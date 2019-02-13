@@ -4,9 +4,13 @@ include:
     - '.update_fork_branches.yml'
     - '.tag_and_deploy.yml'
 
+variables:
+    SERVER_DOMAIN: 'jugit.fz-juelich.de'
+    SAMPLE_CASE_VERSION: '445646d8'
+
 before_script:
     # Install required programs
-    - apt-get update && apt-get -y install cmake openmpi-bin libopenmpi-dev gfortran git makedepf90 xxd
+    - apt-get update && apt-get -y install cmake openmpi-bin libopenmpi-dev gfortran git makedepf90 xxd lcov
     # Bypass mpirun abort due to execution as root
     - export MPIRUN_FLAGS='--allow-run-as-root'
 
@@ -15,6 +19,7 @@ stages:
     - build:executable
     - run
     - test
+    - coverage
     - tag
     - deploy
     - on-schedule
@@ -24,8 +29,10 @@ stages:
     except: 
         - schedules
     script:
-        - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@src.ipp.kfa-juelich.de/eirene/EIRENE-sample-cases.git
-        - cd EIRENE-sample-cases/${PATH_CASE}
+        - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
+        - cd EIRENE-sample-cases
+        - git checkout ${SAMPLE_CASE_VERSION}
+        - cd ${PATH_CASE}
         - make
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
@@ -63,15 +70,15 @@ build_library:
     except: 
         - schedules
     script:
-        - mkdir build
-        - cd build
+        - mkdir buildRelease
+        - cd buildRelease
         - FC=gfortran cmake ../src
         - make EIRENE
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
-            - build/*.mod
-            - lib/
+            - buildRelease/
+            - libRelease/
 
 build_standalone_1D_slab:
     <<: *build_executable
@@ -117,6 +124,30 @@ test_standalone_1D-H_slab_with_farming:
     dependencies:
         - run_standalone_1D-H_slab_with_farming
 
+build_standalone_ITER_1573:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "ITER_1573"
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - binRelease/
+            - EIRENE-sample-cases/${PATH_CASE}
+
+run_standalone_ITER_1573:
+    <<: *run
+    variables:
+        PATH_CASE: "ITER_1573"
+    dependencies:
+        - build_standalone_ITER_1573
+
+test_standalone_ITER_1573:
+    <<: *test
+    variables:
+        PATH_CASE: "ITER_1573"
+    dependencies:
+        - run_standalone_ITER_1573
+
 build_EMC3-EIRENE:
     <<: *build_executable
     variables:
@@ -124,7 +155,7 @@ build_EMC3-EIRENE:
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
-            - EIRENE-sample-cases/EMC3/emc3/bin/
+            - EIRENE-sample-cases/EMC3/emc3/binRelease/
             - EIRENE-sample-cases/EMC3/W7X_Limiter/
 
 run_EMC3-EIRENE_H:
@@ -207,7 +238,7 @@ run_EMC3-EIRENE_H_multiStrataMpi3:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi3"
     dependencies:
-       - build_EMC3-EIRENE
+        - build_EMC3-EIRENE
 
 test_EMC3-EIRENE_H_multiStrataMpi3:
     <<: *test
@@ -222,7 +253,7 @@ run_EMC3-EIRENE_H_profile:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_profile"
     dependencies:
-       - build_EMC3-EIRENE
+        - build_EMC3-EIRENE
 
 test_EMC3-EIRENE_H_profile:
     <<: *test
@@ -231,3 +262,27 @@ test_EMC3-EIRENE_H_profile:
     dependencies:
         - build_EMC3-EIRENE
         - run_EMC3-EIRENE_H_profile
+
+coverage_report:
+    stage: coverage
+    only:
+        - develop
+        - master
+    except:
+        - schedules
+    script:
+        - mkdir buildCoverage
+        - cd buildCoverage
+        - FC=gfortran cmake ../src -DCMAKE_BUILD_TYPE=Coverage
+        - make EIRENE
+        - cd ..
+        - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
+        - cd EIRENE-sample-cases
+        - git checkout ${SAMPLE_CASE_VERSION}
+        - make coverageReport FFLAGS="-g -fprofile-arcs -ftest-coverage" CONFIG=Coverage
+    dependencies: []
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - EIRENE-sample-cases/coverage.info
+            - EIRENE-sample-cases/coverageReport

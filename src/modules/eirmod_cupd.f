@@ -65,9 +65,9 @@
       ALLOCATE (LUPC(N2ND))
       ALLOCATE (MUPC(N2ND))
 
-      WRITE (55+IFOFF,'(A,T25,I15)')
+      WRITE (IUNMEM,'(A,T25,I15)')
      .      ' CUPD ',2*(N2ND+N3RD)*8
-      WRITE (55+IFOFF,'(A,T25,I15)')
+      WRITE (IUNMEM,'(A,T25,I15)')
      .      ' CUPD ',(4*(N2ND+N3RD)+2*N2ND)*4
 
       CALL EIRENE_INIT_CUPD

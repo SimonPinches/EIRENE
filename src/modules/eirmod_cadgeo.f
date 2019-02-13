@@ -60,7 +60,7 @@ C MADGEO, INTEGER
       ALLOCATE (IADGEO(2,NLIM))
       ALLOCATE (RLBNOT(NLIM))
 
-      WRITE (55+IFOFF,'(A,T25,I15)')
+      WRITE (IUNMEM,'(A,T25,I15)')
      .      ' CADGEO ',NLIM*(NPLIM+1)*8 + 2*NLIM*4
 
       A0LM => RADGEO(1,:)

@@ -116,7 +116,8 @@ C
       DO 200 I=1,IS
          XMIT=XMIT+XYZG(1,I)
          YMIT=YMIT+XYZG(2,I)
-  200    ZMIT=ZMIT+XYZG(3,I)
+         ZMIT=ZMIT+XYZG(3,I)
+  200 CONTINUE
       XMIT=XMIT/DBLE(IS)
       YMIT=YMIT/DBLE(IS)
       ZMIT=ZMIT/DBLE(IS)
@@ -156,7 +157,8 @@ C     SORTIERE NACH WINKELN
         DO 620 J=1,3
           HELP=XYZG(J,I)
           XYZG(J,I)=XYZG(J,ISORT)
-  620     XYZG(J,ISORT)=HELP
+          XYZG(J,ISORT)=HELP
+  620   CONTINUE
         HELP=ANGLE(I)
         ANGLE(I)=ANGLE(ISORT)
         ANGLE(ISORT)=HELP
@@ -164,18 +166,20 @@ C     SORTIERE NACH WINKELN
 C
       ICOUNT=ICOUNT+1
       DO 700 I=1,IS-1
-        DO 700 J=I+1,IS
+        DO J=I+1,IS
            IF (ABS(ANGLE(J)-ANGLE(I)).LT.1.E-6.AND.
      .        (XYZG(1,I)-XYZG(1,J))**2+(XYZG(2,I)-XYZG(2,J))**2+
      .        (XYZG(3,I)-XYZG(3,J))**2.GT.1.E-6.AND.
      .         ICOUNT.LT.3) GOTO 150
+        END DO
   700 CONTINUE
 C
       II=0
       DO 1000 I=1,IS
         DO 1100 J=1,3
           II=II+1
- 1100     CORD(II)=XYZG(J,I)
+          CORD(II)=XYZG(J,I)
+ 1100   CONTINUE
  1000 CONTINUE
       CALL EIRENE_PL3Q(CORD,IS,IO,NF)
 C

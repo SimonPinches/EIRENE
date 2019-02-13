@@ -263,8 +263,7 @@ C
             ISPZ=ISPTAL(IBLD,ICURV)
             IF (JTAL.LT.0.) THEN
               NF=NFRSTP(ITL)
-              DO 111 I=1,NRAD
-  111           VECTOR(I,ICURV)=0.
+              VECTOR(:,ICURV)=0.
               IF (ISPZ.EQ.0) THEN
                 SELECT CASE (ITL)
                 CASE (1)
@@ -389,12 +388,12 @@ C
               NFT=NFSTVI(ITL)
               NF=NFIRST(ITL)
               IF (ISPZ.EQ.0) THEN
-                DO 121 I=1,NRAD
-  121             VECTOR(I,ICURV)=0.
+                VECTOR(:,ICURV)=0.
                 DO 122 K=1,NFT
-                  DO 122 I=1,NRAD
+                  DO I=1,NRAD
                     VECTOR(I,ICURV)=VECTOR(I,ICURV)+
      .                              ESTIMV(NADDV(ITL)+K,NCLTAL(I))
+                  END DO
   122           CONTINUE
               ELSEIF (ISPZ.GT.0.AND.ISPZ.LE.NFT) THEN
                 DO 125 I=1,NRAD
@@ -496,23 +495,24 @@ C   ...SAME FOR EACH Y- OR POLOIDAL , IF APPLICABLE
                 XXP2D(I)=RHOSRF(I)
   130         CONTINUE
               DO 131 J=2,NP2ND*NT3RD*NBMLT
-                DO 131 I=1,NR1ST
+                DO I=1,NR1ST
                   XXP2D(I+(J-1)*NR1ST)=XXP2D(I)
-  131          CONTINUE
-              DO 138 I=NSURF+1,NRAD
-  138           XXP2D(I)=0.
+                END DO
+  131         CONTINUE
+              XXP2D(NSURF+1:NRAD)=0.
               IXSET2=1
             ELSEIF (LEVGEO.EQ.3) THEN
 C   USE PERPEND. ARCLENGTH "BGLP" IN CASE OF POLYGON GRID,
 C   ...FOR EACH POLOIDAL AND TOROIDAL POSITION, IF APPLICABLE
               DO 133 I=1,NR1ST
-                DO 133 J=1,NP2ND
-                  DO 133 K=1,NT3RD
+                DO J=1,NP2ND
+                  DO K=1,NT3RD
                     IRAD=I+((J-1)+(K-1)*NP2T3)*NR1P2
                     XXP2D(IRAD)=BGLP(I,J)
+                  END DO
+                END DO
   133         CONTINUE
-              DO 136 I=NSURF+1,NRAD
-  136           XXP2D(I)=0.
+              XXP2D(NSURF+1:NRAD)=0.
               IXSET2=1
             ELSE
 C   NO 2D PLOTOPTIONS AVAILABLE
@@ -676,7 +676,8 @@ C  SYMMETRY CONDITION AT POLAR ANGLE THETA=YIA AND THETA=2*PI+YIA
 C  NOT READY: IXTL3 NOT DEFINED HERE. ENFORCE SYMMETRY AUTOMATICALLY EARLIER
 C             IF (LEVGEO.EQ.2.AND.IYTL3.EQ.NP2ND) THEN
 C               DO 1036 I=1,IXTL3
-C 1036            VECTOR(I+NP2NDM*NR1ST,ICURV)=VECTOR(I,ICURV)
+C                 VECTOR(I+NP2NDM*NR1ST,ICURV)=VECTOR(I,ICURV)
+C 1036          CONTINUE
 C             ENDIF
  1040       CONTINUE
 C
@@ -712,15 +713,13 @@ c  set a y-z grid, by abuse of notation on xxp3d,yyp3d
 c  at this point: either lppol3 or lptor3 must be true
 c  set a x-y or a x-z grid, by abuse of notation on xxp3d,yyp3d
                 IXTL3=NR1ST
-                DO 218 I=1,IXTL3
-  218             XXP3D(I)=RHOSRF(I)
+                XXP3D(1:IXTL3)=RHOSRF(1:IXTL3)
                 IXSET3=1
               ENDIF
               IF (NLTOR.AND.NLTRZ.AND..NOT.LPTOR3(IBLD)) THEN
 c  at this point:  lppol3 must be true, i.e. we need x-z grid
                 IYTL3=NT3RD
-                DO 220 I=1,IYTL3
-  220             YYP3D(I)=ZSURF(I)
+                YYP3D(1:IYTL3)=ZSURF(1:IYTL3)
                 DO I=1,NR1ST
                   DO J=1,NT3RD
                     XPOL(I,J)=RHOSRF(I)
@@ -732,8 +731,7 @@ c  at this point:  lppol3 must be true, i.e. we need x-z grid
               IF (NLPOL.AND..NOT.LPPOL3(IBLD)) THEN
 c  at this point: lptor3 must be true, i.e. we need x-y grid
                 IYTL3=NP2ND
-                DO 221 I=1,IYTL3
-  221             YYP3D(I)=PSURF(I)
+                YYP3D(1:IYTL3)=PSURF(1:IYTL3)
                 DO I=1,NR1ST
                   DO J=1,NP2ND
                     XPOL(I,J)=RHOSRF(I)
@@ -747,20 +745,17 @@ C
 C
               IF (NLRAD.AND..NOT.LPRAD3(IBLD)) THEN
                 IXTL3=NR1ST
-                DO 223 I=1,IXTL3
-  223             XXP3D(I)=RHOSRF(I)
+                XXP3D(1:IXTL3)=RHOSRF(1:IXTL3)
                 IXSET3=1
               ENDIF
               IF (NLTOR.AND.NLTRZ.AND..NOT.LPTOR3(IBLD)) THEN
                 IYTL3=NT3RD
-                DO 226 I=1,IYTL3
-  226             YYP3D(I)=ZSURF(I)
+                YYP3D(1:IYTL3)=ZSURF(1:IYTL3)
                 IYSET3=1
               ENDIF
               IF (NLPOL.AND..NOT.LPPOL3(IBLD)) THEN
                 IYTL3=NP2ND
-                DO 225 I=1,IYTL3-1
-  225             YYP3D(I)=0.5*(PSURF(I+1)+PSURF(I))
+                YYP3D(1:IYTL3-1)=0.5*(PSURF(2:IYTL3)+PSURF(1:IYTL3-1))
                 YYP3D(NP2ND)=PSURF(1)+PI2A
                 IYSET3=1
               ENDIF
@@ -770,11 +765,13 @@ C
               IF (LPTOR3(IBLD)) THEN
                 IXTL3=NR1ST
                 DO 228 IX=1,IXTL3
-  228             XXP3D(IX)=IX
+                  XXP3D(IX)=IX
+  228           CONTINUE
                 IXSET3=1
                 IYTL3=NP2ND
                 DO 230 IX=1,IYTL3
-  230             YYP3D(IX)=IX
+                  YYP3D(IX)=IX
+  230           CONTINUE
                 IYSET3=1
               ENDIF
 C

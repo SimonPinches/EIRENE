@@ -3,13 +3,25 @@
 cmake_minimum_required(VERSION 2.8)
 project(EIRENE Fortran)
 
+# Set a default build type if none was specified
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  message(STATUS "Setting build type to 'Release' as none was specified.")
+  set(CMAKE_BUILD_TYPE "Release" CACHE
+      STRING "Choose the type of build." FORCE)
+  # Set the possible values of build type for cmake-gui
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+    "Release" "Debug" "Coverage")
+  # "Coverage" only available for GNU compiler
+endif()
+
 # Adds compiler flags to all build types.
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
-  set(CMAKE_Fortran_FLAGS "-fp-model source")
+  set(CMAKE_Fortran_FLAGS_RELEASE "-fp-model source")
   set(CMAKE_Fortran_FLAGS_DEBUG "-g -warn all,nointerfaces -check all")
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
-  set(CMAKE_Fortran_FLAGS "-O3")
+  set(CMAKE_Fortran_FLAGS_RELEASE "-O3")
   set(CMAKE_Fortran_FLAGS_DEBUG "-g -Wall -fcheck=all")
+  set(CMAKE_Fortran_FLAGS_COVERAGE "-g -fprofile-arcs -ftest-coverage")
 endif()
 
 # Libraries used for plotting
@@ -67,20 +79,18 @@ else()
   message(STATUS " --  Plotting will be disabled.")
 endif()
 
-message(STATUS   " --  Setting interface and user routines:       ")
-message(STATUS   "       if flag -Dinterface is unspecified, dummies will")
-message(STATUS   "       be set. Try e.g. -Dinterface=SOLPS.  ")
-
-if(interface)
-  get_filename_component(interface ${interface} NAME)
-  message(STATUS " --  interface and user routines set to " ${interface})
-else()
-  message(STATUS " --  Flag -Dinterface unset; will use dummy routines")
-endif()
-
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+# Control of interface and user-routines to compile:
+set(EIRENE_INTERFACE "Dummy" CACHE STRING "EIRENE interface to compile")
+set(EIRENE_USER-ROUTINES "default" CACHE STRING "EIRENE user-routines to compile")
+
+message(STATUS   " --  Setting interface and user-routines to compile:")
+message(STATUS   "       If flag -DEIRENE_INTERFACE is unspecified, \"Dummy\"")
+message(STATUS   "       will be set. Try e.g. -DEIRENE_INTERFACE=SOLPS-ITER.  ")
+message(STATUS   "       If flag -DEIRENE_USER-ROUTINES is unspecified, \"default\"")
+message(STATUS   "       will be set. Try e.g. -DEIRENE_USER-ROUTINES=iter.  ")
 
 # Add option to control whether trace output will be compiled
 option(TRACE "Build with trace output" OFF)
@@ -133,31 +143,26 @@ else()
   list(APPEND plotpath ${src_plot_dummy})
 endif()
 
-# Decide whether to use SOLPS interface or dummy placeholders
-# (easily expandable for further interfaces)
-set(couplepath "")
-set(userpath "")
-if(     interface STREQUAL "SOLPS" )
-  list(APPEND couplepath ${src_interfaces/couple_SOLPS-ITER})
-  list(APPEND userpath   ${src_user-routines/user_iter})
-elseif( interface STREQUAL "BOX"  )
-  list(APPEND couplepath ${src_interfaces/couple_Dummy})
-  list(APPEND userpath   ${src_user-routines/user_box})
-else()
-  list(APPEND couplepath ${src_interfaces/couple_Dummy})
-  list(APPEND userpath   ${src_user-routines/user_default})
+# Specify interface and user-routines to use
+set(src_interface/x ${src_interfaces/couple_${EIRENE_INTERFACE}})
+set(src_user-routines/x ${src_user-routines/user_${EIRENE_USER-ROUTINES}})
+if( NOT src_interface/x )
+  message(FATAL_ERROR "No interface named \"${EIRENE_INTERFACE}\"")
+endif()
+if( NOT src_user-routines/x )
+  message(FATAL_ERROR "No user-routines named \"${EIRENE_USER-ROUTINES}\"")
 endif()
 
 # Adds EIRENE library to the project.
 add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno} 
                    ${src_file-handling} ${src_geometry}
-                   ${src_geometry/time-routines} ${couplepath} 
+                   ${src_geometry/time-routines} ${src_interface/x} 
                    ${src_iterate} ${src_main-routines} ${src_mathematics} 
                    ${src_modules} ${src_output} ${src_particle-tracing} 
                    ${src_photons} ${plotpath} ${src_sampling} 
                    ${src_scoring} ${src_startup-routines} 
                    ${src_surface-processes} ${src_tetrahedra} 
-                   ${userpath} ${src_volume-processes})
+                   ${src_user-routines/x} ${src_volume-processes})
 
 # Adds eirene executable to the project and links it to the MPI library.
 add_executable(eirene main-routines/eirene_main.f)

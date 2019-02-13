@@ -44,13 +44,13 @@ C
 c
       data nvplot/0/
 C
-      WRITE (60+ifoff,*) RUNID
-      WRITE (60+ifoff,*) TXHEAD
-      WRITE (60+ifoff,*) HEAD
-      WRITE (60+ifoff,*) TEXT1
-      WRITE (60+ifoff,*) TEXT2
-      WRITE (60+ifoff,*) TEXT3
-      WRITE (60+ifoff,*)
+      WRITE (IUNRAPSVEC,*) RUNID
+      WRITE (IUNRAPSVEC,*) TXHEAD
+      WRITE (IUNRAPSVEC,*) HEAD
+      WRITE (IUNRAPSVEC,*) TEXT1
+      WRITE (IUNRAPSVEC,*) TEXT2
+      WRITE (IUNRAPSVEC,*) TEXT3
+      WRITE (IUNRAPSVEC,*)
 c
       nraps2=80
       nvplot=nvplot+1
@@ -402,12 +402,7 @@ C  SIDE 8
         enddo
 
       ELSEIF (LEVGEO.EQ.4) THEN
-        DO 41 I=1,NRKNOT
-          DO 51 J=0,30
-            DO 51 K=1,2
-            ZUORD(I,J,K) = 0
-   51     CONTINUE
-   41   CONTINUE
+        ZUORD(1:NRKNOT,:,:) = 0
         DO 40 J=1,NTRII
           DO 50 I=1,3
             ZUORD(NECKE(I,J),0,1) = ZUORD(NECKE(I,J),0,1) + 1

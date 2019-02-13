@@ -133,7 +133,7 @@ c                       ! better: move iunin, iunout, etc.. to parmmod ??
       ALLOCATE (IIMPOL(N1STS,N2NDPLGS))
       ALLOCATE (IIMINT(NRADS))
 
-      WRITE (55+IFOFF,'(A,T25,I15)')
+      WRITE (IUNMEM,'(A,T25,I15)')
      .      ' COMPRT ',(NPARTC+NRADS+N1STS*N2NDPLGS)*8 +
      .                 (MPARTC+1+NRADS+N1STS*N2NDPLGS+NRADS)*4
 

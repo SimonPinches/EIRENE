@@ -249,9 +249,9 @@ C
 c                         ! otherwise: helpp=helps
             DO 121 IB=1,NBMLT
              NBLCKA=NSTRD*(IB-1)
-            DO 121 IR=1,NXM
-            DO 121 IP=1,NYM
-            DO 121 IT=1,NZM
+             DO IR=1,NXM
+             DO IP=1,NYM
+             DO IT=1,NZM
               I_FINE=IR + ((IP-1)+(IT-1)*NP2T3)*NR1P2 + NBLCKA
 C  COARSE-GRAINING OF INPUT TALLY ITAL ONTO GRID DEFINED BY NCLTPR(I-FINE),
 C  STRUCTURE NR1TAL,NP2TAL,....
@@ -312,6 +312,9 @@ C  22) (ELECTRIC) POTENTIAL
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               ENDIF
+             END DO
+             END DO
+             END DO
   121       CONTINUE
 
 C

@@ -43,7 +43,12 @@ c    distrib_parm
      P         NUM_PARM=200,
      P         NPARTC=12, NPARTT=11,
      P         MPARTC=14, MPARTT=10
-csw 13apr07
+C> Unit number for memory usage output file
+      INTEGER, PUBLIC, SAVE :: IUNMEM = 55
+C> Unit number for RAPS output file
+      INTEGER, PUBLIC, SAVE :: IUNRAPS = 65
+C> Unit number for RAPS vector field output file
+      INTEGER, PUBLIC, SAVE :: IUNRAPSVEC = 60
       integer, public, save :: IFOFF = 0
 C> Indicates whether output files 'output.*' should be appended or overwritten
       LOGICAL, PUBLIC, SAVE :: LOUTAPP = .FALSE.

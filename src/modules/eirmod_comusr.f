@@ -116,6 +116,9 @@ C FROM HERE ON: NO EQUIVALENCE
      I         NFRSTP(:), NADDP(:), NSPAN(:),  NSPEN(:),
      I         NSPANW(:), NSPENW(:)
 
+      INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
+     I         NAINS(:), NAINT(:)
+
       INTEGER, PUBLIC, SAVE ::
      I         NPRLL, NMODE,  NTCPU,
      I         NFILE, NFILEN, NFILEM, NFILEL, NFILEK, NFILEJ,
@@ -258,7 +261,7 @@ c  logicals
         ALLOCATE (LGDFT(NRAD))
         ALLOCATE (LSPCCLL(NRAD))
 
-        WRITE (55+IFOFF,'(A,T25,I15)')
+        WRITE (IUNMEM,'(A,T25,I15)')
      .        ' COMUSR(1) ',NUSR*8 + MUSR*4 + (LUSR+12)*4 + 3*NRTAL*8
 
       ELSE IF (ICAL == 2) THEN
@@ -268,6 +271,9 @@ c  NAIN: first dimension of adin is now fixed.  correct nplprm with nain*nrad
         NPLPR1=(12+1*NPLS+NPLSTI+3*NPLSV)*NRAD
         NPLPRM=NPLPR1+(NAIN+NSPZMC)*NRAD
         ALLOCATE (ADIN(NAIN,NRAD))
+
+        ALLOCATE (NAINS(NAIN))
+        ALLOCATE (NAINT(NAIN))
 
 c  NCPV, NBGV are now set
         ALLOCATE (ICPVE(NCPV))
@@ -287,7 +293,7 @@ c  NCPV, NBGV are now set
         ALLOCATE (FLXOUT(NLMPGS))
         ALLOCATE (SAREA(NLMPGS))
 
-        WRITE (55+IFOFF,'(A,T25,I15)')
+        WRITE (IUNMEM,'(A,T25,I15)')
      .         ' COMUSR(3) ',NSFPRM*8
 
       END IF
@@ -525,6 +531,8 @@ c
       DEALLOCATE (NSPEN)
       DEALLOCATE (NSPANW)
       DEALLOCATE (NSPENW)
+      DEALLOCATE (NAINS)
+      DEALLOCATE (NAINT)
       DEALLOCATE (LGVAC)
       DEALLOCATE (LGDFT)
       DEALLOCATE (LSPCCLL)
@@ -663,6 +671,9 @@ c
       ELSE IF (ICAL == 2) THEN
 c  at this call: first dimension of adin is known, as well as size of cop and bgk tallies
         ADIN   = 0._DP      ! ital=-12
+
+        NAINS = 0
+        NAINT = 0
 
         ICPVE  = 0
         ICPVS  = 0

@@ -188,10 +188,12 @@ C     L.C.JOHNSON, ASTROPHYS. J. 174, 227 (1972).
 C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER LIM
       DIMENSION F(40,40)
       DIMENSION A(40,40)
       DIMENSION E_AT(40)
       DIMENSION POP_ESC(40,40)
+      INTEGER I, J
       logical lopaque
 
       UH=13.595
@@ -246,6 +248,7 @@ C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
       DIMENSION SAHA(40)
+      INTEGER I, II, III, J, JJ
 
       TE=TEMP*1.1605E4
 
@@ -275,6 +278,7 @@ C
       IMPLICIT REAL(DP) (A-H,O-Z)
       DIMENSION OSC(40,40),C(40,40),F(40,40),U(40,40)
       DIMENSION SAHA(40),S(40),ALPHA(40),BETA(40),EBETA(40),UION(40)
+      INTEGER I, II, III, J, JJ
 
 cdr  above some critical Te0 value the radiative rate coefficients beta become unphysical
 c    perhaps due to numerical integration, or due to fit expression for integrand.
@@ -440,17 +444,14 @@ c    Extrapolate energy rate coeff ebeta beyond Te0 =500 eV
       EQUIVALENCE (RECOMB(1,26),RECMB26(1))
 
 C     INITIALIZATION
-      DO 1 I=1,40
-      S(I)=0.0
-      ALPHA(I)=0.0
-      BETA(I)=0.0
-      EBETA(I)=0.0
-      UION(I)=0.0
-      DO 1 J=1,40
-      C(I,J)=0.0
-      F(I,J)=0.0
-      U(I,J)=0.0
-    1 CONTINUE
+      S=0.0
+      ALPHA=0.0
+      BETA=0.0
+      EBETA=0.0
+      UION=0.0
+      C=0.0
+      F=0.0
+      U=0.0
 
       TE=TEMP*1.1605E4     !  Te in Kelvin, TEMP in eV
       TEL10=log10(temp)
@@ -458,10 +459,13 @@ C     INITIALIZATION
 
       DO 101 I=1,40
       P=I
-  101 UION(I)=13.595/TEMP/P**2
+      UION(I)=13.595/TEMP/P**2
+  101 CONTINUE
       DO 102 I=1,40
-      DO 102 J=1,40
-  102 U(I,J)=UION(I)-UION(J)
+      DO J=1,40
+      U(I,J)=UION(I)-UION(J)
+      END DO
+  102 CONTINUE
 
 c  excitation   :            C
 c  de-excitation:            F  (by detailed balance)
@@ -472,7 +476,8 @@ c  three body recombination: ALPHA (inverse to ionization S)
         CALL EIRENE_EXCOFF(U,OSC,TEMP,C,F,S,ALPHA)
 
         DO 105 I=1,40
-  105     ALPHA(I)=S(I)*SAHA(I)
+          ALPHA(I)=S(I)*SAHA(I)
+  105   CONTINUE
 
       ELSE
 ! Te lt than 5000 Kelvin:  calculate ALPHA, and derive S for transition to n=1
@@ -480,7 +485,8 @@ c  three body recombination: ALPHA (inverse to ionization S)
         CALL EIRENE_EXCOFF(U,OSC,TEMP,C,F,S,ALPHA)
         S(1)=ALPHA(1)/SAHA(1)
         DO 19 I=2,40
-   19     ALPHA(I)=S(I)*SAHA(I)
+          ALPHA(I)=S(I)*SAHA(I)
+   19   CONTINUE
       END IF
 
 c   next: radiative recombination: BETA
@@ -536,13 +542,12 @@ C
       IMPLICIT REAL(DP) (A-H,O-Z)
       DIMENSION U(40,40),OSC(40,40),C(40,40),F(40,40)
       DIMENSION S(40),ALPHA(40)
+      INTEGER I, J
 C
-      DO 1 I=1,40
-      S(I)=0.0
-      ALPHA(I)=0.0
-      DO 1 J=1,40
-      C(I,J)=0.0
-    1 F(I,J)=0.0
+      S=0.0
+      ALPHA=0.0
+      C=0.0
+      F=0.0
 
       TE=TEMP*1.1605E4
 
@@ -553,30 +558,35 @@ C*********  1 -> J
       Q=J
       CALL EIRENE_COF1N(U(I,J),OSC(I,J),TE,F1,I,J)
       F(J,1)=F1
-  100 C(1,J)=Q**2/EXP(U(1,J))*F(J,1)  !/P**2, but P=1 here
+      C(1,J)=Q**2/EXP(U(1,J))*F(J,1)  !/P**2, but P=1 here
+  100 CONTINUE
 
 C*********  2-10 -> J
       DO 110 I=2,10
       P=I
-      DO 110 J=I+1,40
+      DO J=I+1,40
       Q=J
       CALL EIRENE_COFVR(U(I,J),OSC(I,J),TEMP,CV,I,J)
       CALL EIRENE_COFJO(U(I,J),OSC(I,J),TE,CJ,I,J)
 
       GG=((P-2.)/8.)**0.25
       C(I,J)=(1.-GG)*CJ+GG*CV
-  110 F(J,I)=P**2/Q**2*EXP(U(I,J))*C(I,J)
+      F(J,I)=P**2/Q**2*EXP(U(I,J))*C(I,J)
+      END DO
+  110 CONTINUE
 
 
 C*********  I(>11) -> J
 
       DO 120 I=11,39
       P=I
-      DO 120 J=I+1,40
+      DO J=I+1,40
       Q=J
       CALL EIRENE_COFVR(U(I,J),OSC(I,J),TEMP,CV,I,J)
       C(I,J)=CV
-  120 F(J,I)=P**2/Q**2*EXP(U(I,J))*C(I,J)
+      F(J,I)=P**2/Q**2*EXP(U(I,J))*C(I,J)
+      END DO
+  120 CONTINUE
 
 C*********  S  1 ->  ionization
       I=1
@@ -598,12 +608,14 @@ C*********  S  2-10 ->
       CALL EIRENE_COFVS(TEMP,SV,I)
 
       GGG=((P-2.)/8.)**0.25
-  210 S(I)=(1.-GGG)*SJ+GGG*SV
+      S(I)=(1.-GGG)*SJ+GGG*SV
+  210 CONTINUE
 
 C*********  S  I(>11) ->
       DO 220 I=11,40
       CALL EIRENE_COFVS(TEMP,SV,I)
-  220 S(I)=SV
+      S(I)=SV
+  220 CONTINUE
       RETURN
       END
 
@@ -623,6 +635,7 @@ C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
 
+      INTEGER I, J, ICON
       REAL(DP) EIRENE_GINT
       EXTERNAL EIRENE_GINT
 
@@ -702,6 +715,7 @@ C
       USE EIRMOD_COMPRT, ONLY: IUNOUT
 
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER I, J, ICON
       P=I
       BN=(4.0-18.63/P+36.24/P**2-28.09/P**3)/P
       Q=J
@@ -745,6 +759,7 @@ C
 C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER I, J
       UH=13.595
       P=I
       BN=1.4/P*LOG(P)-0.7/P-0.51/P**2+1.16/P**3-0.55/P**4
@@ -779,6 +794,7 @@ C
 C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER I, N, K, ICON
       DIMENSION G(0:2,40)
 
       G(0,1)=1.1330
@@ -790,7 +806,8 @@ C
       DO 350 N=3,40
       G(0,N)=0.9935+0.2328/N-0.1296/N**2
       G(1,N)=-0.6282/N+0.5598/N**2-0.5299/N**3
-  350 G(2,N)=0.3887/N**2-1.181/N**3+1.470/N**4
+      G(2,N)=0.3887/N**2-1.181/N**3+1.470/N**4
+  350 CONTINUE
 
       IF (I.EQ.1) THEN
 
@@ -802,7 +819,8 @@ C
       RX=-0.59
       A=0.0
       DO 223 K=0,2
-  223 A=A+G(K,1)/(K+3)
+      A=A+G(K,1)/(K+3)
+  223 CONTINUE
       A=A*1.9603*P
 
       B=0.66667*P**2*(5-0.603)
@@ -834,7 +852,8 @@ C
       Z=R+Y
       A=0.0
       DO 222 K=0,2
-  222 A=A+G(K,I)/(K+3)
+      A=A+G(K,I)/(K+3)
+  222 CONTINUE
       A=A*1.9603*P
       B=0.66667*P**2*(5+BN)
       C1=2*P**2
@@ -872,6 +891,7 @@ C
 C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER I, N, K
       DIMENSION G(0:2,40)
       REAL(DP) EIRENE_GINT
       EXTERNAL EIRENE_GINT
@@ -885,7 +905,8 @@ C
       DO 350 N=3,40
       G(0,N)=0.9935+0.2328/N-0.1296/N**2
       G(1,N)=-0.6282/N+0.5598/N**2-0.5299/N**3
-  350 G(2,N)=0.3887/N**2-1.181/N**3+1.470/N**4
+      G(2,N)=0.3887/N**2-1.181/N**3+1.470/N**4
+  350 CONTINUE
 
 C     IF (I.EQ.1) THEN
       PP=I
@@ -897,7 +918,8 @@ C     IF (I.EQ.1) THEN
 
       A=0.0
       DO 223 K=0,2
-  223 A=A+G(K,1)/(K+3)
+      A=A+G(K,1)/(K+3)
+  223 CONTINUE
       A=A*1.9603*P
 
       B=0.66667*P**2*(5-0.603)
@@ -936,6 +958,7 @@ C
 C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER I
 
       P=I
       UI=13.595/TEMP/P**2
@@ -988,6 +1011,7 @@ C
 
       IMPLICIT REAL(DP) (A-H,O-Z)
       REAL(DP) EIRENE_GAUNT3,EIRENE_GAUNT4,PP,XPP,A,B,EPSR
+      INTEGER II, NMIN, NMAX
       COMMON PP,XPP
       EXTERNAL EIRENE_GAUNT3, EIRENE_GAUNT4
 
@@ -1056,33 +1080,39 @@ c  l_ext: indicate that 3rd right hand side term is requested
 C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER LUP, LIM
       REAL(DP)  C(40,40),F(40,40),A(40,40),W(40,40)
      &         ,SAHA(40),S(40),ALPHA(40),BETA(40),R0(40),R1(40)
      &         ,       Q_EXT(40),R_EXT(40)
      &         ,VW(40),WA(40,40)
       REAL(DP) :: BLAX(3,40)
+      INTEGER I,J,K,L,IE,ICON,IS
       LOGICAL :: L_EXT
-      dimension ip(40)
+      integer ip(40)
 
       DO 201 K=2,LUP-1
 
         DO 202 L=2,K
 cdr stoss bevoelkerung von k von unten
-  202     W(K,L)=C(L,K)*DENSEL
+          W(K,L)=C(L,K)*DENSEL
+  202   CONTINUE
 
 cc diagonale
 cc entvoelkerung durch stoesse nach unten
         SUMF=0.
         DO 301 I=1,K-1
-  301     SUMF=SUMF+F(K,I)
+          SUMF=SUMF+F(K,I)
+  301   CONTINUE
 cc entvoelkerung durch stoesse nach oben
         SUMC=0.
         DO 302 I=K+1,LIM
-  302     SUMC=SUMC+C(K,I)
+          SUMC=SUMC+C(K,I)
+  302   CONTINUE
 cc  spontan nach unten
         SUMA=0.
         DO 303 I=1,K-1
-  303     SUMA=SUMA+A(K,I)
+          SUMA=SUMA+A(K,I)
+  303   CONTINUE
 cdr entvoelkerung von k: stoesse nach unten, nach oben, ionis, spontan
 cdr                      nach unten
         W(K,K)=-(DENSEL*(SUMF+SUMC+S(K))+SUMA)
@@ -1091,7 +1121,8 @@ cc diagonale fertig
 
         DO 203 L=K+1,LUP
 cdr bevoelkerung durch: stoesse von oben, spontan von oben
-  203     W(K,L)=DENSEL*F(L,K)+A(L,K)
+          W(K,L)=DENSEL*F(L,K)+A(L,K)
+  203   CONTINUE
 
   201 CONTINUE
 cdr k loop finished, k=2, lup-1 (d.h. ohne letzte Zeile)
@@ -1100,18 +1131,21 @@ cdr k loop finished, k=2, lup-1 (d.h. ohne letzte Zeile)
 c  special treatment letzter zustand lup: 2-->lup, 3-->lup,..., gibt es nur bei excitation, nicht
 c                                  bei de-exit, auch nicht bei rad rec.
       DO 211 L=2,LUP-1
-
-  211 W(LUP,L)=C(L,LUP)*DENSEL
+        W(LUP,L)=C(L,LUP)*DENSEL
+  211 CONTINUE
 c  beitrag des letzten zustandes lup zu diagonal
       SUMF=0.
       DO 311 I=1,LUP-1
-  311 SUMF=SUMF+F(LUP,I)
+        SUMF=SUMF+F(LUP,I)
+  311 CONTINUE
       SUMC=0.0
       DO 313 I=LUP+1,LIM   !Boltzmann LTE contribution fuer LIM gt. LUP
-  313 SUMC=SUMC+C(LUP,I)
+        SUMC=SUMC+C(LUP,I)
+  313 CONTINUE
       SUMA=0.
       DO 312 I=1,LUP-1
-  312 SUMA=SUMA+A(LUP,I)
+        SUMA=SUMA+A(LUP,I)
+  312 CONTINUE
 
       W(LUP,LUP)=-(DENSEL*(SUMF+SUMC+S(LUP))+SUMA)
 
@@ -1121,10 +1155,12 @@ C  RECHTE SEITEN:
 c  vorbereiten fuer recombination, Saha correction
         SUMFS=0.0
         DO 500 I=LUP+1,LIM
-  500     SUMFS=SUMFS+F(I,K)*SAHA(I)
+          SUMFS=SUMFS+F(I,K)*SAHA(I)
+  500   CONTINUE
         SUMAS=0.0
         DO 501 I=LUP+1,LIM
-  501     SUMAS=SUMAS+SAHA(I)*A(I,K)
+          SUMAS=SUMAS+SAHA(I)*A(I,K)
+  501   CONTINUE
 c
 c  matrixelemente: 1/s  (densel*rate coeff. )
 c  rechte seiten : cm**3/s, nicht: 1/s, also fuer elektronendichte=1
@@ -1145,8 +1181,10 @@ cdr OK, AS LONG AS lup<38
 cdr reduziere w indices um 1: auf wa: i=1,lup-1,j=1,(lup-1)+3
 
       DO 402 I=1,LUP-1
-      DO 402 J=1,LUP-1+3
-  402   WA(I,J)=W(I+1,J+1)
+        DO J=1,LUP-1+3
+          WA(I,J)=W(I+1,J+1)
+        END DO
+  402 CONTINUE
 
 c  two or three right linearly additive hand side terms?
       ie=2
@@ -1155,7 +1193,7 @@ c  two or three right linearly additive hand side terms?
         BLAX(1:ie,J)=WA(J,LUP:LUP+ie-1)
  3000 CONTINUE
 
-      CALL EIRENE_LAX_M(WA,40,LUP-1,BLAX,3,ie,0.0,1,IS,VW,IP,ICON)
+      CALL EIRENE_LAX_M(WA,40,LUP-1,BLAX,3,ie,0.0_DP,1,IS,VW,IP,ICON)
 c
 
         DO J=1,LUP-1
@@ -1191,8 +1229,10 @@ C
 C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER LUP, LIM
       DIMENSION C(40,40),S(40),SAHA(40),A(40,40),ALPHA(40),BETA(40),
      &          R0(40),R1(40),R_EXT(40),Q_EXT(40),F(40,40)
+      INTEGER I
       LOGICAL :: L_EXT
 C
       DO 5000 I=LUP+1,LIM
@@ -1205,7 +1245,8 @@ C  IONIS. TRANSITION TO CONTINUUM
       SCR=S(1)
       DO 5001 I=2,LUP
         SUSCR=C(1,I)-R1(I)*(F(I,1)*DENSEL+A(I,1))
- 5001 SCR=SCR+SUSCR
+        SCR=SCR+SUSCR
+ 5001 CONTINUE
 
 C  RECOMB. TRANSITION TO (1)
       ALPCR1=DENSEL*ALPHA(1)+BETA(1)
@@ -1213,8 +1254,8 @@ C  RECOMB. TRANSITION TO (1)
       ALPCR2=0.0
 
       DO 5003 I=2,LIM
-
- 5003 ALPCR2=ALPCR2+R0(I)*(DENSEL*F(I,1)+A(I,1))
+        ALPCR2=ALPCR2+R0(I)*(DENSEL*F(I,1)+A(I,1))
+ 5003 CONTINUE
 
       ALPCR=ALPCR1+ALPCR2
 
@@ -1226,7 +1267,8 @@ C  FROM EXTERNAL, TRANSITION TO CONTINUUM
 
       DO 5002 I=2,LUP
         SUSRAD=Q_EXT(I)-R_EXT(I)*(F(I,1)*DENSEL+A(I,1))
- 5002 SCR_EXT=SCR_EXT+SUSRAD
+        SCR_EXT=SCR_EXT+SUSRAD
+ 5002 CONTINUE
 
 C  ALP_EXT STILL MISSING: from external to ground state
 
@@ -1259,9 +1301,11 @@ C
 C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER LUP, LIM
       DIMENSION C(40,40),S(40),SAHA(40),A(40,40),F(40,40),
      &          ALPHA(40),BETA(40),EBETA(40),
      &          R0(40),R1(40),R_EXT(40),Q_EXT(40),E_AT(40)
+      INTEGER I, I1, I2
       LOGICAL :: L_EXT
 
       DIMENSION EMEAN_REC(41)
@@ -1283,7 +1327,7 @@ C
 C  EFFECTIVE ELECTRON COOLING CORRESPONDING TO
 C  "ORDINARY" COUPLING TO GROUND STATE S(I)
 C
-C  PART I
+C     PART I
 C  1(EXTERN)--> inf.  R1(1)=1
       UH=13.595
       DE=(E_AT(1)-UH)
@@ -1511,6 +1555,7 @@ C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
       REAL(DP) OSC(40,40),CJ(40,40)
+      INTEGER I, J, ICON
       TE=TEMP*1.1605E4
 C
       DO 1 I=1,40
@@ -1570,9 +1615,11 @@ C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
 
+      integer n1, n,nb, nbi, ifl, is, icon
       real(dp) a(n1,n1),B(nb,*),vw(*)
-      dimension ip(*)
-      dimension iw(100)
+      real(dp) eps
+      integer ip(*)
+      integer iw(100), ier
       if (n1.gt.100) then
         write (iunout,*) 'error in lax'
         call eirene_exit_own(1)
@@ -1611,8 +1658,10 @@ C    IER     : ERROR-INDEX (IER = 1: MATRIX SINGULAER)
 C***********************************************************************
 C
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER NA, NG, NB, NBI, IW, IER
       DIMENSION A(NA,NA),B(NB,NG),IW(NG)
       DIMENSION HB(NB), R(NB,NG)
+      INTEGER IB, I, K, M, N, IZ, KS, IH, II
       DATA ZERO /1.E-71_DP/
       IER=0
 C
@@ -1636,7 +1685,8 @@ C     NUMMERN DER UNBEKANNTEN AUF IW ABSPEICHERN.
 C     ******************************************************************
 C
       DO 1 K=1,NG
-    1    IW(K)=K
+        IW(K)=K
+    1 CONTINUE
 C
 C     ******************************************************************
 C     DIE A-MATRIX AUF DREIECKS-FORM BRINGEN.
@@ -1673,7 +1723,8 @@ C
                      DO 4 N=I,NG
                         H=A(I,N)
                         A(I,N)=A(IZ,N)
-    4                   A(IZ,N)=H
+                        A(IZ,N)=H
+    4                CONTINUE
                      HB=B(1:NBI,I)
                      B(1:NBI,I)=B(1:NBI,IZ)
                      B(1:NBI,IZ)=HB(1:NBI)
@@ -1690,7 +1741,8 @@ C
                      DO 5 M=1,NG
                         AK=A(M,KS)
                         A(M,KS)=A(M,I)
-    5                   A(M,I)=AK
+                        A(M,I)=AK
+    5                CONTINUE
                      ENDIF
 C
 C        ===============================================================
@@ -1706,7 +1758,8 @@ C
             IF(ABS(A(M,I)).GT.ZERO) THEN
                                     Q=A(M,I)*AP
                                     DO 7 N=I,NG
-    7                                  A(M,N)=A(M,N)-A(I,N)*Q
+                                       A(M,N)=A(M,N)-A(I,N)*Q
+    7                               CONTINUE
                                     B(1:NBI,M)=B(1:NBI,M)-B(1:NBI,I)*Q
                                     ENDIF
     8       CONTINUE
@@ -1720,10 +1773,12 @@ C         AUF B(I) SCHREIBEN UND AN DAS AUFRUFENDE PROGRAMM ZURUECKGEBEN
 C     ******************************************************************
 C
       DO 12 M=1,NG
-   12    R(1:NBI,M)=B(1:NBI,M)/A(M,M)
+         R(1:NBI,M)=B(1:NBI,M)/A(M,M)
+   12 CONTINUE
       DO 14 M=1,NG
          II=IW(M)
-   14    B(1:NBI,II)=R(1:NBI,M)
+         B(1:NBI,II)=R(1:NBI,M)
+   14 CONTINUE
 C
        RETURN
 
@@ -1747,6 +1802,7 @@ c  +int exp(x)/x,  von -unendl. bis x
 c
 c   PV +int exp(-x)/x von unendl bis -x      x>0 ,  identisch mit
 c   PV +int exp(x)/x von -unendl bis x
+      INTEGER ICON, IER
       REAL(DP) EIRENE_mmdei,dei,xx
 cdr   if (x.gt.0) then
         xx=x
@@ -1773,6 +1829,7 @@ c S
 c err: estim absolut error
 c n  anzahl der functionsaufrufe
 c icon: error code
+      integer nmin, nmax
       real(dp) f
       external f
       external EIRENE_midpnt
@@ -1791,6 +1848,7 @@ c  s muss gt.0, mmdei ist dann: integral (s bis unendlich) von
 c               exp(-t)/t dt
       IMPLICIT REAL(DP) (A-H,O-Z)
       REAL(DP) EIRENE_MMDEI
+      INTEGER IER
       X=S
       Y=ABS(X)
       Z=0.25_DP*Y
@@ -1830,8 +1888,10 @@ c     endif
       USE EIRMOD_COMPRT, ONLY: IUNOUT
 
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER JMAX, JMAXP, KM, K
       PARAMETER (JMAX=14,JMAXP=JMAX+1,KM=4,K=KM+1)
       DIMENSION S(JMAXP),H(JMAXP)
+      INTEGER J
       REAL(DP) FUNC
       external choose,func
       H(1)=1.0D0
@@ -1853,8 +1913,10 @@ c     endif
       SUBROUTINE EIRENE_POLINT(XA,YA,N,X,Y,DY)
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER NMAX, N
       PARAMETER (NMAX=10)
       DIMENSION XA(N),YA(N),C(NMAX),D(NMAX)
+      INTEGER I, NS, M
       NS=1
       DIF=ABS(X-XA(1))
       DO 11 I=1,N
@@ -1899,6 +1961,7 @@ C
       SUBROUTINE EIRENE_MIDPNT(FUNC,A,B,S,N)
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
+      INTEGER N, IT, J
       external func
       save
       IF (N.EQ.1) THEN

@@ -1037,6 +1037,12 @@ C  .....................................
 C
 C  FIND VELOCITY VECTOR NEXT
 C  .....................................
+!     set "old" particle velocity for VELOCX
+      VXO = 0._DP
+      VYO = 0._DP
+      VZO = 0._DP
+      VO = 0._DP
+
       SELECT CASE (ITYP)
         CASE (1)
 C

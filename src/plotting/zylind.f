@@ -121,7 +121,8 @@ C PLOTTE DIE KREISSTUECKE, NK STUECK
             PXX=P(1,J)+PX
             PYY=P(2,J)+PY
             PZZ=P(3,J)+PZ
-    3       CALL EIRENE_PL3D (PXX,PYY,PZZ,XP(J),YP(J))
+            CALL EIRENE_PL3D (PXX,PYY,PZZ,XP(J),YP(J))
+    3     CONTINUE
         ENDIF
         IF (IO.GE.2) CALL GRNWPN(IO)
         do 7 jj=1,na+1

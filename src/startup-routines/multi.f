@@ -57,22 +57,25 @@ C  IS THIS A SPACE FOR AVERAGING: THEN DO NOT COPY
         ENDIF
         IF (INDPRO(2).LT.4) THEN
           DO 202 K=1,NPLSTI
-            DO 202 I=1,NR1ST
+            DO I=1,NR1ST
               TIIN(K,I+(J-1)*NR1ST)=TIIN(K,I)
+            END DO
   202     CONTINUE
         ENDIF
         IF (INDPRO(3).LT.4) THEN
           DO 204 K=1,NPLSI
-            DO 204 I=1,NR1ST
+            DO I=1,NR1ST
               DIIN(K,I+(J-1)*NR1ST)=DIIN(K,I)
+            END DO
   204     CONTINUE
         ENDIF
         IF (INDPRO(4).LT.4) THEN
           DO 205 K=1,NPLSV
-            DO 205 I=1,NR1ST
+            DO I=1,NR1ST
               VXIN(K,I+(J-1)*NR1ST)=VXIN(K,I)
               VYIN(K,I+(J-1)*NR1ST)=VYIN(K,I)
               VZIN(K,I+(J-1)*NR1ST)=VZIN(K,I)
+            END DO
   205     CONTINUE
         ENDIF
         IF (INDPRO(5).LT.4) THEN
@@ -80,8 +83,9 @@ C  BFIELD DATA, INDPRO(5), ARE ALREADY SET ON 1:NSURF, SET IN PLASMA.F
         ENDIF
         IF (INDPRO(6).LT.4) THEN
           DO 207 K=1,NAINI
-          DO 207 I=1,NR1ST
-            ADIN(K,I+(J-1)*NR1ST)=ADIN(K,I)
+            DO I=1,NR1ST
+              ADIN(K,I+(J-1)*NR1ST)=ADIN(K,I)
+            END DO
   207     CONTINUE
         ENDIF
   210 CONTINUE
@@ -95,22 +99,25 @@ C  INDPRO.GT.4: ONLY NSTRD=NR1ST*NP2ND*NT3RD PLASMA DATA GIVEN
         ENDIF
         IF (INDPRO(2).GT.4) THEN
           DO 302 K=1,NPLSTI
-            DO 302 I=1,NSTRD
+            DO I=1,NSTRD
               TIIN(K,I+(J-1)*NSTRD)=TIIN(K,I)
+            END DO
   302     CONTINUE
         ENDIF
         IF (INDPRO(3).GT.4) THEN
           DO 304 K=1,NPLSI
-            DO 304 I=1,NSTRD
+            DO I=1,NSTRD
               DIIN(K,I+(J-1)*NSTRD)=DIIN(K,I)
+            END DO
   304     CONTINUE
         ENDIF
         IF (INDPRO(4).GT.4) THEN
           DO 305 K=1,NPLSV
-            DO 305 I=1,NSTRD
+            DO I=1,NSTRD
               VXIN(K,I+(J-1)*NSTRD)=VXIN(K,I)
               VYIN(K,I+(J-1)*NSTRD)=VYIN(K,I)
               VZIN(K,I+(J-1)*NSTRD)=VZIN(K,I)
+            END DO
   305     CONTINUE
         ENDIF
         IF (INDPRO(5).GT.4) THEN
@@ -123,8 +130,9 @@ C  INDPRO.GT.4: ONLY NSTRD=NR1ST*NP2ND*NT3RD PLASMA DATA GIVEN
         ENDIF
         IF (INDPRO(6).GT.4) THEN
           DO 307 K=1,NAINI
-          DO 307 I=1,NSTRD
-            ADIN(K,I+(J-1)*NSTRD)=ADIN(K,I)
+            DO I=1,NSTRD
+              ADIN(K,I+(J-1)*NSTRD)=ADIN(K,I)
+            END DO
   307     CONTINUE
         ENDIF
   310 CONTINUE
