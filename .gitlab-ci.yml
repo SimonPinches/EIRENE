@@ -1,18 +1,10 @@
-image: debian
-
 include:
     - '.update_fork_branches.yml'
     - '.tag_and_deploy.yml'
 
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
-    SAMPLE_CASE_VERSION: '445646d8'
-
-before_script:
-    # Install required programs
-    - apt-get update && apt-get -y install cmake openmpi-bin libopenmpi-dev gfortran git makedepf90 xxd lcov
-    # Bypass mpirun abort due to execution as root
-    - export MPIRUN_FLAGS='--allow-run-as-root'
+    SAMPLE_CASE_VERSION: '9639fde'
 
 stages:
     - build:library
