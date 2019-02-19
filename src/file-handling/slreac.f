@@ -24,6 +24,8 @@ c     Sept.16: two new internal subroutines,
 c              a) READ_RANGE:  to read validity range information,
 c              b) READ_COEFFS: three parameters for each validity boundary, for extrapolation options
 c    June  17: read_colrad (for old H-COL option (now CRM)) moved to separate routine.
+cdr  Jan   19:  filnam=CRM --> CR... to prepare merge with branch ...emis....,
+cdr             H, He internal CR codes, formulation I, II (MS resolved or not) 
 C
 C
       SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,

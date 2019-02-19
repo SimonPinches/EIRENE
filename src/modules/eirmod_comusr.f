@@ -11,6 +11,7 @@ cdr             tbd:  BXPERP, BYPERP:  move into LBSMO condition
 cdr             missing:  dealloc_corners  ??
 cdr             remove redundant tally LGDFT (also from LUSR)
 cdr  jan 19  :  nains, naint moved here, formerly: ccoupl
+cdr             input tally no. 25 added: PSI, poloidal magn. flux. Units?
 
       MODULE EIRMOD_COMUSR
 
@@ -56,7 +57,7 @@ c  (strictly: DEIN is also a derived tally) :
      R        PSI(:),         FREE26(:),      FREE27(:),
      R        FREE28(:),      FREE29(:),      FREE30(:),
 
-c  optional: gradients of all scalar input tallies.
+c  Tallies 31 --120: optional: gradients of all scalar input tallies.
 c  For the vectorial input tallies (V_IN, B_IN, E_IN) these gradients
 c  then provide the full dyadic (all nine components).
 

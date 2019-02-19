@@ -38,7 +38,23 @@ c         fdx,fdy,fdz,  corresponding derivatives df/dx (dx: in cm)
         end subroutine eirene_df_dxyz
       end interface
 
-      ierr=0 
+      ierr=0
+c  1d cartesian x -grid
+      if ((levgeo == 1) 
+     .    .and. nlrad .and. (.not.nlpol).and.(.not.nltor)) then
+c   TO BE DONE: 1d  x grid
+         ierr=11
+         goto 999
+      endif
+
+c  1d  r -grid
+      if ((levgeo == 2 .or. levgeo == 3) 
+     .    .and. nlrad .and. (.not.nlpol).and.(.not.nltor)) then
+c   TO BE DONE: 1d  r grid
+         ierr=12
+         goto 999
+      endif
+
 c  2d cartesian x-y- grid      
       if ((levgeo == 1) 
      .    .and. nlrad .and. nlpol.and..not.nltor) then

@@ -149,7 +149,7 @@ C in this particlar case: retain old pitch: velpar/velper. No pitch angle scatte
         VELPER=VELPER*FAC
         E0PAR=E0PAR*FAC*FAC
 
-      ELSE  ! DUR IS NOT GT 0.0
+      ELSE  ! flight time DUR IS NOT GT 0.0
         GOTO 998
       ENDIF
 C  FP COLLISION DONE, LCART=F STILL, I.E. VEL = V_GC

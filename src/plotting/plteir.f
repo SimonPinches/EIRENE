@@ -333,8 +333,11 @@ cdr  tbd:  summing with proper weighting, as in outtal.f
                   VECTOR(1:NSBOX,ICURV) = SUM(BVIN(1:NF,1:NSBOX),1)
                 CASE (24)
                   VECTOR(1:NSBOX,ICURV) = SUM(PARMOM(1:NF,1:NSBOX),1)
-                CASE (25:96)     ! ntali=96, constant required here
-! GRADIENTS
+                CASE (25)
+                  VECTOR(1:NSBOX,ICURV) = PSI(1:NSBOX)
+! INPUT TALLIES 26 -- 30:  CURRENTLY UNUSED (FREE)
+! GRADIENTS OF INPUT TALLIES
+                CASE (31:120)     ! ntali=120, constant required here
                   KK = NADDP(ITL)
                   VECTOR(1:NSBOX,ICURV) = 
      .                   SUM(PLSTLS(KK+1:KK+NF,1:NSBOX),1)
@@ -397,9 +400,11 @@ cdr  individual species indices
                   VECTOR(1:NSBOX,ICURV) = BVIN(MPLSV(ISPZ),1:NSBOX)
                 CASE (24)
                   VECTOR(1:NSBOX,ICURV) = PARMOM(ISPZ,1:NSBOX)
-
-                CASE (25:96)     ! ntali=96, constant required here
+                CASE (25)
+                  VECTOR(1:NSBOX,ICURV) = PSI(1:NSBOX)
+! INPUT TALLIES 26 -- 30:  CURRENTLY UNUSED (FREE)
 ! GRADIENTS
+                CASE (31:120)     ! ntali=120, constant required here
                   KK = NADDP(ITL)+ISPZ
                   VECTOR(1:NSBOX,ICURV) = PLSTLS(KK,1:NSBOX)
                 CASE DEFAULT
