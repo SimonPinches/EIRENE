@@ -9,7 +9,8 @@ C
       SUBROUTINE EIRENE_WRPLAM_SHRT(TRCFLE)
 
 cdr Only the input tallies of the last (virtual) plasma species: nfla+1,...nplsi
-cdr are written/read using I/O stream fort.13
+cdr are written/read using I/O stream fort.13. The ones 1,...,nfla are directly transferred 
+cdr from external plasma code/ external data set
 
 c  if NLSRT13=true : wrplam_short and (entry) rplam_short are called from WRPLAM,
 c  if NLSRT13=false: wrplam_long and (entry) rplam_long are called from WRPLAM,

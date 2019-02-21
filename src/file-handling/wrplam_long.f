@@ -1,9 +1,11 @@
+c  jan. 2019:  lgdft removed.  read (....,IOSTAT=IO)
 c  oct. 2018:  iflg=0 read primary source data (incl. stepfunctions)
 c              else   no reading of primary source data 
 c             (also not of  stepfunctions)
 c              remove redundant logical tally LGDFT
 c  feb. 2018:  restructured because of switchable input tallies
 c              Tests: are the same input tallies active in read and write runs?
+
 c  sept. 05:  five more tallies added to step function, see also CSTEP.f
 c  nov.  05:  add eltot and ve to step function data
 
@@ -32,12 +34,9 @@ C          else   do also read data from COMSOU
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: IFLG
       LOGICAL TRCFLE
-cdr
+cdr, jan 2019
       INTEGER :: IO
-      REAL(DP), ALLOCATABLE :: RDUM(:)
-      INTEGER, ALLOCATABLE :: IDUM(:)
-      LOGICAL, ALLOCATABLE :: LDUM(:)
-      INTEGER :: NRDUM, NIDUM, NLDUM
+
 C
       OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 13+ifoff

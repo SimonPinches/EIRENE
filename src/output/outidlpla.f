@@ -150,9 +150,9 @@ C
           TOTAL=0.D0
           DO 121 IB=1,NBMLT
           NBLCKA=NSTRD*(IB-1)
-          DO 121 IR=1,NXM
-          DO 121 IP=1,NYM
-          DO 121 IT=1,NZM
+           DO IR=1,NXM
+           DO IP=1,NYM
+           DO IT=1,NZM
             I=IR + ((IP-1)+(IT-1)*NP2T3)*NR1P2 + NBLCKA
             IF (ITAL.EQ.1) THEN
 C  ELECTR. TEMPERATURE: NE*VOLUME-WEIGHTED AVERAGES
@@ -189,6 +189,9 @@ C  ELECTRIC POTENTIAL
               HELPW(I,K)=1.D0
             ENDIF
             TOTAL=TOTAL+HELPW(I,K)
+           END DO
+           END DO
+           END DO
   121     CONTINUE
 C
 C  SAME LOOP AGAIN, OVER ADDITIONAL CELL REGION

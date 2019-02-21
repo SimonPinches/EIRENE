@@ -25,7 +25,8 @@ c              a) READ_RANGE:  to read validity range information,
 c              b) READ_COEFFS: three parameters for each validity boundary, for extrapolation options
 c    June  17: read_colrad (for old H-COL option (now CRM)) moved to separate routine.
 cdr  Jan   19:  filnam=CRM --> CR... to prepare merge with branch ...emis....,
-cdr             H, He internal CR codes, formulation I, II (MS resolved or not) 
+cdr             H, He internal CR codes, formulation I, II (MS resolved or not)
+cdr  Feb   19:  remove obsolete (and unfinished) option HYDRTC 
 C
 C
       SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
@@ -53,7 +54,6 @@ c            FILNAM=AMJUEL, HYDHEL, METHAN, H2VIBR, CONST: polynomial fits
 CC           FILNAM=TAB2D, ADAS:  special treatment, see below.
 C            FILNAM=CR...: nothing to be done here, use internal CR code xx_colrad.f
 c                          currently available: h_colrad.f
-C            FILNAM=HYDRTC: proprietary option, disabled. Nothing to be done here  ??
 C
 c    H123  : identifier for data type in filnam, e.g. H.1, H.2, H.3, ...
 
@@ -569,18 +569,6 @@ c  close unit=29+ifoff:   done in READ_TAB2D.f
         RETURN
       END IF
 
-      IF (INDEX(FILNAM,'HYDRTC').NE.0) THEN
-cdr  proprietary option at FZ Juelich.
-cdr  Not ready, and not to be used by 3rd party
-        CLOSE (UNIT=29+ifoff)
-        CH123 = H123
-        CCRC = CRC
-        CALL EIRENE_READ_HYDKIN
-     .      (IR,DBFNAME(IFILE),CH123,REAC,CCRC,RC1MIN,RC1MAX,
-     .       E_EL,E_K,.FALSE.)
-        RETURN
-      END IF
-C
       IF (INDEX(FILNAM,'CONST').NE.0) THEN
         IND=INDEX(REACSTR,'FT')
         IF (IND /= 0) THEN
@@ -608,7 +596,7 @@ C
 C  READ FROM DATA FILE, stream 29
 C
 C  already ruled out here (done at this point):
-C  FILNAM= "CR", "CONST", "ADAS", "HYDRTC", "PHOTON"
+C  FILNAM= "CR...", "CONST", "ADAS",  "PHOTON"
 C  in all these cases: already returned to calling program
 C
 C......................................................................

@@ -592,7 +592,7 @@ C
             CALL GRDSH (0.2,0.5,0.2)
             DO 150 I=1,NPPLG
               LSTORE = .FALSE.
-              DO 150 K=NPOINT(1,I),NPOINT(2,I)
+              DO K=NPOINT(1,I),NPOINT(2,I)
                 IFL=K-NPOINT(1,I)
                 XTN=XPOL(NU,K)
                 IF (NLTRA) XTN=XTN+RMTOR
@@ -611,13 +611,12 @@ C
                 ENDIF
 C
                 IF (IN.EQ.0) IN=4
-                GOTO (151,152,153,154,155),IN
-  151             CONTINUE
+                SELECT CASE (IN)
+                  CASE (1)
                     CALL GRDRW (REAL(XTN,KIND(1.E0)),
      .                          REAL(YTN,KIND(1.E0)))
                     IF (LSTORE) CALL EIRENE_STCOOR(XTN,YTN,1)
-                    GOTO 156
-  152             CONTINUE
+                  CASE (2)
                     CALL GRDRW(REAL(XT,KIND(1.E0)),
      .                         REAL(YT,KIND(1.E0)))
                     CALL GRJMP(REAL(XTN,KIND(1.E0)),
@@ -626,8 +625,7 @@ C
                       CALL EIRENE_STCOOR (XT,YT,0)
                       CALL EIRENE_STCOOR (XTN,YTN,1)
                     END IF
-                    GOTO 156
-  153             CONTINUE
+                  CASE (3)
                     CALL GRJMP(REAL(XT,KIND(1.E0)),
      .                         REAL(YT,KIND(1.E0)))
                     CALL GRDRW(REAL(XTN,KIND(1.E0)),
@@ -636,13 +634,11 @@ C
                       CALL EIRENE_STCOOR (XT,YT,0)
                       CALL EIRENE_STCOOR (XTN,YTN,1)
                     END IF
-                    GOTO 156
-  154             CONTINUE
+                  CASE (4)
                     CALL GRJMP(REAL(XTN,KIND(1.E0)),
      .                         REAL(YTN,KIND(1.E0)))
                     IF (LSTORE) CALL EIRENE_STCOOR(XTN,YTN,0)
-                    GOTO 156
-  155             CONTINUE
+                  CASE (5)
                     CALL GRJMP(REAL(XT,KIND(1.E0)),
      .                         REAL(YT,KIND(1.E0)))
                     CALL GRDRW(REAL(XT2,KIND(1.E0)),
@@ -651,8 +647,7 @@ C
                       CALL EIRENE_STCOOR (XT,YT,0)
                       CALL EIRENE_STCOOR (XT2,YT2,1)
                     END IF
-                    GOTO 156
-  156           CONTINUE
+                END SELECT
 C
                 IF (IFL.GT.0.AND.K.EQ.ISWC(ISW)) THEN
                   IF (.NOT.NLSPLT(NU)) CALL GRNWPN (ICLR(ISW))
@@ -667,6 +662,7 @@ C
                 ENDIF
 C
 C
+              END DO
   150       CONTINUE
             CALL GRNWPN(1)
   158     CONTINUE
@@ -1265,48 +1261,35 @@ C
             ENDIF
 C
             IF (IN.EQ.0) IN=4
-            GOTO (171,172,173,174,175),IN
-  171         CONTINUE
-                CALL GRDRW
-     .          (REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
+            SELECT CASE (IN)
+              CASE (1)
+                CALL GRDRW(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
                 IF (LSTORE) CALL EIRENE_STCOOR(XTN,YTN,1)
-                GOTO 1752
-  172         CONTINUE
-                CALL
-     .          GRDRW(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
-                CALL
-     .          GRJMP(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
+              CASE (2)
+                CALL GRDRW(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
+                CALL GRJMP(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
                 IF (LSTORE) THEN
                   CALL EIRENE_STCOOR (XT,YT,0)
                   CALL EIRENE_STCOOR (XTN,YTN,1)
                 END IF
-                GOTO 1752
-  173         CONTINUE
-                CALL
-     .          GRJMP(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
-                CALL
-     .          GRDRW(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
+              CASE (3)
+                CALL GRJMP(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
+                CALL GRDRW(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
                 IF (LSTORE) THEN
                   CALL EIRENE_STCOOR (XT,YT,0)
                   CALL EIRENE_STCOOR (XTN,YTN,1)
                 END IF
-                GOTO 1752
-  174         CONTINUE
-                CALL
-     .          GRJMP(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
+              CASE (4)
+                CALL GRJMP(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
                 IF (LSTORE) CALL EIRENE_STCOOR(XTN,YTN,0)
-                GOTO 1752
-  175         CONTINUE
-                CALL
-     .          GRJMP(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
-                CALL
-     .          GRDRW(REAL(XT2,KIND(1.E0)),REAL(YT2,KIND(1.E0)))
+              CASE (5)
+                CALL GRJMP(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
+                CALL GRDRW(REAL(XT2,KIND(1.E0)),REAL(YT2,KIND(1.E0)))
                 IF (LSTORE) THEN
                   CALL EIRENE_STCOOR (XT,YT,0)
                   CALL EIRENE_STCOOR (XT2,YT2,1)
                 END IF
-                GOTO 1752
- 1752     CONTINUE
+            END SELECT
 C
           IF (IFL.GT.0.AND.I.EQ.ISWC(ISW)) THEN
             IF (.NOT.NLSPLT(N1ST+NU)) CALL GRNWPN (ICLR(ISW))
@@ -1773,22 +1756,22 @@ C
       IF (IN.EQ.0) IN=4
       IF (IN.LE.2)
      .   CALL GRJMP (REAL(XWO,KIND(1.E0)),REAL(YWO,KIND(1.E0)))
-      IF (ILINIE.EQ.0.OR.NHSTS(ISPZ).EQ.-1) GOTO 404
-      GOTO (401,402,403,404,405),IN
-  401   CALL GRDRW (REAL(XWN,KIND(1.E0)),REAL(YWN,KIND(1.E0)))
-        GOTO 406
-  402   CALL GRDRW (REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
-        CALL GRJMP (REAL(XWN,KIND(1.E0)),REAL(YWN,KIND(1.E0)))
-        GOTO 406
-  403   CALL GRJMP (REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
+      IF (ILINIE.EQ.0.OR.NHSTS(ISPZ).EQ.-1) IN=4
+      SELECT CASE (IN)
+      CASE (1)
         CALL GRDRW (REAL(XWN,KIND(1.E0)),REAL(YWN,KIND(1.E0)))
-        GOTO 406
-  404   CALL GRJMP (REAL(XWN,KIND(1.E0)),REAL(YWN,KIND(1.E0)))
-        GOTO 406
-  405   CALL GRJMP (REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
+      CASE (2)
+        CALL GRDRW (REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
+        CALL GRJMP (REAL(XWN,KIND(1.E0)),REAL(YWN,KIND(1.E0)))
+      CASE (3)  
+        CALL GRJMP (REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
+        CALL GRDRW (REAL(XWN,KIND(1.E0)),REAL(YWN,KIND(1.E0)))
+      CASE (4)  
+        CALL GRJMP (REAL(XWN,KIND(1.E0)),REAL(YWN,KIND(1.E0)))
+      CASE (5)
+        CALL GRJMP (REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
         CALL GRDRW (REAL(XT2,KIND(1.E0)),REAL(YT2,KIND(1.E0)))
-        GOTO 406
-  406 CONTINUE
+      END SELECT
 C
 C  PLOT SYMBOL
 C

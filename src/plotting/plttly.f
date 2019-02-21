@@ -175,7 +175,8 @@ C
         DO 20 ICURV=1,NKURV
           IF (.NOT.LPLOT(ICURV)) GOTO 20
           DO 21 I=IR1(ICURV),IR2(ICURV)-1,IRS(ICURV)
-   21       Y(I,ICURV)=LOG10(MAX(YMINY,Y(I,ICURV)))
+            Y(I,ICURV)=LOG10(MAX(YMINY,Y(I,ICURV)))
+   21     CONTINUE
    20   CONTINUE
       ENDIF
 C
@@ -223,8 +224,9 @@ C  PLOT LINES
           CALL
      .  GRJMP(REAL(X(I1),KIND(1.E0)),REAL(Y(I1,I),KIND(1.E0)))
           DO 33 J=I1+IS,I2,IS
-   33       CALL GRDRW
-     .  (REAL(X(J),KIND(1.E0)),REAL(Y(J,I),KIND(1.E0)))
+            CALL GRDRW
+     .       (REAL(X(J),KIND(1.E0)),REAL(Y(J,I),KIND(1.E0)))
+   33     CONTINUE
 C  PLOT SYMBOLS
           ISY=IPEN2+1
           NP=(I2-I1+1)/IS

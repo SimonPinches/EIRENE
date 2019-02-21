@@ -121,7 +121,7 @@ C
             EXPR=LENX/(MAXLX-MINLX)
             IF (EXPR.GE.6) THEN
                DO 15 RI=MINLX,MAXLX-1
-                  DO 15 RJ=1,9
+                  DO RJ=1,9
                      ARG=RJ*10.**RI
                      T=LOG10(ARG)
                      IF (RJ.LT.2.) THEN
@@ -141,6 +141,7 @@ C
                      ELSE
                         CALL GRDRW(REAL(T,KIND(1.E0)),0.)
                      ENDIF
+                  END DO
    15          CONTINUE
             ELSE IF(EXPR.GE.4) THEN
                DO 20 RI=MINLX,MAXLX-1
@@ -158,7 +159,7 @@ C
                   ELSE
                      CALL GRDRW(REAL(RI,KIND(1.E0)),0.)
                   ENDIF
-                  DO 20 RJ=2,8,2
+                  DO RJ=2,8,2
                      CALL GRSPTS(16)
                      ARG=RJ*10.**RI
                      T=LOG10(ARG)
@@ -171,6 +172,7 @@ C
                      ELSE
                         CALL GRDRW(REAL(T,KIND(1.E0)),0.)
                      ENDIF
+                  END DO
    20          CONTINUE
             ELSE IF (EXPR.GE.1) THEN
                DO 25 RI=MINLX,MAXLX-1
@@ -188,7 +190,7 @@ C
                   ELSE
                      CALL GRDRW(REAL(RI,KIND(1.E0)),0.)
                   ENDIF
-                  DO 25 RJ=2,5,3
+                  DO RJ=2,5,3
                      CALL GRSPTS(16)
                      ARG=RJ*10.**RI
                      T=LOG10(ARG)
@@ -201,6 +203,7 @@ C
                      ELSE
                         CALL GRDRW(REAL(T,KIND(1.E0)),0.)
                      ENDIF
+                  END DO
    25          CONTINUE
             ELSE IF (EXPR.GE.0) THEN
                DO 30 RI=MINLX,MAXLX-1
@@ -262,27 +265,30 @@ C
             EXPR=LENX/(MAXLX-MINLX)
             IF (EXPR.GE.8) THEN
                DO 45 RI=MINLX,MAXLX-1
-                  DO 45 J=2,9
+                  DO J=2,9
                      WRITE(CEINLB,'(I1)') J
                      ARG=REAL(J,KIND(1.E0))*10.**RI
                      T=LOG10(ARG)-0.05*(MAXLX-MINLX)/LENX
                      CALL GRTXT(REAL(T,KIND(1.E0)),-0.5,1,CEINLB)
+                  END DO
    45          CONTINUE
             ELSE IF (EXPR.GE.4) THEN
                DO 50 RI=MINLX,MAXLX-1
-                  DO 50 J=2,8,2
+                  DO J=2,8,2
                      WRITE(CEINLB,'(I1)') J
                      ARG=REAL(J,KIND(1.E0))*10.**RI
                      T=LOG10(ARG)-0.05*(MAXLX-MINLX)/LENX
                      CALL GRTXT(REAL(T,KIND(1.E0)),-0.5,1,CEINLB)
+                  END DO
    50          CONTINUE
             ELSE IF (EXPR.GE.2) THEN
                DO 55 RI=MINLX,MAXLX-1
-                  DO 55 J=2,5,3
+                  DO J=2,5,3
                      WRITE(CEINLB,'(I1)') J
                      ARG=REAL(J,KIND(1.E0))*10.**RI
                      T=LOG10(ARG)-0.05*(MAXLX-MINLX)/LENX
                      CALL GRTXT(REAL(T,KIND(1.E0)),-0.5,1,CEINLB)
+                  END DO
    55          CONTINUE
             ENDIF
 C
@@ -380,7 +386,7 @@ C
            EXPR=LENY/(MAXLY-MINLY)
            IF (EXPR.GE.6) THEN
               DO 120 RI=MINLY,MAXLY-1
-                 DO 120 RJ=1,9
+                 DO RJ=1,9
                     ARG=RJ*10.**RI
                     T=LOG10(ARG)
                     IF (RJ.LT.2.) THEN
@@ -400,6 +406,7 @@ C
                     ELSE
                        CALL GRDRW(0.,REAL(T,KIND(1.E0)))
                     ENDIF
+                 END DO
   120         CONTINUE
            ELSE IF (EXPR.GE.4) THEN
               DO 125 RI=MINLY,MAXLY-1
@@ -417,7 +424,7 @@ C
                  ELSE
                     CALL GRDRW(0.,REAL(RI,KIND(1.E0)))
                  ENDIF
-                 DO 125 RJ=2,8,2
+                 DO RJ=2,8,2
                     CALL GRSPTS(16)
                     ARG=RJ*10.**RI
                     T=LOG10(ARG)
@@ -430,6 +437,7 @@ C
                     ELSE
                        CALL GRDRW(0.,REAL(T,KIND(1.E0)))
                     ENDIF
+                 END DO
   125         CONTINUE
            ELSE IF (EXPR.GE.1) THEN
               DO 130 RI=MINLY,MAXLY-1
@@ -447,7 +455,7 @@ C
                  ELSE
                     CALL GRDRW(0.,REAL(RI,KIND(1.E0)))
                  ENDIF
-                 DO 130 RJ=2,5,3
+                 DO RJ=2,5,3
                     CALL GRSPTS(18)
                     ARG=RJ*10.**RI
                     T=LOG10(ARG)
@@ -460,6 +468,7 @@ C
                     ELSE
                        CALL GRDRW(0.,REAL(T,KIND(1.E0)))
                     ENDIF
+                 END DO
   130         CONTINUE
            ELSE IF (EXPR.GE.0) THEN
               DO 135 RI=MINLY,MAXLY-1
@@ -521,27 +530,30 @@ C
            EXPR=LENY/(MAXLY-MINLY)
            IF (EXPR.GE.8) THEN
               DO 150 RI=MINLY,MAXLY-1
-                 DO 150 J=2,9
+                 DO J=2,9
                     WRITE(CEINLB,'(I1)') J
                     ARG=REAL(J,KIND(1.E0))*10.**RI
                     T=LOG10(ARG)-0.1*(MAXLY-MINLY)/LENY
                     CALL GRTXT(-0.4,REAL(T,KIND(1.E0)),1,CEINLB)
+                 END DO
   150         CONTINUE
            ELSE IF (EXPR.GE.4) THEN
               DO 155 RI=MINLY,MAXLY-1
-                 DO 155 J=2,8,2
+                 DO J=2,8,2
                     WRITE(CEINLB,'(I1)') J
                     ARG=REAL(J,KIND(1.E0))*10.**RI
                     T=LOG10(ARG)-0.1*(MAXLY-MINLY)/LENY
                     CALL GRTXT(-0.4,REAL(T,KIND(1.E0)),1,CEINLB)
+                 END DO
   155         CONTINUE
            ELSE IF (EXPR.GE.2) THEN
               DO 160 RI=MINLY,MAXLY-1
-                 DO 160 J=2,5,3
+                 DO J=2,5,3
                     WRITE(CEINLB,'(I1)') J
                     ARG=REAL(J,KIND(1.E0))*10.**RI
                     T=LOG10(ARG)-0.1*(MAXLY-MINLY)/LENY
                     CALL GRTXT(-0.4,REAL(T,KIND(1.E0)),1,CEINLB)
+                 END DO
   160         CONTINUE
            ENDIF
 C

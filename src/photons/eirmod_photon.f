@@ -456,8 +456,8 @@ c     end select
      .                           DRFT,E00,IPROF)
      .         RESULT(RES)
 c  zeeman - profile - splitting
-c  input: photon energy x (ev)
-c  output:  value of zeeman splitted absorption profile
+c  input:   x:    photon energy [eV]
+c  output:  res:  value of zeeman splitted absorption profile
 c   iprof:  6:  delta
 c           7:  doppler
 c           8:  lorentz
