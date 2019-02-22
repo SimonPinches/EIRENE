@@ -136,15 +136,15 @@ cdr one profile iplsti set at a time
           CALL EIRENE_PROFN (HELP,TI0(IPLSTI),TI1(IPLSTI),TI2(IPLSTI),
      .                            TI3(IPLSTI),TI4(IPLSTI),TI5(IPLSTI),
      .                            TVAC)
-        TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
+          TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
         case (2)
           CALL EIRENE_PROFE (HELP,TI0(IPLSTI),TI1(IPLSTI),TI2(IPLSTI),
      .                                 TI4(IPLSTI),TI5(IPLSTI),TVAC)
-        TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
+          TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
         case (3)
           CALL EIRENE_PROFS (HELP,TI0(IPLSTI),TI1(IPLSTI),
      .                     TI5(IPLSTI),TVAC)
-        TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
+          TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
         case (4)
 c  INDPRO=4:  read tally from stream TIO(IPLSTI)
           ISTREAM=TI0(IPLSTI)
@@ -199,19 +199,19 @@ cdr one profile ipls set at a time
           DIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
         case (4)
 c  INDPRO=4:  read tally from stream DIO(IPLS)
-        ISTREAM=DI0(IPLS)
-        ITALI=4
-        CALL EIRENE_READTL(TXTPLS(IPLS,ITALI),TXTPSP(IPLS,ITALI),
+          ISTREAM=DI0(IPLS)
+          ITALI=4
+          CALL EIRENE_READTL(TXTPLS(IPLS,ITALI),TXTPSP(IPLS,ITALI),
      .              TXTPUN(IPLS,ITALI),
      .              HELP,NR1ST,NP2ND,NT3RD,NBMLT,NSBOX,
      .              3,ISTREAM)
-        DIIN(IPLS,1:NSBOX)=HELP(1:NSBOX)
+          DIIN(IPLS,1:NSBOX)=HELP(1:NSBOX)
         case (5)
 c  INDPRO=5:  tally from PROUSR, indx=1+1*NPLS, but NPLSI calls, one for each IPLS
           CALL EIRENE_PROUSR (HELP,1+1*NPLS,DI0(IPLS),DI1(IPLS),
      .                        DI2(IPLS),DI3(IPLS),DI4(IPLS),DI5(IPLS),
      .                        DVAC,NSURF)
-        DIIN(IPLS,1:NSURF)=HELP(1:NSURF)
+          DIIN(IPLS,1:NSURF)=HELP(1:NSURF)
 
 cdr distinct from indpro=1,...5:  now one single call for all IPLS=1,NPLSI
         case (6)
@@ -315,7 +315,7 @@ cdr first dimension of arrays:  always NPLSV
 
 C  SCALE FROM MACH NUMBER PROFILE TO CM/SEC PROFILE?
 C  USE ISOTHERMAL ACCOUSTIC SPEED OF ION IPLS.
-      IF (NLMACH) THEN
+      IF (NLMACH .AND. (IND <= 5)) THEN
         DO 1141 JPLS=1,NPLSI
           IPLSTI=MPLSTI(JPLS)
           IPLSV=MPLSV(JPLS)

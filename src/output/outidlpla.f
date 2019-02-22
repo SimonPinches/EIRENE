@@ -149,7 +149,7 @@ C
 C
           TOTAL=0.D0
           DO 121 IB=1,NBMLT
-          NBLCKA=NSTRD*(IB-1)
+           NBLCKA=NSTRD*(IB-1)
            DO IR=1,NXM
            DO IP=1,NYM
            DO IT=1,NZM

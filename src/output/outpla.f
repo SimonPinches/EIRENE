@@ -146,7 +146,6 @@ c  positive tally numbers ital: output tallies, printed from OUTEIR.
             NFTE=MAX(NFTI,NSPEZV(IPRV,2))
           ENDIF
           DO 119 K=NFTI,NFTE
-c  check for valid range of tally ITALI
             IF (K.GT.NFSTPI(ITALI)) THEN
               CALL EIRENE_LEER(1)
               WRITE (iunout,*)
@@ -155,7 +154,6 @@ c  check for valid range of tally ITALI
               CALL EIRENE_LEER(1)
               GOTO 119
             ENDIF
-
             SELECT CASE (ITALI)
             CASE (1)
               HELPP(1:NSBOX) = TEIN(1:NSBOX)
