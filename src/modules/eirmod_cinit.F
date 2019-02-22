@@ -255,8 +255,8 @@ C
       DBHANDLE(11) = 'free'
       DBHANDLE(12) = 'free'
       DBHANDLE(13) = 'ADAS  '
-      DBHANDLE(14) = 'HYDRTC'
-      DBHANDLE(15) = 'HYDCRS'
+      DBHANDLE(14) = 'free'
+      DBHANDLE(15) = 'free'
       DBHANDLE(16) = 'HYDREA'
       DBHANDLE(17) = 'TAB2D '
 
@@ -278,8 +278,8 @@ C
       DBFNAME(11) = 'free'
       DBFNAME(12) = 'free'
       DBFNAME(13) = ' '
-      DBFNAME(14) = 'HYDRTC'
-      DBFNAME(15) = 'HYDCRS'
+      DBFNAME(14) = 'free'
+      DBFNAME(15) = 'free'
       DBFNAME(16) = ' '
       DBFNAME(17) = ' '
 

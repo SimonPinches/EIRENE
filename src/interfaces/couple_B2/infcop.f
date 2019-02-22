@@ -10,6 +10,7 @@ c             transfered to here from couple_b2.5
 c             EPEL --> EPEL_COP  (also in couple_B2.5)
 c             CPPV --> MPPL_COP
 c             ELTEST, EMAXW,... for a target energy flux as interpreted from B2 output.
+cdr Oct. 18:  bug fix: bvin(iplsv) instead bvin(ipls) in 2 places
 
 C
 C   EIRENE CODE SEGMENT COUPLE_$, $ MAY CURRENTLY STAND FOR B2,
@@ -180,7 +181,7 @@ c    .          DELTE_PARA, DELTI_PARA, DELTE_PERP, DELTI_PERP, TES,TIS,
      .          VPX, VPY, VT, PARW, PERW, PN1, OR, VPZ, GAMMA, CUR, TE,
      .          SFEEWX, SFEINY, PM1, DRR, UU, PITB,
      .          FLX_EIR, SUMN_OLD, SNIRES, SMORES, SEERES, SEIRES,
-     .          fltt, e0b2, dmaxiso, dminiso, CFAC, !pb 22012013
+     .          fltt, e0b2, dmaxiso, dminiso, CFAC, 
      .          eamisum, eplsum
       INTEGER :: NRWL(NSTRA)
 
@@ -2557,7 +2558,7 @@ cdr  is this now any different from sni set above?
 cdr  add pppl contribution to internal energy sources rate
                 cpv_cmp(icp4+ipls,in,istrai)=
      .                  cpv_cmp(icp4+ipls,in,istrai) +
-     .                  cvrssp(ipls)*bvin(ipls,inn)**2*PPPL_COP(IPLS,IN)
+     .                  cvrssp(ipls)*bvin(iplsv,inn)**2*PPPL_COP(IPLS,IN)
               end do  ! iy
             end do    ! ix
 
@@ -2628,7 +2629,7 @@ cdr  tbd:  check storage on copv tallies, ncpv ??
      .                  VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
 !pb 30012013 sei internal
                 cpv_cmp(icp3+3,inc,istrai)=cpv_cmp(icp3+3,inc,istrai) -
-     .                  bvin(ipls,in)*MPPL_COP(IPLS,INC)*SIGNUM*
+     .                  bvin(iplsv,in)*MPPL_COP(IPLS,INC)*SIGNUM*
      .                  cveli2/amua*2._DP
               end do
             end do

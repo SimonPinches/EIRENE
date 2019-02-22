@@ -237,6 +237,7 @@ C  PLOT OUTPUT TALLIES ONLY FOR STRATA WITH TWO OR MORE HISTORIES
             IF (JTAL.GT.0.AND.XMCP(ISTRA).LE.1) GOTO 10000
 C  PLOT INPUT TALLIES ONLY ONCE PER ITERATION
             IF (JTAL.LT.0.AND.ISAVE.NE.ISTRA) GOTO 10000
+c
             TXHEAD=HEAD0
             IF (JTAL.GT.0)     TXHEAD=HEAD1
             IF (JTAL.EQ.NTALA) TXHEAD=HEAD2
@@ -261,10 +262,16 @@ C
             LSDVI(ICURV)=.FALSE.
             LPLOT2(ICURV)=.FALSE.
             ISPZ=ISPTAL(IBLD,ICURV)
+
             IF (JTAL.LT.0.) THEN
+cdr  here we deal with input tallies (and gradients thereof)
+cdr  ITL = IABS(JTAL)
               NF=NFRSTP(ITL)
               VECTOR(:,ICURV)=0.
               IF (ISPZ.EQ.0) THEN
+cdr  sum over species:  this is non-sense in case of intensive quantities, such as Ti,V_in
+cdr                     and also in case of derivatives.
+cdr  tbd:  summing with proper weighting, as in outtal.f
                 SELECT CASE (ITL)
                 CASE (1)
                   VECTOR(1:NSBOX,ICURV) = TEIN(1:NSBOX)
@@ -315,7 +322,9 @@ C
                   CALL EIRENE_LEER(1)
                   GOTO 10000
                 END SELECT
+
               ELSEIF (ISPZ.GT.0.AND.ISPZ.LE.NF) THEN
+cdr  individual species indices
                 SELECT CASE (ITL)
                 CASE (1)
                   VECTOR(1:NSBOX,ICURV) = TEIN(1:NSBOX)
@@ -366,6 +375,7 @@ C
                   CALL EIRENE_LEER(1)
                   GOTO 10000
                 END SELECT
+
               ELSE
                 IF (TRCPLT) THEN
                   WRITE (iunout,*) 'SPECIES INDEX OUT OF RANGE '
@@ -378,17 +388,23 @@ C
                 PLTL3D(IBLD)=.FALSE.
                 GOTO 110
               ENDIF
+
             ELSEIF (JTAL.GE.0) THEN
+cdr  plot output tallies
+              NFT=NFSTVI(ITL)
+              NF=NFIRST(ITL)
+              VECTOR(:,ICURV)=0.
+              
               IF (.NOT.LIVTALV(JTAL)) THEN
                 WRITE (iunout,*) TXTTAL(1,JTAL)
                 WRITE (iunout,*) 'TALLY SWITCHED OFF '
                 WRITE (iunout,*) 'ALL PLOTS FOR THIS TALLY TURNED OFF '
                 GOTO 10000
               END IF
-              NFT=NFSTVI(ITL)
-              NF=NFIRST(ITL)
+
               IF (ISPZ.EQ.0) THEN
-                VECTOR(:,ICURV)=0.
+c  sum over species
+
                 DO 122 K=1,NFT
                   DO I=1,NRAD
                     VECTOR(I,ICURV)=VECTOR(I,ICURV)+

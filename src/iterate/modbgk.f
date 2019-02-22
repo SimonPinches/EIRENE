@@ -808,6 +808,10 @@ C
       PLASMA_BCKGRND(1:NRWK1,:) = 0.D0
 
 cdr
+cdr initialize BXIN=0
+      PLASMA_BCKGRND(1+1*NPLS+NPLSTI+3*NPLSV+1,:)= 0._DP  
+cdr initialize BYIN=0
+      PLASMA_BCKGRND(2+1*NPLS+NPLSTI+3*NPLSV+1,:)= 0._DP  
 !pb initialize BZIN=1
       PLASMA_BCKGRND(3+1*NPLS+NPLSTI+3*NPLSV+1,:)= 1._DP
 !pb initialize BFIN=1
@@ -836,7 +840,9 @@ cdr
             PLASMA_BCKGRND(2+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= BYIN(IRAD)
             PLASMA_BCKGRND(3+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= BZIN(IRAD)
             PLASMA_BCKGRND(4+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= BFIN(IRAD)
+
             PLASMA_BCKGRND(5+1*NPLS+NPLSTI+3*NPLSV+1,IRAD)= VOL(IRAD)
+
             DO IAIN=1,NAINI
               PLASMA_BCKGRND(6+1*NPLS+NPLSTI+3*NPLSV+IAIN,IRAD)=
      .               ADIN(IAIN,IRAD)
@@ -847,7 +853,7 @@ cdr
 C
 c  same as do loop above, for additional cell region
 c
-      DO 570 IRAD=NSURF+1,NSURF+NRADD
+      DO IRAD=NSURF+1,NSURF+NRADD
             PLASMA_BCKGRND  (0+0*NPLS+1   ,IRAD)= TEIN(IRAD)
             DO IPLSTI=1,NPLSTI
               PLASMA_BCKGRND(1+0*NPLS+IPLSTI,IRAD)= TIIN(IPLSTI,IRAD)
@@ -872,7 +878,7 @@ c
               PLASMA_BCKGRND(6+1*NPLS+NPLSTI+3*NPLSV+IAIN,IRAD)=
      .               ADIN(IAIN,IRAD)
             ENDDO
-  570 CONTINUE
+      ENDDO
 C
       CALL EIRENE_PLASMA_DERIV(0)
 C

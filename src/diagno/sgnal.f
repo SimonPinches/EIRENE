@@ -318,8 +318,8 @@ C           IF (IATM.LE.0.OR.IATM.GT.NATMI) GOTO 100
 C           DO 101 IR=1,NSBOX
 C             RECADD(IATM,IR)=RECADD(IATM,IR)+
 C    .                        TABRC1(KREC,IR)*DIIN(IPLS,IR)*ELCHA
-  101       CONTINUE
-  100   CONTINUE
+C 101     CONTINUE
+C 100   CONTINUE
         write (iunout,*) 'sgnal, cx: ichord,istra,sum ',
      .                      ichori,istra
         write (iunout,*) 'volumetric emission to be written'

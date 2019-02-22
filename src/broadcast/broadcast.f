@@ -1009,7 +1009,7 @@ cdr dimensioning of LCUT array corrected:
 
         IF (MY_PE > 0) THEN
 csw
-!pb          if(.not.allocated(tdmpar)) then
+!pb       if(.not.allocated(tdmpar)) then
           if(.not.associated(tdmpar(ipls)%tdm)) then
 csw
             ALLOCATE (TDMPAR(IPLS)%TDM)
@@ -1049,6 +1049,7 @@ csw
         DEALLOCATE (CHELP)
 
       END DO
+
       CALL MPI_BCAST(DBFNAME,100*NDBNAMES,MPI_CHARACTER,0,
      .               MPI_COMM_WORLD,ier)
 
@@ -1187,7 +1188,6 @@ csw
       CALL MPI_BCAST (NSPEN,NTALV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LGVAC,NRAD*(NPLS+2),MPI_LOGICAL,0,MPI_COMM_WORLD,
      .                ier)
-      CALL MPI_BCAST (LGDFT,NRAD,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NPRLL,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 cpb   CALL MPI_BCAST (NMODE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)  ! exception made for this variable
       CALL MPI_BCAST (NTCPU,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -1208,6 +1208,8 @@ cpb   CALL MPI_BCAST (NMODE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)  ! exception mad
          CALL EIRENE_ALLOC_CCOUPL(1)
          CALL EIRENE_ALLOC_CCOUPL(2)
       END IF
+
+cdr  broadcast arrays for interfacing with B2/B2.5 codes family
       CALL EIRENE_BROAD_CCOUPL
 
       IF (ALLOCATED(NAINS)) THEN
@@ -1219,6 +1221,8 @@ cpb   CALL MPI_BCAST (NMODE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)  ! exception mad
 
       CALL EIRENE_BROAD_USR
 
+c  active and inactive tallies:
+C  OUTPUT:
       CALL MPI_BCAST (LIVTALV,NTALV,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LIVTALS,NTALS,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LMISTALV,NTALV,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
@@ -1590,62 +1594,9 @@ C.....................................................................
      .                  MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
 C.....................................................................
-      ELSE IF (RP%IFIT == 4) THEN
-! 1D TABLES. E.G. HYDKIN DATA
-        IF (MY_PE .NE. 0) THEN
-          IF (.NOT.ASSOCIATED(RP%HYD)) THEN
-             ALLOCATE (RP%HYD)
-             NULLIFY(RP%HYD%TEMPS)
-             NULLIFY(RP%HYD%RATES)
-             NULLIFY(RP%HYD%RATIO)
-          END IF
-        END IF
+C     ELSE IF (RP%IFIT == 4) THEN
+! 1D TABLES. E.G. FORMERLY: HYDKIN DATA:  moved to "snippets_hydkin"
 
-        CALL MPI_BCAST (RP%HYD%NTEMPS,1,MPI_INTEGER,
-     .                  0,MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST (RP%HYD%REACNAME,50,MPI_CHARACTER,
-     .                  0,MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST (RP%HYD%REAC_STRING,50,MPI_CHARACTER,
-     .                  0,MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST (RP%HYD%RPRT,100,MPI_CHARACTER,
-     .                  0,MPI_COMM_WORLD,ier)
-
-        IF (MY_PE .NE. 0) THEN
-          IF (ASSOCIATED(RP%HYD%TEMPS)) THEN
-            IF (RP%HYD%NTEMPS.ne.UBOUND(RP%HYD%TEMPS,1)) THEN
-               DEALLOCATE (RP%HYD%TEMPS)
-               NULLIFY (RP%HYD%TEMPS)
-               ALLOCATE (RP%HYD%TEMPS(RP%HYD%NTEMPS))
-            ENDIF
-          ELSE
-            ALLOCATE (RP%HYD%TEMPS(RP%HYD%NTEMPS))
-          ENDIF
-          IF (ASSOCIATED(RP%HYD%RATES)) THEN
-            IF (RP%HYD%NTEMPS.ne.UBOUND(RP%HYD%RATES,1)) THEN
-               DEALLOCATE (RP%HYD%RATES)
-               NULLIFY (RP%HYD%RATES)
-               ALLOCATE (RP%HYD%RATES(RP%HYD%NTEMPS))
-            ENDIF
-          ELSE
-            ALLOCATE (RP%HYD%RATES(RP%HYD%NTEMPS))
-          ENDIF
-          IF (ASSOCIATED(RP%HYD%RATIO)) THEN
-            IF (RP%HYD%NTEMPS.ne.UBOUND(RP%HYD%RATIO,1)) THEN
-               DEALLOCATE (RP%HYD%RATIO)
-               NULLIFY (RP%HYD%RATIO)
-               ALLOCATE (RP%HYD%RATIO(RP%HYD%NTEMPS))
-            END IF
-          ELSE
-            ALLOCATE (RP%HYD%RATIO(RP%HYD%NTEMPS))
-          ENDIF
-        END IF
-
-        CALL MPI_BCAST (RP%HYD%TEMPS,RP%HYD%NTEMPS,MPI_REAL8,
-     .                  0,MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST (RP%HYD%RATES,RP%HYD%NTEMPS,MPI_REAL8,
-     .                  0,MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST (RP%HYD%RATIO,RP%HYD%NTEMPS,MPI_REAL8,
-     .                  0,MPI_COMM_WORLD,ier)
 C.....................................................................
       ELSE IF (RP%IFIT == 5 ) THEN
 cdr  internal CR Model
@@ -1670,6 +1621,11 @@ C STUFF TO TRANSFER POPULATION ESCAPE FACTORS INTO INTERNAL CRM ROUTINES
 C.....................................................................
       ELSE
 cdr     INVALID RP%IFIT
+
+        WRITE (iunout,*) 'ERROR IN BROADCAST:' 
+        WRITE (iunout,*) 'IFIT DATA FORMAT NO AVAILABLE'
+        WRITE (iunout,*) 'IFIT ',RP%IFIT
+        CALL EIRENE_EXIT_OWN(1) 
       END IF
 
       RETURN

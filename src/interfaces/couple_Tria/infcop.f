@@ -92,6 +92,7 @@ c            code was correct in solps4.3, and garching versions of couple_b2/b2
 cdr March 18: new variable LCOARSE: maintain underlying coarse structured grid, scoring
 cdr           on coarse grid (NCLTAL array). Otherwise: only fine (triangular) grid structure
 cdr           remove unused array: scpveii
+cdr Oct.  18: bug fix: bvin(iplsv) rather than bvin(ipls) in one place
 c......................................................................................
 
 
@@ -3517,7 +3518,7 @@ cdr  add pppl_cop contribution to internal energy sources rate
 !pb              copv(icp3+3,in)=copv(icp3+3,in) +
 !pb     .            0.5_dp*rmassp(ipls)*bvin(ipls,in)**2*PPPL_COP(IPLS,IN)
               copv(icp3+3,in)=copv(icp3+3,in) +
-     .            cvrssp(ipls)*bvin(ipls,itri)**2*PPPL_COP(IPLS,IN)
+     .            cvrssp(ipls)*bvin(iplsv,itri)**2*PPPL_COP(IPLS,IN)
               lhit(in) = .true.
             end do  ! ITRI LOOP
             copv(icp1+ipls,:) = copv(icp1+ipls,:) * flxi
@@ -3619,7 +3620,7 @@ c  skip working on internal lin. comb. of tallies, unless sufficient storage
      .                VOLTAL(IN)*1.D-5*SIGNUM*FLX_EIR
 !pb 30012013 sei internal
               copv(icp3+3,in)=copv(icp3+3,in) -
-     .            bvin(ipls,itri)*MPPL_COP(IPLS,IN)*SIGNUM*
+     .            bvin(iplsv,itri)*MPPL_COP(IPLS,IN)*SIGNUM*
      .            cveli2/amua*2._DP
               lhit(in) = .true.
             end do  !itri loop
@@ -3649,8 +3650,8 @@ c  skip working on internal lin. comb. of tallies, unless sufficient storage
                      INC=IY+(IX-1)*NR1TAL_SAVE
 
                      SMORES=(MAPL(IPLS,INC)+MMPL(IPLS,INC)+
-     .                      MIPL(IPLS,INC))*
-     .                     VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
+     .                       MIPL(IPLS,INC))*
+     .                       VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
                      RESSMO(ISTRAI,IFL)=RESSMO(ISTRAI,IFL)+
      .                                  ABS(SIGMA(ISTAT_COP,INC)*
      .                                  SMORES/100.D0*1.D5)

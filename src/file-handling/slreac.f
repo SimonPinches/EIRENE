@@ -24,6 +24,9 @@ c     Sept.16: two new internal subroutines,
 c              a) READ_RANGE:  to read validity range information,
 c              b) READ_COEFFS: three parameters for each validity boundary, for extrapolation options
 c    June  17: read_colrad (for old H-COL option (now CRM)) moved to separate routine.
+cdr  Jan   19:  filnam=CRM --> CR... to prepare merge with branch ...emis....,
+cdr             H, He internal CR codes, formulation I, II (MS resolved or not)
+cdr  Feb   19:  remove obsolete (and unfinished) option HYDRTC 
 C
 C
       SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
@@ -49,9 +52,8 @@ c
 C    FILNAM: read A&M data from file filnam,
 c            FILNAM=AMJUEL, HYDHEL, METHAN, H2VIBR, CONST: polynomial fits
 CC           FILNAM=TAB2D, ADAS:  special treatment, see below.
-C            FILNAM=CRM: nothing to be done here, use internal CR code xx_colrad.f
-c                        currently available: h_colrad.f
-C            FILNAM=HYDRTC: proprietary option, disabled. Nothing to be done here  ??
+C            FILNAM=CR...: nothing to be done here, use internal CR code xx_colrad.f
+c                          currently available: h_colrad.f
 C
 c    H123  : identifier for data type in filnam, e.g. H.1, H.2, H.3, ...
 
@@ -273,7 +275,7 @@ C
       IF (INDEX(FILNAM,'CONST').NE.0) THEN
         LCONST=.TRUE.
 !  nothing to be done
-      ELSEIF (INDEX(FILNAM,'CRM').NE.0) THEN
+      ELSEIF (INDEX(FILNAM,'CR').NE.0) THEN
         LCONST=.FALSE.
 !  nothing to be done
       ELSE   ! in all other cases: open data file, stream 29+ifoff
@@ -320,7 +322,7 @@ C  THE A&M DATA FILE FILNAM IS NOW OPENDED, ON STREAM 29 (+ifoff)
           WRITE (iunout,*) ' OR '
           WRITE (iunout,*) ' TAB1D, TAB2D '
           WRITE (iunout,*) ' OR '
-          WRITE (iunout,*) ' CRM'
+          WRITE (iunout,*) ' CR'
           WRITE (iunout,*) ' OR '
           WRITE (iunout,*) ' CONST '
           WRITE (iunout,*) ' OR '
@@ -553,7 +555,7 @@ C  H.12
       ENDIF
 
 
-      IF (INDEX(FILNAM,'CRM').NE.0) THEN
+      IF (INDEX(FILNAM,'CR').NE.0) THEN
         CALL EIRENE_READ_COLRAD (IR,REAC,ISW,IZ1,
      .                           IROW_ESC,ICOL_ESC,POP_ESC)
 c  close unit=29+ifoff:   done in READ_COLRAD.f
@@ -567,18 +569,6 @@ c  close unit=29+ifoff:   done in READ_TAB2D.f
         RETURN
       END IF
 
-      IF (INDEX(FILNAM,'HYDRTC').NE.0) THEN
-cdr  proprietary option at FZ Juelich.
-cdr  Not ready, and not to be used by 3rd party
-        CLOSE (UNIT=29+ifoff)
-        CH123 = H123
-        CCRC = CRC
-        CALL EIRENE_READ_HYDKIN
-     .      (IR,DBFNAME(IFILE),CH123,REAC,CCRC,RC1MIN,RC1MAX,
-     .       E_EL,E_K,.FALSE.)
-        RETURN
-      END IF
-C
       IF (INDEX(FILNAM,'CONST').NE.0) THEN
         IND=INDEX(REACSTR,'FT')
         IF (IND /= 0) THEN
@@ -606,7 +596,7 @@ C
 C  READ FROM DATA FILE, stream 29
 C
 C  already ruled out here (done at this point):
-C  FILNAM= "CRM", "CONST", "ADAS", "HYDRTC", "PHOTON"
+C  FILNAM= "CR...", "CONST", "ADAS",  "PHOTON"
 C  in all these cases: already returned to calling program
 C
 C......................................................................
@@ -870,7 +860,7 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) ' LOWER RANGE FOR 1ST PARAMETER OF FIT',
      .          ' SPECIFIED BUT',
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED'
-          WRITE (IUNOUT,*) 'IFLG = ',if1mn
+          CALL EIRENE_MASJ1R('IF1MN,R1MN      ',if1mn,r1mn)
           IF (IF1MN.EQ.4)
      .      WRITE (IUNOUT,*) 'I.E.: CONTINUATION AS CONSTANT'
           CALL EIRENE_LEER(1)
@@ -899,7 +889,7 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) ' UPPER RANGE FOR 1ST PARAMETER OF FIT',
      .          ' SPECIFIED BUT',
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
-          WRITE (IUNOUT,*) 'IFLG = ',if1mx
+          CALL EIRENE_MASJ1R('IF1MX,R1MX      ',if1mx,r1mx)
           IF (IF1MX.EQ.4)
      .      WRITE (IUNOUT,*) 'I.E.: CONTINUATION AS CONSTANT '
           CALL EIRENE_LEER(1)
@@ -928,7 +918,7 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) ' LOWER RANGE FOR 2ND PARAMETER OF FIT',
      .          ' SPECIFIED BUT',
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
-          WRITE (IUNOUT,*) 'IFLG = ',if2mn
+          CALL EIRENE_MASJ1R('IF2MN,R2MN      ',if2mn,r2mn)
           IF (IF2MN.EQ.4)
      .      WRITE (IUNOUT,*) 'I.E.: CONTINUATION AS CONSTANT '
           CALL EIRENE_LEER(1)
@@ -956,7 +946,7 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) ' UPPER RANGE FOR 2ND PARAMETER OF FIT',
      .          ' SPECIFIED BUT',
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
-          WRITE (IUNOUT,*) 'IFLG = ',if2mx
+          CALL EIRENE_MASJ1R('IF2MX,R2MX      ',if2mx,r2mx)
           IF (IF2MX.EQ.4)
      .      WRITE (IUNOUT,*) 'I.E.: CONTINUATION AS CONSTANT '
           CALL EIRENE_LEER(1)

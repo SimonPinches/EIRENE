@@ -275,7 +275,7 @@ cdr EMPL, EMEL       :  SCORE NET CHANGES HERE.
 cdr EMAT, EMML, EMIO :  SCORE EXACT GAINS LATER.
           IF (LEMPL) THEN
             DO IP=1,IPPLEI(IREI,0)
-cdr:  this is incorrect. esigei must be split into ipl secondaries
+cdr: this is incorrect. esigei must be split into ipl secondaries
 cdr  it only happens to be correct if the post-collision bulk species are all the same (=ipl),
 cdr  because then esigei is the total for this species.
               IPL=IPPLEI(IREI,IP)
@@ -508,7 +508,7 @@ C  FOLLOW 1ST SECONDARY
 
           ZEP3 = 0.5*FRSTP
 
-        ELSE  ! NOT ENOUGH STORAGE FOR CASCADING
+        ELSE ! NOT ENOUGH STORAGE FOR CASCADING
 
           IF (NLCASCAD) THEN
             WRITE (iunout,*)
@@ -597,7 +597,7 @@ c  UPDATE collision estimator for CX energy exchange tallies
 C  UPDATE COLLISION ESTIMATOR CONTRIBUTION TO MMPL (FORMERLY: COPV)
             IF (IESTCX(IRCX,2).NE.0) THEN
               IF (LMMPL) THEN
-C  SET THE POST-COLLISION TEST PARTICLE  PARALLEL VELOCITY = OLD PRE-COLLISION BULK (ION) VELOCITY
+C  SET THE POST-COLLISION TEST PARTICLE PARALLEL VELOCITY = OLD PRE-COLLISION BULK (ION) VELOCITY
                 V0_PARB=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
                 V0_PARB=V0_PARB*AMUA*RMASSM(IMOL)
                 IF (INDPRO(4) == 8) THEN
