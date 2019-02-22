@@ -174,7 +174,7 @@ C
 C  ABSORPTION BIASING: CURRENTLY ONLY IMPLEMENTED FOR "EI-TYPE" (ELECTRON IMPACT) PROCESSES
 
 C  SUPPRESS THOSE IREI PROCESSES WITH ZERO
-C                       TEST PARTICLE SECONDARIES
+C                      TEST PARTICLE SECONDARIES
 
       SIG_ELIM=0.
       SIG_TOT_N=SIGTOT
@@ -275,7 +275,8 @@ cdr EIPL, EIEL       :  SCORE NET CHANGES HERE.
 cdr EIAT, EIML, EIIO :  SCORE EXACT GAINS LATER.
           IF (LEIPL) THEN
             DO IP=1,IPPLEI(IREI,0)
-cdr:  this is incorrect. esigei must be split into ipl secondaries
+
+cdr: this is incorrect. esigei must be split into ipl secondaries
 cdr  it only happens to be correct if the post-collision bulk species are all the same (=ipl),
 cdr  because then esigei is the total for this species.
               IPL=IPPLEI(IREI,IP)
@@ -508,7 +509,7 @@ C  FOLLOW 1ST SECONDARY
 
           ZEP3 = 0.5*FRSTP
 
-        ELSE  ! NOT ENOUGH STORAGE FOR CASCADING
+        ELSE ! NOT ENOUGH STORAGE FOR CASCADING
 
           IF (NLCASCAD) THEN
             WRITE (iunout,*)
@@ -533,7 +534,7 @@ C  FOLLOW FIRST SECONDARY, SPEED FROM BULK POPULATION
           NFLAG=CFLAG(3,IRCX)
           CALL EIRENE_VELOCX
      .         (NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,NOLD,VELQ,
-     .                  NFLAG,IRCX,DUMT,DUMV)
+     .          NFLAG,IRCX,DUMT,DUMV)
 
           SELECT CASE (ITYP)
 C

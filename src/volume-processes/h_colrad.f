@@ -458,12 +458,12 @@ C     INITIALIZATION
       UH=13.595
 
       DO 101 I=1,40
-      P=I
-      UION(I)=13.595/TEMP/P**2
+        P=I
+        UION(I)=13.595/TEMP/P**2
   101 CONTINUE
       DO 102 I=1,40
       DO J=1,40
-      U(I,J)=UION(I)-UION(J)
+        U(I,J)=UION(I)-UION(J)
       END DO
   102 CONTINUE
 

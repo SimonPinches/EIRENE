@@ -15,9 +15,10 @@ cdr n,T,V for background (bulk) velocity distribution: not finished.
 !  sept. 16 change variable names ipls --> iplsti, (for TI)
 !                                 ipls --> iplsv,  (for VX,VY,VZ)
 !  oct. 16  comments, one minor bug fix (VZIN(IPLSV) in one (unused) option)
-!  nov. 16  nlpitch option added, for orientation of B-field in 1D runs
-
-cpb: add parameter ndim: special treatment of Ti fields species index.
+!  nov. 16  nlpitch option added, for orientation of B-field in 1D and 2D runs
+cdr jan 19: SELECT CASE(IND)
+cdr feb 19: parameter NDIM: check 1st dimension of input tallies. 
+cdr         Still unclear treatment in case of Ti (ion temperature). 
 cpb: reading tiin from profr:  set 1st dimension of tiin array.
 
 cdr: check under which conditions can nplsti be different from npls, and is that still needed?
@@ -64,11 +65,14 @@ C  INDPRO=9 MEANS: THESE ARRAYS ARE ALREADY SET IN COUPLE_... (SUBR. INFCOP)
       IF (INDPRO(4) /= 9) VXIN = 0.D0
       IF (INDPRO(4) /= 9) VYIN = 0.D0
       IF (INDPRO(4) /= 9) VZIN = 0.D0
+c  magnetic field
       IF (INDPRO(5) /= 9) BXIN = 0.D0
       IF (INDPRO(5) /= 9) BYIN = 0.D0
       IF (INDPRO(5) /= 9) BZIN = 0.D0
       IF (INDPRO(5) /= 9) BFIN = 0.D0
+
       IF (INDPRO(6) /= 9) ADIN = 0.D0
+c  electric field
       IF (INDPRO(7) /= 9) EXIN = 0.D0
       IF (INDPRO(7) /= 9) EYIN = 0.D0
       IF (INDPRO(7) /= 9) EZIN = 0.D0
@@ -121,6 +125,10 @@ c  INDPRO=7:  tally from PROFR,  1:NSBOX=NSURF+NRADD
 
 C  ION TEMPERATURE
       IND=INDPRO(2)
+cdr first dimension of arrays:  NDIM .ne. NPLSTI possible ?
+      NDIM = SIZE(TIIN,DIM=1)
+      IF (NDIM.LT.NPLSTI) GOTO 996
+
       DO 120 IPLSTI=1,NPLSTI
 cdr one profile iplsti set at a time
         select case (IND)
@@ -152,20 +160,15 @@ c  INDPRO=5:  tally from PROUSR, indx=1, but NPLSTI calls, one for each IPLSTI
      .                      TI2(IPLSTI),TI3(IPLSTI),TI4(IPLSTI),
      .                      TI5(IPLSTI),TVAC,NSURF)
           TIIN(IPLSTI,1:NSURF)=HELP(1:NSURF)
-cdr all nplsti profiles set in a single call
+
+cdr distinct from indpro=1,...5:  now one single call for all IPLS=1,NPLSTI
         case(6)
 c  INDPRO=6:  tally from PROFR, indx=1, all TIIN fields in one single call
-cdr first dimension of arrays:  NDIM .ne. NPLSTI possible ?
-!pb Jan 17: 116     CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NPLSTI,NSURF)
-          NDIM = SIZE(TIIN,DIM=1)
           CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NDIM,NSURF)
 !pb all species fields have been filled in this call thus exit loop
           EXIT
         case (7)
 c  INDPRO=7:  tally from PROFR, indx=1, all TIIN fields in one single call
-cdr first dimension of arrays:  NDIM .ne. NPLSTI possible ?
-!pb Jan 17 117     CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NPLSTI,NSBOX)
-          NDIM = SIZE(TIIN,DIM=1)
           CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NDIM,NSBOX)
 !pb all species fields have been filled in this call thus exit loop
           EXIT
@@ -174,6 +177,10 @@ cdr first dimension of arrays:  NDIM .ne. NPLSTI possible ?
 
 C  ION DENSITY
       IND=INDPRO(3)
+cdr first dimension of arrays:  NDIM .ne. NPLS possible ?
+      NDIM = SIZE(DIIN,DIM=1)
+      IF (NDIM.LT.NPLSI) GOTO 997
+
       DO 130 JPLS=1,NPLSI
         IPLS=JPLS
         IF (LEN_TRIM(CDENMODEL(IPLS)) > 0) CYCLE
@@ -205,7 +212,8 @@ c  INDPRO=5:  tally from PROUSR, indx=1+1*NPLS, but NPLSI calls, one for each IP
      .                        DI2(IPLS),DI3(IPLS),DI4(IPLS),DI5(IPLS),
      .                        DVAC,NSURF)
           DIIN(IPLS,1:NSURF)=HELP(1:NSURF)
-cdr all nplsi profiles set in a single call
+
+cdr distinct from indpro=1,...5:  now one single call for all IPLS=1,NPLSI
         case (6)
 c  INDPRO=6:
 cdr first dimension of arrays:  always NPLS
@@ -223,10 +231,14 @@ cdr first dimension of arrays:  always NPLS
 
 C  DRIFT VELOCITY
       IND=INDPRO(4)
+cdr first dimension of arrays:  NDIM .ne. NPLSV possible ?
+      NDIM = MIN(SIZE(VXIN,DIM=1),SIZE(VYIN,DIM=1),SIZE(VZIN,DIM=1))
+      IF (NDIM.LT.NPLSV) GOTO 998
+
       DO 140 IPLSV=1,NPLSV
         select case (IND)
 	case (1)
-cdr one vector component profile (vx,vy,vz) iplsv set at a time
+cdr one vector component profile (vx,vy,vz), and one value of iplsv set at a time
           CALL EIRENE_PROFN (HELP,VX0(IPLSV),VX1(IPLSV),VX2(IPLSV),
      .                   VX3(IPLSV),VX4(IPLSV),VX5(IPLSV),VVAC)
           VXIN(IPLSV,1:NR1ST)=HELP(1:NR1ST)
@@ -273,16 +285,17 @@ c             VZ: indx=1+4*NPLS, but NPLSV calls, one for each IPLSV
      .                      VZ2(IPLSV),VZ3(IPLSV),
      .                      VZ4(IPLSV),VZ5(IPLSV),VVAC,NSURF)
           VZIN(IPLSV,1:NSURF)=HELP(1:NSURF)
+
+cdr distinct from indpro=1,...5:  now one single call for all IPLS=1,NPLSV
         case (6)
-cdr all nplsv vector component profiles set in a single call
 c  read tally from external data structure, all V.IN fields in one single call
 cdr first dimension of arrays:  always NPLSV
           CALL EIRENE_PROFR (VXIN,1+1*NPLS+NPLSTI+0*NPLSV,
-     .                       NPLSV,NPLSV,NSURF)
+     .                       NPLSV,NDIM,NSURF)
           CALL EIRENE_PROFR (VYIN,1+1*NPLS+NPLSTI+1*NPLSV,
-     .                       NPLSV,NPLSV,NSURF)
+     .                       NPLSV,NDIM,NSURF)
           CALL EIRENE_PROFR (VZIN,1+1*NPLS+NPLSTI+2*NPLSV,
-     .                       NPLSV,NPLSV,NSURF)
+     .                       NPLSV,NDIM,NSURF)
 !pb all species fields have been filled in this call thus exit loop
           EXIT
         case (7)
@@ -290,11 +303,11 @@ cdr all nplsv vector component profiles set in a single call
 c  read tally from external data structure, all V.IN fields in one single call
 cdr first dimension of arrays:  always NPLSV
           CALL EIRENE_PROFR (VXIN,1+1*NPLS+NPLSTI+0*NPLSV,
-     .                       NPLSV,NPLSV,NSBOX)
+     .                       NPLSV,NDIM,NSBOX)
           CALL EIRENE_PROFR (VYIN,1+1*NPLS+NPLSTI+1*NPLSV,
-     .                       NPLSV,NPLSV,NSBOX)
+     .                       NPLSV,NDIM,NSBOX)
           CALL EIRENE_PROFR (VZIN,1+1*NPLS+NPLSTI+2*NPLSV,
-     .                       NPLSV,NPLSV,NSBOX)
+     .                       NPLSV,NDIM,NSBOX)
 !pb all species fields have been filled in this call thus exit loop
           EXIT
         end select
@@ -307,6 +320,7 @@ C  USE ISOTHERMAL ACCOUSTIC SPEED OF ION IPLS.
           IPLSTI=MPLSTI(JPLS)
           IPLSV=MPLSV(JPLS)
           DO 1142 ICELL=1,NSURF
+CDR FACT is the isothermal ion acoustic speed, [cm/s], for species IPLS=JPLS
             FACT=CVEL2A*SQRT((TIIN(IPLSTI,ICELL)+
      .                        TEIN(ICELL))/RMASSP(JPLS))
             VXIN(IPLSV,ICELL)=VXIN(IPLSV,ICELL)*FACT
@@ -374,7 +388,8 @@ c                 include also additional cells
 C  CONVERT PITCH ANGLE INTO B-FIELD UNIT VECTOR
  1400   CONTINUE
 	IF (IND <= 3) then
-C  AT THIS POINT: INDPRO= 1,2, OR =3. HELP2 IS KNOWN ONLY IN CASE INDPRO=3
+C  AT THIS POINT: INDPRO= 1,2, OR =3. 
+C                 HELP2 IS KNOWN ONLY IN CASE INDPRO=3
         IF (LEVGEO.EQ.1) THEN
           DO 1401 J=1,NSURF
             CALL EIRENE_NCELLN(J,IR,IP,IT,IA,IB,
@@ -469,10 +484,13 @@ C  CHECK FOR ZERO MAGNETIC FIELD IN ANY CELL (INCL. ADD. CELL REGION)
 C
 C  ADDITIONAL INPUT TALLIES
       IND=INDPRO(6)
+      NDIM=SIZE(ADIN,DIM=1)
+      IF (NDIM.LT.NAINI) GOTO 999
+
       DO 160 K=1,NAINI
         select case (IND)
         case (1:4)
-C  DEFAULT: ZERO, only options ind=5,6,7 are available
+C  DEFAULT: ADIN == 0.0, only options ind=5,6,7 are available
 c          (transfer from problem-specific codes or external data structures)
         DO 1151 J=1,NR1ST
           ADIN(K,J)=0.
@@ -480,15 +498,17 @@ c          (transfer from problem-specific codes or external data structures)
         case (5)
           CALL EIRENE_PROUSR (HELP,6+1*NPLS+NPLSTI+3*NPLSV,
      .                      BD,BD,BD,BD,BD,BD,0._DP,NSURF)
-        ADIN(K,1:NSURF)=HELP(1:NSURF)
+          ADIN(K,1:NSURF)=HELP(1:NSURF)
+
+cdr distinct from indpro=1,...5:  now one single call for all K=1,NAINI
         case (6)
           CALL EIRENE_PROFR (ADIN,6+1*NPLS+NPLSTI+3*NPLSV,
-     .                       NAINI,NAIN,NSURF)
+     .                       NAINI,NDIM,NSURF)
 !pb all species fields have been filled in this call thus exit loop
           EXIT
         case (7)
           CALL EIRENE_PROFR (ADIN,6+1*NPLS+NPLSTI+3*NPLSV,
-     .                       NAINI,NAIN,NSBOX)
+     .                       NAINI,NDIM,NSBOX)
 !pb all species fields have been filled in this call thus exit loop
           EXIT
         end select
@@ -496,7 +516,7 @@ c          (transfer from problem-specific codes or external data structures)
 C
 C  ELECTRIC FIELD
       IND=INDPRO(7)
-C  DEFAULT: ZERO, only options ind=5,6,7
+C  DEFAULT: E==0.0 (no electric field), only options ind=5,6,7 overrule this
 c          (transfer from problem-specific codes or external data structures)
       select case (IND)
       case (5)
@@ -508,6 +528,7 @@ c          (transfer from problem-specific codes or external data structures)
      .                      EF0,EF1,EF2,EF3,EF4,EF5,0._DP,NSURF)
         CALL EIRENE_PROUSR (EFIN,10+1*NPLS+NPLSTI+3*NPLSV,
      .                      EF0,EF1,EF2,EF3,EF4,EF5,0._DP,NSURF)
+
       case (6)
         CALL EIRENE_PROFR (EXIN,7+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
         CALL EIRENE_PROFR (EYIN,8+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
@@ -588,4 +609,21 @@ C
       DEALLOCATE(HELP2)
 C
       RETURN
+
+996   CONTINUE
+      WRITE (iunout,*) 'ERROR IN PLASMA: 1ST DIMENSION OF TIIN TALLY'
+      WRITE (iunout,*) 'NDIM,NPLSTI ',NDIM,NPLSTI
+      CALL EIRENE_EXIT_OWN(1)
+997   CONTINUE
+      WRITE (iunout,*) 'ERROR IN PLASMA: 1ST DIMENSION OF DIIN TALLY'
+      WRITE (iunout,*) 'NDIM,NPLSI ',NDIM,NPLSI
+      CALL EIRENE_EXIT_OWN(1)
+998   CONTINUE
+      WRITE (iunout,*) 'ERROR IN PLASMA: 1ST DIMENSION OF V..IN TALLIES'
+      WRITE (iunout,*) 'NDIM,NPLSV ',NDIM,NPLSV
+      CALL EIRENE_EXIT_OWN(1)
+999   CONTINUE
+      WRITE (iunout,*) 'ERROR IN PLASMA: 1ST DIMENSION OF ADIN TALLY'
+      WRITE (iunout,*) 'NDIM,NAINI ',NDIM,NAINI
+      CALL EIRENE_EXIT_OWN(1)
       END

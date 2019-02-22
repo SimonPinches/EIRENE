@@ -729,7 +729,7 @@ C  FOLLOW 2ND SECONDARY, SPEED OF PREVIOUS TEST PARTICLE
 C
           CASE(1)
             IATM=N2NDX(IRCX,2)
-            XGENER= 0.D0
+            XGENER=0.D0
 C
             E0=CVRSSA(IATM)*VELO*VELO
             IF (IESTCX(IRCX,1).NE.0) GOTO 999
@@ -741,7 +741,7 @@ C
 C
           CASE(2)
             IMOL=N2NDX(IRCX,2)
-            XGENER= 0.D0
+            XGENER=0.D0
 C
             E0=CVRSSM(IMOL)*VELO*VELO
             IF (IESTCX(IRCX,1).NE.0) GOTO 999

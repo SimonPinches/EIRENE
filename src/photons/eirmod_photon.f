@@ -240,7 +240,8 @@ c
       fac=0._dp
       hwvdw=0._dp
 
-cdr  find $fac$: the value of the line profile (emission profile or absorption profile) at E0:
+cdr  find $fac(E0)$: the value of the line profile $fac(E$
+cdr  (emission profile or absorption profile) at E0:
 cdr  the current photon energy.
 cdr  units of fac:  1/eV, because: integral dE fac(E) = 1.0
 
@@ -264,6 +265,7 @@ c     P.2 PH_ABS OT, P.2 PH_STIM OT
 
          iptype = reaction%iprofiletype
          select case(iptype)
+
          case(0)
 c  delta distribution, all mass at e0=e00
 cdr         FAC=1./E00  ! cancel e00 factor in rate coeff.
@@ -327,6 +329,7 @@ c  use energy scale
              call EIRENE_dopplerprof(iipl,icell,dnd,drft)
              fac = EIRENE_zm_profile(e0,ctheta2,dbz,gam,dnd,drft,e00,9)
            endif
+
          case(10,11)
 !zeeman-stark, or zeeman-stark-doppler, at photon energy E0
 
@@ -351,6 +354,7 @@ c            npt=1
      .             ctheta2,v,e00,e0)
 
 c    .             npt,omega_min,omega_max)
+
            elseif (iptype == 11) then
 c  With Doppler broadening by absorbing gas
              call EIRENE_dopplerprof(iipl,icell,dnd,drft)
@@ -452,8 +456,8 @@ c     end select
      .                           DRFT,E00,IPROF)
      .         RESULT(RES)
 c  zeeman - profile - splitting
-c  input: photon energy x (ev)
-c  output:  value of zeeman splitted absorption profile
+c  input:   x:    photon energy [eV]
+c  output:  res:  value of zeeman splitted absorption profile
 c   iprof:  6:  delta
 c           7:  doppler
 c           8:  lorentz
