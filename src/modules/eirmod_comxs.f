@@ -170,7 +170,7 @@ c  inverse mean free path
 
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R TABEI1(:,:),   TABRC1(:,:),
-     R TABPI3(:,:,:), TABCX3(:,:,:), TABEL3(:,:,:),
+     R TABPI3(:,:,:), TABCX3(:,:,:), TABEL3(:,:,:),  ! missing: tabph3
      R FDLMPI(:),     FDLMCX(:),     FDLMEL(:),
      R ADDPI(:,:),    ADDCX(:,:),    ADDEL(:,:)
 
@@ -183,11 +183,14 @@ c  secondaries, species distribution, for EI and PI processes
      R PELPI(:),  PATPI(:,:), PMLPI(:,:), PIOPI(:,:), PPLPI(:,:),
 c  ...and cumulated distributions thereof, for species sampling
      R P2ND(:,:), P2NP(:,:),  P2NEI(:),   P2NPI(:)
-
+c  post-collision energies: to EL (electrons), PI (background) or HV (heavy test particles)
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R EELEI1(:,:),   EELRC1(:,:),   EELPI1(:,:), !  missing: eelph1, el and cx processes have no secondary electrons
-     R EHVEI1(:,:),   EHVPI3(:,:,:),
-     R EPLPI3(:,:,:), EPLCX3(:,:,:), EPLEL3(:,:,:), EPLPH3(:,:,:)
+     R EELEI1(:,:), EHVEI1(:,:), 
+     R EELRC1(:,:),       
+     R EPLPI3(:,:,:), EELPI3(:,:,:), EHVPI3(:,:,:),
+     R EPLCX3(:,:,:), !  cx processes have no secondary electrons 
+     R EPLEL3(:,:,:), !  el processes have no secondary electrons
+     R EPLPH3(:,:,:)  !  missing: eelph...,  ph processes energetics unfinished
 
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R EATEI(:,:,:), EMLEI(:,:,:), EIOEI(:,:,:), EPLEI(:,:,:),
@@ -523,13 +526,16 @@ C  SECOND DIMENSION OF XSTOR ARRAY
      .           2*(NREL+NRCX+NRPI)+5*NREI+
      .           NREL+NRCX+NRPI
 C
+c  tab..1/3 arrays
         NTAB=NSTORDR*(NREI+NREC)+
      P       NSTORDR*NSTORDT*(NRCX+NREL+NRPI)+
      P       (NPLS+1)*(NRPI+NRCX+NREL)+
      P       2*(NREC+NRPI+NREL+NREI+NRCX)
 C
-        NDAT=NSTORDR*(2*NREI+NREC+NRPI+
-     P       NSTORDT*(NRCX+NREL+2*NRPI+NRPH))+
+c  exx..1/3 arrays  xx=(el,pl,hv),  
+        NDAT=NSTORDR*(2*NREI+NREC+
+     P       NSTORDT*(NRCX+NREL+3*NRPI+NRPH))+
+c  
      P      (NREI+NRPI)*
      P      (NATMP+NMOLP+NIONP+NPLSP+1)+
      P      (NRPI+NREI)*(NSPZP+1)+
@@ -622,7 +628,7 @@ c  secondaries, PI processes
 
         ALLOCATE (EELRC1(NREC,NSTORDR))
 
-        ALLOCATE (EELPI1(NRPI,NSTORDR))
+        ALLOCATE (EELPI3(NRPI,NSTORDR,NSTORDT))
         ALLOCATE (EHVPI3(NRPI,NSTORDR,NSTORDT))
         ALLOCATE (EPLPI3(NRPI,NSTORDR,NSTORDT))
 
@@ -717,7 +723,7 @@ c
         ALLOCATE (LGPHPI(0:NPHOT,0:NRPI,0:1))
 
         MEM = (MSTOR1*MSTOR2+NMDTA)*8_IL +
-     .                      MMDTA*4_IL
+     .                       MMDTA*4_IL
 
         WRITE (IUNMEM,'(A,T25,I15)')
      .        ' COMXS(2) ', MEM
@@ -774,7 +780,7 @@ c
       DEALLOCATE (EELEI1)
       DEALLOCATE (EHVEI1)
       DEALLOCATE (EELRC1)
-      DEALLOCATE (EELPI1)
+      DEALLOCATE (EELPI3)
       DEALLOCATE (EHVPI3)
       DEALLOCATE (EPLPI3)
       DEALLOCATE (EPLCX3)
@@ -1242,11 +1248,12 @@ c  reaction threshold (if any)
         EELEI1  = 0._DP
         EHVEI1  = 0._DP
         EELRC1  = 0._DP
-        EELPI1  = 0._DP
+        EELPI3  = 0._DP
         EHVPI3  = 0._DP
         EPLPI3  = 0._DP
         EPLCX3  = 0._DP
         EPLEL3  = 0._DP
+
         EPLPH3  = 0._DP
 
         EATPI   = 0._DP
@@ -1344,7 +1351,7 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . PELPI  ,PATPI  ,PMLPI  ,PIOPI  ,PPLPI  ,
      . P2ND   ,P2NP   ,P2NEI  ,P2NPI  ,
 
-     . EELEI1 ,EELRC1 ,EELPI1 ,
+     . EELEI1 ,EELRC1 ,EELPI3 ,
      . EHVEI1 ,EHVPI3 ,
      . EPLPI3 ,EPLCX3 ,EPLEL3 ,EPLPH3 ,
 
@@ -1388,7 +1395,7 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . PELPI  ,PATPI  ,PMLPI  ,PIOPI  ,PPLPI  ,
      . P2ND   ,P2NP   ,P2NEI  ,P2NPI  ,
 
-     . EELEI1 ,EELRC1 ,EELPI1 ,
+     . EELEI1 ,EELRC1 ,EELPI3 ,
      . EHVEI1 ,EHVPI3 ,
      . EPLPI3 ,EPLCX3 ,EPLEL3 ,EPLPH3 ,
 

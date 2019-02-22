@@ -65,7 +65,7 @@ C
      .            ACCINI, ACCINP, ACCMSM, ACCMSI, ACCMSA, ACCINA,
      .            ACCINM, ACCMSP, ACCINV,
      .            EFLAG, EIRENE_FEHVPI3,
-     .            EIRENE_FEELPI1,
+     .            EIRENE_FEELPI3,
      .            EIRENE_RATE_COEFF,
      .            EIRENE_ENERGY_RATE_COEFF,
      .            EI, EA, EN, TB, TII,
@@ -514,12 +514,12 @@ C  SET NET ENERGY LOSS RATE OF ELECTRON (IF ANY INVOLVED)
 C  4.A1) ENERGY LOSS RATE OF IMP. ELECTRON = CONST.*RATE COEFF.
         IF (NSTORDR >= NRAD) THEN
           DO J=1,NSBOX
-            EELPI1(IRPI,J)=EELEC
+            EELPI3(IRPI,J,1)=EELEC
           ENDDO
           NELRPI(IRPI)=0
         ELSE
           NELRPI(IRPI)=0
-          EELPI1(IRPI,1)=EELEC
+          EELPI3(IRPI,1,1)=EELEC
         END IF
         MODCOL(4,4,IRPI)=1
       ELSE
@@ -686,9 +686,9 @@ C  ARE SECONDARY ELECTRONS INVOLVED?
         DO 875 IRAD=1,NSBOX
           IF (LGVAC(IRAD,IPL)) GOTO 875
           IF (NSTORDR >= NRAD) THEN
-            EN=EELPI1(IRPI,IRAD)
+            EN=EELPI3(IRPI,IRAD,1)
           ELSE
-            EN=EIRENE_FEELPI1(IRPI,IRAD)
+            EN=EIRENE_FEELPI3(IRPI,IRAD)
           END IF
           if (en < ei) imin=irad
           if (en > ea) imax=irad

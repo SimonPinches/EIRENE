@@ -113,7 +113,7 @@ C
      .          CII, ELB,TII,V0_REL,VI_TH,VE_TH,
      .          EXPO,
 cdr  functions for 'on the fly' evaluation of a&m data
-     .          EIRENE_FEELEI1, EIRENE_FEELPI1,
+     .          EIRENE_FEELEI1, EIRENE_FEELPI3,
      .          EIRENE_FEHVEI1, EIRENE_FEHVPI3,
      .          EIRENE_FEPLCX3, EIRENE_FEPLPI3, EIRENE_FEPLEL3,
      .          EIRENE_FTABCX3, EIRENE_FTABPI3,
@@ -297,10 +297,10 @@ C
 C  2.A ELECTRON ENERGY LOSS PER COLLISION (EV)
 C
         IF (NSTORDR >= NRAD) THEN
-          ESIGPI(IRPI,5)=EELPI1(IRPI,K)
+          ESIGPI(IRPI,5)=EELPI3(IRPI,K,1)
           EHEAVY        =EHVPI3(IRPI,K,1)
         ELSE
-          ESIGEI(IREI,5)=EIRENE_FEELPI1(IRPI,K)
+          ESIGPI(IRPI,5)=EIRENE_FEELPI3(IRPI,K)
           EHEAVY        =EIRENE_FEHVPI3(IRPI,K)
         ENDIF
 C
