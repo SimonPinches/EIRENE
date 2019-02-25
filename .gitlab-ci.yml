@@ -116,6 +116,25 @@ test_standalone_1D-H_slab_with_farming:
     dependencies:
         - run_standalone_1D-H_slab_with_farming
 
+build_standalone_2D_slab:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "2D-D_slab"
+
+run_standalone_2D-D_slab:
+    <<: *run
+    variables:
+        PATH_CASE: "2D-D_slab"
+    dependencies:
+        - build_standalone_2D_slab
+
+test_standalone_2D-D_slab:
+    <<: *test
+    variables:
+        PATH_CASE: "2D-D_slab"
+    dependencies:
+        - run_standalone_2D-D_slab
+
 build_standalone_ITER_1573:
     <<: *build_executable
     variables:
