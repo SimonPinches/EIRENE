@@ -533,8 +533,8 @@ c  tab..1/3 arrays
      P       2*(NREC+NRPI+NREL+NREI+NRCX)
 C
 c  exx..1/3 arrays  xx=(el,pl,hv),  
-        NDAT=NSTORDR*(2*NREI+NREC+
-     P       NSTORDT*(NRCX+NREL+3*NRPI+NRPH))+
+        NDAT=NSTORDR*(2*NREI+NREC)+
+     P       NSTORDR*NSTORDT*(NRCX+NREL+3*NRPI+NRPH)+
 c  
      P      (NREI+NRPI)*
      P      (NATMP+NMOLP+NIONP+NPLSP+1)+
