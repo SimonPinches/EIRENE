@@ -4,7 +4,7 @@ include:
 
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
-    SAMPLE_CASE_VERSION: '916f6f40'
+    SAMPLE_CASE_VERSION: '5aedb885848c2ff1990d20593568dd1fa1099ff8'
 
 stages:
     - build:library
@@ -115,6 +115,25 @@ test_standalone_1D-H_slab_with_farming:
         - PB/feature/farming
     dependencies:
         - run_standalone_1D-H_slab_with_farming
+
+build_standalone_2D_slab:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "2D-D_slab"
+
+run_standalone_2D-D_slab:
+    <<: *run
+    variables:
+        PATH_CASE: "2D-D_slab"
+    dependencies:
+        - build_standalone_2D_slab
+
+test_standalone_2D-D_slab:
+    <<: *test
+    variables:
+        PATH_CASE: "2D-D_slab"
+    dependencies:
+        - run_standalone_2D-D_slab
 
 build_standalone_ITER_1573:
     <<: *build_executable
