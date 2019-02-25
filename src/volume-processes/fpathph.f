@@ -18,6 +18,7 @@ cdr             plus rcmin,rcmax consideration.
 cdr             unless rcmin,rcmax are set (as it is the case currently here),
 cdr             there is no need to call  --> move to in-line
 cdr 06.08.15 :  arguments added to vecusr
+cdr 13.08.15 :  cflag(4,1) changed from 2 to 1 (as it was in fpatha).  Is that correct ??
 
 cdr dec. 15:    missing: ftabel3
 cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option
@@ -30,24 +31,26 @@ cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option
 !pb APR  16:    eelds -> eelei
 !pb MAY  16:    tabds1 -> tabei1
 !pb JUL  16:    ehvds1 -> ehvei1
-
+cdr sept 16:    nadsi  -> naeii
 
 cdr aug. 16:    bug fix re EXPO in PI branch
 cdr sept.16:    pi process: use v0/vth >> 1. to switch to beam-rate coeff
 cdr             ei process: started to check for H.3, H.1 options for EI processes
 cdr                         according to v0/vth >> 1. criteria
 cdr Nov. 16:    cflag(7,mstor0) rather than cflag(6,3), see comments
+
 cdr Jan. 18:    This entire routine is largely unfinished. Photon transport
 cdr             with eirene currently not possible.
 cdr             Started to prepare re-activating this option: for now: comments only
 cdr Nov. 18:    notational cleanup: OT processes --> PH processes, to avoid confusion
 cdr             with OT ("other) processes of type H.11, H.12, population ratios.
+cdr
 
 C
       FUNCTION EIRENE_FPATHPH (K,CFLAG,JCOU,NCOU)
 C
 C   CALCULATE MEAN FREE PATH AND REACTION RATES FOR PHOTON
-C   "BEAM" SPECIES IPHOT, OF VELOCITY (E0,VEL_X,Y,Z) IN DRIFTING MAXWELLIAN BACKGROUND MEDIUM
+C   "BEAM PARTICLES" , SPECIES IPHOT, OF VELOCITY (E0,VEL_X,Y,Z) IN DRIFTING MAXWELLIAN BACKGROUND MEDIUM
 C   IN CELL K
 
 C
@@ -55,7 +58,8 @@ C   INPUT:
 C   IPHOT     :  PHOTON LINE SPECIES INDEX (INPUT VIA COMMON)
 C   K         :  CURRENT GRID CELL
 C   JCOU, NCOU:  THERE WILL BE NCOU CALLS TO FPATH, FOR SAME TEST PARTICLE
-C                COORDINATES. THIS CURRENT CALL IS CALL NO. JCOU.
+C                COORDINATES WITH DIFFERENT CELL NUMBER K.
+C                THIS CURRENT CALL IS CALL NO. JCOU.
 
 C   OUTPUT: COMMON COMLCA
 C           CFLAG: FLAG FOR SAMPLING OF POST-COLLISION STATES
@@ -93,22 +97,26 @@ C
       IMPLICIT NONE
 
       REAL(DP), INTENT(OUT) :: CFLAG(7,MSTOR0)
-      INTEGER, INTENT(IN) :: K, JCOU,NCOU
+      INTEGER, INTENT(IN) :: K,JCOU,NCOU
 
       REAL(DP) :: DENIO(NPLS), ZTI(NPLS)
       REAL(DP) :: PVELQ(NPLSV)
-      REAL(DP) :: EIRENE_FPATHPH, sigmax, sigv, eirene_feplph3,
+      REAL(DP) :: EIRENE_FPATHPH,
+     .            sigmax, sigv, 
      .            DENEL, VX, VY, VZ, PVELQ0, fac,
-     .            XC,YC,ZC
-      integer :: il, kk, irph, ipph, j
+     .            XC,YC,ZC,
+cdr  functions for 'on the fly' evaluation of a&m data
+     .            EIRENE_FEPLPH3
+      INTEGER :: J, KK, irph, ipph, IL,
+     .           IPLSV
 C
 C  SET DEFAULTS: NO REACTIONS
 C
       XSTORV=0.D0
-!pb      IF (NCOU.GT.1) THEN
+!pb   IF (NCOU.GT.1) THEN
         XSTOR=0.D0
-!pb      ENDIF
-      EIRENE_FPATHPH = 1.E10_DP
+!pb   ENDIF
+      EIRENE_FPATHPH=1.D10
       SIGMAX=0.D0
 C
       IF (LGVAC(K,0)) RETURN
@@ -123,10 +131,11 @@ C
     2 CONTINUE
 C
 C  TRANSFORM TEST PARTICLE VELOCITY TO FRAME MOVING WITH BULK SPECIES IPLS
-C            PVELQ(IPLS) IS SQUARED THE PHOTON VELOCITY IN THESE FRAMES
+C            PVELQ(IPLSV) IS THE VELOCITY IN THESE REFERENCE FRAMES, SQUARED 
 C
       PVELQ0=VEL*VEL
-      DO 3 IPLS=1,NPLSV
+      DO 3 IPLS=1,NPLS
+        IPLSV=MPLSV(IPLS)
         IF (NLDRFT) THEN
           IF (INDPRO(4) == 8) THEN
             XC=0.
@@ -134,15 +143,15 @@ C
             ZC=0.
             CALL EIRENE_VECUSR (2,K,XC,YC,ZC,VX,VY,VZ,IPLS,.FALSE.)
           ELSE
-            VX=VXIN(IPLS,K)
-            VY=VYIN(IPLS,K)
-            VZ=VZIN(IPLS,K)
+            VX=VXIN(IPLSV,K)
+            VY=VYIN(IPLSV,K)
+            VZ=VZIN(IPLSV,K)
           END IF
-          PVELQ(IPLS)=(VELX*VEL-VX)**2+
-     .                (VELY*VEL-VY)**2+
-     .                (VELZ*VEL-VZ)**2
+          PVELQ(IPLSV)=(VELX*VEL-VX)**2+
+     .                 (VELY*VEL-VY)**2+
+     .                 (VELZ*VEL-VZ)**2
         ELSE
-          PVELQ(IPLS)=PVELQ0
+          PVELQ(IPLSV)=PVELQ0
         ENDIF
     3 CONTINUE
 C
