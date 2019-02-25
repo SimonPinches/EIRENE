@@ -363,7 +363,7 @@ c  RC post-collision energetics
       CALL MPI_BCAST (EELRC1,NREC*NSTORDR,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
 c  PI post-collision energetics
-      CALL MPI_BCAST (EELPI1,NRPI*NSTORDR,MPI_REAL8,
+      CALL MPI_BCAST (EELPI3,NRPI*NSTORDR*NSTORDT,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EHVPI3,NRPI*NSTORDR*NSTORDT,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)

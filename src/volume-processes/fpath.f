@@ -18,7 +18,7 @@ cdr             plus rcmin,rcmax consideration.
 cdr             unless rcmin,rcmax are set (as it is the case currently here),
 cdr             there is no need to call  --> move to in-line
 cdr 06.08.15 :  arguments added to vecusr
-cdr 13.08.15 :  clag(4,1) changed from 2 to 1 (as it was in fpatha).  Is that correct ??
+cdr 13.08.15 :  cflag(4,1) changed from 2 to 1 (as it was in fpatha).  Is that correct ??
 
 cdr dec. 15:    missing: ftabel3
 cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option
@@ -113,7 +113,7 @@ C
      .          CII, ELB,TII,V0_REL,VI_TH,VE_TH,
      .          EXPO,
 cdr  functions for 'on the fly' evaluation of a&m data
-     .          EIRENE_FEELEI1, EIRENE_FEELPI1,
+     .          EIRENE_FEELEI1, EIRENE_FEELPI3,
      .          EIRENE_FEHVEI1, EIRENE_FEHVPI3,
      .          EIRENE_FEPLCX3, EIRENE_FEPLPI3, EIRENE_FEPLEL3,
      .          EIRENE_FTABCX3, EIRENE_FTABPI3,
@@ -155,7 +155,7 @@ C
     2 CONTINUE
 C
 C  TRANSFORM TEST PARTICLE VELOCITY TO FRAME MOVING WITH BULK SPECIES IPLS
-C            PVELQ(IPLSV) IS SQUARED THE ATOM VELOCITY IN THESE REFERENCE FRAMES
+C            PVELQ(IPLSV) IS THE VELOCITY IN THESE REFERENCE FRAMES, SQUARED 
 C
       PVELQ0=VEL*VEL
       DO 3 IPLS=1,NPLS
@@ -297,10 +297,10 @@ C
 C  2.A ELECTRON ENERGY LOSS PER COLLISION (EV)
 C
         IF (NSTORDR >= NRAD) THEN
-          ESIGPI(IRPI,5)=EELPI1(IRPI,K)
+          ESIGPI(IRPI,5)=EELPI3(IRPI,K,1)
           EHEAVY        =EHVPI3(IRPI,K,1)
         ELSE
-          ESIGEI(IREI,5)=EIRENE_FEELPI1(IRPI,K)
+          ESIGPI(IRPI,5)=EIRENE_FEELPI3(IRPI,K)
           EHEAVY        =EIRENE_FEHVPI3(IRPI,K)
         ENDIF
 C
