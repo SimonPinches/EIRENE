@@ -84,7 +84,7 @@ c  check orientation of parallel motion relative to radial coordinate
             SH=SIGN(1._DP,SG)*CELDIA(NCELL)*1.D-2
             X0 = X0  +SH*PTRIX(IPOLG,MRSURF)
             Y0 = Y0  +SH*PTRIY(IPOLG,MRSURF)
-            WRITE (IUNOUT,*) 'ON SURFACE IN FOLION, NPANU = ',NPANU
+            WRITE (IUNOUT,*) 'ON SURFACE IN SRFCHK, NPANU = ',NPANU
             WRITE (IUNOUT,*) 'AND MOVING PARALLEL TO SURFACE'
             WRITE (IUNOUT,*) 'PUSH INTO SUSPECTED NEXT CELL, SH = ',SH
             NLSRFX=.FALSE.
@@ -103,7 +103,7 @@ C    .                             SG,NTEST,NCHBAR(IPOLG,MRSURF)
             IF (NTEST.EQ.0) THEN
 C  NO NEIGHBOR. PUSH BACK INTO OLD CELL.
               SH=-CELDIA(NCELL)*1.D-2
-              WRITE (IUNOUT,*) 'ON SURFACE IN FOLION, NPANU = ',NPANU
+              WRITE (IUNOUT,*) 'ON SURFACE IN SRFCHK, NPANU = ',NPANU
               WRITE (IUNOUT,*) 'PUSH BACK INTO OLD CELL: SH = ',SH
               WRITE (iunout,*) 'NRCELL = ',NRCELL
               NLSRFX=.FALSE.
@@ -126,7 +126,7 @@ C  NOTHING TO BE DONE
      .       VZ*PTETZ(IPOLG,MRSURF)
           IF (ABS(SG) .LT. EPS6) THEN
 C  TO BE WRITTEN
-            WRITE (iunout,*) 'PARALLEL TO SURFACE IN FOLION ',NPANU
+            WRITE (iunout,*) 'PARALLEL TO SURFACE IN SRFCHK ',NPANU
             WRITE (IUNOUT,*) 'CORRECTION FOR LEVGEO=5: TO BE DONE'
             CALL EIRENE_EXIT_OWN(1)
           ELSEIF (SG.GT.0) THEN
