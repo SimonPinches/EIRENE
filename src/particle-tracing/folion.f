@@ -281,8 +281,10 @@ c  at this point: V_PARALLEL, V_PERP known,
 c                 gyrophase: to be sampled, if needed
 C
  1001 CONTINUE
-      IF (IC_ION.EQ.1.AND.NLTRC.AND.TRCHST)
-     .  WRITE (iunout,*) 'TRAJECTORY ENTERS STATIC LOOP, ITYP=', ITYP
+      IF (IC_ION.EQ.1.AND.NLTRC.AND.TRCHST) THEN
+        WRITE (iunout,*) 'TRAJECTORY ENTERS STATIC LOOP, ITYP=', ITYP
+        CALL EIRENE_CHCTRC(X0,Y0,Z0,0,21)
+      ENDIF
 
 C***********************************************************************
 C  STATIC APPROXIMATION

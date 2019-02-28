@@ -170,26 +170,6 @@ C
         ENDIF
 C
   300 CONTINUE
-csw
-csw  COLLISIONS OF ATOMS WITH PHOTON BACKGROUND, OT - type
-csw
-cdr  not active
-c      IF (.FALSE.) THEN
-c      nnrot=0
-c      do iatm=1,natmi
-c         if(nrca(iatm) > 0) then
-c            do nrc=1,nrca(iatm)
-c               kk=ireaca(iatm,nrc)
-c               if(iswr(kk) == 7) then
-c                  nNROT=nNROT+1
-c               endif
-c            enddo
-c         endif
-c      enddo
-c      call PH_ALLOC_XSECTA(nnrot)
-c      END IF
-csw
-C
 C
 C   ION IMPACT COLLISIONS
 C

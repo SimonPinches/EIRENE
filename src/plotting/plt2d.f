@@ -40,7 +40,7 @@ C   2D GEOMETRY (AND TRAJECTORY) PLOT
 
       IMPLICIT NONE
 C
-      INTEGER,PARAMETER :: NTXHST=20
+      INTEGER,PARAMETER :: NTXHST=21
 
       REAL(DP), ALLOCATABLE :: XX(:), YY(:)
       REAL(DP) :: DSD(3), AFF(3,3), AFFI(3,3)
@@ -53,7 +53,7 @@ C
      .          XT2, XTIP, P, YTIP, TR, RS, EP, EL, XT, YT, XTN, YTN,
      .          DXX, DYY, A, B, XN0
       REAL(SP) :: XPS(5), YPS(5)
-      INTEGER :: ISPL(NTXHST),ICLR(2*NSTS+1),IDSH(2*NSTS+1),
+      INTEGER :: ICLR(2*NSTS+1),IDSH(2*NSTS+1),
      .           ISWC(2*NSTS+1), INON(2*NSTS+1)
       INTEGER, ALLOCATABLE :: IFARB(:,:), IDASH(:,:), ICPSPZ(:)
       INTEGER :: ICP, ISTR, IC, IC1, IC2, NCTPNT, IDUMMY, ICT, IEN,
@@ -64,14 +64,17 @@ C
      .           ITA, ITE, JJ
       LOGICAL :: PLSAV1, PLSAV2, LSTORE, LWR
       CHARACTER(20) :: TXTHST(NTXHST)
+      INTEGER :: ISPL(NTXHST)
       CHARACTER(10) :: CX, CY, CX0, CY0, CZ0
       CHARACTER(6) :: CH
 
       SAVE
       DATA ABSMAX,ORDMAX/21.,21./
       DATA XNULL,YNULL/9.,4./,XWN,YWN/0.,0./
-      DATA IWRIT/0/,ISPL/2,101,103,205,100,206,208,104,105,
-     .                   106,107,108,200,201,202,204,207,4,104,105/
+      DATA IWRIT/0/,
+     .      ISPL/  2,101,103,205,100,206,208,104,105,106,
+     .           107,108,200,201,202,204,207,4  ,104,105,
+     .           102/
       DATA TXTHST
      .           /'LOCATE(1)           ',
      .            'ELECTR. IMPACT(2)   ',
@@ -93,7 +96,8 @@ C
      .            'ERROR DETECTED      ',     ! SYMBOL FOR PARTICLE TRACING ERROR.
 c  next symbols/text: only for printout, not on plot.
      .            'INT.GRID SURFACE(19)',
-     .            'DIFFUSION STEP(20)  '/
+     .            'DIFFUSION STEP(20)  ',
+     .            'STATIC LOOP(21)     '/
 C
 C  SYMBOL FOR PARTICLE TRACING ERROR, CURRENTLY NO. 18
       ISYM_ERR=18   !  SYMBOL NO. 18 IS CURRENTLY HARD-WIRED FOR TRACING ERRORS, SUBR., FOLNEUT, FOLION, ETC...
@@ -1824,8 +1828,9 @@ C     following ENTRY is for reinitialization of EIRENE (DMH)
       XWN = 0.
       YWN =0.
       IWRIT = 0
-      ISPL = (/2,101,103,205,100,206,208,104,105,
-     .         106,107,108,200,201,202,204,207,4,104,105/)
+      ISPL = (/  2,101,103,205,100,206,208,104,105,106,
+     .         107,108,200,201,202,204,207,4  ,104,105,
+     .         102/) 
 csw 20oct08
       if(allocated(icpspz)) deallocate(icpspz)
       if(allocated(idash)) deallocate(idash)
