@@ -166,7 +166,7 @@ c  rescale parameter p2  (currently only by 1e-8 for density):  pp2
           rrc2min=rc2min - dsub
           rrc2max=rc2max - dsub
         endif
-cdr     write (6,*) 'other rate '
+cdr     write (iunout,*) 'other rate '
 
         call EIRENE_dbl_poly
      .       (reacdat(ir)%oth%poly%dblpol,p1,pp2,orate,dum,

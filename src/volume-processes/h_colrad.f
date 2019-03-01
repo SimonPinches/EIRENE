@@ -506,8 +506,8 @@ c                                  electron energy-weighted rate, both: into P s
 c  the high temp behaviour (above about 500 - 1000 eV) is spurious, and gets very wrong for ebeta
 c         if (i.eq.1) then
 c           ratio=ebeta(i)/beta(i)
-c           write (6,*) 'calc: temp, i, B, EB, RATIO ',
-c    .                 temp, I, BETA(i),EBETA(I), RATIO
+c           write (iunout,*) 'calc: temp, i, B, EB, RATIO ',
+c    .                       temp, I, BETA(i),EBETA(I), RATIO
 c         endif
 
 C  for high Te use the d ln(K)/d ln(T) from the old Claudine (Mahn-Welge) code.
@@ -1464,8 +1464,8 @@ ctt   E_ALPCR_TT=E_ALPCR_T+ALPCR *DEALP
 c  e_alpcr_TT:  test quantity, should be equal to E_alpcr
 c  e_alpcr_T :  this would be the shifted (radiation alone part) e.g. fitted in amjuel format
 
-c     WRITE (6,*) 'DE,TE, E_ALPCR, E_ALPCR_TT, E_ALPCR_T , alpcr'
-c     WRITE (6,*) log10(DENSEL),TEMP,E_ALPCR,E_ALPCR_TT,E_alpcr_T,alpcr
+c     WRITE (IUNOUT,*) 'DE,TE, E_ALPCR, E_ALPCR_TT, E_ALPCR_T , alpcr'
+c     WRITE (IUNOUT,*) log10(DENSEL),TEMP,E_ALPCR,E_ALPCR_TT,E_alpcr_T,alpcr
 
 C  contribution for "ordinary" coupling to H+ state done
 

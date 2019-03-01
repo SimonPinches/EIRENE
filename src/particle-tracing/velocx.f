@@ -251,7 +251,7 @@ c...........................................................
 cdr  test output only
 c       elb=exp(elab)
 c       if (elb.le.0.1) then
-c         write (6,*) 'elb velocx ',elab,elb
+c         write (iunout,*) 'elb velocx ',elab,elb
 c       endif
 cdr
 c.....................................................................
