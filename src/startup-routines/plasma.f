@@ -139,11 +139,11 @@ cdr one profile iplsti set at a time
           TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
         case (2)
           CALL EIRENE_PROFE (HELP,TI0(IPLSTI),TI1(IPLSTI),TI2(IPLSTI),
-     .                                 TI4(IPLSTI),TI5(IPLSTI),TVAC)
+     .                            TI4(IPLSTI),TI5(IPLSTI),TVAC)
           TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
         case (3)
           CALL EIRENE_PROFS (HELP,TI0(IPLSTI),TI1(IPLSTI),
-     .                     TI5(IPLSTI),TVAC)
+     .                            TI5(IPLSTI),TVAC)
           TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
         case (4)
 c  INDPRO=4:  read tally from stream TIO(IPLSTI)

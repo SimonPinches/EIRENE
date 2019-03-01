@@ -771,7 +771,7 @@ C  SIDE 3-1-4
             IF ((NTBAR(IS,ITET) == 0) .AND. (INMTIT(IS,ITET) == 0)) THEN
               IC=IC+1
               WRITE (iunout,*) ' TETRAHEDRON WITH NO NEIGHBORS AND NO ',
-     .                    'REFLECTION MODEL FOUND '
+     .                    'REFLECTION MODEL FOUND'
               WRITE (iunout,*) ' ITET = ',ITET,' ISIDE = ',IS
               write (iunout,*) nteck(itside(1,is),itet),
      .                    nteck(itside(2,is),itet),
@@ -780,7 +780,7 @@ C  SIDE 3-1-4
             IF (NTBAR(IS,ITET) < 0) THEN
               IF (SUM(NTBAR(1:4,ITET)) > -4) THEN
                 WRITE (iunout,*)
-     .            ' TETRAHEDRON WITH NEIGHBOR -1 DETECTED '
+     .            ' TETRAHEDRON WITH NEIGHBOR -1 DETECTED'
                 WRITE (iunout,*) ' ITET = ',ITET,' ISIDE = ',IS
                 WRITE (iunout,*) ' NTBAR(ITET) = ',NTBAR(1:4,ITET)
                 IC=IC+1
@@ -796,7 +796,7 @@ C  SIDE 3-1-4
 c  transparent surfaces, that switch into additional cells, are legal.
 c  all other transparent cell faces must either have a neighbor, or a surface boundary condition.
                 WRITE (iunout,*) 'SIDE',IS,' OF TETRAHEDRON ',ITET,
-     .              ' IS TRANSPARENT BUT HAS NO NEIGHBOR '
+     .              ' IS TRANSPARENT BUT HAS NO NEIGHBOR'
                 LERROR = .TRUE.
               END IF
             END IF

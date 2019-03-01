@@ -185,7 +185,7 @@ C>   processes to one stratum.
             TIMPE(ISTRA)=MAX(delt-TMEAN,0._DP)/TMEAN
             NPRS_OPT=NPRS_OPT+int(TIMPE(ISTRA))
           ENDDO
-          WRITE (iunout,*) ' ISTRA, TIMPE '
+          WRITE (iunout,*) ' ISTRA, TIMPE'
           DO ISTRA=1,NSTRA
             WRITE (iunout,*) ISTRA,TIMPE(ISTRA)
           ENDDO
@@ -200,7 +200,7 @@ C>   processes to one stratum.
             NPESTR(ISTRA)=NPESTR(ISTRA)+int(TIMPE(ISTRA)*FACP)
             NPRS_FREE=NPRS_FREE-int(TIMPE(ISTRA)*FACP)
           ENDDO
-          WRITE (iunout,*) ' NPESTR '
+          WRITE (iunout,*) ' NPESTR'
           WRITE (iunout,'(12I6)') (NPESTR(ISTRA),ISTRA=1,NSTRA)
           WRITE (iunout,*) ' NPRS_FREE ',NPRS_FREE
 
@@ -268,8 +268,8 @@ csw
             IPE=IPE+1
           ENDDO
         ENDDO
-        WRITE (iunout,*) 'pedist:  proc. IPE works on stratum ISTRA '
-        WRITE (iunout,*) ' IPE, ISTRA '
+        WRITE (iunout,*) 'pedist:  proc. IPE works on stratum ISTRA'
+        WRITE (iunout,*) ' IPE, ISTRA'
         WRITE (iunout,'(12I6)') (I,NSTRPE(I),I=0,NPRS-1)
 
 ! for each stratum define the number of the first processor NPESTA
@@ -282,8 +282,8 @@ csw
         DO ISTRA=2,NSTRA
           NPESTA(ISTRA)=NPESTA(ISTRA-1)+NPESTR(ISTRA-1)
         ENDDO
-        WRITE (iunout,*) ' MASTER PROCESSOR FOR STRATUM '
-        WRITE (iunout,*) ' ISTRA, NPESTA '
+        WRITE (iunout,*) ' MASTER PROCESSOR FOR STRATUM'
+        WRITE (iunout,*) ' ISTRA, NPESTA'
         WRITE (iunout,'(12I6)') (I,NPESTA(I),I=1,NSTRA)
 
         XTIM(1:NSTRA) = XX1

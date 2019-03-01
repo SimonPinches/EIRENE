@@ -849,7 +849,7 @@ C
               end do
             endif
           else
-            write(*,*) 'Setting IGJUM3 to 0 for ',NSURF,NLIMI
+            write(iunout,*) 'Setting IGJUM3 to 0 for ',NSURF,NLIMI
             if (nlimpb.ge.nlimps) then
               do I=1,NLIMI
                 do J=1,NOPTIM

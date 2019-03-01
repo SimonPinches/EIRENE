@@ -846,36 +846,36 @@ C
 C-----------------------------------------------------------------------
 C
   990 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTPI: EXIT CALLED '
+      WRITE (iunout,*) 'ERROR IN XSTPI: EXIT CALLED'
       WRITE (iunout,*) 'INVALID SPECIES INDEX FOR PI ',IRPI
       CALL EIRENE_EXIT_OWN(1)
   991 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTPI: EXIT CALLED '
-      WRITE (iunout,*) 'CHARGE CONSERVATION VIOLATED '
+      WRITE (iunout,*) 'ERROR IN XSTPI: EXIT CALLED'
+      WRITE (iunout,*) 'CHARGE CONSERVATION VIOLATED'
       WRITE (iunout,*) 'IRPI, TEST SPECIES, BULK SPECIES ',IRPI,
      .                  TEXTS(ISP),TEXTS(NSPAMI+IPL)
       CALL EIRENE_EXIT_OWN(1)
   992 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTPI: EXIT CALLED '
+      WRITE (iunout,*) 'ERROR IN XSTPI: EXIT CALLED'
       WRITE (iunout,*)
      .  'MASS NUMBERS OF INTERACTING PARTICLES INCONSISTENT'
       WRITE (iunout,*) 'KK ',KK
       CALL EIRENE_EXIT_OWN(1)
   993 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTPI: EXIT CALLED '
+      WRITE (iunout,*) 'ERROR IN XSTPI: EXIT CALLED'
       WRITE (iunout,*)
      .  'EBULK_ION .LE.0, BUT MONOENERGETIC DISTRIBUTION?'
       WRITE (iunout,*) 'CHECK ENERGY FLAG ISCDEA'
       WRITE (iunout,*) 'KK,ISCDEA ',KK,ISCDEA
       CALL EIRENE_EXIT_OWN(1)
   994 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTPI: EXIT CALLED '
+      WRITE (iunout,*) 'ERROR IN XSTPI: EXIT CALLED'
       WRITE (iunout,*)
      .  'SPECIES INDEX OF SECONDARY PARTICLE OUT OF RANGE'
       WRITE (iunout,*) 'KK ',KK
       CALL EIRENE_EXIT_OWN(1)
   995 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTPI: EXIT CALLED '
+      WRITE (iunout,*) 'ERROR IN XSTPI: EXIT CALLED'
       WRITE (iunout,*)
      .  'STORAGE SAVING MODE NOT READY; KK, IRPI'
       WRITE (iunout,*) 'KK, IRPI ',KK,IRPI

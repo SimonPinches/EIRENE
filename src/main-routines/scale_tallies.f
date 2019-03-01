@@ -580,11 +580,11 @@ C
 
 C
         CALL EIRENE_LEER(1)
-        WRITE (iunout,*) ('RESCALING OF TRACKLENGTH TALLIES COMPLETED')
-        WRITE (iunout,*) ('RESCALING FACTORS:                        ')
+        WRITE (iunout,*) 'RESCALING OF TRACKLENGTH TALLIES COMPLETED'
+        WRITE (iunout,*) 'RESCALING FACTORS:'
         CALL EIRENE_MASR4 ('FATM,FMOL,FION,FPHOT            ',
      .               FATM, FMOL, FION, FPHOT)
-!       CALL MASR4 ('FATM2,FMOL2,FION2,FPHOT2        ',
+!       CALL EIRENE_MASR4 ('FATM2,FMOL2,FION2,FPHOT2        ',
 !    .               FATM2, FMOL2, FION2, FPHOT2)
         CALL EIRENE_LEER(2)
 C

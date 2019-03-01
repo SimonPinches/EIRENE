@@ -240,7 +240,7 @@ C
       ENDIF
 C
       IF (NLVOL(ISTRA).AND.NLPLS(ISTRA).AND.NEMOD1.EQ.1) THEN
-        WRITE (iunout,*) 'WARNING: NEMOD1=1: NEW MEANING: '
+        WRITE (iunout,*) 'WARNING: NEMOD1=1: NEW MEANING:'
         WRITE (iunout,*) '                   MONOENERGETIC SOURCE'
       ENDIF
       IF (TRCSOU) THEN
@@ -422,8 +422,8 @@ C Volume source
             ETOTPH(ISTRA)=ETOTPH(ISTRA)+E0*WEIGHT
             LOGPHOT(IPHOT,ISTRA)=.TRUE.
           CASE DEFAULT
-            WRITE (iunout,*) 'ERROR IN LOCATE, CALL EIRENE_EXIT '
-            WRITE (iunout,*) 'INVALID ITYP ON CENSUS     '
+            WRITE (iunout,*) 'ERROR IN LOCATE, CALL EIRENE_EXIT'
+            WRITE (iunout,*) 'INVALID ITYP ON CENSUS'
             CALL EIRENE_EXIT_OWN(1)
         END SELECT
 
@@ -1716,7 +1716,7 @@ C
 C
             IF (NLTRC.AND.TRCHST) THEN
               IF (LGPART) THEN
-                WRITE (iunout,*) 'AFTER SUBR. REFLEC: '
+                WRITE (iunout,*) 'AFTER SUBR. REFLEC:'
                 WRITE (iunout,'(1X,A8)') TEXTS(ISPZ)
                 CALL EIRENE_MASR6 (
      .             'VELX,VELY,VELZ,VEL,E0,WEIGHT                    ',
@@ -1776,8 +1776,8 @@ C  FIND TYPE AND SPECIES OF NEW TEST PARTICLE FROM RECOMB. PROCESS: IRRC
             ISTEP=SORIND(IVOLM,ISTRA)
             IF (ISTEP.EQ.0) THEN
               IF (SORLIM(IVOLM,ISTRA).LE.0._DP) THEN
-                WRITE (iunout,*) 'SPECIES DISTRIBUTION AFTER SAMUSR ? '
-                WRITE (iunout,*) 'EXIT FROM LOCATE '
+                WRITE (iunout,*) 'SPECIES DISTRIBUTION AFTER SAMUSR ?'
+                WRITE (iunout,*) 'EXIT FROM LOCATE'
                 CALL EIRENE_EXIT_OWN(1)
               ENDIF
 C  FIND RECOMBINATION PROCESS IRRC (AMONGST THOSE AVAILABLE FOR IPLS)
@@ -1962,7 +1962,7 @@ C  CORRECT FOR DOPPLER SHIFT: XNU = XNU_0*(1+N*VEL_B/CLIGHT)
 c
 c  put spectrum no. 1, and use energy range from input block 10F
 c             if (nadspc < 1) then
-c               write (iunout,*) 'locate: no storage for spectr. no. 1  '
+c               write (iunout,*) 'locate: no storage for spectr. no. 1'
 c               call eirene_exit_own(1)
 c             endif
 c             msurf=estiml(1)%ispcsrf
@@ -1987,7 +1987,7 @@ c           IF (NLTRC) CALL CHCTRC(X0,Y0,Z0,0,1)
 c  parts for plotting emission spectrum removed from here --> development branch
 
             IF (NLTRC.AND.TRCHST) THEN
-              WRITE (iunout,*) 'AFTER RECOMBINATION: '
+              WRITE (iunout,*) 'AFTER RECOMBINATION:'
               CALL EIRENE_MASJ6
      .             ('ITYP,IPHOT,IATM,IMOL,IION,IPLS                  ',
      .               ITYP,IPHOT,IATM,IMOL,IION,IPLS)
@@ -2120,7 +2120,7 @@ C  SET NRCELL FROM MRSURF AND SG
           ELSEIF (SG.GT.0) THEN
             NRCELL=MRSURF
           ELSE
-            WRITE (iunout,*) 'ERROR EXIT IN LOCATE, SG=0 '
+            WRITE (iunout,*) 'ERROR EXIT IN LOCATE, SG=0'
             CALL EIRENE_EXIT_OWN(1)
           ENDIF
 
@@ -2137,7 +2137,7 @@ C  POLOIDAL CELL NO. MAY BE WRONG
         ELSEIF (SG.GT.0) THEN
           NPCELL=MPSURF
         ELSE
-          WRITE (iunout,*) 'ERROR EXIT IN LOCATE, SG=0 '
+          WRITE (iunout,*) 'ERROR EXIT IN LOCATE, SG=0'
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
         IPOLG=NPCELL
@@ -2176,18 +2176,18 @@ C
       WRITE (iunout,*)
      .  'THUS NO OUTER NORMAL CAN BE DEFINED. EXIT CALLED'
       WRITE (iunout,*)
-     .  'SET EITHER ILSIDE NE 0 OR USE EIRMOD_SORIFL FLAG '
-      WRITE (iunout,*) 'MSURF,ISTSF,NRCELL,NPCELL,NTCELL '
+     .  'SET EITHER ILSIDE NE 0 OR USE EIRMOD_SORIFL FLAG'
+      WRITE (iunout,*) 'MSURF,ISTSF,NRCELL,NPCELL,NTCELL'
       WRITE (iunout,*)  MSURF,ITRSF,NRCELL,NPCELL,NTCELL
       CALL EIRENE_EXIT_OWN(1)
   991 CONTINUE
-      WRITE (iunout,*) 'ERROR IN LOCATE: INCONSISTENT INPUT FLAGS   '
+      WRITE (iunout,*) 'ERROR IN LOCATE: INCONSISTENT INPUT FLAGS'
       WRITE (iunout,*) 'MSURF = ',MSURF
       CALL EIRENE_EXIT_OWN(1)
   992 CONTINUE
-      WRITE (iunout,*) 'ERROR IN LOCATE: RADON-NIKODYM CONDITION    '
+      WRITE (iunout,*) 'ERROR IN LOCATE: RADON-NIKODYM CONDITION'
       WRITE (iunout,*) 'VIOLATED FOR NON-ANALOG SOURCE SPECIES SAMPLING'
-      WRITE (iunout,*) 'CHECK DATM,DMOL,DION OR DPLS ARRAYS (BLOCK) 6 '
+      WRITE (iunout,*) 'CHECK DATM,DMOL,DION OR DPLS ARRAYS (BLOCK) 6'
       CALL EIRENE_EXIT_OWN(1)
   995 CONTINUE
       WRITE (iunout,*) 'PARTICLE LAUNCHED OUTSIDE THE COMPUTATIONAL BOX'

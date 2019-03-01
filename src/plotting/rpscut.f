@@ -377,7 +377,7 @@
 
       if (abs(detam) < eps10) then
         write (iunout,*) ' problem in berechne_koordinaten '
-        write (iunout,*) 
+        write (iunout,*)
      .    ' gls zur koordinatentransformation nicht loesbar'
         call EIRENE_exit_own (1)
       end if

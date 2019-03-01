@@ -260,7 +260,7 @@ C         JEREACX(IRCX) = 9
 C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
           write (iunout,*) 'storage save mode not available yet for CX'
           write (iunout,*) 'in case modc=3  (n,T-dependence).'
-          write (iunout,*) 'exit called '
+          write (iunout,*) 'exit called'
           call eirene_exit_own(1)
         ENDIF
         MODCOL(3,2,IRCX)=1 !  indicate: rate coefficient as fct. of local plasma conditions only
@@ -525,17 +525,17 @@ C
 C-----------------------------------------------------------------------
 C
   990 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED '
+      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED'
       WRITE (iunout,*) 'INVALID SPECIES INDEX FOR CX ',IRCX
       CALL EIRENE_EXIT_OWN(1)
   991 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED '
-      WRITE (iunout,*) 'CHARGE CONSERVATION VIOLATED '
+      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED'
+      WRITE (iunout,*) 'CHARGE CONSERVATION VIOLATED'
       WRITE (iunout,*) 'IRCX, TEST-SPECIES, BULK SPECIES ',IRCX,
      .                  TEXTS(ISP),TEXTS(NSPAMI+IPL)
       CALL EIRENE_EXIT_OWN(1)
   992 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED '
+      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED'
       WRITE (iunout,*)
      .  'INTERACTING PARTICLES INCONSISTENT (MASS OR CHARGE)'
       WRITE (iunout,*) 'KK ',KK
@@ -543,24 +543,23 @@ C
      .                  TEXTS(ISP),TEXTS(NSPAMI+IPL)
       CALL EIRENE_EXIT_OWN(1)
   993 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED '
+      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED'
       WRITE (iunout,*)
      .  'EBULK_ION .LE.0, BUT MONOENERGETIC DISTRIBUTION?'
       WRITE (iunout,*) 'CHECK ENERGY FLAG ISCDEA'
       WRITE (iunout,*) 'KK,ISCDEA ',KK,ISCDEA
       CALL EIRENE_EXIT_OWN(1)
   994 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED '
+      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED'
       WRITE (iunout,*)
      .  'SPECIES INDEX OF SECONDARY PARTICLE OUT OF RANGE'
       WRITE (iunout,*) 'KK ',KK
       CALL EIRENE_EXIT_OWN(1)
   996 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED '
+      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED'
       WRITE (iunout,*) 'NO CROSS-SECTION AVAILABLE FOR NON-DEFAULT CX'
       WRITE (iunout,*) 'KK ',KK
-      WRITE (iunout,*)
-     .  'EITHER PROVIDE CROSS-SECTION OR USE DIFFERENT '
+      WRITE (iunout,*) 'EITHER PROVIDE CROSS-SECTION OR USE DIFFERENT'
       WRITE (iunout,*) 'POST-COLLISION SAMPLING FLAG ISCDEA'
       CALL EIRENE_EXIT_OWN(1)
       END

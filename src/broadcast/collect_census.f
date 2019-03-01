@@ -195,7 +195,7 @@ cdr where currently these numbers are hard-coded.
 !                                    sample exactly nprnl scores from the full set of itotal scores
         if (my_pe == 0) then
           write (iunout,*)
-     .           ' There is not enough storage for collected census '
+     .           ' There is not enough storage for collected census'
           write (iunout,*) ' bootstrapping done in "collect_census"'
           write (iunout,*) ' itotal, nprnl = ',itotal,nprnl
         endif
@@ -225,8 +225,8 @@ cdr rpselect(0) war schon gesetzt.
             rpselect(ipe) = rpselect(ipe-1) + rpselect(ipe)
           end do
 
-          write (iunout,*) 'total cumulated flux on census (AMP) '
-          write (iunout,*) 'rpselect '
+          write (iunout,*) 'total cumulated flux on census (AMP)'
+          write (iunout,*) 'rpselect'
           write (iunout,'(i6,es12.4)') (ipe,rpselect(ipe),ipe=0,nprs-1)
 
 ! now find random numbers to select NPRNL particles from the total of itotal scores
@@ -279,7 +279,7 @@ c                           restricted to this processor iu
 
 
           write (iunout,*) 'number of particles to be resampled ',
-     .                     'per processor '
+     .                     'per processor'
           do ipe=0,nprs-1
             write (iunout,'(2i10)') ipe, icopro(ipe)
           enddo
@@ -409,7 +409,7 @@ C required to keep the changed weight:
         end do
 
 cdr diagnose resampling procedure:
-        write (iunout,*) ' resampled atomic flux from my_pe '
+        write (iunout,*) ' resampled atomic flux from my_pe'
         write (iunout,*) ' total, sumrpw  ', sumrpw
         call eirene_masr4('at. flx.: addph, adda, addm, addi',
      .                     addph, adda, addm, addi)
@@ -455,7 +455,7 @@ c  combine all the resampled census from all processors into a single one: rpart
      .                   0,MPI_COMM_WORLD,ier)
 
 !pb        if (my_pe == 0) then
-!pb           write (iunout,*) ' rpart collected from all '
+!pb           write (iunout,*) ' rpart collected from all'
 !pb           do i=1, nprnl
 !pb             write (iunout,'(i6,4es12.4)') i,rpart(1:3,i),weight
 !              write (iunout,*) ' i, my_pe ',i,my_pe

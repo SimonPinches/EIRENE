@@ -284,7 +284,7 @@ C
 C  READ DATA FOR STANDARD MESH, 200---299
 
 
-      WRITE (iunout,*) '*** 2. DATA FOR VOXEL GRID GENERATION '
+      WRITE (iunout,*) '*** 2. DATA FOR VOXEL GRID GENERATION'
 
 C
       DO WHILE (ZEILE(1:1) .EQ. '*')
@@ -572,7 +572,7 @@ C  FIND START OF NEXT INPUT BLOCK: 3B
 C
 C  READ DATA FOR ADDITIONAL SURFACES 350--399
 C
-      WRITE (iunout,*) '*** 3B. DATA FOR ADDITIONAL SURFACES           '
+      WRITE (iunout,*) '*** 3B. DATA FOR ADDITIONAL SURFACES'
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:1) .EQ. '*')
         READ (IUNIN,'(A72)') ZEILE
@@ -976,7 +976,7 @@ cdr these next 2 lines for V_IN(ipls)
         WRITE (IUNOUT,*) 'DUE TO INDPRO(4) > 10'  !dr above, for Ti, we say:  < 0
         IF (LMULVI) THEN
           WRITE (IUNOUT,*) 'DIMENSION OF V_IN ARRAYS OVERWRITTEN'
-          WRITE (IUNOUT,*) 'BECAUSE BGK REACTIONS ARE  PRESENT'
+          WRITE (IUNOUT,*) 'BECAUSE BGK REACTIONS ARE PRESENT'
           NPLSV = NPLS
         END IF
         WRITE (IUNOUT,*) ' NPLSV = ',NPLSV
