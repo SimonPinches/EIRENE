@@ -371,7 +371,7 @@ C   PMASS FOR CROSS-SECTION RELATIVE VELOCITY
 C  MINIMUM PROJECTILE ENERGY: 0.1 EV
 cdr         if (LOG(PVELQ(IPLSV))+EEFCX(IRCX).le.-2.3) then
 cdr           elb=LOG(PVELQ(IPLSV))+EEFCX(IRCX)
-cdr           write (6,*) 'elb in fpath-1 ',elb, exp(elb)
+cdr           write (iunout,*) 'elb in fpath-1 ',elb, exp(elb)
 cdr         endif
 C   TMASS FOR RATE COEFF. BEAM VELOCITY
             ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFCX(IRCX))
@@ -444,7 +444,7 @@ C  ION SAMPLING FROM WEIGHTED DRIFTING MAXWELLIAN (E.G., BY REJECTION)
 C  MINIMUM PROJECTILE ENERGY: 0.1 EV
 cdr         if (LOG(PVELQ(IPLSV))+EEFCX(IRCX).le.-2.3) then
 cdr           elb=LOG(PVELQ(IPLSV))+EEFCX(IRCX)
-cdr           write (6,*) 'elb in fpath-2 ',elb, exp(elb)
+cdr           write (iunout,*) 'elb in fpath-2 ',elb, exp(elb)
 cdr         endif
             ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFCX(IRCX))
             IF (NSTORDR >= NRAD) THEN

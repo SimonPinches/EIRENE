@@ -1512,7 +1512,7 @@ C  NJUMP=3:  INTERNAL GRID SURFACE, STOP AND GO.
       ENDIF
 #endif
 
-c     if (nltrc.and.tim.ne.zt) write (6,*) 'error, npanu ',npanu,tim,zt
+c     if (nltrc.and.tim.ne.zt) write (iunout,*) 'error, npanu ',npanu,tim,zt
 
       CALL EIRENE_TIMUSR(NRCELL,X0,Y0,Z0,VELX,VELY,VELZ,NJUMP,
      .                   NEWCEL,TIM,ICOS,IERR,NPANU,NLSRFX)

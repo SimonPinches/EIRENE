@@ -9,7 +9,7 @@ C*DK MARPRM
       INTEGER, INTENT(IN) :: NA, MA, NB, MB
       INTEGER, INTENT(INOUT) :: IERR
       IERR=IERR+1
-      WRITE (iunout,*) 'PARAMETER ERROR DETECTED '
+      WRITE (iunout,*) 'PARAMETER ERROR DETECTED'
       WRITE (iunout,*) A(1:NA),' MUST BE >= ',B(1:NB)
       WRITE (iunout,*) A(1:NA),' = ',MA
       WRITE (iunout,*) B(1:NB),' = ',MB

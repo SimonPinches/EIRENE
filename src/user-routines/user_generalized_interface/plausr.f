@@ -323,22 +323,22 @@ c        enddo isrfs
          END IF
 
          CALL EIRENE_LEER(1)
-         WRITE (6,*) 'TARGET DATA: TARGET NO. ITARG=ISTRA= ',ISTRA
-         WRITE (6,*)
+         WRITE (IUNOUT,*) 'TARGET DATA: TARGET NO. ITARG=ISTRA= ',ISTRA
+         WRITE (IUNOUT,*)
      .' IG,  ARC,     P-FLUX,   E-FLUX,     TE,       TI,    SHEATH/TE'
          ITARG = ISTRA
          DO 6100 IG=1,KSTEP(ISTEP)
-           WRITE (6,'(1X,I3,1P,6E11.3)')
+           WRITE (IUNOUT,'(1X,I3,1P,6E11.3)')
      .             IG,RRSTEP(ITARG,IG),FLSTEP(0,ITARG,IG),
      .             ELSTEP(0,ITARG,IG),
      .             TESTEP(ITARG,IG),TISTEP(1,ITARG,IG),
      .             SHSTEP(ITARG,IG)
  6100    CONTINUE
-         WRITE (6,'(1X,I3,1P,1E11.3)') KSTEP(ISTEP)+1,
-     .                                 RRSTEP(ITARG,KSTEP(ISTEP)+1)
+         WRITE (IUNOUT,'(1X,I3,1P,1E11.3)') KSTEP(ISTEP)+1,
+     .                                      RRSTEP(ITARG,KSTEP(ISTEP)+1)
 C
-         WRITE (6,*) 'PARTICLE FLUX(IPLS), IPLS=1,NPLSI '
-         WRITE (6,'(1X,1P,6E12.4)') (FLTOT(ISP,ITARG),ISP=1,NPLSI)
+         WRITE (IUNOUT,*) 'PARTICLE FLUX(IPLS), IPLS=1,NPLSI '
+         WRITE (IUNOUT,'(1X,1P,6E12.4)') (FLTOT(ISP,ITARG),ISP=1,NPLSI)
          CALL EIRENE_LEER(2)
 C
 

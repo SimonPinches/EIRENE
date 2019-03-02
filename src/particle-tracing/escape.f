@@ -623,7 +623,7 @@ C
 C
 C   .............................
 C   .                           .
-C   .  NON TRANSPARENT SURFACE  .
+C   .  NON-TRANSPARENT SURFACE  .
 C   .............................
 C
       XGENER=0.

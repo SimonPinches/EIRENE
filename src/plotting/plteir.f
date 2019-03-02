@@ -161,37 +161,49 @@ C  NOTHING TO BE DONE
 
    10 CONTINUE
 C
-      IF (ISTRA.EQ.0)
-     .HEAD='SUM OVER STRATA
-     .          '
+      IF (ISTRA.EQ.0) HEAD=
+     . 'SUM OVER STRATA                                             '//
+     . '          '
       IF (ISTRA.NE.0) THEN
-      HEAD='STRATUM NO.
-     .          '
-      WRITE (HEAD(13:15),'(I3)') ISTRA
+        HEAD=
+     .   'STRATUM NO.                                               '//
+     .   '            '
+        WRITE (HEAD(13:15),'(I3)') ISTRA
       ENDIF
 C
-      HEAD0='VOLUME-AVERAGED BACKGROUND TALLY, INPUT
-     .           '
-      HEAD1='DEFAULT VOLUME-AVERAGED TALLY, TRACKLENGTH-ESTIMATED
-     .           '
-      HEAD2='ADDITIONAL VOLUME-AVERAGED TALLY, TRACKLENGTH-ESTIMATED
-     .           '
-      HEAD3='ADDITIONAL VOLUME-AVERAGED TALLY, COLLISION-ESTIMATED
-     .           '
-      HEAD4='VOLUME-AVERAGED TALLY, SNAPSHOT-ESTIMATED
-     .           '
-      HEAD5='VOLUME-AVERAGED TALLY, FOR COUPLING TO PLASMA CODE
-     .           '
-      HEAD6='BGK TALLY
-     .           '
-      HEAD7='ALGEBRAIC FUNCTION OF VOLUME-AVERAGED TALLIES
-     .           '
-      HEAD8='RELATIVE STANDARD DEVIATION
-     .           '
-      HEAD9='SPECTRUM (VS. ENERGY, EV)
-     .           '
-      HEAD10='SPECTRUM (VS. WAVELENGTH, NM)
-     .            '
+      HEAD0=
+     . 'VOLUME-AVERAGED BACKGROUND TALLY, INPUT                    '//
+     . '           '
+      HEAD1=
+     . 'DEFAULT VOLUME-AVERAGED TALLY, TRACKLENGTH-ESTIMATED       '//
+     . '           '
+      HEAD2=
+     . 'ADDITIONAL VOLUME-AVERAGED TALLY, TRACKLENGTH-ESTIMATED    '//
+     . '           '
+      HEAD3=
+     . 'ADDITIONAL VOLUME-AVERAGED TALLY, COLLISION-ESTIMATED      '//
+     . '           '
+      HEAD4=
+     . 'VOLUME-AVERAGED TALLY, SNAPSHOT-ESTIMATED                  '//
+     . '           '
+      HEAD5=
+     . 'VOLUME-AVERAGED TALLY, FOR COUPLING TO PLASMA CODE         '//
+     . '           '
+      HEAD6=
+     . 'BGK TALLY                                                  '//
+     . '           '
+      HEAD7=
+     . 'ALGEBRAIC FUNCTION OF VOLUME-AVERAGED TALLIES              '//
+     . '           '
+      HEAD8=
+     . 'RELATIVE STANDARD DEVIATION                                '//
+     . '           '
+      HEAD9=
+     . 'SPECTRUM (VS. ENERGY, EV)                                  '//
+     . '           '
+      HEAD10=
+     . 'SPECTRUM (VS. WAVELENGTH, NM)                              '//
+     . '           '
 C
       IALG=0
 C

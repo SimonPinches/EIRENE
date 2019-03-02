@@ -314,11 +314,11 @@ C
           ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
           DO 11 IIRC=1,NPRCI(IPLS)
             IRRC=LGPRC(IPLS,IIRC)
-            CALL EIRENE_MASAJR('IPLS,IRRC, SREC         ',
+            CALL EIRENE_MASAJR('IPLS,IRRC,SREC          ',
      .                   TEXTS(ISPZ),IRRC,-SREC(IPLS,IRRC))
    11     CONTINUE
           IF (NPRCI(IPLS).GT.1) THEN
-            CALL EIRENE_MASAJR('IPLS,TOT., SREC(IPLS,0) ',
+            CALL EIRENE_MASAJR('IPLS,TOT.,SREC(IPLS,0)  ',
      .                   TEXTS(ISPZ),0   ,-SREC(IPLS,0))
           ENDIF
    10   CONTINUE
@@ -416,7 +416,7 @@ C  ACCOUNT FOR INGRDA(IVOLSI,ISTRA,...), INGRDE(IVOLSI,ISTRA,...)
                 WRITE (iunout,*) 'WARNING FROM SAMVL0, ISTRA= ',ISTRA
                 WRITE (iunout,*)
      .            'NEW INPUT FOR INGRDA(.,.,1),INGRDE(.,.,1)'
-                WRITE (iunout,*) 'AUTOMATIC CORRECTION CARRIED OUT '
+                WRITE (iunout,*) 'AUTOMATIC CORRECTION CARRIED OUT'
                 INGRDA(IVL,I,1)=1
                 INGRDE(IVL,I,1)=MAX0(1,NR1ST)
                 CALL EIRENE_LEER(1)
@@ -428,7 +428,7 @@ C  ACCOUNT FOR INGRDA(IVOLSI,ISTRA,...), INGRDE(IVOLSI,ISTRA,...)
                 WRITE (iunout,*) 'WARNING FROM SAMVL0, ISTRA= ',ISTRA
                 WRITE (iunout,*)
      .            'NEW INPUT FOR INGRDA(.,.,2),INGRDE(.,.,2)'
-                WRITE (iunout,*) 'AUTOMATIC CORRECTION CARRIED OUT '
+                WRITE (iunout,*) 'AUTOMATIC CORRECTION CARRIED OUT'
                 INGRDA(IVL,I,2)=1
                 INGRDE(IVL,I,2)=MAX0(1,NP2ND)
                 CALL EIRENE_LEER(1)
@@ -440,7 +440,7 @@ C  ACCOUNT FOR INGRDA(IVOLSI,ISTRA,...), INGRDE(IVOLSI,ISTRA,...)
                 WRITE (iunout,*) 'WARNING FROM SAMVL0, ISTRA= ',ISTRA
                 WRITE (iunout,*)
      .            'NEW INPUT FOR INGRDA(.,.,3),INGRDE(.,.,3)'
-                WRITE (iunout,*) 'AUTOMATIC CORRECTION CARRIED OUT '
+                WRITE (iunout,*) 'AUTOMATIC CORRECTION CARRIED OUT'
                 INGRDA(IVL,I,3)=1
                 INGRDE(IVL,I,3)=MAX0(1,NT3RD)
                 CALL EIRENE_LEER(1)

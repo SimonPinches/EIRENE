@@ -69,7 +69,7 @@ C ILPLG WIRD IM INPUT BLOCK 3 EINGELESEN
         call EIRENE_leer(1)
         write (iunout,*) 'No contours specified in blocks 3a,3b'
         write (iunout,*)
-     .    'No input file ', FORT, '78 for FEM mesh generator written '
+     .    'No input file ', FORT, '78 for FEM mesh generator written'
         call EIRENE_leer(2)
         return
       endif
@@ -347,7 +347,7 @@ C STUECKE DER AKTUELLEN KONTOUR WERDEN SORTIERT
      >                    irip(i,1),irip(i,2),
      >                    partcont(i,1,1),partcont(i,1,2),
      >                    partcont(i,2,1),partcont(i,2,2)
-            WRITE(iunout,*) 'USE NEXT POINT '
+            WRITE(iunout,*) 'USE NEXT POINT'
             IP=I+1
             write(iunout,'(I4,3(1X,I4),4(1X,G14.7))') iP,idiag(iP),
      >                    irip(ip,1),irip(ip,2),
