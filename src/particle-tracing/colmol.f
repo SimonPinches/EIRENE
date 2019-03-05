@@ -117,7 +117,7 @@ C
      .          VELYO, VELZO, BX, BY, BZ, V0_PARBO, VELO, SCNDP,
      .          EDEL, VDEL, SIG, V0_PARB, FP, FLTEST, ZEP3, VELQ, VX,
      .          VY, VZ, VPLASP, RMAIO, RMMIO, RMIIO, BF, ZEP
-cdr  .         ,ss,ssr  ! for consistency test only. Now de-activated
+cdr  .         ,ss,ssr  ! for consistency test only. Now deactivated
       REAL(DP) :: SIG_ELIM, SIG_TOT_N, SIG_TOT_O, SIG_TEST
       INTEGER ::
 c    .           IICX, IIEI, IIPI, IIEL,

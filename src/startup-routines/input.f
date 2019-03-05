@@ -291,7 +291,7 @@ C
 
       IF (ITIMV.GT.1) THEN
         CALL EIRENE_MASBOX
-     .   ('NEXT TIME CYCLE STARTS, SKIP READING INPUT FILE ')
+     .   ('NEXT TIME-CYCLE STARTS, SKIP READING INPUT FILE ')
         CALL EIRENE_MASJ1('ITIMV   ',ITIMV)
         GOTO 4000
       ENDIF
@@ -705,10 +705,10 @@ C         Reserved for default, see below
       CALL EIRENE_LEER(1)
       IF (NTIME.GE.1) THEN
         WRITE (iunout,*) '       EIRENE RUN IN TIME DEP. MODE.'
-        WRITE (iunout,*) '       TIME CYCLES: ',ITIMV,' TO ',NTIME
+        WRITE (iunout,*) '       TIME-CYCLES: ',ITIMV,' TO ',NTIME
         WRITE (iunout,*)
      .    '       SUBROUTINE "TMSUSR" IS CALLED AFTER EACH'
-        WRITE (iunout,*) '       TIME CYCLE'
+        WRITE (iunout,*) '       TIME-CYCLE'
       ELSE
         WRITE (iunout,*) '       EIRENE RUN IN STATIONARY MODE'
       ENDIF

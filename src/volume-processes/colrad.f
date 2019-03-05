@@ -231,7 +231,7 @@ cdr  it may be a rate, an energly loss rate or a reduced population coefficient
       end if
 
       entry eirene_colrad_reinit
-cdr this must be done after each internal iteration or time cycle
+cdr this must be done after each internal iteration or time-cycle
 
       if (allocated(lvis_h)) then
          lvis_h = .false.

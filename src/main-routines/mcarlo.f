@@ -1,6 +1,6 @@
 c  nov.16th 2005: npts_save = npts always, not only for nlmovie option
 c                 because otherwise in iterative mode a stratum cannot be
-c                 re-activated, once it was de-activated in a particlar iteration.
+c                 re-activated, once it was deactivated in a particlar iteration.
 c                 v.kotov
 c  19.12.05:  bug: no printout of surface tally std. dev., for sum over strata
 c             bug fix: here in mcarlo.f: sigmaw = stvw and sgmws=stvws added
