@@ -1035,7 +1035,7 @@ C
 C
       ENDIF
 C
-  170 IF (.NOT.PL2ND.OR..NOT.NLPOL.OR.PLCUT(2))   GOTO 200
+  170 IF (.NOT.PL2ND.OR..NOT.NLPOL.OR.PLCUT(2)) GOTO 200
 C
 C  PLOT POLOIDAL GRID
 C
@@ -1291,18 +1291,17 @@ C
                 END IF
             END SELECT
 C
-          IF (IFL.GT.0.AND.I.EQ.ISWC(ISW)) THEN
-            IF (.NOT.NLSPLT(N1ST+NU)) CALL GRNWPN (ICLR(ISW))
-            IF (IDSH(ISW).EQ.0) CALL GRDSH (1.,0.,1.)
-            IF (IDSH(ISW).EQ.1) CALL GRDSH (0.2,0.5,0.2)
-            INOSF=-INON(ISW)
-            ISW=ISW+1
-            LSTORE = PLSTOR
-            INOSF=0
-            CALL GRJMP
-     .      (REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
-            IF (LSTORE) CALL EIRENE_STCOOR(XTN,YTN,0)
-          ENDIF
+            IF (IFL.GT.0.AND.I.EQ.ISWC(ISW)) THEN
+              IF (.NOT.NLSPLT(N1ST+NU)) CALL GRNWPN (ICLR(ISW))
+              IF (IDSH(ISW).EQ.0) CALL GRDSH (1.,0.,1.)
+              IF (IDSH(ISW).EQ.1) CALL GRDSH (0.2,0.5,0.2)
+              INOSF=-INON(ISW)
+              ISW=ISW+1
+              LSTORE = PLSTOR
+              INOSF=0
+              CALL GRJMP(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
+              IF (LSTORE) CALL EIRENE_STCOOR(XTN,YTN,0)
+            ENDIF
 C
  1751     CONTINUE
           CALL GRNWPN(1)
@@ -1348,7 +1347,7 @@ C
 C
 C  PLOT 3RD GRID (Z OR TOROIDAL)
 C
-  200 IF (.NOT.PL3RD.OR..NOT.NLTOR.OR.PLCUT(3))  GOTO 220
+  200 IF (.NOT.PL3RD.OR..NOT.NLTOR.OR.PLCUT(3)) GOTO 220
 C
       IF (NLTRZ.AND.LEVGEO.EQ.1) THEN
 C Y-Z-PLANE
@@ -1763,10 +1762,10 @@ C
       CASE (2)
         CALL GRDRW (REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
         CALL GRJMP (REAL(XWN,KIND(1.E0)),REAL(YWN,KIND(1.E0)))
-      CASE (3)  
+      CASE (3)
         CALL GRJMP (REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
         CALL GRDRW (REAL(XWN,KIND(1.E0)),REAL(YWN,KIND(1.E0)))
-      CASE (4)  
+      CASE (4)
         CALL GRJMP (REAL(XWN,KIND(1.E0)),REAL(YWN,KIND(1.E0)))
       CASE (5)
         CALL GRJMP (REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))

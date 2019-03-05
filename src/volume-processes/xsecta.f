@@ -68,7 +68,7 @@ cdr  PLS:  ELECTRON DENSITY PARAMETER in CR MODELS
 cdr       (NOT TO BE CONFUSED WITH THE DENSITY FACTOR BETWEEN RATES AND RATE COEFF.)
 cdr: set hard-wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3
 cdr: at this lower limit density the fits are produced such
-cdr: that they collapse to the Corona limit values.
+cdr: that they collapse to the corona limit values.
       DEIMIN=LOG(1.D8)
       IF (NSTORDR >= NRAD) THEN
         DO 10 J=1,NSBOX
@@ -408,11 +408,11 @@ C  BULK PARTICLE INDEX
             LGACX(IATM,IDSC,0)=IRCX
             LGACX(IATM,IDSC,1)=IPLS
 c
-            if (ngena(iatm).lt.0) then  !  in range -1,...-infty
+            if (ngena(iatm).lt.0) then  !  in range -1,...-infinity
 c  set cx fluid limit FDLM (critical Knudsen number Kn_c = mfp_cx/delta
 c  delta: typical length (could be cell size, or gradient length...)
 c  use the integer input flag ngena (generation limit).
-              MFL=-(ngena(iatm)+1)  !  now MFL in range 0 to +infty
+              MFL=-(ngena(iatm)+1)  !  now MFL in range 0 to +infinity
 c  ngena=-10001 produces Kn_c=1.0. Larger abs(ngena) --> smaller Kn_c
               FDLMCX(IRCX)=1.0E4/(MFL+eps30)
             endif

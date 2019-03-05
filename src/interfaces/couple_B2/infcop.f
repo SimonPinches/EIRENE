@@ -1,4 +1,4 @@
-cdr Jan 2016: clean up, comments.
+cdr Jan 2016: clean-up, comments.
 cdr           This is master version for all other versions of infcop.f
 
 cdr Nov. 17: removed dead option LINDIM: here and in couple_b2_parallel

@@ -63,7 +63,7 @@ C> - tallies
       integer :: ier1, ier, ir, i, ispc, my_pe_gr,
      .           mxdim, ns, j, istr
       logical, allocatable :: lhelp(:)
-      logical :: lhelpa(0:natm),lhelpm(0:nmol), lhelpi(0:nion),
+      logical :: lhelpa(0:natm), lhelpm(0:nmol), lhelpi(0:nion),
      .           lhelpp(0:npls), lhelpph(0:nphot),
      .           use_split
 

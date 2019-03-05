@@ -65,7 +65,6 @@ C When the current process is a master processes of any stratum it gets imaster=
         mxdim = max(noutau,nidv,nids,3*nsigci,nsigvi,nsigsi)
         allocate (help(mxdim))
 
-
         CALL MPI_REDUCE(OUTAU,help,NOUTAU,
      .                  mpi_double_precision,mpi_sum,0,icomgrp,ier)
 
@@ -218,6 +217,7 @@ c  variances of surface-averaged output tallies
      .                      MPI_DOUBLE_PRECISION,MPI_SUM,0,ICOMGRP,IER1)
             if (my_pe == 0) FF(1:NSIGSI,IR) = help(1:nsigsi)
           end do
+
           CALL MPI_REDUCE(STVWS,help,NSIGSI,
      .                    MPI_DOUBLE_PRECISION,MPI_SUM,0,ICOMGRP,IER1)
           if (my_pe == 0) STVWS(1:NSIGSI) = help(1:nsigsi)

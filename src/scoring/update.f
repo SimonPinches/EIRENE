@@ -36,7 +36,7 @@ cdr          so no effect on any result.  Few further comments corrected
 cdr sept 16: nmdsi -> nmeii, nidsi -> nieii
 cdr dec. 16: some more comments re sign convention for momentum sources
 cdr Nov. 17: merging of entries for atoms, molecules, test ions, from
-cdr          branch "code-combine (p.b.), plus some naming conventions re-enforced
+cdr          branch "code-combine" (p.b.), plus some naming conventions re-enforced
 cdr          tbd: entry update_photons now own routine: update_phot. to be integrated still.
 
 

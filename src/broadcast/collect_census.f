@@ -70,7 +70,7 @@ c
       DO I=1,IPRNLI
         RPSTT(1:NPARTT)=RPART(1:NPARTT,I)
 ! WEIGHT SHOULD ALREADY CONTAIN THE PARTICLE BALANCE
-! RESCALING FACTORS FATM, FMOL, FION, FPHOT.  DONE LATER IN TMSTEP.
+! RESCALING FACTORS FATM, FMOL, FION, FPHOT DONE LATER IN TMSTEP.
         IPSTT(1:MPARTT)=IPART(1:MPARTT,I)
         ITYP=ISPEZI(ISPZ,-1)
         IF (ITYP.EQ.0) THEN
@@ -342,7 +342,7 @@ c
 ! on each processor look for the indices of the particles to be
 ! put into the global census arrays rpartc,ipartc.
 ! Sampling with replacement, fill rpartc,ipartc per processor,
-! then gather theses into one single array on my_pe=0
+! then gather these into one single array on my_pe=0
 
 
         sumrpw = 0._dp

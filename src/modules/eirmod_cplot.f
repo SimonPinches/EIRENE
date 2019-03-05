@@ -1,7 +1,7 @@
 cdr  28.4.04:  NHSTS introduced (select species for trajectory plot)
 cdr  aug. 17:  PLARGL introduced. Separate options for
 cdr            spectrally resolved plot (plspec)
-cdr            and for line of side spatially resolved plot (plargl)
+cdr            and for line of sight spatially resolved plot (plargl)
       MODULE EIRMOD_CPLOT
 
       USE EIRMOD_PRECISION

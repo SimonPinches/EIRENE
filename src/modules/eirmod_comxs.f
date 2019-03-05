@@ -43,7 +43,7 @@ cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
 !pb  JUL  16:  ehvds1 -> ehvei1
 cdr  Sept 16:  nmdsi  -> nmeii, nidsi -> nieii,..
 cdr  Jan  18:  added colrad_data, alloc_fit_form, rp%ifit=5 option: use internal crm code
-cdr  sept 18:  prepare reviving "storage save mode (for large 3D grids):
+cdr  sept 18:  prepare reviving "storage save mode" (for large 3D grids):
 cdr            first: rationalize naming of integer flags for collision models
 cdr            nhvrei, nhvrpi, for KER (heavy particle post-collision kinetics)
 cdr            remove redundant flags: JEREARC  (UNUSED)

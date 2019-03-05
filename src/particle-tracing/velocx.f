@@ -5,7 +5,7 @@
 !DR          to wrong cross-sections, e.g. for beam penetration
 CDR  5.8.15: ARGUMENTS ADDED TO VECUSR
 cdr  aug.16: some test output, re asymptotic, rejection sampling. Commented out.
-cdr  sept.17:sync with veloel. Prepare bgk relaxation. perhaps ready: nflag=2
+cdr  sep.17: sync with veloel. Prepare bgk relaxation. perhaps ready: nflag=2
 cdr  jan.18: comments, cleanup. Sync with veloel, velopi, for incident ion sampling
 cdr          then here: only relaxation, Delta_E=0. Scattering angle= Pi in COM.
 cdr          but exchange of masses also allowed (distrinct from EL processes).
