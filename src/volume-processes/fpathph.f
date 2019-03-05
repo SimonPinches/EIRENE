@@ -43,7 +43,7 @@ cdr Jan. 18:    This entire routine is largely unfinished. Photon transport
 cdr             with eirene currently not possible.
 cdr             Started to prepare re-activating this option: for now: comments only
 cdr Nov. 18:    notational cleanup: OT processes --> PH processes, to avoid confusion
-cdr             with OT ("other) processes of type H.11, H.12, population ratios.
+cdr             with OT ("other") processes of type H.11, H.12, population ratios.
 cdr
 
 C

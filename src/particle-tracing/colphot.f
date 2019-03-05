@@ -119,7 +119,7 @@ C
      .           IATMN, IPLSN, IRPI, NCLLO, IPLSV, IMPI, IIPI, I, J, IPL
       INTEGER :: NEII_RED,LGEI_RED(0:NREI)
 
-Cdr  additional arrays for  ANALOG CASCADE and SPLITTING AT COLLISIONS.
+Cdr  additional arrays for ANALOG CASCADE and SPLITTING AT COLLISIONS.
 Cdr (should be set in initialization phase, not here)
 CDR  check: are the corresponding arrays PATEI,PMLEI, PIOEI real or integer (1/2 particle possible?)
       INTEGER, ALLOCATABLE, SAVE :: NAMIEI(:),NAMIPI(:)
@@ -409,7 +409,7 @@ C
       WRITE (iunout,*) 'IREI=  ',IREI,' IS SUPPRESSED, BUT'
       WRITE (iunout,*) 'COLLISION ESTIMATOR WAS SELECTED  '
       WRITE (iunout,*)
-     .  'SET WMINV = INFTY, OR USE TRACKLENGTH ESTIM. '
+     .  'SET WMINV = INFINITY, OR USE TRACKLENGTH ESTIM. '
       CALL EIRENE_EXIT_OWN(1)
 C
   999 WRITE (iunout,*) 'ERROR IN COLLIDE '

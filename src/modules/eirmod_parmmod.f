@@ -1,5 +1,5 @@
 
-!pb  18.12.06:  NPARTC and NPARTT reduced because of cancelation of XNUE
+!pb  18.12.06:  NPARTC and NPARTT reduced because of cancellation of XNUE
 !    20.06.07:  NUM_PARM = maximum number of parameters introduced
 cdr  input tallies   ntali, increased from 21 to 22 (electr. potential)
 cdr  surface tallies ntals, increased from 59 to 79 (more sputter tallies)
@@ -235,7 +235,7 @@ C                           NTLSR: INDEX OF THE ALGEBRAIC TALLY
 C                       NTALI: TOTAL NUMBER OF INPUT TALLIES
 C                           NTALG: NUMBER OF INPUT TALLIES, EXCLUDING THE OPT. GRADIENT TALLIES
 C                           NTALN: INDEX OF THE ADDITIONAL INPUT TALLIES
-C                           NTALO: INDEX OF THE CELL VOLUME TALLY
+C                           NTALO: INDEX OF THE CELL VOLUME TALLIES
 
         NIONP=NION+1
         NATMP=NATM+1
@@ -432,7 +432,7 @@ c  storage reduction parameters
       INT_PARM( 61) = NSTORAM
       INT_PARM( 62) = NGSTAL
 
-C     INT_PARM( 63) =        !free, not in use.
+C     INT_PARM( 63) =        ! free, not in use
 
       INT_PARM( 64) = NRAD
       INT_PARM( 65) = NSWIT

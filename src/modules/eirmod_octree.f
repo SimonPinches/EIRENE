@@ -48,7 +48,7 @@ c     --- DERIVED POINTER TYPE FOR ARRAY ---
       END TYPE pOcNode
 
 c     --- OCTREE TYPE, CONTAINING THE ROOT NODE ---
-      TYPE, PUBLIC :: octree
+      TYPE, PUBLIC :: ocTree
         TYPE(ocNode), POINTER :: root
 c       how many layers will this tree have?
         INTEGER :: layers, maxvalue
@@ -63,7 +63,7 @@ c       small amount more to have a slightly larger volume. we
 c       divide by this length, so we do not have problems with floating
 c       point arithmetic anymore
         REAL(DP), DIMENSION(3,2) :: bounds
-      END TYPE octree
+      END TYPE ocTree
 
 c     --- OCTREE NODE TYPE ---
       TYPE, PUBLIC :: ocNode

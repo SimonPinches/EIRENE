@@ -155,7 +155,7 @@ cdr  PLS:  ELECTRON DENSITY PARAMETER in CR MODELS
 cdr       (NOT TO BE CONFUSED WITH THE DENSITY FACTOR BETWEEN RATES AND RATE COEFF.)
 cdr: set hard-wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3
 cdr: at this lower limit density the fits are produced such
-cdr: that they collapse to the Corona limit values.
+cdr: that they collapse to the corona limit values.
       ALLOCATE (PLS(NSTORDR))
       DEIMIN=LOG(1.D8)
       IF (NSTORDR >= NRAD) THEN

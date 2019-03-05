@@ -291,7 +291,7 @@ C
 
       IF (ITIMV.GT.1) THEN
         CALL EIRENE_MASBOX
-     .   ('NEXT TIME CYCLE STARTS, SKIP READING INPUT FILE ')
+     .   ('NEXT TIME-CYCLE STARTS, SKIP READING INPUT FILE ')
         CALL EIRENE_MASJ1('ITIMV   ',ITIMV)
         GOTO 4000
       ENDIF
@@ -705,10 +705,10 @@ C         Reserved for default, see below
       CALL EIRENE_LEER(1)
       IF (NTIME.GE.1) THEN
         WRITE (iunout,*) '       EIRENE RUN IN TIME DEP. MODE.'
-        WRITE (iunout,*) '       TIME CYCLES: ',ITIMV,' TO ',NTIME
+        WRITE (iunout,*) '       TIME-CYCLES: ',ITIMV,' TO ',NTIME
         WRITE (iunout,*)
      .    '       SUBROUTINE "TMSUSR" IS CALLED AFTER EACH'
-        WRITE (iunout,*) '       TIME CYCLE'
+        WRITE (iunout,*) '       TIME-CYCLE'
       ELSE
         WRITE (iunout,*) '       EIRENE RUN IN STATIONARY MODE'
       ENDIF
@@ -2489,7 +2489,7 @@ C           WRITE (iunout,'(A,A)') ' FILE = ',FILE
   620 CONTINUE  !  READING OF REFLECTION DATASETS 'A_ON_B' COMPLETED
 
       IF (ASSOCIATED(REFFILES)) THEN
-c  TRIM files for NFR target projectile combinations are requested.
+c  TRIM files for NFR target-projectile combinations are requested.
 c  read them one by one in subr. RDTRIM
         NHD6 = NFR
       ELSE
@@ -3645,7 +3645,7 @@ c                 i.e. addv tallies are only saved for one line at a time.
 cdr       IF (MOD_ADDV == 0) IADV = NADVI + 1
           IF (MOD_ADDV == 0) IADV = NADVI
 
-          EMIS_LINES(ILINE)%IADV_TOTAL = IADV + num_COMPO+1
+          EMIS_LINES(ILINE)%IADV_TOTAL = IADV + NUM_COMPO+1
 
           IF (NUM_COMPO > 0) THEN
             ALLOCATE (EMIS_LINES(ILINE)%COMPO(NUM_COMPO))

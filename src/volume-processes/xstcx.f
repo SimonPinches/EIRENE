@@ -227,7 +227,7 @@ C       NEND=9
 cdr  safety cut-off at TI= 0.1 eV. (TVAC=0.02)
               tii = max(-2.3_dp,tii)
 c  evaluate 2 parametric fit,
-c  collaps this to a one parameter fit CF for EB dependence, evaluated at TII.
+c  collapse this to a one parameter fit CF for EB dependence, evaluated at TII.
               rp => reacdat(KK)%rtc%poly
               call EIRENE_dbl_poly (rp%dblpol,tii,0._dp,cou,cf,
      .               rt%rc1min, rt%rc1max, fp1, rt%jfex1mn, rt%jfex1mx,

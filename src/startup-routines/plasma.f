@@ -188,11 +188,11 @@ cdr first dimension of arrays:  NDIM .ne. NPLS possible ?
 cdr one profile ipls set at a time
         case (1)
           CALL EIRENE_PROFN (HELP,DI0(IPLS),DI1(IPLS),DI2(IPLS),
-     .                   DI3(IPLS),DI4(IPLS),DI5(IPLS),DVAC)
+     .                       DI3(IPLS),DI4(IPLS),DI5(IPLS),DVAC)
           DIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
         case (2)
           CALL EIRENE_PROFE (HELP,DI0(IPLS),DI1(IPLS),DI2(IPLS),
-     .                   DI4(IPLS),DI5(IPLS),DVAC)
+     .                       DI4(IPLS),DI5(IPLS),DVAC)
           DIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
         case (3)
           CALL EIRENE_PROFS (HELP,DI0(IPLS),DI1(IPLS),DI5(IPLS),DVAC)

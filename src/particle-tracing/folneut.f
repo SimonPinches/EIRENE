@@ -586,7 +586,7 @@ c  conditional expexctation estimator for flight segment J
 c
 c  find new AX(1)= AX(1) * (1-exp(-ex))/ex)
 c           AX(1)= AX(1) * funexp(ex)
-c  funexp(x), with 0 <= x <= infty
+c  funexp(x), with 0 <= x <= infinity
             FF=EIRENE_FUNEXP(EX,EXPM)
             AX(1)=AX(1)*FF
 
