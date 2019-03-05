@@ -94,9 +94,10 @@ c
 C
 C  ON INPUT:
 C     ITYP=3
-C     IC_NEUT = 0  NEW NEUTRAL PARTICLE, OR CONTINUATION FROM TEST ION
-C     IC_NEUT > 0  CONTINUATION FROM TEST ION WHICH WAS IN STATIC LOOP
-C     IC_NEUT < 0  CONTINUATION FROM TEST PARTICLE IN DIFFUSION MODE
+C     IC_NEUT = 0  NEWBORN CHARGED PARTICLE, OR CONTINUATION FROM NEUTRAL PARTICLE FULL TRACK
+C     IC_NEUT > 0  CONTINUATION FROM NEUTRAL PARTICLE WHICH WAS IN STATIC LOOP
+C     IC_NEUT < 0  CONTINUATION FROM TEST PARTICLE IN DIFFUSION MODE (TO BE WRITTEN)
+C
 C  ON OUTPUT:
 C
 C     LGPART=TRUE
@@ -177,23 +178,25 @@ c  tentatively assume: a next generation particle will be born
 
 c  IC_NEUT, IC_ION: counter for generations within static loop
       IC_ION=IC_NEUT
+C  XGENER: COUNTER FOR GENERATION LIMIT
       LCART=.TRUE.
 
   100 LGPART=.TRUE.
+      IC_ION=IC_ION+1
 c  full cartesian velocity vector VEL,VELX,VELY,VELZ at this point
 c  either a new particle, or back to here from collide, escape, fpkcol,
 c  with a new full (cartesian) velocity vector.
 c
       IF (.NOT.LCART) GOTO 9921
 
-      IC_ION=IC_ION+1
+
       XGENER=0.D0
       ico=0
 
 C  CHECK FOR VALID SPECIES INDEX
       IF (ITYP.EQ.3.AND.(IION.LE.0.OR.IION.GT.NIONI)) GOTO 998
 C
-C  THE  CELL NUMBER NRCELL, IPOLG, IPERID, NPCELL, NTCELL, NACELL, NBLOCK
+C  THE CELL NUMBER NRCELL, IPOLG, IPERID, NPCELL, NTCELL, NACELL, NBLOCK
 C  WAS ALREADY SET IN CALLING SUBROUTINE MCARLO
 C
 C  IF NLSRFX, SURFACE INDEX MRSURF MUST BE DEFINED AT THIS POINT
@@ -250,7 +253,8 @@ c
 C
  1004 CONTINUE
 
-c  follow motion of test ion or "static approximation"?
+C  FOLLOW MOTION OF TEST ION OR "STATIC APPROXIMATION"?
+
       IF (NFOLI(IION).EQ.-1.AND.IFPATH.EQ.1) GOTO 1001 ! go to static loop
 C
 C  the particle may be sitting exactly on a surface (nlsrf...=.true.).
@@ -269,6 +273,10 @@ c  number. In that case: goto 1005 and try again with new cell number.
 c  Else: continue at 1002
 
       CALL SRFCHK(VLXPAR,VLYPAR,VLYPAR,SG,*1005)
+      IF (ic_ion.gt.1) THEN 
+        write (iunout,*) 'error re static loop, ic_ion=', ic_ion
+        call eirene_exit_own(1)
+      ENDIF
       GOTO 1002
 
 
@@ -281,15 +289,23 @@ c  at this point: V_PARALLEL, V_PERP known,
 c                 gyrophase: to be sampled, if needed
 C
  1001 CONTINUE
-      IF (IC_ION.EQ.1.AND.NLTRC.AND.TRCHST) THEN
-        WRITE (iunout,*) 'TRAJECTORY ENTERS STATIC LOOP, ITYP=', ITYP
-        CALL EIRENE_CHCTRC(X0,Y0,Z0,0,21)
-      ENDIF
 
 C***********************************************************************
 C  STATIC APPROXIMATION
 C  SIMULATE NEXT COLLISION INSTANTANEOUSLY
 C***********************************************************************
+
+      CALL EIRENE_FOLSTAT_ION(IC_ION,VLXPAR,VLYPAR,VLZPAR,
+     .                        *101,*230,*380)
+C.............................................................
+      IF (IC_ION.EQ.1.AND.NLTRC.AND.TRCHST) THEN
+        WRITE (iunout,*) 'folion:'
+        WRITE (iunout,*) 'TRAJECTORY ENTERS STATIC LOOP, ITYP=', ITYP
+        CALL EIRENE_CHCTRC(X0,Y0,Z0,0,21)
+      ENDIF
+
+
+
 
 C  WEIGHT TOO SMALL? STOP HISTORY
       IF (WEIGHT.LT.EPS30) THEN
@@ -314,7 +330,7 @@ C                      VIA STDCOL OR ADDCOL
           SCOS = SIGN(1.D0,VLXPAR*CRTXG+VLYPAR*CRTYG+VLZPAR*CRTZG)
           SCOS_SAVE = SCOS
           SCOS_NEW  = SCOS
-C  INCIDENT DURING STATIC LOOP?
+C  LATER IN STATIC LOOP: INCIDENT OR EMITTED DURING STATIC LOOP?
 C  CALL ESCAPE, AFTER UPDATE
         ELSE
           SCOS_NEW = SIGN(1.D0,VLXPAR*CRTXG+VLYPAR*CRTYG+VLZPAR*CRTZG)
@@ -344,7 +360,7 @@ C
       CLPD(1)=ZMFP
       IF (IUPDTE.GE.1) THEN
         IFLAG=4
-        CALL EIRENE_UPDATE (XSTOR2,XSTORV2,IFLAG)
+        CALL EIRENE_UPDATE(XSTOR2,XSTORV2,IFLAG)
         IF (NADSPC_CD >= 1) CALL EIRENE_UPDATE_SPECTRUM (WEIGHT,IFLAG,1)
       ENDIF
       ZTC=0.
@@ -364,14 +380,15 @@ C
 C
  1002 CONTINUE
 
-C  AT THIS POINT: PARTICLE WAS IN STATIC APPROXIMATION,
+C  AT THIS POINT: EITHER CONTINUE FULL TRAJECTORY
+C                 OR PARTICLE WAS IN STATIC APPROXIMATION,
 C                 BUT NOW IT RETURNS TO FULL MOTION
 C
       IF (IC_ION.GT.1.AND.NLTRC.AND.TRCHST)
      .  WRITE (iunout,*) 'TRAJECTORY LEAVES STATIC LOOP, ITYP=',ITYP
 
 C  IN CASE THAT THE PARTICLE WAS IN STATIC LOOP AND ON A SURFACE,
-C  SOME MORE WORK NEEDS TO BE DONE, TO REVIVE IT TO FULL KINETIC MODE.
+C  SOME MORE WORK NEEDS TO BE DONE, TO REVIVE IT TO FULL KINETIC ORBIT MODE.
       IF (IC_ION.GT.1.AND.
      .   (NLSRFX.OR.NLSRFY.OR.NLSRFZ.OR.NLSRFA)) THEN
 
@@ -408,12 +425,12 @@ C PUSH PARTICLE TO SURFACE, USE REDUCED (GC) VELOCITY
               IF (ILIIN(NLIM+ISTS) .NE. 0)
      .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
             case (4)
-              ISTS=ABS(INMTI(IPOLGN,MRSURF))
+              ISTS=ABS(INMTI(IPOLGN,MRSURF))  !dr NLIM already added in ISTS ?
               MSURFG=INSPAT(IPOLGN,MRSURF)
               IF (ILIIN(ISTS) .NE. 0)
      .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
             case (5)
-              ISTS=ABS(INMTIT(IPOLGN,MRSURF))
+              ISTS=ABS(INMTIT(IPOLGN,MRSURF)) !dr NLIM already added in ISTS ?
 C             MSURFG= ??
               IF (ILIIN(ISTS) .NE. 0)
      .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
@@ -528,8 +545,8 @@ c  check all additional surfaces in index range nli, nle
      .               MASURF,XLI,YLI,ZLI,SG,TL,NLTRC,LCNDEXP)
 C       NLPR= :NOT AVAILABLE FOR TEST IONS
 c
-        ZTST=TL
         ZDT1=TL
+        ZTST=TL
         CLPD(1)=ZDT1
         IF (MASURF.NE.0) ISRFCL=1
       ENDIF
@@ -743,8 +760,8 @@ c switch to parallel gc velocity
           IF (LDAMCEL(NCELL)) GOTO 9912
           ZMFP=EIRENE_FPATH(NCELL,CFLAG,J,NCOU)
           IF (NCOU.GT.1) THEN
-            XSTOR2(:,:,J)=XSTOR(:,:)
-            XSTORV2(:,J)=XSTORV(:)
+            XSTOR2(:,:,J) = XSTOR(:,:)
+            XSTORV2(:,J) = XSTORV(:)
           ENDIF
 
 C  UPDATE INTEGRAL
@@ -884,8 +901,8 @@ C  ESCAPE AT 1ST GRID SURFACE (X OR RADIAL) MRSURF
           SG=ISIGN(1,NINCX)
           NLSRFX=.TRUE.
           MSURFG=NPCELL+(NTCELL-1)*NP2T3
-          IF (ILIIN(NLIM+ISTS) .NE. 0) CALL EIRENE_STDCOL
-     .                                             (ISTS,1,SG,*104,*380)
+          IF (ILIIN(NLIM+ISTS) .NE. 0)
+     .      CALL EIRENE_STDCOL (ISTS,1,SG,*104,*380)
         ENDIF
 
 C  ESCAPE AT 2ND GRID SURFACE (Y OR POLOIDAL) NO. MPSURF
@@ -894,8 +911,8 @@ C  ESCAPE AT 2ND GRID SURFACE (Y OR POLOIDAL) NO. MPSURF
           SG=ISIGN(1,NINCY)
           NLSRFY=.TRUE.
           MSURFG=NRCELL+(NTCELL-1)*NR1P2
-          IF (ILIIN(NLIM+ISTS) .NE. 0) CALL EIRENE_STDCOL
-     .                                             (ISTS,2,SG,*104,*380)
+          IF (ILIIN(NLIM+ISTS) .NE. 0)
+     .      CALL EIRENE_STDCOL (ISTS,2,SG,*104,*380)
         ENDIF
 
 C  ESCAPE AT 3RD GRID SURFACE (Z OR TOROIDAL) MTSURF
@@ -904,8 +921,8 @@ C  ESCAPE AT 3RD GRID SURFACE (Z OR TOROIDAL) MTSURF
           SG=ISIGN(1,NINCZ)
           NLSRFZ=.TRUE.
           MSURFG=NRCELL+(NPCELL-1)*NR1P2
-          IF (ILIIN(NLIM+ISTS) .NE. 0) CALL EIRENE_STDCOL
-     .                                             (ISTS,3,SG,*104,*380)
+          IF (ILIIN(NLIM+ISTS) .NE. 0)
+     .      CALL EIRENE_STDCOL (ISTS,3,SG,*104,*380)
         ENDIF
 C
 C  ESCAPE AT GRID SURFACE BUILT FROM TRIANGLE SIDES IN X-Y PLANE: MRSURF
@@ -929,22 +946,22 @@ C  ESCAPE AT 3RD (Z OR TOROIDAL) GRID SURFACE FOR TRIANGULAR X-Y GRID OPTION: MT
             SG=ISIGN(1,NINCZ)
             NLSRFZ=.TRUE.
             MSURFG=NRCELL+(NPCELL-1)*NR1P2
-            IF (ILIIN(NLIM+ISTS) .NE. 0) CALL EIRENE_STDCOL
-     .                                        (ISTS,3,SG,*104,*380)
+            IF (ILIIN(NLIM+ISTS) .NE. 0) 
+     .        CALL EIRENE_STDCOL(ISTS,3,SG,*104,*380)
           ENDIF
         END IF
 C
-C  ESCAPE AT GRID SURFACE BUILT FROM TETRAHEDRA SIDES: MRSURF
+C  ESCAPE AT GRID SURFACE BUILD FROM TETRAHEDRA SIDES: MRSURF
       case (5)
-        ISTS=ABS(INMTIT(IPOLGN,MRSURF))
+        ISTS=ABS(INMTIT(IPOLGN,MRSURF))  !dr NLIM already added in ISTS ?
         IF (NLRAD.AND.ISTS.NE.0) THEN
           SG=SIGN(1._DP,VELX*PTETX(IPOLGN,MRSURF)+
      .                  VELY*PTETY(IPOLGN,MRSURF)+
      .                  VELZ*PTETZ(IPOLGN,MRSURF))
           NLSRFX=.TRUE.
 C         MSURFG= ??
-          IF (ILIIN(ISTS) .NE. 0) CALL EIRENE_STDCOL
-     .                                        (ISTS,1,SG,*104,*380)
+          IF (ILIIN(ISTS) .NE. 0)
+     .      CALL EIRENE_STDCOL (ISTS,1,SG,*104,*380)
         ENDIF
 
 C  ESCAPE TO GRID SURFACE ON USER-DEFINED GEOMETRY BLOCK: MRSURF
@@ -953,11 +970,10 @@ C  ESCAPE TO GRID SURFACE ON USER-DEFINED GEOMETRY BLOCK: MRSURF
         IF (NLRAD.AND.ISTS.NE.0) THEN
           SG=ISIGN(1,NINCX)
           NLSRFX=.TRUE.
-          IF (ILIIN(NLIM+ISTS) .NE. 0) CALL EIRENE_STDCOL
-     .                                        (ISTS,1,SG,*104,*380)
+          IF (ILIIN(NLIM+ISTS) .NE. 0)
+     .      CALL EIRENE_STDCOL (ISTS,1,SG,*104,*380)
         ENDIF
       end select
-C
 C
       NRCELL=NRCELL+NINCX
       IF (NRCELL.GT.NR1STM.OR.NRCELL.LT.1) GOTO 990
@@ -978,11 +994,12 @@ C       JCOL=0
 C     ENDIF
 CCC
 
-C  EARLIER CLPD WAS FULL GYRO DISTANCE, FOR SCORING.
+C  EARLIER CLPD WAS DISTANCE ALONG FULL GYROMOTION, FOR SCORING.
 C  NOW WE NEED AGAIN THE PARALLEL DISTANCE, FOR TRACKING TO
-C  POINT OF COLLISION OR SURFACE EVENT. (I.E. LCART=F)
+C  POINT OF COLLISION OR TO SURFACE EVENT. (I.E. LCART=F)
       IF (.NOT.LCART) THEN
-c        WRITE (IUNOUT,*) 'SHIT: VEL IS ALREADY = VELPAR HERE'
+c        WRITE (IUNOUT,*) 'FROM FOLION: LCART ?'
+c        WRITE (IUNOUT,*) 'WARNING: VEL IS ALREADY = VELPAR HERE'
 c        WRITE (IUNOUT,*) VEL,VELPAR,VELS
          CLPD(1)=CLPD(1)*VELPAR/VELS
       ENDIF
@@ -1319,7 +1336,7 @@ C
  9911 CONTINUE
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE
-     .  ('ERROR IN FOLION,  NO INTERSECTION FOUND       ')
+     .  ('ERROR IN FOLION, NO INTERSECTION FOUND       ')
       CALL EIRENE_MASAGE
      .  ('PARTICLE IS KILLED                            ')
       WRITE (iunout,*) 'NPANU,NCELL,NRCELL,NPCELL,NTCELL '
@@ -1329,7 +1346,7 @@ C
  9912 CONTINUE
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE
-     .  ('ERROR IN FOLION, DAMAGED CELL HIT             ')
+     .  ('ERROR IN FOLION, DAMAGED CELL HIT            ')
       CALL EIRENE_MASAGE
      .  ('PARTICLE IS KILLED                            ')
       WRITE (iunout,*) 'NPANU,NCELL,NRCELL,NPCELL,NTCELL '
@@ -1354,7 +1371,7 @@ C
       IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
       GOTO 999
   993 CALL EIRENE_MASAGE
-     .  ('ERROR IN FOLION, NO PARTICLE TRACING BUT      ')
+     .  ('ERROR IN FOLION, NO PARTICLE TRACING BUT     ')
       CALL EIRENE_MASAGE
      .  ('IFPATH.NE.1. PARTICLE IS KILLED               ')
       WRITE (iunout,*) 'IION ',IION
@@ -1384,7 +1401,7 @@ C
      .  ('ERROR IN FOLION, COND. EXP. ESTIM. NOT IN USE ')
       GOTO 999
   997 CALL EIRENE_MASAGE
-     .  ('ERROR IN FOLION,  DETECTED IN SUBR. CLLTST    ')
+     .  ('ERROR IN FOLION, DETECTED IN SUBR. CLLTST    ')
       CALL EIRENE_MASAGE
      .  ('PARTICLE IS KILLED                            ')
 C   DETAILED PRINTOUT ALREADY DONE FROM SUBR. CLLTST
