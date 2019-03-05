@@ -59,7 +59,8 @@ C
       INTEGER :: ICP, ISTR, IC, IC1, IC2, NCTPNT, IDUMMY, ICT, IEN,
      .           ITH, ITHPL, IAN, NTDUM, NTT, IECKE2, EIRENE_LEARCA,
      .           NT, ICOLOR, NU, J, ISYM, IFLAG, IERR, IWRIT,
-     .           IR, IP, ISTS, IN, IY, IB, IT, IA, NRET, I, NSW, ISW,
+     .           IR, IP, ISTS, IN, IY, IB, IT, IA, IAA,
+     .           NRET, I, NSW, ISW,
      .           ISP, IHELP, K, IFL, ISYM_ERR, IRA, IRE, IPA, IPE,
      .           ITA, ITE, JJ
       LOGICAL :: PLSAV1, PLSAV2, LSTORE, LWR
@@ -1477,6 +1478,7 @@ C  IFLAG.NE.0 TRACK FROM LAST POSITION (PREVIOUS CALL) TO XPLO,YPLO,ZPLO
 C  ISYM       NUMBER OF SYMBOL FOR THE CURRENT EVENT
 C
 C  TEXT FOR PARTICLE HISTORIES PLOT, ONLY AT FIRST CALL TO THIS ENTRY
+C  LEGEND ONLY FOR THOSE SYMBOLS WHICH ARE SELECTED (ISYPLT(1:8) FLAG)
 C
       XN=XN2D
       YN=YN2D
@@ -1489,14 +1491,19 @@ C
      .                               REAL(ORDMAX,KIND(1.E0)))
         XNP05=XN+0.5/FX
         CALL GRNWPN(1)
-        DO IA=1,NTXHST-1
-          YYIA=YN-(0.75*(IA-1))/FY
-          CALL GRJMPS
-     .  (REAL(XN,KIND(1.E0)),REAL(YYIA+0.15,KIND(1.E0)),
-     .                 ISPL(IA))
-          CALL GRTXT
-     .  (REAL(XNP05,KIND(1.E0)),REAL(YYIA,KIND(1.E0)),20,
-     .                TXTHST(IA))
+        IAA=0
+        DO IA=1,NTXHST
+          DO J=1,8
+            IF (IA.NE.ABS(ISYPLT(J)).AND.IA.NE.ISYM_ERR) CYCLE
+C  SYMBOL IA (OR ISYM_ERR) ACTIVATED ON PLOT.
+            IAA=IAA+1
+            YYIA=YN-(0.75*(IAA-1))/FY
+            CALL GRJMPS (REAL(XN,KIND(1.E0)),REAL(YYIA+0.15,KIND(1.E0)),
+     .                   ISPL(IA))
+            CALL GRTXT (REAL(XNP05,KIND(1.E0)),REAL(YYIA,KIND(1.E0)),20,
+     .                  TXTHST(IA))
+            EXIT
+          ENDDO
         ENDDO
 C
         IF (NLPL3D) THEN
