@@ -1,6 +1,6 @@
 cdr  june 17: merge with branch reflection: LTRMOL-->LTRIM_OLD
-cdr        LTRIM_OLD: old TRIM database option: fixed set of 12 target projectile
-cdr        combinations, read from one single file:  TRIM.dat
+cdr        LTRIM_OLD: old TRIM database option: fixed set of 12 target-projectile
+cdr        combinations, read from one single file: TRIM.dat
 
       SUBROUTINE EIRENE_BROADREF
       USE EIRMOD_PRECISION

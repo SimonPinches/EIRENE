@@ -52,7 +52,7 @@ c    1.96e-14*sqrt(eionhe/Ry) = 3.5487E-14
 c  kk >  0
       ELSE
 
-cdr  automatic cut-off at density 1E8: collapse fit to Corona value.
+cdr  automatic cut-off at density 1E8: collapse fit to corona value.
         DEIMIN=LOG(1.D8)
         PLS=MAX(DEIMIN,DEINL(K))
 

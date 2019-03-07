@@ -71,7 +71,6 @@ C
 
         CALL EIRENE_INIT_CMDTA(2)
 
-
       END IF
 
       NRCXI=0
@@ -99,7 +98,6 @@ csw
 
 
       CALL EIRENE_CONDENSE
-
 
 c
 cdr  set some further assistant arrays, for ei and pi processes:

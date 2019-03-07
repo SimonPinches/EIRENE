@@ -1099,7 +1099,7 @@ C
         IF (IGJUM0(I)==0) THEN
 C  SURFACE I IS ACTIVE
           IF (ILPLG(I).NE.0) THEN
-C  SURFACE I IS PART IF A CONTOUR USED FOR THE MESHGENERATOR
+C  SURFACE I IS PART IF A CONTOUR USED FOR THE MESH GENERATOR
             VSX=P2(1,I)-P1(1,I)
             VSY=P2(2,I)-P1(2,I)
             VS=SQRT(VSX**2+VSY**2)+EPS60
@@ -1248,19 +1248,19 @@ C  NCLTAL(ITRI):  TRIANGLE ITRI IS PART OF ORIGINAL STRUCTURED GRID CELL IX,IY,
 C                 WITH IX,IY, CODED IN THE 1D ARRAY FORM (NCELL) OF EIRENE STANDARD GRIDS
 C                 NCELL=NCLTAL(ITRI)
       IF (LCOARSE) THEN
-      	write (iunout,*) 'SCORING OF VOLUME-AVERAGED TALLIES  '
+        write (iunout,*) 'SCORING OF VOLUME-AVERAGED TALLIES  '
         write (iunout,*) 'IS ON COARSE GRID CELLS NCELL ONLY. '
-      DO ITRI=1,NTRII
-        IY=IYTRI(ITRI)
-        IX=IXTRI(ITRI)
-        IF (IX .GT. 0) THEN
-           IN=IY+(IX-1)*NR1TAL
-           NCLTAL(ITRI)=IN
-        ELSE   ! ADDITIONAL TRIA CELLS, OUTSIDE OLD STRUCTURED GRID
-           icoadd = icoadd+1
-           NCLTAL(ITRI)=icoadd
-        ENDIF
-      ENDDO
+        DO ITRI=1,NTRII
+          IY=IYTRI(ITRI)
+          IX=IXTRI(ITRI)
+          IF (IX .GT. 0) THEN
+            IN=IY+(IX-1)*NR1TAL
+            NCLTAL(ITRI)=IN
+          ELSE   ! ADDITIONAL TRIA CELLS, OUTSIDE OLD STRUCTURED GRID
+            icoadd = icoadd+1
+            NCLTAL(ITRI)=icoadd
+          ENDIF
+        ENDDO
 
       ELSEIF (.NOT.LCOARSE) THEN
         write (iunout,*) 'SCORING OF VOLUME-AVERAGED TALLIES  '
@@ -1307,8 +1307,7 @@ C  PLUS THOSE FROM INPUT FILE BLOCK 2E (NRADD)
 C  TOTAL NUMBER OF CELLS OF COARSE GRID: STRUCTURED GRID PLUS ALL ADDITIONAL CELLS
       NSBOX_TAL=NSURF_TAL+NRADD_TAL
 
-
-C  save old COURSE grid structure
+C  save old COARSE grid structure
 
       nr1tal_save=nr1tal
       np2tal_save=np2tal
@@ -2837,8 +2836,8 @@ C
  6100 CONTINUE
       WRITE (iunout,'(1X,I3,1P,1E11.3)') NRWL(ITARG),
      .                                 RRSTEP(ITARG,NRWL(ITARG))
-      CALL EIRENE_MASR1 ('EEMAX    ',EEMAX)
-      CALL EIRENE_MASR1 ('EESHT    ',EESHT)
+      CALL EIRENE_MASR1 ('EEMAX   ',EEMAX)
+      CALL EIRENE_MASR1 ('EESHT   ',EESHT)
 C
       ETOT=EEMAX+EESHT
       EFLX(ITARG)=EEMAX+EESHT

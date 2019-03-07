@@ -68,7 +68,7 @@ cdr  PLS:  ELECTRON DENSITY PARAMETER in CR MODELS
 cdr       (NOT TO BE CONFUSED WITH THE DENSITY FACTOR BETWEEN RATES AND RATE COEFF.)
 cdr: set hard-wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3
 cdr: at this lower limit density the fits are produced such
-cdr: that they collapse to the Corona limit values.
+cdr: that they collapse to the corona limit values.
       DEIMIN=LOG(1.D8)
       IF (NSTORDR >= NRAD) THEN
         DO 10 J=1,NSBOX
@@ -95,9 +95,9 @@ C
 C  CHECK IF THIS REALLY IS AN ATOM: USE NPRT(ISPZ).EQ.1?
 
         IF (NPRT(IATM).NE.1) THEN
-          WRITE (IUNOUT,*) 'SEVERE INPUT ERROR DETECTED IN XSECTA: '
+          WRITE (IUNOUT,*) 'SEVERE INPUT ERROR DETECTED IN XSECTA:'
           WRITE (IUNOUT,*) 'IATM= ',IATM,' CARRIES NOT ONE FLUX UNIT'
-          WRITE (IUNOUT,*) 'EXIT CALLED FROM XSECTA '
+          WRITE (IUNOUT,*) 'EXIT CALLED FROM XSECTA'
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
 
@@ -408,11 +408,11 @@ C  BULK PARTICLE INDEX
             LGACX(IATM,IDSC,0)=IRCX
             LGACX(IATM,IDSC,1)=IPLS
 c
-            if (ngena(iatm).lt.0) then  !  in range -1,...-infty
+            if (ngena(iatm).lt.0) then  !  in range -1,...-infinity
 c  set cx fluid limit FDLM (critical Knudsen number Kn_c = mfp_cx/delta
 c  delta: typical length (could be cell size, or gradient length...)
 c  use the integer input flag ngena (generation limit).
-              MFL=-(ngena(iatm)+1)  !  now MFL in range 0 to +infty
+              MFL=-(ngena(iatm)+1)  !  now MFL in range 0 to +infinity
 c  ngena=-10001 produces Kn_c=1.0. Larger abs(ngena) --> smaller Kn_c
               FDLMCX(IRCX)=1.0E4/(MFL+eps30)
             endif
@@ -667,7 +667,7 @@ C
           CALL EIRENE_LEER(2)
           IF (LGAPI(IATM,0,0).EQ.0) THEN
             CALL EIRENE_LEER(1)
-            WRITE (iunout,*) 'NO GENERAL ION IMPACT COLLISIONS '
+            WRITE (iunout,*) 'NO GENERAL ION IMPACT COLLISIONS'
             CALL EIRENE_LEER(1)
           ELSE
             DO 885 IAPI=1,NAPII(IATM)
@@ -686,11 +686,11 @@ C
       RETURN
 C
   990 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSECTA: EXIT CALLED '
+      WRITE (iunout,*) 'ERROR IN XSECTA: EXIT CALLED'
       WRITE (iunout,*) 'INVALID SPECIES INDEX FOR CX COLLISION'
       CALL EIRENE_EXIT_OWN(1)
   991 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSECTA: EXIT CALLED '
+      WRITE (iunout,*) 'ERROR IN XSECTA: EXIT CALLED'
       WRITE (iunout,*) 'INVALID SPECIES INDEX FOR ELASTIC COLLISION'
       CALL EIRENE_EXIT_OWN(1)
   992 CONTINUE
@@ -705,16 +705,16 @@ C
       CALL EIRENE_EXIT_OWN(1)
   994 CONTINUE
       WRITE (iunout,*) 'ERROR DETECTED IN XSECTA.'
-      WRITE (iunout,*) 'REACTION NO. KK= ',KK, 'NOT READ FROM FILE '
+      WRITE (iunout,*) 'REACTION NO. KK= ',KK, 'NOT READ FROM FILE'
       WRITE (iunout,*) 'IATM = ',IATM
       WRITE (iunout,*) 'ISWR(KK) = ',ISWR(KK)
       WRITE (iunout,*) 'EXIT CALLED'
       CALL EIRENE_EXIT_OWN(1)
   996 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTA: EXIT CALLED'
-      WRITE (iunout,*) 'NO COLLISION DATA AVAILABLE FOR THE CHOICE  '
+      WRITE (iunout,*) 'NO COLLISION DATA AVAILABLE FOR THE CHOICE'
       WRITE (iunout,*) 'OF POST-COLLISION SAMPLING FLAG ISCDEA'
-      WRITE (iunout,*) 'OR OTHER COLLISION DATA INCONSISTENY '
+      WRITE (iunout,*) 'OR OTHER COLLISION DATA INCONSISTENCY'
       CALL EIRENE_EXIT_OWN(1)
   998 CONTINUE
       WRITE (iunout,*) 'INSUFFICIENT STORAGE FOR PI: NRPI=',NRPI

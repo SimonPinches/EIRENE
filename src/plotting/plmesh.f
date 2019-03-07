@@ -3,14 +3,16 @@ c           otherwise sometimes problems with non-closing polygons encountered.
 cdr june 17:  separate WRMESH (WRITING) and PLMESH (PLOTTING).
 
       SUBROUTINE EIRENE_PLMESH
-c  create closed polygonal contours, from the eirene standard and additional surfaces
+c  create closed polygonal contours, from the eirene standard and
+c  additional surfaces
 c  use ILPLG(isurf) flag, from input blocks 3A LEVGEO=3 OR LEVGEO=4,
 C                         or certain additional surfaces, input block 3B,
 c                         0<RLB<2.
 c  This set of closed contours, together with their orientation, can be used
 c  in 2D grid generators to produce multiply connected triangular grids.
 c  The orientation indicates whether the inner or outer part of a closed contour
-c  is a valid computational volume for triangular grid generation (not needed for plotting)
+c  is a valid computational volume for triangular grid generation (not needed
+c  for plotting)
 
 
 c  EIRENE_WRMESH: Write closed contours onto output stream 78+ifoff.
@@ -30,7 +32,6 @@ c  EIRENE_PLMESH: plots these contours, using GR plot software.
       USE EIRMOD_CGRID
       USE EIRMOD_CTRCEI
       IMPLICIT NONE
-
 
       INTEGER, PARAMETER :: MAXPOIN=2000
       REAL(DP) :: partcont(maxpoin,2,2), maxlen
@@ -90,7 +91,7 @@ C ILPLG WIRD IM INPUT BLOCK 3 EINGELESEN
         MAXLEN = 0.
         irip=0
 C AKTUELLE KONTOUR BESTIMMEN, STUECKE MIT ILPLG=ICONT GEHOEREN ZUR
-C AKTUELLEN CONTOUR, ANFANGS UND ENDPUNKT DIESES STUECKES WERDEN AUF
+C AKTUELLEN KONTOUR, ANFANGS UND ENDPUNKT DIESES STUECKES WERDEN AUF
 C PARTCONT GESPEICHERT
 
 c  ADDITIONAL SURFACES
@@ -380,7 +381,6 @@ c  last point on contour
 
  1000   CONTINUE
       ENDDO    ! END OF DO ICONT.... LOOP
-
 
 c  re-initialize gr plot software for next picture
       call grnwpn(1)

@@ -31,7 +31,7 @@ C
       INTEGER :: ICOUNT
 
 C  DO WE HAVE A MODIFIED OUTER SURFACE NORMAL ?
-C  THIS CAN ALSO BE USED FOR GAUSSIAN LOBE BI-DRECTIONAL REFLECTION FUNCTION
+C  THIS CAN ALSO BE USED FOR GAUSSIAN LOBE BI-DIRECTIONAL REFLECTION FUNCTION
       IF (SNORM.GE.EPS10) THEN
         CRTXL=CRTXR
         CRTYL=CRTYR
@@ -61,7 +61,7 @@ C   POLAR ANGLE: FROM GAUSSIAN, St. dev.= COSP , with cut-off COSM, done by reje
 
 cdr  this sampling from Gaussian is currently highly inefficient.
 cdr  a) due to rejection
-cdr  b) because a full triple of Gaussian random numbers is generated, but just the first
+cdr  b) because a full triplet of Gaussian random numbers is generated, but just the first
 cdr     component is used
 
         ZPHI=COSP*FG1(INIV2)

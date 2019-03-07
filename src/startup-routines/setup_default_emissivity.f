@@ -12,19 +12,19 @@ cdr  this present routine (pb, 2017):
 cdr  Try to reproduce the old version of these 6 routines,
 cdr  by using the new structures EMIS_LINES%....
 cdr
-cdr  number of lines       6     (BA_AL, BA_BET,....LY_BET)
+cdr  number of lines       6     (BA_AL, BA_BET, ..., LY_BET)
 cdr  number of components: 6     (COUPLING TO H, H+,H2,H2+,H-,H3+)
 cdr  number of contributions:  detected from input file,
 cdr                            as in old ba... ly... routines
 cdr                           (there sum over contributions only
 cdr                            on ADDV tallies),
-cdr  hard-coded here: use pop.coeffs from amjuel H.12, and
+cdr  hard-coded here: use pop. coeffs from amjuel H.12, and
 cdr                   use ratios for short living radicals (H2+, H3+, H-)
 cdr                   from amjuel H.11 and H.12
 cdr
 cdr  tbd:  make consistent notation "component vs. contribution"
 cdr  tbd:  below we now still have 6*6=36 times mostly identical code.
-cdr  I beliefe:
+cdr  I believe:
 cdr  all that this routine does is: define CNT%.., and set emis_lines%...=CNT%..
 cdr  for each of the 36 hydrogenic components. The ADDV tallies are filled later,
 cdr  in calls to emission.f from sigha. So we need at least one chord and nchtal=2,
@@ -79,7 +79,7 @@ C  identifier of Line:
 
       ALLOCATE (EMIS_LINES(1)%COMPO(NUM_COMPO))
 
-C  COMPONENT 1: LINEAR IN H, D, T   -ATOM      DENSITY
+C  COMPONENT 1: LINEAR IN H/D/T ATOM DENSITY
 C  ALL TEST ATOM (ITYP=1) CONTRIBUTIONS WITH
 C                         NUCLEAR CHARGE NUMBER=1
 C  H(n=3)/H(n=1)
@@ -108,7 +108,7 @@ C  H(n=3)/H(n=1)
       CNT%CR           = 'OT '
 
 cdr all reaction data are the same for all contributions.
-cdr only CNT%ISP  (species index) may differ for different contributions.
+cdr only CNT%ISP (species index) may differ for different contributions.
       IAT = 0
       DO I = 1, NATMI
         IF (NCHARA(I) == 1) THEN
@@ -118,7 +118,7 @@ cdr only CNT%ISP  (species index) may differ for different contributions.
         END IF
       END DO
 
-C  COMPONENT 2: LINEAR IN H+, D+, T+  -ION  DENSITY
+C  COMPONENT 2: LINEAR IN H+/D+/T+ ION DENSITY
 C  ALL BULK ION (ITYP=4) CONTRIBUTIONS WITH
 C                        NUCLEAR CHARGE NUMBER=1 AND CHARGE STATE NUMBER=1
 C  H(n=3)/H+
@@ -155,7 +155,7 @@ C  H(n=3)/H+
         END IF
       END DO
 
-C  COMPONENT 3:  LINEAR IN "H2"  -MOLEC.    DENSITY
+C  COMPONENT 3: LINEAR IN "H2" MOLEC. DENSITY
 C  ALL MOLECULE (ITYP=2) CONTRIBUTIONS WITH
 C                        NUCLEAR CHARGE NUMBER=2
 C  H(n=3)/H2(g)
@@ -192,7 +192,7 @@ C  H(n=3)/H2(g)
         END IF
       END DO
 
-C  COMPONENT 4: LINEAR IN "H2+" -MOLEC.ION DENSITY
+C  COMPONENT 4: LINEAR IN "H2+" MOLEC. ION DENSITY
 C  H(n=3)/H2+(g)
 
       EMIS_LINES(1)%COMPO(4)%COMPO_NAME =
@@ -232,7 +232,7 @@ C  H(n=3)/H2+(g)
         END IF
       END DO
 
-C  COMPONENT 5:  LINEAR IN H-  -NEG. ION  DENSITY
+C  COMPONENT 5: LINEAR IN H- NEG. ION DENSITY
 C  H(n=3)/H-
 
       EMIS_LINES(1)%COMPO(5)%COMPO_NAME =
@@ -273,7 +273,7 @@ C  H(n=3)/H-
         END IF
       END DO
 
-C  COMPONENT 6 LINEAR IN H3+ -MOL. ION  DENSITY
+C  COMPONENT 6: LINEAR IN H3+ MOL. ION DENSITY
 C  H(n=3)/H3+
 
       EMIS_LINES(1)%COMPO(6)%COMPO_NAME =
@@ -325,7 +325,7 @@ C  H(n=3)/H3+
 
 
 ************************************************
-* BALMER BETA,  LINE NO. 2
+* BALMER BETA, LINE NO. 2
 ************************************************
 
       EMIS_LINES(2)%LINE_NAME = 'BA_BETA'
@@ -342,7 +342,7 @@ C  RADIATIVE TRANSITION RATE (1/S)
 
       ALLOCATE (EMIS_LINES(2)%COMPO(NUM_COMPO))
 
-C  COMPONENT 1: LINEAR IN H, D, T   -ATOM      DENSITY
+C  COMPONENT 1: LINEAR IN H/D/T ATOM DENSITY
 C  ALL TEST ATOM (ITYP=1) CONTRIBUTIONS WITH
 C                         NUCLEAR CHARGE NUMBER=1
 C  H(n=4)/H(n=1)
@@ -379,7 +379,7 @@ C  H(n=4)/H(n=1)
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H+  -ION       DENSITY
+C  CONTRIBUTION LINEAR IN H+ ION DENSITY
 C  H(n=4)/H+
 
       EMIS_LINES(2)%COMPO(2)%COMPO_NAME = 'ATOMIC HYDR. ION'
@@ -414,7 +414,7 @@ C  H(n=4)/H+
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H2  -MOLEC.    DENSITY
+C  CONTRIBUTION LINEAR IN H2 MOLEC. DENSITY
 C  H(n=4)/H2(g)
 
       EMIS_LINES(2)%COMPO(3)%COMPO_NAME = 'DIATOMIC NEUTRAL HYDR. MOL'
@@ -449,7 +449,7 @@ C  H(n=4)/H2(g)
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H2+ -MOLEC.ION DENSITY
+C  CONTRIBUTION LINEAR IN H2+ MOLEC. ION DENSITY
 C  H(n=4)/H2+(g)
 
       EMIS_LINES(2)%COMPO(4)%COMPO_NAME =
@@ -489,7 +489,7 @@ C  H(n=4)/H2+(g)
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H-  -NEG. ION  DENSITY
+C  CONTRIBUTION LINEAR IN H- NEG. ION DENSITY
 C  H(n=4)/H-
 
       EMIS_LINES(2)%COMPO(5)%COMPO_NAME =
@@ -529,7 +529,7 @@ C  H(n=4)/H-
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H3+ -MOL. ION  DENSITY
+C  CONTRIBUTION LINEAR IN H3+ MOL. ION DENSITY
 C  H(n=4)/H3+
 
       EMIS_LINES(2)%COMPO(6)%COMPO_NAME =
@@ -596,7 +596,7 @@ C  RADIATIVE TRANSITION RATE (1/S)
 
       ALLOCATE (EMIS_LINES(3)%COMPO(NUM_COMPO))
 
-C  COMPONENT 1: LINEAR IN H, D, T   -ATOM      DENSITY
+C  COMPONENT 1: LINEAR IN H/D/T ATOM DENSITY
 C  ALL TEST ATOM (ITYP=1) CONTRIBUTIONS WITH
 C                         NUCLEAR CHARGE NUMBER=1
 C  H(n=5)/H(n=1)
@@ -633,7 +633,7 @@ C  H(n=5)/H(n=1)
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H+  -ION       DENSITY
+C  CONTRIBUTION LINEAR IN H+ ION DENSITY
 C  H(n=5)/H+
 
       EMIS_LINES(3)%COMPO(2)%COMPO_NAME = 'ATOMIC HYDR. ION'
@@ -703,7 +703,7 @@ C  H(n=5)/H2(g)
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H2+ -MOLEC.ION DENSITY
+C  CONTRIBUTION LINEAR IN H2+ MOLEC. ION DENSITY
 C  H(n=5)/H2+(g)
 
       EMIS_LINES(3)%COMPO(4)%COMPO_NAME =
@@ -743,7 +743,7 @@ C  H(n=5)/H2+(g)
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H-  -NEG. ION  DENSITY
+C  CONTRIBUTION LINEAR IN H- NEG. ION DENSITY
 C  H(n=5)/H-
 
       EMIS_LINES(3)%COMPO(5)%COMPO_NAME =
@@ -783,7 +783,7 @@ C  H(n=5)/H-
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H3+ -MOL. ION  DENSITY
+C  CONTRIBUTION LINEAR IN H3+ MOL. ION DENSITY
 C  H(n=5)/H3+
 
       EMIS_LINES(3)%COMPO(6)%COMPO_NAME =
@@ -851,7 +851,7 @@ C  RADIATIVE TRANSITION RATE (1/S)
 
       ALLOCATE (EMIS_LINES(4)%COMPO(NUM_COMPO))
 
-C  COMPONENT 1: LINEAR IN H, D, T   -ATOM      DENSITY
+C  COMPONENT 1: LINEAR IN H/D/T ATOM DENSITY
 C  ALL TEST ATOM (ITYP=1) CONTRIBUTIONS WITH
 C                         NUCLEAR CHARGE NUMBER=1
 C  H(n=6)/H(n=1)
@@ -888,7 +888,7 @@ C  H(n=6)/H(n=1)
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H+  -ION       DENSITY
+C  CONTRIBUTION LINEAR IN H+ ION DENSITY
 C  H(n=6)/H+
 
       EMIS_LINES(4)%COMPO(2)%COMPO_NAME = 'ATOMIC HYDR. ION'
@@ -923,7 +923,7 @@ C  H(n=6)/H+
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H2  -MOLEC.    DENSITY
+C  CONTRIBUTION LINEAR IN H2 MOLEC. DENSITY
 C  H(n=6)/H2(g)
 
       EMIS_LINES(4)%COMPO(3)%COMPO_NAME = 'DIATOMIC NEUTRAL HYDR. MOL'
@@ -958,7 +958,7 @@ C  H(n=6)/H2(g)
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H2+ -MOLEC.ION DENSITY
+C  CONTRIBUTION LINEAR IN H2+ MOLEC. ION DENSITY
 C  H(n=6)/H2+(g)
 
       EMIS_LINES(4)%COMPO(4)%COMPO_NAME =
@@ -998,7 +998,7 @@ C  H(n=6)/H2+(g)
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H-  -NEG. ION  DENSITY
+C  CONTRIBUTION LINEAR IN H- NEG. ION DENSITY
 C  H(n=6)/H-
 
       EMIS_LINES(4)%COMPO(5)%COMPO_NAME =
@@ -1038,7 +1038,7 @@ C  H(n=6)/H-
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H3+ -MOL. ION  DENSITY
+C  CONTRIBUTION LINEAR IN H3+ MOL. ION DENSITY
 C  H(n=6)/H3+
 
       EMIS_LINES(4)%COMPO(6)%COMPO_NAME =
@@ -1105,7 +1105,7 @@ C  RADIATIVE TRANSITION RATE (1/S)
 
       ALLOCATE (EMIS_LINES(5)%COMPO(NUM_COMPO))
 
-C  COMPONENT 1: LINEAR IN H, D, T   -ATOM      DENSITY
+C  COMPONENT 1: LINEAR IN H/D/T ATOM DENSITY
 C  ALL TEST ATOM (ITYP=1) CONTRIBUTIONS WITH
 C                         NUCLEAR CHARGE NUMBER=1
 C  H(n=2)/H(n=1)
@@ -1142,7 +1142,7 @@ C  H(n=2)/H(n=1)
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H+  -ION       DENSITY
+C  CONTRIBUTION LINEAR IN H+ ION DENSITY
 C  H(n=2)/H+
 
       EMIS_LINES(5)%COMPO(2)%COMPO_NAME = 'ATOMIC HYDR. ION'
@@ -1177,7 +1177,7 @@ C  H(n=2)/H+
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H2  -MOLEC.    DENSITY
+C  CONTRIBUTION LINEAR IN H2 MOLEC. DENSITY
 C  H(n=2)/H2(g)
 
       EMIS_LINES(5)%COMPO(3)%COMPO_NAME = 'DIATOMIC NEUTRAL HYDR. MOL'
@@ -1212,7 +1212,7 @@ C  H(n=2)/H2(g)
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H2+ -MOLEC.ION DENSITY
+C  CONTRIBUTION LINEAR IN H2+ MOLEC. ION DENSITY
 C  H(n=2)/H2+(g)
 
       EMIS_LINES(5)%COMPO(4)%COMPO_NAME =
@@ -1252,7 +1252,7 @@ C  H(n=2)/H2+(g)
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H-  -NEG. ION  DENSITY
+C  CONTRIBUTION LINEAR IN H- NEG. ION DENSITY
 C  H(n=2)/H-
 
       EMIS_LINES(5)%COMPO(5)%COMPO_NAME =
@@ -1292,7 +1292,7 @@ C  H(n=2)/H-
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H3+ -MOL. ION  DENSITY
+C  CONTRIBUTION LINEAR IN H3+ MOL. ION DENSITY
 C  H(n=2)/H3+
 
       EMIS_LINES(5)%COMPO(6)%COMPO_NAME =
@@ -1359,7 +1359,7 @@ C  RADIATIVE TRANSITION RATE (1/S)
 
       ALLOCATE (EMIS_LINES(6)%COMPO(NUM_COMPO))
 
-C  COMPONENT 1: LINEAR IN H, D, T   -ATOM      DENSITY
+C  COMPONENT 1: LINEAR IN H/D/T ATOM DENSITY
 C  ALL TEST ATOM (ITYP=1) CONTRIBUTIONS WITH
 C                         NUCLEAR CHARGE NUMBER=1
 C  H(n=3)/H(n=1)
@@ -1396,7 +1396,7 @@ C  H(n=3)/H(n=1)
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H+  -ION       DENSITY
+C  CONTRIBUTION LINEAR IN H+ ION DENSITY
 C  H(n=3)/H+
 
       EMIS_LINES(6)%COMPO(2)%COMPO_NAME = 'ATOMIC HYDR. ION'
@@ -1431,7 +1431,7 @@ C  H(n=3)/H+
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H2  -MOLEC.    DENSITY
+C  CONTRIBUTION LINEAR IN H2 MOLEC. DENSITY
 C  H(n=3)/H2(g)
 
       EMIS_LINES(6)%COMPO(3)%COMPO_NAME = 'DIATOMIC NEUTRAL HYDR. MOL'
@@ -1466,7 +1466,7 @@ C  H(n=3)/H2(g)
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H2+ -MOLEC.ION DENSITY
+C  CONTRIBUTION LINEAR IN H2+ MOLEC. ION DENSITY
 C  H(n=3)/H2+(g)
 
       EMIS_LINES(6)%COMPO(4)%COMPO_NAME =
@@ -1506,7 +1506,7 @@ C  H(n=3)/H2+(g)
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H-  -NEG. ION  DENSITY
+C  CONTRIBUTION LINEAR IN H- NEG. ION DENSITY
 C  H(n=3)/H-
 
       EMIS_LINES(6)%COMPO(5)%COMPO_NAME =
@@ -1546,7 +1546,7 @@ C  H(n=3)/H-
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H3+ -MOL. ION  DENSITY
+C  CONTRIBUTION LINEAR IN H3+ MOL. ION DENSITY
 C  H(n=2)/H3+
 
       EMIS_LINES(6)%COMPO(6)%COMPO_NAME =

@@ -523,7 +523,7 @@ c  conditional expexctation estimator for flight segment J
 c
 c  find new AX(1)= AX(1) * (1-exp(-ex))/ex)
 c           AX(1)= AX(1) * funexp(ex)
-c  funexp(x), with 0 <= x <= infty
+c  funexp(x), with 0 <= x <= infinity
             FF=EIRENE_FUNEXP(EX,EXPM)
             AX(1)=AX(1)*FF
 
@@ -1100,9 +1100,8 @@ C
       ENDIF
       GOTO 999
   997 CALL EIRENE_MASAGE
-     .  ('ERROR IN FOLNEUT, DETECTED IN SUBR. CLLTST    ')
-      CALL EIRENE_MASAGE
-     .  ('PARTICLE IS KILLED                            ')
+     .  ('ERROR IN FOLNEUT, DETECTED IN SUBR. CLLTST')
+      CALL EIRENE_MASAGE('PARTICLE IS KILLED')
 C   DETAILED PRINTOUT ALREADY DONE FROM SUBR. CLLTST
       IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
       GOTO 999

@@ -2,7 +2,7 @@ cdr  Dec. 15: added allocatable public array fnuiar(npls): species-dependent
 cdr                                 collision frequency, for FP collisions
 
       MODULE EIRMOD_CFPLK
-C   parameters for fokker planck collision operator
+C   parameters for fokker-planck collision operator
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
 

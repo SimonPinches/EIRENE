@@ -460,7 +460,7 @@ C   PRINT ONLY THE HEADER FOR TALLY, BECAUSE TALLY IDENTICAL ZERO
      .                      NR1PR,NP2PR,NT3PR,NBMLT,NSBPR,-1,0)
             CALL
      .         EIRENE_MASAGE
-     .              ('IDENTICAL ZERO, NOT PRINTED                  ')
+     .              ('IDENTICAL ZERO, NOT PRINTED')
             CALL EIRENE_LEER(2)
   119     CONTINUE
         ENDIF
