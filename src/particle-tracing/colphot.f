@@ -122,7 +122,7 @@ C
 Cdr  additional arrays for ANALOG CASCADE and SPLITTING AT COLLISIONS.
 Cdr (should be set in initialization phase, not here)
 CDR  check: are the corresponding arrays PATEI,PMLEI, PIOEI real or integer (1/2 particle possible?)
-      INTEGER, ALLOCATABLE, SAVE :: NAMIEI(:),NAMIPI(:)
+      INTEGER, ALLOCATABLE :: NAMIEI(:),NAMIPI(:)
 
 
 csw add n 2lines
@@ -334,8 +334,8 @@ csw no coll.estim.
             IF (PHV_IESTOTph(iphot,IRPH,1).NE.0) GOTO 999
             IF (PHV_IESTOTph(iphot,IRPH,2).NE.0) GOTO 999
             IF (PHV_IESTOTph(iphot,IRPH,3).NE.0) GOTO 999
-          ITYP=PHV_N2NDOTph(iphot,IRPH,1)
-          vel=velo
+            ITYP=PHV_N2NDOTph(iphot,IRPH,1)
+            vel=velo
             write (iunout,*)
      .        'ot not ready for photons. exit from collide '
             call EIRENE_exit_own(1)
