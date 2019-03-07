@@ -1,10 +1,19 @@
-C
-      SUBROUTINE EIRENE_FOLSTAT_ION(IC_PART,VLX,VLY,VLZ,*,*,*)
+Cdr
+c Sync between folneut and folion.
+c March 2019: extracted from folion: static loop:
+c  particles do not move, but carry out next collision or surface event
+c  instantaneously. 
+c  Careful: infinite loops are possible, if no collisions or surface
+c  events lead out of the community of static loop particles
+c
+      SUBROUTINE EIRENE_FOLSTAT_ION(IC_PART,VLX,VLY,VLZ,CFLAG,*,*,*)
 C  FOLLOW IONS IN STATIC LOOP
 
-C  CURRENTLY: REDUCED (GC) VELOCITIES ARE USED TO HANDLE SURFACE EVENTS
-C             IN THE STATIC LOOP. 
-C             PERHAPS NEEDS TO BE REVISED TO FULL VELOCITIES?
+C  IN CALLING PROGRAM ALREADY VERIFIED: FINITE CHANCE TO LEAVE STATIC LOOP. 
+C  IFPATH=1. 
+C  NRC$>0, --> ZMFP NOT INFINITY
+C  FURTHER: IF ONLY ELASTIC COLLISION, THEN STATIC LOOP CANNOT BE LEFT, INFINITE LOOP.
+C  ALSO: NOT LGVAC(NCELL)
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -42,6 +51,8 @@ c  particle enters the static loop, NFOL$(ISPZ)=-1
       IF (IC_PART.EQ.1.AND.NLTRC.AND.TRCHST) THEN !FIRST ENTRY TO STATIC LOOP
         WRITE (iunout,*) 'TRAJECTORY ENTERS STATIC LOOP, ITYP=', ITYP
         CALL EIRENE_CHCTRC(X0,Y0,Z0,0,21)
+      ELSEIF (NLTRC.AND.TRCHST.and.ic_part.le.10) THEN
+        WRITE (iunout,*) 'ion static generation ic_part=',ic_part
       ENDIF
  
 C***********************************************************************
@@ -88,7 +99,6 @@ C
         NUPC(1)=(NCELL-NRCELL-NBLCKA)/NR1P2
       END IF
 
-      IF (IFPATH.NE.1) GOTO 993
       ZMFP=EIRENE_FPATH(NCELL,CFLAG,1,1)
 C  XSTOR IN STATIC LOOP:  NOT NEEDED, BECAUSE NCOU=1
 C     XSTOR2(:,:,1)=XSTOR(:,:)
@@ -116,8 +126,9 @@ C  AT THIS POINT: PARTICLE INCIDENT ON SURFACE, IC_PART GT 1 NECESSARILY
           GOTO 230
         END IF
       ENDIF
+      WRITE (IUNOUT,*) 'FOLSTAT_ION: I SHOULD NOT BE HERE'
 C
-
+C..................................................................
 C  AT THIS POINT: PARTICLE WAS IN STATIC APPROXIMATION, 
 C                 BUT NOW IT RETURNS TO FULL MOTION
 C
@@ -188,6 +199,7 @@ C             MSURFG= ??
             IF (ILIIN(NLIM+ISTS) .NE. 0)
      .        CALL EIRENE_STDCOL (ISTS,3,SG,*101,*380)
           ENDIF
+          WRITE (IUNOUT,*) 'FOLSTAT_ION: I SHOULD NOT BE HERE'
         ENDIF
       ENDIF
 
@@ -204,12 +216,6 @@ C**********************************************************************
 380   CONTINUE
       RETURN 3
 
-993   CALL EIRENE_MASAGE
-     .  ('ERROR IN STATIC LOOP,  NO PARTICLE TRACING BUT     ')
-      CALL EIRENE_MASAGE
-     .  ('IFPATH.NE.1. PARTICLE IS KILLED               ')
-      WRITE (iunout,*) 'IION ',IION
-      GOTO 999
 C
 999   PTRASH(ISTRA)=PTRASH(ISTRA)-WEIGHT
       ETRASH(ISTRA)=ETRASH(ISTRA)-WEIGHT*E0
