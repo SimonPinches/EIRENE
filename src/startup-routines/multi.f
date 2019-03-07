@@ -9,7 +9,6 @@ cdr                 indpro =4: check this option: tbd.
 cdr                 Currently available for indpro(I), I=1,2,3,4,5,6
 cdr                 indpro(7) (electr. field): still missing here 
 
-      USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
       USE EIRMOD_CINIT

@@ -21,7 +21,6 @@ CDR  CALLED IN INITIALIZATION PHASE OF RUN
 c  ical =   0:      allocate storage
 c  ical ne. 0:      call EIRENE_INIT_CMDTA(2) (contained in eirmod_comxs) cdr: called twice ??
 C
-      USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMXS
       USE EIRMOD_COMSOU

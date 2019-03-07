@@ -3,7 +3,6 @@
 !pb 05.12.06: structure COORTET is build up from tetrahedra
 !pb 07.12.06: set itethand to default value 1
 
-      USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CTETRA
       USE EIRMOD_CLGIN

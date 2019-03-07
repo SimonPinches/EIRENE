@@ -2,7 +2,6 @@
 c
 c     this subroutine prints information about surface properties for IDL tool
 c
-      USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CLGIN
       USE EIRMOD_CGRID

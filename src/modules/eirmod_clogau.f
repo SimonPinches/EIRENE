@@ -5,7 +5,6 @@ cdr  Jan. 2018:   NLEMIS added, nlogau=39
 
       MODULE EIRMOD_CLOGAU
 
-      USE EIRMOD_PRECISION
 
       IMPLICIT NONE
 

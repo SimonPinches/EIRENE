@@ -1,6 +1,5 @@
       subroutine eirene_vtkout_head
 
-        use eirmod_precision
         use eirmod_parmmod
         use eirmod_cadgeo
         use eirmod_clgin
@@ -50,7 +49,6 @@
 
 
       subroutine eirene_vtkout_surfaces
-        use eirmod_precision
         use eirmod_parmmod
         use eirmod_cadgeo
         use eirmod_clgin
