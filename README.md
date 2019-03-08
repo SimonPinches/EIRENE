@@ -1,5 +1,9 @@
 # EIRENE
 
+## Source code
+
+The source code of EIRENE is [hosted on JuGit](https://jugit.fz-juelich.de/eirene/eirene).
+
 ## Monte Carlo transport solver
 - multi species
 - nonlinear
@@ -28,6 +32,34 @@ Following atomic and molecular databases are usually used within EIRENE:
 - [Hydhel](http://www.eirene.de/hydhel.pdf)
 - [Methane](http://www.eirene.de/methane.pdf)
 - [H2vibr](http://www.eirene.de/h2vibr.pdf)
+
+## Installation
+
+EIRENE is served with a CMake config file that allows to control which [interface](src/interfaces) (`EIRENE_INTERFACE`) and [user-routines](src/user-routines) (`EIRENE_USER-ROUTINES`) are compiled with the code. Options to activate trace output (`TRACE`) and usage of the Message Passing Interface (`MPI`) are available.
+
+Typical targets of the generated makefile are `EIRENE` for the EIRENE library to be linked into plasma codes, `eirene` for a standalone version of EIRENE, and `doc` for a Doxygen documentation (by fare not complete).
+
+Getting started:
+```bash
+cd eirene
+mkdir buildRelease
+cd buildRelease
+FC=gfortran cmake ../src
+make -j EIRENE
+```
+Above lines generate an EIRENE library in `eirene/libRelease` with the "Dummy" interface and "default" user-routines. If you like to compile for SOLPS-ITER use e.g.
+```bash
+FC=gfortran cmake ../src -DEIRENE_INTERFACE=SOLPS-ITER -DEIRENE_USER-ROUTINES=iter
+```
+instead. The variable values correspond to the folder name without prefix (`couple_`, `user_`).
+
+## Attention
+
+[Interfaces](src/interfaces/) and [user-routines](src/user-routines/) may not be up to date. Use the routines served with the plasma code repository if you are not sure that the EIRENE repository contains the interface and user-routines you want.
+
+## Contributing
+
+EIRENE is an open source code and we are very happy to accept contributions.
 
 ## Legal aspects
 
