@@ -59,7 +59,7 @@ instead. The variable values correspond to the folder name without prefix (`coup
 
 ## Contributing
 
-EIRENE is an open source code and we are very happy to accept contributions.
+EIRENE is an open source code and we are very happy to accept contributions. Please refer to the [contributing guide](CONTRIBUTING.md) for more details.
 
 ## Legal aspects
 
