@@ -6,7 +6,7 @@
 !pb 090309  rewritten to use automatic arrays as output buffer in mpi_reduce
 !pb 090309  loops reorganized
 !pb 270309  typos corrected
-!sw 091112  added support for csdvi_cop and csdvi_bgk
+!sw 091112  added support for csdvi_bgk
 
 cdr Nov. 15:  comments needed. copv tallies: variances for coupling ??
 cdr                            to be checked again after changes in 2013
@@ -34,7 +34,7 @@ C> - tallies
 
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: NATM, NION, NMOL, NPHOT, NPLS, NSTRA,
-     .                          NLMPGS, NRTALS, NCPV_STAT, NCV, NLIMPS,
+     .                          NLMPGS, NRTALS, NCV, NLIMPS,
      .                          NRTAL, NADSPC, NVOLTL, NSDW, NSD, NSRFTL
       USE EIRMOD_CAI, ONLY: XMCT
       USE EIRMOD_COMUSR, ONLY: NATMI, NIONI, NMOLI, NPHOTI, NPLSI
@@ -44,8 +44,6 @@ C> - tallies
       USE EIRMOD_COMPRT, ONLY: ISTRA
       USE EIRMOD_CPES, ONLY: MY_PE, NPESTA, NEED_CALSTR, CALC_STRATUM
       USE EIRMOD_CSDVI, ONLY: NSIGI_SPC, SDVI1, SDVI2, SIGMAC, SGMCS
-      USE EIRMOD_CSDVI_COP, ONLY: EE_COP, EES_COP, SDVIA_COP, SGMS_COP,
-     .                            SIGMA_COP, STV_COP, STVS_COP
       USE EIRMOD_CSDVI_BGK, ONLY: EE_BGK, EES_BGK, NBGV_STAT, SDVIA_BGK,
      .                            SGMS_BGK, SIGMA_BGK, STV_BGK, STVS_BGK
       USE EIRMOD_COUTAU
@@ -307,56 +305,6 @@ C  covariances between two volume-averaged tallies
           if (my_pe_gr==0) sgmcs(2,1:ncv) = helpv(1:ncv)
         end if
 
-csw 09nov2012 reduce csdvi_cop
-        if (ncpv_stat > 0) then
-          allocate(dummyw(max(nrtals,ncpv_stat)+1))
-          allocate(helpw(max(nrtals,ncpv_stat)+1))
-
-          do i=1,ncpv_stat
-            dummyw(1:nrtals) = sigma_cop(i,1:nrtals)
-            call mpi_reduce(dummyw,helpw,nrtals,
-     .                      mpi_double_precision,mpi_sum,
-     .                      0,calstr_comm,ier1)
-            if(my_pe_gr==0) sigma_cop(i,1:nrtals) = helpw(1:nrtals)
-
-            dummyw(1:nrtals) = stv_cop(i,1:nrtals)
-            call mpi_reduce(dummyw,helpw,nrtals,
-     .                      mpi_double_precision,mpi_sum,
-     .                      0,calstr_comm,ier1)
-            if(my_pe_gr==0) stv_cop(i,1:nrtals) = helpw(1:nrtals)
-
-            dummyw(1:nrtals) = sdvia_cop(i,1:nrtals)
-            call mpi_reduce(dummyw,helpw,nrtals,
-     .                      mpi_double_precision,mpi_sum,
-     .                      0,calstr_comm,ier1)
-            if(my_pe_gr==0) sdvia_cop(i,1:nrtals) = helpw(1:nrtals)
-
-            dummyw(1:nrtals) = ee_cop(i,1:nrtals)
-            call mpi_reduce(dummyw,helpw,nrtals,
-     .                      mpi_double_precision,mpi_sum,
-     .                      0,calstr_comm,ier1)
-            if(my_pe_gr==0) ee_cop(i,1:nrtals) = helpw(1:nrtals)
-          enddo
-
-          call mpi_reduce(sgms_cop(1:ncpv_stat),helpv,ncpv_stat,
-     .                    mpi_double_precision,mpi_sum,
-     .                    0,calstr_comm,ier1)
-          if (my_pe_gr==0) sgms_cop(1:ncpv_stat) = helpv(1:ncpv_stat)
-
-          call mpi_reduce(stvs_cop(1:ncpv_stat),helpv,ncpv_stat,
-     .                    mpi_double_precision,mpi_sum,
-     .                    0,calstr_comm,ier1)
-          if (my_pe_gr==0) stvs_cop(1:ncpv_stat) = helpv(1:ncpv_stat)
-
-          call mpi_reduce(ees_cop(1:ncpv_stat),helpv,ncpv_stat,
-     .                    mpi_double_precision,mpi_sum,
-     .                    0,calstr_comm,ier1)
-          if (my_pe_gr==0) ees_cop(1:ncpv_stat) = helpv(1:ncpv_stat)
-
-          deallocate(dummyw)
-          deallocate(helpw)
-        endif
-csw
 
 csw 09nov2012 reduce csdvi_bgk
         if (nbgv_stat > 0) then

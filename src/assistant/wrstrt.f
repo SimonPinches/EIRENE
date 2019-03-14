@@ -23,7 +23,6 @@ cpb  Dec. 2017: remove type SPECT_ARRAY, not needed in Fortran 2003
      .                  ISDVI1,STAT1,ISDVI2,STAT2,
      .                  ISDVC1,SIGC,ISDVC2,SIGCS,
      .                  IBGKI,SIG_BGK,JBGKI,SIGS_BGK,
-     .                  ICOPI,SIG_COP,JCOPI,SIGS_COP,
      .                  ISPCI,TRCFLE)
 
       USE EIRMOD_PRECISION
@@ -33,16 +32,16 @@ cpb  Dec. 2017: remove type SPECT_ARRAY, not needed in Fortran 2003
 
       TYPE(EIRENE_SPECTRUM), INTENT(INOUT) :: TALLYL(*)
       REAL(DP), INTENT(INOUT) :: TALLYV(*), TALLYS(*),
-     .                         STAT1(*), SIG_BGK(*), SIG_COP(*)
+     .                         STAT1(*), SIG_BGK(*)
       REAL(DP), INTENT(INOUT) :: STAT2(*), SIGC(*), SIGCS(*)
-      REAL(DP), INTENT(INOUT) :: SIGS_BGK(*), SIGS_COP(*)
+      REAL(DP), INTENT(INOUT) :: SIGS_BGK(*)
       INTEGER, INTENT(IN) :: IG, NSTRAI, IESTM1, IESTM2, ISDVI1, ISDVI2,
-     .                       ISDVC1, ISDVC2, IBGKI, JBGKI, ICOPI, JCOPI,
+     .                       ISDVC1, ISDVC2, IBGKI, JBGKI, 
      .                       IESTM3, ISPCI
       LOGICAL, INTENT(IN) :: TRCFLE
 
       INTEGER :: IMAX11, IMAX12, IMAX21, IMAX22, IMAX23, IMAX24, IMAX2,
-     .           IMAX31, IMAX32, IMAX41, IMAX42, NRECL, IRC, ISTRA,
+     .           IMAX31, IMAX32, NRECL, IRC, ISTRA,
      .           JINI, J, JEND, IMAX, ISPC, IMAXS, NSPECI,NSPECE
 
 C
@@ -58,8 +57,7 @@ C
       IMAX2=IMAX21+IMAX22+IMAX23+IMAX24
       IMAX31=IBGKI/NRECL+1
       IMAX32=JBGKI/NRECL+1
-      IMAX41=ICOPI/NRECL+1
-      IMAX42=JCOPI/NRECL+1
+
       IMAXS=0
       DO ISPC=1,IESTM3
         IMAXS=IMAXS+1
@@ -69,7 +67,7 @@ C  SPECTRUM BINS RANGE FROM 0 TO NSPC+1
           IMAXS=IMAXS+4*((1+TALLYL(ISPC)%NSPC+1)/NRECL+1)
         END IF
       END DO
-      IMAX=IMAX11+IMAX12+IMAX2+IMAX31+IMAX32+IMAX41+IMAX42+IMAXS
+      IMAX=IMAX11+IMAX12+IMAX2+IMAX31+IMAX32+IMAXS
       ISTRA=IG
       IRC=ISTRA*IMAX+1
       IF (TRCFLE.AND.IG.NE.0) WRITE (iunout,*) 'WRITE STRATUM NO. ',IG
@@ -198,36 +196,7 @@ C
       GOTO 61
 C
    62 CONTINUE
-      IF (TRCFLE) WRITE (iunout,*) 'STATIS_COP'
-      IRC=IRC+1
-      JINI=1
-    7 JEND=MIN0(JINI-1+NRECL,ICOPI)
-      IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.ICOPI)) THEN
-        WRITE (iunout,*) 'WRITE 10 IRC,JINI,JEND ',
-     .                             IRC,JINI,JEND
-      ENDIF
-      WRITE (10+ifoff,REC=IRC) (SIG_COP(J),J=JINI,JEND)
-      IF (JEND.EQ.ICOPI) GOTO 8
-      JINI=JEND+1
-      IRC=IRC+1
-      GOTO 7
-C
-    8 CONTINUE
-      IF (TRCFLE) WRITE (iunout,*) 'SUM STATIS_COP'
-      IRC=IRC+1
-      JINI=1
-    9 JEND=MIN0(JINI-1+NRECL,JCOPI)
-      IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.JCOPI)) THEN
-        WRITE (iunout,*) 'WRITE 10 IRC,JINI,JEND ',
-     .                             IRC,JINI,JEND
-      ENDIF
-      WRITE (10+ifoff,REC=IRC) (SIGS_COP(J),J=JINI,JEND)
-      IF (JEND.EQ.JCOPI) GOTO 13
-      JINI=JEND+1
-      IRC=IRC+1
-      GOTO 9
-C
-   13 CONTINUE
+
       IF (TRCFLE) WRITE (iunout,*) 'SPECTRA'
       DO ISPC=1,IESTM3
 C  SET RANGE OF SPECTRUM ISPC, ADD BIN 0 AND NSPC+1 FOR LOW AND HIGH END OF SPECTRUM
@@ -291,7 +260,6 @@ C
      .            ISDVI1,STAT1,ISDVI2,STAT2,
      .            ISDVC1,SIGC,ISDVC2,SIGCS,
      .            IBGKI,SIG_BGK,JBGKI,SIGS_BGK,
-     .            ICOPI,SIG_COP,JCOPI,SIGS_COP,
      .            ISPCI,TRCFLE)
 C
 C  READ DATA FOR SINGLE STRATA OR SUM OVER STRATA FROM TEMP. FILE FORT.10
@@ -306,8 +274,7 @@ C
       IMAX2=IMAX21+IMAX22+IMAX23+IMAX24
       IMAX31=IBGKI/NRECL+1
       IMAX32=JBGKI/NRECL+1
-      IMAX41=ICOPI/NRECL+1
-      IMAX42=JCOPI/NRECL+1
+ 
       IMAXS=0
       DO ISPC=1,IESTM3
         IMAXS=IMAXS+1
@@ -317,14 +284,13 @@ C  SPECTRUM BINS RANGE FROM 0 TO NSPC+1
           IMAXS=IMAXS+4*((1+TALLYL(ISPC)%NSPC+1)/NRECL+1)
         END IF
       END DO
-      IMAX=IMAX11+IMAX12+IMAX2+IMAX31+IMAX32+IMAX41+IMAX42+IMAXS
+      IMAX=IMAX11+IMAX12+IMAX2+IMAX31+IMAX32+IMAXS
       ISTRA=IG
       IRC=ISTRA*IMAX+1
       IF (TRCFLE.AND.IG.NE.0) WRITE (iunout,*) 'READ STRATUM NO. ',IG
       IF (TRCFLE.AND.IG.EQ.0) WRITE (iunout,*) 'READ SUM OVER STRATA '
 
       OPEN (UNIT=10+ifoff,ACCESS='DIRECT',FORM='UNFORMATTED',
-!pb     .      RECL=8*NRECL,STATUS='OLD',FILE='fort.10')
      .      RECL=8*NRECL,STATUS='OLD')
 
 C
@@ -447,36 +413,7 @@ C
       GOTO 65
 C
    66 CONTINUE
-      IF (TRCFLE) WRITE (iunout,*) 'STATIS_COP'
-      IRC=IRC+1
-      JINI=1
-   70 JEND=MIN0(JINI-1+NRECL,ICOPI)
-      IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.ICOPI)) THEN
-        WRITE (iunout,*) 'READ 10 IRC,JINI,JEND ',
-     .                            IRC,JINI,JEND
-      ENDIF
-      READ (10+ifoff,REC=IRC) (SIG_COP(J),J=JINI,JEND)
-      IF (JEND.EQ.ICOPI) GOTO 80
-      JINI=JEND+1
-      IRC=IRC+1
-      GOTO 70
-C
-   80 CONTINUE
-      IF (TRCFLE) WRITE (iunout,*) 'SUM STATIS_COP'
-      IRC=IRC+1
-      JINI=1
-   90 JEND=MIN0(JINI-1+NRECL,JCOPI)
-      IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.JCOPI)) THEN
-        WRITE (iunout,*) 'READ 10 IRC,JINI,JEND ',
-     .                            IRC,JINI,JEND
-      ENDIF
-      READ (10+ifoff,REC=IRC) (SIGS_COP(J),J=JINI,JEND)
-      IF (JEND.EQ.JCOPI) GOTO 100
-      JINI=JEND+1
-      IRC=IRC+1
-      GOTO 90
-C
-  100 CONTINUE
+
       IF (TRCFLE) WRITE (iunout,*) 'SPECTRA'
       DO ISPC=1,IESTM3
         IRC=IRC+1
