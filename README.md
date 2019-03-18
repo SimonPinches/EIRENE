@@ -37,7 +37,7 @@ Following atomic and molecular databases are usually used within EIRENE:
 
 EIRENE is served with a CMake config file that allows to control which [interface](src/interfaces) (`EIRENE_INTERFACE`) and [user-routines](src/user-routines) (`EIRENE_USER-ROUTINES`) are compiled with the code. Options to activate trace output (`TRACE`) and usage of the Message Passing Interface (`MPI`) are available.
 
-Typical targets of the generated makefile are `EIRENE` for the EIRENE library to be linked into plasma codes, `eirene` for a standalone version of EIRENE, and `doc` for a Doxygen documentation (by fare not complete).
+Typical targets of the generated makefile are `EIRENE` for the EIRENE library to be linked into plasma codes, `eirene` for a standalone version of EIRENE, and `doc` for a Doxygen documentation (by far not complete).
 
 Getting started:
 ```bash
@@ -47,15 +47,15 @@ cd buildRelease
 FC=gfortran cmake ../src
 make -j EIRENE
 ```
-Above lines generate an EIRENE library in `eirene/libRelease` with the "Dummy" interface and "default" user-routines. If you like to compile for SOLPS-ITER use e.g.
+Above lines generate an EIRENE library in `eirene/libRelease` with the "Dummy" interface and "default" user-routines, where `j` is an integer number denoting the number of threads used for compilation (default is `j=1`). If you like to compile for SOLPS-ITER use e.g.
 ```bash
 FC=gfortran cmake ../src -DEIRENE_INTERFACE=SOLPS-ITER -DEIRENE_USER-ROUTINES=iter
 ```
 instead. The variable values correspond to the folder name without prefix (`couple_`, `user_`).
 
-## Attention
+**Attention**
 
-[Interfaces](src/interfaces/) and [user-routines](src/user-routines/) may not be up to date. Use the routines served with the plasma code repository if you are not sure that the EIRENE repository contains the interface and user-routines you want.
+[Interfaces](src/interfaces/) and [user-routines](src/user-routines/) may not be up to date. Use the routines served with the plasma code repository if you are not sure if the EIRENE repository contains the interface and user-routines you want.
 
 ## Contributing
 
@@ -75,5 +75,5 @@ numerical tool.
 
 For this reason no download of EIRENE as ready-to-use software is foreseen.
 
-On the other hand EIRENE is an open source code, which we are happy to provide 
+On the other hand, EIRENE is an open source code, which we are happy to provide 
 and jointly employ within projects and collaborations of mutual interest.
