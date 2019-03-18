@@ -47,7 +47,7 @@ cd buildRelease
 FC=gfortran cmake ../src
 make -j EIRENE
 ```
-Above lines generate an EIRENE library in `eirene/libRelease` with the "Dummy" interface and "default" user-routines, where `j` is an integer number denoting the number of threads used for compilation (default is `j=1`). If you like to compile for SOLPS-ITER use e.g.
+Above lines generate an EIRENE library in `eirene/libRelease` with the "Dummy" interface and "default" user-routines, where `j` denotes to use as many threads as available for compilation. If you like to compile for SOLPS-ITER use e.g.
 ```bash
 FC=gfortran cmake ../src -DEIRENE_INTERFACE=SOLPS-ITER -DEIRENE_USER-ROUTINES=iter
 ```
