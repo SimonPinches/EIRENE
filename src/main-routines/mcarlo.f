@@ -55,7 +55,6 @@ C
       USE EIRMOD_CGEOM
       USE EIRMOD_CSDVI
       USE EIRMOD_CSDVI_BGK
-      USE EIRMOD_CSDVI_COP
       USE EIRMOD_COMPRT
       USE EIRMOD_CPES
       USE EIRMOD_COMNNL
@@ -185,10 +184,6 @@ cdr   write (iunout,*) 'cpu time for stats0 ', tim2-tim1
       CALL EIRENE_STATS0_BGK
       TIM2=EIRENE_SECOND_OWN()
 cdr   write (iunout,*) 'cpu time for stats0_bgk ', tim2-tim1
-      tim1 = tim2
-      CALL EIRENE_STATS0_COP
-      TIM2=EIRENE_SECOND_OWN()
-cdr   write (iunout,*) 'cpu time for stats0_cop ', tim2-tim1
       tim1 = tim2
       CALL EIRENE_STATS0_SPC
       TIM2=EIRENE_SECOND_OWN()
@@ -853,10 +848,6 @@ C   MEAN SQUARE
      .                                    (NSBOX_TAL,NR1TAL,NP2TAL,
      .                                     NT3TAL,NLIMPS,
      .                                     NLSYMP(ISTRA),NLSYMT(ISTRA))
-            IF (NSIGI_COP.GT.0) CALL EIRENE_STATS1_COP
-     .                                    (NSBOX_TAL,NR1TAL,NP2TAL,
-     .                                     NT3TAL,NLIMPS,
-     .                                     NLSYMP(ISTRA),NLSYMT(ISTRA))
             IF (NSIGI_SPC.GT.0) CALL EIRENE_STATS1_SPC
      .                                    (NSBOX_TAL,NR1TAL,NP2TAL,
      .                                     NT3TAL,NLIMPS,
@@ -1002,16 +993,6 @@ C  CONVERT TO %
                 SIGMA_BGK(IB,J)=MAX(0._DP,SIGMA_BGK(IB,J)-EPS6)*100.D0
   212         CONTINUE
   211       CONTINUE
-          ENDIF
-          IF (NSIGI_COP.GT.0) THEN
-            CALL EIRENE_STATS2_COP(XMCP(ISTRA),FSIG,ZFLUX)
-C  CONVERT TO %
-            DO 213 IC=1,NCPVI_STAT
-              SGMS_COP(IC)=MAX(0._DP,SGMS_COP(IC)-EPS6)*100.D0
-              DO 214 J=1,NSBOX_TAL
-                SIGMA_COP(IC,J)=MAX(0._DP,SIGMA_COP(IC,J)-EPS6)*100.D0
-  214         CONTINUE
-  213       CONTINUE
           ENDIF
           IF (NSIGI_SPC.GT.0) THEN
             CALL EIRENE_STATS2_SPC(XMCP(ISTRA),FSIG,ZFLUX)
@@ -1177,7 +1158,6 @@ cdr npesta is the master processor for stratum no ISTRA
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
      .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .              NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
-     .              NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .              NSIGI_SPC,TRCFLE)
             endif
           ENDIF
@@ -1291,7 +1271,6 @@ C  STRATA
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
      .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .              NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
-     .              NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .              NSIGI_SPC,TRCFLE)
         ENDIF
         GOTO 2000
@@ -1343,15 +1322,6 @@ C  BGK TALLY VARIANCES
  1272       CONTINUE
  1271     CONTINUE
         ENDIF
-C  PROBLEM-SPECIFIC COUPLING TALLY VARIANCES
-        IF (NSIGI_COP.GT.0) THEN
-          DO 1273 IC=1,NCPVI_STAT
-            SGMS_COP(IC)=STVS_COP(IC)
-            DO 1274 J=1,NSBOX_TAL
-              SIGMA_COP(IC,J)=STV_COP(IC,J)
- 1274       CONTINUE
- 1273     CONTINUE
-        ENDIF
 C
 C   ALGEBRAIC EXPRESSION IN TALLIES, SUM OVER STRATA  1571--1579
 C
@@ -1391,7 +1361,6 @@ C
      .                NSDVI1,SDVI1,NSDVI2,SDVI2,
      .                NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .                NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
-     .                NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .                NSIGI_SPC,
 cdr spectrum tally variances are already in ESTIML
      .                TRCFLE)

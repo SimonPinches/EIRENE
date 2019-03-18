@@ -186,7 +186,6 @@ C
       USE EIRMOD_CGEOM
       USE EIRMOD_CSDVI
       USE EIRMOD_CSDVI_BGK
-      USE EIRMOD_CSDVI_COP
       USE EIRMOD_COMPRT
       USE EIRMOD_COMNNL
       USE EIRMOD_COMSOU
@@ -1727,7 +1726,7 @@ C
 CDR  set density from B2 array DNIB, for each fluid
 CDR  set plasma flow velocity field from B2 arrays UPB (parallel velocity)
 c  without drifts:
-c  upb * pitch:  poloidal velocity (i.e. cartesian x,y direction).
+c  upb * pitch: poloidal velocity (i.e. cartesian x,y direction).
 c  poloidal field direction is given by that of the poloidal cell face PU..(in),
 C  i.e. along a flux surface. (PU(...) is cell-centered)
 c  and upb*(1-pitch^2): toroidal velocity  (i.e. cartesian z direction (nltrz) or
@@ -1816,8 +1815,8 @@ C  READ DATA FOR "IPLS" FROM EIRENE DUMP FILE FT13
                WRITE(IUNOUT,*) 'IPLS, IPLSV,IPLSTI ',IPLS,IPLSV,IPLSTI
             ENDIF
 
-            IPLSTI = MPLSTI(IPLS)
-            IPLSV = MPLSV(IPLS)
+            IPLSTI= MPLSTI(IPLS)
+            IPLSV= MPLSV(IPLS)
             DIINTF(IPLS,:)=DIIN(IPLS,:)
             VXINTF(IPLSV,:)=VXIN(IPLSV,:)
             VYINTF(IPLSV,:)=VYIN(IPLSV,:)
@@ -1999,7 +1998,7 @@ C
         WRITE (iunout,*) 'ITARG: TARGET NUMBER '
         WRITE (iunout,*) 'IPRT : SUBSECTION OF TARGET '
         WRITE (iunout,*)
-     .        'NPBS : BRAAMS (SURFACE) X-CELL INDEX OF TARGET '
+     .     'NPBS : BRAAMS (SURFACE) X-CELL INDEX OF TARGET '
         WRITE (iunout,*) 'NPBC : BRAAMS (ZONE) P-CELL INDEX OF TARGET '
         WRITE (iunout,*) 'NPES : POLOIDAL SURFACE INDEX OF TARGET'
         WRITE (iunout,*) '       IN EIRENE MESH'
@@ -2957,7 +2956,6 @@ C  NOTHING TO BE DONE
      .               NSDVI1,SDVI1,NSDVI2,SDVI2,
      .               NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .               NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
-     .               NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .               NSIGI_SPC,TRCFLE)
         ELSE
           WRITE (iunout,*) 'ERROR IN INFCOP: STRATUM ISTRAI= ',ISTRAI
@@ -2992,6 +2990,8 @@ C  IF THE SOURCE STRENGTH IS TO BE CHANGED DURING THE SHORT CYCLE (E.G.: VOL-REC
 C  THEN FLXEIR HAS TO BE RESET TO SCALE TO NEW SOURCE STRENGTH DURING SHORT CYCLE
           FLXEIR(ISTRAI)=1._DP
         ENDIF
+C
+C  FIRSTLY INITIALIZE SOURCE TERM ARRAYS
 
 C
         CHPM  = 0._DP
@@ -3527,7 +3527,8 @@ cdr  add pppl_cop contribution to internal energy sources rate
 
             IF (.NOT.LSHORT) THEN
 
-!pb replace sigma_cop
+cdr:  try to find stat. variance for particle balance sources
+cdr   ntalm is a copv tally.
               istat_cop = 0
               do i = 1, nsigvi
                 if ((iih(i) == ntalm).and.(igh(i) == NPLSI+IPLS)) then
@@ -3629,7 +3630,8 @@ c  skip working on internal lin. comb. of tallies, unless sufficient storage
 
             IF (.NOT.LSHORT) THEN
 
-!pb replace sigma_cop
+cdr:  try to find stat. variance for momentum balance sources
+cdr   ntalm is a copv tally.
               istat_cop = 0
               do i = 1, nsigvi
                 if ((iih(i) == ntalm).and.(igh(i) == 2*NPLSI+IPLS)) then
@@ -3726,7 +3728,8 @@ cdr  this is now identical to see above ?
 
         IF (.NOT.LSHORT) THEN
 
-!pb replace sigma_cop
+cdr:  try to find stat. variance for electron energy balance sources
+cdr   ntalm is a copv tally.
           istat_cop = 0
           do i = 1, nsigvi
             if ((iih(i) == ntalm).and.(igh(i) == ICP3+1)) then
@@ -3747,9 +3750,6 @@ cdr  this is now identical to see above ?
                 IN=IY+(IX-1)*NR1TAL_SAVE
 
                 SEERES=(EAEL(IN)+EMEL(IN)+EIEL(IN))*VOLTAL(IN)*FLX_EIR
-!pb              RESSEE(ISTRAI)=RESSEE(ISTRAI)+
-!pb     .                       ABS(SIGMA_COP(2*NPLSI+1,IN)*
-!pb     .                       SEERES/100.D0)
                 RESSEE(ISTRAI)=RESSEE(ISTRAI)+
      .                         ABS(SIGMA(ISTAT_COP,IN)*
      .                         SEERES/100.D0)
@@ -3782,7 +3782,7 @@ C  or     (    lcoarse) already scored on B2.5 grid cell INC=IY+(IX-1)*NR1TAL
      .                 (EAPL(IPLS,INC)+EMPL(IPLS,INC)+
      .                  EIPL(IPLS,INC)+
      .                  EPPL_COP(IPLS,INC))*VOLTAL(INC)*ELCHA
-                  CHEIS=CHEIS+CHEIM(INC)*VOLTAL(IN)
+                  CHEIS=CHEIS+CHEIM(INC)*VOLTAL(INC)
                   SEIS=SEIS+(EAPL(IPLS,INC)+EMPL(IPLS,INC)+
      .                       EIPL(IPLS,INC)+
      .                       EPPL_COP(IPLS,INC))*VOLTAL(INC)
@@ -3834,7 +3834,8 @@ c  skip working on internal lin. comb. of tallies, unless sufficient storage
 
       IF (.NOT.LSHORT) THEN
 
-!pb replace sigma_cop
+cdr:  try to find stat. variance for ion energy balance sources
+cdr   ntalm is a copv tally.
           istat_cop = 0
           do i = 1, nsigvi
             if ((iih(i) == ntalm).and.(igh(i) == ICP3+2)) then
@@ -3854,9 +3855,6 @@ c  skip working on internal lin. comb. of tallies, unless sufficient storage
                IN=IY+(IX-1)*NR1TAL_SAVE
                SEIRES=(EAPL(IPLS,IN)+EMPL(IPLS,IN)+
      .                 EIPL(IPLS,IN))*VOLTAL(IN)*FLX_EIR
-!pb                RESSEI(ISTRAI)=RESSEI(ISTRAI)+
-!pb     .                       ABS(SIGMA_COP(2*NPLSI+2,IN)*
-!pb     .                       SEIRES/100.D0)
                   RESSEI(ISTRAI)=RESSEI(ISTRAI)+
      .                           ABS(SIGMA(ISTAT_COP,IN)*
      .                           SEIRES/100.D0)
