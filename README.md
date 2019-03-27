@@ -6,7 +6,7 @@ The source code of EIRENE is [hosted on JuGit](https://jugit.fz-juelich.de/eiren
 
 ## Monte Carlo transport solver
 - multi species
-- nonlinear
+- nonlinear (neutral-neutral)
 - time dependent
 
 ## Curiosities
