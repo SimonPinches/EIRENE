@@ -17,7 +17,7 @@ endif()
 # Adds compiler flags to all build types.
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
   set(CMAKE_Fortran_FLAGS_RELEASE "-fp-model source")
-  set(CMAKE_Fortran_FLAGS_DEBUG "-g -warn all,nointerfaces -check all")
+  set(CMAKE_Fortran_FLAGS_DEBUG "-g -warn all,nointerfaces -check all -traceback")
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(CMAKE_Fortran_FLAGS_RELEASE "-O3")
   set(CMAKE_Fortran_FLAGS_DEBUG "-g -Wall -fcheck=all")
