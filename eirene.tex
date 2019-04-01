@@ -1,6 +1,6 @@
 %\documentclass[12pt,dvipdfm,a4paper]{report}
 \documentclass[12pt,a4paper]{report}
-%$\documentclass[12pt,dvipdfm]{report}
+%\documentclass[12pt,dvipdfm]{report}
 
 \oddsidemargin 5mm
 \evensidemargin 4mm
@@ -8,71 +8,43 @@
 \textwidth 156mm
 \textheight 240mm
 \parindent=0pt
-\newenvironment{deflist}{\begin{list}{ }{\labelwidth2.2truecm
-\leftmargin2.4truecm \labelsep0.2truecm \parsep0truecm}}{\end{list}}
-\newenvironment{deflist2}{\begin{list}{ }{\labelwidth1.5truecm
-\leftmargin1.7truecm \labelsep0.2truecm \parsep0truecm}}{\end{list}}
+
 \usepackage{longtable}
-\usepackage{epsf}
-\usepackage{amsbsy}
-\usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{amsmath}
-\usepackage{color}
 \usepackage{graphicx}
-\usepackage{epstopdf}
-\newcommand{\vOmega}{\mathbf{\Omega}}
-\newcommand{\vdOmega}{\mathbf{d\Omega}}
-\newcommand{\vv}{\mathbf{v}}
-\newcommand{\ve}{\mathbf{e}}
-\newcommand{\vepsilon}{\mathbf{\epsilon}}
-\newcommand{\vn}{\mathbf{n}}
-\newcommand{\vV}{\mathbf{V}}
-\newcommand{\vx}{\mathbf{x}}
-\newcommand{\vu}{\mathbf{u}}
-\newcommand{\vr}{\mathbf{r}}
-\newcommand{\vp}{\mathbf{p}}
-\newcommand{\vb}{\mathbf{b}}
-\newcommand{\ver}{\mathbf{e}_r}
-\newcommand{\veth}{\mathbf{e}_\theta}
-\newcommand{\veph}{\mathbf{e}_\phi}
-\newcommand{\vC}{\mathbf{C}}
-\newcommand{\vdr}{\mathbf{dr}}
-\newcommand{\vdp}{\mathbf{dp}}
-\newcommand{\vF}{\mathbf{F}}
-\newcommand{\vE}{\mathbf{E}}
-\newcommand{\vB}{\mathbf{B}}
-\newcommand{\vS}{\mathbf{S}}
-\newcommand{\vL}{\mathbf{L}}
-\newcommand{\vJ}{\mathbf{J}}
-\newcommand{\vj}{\mathbf{j}}
-\newcommand{\vrho}{\mathbf{\rho}}
-\newcommand{\vDeltar}{\mathbf{\Delta r}}
-\newcommand{\vdS}{\mathbf{dS}}
-\newcommand{\ddr}{d^{\,3}r}
-\newcommand{\ddv}{d^{\,3}v}
-\newcommand{\ddk}{d^{\,3}k}
-\newcommand{\ddV}{d^{\,3}V}
-\newcommand{\vBTheta}{\mathbf{B}_\Theta}
-\newcommand{\vBPhi}{\mathbf{B}_\Phi}
-%\usepackage{color}
-\pagecolor {white}
-
 % CSW: use following package for better ps2pdf-conversion
 \usepackage{times}
-
 \usepackage[unicode=true,
 % hypertex, % use for activating links in DVI file
 % dvipdfm, % use for bookmarks in final version
  bookmarks=true,bookmarksnumbered=true,bookmarksopen=true,
  breaklinks=false,pdfborder={0 0 0},backref=false,colorlinks=true]
  {hyperref}
+% \usepackage{bookmark} % use only together with dvipdfm option of hyperref package!
+
 \hypersetup{pdftitle={EIRENE Documentation},linkcolor=blue, citecolor=blue, urlcolor=blue, filecolor=blue}
- \usepackage{bookmark} % use only together with dvipdfm option of hyperref package!
+
+\newcommand{\vOmega}{\mathbf{\Omega}}
+\newcommand{\vv}{\mathbf{v}}
+\newcommand{\ve}{\mathbf{e}}
+\newcommand{\vV}{\mathbf{V}}
+\newcommand{\vx}{\mathbf{x}}
+\newcommand{\vr}{\mathbf{r}}
+\newcommand{\vb}{\mathbf{b}}
+\newcommand{\ver}{\mathbf{e}_r}
+\newcommand{\veth}{\mathbf{e}_\theta}
+\newcommand{\veph}{\mathbf{e}_\phi}
+\newcommand{\vC}{\mathbf{C}}
+\newcommand{\vF}{\mathbf{F}}
+\newcommand{\vB}{\mathbf{B}}
+\newcommand{\vj}{\mathbf{j}}
 
 \setcounter{secnumdepth}{3}
 \setcounter{tocdepth}{3}
+
 \graphicspath{{figures/}}
+
 \begin{document}
 
 
