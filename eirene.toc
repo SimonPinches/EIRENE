@@ -1,0 +1,168 @@
+\contentsline {chapter}{\numberline {I}Introduction and General Information}{VIII}{chapter.1}
+\contentsline {chapter}{\numberline {1}The neutral gas transport equation;\nobreakspace {}\nobreakspace {}\\ Monte-Carlo terminology}{1}{chapter.arabicchapter.1}
+\contentsline {section}{\numberline {1.1}The linear Boltzmann equation for the distribution function $f$}{2}{section.arabicchapter.1.1}
+\contentsline {paragraph}{The linear form of Boltzmann transport equation}{5}{section*.4}
+\contentsline {paragraph}{stationary kinetic transport equation}{6}{section*.5}
+\contentsline {subsection}{\numberline {1.1.1}The WCU generalisation of the Boltzmann equation}{7}{subsection.arabicchapter.1.1.1}
+\contentsline {paragraph}{linear form of WCU equation: the generic EIRENE equation}{8}{section*.6}
+\contentsline {section}{\numberline {1.2}The linear integral equation for the collision density $\Psi $}{8}{section.arabicchapter.1.2}
+\contentsline {subsection}{\numberline {1.2.1}The Green's function concept}{11}{subsection.arabicchapter.1.2.1}
+\contentsline {section}{\numberline {1.3}Monte Carlo solution of equation 1}{12}{section.arabicchapter.1.3}
+\contentsline {subsection}{\numberline {1.3.1}Unbiased estimators}{12}{subsection.arabicchapter.1.3.1}
+\contentsline {subsection}{\numberline {1.3.2}Scaling of tallies}{13}{subsection.arabicchapter.1.3.2}
+\contentsline {subsubsection}{\numberline {1.3.2.1}Scaling in problems with ignorable coordinates}{14}{subsubsection.arabicchapter.1.3.2.1}
+\contentsline {paragraph}{stationary (time independent) problems}{14}{section*.7}
+\contentsline {paragraph}{one ignorable spatial coordinate}{14}{section*.8}
+\contentsline {subsection}{\numberline {1.3.3}Statistical errors, Efficiency (FOM)}{14}{subsection.arabicchapter.1.3.3}
+\contentsline {paragraph}{Multiple cell crossings}{15}{section*.9}
+\contentsline {paragraph}{Linear functions of tallies}{16}{section*.10}
+\contentsline {paragraph}{Statistical independence of MC histories}{16}{section*.11}
+\contentsline {subsubsection}{\numberline {1.3.3.1}Sampling, Non-analog sampling}{16}{subsubsection.arabicchapter.1.3.3.1}
+\contentsline {subsubsection}{\numberline {1.3.3.2}Stratified Source Sampling}{18}{subsubsection.arabicchapter.1.3.3.2}
+\contentsline {subsubsection}{\numberline {1.3.3.3}Testing the stratification}{21}{subsubsection.arabicchapter.1.3.3.3}
+\contentsline {subsection}{\numberline {1.3.4}Source sampling}{21}{subsection.arabicchapter.1.3.4}
+\contentsline {subsubsection}{\numberline {1.3.4.1}time-census sources}{22}{subsubsection.arabicchapter.1.3.4.1}
+\contentsline {subsubsection}{\numberline {1.3.4.2}Point sources}{22}{subsubsection.arabicchapter.1.3.4.2}
+\contentsline {subsubsection}{\numberline {1.3.4.3}Line sources}{22}{subsubsection.arabicchapter.1.3.4.3}
+\contentsline {subsubsection}{\numberline {1.3.4.4}Surface-sources}{22}{subsubsection.arabicchapter.1.3.4.4}
+\contentsline {subsubsection}{\numberline {1.3.4.5}Volume sources}{22}{subsubsection.arabicchapter.1.3.4.5}
+\contentsline {subsection}{\numberline {1.3.5}Sampling a free flight from the transport kernel T}{22}{subsection.arabicchapter.1.3.5}
+\contentsline {subsubsection}{\numberline {1.3.5.1}Alternative: fixed time step (or constant path length increment)}{23}{subsubsection.arabicchapter.1.3.5.1}
+\contentsline {subsection}{\numberline {1.3.6}Sampling from the collision kernel C}{24}{subsection.arabicchapter.1.3.6}
+\contentsline {subsection}{\numberline {1.3.7}elastic collisions, VELOEL}{26}{subsection.arabicchapter.1.3.7}
+\contentsline {subsection}{\numberline {1.3.8}charge exchange, VELOCX}{26}{subsection.arabicchapter.1.3.8}
+\contentsline {subsection}{\numberline {1.3.9}electron-impact collisions, VELOEI}{26}{subsection.arabicchapter.1.3.9}
+\contentsline {subsection}{\numberline {1.3.10}general heavy-particle-impact collisions, VELOPI }{26}{subsection.arabicchapter.1.3.10}
+\contentsline {subsection}{\numberline {1.3.11}photon processes (emission, absorption, scattering)}{26}{subsection.arabicchapter.1.3.11}
+\contentsline {section}{\numberline {1.4}Surface Reflection Models}{27}{section.arabicchapter.1.4}
+\contentsline {subsection}{\numberline {1.4.1}The Behrisch matrix reflection model}{27}{subsection.arabicchapter.1.4.1}
+\contentsline {subsection}{\numberline {1.4.2}TRIM code database reflection models}{29}{subsection.arabicchapter.1.4.2}
+\contentsline {section}{\numberline {1.5}Recycling surface sources}{31}{section.arabicchapter.1.5}
+\contentsline {subsection}{\numberline {1.5.1}truncated drifting Maxwellian flux at electrostatic sheath entrance}{32}{subsection.arabicchapter.1.5.1}
+\contentsline {subsection}{\numberline {1.5.2}The electrostatic sheath}{35}{subsection.arabicchapter.1.5.2}
+\contentsline {subsection}{\numberline {1.5.3}The magnetic pre-sheath}{37}{subsection.arabicchapter.1.5.3}
+\contentsline {section}{\numberline {1.6}Combinatorial description of geometry}{38}{section.arabicchapter.1.6}
+\contentsline {paragraph}{The geometry module of EIRENE\\}{40}{section*.12}
+\contentsline {section}{\numberline {1.7}time dependent mode of operation}{41}{section.arabicchapter.1.7}
+\contentsline {section}{\numberline {1.8}non-linear effects: coupling to plasma fluid models}{42}{section.arabicchapter.1.8}
+\contentsline {subsection}{\numberline {1.8.1}correlated sampling}{46}{subsection.arabicchapter.1.8.1}
+\contentsline {section}{\numberline {1.9}non-linear effects: neutral-neutral collisions}{48}{section.arabicchapter.1.9}
+\contentsline {subsection}{\numberline {1.9.1}BGK approximation}{49}{subsection.arabicchapter.1.9.1}
+\contentsline {subsubsection}{\numberline {1.9.1.1}A: Self collisions}{50}{subsubsection.arabicchapter.1.9.1.1}
+\contentsline {subsubsection}{\numberline {1.9.1.2}B: Cross collisions}{50}{subsubsection.arabicchapter.1.9.1.2}
+\contentsline {subsubsection}{\numberline {1.9.1.3}B1: Cross collisions: electron or photon impact}{50}{subsubsection.arabicchapter.1.9.1.3}
+\contentsline {subsubsection}{\numberline {1.9.1.4}Implementation, ``virtual particle'' concept, iteration}{51}{subsubsection.arabicchapter.1.9.1.4}
+\contentsline {subsection}{\numberline {1.9.2}Direct Simulation (DMCS) of self-collisions}{51}{subsection.arabicchapter.1.9.2}
+\contentsline {section}{\numberline {1.10}Radiation transport, photon gas simulations}{52}{section.arabicchapter.1.10}
+\contentsline {subsection}{\numberline {1.10.1}Line shape options}{53}{subsection.arabicchapter.1.10.1}
+\contentsline {section}{\numberline {1.11}Charged Particle Transport}{54}{section.arabicchapter.1.11}
+\contentsline {subsection}{\numberline {1.11.1}Orbit integration}{54}{subsection.arabicchapter.1.11.1}
+\contentsline {subsubsection}{\numberline {1.11.1.1}Particles following the B-field}{54}{subsubsection.arabicchapter.1.11.1.1}
+\contentsline {paragraph}{A: no electric field, no drifts\\}{54}{section*.13}
+\contentsline {paragraph}{B: \textbf {E} $\times $ \textbf {B} drift only\\}{55}{section*.14}
+\contentsline {subsubsection}{\numberline {1.11.1.2}Guiding centre approximation}{55}{subsubsection.arabicchapter.1.11.1.2}
+\contentsline {subsection}{\numberline {1.11.2}Coulomb Collision Models}{55}{subsection.arabicchapter.1.11.2}
+\contentsline {subsubsection}{\numberline {1.11.2.1}Simple Coulomb Collision Models}{55}{subsubsection.arabicchapter.1.11.2.1}
+\contentsline {paragraph}{A: Deterministic relaxation in velocity space}{56}{section*.15}
+\contentsline {subparagraph}{A1: Only energy relaxation}{56}{section*.16}
+\contentsline {subparagraph}{A2: BGK Coulomb-Collision operator}{58}{section*.17}
+\contentsline {subsubsection}{\numberline {1.11.2.2}The Fokker-Planck Collision Model}{58}{subsubsection.arabicchapter.1.11.2.2}
+\contentsline {paragraph}{A:}{58}{section*.18}
+\contentsline {paragraph}{B: binary Monte Carlo collision procedure}{58}{section*.19}
+\contentsline {section}{\numberline {1.12}Parallelization of EIRENE Code}{59}{section.arabicchapter.1.12}
+\contentsline {section}{\numberline {1.13}EIRENE flow charts}{60}{section.arabicchapter.1.13}
+\contentsline {chapter}{\numberline {2}Description of formatted input file}{66}{chapter.arabicchapter.2}
+\contentsline {section}{\numberline {2.1}Input data for operating mode}{70}{section.arabicchapter.2.1}
+\contentsline {subsection}{\numberline {2.1.1}Automated stratification optimization: proportional allocation}{77}{subsection.arabicchapter.2.1.1}
+\contentsline {subsection}{\numberline {2.1.2}The NLERG option for cell volumes}{77}{subsection.arabicchapter.2.1.2}
+\contentsline {subsection}{\numberline {2.1.3}The NLMOVIE option for making movies of trajectories}{78}{subsection.arabicchapter.2.1.3}
+\contentsline {section}{\numberline {2.2}Input for Standard Mesh}{79}{section.arabicchapter.2.2}
+\contentsline {subsection}{\numberline {2.2.1}Mesh Parameters}{89}{subsection.arabicchapter.2.2.1}
+\contentsline {subsection}{\numberline {2.2.2}geometry level LEVGEO: symmetry and dimensionality of a run}{90}{subsection.arabicchapter.2.2.2}
+\contentsline {section}{\numberline {2.3}The Input Block for Surfaces}{92}{section.arabicchapter.2.3}
+\contentsline {subsection}{\numberline {2.3.1}The Input Block for ``Non-default Standard Surfaces"}{92}{subsection.arabicchapter.2.3.1}
+\contentsline {subsection}{\numberline {2.3.2}Input Data for ``Additional Surfaces"}{95}{subsection.arabicchapter.2.3.2}
+\contentsline {section}{\numberline {2.4}Input Data for Species Specification and Atomic Physics Module}{106}{section.arabicchapter.2.4}
+\contentsline {subsection}{\numberline {2.4.1}Collision kinetics}{123}{subsection.arabicchapter.2.4.1}
+\contentsline {paragraph}{default resonant charge exchange model}{125}{section*.20}
+\contentsline {subsection}{\numberline {2.4.2}Default atomic and molecular data}{128}{subsection.arabicchapter.2.4.2}
+\contentsline {paragraph}{default model for atomic H (=H,D,T) and He test particles}{128}{section*.21}
+\contentsline {paragraph}{default model for hydrogenic molecules H$_2$ (and isotopomers) and their ions}{129}{section*.22}
+\contentsline {paragraph}{default model for hydrogenic ions}{130}{section*.23}
+\contentsline {subsection}{\numberline {2.4.3}Neutral-Neutral collisions in BGK approximation}{131}{subsection.arabicchapter.2.4.3}
+\contentsline {subsection}{\numberline {2.4.4}Fitting expressions (IFTFLG)}{132}{subsection.arabicchapter.2.4.4}
+\contentsline {subsection}{\numberline {2.4.5}Internal EIRENE A$\&$M Data structures and conventions}{132}{subsection.arabicchapter.2.4.5}
+\contentsline {subsubsection}{\numberline {2.4.5.1}The CREAC array (prior to first SVN version 2008)}{132}{subsubsection.arabicchapter.2.4.5.1}
+\contentsline {subsubsection}{\numberline {2.4.5.2}Data structure REACDAT (from SVN versions (2008))}{133}{subsubsection.arabicchapter.2.4.5.2}
+\contentsline {subsubsection}{\numberline {2.4.5.3}The MODCOL array}{134}{subsubsection.arabicchapter.2.4.5.3}
+\contentsline {subsubsection}{\numberline {2.4.5.4}storage saving mode}{136}{subsubsection.arabicchapter.2.4.5.4}
+\contentsline {section}{\numberline {2.5}Input for Plasma Background}{137}{section.arabicchapter.2.5}
+\contentsline {paragraph}{Special case: Magnetic field input}{137}{section*.24}
+\contentsline {paragraph}{Other input tallies: ADIN, VOL, WGHT}{138}{section*.25}
+\contentsline {paragraph}{Vacuum zones: no collision processes}{138}{section*.26}
+\contentsline {subsection}{\numberline {2.5.1}Derived Background Data}{145}{subsection.arabicchapter.2.5.1}
+\contentsline {section}{\numberline {2.6}Input Data for Surface Interaction Models}{147}{section.arabicchapter.2.6}
+\contentsline {subsection}{\numberline {2.6.1}effective pumping speed}{160}{subsection.arabicchapter.2.6.1}
+\contentsline {section}{\numberline {2.7}Input data for Initial Distribution of Test Particles}{161}{section.arabicchapter.2.7}
+\contentsline {subsection}{\numberline {2.7.1}Piecewise constant ``Step-functions" for sampling}{176}{subsection.arabicchapter.2.7.1}
+\contentsline {subsection}{\numberline {2.7.2}Electrostatic sheath acceleration}{179}{subsection.arabicchapter.2.7.2}
+\contentsline {section}{\numberline {2.8}Additional Data for some Specific Zones}{180}{section.arabicchapter.2.8}
+\contentsline {section}{\numberline {2.9}Data for Statistics and non-analog Methods}{182}{section.arabicchapter.2.9}
+\contentsline {section}{\numberline {2.10}Data for additional volume and surface averaged tallies}{186}{section.arabicchapter.2.10}
+\contentsline {subsection}{\numberline {2.10.1}Additional volume averaged tallies, tracklength estimator}{187}{subsection.arabicchapter.2.10.1}
+\contentsline {subsection}{\numberline {2.10.2}Additional volume averaged tallies, collision estimator}{188}{subsection.arabicchapter.2.10.2}
+\contentsline {subsection}{\numberline {2.10.3}Algebraic expression in volume averaged tallies}{189}{subsection.arabicchapter.2.10.3}
+\contentsline {subsubsection}{\numberline {2.10.3.1}frequently used algebraic tallies}{189}{subsubsection.arabicchapter.2.10.3.1}
+\contentsline {subsection}{\numberline {2.10.4}Additional surface averaged tallies}{190}{subsection.arabicchapter.2.10.4}
+\contentsline {subsection}{\numberline {2.10.5}Algebraic expression in surface averaged tallies}{190}{subsection.arabicchapter.2.10.5}
+\contentsline {subsection}{\numberline {2.10.6}Energy spectra in selected cells or surfaces}{190}{subsection.arabicchapter.2.10.6}
+\contentsline {section}{\numberline {2.11}Data for numerical and graphical Output}{193}{section.arabicchapter.2.11}
+\contentsline {section}{\numberline {2.12}Data for Diagnostic Module}{205}{section.arabicchapter.2.12}
+\contentsline {subsection}{\numberline {2.12.1}Line of sight: charge exchange spectrum}{210}{subsection.arabicchapter.2.12.1}
+\contentsline {subsection}{\numberline {2.12.2}Line of sight: line emissivity}{210}{subsection.arabicchapter.2.12.2}
+\contentsline {subsection}{\numberline {2.12.3}Line of sight: line shape}{210}{subsection.arabicchapter.2.12.3}
+\contentsline {subsection}{\numberline {2.12.4}Line of sight: user defined integral}{210}{subsection.arabicchapter.2.12.4}
+\contentsline {section}{\numberline {2.13}Data for nonlinear and time dependent Options}{211}{section.arabicchapter.2.13}
+\contentsline {section}{\numberline {2.14}Data for interfacing Subroutine ``INFCOP" (example)}{215}{section.arabicchapter.2.14}
+\contentsline {subsection}{\numberline {2.14.1}Version B2-EIRENE-1999 and older}{216}{subsection.arabicchapter.2.14.1}
+\contentsline {subsection}{\numberline {2.14.2}Version B2-EIRENE-2000 and younger}{224}{subsection.arabicchapter.2.14.2}
+\contentsline {subsection}{\numberline {2.14.3}Version B2-EIRENE-wide-grid (2011 and later)}{227}{subsection.arabicchapter.2.14.3}
+\contentsline {subsection}{\numberline {2.14.4}Version B2.5-EIRENE (2012 and later)}{229}{subsection.arabicchapter.2.14.4}
+\contentsline {chapter}{\numberline {3}Problem specific Routines}{230}{chapter.arabicchapter.3}
+\contentsline {section}{\numberline {3.1}Parameter Statements (for EIRENE-2001 or older)}{232}{section.arabicchapter.3.1}
+\contentsline {section}{\numberline {3.2}The ``Additional Tally" routines UPTUSR, UPCUSR, UPSUSR and UPNUSR}{237}{section.arabicchapter.3.2}
+\contentsline {subsection}{\numberline {3.2.1}Tracklength estimated volume tallies, UPTUSR}{238}{subsection.arabicchapter.3.2.1}
+\contentsline {subsection}{\numberline {3.2.2}Collision estimated volume tallies, UPCUSR}{238}{subsection.arabicchapter.3.2.2}
+\contentsline {subsection}{\numberline {3.2.3}Snapshot estimated volume averaged tallies, UPNUSR}{239}{subsection.arabicchapter.3.2.3}
+\contentsline {subsubsection}{\numberline {3.2.3.1}A: time dependent estimates}{239}{subsubsection.arabicchapter.3.2.3.1}
+\contentsline {subsubsection}{\numberline {3.2.3.2}B: stationary snapshot tallies}{240}{subsubsection.arabicchapter.3.2.3.2}
+\contentsline {subsection}{\numberline {3.2.4}Surface averaged tallies, UPSUSR}{240}{subsection.arabicchapter.3.2.4}
+\contentsline {section}{\numberline {3.3}The user surface reflection model REFUSR}{242}{section.arabicchapter.3.3}
+\contentsline {section}{\numberline {3.4}The user source sampling routine SAMUSR}{244}{section.arabicchapter.3.4}
+\contentsline {section}{\numberline {3.5}The user routines to overrule input data}{246}{section.arabicchapter.3.5}
+\contentsline {subsection}{\numberline {3.5.1}The user geometry data routine GEOUSR}{246}{subsection.arabicchapter.3.5.1}
+\contentsline {subsection}{\numberline {3.5.2}User supplied background data routine PLAUSR}{247}{subsection.arabicchapter.3.5.2}
+\contentsline {section}{\numberline {3.6}The user routines for profiles PROUSR}{247}{section.arabicchapter.3.6}
+\contentsline {subsection}{\numberline {3.6.1}User supplied background data routine VECUSR}{248}{subsection.arabicchapter.3.6.1}
+\contentsline {section}{\numberline {3.7}User supplied post-processed tally routine TALUSR}{249}{section.arabicchapter.3.7}
+\contentsline {section}{\numberline {3.8}User supplied ``general geometry block"}{249}{section.arabicchapter.3.8}
+\contentsline {subsection}{\numberline {3.8.1}Subroutine INIUSR}{250}{subsection.arabicchapter.3.8.1}
+\contentsline {subsection}{\numberline {3.8.2}Subroutine LEAUSR}{250}{subsection.arabicchapter.3.8.2}
+\contentsline {subsection}{\numberline {3.8.3}Subroutine TIMUSR}{250}{subsection.arabicchapter.3.8.3}
+\contentsline {subsection}{\numberline {3.8.4}Subroutine VOLUSR}{252}{subsection.arabicchapter.3.8.4}
+\contentsline {subsection}{\numberline {3.8.5}Subroutine NORUSR}{252}{subsection.arabicchapter.3.8.5}
+\contentsline {chapter}{\numberline {4}Routines for interfacing with other codes: \\EIRCOP}{253}{chapter.arabicchapter.4}
+\contentsline {section}{\numberline {4.1}Routine for interfacing INFCOP}{254}{section.arabicchapter.4.1}
+\contentsline {subsection}{\numberline {4.1.1}entry IF0COP}{255}{subsection.arabicchapter.4.1.1}
+\contentsline {subsection}{\numberline {4.1.2}entry IF1COP}{255}{subsection.arabicchapter.4.1.2}
+\contentsline {subsection}{\numberline {4.1.3}entry IF2COP(ISTRA)}{255}{subsection.arabicchapter.4.1.3}
+\contentsline {subsection}{\numberline {4.1.4}entry IF3COP(ISTRAA,ISTRAE)}{256}{subsection.arabicchapter.4.1.4}
+\contentsline {subsection}{\numberline {4.1.5}entry IF4COP}{256}{subsection.arabicchapter.4.1.5}
+\contentsline {section}{\numberline {4.2}Routines for cycling of EIRENE with external codes: EIRSRT}{256}{section.arabicchapter.4.2}
+\contentsline {section}{\numberline {4.3}Routines for special tallies needed for code coupling: UPTCOP}{256}{section.arabicchapter.4.3}
+\contentsline {section}{\numberline {4.4}Statistical noise in Monte Carlo terms for external code, noise-residuals: STATIS\_COP }{258}{section.arabicchapter.4.4}
+\contentsline {chapter}{\numberline {5}Default EIRENE tallies, and selected Modules}{259}{chapter.arabicchapter.5}
+\contentsline {section}{\numberline {5.1}Tables of EIRENE tallies}{259}{section.arabicchapter.5.1}
+\contentsline {subsection}{\numberline {5.1.1}Current status, incl. photon gas tallies (Eirene$_{2002}$ and younger)}{261}{subsection.arabicchapter.5.1.1}
+\contentsline {subsection}{\numberline {5.1.2}old version, w/o photon gas tallies (Eirene$_{2001}$ and older)}{270}{subsection.arabicchapter.5.1.2}
+\bf References

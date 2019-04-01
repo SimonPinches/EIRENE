@@ -1,0 +1,629 @@
+\newpage
+\section{Input for Plasma Background} \label{sec2.5}
+
+\medskip
+
+\noindent
+
+{\bf General remarks}
+
+\medskip
+
+\noindent %
+
+The background medium (mostly plasma) consists of NPLS (sometimes
+in the code: NPLSI) different so called ``bulk particle" species,
+also referred to as ``bulk ions", by abuse of language. For each of these species
+arrays of the parameters: particle density, temperature, flow velocity (3 cartesian components),  are defined,
+one value per parameter and per grid cell.
+There are, in total, NSBOX cells in a run.
+
+From the assumption of quasi-neutrality, the specified charge
+state of each background ion species (including  charge state = 0 for neutral background species),
+and the data for density $n_i$ of background species labeled $i$, DIIN(IPLS,icell), an array of
+NSBOX data for the \textbf{electron density} $n_e   (cm^{-3} )$ (DEIN(icell) is
+computed in each of the cells (see next subsection: ``derived background data").
+
+Further background tallies (or ``input tallies") defined in this block are related to a
+magnetic field, electric field,
+cell volumes (unless computed by EIRENE defaults).
+
+For each ``background tally" ITALLY there is a flag INDPRO(ITALLY), which describes the
+type of profiles, the usage of input parameters, or how a tally is transferred from an external
+file or code into an EIRENE run. The meaning of variable INDPRO is described below.
+
+I.e.: the background medium is
+described by several blocks of NSBOX data each, (i.e. one datum
+per grid cell), so called ``input tallies", namely
+\begin{itemize}
+    \item one array for the electron temperature $T_e $ (eV) (TEIN),
+    \item either one common or NPLS distinct
+(one for each bulk ion species) arrays for the ion temperature(s) $T_i$ (eV) (TIIN),
+    \item NPLS arrays (one for each bulk ion species), ion densities $n_i   ( cm^{-3} )$ (DIIN),
+    \item either one common or NPLS distinct
+(one for each bulk ion species) arrays for the (cartesian) drift velocities
+           $\vV = ( V_x , V_y , V_z )$ (VXIN, VYIN, VZIN), either in cm/s or Mach number
+         units.
+\end{itemize}
+
+\paragraph{Special case: Magnetic field input}
+
+The unit vector  $\vb$ = $( b_1 , b_2 , b_3 )$ (BXIN, BYIN, BZIN),
+parallel to the magnetic field is set to (0.,0.,1.) by default,
+i.e. pointing in z- (or toroidal-) direction. The default magnetic
+field strength is $|\vB|=1$ T in all grid cells. This default
+setting may be overruled by using the \emph{INDPRO(5)} flag and
+the corresponding input parameters (see below).
+Mostly the full magnetic vector field is read from external files or routines (\emph{INDPRO(5)} $> 3$ options).
+For testing purposes also quite simple preprogrammed magnetic fields can be set (\emph{INDPRO(5)} $\leq 3$ options).
+In this latter case either a (radial or x-) profile of a vector field $\vb$ = $( 0.0, b_2, b_3 )$ (which is parallel to the $x=$ const. ``flux" surfaces) or,
+alternatively (since 2016) of a vector field $\vb$ = $( b_1, 0.0, b_3 )$ can be defined.
+In these two cases a B-field ``pitch"  profile can be selected.
+
+For example, in the first case,
+($INDPRO(5)=1,...3,$ and geometry level $LEVGEO=1,2,3$), the profile input parameters $B1, \dots B5$  control the x- or radial profile
+$\rm{pitch(x)} = b_2/B_{tot}$. From this a cell centered
+B-field unit vector is internally constructed, by assuming that
+the first set of coordinate surfaces (x- or radial surfaces) are
+flux-surfaces (B-field aligned and constant pitch). The magnetic
+field direction then has components ($0., \rm{pitch},
+\sqrt{1-\rm{pitch}^2}$) in the three coordinate directions.
+1D simulations (x-grid only) are then across the magnetic field.
+
+An analogous procedure is applied in the second case, but there the pitch is defined as $\rm{pitch(x)} = b_1/B_{tot}$
+via the input profile parameters $B1, \dots B5$,
+allowing 1D simulations (x grid only) parallel to the magnetic field (PITCH = 1.0 = const).
+
+Currently only $INDPRO(5)=3$ profile option (piecewise constant profile) allows to define also
+the B-field strength (BFIN) [T] together with the field pitch, solely by the input flags $B1, \dots B5$ described
+below.
+
+Alternatively and in all other options an external data source for
+the B-field vector in cartesian coordinates ($INDPRO(5)=4,...,7$,
+all geometry levels $LEVGEO$) is used directly. In this latter case
+the transfer of magnetic field data (BXIN,BYIN,BZIN and BFIN) for
+each cell into EIRENE proceeds from user supplied profile subroutine
+PROUSR ($INDPRO(5)=5$) or, ($INDPRO(5)=4$) from external file or, ($INDPRO(5)=6,7$), via
+work array RWK, and then from subroutine PROFR).
+\medskip
+
+\paragraph{Other input tallies: ADIN, VOL, WGHT}
+The same applies to the ``additional plasma profile array" ADIN,
+$INDPRO(6)$, to permit usage of EIRENE output and graphics routines for additinal (derived) plasma
+profiles such as pressure, energy fluxes, collision rate coefficients (see input block 14 for the latter), etc., which are not
+directly needed in an EIRENE run but which may be available from
+an external plasma code, or are derived from the atomic or molecular data sets included in a particular run.
+For all those: $INDPRO(6)=5,...,7$ in input block 5 only, or the options in input block 14 (routine AMDIAG.f).
+
+It also applies to the space and species dependent weight function
+WGHT (to be used for non-analog sampling techniques, INDPRO(7)),
+which is defaulted to 1.0D0 for all cells and all NSPZMC test particle species:
+NSPZMC = NATM + NMOL + NION + NPHOT.  WGHT is currently unused, and could in principle be eliminated
+from all current runs, in particular when storage limitations are a concern.
+
+It furthermore also applies to the zone volume array VOL $cm^{-3}$, $INDPRO(12)$.
+Defaults are the cell volumes computed in EIRENE subroutine VOLUME
+from the standard mesh data.
+
+Plasma data in the additional zones IADD, IADD=NSURF+1,NSURF+NADD
+outside the standard mesh are defaulted to the ``EIRENE vacuum
+data" given below. Plasma data other than these ``vacuum values" (meaning: no collision processes in such cells) in these zones
+{\sl have } to be specified either explicitly in input block 8
+(see below), or in the user supplied subroutine PLAUSR or with the
+INDPRO=7 option (see below, this section).
+
+Cell volumes in the additional cell region are defaulted to 1.0
+$cm^{-3}$, unless $INDPRO(12)=4, 5, 6, 7$.
+
+
+\paragraph{Vacuum zones: no collision processes}
+A standard mesh zone ICELL is automatically identified as
+a vacuum zone with regard to plasma species IPL (no collisions with the
+bulk particles IPL
+there, \emph{LGVAC(ICELL,IPL)=.TRUE.},
+for electrons: IPL=NPLS+1)
+
+if at least one of the following conditions is met:
+
+for electrons: IPL=NPLS+1:
+
+TEIN(ICELL) $\le$ TVAC ,
+
+DEIN(ICELL) $\le$ DVAC
+
+for bulk ion species IPL=IPLS:
+
+TIIN(ICELL,IPL) $\le$ TVAC,
+
+DIIN(ICELL,IPL) $\le$ DVAC
+
+and for all background species, IPL=0:
+
+LGVAC(ICELL,I)=TRUE for I=1,NPLSI and for I=NPLS+1.
+
+
+The EIRENE vacuum data are defaulted (in subroutine PLASMA) to:
+
+DVAC = 1.0000E 02 $ cm^{-3} $
+
+TVAC = 2.0000E-02 eV
+
+Furthermore, zero plasma drift velocities are set in cells which are
+treated as vacuum zones.
+
+VVAC = 0.0000E 00  cm/s
+
+for all three cartesian components and for all NPLS background particle species.
+
+Note: A cell can be considered a vacuum cell with respect to
+electrons, (LGVAC(...,NPLS+1) = TRUE), without being a vacuum cell
+for all background ions. This is because, by abuse of language,
+also neutral particle species may be used as background ``ion"
+species (NCHARP = 0), to include neutral-neutral collisions, e.g.,
+by the iterative option NITER (input block 1).
+\medskip
+
+\noindent
+
+{\bf The Input Block}
+
+\medskip
+
+\noindent
+
+{\sl *** 5. Data for Plasma background}
+\begin{verbatim}
+ NPLSI
+ DO 51  J= 1, NPLSI
+\end{verbatim}
+{\sl * read NPLSI species blocks with \$ = P }
+\begin{verbatim}
+ISPZ$ TEXT$ NMASS$ NCHAR$ NPRT$ NCHRG$ ISRF$ ISRT$ ID1$
+NRC$  NFOL$ NGEN$  NHSTS$ ID3$
+ (format: I2,1X,A8,1X,12(I2,1X))
+
+ 51 CONTINUE ! End of NPLSI species cards reading
+
+ (INDPRO(J), J=1,12)
+ IF (INDPRO(1).LE.5) THEN
+ TE0  TE1  TE2  TE3  TE4  TE5
+ ENDIF
+ IF (INDPRO(2).LE.5) THEN
+ (TI0(I)  TI1(I)  TI2(I)  TI3(I)  TI4(I)  TI5(I)  I=1,NPLSI)
+ ENDIF
+ IF (INDPRO(3).LE.5) THEN
+ (DI0(I)  DI1(I)  DI2(I)  DI3(I)  DI4(I)  DI5(I)  I=1,NPLSI)
+ ENDIF
+ IF (INDPRO(4).LE.5) THEN
+ (VX0(I)  VX1(I)  VX2(I)  VX3(I)  VX4(I)  VX5(I)  I=1,NPLSI)
+ (VY0(I)  VY1(I)  VY2(I)  VY3(I)  VY4(I)  VY5(I)  I=1,NPLSI)
+ (VZ0(I)  VZ1(I)  VZ2(I)  VZ3(I)  VZ4(I)  VZ5(I)  I=1,NPLSI)
+ ENDIF
+ IF (INDPRO(5).LE.5) THEN
+ B0  B1  B2  B3  B4  B5
+ ENDIF
+ IF (INDPRO(12).LE.5) THEN
+ VL0  VL1  VL2  VL3  VL4  VL5
+ ENDIF
+\end{verbatim}
+Currently option INDPRO=6 and INDPRO=7 are not available for cell volumes (input tally no. 12).
+\medskip
+
+\noindent
+
+{\bf Meaning of the Input Variables for Plasma Parameters}
+
+\medskip
+
+\noindent
+
+The meaning of the variables in the bulk ion species cards is as
+in block \ref{sec2.4} for the test particle species cards specified there.
+
+\textbf{New options since 2003:}
+
+However, after the ID3 flag, there may be 2 additional input
+flags: (only for Eirene$_{2003}$ and younger):
+\begin{verbatim}
+..... CDENMODEL NRE
+\end{verbatim}
+Format: ....,1X,A10,1X,I2.
+
+These flags, if included, control
+additional options to set the density, temperature and flow field
+of the selected species IPLS. If the string CDENMODEL is found
+here for a species IPLS, then, after reading the species and
+reaction cards for IPLS, one (default) or NRE further input cards
+are expected.
+\begin{list}{ }{}
+\item[{\bf CDENMODEL = 'Multiply' }]
+docu to be written
+\item[{\bf CDENMODEL = 'Constant' }]
+docu to be written
+\item[{\bf CDENMODEL = 'fort.13' }]
+Read data for this species from file fort.13.
+
+The additional card (only one) reads (format 2I6):
+\begin{verbatim}
+ISP, ITP
+\end{verbatim}
+ISP is the number of a bulk species on the file fort.13 (e.g.
+written in an earlier EIRENE run, see NFILEL option in input block
+1). The parameters (fields of density, temperature, flow velocity)
+for species IPLS are set from those of species ISP on fort.13
+
+ITP is the type of the particle, i.e., always: ITP=4 for this option.
+Internally set: ITP=4, bulk particle type, independent of input value for ITP.
+
+\item[{\bf CDENMODEL = 'fort.10' }]
+Read data for this species from file fort.10.
+
+The additional card (only one) reads (format 3I6):
+\begin{verbatim}
+ISP, ITP, ISTR
+\end{verbatim}
+ISP, ITP is the number and type of a test particle species on the
+file fort.10, respectively, from stratum no. ISTR (i.e. written
+onto fort.10 either in the present run or an earlier EIRENE run,
+see NFILEN option in input block 1). The parameters (fields of
+density, temperature, flow velocity) for species IPLS are derived
+from those of species ISP, ITP, ISTR on fort.10.
+
+Note: at the end of a full EIRENE run the corresponding bulk particle
+profiles are reset to those evaluated in this run, for further use in
+post processing routines such as the diagnostic module (see Section \ref{sec2.11}),
+printout, plotting or iterative mode (input flags NITERI, NITERE, and user subroutine MODUSR, see Section \ref{sec2.1})
+
+\item[{\bf CDENMODEL = 'Saha' }] Set parameters from
+Saha-equilibrium of ionization states.
+The additional card (only one) reads:
+\begin{verbatim}
+ISP, ITP, ISTR, ....
+\end{verbatim}
+to be written \item[{\bf CDENMODEL = 'Boltzmann' }]
+Set parameters
+from Boltzmann-equilibrium of excited states. The additional card
+(only one) reads (format: 3I6,6x,2E12.4)
+\begin{verbatim}
+ISP, ITP, ISTR, G_BOLTZMANN, DELTA_E
+\end{verbatim}
+docu to be written
+\item[{\bf CDENMODEL = 'Planck' }]
+(only for background photons) to be written
+\item[{\bf CDENMODEL = 'Corona' }]
+Set density parameters from Corona-equilibrium to a ``donor species",
+using an excitation rate coefficient from atomic database FILNAM and a fixed radiative decay rate $A=A_{CORONA}$.
+The additional card (only one) reads (format: 3I6,1X,A6,1X,A4,A9,A3,E12.4):
+\begin{verbatim}
+ISP, ITP, ISTR, FILNAM , H123 , REACTION, CR, A_CORONA
+\end{verbatim}
+ISP, ITP is the number and type of a (donor) particle species, either one of the already defined
+bulk species IPLS: ISP=IPLS,
+(for ITP=4), or from the file fort.10 (for ITP=0,1,2 or 3)
+from stratum no. ISTR (i.e.
+written onto fort.10 either in the present run or an earlier EIRENE run,
+see NFILEN option in input block 1).
+I.e. the density $ni(IPLS)$ at each position $x$ (grid cell) for this
+background species IPLS is specified via:
+\begin{equation}\nonumber
+ ni(IPLS,x)=  n_{IS}(x) \times \frac{Rate_{IS}(x)}{A}
+\end{equation}
+Here $Rate_{IS}$ is the rate for excitation from species $IS$ to $IPLS$ from the A\&M data file $FILNAM, ...$,
+and $A$ is a radiative decay rate $A = A_{CORONA}$ read from this input card.
+The parameters (fields of density, temperature, flow velocity)
+for donor species IS are taken to be those of species [ISP, ITP, ISTR].
+
+I.e.: this model constructs a background species IPLS
+which is in Corona-equilibrium with these IS = [ISP,ITP, ISTR] donor particles.
+\item[{\bf CDENMODEL = 'Colrad' }]
+set parameters density, temperature and flow velocity from collisional radiative equilibrium with one or more (NRE) ``donor-species", using
+reduced population coefficients from atomic database FILNAM.
+I.e. the density ni(IPLS) at each position $x$ (grid cell) for this 
+background species IPLS is specified via:
+\begin{equation}\nonumber
+ ni(IPLS,x)= \sum_{IS} n_{IS}(x) \times POP_{IS}(x)
+\end{equation} 
+The NRE (for NRE different donor-states) additional cards read:
+\begin{verbatim}
+ISP, ITP, ISTR, FILNAM,  H123, REACTION, CR
+\end{verbatim}
+ISP, ITP is the number and type of a particle (donor) species $IS$, either one of the already defined
+bulk species IPLS: ISP=IPLS,
+(for ITP=4, then ISTR is irrelevant), or from the file fort.10 (for ITP=0,1,2 or 3)
+from stratum no. ISTR (i.e.
+written onto fort.10 either in the present run or an earlier EIRENE run,
+see NFILEN option in input block 1).
+The parameters (fields of density, temperature, flow velocity)
+for donor species IS are set from those of isotope [ISP, ITP, ISTR]. And by multiplication
+with a reduced population coefficient $POP$ specified via $[FILNAM, H123, ...]$ these are turned 
+into excited state or other (ionised state)
+populations. The $POP$ coefficients are typically from externally applied collisional radiative models.
+
+I.e. this model constructs a background species IPLS
+which is the sum of NRE species, each of which being in local collision-radiative-equilibrium
+with its donor isotope $IS$.
+\end{list}
+
+
+\begin{list}{ }{}
+\item[{\bf INDPRO }] Flag-array for the type of profile. The
+last digit (between 1 and 9) controls the type of profile. A
+second digit and/or the sign control further options, as described
+below.
+A third digit for each entry can be used to switch from a cell-wise constant profile
+(default) to a smooth
+(interpolated into cells) profile. This option is currently being tested for the
+magnetic field input profiles. I.e. INDPRO(5)=103 provides the same magnetic field as
+INDPRO(3)=3, however
+the magnetic field is evaluated on the fly (along particle trajectories) by interpolation,
+at the very point of
+particle position rather than at the cell center (=const. per cell).
+
+Options INDPRO=1,2,3 are pre-programmed 1 D profiles with the first coordinate (x or radial) taken as independent parameter.
+I.e. profiles are constant in the other 2 coordinate directions: y and z.
+
+Options INDPRO=4,5,6.... allow more general, and higher dimensional profile forms.
+
+INDPRO is an array of length 12. Each element in this array
+controls one particular input tally, namely:
+\begin{list}{ }{}
+\item[{INDPRO(1)}]  for TEIN
+
+\item[{INDPRO(2) }]  for TIIN
+By the default ($\emph{0} < \emph{INDPRO(2)} < \emph{10}$): one common $T_i$ profile
+for all ``bulk ion" species is set. I.e., read only one profile card.
+
+\textbf{New options since 2001:}
+
+Values of INDPRO(2) larger than 10: use only the last digit, and one $T_i$ profile card must
+be read for each bulk ion species IPLS.  For example: \emph{INDPRO(2)=15} or \emph{=25}, means: one
+separate ion temperature must be specified for each bulk ion species,
+and the profile type is 5. (\emph{INDPRO(2)=-5} would do the same.)
+\item[{INDPRO(3) }]
+read NPLSI cards, for DIIN , IPLS = 1,NPLSI
+
+\item[{INDPRO(4) }]
+read NPLSI cards, for VXIN, VYIN, VZIN , IPLS = 1,NPLSI
+
+\textbf{New options since 2001:}
+
+By the default ($\emph{0} < \emph{INDPRO(4)} < \emph{10}$): one separate flow field for
+each bulk species is set, velocity is given in cm/sec.
+
+Negative value of INDPRO(4) means: Mach number
+units instead. The sound speed \emph{cs} is taken to be the isothermal
+ion acoustic speed of species IPLS.\\
+\emph{ABS(INDPRO(4)} is then used as flag for the choice of profile type.
+
+Values of INDPRO(4) larger than 10: use only the last digit, and only one common flow
+field is set for all bulk ion species. Note the difference to the $T_i$ options:
+there the meaning of INDPRO larger than 10 was exactly opposite to the meaning here
+for the flow fields (due to historical reasons and for backward compatibility of input
+files. EIRENE had originally by default one single common ion temperature, but one flow field for each
+bulk ion species).
+
+
+\item[{INDPRO(5) }]
+for a 1D (radial or x-) profile of PITCH (later, in initialization phase,  converted into cartesian unit B-field vector BXIN,BYIN,BZIN)
+
+By the default ($\emph{0} < \emph{INDPRO(5)} < \emph{10}$) the
+pitch is defined as $B_y/B_{tot}$ (LEVGEO=1), $B_{\theta}/B_{tot}$ (LEVGEO=2), or as
+$B_{pol}/B_{tot}$ (LEVGEO=3), where $B_{pol}$ is the direction along the polygons.
+
+Negative values of INDPRO(5) (only for LEVGEO=1): use \emph{ABS(INDPRO(5)}, and the pitch is then defined as  $B_x/B_{tot}$ (only for LEVGEO=1),
+allowing 1D simulations, using the first (x-) grid only, along the B field. This option was only added during 2016.
+
+\textbf{New options since 2001:}
+In case INDPRO(5)=3 (flat profile) the two redundant input parameters B2, B3 are used to define
+a constant B-field strength [T], see below under profile type INDPRO=3.
+
+\item[{INDPRO(6) }]
+for ADIN
+
+\item[{INDPRO(7) }]
+for WGHT (to be written)
+
+\item[{INDPRO(12) }]
+for VOL.
+
+\end{list}
+
+For the input tally profiles no. 6 and 7 (ADIN, WGHT) only the options INDPRO=5 or INDPRO=6
+exist.
+
+For the profile no. 12 (cell volumes) the options INDPRO(12) = 4,
+5, 6, or INDPRO(12) = 7 are active options. For all other values
+of INDPRO for these latter four profiles the default profiles
+described above (``General remarks") are set.
+
+For each profile up to 6 parameters P0 , \ldots, P5
+are read, e.g. TE0, ... , TE5 for the $T_e $-profile,
+TI0, ... , TI5 for the $T_i $-profile, and so on.
+
+Depending upon the value of INDPRO one of the profile routines
+PROFN, PROFE, PROFS, \dots etc. is called from subroutine PLASMA.
+\begin{list}{ }{}
+\item[{INDPRO = 1-4 }] ~
+
+NR1STM plasma data are defined on the
+one- dimensional zone-centered grid
+
+RHOZNE(J), J=1, \ldots,NR1STM   (NR1STM = NR1ST - 1 ) .
+
+Vacuum data are specified in zone NR1ST.
+
+These \hfill NR1ST \hfill data \hfill are \hfill copied \hfill NBLCKS
+\hfill times \hfill to \hfill define
+
+NBLCKS identical
+profiles, totally : NBLCKS $\cdot$ NR1ST = NSURF data (subroutine
+MULTI).
+
+Here the number of copies is NBLCKS = NMULT $\cdot$ NP2ND $\cdot$
+NT3RD. see ``Input Data for Standard Mesh" (block 2).
+\item
+{INDPRO = 1 \hfill} ~
+
+
+
+(see subroutine PROFN)
+
+Parameter P5 must be a position inside the first (radial) grid
+
+RHOSRF(1) $\le$ x $\le$ P5:
+
+$P(x) = P1+( P0 - P1 ) \cdot
+{ \left ( 1 -
+{\left ( \frac{x - RHOSRF(1)}{P5 - RHOSRF(1)} \right ) }^{P2}
+\right ) }^{P3} $
+
+\medskip
+
+in particular :  $\begin{array}{l} x = RHOSRF(1)   \rightarrow   P(x) =
+P0 \\
+x = P5   \rightarrow   P(x) = P1 \end{array}$
+
+\medskip
+
+P5 $\le$ x $\le$ RHOSRF(NR1ST) :
+
+P(x) = P1  $\cdot$ exp(- (x - P5) / P4)
+\item[{INDPRO = 2 }] ~
+
+(see subroutine PROFE)
+
+Parameter P5 must be a position inside the first (radial) grid
+
+RHOSRF(1) $\le$ x $\le$ P5 :
+
+P(x) = P0  $\cdot \exp$(- (x - P1) / P2)
+
+in particular : x = P1 $\rightarrow$ P(x) = P0
+
+P5 $\le$ x $\le$ RHOSRF(NR1ST) :
+
+P(x) = P(P5)  $\cdot \exp$(- (x - P5) / P4)
+
+(P3 : no meaning)
+\item[{INDPRO = 3 }] ~
+
+(see subroutine PROFS, PROFS(P0,P1,P5,PVAC)
+
+Parameter P5 must be a position inside the first (radial) grid
+
+RHOSRF(1) $\le$ x $\le$ P5 :       P(x) = P0
+
+P5 $\le$ x $\le$ RHOSRF(NR1ST) :    P(x) = P1
+
+Parameters P2, P3, P4 have no meaning, except for the
+magnetic-field (INDPRO(5)=3): Here PROFS(P0,P1,P5,PVAC) is used to
+define the pitch angle profile, and it is also used to set the
+B-field strength (Tesla) by calling PROFS(P2,P3,P5,PVAC)
+
+
+
+
+\item[{INDPRO = 4 }] ~
+
+read from input stream fort.P0
+
+\item[{INDPRO = 5 }] ~
+
+EIRENE calls a user supplied plasma profile routine:
+
+Subroutine
+PROUSR (RHO, INDEX, P0, P1, P2, P3, P4, P5, PVAC, NDAT).
+
+NDAT data must be defined on
+
+RHO(J), J=1,NDAT
+e.g. by using the profile parameters P0,...,P5 and any user
+supplied profile function. See section \ref{sec3.6}.\\
+(NDAT=NSURF) \\
+
+The flag INDEX is as for the ``INDPRO = 6" option, see below, and
+sections \ref{sec3.6} and \ref{sec4} . It determines, which of the
+background medium profiles has to be provided at a particular call
+to subroutine PROUSR.
+
+PVAC is the EIRENE vacuum value for the profile in question.
+\item[{INDPRO = 6 }] ~
+
+EIRENE calls a the routine:
+
+Subroutine
+PROFR (RHO,INDEX,N1I,N1,NDAT).
+
+N1I (e.g., NPLSI) profiles, of NDAT= NSURF data each, are read
+onto RHO(I1I,J), J=1,NDAT, I1I=1,N1I from a work array RWK. N1
+(e.g., NPLS) is the leading dimension of the array PRO as
+specified in the calling program. The data must be written onto
+array RWK in the initialization phase, e.g., in subroutine INFCOP
+or MODUSR. The location of a particular profile on this work array
+is determined by the value of INDEX, see section \ref{sec4} below.
+By this option plasma parameters may directly be transferred into
+EIRENE from other files, e.g. from plasma transport codes.
+
+NDAT (= NSURF) is the number of cells in the ``Standard Mesh".
+Parameters in the additional cell region
+
+ICELL=NSURF+1,...NSURF+NRADD
+
+are set to the ``EIRENE vacuum values"
+
+For further details of subroutine INFCOP see \ref{sec2.1} ``Input
+Data for operating mode", input variable NMODE and sections
+\ref{sec2.14} and \ref{sec4} for an example.
+
+\item[{INDPRO = 7}] ~
+
+Same as INDPRO=6 option, except that NDAT=NSBOX rather than NDAT=NSURF.
+Hence in this case background data are read from RWK also for the additional
+cell region
+
+ICELL=NSURF+1,NSURF+NRADD.
+
+\item[{INDPRO = 8}] ~
+
+to be written
+
+\end{list}
+\end{list}
+\subsection{Derived Background Data} \label{sec2.5.1}
+Given the data describing the background medium (plasma) in each
+cell (on common block COMUSR) a set of further, ``derived
+background data" profiles is computed and stored also on COMUSR.
+This is done by a call to subroutine \verb/PLASMA_DERIV/. The
+following quantities are defined there:
+\begin{list}{ }{}
+\item[{\bf DEIN }]
+Electron density ($cm^-3$), derived from all NPLSI
+ion densities and the charge states NCHRGP(IPLS) of each ion species.
+\item[{\bf EDRIFT }]
+Kinetic energy (eV) in drift motion, for each background species IPLS, derived from
+the mass MASSP(IPLS) and the flow velocity VXIN,VYIN,VZIN.
+\item[{\bf LGVAC }]
+Vacuum flag (logical) to identify regions, in which no collision data for all or
+certain background species are computed, i.e., the collisionalities are set to zero
+in these cells for those background species. See also explanation above, with respect
+to the EIRENE vacuum data TVAC,DVAC,VVAC.
+\item[{\bf NSTGRD }]
+flag for special treatment of some selected cells
+\begin{list}{ }{}
+\item[{=0 }]
+default
+\item[{=1 }]
+This cell is a dead cell, not to be seen by
+the particles (isolated from the computational
+domain. NSTGRD(ICELL)=1 can be specified in
+problem specific routines (...USR) or in
+routines interfacing EIRENE with external codes: INFCOP (code segment:
+COUPLE....)
+\item[{=2 }]
+indicates that this cell belongs to a grid cut, i.e., is not a valid cell for particle
+tracing.
+\item[{=3 }]
+indicates that this cell is not a real cell but only the storage position for
+spatially averaged tallies. E.g.: cell no. NR1ST, 2*NR1ST,....etc. .
+\end{list}
+\end{list} 

@@ -1,0 +1,231 @@
+\begin{thebibliography}{10}
+
+\bibitem{kn:Reiter92a}
+D.~Reiter.
+\newblock {\em The EIRENE code, Version Jan. 92, User manual}, March 1992.
+
+\bibitem{kn:Braams}
+B.~Braams.
+\newblock {\em Computational Studies in Tokamak Equilibrium and Transport}.
+\newblock PhD thesis, Rijksuniversiteit Utrecht, June 1986.
+
+\bibitem{kn:Reiter91b}
+D.~Reiter, H.~Kever, G.H. Wolf, et~al.
+\newblock Helium removal from tokamaks.
+\newblock {\em Plasma Phys. and Contr. Fus.}, 33:1579, 1991.
+
+\bibitem{kn:Reiter92b}
+D.~Reiter.
+\newblock Progress in 2-dimensional plasma edge modelling.
+\newblock {\em J. Nucl. Mat.}, 196--198:241, 1992.
+
+\bibitem{kn:Reiter2004}
+D.~Reiter, M.~Baelmans, et~al.
+\newblock {\em Fusion Science and Technology}, 47:172, 2005.
+
+\bibitem{kn:Gerhauser88a}
+H.~Gerhauser, H.A. Claa{\ss}en, and D.~Reiter.
+\newblock {\em Contrib. Plasma Phys.}, 4/5(28):359, 1988.
+
+\bibitem{kn:Net}
+D.~Reiter, P.~B{\"o}rner, B.~K{\"u}ppers, M.~Baelmans, and G.~Maddison.
+\newblock Final report on KFA-NET contract 428/90-8/FU-D, 1991.
+
+\bibitem{kn:Maddison91}
+G.P. Maddison, E.S. Hotston, D.~Reiter, et~al.
+\newblock Towards fully authentic modelling of {ITER} divertor plasmas.
+\newblock In {\em Proc. 18th Eur. Conf. on Contr. Fus. and Plasma Phys.},
+  volume 15C, page 197, Berlin, 1991.
+
+\bibitem{kn:Spanier69a}
+J.~Spanier and E.M. Gelbard.
+\newblock {\em Monte Carlo Principles and Neutron Transport Problems}.
+\newblock Addison Wesley Publication Company, 1969.
+
+\bibitem{kn:Reiter84a}
+D.~Reiter.
+\newblock Randschicht-{K}onfiguration von {T}okamaks~: {E}ntwicklung und
+  {A}nwendung stochastischer {M}odelle zur {B}eschreibung des
+  {N}eutralgastransports.
+\newblock KFA-J{\"u}lich Report J{\"u}l- 1947, Forschungszentrum J{\"u}lich,
+  August 1984.
+\newblock Dissertation.
+
+\bibitem{kn:Reiter94}
+D.~Reiter, Chr. May, et~al.
+\newblock {\em J. Nucl. Mat.}, 220--222:987, 1994.
+
+\bibitem{kn:Maddison94}
+G.P. Maddison and D.~Reiter.
+\newblock Recycling source terms for edge plasma fluid models and impact on
+  convergence behaviour in the {BRAAMS} {B}2 code.
+\newblock KFA-J{\"u}lich Report J{\"u}l- 2872, Forschungszentrum J{\"u}lich,
+  March 1994.
+
+\bibitem{kn:WCU}
+R.~Yano and K.~Suzuki.
+\newblock Formulation and numerical analysis of diatomic molecular dissociation
+  using {B}oltzmann kinetic equation.
+\newblock {\em Physics of Fluids}, 19:017103, 2007.
+
+\bibitem{kn:Cercignani}
+C.~Cercignani.
+\newblock {\em The Boltzmann Equation and Its Applications}, volume~67 of {\em
+  Springer Series on Applied Mathematical Sciences}.
+\newblock Springer Verlag, 1988.
+
+\bibitem{kn:Heifetz}
+D.B. Heifetz, D.~Post, M.~Petravic, et~al.
+\newblock A monte carlo model of neutral particle transport in diverted
+  plasmas.
+\newblock Princeton report PPPL 1843, PPPL, November 1981.
+\newblock J. Comput. Phys. 46, 309 (1982).
+
+\bibitem{kn:Reiter84b}
+D.~Reiter and A.~Nicolai.
+\newblock Modelling of the advanced limiter test facility {(ALT-I)}, a module
+  for {TEXTOR}.
+\newblock {\em Journal of Nuclear Materials}, 138--129:458, 1984.
+
+\bibitem{kn:Cupini}
+E.~Cupini, A.~de~Matteis, and R.Simonini.
+\newblock EUR XII-324/9, April 1983.
+
+\bibitem{kn:Sampling}
+L.~Devroye.
+\newblock {\em Non-Uniform Random Variate Generation}.
+\newblock Springer Verlag, 1986.
+
+\bibitem{kn:Behrisch}
+R.~Behrisch.
+\newblock Plasma-wall interaction.
+\newblock In {\em Summer School of Tokamak Reactors for Breakeven}, Erice,
+  1976.
+
+\bibitem{kn:Benchmark}
+Impurity Control, INTOR Workshop Phase IIA, Part 3.
+
+\bibitem{kn:Eckstein}
+W.~Eckstein and D.B. Heifetz.
+\newblock Data sets for hydrogen reflection and their use in neutral transport
+  calculations.
+\newblock MPI-Garching Report IPP 9/59, MPI-Garching, August 1986.
+\newblock J.Nucl.Mater. 145-147, p332 (1987).
+
+\bibitem{kn:Bateman}
+G.~Bateman.
+\newblock Distribution of neutrals scattered off a wall.
+\newblock PPPL Appl. Phys. Rep. No.~1, PPPL, 1980.
+
+\bibitem{kn:Reiter92d}
+D.~Reiter, P.~Bogen, and U.~Samm.
+\newblock {\em J. Nucl. Mat.}, 196--198:1059, 1992.
+
+\bibitem{kn:Kotov-Dis}
+V.~Kotov, D.~Reiter, and A.~Kukushkin.
+\newblock Numerical study of the {ITER} divertor plasma with the {B2-EIRENE}
+  code package.
+\newblock FZ-J{\"u}lich Report JUEL- 4257, Forschungszentrum J{\"u}lich,
+  November 2007.
+
+\bibitem{kn:Reiter96}
+D.~Reiter, Chr. May, M.~Baelmans, et~al.
+\newblock {\em J. Nucl. Mat.}, 241--243:342, 1996.
+
+\bibitem{kn:Behringer}
+Th. Behringer.
+\newblock Einflu\ss \ nichtlinearer {E}ffekte auf den {N}eutralgastransport in
+  {T}okamaks.
+\newblock KFA-J{\"u}lich Report J{\"u}l- 2637, Forschungszentrum J{\"u}lich,
+  June 1992.
+\newblock Dissertation.
+
+\bibitem{kn:Oxenius}
+Oxenius J.
+\newblock {\em Kinetic theory of particles and photons}.
+\newblock Springer, Berlin Heidelberg, 1986.
+
+\bibitem{kn:Seebacher}
+J.~Seebacher and A.~Kendl.
+\newblock {\em Computer Phaysics Communications}, 182:947, 2012.
+
+\bibitem{kn:NRL}
+D.L. Book.
+\newblock {\em NRL Plasma Formulary}.
+\newblock NRL Publication 0084-4040, Washington, DC 20375, 1987.
+
+\bibitem{kn:Langer}
+W.D. Langer.
+\newblock {\em Nuclear Fusion}, 22(6):751, 1982.
+
+\bibitem{kn:Trubnikov}
+Trubnikov B.A.
+\newblock {\em Reviews of Plasma Physics, Vol. 1}.
+\newblock Consultants Bureau, New York, 1965.
+
+\bibitem{kn:Doris}
+D.~Reiser and D.~Reiter.
+\newblock {\em Nuclear Fusion}, 38(2):165, 1998.
+
+\bibitem{kn:Reiser98}
+D.~Reiser.
+\newblock Zur {A}nwendung der driftkinetischen {T}heorie in
+  {Monte-Carlo-Studien} zum {V}erunreinigungstransport in {Tokamak-Plasmen}.
+\newblock KFA-J{\"u}lich Report J{\"u}l- 3508, Forschungszentrum J{\"u}lich,
+  February 1998.
+
+\bibitem{kn:Takizuka}
+T.~Takizuka and H.~Abe.
+\newblock {\em Journal Computational Physics}, 25:205--219, 1977.
+
+\bibitem{kn:Janev}
+R.K. Janev, W.D. Langer, K.~Evans, Jr., et~al.
+\newblock {\em Elementary Processes in Hydrogen-Helium Plasmas}, volume~4 of
+  {\em Springer Series on Atoms + Plasmas}.
+\newblock Springer Verlag, 1987.
+
+\bibitem{kn:Ehrhardt}
+A.B. Ehrhardt and W.D. Langer.
+\newblock Collisional processes of hydrocarbons in hydrogen plasmas.
+\newblock Princeton report PPPL 2477, PPPL, September 1987.
+
+\bibitem{kn:Reiter93}
+D.~Reiter.
+\newblock {\em Atomic and Plasma-Material Interaction Processes in Controlled
+  Thermonuclear Fusion}.
+\newblock Elsevier Science Publishers, 1993.
+
+\bibitem{kn:Gordeev}
+Gordeev et~al.
+\newblock {\em Pis'ma Zh. Ehksp. Teor. Fiz.}, (25):223, 1977.
+
+\bibitem{kn:Bachmann}
+P.~Bachmann and D.~Reiter.
+\newblock {\em Contrib. Plasma Phys.}, 35(1):45, 1995.
+
+\bibitem{kn:Nicolai}
+A.~Nicolai and D.~Reiter.
+\newblock {\em J. Comp. Phys.}, 55(1):129--153, 1984.
+
+\bibitem{kn:NucFus}
+Nuclear Fusion, Special issue 1984, Data Compendium for Plasma-Surface
+  interactions.
+
+\bibitem{kn:Sputer95}
+W.~Eckstein, Garcia-Rosales C., J.~Roth, et~al.
+\newblock Sputtering data.
+\newblock MPI-Garching Report IPP-9/82, MPI-Garching, February 1993.
+
+\bibitem{kn:Roth96}
+J.~Roth and C.~Gracia-Rosales.
+\newblock {\em Nucl.Fus. 36}, 12:1647, 1996.
+
+\bibitem{kn:Roth99}
+J.~Roth.
+\newblock {\em J.Nucl.Mater.}, 266--269:51--57, 1999.
+
+\bibitem{kn:Mueller}
+S.H. M{\"u}ller et~al.
+\newblock {\em Plasma Phys. Control. Fusion}, 51:105014, 2009.
+
+\end{thebibliography}

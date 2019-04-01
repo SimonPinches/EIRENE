@@ -1,0 +1,274 @@
+\chapter{Description of formatted input file} \label{sec2}
+
+\medskip
+
+\noindent
+
+{\bf General Remarks}
+
+\medskip
+
+\noindent
+
+All input data from unit IUNIN are read in subroutine  INPUT using
+formatted I/O. There are 14 "blocks", each one starting with a card
+
+\medskip
+
+*** n. TEXT
+
+\medskip
+
+where n is the number of the input block, n=1,2,...,14. Some blocks
+are subdivided into so called "sub-blocks", each one starting with a
+card
+
+\medskip
+
+** TEXT .
+
+\medskip
+
+Each input block is described in one of the
+following 14 sections \ref{sec2.1} to \ref{sec2.14}:
+
+\medskip
+
+{\sl 2.1  Input data for operating mode
+
+2.2  Input data for standard mesh
+
+2.3A Input data for "Non-default Standard Surfaces"
+
+2.3B Input data for "Additional Surfaces"
+
+2.4  Input data for species specification and atomic physics module
+
+2.5  Input data for plasma background
+
+2.6  Input data for surface interaction models
+
+2.7  Input data for initial distribution of test particles
+
+2.8  Additional data for some specific mesh zones
+
+2.9  Data for statistics and non-analog methods
+
+2.10 Data for additional volumetric and surface averaged tallies
+
+2.11 Data for numerical and graphical output
+
+2.12 Data for plasma diagnostic module DIAGNO
+
+2.13 Data for nonlinear and time-dependent mode
+
+\sl 2.14 Data for interfacing with external codes}
+\medskip
+
+This last block 14 may be read in from
+the user supplied part (with any
+format specified there) from this same unit IUNIN, (but equally well from
+any other unit specified there), e.g., from the subroutine
+INFCOP for interfacing with other codes.
+
+
+\medskip
+
+\medskip
+{\bf Units}
+
+cgs units are used, with two exceptions:
+\medskip
+
+All \textbf{temperatures and energies} are in eV.
+
+All \textbf{particle fluxes} are in Ampere (i.e. $\#/s \cdot 1.6022
+10^{-19}$), even neutral particle fluxes. Since energies are given in eV units, a particle flux $\times$ energy is already in Watt.
+
+
+E.g., to convert a \textbf{gas flow rate} $Q$ (= ``mass-flow rate" at temperature $T_0$), which is a quantity given with dimension
+pressure times volume divided by time, to a particle flux (source strength, given in 1/\;time), one utilizes
+the universal gas law $P \times V = N \times k_B T$ to convert from pressure times volume (typically at standard temperature $T_0= 273.15\; K$)
+to the number $N$ of particles.
+For example  $x$ sl/min (standard liters per
+minute) first divide $x$ by 22.4 (then: mol/min, at ``standard conditions" = normal pressure $1013.25\; mbar$ and normal temperature $T_0$). Next multiply by
+Avogadro's no. $N_A = 6.0221 \cdot 10^{23}$, (i.e., then particles per
+minute), then divide by $60$ (then: particles per second), and
+finally multiply by the elementary charge $1.6022 \cdot 10^{-19}$ (then
+Ampere, as used for particle fluxes in EIRENE).
+Gas (mass-) flow rates given in other units, e.g. $Torr\; m^3/s$ are converted correspondingly.
+
+Another frequently used dimensional quantity is the (effective) \textbf{pumping speed} $S$, and also \textbf{conductance} $L$ which both have
+dimension volume / time (e.g. litres/sec), i.e. these are ``volumetric flow rates" rather than mass flow rates. Multiplying these volume flow rates
+by the entrance gas pressure
+(or by the pressure difference in case of conductance) produces the (pump-) throughput, a mass flow rate again, i.e., at given temperature a ``pumped particle flux" (1/s).
+
+Pumping speeds and conductances typically depend on pressure themselves, and on temperature $T$ and the type of gas (mass $m$). In the molecular flow regime
+the pressure dependence in $S, L$ diminishes, and $S$ ($L$) can be written as product $S,L =A_{S,L} \cdot v$,
+of an area and velocity,
+with $v \propto \sqrt{T/m}.$
+Implementation of a specified volumetric flow (e.g. a given effective pumping speed at pumps) in EIRENE is via effective surface area and  sticking probabilities, see section \ref{sec2.6.1},
+input flag \textbf{RECYCT}
+
+
+All \textbf{densities} are in $cm^{-3}$.
+
+All \textbf{velocities} are in either cm/s or in (isothermal) Mach-number units.
+
+All geometrical data are in cm.
+
+Note: consequently, e.g., energy densities are in $eV/cm^3$, and
+energy fluxes are given in $eV \cdot Amp$, i.e., in $Watt$.
+
+Hence: In order to convert from EIRENE {\bf energy density} units ($eV/cm^3$) into  {\bf pressure}
+units in $N/m^2$
+(i.e., Pascal: Pa) one must multiply by $1.6022 \cdot 10^{-19}$ (eV to Nm)
+and multiply by $10^6$ ($cm^{-3} \rightarrow m^{-3}$. Check: 1 Pa gas at 300 K corresponds to
+about $2.7 \cdot 10^{14} \times 0.026~ eV/cm^3 \approx 7 \cdot 10^{12}~ eV/cm^3$, or:
+a gas pressure P in Pa, at gas temperature T (Kelvin) corresponds to a gas density n with $n (m^{-3}) = P/k_B T$,
+with $k_B =1.38 \cdot 10^{-23}$ the Boltzmann constant in J/K units. At 300 K and 1 Pa, the corresponding gas density is $n=2.415...10^{20} m^{-3} = 2.415...10^{14} cm^{-3}$.
+
+For example, energy densities as computed by EIRENE defaults
+tallies 5, 6, 7 and 8 (see table \ref{tab2}) must be converted into
+``temperature densities" (a factor 2/3, if one neglects the energy
+of the directed motion) and then be re-scaled to pressure units as
+described above.
+
+For further scaling to other pressure units note, e.g.:
+
+101.3 Pa = 760 mTorr = 1 mBar
+
+
+Further: momentum is in $g~cm/s$, and a {\bf momentum flux}
+or momentum rate of change
+is in $g~cm/s \cdot Amp$ (per cell) and the momentum source density
+in the EIRENE tallies for interfacing with plasma codes is then in
+$g~cm/s~Amp /cm^3$.
+
+Hence, conversion from
+$g~cm/s~Amp $
+into $Pa \cdot m^2$ (momentum source per cell in plasma momentum
+balance equations in SI units) is done by firstly multiplying with $10^{-5}$
+(then: $kg \cdot m/s \cdot Amp$)
+and then dividing by
+$1.6022 \cdot 10^{-19}$ (hence: $kg \cdot m/s^2$).
+After dividing by the cell volume ($m^3$)
+the momentum source is in $Pa/m$, or $N/m^3$ (force density).
+
+
+\medskip
+
+\noindent
+
+{\bf Input format}
+
+\medskip
+
+\noindent
+
+The format statement numbers in subroutine INPUT
+start with 666... for reading and with
+777... for writing. The following conventions are used:
+\begin{list}{$ * $}{\leftmargin2.0cm\labelsep0.4cm}
+\item Standard Fortran naming conventions, i.e., variable names starting
+with the letters I,J,...,N are Integer, all other variables
+are Real.
+\end{list}
+In addition to these standard convention the following rules
+are employed:
+\begin{list}{$ * $}{\leftmargin2.0cm\labelsep0.4cm
+\parsep0.5ex plus0.2ex minus0.1ex \itemsep0ex plus0.2ex}
+\item Character strings start with the letter C\dots or with T\dots
+\item Logical variables start with NL\dots, LG\dots or with TRC\dots
+\end{list}
+The format for a card containing only real variables: (6E12.4)
+
+The format for a card containing only integer variables: (12I6)
+
+The format for a card containing only logical variables: (12(5L1,1X))
+
+The format for a card containing text: (A72)
+
+The format for a card containing K (K $<$ 6)
+integer variables first
+and then up to 6-K real
+variables next: (K(I6,6x),(6-K)E12.4)
+
+An input card starting with '*' is recognized as a comment line,
+i.e., it does not contain input data.
+These comment lines should not start
+with  '**' or '***', because
+in this latter case EIRENE would assume that the input for the current
+block
+is completed. It would expect the first card of the following
+block (or '* comment...' lines belonging to this next block)
+as next card. Any data not read from the input file, before
+the following block is read, are set to default values.
+
+An arbitrary number
+of such comment lines may be included
+in the input file, but each block of comment lines must always
+be put at the beginning of a block or sub-block. I.e., comment lines
+are only identified by EIRENE if preceded by a card starting with
+'**' or '***' indicating a new sub-block or block respectively.
+
+\medskip
+
+Example (see section \ref{sec2.7} below):
+
+*** 7. Data for initial distribution of test particles
+
+* this is a comment
+
+* there are NSTRAI=2 strata in this run
+
+* this is a comment
+
+ 2
+
+** Data for first stratum
+
+* this is a surface recycling source of helium ions, IPLS=2
+
+* this is a comment
+
+FFFF
+
+  .
+
+  .
+
+  .
+
+  .
+
+** Data for second stratum
+
+* this is a hydrogen ion volume re-combination source, IPLS=1
+
+FFFF
+
+  .
+
+  .
+
+  .
+
+*** 8. Data for some specific zones
+
+  .
+
+  .
+
+  .
+
+  .
+
+and so on.
+
+\medskip
+
+In very few cases formats other than these are used. They are then
+explicitly mentioned in this manual and in case of doubt the user
+should check in subroutine INPUT.
+\newpage

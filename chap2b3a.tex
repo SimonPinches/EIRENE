@@ -1,0 +1,187 @@
+\newpage
+\section{The Input Block for Surfaces}
+\label{sec2.3}
+%\addcontentsline{toc}{section}{\protect\numberline{2.3}{The Input
+%Block for Surfaces}}
+Grid surfaces may be assigned special properties (e.g.: reflecting,
+absorbing, periodicity, modified cell index switching, etc...).
+Their definition is described in subsection \ref{sec2.3a}.
+
+In addition to these grid surfaces also additional surfaces can be
+seen by the histories (vacuum boundaries, special surfaces for
+scoring fluxes, diagnostic surfaces, ....).
+Such surfaces can be general linear or second order surfaces in 3D space.
+Their definition and properties are described in subsection \ref{sec2.3b}.
+
+\subsection{The Input Block for ``Non-default Standard Surfaces"}
+\label{sec2.3a}
+
+
+\medskip
+
+\noindent   %
+
+{\bf General remarks}
+
+\medskip
+
+\noindent
+
+Some of the ``standard grid surfaces'' RSURF, PSURF and TSURF may be
+defined as reflecting or absorbing (rather than the default
+transparent character of co-ordinate surfaces), or as transparent
+but with other switching features (cell indexing, transition into
+additional cell region etc.) than the default settings. E.g.,
+surface averaged tallies (see block \ref{sec2.11}, end of section
+\ref{sec3.2} and Table \ref{tab3}) are only evaluated on either
+``Additional Surfaces'' (subsection \ref{sec2.3b}) or on these ``Non
+default Standard Surfaces'', whereas they are not computed for those
+standard grid surfaces which are not explicitly identified in this
+block.
+
+The geometrical properties of these ``Non default Standard Surfaces" are
+specified here. This is described below.
+
+{\bf Particle-surface interaction models}
+
+Although the (local) data for particle-surface interaction models
+(PSI-models) for each specific surface can be read in this input
+block, their meaning is described in block \ref{sec2.6} together
+with the globally valid input data for particle-surface
+interactions.
+
+In any particular run there are NLIM ``additional surfaces", see
+subsection \ref{sec2.3b}. For many arrays containing surface
+properties the ``non-default standard surfaces" are stored after the
+additional surfaces. E.g. FLAG(NLIM+4) would store the data FLAG for
+non-default standard surface no. 4.
+
+\medskip
+
+{\sl *** 3A. Data for ``Non-default Standard Surfaces''}
+\begin{verbatim}
+ NSTSI
+ DO 31 ISTSI=1,NSTSI
+\end{verbatim}
+ unless otherwise stated, N = NLIM+ISTSI is the index of the following
+ surface data for surface ISTSI:
+\begin{verbatim}
+    TXTSFL
+    ISTS, IDIMP, INUMP(ISTSI,IDIMP),
+   .IRPTA1, IRPTE1, IRPTA2, IRPTE2, IRPTA3, IRPTE3
+    ILIIN, ILSIDE, ILSWCH, ILEQUI, ILTOR, ILCOL,
+   .ILFIT ILCELL ILBOX ILPLG
+\end{verbatim}
+optional for non transparent surfaces (ILIIN $>$ 0):
+
+The next 3 (or 4) lines comprise the block for local particle-surface
+interaction data
+(in analytic terminology: the boundary condition at this surface element).
+If they are omitted, the default particle-surface model is activated for this
+particular surface element, see section \ref{sec2.6}.
+\begin{verbatim}
+    ILREF  ILSPT ISRS  ISRC
+    ZNML EWALL EWBIN TRANSP(1,N) TRANSP(2,N) FSHEAT
+    RECYCF  RECYCT  RECPRM  EXPPL  EXPEL  EXPIL
+    RECYCS  RECYCC  SPTPRM  (this line may be omitted,
+        then: default sputter model, see \ref{sec2.6})
+ 31 CONTINUE
+\end{verbatim}
+
+
+also, optional for non-transparent surfaces (ILIIN $>$ 0), and
+alternative to the local surface interaction data block mentioned
+above:
+
+read a surface interaction model identifier to link one of the surface
+``local reflection
+models'' defined in block \ref{sec2.6} below to this current surface.
+The presence of such a link is identified by the string $'SURFMOD_{ }'$,
+followed
+by a name $'modname'$. Later, in input block \ref{sec2.6},
+a ``local reflection model'' block with that name
+$'modname'$ must be included. This option allows
+quick changes of particle-surface interaction parameters, affecting
+many surfaces at once,
+by changes in just one location of the input file.
+
+\begin{verbatim}
+   SURFMOD_modname
+\end{verbatim}
+\medskip
+
+\noindent
+
+{\bf Meaning of the Input Variables for ``non-default standard
+surfaces"}
+
+\medskip
+
+\noindent
+
+\begin{list}{ }{}
+\item[{\bf NSTSI }]
+Total number of non-default standard surfaces that do not act as
+prescribed by the default transparent standard co-ordinate surface model.
+\item[{\bf TXTSFL }]
+Text to characterize a surface (``name of the surface'') on the
+printout file.
+\item[{\bf ISTS }]
+irrelevant; labelling index
+\item[{\bf IDIMP }]
+flag to identify mesh from which this particular surface is
+chosen.
+\begin{list}{ }{}
+\item[{= 1 }]
+surface from the x- (radial) standard mesh (RSURF)
+Note that for the unstructured grid options NLTRI and NLTET (i.e. for the 2D triangular grid option
+or for the general 3D grids of tetrahedra) all surfaces are referred to as 1st grid (x or radial) surfaces,
+by abuse of language.
+\item[{= 2 }]
+surface from the y- (poloidal) standard mesh (PSURF)
+\item[{= 3 }]
+surface from the z- (toroidal) standard mesh (TSURF)
+\end{list}
+\item[{\bf INUMP }]
+Number of the surface in mesh RSURF, PSURF or TSURF respectively
+\item[{\bf IRPTA,IRPTE}] ~
+
+Only a subregion of the surface acts by the ``non-default options"
+specified for this particular surface. This subregion is defined
+by these flags.
+
+If JMP is a surface from the first mesh, then IRPTA2$\rightarrow
+$IRPTE2 and
+IRPTA3$\rightarrow
+$IRPTE3 are the surface index ranges of the 2nd and 3rd mesh,
+respectively, for which this surface acts as non-default surface.
+IRPTA1 and IRPTE1 are irrelevant.
+
+If JMP is a surface from the 2nd mesh, then IRPTA1$\rightarrow
+$IRPTE1 and
+IRPTA3$\rightarrow
+$IRPTE3 are the surface index ranges of the 1st and 3rd mesh,
+respectively, for which this surface acts as non-default surface.
+IRPTA2 and IRPTE2 are irrelevant.
+
+If JMP is a surface from the 3rd mesh, then IRPTA1$\rightarrow$
+IRPTE1 and
+IRPTA2$\rightarrow$
+IRPTE2 are the surface index ranges of the 1st and 2rd mesh,
+respectively, for which this surface acts as non-default surface.
+IRPTA3 and IRPTE3 are irrelevant.
+\end{list}
+
+The third card
+ILIIN, ..., ILPLG is identical to the corresponding card for ``additional surfaces",
+ see block \ref{sec2.3b} below,
+``Input Data for Additional Surfaces''. One exception is the flag ILSIDE, which controls
+the sign of the surface normal vector (hence the orientation of a surface). In case of unstructured
+``standard grids" NLTRI or NLTET (triangles in 2D and tetrahedrons in 3D) there is no well defined
+default surface orientation and the flag ILSIDE is irrelevant in such cases.
+
+\medskip
+
+The input data in the block for the local reflection model are
+described below, see \ref{sec2.6} : ``Input Data for Particle-Surface Interaction
+Models''.

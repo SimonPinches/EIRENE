@@ -1,0 +1,58 @@
+\chapter{Introduction and General Information} \label{intro}
+
+
+This manual describes the input required by the EIRENE
+code to run a Monte Carlo study for a fully 3 dimensional simulation of
+linear transport (i.e., of test particles) in a prescribed background
+medium. Although the geometry of the problem and the interaction between
+test particle species and the background are in principle not subject to
+any restrictions, the aim of code development was to provide a tool
+for investigating neutral gas transport in tokamak plasmas. Consequently
+the choice of preprogrammed options has been made mainly with this
+application in mind. A large variety of problems in this field can be
+run
+without having to resort to any problem specific routines but instead by
+an appropriate setting of logical and numerical input flags. \\
+Any user of EIRENE should be aware that this
+ code is a moving target as is this manual.\\
+Therefore it is possible that there are some inconsistencies
+between this description and a particular version of the code.
+The user should always
+first check subroutine INPUT, where most of the data
+are read in using hard wired formats, as most input errors will
+lead to a rapid exit in the initialization phase of a run.\\
+This manual was written by the author of the code
+who often may not have been
+able to anticipate difficulties in understanding the use of EIRENE. He
+therefore gratefully acknowledges any suggestions to make this manual
+more informative and clear than it might be at the present status.\\
+This code description consists of the following parts:\\
+\begin{itemize}
+\item
+In the first part an introduction is given to the
+general linear transport problem and its solution by Monte Carlo methods.
+Most of the terminology used in later sections is introduced there.\\
+\item
+In part two a description of the formatted input file required by
+EIRENE to run on a specific problem is given. It mainly consists of
+explanations of the meanings of the various input flags.\\
+\item In part three the most important problem specific routines
+are explained. At present we have restricted this part to routines
+for evaluation of ``user requested tallies", namely the
+subroutines UPTUSR, UPCUSR and UPSUSR. Other often applied
+routines such as SAMUSR (user supplied source sampling
+distribution) or REFUSR (user supplied surface
+interaction model) are briefly described.\\
+\item
+In part four
+the package EIRCOP for
+interfacing
+EIRENE with other codes (e.g., the B2-EIRENE package) is
+described. Here mainly the location of the storage on
+the EIRENE work array RWK for plasma data and geometrical information
+is given. Also the implementation of the method of (semi-implicit)
+corrections (see section \ref{sec1.7}) at each plasma code time-step to
+the terms
+transferred from EIRENE to plasma fluid transport codes is described
+here. \\
+\end{itemize}

@@ -1,0 +1,2295 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6840 64-bit) (preloaded format=pdflatex 2018.10.7)  30 MAR 2019 12:47
+entering extended mode
+**./eirene.tex
+(eirene.tex
+LaTeX2e <2018-04-01> patch level 5
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\base\report.cls"
+Document Class: report 2014/09/29 v1.4h Standard LaTeX document class
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\base\size12.clo"
+File: size12.clo 2014/09/29 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count80
+\c@chapter=\count81
+\c@section=\count82
+\c@subsection=\count83
+\c@subsubsection=\count84
+\c@paragraph=\count85
+\c@subparagraph=\count86
+\c@figure=\count87
+\c@table=\count88
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\tools\longtable.s
+ty"
+Package: longtable 2014/10/28 v4.11 Multi-page Table package (DPC)
+\LTleft=\skip43
+\LTright=\skip44
+\LTpre=\skip45
+\LTpost=\skip46
+\LTchunksize=\count89
+\LTcapwidth=\dimen103
+\LT@head=\box26
+\LT@firsthead=\box27
+\LT@foot=\box28
+\LT@lastfoot=\box29
+\LT@cols=\count90
+\LT@rows=\count91
+\c@LT@tables=\count92
+\c@LT@chunks=\count93
+\LT@p@ftn=\toks14
+) ("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\epsf\epsf.sty"
+This is `epsf.tex' v2.7.4 <14 February 2011>
+\epsffilein=\read1
+\epsfframemargin=\dimen104
+\epsfframethickness=\dimen105
+\epsfrsize=\dimen106
+\epsftmp=\dimen107
+\epsftsize=\dimen108
+\epsfxsize=\dimen109
+\epsfysize=\dimen110
+\pspoints=\dimen111
+)
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\amsmath\amsbsy.st
+y"
+Package: amsbsy 1999/11/29 v1.2d Bold Symbols
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\amsmath\amsgen.st
+y"
+File: amsgen.sty 1999/11/30 v2.0 generic functions
+\@emptytoks=\toks15
+\ex@=\dimen112
+)
+\pmbraise@=\dimen113
+)
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\amsfonts\amsfonts
+.sty"
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+)
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\amsfonts\amssymb.
+sty"
+Package: amssymb 2013/01/14 v3.01 AMS font symbols
+)
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\amsmath\amsmath.s
+ty"
+Package: amsmath 2017/09/02 v2.17a AMS math features
+\@mathmargin=\skip47
+
+For additional information on amsmath, use the `?' option.
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\amsmath\amstext.s
+ty"
+Package: amstext 2000/06/29 v2.01 AMS text
+)
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\amsmath\amsopn.st
+y"
+Package: amsopn 2016/03/08 v2.02 operator names
+)
+\inf@bad=\count94
+LaTeX Info: Redefining \frac on input line 213.
+\uproot@=\count95
+\leftroot@=\count96
+LaTeX Info: Redefining \overline on input line 375.
+\classnum@=\count97
+\DOTSCASE@=\count98
+LaTeX Info: Redefining \ldots on input line 472.
+LaTeX Info: Redefining \dots on input line 475.
+LaTeX Info: Redefining \cdots on input line 596.
+\Mathstrutbox@=\box30
+\strutbox@=\box31
+\big@size=\dimen114
+LaTeX Font Info:    Redeclaring font encoding OML on input line 712.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 713.
+\macc@depth=\count99
+\c@MaxMatrixCols=\count100
+\dotsspace@=\muskip10
+\c@parentequation=\count101
+\dspbrk@lvl=\count102
+\tag@help=\toks16
+\row@=\count103
+\column@=\count104
+\maxfields@=\count105
+\andhelp@=\toks17
+\eqnshift@=\dimen115
+\alignsep@=\dimen116
+\tagshift@=\dimen117
+\tagwidth@=\dimen118
+\totwidth@=\dimen119
+\lineht@=\dimen120
+\@envbody=\toks18
+\multlinegap=\skip48
+\multlinetaggap=\skip49
+\mathdisplay@stack=\toks19
+LaTeX Info: Redefining \[ on input line 2817.
+LaTeX Info: Redefining \] on input line 2818.
+)
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\graphics\color.st
+y"
+Package: color 2016/07/10 v1.1e Standard LaTeX Color (DPC)
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\graphics-cfg\colo
+r.cfg"
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package color Info: Driver file: pdftex.def on input line 147.
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\graphics-def\pdft
+ex.def"
+File: pdftex.def 2018/01/08 v1.0l Graphics/color driver for pdftex
+))
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\graphics\graphicx
+.sty"
+Package: graphicx 2017/06/01 v1.1a Enhanced LaTeX Graphics (DPC,SPQR)
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\graphics\keyval.s
+ty"
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks20
+)
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\graphics\graphics
+.sty"
+Package: graphics 2017/06/25 v1.2c Standard LaTeX Graphics (DPC,SPQR)
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\graphics\trig.sty
+"
+Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
+)
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\graphics-cfg\grap
+hics.cfg"
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 99.
+)
+\Gin@req@height=\dimen121
+\Gin@req@width=\dimen122
+)
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\oberdiek\epstopdf
+.sty"
+Package: epstopdf 2016/05/15 v2.6 Conversion with epstopdf on the fly (HO)
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\oberdiek\epstopdf
+-base.sty"
+Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\generic\oberdiek\infwar
+err.sty"
+Package: infwarerr 2016/05/16 v1.4 Providing info/warning/error messages (HO)
+)
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\oberdiek\grfext.s
+ty"
+Package: grfext 2016/05/16 v1.2 Manage graphics extensions (HO)
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\generic\oberdiek\kvdefi
+nekeys.sty"
+Package: kvdefinekeys 2016/05/16 v1.4 Define keys (HO)
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\generic\oberdiek\ltxcmd
+s.sty"
+Package: ltxcmds 2016/05/16 v1.23 LaTeX kernel commands for general use (HO)
+)))
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\oberdiek\kvoption
+s.sty"
+Package: kvoptions 2016/05/16 v3.12 Key value format for package options (HO)
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\generic\oberdiek\kvsetk
+eys.sty"
+Package: kvsetkeys 2016/05/16 v1.17 Key value parser (HO)
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\generic\oberdiek\etexcm
+ds.sty"
+Package: etexcmds 2016/05/16 v1.6 Avoid name clashes with e-TeX commands (HO)
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\generic\oberdiek\ifluat
+ex.sty"
+Package: ifluatex 2016/05/16 v1.4 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX not detected.
+)
+Package etexcmds Info: Could not find \expanded.
+(etexcmds)             That can mean that you are not using pdfTeX 1.50 or
+(etexcmds)             that some package has redefined \expanded.
+(etexcmds)             In the latter case, load this package earlier.
+)))
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\generic\oberdiek\pdftex
+cmds.sty"
+Package: pdftexcmds 2018/09/10 v0.29 Utility functions of pdfTeX for LuaTeX (HO
+)
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\generic\oberdiek\ifpdf.
+sty"
+Package: ifpdf 2018/09/07 v3.3 Provides the ifpdf switch
+)
+Package pdftexcmds Info: LuaTeX not detected.
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+)
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+38.
+Package grfext Info: Graphics extension search list:
+(grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 456.
+))
+\GPT@outputbox=\box32
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\psnfss\times.sty"
+Package: times 2005/04/12 PSNFSS-v9.2a (SPQR) 
+)
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\hyperref\hyperref
+.sty"
+Package: hyperref 2018/09/30 v6.88a Hypertext links for LaTeX
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\generic\oberdiek\hobsub
+-hyperref.sty"
+Package: hobsub-hyperref 2016/05/16 v1.14 Bundle oberdiek, subset hyperref (HO)
+
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\generic\oberdiek\hobsub
+-generic.sty"
+Package: hobsub-generic 2016/05/16 v1.14 Bundle oberdiek, subset generic (HO)
+Package: hobsub 2016/05/16 v1.14 Construct package bundles (HO)
+Package hobsub Info: Skipping package `infwarerr' (already loaded).
+Package hobsub Info: Skipping package `ltxcmds' (already loaded).
+Package hobsub Info: Skipping package `ifluatex' (already loaded).
+Package: ifvtex 2016/05/16 v1.6 Detect VTeX and its facilities (HO)
+Package ifvtex Info: VTeX not detected.
+Package: intcalc 2016/05/16 v1.2 Expandable calculations with integers (HO)
+Package hobsub Info: Skipping package `ifpdf' (already loaded).
+Package hobsub Info: Skipping package `etexcmds' (already loaded).
+Package hobsub Info: Skipping package `kvsetkeys' (already loaded).
+Package hobsub Info: Skipping package `kvdefinekeys' (already loaded).
+Package hobsub Info: Skipping package `pdftexcmds' (already loaded).
+Package: pdfescape 2016/05/16 v1.14 Implements pdfTeX's escape features (HO)
+Package: bigintcalc 2016/05/16 v1.4 Expandable calculations on big integers (HO
+)
+Package: bitset 2016/05/16 v1.2 Handle bit-vector datatype (HO)
+Package: uniquecounter 2016/05/16 v1.3 Provide unlimited unique counter (HO)
+)
+Package hobsub Info: Skipping package `hobsub' (already loaded).
+Package: letltxmacro 2016/05/16 v1.5 Let assignment for LaTeX macros (HO)
+Package: hopatch 2016/05/16 v1.3 Wrapper for package hooks (HO)
+Package: xcolor-patch 2016/05/16 xcolor patch
+Package: atveryend 2016/05/16 v1.9 Hooks at the very end of document (HO)
+Package atveryend Info: \enddocument detected (standard20110627).
+Package: atbegshi 2016/06/09 v1.18 At begin shipout hook (HO)
+Package: refcount 2016/05/16 v3.5 Data extraction from label references (HO)
+Package: hycolor 2016/05/16 v1.8 Color options for hyperref/bookmark (HO)
+)
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\generic\ifxetex\ifxetex
+.sty"
+Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
+)
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\oberdiek\auxhook.
+sty"
+Package: auxhook 2016/05/16 v1.4 Hooks for auxiliary files (HO)
+)
+\@linkdim=\dimen123
+\Hy@linkcounter=\count106
+\Hy@pagecounter=\count107
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\hyperref\pd1enc.d
+ef"
+File: pd1enc.def 2018/09/30 v6.88a Hyperref: PDFDocEncoding definition (HO)
+Now handling font encoding PD1 ...
+... no UTF-8 mapping file for font encoding PD1
+)
+\Hy@SavedSpaceFactor=\count108
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\00miktex\hyperref
+.cfg"
+File: hyperref.cfg 2002/06/06 v1.2 hyperref configuration of TeXLive
+)
+Package hyperref Info: Option `unicode' set `true' on input line 4409.
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\hyperref\puenc.de
+f"
+File: puenc.def 2018/09/30 v6.88a Hyperref: PDF Unicode definition (HO)
+Now handling font encoding PU ...
+... no UTF-8 mapping file for font encoding PU
+)
+Package hyperref Info: Option `bookmarks' set `true' on input line 4409.
+Package hyperref Info: Option `bookmarksnumbered' set `true' on input line 4409
+.
+Package hyperref Info: Option `bookmarksopen' set `true' on input line 4409.
+Package hyperref Info: Option `breaklinks' set `false' on input line 4409.
+Package hyperref Info: Option `colorlinks' set `true' on input line 4409.
+Package hyperref Info: Hyper figures OFF on input line 4535.
+Package hyperref Info: Link nesting OFF on input line 4540.
+Package hyperref Info: Hyper index ON on input line 4543.
+Package hyperref Info: Plain pages OFF on input line 4550.
+Package hyperref Info: Backreferencing OFF on input line 4555.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4788.
+\c@Hy@tempcnt=\count109
+ ("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\url\url.sty"
+\Urlmuskip=\muskip11
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+LaTeX Info: Redefining \url on input line 5141.
+\XeTeXLinkMargin=\dimen124
+\Fld@menulength=\count110
+\Field@Width=\dimen125
+\Fld@charsize=\dimen126
+Package hyperref Info: Hyper figures OFF on input line 6396.
+Package hyperref Info: Link nesting OFF on input line 6401.
+Package hyperref Info: Hyper index ON on input line 6404.
+Package hyperref Info: backreferencing OFF on input line 6411.
+Package hyperref Info: Link coloring ON on input line 6414.
+Package hyperref Info: Link coloring with OCG OFF on input line 6421.
+Package hyperref Info: PDF/A mode OFF on input line 6426.
+LaTeX Info: Redefining \ref on input line 6466.
+LaTeX Info: Redefining \pageref on input line 6470.
+\Hy@abspage=\count111
+\c@Item=\count112
+\c@Hfootnote=\count113
+)
+Package hyperref Info: Driver (autodetected): hpdftex.
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\hyperref\hpdftex.
+def"
+File: hpdftex.def 2018/09/30 v6.88a Hyperref driver for pdfTeX
+\Fld@listcount=\count114
+\c@bookmark@seq@number=\count115
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\oberdiek\rerunfil
+echeck.sty"
+Package: rerunfilecheck 2016/05/16 v1.8 Rerun checks for auxiliary files (HO)
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
+82.
+)
+\Hy@SectionHShift=\skip50
+)
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\oberdiek\bookmark
+.sty"
+Package: bookmark 2016/05/17 v1.26 PDF bookmarks (HO)
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\oberdiek\bkm-pdft
+ex.def"
+File: bkm-pdftex.def 2016/05/17 v1.26 bookmark driver for pdfTeX (HO)
+\BKM@id=\count116
+)) (eirene.aux (foreword.aux) (intro.aux) (chap1.aux) (chap2.aux)
+(chap2b1.aux) (chap2b2.aux) (chap2b3a.aux) (chap2b3b.aux) (chap2b4.aux)
+(chap2b5.aux) (chap2b6.aux) (chap2b7.aux) (chap2b8.aux) (chap2b9.aux)
+(chap2b10.aux) (chap2b11.aux) (chap2b12.aux) (chap2b13.aux) (chap2b14.aux)
+(chap3.aux) (chap4.aux) (tables.aux))
+\openout1 = `eirene.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 75.
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\psnfss\ot1ptm.fd"
+File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
+)
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\context\base\supp-pdf.m
+kii"
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count117
+\scratchdimen=\dimen127
+\scratchbox=\box33
+\nofMPsegments=\count118
+\nofMParguments=\count119
+\everyMPshowfont=\toks21
+\MPscratchCnt=\count120
+\MPscratchDim=\dimen128
+\MPnumerator=\count121
+\makeMPintoPDFobject=\count122
+\everyMPtoPDFconversion=\toks22
+)
+\AtBeginShipoutBox=\box34
+Package hyperref Info: Link coloring ON on input line 75.
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\hyperref\nameref.
+sty"
+Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\generic\oberdiek\gettit
+lestring.sty"
+Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
+)
+\c@section@level=\count123
+)
+LaTeX Info: Redefining \ref on input line 75.
+LaTeX Info: Redefining \pageref on input line 75.
+LaTeX Info: Redefining \nameref on input line 75.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <24.88> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 83.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <17.28> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 87.
+ [1
+
+{C:/Users/Detlev/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}]
+Package epstopdf Info: Source file: <ManualFigs/manual00.eps>
+(epstopdf)                    date: 2016-10-10 10:41:25
+(epstopdf)                    size: 375912 bytes
+(epstopdf)             Output file: <ManualFigs/manual00-eps-converted-to.pdf>
+(epstopdf)                    date: 2016-11-03 14:03:00
+(epstopdf)                    size: 20952 bytes
+(epstopdf)             Command: <epstopdf --outfile=ManualFigs/manual00-eps-con
+verted-to.pdf ManualFigs/manual00.eps>
+(epstopdf)             \includegraphics on input line 113.
+Package epstopdf Info: Output file is already uptodate.
+<ManualFigs/manual00-eps-converted-to.pdf, id=9, 158.5925pt x 314.17375pt>
+File: ManualFigs/manual00-eps-converted-to.pdf Graphic file (type pdf)
+<use ManualFigs/manual00-eps-converted-to.pdf>
+Package pdftex.def Info: ManualFigs/manual00-eps-converted-to.pdf  used on inpu
+t line 113.
+(pdftex.def)             Requested size: 227.62204pt x 450.95729pt.
+pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
+been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.135 \newpage
+               [1 <./ManualFigs/manual00-eps-converted-to.pdf>]
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 136.
+pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
+been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.163 \end{abstract}
+                     [1]
+\openout2 = `foreword.aux'.
+
+ (foreword.tex
+Overfull \hbox (9.01016pt too wide) in paragraph at lines 44--47
+[]\OT1/ptm/m/n/12 Particle trac-ing rou-tines FO-LATM and FOL-MOL for neu-tral 
+atoms and neu-tral molecules
+ []
+
+[1
+
+]
+LaTeX Font Info:    Try loading font information for U+msa on input line 85.
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\amsfonts\umsa.fd"
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 85.
+ ("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\amsfonts\umsb.fd
+"
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+Overfull \hbox (11.37599pt too wide) in paragraph at lines 107--114
+[]\OT1/ptm/m/n/12 In par-tic-u-lar a dy-nam-i-cal al-lo-ca-tion of stor-age (ra
+ther than the hith-erto nec-es-sary pre-assignment
+ []
+
+LaTeX Font Info:    Try loading font information for OMS+ptm on input line 117.
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\psnfss\omsptm.fd"
+File: omsptm.fd 
+)
+LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <12> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 117.
+ [2]) [3] (eirene.toc [4
+
+
+] [5] [6])
+\tf@toc=\write3
+\openout3 = `eirene.toc'.
+
+ [7]
+\openout2 = `intro.aux'.
+
+ (intro.tex
+Chapter I.
+
+Underfull \hbox (badness 10000) in paragraph at lines 4--30
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 32--36
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 36--39
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 39--47
+
+ []
+
+[8
+
+
+]
+Underfull \hbox (badness 10000) in paragraph at lines 47--58
+
+ []
+
+) [9]
+\openout2 = `chap1.aux'.
+
+ (chap1.tex
+Chapter 1.
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\\' on input line 2.
+
+pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
+been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.55 \newpage
+              [1
+
+
+
+]
+Overfull \hbox (5.08406pt too wide) in paragraph at lines 58--58
+[]\OT1/ptm/b/n/17.28 The lin-ear Boltz-mann equa-tion for the dis-tri-bu-tion f
+unc-
+ []
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 58.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 58.
+
+[2]pdfTeX warning (ext4): destination with the same identifier (name{equation.a
+rabicchapter.1.1.1}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.145 \begin{eqnarray}
+                       \label{eq1a}pdfTeX warning (ext4): destination with the 
+same identifier (name{equation.arabicchapter.1.1.1}) has been already used, dup
+licate ignored
+<to be read again> 
+                   \relax 
+l.145 \begin{eqnarray}
+                       \label{eq1a}pdfTeX warning (ext4): destination with the 
+same identifier (name{equation.arabicchapter.1.1.1}) has been already used, dup
+licate ignored
+<to be read again> 
+                   \relax 
+l.145 \begin{eqnarray}
+                       \label{eq1a}pdfTeX warning (ext4): destination with the 
+same identifier (name{equation.arabicchapter.1.1.1}) has been already used, dup
+licate ignored
+<to be read again> 
+                   \relax 
+l.145 \begin{eqnarray}
+                       \label{eq1a} [3] [4pdfTeX warning (ext4): destination wi
+th the same identifier (name{equation.arabicchapter.1.1.3}) has been already us
+ed, duplicate ignored
+
+\GPT@@shipout ...Torg@shipout \box \GPT@outputbox 
+                                                  \relax \fi 
+l.267 \end{equation}
+                    ]
+Underfull \hbox (badness 10000) in paragraph at lines 302--303
+
+ []
+
+
+Overfull \hbox (9.33163pt too wide) in alignment at lines 319--331
+ [][][] []
+ []
+
+[5]
+Underfull \hbox (badness 10000) in paragraph at lines 331--349
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 349--350
+
+ []
+
+[6pdfTeX warning (ext4): destination with the same identifier (name{equation.ar
+abicchapter.1.1.7}) has been already used, duplicate ignored
+
+\GPT@@shipout ...Torg@shipout \box \GPT@outputbox 
+                                                  \relax \fi 
+l.407 
+      pdfTeX warning (ext4): destination with the same identifier (name{equatio
+n.arabicchapter.1.1.7b}) has been already used, duplicate ignored
+
+\GPT@@shipout ...Torg@shipout \box \GPT@outputbox 
+                                                  \relax \fi 
+l.407 
+      ]
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 421.
+ [7]
+Underfull \hbox (badness 10000) in paragraph at lines 486--487
+
+ []
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 493.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\Psi' on input line 493.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 493.
+
+[8]pdfTeX warning (ext4): destination with the same identifier (name{equation.a
+rabicchapter.1.2.10}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.534 \begin{equation}
+                       \label{eq1.2}pdfTeX warning (ext4): destination with the
+ same identifier (name{equation.arabicchapter.1.2.10}) has been already used, d
+uplicate ignored
+<to be read again> 
+                   \relax 
+l.534 \begin{equation}
+                       \label{eq1.2}pdfTeX warning (ext4): destination with the
+ same identifier (name{equation.arabicchapter.1.2.10}) has been already used, d
+uplicate ignored
+<to be read again> 
+                   \relax 
+l.534 \begin{equation}
+                       \label{eq1.2}pdfTeX warning (ext4): destination with the
+ same identifier (name{equation.arabicchapter.1.2.10}) has been already used, d
+uplicate ignored
+<to be read again> 
+                   \relax 
+l.534 \begin{equation}
+                       \label{eq1.2}
+Overfull \hbox (2.40529pt too wide) in paragraph at lines 614--615
+[]\OT1/ptm/m/n/12 For a fi-nite medium this dis-tri-bu-tion can be gen-er-al-iz
+ed to (writ-ing shorter $\OML/cmm/m/it/12 l$ \OT1/ptm/m/n/12 for $\OT1/cmr/m/n/
+12 (\OT1/cmr/bx/n/12 r[] \OT1/cmr/m/n/12 + \OML/cmm/m/it/12 l\OT1/cmr/bx/n/12 
+[]\OML/cmm/m/it/12 ; \OT1/cmr/bx/n/12 v[]\OML/cmm/m/it/12 ; i[]\OT1/cmr/m/n/12 
+)$\OT1/ptm/m/n/12 : 
+ []
+
+[9] [10pdfTeX warning (ext4): destination with the same identifier (name{equati
+on.arabicchapter.1.2.15}) has been already used, duplicate ignored
+
+\GPT@@shipout ...Torg@shipout \box \GPT@outputbox 
+                                                  \relax \fi 
+l.700 \begin{equation}
+                      pdfTeX warning (ext4): destination with the same identifi
+er (name{equation.arabicchapter.1.2.15}) has been already used, duplicate ignor
+ed
+
+\GPT@@shipout ...Torg@shipout \box \GPT@outputbox 
+                                                  \relax \fi 
+l.700 \begin{equation}
+                      ] [11] [12] [13] [14] [15]
+Overfull \hbox (12.50371pt too wide) in paragraph at lines 1020--1023
+ []\OT1/ptm/b/n/12 Statistical in-de-pen-dence of MC his-to-ries[] \OT1/ptm/m/n
+/12 When the Monte Carlo his-to-ries from one EIRENE
+ []
+
+[16]
+Overfull \hbox (9.25269pt too wide) in paragraph at lines 1125--1127
+[]\OT1/ptm/m/n/12 This trans-for-ma-tion of a mul-ti-vari-ate (k-) dis-tri-bu-t
+ion to a uni-form dis-tri-bu-tion on a k-hypercube
+ []
+
+[17] [18] [19] [20] [21] [22]
+Overfull \hbox (8.78387pt too wide) in paragraph at lines 1419--1422
+[]\OT1/ptm/m/n/12 Furthermore, let $\OML/cmm/m/it/12 f[]$ \OT1/ptm/m/n/12 be a 
+drift-ing Maxwellian, with tem-per-a-ture $\OML/cmm/m/it/12 T[]$ \OT1/ptm/m/n/1
+2 and drift $\OT1/cmr/bx/n/12 V[]$\OT1/ptm/m/n/12 : $\OML/cmm/m/it/12 f[] \OT1/
+cmr/m/n/12 = \OML/cmm/m/it/12 f[]\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 T[]; \OT1/cm
+r/bx/n/12 V[]\OT1/cmr/m/n/12 )$\OT1/ptm/m/n/12 . 
+ []
+
+[23] [24] [25] [26] [27] [28] [29] [30]
+Overfull \hbox (14.60452pt too wide) in paragraph at lines 1875--1888
+\OT1/ptm/m/n/12 bench-mark cal-cu-la-tions with sev-eral dif-fer-ent neu-tral g
+as trans-port Monte Carlo codes (EIRENE,
+ []
+
+[31]
+Package epstopdf Info: Source file: <ManualFigs/magn_pre_sheath.eps>
+(epstopdf)                    date: 2013-11-04 11:54:22
+(epstopdf)                    size: 79183 bytes
+(epstopdf)             Output file: <ManualFigs/magn_pre_sheath-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2016-11-03 16:02:42
+(epstopdf)                    size: 9726 bytes
+(epstopdf)             Command: <epstopdf --outfile=ManualFigs/magn_pre_sheath-
+eps-converted-to.pdf ManualFigs/magn_pre_sheath.eps>
+(epstopdf)             \includegraphics on input line 1968.
+Package epstopdf Info: Output file is already uptodate.
+<ManualFigs/magn_pre_sheath-eps-converted-to.pdf, id=763, 697.60625pt x 496.856
+25pt>
+File: ManualFigs/magn_pre_sheath-eps-converted-to.pdf Graphic file (type pdf)
+<use ManualFigs/magn_pre_sheath-eps-converted-to.pdf>
+Package pdftex.def Info: ManualFigs/magn_pre_sheath-eps-converted-to.pdf  used 
+on input line 1968.
+(pdftex.def)             Requested size: 359.54266pt x 256.0748pt.
+
+Overfull \hbox (0.57413pt too wide) in paragraph at lines 1975--1975
+[]\OT1/ptm/b/n/14.4 truncated drift-ing Maxwellian flux at elec-tro-static shea
+th en-trance 
+ []
+
+[32 <./ManualFigs/magn_pre_sheath-eps-converted-to.pdf>]
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 2039
+.
+
+("C:\Users\Detlev\AppData\Local\Programs\MiKTeX 2.9\tex\latex\psnfss\ot1pcr.fd"
+File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
+)
+Overfull \hbox (2.36137pt too wide) in paragraph at lines 2039--2045
+\OT1/ptm/m/n/12 zero drift in $\OML/cmm/m/it/12 $\OT1/ptm/m/n/12 -direction bu
+t with dif-fer-ent ``non-analog" $\OML/cmm/m/it/12 $\OT1/ptm/m/n/12 - tem-per-
+a-ture $[]\OML/cmm/m/it/12 ; \OT1/cmr/m/n/12 ([] \OMS/cmsy/m/n/12 6\OT1/cmr/m/n
+/12 = \OML/cmm/m/it/12 T[]; [] \OT1/cmr/m/n/12 =
+ []
+
+[33] [34] [35] [36] [37]
+
+LaTeX Warning: File `ManualFigs/ALT-II.eps' not found on input line 2363.
+
+Package epstopdf Info: Source file: <ManualFigs/ALT-II.eps>
+(epstopdf)             Output file: <ManualFigs/ALT-II-eps-converted-to.pdf>
+(epstopdf)                    date: 2016-11-03 14:03:14
+(epstopdf)                    size: 30509 bytes
+(epstopdf)             Command: <epstopdf --outfile=ManualFigs/ALT-II-eps-conve
+rted-to.pdf ManualFigs/ALT-II.eps>
+(epstopdf)             \includegraphics on input line 2363.
+Package epstopdf Info: Output file is already uptodate.
+<ManualFigs/ALT-II-eps-converted-to.pdf, id=840, 462.72874pt x 450.68375pt>
+File: ManualFigs/ALT-II-eps-converted-to.pdf Graphic file (type pdf)
+<use ManualFigs/ALT-II-eps-converted-to.pdf>
+Package pdftex.def Info: ManualFigs/ALT-II-eps-converted-to.pdf  used on input 
+line 2363.
+(pdftex.def)             Requested size: 213.39566pt x 207.83968pt.
+
+Overfull \hbox (8.6704pt too wide) in paragraph at lines 2363--2368
+[][] 
+ []
+
+
+Underfull \hbox (badness 2529) in paragraph at lines 2368--2368
+\OT1/ptm/m/n/12 VOXEL, sup-ple-mented by about 100
+ []
+
+
+LaTeX Warning: File `ManualFigs/alt_imp.eps' not found on input line 2371.
+
+Package epstopdf Info: Source file: <ManualFigs/alt_imp.eps>
+(epstopdf)             Output file: <ManualFigs/alt_imp-eps-converted-to.pdf>
+(epstopdf)                    date: 2016-11-03 14:03:16
+(epstopdf)                    size: 21699 bytes
+(epstopdf)             Command: <epstopdf --outfile=ManualFigs/alt_imp-eps-conv
+erted-to.pdf ManualFigs/alt_imp.eps>
+(epstopdf)             \includegraphics on input line 2371.
+Package epstopdf Info: Output file is already uptodate.
+<ManualFigs/alt_imp-eps-converted-to.pdf, id=841, 448.67625pt x 365.365pt>
+File: ManualFigs/alt_imp-eps-converted-to.pdf Graphic file (type pdf)
+<use ManualFigs/alt_imp-eps-converted-to.pdf>
+Package pdftex.def Info: ManualFigs/alt_imp-eps-converted-to.pdf  used on input
+ line 2371.
+(pdftex.def)             Requested size: 213.39566pt x 173.7676pt.
+
+Overfull \hbox (14.22638pt too wide) in paragraph at lines 2371--2374
+[][] 
+ []
+
+[38] [39 <./ManualFigs/ALT-II-eps-converted-to.pdf> <./ManualFigs/alt_imp-eps-c
+onverted-to.pdf>] [40pdfTeX warning (ext4): destination with the same identifie
+r (name{equation.arabicchapter.1.6.88}) has been already used, duplicate ignore
+d
+
+\GPT@@shipout ...Torg@shipout \box \GPT@outputbox 
+                                                  \relax \fi 
+l.2474 \newpage
+               ] [41]
+Overfull \hbox (7.16502pt too wide) in paragraph at lines 2499--2502
+\OT1/ptm/m/n/12 The sec-tion is cur-rently rewrit-ten. Please re-fer to the re-
+port J[]ul-2872, Feb 1994, by G.Maddison
+ []
+
+[42]
+Package epstopdf Info: Source file: <ManualFigs//Flowcharts/flowchart9.eps>
+(epstopdf)                    date: 2000-04-20 11:43:02
+(epstopdf)                    size: 9535 bytes
+(epstopdf)             Output file: <ManualFigs//Flowcharts/flowchart9-eps-conv
+erted-to.pdf>
+(epstopdf)                    date: 2016-11-03 16:29:54
+(epstopdf)                    size: 3189 bytes
+(epstopdf)             Command: <epstopdf --outfile=ManualFigs//Flowcharts/flow
+chart9-eps-converted-to.pdf ManualFigs//Flowcharts/flowchart9.eps>
+(epstopdf)             \includegraphics on input line 2546.
+Package epstopdf Info: Output file is already uptodate.
+<ManualFigs//Flowcharts/flowchart9-eps-converted-to.pdf, id=888, 364.36125pt x 
+229.85875pt>
+File: ManualFigs//Flowcharts/flowchart9-eps-converted-to.pdf Graphic file (type
+ pdf)
+<use ManualFigs//Flowcharts/flowchart9-eps-converted-to.pdf>
+Package pdftex.def Info: ManualFigs//Flowcharts/flowchart9-eps-converted-to.pdf
+  used on input line 2546.
+(pdftex.def)             Requested size: 455.24408pt x 287.20346pt.
+
+Overfull \hbox (11.38109pt too wide) in paragraph at lines 2546--2551
+[][] 
+ []
+
+[43 <./ManualFigs//Flowcharts/flowchart9-eps-converted-to.pdf>]
+Package epstopdf Info: Source file: <ManualFigs//Flowcharts/flowchart7.eps>
+(epstopdf)                    date: 2000-04-20 11:42:42
+(epstopdf)                    size: 14662 bytes
+(epstopdf)             Output file: <ManualFigs//Flowcharts/flowchart7-eps-conv
+erted-to.pdf>
+(epstopdf)                    date: 2016-11-04 11:10:27
+(epstopdf)                    size: 3408 bytes
+(epstopdf)             Command: <epstopdf --outfile=ManualFigs//Flowcharts/flow
+chart7-eps-converted-to.pdf ManualFigs//Flowcharts/flowchart7.eps>
+(epstopdf)             \includegraphics on input line 2606.
+Package epstopdf Info: Output file is already uptodate.
+<ManualFigs//Flowcharts/flowchart7-eps-converted-to.pdf, id=897, 471.7625pt x 3
+20.19624pt>
+File: ManualFigs//Flowcharts/flowchart7-eps-converted-to.pdf Graphic file (type
+ pdf)
+<use ManualFigs//Flowcharts/flowchart7-eps-converted-to.pdf>
+Package pdftex.def Info: ManualFigs//Flowcharts/flowchart7-eps-converted-to.pdf
+  used on input line 2606.
+(pdftex.def)             Requested size: 455.24408pt x 308.98743pt.
+
+Overfull \hbox (11.38109pt too wide) in paragraph at lines 2606--2609
+[][] 
+ []
+
+[44 <./ManualFigs//Flowcharts/flowchart7-eps-converted-to.pdf>]
+Package epstopdf Info: Source file: <ManualFigs//Flowcharts/flowchart8.eps>
+(epstopdf)                    date: 2000-04-20 11:42:56
+(epstopdf)                    size: 12326 bytes
+(epstopdf)             Output file: <ManualFigs//Flowcharts/flowchart8-eps-conv
+erted-to.pdf>
+(epstopdf)                    date: 2016-11-04 11:10:29
+(epstopdf)                    size: 3627 bytes
+(epstopdf)             Command: <epstopdf --outfile=ManualFigs//Flowcharts/flow
+chart8-eps-converted-to.pdf ManualFigs//Flowcharts/flowchart8.eps>
+(epstopdf)             \includegraphics on input line 2693.
+Package epstopdf Info: Output file is already uptodate.
+<ManualFigs//Flowcharts/flowchart8-eps-converted-to.pdf, id=905, 438.63875pt x 
+361.35pt>
+File: ManualFigs//Flowcharts/flowchart8-eps-converted-to.pdf Graphic file (type
+ pdf)
+<use ManualFigs//Flowcharts/flowchart8-eps-converted-to.pdf>
+Package pdftex.def Info: ManualFigs//Flowcharts/flowchart8-eps-converted-to.pdf
+  used on input line 2693.
+(pdftex.def)             Requested size: 455.24408pt x 375.03975pt.
+
+Overfull \hbox (11.38109pt too wide) in paragraph at lines 2693--2694
+[][] 
+ []
+
+[45 <./ManualFigs//Flowcharts/flowchart8-eps-converted-to.pdf>]
+Package epstopdf Info: Source file: <ManualFigs//converg.eps>
+(epstopdf)                    date: 2016-11-04 11:23:26
+(epstopdf)                    size: 342679 bytes
+(epstopdf)             Output file: <ManualFigs//converg-eps-converted-to.pdf>
+(epstopdf)                    date: 2016-11-04 12:02:20
+(epstopdf)                    size: 92147 bytes
+(epstopdf)             Command: <epstopdf --outfile=ManualFigs//converg-eps-con
+verted-to.pdf ManualFigs//converg.eps>
+(epstopdf)             \includegraphics on input line 2760.
+Package epstopdf Info: Output file is already uptodate.
+<ManualFigs//converg-eps-converted-to.pdf, id=915, 396.48125pt x 813.0375pt>
+File: ManualFigs//converg-eps-converted-to.pdf Graphic file (type pdf)
+<use ManualFigs//converg-eps-converted-to.pdf>
+Package pdftex.def Info: ManualFigs//converg-eps-converted-to.pdf  used on inpu
+t line 2760.
+(pdftex.def)             Requested size: 277.51077pt x 569.05511pt.
+ [46] [47 <./ManualFigs//converg-eps-converted-to.pdf>] [48] [49] [50] [51]
+Underfull \hbox (badness 10000) in paragraph at lines 3039--3067
+
+ []
+
+[52] [53] [54] [55] [56] [57pdfTeX warning (ext4): destination with the same id
+entifier (name{equation.arabicchapter.1.11.111}) has been already used, duplica
+te ignored
+
+\GPT@@shipout ...Torg@shipout \box \GPT@outputbox 
+                                                  \relax \fi 
+l.3384 \subparagraph
+                    {A2: BGK Coulomb-Collision operator}\hfill \\] [58]
+Overfull \hbox (3.33633pt too wide) in paragraph at lines 3417--3422
+[]\OT1/ptm/m/n/12 In con-trast to the CFD codes, which can be par-al-lelized us
+-ing do-main de-com-po-si-tion, EIRENE
+ []
+
+[59]
+Package epstopdf Info: Source file: <ManualFigs//Flowcharts/flowchart1.eps>
+(epstopdf)                    date: 1999-11-11 13:13:24
+(epstopdf)                    size: 74762 bytes
+(epstopdf)             Output file: <ManualFigs//Flowcharts/flowchart1-eps-conv
+erted-to.pdf>
+(epstopdf)                    date: 2016-11-03 16:21:21
+(epstopdf)                    size: 4245 bytes
+(epstopdf)             Command: <epstopdf --outfile=ManualFigs//Flowcharts/flow
+chart1-eps-converted-to.pdf ManualFigs//Flowcharts/flowchart1.eps>
+(epstopdf)             \includegraphics on input line 3442.
+Package epstopdf Info: Output file is already uptodate.
+<ManualFigs//Flowcharts/flowchart1-eps-converted-to.pdf, id=1051, 545.03625pt x
+ 353.32pt>
+File: ManualFigs//Flowcharts/flowchart1-eps-converted-to.pdf Graphic file (type
+ pdf)
+<use ManualFigs//Flowcharts/flowchart1-eps-converted-to.pdf>
+Package pdftex.def Info: ManualFigs//Flowcharts/flowchart1-eps-converted-to.pdf
+  used on input line 3442.
+(pdftex.def)             Requested size: 398.33858pt x 258.22336pt.
+ [60 <./ManualFigs//Flowcharts/flowchart1-eps-converted-to.pdf>]
+Package epstopdf Info: Source file: <ManualFigs//Flowcharts/flowchart2.eps>
+(epstopdf)                    date: 1999-11-29 11:19:48
+(epstopdf)                    size: 25638 bytes
+(epstopdf)             Output file: <ManualFigs//Flowcharts/flowchart2-eps-conv
+erted-to.pdf>
+(epstopdf)                    date: 2016-11-03 16:21:25
+(epstopdf)                    size: 3885 bytes
+(epstopdf)             Command: <epstopdf --outfile=ManualFigs//Flowcharts/flow
+chart2-eps-converted-to.pdf ManualFigs//Flowcharts/flowchart2.eps>
+(epstopdf)             \includegraphics on input line 3452.
+Package epstopdf Info: Output file is already uptodate.
+<ManualFigs//Flowcharts/flowchart2-eps-converted-to.pdf, id=1060, 442.65375pt x
+ 550.055pt>
+File: ManualFigs//Flowcharts/flowchart2-eps-converted-to.pdf Graphic file (type
+ pdf)
+<use ManualFigs//Flowcharts/flowchart2-eps-converted-to.pdf>
+Package pdftex.def Info: ManualFigs//Flowcharts/flowchart2-eps-converted-to.pdf
+  used on input line 3452.
+(pdftex.def)             Requested size: 457.985pt x 569.05511pt.
+
+Overfull \hbox (14.12201pt too wide) in paragraph at lines 3452--3455
+[][] 
+ []
+
+Package epstopdf Info: Source file: <ManualFigs//Flowcharts/flowchart3.eps>
+(epstopdf)                    date: 1999-11-29 11:15:08
+(epstopdf)                    size: 24832 bytes
+(epstopdf)             Output file: <ManualFigs//Flowcharts/flowchart3-eps-conv
+erted-to.pdf>
+(epstopdf)                    date: 2016-11-03 16:21:26
+(epstopdf)                    size: 3956 bytes
+(epstopdf)             Command: <epstopdf --outfile=ManualFigs//Flowcharts/flow
+chart3-eps-converted-to.pdf ManualFigs//Flowcharts/flowchart3.eps>
+(epstopdf)             \includegraphics on input line 3462.
+Package epstopdf Info: Output file is already uptodate.
+<ManualFigs//Flowcharts/flowchart3-eps-converted-to.pdf, id=1061, 368.37625pt x
+ 595.22375pt>
+File: ManualFigs//Flowcharts/flowchart3-eps-converted-to.pdf Graphic file (type
+ pdf)
+<use ManualFigs//Flowcharts/flowchart3-eps-converted-to.pdf>
+Package pdftex.def Info: ManualFigs//Flowcharts/flowchart3-eps-converted-to.pdf
+  used on input line 3462.
+(pdftex.def)             Requested size: 387.41914pt x 625.96062pt.
+Package epstopdf Info: Source file: <ManualFigs//Flowcharts/flowchart4.eps>
+(epstopdf)                    date: 1999-11-29 11:07:28
+(epstopdf)                    size: 25638 bytes
+(epstopdf)             Output file: <ManualFigs//Flowcharts/flowchart4-eps-conv
+erted-to.pdf>
+(epstopdf)                    date: 2016-11-03 16:21:28
+(epstopdf)                    size: 4087 bytes
+(epstopdf)             Command: <epstopdf --outfile=ManualFigs//Flowcharts/flow
+chart4-eps-converted-to.pdf ManualFigs//Flowcharts/flowchart4.eps>
+(epstopdf)             \includegraphics on input line 3470.
+Package epstopdf Info: Output file is already uptodate.
+<ManualFigs//Flowcharts/flowchart4-eps-converted-to.pdf, id=1062, 317.185pt x 7
+66.865pt>
+File: ManualFigs//Flowcharts/flowchart4-eps-converted-to.pdf Graphic file (type
+ pdf)
+<use ManualFigs//Flowcharts/flowchart4-eps-converted-to.pdf>
+Package pdftex.def Info: ManualFigs//Flowcharts/flowchart4-eps-converted-to.pdf
+  used on input line 3470.
+(pdftex.def)             Requested size: 258.92212pt x 625.96062pt.
+Package epstopdf Info: Source file: <ManualFigs//Flowcharts/flowchart5_new.eps>
+
+(epstopdf)                    date: 2015-05-19 17:56:03
+(epstopdf)                    size: 14202 bytes
+(epstopdf)             Output file: <ManualFigs//Flowcharts/flowchart5_new-eps-
+converted-to.pdf>
+(epstopdf)                    date: 2016-11-03 16:21:30
+(epstopdf)                    size: 3746 bytes
+(epstopdf)             Command: <epstopdf --outfile=ManualFigs//Flowcharts/flow
+chart5_new-eps-converted-to.pdf ManualFigs//Flowcharts/flowchart5_new.eps>
+(epstopdf)             \includegraphics on input line 3479.
+Package epstopdf Info: Output file is already uptodate.
+<ManualFigs//Flowcharts/flowchart5_new-eps-converted-to.pdf, id=1063, 347.2975p
+t x 447.6725pt>
+File: ManualFigs//Flowcharts/flowchart5_new-eps-converted-to.pdf Graphic file (
+type pdf)
+<use ManualFigs//Flowcharts/flowchart5_new-eps-converted-to.pdf>
+Package pdftex.def Info: ManualFigs//Flowcharts/flowchart5_new-eps-converted-to
+.pdf  used on input line 3479.
+(pdftex.def)             Requested size: 353.1789pt x 455.24408pt.
+Package epstopdf Info: Source file: <ManualFigs//Flowcharts/flowchart6.eps>
+(epstopdf)                    date: 1999-11-30 09:50:30
+(epstopdf)                    size: 25793 bytes
+(epstopdf)             Output file: <ManualFigs//Flowcharts/flowchart6-eps-conv
+erted-to.pdf>
+(epstopdf)                    date: 2016-11-03 16:21:31
+(epstopdf)                    size: 4326 bytes
+(epstopdf)             Command: <epstopdf --outfile=ManualFigs//Flowcharts/flow
+chart6-eps-converted-to.pdf ManualFigs//Flowcharts/flowchart6.eps>
+(epstopdf)             \includegraphics on input line 3497.
+Package epstopdf Info: Output file is already uptodate.
+<ManualFigs//Flowcharts/flowchart6-eps-converted-to.pdf, id=1064, 351.3125pt x 
+735.74875pt>
+File: ManualFigs//Flowcharts/flowchart6-eps-converted-to.pdf Graphic file (type
+ pdf)
+<use ManualFigs//Flowcharts/flowchart6-eps-converted-to.pdf>
+Package pdftex.def Info: ManualFigs//Flowcharts/flowchart6-eps-converted-to.pdf
+  used on input line 3497.
+(pdftex.def)             Requested size: 298.91185pt x 625.96062pt.
+) [61 <./ManualFigs//Flowcharts/flowchart2-eps-converted-to.pdf>] [62 <./Manual
+Figs//Flowcharts/flowchart3-eps-converted-to.pdf>] [63 <./ManualFigs//Flowchart
+s/flowchart4-eps-converted-to.pdf>] [64 <./ManualFigs//Flowcharts/flowchart5_ne
+w-eps-converted-to.pdf>] [65 <./ManualFigs//Flowcharts/flowchart6-eps-converted
+-to.pdf>]
+\openout2 = `chap2.aux'.
+
+ (chap2.tex
+Chapter 2.
+[66
+
+
+
+] [67] [68] [69])
+\openout2 = `chap2b1.aux'.
+
+ (chap2b1.tex
+Underfull \hbox (badness 10000) in paragraph at lines 32--33
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 37--40
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 43--49
+
+ []
+
+
+Overfull \hbox (12.60143pt too wide) in paragraph at lines 87--88
+[]\OT1/ptm/m/n/12 user de-fined dis-tri-bu-tion of strata to pro-cesses (subr. 
+PEDIST, calls: PEDIST[]USR.f) 
+ []
+
+[70
+
+
+]
+Overfull \hbox (27.43443pt too wide) in paragraph at lines 94--97
+[]\OT1/ptm/m/n/12 EIRENE run as stand-alone-code. Code cou-pling seg-ment [] []
+\OT1/pcr/m/n/12 couple_Dummy.f  []\OT1/ptm/m/n/12 may
+ []
+
+[71] [72] [73] [74] [75]
+Underfull \hbox (badness 10000) in paragraph at lines 436--440
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 452--462
+
+ []
+
+[76]
+Underfull \hbox (badness 10000) in paragraph at lines 478--482
+
+ []
+
+) [77] [78]
+\openout2 = `chap2b2.aux'.
+
+ (chap2b2.tex [79
+
+
+] [80] [81]
+Overfull \hbox (19.90659pt too wide) in paragraph at lines 300--303
+[]\OT1/ptm/m/n/12 Furthermore, the flux-surface la-bel-ing grid RHOSRF(I) is id
+en-ti-cal with the grid RSURF(I). 
+ []
+
+[82] [83]
+Overfull \hbox (8.69948pt too wide) in paragraph at lines 409--410
+[]\OT1/ptm/m/n/12 RSURF(NR1ST)=RRA, and the pa-ram-e-ter RAA now de-ter-mines t
+he sur-face no. NR1ST-
+ []
+
+[84] [85] [86] [87] [88] [89] [90]) [91]
+\openout2 = `chap2b3a.aux'.
+
+ (chap2b3a.tex [92
+
+
+] [93]) [94]
+\openout2 = `chap2b3b.aux'.
+
+
+(chap2b3b.tex
+Overfull \hbox (25.53508pt too wide) in paragraph at lines 51--55
+\OT1/ptm/m/n/12 not checked. For par-ti-cles on sur-face MS all other sur-faces
+ MSURF with IGJUM1(MS,MSURF)=1
+ []
+
+[95
+
+
+]
+Overfull \hbox (31.3368pt too wide) in paragraph at lines 137--137
+[]   \OT1/pcr/m/n/12 ILIIN ILSIDE ILSWCH ILEQUI ILTOR ILCOL ILFIT ILCELL ILBOX 
+ILPLG[] 
+ []
+
+
+Overfull \hbox (9.73682pt too wide) in paragraph at lines 165--165
+[]     \OT1/pcr/m/n/12 P1(1,..)  P1(2,..)  P1(3,..)  P2(1,..)  P2(2,..)  P2(3,.
+.)[] 
+ []
+
+
+Overfull \hbox (38.5368pt too wide) in paragraph at lines 165--165
+[]         \OT1/pcr/m/n/12 P3(1,..)  P3(2,..)  P3(3,..)  P4(1,..)  P4(2,..)  P4
+(3,..)[] 
+ []
+
+[96]
+Overfull \hbox (4.52141pt too wide) in paragraph at lines 228--235
+[]\OT1/ptm/m/n/12 surfaces from the range n1 to m1, n2 to m2, ..., are ig-nored
+ by EIRENE.
+ []
+
+[97] [98] [99] [100] [101]
+Overfull \hbox (10.27246pt too wide) in paragraph at lines 578--592
+\OT1/ptm/m/n/12 2-point op-tion and/or of stan-dard sur-faces in the x-y-plane.
+ For ex-am-ple if ILPLG(I)=NN,
+ []
+
+[102]
+Overfull \hbox (5.11496pt too wide) in paragraph at lines 645--650
+\OT1/ptm/m/n/12 the two vec-tors (XLIMS1, YLIMS1, ZLIMS1) and (XLIMS2, YLIMS2, 
+ZLIMS2),
+ []
+
+
+Overfull \hbox (3.81746pt too wide) in paragraph at lines 679--687
+[]\OT1/ptm/m/n/12 plane sur-face par-al-lel to z axis. The sur-face equa-tion o
+f this plane reads ax+by+c=0
+ []
+
+[103]
+Overfull \hbox (2.87921pt too wide) in paragraph at lines 719--723
+[]\OT1/ptm/m/n/12 plane quint-angle; sur-face in-side the poly-gon ($\OML/cmm/m
+/it/12 P[]$\OT1/ptm/m/n/12 , $\OML/cmm/m/it/12 P[]$\OT1/ptm/m/n/12 , $\OML/cmm/
+m/it/12 P[]$\OT1/ptm/m/n/12 , $\OML/cmm/m/it/12 P[]$\OT1/ptm/m/n/12 , $\OML/cmm
+/m/it/12 P[]$\OT1/ptm/m/n/12 , $\OML/cmm/m/it/12 P[]$\OT1/ptm/m/n/12 ) $\OML/cm
+m/m/it/12 P[]; P[]; P[]; P[]$
+ []
+
+pdfTeX warning (ext4): destination with the same identifier (name{equation.arab
+icchapter.2.3.2}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.737 \begin{eqnarray}
+                      pdfTeX warning (ext4): destination with the same identifi
+er (name{equation.arabicchapter.2.3.2}) has been already used, duplicate ignore
+d
+<to be read again> 
+                   \relax 
+l.737 \begin{eqnarray}
+                      pdfTeX warning (ext4): destination with the same identifi
+er (name{equation.arabicchapter.2.3.2}) has been already used, duplicate ignore
+d
+<to be read again> 
+                   \relax 
+l.737 \begin{eqnarray}
+                      pdfTeX warning (ext4): destination with the same identifi
+er (name{equation.arabicchapter.2.3.2}) has been already used, duplicate ignore
+d
+<to be read again> 
+                   \relax 
+l.737 \begin{eqnarray}
+                       [104]) [105]
+\openout2 = `chap2b4.aux'.
+
+ (chap2b4.tex
+Overfull \hbox (0.34982pt too wide) in paragraph at lines 3--3
+[]\OT1/ptm/b/n/17.28 Input Data for Species Spec-i-fi-ca-tion and Atomic Physic
+s
+ []
+
+
+Overfull \hbox (24.13681pt too wide) in paragraph at lines 61--61
+[]\OT1/pcr/m/n/12 IR  FILNAM  H123  REAC  CRC  MASSP  MASST  DP RMN1 RMX1 R2MN 
+R2MX[] 
+ []
+
+
+Overfull \hbox (23.35402pt too wide) in paragraph at lines 63--64
+[]\OT1/ptm/m/n/12 either from ex-ter-nal A&M data files such as \OT1/pcr/m/n/12
+ FILNAM = HYDHEL, = METHAN, = AMJUEL,
+ []
+
+[106
+
+
+] [107] [108]
+Overfull \hbox (9.73682pt too wide) in paragraph at lines 259--259
+[]   \OT1/pcr/m/n/12 IREAC$  IBULK$  ISCD1$  ISCD2$  ISCD3$ ISCDE$  IESTM$  IBG
+K$[] 
+ []
+
+
+Overfull \hbox (60.1368pt too wide) in paragraph at lines 270--270
+[]   \OT1/pcr/m/n/12 IREAC$  IBULK$  ISCD1$  ISCD2$  ISCD3$ ISCD4$ ISCDE$  IEST
+M$  IBGK$[] 
+ []
+
+[109] [110] [111] [112] [113]
+Overfull \hbox (1.03354pt too wide) in paragraph at lines 594--599
+\OT1/ptm/m/n/12 This op-tion uses the ADAS adf11 file for-mat as guid-ance and 
+is de-vel-oped/adapted
+ []
+
+[114] [115] [116] [117] [118] [119] [120]
+Overfull \hbox (19.40561pt too wide) in paragraph at lines 1010--1013
+[]\OT1/ptm/m/n/12 In case NGEN...= 0, (de-fault) no gen-er-a-tion limit is ac-t
+i-vated for atoms (NGENA=0),
+ []
+
+
+Overfull \hbox (19.04561pt too wide) in paragraph at lines 1010--1013
+\OT1/ptm/m/n/12 molecules (NGENM=0) or test ions (NGENI=0). I.e., strictly, the
+ de-fault NGEN...=0
+ []
+
+
+Overfull \hbox (10.04547pt too wide) in paragraph at lines 1034--1036
+[]\OT1/ptm/m/n/12 type flag ITYP for im-pact-ing bulk par-ti-cle (elec-tron (IT
+YP=5) or bulk ion (ITYP=4), 
+ []
+
+[121] [122] [123]
+Underfull \hbox (badness 10000) in paragraph at lines 1251--1257
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1270--1271
+
+ []
+
+[124] [125] [126]
+Overfull \hbox (8.11328pt too wide) in paragraph at lines 1461--1477
+\OT1/ptm/m/n/12 ting the flag NRCM(IATM)=0 (or NRCM(IMOL)=0, NRCI(IION)=0, resp
+., or NRCP(IPLS)=0
+ []
+
+[127] [128]
+Underfull \hbox (badness 10000) in paragraph at lines 1538--1547
+
+ []
+
+[129]
+Overfull \hbox (160.93675pt too wide) in paragraph at lines 1629--1629
+[]  \OT1/pcr/m/n/12 1 HYDHEL H.2 2.1.8     RC  0  1   ! single step recombinati
+on rate to ground state[] 
+ []
+
+
+Overfull \hbox (110.53677pt too wide) in paragraph at lines 1629--1629
+[]  \OT1/pcr/m/n/12 2 HYDHEL H.8 2.1.8     RC  0  1   ! corresponding electron 
+energy loss/gain[] 
+ []
+
+[130] [131]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 1775.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 1775.
+
+
+Overfull \hbox (4.58861pt too wide) in paragraph at lines 1787--1795
+\OT1/ptm/m/n/12 gu-ment here con-trols ei-ther the par-ti-cle en-ergy (in eV) o
+r plasma den-sity (in particles/cm$[]\OML/cmm/m/it/12 =\OT1/cmr/m/n/12 10[]$\OT
+1/ptm/m/n/12 )
+ []
+
+[132]
+Overfull \hbox (0.55043pt too wide) in paragraph at lines 1840--1841
+[]\OT1/ptm/m/n/12 TAB2D (old ver-sions: ADAS) is a pointer to TAB2D (old: ADAS)
+ data (TAB2D[]DATA
+ []
+
+[133]
+Overfull \hbox (17.05284pt too wide) in paragraph at lines 1869--1874
+\OT1/ptm/m/n/12 tial-iza-tion phase (rou-tines XSTEI, XSTCX, XS-TEL, XSTPI, ) o
+f a run from the atomic/molecular
+ []
+
+[134] [135]) [136]
+\openout2 = `chap2b5.aux'.
+
+ (chap2b5.tex
+Overfull \hbox (6.27678pt too wide) in paragraph at lines 63--72
+\OT1/ptm/m/n/12 and con-stant pitch). The mag-netic field di-rec-tion then has 
+com-po-nents ($\OT1/cmr/m/n/12 0\OML/cmm/m/it/12 :; []; []$\OT1/ptm/m/n/12 )
+ []
+
+[137
+
+
+] [138] [139] [140]
+Overfull \hbox (12.96712pt too wide) in paragraph at lines 284--287
+[]\OT1/ptm/m/n/12 Set pa-ram-e-ters from Boltzmann-equilibrium of ex-cited stat
+es.
+ []
+
+[141pdfTeX warning (ext4): destination with the same identifier (name{equation.
+arabicchapter.2.5.6}) has been already used, duplicate ignored
+
+\GPT@@shipout ...Torg@shipout \box \GPT@outputbox 
+                                                  \relax \fi 
+l.341 
+      ] [142] [143]
+Overfull \hbox (43.34521pt too wide) in paragraph at lines 518--522
+\OT1/ptm/m/n/12 file, and it is also used to set the B-field strength (Tesla) b
+y call-ing PROFS(P2,P3,P5,PVAC) 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 539--543
+
+ []
+
+
+Overfull \hbox (5.0166pt too wide) in paragraph at lines 557--566
+[]\OT1/ptm/m/n/12 N1I (e.g., NPLSI) pro-files, of NDAT= NSURF data each, are re
+ad onto RHO(I1I,J),
+ []
+
+[144]
+Overfull \hbox (0.46951pt too wide) in paragraph at lines 574--577
+[]\OT1/ptm/m/n/12 For fur-ther de-tails of sub-rou-tine IN-F-COP see [][]2.1[][
+] ``In-put Data for op-er-at-ing mode",
+ []
+
+
+Overfull \hbox (14.55786pt too wide) in paragraph at lines 580--583
+[]\OT1/ptm/m/n/12 Same as IN-D-PRO=6 op-tion, ex-cept that NDAT=NSBOX rather th
+an NDAT=NSURF.
+ []
+
+[145]) [146]
+\openout2 = `chap2b6.aux'.
+
+ (chap2b6.tex [147
+
+
+]
+Overfull \hbox (60.1368pt too wide) in paragraph at lines 130--130
+[] \OT1/pcr/m/n/12 (DPHT(I) I=1,NPHOT)  (this card is to be read only in case N
+PHOT > 0)[] 
+ []
+
+
+Overfull \hbox (45.7368pt too wide) in paragraph at lines 153--153
+[]    \OT1/pcr/m/n/12 RECYCS  RECYCC  SPTPRM  ESPUTS ESPUTC (this line may be o
+mitted,[] 
+ []
+
+
+Overfull \hbox (45.7368pt too wide) in paragraph at lines 153--153
+[]                             \OT1/pcr/m/n/12 then: default sputter model, see
+ below)[] 
+ []
+
+[148] [149] [150] [151]
+Overfull \hbox (29.17644pt too wide) in paragraph at lines 475--475
+[] \OT1/pcr/m/n/10.95 9.04000E+02-2.60000E-02 0.00000E+00 0.00000E+00 0.00000E+
+00 2.80000E+00[] 
+ []
+
+[152]
+Overfull \hbox (29.17644pt too wide) in paragraph at lines 475--475
+[] \OT1/pcr/m/n/10.95 1.00000E+00 1.00000E+00 1.00000E+00 1.00000E+00 5.00000E-
+01 1.00000E+00[] 
+ []
+
+
+Overfull \hbox (29.17644pt too wide) in paragraph at lines 475--475
+[] \OT1/pcr/m/n/10.95 1.20600E+03-1.00000E-01 0.00000E+00 0.00000E+00 0.00000E+
+00 2.80000E+00[] 
+ []
+
+
+Overfull \hbox (29.17644pt too wide) in paragraph at lines 475--475
+[] \OT1/pcr/m/n/10.95 1.00000E+00 1.00000E+00 1.00000E+00 1.00000E+00 5.00000E-
+01 1.00000E+00[] 
+ []
+
+
+Overfull \hbox (29.17644pt too wide) in paragraph at lines 475--475
+[] \OT1/pcr/m/n/10.95 1.20600E+03-7.00000E-02 0.00000E+00 0.00000E+00 0.00000E+
+00 2.80000E+00[] 
+ []
+
+
+Overfull \hbox (29.17644pt too wide) in paragraph at lines 475--475
+[] \OT1/pcr/m/n/10.95 1.00000E+00 1.00000E+00 1.00000E+00 1.00000E+00 5.00000E-
+01 1.00000E+00[] 
+ []
+
+[153] [154] [155]
+Overfull \hbox (22.80783pt too wide) in paragraph at lines 693--695
+[]\OT1/ptm/m/n/12 Semi-transparency for par-ti-cles in-ci-dent from the neg-a-t
+ive side on a non-transparent
+ []
+
+[156] [157] [158]
+Overfull \hbox (1.11581pt too wide) in paragraph at lines 893--899
+\OT1/ptm/m/n/12 NMOLI+-NIONI+-NPLSI times onto ap-pro-pri-ately di-men-sioned a
+r-rays (with the same names).
+ []
+
+[159]) [160]
+\openout2 = `chap2b7.aux'.
+
+ (chap2b7.tex [161
+
+
+] [162] [163] [164]
+Overfull \hbox (1.82333pt too wide) in paragraph at lines 333--336
+[]\OT1/ptm/m/n/12 Photon source. His-tory starts in sub-rou-tine FOL-NEUT with 
+type in-dex ITYP=0, species
+ []
+
+[165] [166]
+Overfull \hbox (5.83984pt too wide) in paragraph at lines 472--473
+[]\OT1/ptm/m/n/12 = .TRUE. Ini-tial con-di-tions source (sam-pling from cen-sus
+ ar-ray), for time-dependent
+ []
+
+[167]
+Overfull \hbox (28.76721pt too wide) in paragraph at lines 529--535
+[]\OT1/ptm/m/n/12 are the x,y and z com-po-nents of a ref-er-ence di-rec-tional
+ vec-tor $\OT1/cmr/bx/n/12 C \OT1/cmr/m/n/12 = (\OML/cmm/m/it/12 CRTX; CRTY; CR
+TZ\OT1/cmr/m/n/12 )$
+ []
+
+
+Overfull \hbox (39.35315pt too wide) in paragraph at lines 574--584
+\OML/cmm/m/it/12 COUPLE[]$ \OT1/ptm/m/n/12 (cou-pling to B2 (BRAAMS) multi-flui
+d plasma code) , $\OML/cmm/m/it/12 COUPLE[]$
+ []
+
+[168] [169] [170] [171]
+Overfull \hbox (28.76721pt too wide) in paragraph at lines 854--861
+[]\OT1/ptm/m/n/12 are the x,y and z com-po-nents of a ref-er-ence di-rec-tional
+ vec-tor $\OT1/cmr/bx/n/12 C \OT1/cmr/m/n/12 = (\OML/cmm/m/it/12 CRTX; CRTY; CR
+TZ\OT1/cmr/m/n/12 )$
+ []
+
+[172]
+Overfull \hbox (26.24535pt too wide) in paragraph at lines 898--902
+[]\OT1/ptm/m/n/12 Depending upon the value of the flag \OT1/ptm/b/n/12 NEMODS\O
+T1/ptm/m/n/12 , the fol-low-ing en-ergy dis-tri-bu-tions $\OML/cmm/m/it/12 f\OT
+1/cmr/m/n/12 (\OML/cmm/m/it/12 E\OMS/cmsy/m/n/12 j\OT1/cmr/bx/n/12 r[]\OML/cmm/
+m/it/12 ; t[]; isp\OT1/cmr/m/n/12 )$
+ []
+
+
+Overfull \hbox (3.02184pt too wide) in paragraph at lines 919--928
+[]\OT1/ptm/m/n/12 Furthermore, let $\OT1/cmr/bx/n/12 V[]\OT1/cmr/m/n/12 (\OML/c
+mm/m/it/12 ip[]\OT1/cmr/m/n/12 )$ \OT1/ptm/m/n/12 and $\OT1/cmr/bx/n/12 V[]\OT1
+/cmr/m/n/12 (\OML/cmm/m/it/12 ip[]\OT1/cmr/m/n/12 )$ \OT1/ptm/m/n/12 be the com
+-po-nents of the ve-loc-ity drift vec-tor $\OT1/cmr/bx/n/12 V[]\OT1/cmr/m/n/12 
+(\OML/cmm/m/it/12 ip[]\OT1/cmr/m/n/12 )$
+ []
+
+
+Overfull \hbox (0.12114pt too wide) in paragraph at lines 971--973
+[]\OT1/ptm/m/n/12 where EMAX is the mean en-ergy from a trun-cated (one-sided) 
+shifted Maxwellian
+ []
+
+[173]
+Overfull \hbox (15.12341pt too wide) in paragraph at lines 997--1004
+[]\OT1/ptm/m/n/12 The ve-loc-ity vec-tor $\OT1/cmr/bx/n/12 V[] \OT1/cmr/m/n/12 
+= (\OML/cmm/m/it/12 VX[]; VY[]; VZ[]\OT1/cmr/m/n/12 )$ \OT1/ptm/m/n/12 is sam-p
+led from a trun-cated Maxwellian
+ []
+
+
+Overfull \hbox (15.12341pt too wide) in paragraph at lines 1007--1010
+[]\OT1/ptm/m/n/12 The ve-loc-ity vec-tor $\OT1/cmr/bx/n/12 V[] \OT1/cmr/m/n/12 
+= (\OML/cmm/m/it/12 VX[]; VY[]; VZ[]\OT1/cmr/m/n/12 )$ \OT1/ptm/m/n/12 is sam-p
+led from a trun-cated Maxwellian
+ []
+
+
+Overfull \hbox (1.17351pt too wide) in paragraph at lines 1024--1028
+\OT1/ptm/m/n/12 The choice of tem-per-a-ture pa-ram-e-ters $\OML/cmm/m/it/12 T[
+]$ \OT1/ptm/m/n/12 and $\OML/cmm/m/it/12 T[]\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 i
+p[]\OT1/cmr/m/n/12 )$ \OT1/ptm/m/n/12 in the en-ergy dis-tri-bu-tions N=4,5,6
+ []
+
+[174]
+Overfull \hbox (35.81732pt too wide) in paragraph at lines 1069--1072
+[]\OT1/ptm/m/n/12 The lo-cal drift ve-loc-ity vec-tor $\OT1/cmr/bx/n/12 V$ \OT1
+/ptm/m/n/12 is re-placed by the con-stant vec-tor (SORVDX,SORVDY,
+ []
+
+[175] [176]
+Overfull \hbox (57.6742pt too wide) in paragraph at lines 1268--1271
+[]\OT1/ptm/m/n/12 After this the to-tal flux (nor-mal-iza-tion con-stant) $[]$
+ []
+
+[177pdfTeX warning (ext4): destination with the same identifier (name{equation.
+arabicchapter.2.7.11}) has been already used, duplicate ignored
+
+\GPT@@shipout ...Torg@shipout \box \GPT@outputbox 
+                                                  \relax \fi 
+l.1286 D
+        efault initializations of functions \texttt{STEP} are carried out in...
+pdfTeX warning (ext4): destination with the same identifier (name{equation.arab
+icchapter.2.7.11}) has been already used, duplicate ignored
+
+\GPT@@shipout ...Torg@shipout \box \GPT@outputbox 
+                                                  \relax \fi 
+l.1286 D
+        efault initializations of functions \texttt{STEP} are carried out in...
+]pdfTeX warning (ext4): destination with the same identifier (name{equation.ara
+bicchapter.2.7.11}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.1330 \begin{equation}
+                       pdfTeX warning (ext4): destination with the same identif
+ier (name{equation.arabicchapter.2.7.11}) has been already used, duplicate igno
+red
+<to be read again> 
+                   \relax 
+l.1330 \begin{equation}
+                       pdfTeX warning (ext4): destination with the same identif
+ier (name{equation.arabicchapter.2.7.11}) has been already used, duplicate igno
+red
+<to be read again> 
+                   \relax 
+l.1330 \begin{equation}
+                       pdfTeX warning (ext4): destination with the same identif
+ier (name{equation.arabicchapter.2.7.11}) has been already used, duplicate igno
+red
+<to be read again> 
+                   \relax 
+l.1330 \begin{equation}
+                       
+Overfull \hbox (18.00536pt too wide) in paragraph at lines 1340--1342
+[]\OT1/ptm/m/n/12 The mean in-ci-dent ion en-ergy $\OML/cmm/m/it/12 ELSTEP \OT1
+/cmr/m/n/12 = \OML/cmm/m/it/12 E[]$ \OT1/ptm/m/n/12 cor-re-sponds to that re-su
+lt-ing from the \OT1/pcr/m/n/12 NEMOD\OT1/ptm/m/n/12 =2,3
+ []
+
+[178]) [179]
+\openout2 = `chap2b8.aux'.
+
+ (chap2b8.tex
+Overfull \hbox (1.2992pt too wide) in paragraph at lines 14--27
+[]\OT1/ptm/m/n/12 Input data in this block per-mit ex-plicit spec-i-fi-ca-tion 
+of plasma pa-ram-e-ters $\OML/cmm/m/it/12 T[]; T[]; D[];$ $V[]; V[]; V[]$
+ []
+
+[180
+
+
+]) [181]
+\openout2 = `chap2b9.aux'.
+
+ (chap2b9.tex
+Overfull \hbox (2.53682pt too wide) in paragraph at lines 72--72
+[] \OT1/pcr/m/n/12 (NLPRCA(IATM)  IATM=1,NATM) , (NLPRCM(IMOL)   IMOL =1,NMOL) 
+,[] 
+ []
+
+
+Overfull \hbox (24.13681pt too wide) in paragraph at lines 72--72
+[]   \OT1/pcr/m/n/12 READ (IUNIN,66665) ID,NSSPL(N1ST+N2ND+IN),PRMSPL(N1ST+N2ND
++IN)[] 
+ []
+
+[182
+
+
+] [183]
+Overfull \hbox (3.85211pt too wide) in paragraph at lines 206--211
+\OT1/ptm/m/n/12 vant tal-lies are se-lected in sub-rou-tine [][]\OT1/pcr/m/n/12
+ STATIS_COP []\OT1/ptm/m/n/12 in code seg-ment [][]\OT1/pcr/m/n/12 COUPLE_....F
+[]\OT1/ptm/m/n/12 ,
+ []
+
+[184]) [185]
+\openout2 = `chap2b10.aux'.
+
+ (chap2b10.tex [186
+
+
+] [187] [188] [189] [190] [191]) [192]
+\openout2 = `chap2b11.aux'.
+
+
+(chap2b11.tex [193
+
+
+]
+Overfull \hbox (2.53682pt too wide) in paragraph at lines 108--108
+[]         \OT1/pcr/m/n/12 NPRTLV(J) NFLAGV(J) NSPEZV(J,1) NSPEZV(J,2) NTLVFL(J
+)[] 
+ []
+
+
+Overfull \hbox (2.53682pt too wide) in paragraph at lines 108--108
+[]    \OT1/pcr/m/n/12 NSRF NPRTLS(J) NFLAGS(J) NSPEZS(J,1) NSPEZS(J,2) NTLSFL(J
+)[] 
+ []
+
+
+Overfull \hbox (9.73682pt too wide) in paragraph at lines 135--135
+[] \OT1/pcr/m/n/12 NPLINR NPLOTR NPLDLR NPLINP NPLOTP NPLDLP NPLINT NPLOTT NPLD
+LT[] 
+ []
+
+
+Overfull \hbox (45.7368pt too wide) in paragraph at lines 135--135
+[]    \OT1/pcr/m/n/12 PL3A(J)  TEXTLA(J) IPLTA(J) (IPLAA(J,I) IPLEA(J,I) I=1,IP
+LTA(J))[] 
+ []
+
+
+Overfull \hbox (45.7368pt too wide) in paragraph at lines 135--135
+[]    \OT1/pcr/m/n/12 PL3S(J)  TEXTLS(J) IPLTS(J) (IPLAS(J,I) IPLES(J,I) I=1,IP
+LTS(J))[] 
+ []
+
+
+Overfull \hbox (24.13681pt too wide) in paragraph at lines 163--163
+[] \OT1/pcr/m/n/12 optional: one text card starting with *...... to label the  
+plot[] 
+ []
+
+
+Overfull \hbox (45.7368pt too wide) in paragraph at lines 163--163
+[]    \OT1/pcr/m/n/12 TALZMI(N)  TALZMA(N)  TALXMI(N)  TALXMA(N)  TALYMI(N)  TA
+LYMA(N)[] 
+ []
+
+[194]
+Overfull \hbox (31.3368pt too wide) in paragraph at lines 163--163
+[]    \OT1/pcr/m/n/12 LHIST3  LCNTR3  LSMOT3  LRAPS3  LVECT3  LRPVC3 LRAPS3D LR
+3DCON[] 
+ []
+
+[195]
+Overfull \hbox (5.16844pt too wide) in paragraph at lines 217--219
+[]\OT1/ptm/m/n/12 Traceback from pri-mary source sam-pling rou-tines, e.g. from
+ LO-CATE, SAMPNT,
+ []
+
+[196] [197] [198] [199] [200] [201] [202] [203]) [204]
+\openout2 = `chap2b12.aux'.
+
+ (chap2b12.tex [205
+
+
+]
+[206] [207] [208]
+Underfull \hbox (badness 10000) in paragraph at lines 276--279
+
+ []
+
+
+Overfull \hbox (5.16039pt too wide) in paragraph at lines 293--297
+\OT1/ptm/m/n/12 XPIVOT,YPIVOT,ZPIVOT = $\OML/cmm/m/it/12 r; z; $\OT1/ptm/m/n/1
+2 , with $\OML/cmm/m/it/12 $ \OT1/ptm/m/n/12 in de-grees. The cor-re-spond-ing
+ toroidal
+ []
+
+[209]) [210]
+\openout2 = `chap2b13.aux'.
+
+ (chap2b13.tex [211
+
+
+] [212]) [213] [214]
+\openout2 = `chap2b14.aux'.
+
+ (chap2b14.tex [215
+
+
+]
+Overfull \hbox (20.63626pt too wide) in paragraph at lines 99--101
+[]\OT1/ptm/m/n/12 electron cool-ing rate co-ef-fi-cient, EELEI3 ar-ray (not rea
+dy) $ \OT1/cmr/m/n/12 [\OML/cmm/m/it/12 eV \OMS/cmsy/m/n/12  []\OT1/cmr/m/n/12
+ ]$ 
+ []
+
+
+Overfull \hbox (36.52354pt too wide) in paragraph at lines 120--122
+[]\OT1/ptm/m/n/12 electron en-ergy loss weighted re-com-bi-na-tion rate co-ef-f
+i-cient $ \OT1/cmr/m/n/12 [\OML/cmm/m/it/12 eV \OMS/cmsy/m/n/12  []\OT1/cmr/m/
+n/12 ]$ 
+ []
+
+[216]
+Overfull \hbox (0.53767pt too wide) in paragraph at lines 155--157
+[]$\OML/cmm/m/it/12 PAPL$ \OT1/ptm/m/n/12 is the par-ti-cle source for back-gro
+und plasma species $\OML/cmm/m/it/12 ipls$ \OT1/ptm/m/n/12 re-sult-ing from ``a
+tom"-
+ []
+
+
+Overfull \hbox (24.34192pt too wide) in paragraph at lines 157--159
+[]$\OML/cmm/m/it/12 PMPL$ \OT1/ptm/m/n/12 is the par-ti-cle source for back-gro
+und plasma species $\OML/cmm/m/it/12 ipls$ \OT1/ptm/m/n/12 re-sult-ing from ``m
+olecule"-
+ []
+
+[217]
+Overfull \hbox (7.91344pt too wide) in paragraph at lines 185--187
+[]$\OML/cmm/m/it/12 EMPL$ \OT1/ptm/m/n/12 is the ion en-ergy source re-sult-ing
+ from ``molecule"-plasma in-ter-ac-tions (summed
+ []
+
+
+Overfull \hbox (7.62062pt too wide) in paragraph at lines 198--200
+[]$\OML/cmm/m/it/12 EAEL$ \OT1/ptm/m/n/12 is the elec-tron en-ergy source re-su
+lt-ing from ``atom"-plasma in-ter-ac-tions (summed
+ []
+
+
+Overfull \hbox (15.22182pt too wide) in paragraph at lines 202--203
+[]$\OML/cmm/m/it/12 EIEL$ \OT1/ptm/m/n/12 is the elec-tron en-ergy source re-su
+lt-ing from ``test ion"-plasma in-ter-ac-tions (summed
+ []
+
+[218]
+Overfull \hbox (38.5368pt too wide) in paragraph at lines 272--272
+[]    \OT1/pcr/m/n/12 I NDT(IT,IPRT) NINCT(..,..) NIXY(..,..) NTIN(..,..) NTEN(
+..,..)[] 
+ []
+
+[219]
+Overfull \hbox (5.91153pt too wide) in paragraph at lines 333--334
+[]\OT1/ptm/m/n/12 new flags for mag-netic field ori-en-ta-tion, avail-able only
+ since March
+ []
+
+[220] [221] [222]
+Overfull \hbox (25.59602pt too wide) in paragraph at lines 493--497
+[]\OT1/ptm/m/n/12 Step-function sam-pling with SOR-LIM(ISTRA,1)=104, and the st
+ep func-tion data FLSTEP,...
+ []
+
+[223]
+Overfull \hbox (0.53767pt too wide) in paragraph at lines 580--582
+[]$\OML/cmm/m/it/12 PAPL$ \OT1/ptm/m/n/12 is the par-ti-cle source for back-gro
+und plasma species $\OML/cmm/m/it/12 ipls$ \OT1/ptm/m/n/12 re-sult-ing from ``a
+tom"-
+ []
+
+
+Overfull \hbox (24.34192pt too wide) in paragraph at lines 582--584
+[]$\OML/cmm/m/it/12 PMPL$ \OT1/ptm/m/n/12 is the par-ti-cle source for back-gro
+und plasma species $\OML/cmm/m/it/12 ipls$ \OT1/ptm/m/n/12 re-sult-ing from ``m
+olecule"-
+ []
+
+[224]
+Overfull \hbox (7.81491pt too wide) detected at line 595
+[]\OML/cmm/m/it/12 S[]\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 ipls; icell\OT1/cmr/m/n
+/12 ) = [] []
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 620--622
+
+ []
+
+[225]
+Package epstopdf Info: Source file: <ManualFigs/eirene-coord-2.eps>
+(epstopdf)                    date: 2008-07-31 11:12:10
+(epstopdf)                    size: 82719 bytes
+(epstopdf)             Output file: <ManualFigs/eirene-coord-2-eps-converted-to
+.pdf>
+(epstopdf)                    date: 2016-11-04 14:44:47
+(epstopdf)                    size: 10032 bytes
+(epstopdf)             Command: <epstopdf --outfile=ManualFigs/eirene-coord-2-e
+ps-converted-to.pdf ManualFigs/eirene-coord-2.eps>
+(epstopdf)             \includegraphics on input line 637.
+Package epstopdf Info: Output file is already uptodate.
+<ManualFigs/eirene-coord-2-eps-converted-to.pdf, id=2084, 515.9275pt x 443.6575
+pt>
+File: ManualFigs/eirene-coord-2-eps-converted-to.pdf Graphic file (type pdf)
+<use ManualFigs/eirene-coord-2-eps-converted-to.pdf>
+Package pdftex.def Info: ManualFigs/eirene-coord-2-eps-converted-to.pdf  used o
+n input line 637.
+(pdftex.def)             Requested size: 341.43306pt x 293.61366pt.
+ [226 <./ManualFigs/eirene-coord-2-eps-converted-to.pdf>]
+Underfull \hbox (badness 10000) in paragraph at lines 703--710
+
+ []
+
+[227]
+Underfull \hbox (badness 10000) in paragraph at lines 723--730
+
+ []
+
+[228]) [229]
+\openout2 = `chap3.aux'.
+
+ (chap3.tex
+Chapter 3.
+
+Underfull \hbox (badness 10000) in paragraph at lines 20--33
+
+ []
+
+[230
+
+
+
+] [231]
+Overfull \hbox (31.3368pt too wide) in paragraph at lines 184--184
+[]      \OT1/pcr/m/n/12 PARAMETER (NCLV=..., NSNV=..., NALV=..., NALS=..., NAIN
+=...)[] 
+ []
+
+
+Overfull \hbox (38.5368pt too wide) in paragraph at lines 184--184
+[]\OT1/pcr/m/n/12 C     PARAMETER (NHD1=12, NHD2=7, NHD3=5, NHD4=5, NHD5=5, NHD
+6=...)[] 
+ []
+
+[232]
+Overfull \hbox (16.93681pt too wide) in paragraph at lines 184--184
+[]\OT1/pcr/m/n/12 C          NOPTIM=N1ST*N2ND*N3RD+NADD:  NO STORAGE OPTIMIZATI
+ON,[] 
+ []
+
+
+Overfull \hbox (2.53682pt too wide) in paragraph at lines 184--184
+[]\OT1/pcr/m/n/12 C                                       SPEEDUP OF GEOMETRICA
+L[] 
+ []
+
+
+Overfull \hbox (16.93681pt too wide) in paragraph at lines 184--184
+[]\OT1/pcr/m/n/12 C                                       CALCULATIONS IS POSSI
+BLE[] 
+ []
+
+
+Overfull \hbox (45.7368pt too wide) in paragraph at lines 184--184
+[]\OT1/pcr/m/n/12 C  NOPTM1: BIT-ARITHMETIC/INTEGER, E.G. 32 FOR IBM RISK, 46 F
+OR CRAY[] 
+ []
+
+
+Overfull \hbox (45.7368pt too wide) in paragraph at lines 184--184
+[]\OT1/pcr/m/n/12 C  NGEOM_USR = 1  ==> EXTERNAL GEOMETRY ROUTINES (...USR), LE
+VGEO=10[] 
+ []
+
+
+Overfull \hbox (45.7368pt too wide) in paragraph at lines 184--184
+[]\OT1/pcr/m/n/12 C  NSTORAM=0,1,2...,8,9.    =0: MINIMUM STORAGE, MAXIMUM CALC
+ULATION[] 
+ []
+
+
+Overfull \hbox (45.7368pt too wide) in paragraph at lines 184--184
+[]\OT1/pcr/m/n/12 C                           =9: MAXIMUM STORAGE, MINIMUM CALC
+ULATION[] 
+ []
+
+
+Overfull \hbox (45.7368pt too wide) in paragraph at lines 184--184
+[]\OT1/pcr/m/n/12 C  NGSTAL = 0  ==> NO STORAGE FOR SPATIALLY RESOLVED SURFACE 
+TALLIES[] 
+ []
+
+
+Overfull \hbox (31.3368pt too wide) in paragraph at lines 184--184
+[]\OT1/pcr/m/n/12 C  NGSTAL = 1  ==> SPATIALLY RESOLVED SURFACE TALLIES ARE COM
+PUTED[] 
+ []
+
+[233] [234] [235] [236] [237] [238]
+Overfull \hbox (13.06726pt too wide) in paragraph at lines 477--486
+[]\OT1/ptm/m/n/12 Subroutine UP-NUSR must at least in-clude mod-ule COM-PRT (fo
+r the par-ti-cle weight WEIGHT).
+ []
+
+[239] [240] [241]
+Overfull \hbox (9.73682pt too wide) in paragraph at lines 701--701
+[]      \OT1/pcr/m/n/12 ENTRY RF1USR (XMW,XCW,XMP,XCP,IGASF,IGAST,ZCOS,ZSIN,EXP
+I,[] 
+ []
+
+
+Overfull \hbox (38.5368pt too wide) in paragraph at lines 701--701
+[]\OT1/pcr/m/n/12 C  RETURN 1: EIRENE STANDARD ANGULAR DISTRIBUTION (DEP. ON ``
+EXPI")[] 
+ []
+
+
+Overfull \hbox (24.13681pt too wide) in paragraph at lines 701--701
+[]\OT1/pcr/m/n/12 C  RETURN 2: THERMAL MOLECULE MODEL (DEP. ON ``IGAST", ``E0TE
+RM")[] 
+ []
+
+
+Overfull \hbox (16.93681pt too wide) in paragraph at lines 701--701
+[]\OT1/pcr/m/n/12 C  DEFINE SPECIES DEPENDENT PHYSICAL SPUTTERING COEFFICIENT H
+ERE[] 
+ []
+
+[242] [243]
+Overfull \hbox (38.5368pt too wide) in paragraph at lines 825--825
+[]     \OT1/pcr/m/n/12 .                   SORAD1,SORAD2,SORAD3,SORAD4,SORAD5,S
+ORAD6,[] 
+ []
+
+
+Overfull \hbox (24.13681pt too wide) in paragraph at lines 825--825
+[]     \OT1/pcr/m/n/12 .                   TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,S
+HWL,[] 
+ []
+
+
+Overfull \hbox (38.5368pt too wide) in paragraph at lines 825--825
+[]      \OT1/pcr/m/n/12 REAL(DP), INTENT(IN)   :: SORAD1,SORAD2,SORAD3,SORAD4,S
+ORAD5,[] 
+ []
+
+[244]
+Overfull \hbox (2.53682pt too wide) in paragraph at lines 825--825
+[]     \OT1/pcr/m/n/12 .              SORAD1,SORAD2,SORAD3,SORAD4,SORAD5,SORAD6
+,[] 
+ []
+
+
+Overfull \hbox (38.5368pt too wide) in paragraph at lines 825--825
+[]     \OT1/pcr/m/n/12 .              TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,W
+EISPZ)[] 
+ []
+
+
+Overfull \hbox (16.93681pt too wide) in paragraph at lines 825--825
+[]\OT1/pcr/m/n/12 !  FIND BIRTH POINT COORDINATES. SUBSTRATUM ISR IF STRATUM IS
+TRA[] 
+ []
+
+
+Overfull \hbox (60.1368pt too wide) in paragraph at lines 825--825
+[]\OT1/pcr/m/n/12 !  HAS ALREADY BEEN IDENTIFIED. ISTRA (IF NEEDED) IS IN MODUL
+E COMPRT.[] 
+ []
+
+
+Overfull \hbox (52.9368pt too wide) in paragraph at lines 825--825
+[]\OT1/pcr/m/n/12 !  HERE COMES THE PROBLEM SPECIFIC DEFINITION OF BIRTH POINT 
+SAMPLING[] 
+ []
+
+[245] [246]
+Overfull \hbox (9.73682pt too wide) in paragraph at lines 901--901
+[]      \OT1/pcr/m/n/12 SUBROUTINE PROUSR (RHO,INDEX,P0,P1,P2,P3,P4,P5,PVAC,NDA
+T)[] 
+ []
+
+[247]
+Overfull \hbox (32.05304pt too wide) in paragraph at lines 958--963
+\OT1/ptm/m/n/12 vec-tor quan-tity. Po-si-tion and cell num-ber in-for-ma-tion a
+re taken from mod-ule EIR-MOD[]COMPRT.F.
+ []
+
+
+Overfull \hbox (2.82086pt too wide) in paragraph at lines 967--971
+\OT1/ptm/m/n/12 This rou-tine is called in case IN-D-PRO(5)=8 for the B-field t
+ally (e.g. from rou-tine BFIELD.F),
+ []
+
+[248] [249] [250] [251]) [252]
+\openout2 = `chap4.aux'.
+
+ (chap4.tex
+Chapter 4.
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\\' on input line 1.
+
+[253
+
+
+
+]
+Overfull \hbox (52.9368pt too wide) in paragraph at lines 115--115
+[]\OT1/pcr/m/n/12 RSURF :  (RWK ((6+5*NPLS+NAIN) * NRAD +                 J), J
+=1,N1ST)[] 
+ []
+
+
+Overfull \hbox (52.9368pt too wide) in paragraph at lines 115--115
+[]\OT1/pcr/m/n/12 EP    :  (RWK ((6+5*NPLS+NAIN) * NRAD +   N1ST +        J), J
+=1,N1ST)[] 
+ []
+
+
+Overfull \hbox (52.9368pt too wide) in paragraph at lines 115--115
+[]\OT1/pcr/m/n/12 EL    :  (RWK ((6+5*NPLS+NAIN) * NRAD + 2*N1ST +        J), J
+=1,N1ST)[] 
+ []
+
+
+Overfull \hbox (52.9368pt too wide) in paragraph at lines 115--115
+[]\OT1/pcr/m/n/12 TR    :  (RWK ((6+5*NPLS+NAIN) * NRAD + 3*N1ST +        J), J
+=1,N1ST)[] 
+ []
+
+
+Overfull \hbox (52.9368pt too wide) in paragraph at lines 115--115
+[]\OT1/pcr/m/n/12 PSURF :  (RWK ((6+5*NPLS+NAIN) * NRAD + 4*N1ST +        J), J
+=1,N2ND)[] 
+ []
+
+
+Overfull \hbox (52.9368pt too wide) in paragraph at lines 115--115
+[]\OT1/pcr/m/n/12 TSURF :  (RWK ((6+5*NPLS+NAIN) * NRAD + 4*N1ST + N2ND + J), J
+=1,N3RD)[] 
+ []
+
+[254]
+Overfull \hbox (2.16162pt too wide) in paragraph at lines 138--142
+[]\OT1/ptm/m/n/12 In the $\OML/cmm/m/it/12 LEVGEO \OT1/cmr/m/n/12 = 5$ \OT1/ptm
+/m/n/12 op-tion (3D grid of tetra-he-dons) THINTF is an ar-ray of length NHMAX,
+
+ []
+
+[255] [256] [257]
+Overfull \hbox (55.39412pt too wide) in paragraph at lines 303--305
+[]\OT1/ptm/m/n/12 These are printed from \OT1/pcr/m/n/12 IF4COP\OT1/ptm/m/n/12 
+, to-gether with the over-all bal-ances of a cou-pled run (\OT1/pcr/m/n/12 TRCB
+AL=.true.\OT1/ptm/m/n/12 ) 
+ []
+
+[258])
+\openout2 = `tables.aux'.
+
+ (tables.tex
+Chapter 5.
+[259
+
+
+
+]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 116.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 116.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 116.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 124.
+
+Overfull \hbox (5.6081pt too wide) in paragraph at lines 122--181
+[][]
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 122--181
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 122--181
+
+ []
+
+[260] [261] [262]
+Overfull \hbox (52.24275pt too wide) in alignment at lines 226--236
+ [] [] [] [] [] [] 
+ []
+
+
+Overfull \hbox (52.24275pt too wide) in alignment at lines 236--243
+ [] [] [] [] [] [] 
+ []
+
+
+Overfull \hbox (52.24275pt too wide) in alignment at lines 243--283
+ [] [] [] [] [] [] 
+ []
+
+
+Overfull \hbox (52.24275pt too wide) in alignment at lines 283--325
+ [] [] [] [] [] [] 
+ []
+
+
+Overfull \hbox (52.24275pt too wide) in alignment at lines 325--365
+ [] [] [] [] [] [] 
+ []
+
+[263
+
+]
+Overfull \hbox (52.24275pt too wide) in alignment at lines 365--413
+ [] [] [] [] [] [] 
+ []
+
+
+Overfull \hbox (52.24275pt too wide) in alignment at lines 413--472
+ [] [] [] [] [] [] 
+ []
+
+[264]
+Overfull \hbox (52.24275pt too wide) in alignment at lines 472--473
+ [] [] [] [] [] [] 
+ []
+
+[265] [266] [267
+
+] [268] [269
+
+]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 796.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 796.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 796.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 797--802
+
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[270
+
+]
+Overfull \hbox (12.22293pt too wide) in paragraph at lines 881--997
+[][]
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 881--997
+
+ []
+
+
+LaTeX Warning: Float too large for page by 16.64128pt on input line 997.
+
+) [271] [272] [273] (eirene.bbl [274
+
+
+] [275])
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 238.
+ [276]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 238.
+ (eirene.aux (foreword.aux)
+(intro.aux) (chap1.aux) (chap2.aux) (chap2b1.aux) (chap2b2.aux) (chap2b3a.aux)
+(chap2b3b.aux) (chap2b4.aux) (chap2b5.aux) (chap2b6.aux) (chap2b7.aux)
+(chap2b8.aux) (chap2b9.aux) (chap2b10.aux) (chap2b11.aux) (chap2b12.aux)
+(chap2b13.aux) (chap2b14.aux) (chap3.aux) (chap4.aux) (tables.aux))
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 238.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 238.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 238.
+ ) 
+Here is how much of TeX's memory you used:
+ 11232 strings out of 492970
+ 162697 string characters out of 3126150
+ 290024 words of memory out of 3000000
+ 14131 multiletter control sequences out of 15000+200000
+ 37107 words of font info for 95 fonts, out of 3000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 42i,14n,32p,1144b,491s stack positions out of 5000i,500n,10000p,200000b,50000s
+{C:/Users/Detlev/AppData/Local/Programs/MiKTeX 2.9/fonts/enc/dvips/base/8r.en
+c}<C:/Users/Detlev/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfont
+s/cm/cmbx12.pfb><C:/Users/Detlev/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/
+public/amsfonts/cm/cmbx8.pfb><C:/Users/Detlev/AppData/Local/Programs/MiKTeX 2.9
+/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/Detlev/AppData/Local/Progr
+ams/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/Detlev/AppDa
+ta/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/User
+s/Detlev/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi6
+.pfb><C:/Users/Detlev/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsf
+onts/cm/cmmi8.pfb><C:/Users/Detlev/AppData/Local/Programs/MiKTeX 2.9/fonts/type
+1/public/amsfonts/cm/cmr10.pfb><C:/Users/Detlev/AppData/Local/Programs/MiKTeX 2
+.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/Detlev/AppData/Local/Prog
+rams/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/Detlev/AppDa
+ta/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Users/
+Detlev/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr7.pf
+b><C:/Users/Detlev/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfont
+s/cm/cmr8.pfb><C:/Users/Detlev/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/pu
+blic/amsfonts/cm/cmsy10.pfb><C:/Users/Detlev/AppData/Local/Programs/MiKTeX 2.9/
+fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Users/Detlev/AppData/Local/Program
+s/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/Detlev/AppData/
+Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/De
+tlev/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/symbols/msam
+10.pfb><C:/Users/Detlev/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/am
+sfonts/symbols/msbm10.pfb><C:/Users/Detlev/AppData/Local/Programs/MiKTeX 2.9/fo
+nts/type1/urw/courier/ucrr8a.pfb><C:/Users/Detlev/AppData/Local/Programs/MiKTeX
+ 2.9/fonts/type1/urw/times/utmb8a.pfb><C:/Users/Detlev/AppData/Local/Programs/M
+iKTeX 2.9/fonts/type1/urw/times/utmr8a.pfb><C:/Users/Detlev/AppData/Local/Progr
+ams/MiKTeX 2.9/fonts/type1/urw/times/utmr8a.pfb><C:/Users/Detlev/AppData/Local/
+Programs/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.pfb>
+Output written on eirene.pdf (288 pages, 1597899 bytes).
+PDF statistics:
+ 3053 PDF objects out of 3580 (max. 8388607)
+ 675 named destinations out of 1000 (max. 500000)
+ 1228 words of extra memory for PDF output out of 10000 (max. 10000000)
+

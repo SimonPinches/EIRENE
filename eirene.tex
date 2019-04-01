@@ -1,0 +1,238 @@
+%\documentclass[12pt,dvipdfm,a4paper]{report}
+\documentclass[12pt,a4paper]{report}
+%$\documentclass[12pt,dvipdfm]{report}
+
+\oddsidemargin 5mm
+\evensidemargin 4mm
+\topmargin -15mm
+\textwidth 156mm
+\textheight 240mm
+\parindent=0pt
+\newenvironment{deflist}{\begin{list}{ }{\labelwidth2.2truecm
+\leftmargin2.4truecm \labelsep0.2truecm \parsep0truecm}}{\end{list}}
+\newenvironment{deflist2}{\begin{list}{ }{\labelwidth1.5truecm
+\leftmargin1.7truecm \labelsep0.2truecm \parsep0truecm}}{\end{list}}
+\usepackage{longtable}
+\usepackage{epsf}
+\usepackage{amsbsy}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\newcommand{\vOmega}{\mathbf{\Omega}}
+\newcommand{\vdOmega}{\mathbf{d\Omega}}
+\newcommand{\vv}{\mathbf{v}}
+\newcommand{\ve}{\mathbf{e}}
+\newcommand{\vepsilon}{\mathbf{\epsilon}}
+\newcommand{\vn}{\mathbf{n}}
+\newcommand{\vV}{\mathbf{V}}
+\newcommand{\vx}{\mathbf{x}}
+\newcommand{\vu}{\mathbf{u}}
+\newcommand{\vr}{\mathbf{r}}
+\newcommand{\vp}{\mathbf{p}}
+\newcommand{\vb}{\mathbf{b}}
+\newcommand{\ver}{\mathbf{e}_r}
+\newcommand{\veth}{\mathbf{e}_\theta}
+\newcommand{\veph}{\mathbf{e}_\phi}
+\newcommand{\vC}{\mathbf{C}}
+\newcommand{\vdr}{\mathbf{dr}}
+\newcommand{\vdp}{\mathbf{dp}}
+\newcommand{\vF}{\mathbf{F}}
+\newcommand{\vE}{\mathbf{E}}
+\newcommand{\vB}{\mathbf{B}}
+\newcommand{\vS}{\mathbf{S}}
+\newcommand{\vL}{\mathbf{L}}
+\newcommand{\vJ}{\mathbf{J}}
+\newcommand{\vj}{\mathbf{j}}
+\newcommand{\vrho}{\mathbf{\rho}}
+\newcommand{\vDeltar}{\mathbf{\Delta r}}
+\newcommand{\vdS}{\mathbf{dS}}
+\newcommand{\ddr}{d^{\,3}r}
+\newcommand{\ddv}{d^{\,3}v}
+\newcommand{\ddk}{d^{\,3}k}
+\newcommand{\ddV}{d^{\,3}V}
+\newcommand{\vBTheta}{\mathbf{B}_\Theta}
+\newcommand{\vBPhi}{\mathbf{B}_\Phi}
+%\usepackage{color}
+\pagecolor {white}
+
+% CSW: use following package for better ps2pdf-conversion
+\usepackage{times}
+
+\usepackage[unicode=true,
+% hypertex, % use for activating links in DVI file
+% dvipdfm, % use for bookmarks in final version
+ bookmarks=true,bookmarksnumbered=true,bookmarksopen=true,
+ breaklinks=false,pdfborder={0 0 0},backref=false,colorlinks=true]
+ {hyperref}
+\hypersetup{pdftitle={EIRENE Documentation},linkcolor=blue, citecolor=blue, urlcolor=blue, filecolor=blue}
+ \usepackage{bookmark} % use only together with dvipdfm option of hyperref package!
+
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\begin{document}
+
+
+\begin{titlepage}
+
+\vspace*{5cm}
+
+\begin{center}
+{\Huge { \bf The EIRENE Code User Manual}}\\
+
+\vspace{1cm}
+
+{\Large { \bf including: B2-EIRENE interface }}
+\vspace{2cm}
+
+{\huge { \bf Manual version:  \today}}
+
+
+\vspace{5cm}
+
+{\Large {\bf D. Reiter \\
+     Institut f\"ur Energie- und Klimaforschung \\
+     Plasmaphysik \\
+     Forschungszentrum J\"ulich GmbH \\
+%     Association EURATOM-KFA \\
+     P.O.B. 1913 \\
+     D-52425 J\"ulich, GERMANY \\}}
+%{\Large {\bf D. Reiter \\}}
+
+\vspace{0.5cm}
+
+
+\end{center}
+\end{titlepage}
+
+\begin{center}
+\begin{figure} \label{eirene}
+\centering
+\includegraphics[width=8cm]{ManualFigs/manual00.eps}
+%  old version
+%\epsfxsize=15truecm
+%\epsffile{manual00.ps}
+\end{figure}
+
+
+
+{\Huge{\bf{EIRENE}}}\\
+
+\vspace{1.0cm}
+
+{\Large{\bf{THE GREEK GODDESS OF PEACE}}}
+
+\vspace{2.0cm}
+
+The Greek author Hesiodos wrote a genealogy of the gods, The
+Theogony, in the 8th century B.C.. According to him, EIRENE and
+her sisters, Eunomia and Dike, were the daughters of Zeus and
+Themis. These sisters were called the horae, the Greek word for
+the right time, hora.
+\end{center}
+\newpage
+\begin{abstract}\label{abstract}
+The EIRENE neutral particle (incl. photons) transport code \cite{kn:Reiter92a} is described. This code
+resorts to a combinatorial discretization of general 3 dimensional
+computational domains. It is a multi-species code solving
+simultaneously a system of time dependent (optional) or stationary
+(default) linear or non-linear kinetic transport equations of almost arbitrary
+complexity. A rather crude model for transport of ionized particles in an externally specified
+magnetic field lines is also included. EIRENE is coupled to
+external databases for atomic and molecular data and for surface
+reflection data, and it calls various user supplied routines, e.g.
+for exchange of data with other (fluid-) transport codes. The main
+goal of code development was to provide a tool to investigate
+neutral gas transport in magnetically confined plasmas. But, due
+to its flexibility, it also can be used to solve more general
+linear kinetic transport equations, by applying a stochastic
+rather than a numerical or analytical method of solution. In
+particular, options are retained to reduce the model equations to
+the
+theoretically important case of the one speed transport problem.\\
+Major applications of EIRENE are in connection with plasma fluid codes,
+in particular with the various versions of the B2 code \cite{kn:Braams}.
+The semi-implicit iterative coupling method of B2-EIRENE \cite{kn:Reiter91b},
+\cite{kn:Reiter92b}
+and it's implementation (code segment: EIRCOP) are also described.
+Both, in its stand alone form and also non-linearly integrated into plasma fluid transport solvers
+the EIRENE code has become a widely spread ''community code" since the nineties of the last century
+A short overall summary of the code package, including some historical notes, is given in \cite{kn:Reiter2004}
+\end{abstract}
+\pagenumbering{Roman}
+\newpage
+\renewcommand\thechapter{\Roman{chapter}}
+\include{foreword}
+
+\newpage
+
+\tableofcontents
+
+
+\include{intro}
+
+\newpage
+% to make sure that bookmarks stay correct in pdf:
+% due to roman and arabic section numbering otherwise section1 would be there twice.
+% and pdf viewer gets confused.
+\renewcommand{\theHchapter}{arabicchapter.\thechapter}
+\renewcommand\thechapter{\arabic{chapter}}
+%\renewcommand{\thesection}{\arabic{section}}
+%\renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
+%\renewcommand{\thesubsubsection}{\thesection.\thesubsection.\arabic{subsubsection}}
+\pagenumbering{arabic}
+\setcounter{chapter}{0}
+\include{chap1}
+
+\include{chap2}
+
+\include{chap2b1}
+
+\include{chap2b2}
+
+\include{chap2b3a}
+
+\include{chap2b3b}
+
+\include{chap2b4}
+
+\include{chap2b5}
+
+\include{chap2b6}
+
+\include{chap2b7}
+
+\include{chap2b8}
+
+\include{chap2b9}
+
+\include{chap2b10}
+
+\include{chap2b11}
+
+\include{chap2b12}
+
+\include{chap2b13}
+
+\include{chap2b14}
+
+\newpage
+
+\include{chap3}
+
+\newpage
+
+\include{chap4}
+
+\include{tables}
+
+%\include{commons}
+
+%\include{references}
+\addtocontents{toc}{\bf References}
+\bibliography{eirene}
+\bibliographystyle{unsrt}
+
+\end{document}

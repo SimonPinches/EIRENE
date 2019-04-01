@@ -1,0 +1,3503 @@
+\chapter{The neutral gas transport equation;~~\\
+Monte-Carlo terminology} \label{sec1} {\bf General
+Remarks}
+\medskip\noindent
+
+
+To introduce the terminology used throughout this report, we
+briefly recall the basic definitions and principles of a Monte
+Carlo linear transport model, following the lead of many textbooks
+on Monte Carlo methods for computing neutron transport (see e.g.,
+\cite{kn:Spanier69a}). The original derivation of the EIRENE Monte Carlo
+model, building on these neutronics concepts and terminology,
+was carried out in D. Reiter's phd thesis (in german) \cite{kn:Reiter84a}
+in the early eighties of the last century.
+We begin with the linear transport equation
+for the pre-collision density, written as integral equation
+(linear non-homogeneous Fredholm integral equation of 2nd kind).
+Distinct from standard terminology in the (analytic) transport
+theory we do not discuss analytic properties of the various terms
+in the equation, but, instead, point out their probabilistic
+interpretation, as needed for a Monte-Carlo solution of that
+equation. Next (section \ref{sec1.2}) we sketch the Monte Carlo
+procedure to solve such equations, by referring to the two most
+often applied techniques: ``track-length - and collision based
+estimators''. In the third subsection we briefly describe the
+treatment of boundary conditions (models for interaction of the
+particles with surrounding surfaces) and discuss some special
+models which are in use for the neutral gas transport in fusion
+plasma devices. Then (section \ref{sec1.4}) we discuss the most
+important source function (non-homogeneous part of the integral
+equation) and its implementation in a Monte Carlo algorithm,
+namely the surface source of neutral particles due to
+recombination of ions incident on solid surfaces at the boundary
+or inside of the computational area. In section \ref{sec1.5} we
+comment on the implementation of geometry within the framework of
+a Monte Carlo code in general terms and for the EIRENE code in
+particular. In section \ref{sec1.6} the time dependent mode of
+operation of the EIRENE code is described. It merely amounts just
+to an increase in the dimensionality by one, by adding a time
+co-ordinate and treating it, formally, in a rather symmetric
+fashion with the other spatial coordinates. See also reference
+\cite{kn:Reiter94}.
+\\
+Two kinds of non-linearities may be accounted for:
+\\
+In section \ref{sec1.7} the nonlinear behavior resulting from
+background data, which depend on neutral particle transport
+(sources and sinks), is discussed. The algorithm of the B2-EIRENE
+code system \cite{kn:Reiter92b}
+is described. More details on this can be found in the report \cite{kn:Maddison94}.\\
+In the final section of this introductory chapter \ref{sec1.8} the
+non-linear BGK formalism and the direct simulation method (DMCS)
+for self collisions between neutral particles, as implemented in
+the EIRENE code, is described.
+\newpage
+
+\section{The linear Boltzmann equation for the distribution function
+$f$} \label{sec1.0}
+EIRENE solves a multi species set of coupled ``Boltzmann''-type equations, in arbitrary 3D geometries.
+Strictly speaking it is the Boltzmann equation generalized from its original single species form with
+bi-linear collision kernel for elastic collisions,
+to a far more complicated collision integral, which also represents  ``chemical reactions''.
+This generalisation is also often referred to as Wang Chang-Uhlenbeck (WCU) equation in literature \cite{kn:WCU}.
+In this present section we start with the Boltzmann equation. We then deal with linearisations of collision
+kernels by fixing the phase space distribution of one of the two collision partners (which we refer to as ``bulk''
+or ``background'' or even simply ``plasma'' species). Generalization to the full WCU type multi-species collision kernels, which in the same
+linearized form provide the mathematical description of the equations solved by EIRENE, is then discussed next, section \ref{sec1.01}.
+
+Relaxation of the linearisation assumptions is needed only when there is self-interaction amongst the species considered by EIRENE,
+as it is required e.g. when radiation transfer is included (coupling between ``photons'' and atoms) or if
+neutral-neutral collisions are relevant. In this latter case so called BGK approximations to the full collisions integral
+are employed, and the non-linearity is dealt with by successive linearisation (i.e. by iteration).
+
+The strongest non-linearity in EIRENE applications is typically the back-reaction of the ``plasma-background'' (the host medium) on the
+neutral gas and radiation fields. This, however, is dealt with in an operator splitting cycling procedure (see section \ref{sec4}) between a plasma solver (``diffusion-advection sub-module" solver, for given reaction terms) and EIRENE (``reaction part'' solver, for given diffusion advection solution, i.e. for given background medium), in which
+EIRENE, within each single cycle, may still be operated in linear mode.
+
+
+
+
+
+
+The term {\sl  $\mu$-space } in this report refers to the phase
+space of a single particle. The quantity of interest is then the
+{\sl  one particle distribution function }  {\it f}
+\[
+f(\vr, \vv, i, t)  \quad \mbox{or} \quad \tilde f(\vr, E, \vOmega, i, t)
+\quad \mbox{or} \quad f(x) ,
+\]
+where the state $x$ of the $\mu$-space is characterized by a
+position vector $\vr$, a velocity vector
+$\vv$, a species index $i$ ($i$ stands for, e.g.,
+H, D, T, D$_2$, DT, He, CH$_n$,...) and the time $t$.
+
+The number density $n_i(\vr)$ for species $i$ then
+reads:
+\[
+n_i(\vr,t) = \int d^3{v} \ f(\vr,\vv,i,t)
+\]
+\\
+Instead of $\vv$ we sometimes utilize the kinetic energy
+$E$, $E=m/2 \cdot v^2$, and the unit (speed) vector
+$\vOmega = \vv/|\vv|$ in the
+direction of particle motion. Hence:
+\begin{equation}\nonumber
+f(\vr)d^3v = \tilde f(E, \vOmega)dEd\Omega \quad \mbox{where}  ~~d^3v = v^2dv d\Omega \quad \mbox{and} ~~ d\Omega = \sin \theta d\theta d\phi
+\end{equation}
+and
+\[
+f(\vr, \vv, i ,t)   = \left(\frac{m}{v}\right)
+\tilde{f}(\vr, E, \vOmega, i, t)
+\]
+The distribution function in the form of $\tilde f$ clearly remains meaningful also in the case of massless particles (photons),
+i.e. for applications of EIRENE to radiation transfer problems.
+\\
+The notation used now may appear to be unnecessarily complicated, but we indent to prepare here already the
+more general discussion in section \ref{sec1.01} on the WCU equation.
+
+We start with the original (elastic collisions only) ``Boltzmann Equation" \cite{kn:Cercignani},
+but by assuming additionally that collisions are discontinuous events (i.e.: finite range
+interaction potentials, or, at least, that proper cut-off procedures are applicable).
+This additional assumption allows us to separate, in the Boltzmann collision integral
+given below, the collisional ``loss" and ``gain" terms into two
+separate integrals. Otherwise cases could arise in which only the net collision term $\int\!\!\int\!\!\int \dots (f'f_b'-ff_b)$ would lead to finite results,
+but not the collision term in the form as given in (\ref{eq1a}) below: $\int\!\!\int\!\!\int \dots (f'f_b')- \int\!\!\int\!\!\int \dots (ff_b)$.
+
+Further: Lets consider only one specific species $i_0$, now sometimes
+omitting this species index. We assume that there are only
+collisions of this species $i_0$ with only one further species, here
+labeled $b$. Generally $b=i_0$ is also possible, but anticipating that later, when discussing \textbf{linear} Boltzmann models,
+these species $b$ will be referred to as background species, plasma species, etc.., with an externally given (fixed) distribution $f_b(\vx,\vv,t)$.
+Restriction, for the time being, to elastic collisions means that exactly one particle of each of these two
+species $i_0, b$ will also be present after the collision event (i.e.,
+chemical reactions, inelastic collisions with change of internal energy,
+are excluded for the time being,
+but their description within a ``Boltzmann-like" framework is discussed below,
+section \ref{sec1.01}) on the so called ``WCU" equation.
+
+The familiar Boltzmann
+equation for the distribution function $f=f_{i_0}$ for a particular species (a particular component of a gas mixture) $i_0$
+reads
+
+% gleichungsnummern fest auf eq. 1a setzen
+\renewcommand{\theequation}{1.1a}
+\begin{eqnarray} \label{eq1a}
+\lbrack\frac\partial{\partial t} + \vv \cdot
+\nabla_{\vr} +
+\frac{\vF(\vr,\vv,t)}{m} \cdot
+\nabla_{\vv}\rbrack \ f(\vr,\vv,t)
+& = &
+\int\!\int\!\int
+\sigma(\vv',\vV';\vv,\vV)
+|\vv'-\vV'| f(\vv')
+f_b(\vV')  \nonumber \\
+& - & \int\!\int\!\int
+\sigma(\vv,\vV;\vv',\vV')
+|\vv-\vV| f(\vv) f_b(\vV)
+\nonumber \\  &+  & Q(\vr,\vv,t)
+\end{eqnarray}
+
+% gleichungsnummern einen hochzaehlen.
+%\addtocounter{equation}{+1}
+%  gleichungszaehler auf default mode zuruecksetzen
+\renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
+There is one such equation for each ``particle species $i$" considered, but for elastic collision
+without exchange between species. Always only two of them (here: $i_0$ and $b$) a directly coupled to each other.
+
+
+$Q \ (= Q_{i_0})$ is any external source (particles of species $i_0$ injected per unit volume  in phase space and per unit time).
+\
+
+Integration in the first term on the right hand side (``gain term") of this equation is over the (pre-collision) velocities $\vv',
+\vV'$  as well as over one of the two post collision velocities: $\vV$, the velocity of species $b$.
+We write more suggestively  $\sigma(\vv',\vV'; \vv,\vV) = \sigma(\vv',\vV' \rightarrow \vv,\vV)$
+for the (multi-) differential cross section for a binary particle collision process. The product of this $\sigma$ with the relative pre-collision velocity
+$|\vv'-\vV'|$ is the transitional (collision) probability leading from velocities prior to the collision $(\vv',\vV')$ to the pair $(\vv,\vV)$ of velocities after the collision.
+
+In a multi-component gas mixture the first two arguments in $\sigma$, namely the velocities
+$\vv',\vV'$ in the first integral, correspond to the species $i_0$
+and $b$, respectively. Via elastic collisions these are turned into
+the post collision velocities $\vv, \vV$,
+again for the same species $i_0$ and $b$, respectively. The first integral,
+therefore, describes the total rate of collisional transitions
+into the velocity space interval
+$[\vv,\vv+d\vv]$ for species $i_0$
+
+In the second integral on the right hand side (``loss term") the role of pre and post collision velocities is exchanged, but the integration
+remains over the same three velocities $\vv',\vV'$ and $\vV$, i.e. integration is now over all post collision velocities and
+over all incident velocities $\vV$ of collision partner $b$. Hence this
+integral describes the total collisional rate of loss for species $i_0$ from that phase space interval $[\vv,\vv+d\vv]$.
+Furthermore, $m = m_{i_0}$ is the particle mass and
+$\vF(\vr,\vv,t)$ is a volume force
+field. The fact that the cross section $\sigma$ remains the same in the forward (gain) and reverse (loss) integral
+after exchanging the pre-collision with the post collision velocity arguments
+follows from time-reversal (detailed balancing) in case of elastic collisions.
+
+
+The four velocity arguments in both collision integral terms are not truly independent:
+the conservation laws for total energy and
+momentum in a collision event must be fulfilled.
+\begin{eqnarray}\label{massenergy}
+m_{i_0} \vv' + m_b\vV' &=& m_{i_0}\vv + m_b \vV \nonumber\\
+\frac12 m_{i_0}v'^2+\frac12m_bV'^2&=&\frac12 m_{i_0}v^2 + m_b V^2 +\Delta_E
+\end{eqnarray}
+Here $\Delta_E$ is the exchange of internal energy in the collision (on expense of the energy of relative motion), and, by definition, $\Delta_E = 0$ for elastic collisions.
+We may assume that cross section $\sigma$ contains appropriate delta function factors such that the three
+integrations over velocity spaces reduce to integrations over lower dimensional manifolds on which these conservation laws are fulfilled.
+The modulus of the relative velocity $g$ is unchanged in elastic collisions,
+$g_{i_0,b} = |\vv-\vV| = |\vv'-\vV'| = g_{i_0,b}'$,
+and hence the collision is just a rotation of this relative velocity, by an angle $\vec\Omega$. 6-fold integration over full velocity spaces $\vv', \vV'$
+in $\Re^6$ reduce to just the 2 fold integration
+over $\Omega:  d\Omega=\sin\chi d\chi d\epsilon$ with $\chi$ being the deflection angle
+and $\epsilon$ the scattering angle.
+
+
+Writing
+\begin{equation} \nonumber
+D_t^{i_0} = \frac\partial{\partial t} + \vv \cdot
+\nabla_{\vr} + \frac{\vF_{i_0}(\vr,\vv,t)}{m_{i_0}} \cdot
+\nabla_{\vv}
+\end{equation}
+for the left hand side (convective part) of (\ref{eq1a}), leads to the Boltzmann equation in more commonly used text book form:
+
+% gleichungsnummern fest auf eq. 1.1a1 setzen
+\renewcommand{\theequation}{1.1a1}
+\begin{eqnarray} \label{eq1a1}\nonumber
+D_t^{i_0} \ f_{i_0}(\vr,\vv,t)
+& = &
+\int_{\Re^3,\Omega}  d\vV'd\Omega \ \
+\sigma(\vv,\vV;\vv',\vV')
+|\vv-\vV| \left[f_{i_0}(\vv')
+f_b(\vV')- f_{i_0}(\vv) f_b(\vV)\right]
+\nonumber \\  &+  & Q_{i_0}(\vr,\vv,t)
+\end{eqnarray}
+
+% gleichungsnummern einen hochzaehlen.
+%\addtocounter{equation}{+1}
+%  gleichungszaehler auf default mode zuruecksetzen
+\renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
+
+and the velocities $\vv',\vV $ are uniquely determined by $\vv, \vV'$ and scattering angles $\Omega$ via mass and energy conservation (\ref{massenergy}).
+
+
+The integral in this equation, or, equivalently, the first two terms on the right hand side of (\ref{eq1a}), comprise the Boltzmann collision integral $\frac{\delta
+f_{i_0}}{\delta t}|_{_{coll}}$. If there are more than just one possible type
+of collision partners (species) ``$b$", then the collision integral has to be
+replaced by a sum of collision integrals over all collision
+partners $b$, including, possibly, $b=i_0$ (self collisions)
+\begin{equation}\label{collop}
+\frac{\delta f_{i_0}}{\delta t}|_{_{coll}}= \frac{\delta f_{i_0}}{\delta t}|_{_{gain}}- \frac{\delta f_{i_0}}{\delta t}|_{_{loss}}= \sum_b \frac{\delta f_{i_0}}{\delta
+t}|_{_{coll_b}}.\end{equation}
+
+All these collision operators are bi-linear in the distribution
+functions $f_{i_0}, f_b$. The first term on the right hand side is due to
+scattering into the element $d\vv$ of velocity space and
+we shall abbreviate it by defining the collision kernel
+(``redistribution function") $C_{i_0}$ for $i_0$ particles alone, i.e. with an operator acting on (pre-collision) $f_{i_0}$ alone, already containing the proper integrations over pre-
+and post collision velocities $\vV', \vV$ of species $b$ collision partners:
+\begin{equation}\label{colkern}
+\frac{\delta f_{i_0}(\vv)}{\delta t}|_{_{gain}}
+ =
+ \int d^3{v}'  C_{i_0}(\vv' \rightarrow \vv)
+|\vv'| f_{i_0}(\vv')
+ =
+\int d^3{v}' \sum_b \ C_{i_0,b}(\vv' \rightarrow \vv)
+|\vv'| f_{i_0}(\vv')
+\end{equation}
+In more general situations (including chemical reactions) in addition to being an integral over particle $``b"$ velocity distributions, the kernels $C$ can be quite complicated integrals due to collision kinetics, as it then involves
+not only multiple differential cross sections, but also, possibly,
+particle multiplication factors, e.g. in case of fission by
+neutron impact, dissociation of molecules by electron impact, or
+stimulated photon emission from excited atoms. It can also
+include absorption, in which case the post collision state must be
+an extra ``limbo" state outside the phase-space considered. Due to
+both particle multiplication and/or absorption the collision
+kernel $C$ is not normalized to one, generally.
+
+The second term on the right hand side of the Boltzmann equation $\frac{\delta f}{\delta t}|_{_{loss}}$ is, formally, much simpler, because
+the function $f_{i_0}(\vv)$ can be taken out of the integrals.
+It is often convenient to even take the product $|\vv| \cdot f_{i_0}$ before the
+integral. The remaining integral is then just the total
+``macroscopic cross section" $\Sigma_t$ (dimension: 1/length), i.e., the inverse local mean
+free path. Apart from dependence on individual velocity $\vv$  of particle $i_0$ it is solely defined by total
+cross sections averaged over velocity distributions of particles ``$b$", i.e. by ``reaction rates", and is independent of particle multiplication factors, since we
+only consider binary collisions (exactly two pre-collision partners always, which lead to the loss of exactly
+one particle of species $i_0$ from phase space).
+
+This term is then, often, taken on the left hand side of the
+Boltzmann equation with a positive sign, in the form:
+\begin{equation}\label{extcoef}
+\frac{\delta f_{i_0}}{\delta t}|_{_{loss}}
+ =
+\Sigma_{t,i_0}(\vr,\vv) |\vv|
+f_{i_0}(\vv)
+\end{equation}
+
+Note, however, that in case of ``self collisions" within the community of particles $i_0$, the macroscopic cross section $\Sigma_t$
+itself is a (nonlinear) function of the dependent
+variable $f_{i_0}: \Sigma_{t,i_0}(\vr,\vv,f_{i_0})$,
+since it then contains also an integration (over velocities $\vV$ of the collision partners) of $\sigma(...,\vV \rightarrow ...) \times f_{i_0}(\vV)$.
+
+\paragraph{The linear form of Boltzmann transport equation}\mbox{}\\
+
+If all distributions $f_b(\vV)$ of  the collision partners $b$ of species $i_0$ are assumed to be given, then the
+kernel $C = C_{i_0}$ defined in (\ref{colkern}) is linear and the expression given there defines  a linear
+integral (``collision") operator acting on the distribution $f_{i_0}(\vv)$.
+For the linear case, i.e. for $f_b$ given for all collision partners other than $i_0$, and for self collisions ($i_0 + i_0 \rightarrow ...$) being excluded, also the ``extinction coefficient"
+$\Sigma_t = \Sigma_{t,i_0}$ defined by (\ref{extcoef}) is independent of the dependent variable $f = f_{i_0}$,
+and this term (out-scattering) just describes the loss of particle
+flux of $i_0$ particles due to any kind of interaction of them with any species $b$ from
+the background ``host" medium.
+
+With these formal substitutions the Boltzmann equation for distribution function $f(\vv) = f_{i_0}(\vv)$ takes a
+form which is often more convenient, in particular in linear
+transport theory (from now on omitting subscript $i_0$ on all terms):
+
+% gleichungsnummern fest auf eq. 1.1b setzen
+\renewcommand{\theequation}{1.1b}
+\begin{eqnarray} \label{eq1b}
+\lbrack\frac\partial{\partial t} + \vv \cdot
+\nabla_{\vr} +
+\frac{\vF(\vr,\vv,t)}{m} \cdot
+\nabla_{\vv}\rbrack \ f(\vr,\vv,t) +
+\Sigma_t(\vr,\vv) |\vv|
+f(\vv)
+  &=&
+\int d^3{v}' \ C(\vv' \rightarrow \vv)
+|\vv'|
+f(\vv') \nonumber \\
+&+& Q(\vr,\vv,t)
+\end{eqnarray}
+%  gleichungszaehler auf default mode zuruecksetzen
+\renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
+% gleichungsnummern einen runterzaehlen.
+\addtocounter{equation}{-1}
+which, in the linear case (no self collisions, $f_b$ given externally) is a linear equation for the distribution
+function $f = f_{i_0}(\vx,\vv,t)$ for species $i_0$.
+\\
+Clearly a computationally crucial simplification is provided in this linear case, which means neglect of all
+interactions within the community of species $``i"$, retaining only: $i_0 + b \rightarrow \cdots$ events.
+In practice for neutral particle (species group $i$) transport in plasmas (species group $b$) this mostly means neglect of neutral-neutral interaction,
+retaining only neutral-plasma collisions (for given plasma conditions).
+For the status of options in EIRENE to deal with ``non-linear''
+``self-collisions" ($i_0 + i_0 \rightarrow \cdots$)  or with ``cross collisions" ($i_0 + i_1 \rightarrow \cdots$) amongst the
+species for which the kinetic equation is solved, see below, section \ref{sec1.8}. Note that also combined (consistent) neutral particle and
+radiation transport models fall into the class of non-linear Monte Carlo applications, except for optically thin media in which case the photon gas
+and the neutral particle gas are decoupled.
+\\
+\paragraph{stationary kinetic transport equation} \mbox{}\\
+
+Often the characteristic time constants for neutral particle transport
+phenomena are very short ($\mu$s), compared to those for plasma
+transport (ms). We can, therefore, often neglect explicit time
+dependence in the equations describing the neutral particles. This
+is done in most applications. The extension to time-dependent
+problems is rather straight forward and the procedure in the
+EIRENE code for such cases is described in \ref{sec1.6} below.
+This is because in a Monte Carlo transport procedure
+time can be treated in a completely symmetric fashion with the spatial coordinates.
+\\
+For stationary (time-independent) problems the (scalar) transport flux (``angular flux") $\Phi$, where
+\begin{subequations}
+\begin{equation}\label{trans-flux}
+\Phi (x)   :=   | \vv |  \cdot f( \vr , \vv , i)   ,
+\end{equation}
+with, again, $| \vv| \Omega = \vv$,
+is sometimes used as dependent variable, in preference to the distribution $f(x)$.
+For example the \emph{total particle flux} is obtained from this ``angular flux'' by integrating it over all velocity space angles $\Omega$,
+i.e. as the zeroth $\Omega$ - moment of $\Phi(\vr,\vv,i)$.
+
+In particular for stationary ($\partial/\partial t = 0$)  and force free ($\vF = 0$) problems, as e.g. often encountered in linear transport theory such as
+neutronics, radiation transport, neutral particle transport in plasmas, etc.,
+the transport equation then reduces to the more compact form:
+% gleichungsnummern fest auf eq. 1.1c setzen
+\renewcommand{\theequation}{1.1c}
+\begin{eqnarray} \label{eq1c}
+\nabla_{\vr}
+ \Phi(\vr,\vv,t) +
+\Sigma_t(\vr,\vv)
+\Phi(\vr,\vv)
+  =  Q(\vr,\vv,t) +
+\int d^3{v}' \ C(\vr;\vv' \rightarrow \vv)
+\Phi(\vr,\vv')
+\end{eqnarray}
+%  gleichungszaehler auf default mode zuruecksetzen
+\renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
+% gleichungsnummern einen runterzaehlen.
+\addtocounter{equation}{-1}
+
+Alternatively, in computational domains with non-vanishing
+collisionality (i.e., if $\Sigma_t(x) \ne 0$ everywhere) the (pre-)
+collision density $\Psi$ is used, i.e.,
+\begin{equation}\label{defPsi}
+\Psi (x)
+= \Sigma_{t} (x)  \cdot \Phi (x) =\nu_t(x) \cdot f(x)  , \hspace{1cm} \Sigma_t =
+\Sigma_t(\vr,E,\vOmega,i)= \nu_t(\vr,E,\vOmega,i)/|\vv|
+\end{equation}
+\end{subequations}
+where, again, the ``macroscopic cross section" $\Sigma_t$ is the
+total inverse local mean free path (dimension: 1/length), and $\nu_t$ is the collision frequency (dimension: 1/time). This
+cross section can be written as a sum $ \Sigma_t   =   \sum
+\Sigma_k$ over macroscopic cross sections for the different types
+(identified by the index $k$) of collision processes. Further
+details about this ``macroscopic cross section" and its relation
+to the conventional (``microscopic") cross sections are given
+below, section \ref{sec1.2.3}.
+
+In closing this section we note:
+
+
+All these equations (\ref{eq1a}, \ref{eq1b}, \ref{eq1c}), and equation (\ref{eq1d})
+given below are equivalent, of course,
+so are their corresponding WCU generalizations discussed in the next section \ref{sec1.01}.
+Which particular
+form is used in a particular discussion depends upon the issue which is
+considered. For example, the collision estimator for evaluating moments (responses) of the solution to the Boltzmann equation can be shown to be
+unbiased quite conveniently when using eq. (\ref{eq1d}), whereas the track-length
+estimator, used for the same purpose in EIRENE, is most easily understood with the from (\ref{eq1d}). Time dependent
+cases are best discussed utilizing the form (\ref{eq1b}), etc...
+
+\subsection{The WCU generalisation of the Boltzmann equation} \label{sec1.01}
+
+The mathematical generalization from the classical Boltzmann equation
+(for a system undergoing only elastic collisions),
+equation (\ref{eq1a})
+to the semi-classical Boltzmann
+equation (the WCU equation, \cite{kn:WCU}) for accomodating also chemical reactions (including, for example,
+vibrational relaxation or exchange of internal energy $\Delta E$ as special
+cases, but also chemical reactions $A+B \rightarrow C+D$, etc.)
+is obtained by a proper generalization of the species labels.
+The transitions are now symbolized as $\{i'l'\},\{b'l_1'\} \rightleftarrows \{il\},\{bl_1\}$. These
+generalized species indices label both the chemical species ($i,b$) and/or the
+internal quantum state ($l,l_1$) corresponding to modes of vibration, rotation or excitation.
+I.e. we regard two particles (objects) as different, with a different label,
+if either they belong to a different
+chemical species or they differ by their internal (electronic, or ro-vibrational, etc) state,
+as appropriate.
+
+
+Now, by analogy to the discussion of the original Boltzmann equation (\ref{eq1a}), (\ref{eq1a1}),
+we consider then the phase-space balance equation for a given species/internal mode $\{i_0l_0\}$. Then the sum in the collision
+integral is over all collision labels $\{i'l'\}, \{b'l_1'\}, \{bl_{1}\}$ and over all velocities of these three ``species".
+Even more generally:
+in case there are more than two post collision particles, i.e. more than two particles in the exit channel of the collision, integration (velocities) and summation (generalized species indices) in the WCU collision integral is over all involved particles, except over $\{i_0l_0; \vv\}$, the parameters of the dependent variable $f_{i_0}(l_0,\vv)$. Employing the notations as in (\ref{eq1a1}) the full WCU prototypical system of kinetic transport equations then reads (written here for two post collision particles only)
+
+\begin{eqnarray}\label{WCU}
+D_t^{i_0l_0} \ f_{i_0l_0}(\vr,\vv,t)
+& = &
+\sum_{i',l',b,l_1,b',l_1'}\int_{\Re^3,\Omega}  d\vV'd\Omega \ \
+B_{i_0l_0,bl_1}^{i'l',b'l_1'}(\vv,\vV) \ \times \\ && \times
+\left[f_{i'l'}(\vv')
+f_{b'l_1'}(\vV')- f_{i_0l_0}(\vv) f_{b,l_1}(\vV)\right]
+\nonumber \\  &+  & Q_{i_0l_0}(\vr,\vv,t) \nonumber
+\end{eqnarray}
+with
+\begin{equation}
+B_{il,bl_1}^{i'l',b'l_1'}(\vv,\vV)=\sigma_{il,bl_1}^{i'l',b'l_1'}(\vv,\vV;\vv',\vV') \
+|\vv-\vV|
+\end{equation}
+
+The cross sections in the
+corresponding collision integrals
+$\sigma_{il,bl_1}^{i'l',b'l_1'}(\vv',\vV',\vv,\vV)$
+are multiple differential for scattering at a certain solid angle and post
+collision energies with simultaneous transition from $(il, bl_1)$
+to $(i'l',b'l_1')$.
+Again, as already in the Boltzmann equation restricted to elastic collisions, the pre and post collision velocities
+$\vv',\vV'$ and $\vv,\vV$, respectively, are not independent, but constrained by momentum and energy conservation, and the corresponding constrains
+are contained in the multi-differential cross sections, e.g. in form of delta functions.
+\\
+For more than two post collision objects (e.g. fission, dissociative excitation, stimulated radiation emission, etc...), this notation is readily generalized by
+adding more superscript labels and more post collision velocities.
+
+
+
+The extra discrete label $l$ introduced here compared to the Boltzmann equation may either be regarded as species index:
+$i_0 \rightarrow i_0l_0$ or as other additional discrete independent variable (e.g. polarization, in case of radiation transport):
+$f_{il}(\vv) \rightarrow f_{i}(l,\vv)$, whichever is more convenient.
+
+As noted above, further generalizations to include particle
+splitting, absorption or fragmentation into more than two post
+collision products are straight forward, but can more conveniently
+be formulated in the $C$-collision kernel formulation introduced above and used below to relate the transport equation
+to a Markovian stochastic (discrete time) process.
+
+\paragraph {linear form of WCU equation: the generic EIRENE equation}\mbox{}\\
+
+As above, linearisation will be again be obtained by grouping generalized labels $\{il\}$ and $\{bl_1\}$ into two disjunct classes,
+and allowing for reactions only between initially (prior to the collision) one member $\{i_0l_0\}$ from class $``\{il\}"$, the community of ``test particles''
+and one member $\{b_0l_{1_0}\}$ from the disjunct class $``\{bl_1\}"$, the ``bulk", ``background" medium, or in our case, simply ``plasma" species.
+
+\section{The linear integral equation for the collision density
+$\Psi$} \label{sec1.1}
+
+By formally integrating the characteristics for  (\ref{eq1c}) the
+same transport equation can also be written in integral form. This formal procedure is outlined below in
+paragraph \ref{sec_green}.
+
+The resulting integral equation is often most conveniently written for the (ingoing-) collision density $\Psi$ (\ref{defPsi}) rather than for
+transport flux $\Phi$:
+% gleichungsnummern fest auf eq. 1.1d setzen
+\renewcommand{\theequation}{1.1d}
+\begin{equation} \label{eq1d}
+\Psi(x) = S(x) + \int dx ' \Psi (x ') \cdot K(x '\rightarrow x)  .
+\end{equation}
+% gleichungsnummern einen runterzaehlen.
+\addtocounter{equation}{-1}
+%  gleichungszaehler auf default mode zuruecksetzen
+\renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
+This equation has the general form of the backward integral
+equation of a Markovian jump-process and it is therefore
+particularly well suited for a Monte Carlo method of solution. The
+formal relation between the integro-differential form (\ref{eq1c})
+and this integral form is very useful to generalize the Monte
+Carlo procedure, e.g., to time-dependent equations, and to
+Boltzmann-Fokker-Planck equations (which contain diffusive
+contributions or diffusive approximations for some processes, in
+addition to the jump processes described by the Boltzmann
+collision integral). It also allows to make connection to the so
+called ``Green's-functions Monte Carlo'' concept (originally
+developed for quantum mechanical problems involving solutions to
+the Schr\"odinger equation). A corresponding discussion is
+postponed to section \ref{sec_green}. A direct intuitive
+interpretation of the integral equation is already sufficient to
+understand the Monte Carlo method of solution and shall be given
+first.
+
+In (\ref{eq1d}) $x'$ and $x$ are the states at two successive
+collisions (jumps). The integral $\int dx'$ in (\ref{eq1d}) is to be understood as
+an integral over all initial coordinates, i.e. over the entire physical space, the full velocity space and a
+summation over all species indices. The transition kernel $K$ is
+usually decomposed, in our context, into a collision- and a
+transport kernel, i.e., $C$ and $T$ , where
+\begin{equation} \label{eq1.2}
+K(\vr  ' , \vv  ' , i ' \rightarrow
+\vr  , \vv , i)   =   C( \vr ' ;
+\vv ' , i '   \rightarrow   \vv , i)  \cdot T(
+\vv , i; \vr ' \rightarrow \vr )   .
+\end{equation}
+The kernel $C$ is (excluding normalization) the conditional
+distribution for new co-ordinates ($\vv $,i) given that
+a particle of species $i'$ and with velocity $\vv'$ has
+undergone a collision at position $\vr ' $. This kernel
+can further be decomposed into:
+\begin{equation} \label{eq1.3}
+C( \vr ' , \vv ' , i '   \rightarrow
+\vv , i) =   \sum_{k} {p_k  \ C_k ( \vr ' ;
+              \vv ' , i '   \rightarrow \vv, i)} \
+, \ p_k   =    \frac{\Sigma_k}{\Sigma_t}
+\end{equation}
+with summation over the index $k$ for the different types of
+collision processes under consideration and $p_k$ defined as the
+(conditional) probability for a collision to be of type $k$. The
+normalizing factor
+\begin{equation} \label{eq1.4}
+c_k (x ')   =
+  \sum_{i}   \int d^3v \  C_k (
+\vr ' , \vv ' , i ' \rightarrow
+\vv , i ) \   , \  {\cal{C}}_k   =    \frac{1}{c_k}
+C_k
+\end{equation}
+gives the mean number of secondaries for this collision process.
+The function $ {\cal{C}}_k$ then is a conditional probability
+density. The particle absorption process can conveniently be
+described by adding an ``absorbing state" $x_a$ to the $\mu$-space
+(generally referred to as ``one-point compactification of this
+space" in the language of mathematical topology). This ``limbo
+state", once it is reached, is never left again if the kernels $T$
+or $C$ are employed as transition probabilities. Formally, an
+additional collision kernel $C_a (x \rightarrow x_a )$ and an
+absorption probability $ p_a   =   \Sigma_a / \Sigma_t$ must be
+included in the collision kernel. The quantity $ \Sigma_a$
+comprises all collision processes with no next generation
+particles within the community of particles considered by the coupled set of kinetic transport equations.
+(Ionisation of a neutral atom is a loss, if the resulting ion is not considered further, or dealt with
+by a CFD code outside the Monte Carlo procedure).
+\\The kernel $T$ describes the motion of the test
+particles between the collision events. Let, again,  $
+\vOmega'$ denote the unit vector in the direction of
+particle flight $\vv'/|\vv'|$, and let $ \vOmega_2'$ and $
+\vOmega_3'$ be two further unit vectors such that
+these three vectors  form an orthonormal basis at the point
+$\vr  '$. Neither velocity nor species change along the transition described by $T$, i.e. $\vv'=\vv$ and $i'-i$.
+Omitting the corresponding delta functions in velocity space and the Kronecker delta $\delta_{i'i}$
+the transport kernel $T$ then reads as
+follows:
+\begin{subequations}
+\begin{eqnarray} \label{eq1.5}
+(T(l)=)\ \ T ( \vv' , i'; \vr ' \rightarrow  \vr
+) &=& \Sigma_t ( \vr  ,\vv', i') \cdot \exp
+\left [   - \int_{0}^{l=\vOmega' ( \vr -
+\vr ' )} ds \Sigma_t ( \vr '  +  s
+\vOmega', \vv', i' )  \right ]
+\nonumber\\
+& &\cdot \delta (\vOmega_2' ( \vr  -
+\vr ' ))    \cdot \delta ( \vOmega_3'   (
+\vr - \vr ' ))
+  \cdot   H (\vOmega'
+( \vr  - \vr  ' )) \\
+&=& \Sigma_t ( \vr  ,\vv' , i') \cdot F( \vv' , i'; \vr ' \rightarrow  \vr
+) \quad 0\le l \le \infty \label{2.8b}
+\end{eqnarray}
+\end{subequations}
+with $H(x) = 0 $ if $ x < 0 $, and $H(x) = 1 $ if $ x \ge 0$, the
+Heaviside step function (the unit step function). The two remaining delta functions restrict the motion to a path in the direction
+of the initial velocity $\vv'$.
+
+Thus, although strictly being a conditional (on $x'$) distribution in phase space, for an infinite medium $T$ can be interpreted as the
+distribution density for the distance $l$ for a free flight
+starting from $\vr '$ to the next point of collision
+$\vr  = \vr ' + l \cdot \vOmega'$. We shall frequently omit the arguments $\vv',i'$ to simplify notation, because neither initial velocity
+nor species change during a free flight.
+
+For a finite medium this distribution can be generalized to (writing shorter $l$ for $(\vr'+l\vOmega',\vv',i')$:
+\begin{eqnarray} \label{eq1.5b}
+T(l) &=& \left\{
+\begin{array}{lcr}
+\Sigma_t ( l) & \cdot \exp
+\left [   - \int_{0}^{l} ds \Sigma_t ( s
+ )  \right ],&  l< l_{max} \\ \delta(l-l_{max}) & \cdot \exp
+\left [   - \int_{0}^{l_{max}} ds \Sigma_t (   s
+ )  \right ],  & l\ge l_{max}
+\end{array}
+\right.
+\end{eqnarray}
+Here $l_{max}$ denotes the distance along the flight direction from $\vr'$ to the boundary for the computational domain,
+to any internal surface at which the test flight shall be stopped, e.g. for scoring surface fluxes there,  or even to the cell boundary.
+The ``Transport Kernel" $T$ has dimension: [1/Dimension of phase space] ($T(x'\rightarrow x)dx$ is a probability).
+The function $F$ (Dimension: [length times Dimension of $T$])
+defined in expression (\ref{2.8b}), and analogously from (\ref{eq1.5b})
+for a finite medium,  will turn out to be the relevant Green's function
+for the transport problem, see Section \ref{sec_green}.
+The integral
+\begin{displaymath}
+\alpha(\vr',\vr) =
+\int_{0}^{\vOmega ( \vr - \vr' )}
+ds \Sigma_t ( \vr '  +  s \vOmega )
+\end{displaymath}
+in equation (\ref{eq1.5}) is well known as ``optical thickness of
+the medium" in linear transport theory.
+\\ The inhomogeneity $S$ in equation (\ref{eq1d}) is, excluding
+normalization, the distribution density of first collisions,
+whereas the integral term in equation (\ref{eq1d}) describes the
+contribution to $\Psi$ from all higher generations. The quantity $S$
+can be written as:
+%\begin{subequations}  subeqs. functioniert nicht bei latex2html
+% gleichungsnummern fest auf eq. 1.6a setzen
+\renewcommand{\theequation}{1.6a}
+\begin{equation} \label{eq1.6a}
+S(x)  =  \int dx '   Q(x ' )  \cdot T(x ' \rightarrow x) ,
+\end{equation}
+% gleichungsnummern einen runterzaehlen.
+\addtocounter{equation}{-1}
+%  gleichungszaehler auf default mode zuruecksetzen
+\renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
+with a source density $Q$. As the problem is linear, $Q$ can be
+normalized to 1 and, thus, $Q$ can be considered a distribution
+density in $\mu$ -space for the ``{\sl primary}" birth points of
+particles, as, e.g., opposed to the ``{\sl secondary}" birth point
+distribution (or ``post collision density") $\chi$ of particles
+after a collision event
+
+% gleichungsnummern fest auf eq. 1.6b setzen
+\renewcommand{\theequation}{1.6b}
+\begin{equation} \label{eq1.6b}
+\chi (x)   =   \int dx '
+\Psi(x ' )  \cdot C(x ' \rightarrow x).
+\end{equation}
+% gleichungsnummern einen runterzaehlen.
+\addtocounter{equation}{-1}
+%  gleichungszaehler auf default mode zuruecksetzen
+\renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
+%\end{subequations}  subeqs. functioniert nicht bei latex2html
+
+It can be shown that a unique solution $\Psi(x)$ exists subject to
+appropriate boundary conditions and under only mild restrictions
+(basically on the constants $c_k$ and $ p_a $) to ensure that the
+particle generation process stays sub-critical.
+\\ Usually, a detailed knowledge of $\Phi$ or $\Psi$
+is not required, but only a set of ``responses", R, defined by
+\begin{equation} \label{eq1.7}
+R   = \quad  < \Psi | g_c > \quad  =   \int dx   \Psi (x)
+ \cdot g_c (x)   \quad   \left (    = \quad  < \Phi | g_t > \quad  =
+\int dx   \Phi (x)  \cdot g_t (x)   \right ),
+\end{equation}
+where $g_c (x)$, $g_t (x)$ are given ``detector functions".
+
+For example all terms in the plasma fluid equations resulting from
+neutral plasma interaction can be written in this way. This can be
+seen by considering a numerical grid, composed of M mesh cells (spatial and/or temporal),
+for the numerical solution of the fluid equations. The detector functions for many responses
+needed for fusion plasma applications are hard wired in EIRENE, generalization to any arbitrary
+response by resorting to ``user defined detector functions" is described in Section \ref{sec3.2.1} for tracklength estimates,
+and in Section \ref{sec3.2.2} for collision estimates.
+
+Lets therefore define an entire set of detector functions $g_m$, one for each mesh cell of an external
+code,
+each including a characteristic function
+\begin{subequations}\label{eq2.10}
+\begin{equation}
+\label{eq2.10a}
+g_m=g \times ch_m(\vr,t)  , \quad m=1,2,...,M, \end{equation}
+i.e., $ch_m (\vr,t)=1$
+inside the numerical mesh cell (or time interval) labeled with the cell index $m$,
+and $ ch_m (\vr,t)  =0 $ outside this cell.
+Thus profiles of cell volume averaged responses are readily obtained in a single Monte Carlo run.
+
+Estimates of surface fluxes, or point estimates e.g. in time,
+are also included in this concept if proper use is made of delta functions to
+reduce dimensionality of the response:
+\begin{equation}
+\label{eq2.10b}
+g_{m,\alpha}=g \times ch_m(\vr,t) \times \delta^\alpha(\vr,t) , \quad m=1,2,...,M,
+\end{equation}
+Here, e.g.,  a surface cell $m$ would discretise  a surface $S$ characterized by a surface delta function $\delta^S$.
+\end{subequations}
+
+Equation (\ref{eq1.7}) shows that Monte Carlo estimates (tallies) fall into the category of \emph{extensive} quantities
+(number of particles, total energy, momentum, etc., per cell). \emph{Intensive }quantities  (flow velocity, temperature, etc...)
+obtained by dividing two extensive quantities are typically difficult estimate with Monte Carlo methods
+(see: ``ratio estimates", correlation between nominator and denominator,...).
+If, however, the extensive quantity in the denominator is known exactly, such as e.g. the cell volume in a computational mesh, then, of course,
+obtaining an intensive quantity from an extensive quantity with Monte Carlo is a trivial re-scaling.
+
+Monte Carlo estimates of the (intensive) volumetric source terms in the fluid
+equations due to the trace particles (neutral particles, but also
+trace ions described by the Monte Carlo procedure) are such
+cell averages, surface averages, time averages or point estimates (e.g. in time),
+averaged over a sub-manifold with reduced dimensionality. (This works, of course, only if the probability
+for particle histories crossing this sub-manifold is not zero).
+Surface averages in EIRENE are described in Section \ref{sec3.2.4}, point averages in time
+are described in Section \ref{sec3.2.3}.
+This option to reduce dimensionality of responses usually excludes point estimates in real space,
+for which special estimators not mentioned here would be required.
+
+Nevertheless, in concluding, depending upon the numerical algorithm in the
+fluid code, one may then have to interpret these Monte Carlo estimates properly, e.g.
+they may have to be interpolated to the grid points, or be properly rescaled in case of time-dependent applications.
+
+\subsection{The Green's function concept}\label{sec_green}
+We return to Equation (\ref{2.8b}), where the function $F(\vv,i;\vr'\rightarrow \vr))$ was defined.
+For a finite domain, see (\ref{eq1.5b}), and introducing again the shortcut $l$ for $(\vr'+l\vOmega,\vv,i)$
+this becomes:
+\begin{equation}
+F(l) = \left\{
+\begin{array}{lr}
+\exp \left [   - \int_{0}^{l} ds \Sigma_t ( s
+ )  \right ],                  &   l<l_{max}  \\
+0                      &   l\ge l_{max}
+\end{array}
+\right.
+\end{equation}
+
+This function $F$ is the Green's function of the left hand side (the ``convective part") of the transport equation.
+\bigskip
+
+to be written
+
+
+\newpage
+\section{Monte Carlo solution of equation 1} \label{sec1.2}
+
+A statistical solution to equation (\ref{eq1b}) is straight forward,
+because it is formulated in probabilistic terms as follows.
+
+A discrete Markoff chain is defined using $Q$ as an initial
+distribution and $L = T  \cdot  C$ (order of $C$ and $T$ reversed
+compared to $K$, $K = C \cdot T$) as a transition probability. Histories $\omega^n$
+from this stochastic process are generated according to $\omega^n
+=   (x_0, x_1, x_2, ... , x_n)$, (where $x_j   =   x_a $ for all $
+j   \ge   n$ and $ x_i   \ne   x_a $ for all $ i   <   n$), with
+$x_n$ being the first state after transition into the absorbing
+state $x_a$. $ x_0$ denotes the initial state distributed as
+described by $Q$. Thus, the length n of the chain $ \omega^n$ is
+itself a random variable. A random sampling procedure to generate
+such chains is carried out in Monte Carlo codes by converting
+machine generated (pseudo-) random numbers $ \xi_{i_1} , \xi_{i_2}
+, ...$ into random numbers with the distributions $Q$, $T$ and
+$C$. Having computed N  chains $ \omega_i$,
+$i=1,2,...,N$, the responses $R$
+(\ref{eq1.7}) with respect to detector function $g$ are estimated as the arithmetic mean
+of functions (``statistics'', or  ``estimators'') $X_g(\omega )$, i.e.
+\begin{equation} \label{eq1.8}
+R  \approx   \tilde{R}   =    \frac{1}{N} \sum_{i=1}^{N}   X_g(\omega_i) .
+\end{equation}
+The proper choice of the number of histories $N$ depends on the variance $\sigma^2(X_g)$ of the estimator $X_g$ and is highly problem specific.
+In EIRENE it can range from $N=2$ for conditional expectation estimators and point sources in phase space, up to
+values of several millions for $N$.
+\subsection{Unbiased estimators}\label{sec1.2.a}
+One possible choice for $X(\omega )$ is the so called ``collision
+estimator" $X^c$, which, for a chain no. $i$,  $\omega_i^n$ of length $n$ reads:
+\begin{equation} \label{eq1.9}
+X^c_g ( \omega^n_i)   =   \sum_{l=1}^{n} g_c (x_l )
+ \cdot   \prod_{j=1}^{l-1}
+ \frac{c(x_j )}{(1 - p_a(x_j))}   \ \ ,
+\end{equation}
+and the summation index $l$ runs from the first point of collision $x_1$ until the last (absorption) at $x_n$.
+The product in the sum accounts cumulatively for branching, and absorption rates during along the Markoff chain $\omega_i^n$.
+
+This estimator is, for example, used in the DEGAS code
+\cite{kn:Heifetz}. It can be shown \cite{kn:Spanier69a} in a tedious but mathematically strict way that the statistical
+expectation E($X^c$) produces:
+\begin{equation} \label{eq1.10}
+R   =   E(X^c )   =   \int  d( \omega )   X^c_g ( \omega ) h( \omega
+)
+\end{equation}
+with $h(\omega)$ being the probability density for finding a chain
+$\omega$  from the Markoff process defined above, i.e. $X^c$ is an
+unbiased estimator for response $R$.
+\\
+Other estimators (``track-length type estimators") are employed
+frequently. These estimators are unbiased as well but have higher
+moments different from those of $ X^c$. Instead of evaluating the
+detector function $ g_c(x)$ at the points of collisions, $ x_l   ,
+$ (as $ X^c$ does), they involve line integrals of $ g_t(x)$ along
+the trajectories, e.g.,
+\begin{equation} \label{eq1.11}
+X^t_g ( \omega^{n}_i )   =    \sum_{l=0}^{n-1}   \left \{
+\int_{x_l}^{x_{l+1}} ds \  g_t (s) \right \}
+  \cdot   \prod_{j=1}^{l-1}
+ \frac{c(x_j )}{(1 - p_a(x_j))}   ,
+\end{equation}
+with $ R   =   E(X^t )   =   E(X^c)$.
+In literature mostly the detector function $g_t$ is taken to be constant within a grid cell.
+The line integral in Eq. (\ref{eq1.11}) then collapses to the product $g_t s_l$, with $s_l$ being the distance
+(``track-length'') travelled in cell during step $l$.
+The mild generalisation of the track-length estimators
+to detector functions, which can vary along the track even within a cell, is derived in
+\cite{kn:Reiter84a} and applied in EIRENE as early as 1984 in \cite{kn:Reiter84b}.
+
+It has been shown, e.g., in
+\cite{kn:Spanier69a}, that the collision estimator, derived not
+for the pre- but for the post-collision density integral equation
+results in a track-length type ``conditional expectation
+estimator" $ X^e$, which, together with $X^c$ and the
+``traditional" track-length estimator $ X^t$, may be used as one
+further option in the EIRENE code.
+\\ This estimator $ X^e$ is obtained from $ X^t$ by
+extending the line integration, which is restricted to the path
+from $ x_l$ to $ x_{l+1}$ in formula (\ref{eq1.11}), to the line
+segment from $ x_l$ to $ x_{end}$. Here $ x_{end}$ is the nearest
+point on a boundary along the test flight originating in $ x_l$.
+I.e., the line integration may be extended into a region beyond
+the next point of collision, into which the generated history
+would not necessarily reach. This ``conditional expectation
+estimator" reads:
+\begin{equation} \label{eq1.12}
+ X^e_g ( \omega^n_i )   =
+  \sum_{l=0}^{n-1}  \left \{ \int_{x_l}^{x_{end}}
+ds \  g_t (s)    \cdot   \exp \left (
+ - \int_{0}^{s} ds '   \Sigma_t (
+  s ' ) \right ) \right \}
+   \cdot   \prod_{j=1}^{l-1}
+ \frac{c(x_j )}{(1 - p_a(x_j))}   ,
+\end{equation}
+If $ x_{end}$ is taken to be the nearest point on each mesh cell
+boundary, then the estimator (\ref{eq1.12}) reduces, as a special
+case, to the method employed by the NIMBUS code \cite{kn:Cupini}.
+However, the estimator (\ref{eq1.12}) is more general, as the
+integration may be extended over arbitrarily many cells. The
+length of the integration path is controlled in EIRENE by an input
+flag WMINC, see section \ref{sec2.10}.
+
+
+\subsection{Scaling of tallies}\label{sec1.2.0}
+With increasing $N$, the number of Monte Carlo histories,
+the unbiased estimators $X$ given in previous section \ref{sec1.2.a} provide arbitrarily precise approximations for the responses $R_g=\langle\Psi|g\rangle$,
+for detector function $g$ and dependent variable $\Psi$ (equation \ref{eq1d}). The precise meaning and physical dimensions of $g$ and $\Psi$
+depend upon the problem at hand, e.g. also on symmetry (ignorable spatial coordinates, or time).
+
+Because the inhomogeneous part of the transport equation (\ref{eq1d}) $\cal{S}$ was assumed to be normalized to one (for source
+sampling),
+\begin{equation}\label{scale}
+{\cal{S}} (\vr,\vv,t)=\frac{1}{s} \ S(\vr,\vv,t), \quad  s =\int  d^3rd^3vdt\ S(\vr,\vv,t)
+\end{equation}
+this normalization factor $s$ has to be multiplied to estimators (\ref{eq1.8}) to turn responses $R_g$ (\ref{eq1.7}) into
+estimates with correct dimensionality and in absolute units.
+
+Mostly the responses of interest are \emph{intensive quantities}, such as density, pressure, collision density (number
+of collision per unit time and volume) rather than
+the \emph{extensive quantities} obtained by the Monte Carlo phase space integration in (\ref{eq1.7}), total energy, momentum or
+number of particles.  The volume, e.g. of a grid cell, is also an extensive quantity. Thus by dividing the estimate by the appropriate cell-volume $V_m$ (in space-time), see (\ref{eq2.10}), finally the
+profiles of cell averaged intensive quantities (e.g. density profiles) are obtained.
+The final unbiased estimate, in absolute units, for any of the unbiased estimators $X_g$ for detector function $g$ discussed above, then is:
+\begin{equation} \label{eq1.8b}
+R_g  =\langle\Psi|g\rangle \approx   \tilde{R}_g(N)   =    \frac{s}{ V_m\times N} \sum_{i=1}^{N}   X_g(
+\omega_i) , \quad N \gg 1
+\end{equation}
+with $N$ being the number of Monte Carlo histories.
+Correct interpretation of the results of an EIRENE run hence requires knowledge of the
+ratio $s/V_m$.
+The total source strength scaling factor $s$, i.e. the integral of the
+inhomogeneous part $S$ of the governing Fredholm integral equation, is input to EIRENE,
+variable ``FLUX" in input block 7 (see \ref{sec2.7}). The space-time cell volumes $V_m$ are either automatically calculated by EIRENE
+in subroutine ``VOLUME", for cells belonging to standard grid (input block 2, Section \ref{sec2.2}), or are provided from external considerations
+by a number of options, e.g. input blocks 3b, 5, or 8.
+In this latter case great care is needed, however, that the cell volumes are proportional to the volumes
+\emph{as seen by the test flights} for otherwise not only unscaled profiles, but even wrong (biased) profile shapes will be obtained.
+
+\subsubsection{Scaling in problems with ignorable coordinates}\label{sec1.2.0a}
+As seen in the previous paragraph, the absolute values of estimates are scaled
+with the ratio $s/V$ of source strength to cell volume. Depending on ignorable coordinates in any particular problem,
+or on whether stationary (i.e.: time is an ignorable coordinate) or time dependent transport problems are considered ,
+the dependent variable $\Psi$
+in the governing integral equation (\ref{eq1d}),
+the source strength $s$ and ``cell volume" $V$ may have different interpretations:
+\paragraph{stationary (time independent) problems}
+\paragraph{one ignorable spatial coordinate}
+In stationary problems with one ignorable coordinate, say, the z-coordinate,
+the source strength $s$ (input flag ``FLUX") is the flux, particles per
+unit length $dz$ in direction of $z$. Likewise, the volume $V$ is per unit length in the ignorable direction,
+i.e. if $dz=1$ then $V$
+is the cell area in the two remaining coordinates $x,y$.
+The unit length $dz$ of an ignorable coordinate (here: $z$-coordinate) used in a particular run
+is determined by the input flags in the corresponding input block for standard grid options,
+i.e. in input block 2A for the x-coordinate, input block 2B for the y-coordinate and input block
+2C for the z-coordinate, see Section \ref{sec2.2}. Note that the numerical value of source strength
+``FLUX" (block 7) corresponds to the choice of e.g. $dz$. If $dz=1$ cm, then ``FLUX" is the number of particles
+per unit time and per cm in z-direction. If $dz=1$ m, then the same value of variable ``FLUX"
+would correspond to the 100 times smaller source strength of ``FLUX" particles per unit time and per meter.
+All resulting volume averaged output tallies would have a value 100 times smaller. A particle density
+might then also be interpreted as surface density (particle per unit area).
+
+
+
+\subsection{Statistical errors, Efficiency (FOM)} \label{sec1.2.1}
+The efficiency for Monte Carlo Codes is the
+inverse of the figure of merit (FOM) of the calculation, defined
+as
+\begin{equation} \label{eq1.13}
+FOM = statistical \ variance    \cdot   computing \ cost.
+\end{equation}
+Note that FOM should be approximately independent of the running
+time, because the number of histories generated is (excluding
+overhead) proportional to the CPU costs and inversely proportional
+to the statistical variance $\sigma^2$.
+
+It is one of the major advantages of Monte Carlo methods over other numerical
+schemes that the error estimates, empirical variances $\tilde\sigma^2$, are directly provided by the method itself,
+not requiring any further considerations.
+The options to activate evaluation of statistical variance in an EIRENE run for any computed quantity
+(tally) are described in input block 9 (section \ref{sec2.9}). EIRENE provides numerical and graphical
+output for the ``empirical relative standard deviation", in \%.
+\begin{equation}
+\tilde\sigma_{g,rel}(N) = \tilde\sigma_g(N)/\tilde R_g(N) \times 100
+\end{equation}
+and $\tilde R_g^N$ is the Monte Carlo estimate for tally $R_g$  based on $N$
+Monte Carlo histories (\ref{eq1.8b}), properly scaled to source strength $s$ (\ref{scale}). Here $R_g$ may be any volume or surface averaged tally
+for detector function $g$, either track-length, collision, or snapshot estimated.
+The  variance $\sigma^2_1$ per history is obtained as the (unbiased) estimate (``empirical variance") as:
+\begin{equation}\label{MCsig1}
+\sigma^2_1 \approx \tilde\sigma^2_1(N) = \frac{1}{N-1}\sum_{i=1}^N (X_i-\overline{X})^2=\frac 1{N-1}\left[\sum_{i=1}^N X_i^2 - \frac 1N \left(\sum_{i=1}^N X_i\right)^2\right]
+\end{equation}
+where $X_i= X_g(\omega_i)$ is the contribution of Monte Carlo history $\omega_i$ to
+estimator $X_g$ for tally $R_g$, and
+$\overline{X}$ is the arithmetic mean $\overline{X}=1/N\sum X_i$ over all histories. $N$ is the number of (statistically independent)
+Monte Carlo histories. The subscript $g$ is omitted here and from now on. Note that the expression on the right hand side of (\ref{MCsig1}) can be evaluated after each completed particle history,
+i.e. without storing all individual contributions $X_i$ first.
+
+The variance per history is turned into the final estimate for the Monte Carlo variance by the ``law of large numbers" (and the ``central limit theorem"
+of probability theory):
+\begin{equation}\label{MCsig}
+\tilde\sigma^2_{MC}(N)=\frac 1N \tilde \sigma_1^2(N)
+\end{equation}
+For large $N$ the variance per history (= variance of a single observation) $\tilde\sigma_1^2$ converges to a  constant (namely to $\sigma^2_1$),
+and the final Monte Carlo estimate of variance $\tilde \sigma^2_{MC}$ (\ref{MCsig})
+has the expected probabilistic $1/N$ scaling,
+i.e. the empirical standard deviation, which is the Monte Carlo error estimate,  scales as: $\tilde\sigma_{MC} \sim 1/\sqrt{N}$.
+\paragraph{Multiple cell crossings}
+
+One should note that except in simple 1D cases in general one single Monte Carlo history $\omega_i$ can contribute more than
+once to the estimate $\tilde R_g$ for a particular cell of the grid or surface segment. E.g. test particles can cross one cell $m$ [see (\ref{eq2.10b})] more than once,
+with each cell crossing ``$j$" leaving a score (contribution) $X_{i,j}$ to estimator $X_g(\omega_i)$. Then:
+\begin{equation}\label{mccross}
+X_i=\sum_{j=1}^{J_i} X_{i,j} \quad ,
+\end{equation}
+with $J_i$ being the number of contributions  (e.g. cell crossings) to the estimator, from particle history no. $i$.
+The summation in (\ref{eq1.8}) and hence also the second sum on the right hand side of  (\ref{MCsig1}) can still be accumulated
+``on the fly" while generating the Monte Carlo histories (i.e. at no extra CPU cost).
+However, because, of course  $X_i^2 \neq  \sum X_{i,j}^2$, the first sum on the right hand side of (\ref{MCsig1})
+cannot be evaluated ``on the fly" (per event). Instead here EIRENE first accumulates the sum (\ref{mccross}) $X_i$ for individual test flight ``$i$", and updates the
+sum $\sum X_i^2$ only once after each completed history (in subroutine. STATIS, entry STATS1). I.e., variance estimates are made after completion of each history, inside the particle loop, see flowchart \ref{flow5}).
+The full evaluation and scaling of
+expression (\ref{MCsig1}, \ref{MCsig}) is then carried out after completion of all histories (per stratum), in entry STATS2 of subroutine STATIS.
+\paragraph{Linear functions of tallies}\label{lin-funct}
+Often algebraic functions of tallies (sums, products, ratios,....) are formed after a Monte Carlo run to produce further (post processed) output quantities
+(see input blocks 10C and 10E in section \ref{sec2.10}).
+For those tallies standard deviations are not available in general, due to statistical correlation between individual tallies obtained from the same Monte Carlo run.
+
+However, for linear functions of tallies (e.g. sums, differences), this is possible even without resorting to the covariance estimators (block 9, \ref{sec2.9}) of EIRENE.
+Usually this was done in ``problem specific" modules, e.g. in STATS1\_COP for source terms arising in plasma fluid codes (see section \ref{sec2.14}).
+In 2012 a new routine (UPFCOP) was added, and
+is called inside the particle loop, scored per particle (not per event) and prior to STATS1.
+
+Let a linear function $R_{lin}$  of default tallies $R_k$ be given by
+\begin{equation}
+R_{lin} = \sum_k a_k R_k,
+\end{equation}
+($a_k$ are some constant scalar factors)
+then after each completed history $\omega_i$ in routine UPFCOP the sum
+of contributions
+\begin{equation}\label{interchange}
+X_l(\omega_i)= \sum_k a_k X_k(\omega_i) = \sum_k a_k \sum_j X_{k,j}(\omega_i) = \sum_j \sum_k a_k X_{k,j}(\omega_i)
+\end{equation}
+is formed, to finally build the linear function tally $R_l(N)=1/N\sum_i X_l(\omega_i)$ by averaging over all histories, same as for default tallies.
+This is possible because in case of linear combinations of tallies the summation over tallies $k$ and event-contributions $j$ of a single
+history can be interchanged (\ref{interchange}).
+
+
+Finally the variances for $R_l$ are evaluated in STATS1, reusing the procedure used for default tallies, and the
+former problem specific routine STATS1\_COP for variances from tallies needed for code coupling has hence been made redundant, as indicated in red color in flowchart (\ref{flow5}).
+Currently linear combination tallies $R_l$ are stored
+on array (tally) COPV. For them all printout and graphical output options are available.
+One example of such linear combination tallies is discussed in section \ref{sec2.14} for interfacing EIRENE with
+CFD codes, as usually the (kinetic) reaction source terms provided by EIRENE to plasma fluid codes are such linear functions
+of default tallies.
+
+\paragraph{Statistical independence of MC histories}
+
+When the Monte Carlo histories from one EIRENE run are not strictly statistically independent,
+as e.g. in case of stratified source sampling (see paragraph below), then a modified
+formula for the statistical error estimates has to be used.
+
+\subsubsection{Sampling, Non-analog sampling}
+\label{sec1.2.1a}
+
+One often encounters in literature the description of special,
+``new" Monte Carlo techniques, that are greatly superior to so
+called ``standard methods".
+
+It is true that one can devise very intelligent methods to
+optimize performance, but each optimization always only works well
+for one very particular problem, it can equally well entirely
+wreck the performance of an only  slightly different case.
+
+For a general purpose Monte Carlo solver for transfer problems, as
+EIRENE, therefore, no general advise can be given, although the
+performance often could greatly be improved by adapting the method
+to a particular problem. In particular, non of these ``intelligent
+methods" have been (and will ever be) hard wired into EIRENE.
+
+EIRENE contains a set of such methods, referred to as
+``non-analog" methods and controlled by the flags in input block
+9, see section \ref{sec2.9}. Activating those must be accompanied
+by a very careful statistical analysis of results, not just the
+run time per particle, nor even the standard deviation alone,
+suffices.
+
+
+We first note here that any random distribution function $f(x)$
+arising during the course of generating the chains $\omega$
+(``particle histories") can be replaced by another ``non-analog"
+function, $ g(x)$, if a weighting factor,
+\begin{equation} \label{eq1.13a}
+ w(y)   =   f(y) / g(y)
+\end{equation}
+is included in the formula for the estimator $X(\omega )$, y being
+an actual random number generated from $ g $. This choice
+can in some cases increase the efficiency of the algorithm.
+\\
+The only restrictions on the choice of non-analog sampling functions $g(x)$
+(besides practical ones) are:
+
+\begin{equation} \label{eq1.14a}
+\mbox{if} \quad  g(x) = 0, \qquad \mbox{then}  \quad f(x)
+= 0;
+\end{equation}
+
+and conditions to ensure that the non-analog process remains
+sub-critical as well.
+
+The condition (\ref{eq1.14a}) is checked in an EIRENE run whenever
+non-analog distributions are applied, and, if violated, an error
+exit with the message: ``violation of Radon-Nikodym condition"
+occurs.
+
+Note: a violation of condition \ref{eq1.14a} can not be detected
+otherwise, e.g., by monitoring overflow in the weighting factor $w$.
+Of course, values y resulting in a zero in the denominator of $w$
+(equation \ref{eq1.13a}) have sampling probability zero according
+to distribution $g(x)$, and, hence, are never sampled.
+Still the results would be biased.
+
+Note: when inspecting an EIRENE geometry plot with particle
+trajectories (or even a movie: NLMOVIE=TRUE, input block 1) in
+order to get an intuitive feeling for the particular transfer
+process considered, then all non-analog sampling options must
+first be turned off, (NLANA flag in input block 1), for otherwise
+the pictures may be grossly misleading.
+
+\medskip
+We consider the procedures for random sampling from univariate
+distributions as known, and refer to the many textbooks on that,
+in particular to the ``random sampling library"
+\cite{kn:Sampling}. If none of the direct methods apply, then
+still either the non-analog method mentioned above, or the
+``rejection method" can be used.
+
+Sampling from a multivariate distribution $f(x_1,x_2,...,x_n)$ can
+always be reduced to a sequence of samplings from univariate
+distributions, by noting that:
+\begin{equation} \label{eq1.15a}
+f(x_1,x_2,...,x_n)=f_1(x_1) \cdot f_2(x_2|x_1) \cdot
+f_3(x_3|x_1,x_2) \cdot ...
+\end{equation}
+Here, $f_1$ is the marginal distribution obtained from $f$ by
+integrating over all but the first independent variables. It is a
+univariate distribution of $x_1$.
+
+$f_2$ is a conditional marginal distribution obtained from $f$
+firstly by integrating $f$ over all but the first 2 variables
+$x_1, x_2$, and secondly then taking the conditional distribution,
+conditional on $x_1$ (i.e., the univariate distribution of $x_2$
+for given values of $x_1$).
+
+Likewise, $f_3$ is a conditional marginal distribution, n-3 fold
+integration of $f$, and then distribution conditional on $x_1, x_2$,
+and so on.
+
+Random sampling from $f(x_1,x_2,...,x_3)$ then proceeds by
+sampling first $x_1$ from the (univariate) first factor in
+equation \ref{eq1.15a}, then $x_2$ by sampling from the
+(univariate) second factor, and so on.
+
+This transformation of a multivariate (k-) distribution to a uniform distribution
+on a k-hypercube is sometimes referred to as ``Rosenblatt transformation" (M. Rosenblatt, Ann. Math. Statistics 23: 470-472, (1952)).
+
+One particular example of this scheme is the ``TRIM database
+surface reflection model" (see below, section \ref{sec1.3.2}).
+There, essentially, tables of the conditional marginal
+distributions mentioned here are pre-computed with the TRIM code.
+For convenient random sampling, these tables are stored for the
+inverted cumulative distribution, i.e., as conditional quantile
+functions.
+
+\subsubsection{Stratified Source Sampling}
+\label{sec1.2.1b} The EIRENE code resorts to a ``stratified
+sampling" technique. This technique is one the few Monte Carlo variance reducing techniques
+which are quite straight forward, easy to implement and, most importantly,
+behave in a well predicable way. It is therefore recommended to always use ``source stratification"
+described below as much as possible.
+There are, however, non-trivial issues of load balancing in case of multi-core runs (i.e. Monte Carlo code parallelisation),
+which are related to assignments of strata to cores, in particular if the average cpu-time per history
+strongly varies between strata. In such cases the ``proportional allocation of weight" to source strata discussed below is
+technically difficult to achieve together with proper load balancing, due to the stochastic termination of the random walks
+in the various strata. Whereas without stratification extracting parallelism seems as trivial
+as constructing many independent samples in parallel, this ``embarrassingly parallel'' feature of linear Monte carlo transport codes is lost, and
+parallelisation in combination with stratified source sampling  requires some attention.
+
+
+
+
+Stratified sampling means that the primary source
+distribution $Q(\vr,\vv,t)$ , see Equation (\ref{eq1a}), or more generally, for $S(x)$ in (\ref{eq1d}), can be decomposed into a sum of
+$M$ independent sources (this applies for both: the source distribution $S$ itself and the corresponding source strength $s$):
+\begin{equation}\label{sss}
+S = \sum_k^{M} S_k ; \quad s=\sum_k^{M} s_k
+\end{equation}
+and the solution is obtained
+by linear superposition of the solutions for each sub-source
+(``stratum") $S_k$. We use again the slightly more general notation $S$ for the inhomogeneous part of the Boltzmann equation
+rather than $Q$, which is the physical source of particles (objects), i.e. a special case of $S$.
+
+The stratified sampling technique is a well known statistical
+procedure from experimental planning, see any textbook on statistics or Monte-Carlo methods.
+
+It sometimes can significantly affect the efficiency of a
+Monte-Carlo run. This can go both ways, depending upon the
+particular problem and the particular stratification used.
+Therefore, as with the non-analog options, no general
+recommendation can be made.
+
+The effects of source stratification, however, are usually more easy to
+assess (predict) than those resulting from general non-analog methods.
+
+In order to make connection with the textbooks, in which ``stratified sampling" is often discussed
+in connection with Monte Carlo integration procedures,
+the Monte Carlo solution of the transport problem is interpreted as a Monte Carlo integration,
+and the ``stratified sampling" in Monte Carlo integration becomes a ``stratified source sampling" in
+transport problems in this interpretation. To see this we need to note
+here only the following (based on Fredholms alternative for the linear Boltzmann operator):
+
+EIRENE provides estimates of linear functionals (``moments",
+``responses")
+
+\begin{equation}  \label{fredhalt}
+\langle g,\phi_S\rangle    = \langle S,\phi^*_g\rangle
+\end{equation}
+
+As described above, $g$ is the detector function (``weighting
+function") $\phi_S $ is the solution to the kinetic transfer
+equation (Boltzmann equation) in which $S$ was used as (inhomogeneous)
+source term. $\phi^*_g$ is the solution of the corresponding
+adjoint equation, with $g$ as source term (and $S$ as ``weighting function".
+
+The above equation means that EIRENE estimates can simply be
+regarded as Monte-Carlo estimates of multi-dimensional integrals,
+namely of the adjoint function $\phi^*_g$ integrated over phase
+space with $S$ defining a distribution (measure) in phase space ``$\mu_S$".
+
+It is then obvious that one can split that integral into a sum of
+integrals by arbitrarily decomposing the domain of integration,
+i.e., by decomposing the source $S$ into sub-sources (``strata")
+$S_k$ with
+\begin{equation}
+R_g = \int d\vx~ \phi_S \cdot g    = \langle S,\phi^*_g\rangle  =\sum_k^{M} \langle S_k,\phi^*_g\rangle = \sum_k^{M} \int d\mu_{S_k} \phi^*_g
+\end{equation}
+This is the concept of ``stratified sampling", which, for Monte Carlo
+particle transfer procedures in particular actually turns out to
+be a ``stratified source sampling".
+
+Further details about this in our particular context are given in
+the description of input block 7, section \ref{sec2.7} below. As pointed out above
+the evaluation of statistical error estimates has to account for the stratification,
+because with stratification  the Monte Carlo histories are not strictly independent anymore.
+
+Grouping the $N$ statistically independent test flights (random samples) into $M$ strata, leads to Monte Carlo particle
+numbers $N_k$ sampled from stratum $k$ (i.e., with birth points sampled only from source $S_k$) with:
+\begin{equation}\label{Nstra}
+\sum_{k=1}^{M} N_k = N   \quad , \quad  N_k > 0 ~ \quad \mbox{for}~~ ~ k=1,...M
+\end{equation}
+where, again, we omit the subscript $g$ for the particular tally (response function) from now on.
+
+The choice of the $N_k$
+is only restricted by the normalization condition in (\ref{Nstra}).
+This therefore also applies for the allocation of CPU time to individual strata for a given overall CPU time.
+This additional freedom can be used in EIRENE runs to affect the statistical error for a given CPU time.
+Unfortunately, as with non-analog sampling, this can go both ways. Fortunately, however, here a clear general
+recommendation can be given, see below in this section: ``proportional allocation".
+
+Lets denote by
+$\tilde R_k(N_k)$ the estimate for tally $R$ as obtained only from the $N_k$ samples from stratum $k$ (but scaled with
+the full source strength $s$). Likewise, we denote by
+$ \tilde \sigma^2_{1k}(N_k)$ the variance of estimate $\tilde R_k$ per history, i.e. for a single sample,
+obtained by only using the $N_k$ samples from stratum $k$ (again implying the scaling with total source strength $s$).
+ Then clearly
+\begin{equation}
+\tilde R^*(N) =\sum_k  \frac {s_k}{s} \tilde R_k(N_k)
+\end{equation}
+is the (only) unbiased weighted estimate of $R$ obtained from summing over all strata, i.e. from all $N$ samples.
+The asterisk denotes the estimate $\tilde R$ of $R$ obtained with stratification, $N=N_1+\dots + N_M$, and $\tilde R(N)$ is the estimate
+of the same quantity from a simple sample (no stratification) of same size $N$:
+
+\begin{equation}
+R = E\{\tilde R^*(N)\} = E\{\tilde R(N)\}
+\end{equation}
+where $E\{X\}$ denotes the ``expectation value" of random variable $X$.
+Furthermore:
+\begin{equation}\label{varstra}
+\tilde \sigma^2_{k}(N_k)  = \frac{1}{N_k}\tilde \sigma^2_{1k}(N_k); \quad \tilde \sigma^{2^*}(N)  = \sum_k \frac{s_k^2}{s^2}\frac{1}{N_k}\tilde \sigma^2_{1k}(N_k)
+\end{equation}
+where again the asterisk indicates the value obtained with stratification.
+The right equation follows from the sum rule for variances and because
+the estimates for the strata are mutually statistically independent.
+It is clear that the variance with stratification $\tilde \sigma^{2^*}(N)$ can certainly be different from the variance $\tilde \sigma^2(N)$ obtained  from a simple random sample (without stratification) of the same size $N$.
+To see this we write the trivial identity:
+\begin{equation}\label{varsimp}
+\tilde \sigma^2(N) = \sum_{k=1}^{M}\frac{s_k}{s} \tilde\sigma^2(N)
+\end{equation}
+For example, in case of ``proportional allocation" of CPU-time to strata according to their source strength $s_k$ , i.e.,  $N_k \propto s_k$ :
+\begin{equation}\label{propalloc}
+N_k=\frac{s_k}{s} N, \quad k=1,2,\dots,M
+\end{equation}
+one finds from (\ref{varstra}) for the variance of the stratified sample:
+\begin{equation}
+ \tilde \sigma^{2^*}(N)  = \sum \frac{s_k}{s}\tilde \sigma^2_{k}(N_k)
+\end{equation}
+which can be substantially smaller than the variance from the simple sample (\ref{varsimp}) of size $N$, if the
+subdivision into strata is made such that the variability within strata $\sigma_k^2$ is less then the variability
+in the entire population $\sigma^2$.
+Furthermore, one can show that with proportional allocation (\ref{propalloc}) the variance from the stratified sample is
+always less than or equal to the variance from the simple sample of same size $N$, no matter how the subdivision into strata was
+done:
+\begin{equation}
+\mbox{If} \quad N_k=\frac{s_k}{s} N; ~~ k=1,2,\dots,M \quad \mbox{then} \quad  \tilde \sigma^{2^*}(N) \leq \tilde \sigma^{2}(N)
+\end{equation}
+i.e., stratified source sampling with proportional allocation is an ``inherently safe working procedure" for variance reduction.
+
+This important inequality can be derived after some lengthy algebra, leading finally to
+\begin{equation}
+\tilde \sigma^{2}(N)=\tilde \sigma^{2^*}(N)+ \frac{1}{N}\sum_k[ R_k(N_k)- R(N)]^2
+\end{equation}
+Clearly, the second term on the right side of this equation, which is the variance between strata, is always positive (or zero)
+and this fraction of the variance is eliminated from the Monte Carlo estimate by stratified sampling.
+
+This fact is the reason for the EIRENE option of ``proportional allocation of CPU time" described in input block 7,
+Section \ref{sec2.7}.
+
+In principle one can even optimize the CPU performance (i.e. minimize the variance per CPU time, for any given stratification $S_k$) by choosing the
+allocation $N_k$ to strata in an even more intelligent way (involving a-priori knowledge of the variability within strata $\sigma^2_k$,
+e.g. estimated from a previous iteration.)  But these options are likely to be quite sensitive to the choice of the particular tally (response $R_g$).
+In a typical EIRENE application many such responses for a large variety of detector functions $g$ are estimated simultaneously in one single run.
+Therefore this ``optimal allocation" schemes are not currently implemented.
+
+\subsubsection{Testing the stratification}
+The proper implementation of the stratification, for all kinds of output tallies (such as volume averaged tallies,
+surface averaged tallies, spectral tallies) can be verified by including two:  $M=2$ (or more: $M$) identical strata,
+even with identical number of test-histories $N_k$ and identical random number seeds for those.
+The standard deviations of the sum over these identical strata
+must then be smaller by a factor $\sqrt{2}$  (or: a factor $\sqrt{M}$, respectively) \emph{exactly}, rather than
+only approximately, as it would be the case without stratification by simply enhancing the number of test-histories
+for a stratum by a factor two (a factor $M$, respectively).
+
+\subsection{Source sampling} \label{sec1.2.2}
+Source sampling in EIRENE is carried out in routine LOCATE.F. This routine converts uniform random numbers into
+random numbers with distribution $S_k$, the k-stratum part of the inhomogeneous term $S$.
+Again sequential sampling (\ref{eq1.15a}) from conditional distributions is applied.
+
+In LOCATE.F the following sequence is used (stratum no. $istra=k$ is set in calling program):
+\begin{eqnarray}
+S = S_1(\vx) \times S_2(i|\vx) \times S_3(\vv|\vx,i)
+\end{eqnarray}
+with $S_1(\vx)= \sum_i\int d^3v S(\vx,i,\vv)$ being the cumulative distribution of the spatial coordinate $\vx$ of the ``birth point"
+of the trajectory, obtained by integrating the source term  $S$ over all velocities and summing over all species.
+$S_2(i)$ is the distribution of birth species index, obtained by integrating over all velocities and conditional on the already
+sampled spatial birth point.
+$S_3(\vv)$ finally is the velocity distribution at the birth-point of the trajectory, conditional on the already sampled
+species index $i$ and birth point location $\vx$.
+
+This procedure is employed for all types of sources, namely for re-sampling from a stored ``census array" (e.g. initial condition
+in time dependent mode), for point sources, line sources, surface sources and volume sources.
+
+If the sampled species $i$ belongs to the background species ($i=i_b$) rather than to the test particle species community, then, after completion
+of sampling from $S$ an
+appropriate ``collision" is carried out (e.g. with a wall surface in case of surface sources), until a test particle species $i_t$ results.
+I.e., formally a sampling from  kernel $C(\vx,\vv,i_b \rightarrow i_t,...)$ is carried out at the place of birth $\vx$ to produce initial test particle coordinates.
+
+Stratification of sources has been described in section \ref{sec1.2.1b}.
+
+\subsubsection{time-census sources}
+\subsubsection{Point sources}
+\subsubsection{Line sources}
+\subsubsection{Surface-sources}
+and see special section on ``plasma surface recycling source
+sampling", \ref{sec1.4}.
+\subsubsection{Volume sources}
+special case: volume (radiative or threebody) recombination of plasma ions and electrons to neutrals.
+Also used for: spontaneous photon emission source in radiative transfer simulations.
+
+\subsection{Sampling a free flight from the transport kernel T} \label{sec1.2.3}
+The conditional sampling distribution $T(\vr'\rightarrow \vr)$ for the next point of collision (event), given a test flight
+is at position $\vr'$, traveling with velocity $\vv'$, is given by (\ref{eq1.5}).
+
+A more intuitive argument for this distribution of free flight path lengths follows from the
+simple attenuation law of a mono-energetic beam incident on a thin slab of material, thickness $dl$,
+target material density $n_t$. Clearly the fraction of beam particles undergoing collisions in this slab
+is $\sigma n_t dl$, with ``cross section'' $\sigma$ (stationary target). This  results in the attenuation law
+\begin{equation}
+dn = -n n_t  \sigma dl \quad \quad \rightarrow \quad n = n_0 \exp(-n_t \sigma l)
+\end{equation}
+where $n$ is the number of beam particles, $n_0$ the number of beam particles at $l=0$.
+It is then naturally supposed that
+\begin{equation}
+p(l)dl = [\exp(-n_t\sigma l)]n_t\sigma (dl)
+\end{equation}
+is the probability for a first collision between $l$ and $l+dl$,
+and hence
+\begin{equation}
+P(l) = \int_0^l [\exp(-n_t\sigma l)]n_t\sigma (dl) = 1 - \exp(-n_t \sigma l)
+\end{equation}
+is the corresponding probability distribution function for a first collision at distance $\le l$,
+i.e. the same results as derived
+above formally with the Green's function argument.
+
+Returning to (\ref{eq1.5})
+we first  again omit velocity and species index in the argument lists to keep the notation simple, but we note that certainly
+the mean free path $\lambda$ (or macroscopic cross section $\Sigma_t$) usually depend explicitly on the test particle energy and species.
+Let us introduce the distance of the flight $l$ in direction $\vOmega=\vv/|\vv|$, hence
+$\vr=\vr'+l\vOmega$, then the sampling distribution for $l$ is simply
+\begin{equation}
+T(l)=\Sigma_t(\vr'+l\vOmega)\exp\left[-\int_0^l ds \Sigma_t(\vr'+s\vOmega)\right], \quad \Sigma_t=1/\lambda_t
+\end{equation}
+Distances $l$ are readily sampled from this exponential distribution using the
+inversion method and the cumulative distribution $G_T$ of $T$
+\begin{equation}\label{cummul}
+\xi=G_T(l)=1-F(l)=1-\exp\left[-\int_0^l ds \Sigma_t(\vr'+s\vOmega)\right]
+\end{equation}
+with $\xi$ (and hence also $1-\xi$) being a uniformly distributed  random variable on [0,1].
+Therefore, cumulating $\left[-\int_0^l ds \Sigma_t(\vr'+s\vOmega)\right]$ along a flight and comparing it with
+$\ln(\xi)$ with a uniform random number $\xi$ provides (by inversion) a random sample of the free flight distance $l$
+with the proper distribution.
+
+Sampling the distance $l$ of a free flight, for test particle species ``$i$" with velocity $\vv$, from the transport
+kernel $T$ requires knowledge of the (``monochromatic") mean free
+path $\lambda = \lambda(\vr,|\vv|)$ along the
+trajectory, and, hence, of the ``macroscopic cross section"
+$\Sigma = \Sigma(\vr,|\vv|)$, which also may
+vary along the trajectory.
+
+The ``macroscopic cross sections" $\Sigma$ (by abuse of language,
+dimension: 1/length) with or without subscript $k$ (the label for
+the type of the collision process) or subscript $t$ (for ``total", the sum
+over $k$), are defined as:
+\begin{equation}
+\Sigma = \frac{1}{\lambda} = \frac{\nu}{|\vv|}, \qquad
+\lambda = \frac{|\vv|}{\nu}
+\end{equation}
+with the mean free path $\lambda$ and the collision frequency
+$\nu$:
+\begin{equation}
+\nu(\vr,\vv,i) = n_b \langle\sigma \cdot
+v_{rel}\rangle_b, \qquad v_{rel}= |\vv-\vv_b|
+\end{equation}
+Here $n_b$ and $\vv_b$ are the target particle density
+and velocity, respectively, and the brac\-kets
+$\langle...\rangle_b$ denote averaging with the velocity
+distribution $f_b(\vr,\vv_b)$ of the
+background medium species $b$.
+
+$\sigma$ is the total scattering cross section, $\sigma =
+\sigma(|\vv_{rel}|)$.
+
+Hence, e.g., for all isotropic target distributions $f_b$ one has:
+\begin{displaymath}
+\nu = \nu(\vr,E,\not\! \vOmega,i) \qquad
+\mbox{and} \qquad \Sigma = \Sigma(\vr,E,\not\!\vOmega,i).
+\end{displaymath}
+
+Furthermore, let $f_b$ be a drifting Maxwellian, with temperature
+$T_b$ and drift $\vV_b$: $f_b =
+f_b(T_b,\vV_b)$.
+
+Then:
+
+$\nu = \nu(T_b,|\vv-\vV_b|,i)$
+
+Finally, if the thermal speed $v_b^{therm}$ in this Maxwellian:
+$v_b^{therm} = \sqrt{T_b/m_b}$ is very large compared to
+typical values of $|\vv-\vV_b|$ (i.e.: nearly
+incompressible flow conditions), then:
+
+
+$\nu \approx \nu(T_b,0,i) = n_b \langle\sigma \cdot v\rangle_b$
+
+and here $\langle\sigma \cdot v\rangle_b$ is the usual
+``Maxwellian rate coefficient'' for the collision process, taken at
+temperature $T_b$ of the background particles (species $b$) and at
+zero velocity of the test particles (species $i$). For example, in
+case of neutral atom or molecule collisions with electrons this
+approximation is usually valid.
+From the point of view of electrons or ions, colliding with a cold background of neutrals or ions ($T_b\approx 0$,
+we have the opposite case: $|\vv|\gg v_b^{therm}$ and then the rate coefficient reduced to
+the simple product $\sigma(v) v$ with $v$ being the test particle velocity.
+
+\subsubsection{Alternative: fixed time step (or constant path length increment)}
+If the particle orbit between two events (the Green's function) is not given explicitly,
+e.g., not as simple straight line, then the orbit has to be integrated numerically, using small
+time steps $\Delta t$ or path length increments $\Delta \vx$.
+The algorithm to determine the next point of collision then is different:
+
+After a free flight  time  $\Delta t$ the probability of at least one collision during this period is the function
+$G_T(l_0)$ defined above, with $|\Delta \vx| = l_0 = \int_0^{\Delta t} \vv(t) dt \approx v \Delta t$ the fixed path length for this step.
+This follows from
+the definition of $G_T$ as cumulative distribution for the free flight length (\ref{cummul}).
+Clearly $0\le G_T(l) \le 1$ for all positive $l$, by definition.
+Lets now
+assume constant mean free path $\lambda$, and constant velocity $\vv$ during time step $\Delta t$, and $l_0=|\vv| \Delta t$, to simplify notation.
+
+The procedure to find the free flight length (or time) is now as follows:
+
+Rather than sampling $l$ by inversion, as in Equation (\ref{cummul}),
+now a uniformly distributed random number $\xi$ on [0,1] is compared with the probability $G_T(l_0) = 1-\exp[-l_0/\lambda]$.
+
+If $\xi > G_T(l_0)$, no collision has happened during this step, and the next step is carried out.
+
+If $\xi \le G_T(l_0)$, then at least one collision has happened prior to completion of the step.
+
+Strictly, in this case the exact position of the first collision during this step has to be identified,
+by inversion, the time step has to be shortened and the particle has to be moved to the sampled point of collision in the
+interval $\Delta \vx$. However, various approximations are now usually made, to simplify coding.
+\begin{itemize}
+\item{} Ignore the fact that more than one collisions could have happened during $\Delta t$.
+\item{} replace $G_T(l_0)$ by $l_0/\lambda ~ (= \Delta t v \Sigma_t(\vv)$, see above) when comparing with uniform random number $\xi$
+\end{itemize}
+The second assumption results from Taylor expansion for sufficiently small $\Delta t$ such that $l_0/\lambda \ll 1$.
+
+The first assumption is more difficult to justify generally:
+
+If the post collision test particle species is the same  and its new velocity is not too different from that prior to the collision,
+then the probability for $n$ collisions in the same time $\Delta t$ is roughly $P_n=G_T(l_0)^n$
+and the number of missed collisions in $\Delta t$ is
+\begin{equation}
+\sum_{i=2}^\infty P_i = \frac{G_T(l_0)^2}{1-G_T(l_0)}
+\end{equation}
+For sufficiently small $\Delta t$ (and hence $l_0$) this error can be made small.
+
+If, however, collisions involve change in species, and/or significant changes in velocity, then
+the smallness of $l_0/\lambda$ must be guaranteed not only for the particle which is currently being considered,
+but for all particle species in the system and for all possible energies (of secondaries).
+E.g.: the excitation cross section for process $A  \rightarrow A^*$ may be small, hence $l_0/\lambda \ll 1$ for species
+$A$, but the de-excitation (quenching) of state $A^*$ may be very rapid. Then the quenching time of species $A^*$
+determines the permitted time-step for species $A$ in this approximate procedure. Other critical examples may be systems
+composed of both rather stable chemical species and short living radicals, e.g hydrocarbons.
+
+The EIRENE code therefore only uses the correct full sampling procedure (\ref{cummul}), even when particle orbits (e.g. of ions) are
+integrated numerically with time-steps.
+
+
+
+\subsection{Sampling from the collision kernel C} \label{sec1.2.4}
+
+The general rules for sampling from multivariate distributions
+outlined in Section \ref{sec1.2.1}, Equation (\ref{eq1.15a}) also
+apply here. In the EIRENE code sampling from the collision kernel is carried out in subr. COLLIDE, which is called when a collision is
+known to have occurred at a pre-collision particle state vector [position, velocity, species (and, optional: time)] $( \vr ' , \vv ' , i ')$
+by a sequence of random decisions regarding the type of collision process $k$, the species index of the post collision test particle $i$,
+and the new post collision velocity $\vv$.  Collisions are instantaneous in time.
+Branching and/or absorption is accounted for by statistical weights.
+
+It is strictly not necessary, but usually most convenient and intuitively
+most clear, to decompose the kernel $C$ according to the physical
+nature of the various collision processes taken into account.
+
+The collision kernel $C$ was written as (see equation \ref{eq1.3})
+\begin{displaymath}
+C( \vr ' , \vv ' , i '   \rightarrow
+\vv , i) =   \sum_{k} {p_k  C_k ( \vr ' ;
+              \vv ' , i '   \rightarrow \vv, i)} \
+, \ p_k   =    \frac{\Sigma_k}{\Sigma_t}
+\end{displaymath}
+with summation over the index $k$ for the different types of
+collision processes under consideration and $p_k$ defined as the
+probability for a collision to be of type $k$. The normalizing
+factor
+\begin{displaymath}
+c_k (x ')   =
+  \sum_{i}   \int d \vv \ C_k (
+\vr ' , \vv ' , i ' \rightarrow
+\vv , i ) \   , \  {\cal{C}}_k   =    \frac{1}{c_k}
+C_k
+\end{displaymath}
+was the mean number of secondaries for this collision process $k$. The normalized
+function $ {\cal{C}}_k$ then is a conditional probability
+density for post-collision state $(\vv,i)$, given the pre-collision
+coordinates $(\vr',\vv',i')$.
+
+Sampling from $\cal{C}$ (given that a collision of some kind has
+occurred) proceeds most conveniently by firstly sampling the type
+$k$ of the process from the discrete distribution
+\begin{displaymath}
+(p_k, \quad k=1,..,K),
+\end{displaymath}
+and then by sampling the post-collision state of the test-particle
+from ${\cal{C}}_k$. Finally the weight of the test-flight after
+collision is increased (or reduced) by multiplying it with the
+normalization constant $c_k$.
+
+The decomposition of $C$ into sub-kernels $C_k$ is somewhat
+arbitrary, and the criteria may also be computational aspects
+rather than the different physical nature of the various processes
+taken into consideration.
+
+Sampling $(\vv,i)$ from ${\cal{C}}_k$ can be done along
+the same idea: first factoring out the discrete distribution for
+the species index $i$, and then by sampling $\vv$ from
+${\cal{C}}_{k,i}$, the conditional distribution for
+$\vv$ given the type of the process is $k$ and the
+species of the post collision trajectory is $i$. Let $(n_{k,i},
+i=1,...,I_k)$ be the number of post collision particles of
+species $i$ from process $k$, and $n_k = \sum_{i} n_{k,i}$.
+I.e., omitting pre-collision state parameters $(\vr ' , \vv ' , i ')$:
+\begin{displaymath}
+n_{k,i} = \int d \vv \ C_k (
+\vr ' , \vv ' , i ' \rightarrow
+\vv , i )
+\end{displaymath}
+Then, normalizing,
+\begin{displaymath}
+(\tilde{n}_{k,i} \quad i=1,...I_k)
+ = (n_{k,i}/n_k, \quad i=1,...I_k)
+\end{displaymath}
+is the discrete distribution for the post-collision particle
+species $i$, given a collision process of type $k$.
+
+Finally, writing
+\begin{displaymath}
+C_{k} = \sum_i n_{k,i} w_{k,i}(\vv)
+\end{displaymath}
+defines the post collision velocity distribution $w_{k,i}$, given: a collision has occurred at
+pre collision state $(\vr ' , \vv ' , i ')$, then a type of process $k$ has been sampled, then a post collision species
+$i$ has been identified. Sampling $(\vv)$ from $w_{k,i}(\vv)$ is carried out in routines VELOCX, VELOEL, VELOEI, VELOPI,
+depending on the type $k$ of process identified. In all cases first a transformation into the rest frame of the
+interacting background species $i_b'$ is carried out.
+
+\subsection{elastic collisions, VELOEL}
+
+In elastic collisions (EL) colliding particles retain their identity: ($i' = i,  i_b = i_{b'}$). A binary collision
+is simulated by first identifying the velocity $\vv_{b'}$ of the pre collision partner from the background medium.
+As in all heavy particle collisions the distribution for finding $\vv_{b'}$ is:
+\begin{displaymath}
+w_{k,i_{b'}}(\vv_{b'}) \sim \sigma_{el}(|\vv'-\vv_{b'}|) |\vv'-\vv_{b'}| f_{i_{b'}}(\vv_{b'})
+\end{displaymath}
+with $f_{i_{b'}}(\vv_{b'})$ the velocity distribution of background medium $b$. EIRENE typically assumes here
+either a drifting Maxwellian in the laboratory frame, or a mono-energetic isotropic distribution in the rest frame of background medium $b$.
+Next the scattering angle $\theta$ is found in the center of mass frame, either from the total cross section and the interaction
+potential, for from differential cross sections, for other, more approximate assumptions. Finally the post collision velocity
+$\vv$ is obtained by transforming back into the laboratory frame.
+\subsection{charge exchange, VELOCX}
+In this case an exchange of identity is assumed:  $i = i_{b'},   i_b = i'$, which corresponds to a scattering angle
+$\theta = \pi$ in the center of mass system. In this special case sampling is most convenient in the
+in the rest frame of background medium $b$, rather than in the center of mass frame. This means again first sampling
+$\vv_{b'}$ from
+\begin{displaymath}
+w_{k,i_{b'}}(\vv_{b'}) \sim \sigma_{cx}(|\vv'-\vv_{b'}|) |\vv'-\vv_{b'}| f_{i_{b'}}(\vv_{b'})
+\end{displaymath}
+and then, after transformation from the rest frame of species $b$ back into the laboratory frame, simply setting $\vv = \vv_{b'}$
+\subsection{electron-impact collisions, VELOEI}
+\subsection{general heavy-particle-impact collisions, VELOPI }
+\subsection{photon processes (emission, absorption, scattering)}
+documentation to be written
+\newpage
+\section{Surface Reflection Models} \label{sec1.3}
+
+Within the terminology introduced in section \ref{sec1.1} the effects
+of the interaction of neutral particles, photons (and escaping ions) with
+surfaces surrounding or inside the computational volume can be
+described by additional boundary conditions.
+Such kinetic boundary conditions are then often referred to as ``bidirectional reflectance functions''.
+It is, however, much
+more convenient for Monte Carlo applications to describe this
+interaction as just one special type of collision process in the
+collision kernel $C$ of equation (\ref{eq1.3}), i.e. as
+\begin{equation} \label{eq1.14}
+C   =   p_w    \cdot   C_w    + \sum_{k}  p_k   C_k   ,
+\end{equation}
+with $ p_w (\vr )$ = 1, if $ \vr $ is a point
+on a surface, and $ p_w (\vr)$ = 0 elsewhere. The
+transport kernel $T$ can be modified such that the maximum length
+$ l_{max}$ for free flight to the next point of collision is the
+distance to the nearest surface along the track of the particle.
+The reflection kernel $ C_w$ is further decomposed it into a
+kernel $ C_{wf}$ (fast particle reflection), $ C_{wt}$ (thermal
+particle re-emission) and $ C_{wa}$ (particle absorption) with
+respective probabilities, $ p_f , p_t$  and $ p_ a$, such that
+\begin{equation}
+C_w   = C_{wf}   +   C_{wt}   +   C_{wa}   =
+  p_f   {\cal{C}}_{wf}   +
+  p_t   {\cal{C}}_{wt}   +   p_a
+{\cal{C}}_{wa}  , \quad p_f + p_t + p_a = 1 . \label{eq1.15}
+\end{equation}
+Here ${\cal{C}}$ are, as above, the normalized versions of the collision kernels $C$.
+
+We discuss in detail only the fast particle reflection model $
+C_{wf}$ since $C_{wt}$ is generally a mono-energetic and cosine
+angular distribution or a Maxwellian flux distribution at wall
+temperature, and $C_{wa}$ only describes the transition into the
+``limbo state" $ x_a$ ``absorbed particle".
+\\ It is usual
+in neutral gas models to replace $C_{wf}$ with numerical or
+analytical fits to moments of $C_{wf}$, e.g., such as the
+particle and energy reflection coefficients $ C_P$ and $ C_E$. The
+particle - wall interaction is often supplemented by simple
+assumptions on the angular distribution (cosine or specular) of
+the particles leaving the surface.
+
+One has  for the particle reflection coefficient:
+\begin{equation}
+C_P   =   \sum_{i}   \int d \vv \   C_{wf} (
+\vr ; \vv ' , i ' \rightarrow   \vv
+,i) \label{eq1.16}
+\end{equation}
+Note that $ C_P   =   p_f = c_{wf}$ in the terminology of equation
+\ref{eq1.4}.
+
+The energy reflection coefficient is defined as:
+\begin{equation}
+C_E    =    \frac{1}{E '}    \cdot \sum_{i}   \int d \vv
+\   E    \cdot C_{wf} (\vr ; \vv ' , i '
+\rightarrow   \vv ,i)   =
+ \frac{1}{E '}     \cdot   {\tilde{C}}_E
+\label{eq1.17}
+\end{equation}
+Here $E = m v^2 / 2$ is the energy of the reflected particle.
+Hence $C_E = \bar {E}/E' \cdot C_P$, with $\bar {E}$ denoting the
+mean energy of the reflected particles.
+
+\subsection{The Behrisch matrix reflection model} \label{sec1.3.1}
+One model, the matrix model due to Behrisch \cite{kn:Behrisch}, is
+hardwired in EIRENE (and in many other codes such as AURORA,
+BALDUR, TRANSP developed in the early eighties of the last century).
+ This model has been used as a standard option in
+many benchmarks \cite{kn:Benchmark}. The model is based upon a
+table of values for $ C_{P_\perp} (E ')$ and a stochastic matrix $
+{\underline{\underline{B}}}_{\perp}$ for the transition $ E '
+\rightarrow   E$, for H atoms striking a stainless steel target at
+normal incidence. For other incident angles $ \vartheta_{in}$ the
+moments are modified in EIRENE by the relations:
+\begin{equation}
+C_P ( \vartheta_{in} )   =   1   - (   1   -   C_{P_\perp})
+ \cdot   \cos^{e1} ( \vartheta_{in} )
+\label{eq1.18}
+\end{equation}
+and
+\begin{equation}
+C_E ( \vartheta_{in} )   =
+  1   -   (   1   -   C_{E_\perp})
+ \cdot   \cos^{e2} ( \vartheta_{in} )    .
+\label{eq1.19}
+\end{equation}
+This latter moment equation can be satisfied by modifying the
+tabulated stochastic matrix $ {\underline{\underline{B}}}_{\perp}
+( E ' \rightarrow   E)$ in many different ways. In EIRENE, we
+first sample $ {\cal{E}}$ from $ {\underline{\underline{B}}}
+_{\perp}$ (given $ E '$) and then set
+\begin{equation}
+E   =   E '   -   (   E ' - {\cal{E}}  )
+ \cdot   \cos^{e2} ( \vartheta_{in} )    .
+\label{eq1.20}
+\end{equation}
+The linearity of E in $ {\cal{E}}$ gives an expectation value $\bar
+{E}$ with $ \bar {E} / E ' \cdot C_P( \vartheta_{in} )  = C_E (
+\vartheta_{in} )$, with $C_P $ and $C_E$ as given by equations
+(\ref{eq1.18}) and (\ref{eq1.19}), respectively.
+
+To describe the angular distribution of re-emitted particles, conditional
+on incident energy and angle,  let
+$ \ve_x ,   \ve_y ,   \ve_z$ define
+an orthonormal basis at the strike-point of a test-particle on a
+surface. Here let $ \ve_x$ be the unit vector parallel
+to the outer surface normal and let the incident particle travel
+in the local xz-plane. Furthermore, let $ \vartheta_r$ and $
+\varphi_r$ be the polar and azimuthal angles sampled from a cosine
+distribution around $ - \ve_x$. The speed unit vector $
+\vOmega $ of the reflected particle in EIRENE is then
+given by
+\begin{eqnarray}
+\Omega_x   & = &  - \cos( \hat{\vartheta}_r ) f_1 ( \vartheta_{in}
+)   +   \sin( \hat{\vartheta}_r )
+\sin( \varphi_r)   f_2 ( \vartheta_{in} )     ,   \nonumber\\
+\Omega_y   & = &  \sin( \hat{\vartheta}_r )
+\cos( \varphi_r )     ,                           \nonumber\\
+\Omega_z   & = &  \sin( \hat{\vartheta}_r ) \sin( \varphi_r )
+f_1( \vartheta_{in} )   + \cos( \hat{\vartheta}_r )   f_2(
+\vartheta_{in} )  , \label{eq1.21}
+\end{eqnarray}
+with
+\begin{eqnarray}
+\sin( \hat{\vartheta}_r )   & = &  f_1( \vartheta
+_{in})   \sin( \vartheta_r )     , \nonumber\\
+ f_1( \vartheta_{in} )   & = &  \cos^{e3} ( \vartheta_{in} ) ,
+\nonumber\\
+ f_2( \vartheta_{in} ) &  =  &
+(   1   -   f_1  \cdot f_1 )^{\frac{1}{2}} . \nonumber
+\end{eqnarray}
+In total we have defined three parameters e1, e2, e3. The first
+two parameters e1 and e2 account for particle and energy
+reflection coefficients that continuously increase with incident
+angle (recommended: e1=1, e2=0.5 from comparison with TRIM code
+calculations, see below).
+\\ The third parameter e3 can be used to take into
+account an increasing contribution of specular reflection at near
+grazing incidence. e3=0 gives a pure cosine distribution, e3=1
+reproduces the distribution given in \cite{kn:Heifetz}. In general
+this model describes a fraction of specular versus cosine
+reflection, which increases with $ \vartheta_{in}$. And in the
+(purely mathematical) limit of $ \vartheta_{in}   =   90^{\circ}$,
+it results in pure specular reflection. Furthermore, the parameter $e3$ controls
+the speed at which the specular part $a_{spec} (
+\vOmega; \vartheta_{in})$ of the angular distribution $a
+(\vOmega; \vartheta_{in})   =   a_{spec} ( \vOmega; \vartheta_{in})
+  +   a_{cosin} ( \vOmega; \vartheta_{in})$ increases with incident angle
+$ \vartheta_{in} $.
+
+A simpler, ``fixed momentum accommodation coefficient model", in which the dependence of this decomposition
+on incident angle $\vartheta_{in} $ is absent, can also be activated, e.g.  for testing, (see flag: AINTG
+in cards for surface reflection models, section \ref{sec2.6}).
+\\
+The interaction of neutrals and ions with a solid surface for
+target-projectile combinations other than H onto stainless steel
+are modelled using a reduced energy scaling.
+
+\subsection{TRIM code database reflection models} \label{sec1.3.2}
+Complementary to the surface model described above, EIRENE is
+coupled to computer generated reflection databases, produced with
+the TRIM code (see references \cite{kn:Eckstein} and
+\cite{kn:Bateman}). At present a discretized form of the
+reflection kernel $C_{wf}$, including all correlations between the
+five vector components of $ \vv '$ and $\vv $, is
+available for the target-projectile combinations listed in table
+\ref{tabref}. The first 12 of these combinations
+comprised an old default ``TRIM data file" of such combinations in an EIRENE run.
+Meanwhile a much extended list,
+also far beyond that of table \ref{tabref}, is available, see separate
+documentation of TRIM code bidirectional reflectance database,
+and the target projectile combinations
+to be used in any particular run are selected individually
+from this larger list (input block 6).
+
+ZNML is a target material flag set for each surface
+in the input file, blocks 3a and 3b, and is described below in
+block 6b, ``Data for local reflection models". These databases
+are, essentially, tables of conditional quantile functions
+obtained from large random samples of test particle trajectories
+in the solid.
+\begin{table}[h]
+\caption {\bf Surface reflection database (TRIM Code)}
+\label{tabref}
+\begin{center}
+\begin{tabular} {|r|l|l|r|} \hline
+ {\bf No} & {\bf Projectile} & {\bf Target}
+ &  {\bf ZNML}
+ \\ \hline \hline
+
+1 & H & Fe & 5626.   \\ \hline
+
+2 & D & Fe & 5626.    \\ \hline
+
+3 & H & C  & 1206.    \\ \hline
+
+4 & D & C  &   1206.    \\ \hline
+
+5 & He &Fe &  5626.    \\ \hline
+
+6 & He & C  &  1206.    \\ \hline
+
+7 & T  & Fe & 5626.    \\ \hline
+
+8 & T & C  &  1206.    \\ \hline
+
+9 & D  & W  & 18474.    \\ \hline
+
+10 & He & W  & 18474.    \\ \hline
+
+11 & H  & W  & 18474.    \\ \hline
+
+12 & T  & W  & 18474.    \\ \hline\hline
+
+13 & D  & Be &  904.    \\ \hline
+
+14 & D  & Mo & 9642.    \\ \hline
+
+15 & Ne & C  & 1206.    \\ \hline
+
+16 & Ne & Be & 904.    \\ \hline
+
+17 & H  & Cu & 6429.    \\ \hline
+
+18 & H  & Mo & 9642.   \\ \hline
+
+19 & T  & Mo &  9642.   \\ \hline
+
+20 & He & Mo &  9642.   \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+We consider these ``database -" reflection models to be the most
+complete option available at present and recommend to further
+extend the databases to additional projectile - target
+combinations, and in particular to sputtering and self-sputtering
+data (such as, e.g., C onto C, or Be, etc.).
+\\ For an INTOR benchmark case for neutral particle Monte Carlo Codes
+\cite{kn:Benchmark} the choice of a particular surface reflection
+model had no strong impact on the results. This was shown by
+running the EIRENE code with all three models (``Behrisch Matrix",
+TRIM database and MARLOWE database (at that time available as a
+third option. Meanwhile the MARLOWE database is not available
+anymore).
+
+It was found that this had little influence on global parameters
+as, e.g., the pumping efficiency for the particular geometry (5.4
+\%, 5.3 \% and 5.2 \% respectively.). On the other hand, it can
+easily be imagined that in other cases (different plasma
+conditions, more detailed geometries) the choice of the reflection
+kernel $ C_{wf} $ can be more important for the result. Certainly
+in all cases, in which the results are sensitive to the neutral
+particle velocity distribution near surfaces, details of the
+reflection kernel matter. This is, for example, the case for
+computed line shapes of certain electronic transitions ($
+H_{\alpha} $ lines etc.), see e.g., reference \cite{kn:Reiter92d}.
+
+\newpage
+\section{Recycling surface sources} \label{sec1.4}
+
+It has been found (mid eigthies of last century: within INTOR framework) as a result of benchmark calculations with
+several different neutral gas transport Monte Carlo codes (EIRENE, DEGAS, NIMBUS, DDC83) on the
+same input data that the main divergence in the results from the
+different codes tested was due to different primary source terms
+$Q$ in the transport equation [equations (\ref{eq1a},\ref{eq1b}) and
+(\ref{eq1.6a})] , although target fluxes and temperatures had been
+prescribed to be identical. Here we describe one particular EIRENE
+surface source option in detail. The way the source is modelled by
+EIRENE allows  consistency with kinetic boundary
+conditions for plasma fluid equations at plasma facing surfaces.
+To describe this, we first write the volumetric source $Q$ (particles per unit time and per unit $(\vr,\vv)$-phase space volume)
+in terms of a  surface flux $\Gamma_w$ and a surface delta-function. The
+surface (wall) flux $\Gamma_w$ thus has dimension: particles per unit time, per velocity space unit, and per unit area:
+\begin{equation}
+Q_w( \vr , \vv , i )   = \Gamma_w (
+\vr, \vv , i )    \cdot   \delta_w ( \pi )     ,
+\label{eq1.22}
+\end{equation}
+where $\pi$ is a coordinate normal to the surface $S_w$:
+$\pi(\vr)=0 $, i.e.: $\ve_{\pi} =
+\nabla_{\vr}\pi(\vr)$, pointing away from the
+computational volume.
+We see that $\Gamma_w$ specifies the (ingoing) ``transport" flux $\Phi$ introduced in (\ref{trans-flux}) at the boundary of
+the computational domain.
+We will henceforth use the notation $\Gamma$ rather than $Q$, in case of surface sources.
+$\Gamma_w$ is a kinetic (microscopic) surface source (flux-)
+density distribution, backward directed (into the computational
+volume, i.e., it is non-zero only for $v_\pi < 0$).
+
+
+
+To convert from a forward directed ion flux distribution
+$\Gamma_{Sh,ion}(\vv)$ at the plasma-sheath interface $S_{Sh}$ to a
+neutral flux distribution back from the wall surface $S_w$, we
+fold $\Gamma_{Sh,ion}$ with a (magnetic plus electrostatic) sheath transmission
+kernel $T_{Sh}$ and with the surface reflection (incl. sputtering) kernel $C_w$,
+equation (\ref{eq1.14}):
+ \begin{eqnarray}
+\Gamma_w ( \vr , \vv  , i )  & = & \sum_{i '}
+\int\! \int\! \int d^3 r' d^3 v'  d^3
+v'' \Gamma_{Sh,ion} ( \vr ' ,
+\vv '' , i ' ) \nonumber\\
+& & \cdot T_{Sh} (i ' ; \vr ' ,
+\vv '' \rightarrow \vr , \vv  ' )
+ \cdot  C_w ( \vr ;
+\vv ' , i ' \rightarrow \vv , i )
+\label{eq1.24}
+\end{eqnarray}
+The summation over $i '$ is performed over all ion species
+entering the sheath region.
+
+A typical example for $\Gamma_{Sh,ion}$ is at least sonic parallel plasma flow (Mach number $M_\|\geq 1$ along the
+magnetic field lines) entering the magnetic pre-sheath. In this magnetic pre-sheath
+the ion trajectories are bend over (accelerated by the electric pre-sheath field) such that at the entrance of the electrostatic sheath $\vr'_{eSh}$
+(locate intermediate between magnetic pre-sheath entrance $\vr '$ and target surface $\vr$ at least sound speed is already reached with respect to the surface normal: $M_\pi\geq 1$.
+
+If the magnetic field is directed normal to the target surface, then the magnetic pre-sheath is absent, $\vr' = \vr'_{eSh}$  and, of course
+$M_\| = M_\pi \geq 1$.
+
+A commonly adopted simplification is made in plasma fluid descriptions by ignoring the
+typically small spatial volume between the plasma sheath interface
+and the wall surface. Hence: $T_{Sh}$ factorizes into a 3D delta
+function $\delta^3(\vr-\vr')$ and a deterministic transition
+kernel for the velocities $\vv'' \rightarrow \vv'$.
+
+
+
+Random numbers from $\Gamma_w$ are generated conveniently by
+sampling, firstly, $(\vr ' , \vv  '' , i ' ) $
+from $\Gamma_{Sh,ion}$, next generating $(\vr ,
+\vv ' ) $ from $T_{Sh}$ and then, finally, sampling the weights, velocities and species indices of re-emitted (neutral) particles
+$(\vv , i)$ from the conditional distribution $C_w $, which is conditional on one ion (species $i'$) having hit the
+target at position $\vr' = \vr$ and with velocity $\vv '$.
+
+A frequently employed assumption for $\Gamma_{Sh,ion}$ is a one sided (only positive velocity components into the sheath)
+forward drifting Maxwellian ion flux distribution at the interface between plasma
+and electrostatic sheath $S_{Sh}$. In this case the bending of trajectories from parallel (to $\vB$) to
+normal (to the surface) sonic flow within the magnetic pre-sheath is already included in $\Gamma_{Sh,ion}$,
+e.g., via boundary conditions in a CFD model for plasma ion flow, and the action of
+operator $T_{Sh}$ is solely the acceleration in the electrostatic sheath.
+
+Alternatively, and in cases when the magnetic field is tilted with respect to the wall surface,
+one may define $\Gamma_{Sh,ion}(\vv)$ to be the kinetic transport flux distribution entering the magnetic pre-sheath,
+i.e. with a drift velocity of at least ion sound speed in the direction parallel to the magnetic field $\vB$ (rather than normal to the wall).
+In this case the action of the magnetic pre-sheath must be accommodated in the sheath kernel $T_{Sh}$, which we might
+even consider to split into a magnetic pre-sheath (MP) kernel and an electrostatic sheath (Sh) kernel:
+\begin{equation}
+T_{Sh} =  T_{mpSh}(\vr_{mpSh}, \vv_{mpSh} \rightarrow \vr_{eSh}, \vv_{eSh}) \cdot  T_{eSh}(\vr_{eSh},\vv_{eSh} \rightarrow \mbox{wall})
+\end{equation}
+with the subscripts $mpSh$ and $eSh$ labelling the plasma side magnetic pre-sheath entrance and the electrostatic sheath entrance, respectively.
+
+\begin{figure}[h]
+%\epsfysize=9truecm \epsffile{ManualFigs/magn_pre_sheath.eps}
+\includegraphics[height=9.0cm]{ManualFigs/magn_pre_sheath.eps}
+\caption{Transition region between fluid plasma (CFD) and wall surface, schematic. The plasma flow is specified by CFD models
+at the entrance surface of the magnetic pre-sheath MP (taken normal to the magnetic field $\vec{B}$). $\Delta \Phi$ is the fraction of the total
+sheath potential drop inside the electrostatic sheath.}
+\label{magpresheath}
+\end{figure}
+
+\subsection{truncated drifting Maxwellian flux at electrostatic sheath entrance}\label{maxw-flux}
+
+One of the standard options in EIRENE, in particular in applications in which EIRENE is coupled iteratively to a plasma fluid code,
+is a truncated forward drifting Maxwellian ion flux distribution (options: NEMODS = 6,7, Section \ref{sec2.7}).
+The kinetic plasma ion flux distribution entering the electrostatic sheath is given as
+\begin{equation}
+\Gamma^0_{Sh,ion}   = \frac{1}{\alpha^2}   \cdot   v_{\pi}   \cdot
+  \exp \left ( - \frac{1}{v_{T_i}^2}
+(\vv - \vV_d )^2  \right )    , \quad
+v_{\pi} > 0 \label{eq1.23}
+\end{equation}
+with $v_{T_i}  =   \sqrt{2 kT_i/m_i }$, the thermal ion velocity, normalizing constant
+$\alpha^2$ and with the drift velocity $\vV_d$. See Section \ref{sec2.7} for a description of related EIRENE input flags.
+The
+superscript 0 indicates normalization of the flux to one particle per unit time and unit area:
+\begin{equation}
+\int_{v_\pi>0} d^{\ 3}v~ \Gamma^0_{Sh,ion}(\vv) = 1
+\end{equation}
+
+Consider now the three orthogonal velocity components $v_1,v_2,v_3$ chosen such that $v_3 = v_\pi$, i.e. the $v_3$ velocity component is normal
+to the surface (target), and hence also normal to the plasma-sheath interface.
+$\Gamma^0_{Sh,ion}(\vv)$ factorizes into the three uni-variate distributions
+\begin{equation}
+\Gamma^0_{Sh,ion}(\vv)=\Gamma^0_{Sh,ion,1}(v_1)\cdot \Gamma^0_{Sh,ion,2}(v_2) \cdot \Gamma^0_{Sh,ion,\pi}(v_\pi)
+\end{equation}
+The first two factors here are simply (shifted) Gaussian distributions and sampling random velocities $v_1, v_2$ from them is trivial (e.g.: Box Muller method),
+whereas the third factor is a one-sided drifting Maxwellian flux distribution:
+\begin{equation}
+\Gamma^0_{Sh,ion,\pi}(v_\pi)   = \frac{1}{\alpha^2_\pi}   \cdot   v_{\pi}   \cdot
+  \exp \left ( - \frac{1}{v_{T_i}^2}
+(v_\pi - V_{d,\pi} )^2  \right )    , \quad
+v_{\pi} > 0
+\end{equation}
+The normalizing factor $\alpha_{\pi}^2$ for this (now uni-variate) distribution of the normal component  $v_\pi$
+  reads:
+\begin{equation}
+\alpha_{\pi}^2   =  \frac12 v_{T_i}^2  \cdot  \exp(-{\cal V}^2_{\pi} )
+   g({\cal V}_{\pi} )  ,
+\label{eq1.27}
+\end{equation}
+with ${\cal V}_{\pi} = V_{d,\pi}/   v_{T_i} $ and $
+g(x)   =   1   +   \sqrt{\pi} ~  x ~  [1 + {\rm erf}(x)] ~  \exp(x^2
+)$.
+
+(Note that the dimensionless velocity $\cal V$ normalized by the thermal speed introduced here is related to the Mach number $M$
+(normalized by the ion sound speed) by
+\begin{equation}\label{normfac}
+{\cal V} = \frac{V}{v_{T_i}} = \frac{V}{c_s}~ \frac{\sqrt{Z_i~T_e/T_i+1}}{\sqrt{2}} = M ~\frac{\sqrt{Z_i~T_e/T_i+1}}{\sqrt{2}}
+\end{equation}
+with $M = V/c_s$ and the (isothermal) ion sound speed $c_s$ defined as: $c_s=\sqrt{(Z_i~T_e+T_i)/m_i}$
+$Z_i$ is the ion charge state.
+Hence ${\cal V} = M$ only if $Z_i~T_e=T_i$.
+
+It is clear that random sampling the $\pi$-component $v_{\pi}$ of $\vv $ from
+$\Gamma^0_{Sh,ion,\pi}$ is not trivial even for this seemingly simplest sheath entrance ion velocity distribution,  because the cumulative
+distribution function $F$ of a 1D forward drifting Maxwellian (with
+cut-off at $v_{\pi}=0$):
+\begin{equation}
+F ( v_{\pi} )   = \int_{0}^{v_{\pi}} dv_{\pi} ' \
+\Gamma^{0}_{Sh,ion,\pi} ( v_{\pi} ' ) \label{eq1.25}
+\end{equation}
+cannot be inverted explicitly.
+
+
+Therefore in the EIRENE code we apply the Monte Carlo  ``biassed source sampling" concept, (module: \texttt{VELOCS.F}).
+We sample this component
+${\tilde{v} }_{\pi}$ from a ``non-analog" truncated Maxwellian flux distribution
+$\tilde\Gamma^0_{Sh,ion,\pi}(\tilde v_{\pi})$ (see Section \ref{sec1.2}, paragraph \ref{sec1.2.1a} above)
+with zero drift in $\pi$-direction but with different ``non-analog" $\pi$- temperature ${\tilde{T}}_{\pi,i},
+({\tilde{T}}_{\pi,i}   \ne T_i   , {\tilde{V}} _{d,\pi} = 0 )$.
+\begin{equation}
+\tilde\Gamma^0_{Sh,ion,\pi}(\tilde v_\pi)   = \frac{1}{\tilde \alpha^2_\pi}   \cdot   \tilde v_{\pi}   \cdot
+  \exp \left ( - \frac{1}{v_{\tilde T_{\pi,i}}^2}
+(\tilde v_\pi )^2  \right )    , \quad
+\tilde v_{\pi} > 0
+\end{equation}
+Note that although this non-analog
+distribution clearly violates any ``Bohm criterion", it is, taken together with the weight correction factors described below, unbiased and
+a fully legitimate sampling distribution because it fulfils the ``Radon-Nikodym condition''
+(\ref{eq1.14a}).
+Sampling from this non-analog distribution can
+be done by setting, e.g.,
+\begin{eqnarray}
+\tilde{v}_{\pi}   = {\tilde{\alpha}}_{\pi}   \cdot   \sqrt{ -\ln(
+\xi )  \cdot 2 } = v_{\tilde T_{\pi,i}} \cdot   \sqrt{ -\ln(
+\xi ) }  \quad  \mbox{since: \ }  \tilde{\alpha}_{\pi}   =\frac{1}{\sqrt{2}}
+v_{\tilde T_{\pi,i}}  \mbox{for} & \tilde{V}_{d,\pi} = 0
+\label{eq1.26}
+\end{eqnarray}
+$\xi$  being a uniformly distributed random number between 0 and
+1.
+
+\smallskip\noindent
+
+In order to find the weight correction factor associated with this non-analog
+procedure, we first note that from (\ref{normfac}) we have
+\begin{displaymath}
+{\tilde{\cal V}}_{\pi} = 0 \rightarrow g({\tilde{\cal V}}_{\pi}) =1, \mbox{and}  \quad \tilde{\alpha}_{\pi}   = \frac{1}{\sqrt{2}}v_{\tilde{T_i}}
+\end{displaymath}
+This gives the following result for the (multiplicative) weight
+correction factor $w ( \tilde{v}_{\pi} )$, see equation (\ref{eq1.13a}), to be applied for each sampled non-analog velocity component
+$\tilde v_\pi$:
+\begin{eqnarray}
+w ( \tilde{v}_{\pi} )   =   \frac{\Gamma^0_{Sh,ion,\pi} (
+{\tilde{v}}_{\pi} )}{\tilde{\Gamma}^0_{Sh,ion,\pi} ( \tilde{v}_{\pi}
+)}
+ & = &  \frac{\tilde{T}_{\pi,i}}{T_i}
+\exp \left (  \frac{2 \tilde{v}_{\pi}  V_{d, \pi} }{v_{Ti}^2}    -
+\frac { {\tilde{v}_{\pi}}^2}{v_{T_i}^2} \left ( 1   -
+\frac{T_i}{ {\tilde{T}_{\pi,i}} }  \right ) \right )
+ \cdot  \frac {1}{g({\cal V}_{\pi})}
+\label{eq1.28}
+\end{eqnarray}
+This non-analog sampling of the source term introduces additional
+statistical fluctuations in the results, since the initial test
+particle weights $w$ fluctuate with variance
+\begin{eqnarray}
+\sigma^2(w)   =   \int_{0}^{\infty} \! d \tilde{v}_{\pi} \ w^2 (
+{\tilde{v}}_{\pi} )  \cdot \tilde{\Gamma}^0_{Sh,ion} (
+\tilde{v}_{\pi} )
+  -   1 &  = &  g \left ( \frac{2{\cal V}_{\pi}}{\sqrt{b}} \right ) /
+g({\cal V}_{\pi})^2
+ \cdot  \frac{1}{(2-b)   b}   -   1 \nonumber \\
+\label{eq1.29}
+\end{eqnarray}
+where $b   =   2   -  T / {\tilde{T}}$. We use the
+ansatz $b = C  \cdot   {\cal V}_{\pi} + 1$ and compute numerically that
+value of C which minimizes $\sigma^2$ in the range $0 \le {\cal V}_{\pi}
+\le 1$. We find C = 0.6026. This means that the ratio of the
+``real" temperature $T_i$ and the non-analog temperature $\tilde{T}_{\pi,i}$
+should be chosen to be $ T_{i} / {\tilde{T}_{\pi,i}}   =   1 - 0.6026  \cdot
+{\cal V}_{\pi}$. This choice optimizes the statistical performance in the given Mach number range. In
+principle, of course, any other $\tilde{T_{\pi}} $ could have been used
+without introducing bias into
+the algorithm.\\
+The mean energy of ions generated by this sampling procedure is
+(note: the distribution $\Gamma^0$ is  already normalized to flux
+one):
+\begin{eqnarray}\nonumber
+\overline{E}({\cal V}_{\pi},{\cal V}_{\sigma})   &=&
+ \frac{m_i}{2}    \cdot   \int^\infty_{-\infty} \!
+\int^\infty_{-\infty} \! \int^\infty_{0} \!
+ d^3v' \
+ {v'}^2    \cdot
+\Gamma^0_{Sh,ion} (\vv ' ) = \\
+&=& \frac{m_i}{2}    \cdot   \int^\infty_{-\infty} \!dv_1
+\int^\infty_{-\infty} \!dv_2 \int^\infty_{0} \!
+   dv_\pi \
+ (v_1^2+v_2^2+v_\pi^2)    \cdot
+\Gamma^0_{Sh,ion} (\vv ' ) \\\nonumber
+   &=&   T_i    \cdot   \gamma_E    ,
+\label{eq1.30}
+\end{eqnarray}
+with the half sided integration for the $\pi$-component of
+$\vv$, and:
+ \begin{equation}
+\gamma_E   =    2 + {\cal V}_\sigma^2    + \left[{\cal V}_\pi^2    +   0.5
+\cdot \frac{g({\cal V}_{\pi} )  - 1}{g({\cal V}_{\pi} )}\right]       , \label{eq1.31}
+\end{equation}
+Here we have decomposed the drift velocity $\vV_d$ into a
+normal (to the surface) $\pi$-component $\vV_{d,\pi}$ and a $\sigma$-component $\vV_{d,\sigma}$ parallel to
+the wall surface.
+\begin{equation}
+{\cal V}_{\sigma}   = \frac{ | \vV_d   -   \vV_{d,
+\pi} | } {  v_{T_i}} = \frac{ | \vV_{d,\sigma} | } {    v_{T_i}}. \label{eq1.32}
+\end{equation}
+Note that for ${\cal V}_{\pi}$ = 0 (\ref{eq1.31}) reduces to the expected formula
+$\gamma_E   =   2   + {{\cal V}_{\sigma}}^2$  for a half sided Maxwellian flux with only drift components parallel to the surface.
+
+Furthermore, if ${\cal V}_{\sigma}
+= 0$ (normal incidence of the mean flow) and ${\cal V}_{\pi} \rightarrow 1$ (i.e. for the Bohm sheath
+condition $M_{\pi} \rightarrow 1$ in case of $Z_i~T_e = T_i$, such that $cs = v_{T_i}$), then $\gamma_E$ for the forward sided
+fluxes approaches the value for total net heat fluxes from (full) drifting Maxwellian distributions:
+$\gamma_E = 2.449 + {{\cal V}_{\pi}}^2 \simeq \frac {5}{2} +
+{{\cal V}_{\pi}}^2$, as it must.
+
+We conclude that the above scheme is both an accurate and
+efficient random number generator for truncated shifted Maxwellian
+flux distributions of particles incident onto or emitted from
+surfaces. Of course, after having generated $
+\tilde{\vv}  $ with the weight $ w ({\tilde{v} }_{\pi}
+)$ and before reflecting the particle via the kernel $C_w $, the
+acceleration of an ion in a sheath potential  in direction $\pi$
+(normal to the target surface), as formalized in the sheath
+transmission kernel $T_{Sh}$ mentioned above in Eq. (\ref{eq1.24}), can easily be
+included.
+
+\subsection{The electrostatic sheath} \label{sec1.4.1}
+
+
+The electrostatic sheath potential in front of a target surface is
+derived from assuming a given net electrical current $j_{pl}$ and
+a known ion particle current (ion species $i$) $\Gamma^+_i$ (i.e., $j^+_i = q_i
+\Gamma^+_i$ electrical ion current entering a plasma-target boundary layer (the ``sheath"), with $q_i=eZ_i$ being the ion charge, $e$ the elementary charge and $Z_i$ the ion charge number)
+flowing over the target sheath edge. Both these currents $j_{pl}, \Gamma^+_i$, and the
+electron current
+
+$j^-=q_e\Gamma^- = -e\Gamma^- = j_{pl} - \sum_i j^+_i = j_{pl} -  j^+$,
+(with $j^+$ denoting the total, sum over all ion species, ion current)
+are taken to
+flow parallel to the $\vB$-field at the plasma-sheath edge (or, more generally: to form (different) angles $\Psi_{\Gamma^+,j_{pl}} > 0$ degrees, respectively,  with the target surface normal $\pi$).
+
+Often, but not necessarily, it is assumed: $j_{pl} = j^+ + j^- =
+0$, i.e., locally ambi-polar flow conditions.
+
+We start with a Maxwell-Boltzmann density distribution $n_e(x)$
+for the electrons, with electron temperature $T_e$, in the
+electron retarding electric field with potential $\Phi(x)$. Here $x$
+is a coordinate parallel to the current flow, e.g. parallel to the magnetic field $\vB$ in case of absence of drift flows. The
+electron current density along the field is then (after reduction,
+possibly, due to secondary electron emission):
+\begin{displaymath}
+j^-_T = -e \cdot 1/4 \cdot n_{e,T} \cdot v_e^{av} \cdot
+(1-\gamma_{s.e.e.}) = -e \cdot 1/4  \cdot n_{e,S} \cdot \exp[e
+\Delta\Phi_{S,T}/kT_e] \cdot \sqrt{\frac{8 kT_e}{\pi m_e}} \cdot
+(1-\gamma_{s.e.e.})
+\end{displaymath}
+Here $\gamma_{s.e.e.}$ is the secondary electron emission
+coefficient and $v_e^{av}$ is the average electron velocity. The subscripts $S$ and $T$ stand for the plasma-sheath
+interface and for the target surface, respectively and $
+\Delta\Phi_{S,T}$ is the (typically negative) voltage drop from
+the plasma sheath edge to the target.
+
+In order to determine the sheath voltage drop $\Delta\Phi_{S,T}$
+we equate the component normal to the target of this current
+density with the corresponding component of the net ion current
+density:
+\begin{displaymath}
+\left(-j^-_T\right)_{\pi} =-j^-_T \cdot \cos(\Psi) =
+(j^+_T - j_{pl}) \cdot \cos(\Psi) = \left(j^+_T - j_{pl}\right)_{\pi}
+\end{displaymath}
+Hence the cosine of the angle $\Psi$ of direction of current flow
+(e.g. of field line inclination
+against the target surface normal, if the current flows parallel to $\vB$) cancels out, as does the elementary
+charge $e$. The ion electrical current to the target $j^+_T$ ($ = (j^+_S)_{\pi}$, no ion
+sources within the sheath region) is given as
+\begin{displaymath}
+j^+_T = e \ \sum_i Z_i \cdot n_{i,S} \cdot {{V}_{\pi,i,S}}
+ = e \ \sum_i Z_i \cdot n_{i,S} \cdot M_{\pi,i,S} \cdot c_{i,S}.
+\end{displaymath}
+The sum is over all ion species, $Z_i$ is the charge state of
+species $i$, $n_{i,S}$ is the corresponding ion density and
+${{V}_{\pi,i,S}}$ the ion flow
+velocity component normal to the target, of ion species $i$, subscript $S$ indicated that these values are taken at the sheath entrance.
+$M_{\pi,i}$ is the Mach number of the corresponding current component, and $c_i$
+is the ion acoustic speed for species $i$, again taken at sheath entrance.
+
+Hence, combining the three previous relations, the sheath potential difference $\Delta\Phi$
+in terms of
+given values (at sheath entrance) for $ j_{pl},  T_e, \gamma_{s.e.e.} $ and ions flows $\Gamma_i$,
+reads (omitting the subscript $\pi$ for the components normal to the target in these quantities):
+
+\begin{eqnarray} \label{sheath1}
+ e \Delta\Phi/kT_e & = &
+\ln\left[\frac{\sqrt{2\pi}}{(1-\gamma_{s.e.e.})}\left(\sum_i
+\left( Z_i \frac{n_{i,S}}{n_{e,S}}\cdot {V_{i,S}}
+\sqrt{\frac{m_e}{kT_e}}\right)-\frac{j_{pl}}{e \cdot n_{e,S} \cdot
+\sqrt{\frac{kT_e}{m_e}}}\right)\right]\nonumber \\&&\\
+& = & \label{sheath2}
+\ln\left\lbrack\frac{\sqrt{2\pi}}{(1-\gamma_{s.e.e.})}\left(\sum_i
+\left( Z_i \frac{n_{i,S}}{n_{e,S}} \cdot M_{i,S} \cdot c_{i,S}
+\sqrt{\frac{m_e}{kT_e}}\right)-\frac{j_{pl}}{e \cdot n_{e,S} \cdot
+\sqrt{\frac{kT_e}{m_e}}}\right)\right\rbrack \nonumber \\ & &
+\end{eqnarray}
+% \end{subequations}
+This expression (\ref{sheath1}) is evaluated by the function SHEATH
+of the EIRENE code for the sheath potential drop $\Delta\Phi$, taking local plasma data for $T_e$ and $n_i$
+and ${V_{\pi,i}}$  (index $i$ runs over all ion species comprising the ionic target surface flux. The local electron density $n_e$ at sheath entrance  follows then  from quasi-neutrality.
+
+All these values may have a spatial dependency and are taken at a (random sampled, according to target outflow plasma flux distributions)
+point at a boundary surface of a CFD plasma code, e.g., at the divertor target boundary
+plate, which, strictly, is at the sheath entrance $S$ in front of the target. The energy gain due to sheath acceleration for a particular ion $i_0$
+is then $Z_{i_0} e \Delta\Phi$.
+
+Special forms of (\ref{sheath2}) are often quoted in the
+literature, e.g. for single ion fluid cases. Writing for the ion acoustic speed $c_i$ explicitly
+\begin{displaymath}
+c_i = \sqrt{\left(\frac{\gamma kT_i + Z_i kT_e}{m_i}\right)}
+\end{displaymath}
+($\gamma$ denoting the adiabatic coefficient) and hence:
+\begin{equation}\label{insert}
+c_i \cdot \sqrt{ \frac{m_e}{kT_e} } = \left[ \left( \frac{\gamma
+kT_i}{kT_e} + Z_i \right) \cdot \frac{m_e}{m_i} \right]^{1/2}
+\end{equation}
+we recover well known expressions for simpler cases. Consider,
+e.g., a single ion fluid case, $n_e = Z_i n_i = n$,  and
+$M_i = 1$ (Bohm sheath condition for isothermal flow, $\gamma =
+1$), (\ref{sheath2}) reduces to:
+\begin{eqnarray} \label{sheath3}
+ e \Delta\Phi/kT_e & = &
+\ln\left[\frac{\sqrt{2\pi}}{(1-\gamma_{s.e.e.})}
+\left({c_{i,S}}
+\sqrt{\frac{m_e}{kT_e}}\right)-\frac{j_{pl}}{e \cdot n \cdot
+\sqrt{\frac{kT_e}{m_e}}}\right]\nonumber \\&&\\
+& = &
+\ln\left[\frac{\sqrt{2\pi}}{(1-\gamma_{s.e.e.})}
+\left[ \left( \frac{
+kT_i}{kT_e} + Z_i \right) \cdot \frac{m_e}{m_i} \right]^{1/2}\left(1-\frac{j_{pl}}{e \cdot n \cdot
+c_{i,S}}\right)\right]
+\label{sheath4}
+\end{eqnarray}
+the latter equality (\ref{sheath4} follows after insertion of (\ref{insert}) into the former.
+
+
+
+If we let, furthermore, the net electrical current be zero: $j_{pl} = 0$ and take
+zero secondary electron emission $\gamma_{s.e.e} = 0$, we then find the classical result:
+\begin{displaymath}
+ e \Delta\Phi/kT_e = \frac{1}{2} \ln{ \left[ \frac {2\pi
+m_e}{m_i} \left( \frac{T_i}{T_e} + Z_i \right) \right]}
+\end{displaymath}
+Hence, e.g.,  for a pure hydrogen plasma ($m_e/m_i \approx 1/1836$), and for $T_e \approx
+T_i$, we have $e \Delta\Phi/kT_e \approx -2.5 $ and $ \approx
+-2.84$ for a pure deuteron plasma. For a pure helium plasma (fully ionized,
+$Z_i=2$) this sheath factor becomes $\approx -2.98$.
+
+
+\subsection{The magnetic pre-sheath} \label{sec1.4.2}
+In most situations when EIRENE is applied to plasma surface interaction studies the ion-plasma flow velocity $\vV_i$
+is predominantly parallel to a $\vB$ field: $V_{\parallel,i} \approx |\vV_i|$, and it is this parallel ion flow velocity,
+which is usually available from CFD plasma simulations, via boundary conditions specified for the (parallel component of the) momentum balance equation
+at the entrance of the magnetic pre-sheath ($mpSh$) rather than at the entrance of the electrostatic sheath $eSh$.
+
+The sheath model of EIRENE then is to be supplemented by a model \textbf{PRE-SHEATH} for the transition of known currents and $\vV_{i,mpSh}$  to $\vV_{i,eSh}$, i.e.
+in particular to derive the currents $j_{\pi,eSh}$ and flow components $V_{\pi,i,eSh}$ entering the electrostatic sheath from $\vj_{mpSh}$ and $\vV_{i,mpSh}$
+
+to be written....
+
+\newpage
+\section{Combinatorial description of geometry} \label{sec1.5}
+EIRENE is a Monte Carlo Code. Defining geometry in a Monte Carlo code is complex and laborious.
+
+
+Of the three typical options for definition of the target geometry in Monte Carlo Codes:
+\begin{itemize}
+\item {}
+``Constructive solid geometry (CSG)",
+\item
+    ``boundary representation (BREP)"
+\item
+     ``Voxel Geometry"
+\end{itemize}
+EIRENE uses a combination of the latter two concepts.
+
+\medskip
+In CSG a solid object is ``constructed" from the intersection, union or other boolean operations of several ``half-spaces".
+Each half space in specified by a relation $F(x,y,z)\le 0$, typically $F$ is a low order polynomial.
+For example the neutronics code MCNP used e.g. for ITER nuclear safety studies, is based on CSG.
+
+\medskip
+In BREP geometry, surfaces and volumes are build up from constituent parts.
+These parts may be related with algebraic functions (elementary BREPs)
+or complex functions such as Bezier functions or B-splines (advanced BREPS).
+Most CAD software uses BREPs in their native definition of geometry.
+
+In the EIRENE BREP options surfaces are build from (bounded) algebraic functions.
+These surfaces are referred to as ``additional surfaces", see Section \ref{sec2.3b}.
+EIRENE uses only algebraic functions, up to second order
+(some  extensions to raise the order to fourth order have been started recently but are not ready to use).
+
+\medskip
+In ``Voxel geometry", a 2D or a 3D object is constructed from identically shaped volume elements (``voxels"). In EIRENE these may be triangles
+ or quadrangles in 2D, or tetrahedra in 3D. New options to accommodate trilinear hexaedra as 3D voxels are currently being developed in connection with 3D edge codes such as EMC3. The bounding surfaces of these voxels are referred to as
+``standard grid surfaces" in EIRENE, see Section \ref{sec2.2}. These volume discretisation meshes (VOXELS) can be read into EIRENE
+from external files. For example the mesh in B2 CFD plasma fluid code is read into EIRENE directly from the CFD grid generator in
+coupled B2-EIRENE applications.
+Wall meshes are build from these by assigning
+a surface reflection model to some of the (voxel-) surfaces (Section \ref{sec2.3a}), whereas internal (grid-) surfaces remain transparent for flow of test-particles.
+
+\textbf{Note added in 2008:}
+
+An attempt has been made in 2008 to use CAD files directly for 3D wall surfaces.
+This was done via the already existing CAD-MCNP interface. We had then tried to turn the CSG input
+for MCNP (see above) into a BREP form for EIRENE.  In principle this works. But in practice the
+de-tour via the CSG concept leads to prohibitively complex BREP input for EIRENE.
+
+A direct CAD-BREP interface seems now much more efficient to us and more natural anyway,
+and has meanwhile (2011) been established by an intermediate code step (the ANSYS code), which first converts
+CAD output into a triangulation of surface elements, and then each triangle (in 3D space) is taken as ``additional surface'' (BREP concept)
+into EIRENE. Very large sets of triangles required optimisation procedures, which have  also been
+implemented (in EIRENE module timea.f) on the basis of OCTREE concepts adopted from ray-tracing procedures used in image processing.
+
+
+\medskip
+A complete set of surfaces in an EIRENE geometry may consist of a combination of both: standard surfaces (hence: defining standard grid cells, (voxels), and additional surfaces, defining a general BREP discretisation (additional cells).  A more complicated situation arises when additional surfaces intersect
+standard grid voxels.
+\begin{figure}[h]
+\begin{minipage}{7cm}
+\includegraphics[width=7.5cm, angle=+90]{ManualFigs/ALT-II.eps}
+\caption{\label{label1l} Early example a combination of BREP and VOXEL discretisation, around 1985
+for ALT-II pumplimiter studies at TEXTOR. Discretisation inside the TEXTOR tokamak vessel (torus): VOXEL, supplemented
+by about 100 (BREP) first and second order surfaces for ALT-II scoops, pumping ducts and inner structures such as probe supports,
+getter pumps, etc..
+}
+\end{minipage}\hspace{1cm}%
+\begin{minipage}{7cm}
+\includegraphics[width=7.5cm,angle=-0]{ManualFigs/alt_imp.eps}
+\caption{
+\label{label1r}same as left Figure, but BREP part only, and EIRENE re-run with more modern 3D visualisation graphics program, 2009
+\vspace{2.5cm} }
+\end{minipage}
+\end{figure}
+
+
+
+
+If these surfaces are transparent, they can be used to conveniently ``measure" fluxes at any position.
+But if they are reflecting, or absorbing, e.g. to define a complex shaped bounding surface in an otherwise simple grid, then
+some care is needed because the automatic cell volume evaluation, which is available in EIRENE for standard grid cells (voxels),
+may not correspond anymore to the cell volume accessible for test particles. Cell averaged quantities (divided by cell volume) may then not necessarily
+be scaled properly. For a possible work-around see NLERG option in input block 1, section \ref{sec2.1}.
+
+From the above it follows than in an EIRENE model
+surface elements building up the wall can be defined as bounded algebraic surfaces, with triangles as special case,
+i.e. as ``additional surfaces, BREP", or can be bounding surfaces of the voxels, if the ``grid of voxels" extends up to the real wall, or a combination of both.
+
+\medskip
+As can be seen from the flowcharts, all the geometrical
+calculations needed for tracing test flights and for estimating
+volume- and surface averaged tallies are compiled in a ``geometry
+block", which can easily be exchanged.
+In most cases (e.g., all
+installations of EIRENE outside FZ-J\"ulich) we load the most
+complete, fully 3D block ``GEO3D", which allows fully 3 dimensional spatial
+resolution. Lower dimensional (0D, 1D or 2D) are contained as special cases, e.g.
+by choosing only grid surfaces with proper symmetry.
+
+
+There is, in general, not a very large CPU benefit from
+running EIRENE with simpler specialized and geometry optimized blocks such as GEO2D or GEO1D for 2D
+or 1D models, respectively, because the saving in CPU costs in most
+cases is only around 10 - 20 \%, so these options have not been supported since the late eighties of the last century anymore.
+
+\paragraph{The geometry module of EIRENE\\}
+
+The following operations have to be executed by the block:
+\\Suppose the three dimensional
+computational volume is discretized by a mesh of $n$ surfaces
+\mbox{$S_i, i=1,2,...,n$ .} Each of these surfaces is defined by a
+set of $\Lambda_i$ equations (unbounded surfaces):
+\begin{equation}
+f_{\lambda}^i (x,y,z)   =   0 { },    \quad \quad \lambda   =
+1,2,..., \Lambda_i { }, \label{eq1.34}
+\end{equation}
+and, optional, for each unbounded surface $\lambda$  a subset of $ \Pi_{\lambda} $
+inequalities (e.g. for turning the unbounded surfaces into finite segments):
+\begin{equation}
+g_{\lambda , \pi }^i (x,y,z)  \le   0 { },    \quad \quad \pi   =
+1,2,..., \Pi_{\lambda} { }. \label{eq1.35}
+\end{equation}
+
+This means that for all unbounded surfaces $S_{i,\lambda}$ only the points, which fulfill all corresponding
+inequalities (\ref{eq1.35}) are regarded by EIRENE as valid parts of the finite surface element.
+
+Assume a test particle at position $ \vr_0 $ =
+(X0,Y0,Z0) moving with speed unit vector $ \vOmega_0 $
+= (VELX,VELY,VELZ). The block then has to provide the nearest
+intersection $ \vr_1$ of the straight line (``sample trajectory")
+\begin{equation}\nonumber
+G(t):
+ \vr_0   +   t   \vOmega_0
+\end{equation}
+amongst all possible intersections with the surfaces $S_i$. Moving
+the ``particle" from $\vr_0$ to $\vr_1$ and
+then repeating the block until the total track length $l$ as
+sampled from the transport kernel $T(l)$ (\ref{eq1.5}) is reached,
+allows to generate histories with all information available along
+the track to evaluate the estimators mentioned in section
+\ref{sec1.1}.
+\\
+In EIRENE $f$ and $g$ are general 2nd order (with linear surfaces
+as special case) algebraic equations of the form
+\begin{eqnarray}
+h(x,y,z)   =   a_0   +   a_1  \cdot  x   + a_2   \cdot  y   +
+a_3  \cdot  z  & + & a_4  \cdot  x^2   +   a_5  \cdot  y^2   +
+a_6  \cdot  z^2   +  \nonumber\\
+& + &  a_7  \cdot  xy   +   a_8  \cdot  xz   +
+a_9  \cdot  yz \label{eq1.36}
+\end{eqnarray}
+Hence in the geometrical block nothing else but second order
+equations
+\begin{equation}\nonumber
+t^2   +   p \cdot  t   +   q   =   0
+\end{equation}
+have to be solved
+accurately and as efficiently as possible. We note in passing that
+each of this surfaces may be transparent, purely absorbing, semi
+transparent or (partially) reflecting. Surface sources may be
+defined on each surface. These surfaces may be ``invisible" from
+one side and transparent, absorbing or reflecting from the other
+and each surface can ``operate switches" if intersected by a test
+flight, such as abandoning the evaluation of atomic or molecular
+reaction rates (entrance into vacuum regions) along the flight,
+abandoning evaluation of volume averaged responses (e.g., in some
+uninteresting regions) or abandoning geometrical calculations (for
+those surfaces, for which it can be known a priori that they will
+not intersect a flight path originating at a particular surface or
+in a particular cell).
+
+\newpage
+\section{time dependent mode of operation} \label{sec1.6}
+The section is currently rewritten. Please refer to the
+J.Nucl.Mater. paper: D.Reiter et al., Vol 220-222 (1995), 987-992.
+
+Details of options available in EIRENE for time dependent problems are also given in Section \ref{sec2.13}.
+
+The following issues have to be considered in case of time-dependent coupling schemes to external plasma fluid solvers,
+see figure \ref{flow03}:
+
+The coupling is explicit, hence CFL-type conditions for the
+time-step have to be obeyed. Here this means: the time-step must
+be shorter than the time between re-ionization and subsequent
+neutralization (in the volume or at the targets), because the fate
+of a particle during its intermediate ionized phase is not
+included in the explicit Monte Carlo procedure.
+
+The noise level for collision estimators increases with smaller
+time-steps. Hence: avoid all collision estimators in t-dependent
+mode.
+
+Please contact us for an update on this situation, if you wish to
+use that option.
+\newpage
+\section{non-linear effects: coupling to plasma fluid models} \label{sec1.7}
+The section is currently rewritten. Please refer to the report
+J\"ul-2872, Feb 1994, by G.Maddison and D.Reiter for details (ref.
+\cite{kn:Maddison94}).
+
+The back-reaction of the host medium (plasma) on the neutral (test) particle kinetics renders
+the combined plasma-neutral transport problem non-linear already for the Monte Carlo solution of the ``linear" Boltzmann equation.
+This non-linearity is not in the collision integral, but in the dependence of the collision parameters
+(collision rates, mean free pathes, ...) on the plasma parameters. It can be dealt with by iterating a solver for the host medium (plasma) and for the kinetic equation (neutrals).
+Such a CFD solver for 2D plasma flows is e.g. the B2-``BRAAMS" code, and its iterative coupling to the Monte Carlo kinetic code
+EIRENE was developed in the late eighties and early nineties of the last century, under NET-KFA contracts, involving three EFDA associates:
+the EIRENE group at FZ J\"ulich (formerly KFA), the CCFE (formerly AEA Culham) edge modelling group as well as ERM Brussels.
+
+
+The historically oldest option is the ``semi implicit" scheme, see fig. \ref{flow02}, because of
+the severe CPU time constrains in the late eighties of the last century, when B2-EIRENE was first
+developed, see Reiter et al.,  (\cite{kn:Net}).
+
+Later mostly the simpler ``explicit scheme" , fig. \ref{flow01} was employed in applications, which, although probably being much slower
+in ``code turn-around time", did require less attention by the person running the code, i.e. seemed to be
+numerically more robust, in particular in cold, recombining divertor plasma conditions.
+
+Since about 2009 also available (but apparently not used in 3rd party applications) is a combination of both methods:
+The selection between explicit and semi-implicit iteration is made possible individually for each ``stratum",
+such that now some parts of the problem can be run semi-implicitly, while others (notably the volume recombination
+neutral gas source) can remain explicit.
+
+All these coupling schemes treat the kinetic part of the model in quasi-steady-state approximation with the plasma state.
+This is justified as long as the gas dynamics is fast compared to the plasma dynamics, the latter being roughly specified by the
+time step $\Delta t$ used in the CFD plasma simulation.
+
+In particular in high density, low temperature detached divertor plasmas this ordering may not necessarily be correct any longer, and a
+time dependent mode of operation of EIRENE for the coupling may be required due to CFL constrains.
+
+The full exploration of this option,
+which was implemented into EIRENE in the mid nineties of the last century for ELM-simulations, has not yet happened  with respect to
+overall coupled code stability and ``turn around code run time". The flowchart \ref{flow03} illustrates this mode of operation.
+
+
+
+
+
+
+
+
+\newpage
+
+\begin{figure}[h]
+\includegraphics[width=16cm]{ManualFigs//Flowcharts/flowchart9.eps}
+%\epsfxsize=16truecm
+%\epsffile{Manualfigs/Flowcharts/flowchart9.eps}
+\caption{Explicit coupling scheme between EIRENE and a CFD code (for plasma flow):
+After each plasma code cycle (or time step) a full new Monte Carlo run is carried out
+\label{flow01}}
+\end{figure}
+
+%{\center
+%{\Huge "explicit coupling"}
+
+%\vspace{2truecm}
+
+%\unitlength1 true cm
+%\begin{picture}(16,9) \thicklines
+%
+%\put(7.0,6.5){\framebox(2,1.5)}
+%\put(7.2,7.5){\makebox(0,0)[tl]{LINDA}}
+%
+%\put(7.0,7.25) {\line(-1,0){3.5}}
+%\put(3.5,7.25) {\vector(0,-1){1.5}}
+%
+%\put(9.0,7.25) {\line(1,0){4.0}}
+%\put(13.0,7.25) {\vector(0,-1){4.5}}
+%
+%\put(2.5,4.25){\framebox(2,1.5)}
+%\put(2.7,5.25){\makebox(0,0)[tl]{INTER0}}
+%
+%\put(3.5,4.25) {\vector(0,-1){1.5}}
+%
+%\put(2.0,0.75){\framebox(3,2.0)}
+%\put(2.2,2.25){\makebox(0,0)[tl]{EIRENE}}
+%\put(2.2,1.75){\makebox(0,0)[tl]{nE Histories}}
+%
+%\put(11.0,0.75){\framebox(4,2.0)}
+%\put(11.7,2.25){\makebox(0,0)[tl]{BRAAMS}}
+%\put(11.7,1.75){\makebox(0,0)[tl]{nB timesteps}}
+%
+%\put(7.0,2.0){\framebox(2,1.5)}
+%\put(7.2,3.0){\makebox(0,0)[tl]{INTER1}}
+%
+%\put(7.0,0.0){\framebox(2,1.5)}
+%\put(7.2,1.0){\makebox(0,0)[tl]{INTER2}}
+%
+%\put(7.0,2.25) {\vector(-1,0){2.0}}
+%\put(5.0,2.25) {\line(-1,0){0.1}}
+%\put(4.9,2.25) {\line(0,-1){1.0}}
+%\put(4.9,1.25) {\vector(1,0){2.1}}
+%
+%\put(11.1,1.25) {\line(0,1){1.0}}
+%\put(11.1,2.25) {\vector(-1,0){2.1}}
+%\put(9.0,1.25) {\vector(1,0){2.0}}
+%\put(11.0,1.25) {\line(1,0){0.1}}
+%\end{picture}
+%}
+\newpage
+%{\center
+
+\begin{figure}[h]
+%\epsfxsize=16truecm \epsffile{Manualfigs/Flowcharts/flowchart7.eps}
+\includegraphics[width=16cm]{ManualFigs//Flowcharts/flowchart7.eps}
+\caption{``semi implicit" coupling scheme between EIRENE and a CFD code (e.g. BRAAMS B2 for plasma flow), involving internal
+re-iteration on sources terms without new Monte Carlo trajectories, much less frequent Monte Carlo runs than in ``explicit" mode of operation,
+but unresolved issues still re volume recombination contribution.  LINDA is a grid generating tool providing a numerical discretisation mesh which is common for B2 and EIRENE  \label{flow02}}
+\end{figure}
+%{\Huge "implicit coupling"}
+
+
+%\vspace{2truecm}
+
+%\unitlength1 true cm
+%\begin{picture}(16,12) \thicklines
+%
+%\put(7.0,10.5){\framebox(2,1.5)}
+%\put(7.2,11.5){\makebox(0,0)[tl]{LINDA}}
+%
+%\put(7.0,11.25) {\line(-1,0){5.75}}
+%\put(1.25,11.25) {\vector(0,-1){1.5}}
+%
+%\put(9.0,11.25) {\line(1,0){4.5}}
+%\put(13.5,11.25) {\vector(0,-1){5.75}}
+%
+%\put(0.25,8.25){\framebox(2,1.5)}
+%\put(0.45,9.25){\makebox(0,0)[tl]{INTER0}}
+%
+%\put(1.25,8.25) {\vector(0,-1){2.75}}
+%
+%\put(0.0,2.0){\framebox(5,3.5)}
+%\put(0.2,5.0){\makebox(0,0)[tl]{EIRENE}}
+%\put(2.5,3.5) {\line(0,1){2.0}}
+%\put(2.7,5.0){\makebox(0,0)[tl]{EIRENE}}
+%\put(2.7,4.5){\makebox(0,0)[tl]{A+M data}}
+%\put(0.0,3.5) {\line(1,0){5.0}}
+%\put(1.3,3.0){\makebox(0,0)[tl]{nE Histories}}
+%
+%\put(11.0,2.0){\framebox(5,3.5)}
+%\put(11.7,5.0){\makebox(0,0)[tl]{BRAAMS}}
+%\put(11.7,4.5){\makebox(0,0)[tl]{(each time-step)}}
+%\put(11.0,3.5) {\line(1,0){5.0}}
+%\put(11.7,3.0){\makebox(0,0)[tl]{nB time-steps}}
+%
+%\put(7.0,6.0){\framebox(2,1.5)}
+%\put(7.2,7.0){\makebox(0,0)[tl]{INTER3}}
+%
+%\put(7.0,4.0){\framebox(2,1.5)}
+%\put(7.2,5.0){\makebox(0,0)[tl]{INTER4}}
+%
+%\put(7.1,4.75) {\line(0,1){2.0}}
+%\put(7.0,4.75) {\line(1,0){0.1}}
+%\put(7.1,6.75) {\line(-1,0){2.2}}
+%\put(4.9,6.75) {\vector(0,-1){1.25}}
+%\put(4.9,6.75) {\line(0,-1){2.0}}
+%\put(4.9,4.75) {\vector(1,0){2.1}}
+%
+%\put(11.1,4.75) {\line(0,1){2.0}}
+%\put(11.1,6.75) {\vector(-1,0){2.1}}
+%\put(9.0,6.75) {\line(-1,0){0.1}}
+%\put(8.9,6.75) {\line(0,-1){2.0}}
+%\put(8.9,4.75) {\vector(1,0){2.1}}
+%\put(11.0,4.75) {\line(1,0){0.1}}
+%
+%\put(7.0,2.0){\framebox(2,1.5)}
+%\put(7.2,3.0){\makebox(0,0)[tl]{INTER1}}
+%
+%\put(7.0,0.0){\framebox(2,1.5)}
+%\put(7.2,1.0){\makebox(0,0)[tl]{INTER2}}
+%
+%\put(7.1,0.75) {\line(0,1){2.0}}
+%\put(7.1,2.75) {\vector(-1,0){2.1}}
+%\put(4.9,2.75) {\line(1,0){0.1}}
+%\put(4.9,2.75) {\line(0,-1){2.0}}
+%\put(4.9,0.75) {\vector(1,0){2.1}}
+%\put(7.0,0.75) {\line(1,0){0.1}}
+%
+%\put(8.9,2.75) {\line(0,-1){2.0}}
+%\put(8.9,0.75) {\line(1,0){2.2}}
+%\put(11.1,0.75) {\vector(0,1){1.25}}
+%\put(11.1,2.0) {\line(0,1){0.75}}
+%\put(11.1,2.75) {\vector(-1,0){2.1}}
+%\put(9.0,2.75) {\line(-1,0){0.1}}
+%\end{picture}
+%}
+\newpage
+%{\center
+
+\begin{figure}[h]
+%\epsfxsize=16truecm \epsffile{Manualfigs/Flowcharts/flowchart8.eps}
+\includegraphics[width=16cm]{ManualFigs//Flowcharts/flowchart8.eps}
+\caption{Time dependent coupling to plasma CFD code}
+\label{flow03}
+\end{figure}
+%{\Huge "time-dependent coupling", explicit}
+
+%\vspace{2truecm}
+
+%\unitlength1 true cm
+%\begin{picture}(16,10) \thicklines
+%
+%\put(7.0,7.75){\framebox(2,1.5)}
+%\put(7.2,8.75){\makebox(0,0)[tl]{LINDA}}
+%
+%\put(7.0,8.5) {\line(-1,0){4.5}}
+%\put(2.5,8.5) {\vector(0,-1){1.5}}
+%
+%\put(9.0,8.5) {\line(1,0){4.5}}
+%\put(13.5,8.5) {\vector(0,-1){5.5}}
+%
+%\put(1.5,5.5){\framebox(2,1.5)}
+%\put(1.7,6.5){\makebox(0,0)[tl]{INTER0}}
+%
+%\put(2.5,5.5) {\vector(0,-1){1.5}}
+%
+%\put(0.0,0.0){\framebox(5,4.0)}
+%\put(0.2,3.5){\makebox(0,0)[tl]{EIRENE}}
+%\put(0.2,3.0){\makebox(0,0)[tl]{Source 1 in $\Delta t$}}
+%\put(0.0,2.0) {\line(1,0){5.0}}
+%\put(0.2,1.5){\makebox(0,0)[tl]{Source 2 at t=0,}}
+%\put(0.2,1.0){\makebox(0,0)[tl]{from previous $\Delta t$}}
+%
+%\put(11.0,1.0){\framebox(5,2.0)}
+%\put(11.7,2.5){\makebox(0,0)[tl]{BRAAMS}}
+%\put(11.7,2.0){\makebox(0,0)[tl]{1 timestep}}
+%
+%\put(7.0,2.25){\framebox(2,1.5)}
+%\put(7.2,3.25){\makebox(0,0)[tl]{INTER1}}
+%
+%\put(7.0,0.25){\framebox(2,1.5)}
+%\put(7.2,1.25){\makebox(0,0)[tl]{INTER2}}
+%
+%\put(9.0,3.65) {\vector(-1,0){4.0}}
+%\put(5.0,3.65) {\line(-1,0){0.1}}
+%\put(4.9,3.65) {\line(0,-1){3.3}}
+%\put(4.9,0.35) {\vector(1,0){2.1}}
+%\put(7.0,0.35) {\line(1,0){4.1}}
+%\put(11.1,0.35) {\vector(0,1){0.65}}
+%\put(11.1,1.0) {\line(0,1){2.65}}
+%\put(11.1,3.65) {\vector(-1,0){2.1}}
+%\end{picture}
+%}
+
+%Source1 + Source2 : Stratified Source Sampling
+
+%\medskip
+
+%Source 1 : homogeneous in $\Delta t$
+
+%\medskip
+
+%Source 2 : bootstrapping from empirical distribution at t=0
+
+\newpage
+
+\begin{figure}{h}
+%\epsfysize=17truecm \epsffile{converg.ps}
+\includegraphics[height=20cm]{ManualFigs//converg.eps}
+\caption{Convergence of
+B2/EIRENE, measured by B2-residuals. Method: implicit coupling,
+method of ``saturated residuals", ref.\cite{kn:Maddison94}}
+\label{converg}
+\end{figure}
+
+\subsection{correlated sampling}
+A generic feature of coupled B2-EIRENE runs seems to be the loss of exponential decaying residuals (errors in B2 balances) down to machine precision,
+which, in stand alone B2 runs, is a signature of having achieved convergence.
+When coupled to EIRENE, at least with uncorrelated EIRENE trajectories between subsequent EIRENE calls (e.g.: between time steps
+in the explicit coupling code), residuals only saturate. The level of the saturated residuals then scales only with the square root
+of the number of EIRENE trajectories used per EIRENE cycle. Other convergence criteria then have to be defined, see \cite{kn:Maddison94}
+for an early discussion of this still unsettled subject. The typical behaviour of residuals in coupled B2-EIRENE runs
+(``saturated residuals'') is depicted in Figure \ref{converg}.
+
+Note:  strong (strict) convergence (exponentially decaying residuals down to machine precision)
+can be achieved even in the presence of Monte Carlo noise, as is regularly
+seen in simplified and dedicated test cases, and, actually, in the very first applications of EIRENE in coupled
+plasma-neutral transport problems in the late eighties of the last century \cite{kn:Gerhauser88a}, there to TEXTOR limiter configurations.
+This, however, seems to require the activation of the ``correlated sampling" options of EIRENE
+in order to provide positive statistical correlation between successive time-steps (or iterations).
+However, except for strongly reduced (simplified) applications presently the level of positive correlation implemented via the EIRENE flag NLCRR (input block 1) seems
+to be too low  to provide strong convergence on a regular basis and for full scale problems (e.g. the detached ITER divertor).
+In these latter, more complex cases the entropy producing collisions and surface interactions lead to a rapid de-correlation
+of trajectories, leading to a low level of correlation only, while, with the same algorithm, that level of correlation
+can be very high in geometrically and/or physically very simple cases.
+\\
+\medskip
+
+For this consider two plasma solutions obtained with a CFD plasma code coupled iteratively to EIRENE,
+at neighboring time-steps $1$ and $2$.
+The incremental change of the plasma solution due to the change in the Monte Carlo reaction term in the plasma flow equations is the
+difference between Monte Carlo source rates evaluated at time $1$ and time $2$.
+
+
+In more general terms a Monte Carlo estimate  of a difference $\Delta E$ between two different calculations $MC_1$ and $MC_2$ (due to either code version differences, due to a different physical incremental effects or due to iterative procedures with CFD solvers) is:
+\begin{eqnarray}\label{cov}
+\Delta E &=&  E(MC_1) - E(MC_2)  \nonumber \\
+\sigma^2(\Delta E) &=& \sigma^2(E(MC_1)) + \sigma^2(E(MC_2)) - 2 cov(E(MC_1),E(MC_2))
+\end{eqnarray}
+(This holds even for any statistical estimate of an incremental effect, independent of Monte Carlo procedures).
+Here $E(MC)$ is the Monte Carlo estimate of the expectation value (i.e. it is the Monte Carlo solution to the kinetic transport equation),
+and $\sigma^2$ is the corresponding statistical variance.
+It is clear from (\ref{cov}) that small effects $\Delta E$ (such as those due to slightly different code versions) can only by detected when the statistical correlation quantified by the covariance of the two estimators $cov$, between the two Monte Carlo runs, is made large (EIRENE option: NLCRR).
+
+\newpage
+
+\section{non-linear effects: neutral-neutral collisions}  \label{sec1.8}
+Neutral-neutral collisions make the Boltzmann collision integral
+non-linear (bi-linear). More generally, inclusion of any binary
+collisions between two test-particle species $i_0, j_0$, elastic
+or not, have this effect. Important examples are, of course,
+elastic self collisions $(i_0,i_0)_{el}$, e.g., $H_2-H_2$
+collisions leading to viscous effects in the gas, elastic cross
+collisions $(i_0,j_0)_{el}$, such as $H-H_2$ collisions, often
+leading to a heating of the molecular gas due to hot charge
+exchange atoms. Furthermore there may be relevant inelastic (chemical) binary
+particle collisions $(i_0,j_0)_{inel}$, such as $(H_2-H^+_2
+\rightarrow H+H_3^+)$ which is an important channel in hydrogen
+plasma chemistry. Finally, binary test particle interactions occur in case of radiation transport, 
+for example $(h\nu + H(1s) \rightarrow H(n=2))$, the
+absorption of resonance Lyman-alpha photons. In the intermediate regime between optically thin and (black body) LTE
+conditions the photons of a line from the discrete spectrum $h\nu$ become ``test particles'', 
+which interact with other test particles, here with the ground state H atom, via line absorption.
+In large dense divertor plasmas the ratio $H(1s)$ to
+$H(n=2)$ may have to be calculated consistently with the radiation
+field (a photon Boltzmann equation), competing electron impact
+collisions and neutral atom transport.
+
+Two methods of solution for this non-linear problem have been
+tested in EIRENE, 1) a parametrization of the single particle
+distribution functions involved in non-linear collision terms and
+an iterative scheme (see next subsection: BGK model collision
+terms), and 2) a Direct Monte Carlo Simulation (DMCS) technique
+based upon a swarm simulation, an operator splitting (``Streaming"
+and ``Collisions") and a random simulation of binary collisions in
+the swarm. Currently only the first of these two options is still
+being used. Despite its approximate character, it proved
+to be much more effective than the full DMCS method, for the cases
+relevant to fusion research applications studied so far. A simple
+estimate for the relevance of neutral-neutral gas collisions is
+given by the so called Knudsen number $Kn$:
+\begin{equation}
+Kn = \frac{\lambda_{el}}{L} = \frac{1}{\sqrt{2} \sigma_{el} n_N L}
+\end{equation}
+Here $\lambda_{el}$ is the mean free path for elastic neutral
+neutral collisions, $\sigma_{el}$ is the typical collision cross section (cm$^{2}$),
+$n_N$ the gas density (cm$^{-3}$) and $L$ is a characteristic dimension
+(cm). Fixing the hard sphere molecular diameter at $d=4 \cdot
+10^{-8}$ cm results in a typical cross section $\sigma_{el}$ of $(1-2) \cdot
+10^{-15}$ cm$^2$ to be used in this Knudsen number.  For a gas temperature  of
+300 K and a pressure of 1 Pa ($n_N=2.414 \times 10^{14} cm^{-3} )$ we then obtain:
+\begin{equation}
+\lambda_{el} (cm) = 1/(2.414\times 10^{14}\times 2\times 10^{-15}) \approx 2 ~cm
+\end{equation}
+In the BGK approximation to the Boltzmann collision integral (see below, Section \ref{sec1-bgk}) only an ``effective'' mean free path
+appears, because the collision rate $\nu_{BGK}$ is an effective (relaxation) rate only. When the common assumption of an velocity independent
+collision rate is made, then this rate is
+chosen such that the BGK model fixes just
+one single transport coefficient to a desired value in the continuum limit. E.g. either a certain viscosity, or  binary diffusion, or heat conduction, or any one
+other selected transport coefficient in the continuum limit can be matched, when the Chapman-Enskog procedure is applied to derive continuum
+equations (Navier Stokes equations) from the Boltzmann equation with that particular BGK binary collision model term.
+
+One default set of BGK collision parameters used in EIRENE is based upon
+the concept of ``diffusion volumes'' to provide (weakly temperature dependent) binary diffusion coefficients $D_{12}$ (for cross collisions, e.g. for He + H$_2$) or a viscosity coefficient $\mu$ (for self collisions) in the gas (see \cite{kn:Reiter94}). This choice results in a BGK collision rate coefficient $k(T)= k_0 T^{0.25}$  with the constant $k_0$ derived
+from such continuum limit considerations and the (experimentally determined) ``diffusion volumes''. Within this concept then a BGK - mean free path \cite{kn:Kotov-Dis} follows as:
+\begin{eqnarray}
+\lambda_{BGK} (cm) &= &\frac{\tilde{v}}{n \langle \sigma v\rangle} =  \frac{\sqrt{8T/\pi m}} {n k_0 T^{0.25}} \nonumber \\
+& = & L_0 \times T[eV]^{0.25} / n[10^{14} cm^{-3}]
+\end{eqnarray}
+where the proportionality factor $L_0$ (in cm) is typically in the range between 7 and 20 ($L_0 = 20$\,cm for D--D self collisions, $L_0 = 9.75$\,cm for D$_2$--D$_2$ self collisions and $L_0 = 8.7$\,cm for D$_2$--He cross collisions). $L_0$ is the BGK mean free path (in cm) in a gas
+at $T = 1$ eV and density $n =1 \times 10^{14}$ cm$^{-3}$.
+
+For the same conditions as above: $T=300$ K ($T=0.026$ eV) and a pressure of 1 Pa ($n_N=2.414 \times 10^{14} cm^{-3} )$, one then finds $\lambda_{BGK}\approx 1.6 ~cm$
+in a $D_2$ gas.
+
+
+
+For $Kn\ll 1$
+a neutral fluid model (diffusion approximation, Euler, or Navier Stokes, etc.) is more appropriate,
+while $Kn \gg 1$ leads to the (linear) free molecular flow regime, in which
+only the linear collisions terms (collisions of neutrals with surfaces and a
+given ``plasma'' host medium) are retained.
+\subsection{BGK approximation}\label{sec1-bgk}
+currently under development. Please contact us for details and
+status.
+
+See flowchart 9.1 (figure \ref{flow6}).
+
+Further details can be found in Ref. \cite{kn:Reiter96}.
+\bigskip
+
+The BGK approximation used in the EIRENE code to model neutral-neutral collisions,
+of both monatomic and multiple species gases,
+and its implementation via successive approximation of the non-linear Boltzmann equation,
+is a special case of the classical
+``test particle method" for solving the Boltzmann equation, as opposed to the ``direct Monte Carlo
+Simulation" method. The former was introduced in rarefied gas dynamics by J.K. Haviland, in 1961, see:
+J.K. Haviland, ``The solution of Two Molecular Flow Problems by the Monte Carlo Method",
+in: Methods in Computational Physics (Ed. Alder), Vol. 4, 1965, Academic Press.
+An early review and comparison of different Monte Carlo methods in kinetic theory, also comparing this particular
+``test particle method" with the DMCS scheme, is given by
+the report: N.A. Derzko, ``Review of Monte Carlo Methods in kinetic Theory", UTIAS Review No. 35 (April 1972)
+University of Toronto, Institute of aerospace studies, April 1972.
+(This review also includes a discussion of a third Monte Carlo scheme, the so called ``Integral evaluation method" of
+A. Nordsieck and B.L. Hicks.)
+\\
+In rarefied gas dynamics problems for fusion reactor design, in particular for the ITER divertor design, the Haviland method,
+but applied to a Boltzmann equation with a (non-linear) BGK collision integral,
+was first developed for the EIRENE code around 1995 (see Reiter et al. \cite{kn:Reiter96}),
+and it is routinely applied in computational divertor design studies for ITER since
+about 2004 by V. Kotov, A.K. Kukushkin, et al.
+
+The method of ``successive approximations" employed in EIRENE is illustrated best when using the integral (Fredholm) form
+of the Boltzmann equation......to be continued....
+
+
+\subsubsection{A: Self collisions}
+
+
+Consider first the elastic self collisions amongst particle species $A$.
+The BGK approximation to the Boltzmann collision integral reads:
+\begin{equation}
+\frac{\partial f_A(\vv)}{\partial t}_{BGK}=-\nu (f_A(\vv)-f^0(\vv))
+\end{equation}
+where
+\begin{equation}
+f^0(\vv)=\frac{n}{(2\pi mT)^{3/2}} \exp\left[-\frac{m(\vv-\vV)^2}{2T}\right]
+\end{equation}
+is a drifting Maxwellian distribution.
+
+The parameters $n, \vV, T$ in $f^0$ are uniquely determined by conservation of particles, momentum and
+energy in these elastic collisions.
+
+When the collision rate $\nu$ is independent of velocity $v$, as it is the case in the default model described
+above, then the parameters are simply given by the first velocity moments of $f_A$.
+
+A key feature for these velocity independent collision frequencies is the simple closed form solution for $f_A(\vv,t)$
+in a homogeneous medium, which translates into a particular simple realisation of this type of collisions in a Monte Carlo
+procedure. Let $g(\vv)=f_A(\vv,t=0)$, then
+\begin{equation}
+f_A(\vv,t)=g(\vv)e^{-\nu t} +\left(1-e^{-\nu t}\right) f^0(\vv)
+\end{equation}
+where the parameters $(n, \vv, T)$ in $f^0$ can be calculated directly as moments of $g(\vv)$
+(i.e. from the EIRENE default tallies PDEN, VDEN, EDEN.)
+
+When a velocity dependent collision frequency is used, e.g. to capture
+more than just one continuum limit transport coefficient correctly (or adjust to another Prantl number), then the solution of the
+initial value problem for the distribution function $f_A$ is not as simple any more, and the
+parameters $(n, \vv, T)$ in $f^0$ become fictitious local parameters related to the five moments of $f_A(\vv)$
+weighted with $\nu(\vv)$:
+\begin{equation}
+\int \nu(\vv) M_i(\vv) f^0(\vv) d^3(v) =  \int \nu(\vv) M_i(\vv) f_A(\vv) d^3(v) \ \ \ i=1,\dots 5
+\end{equation}
+Here $M_i(\vv)$ are the five collisional invariants: $M_1 = 1$ (particle conservation),
+$M_{2,3,4} = (v_x,v_y,v_z)$ (momentum conservation), and $M_5 = m/2 v^2$ (energy conservation).
+Storage for the rates on the right hand side of these relations is foreseen on the EIRENE ``BGK'' default tallies,
+and the Maxwellian integrals on the left hand side have to evaluated on a case by case basis, depending on the
+choice of the velocity dependence in $\nu(\vv)$ made.
+
+
+\subsubsection{B: Cross collisions}
+
+to be written...
+
+\subsubsection{B1: Cross collisions: electron or photon impact}
+
+In case of photon absorption processes, or other processes with no momentum (velocity)
+transfer, one virtual background species suffices:
+
+For example, in case of resonance (Lyman) line absorption with excitation $H(1s) \rightarrow H(2)$,
+the velocity distribution of H atoms does not change, and only a photon absorption rate
+coefficient (additional to the electron impact ionisation rate coefficient) needs to be
+provided, rather than a spectral parametrization of the Lyman radiation field, since only the density but not the
+distribution function of the H atoms is affected by the photons.
+
+From the photon point of view, a virtual parameterized H atom species (e.g. with flow velocity, temperature)
+is needed, because via Doppler effects the absorption line shape in the photon transport equation
+is very sensitive to the local atomic gas parameters   
+
+
+\subsubsection{Implementation, ``virtual particle'' concept, iteration}
+
+Self collisions between those particle species, which are
+followed by EIRENE (i.e., between any two ``test-particle''-species)
+can be included by using the iteration option NITER $> 1$  (input
+block 1), and by adding a proper collision process to the collision
+kernel (and its related total cross section $\Sigma_{nonlin}$ to the total cross
+section $\Sigma$):
+\begin{eqnarray}
+C &=& C_{lin} + C_{nonlin}\\
+\Sigma &=& \Sigma_{lin} + \Sigma_{nonlin}
+\end{eqnarray}
+Whereas $C_{lin}$ and $\Sigma_{lin}$ depend only upon parameters of the
+background medium (``bulk particles'', usually: electrons and ions),
+the kernels $C_{nonlin}$ and the rate coefficients $\Sigma_{nonlin}$ may
+also depend upon parameters of the test particles (atoms, molecules,
+test ions) themselves.
+
+If other non-linearities are already present in the model, such as those due to
+self-consistent feedback between the neutrals and the plasma state
+(see above: section \ref{sec1.7}), code-iterations between the test particle and bulk plasma parameters can
+also be used to simultaneously iterate on the neutral-neutral collision effects. Then NITER=1 suffices, i.e. only one single EIRENE
+cycle per plasma code step, to relax simultaneously
+both the neutral-neutral interaction and the neutral-plasma interaction non-linearities.
+
+In order to include such non-linear interactions in a case, a copy of
+the test-particle species cards (input block 4a, 4b or 4c) is put into
+the background species specification (input block 5), as a ``virtual'' species.
+E.g., if one
+wishes to include H - H elastic neutral-neutral collisions in a
+simulation, then a (virtual) species of H particles with a drifting Maxwellian distribution has to be
+specified as one additional background particle species (``bulk ions with charge
+state zero'', by abuse of language). During the
+iterative
+procedure, the parameters of the Maxwellian of this artificial background species
+(e.g. density, temperature, drift velocities in case of velocity independent collision rates)
+are those that have been
+obtained from the corresponding test particle tallies in the previous
+iteration. One iteration step ends by overwriting these parameters
+at the end of a cycle with the new values, in the post processing phase
+of each iteration cycle (module MODBGK.f) and by preparing the new collision rate coefficients
+for the next iteration cycle.
+
+
+
+\subsection{Direct Simulation (DMCS) of self-collisions}
+The DMCS method was implemented in EIRENE in the late eighties of the last century,
+but then abandoned due to its limitations to physically rather simple cases (e.g. no feedback
+with the consistent bulk plasma state, the often dominant non-linearity in fusion applications).
+Currently it is not developed nor supported  any more. Contact us for details and
+status. Further details can be found in Ref. \cite{kn:Behringer}
+
+\section{Radiation transport, photon gas simulations}
+% dissertation Veach, 1997
+The extensions of EIRENE towards radiative transfer problems, and also the material in this
+present short description, is largely based on the monograph by Oxenius: \cite{kn:Oxenius}.
+
+The theory of light and its interaction with matter is one of the
+best that physics can offer, and can predict virtually every
+observed phenomenon with great accuracy [Feynman, 1985, QED: The
+strange Theory of Light and Matter, Princeton University Press,
+Princeton]. In our simulations of radiation transport with the
+EIRENE code we assume a geometric optics model (i.e., essentially,
+``particle theory of light''), which is sufficient for all our
+purposes. Light is emitted, scattered, reflected and absorbed, but moves on
+straight lines between these events. I.e., a continuously varying
+index of refraction is not allowed, and we ignore most properties
+of light that depend on a wave or quantum model for their
+explanation (e.g. diffraction, or interference). However, the
+linear wave-optics phenomenon of polarization and the linear
+quantum optics phenomenon of fluorescence [absorption of a certain
+wavelength (line), and re-emission at another wavelength
+(line)] can conveniently be added to our linear geometric optics model.\\
+% Oxenius
+We are concerned with the kinetic theory of interacting particles
+and photons, where the behaviour of each species is governed by a
+kinetic equation: the kinetic equation for photons being nothing
+else but the well known equation of radiation transfer, i.e., the
+``strangely normalized photon-Boltzmann equation''. In contrast to
+plasma radiation (e.g., Bremsstrahlung) the radiation processes
+studied here are due to single, uncorrelated particles such that
+emission and absorption of the plasma is obtained by simple
+summation of all contributions of all individual particles. We
+therefore consider all particles as uncorrelated and in well
+defined one-particle states.\\
+
+For continuum radiation (bound-free or free-free) the frequency of
+the photon in the atoms rest frame may be replaced by the
+frequency in the lab. frame, because all cross sections are slowly
+varying functions of frequency. By contrast, for line-radiation
+due to bound-bound transitions, the Doppler effect must be taken
+into account in all quantities that vary rapidly as function of
+frequency, such as cross sections, line-profile, or redistribution
+functions
+%Feynman, Pomraining, Oxenius, Uhlenbusch,...
+
+The key atomic parameters for radiation transport are
+the Einstein (or Einstein-Milne) coefficients A$_{mn}$, B$_{mn}$
+and B$_{nm}$ of spontaneous emission, induced (stimulated) emission
+and absorption, respectively. We will discuss them here first for
+a gas of stationary atoms and include Doppler- and other line
+broadening effects later.
+
+For a thermal radiation field (temperature T) in a gas of atoms
+with density $n_1$ (lower state) and $n_2$ (upper state) the rate
+equation expressing balance between emission and absorption reads:
+\[n_1 B_{12} R_\nu(T)= n_2[A_{21}+B_{21} R_\nu(T)]\].
+
+$R_\nu(T)$ is a specific function characterizing the wavelength and
+temperature dependence of the
+thermal radiation field (i.e., the Planck-function). For example
+the specific intensity $I_\nu$
+(energy\-/area\-/time\-/solid-angle\-/frequency-interval) is often used, or the
+(angle)-integrated intensity $J_\nu = \int I_\nu d\Omega$, or the
+specific energy density $u_\nu = 1/c J_\nu$
+(energy\-/volume\-/frequency-interval), etc. Also the wavelength
+dependence may be given either using frequency $\nu$ (Hz), $\omega$
+(rad/s), wavelength $\lambda$ or energy $E = h \nu=\hbar \omega$.
+
+Depending upon all these choices the numerical factors in the
+definitions of the $B_{nm}$ coefficients (sometimes even in the
+$A_{nm})$ differ in the literature. For our purpose (Monte Carlo
+solution of the full radiation transfer equation) we need to
+define monochromatic mean free pathes for photons,
+rates and rate coefficients
+and cross sections for the individual processes.
+
+In order to take advantage of the analogy between radiation and particle
+transport equations as much as possible, we will choose the numerical constants
+in the Einstein coefficients such that these
+parameters have the same meanings and even the same units in both cases of
+radiation and particle transport.
+I.e., we will use the
+``absorption coefficient'' (better: ``extinction coefficient'',
+if scattering is allowed)
+$\alpha_{\nu} = n \sigma \equiv \Sigma_t$,
+(invers monocromatic mean free path), which directly corresponds to
+the ``total macroscopic cross section'' (dimension: 1/length) defined earlier for
+particle transport problems.
+
+
+% d.h. definitionen der b_nm muessen mit den formeln fuer sigma, etc...
+% consistent gemacht werden!!!!
+
+%weiter r.j.rutten, (rad.transf. in stellar atmospheres, hat gute
+%diskussion und saubere definitionen. insb. a_nm explizit, (4 pi
+%factor bereits drin, gibts auch anders, bereits bei a_mn,
+% bei uns: so wie dort.
+% aber vorsicht: feynman
+%hat I(omega) verwendet, deshalb einen faktor 2pi anders zwischen
+%a12 und b12 als rutten, rybiki,oxenius,wir.
+%frage: wir verwenden energie, nicht frequenz. ist da alles richtig?
+%uhlenbusch,einstein,chandrasekhar,.... verwenden u(nu), also
+% um faktor 4pi/c andere
+%relation zwischen a12 und b12.
+\subsection{Line shape options}
+Emission of photons from a particular line is simulated by sampling
+firstly the location of emission, and secondly the frequency and direction of emission.
+Spatial distribution of photon emission is treated in EIRENE in exactly the same way as
+for any other particle type (neutrals, ions), and actually using the same modules of code for that.
+Emission from the transition $i\rightarrow k$ from an upper state $i=nl$ of an atom is treated, by abuse  of language, as ``volume recombination
+source": The position is sampled from the spatial distribution $A_{ik}P^{nl}(\vec{r})$, which, because the Einstein
+emission coefficient $A_{ik}$ is constant, is the same as the spatial distribution $P^{nl}(\vec{r})$ of upper state particle density.
+.....
+Given the birth point $\vec{r}$ of the photon, and hence  all local parameters of the host medium at this point,
+the frequency $\nu$ (in fact: the energy $E=h\nu$) is sampled from the normalized line shape function $\Phi(\nu)$,
+....
+The following line shape options are currently available:
+\begin{itemize}
+\item{ISHAPE=0} $\delta$-profile: mono-energetic emission (not yet available for absorption)
+\item{ISHAPE=1} pure Doppler profile
+\item{ISHAPE=2} Lorentz profile, truncated at zero
+\item{ISHAPE=3} Doppler convoluted Lorentz  profile, i.e. Voight profile
+\item{ISHAPE=4} LORVDW: convoluted Lorentz and van der Waals pressure broadened profile
+\item{ISHAPE=5} Doppler broadened LORVDW profile
+\item{ISHAPE=6} normal Zeeman triplet, $\delta$-profile in each component
+\item{ISHAPE=7} Doppler broadened Zeeman-$\delta$-profile in each component
+\item{ISHAPE=8} Doppler broadened Zeeman-Stark-profile, 10 Lorentzian model, Rosato 2006
+\end{itemize}
+
+
+
+\newpage
+\section{Charged Particle Transport}
+EIRENE also follows charged particles since EIRENE$_{1987}$. The particle tracing is
+carried out in Subroutine FOLION.
+We refer to this ``default" ion transport model as the \emph{``minimal trace ion model"}, as opposed to
+refinements added only later, starting with Seebacher et al., (2012) \cite{kn:Seebacher}.
+The differences of the module FOLION to
+the module FOLNEUT for neutral particles (and photons) are:
+\begin{itemize}
+\item Motion is not along straight lines between events, but instead
+determined by drifts and forces due to the electro-magnetic fields.
+\item Time stepping is not of ``Poisson type" (exponentially distributed time steps), but with constant increments $\Delta t$,
+because the equation of motion has to be solved numerically, and this introduces already a discrete time-stepping anyway.
+\item after each time-step a Coulomb collision kernel is modelled,
+i.e., a diffusive step in velocity space.
+\item after each time-step a diffusion-step is modelled,
+i.e., a diffusive step in physical space (not yet fully written).
+\item ionized test particles which hit a surface see an electrostatic sheath potential,
+by which they are either reflected, slowed down or accelerated,
+depending on the sign of their charge relative to the sheath
+potential.
+\end{itemize}
+\subsection{Orbit integration}
+Orbit integration in a magnetized plasma is carried out to various orders
+of the small parameter $\delta = \rho/L$, ($\rho$:
+thermal gyro-radius, $L$ spatial length scale, e.g. gradient length of B-field, etc.)
+\subsubsection{Particles following the B-field}
+Simple, analytical, orbit integration, zeroth order in $\delta$.
+\paragraph{A: no electric field, no drifts\\}
+To zeroth order in the smallness parameter $\delta=\rho/L$ , i.e. for $\rho \simeq 0$,
+charged particle orbits are the magnetic field lines themselves.
+The magnetic field unit vector $\textbf{b}=\textbf{B}/|\textbf{B}|$ is provided as input
+vector in each cell of the computational
+grid, see input block 5 (section  \ref{sec2.5}). By default the magnetic field vector
+is taken to be constant within a grid cell, as are also the plasma (background) input tallies.
+
+With the  ``FEM" interpolation option (EIRENE$_{2006}$ and younger) iso-parametric elements can be used
+for interpolating input tallies in various grid options, and hence providing a magnetic field $\textbf{B}$ which continuously varies
+inside the grid cell (and then also providing non-zero derivatives such as grad|$\textbf{B}$| or B field curvature).
+
+In 2D cases the interpolation scheme currently ignores the third coordinate,
+even if it is curvilinear (e.g., NLTRA option, toroidal effects in a 2D setting).
+As a consequence toroidal curvature effects are not yet properly
+seen by charged particles in that case, and the corresponding toroidal curvature drift had been added
+separately in \cite{kn:Seebacher}.
+
+Default is $\textbf{b}=(0.,0.,1.)$ in each cell.
+The velocity vector of each test-ion followed by EIRENE is projected onto $\textbf{b}$
+in each grid cell along the trajectory. The velocity used for pushing the particle along
+its trajectory is only the parallel component $\vv_\|=(\vv \cdot \vb) \vb$
+\paragraph{B: \textbf{E} $\times$ \textbf{B} drift only\\}
+\noindent
+Only the \textbf{E} $\times$ \textbf{B} drift is included.
+This is still zeroth order in $\delta$.
+By modifying the electric field
+in each cell into one effective \textbf{E$^*$} field, some features of  guiding centre drifts
+(namely: the grad B drift) can be already captured at this level.
+\subsubsection{Guiding centre approximation}
+To first order in $\delta$ a number of so called guiding centre drifts arise. Their inclusion
+into EIRENE (module FOLION) is a later code extension, and not fully operational yet.
+Once this option is fully implemented, guiding centre currents will be derivable from EIRENE runs
+as volume tallies. These guiding centre currents, supplemented by the (divergence free)
+magnetisation currents, are one important component of the plasma currents.
+\subsection{Coulomb Collision Models}
+In this section conventional notation for masses of colliding charged test particles labeled $a$ and field (background) particles $b$
+is used:   $m_a, m_b$ for the masses,
+for atomic mass numbers
+$\mu_a, \mu_b$ and for reduced
+masses $\mu_{a,b}$ are used. Charge states are $Z_a, Z_b$. Particles of type $b$ are background particles,
+with a given velocity distribution $f(\vec v_b)$, whereas particles of type $a$ are individual test particles with a specific
+velocity $\vec v_a$.
+
+
+Four (velocity dependent) collision relaxation rates (inverse time) arise: The slowing down rate
+$\nu_s^{a,b}(v_a)$, the deflection (or transverse diffusion) rate $\nu_\perp^{a,b}(v_a)$, dispersion (or parallel diffusion) $\nu_\parallel^{a,b}(v_a)$ and the energy loss rate $\nu_\varepsilon^{a,b}(v_a)$
+
+Due to energy conservation in the binary Coulomb collisions one has \cite{kn:NRL}:
+\begin{equation}\label{eps1}
+\nu_\varepsilon^{a,b}(v_a) = 2 \nu_s^{a,b}(v_a) - \nu_\perp^{a,b}(v_a) - \nu_\parallel^{a,b}(v_a).
+\end{equation}
+I.e.: the energy transfer rate $\nu_\varepsilon^{a,b}$ is given via the ``slowing down rate" $\nu_s^{a,b}$, the transverse diffusion
+rate $\nu_\perp^b$ and the parallel diffusion rate
+$\nu_\parallel^b$, for any velocity $\vec v_a$ and any distribution $f_b(\vec v_b)$.
+
+Explicit results when $f(\vec v_b)$ is a Maxwellian distribution are given in most textbooks or lecture notes
+on plasma physics since many decades. In general: unless otherwise stated, notations here are as in \cite{kn:NRL}.
+The resulting rates (or: rate coefficients, if divided by target density $n_b$) have the same functional dependencies
+on test particle velocity (or energy) and background temperature as the ``Beam-Maxwellian rates" (or rate coefficients)
+of format H.3, H.4, H.5 for in-elastic collisions described in section 4 (atomic and molecular data input, \ref{sec2.4})
+
+\subsubsection{Simple Coulomb Collision Models}
+Strongly simplified Coulomb collision models are usually sufficient for molecular ions,
+because of the molecular (radical) ion's typically very short lifetime until further fragmentation (dissociative excitation,
+dissociative recombination, etc...) to atomic products. In order to roughly account for thermalization effects
+and background plasma
+cooling or momentum transfer,  the energy, parallel and the perpendicular velocity of such ions can be
+modified ``continuously" during particle orbit integration, hence approximating the velocity space
+diffusion (Fokker Planck equation) by mean values of energy and momentum of the test particle.
+There are two classes of simple collision models: deterministic and stochastic.
+\paragraph{A: Deterministic relaxation in velocity space}
+The energy and/or velocity of charged test particles are modified in a fully deterministic way along the
+particle trajectory. I.e.: along with orbit integration also energy, or certain velocity components
+are evolved according to ordinary (non-stochastic) differential equations, using appropriate relaxation times.
+\subparagraph{A1: Only energy relaxation}\hfill \\
+The simplest Coulomb Collision model is an averaged BGK-type
+relaxation of energy of test particles towards the mean energy of the Maxwellian
+background ions. In the earliest versions of the EIRENE code (mid
+eighties) it was originally based upon the hydrocarbon ion
+equilibration model given by Langer, \cite{kn:Langer} and it is a slight
+generalization thereof. The equation for the energy $\varepsilon_a$ of
+a test-ion $a$ in a field of background ions $b$ (field particles) with temperature
+$T_b$ is given as:
+\begin{equation}\label{eq.relax1}
+\frac{d\varepsilon_a}{dt}=-\nu_\varepsilon^{a,b} \cdot
+\varepsilon_a  \quad , \quad  \varepsilon_a(t=0)=\varepsilon_a^0
+\end{equation}
+In general this is a non-linear equation because the energy exchange collision
+rate (energy transfer rate) $\nu_\varepsilon^{a,b}$ depends on
+$\varepsilon_a$ itself. The full expression for $\nu_\varepsilon^{a,b}(v_a, T_b)$ is given below, it involves
+the Maxwell integral $\Psi$ and its derivative $\Psi'$, see below.
+
+
+
+\vspace{1cm}
+The \emph{limit of small test particle velocities} (as compared to thermal velocities of the
+field particles $b$), i.e.:
+\begin{equation}\label{xab}
+v_a\ll \sqrt{(2T_b/m_b)},\quad  \mbox{i.e.} \quad  x^{a/b} = \mu_bv_a^2/2kT_b \ll 1,
+\end{equation}
+as often particularly
+appropriate for molecular ions $a$,
+In this limit one has for the basic ``Spitzer
+rates" (loc. cit.):
+\begin{eqnarray}
+\nu_s^{a,b} & = & n_b Z_a^2 Z_b^2\lambda_{a,b}\cdot
+6.8 \times 10^{-8}~\frac{\mu_b^{1/2}}{\mu_a} \left(1+\frac{\mu_b}{\mu_a}\right)T_b^{-3/2}\\
+\nu_\perp^{a,b} & = & n_b Z_a^2 Z_b^2\lambda_{a,b}\cdot 1.4 \times 10^{-7}~\frac{\mu_b^{1/2}}{\mu_a} T_b^{-1/2}\varepsilon^{-1}  \\
+\nu_\parallel^{a,b} & = &  n_b Z_a^2 Z_b^2\lambda_{a,b}\cdot 6.8 \times 10^{-8}~\frac{\mu_b^{1/2}}{\mu_a} T_b^{-1/2}\varepsilon^{-1}
+\end{eqnarray}
+and hence, using Equation (\ref{eps1}):
+\begin{eqnarray}
+\nu_\varepsilon^{a,b} &=&  n_b Z_a^2 Z_b^2\lambda_{a,b}\cdot
+6.8 \times 10^{-8}~\frac{\mu_b^{1/2}}{\mu_a}\frac{1}{T_b^{1/2}}
+\left[2 \frac{1}{T_b}\left(1+\frac{\mu_b}{\mu_a}\right)-
+2\frac1\varepsilon_a-\frac1\varepsilon_a\right]\nonumber\\
+&& \\
+&=&\nu^c_\varepsilon +\nu^v_\varepsilon
+\end{eqnarray}
+with the ``constant" and ``variable" contribution $\nu^c_\varepsilon$ and $\nu^v_\varepsilon$, respectively, defined as
+\begin{eqnarray}
+\nu^c_\varepsilon &=& 2 n_b Z_a^2 Z_b^2\lambda_{a,b}\cdot
+6.8 \times 10^{-8}~\frac{\mu_b^{1/2}}{\mu_a}\frac{1}{T_b^{3/2}}
+\left[1+\frac{\mu_b}{\mu_a}\right] =
+\tilde{\nu}_\varepsilon\left[1+\frac{\mu_b}{\mu_a}\right] \\
+\nu^v_\varepsilon &=&2 n_b Z_a^2 Z_b^2\lambda_{a,b}\cdot 6.8 \times 10^{-8}~\frac{\mu_b^{1/2}}{\mu_a}\frac{1}{T_b^{3/2}} \left[-\frac{3T_b/2}{\varepsilon_a}\right]=\tilde{\nu}_\varepsilon\left[-\frac{3T_b/2}{\varepsilon_a}\right].
+\end{eqnarray}
+Using this decomposition of $\nu_\varepsilon^{a,b}$ in equation
+(\ref{eq.relax1}) we find:
+\begin{equation}\label{eq.relax2}
+\frac{d\varepsilon_a}{dt}=-\tilde{\nu}_\varepsilon\left[1+\frac{\mu_b}{\mu_a}\right] \cdot
+\varepsilon_a + \tilde{\nu}_\varepsilon\cdot \frac{3T_b}{2}
+\end{equation}
+
+Hence, in this small test particle velocity limit of $\varepsilon_a \ll 3/2T_b$,
+and introducing the mass correction factor $\delta_{a,b}=1+\mu_b/\mu_a$ the solution of this (now: linear) ordinary differential
+equation exists in closed form:
+\begin{equation}\label{eq.solut1}
+\varepsilon_a(t)=\varepsilon_a^0 \cdot
+\exp(-\tilde{\nu}_\varepsilon\delta_{a,b}  t)+
+\frac{3T_b}{2\delta_{a,b}}\left[1-\exp(-\tilde{\nu}_\varepsilon \delta_{a,b}t)\right]
+\end{equation}
+
+\textbf{Example: hydrocarbon ions \cite{kn:Langer}}
+
+With $\mu_b=1$ for protons, $\mu_a=16$ for CH$_4^+$, the Coulomb logarithm $\lambda_{a,b}\approx 10$,
+hence $2 (\lambda_{a,b}/\mu_a) \delta_{a,b} \approx 1.3$ and
+\begin{equation}
+{\nu}_\varepsilon = \tilde{\nu}_\varepsilon \delta_{a,b}\approx
+8.8 \times 10^{-8}~ n_b~T_b^{-3/2}
+\nonumber
+\end{equation}
+($n_b, T_b$ in $cm^{-3}$ and $eV$, resp.)
+which is the solution Eq. (11) given in \cite{kn:Langer} for thermalization
+of hydrocarbon ions in a Maxwellian hydrogen plasma. The relaxation is towards an energy
+$\varepsilon_p = 3/2 T_b/(1+1/16)$, which is (very slightly) lower only than the mean energy of the target Maxwellian, due to
+the particular velocity dependence in the energy relaxation rate in this small test particle velocity limit.
+
+And this is also exactly the approximation which was also used in EIRENE
+since about 1987 for all test ions traveling in a bath of background ions.
+
+\textcolor[rgb]{1.00,0.00,0.00}{To be done: in case of drifting Maxwellian background: first transform into plasma frame, such that stationary Maxw. background,
+then relax test particle energy in this frame, then transform back...
+To be done: isotropization: currently the ratio $v_{\perp B}$ to $v_{\parallel B}$ relative to the B-field  is preserved.}
+
+\vspace{1cm}
+The \emph{full expression for the energy relaxation frequency }$\nu_\varepsilon^{a,b}$, without the approximation of slow particles $a$, i.e. for all values of $x^{a/b}$ is:
+\begin{equation}\label{eps2}
+\nu_\varepsilon^{a,b}(x^{a/b}) =2 \left[\mu_a/\mu_b \Psi(x^{a/b}) - \Psi'(x^{a/b})\right] \nu_0^{a/b}
+\end{equation}
+where $x^{a/b}$ has been defined above, relation (\ref{xab})
+\begin{equation}
+\nu_0^{a,b}  =  n_b Z_a^2 Z_b^2\lambda_{a,b}\cdot 4 \pi  /(\mu_a^2~  v_a^3)
+\end{equation}
+ and the Maxwell integral $\Psi(x)$:
+\begin{eqnarray}
+\Psi(x) =& \frac{2}{\sqrt{\pi}}\int_0^x dy~e^{-y} \sqrt{y} &= {\rm erf(\sqrt{x})}-\frac{2}{\sqrt{\pi}}e^{-x}\sqrt{x}\\
+\Psi'(x) =& d\Psi/dx&= \frac{2}{\sqrt{\pi}}e^{-x}\sqrt{x}
+\end{eqnarray}
+With this more general expression for the collision frequency Equation (\ref{eq.relax1})
+can then only be integrated numerically  along the particle trajectory.
+However, other features of the collision process (velocity spreading, isotropization)
+then should be taken into account as well in order
+to ensure proper equilibration of energy $\varepsilon_a$ of test particles
+to $3/2 T_b$ of the fixed (stationary Maxwellian) background, as well as momentum conservation.
+Without such further velocity space effects
+a test-particle with energy $\varepsilon_a$ corresponds to the non-equilibrium situation
+of a plane parallel (mono-energetic) flux, and energy exchange of this non-equilibrium flux
+with a Maxwellian background
+vanishes at a critical energy $\varepsilon'$ distinct from from $3/2 T_b$.
+\cite[paragraph 19]{kn:Trubnikov}.
+\subparagraph{A2: BGK Coulomb-Collision operator}\hfill \\
+(Diploma Thesis Felix Reimold....)
+\subsubsection{The Fokker-Planck Collision Model}
+\paragraph {A:}
+A gyro averaged Fokker-Planck Coulomb Collision Model, which was originally
+developed for a stand alone trace impurity ion transport code DORIS
+\cite{kn:Doris,kn:Reiser98}. It was later accommodated as collision kernel in EIRENE.
+Distinct from various other drift-kinetic collision operators published already since the early
+nineties of the last century its range of applicability is rather limited.
+In its present version this collision operator ignores the difference between
+``real particle position" and the guiding center, hence, e.g. (classical) diffusion terms
+due to finite Larmor radius effects are not taken into account. The averaging over gyro angle
+limits this operator to
+distributions of relative velocities which are symmetric around the B-field line, i.e. essentially a 1D, parallel to B, situation,
+(but it allowed for distributions which may deviate from Maxwellians in this B-field direction,
+e.g. to accommodate parallel to B thermal force effects).
+See also: Thesis J. Seebacher, Univ. Innsbruck, 2009, and \cite{kn:Seebacher}.
+
+\paragraph{B: binary Monte Carlo collision procedure}
+A procedure similar to the ``Abe, Takizuka Coulomb collision algorithm" frequently used in PIC codes \cite{kn:Takizuka}
+is employed. This procedure consists in random sampling  a bulk (background) collision partner, and then to carry out
+an effective binary collision between these two particles. It hence can be viewed as Monte Carlo ``randomization"
+of the algorithm A, in which the integration over background distribution is carried out deterministically.
+
+
+\newpage
+\section{Parallelization of EIRENE Code}
+EIRENE is often coupled iteratively to finite volume or finite element CFD codes, which provide the host medium (plasma background).
+Then EIRENE is used as kinetic neutral particle transport module,
+providing, often in iterative mode, the reaction part in the overall
+``diffusion-advection-reaction problems. Non-linearly coupled fusion edge plasma flow
+simulations fall into that category.
+
+In contrast to the CFD codes, which can be parallelized using domain decomposition, EIRENE uses a particle partitioning technique,
+which is usually most suitable for Monte Carlo methods. Here the stochastic Monte Carlo trajectories are distributed on different processes,
+whereas the domain is the same on all processes. If there would be no stratified source sampling also typically involved, then
+this particle partitioning would provide a good load balancing automatically. Most 3D edge plasma applications using the EMC3-EIRENE
+hybrid Lagrangian CFD/Lagrangian kinetic Monte Carlo code are run in this (``embarrassingly parallel") single stratum mode of operation.
+
+However, the 2D hybrid finite-volume/Lagrangian Monte Carlo code B2-EIRENE is heavily resorting on ``stratified sampling". This means the primary sources
+of neutral particles are split by their physical or computational origin into ``sub-strata", and results are then linearly superimposed finally.
+This is, amongst others, a variance reducing technique, but it also leads to load balancing issues in the Monte Carlo part, even with particle partitioning.
+
+
+
+Different strategies have been implemented in the past
+for assigning strata to processes:
+
+problem specific matrix: PROCFORSTRA(NSTRA,0:NPRES-1),
+to be filled in startup routine pedist.f
+
+.... to be written....
+\newpage
+
+\section{EIRENE flow charts} \label{sec1.9}
+
+
+\begin{figure}[h]
+\includegraphics[width=14cm]{ManualFigs//Flowcharts/flowchart1.eps}
+%\epsfxsize=16truecm \epsffile{Manualfigs/Flowcharts/flowchart1.eps}
+\caption{Structure:
+EIRENE code}
+\label{flow1}
+\end{figure}
+
+\newpage
+
+\begin{figure}
+\includegraphics[height=20cm]{ManualFigs//Flowcharts/flowchart2.eps}
+%\epsfysize=22truecm \epsffile{Manualfigs/Flowcharts/flowchart2.eps}
+\caption{Flowchart:
+Program EIRENE}
+\label{flow2}
+\end{figure}
+
+\newpage
+
+\begin{figure}
+\includegraphics[height=22cm]{ManualFigs//Flowcharts/flowchart3.eps}
+%\epsfysize=22truecm \epsffile{Manualfigs/Flowcharts/flowchart3.eps}
+\caption{Flowchart 2: Subroutine INPUT}
+\label{flow3}
+\end{figure}
+
+\newpage
+\begin{figure}
+\includegraphics[height=22cm]{ManualFigs//Flowcharts/flowchart4.eps}
+%\epsfysize=22truecm \epsffile{Manualfigs/Flowcharts/flowchart4.eps}
+\caption{Flowchart 6: Subroutine MCARLO}
+\label{flow4}
+\end{figure}
+
+\newpage
+
+\begin{figure}
+\includegraphics[height=16cm]{ManualFigs//Flowcharts/flowchart5_new.eps}
+%\epsfysize=16truecm \epsffile{Manualfigs/Flowcharts/flowchart5_new.eps}
+\caption{Flowchart 6.3:
+Particle loop in subr. MCARLO.  Default volume averaged tallies are updated, ``on the fly" \emph{(per event)} in routines UPDATE,
+problem specific tallies
+for code-code interfacing (COPV(...), e.g. B2-EIRENE) in UPDCOP, specific tallies for non-linear BGK operators (BGKV(...)) in UPDBGK.
+Corresponding variances
+are updated \emph{(per history)} after completion of each trajectory in STATS1, STATS1\_COP, STATS1\_BGK.
+\textcolor[rgb]{1.00,0.00,0.00}{Addition/revision in 2012: Updating of linear functions of default tallies, \emph{per history}, in UPFCOP, e.g. for code coupling tally
+COPV.
+This makes redundant the specific statistical variance evaluation in STATS1\_COP}
+}
+\label{flow5}
+
+\end{figure}
+\newpage
+
+\begin{figure}
+\includegraphics[height=22cm]{ManualFigs//Flowcharts/flowchart6.eps}
+%\epsfysize=22truecm \epsffile{Manualfigs/Flowcharts/flowchart6.eps}
+\caption{Flowchart
+9.1: Iterative mode for neutral-neutral interactions}
+\label{flow6}
+\end{figure}
+\newpage

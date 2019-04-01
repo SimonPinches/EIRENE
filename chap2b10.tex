@@ -1,0 +1,436 @@
+\newpage
+\section{Data for additional volume and surface averaged tallies}
+\label{sec2.10}
+
+\medskip
+
+\noindent
+
+{\bf General remarks}
+
+\medskip
+
+\noindent  %
+
+There is a large number of preprogrammed ``default" volume or
+surface averaged tallies, which have been selected mainly to allow
+assessment of global particle and energy balances for all test
+particle species, as well as coupling of neutral gas and plasma
+transport equations. These tallies are estimated at each EIRENE
+run unless they are explicitly abandoned by the surface crossing
+switches ILSWCH (section \ref{sec2.3b}), or are turned off in
+input block \ref{sec2.11}.
+
+There is, however, a very general option to allow for estimation
+of many more moments of the test particle $\mu$ -space
+distribution function by resorting to appropriately prepared
+problem specific routines UPTUSR, UPCUSR and UPSUSR. These are
+described in more detail in section \ref{sec3.2}. Furthermore
+there are options to form algebraic expressions from tallies, and,
+since Eirene$_{2003}$ also for particle and energy flux spectra
+evaluated from the fluxes on selected surfaces or in selected
+cells of the computational grid. The input data in block 10
+described here are flags for activating and controlling these
+routines.
+
+Default: If the first card in this block: \texttt{NADVI, .....,}
+contains only zeros, then the rest of this block can/must be
+omitted.
+
+\medskip
+
+\noindent
+
+{\bf The Input Block}
+
+\medskip
+
+\noindent
+
+{\sl *** 10. Data for additional tallies}
+\begin{verbatim}
+NADVI  NCLVI  NALVI  NADSI  NALSI NADSPC
+\end{verbatim}
+{\sl * 10A. Data for additional track-length estimated volumetric
+tallies}
+\begin{verbatim}
+ DO 101 IADVI=1,NADVI
+     IADVE(IADVI)  IADVS(IADVI)  IADVT(IADVI)  IADVR(IADVI)
+     TXTTAL(IADVI,NTALA)
+     TXTSPC(IADVI,NTALA)  TXTUNT(IADVI,NTALA)
+ 101 CONTINUE
+\end{verbatim}
+{\sl * 10B. Data for additional collision estimated volumetric
+            tallies}
+\begin{verbatim}
+ DO 102 ICLVI=1,NCLVI
+     ICLVE(ICLVI)  ICLVS(ICLVI)  ICLVT(ICLVI)  ICLVR(ICLVI)
+     TXTTAL(ICLVI,NTALC)
+     TXTSPC(ICLVI,NTALC)  TXTUNT(ICLVI,NTALC)
+ 102 CONTINUE
+\end{verbatim}
+{\sl * 10C. Data for algebraic function of volumetric
+             tallies}
+\begin{verbatim}
+ DO 103 IALVI=1,NALVI
+     ALSTRNG
+     TXTTAL(IALVI,NTALR)
+     TXTSPC(IALVI,NTALR)  TXTUNT(IALVI,NTALR)
+ 103 CONTINUE
+\end{verbatim}
+{\sl * 10D. Data for additional surface crossing tallies}
+\begin{verbatim}
+ DO 104 IADSI=1,NADSI
+     IADSE(IADSI)  IADSS(IADSI)  IADST(IADSI)  IADSR(IADSI)
+     TXTTLS(IADSI,NTLSA)
+     TXTSPS(IADSI,NTLSA)  TXTUNS(IADSI,NTLSA)
+ 104 CONTINUE
+\end{verbatim}
+
+{\sl * 10E. Data for algebraic function of
+surface crossing tallies}
+\begin{verbatim}
+ DO 105 IALSI=1,NALSI
+     ALSTRNG
+     TXTTLS(IALSI,NTLSR)
+     TXTSPS(IALSI,NTLSR)  TXTUNS(IALSI,NTLSR)
+ 105 CONTINUE
+\end{verbatim}
+
+optional, in versions Eirene$_{2003}$ and younger:
+
+{\sl * 10F. Data for energy spectra}
+\begin{verbatim}
+ DO 106 IADSP=1,NADSPC
+     ISPSRF, IPTYP, IPSPZ, ISPTYP, NSPS, ISRFCLL, IDIREC
+     SPCMN, SPCMX, SPC_SHIFT, SPCPLT_X, SPCPLT_Y, SPCPLT_SAME
+     if (idirec.ne.0) SPCVX, SPCVY, SPCVZ
+ 106 CONTINUE
+\end{verbatim}
+
+{\bf Meaning of the input variables for additional volume and
+surface averaged Tallies}
+
+\medskip
+
+\noindent
+
+\begin{list}{ }{}
+\item[{\bf NADVI }] Total number of additional volume averaged,
+track-length estimated tallies
+\item[{\bf NCLVI }] Total number of
+additional volume averaged, collision estimated tallies
+\item[{\bf
+NALVI }] Total number of tallies defined as algebraic expressions
+of other volume averaged tallies
+\item[{\bf NADSI }] Total number
+of additional surface averaged tallies
+\item[{\bf NALSI }] Total
+number of tallies defined as algebraic expressions of other
+surface averaged tallies
+\item[{\bf NADSPC }] Total number of
+surface or cell averaged energy spectra
+\end{list}
+\subsection{Additional volume averaged tallies, tracklength estimator}\label{sec2.10A}
+\begin{list}{ }{}
+\item[{\bf IADVE }] flag
+for scaling factor for this tally (carried out in subroutine
+MCARLO)
+\begin{list}{ }{}
+\item[{= 1 }]
+scale tally per unit volume $[1/cm^3]$. The tally is printed and
+plotted in the units
+
+$[1/cm^3] \cdot [$units of $g^*] \cdot [cm] \cdot
+[$source strength FLUX$]$
+
+however, with FLUX converted to units $[1/s]$ (rather than input units $[Ampere]$).
+For the definition of the detector functions
+$g$ and $g^*$ see section \ref{sec3.2}, the variable FLUX is explained in
+input block no. \ref{sec2.7}. This scaling is default for ``density tallies" of particles, momentum and energy.
+\item[{= 2 }]
+scale tally per unit cell. Same units as above, however not per
+$cm^3$ but per cell instead.
+\item[{= 3 }]
+same as IADVE = 1, but with FLUX in Ampere, rather than 1/s.
+This scaling is default for ``source rate tallies", e.g. for particle, momentum and energy sources.
+\item[{= 4 }]
+same as IADVE = 2, but with FLUX in Ampere, rather than 1/s.
+\item[{else }]
+no re-scaling done, units as chosen in subroutine UPTUSR.
+\end{list}
+\end{list}
+Note: scaling of EIRENE default tallies 1 to 8 (particle and energy
+densities, respectively) and tallies 85 to 96 (momentum density) is as for IADVE=1 option. Scaling of all
+default source and sink terms is as for IADVE=3 option.
+
+If instead also for particle- or energy densities tallies 1 to 8 the scaling IADVE=3 would
+have been used, then, for example, particle densities would have
+been in units $[AMP \cdot s / cm^3]$ (``atomic charge density")
+rather than $[1/cm^3]$. Energy densities would have been in $[W
+\cdot s/ cm^3]$ rather than $[eV/cm^3]$.
+\begin{list}{ }{}
+\item[{\bf IADVS }]
+species index of default volume averaged tally,
+which is to be replaced by this additional track-length estimated tally.
+In case of tallies with no species index, IADVS must be set equal to 1.
+\item[{\bf IADVT }]
+number of default volume averaged tally,
+which is to be replaced by this tracklength estimated tally.
+\end{list}
+If either IADVS or IADVT is out of range, no default tally is
+replaced by this additional tally.
+\begin{list}{ }{}
+\item[{\bf IADVR }]
+If automatic re-scaling of volumetric tallies is performed (i.e.
+if NLSCL = TRUE), then re-scale this tally with EIRENE recommended
+factor FATM (IADVR = 1), FMOL (IADVR = 2) or FION (IADVR = 3) (see
+block 1 for the flag NLSCL and the variables FATM,FMOL,FION)
+\item[{\bf TXTTAL }]
+Text to label tally on numerical or graphical output.
+\item[{\bf TXTSPC }]
+Text describing the species of particles contributing for
+this tally in output routines.
+\item[{\bf TXTUNT }]
+Text describing the units of this tally in output routines.
+\end{list}
+\subsection{Additional volume averaged tallies, collision estimator}\label{sec2.10B}
+\begin{list}{ }{}
+\item[{\bf ICLVE }]
+as IADVE above, for collision estimated tally (subroutine UPCUSR).
+\item[{\bf ICLVS }]
+species index of default volume averaged tally,
+which is to be replaced by this collision estimated tally.
+In case of tallies with no species index, ICLVS must be set equal to 1.
+\item[{\bf ICLVT }]
+number of default volume averaged tally,
+which is to be replaced by this collision estimated tally.
+\end{list}
+If either ICLVS or ICLVT is out of range, no default tally is
+replaced.
+\begin{list}{ }{}
+\item[{\bf ICLVR }] as IADVR above, for collision estimated tally
+(subroutine UPCUSR).
+\item[{\bf TXTTAL, TXTSPC, TXTUNT }]: as above
+\end{list}
+\subsection{Algebraic expression in volume averaged tallies}\label{sec2.10C}
+\begin{list}{ }{}
+\item[{\bf ALSTRNG }] character string which is interpreted as an
+algebraic expression in some volume averaged tallies. An operand
+$\langle i,j \rangle$ stands for tally number $j$, first (species) index $i$, in
+tables \ref{tab1} (input tallies) and \ref{tab2} (output tallies) . Note that the first index for
+tallies with no species index must read 1, and the tally number of input tallies must be negative.
+Example: $\langle 1,-1\rangle$ for the electron temperature tally, $\langle 2,3\rangle$ for the particle density of test ion species
+no. IION=2 . Expressions $\langle c\rangle$
+with an integer or real constant $c$ are interpreted as scalars. The
+string may contain an arbitrary (but $\le$ 20) number of operands,
+and of operators +, -, *, /, **, and of properly nested parentheses
+(...).
+
+Standard deviations are not available, generally, for algebraic tallies.
+For linear combinations of tallies it is, in principle, possible to obtain also the standard deviations,
+this evaluation of error estimates for such combinations of tally is, however, is currently  carried
+out only in a proprietary code segment (available from the author).
+
+E.g., the total electron particle source due to test particle - plasma
+interaction in units: \#/s/m$^3$ can be obtained by the line:
+
+($\langle 1,7\rangle +\langle 1,12\rangle +\langle 1,17\rangle) * \langle 1.e6\rangle /\langle 1.6022e-19\rangle$
+
+in code versions older than 2002 (see tables in section
+\ref{sec.tables-old}), and the same expressions in versions 2002
+and younger, i.e. after implementation of photons as further
+species type (and the related default tallies, tables in section
+\ref{sec.tables-new}):
+
+($\langle 1,9\rangle+\langle 1,15\rangle+\langle 1,21\rangle) * \langle 1.e6\rangle/\langle 1.6022e-19\rangle$
+
+and it would be stored on the tally: ``ALGV" with the first
+(labelling) index IALVI.
+
+Note that the cell volume array VOL is regarded as a volume averaged
+tally, by abuse of language (tally number = -14, see table \ref{tab1}).
+\item[{\bf TXTTAL, TXTSPC, TXTUNT }]
+as above.
+\end{list}
+\subsubsection{frequently used algebraic tallies}
+\begin{itemize}
+\item{mean energy}\\
+The mean energy (eV) of a test particle species is the ratio of its total energy density (= total pressure) and particle density.
+The algebraic tally
+$\langle i,5\rangle/\langle i,1\rangle$ is that ratio estimate, here exemplarily for atomic species no. IATM=$i$.
+Similarly, for molecular species IMOL=$k$, this expression would
+read: $\langle k,6\rangle/\langle k,2\rangle$
+
+\item{kinetic temperature}\\
+The kinetic temperature $T_t$ (eV)  is defined such that $3/2  \ T_t$ is the mean thermal energy. The kinetic temperature
+is obtained by first subtracting the dynamic pressure (contribution from drift motion) from the total energy density,
+and then by rescaling.
+\begin{eqnarray} \nonumber
+(\langle i,5\rangle&-&\langle 1.8792e+35\rangle/\langle 2.0\rangle \\
+&*&(\langle i,85 \rangle*\langle i,85\rangle+\langle i,89\rangle*\langle i,89\rangle+\langle i,93\rangle*\langle i,93\rangle)\\
+&/&\langle i,1\rangle)/\langle i,1\rangle/\langle 1.5\rangle
+\end{eqnarray}
+Here the subtracted part
+$\langle 1.8792e+35\rangle/\langle 2.0\rangle*
+(\langle i,85\rangle*\langle i,85\rangle+
+ \langle i,89\rangle*\langle i,89\rangle+
+ \langle i,93\rangle*\langle i,93\rangle)/
+ \langle i,1\rangle)$ is the dynamic pressure, scaled to eV\ cm$^3$ units
+of atoms, with atomic weight $\langle 2.0\rangle$ in atomic mass units in this example.
+The numerical factor $1.8792e+35$ is, in EIRENE unit conversion variables, is given
+by CVELI2/AMUA/AMUA, (defined in SETCON.F), and the momentum density tallies 85, 89 and 93 are in g cm/s cm$^{-3}$.
+\end{itemize}
+\subsection{Additional surface averaged tallies}\label{sec2.10E}
+
+as in sub-block 10A or 10B, but for surface averaged tallies rather than
+volume averaged tallies.
+
+
+Note: for surface averaged tallies collision and track-length
+estimators are identical, see section \ref{sec3.2.4}.
+
+\subsection{Algebraic expression in surface averaged tallies}\label{sec2.10F}
+
+
+
+as in sub-block 10C, but for surface averaged tallies rather
+than volume averaged tallies. The corresponding tally numbers are listed
+in table \ref{tab3}.
+
+There is one generalization available here compared to the options
+for volume tallies, which permits algebraic expressions not only
+between different complete surface tallies (expression evaluated
+for all NLIMPS surfaces), but also between different individual
+surfaces.
+
+If the first index I is out of range, i.e., larger than the
+first dimension N1 of the tally J as listed in table \ref{tab3},
+then the operand $\langle I,J\rangle$ identifies the following estimate:
+
+surface index $ILIMPS = (I-N1-1)/N1 + 1 $
+
+species index $ISPZ = I - ILIMPS \cdot N1 $
+
+The other way round: in order to identify species ISPZ and surface no. ILIMPS
+for a particular tally J,
+on must set:
+
+first operand $I = ILIMPS \cdot N1 + ISPZ  $
+
+second operand  J
+
+The algebraic expression is stored on the ALGS tally for all
+surfaces ILIMPS, which occurred in at least one of the operands.
+
+Example: let there be up to 3 atom species (N1=NATM=3), and assume, that
+additional surfaces no. 7,8,9,10 and 11 comprise the pump.
+Let furthermore IATM=2 stand for helium atoms.
+The total pumped flux of helium atoms from these surfaces is
+the difference between incident and re-emitted He particle fluxes,
+summed over these 5 surfaces. This is evaluated
+by the string:
+
+$\langle 23,1\rangle-\langle 23,2\rangle+\langle 26,1\rangle-\langle 26,2\rangle+\langle 29,1\rangle-$
+
+$\langle 29,2\rangle+\langle 32,1\rangle-\langle 32,2\rangle+\langle 35,1\rangle-\langle 35,2\rangle$
+
+The value found for this expression is stored on ALGS (..,ISURF),
+and is the same for ISURF=7, =8, =9, =10 or =11, and zero for all
+other surfaces.
+
+\subsection{Energy spectra in selected cells or surfaces}\label{sec2.10G}
+Additional, spectrally resolved, tallies, either surface averaged or cell based.
+Printout of these spectra is activated in input block 11a, flag NSPCPR.
+
+\begin{list}{ }{}
+\item[{\bf ISRFCLL}] flag to choose between surface and cell averages.
+
+=0:  surface averaged spectrum
+
+=1:  volume (cell) averaged spectrum
+\item[{\bf ISPSRF }]
+number of surface or cell, for which spectra are to be evaluated.
+Positive for additional surfaces, negative for non-default standard
+surfaces.
+\item[{\bf IPTYP }]
+Type of particle (0 for photons, 1 for atoms, 2 for molecules,
+3 for test ions, 4 for bulk ions)
+\item[{\bf IPSPZ }]
+species index of particle, within the specified type-category.
+If IPSPZ=0, then sum over species, for this type of particles.
+
+
+\item[{\bf ISPTYP }]
+type of spectrum:
+
+\textbf{for surface averaged spectra (i.e. ISRFCLL=0):}
+
+flux-spectrum (ISPTYP=1) , [Amp/eV]
+
+or energy-flux spectrum (ISPTYP=2) [Watt/eV]
+
+Currently only surface ``incident fluxes". Spectra for surfaces ``emitted fluxes" (outgoing)
+are not yet available.
+
+\textbf{for cell averaged spectra (i.e. ISRFCLL=1):}
+
+{\bf case a:} no direction specified: IDIREC=0
+
+energy distribution (ISPTYP=1) , [cm**-3/eV]
+
+energy weighted energy distribution (ISPTYP=2) [eV*cm**-3/eV]
+
+velocity weighted energy distribution (ISPTYP=3) [cm/s *cm**-3/eV]
+
+{\bf case b:} direction specified: IDIREC=1
+
+
+velocity distribution along specified direction, binned in energy units (ISPTYP=1) , [cm**-3/eV]
+
+energy weighted velocity distribution along specified direction, put into bins in energy units
+(ISPTYP=2) [eV*cm**-3/eV]
+
+velocity weighted velocity distribution along specified direction,
+put into bins in energy units (ISPTYP=3) [cm/s *cm**-3/eV]
+
+
+\item[{\bf IDIREC, SPCVX, SPCVY, SPCVZ}]
+
+These flags are only for cell averaged spectra (otherwise: not in use):
+
+=0: no direction specified
+
+=1: cell averaged spectra are along direction SPCVX, SPCVY, SPCVZ. The vector
+defining this direction is normalized internally.
+
+\item[{\bf NSPS, SPCMN, SPCMX }] Number of equidistant energy
+bins (eV) for spectra. The contributions with energies below the
+minimum energy SPCMN are stored in bin no. 0, those with energies
+above the maximum energy SPCMX are stored in bin NSPS+1.
+
+NSPS $> 0$:  The bins are set equidistant in linear energy scale
+
+NSPS $< 0$:  $\mid$NSPS$\mid$ is used for the number of bins, but the bins are set equidistant
+in a logarithmic energy scale (option added by X.B., 2017). Same as for NCHENI parameter in input
+block 12 for (post processed) line of sight integrated and spectrally resolved data.
+
+\item[{\bf SPC$\_$SHIFT }] shift spectrum by SPC$\_$SHIFT (eV) in printout and plots.
+
+\item[{\bf SPCPLT$\_$X, SPCPLT$\_$Y }] SPCPLT$\_$X is a flag foreseen to control the
+X axis (independent variable) in a plot of the spectrum. (X: e.g. the no. of an energy bin).
+This flag is currently not in use.
+
+SPCPLT$\_$Y is a flag to control the
+Y axis (dependent variable) in a plot of the spectrum. (Y: e.g. particle or energy flux in an energy bin).
+IF SPCPLT$\_$Y $>$ 0: logarithmic scale for Y axix, otherwise: linear scale for Y axix.
+.
+
+\item[{\bf SPCPLT$\_$SAME }] plot this spectrum into previous
+frame
+\end{list}
+The surface flux spectra are printed together with the other
+surface averaged tallies, for those surfaces, which are selected
+for printout in sub-block 11A. They are all automatically plotted
+as soon as at least one further volume tally plot (input sub-block
+11B.2) is selected.
