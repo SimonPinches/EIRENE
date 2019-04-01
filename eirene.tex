@@ -72,6 +72,7 @@
 
 \setcounter{secnumdepth}{3}
 \setcounter{tocdepth}{3}
+\graphicspath{{figures/}}
 \begin{document}
 
 
@@ -110,7 +111,7 @@
 \begin{center}
 \begin{figure} \label{eirene}
 \centering
-\includegraphics[width=8cm]{ManualFigs/manual00.eps}
+\includegraphics[width=8cm]{manual00}
 %  old version
 %\epsfxsize=15truecm
 %\epsffile{manual00.ps}
@@ -164,14 +165,14 @@ A short overall summary of the code package, including some historical notes, is
 \pagenumbering{Roman}
 \newpage
 \renewcommand\thechapter{\Roman{chapter}}
-\include{foreword}
+\include{tex/foreword}
 
 \newpage
 
 \tableofcontents
 
 
-\include{intro}
+\include{tex/intro}
 
 \newpage
 % to make sure that bookmarks stay correct in pdf:
@@ -184,53 +185,53 @@ A short overall summary of the code package, including some historical notes, is
 %\renewcommand{\thesubsubsection}{\thesection.\thesubsection.\arabic{subsubsection}}
 \pagenumbering{arabic}
 \setcounter{chapter}{0}
-\include{chap1}
+\include{tex/chap1}
 
-\include{chap2}
+\include{tex/chap2}
 
-\include{chap2b1}
+\include{tex/chap2b1}
 
-\include{chap2b2}
+\include{tex/chap2b2}
 
-\include{chap2b3a}
+\include{tex/chap2b3a}
 
-\include{chap2b3b}
+\include{tex/chap2b3b}
 
-\include{chap2b4}
+\include{tex/chap2b4}
 
-\include{chap2b5}
+\include{tex/chap2b5}
 
-\include{chap2b6}
+\include{tex/chap2b6}
 
-\include{chap2b7}
+\include{tex/chap2b7}
 
-\include{chap2b8}
+\include{tex/chap2b8}
 
-\include{chap2b9}
+\include{tex/chap2b9}
 
-\include{chap2b10}
+\include{tex/chap2b10}
 
-\include{chap2b11}
+\include{tex/chap2b11}
 
-\include{chap2b12}
+\include{tex/chap2b12}
 
-\include{chap2b13}
+\include{tex/chap2b13}
 
-\include{chap2b14}
-
-\newpage
-
-\include{chap3}
+\include{tex/chap2b14}
 
 \newpage
 
-\include{chap4}
+\include{tex/chap3}
 
-\include{tables}
+\newpage
 
-%\include{commons}
+\include{tex/chap4}
 
-%\include{references}
+\include{tex/tables}
+
+%\include{tex/commons}
+
+%\include{tex/references}
 \addtocontents{toc}{\bf References}
 \bibliography{eirene}
 \bibliographystyle{unsrt}
