@@ -1964,7 +1964,6 @@ T_{Sh} =  T_{mpSh}(\vr_{mpSh}, \vv_{mpSh} \rightarrow \vr_{eSh}, \vv_{eSh}) \cdo
 with the subscripts $mpSh$ and $eSh$ labelling the plasma side magnetic pre-sheath entrance and the electrostatic sheath entrance, respectively.
 
 \begin{figure}[h]
-%\epsfysize=9truecm \epsffile{magn_pre_sheath.eps}
 \includegraphics[height=9.0cm]{magn_pre_sheath}
 \caption{Transition region between fluid plasma (CFD) and wall surface, schematic. The plasma flow is specified by CFD models
 at the entrance surface of the magnetic pre-sheath MP (taken normal to the magnetic field $\vec{B}$). $\Delta \Phi$ is the fraction of the total
@@ -2544,8 +2543,6 @@ overall coupled code stability and ``turn around code run time". The flowchart \
 
 \begin{figure}[h]
 \includegraphics[width=16cm]{flowchart9}
-%\epsfxsize=16truecm
-%\epsffile{flowchart9.eps}
 \caption{Explicit coupling scheme between EIRENE and a CFD code (for plasma flow):
 After each plasma code cycle (or time step) a full new Monte Carlo run is carried out
 \label{flow01}}
@@ -2602,7 +2599,6 @@ After each plasma code cycle (or time step) a full new Monte Carlo run is carrie
 %{\center
 
 \begin{figure}[h]
-%\epsfxsize=16truecm \epsffile{flowchart7.eps}
 \includegraphics[width=16cm]{flowchart7}
 \caption{``semi implicit" coupling scheme between EIRENE and a CFD code (e.g. BRAAMS B2 for plasma flow), involving internal
 re-iteration on sources terms without new Monte Carlo trajectories, much less frequent Monte Carlo runs than in ``explicit" mode of operation,
@@ -2689,7 +2685,6 @@ but unresolved issues still re volume recombination contribution.  LINDA is a gr
 %{\center
 
 \begin{figure}[h]
-%\epsfxsize=16truecm \epsffile{flowchart8.eps}
 \includegraphics[width=16cm]{flowchart8}
 \caption{Time dependent coupling to plasma CFD code}
 \label{flow03}
@@ -2756,7 +2751,6 @@ but unresolved issues still re volume recombination contribution.  LINDA is a gr
 \newpage
 
 \begin{figure}{h}
-%\epsfysize=17truecm \epsffile{converg.ps}
 \includegraphics[height=20cm]{converg}
 \caption{Convergence of
 B2/EIRENE, measured by B2-residuals. Method: implicit coupling,
@@ -3440,7 +3434,6 @@ to be filled in startup routine pedist.f
 
 \begin{figure}[h]
 \includegraphics[width=14cm]{flowchart1.eps}
-%\epsfxsize=16truecm \epsffile{flowchart1}
 \caption{Structure:
 EIRENE code}
 \label{flow1}
@@ -3450,7 +3443,6 @@ EIRENE code}
 
 \begin{figure}
 \includegraphics[height=20cm]{flowchart2}
-%\epsfysize=22truecm \epsffile{flowchart2.eps}
 \caption{Flowchart:
 Program EIRENE}
 \label{flow2}
@@ -3460,7 +3452,6 @@ Program EIRENE}
 
 \begin{figure}
 \includegraphics[height=22cm]{flowchart3}
-%\epsfysize=22truecm \epsffile{flowchart3.eps}
 \caption{Flowchart 2: Subroutine INPUT}
 \label{flow3}
 \end{figure}
@@ -3468,7 +3459,6 @@ Program EIRENE}
 \newpage
 \begin{figure}
 \includegraphics[height=22cm]{flowchart4}
-%\epsfysize=22truecm \epsffile{flowchart4.eps}
 \caption{Flowchart 6: Subroutine MCARLO}
 \label{flow4}
 \end{figure}
@@ -3477,7 +3467,6 @@ Program EIRENE}
 
 \begin{figure}
 \includegraphics[height=16cm]{flowchart5_new}
-%\epsfysize=16truecm \epsffile{flowchart5_new.eps}
 \caption{Flowchart 6.3:
 Particle loop in subr. MCARLO.  Default volume averaged tallies are updated, ``on the fly" \emph{(per event)} in routines UPDATE,
 problem specific tallies
@@ -3495,7 +3484,6 @@ This makes redundant the specific statistical variance evaluation in STATS1\_COP
 
 \begin{figure}
 \includegraphics[height=22cm]{flowchart6}
-%\epsfysize=22truecm \epsffile{flowchart6.eps}
 \caption{Flowchart
 9.1: Iterative mode for neutral-neutral interactions}
 \label{flow6}
