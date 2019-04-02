@@ -1,0 +1,8 @@
+image: blang/latex
+
+build:
+  script:
+    - latexmk -pdfdvi eirene.tex
+  artifacts:
+    paths:
+      - "*.pdf"
