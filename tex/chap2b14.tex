@@ -1,15 +1,10 @@
-\newpage
 \section{Data for interfacing Subroutine ``INFCOP" (example)} \label{sec2.14}
 
 \medskip
 
-\noindent
-
 {\bf General remarks}
 
 \medskip %
-
-\noindent
 
 Data in input block 14 control additional input for an EIRENE run.
 
@@ -49,8 +44,6 @@ of INFCOP is available from FZ J\"ulich.
 
 \medskip
 
-\noindent
-
 {\sl ***14. Data for additional input tallies, in stand alone mode}
 \begin{verbatim}
 IF (NMODE.EQ. 0) THEN
@@ -67,8 +60,6 @@ ELSEIF (NMODE.NE. 0) ... see paragraphs below
 {\bf Meaning of the Input Variables of block 14 in stand alone mode}
 
 \medskip
-
-\noindent
 
 \begin{list}{ }{}
 \item[{\bf NAINI }]
@@ -202,7 +193,6 @@ and their statistical errors is case specific and done in interfacing module EIR
  $EIEL$ is the electron energy source  resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no. 32.
  \end{itemize}
 
-\noindent
 The data transferred from B2 into EIRENE are either from Common BRAEIR, (a module common to both B2 and EIRENE)
 or from the stream FORT.31. Due to the ``staggered grid" discretization in the B2 code,
 there as cell centred as well as surface centred quantities.
@@ -234,8 +224,6 @@ as well as to derive recycling target fluxes and boundary conditions from them.
 {\bf The Input Block}
 
 \medskip
-
-\noindent
 
 {\sl ***14. Data for interfacing Subroutine ``INFCOP" }
 \begin{verbatim}
@@ -277,8 +265,6 @@ DO 50 IAOT=1,NAOTB
 ``INFCOP"}
 
 \medskip
-
-\noindent
 
 \begin{list}{ }{}
 \item[{\bf LSYMET }]
@@ -618,10 +604,8 @@ the positive poloidal grid coordinate direction.
 
 \medskip
 input block 14: unchanged, as compared to section \ref{sec2.14.1}\\
-\noindent
 
 \medskip
-\noindent
 Additional data to those described in previous sub-section \ref{sec2.14.1} are read,
 basically to account for non-orthogonal grids and for direct transfer of surface recycling
 boundary conditions into EIRENE.
@@ -666,7 +650,6 @@ one north- and one east surface.
 \subsection{Version B2-EIRENE-wide-grid (2011 and later)} \label{sec2.14.3}
 \medskip
 
-\noindent
 Further adaptations in case of ``wide grid" option, to accommodate   mixed fluxes (e.g. west and north)
 at a single boundary element.
 Also additional: flags for magnetic field orientation, e.g. to allow poloidal and/or toroidal magnetic field components

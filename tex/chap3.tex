@@ -2,13 +2,9 @@
 
 \medskip
 
-\noindent
-
 {\bf General remarks}
 
 \medskip
-
-\noindent
 
 As mentioned earlier, already the hard wired options in EIRENE allow
 a large variety of linear and also of non-linear transport problems to be studied. In oder versions of EIRENE (2001 and older) in most
@@ -36,8 +32,6 @@ The names of all other routines in the user specified block
 end with ...USR.
 
 \smallskip
-
-\noindent
 
 The description of the ``additional tally" routines UPTUSR, UPCUSR,
 UPSUSR and UPNUSR given below (section \ref{sec3.2}) is meant as a
@@ -625,13 +619,9 @@ source, whereas the default surface tallies don't.
 
 \medskip
 
-\noindent
-
 {\bf General remarks}:
 
 \medskip
-
-\noindent
 
 This subroutine is called in the initialization phase of an EIRENE
 run, at entry RF0USR, from subroutine REFLEC, and at entry SP0USR, from
@@ -652,13 +642,9 @@ whenever this surface is intersected by a test flight.
 
 \medskip
 
-\noindent
-
 {\bf Format of subroutine}
 
 \medskip
-
-\noindent
 
 \begin{verbatim}
       SUBROUTINE REFUSR
@@ -705,13 +691,9 @@ C     RECYCC(ISPZ,MSURF)=.....
 
 \medskip
 
-\noindent
-
 {\bf General remarks}:
 
 \medskip
-
-\noindent
 
 This subroutine is called from the point source sampling routine
 SAMPNT, the surface source sampling routine SAMSRF, or from the
@@ -744,13 +726,9 @@ Dimensions, Precision:
 
 \medskip
 
-\noindent
-
 {\bf Format of subroutine}
 
 \medskip
-
-\noindent
 
 \begin{verbatim}
       SUBROUTINE SAMUSR (ISR,X0,Y0,Z0,
@@ -843,13 +821,9 @@ been interchanged with respect to the calling statements in the EIRENE code. \\
 \label{sec3.6}
 \medskip
 
-\noindent
-
 {\bf General remarks}:
 
 \medskip
-
-\noindent
 
 Purpose: set input tallies (background medium), on the grid (one number per tally per cell)
 For more general input tallies, evaluated ``on the fly" at a particular position, see routine VECUSR
@@ -867,13 +841,9 @@ cells (ICELL=1,...,NSBOX), if the input flag INDPRO(12) has the value INDPRO(12)
 
 \medskip
 
-\noindent
-
 {\bf Format of subroutine}
 
 \medskip
-
-\noindent
 
 \begin{verbatim}
       SUBROUTINE PROUSR (RHO,INDEX,P0,P1,P2,P3,P4,P5,PVAC,NDAT)
@@ -1206,5 +1176,3 @@ on [VELX,VELY,VELZ] the new speed unit vector. NRCELL must contain the cell numb
 Currently NORUSR is called for all non default surfaces in the general (external) geometry level LEVGEO=10, i.e. for NRGEN = T.
 
 It is also called (currently without warning or conditioning) for tetrahedral grids at periodicity surfaces.
-
-

@@ -1,16 +1,11 @@
-\newpage
 \section{Input data for Initial Distribution of Test Particles}
 \label{sec2.7}
 
 \medskip
 
-\noindent %
-
 {\bf General Remarks}
 
 \medskip
-
-\noindent
 
 The primary source (and: initial distribution of test particles,
 in time dependent mode) is given as a function $Q(i, \vr,t
@@ -88,13 +83,9 @@ storage on the census array of this stratum has been filled up
 
 \medskip
 
-\noindent
-
 {\bf The Input Block}
 
 \medskip
-
-\noindent
 
 \begin{verbatim}
  *** 7. Data for primary sources
@@ -131,8 +122,6 @@ storage on the census array of this stratum has been filled up
 {\bf Meaning of the Input Variables for primary sources}
 
 \medskip
-
-\noindent
 
 \begin{list}{ }{}
 \item[{\bf NSTRAI }] Number of different sources (``Strata"), which
@@ -300,13 +289,9 @@ to be written
 
 \medskip
 
-\noindent
-
 {\bf Distribution for the species index ISP}
 
 \medskip
-
-\noindent
 
 \begin{list}{ }{}
 \item[{\bf NLATM }]
@@ -412,8 +397,6 @@ default can be overruled  when SORIND has three digits.
 
 \medskip
 
-\noindent
-
 {\bf Distribution in physical space}
 
 \medskip
@@ -456,8 +439,6 @@ can be assigned naturally (point sources (gas puff), volume sources)
 this reference vector $\vC$ points \emph{away}
 from the direction of
 preferential test particle emission.
-
-\noindent
 
 \begin{list}{ }{}
 \item[{\bf NLPNT }]
@@ -862,13 +843,9 @@ distribution. (Same as for point sources, see above)
 
 \medskip
 
-\noindent
-
 {\bf Distribution in velocity space}
 
 \medskip
-
-\noindent
 
 Together with a position (and time) $\vr_0,t_0$
 of a source particle, species index $isp$,  also a specific
@@ -1378,6 +1355,3 @@ given by equation \ref{sheath1} in section \ref{sec1}, unless overruled by param
 
 If $Sh\leq 0$ and the sheath potential according to equation (\ref{sheath1}) cannot be found either (e.g. because $\vV_{\pi,i}(ip) \equiv 0.)$, then
 $Sh = FSHEAT(MSURF)$ (the input sheath parameter for source surface no. MSURF, input blocks 3 and 6) is used.
-
-
-
