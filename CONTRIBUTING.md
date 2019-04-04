@@ -8,7 +8,7 @@ Looking for something to work on? Look for open issues.
 
 __One branch, one sort of changes.__
 
-Contributors can speed up the integration of corrects or improvements by focussing on one topic per branch / merge request. This allows the reviewer to get a rapid overview on the changes which simplifies the process of merging contributions into our master branch.
+Contributors can speed up the integration of corrections or improvements by focussing on one topic per branch / merge request. This allows the reviewer to get a rapid overview on the changes which simplifies the process of merging contributions into our master branch.
 
 ## Contribution flow
 
