@@ -13,6 +13,8 @@ cdr July 18  remove nsteff, redundant
 
       PUBLIC :: EIRENE_ALLOC_CPES, EIRENE_DEALLOC_CPES, EIRENE_INIT_CPES
       public :: I_am_leader
+      public :: create_all_communicators
+      public :: get_leader_comm, get_stratum_comm
       public :: need_calstr, calc_stratum
 
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
@@ -63,7 +65,7 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
         if (my_pe==0) then
           write(iunout,*) 'Creating communicator for stratum leaders'
         end if
-        comm = create_communicator(I_am_leader)
+        comm = create_communicator(I_am_leader())
       end function
 
       !> creates the communicators for PEs working on same stratum
@@ -196,6 +198,9 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
 
       ALLOCATE(PROCFORSTRA(NSTRA,0:NPRS-1))
 
+      ALLOCATE(STRATUM_COMM(NSTRA))
+      STRATUM_COMM = MPI_COMM_NULL
+
       WRITE (IUNMEM,'(A,T25,I15)')
      .      ' CPES ',2*NSTRA*4 + NSTRA*NPRS*4
 
@@ -214,6 +219,8 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
 
       DEALLOCATE(PROCFORSTRA)
 
+      CALL FREE_COMMUNICATORS(NSTRA)
+      DEALLOCATE(STRATUM_COMM)
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_CPES
 
