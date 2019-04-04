@@ -121,7 +121,8 @@ arbitrary number of strings $\pm$ n/m, separated by blanks. n and m
 must be integer variables $1\le n,m\le NLIMI$.
 \begin{verbatim}
    RLBND  RLARE  RLWMN  RLWMX
-   ILIIN ILSIDE ILSWCH ILEQUI ILTOR ILCOL ILFIT ILCELL ILBOX ILPLG
+   ILIIN ILSIDE ILSWCH ILEQUI ILTOR ILCOL ILFIT ILCELL ILBOX 
+  .  ILPLG
    IF (RLBND.LT.0.) THEN
      A0LM  A1LM  A2LM  A3LM  A4LM  A5LM
      A6LM  A7LM  A8LM  A9LM
@@ -145,9 +146,11 @@ and then read K blocks next:
      XLIMS1  YLIMS1  ZLIMS1  XLIMS2  YLIMS2  ZLIMS2
    ENDIF
    IF (RLBND.GE.2.) THEN
-     P1(1,..)  P1(2,..)  P1(3,..)  P2(1,..)  P2(2,..)  P2(3,..)
+     P1(1,..)  P1(2,..)  P1(3,..)  P2(1,..)  P2(2,..)  
+  .    P2(3,..)
      IF (K .GT. 2) THEN
-         P3(1,..)  P3(2,..)  P3(3,..)  P4(1,..)  P4(2,..)  P4(3,..)
+         P3(1,..)  P3(2,..)  P3(3,..)  P4(1,..)  P4(2,..)  
+  .        P4(3,..)
          IF (K .GT. 4) THEN
              P5(1,..)  P5(2,..)  P5(3,..)
          ENDIF
@@ -213,7 +216,7 @@ by the other four cards:
 \item[{\bf CH0 n1/m1 n2/m2 ...}]
 
 surfaces from the range n1 to m1, n2 to m2, ..., are ignored by
-EIRENE. Specifying a surface in such a CH0-card is identical to
+EIRE\-NE. Specifying a surface in such a CH0-card is identical to
 taking it out from the input file. It may be more convenient in
 some cases, however, to use the CH0 option, because the labelling
 index of the remaining valid surfaces is not altered then. No
@@ -564,7 +567,7 @@ additional surfaces (2 $\le$ RLBND $<$ 3 option).
 
 This flag identifies closed polygonal lines composed of additional
 surfaces given by the 2-point option and/or of standard surfaces in
-the x-y-plane. For example if ILPLG(I)=NN, for surfaces I = I1, I2,
+the x-y-plane. For example if ILPLG(I) = NN, for surfaces I = I1, I2,
 ...IN, (NN a positive integer) then these IN surfaces form a closed
 polygonal line in the x-y-plane. The region inside this closed line
 is part of the computational domain. By a negative integer value of
@@ -660,7 +663,7 @@ can be reversed e.g. by interchanging
 $P_2$ and $P_3$.
 \begin{list}{ }{}
 \item[{2.1 }] plane surface parallel to z axis.
-The surface equation of this plane reads ax+by+c=0 with the
+The surface equation of this plane reads ax + by + c = 0 with the
 coefficients a,b and c such that the points $P_1, P_2$
 lie on this surface
 and the valid part of that surface ranges from $P_1$ to
@@ -701,7 +704,7 @@ $P_4$, $P_3$ respectively.
 outside the quadrangle is seen by the test particles
 \item[{= 5 }] plane quint-angle; surface inside the polygon ($P_1$,
 $P_2$, $P_4$, $P_5$, $P_3$, $P_1$)
-$P_1, P_2, P_3, P_4$ as RLBND=4, and
+$P_1$, $P_2$, $P_3$, $P_4$ as RLBND=4, and
 $P_5$ = (P5(1), P5(2), P5(3))
 \item[{= 5.5 }] complement to RLBND = 5; only the part of the plane
 surface outside the quint-angle is seen by the test particles.
