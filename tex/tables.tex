@@ -24,7 +24,7 @@ that has been affected.
 
 \
 
-Each {\bf volume averaged response} is a spatial function,
+Each \textbf{volume averaged response} is a spatial function,
 averaged over a grid cell, hence: a piecewise constant function, which is constant in each grid
 cell ICELL:
 \\
@@ -65,7 +65,7 @@ i.e. currently default tallies are only available for momentum sources/sinks for
 test particles, resolved by type of test particle (name of tally) and by species of bulk particle (1st index in array).
 \end{list}
 
-{\bf Surface averaged res\-ponses} are also spatial
+\textbf{Surface averaged res\-ponses} are also spatial
 functions, averaged over surface segments, hence:
 piecewise constant on each surface ISURF or surface segment:
 \\
@@ -115,15 +115,15 @@ to the ``Time-Surface" (the census array) then.
 \subsection{Current status, incl. photon gas tallies (Eirene\texorpdfstring{$_{2002}$}{2002} and
 younger)}\label{sec.tables-new}
 \begin{table}[h]
-\caption {\bf Input Tallies for Background,
-Input, Module: COMUSR}
+\caption{\textbf{Input Tallies for Background,
+Input, Module: COMUSR}}
 \bigskip
 \label{tab1} {\footnotesize
 \begin{tabular} {|r|l|l|l|l|c|} \hline
 
- {\bf No} & {\bf Name} & {\bf Macroscopic quantity}
- &  {\bf 1.Dim.}
-  & {\bf Units} & {\bf Estim.}   \\ \hline
+ \textbf{No} & \textbf{Name} & \textbf{Macroscopic quantity}
+ &  \textbf{1.Dim.}
+  & \textbf{Units} & \textbf{Estim.}   \\ \hline
 
  -1 & TEIN & Plasma Temperature, Electrons & 1 & $eV$ & /  \\ \hline
  -2 & TIIN & Plasma Temperature, Bulk Ions & NPLSTI & $eV$ & /  \\ \hline
@@ -181,7 +181,7 @@ d5    &      TEDTEDZ $^{**}$ &    unused  & 1  &  --    &/
 
 \medskip
 
-{\bf Note:}
+\textbf{Note:}
 We distinguish between so called primary input tallies,
 and derived input tallies, the latter being  indicated by $^*$.
 The latter are automatically computed from the former by EIRENE.
@@ -223,21 +223,21 @@ is possible. Default: $\vec{E} = 0$
 {\footnotesize
 %\begin{longtable}[t]{|r|l|l|l|l|c|}
 \begin{longtable}{|r|l|l|l|l|c|}
-\caption{\bf Volume Averaged Tallies, Output,
-Module: CESTIM}
+\caption{\textbf{Volume Averaged Tallies, Output,
+Module: CESTIM}}
 \label{tab2}
 \\
 \hline
-{\bf No} & {\bf Name} & {\bf Macroscopic quantity}
-& {\bf 1.Dim.}
-& {\bf Units} & {\bf Estim.} \\
+\textbf{No} & \textbf{Name} & \textbf{Macroscopic quantity}
+& \textbf{1.Dim.}
+& \textbf{Units} & \textbf{Estim.} \\
 \hline\hline
 \endfirsthead
 \caption[]{(continued)}\\
 \hline
- {\bf No} & {\bf Name} & {\bf Macroscopic quantity}
- & {\bf 1.Dim.}
- & {\bf Units} & {\bf Estim.} \\
+ \textbf{No} & \textbf{Name} & \textbf{Macroscopic quantity}
+ & \textbf{1.Dim.}
+ & \textbf{Units} & \textbf{Estim.} \\
 \hline\hline
 \endhead
  1 & PDENA & Particle density, Atoms & NATM & $cm^{-3}$ & TD
@@ -471,7 +471,7 @@ amp*g*cm/s*cm{-3} & TPM
 \\ \hline
 \end{longtable}
 }
-{\bf Note:}
+\textbf{Note:}
 $\underline{Momentum  \ density}$  is the directional momentum weighted velocity space integral, i.e. it is a (directional) particle
 flux (density), for the x,y and z directions, respectively, and then multiplied by the particle mass. (Relation to particle current??,
 check with neutron transport terminology)
@@ -518,7 +518,7 @@ diffusive or other continuum regime. These fluxes are scored in COLLIDE.F, i.e. 
 
 %\newpage
 %\begin{table}[t]
-%\caption {\bf Surface Averaged Tallies,
+%\caption \textbf{Surface Averaged Tallies,
 %Output, Module: CESTIM}
 %\bigskip
 %\label{tab3}
@@ -526,23 +526,23 @@ diffusive or other continuum regime. These fluxes are scored in COLLIDE.F, i.e. 
 \clearpage
 {\footnotesize
 \begin{longtable}{|r|l|l|l|l|c|}
-\caption {\bf Surface Averaged Tallies,
-Output, Module: CESTIM}
+\caption{\textbf{Surface Averaged Tallies,
+Output, Module: CESTIM}}
 \label{tab3}
 \\
 \hline
 
- {\bf No} & {\bf Name} & {\bf Macroscopic quantity}
+ \textbf{No} & \textbf{Name} & \textbf{Macroscopic quantity}
 &
-   {\bf 1.Dim.}
-  & {\bf Units} & {\bf Estim.}   \\
+   \textbf{1.Dim.}
+  & \textbf{Units} & \textbf{Estim.}   \\
 \hline\hline
 \endfirsthead
 \caption[]{(continued)}\\
 \hline
- {\bf No} & {\bf Name} & {\bf Macroscopic quantity}
- & {\bf 1.Dim.}
- & {\bf Units} & {\bf Estim.} \\
+ \textbf{No} & \textbf{Name} & \textbf{Macroscopic quantity}
+ & \textbf{1.Dim.}
+ & \textbf{Units} & \textbf{Estim.} \\
 \hline\hline
 \endhead
  1 & POTAT &Particle Flux, incident, Atoms&NATM
@@ -668,7 +668,7 @@ Output, Module: CESTIM}
 \end{longtable}
 }
 
-{\bf Note:}\\
+\textbf{Note:}\\
 i) The tallies listed here are two dimensional arrays. The 2nd index I2
 is the number of the surface or the surface segment.
  For
@@ -692,23 +692,23 @@ and (emitted) sputtered particle type and species, see Table \ref{tab3a}.
 \clearpage
 {\footnotesize
 \begin{longtable}{|r|l|l|l|l|c|}
-\caption {\bf Sputter tallies, new version, svn 360 ff, 2014,\\
-Output, Module: CESTIM}
+\caption{\textbf{Sputter tallies, new version, svn 360 ff, 2014,\\
+Output, Module: CESTIM}}
 \label{tab3a}
 \\
 \hline
 
- {\bf No} & {\bf Name} & {\bf Macroscopic quantity}
+ \textbf{No} & \textbf{Name} & \textbf{Macroscopic quantity}
 &
-   {\bf 1.Dim.}
-  & {\bf Units} & {\bf Estim.}   \\
+   \textbf{1.Dim.}
+  & \textbf{Units} & \textbf{Estim.}   \\
 \hline\hline
 \endfirsthead
 \caption[]{(continued)}\\
 \hline
- {\bf No} & {\bf Name} & {\bf Macroscopic quantity}
- & {\bf 1.Dim.}
- & {\bf Units} & {\bf Estim.} \\
+ \textbf{No} & \textbf{Name} & \textbf{Macroscopic quantity}
+ & \textbf{1.Dim.}
+ & \textbf{Units} & \textbf{Estim.} \\
 \hline\hline
 \endhead
  51 & SPTAAT &Sputtered Flux, Atoms, by incident Atoms&NATM
@@ -811,14 +811,14 @@ in versions SOLPS4.x, see under \ref{sec2.14} in which problem specific issues r
 interfacing to the particular external plasma codes B2, B2.5, etc. are described.
 
 \begin{table}[ht]
-\caption {\bf Input Tallies for Background, Input, Common: COMUSR}
+\caption{\textbf{Input Tallies for Background, Input, Common: COMUSR}}
 \bigskip
 \label{tab1old} {\footnotesize
 \begin{tabular} {|r|l|l|l|l|} \hline
 
- {\bf No} & {\bf Name} & {\bf Macroscopic quantity}
- &  {\bf 1.Dim.}
-  & {\bf Units}   \\ \hline
+ \textbf{No} & \textbf{Name} & \textbf{Macroscopic quantity}
+ &  \textbf{1.Dim.}
+  & \textbf{Units}   \\ \hline
 
  -1 & TEIN & Plasma Temperature, Electrons & 1 & $eV$   \\ \hline
  -2 & TIIN & Plasma Temperature, Bulk Ions & NPLS & $eV$   \\ \hline
@@ -849,7 +849,7 @@ interfacing to the particular external plasma codes B2, B2.5, etc. are described
 \end{tabular}
 }
 
-{\bf Note:}
+\textbf{Note:}
 We distinguish between so called primary input tallies, and derived input tallies.
 The latter are automatically computed from the former by EIRENE.
 
@@ -875,12 +875,12 @@ see INDPRO(5) options for magnetic field tallies in input block 5 \ref{sec2.5}.
 
 \newpage
 \begin{table}[t]
-\caption {\bf Volume Averaged Tallies, Output, Common: CESTIM}
+\caption{\textbf{Volume Averaged Tallies, Output, Common: CESTIM}}
 \label{tab2old} {\footnotesize
 \begin{tabular}{|r|l|l|l|l|c|} \hline
- {\bf No} & {\bf Name} & {\bf Macroscopic quantity}
- & {\bf 1.Dim.}
- & {\bf Units} & {\bf Estim.} \\ \hline
+ \textbf{No} & \textbf{Name} & \textbf{Macroscopic quantity}
+ & \textbf{1.Dim.}
+ & \textbf{Units} & \textbf{Estim.} \\ \hline
  1 & PDENA & Particle density, Atoms & NATM & $cm^{-3}$ & T1
  \\ \hline
  2 & PDENM & Particle density, Molecules & NMOL & $cm^{-3}$ & T2
@@ -989,22 +989,22 @@ NION & as COP & T1
  \\ \hline
 \end{tabular}
 }
-{\bf Note:} $\underline{Source} $ means: if the sign is positive,
+\textbf{Note:} $\underline{Source} $ means: if the sign is positive,
 it is a gain for the specified type of particles; if it is
 negative, it is a loss.
 \end{table}
 
 \newpage
 \begin{table}[t]
-\caption {\bf Surface Averaged Tallies, Output, Common: CESTIM}
+\caption{\textbf{Surface Averaged Tallies, Output, Common: CESTIM}}
 \bigskip
 \label{tab3old} {\footnotesize
 \begin{tabular}{|r|l|l|l|l|c|} \hline
 
- {\bf No} & {\bf Name} & {\bf Macroscopic quantity}
+ \textbf{No} & \textbf{Name} & \textbf{Macroscopic quantity}
 &
-   {\bf 1.Dim.}
-  & {\bf Units} & {\bf Estim.}   \\ \hline
+   \textbf{1.Dim.}
+  & \textbf{Units} & \textbf{Estim.}   \\ \hline
  1 & POTAT&Particle Flux, incident, Atoms&NATM
     & amp & T/C  \\ \hline
  2 &PRFAAT&Particle Flux, emitted, Ats.$\Rightarrow$Atoms&NATM
@@ -1088,7 +1088,7 @@ negative, it is a loss.
 \end{tabular}
 }
 \\
-{\bf Note:} The tallies listed here are two dimensional arrays.
+\textbf{Note:} The tallies listed here are two dimensional arrays.
 The 2nd index I2 is the number of the surface or the surface
 segment.
  For

@@ -2,7 +2,7 @@
 
 \medskip
 
-{\bf General remarks}
+\textbf{General remarks}
 
 \medskip
 
@@ -22,7 +22,7 @@ grids,...)
 
 \medskip
 
-{\bf The Input Block}
+\textbf{The Input Block}
 
 \medskip
 
@@ -44,7 +44,7 @@ any order
 The following specifications are applied to each cell with
 cell number ICELL in the range  $INI \leq ICELL \leq INE$.
 \begin{list}{ }{}
-\item[{\bf ``CH3-cards" }] (format: 3A,69A)
+\item[\textbf{``CH3-cards" }] (format: 3A,69A)
 
 arbitrary number of strings $\pm$ n/m, separated by blanks. n and
 m must be integer variables 1 $\le$ n,m $\le$ NLIMI. By default
@@ -59,7 +59,7 @@ setting).
 A particle history can be forced to stop and then to
 restart in a cell e.g. by making appropriate use of the ILIIN = -1
 option for additional- or non default standard surfaces.
-\item[{\bf ``T-cards" }] T, IDION, TEADD, TIADD(IDION)
+\item[\textbf{``T-cards" }] T, IDION, TEADD, TIADD(IDION)
 
 format: 1A,1I6,6X,2E12.4
 
@@ -69,7 +69,7 @@ ICELL are reset to:
 TEIN(ICELL)=TEADD
 
 TIIN(IDION,ICELL)=TIADD(IDION)
-\item[{\bf ``D-cards" }] D, IDPLS,
+\item[\textbf{``D-cards" }] D, IDPLS,
 DIADD(IDPLS)
 
 format: 1A,1I6,6X,1E12.4
@@ -77,7 +77,7 @@ format: 1A,1I6,6X,1E12.4
 plasma ion density $D_i $ for species IDPLS in cell
 ICELL is reset to:
 
-DIIN(IDPLS,ICELL)=DIADD(IDPLS) \item[{\bf ``V-cards" }] V, IDPLS,
+DIIN(IDPLS,ICELL)=DIADD(IDPLS) \item[\textbf{``V-cards" }] V, IDPLS,
 VXADD(IDPLS), VYADD(IDPLS), VZADD(IDPLS)
 
 format: 1A,1I6,6X,3E12.4
@@ -90,7 +90,7 @@ VXIN(IDPLS,ICELL)=VXADD(IDPLS)
 
 VYIN,VZIN: likewise, for the drift velocities in y and z direction
 respectively.
-\item[{\bf ``M-cards" }] M, IDPLS, MXADD(IDPLS),
+\item[\textbf{``M-cards" }] M, IDPLS, MXADD(IDPLS),
 MYADD(IDPLS), MZADD(IDPLS)
 
 same as ``V-cards", but drift velocity in cell ICELL is given in
@@ -103,7 +103,7 @@ $m_i $ being the mass of bulk ions of species IDPLS.
 
 VYIN,VZIN are computed in the same way from MYADD and MZADD
 respectively.
-\item[{\bf ``VL-cards" }] VL, VLADD
+\item[\textbf{``VL-cards" }] VL, VLADD
 
 format: 2A,1E12.4
 

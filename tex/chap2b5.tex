@@ -2,7 +2,7 @@
 
 \medskip
 
-{\bf General remarks}
+\textbf{General remarks}
 
 \medskip
 
@@ -158,7 +158,7 @@ species (NCHARP = 0), to include neutral-neutral collisions, e.g.,
 by the iterative option NITER (input block 1).
 \medskip
 
-{\bf The Input Block}
+\textbf{The Input Block}
 
 \medskip
 
@@ -200,7 +200,7 @@ NRC$  NFOL$ NGEN$  NHSTS$ ID3$
 Currently option INDPRO=6 and INDPRO=7 are not available for cell volumes (input tally no. 12).
 \medskip
 
-{\bf Meaning of the Input Variables for Plasma Parameters}
+\textbf{Meaning of the Input Variables for Plasma Parameters}
 
 \medskip
 
@@ -223,11 +223,11 @@ here for a species IPLS, then, after reading the species and
 reaction cards for IPLS, one (default) or NRE further input cards
 are expected.
 \begin{list}{ }{}
-\item[{\bf CDENMODEL = 'Multiply' }]
+\item[\textbf{CDENMODEL = 'Multiply' }]
 docu to be written
-\item[{\bf CDENMODEL = 'Constant' }]
+\item[\textbf{CDENMODEL = 'Constant' }]
 docu to be written
-\item[{\bf CDENMODEL = 'fort.13' }]
+\item[\textbf{CDENMODEL = 'fort.13' }]
 Read data for this species from file fort.13.
 
 The additional card (only one) reads (format 2I6):
@@ -242,7 +242,7 @@ for species IPLS are set from those of species ISP on fort.13
 ITP is the type of the particle, i.e., always: ITP=4 for this option.
 Internally set: ITP=4, bulk particle type, independent of input value for ITP.
 
-\item[{\bf CDENMODEL = 'fort.10' }]
+\item[\textbf{CDENMODEL = 'fort.10' }]
 Read data for this species from file fort.10.
 
 The additional card (only one) reads (format 3I6):
@@ -261,14 +261,14 @@ profiles are reset to those evaluated in this run, for further use in
 post processing routines such as the diagnostic module (see Section \ref{sec2.11}),
 printout, plotting or iterative mode (input flags NITERI, NITERE, and user subroutine MODUSR, see Section \ref{sec2.1})
 
-\item[{\bf CDENMODEL = 'Saha' }] Set parameters from
+\item[\textbf{CDENMODEL = 'Saha' }] Set parameters from
 Saha-equilibrium of ionization states.
 The additional card (only one) reads:
 \begin{verbatim}
 ISP, ITP, ISTR, ....
 \end{verbatim}
 to be written 
-\item[{\bf CDENMODEL = 'Boltzmann' }]
+\item[\textbf{CDENMODEL = 'Boltzmann' }]
 Set parameters
 from Boltzmann-equilibrium of excited states. The additional card
 (only one) reads (format: 3I6,6x,2E12.4)
@@ -276,9 +276,9 @@ from Boltzmann-equilibrium of excited states. The additional card
 ISP, ITP, ISTR, G_BOLTZMANN, DELTA_E
 \end{verbatim}
 docu to be written
-\item[{\bf CDENMODEL = 'Planck' }]
+\item[\textbf{CDENMODEL = 'Planck' }]
 (only for background photons) to be written
-\item[{\bf CDENMODEL = 'Corona' }]
+\item[\textbf{CDENMODEL = 'Corona' }]
 Set density parameters from Corona-equilibrium to a ``donor species",
 using an excitation rate coefficient from atomic database FILNAM and a fixed radiative decay rate $A=A_{CORONA}$.
 The additional card (only one) reads (format: 3I6,1X,A6,1X,A4,A9,A3,E12.4):
@@ -303,7 +303,7 @@ for donor species IS are taken to be those of species [ISP, ITP, ISTR].
 
 I.e.: this model constructs a background species IPLS
 which is in Corona-equilibrium with these IS = [ISP,ITP, ISTR] donor particles.
-\item[{\bf CDENMODEL = 'Colrad' }]
+\item[\textbf{CDENMODEL = 'Colrad' }]
 set parameters density, temperature and flow velocity from collisional radiative equilibrium with one or more (NRE) ``donor-species", using
 reduced population coefficients from atomic database FILNAM.
 I.e. the density ni(IPLS) at each position $x$ (grid cell) for this 
@@ -334,7 +334,7 @@ with its donor isotope $IS$.
 
 
 \begin{list}{ }{}
-\item[{\bf INDPRO }] Flag-array for the type of profile. The
+\item[\textbf{INDPRO }] Flag-array for the type of profile. The
 last digit (between 1 and 9) controls the type of profile. A
 second digit and/or the sign control further options, as described
 below.
@@ -584,18 +584,18 @@ background data" profiles is computed and stored also on COMUSR.
 This is done by a call to subroutine \verb/PLASMA_DERIV/. The
 following quantities are defined there:
 \begin{list}{ }{}
-\item[{\bf DEIN }]
+\item[\textbf{DEIN }]
 Electron density ($cm^-3$), derived from all NPLSI
 ion densities and the charge states NCHRGP(IPLS) of each ion species.
-\item[{\bf EDRIFT }]
+\item[\textbf{EDRIFT }]
 Kinetic energy (eV) in drift motion, for each background species IPLS, derived from
 the mass MASSP(IPLS) and the flow velocity VXIN,VYIN,VZIN.
-\item[{\bf LGVAC }]
+\item[\textbf{LGVAC }]
 Vacuum flag (logical) to identify regions, in which no collision data for all or
 certain background species are computed, i.e., the collisionalities are set to zero
 in these cells for those background species. See also explanation above, with respect
 to the EIRENE vacuum data TVAC,DVAC,VVAC.
-\item[{\bf NSTGRD }]
+\item[\textbf{NSTGRD }]
 flag for special treatment of some selected cells
 \begin{list}{ }{}
 \item[{=0 }]

@@ -6,7 +6,7 @@
 
 \medskip
 
-{\bf General remarks}
+\textbf{General remarks}
 
 \medskip
 
@@ -37,7 +37,7 @@ the angle between the trajectory of the particle and the surface
 normal at the point of intersection is less than 90 degrees,
 ``negative" has the opposite meaning.
 
-{\bf speeding up geometry calculations:}
+\textbf{speeding up geometry calculations:}
 
 For optimization of CPU performance the checking of intersections with surfaces along a test flight 
 can be abandoned depending upon
@@ -54,7 +54,7 @@ below, or in some user-specified problem specific routines (e.g.
 GEOUSR). The integer matrix IGJUM3 can be set via the CH3 cards in input block 8, or, 
 again, e.g. in problem specific routines such as GEOUSR. 
 
-{\bf ignorable coordinates:}
+\textbf{ignorable coordinates:}
 
 Surfaces with ignorable coordinates are specified either by
 setting the corresponding coefficients in the surface equation to zero,
@@ -63,7 +63,7 @@ the corresponding coordinates of the points to -1.D20 and +1.D20,
 respectively.
 \smallskip
 
-{\bf coordinate systems, transformations:}
+\textbf{coordinate systems, transformations:}
 
 All surfaces are specified in cartesian coordinates.
 
@@ -84,7 +84,7 @@ been read previous to the ``TRANSFORM-deck". Hence, in order to transform
 the entire set of additional surfaces by one deck, this deck must come after
 the last surface (no. NLIMI, see below).
 
-{\bf Particle-surface interaction models}
+\textbf{Particle-surface interaction models}
 
 Although the (local) data for particle surface interaction models
 for each specific additional surface
@@ -93,7 +93,7 @@ together with the globally valid input data for particle surface interactions.
 
 \medskip
 
-{\bf The Input Block}
+\textbf{The Input Block}
 
 \medskip
 
@@ -208,12 +208,12 @@ by the other four cards:
 
 \medskip
 
-{\bf Meaning of the Input Variables for additional surfaces}
+\textbf{Meaning of the Input Variables for additional surfaces}
 
 \medskip
 
 \begin{list}{ }{}
-\item[{\bf CH0 n1/m1 n2/m2 ...}]
+\item[\textbf{CH0 n1/m1 n2/m2 ...}]
 
 surfaces from the range n1 to m1, n2 to m2, ..., are ignored by
 EIRE\-NE. Specifying a surface in such a CH0-card is identical to
@@ -222,9 +222,9 @@ some cases, however, to use the CH0 option, because the labelling
 index of the remaining valid surfaces is not altered then. No
 input is read for these surfaces, and the input segment for the
 next valid surface (identified by the string '*text') is read
-next. \item[{\bf NLIMI }] number of surfaces in the input block
-\item[{\bf TXTSUR }] Text to identify a surface (``name of the
-surface") on the printout file \item[{\bf CH1(ILIMI) n1/m1 n2/m2
+next. \item[\textbf{NLIMI }] number of surfaces in the input block
+\item[\textbf{TXTSUR }] Text to identify a surface (``name of the
+surface") on the printout file \item[\textbf{CH1(ILIMI) n1/m1 n2/m2
 ...}]
 
 surfaces from the range n1 to m1, n2 to m2, ..., are considered
@@ -232,7 +232,7 @@ invisible for a
 particle located on this current surface ILIMI.
 Intersection of trajectories starting from surface ILIMI with those
 ``invisible" surfaces is not checked.
-\item[{\bf CH2(ILIMI) n1/m1 n2/m2 ...}]
+\item[\textbf{CH2(ILIMI) n1/m1 n2/m2 ...}]
 
 Only for second order surfaces ILIMI, n1-m1, ...
 The first of the two possible intersections is ignored for particles
@@ -241,22 +241,22 @@ located on surface no. ILIMI.
 
 {\sl General Data for Surfaces}
 \begin{list}{ }{}
-\item[{\bf RLBND }]
+\item[\textbf{RLBND }]
 flag for different options to define the boundary of the surface
-\item[{\bf RLARE }]
+\item[\textbf{RLARE }]
 Area (in $cm^2$) of the surface element which is seen
 by the test particles. (Default: 666.0)
 (needed only for scaling of non default surface averaged tallies)
 If RLARE is not specified here, (i.e., if a value less than or equal to
 zero is read) then EIRENE tries to evaluate this area itself.
 For some surfaces this is still not possible automatically.
-\item[{\bf RLWMN }]
+\item[\textbf{RLWMN }]
 lower weight limit for space weight window for particles crossing
 the surface in positive direction. (not in use)
-\item[{\bf RLWMX }]
+\item[\textbf{RLWMX }]
 upper weight limit for space weight window for particles crossing
 the surface in positive direction. (not in use)
-\item[{\bf ILIIN }]
+\item[\textbf{ILIIN }]
 defines the type of surface
 \begin{list}{ }{}
 \item[{ $>$ 0 }] non-transparent surface
@@ -325,7 +325,7 @@ The PRF... and ERF... tallies are empty for these surfaces.
 \item[{$\leq$ -4 }] Not in use. Currently: same as ILIIN=-2 option.
 \end{list}
 \end{list}
-\item[{\bf ILSIDE }] ~
+\item[\textbf{ILSIDE }] ~
 \begin{list}{ }{}
 \item[{= 0 }]
 both sides of the surface act as described by
@@ -360,7 +360,7 @@ as 2, but with the opposite direction of the surface normal
 \item[{= -3 }]
 as 3, but with the opposite direction of the surface normal
 \end{list}
-\item[{\bf ILSWCH }]
+\item[\textbf{ILSWCH }]
 = IJKLMN, i.e. six digits I, J, K, L, M and N
 \begin{list}{ }{}
 \item[{= 0 }]
@@ -486,7 +486,7 @@ to the birth process in the positive direction. This default
 setting is only available for ILSIDE $\neq$ 0 and can (must) be
 overruled by the SORIFL flag (see section \ref{sec2.7}), e.g. if a
 surface source needs to be defined on a surface with ILSIDE = 0.
-\item[{\bf ILEQUI }] The algebraic equations for the surfaces J
+\item[\textbf{ILEQUI }] The algebraic equations for the surfaces J
 and IABS(ILEQUI(J)) will be described by exactly the same
 coefficients (up to a common sign, if ILEQUI(J) .lt. 0). For
 example a triangle can be specified by the three corners and
@@ -497,7 +497,7 @@ surface J is a transparent ``hole" in surface ILEQUI(J), or vice
 versa.
 
 Default: ILEQUI = 0
-\item[{\bf ILTOR }]
+\item[\textbf{ILTOR }]
 For NLTRA option only (see block 2c):
 
 if ILTOR$>$0 :
@@ -520,13 +520,13 @@ This flag is irrelevant for NLTRZ (i.e.,
 if cylindrical coordinates are used) or for NLTRT.
 
 Default: ILTOR = 0
-\item[{\bf ILCOL }]
+\item[\textbf{ILCOL }]
 Flag for the color that is used for plotting this surface on 2d or
 3d geometry plots. If ILCOL $\le 0$  than -ILCOL is used and the
 surface area is filled in by that color on the 3d geometry plots.
 
 Default: ILCOL=1
-\item[{\bf ILFIT }]
+\item[\textbf{ILFIT }]
 = MN
 
 This option is relevant
@@ -551,14 +551,14 @@ The fitting is achieved by a small automatic internal modification
 of the surface data P1 and/or P2 of surface number J in subroutine
 SETFIT. Printout of the modifications made there is activated with
 the TRCSUR flag (input block 11).
-\item[{\bf ILCELL }]
+\item[\textbf{ILCELL }]
 Parameter ILBLCK and ILACLL for the ILSWCH flags described above.
 Let ILCELL = NM, with N and M being integers with 3 digits each.
 Then N = ILBLCK and M = ILACLL.
 
-\item[{\bf ILBOX }] to be written
+\item[\textbf{ILBOX }] to be written
 \item
-[{\bf ILPLG }] EIRENE can write out information for a finite element
+[\textbf{ILPLG }] EIRENE can write out information for a finite element
 mesh generator to produce a grid of triangles for a multiply
 connected 2D domain with cracks and holes. The various (inner and
 outer) boundaries are given as polygonal lines, which are composed
@@ -588,7 +588,7 @@ or the code interfacing routines INFCOP
 
 \medskip
 
-{\bf Surface coefficients and boundaries of surfaces}
+\textbf{Surface coefficients and boundaries of surfaces}
 
 \medskip
 
@@ -621,11 +621,11 @@ The boundary of the
 valid part of the surface may be described by 4 different options,
 depending upon the value of the flag RLBND.
 \begin{list}{ }{}
-\item[{\bf RLBND = 0 }] ~
+\item[\textbf{RLBND = 0 }] ~
 
 No boundary inequalities specified, i.e. the whole surface
 is seen by the test particles.
-\item[{\bf 0  $<$   RLBND  $<$   2 }] ~
+\item[\textbf{0  $<$   RLBND  $<$   2 }] ~
 
 \begin{list}{ }{}
 \item[{= 1 }] Only that part of the surface, which lies inside the
@@ -645,7 +645,7 @@ are checked at the point of intersection (x,y,z).
 
 Only the surface element outside the parallelepiped is seen by the
 particles. \end{list}
-\item[{\bf RLBND $\ge$ 2 }] ~
+\item[\textbf{RLBND $\ge$ 2 }] ~
 
 In this case the surface will be
 defined by the input of the coordinates of
@@ -709,7 +709,7 @@ $P_5$ = (P5(1), P5(2), P5(3))
 \item[{= 5.5 }] complement to RLBND = 5; only the part of the plane
 surface outside the quint-angle is seen by the test particles.
 \end{list}
-\item[{\bf RLBND  $<$   0 }] ~
+\item[\textbf{RLBND  $<$   0 }] ~
 
 -KL
 
@@ -738,7 +738,7 @@ Interaction Models").
 The meanings of the input variables for a transformation block are:
 
 \begin{list}{ }{}
-\item[{\bf ITINI, ITEND }] ~
+\item[\textbf{ITINI, ITEND }] ~
 
 The transformation defined by the next 3 cards is carried out for
 additional surfaces from number ITINI through ITEND The
@@ -747,7 +747,7 @@ is found. Hence, if such a transformation deck is found after
 ``additional surface" no. IS, then one must guarantee: ITINI $\le$
 IS and ITEND $\le$ IS.
 
-\item[{\bf XLCOR, YLCOR, ZLCOR }] ~
+\item[\textbf{XLCOR, YLCOR, ZLCOR }] ~
 
 Translation:
 
@@ -755,14 +755,14 @@ The origin of the coordinate system is shifted by the
 vector
 
 XLCOR,YLCOR,ZLCOR
-\item[{\bf XLREF, YLREF, ZLREF }] ~
+\item[\textbf{XLREF, YLREF, ZLREF }] ~
 
 Reflection:
 
 to be written
 
 No transformation if XLREF,YLREF,ZLREF = (0,0,0)
-\item[{\bf XLREF, YLREF, ZLREF }] ~
+\item[\textbf{XLREF, YLREF, ZLREF }] ~
 
 Rotation:
 

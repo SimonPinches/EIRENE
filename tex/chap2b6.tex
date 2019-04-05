@@ -2,7 +2,7 @@
 
 \medskip
 
-{\bf General remarks}
+\textbf{General remarks}
 
 \medskip
 
@@ -87,7 +87,7 @@ rather unhandy reflection data and formulas.
 
 \medskip
 
-{\bf The Input Block for General Reflection Data}
+\textbf{The Input Block for General Reflection Data}
 
 \medskip
 
@@ -151,12 +151,12 @@ VARNAME  SPZNAME   VALUE
 \end{verbatim}
 \medskip
 
-{\bf Meaning of the Input Variables}
+\textbf{Meaning of the Input Variables}
 
 \medskip
 
 \begin{list}{ }{}
-\item[{\bf NLTRIM }] TRIM database is used, if ``Database
+\item[\textbf{NLTRIM }] TRIM database is used, if ``Database
 Reflection Model" is specified in at least one block for local
 reflection data. Data are read from data-set FT21 (no ``Path Card"
 specified, old option), or from the domain specified by the ``Path
@@ -166,11 +166,11 @@ target-projectile combination data-sets listed in section
 \ref{sec1.3}, i.e., the files H\_on\_Fe to T\_on\_W.
 
 If the parameter NHD6 $<$ 12, (section \ref{sec3.1}) then only the
-first NHD6 files are read from FT21. \item[{\bf ``Path Card"
+first NHD6 files are read from FT21. \item[\textbf{``Path Card"
 }] This card is machine specific. If EIRENE finds a card
 containing the string 'PATH' or 'path', it assumes that this card
 specifies the path to the domain containing the TRIM surface
-reflection data files. \item[{\bf A\_on\_B }] Name of a
+reflection data files. \item[\textbf{A\_on\_B }] Name of a
 particular TRIM data file in the domain specified by the path
 card. E.g., H\_on\_Fe would include the data file for hydrogen
 onto iron into the EIRENE run. Up to NHD6 such ``Target-Projectile
@@ -186,7 +186,7 @@ scaling of incident particle energy. Hence, a TRIM data set is
 chosen such that the reduced mass scaling factor is as close to
 one as possible amongst the files available.
 \begin{list}{ }{}
-\item[{\bf DATD }]
+\item[\textbf{DATD }]
 distribution for sampling the species index of reflected or
 otherwise emitted atoms. The NATMI relative frequencies
 
@@ -200,11 +200,11 @@ DATD such that
 $\sum_{IATM} DATD(IATM) =1$
 
  is carried out internally.
-\item[{\bf DMLD }]
+\item[\textbf{DMLD }]
 as for DATD, but for molecules. Cumulative distribution is DMOL.
-\item[{\bf DIOD }]
+\item[\textbf{DIOD }]
 as for DATD, but for test ions. Cumulative distribution is DION.
-\item[{\bf DPLD }]
+\item[\textbf{DPLD }]
 as for DATD, but for bulk ions. Cumulative distribution is DPLS.
 \end{list}
 The activation of these distributions at surface events
@@ -218,7 +218,7 @@ are used (and can be overruled by calls to subroutines REFUSR, SPTUSR
 only, see
 section \ref{sec3.3}):
 \begin{list}{ }{}
-\item[{\bf ISRF\$ }]
+\item[\textbf{ISRF\$ }]
 fast particle reflection species flag:
 
 \begin{list}{ }{}
@@ -234,10 +234,10 @@ no fast particle reflection for this species: $p_f = 0 $
 not in use, warning and error exit.
 
 \end{list}
-\item[{\bf ISRT\$ }]
+\item[\textbf{ISRT\$ }]
 thermal particle re-emission species flag:
 
-{\bf incident atoms, test ions and bulk ions:}
+\textbf{incident atoms, test ions and bulk ions:}
 \begin{list}{ }{}
 \item[{$>$ 0 }]
 If ISRT\$ $\le$ NATMI, then ISRT\$ = IATM, the species labelling
@@ -257,7 +257,7 @@ This option can e.g. be used to specify the distribution of vibrationally excite
 molecules $H_2(\nu)$ emitted from a surface after bombardment by incident $H$ atoms,
 the so called Eley Rideal mechanism: Surface(with implanted $H) + H \rightarrow H_2(\nu)$
 \end{list}
-{\bf incident molecules:}
+\textbf{incident molecules:}
 \begin{list}{ }{}
 \item[{$>$ 0 }]
 If ISRT\$ $\le$ NMOLI, then ISRT\$ = IMOL, the species labelling
@@ -282,10 +282,10 @@ and
 The flags in the next card can be used to modify the pre-programmed
 fast particle reflection models, to some extend at least.
 \begin{list}{ }{}
-\item[{\bf ERMIN }] For incident particle energies below
+\item[\textbf{ERMIN }] For incident particle energies below
 ERMIN, the ``fast" particle reflection model is switched off. Only
 the ``thermal" particle model is used.
-\item[{\bf ERCUT,RPROBF}] ~
+\item[\textbf{ERCUT,RPROBF}] ~
 
 These variables may be used to modify the default ``Behrisch
 Matrix" reflection coefficients for particles incident on a
@@ -308,7 +308,7 @@ These flags only apply to incident particles of type 1, 3, 4 and 5, i.e.,
 not for incident molecules
 because for those RPROBF = 0 by default.
 \begin{list}{ }{}
-\item[{\bf RINTEG }] ~
+\item[\textbf{RINTEG }] ~
 \begin{list}{ }{}
 \item[{$>$ 0 }]
 Fixed (independent of energy and angle of incidence)  particle
@@ -331,7 +331,7 @@ The fast particle reflection probabilities RPROBF are
 set to $1.0-p_a$.  Hence: same as RINTEG=1.0
 \end{list}
 
-\item[{\bf EINTEG }] ~
+\item[\textbf{EINTEG }] ~
 \begin{list}{ }{}
 \item[{$>$ 0 }]
 Fixed (independent of energy and angle of incidence) energy
@@ -348,7 +348,7 @@ for fast particle reflection.
 elastic ($E_{out} = E_{in}$) reflection for all particles reflected according to
 the fast particle reflection model. Hence: same as EINTEG=1.0
 \end{list}
-\item[{\bf AINTEG }] ~
+\item[\textbf{AINTEG }] ~
 \begin{list}{ }{}
 \item[{$>$ 0 }]
 
@@ -458,12 +458,12 @@ SURFMOD_CARB_SPT_812K
  1.00000E+00 1.00000E+00 1.00000E+00 0.00000E+00 0.00000E+00
 \end{verbatim}}
 
-{\bf Meaning of the Input Variables}
+\textbf{Meaning of the Input Variables}
 
 \medskip
 
 \begin{list}{ }{}
-\item[{\bf ILREF }]
+\item[\textbf{ILREF }]
 Flag for choice of local reflection model
 \begin{list}{ }{}
 \item[{= 1 }] TRIM database reflection model is used. NLTRIM
@@ -473,7 +473,7 @@ model" is used \item[{= 3 }] user supplied reflection model
 \end{list}
 
 Default: ILREF = 2
-\item[{\bf ILSPT }]
+\item[\textbf{ILSPT }]
 Flag for choice of local sputtering model
 
 Let ILSPT = MN, with M and N single digit integers each.
@@ -531,7 +531,7 @@ Hence they are considered surface properties
 and are read in the surface specification decks
 in blocks \ref{sec2.3a}, \ref{sec2.3b} and/or \ref{sec2.6}.
 \begin{list}{ }{}
-\item[{\bf ISRS\$ }]
+\item[\textbf{ISRS\$ }]
 sputtered particle species flag (physical sputtering).
 
 \begin{list}{ }{}
@@ -570,7 +570,7 @@ as well as for either only scoring fluxes or even tracing these
 sputtered particles, can be made
 dependent on the incident species index ISPZ.
 
-\item[{\bf ISRC\$ }]
+\item[\textbf{ISRC\$ }]
 sputtered particle species flag (chemical sputtering).
 
 \begin{list}{ }{}
@@ -606,7 +606,7 @@ particle is a C-atom, if such an atom has been specified in input block
 \end{list}
 %\end{list}
 
-\item[{\bf ZNML }]
+\item[\textbf{ZNML }]
 = KLMN (4 digits)
 \begin{list}{ }{}
 \item[{KL }]
@@ -624,7 +624,7 @@ Example: Molybdenum: ZNML=9642.
 Example: Copper: ZNML=6429.
 
 Default: ZNML = 5.626E3 (stands for Fe).
-\item[{\bf EWALL }] ~
+\item[\textbf{EWALL }] ~
 \begin{list}{ }{}
 \item[{$<$ 0 }]
 -EWALL = TW is a (surface-) temperature (eV) in a Max\-wel\-li\-an flux
@@ -649,12 +649,12 @@ boundary conditions in ``one speed transport equation'' approximations,
 which often are of great interest in general linear transport theory.
 The $EWALL < 0 $ option, together with the EINTEG and AINTEG flags described above,
 provides the Maxwell boundary conditions with given wall accommodation coefficient (see above).
-\item[{\bf EWBIN }]
+\item[\textbf{EWBIN }]
 see above, EWALL = 0 option.
 
 Default: EWBIN = 0.0 (irrelevant for ``Default Model'')
 
-\item[{\bf TRANSP(1) }]
+\item[\textbf{TRANSP(1) }]
 Semi-transparency for particles incident from the positive side.
 Renders a non-transparent surface (ILIIN $>$ 0) semi-transparent.
 The probability of a test flight to pass through the surface is [TRANSP]. This transparent fraction
@@ -671,7 +671,7 @@ Default: 0.0  (i.e., fully reflecting surface).
 
 Irrelevant for transparent surfaces (with ILIIN $\leq 0$).
 
-\item[{\bf TRANSP(2) }]
+\item[\textbf{TRANSP(2) }]
 Semi-transparency for particles incident from the negative side on a
 non-trans\-parent surface. Otherwise same as for TRANSP(1) option.
 
@@ -679,7 +679,7 @@ Default: 0.0  (i.e., fully reflecting surface).
 
 Irrelevant for transparent surfaces (with ILIIN $\leq 0$).
 
-\item[{\bf FSHEAT }]
+\item[\textbf{FSHEAT }]
 surface sheath potential factor. The sheath potential is $FSHEAT
 \cdot T_e$, with $T_e$ the electron temperature at the point of
 incidence. This sheath potential is applied if ions (test ions or bulk ions)
@@ -696,7 +696,7 @@ speed parallel to the $\vec B$-field into the sheath.
 
 Default: FSHEAT = 0.0
 
-\item[{\bf RECYCF, RECYCT}]
+\item[\textbf{RECYCF, RECYCT}]
 Multiplier for reflection probability RPROBF:
 
 Particles can be re-emitted from surfaces by either the ``fast reflection'' model
@@ -723,7 +723,7 @@ to maintain a total recycling coefficient at this surface of RECYCT.
 Default: RECYCF = 1 for incident atoms, test ions and bulk ions.
 
 Default: RECYCF = RPROBF =0 for incident molecules.
-\item[{\bf RECYCT }]
+\item[\textbf{RECYCT }]
 Recycling coefficient (must not be negative):
 
 A flux $RECYCT \cdot Influx$ is re-emitted from a surface, for any $Influx$ of particles of any species,
@@ -749,12 +749,12 @@ certain surfaces, see paragraph \ref{sec2.6.1} below.
 Note: RPROBF = 0 for incident molecules (ITYP=2) by default.
 
 Default: RECYCT = 1. , i.e. $p_a = 0$
-\item[{\bf RECPRM }]
+\item[\textbf{RECPRM }]
 free model parameter for user supplied recycling models $ILREF=9$.
 
 Default: RECPRM = 0.
 
-\item[{\bf EXPPL }]
+\item[\textbf{EXPPL }]
 (only for ILREF = 2 option)
 
 incident angular dependence of fast particle reflection coefficient. The
@@ -772,7 +772,7 @@ and EXPPL $>$  0.
 \end{list}
 Default: EXPPL = 1. (recommended from a comparison with the
 TRIM database)
-\item[{\bf EXPEL }]
+\item[\textbf{EXPEL }]
 (only for ILREF = 2 option)
 
 
@@ -780,7 +780,7 @@ as EXPPL, incident angular dependence for the energy reflection coefficient.
 
 Default: EXPEL = 0.5 (recommended from a comparison with the
 TRIM database). e2 = EXPEL, see equations \ref{eq1.19} and \ref{eq1.20}
-\item[{\bf EXPIL }]
+\item[\textbf{EXPIL }]
 (only for ILREF = 2 option)
 
 incident angular dependence for angular distribution of re-emitted atom or molecule;
@@ -804,7 +804,7 @@ specular reflection angles
 
 Default: EXPIL = 0.
 
-\item[{\bf RECYCS }] The meaning of this flag for the
+\item[\textbf{RECYCS }] The meaning of this flag for the
 ``physical sputtering" options depends upon the value of the first
 digit N of ILSPT:
 \begin{list}{ }{}
@@ -826,7 +826,7 @@ supplied sputter model for any particular surface element.
 
 Default: RECYCS = 1.
 \end{list}
-\item[{\bf RECYCC }] The meaning of this flag for the
+\item[\textbf{RECYCC }] The meaning of this flag for the
 ``chemical sputtering" options depends upon the value of the
 second digit M of ILSPT:
 \begin{list}{ }{}
@@ -848,16 +848,16 @@ supplied sputter model for any particular surface element.
 
 Default: RECYCC = 1.
 \end{list}
-\item[{\bf SPTPRM }]
+\item[\textbf{SPTPRM }]
 free model parameter for user supplied sputtering models N=3, M=3.
 
 Default: SPTPRM = 0.
-\item[{\bf ESPUTS }]
+\item[\textbf{ESPUTS }]
 (new: March 2015) parameter (flag) for energy of physically sputtered particle.
 Currently not in use.
 
 Default: ESPUTS = 0.
-\item[{\bf ESPUTC }]
+\item[\textbf{ESPUTC }]
 (new: March 2015) parameter (flag) for energy of chemically sputtered particle.
 By default: chemically sputtered particles are released from the wall by the ``thermal surface emission model",
 as also used for the recycling/reflection thermal emission,

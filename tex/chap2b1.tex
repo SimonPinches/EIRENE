@@ -1,7 +1,7 @@
 \section{Input data for operating mode} \label{sec2.1}
 
 \medskip
-{\bf General Remarks}
+\textbf{General Remarks}
 
 \medskip
 
@@ -12,7 +12,7 @@ the simulation model (drifts included or not, etc.).
 
 \medskip
 
-{\bf The Input Block}
+\textbf{The Input Block}
 
 \medskip
 
@@ -52,19 +52,19 @@ cards starting with character string \texttt{CFILE}  in the input file.
 
 \medskip
 
-{\bf Meaning of the input flags for operating mode}
+\textbf{Meaning of the input flags for operating mode}
 
 \medskip
 
 \begin{list}{}{}
-\item [{\bf TXTRUN}]
+\item [\textbf{TXTRUN}]
 At least one line of text to identify the run
 on printout and plot files.
 
 Each text card must start with *. The first of these text lines
 will appear on all plots, the full text will be echoed at the
 beginning of the printout file
- \item [{\bf NPRLL}]
+ \item [\textbf{NPRLL}]
 (Formerly at this place: NMACH, flag for machine precision (round off errors), now: out.) \\
 The new (2018) flag NPRLL controls the various options for (MPI) parallelisation modes, i.e. the strategies
 to assign processes  to strata. This is defined in PEDIST.f (initialization phase)
@@ -81,7 +81,7 @@ Most transparent, and simplest method, load balancing guaranteed. But perhaps no
 
 
 
-\item [{\bf NMODE}] Operating mode
+\item [\textbf{NMODE}] Operating mode
 \begin{list}{}{}
 \item [= 0 ] EIRENE run as stand-alone-code. Code coupling segment
 \texttt{couple\_Dummy.f} may be used. 
@@ -127,7 +127,7 @@ routines, e.g. to perform global balances etc. after summation of
 the contributions from the individual strata.
 
 \end{list}
-\item [{\bf NTCPU}]
+\item [\textbf{NTCPU}]
 Maximum number of CPU seconds allowed for this run. NTCPU must be
 less than or equal to the time parameter in the job-card (if any).
 
@@ -142,7 +142,7 @@ this variable NTCPU now is close to the true Monte Carlo sampling time.
 The total cpu-time, including initialisation overhead as well as post-processing
 is printed at the end of an EIRENE run (see: ``total cpu-time of this run"
 in printout file).
-\item [{\bf NFILE}]
+\item [\textbf{NFILE}]
 Flag for the use of dump files FT10, FT11, FT12, FT13, FT14 and FT15.
 
 = 0: Neither reading nor saving of data is done.
@@ -225,11 +225,11 @@ distribution for the coming next time-step.
 \item [J = 3 ]
 Acts as if both NFILE-J=1 and NFILE-J=2.
 \end{list}
-\item [{\bf NITER0} ]
+\item [\textbf{NITER0} ]
 Initial iteration number: (Default: NITER0=1)
 Irrelevant parameter. Only needed
 for book keeping and printout. EIRENE labels the iterations from NITER0 to NITER.
-\item [{\bf NITER}]
+\item [\textbf{NITER}]
 Number of iterations, if EIRENE runs in ``iterative mode".
 \begin{list}{}{}
 \item [$>$ 0 ] EIRENE calls user supplied subroutine MODUSR
@@ -243,10 +243,10 @@ formatted input file again. This recalling is repeated NITER times
 is used for each iteration. Hence the true CPU time then is
 $ NTCPU \cdot NITER $.
 \end{list}
-\item [{\bf NTIME0} ]
+\item [\textbf{NTIME0} ]
 Initial time-cycle number: (default: NTIME0=1). Irrelevant. Only needed
 for book keeping and printout. EIRENE labels the time steps from NTIME0 to NTIME.
-\item [{\bf NTIME} ]
+\item [\textbf{NTIME} ]
 Total number of iterations (``cycles") in time carried out in one single run.
 The total time
 per cycle is defined as NTMSTP $\cdot$ DTIMV (see below, input block 13).\\
@@ -277,35 +277,35 @@ I.e., the census population then determines the initial condition
 for the distribution function
 $f(\underline{r},\underline{v},i,t=t_0)$. The source strength FLUX
 is computed from that initial condition.
-\item [{\bf NOPTIM} ]
+\item [\textbf{NOPTIM} ]
 Default: NRAD, = total number of grid cells \\
 (verify this default in case of older versions: there it may have been NOPTIM=1)\\
 NOPTIM is the first dimension of the arrays IGJUM3(ICELL,ISURF), which may be
 used for optimizing code performance by reducing unnecessary geometrical calculations.
 See `CH3-cards' in input block 8 (\ref{sec2.8}).
-\item [{\bf NOPTM1} ]
+\item [\textbf{NOPTM1} ]
 Default: 1
-\item [{\bf NGEOM\_USR} ]
+\item [\textbf{NGEOM\_USR} ]
 for value =1: user defined (external) geometry package (LEVGEO=10),
 then no grid storage is provided in EIRENE.
 Default: 0
-\item [{\bf NCOUP\_INPUT} ]
+\item [\textbf{NCOUP\_INPUT} ]
 =1: Storage for data transfer via coupling routines, =0: no
 such storage.
 Default: 1
-\item [{\bf NSMSTRA} ]
+\item [\textbf{NSMSTRA} ]
 ``Sum over strata" disabled
 for value 0, enabled for value 1. Default: 1
-\item [{\bf NSTORAM} ]
+\item [\textbf{NSTORAM} ]
 Storage vs. speed in atomic data evaluation. Maximum
 storage, fastest computation: =9. Minimum storage, maximum work
 (slowest option) =0. Default: 9
-\item [{\bf NGSTAL} ]
+\item [\textbf{NGSTAL} ]
 Storage for spatial distribution of surface tallies on non-default
 standard surfaces for value =1. For value =0: only total (spatially
 integrated) surfaces fluxes.
 Default: 0
-\item [{\bf NRTAL} ]
+\item [\textbf{NRTAL} ]
 Condensing mesh cells into fewer larger
 cells, for output volume tallies. The underlying fine mesh has NRAD cells (see input block 2).
 The coarser mesh, obtained from condensing cells into one larger cell, has NRTAL cells.
@@ -327,14 +327,14 @@ The index array NCLTAL(NRAD) can be defined in the problem
 specific ``user" routines (see section \ref{sec3}), e.g.: INIUSR, GEOUSR, etc..
 
 Default: NCLTAL(IRAD)=IRAD for IRAD=1,NRAD
-\item [{\bf NREAC\_ADD} ]
+\item [\textbf{NREAC\_ADD} ]
 Storage for additional reaction decks read onto EIRENE
 arrays in USR-routines, post-processing, etc. Default: 0
 \end{list}
 Next input card, global logical switches. The switches 10--15 in this card
 may have version specific meanings and are for internal code options only.
 \begin{list}{}{}
-\item [{\bf NLSCL} ]
+\item [\textbf{NLSCL} ]
 Some volume averaged tallies are re-scaled in
 order to exactly preserve the total number of particles, which
 otherwise would be the case only up to statistical precision (due
@@ -342,7 +342,7 @@ to the use of track-length estimators). EIRENE computes three
 factors FATM, FMOL and FION such that particle balances for atoms,
 molecules and test ions, respectively, are accurately observed, if
 NLSCL = TRUE.
-\item [{\bf NLTEST} ]
+\item [\textbf{NLTEST} ]
 Tests for consistency
 between cell numbers and geometrical data along the particle
 tracks are carried out at each point of collision. If
@@ -350,12 +350,12 @@ inconsistencies are detected, the history is stopped and an error
 message is printed. The contribution of these particles to the
 particle- and energy balances is stored in the bins ``PTRASH" and
 ``ETRASH" respectively.
-\item [{\bf NLANA} ] De-activates
+\item [\textbf{NLANA} ] De-activates
 (NLANA=.TRUE.) all non-analog sampling distributions, such as
 biased source sampling, splitting, etc.. Select NLANA=.TRUE., if
 particle trajectory plots are used to get an intuitive picture of
 what is going on physically.
-\item [{\bf NLDRFT} ] Drift
+\item [\textbf{NLDRFT} ] Drift
 component in the bulk ions velocity distribution is included, i.e. the assumed underlying distribution in velocity space
 is a drifting Maxwellian for volumetric background tallies of bulk particles.
 (see input block 5, input tallies VXIN, VYIN, VZIN)). Otherwise (if NLDRFT = FALSE) an
@@ -364,22 +364,22 @@ assumed for the background particles and the input for VXIN,...VZIN is ignored.
 
 This flag also affects the output tallies for energy exchange, momentum exchange between test particles and background particles,
 as well as sampling from linear collision kernels.
-\item [{\bf NLCRR} ]
+\item [\textbf{NLCRR} ]
 Correlated sampling is used. See discussion at end of section \ref{sec1.7}.
-\item [{\bf NLERG} ]
+\item [\textbf{NLERG} ]
 The case is
 automatically reduced to a case for estimating cell volumes by
 utilizing an ``ergodic property". More details: see paragraph \ref{NLERG} below.
-\item [{\bf NLIDENT} ]
+\item [\textbf{NLIDENT} ]
 In multi-processor calculation mode NLIDENT forces all processors working on the
 same stratum to use the same sequence of random numbers and hence to
 carry out exactly identical work.
 This flag can be used to test the parallelized code version.
-\item [{\bf NLONE} ] The case
+\item [\textbf{NLONE} ] The case
 is automatically reduced to a single species and ``one speed
 transport" problem
 (to simplify setting up cases for comparison with analytic results). (not ready, don't use)
-\item [{\bf NLMOVIE} ]
+\item [\textbf{NLMOVIE} ]
 reset a number of model parameters to enable a series of geometry
 plots for making particle trajectory movies. This option only works in connection with time dependent mode, see NTIME flag
 described above, and input block \ref{sec2.13}. More details: see paragraph \ref{NLMOVIE} below.
@@ -391,25 +391,25 @@ These variables may disappear and re-appear with other names/features,
 no code backward compatibility. They should all be set to FALSE, except probably NLOLDRAN,
 with may be code version dependent.
 \begin{list}{}{}
-\item [{\bf NLDFST} ]
+\item [\textbf{NLDFST} ]
 for internal use. Testing time step options in Fokker Planck solver (folion.f)
-\item [{\bf NLOLDRAN} ]
+\item [\textbf{NLOLDRAN} ]
 Switch between random number generators. Opposite meaning in different code versions.
 One should set this switch such that generator ``H1RN" is used, and NOT the congruential generator.
 See function ``ranf.f". The ``junk" congruential generator has been kept, so far,
 to permit full backward compatibility. But the code now (from revisions April 17 on) heavily complains if it is used.
-\item [{\bf NLCASCAD} ]
+\item [\textbf{NLCASCAD} ]
 for internal use. Unfinished option for enforcing fully analog collision cascades,
 rather than weighting  (collide.f)
-\item [{\bf NLOCTREE} ]
+\item [\textbf{NLOCTREE} ]
 for internal use. Testing CPU optimization for timea.F routines (``additional surfaces")
-\item [{\bf NLWRMSH} ]
+\item [\textbf{NLWRMSH} ]
 write out additional surface information for internal (FZJ) triangular grid generators (input.f)
 \end{list}
 Optional input cards, for pathways to external databases.
 Their presence is identified by the starting character string CFILE of these cards.
 \begin{list}{}{}
-\item [{\bf DBHANDLE} ]
+\item [\textbf{DBHANDLE} ]
 Name of the database which is specified in this ``CFILE" card.
 The format of a data file is identified in EIRENE by its name.
 Possible database names currently recognized are:\\
@@ -419,7 +419,7 @@ PHOTON, POLARI,
 SPUTER, TRIM,  TRMSGL, \\
 with volumetric collision databases in the first block, and
 surface interaction databases in the second.
-\item [{\bf DBFNAME} ]
+\item [\textbf{DBFNAME} ]
 Absolute or relative path and name of file to be used for this
 database.
 \end{list}

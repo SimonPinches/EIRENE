@@ -2,7 +2,7 @@
 
 \medskip
 
-{\bf General remarks}
+\textbf{General remarks}
 
 \medskip %
 
@@ -51,7 +51,7 @@ explicitly done so in subroutine TALUSR).
 
 The input volume tallies for the background medium are listed in
 table \ref{tab1}. They are selected for printout or graphical
-output by the {\bf negative} value of their tally number. E.g.,
+output by the \textbf{negative} value of their tally number. E.g.,
 the choice ITALV = 5 selects tally no. 5 from table \ref{tab2},
 and the choice ITALV = -5 selects tally no. 5 from table
 \ref{tab1}.
@@ -73,7 +73,7 @@ to as an input volumetric tally (no. ITALI=13 in table
 
 \medskip
 
-{\bf The Input Block}
+\textbf{The Input Block}
 
 \medskip
 
@@ -161,57 +161,57 @@ NLTSOUT
 
 \medskip
 
-{\bf Meaning of the Input Variables for numerical and graphical Output}
+\textbf{Meaning of the Input Variables for numerical and graphical Output}
 
 \medskip
 
 {\sl * 11A. Block for numerical output written on unit 6}
 \begin{list}{ }{}
-\item[{\bf TRCPLT }]
+\item[\textbf{TRCPLT }]
 Trace-back from plot routines
-\item[{\bf TRCHST }]
+\item[\textbf{TRCHST }]
 Printout of trajectories of selected test particle histories into
 geometry plots.
 These histories are selected by the flags I1TRC and I2TRC, see below,
 sub-block 11B.2.
-\item[{\bf TRCNAL }]
+\item[\textbf{TRCNAL }]
 Trace-back for non-analog methods, i.e. splitting surfaces,
 suppression of absorption, weighted post-collision species
 sampling etc.
-\item[{\bf TRCMOD }]
+\item[\textbf{TRCMOD }]
 Trace-back from routines for iterative mode (MOD\_TMSTEP, MODBGK, and problem
 specific routines called from MODUSR).
-\item[{\bf TRCSIG }]
+\item[\textbf{TRCSIG }]
 Trace-back from post processing line integral diagnostics block
 DIAGNO, line of sight integration routines.
-\item[{\bf TRCGRD }]
+\item[\textbf{TRCGRD }]
 Printout of ``standard mesh surface data"
-\item[{\bf TRCSUR }]
+\item[\textbf{TRCSUR }]
 Printout of data for ``additional surfaces"
-\item[{\bf TRCREF }]
+\item[\textbf{TRCREF }]
 Printout of reflection model related data.
 In particular a list of all non-perfect recycling surfaces is printed,
 i.e., a list of surfaces for which there is some absorption at least for
 one incident particle species.
-\item[{\bf TRCFLE }]
+\item[\textbf{TRCFLE }]
 Trace-back from subroutines WRSTRT, WRGEOM, WRPLAS (writing on and
 reading from the dump files FT10, FT11, FT12, FT13 etc.
-\item[{\bf TRCAMD }]
+\item[\textbf{TRCAMD }]
 Trace-back from atomic and molecular data routines
 
 XSECTA, XSECTM, XSECTI
-\item[{\bf TRCINT }]
+\item[\textbf{TRCINT }]
 Traceback from user specified interfacing routine INFCOP,
 e.g. of data related to coupling of EIRENE to other codes.
-\item[{\bf TRCLST }]
+\item[\textbf{TRCLST }]
 Printout of information during the last history of each stratum.
 E.g., sampling efficiencies, and other accumulated information,
 which is only available in the history generation routines during
 particle tracing.
-\item[{\bf TRCSOU }]
+\item[\textbf{TRCSOU }]
 Traceback from primary source sampling routines, e.g. from LOCATE,
 SAMPNT, SAMLNE, SAMSRF, SAMVOL and SAMUSR
-\item[{\bf TRCREC }]
+\item[\textbf{TRCREC }]
 Printout of
 EIRENE recommendations for next run on same case:
 
@@ -219,38 +219,38 @@ A) stratified source sampling, at present:
 for proportional allocation of weights.
 
 B) weight windows, at present: to be written
-\item[{\bf TRCTIM }]
+\item[\textbf{TRCTIM }]
 Printout cpu-time information for each history
-\item[{\bf TRCBLA}]
+\item[\textbf{TRCBLA}]
 Global particle and energy balance for atoms is printed.
-\item[{\bf TRCBLM }]
+\item[\textbf{TRCBLM }]
 Global particle and energy balance for
 molecules is printed.
-\item[{\bf TRCBLI }]
+\item[\textbf{TRCBLI }]
 Global particle and
 energy balance for test ions is printed.
-\item[{\bf TRCBLP }]
+\item[\textbf{TRCBLP }]
 Global particle and energy balance for bulk ions is printed.
-\item[{\bf TRCBLE }]
+\item[\textbf{TRCBLE }]
 Global particle and energy balance for
 electrons is printed.
-\item[{\bf TRCBLPH }]
+\item[\textbf{TRCBLPH }]
 Global particle and
 energy balance for photons is printed.
-\item[{\bf TRCTAL }]
+\item[\textbf{TRCTAL }]
 Print list of activated and de-activated tallies. The default settings eliminate some tallies from storage and
 estimators which are likely to be irrelevant in a particular run, e.g. all photon related tallies are deactivated automatically
 if no radiation transfer calculation is included in a run.
 These default settings are overruled by the flags NTLVOUT and NTLSOUT at the end of this sub-block 11A, see below.
-\item[{\bf TRCOCT }]
+\item[\textbf{TRCOCT }]
 to be written: printout from octree geometry optimization procedure
-\item[{\bf TRCCEN }]
+\item[\textbf{TRCCEN }]
 printout from census array stored in time dependent mode: species and stratum resolved census fluxes
-\item[{\bf TRCRNF }]
+\item[\textbf{TRCRNF }]
 printout from random number generation routines: setting seed, etc., mostly for testing ``correlated sampling'' options (flag: NLCRR).
-\item[{\bf TRCHKTIM }]
+\item[\textbf{TRCHKTIM }]
 printout of cpu usage during particle tracing and scoring (excluding overhead), separated by particle type, species and strata.
-\item[{\bf TRCSRC(ISTRA),ISTRA=0,NSTRAI }] ~
+\item[\textbf{TRCSRC(ISTRA),ISTRA=0,NSTRAI }] ~
 
 The selected global, volumetric and
 surface crossing tallies are printed for those
@@ -262,12 +262,12 @@ these tallies.
 Note: printout for individual strata is only possible if the
 data for strata have been saved on file (NFILE-N=1,2 option, input block 1).
 Otherwise only the last stratum currently on storage arrays (mostly: sum over strata) is available.
-\item[{\bf NVOLPR }]
+\item[\textbf{NVOLPR }]
 Total number of volume averaged tallies to be printed.
-\item[{\bf NSPCPR }]
+\item[\textbf{NSPCPR }]
 Flag for printout of surface or cell based spectra (defined in input block 10F)
 If NSPCPR $> 0$: spectra are printed on output stream fort.(20+ioff), name: spectra.out
-\item[{\bf NPRTLV }]
+\item[\textbf{NPRTLV }]
 Index of the tally to be printed (first column in table \ref{tab1} or
 \ref{tab2}). If the tally has a species index, it is printed for all
 species,
@@ -285,7 +285,7 @@ general sense.
 
 If NPRTLV = 0, then the user defined post processing routine TALUSR
 is called (\ref{sec3.7}.
-\item[{\bf NFLAGV }]
+\item[\textbf{NFLAGV }]
 Flag to specify the level of printout.
 \begin{list}{ }{}
 \item[{$=-1$ }]
@@ -301,7 +301,7 @@ additionally: print 3D profiles (if any), averaged over all (if any) higher dime
 \item[{$=4$ }]
 print 3D profiles, but no lower dimensional averages
 \end{list}
-\item[{\bf NSPEZV }]
+\item[\textbf{NSPEZV }]
 If NSPEZV(..,1) $\ne 0$, then this tally is printed only for the
 species
 index range:
@@ -309,7 +309,7 @@ index range:
 $I1 = NSPEZV(...,1)$ to $I2 = MAX(I1,NSPEZV(...,2))$,
 
 rather than for all species relevant for the specified tally.
-\item[{\bf NTLVFL }]
+\item[\textbf{NTLVFL }]
 In addition to the standard output stream fort.IUNOUT, this tally is
 also printed onto output stream fort.NTLVFL, for all species selected,
 and also the corresponding standard deviations are printed, if
@@ -327,13 +327,13 @@ the particular surfaces (internal EIRENE surface
 numbers) are selected here by input flag NSRF.
 
 \begin{list}{ }{}
-\item[{\bf NSURPR }]
+\item[\textbf{NSURPR }]
 Total number of surfaces, for which surface averaged tallies are to be printed.
-\item[{\bf NSRF }]
+\item[\textbf{NSRF }]
 Index of the surface
 to be printed. By default all tallies listed in tables (\ref{tab3}, \ref{tab3a}, \ref{tab3old}) (depending on code version)
 are printed for this surface.
-\item[{\bf NPRTLS(J) NFLAGS(J) NSPEZS(J,1) NSPEZS(J,2)}]
+\item[\textbf{NPRTLS(J) NFLAGS(J) NSPEZS(J,1) NSPEZS(J,2)}]
 These next flags are only needed for those surfaces, for which a
 further spatial resolution within one surface is provided (this is
 enabled by providing storage through setting the flag NGSTAL = 1 in
@@ -342,8 +342,7 @@ flags NPRTLV(J), NFLAGV(J), NSPEZV(J,1), NSPEZV(J,2) for volume
 tallies, respectively. If the NPRTLS,... flags are not specified
 (i.e.: default=0), then no spatially resolved surface tallies are
 printed.
-\item[{\bf
-NTLSFL(J)}] The spatially resolved tallies (if any) and/or the flux
+\item[\textbf{NTLSFL(J)}] The spatially resolved tallies (if any) and/or the flux
 energy spectra (if any, see input block 10F) are printed on
 additional output stream fort.NTLSFL(J) for this surface.
 \end{list}
@@ -351,14 +350,14 @@ additional output stream fort.NTLSFL(J) for this surface.
 The next, optional input cards can be used to overrule the default choices of tallies which are available in a run.
 The logical flag TRCTAL described above can be used to print a list of all activated and deactivated tallies.
 \begin{list}{ }{}
-\item[{\bf NTLVOUT }]
+\item[\textbf{NTLVOUT }]
 total number of volume averaged tallies to be explicitly abandoned or enabled
-\item[{\bf NUMTAL(J) }]
+\item[\textbf{NUMTAL(J) }]
 Number of a tally from table \ref{tab2}, e.g. NUMTAL(J)=1 for neutral atom density tally PDENA.
 The tally with this number NUMTAL(J) is explicitly enabled.
 With an additional negative sign this tally is removed from the run (and the balances), e.g. NUMTAL(J)=-2
 would remove the evaluation (and storage) of tally PDENM from this run.
-\item[{\bf NTLSOUT }]
+\item[\textbf{NTLSOUT }]
 to be written
 \end{list}
 
@@ -366,20 +365,20 @@ to be written
 {\sl  * 11B.1 Data for 2D plot of geometry}
 
 \begin{list}{ }{}
-\item[{\bf PL1ST }]
+\item[\textbf{PL1ST }]
 plot the x- (radial) standard grid surfaces into a 2D geometry plot
-\item[{\bf PL2ND }]
+\item[\textbf{PL2ND }]
 plot the y- (poloidal) standard grid surfaces into a 2D
 geometry plot
-\item[{\bf PL3RD }]
+\item[\textbf{PL3RD }]
 plot the z- (toroidal) standard grid surfaces into a 2D
 geometry plot
-\item[{\bf PLADD }]
+\item[\textbf{PLADD }]
 plot the additional surfaces into a 2D geometry plot
-\item[{\bf PLHST }]
+\item[\textbf{PLHST }]
 Plot the track of some selected test particle histories into the
 geometry plot (2D or 3D).
-\item[{\bf PLCUT }]
+\item[\textbf{PLCUT }]
 Flag for the choice of a plane, in which the 3 dimensional
 geometrical configuration is plotted in case of a 2D geometry plot.
 This plane may be defined by either x = CONST, y = CONST or by
@@ -401,36 +400,36 @@ z = CONST ; plotting plane is the xy plane.
 
 y is the ordinate, x is the abscissa
 \end{list}
-\item[{\bf PLBOX }] plot box defined by surface inequalities
+\item[\textbf{PLBOX }] plot box defined by surface inequalities
 in addition to valid part of surface
-\item[{\bf PLSTOR }]
+\item[\textbf{PLSTOR }]
 produce file of coordinates along 2D projections of ``additional
 surfaces" for later use in some graphics (``PATRAN format", also
 for RAPS-graphics, see below, sub-block: 11B3). These coordinates
 are stored on arrays XPL2D, YPL2D in subroutine STCOOR called from
 subroutine PLTADD.
-\item[{\bf PLNUMV }] print cell number
+\item[\textbf{PLNUMV }] print cell number
 into standard mesh cells
-\item[{\bf PLNUMS }] print numbers
+\item[\textbf{PLNUMS }] print numbers
 near additional surfaces
-\item[{\bf PLARR }] plot arrows to
+\item[\textbf{PLARR }] plot arrows to
 indicate the outer surface normal vector (only in LEVGEO=3, partly in LEVGEO=2, for non-default standard surfaces (input block 3a).
 Not functional (any more?) for additional surfaces.
-\item[{\bf PLIDL }] print output files for further processing
+\item[\textbf{PLIDL }] print output files for further processing
 in external  tools (e.g. for FZJ proprietary IDL graphics tool).
 The grid information as well as all input and output tallies (excluding the de-activated ones)
 are printed on files, one file per tally. See calls to routines OUTIDL.... from main program EIRENE.
-\item[{\bf CH2MX }] horizontal
+\item[\textbf{CH2MX }] horizontal
 half width of 2D plot window (cm)
-\item[{\bf CH2MY }]
+\item[\textbf{CH2MY }]
 vertical half width of 2D plot window (cm)
-\item[{\bf CH2X0
+\item[\textbf{CH2X0
 }] horizontal co-ordinate of midpoint of 2D plot window (cm).
-\item[{\bf CH2Y0 }] vertical co-ordinate of midpoint of 2D
+\item[\textbf{CH2Y0 }] vertical co-ordinate of midpoint of 2D
 plot window (cm).
-\item[{\bf CH2Z0 }] distance CONST of
+\item[\textbf{CH2Z0 }] distance CONST of
 plotting plane to origin.
-\item[{\bf NPLINR NPLOTR NPLDLR }]
+\item[\textbf{NPLINR NPLOTR NPLDLR }]
 ~
 
 radial standard surfaces with labels
@@ -438,14 +437,14 @@ radial standard surfaces with labels
 IR1ST = NPLINR, NPLOTR, NPLDLR
 
 are plotted.
-\item[{\bf NPLINP NPLOTP NPLDLP }] ~
+\item[\textbf{NPLINP NPLOTP NPLDLP }] ~
 
 poloidal standard surfaces with labels
 
 IP2ND= NPLINP, NPLOTP, NPLDLP
 
 are plotted.
-\item[{\bf NPLINT NPLOTT NPLDLT }] ~
+\item[\textbf{NPLINT NPLOTT NPLDLT }] ~
 
 toroidal standard surfaces with labels
 
@@ -457,25 +456,25 @@ are plotted.
 {\sl  * 11B.2 Data for 3D plot of geometry}
 
 \begin{list}{ }{}
-\item[{\bf CH3MX }]
+\item[\textbf{CH3MX }]
 half width of plot chamber in x- direction, used for
 3D geometry plot
-\item[{\bf CH3MY }]
+\item[\textbf{CH3MY }]
 half width of plot chamber in y- direction, used for
 3D geometry plot
-\item[{\bf CH3MZ }]
+\item[\textbf{CH3MZ }]
 half width of plot chamber in z- direction, used for
 3D geometry plot
-\item[{\bf CH3X0 }]
+\item[\textbf{CH3X0 }]
 x-co-ordinate of midpoint of plot-chamber in user co-ordinates, 3D
 geometry plot only
-\item[{\bf CH3Y0 }]
+\item[\textbf{CH3Y0 }]
 y-co-ordinate of midpoint of plot-chamber in user co-ordinates, 3D
 geometry plot only
-\item[{\bf CH3Z0 }]
+\item[\textbf{CH3Z0 }]
 z-co-ordinate of midpoint of plot-chamber in user co-ordinates, 3D
 geometry plot only
-\item[{\bf ANGLE1, ANGLE2 }] ~
+\item[\textbf{ANGLE1, ANGLE2 }] ~
 
 First and second viewing angle for 3D geometry plot
 \end{list}
@@ -487,17 +486,17 @@ by an interval of additional surface labeling indices ILIMI,
 from the full range of all (i.e NLIMI) additional surfaces.
 
 \begin{list}{ }{}
-\item[{\bf PL3A }]
+\item[\textbf{PL3A }]
 logical flag, indicating if the additional surfaces specified
 in this card are to be plotted or not. If PL3A=.FALSE., the rest
 of this card is irrelevant
-\item[{\bf TEXTLA }]
+\item[\textbf{TEXTLA }]
 text written onto plot, characterizing this group of additional
 surfaces
-\item[{\bf IPLTA }]
+\item[\textbf{IPLTA }]
 number of different subgroups of additional surfaces comprising
 this group
-\item[{\bf IPLAA, IPLEA }] ~
+\item[\textbf{IPLAA, IPLEA }] ~
 
 each \hfill subgroup \hfill consists \hfill of \hfill additional \hfill
 surfaces \hfill ranging \hfill from \hfill no.
@@ -519,13 +518,13 @@ from the full range of all (i.e NR1ST, NP2ND or NT3RD, resp.)
 standard surfaces.
 
 \begin{list}{ }{}
-\item[{\bf I1TRC }]
+\item[\textbf{I1TRC }]
 Number of first particle history
 to be traced in printout and/or 2D or 3D plot
-\item[{\bf I2TRC }]
+\item[\textbf{I2TRC }]
 Number of last particle history
 to be traced in printout and/or 2D or 3D plot
-\item[{\bf ISYPLT(J), J=1,8 }] ~
+\item[\textbf{ISYPLT(J), J=1,8 }] ~
 
 Indices to plot symbols along the particle tracks for different
 events. Up to 8 different events can be picked in any order in the
@@ -566,7 +565,7 @@ symbol at a particle stopped at generation limit (t-dep. mode)
 If an error is detected, by default a symbol is always plotted.
 Plotting this symbol cannot be abandoned.
 \end{list}
-\item[{\bf ILINIE }] ~
+\item[\textbf{ILINIE }] ~
 \begin{list}{ }{}
 \item[{$\ne 0$ }]
 connect two successive events by a straight line.
@@ -581,9 +580,9 @@ only symbols (if any selected) will be plotted along the history
 {\sl * 11B3 Graphical output of volume averaged tallies}
 
 \begin{list}{ }{}
-\item[{\bf NVOLPL }]
+\item[\textbf{NVOLPL }]
 Total number of pictures from volume averaged tallies.
-\item[{\bf PLTSRC(ISTRA), (ISTRA=0,NSTRAI) }] ~
+\item[\textbf{PLTSRC(ISTRA), (ISTRA=0,NSTRAI) }] ~
 
 Profiles of the selected
 volumetric tallies are plotted
@@ -594,23 +593,23 @@ these tallies.
 Note: graphical output for individual strata is only possible if the
 data for strata have been saved on file (NFILE-N=1,2 option, input block 1).
 Otherwise only the last stratum currently on storage arrays (mostly: sum over strata) is available.
-\item[{\bf NSPTAL }]
+\item[\textbf{NSPTAL }]
 Number of different ``species" (quantities) to be plotted for this
 tally into one picture.
 
 For 3D plots, NSPTAL = 1, except for the
 LVECT3 or LRPVC3 vector field options, in which case NSPTAL = 2. See below.
-\item[{\bf PLTL2D }]
+\item[\textbf{PLTL2D }]
 Switch to activate a 2D plot
-\item[{\bf PLTL3D }]
+\item[\textbf{PLTL3D }]
 Switch to activate a 3D plot
-\item[{\bf PLTLLG }]
+\item[\textbf{PLTLLG }]
 The tally is plotted on a logarithmic scale.
-\item[{\bf PLTLER }]
+\item[\textbf{PLTLER }]
 Standard deviation is plotted if available. In case of
 2D plot error bars are plotted along the curves. In case of 3D plot
 a full standard deviation profile is plotted on a separate picture.
-\item[{\bf TALZMI }]
+\item[\textbf{TALZMI }]
 Minimum ordinate value for the plot.
 
 If TALZMI = 666.0 then the minimum is searched for in the data array.
@@ -619,7 +618,7 @@ Even if PLTLLG (log. scale), the true
 minimum ordinate value (not the logarithm thereof) must be specified.
 
 If TALZMI = 666.0 and PLTLLG, ZMIN=1.E-48 is used as cut-off value.
-\item[{\bf TALZMA }]
+\item[\textbf{TALZMA }]
 like TALZMI, but
 maximum ordinate value for the plot.
 
@@ -632,7 +631,7 @@ maximum ordinate value (not the logarithm thereof) must be specified.
 The following input variables are needed only if PLTL2D = TRUE
 
 \begin{list}{ }{}
-\item[{\bf TALXMI = TALXMA = 0.0 }]
+\item[\textbf{TALXMI = TALXMA = 0.0 }]
 the radial (x-) grid is used as abscissa
 for plotting (default).
 \end{list}
@@ -640,7 +639,7 @@ The next options allow to change the x axis, e.g. for cases when a meaningful
 radial (x-) grid does not exist for the curve to be plotted. No interpolation to a ``true" radial (x-) grid
 is involved, so the resulting curves may change shape on the plot depending on options chosen here.
 \begin{list}{ }{}
-\item[{\bf TALXMI $\neq$ TALXMA }] ~
+\item[\textbf{TALXMI $\neq$ TALXMA }] ~
 
 if TALXMI $<$ TALXMA, then a grid equidistant on a linear scale is used,
 TALXMI is then the minimum abscissa value for the plot,
@@ -655,20 +654,20 @@ if TALXMI $>$ TALXMA and at least one of them is negative,
 then a user defined grid XXP2D\_USR is used. This must have been
 defined in one of the user-routines for this figure no. N=IBLD,
 i.e., the array XXP2D(J,IBLD) must have been set, J the grid index.
-\item[{\bf ISPZTL }]
+\item[\textbf{ISPZTL }]
 Index of the species of the tally that will be plotted.
 
 If ISPZTL = 0, the tally obtained by summation over its
 species index is plotted.
-\item[{\bf NPTALI }]
+\item[\textbf{NPTALI }]
 Index of tally to be plotted.
-\item[{\bf NPLIN2 }]
+\item[\textbf{NPLIN2 }]
 Index of the first cell that is displayed on the plot,
 for 2D plot only.
-\item[{\bf NPLOT2 }]
+\item[\textbf{NPLOT2 }]
 Index of the last cell that is displayed on the plot,
 for 2D plot only.
-\item[{\bf NPLDL2 }]
+\item[\textbf{NPLDL2 }]
 Increment for the cell indices,
 for 2D plot only.
 \end{list}
@@ -676,53 +675,53 @@ for 2D plot only.
 The following input variables are needed only if PLTL3D = TRUE
 
 \begin{list}{ }{}
-\item[{\bf LHIST3 }]
+\item[\textbf{LHIST3 }]
 make a 3D histogram plot.
-\item[{\bf LCNTR3 }]
+\item[\textbf{LCNTR3 }]
 make a contour plot.
-\item[{\bf LSMOT3 }]
+\item[\textbf{LSMOT3 }]
 make a surface plot in a 3D cube.
-\item[{\bf LRAPS3 }]
+\item[\textbf{LRAPS3 }]
 produce files for RAPS graphics system. If additional surfaces are
 to be indicated in these blocks, PLSTOR =.TRUE., see sub-block 11B1.
-\item[{\bf LVECT3}]
+\item[\textbf{LVECT3}]
 make a vector field plot.
 
 NSPTAL must be 2 in this case. The first of these
 2 tallies is taken as field of x - coordinates of the vector field to
 to be plotted, and the second tally is the y - coordinate field.
-\item[{\bf LRPVC3}]
+\item[\textbf{LRPVC3}]
 produce files for RAPS graphics system for vector field plot.
 Co-ordinates of vectors as in LVECT3 option. If additional
 surfaces are to be indicated in these blocks, PLSTOR=TRUE, see
 sub-block 11B1.
 
-\item[{\bf LPRAD3 }]
+\item[\textbf{LPRAD3 }]
 radial (x) co-ordinate is fixed. Plot tally versus poloidal (y) and toroidal (z)
 co-ordinate. See IPROJ3 flag below.
-\item[{\bf LPPOL3 }]
+\item[\textbf{LPPOL3 }]
 poloidal (y) co-ordinate is fixed. Plot tally versus radial (x) and toroidal (z)
 co-ordinate
-\item[{\bf LPTOR3 }]
+\item[\textbf{LPTOR3 }]
 toroidal (z) co-ordinate is fixed. Plot tally versus radial (x) and poloidal (y)
 co-ordinate
-\item[{\bf ISPTAL }]
+\item[\textbf{ISPTAL }]
 species index of tally to be plotted. ISPTAL = 0 means: sum over species
 index.
-\item[{\bf NPTALI }]
+\item[\textbf{NPTALI }]
 Index of tally to be plotted.
-\item[{\bf IPROJ3 }]
+\item[\textbf{IPROJ3 }]
 in case of 3d calculation, IPROJ3 is the index of
 the mesh cell of the grid, for which the corresponding
 co-ordinate is fixed. (See LPRAD3, LPPLO3, LPTOR3 flags above).
-\item[{\bf NPLI13 }]
-\item[{\bf NPL013 }]
-\item[{\bf NPLI23 }]
-\item[{\bf NPLO23 }]
-\item[{\bf TALW1 }]
+\item[\textbf{NPLI13 }]
+\item[\textbf{NPL013 }]
+\item[\textbf{NPLI23 }]
+\item[\textbf{NPLO23 }]
+\item[\textbf{TALW1 }]
 first viewing angle for 3D plot
-\item[{\bf TALW2 }]
+\item[\textbf{TALW2 }]
 second viewing angle for 3D plot
-\item[{\bf FCABS1 }]
-\item[{\bf FCABS2 }]
+\item[\textbf{FCABS1 }]
+\item[\textbf{FCABS2 }]
 \end{list}

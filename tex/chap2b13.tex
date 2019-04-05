@@ -2,7 +2,7 @@
 
 \medskip
 
-{\bf General remarks}
+\textbf{General remarks}
 
 \medskip %
 
@@ -50,7 +50,7 @@ stationary case in the time-dependent mode (see below).
 
  \medskip
 
-{\bf The Input Block}
+\textbf{The Input Block}
 
 \medskip
 
@@ -75,12 +75,12 @@ ENDIF
 
 \medskip
 
-{\bf Meaning of the Input Variables for this block}
+\textbf{Meaning of the Input Variables for this block}
 
 \medskip
 
 \begin{list}{ }{}
-\item[{\bf NPRNLI }] Total number of test particles in time
+\item[\textbf{NPRNLI }] Total number of test particles in time
 dependent arrays (``census arrays") (in old versions before 2001: NPRNLI must be $\le$ NPRNL,
 see: PARMUSR). The scoring on census arrays stops at latest when NPRNLI scores are on
 the census array.
@@ -95,12 +95,12 @@ In case NLERG = TRUE  (see input block 1), a time horizon is
 absolutely necessary in order to prevent infinite histories.
 Therefore, in case NLERG=TRUE and NPRNLI=0 an automatic correction
 to NPRNLI=100 is carried out.
-\item[{\bf NINITL\_READ}]  (new: 2013) Same as NINITL in block 7: provides random number seed for ``time-stratum" (sampling from census
+\item[\textbf{NINITL\_READ}]  (new: 2013) Same as NINITL in block 7: provides random number seed for ``time-stratum" (sampling from census
 array  (default: =0, no fresh initialization of random number generator for this stratum)
-\item[{\bf NPRMUL}] (new: 2013) Multiplicative factor for NPRNLI, in order to increase size of census
+\item[\textbf{NPRMUL}] (new: 2013) Multiplicative factor for NPRNLI, in order to increase size of census
 to more than 999999 particles, which otherwise would be the maximum due to I6 formatted integer input. 
 Default: = 0: no multiplication carried out
-\item[{\bf NPTST }] Same as NPTS in block 7.
+\item[\textbf{NPTST }] Same as NPTS in block 7.
 This is the number of histories, which are continued from a
 previous time-cycle (``Time dependence stratum ISTRA=NSTRAI+1").
 The initial coordinates are randomly sampled (with replacement)
@@ -131,7 +131,7 @@ is enforced, rather than random sampling from old census.
 
 
 Default: NPTST=0
-\item[{\bf NTMSTP }]
+\item[\textbf{NTMSTP }]
 Total number of time-steps for particle tracing.
 Each trajectory can score on census up to NTMSTP times.
 Particle trajectories are stopped after NTMSTP time-steps.
@@ -166,18 +166,18 @@ as the track-length estimator or the collision estimator. Note that
 in order to obtain this stationary estimate from snapshot estimates
 an additional multiplicative factor DTIMV (s) (see next) is applied
 to snapshot tallies in case NTMSTP $<$ 0.
-\item[{\bf DTIMV }]
+\item[\textbf{DTIMV }]
 Length of each individual internal time-step (seconds)
 
 Default: DTIMV=1.D-02
 
-\item[{\bf TIME0 }]
+\item[\textbf{TIME0 }]
 Initial time $t_0$ of the first time-step.
 (irrelevant, only for printout and book-keeping)
 
 Default: TIME0=0.
 
-\item[{\bf NSNVI }]
+\item[\textbf{NSNVI }]
 Number of snapshot tallies computed from census arrays. In old
 EIRENE versions without dynamic allocation of storage NSNVI must be
 less or equal NSNV (see PARMUSR), and the detector functions are
@@ -190,7 +190,7 @@ The meaning of the next three cards is the same as for the corresponding
 cards in block 10A, 10B or 10D.
 
 \bigskip
-{\bf Census Arrays }
+\textbf{Census Arrays }
 
 All particle co-ordinates at time $t_i$ for history number IHIST,
 i.e., position, cell indices, velocity etc. are stored on arrays
@@ -199,14 +199,14 @@ subroutine TIMCOL. This subroutine TIMCOL is called if ``a
 collision with the time surface $t=t_i$" has occurred.
 
 The number of scores on the old census arrays (from a previous completed time-cycle
-in a current run or from an earlier run) is {\bf IPRNL}.
+in a current run or from an earlier run) is \textbf{IPRNL}.
 
-The actual number of a score in subroutine TIMCOL is {\bf IPRNLI},
+The actual number of a score in subroutine TIMCOL is \textbf{IPRNLI},
 and after the score IPRNLI is increased by one. IPRNLI is set to
 zero at the beginning of a run.
 
 The actual number of a score in subroutine TIMCOL for the present
-stratum ISTRA  is {\bf IPRNLS}, and after
+stratum ISTRA  is \textbf{IPRNLS}, and after
 the score IPRNLS is increased by one. IPRNLS is reset to zero at the
 beginning of sampling for each stratum.
 \\
