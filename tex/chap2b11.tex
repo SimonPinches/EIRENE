@@ -80,6 +80,7 @@ to as an input volumetric tally (no. ITALI=13 in table
 {\sl  * 11 Data for numerical and graphical output}
 
 {\sl * 11A Block for numerical output written on unit 6 (IUNOUT)}
+{\small
 \begin{verbatim}
  TRCPLT  TRCHST  TRCNAL  TRCREA  TRCSIG
  TRCGRD  TRCSUR  TRCREF  TRCFLE  TRCAMD
@@ -97,6 +98,7 @@ to as an input volumetric tally (no. ITALI=13 in table
     NSRF NPRTLS(J) NFLAGS(J) NSPEZS(J,1) NSPEZS(J,2) NTLSFL(J)
  102 CONTINUE
 \end{verbatim}
+}
 optional: unless block 11B starts:
 \begin{verbatim}
 NLTVOUT
@@ -108,41 +110,44 @@ NLTSOUT
  {\sl  * 11B Data for graphical output}
 
  {\sl  * 11B.1 Data for 2D and 3D Geometry plot}
+{\small
 \begin{verbatim}
  PL1ST     PL2ND     PL3RD     PLADD  PLHST
  PLCUT(1)  PLCUT(2)  PLCUT(3)  PLBOX  PLSTOR
  PLNUMV    PLNUMS    PLARR
  NPLINR NPLOTR NPLDLR NPLINP NPLOTP NPLDLP NPLINT NPLOTT NPLDLT
  DO 1140 J=1,5
-    PL3A(J)  TEXTLA(J) IPLTA(J) (IPLAA(J,I) IPLEA(J,I) I=1,IPLTA(J))
+    PL3A(J) TEXTLA(J) IPLTA(J) (IPLAA(J,I) IPLEA(J,I) I=1,IPLTA(J))
  1140 CONTINUE
  DO 1141 J=1,3
-    PL3S(J)  TEXTLS(J) IPLTS(J) (IPLAS(J,I) IPLES(J,I) I=1,IPLTS(J))
+    PL3S(J) TEXTLS(J) IPLTS(J) (IPLAS(J,I) IPLES(J,I) I=1,IPLTS(J))
  1141 CONTINUE
  CH2MX  CH2MY         CH2X0  CH2Y0  CH2Z0
  CH3MX  CH3MY  CH3MZ  CH3X0  CH3Y0  CH3Z0
  ANGLE1  ANGLE2  ANGLE3
  I1TRC  I2TRC  (ISYPLT(J)  J=1,8)  ILINIE
 \end{verbatim}
+}
  {\sl  * 11B.2 Data for plots of volume tallies}
+{\small
 \begin{verbatim}
  NVOLPL
  PLTSRC(J), J= 0, NSTRAI
  DO 116 N=1,NVOLPL
  optional: one text card starting with *...... to label the  plot
     NSPTAL(N)
-    PLTL2D(N)  PLTL3D(N)  PLTLLG(N)  PLTLER(N)
-    TALZMI(N)  TALZMA(N)  TALXMI(N)  TALXMA(N)  TALYMI(N)  TALYMA(N)
+    PLTL2D(N) PLTL3D(N) PLTLLG(N) PLTLER(N)
+    TALZMI(N) TALZMA(N) TALXMI(N) TALXMA(N) TALYMI(N) TALYMA(N)
   IF (PLTL2D(NTL)) THEN
     LHIST2(N) LSMOT2(N)
     DO 118 I=1,NSPTAL(N)
-       ISPTAL(N,I) NPTALI(N,I)  NPLIN2(N,I)  NPLOT2(N,I)
+       ISPTAL(N,I) NPTALI(N,I) NPLIN2(N,I) NPLOT2(N,I)
        NPLDL2(N,I)
     118 CONTINUE
   ENDIF
   IF (PLTL3D(N)) THEN
-    LHIST3  LCNTR3  LSMOT3  LRAPS3  LVECT3  LRPVC3 LRAPS3D LR3DCON
-    LPRAD  LPPOL  LPTOR
+    LHIST3 LCNTR3 LSMOT3 LRAPS3 LVECT3 LRPVC3 LRAPS3D LR3DCON
+    LPRAD LPPOL LPTOR
     DO 119 I=1,NSPTAL(N)
        ISPTAL(N,I)  NPTALI(N,I) IPROJ3(N,J)
        NPLI13(N,I)  NPLO13(N,I)
@@ -152,6 +157,7 @@ NLTSOUT
   ENDIF
  116 CONTINUE
 \end{verbatim}
+}
 
 \medskip
 

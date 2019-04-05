@@ -316,7 +316,7 @@ index ISP = IION and initial weight NPRTI(IION) (see block 4C)
 = .TRUE.
 
 Photon source. History starts in subroutine FOLNEUT with type index
-ITYP=0, species
+ITYP=0, speci\-es
 index ISP = IPHOT and initial weight NPRTPH(IPHOT) (see block 4D)
 
 Not all options for direct photon sources are fully programmed. Currently
@@ -450,7 +450,7 @@ preferential test particle emission.
 \item[{\bf NLVOL }]
 = .TRUE.     Volume Source
 \item[{\bf NLCNS }]
-= .TRUE.     Initial conditions source (sampling from census array), for time-dependent mode of operation, see input blocks 1. and 13.
+= .TRUE.     Initial conditions source (sampling from census array), for time-depen\-dent mode of operation, see input blocks 1. and 13.
 \end{list}
 
 One and only one of these 5 variables must be .TRUE.
@@ -508,7 +508,7 @@ z-co-ordinate of source point Z0
 \item[{\bf SORAD4, SORAD5, SORAD6 }] ~
 
 are the x,y and z components of a reference directional
-vector $\vC = (CRTX,CRTY,CRTZ)$
+vector $\vC =$ (CRTX, CRTY, CRTZ)
 which may be used to distinguish one particular direction for the
 distribution in velocity space (see below). Internally this vector
 is normalized to length 1. Irrelevant for an isotropic velocity
@@ -558,7 +558,7 @@ are defined in code coupling routines, i.e., the code coupling routine
 IF1COP must be
 called. Special versions of IF1COP are available, e.g., in the code
 segments $COUPLE_{B2}$, $COUPLE_{B2.5}$
-(coupling to B2 (BRAAMS) multi-fluid plasma code) , $COUPLE_{DIVIMP}$
+(coupling to B2 (BRAAMS) multi-fluid plasma code), $COUPLE_{DIVIMP}$
 (coupling
 to DIVIMP impurity ion kinetic transport code) or  $COUPLE_{Ufile}$
 (TRANSP-code format).
@@ -833,7 +833,7 @@ unused. Parameter for user supplied sampling routine SAMUSR
 \item[{\bf SORAD4, SORAD5, SORAD6 }] ~
 
 are the x,y and z components of a reference directional
-vector $\vC = (CRTX,CRTY,CRTZ)$
+vector $\vC =$ (CRTX, CRTY, CRTZ)
 which may be used to distinguish one particular direction for the
 distribution in velocity space (see below). Internally this vector
 is normalized to length 1. Irrelevant for an isotropic velocity
@@ -873,7 +873,7 @@ or can be provided in case of user-source-sampling (SAMUSR), i.e., if  SORLIM $<
 background tallies at the place of birth.
 
 Depending upon the value of the flag {\bf NEMODS}, the following
-energy distributions $f(E|\vr_0,t_0,isp)$ are available. Note that this conditional energy distribution
+energy distributions $f(E|\vr_0, t_0, isp)$ are available. Note that this conditional energy distribution
 $f(E|...)$ may also
 depend upon the further input parameters
 
@@ -945,7 +945,7 @@ Mono-energetic source f(E) = $\delta$ (E-E0) with energy
 
 E0 = EMAX($T_i(ip_0) ,V_{i,\pi}(ip_0) ,V_{i,\sigma}(ip_0)$)
 
-where EMAX is the mean energy from a truncated (one-sided) shifted Maxwellian flux
+where EMAX is the mean energy from a truncated (one-sided) shifted Maxwell\-ian flux
 at temperature $T_i(ip_0)$ drifting by a velocity
 
 $(V_{i,\pi}(ip_0), V_{i,\sigma}(ip_0)$).
@@ -972,7 +972,7 @@ ESHEAT
 \emph{surface source}
 
 The velocity vector $\vV_0 = (VX_0,VY_0,VZ_0)$ is sampled from a
-truncated Maxwellian flux $f_{flux}= \vV \cdot \vC f_{max} (T_i(ip_0) ,\vV_i(ip_0) , \vC )$
+truncated Max\-well\-ian flux $f_{flux}= \vV \cdot \vC f_{max} (T_i(ip_0) ,\vV_i(ip_0) , \vC )$
 with a drifting Maxellian $f_{max}$ at temperature
 $ T_i(ip_0) $ and drift velocity $\vV_i(ip_0) $. The (one-sided) flux is
 across a surface element described locally by the outward normal
@@ -982,7 +982,7 @@ that given by option N=4.
 \emph{point or volume source}
 
 The velocity vector $\vV_0 = (VX_0,VY_0,VZ_0)$ is sampled from a
-truncated Maxwellian density distribution $f_{max} (T_i(ip_0) ,\vV_i(ip_0) , \vC
+truncated Max\-well\-ian density distribution $f_{max} (T_i(ip_0) ,\vV_i(ip_0) , \vC
 )$ at temperature $ T_i(ip_0) $ and which is shifted by a velocity $\vV_i(ip_0) $
 
 \item[{N = 7 }]
@@ -999,7 +999,7 @@ $E0 = E_i(ip_0)$, with $E_i(ip_0)$ being the local mean incident ion energy, for
 As N=8, but with added sheath acceleration, see paragraph \ref{sec2.7.2} below
 \end{list}
 The choice of temperature parameters $T_e$ and $T_i(ip_0)$
-in the energy distributions N=4,5,6 or 7
+in the energy distributions N = 4, 5, 6 or 7
 of the plasma fluids entering the sheath region
 is controlled by the second digit M of NEMODS:
 \begin{list}{ }{}
@@ -1044,7 +1044,7 @@ for bulk ion species IPL, IPL is the species index of the source particle.
 In case of .NOT.NLPLS, $\vV$ =0.
 \item[{L =1 }]
 The local drift velocity vector
-$\vV $ is replaced by the constant vector (SORVDX,SORVDY,
+$\vV $ is replaced by the constant vector (SORVDX, SORVDY,
 SORVDZ) (cm/sec), regardless of the point of birth.
 
 \item[{L =2 }]
@@ -1314,7 +1314,7 @@ cs(ip)=\sqrt{[Z_i T_e+T_i(ip)]/m_i(ip)}.
 \end{equation}
 Here $Z_i$ denotes the ion electric charge.
 
-The mean incident ion energy $ELSTEP=E_i$ corresponds to that resulting from the \texttt{NEMOD}=2,3 options,
+The mean incident ion energy $ELSTEP=E_i$ corresponds to that resulting from the \texttt{NEMOD} = 2, 3 options,
 with $E_i=3.0 T_i + 0.5 Z_i T_e$ and the sheath potential $SHSTEP= Sh$ is set to the sheath potential flag for the non-default surface: \texttt{FSHEAT}, see input block 6.
 
 Note that by setting SHSTEP and hence parameter $Sh$, the evaluation of the full sheath potential function $\Delta \Phi$

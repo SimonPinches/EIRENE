@@ -77,6 +77,7 @@ procedure:
 
 {\sl Plasma data (INDPRO = 6 option) }
 
+{\footnotesize
 \begin{verbatim}
 TEIN  :  (RWK ((0         ) * NRAD + J), J=1,NSBOX)
 TIIN  :  (RWK ((1 + 0*NPLS) * NRAD + J), J=1,NSBOX,I=1,NPLS)
@@ -109,6 +110,7 @@ TSURF :  (RWK ((6+5*NPLS+NAIN) * NRAD + NTMAX + J), J=1,N3RD)
 LEVGEO = 5
 THINTF:  (RWK ((6+5*NPLS+NAIN) * NRAD + J), J=1,NHMAX)
 \end{verbatim}
+}
 
 \subsection{entry IF0COP} \label{sec4.1.0}
 {\sl Geometry data (INDGRD = 6 option)}
@@ -297,7 +299,7 @@ contribution of statistical noise to the overall residuals of a B2
 run.
 
 These are printed from \texttt{IF4COP}, together with the overall
-balances of a coupled run (\texttt{TRCBAL=.true.})
+balances of a coupled run (\texttt{TRCBAL} = \texttt{.true.})
 
 Hence: if the B2 estimated residuals are of the same order as
 these ``statistical noise residuals", then a further convergence
