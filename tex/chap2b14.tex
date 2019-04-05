@@ -88,28 +88,28 @@ $IREI: 1 \le NREI$ : number of electron impact process. See TRCAMD output from t
 IREI is assigned to which species IATM, IMOL, etc.
 \item[{\bf NAINT = 21 }]
 electron cooling rate coefficient, EELEI3 array  (not ready)
-$ \ [eV \cdot \mbox{(rate-coeff in a.u.)}]$
+[eV $\cdot$ (rate-coeff in a.u.)]
 \item[{\bf NAINT = 22 }]
 charge exchange rate coefficient, TABCX3 arrays
 \item[{\bf NAINT = 23 }]
 charge exchange ion energy weighted rate coefficient, EPLCX3 arrays (not ready)
-$ \ [eV \cdot \mbox{(rate-coeff in a.u.)}]$
+[eV $\cdot$ (rate-coeff in a.u.)]
 \item[{\bf NAINT = 24 }]
 elastic collision rate coefficient, TABEL3 arrays
 \item[{\bf NAINT = 25 }]
 elastic collision ion energy weighted rate coefficient, EPLEL3 arrays (not ready)
-$ \ [eV \cdot \mbox{(rate-coeff in a.u.)}]$
+[eV $\cdot$ (rate-coeff in a.u.)]
 \item[{\bf NAINT = 26 }]
 general ion impact collision rate coefficient, TABPI3 arrays
 \item[{\bf NAINT = 27 }]
 general ion impact collision ion energy weighted rate coefficient, EPLPI3 arrays (not ready)
-$ \ [eV \cdot \mbox{(rate-coeff in a.u.)}]$
+[eV $\cdot$ (rate-coeff in a.u.)]
 \item[{\bf NAINT = 28 }]
 recombination rate coefficient $\langle<\sigma v\rangle_{rc}  \ [a.u.]$, with the rate coefficient profile taken from TABRC1(IREC,...) arrays.
 $IREC: 1 \le NREC$ : number of recombination process. See TRCAMD output to identify, which recombination
 process is assigned to which species IPLS.
 \item[{\bf NAINT == 29 }] electron energy loss weighted recombination rate coefficient
-$ \ [eV \cdot \mbox{(rate-coeff in a.u.)}]$
+[eV $\cdot$ (rate-coeff in a.u.)]
 \end{list}
 
 \subsection{Version B2-EIRENE-1999 and older} \label{sec2.14.1}
@@ -143,9 +143,9 @@ and their statistical errors is case specific and done in interfacing module EIR
  The sum is over all strata (see  ``stratified sampling" in section \ref{sec1}). $PAPL, PMPL,  PIPL$ are default EIRENE tallies (Table \ref{tab2old} in section \ref{sec.tables-old}):
  \begin{itemize}
  \item
- $PAPL$ is the particle source for background plasma species $ipls$ resulting from ``atom"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no. 11.
+ $PAPL$ is the particle source for background plasma species $ipls$ resulting from ``a\-tom"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no. 11.
  \item
- $PMPL$ is the particle source for background plasma species $ipls$ resulting from ``molecule"-plasma interactions (summed over all EIRENE species of type ``molecule"), tally no. 16.
+ $PMPL$ is the particle source for background plasma species $ipls$ resulting from ``mole\-cule"-plasma interactions (summed over all EIRENE species of type ``molecule"), tally no. 16.
  \item
  $PIPL$ is the particle source for background plasma species $ipls$ resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no. 21.
  \end{itemize}
@@ -171,11 +171,11 @@ and their statistical errors is case specific and done in interfacing module EIR
  The sum is over all strata (see  ``stratified sampling" in section \ref{sec1}). $EAPL, EMPL,  EIPL$ are default EIRENE tallies (Table \ref{tab2old} in section \ref{sec.tables-old}):
  \begin{itemize}
  \item
- $EAPL$ is the ion energy source  resulting from ``atom"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no. 26.
+ $EAPL$ is the ion energy source  resulting from ``atom"-plasma interactions (sum\-med over all EIRENE species of type ``atom"), tally no. 26.
  \item
- $EMPL$ is the ion energy source  resulting from ``molecule"-plasma interactions (summed over all EIRENE species of type ``molecule"), tally no. 31.
+ $EMPL$ is the ion energy source  resulting from ``molecule"-plasma interactions (sum\-med over all EIRENE species of type ``molecule"), tally no. 31.
  \item
- $EIPL$ is the ion energy source  resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no. 36.
+ $EIPL$ is the ion energy source  resulting from ``test ion"-plasma interactions (sum\-med over all EIRENE species of type ``test ion"), tally no. 36.
  \end{itemize}
 
 \textbf{Electron energy source: [Energy/time/volume], Watt/cm$^3$}
@@ -186,11 +186,11 @@ and their statistical errors is case specific and done in interfacing module EIR
  The sum is over all strata (see  ``stratified sampling" in section \ref{sec1}). $EAEL, EMEL,  EIEL$ are default EIRENE tallies (Table \ref{tab2old} in section \ref{sec.tables-old}):
  \begin{itemize}
  \item
- $EAEL$ is the electron energy source  resulting from ``atom"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no. 22.
+ $EAEL$ is the electron energy source  resulting from ``atom"-plasma interactions (sum\-med over all EIRENE species of type ``atom"), tally no. 22.
  \item
- $EMEL$ is the electron energy source  resulting from ``molecule"-plasma interactions (summed over all EIRENE species of type ``molecule"), tally no. 27.
+ $EMEL$ is the electron energy source  resulting from ``molecule"-plasma interactions (sum\-med over all EIRENE species of type ``molecule"), tally no. 27.
  \item
- $EIEL$ is the electron energy source  resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no. 32.
+ $EIEL$ is the electron energy source  resulting from ``test ion"-plasma interactions (sum\-med over all EIRENE species of type ``test ion"), tally no. 32.
  \end{itemize}
 
 The data transferred from B2 into EIRENE are either from Common BRAEIR, (a module common to both B2 and EIRENE)
@@ -226,6 +226,7 @@ as well as to derive recycling target fluxes and boundary conditions from them.
 \medskip
 
 {\sl ***14. Data for interfacing Subroutine ``INFCOP" }
+{\small
 \begin{verbatim}
 IF (NMODE.EQ. 0) THEN
 ...
@@ -258,7 +259,7 @@ DO 50 IAOT=1,NAOTB
   I NAOTS(IAOT) NAOTT(IAOT)
 50 CONTINUE
 \end{verbatim}
-
+}
 
 
 {\bf Meaning of the Input Variables for interfacing Subroutine
@@ -316,7 +317,7 @@ at each call to the interfacing routines.
 \item[{\bf MSHFRM, NTRFRM, NFULL}]
 new flags, available only since 2013, see section \ref{sec2.14.3}
 \item[{\bf IBRAD, IBPOL, IBTOR}]
-new flags for magnetic field orientation, available only since March 2015, see section \ref{sec2.14.3}
+new flags for magnetic field orientation, available only since Mar\-ch 2015, see section \ref{sec2.14.3}
 \item[{\bf I }]
 irrelevant, labelling index for EIRENE bulk ion species IPLS, runs from 1 to NPLS
 \item[{\bf IFLB }]
@@ -477,7 +478,7 @@ NLSRF(ISTRA) = TRUE
 \item Number of sub-strata NSRFSI(ISTRA)=1
 \item Mixed radial/poloidal (or: x/y) surface type: INDIM(ISTRA,1)=4
 \item Step-function sampling with SORLIM(ISTRA,1)=104, and the step
-function data FLSTEP,...
+function data FLSTEP, ...
 for the flux distribution entering the sheath region of the target are
 automatically defined.
 \item Number of step-function  SORIND(ISTRA,1)=ITARG (=ISTRA)
@@ -563,9 +564,9 @@ listed in Table \ref{tab2} in section \ref{sec.tables-new}
 rather than in Table \ref{tab2old} in section \ref{sec.tables-old}:
  \begin{itemize}
  \item
- $PAPL$ is the particle source for background plasma species $ipls$ resulting from ``atom"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no. 14.
+ $PAPL$ is the particle source for background plasma species $ipls$ resulting from ``a\-tom"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no. 14.
  \item
- $PMPL$ is the particle source for background plasma species $ipls$ resulting from ``molecule"-plasma interactions (summed over all EIRENE species of type ``molecule"), tally no. 20.
+ $PMPL$ is the particle source for background plasma species $ipls$ resulting from ``mole\-cule"-plasma interactions (summed over all EIRENE species of type ``molecule"), tally no. 20.
  \item
  $PIPL$ is the particle source for background plasma species $ipls$ resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no. 26.
  \end{itemize}

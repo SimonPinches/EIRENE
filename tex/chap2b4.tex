@@ -1,5 +1,5 @@
 \section{Input Data for Species Specification
-and Atomic Physics Module} \label{sec2.4}
+and Atomic Phy\-sics Module} \label{sec2.4}
 
 \medskip
 
@@ -44,7 +44,7 @@ to define general test particles (objects) (atoms, molecules, test ions, photons
 
 First EIRENE reads NREACI ``non-default" atomic data cards, (if any, i.e., if NREACI $>$ 0)
 
-
+{\small
 \begin{verbatim}
 NREACI
 DO I=1,NREACI
@@ -54,9 +54,9 @@ IR  FILNAM  H123  REAC  CRC  MASSP  MASST  DP RMN1 RMX1 R2MN R2MX
 ENDDO
 
 \end{verbatim}
+}
 
-either from external A\&M data files such as \texttt{FILNAM = HYDHEL, = METHAN, = AMJUEL, = H2VIBR},
-
+either from external A\&M data files such as \texttt{FILNAM} = \texttt{HYDHEL}, = \texttt{METHAN}, = \texttt{AMJUEL}, = \texttt{H2VIBR},
 for polynomial fits, or other data files
 of appropriate format.
 
@@ -245,24 +245,26 @@ needed for some
 more complex chemical reactions, such as particle rearrangement collisions
 $p + CH_4 \rightarrow CH_2 + H_2 + H$, etc.
 
-
+{\small
 \begin{verbatim}
  DO  K= 1, NRC$
    IREAC$  IBULK$  ISCD1$  ISCD2$  ISCD3$ ISCDE$  IESTM$  IBGK$
    EELEC$  EBULK$  ESCD1$  EDUMMY FREAC$  EDPOT$
  ENDDO
 \end{verbatim}
+}
 New option in 2006:
 
 In case ID1 = 4, i.e., four post collision particles (not counting electrons)
 
-
+{\footnotesize
 \begin{verbatim}
  DO  K= 1, NRC$
    IREAC$  IBULK$  ISCD1$  ISCD2$  ISCD3$ ISCD4$ ISCDE$  IESTM$  IBGK$
    EELEC$  EBULK$  ESCD1$  EDUMMY FREAC$  EDPOT$
  ENDDO
 \end{verbatim}
+}
 
 where {\bf \$} stands for either A (atoms), M (molecules),
 I (test ions), PH (photons) or P (bulk ions).
@@ -582,7 +584,7 @@ EIRENE post processing routines in code section ``output", routines: Ba$\_$alpha
 double parameter table of rate coefficient $\langle \sigma v \rangle
 (cm^3/s)$ as function of target density $(cm^{-3})$ and target
 temperature (eV) read from files containing 2D tabulated rate coefficients, i.e. rate coefficients tabulated vs. 2 independent parameters.
-This option uses the ADAS adf11 file format as guidance and is developed/adapted from it for more general
+This option uses the ADAS adf11 file format as guidance and is developed/adap\-ted from it for more general
 A\&M data structures.
 
 E.g. original ADAS file-names starting with SCD\dots (ionization rate coefficients
@@ -996,7 +998,7 @@ value (FDLM) (fluid limit), then the trajectory is stopped
 and the above mentioned generation limit tallies are scored.
 \item[{\bf $=$ 0 }]
 In case NGEN\dots = 0, (default) no generation limit is activated
-for atoms (NGENA=0), molecules (NGENM=0) or test ions (NGENI=0). I.e., strictly, the default NGEN\dots=0
+for atoms (NGENA = 0), molecules (NGENM = 0) or test ions (NGENI = 0). I.e., strictly, the default NGEN\dots = 0
 is equivalent to specifying NGEN\dots = infinity.
 \end{list}
 
@@ -1020,7 +1022,7 @@ pre collision bulk particle identifier
 \begin{list}{ }{}
 \item[{M }]
 type flag ITYP for impacting bulk particle
-(electron (ITYP=5) or bulk ion (ITYP=4),
+(electron (ITYP = 5) or bulk ion (ITYP = 4),
 
 irrelevant, defaulted to M = 4 for bulk ion impact collision and
 defaulted to M = 5 for electron impact collisions
@@ -1447,7 +1449,7 @@ a drifting isotropic mono-energetic distribution.
 \subsection{Default atomic and molecular data}
 If default atomic data are requested for some test particle species,
 these are activated by setting the
-flag  NRCM(IATM)=0 (or NRCM(IMOL)=0, NRCI(IION)=0, resp., or NRCP(IPLS)=0 in input block 5)
+flag  NRCM(IATM) = 0 (or NRCM(IMOL) = 0, NRCI(IION) = 0, respectively, or NRCP(IPLS) = 0 in input block 5)
 for a particular atom IATM (molecule IMOL or test ion IION, or (block 5) bulk ion IPLS),
 and by omitting the corresponding reaction cards \\
 IREAC\$,... and \\
@@ -1609,10 +1611,14 @@ derived in closed analytic form for this expression.
 
 There is currently no fully equivalent counterpart to this in the AMJUEL or HYDHEL polynomial fits.
 Rather close to the minimal default volume recombination model, al least at low Te, is the choice:
+{\small
 \begin{verbatim}
-  1 HYDHEL H.2 2.1.8     RC  0  1   ! single step recombination rate to ground state
-  2 HYDHEL H.8 2.1.8     RC  0  1   ! corresponding electron energy loss/gain
+  1 HYDHEL H.2 2.1.8     RC  0  1   ! single step recombination 
+                                    ! rate to ground state
+  2 HYDHEL H.8 2.1.8     RC  0  1   ! corresponding electron 
+                                    ! energy loss/gain
 \end{verbatim}
+}
 
 For helium bulk ions ($He^+$) analytic default (radiative) volume recombination rates are given
 in \cite{kn:Janev}, reaction 2.3.13. The associated electron energy losses are
@@ -1777,6 +1783,7 @@ those for cross-sections
 on CREAC(1:9,0,KK), \\
 and those for Maxwellian averaged rate coefficients on CREAC(1:9,1:9,KK).
 \medskip
+
 The second argument here controls either the particle energy (in eV) or plasma density (in particles/cm$^3/10^8$) dependence in rate coefficients.
 
 Higher moments, such as energy-weighted rate coefficients, have been read in and stored on CREAC with a different value of KK.
@@ -1854,7 +1861,7 @@ IROW\_ESC, ICOL\_ESC, POP\_ESC: population escape factor and the matrix position
 
 The integer array IFLAG = MODCOL(CT,I2=0,...,4,IR) is the internally used identifier for
 the various collision process options and related data availability. It is constructed in the initialization
-phase (routines XSTEI, XSTCX, XSTEL, XSTPI, ) of a run from the atomic/molecular data read in input block 4
+phase (routines XSTEI, XSTCX, XSTEL, XSTPI, ) of a run from the atomic/mole\-cular data read in input block 4
 (or hard wired from the minimal default
 atomic collision models, in case of NRC..=0 for a certain test particle component).
 

@@ -1022,7 +1022,7 @@ of default tallies.
 
 \paragraph{Statistical independence of MC histories}
 
-When the Monte Carlo histories from one EIRENE run are not strictly statistically independent,
+When the Monte Carlo histories from one EIR\-E\-NE run are not strictly statistically independent,
 as e.g. in case of stratified source sampling (see paragraph below), then a modified
 formula for the statistical error estimates has to be used.
 
@@ -1128,7 +1128,7 @@ equation \ref{eq1.15a}, then $x_2$ by sampling from the
 (univariate) second factor, and so on.
 
 This transformation of a multivariate (k-) distribution to a uniform distribution
-on a k-hypercube is sometimes referred to as ``Rosenblatt transformation" (M. Rosenblatt, Ann. Math. Statistics 23: 470-472, (1952)).
+on a k-hyper\-cube is sometimes referred to as ``Rosenblatt transformation" (M. Rosenblatt, Ann. Math. Statistics 23: 470-472, (1952)).
 
 One particular example of this scheme is the ``TRIM database
 surface reflection model" (see below, section \ref{sec1.3.2}).
@@ -1878,7 +1878,7 @@ H_{\alpha} $ lines etc.), see e.g., reference \cite{kn:Reiter92d}.
 \section{Recycling surface sources} \label{sec1.4}
 
 It has been found (mid eigthies of last century: within INTOR framework) as a result of benchmark calculations with
-several different neutral gas transport Monte Carlo codes (EIRENE, DEGAS, NIMBUS, DDC83) on the
+several different neutral gas transport Monte Carlo codes (EIR\-E\-NE, DEGAS, NIMBUS, DDC83) on the
 same input data that the main divergence in the results from the
 different codes tested was due to different primary source terms
 $Q$ in the transport equation [equations (\ref{eq1a},\ref{eq1b}) and
@@ -1976,7 +1976,7 @@ sheath potential drop inside the electrostatic sheath.}
 \label{magpresheath}
 \end{figure}
 
-\subsection{truncated drifting Maxwellian flux at electrostatic sheath entrance}\label{maxw-flux}
+\subsection{truncated drifting Maxwellian flux at electrostatic sheath en\-tran\-ce}\label{maxw-flux}
 
 One of the standard options in EIRENE, in particular in applications in which EIRENE is coupled iteratively to a plasma fluid code,
 is a truncated forward drifting Maxwellian ion flux distribution (options: NEMODS = 6,7, Section \ref{sec2.7}).
@@ -2042,7 +2042,7 @@ cannot be inverted explicitly.
 
 Therefore in the EIRENE code we apply the Monte Carlo  ``biassed source sampling" concept, (module: \texttt{VELOCS.F}).
 We sample this component
-${\tilde{v} }_{\pi}$ from a ``non-analog" truncated Maxwellian flux distribution
+${\tilde{v} }_{\pi}$ from a ``non-analog" truncated Max\-wellian flux distribution
 $\tilde\Gamma^0_{Sh,ion,\pi}(\tilde v_{\pi})$ (see Section \ref{sec1.2}, paragraph \ref{sec1.2.1a} above)
 with zero drift in $\pi$-direction but with different ``non-analog" $\pi$- temperature ${\tilde{T}}_{\pi,i},
 ({\tilde{T}}_{\pi,i}   \ne T_i   , {\tilde{V}} _{d,\pi} = 0 )$.
@@ -2364,15 +2364,15 @@ A complete set of surfaces in an EIRENE geometry may consist of a combination of
 standard grid voxels.
 \begin{figure}[h]
 \begin{minipage}{7cm}
-\includegraphics[width=7.5cm, angle=+90]{ALT-II}
+\includegraphics[width=7cm, angle=+90]{ALT-II}
 \caption{\label{label1l} Early example a combination of BREP and VOXEL discretisation, around 1985
 for ALT-II pumplimiter studies at TEXTOR. Discretisation inside the TEXTOR tokamak vessel (torus): VOXEL, supplemented
 by about 100 (BREP) first and second order surfaces for ALT-II scoops, pumping ducts and inner structures such as probe supports,
 getter pumps, etc..
 }
-\end{minipage}\hspace{1cm}%
+\end{minipage}\hfill%
 \begin{minipage}{7cm}
-\includegraphics[width=7.5cm,angle=-0]{alt_imp}
+\includegraphics[width=7cm,angle=-0]{alt_imp}
 \caption{
 \label{label1r}same as left Figure, but BREP part only, and EIRENE re-run with more modern 3D visualisation graphics program, 2009
 \vspace{2.5cm} }
@@ -2501,7 +2501,7 @@ use that option.
 \newpage
 \section{non-linear effects: coupling to plasma fluid models} \label{sec1.7}
 The section is currently rewritten. Please refer to the report
-J\"ul-2872, Feb 1994, by G.Maddison and D.Reiter for details (ref.
+J\"ul-2872, Feb 1994, by G.Maddi\-son and D.Reiter for details (ref.
 \cite{kn:Maddison94}).
 
 The back-reaction of the host medium (plasma) on the neutral (test) particle kinetics renders
@@ -2547,7 +2547,7 @@ overall coupled code stability and ``turn around code run time". The flowchart \
 \newpage
 
 \begin{figure}[h]
-\includegraphics[width=16cm]{flowchart9}
+\includegraphics[width=\textwidth]{flowchart9}
 \caption{Explicit coupling scheme between EIRENE and a CFD code (for plasma flow):
 After each plasma code cycle (or time step) a full new Monte Carlo run is carried out
 \label{flow01}}
@@ -2604,7 +2604,7 @@ After each plasma code cycle (or time step) a full new Monte Carlo run is carrie
 %{\center
 
 \begin{figure}[h]
-\includegraphics[width=16cm]{flowchart7}
+\includegraphics[width=\textwidth]{flowchart7}
 \caption{``semi implicit" coupling scheme between EIRENE and a CFD code (e.g. BRAAMS B2 for plasma flow), involving internal
 re-iteration on sources terms without new Monte Carlo trajectories, much less frequent Monte Carlo runs than in ``explicit" mode of operation,
 but unresolved issues still re volume recombination contribution.  LINDA is a grid generating tool providing a numerical discretisation mesh which is common for B2 and EIRENE  \label{flow02}}
@@ -2690,7 +2690,7 @@ but unresolved issues still re volume recombination contribution.  LINDA is a gr
 %{\center
 
 \begin{figure}[h]
-\includegraphics[width=16cm]{flowchart8}
+\includegraphics[width=\textwidth]{flowchart8}
 \caption{Time dependent coupling to plasma CFD code}
 \label{flow03}
 \end{figure}
@@ -3412,7 +3412,7 @@ providing, often in iterative mode, the reaction part in the overall
 ``diffusion-advection-reaction problems. Non-linearly coupled fusion edge plasma flow
 simulations fall into that category.
 
-In contrast to the CFD codes, which can be parallelized using domain decomposition, EIRENE uses a particle partitioning technique,
+In contrast to the CFD codes, which can be parallelized using domain decomposition, EIRE\-NE uses a particle partitioning technique,
 which is usually most suitable for Monte Carlo methods. Here the stochastic Monte Carlo trajectories are distributed on different processes,
 whereas the domain is the same on all processes. If there would be no stratified source sampling also typically involved, then
 this particle partitioning would provide a good load balancing automatically. Most 3D edge plasma applications using the EMC3-EIRENE
@@ -3446,7 +3446,7 @@ EIRENE code}
 \newpage
 
 \begin{figure}
-\includegraphics[height=20cm]{flowchart2}
+\includegraphics[height=\textwidth]{flowchart2}
 \caption{Flowchart:
 Program EIRENE}
 \label{flow2}

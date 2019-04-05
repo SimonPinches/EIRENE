@@ -61,8 +61,8 @@ $\rm{pitch(x)} = b_2/B_{tot}$. From this a cell centered
 B-field unit vector is internally constructed, by assuming that
 the first set of coordinate surfaces (x- or radial surfaces) are
 flux-surfaces (B-field aligned and constant pitch). The magnetic
-field direction then has components ($0., \rm{pitch},
-\sqrt{1-\rm{pitch}^2}$) in the three coordinate directions.
+field direction then has components ($0.$, pitch,
+$\sqrt{1-\rm{pitch}^2}$) in the three coordinate directions.
 1D simulations (x-grid only) are then across the magnetic field.
 
 An analogous procedure is applied in the second case, but there the pitch is defined as $\rm{pitch(x)} = b_1/B_{tot}$
@@ -267,7 +267,8 @@ The additional card (only one) reads:
 \begin{verbatim}
 ISP, ITP, ISTR, ....
 \end{verbatim}
-to be written \item[{\bf CDENMODEL = 'Boltzmann' }]
+to be written 
+\item[{\bf CDENMODEL = 'Boltzmann' }]
 Set parameters
 from Boltzmann-equilibrium of excited states. The additional card
 (only one) reads (format: 3I6,6x,2E12.4)
@@ -503,9 +504,9 @@ RHOSRF(1) $\le$ x $\le$ P5 :       P(x) = P0
 P5 $\le$ x $\le$ RHOSRF(NR1ST) :    P(x) = P1
 
 Parameters P2, P3, P4 have no meaning, except for the
-magnetic-field (INDPRO(5)=3): Here PROFS(P0,P1,P5,PVAC) is used to
+magnetic-field (INDPRO(5) = 3): Here PROFS(P0, P1, P5, PVAC) is used to
 define the pitch angle profile, and it is also used to set the
-B-field strength (Tesla) by calling PROFS(P2,P3,P5,PVAC)
+B-field strength (Tesla) by calling PROFS(P2, P3, P5, PVAC)
 
 
 
@@ -541,8 +542,8 @@ EIRENE calls a the routine:
 Subroutine
 PROFR (RHO,INDEX,N1I,N1,NDAT).
 
-N1I (e.g., NPLSI) profiles, of NDAT= NSURF data each, are read
-onto RHO(I1I,J), J=1,NDAT, I1I=1,N1I from a work array RWK. N1
+N1I (e.g., NPLSI) profiles, of NDAT = NSURF data each, are read
+onto RHO(I1I, J), J = 1, NDAT, I1I = 1, N1I from a work array RWK. N1
 (e.g., NPLS) is the leading dimension of the array PRO as
 specified in the calling program. The data must be written onto
 array RWK in the initialization phase, e.g., in subroutine INFCOP
@@ -558,13 +559,13 @@ ICELL=NSURF+1,...NSURF+NRADD
 
 are set to the ``EIRENE vacuum values"
 
-For further details of subroutine INFCOP see \ref{sec2.1} ``Input
-Data for operating mode", input variable NMODE and sections
+For further details of subroutine INFCOP see \ref{sec2.1} (``Input
+Data for operating mode"), input variable NMODE and sections
 \ref{sec2.14} and \ref{sec4} for an example.
 
 \item[{INDPRO = 7}] ~
 
-Same as INDPRO=6 option, except that NDAT=NSBOX rather than NDAT=NSURF.
+Same as INDPRO = 6 option, except that NDAT = NSBOX rather than NDAT = NSURF.
 Hence in this case background data are read from RWK also for the additional
 cell region
 

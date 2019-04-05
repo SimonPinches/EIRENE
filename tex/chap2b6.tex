@@ -115,7 +115,8 @@ for sampling post-surface event species as part of the surface reflection models
  (DMLD(I) I=1,NMOL)
  (DIOD(I) I=1,NION)
  (DPLD(I) I=1,NPLS)
- (DPHT(I) I=1,NPHOT)  (this card is to be read only in case NPHOT > 0)
+ (DPHT(I) I=1,NPHOT)  (this card is to be read only in case 
+                       NPHOT > 0)
  ERMIN  ERCUT  RPROB0  RINTEG EINTEG AINTEG
 \end{verbatim}
 Note that the species index distribution cards must always be read,
@@ -138,8 +139,9 @@ SURFMOD_modname
     ILREF  ILSPT ISRS  ISRC
     ZNML EWALL EWBIN TRANSP(1,N) TRANSP(2,N) FSHEAT
     RECYCF  RECYCT  RECPRM  EXPPL  EXPEL  EXPIL
-    RECYCS  RECYCC  SPTPRM  ESPUTS ESPUTC (this line may be omitted,
-                             then: default sputter model, see below)
+    RECYCS  RECYCC  SPTPRM  ESPUTS ESPUTC (this line may be 
+                             omitted, then: default sputter 
+                             model, see below)
 \end{verbatim}
 next: within each SURFMOD-sub-block there may be an
 arbitrary number of lines
@@ -433,7 +435,7 @@ surfaces may then be linked to the same surface reflection
 sub-block.
 
 Example:
-{\small
+{\footnotesize
 \begin{verbatim}
 SURFMOD_BERYL_SPT_300K
      1     2     0     0
@@ -671,7 +673,7 @@ Irrelevant for transparent surfaces (with ILIIN $\leq 0$).
 
 \item[{\bf TRANSP(2) }]
 Semi-transparency for particles incident from the negative side on a
-non-transparent surface. Otherwise same as for TRANSP(1) option.
+non-trans\-parent surface. Otherwise same as for TRANSP(1) option.
 
 Default: 0.0  (i.e., fully reflecting surface).
 
@@ -873,7 +875,7 @@ $\underline{Note:} $
 All data in a block for ``local reflection data" are, in general,
 independent of the type and species of the incident particle. Some
 are, however, copied identically
-NPHOTI+\-NATMI+\-NMOLI+\-NIONI+\-NPLSI times onto appropriately
+NPHOTI + NATMI + NMOLI + NIONI + NPLSI times onto appropriately
 dimensioned arrays (with the same names). This is currently done
 for the parameters:
 

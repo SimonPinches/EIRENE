@@ -77,6 +77,7 @@ procedure:
 
 {\sl Plasma data (INDPRO = 6 option) }
 
+{\footnotesize
 \begin{verbatim}
 TEIN  :  (RWK ((0         ) * NRAD + J), J=1,NSBOX)
 TIIN  :  (RWK ((1 + 0*NPLS) * NRAD + J), J=1,NSBOX,I=1,NPLS)
@@ -109,13 +110,14 @@ TSURF :  (RWK ((6+5*NPLS+NAIN) * NRAD + NTMAX + J), J=1,N3RD)
 LEVGEO = 5
 THINTF:  (RWK ((6+5*NPLS+NAIN) * NRAD + J), J=1,NHMAX)
 \end{verbatim}
+}
 
 \subsection{entry IF0COP} \label{sec4.1.0}
 {\sl Geometry data (INDGRD = 6 option)}
 
 \medskip
 
-In the $LEVGEO=3$ option (2D grid of quadrangles) PGINTF is an array of length NPMAX,
+In the LEVGEO = 3 option (2D grid of quadrangles) PGINTF is an array of length NPMAX,
 which contains all relevant
 information to generate a 2D mesh of polygons in the x-y plane.
 It is equivalenced to the common block CPOLYG
@@ -123,7 +125,7 @@ via the statement:
 
 EQUIVALENCE (PGINTF(1),XPLG(1,1)),...
 
-In the $LEVGEO=4$ option (2D grid of triangles) TRINTF is an array of length NTMAX,
+In the LEVGEO = 4 option (2D grid of triangles) TRINTF is an array of length NTMAX,
 which contains all relevant
 information to generate a mesh of triangles in the x-y plane.
 It is equivalenced to the common block CTRIA
@@ -131,7 +133,7 @@ via the statement:
 
 EQUIVALENCE (TRINTF(1),XT(1)),...
 
-In the $LEVGEO=5$ option (3D grid of tetrahedons) THINTF is an array of length NHMAX, which
+In the LEVGEO = 5 option (3D grid of tetrahedons) THINTF is an array of length NHMAX, which
 contains all relevant information to generate a mesh of
 tetrahedrons in the 3d computational domain. It is equivalenced to
 the common block CTETRA via the statement:
@@ -297,7 +299,7 @@ contribution of statistical noise to the overall residuals of a B2
 run.
 
 These are printed from \texttt{IF4COP}, together with the overall
-balances of a coupled run (\texttt{TRCBAL=.true.})
+balances of a coupled run (\texttt{TRCBAL} = \texttt{.true.})
 
 Hence: if the B2 estimated residuals are of the same order as
 these ``statistical noise residuals", then a further convergence
