@@ -75,7 +75,7 @@ The following addresses are foreseen on \texttt{RWK} for this data transferring
 procedure:
 
 
-{\sl Plasma data (INDPRO = 6 option) }
+\textsl{Plasma data (INDPRO = 6 option) }
 
 {\footnotesize
 \begin{verbatim}
@@ -92,7 +92,7 @@ BFIN  :  (RWK ((4 + 5*NPLS) * NRAD + J), J=1,NSBOX)
 VLIN  :  (RWK ((5 + 5*NPLS) * NRAD + J), J=1,NSBOX)
 ADIN  :  (RWK ((6 + 5*NPLS) * NRAD + J), J=1,NSBOX,I=1,NAIN)
 \end{verbatim}
-{\sl Geometrical data (INDGRD = 6 option) }
+\textsl{Geometrical data (INDGRD = 6 option) }
 \begin{verbatim}
 LEVGEO = 1 or LEVGEO = 2:
 RSURF :  (RWK ((6+5*NPLS+NAIN) * NRAD +                 J), J=1,N1ST)
@@ -113,7 +113,7 @@ THINTF:  (RWK ((6+5*NPLS+NAIN) * NRAD + J), J=1,NHMAX)
 }
 
 \subsection{entry IF0COP} \label{sec4.1.0}
-{\sl Geometry data (INDGRD = 6 option)}
+\textsl{Geometry data (INDGRD = 6 option)}
 
 \medskip
 
@@ -141,7 +141,7 @@ the common block CTETRA via the statement:
 EQUIVALENCE (THINTF(1),XT(1)),...
 
 \subsection{entry IF1COP} \label{sec4.1.1}
-{\sl Plasma (background) data (INDPRO = 6 option)}
+\textsl{Plasma (background) data (INDPRO = 6 option)}
 
 
 \medskip
@@ -149,7 +149,7 @@ EQUIVALENCE (THINTF(1),XT(1)),...
 
 to be written
 \subsection{entry IF2COP(ISTRA)} \label{sec4.1.2}
-{\sl Primary source data (INDSRC = 6 option)}
+\textsl{Primary source data (INDSRC = 6 option)}
 
 \medskip
 In case of an EIRENE run, in which input information is obtained
@@ -191,7 +191,7 @@ may be omitted. Stratum ISTRA corresponds to the target recycling source
 ITARG from block 14.
 
 \subsection{entry IF3COP(ISTRAA,ISTRAE)}  \label{sec4.1.3}
-{\sl Return data at the end of an EIRENE stratum}
+\textsl{Return data at the end of an EIRENE stratum}
 
 \medskip
 
@@ -209,7 +209,7 @@ There they may be further prepared (e.g. normalized, or scaled to other units)
 for transfer to the external code
 
 \subsection{entry IF4COP} \label{sec4.1.4}
-{\sl post-processing after one complete cycle: overall balances, statistics, etc.}
+\textsl{post-processing after one complete cycle: overall balances, statistics, etc.}
 
 \section{Routines for cycling of EIRENE with external codes: EIRSRT}
 \label{sec4.2}
