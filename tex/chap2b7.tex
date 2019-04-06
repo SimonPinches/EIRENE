@@ -315,7 +315,7 @@ index ISP = IION and initial weight NPRTI(IION) (see block 4C)
 = .TRUE.
 
 Photon source. History starts in subroutine FOLNEUT with type index
-ITYP=0, speci\-es
+ITYP=0, species
 index ISP = IPHOT and initial weight NPRTPH(IPHOT) (see block 4D)
 
 Not all options for direct photon sources are fully programmed. Currently
@@ -944,7 +944,7 @@ Mono-energetic source f(E) = $\delta$ (E-E0) with energy
 
 E0 = EMAX($T_i(ip_0) ,V_{i,\pi}(ip_0) ,V_{i,\sigma}(ip_0)$)
 
-where EMAX is the mean energy from a truncated (one-sided) shifted Maxwell\-ian flux
+where EMAX is the mean energy from a truncated (one-sided) shifted Maxwellian flux
 at temperature $T_i(ip_0)$ drifting by a velocity
 
 $(V_{i,\pi}(ip_0), V_{i,\sigma}(ip_0)$).
@@ -971,7 +971,7 @@ ESHEAT
 \emph{surface source}
 
 The velocity vector $\vV_0 = (VX_0,VY_0,VZ_0)$ is sampled from a
-truncated Max\-well\-ian flux $f_{flux}= \vV \cdot \vC f_{max} (T_i(ip_0) ,\vV_i(ip_0) , \vC )$
+truncated Maxwellian flux $f_{flux}= \vV \cdot \vC f_{max} (T_i(ip_0) ,\vV_i(ip_0) , \vC )$
 with a drifting Maxellian $f_{max}$ at temperature
 $ T_i(ip_0) $ and drift velocity $\vV_i(ip_0) $. The (one-sided) flux is
 across a surface element described locally by the outward normal
@@ -981,7 +981,7 @@ that given by option N=4.
 \emph{point or volume source}
 
 The velocity vector $\vV_0 = (VX_0,VY_0,VZ_0)$ is sampled from a
-truncated Max\-well\-ian density distribution $f_{max} (T_i(ip_0) ,\vV_i(ip_0) , \vC
+truncated Maxwellian density distribution $f_{max} (T_i(ip_0) ,\vV_i(ip_0) , \vC
 )$ at temperature $ T_i(ip_0) $ and which is shifted by a velocity $\vV_i(ip_0) $
 
 \item[{N = 7 }]

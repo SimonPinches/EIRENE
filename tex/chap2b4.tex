@@ -1,5 +1,5 @@
 \section{Input Data for Species Specification
-and Atomic Phy\-sics Module} \label{sec2.4}
+and Atomic Physics Module} \label{sec2.4}
 
 \medskip
 
@@ -584,7 +584,7 @@ EIRENE post processing routines in code section ``output", routines: Ba$\_$alpha
 double parameter table of rate coefficient $\langle \sigma v \rangle
 (cm^3/s)$ as function of target density $(cm^{-3})$ and target
 temperature (eV) read from files containing 2D tabulated rate coefficients, i.e. rate coefficients tabulated vs. 2 independent parameters.
-This option uses the ADAS adf11 file format as guidance and is developed/adap\-ted from it for more general
+This option uses the ADAS adf11 file format as guidance and is developed\slash adapted from it for more general
 A\&M data structures.
 
 E.g. original ADAS file-names starting with SCD\dots (ionization rate coefficients
@@ -1322,7 +1322,7 @@ need for integrating cross sections into rate coefficients. It is based on total
 but it retains thermal force effects.
 
 In the default (minimal) model hydrogenic atoms (here: D atoms)
-undergo re\-so\-nant charge exchange with hydrogenic ions (here: D$^+$ ions), utilizing
+undergo resonant charge exchange with hydrogenic ions (here: D$^+$ ions), utilizing
 the cross section data for reaction 3.1.8 (again from reference \cite{kn:Janev}, but with improved low energy asymptotics). The assumptions for processes labeled as
 CX are, generally: pure electron capture from the neutral by the ion (=``exchange of identity"
 in symmetric charge exchange), scattering angle $\pi$ in center of mass system, zero exotermicity,
@@ -1788,7 +1788,7 @@ The second argument here controls either the particle energy (in eV) or plasma d
 
 Higher moments, such as energy-weighted rate coefficients, have been read in and stored on CREAC with a different value of KK.
 
-In 2008 all data structures for atomic/molecular or photonic processes or CR codes have been
+In 2008 all data structures for atomic\slash molecular or photonic processes or CR codes have been
 accommodated into a single, more general array of generalized data type REACTION\_DATA
 
 \subsubsection{Data structure REACDAT (from SVN versions (2008))}
@@ -1861,7 +1861,7 @@ IROW\_ESC, ICOL\_ESC, POP\_ESC: population escape factor and the matrix position
 
 The integer array IFLAG = MODCOL(CT,I2=0,...,4,IR) is the internally used identifier for
 the various collision process options and related data availability. It is constructed in the initialization
-phase (routines XSTEI, XSTCX, XSTEL, XSTPI, ) of a run from the atomic/mole\-cular data read in input block 4
+phase (routines XSTEI, XSTCX, XSTEL, XSTPI, ) of a run from the atomic\slash molecular data read in input block 4
 (or hard wired from the minimal default
 atomic collision models, in case of NRC..=0 for a certain test particle component).
 
@@ -1933,7 +1933,7 @@ Meaning of IFLAG:
 
 to be written
 \subsubsection{storage saving mode}
-The storage saving mode: atomic/molecular data ``on the fly" routines
+The storage saving mode: atomic\slash molecular data ``on the fly" routines
 Available and tested (Jan 2016)
 
 ftabcx3 for modcol(3,2,ir)=1  (H.2 cx rate coefficients vs. Ti)

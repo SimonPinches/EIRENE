@@ -1022,7 +1022,7 @@ of default tallies.
 
 \paragraph{Statistical independence of MC histories}
 
-When the Monte Carlo histories from one EIR\-E\-NE run are not strictly statistically independent,
+When the Monte Carlo histories from one EIRENE run are not strictly statistically independent,
 as e.g. in case of stratified source sampling (see paragraph below), then a modified
 formula for the statistical error estimates has to be used.
 
@@ -1128,7 +1128,7 @@ equation \ref{eq1.15a}, then $x_2$ by sampling from the
 (univariate) second factor, and so on.
 
 This transformation of a multivariate (k-) distribution to a uniform distribution
-on a k-hyper\-cube is sometimes referred to as ``Rosenblatt transformation" (M. Rosenblatt, Ann. Math. Statistics 23: 470-472, (1952)).
+on a k-hy\-per\-cube is sometimes referred to as ``Rosenblatt transformation" (M. Rosenblatt, Ann. Math. Statistics 23: 470-472, (1952)).
 
 One particular example of this scheme is the ``TRIM database
 surface reflection model" (see below, section \ref{sec1.3.2}).
@@ -1407,7 +1407,7 @@ $\nu$:
 v_{rel}\rangle_b, \qquad v_{rel}= |\vv-\vv_b|
 \end{equation}
 Here $n_b$ and $\vv_b$ are the target particle density
-and velocity, respectively, and the brac\-kets
+and velocity, respectively, and the brackets
 $\langle...\rangle_b$ denote averaging with the velocity
 distribution $f_b(\vr,\vv_b)$ of the
 background medium species $b$.
@@ -1878,7 +1878,7 @@ H_{\alpha} $ lines etc.), see e.g., reference \cite{kn:Reiter92d}.
 \section{Recycling surface sources} \label{sec1.4}
 
 It has been found (mid eigthies of last century: within INTOR framework) as a result of benchmark calculations with
-several different neutral gas transport Monte Carlo codes (EIR\-E\-NE, DEGAS, NIMBUS, DDC83) on the
+several different neutral gas transport Monte Carlo codes (EIRENE, DEGAS, NIMBUS, DDC83) on the
 same input data that the main divergence in the results from the
 different codes tested was due to different primary source terms
 $Q$ in the transport equation [equations (\ref{eq1a},\ref{eq1b}) and
@@ -1976,7 +1976,7 @@ sheath potential drop inside the electrostatic sheath.}
 \label{magpresheath}
 \end{figure}
 
-\subsection{truncated drifting Maxwellian flux at electrostatic sheath en\-tran\-ce}\label{maxw-flux}
+\subsection{truncated drifting Maxwellian flux at electrostatic sheath entrance}\label{maxw-flux}
 
 One of the standard options in EIRENE, in particular in applications in which EIRENE is coupled iteratively to a plasma fluid code,
 is a truncated forward drifting Maxwellian ion flux distribution (options: NEMODS = 6,7, Section \ref{sec2.7}).
@@ -2042,7 +2042,7 @@ cannot be inverted explicitly.
 
 Therefore in the EIRENE code we apply the Monte Carlo  ``biassed source sampling" concept, (module: \texttt{VELOCS.F}).
 We sample this component
-${\tilde{v} }_{\pi}$ from a ``non-analog" truncated Max\-wellian flux distribution
+${\tilde{v} }_{\pi}$ from a ``non-analog" truncated Maxwellian flux distribution
 $\tilde\Gamma^0_{Sh,ion,\pi}(\tilde v_{\pi})$ (see Section \ref{sec1.2}, paragraph \ref{sec1.2.1a} above)
 with zero drift in $\pi$-direction but with different ``non-analog" $\pi$- temperature ${\tilde{T}}_{\pi,i},
 ({\tilde{T}}_{\pi,i}   \ne T_i   , {\tilde{V}} _{d,\pi} = 0 )$.
@@ -3412,7 +3412,7 @@ providing, often in iterative mode, the reaction part in the overall
 ``diffusion-advection-reaction problems. Non-linearly coupled fusion edge plasma flow
 simulations fall into that category.
 
-In contrast to the CFD codes, which can be parallelized using domain decomposition, EIRE\-NE uses a particle partitioning technique,
+In contrast to the CFD codes, which can be parallelized using domain decomposition, EIRENE uses a particle partitioning technique,
 which is usually most suitable for Monte Carlo methods. Here the stochastic Monte Carlo trajectories are distributed on different processes,
 whereas the domain is the same on all processes. If there would be no stratified source sampling also typically involved, then
 this particle partitioning would provide a good load balancing automatically. Most 3D edge plasma applications using the EMC3-EIRENE
