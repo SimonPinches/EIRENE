@@ -34,10 +34,11 @@ C
       INTEGER, PARAMETER :: NSTREAM=15
       REAL(DP) :: H(6)
       INTEGER :: K(6), ISTREAM(NSTREAM)
-      INTEGER :: JR, JP, JT, IJ, N1DEL, N2DEL, IADD, JA, IA, IB, I,
+      INTEGER :: JR, JP, JT, IJ, N1DEL, N2DEL, IADD, JA, IA, IB,
      .           IC, IT, IP, NRM, NS, NTM, NPM, IRAD, IST, NCOL, IR,
      .           NTTS
       CHARACTER(1) :: TL(72)
+C     INTEGER :: I
 
       DATA TL/72*'='/
 C  BLOCK A FEW RESERVED OUTPUT STREAMS.
@@ -408,6 +409,7 @@ c  1 .le.NR.le.6 is already verified in calling program.
 
       REAL(DP), INTENT(IN) :: H(6)
       INTEGER, INTENT(IN)  :: K(6),NR,IUNOUT
+      INTEGER :: I
 
       IF (K(NR).LT.1E4) THEN
         WRITE (iunout,64) (K(I),H(I),I=1,NR)
