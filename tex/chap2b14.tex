@@ -121,12 +121,12 @@ volumetric particle, parallel momentum and electron and ion energy sources $S_n,
 from those ``kinetic species", for the B2 continuum equations for the orthogonal set of ``species in fluid description".
 Formally, these volumetric source rates arise in the particle, parallel momentum and energy balances. For the B2 code these balances
 are discretized in conservative form (finite volume (FV) schemes) and solved (in the laboratory frame of reference):
-\begin{eqnarray}
-\frac{D(n_{ipls})}{Dt} &=& S_n(ipls) +  o.c. \quad   ipls=1,\dots NFLA\\
-\frac{D ( m_{ipls} \ n_{ipls} \ V_{\parallel,{ipls}})}{Dt}&=& S_{m\parallel}(ipls) + o.c. \quad   ipls=1,\dots NFLA\\
-\frac{D (\frac32 \ n \ T_i+\sum_{ipls}\frac{m_{ipls}}{2} V^2_{\parallel,ipls})}{Dt} &=& S_{Ei} + o.c.\\
-\frac{D (\frac32 \ n \ T_e)}{Dt} &=& S_{Ee} + o.c.
-\end{eqnarray}
+\begin{align}
+\frac{D(n_{ipls})}{Dt} &= S_n(ipls) +  o.c. \quad   ipls=1,\dots NFLA\\
+\frac{D ( m_{ipls} \ n_{ipls} \ V_{\parallel,{ipls}})}{Dt}&= S_{m\parallel}(ipls) + o.c. \quad   ipls=1,\dots NFLA\\
+\frac{D (\frac32 \ n \ T_i+\sum_{ipls}\frac{m_{ipls}}{2} V^2_{\parallel,ipls})}{Dt} &= S_{Ei} + o.c.\\
+\frac{D (\frac32 \ n \ T_e)}{Dt} &= S_{Ee} + o.c.
+\end{align}
 $D/Dt$ denotes the derivative (total, or convective derivative, or partial derivative), and $o.c.$ stands for other contributions such as e.g. friction forces, pressure gradient forces,
 collisional heating, etc...
 

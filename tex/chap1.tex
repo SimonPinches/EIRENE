@@ -141,21 +141,22 @@ reads
 
 % gleichungsnummern fest auf eq. 1a setzen
 \renewcommand{\theequation}{1.1a}
-\begin{eqnarray} \label{eq1a}
+\begin{align} \label{eq1a}
 \lbrack\frac\partial{\partial t} + \vv \cdot
 \nabla_{\vr} +
 \frac{\vF(\vr,\vv,t)}{m} \cdot
 \nabla_{\vv}\rbrack \ f(\vr,\vv,t)
-& = &
+& = 
 \int\!\int\!\int
 \sigma(\vv',\vV';\vv,\vV)
 |\vv'-\vV'| f(\vv')
 f_b(\vV')  \nonumber \\
-& - & \int\!\int\!\int
+& -  \int\!\int\!\int
 \sigma(\vv,\vV;\vv',\vV')
 |\vv-\vV| f(\vv) f_b(\vV)
-\nonumber \\  &+  & Q(\vr,\vv,t)
-\end{eqnarray}
+\nonumber \\  
+& + Q(\vr,\vv,t)
+\end{align}
 
 % gleichungsnummern einen hochzaehlen.
 %\addtocounter{equation}{+1}
@@ -197,10 +198,10 @@ follows from time-reversal (detailed balancing) in case of elastic collisions.
 The four velocity arguments in both collision integral terms are not truly independent:
 the conservation laws for total energy and
 momentum in a collision event must be fulfilled.
-\begin{eqnarray}\label{massenergy}
-m_{i_0} \vv' + m_b\vV' &=& m_{i_0}\vv + m_b \vV \nonumber\\
-\frac12 m_{i_0}v'^2+\frac12m_bV'^2&=&\frac12 m_{i_0}v^2 + m_b V^2 +\Delta_E
-\end{eqnarray}
+\begin{align}\label{massenergy}
+m_{i_0} \vv' + m_b\vV' &= m_{i_0}\vv + m_b \vV \nonumber\\
+\frac12 m_{i_0}v'^2+\frac12m_bV'^2&=\frac12 m_{i_0}v^2 + m_b V^2 +\Delta_E
+\end{align}
 Here $\Delta_E$ is the exchange of internal energy in the collision (on expense of the energy of relative motion), and, by definition, $\Delta_E = 0$ for elastic collisions.
 We may assume that cross section $\sigma$ contains appropriate delta function factors such that the three
 integrations over velocity spaces reduce to integrations over lower dimensional manifolds on which these conservation laws are fulfilled.
@@ -222,15 +223,16 @@ for the left hand side (convective part) of (\ref{eq1a}), leads to the Boltzmann
 
 % gleichungsnummern fest auf eq. 1.1a1 setzen
 \renewcommand{\theequation}{1.1a1}
-\begin{eqnarray} \label{eq1a1}\nonumber
+\begin{align} \label{eq1a1}\nonumber
 D_t^{i_0} \ f_{i_0}(\vr,\vv,t)
-& = &
+& = 
 \int_{\Re^3,\Omega}  d\vV'd\Omega \ \
 \sigma(\vv,\vV;\vv',\vV')
 |\vv-\vV| \left[f_{i_0}(\vv')
 f_b(\vV')- f_{i_0}(\vv) f_b(\vV)\right]
-\nonumber \\  &+  & Q_{i_0}(\vr,\vv,t)
-\end{eqnarray}
+\nonumber \\  
+& + Q_{i_0}(\vr,\vv,t)
+\end{align}
 
 % gleichungsnummern einen hochzaehlen.
 %\addtocounter{equation}{+1}
@@ -317,19 +319,19 @@ transport theory (from now on omitting subscript $i_0$ on all terms):
 
 % gleichungsnummern fest auf eq. 1.1b setzen
 \renewcommand{\theequation}{1.1b}
-\begin{eqnarray} \label{eq1b}
+\begin{align} \label{eq1b}
 \lbrack\frac\partial{\partial t} + \vv \cdot
 \nabla_{\vr} +
 \frac{\vF(\vr,\vv,t)}{m} \cdot
 \nabla_{\vv}\rbrack \ f(\vr,\vv,t) +
 \Sigma_t(\vr,\vv) |\vv|
 f(\vv)
-  &=&
+  &=
 \int d^3{v}' \ C(\vv' \rightarrow \vv)
 |\vv'|
 f(\vv') \nonumber \\
-&+& Q(\vr,\vv,t)
-\end{eqnarray}
+  &+ Q(\vr,\vv,t)
+\end{align}
 %  gleichungszaehler auf default mode zuruecksetzen
 \renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
 % gleichungsnummern einen runterzaehlen.
@@ -376,7 +378,7 @@ neutronics, radiation transport, neutral particle transport in plasmas, etc.,
 the transport equation then reduces to the more compact form:
 % gleichungsnummern fest auf eq. 1.1c setzen
 \renewcommand{\theequation}{1.1c}
-\begin{eqnarray} \label{eq1c}
+\begin{equation} \label{eq1c}
 \nabla_{\vr}
  \Phi(\vr,\vv,t) +
 \Sigma_t(\vr,\vv)
@@ -384,7 +386,7 @@ the transport equation then reduces to the more compact form:
   =  Q(\vr,\vv,t) +
 \int d^3{v}' \ C(\vr;\vv' \rightarrow \vv)
 \Phi(\vr,\vv')
-\end{eqnarray}
+\end{equation}
 %  gleichungszaehler auf default mode zuruecksetzen
 \renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
 % gleichungsnummern einen runterzaehlen.
@@ -446,15 +448,17 @@ integral is over all collision labels $\{i'l'\}, \{b'l_1'\}, \{bl_{1}\}$ and ove
 Even more generally:
 in case there are more than two post collision particles, i.e. more than two particles in the exit channel of the collision, integration (velocities) and summation (generalized species indices) in the WCU collision integral is over all involved particles, except over $\{i_0l_0; \vv\}$, the parameters of the dependent variable $f_{i_0}(l_0,\vv)$. Employing the notations as in (\ref{eq1a1}) the full WCU prototypical system of kinetic transport equations then reads (written here for two post collision particles only)
 
-\begin{eqnarray}\label{WCU}
+\begin{align}\label{WCU}
 D_t^{i_0l_0} \ f_{i_0l_0}(\vr,\vv,t)
-& = &
+& = 
 \sum_{i',l',b,l_1,b',l_1'}\int_{\Re^3,\Omega}  d\vV'd\Omega \ \
-B_{i_0l_0,bl_1}^{i'l',b'l_1'}(\vv,\vV) \ \times \\ && \times
+B_{i_0l_0,bl_1}^{i'l',b'l_1'}(\vv,\vV) \ \times \\
+& \phantom{=} \times
 \left[f_{i'l'}(\vv')
 f_{b'l_1'}(\vV')- f_{i_0l_0}(\vv) f_{b,l_1}(\vV)\right]
-\nonumber \\  &+  & Q_{i_0l_0}(\vr,\vv,t) \nonumber
-\end{eqnarray}
+\nonumber \\
+& + Q_{i_0l_0}(\vr,\vv,t) \nonumber
+\end{align}
 with
 \begin{equation}
 B_{il,bl_1}^{i'l',b'l_1'}(\vv,\vV)=\sigma_{il,bl_1}^{i'l',b'l_1'}(\vv,\vV;\vv',\vV') \
@@ -590,21 +594,21 @@ Omitting the corresponding delta functions in velocity space and the Kronecker d
 the transport kernel $T$ then reads as
 follows:
 \begin{subequations}
-\begin{eqnarray} \label{eq1.5}
+\begin{align} \label{eq1.5}
 (T(l)=)\ \ T ( \vv' , i'; \vr ' \rightarrow  \vr
-) &=& \Sigma_t ( \vr  ,\vv', i') \cdot \exp
+) &= \Sigma_t ( \vr  ,\vv', i') \cdot \exp
 \left [   - \int_{0}^{l=\vOmega' ( \vr -
 \vr ' )} ds \Sigma_t ( \vr '  +  s
 \vOmega', \vv', i' )  \right ]
 \nonumber\\
-& &\cdot \delta (\vOmega_2' ( \vr  -
+  &\phantom{=} \cdot \delta (\vOmega_2' ( \vr  -
 \vr ' ))    \cdot \delta ( \vOmega_3'   (
 \vr - \vr ' ))
   \cdot   H (\vOmega'
 ( \vr  - \vr  ' )) \\
-&=& \Sigma_t ( \vr  ,\vv' , i') \cdot F( \vv' , i'; \vr ' \rightarrow  \vr
+ &= \Sigma_t ( \vr  ,\vv' , i') \cdot F( \vv' , i'; \vr ' \rightarrow  \vr
 ) \quad 0\le l \le \infty \label{2.8b}
-\end{eqnarray}
+\end{align}
 \end{subequations}
 with $H(x) = 0 $ if $ x < 0 $, and $H(x) = 1 $ if $ x \ge 0$, the
 Heaviside step function (the unit step function). The two remaining delta functions restrict the motion to a path in the direction
@@ -617,17 +621,18 @@ $\vr  = \vr ' + l \cdot \vOmega'$. We shall frequently omit the arguments $\vv',
 nor species change during a free flight.
 
 For a finite medium this distribution can be generalized to (writing shorter $l$ for $(\vr'+l\vOmega',\vv',i')$:
-\begin{eqnarray} \label{eq1.5b}
-T(l) &=& \left\{
+\begin{equation} \label{eq1.5b}
+T(l) = \left\{
 \begin{array}{lcr}
 \Sigma_t ( l) & \cdot \exp
 \left [   - \int_{0}^{l} ds \Sigma_t ( s
- )  \right ],&  l< l_{max} \\ \delta(l-l_{max}) & \cdot \exp
+ )  \right ],&  l< l_{max} \\
+\delta(l-l_{max}) & \cdot \exp
 \left [   - \int_{0}^{l_{max}} ds \Sigma_t (   s
  )  \right ],  & l\ge l_{max}
 \end{array}
 \right.
-\end{eqnarray}
+\end{equation}
 Here $l_{max}$ denotes the distance along the flight direction from $\vr'$ to the boundary for the computational domain,
 to any internal surface at which the test flight shall be stopped, e.g. for scoring surface fluxes there,  or even to the cell boundary.
 The ``Transport Kernel" $T$ has dimension: [1/Dimension of phase space] ($T(x'\rightarrow x)dx$ is a probability).
@@ -1312,9 +1317,9 @@ random numbers with distribution $S_k$, the k-stratum part of the inhomogeneous 
 Again sequential sampling (\ref{eq1.15a}) from conditional distributions is applied.
 
 In LOCATE.F the following sequence is used (stratum no. $istra=k$ is set in calling program):
-\begin{eqnarray}
+\begin{equation}
 S = S_1(\vx) \times S_2(i|\vx) \times S_3(\vv|\vx,i)
-\end{eqnarray}
+\end{equation}
 with $S_1(\vx)= \sum_i\int d^3v S(\vx,i,\vv)$ being the cumulative distribution of the spatial coordinate $\vx$ of the ``birth point"
 of the trajectory, obtained by integrating the source term  $S$ over all velocities and summing over all species.
 $S_2(i)$ is the distribution of birth species index, obtained by integrating over all velocities and conditional on the already
@@ -1728,25 +1733,25 @@ in the local xz-plane. Furthermore, let $ \vartheta_r$ and $
 distribution around $ - \ve_x$. The speed unit vector $
 \vOmega $ of the reflected particle in EIRENE is then
 given by
-\begin{eqnarray}
-\Omega_x   & = &  - \cos( \hat{\vartheta}_r ) f_1 ( \vartheta_{in}
+\begin{align}
+\Omega_x & =  - \cos( \hat{\vartheta}_r ) f_1 ( \vartheta_{in}
 )   +   \sin( \hat{\vartheta}_r )
 \sin( \varphi_r)   f_2 ( \vartheta_{in} )     ,   \nonumber\\
-\Omega_y   & = &  \sin( \hat{\vartheta}_r )
+\Omega_y & =  \sin( \hat{\vartheta}_r )
 \cos( \varphi_r )     ,                           \nonumber\\
-\Omega_z   & = &  \sin( \hat{\vartheta}_r ) \sin( \varphi_r )
+\Omega_z & =  \sin( \hat{\vartheta}_r ) \sin( \varphi_r )
 f_1( \vartheta_{in} )   + \cos( \hat{\vartheta}_r )   f_2(
 \vartheta_{in} )  , \label{eq1.21}
-\end{eqnarray}
+\end{align}
 with
-\begin{eqnarray}
-\sin( \hat{\vartheta}_r )   & = &  f_1( \vartheta
+\begin{align}
+\sin( \hat{\vartheta}_r ) & = f_1( \vartheta
 _{in})   \sin( \vartheta_r )     , \nonumber\\
- f_1( \vartheta_{in} )   & = &  \cos^{e3} ( \vartheta_{in} ) ,
+ f_1( \vartheta_{in} )    & = \cos^{e3} ( \vartheta_{in} ) ,
 \nonumber\\
- f_2( \vartheta_{in} ) &  =  &
+ f_2( \vartheta_{in} )    & =
 (   1   -   f_1  \cdot f_1 )^{\frac{1}{2}} . \nonumber
-\end{eqnarray}
+\end{align}
 In total we have defined three parameters e1, e2, e3. The first
 two parameters e1 and e2 account for particle and energy
 reflection coefficients that continuously increase with incident
@@ -1914,17 +1919,17 @@ neutral flux distribution back from the wall surface $S_w$, we
 fold $\Gamma_{Sh,ion}$ with a (magnetic plus electrostatic) sheath transmission
 kernel $T_{Sh}$ and with the surface reflection (incl. sputtering) kernel $C_w$,
 equation (\ref{eq1.14}):
- \begin{eqnarray}
-\Gamma_w ( \vr , \vv  , i )  & = & \sum_{i '}
+ \begin{align}
+\Gamma_w ( \vr , \vv  , i ) & = \sum_{i '}
 \int\! \int\! \int d^3 r' d^3 v'  d^3
 v'' \Gamma_{Sh,ion} ( \vr ' ,
 \vv '' , i ' ) \nonumber\\
-& & \cdot T_{Sh} (i ' ; \vr ' ,
+& \phantom{=} \cdot T_{Sh} (i ' ; \vr ' ,
 \vv '' \rightarrow \vr , \vv  ' )
  \cdot  C_w ( \vr ;
 \vv ' , i ' \rightarrow \vv , i )
 \label{eq1.24}
-\end{eqnarray}
+\end{align}
 The summation over $i '$ is performed over all ion species
 entering the sheath region.
 
@@ -2058,13 +2063,13 @@ a fully legitimate sampling distribution because it fulfils the ``Radon-Nikodym 
 (\ref{eq1.14a}).
 Sampling from this non-analog distribution can
 be done by setting, e.g.,
-\begin{eqnarray}
+\begin{equation}
 \tilde{v}_{\pi}   = {\tilde{\alpha}}_{\pi}   \cdot   \sqrt{ -\ln(
 \xi )  \cdot 2 } = v_{\tilde T_{\pi,i}} \cdot   \sqrt{ -\ln(
 \xi ) }  \quad  \mbox{since: \ }  \tilde{\alpha}_{\pi}   =\frac{1}{\sqrt{2}}
-v_{\tilde T_{\pi,i}}  \mbox{for} & \tilde{V}_{d,\pi} = 0
+v_{\tilde T_{\pi,i}} \quad \mbox{for \ } \tilde{V}_{d,\pi} = 0
 \label{eq1.26}
-\end{eqnarray}
+\end{equation}
 $\xi$  being a uniformly distributed random number between 0 and
 1.
 
@@ -2078,29 +2083,29 @@ procedure, we first note that from (\ref{normfac}) we have
 This gives the following result for the (multiplicative) weight
 correction factor $w ( \tilde{v}_{\pi} )$, see equation (\ref{eq1.13a}), to be applied for each sampled non-analog velocity component
 $\tilde v_\pi$:
-\begin{eqnarray}
-w ( \tilde{v}_{\pi} )   =   \frac{\Gamma^0_{Sh,ion,\pi} (
+\begin{equation}
+w ( \tilde{v}_{\pi} ) = \frac{\Gamma^0_{Sh,ion,\pi} (
 {\tilde{v}}_{\pi} )}{\tilde{\Gamma}^0_{Sh,ion,\pi} ( \tilde{v}_{\pi}
 )}
- & = &  \frac{\tilde{T}_{\pi,i}}{T_i}
+ =  \frac{\tilde{T}_{\pi,i}}{T_i}
 \exp \left (  \frac{2 \tilde{v}_{\pi}  V_{d, \pi} }{v_{Ti}^2}    -
 \frac { {\tilde{v}_{\pi}}^2}{v_{T_i}^2} \left ( 1   -
 \frac{T_i}{ {\tilde{T}_{\pi,i}} }  \right ) \right )
  \cdot  \frac {1}{g({\cal V}_{\pi})}
 \label{eq1.28}
-\end{eqnarray}
+\end{equation}
 This non-analog sampling of the source term introduces additional
 statistical fluctuations in the results, since the initial test
 particle weights $w$ fluctuate with variance
-\begin{eqnarray}
-\sigma^2(w)   =   \int_{0}^{\infty} \! d \tilde{v}_{\pi} \ w^2 (
+\begin{equation}
+\sigma^2(w) = \int_{0}^{\infty} \! d \tilde{v}_{\pi} \ w^2 (
 {\tilde{v}}_{\pi} )  \cdot \tilde{\Gamma}^0_{Sh,ion} (
 \tilde{v}_{\pi} )
-  -   1 &  = &  g \left ( \frac{2{\cal V}_{\pi}}{\sqrt{b}} \right ) /
+ - 1 = g \left ( \frac{2{\cal V}_{\pi}}{\sqrt{b}} \right ) /
 g({\cal V}_{\pi})^2
- \cdot  \frac{1}{(2-b)   b}   -   1 \nonumber \\
+ \cdot  \frac{1}{(2-b)   b}   -   1
 \label{eq1.29}
-\end{eqnarray}
+\end{equation}
 where $b   =   2   -  T / {\tilde{T}}$. We use the
 ansatz $b = C  \cdot   {\cal V}_{\pi} + 1$ and compute numerically that
 value of C which minimizes $\sigma^2$ in the range $0 \le {\cal V}_{\pi}
@@ -2114,21 +2119,20 @@ the algorithm.\\
 The mean energy of ions generated by this sampling procedure is
 (note: the distribution $\Gamma^0$ is  already normalized to flux
 one):
-\begin{eqnarray}\nonumber
-\overline{E}({\cal V}_{\pi},{\cal V}_{\sigma})   &=&
+\begin{align}\nonumber
+\overline{E}({\cal V}_{\pi},{\cal V}_{\sigma})   &=
  \frac{m_i}{2}    \cdot   \int^\infty_{-\infty} \!
 \int^\infty_{-\infty} \! \int^\infty_{0} \!
  d^3v' \
  {v'}^2    \cdot
 \Gamma^0_{Sh,ion} (\vv ' ) = \\
-&=& \frac{m_i}{2}    \cdot   \int^\infty_{-\infty} \!dv_1
+&= \frac{m_i}{2}    \cdot   \int^\infty_{-\infty} \!dv_1
 \int^\infty_{-\infty} \!dv_2 \int^\infty_{0} \!
    dv_\pi \
  (v_1^2+v_2^2+v_\pi^2)    \cdot
-\Gamma^0_{Sh,ion} (\vv ' ) \\\nonumber
-   &=&   T_i    \cdot   \gamma_E    ,
-\label{eq1.30}
-\end{eqnarray}
+\Gamma^0_{Sh,ion} (\vv ' ) \label{eq1.30} \\\nonumber
+&= T_i    \cdot   \gamma_E    ,
+\end{align}
 with the half sided integration for the $\pi$-component of
 $\vv$, and:
  \begin{equation}
@@ -2228,18 +2232,18 @@ in terms of
 given values (at sheath entrance) for $ j_{pl},  T_e, \gamma_{s.e.e.} $ and ions flows $\Gamma_i$,
 reads (omitting the subscript $\pi$ for the components normal to the target in these quantities):
 
-\begin{eqnarray} \label{sheath1}
- e \Delta\Phi/kT_e & = &
+\begin{align} \label{sheath1}
+ e \Delta\Phi/kT_e & =
 \ln\left[\frac{\sqrt{2\pi}}{(1-\gamma_{s.e.e.})}\left(\sum_i
 \left( Z_i \frac{n_{i,S}}{n_{e,S}}\cdot {V_{i,S}}
 \sqrt{\frac{m_e}{kT_e}}\right)-\frac{j_{pl}}{e \cdot n_{e,S} \cdot
-\sqrt{\frac{kT_e}{m_e}}}\right)\right]\nonumber \\&&\\
-& = & \label{sheath2}
+\sqrt{\frac{kT_e}{m_e}}}\right)\right] \\
+& = \label{sheath2}
 \ln\left\lbrack\frac{\sqrt{2\pi}}{(1-\gamma_{s.e.e.})}\left(\sum_i
 \left( Z_i \frac{n_{i,S}}{n_{e,S}} \cdot M_{i,S} \cdot c_{i,S}
 \sqrt{\frac{m_e}{kT_e}}\right)-\frac{j_{pl}}{e \cdot n_{e,S} \cdot
-\sqrt{\frac{kT_e}{m_e}}}\right)\right\rbrack \nonumber \\ & &
-\end{eqnarray}
+\sqrt{\frac{kT_e}{m_e}}}\right)\right\rbrack
+\end{align}
 % \end{subequations}
 This expression (\ref{sheath1}) is evaluated by the function SHEATH
 of the EIRENE code for the sheath potential drop $\Delta\Phi$, taking local plasma data for $T_e$ and $n_i$
@@ -2264,19 +2268,19 @@ we recover well known expressions for simpler cases. Consider,
 e.g., a single ion fluid case, $n_e = Z_i n_i = n$,  and
 $M_i = 1$ (Bohm sheath condition for isothermal flow, $\gamma =
 1$), (\ref{sheath2}) reduces to:
-\begin{eqnarray} \label{sheath3}
- e \Delta\Phi/kT_e & = &
+\begin{align} \label{sheath3}
+ e \Delta\Phi/kT_e & =
 \ln\left[\frac{\sqrt{2\pi}}{(1-\gamma_{s.e.e.})}
 \left({c_{i,S}}
 \sqrt{\frac{m_e}{kT_e}}\right)-\frac{j_{pl}}{e \cdot n \cdot
-\sqrt{\frac{kT_e}{m_e}}}\right]\nonumber \\&&\\
-& = &
+\sqrt{\frac{kT_e}{m_e}}}\right] \\
+& = 
 \ln\left[\frac{\sqrt{2\pi}}{(1-\gamma_{s.e.e.})}
 \left[ \left( \frac{
 kT_i}{kT_e} + Z_i \right) \cdot \frac{m_e}{m_i} \right]^{1/2}\left(1-\frac{j_{pl}}{e \cdot n \cdot
 c_{i,S}}\right)\right]
 \label{sheath4}
-\end{eqnarray}
+\end{align}
 the latter equality (\ref{sheath4} follows after insertion of (\ref{insert}) into the former.
 
 
@@ -2448,13 +2452,13 @@ the track to evaluate the estimators mentioned in section
 \\
 In EIRENE $f$ and $g$ are general 2nd order (with linear surfaces
 as special case) algebraic equations of the form
-\begin{eqnarray}
-h(x,y,z)   =   a_0   +   a_1  \cdot  x   + a_2   \cdot  y   +
-a_3  \cdot  z  & + & a_4  \cdot  x^2   +   a_5  \cdot  y^2   +
+\begin{align}
+h(x,y,z) = a_0   +   a_1  \cdot  x   + a_2   \cdot  y   +
+a_3  \cdot  z  & + a_4  \cdot  x^2   +   a_5  \cdot  y^2   +
 a_6  \cdot  z^2   +  \nonumber\\
-& + &  a_7  \cdot  xy   +   a_8  \cdot  xz   +
+               & + a_7  \cdot  xy   +   a_8  \cdot  xz   +
 a_9  \cdot  yz \label{eq1.36}
-\end{eqnarray}
+\end{align}
 Hence in the geometrical block nothing else but second order
 equations
 \begin{equation}\nonumber
@@ -2793,10 +2797,10 @@ difference between Monte Carlo source rates evaluated at time $1$ and time $2$.
 
 
 In more general terms a Monte Carlo estimate  of a difference $\Delta E$ between two different calculations $MC_1$ and $MC_2$ (due to either code version differences, due to a different physical incremental effects or due to iterative procedures with CFD solvers) is:
-\begin{eqnarray}\label{cov}
-\Delta E &=&  E(MC_1) - E(MC_2)  \nonumber \\
-\sigma^2(\Delta E) &=& \sigma^2(E(MC_1)) + \sigma^2(E(MC_2)) - 2 cov(E(MC_1),E(MC_2))
-\end{eqnarray}
+\begin{align}\label{cov}
+\Delta E &= E(MC_1) - E(MC_2)  \nonumber \\
+\sigma^2(\Delta E) &= \sigma^2(E(MC_1)) + \sigma^2(E(MC_2)) - 2 cov(E(MC_1),E(MC_2))
+\end{align}
 (This holds even for any statistical estimate of an incremental effect, independent of Monte Carlo procedures).
 Here $E(MC)$ is the Monte Carlo estimate of the expectation value (i.e. it is the Monte Carlo solution to the kinetic transport equation),
 and $\sigma^2$ is the corresponding statistical variance.
@@ -2863,10 +2867,10 @@ equations (Navier Stokes equations) from the Boltzmann equation with that partic
 One default set of BGK collision parameters used in EIRENE is based upon
 the concept of ``diffusion volumes'' to provide (weakly temperature dependent) binary diffusion coefficients $D_{12}$ (for cross collisions, e.g. for He + H$_2$) or a viscosity coefficient $\mu$ (for self collisions) in the gas (see \cite{kn:Reiter94}). This choice results in a BGK collision rate coefficient $k(T)= k_0 T^{0.25}$  with the constant $k_0$ derived
 from such continuum limit considerations and the (experimentally determined) ``diffusion volumes''. Within this concept then a BGK - mean free path \cite{kn:Kotov-Dis} follows as:
-\begin{eqnarray}
-\lambda_{BGK} (cm) &= &\frac{\tilde{v}}{n \langle \sigma v\rangle} =  \frac{\sqrt{8T/\pi m}} {n k_0 T^{0.25}} \nonumber \\
-& = & L_0 \times T[eV]^{0.25} / n[10^{14} cm^{-3}]
-\end{eqnarray}
+\begin{align}
+\lambda_{BGK} (cm) &= \frac{\tilde{v}}{n \langle \sigma v\rangle} =  \frac{\sqrt{8T/\pi m}} {n k_0 T^{0.25}} \nonumber \\
+                   &= L_0 \times T[eV]^{0.25} / n[10^{14} cm^{-3}]
+\end{align}
 where the proportionality factor $L_0$ (in cm) is typically in the range between 7 and 20 ($L_0 = 20$\,cm for D--D self collisions, $L_0 = 9.75$\,cm for D$_2$--D$_2$ self collisions and $L_0 = 8.7$\,cm for D$_2$--He cross collisions). $L_0$ is the BGK mean free path (in cm) in a gas
 at $T = 1$ eV and density $n =1 \times 10^{14}$ cm$^{-3}$.
 
@@ -2986,10 +2990,10 @@ can be included by using the iteration option NITER $> 1$  (input
 block 1), and by adding a proper collision process to the collision
 kernel (and its related total cross section $\Sigma_{nonlin}$ to the total cross
 section $\Sigma$):
-\begin{eqnarray}
-C &=& C_{lin} + C_{nonlin}\\
-\Sigma &=& \Sigma_{lin} + \Sigma_{nonlin}
-\end{eqnarray}
+\begin{align}
+C &= C_{lin} + C_{nonlin}\\
+\Sigma &= \Sigma_{lin} + \Sigma_{nonlin}
+\end{align}
 Whereas $C_{lin}$ and $\Sigma_{lin}$ depend only upon parameters of the
 background medium (``bulk particles'', usually: electrons and ions),
 the kernels $C_{nonlin}$ and the rate coefficients $\Sigma_{nonlin}$ may
@@ -3292,29 +3296,28 @@ as often particularly
 appropriate for molecular ions $a$,
 In this limit one has for the basic ``Spitzer
 rates" (loc. cit.):
-\begin{eqnarray}
-\nu_s^{a,b} & = & n_b Z_a^2 Z_b^2\lambda_{a,b}\cdot
+\begin{align}
+\nu_s^{a,b} & = n_b Z_a^2 Z_b^2\lambda_{a,b}\cdot
 6.8 \times 10^{-8}~\frac{\mu_b^{1/2}}{\mu_a} \left(1+\frac{\mu_b}{\mu_a}\right)T_b^{-3/2}\\
-\nu_\perp^{a,b} & = & n_b Z_a^2 Z_b^2\lambda_{a,b}\cdot 1.4 \times 10^{-7}~\frac{\mu_b^{1/2}}{\mu_a} T_b^{-1/2}\varepsilon^{-1}  \\
-\nu_\parallel^{a,b} & = &  n_b Z_a^2 Z_b^2\lambda_{a,b}\cdot 6.8 \times 10^{-8}~\frac{\mu_b^{1/2}}{\mu_a} T_b^{-1/2}\varepsilon^{-1}
-\end{eqnarray}
+\nu_\perp^{a,b} & = n_b Z_a^2 Z_b^2\lambda_{a,b}\cdot 1.4 \times 10^{-7}~\frac{\mu_b^{1/2}}{\mu_a} T_b^{-1/2}\varepsilon^{-1}  \\
+\nu_\parallel^{a,b} & = n_b Z_a^2 Z_b^2\lambda_{a,b}\cdot 6.8 \times 10^{-8}~\frac{\mu_b^{1/2}}{\mu_a} T_b^{-1/2}\varepsilon^{-1}
+\end{align}
 and hence, using Equation (\ref{eps1}):
-\begin{eqnarray}
-\nu_\varepsilon^{a,b} &=&  n_b Z_a^2 Z_b^2\lambda_{a,b}\cdot
+\begin{align}
+\nu_\varepsilon^{a,b} & = n_b Z_a^2 Z_b^2\lambda_{a,b}\cdot
 6.8 \times 10^{-8}~\frac{\mu_b^{1/2}}{\mu_a}\frac{1}{T_b^{1/2}}
 \left[2 \frac{1}{T_b}\left(1+\frac{\mu_b}{\mu_a}\right)-
-2\frac1\varepsilon_a-\frac1\varepsilon_a\right]\nonumber\\
-&& \\
-&=&\nu^c_\varepsilon +\nu^v_\varepsilon
-\end{eqnarray}
+2\frac1\varepsilon_a-\frac1\varepsilon_a\right]\\
+                      & = \nu^c_\varepsilon +\nu^v_\varepsilon
+\end{align}
 with the ``constant" and ``variable" contribution $\nu^c_\varepsilon$ and $\nu^v_\varepsilon$, respectively, defined as
-\begin{eqnarray}
-\nu^c_\varepsilon &=& 2 n_b Z_a^2 Z_b^2\lambda_{a,b}\cdot
+\begin{align}
+\nu^c_\varepsilon &= 2 n_b Z_a^2 Z_b^2\lambda_{a,b}\cdot
 6.8 \times 10^{-8}~\frac{\mu_b^{1/2}}{\mu_a}\frac{1}{T_b^{3/2}}
 \left[1+\frac{\mu_b}{\mu_a}\right] =
 \tilde{\nu}_\varepsilon\left[1+\frac{\mu_b}{\mu_a}\right] \\
-\nu^v_\varepsilon &=&2 n_b Z_a^2 Z_b^2\lambda_{a,b}\cdot 6.8 \times 10^{-8}~\frac{\mu_b^{1/2}}{\mu_a}\frac{1}{T_b^{3/2}} \left[-\frac{3T_b/2}{\varepsilon_a}\right]=\tilde{\nu}_\varepsilon\left[-\frac{3T_b/2}{\varepsilon_a}\right].
-\end{eqnarray}
+\nu^v_\varepsilon &= 2 n_b Z_a^2 Z_b^2\lambda_{a,b}\cdot 6.8 \times 10^{-8}~\frac{\mu_b^{1/2}}{\mu_a}\frac{1}{T_b^{3/2}} \left[-\frac{3T_b/2}{\varepsilon_a}\right]=\tilde{\nu}_\varepsilon\left[-\frac{3T_b/2}{\varepsilon_a}\right].
+\end{align}
 Using this decomposition of $\nu_\varepsilon^{a,b}$ in equation
 (\ref{eq.relax1}) we find:
 \begin{equation}\label{eq.relax2}
@@ -3363,10 +3366,10 @@ where $x^{a/b}$ has been defined above, relation (\ref{xab})
 \nu_0^{a,b}  =  n_b Z_a^2 Z_b^2\lambda_{a,b}\cdot 4 \pi  /(\mu_a^2~  v_a^3)
 \end{equation}
  and the Maxwell integral $\Psi(x)$:
-\begin{eqnarray}
-\Psi(x) =& \frac{2}{\sqrt{\pi}}\int_0^x dy~e^{-y} \sqrt{y} &= \mathrm{erf}(\sqrt{x})-\frac{2}{\sqrt{\pi}}e^{-x}\sqrt{x}\\
-\Psi'(x) =& d\Psi/dx&= \frac{2}{\sqrt{\pi}}e^{-x}\sqrt{x}
-\end{eqnarray}
+\begin{align}
+\Psi(x) &= \frac{2}{\sqrt{\pi}}\int_0^x dy~e^{-y} \sqrt{y} &&= \mathrm{erf}(\sqrt{x})-\frac{2}{\sqrt{\pi}}e^{-x}\sqrt{x}\\
+\Psi'(x)&= d\Psi/dx &&= \frac{2}{\sqrt{\pi}}e^{-x}\sqrt{x}
+\end{align}
 With this more general expression for the collision frequency Equation (\ref{eq.relax1})
 can then only be integrated numerically  along the particle trajectory.
 However, other features of the collision process (velocity spreading, isotropization)

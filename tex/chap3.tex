@@ -278,12 +278,13 @@ Photons, S = A: Atoms, S = M: Molecules, S = I: Test Ions, S = P:
 Bulk Ions
 
 e.g.:
-\begin{eqnarray}
-& & \\ j_A    & =  & H  , D , T , He , C , O  ,  \dots \nonumber \\
-j_M  &  = & H_2  , D_2,  HD , CH_4 , H_2 O ,  \dots \nonumber \\
-j_I  &  = & H_2^+ , CH_3^+ ,  C^+ , O^{++} , \dots  \nonumber \\
-j_P  &  = & H^+  , D^+ , He^+  ,  He^{++} , C^+ , \dots \nonumber
-\end{eqnarray}
+\begin{align}
+    &  \\
+j_A & = H  , D , T , He , C , O  ,  \dots \nonumber \\
+j_M & = H_2  , D_2,  HD , CH_4 , H_2 O ,  \dots \nonumber \\
+j_I & = H_2^+ , CH_3^+ ,  C^+ , O^{++} , \dots  \nonumber \\
+j_P & = H^+  , D^+ , He^+  ,  He^{++} , C^+ , \dots \nonumber
+\end{align}
 The distinction between ``Test Ions" and ``Bulk Ions" is problem specific,
 see input blocks 4 and 5.
 The ``volume averaged tallies" estimated by EIRENE (see \cref{tab2})
@@ -555,14 +556,14 @@ if the surface is intersected
 during the test-flight from $ \vr_i $
 to $ \vr_{i+1} $ , and $ I_{l,i} = 0 $ else.
 This can easily be seen by writing
-\begin{eqnarray}
- \vr_{l,i} & = & \vr_i + l  \cdot
- \left(\begin{array} {c} \cos(\vOmega ,
+\begin{align}
+ \vr_{l,i} & = \vr_i + l  \cdot
+ \left(\begin{array} {c} \cos(\vOmega , 
 \ve_{\rho}
 )
 \\  \cos(\vOmega , \ve_{ \rho '} )
 \\  \cos(\vOmega,\ve_{ \rho ''}) \end{array}\right)
-\end{eqnarray}
+\end{align}
 i.e., $ \rho= r_{\rho , i} + l  \cdot  \cos( \vOmega , \ve_{\rho} )
 $ . In other words: tracklength estimators become formally identical
 to collision estimators, for detector functions containing surface
