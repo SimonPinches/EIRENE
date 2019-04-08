@@ -8,7 +8,7 @@
 \medskip  %
 
 The ``background'' or ``host'' medium, usually the ``plasma'' is fixed in an EIRENE run, and usually either specified
-in input block 5 (\ref{sec2.5}), or the background volume tallies are simply ready from data files.
+in input block 5 (\cref{sec2.5}), or the background volume tallies are simply ready from data files.
 
 However the mutual coupling between test-particle species treated by EIRENE and the background medium may be very
 strong, even if the test particle density is quite low compared to the background (plasma) density. This is
@@ -67,7 +67,7 @@ and the material in this section is still valid.
 
 Data are transfered from subroutine INFCOP into EIRENE via the
 EIRENE work array \texttt{RWK}  (Module CSPEI).
-They are read onto the EIRENE arrays for input volume tallies (\ref{tab1}) by calls of subroutine PROFR in
+They are read onto the EIRENE arrays for input volume tallies (\cref{tab1}) by calls of subroutine PROFR in
 the initialization phase individually for each tally,
 for which the flag INDPRO has the value 6 or 7 for a particular input tally
 (see \cref{sec2.5}).

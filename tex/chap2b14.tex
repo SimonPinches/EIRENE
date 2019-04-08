@@ -573,10 +573,10 @@ rather than in \cref{tab2old} in \cref{sec.tables-old}:
 Default tally no. 32 might be added here as well, once photo-ionization processes are activated in an EIRENE run.
 Analogous statements, i.e. modifications of volume averaged tally numbers,
 apply for the other source rates (for electron and ion energy balance), as compared
-to those described above in (\ref{sec2.14.1}).
+to those described above in \cref{sec2.14.1}.
 
 One further difference is that momentum source terms (for parallel momentum balance equations of plasma fluid codes) have become default tallies (MAPL, MMPL, MIPL), rather than problem specific tallies (COPV). These are now scored in routine UPDATE, together will all other tallies listed in tables \ref{tab2}, rather than in the coupling-specific routine UPTCOP.
-I.e. now we have (compare to (\ref{Sm})):
+I.e. now we have (compare to \cref{Sm}):
 \begin{equation}
  S_{m\parallel}(ipls,icell) = \sum_{is} \left[MAPL_{is}(ipls,icell) + MMPL_{is}(ipls,icell) + MIPL_{is}(ipls,icell) \right]
  \end{equation}
@@ -753,7 +753,7 @@ respectively, as defined in \ref{sec2.14.2} for the interface to the B2 plasma s
 $UA$ and $EKIN$ are the parallel plasma flow velocity $V_\parallel$ and the kinetic energy carried by the parallel
 plasma flow: $EKIN = (m_{ipls}/2) V_\parallel^2$.
 This equation applies for a single plasma fluid case (one single plasma species $ipls$).
-Relation (\ref{Sei-intern}) for the internal energy source follows from either substituting the lower order moment equations into the total energy moment equation,
+Relation \cref{Sei-intern} for the internal energy source follows from either substituting the lower order moment equations into the total energy moment equation,
 or by forming the energy moment equation directly by averaging the kinetic equation with velocities in the plasma frame:
 $w = v - V$, i.e. by averaging the kinetic equation with $(m/2) w^2$ rather than $(m/2) v^2$ with $V$ the plasma flow velocity \cite{kn:Mueller}.
 

@@ -464,7 +464,7 @@ read:
  SNAPV(ISNV,ICELL) = SNAPV(ISNV,ICELL) + WSNAP * g(...)  .
 \end{verbatim}
 E.g., with $g=1$ this is an unbiased estimate of cell averaged particle density at
-time $t=t^*$, see (\ref{est}), i.e., just counting the particle weights at $t=t^*$
+time $t=t^*$, see \cref{est}, i.e., just counting the particle weights at $t=t^*$
 provides an unbiased estimate of the particle density.
 This is intuitively clear, but also mathematically correct since
 these snapshot estimators are formally derived as special cases of tracklength- collision
@@ -542,7 +542,7 @@ g_S   \cdot   f
 \]
 
 Therefore, the line integrals $ I_{l,i} $ in the formula given above
-for track-length estimates, equation (\ref{tracklest}), now reduce
+for track-length estimates, equation \cref{tracklest}, now reduce
 to:
 
 \begin{equation}
@@ -834,7 +834,7 @@ been interchanged with respect to the calling statements in the EIRENE code. \\
 
 Purpose: set input tallies (background medium), on the grid (one number per tally per cell)
 For more general input tallies, evaluated ``on the fly" at a particular position, see routine VECUSR
-below (\ref{sec3.6.2}).
+below (\cref{sec3.6.2}).
 
 This subroutine is called from the subroutine PLASMA
 if the input flag INDPRO (input block 5) has the value INDPRO(IPRO)=5
@@ -1173,7 +1173,7 @@ Here [X,Y,Z] are the cartesian coordinates
 of an intersetcion point, located on non-default standard surface no. M. The routine must return
 the surface normal unit vector [CX,CY,CZ].
 
-If surface M has a periodicity condition (i.e. surface flag ILIIN(M) $>$3 in input block 3a (\ref{sec2.3a})
+If surface M has a periodicity condition (i.e. surface flag ILIIN(M) $>$3 in input block 3a (\cref{sec2.3a})
 then this routine must also carry out the periodicity transformation for the test particle (which may be different
 for neutral particles and for charged (test ion) particles).
 

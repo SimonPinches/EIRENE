@@ -485,7 +485,7 @@ is determined by the magnetic field unit vector (input tallies BXIN,...).
 
 \bigskip
 \textbf{Estimators} EIRENE resorts, by default, to tracklength
-estimators (\ref{eq1.11}). Default tallies are updated (``scoring")
+estimators \cref{eq1.11}. Default tallies are updated (``scoring")
 in routine UPDATE. All default estimators are constant within a cell
 $m$, i.e. depend only upon the cell index $m$ but not on the
 position $\vr$ in the cell: $g_t(s) = const(m)$. Hence they also do
@@ -494,7 +494,7 @@ calls templates UPTUSR, in which any further quantity can be scored
 by programming the path integral of any function $g_t(s)$, see
 \cref{sec3.2}.
 
-In some instances still collision estimators (\ref{eq1.9}) are
+In some instances still collision estimators \cref{eq1.9} are
 employed but we are gradually removing them (and plan keep them in
 the code only to provide independent checks for code-verification
 runs.)

@@ -1350,7 +1350,7 @@ The sheath acceleration $ESHEAT = Z_i \cdot \Delta \Phi \cdot T_e$  is computed 
 $\Delta \Phi$, where $Z_i$ is
 the electric charge of the sampled particle at birth point, $Z_i=0$ for neutral particles.
 The sheath potential drop $\Delta \Phi$ is
-given by equation \ref{sheath1} in \cref{sec1}, unless overruled by parameter $Sh>0.$, (see (\ref{local-source}), in which latter case $ESHEAT=Z_i \cdot Sh \cdot T_e$.
+given by equation \ref{sheath1} in \cref{sec1}, unless overruled by parameter $Sh>0.$, (see \cref{local-source}, in which latter case $ESHEAT=Z_i \cdot Sh \cdot T_e$.
 
-If $Sh\leq 0$ and the sheath potential according to equation (\ref{sheath1}) cannot be found either (e.g. because $\vV_{\pi,i}(ip) \equiv 0.)$, then
+If $Sh\leq 0$ and the sheath potential according to equation \cref{sheath1} cannot be found either (e.g. because $\vV_{\pi,i}(ip) \equiv 0.)$, then
 $Sh = FSHEAT(MSURF)$ (the input sheath parameter for source surface no. MSURF, input blocks 3 and 6) is used.

@@ -1271,7 +1271,7 @@ the background ions, see input block 5.
 Both contributions are evaluated for background bulk species IPLS which is the bulk collision partner
 in this particular reaction.
 The local drift energy contribution $E_{Drift}$ is added only in case NLDRFT=TRUE, see
-input block 1 (\ref{sec2.1})
+input block 1 (\cref{sec2.1})
 \item[for \# $  \hat{=} $ L]
 a fraction EP=ESCD of the energy loss EBULK of the
 impacting bulk particle is distributed equally over all (if more than
@@ -1377,7 +1377,7 @@ exchange rate coefficients, respectively. The resulting energy and momentum exch
 be fully correct in case of ``Maxwellian molecule collisions" :$\sigma \propto 1/v_{rel}$
 
 The velocity of the impacting ion is sampled without this ``Maxwellian Molecule" approximation being made. I.e.,
-consequently, sampling is from the a drifting, isotropic and mono-energetic distribution $f_i^{CX}$ (\ref{iso-mono})
+consequently, sampling is from the a drifting, isotropic and mono-energetic distribution $f_i^{CX}$ \cref{iso-mono}
 \textbf{weighted} by $\sigma(v_{rel}) \cdot |\vv_{rel}|$, with $v_{rel}$ the relative
 velocity between the two collision partners. The sampling distribution $f_{in \ CX}$ for the velocity $\vv_i^{CX}$
 of ions going into a CX event depends on the pre-collision test particle velocity $\vv_0$ as well and is (as also in general cases) given by:
@@ -1393,8 +1393,8 @@ $\sigma(v_{rel}) \propto 1/v_{rel}$).
 
 Summarizing: The current default CX model approximations consist in:
 
-a) selecting a particular distribution $f_i^{CX}$   (\ref{iso-mono}) rather than e.g. a drifting Maxwellian \\
-b) evaluating the reaction rate coefficient by (\ref{sigveff}) rather than a full rate coefficient integration \\
+a) selecting a particular distribution $f_i^{CX}$   \cref{iso-mono} rather than e.g. a drifting Maxwellian \\
+b) evaluating the reaction rate coefficient by \cref{sigveff} rather than a full rate coefficient integration \\
 c) approximating the energy and momentum exchange rate tallies by again employing the ``Langevin" $\sigma \propto 1/v_{rel}$ approximation\\
 d) but carrying out the full (relative velocity selective) reaction kinetics, i.e. here without making the $\sigma \propto 1/v_{rel}$ approximation, and, hence, retaining e.g. thermal force effects.
 

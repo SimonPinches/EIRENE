@@ -542,8 +542,8 @@ Their contribution to surface particle
 and energy fluxes is stored in surface averaged tallies 1 to 24,
 i.e., sputtered particles are not explicitly distinguished from
 reflected particles in the particle and energy balances.
-Furthermore the ``sputtered flux surface tallies" 33 to 37 (\ref{sec.tables-old} in older versions before 2002, and
-on tallies 51 to 81, (\ref{sec.tables-new}) else,  are also updated.
+Furthermore the ``sputtered flux surface tallies" 33 to 37 (\cref{sec.tables-old}) in older versions before 2002, and
+on tallies 51 to 81 (\cref{sec.tables-new}) else,  are also updated.
 The species index of the sputtered particle (atom) is IATM=ISRS.
 Hence, on input, one must have 1 $\le$ ISRS $\le$ NATMI, otherwise: error exit.
 
@@ -728,7 +728,7 @@ Recycling coefficient (must not be negative):
 
 A flux $RECYCT \cdot Influx$ is re-emitted from a surface, for any $Influx$ of particles of any species,
 where all fluxes are measured as ``atomic fluxes" (=fluxes of nuclei). RECYCT hence defines the sticking
-probability $p_a$ [and hence also the pumping speed (\ref{pumping-speed})] of any surface in EIRENE, for all incident species.
+probability $p_a$ [and hence also the pumping speed \cref{pumping-speed}] of any surface in EIRENE, for all incident species.
 
 The fraction $p_a$ =
 (1 - RECYCT) of incident (atomic) flux will be absorbed at the surface. The non-sticking, i.e. the re-emitted fraction
@@ -736,8 +736,8 @@ $RECYCT=1-p_a$ is split into a ``fast" and a ``thermal'' component.
 
 
 
-A fraction $p_f$ = RPROBF [see (\ref{rprobf})] of the incident particles is reflected
-as described by the ``fast particle reflection model". However, by relation (\ref{rprobf})
+A fraction $p_f$ = RPROBF [see \cref{rprobf}] of the incident particles is reflected
+as described by the ``fast particle reflection model". However, by relation \cref{rprobf}
 it is ensured that RPROBF is always less than or equal to RECYCT.
 
 The fraction $p_t$ = RPROBT = (RECYCT - RPROBF) will be re-emitted
@@ -950,7 +950,7 @@ The temperature $T$ and type of gas (given by $m$) are part of the specification
 $S$ may also depend on the pressure for some pumps: $S = S(P,T,m)$. However in the molecular flow regime $S$ may often assumed to be a constant (independent of pressure) for a given
 temperature and type of gas.
 
-But normally even in this case  the specified pumping speeds $S$ for vacuum pumps do not follow the $\sqrt{T/m}$ dependence in equation (\ref{pumping-speed})
+But normally even in this case  the specified pumping speeds $S$ for vacuum pumps do not follow the $\sqrt{T/m}$ dependence in equation \cref{pumping-speed}
 for different types of gas. E.g. pumping speeds for  H$_2$ vs. He
 of ``real pumps", for same temperatures, are usually not simply related by a factor $1/\sqrt{2}$, and those for D$_2$ and He may not be identical either.
 In a simulation of a gas mixture then a species dependent flag RECYCT (to produce a species dependent effective area $\tilde{A}$(ISPZ)
