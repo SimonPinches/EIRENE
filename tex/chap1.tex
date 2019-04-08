@@ -413,7 +413,7 @@ below, \cref{sec1.2.3}.
 In closing this section we note:
 
 
-All these equations (\ref{eq1a}, \ref{eq1b}, \ref{eq1c}), and equation \cref{eq1d}
+All these equations \cref{eq1a,eq1b,eq1c,eq1d}
 given below are equivalent, of course,
 so are their corresponding WCU generalizations discussed in the next \cref{sec1.01}.
 Which particular
@@ -875,7 +875,7 @@ flag WMINC, see \cref{sec2.10}.
 \subsection{Scaling of tallies}\label{sec1.2.0}
 With increasing $N$, the number of Monte Carlo histories,
 the unbiased estimators $X$ given in previous \cref{sec1.2.a} provide arbitrarily precise approximations for the responses $R_g=\langle\Psi|g\rangle$,
-for detector function $g$ and dependent variable $\Psi$ (equation \ref{eq1d}). The precise meaning and physical dimensions of $g$ and $\Psi$
+for detector function $g$ and dependent variable $\Psi$ \cref{eq1d}. The precise meaning and physical dimensions of $g$ and $\Psi$
 depend upon the problem at hand, e.g. also on symmetry (ignorable spatial coordinates, or time).
 
 Because the inhomogeneous part of the transport equation \cref{eq1d} $\cal{S}$ was assumed to be normalized to one (for source
@@ -991,7 +991,7 @@ However, because, of course  $X_i^2 \neq  \sum X_{i,j}^2$, the first sum on the 
 cannot be evaluated ``on the fly" (per event). Instead here EIRENE first accumulates the sum \cref{mccross} $X_i$ for individual test flight ``$i$", and updates the
 sum $\sum X_i^2$ only once after each completed history (in subroutine. STATIS, entry STATS1). I.e., variance estimates are made after completion of each history, inside the particle loop, see flowchart \ref{flow5}).
 The full evaluation and scaling of
-expression (\ref{MCsig1}, \ref{MCsig}) is then carried out after completion of all histories (per stratum), in entry STATS2 of subroutine STATIS.
+expression \cref{MCsig1,MCsig} is then carried out after completion of all histories (per stratum), in entry STATS2 of subroutine STATIS.
 \paragraph{Linear functions of tallies}\label{lin-funct}
 Often algebraic functions of tallies (sums, products, ratios,....) are formed after a Monte Carlo run to produce further (post processed) output quantities
 (see input blocks 10C and 10E in \cref{sec2.10}).
@@ -1084,10 +1084,10 @@ non-analog distributions are applied, and, if violated, an error
 exit with the message: ``violation of Radon-Nikodym condition"
 occurs.
 
-Note: a violation of condition \ref{eq1.14a} can not be detected
+Note: a violation of condition \cref{eq1.14a} can not be detected
 otherwise, e.g., by monitoring overflow in the weighting factor $w$.
 Of course, values y resulting in a zero in the denominator of $w$
-(equation \ref{eq1.13a}) have sampling probability zero according
+\cref{eq1.13a} have sampling probability zero according
 to distribution $g(x)$, and, hence, are never sampled.
 Still the results would be biased.
 
@@ -1129,7 +1129,7 @@ and so on.
 
 Random sampling from $f(x_1,x_2,...,x_3)$ then proceeds by
 sampling first $x_1$ from the (univariate) first factor in
-equation \ref{eq1.15a}, then $x_2$ by sampling from the
+\cref{eq1.15a}, then $x_2$ by sampling from the
 (univariate) second factor, and so on.
 
 This transformation of a multivariate (k-) distribution to a uniform distribution
@@ -1521,7 +1521,7 @@ It is strictly not necessary, but usually most convenient and intuitively
 most clear, to decompose the kernel $C$ according to the physical
 nature of the various collision processes taken into account.
 
-The collision kernel $C$ was written as (see equation \ref{eq1.3})
+The collision kernel $C$ was written as (see \cref{eq1.3})
 \begin{displaymath}
 C( \vr ' , \vv ' , i '   \rightarrow
 \vv , i) =   \sum_{k} {p_k  C_k ( \vr ' ;
@@ -1669,8 +1669,8 @@ C_P   =   \sum_{i}   \int d \vv \   C_{wf} (
 \vr ; \vv ' , i ' \rightarrow   \vv
 ,i) \label{eq1.16}
 \end{equation}
-Note that $ C_P   =   p_f = c_{wf}$ in the terminology of equation
-\ref{eq1.4}.
+Note that $ C_P   =   p_f = c_{wf}$ in the terminology of
+\cref{eq1.4}.
 
 The energy reflection coefficient is defined as:
 \begin{equation}
@@ -1886,8 +1886,7 @@ It has been found (mid eigthies of last century: within INTOR framework) as a re
 several different neutral gas transport Monte Carlo codes (EIRENE, DEGAS, NIMBUS, DDC83) on the
 same input data that the main divergence in the results from the
 different codes tested was due to different primary source terms
-$Q$ in the transport equation [equations (\ref{eq1a},\ref{eq1b}) and
-\cref{eq1.6a}] , although target fluxes and temperatures had been
+$Q$ in the transport equation \cref{eq1a,eq1b,eq1.6a}, although target fluxes and temperatures had been
 prescribed to be identical. Here we describe one particular EIRENE
 surface source option in detail. The way the source is modelled by
 EIRENE allows  consistency with kinetic boundary
@@ -2281,7 +2280,7 @@ kT_i}{kT_e} + Z_i \right) \cdot \frac{m_e}{m_i} \right]^{1/2}\left(1-\frac{j_{pl
 c_{i,S}}\right)\right]
 \label{sheath4}
 \end{align}
-the latter equality (\ref{sheath4} follows after insertion of \cref{insert} into the former.
+the latter equality \cref{sheath4} follows after insertion of \cref{insert} into the former.
 
 
 

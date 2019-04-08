@@ -7,7 +7,7 @@
 \medskip
 
 The statistical performance (FOM, ``figure of merit",
-see equation \ref{eq1.13} in \cref{sec1.2.1}) of an EIRENE
+see \cref{eq1.13} in \cref{sec1.2.1}) of an EIRENE
 run (as for any Monte Carlo application in general) is very
 sensitive to the non-analog methods used by EIRENE. Therefore the
 input parameters in this block, which define the non-analog setting of an EIRENE run, should only be used, if the user
@@ -89,8 +89,8 @@ Methods}
 \medskip
 
 \begin{list}{ }{}
-\item[\textbf{NLPRCA }] conditional expectation estimator (eq.
-\ref{eq1.12}) is used for atom species IATM
+\item[\textbf{NLPRCA }] conditional expectation estimator
+\cref{eq1.12} is used for atom species IATM
 \item[\textbf{NLPRCM }]
 conditional expectation estimator is used for molecule species
 IMOL
@@ -159,7 +159,7 @@ cell without collision. If this probability is smaller than WMINC,
 the particle track is stopped and restarted. E.g. for WMINC $\ge
 1$, the estimator used in the NIMBUS code results (ref.
 \cite{kn:Cupini}), whereas for WMINC = 0 each particle path is
-integrated according to equation \ref{eq1.12}, until the nearest
+integrated according to \cref{eq1.12}, until the nearest
 non transparent surface along the track is reached, regardless of
 any collisions. Periodicity surfaces are regarded as ``transparent" in this context.
 
