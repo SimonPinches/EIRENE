@@ -10,6 +10,10 @@ __One branch, one sort of changes.__
 
 Contributors can speed up the integration of corrections or improvements by focussing on one topic per branch / merge request. This allows the reviewer to get a rapid overview on the changes which simplifies the process of merging contributions into our master branch.
 
+## Style guide
+
+* keep number of Underful/Overful boxes and Warnings as small as possible 
+
 ## Contribution flow
 
 When contributing to the EIRENE code documentation, your merge request is subject to review by our maintainers.
