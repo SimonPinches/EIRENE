@@ -10,7 +10,7 @@ Data in input block 14 control additional input for an EIRENE run.
 
 In case NMODE $= 0$ (see input block 1), i.e., no call to interfacing
 subroutine INFCOP, only
-the additional input tallies ADIN (see table \ref{tab1}), if any, are
+the additional input tallies ADIN (see \cref{tab1}), if any, are
 specified here.
 
 Otherwise, if NMODE $\neq 0$ the data in this block
@@ -140,7 +140,7 @@ and their statistical errors is case specific and done in interfacing module EIR
  S_n(ipls,icell) = \sum_{is} \left[PAPL_{is}(ipls,icell) + PMPL_{is}(ipls,icell) + PIPL_{is}(ipls,icell) \right]
  \end{equation}
 
- The sum is over all strata (see  ``stratified sampling" in \cref{sec1}). $PAPL, PMPL,  PIPL$ are default EIRENE tallies (Table \ref{tab2old} in \cref{sec.tables-old}):
+ The sum is over all strata (see  ``stratified sampling" in \cref{sec1}). $PAPL, PMPL,  PIPL$ are default EIRENE tallies (\cref{tab2old} in \cref{sec.tables-old}):
  \begin{itemize}
  \item
  $PAPL$ is the particle source for background plasma species $ipls$ resulting from ``at\-om"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no. 11.
@@ -168,7 +168,7 @@ and their statistical errors is case specific and done in interfacing module EIR
  S_{Ei}(icell) = \sum_{is} \left[EAPL_{is}(icell) + EMPL_{is}(icell) + EIPL_{is}(icell) \right]
  \end{equation}
 
- The sum is over all strata (see  ``stratified sampling" in \cref{sec1}). $EAPL, EMPL,  EIPL$ are default EIRENE tallies (Table \ref{tab2old} in \cref{sec.tables-old}):
+ The sum is over all strata (see  ``stratified sampling" in \cref{sec1}). $EAPL, EMPL,  EIPL$ are default EIRENE tallies (\cref{tab2old} in \cref{sec.tables-old}):
  \begin{itemize}
  \item
  $EAPL$ is the ion energy source  resulting from ``atom"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no. 26.
@@ -183,7 +183,7 @@ and their statistical errors is case specific and done in interfacing module EIR
  S_{Ee}(icell) = \sum_{is} \left[EAEL_{is}(icell) + EMEL_{is}(icell) + EIEL_{is}(icell) \right]
  \end{equation}
 
- The sum is over all strata (see  ``stratified sampling" in \cref{sec1}). $EAEL, EMEL,  EIEL$ are default EIRENE tallies (Table \ref{tab2old} in \cref{sec.tables-old}):
+ The sum is over all strata (see  ``stratified sampling" in \cref{sec1}). $EAEL, EMEL,  EIEL$ are default EIRENE tallies (\cref{tab2old} in \cref{sec.tables-old}):
  \begin{itemize}
  \item
  $EAEL$ is the electron energy source  resulting from ``atom"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no. 22.
@@ -218,7 +218,7 @@ They are read in the following sequence,
 \item[{= 16 }] BFELD: magnitude of magnetic field $[T]$, cell centered
 \end{list}
 
-Thereafter index mapping (accounting for grid cuts), and units conversion are carried out,  to turn these fields into EIRENE bulk ion tallies (Table \ref{tab1old})
+Thereafter index mapping (accounting for grid cuts), and units conversion are carried out,  to turn these fields into EIRENE bulk ion tallies (\cref{tab1old})
 as well as to derive recycling target fluxes and boundary conditions from them.
 
 \textbf{The Input Block}
@@ -560,8 +560,8 @@ not in use
 The first thing to note is that due to introduction of photons as a forth type of test particle (for radiation transfer simulations) the numbering of tallies
 (source rates) to be transferred from EIRENE into B2 has changed.
 For example the particle source rates $PAPL, PMPL,  PIPL$ are now default EIRENE tallies
-listed in Table \ref{tab2} in \cref{sec.tables-new}
-rather than in Table \ref{tab2old} in \cref{sec.tables-old}:
+listed in \cref{tab2} in \cref{sec.tables-new}
+rather than in \cref{tab2old} in \cref{sec.tables-old}:
  \begin{itemize}
  \item
  $PAPL$ is the particle source for background plasma species $ipls$ resulting from ``at\-om"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no. 14.
@@ -581,7 +581,7 @@ I.e. now we have (compare to (\ref{Sm})):
  S_{m\parallel}(ipls,icell) = \sum_{is} \left[MAPL_{is}(ipls,icell) + MMPL_{is}(ipls,icell) + MIPL_{is}(ipls,icell) \right]
  \end{equation}
 
- The sum is over all strata (see  ``stratified sampling" in \cref{sec1}). $MAPL, MMPL,  MIPL$ are default EIRENE tallies (Table \ref{tab2} in \cref{sec.tables-new}):
+ The sum is over all strata (see  ``stratified sampling" in \cref{sec1}). $MAPL, MMPL,  MIPL$ are default EIRENE tallies (\cref{tab2} in \cref{sec.tables-new}):
  \begin{itemize}
  \item
  $MAPL$ is the parallel momentum source for background plasma species $ipls$ resulting from ``atom"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no. 97.

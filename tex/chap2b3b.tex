@@ -265,11 +265,11 @@ defines the type of surface
 reflecting, partly or purely absorbing surface.
 
 local reflection model has to be specified unless default model is
-to be used; all surface tallies (see Table \ref{tab3})
+to be used; all surface tallies (see \cref{tab3})
 are updated and a switch can be operated.
 \item[{= 2 }]
 purely absorbing surface ;. surface tallies for incident fluxes
-(i.e., POT... and EOT... tallies in Table \ref{tab3})
+(i.e., POT... and EOT... tallies in \cref{tab3})
 are updated and the particle history is stopped then.
 \item[{= 3 }]
 mirror for incident
@@ -312,15 +312,15 @@ as -1, and, additionally:
 if a particle is crossing the surface in the positive direction,
 (one sided-) surface tallies are updated, e.g., by
 default: partial particle and energy currents $J^+$ (Amp)
-and $K^+$ (Watt). These are stored in the POT... and EOT... tallies of Table \ref{tab3}.
+and $K^+$ (Watt). These are stored in the POT... and EOT... tallies of \cref{tab3}.
 If the particle crosses the surface in the direction opposite to the surface normal, then
 negative partial particle and energy currents $J^-$ (Amp)
 and $K^-$ (Watt) are updated. These are stored in the PRF... and ERF... tallies of
-Table \ref{tab3}.
+\cref{tab3}.
 
 \item[{= -3 }]
 Net currents (e.g. $J^+ - J^-$),
-are evaluated, and stored on the POT... and EOT... tallies (see Table \ref{tab3}).
+are evaluated, and stored on the POT... and EOT... tallies (see \cref{tab3}).
 The PRF... and ERF... tallies are empty for these surfaces.
 \item[{$\leq$ -4 }] Not in use. Currently: same as ILIIN=-2 option.
 \end{list}
