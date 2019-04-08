@@ -27,7 +27,7 @@ operation (NITERI, NITERE, input block 1), see section
 As for the time-dependence options, it is important to note that
 there are two kinds of time-steps. One is the so called
 ``time-cycle". Each time cycle is a more or less complete EIRENE
-run in its own, even if several (NTIME, see section \ref{sec2.1})
+run in its own, even if several (NTIME, see \cref{sec2.1})
 such time-cycles are carried out in one single job. In each
 time-cycle, a time-horizon is set and the trajectories are stopped
 (at latest) if they have survived until then. All relevant
@@ -41,7 +41,7 @@ time-steps, the relevant snapshot tallies are updated (subroutine TIMCOL).
 These are the volumetric ``snapshot tallies", the default ``time-surface
 tallies" (particle and energy fluxes) and the ``census arrays". Hence: these tallies are averaged
 over NTMSTP (internal) time-steps. For more details on snapshot
-tallies see Section \ref{sec3.2.3}.
+tallies see \cref{sec3.2.3}.
 
 This distinction between complete ``time cycles" and ``internal
 time steps" is particularly relevant for obtaining truly steady
@@ -181,7 +181,7 @@ Default: TIME0=0.
 Number of snapshot tallies computed from census arrays. In old
 EIRENE versions without dynamic allocation of storage NSNVI must be
 less or equal NSNV (see PARMUSR), and the detector functions are
-user supplied in subroutine UPNUSR, see Sub-section \ref{sec3.2.3}.
+user supplied in subroutine UPNUSR, see Sub-\cref{sec3.2.3}.
 
 Default: NSNVI=0
 

@@ -11,7 +11,7 @@ a large variety of linear and also of non-linear transport problems to be studie
 cases of linear neutral gas transport in a prescribed background plasma
 the only problem specific FORTRAN that is required consisted of
 a few parameter statements (i.e., the COMMON deck PARMUSR described
-below in section \ref{sec3.1}).  
+below in \cref{sec3.1}).  
 
 In it one had defined the
 storage requirements for this particular case.
@@ -24,7 +24,7 @@ Some controllable storage options (e.g.: trading CPU - vs. storage -
 optimization), formerly under: ``parameters for storage
 reductions'' in PARMUSR, can now be set in an additional, but
 optional input line at the beginning of input block 1 (as new
-second line in this block), see section \ref{sec2.1}.
+second line in this block), see \cref{sec2.1}.
 
 \vspace{1em}
 
@@ -34,7 +34,7 @@ end with ...USR.
 \smallskip
 
 The description of the ``additional tally" routines UPTUSR, UPCUSR,
-UPSUSR and UPNUSR given below (section \ref{sec3.2}) is meant as a
+UPSUSR and UPNUSR given below (\cref{sec3.2}) is meant as a
 guide for the more experienced users of the code only. These
 routines allow to extend the number of responses estimated by EIRENE
 almost arbitrarily.
@@ -47,26 +47,26 @@ a test particle has collided with a non-transparent surface and neither
 absorption, nor specular reflection nor the ``thermal particle re-emission"
 is identified as
 surface event by the flags and the random sampling procedure. The use of
-this routine REFUSR is described in section \ref{sec3.3}.
+this routine REFUSR is described in \cref{sec3.3}.
 
 By including a birth point sampling routine SAMUSR, one can easily
 model any spatial distribution of the primary source, in addition to the
-preprogrammed options described in section \ref{sec2.7}.
-This is explained in section \ref{sec3.4}.
+preprogrammed options described in \cref{sec2.7}.
+This is explained in \cref{sec3.4}.
 
 Some geometrical variables, such as cell volumes, surface coefficients,
 etc., may be re-defined or modified after reading the input data.
 This is done by a call to routine GEOUSR, called from EIRENE
-subroutine INPUT. See section \ref{sec3.5.1} below. Similarly,
+subroutine INPUT. See \cref{sec3.5.1} below. Similarly,
 any background data (plasma profiles) may explicitly be modified
-in routine PLAUSR (see section \ref{sec3.5.2}).
+in routine PLAUSR (see \cref{sec3.5.2}).
 
 The routine for additional background profiles PROUSR (called for
 those background tallies, for which INDPRO=5, see block 5, is described
-in section \ref{sec3.6}. It is recommended to use this option,
+in \cref{sec3.6}. It is recommended to use this option,
 if a particular closed form expression for the background profile
 is needed. It is then more convenient than the external data file
-options INDPRO=6, or INDPRO=7, see section \ref{sec4}.
+options INDPRO=6, or INDPRO=7, see \cref{sec4}.
 
 The various routines needed for the general user supplied geometry
 option (NLGEN, LEVGEO=10, see block 2a) are described in section
@@ -433,7 +433,7 @@ state approximation ``QSSA" for this species).
 
 \subsection{Snapshot estimated volume averaged tallies, UPNUSR}\label{sec3.2.3}
 
-By default snapshot tallies are only scored in time dependent mode, see input flags in Section \ref{sec2.13}.
+By default snapshot tallies are only scored in time dependent mode, see input flags in \cref{sec2.13}.
 They can, however, also be used as a third alternative to tracklength and collision
 estimators for any stationary response. In particular for diffusive processes, as e.g.
 ion transport with Fokker Planck type Coulomb collision operators,
@@ -506,7 +506,7 @@ from $t_0$ to $t_1=t_0+DTIMV$).
 
 Further considerations regarding the scaling factors for volume averaged
 tallies in EIRENE, with respect to dimensionality of phase space of the problem
-(1D, 2D, 3D, stationary or time-dependent) are given in Section \ref{sec1.2.0}.
+(1D, 2D, 3D, stationary or time-dependent) are given in \cref{sec1.2.0}.
 
 \subsection{Surface averaged tallies, UPSUSR}\label{sec3.2.4}
 \medskip
@@ -1044,7 +1044,7 @@ coordinates of a point inside the computational domain in centimeters.
 LEAUSR must then return
 the number of the cell to which this point belongs.
 
-Note (see section \ref{sec2.2}): Any particular cell in EIRENE can be specified in
+Note (see \cref{sec2.2}): Any particular cell in EIRENE can be specified in
 one of two possible ways:
 
 Either by giving the 5 cell numbers:
@@ -1140,7 +1140,7 @@ only relevant, if the trajectory has intersected a non-default surface.
 In this case, ICOS is the sign (+1 or -1) of the cosine of the angle of
 incidence against the surface normal (this latter unit vector, [CRTX,CRTY,CRTZ]
 may, e.g., be found in TIMUSR by a call
-to NORUSR, see section \ref{sec3.8.4}).
+to NORUSR, see \cref{sec3.8.4}).
 \item[\textbf{IERR }]
 error flag. Presently
 any value different from 0 will lead to an immediate end of the run.

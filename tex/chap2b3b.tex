@@ -162,7 +162,7 @@ optional for non transparent surfaces (ILIIN $>$ 0):
 The next 3 (or 4) lines comprise the block for local particle-surface interaction data
 (in analytic terminology: the boundary condition at this surface element).
 If they are omitted, the default particle-surface model is activated for this
-particular surface element, see section \ref{sec2.6}.
+particular surface element, see \cref{sec2.6}.
 \begin{verbatim}
     ILREF  ILSPT ISRS  ISRC
     ZNML EWALL EWBIN TRANSP(1,N) TRANSP(2,N) FSHEAT
@@ -484,7 +484,7 @@ If a test particle history starts from a surface (NLSRF option),
 then ILSWCH acts as if this particle had struck the surface prior
 to the birth process in the positive direction. This default
 setting is only available for ILSIDE $\neq$ 0 and can (must) be
-overruled by the SORIFL flag (see section \ref{sec2.7}), e.g. if a
+overruled by the SORIFL flag (see \cref{sec2.7}), e.g. if a
 surface source needs to be defined on a surface with ILSIDE = 0.
 \item[\textbf{ILEQUI }] The algebraic equations for the surfaces J
 and IABS(ILEQUI(J)) will be described by exactly the same

@@ -70,7 +70,7 @@ There are NSRFSI substrata, and the weights $w_{k,j}, \ j=1,\dots NSRFSI$, are u
 substratum $j_0$ by sampling, and then sampling from distribution $Q_{k,j_0}(\vr,\vv,i,t)$ of stratum $k$ as described above.
 
 The total CPU resources (and storage for the census array, see
-section \ref{sec2.13}) are distributed over the strata. This
+\cref{sec2.13}) are distributed over the strata. This
 distribution is controlled by some of the input flags in this
 input block, as described below. EIRENE stops working on a
 particular stratum if either the assigned CPU-time for this
@@ -137,7 +137,7 @@ at entry IF2COP(ISTRA))
 \item[{INDSRC(ISTRA)=6}]
 no input data for stratum ISTRA are read here. The definition of this stratum
 must be entirely in some problem specific routine (IF2COP, etc.).
-See section \ref{sec3.4} for one such example,
+See \cref{sec3.4} for one such example,
 namely the default surface recycling
 source model as specified in coupled B2-EIRENE runs.
 \item[{INDSRC(ISTRA)=-1}]
@@ -276,10 +276,10 @@ tally number of selected tally (refer to tables \ref{tab2}, \ref{tab3})
 cell numbers NRCELL, NPCELL, NTCELL, NBLOCK, NACELL, respectively.
 
 if (NPCELL = 0) or (NTCELL = 0), then ISCL1 = NCELL, the cell number in the
-1-dimensional arrays (see end of section \ref{sec2.2.1}).
+1-dimensional arrays (see end of \cref{sec2.2.1}).
 
 The additional cell region is specified by NRCELL=0, NPCELL=1, NTCELL=1,
-NBLOCK=NBMLT+1 (see section \ref{sec2.2}) and
+NBLOCK=NBMLT+1 (see \cref{sec2.2}) and
 the proper value of NACELL.
 \item[{IVLSF=2}]
 to be written
@@ -365,7 +365,7 @@ this section and paragraph \ref{sec2.7.1}). There it is set according to the loc
 composition.
 
 WEISPZ may also be transferred into a run via
-user specified source sampling (SAMUSR.f, see section \ref{sec3.4} )
+user specified source sampling (SAMUSR.f, see \cref{sec3.4} )
 
 
 In all other cases NSPEZ must be positive.
@@ -586,7 +586,7 @@ NSRFSI surfaces is normalized to one internally.
 if SORLIM $\le$ 0, the user supplied
 Subroutine SAMUSR
 is called to sample all 3 initial
-co-ordinates (X0,Y0,Z0), see section \ref{sec3.4}.
+co-ordinates (X0,Y0,Z0), see \cref{sec3.4}.
 
 if SORLIM $>$  0, then one of the preprogrammed options is used
 (the digits L,M and N are relevant only for surface sources).
@@ -643,7 +643,7 @@ with normalizing constant
 $c = \left\{ \lambda (\exp[ -a/ \lambda] - \exp[-b/
 \lambda])\right\}^{-1}$
 \item[{L,M,N = 4 }]
-Step-function (see below: Function STEP, subsection \ref{sec2.7.1})
+Step-function (see below: Function STEP, \cref{sec2.7.1})
 (only one of either
 L or M or N should be 4)
 \item[{K = 1 }]
@@ -655,12 +655,12 @@ kinetic integro-differential equation).
 Uniform distribution in [TIME0,TIME0+DTIMV] for time of particle
 birth.\\
 Default: K=2 in time-dependent mode (NTIME $>$0) and K=1, TIME0=0 in
-time-independent mode (NTIME = 0), see section \ref{sec2.1}.
+time-independent mode (NTIME = 0), see \cref{sec2.1}.
 \end{list}
 \item[\textbf{SORIND }]
 Flag to choose one from the various step functions (SORLIM-option
 4), which have been defined in the initialization phase. Up to NSTEP
-(PARMUSR, see section \ref{sec3.1}) step functions can be described
+(PARMUSR, see \cref{sec3.1}) step functions can be described
 there. SORIND is the labelling index of the selected step function.
 
 Each step function STEP(ISTEP,...) can consist of step functions for
@@ -699,37 +699,37 @@ input flag ILSWCH)
 as for point source, but additionally:
 
 If NRSOR  $<$   0, NRCELL is found from the step-function data (see
-below: Function STEP,  section \ref{sec2.7.1}) (if N is equal to 4) or
+below: Function STEP,  \cref{sec2.7.1}) (if N is equal to 4) or
 is returned from SAMUSR  (if  SORLIM  $<$   0)
 \item[\textbf{NPSOR }]
 as for point source, but additionally:
 
 If NPSOR  $<$   0, NPCELL is found from the step-function data (see
-below: Function STEP,  section \ref{sec2.7.1}) (if M is equal to 4) or
+below: Function STEP,  \cref{sec2.7.1}) (if M is equal to 4) or
 is returned from SAMUSR  (if  SORLIM  $<$   0)
 \item[\textbf{NTSOR }]
 as for point source, but additionally:
 
 If NTSOR  $<$   0, NTCELL is found from the step-function data (see
-below: Function STEP,  section \ref{sec2.7.1}) (if L is equal to 4) or
+below: Function STEP,  \cref{sec2.7.1}) (if L is equal to 4) or
 is returned from SAMUSR  (if  SORLIM  $<$   0)
 \item[\textbf{NBSOR }]
 as for point source, but additionally:
 
 If NBSOR  $<$   0, NBLOCK is found from the step-function data (see
-below: Function STEP,  section \ref{sec2.7.1}) (if N is equal to 4) or
+below: Function STEP,  \cref{sec2.7.1}) (if N is equal to 4) or
 is returned from SAMUSR  (if  SORLIM  $<$   0)
 \item[\textbf{NASOR }]
 as for point source, but additionally:
 
 If NASOR  $<$   0, NACELL is found from the step-function data (see
-below: Function STEP, section \ref{sec2.7.1}) (if N is equal to 4) or
+below: Function STEP, \cref{sec2.7.1}) (if N is equal to 4) or
 is returned from SAMUSR  (if  SORLIM  $<$   0)
 \item[\textbf{NISOR }]
 as for point source, but additionally:
 
 If NISOR $<$  0, IPOLG is found from the step-function data (see
-below: Function STEP, section \ref{sec2.7.1}) (if N is equal to 4) or
+below: Function STEP, \cref{sec2.7.1}) (if N is equal to 4) or
 is returned from SAMUSR  (if  SORLIM $ < $  0)
 \end{list}
 The six parameters in the next card SORAD.. are used to define the
@@ -797,7 +797,7 @@ if SORLIM $\le$ 0, the user supplied
 Subroutine SAMUSR
 is called to sample all 3 initial
 co-ordinates (X0,Y0,Z0),
-see section \ref{sec3.4}.
+see \cref{sec3.4}.
 
 If SORLIM $>$  0, then the preprogrammed option is used.
 \item[\textbf{SORIND }]
@@ -897,7 +897,7 @@ be the
 components of the velocity drift vector $\vV_i(ip_0)$ normal
 and parallel,
 respectively, to a (possibly fictious) surface element
-(similar  notation as in section \ref{maxw-flux}), the
+(similar  notation as in \cref{maxw-flux}), the
 orientation of which is locally defined at the initial position of
 the test particle by the above mentioned reference ``outward normal unit
 vector" $\vC$.
@@ -914,7 +914,7 @@ I.e. the bending of the sonic or supersonic flow $\vV_{i,\|}$ parallel to the ma
 at the magnetic pre-sheath entrance
 to a sonic flow $\vV_{i,\pi}$ normal to the target entering the electrostatic sheath,
 by the action of the magnetic pre-sheath field, is not carried out inside EIRENE.
-Check section \ref{sec1.5} for generalizations, e.g. to also include magnetic pre-sheath models inside EIRENE.
+Check \cref{sec1.5} for generalizations, e.g. to also include magnetic pre-sheath models inside EIRENE.
 
 
 
@@ -949,7 +949,7 @@ at temperature $T_i(ip_0)$ drifting by a velocity
 
 $(V_{i,\pi}(ip_0), V_{i,\sigma}(ip_0)$).
 
-One obtains (see (\ref{eq1.30}, omitting unnecessary indices) in section \ref{sec1}) by integration EMAX = $\gamma_E   T_i(ip_0) $
+One obtains (see (\ref{eq1.30}, omitting unnecessary indices) in \cref{sec1}) by integration EMAX = $\gamma_E   T_i(ip_0) $
 
 with $\gamma_E   =   (
 {\cal V}_{\pi}^2  +   2   +  {\cal V}_{\sigma}^ 2   )   +   0.5
@@ -959,7 +959,7 @@ ${\cal V}   = V / \sqrt{ \frac{{2 T_i}}{{m_i}} }$, and $g(x)   =   1 +
 \sqrt{\pi} x  [ 1 + \mbox{erf}(x) ]   \exp(x^2 )$.
 
 (The normalized velocities ${\cal V}, {\cal V}_{\pi}, {\cal V}_{\sigma}$ used here coincide with the
-isothermal Mach number if $T_i(ip_0) = T_e$, see again section \ref{maxw-flux}).
+isothermal Mach number if $T_i(ip_0) = T_e$, see again \cref{maxw-flux}).
 \item[{N = 5 }]
 (only for surface sources)
 As N=4, but with added sheath acceleration, see paragraph \ref{sec2.7.2} below
@@ -992,7 +992,7 @@ As N=6, but with added sheath acceleration, see paragraph \ref{sec2.7.2} below
 Mono-energetic source $f(E) = \delta (E-E0)$ with energy
 
 $E0 = E_i(ip_0)$, with $E_i(ip_0)$ being the local mean incident ion energy, for example defined in connection with the spatial
-``step-function" option, see section \ref{sec2.7.1}.
+``step-function" option, see \cref{sec2.7.1}.
 \item[{N = 9 }]
 (only for surface sources)
 As N=8, but with added sheath acceleration, see paragraph \ref{sec2.7.2} below
@@ -1350,7 +1350,7 @@ The sheath acceleration $ESHEAT = Z_i \cdot \Delta \Phi \cdot T_e$  is computed 
 $\Delta \Phi$, where $Z_i$ is
 the electric charge of the sampled particle at birth point, $Z_i=0$ for neutral particles.
 The sheath potential drop $\Delta \Phi$ is
-given by equation \ref{sheath1} in section \ref{sec1}, unless overruled by parameter $Sh>0.$, (see (\ref{local-source}), in which latter case $ESHEAT=Z_i \cdot Sh \cdot T_e$.
+given by equation \ref{sheath1} in \cref{sec1}, unless overruled by parameter $Sh>0.$, (see (\ref{local-source}), in which latter case $ESHEAT=Z_i \cdot Sh \cdot T_e$.
 
 If $Sh\leq 0$ and the sheath potential according to equation (\ref{sheath1}) cannot be found either (e.g. because $\vV_{\pi,i}(ip) \equiv 0.)$, then
 $Sh = FSHEAT(MSURF)$ (the input sheath parameter for source surface no. MSURF, input blocks 3 and 6) is used.

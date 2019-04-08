@@ -7,7 +7,7 @@
 \medskip
 
 An outline of surface interaction models in general terms was
-given in section \ref{sec1.3}. As for the implementation of such
+given in \cref{sec1.3}. As for the implementation of such
 models in EIRENE, there are two parts to the surface interaction
 data block. The first part contains data which are general to the
 EIRENE reflection model (``Block for General Reflection Data"), at all surfaces.
@@ -58,7 +58,7 @@ All this information is contained in each of three so called
 references \cite{kn:Eckstein}, \cite{kn:Bateman}), the ``Modified
 Behrisch Matrix model" (references \cite{kn:Behrisch},
 \cite{kn:Nicolai}) or the ``User Supplied Reflection model" (see
-section \ref{sec3.3}), and in several so called ``Sputter Models"
+\cref{sec3.3}), and in several so called ``Sputter Models"
 (\cite{kn:NucFus}, \cite{kn:Sputer95}, \cite{kn:Roth96}.
 
 These models may, to some extend, be modified by the input flags
@@ -102,7 +102,7 @@ If a ``Path Card'' is included, then read an arbitrary number of
 \begin{verbatim}
  A_on_B
 \end{verbatim}
-Up to NHD6 (see PARAMETER statements, section \ref{sec3.1}) data files for different
+Up to NHD6 (see PARAMETER statements, \cref{sec3.1}) data files for different
 Target-Projectile combinations can be read in EIRENE versions older than 2001. No such limitation exists in
 more recent versions (due to dynamic allocation of storage).
 
@@ -165,7 +165,7 @@ the complete TRIM file is read, containing the first 12 TRIM
 target-projectile combination data-sets listed in section
 \ref{sec1.3}, i.e., the files H\_on\_Fe to T\_on\_W.
 
-If the parameter NHD6 $<$ 12, (section \ref{sec3.1}) then only the
+If the parameter NHD6 $<$ 12, (\cref{sec3.1}) then only the
 first NHD6 files are read from FT21. \item[\textbf{``Path Card"
 }] This card is machine specific. If EIRENE finds a card
 containing the string 'PATH' or 'path', it assumes that this card
@@ -175,7 +175,7 @@ particular TRIM data file in the domain specified by the path
 card. E.g., H\_on\_Fe would include the data file for hydrogen
 onto iron into the EIRENE run. Up to NHD6 such ``Target-Projectile
 Specification Cards" may be included. For a complete list of such
-files currently available see again section \ref{sec1.3}.
+files currently available see again \cref{sec1.3}.
 \end{list}
 Note: if during a Monte Carlo simulation a projectile A hits a
 target B, for which no TRIM data file has been specified, but
@@ -212,11 +212,11 @@ during the particle history
 generation process
 is controlled by the surface
 species index flags ISRF\$, ISRT\$ read in the species
-sub-blocks of section \ref{sec2.4} and \ref{sec2.5}. By default the
+sub-blocks of \cref{sec2.4} and \ref{sec2.5}. By default the
 following conventions
 are used (and can be overruled by calls to subroutines REFUSR, SPTUSR
 only, see
-section \ref{sec3.3}):
+\cref{sec3.3}):
 \begin{list}{ }{}
 \item[\textbf{ISRF\$ }]
 fast particle reflection species flag:
@@ -399,7 +399,7 @@ be done via a call to the entry RF0USR of the user supplied reflection
 routine REFUSR.
 RF0USR is
 called
-in the initialization phase of an EIRENE run (see section \ref{sec3.3}).
+in the initialization phase of an EIRENE run (see \cref{sec3.3}).
 
 By a similar strategy, some of the species independent flags in the next
 sub-block 6B can be made species-dependent. See, for example,
@@ -469,7 +469,7 @@ Flag for choice of local reflection model
 \item[{= 1 }] TRIM database reflection model is used. NLTRIM
 must be .TRUE.. \item[{= 2 }] ``modified Behrisch Matrix
 model" is used \item[{= 3 }] user supplied reflection model
-(see section \ref{sec3.3}: Subroutine REFUSR)
+(see \cref{sec3.3}: Subroutine REFUSR)
 \end{list}
 
 Default: ILREF = 2
@@ -492,7 +492,7 @@ and cosine angular distribution for emitted particles
 \item[{N = 9 }]
 (was option N=3 in Eirene-2004 and older)
 
-user supplied sputtering model (see section \ref{sec3.3}: Entry
+user supplied sputtering model (see \cref{sec3.3}: Entry
 SPTUSR to subroutine REFUSR)
 \item[{M = 0 }] no chemical
 sputtering at this surface
@@ -519,7 +519,7 @@ and multiplicative factor for flux dependence (Roth, 2004).
 \item[{M = 9 }]
  (was option N=3 in Eirene-2004 and older)
 
-user supplied sputtering model (see section \ref{sec3.3}: Entry SPTUSR
+user supplied sputtering model (see \cref{sec3.3}: Entry SPTUSR
 to subroutine REFUSR)
 \end{list}
 
@@ -689,7 +689,7 @@ If FSHEAT $\le$ 0.0, then a sheath potential
 computed from the local background plasma flow conditions is used (function SHEATH),
 assuming ambi-polar flow, a Boltzmann distribution for electrons and zero
 secondary electron emission.
-See section \ref{sec1.4}. In case of zero (undefined) background plasma flow velocity at the place
+See \cref{sec1.4}. In case of zero (undefined) background plasma flow velocity at the place
 of incidence, a default of FSHEAT = 2.8 is used (corresponding to $T_e = T_i$,
 and a single ion species $D^+$ plasma flowing at ion acoustic
 speed parallel to the $\vec B$-field into the sheath.
@@ -897,7 +897,7 @@ EIRENE run, from subroutine REFLEC.
 Likewise, the entry SP0USR of the user supplied sputter routine SPTUSR
 is called in the initialization phase from subroutine SPUTER.
 For further details on user supplied surface interaction routines
-see section \ref{sec3.3}.
+see \cref{sec3.3}.
 
 For example: RECYCT(3,5) is the recycling
 coefficient for incident species 3 onto surface no. 5.

@@ -120,7 +120,7 @@ Cell volumes in the standard mesh region, as well as the center of
 mass vector in each of these cells are computed automatically. The
 corresponding data in the additional cell region must be specified
 by the user, e.g. in the input block 2E or 8, or in the user
-supplied routine GEOUSR (section \ref{sec3.6}), which is called by
+supplied routine GEOUSR (\cref{sec3.6}), which is called by
 EIRENE in the initialization phase.
 
 \medskip
@@ -268,7 +268,7 @@ are read from the work array RWK. These
 data must have been written onto RWK in the user supplied subroutine INFCOP.
 By this option grid parameters may directly be transferred into
 EIRENE from other files, e.g. from plasma transport codes
-(see below: section \ref{sec2.14}. Data for interfacing routine INFCOP).
+(see below: \cref{sec2.14}. Data for interfacing routine INFCOP).
 \end{list}
 \end{list}
 
@@ -543,7 +543,7 @@ if NLGEN = .TRUE. :
 \item[\textbf{NR1ST }]
 
 number of cells in otherwise arbitrary mesh option NLGEN.
-Use problem specific routines (see section \ref{sec3})
+Use problem specific routines (see \cref{sec3})
 to set up mesh, cell volumes, and flight interesction times for test partilces.
 \end{list}
 
@@ -721,7 +721,7 @@ The can mesh consist two different parts.
 
 The first is the so called ``standard mesh" part (``VOXEL-geometry"), defined
 by the grids RSURF, PSURF and TSURF. There may then be NBMLT copies of that
-mesh, separated by additional surfaces (see below, section \ref{sec2.3b}
+mesh, separated by additional surfaces (see below, \cref{sec2.3b}
 (default: NBMLT=1).
 
 The second part is the so called ``additional cell region". Up to

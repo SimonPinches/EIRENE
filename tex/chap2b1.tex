@@ -71,7 +71,7 @@ to assign processes  to strata. This is defined in PEDIST.f (initialization phas
 by filling the matrix PROCFORSTRA(strata,processors).
 \begin{list}{}{}
 \item [= 1] old default: attempting proportional allocation and, simultaneously, load balancing (see under: stratified sampling,
-the remarks towards the end of section \ref{sec1.2.1b}).
+the remarks towards the end of \cref{sec1.2.1b}).
 \item [= 2] not in use
 \item [= 3] not in use
 \item [= 0] new default: ``embarrassingly parallel mode'': all processes do the full MC job (all strata).\\
@@ -85,7 +85,7 @@ Most transparent, and simplest method, load balancing guaranteed. But perhaps no
 \begin{list}{}{}
 \item [= 0 ] EIRENE run as stand-alone-code. Code coupling segment
 \texttt{couple\_Dummy.f} may be used. 
-Input block 14 has a fixed format, see section \ref{sec2.14}.
+Input block 14 has a fixed format, see \cref{sec2.14}.
 \item [$\ne$ 0 ]
 EIRENE calls the code coupling subroutine INFCOP in the code coupling segment
 %\begin{verbatim}
@@ -324,7 +324,7 @@ statistics are automatically done on the coarser grid (size: NRTAL).
 
 
 The index array NCLTAL(NRAD) can be defined in the problem
-specific ``user" routines (see section \ref{sec3}), e.g.: INIUSR, GEOUSR, etc..
+specific ``user" routines (see \cref{sec3}), e.g.: INIUSR, GEOUSR, etc..
 
 Default: NCLTAL(IRAD)=IRAD for IRAD=1,NRAD
 \item [\textbf{NREAC\_ADD} ]
@@ -365,7 +365,7 @@ assumed for the background particles and the input for VXIN,...VZIN is ignored.
 This flag also affects the output tallies for energy exchange, momentum exchange between test particles and background particles,
 as well as sampling from linear collision kernels.
 \item [\textbf{NLCRR} ]
-Correlated sampling is used. See discussion at end of section \ref{sec1.7}.
+Correlated sampling is used. See discussion at end of \cref{sec1.7}.
 \item [\textbf{NLERG} ]
 The case is
 automatically reduced to a case for estimating cell volumes by

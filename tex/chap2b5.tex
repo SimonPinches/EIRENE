@@ -258,8 +258,8 @@ from those of species ISP, ITP, ISTR on fort.10.
 
 Note: at the end of a full EIRENE run the corresponding bulk particle
 profiles are reset to those evaluated in this run, for further use in
-post processing routines such as the diagnostic module (see Section \ref{sec2.11}),
-printout, plotting or iterative mode (input flags NITERI, NITERE, and user subroutine MODUSR, see Section \ref{sec2.1})
+post processing routines such as the diagnostic module (see \cref{sec2.11}),
+printout, plotting or iterative mode (input flags NITERI, NITERE, and user subroutine MODUSR, see \cref{sec2.1})
 
 \item[\textbf{CDENMODEL = 'Saha' }] Set parameters from
 Saha-equilibrium of ionization states.
@@ -526,7 +526,7 @@ NDAT data must be defined on
 
 RHO(J), J=1,NDAT
 e.g. by using the profile parameters P0,...,P5 and any user
-supplied profile function. See section \ref{sec3.6}.\\
+supplied profile function. See \cref{sec3.6}.\\
 (NDAT=NSURF)
 
 The flag INDEX is as for the ``INDPRO = 6" option, see below, and
@@ -548,7 +548,7 @@ onto RHO(I1I, J), J = 1, NDAT, I1I = 1, N1I from a work array RWK. N1
 specified in the calling program. The data must be written onto
 array RWK in the initialization phase, e.g., in subroutine INFCOP
 or MODUSR. The location of a particular profile on this work array
-is determined by the value of INDEX, see section \ref{sec4} below.
+is determined by the value of INDEX, see \cref{sec4} below.
 By this option plasma parameters may directly be transferred into
 EIRENE from other files, e.g. from plasma transport codes.
 
