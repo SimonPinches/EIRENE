@@ -2483,7 +2483,7 @@ J.Nucl.Mater. paper: D.Reiter et al., Vol 220-222 (1995), 987-992.
 Details of options available in EIRENE for time dependent problems are also given in \cref{sec2.13}.
 
 The following issues have to be considered in case of time-dependent coupling schemes to external plasma fluid solvers,
-see figure \ref{flow03}:
+see \cref{flow03}:
 
 The coupling is explicit, hence CFL-type conditions for the
 time-step have to be obeyed. Here this means: the time-step must
@@ -2513,11 +2513,11 @@ EIRENE was developed in the late eighties and early nineties of the last century
 the EIRENE group at FZ J\"ulich (formerly KFA), the CCFE (formerly AEA Culham) edge modelling group as well as ERM Brussels.
 
 
-The historically oldest option is the ``semi implicit" scheme, see fig. \ref{flow02}, because of
+The historically oldest option is the ``semi implicit" scheme, see \cref{flow02}, because of
 the severe CPU time constrains in the late eighties of the last century, when B2-EIRENE was first
 developed, see Reiter et al.,  (\cite{kn:Net}).
 
-Later mostly the simpler ``explicit scheme" , fig. \ref{flow01} was employed in applications, which, although probably being much slower
+Later mostly the simpler ``explicit scheme" , \cref{flow01} was employed in applications, which, although probably being much slower
 in ``code turn-around time", did require less attention by the person running the code, i.e. seemed to be
 numerically more robust, in particular in cold, recombining divertor plasma conditions.
 
@@ -2535,7 +2535,7 @@ time dependent mode of operation of EIRENE for the coupling may be required due 
 
 The full exploration of this option,
 which was implemented into EIRENE in the mid nineties of the last century for ELM-simulations, has not yet happened  with respect to
-overall coupled code stability and ``turn around code run time". The flowchart \ref{flow03} illustrates this mode of operation.
+overall coupled code stability and ``turn around code run time". The \cref{flow03} illustrates this mode of operation.
 
 
 
@@ -2770,7 +2770,7 @@ When coupled to EIRENE, at least with uncorrelated EIRENE trajectories between s
 in the explicit coupling code), residuals only saturate. The level of the saturated residuals then scales only with the square root
 of the number of EIRENE trajectories used per EIRENE cycle. Other convergence criteria then have to be defined, see \cite{kn:Maddison94}
 for an early discussion of this still unsettled subject. The typical behaviour of residuals in coupled B2-EIRENE runs
-(``saturated residuals'') is depicted in Figure \ref{converg}.
+(``saturated residuals'') is depicted in \cref{converg}.
 
 Note:  strong (strict) convergence (exponentially decaying residuals down to machine precision)
 can be achieved even in the presence of Monte Carlo noise, as is regularly
@@ -2884,7 +2884,7 @@ given ``plasma'' host medium) are retained.
 currently under development. Please contact us for details and
 status.
 
-See flowchart 9.1 (figure \ref{flow6}).
+See flowchart 9.1 (\cref{flow6}).
 
 Further details can be found in Ref. \cite{kn:Reiter96}.
 \bigskip
