@@ -5,7 +5,6 @@ c              rate taken from Janev et al., 1987, Process 2.3.13.
 C
       SUBROUTINE EIRENE_XSECTP_PARAM
 
-      USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
       USE EIRMOD_CCONA

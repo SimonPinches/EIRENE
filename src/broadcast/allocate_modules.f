@@ -1,7 +1,6 @@
 !pb  03.06.09  NCHORI --> NCHOR in if-condition as NCHORI is not yet broadcasted
 
       SUBROUTINE EIRENE_ALLOCATE_MODULES
-      USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CESTIM
 !pb      USE EIRMOD_CREFMOD

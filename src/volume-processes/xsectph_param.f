@@ -4,7 +4,6 @@ C                 and phv_nrotph
 C
       SUBROUTINE EIRENE_XSECTPH_PARAM
 
-      USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMXS
       USE EIRMOD_COMUSR

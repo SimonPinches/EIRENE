@@ -1,7 +1,6 @@
 
       subroutine EIRENE_remove_char (inchar, outchar ,remchar)
 
-      use EIRMOD_precision
       use EIRMOD_parmmod
       use EIRMOD_comprt, only : iunout
 

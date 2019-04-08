@@ -3,7 +3,6 @@ cdr        LTRIM_OLD: old TRIM database option: fixed set of 12 target-projectil
 cdr        combinations, read from one single file: TRIM.dat
 
       SUBROUTINE EIRENE_BROADREF
-      USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CREF
       USE EIRMOD_CPES
