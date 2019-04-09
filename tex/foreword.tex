@@ -28,7 +28,7 @@ disabled again shortly after its implementation, because of spurious oscillatory
 behaviour of some derivatives of polynomial fits for rate coefficients)
 \item[-] individual background ``ion" temperatures TI(IPLS) for each
 background species (e.g., for neutral background particles)
-\item[-] simulation of self collisions in BGK approximation
+\item[-] simulation of self collisions in \ac{BGK} approximation
 \item[-] some new collision processes and data, such as
 net re-combination energy losses (radiation + potential), elastic
 neutral - ion collisions, multi-step break-up of molecules
@@ -56,7 +56,7 @@ Here it provides sources and sinks due to interaction
 of ``kinetic sub-components" with the macroscopic flow, which are iteratively
 coupled (``operator splitting").
 
-The first such coupled CFD - EIRENE code was SOLXY-EIRENE (\cite{kn:Gerhauser88a})
+The first such coupled \acs{CFD} - EIRENE code was SOLXY-EIRENE (\cite{kn:Gerhauser88a})
 and had led to
 implementation of the so called ``correlated sampling" option in EIRENE,
 as necessary to
@@ -64,11 +64,11 @@ achieve convergence measured by comparison with solution using an analog
 analytic neutral particle model.
 
 
-The widely used B2-EIRENE code system \cite{kn:Reiter91b} is another such example of a coupled CFD-Monte Carlo diffusion-advection-reaction code.
+The widely used B2-EIRENE code system \cite{kn:Reiter91b} is another such example of a coupled \acs{CFD}-Monte Carlo diffusion-advection-reaction code.
 
 A new section describing this code coupling part of the EIRENE code has been added.
 It describes the ``sandwich" file EIRCOP which was written to permit
-linkage between EIRENE and a CFD plasma fluid model (one, two,
+linkage between EIRENE and a \ac{CFD} plasma fluid model (one, two,
 or
 three dimensional).
 Initial and boundary value problems can be treated in
@@ -80,9 +80,9 @@ applications have been published for ITER configurations, see
 \cite{kn:Reiter91b} and
 \cite{kn:Maddison91}.
 Main new features in EIRENE for this project was implementation of multiply connected 2D curvilinear
-grids into EIRENE, so that the CFD and Monte Carlo code operate on identical meshes, without any interpolation
+grids into EIRENE, so that the \ac{CFD} and Monte Carlo code operate on identical meshes, without any interpolation
 necessary. Also the ``short-cycle" option, a semi-implicit correction scheme for Monte Carlo source terms between
-large CFD $\Delta t$ cycles, without new or at least with strongly reduced MC runs in between, was implemented.
+large \ac{CFD} $\Delta t$ cycles, without new or at least with strongly reduced MC runs in between, was implemented.
 
 
 Subsequently a large number of application runs, in particular those

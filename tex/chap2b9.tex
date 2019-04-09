@@ -6,7 +6,7 @@
 
 \medskip
 
-The statistical performance (FOM, ``figure of merit",
+The statistical performance (\ac{FOM},
 see \cref{eq1.13} in \cref{sec1.2.1}) of an EIRENE
 run (as for any Monte Carlo application in general) is very
 sensitive to the non-analog methods used by EIRENE. Therefore the
@@ -24,7 +24,7 @@ of large meshes.
 Hence, as a rule, one
 should generally try to find the optimal setting of the non-analog
 sampling
-flags in this block and estimate the FOM from test runs,
+flags in this block and estimate the \ac{FOM} from test runs,
 and then use this setting, but without evaluation of standard
 deviations, in production runs.
 
@@ -191,7 +191,7 @@ NSIGCI must be less than or equal to the parameter NCV in PARMUSR,
 \item[\textbf{NSIGI\_BGK }]
 if \verb|NSIGI_BGK| $>$ 0, then the standard deviations are
 evaluated for all tallies needed for the iteration procedure for
-the non-linear BGK collision terms. See subroutine
+the non-linear \ac{BGK} collision terms. See subroutine
 \verb|STATIS_BGK| in code segment BGK.F
 \item[\textbf{NSIGI\_COP }]
 if \verb|NSIGI_COP| $>$ 0, then the standard deviations are

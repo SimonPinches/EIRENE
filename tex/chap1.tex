@@ -48,7 +48,7 @@ background data, which depend on neutral particle transport
 code system \cite{kn:Reiter92b}
 is described. More details on this can be found in the report \cite{kn:Maddison94}.\\
 In the final section of this introductory \cref{sec1.8} the
-non-linear BGK formalism and the direct simulation method (DMCS)
+non-linear \ac{BGK} formalism and the \ac{DMCS} method
 for self collisions between neutral particles, as implemented in
 the EIRENE code, is described.
 \newpage
@@ -59,15 +59,15 @@ EIRENE solves a multi species set of coupled ``Boltzmann''-type equations, in ar
 Strictly speaking it is the Boltzmann equation generalized from its original single species form with
 bi-linear collision kernel for elastic collisions,
 to a far more complicated collision integral, which also represents  ``chemical reactions''.
-This generalisation is also often referred to as Wang Chang-Uhlenbeck (WCU) equation in literature \cite{kn:WCU}.
+This generalisation is also often referred to as \ac{WCU} equation in literature \cite{kn:WCU}.
 In this present section we start with the Boltzmann equation. We then deal with linearisations of collision
 kernels by fixing the phase space distribution of one of the two collision partners (which we refer to as ``bulk''
-or ``background'' or even simply ``plasma'' species). Generalization to the full WCU type multi-species collision kernels, which in the same
+or ``background'' or even simply ``plasma'' species). Generalization to the full \ac{WCU} type multi-species collision kernels, which in the same
 linearized form provide the mathematical description of the equations solved by EIRENE, is then discussed next, \cref{sec1.01}.
 
 Relaxation of the linearisation assumptions is needed only when there is self-interaction amongst the species considered by EIRENE,
 as it is required e.g. when radiation transfer is included (coupling between ``photons'' and atoms) or if
-neutral-neutral collisions are relevant. In this latter case so called BGK approximations to the full collisions integral
+neutral-neutral collisions are relevant. In this latter case so called \ac{BGK} approximations to the full collisions integral
 are employed, and the non-linearity is dealt with by successive linearisation (i.e. by iteration).
 
 The strongest non-linearity in EIRENE applications is typically the back-reaction of the ``plasma-background'' (the host medium) on the
@@ -113,7 +113,7 @@ The distribution function in the form of $\tilde f$ clearly remains meaningful a
 i.e. for applications of EIRENE to radiation transfer problems.
 \\
 The notation used now may appear to be unnecessarily complicated, but we indent to prepare here already the
-more general discussion in \cref{sec1.01} on the WCU equation.
+more general discussion in \cref{sec1.01} on the \ac{WCU} equation.
 
 We start with the original (elastic collisions only) ``Boltzmann Equation" \cite{kn:Cercignani},
 but by assuming additionally that collisions are discontinuous events (i.e.: finite range
@@ -133,7 +133,7 @@ species $i_0, b$ will also be present after the collision event (i.e.,
 chemical reactions, inelastic collisions with change of internal energy,
 are excluded for the time being,
 but their description within a ``Boltzmann-like" framework is discussed below,
-\cref{sec1.01}) on the so called ``WCU" equation.
+\cref{sec1.01}) on the so called ``\ac{WCU}" equation.
 
 The familiar Boltzmann
 equation for the distribution function $f=f_{i_0}$ for a particular species (a particular component of a gas mixture) $i_0$
@@ -415,7 +415,7 @@ In closing this section we note:
 
 All these equations \cref{eq1a,eq1b,eq1c,eq1d}
 given below are equivalent, of course,
-so are their corresponding WCU generalizations discussed in the next \cref{sec1.01}.
+so are their corresponding \ac{WCU} generalizations discussed in the next \cref{sec1.01}.
 Which particular
 form is used in a particular discussion depends upon the issue which is
 considered. For example, the collision estimator for evaluating moments (responses) of the solution to the Boltzmann equation can be shown to be
@@ -423,13 +423,13 @@ unbiased quite conveniently when using eq. \cref{eq1d}, whereas the track-length
 estimator, used for the same purpose in EIRENE, is most easily understood with the from \cref{eq1d}. Time dependent
 cases are best discussed utilizing the form \cref{eq1b}, etc...
 
-\subsection{The WCU generalisation of the Boltzmann equation} \label{sec1.01}
+\subsection{The \acs{WCU} generalisation of the Boltzmann equation} \label{sec1.01}
 
 The mathematical generalization from the classical Boltzmann equation
 (for a system undergoing only elastic collisions),
 equation \cref{eq1a}
 to the semi-classical Boltzmann
-equation (the WCU equation, \cite{kn:WCU}) for accomodating also chemical reactions (including, for example,
+equation (the \ac{WCU} equation, \cite{kn:WCU}) for accomodating also chemical reactions (including, for example,
 vibrational relaxation or exchange of internal energy $\Delta E$ as special
 cases, but also chemical reactions $A+B \rightarrow C+D$, etc.)
 is obtained by a proper generalization of the species labels.
@@ -446,7 +446,7 @@ Now, by analogy to the discussion of the original Boltzmann equation \cref{eq1a}
 we consider then the phase-space balance equation for a given species/internal mode $\{i_0l_0\}$. Then the sum in the collision
 integral is over all collision labels $\{i'l'\}, \{b'l_1'\}, \{bl_{1}\}$ and over all velocities of these three ``species".
 Even more generally:
-in case there are more than two post collision particles, i.e. more than two particles in the exit channel of the collision, integration (velocities) and summation (generalized species indices) in the WCU collision integral is over all involved particles, except over $\{i_0l_0; \vv\}$, the parameters of the dependent variable $f_{i_0}(l_0,\vv)$. Employing the notations as in \cref{eq1a1} the full WCU prototypical system of kinetic transport equations then reads (written here for two post collision particles only)
+in case there are more than two post collision particles, i.e. more than two particles in the exit channel of the collision, integration (velocities) and summation (generalized species indices) in the \ac{WCU} collision integral is over all involved particles, except over $\{i_0l_0; \vv\}$, the parameters of the dependent variable $f_{i_0}(l_0,\vv)$. Employing the notations as in \cref{eq1a1} the full \ac{WCU} prototypical system of kinetic transport equations then reads (written here for two post collision particles only)
 
 \begin{align}\label{WCU}
 D_t^{i_0l_0} \ f_{i_0l_0}(\vr,\vv,t)
@@ -490,7 +490,7 @@ collision products are straight forward, but can more conveniently
 be formulated in the $C$-collision kernel formulation introduced above and used below to relate the transport equation
 to a Markovian stochastic (discrete time) process.
 
-\paragraph {linear form of WCU equation: the generic EIRENE equation}\hfill
+\paragraph {linear form of \ac{WCU} equation: the generic EIRENE equation}\hfill
 
 \vspace{1em}
 
@@ -582,7 +582,7 @@ included in the collision kernel. The quantity $ \Sigma_a$
 comprises all collision processes with no next generation
 particles within the community of particles considered by the coupled set of kinetic transport equations.
 (Ionisation of a neutral atom is a loss, if the resulting ion is not considered further, or dealt with
-by a CFD code outside the Monte Carlo procedure).
+by a \ac{CFD} code outside the Monte Carlo procedure).
 \\The kernel $T$ describes the motion of the test
 particles between the collision events. Let, again,  $
 \vOmega'$ denote the unit vector in the direction of
@@ -933,14 +933,14 @@ might then also be interpreted as surface density (particle per unit area).
 
 
 
-\subsection{Statistical errors, Efficiency (FOM)} \label{sec1.2.1}
+\subsection{Statistical errors, Efficiency (\acs{FOM})} \label{sec1.2.1}
 The efficiency for Monte Carlo Codes is the
-inverse of the figure of merit (FOM) of the calculation, defined
+inverse of the \ac{FOM} of the calculation, defined
 as
 \begin{equation} \label{eq1.13}
-FOM = statistical \ variance    \cdot   computing \ cost.
+\texttt{FOM} = statistical \ variance    \cdot   computing \ cost.
 \end{equation}
-Note that FOM should be approximately independent of the running
+Note that \texttt{FOM} should be approximately independent of the running
 time, because the number of histories generated is (excluding
 overhead) proportional to the CPU costs and inversely proportional
 to the statistical variance $\sigma^2$.
@@ -1022,7 +1022,7 @@ former problem specific routine STATS1\_COP for variances from tallies needed fo
 Currently linear combination tallies $R_l$ are stored
 on array (tally) COPV. For them all printout and graphical output options are available.
 One example of such linear combination tallies is discussed in \cref{sec2.14} for interfacing EIRENE with
-CFD codes, as usually the (kinetic) reaction source terms provided by EIRENE to plasma fluid codes are such linear functions
+\ac{CFD} codes, as usually the (kinetic) reaction source terms provided by EIRENE to plasma fluid codes are such linear functions
 of default tallies.
 
 \paragraph{Statistical independence of MC histories}
@@ -1959,7 +1959,7 @@ A frequently employed assumption for $\Gamma_{Sh,ion}$ is a one sided (only posi
 forward drifting Maxwellian ion flux distribution at the interface between plasma
 and electrostatic sheath $S_{Sh}$. In this case the bending of trajectories from parallel (to $\vB$) to
 normal (to the surface) sonic flow within the magnetic pre-sheath is already included in $\Gamma_{Sh,ion}$,
-e.g., via boundary conditions in a CFD model for plasma ion flow, and the action of
+e.g., via boundary conditions in a \ac{CFD} model for plasma ion flow, and the action of
 operator $T_{Sh}$ is solely the acceleration in the electrostatic sheath.
 
 Alternatively, and in cases when the magnetic field is tilted with respect to the wall surface,
@@ -1974,7 +1974,7 @@ with the subscripts $mpSh$ and $eSh$ labelling the plasma side magnetic pre-shea
 
 \begin{figure}[h]
 \includegraphics[height=9.0cm]{magn_pre_sheath}
-\caption{Transition region between fluid plasma (CFD) and wall surface, schematic. The plasma flow is specified by CFD models
+\caption{Transition region between fluid plasma (\ac{CFD}) and wall surface, schematic. The plasma flow is specified by \ac{CFD} models
 at the entrance surface of the magnetic pre-sheath MP (taken normal to the magnetic field $\vec{B}$). $\Delta \Phi$ is the fraction of the total
 sheath potential drop inside the electrostatic sheath.}
 \label{magpresheath}
@@ -2249,7 +2249,7 @@ of the EIRENE code for the sheath potential drop $\Delta\Phi$, taking local plas
 and ${V_{\pi,i}}$  (index $i$ runs over all ion species comprising the ionic target surface flux. The local electron density $n_e$ at sheath entrance  follows then  from quasi-neutrality.
 
 All these values may have a spatial dependency and are taken at a (random sampled, according to target outflow plasma flux distributions)
-point at a boundary surface of a CFD plasma code, e.g., at the divertor target boundary
+point at a boundary surface of a \ac{CFD} plasma code, e.g., at the divertor target boundary
 plate, which, strictly, is at the sheath entrance $S$ in front of the target. The energy gain due to sheath acceleration for a particular ion $i_0$
 is then $Z_{i_0} e \Delta\Phi$.
 
@@ -2299,7 +2299,7 @@ $Z_i=2$) this sheath factor becomes $\approx -2.98$.
 \subsection{The magnetic pre-sheath} \label{sec1.4.2}
 In most situations when EIRENE is applied to plasma surface interaction studies the ion-plasma flow velocity $\vV_i$
 is predominantly parallel to a $\vB$ field: $V_{\parallel,i} \approx |\vV_i|$, and it is this parallel ion flow velocity,
-which is usually available from CFD plasma simulations, via boundary conditions specified for the (parallel component of the) momentum balance equation
+which is usually available from \ac{CFD} plasma simulations, via boundary conditions specified for the (parallel component of the) momentum balance equation
 at the entrance of the magnetic pre-sheath ($mpSh$) rather than at the entrance of the electrostatic sheath $eSh$.
 
 The sheath model of EIRENE then is to be supplemented by a model \textbf{PRE-SHEATH} for the transition of known currents and $\vV_{i,mpSh}$  to $\vV_{i,eSh}$, i.e.
@@ -2315,26 +2315,26 @@ EIRENE is a Monte Carlo Code. Defining geometry in a Monte Carlo code is complex
 Of the three typical options for definition of the target geometry in Monte Carlo Codes:
 \begin{itemize}
 \item {}
-``Constructive solid geometry (CSG)",
+    ``\ac{CSG}",
 \item
-    ``boundary representation (BREP)"
+    ``\ac{BREP}"
 \item
      ``Voxel Geometry"
 \end{itemize}
 EIRENE uses a combination of the latter two concepts.
 
 \medskip
-In CSG a solid object is ``constructed" from the intersection, union or other boolean operations of several ``half-spaces".
+In \ac{CSG} a solid object is ``constructed" from the intersection, union or other boolean operations of several ``half-spaces".
 Each half space in specified by a relation $F(x,y,z)\le 0$, typically $F$ is a low order polynomial.
-For example the neutronics code MCNP used e.g. for ITER nuclear safety studies, is based on CSG.
+For example the neutronics \ac{MCNP} code used e.g. for ITER nuclear safety studies, is based on \ac{CSG}.
 
 \medskip
-In BREP geometry, surfaces and volumes are build up from constituent parts.
-These parts may be related with algebraic functions (elementary BREPs)
-or complex functions such as Bezier functions or B-splines (advanced BREPS).
-Most CAD software uses BREPs in their native definition of geometry.
+In \ac{BREP} geometry, surfaces and volumes are build up from constituent parts.
+These parts may be related with algebraic functions (elementary \acp{BREP})
+or complex functions such as Bezier functions or B-splines (advanced \acp{BREP}).
+Most \ac{CAD} software uses \acp{BREP} in their native definition of geometry.
 
-In the EIRENE BREP options surfaces are build from (bounded) algebraic functions.
+In the EIRENE \ac{BREP} options surfaces are build from (bounded) algebraic functions.
 These surfaces are referred to as ``additional surfaces", see \cref{sec2.3b}.
 EIRENE uses only algebraic functions, up to second order
 (some  extensions to raise the order to fourth order have been started recently but are not ready to use).
@@ -2343,41 +2343,41 @@ EIRENE uses only algebraic functions, up to second order
 In ``Voxel geometry", a 2D or a 3D object is constructed from identically shaped volume elements (``voxels"). In EIRENE these may be triangles
  or quadrangles in 2D, or tetrahedra in 3D. New options to accommodate trilinear hexaedra as 3D voxels are currently being developed in connection with 3D edge codes such as EMC3. The bounding surfaces of these voxels are referred to as
 ``standard grid surfaces" in EIRENE, see \cref{sec2.2}. These volume discretisation meshes (VOXELS) can be read into EIRENE
-from external files. For example the mesh in B2 CFD plasma fluid code is read into EIRENE directly from the CFD grid generator in
+from external files. For example the mesh in B2 \ac{CFD} plasma fluid code is read into EIRENE directly from the \ac{CFD} grid generator in
 coupled B2-EIRENE applications.
 Wall meshes are build from these by assigning
 a surface reflection model to some of the (voxel-) surfaces (\cref{sec2.3a}), whereas internal (grid-) surfaces remain transparent for flow of test-particles.
 
 \textbf{Note added in 2008:}
 
-An attempt has been made in 2008 to use CAD files directly for 3D wall surfaces.
-This was done via the already existing CAD-MCNP interface. We had then tried to turn the CSG input
-for MCNP (see above) into a BREP form for EIRENE.  In principle this works. But in practice the
-de-tour via the CSG concept leads to prohibitively complex BREP input for EIRENE.
+An attempt has been made in 2008 to use \ac{CAD} files directly for 3D wall surfaces.
+This was done via the already existing \acs{CAD}-\acs{MCNP} interface. We had then tried to turn the \ac{CSG} input
+for \ac{MCNP} (see above) into a \ac{BREP} form for EIRENE.  In principle this works. But in practice the
+de-tour via the \ac{CSG} concept leads to prohibitively complex \ac{BREP} input for EIRENE.
 
-A direct CAD-BREP interface seems now much more efficient to us and more natural anyway,
+A direct \acs{CAD}-\acs{BREP} interface seems now much more efficient to us and more natural anyway,
 and has meanwhile (2011) been established by an intermediate code step (the ANSYS code), which first converts
-CAD output into a triangulation of surface elements, and then each triangle (in 3D space) is taken as ``additional surface'' (BREP concept)
+\ac{CAD} output into a triangulation of surface elements, and then each triangle (in 3D space) is taken as ``additional surface'' (\ac{BREP} concept)
 into EIRENE. Very large sets of triangles required optimisation procedures, which have  also been
 implemented (in EIRENE module timea.f) on the basis of OCTREE concepts adopted from ray-tracing procedures used in image processing.
 
 
 \medskip
-A complete set of surfaces in an EIRENE geometry may consist of a combination of both: standard surfaces (hence: defining standard grid cells, (voxels), and additional surfaces, defining a general BREP discretisation (additional cells).  A more complicated situation arises when additional surfaces intersect
+A complete set of surfaces in an EIRENE geometry may consist of a combination of both: standard surfaces (hence: defining standard grid cells, (voxels), and additional surfaces, defining a general \ac{BREP} discretisation (additional cells).  A more complicated situation arises when additional surfaces intersect
 standard grid voxels.
 \begin{figure}[h]
 \begin{minipage}{0.48\textwidth}
 \includegraphics[width=\textwidth, angle=+90]{ALT-II}
-\caption{\label{label1l}Early example a combination of BREP and VOXEL discretisation, around 1985
-for ALT-II pumplimiter studies at TEXTOR. Discretisation inside the TEXTOR tokamak vessel (torus): VOXEL, supplemented
-by about 100 (BREP) first and second order surfaces for ALT-II scoops, pumping ducts and inner structures such as probe supports,
+\caption{\label{label1l}Early example a combination of \ac{BREP} and VOXEL discretisation, around 1985
+for ALT-II pumplimiter studies at \ac{TEXTOR}. Discretisation inside the \ac{TEXTOR} tokamak vessel (torus): VOXEL, supplemented
+by about 100 (\acs{BREP}) first and second order surfaces for ALT-II scoops, pumping ducts and inner structures such as probe supports,
 getter pumps, etc..
 }
 \end{minipage}\hfill%
 \begin{minipage}{0.48\textwidth}
 \includegraphics[width=\textwidth,angle=-0]{alt_imp}
 \caption{%
-\label{label1r}same as left Figure, but BREP part only, and EIRENE re-run with more modern 3D visualisation graphics program, 2009
+\label{label1r}same as left Figure, but \ac{BREP} part only, and EIRENE re-run with more modern 3D visualisation graphics program, 2009
 \vspace{1.2cm}}
 \end{minipage}
 \end{figure}
@@ -2393,7 +2393,7 @@ be scaled properly. For a possible work-around see NLERG option in input block 1
 
 From the above it follows than in an EIRENE model
 surface elements building up the wall can be defined as bounded algebraic surfaces, with triangles as special case,
-i.e. as ``additional surfaces, BREP", or can be bounding surfaces of the voxels, if the ``grid of voxels" extends up to the real wall, or a combination of both.
+i.e. as ``additional surfaces, \ac{BREP}", or can be bounding surfaces of the voxels, if the ``grid of voxels" extends up to the real wall, or a combination of both.
 
 \medskip
 As can be seen from the flowcharts, all the geometrical
@@ -2511,7 +2511,7 @@ The back-reaction of the host medium (plasma) on the neutral (test) particle kin
 the combined plasma-neutral transport problem non-linear already for the Monte Carlo solution of the ``linear" Boltzmann equation.
 This non-linearity is not in the collision integral, but in the dependence of the collision parameters
 (collision rates, mean free pathes, ...) on the plasma parameters. It can be dealt with by iterating a solver for the host medium (plasma) and for the kinetic equation (neutrals).
-Such a CFD solver for 2D plasma flows is e.g. the B2-``BRAAMS" code, and its iterative coupling to the Monte Carlo kinetic code
+Such a \ac{CFD} solver for 2D plasma flows is e.g. the B2-``BRAAMS" code, and its iterative coupling to the Monte Carlo kinetic code
 EIRENE was developed in the late eighties and early nineties of the last century, under NET-KFA contracts, involving three EFDA associates:
 the EIRENE group at FZ J\"ulich (formerly KFA), the CCFE (formerly AEA Culham) edge modelling group as well as ERM Brussels.
 
@@ -2531,13 +2531,13 @@ neutral gas source) can remain explicit.
 
 All these coupling schemes treat the kinetic part of the model in quasi-steady-state approximation with the plasma state.
 This is justified as long as the gas dynamics is fast compared to the plasma dynamics, the latter being roughly specified by the
-time step $\Delta t$ used in the CFD plasma simulation.
+time step $\Delta t$ used in the \ac{CFD} plasma simulation.
 
 In particular in high density, low temperature detached divertor plasmas this ordering may not necessarily be correct any longer, and a
 time dependent mode of operation of EIRENE for the coupling may be required due to CFL constrains.
 
 The full exploration of this option,
-which was implemented into EIRENE in the mid nineties of the last century for ELM-simulations, has not yet happened  with respect to
+which was implemented into EIRENE in the mid nineties of the last century for \ac{ELM} simulations, has not yet happened  with respect to
 overall coupled code stability and ``turn around code run time". The \cref{flow03} illustrates this mode of operation.
 
 
@@ -2551,7 +2551,7 @@ overall coupled code stability and ``turn around code run time". The \cref{flow0
 
 \begin{figure}[h]
 \includegraphics[width=\textwidth]{flowchart9}
-\caption{Explicit coupling scheme between EIRENE and a CFD code (for plasma flow):
+\caption{Explicit coupling scheme between EIRENE and a \ac{CFD} code (for plasma flow):
 After each plasma code cycle (or time step) a full new Monte Carlo run is carried out
 \label{flow01}}
 \end{figure}
@@ -2608,7 +2608,7 @@ After each plasma code cycle (or time step) a full new Monte Carlo run is carrie
 
 \begin{figure}[h]
 \includegraphics[width=\textwidth]{flowchart7}
-\caption{``semi implicit" coupling scheme between EIRENE and a CFD code (e.g. BRAAMS B2 for plasma flow), involving internal
+\caption{``semi implicit" coupling scheme between EIRENE and a \ac{CFD} code (e.g. BRAAMS B2 for plasma flow), involving internal
 re-iteration on sources terms without new Monte Carlo trajectories, much less frequent Monte Carlo runs than in ``explicit" mode of operation,
 but unresolved issues still re volume recombination contribution.  LINDA is a grid generating tool providing a numerical discretisation mesh which is common for B2 and EIRENE  \label{flow02}}
 \end{figure}
@@ -2694,7 +2694,7 @@ but unresolved issues still re volume recombination contribution.  LINDA is a gr
 
 \begin{figure}[h]
 \includegraphics[width=\textwidth]{flowchart8}
-\caption{Time dependent coupling to plasma CFD code}
+\caption{Time dependent coupling to plasma \ac{CFD} code}
 \label{flow03}
 \end{figure}
 %{\Huge "time-dependent coupling", explicit}
@@ -2778,7 +2778,7 @@ for an early discussion of this still unsettled subject. The typical behaviour o
 Note:  strong (strict) convergence (exponentially decaying residuals down to machine precision)
 can be achieved even in the presence of Monte Carlo noise, as is regularly
 seen in simplified and dedicated test cases, and, actually, in the very first applications of EIRENE in coupled
-plasma-neutral transport problems in the late eighties of the last century \cite{kn:Gerhauser88a}, there to TEXTOR limiter configurations.
+plasma-neutral transport problems in the late eighties of the last century \cite{kn:Gerhauser88a}, there to \ac{TEXTOR} limiter configurations.
 This, however, seems to require the activation of the ``correlated sampling" options of EIRENE
 in order to provide positive statistical correlation between successive time-steps (or iterations).
 However, except for strongly reduced (simplified) applications presently the level of positive correlation implemented via the EIRENE flag NLCRR (input block 1) seems
@@ -2789,13 +2789,13 @@ can be very high in geometrically and/or physically very simple cases.
 \\
 \medskip
 
-For this consider two plasma solutions obtained with a CFD plasma code coupled iteratively to EIRENE,
+For this consider two plasma solutions obtained with a \ac{CFD} plasma code coupled iteratively to EIRENE,
 at neighboring time-steps $1$ and $2$.
 The incremental change of the plasma solution due to the change in the Monte Carlo reaction term in the plasma flow equations is the
 difference between Monte Carlo source rates evaluated at time $1$ and time $2$.
 
 
-In more general terms a Monte Carlo estimate  of a difference $\Delta E$ between two different calculations $MC_1$ and $MC_2$ (due to either code version differences, due to a different physical incremental effects or due to iterative procedures with CFD solvers) is:
+In more general terms a Monte Carlo estimate  of a difference $\Delta E$ between two different calculations $MC_1$ and $MC_2$ (due to either code version differences, due to a different physical incremental effects or due to iterative procedures with \ac{CFD} solvers) is:
 \begin{align}\label{cov}
 \Delta E &= E(MC_1) - E(MC_2)  \nonumber \\
 \sigma^2(\Delta E) &= \sigma^2(E(MC_1)) + \sigma^2(E(MC_2)) - 2 cov(E(MC_1),E(MC_2))
@@ -2832,13 +2832,13 @@ collisions and neutral atom transport.
 Two methods of solution for this non-linear problem have been
 tested in EIRENE, 1) a parametrization of the single particle
 distribution functions involved in non-linear collision terms and
-an iterative scheme (see next subsection: BGK model collision
-terms), and 2) a Direct Monte Carlo Simulation (DMCS) technique
+an iterative scheme (see next subsection: \ac{BGK} model collision
+terms), and 2) a \ac{DMCS} technique
 based upon a swarm simulation, an operator splitting (``Streaming"
 and ``Collisions") and a random simulation of binary collisions in
 the swarm. Currently only the first of these two options is still
 being used. Despite its approximate character, it proved
-to be much more effective than the full DMCS method, for the cases
+to be much more effective than the full \ac{DMCS} method, for the cases
 relevant to fusion research applications studied so far. A simple
 estimate for the relevance of neutral-neutral gas collisions is
 given by the so called Knudsen number $Kn$:
@@ -2855,22 +2855,22 @@ $n_N$ the gas density (cm$^{-3}$) and $L$ is a characteristic dimension
 \begin{equation}
 \lambda_{el} (cm) = 1/(2.414\times 10^{14}\times 2\times 10^{-15}) \approx 2 ~cm
 \end{equation}
-In the BGK approximation to the Boltzmann collision integral (see below, \cref{sec1-bgk}) only an ``effective'' mean free path
+In the \ac{BGK} approximation to the Boltzmann collision integral (see below, \cref{sec1-bgk}) only an ``effective'' mean free path
 appears, because the collision rate $\nu_{BGK}$ is an effective (relaxation) rate only. When the common assumption of an velocity independent
 collision rate is made, then this rate is
-chosen such that the BGK model fixes just
+chosen such that the \ac{BGK} model fixes just
 one single transport coefficient to a desired value in the continuum limit. E.g. either a certain viscosity, or  binary diffusion, or heat conduction, or any one
 other selected transport coefficient in the continuum limit can be matched, when the Chapman-Enskog procedure is applied to derive continuum
-equations (Navier Stokes equations) from the Boltzmann equation with that particular BGK binary collision model term.
+equations (Navier Stokes equations) from the Boltzmann equation with that particular \ac{BGK} binary collision model term.
 
-One default set of BGK collision parameters used in EIRENE is based upon
-the concept of ``diffusion volumes'' to provide (weakly temperature dependent) binary diffusion coefficients $D_{12}$ (for cross collisions, e.g. for He + H$_2$) or a viscosity coefficient $\mu$ (for self collisions) in the gas (see \cite{kn:Reiter94}). This choice results in a BGK collision rate coefficient $k(T)= k_0 T^{0.25}$  with the constant $k_0$ derived
-from such continuum limit considerations and the (experimentally determined) ``diffusion volumes''. Within this concept then a BGK - mean free path \cite{kn:Kotov-Dis} follows as:
+One default set of \ac{BGK} collision parameters used in EIRENE is based upon
+the concept of ``diffusion volumes'' to provide (weakly temperature dependent) binary diffusion coefficients $D_{12}$ (for cross collisions, e.g. for He + H$_2$) or a viscosity coefficient $\mu$ (for self collisions) in the gas (see \cite{kn:Reiter94}). This choice results in a \ac{BGK} collision rate coefficient $k(T)= k_0 T^{0.25}$  with the constant $k_0$ derived
+from such continuum limit considerations and the (experimentally determined) ``diffusion volumes''. Within this concept then a \ac{BGK} - mean free path \cite{kn:Kotov-Dis} follows as:
 \begin{align}
 \lambda_{BGK} (cm) &= \frac{\tilde{v}}{n \langle \sigma v\rangle} =  \frac{\sqrt{8T/\pi m}} {n k_0 T^{0.25}} \nonumber \\
                    &= L_0 \times T[eV]^{0.25} / n[10^{14} cm^{-3}]
 \end{align}
-where the proportionality factor $L_0$ (in cm) is typically in the range between 7 and 20 ($L_0 = 20$\,cm for D--D self collisions, $L_0 = 9.75$\,cm for D$_2$--D$_2$ self collisions and $L_0 = 8.7$\,cm for D$_2$--He cross collisions). $L_0$ is the BGK mean free path (in cm) in a gas
+where the proportionality factor $L_0$ (in cm) is typically in the range between 7 and 20 ($L_0 = 20$\,cm for D--D self collisions, $L_0 = 9.75$\,cm for D$_2$--D$_2$ self collisions and $L_0 = 8.7$\,cm for D$_2$--He cross collisions). $L_0$ is the \ac{BGK} mean free path (in cm) in a gas
 at $T = 1$ eV and density $n =1 \times 10^{14}$ cm$^{-3}$.
 
 For the same conditions as above: $T=300$ K ($T=0.026$ eV) and a pressure of 1 Pa ($n_N=2.414 \times 10^{14} cm^{-3} )$, one then finds $\lambda_{BGK}\approx 1.6 ~cm$
@@ -2883,7 +2883,7 @@ a neutral fluid model (diffusion approximation, Euler, or Navier Stokes, etc.) i
 while $Kn \gg 1$ leads to the (linear) free molecular flow regime, in which
 only the linear collisions terms (collisions of neutrals with surfaces and a
 given ``plasma'' host medium) are retained.
-\subsection{BGK approximation}\label{sec1-bgk}
+\subsection{\ac{BGK} approximation}\label{sec1-bgk}
 currently under development. Please contact us for details and
 status.
 
@@ -2892,7 +2892,7 @@ See flowchart 9.1 (\cref{flow6}).
 Further details can be found in Ref. \cite{kn:Reiter96}.
 \bigskip
 
-The BGK approximation used in the EIRENE code to model neutral-neutral collisions,
+The \ac{BGK} approximation used in the EIRENE code to model neutral-neutral collisions,
 of both monatomic and multiple species gases,
 and its implementation via successive approximation of the non-linear Boltzmann equation,
 is a special case of the classical
@@ -2901,14 +2901,14 @@ Simulation" method. The former was introduced in rarefied gas dynamics by J.K. H
 J.K. Haviland, ``The solution of Two Molecular Flow Problems by the Monte Carlo Method",
 in: Methods in Computational Physics (Ed. Alder), Vol. 4, 1965, Academic Press.
 An early review and comparison of different Monte Carlo methods in kinetic theory, also comparing this particular
-``test particle method" with the DMCS scheme, is given by
+``test particle method" with the \ac{DMCS} scheme, is given by
 the report: N.A. Derzko, ``Review of Monte Carlo Methods in kinetic Theory", UTIAS Review No. 35 (April 1972)
 University of Toronto, Institute of aerospace studies, April 1972.
 (This review also includes a discussion of a third Monte Carlo scheme, the so called ``Integral evaluation method" of
 A. Nordsieck and B.L. Hicks.)
 \\
 In rarefied gas dynamics problems for fusion reactor design, in particular for the ITER divertor design, the Haviland method,
-but applied to a Boltzmann equation with a (non-linear) BGK collision integral,
+but applied to a Boltzmann equation with a (non-linear) \ac{BGK} collision integral,
 was first developed for the EIRENE code around 1995 (see Reiter et al. \cite{kn:Reiter96}),
 and it is routinely applied in computational divertor design studies for ITER since
 about 2004 by V. Kotov, A.K. Kukushkin, et al.
@@ -2921,7 +2921,7 @@ of the Boltzmann equation......to be continued....
 
 
 Consider first the elastic self collisions amongst particle species $A$.
-The BGK approximation to the Boltzmann collision integral reads:
+The \ac{BGK} approximation to the Boltzmann collision integral reads:
 \begin{equation}
 \frac{\partial f_A(\vv)}{\partial t}_{BGK}=-\nu (f_A(\vv)-f^0(\vv))
 \end{equation}
@@ -3026,8 +3026,8 @@ for the next iteration cycle.
 
 
 
-\subsection{Direct Simulation (DMCS) of self-collisions}
-The DMCS method was implemented in EIRENE in the late eighties of the last century,
+\subsection{Direct Simulation (\acs{DMCS}) of self-collisions}
+The \ac{DMCS} method was implemented in EIRENE in the late eighties of the last century,
 but then abandoned due to its limitations to physically rather simple cases (e.g. no feedback
 with the consistent bulk plasma state, the often dominant non-linearity in fusion applications).
 Currently it is not developed nor supported  any more. Contact us for details and
@@ -3266,7 +3266,7 @@ The energy and/or velocity of charged test particles are modified in a fully det
 particle trajectory. I.e.: along with orbit integration also energy, or certain velocity components
 are evolved according to ordinary (non-stochastic) differential equations, using appropriate relaxation times.
 \subparagraph{A1: Only energy relaxation}\hfill \\
-The simplest Coulomb Collision model is an averaged BGK-type
+The simplest Coulomb Collision model is an averaged \acs{BGK}-type
 relaxation of energy of test particles towards the mean energy of the Maxwellian
 background ions. In the earliest versions of the EIRENE code (mid
 eighties) it was originally based upon the hydrocarbon ion
@@ -3381,7 +3381,7 @@ of a plane parallel (mono-energetic) flux, and energy exchange of this non-equil
 with a Maxwellian background
 vanishes at a critical energy $\varepsilon'$ distinct from from $3/2 T_b$.
 \cite[paragraph 19]{kn:Trubnikov}.
-\subparagraph{A2: BGK Coulomb-Collision operator}\hfill \\
+\subparagraph{A2: \ac{BGK} Coulomb-Collision operator}\hfill \\
 (Diploma Thesis Felix Reimold....)
 \subsubsection{The Fokker-Planck Collision Model}
 \paragraph {A:}
@@ -3408,17 +3408,17 @@ of the algorithm A, in which the integration over background distribution is car
 
 \newpage
 \section{Parallelization of EIRENE Code}
-EIRENE is often coupled iteratively to finite volume or finite element CFD codes, which provide the host medium (plasma background).
+EIRENE is often coupled iteratively to finite volume or finite element \ac{CFD} codes, which provide the host medium (plasma background).
 Then EIRENE is used as kinetic neutral particle transport module,
 providing, often in iterative mode, the reaction part in the overall
 ``diffusion-advection-reaction problems. Non-linearly coupled fusion edge plasma flow
 simulations fall into that category.
 
-In contrast to the CFD codes, which can be parallelized using domain decomposition, EIRENE uses a particle partitioning technique,
+In contrast to the \ac{CFD} codes, which can be parallelized using domain decomposition, EIRENE uses a particle partitioning technique,
 which is usually most suitable for Monte Carlo methods. Here the stochastic Monte Carlo trajectories are distributed on different processes,
 whereas the domain is the same on all processes. If there would be no stratified source sampling also typically involved, then
 this particle partitioning would provide a good load balancing automatically. Most 3D edge plasma applications using the EMC3-EIRENE
-hybrid Lagrangian CFD/Lagrangian kinetic Monte Carlo code are run in this (``embarrassingly parallel") single stratum mode of operation.
+hybrid Lagrangian \acs{CFD}/Lagrangian kinetic Monte Carlo code are run in this (``embarrassingly parallel") single stratum mode of operation.
 
 However, the 2D hybrid finite-volume/Lagrangian Monte Carlo code B2-EIRENE is heavily resorting on ``stratified sampling". This means the primary sources
 of neutral particles are split by their physical or computational origin into ``sub-strata", and results are then linearly superimposed finally.
@@ -3476,7 +3476,7 @@ Program EIRENE}
 \caption{Flowchart 6.3:
 Particle loop in subr. MCARLO.  Default volume averaged tallies are updated, ``on the fly" \emph{(per event)} in routines UPDATE,
 problem specific tallies
-for code-code interfacing (COPV(...), e.g. B2-EIRENE) in UPDCOP, specific tallies for non-linear BGK operators (BGKV(...)) in UPDBGK.
+for code-code interfacing (COPV(...), e.g. B2-EIRENE) in UPDCOP, specific tallies for non-linear \ac{BGK} operators (BGKV(...)) in UPDBGK.
 Corresponding variances
 are updated \emph{(per history)} after completion of each trajectory in STATS1, STATS1\_COP, STATS1\_BGK.
 \textcolor[rgb]{1.00,0.00,0.00}{Addition/revision in 2012: Updating of linear functions of default tallies, \emph{per history}, in UPFCOP, e.g. for code coupling tally

@@ -11,10 +11,10 @@ EIRENE follows atoms, molecules or test ions in a 3-dimensional
 computational box. This box is discretized by
 zones (mesh cells), the boundaries of which are
 defined either by regular ``standard mesh surfaces", i.e., co-ordinate
-surfaces, (BREP representation of geometry, \cref{sec1.5}) which are described here, and/or by zones whose
+surfaces, (\ac{BREP} representation of geometry, \cref{sec1.5}) which are described here, and/or by zones whose
 boundaries are defined more generally
 by ``additional surfaces" (see below block 3B).
-Alternative to this BREP option there is also the option of unstructured meshes (Voxel representation, loc.cit.) of triangles ( in 2D)
+Alternative to this \ac{BREP} option there is also the option of unstructured meshes (Voxel representation, loc.cit.) of triangles ( in 2D)
 or tetrahedra (in 3D).
 
 In 2-dimensional applications the co-ordinate surfaces automatically collapse to
@@ -335,7 +335,7 @@ The mesh in the x-y plane
 is described by NR1ST polygonal arcs of length NRPLG
 each. A polygon
 may consist of several ``valid" and ``invalid"
-parts (to account for ``grid cuts" in CFD meshes).
+parts (to account for ``grid cuts" in \ac{CFD} meshes).
 The ``invalid" parts of a polygon are not seen by test particles and are
 allowed for in EIRENE only in order to facilitate index mapping
 in case of runs coupled to plasma transport models,
@@ -726,7 +726,7 @@ mesh, separated by additional surfaces (see below, \cref{sec2.3b}
 
 The second part is the so called ``additional cell region". Up to
 NRADD additional cells, of arbitrary shape, are defined by their
-boundaries (``BREP"-geometry): the ``additional surfaces" defined in
+boundaries (``\acs{BREP}"-geometry): the ``additional surfaces" defined in
 \cref{sec2.3b}.
 
 \medskip
@@ -825,7 +825,7 @@ resolution in the third dimension.
 
 \textbf{LEVGEO = 3} This 2D discretisation of a domain, based upon polygonal lines,  in the x-y
 plane was originally developed for the B2-EIRENE interfacing. More generally, this option allows to
-directly use many 2D CFD meshes directly in EIRENE for kinetic transport.
+directly use many 2D \ac{CFD} meshes directly in EIRENE for kinetic transport.
 
 \textbf{LEVGEO = 4} This example shows the extension of the 2D
 B2-grid, polynomial option LEVGEO = 3, into the outer

@@ -154,7 +154,7 @@ files
 FT10 and FT11 to save them for plot or printout options in this or in later
 'read only' runs with the same input file.
 \item [N = 6 ] same as NFILE-N=1, but only the data for the sum over
-all strata are written (sufficient, e.g., for BGK-iterations, or for post processing,
+all strata are written (sufficient, e.g., for \acs{BGK}-iterations, or for post processing,
 (subroutine DIAGNO, see input block 12)
 as long as this post processing only is to be done on total results (not on
 contributions from individual strata).
@@ -454,13 +454,13 @@ TRIM or ``fort.21",  for database name TRIM
 For ADAS (AMdata) and TRMSGL (Surfacedata) there is an exception from this scheme.
 In these cases no default file names are available.
 The notation ``ADAS" and ``TRMSGL" here are only synonymous for any atomic or surface data file
-which is stored in the same format as the so called ADAS adf11 files and the TRIM
+which is stored in the same format as the so called \ac{ADAS} adf11 files and the TRIM
 conditional quantil data tables, independent on
-whether these tables originate from ADAS or TRIM.
+whether these tables originate from \ac{ADAS} or TRIM.
 
 And input variable DBFNAME
 specifies only the path to the directory
-which is the root of the data tabulated in ADAS (tabular) format and the TRIM format
+which is the root of the data tabulated in \ac{ADAS} (tabular) format and the TRIM format
 data tree, respectively.
 \\
 Example:
@@ -469,11 +469,11 @@ Example:
 \\
 \texttt{CFILE TRMSGL /home/path/Surfacedata/TRIM/}
 
-The particular data file from these trees (e.g.: \texttt{SCD96} in case of ADAS, or \texttt{A\_on\_B}
+The particular data file from these trees (e.g.: \texttt{SCD96} in case of \ac{ADAS}, or \texttt{A\_on\_B}
 in case of TRMSGL), the
 chemical element  and the charge stage of a
 particular ion $Z=1,\dots Z+1$ (e.g.: C, 4), are detailed later in
-input block 4 (for volumetric collision processes based on ADAS adf11 format), and input block 6 (TRMSGL, for the surface reflection database based on TRIM)
+input block 4 (for volumetric collision processes based on \ac{ADAS} adf11 format), and input block 6 (TRMSGL, for the surface reflection database based on TRIM)
 see below, \cref{sec2.4,sec2.6},
 respectively.
 
