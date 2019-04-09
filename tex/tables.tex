@@ -5,8 +5,8 @@ The following three tables comprise the EIRENE pre-programmed default ``tallies"
 (Further tallies can be added via the problem specific interfacing or user routines).
 
 The term ``tally" is adopted from neutron transport applications, a
-more precise terminology would be ``response", see section
-\ref{sec3.2}.  By abuse of language we also refer to input data, such as plasma profiles
+more precise terminology would be ``response", see
+\cref{sec3.2}.  By abuse of language we also refer to input data, such as plasma profiles
 defined on the computational grid, as tallies, because in post-processing these can printed, plotted
 and be algebraically mixed with the output tallies (responses) to form more general output quantities.
 The three tables given below list the (volumetric) input tallies, (volumetric, cell averaged) output tallies,
@@ -19,7 +19,7 @@ for the current EIRENE version (2002 and younger), and once for
 the versions older than 2001. A further change in tally numbering and naming conventions
 has been carried out in early 2014, and this affects the surface sputter tallies, (and those
 surface tallies in the list after the sputter tallies.
-These latter revisions are described in table \ref{tab3a}, and only for that section of the surface tally list
+These latter revisions are described in \cref{tab3a}, and only for that section of the surface tally list
 that has been affected.
 
 \
@@ -89,7 +89,7 @@ PRF... are fluxes reflected or emitted due to incident particle fluxes, of type 
 fluxes of surface material).
 
 \textbf{Note:} The naming convention of \textbf{surface sputter tallies SPT...} differs in older versions of EIRENE.
-The full resolution wrt. to incident type and emitted species is only implemented in EIRENE revisions svn 360 and later (Jan. 2014), see Table \ref{tab3a}.
+The full resolution wrt. to incident type and emitted species is only implemented in EIRENE revisions svn 360 and later (Jan. 2014), see \cref{tab3a}.
 
 In all older versions only much fewer sputter tallies SPT[BC] were available, i.e. only one type-identifier in the name of these ``sputter tallies".
 
@@ -210,7 +210,7 @@ nor for graphics.
 \item  Magnetic field input is needed only for photon transport with Zeeman splitted line shapes, or
 in case of charged particle transport (Subr. FOLION). Only quite rudimentary preprogrammed input options
 for magnetic field are available, usually it is expected to receive B-field information from external files,
-see INDPRO(5) options for magnetic field tallies in input block 5 \ref{sec2.5}.
+see INDPRO(5) options for magnetic field tallies in input block 5 (\cref{sec2.5}).
 \item  For electric fields (needed only for charged particle transport) only input via external files
 is possible. Default: $\vec{E} = 0$
 \end{itemize}
@@ -485,16 +485,16 @@ is determined by the magnetic field unit vector (input tallies BXIN,...).
 
 \bigskip
 \textbf{Estimators} EIRENE resorts, by default, to tracklength
-estimators (\ref{eq1.11}). Default tallies are updated (``scoring")
+estimators \cref{eq1.11}. Default tallies are updated (``scoring")
 in routine UPDATE. All default estimators are constant within a cell
 $m$, i.e. depend only upon the cell index $m$ but not on the
 position $\vr$ in the cell: $g_t(s) = const(m)$. Hence they also do
 not depend on the position $s$ along the track within a cell. UPDATE
 calls templates UPTUSR, in which any further quantity can be scored
 by programming the path integral of any function $g_t(s)$, see
-section \ref{sec3.2}.
+\cref{sec3.2}.
 
-In some instances still collision estimators (\ref{eq1.9}) are
+In some instances still collision estimators \cref{eq1.9} are
 employed but we are gradually removing them (and plan keep them in
 the code only to provide independent checks for code-verification
 runs.)
@@ -684,7 +684,7 @@ iii) by default the sputter tallies are type and species resolved with respect t
 E.g. the sputtered fluxes SPTAT(2) is the total sputtered flux (all species), sputtered by incident atoms of species IATM=2.
 Other conventions regarding sputter tallies are used in EIRENE versions operated at ITER-IO (e.g. SOLPS4.x), see general description above.\\
 iv) the sputter tallies have been revised at revision svn 360, Jan 2014, to allow full resolution with respect to both: incident type (for scaling)
-and (emitted) sputtered particle type and species, see Table \ref{tab3a}.
+and (emitted) sputtered particle type and species, see \cref{tab3a}.
 
 %\end{table}
 
@@ -803,11 +803,11 @@ in BGK approximation).
 With respect to surface averaged tallies (in and outgoing surface fluxes, sputter fluxes,
 etc...) there have been major revisions in versions
 2014 or later, see ``sputter tallies, new version, svn 360 ff, 2014" in
-paragraph \ref{sec.tables-new}.
+\cref{sec.tables-new}.
 
 A particular modification (A. Kukushkin) of the sputter tallies has been used
 in many B2-EIRENE applications,
-in versions SOLPS4.x, see under \ref{sec2.14} in which problem specific issues regarding EIRENE
+in versions SOLPS4.x, see under \cref{sec2.14} in which problem specific issues regarding EIRENE
 interfacing to the particular external plasma codes B2, B2.5, etc. are described.
 
 \begin{table}[ht]
@@ -864,7 +864,7 @@ the flow field, respectively.
 \item  Magnetic field input is needed only for photon transport with Zeeman splitted line shapes, or
 in case of charged particle transport (Subr. FOLION). Only quite rudimentary preprogrammed input options
 for magnetic field are available, usually it is expected to receive B-field information from external files,
-see INDPRO(5) options for magnetic field tallies in input block 5 \ref{sec2.5}.
+see INDPRO(5) options for magnetic field tallies in input block 5 (\cref{sec2.5}).
 
 \end{itemize}
 \end{table}

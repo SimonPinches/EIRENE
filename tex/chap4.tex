@@ -8,7 +8,7 @@
 \medskip  %
 
 The ``background'' or ``host'' medium, usually the ``plasma'' is fixed in an EIRENE run, and usually either specified
-in input block 5 (\ref{sec2.5}), or the background volume tallies are simply ready from data files.
+in input block 5 (\cref{sec2.5}), or the background volume tallies are simply ready from data files.
 
 However the mutual coupling between test-particle species treated by EIRENE and the background medium may be very
 strong, even if the test particle density is quite low compared to the background (plasma) density. This is
@@ -29,7 +29,7 @@ and the most detailed discussion probably still is the FZ J\"ulich report JUEL-2
 Maddison, Reiter, \cite{kn:Maddison94},  (1994).
 
 Special Monte Carlo options, such as correlated sampling 
-(see flag NLCRR in input block 1, \ref{sec2.1}) or the semi-implicit
+(see flag NLCRR in input block 1, \cref{sec2.1}) or the semi-implicit
 coupling schemes based on source term adaptations/rescalings 
 to reduce Monte Carlo run-time in these iterative non-linear schemes
 (jargon: ``short cycles"), have also had their
@@ -67,10 +67,10 @@ and the material in this section is still valid.
 
 Data are transfered from subroutine INFCOP into EIRENE via the
 EIRENE work array \texttt{RWK}  (Module CSPEI).
-They are read onto the EIRENE arrays for input volume tallies (\ref{tab1}) by calls of subroutine PROFR in
+They are read onto the EIRENE arrays for input volume tallies (\cref{tab1}) by calls of subroutine PROFR in
 the initialization phase individually for each tally,
 for which the flag INDPRO has the value 6 or 7 for a particular input tally
-(see section \ref{sec2.5}).
+(see \cref{sec2.5}).
 The following addresses are foreseen on \texttt{RWK} for this data transferring
 procedure:
 
@@ -155,9 +155,9 @@ to be written
 In case of an EIRENE run, in which input information is obtained
 from an external code (e.g.: B2, EMC3, DIVIMP, ...), the
 stratification of the primary source should be such that the first
-NTARGI (see \ref{sec2.14}) strata are determined by the plasma
+NTARGI (see \cref{sec2.14}) strata are determined by the plasma
 fluxes onto surfaces (``recycling surface sources"). In this case
-the surface source distribution $Q_S(\vr,\vv,i,t)$ (section \ref{sec1.2}) can be defined automatically from the interfacing
+the surface source distribution $Q_S(\vr,\vv,i,t)$ (\cref{sec1.2}) can be defined automatically from the interfacing
 routine, using the data specified in input block 14. The remaining
 primary sources NTARGI+1, ..., NSTRAI (e.g. gas puff, volume
 recombination sources, etc...) still have to defined in input
@@ -166,17 +166,17 @@ a particular surface source ISTRA $\le$ NTARGI is controlled by
 the flag INDSRC.  For sources ISTRA $>$ NTARGI the input flag INDSRC  is irrelevant.
 
 if INDSRC(ISTRA) $<$ 0 then interfacing routine IF2COP is not called.
-Input data are used from block 7, see \ref{sec2.7}.
+Input data are used from block 7, see \cref{sec2.7}.
 
 \medskip
 
-if INDSRC(ISTRA) = 0--5, then the input flags described in section
-\ref{sec2.7} are used to define the spatial distribution of a
+if INDSRC(ISTRA) = 0--5, then the input flags described in
+\cref{sec2.7} are used to define the spatial distribution of a
 recycling source on a grid boundary (function STEP(ISTEP), see
-section \ref{sec2.7.1}) as well as the distribution in velocity
+\cref{sec2.7.1}) as well as the distribution in velocity
 space. The step function itself and the total source strength
 FLUX(ISTRA), however, are defined in IF2COP, using data from input
-block 14, see \ref{sec2.14}, for target recycling source ITARG. In
+block 14, see \cref{sec2.14}, for target recycling source ITARG. In
 this case the sampling range from the spatial surface distribution
 and the species distribution specified in input block 7 must be
 equal to or a subrange of the the step-function for target
@@ -184,7 +184,7 @@ recycling source ITARG defined from the data in input block 14.
 
 \medskip
 
-if INDSRC(ISTRA) = 6, then the input flags described in section \ref{sec2.14}
+if INDSRC(ISTRA) = 6, then the input flags described in \cref{sec2.14}
 are used to define the entire surface recycling source automatically. The
 corresponding data in input block 7 for this stratum are not used and
 may be omitted. Stratum ISTRA corresponds to the target recycling source
@@ -234,7 +234,7 @@ the tally COPV is scaled, averaged, printed and plotted as any other EIRENE tall
 In older versions of EIRENE (before 2002) in particular momentum exchange rates (i.e. friction terms) in the
 direction parallel to the magnetic field have been programmed here in UPTCOP.
 Meanwhile these have become default tallies (i.e. scoring moved to UPDATE,
- see chapter \ref{sec.tables}. Still some particular
+ see \cref{sec.tables}. Still some particular
 coupling tallies, e.g. to render the coupling procedure more implicit,
 are scored in this routine.
 
@@ -246,7 +246,7 @@ noise-residuals: STATIS\_COP
 }
 \label{sec4.4}
 
-As pointed out in Section \ref{sec2.9}:  for all primary (not derived)
+As pointed out in \cref{sec2.9}:  for all primary (not derived)
 EIRENE tallies the empirical standard deviation can also be obtained,
 if requested, by setting proper flags in input block 9.
 
@@ -291,7 +291,7 @@ tallies which are specific to a particular coupled case. Usually
 these will be source terms for particle, momentum, and energy
 balance equations, summed over all donor species.
 
-At entry \texttt{IF4COP} (see section \ref{sec4.1.4} above) these
+At entry \texttt{IF4COP} (see \cref{sec4.1.4} above) these
 may be further processed. For example, in case of coupling to the
 B2 plasma fluid code these noise estimates are integrated into
 global quantities (dimension: 1/time) and represent the

@@ -19,8 +19,8 @@ surfaces, respectively.
 
 Each volume averaged tally is an array TALLYV(I) of NSBOX data,
 comprising the responses for the respective detector function $g_V
-$ in each zone of the computational mesh (see section
-\ref{sec2.2}, ``General Remarks").
+$ in each zone of the computational mesh (see
+\cref{sec2.2}, ``General Remarks").
 
 Each surface averaged tally is an array TALLYS(I) of NLIMPS data,
 comprising the responses for the respective detector function
@@ -45,31 +45,31 @@ Up to NALV algebraic expressions in these tallies (tally no.
 ITALV) can be stored.
 
 There is also one tally no. 0, which is evaluated in subroutine
-TALUSR (section \ref{sec3.7}). This tally is printed immediately
+TALUSR (\cref{sec3.7}). This tally is printed immediately
 after evaluation, i.e., it is not put onto any storage (unless
 explicitly done so in subroutine TALUSR).
 
 The input volume tallies for the background medium are listed in
-table \ref{tab1}. They are selected for printout or graphical
+\cref{tab1}. They are selected for printout or graphical
 output by the \textbf{negative} value of their tally number. E.g.,
-the choice ITALV = 5 selects tally no. 5 from table \ref{tab2},
-and the choice ITALV = -5 selects tally no. 5 from table
-\ref{tab1}.
+the choice ITALV = 5 selects tally no. 5 from \cref{tab2},
+and the choice ITALV = -5 selects tally no. 5 from
+\cref{tab1}.
 
 Furthermore, there are NTALS  preprogrammed detector functions for
 surface averaged tallies, and there may be up to NADS additional
 user supplied surface averaged tallies (tally no. ITALS).
 
 The preprogrammed tallies and their default units are given in
-table \ref{tab2} (volume averaged tallies) and in table \ref{tab3}
+\cref{tab2} (volume averaged tallies) and in \cref{tab3}
 (surface averaged tallies).
 
-Table \ref{tab1} lists the NTALI  (volume-) tallies which are
+\cref{tab1} lists the NTALI  (volume-) tallies which are
 computed from the input data in block 5 and which describe the
 background medium (plasma). By an abuse of language the cell
 volumes ($cm^{-3}$) stored in the array VOL(I) are also referred
-to as an input volumetric tally (no. ITALI=13 in table
-\ref{tab1}).
+to as an input volumetric tally (no. ITALI=13 in
+\cref{tab1}).
 
 \medskip
 
@@ -268,8 +268,8 @@ Total number of volume averaged tallies to be printed.
 Flag for printout of surface or cell based spectra (defined in input block 10F)
 If NSPCPR $> 0$: spectra are printed on output stream fort.(20+ioff), name: spectra.out
 \item[\textbf{NPRTLV }]
-Index of the tally to be printed (first column in table \ref{tab1} or
-\ref{tab2}). If the tally has a species index, it is printed for all
+Index of the tally to be printed (first column in \cref{tab1} or
+\cref{tab2}). If the tally has a species index, it is printed for all
 species,
 for which the integral of the tally over the computational area is
 nonzero. Otherwise the statement
@@ -284,7 +284,7 @@ else, this term ``species index" then is to be understood in a more
 general sense.
 
 If NPRTLV = 0, then the user defined post processing routine TALUSR
-is called (\ref{sec3.7}.
+is called (\cref{sec3.7}).
 \item[\textbf{NFLAGV }]
 Flag to specify the level of printout.
 \begin{list}{ }{}
@@ -331,7 +331,7 @@ numbers) are selected here by input flag NSRF.
 Total number of surfaces, for which surface averaged tallies are to be printed.
 \item[\textbf{NSRF }]
 Index of the surface
-to be printed. By default all tallies listed in tables (\ref{tab3}, \ref{tab3a}, \ref{tab3old}) (depending on code version)
+to be printed. By default all tallies listed in \cref{tab3,tab3a,tab3old} (depending on code version)
 are printed for this surface.
 \item[\textbf{NPRTLS(J) NFLAGS(J) NSPEZS(J,1) NSPEZS(J,2)}]
 These next flags are only needed for those surfaces, for which a
@@ -353,7 +353,7 @@ The logical flag TRCTAL described above can be used to print a list of all activ
 \item[\textbf{NTLVOUT }]
 total number of volume averaged tallies to be explicitly abandoned or enabled
 \item[\textbf{NUMTAL(J) }]
-Number of a tally from table \ref{tab2}, e.g. NUMTAL(J)=1 for neutral atom density tally PDENA.
+Number of a tally from \cref{tab2}, e.g. NUMTAL(J)=1 for neutral atom density tally PDENA.
 The tally with this number NUMTAL(J) is explicitly enabled.
 With an additional negative sign this tally is removed from the run (and the balances), e.g. NUMTAL(J)=-2
 would remove the evaluation (and storage) of tally PDENM from this run.

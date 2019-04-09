@@ -88,7 +88,7 @@ the last surface (no. NLIMI, see below).
 
 Although the (local) data for particle surface interaction models
 for each specific additional surface
-can be read in this input block, their meaning is described in block \ref{sec2.6}
+can be read in this input block, their meaning is described in block 6 (\cref{sec2.6})
 together with the globally valid input data for particle surface interactions.
 
 \medskip
@@ -162,24 +162,24 @@ optional for non transparent surfaces (ILIIN $>$ 0):
 The next 3 (or 4) lines comprise the block for local particle-surface interaction data
 (in analytic terminology: the boundary condition at this surface element).
 If they are omitted, the default particle-surface model is activated for this
-particular surface element, see section \ref{sec2.6}.
+particular surface element, see \cref{sec2.6}.
 \begin{verbatim}
     ILREF  ILSPT ISRS  ISRC
     ZNML EWALL EWBIN TRANSP(1,N) TRANSP(2,N) FSHEAT
     RECYCF  RECYCT  RECPRM  EXPPL  EXPEL  EXPIL
     RECYCS  RECYCC  SPTPRM  (this line may be omitted,
                              then: default sputter model,
-                             see \ref{sec2.6})
+                             see \cref{sec2.6})
 \end{verbatim}
 
 also optional for non transparent surfaces (ILIIN $>$ 0):
 
 read a surface interaction model identifier to link one of the surface
 ``local reflection
-models" defined in block \ref{sec2.6} below to this current surface.
+models" defined in block 6 (\cref{sec2.6}) below to this current surface.
 The presence of such a link is identified by the string $'SURFMOD_{ }'$,
 followed
-by a name $'modname'$. Later, in input block \ref{sec2.6},
+by a name $'modname'$. Later, in input block 6 (\cref{sec2.6}),
 a ``local reflection model" block with that name
 $'modname'$ must be included. This option allows
 quick changes of particle-surface interaction parameters, affecting
@@ -265,11 +265,11 @@ defines the type of surface
 reflecting, partly or purely absorbing surface.
 
 local reflection model has to be specified unless default model is
-to be used; all surface tallies (see Table \ref{tab3})
+to be used; all surface tallies (see \cref{tab3})
 are updated and a switch can be operated.
 \item[{= 2 }]
 purely absorbing surface ;. surface tallies for incident fluxes
-(i.e., POT... and EOT... tallies in Table \ref{tab3})
+(i.e., POT... and EOT... tallies in \cref{tab3})
 are updated and the particle history is stopped then.
 \item[{= 3 }]
 mirror for incident
@@ -312,15 +312,15 @@ as -1, and, additionally:
 if a particle is crossing the surface in the positive direction,
 (one sided-) surface tallies are updated, e.g., by
 default: partial particle and energy currents $J^+$ (Amp)
-and $K^+$ (Watt). These are stored in the POT... and EOT... tallies of Table \ref{tab3}.
+and $K^+$ (Watt). These are stored in the POT... and EOT... tallies of \cref{tab3}.
 If the particle crosses the surface in the direction opposite to the surface normal, then
 negative partial particle and energy currents $J^-$ (Amp)
 and $K^-$ (Watt) are updated. These are stored in the PRF... and ERF... tallies of
-Table \ref{tab3}.
+\cref{tab3}.
 
 \item[{= -3 }]
 Net currents (e.g. $J^+ - J^-$),
-are evaluated, and stored on the POT... and EOT... tallies (see Table \ref{tab3}).
+are evaluated, and stored on the POT... and EOT... tallies (see \cref{tab3}).
 The PRF... and ERF... tallies are empty for these surfaces.
 \item[{$\leq$ -4 }] Not in use. Currently: same as ILIIN=-2 option.
 \end{list}
@@ -484,7 +484,7 @@ If a test particle history starts from a surface (NLSRF option),
 then ILSWCH acts as if this particle had struck the surface prior
 to the birth process in the positive direction. This default
 setting is only available for ILSIDE $\neq$ 0 and can (must) be
-overruled by the SORIFL flag (see section \ref{sec2.7}), e.g. if a
+overruled by the SORIFL flag (see \cref{sec2.7}), e.g. if a
 surface source needs to be defined on a surface with ILSIDE = 0.
 \item[\textbf{ILEQUI }] The algebraic equations for the surfaces J
 and IABS(ILEQUI(J)) will be described by exactly the same
@@ -593,24 +593,24 @@ or the code interfacing routines INFCOP
 \medskip
 
 The surface equation:
-\begin{eqnarray}
-A0LM & + & A1LM  \cdot  x + A2LM \cdot y + A3LM  \cdot z +  \nonumber\\
-& + & A4LM  \cdot x^2 + A5LM  \cdot y^2 + A6LM  \cdot z^2 + \nonumber\\
-& + & A7LM  \cdot xy + A8LM  \cdot xz + A9LM  \cdot yz = 0
-\end{eqnarray}
+\begin{align}
+A0LM & + A1LM  \cdot  x + A2LM \cdot y + A3LM  \cdot z +  \nonumber\\
+     & + A4LM  \cdot x^2 + A5LM  \cdot y^2 + A6LM  \cdot z^2 + \nonumber\\
+     & + A7LM  \cdot xy + A8LM  \cdot xz + A9LM  \cdot yz = 0
+\end{align}
 The positive surface normal $(n_x , n_y , n_z)$
 depends upon the point of impact (x,y,z) and is defined by the
 vector
-\begin{eqnarray}
-n_x  & = &   A1LM  + 2  \cdot   A4LM  \cdot  x    +
-A7LM  \cdot  y    +      A8LM  \cdot  z    \nonumber\\
-n_y  &  = &   A2LM    +
+\begin{align}
+n_x  & = A1LM  + 2  \cdot   A4LM  \cdot  x    +
+  A7LM  \cdot  y    +      A8LM  \cdot  z    \nonumber\\
+n_y  & = A2LM    +
 A7LM  \cdot  x    +     2  \cdot   A5LM  \cdot  y    +
 A9LM  \cdot  z   \nonumber\\
-n_z  &  = &   A3LM    +
+n_z  & = A3LM    +
 A8LM  \cdot  x +  A9LM  \cdot  y +
 2  \cdot   A6LM  \cdot  z       \nonumber
-\end{eqnarray}
+\end{align}
 For a plane surface the following reduction is valid:
 
 ($n_x , n_y , n_z$) = (A1LM,A2LM,A3LM)
@@ -720,19 +720,19 @@ $ALIMS + XLIMS  *  x + YLIMS  *  y + ZLIMS  *  z
 \le 0 $
 \raggedleft (L inequalities)
 
-\begin{eqnarray}
-ALIMS0 & + & XLIMS1  \cdot  x + YLIMS1  \cdot  y + ZLIMS1  \cdot  z
+\begin{align}
+ALIMS0 & + XLIMS1  \cdot  x + YLIMS1  \cdot  y + ZLIMS1  \cdot  z
 \nonumber \\
-& + & XLIMS2  \cdot  x^2 + YLIMS2  \cdot  y^2 + ZLIMS2  \cdot  z^2
+       & + XLIMS2  \cdot  x^2 + YLIMS2  \cdot  y^2 + ZLIMS2  \cdot  z^2
 \nonumber \\
-& + & XLIMS3  \cdot  xy + YLIMS3  \cdot  xz + ZLIMS3  \cdot  yz \le 0
+       & + XLIMS3  \cdot  xy + YLIMS3  \cdot  xz + ZLIMS3  \cdot  yz \le 0
 \nonumber
-\end{eqnarray}
+\end{align}
 \raggedleft (K inequalities)
 \end{list}
 
 The meanings of the input variables for the local reflection model
-are described below (see: \ref{sec2.6}: ``Input Data for Surface
+are described below (see: \cref{sec2.6}: ``Input Data for Surface
 Interaction Models").
 
 The meanings of the input variables for a transformation block are:

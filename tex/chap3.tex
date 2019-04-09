@@ -11,7 +11,7 @@ a large variety of linear and also of non-linear transport problems to be studie
 cases of linear neutral gas transport in a prescribed background plasma
 the only problem specific FORTRAN that is required consisted of
 a few parameter statements (i.e., the COMMON deck PARMUSR described
-below in section \ref{sec3.1}).  
+below in \cref{sec3.1}).  
 
 In it one had defined the
 storage requirements for this particular case.
@@ -24,7 +24,7 @@ Some controllable storage options (e.g.: trading CPU - vs. storage -
 optimization), formerly under: ``parameters for storage
 reductions'' in PARMUSR, can now be set in an additional, but
 optional input line at the beginning of input block 1 (as new
-second line in this block), see section \ref{sec2.1}.
+second line in this block), see \cref{sec2.1}.
 
 \vspace{1em}
 
@@ -34,7 +34,7 @@ end with ...USR.
 \smallskip
 
 The description of the ``additional tally" routines UPTUSR, UPCUSR,
-UPSUSR and UPNUSR given below (section \ref{sec3.2}) is meant as a
+UPSUSR and UPNUSR given below (\cref{sec3.2}) is meant as a
 guide for the more experienced users of the code only. These
 routines allow to extend the number of responses estimated by EIRENE
 almost arbitrarily.
@@ -47,30 +47,30 @@ a test particle has collided with a non-transparent surface and neither
 absorption, nor specular reflection nor the ``thermal particle re-emission"
 is identified as
 surface event by the flags and the random sampling procedure. The use of
-this routine REFUSR is described in section \ref{sec3.3}.
+this routine REFUSR is described in \cref{sec3.3}.
 
 By including a birth point sampling routine SAMUSR, one can easily
 model any spatial distribution of the primary source, in addition to the
-preprogrammed options described in section \ref{sec2.7}.
-This is explained in section \ref{sec3.4}.
+preprogrammed options described in \cref{sec2.7}.
+This is explained in \cref{sec3.4}.
 
 Some geometrical variables, such as cell volumes, surface coefficients,
 etc., may be re-defined or modified after reading the input data.
 This is done by a call to routine GEOUSR, called from EIRENE
-subroutine INPUT. See section \ref{sec3.5.1} below. Similarly,
+subroutine INPUT. See \cref{sec3.5.1} below. Similarly,
 any background data (plasma profiles) may explicitly be modified
-in routine PLAUSR (see section \ref{sec3.5.2}).
+in routine PLAUSR (see \cref{sec3.5.2}).
 
 The routine for additional background profiles PROUSR (called for
 those background tallies, for which INDPRO=5, see block 5, is described
-in section \ref{sec3.6}. It is recommended to use this option,
+in \cref{sec3.6}. It is recommended to use this option,
 if a particular closed form expression for the background profile
 is needed. It is then more convenient than the external data file
-options INDPRO=6, or INDPRO=7, see section \ref{sec4}.
+options INDPRO=6, or INDPRO=7, see \cref{sec4}.
 
 The various routines needed for the general user supplied geometry
-option (NLGEN, LEVGEO=10, see block 2a) are described in section
-\ref{sec3.8}. Simple examples are also given there.
+option (NLGEN, LEVGEO=10, see block 2a) are described in
+\cref{sec3.8}. Simple examples are also given there.
 \newpage
 
 \section{Parameter Statements (for EIRENE-2001 or older)} \label{sec3.1}
@@ -278,15 +278,16 @@ Photons, S = A: Atoms, S = M: Molecules, S = I: Test Ions, S = P:
 Bulk Ions
 
 e.g.:
-\begin{eqnarray}
-& & \\ j_A    & =  & H  , D , T , He , C , O  ,  \dots \nonumber \\
-j_M  &  = & H_2  , D_2,  HD , CH_4 , H_2 O ,  \dots \nonumber \\
-j_I  &  = & H_2^+ , CH_3^+ ,  C^+ , O^{++} , \dots  \nonumber \\
-j_P  &  = & H^+  , D^+ , He^+  ,  He^{++} , C^+ , \dots \nonumber
-\end{eqnarray}
+\begin{align}
+    &  \\
+j_A & = H  , D , T , He , C , O  ,  \dots \nonumber \\
+j_M & = H_2  , D_2,  HD , CH_4 , H_2 O ,  \dots \nonumber \\
+j_I & = H_2^+ , CH_3^+ ,  C^+ , O^{++} , \dots  \nonumber \\
+j_P & = H^+  , D^+ , He^+  ,  He^{++} , C^+ , \dots \nonumber
+\end{align}
 The distinction between ``Test Ions" and ``Bulk Ions" is problem specific,
 see input blocks 4 and 5.
-The ``volume averaged tallies" estimated by EIRENE (see table \ref{tab2})
+The ``volume averaged tallies" estimated by EIRENE (see \cref{tab2})
 are profiles of
 ``responses"
 \[
@@ -433,7 +434,7 @@ state approximation ``QSSA" for this species).
 
 \subsection{Snapshot estimated volume averaged tallies, UPNUSR}\label{sec3.2.3}
 
-By default snapshot tallies are only scored in time dependent mode, see input flags in Section \ref{sec2.13}.
+By default snapshot tallies are only scored in time dependent mode, see input flags in \cref{sec2.13}.
 They can, however, also be used as a third alternative to tracklength and collision
 estimators for any stationary response. In particular for diffusive processes, as e.g.
 ion transport with Fokker Planck type Coulomb collision operators,
@@ -441,8 +442,8 @@ such ``snapshot averaging" is the most frequent option used in Monte Carlo appli
 stationary moments. See paragraph B below.
 \subsubsection{A: time dependent estimates}
 The default
-snapshot estimated tallies at a fixed time $t^*$, see Section
-\ref{sec2.13}, are updated in subroutine TIMCOL. Currently these are
+snapshot estimated tallies at a fixed time $t^*$, see
+\cref{sec2.13}, are updated in subroutine TIMCOL. Currently these are
 only the census tallies and the particle- and energy fluxes at
 census. Subroutine TIMCOL is called from the particle tracing
 subroutines FOLNEUT and FOLION (defaults), in case of time dependent
@@ -463,7 +464,7 @@ read:
  SNAPV(ISNV,ICELL) = SNAPV(ISNV,ICELL) + WSNAP * g(...)  .
 \end{verbatim}
 E.g., with $g=1$ this is an unbiased estimate of cell averaged particle density at
-time $t=t^*$, see (\ref{est}), i.e., just counting the particle weights at $t=t^*$
+time $t=t^*$, see \cref{est}, i.e., just counting the particle weights at $t=t^*$
 provides an unbiased estimate of the particle density.
 This is intuitively clear, but also mathematically correct since
 these snapshot estimators are formally derived as special cases of tracklength- collision
@@ -474,15 +475,14 @@ Subroutine UPNUSR must at least include module COMPRT (for the
 particle weight WEIGHT). Here $g$ is evaluated at the point of time $t^*$
 at which TIMCOL is called. Scaling of snapshot tallies is done by
 interpreting the linear source strength ``FLUX" scaling factor
-(given in input block \ref{sec2.7} for each stratum) as a total
+(given in input block 7 (\cref{sec2.7}) for each stratum) as a total
 number of particles, rather than as flux (particles/s), i.e. ``FLUX is the
 integral of the source distribution not only over physical space, but also over time interval $DTIMV$ from initial time $t_0$
-to time $t^*$ (Section
-\ref{sec2.13}).
+to time $t^*$ (\cref{sec2.13}).
 \subsubsection{B: stationary snapshot tallies}\label{sec3.2.3b}
 A stationary value of snapshot tallies, to be compared with other
 tallies in stationary mode, is obtained by setting the flag NTMSTP
-of block \ref{sec2.13} to negative values. Stationary results in
+of block 13 (\cref{sec2.13}) to negative values. Stationary results in
 this ``time dependent mode" are obtained by launching all test
 flights at time $t_0$, but scoring snapshot tallies not only at
 $t^*=t_1=t_0+DTIMV$, but also at $t_2=t_0+2~ DTIMV, t_3=t_0+3~
@@ -506,11 +506,11 @@ from $t_0$ to $t_1=t_0+DTIMV$).
 
 Further considerations regarding the scaling factors for volume averaged
 tallies in EIRENE, with respect to dimensionality of phase space of the problem
-(1D, 2D, 3D, stationary or time-dependent) are given in Section \ref{sec1.2.0}.
+(1D, 2D, 3D, stationary or time-dependent) are given in \cref{sec1.2.0}.
 
 \subsection{Surface averaged tallies, UPSUSR}\label{sec3.2.4}
 \medskip
-Finally we note that ``surface averaged tallies" (table \ref{tab3})
+Finally we note that ``surface averaged tallies" (\cref{tab3})
 may be considered just as special cases of the ``volume averaged
 tallies" described above, if appropriate use is made of $\delta$
 -functions. Let therefore $\rho$ be a co-ordinate normal to a
@@ -541,7 +541,7 @@ g_S   \cdot   f
 \]
 
 Therefore, the line integrals $ I_{l,i} $ in the formula given above
-for track-length estimates, equation (\ref{tracklest}), now reduce
+for track-length estimates, equation \cref{tracklest}, now reduce
 to:
 
 \begin{equation}
@@ -555,14 +555,14 @@ if the surface is intersected
 during the test-flight from $ \vr_i $
 to $ \vr_{i+1} $ , and $ I_{l,i} = 0 $ else.
 This can easily be seen by writing
-\begin{eqnarray}
- \vr_{l,i} & = & \vr_i + l  \cdot
- \left(\begin{array} {c} \cos(\vOmega ,
+\begin{align}
+ \vr_{l,i} & = \vr_i + l  \cdot
+ \left(\begin{array} {c} \cos(\vOmega , 
 \ve_{\rho}
 )
 \\  \cos(\vOmega , \ve_{ \rho '} )
 \\  \cos(\vOmega,\ve_{ \rho ''}) \end{array}\right)
-\end{eqnarray}
+\end{align}
 i.e., $ \rho= r_{\rho , i} + l  \cdot  \cos( \vOmega , \ve_{\rho} )
 $ . In other words: tracklength estimators become formally identical
 to collision estimators, for detector functions containing surface
@@ -833,7 +833,7 @@ been interchanged with respect to the calling statements in the EIRENE code. \\
 
 Purpose: set input tallies (background medium), on the grid (one number per tally per cell)
 For more general input tallies, evaluated ``on the fly" at a particular position, see routine VECUSR
-below (\ref{sec3.6.2}).
+below (\cref{sec3.6.2}).
 
 This subroutine is called from the subroutine PLASMA
 if the input flag INDPRO (input block 5) has the value INDPRO(IPRO)=5
@@ -984,19 +984,19 @@ are transferred from outside.
 
 \begin{itemize}
 \item
-INIUSR (initialize user specified geometry block), see \ref{sec3.8.0}
+INIUSR (initialize user specified geometry block), see \cref{sec3.8.0}
 \item
 LEAUSR(x) (return cell number, for any given position x), see
-\ref{sec3.8.1}
+\cref{sec3.8.1}
 \item
 TIMUSR (flight time to next cell boundary, and next cell number
-or surface number), see \ref{sec3.8.2}
+or surface number), see \cref{sec3.8.2}
 \item
 VOLUSR (volume of each grid cell),
-see \ref{sec3.8.3}
+see \cref{sec3.8.3}
 \item
 NORUSR (outer surface normal, for any given position on a surface),
-see \ref{sec3.8.4}
+see \cref{sec3.8.4}
 \end{itemize}
 In case NLGEN, only a reduced set of the standard EIRENE options is available, and the
 five user routines mentioned above and described below may have to be
@@ -1014,7 +1014,7 @@ source (code) for the data of the background medium.
 \item[\textbf{Input block 7 }]
 only the point source option is available. In case of surface
 sources or volume sources, the subroutine SAMUSR has to be called,
-see \ref{sec3.4}.
+see \cref{sec3.4}.
 \item[\textbf{Input block 11 }]
 only the printout options are available, no graphics output
 options are available. However, subroutine PLTUSR(LOG,J) is called
@@ -1044,7 +1044,7 @@ coordinates of a point inside the computational domain in centimeters.
 LEAUSR must then return
 the number of the cell to which this point belongs.
 
-Note (see section \ref{sec2.2}): Any particular cell in EIRENE can be specified in
+Note (see \cref{sec2.2}): Any particular cell in EIRENE can be specified in
 one of two possible ways:
 
 Either by giving the 5 cell numbers:
@@ -1140,7 +1140,7 @@ only relevant, if the trajectory has intersected a non-default surface.
 In this case, ICOS is the sign (+1 or -1) of the cosine of the angle of
 incidence against the surface normal (this latter unit vector, [CRTX,CRTY,CRTZ]
 may, e.g., be found in TIMUSR by a call
-to NORUSR, see section \ref{sec3.8.4}).
+to NORUSR, see \cref{sec3.8.4}).
 \item[\textbf{IERR }]
 error flag. Presently
 any value different from 0 will lead to an immediate end of the run.
@@ -1172,7 +1172,7 @@ Here [X,Y,Z] are the cartesian coordinates
 of an intersetcion point, located on non-default standard surface no. M. The routine must return
 the surface normal unit vector [CX,CY,CZ].
 
-If surface M has a periodicity condition (i.e. surface flag ILIIN(M) $>$3 in input block 3a (\ref{sec2.3a})
+If surface M has a periodicity condition (i.e. surface flag ILIIN(M) $>$3 in input block 3a (\cref{sec2.3a})
 then this routine must also carry out the periodicity transformation for the test particle (which may be different
 for neutral particles and for charged (test ion) particles).
 

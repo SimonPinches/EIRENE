@@ -11,7 +11,7 @@ EIRENE follows atoms, molecules or test ions in a 3-dimensional
 computational box. This box is discretized by
 zones (mesh cells), the boundaries of which are
 defined either by regular ``standard mesh surfaces", i.e., co-ordinate
-surfaces, (BREP representation of geometry, \ref{sec1.5}) which are described here, and/or by zones whose
+surfaces, (BREP representation of geometry, \cref{sec1.5}) which are described here, and/or by zones whose
 boundaries are defined more generally
 by ``additional surfaces" (see below block 3B).
 Alternative to this BREP option there is also the option of unstructured meshes (Voxel representation, loc.cit.) of triangles ( in 2D)
@@ -35,7 +35,7 @@ RSURF(NR1ST) are grid-points (parameters) in the 1st co-ordinate direction, most
 (depending on the
 geometry level, internal parameter LEVGEO, see below) defined by the input data in sub-block 2A.
 I.e., there are NR1STM= NR1ST-1 cells in the 1st co-ordinate direction (e.g. radial or x direction).
-With regard to the terminology in \ref{sec1.5}, equation (\ref{eq1.34}), a
+With regard to the terminology in \cref{sec1.5}, \cref{eq1.34}, a
 corresponding co-ordinate surface is labelled with a double index 1,IR
 and is defined by the equation
 
@@ -120,7 +120,7 @@ Cell volumes in the standard mesh region, as well as the center of
 mass vector in each of these cells are computed automatically. The
 corresponding data in the additional cell region must be specified
 by the user, e.g. in the input block 2E or 8, or in the user
-supplied routine GEOUSR (section \ref{sec3.6}), which is called by
+supplied routine GEOUSR (\cref{sec3.6}), which is called by
 EIRENE in the initialization phase.
 
 \medskip
@@ -268,7 +268,7 @@ are read from the work array RWK. These
 data must have been written onto RWK in the user supplied subroutine INFCOP.
 By this option grid parameters may directly be transferred into
 EIRENE from other files, e.g. from plasma transport codes
-(see below: section \ref{sec2.14}. Data for interfacing routine INFCOP).
+(see below: \cref{sec2.14}. Data for interfacing routine INFCOP).
 \end{list}
 \end{list}
 
@@ -543,7 +543,7 @@ if NLGEN = .TRUE. :
 \item[\textbf{NR1ST }]
 
 number of cells in otherwise arbitrary mesh option NLGEN.
-Use problem specific routines (see section \ref{sec3})
+Use problem specific routines (see \cref{sec3})
 to set up mesh, cell volumes, and flight interesction times for test partilces.
 \end{list}
 
@@ -721,13 +721,13 @@ The can mesh consist two different parts.
 
 The first is the so called ``standard mesh" part (``VOXEL-geometry"), defined
 by the grids RSURF, PSURF and TSURF. There may then be NBMLT copies of that
-mesh, separated by additional surfaces (see below, section \ref{sec2.3b}
+mesh, separated by additional surfaces (see below, \cref{sec2.3b}
 (default: NBMLT=1).
 
 The second part is the so called ``additional cell region". Up to
 NRADD additional cells, of arbitrary shape, are defined by their
-boundaries (``BREP"-geometry): the ``additional surfaces" defined in section
-\ref{sec2.3b}.
+boundaries (``BREP"-geometry): the ``additional surfaces" defined in
+\cref{sec2.3b}.
 
 \medskip
 

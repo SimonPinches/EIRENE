@@ -19,8 +19,8 @@ of language, we refer to them as ``bulk ions" as well, but we
 mean in this case: heavy background particles, i.e. more general objects.
 
 NATM, NMOL, NION, NPHOT, NPLS and NREAC are specified in the
-parameter block ``PARMUSR", see: ``Parameter Statements" (section
-\ref{sec3.1} below, for versions EIRENE$_{2000}$ and older), or are determined automatically
+parameter block ``PARMUSR", see: ``Parameter Statements" (\cref{sec3.1} 
+below, for versions EIRENE$_{2000}$ and older), or are determined automatically
 from the input file.
 
 Masses in EIRENE (RMASSA, RMASSM, RMASSI, RMASSP assigned to the objects ``atoms", ``molecules",
@@ -432,7 +432,7 @@ the same process count as new reaction and must be labelled by a
 different index $IR$ (see below).
 
 Storage is provided for up to NREAC different additional reactions
-(see ``Parameter Statements", section \ref{sec3.1}), i.e., one
+(see ``Parameter Statements", \cref{sec3.1}), i.e., one
 must guarantee NREACI.LE.NREAC
 
 \item[\textbf{IR }] Labeling
@@ -459,7 +459,7 @@ directly read from the formatted input file rather than from an
 external file.
 \item[{ADAS}] Collisional radiative rate coefficients from
 any files tabulated in the same format as ADAS adf11 files,
-which must be located in a directory, the path to which is specified in input block 1, section \ref{sec2.1},
+which must be located in a directory, the path to which is specified in input block 1, \cref{sec2.1},
 by one of the ``CFILE" cards described there:   \texttt{CFILE  ADAS  path/adf11/}
 \item[{PHOTON}]  line emission and line absorption constants,
 as well as parameters for line shapes (line broadening constants).
@@ -636,7 +636,7 @@ If FILNAM = ADAS,
 
 then the character string REAC identifies the particular file within the
 directory identified by the path given for ADAS files in input block 1,
-see card: ``CFILE" DBHANDLE DBFNAME in block \ref{sec2.1}. For example, REAC = SCD96, then the file \verb+SCD96_h.dat+,
+see card: ``CFILE" DBHANDLE DBFNAME in block 1 (\cref{sec2.1}). For example, REAC = SCD96, then the file \verb+SCD96_h.dat+,
 is read, in this example this is for ionisation rate coefficients of H atoms.
 In this latter example the additional input species identifier ELNAME  reads: H (for hydrogen).
 In Module \verb+eirene_read-adas.f+, called from \verb+SLREAC.f+, the corresponding data table is then read into EIRENE.
@@ -961,7 +961,7 @@ The test particle is destroyed immediately at it's point of birth by
 a collision.
 A collision estimator is used
 rather than a track-length estimator
-for all default volumetric tallies, as described in section \ref{sec3.2}.
+for all default volumetric tallies, as described in \cref{sec3.2}.
 \end{list}
 
 \item[\textbf{NGEN\$ }]
@@ -1139,13 +1139,13 @@ or of different species and type), then a bulk species $AB_{bulk}$ must be prese
 input block 5, such that species $A$ and $AB_{bulk}$ have the same mass, nuclear charge and
 charge numbers. The density, flow field and temperature of collision partner $AB_{bulk}$ are iterated,
 using either the corresponding parameters estimated for species $A$ (in case of self collisions) or
-using parameters obtained from the formulas for $n_{AB}, T_{AB}, V_{AB}$ (see section \ref{sec1-bgk})
+using parameters obtained from the formulas for $n_{AB}, T_{AB}, V_{AB}$ (see \cref{sec1-bgk})
 for cross collisions between species $A$ and $B$.
 
 The flag IBULK must point to the corresponding species IPLS=$AB_{BULK}$ in block 5.
 
 An example for input specifications of non-linear BGK collisions is given
-below in section \ref{sec4-bgk}.
+below in \cref{sec4-bgk}.
 (Default: = 0, no iteration for non-linearity in collision kernel, no
 ``artificial background species" involved in this collision, and no
 BGK-tallies are updated for iterating the artificial background species.)
@@ -1271,7 +1271,7 @@ the background ions, see input block 5.
 Both contributions are evaluated for background bulk species IPLS which is the bulk collision partner
 in this particular reaction.
 The local drift energy contribution $E_{Drift}$ is added only in case NLDRFT=TRUE, see
-input block 1 (\ref{sec2.1})
+input block 1 (\cref{sec2.1})
 \item[for \# $  \hat{=} $ L]
 a fraction EP=ESCD of the energy loss EBULK of the
 impacting bulk particle is distributed equally over all (if more than
@@ -1377,7 +1377,7 @@ exchange rate coefficients, respectively. The resulting energy and momentum exch
 be fully correct in case of ``Maxwellian molecule collisions" :$\sigma \propto 1/v_{rel}$
 
 The velocity of the impacting ion is sampled without this ``Maxwellian Molecule" approximation being made. I.e.,
-consequently, sampling is from the a drifting, isotropic and mono-energetic distribution $f_i^{CX}$ (\ref{iso-mono})
+consequently, sampling is from the a drifting, isotropic and mono-energetic distribution $f_i^{CX}$ \cref{iso-mono}
 \textbf{weighted} by $\sigma(v_{rel}) \cdot |\vv_{rel}|$, with $v_{rel}$ the relative
 velocity between the two collision partners. The sampling distribution $f_{in \ CX}$ for the velocity $\vv_i^{CX}$
 of ions going into a CX event depends on the pre-collision test particle velocity $\vv_0$ as well and is (as also in general cases) given by:
@@ -1393,8 +1393,8 @@ $\sigma(v_{rel}) \propto 1/v_{rel}$).
 
 Summarizing: The current default CX model approximations consist in:
 
-a) selecting a particular distribution $f_i^{CX}$   (\ref{iso-mono}) rather than e.g. a drifting Maxwellian \\
-b) evaluating the reaction rate coefficient by (\ref{sigveff}) rather than a full rate coefficient integration \\
+a) selecting a particular distribution $f_i^{CX}$   \cref{iso-mono} rather than e.g. a drifting Maxwellian \\
+b) evaluating the reaction rate coefficient by \cref{sigveff} rather than a full rate coefficient integration \\
 c) approximating the energy and momentum exchange rate tallies by again employing the ``Langevin" $\sigma \propto 1/v_{rel}$ approximation\\
 d) but carrying out the full (relative velocity selective) reaction kinetics, i.e. here without making the $\sigma \propto 1/v_{rel}$ approximation, and, hence, retaining e.g. thermal force effects.
 
@@ -1631,8 +1631,8 @@ for these expressions are available currently in the external databases.
 to be written
 \subsection{Neutral-Neutral collisions in BGK approximation}\label{sec4-bgk}
 
-More generally: the BGK approximation \ref{sec1-bgk} is employed for (bilinear) test-particle  -  test-particle collisions
-processes. From the input flags IBGKA(KK), IBGKM(KK), IBGKI(KK) (see above, \ref{sec4}) for a collision processes KK
+More generally: the BGK approximation (\cref{sec1-bgk}) is employed for (bilinear) test-particle  -  test-particle collisions
+processes. From the input flags IBGKA(KK), IBGKM(KK), IBGKI(KK) (see above, \cref{sec4}) for a collision processes KK
 for atoms, molecules and test-ions, respectively,  certain internal flags are set and options are
 activated to enable iterative solutions of the transport problem with these non-linear effects. This iteration is
 carried out for the parameters density, temperature and flow velocity of a virtual background species,

@@ -7,7 +7,7 @@
 \medskip
 
 The statistical performance (FOM, ``figure of merit",
-see equation \ref{eq1.13} in section \ref{sec1.2.1}) of an EIRENE
+see \cref{eq1.13} in \cref{sec1.2.1}) of an EIRENE
 run (as for any Monte Carlo application in general) is very
 sensitive to the non-analog methods used by EIRENE. Therefore the
 input parameters in this block, which define the non-analog setting of an EIRENE run, should only be used, if the user
@@ -28,10 +28,10 @@ flags in this block and estimate the FOM from test runs,
 and then use this setting, but without evaluation of standard
 deviations, in production runs.
 
-The input flag NLANA in block 1 (section \ref{sec2.1}) de-activates all non-analog sampling
+The input flag NLANA in block 1 (\cref{sec2.1}) de-activates all non-analog sampling
 distributions. This option should, for example, be used to derive an
 intuitive but physically correct picture from plots of selected
-particle trajectories (input block 11, section \ref{sec2.11}),
+particle trajectories (input block 11, \cref{sec2.11}),
 which otherwise, e.g. in case of suppression of absorption,  may be grossly misleading.
 \medskip
 
@@ -89,8 +89,8 @@ Methods}
 \medskip
 
 \begin{list}{ }{}
-\item[\textbf{NLPRCA }] conditional expectation estimator (eq.
-\ref{eq1.12}) is used for atom species IATM
+\item[\textbf{NLPRCA }] conditional expectation estimator
+\cref{eq1.12} is used for atom species IATM
 \item[\textbf{NLPRCM }]
 conditional expectation estimator is used for molecule species
 IMOL
@@ -159,7 +159,7 @@ cell without collision. If this probability is smaller than WMINC,
 the particle track is stopped and restarted. E.g. for WMINC $\ge
 1$, the estimator used in the NIMBUS code results (ref.
 \cite{kn:Cupini}), whereas for WMINC = 0 each particle path is
-integrated according to equation \ref{eq1.12}, until the nearest
+integrated according to \cref{eq1.12}, until the nearest
 non transparent surface along the track is reached, regardless of
 any collisions. Periodicity surfaces are regarded as ``transparent" in this context.
 
@@ -176,18 +176,18 @@ splitting parameter for default radial splitting option (MAXRAD $<0$)
 \item[\textbf{NSIGVI }]
 number of standard deviation profiles for volume averaged tallies
 to be estimated.
-NSIGVI must be less than or equal to the parameter NSD in PARMUSR
-\ref{sec3.1}.
+NSIGVI must be less than or equal to the parameter NSD in PARMUSR,
+\cref{sec3.1}.
 \item[\textbf{NSIGSI }]
 number of standard deviation profiles for surface averaged tallies
 to be estimated.
-NSIGSI must be less than or equal to the parameter NSDW in PARMUSR
-\ref{sec3.1}.
+NSIGSI must be less than or equal to the parameter NSDW in PARMUSR,
+\cref{sec3.1}.
 \item[\textbf{NSIGCI }]
 number of correlation coefficients between volume tallies
 to be estimated.
-NSIGCI must be less than or equal to the parameter NCV in PARMUSR
-\ref{sec3.1}.
+NSIGCI must be less than or equal to the parameter NCV in PARMUSR,
+\cref{sec3.1}.
 \item[\textbf{NSIGI\_BGK }]
 if \verb|NSIGI_BGK| $>$ 0, then the standard deviations are
 evaluated for all tallies needed for the iteration procedure for
@@ -198,7 +198,7 @@ if \verb|NSIGI_COP| $>$ 0, then the standard deviations are
 evaluated for all tallies needed for the iteration procedure for
 the coupling to a plasma fluid model. The relevant tallies are
 selected in subroutine \verb|STATIS_COP| in code segment
-\verb|COUPLE_....F|, section \ref{sec4.2}
+\verb|COUPLE_....F|, \cref{sec4.2}
 \item[\textbf{NSIGI\_SPC }]
 if \verb|NSIGI_SPC| $>$ 0, then the standard deviations are
 evaluated for all surface flux spectra defined in sub-block 10F below.
@@ -206,12 +206,12 @@ evaluated for all surface flux spectra defined in sub-block 10F below.
 Index of species for selected volume averaged tally
 \item[\textbf{IIH }]
 Index of volume averaged tally for which empirical standard
-deviation is to be calculated (see table \ref{tab2}).
+deviation is to be calculated (see \cref{tab2}).
 \item[\textbf{IGHW }]
 Index of species for selected surface averaged tally
 \item[\textbf{IIHW }]
 Index of surface averaged tally for which empirical standard
-deviation is to be calculated (see table \ref{tab3})
+deviation is to be calculated (see \cref{tab3})
 \item[\textbf{IGHC1 IIHC1 IGHC2 IIHC2 }]~
 
 Species and tally index for first and second tally, respectively,

@@ -7,7 +7,7 @@
 \medskip
 
 An outline of surface interaction models in general terms was
-given in section \ref{sec1.3}. As for the implementation of such
+given in \cref{sec1.3}. As for the implementation of such
 models in EIRENE, there are two parts to the surface interaction
 data block. The first part contains data which are general to the
 EIRENE reflection model (``Block for General Reflection Data"), at all surfaces.
@@ -58,7 +58,7 @@ All this information is contained in each of three so called
 references \cite{kn:Eckstein}, \cite{kn:Bateman}), the ``Modified
 Behrisch Matrix model" (references \cite{kn:Behrisch},
 \cite{kn:Nicolai}) or the ``User Supplied Reflection model" (see
-section \ref{sec3.3}), and in several so called ``Sputter Models"
+\cref{sec3.3}), and in several so called ``Sputter Models"
 (\cite{kn:NucFus}, \cite{kn:Sputer95}, \cite{kn:Roth96}.
 
 These models may, to some extend, be modified by the input flags
@@ -102,7 +102,7 @@ If a ``Path Card'' is included, then read an arbitrary number of
 \begin{verbatim}
  A_on_B
 \end{verbatim}
-Up to NHD6 (see PARAMETER statements, section \ref{sec3.1}) data files for different
+Up to NHD6 (see PARAMETER statements, \cref{sec3.1}) data files for different
 Target-Projectile combinations can be read in EIRENE versions older than 2001. No such limitation exists in
 more recent versions (due to dynamic allocation of storage).
 
@@ -162,10 +162,10 @@ reflection data. Data are read from data-set FT21 (no ``Path Card"
 specified, old option), or from the domain specified by the ``Path
 Card" (new option, see next card). If the old option is used, then
 the complete TRIM file is read, containing the first 12 TRIM
-target-projectile combination data-sets listed in section
-\ref{sec1.3}, i.e., the files H\_on\_Fe to T\_on\_W.
+target-projectile combination data-sets listed in
+\cref{sec1.3}, i.e., the files H\_on\_Fe to T\_on\_W.
 
-If the parameter NHD6 $<$ 12, (section \ref{sec3.1}) then only the
+If the parameter NHD6 $<$ 12, (\cref{sec3.1}) then only the
 first NHD6 files are read from FT21. \item[\textbf{``Path Card"
 }] This card is machine specific. If EIRENE finds a card
 containing the string 'PATH' or 'path', it assumes that this card
@@ -175,7 +175,7 @@ particular TRIM data file in the domain specified by the path
 card. E.g., H\_on\_Fe would include the data file for hydrogen
 onto iron into the EIRENE run. Up to NHD6 such ``Target-Projectile
 Specification Cards" may be included. For a complete list of such
-files currently available see again section \ref{sec1.3}.
+files currently available see again \cref{sec1.3}.
 \end{list}
 Note: if during a Monte Carlo simulation a projectile A hits a
 target B, for which no TRIM data file has been specified, but
@@ -212,11 +212,11 @@ during the particle history
 generation process
 is controlled by the surface
 species index flags ISRF\$, ISRT\$ read in the species
-sub-blocks of section \ref{sec2.4} and \ref{sec2.5}. By default the
+sub-blocks of block 4 and 5 (\cref{sec2.4,sec2.5}). By default the
 following conventions
 are used (and can be overruled by calls to subroutines REFUSR, SPTUSR
 only, see
-section \ref{sec3.3}):
+\cref{sec3.3}):
 \begin{list}{ }{}
 \item[\textbf{ISRF\$ }]
 fast particle reflection species flag:
@@ -276,9 +276,7 @@ at surfaces this option was disabled from year 2000 on.
 \end{list}
 \end{list}
 These latter two surface-species index flags are considered to be particle properties,
-hence they are read in the particle specification blocks \ref{sec2.4}
-and
-\ref{sec2.5}.
+hence they are read in the particle specification blocks 4 and 5 (\cref{sec2.4,sec2.5}).
 The flags in the next card can be used to modify the pre-programmed
 fast particle reflection models, to some extend at least.
 \begin{list}{ }{}
@@ -399,7 +397,7 @@ be done via a call to the entry RF0USR of the user supplied reflection
 routine REFUSR.
 RF0USR is
 called
-in the initialization phase of an EIRENE run (see section \ref{sec3.3}).
+in the initialization phase of an EIRENE run (see \cref{sec3.3}).
 
 By a similar strategy, some of the species independent flags in the next
 sub-block 6B can be made species-dependent. See, for example,
@@ -469,7 +467,7 @@ Flag for choice of local reflection model
 \item[{= 1 }] TRIM database reflection model is used. NLTRIM
 must be .TRUE.. \item[{= 2 }] ``modified Behrisch Matrix
 model" is used \item[{= 3 }] user supplied reflection model
-(see section \ref{sec3.3}: Subroutine REFUSR)
+(see \cref{sec3.3}: Subroutine REFUSR)
 \end{list}
 
 Default: ILREF = 2
@@ -492,7 +490,7 @@ and cosine angular distribution for emitted particles
 \item[{N = 9 }]
 (was option N=3 in Eirene-2004 and older)
 
-user supplied sputtering model (see section \ref{sec3.3}: Entry
+user supplied sputtering model (see \cref{sec3.3}: Entry
 SPTUSR to subroutine REFUSR)
 \item[{M = 0 }] no chemical
 sputtering at this surface
@@ -519,7 +517,7 @@ and multiplicative factor for flux dependence (Roth, 2004).
 \item[{M = 9 }]
  (was option N=3 in Eirene-2004 and older)
 
-user supplied sputtering model (see section \ref{sec3.3}: Entry SPTUSR
+user supplied sputtering model (see \cref{sec3.3}: Entry SPTUSR
 to subroutine REFUSR)
 \end{list}
 
@@ -529,7 +527,7 @@ The next two surface-species index flags ISRS\$ and ISRC\$
 control the species of sputtered particles.
 Hence they are considered surface properties
 and are read in the surface specification decks
-in blocks \ref{sec2.3a}, \ref{sec2.3b} and/or \ref{sec2.6}.
+in blocks 3a, 3b and/or 6 (\cref{sec2.3a,sec2.3b,sec2.6}).
 \begin{list}{ }{}
 \item[\textbf{ISRS\$ }]
 sputtered particle species flag (physical sputtering).
@@ -542,8 +540,8 @@ Their contribution to surface particle
 and energy fluxes is stored in surface averaged tallies 1 to 24,
 i.e., sputtered particles are not explicitly distinguished from
 reflected particles in the particle and energy balances.
-Furthermore the ``sputtered flux surface tallies" 33 to 37 (\ref{sec.tables-old} in older versions before 2002, and
-on tallies 51 to 81, (\ref{sec.tables-new}) else,  are also updated.
+Furthermore the ``sputtered flux surface tallies" 33 to 37 (\cref{sec.tables-old}) in older versions before 2002, and
+on tallies 51 to 81 (\cref{sec.tables-new}) else,  are also updated.
 The species index of the sputtered particle (atom) is IATM=ISRS.
 Hence, on input, one must have 1 $\le$ ISRS $\le$ NATMI, otherwise: error exit.
 
@@ -689,7 +687,7 @@ If FSHEAT $\le$ 0.0, then a sheath potential
 computed from the local background plasma flow conditions is used (function SHEATH),
 assuming ambi-polar flow, a Boltzmann distribution for electrons and zero
 secondary electron emission.
-See section \ref{sec1.4}. In case of zero (undefined) background plasma flow velocity at the place
+See \cref{sec1.4}. In case of zero (undefined) background plasma flow velocity at the place
 of incidence, a default of FSHEAT = 2.8 is used (corresponding to $T_e = T_i$,
 and a single ion species $D^+$ plasma flowing at ion acoustic
 speed parallel to the $\vec B$-field into the sheath.
@@ -728,7 +726,7 @@ Recycling coefficient (must not be negative):
 
 A flux $RECYCT \cdot Influx$ is re-emitted from a surface, for any $Influx$ of particles of any species,
 where all fluxes are measured as ``atomic fluxes" (=fluxes of nuclei). RECYCT hence defines the sticking
-probability $p_a$ [and hence also the pumping speed (\ref{pumping-speed})] of any surface in EIRENE, for all incident species.
+probability $p_a$ [and hence also the pumping speed \cref{pumping-speed}] of any surface in EIRENE, for all incident species.
 
 The fraction $p_a$ =
 (1 - RECYCT) of incident (atomic) flux will be absorbed at the surface. The non-sticking, i.e. the re-emitted fraction
@@ -736,13 +734,13 @@ $RECYCT=1-p_a$ is split into a ``fast" and a ``thermal'' component.
 
 
 
-A fraction $p_f$ = RPROBF [see (\ref{rprobf})] of the incident particles is reflected
-as described by the ``fast particle reflection model". However, by relation (\ref{rprobf})
+A fraction $p_f$ = RPROBF [see \cref{rprobf}] of the incident particles is reflected
+as described by the ``fast particle reflection model". However, by relation \cref{rprobf}
 it is ensured that RPROBF is always less than or equal to RECYCT.
 
 The fraction $p_t$ = RPROBT = (RECYCT - RPROBF) will be re-emitted
 by the ``thermal particle reflection model". This flag is to be used to define an effective pumping speed at
-certain surfaces, see paragraph \ref{sec2.6.1} below.
+certain surfaces, see \cref{sec2.6.1} below.
 
 
 
@@ -759,7 +757,7 @@ Default: RECPRM = 0.
 
 incident angular dependence of fast particle reflection coefficient. The
 formula \[R( \Phi ) = 1 - (1 - RPROBF)  \cdot  \cos^{EXPPL} (\Phi)\]
-is used, $e1 = EXPPL$, see equation \ref{eq1.18}, where:
+is used, $e1 = EXPPL$, see \cref{eq1.18}, where:
 \begin{list}{ }{}
 \item[{RPROBF }] Reflection probability from ``Behrisch
 Matrix" model, which is valid only for normal incidence. \item
@@ -779,7 +777,7 @@ TRIM database)
 as EXPPL, incident angular dependence for the energy reflection coefficient.
 
 Default: EXPEL = 0.5 (recommended from a comparison with the
-TRIM database). e2 = EXPEL, see equations \ref{eq1.19} and \ref{eq1.20}
+TRIM database). e2 = EXPEL, see \cref{eq1.19,eq1.20}
 \item[\textbf{EXPIL }]
 (only for ILREF = 2 option)
 
@@ -793,7 +791,7 @@ cosine distribution (Lambertian)
 
 mixed cosine-specular model.
 
-the specular contribution increases according to equations \ref{eq1.21}
+the specular contribution increases according to \cref{eq1.21}
 with angle of incidence $\Phi$ and with
 e3 = EXPIL (recommended: $EXPIL \le 1$).
 \item[{EXPIL $>$ 100 }] ~
@@ -897,7 +895,7 @@ EIRENE run, from subroutine REFLEC.
 Likewise, the entry SP0USR of the user supplied sputter routine SPTUSR
 is called in the initialization phase from subroutine SPUTER.
 For further details on user supplied surface interaction routines
-see section \ref{sec3.3}.
+see \cref{sec3.3}.
 
 For example: RECYCT(3,5) is the recycling
 coefficient for incident species 3 onto surface no. 5.
@@ -950,7 +948,7 @@ The temperature $T$ and type of gas (given by $m$) are part of the specification
 $S$ may also depend on the pressure for some pumps: $S = S(P,T,m)$. However in the molecular flow regime $S$ may often assumed to be a constant (independent of pressure) for a given
 temperature and type of gas.
 
-But normally even in this case  the specified pumping speeds $S$ for vacuum pumps do not follow the $\sqrt{T/m}$ dependence in equation (\ref{pumping-speed})
+But normally even in this case  the specified pumping speeds $S$ for vacuum pumps do not follow the $\sqrt{T/m}$ dependence in equation \cref{pumping-speed}
 for different types of gas. E.g. pumping speeds for  H$_2$ vs. He
 of ``real pumps", for same temperatures, are usually not simply related by a factor $1/\sqrt{2}$, and those for D$_2$ and He may not be identical either.
 In a simulation of a gas mixture then a species dependent flag RECYCT (to produce a species dependent effective area $\tilde{A}$(ISPZ)

@@ -71,7 +71,7 @@ to assign processes  to strata. This is defined in PEDIST.f (initialization phas
 by filling the matrix PROCFORSTRA(strata,processors).
 \begin{list}{}{}
 \item [= 1] old default: attempting proportional allocation and, simultaneously, load balancing (see under: stratified sampling,
-the remarks towards the end of section \ref{sec1.2.1b}).
+the remarks towards the end of \cref{sec1.2.1b}).
 \item [= 2] not in use
 \item [= 3] not in use
 \item [= 0] new default: ``embarrassingly parallel mode'': all processes do the full MC job (all strata).\\
@@ -85,7 +85,7 @@ Most transparent, and simplest method, load balancing guaranteed. But perhaps no
 \begin{list}{}{}
 \item [= 0 ] EIRENE run as stand-alone-code. Code coupling segment
 \texttt{couple\_Dummy.f} may be used. 
-Input block 14 has a fixed format, see section \ref{sec2.14}.
+Input block 14 has a fixed format, see \cref{sec2.14}.
 \item [$\ne$ 0 ]
 EIRENE calls the code coupling subroutine INFCOP in the code coupling segment
 %\begin{verbatim}
@@ -213,7 +213,7 @@ EIRENE saves some data for optimizing non-analog sampling and
 stratified source sampling on file FT14.
 \item [K = 2 ]
 EIRENE reads from file FT14 and tries to optimize operation for the next run, time-step or iteration. Currently only
-allocation of CPU time in stratified source sampling is optimized. More details: see paragraph \ref{NFILEK} below.
+allocation of CPU time in stratified source sampling is optimized. More details: see \cref{NFILEK} below.
 \item [K = 3 ]
 Acts as if both NFILE-K=1 and NFILE-K=2.
 \item [J = 1 ]
@@ -282,7 +282,7 @@ Default: NRAD, = total number of grid cells \\
 (verify this default in case of older versions: there it may have been NOPTIM=1)\\
 NOPTIM is the first dimension of the arrays IGJUM3(ICELL,ISURF), which may be
 used for optimizing code performance by reducing unnecessary geometrical calculations.
-See `CH3-cards' in input block 8 (\ref{sec2.8}).
+See `CH3-cards' in input block 8 (\cref{sec2.8}).
 \item [\textbf{NOPTM1} ]
 Default: 1
 \item [\textbf{NGEOM\_USR} ]
@@ -324,7 +324,7 @@ statistics are automatically done on the coarser grid (size: NRTAL).
 
 
 The index array NCLTAL(NRAD) can be defined in the problem
-specific ``user" routines (see section \ref{sec3}), e.g.: INIUSR, GEOUSR, etc..
+specific ``user" routines (see \cref{sec3}), e.g.: INIUSR, GEOUSR, etc..
 
 Default: NCLTAL(IRAD)=IRAD for IRAD=1,NRAD
 \item [\textbf{NREAC\_ADD} ]
@@ -365,11 +365,11 @@ assumed for the background particles and the input for VXIN,...VZIN is ignored.
 This flag also affects the output tallies for energy exchange, momentum exchange between test particles and background particles,
 as well as sampling from linear collision kernels.
 \item [\textbf{NLCRR} ]
-Correlated sampling is used. See discussion at end of section \ref{sec1.7}.
+Correlated sampling is used. See discussion at end of \cref{sec1.7}.
 \item [\textbf{NLERG} ]
 The case is
 automatically reduced to a case for estimating cell volumes by
-utilizing an ``ergodic property". More details: see paragraph \ref{NLERG} below.
+utilizing an ``ergodic property". More details: see \cref{NLERG} below.
 \item [\textbf{NLIDENT} ]
 In multi-processor calculation mode NLIDENT forces all processors working on the
 same stratum to use the same sequence of random numbers and hence to
@@ -382,7 +382,7 @@ transport" problem
 \item [\textbf{NLMOVIE} ]
 reset a number of model parameters to enable a series of geometry
 plots for making particle trajectory movies. This option only works in connection with time dependent mode, see NTIME flag
-described above, and input block \ref{sec2.13}. More details: see paragraph \ref{NLMOVIE} below.
+described above, and input block 13 (\cref{sec2.13}). More details: see \cref{NLMOVIE} below.
 \end{list}
 The next 5 logical flags are for internal use only, in proprietary parts of the code.
 They should not be activated without checking the underlying code.
@@ -431,7 +431,7 @@ Example:
 
 Default:
 If the specification of an external database name and path,
-which is later (e.g. in block \ref{sec2.4} or block \ref{sec2.6}) referred to in
+which is later (e.g. in block 4 (\cref{sec2.4}) or block 6 (\cref{sec2.6})) referred to in
 a particular run, is not given here, then
 these data files are expected, usually with the same name,
 in the local directory from which the calculation
@@ -474,14 +474,14 @@ in case of TRMSGL), the
 chemical element  and the charge stage of a
 particular ion $Z=1,\dots Z+1$ (e.g.: C, 4), are detailed later in
 input block 4 (for volumetric collision processes based on ADAS adf11 format), and input block 6 (TRMSGL, for the surface reflection database based on TRIM)
-see below, sections \ref{sec2.4}, \ref{sec2.6},
+see below, \cref{sec2.4,sec2.6},
 respectively.
 
 \subsection{Automated stratification optimization: proportional allocation}\label{NFILEK}
 The stratified sampling in EIRENE can improve the performance (measured in terms of statistical error per CPU-time),
-if proportional allocation of sample size $N_k$ to strata source strength $S_k$ can be achieved. See paragraph \ref{sec1.2.1b}
+if proportional allocation of sample size $N_k$ to strata source strength $S_k$ can be achieved. See \cref{sec1.2.1b}
 for more information on stratified source sampling.
-The input flag ALLOC in input block \ref{sec2.7} controls this allocation.
+The input flag ALLOC in input block 7 (\cref{sec2.7}) controls this allocation.
 
 Monte Carlo codes such as EIRENE are, in principle,  trivially parallelisable by just distributing the Monte Carlo
 trajectory calculation over the available compute nodes.
