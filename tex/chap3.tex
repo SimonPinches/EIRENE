@@ -69,8 +69,8 @@ is needed. It is then more convenient than the external data file
 options INDPRO=6, or INDPRO=7, see \cref{sec4}.
 
 The various routines needed for the general user supplied geometry
-option (NLGEN, LEVGEO=10, see block 2a) are described in section
-\ref{sec3.8}. Simple examples are also given there.
+option (NLGEN, LEVGEO=10, see block 2a) are described in
+\cref{sec3.8}. Simple examples are also given there.
 \newpage
 
 \section{Parameter Statements (for EIRENE-2001 or older)} \label{sec3.1}
@@ -442,8 +442,8 @@ such ``snapshot averaging" is the most frequent option used in Monte Carlo appli
 stationary moments. See paragraph B below.
 \subsubsection{A: time dependent estimates}
 The default
-snapshot estimated tallies at a fixed time $t^*$, see Section
-\ref{sec2.13}, are updated in subroutine TIMCOL. Currently these are
+snapshot estimated tallies at a fixed time $t^*$, see
+\cref{sec2.13}, are updated in subroutine TIMCOL. Currently these are
 only the census tallies and the particle- and energy fluxes at
 census. Subroutine TIMCOL is called from the particle tracing
 subroutines FOLNEUT and FOLION (defaults), in case of time dependent
@@ -475,15 +475,14 @@ Subroutine UPNUSR must at least include module COMPRT (for the
 particle weight WEIGHT). Here $g$ is evaluated at the point of time $t^*$
 at which TIMCOL is called. Scaling of snapshot tallies is done by
 interpreting the linear source strength ``FLUX" scaling factor
-(given in input block \ref{sec2.7} for each stratum) as a total
+(given in input block 7 (\cref{sec2.7}) for each stratum) as a total
 number of particles, rather than as flux (particles/s), i.e. ``FLUX is the
 integral of the source distribution not only over physical space, but also over time interval $DTIMV$ from initial time $t_0$
-to time $t^*$ (Section
-\ref{sec2.13}).
+to time $t^*$ (\cref{sec2.13}).
 \subsubsection{B: stationary snapshot tallies}\label{sec3.2.3b}
 A stationary value of snapshot tallies, to be compared with other
 tallies in stationary mode, is obtained by setting the flag NTMSTP
-of block \ref{sec2.13} to negative values. Stationary results in
+of block 13 (\cref{sec2.13}) to negative values. Stationary results in
 this ``time dependent mode" are obtained by launching all test
 flights at time $t_0$, but scoring snapshot tallies not only at
 $t^*=t_1=t_0+DTIMV$, but also at $t_2=t_0+2~ DTIMV, t_3=t_0+3~
@@ -985,19 +984,19 @@ are transferred from outside.
 
 \begin{itemize}
 \item
-INIUSR (initialize user specified geometry block), see \ref{sec3.8.0}
+INIUSR (initialize user specified geometry block), see \cref{sec3.8.0}
 \item
 LEAUSR(x) (return cell number, for any given position x), see
-\ref{sec3.8.1}
+\cref{sec3.8.1}
 \item
 TIMUSR (flight time to next cell boundary, and next cell number
-or surface number), see \ref{sec3.8.2}
+or surface number), see \cref{sec3.8.2}
 \item
 VOLUSR (volume of each grid cell),
-see \ref{sec3.8.3}
+see \cref{sec3.8.3}
 \item
 NORUSR (outer surface normal, for any given position on a surface),
-see \ref{sec3.8.4}
+see \cref{sec3.8.4}
 \end{itemize}
 In case NLGEN, only a reduced set of the standard EIRENE options is available, and the
 five user routines mentioned above and described below may have to be
@@ -1015,7 +1014,7 @@ source (code) for the data of the background medium.
 \item[\textbf{Input block 7 }]
 only the point source option is available. In case of surface
 sources or volume sources, the subroutine SAMUSR has to be called,
-see \ref{sec3.4}.
+see \cref{sec3.4}.
 \item[\textbf{Input block 11 }]
 only the printout options are available, no graphics output
 options are available. However, subroutine PLTUSR(LOG,J) is called

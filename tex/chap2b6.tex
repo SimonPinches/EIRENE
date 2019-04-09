@@ -162,8 +162,8 @@ reflection data. Data are read from data-set FT21 (no ``Path Card"
 specified, old option), or from the domain specified by the ``Path
 Card" (new option, see next card). If the old option is used, then
 the complete TRIM file is read, containing the first 12 TRIM
-target-projectile combination data-sets listed in section
-\ref{sec1.3}, i.e., the files H\_on\_Fe to T\_on\_W.
+target-projectile combination data-sets listed in
+\cref{sec1.3}, i.e., the files H\_on\_Fe to T\_on\_W.
 
 If the parameter NHD6 $<$ 12, (\cref{sec3.1}) then only the
 first NHD6 files are read from FT21. \item[\textbf{``Path Card"
@@ -212,7 +212,7 @@ during the particle history
 generation process
 is controlled by the surface
 species index flags ISRF\$, ISRT\$ read in the species
-sub-blocks of \cref{sec2.4} and \ref{sec2.5}. By default the
+sub-blocks of block 4 and 5 (\cref{sec2.4,sec2.5}). By default the
 following conventions
 are used (and can be overruled by calls to subroutines REFUSR, SPTUSR
 only, see
@@ -276,9 +276,7 @@ at surfaces this option was disabled from year 2000 on.
 \end{list}
 \end{list}
 These latter two surface-species index flags are considered to be particle properties,
-hence they are read in the particle specification blocks \ref{sec2.4}
-and
-\ref{sec2.5}.
+hence they are read in the particle specification blocks 4 and 5 (\cref{sec2.4,sec2.5}).
 The flags in the next card can be used to modify the pre-programmed
 fast particle reflection models, to some extend at least.
 \begin{list}{ }{}
@@ -529,7 +527,7 @@ The next two surface-species index flags ISRS\$ and ISRC\$
 control the species of sputtered particles.
 Hence they are considered surface properties
 and are read in the surface specification decks
-in blocks \ref{sec2.3a}, \ref{sec2.3b} and/or \ref{sec2.6}.
+in blocks 3a, 3b and/or 6 (\cref{sec2.3a,sec2.3b,sec2.6}).
 \begin{list}{ }{}
 \item[\textbf{ISRS\$ }]
 sputtered particle species flag (physical sputtering).
@@ -742,7 +740,7 @@ it is ensured that RPROBF is always less than or equal to RECYCT.
 
 The fraction $p_t$ = RPROBT = (RECYCT - RPROBF) will be re-emitted
 by the ``thermal particle reflection model". This flag is to be used to define an effective pumping speed at
-certain surfaces, see paragraph \ref{sec2.6.1} below.
+certain surfaces, see \cref{sec2.6.1} below.
 
 
 

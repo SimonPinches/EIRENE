@@ -88,7 +88,7 @@ the last surface (no. NLIMI, see below).
 
 Although the (local) data for particle surface interaction models
 for each specific additional surface
-can be read in this input block, their meaning is described in block \ref{sec2.6}
+can be read in this input block, their meaning is described in block 6 (\cref{sec2.6})
 together with the globally valid input data for particle surface interactions.
 
 \medskip
@@ -169,17 +169,17 @@ particular surface element, see \cref{sec2.6}.
     RECYCF  RECYCT  RECPRM  EXPPL  EXPEL  EXPIL
     RECYCS  RECYCC  SPTPRM  (this line may be omitted,
                              then: default sputter model,
-                             see \ref{sec2.6})
+                             see \cref{sec2.6})
 \end{verbatim}
 
 also optional for non transparent surfaces (ILIIN $>$ 0):
 
 read a surface interaction model identifier to link one of the surface
 ``local reflection
-models" defined in block \ref{sec2.6} below to this current surface.
+models" defined in block 6 (\cref{sec2.6}) below to this current surface.
 The presence of such a link is identified by the string $'SURFMOD_{ }'$,
 followed
-by a name $'modname'$. Later, in input block \ref{sec2.6},
+by a name $'modname'$. Later, in input block 6 (\cref{sec2.6}),
 a ``local reflection model" block with that name
 $'modname'$ must be included. This option allows
 quick changes of particle-surface interaction parameters, affecting
@@ -732,7 +732,7 @@ ALIMS0 & + XLIMS1  \cdot  x + YLIMS1  \cdot  y + ZLIMS1  \cdot  z
 \end{list}
 
 The meanings of the input variables for the local reflection model
-are described below (see: \ref{sec2.6}: ``Input Data for Surface
+are described below (see: \cref{sec2.6}: ``Input Data for Surface
 Interaction Models").
 
 The meanings of the input variables for a transformation block are:

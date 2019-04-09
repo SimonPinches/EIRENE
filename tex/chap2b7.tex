@@ -23,14 +23,14 @@ and the fifth one is an initial distribution (in volume) at a given point in tim
 As the transport equation (within each iterative step, if any) is linear, various sources of test
 particles can be treated subsequently and the responses can then
 be linearly superposed.
-EIRENE can handle up to NSTRA (see: PARMUSR, \ref{sec3.1})
+EIRENE can handle up to NSTRA (see: PARMUSR, \cref{sec3.1})
 different strata and it prints
 output from
 each single stratum as well as from the sum over strata. The source strength
 is prescribed for each stratum separately (input card: FLUX(ISTRA),...).
 Subdividing the total source into such strata can be useful
 to increase
-the efficiency of the code, (``stratified source sampling", see paragraph \ref{sec1.2.1b} or any
+the efficiency of the code, (``stratified source sampling", see \cref{sec1.2.1b} or any
 textbook on Monte Carlo integration), or if
 the contribution of such sub-sources is of interest by itself.
 
@@ -267,7 +267,7 @@ tally
 \item[\textbf{ISCLS}]
 species index of selected tally
 \item[\textbf{ISCLT}]
-tally number of selected tally (refer to tables \ref{tab2}, \ref{tab3})
+tally number of selected tally (refer to \cref{tab2,tab3})
 \item[\textbf{ISCL1, ISCL2, ISCL3, ISCLB, ISCLA}]~
 
 \begin{list}{ }{}
@@ -351,7 +351,7 @@ No random sampling for the species index is done.
 is sampled from the distribution DATM, DMOL, DION, DPLS,
 respectively.  The ``surface species distributions'' DATM, DMOL,
 DION and DPLS are read in the block ``Data for General Reflection
-Models", see \ref{sec2.6}.
+Models", see \cref{sec2.6}.
 
 \item[{NSPEZ $ = $ 0 }]~
 
@@ -361,7 +361,7 @@ sampling. WEISPZ is defined internally by the code.
 
 The distribution WEISPZ is currently defined only for NLPLS=TRUE
 sources, and here only for surface recycling sources using the STEP-function option (in SAMSRF, see further below
-this section and paragraph \ref{sec2.7.1}). There it is set according to the local bulk ion flux
+this section and \cref{sec2.7.1}). There it is set according to the local bulk ion flux
 composition.
 
 WEISPZ may also be transferred into a run via
@@ -664,7 +664,7 @@ Flag to choose one from the various step functions (SORLIM-option
 there. SORIND is the labelling index of the selected step function.
 
 Each step function STEP(ISTEP,...) can consist of step functions for
-fluxes of up to NSPZ species, see \ref{sec2.7.1}. NSPZ depends upon
+fluxes of up to NSPZ species, see \cref{sec2.7.1}. NSPZ depends upon
 the initialization of this function. By default the source species
 index NSPEZ is used when sampling from step functions.
 
@@ -936,7 +936,7 @@ E0 = SORENI $\cdot T_i(ip_0) $ + SORENE $\cdot T_e $
 
 \item[{N = 3 }]
 (only for surface sources)
-As N=2, but with added sheath acceleration, see paragraph \ref{sec2.7.2} below
+As N=2, but with added sheath acceleration, see \cref{sec2.7.2} below
 
 
 \item[{N = 4 }]
@@ -962,7 +962,7 @@ ${\cal V}   = V / \sqrt{ \frac{{2 T_i}}{{m_i}} }$, and $g(x)   =   1 +
 isothermal Mach number if $T_i(ip_0) = T_e$, see again \cref{maxw-flux}).
 \item[{N = 5 }]
 (only for surface sources)
-As N=4, but with added sheath acceleration, see paragraph \ref{sec2.7.2} below
+As N=4, but with added sheath acceleration, see \cref{sec2.7.2} below
 
 E0 = EMAX($T_i(ip_0) ,V_{i,\pi}(ip_0) ,V_{i,\sigma}(ip_0)$) +
 ESHEAT
@@ -986,7 +986,7 @@ truncated Maxwellian density distribution $f_{max} (T_i(ip_0) ,\vV_i(ip_0) , \vC
 
 \item[{N = 7 }]
 (only for surface sources)
-As N=6, but with added sheath acceleration, see paragraph \ref{sec2.7.2} below
+As N=6, but with added sheath acceleration, see \cref{sec2.7.2} below
 
 \item[{N = 8 }]
 Mono-energetic source $f(E) = \delta (E-E0)$ with energy
@@ -995,7 +995,7 @@ $E0 = E_i(ip_0)$, with $E_i(ip_0)$ being the local mean incident ion energy, for
 ``step-function" option, see \cref{sec2.7.1}.
 \item[{N = 9 }]
 (only for surface sources)
-As N=8, but with added sheath acceleration, see paragraph \ref{sec2.7.2} below
+As N=8, but with added sheath acceleration, see \cref{sec2.7.2} below
 \end{list}
 The choice of temperature parameters $T_e$ and $T_i(ip_0)$
 in the energy distributions N = 4, 5, 6 or 7
@@ -1350,7 +1350,7 @@ The sheath acceleration $ESHEAT = Z_i \cdot \Delta \Phi \cdot T_e$  is computed 
 $\Delta \Phi$, where $Z_i$ is
 the electric charge of the sampled particle at birth point, $Z_i=0$ for neutral particles.
 The sheath potential drop $\Delta \Phi$ is
-given by equation \ref{sheath1} in \cref{sec1}, unless overruled by parameter $Sh>0.$, (see \cref{local-source}, in which latter case $ESHEAT=Z_i \cdot Sh \cdot T_e$.
+given by \cref{sheath1} in \cref{sec1}, unless overruled by parameter $Sh>0.$, (see \cref{local-source}, in which latter case $ESHEAT=Z_i \cdot Sh \cdot T_e$.
 
 If $Sh\leq 0$ and the sheath potential according to equation \cref{sheath1} cannot be found either (e.g. because $\vV_{\pi,i}(ip) \equiv 0.)$, then
 $Sh = FSHEAT(MSURF)$ (the input sheath parameter for source surface no. MSURF, input blocks 3 and 6) is used.

@@ -359,7 +359,7 @@ transport (ms). We can, therefore, often neglect explicit time
 dependence in the equations describing the neutral particles. This
 is done in most applications. The extension to time-dependent
 problems is rather straight forward and the procedure in the
-EIRENE code for such cases is described in \ref{sec1.6} below.
+EIRENE code for such cases is described in \cref{sec1.6} below.
 This is because in a Monte Carlo transport procedure
 time can be treated in a completely symmetric fashion with the spatial coordinates.
 \\
@@ -503,7 +503,7 @@ and one member $\{b_0l_{1_0}\}$ from the disjunct class $``\{bl_1\}"$, the ``bul
 
 By formally integrating the characteristics for  \cref{eq1c} the
 same transport equation can also be written in integral form. This formal procedure is outlined below in
-paragraph \ref{sec_green}.
+\cref{sec_green}.
 
 The resulting integral equation is often most conveniently written for the (ingoing-) collision density $\Psi$ \cref{defPsi} rather than for
 transport flux $\Phi$:
@@ -901,7 +901,7 @@ Correct interpretation of the results of an EIRENE run hence requires knowledge 
 ratio $s/V_m$.
 The total source strength scaling factor $s$, i.e. the integral of the
 inhomogeneous part $S$ of the governing Fredholm integral equation, is input to EIRENE,
-variable ``FLUX" in input block 7 (see \ref{sec2.7}). The space-time cell volumes $V_m$ are either automatically calculated by EIRENE
+variable ``FLUX" in input block 7 (see \cref{sec2.7}). The space-time cell volumes $V_m$ are either automatically calculated by EIRENE
 in subroutine ``VOLUME", for cells belonging to standard grid (input block 2, \cref{sec2.2}), or are provided from external considerations
 by a number of options, e.g. input blocks 3b, 5, or 8.
 In this latter case great care is needed, however, that the cell volumes are proportional to the volumes
@@ -989,7 +989,7 @@ The summation in \cref{eq1.8} and hence also the second sum on the right hand si
 ``on the fly" while generating the Monte Carlo histories (i.e. at no extra CPU cost).
 However, because, of course  $X_i^2 \neq  \sum X_{i,j}^2$, the first sum on the right hand side of \cref{MCsig1}
 cannot be evaluated ``on the fly" (per event). Instead here EIRENE first accumulates the sum \cref{mccross} $X_i$ for individual test flight ``$i$", and updates the
-sum $\sum X_i^2$ only once after each completed history (in subroutine. STATIS, entry STATS1). I.e., variance estimates are made after completion of each history, inside the particle loop, see flowchart \ref{flow5}).
+sum $\sum X_i^2$ only once after each completed history (in subroutine. STATIS, entry STATS1). I.e., variance estimates are made after completion of each history, inside the particle loop, see \cref{flow5}.
 The full evaluation and scaling of
 expression \cref{MCsig1,MCsig} is then carried out after completion of all histories (per stratum), in entry STATS2 of subroutine STATIS.
 \paragraph{Linear functions of tallies}\label{lin-funct}
@@ -997,7 +997,7 @@ Often algebraic functions of tallies (sums, products, ratios,....) are formed af
 (see input blocks 10C and 10E in \cref{sec2.10}).
 For those tallies standard deviations are not available in general, due to statistical correlation between individual tallies obtained from the same Monte Carlo run.
 
-However, for linear functions of tallies (e.g. sums, differences), this is possible even without resorting to the covariance estimators (block 9, \ref{sec2.9}) of EIRENE.
+However, for linear functions of tallies (e.g. sums, differences), this is possible even without resorting to the covariance estimators (block 9, \cref{sec2.9}) of EIRENE.
 Usually this was done in ``problem specific" modules, e.g. in STATS1\_COP for source terms arising in plasma fluid codes (see \cref{sec2.14}).
 In 2012 a new routine (UPFCOP) was added, and
 is called inside the particle loop, scored per particle (not per event) and prior to STATS1.
@@ -1342,7 +1342,7 @@ Stratification of sources has been described in \cref{sec1.2.1b}.
 \subsubsection{Line sources}
 \subsubsection{Surface-sources}
 and see special section on ``plasma surface recycling source
-sampling", \ref{sec1.4}.
+sampling", \cref{sec1.4}.
 \subsubsection{Volume sources}
 special case: volume (radiative or threebody) recombination of plasma ions and electrons to neutrals.
 Also used for: spontaneous photon emission source in radiative transfer simulations.
@@ -1786,8 +1786,8 @@ the TRIM code (see references \cite{kn:Eckstein} and
 \cite{kn:Bateman}). At present a discretized form of the
 reflection kernel $C_{wf}$, including all correlations between the
 five vector components of $ \vv '$ and $\vv $, is
-available for the target-projectile combinations listed in table
-\ref{tabref}. The first 12 of these combinations
+available for the target-projectile combinations listed in
+\cref{tabref}. The first 12 of these combinations
 comprised an old default ``TRIM data file" of such combinations in an EIRENE run.
 Meanwhile a much extended list,
 also far beyond that of \cref{tabref}, is available, see separate
@@ -2047,7 +2047,7 @@ cannot be inverted explicitly.
 Therefore in the EIRENE code we apply the Monte Carlo  ``biassed source sampling" concept, (module: \texttt{VELOCS.F}).
 We sample this component
 ${\tilde{v} }_{\pi}$ from a ``non-analog" truncated Maxwellian flux distribution
-$\tilde\Gamma^0_{Sh,ion,\pi}(\tilde v_{\pi})$ (see \cref{sec1.2}, paragraph \ref{sec1.2.1a} above)
+$\tilde\Gamma^0_{Sh,ion,\pi}(\tilde v_{\pi})$ (see \cref{sec1.2.1a} above)
 with zero drift in $\pi$-direction but with different ``non-analog" $\pi$- temperature ${\tilde{T}}_{\pi,i},
 ({\tilde{T}}_{\pi,i}   \ne T_i   , {\tilde{V}} _{d,\pi} = 0 )$.
 \begin{equation}
@@ -2446,8 +2446,8 @@ the ``particle" from $\vr_0$ to $\vr_1$ and
 then repeating the block until the total track length $l$ as
 sampled from the transport kernel $T(l)$ \cref{eq1.5} is reached,
 allows to generate histories with all information available along
-the track to evaluate the estimators mentioned in section
-\ref{sec1.1}.
+the track to evaluate the estimators mentioned in
+\cref{sec1.1}.
 \\
 In EIRENE $f$ and $g$ are general 2nd order (with linear surfaces
 as special case) algebraic equations of the form
@@ -3196,7 +3196,7 @@ To zeroth order in the smallness parameter $\delta=\rho/L$ , i.e. for $\rho \sim
 charged particle orbits are the magnetic field lines themselves.
 The magnetic field unit vector $\textbf{b}=\textbf{B}/|\textbf{B}|$ is provided as input
 vector in each cell of the computational
-grid, see input block 5 (section  \ref{sec2.5}). By default the magnetic field vector
+grid, see input block 5 (\cref{sec2.5}). By default the magnetic field vector
 is taken to be constant within a grid cell, as are also the plasma (background) input tallies.
 
 With the  ``FEM" interpolation option (EIRENE$_{2006}$ and younger) iso-parametric elements can be used
@@ -3250,7 +3250,7 @@ Explicit results when $f(\vec v_b)$ is a Maxwellian distribution are given in mo
 on plasma physics since many decades. In general: unless otherwise stated, notations here are as in \cite{kn:NRL}.
 The resulting rates (or: rate coefficients, if divided by target density $n_b$) have the same functional dependencies
 on test particle velocity (or energy) and background temperature as the ``Beam-Maxwellian rates" (or rate coefficients)
-of format H.3, H.4, H.5 for in-elastic collisions described in section 4 (atomic and molecular data input, \ref{sec2.4})
+of format H.3, H.4, H.5 for in-elastic collisions described in section 4 (atomic and molecular data input, \cref{sec2.4})
 
 \subsubsection{Simple Coulomb Collision Models}
 Strongly simplified Coulomb collision models are usually sufficient for molecular ions,

@@ -19,8 +19,8 @@ of language, we refer to them as ``bulk ions" as well, but we
 mean in this case: heavy background particles, i.e. more general objects.
 
 NATM, NMOL, NION, NPHOT, NPLS and NREAC are specified in the
-parameter block ``PARMUSR", see: ``Parameter Statements" (section
-\ref{sec3.1} below, for versions EIRENE$_{2000}$ and older), or are determined automatically
+parameter block ``PARMUSR", see: ``Parameter Statements" (\cref{sec3.1} 
+below, for versions EIRENE$_{2000}$ and older), or are determined automatically
 from the input file.
 
 Masses in EIRENE (RMASSA, RMASSM, RMASSI, RMASSP assigned to the objects ``atoms", ``molecules",
@@ -636,7 +636,7 @@ If FILNAM = ADAS,
 
 then the character string REAC identifies the particular file within the
 directory identified by the path given for ADAS files in input block 1,
-see card: ``CFILE" DBHANDLE DBFNAME in block \ref{sec2.1}. For example, REAC = SCD96, then the file \verb+SCD96_h.dat+,
+see card: ``CFILE" DBHANDLE DBFNAME in block 1 (\cref{sec2.1}). For example, REAC = SCD96, then the file \verb+SCD96_h.dat+,
 is read, in this example this is for ionisation rate coefficients of H atoms.
 In this latter example the additional input species identifier ELNAME  reads: H (for hydrogen).
 In Module \verb+eirene_read-adas.f+, called from \verb+SLREAC.f+, the corresponding data table is then read into EIRENE.
@@ -1631,8 +1631,8 @@ for these expressions are available currently in the external databases.
 to be written
 \subsection{Neutral-Neutral collisions in BGK approximation}\label{sec4-bgk}
 
-More generally: the BGK approximation \ref{sec1-bgk} is employed for (bilinear) test-particle  -  test-particle collisions
-processes. From the input flags IBGKA(KK), IBGKM(KK), IBGKI(KK) (see above, \ref{sec4}) for a collision processes KK
+More generally: the BGK approximation (\cref{sec1-bgk}) is employed for (bilinear) test-particle  -  test-particle collisions
+processes. From the input flags IBGKA(KK), IBGKM(KK), IBGKI(KK) (see above, \cref{sec4}) for a collision processes KK
 for atoms, molecules and test-ions, respectively,  certain internal flags are set and options are
 activated to enable iterative solutions of the transport problem with these non-linear effects. This iteration is
 carried out for the parameters density, temperature and flow velocity of a virtual background species,

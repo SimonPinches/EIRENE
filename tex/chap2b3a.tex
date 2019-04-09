@@ -27,8 +27,8 @@ defined as reflecting or absorbing (rather than the default
 transparent character of co-ordinate surfaces), or as transparent
 but with other switching features (cell indexing, transition into
 additional cell region etc.) than the default settings. E.g.,
-surface averaged tallies (see block \ref{sec2.11}, end of section
-\ref{sec3.2} and \cref{tab3}) are only evaluated on either
+surface averaged tallies (see block 11 (\cref{sec2.11}), end of 
+\cref{sec3.2} and \cref{tab3}) are only evaluated on either
 ``Additional Surfaces'' (\cref{sec2.3b}) or on these ``Non
 default Standard Surfaces'', whereas they are not computed for those
 standard grid surfaces which are not explicitly identified in this
@@ -41,7 +41,7 @@ specified here. This is described below.
 
 Although the (local) data for particle-surface interaction models
 (PSI-models) for each specific surface can be read in this input
-block, their meaning is described in block \ref{sec2.6} together
+block, their meaning is described in block 6 (\cref{sec2.6}) together
 with the globally valid input data for particle-surface
 interactions.
 
@@ -79,7 +79,7 @@ particular surface element, see \cref{sec2.6}.
     ZNML EWALL EWBIN TRANSP(1,N) TRANSP(2,N) FSHEAT
     RECYCF  RECYCT  RECPRM  EXPPL  EXPEL  EXPIL
     RECYCS  RECYCC  SPTPRM  (this line may be omitted,
-        then: default sputter model, see \ref{sec2.6})
+        then: default sputter model, see \cref{sec2.6})
  31 CONTINUE
 \end{verbatim}
 
@@ -90,10 +90,10 @@ above:
 
 read a surface interaction model identifier to link one of the surface
 ``local reflection
-models'' defined in block \ref{sec2.6} below to this current surface.
+models'' defined in block 6 (\cref{sec2.6}) below to this current surface.
 The presence of such a link is identified by the string $'SURFMOD_{ }'$,
 followed
-by a name $'modname'$. Later, in input block \ref{sec2.6},
+by a name $'modname'$. Later, in input block 6 (\cref{sec2.6}),
 a ``local reflection model'' block with that name
 $'modname'$ must be included. This option allows
 quick changes of particle-surface interaction parameters, affecting
@@ -165,7 +165,7 @@ IRPTA3 and IRPTE3 are irrelevant.
 
 The third card
 ILIIN, ..., ILPLG is identical to the corresponding card for ``additional surfaces",
- see block \ref{sec2.3b} below,
+ see block 3b (\cref{sec2.3b}) below,
 ``Input Data for Additional Surfaces''. One exception is the flag ILSIDE, which controls
 the sign of the surface normal vector (hence the orientation of a surface). In case of unstructured
 ``standard grids" NLTRI or NLTET (triangles in 2D and tetrahedrons in 3D) there is no well defined
@@ -174,5 +174,5 @@ default surface orientation and the flag ILSIDE is irrelevant in such cases.
 \medskip
 
 The input data in the block for the local reflection model are
-described below, see \ref{sec2.6} : ``Input Data for Particle-Surface Interaction
+described below, see \cref{sec2.6} : ``Input Data for Particle-Surface Interaction
 Models''.

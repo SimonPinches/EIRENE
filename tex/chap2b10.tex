@@ -14,7 +14,7 @@ particle species, as well as coupling of neutral gas and plasma
 transport equations. These tallies are estimated at each EIRENE
 run unless they are explicitly abandoned by the surface crossing
 switches ILSWCH (\cref{sec2.3b}), or are turned off in
-input block \ref{sec2.11}.
+input block 11 (\cref{sec2.11}).
 
 There is, however, a very general option to allow for estimation
 of many more moments of the test particle $\mu$ -space
@@ -135,7 +135,7 @@ $[1/cm^3] \cdot [$units of $g^*] \cdot [cm] \cdot
 however, with FLUX converted to units $[1/s]$ (rather than input units $[Ampere]$).
 For the definition of the detector functions
 $g$ and $g^*$ see \cref{sec3.2}, the variable FLUX is explained in
-input block no. \ref{sec2.7}. This scaling is default for ``density tallies" of particles, momentum and energy.
+input block no. 7 (\cref{sec2.7}). This scaling is default for ``density tallies" of particles, momentum and energy.
 \item[{= 2 }]
 scale tally per unit cell. Same units as above, however not per
 $cm^3$ but per cell instead.
@@ -206,7 +206,7 @@ replaced.
 \item[\textbf{ALSTRNG }] character string which is interpreted as an
 algebraic expression in some volume averaged tallies. An operand
 $\langle i,j \rangle$ stands for tally number $j$, first (species) index $i$, in
-tables \ref{tab1} (input tallies) and \ref{tab2} (output tallies) . Note that the first index for
+\cref{tab1} (input tallies) and \cref{tab2} (output tallies) . Note that the first index for
 tallies with no species index must read 1, and the tally number of input tallies must be negative.
 Example: $\langle 1,-1\rangle$ for the electron temperature tally, $\langle 2,3\rangle$ for the particle density of test ion species
 no. IION=2 . Expressions $\langle c\rangle$
@@ -225,11 +225,11 @@ interaction in units: \#/s/m$^3$ can be obtained by the line:
 
 ($\langle 1,7\rangle +\langle 1,12\rangle +\langle 1,17\rangle) * \langle 1.e6\rangle /\langle 1.6022e-19\rangle$
 
-in code versions older than 2002 (see tables in section
-\ref{sec.tables-old}), and the same expressions in versions 2002
+in code versions older than 2002 (see tables in
+\cref{sec.tables-old}), and the same expressions in versions 2002
 and younger, i.e. after implementation of photons as further
-species type (and the related default tallies, tables in section
-\ref{sec.tables-new}):
+species type (and the related default tallies, tables in
+\cref{sec.tables-new}):
 
 ($\langle 1,9\rangle+\langle 1,15\rangle+\langle 1,21\rangle) * \langle 1.e6\rangle/\langle 1.6022e-19\rangle$
 

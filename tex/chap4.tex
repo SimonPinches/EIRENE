@@ -29,7 +29,7 @@ and the most detailed discussion probably still is the FZ J\"ulich report JUEL-2
 Maddison, Reiter, \cite{kn:Maddison94},  (1994).
 
 Special Monte Carlo options, such as correlated sampling 
-(see flag NLCRR in input block 1, \ref{sec2.1}) or the semi-implicit
+(see flag NLCRR in input block 1, \cref{sec2.1}) or the semi-implicit
 coupling schemes based on source term adaptations/rescalings 
 to reduce Monte Carlo run-time in these iterative non-linear schemes
 (jargon: ``short cycles"), have also had their
@@ -155,7 +155,7 @@ to be written
 In case of an EIRENE run, in which input information is obtained
 from an external code (e.g.: B2, EMC3, DIVIMP, ...), the
 stratification of the primary source should be such that the first
-NTARGI (see \ref{sec2.14}) strata are determined by the plasma
+NTARGI (see \cref{sec2.14}) strata are determined by the plasma
 fluxes onto surfaces (``recycling surface sources"). In this case
 the surface source distribution $Q_S(\vr,\vv,i,t)$ (\cref{sec1.2}) can be defined automatically from the interfacing
 routine, using the data specified in input block 14. The remaining
@@ -166,17 +166,17 @@ a particular surface source ISTRA $\le$ NTARGI is controlled by
 the flag INDSRC.  For sources ISTRA $>$ NTARGI the input flag INDSRC  is irrelevant.
 
 if INDSRC(ISTRA) $<$ 0 then interfacing routine IF2COP is not called.
-Input data are used from block 7, see \ref{sec2.7}.
+Input data are used from block 7, see \cref{sec2.7}.
 
 \medskip
 
-if INDSRC(ISTRA) = 0--5, then the input flags described in section
-\ref{sec2.7} are used to define the spatial distribution of a
+if INDSRC(ISTRA) = 0--5, then the input flags described in
+\cref{sec2.7} are used to define the spatial distribution of a
 recycling source on a grid boundary (function STEP(ISTEP), see
 \cref{sec2.7.1}) as well as the distribution in velocity
 space. The step function itself and the total source strength
 FLUX(ISTRA), however, are defined in IF2COP, using data from input
-block 14, see \ref{sec2.14}, for target recycling source ITARG. In
+block 14, see \cref{sec2.14}, for target recycling source ITARG. In
 this case the sampling range from the spatial surface distribution
 and the species distribution specified in input block 7 must be
 equal to or a subrange of the the step-function for target

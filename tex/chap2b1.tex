@@ -213,7 +213,7 @@ EIRENE saves some data for optimizing non-analog sampling and
 stratified source sampling on file FT14.
 \item [K = 2 ]
 EIRENE reads from file FT14 and tries to optimize operation for the next run, time-step or iteration. Currently only
-allocation of CPU time in stratified source sampling is optimized. More details: see paragraph \ref{NFILEK} below.
+allocation of CPU time in stratified source sampling is optimized. More details: see \cref{NFILEK} below.
 \item [K = 3 ]
 Acts as if both NFILE-K=1 and NFILE-K=2.
 \item [J = 1 ]
@@ -369,7 +369,7 @@ Correlated sampling is used. See discussion at end of \cref{sec1.7}.
 \item [\textbf{NLERG} ]
 The case is
 automatically reduced to a case for estimating cell volumes by
-utilizing an ``ergodic property". More details: see paragraph \ref{NLERG} below.
+utilizing an ``ergodic property". More details: see \cref{NLERG} below.
 \item [\textbf{NLIDENT} ]
 In multi-processor calculation mode NLIDENT forces all processors working on the
 same stratum to use the same sequence of random numbers and hence to
@@ -382,7 +382,7 @@ transport" problem
 \item [\textbf{NLMOVIE} ]
 reset a number of model parameters to enable a series of geometry
 plots for making particle trajectory movies. This option only works in connection with time dependent mode, see NTIME flag
-described above, and input block \ref{sec2.13}. More details: see paragraph \ref{NLMOVIE} below.
+described above, and input block 13 (\cref{sec2.13}). More details: see \cref{NLMOVIE} below.
 \end{list}
 The next 5 logical flags are for internal use only, in proprietary parts of the code.
 They should not be activated without checking the underlying code.
@@ -431,7 +431,7 @@ Example:
 
 Default:
 If the specification of an external database name and path,
-which is later (e.g. in block \ref{sec2.4} or block \ref{sec2.6}) referred to in
+which is later (e.g. in block 4 (\cref{sec2.4}) or block 6 (\cref{sec2.6})) referred to in
 a particular run, is not given here, then
 these data files are expected, usually with the same name,
 in the local directory from which the calculation
@@ -474,14 +474,14 @@ in case of TRMSGL), the
 chemical element  and the charge stage of a
 particular ion $Z=1,\dots Z+1$ (e.g.: C, 4), are detailed later in
 input block 4 (for volumetric collision processes based on ADAS adf11 format), and input block 6 (TRMSGL, for the surface reflection database based on TRIM)
-see below, sections \ref{sec2.4}, \ref{sec2.6},
+see below, \cref{sec2.4,sec2.6},
 respectively.
 
 \subsection{Automated stratification optimization: proportional allocation}\label{NFILEK}
 The stratified sampling in EIRENE can improve the performance (measured in terms of statistical error per CPU-time),
-if proportional allocation of sample size $N_k$ to strata source strength $S_k$ can be achieved. See paragraph \ref{sec1.2.1b}
+if proportional allocation of sample size $N_k$ to strata source strength $S_k$ can be achieved. See \cref{sec1.2.1b}
 for more information on stratified source sampling.
-The input flag ALLOC in input block \ref{sec2.7} controls this allocation.
+The input flag ALLOC in input block 7 (\cref{sec2.7}) controls this allocation.
 
 Monte Carlo codes such as EIRENE are, in principle,  trivially parallelisable by just distributing the Monte Carlo
 trajectory calculation over the available compute nodes.

@@ -5,8 +5,8 @@ The following three tables comprise the EIRENE pre-programmed default ``tallies"
 (Further tallies can be added via the problem specific interfacing or user routines).
 
 The term ``tally" is adopted from neutron transport applications, a
-more precise terminology would be ``response", see section
-\ref{sec3.2}.  By abuse of language we also refer to input data, such as plasma profiles
+more precise terminology would be ``response", see
+\cref{sec3.2}.  By abuse of language we also refer to input data, such as plasma profiles
 defined on the computational grid, as tallies, because in post-processing these can printed, plotted
 and be algebraically mixed with the output tallies (responses) to form more general output quantities.
 The three tables given below list the (volumetric) input tallies, (volumetric, cell averaged) output tallies,
@@ -210,7 +210,7 @@ nor for graphics.
 \item  Magnetic field input is needed only for photon transport with Zeeman splitted line shapes, or
 in case of charged particle transport (Subr. FOLION). Only quite rudimentary preprogrammed input options
 for magnetic field are available, usually it is expected to receive B-field information from external files,
-see INDPRO(5) options for magnetic field tallies in input block 5 \ref{sec2.5}.
+see INDPRO(5) options for magnetic field tallies in input block 5 (\cref{sec2.5}).
 \item  For electric fields (needed only for charged particle transport) only input via external files
 is possible. Default: $\vec{E} = 0$
 \end{itemize}
@@ -803,11 +803,11 @@ in BGK approximation).
 With respect to surface averaged tallies (in and outgoing surface fluxes, sputter fluxes,
 etc...) there have been major revisions in versions
 2014 or later, see ``sputter tallies, new version, svn 360 ff, 2014" in
-paragraph \ref{sec.tables-new}.
+\cref{sec.tables-new}.
 
 A particular modification (A. Kukushkin) of the sputter tallies has been used
 in many B2-EIRENE applications,
-in versions SOLPS4.x, see under \ref{sec2.14} in which problem specific issues regarding EIRENE
+in versions SOLPS4.x, see under \cref{sec2.14} in which problem specific issues regarding EIRENE
 interfacing to the particular external plasma codes B2, B2.5, etc. are described.
 
 \begin{table}[ht]
@@ -864,7 +864,7 @@ the flow field, respectively.
 \item  Magnetic field input is needed only for photon transport with Zeeman splitted line shapes, or
 in case of charged particle transport (Subr. FOLION). Only quite rudimentary preprogrammed input options
 for magnetic field are available, usually it is expected to receive B-field information from external files,
-see INDPRO(5) options for magnetic field tallies in input block 5 \ref{sec2.5}.
+see INDPRO(5) options for magnetic field tallies in input block 5 (\cref{sec2.5}).
 
 \end{itemize}
 \end{table}
