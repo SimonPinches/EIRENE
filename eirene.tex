@@ -21,6 +21,7 @@
  {hyperref}
 % \usepackage{bookmark} % use only together with dvipdfm option of hyperref package!
 \usepackage{cleveref}
+\usepackage[nolist]{acronym}
 
 \hypersetup{pdftitle={EIRENE Documentation},linkcolor=blue, citecolor=blue, urlcolor=blue, filecolor=blue}
 
@@ -198,5 +199,21 @@ A short overall summary of the code package, including some historical notes, is
 \addtocontents{toc}{\textbf{References}}
 \bibliography{eirene}
 \bibliographystyle{unsrt}
+
+\begin{acronym}
+  \acro{ADAS}{atomic data and analysis structure}
+  \acro{BGK}{Bhatnagar--Gross--Krook}
+  \acro{BREP}{boundary representation}
+  \acro{CAD}{computer-aided design}
+  \acro{CFD}{computational fluid dynamics}
+  \acro{CFL}{}
+  \acro{CSG}{constructive solid geometry}
+  \acro{DMCS}{direct Monte Carlo simulation}
+  \acro{ELM}{edge localised mode}
+  \acro{FOM}{figure of merit}
+  \acro{MCNP}{Monte Carlo N-particle}
+  \acro{TEXTOR}{tokamak experiment for technology-oriented research}
+  \acro{WCU}{Wang Chang--Uhlenbeck}
+\end{acronym}
 
 \end{document}

@@ -91,7 +91,7 @@ Parameter DP (potential energy shift) is currently not available here.
 
 For tabulated (rather than fitted) collision reaction rates,
 electron cooling rates, etc., with a format derived from the
-so called ``ADAS database format AFD11",
+so called ``\ac{ADAS} database format AFD11",
 or any other properly (2D) tabulated
 data source, i.e. with \texttt{FILNAM = TAB2D}, or \texttt{FILNAM = ADAS}
 the corresponding card reads:
@@ -103,7 +103,7 @@ IR  TAB2D  H123  REAC  CRC  MASSP  MASST  DP
 
 \end{verbatim}
 
-or, alternatively, if ADAS ADF11 files are used directly:
+or, alternatively, if \ac{ADAS} ADF11 files are used directly:
 
 \begin{verbatim}
 
@@ -117,7 +117,7 @@ ELNAME, IZ
 
 In this case an additional
 card is read (containing variables: ELNAME, IZ) for each IR entry, see below, to identify the species and ion charge state within the data file
-(e.g. within an ADAS ADF11 file folder).
+(e.g. within an \ac{ADAS} ADF11 file folder).
 
 
 For photonic emission and absorption data (line shapes), i.e. for \texttt{FILNAM = PHOTON},
@@ -329,7 +329,7 @@ DO
      IF (RMX1.GT.0.) READ IFEXMX, FPARM(J),J=4,6
 \end{verbatim}
 \textbf{for ``real particles"}, database: \texttt{FILNAM = ADAS}
-(or any table in an equivalent format as the ADAS adf11 files)
+(or any table in an equivalent format as the \ac{ADAS} adf11 files)
 \begin{verbatim}
    IR  ADAS  H123  REAC  CRC  MASSP  MASST  DP
    (format: I3,1X,A6,1X,A4,Axxx,A3,2I3,3E12.4)
@@ -458,7 +458,7 @@ e.g., constant, power law, etc. These fitting coefficients are
 directly read from the formatted input file rather than from an
 external file.
 \item[{ADAS}] Collisional radiative rate coefficients from
-any files tabulated in the same format as ADAS adf11 files,
+any files tabulated in the same format as \ac{ADAS} adf11 files,
 which must be located in a directory, the path to which is specified in input block 1, \cref{sec2.1},
 by one of the ``CFILE" cards described there:   \texttt{CFILE  ADAS  path/adf11/}
 \item[{PHOTON}]  line emission and line absorption constants,
@@ -584,10 +584,10 @@ EIRENE post processing routines in code section ``output", routines: Ba$\_$alpha
 double parameter table of rate coefficient $\langle \sigma v \rangle
 (cm^3/s)$ as function of target density $(cm^{-3})$ and target
 temperature (eV) read from files containing 2D tabulated rate coefficients, i.e. rate coefficients tabulated vs. 2 independent parameters.
-This option uses the ADAS adf11 file format as guidance and is developed\slash adapted from it for more general
+This option uses the \ac{ADAS} adf11 file format as guidance and is developed\slash adapted from it for more general
 A\&M data structures.
 
-E.g. original ADAS file-names starting with SCD\dots (ionization rate coefficients
+E.g. original \ac{ADAS} file-names starting with SCD\dots (ionization rate coefficients
 contain ionization rate coefficients to charge state Z, Z=1,\dots Z$_{max}$)
 and filenames starting with  ACD\dots... contain recombination rate coefficients,
 from charge state Z,   Z=1, Z$_{max}$.
@@ -595,11 +595,11 @@ The particular chemical element ELNAME and the value of charge state $Z$ is spec
 which is read only in case of FILNAM = TAB2D  or FILNAM = ADAS.
 \item[{H.10 }]
 same as for H123='H.4', but ionisation and recombination electron energy loss rate coefficients rather than
-reaction rate coefficients. In the original ADAS files the names PLT\dots and PRB\dots are used for those quantities. Note:
-distinct from the AMJUEL database convention in case of ADAS format the PLT rates (W/cm$^3$) do not contain the potential energy loss
+reaction rate coefficients. In the original \ac{ADAS} files the names PLT\dots and PRB\dots are used for those quantities. Note:
+distinct from the AMJUEL database convention in case of \ac{ADAS} format the PLT rates (W/cm$^3$) do not contain the potential energy loss
 DP $\times$ SCD, and the PRB rates contain, in addition to their corresponding rates from AMJUEL, also
-a Bremsstrahlung contribution. Internally EIRENE subtracts this ADAS-Bremsstrahlung from electron energy weighted PRB rates
-whenever such rates are read via the ADAS format (i.e. whenever FILNAM = ADAS)
+a Bremsstrahlung contribution. Internally EIRENE subtracts this \acs{ADAS}-Bremsstrahlung from electron energy weighted PRB rates
+whenever such rates are read via the \ac{ADAS} format (i.e. whenever FILNAM = ADAS)
 
 Note: in general the potential energy difference DP may or may not be included in the definition of energy rate coefficients H.8, H.9 and H.10 as read
 from a particular database. For example the energy rate coefficients may, in effect,  be either a radiation loss rate or a total electron energy loss/gain rate.
@@ -608,7 +608,7 @@ This database specific convention may be altered by EIRENE input flag DP during 
 files. Proper choice of DP may then turn a radiation loss rate to a total energy loss/gain rate, and vice versa.
 (The use of flag DP is the same as in case of the AMJUEL database or any other external database).
 Default EIRENE electron energy source tallies then may have a different meaning, depending on the choice of input flag DP and the
-particular database used (ADAS, or AMJUEL, etc.)
+particular database used (\ac{ADAS}, or AMJUEL, etc.)
 \end{list}
 
 \textbf{case 3:} FILNAM = PHOTON
@@ -635,7 +635,7 @@ IFTFLG = 110 for this reaction).
 If FILNAM = ADAS,
 
 then the character string REAC identifies the particular file within the
-directory identified by the path given for ADAS files in input block 1,
+directory identified by the path given for \ac{ADAS} files in input block 1,
 see card: ``CFILE" DBHANDLE DBFNAME in block 1 (\cref{sec2.1}). For example, REAC = SCD96, then the file \verb+SCD96_h.dat+,
 is read, in this example this is for ionisation rate coefficients of H atoms.
 In this latter example the additional input species identifier ELNAME  reads: H (for hydrogen).
@@ -1119,7 +1119,7 @@ then internally a switching from track-length to collision
 estimators is carried out, and a corresponding warning is printed.
 \item[\textbf{IBGK }]
 
-Three digits IBGK=NML. Particle identifier for BGK self and cross collisions.
+Three digits IBGK=NML. Particle identifier for \ac{BGK} self and cross collisions.
 The format is the same as for IBULK, ISCD1 and ISCD2 species identifier flags.
 I.e., it has three digits, pointing to the type and to the species index within that type-group.
 The second digit is irrelevant and defaulted to one (only binary collisions are considered).
@@ -1129,7 +1129,7 @@ test-particle - test-particle collision.
 Let ISPZ be the species index of a test-particle.
 If the collision is a self-collisions, this flag IBGK must point to
 the species ISPZ itself. Otherwise it must point to the 2nd test particle
-species ISPZ2, which is involved in the BGK-cross collision term.
+species ISPZ2, which is involved in the \acs{BGK}-cross collision term.
 
 IBGK must be consistent with IBULK, which in this case is the ``artificial
 background species" (= result from previous iteration) in the linearization of the collision operator.
@@ -1144,11 +1144,11 @@ for cross collisions between species $A$ and $B$.
 
 The flag IBULK must point to the corresponding species IPLS=$AB_{BULK}$ in block 5.
 
-An example for input specifications of non-linear BGK collisions is given
+An example for input specifications of non-linear \ac{BGK} collisions is given
 below in \cref{sec4-bgk}.
 (Default: = 0, no iteration for non-linearity in collision kernel, no
 ``artificial background species" involved in this collision, and no
-BGK-tallies are updated for iterating the artificial background species.)
+\acs{BGK}-tallies are updated for iterating the artificial background species.)
 \item[\textbf{EELEC }]
 parameter EP for electron energy loss per collision.
 Its meaning depends on fifth digit of ISCDE flag and is described above.
@@ -1629,14 +1629,14 @@ for these expressions are available currently in the external databases.
 \textbf{Further examples}
 
 to be written
-\subsection{Neutral-Neutral collisions in BGK approximation}\label{sec4-bgk}
+\subsection{Neutral-Neutral collisions in \ac{BGK} approximation}\label{sec4-bgk}
 
-More generally: the BGK approximation (\cref{sec1-bgk}) is employed for (bilinear) test-particle  -  test-particle collisions
+More generally: the \ac{BGK} approximation (\cref{sec1-bgk}) is employed for (bilinear) test-particle  -  test-particle collisions
 processes. From the input flags IBGKA(KK), IBGKM(KK), IBGKI(KK) (see above, \cref{sec4}) for a collision processes KK
 for atoms, molecules and test-ions, respectively,  certain internal flags are set and options are
 activated to enable iterative solutions of the transport problem with these non-linear effects. This iteration is
 carried out for the parameters density, temperature and flow velocity of a virtual background species,
-one virtual species for each bgk process KK. The BGK collision integrals are then simulated simply by random sampling the
+one virtual species for each bgk process KK. The \ac{BGK} collision integrals are then simulated simply by random sampling the
 post collision velocity from a drifting Maxwellian of the corresponding virtual bulk species.
 
 
@@ -1663,7 +1663,7 @@ involved this is particular collision process IBGK.
 
 In the example considered here we have the 4 neutral-neutral collision
 processes: D on D2,  D on D and D2 on D2, D2 on D.
-In input block 4 there are three BGK relaxation rate coefficients (note:
+In input block 4 there are three \ac{BGK} relaxation rate coefficients (note:
 the rate coefficient for D2 on D is equal to the one for D on D2, hence 3 rate coefficients
 for 4 processes are sufficient).
 \begin{scriptsize}
@@ -1714,7 +1714,7 @@ Processes no. 6 and 7 are neutral-neutral collisions.
 \end{verbatim}
 \end{scriptsize}
 In input block 5 there are at least 23 bulk ion species in this example. Of those
-species no. 20 to 23 are ``artificial" BGK species for neutral-neutral self collisions specified
+species no. 20 to 23 are ``artificial" \ac{BGK} species for neutral-neutral self collisions specified
 above by IBULK = 2014, 2114, 2214 and 2314 in blocks 4a and 4b above.
 \begin{scriptsize}
 \begin{verbatim}
@@ -1846,7 +1846,7 @@ Data structure POLY\_DATA is used to store data belonging to polynomial fit.
 It consists of a 2 dimensional array DBLPOL for holding the fit coefficients.
 Variables RC1MN and RC1MX describing the validity range of the fit, flags IFEX1MN and IFEX1MX and array FPARM1(6) specifying extrapolation options.
 
-Data structure TAB2D\_DATA describes data read from database with tabulated rate coefficients, e.g. ADAS. It consists of two integer variables NDENS and NTEMP denoting the number of densities and temperatures in the fit table.
+Data structure TAB2D\_DATA describes data read from database with tabulated rate coefficients, e.g. \ac{ADAS}. It consists of two integer variables NDENS and NTEMP denoting the number of densities and temperatures in the fit table.
 Arrays DENS and TEMP hold the densities and temperatures respectively. Array FIT contains the 2d fit. The arrays DDE and DTE are used to precalculate delta\_DENS and delta\_TEMP.
 
 Data type LINE\_DATA deals with all parameters specifying a photonic process. It comprises a reaction name REACNAME, profile parameters E0, E1, AIK, G1, G2, C2, C3, C4, C6, B12, B21 and flags IGND, IRCART, IPROFILETYPE, IFREMD, NRJPRT, IMESS. Additionally there are arrays  C6A(12), IPLSC6(12), KENN(12).

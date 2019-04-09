@@ -8,8 +8,8 @@
 
 The data in this block are used to define a discretisation in
 time, and the test-particle self interaction effects. These latter
-options are based upon the ``Bird's Direct Monte Carlo Simulation"
-(DMCS) procedure, and are currently not in use (see
+options are based upon the ``Bird's \ac{DMCS}"
+procedure, and are currently not in use (see
 \cite{kn:Behringer} for a detailed description of its
 implementation in EIRENE). They can be activated by replacing the
 current dummy routine STOSS, which is called after each time-step
@@ -17,10 +17,10 @@ from subroutine EIRENE, by a routine that reads the particle
 population from the ``census arrays" described below, and which
 then carries out the binary self-collisions (modification of the
 individual particle velocity vectors). The rest of the code for
-time dependency and the DMCS algorithm is the same and described
+time dependency and the \ac{DMCS} algorithm is the same and described
 in this section. Note that, currently, with the use of a dummy
 routine STOSS, non-linear self collision effects can still be
-simulated, in BGK approximation, by using the iterative mode of
+simulated, in \ac{BGK} approximation, by using the iterative mode of
 operation (NITERI, NITERE, input block 1), see
 \cref{sec1.8}.
 
