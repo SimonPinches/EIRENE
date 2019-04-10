@@ -264,10 +264,10 @@ $\langle 1.8792e+35\rangle/\langle 2.0\rangle*
 (\langle i,85\rangle*\langle i,85\rangle+
  \langle i,89\rangle*\langle i,89\rangle+
  \langle i,93\rangle*\langle i,93\rangle)/
- \langle i,1\rangle)$ is the dynamic pressure, scaled to eV\ cm$^3$ units
+ \langle i,1\rangle)$ is the dynamic pressure, scaled to eV~\si{\cubic\centi\metre} units
 of atoms, with atomic weight $\langle 2.0\rangle$ in atomic mass units in this example.
 The numerical factor $1.8792e+35$ is, in EIRENE unit conversion variables, is given
-by CVELI2/AMUA/AMUA, (defined in SETCON.F), and the momentum density tallies 85, 89 and 93 are in g \si{\centi\metre\per\second} cm$^{-3}$.
+by CVELI2/AMUA/AMUA, (defined in SETCON.F), and the momentum density tallies 85, 89 and 93 are in g \si{\centi\metre\per\second} \si{\per\cubic\centi\metre}.
 \end{itemize}
 \subsection{Additional surface averaged tallies}\label{sec2.10E}
 
@@ -365,22 +365,22 @@ are not yet available.
 
 \textbf{case a:} no direction specified: IDIREC=0
 
-energy distribution (ISPTYP=1) , [cm**-3/eV]
+energy distribution (ISPTYP=1) , [\si{\per\cubic\centi\metre}/eV]
 
-energy weighted energy distribution (ISPTYP=2) [eV*cm**-3/eV]
+energy weighted energy distribution (ISPTYP=2) [eV*\si{\per\cubic\centi\metre}/eV]
 
-velocity weighted energy distribution (ISPTYP=3) [\si{\centi\metre\per\second} *cm**-3/eV]
+velocity weighted energy distribution (ISPTYP=3) [\si{\centi\metre\per\second} *\si{\per\cubic\centi\metre}/eV]
 
 \textbf{case b:} direction specified: IDIREC=1
 
 
-velocity distribution along specified direction, binned in energy units (ISPTYP=1) , [cm**-3/eV]
+velocity distribution along specified direction, binned in energy units (ISPTYP=1) , [\si{\per\cubic\centi\metre}/eV]
 
 energy weighted velocity distribution along specified direction, put into bins in energy units
-(ISPTYP=2) [eV*cm**-3/eV]
+(ISPTYP=2) [eV*\si{\per\cubic\centi\metre}/eV]
 
 velocity weighted velocity distribution along specified direction,
-put into bins in energy units (ISPTYP=3) [\si{\centi\metre\per\second} *cm**-3/eV]
+put into bins in energy units (ISPTYP=3) [\si{\centi\metre\per\second} *\si{\per\cubic\centi\metre}/eV]
 
 
 \item[\textbf{IDIREC, SPCVX, SPCVY, SPCVZ}]

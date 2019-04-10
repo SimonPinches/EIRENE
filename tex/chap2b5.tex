@@ -16,7 +16,7 @@ There are, in total, NSBOX cells in a run.
 From the assumption of quasi-neutrality, the specified charge
 state of each background ion species (including  charge state = 0 for neutral background species),
 and the data for density $n_i$ of background species labeled $i$, DIIN(IPLS,icell), an array of
-NSBOX data for the \textbf{electron density} $n_e   (cm^{-3} )$ (DEIN(icell) is
+NSBOX data for the \textbf{electron density} $n_e   (\si{\per\cubic\centi\metre} )$ (DEIN(icell) is
 computed in each of the cells (see next subsection: ``derived background data").
 
 Further background tallies (or ``input tallies") defined in this block are related to a
@@ -34,7 +34,7 @@ per grid cell), so called ``input tallies", namely
     \item one array for the electron temperature $T_e $ (eV) (TEIN),
     \item either one common or NPLS distinct
 (one for each bulk ion species) arrays for the ion temperature(s) $T_i$ (eV) (TIIN),
-    \item NPLS arrays (one for each bulk ion species), ion densities $n_i   ( cm^{-3} )$ (DIIN),
+    \item NPLS arrays (one for each bulk ion species), ion densities $n_i   ( \si{\per\cubic\centi\metre} )$ (DIIN),
     \item either one common or NPLS distinct
 (one for each bulk ion species) arrays for the (cartesian) drift velocities
            $\vV = ( V_x , V_y , V_z )$ (VXIN, VYIN, VZIN), either in \si{\centi\metre\per\second} or Mach number
@@ -139,7 +139,7 @@ LGVAC(ICELL,I)=TRUE for I=1,NPLSI and for I=NPLS+1.
 
 The EIRENE vacuum data are defaulted (in subroutine PLASMA) to:
 
-DVAC = 1.0000E 02 $ cm^{-3} $
+DVAC = 1.0000E 02 \si{\per\cubic\centi\metre}
 
 TVAC = 2.0000E-02 eV
 
@@ -585,7 +585,7 @@ This is done by a call to subroutine \verb/PLASMA_DERIV/. The
 following quantities are defined there:
 \begin{list}{ }{}
 \item[\textbf{DEIN }]
-Electron density ($cm^-3$), derived from all NPLSI
+Electron density (\si{\per\cubic\centi\metre}), derived from all NPLSI
 ion densities and the charge states NCHRGP(IPLS) of each ion species.
 \item[\textbf{EDRIFT }]
 Kinetic energy (eV) in drift motion, for each background species IPLS, derived from

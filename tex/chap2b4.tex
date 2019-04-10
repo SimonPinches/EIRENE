@@ -596,7 +596,7 @@ which is read only in case of FILNAM = TAB2D  or FILNAM = ADAS.
 \item[{H.10 }]
 same as for H123='H.4', but ionisation and recombination electron energy loss rate coefficients rather than
 reaction rate coefficients. In the original \ac{ADAS} files the names PLT\dots and PRB\dots are used for those quantities. Note:
-distinct from the AMJUEL database convention in case of \ac{ADAS} format the PLT rates (W/cm$^3$) do not contain the potential energy loss
+distinct from the AMJUEL database convention in case of \ac{ADAS} format the PLT rates (W\si{\per\cubic\centi\metre}) do not contain the potential energy loss
 DP $\times$ SCD, and the PRB rates contain, in addition to their corresponding rates from AMJUEL, also
 a Bremsstrahlung contribution. Internally EIRENE subtracts this \acs{ADAS}-Bremsstrahlung from electron energy weighted PRB rates
 whenever such rates are read via the \ac{ADAS} format (i.e. whenever FILNAM = ADAS)

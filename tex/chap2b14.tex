@@ -135,7 +135,7 @@ The particle and parallel momentum sources are also resolved with respect to rec
 The source rates are given as linear functions of default EIRENE tallies.
 Statistical error estimates (the standard deviations) of all sources transferred to B2 are evaluated in case specific routine STATS1\_COP. All printout of these sources
 and their statistical errors is case specific and done in interfacing module EIRCOP.\\
-\textbf{Particle source: [particles/time/volume], Amp/cm$^3$ }
+\textbf{Particle source: [particles/time/volume], Amp \si{\per\cubic\centi\metre} }
  \begin{equation}
  S_n(ipls,icell) = \sum_{is} \left[PAPL_{is}(ipls,icell) + PMPL_{is}(ipls,icell) + PIPL_{is}(ipls,icell) \right]
  \end{equation}
@@ -149,7 +149,7 @@ and their statistical errors is case specific and done in interfacing module EIR
  \item
  $PIPL$ is the particle source for background plasma species $ipls$ resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no. 21.
  \end{itemize}
-\textbf{Momentum source: [mass velocity/time/volume], g \si{\centi\metre\per\second} Amp /cm$^3$}
+\textbf{Momentum source: [mass velocity/time/volume], g \si{\centi\metre\per\second} Amp \si{\per\cubic\centi\metre}}
  \begin{equation}\label{Sm}
  S_{m\parallel}(ipls,icell) = \sum_{is,icop} \left[COPV_{is}(icop,icell) \right]
  \end{equation}
@@ -163,7 +163,7 @@ and their statistical errors is case specific and done in interfacing module EIR
  of EIRENE, the momentum sources parallel to a magnetic field have become default tallies,
  see below in \cref{sec2.14.2}.
 
-\textbf{Ion energy source: [Energy/time/Volume], Watt/cm$^3$} (for total ion energy balance, in laboratory frame)
+\textbf{Ion energy source: [Energy/time/Volume], Watt \si{\per\cubic\centi\metre}} (for total ion energy balance, in laboratory frame)
 \begin{equation}
  S_{Ei}(icell) = \sum_{is} \left[EAPL_{is}(icell) + EMPL_{is}(icell) + EIPL_{is}(icell) \right]
  \end{equation}
@@ -178,7 +178,7 @@ and their statistical errors is case specific and done in interfacing module EIR
  $EIPL$ is the ion energy source  resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no. 36.
  \end{itemize}
 
-\textbf{Electron energy source: [Energy/time/volume], Watt/cm$^3$}
+\textbf{Electron energy source: [Energy/time/volume], Watt \si{\per\cubic\centi\metre}}
 \begin{equation}
  S_{Ee}(icell) = \sum_{is} \left[EAEL_{is}(icell) + EMEL_{is}(icell) + EIEL_{is}(icell) \right]
  \end{equation}
