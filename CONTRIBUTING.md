@@ -12,10 +12,11 @@ Contributors can speed up the integration of corrections or improvements by focu
 
 ## Style guide
 
-* keep number of Underful/Overful boxes and Warnings as small as possible 
-* use the `cleveref` package for in-document references, e.g. `\cref{.}`, `\Cref{.}`, to preserve a common style
-* use the `acronym` package for acronyms, i.e. define new acronyms via `\acro{}{}` at the end of `eirene.tex` and use any acronym via `\ac`, `\acp`, etc.
-* remember `e.g.` and `i.e.` will trigger full stop space behind, use `e.g.\` and `.i.e.\` instead
+* Keep number of Underful/Overful boxes and Warnings as small as possible.
+* Use the `cleveref` package for in-document references, e.g. `\cref{.}`, `\Cref{.}`, to preserve a common style.
+* Use the `acronym` package for acronyms, i.e. define new acronyms via `\acro{}{}` at the end of `eirene.tex` and use any acronym via `\ac`, `\acp`, etc.
+* Remember `e.g.` and `i.e.` will trigger full stop space behind, use `e.g.\` and `.i.e.\` instead.
+* The space between initials and surname should be filled with `~`. It prevents the full stop space and keeps initials and surname in one line.
 
 ## Contribution flow
 
