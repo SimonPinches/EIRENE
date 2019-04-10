@@ -596,7 +596,7 @@ which is read only in case of FILNAM = TAB2D  or FILNAM = ADAS.
 \item[{H.10 }]
 same as for H123='H.4', but ionisation and recombination electron energy loss rate coefficients rather than
 reaction rate coefficients. In the original \ac{ADAS} files the names PLT\dots and PRB\dots are used for those quantities. Note:
-distinct from the AMJUEL database convention in case of \ac{ADAS} format the PLT rates (W\si{\per\cubic\centi\metre}) do not contain the potential energy loss
+distinct from the AMJUEL database convention in case of \ac{ADAS} format the PLT rates (\si{\watt\per\cubic\centi\metre}) do not contain the potential energy loss
 DP $\times$ SCD, and the PRB rates contain, in addition to their corresponding rates from AMJUEL, also
 a Bremsstrahlung contribution. Internally EIRENE subtracts this \acs{ADAS}-Bremsstrahlung from electron energy weighted PRB rates
 whenever such rates are read via the \ac{ADAS} format (i.e. whenever FILNAM = ADAS)
@@ -1252,9 +1252,9 @@ constant loss or gain of EP (\si{\electronvolt}) per collision event.
 If \# $\hat{=} $ L, and if there is more than one
 heavy particle secondary, then the energy loss/gain EP (reaction exothermicity, or kinetic energy release)
 is distributed over the secondary bulk particles inversely proportional to their masses.
-E.g. for reaction $e+CH_4 \rightarrow CH_3 + H + e$, and EP=ESCD=8.0 \si{\electronvolt}, then
-the fragment $CH_3$ would receive an extra energy of 0.5 \si{\electronvolt}, and the fragment $H$ would
-receive 7.5 \si{\electronvolt},
+E.g. for reaction $e+CH_4 \rightarrow CH_3 + H + e$, and EP=ESCD=\SI{8.0}{\electronvolt}, then
+the fragment $CH_3$ would receive an extra energy of \SI{0.5}{\electronvolt}, and the fragment $H$ would
+receive \SI{7.5}{\electronvolt},
 both isotropically in the center of mass system of the collision.
 \item[{\# = 1 }] \hfill
 \begin{list}{ }{}
@@ -1403,7 +1403,7 @@ method is used to avoid the weighting, and without need of knowing the integral 
 collision integral.
 Currently this rejection method, for each individual collision process,
 is based upon pre-evaluation (initialisation phase of a run) of the
-product $\sigma(E_{rel}) v_{rel}$ in the hard wired energy range 0.1 to 1.e4 \si{\electronvolt},
+product $\sigma(E_{rel}) v_{rel}$ in the hard wired energy range \SIrange{0.1}{1.e4}{\electronvolt},
 determination of the the maximum SGVMAX of that product in this energy range.
 Then during the test particle tracing a comparison ``on the fly" (and rejection, if appropriate) is carried out, of the actual
 value of this product with {RANF} $\times$ SGVMAX, {RANF} being a uniformly distributed random number.
@@ -1508,7 +1508,7 @@ found in block 5, then the corresponding default process is de-activated.
 Hence: D and He atoms are ionized by electron
 impact, using the Corona data 2.1.5 and 2.3.9, respectively, from
 reference \cite{kn:Janev}, and with constant electron energy loss
-per ionization of 13.6 and 24.588 \si{\electronvolt}, respectively.
+per ionization of \SIlist{13.6;24.588}{\electronvolt}, respectively.
 \medskip
 \paragraph{default model for hydrogenic molecules H$_2$ (and isotopomers) and their ions}
 
@@ -1784,7 +1784,7 @@ on CREAC(1:9,0,KK), \\
 and those for Maxwellian averaged rate coefficients on CREAC(1:9,1:9,KK).
 \medskip
 
-The second argument here controls either the particle energy (in \si{\electronvolt}) or plasma density (in particles~\si{\per\cubic\centi\metre}/$10^8$) dependence in rate coefficients.
+The second argument here controls either the particle energy (in \si{\electronvolt}) or plasma density (in particles~\SI{1e-8}{\per\cubic\centi\metre}) dependence in rate coefficients.
 
 Higher moments, such as energy-weighted rate coefficients, have been read in and stored on CREAC with a different value of KK.
 

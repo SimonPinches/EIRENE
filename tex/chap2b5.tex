@@ -16,7 +16,7 @@ There are, in total, NSBOX cells in a run.
 From the assumption of quasi-neutrality, the specified charge
 state of each background ion species (including  charge state = 0 for neutral background species),
 and the data for density $n_i$ of background species labeled $i$, DIIN(IPLS,icell), an array of
-NSBOX data for the \textbf{electron density} $n_e   (\si{\per\cubic\centi\metre} )$ (DEIN(icell) is
+NSBOX data for the \textbf{electron density} $n_e (\si{\per\cubic\centi\metre} )$ (DEIN(icell) is
 computed in each of the cells (see next subsection: ``derived background data").
 
 Further background tallies (or ``input tallies") defined in this block are related to a
@@ -31,10 +31,10 @@ I.e.: the background medium is
 described by several blocks of NSBOX data each, (i.e. one datum
 per grid cell), so called ``input tallies", namely
 \begin{itemize}
-    \item one array for the electron temperature $T_e $ (\si{\electronvolt}) (TEIN),
+    \item one array for the electron temperature $T_e$ (\si{\electronvolt}) (TEIN),
     \item either one common or NPLS distinct
 (one for each bulk ion species) arrays for the ion temperature(s) $T_i$ (\si{\electronvolt}) (TIIN),
-    \item NPLS arrays (one for each bulk ion species), ion densities $n_i   ( \si{\per\cubic\centi\metre} )$ (DIIN),
+    \item NPLS arrays (one for each bulk ion species), ion densities $n_i$ (\si{\per\cubic\centi\metre}) (DIIN),
     \item either one common or NPLS distinct
 (one for each bulk ion species) arrays for the (cartesian) drift velocities
            $\vV = ( V_x , V_y , V_z )$ (VXIN, VYIN, VZIN), either in \si{\centi\metre\per\second} or Mach number
@@ -107,8 +107,7 @@ data" given below. Plasma data other than these ``vacuum values" (meaning: no co
 (see below), or in the user supplied subroutine PLAUSR or with the
 INDPRO=7 option (see below, this section).
 
-Cell volumes in the additional cell region are defaulted to 1.0
-\si{\per\cubic\centi\metre}, unless $INDPRO(12)=4, 5, 6, 7$.
+Cell volumes in the additional cell region are defaulted to \SI{1.0}{\per\cubic\centi\metre}, unless $INDPRO(12)=4, 5, 6, 7$.
 
 
 \paragraph{Vacuum zones: no collision processes}

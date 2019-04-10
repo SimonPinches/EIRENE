@@ -640,7 +640,7 @@ Energy is sampled from a Thompson distribution, using the
 flag EWBIN (see below) as parameter for the surface binding energy
 \end{list}
 
-Default: EWALL = +0.0388 ($\simeq$ TW = 0.026 \si{\electronvolt}  $\simeq$  300 \si{\kelvin})
+Default: EWALL = +0.0388 ($\simeq$ TW = \SI{0.026}{\electronvolt} $\simeq$ \SI{300}{\kelvin})
 
 Note that the $EWALL > 0 $ option enables EIRENE to include
 boundary conditions in ``one speed transport equation'' approximations,
@@ -931,7 +931,7 @@ for particles with temperature $T$ [\si{\kelvin}] and mass $m$ [AMU] is related 
 S = A \cdot (1 - RECYCT) \cdot 3.638 \cdot \sqrt{T/m} = \tilde A \cdot 3.638 \cdot \sqrt{T/m}
 \end{equation}
 If the surface area is given in [\si{\square\metre}], $S$ in [\si{\cubic\metre\per\second}], then the
-numerical factor becomes 36.38 .
+numerical factor becomes \num{36.38}.
 
 Note: the first two factors define an \emph{effective exposed area} $\tilde A$, across which particles with a thermal velocity would be removed.
 The remaining factors are the (thermal) effective velocity
