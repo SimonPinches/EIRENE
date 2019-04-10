@@ -2488,7 +2488,7 @@ Details of options available in EIRENE for time dependent problems are also give
 The following issues have to be considered in case of time-dependent coupling schemes to external plasma fluid solvers,
 see \cref{flow03}:
 
-The coupling is explicit, hence CFL-type conditions for the
+The coupling is explicit, hence \ac{CFL} type conditions for the
 time-step have to be obeyed. Here this means: the time-step must
 be shorter than the time between re-ionization and subsequent
 neutralization (in the volume or at the targets), because the fate
@@ -2534,7 +2534,7 @@ This is justified as long as the gas dynamics is fast compared to the plasma dyn
 time step $\Delta t$ used in the \ac{CFD} plasma simulation.
 
 In particular in high density, low temperature detached divertor plasmas this ordering may not necessarily be correct any longer, and a
-time dependent mode of operation of EIRENE for the coupling may be required due to CFL constrains.
+time dependent mode of operation of EIRENE for the coupling may be required due to \ac{CFL} constrains.
 
 The full exploration of this option,
 which was implemented into EIRENE in the mid nineties of the last century for \ac{ELM} simulations, has not yet happened  with respect to
