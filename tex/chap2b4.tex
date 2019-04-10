@@ -508,7 +508,7 @@ nine parameters).
 \begin{list}{ }{}
 \item[{H.1 }]
 single parameter fit for
-cross section $\sigma (cm^2)$ as function of energy ELAB (eV),
+cross section $\sigma (\si{\square\centi\metre})$ as function of energy ELAB (eV),
 with ELAB = $m_{Lab} / 2  \cdot  v_{rel}^2 $
 (For the definition of $m_{Lab}$ = MASSP : see below.
 \item[{H.2 }]
@@ -521,7 +521,7 @@ double parameter fit of rate coefficient $\langle \sigma v
 temperature (eV)
 \item[{H.4 }]
 double parameter fit of rate coefficient $\langle \sigma v \rangle
-(\si{\cubic\centi\metre\per\second})$ as function of target density $(cm^{-3})$ and target
+(\si{\cubic\centi\metre\per\second})$ as function of target density (\si{\per\cubic\centi\metre}) and target
 temperature (eV)
 \item[{H.5 }]
 single parameter fit of target particle momentum weighted rate
@@ -582,7 +582,7 @@ EIRENE post processing routines in code section ``output", routines: Ba$\_$alpha
 \begin{list}{ }{}
 \item[{H.4 }]
 double parameter table of rate coefficient $\langle \sigma v \rangle
-(\si{\cubic\centi\metre\per\second})$ as function of target density $(cm^{-3})$ and target
+(\si{\cubic\centi\metre\per\second})$ as function of target density (\si{\per\cubic\centi\metre}) and target
 temperature (eV) read from files containing 2D tabulated rate coefficients, i.e. rate coefficients tabulated vs. 2 independent parameters.
 This option uses the \ac{ADAS} adf11 file format as guidance and is developed\slash adapted from it for more general
 A\&M data structures.
@@ -1752,7 +1752,7 @@ IFTFLG $=$ 2    :  generalized Morse potential as described in \cite{kn:Bachmann
 
 \textbf{b) for cross sections, rate coefficients, rates:}
 
-IFTFLG $<$ 100  :  rate coeff. or cross section, $[\si{\cubic\centi\metre\per\second}]$ or $[cm^2]$.
+IFTFLG $<$ 100  :  rate coeff. or cross section, [\si{\cubic\centi\metre\per\second}] or [\si{\square\centi\metre}].
 
 IFTFLG $>$ 100  :  rate = density * rate coeff,  $[s]$
                  (e.g. used for spontaneous decay, e.g. radiative decay.
