@@ -13,6 +13,8 @@ Contributors can speed up the integration of corrections or improvements by focu
 ## Style guide
 
 * keep number of Underful/Overful boxes and Warnings as small as possible 
+* use the `cleveref` package for in-document references, e.g. `\cref{.}`, `\Cref{.}`, to preserve a common style
+* use the `acronym` package for acronyms, i.e. define new acronyms via `\acro{}{}` at the end of `eirene.tex` and use any acronym via `\ac`, `\acp`, etc.
 
 ## Contribution flow
 
