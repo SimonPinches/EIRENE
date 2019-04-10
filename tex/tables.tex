@@ -147,7 +147,7 @@ Input, Module: COMUSR}}
     \\ \hline
  -13 & EDRIFT$^*$ & Kinetic energy in drift motion, Bulk Ions &NPLS & $eV$ & /
     \\ \hline
- -14 & VOL & Zone Volume & 1 & $cm^{3}$ & /
+ -14 & VOL & Zone Volume & 1 & \si{\cubic\centi\metre} & /
     \\ \hline
  -15 & WGHT $^{**}$ & unused, importance fct.  & NSPCMC & $ 1 $ & /
  \\ \hline
@@ -511,7 +511,7 @@ vector given by input tallies Bxin, Byin, Bzin,
 then the scalar product $\langle e_{\vec B},
 \vec{\Delta Mom}\rangle$ is used for scoring.
 \item[CG]  Collision estimator for generation limit (for fluid limit) tallies. These tallies contain particle, momentum and energy fluxes
-(per cell or per $cm^3$), when particles are removed from the fully kinetic tracing, due to e.g. transition into a
+(per cell or per \si{\cubic\centi\metre}), when particles are removed from the fully kinetic tracing, due to e.g. transition into a
 diffusive or other continuum regime. These fluxes are scored in COLLIDE.F, i.e. by collision estimators by nature.
 \end{itemize}
 
@@ -841,7 +841,7 @@ interfacing to the particular external plasma codes B2, B2.5, etc. are described
     \\ \hline
  -13 & EDRIFT$^*$ & Kinetic energy in drift motion, Bulk Ions &NPLS & $eV$
     \\ \hline
- -14 & VOL & Zone Volume & 1 & $cm^{3}$
+ -14 & VOL & Zone Volume & 1 & \si{\cubic\centi\metre}
     \\ \hline
  -15 & WGHT$^{**}$ & Space and species dependent importance & NSPCMC & $ 1 $
     \\ \hline
@@ -910,7 +910,7 @@ see INDPRO(5) options for magnetic field tallies in input block 5 (\cref{sec2.5}
  14 & PMML &Particle Source (Molecules) from molecule-plasma coll.
     & NMOL &amp*\si{\per\cubic\centi\metre} & T14   \\  \hline
  15 & PMIO &Particle Source (Test Ions) from molecule-plasma coll.
-    &NION&amp*$cm^{3}$ & T15     \\   \hline
+    &NION&amp*\si{\cubic\centi\metre} & T15     \\   \hline
  16 & PMPL &Particle Source (Bulk Ions) from molecule-plasma coll.
     &NPLS&amp*\si{\per\cubic\centi\metre} & T16    \\    \hline
  17 & PIEL &Particle Source (Electrons) from test ion-plasma coll.

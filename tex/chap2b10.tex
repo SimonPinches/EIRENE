@@ -126,10 +126,10 @@ for scaling factor for this tally (carried out in subroutine
 MCARLO)
 \begin{list}{ }{}
 \item[{= 1 }]
-scale tally per unit volume $[1/cm^3]$. The tally is printed and
+scale tally per unit volume [\si{\per\cubic\centi\metre}]. The tally is printed and
 plotted in the units
 
-$[1/cm^3] \cdot [$units of $g^*] \cdot [cm] \cdot
+$[\si{\per\cubic\centi\metre}] \cdot [$units of $g^*] \cdot [cm] \cdot
 [$source strength FLUX$]$
 
 however, with FLUX converted to units $[1/s]$ (rather than input units $[Ampere]$).
@@ -138,7 +138,7 @@ $g$ and $g^*$ see \cref{sec3.2}, the variable FLUX is explained in
 input block no. 7 (\cref{sec2.7}). This scaling is default for ``density tallies" of particles, momentum and energy.
 \item[{= 2 }]
 scale tally per unit cell. Same units as above, however not per
-$cm^3$ but per cell instead.
+\si{\cubic\centi\metre} but per cell instead.
 \item[{= 3 }]
 same as IADVE = 1, but with FLUX in Ampere, rather than 1/s.
 This scaling is default for ``source rate tallies", e.g. for particle, momentum and energy sources.
@@ -154,9 +154,9 @@ default source and sink terms is as for IADVE=3 option.
 
 If instead also for particle- or energy densities tallies 1 to 8 the scaling IADVE=3 would
 have been used, then, for example, particle densities would have
-been in units $[AMP \cdot s / cm^3]$ (``atomic charge density")
-rather than $[1/cm^3]$. Energy densities would have been in $[W
-\cdot s/ cm^3]$ rather than $[eV/cm^3]$.
+been in units $[AMP \cdot \si{\second\per\cubic\centi\metre}]$ (``atomic charge density")
+rather than [\si{\per\cubic\centi\metre}]. Energy densities would have been in $[W
+\cdot \si{\second\per\cubic\centi\metre}]$ rather than $[eV\si{\per\cubic\centi\metre}]$.
 \begin{list}{ }{}
 \item[\textbf{IADVS }]
 species index of default volume averaged tally,

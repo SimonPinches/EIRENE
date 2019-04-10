@@ -925,7 +925,7 @@ INDEX = 4+5*NPLS    :   \\
 Magnetic field, magnitude, (T)
 \item
 INDEX = 5+5*NPLS    :   \\
-Cell volume, ($cm^3$)
+Cell volume, (\si{\cubic\centi\metre})
 \item
 INDEX = 6+5*NPLS    :   \\
 Additional tally, NAINI calls, one for each additional quantity.
@@ -1155,7 +1155,7 @@ VOLUME in case of LEVGEO=10. The call is
 CALL VOLUSR(N,A)
 \end{verbatim}
 Here N is the total number of cells in this run, and
-A is an array of length N, containing the N cell volume values in $cm^3$.
+A is an array of length N, containing the N cell volume values in \si{\cubic\centi\metre}.
 \subsection{Subroutine NORUSR}
 \label{sec3.8.4} The subroutine NORUSR provides the outer surface normal unit vector CX,CY,CZ at surfaces,
 i.e. after a particle trajectory has intersected a ``non default grid surface" at point X,Y,Z.
