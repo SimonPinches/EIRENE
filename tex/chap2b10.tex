@@ -132,7 +132,7 @@ plotted in the units
 $[\si{\per\cubic\centi\metre}] \cdot [$units of $g^*] \cdot [\si{\centi\metre}] \cdot
 [$source strength FLUX$]$
 
-however, with FLUX converted to units $[1/s]$ (rather than input units $[Ampere]$).
+however, with FLUX converted to units [\si{\per\second}] (rather than input units $[Ampere]$).
 For the definition of the detector functions
 $g$ and $g^*$ see \cref{sec3.2}, the variable FLUX is explained in
 input block no. 7 (\cref{sec2.7}). This scaling is default for ``density tallies" of particles, momentum and energy.
@@ -140,10 +140,10 @@ input block no. 7 (\cref{sec2.7}). This scaling is default for ``density tallies
 scale tally per unit cell. Same units as above, however not per
 \si{\cubic\centi\metre} but per cell instead.
 \item[{= 3 }]
-same as IADVE = 1, but with FLUX in Ampere, rather than 1/s.
+same as IADVE = 1, but with FLUX in Ampere, rather than \si{\per\second}.
 This scaling is default for ``source rate tallies", e.g. for particle, momentum and energy sources.
 \item[{= 4 }]
-same as IADVE = 2, but with FLUX in Ampere, rather than 1/s.
+same as IADVE = 2, but with FLUX in Ampere, rather than \si{\per\second}.
 \item[{else }]
 no re-scaling done, units as chosen in subroutine UPTUSR.
 \end{list}
@@ -221,7 +221,7 @@ this evaluation of error estimates for such combinations of tally is, however, i
 out only in a proprietary code segment (available from the author).
 
 E.g., the total electron particle source due to test particle - plasma
-interaction in units: \#/s/m$^3$ can be obtained by the line:
+interaction in units: \si{\#\per\second\per\cubic\metre} can be obtained by the line:
 
 ($\langle 1,7\rangle +\langle 1,12\rangle +\langle 1,17\rangle) * \langle 1.e6\rangle /\langle 1.6022e-19\rangle$
 

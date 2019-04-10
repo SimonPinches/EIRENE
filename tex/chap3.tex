@@ -476,7 +476,7 @@ particle weight WEIGHT). Here $g$ is evaluated at the point of time $t^*$
 at which TIMCOL is called. Scaling of snapshot tallies is done by
 interpreting the linear source strength ``FLUX" scaling factor
 (given in input block 7 (\cref{sec2.7}) for each stratum) as a total
-number of particles, rather than as flux (particles/s), i.e. ``FLUX is the
+number of particles, rather than as flux (particles~\si{\per\second}), i.e. ``FLUX is the
 integral of the source distribution not only over physical space, but also over time interval $DTIMV$ from initial time $t_0$
 to time $t^*$ (\cref{sec2.13}).
 \subsubsection{B: stationary snapshot tallies}\label{sec3.2.3b}
@@ -1134,7 +1134,7 @@ of the flight.
 distance (\si{\centi\metre}) from [X0,Y0,Z0]
 to the nearest intersection of the trajectory with a
 boundary of cell NRCELL.  Since the speed vector [VELX,VELY,VELZ] is normalized to one (\si{\centi\metre\per\second}),
-this distance is also the flight time (s)
+this distance is also the flight time (\si{\second})
 \item[\textbf{ICOS }]
 only relevant, if the trajectory has intersected a non-default surface.
 In this case, ICOS is the sign (+1 or -1) of the cosine of the angle of

@@ -78,26 +78,24 @@ cgs units are used, with two exceptions:
 
 All \textbf{temperatures and energies} are in \si{\electronvolt}.
 
-All \textbf{particle fluxes} are in Ampere (i.e. $\#/s \cdot 1.6022
+All \textbf{particle fluxes} are in Ampere (i.e. $\si{\#\per\second} \cdot 1.6022
 10^{-19}$), even neutral particle fluxes. Since energies are given in \si{\electronvolt} units, a particle flux $\times$ energy is already in \si{\watt}.
 
 
 E.g., to convert a \textbf{gas flow rate} $Q$ (= ``mass-flow rate" at temperature $T_0$), which is a quantity given with dimension
 pressure times volume divided by time, to a particle flux (source strength, given in 1/\;time), one utilizes
-the universal gas law $P \times V = N \times k_B T$ to convert from pressure times volume (typically at standard temperature $T_0= 273.15\; K$)
+the universal gas law $P \times V = N \times k_B T$ to convert from pressure times volume (typically at standard temperature $T_0= 273.15\; \si{\kelvin}$)
 to the number $N$ of particles.
-For example  $x$ sl/min (standard liters per
-minute) first divide $x$ by 22.4 (then: mol/min, at ``standard conditions" = normal pressure $1013.25\; mbar$ and normal temperature $T_0$). Next multiply by
-Avogadro's no. $N_A = 6.0221 \cdot 10^{23}$, (i.e., then particles per
-minute), then divide by $60$ (then: particles per second), and
+For example  $x$ \ac{SLPM} first divide $x$ by 22.4 (then: \si{\mole\per\minute}, at ``standard conditions" = normal pressure $1013.25\; \si{\milli\bar}$ and normal temperature $T_0$). Next multiply by
+Avogadro's no. $N_A = 6.0221 \cdot 10^{23}$, (i.e., then particles~\si{\per\minute}), then divide by $60$ (then: particles~\si{\per\second}), and
 finally multiply by the elementary charge $1.6022 \cdot 10^{-19}$ (then
-Ampere, as used for particle fluxes in EIRENE).
-Gas (mass-) flow rates given in other units, e.g. $Torr\; m^3/s$ are converted correspondingly.
+\si{\ampere}, as used for particle fluxes in EIRENE).
+Gas (mass-) flow rates given in other units, e.g. \si{\torr\cubic\metre\per\second} are converted correspondingly.
 
 Another frequently used dimensional quantity is the (effective) \textbf{pumping speed} $S$, and also \textbf{conductance} $L$ which both have
 dimension volume / time (e.g. litres/sec), i.e. these are ``volumetric flow rates" rather than mass flow rates. Multiplying these volume flow rates
 by the entrance gas pressure
-(or by the pressure difference in case of conductance) produces the (pump-) throughput, a mass flow rate again, i.e., at given temperature a ``pumped particle flux" (1/s).
+(or by the pressure difference in case of conductance) produces the (pump-) throughput, a mass flow rate again, i.e., at given temperature a ``pumped particle flux" (\si{\per\second}).
 
 Pumping speeds and conductances typically depend on pressure themselves, and on temperature $T$ and the type of gas (mass $m$). In the molecular flow regime
 the pressure dependence in $S, L$ diminishes, and $S$ ($L$) can be written as product $S,L =A_{S,L} \cdot v$,
@@ -145,11 +143,11 @@ Hence, conversion from
 $g~\si{\centi\metre\per\second\ampere} $
 into $Pa \cdot m^2$ (momentum source per cell in plasma momentum
 balance equations in SI units) is done by firstly multiplying with $10^{-5}$
-(then: $kg \cdot m/s \cdot \si{\ampere}$)
+(then: $\si{\kilo\gram} \cdot \si{\metre\per\second} \cdot \si{\ampere}$)
 and then dividing by
-$1.6022 \cdot 10^{-19}$ (hence: $kg \cdot m/s^2$).
-After dividing by the cell volume ($m^3$)
-the momentum source is in $Pa/m$, or $N/m^3$ (force density).
+$1.6022 \cdot 10^{-19}$ (hence: $\si{\kilo\gram} \cdot \si{\metre\per\square\second}$).
+After dividing by the cell volume (\si{\cubic\metre})
+the momentum source is in \si{\pascal\per\metre}, or \si{\newton\per\cubic\metre} (force density).
 
 
 \medskip

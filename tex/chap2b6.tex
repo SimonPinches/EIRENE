@@ -925,12 +925,12 @@ self-explaining.
 The flag RECYCT described in the previous section is also used to specify surface pumping in the following way:
 
 Let $A$ be the surface area [\si{\square\centi\metre}] of a surface (additional surface or non-default standard surface) as seen by test particles,
-to which a given pumping speed $S$ is to be assigned. Then the pumping speed $S$ [liters/s]
+to which a given pumping speed $S$ is to be assigned. Then the pumping speed $S$ [\si{\litre\per\second}]
 for particles with temperature $T$ [K] and mass $m$ [AMU] is related to the sticking fraction $p_a = 1 -RECYCT$ by
 \begin{equation}\label{pumping-speed}
 S = A \cdot (1 - RECYCT) \cdot 3.638 \cdot \sqrt{T/m} = \tilde A \cdot 3.638 \cdot \sqrt{T/m}
 \end{equation}
-If the surface area is given in $[m^2]$, $S$ in $[m^3/s]$, then the
+If the surface area is given in [\si{\square\metre}], $S$ in [\si{\cubic\metre\per\second}], then the
 numerical factor becomes 36.38 .
 
 Note: the first two factors define an \emph{effective exposed area} $\tilde A$, across which particles with a thermal velocity would be removed.
@@ -941,7 +941,7 @@ The pump-throughput (pumped flux), (mass flow rate) $Q$ is the product of pressu
 
 $Q_{pump} = P \cdot S$,
 
-and, for a given type of gas ($m$) and gas temperature $T$  the pump-throughput is given e.g. in flux units 1/s, (or: \si{\ampere}),
+and, for a given type of gas ($m$) and gas temperature $T$  the pump-throughput is given e.g. in flux units \si{\per\second}, (or: \si{\ampere}),
 or as mass flow with dimension pressure times volume per time.
 
 The temperature $T$ and type of gas (given by $m$) are part of the specification of $S$, e.g. to be found from the technical specification of the pump.

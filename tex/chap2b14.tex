@@ -201,15 +201,15 @@ poloidal magnetic field (or flux surfaces), and ``y-surfaces", running from sout
 They are read in the following sequence,
 \begin{list}{ }{}
 \item[{= 1 }] DI :plasma ion density $[m^{-3}]$, cell centered
-\item[{= 2 }] UU :poloidal velocity $[m/s]$, x-surface centered
-\item[{= 3 }] VV :radial velocity $[m/s]$, y-surface centered
+\item[{= 2 }] UU :poloidal velocity [\si{\metre\per\second}], x-surface centered
+\item[{= 3 }] VV :radial velocity [\si{\metre\per\second}], y-surface centered
 \item[{= 4 }] TE :electron temperature $[J]$, cell centered
 \item[{= 5 }] TI :ion temperature $[J]$, cell centered
 \item[{= 6 }] PR :plasma pressure $[N/m^2]$, cell centered
-\item[{= 7 }] UP :parallel velocity $[m/s]$, x-surface centered
+\item[{= 7 }] UP :parallel velocity [\si{\metre\per\second}], x-surface centered
 \item[{= 8 }] RR :pitch angle $[1]$, cell centered
-\item[{= 9 }] FNIX: Particle fluxes along the field $[1/s]$, x-surface centered
-\item[{= 10 }] FNIY Particle fluxes across the field $[1/s]$, y-surface centered
+\item[{= 9 }] FNIX: Particle fluxes along the field [\si{\per\second}], x-surface centered
+\item[{= 10 }] FNIY Particle fluxes across the field [\si{\per\second}], y-surface centered
 \item[{= 11 }] FEIX Ion energy fluxes along the field [\si{\watt}], x-surface centered
 \item[{= 12 }] FEIY Ion energy fluxes across the field [\si{\watt}], y-surface centered
 \item[{= 13 }] FEEX Electron energy fluxes along the field [\si{\watt}], x-surface centered
@@ -522,13 +522,13 @@ the following ``B2-quantities" can be selected.
 $1 \le NAINT \le 16 :$
 \begin{list}{ }{}
 \item[{= 1 }] DI :plasma ion density $[m^{-3}]$, also on DIIN, by IPLS species
-\item[{= 2 }] UU :poloidal velocity $[m/s]$
-\item[{= 3 }] VV :radial velocity $[m/s]$
+\item[{= 2 }] UU :poloidal velocity [\si{\metre\per\second}]
+\item[{= 3 }] VV :radial velocity [\si{\metre\per\second}]
 \item[{= 6 }] PR :plasma pressure $[N/m^2]$
-\item[{= 7 }] UP :parallel velocity $[m/s]$
+\item[{= 7 }] UP :parallel velocity [\si{\metre\per\second}]
 \item[{= 8 }] RR :pitch angle $[1]$
-\item[{= 9 }] FNIX: Particle fluxes along the field $[1/s]$
-\item[{= 10 }] FNIY Particle fluxes across the field $[1/s]$
+\item[{= 9 }] FNIX: Particle fluxes along the field [\si{\per\second}]
+\item[{= 10 }] FNIY Particle fluxes across the field [\si{\per\second}]
 \item[{= 11 }] FEIX Ion energy fluxes along the field [\si{\watt}]
 \item[{= 12 }] FEIY Ion energy fluxes across the field [\si{\watt}]
 \item[{= 13 }] FEEX Electron energy fluxes along the field [\si{\watt}]
@@ -629,10 +629,10 @@ achieve full symmetry of boundary condition options between east-west and north-
 (up to the real vacuum vessel)
 in which boundary conditions on strongly inclined surfaces are defined.
 \begin{list}{ }{}
-\item[{ 1 }] v\_par,x: parallel velocity $[m/s]$, x-surface (across field, East)  centered
-\item[{ 2 }] v\_par,y: parallel velocity $[m/s]$, y-surface (along field, North) centered
-\item[{ 3 }] v\_rad,x: plasma ion density $[m/s]$, x-surface (across field, East)  centered
-\item[{ 4 }] v\_rad,y: poloidal velocity $[m/s]$, y-surface (along field, North) centered
+\item[{ 1 }] v\_par,x: parallel velocity [\si{\metre\per\second}], x-surface (across field, East)  centered
+\item[{ 2 }] v\_par,y: parallel velocity [\si{\metre\per\second}], y-surface (along field, North) centered
+\item[{ 3 }] v\_rad,x: plasma ion density [\si{\metre\per\second}], x-surface (across field, East)  centered
+\item[{ 4 }] v\_rad,y: poloidal velocity [\si{\metre\per\second}], y-surface (along field, North) centered
 \item[{ 5 }] $\delta_e$\_par,x:   x-surface (across field, East)  centered
 \item[{ 6 }] $\delta_e$\_par,y:   y-surface (along field, North) centered
 \item[{ 7 }] $\delta_e$\_rad,x:   x-surface (across field, East)  centered
