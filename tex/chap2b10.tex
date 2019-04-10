@@ -156,7 +156,7 @@ If instead also for particle- or energy densities tallies 1 to 8 the scaling IAD
 have been used, then, for example, particle densities would have
 been in units $[AMP \cdot \si{\second\per\cubic\centi\metre}]$ (``atomic charge density")
 rather than [\si{\per\cubic\centi\metre}]. Energy densities would have been in $[W
-\cdot \si{\second\per\cubic\centi\metre}]$ rather than $[\si{\electronvolt}\si{\per\cubic\centi\metre}]$.
+\cdot \si{\second\per\cubic\centi\metre}]$ rather than $[\si{\electronvolt\per\cubic\centi\metre}]$.
 \begin{list}{ }{}
 \item[\textbf{IADVS }]
 species index of default volume averaged tally,
@@ -264,10 +264,10 @@ $\langle 1.8792e+35\rangle/\langle 2.0\rangle*
 (\langle i,85\rangle*\langle i,85\rangle+
  \langle i,89\rangle*\langle i,89\rangle+
  \langle i,93\rangle*\langle i,93\rangle)/
- \langle i,1\rangle)$ is the dynamic pressure, scaled to \si{\electronvolt}~\si{\cubic\centi\metre} units
+ \langle i,1\rangle)$ is the dynamic pressure, scaled to \si{\electronvolt\cubic\centi\metre} units
 of atoms, with atomic weight $\langle 2.0\rangle$ in atomic mass units in this example.
 The numerical factor $1.8792e+35$ is, in EIRENE unit conversion variables, is given
-by CVELI2/AMUA/AMUA, (defined in SETCON.F), and the momentum density tallies 85, 89 and 93 are in g \si{\centi\metre\per\second} \si{\per\cubic\centi\metre}.
+by CVELI2/AMUA/AMUA, (defined in SETCON.F), and the momentum density tallies 85, 89 and 93 are in g \si{\centi\metre\per\second\per\cubic\centi\metre}.
 \end{itemize}
 \subsection{Additional surface averaged tallies}\label{sec2.10E}
 
@@ -354,9 +354,9 @@ type of spectrum:
 
 \textbf{for surface averaged spectra (i.e. ISRFCLL=0):}
 
-flux-spectrum (ISPTYP=1) , [\si{\ampere}/\si{\electronvolt}]
+flux-spectrum (ISPTYP=1) , [\si{\ampere\per\electronvolt}]
 
-or energy-flux spectrum (ISPTYP=2) [\si{\watt}/\si{\electronvolt}]
+or energy-flux spectrum (ISPTYP=2) [\si{\watt\per\electronvolt}]
 
 Currently only surface ``incident fluxes". Spectra for surfaces ``emitted fluxes" (outgoing)
 are not yet available.
@@ -365,22 +365,22 @@ are not yet available.
 
 \textbf{case a:} no direction specified: IDIREC=0
 
-energy distribution (ISPTYP=1) , [\si{\per\cubic\centi\metre}/\si{\electronvolt}]
+energy distribution (ISPTYP=1) , [\si{\per\cubic\centi\metre\per\electronvolt}]
 
-energy weighted energy distribution (ISPTYP=2) [\si{\electronvolt}*\si{\per\cubic\centi\metre}/\si{\electronvolt}]
+energy weighted energy distribution (ISPTYP=2) [\si{\electronvolt\per\cubic\centi\metre\per\electronvolt}]
 
-velocity weighted energy distribution (ISPTYP=3) [\si{\centi\metre\per\second} *\si{\per\cubic\centi\metre}/\si{\electronvolt}]
+velocity weighted energy distribution (ISPTYP=3) [\si{\centi\metre\per\second\per\cubic\centi\metre\per\electronvolt}]
 
 \textbf{case b:} direction specified: IDIREC=1
 
 
-velocity distribution along specified direction, binned in energy units (ISPTYP=1) , [\si{\per\cubic\centi\metre}/\si{\electronvolt}]
+velocity distribution along specified direction, binned in energy units (ISPTYP=1) , [\si{\per\cubic\centi\metre\per\electronvolt}]
 
 energy weighted velocity distribution along specified direction, put into bins in energy units
-(ISPTYP=2) [\si{\electronvolt}*\si{\per\cubic\centi\metre}/\si{\electronvolt}]
+(ISPTYP=2) [\si{\electronvolt\per\cubic\centi\metre\per\electronvolt}]
 
 velocity weighted velocity distribution along specified direction,
-put into bins in energy units (ISPTYP=3) [\si{\centi\metre\per\second} *\si{\per\cubic\centi\metre}/\si{\electronvolt}]
+put into bins in energy units (ISPTYP=3) [\si{\centi\metre\per\second\per\cubic\centi\metre\per\electronvolt}]
 
 
 \item[\textbf{IDIREC, SPCVX, SPCVY, SPCVZ}]
