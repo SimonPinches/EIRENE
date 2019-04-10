@@ -37,7 +37,7 @@ per grid cell), so called ``input tallies", namely
     \item NPLS arrays (one for each bulk ion species), ion densities $n_i   ( cm^{-3} )$ (DIIN),
     \item either one common or NPLS distinct
 (one for each bulk ion species) arrays for the (cartesian) drift velocities
-           $\vV = ( V_x , V_y , V_z )$ (VXIN, VYIN, VZIN), either in cm/s or Mach number
+           $\vV = ( V_x , V_y , V_z )$ (VXIN, VYIN, VZIN), either in \si{\centi\metre\per\second} or Mach number
          units.
 \end{itemize}
 
@@ -146,7 +146,7 @@ TVAC = 2.0000E-02 eV
 Furthermore, zero plasma drift velocities are set in cells which are
 treated as vacuum zones.
 
-VVAC = 0.0000E 00  cm/s
+VVAC = 0.0000E 00  \si{\centi\metre\per\second}
 
 for all three cartesian components and for all NPLS background particle species.
 
@@ -376,7 +376,7 @@ read NPLSI cards, for VXIN, VYIN, VZIN , IPLS = 1,NPLSI
 \textbf{New options since 2001:}
 
 By the default ($\emph{0} < \emph{INDPRO(4)} < \emph{10}$): one separate flow field for
-each bulk species is set, velocity is given in cm/sec.
+each bulk species is set, velocity is given in \si{\centi\metre\per\second}.
 
 Negative value of INDPRO(4) means: Mach number
 units instead. The sound speed \emph{cs} is taken to be the isothermal
