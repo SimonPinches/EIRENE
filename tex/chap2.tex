@@ -115,12 +115,12 @@ Note: consequently, e.g., energy densities are in $\si{\electronvolt\per\cubic\c
 energy fluxes are given in $\si{\electronvolt} \cdot \si{\ampere}$, i.e., in \si{\watt}.
 
 Hence: In order to convert from EIRENE \textbf{energy density} units ($\si{\electronvolt\per\cubic\centi\metre}$) into  \textbf{pressure}
-units in $N/m^2$
-(i.e., Pascal: Pa) one must multiply by $1.6022 \cdot 10^{-19}$ (\si{\electronvolt} to Nm)
-and multiply by $10^6$ ($\si{\per\cubic\centi\metre} \rightarrow m^{-3}$. Check: 1 Pa gas at 300 K corresponds to
+units in \si{\newton\per\square\metre}
+(i.e., Pascal: \si{\pascal}) one must multiply by $1.6022 \cdot 10^{-19}$ (\si{\electronvolt} to \si{\newton\metre})
+and multiply by $10^6$ ($\si{\per\cubic\centi\metre} \rightarrow \si{\per\cubic\metre}$). Check: 1 \si{\pascal} gas at 300 \si{\kelvin} corresponds to
 about $2.7 \cdot 10^{14} \times 0.026~ \si{\electronvolt\per\cubic\centi\metre} \approx 7 \cdot 10^{12}~ \si{\electronvolt\per\cubic\centi\metre}$, or:
-a gas pressure P in Pa, at gas temperature T (Kelvin) corresponds to a gas density n with $n (m^{-3}) = P/k_B T$,
-with $k_B =1.38 \cdot 10^{-23}$ the Boltzmann constant in J/K units. At 300 K and 1 Pa, the corresponding gas density is $n=2.415...10^{20} m^{-3} = 2.415...10^{14} \si{\per\cubic\centi\metre}$.
+a gas pressure P in \si{\pascal}, at gas temperature T (\si{\kelvin}) corresponds to a gas density n with $n (\si{\per\cubic\metre}) = P/k_B T$,
+with $k_B =1.38 \cdot 10^{-23}$ the Boltzmann constant in \si{\joule\per\kelvin} units. At 300 \si{\kelvin} and 1 \si{\pascal}, the corresponding gas density is $n=2.415...10^{20} \si{\per\cubic\metre} = 2.415...10^{14} \si{\per\cubic\centi\metre}$.
 
 For example, energy densities as computed by EIRENE defaults
 tallies 5, 6, 7 and 8 (see \cref{tab2}) must be converted into
@@ -130,7 +130,7 @@ described above.
 
 For further scaling to other pressure units note, e.g.:
 
-101.3 Pa = 760 mTorr = 1 mBar
+101.3 \si{\pascal} = 760 \si{\milli\torr} = 1 \si{\milli\bar}
 
 
 Further: momentum is in $g~\si{\centi\metre\per\second}$, and a \textbf{momentum flux}
@@ -140,8 +140,8 @@ in the EIRENE tallies for interfacing with plasma codes is then in
 $g~\si{\centi\metre\per\second\ampere\per\cubic\centi\metre}$.
 
 Hence, conversion from
-$g~\si{\centi\metre\per\second\ampere} $
-into $Pa \cdot m^2$ (momentum source per cell in plasma momentum
+\si{\gram\centi\metre\per\second\ampere}
+into $\si{\pascal} \cdot \si{\square\metre}$ (momentum source per cell in plasma momentum
 balance equations in SI units) is done by firstly multiplying with $10^{-5}$
 (then: $\si{\kilo\gram} \cdot \si{\metre\per\second} \cdot \si{\ampere}$)
 and then dividing by

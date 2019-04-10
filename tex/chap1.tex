@@ -926,7 +926,7 @@ is determined by the input flags in the corresponding input block for standard g
 i.e. in input block 2A for the x-coordinate, input block 2B for the y-coordinate and input block
 2C for the z-coordinate, see \cref{sec2.2}. Note that the numerical value of source strength
 ``FLUX" (block 7) corresponds to the choice of e.g. $dz$. If $dz=1$ \si{\centi\metre}, then ``FLUX" is the number of particles
-per unit time and per \si{\centi\metre} in z-direction. If $dz=1$ m, then the same value of variable ``FLUX"
+per unit time and per \si{\centi\metre} in z-direction. If $dz=1$ \si{\metre}, then the same value of variable ``FLUX"
 would correspond to the 100 times smaller source strength of ``FLUX" particles per unit time and per meter.
 All resulting volume averaged output tallies would have a value 100 times smaller. A particle density
 might then also be interpreted as surface density (particle per unit area).
@@ -2851,7 +2851,7 @@ $n_N$ the gas density (\si{\per\cubic\centi\metre}) and $L$ is a characteristic 
 (\si{\centi\metre}). Fixing the hard sphere molecular diameter at $d=4 \cdot
 10^{-8}$ \si{\centi\metre} results in a typical cross section $\sigma_{el}$ of $(1-2) \cdot
 10^{-15}$ \si{\square\centi\metre} to be used in this Knudsen number.  For a gas temperature  of
-300 K and a pressure of 1 Pa ($n_N=2.414 \times 10^{14} \si{\per\cubic\centi\metre} )$ we then obtain:
+300 \si{\kelvin} and a pressure of 1 \si{\pascal} ($n_N=2.414 \times 10^{14} \si{\per\cubic\centi\metre} )$ we then obtain:
 \begin{equation}
 \lambda_{el} (\si{\centi\metre}) = 1/(2.414\times 10^{14}\times 2\times 10^{-15}) \approx 2 ~\si{\centi\metre}
 \end{equation}
@@ -2873,7 +2873,7 @@ from such continuum limit considerations and the (experimentally determined) ``d
 where the proportionality factor $L_0$ (in \si{\centi\metre}) is typically in the range between 7 and 20 ($L_0 = 20$\,\si{\centi\metre} for D--D self collisions, $L_0 = 9.75$\,\si{\centi\metre} for D$_2$--D$_2$ self collisions and $L_0 = 8.7$\,\si{\centi\metre} for D$_2$--He cross collisions). $L_0$ is the \ac{BGK} mean free path (in \si{\centi\metre}) in a gas
 at $T = 1$ \si{\electronvolt} and density $n =1 \times 10^{14}$ \si{\per\cubic\centi\metre}.
 
-For the same conditions as above: $T=300$ K ($T=0.026$ \si{\electronvolt}) and a pressure of 1 Pa ($n_N=2.414 \times 10^{14} \si{\per\cubic\centi\metre} )$, one then finds $\lambda_{BGK}\approx 1.6 ~\si{\centi\metre}$
+For the same conditions as above: $T=300$ \si{\kelvin} ($T=0.026$ \si{\electronvolt}) and a pressure of 1 \si{\pascal} ($n_N=2.414 \times 10^{14} \si{\per\cubic\centi\metre} )$, one then finds $\lambda_{BGK}\approx 1.6 ~\si{\centi\metre}$
 in a $D_2$ gas.
 
 
