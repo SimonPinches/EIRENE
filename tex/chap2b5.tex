@@ -96,7 +96,7 @@ which is defaulted to 1.0D0 for all cells and all NSPZMC test particle species:
 NSPZMC = NATM + NMOL + NION + NPHOT.  WGHT is currently unused, and could in principle be eliminated
 from all current runs, in particular when storage limitations are a concern.
 
-It furthermore also applies to the zone volume array VOL $cm^{-3}$, $INDPRO(12)$.
+It furthermore also applies to the zone volume array VOL \si{\per\cubic\centi\metre}, $INDPRO(12)$.
 Defaults are the cell volumes computed in EIRENE subroutine VOLUME
 from the standard mesh data.
 
@@ -108,7 +108,7 @@ data" given below. Plasma data other than these ``vacuum values" (meaning: no co
 INDPRO=7 option (see below, this section).
 
 Cell volumes in the additional cell region are defaulted to 1.0
-$cm^{-3}$, unless $INDPRO(12)=4, 5, 6, 7$.
+\si{\per\cubic\centi\metre}, unless $INDPRO(12)=4, 5, 6, 7$.
 
 
 \paragraph{Vacuum zones: no collision processes}
