@@ -31,9 +31,9 @@ I.e.: the background medium is
 described by several blocks of NSBOX data each, (i.e. one datum
 per grid cell), so called ``input tallies", namely
 \begin{itemize}
-    \item one array for the electron temperature $T_e $ (eV) (TEIN),
+    \item one array for the electron temperature $T_e $ (\si{\electronvolt}) (TEIN),
     \item either one common or NPLS distinct
-(one for each bulk ion species) arrays for the ion temperature(s) $T_i$ (eV) (TIIN),
+(one for each bulk ion species) arrays for the ion temperature(s) $T_i$ (\si{\electronvolt}) (TIIN),
     \item NPLS arrays (one for each bulk ion species), ion densities $n_i   ( \si{\per\cubic\centi\metre} )$ (DIIN),
     \item either one common or NPLS distinct
 (one for each bulk ion species) arrays for the (cartesian) drift velocities
@@ -141,7 +141,7 @@ The EIRENE vacuum data are defaulted (in subroutine PLASMA) to:
 
 DVAC = 1.0000E 02 \si{\per\cubic\centi\metre}
 
-TVAC = 2.0000E-02 eV
+TVAC = 2.0000E-02 \si{\electronvolt}
 
 Furthermore, zero plasma drift velocities are set in cells which are
 treated as vacuum zones.
@@ -588,7 +588,7 @@ following quantities are defined there:
 Electron density (\si{\per\cubic\centi\metre}), derived from all NPLSI
 ion densities and the charge states NCHRGP(IPLS) of each ion species.
 \item[\textbf{EDRIFT }]
-Kinetic energy (eV) in drift motion, for each background species IPLS, derived from
+Kinetic energy (\si{\electronvolt}) in drift motion, for each background species IPLS, derived from
 the mass MASSP(IPLS) and the flow velocity VXIN,VYIN,VZIN.
 \item[\textbf{LGVAC }]
 Vacuum flag (logical) to identify regions, in which no collision data for all or

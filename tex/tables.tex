@@ -125,8 +125,8 @@ Input, Module: COMUSR}}
  &  \textbf{1.Dim.}
   & \textbf{Units} & \textbf{Estim.}   \\ \hline
 
- -1 & TEIN & Plasma Temperature, Electrons & 1 & $eV$ & /  \\ \hline
- -2 & TIIN & Plasma Temperature, Bulk Ions & NPLSTI & $eV$ & /  \\ \hline
+ -1 & TEIN & Plasma Temperature, Electrons & 1 & \si{\electronvolt} & /  \\ \hline
+ -2 & TIIN & Plasma Temperature, Bulk Ions & NPLSTI & \si{\electronvolt} & /  \\ \hline
  -3 & DEIN$^*$ & Plasma Density, Electrons & 1 & \si{\per\cubic\centi\metre} & /  \\ \hline
  -4 & DIIN & Plasma Density, Bulk Ions & NPLS & \si{\per\cubic\centi\metre} & / \\ \hline
  -5 & VXIN & Plasma Drift Velocity, x-component, Bulk Ions&NPLSV
@@ -145,7 +145,7 @@ Input, Module: COMUSR}}
     \\ \hline
  -12 & ADIN & Additional input tally & NAIN & see INFCOP & /
     \\ \hline
- -13 & EDRIFT$^*$ & Kinetic energy in drift motion, Bulk Ions &NPLS & $eV$ & /
+ -13 & EDRIFT$^*$ & Kinetic energy in drift motion, Bulk Ions &NPLS & \si{\electronvolt} & /
     \\ \hline
  -14 & VOL & Zone Volume & 1 & \si{\cubic\centi\metre} & /
     \\ \hline
@@ -248,13 +248,13 @@ Module: CESTIM}}
  \\ \hline
  4 & PDENPH & Particle density, Photons & NPHOT  & \si{\per\cubic\centi\metre} & TD
  \\ \hline
- 5 & EDENA & Energy density, Atoms & NATM       & eV*\si{\per\cubic\centi\metre} & TE
+ 5 & EDENA & Energy density, Atoms & NATM       & \si{\electronvolt}*\si{\per\cubic\centi\metre} & TE
  \\ \hline
- 6 & EDENM & Energy density, Molecules & NMOL   & eV*\si{\per\cubic\centi\metre} & TE
+ 6 & EDENM & Energy density, Molecules & NMOL   & \si{\electronvolt}*\si{\per\cubic\centi\metre} & TE
  \\ \hline
- 7 & EDENI & Energy density, Test Ions & NION   & eV*\si{\per\cubic\centi\metre} & TE
+ 7 & EDENI & Energy density, Test Ions & NION   & \si{\electronvolt}*\si{\per\cubic\centi\metre} & TE
  \\ \hline
- 8 & EDENPH & Energy density, Photons & NPHOT   & eV*\si{\per\cubic\centi\metre} & TE
+ 8 & EDENPH & Energy density, Photons & NPHOT   & \si{\electronvolt}*\si{\per\cubic\centi\metre} & TE
  \\ \hline
  9 & PAEL & Particle Source (Electrons) from atom-plasma coll.
    & 1 & \si{\ampere}* \si{\per\cubic\centi\metre} & TPS  \\ \hline
@@ -820,8 +820,8 @@ interfacing to the particular external plasma codes B2, B2.5, etc. are described
  &  \textbf{1.Dim.}
   & \textbf{Units}   \\ \hline
 
- -1 & TEIN & Plasma Temperature, Electrons & 1 & $eV$   \\ \hline
- -2 & TIIN & Plasma Temperature, Bulk Ions & NPLS & $eV$   \\ \hline
+ -1 & TEIN & Plasma Temperature, Electrons & 1 & \si{\electronvolt}   \\ \hline
+ -2 & TIIN & Plasma Temperature, Bulk Ions & NPLS & \si{\electronvolt}   \\ \hline
  -3 & DEIN$^*$ & Plasma Density, Electrons & 1 & \si{\per\cubic\centi\metre}   \\ \hline
  -4 & DIIN & Plasma Density, Bulk Ions & NPLS & \si{\per\cubic\centi\metre}  \\ \hline
  -5 & VXIN & Plasma Drift Velocity, x-component, Bulk Ions&NPLS  & \si{\centi\metre\per\second}  \\ \hline
@@ -839,7 +839,7 @@ interfacing to the particular external plasma codes B2, B2.5, etc. are described
     \\ \hline
  -12 & ADIN & Additional input tally & NAIN & see INFCOP
     \\ \hline
- -13 & EDRIFT$^*$ & Kinetic energy in drift motion, Bulk Ions &NPLS & $eV$
+ -13 & EDRIFT$^*$ & Kinetic energy in drift motion, Bulk Ions &NPLS & \si{\electronvolt}
     \\ \hline
  -14 & VOL & Zone Volume & 1 & \si{\cubic\centi\metre}
     \\ \hline
@@ -887,11 +887,11 @@ see INDPRO(5) options for magnetic field tallies in input block 5 (\cref{sec2.5}
  \\ \hline
  3 & PDENI & Particle density Test Ions & NION  & \si{\per\cubic\centi\metre} & T3
  \\ \hline
- 4 & EDENA & Energy density, Atoms & NATM       & eV*\si{\per\cubic\centi\metre} & T4
+ 4 & EDENA & Energy density, Atoms & NATM       & \si{\electronvolt}*\si{\per\cubic\centi\metre} & T4
  \\ \hline
- 5 & EDENM & Energy density, Molecules & NMOL   & eV*\si{\per\cubic\centi\metre} & T5
+ 5 & EDENM & Energy density, Molecules & NMOL   & \si{\electronvolt}*\si{\per\cubic\centi\metre} & T5
  \\ \hline
- 6 & EDENI & Energy density, Test Ions & NION   & eV*\si{\per\cubic\centi\metre} & T6
+ 6 & EDENI & Energy density, Test Ions & NION   & \si{\electronvolt}*\si{\per\cubic\centi\metre} & T6
  \\ \hline
  7 & PAEL & Particle Source (Electrons) from atom-plasma coll.
    & 1 & \si{\ampere}* \si{\per\cubic\centi\metre} & T7  \\ \hline

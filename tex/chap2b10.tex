@@ -156,7 +156,7 @@ If instead also for particle- or energy densities tallies 1 to 8 the scaling IAD
 have been used, then, for example, particle densities would have
 been in units $[AMP \cdot \si{\second\per\cubic\centi\metre}]$ (``atomic charge density")
 rather than [\si{\per\cubic\centi\metre}]. Energy densities would have been in $[W
-\cdot \si{\second\per\cubic\centi\metre}]$ rather than $[eV\si{\per\cubic\centi\metre}]$.
+\cdot \si{\second\per\cubic\centi\metre}]$ rather than $[\si{\electronvolt}\si{\per\cubic\centi\metre}]$.
 \begin{list}{ }{}
 \item[\textbf{IADVS }]
 species index of default volume averaged tally,
@@ -244,14 +244,14 @@ as above.
 \subsubsection{frequently used algebraic tallies}
 \begin{itemize}
 \item{mean energy}\\
-The mean energy (eV) of a test particle species is the ratio of its total energy density (= total pressure) and particle density.
+The mean energy (\si{\electronvolt}) of a test particle species is the ratio of its total energy density (= total pressure) and particle density.
 The algebraic tally
 $\langle i,5\rangle/\langle i,1\rangle$ is that ratio estimate, here exemplarily for atomic species no. IATM=$i$.
 Similarly, for molecular species IMOL=$k$, this expression would
 read: $\langle k,6\rangle/\langle k,2\rangle$
 
 \item{kinetic temperature}\\
-The kinetic temperature $T_t$ (eV)  is defined such that $3/2  \ T_t$ is the mean thermal energy. The kinetic temperature
+The kinetic temperature $T_t$ (\si{\electronvolt})  is defined such that $3/2  \ T_t$ is the mean thermal energy. The kinetic temperature
 is obtained by first subtracting the dynamic pressure (contribution from drift motion) from the total energy density,
 and then by rescaling.
 \begin{align} \nonumber
@@ -264,7 +264,7 @@ $\langle 1.8792e+35\rangle/\langle 2.0\rangle*
 (\langle i,85\rangle*\langle i,85\rangle+
  \langle i,89\rangle*\langle i,89\rangle+
  \langle i,93\rangle*\langle i,93\rangle)/
- \langle i,1\rangle)$ is the dynamic pressure, scaled to eV~\si{\cubic\centi\metre} units
+ \langle i,1\rangle)$ is the dynamic pressure, scaled to \si{\electronvolt}~\si{\cubic\centi\metre} units
 of atoms, with atomic weight $\langle 2.0\rangle$ in atomic mass units in this example.
 The numerical factor $1.8792e+35$ is, in EIRENE unit conversion variables, is given
 by CVELI2/AMUA/AMUA, (defined in SETCON.F), and the momentum density tallies 85, 89 and 93 are in g \si{\centi\metre\per\second} \si{\per\cubic\centi\metre}.
@@ -354,9 +354,9 @@ type of spectrum:
 
 \textbf{for surface averaged spectra (i.e. ISRFCLL=0):}
 
-flux-spectrum (ISPTYP=1) , [Amp/eV]
+flux-spectrum (ISPTYP=1) , [Amp/\si{\electronvolt}]
 
-or energy-flux spectrum (ISPTYP=2) [Watt/eV]
+or energy-flux spectrum (ISPTYP=2) [Watt/\si{\electronvolt}]
 
 Currently only surface ``incident fluxes". Spectra for surfaces ``emitted fluxes" (outgoing)
 are not yet available.
@@ -365,22 +365,22 @@ are not yet available.
 
 \textbf{case a:} no direction specified: IDIREC=0
 
-energy distribution (ISPTYP=1) , [\si{\per\cubic\centi\metre}/eV]
+energy distribution (ISPTYP=1) , [\si{\per\cubic\centi\metre}/\si{\electronvolt}]
 
-energy weighted energy distribution (ISPTYP=2) [eV*\si{\per\cubic\centi\metre}/eV]
+energy weighted energy distribution (ISPTYP=2) [\si{\electronvolt}*\si{\per\cubic\centi\metre}/\si{\electronvolt}]
 
-velocity weighted energy distribution (ISPTYP=3) [\si{\centi\metre\per\second} *\si{\per\cubic\centi\metre}/eV]
+velocity weighted energy distribution (ISPTYP=3) [\si{\centi\metre\per\second} *\si{\per\cubic\centi\metre}/\si{\electronvolt}]
 
 \textbf{case b:} direction specified: IDIREC=1
 
 
-velocity distribution along specified direction, binned in energy units (ISPTYP=1) , [\si{\per\cubic\centi\metre}/eV]
+velocity distribution along specified direction, binned in energy units (ISPTYP=1) , [\si{\per\cubic\centi\metre}/\si{\electronvolt}]
 
 energy weighted velocity distribution along specified direction, put into bins in energy units
-(ISPTYP=2) [eV*\si{\per\cubic\centi\metre}/eV]
+(ISPTYP=2) [\si{\electronvolt}*\si{\per\cubic\centi\metre}/\si{\electronvolt}]
 
 velocity weighted velocity distribution along specified direction,
-put into bins in energy units (ISPTYP=3) [\si{\centi\metre\per\second} *\si{\per\cubic\centi\metre}/eV]
+put into bins in energy units (ISPTYP=3) [\si{\centi\metre\per\second} *\si{\per\cubic\centi\metre}/\si{\electronvolt}]
 
 
 \item[\textbf{IDIREC, SPCVX, SPCVY, SPCVZ}]
@@ -393,7 +393,7 @@ These flags are only for cell averaged spectra (otherwise: not in use):
 defining this direction is normalized internally.
 
 \item[\textbf{NSPS, SPCMN, SPCMX }] Number of equidistant energy
-bins (eV) for spectra. The contributions with energies below the
+bins (\si{\electronvolt}) for spectra. The contributions with energies below the
 minimum energy SPCMN are stored in bin no. 0, those with energies
 above the maximum energy SPCMX are stored in bin NSPS+1.
 
@@ -403,7 +403,7 @@ NSPS $< 0$:  $\mid$NSPS$\mid$ is used for the number of bins, but the bins are s
 in a logarithmic energy scale (option added by X.B., 2017). Same as for NCHENI parameter in input
 block 12 for (post processed) line of sight integrated and spectrally resolved data.
 
-\item[\textbf{SPC$\_$SHIFT }] shift spectrum by SPC$\_$SHIFT (eV) in printout and plots.
+\item[\textbf{SPC$\_$SHIFT }] shift spectrum by SPC$\_$SHIFT (\si{\electronvolt}) in printout and plots.
 
 \item[\textbf{SPCPLT$\_$X, SPCPLT$\_$Y }] SPCPLT$\_$X is a flag foreseen to control the
 X axis (independent variable) in a plot of the spectrum. (X: e.g. the no. of an energy bin).

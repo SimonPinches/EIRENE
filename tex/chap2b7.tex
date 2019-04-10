@@ -928,7 +928,7 @@ made depending upon the value of the first digit N of NEMODS:
 \item[{N = 1 }]
 Mono-energetic source $f(E) = \delta (E-E0)$ with fixed energy
 
-E0 = SORENI (eV)
+E0 = SORENI (\si{\electronvolt})
 \item[{N = 2 }]
 Mono-energetic source $f(E) = \delta (E-E0)$ with energy
 
@@ -1022,8 +1022,8 @@ input flag, see below.
 In case of .not.(NLPLS.or.NLION), $T_i(ip_0)$ =0.
 \item[{M =1 }]
 The local ion temperature
-$T_i$ is replaced by the input constant SORENI (eV) and
-$T_e$ is replaced by the constant SORENE (eV) in options
+$T_i$ is replaced by the input constant SORENI (\si{\electronvolt}) and
+$T_e$ is replaced by the constant SORENE (\si{\electronvolt}) in options
 N = 4 to N = 7.
 \item[{M =2 }]
 not in use
@@ -1343,7 +1343,7 @@ m_i    \cdot    V_S \left
 V_S^2   =
 ESHEAT(n_i,{\vec{v}}_{\pi,i} ,T_e),
 \end{equation}
-i.e., the energy $E$ of the particle is increased from $E_0$ to $E_1$ by the amount ESHEAT (eV) as
+i.e., the energy $E$ of the particle is increased from $E_0$ to $E_1$ by the amount ESHEAT (\si{\electronvolt}) as
 compared to the option without sheath acceleration, and this increased energy comes from an additional speed component $V_s$ normal towards the target surface.
 
 The sheath acceleration $ESHEAT = Z_i \cdot \Delta \Phi \cdot T_e$  is computed from the sheath voltage
