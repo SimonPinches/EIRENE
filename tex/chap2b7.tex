@@ -1239,7 +1239,7 @@ VF(ISPZ,ISTEP,i)= \sum_{j=1}^{j=i} \Delta u_j \cdot FLSTEP(ISPZ,ISTEP,j)
 \end{equation}
 with, again, $\Delta u_J=RRSTEP(J+1,ISTEP)-RRSTEP(J,ISTEP)$,
 
-one for each species index separately. This cumulative flux-distribution is then in units of a flux (source strength), typically in EIRENE: in [Amp].
+one for each species index separately. This cumulative flux-distribution is then in units of a flux (source strength), typically in EIRENE: in [\si{\ampere}].
 
 After this the total flux (normalization constant) \texttt{FLTOT(ISPZ,ISTEP)} = \texttt{VF(ISPZ,ISTEP,NSMAX)} is stored,
 and then the cumulative distributions $VF$ are normalized

@@ -79,7 +79,7 @@ cgs units are used, with two exceptions:
 All \textbf{temperatures and energies} are in \si{\electronvolt}.
 
 All \textbf{particle fluxes} are in Ampere (i.e. $\#/s \cdot 1.6022
-10^{-19}$), even neutral particle fluxes. Since energies are given in \si{\electronvolt} units, a particle flux $\times$ energy is already in Watt.
+10^{-19}$), even neutral particle fluxes. Since energies are given in \si{\electronvolt} units, a particle flux $\times$ energy is already in \si{\watt}.
 
 
 E.g., to convert a \textbf{gas flow rate} $Q$ (= ``mass-flow rate" at temperature $T_0$), which is a quantity given with dimension
@@ -114,7 +114,7 @@ All \textbf{velocities} are in either \si{\centi\metre\per\second} or in (isothe
 All geometrical data are in \si{\centi\metre}.
 
 Note: consequently, e.g., energy densities are in $\si{\electronvolt}\si{\per\cubic\centi\metre}$, and
-energy fluxes are given in $\si{\electronvolt} \cdot Amp$, i.e., in $Watt$.
+energy fluxes are given in $\si{\electronvolt} \cdot \si{\ampere}$, i.e., in \si{\watt}.
 
 Hence: In order to convert from EIRENE \textbf{energy density} units ($\si{\electronvolt}\si{\per\cubic\centi\metre}$) into  \textbf{pressure}
 units in $N/m^2$
@@ -137,15 +137,15 @@ For further scaling to other pressure units note, e.g.:
 
 Further: momentum is in $g~\si{\centi\metre\per\second}$, and a \textbf{momentum flux}
 or momentum rate of change
-is in $g~\si{\centi\metre\per\second} \cdot Amp$ (per cell) and the momentum source density
+is in $g~\si{\centi\metre\per\second} \cdot \si{\ampere}$ (per cell) and the momentum source density
 in the EIRENE tallies for interfacing with plasma codes is then in
-$g~\si{\centi\metre\per\second}~Amp~\si{\per\cubic\centi\metre}$.
+$g~\si{\centi\metre\per\second}~\si{\ampere}~\si{\per\cubic\centi\metre}$.
 
 Hence, conversion from
-$g~\si{\centi\metre\per\second}~Amp $
+$g~\si{\centi\metre\per\second}~\si{\ampere} $
 into $Pa \cdot m^2$ (momentum source per cell in plasma momentum
 balance equations in SI units) is done by firstly multiplying with $10^{-5}$
-(then: $kg \cdot m/s \cdot Amp$)
+(then: $kg \cdot m/s \cdot \si{\ampere}$)
 and then dividing by
 $1.6022 \cdot 10^{-19}$ (hence: $kg \cdot m/s^2$).
 After dividing by the cell volume ($m^3$)
