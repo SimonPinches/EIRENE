@@ -91,7 +91,7 @@ above:
 read a surface interaction model identifier to link one of the surface
 ``local reflection
 models'' defined in block 6 (\cref{sec2.6}) below to this current surface.
-The presence of such a link is identified by the string $'SURFMOD_{ }'$,
+The presence of such a link is identified by the string $'SURFMOD_{}'$,
 followed
 by a name $'modname'$. Later, in input block 6 (\cref{sec2.6}),
 a ``local reflection model'' block with that name
@@ -110,30 +110,30 @@ surfaces"}
 
 \medskip
 
-\begin{list}{ }{}
-\item[\textbf{NSTSI }]
+\begin{list}{}{}
+\item[\textbf{NSTSI}]
 Total number of non-default standard surfaces that do not act as
 prescribed by the default transparent standard co-ordinate surface model.
-\item[\textbf{TXTSFL }]
+\item[\textbf{TXTSFL}]
 Text to characterize a surface (``name of the surface'') on the
 printout file.
-\item[\textbf{ISTS }]
+\item[\textbf{ISTS}]
 irrelevant; labelling index
-\item[\textbf{IDIMP }]
+\item[\textbf{IDIMP}]
 flag to identify mesh from which this particular surface is
 chosen.
-\begin{list}{ }{}
-\item[{= 1 }]
+\begin{list}{}{}
+\item[{= 1}]
 surface from the x- (radial) standard mesh (RSURF)
 Note that for the unstructured grid options NLTRI and NLTET (i.e.\ for the 2D triangular grid option
 or for the general 3D grids of tetrahedra) all surfaces are referred to as 1st grid (x or radial) surfaces,
 by abuse of language.
-\item[{= 2 }]
+\item[{= 2}]
 surface from the y- (poloidal) standard mesh (PSURF)
-\item[{= 3 }]
+\item[{= 3}]
 surface from the z- (toroidal) standard mesh (TSURF)
 \end{list}
-\item[\textbf{INUMP }]
+\item[\textbf{INUMP}]
 Number of the surface in mesh RSURF, PSURF or TSURF respectively
 \item[\textbf{IRPTA,IRPTE}] ~
 

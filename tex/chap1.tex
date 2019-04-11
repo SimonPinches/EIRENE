@@ -79,9 +79,9 @@ EIRENE, within each single cycle, may still be operated in linear mode.
 
 
 
-The term \textsl{ $\mu$-space } in this report refers to the phase
+The term \textsl{ $\mu$-space} in this report refers to the phase
 space of a single particle. The quantity of interest is then the
-\textsl{ one particle distribution function }  \textit{f}
+\textsl{ one particle distribution function}  \textit{f}
 \[
 f(\vr, \vv, i, t)  \quad \mbox{or} \quad \tilde f(\vr, E, \vOmega, i, t)
 \quad \mbox{or} \quad f(x) ,
@@ -726,7 +726,7 @@ Here, e.g.,  a surface cell $m$ would discretise  a surface $S$ characterized by
 \end{subequations}
 
 Equation \cref{eq1.7} shows that Monte Carlo estimates (tallies) fall into the category of \emph{extensive} quantities
-(number of particles, total energy, momentum, etc., per cell). \emph{Intensive }quantities  (flow velocity, temperature, etc.)
+(number of particles, total energy, momentum, etc., per cell). \emph{Intensive} quantities  (flow velocity, temperature, etc.)
 obtained by dividing two extensive quantities are typically difficult estimate with Monte Carlo methods
 (see: ``ratio estimates", correlation between nominator and denominator, \dots).
 If, however, the extensive quantity in the denominator is known exactly, such as e.g.\ the cell volume in a computational mesh, then, of course,
@@ -1615,7 +1615,7 @@ w_{k,i_{b'}}(\vv_{b'}) \sim \sigma_{cx}(|\vv'-\vv_{b'}|) |\vv'-\vv_{b'}| f_{i_{b
 \end{displaymath}
 and then, after transformation from the rest frame of species $b$ back into the laboratory frame, simply setting $\vv = \vv_{b'}$
 \subsection{electron-impact collisions, VELOEI}
-\subsection{general heavy-particle-impact collisions, VELOPI }
+\subsection{general heavy-particle-impact collisions, VELOPI}
 \subsection{photon processes (emission, absorption, scattering)}
 documentation to be written
 \newpage
@@ -1991,7 +1991,7 @@ The kinetic plasma ion flux distribution entering the electrostatic sheath is gi
 (\vv - \vV_d )^2  \right )    , \quad
 v_{\pi} > 0 \label{eq1.23}
 \end{equation}
-with $v_{T_i}  =   \sqrt{2 kT_i/m_i }$, the thermal ion velocity, normalizing constant
+with $v_{T_i}  =   \sqrt{2 kT_i/m_i}$, the thermal ion velocity, normalizing constant
 $\alpha^2$ and with the drift velocity $\vV_d$. See \cref{sec2.7} for a description of related EIRENE input flags.
 The
 superscript 0 indicates normalization of the flux to one particle per unit time and unit area:
@@ -2046,7 +2046,7 @@ cannot be inverted explicitly.
 
 Therefore in the EIRENE code we apply the Monte Carlo  ``biassed source sampling" concept, (module: \texttt{VELOCS.F}).
 We sample this component
-${\tilde{v} }_{\pi}$ from a ``non-analog" truncated Maxwellian flux distribution
+${\tilde{v}}_{\pi}$ from a ``non-analog" truncated Maxwellian flux distribution
 $\tilde\Gamma^0_{Sh,ion,\pi}(\tilde v_{\pi})$ (see \cref{sec1.2.1a} above)
 with zero drift in $\pi$-direction but with different ``non-analog" $\pi$- temperature ${\tilde{T}}_{\pi,i},
 ({\tilde{T}}_{\pi,i}   \ne T_i   , {\tilde{V}} _{d,\pi} = 0 )$.
@@ -2064,8 +2064,8 @@ Sampling from this non-analog distribution can
 be done by setting, e.g.,
 \begin{equation}
 \tilde{v}_{\pi}   = {\tilde{\alpha}}_{\pi}   \cdot   \sqrt{ -\ln(
-\xi )  \cdot 2 } = v_{\tilde T_{\pi,i}} \cdot   \sqrt{ -\ln(
-\xi ) }  \quad  \mbox{since: \ }  \tilde{\alpha}_{\pi}   =\frac{1}{\sqrt{2}}
+\xi )  \cdot 2} = v_{\tilde T_{\pi,i}} \cdot   \sqrt{ -\ln(
+\xi )}  \quad  \mbox{since: \ }  \tilde{\alpha}_{\pi}   =\frac{1}{\sqrt{2}}
 v_{\tilde T_{\pi,i}} \quad \mbox{for \ } \tilde{V}_{d,\pi} = 0
 \label{eq1.26}
 \end{equation}
@@ -2087,9 +2087,9 @@ w ( \tilde{v}_{\pi} ) = \frac{\Gamma^0_{Sh,ion,\pi} (
 {\tilde{v}}_{\pi} )}{\tilde{\Gamma}^0_{Sh,ion,\pi} ( \tilde{v}_{\pi}
 )}
  =  \frac{\tilde{T}_{\pi,i}}{T_i}
-\exp \left (  \frac{2 \tilde{v}_{\pi}  V_{d, \pi} }{v_{Ti}^2}    -
+\exp \left (  \frac{2 \tilde{v}_{\pi}  V_{d, \pi}}{v_{Ti}^2}    -
 \frac { {\tilde{v}_{\pi}}^2}{v_{T_i}^2} \left ( 1   -
-\frac{T_i}{ {\tilde{T}_{\pi,i}} }  \right ) \right )
+\frac{T_i}{ {\tilde{T}_{\pi,i}}}  \right ) \right )
  \cdot  \frac {1}{g({\cal V}_{\pi})}
 \label{eq1.28}
 \end{equation}
@@ -2143,7 +2143,7 @@ normal (to the surface) $\pi$-component $\vV_{d,\pi}$ and a $\sigma$-component $
 the wall surface.
 \begin{equation}
 {\cal V}_{\sigma}   = \frac{ | \vV_d   -   \vV_{d,
-\pi} | } {  v_{T_i}} = \frac{ | \vV_{d,\sigma} | } {    v_{T_i}}. \label{eq1.32}
+\pi} |} {  v_{T_i}} = \frac{ | \vV_{d,\sigma} |} {    v_{T_i}}. \label{eq1.32}
 \end{equation}
 Note that for ${\cal V}_{\pi}$ = 0 \cref{eq1.31} reduces to the expected formula
 $\gamma_E   =   2   + {{\cal V}_{\sigma}}^2$  for a half sided Maxwellian flux with only drift components parallel to the surface.
@@ -2159,7 +2159,7 @@ We conclude that the above scheme is both an accurate and
 efficient random number generator for truncated shifted Maxwellian
 flux distributions of particles incident onto or emitted from
 surfaces. Of course, after having generated $
-\tilde{\vv}  $ with the weight $ w ({\tilde{v} }_{\pi}
+\tilde{\vv}  $ with the weight $ w ({\tilde{v}}_{\pi}
 )$ and before reflecting the particle via the kernel $C_w $, the
 acceleration of an ion in a sheath potential  in direction $\pi$
 (normal to the target surface), as formalized in the sheath
@@ -2260,7 +2260,7 @@ c_i = \sqrt{\left(\frac{\gamma kT_i + Z_i kT_e}{m_i}\right)}
 \end{displaymath}
 ($\gamma$ denoting the adiabatic coefficient) and hence:
 \begin{equation}\label{insert}
-c_i \cdot \sqrt{ \frac{m_e}{kT_e} } = \left[ \left( \frac{\gamma
+c_i \cdot \sqrt{ \frac{m_e}{kT_e}} = \left[ \left( \frac{\gamma
 kT_i}{kT_e} + Z_i \right) \cdot \frac{m_e}{m_i} \right]^{1/2}
 \end{equation}
 we recover well known expressions for simpler cases. Consider,
@@ -2420,14 +2420,14 @@ computational volume is discretized by a mesh of $n$ surfaces
 \mbox{$S_i, i = 1, 2, \dots, n$.} Each of these surfaces is defined by a
 set of $\Lambda_i$ equations (unbounded surfaces):
 \begin{equation}
-f_{\lambda}^i (x,y,z)   =   0 { },    \quad \quad \lambda   =
-1, 2, \dots, \Lambda_i { }, \label{eq1.34}
+f_{\lambda}^i (x,y,z)   =   0 {},    \quad \quad \lambda   =
+1, 2, \dots, \Lambda_i {}, \label{eq1.34}
 \end{equation}
 and, optional, for each unbounded surface $\lambda$  a subset of $ \Pi_{\lambda} $
 inequalities (e.g.\ for turning the unbounded surfaces into finite segments):
 \begin{equation}
-g_{\lambda , \pi }^i (x,y,z)  \le   0 { },    \quad \quad \pi   =
-1, 2, \dots, \Pi_{\lambda} { }. \label{eq1.35}
+g_{\lambda , \pi}^i (x,y,z)  \le   0 {},    \quad \quad \pi   =
+1, 2, \dots, \Pi_{\lambda} {}. \label{eq1.35}
 \end{equation}
 
 This means that for all unbounded surfaces $S_{i,\lambda}$ only the points, which fulfill all corresponding
@@ -3354,7 +3354,7 @@ then relax test particle energy in this frame, then transform back\dots
 To be done: isotropization: currently the ratio $v_{\perp B}$ to $v_{\parallel B}$ relative to the B-field  is preserved.}
 
 \vspace{1cm}
-The \emph{full expression for the energy relaxation frequency }$\nu_\varepsilon^{a,b}$, without the approximation of slow particles $a$, i.e.\ for all values of $x^{a/b}$ is:
+The \emph{full expression for the energy relaxation frequency} $\nu_\varepsilon^{a,b}$, without the approximation of slow particles $a$, i.e.\ for all values of $x^{a/b}$ is:
 \begin{equation}\label{eps2}
 \nu_\varepsilon^{a,b}(x^{a/b}) =2 \left[\mu_a/\mu_b \Psi(x^{a/b}) - \Psi'(x^{a/b})\right] \nu_0^{a/b}
 \end{equation}
