@@ -111,7 +111,7 @@ All \textbf{velocities} are in either \si{\centi\metre\per\second} or in (isothe
 All geometrical data are in \si{\centi\metre}.
 
 Note: consequently, e.g., energy densities are in $\si{\electronvolt\per\cubic\centi\metre}$, and
-energy fluxes are given in $\si{\electronvolt} \cdot \si{\ampere}$, i.e., in \si{\watt}.
+energy fluxes are given in \si{\electronvolt\ampere}, i.e., in \si{\watt}.
 
 Hence: In order to convert from EIRENE \textbf{energy density} units (\si{\electronvolt\per\cubic\centi\metre}) into  \textbf{pressure}
 units in \si{\newton\per\square\metre}
@@ -134,17 +134,17 @@ For further scaling to other pressure units note, e.g.:
 
 Further: momentum is in \si{\gram\centi\metre\per\second}, and a \textbf{momentum flux}
 or momentum rate of change
-is in $\si{\gram\centi\metre\per\second} \cdot \si{\ampere}$ (per cell) and the momentum source density
+is in \si{\gram\centi\metre\per\second\ampere} (per cell) and the momentum source density
 in the EIRENE tallies for interfacing with plasma codes is then in
 \si{\gram\centi\metre\per\second\ampere\per\cubic\centi\metre}.
 
 Hence, conversion from
 \si{\gram\centi\metre\per\second\ampere}
-into $\si{\pascal} \cdot \si{\square\metre}$ (momentum source per cell in plasma momentum
+into \si{\pascal\square\metre} (momentum source per cell in plasma momentum
 balance equations in SI units) is done by firstly multiplying with \num{1e-5}
-(then: $\si{\kilo\gram} \cdot \si{\metre\per\second} \cdot \si{\ampere}$)
+(then: \si{\kilo\gram\metre\per\second\ampere})
 and then dividing by
-\num{1.6022e-19} (hence: $\si{\kilo\gram} \cdot \si{\metre\per\square\second}$).
+\num{1.6022e-19} (hence: \si{\kilo\gram\metre\per\square\second}).
 After dividing by the cell volume (\si{\cubic\metre})
 the momentum source is in \si{\pascal\per\metre}, or \si{\newton\per\cubic\metre} (force density).
 
