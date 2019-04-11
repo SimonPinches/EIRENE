@@ -135,7 +135,7 @@ $[\si{\per\cubic\centi\metre}] \cdot [$units of $g^*] \cdot [\si{\centi\metre}] 
 however, with FLUX converted to units [\si{\per\second}] (rather than input units $[Ampere]$).
 For the definition of the detector functions
 $g$ and $g^*$ see \cref{sec3.2}, the variable FLUX is explained in
-input block no. 7 (\cref{sec2.7}). This scaling is default for ``density tallies" of particles, momentum and energy.
+input block no.\ 7 (\cref{sec2.7}). This scaling is default for ``density tallies" of particles, momentum and energy.
 \item[{= 2 }]
 scale tally per unit cell. Same units as above, however not per
 \si{\cubic\centi\metre} but per cell instead.
@@ -209,7 +209,7 @@ $\langle i,j \rangle$ stands for tally number $j$, first (species) index $i$, in
 \cref{tab1} (input tallies) and \cref{tab2} (output tallies) . Note that the first index for
 tallies with no species index must read 1, and the tally number of input tallies must be negative.
 Example: $\langle 1,-1\rangle$ for the electron temperature tally, $\langle 2,3\rangle$ for the particle density of test ion species
-no. IION=2 . Expressions $\langle c\rangle$
+no.\ IION=2 . Expressions $\langle c\rangle$
 with an integer or real constant $c$ are interpreted as scalars. The
 string may contain an arbitrary (but $\le$ 20) number of operands,
 and of operators +, -, *, /, **, and of properly nested parentheses
@@ -246,7 +246,7 @@ as above.
 \item{mean energy}\\
 The mean energy (\si{\electronvolt}) of a test particle species is the ratio of its total energy density (= total pressure) and particle density.
 The algebraic tally
-$\langle i,5\rangle/\langle i,1\rangle$ is that ratio estimate, here exemplarily for atomic species no. IATM=$i$.
+$\langle i,5\rangle/\langle i,1\rangle$ is that ratio estimate, here exemplarily for atomic species no.\ IATM=$i$.
 Similarly, for molecular species IMOL=$k$, this expression would
 read: $\langle k,6\rangle/\langle k,2\rangle$
 
@@ -300,7 +300,7 @@ surface index $ILIMPS = (I-N1-1)/N1 + 1 $
 
 species index $ISPZ = I - ILIMPS \cdot N1 $
 
-The other way round: in order to identify species ISPZ and surface no. ILIMPS
+The other way round: in order to identify species ISPZ and surface no.\ ILIMPS
 for a particular tally J,
 on must set:
 
@@ -312,7 +312,7 @@ The algebraic expression is stored on the ALGS tally for all
 surfaces ILIMPS, which occurred in at least one of the operands.
 
 Example: let there be up to 3 atom species (N1=NATM=3), and assume, that
-additional surfaces no. 7,8,9,10 and 11 comprise the pump.
+additional surfaces no.\ 7,8,9,10 and 11 comprise the pump.
 Let furthermore IATM=2 stand for helium atoms.
 The total pumped flux of helium atoms from these surfaces is
 the difference between incident and re-emitted He particle fluxes,
@@ -394,7 +394,7 @@ defining this direction is normalized internally.
 
 \item[\textbf{NSPS, SPCMN, SPCMX }] Number of equidistant energy
 bins (\si{\electronvolt}) for spectra. The contributions with energies below the
-minimum energy SPCMN are stored in bin no. 0, those with energies
+minimum energy SPCMN are stored in bin no.\ 0, those with energies
 above the maximum energy SPCMX are stored in bin NSPS+1.
 
 NSPS $> 0$:  The bins are set equidistant in linear energy scale
@@ -406,7 +406,7 @@ block 12 for (post processed) line of sight integrated and spectrally resolved d
 \item[\textbf{SPC$\_$SHIFT }] shift spectrum by SPC$\_$SHIFT (\si{\electronvolt}) in printout and plots.
 
 \item[\textbf{SPCPLT$\_$X, SPCPLT$\_$Y }] SPCPLT$\_$X is a flag foreseen to control the
-X axis (independent variable) in a plot of the spectrum. (X: e.g.\ the no. of an energy bin).
+X axis (independent variable) in a plot of the spectrum. (X: e.g.\ the no.\ of an energy bin).
 This flag is currently not in use.
 
 SPCPLT$\_$Y is a flag to control the

@@ -35,16 +35,16 @@ ADDV or ALGV in which cases it might have a different meaning.
 
 As for the volume tallies there are NTALV preprogrammed detector
 functions, up to NADV user supplied detector functions for
-track-length estimators (tally no. ITALV) and NCLV user supplied
-detector functions for collision estimators (tally no. ITALV).
-Furthermore there are NSNV snapshot tallies (tally no. ITALV),
+track-length estimators (tally no.\ ITALV) and NCLV user supplied
+detector functions for collision estimators (tally no.\ ITALV).
+Furthermore there are NSNV snapshot tallies (tally no.\ ITALV),
 NCPV tallies for coupling with plasma background codes (tally no.
 ITALV) and NBGV tallies for the (non-linear) \ac{BGK} collision
-integrals, needed for the iteration procedure (tally no. ITALV).
+integrals, needed for the iteration procedure (tally no.\ ITALV).
 Up to NALV algebraic expressions in these tallies (tally no.
 ITALV) can be stored.
 
-There is also one tally no. 0, which is evaluated in subroutine
+There is also one tally no.\ 0, which is evaluated in subroutine
 TALUSR (\cref{sec3.7}). This tally is printed immediately
 after evaluation, i.e., it is not put onto any storage (unless
 explicitly done so in subroutine TALUSR).
@@ -52,13 +52,13 @@ explicitly done so in subroutine TALUSR).
 The input volume tallies for the background medium are listed in
 \cref{tab1}. They are selected for printout or graphical
 output by the \textbf{negative} value of their tally number. E.g.,
-the choice ITALV = 5 selects tally no. 5 from \cref{tab2},
-and the choice ITALV = -5 selects tally no. 5 from
+the choice ITALV = 5 selects tally no.\ 5 from \cref{tab2},
+and the choice ITALV = -5 selects tally no.\ 5 from
 \cref{tab1}.
 
 Furthermore, there are NTALS  preprogrammed detector functions for
 surface averaged tallies, and there may be up to NADS additional
-user supplied surface averaged tallies (tally no. ITALS).
+user supplied surface averaged tallies (tally no.\ ITALS).
 
 The preprogrammed tallies and their default units are given in
 \cref{tab2} (volume averaged tallies) and in \cref{tab3}
@@ -68,7 +68,7 @@ The preprogrammed tallies and their default units are given in
 computed from the input data in block 5 and which describe the
 background medium (plasma). By an abuse of language the cell
 volumes (\si{\per\cubic\centi\metre}) stored in the array VOL(I) are also referred
-to as an input volumetric tally (no. ITALI=13 in
+to as an input volumetric tally (no.\ ITALI=13 in
 \cref{tab1}).
 
 \medskip
@@ -652,7 +652,7 @@ TALXMA is then the maximum abscissa value for the plot.
 
 if TALXMI $>$ TALXMA and at least one of them is negative,
 then a user defined grid XXP2D\_USR is used. This must have been
-defined in one of the user-routines for this figure no. N=IBLD,
+defined in one of the user-routines for this figure no.\ N=IBLD,
 i.e., the array XXP2D(J,IBLD) must have been set, J the grid index.
 \item[\textbf{ISPZTL }]
 Index of the species of the tally that will be plotted.

@@ -143,18 +143,18 @@ and their statistical errors is case specific and done in interfacing module EIR
  The sum is over all strata (see  ``stratified sampling" in \cref{sec1}). $PAPL, PMPL,  PIPL$ are default EIRENE tallies (\cref{tab2old} in \cref{sec.tables-old}):
  \begin{itemize}
  \item
- $PAPL$ is the particle source for background plasma species $ipls$ resulting from ``at\-om"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no. 11.
+ $PAPL$ is the particle source for background plasma species $ipls$ resulting from ``at\-om"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no.\ 11.
  \item
- $PMPL$ is the particle source for background plasma species $ipls$ resulting from ``mol\-e\-cule"-plasma interactions (summed over all EIRENE species of type ``molecule"), tally no. 16.
+ $PMPL$ is the particle source for background plasma species $ipls$ resulting from ``mol\-e\-cule"-plasma interactions (summed over all EIRENE species of type ``molecule"), tally no.\ 16.
  \item
- $PIPL$ is the particle source for background plasma species $ipls$ resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no. 21.
+ $PIPL$ is the particle source for background plasma species $ipls$ resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no.\ 21.
  \end{itemize}
 \textbf{Momentum source: [mass velocity/time/volume], \si{\gram\centi\metre\per\second\ampere\per\cubic\centi\metre}}
  \begin{equation}\label{Sm}
  S_{m\parallel}(ipls,icell) = \sum_{is,icop} \left[COPV_{is}(icop,icell) \right]
  \end{equation}
 
- The sum is over all strata (see  ``stratified sampling" in \cref{sec1}). $COPV$ is the problem specific tally for code interfacing, tally no. 40,
+ The sum is over all strata (see  ``stratified sampling" in \cref{sec1}). $COPV$ is the problem specific tally for code interfacing, tally no.\ 40,
  and it is scored in the routine UPDCOP (different versions exist for different plasma fluid codes), \cref{tab2old} in \cref{sec.tables-old}):
 
  The sign of these sources in EIRENE is such that a gain in momentum for plasma species $ipls$ is taken positive. In the interfacing routine IF3COP of module EIRCOP the sign convention
@@ -171,11 +171,11 @@ and their statistical errors is case specific and done in interfacing module EIR
  The sum is over all strata (see  ``stratified sampling" in \cref{sec1}). $EAPL, EMPL,  EIPL$ are default EIRENE tallies (\cref{tab2old} in \cref{sec.tables-old}):
  \begin{itemize}
  \item
- $EAPL$ is the ion energy source  resulting from ``atom"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no. 26.
+ $EAPL$ is the ion energy source  resulting from ``atom"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no.\ 26.
  \item
- $EMPL$ is the ion energy source  resulting from ``molecule"-plasma interactions (summed over all EIRENE species of type ``molecule"), tally no. 31.
+ $EMPL$ is the ion energy source  resulting from ``molecule"-plasma interactions (summed over all EIRENE species of type ``molecule"), tally no.\ 31.
  \item
- $EIPL$ is the ion energy source  resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no. 36.
+ $EIPL$ is the ion energy source  resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no.\ 36.
  \end{itemize}
 
 \textbf{Electron energy source: [Energy/time/volume], \si{\watt\per\cubic\centi\metre}}
@@ -186,11 +186,11 @@ and their statistical errors is case specific and done in interfacing module EIR
  The sum is over all strata (see  ``stratified sampling" in \cref{sec1}). $EAEL, EMEL,  EIEL$ are default EIRENE tallies (\cref{tab2old} in \cref{sec.tables-old}):
  \begin{itemize}
  \item
- $EAEL$ is the electron energy source  resulting from ``atom"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no. 22.
+ $EAEL$ is the electron energy source  resulting from ``atom"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no.\ 22.
  \item
- $EMEL$ is the electron energy source  resulting from ``molecule"-plasma interactions (summed over all EIRENE species of type ``molecule"), tally no. 27.
+ $EMEL$ is the electron energy source  resulting from ``molecule"-plasma interactions (summed over all EIRENE species of type ``molecule"), tally no.\ 27.
  \item
- $EIEL$ is the electron energy source  resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no. 32.
+ $EIEL$ is the electron energy source  resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no.\ 32.
  \end{itemize}
 
 The data transferred from B2 into EIRENE are either from Common BRAEIR, (a module common to both B2 and EIRENE)
@@ -385,7 +385,7 @@ from the plasma
 code surface effluxes at specified boundaries.
 \item[\textbf{NTGPRT }]
 Number of different surface segments (radially or poloidally), by which
-this target recycling stratum no. ITARGI is composed.
+this target recycling stratum no.\ ITARGI is composed.
 \end{list}
 
 The following NTGPRT(ITARG) cards are used to specify these selected
@@ -564,13 +564,13 @@ listed in \cref{tab2} in \cref{sec.tables-new}
 rather than in \cref{tab2old} in \cref{sec.tables-old}:
  \begin{itemize}
  \item
- $PAPL$ is the particle source for background plasma species $ipls$ resulting from ``at\-om"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no. 14.
+ $PAPL$ is the particle source for background plasma species $ipls$ resulting from ``at\-om"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no.\ 14.
  \item
- $PMPL$ is the particle source for background plasma species $ipls$ resulting from ``mol\-e\-cule"-plasma interactions (summed over all EIRENE species of type ``molecule"), tally no. 20.
+ $PMPL$ is the particle source for background plasma species $ipls$ resulting from ``mol\-e\-cule"-plasma interactions (summed over all EIRENE species of type ``molecule"), tally no.\ 20.
  \item
- $PIPL$ is the particle source for background plasma species $ipls$ resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no. 26.
+ $PIPL$ is the particle source for background plasma species $ipls$ resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no.\ 26.
  \end{itemize}
-Default tally no. 32 might be added here as well, once photo-ionization processes are activated in an EIRENE run.
+Default tally no.\ 32 might be added here as well, once photo-ionization processes are activated in an EIRENE run.
 Analogous statements, i.e.\ modifications of volume averaged tally numbers,
 apply for the other source rates (for electron and ion energy balance), as compared
 to those described above in \cref{sec2.14.1}.
@@ -584,11 +584,11 @@ I.e.\ now we have (compare to \cref{Sm}):
  The sum is over all strata (see  ``stratified sampling" in \cref{sec1}). $MAPL, MMPL,  MIPL$ are default EIRENE tallies (\cref{tab2} in \cref{sec.tables-new}):
  \begin{itemize}
  \item
- $MAPL$ is the parallel momentum source for background plasma species $ipls$ resulting from ``atom"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no. 97.
+ $MAPL$ is the parallel momentum source for background plasma species $ipls$ resulting from ``atom"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no.\ 97.
  \item
- $MMPL$ is the parallel momentum source for background plasma species $ipls$ resulting from ``molecule"-plasma interactions (summed over all EIRENE species of type ``molecule"), tally no. 98.
+ $MMPL$ is the parallel momentum source for background plasma species $ipls$ resulting from ``molecule"-plasma interactions (summed over all EIRENE species of type ``molecule"), tally no.\ 98.
  \item
- $MIPL$ is the parallel momentum source for background plasma species $ipls$ resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no. 99.
+ $MIPL$ is the parallel momentum source for background plasma species $ipls$ resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no.\ 99.
  \end{itemize}
  The sign of these sources in EIRENE is such that a gain in momentum (speeding up the plasma flow) for plasma species $ipls$ is taken positive. In the interfacing routine IF3COP of module EIRCOP the sign convention
  is altered to that of the plasma fluid code, i.e.

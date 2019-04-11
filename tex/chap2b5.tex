@@ -196,7 +196,7 @@ NRC$  NFOL$ NGEN$  NHSTS$ ID3$
  VL0  VL1  VL2  VL3  VL4  VL5
  ENDIF
 \end{verbatim}
-Currently option INDPRO=6 and INDPRO=7 are not available for cell volumes (input tally no. 12).
+Currently option INDPRO=6 and INDPRO=7 are not available for cell volumes (input tally no.\ 12).
 \medskip
 
 \textbf{Meaning of the Input Variables for Plasma Parameters}
@@ -249,7 +249,7 @@ The additional card (only one) reads (format 3I6):
 ISP, ITP, ISTR
 \end{verbatim}
 ISP, ITP is the number and type of a test particle species on the
-file fort.10, respectively, from stratum no. ISTR (i.e.\ written
+file fort.10, respectively, from stratum no.\ ISTR (i.e.\ written
 onto fort.10 either in the present run or an earlier EIRENE run,
 see NFILEN option in input block 1). The parameters (fields of
 density, temperature, flow velocity) for species IPLS are derived
@@ -287,7 +287,7 @@ ISP, ITP, ISTR, FILNAM , H123 , REACTION, CR, A_CORONA
 ISP, ITP is the number and type of a (donor) particle species, either one of the already defined
 bulk species IPLS: ISP=IPLS,
 (for ITP=4), or from the file fort.10 (for ITP=0,1,2 or 3)
-from stratum no. ISTR (i.e.
+from stratum no.\ ISTR (i.e.
 written onto fort.10 either in the present run or an earlier EIRENE run,
 see NFILEN option in input block 1).
 I.e.\ the density $ni(IPLS)$ at each position $x$ (grid cell) for this
@@ -317,7 +317,7 @@ ISP, ITP, ISTR, FILNAM,  H123, REACTION, CR
 ISP, ITP is the number and type of a particle (donor) species $IS$, either one of the already defined
 bulk species IPLS: ISP=IPLS,
 (for ITP=4, then ISTR is irrelevant), or from the file fort.10 (for ITP=0,1,2 or 3)
-from stratum no. ISTR (i.e.
+from stratum no.\ ISTR (i.e.
 written onto fort.10 either in the present run or an earlier EIRENE run,
 see NFILEN option in input block 1).
 The parameters (fields of density, temperature, flow velocity)
@@ -415,10 +415,10 @@ for VOL.
 
 \end{list}
 
-For the input tally profiles no. 6 and 7 (ADIN, WGHT) only the options INDPRO=5 or INDPRO=6
+For the input tally profiles no.\ 6 and 7 (ADIN, WGHT) only the options INDPRO=5 or INDPRO=6
 exist.
 
-For the profile no. 12 (cell volumes) the options INDPRO(12) = 4,
+For the profile no.\ 12 (cell volumes) the options INDPRO(12) = 4,
 5, 6, or INDPRO(12) = 7 are active options. For all other values
 of INDPRO for these latter four profiles the default profiles
 described above (``General remarks") are set.
@@ -611,6 +611,6 @@ indicates that this cell belongs to a grid cut, i.e., is not a valid cell for pa
 tracing.
 \item[{=3 }]
 indicates that this cell is not a real cell but only the storage position for
-spatially averaged tallies. E.g.: cell no. NR1ST, 2*NR1ST, \dots, etc.
+spatially averaged tallies. E.g.: cell no.\ NR1ST, 2*NR1ST, \dots, etc.
 \end{list}
 \end{list} 

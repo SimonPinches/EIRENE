@@ -798,7 +798,7 @@ In EIRENE it can range from $N=2$ for conditional expectation estimators and poi
 values of several millions for $N$.
 \subsection{Unbiased estimators}\label{sec1.2.a}
 One possible choice for $X(\omega )$ is the so called ``collision
-estimator" $X^c$, which, for a chain no. $i$,  $\omega_i^n$ of length $n$ reads:
+estimator" $X^c$, which, for a chain no.\ $i$,  $\omega_i^n$ of length $n$ reads:
 \begin{equation} \label{eq1.9}
 X^c_g ( \omega^n_i)   =   \sum_{l=1}^{n} g_c (x_l )
  \cdot   \prod_{j=1}^{l-1}
@@ -984,7 +984,7 @@ with each cell crossing ``$j$" leaving a score (contribution) $X_{i,j}$ to estim
 \begin{equation}\label{mccross}
 X_i=\sum_{j=1}^{J_i} X_{i,j} \quad ,
 \end{equation}
-with $J_i$ being the number of contributions  (e.g.\ cell crossings) to the estimator, from particle history no. $i$.
+with $J_i$ being the number of contributions  (e.g.\ cell crossings) to the estimator, from particle history no.\ $i$.
 The summation in \cref{eq1.8} and hence also the second sum on the right hand side of  \cref{MCsig1} can still be accumulated
 ``on the fly" while generating the Monte Carlo histories (i.e.\ at no extra CPU cost).
 However, because, of course  $X_i^2 \neq  \sum X_{i,j}^2$, the first sum on the right hand side of \cref{MCsig1}
@@ -1316,7 +1316,7 @@ Source sampling in EIRENE is carried out in routine LOCATE.F. This routine conve
 random numbers with distribution $S_k$, the k-stratum part of the inhomogeneous term $S$.
 Again sequential sampling \cref{eq1.15a} from conditional distributions is applied.
 
-In LOCATE.F the following sequence is used (stratum no. $istra=k$ is set in calling program):
+In LOCATE.F the following sequence is used (stratum no.\ $istra=k$ is set in calling program):
 \begin{equation}
 S = S_1(\vx) \times S_2(i|\vx) \times S_3(\vv|\vx,i)
 \end{equation}
@@ -2900,7 +2900,7 @@ J.K.~Haviland, ``The solution of Two Molecular Flow Problems by the Monte Carlo 
 in: Methods in Computational Physics (Ed. Alder), Vol. 4, 1965, Academic Press.
 An early review and comparison of different Monte Carlo methods in kinetic theory, also comparing this particular
 ``test particle method" with the \ac{DMCS} scheme, is given by
-the report: N.A.~Derzko, ``Review of Monte Carlo Methods in kinetic Theory", UTIAS Review No. 35 (April 1972)
+the report: N.A.~Derzko, ``Review of Monte Carlo Methods in kinetic Theory", UTIAS Review No.\ 35 (April 1972)
 University of Toronto, Institute of aerospace studies, April 1972.
 (This review also includes a discussion of a third Monte Carlo scheme, the so called ``Integral evaluation method" of
 A.~Nordsieck and B.L.~Hicks.)

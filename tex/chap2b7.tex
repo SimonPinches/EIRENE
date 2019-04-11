@@ -1157,7 +1157,7 @@ The statement:
 \texttt{B = STEP1(IINDEX,ISTEP,RNF,ISPEZ)}
 
 converts a uniformly distributed random number RNF into a random number sampled
-from the step function  no. ISTEP.
+from the step function  no.\ ISTEP.
 
 \medskip
 
@@ -1222,7 +1222,7 @@ The initialization call to function \texttt{STEP} reads:
 
 \texttt{FLUX = STEP(NSPZI,NSPZE,NSMAX(ISTEP),ISTEP)}
 
-This call will initialize the step-function no. \texttt{ISTEP}, for a range of species
+This call will initialize the step-function no.\ \texttt{ISTEP}, for a range of species
 \texttt{ISPZ=NSPZI, NSPZE}.
 
 At this point the grid RRSTEP and the distribution density FLSTEP on that grid must be defined (module CSTEP).
@@ -1353,4 +1353,4 @@ The sheath potential drop $\Delta \Phi$ is
 given by \cref{sheath1} in \cref{sec1}, unless overruled by parameter $Sh>0.$, (see \cref{local-source}, in which latter case $ESHEAT=Z_i \cdot Sh \cdot T_e$.
 
 If $Sh\leq 0$ and the sheath potential according to equation \cref{sheath1} cannot be found either (e.g.\ because $\vV_{\pi,i}(ip) \equiv 0.)$, then
-$Sh = FSHEAT(MSURF)$ (the input sheath parameter for source surface no. MSURF, input blocks 3 and 6) is used.
+$Sh = FSHEAT(MSURF)$ (the input sheath parameter for source surface no.\ MSURF, input blocks 3 and 6) is used.

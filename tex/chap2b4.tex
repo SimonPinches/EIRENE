@@ -1467,8 +1467,8 @@ then NRCM(IATM)=-1, and analogous for the other types and species of particles.
 \paragraph{default model for atomic H (=H,D,T) and He test particles}
 
 Assume that the bulk ion H$^+$ is specified as bulk ion species
-no. ``a", D$^+$ as bulk species ``b", T$^+$ as bulk species ``c"
-and He$^+$ as bulk ion species no. ``d", then the default atomic
+no.\ ``a", D$^+$ as bulk species ``b", T$^+$ as bulk species ``c"
+and He$^+$ as bulk ion species no.\ ``d", then the default atomic
 collision models for H  (and isotopes) and He are
 identical to a model that would result from the following
 specifications in input block 4.
@@ -1579,7 +1579,7 @@ This approximation is used
 in the default model for the electron energy loss $E_{el}$ per collision
 and for the total
 kinetic energy  release $E_K$ shared by the two product atoms.
-The reaction card no. 7 above: AMJUEL H.8 2.1.14, together with the rate coefficient AMJUEL H.2 2.2.14 for this process, provides values identical to
+The reaction card no.\ 7 above: AMJUEL H.8 2.1.14, together with the rate coefficient AMJUEL H.2 2.2.14 for this process, provides values identical to
 this default. Due to the linear form (on a log-log scale) of this AMJUEL H.2 rate coefficient, an algebraic manipulation of the AMJUEL fit coefficients
 results in the exact electron energy loss for this process, without independent fitting of energy weighted rates.
 \begin{equation}\label{elloss}
@@ -1643,7 +1643,7 @@ post collision velocity from a drifting Maxwellian of the corresponding virtual 
 
 In input blocks 4a, 4b or 4c any test particle species ISPZ1 may have assigned to it one (or more than one)
 so called ``BGK" collisions, as identified by the process flag IBGK\dots(KK) .ne.\ 0.
-If that is the case, this test particle species is labeled, additionally to its label ISPZ1, also as a ``bgk species" no. IBGK\_SP
+If that is the case, this test particle species is labeled, additionally to its label ISPZ1, also as a ``bgk species" no.\ IBGK\_SP
 and the corresponding internal flags NPBGKA(IATM), NPBGKM(IMOL) or NPBGKI(IION) are non-zero for this species.
 For each ``bgk-species" IBGK\_SP automatically additional tallies, so called ``bgk-tallies" are scored,
 by a call to UPTBGK.F from scoring routine UPDATE.F. These additional tallies are then used to derive parameters for the iterated virtual background
@@ -1651,7 +1651,7 @@ by a call to UPTBGK.F from scoring routine UPDATE.F. These additional tallies ar
 For each bgk collision process KK a ``virtual" background species IPLS  (input block 5) is assigned in a unique way.
 For these bulk particle species IPLS the internal flag IBGK = NPBGKP(IPLS,1) points
 to a particular bgk collision process IBGK and hence also to a particular test particle species ISPZ1, which
-collides with this bulk species IPLS via that bgk collision kernel no. IBGK.
+collides with this bulk species IPLS via that bgk collision kernel no.\ IBGK.
 
 In case of cross collisions a second internal flag ISPZ2= NPBGKP(IPLS,2) points to the second test particle species
 involved this is particular collision process IBGK.
@@ -1684,7 +1684,7 @@ for 4 processes are sufficient).
 \end{verbatim}
 \end{scriptsize}
 In input block 4a (for atoms), we specify 4 collision processes for D atoms.
-Processes no. 3 and 4 are neutral-neutral collisions.
+Processes no.\ 3 and 4 are neutral-neutral collisions.
 \begin{scriptsize}
 \begin{verbatim}
 1 D         2  1  1  0  1 -1  1  4  (i.e.: 4 processes to be specified for this D atom)
@@ -1698,7 +1698,7 @@ Processes no. 3 and 4 are neutral-neutral collisions.
 \end{verbatim}
 \end{scriptsize}
 In input block 4b (for molecules), we specify 7 collision processes for D2.
-Processes no. 6 and 7 are neutral-neutral collisions.
+Processes no.\ 6 and 7 are neutral-neutral collisions.
 \begin{scriptsize}
 \begin{verbatim}
 1 D2       4  2  2  0  0  1  0  7   (i.e.: 7 processes to be specified for this D2 molecule)
@@ -1714,7 +1714,7 @@ Processes no. 6 and 7 are neutral-neutral collisions.
 \end{verbatim}
 \end{scriptsize}
 In input block 5 there are at least 23 bulk ion species in this example. Of those
-species no. 20 to 23 are ``artificial" \ac{BGK} species for neutral-neutral self collisions specified
+species no.\ 20 to 23 are ``artificial" \ac{BGK} species for neutral-neutral self collisions specified
 above by IBULK = 2014, 2114, 2214 and 2314 in blocks 4a and 4b above.
 \begin{scriptsize}
 \begin{verbatim}

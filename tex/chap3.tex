@@ -82,7 +82,7 @@ problem.
 
 In EIRENE versions after 2001 dynamic allocation of storage is implemented, the module
 PARMUSR has been removed.
-Rather than from fixed ``parameter statements", the storage (such as no. of species, grid size, no. of atomic processes, etc.) is now allocated directly
+Rather than from fixed ``parameter statements", the storage (such as no.\ of species, grid size, no.\ of atomic processes, etc.) is now allocated directly
 as identified from input flags, usually with the same name as previously in module PARMUSR.
 The actual ``physical" numbers used in a particular run have an additional letter ``I'' at the end of the variabel name.
 E.g.\  NATM  (storage for number of different atomic species)
@@ -952,7 +952,7 @@ Current implementation:
 \item
 INDEX = 1:   \\
 return the magnetic field unit vector, cartesian coordinates. This local (at position X0,Y0,Z0, in cell NCELL) vector is used
-instead of cell averaged input tally no. 5:
+instead of cell averaged input tally no.\ 5:
 
 [BXIN(ncell),BYIN(ncell),BZIN(ncell)].
 
@@ -961,7 +961,7 @@ VECUSR with INDEX=1 is called from routine BFIELD.F
 INDEX = 2:   \\
 return plasma (background) flow velocity vector, cartesian coordinates, for EIRENE background species IPLS.
 This local (at position X0,Y0,Z0, in cell NCELL) vector is used
-instead of cell averaged input tally no. 4:
+instead of cell averaged input tally no.\ 4:
 
 [VXIN(IPLS,ncell),VYIN(IPLS,ncell),VZIN(IPLS,ncell)].
 
@@ -1169,7 +1169,7 @@ CALL NORUSR(M,X,Y,Z,CX,CY,CZ,SCOS,VELX,VELY,VELZ,NRCELL)
 
 
 Here [X,Y,Z] are the cartesian coordinates
-of an intersetcion point, located on non-default standard surface no. M. The routine must return
+of an intersetcion point, located on non-default standard surface no.\ M. The routine must return
 the surface normal unit vector [CX,CY,CZ].
 
 If surface M has a periodicity condition (i.e.\ surface flag ILIIN(M) $>$3 in input block 3a (\cref{sec2.3a})

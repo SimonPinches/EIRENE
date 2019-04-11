@@ -43,7 +43,7 @@ For optimization of CPU performance the checking of intersections with surfaces 
 can be abandoned depending upon
 the current position of a test particle.
 
-For particles in cell no. NCELL all surfaces MSURF
+For particles in cell no.\ NCELL all surfaces MSURF
 with IGJUM3(NCELL, MSURF) = 1 are not checked.
 For particles on surface MS all other surfaces MSURF with
 IGJUM1(MS, MSURF) = 1 are not checked. 
@@ -82,7 +82,7 @@ an input block for a particular surface. One such ``TRANSFORM-deck"
 can act on an entire range of surfaces, but only on those which have
 been read previous to the ``TRANSFORM-deck". Hence, in order to transform
 the entire set of additional surfaces by one deck, this deck must come after
-the last surface (no. NLIMI, see below).
+the last surface (no.\ NLIMI, see below).
 
 \textbf{Particle-surface interaction models}
 
@@ -236,7 +236,7 @@ Intersection of trajectories starting from surface ILIMI with those
 
 Only for second order surfaces ILIMI, n1-m1, \dots
 The first of the two possible intersections is ignored for particles
-located on surface no. ILIMI.
+located on surface no.\ ILIMI.
 \end{list}
 
 \textsl{General Data for Surfaces}
@@ -279,8 +279,8 @@ velocity component parallel to the B-field is reversed.
 \item[{=m4 }]
 periodicity surface, with regard to x, y, or z coordinate, depending
 upon whether this surface is a standard x, y, or z grid surface,
-respectively. Move particle to x / radial grid surface no. m, m
-integer (or to y / poloidal or to z / toroidal surface no. m,
+respectively. Move particle to x / radial grid surface no.\ m, m
+integer (or to y / poloidal or to z / toroidal surface no.\ m,
 respectively)
 and continue track from there with otherwise identical particle parameters.
 
@@ -744,7 +744,7 @@ The transformation defined by the next 3 cards is carried out for
 additional surfaces from number ITINI through ITEND The
 transformation is carried out as soon as this transformation deck
 is found. Hence, if such a transformation deck is found after
-``additional surface" no. IS, then one must guarantee: ITINI $\le$
+``additional surface" no.\ IS, then one must guarantee: ITINI $\le$
 IS and ITEND $\le$ IS.
 
 \item[\textbf{XLCOR, YLCOR, ZLCOR }] ~
