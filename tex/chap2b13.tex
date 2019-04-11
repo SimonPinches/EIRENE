@@ -32,7 +32,7 @@ such time-cycles are carried out in one single job. In each
 time-cycle, a time-horizon is set and the trajectories are stopped
 (at latest) if they have survived until then. All relevant
 particle coordinates (position, velocity, type and species, cell
-indices, etc....) are stored at this time-horizon on the so called
+indices, etc\dots) are stored at this time-horizon on the so called
 ``census-arrays".
 
 Each time cycle may consist of one or more than one (NTMSTP, see
@@ -194,7 +194,7 @@ cards in block 10A, 10B or 10D.
 
 All particle co-ordinates at time $t_i$ for history number IHIST,
 i.e., position, cell indices, velocity etc. are stored on arrays
-RPART(IHIST,...) (Real) and IPART(IHIST,...) (Integer) in
+RPART(IHIST, \dots) (Real) and IPART(IHIST, \dots) (Integer) in
 subroutine TIMCOL. This subroutine TIMCOL is called if ``a
 collision with the time surface $t=t_i$" has occurred.
 

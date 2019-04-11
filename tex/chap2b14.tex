@@ -48,7 +48,7 @@ of INFCOP is available from FZ J\"ulich.
 \begin{verbatim}
 IF (NMODE.EQ. 0) THEN
 
-  NAINI,...
+  NAINI, ...
   DO  IAIN=1,NAINI
     NAINS(IAIN) NAINT(IAIN)
     TXTPLS(IAIN,11)
@@ -65,7 +65,7 @@ ELSEIF (NMODE.NE. 0) ... see paragraphs below
 \item[\textbf{NAINI }]
 Number of additional input tallies (module COMUSR, printout: OUTPLA).
 Storage is provided for NAINI additional input tallies. These tallies may be filled
-e.g. in the initialization phase of a run, e.g. calls to PLAUSR, PROUSR, etc....
+e.g. in the initialization phase of a run, e.g. calls to PLAUSR, PROUSR, etc\dots
 \item[\textbf{NAINS }]
 species index of additional input tally (case specific, some special preprogrammed cases: see below)
 \item[\textbf{NAINT }]
@@ -83,7 +83,7 @@ These options allow verification of selected atomic/molecular data on the comput
 the plasma background data of a particular run. This option is in particular relevant for checking for extrapolation errors in A$\&$M data fits or tables)
 \begin{list}{ }{}
 \item[\textbf{NAINT = 20 }]
-electron impact collision rate coefficient $\langle\sigma v\rangle_{ei}  \ [a.u.]$, with the rate coefficient profile taken from TABEI3(IREI,...) arrays.
+electron impact collision rate coefficient $\langle\sigma v\rangle_{ei}  \ [a.u.]$, with the rate coefficient profile taken from TABEI3(IREI, \dots) arrays.
 $IREI: 1 \le NREI$ : number of electron impact process. See TRCAMD output from the initialization phase of a run to identify, which particular electron impact process
 IREI is assigned to which species IATM, IMOL, etc.
 \item[\textbf{NAINT = 21 }]
@@ -105,7 +105,7 @@ general ion impact collision rate coefficient, TABPI3 arrays
 general ion impact collision ion energy weighted rate coefficient, EPLPI3 arrays (not ready)
 [\si{\electronvolt} $\cdot$ (rate-coeff in a.u.)]
 \item[\textbf{NAINT = 28 }]
-recombination rate coefficient $\langle<\sigma v\rangle_{rc}  \ [a.u.]$, with the rate coefficient profile taken from TABRC1(IREC,...) arrays.
+recombination rate coefficient $\langle<\sigma v\rangle_{rc}  \ [a.u.]$, with the rate coefficient profile taken from TABRC1(IREC, \dots) arrays.
 $IREC: 1 \le NREC$ : number of recombination process. See TRCAMD output to identify, which recombination
 process is assigned to which species IPLS.
 \item[\textbf{NAINT == 29 }] electron energy loss weighted recombination rate coefficient
@@ -115,20 +115,20 @@ process is assigned to which species IPLS.
 \subsection{Version B2-EIRENE-1999 and older} \label{sec2.14.1}
 \medskip
 B2 solves a set of continuum equations for electrons and ions, and EIRENE solves a set of kinetic transport equations
-for other species, not in the continuum description (e.g. neutrals, radiation, trace ions,...)
+for other species, not in the continuum description (e.g. neutrals, radiation, trace ions, \dots)
 In this hybrid fluid-kinetic formulation the EIRENE code provides
 volumetric particle, parallel momentum and electron and ion energy sources $S_n, S_{m\parallel}, S_{Ei}, S_{Ee}$, respectively,
 from those ``kinetic species", for the B2 continuum equations for the orthogonal set of ``species in fluid description".
 Formally, these volumetric source rates arise in the particle, parallel momentum and energy balances. For the B2 code these balances
 are discretized in conservative form (finite volume (FV) schemes) and solved (in the laboratory frame of reference):
 \begin{align}
-\frac{D(n_{ipls})}{Dt} &= S_n(ipls) +  o.c. \quad   ipls=1,\dots NFLA\\
-\frac{D ( m_{ipls} \ n_{ipls} \ V_{\parallel,{ipls}})}{Dt}&= S_{m\parallel}(ipls) + o.c. \quad   ipls=1,\dots NFLA\\
+\frac{D(n_{ipls})}{Dt} &= S_n(ipls) +  o.c. \quad   ipls = 1, \dots, NFLA\\
+\frac{D ( m_{ipls} \ n_{ipls} \ V_{\parallel,{ipls}})}{Dt}&= S_{m\parallel}(ipls) + o.c. \quad   ipls = 1, \dots, NFLA\\
 \frac{D (\frac32 \ n \ T_i+\sum_{ipls}\frac{m_{ipls}}{2} V^2_{\parallel,ipls})}{Dt} &= S_{Ei} + o.c.\\
 \frac{D (\frac32 \ n \ T_e)}{Dt} &= S_{Ee} + o.c.
 \end{align}
 $D/Dt$ denotes the derivative (total, or convective derivative, or partial derivative), and $o.c.$ stands for other contributions such as e.g. friction forces, pressure gradient forces,
-collisional heating, etc...
+collisional heating, etc\dots
 
 All source rates $S$ are resolved per stratum $is$ and per cell of the computational grid $icell$.
 The particle and parallel momentum sources are also resolved with respect to receiving plasma fluid ion species $ipls$.
@@ -333,7 +333,7 @@ to the drift velocity of the plasma code species IFLB(IPLS).
 
 Only one common ion temperature is available from B2, B2.5 code
 runs, even for multi-species applications. The bulk ion temperature
-TIIN(IPLS,....) for all EIRENE species IPLS, which are read from the
+TIIN(IPLS, \dots) for all EIRENE species IPLS, which are read from the
 plasma code data files, i.e., for all species with IFLB(IPLS) $>$ 0
 \item[{$<$ 0 }]
 The plasma density, flow field and temperature field for EIRENE species
@@ -478,7 +478,7 @@ NLSRF(ISTRA) = TRUE
 \item Number of sub-strata NSRFSI(ISTRA)=1
 \item Mixed radial/poloidal (or: x/y) surface type: INDIM(ISTRA,1)=4
 \item Step-function sampling with SORLIM(ISTRA,1)=104, and the step
-function data FLSTEP, ...
+function data FLSTEP, \dots
 for the flux distribution entering the sheath region of the target are
 automatically defined.
 \item Number of step-function  SORIND(ISTRA,1)=ITARG (=ISTRA)
@@ -514,7 +514,7 @@ irrelevant, labelling index
 species index of tally in B2 arrays.
 \item[\textbf{NAINT }]
 flag to determine which particular quantity is put onto input tally
-ADIN(I,...).
+ADIN(I, \dots).
 
 In the current version of subroutine INFCOP for interfacing to B2
 the following ``B2-quantities" can be selected.

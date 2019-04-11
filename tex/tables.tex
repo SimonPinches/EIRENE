@@ -85,10 +85,10 @@ balances (see NLSCL option, input block 1).
 \medskip
 Naming conventions for emitted surface fluxes are analogue to those for volumetric source rates,
 i.e. PRF[A][BC],  SPT[A][BC] with A and BC having the same meaning as described above for volume tallies.\\
-PRF... are fluxes reflected or emitted due to incident particle fluxes, of type [A], SPT[A][BC] are sputtered fluxes (additional
+PRF\dots are fluxes reflected or emitted due to incident particle fluxes, of type [A], SPT[A][BC] are sputtered fluxes (additional
 fluxes of surface material).
 
-\textbf{Note:} The naming convention of \textbf{surface sputter tallies SPT...} differs in older versions of EIRENE.
+\textbf{Note:} The naming convention of \textbf{surface sputter tallies SPT\dots} differs in older versions of EIRENE.
 The full resolution wrt. to incident type and emitted species is only implemented in EIRENE revisions svn 360 and later (Jan. 2014), see \cref{tab3a}.
 
 In all older versions only much fewer sputter tallies SPT[BC] were available, i.e. only one type-identifier in the name of these ``sputter tallies".
@@ -481,7 +481,7 @@ for the specified type of particles; if it is negative, it is a loss.
 The specified "type of particle" is coded by the last two letters of the name of a tally, AT, ML, IO, EL, PL, PH, respectively,
 as well as by the corresponding ``1st dimension" (species)  NATM, NMOL, NION, NPHOT, NPLS and ``1" (one) for electrons..
 e.g. MAPL:  parallel momentum source/sink for bulk particle (plasma background), due to atom plasma interactions. The parallel direction
-is determined by the magnetic field unit vector (input tallies BXIN,...).
+is determined by the magnetic field unit vector (input tallies BXIN, \dots).
 
 \bigskip
 \textbf{Estimators} EIRENE resorts, by default, to tracklength
@@ -672,10 +672,10 @@ Output, Module: CESTIM}}
 i) The tallies listed here are two dimensional arrays. The 2nd index I2
 is the number of the surface or the surface segment.
  For
-I2=1,...,NLIMI the tallies correspond to the ``Additional Surfaces",
+I2 = 1, \dots, NLIMI the tallies correspond to the ``Additional Surfaces",
 (input block 3B).\\
 ii)
-For I2=NLIM+1,NLIM+NSTSI*NGITT the data correspond to the
+For I2 = NLIM + 1, NLIM + NSTSI * NGITT the data correspond to the
 ``Non-default Standard Surfaces" (input block 3A).
 On each such surface of block 3A,
 there is a spatial resolution with up to NGITT
@@ -794,14 +794,14 @@ Physically irrelevant tallies are listed here only to maintain complete symmetry
 \subsection{old version, w/o photon gas tallies (Eirene\texorpdfstring{$_{2001}$}{2001} and
 older)}\label{sec.tables-old}
 In these older versions photon test particle tallies are not available, nor are the
-momentum source rates MAPL,.... and test particle momentum fluxes VXDEN...,VYDEN,...VZDEN.
+momentum source rates MAPL, \dots and test particle momentum fluxes VXDEN, \dots, VYDEN, \dots, VZDEN.
 In these versions such tallies may still have been available, but then in problem specific tallies
 COPV (interfacing to particular plasma fluid codes) or in tally BGKV (internal iterations due to neutral-neutral collisions
 in \ac{BGK} approximation).
 
 \medskip
 With respect to surface averaged tallies (in and outgoing surface fluxes, sputter fluxes,
-etc...) there have been major revisions in versions
+etc\dots) there have been major revisions in versions
 2014 or later, see ``sputter tallies, new version, svn 360 ff, 2014" in
 \cref{sec.tables-new}.
 
@@ -1092,10 +1092,10 @@ negative, it is a loss.
 The 2nd index I2 is the number of the surface or the surface
 segment.
  For
-I2=1,...,NLIMI the tallies correspond to the ``Additional
+I2 = 1, \dots, NLIMI the tallies correspond to the ``Additional
 Surfaces", (input block 3B).
 
-For I2=NLIM+1,NLIM+NSTSI*NGITT the data correspond to the
+For I2 = NLIM + 1, NLIM + NSTSI * NGITT the data correspond to the
 ``Non-default Standard Surfaces" (input block 3A). On each such
 surface, there is a spatial resolution with up to NGITT surface
 segments.

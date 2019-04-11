@@ -17,7 +17,7 @@ the ``standard mesh" and for each reflecting ``additional
 surface". It is referred to as ``Block for Local Reflection Data".
 If this block is missing and if the surface $MSURF$ is neither transparent
 ($ILIIN<0$) nor purely absorbing ($ILIIN=2$) nor a ``mirror surface" ($ILIIN=3$) nor a ``periodicity
-surface", ($ILIIN\ge 4$) then the default reflection model (i.e. $Fe-Target$, recycling coefficient = one, etc...) is activated for this
+surface", ($ILIIN\ge 4$) then the default reflection model (i.e. $Fe-Target$, recycling coefficient = one, etc\dots) is activated for this
 surface.
 
 The surface interaction model comprises the following information:
@@ -32,7 +32,7 @@ for re-emission as ``thermal particle"
 (with surface temperature, see the flags EWALL)
 \item $p_a$ (RPROBA): probability for absorption
 
-(surface sticking, pumping, etc...)
+(surface sticking, pumping, etc\dots)
 \item $p_s$ : probability for
 (physical) sputtering \item $p_c$ : probability for (chemical)
 sputtering \item For the reflected ``fast particles" and for the
@@ -425,7 +425,7 @@ each individual surface.
 An arbitrary number of such sub-blocks of 3 (or 4) lines each may
 also be defined under a certain label ``\verb|SURFMOD_modname|''
 and be included in the input file in block 6 directly after the
-ERMIN,... deck
+ERMIN, \dots deck
 
 In blocks 3a and 3b surfaces may be assigned a particular local
 reflection model by a card reading \verb|SURFMOD_modname|. Many
@@ -465,8 +465,9 @@ SURFMOD_CARB_SPT_812K
 Flag for choice of local reflection model
 \begin{list}{ }{}
 \item[{= 1 }] TRIM database reflection model is used. NLTRIM
-must be .TRUE.. \item[{= 2 }] ``modified Behrisch Matrix
-model" is used \item[{= 3 }] user supplied reflection model
+must be .TRUE.
+\item[{= 2 }] ``modified Behrisch Matrix model" is used 
+\item[{= 3 }] user supplied reflection model
 (see \cref{sec3.3}: Subroutine REFUSR)
 \end{list}
 
@@ -879,7 +880,7 @@ for the parameters:
 
 \begin{verbatim}
     ISRS  ISRC
-    TRANSP(1,...)  TRANSP(2,...)
+    TRANSP(1, ...)  TRANSP(2, ...)
     RECYCF  RECYCT  RECPRM  EXPPL  EXPEL  EXPIL
     RECYCS  RECYCC  SPTPRM  ESPUTS ESPUTC
 \end{verbatim}
@@ -910,7 +911,7 @@ particular particle species. The name of the species (blocks 4 and
 species.
 
 In the example of SURFMOD decks given above, e.g., the first such
-additional line overwrites the original value of TRANSP(1,...)
+additional line overwrites the original value of TRANSP(1, \dots)
 (=0.0) for species D2 with the value 0.5. I.e., all surfaces, to
 which the reflection model modname=\verb|CARB_SPT_1153|K is
 assigned, have a recycling coefficient =1.0 for all incident

@@ -15,7 +15,7 @@ formatted I/O. There are 14 "blocks", each one starting with a card
 
 \medskip
 
-where n is the number of the input block, n=1,2,...,14. Some blocks
+where n is the number of the input block, n = 1, 2, \dots, 14. Some blocks
 are subdivided into so called "sub-blocks", each one starting with a
 card
 
@@ -156,11 +156,11 @@ the momentum source is in \si{\pascal\per\metre}, or \si{\newton\per\cubic\metre
 \medskip
 
 The format statement numbers in subroutine INPUT
-start with 666... for reading and with
-777... for writing. The following conventions are used:
+start with 666\dots for reading and with
+777\dots for writing. The following conventions are used:
 \begin{list}{$ * $}{\leftmargin2.0cm\labelsep0.4cm}
 \item Standard Fortran naming conventions, i.e., variable names starting
-with the letters I,J,...,N are Integer, all other variables
+with the letters I, J, \dots, N are Integer, all other variables
 are Real.
 \end{list}
 In addition to these standard convention the following rules
@@ -190,7 +190,7 @@ with  '**' or '***', because
 in this latter case EIRENE would assume that the input for the current
 block
 is completed. It would expect the first card of the following
-block (or '* comment...' lines belonging to this next block)
+block (or '* comment\dots' lines belonging to this next block)
 as next card. Any data not read from the input file, before
 the following block is read, are set to default values.
 

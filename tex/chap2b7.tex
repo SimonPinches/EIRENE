@@ -27,7 +27,7 @@ EIRENE can handle up to NSTRA (see: PARMUSR, \cref{sec3.1})
 different strata and it prints
 output from
 each single stratum as well as from the sum over strata. The source strength
-is prescribed for each stratum separately (input card: FLUX(ISTRA),...).
+is prescribed for each stratum separately (input card: FLUX(ISTRA), \dots).
 Subdividing the total source into such strata can be useful
 to increase
 the efficiency of the code, (``stratified source sampling", see \cref{sec1.2.1b} or any
@@ -53,7 +53,7 @@ Q(\vr,t,isp,\vv) &= Q_1(\vr,t) \times Q_2(isp|\vr,t)
 \times Q(\vv |isp,\vr,t)
 \end{align}
 i.e. the source sampling routines in EIRENE
-(samvol.f, samsrf.f, etc..)
+(samvol.f, samsrf.f, etc.)
 start by sampling the spatio-temporal birth point
 coordinates $\vr_0,t_0$
 from $Q_1(\vr,t)$ (obtained by integrating $Q$ over velocity space $\vv$ and
@@ -66,7 +66,7 @@ To facilitate random sampling from $Q_k$ for a particular stratum $k$, each stra
 \begin{equation}
 Q_k= \sum_j w_{k,j} Q_{k,j}  \quad \texttt{with normalisation} \quad \sum_j  w_{k,j} = 1
 \end{equation}
-There are NSRFSI substrata, and the weights $w_{k,j}, \ j=1,\dots NSRFSI$, are used for first determining a particular
+There are NSRFSI substrata, and the weights $w_{k,j}, \ j = 1, \dots, NSRFSI$, are used for first determining a particular
 substratum $j_0$ by sampling, and then sampling from distribution $Q_{k,j_0}(\vr,\vv,i,t)$ of stratum $k$ as described above.
 
 The total CPU resources (and storage for the census array, see
@@ -96,7 +96,7 @@ storage on the census array of this stratum has been filled up
    TXTSOU
    NLAVRP  NLAVRT  NLSYMP  NLSYMT
    NPTS  NINITL  NEMODS  NAMODS  NMINPTS
-   FLUX  SCALV   IVLSF  ISCLS  ISCLT ....
+   FLUX  SCALV   IVLSF  ISCLS  ISCLT ...
    ...continue...ISCL1  ISCL2  ISCL3  ISCLB  ISCLA
  *Species index distribution
    NLATM  NLMOL  NLION  NLPLS NLPHOT
@@ -249,7 +249,7 @@ FLUX/1.602E-19 per second. \item[{SCALV$\ne$0}] The default
 scaling of tallies with FLUX can be overruled by this flag. The
 common scaling factor for all surface- and volume averaged tallies
 is determined such that one particular tally (selected by the
-ISCL..-flags described below) has the prescribed value SCALV. This
+ISCL\dots-flags described below) has the prescribed value SCALV. This
 determines the scaling of all other volume averaged and surface
 averaged tallies. By this option, for example, one can set the
 neutral particle density to a prescribed value in one particular
@@ -259,9 +259,9 @@ nonlinear applications including neutral-neutral interactions.
 \item[\textbf{IVLSF}]
 \begin{list}{ }{}
 \item[{=1}]
-The following ISCL..-flags select one particular volume averaged tally
+The following ISCL\dots-flags select one particular volume averaged tally
 \item[{=2}]
-The following ISCL..-flags select one particular surface averaged
+The following ISCL\dots-flags select one particular surface averaged
 tally
 \end{list}
 \item[\textbf{ISCLS}]
@@ -386,7 +386,7 @@ respectively, in subroutine LOCATE.
 Note: If a step function (function STEP, see below) is used for
 sampling the start position of a test particle on a surface, then
 the species index NSPEZ automatically also fixes the choice of the
-index ISPZ for the spatial step function STEP(ISTEP,ISPZ,...)
+index ISPZ for the spatial step function STEP(ISTEP, ISPZ, \dots)
 selected by the flags SORLIM and SORIND (=ISTEP) (see below). This
 default can be overruled  when SORIND has three digits.
 
@@ -663,7 +663,7 @@ Flag to choose one from the various step functions (SORLIM-option
 (PARMUSR, see \cref{sec3.1}) step functions can be described
 there. SORIND is the labelling index of the selected step function.
 
-Each step function STEP(ISTEP,...) can consist of step functions for
+Each step function STEP(ISTEP, \dots) can consist of step functions for
 fluxes of up to NSPZ species, see \cref{sec2.7.1}. NSPZ depends upon
 the initialization of this function. By default the source species
 index NSPEZ is used when sampling from step functions.
@@ -732,13 +732,13 @@ If NISOR $<$  0, IPOLG is found from the step-function data (see
 below: Function STEP, \cref{sec2.7.1}) (if N is equal to 4) or
 is returned from SAMUSR  (if  SORLIM $ < $  0)
 \end{list}
-The six parameters in the next card SORAD.. are used to define the
+The six parameters in the next card SORAD\dots are used to define the
 sampling intervals in the three co-ordinate directions x, y and z.
 For some geometry options and surface types (i.e., \emph{radial,
 poloidal, toroidal,} or \emph{additional}) these boundaries of the
 sampling interfaces, in some co-ordinates, are automatically found
 from the specified range [INGRDA, INGRDE] in the corresponding grid,
-and the corresponding SORAD... values are then not used for those
+and the corresponding SORAD\dots values are then not used for those
 coordinates. In case of doubt see initialization phase of subroutine
 SAMSRF to find out which options precisely are available, or contact
 the EIRENE team at FZ-Juelich.
@@ -873,7 +873,7 @@ background tallies at the place of birth.
 
 Depending upon the value of the flag \textbf{NEMODS}, the following
 energy distributions $f(E|\vr_0, t_0, isp)$ are available. Note that this conditional energy distribution
-$f(E|...)$ may also
+$f(E|\dots)$ may also
 depend upon the further input parameters
 
 \textbf{SORENI, SORENE, SORVDX, SORVDY, SORVDZ}
@@ -881,7 +881,7 @@ depend upon the further input parameters
 and is conditional on the birth position (and time) $\vr_0,t_0$
 of the test particle
 via local plasma parameters
-$T_e ,   T_i , \vV_i, .... $, as well as on the
+$T_e ,   T_i , \vV_i, \dots $, as well as on the
 selected species index $isp$ of the newly launched
 test particle.
 
@@ -1162,7 +1162,7 @@ from the step function  no. ISTEP.
 \medskip
 
 Sampling of the birth-point of a trajectory is sometimes done from such
-piecewise constant functions (\texttt{EIRENE} function \texttt{STEP}(....) ), e.g.,
+piecewise constant functions (\texttt{EIRENE} function \texttt{STEP}(\dots) ), e.g.,
 if one digit of the flag \texttt{SORLIM} has been set to the value 4.
 This is the case if, for example, a recycling ion flux distribution is given
 in discretized form on a grid along a target surface (from an external \ac{CFD} plasma solver).
@@ -1172,7 +1172,7 @@ random sampling of a coordinate $u$ is from the step-function
 \texttt{FLSTEP(RRSTEP)}. There is storage for up to \texttt{NSTEP} (see \texttt{PARMUSR})
 such step-functions.
 
-$u_i = RRSTEP(i,ISTEP), i=1,...NSMAX(ISTEP)-1$, is a discrete ordered (either increasing or decreasing) set of
+$u_i = RRSTEP(i,ISTEP), i = 1, \dots, NSMAX(ISTEP) - 1$, is a discrete ordered (either increasing or decreasing) set of
 abscissae $u_i$, at which the piecewise constant step-function has
 a jump to $FLSTEP(u_i)$.
 
@@ -1192,7 +1192,7 @@ or on a sub-interval thereof.
 By calls to the entry \texttt{STEP1(IINDEX,ISTEP,RNF,ISPEZ)} of Function \texttt{STEP}
 the randomly sampled index $i$=\texttt{IINDEX} is returned, as well as a coordinate $u$ sampled from an
 uniform distribution on the $i^{th}$ increment $\Delta u_i$
-= \texttt{RRSTEP(i+1,...)-RRSTEP(i,...)}: $u$=\texttt{STEP1}
+= \texttt{RRSTEP(i+1, \dots) - RRSTEP(i, \dots)}: $u$=\texttt{STEP1}
 
 In case of \texttt{LEVGEO=1} or \texttt{LEVGEO=2} $u$ has the simple meaning of one of the
 spatial coordinates in an \texttt{EIRENE} run.
@@ -1245,7 +1245,7 @@ After this the total flux (normalization constant) \texttt{FLTOT(ISPZ,ISTEP)} = 
 and then the cumulative distributions $VF$ are normalized
 to
 \begin{equation}\nonumber
-VF(...,i) = VF(...,i)/FLTOT(...),  \ \ \ \ i=1,NSMAX(...).
+VF(\dots,i) = VF(\dots,i)/FLTOT(\dots),  \ \ \ \ i=1,NSMAX(\dots).
 \end{equation}
 hence enforcing $VF(ISPZ,ISTEP,NSMAX) = 1$ for random sampling.
 

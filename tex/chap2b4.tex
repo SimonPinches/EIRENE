@@ -78,7 +78,7 @@ The character string 'CRM'  (A6 or A8) identifies which particular internal CR c
 is executed, cell by cell, and whether it is run in meta-stable resolved or
 meta-stable unresolved mode.
 Currently H and He codes are available. Documentation: unfinished. Optional input cards
-control further options, such as population escape factors (opacity effects), etc...
+control further options, such as population escape factors (opacity effects), etc\dots
 
 The meaning of input variables is the same as above. This option bypasses
 data tables or data fits for collision radiative model rate coefficients, cooling rates,
@@ -170,7 +170,7 @@ Atomic and molecular processes are always of the following type:
 \begin{displaymath}
 a \cdot A + b \cdot B \longrightarrow m \cdot M + n \cdot N + \Delta E
 \end{displaymath}
-(Very few exceptions, with 3 or more groups of secondaries (N,M,L,...),
+(Very few exceptions, with 3 or more groups of secondaries (N, M, L, \dots),
 exist and can also be treated, but these are very rare applications. See below.)
 
 Here $A,B,M$ and $N$ are labels for the type of pre- and post
@@ -269,7 +269,7 @@ In case ID1 = 4, i.e., four post collision particles (not counting electrons)
 where \textbf{\$} stands for either A (atoms), M (molecules),
 I (test ions), PH (photons) or P (bulk ions).
 I.e., a species block consists of one species specification card
-ISPZ\$ ..., and NRC\$ ``reaction decks" of two cards each.
+ISPZ\$ \dots, and NRC\$ ``reaction decks" of two cards each.
 
 For some particle species (in particular for hydrogenic atoms,
 molecules and molecular ions, and for helium atoms) EIRENE has default
@@ -475,7 +475,7 @@ currently available only for: H123 = H.1, = H.2, = H.5, or = H.8, i.e., only
 for single parameter fits.
 \begin{list}{ }{}
 \item[{    }]
-in case IFTFLG = 10, 110, 210,\dots , ``single parameter", constant collision parameter. One more line \\
+in case IFTFLG = 10, 110, 210, \dots, ``single parameter", constant collision parameter. One more line \\
  \texttt{F(0), REAL}
 \\ is read.
 
@@ -565,15 +565,15 @@ to be used in special user supplied programs.
 double parameter fit for any other data, e.g.
 to be used in special user supplied
 programs, (i.e. not generally understood by EIRENE, but can be used in problem
-specific ``..USR" routines of EIRENE, e.g. for post processing).
+specific ``\dots USR" routines of EIRENE, e.g. for post processing).
 The data fitted in H.12 are, therefore, typically not rate-coefficients,
 but often (not always) ratios between two rate coefficients.
 
 Exception: the reduced population coefficients for hydrogenic plasmas, \\
 i.e.,
-2.1.5a,....2.1.5e, 2.2.5a, 2.2.5e, etc... \\
+2.1.5a, \dots, 2.1.5e, 2.2.5a, 2.2.5e, etc\dots \\
 are currently automatically read in
-EIRENE post processing routines in code section ``output", routines: Ba$\_$alpha, Ba$\_$beta,...
+EIRENE post processing routines in code section ``output", routines: Ba$\_$alpha, Ba$\_$beta, \dots
 
 
 \end{list}
@@ -588,8 +588,8 @@ This option uses the \ac{ADAS} adf11 file format as guidance and is developed\sl
 A\&M data structures.
 
 E.g. original \ac{ADAS} file-names starting with SCD\dots (ionization rate coefficients
-contain ionization rate coefficients to charge state Z, Z=1,\dots Z$_{max}$)
-and filenames starting with  ACD\dots... contain recombination rate coefficients,
+contain ionization rate coefficients to charge state Z, Z = 1, \dots, Z$_{max}$)
+and filenames starting with  ACD\dots contain recombination rate coefficients,
 from charge state Z,   Z=1, Z$_{max}$.
 The particular chemical element ELNAME and the value of charge state $Z$ is specified in the next input card,
 which is read only in case of FILNAM = TAB2D  or FILNAM = ADAS.
@@ -687,7 +687,7 @@ The next input deck is read only in case FILNAM = ADAS:
 \begin{list}{ }{}
 \item[\textbf{ELNAME }]
 Name of element in adf11 style formatted file, e.g. $Fe$ for iron, $C$ for carbon,
-$W$ for tungsten, etc....
+$W$ for tungsten, etc\dots
 \item[\textbf{IZ }]
 Charge state in adf11 file. This value is always between 1 and $Z_{max}$. For ionization rate coefficients
 $IZ$ specifies the ionization rate coefficient for the ionization process from $IZ-1$ to $IZ$,
@@ -787,7 +787,7 @@ in any particular version of EIRENE)
 The next flags RMN1, RMX1, RMN2, RMX2 control the options to extrapolate atomic data fits
 read from files in order to obtain proper asymptotic behavior of fits.
 The default data in EIRENE and some reactions in the
-files AMJUEL, HYDHEL, ... data-set already contain that information.
+files AMJUEL, HYDHEL, \dots data-set already contain that information.
 RMN1, RMN2 control the first independent parameter (often: temperature), and RMN2, RMX2 control
 the second (if any) independent parameter (often: density) of the fits or tables.
 
@@ -798,7 +798,7 @@ the values ELABMIN and ELABMAX for cross section data, TMIN, TMAX for rate coeff
 Currently this works for single parameter fits only. Check routine SLREAC.F for the status wrt. to two-parameter fits.
 If it finds
 these extrapolation parameters, it uses their values as RMN1 and RMX1, respectively. In such cases the
-next card IFEXMN,.... and IFEXMX,.... must also be omitted, because the
+next card IFEXMN, \dots and IFEXMX, \dots must also be omitted, because the
 corresponding information regarding the extrapolation expression (and coefficients)  is found from the atomic data file as well.
 The extrapolation expression is that of option IFEXM. = 5 (see below).
 
@@ -976,7 +976,7 @@ is reset to zero at birth, after surface events and after a non-diagonal
 event (modification of type and/or species of a particle in a collision
 event).
 The generation counter XGENER is increased at entropy producing events (elastic and diagonal charge
-exchange collisions). If, along a trajectory, the condition $ XGENER > NGEN.. $ is met, after a collision, no test
+exchange collisions). If, along a trajectory, the condition $XGENER > NGEN\dots$ is met, after a collision, no test
 particle secondaries are generated, i.e. the history is stopped. The post collision particle flux,
 parallel momentum flux and energy flux is, instead,
 put into the tallies PGENA, VGENA and EGENA for atoms,
@@ -1207,7 +1207,7 @@ Later ESCD2 became redundant, and only ESCD1 (the sum of both old values:  ESCD1
 Internally the code since then distributes the total kinetic energy release ESCD1 to the two post collision
 particles according to the laws of energy and momentum conservation.
 
-More: to be written.... needs detective work in very old code....
+More: to be written\dots needs detective work in very old code\dots
 
 \textbf{Current options:}
 
@@ -1452,13 +1452,13 @@ these are activated by setting the
 flag  NRCM(IATM) = 0 (or NRCM(IMOL) = 0, NRCI(IION) = 0, respectively, or NRCP(IPLS) = 0 in input block 5)
 for a particular atom IATM (molecule IMOL or test ion IION, or (block 5) bulk ion IPLS),
 and by omitting the corresponding reaction cards \\
-IREAC\$,... and \\
-EELEC\$,...\\
+IREAC\$, \dots and \\
+EELEC\$, \dots\\
 Then EIRENE tries to find, automatically, the corresponding species types
 and indices of the collision products in the species blocks. It then
 tries to define all variables in the cards\\
-IREAC\$,... and \\
-EELEC\$,... \\
+IREAC\$, \dots and \\
+EELEC\$, \dots \\
 for collision rates and collision kinetics,
 using default assumptions.\\
 If a test particle is to be assigned no collision processes at all, neither from the reaction list in block 4, nor a default process,
@@ -1512,8 +1512,8 @@ per ionization of \SIlist{13.6;24.588}{\electronvolt}, respectively.
 \medskip
 \paragraph{default model for hydrogenic molecules H$_2$ (and isotopomers) and their ions}
 
-For hydrogenic molecules ($\mathrm{H_2, D_2, HT,}$...) or molecular ions
-($\mathrm{H_2^+, D_2^+, HT^+,}$....)  default dissociation, ionization and
+For hydrogenic molecules ($\mathrm{H_2, D_2, HT,}$\dots) or molecular ions
+($\mathrm{H_2^+, D_2^+, HT^+,}$\dots)  default dissociation, ionization and
 dissociative recombination data are available.
 
 EIRENE  uses the 6 reaction rate coefficients  H.2  2.2.5, 2.2.9, 2.2.10, 2.2.11,
@@ -1574,7 +1574,7 @@ Note that for reaction 6, dissociative recombination of the $D_2^+$ molecular io
 the energy
 dependence of the cross section leads to
 a mean electron energy loss per event $\overline E_{el}$ of
-about $0.896.. \cdot T_e$, see reference \cite{kn:Reiter93}, rather than the perhaps expected $3/2 \cdot T_e$.
+about $0.896\dots \cdot T_e$, see reference \cite{kn:Reiter93}, rather than the perhaps expected $3/2 \cdot T_e$.
 This approximation is used
 in the default model for the electron energy loss $E_{el}$ per collision
 and for the total
@@ -1642,7 +1642,7 @@ post collision velocity from a drifting Maxwellian of the corresponding virtual 
 
 
 In input blocks 4a, 4b or 4c any test particle species ISPZ1 may have assigned to it one (or more than one)
-so called ``BGK" collisions, as identified by the process flag IBGK..(KK) .ne. 0.
+so called ``BGK" collisions, as identified by the process flag IBGK\dots(KK) .ne.\ 0.
 If that is the case, this test particle species is labeled, additionally to its label ISPZ1, also as a ``bgk species" no. IBGK\_SP
 and the corresponding internal flags NPBGKA(IATM), NPBGKM(IMOL) or NPBGKI(IION) are non-zero for this species.
 For each ``bgk-species" IBGK\_SP automatically additional tallies, so called ``bgk-tallies" are scored,
@@ -1765,7 +1765,7 @@ rate coefficient or rate is constant.
 to be written
 
 \subsection{Internal EIRENE A\&M Data structures and conventions}
-This section is currently being written.....
+This section is currently being written\dots
 
 
 
@@ -1794,7 +1794,7 @@ accommodated into a single, more general array of generalized data type REACTION
 \subsubsection{Data structure REACDAT (from SVN versions (2008))}
 Atomic, molecular and photonic collision data are stored internally on the data structure REACDAT, which
 replaces and generalizes the older fixed array format CREAC. The purpose is to accommodate
-also data formats other than the old polynomial fits read from data files AMJUEL, HYDHEL, etc...,
+also data formats other than the old polynomial fits read from data files AMJUEL, HYDHEL, etc\dots,
 e.g. to allow also tabulated data (1D and 2D tables), in-build full CR codes, as well as the various input data formats for line broadening
 mechanism (line shape functions) in case of radiation transport.
 
@@ -1812,13 +1812,13 @@ Each element of REACDAT(IR) holds
 The logicals denote the presence or absence of different types of data for a particular collision the process KK.
 
 logical variable internal code	Corresponding pointer	meaning
-LPOT	POT	interaction potential (or: differential cross section, scattering angle, ....) are available
+LPOT	POT	interaction potential (or: differential cross section, scattering angle, \dots) are available
 LCRS	CRS	Cross-section data is available
 LRCT	RTC	Rate coefficient is available
 LRTCMW	RTCMW	Momentum weighted rate coefficient is available
 LRTCEW	RTCEW	Energy rate coefficient is available
-LPHR	PHR	 Photonic process (line-shape, Einstein coefficients, population escape factors...) is available
-LOTH	OTH	Other reaction type data (reduced population coefficients, equilibrium  density ratios, etc...)
+LPHR	PHR	 Photonic process (line-shape, Einstein coefficients, population escape factors\dots) is available
+LOTH	OTH	Other reaction type data (reduced population coefficients, equilibrium  density ratios, etc\dots)
 
 
 If the logical variable is set to .FALSE. the corresponding pointer is ``unassociated".
@@ -1827,13 +1827,13 @@ NOSEC specifies the number of secondary particles produced by the reaction.
 
 Pointers POT, CRS, RTC, RTCMW, RTCEW, OTH, PHR are of datatype FIT\_FORMS.
 
-Datatype FIT\_FORMS consists of an integer variable IFIT and 4 pointers POLY, TAB2D, LINE and CR....
+Datatype FIT\_FORMS consists of an integer variable IFIT and 4 pointers POLY, TAB2D, LINE and CR\dots
 \begin{itemize}
 \item	POLY is a pointer to a data structure for polygon fits (POLY\_DATA)
 \item	TAB2D  (old versions: ADAS) is a pointer to TAB2D (old: ADAS) data (TAB2D\_DATA or ADAS\_DATA)
 \item	LINE points to a data structure describing a photonic line (LINE\_DATA)
 \item	TAB1D  (old versions: HYD) points to a data structure, out: unfinished codes removed in 2018)
-\item	CR.. points to a data structure used for collisional radiative models
+\item	CR\dots points to a data structure used for collisional radiative models
 \end{itemize}
 
 Of the 5 pointers one and only one can be associated. IFIT indicates which one is set.
@@ -1853,17 +1853,17 @@ Data type LINE\_DATA deals with all parameters specifying a photonic process. It
 
 
 Data type COLRAD holds all data needed to describe the available collisional radiative model such as
-IFLAV: type/flavour of the CR... model (H,H2,He...)
+IFLAV: type/flavour of the CR\dots model (H, H2, He, \dots)
 IFORMUL: formulation used (1 or 2), i.e. meta-stable condensed or meta-stable resolved
 IROW\_ESC, ICOL\_ESC, POP\_ESC: population escape factor and the matrix position in which the factor should be applied.
 
 \subsubsection{The MODCOL array}:
 
-The integer array IFLAG = MODCOL(CT,I2=0,...,4,IR) is the internally used identifier for
+The integer array IFLAG = MODCOL(CT, I2 = 0, \dots, 4, IR) is the internally used identifier for
 the various collision process options and related data availability. It is constructed in the initialization
 phase (routines XSTEI, XSTCX, XSTEL, XSTPI, ) of a run from the atomic\slash molecular data read in input block 4
 (or hard wired from the minimal default
-atomic collision models, in case of NRC..=0 for a certain test particle component).
+atomic collision models, in case of NRC\dots = 0 for a certain test particle component).
 
 \medskip
 The first index CT characterizes the type of a process. From this ''type" parameter also certain default assumptions

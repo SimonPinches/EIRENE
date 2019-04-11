@@ -30,7 +30,7 @@ input block 3B.
 There are up to 3 sets of standard co-ordinate surfaces, each set being parameterised by the arrays
 RSURF(i1), PSURF(i2) and TSURF(i3).
 
-Here RSURF(1), RSURF(2), ...,
+Here RSURF(1), RSURF(2), \dots,
 RSURF(NR1ST) are grid-points (parameters) in the 1st co-ordinate direction, mostly the radial or x direction
 (depending on the
 geometry level, internal parameter LEVGEO, see below) defined by the input data in sub-block 2A.
@@ -42,7 +42,7 @@ and is defined by the equation
 $f_1^{1,IR} (x,y,z)$
 =constant=RSURF(IR).
 
-PSURF(1), PSURF(2), ..., PSURF(NP2ND) are grid-points in the 2nd co-ordinate direction,
+PSURF(1), PSURF(2), \dots, PSURF(NP2ND) are grid-points in the 2nd co-ordinate direction,
 typically the poloidal or y direction (sub-block 2B), and there are
 NP2NDM=NP2ND-1 cells in this direction.
 A corresponding
@@ -67,7 +67,7 @@ No use is made in EIRENE of the arrays RSURF and PSURF in connection
 with the polygon mesh option. The NLPLG option permits to run EIRENE
 on 2D computer generated meshes with grid cuts in one direction.
 
-Furthermore, TSURF(1), TSURF(2), ...,
+Furthermore, TSURF(1), TSURF(2), \dots,
 TSURF(NT3RD) are grid-points in the third co-ordinate direction, mostly the toroidal or z direction (sub-block 2C).
 A co-ordinate surface is labeled $3,IT$ and is defined by the equation
 $f_1^{3,IT} (x,y,z)$
@@ -240,7 +240,7 @@ a 3D ``finite volume" mesh of tetrahedrons used
 \item[{LEVGEO=10}]
 a general, user defined geometry block is used.
 All geometrical calculations are performed in problem specific routine
-VOLUSR, TIMUSR, ...etc.
+VOLUSR, TIMUSR, \dots, etc.
 \end{list}
 If NLRAD=.FALSE., then no spatial grid is defined
 and the default geometry level LEVGEO = 1 is used.
@@ -567,13 +567,13 @@ Number of grid-points in y- or poloidal direction
 \item[ for the LEVGEO=1 option: ] ~
 
 the y grid PSURF is defined in the same way as the x grid, using the
-parameters YIA,YGA,.... (\si{\centi\metre}) instead of RIA,RGA,....
+parameters YIA, YGA, \dots (\si{\centi\metre}) instead of RIA, RGA, \dots
 
 \item[ for the LEVGEO=2 option: ] ~
 
 the poloidal angle $\theta$ grid PSURF is defined in the same way as the radial $r$ grid was,
 using
-the parameters YIA,YGA,...(poloidal angle in degree) instead of RIA,RGA,...
+the parameters YIA, YGA, \dots(poloidal angle in degree) instead of RIA, RGA, \dots
 
 for all options LEVGEO $>$ 2:
 this input card is irrelevant.
@@ -656,7 +656,7 @@ only needed in case NLTRA and .NOT.NLTOR. See above.
 \item[\textbf{ZIA,ZGA,ZAA,ZZA,ROA }] ~
 
 The 3rd  grid ZSURF is defined in the same way as the x grid, using
-the parameters ZIA, ZGA,.... (\si{\centi\metre}) instead of RIA, RGA,....
+the parameters ZIA, ZGA, \dots (\si{\centi\metre}) instead of RIA, RGA, \dots
 
 In case of NLTRZ = TRUE , a z-grid is defined. ROA is irrelevant.
 
@@ -800,7 +800,7 @@ NBLCKA = (NBLOCK -1) * NSTRDT +NRADD
 \subsection{geometry level LEVGEO: symmetry and dimensionality of a run}
 \label{sec2.2.2}
 
-tbd: add a few figures here....
+tbd: add a few figures here\dots
 
 
 
@@ -812,12 +812,12 @@ These can be sets of coordinate surfaces $u^i(x,y,z) = const_i$
 \textbf{LEVGEO = 1}
 Simple cartesian grids (1D, 2D or 3D) are used for code development, comparison with simple (semi-analytical) transport models,
 general 1D  ``one speed transport theory",
-validation of diffusion approximations, etc......  The co-ordinates in the 3 directions are referred to as x,y and either z or phi, respectively,
+validation of diffusion approximations, etc\dots  The co-ordinates in the 3 directions are referred to as x,y and either z or phi, respectively,
 the latter depending on whether the third co-ordinate is linear (cartesian) or circular.
 
 \textbf{LEVGEO = 2} Typically used in connection with 1D radial core
 transport models (e.g., ``Duechs code", 1982 TRANSP 1987, RITM,
-(1996),...), circular limiter tokamaks, or for simple parametric
+(1996), \dots), circular limiter tokamaks, or for simple parametric
 studies in toroidal or cylindrical coordinates (this is the oldest
 EIRENE geometry option, available since 1980). Shifted elliptical grid surfaces (1D),
 but also in combination with a polar grid (then: 2D) and/or a cylindrical or toroidal

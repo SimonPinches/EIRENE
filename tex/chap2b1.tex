@@ -101,7 +101,7 @@ is called by EIRENE for communication with external data sources,
 e.g., external data structures for iterative mode by coupling to other codes.
 The calling program for the first 3 entries of INFCOP
 is subroutine INPUT, and the call to subroutine INFCOP is
-after reading 13 blocks from the formatted input file (READ (IUNIN,...)).
+after reading 13 blocks from the formatted input file (READ (IUNIN, \dots)).
 A 14$^{th}$
 block of the input file is read from subroutine INFCOP with the format
 (if any) specified there.
@@ -318,7 +318,7 @@ all cells IRAD such that NCLTAL(IRAD) = IRTAL,  IRAD=1, NRAD
 The input data in input block 5 (background medium) are always given on
 the fine mesh (size: NRAD)
 
-For output tallies (cell averaging) several cells IRAD1, IRAD2,...
+For output tallies (cell averaging) several cells IRAD1, IRAD2, \dots
 can be condensed into one larger cell IRTAL. Cell volumes, scoring,
 statistics are automatically done on the coarser grid (size: NRTAL).
 
@@ -352,7 +352,7 @@ particle- and energy balances is stored in the bins ``PTRASH" and
 ``ETRASH" respectively.
 \item [\textbf{NLANA} ] De-activates
 (NLANA=.TRUE.) all non-analog sampling distributions, such as
-biased source sampling, splitting, etc.. Select NLANA=.TRUE., if
+biased source sampling, splitting, etc. Select NLANA=.TRUE., if
 particle trajectory plots are used to get an intuitive picture of
 what is going on physically.
 \item [\textbf{NLDRFT} ] Drift
@@ -360,7 +360,7 @@ component in the bulk ions velocity distribution is included, i.e. the assumed u
 is a drifting Maxwellian for volumetric background tallies of bulk particles.
 (see input block 5, input tallies VXIN, VYIN, VZIN)). Otherwise (if NLDRFT = FALSE) an
 isotropic Maxwellian distribution is
-assumed for the background particles and the input for VXIN,...VZIN is ignored.
+assumed for the background particles and the input for VXIN, \dots, VZIN is ignored.
 
 This flag also affects the output tallies for energy exchange, momentum exchange between test particles and background particles,
 as well as sampling from linear collision kernels.
@@ -472,7 +472,7 @@ Example:
 The particular data file from these trees (e.g.: \texttt{SCD96} in case of \ac{ADAS}, or \texttt{A\_on\_B}
 in case of TRMSGL), the
 chemical element  and the charge stage of a
-particular ion $Z=1,\dots Z+1$ (e.g.: C, 4), are detailed later in
+particular ion $Z = 1, \dots, Z+1$ (e.g.: C, 4), are detailed later in
 input block 4 (for volumetric collision processes based on \ac{ADAS} adf11 format), and input block 6 (TRMSGL, for the surface reflection database based on TRIM)
 see below, \cref{sec2.4,sec2.6},
 respectively.

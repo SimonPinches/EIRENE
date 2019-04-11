@@ -213,9 +213,9 @@ by the other four cards:
 \medskip
 
 \begin{list}{ }{}
-\item[\textbf{CH0 n1/m1 n2/m2 ...}]
+\item[\textbf{CH0 n1/m1 n2/m2 \dots}]
 
-surfaces from the range n1 to m1, n2 to m2, ..., are ignored by
+surfaces from the range n1 to m1, n2 to m2, \dots, are ignored by
 EIRENE. Specifying a surface in such a CH0-card is identical to
 taking it out from the input file. It may be more convenient in
 some cases, however, to use the CH0 option, because the labelling
@@ -225,16 +225,16 @@ next valid surface (identified by the string '*text') is read
 next. \item[\textbf{NLIMI }] number of surfaces in the input block
 \item[\textbf{TXTSUR }] Text to identify a surface (``name of the
 surface") on the printout file \item[\textbf{CH1(ILIMI) n1/m1 n2/m2
-...}]
+\dots}]
 
-surfaces from the range n1 to m1, n2 to m2, ..., are considered
+surfaces from the range n1 to m1, n2 to m2, \dots, are considered
 invisible for a
 particle located on this current surface ILIMI.
 Intersection of trajectories starting from surface ILIMI with those
 ``invisible" surfaces is not checked.
-\item[\textbf{CH2(ILIMI) n1/m1 n2/m2 ...}]
+\item[\textbf{CH2(ILIMI) n1/m1 n2/m2 \dots}]
 
-Only for second order surfaces ILIMI, n1-m1, ...
+Only for second order surfaces ILIMI, n1-m1, \dots
 The first of the two possible intersections is ignored for particles
 located on surface no. ILIMI.
 \end{list}
@@ -269,7 +269,7 @@ to be used; all surface tallies (see \cref{tab3})
 are updated and a switch can be operated.
 \item[{= 2 }]
 purely absorbing surface ;. surface tallies for incident fluxes
-(i.e., POT... and EOT... tallies in \cref{tab3})
+(i.e., POT\dots and EOT\dots tallies in \cref{tab3})
 are updated and the particle history is stopped then.
 \item[{= 3 }]
 mirror for incident
@@ -312,16 +312,16 @@ as -1, and, additionally:
 if a particle is crossing the surface in the positive direction,
 (one sided-) surface tallies are updated, e.g., by
 default: partial particle and energy currents $J^+$ (\si{\ampere})
-and $K^+$ (\si{\watt}). These are stored in the POT... and EOT... tallies of \cref{tab3}.
+and $K^+$ (\si{\watt}). These are stored in the POT\dots and EOT\dots tallies of \cref{tab3}.
 If the particle crosses the surface in the direction opposite to the surface normal, then
 negative partial particle and energy currents $J^-$ (\si{\ampere})
-and $K^-$ (\si{\watt}) are updated. These are stored in the PRF... and ERF... tallies of
+and $K^-$ (\si{\watt}) are updated. These are stored in the PRF\dots and ERF\dots tallies of
 \cref{tab3}.
 
 \item[{= -3 }]
 Net currents (e.g. $J^+ - J^-$),
-are evaluated, and stored on the POT... and EOT... tallies (see \cref{tab3}).
-The PRF... and ERF... tallies are empty for these surfaces.
+are evaluated, and stored on the POT\dots and EOT\dots tallies (see \cref{tab3}).
+The PRF\dots and ERF\dots tallies are empty for these surfaces.
 \item[{$\leq$ -4 }] Not in use. Currently: same as ILIIN=-2 option.
 \end{list}
 \end{list}
@@ -568,7 +568,7 @@ additional surfaces (2 $\le$ RLBND $<$ 3 option).
 This flag identifies closed polygonal lines composed of additional
 surfaces given by the 2-point option and/or of standard surfaces in
 the x-y-plane. For example if ILPLG(I) = NN, for surfaces I = I1, I2,
-...IN, (NN a positive integer) then these IN surfaces form a closed
+\dots, IN, (NN a positive integer) then these IN surfaces form a closed
 polygonal line in the x-y-plane. The region inside this closed line
 is part of the computational domain. By a negative integer value of
 NN a closed polygonal region can be excluded from the computational
@@ -653,7 +653,7 @@ at least 2 and at highest 5 points on a plane surface.
 If there are only 2 points, the surface is parallel to one axis.
 If there are 3 or more points, then
 the boundary of this plane surface is a closed polygon
-$(P_1 ,..., P_n , P_1)$.
+$(P_1 , \dots, P_n , P_1)$.
 Therefore, the correct order of points at input is relevant.
 The orientation of the positive
 surface normal vector is defined by the first 3 points,

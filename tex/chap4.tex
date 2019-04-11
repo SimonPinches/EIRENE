@@ -42,7 +42,7 @@ full new Monte Carlo estimates are retained.
 
 
 The names of all routines in the interfacing block
-end with ...COP.
+end with \dots COP.
 
 \section{Routine for interfacing INFCOP} \label{sec4.1}
 
@@ -61,7 +61,7 @@ This array \texttt{RWK} which is then used in the initialization phase of an EIR
 regular EIRENE storage places/names.
 
 In Version from 2001 or later, rather than filling 1D array \texttt{RWK}, now directly
-input tallies TEINTF, TIINTF, DIINTF, ... etc. can be filled. These are pointers now to a vector (now named
+input tallies TEINTF, TIINTF, DIINTF, \dots etc. can be filled. These are pointers now to a vector (now named
 \texttt{PLASMA\_BACKGROUND}), but which has the same structure as the old \texttt{RWK} array. Apart from that the rest remains the same
 and the material in this section is still valid.
 
@@ -123,7 +123,7 @@ information to generate a 2D mesh of polygons in the x-y plane.
 It is equivalenced to the common block CPOLYG
 via the statement:
 
-EQUIVALENCE (PGINTF(1),XPLG(1,1)),...
+EQUIVALENCE (PGINTF(1),XPLG(1,1)), \dots
 
 In the LEVGEO = 4 option (2D grid of triangles) TRINTF is an array of length NTMAX,
 which contains all relevant
@@ -131,14 +131,14 @@ information to generate a mesh of triangles in the x-y plane.
 It is equivalenced to the common block CTRIA
 via the statement:
 
-EQUIVALENCE (TRINTF(1),XT(1)),...
+EQUIVALENCE (TRINTF(1),XT(1)), \dots
 
 In the LEVGEO = 5 option (3D grid of tetrahedons) THINTF is an array of length NHMAX, which
 contains all relevant information to generate a mesh of
 tetrahedrons in the 3d computational domain. It is equivalenced to
 the common block CTETRA via the statement:
 
-EQUIVALENCE (THINTF(1),XT(1)),...
+EQUIVALENCE (THINTF(1),XT(1)), \dots
 
 \subsection{entry IF1COP} \label{sec4.1.1}
 \textsl{Plasma (background) data (INDPRO = 6 option)}
@@ -153,14 +153,14 @@ to be written
 
 \medskip
 In case of an EIRENE run, in which input information is obtained
-from an external code (e.g.: B2, EMC3, DIVIMP, ...), the
+from an external code (e.g.: B2, EMC3, DIVIMP, \dots), the
 stratification of the primary source should be such that the first
 NTARGI (see \cref{sec2.14}) strata are determined by the plasma
 fluxes onto surfaces (``recycling surface sources"). In this case
 the surface source distribution $Q_S(\vr,\vv,i,t)$ (\cref{sec1.2}) can be defined automatically from the interfacing
 routine, using the data specified in input block 14. The remaining
-primary sources NTARGI+1, ..., NSTRAI (e.g. gas puff, volume
-recombination sources, etc...) still have to defined in input
+primary sources NTARGI+1, \dots, NSTRAI (e.g. gas puff, volume
+recombination sources, etc\dots) still have to defined in input
 block 7.  Whether input block 7 or input block 14 is used for
 a particular surface source ISTRA $\le$ NTARGI is controlled by
 the flag INDSRC.  For sources ISTRA $>$ NTARGI the input flag INDSRC  is irrelevant.
