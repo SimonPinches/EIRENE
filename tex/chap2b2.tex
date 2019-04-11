@@ -299,7 +299,7 @@ is either ignorable or discretized according to options described below (block 2
 The radial surfaces are given by
 $r^2 = x^2 + y^2 = const.$ and
 radial coordinate $r$ is discretized by setting $r_I$=RSURF(I) I=1,NR1ST.
-Furthermore RHOSRF(I) = $\sqrt{ \frac{AREA}{\pi}}$ where
+Furthermore RHOSRF(I) = $\sqrt{\frac{AREA}{\pi}}$ where
 AREA is the area inside surface
 number $I$.
 Thus for this option one has again: RHOSRF(I) = RSURF(I), I=1,NR1ST.
@@ -417,7 +417,7 @@ $r_{NR1ST+1}$=RRA
 \item[\textbf{EXEP}]
 The variation of the ``shift function" EP(r) with r is given by
 
-$EP(r) = EPIN + { ( \frac{r - RIA}{RAA -
+$EP(r) = EPIN + {( \frac{r - RIA}{RAA -
 RIA} )}^{EXEP}
 \cdot (EPOT - EPIN)$
 \item[\textbf{ELIN}]
@@ -436,7 +436,7 @@ $r_{NR1ST+1}$=RRA
 The variation of the ``ellipticity function" EL(r) with
 r is given by
 
-$EL(r) = ELIN + { ( \frac{r - RIA}{RAA -
+$EL(r) = ELIN + {( \frac{r - RIA}{RAA -
 RIA} )}^{EXEL}
 \cdot (ELOT - ELIN)$
 \end{list}

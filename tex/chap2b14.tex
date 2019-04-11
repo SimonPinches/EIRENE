@@ -629,15 +629,15 @@ achieve full symmetry of boundary condition options between east-west and north-
 (up to the real vacuum vessel)
 in which boundary conditions on strongly inclined surfaces are defined.
 \begin{list}{}{}
-\item[{ 1}] v\_par,x: parallel velocity [\si{\metre\per\second}], x-surface (across field, East)  centered
-\item[{ 2}] v\_par,y: parallel velocity [\si{\metre\per\second}], y-surface (along field, North) centered
-\item[{ 3}] v\_rad,x: plasma ion density [\si{\metre\per\second}], x-surface (across field, East)  centered
-\item[{ 4}] v\_rad,y: poloidal velocity [\si{\metre\per\second}], y-surface (along field, North) centered
-\item[{ 5}] $\delta_e$\_par,x:   x-surface (across field, East)  centered
-\item[{ 6}] $\delta_e$\_par,y:   y-surface (along field, North) centered
-\item[{ 7}] $\delta_e$\_rad,x:   x-surface (across field, East)  centered
-\item[{ 8}] $\delta_e$\_rad,y:   y-surface (along field, North) centered
-\item[{ 9}] $\delta_i$\_par,x:   x-surface (across field, East)  centered
+\item[{1}] v\_par,x: parallel velocity [\si{\metre\per\second}], x-surface (across field, East)  centered
+\item[{2}] v\_par,y: parallel velocity [\si{\metre\per\second}], y-surface (along field, North) centered
+\item[{3}] v\_rad,x: plasma ion density [\si{\metre\per\second}], x-surface (across field, East)  centered
+\item[{4}] v\_rad,y: poloidal velocity [\si{\metre\per\second}], y-surface (along field, North) centered
+\item[{5}] $\delta_e$\_par,x:   x-surface (across field, East)  centered
+\item[{6}] $\delta_e$\_par,y:   y-surface (along field, North) centered
+\item[{7}] $\delta_e$\_rad,x:   x-surface (across field, East)  centered
+\item[{8}] $\delta_e$\_rad,y:   y-surface (along field, North) centered
+\item[{9}] $\delta_i$\_par,x:   x-surface (across field, East)  centered
 \item[{10}] $\delta_i$\_par,y:   y-surface (along field, North) centered
 \item[{11}] $\delta_i$\_rad,x:   x-surface (across field, East)  centered
 \item[{12}] $\delta_i$\_rad,y:   y-surface (along field, North) centered
@@ -691,11 +691,11 @@ a projection of the vectorial momentum exchange rate onto the parallel to $\vB$ 
 Introducing the radial, poloidal and toroidal magnetic field components $(B_r,B_\theta,B_\phi)$
 the default (and exclusive, until March 2015) option \textbf{in all B2-EIRENE versions ever, until then}, was to assume that
 \begin{list}{}{}
-\item[B\textbf{$_r$ =$(\vB \cdot \ver)$}] { \ }\\
+\item[B\textbf{$_r$ =$(\vB \cdot \ver)$}] {\ }\\
 the radial magnetic field B$_r$ is zero: B$_r$ =0 always. But note that the B2, B2.5 radial grid index is typically IY,
 whereas the EIRENE x-or radial grid index is IX, IR.
 
-\item[B\textbf{$_\theta$ =$(\vB \cdot \veth)$}] { \ }\\
+\item[B\textbf{$_\theta$ =$(\vB \cdot \veth)$}] {\ }\\
 the poloidal magnetic field is in the direction of increasing coordinate of the poloidal B2 (B2.5) grid index IX,
 but EIRENE y- or poloidal grid index IY, or IP. Expressed in unit vectors: $\ve_{B_\theta} = \veth$, by default..
 Its magnitude (relative to the toroidal magnetic field, is determined by the B2, B2.5 pitch angle array RR(icell)
@@ -703,7 +703,7 @@ and the absolute magnetic field strength $|\vB|$ (the latter often being default
 but notably not for photons (Zeeman splitting) nor for the kinetic (guiding center) trace ion options.\\
 $B_\theta = |\vB| \cdot $ pitch.
 
-\item[B\textbf{$_\phi$ =$(\vB \cdot \veph$)}] { \ }\\
+\item[B\textbf{$_\phi$ =$(\vB \cdot \veph$)}] {\ }\\
 the toroidal magnetic field is normal to the poloidal (x-y) plane in the EIRENE z (periodic cylinder, NLTRZ-option )
 or PHI (approximated torus, NLTRA option)
 coordinate. Its strength, relative to the poloidal field, is given by the B2, B2.5 pitch array RR(icell):

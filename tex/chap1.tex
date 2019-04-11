@@ -79,9 +79,9 @@ EIRENE, within each single cycle, may still be operated in linear mode.
 
 
 
-The term \textsl{ $\mu$-space} in this report refers to the phase
+The term \textsl{$\mu$-space} in this report refers to the phase
 space of a single particle. The quantity of interest is then the
-\textsl{ one particle distribution function}  \textit{f}
+\textsl{one particle distribution function}  \textit{f}
 \[
 f(\vr, \vv, i, t)  \quad \mbox{or} \quad \tilde f(\vr, E, \vOmega, i, t)
 \quad \mbox{or} \quad f(x) ,
@@ -856,7 +856,7 @@ would not necessarily reach. This ``conditional expectation
 estimator" reads:
 \begin{equation} \label{eq1.12}
  X^e_g ( \omega^n_i )   =
-  \sum_{l=0}^{n-1}  \left \{ \int_{x_l}^{x_{end}}
+  \sum_{l=0}^{n-1}  \left \{\int_{x_l}^{x_{end}}
 ds \  g_t (s)    \cdot   \exp \left (
  - \int_{0}^{s} ds '   \Sigma_t (
   s ' ) \right ) \right \}
@@ -893,7 +893,7 @@ number of particles.  The volume, e.g.\ of a grid cell, is also an extensive qua
 profiles of cell averaged intensive quantities (e.g.\ density profiles) are obtained.
 The final unbiased estimate, in absolute units, for any of the unbiased estimators $X_g$ for detector function $g$ discussed above, then is:
 \begin{equation} \label{eq1.8b}
-R_g  =\langle\Psi|g\rangle \approx   \tilde{R}_g(N)   =    \frac{s}{ V_m\times N} \sum_{i=1}^{N}   X_g(
+R_g  =\langle\Psi|g\rangle \approx   \tilde{R}_g(N)   =    \frac{s}{V_m\times N} \sum_{i=1}^{N}   X_g(
 \omega_i) , \quad N \gg 1
 \end{equation}
 with $N$ being the number of Monte Carlo histories.
@@ -2063,8 +2063,8 @@ a fully legitimate sampling distribution because it fulfils the ``Radon-Nikodym 
 Sampling from this non-analog distribution can
 be done by setting, e.g.,
 \begin{equation}
-\tilde{v}_{\pi}   = {\tilde{\alpha}}_{\pi}   \cdot   \sqrt{ -\ln(
-\xi )  \cdot 2} = v_{\tilde T_{\pi,i}} \cdot   \sqrt{ -\ln(
+\tilde{v}_{\pi}   = {\tilde{\alpha}}_{\pi}   \cdot   \sqrt{-\ln(
+\xi )  \cdot 2} = v_{\tilde T_{\pi,i}} \cdot   \sqrt{-\ln(
 \xi )}  \quad  \mbox{since: \ }  \tilde{\alpha}_{\pi}   =\frac{1}{\sqrt{2}}
 v_{\tilde T_{\pi,i}} \quad \mbox{for \ } \tilde{V}_{d,\pi} = 0
 \label{eq1.26}
@@ -2088,8 +2088,8 @@ w ( \tilde{v}_{\pi} ) = \frac{\Gamma^0_{Sh,ion,\pi} (
 )}
  =  \frac{\tilde{T}_{\pi,i}}{T_i}
 \exp \left (  \frac{2 \tilde{v}_{\pi}  V_{d, \pi}}{v_{Ti}^2}    -
-\frac { {\tilde{v}_{\pi}}^2}{v_{T_i}^2} \left ( 1   -
-\frac{T_i}{ {\tilde{T}_{\pi,i}}}  \right ) \right )
+\frac {{\tilde{v}_{\pi}}^2}{v_{T_i}^2} \left ( 1   -
+\frac{T_i}{{\tilde{T}_{\pi,i}}}  \right ) \right )
  \cdot  \frac {1}{g({\cal V}_{\pi})}
 \label{eq1.28}
 \end{equation}
@@ -2142,8 +2142,8 @@ Here we have decomposed the drift velocity $\vV_d$ into a
 normal (to the surface) $\pi$-component $\vV_{d,\pi}$ and a $\sigma$-component $\vV_{d,\sigma}$ parallel to
 the wall surface.
 \begin{equation}
-{\cal V}_{\sigma}   = \frac{ | \vV_d   -   \vV_{d,
-\pi} |} {  v_{T_i}} = \frac{ | \vV_{d,\sigma} |} {    v_{T_i}}. \label{eq1.32}
+{\cal V}_{\sigma}   = \frac{| \vV_d   -   \vV_{d,
+\pi} |} {v_{T_i}} = \frac{| \vV_{d,\sigma} |} {v_{T_i}}. \label{eq1.32}
 \end{equation}
 Note that for ${\cal V}_{\pi}$ = 0 \cref{eq1.31} reduces to the expected formula
 $\gamma_E   =   2   + {{\cal V}_{\sigma}}^2$  for a half sided Maxwellian flux with only drift components parallel to the surface.
@@ -2260,7 +2260,7 @@ c_i = \sqrt{\left(\frac{\gamma kT_i + Z_i kT_e}{m_i}\right)}
 \end{displaymath}
 ($\gamma$ denoting the adiabatic coefficient) and hence:
 \begin{equation}\label{insert}
-c_i \cdot \sqrt{ \frac{m_e}{kT_e}} = \left[ \left( \frac{\gamma
+c_i \cdot \sqrt{\frac{m_e}{kT_e}} = \left[ \left( \frac{\gamma
 kT_i}{kT_e} + Z_i \right) \cdot \frac{m_e}{m_i} \right]^{1/2}
 \end{equation}
 we recover well known expressions for simpler cases. Consider,
@@ -2287,7 +2287,7 @@ the latter equality \cref{sheath4} follows after insertion of \cref{insert} into
 If we let, furthermore, the net electrical current be zero: $j_{pl} = 0$ and take
 zero secondary electron emission $\gamma_{s.e.e} = 0$, we then find the classical result:
 \begin{displaymath}
- e \Delta\Phi/kT_e = \frac{1}{2} \ln{ \left[ \frac {2\pi
+ e \Delta\Phi/kT_e = \frac{1}{2} \ln{\left[ \frac {2\pi
 m_e}{m_i} \left( \frac{T_i}{T_e} + Z_i \right) \right]}
 \end{displaymath}
 Hence, e.g.,  for a pure hydrogen plasma ($m_e/m_i \approx 1/1836$), and for $T_e \approx
