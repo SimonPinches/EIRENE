@@ -65,7 +65,7 @@ ELSEIF (NMODE.NE. 0) ... see paragraphs below
 \item[\textbf{NAINI }]
 Number of additional input tallies (module COMUSR, printout: OUTPLA).
 Storage is provided for NAINI additional input tallies. These tallies may be filled
-e.g. in the initialization phase of a run, e.g. calls to PLAUSR, PROUSR, etc\dots
+e.g.\ in the initialization phase of a run, e.g.\ calls to PLAUSR, PROUSR, etc\dots
 \item[\textbf{NAINS }]
 species index of additional input tally (case specific, some special preprogrammed cases: see below)
 \item[\textbf{NAINT }]
@@ -115,7 +115,7 @@ process is assigned to which species IPLS.
 \subsection{Version B2-EIRENE-1999 and older} \label{sec2.14.1}
 \medskip
 B2 solves a set of continuum equations for electrons and ions, and EIRENE solves a set of kinetic transport equations
-for other species, not in the continuum description (e.g. neutrals, radiation, trace ions, \dots)
+for other species, not in the continuum description (e.g.\ neutrals, radiation, trace ions, \dots)
 In this hybrid fluid-kinetic formulation the EIRENE code provides
 volumetric particle, parallel momentum and electron and ion energy sources $S_n, S_{m\parallel}, S_{Ei}, S_{Ee}$, respectively,
 from those ``kinetic species", for the B2 continuum equations for the orthogonal set of ``species in fluid description".
@@ -127,7 +127,7 @@ are discretized in conservative form (finite volume (FV) schemes) and solved (in
 \frac{D (\frac32 \ n \ T_i+\sum_{ipls}\frac{m_{ipls}}{2} V^2_{\parallel,ipls})}{Dt} &= S_{Ei} + o.c.\\
 \frac{D (\frac32 \ n \ T_e)}{Dt} &= S_{Ee} + o.c.
 \end{align}
-$D/Dt$ denotes the derivative (total, or convective derivative, or partial derivative), and $o.c.$ stands for other contributions such as e.g. friction forces, pressure gradient forces,
+$D/Dt$ denotes the derivative (total, or convective derivative, or partial derivative), and $o.c.$ stands for other contributions such as e.g.\ friction forces, pressure gradient forces,
 collisional heating, etc\dots
 
 All source rates $S$ are resolved per stratum $is$ and per cell of the computational grid $icell$.
@@ -505,7 +505,7 @@ as above, but for total ion parallel momentum source rate.
 \item[\textbf{NAINB }]
 total number (=NAINI) of additional plasma code tallies
 transferred
-onto EIRENE input tally ADIN (e.g. in order to utilize EIRENE output
+onto EIRENE input tally ADIN (e.g.\ in order to utilize EIRENE output
 facilities for plasma code data, or for the options described in sub
 block 10c.
 \item[\textbf{I }]
@@ -548,7 +548,7 @@ the plasma background data of a particular run (in particular: check for extrapo
 text for printout and plotting, same as described for additional output tallies in bock 10.
 \item[\textbf{NAOTB }]
 total number of additional EIRENE surface tallies transferred to
-B2 code (e.g. in order to allow re-scaling in B2 such that total
+B2 code (e.g.\ in order to allow re-scaling in B2 such that total
 number of particles (neutrals and ions) is conserved.
 \item[\textbf{NAOTS }]
 not in use
@@ -651,9 +651,9 @@ one north- and one east surface.
 \subsection{Version B2-EIRENE-wide-grid (2011 and later)} \label{sec2.14.3}
 \medskip
 
-Further adaptations in case of ``wide grid" option, to accommodate   mixed fluxes (e.g. west and north)
+Further adaptations in case of ``wide grid" option, to accommodate   mixed fluxes (e.g.\ west and north)
 at a single boundary element.
-Also additional: flags for magnetic field orientation, e.g. to allow poloidal and/or toroidal magnetic field components
+Also additional: flags for magnetic field orientation, e.g.\ to allow poloidal and/or toroidal magnetic field components
 to be reversed, opposed to B2 radial and poloidal grid orientation.
 
 To be written
@@ -663,7 +663,7 @@ Meaning of additional flags from input block 14  (format: see \cref{sec2.14}):
 \item[\textbf{MSHFRM}]
 three different options for reading of B2 grid:
 
-MSHFRM = 0: ``Linda" format, historically oldest format, default, e.g. used in SOLPS.
+MSHFRM = 0: ``Linda" format, historically oldest format, default, e.g.\ used in SOLPS.
 Originates from LINDA grid generating code, G. Maddison, mid eighties last century.
 
 MSHFRM = 1: ``Sonnet" format
@@ -709,7 +709,7 @@ or PHI (approximated torus, NLTRA option)
 coordinate. Its strength, relative to the poloidal field, is given by the B2, B2.5 pitch array RR(icell):
 B$_\phi$ = = $|\vB| \cdot \sqrt{1-\mbox{pitch}^2}$.
 Its orientation is strictly irrelevant due to assumed toroidal symmetry, except in case of kinetic (guiding center) ion tracing by EIRENE.
-In the latter case it would matter indeed, e.g. to fix the $\nabla \vB$ drift direction.
+In the latter case it would matter indeed, e.g.\ to fix the $\nabla \vB$ drift direction.
 \end{list}
 \emph{Note: The confusing notational convention of x and y coordinates in B2-EIRENE still exists because B2 originally started as 1D parallel
 code, with the only coordinate being along the field, whereas EIRENE also started as 1D code,

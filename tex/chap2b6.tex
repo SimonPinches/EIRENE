@@ -121,7 +121,7 @@ for sampling post-surface event species as part of the surface reflection models
 \end{verbatim}
 Note that the species index distribution cards must always be read,
 even if NATM, NMOL, NION or NPLS are zero. In this latter case at
-least one (irrelevant) parameter must be read. E.g. if NION=0, i.e.
+least one (irrelevant) parameter must be read. E.g.\ if NION=0, i.e.
 no test ion species in particular run, then still one card with the
 irrelevant parameter DIOD(1) must be read. An exception from this
 rule is the photon species distribution DPHT: this card is only read
@@ -253,7 +253,7 @@ labelling index IMOL for the re-emitted molecule,
 exactly as described above for re-emitted atoms.
 The relevant sampling distribution for species index
 IMOL in case -ISRT\$ $>$ NMOLI is DMOL(IMOL).
-This option can e.g. be used to specify the distribution of vibrationally excited
+This option can e.g.\ be used to specify the distribution of vibrationally excited
 molecules $H_2(\nu)$ emitted from a surface after bombardment by incident $H$ atoms,
 the so called Eley Rideal mechanism: Surface(with implanted $H) + H \rightarrow H_2(\nu)$
 \end{list}
@@ -942,22 +942,22 @@ The pump-throughput (pumped flux), (mass flow rate) $Q$ is the product of pressu
 
 $Q_{pump} = P \cdot S$,
 
-and, for a given type of gas ($m$) and gas temperature $T$  the pump-throughput is given e.g. in flux units \si{\per\second}, (or: \si{\ampere}),
+and, for a given type of gas ($m$) and gas temperature $T$  the pump-throughput is given e.g.\ in flux units \si{\per\second}, (or: \si{\ampere}),
 or as mass flow with dimension pressure times volume per time.
 
-The temperature $T$ and type of gas (given by $m$) are part of the specification of $S$, e.g. to be found from the technical specification of the pump.
+The temperature $T$ and type of gas (given by $m$) are part of the specification of $S$, e.g.\ to be found from the technical specification of the pump.
 $S$ may also depend on the pressure for some pumps: $S = S(P,T,m)$. However in the molecular flow regime $S$ may often assumed to be a constant (independent of pressure) for a given
 temperature and type of gas.
 
 But normally even in this case  the specified pumping speeds $S$ for vacuum pumps do not follow the $\sqrt{T/m}$ dependence in equation \cref{pumping-speed}
-for different types of gas. E.g. pumping speeds for  H$_2$ vs. He
+for different types of gas. E.g.\ pumping speeds for  H$_2$ vs. He
 of ``real pumps", for same temperatures, are usually not simply related by a factor $1/\sqrt{2}$, and those for D$_2$ and He may not be identical either.
 In a simulation of a gas mixture then a species dependent flag RECYCT (to produce a species dependent effective area $\tilde{A}$(ISPZ)
 has to be specified to reproduce a given ratio of pumping efficiencies for different types of gas, for a particular type of pump
 (see the ``Note" at the end of previous section: RECYCT(ISPZ) option)
 to reproduce the proper species dependence (and pressure dependence, if any) of the pumping system.
 
-Probably sometimes, when $S=S(P)$, even RECYCT has to be made dependent on the pressure $P$ found in front of the surface $A$ (then e.g. by an iterative procedure)
+Probably sometimes, when $S=S(P)$, even RECYCT has to be made dependent on the pressure $P$ found in front of the surface $A$ (then e.g.\ by an iterative procedure)
 
 
 

@@ -85,7 +85,7 @@ data tables or data fits for collision radiative model rate coefficients, coolin
 or population coefficients. The internal CR code is executed cell by cell in the
 initialisation phase. In older versions of EIRENE the intrinsic hydrogen collision radiative
 code had to be invoked from special, problem specific routines,
-as e.g. done for non-linear coupling
+as e.g.\ done for non-linear coupling
 between gas and radiation field since about 2002 in a particular version of MODUSR.f.
 Parameter DP (potential energy shift) is currently not available here.
 
@@ -117,7 +117,7 @@ ELNAME, IZ
 
 In this case an additional
 card is read (containing variables: ELNAME, IZ) for each IR entry, see below, to identify the species and ion charge state within the data file
-(e.g. within an \ac{ADAS} ADF11 file folder).
+(e.g.\ within an \ac{ADAS} ADF11 file folder).
 
 
 For photonic emission and absorption data (line shapes), i.e. for \texttt{FILNAM = PHOTON},
@@ -136,7 +136,7 @@ There also exists an option for specifying constant (or very simple functional d
 cross sections,
 reaction rate coefficients, reaction rates, etc.
 directly via the input file, without resorting to an external database. This has proven useful for testing purposes,
-e.g. comparison with simple analytic or numerical solutions. In this case: \texttt{FILNAM = CONST}, further details: see below.
+e.g.\ comparison with simple analytic or numerical solutions. In this case: \texttt{FILNAM = CONST}, further details: see below.
 
 
 Later EIRENE will assign the relevant atomic,
@@ -450,7 +450,7 @@ Name of the data-set that contains the required reaction.
 including effects of vibrational and electronic excitation, as
 well as rates needed for radiation trapping calculations.
 \item[{AMJUEL}] supplement to HYDHEL and METHAN for neutral gas
-transport Monte Carlo codes, e.g. multi-step reaction rates, etc.
+transport Monte Carlo codes, e.g.\ multi-step reaction rates, etc.
 \item[{CONST }] reaction IR is a collision process with
 explicitly specified fit coefficients for cross sections or
 reaction rate coefficients, (depending upon input flag ``H123"),
@@ -565,7 +565,7 @@ to be used in special user supplied programs.
 double parameter fit for any other data, e.g.
 to be used in special user supplied
 programs, (i.e. not generally understood by EIRENE, but can be used in problem
-specific ``\dots USR" routines of EIRENE, e.g. for post processing).
+specific ``\dots USR" routines of EIRENE, e.g.\ for post processing).
 The data fitted in H.12 are, therefore, typically not rate-coefficients,
 but often (not always) ratios between two rate coefficients.
 
@@ -587,7 +587,7 @@ temperature (\si{\electronvolt}) read from files containing 2D tabulated rate co
 This option uses the \ac{ADAS} adf11 file format as guidance and is developed\slash adapted from it for more general
 A\&M data structures.
 
-E.g. original \ac{ADAS} file-names starting with SCD\dots (ionization rate coefficients
+E.g.\ original \ac{ADAS} file-names starting with SCD\dots (ionization rate coefficients
 contain ionization rate coefficients to charge state Z, Z = 1, \dots, Z$_{max}$)
 and filenames starting with  ACD\dots contain recombination rate coefficients,
 from charge state Z,   Z=1, Z$_{max}$.
@@ -668,13 +668,13 @@ CRC=RC re-combination
 
 CRC=PH photonic processes
 
-CRC=OT other  (e.g. population coefficients, equilibrium density ratios, etc.)
+CRC=OT other  (e.g.\ population coefficients, equilibrium density ratios, etc.)
 \item[\textbf{MASSP }]
 Mass number (\ac{AMU}) of the first particle involved in the collision,
 for the original data as being read from the data-file. EIRENE
 automatically re-scales data according to the mass number of the
 actual first particle involved in this particular collision
-process (e.g. if data are given for H atoms in the data-file, but
+process (e.g.\ if data are given for H atoms in the data-file, but
 are used for D or T atoms in an EIRENE run).
 \item[\textbf{MASST }]
 Mass number (\ac{AMU}) of the second particle involved in the
@@ -686,7 +686,7 @@ collision process.
 The next input deck is read only in case FILNAM = ADAS:
 \begin{list}{ }{}
 \item[\textbf{ELNAME }]
-Name of element in adf11 style formatted file, e.g. $Fe$ for iron, $C$ for carbon,
+Name of element in adf11 style formatted file, e.g.\ $Fe$ for iron, $C$ for carbon,
 $W$ for tungsten, etc\dots
 \item[\textbf{IZ }]
 Charge state in adf11 file. This value is always between 1 and $Z_{max}$. For ionization rate coefficients
@@ -820,7 +820,7 @@ extrapolated using the next input card
 See below, and e.g., subroutine
 CROSS for the various options.
 
-Some cross section data, e.g. in the files AMJUEL, HYDHEL, etc.
+Some cross section data, e.g.\ in the files AMJUEL, HYDHEL, etc.
 already contain the extrapolation information, and hence the default
 RNM1=0 can be used there.
 
@@ -1080,7 +1080,7 @@ with this convention is checked in the initialization phase of each run.
 ``CX" collisions mean: exchange of identity, i.e. scattering angle $\pi$ in the center
 of mass system.
 I.e. CRC=CX is used for resonant charge exchange only.
-Non resonant charge exchange, in which e.g. internal energy is
+Non resonant charge exchange, in which e.g.\ internal energy is
 converted into kinetic energy of products,
 is to be treated in the CRC=PI category of ``general heavy particle collisions".
 
@@ -1178,7 +1178,7 @@ collision process.
 The incident electron energy difference(loss or gain) per collision EELEC is the sum:\\
 ESCD1 (kinetic energy released in educts, KER) plus\\
 EDPOT (potential energy difference) plus \\
-ERAD (radiated energy, e.g. from intermediate excited states).
+ERAD (radiated energy, e.g.\ from intermediate excited states).
 
 
 The old ``fluid limit'' cut off options formerly specified at this place
@@ -1252,7 +1252,7 @@ constant loss or gain of EP (\si{\electronvolt}) per collision event.
 If \# $\hat{=} $ L, and if there is more than one
 heavy particle secondary, then the energy loss/gain EP (reaction exothermicity, or kinetic energy release)
 is distributed over the secondary bulk particles inversely proportional to their masses.
-E.g. for reaction $e+CH_4 \rightarrow CH_3 + H + e$, and EP=ESCD=\SI{8.0}{\electronvolt}, then
+E.g.\ for reaction $e+CH_4 \rightarrow CH_3 + H + e$, and EP=ESCD=\SI{8.0}{\electronvolt}, then
 the fragment $CH_3$ would receive an extra energy of \SI{0.5}{\electronvolt}, and the fragment $H$ would
 receive \SI{7.5}{\electronvolt},
 both isotropically in the center of mass system of the collision.
@@ -1393,10 +1393,10 @@ $\sigma(v_{rel}) \propto 1/v_{rel}$).
 
 Summarizing: The current default CX model approximations consist in:
 
-a) selecting a particular distribution $f_i^{CX}$   \cref{iso-mono} rather than e.g. a drifting Maxwellian \\
+a) selecting a particular distribution $f_i^{CX}$   \cref{iso-mono} rather than e.g.\ a drifting Maxwellian \\
 b) evaluating the reaction rate coefficient by \cref{sigveff} rather than a full rate coefficient integration \\
 c) approximating the energy and momentum exchange rate tallies by again employing the ``Langevin" $\sigma \propto 1/v_{rel}$ approximation\\
-d) but carrying out the full (relative velocity selective) reaction kinetics, i.e. here without making the $\sigma \propto 1/v_{rel}$ approximation, and, hence, retaining e.g. thermal force effects.
+d) but carrying out the full (relative velocity selective) reaction kinetics, i.e. here without making the $\sigma \propto 1/v_{rel}$ approximation, and, hence, retaining e.g.\ thermal force effects.
 
 Instead of the weighting mentioned above, which would require knowledge of $k_{CX}$, a rejection
 method is used to avoid the weighting, and without need of knowing the integral $k_{CX}$, but still to simulate the same
@@ -1755,7 +1755,7 @@ IFTFLG $=$ 2    :  generalized Morse potential as described in \cite{kn:Bachmann
 IFTFLG $<$ 100  :  rate coeff. or cross section, [\si{\cubic\centi\metre\per\second}] or [\si{\square\centi\metre}].
 
 IFTFLG $>$ 100  :  rate = density * rate coeff,  [\si{\second}]
-                 (e.g. used for spontaneous decay, e.g. radiative decay.
+                 (e.g.\ used for spontaneous decay, e.g.\ radiative decay.
 
 mod(IFTFLG,100) = 10:  only one fitting coefficient is read, i.e. the cross section,
 rate coefficient or rate is constant.
@@ -1795,7 +1795,7 @@ accommodated into a single, more general array of generalized data type REACTION
 Atomic, molecular and photonic collision data are stored internally on the data structure REACDAT, which
 replaces and generalizes the older fixed array format CREAC. The purpose is to accommodate
 also data formats other than the old polynomial fits read from data files AMJUEL, HYDHEL, etc\dots,
-e.g. to allow also tabulated data (1D and 2D tables), in-build full CR codes, as well as the various input data formats for line broadening
+e.g.\ to allow also tabulated data (1D and 2D tables), in-build full CR codes, as well as the various input data formats for line broadening
 mechanism (line shape functions) in case of radiation transport.
 
 REACDAT(KK=1,NREAC) is an array of datatype REACTION\_DATA.
@@ -1846,7 +1846,7 @@ Data structure POLY\_DATA is used to store data belonging to polynomial fit.
 It consists of a 2 dimensional array DBLPOL for holding the fit coefficients.
 Variables RC1MN and RC1MX describing the validity range of the fit, flags IFEX1MN and IFEX1MX and array FPARM1(6) specifying extrapolation options.
 
-Data structure TAB2D\_DATA describes data read from database with tabulated rate coefficients, e.g. \ac{ADAS}. It consists of two integer variables NDENS and NTEMP denoting the number of densities and temperatures in the fit table.
+Data structure TAB2D\_DATA describes data read from database with tabulated rate coefficients, e.g.\ \ac{ADAS}. It consists of two integer variables NDENS and NTEMP denoting the number of densities and temperatures in the fit table.
 Arrays DENS and TEMP hold the densities and temperatures respectively. Array FIT contains the 2d fit. The arrays DDE and DTE are used to precalculate delta\_DENS and delta\_TEMP.
 
 Data type LINE\_DATA deals with all parameters specifying a photonic process. It comprises a reaction name REACNAME, profile parameters E0, E1, AIK, G1, G2, C2, C3, C4, C6, B12, B21 and flags IGND, IRCART, IPROFILETYPE, IFREMD, NRJPRT, IMESS. Additionally there are arrays  C6A(12), IPLSC6(12), KENN(12).
@@ -1918,7 +1918,7 @@ format/availability of interaction potential data (or of differential cross sect
 format/availability of cross section data: H.1.  Cross sections are needed, in addition to rate coefficients,
 mainly for heavy particle interactions: CX, EL, PI, for velocity space sampling of the incident background
 medium collision partner. Both the test particle and bulk particle velocities are then used for post collision
-velocity space sampling (e.g. COM scattering angle, etc.)
+velocity space sampling (e.g.\ COM scattering angle, etc.)
 \item[I2 = 2  :] ~
 
 format/availability of rate coefficient data: either H.2, or H.3, or H.4

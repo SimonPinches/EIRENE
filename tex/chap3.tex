@@ -85,14 +85,14 @@ PARMUSR has been removed.
 Rather than from fixed ``parameter statements", the storage (such as no. of species, grid size, no. of atomic processes, etc.) is now allocated directly
 as identified from input flags, usually with the same name as previously in module PARMUSR.
 The actual ``physical" numbers used in a particular run have an additional letter ``I'' at the end of the variabel name.
-E.g.  NATM  (storage for number of different atomic species)
+E.g.\  NATM  (storage for number of different atomic species)
 then is identical with input flag NATMI (input block 4a),
 etc. Only very few exceptions exist,
 in which the storage parameters may be larger than the actual physical parameters in a run,
 such as: NSTRA and NSTRAI, the number of strata.
 
 Such deviations may happen if a parameter is altered in the code after the automatic storage
-parameter evaluation in routine FIND\_PARAM.f was carried out, e.g. in the above example, if the census
+parameter evaluation in routine FIND\_PARAM.f was carried out, e.g.\ in the above example, if the census
 stratum is turned off later in the run due to other parameter settings.
 
 The module PARMUSR reads: (\dots stands for an integer not less than 1)
@@ -942,7 +942,7 @@ i.e. constant within a cell.
 \begin{verbatim}
       SUBROUTINE VECUSR(INDEX,VEC_X,VEC_Y,VEC_Z,IPLS)
 \end{verbatim}
-This routine is called in case INDPRO(5)=8 for the B-field tally (e.g. from routine BFIELD.F), and in case (INDPRO(4)=8)
+This routine is called in case INDPRO(5)=8 for the B-field tally (e.g.\ from routine BFIELD.F), and in case (INDPRO(4)=8)
 for the background flow velocity tallies (from many places in the code),
 to provide either a local magnetic field (unit) vector, or a local plasma (background medium)
 flow velocity vector (\si{\centi\metre\per\second}), respectively, in cartesian coordinates.

@@ -8,7 +8,7 @@
 
 The input flags in this block control all the numerical and graphical
 output of an EIRENE run. This comprises diagnostics during the
-initialization phase (e.g. 2d and 3d geometry plots) as well as selected
+initialization phase (e.g.\ 2d and 3d geometry plots) as well as selected
 test particle histories printed and plotted during their generation.
 All numerical output of a run is arranged in so called ``tallies".
 There are volume averaged tallies, surface averaged tallies
@@ -202,14 +202,14 @@ Trace-back from atomic and molecular data routines
 XSECTA, XSECTM, XSECTI
 \item[\textbf{TRCINT }]
 Traceback from user specified interfacing routine INFCOP,
-e.g. of data related to coupling of EIRENE to other codes.
+e.g.\ of data related to coupling of EIRENE to other codes.
 \item[\textbf{TRCLST }]
 Printout of information during the last history of each stratum.
 E.g., sampling efficiencies, and other accumulated information,
 which is only available in the history generation routines during
 particle tracing.
 \item[\textbf{TRCSOU }]
-Traceback from primary source sampling routines, e.g. from LOCATE,
+Traceback from primary source sampling routines, e.g.\ from LOCATE,
 SAMPNT, SAMLNE, SAMSRF, SAMVOL and SAMUSR
 \item[\textbf{TRCREC }]
 Printout of
@@ -239,7 +239,7 @@ Global particle and
 energy balance for photons is printed.
 \item[\textbf{TRCTAL }]
 Print list of activated and de-activated tallies. The default settings eliminate some tallies from storage and
-estimators which are likely to be irrelevant in a particular run, e.g. all photon related tallies are deactivated automatically
+estimators which are likely to be irrelevant in a particular run, e.g.\ all photon related tallies are deactivated automatically
 if no radiation transfer calculation is included in a run.
 These default settings are overruled by the flags NTLVOUT and NTLSOUT at the end of this sub-block 11A, see below.
 \item[\textbf{TRCOCT }]
@@ -353,9 +353,9 @@ The logical flag TRCTAL described above can be used to print a list of all activ
 \item[\textbf{NTLVOUT }]
 total number of volume averaged tallies to be explicitly abandoned or enabled
 \item[\textbf{NUMTAL(J) }]
-Number of a tally from \cref{tab2}, e.g. NUMTAL(J)=1 for neutral atom density tally PDENA.
+Number of a tally from \cref{tab2}, e.g.\ NUMTAL(J)=1 for neutral atom density tally PDENA.
 The tally with this number NUMTAL(J) is explicitly enabled.
-With an additional negative sign this tally is removed from the run (and the balances), e.g. NUMTAL(J)=-2
+With an additional negative sign this tally is removed from the run (and the balances), e.g.\ NUMTAL(J)=-2
 would remove the evaluation (and storage) of tally PDENM from this run.
 \item[\textbf{NTLSOUT }]
 to be written
@@ -416,7 +416,7 @@ near additional surfaces
 indicate the outer surface normal vector (only in LEVGEO=3, partly in LEVGEO=2, for non-default standard surfaces (input block 3a).
 Not functional (any more?) for additional surfaces.
 \item[\textbf{PLIDL }] print output files for further processing
-in external  tools (e.g. for FZJ proprietary IDL graphics tool).
+in external  tools (e.g.\ for FZJ proprietary IDL graphics tool).
 The grid information as well as all input and output tallies (excluding the de-activated ones)
 are printed on files, one file per tally. See calls to routines OUTIDL\dots from main program EIRENE.
 \item[\textbf{CH2MX }] horizontal
@@ -635,7 +635,7 @@ The following input variables are needed only if PLTL2D = TRUE
 the radial (x-) grid is used as abscissa
 for plotting (default).
 \end{list}
-The next options allow to change the x axis, e.g. for cases when a meaningful
+The next options allow to change the x axis, e.g.\ for cases when a meaningful
 radial (x-) grid does not exist for the curve to be plotted. No interpolation to a ``true" radial (x-) grid
 is involved, so the resulting curves may change shape on the plot depending on options chosen here.
 \begin{list}{ }{}

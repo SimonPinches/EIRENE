@@ -123,7 +123,7 @@ data to another code (post-processing). The call to IF3COP is from
 subroutine MCARLO, at the end of the DO 1000 -loop over the strata. One
 final call to the interfacing routine (entry IF4COP) is
 implemented after the calls to the EIRENE printout- and plot
-routines, e.g. to perform global balances etc. after summation of
+routines, e.g.\ to perform global balances etc. after summation of
 the contributions from the individual strata.
 
 \end{list}
@@ -431,7 +431,7 @@ Example:
 
 Default:
 If the specification of an external database name and path,
-which is later (e.g. in block 4 (\cref{sec2.4}) or block 6 (\cref{sec2.6})) referred to in
+which is later (e.g.\ in block 4 (\cref{sec2.4}) or block 6 (\cref{sec2.6})) referred to in
 a particular run, is not given here, then
 these data files are expected, usually with the same name,
 in the local directory from which the calculation
@@ -487,8 +487,8 @@ Monte Carlo codes such as EIRENE are, in principle,  trivially parallelisable by
 trajectory calculation over the available compute nodes.
 If parallelisation is activated in combination with stratified source sampling, however, and strata are assigned to compute nodes,
 then load balancing may be hard to achieve together with proportional allocation of weights to strata. This is because trajectories from
-some strata may be very short (e.g. transport into purely absorbing media, for example of impurity particles until ionisation) and very fast to compute,
-while from other strata these trajectories may be very long and time consuming to compute, e.g. in near diffusive regimes with many collisions.
+some strata may be very short (e.g.\ transport into purely absorbing media, for example of impurity particles until ionisation) and very fast to compute,
+while from other strata these trajectories may be very long and time consuming to compute, e.g.\ in near diffusive regimes with many collisions.
 Often volume recombination strata in cold plasma regions fall into this category.
 
 Load balancing and proportional (or otherwise optimal) allocation to strata then requires estimates of run-time per history for each stratum
@@ -509,7 +509,7 @@ and up to NPRNLI=10 test flights are launched. Under such
 conditions, the particle density should be constant throughout the grid. Statistically
 significant deviations from that constancy indicate wrong cell
 volumes as compared to the volumes seen by the test particles
-(e.g. due to additional surfaces intersecting the grids, or
+(e.g.\ due to additional surfaces intersecting the grids, or
 complicated shapes of some additional cells (see input blocks 2
 and 3). In a second run the volumes of these cells can then be set explicitly, e.g.
 in input block 8.

@@ -40,7 +40,7 @@ FION, to eliminate statistical errors from the particle balances
 the type (also: electrons (El.) and the species index of the ``receiving''
 component, for which the source/sink term would arise in a velocity
 space averaged balance equation (with the sign as specified).
-Any further tallies (e.g. by incident species, or particular collision process resolved,
+Any further tallies (e.g.\ by incident species, or particular collision process resolved,
 or energy (spectrally) resolved, etc.)
 have to be implemented in the 3rd party (user) or the problem specific
 interfacing routines.
@@ -96,7 +96,7 @@ In all older versions only much fewer sputter tallies SPT[BC] were available, i.
 And [BC] (and the corresponding species index) could either mean:\\
 i)  resolution wrt. incident flux species (summing over all sputtered flux species and types) (same as in incident surface flux tallies), or \\
 ii) resolution wrt. sputtered flux (summing over all incident species and types), \\
-depending on code version. Type ii) convention was used in EIRENE versions operated at ITER-IO (e.g. in SOLPS4.3), all other
+depending on code version. Type ii) convention was used in EIRENE versions operated at ITER-IO (e.g.\ in SOLPS4.3), all other
 EIRENE versions had convention i).
 
 The extension of Jan. 2014 now combines i) and ii) by providing the resolution wrt. emitted type and species (as ii) did) and
@@ -480,7 +480,7 @@ $\underline{Source} $ means: if the sign is positive, it is a gain
 for the specified type of particles; if it is negative, it is a loss.
 The specified "type of particle" is coded by the last two letters of the name of a tally, AT, ML, IO, EL, PL, PH, respectively,
 as well as by the corresponding ``1st dimension" (species)  NATM, NMOL, NION, NPHOT, NPLS and ``1" (one) for electrons..
-e.g. MAPL:  parallel momentum source/sink for bulk particle (plasma background), due to atom plasma interactions. The parallel direction
+e.g.\ MAPL:  parallel momentum source/sink for bulk particle (plasma background), due to atom plasma interactions. The parallel direction
 is determined by the magnetic field unit vector (input tallies BXIN, \dots).
 
 \bigskip
@@ -511,7 +511,7 @@ vector given by input tallies Bxin, Byin, Bzin,
 then the scalar product $\langle e_{\vec B},
 \vec{\Delta Mom}\rangle$ is used for scoring.
 \item[CG]  Collision estimator for generation limit (for fluid limit) tallies. These tallies contain particle, momentum and energy fluxes
-(per cell or per \si{\cubic\centi\metre}), when particles are removed from the fully kinetic tracing, due to e.g. transition into a
+(per cell or per \si{\cubic\centi\metre}), when particles are removed from the fully kinetic tracing, due to e.g.\ transition into a
 diffusive or other continuum regime. These fluxes are scored in COLLIDE.F, i.e. by collision estimators by nature.
 \end{itemize}
 
@@ -681,8 +681,8 @@ On each such surface of block 3A,
 there is a spatial resolution with up to NGITT
 surface segments, depending upon the standard grid dimensionality.\\
 iii) by default the sputter tallies are type and species resolved with respect to incident type and species.
-E.g. the sputtered fluxes SPTAT(2) is the total sputtered flux (all species), sputtered by incident atoms of species IATM=2.
-Other conventions regarding sputter tallies are used in EIRENE versions operated at ITER-IO (e.g. SOLPS4.x), see general description above.\\
+E.g.\ the sputtered fluxes SPTAT(2) is the total sputtered flux (all species), sputtered by incident atoms of species IATM=2.
+Other conventions regarding sputter tallies are used in EIRENE versions operated at ITER-IO (e.g.\ SOLPS4.x), see general description above.\\
 iv) the sputter tallies have been revised at revision svn 360, Jan 2014, to allow full resolution with respect to both: incident type (for scaling)
 and (emitted) sputtered particle type and species, see \cref{tab3a}.
 
@@ -786,7 +786,7 @@ Output, Module: CESTIM}}
 \textbf{Note: }\\
 This extended set of sputter tallies has now species naming conventions SPT[A][BC] fully identical to those for volumetric source rates,
 as well as those for emitted particle and energy fluxes from surfaces.
-The full terminological equivalence leads to presence of quite strange sputter tallies (e.g. bulk ion fluxes sputtered by incident photons,
+The full terminological equivalence leads to presence of quite strange sputter tallies (e.g.\ bulk ion fluxes sputtered by incident photons,
 tally 70), but redundant tallies (and related storage) are automatically removed from a run.
 Physically irrelevant tallies are listed here only to maintain complete symmetry in notation.
 \clearpage

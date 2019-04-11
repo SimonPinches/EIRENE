@@ -412,7 +412,7 @@ distribution in velocity space). Internally this reference
 vector $\vC$
 is always normalized to unit length 1. $\vC$ is interpreted
 as an outward pointing vector (at the source point).
-Outflows (e.g. plasma fluxes onto a surface segment)
+Outflows (e.g.\ plasma fluxes onto a surface segment)
 have a positive velocity component in direction of
 this vector. Emitted particles (recycling, reflection,
 emission from a point source) have a negative
@@ -668,7 +668,7 @@ fluxes of up to NSPZ species, see \cref{sec2.7.1}. NSPZ depends upon
 the initialization of this function. By default the source species
 index NSPEZ is used when sampling from step functions.
 
-New option (Aug. 2006), e.g. for testing isotope effects: If SORIND
+New option (Aug. 2006), e.g.\ for testing isotope effects: If SORIND
 $\geq 100$, then the 3rd digit is used to select the species index
 from step function ISTEP. I.e.: Let SORIND = LMN, then MN is used to
 sample from  step function ISTEP = MN  for species ISPZ = L.
@@ -907,14 +907,14 @@ surface recycling sources
 only the electrostatic sheath action was included.
 The velocity $\vV_{i,\pi}$ corresponded then to the parallel (to a magnetic field $\vB$)
 plasma flow velocity (often: sonic) onto a target surface which was assumed to be essentially
-orthogonal to the magnetic field $\vB$ (e.g. a poloidal limiter side surface).
+orthogonal to the magnetic field $\vB$ (e.g.\ a poloidal limiter side surface).
 In case of toroidal belt limiters or poloidal divertor targets the velocity $\vV_{i,\pi}$
 is interpreted as the parallel plasma flow velocity at the electrostatic sheath entrance.
 I.e. the bending of the sonic or supersonic flow $\vV_{i,\|}$ parallel to the magnetic field
 at the magnetic pre-sheath entrance
 to a sonic flow $\vV_{i,\pi}$ normal to the target entering the electrostatic sheath,
 by the action of the magnetic pre-sheath field, is not carried out inside EIRENE.
-Check \cref{sec1.5} for generalizations, e.g. to also include magnetic pre-sheath models inside EIRENE.
+Check \cref{sec1.5} for generalizations, e.g.\ to also include magnetic pre-sheath models inside EIRENE.
 
 
 
@@ -1352,5 +1352,5 @@ the electric charge of the sampled particle at birth point, $Z_i=0$ for neutral 
 The sheath potential drop $\Delta \Phi$ is
 given by \cref{sheath1} in \cref{sec1}, unless overruled by parameter $Sh>0.$, (see \cref{local-source}, in which latter case $ESHEAT=Z_i \cdot Sh \cdot T_e$.
 
-If $Sh\leq 0$ and the sheath potential according to equation \cref{sheath1} cannot be found either (e.g. because $\vV_{\pi,i}(ip) \equiv 0.)$, then
+If $Sh\leq 0$ and the sheath potential according to equation \cref{sheath1} cannot be found either (e.g.\ because $\vV_{\pi,i}(ip) \equiv 0.)$, then
 $Sh = FSHEAT(MSURF)$ (the input sheath parameter for source surface no. MSURF, input blocks 3 and 6) is used.

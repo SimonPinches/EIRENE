@@ -34,7 +34,7 @@ Here RSURF(1), RSURF(2), \dots,
 RSURF(NR1ST) are grid-points (parameters) in the 1st co-ordinate direction, mostly the radial or x direction
 (depending on the
 geometry level, internal parameter LEVGEO, see below) defined by the input data in sub-block 2A.
-I.e., there are NR1STM= NR1ST-1 cells in the 1st co-ordinate direction (e.g. radial or x direction).
+I.e., there are NR1STM= NR1ST-1 cells in the 1st co-ordinate direction (e.g.\ radial or x direction).
 With regard to the terminology in \cref{sec1.5}, \cref{eq1.34}, a
 corresponding co-ordinate surface is labelled with a double index 1,IR
 and is defined by the equation
@@ -52,7 +52,7 @@ $f_1^{2,IP} (x,y,z) $=constant=PSURF(IP).
 
 In case NP2ND = 1 this 2rd grid is absent and the calculation automatically collapses to a 1D case,
 i.e. a case with only 1 set of co-ordinate points.  This does not mean that the 2rd, ignorable coordinate must be
-straight cartesian (y-direction). E.g. a spherically symmetric volume, but with only radial resolution in space
+straight cartesian (y-direction). E.g.\ a spherically symmetric volume, but with only radial resolution in space
 and polar and azimuthal symmetry,
 then is still referred to as 1-dimensional calculation.
 
@@ -75,7 +75,7 @@ $f_1^{3,IT} (x,y,z)$
 
 In case NT3RD = 1 this 3rd grid is absent and the calculation automatically collapses to a 2D case,
 i.e. a case with only 2 sets of co-ordinate lines.  This does not mean that the 3rd, ignorable coordinate must be
-straight cartesian (z-direction). E.g. a full torus, but with only radial and poloidal resolution and toroidal symmetry
+straight cartesian (z-direction). E.g.\ a full torus, but with only radial and poloidal resolution and toroidal symmetry
 then is referred to as 2-dimensional calculation.
 
 In addition to these grids and, depending on the geometry options
@@ -108,7 +108,7 @@ Appropriate cell number switching flags must be set
 on transparent additional
 surfaces separating these general ``additional cells".
 Data relevant for the
-additional cells (e.g. the volume)
+additional cells (e.g.\ the volume)
 are read in sub-block 2E. The number of additional cells
 is NRADD.
 
@@ -119,7 +119,7 @@ NSBOX = (NR1ST $\cdot$ NP2ND $\cdot$ NT3RD) $\cdot$ NBMLT + NRADD .
 Cell volumes in the standard mesh region, as well as the center of
 mass vector in each of these cells are computed automatically. The
 corresponding data in the additional cell region must be specified
-by the user, e.g. in the input block 2E or 8, or in the user
+by the user, e.g.\ in the input block 2E or 8, or in the user
 supplied routine GEOUSR (\cref{sec3.6}), which is called by
 EIRENE in the initialization phase.
 
@@ -267,7 +267,7 @@ Data for NR1ST radial surfaces
 are read from the work array RWK. These
 data must have been written onto RWK in the user supplied subroutine INFCOP.
 By this option grid parameters may directly be transferred into
-EIRENE from other files, e.g. from plasma transport codes
+EIRENE from other files, e.g.\ from plasma transport codes
 (see below: \cref{sec2.14}. Data for interfacing routine INFCOP).
 \end{list}
 \end{list}
@@ -697,7 +697,7 @@ by one common factor VOLCOR for each ``block".
 \item[\textbf{NLADD }]
 There are cells in the computational volume, which are defined
 through ``additional surfaces" as cell boundaries.
-E.g. a standard mesh (if there is one) is augmented by ``additional
+E.g.\ a standard mesh (if there is one) is augmented by ``additional
 cells" in this case.
 If NLADD = FALSE , the complete block 2D may be omitted and
 the defaults are used.

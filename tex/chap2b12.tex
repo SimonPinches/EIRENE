@@ -19,8 +19,8 @@ LININT, which is called from subroutine DIAGNO at the end (post
 processing phase) of an EIRENE run. The spatial dependence of the
 function $g(l)$ is defined as function of one or more of the
 estimated volume averaged tallies (e.g., atom density), and/or
-input tallies (e.g. plasma temperatures) and/or a small set of preprogrammed
-additional tallies, such as volumetric line emissivities for various H and He lines (e.g. Ba\_alpha.f
+input tallies (e.g.\ plasma temperatures) and/or a small set of preprogrammed
+additional tallies, such as volumetric line emissivities for various H and He lines (e.g.\ Ba\_alpha.f
 for the Balmer alpha emission rate per volume, etc\dots). At present there are two
 (version 2004 and older) or three preprogrammed functions $g(l)$,
 and the option to call a user supplied integrand.
@@ -80,7 +80,7 @@ ENDIF
 Total number of different line of sights
 \item[\textbf{NCHENI }]
 $\mid$NCHENI$\mid$ is the total number of energies, at which the
-spectrum is evaluated (irrelevant e.g. for total signals, such as Lyman and Balmer
+spectrum is evaluated (irrelevant e.g.\ for total signals, such as Lyman and Balmer
 emissivity without line shape resolution).
 
 The energy grid is equidistant on a linear scale, if NCHENI $\ge$ 0,
@@ -242,21 +242,21 @@ the same rules must be followed
 as also for specifying birth point locations of ``real" particles (input block 7).
 These starting points are assumed to be given \textbf{inside a cell, not exactly on a cell boundary}. For example
 coordinates z0=0.0 must be avoided if a z-grid surface coincides with this position. 
-This latter is often the case e.g. already
+This latter is often the case e.g.\ already
 when default options for toroidal curvature (NLTRA option in block 2c) are used, 
 even in otherwise only 1D (radial, x) or only 2D (radial and poloidal, x,y) resolved
 cases. The line of side points then must
-be specified at least with a small incremental distance to such coordinate surfaces, e.g. z0=1.0E-5 in the example.
+be specified at least with a small incremental distance to such coordinate surfaces, e.g.\ z0=1.0E-5 in the example.
 
 Note 2:
 
 The line integration (virtual particle flight) stops at the first non-transparent surface encountered along
 the line of sight. In cases when only the boundary plasma domain is simulated, the interface to the core plasma region is often 
 such a ``non-transparent surface" (mostly set to be purely absorbing). To allow line of sight \textbf{integration across this central core region}
-e.g. to capture both  top and bottom machine contributions along a line of sight, the following work-around can be used:\\
+e.g.\ to capture both  top and bottom machine contributions along a line of sight, the following work-around can be used:\\
 a) set the core boundary transparent, and switch (ILSWCH option block 3) into an unused additional cell, 
-e.g. additional cell no. NC.\\
-b) define a fixed ``virtual core plasma" in this additional cell no. NC, e.g. by the options in input block 8, 
+e.g.\ additional cell no. NC.\\
+b) define a fixed ``virtual core plasma" in this additional cell no. NC, e.g.\ by the options in input block 8, 
 such that during ``real" particle simulations the test particles get either absorbed in the core of reflected (by scattering)
 back into the boundary plasma domain. 
 
@@ -283,11 +283,11 @@ XPIVOT,YPIVOT,ZPIVOT = $r,z,\phi$, with $\phi$ in degrees. The corresponding tor
 ITTRA are found automatically.
 \end{list}
 \item[\textbf{XPIVOT }]
-1st co-ordinate of pivot point for line of sight, e.g. $x$
+1st co-ordinate of pivot point for line of sight, e.g.\ $x$
 \item[\textbf{YPIVOT }]
-2nd  co-ordinate of pivot point for line of sight, e.g. $y$
+2nd  co-ordinate of pivot point for line of sight, e.g.\ $y$
 \item[\textbf{ZPIVOT }]
-3rd co-ordinate of pivot point for line of sight, e.g. $z$
+3rd co-ordinate of pivot point for line of sight, e.g.\ $z$
 \end{list}
 The next card specifies the second (``inside") point.
 

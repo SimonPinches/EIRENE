@@ -33,7 +33,7 @@ Special Monte Carlo options, such as correlated sampling
 coupling schemes based on source term adaptations/rescalings 
 to reduce Monte Carlo run-time in these iterative non-linear schemes
 (jargon: ``short cycles"), have also had their
-origin in those early studies, loc cit., but have meanwhile been generalized significantly, e.g. to allow selective
+origin in those early studies, loc cit., but have meanwhile been generalized significantly, e.g.\ to allow selective
 ``short cycling" for individual strata,
 while for others (notably for volume recombination sources)
 full new Monte Carlo estimates are retained.
@@ -159,7 +159,7 @@ NTARGI (see \cref{sec2.14}) strata are determined by the plasma
 fluxes onto surfaces (``recycling surface sources"). In this case
 the surface source distribution $Q_S(\vr,\vv,i,t)$ (\cref{sec1.2}) can be defined automatically from the interfacing
 routine, using the data specified in input block 14. The remaining
-primary sources NTARGI+1, \dots, NSTRAI (e.g. gas puff, volume
+primary sources NTARGI+1, \dots, NSTRAI (e.g.\ gas puff, volume
 recombination sources, etc\dots) still have to defined in input
 block 7.  Whether input block 7 or input block 14 is used for
 a particular surface source ISTRA $\le$ NTARGI is controlled by
@@ -205,7 +205,7 @@ The call to IF3COP is controlled by the flag NMODE (input block 1).
 
 At entry IF3COP to module INFCOP data are expected
 for all strata ISTRA in the range ISTRA = ISTRAA,ISTRAE.
-There they may be further prepared (e.g. normalized, or scaled to other units)
+There they may be further prepared (e.g.\ normalized, or scaled to other units)
 for transfer to the external code
 
 \subsection{entry IF4COP} \label{sec4.1.4}
@@ -235,7 +235,7 @@ In older versions of EIRENE (before 2002) in particular momentum exchange rates 
 direction parallel to the magnetic field have been programmed here in UPTCOP.
 Meanwhile these have become default tallies (i.e. scoring moved to UPDATE,
  see \cref{sec.tables}. Still some particular
-coupling tallies, e.g. to render the coupling procedure more implicit,
+coupling tallies, e.g.\ to render the coupling procedure more implicit,
 are scored in this routine.
 
 \medskip
