@@ -17,7 +17,7 @@ the ``standard mesh" and for each reflecting ``additional
 surface". It is referred to as ``Block for Local Reflection Data".
 If this block is missing and if the surface $MSURF$ is neither transparent
 ($ILIIN<0$) nor purely absorbing ($ILIIN=2$) nor a ``mirror surface" ($ILIIN=3$) nor a ``periodicity
-surface", ($ILIIN\ge 4$) then the default reflection model (i.e. $Fe-Target$, recycling coefficient = one, etc\dots) is activated for this
+surface", ($ILIIN\ge 4$) then the default reflection model (i.e.\ $Fe-Target$, recycling coefficient = one, etc\dots) is activated for this
 surface.
 
 The surface interaction model comprises the following information:
@@ -125,7 +125,7 @@ least one (irrelevant) parameter must be read. E.g.\ if NION=0, i.e.
 no test ion species in particular run, then still one card with the
 irrelevant parameter DIOD(1) must be read. An exception from this
 rule is the photon species distribution DPHT: this card is only read
-if there are ``photonic test particles" in the run, i.e. if NPHOT
+if there are ``photonic test particles" in the run, i.e.\ if NPHOT
 $>$ 0.  This exception was necessary for backward compatibility of
 input file format after introducing photons as new type of species,
 around 2001.
@@ -657,7 +657,7 @@ Default: EWBIN = 0.0 (irrelevant for ``Default Model'')
 Semi-transparency for particles incident from the positive side.
 Renders a non-transparent surface (ILIIN $>$ 0) semi-transparent.
 The probability of a test flight to pass through the surface is [TRANSP]. This transparent fraction
-of the current is not scored on surface tallies, i.e. for this fraction of surface currents the ILIIN=0 option
+of the current is not scored on surface tallies, i.e.\ for this fraction of surface currents the ILIIN=0 option
 is used, see input block 3B.
 Hence:
 the probability for reflection/re-emission/absorption according to ILLIN setting is [1-TRANSP].
@@ -730,7 +730,7 @@ where all fluxes are measured as ``atomic fluxes" (=fluxes of nuclei). RECYCT he
 probability $p_a$ [and hence also the pumping speed \cref{pumping-speed}] of any surface in EIRENE, for all incident species.
 
 The fraction $p_a$ =
-(1 - RECYCT) of incident (atomic) flux will be absorbed at the surface. The non-sticking, i.e. the re-emitted fraction
+(1 - RECYCT) of incident (atomic) flux will be absorbed at the surface. The non-sticking, i.e.\ the re-emitted fraction
 $RECYCT=1-p_a$ is split into a ``fast" and a ``thermal'' component.
 
 
@@ -747,7 +747,7 @@ certain surfaces, see \cref{sec2.6.1} below.
 
 Note: RPROBF = 0 for incident molecules (ITYP=2) by default.
 
-Default: RECYCT = 1. , i.e. $p_a = 0$
+Default: RECYCT = 1. , i.e.\ $p_a = 0$
 \item[\textbf{RECPRM }]
 free model parameter for user supplied recycling models $ILREF=9$.
 
@@ -860,7 +860,7 @@ Default: ESPUTS = 0.
 (new: March 2015) parameter (flag) for energy of chemically sputtered particle.
 By default: chemically sputtered particles are released from the wall by the ``thermal surface emission model",
 as also used for the recycling/reflection thermal emission,
-i.e. with wall temperature (as specified by EWALL parameter, see above) and either a cosine (for monoenergetic emission
+i.e.\ with wall temperature (as specified by EWALL parameter, see above) and either a cosine (for monoenergetic emission
 at EWALL = 1.5 TWALL) angular distribution, or sampling from a stationary Maxwellian flux distribution at -EWALL = TWALL.
 
 If ESPUTC .GT. 0, then the the chemically sputtered particles are released with a mono-energetic distribution

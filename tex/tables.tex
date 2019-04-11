@@ -61,7 +61,7 @@ but not resolved wrt. species index of secondary particles.
 
 name: M[A][BC], analogue to particle source rates\\
 only available for [A] = A, M, I, PH  and for [BC]=PL,
-i.e. currently default tallies are only available for momentum sources/sinks for background (plasma) particles caused by
+i.e.\ currently default tallies are only available for momentum sources/sinks for background (plasma) particles caused by
 test particles, resolved by type of test particle (name of tally) and by species of bulk particle (1st index in array).
 \end{list}
 
@@ -84,14 +84,14 @@ balances (see NLSCL option, input block 1).
 
 \medskip
 Naming conventions for emitted surface fluxes are analogue to those for volumetric source rates,
-i.e. PRF[A][BC],  SPT[A][BC] with A and BC having the same meaning as described above for volume tallies.\\
+i.e.\ PRF[A][BC],  SPT[A][BC] with A and BC having the same meaning as described above for volume tallies.\\
 PRF\dots are fluxes reflected or emitted due to incident particle fluxes, of type [A], SPT[A][BC] are sputtered fluxes (additional
 fluxes of surface material).
 
 \textbf{Note:} The naming convention of \textbf{surface sputter tallies SPT\dots} differs in older versions of EIRENE.
 The full resolution wrt. to incident type and emitted species is only implemented in EIRENE revisions svn 360 and later (Jan. 2014), see \cref{tab3a}.
 
-In all older versions only much fewer sputter tallies SPT[BC] were available, i.e. only one type-identifier in the name of these ``sputter tallies".
+In all older versions only much fewer sputter tallies SPT[BC] were available, i.e.\ only one type-identifier in the name of these ``sputter tallies".
 
 And [BC] (and the corresponding species index) could either mean:\\
 i)  resolution wrt. incident flux species (summing over all sputtered flux species and types) (same as in incident surface flux tallies), or \\
@@ -472,7 +472,7 @@ NPLS & \si{\ampere\gram\centi\metre\per\second\per\cubic\centi\metre} & TPM
 \end{longtable}
 }
 \textbf{Note:}
-$\underline{Momentum  \ density}$  is the directional momentum weighted velocity space integral, i.e. it is a (directional) particle
+$\underline{Momentum  \ density}$  is the directional momentum weighted velocity space integral, i.e.\ it is a (directional) particle
 flux (density), for the x,y and z directions, respectively, and then multiplied by the particle mass. (Relation to particle current??,
 check with neutron transport terminology)
 
@@ -487,7 +487,7 @@ is determined by the magnetic field unit vector (input tallies BXIN, \dots).
 \textbf{Estimators} EIRENE resorts, by default, to tracklength
 estimators \cref{eq1.11}. Default tallies are updated (``scoring")
 in routine UPDATE. All default estimators are constant within a cell
-$m$, i.e. depend only upon the cell index $m$ but not on the
+$m$, i.e.\ depend only upon the cell index $m$ but not on the
 position $\vr$ in the cell: $g_t(s) = const(m)$. Hence they also do
 not depend on the position $s$ along the track within a cell. UPDATE
 calls templates UPTUSR, in which any further quantity can be scored
@@ -506,13 +506,13 @@ a cell.
 \item[TE]  Tracklength, (kinetic) energy density. In case of photon tallies, the energy used is $E0 = h\nu$
 \item[TPS] Tracklength, particle source rate
 \item[TPM] Tracklength, parallel (to B-field) momentum source/sink. The (vectorial) momentum exchange rate
-$\vec{\Delta Mom}$ is projected to the B-field (input volume tallies Bxin, Byin, Bzin). I.e. if $e_{\vec B}$ is the unit
+$\vec{\Delta Mom}$ is projected to the B-field (input volume tallies Bxin, Byin, Bzin). I.e.\ if $e_{\vec B}$ is the unit
 vector given by input tallies Bxin, Byin, Bzin,
 then the scalar product $\langle e_{\vec B},
 \vec{\Delta Mom}\rangle$ is used for scoring.
 \item[CG]  Collision estimator for generation limit (for fluid limit) tallies. These tallies contain particle, momentum and energy fluxes
 (per cell or per \si{\cubic\centi\metre}), when particles are removed from the fully kinetic tracing, due to e.g.\ transition into a
-diffusive or other continuum regime. These fluxes are scored in COLLIDE.F, i.e. by collision estimators by nature.
+diffusive or other continuum regime. These fluxes are scored in COLLIDE.F, i.e.\ by collision estimators by nature.
 \end{itemize}
 
 

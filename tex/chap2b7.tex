@@ -52,7 +52,7 @@ Q(\vr,t,isp,\vv) &= Q_1(\vr,t) \times Q_2(isp|\vr,t)
 \times \int d\vv \,Q(isp,\vv|\vr,t)
 \times Q(\vv |isp,\vr,t)
 \end{align}
-i.e. the source sampling routines in EIRENE
+i.e.\ the source sampling routines in EIRENE
 (samvol.f, samsrf.f, etc.)
 start by sampling the spatio-temporal birth point
 coordinates $\vr_0,t_0$
@@ -142,7 +142,7 @@ namely the default surface recycling
 source model as specified in coupled B2-EIRENE runs.
 \item[{INDSRC(ISTRA)=-1}]
 the input data for stratum ISTRA are read here, and no attempt is made to
-modify these. I.e. IF2COP(ISTRA) is not called.
+modify these. I.e.\ IF2COP(ISTRA) is not called.
 \end{list}
 \item[\textbf{ALLOC }]  Allocation of CPU-time to stratum weighted as
 
@@ -633,7 +633,7 @@ Uniform distribution on the interval [a,b]
 \item[{L,M,N = 3 }]
 Truncated exponential decay
 with decay length $\lambda$  on the interval [a,b].
-I.e. the sampling distribution reads:
+I.e.\ the sampling distribution reads:
 
 $f(x) = c  \cdot   \exp( - x/ \lambda)$ if $x \in [a,b]$ and $f(x) =
 0$ elsewhere,
@@ -910,7 +910,7 @@ plasma flow velocity (often: sonic) onto a target surface which was assumed to b
 orthogonal to the magnetic field $\vB$ (e.g.\ a poloidal limiter side surface).
 In case of toroidal belt limiters or poloidal divertor targets the velocity $\vV_{i,\pi}$
 is interpreted as the parallel plasma flow velocity at the electrostatic sheath entrance.
-I.e. the bending of the sonic or supersonic flow $\vV_{i,\|}$ parallel to the magnetic field
+I.e.\ the bending of the sonic or supersonic flow $\vV_{i,\|}$ parallel to the magnetic field
 at the magnetic pre-sheath entrance
 to a sonic flow $\vV_{i,\pi}$ normal to the target entering the electrostatic sheath,
 by the action of the magnetic pre-sheath field, is not carried out inside EIRENE.
@@ -1325,7 +1325,7 @@ in energy sampling options \texttt{NEMODS}, digit N=3,5,7 and 9 is overruled by 
 
 For surface sources, and ionic source particles (test ions or bulk ion, with charge $Z_i$) an acceleration of the
 sampled velocity vector $\vv_0$ towards the surface, in the direction normal to the target surface, may be added.
-I.e. the velocity space sampling described above (\texttt{NEMODS} options, digit N) is regarded to provide the velocity at the entrance
+I.e.\ the velocity space sampling described above (\texttt{NEMODS} options, digit N) is regarded to provide the velocity at the entrance
 of the electrostatic sheath in front of a target surface.
 
 Energy sampling options \texttt{NEMODS} N= 3,5,7,9 add this sheath contribution to velocities sampled from the corresponding options N= 2,4,6, and 8, respectively.

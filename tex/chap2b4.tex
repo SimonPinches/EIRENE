@@ -16,7 +16,7 @@ derived internally from the assumption of local charge neutrality.
 Amongst the heavy background particles (the ``bulk ions") may be
 species with charge state zero, i.e., neutral particles. By abuse
 of language, we refer to them as ``bulk ions" as well, but we
-mean in this case: heavy background particles, i.e. more general objects.
+mean in this case: heavy background particles, i.e.\ more general objects.
 
 NATM, NMOL, NION, NPHOT, NPLS and NREAC are specified in the
 parameter block ``PARMUSR", see: ``Parameter Statements" (\cref{sec3.1} 
@@ -93,7 +93,7 @@ For tabulated (rather than fitted) collision reaction rates,
 electron cooling rates, etc., with a format derived from the
 so called ``\ac{ADAS} database format AFD11",
 or any other properly (2D) tabulated
-data source, i.e. with \texttt{FILNAM = TAB2D}, or \texttt{FILNAM = ADAS}
+data source, i.e.\ with \texttt{FILNAM = TAB2D}, or \texttt{FILNAM = ADAS}
 the corresponding card reads:
 \begin{verbatim}
 
@@ -120,7 +120,7 @@ card is read (containing variables: ELNAME, IZ) for each IR entry, see below, to
 (e.g.\ within an \ac{ADAS} ADF11 file folder).
 
 
-For photonic emission and absorption data (line shapes), i.e. for \texttt{FILNAM = PHOTON},
+For photonic emission and absorption data (line shapes), i.e.\ for \texttt{FILNAM = PHOTON},
 the line is shortened to
 \begin{verbatim}
 
@@ -564,7 +564,7 @@ to be used in special user supplied programs.
 \item[{H.12 }]
 double parameter fit for any other data, e.g.
 to be used in special user supplied
-programs, (i.e. not generally understood by EIRENE, but can be used in problem
+programs, (i.e.\ not generally understood by EIRENE, but can be used in problem
 specific ``\dots USR" routines of EIRENE, e.g.\ for post processing).
 The data fitted in H.12 are, therefore, typically not rate-coefficients,
 but often (not always) ratios between two rate coefficients.
@@ -583,7 +583,7 @@ EIRENE post processing routines in code section ``output", routines: Ba$\_$alpha
 \item[{H.4 }]
 double parameter table of rate coefficient $\langle \sigma v \rangle
 (\si{\cubic\centi\metre\per\second})$ as function of target density (\si{\per\cubic\centi\metre}) and target
-temperature (\si{\electronvolt}) read from files containing 2D tabulated rate coefficients, i.e. rate coefficients tabulated vs. 2 independent parameters.
+temperature (\si{\electronvolt}) read from files containing 2D tabulated rate coefficients, i.e.\ rate coefficients tabulated vs. 2 independent parameters.
 This option uses the \ac{ADAS} adf11 file format as guidance and is developed\slash adapted from it for more general
 A\&M data structures.
 
@@ -599,7 +599,7 @@ reaction rate coefficients. In the original \ac{ADAS} files the names PLT\dots a
 distinct from the AMJUEL database convention in case of \ac{ADAS} format the PLT rates (\si{\watt\per\cubic\centi\metre}) do not contain the potential energy loss
 DP $\times$ SCD, and the PRB rates contain, in addition to their corresponding rates from AMJUEL, also
 a Bremsstrahlung contribution. Internally EIRENE subtracts this \acs{ADAS}-Bremsstrahlung from electron energy weighted PRB rates
-whenever such rates are read via the \ac{ADAS} format (i.e. whenever FILNAM = ADAS)
+whenever such rates are read via the \ac{ADAS} format (i.e.\ whenever FILNAM = ADAS)
 
 Note: in general the potential energy difference DP may or may not be included in the definition of energy rate coefficients H.8, H.9 and H.10 as read
 from a particular database. For example the energy rate coefficients may, in effect,  be either a radiation loss rate or a total electron energy loss/gain rate.
@@ -691,9 +691,9 @@ $W$ for tungsten, etc\dots
 \item[\textbf{IZ }]
 Charge state in adf11 file. This value is always between 1 and $Z_{max}$. For ionization rate coefficients
 $IZ$ specifies the ionization rate coefficient for the ionization process from $IZ-1$ to $IZ$,
-i.e. the final charge state.
+i.e.\ the final charge state.
 For recombination process $IZ$ specifies the recombination rate coefficient
-for the recombination process from $IZ$ to $IZ-1$, i.e. the initial charge state
+for the recombination process from $IZ$ to $IZ-1$, i.e.\ the initial charge state
 for these processes.
 \end{list}
 The next input decks are read only in case FILNAM = PHOTON:
@@ -977,7 +977,7 @@ event (modification of type and/or species of a particle in a collision
 event).
 The generation counter XGENER is increased at entropy producing events (elastic and diagonal charge
 exchange collisions). If, along a trajectory, the condition $XGENER > NGEN\dots$ is met, after a collision, no test
-particle secondaries are generated, i.e. the history is stopped. The post collision particle flux,
+particle secondaries are generated, i.e.\ the history is stopped. The post collision particle flux,
 parallel momentum flux and energy flux is, instead,
 put into the tallies PGENA, VGENA and EGENA for atoms,
 resp.,  PGENM, VGENM and EGENM for
@@ -985,7 +985,7 @@ molecules, resp.,  PGENI, VGENI and EGENI
 for test ions, respectively and PGENPH, VGENPH and EGENPH
 for photons, respectively.
 \item[\textbf{$<$ 0 }]
-Flag for  ``fluid-limit", i.e. for critical ``Knudsen number''.
+Flag for  ``fluid-limit", i.e.\ for critical ``Knudsen number''.
 
 Define: FDLM=-10000/(NGEN+1)
 
@@ -1077,9 +1077,9 @@ ISCD2 controls the options for the post collision state
 of that particle which was the test particle prior to the collision.
 Consistency of the particle masses of pre and post collision particles
 with this convention is checked in the initialization phase of each run.
-``CX" collisions mean: exchange of identity, i.e. scattering angle $\pi$ in the center
+``CX" collisions mean: exchange of identity, i.e.\ scattering angle $\pi$ in the center
 of mass system.
-I.e. CRC=CX is used for resonant charge exchange only.
+I.e.\ CRC=CX is used for resonant charge exchange only.
 Non resonant charge exchange, in which e.g.\ internal energy is
 converted into kinetic energy of products,
 is to be treated in the CRC=PI category of ``general heavy particle collisions".
@@ -1090,7 +1090,7 @@ by default.
 
 In case of  electron impact collision (CRC=EI),
 the ISCD1 and ISCD2 flags are
-symmetric, i.e. they can be interchanged without any effect on the calculation.
+symmetric, i.e.\ they can be interchanged without any effect on the calculation.
 \begin{list}{ }{}
 \item[\textbf{ISCDE\$ }]
 flags for post collision velocity space distributions for all
@@ -1114,7 +1114,7 @@ and source term contributions from the collision process.
 In some cases, when track-length estimators can not be used because
 the corresponding momentum or energy weighted Maxwellian rate coefficients
 are not available in a particle run,
-(i.e. are missing in the preceding list of NREAC reaction data),
+(i.e.\ are missing in the preceding list of NREAC reaction data),
 then internally a switching from track-length to collision
 estimators is carried out, and a corresponding warning is printed.
 \item[\textbf{IBGK }]
@@ -1305,7 +1305,7 @@ In principle an energy weighted loss rate coefficient is read in,
 a mean energy loss per collision is derived from that.
 
 If this option is used for heavy particles secondaries
-(i.e. the third digit of ISCDE has the value 3), than this energy is again
+(i.e.\ the third digit of ISCDE has the value 3), than this energy is again
 distributed inversely proportional to
 the masses over all heavy particle secondaries.
 
@@ -1326,7 +1326,7 @@ undergo resonant charge exchange with hydrogenic ions (here: D$^+$ ions), utiliz
 the cross section data for reaction 3.1.8 (again from reference \cite{kn:Janev}, but with improved low energy asymptotics). The assumptions for processes labeled as
 CX are, generally: pure electron capture from the neutral by the ion (=``exchange of identity"
 in symmetric charge exchange), scattering angle $\pi$ in center of mass system, zero exotermicity,
-i.e. perfect conservation of kinetic energy in center of mass system before and after collision.
+i.e.\ perfect conservation of kinetic energy in center of mass system before and after collision.
 This set of assumptions translates in the procedure to first sample the velocity of a bulk ion going into the collision, and then to continue
 the former test particle trajectory with unmodified velocity, with its charge increased by one, and to continue the former bulk ion, also with unmodified velocity, with its
 charge decreased by one
@@ -1396,7 +1396,7 @@ Summarizing: The current default CX model approximations consist in:
 a) selecting a particular distribution $f_i^{CX}$   \cref{iso-mono} rather than e.g.\ a drifting Maxwellian \\
 b) evaluating the reaction rate coefficient by \cref{sigveff} rather than a full rate coefficient integration \\
 c) approximating the energy and momentum exchange rate tallies by again employing the ``Langevin" $\sigma \propto 1/v_{rel}$ approximation\\
-d) but carrying out the full (relative velocity selective) reaction kinetics, i.e. here without making the $\sigma \propto 1/v_{rel}$ approximation, and, hence, retaining e.g.\ thermal force effects.
+d) but carrying out the full (relative velocity selective) reaction kinetics, i.e.\ here without making the $\sigma \propto 1/v_{rel}$ approximation, and, hence, retaining e.g.\ thermal force effects.
 
 Instead of the weighting mentioned above, which would require knowledge of $k_{CX}$, a rejection
 method is used to avoid the weighting, and without need of knowing the integral $k_{CX}$, but still to simulate the same
@@ -1757,7 +1757,7 @@ IFTFLG $<$ 100  :  rate coeff. or cross section, [\si{\cubic\centi\metre\per\sec
 IFTFLG $>$ 100  :  rate = density * rate coeff,  [\si{\second}]
                  (e.g.\ used for spontaneous decay, e.g.\ radiative decay.
 
-mod(IFTFLG,100) = 10:  only one fitting coefficient is read, i.e. the cross section,
+mod(IFTFLG,100) = 10:  only one fitting coefficient is read, i.e.\ the cross section,
 rate coefficient or rate is constant.
 
 \textbf{c) for photonic processes (line shape profiles:}
@@ -1854,7 +1854,7 @@ Data type LINE\_DATA deals with all parameters specifying a photonic process. It
 
 Data type COLRAD holds all data needed to describe the available collisional radiative model such as
 IFLAV: type/flavour of the CR\dots model (H, H2, He, \dots)
-IFORMUL: formulation used (1 or 2), i.e. meta-stable condensed or meta-stable resolved
+IFORMUL: formulation used (1 or 2), i.e.\ meta-stable condensed or meta-stable resolved
 IROW\_ESC, ICOL\_ESC, POP\_ESC: population escape factor and the matrix position in which the factor should be applied.
 
 \subsubsection{The MODCOL array}:

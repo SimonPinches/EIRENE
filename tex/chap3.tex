@@ -476,7 +476,7 @@ particle weight WEIGHT). Here $g$ is evaluated at the point of time $t^*$
 at which TIMCOL is called. Scaling of snapshot tallies is done by
 interpreting the linear source strength ``FLUX" scaling factor
 (given in input block 7 (\cref{sec2.7}) for each stratum) as a total
-number of particles, rather than as flux (particles~\si{\per\second}), i.e. ``FLUX is the
+number of particles, rather than as flux (particles~\si{\per\second}), i.e.\ ``FLUX is the
 integral of the source distribution not only over physical space, but also over time interval $DTIMV$ from initial time $t_0$
 to time $t^*$ (\cref{sec2.13}).
 \subsubsection{B: stationary snapshot tallies}\label{sec3.2.3b}
@@ -486,7 +486,7 @@ of block 13 (\cref{sec2.13}) to negative values. Stationary results in
 this ``time dependent mode" are obtained by launching all test
 flights at time $t_0$, but scoring snapshot tallies not only at
 $t^*=t_1=t_0+DTIMV$, but also at $t_2=t_0+2~ DTIMV, t_3=t_0+3~
-DTIMV, \dots,$ i.e. at all times $t_n=t_0+n~ DTIMV$ until the flight
+DTIMV, \dots,$ i.e.\ at all times $t_n=t_0+n~ DTIMV$ until the flight
 terminates. If the source distribution and the background medium
 parameters are constant in time, then the snapshot score
 contribution from time $t_i$ can be interpreted as score at
@@ -937,7 +937,7 @@ This routine is called at a particular position (X0, Y0, Z0) in grid cell NCELL,
 Position and cell number information are taken from module EIRMOD\_COMPRT.F.
 It is used in particular if the magnetic field, or plasma flow field, are needed with a higher spatial
 resolution than the one provided by the standard input plasma (background) tallies, which are cell averaged,
-i.e. constant within a cell.
+i.e.\ constant within a cell.
 
 \begin{verbatim}
       SUBROUTINE VECUSR(INDEX,VEC_X,VEC_Y,VEC_Z,IPLS)
@@ -1158,7 +1158,7 @@ Here N is the total number of cells in this run, and
 A is an array of length N, containing the N cell volume values in \si{\cubic\centi\metre}.
 \subsection{Subroutine NORUSR}
 \label{sec3.8.4} The subroutine NORUSR provides the outer surface normal unit vector CX,CY,CZ at surfaces,
-i.e. after a particle trajectory has intersected a ``non default grid surface" at point X,Y,Z.
+i.e.\ after a particle trajectory has intersected a ``non default grid surface" at point X,Y,Z.
 
 It is called in the LEVGEO=10 option from subroutine
 STDCOL,  after all surface intersection settings and possible switches have been carried out,
@@ -1172,7 +1172,7 @@ Here [X,Y,Z] are the cartesian coordinates
 of an intersetcion point, located on non-default standard surface no. M. The routine must return
 the surface normal unit vector [CX,CY,CZ].
 
-If surface M has a periodicity condition (i.e. surface flag ILIIN(M) $>$3 in input block 3a (\cref{sec2.3a})
+If surface M has a periodicity condition (i.e.\ surface flag ILIIN(M) $>$3 in input block 3a (\cref{sec2.3a})
 then this routine must also carry out the periodicity transformation for the test particle (which may be different
 for neutral particles and for charged (test ion) particles).
 
@@ -1181,6 +1181,6 @@ Periodicity is carried out, in general, by moving particles to another surface a
 In this cases the code expects on output in [X,Y,Z] the new coordinates, on integer variable M the new surface number, and, if applicable,
 on [VELX,VELY,VELZ] the new speed unit vector. NRCELL must contain the cell number, into which the new flight enters from surface M.
 
-Currently NORUSR is called for all non default surfaces in the general (external) geometry level LEVGEO=10, i.e. for NRGEN = T.
+Currently NORUSR is called for all non default surfaces in the general (external) geometry level LEVGEO=10, i.e.\ for NRGEN = T.
 
 It is also called (currently without warning or conditioning) for tetrahedral grids at periodicity surfaces.

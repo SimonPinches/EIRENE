@@ -28,7 +28,7 @@ type of profiles, the usage of input parameters, or how a tally is transferred f
 file or code into an EIRENE run. The meaning of variable INDPRO is described below.
 
 I.e.: the background medium is
-described by several blocks of NSBOX data each, (i.e. one datum
+described by several blocks of NSBOX data each, (i.e.\ one datum
 per grid cell), so called ``input tallies", namely
 \begin{itemize}
     \item one array for the electron temperature $T_e$ (\si{\electronvolt}) (TEIN),
@@ -45,7 +45,7 @@ per grid cell), so called ``input tallies", namely
 
 The unit vector  $\vb$ = $( b_1 , b_2 , b_3 )$ (BXIN, BYIN, BZIN),
 parallel to the magnetic field is set to (0.,0.,1.) by default,
-i.e. pointing in z- (or toroidal-) direction. The default magnetic
+i.e.\ pointing in z- (or toroidal-) direction. The default magnetic
 field strength is $|\vB|=1$ T in all grid cells. This default
 setting may be overruled by using the \emph{INDPRO(5)} flag and
 the corresponding input parameters (see below).
@@ -249,7 +249,7 @@ The additional card (only one) reads (format 3I6):
 ISP, ITP, ISTR
 \end{verbatim}
 ISP, ITP is the number and type of a test particle species on the
-file fort.10, respectively, from stratum no. ISTR (i.e. written
+file fort.10, respectively, from stratum no. ISTR (i.e.\ written
 onto fort.10 either in the present run or an earlier EIRENE run,
 see NFILEN option in input block 1). The parameters (fields of
 density, temperature, flow velocity) for species IPLS are derived
@@ -290,7 +290,7 @@ bulk species IPLS: ISP=IPLS,
 from stratum no. ISTR (i.e.
 written onto fort.10 either in the present run or an earlier EIRENE run,
 see NFILEN option in input block 1).
-I.e. the density $ni(IPLS)$ at each position $x$ (grid cell) for this
+I.e.\ the density $ni(IPLS)$ at each position $x$ (grid cell) for this
 background species IPLS is specified via:
 \begin{equation}\nonumber
  ni(IPLS,x)=  n_{IS}(x) \times \frac{Rate_{IS}(x)}{A}
@@ -305,7 +305,7 @@ which is in Corona-equilibrium with these IS = [ISP,ITP, ISTR] donor particles.
 \item[\textbf{CDENMODEL = 'Colrad' }]
 set parameters density, temperature and flow velocity from collisional radiative equilibrium with one or more (NRE) ``donor-species", using
 reduced population coefficients from atomic database FILNAM.
-I.e. the density ni(IPLS) at each position $x$ (grid cell) for this 
+I.e.\ the density ni(IPLS) at each position $x$ (grid cell) for this 
 background species IPLS is specified via:
 \begin{equation}\nonumber
  ni(IPLS,x)= \sum_{IS} n_{IS}(x) \times POP_{IS}(x)
@@ -326,7 +326,7 @@ with a reduced population coefficient $POP$ specified via $[FILNAM, H123, \dots]
 into excited state or other (ionised state)
 populations. The $POP$ coefficients are typically from externally applied collisional radiative models.
 
-I.e. this model constructs a background species IPLS
+I.e.\ this model constructs a background species IPLS
 which is the sum of NRE species, each of which being in local collision-radiative-equilibrium
 with its donor isotope $IS$.
 \end{list}
@@ -340,14 +340,14 @@ below.
 A third digit for each entry can be used to switch from a cell-wise constant profile
 (default) to a smooth
 (interpolated into cells) profile. This option is currently being tested for the
-magnetic field input profiles. I.e. INDPRO(5)=103 provides the same magnetic field as
+magnetic field input profiles. I.e.\ INDPRO(5)=103 provides the same magnetic field as
 INDPRO(3)=3, however
 the magnetic field is evaluated on the fly (along particle trajectories) by interpolation,
 at the very point of
 particle position rather than at the cell center (=const. per cell).
 
 Options INDPRO=1,2,3 are pre-programmed 1 D profiles with the first coordinate (x or radial) taken as independent parameter.
-I.e. profiles are constant in the other 2 coordinate directions: y and z.
+I.e.\ profiles are constant in the other 2 coordinate directions: y and z.
 
 Options INDPRO=4,5,6\dots allow more general, and higher dimensional profile forms.
 

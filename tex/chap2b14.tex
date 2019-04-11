@@ -158,7 +158,7 @@ and their statistical errors is case specific and done in interfacing module EIR
  and it is scored in the routine UPDCOP (different versions exist for different plasma fluid codes), \cref{tab2old} in \cref{sec.tables-old}):
 
  The sign of these sources in EIRENE is such that a gain in momentum for plasma species $ipls$ is taken positive. In the interfacing routine IF3COP of module EIRCOP the sign convention
- is altered to that of the plasma fluid code, i.e. it then involves
+ is altered to that of the plasma fluid code, i.e.\ it then involves
  the flow direction relative to the magnetic field vector. Note that in more recent versions
  of EIRENE, the momentum sources parallel to a magnetic field have become default tallies,
  see below in \cref{sec2.14.2}.
@@ -346,7 +346,7 @@ This option permits iteration on some species, which are not treated
 in the plasma code, e.g.: for neutral-neutral interactions.
 \item[{= 0 }]
 The corresponding bulk ion species IPLS in EIRENE has zero density,
-i.e. bulk ions of this species are not present in this EIRENE run.
+i.e.\ bulk ions of this species are not present in this EIRENE run.
 Note the issue re. electron density and quasi-neutrality mentioned
 above.
 \end{list}
@@ -571,12 +571,12 @@ rather than in \cref{tab2old} in \cref{sec.tables-old}:
  $PIPL$ is the particle source for background plasma species $ipls$ resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no. 26.
  \end{itemize}
 Default tally no. 32 might be added here as well, once photo-ionization processes are activated in an EIRENE run.
-Analogous statements, i.e. modifications of volume averaged tally numbers,
+Analogous statements, i.e.\ modifications of volume averaged tally numbers,
 apply for the other source rates (for electron and ion energy balance), as compared
 to those described above in \cref{sec2.14.1}.
 
 One further difference is that momentum source terms (for parallel momentum balance equations of plasma fluid codes) have become default tallies (MAPL, MMPL, MIPL), rather than problem specific tallies (COPV). These are now scored in routine UPDATE, together will all other tallies listed in \cref{tab2}, rather than in the coupling-specific routine UPTCOP.
-I.e. now we have (compare to \cref{Sm}):
+I.e.\ now we have (compare to \cref{Sm}):
 \begin{equation}
  S_{m\parallel}(ipls,icell) = \sum_{is} \left[MAPL_{is}(ipls,icell) + MMPL_{is}(ipls,icell) + MIPL_{is}(ipls,icell) \right]
  \end{equation}
@@ -721,17 +721,17 @@ coupled together in the late eighties.)}
 not in use
 \item[\textbf{IBPOL}]
 if $< 0$, then the poloidal field orientation on the EIRENE side is changed compared to the default: now $\ve_{B_\theta} = -\veth$,
-i.e. (BXIN,BYIN) $\rightarrow - $(BXIN,BYIN) in module eirmod\_infcop.f
+i.e.\ (BXIN,BYIN) $\rightarrow - $(BXIN,BYIN) in module eirmod\_infcop.f
 \item[\textbf{IBTOR}]
 if $< 0$, then the toroidal field orientation on the EIRENE side is changed compared to the default: now $\ve_{B_\phi} = -\veph$,
-i.e. (BZIN) $\rightarrow - $(BZIN) in module eirmod\_infcop.f .
+i.e.\ (BZIN) $\rightarrow - $(BZIN) in module eirmod\_infcop.f .
 \end{list}
 
 These additional B-field options now also introduce an ambiguity in the definition of parallel (to $\vB$) momentum exchange terms
 between plasma ions (in continuum approximation) and kinetic neutrals, see definition of momentum source tallies MAPL, MMPL and MIPL
 in \cref{sec.tables-new}. Since prior to introducing the IBPOL, IPTOR flags there was  $\ve_\| = \ve_{\vB}$ always,
 it made no difference which ``parallel to $\vB$" unit vector was used for
-projections. With the additional freedom in the choice of B-field signs, i.e. with $\ve_\| = \pm \ve_{\vB}$, the proper choice of using either
+projections. With the additional freedom in the choice of B-field signs, i.e.\ with $\ve_\| = \pm \ve_{\vB}$, the proper choice of using either
 $\ve_\|$ or $\ve_{\vB}$ used for projecting
 the vectorial momentum exchange rates onto a ``parallel" direction must depend on conventions used in the plasma continuum code. Current default in EIRENE is
 to use $+\ve_{\vB}$ for this projection for the mentioned momentum source tallies. The same applies for momentum source terms
@@ -742,7 +742,7 @@ in diamagnetic or radial directions, when plasma drifts and electrical currents 
 \medskip
 
 One distinction to the earlier versions of interfaces to the B2 plasma fluid code is that in B2.5
-the energy conservation equation is solved for the internal energy only (i.e. the thermal energy, rather than for the total energy, as in B2.)
+the energy conservation equation is solved for the internal energy only (i.e.\ the thermal energy, rather than for the total energy, as in B2.)
 
 The ion energy source term $S_{Ei-internal}(icell)$ transferred from EIRENE to B2.5 in grid cell $icell$ reads:
 \begin{equation}\label{Sei-intern}
@@ -755,7 +755,7 @@ plasma flow: $EKIN = (m_{ipls}/2) V_\parallel^2$.
 This equation applies for a single plasma fluid case (one single plasma species $ipls$).
 Relation \cref{Sei-intern} for the internal energy source follows from either substituting the lower order moment equations into the total energy moment equation,
 or by forming the energy moment equation directly by averaging the kinetic equation with velocities in the plasma frame:
-$w = v - V$, i.e. by averaging the kinetic equation with $(m/2) w^2$ rather than $(m/2) v^2$ with $V$ the plasma flow velocity \cite{kn:Mueller}.
+$w = v - V$, i.e.\ by averaging the kinetic equation with $(m/2) w^2$ rather than $(m/2) v^2$ with $V$ the plasma flow velocity \cite{kn:Mueller}.
 
 In case of multi-fluid plasmas we use, without proof  (to be checked !) simply the same formula,
 but with the second and third term replaced by the sum over all (receiving) plasma ion species:

@@ -66,7 +66,7 @@ will appear on all plots, the full text will be echoed at the
 beginning of the printout file
  \item [\textbf{NPRLL}]
 (Formerly at this place: NMACH, flag for machine precision (round off errors), now: out.) \\
-The new (2018) flag NPRLL controls the various options for (MPI) parallelisation modes, i.e. the strategies
+The new (2018) flag NPRLL controls the various options for (MPI) parallelisation modes, i.e.\ the strategies
 to assign processes  to strata. This is defined in PEDIST.f (initialization phase)
 by filling the matrix PROCFORSTRA(strata,processors).
 \begin{list}{}{}
@@ -198,7 +198,7 @@ nor the primary source model (block 7)
 has changed as compared to an earlier run. It then reduces the
 CPU costs for the overhead.
 \item [L = 3 ]
-Acts as if both NFILE-L=1 and NFILE-L=2. I.e. reading background data from file, and writing new
+Acts as if both NFILE-L=1 and NFILE-L=2. I.e.\ reading background data from file, and writing new
 background data onto file at the end of the run, the time-step or the iteration.
 For continuation of iterative calculations, for example.
 \item [L = 4 ]
@@ -356,7 +356,7 @@ biased source sampling, splitting, etc. Select NLANA=.TRUE., if
 particle trajectory plots are used to get an intuitive picture of
 what is going on physically.
 \item [\textbf{NLDRFT} ] Drift
-component in the bulk ions velocity distribution is included, i.e. the assumed underlying distribution in velocity space
+component in the bulk ions velocity distribution is included, i.e.\ the assumed underlying distribution in velocity space
 is a drifting Maxwellian for volumetric background tallies of bulk particles.
 (see input block 5, input tallies VXIN, VYIN, VZIN)). Otherwise (if NLDRFT = FALSE) an
 isotropic Maxwellian distribution is
