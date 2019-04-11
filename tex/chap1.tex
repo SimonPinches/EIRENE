@@ -1511,7 +1511,7 @@ integrated numerically with time-steps.
 
 The general rules for sampling from multivariate distributions
 outlined in \cref{sec1.2.1}, Equation \cref{eq1.15a} also
-apply here. In the EIRENE code sampling from the collision kernel is carried out in subr. COLLIDE, which is called when a collision is
+apply here. In the EIRENE code sampling from the collision kernel is carried out in subr.\ COLLIDE, which is called when a collision is
 known to have occurred at a pre-collision particle state vector [position, velocity, species (and, optional: time)] $( \vr ' , \vv ' , i ')$
 by a sequence of random decisions regarding the type of collision process $k$, the species index of the post collision test particle $i$,
 and the new post collision velocity $\vv$.  Collisions are instantaneous in time.
@@ -2897,7 +2897,7 @@ is a special case of the classical
 ``test particle method" for solving the Boltzmann equation, as opposed to the ``direct Monte Carlo
 Simulation" method. The former was introduced in rarefied gas dynamics by J.K.~Haviland, in 1961, see:
 J.K.~Haviland, ``The solution of Two Molecular Flow Problems by the Monte Carlo Method",
-in: Methods in Computational Physics (Ed. Alder), Vol. 4, 1965, Academic Press.
+in: Methods in Computational Physics (Ed.\ Alder), Vol. 4, 1965, Academic Press.
 An early review and comparison of different Monte Carlo methods in kinetic theory, also comparing this particular
 ``test particle method" with the \ac{DMCS} scheme, is given by
 the report: N.A.~Derzko, ``Review of Monte Carlo Methods in kinetic Theory", UTIAS Review No.\ 35 (April 1972)
@@ -2907,7 +2907,7 @@ A.~Nordsieck and B.L.~Hicks.)
 \\
 In rarefied gas dynamics problems for fusion reactor design, in particular for the ITER divertor design, the Haviland method,
 but applied to a Boltzmann equation with a (non-linear) \ac{BGK} collision integral,
-was first developed for the EIRENE code around 1995 (see Reiter et al. \cite{kn:Reiter96}),
+was first developed for the EIRENE code around 1995 (see Reiter et al.\ \cite{kn:Reiter96}),
 and it is routinely applied in computational divertor design studies for ITER since
 about 2004 by V.~Kotov, A.K.~Kukushkin, et al.
 
@@ -3472,7 +3472,7 @@ Program EIRENE}
 \begin{figure}
 \includegraphics[height=16cm]{flowchart5_new}
 \caption{Flowchart 6.3:
-Particle loop in subr. MCARLO.  Default volume averaged tallies are updated, ``on the fly" \emph{(per event)} in routines UPDATE,
+Particle loop in subr.\ MCARLO.  Default volume averaged tallies are updated, ``on the fly" \emph{(per event)} in routines UPDATE,
 problem specific tallies
 for code-code interfacing (COPV(\dots), e.g.\ B2-EIRENE) in UPDCOP, specific tallies for non-linear \ac{BGK} operators (BGKV(\dots)) in UPDBGK.
 Corresponding variances

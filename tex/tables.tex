@@ -187,7 +187,7 @@ and derived input tallies, the latter being  indicated by $^*$.
 The latter are automatically computed from the former by EIRENE.
 
 
-Primary input tallies are set or transferred from external data sources via subr. PLASMA.f,
+Primary input tallies are set or transferred from external data sources via subr.\ PLASMA.f,
 derived input tallies are set via subroutine PLASMA$\_$DERIV.f.
 Storage for both kinds of tallies is allocated in module COMUSR.f
 
@@ -208,7 +208,7 @@ nor for graphics.
 \item  WGHT space species  weight window arrays.  Currently not in use
 
 \item  Magnetic field input is needed only for photon transport with Zeeman splitted line shapes, or
-in case of charged particle transport (Subr. FOLION). Only quite rudimentary preprogrammed input options
+in case of charged particle transport (Subr.\ FOLION). Only quite rudimentary preprogrammed input options
 for magnetic field are available, usually it is expected to receive B-field information from external files,
 see INDPRO(5) options for magnetic field tallies in input block 5 (\cref{sec2.5}).
 \item  For electric fields (needed only for charged particle transport) only input via external files
@@ -360,7 +360,7 @@ Module: CESTIM}}
     & NCLV & see UPCUSR & COL        \\  \hline
  59 & SNPV & Additional volume av. Tally, Snapshot estimated
     & NSNV & see UPSUSR & SNP         \\  \hline
- 60 & COPV & Tallies for coupling to ext. code, see: Subr. UPTCOP
+ 60 & COPV & Tallies for coupling to ext. code, see: Subr.\ UPTCOP
     & NCPV & see UPTCOP  & COP  \\  \hline
  61 & BGKV &Volume averaged tallies for \acs{BGK}-self-collision terms
     & NBGV & see BGK & T41        \\  \hline
@@ -854,7 +854,7 @@ We distinguish between so called primary input tallies, and derived input tallie
 The latter are automatically computed from the former by EIRENE.
 
 
-Primary input tallies are set or transferred from external data sources via subr. PLASMA.f,
+Primary input tallies are set or transferred from external data sources via subr.\ PLASMA.f,
 derived input tallies are set via subroutine PLASMA$\_$DERIV.f.
 \begin{itemize}
 \item DEIN and EDRIFT are ``derived" input tallies,
@@ -862,7 +862,7 @@ internally computed from the ion densities (quasi-neutrality), and
 the flow field, respectively.
 \item  WGHT space species  weight window arrays.  Currently not in use
 \item  Magnetic field input is needed only for photon transport with Zeeman splitted line shapes, or
-in case of charged particle transport (Subr. FOLION). Only quite rudimentary preprogrammed input options
+in case of charged particle transport (Subr.\ FOLION). Only quite rudimentary preprogrammed input options
 for magnetic field are available, usually it is expected to receive B-field information from external files,
 see INDPRO(5) options for magnetic field tallies in input block 5 (\cref{sec2.5}).
 
@@ -959,7 +959,7 @@ see INDPRO(5) options for magnetic field tallies in input block 5 (\cref{sec2.5}
     & NCLV & see UPCUSR & COL        \\  \hline
  39 & SNPV & Additional volume av. Tally, Snapshot estimated
     & NSNV & see UPSUSR & SNP         \\  \hline
- 40 & COPV & Tallies for coupling to ext. code, see: Subr. UPTCOP
+ 40 & COPV & Tallies for coupling to ext. code, see: Subr.\ UPTCOP
     & NCPV & see UPTCOP  & COP  \\  \hline
  41 & BGKV & Volume averaged tallies for \acs{BGK}-self-collision terms
     & NBGV & see BGK & T41        \\  \hline

@@ -276,7 +276,7 @@ One and only one of the next 8 logical variables NLSLB $\dots$ NLTET, NLGEN must
 This variable defines the so called ``geometry level" of a run, i.e.\ the internal EIRENE variable LEVGEO
 
 \begin{list}{ }{}
-\item[\textbf{NLSLB = .TRUE. }] ~
+\item[\textbf{NLSLB = .TRUE.}] ~
 
 Geometry level: LEVGEO = 1
 
@@ -287,7 +287,7 @@ $x_I$=RSURF(I) I=1,NR1ST .
 Furthermore,
 the flux-surface labeling grid RHOSRF(I) is identical with
 the grid RSURF(I).
-\item[\textbf{NLCRC = .TRUE. }] ~
+\item[\textbf{NLCRC = .TRUE.}] ~
 
 Geometry level: LEVGEO = 2
 
@@ -303,7 +303,7 @@ Furthermore RHOSRF(I) = $\sqrt{ \frac{AREA}{\pi} }$ where
 AREA is the area inside surface
 number $I$.
 Thus for this option one has again: RHOSRF(I) = RSURF(I), I=1,NR1ST.
-\item[\textbf{NLELL = .TRUE. }] ~
+\item[\textbf{NLELL = .TRUE.}] ~
 
 Geometry level: LEVGEO = 2
 
@@ -321,13 +321,13 @@ RSURF to define one coordinate surface in the first (radial or $x$- grid).
 RHOSRF: as in NLCRC option.
 
 Note: RHOSRF and RSURF may differ in this case.
-\item[\textbf{NLTRI = .TRUE. }] ~
+\item[\textbf{NLTRI = .TRUE.}] ~
 
 Geometry level: LEVGEO = 2
 
 to be written: triangularity in mesh of nested closed algebraic
 surfaces
-\item[\textbf{NLPLG = .TRUE. }] ~
+\item[\textbf{NLPLG = .TRUE.}] ~
 
 Geometry level: LEVGEO = 3
 
@@ -346,7 +346,7 @@ The polygons must not intersect each other.
 
 In this case RHOSRF(1)=0., and RHOSRF(I) is the area enclosed by
 polygon number 1 and polygon number I.
-\item[\textbf{NLFEM = .TRUE. }] ~
+\item[\textbf{NLFEM = .TRUE.}] ~
 
 Geometry level: LEVGEO = 4
 
@@ -354,13 +354,13 @@ The mesh in the x-y plane
 consists of NR1ST triangles, composed from NRKNOT knots.
 
 In this case a flux surface labeling grid RHOSRF is not defined.
-\item[\textbf{NLTET = .TRUE. }] ~
+\item[\textbf{NLTET = .TRUE.}] ~
 
 Geometry level: LEVGEO = 5
 
 3D discretisation of volume by tetrahedrons. For this grid option
 please make contact to the authors.
-\item[\textbf{NLGEN = .TRUE. }] ~
+\item[\textbf{NLGEN = .TRUE.}] ~
 
 Geometry level: LEVGEO = 10
 
@@ -398,12 +398,12 @@ RSURF(NR1ST) = RRA, and the parameter RAA now determines the surface no.\ NR1ST 
 (irrelevant, if RRA $\le$ RAA)
 \end{list}
 
-if NLELL = .TRUE. :
+if NLELL = .TRUE.:
 \begin{list}{ }{}
 \item[\textbf{EPIN }]
 Value of EP(r) for cylindrical co-ordinate surface number 1 with
 $r_1$=RIA
-(see: NLCRC = .TRUE. option above)
+(see: NLCRC = .TRUE.\ option above)
 \item[\textbf{EPOT }]
 Value of EP(r) for cylindrical surface number NR1ST with
 
@@ -422,7 +422,7 @@ RIA} ) }^{EXEP}
 \cdot (EPOT - EPIN)$
 \item[\textbf{ELIN }]
 Value of EL(r) for cylindrical surface number 1 with \\
-$r_1$=RIA (see: NLELL = .TRUE. option)
+$r_1$=RIA (see: NLELL = .TRUE.\ option)
 \item[\textbf{ELOT }]
 Value of EL(r) for cylindrical surface number NR1ST \\
 with $r_{NR1ST}$=RAA
@@ -441,14 +441,14 @@ RIA} ) }^{EXEL}
 \cdot (ELOT - ELIN)$
 \end{list}
 
-if NLTRI = .TRUE. :
+if NLTRI = .TRUE.:
 \begin{list}{ }{}
 \item[\textbf{TRIN, TROT, TRCH, EXTR }]
 to be written: the option for algbraically given triangular grids is currently
 no available.
 
 \end{list}
-if NLPLG = .TRUE. :
+if NLPLG = .TRUE.:
 \begin{list}{ }{}
 \item[\textbf{NR1ST }]
 number of polygons for discretisation in ``radial" or x direction
@@ -490,7 +490,7 @@ x-co-ordinate of the polygon point number K on polygon number I
 \item[\textbf{YPOL(K,I) }]
 y-co-ordinate of the polygon point number K on polygon number I
 \end{list}
-if NLFEM = .TRUE. :
+if NLFEM = .TRUE.:
 \begin{list}{ }{}
 \item[\textbf{NR1ST }]
 number of triangles for discretisation in x-y plane
@@ -534,11 +534,11 @@ By default the normal vector of each side of a triangle points out of the triang
 In case IPROP $<$ 0, this vector points into the triangle.
 This is relevant at surface options with ILSIDE $\not=$ 0.
 \end{list}
-if NLTET = .TRUE. :
+if NLTET = .TRUE.:
 
 Documentation not available here. Make contact with the authors.
 
-if NLGEN = .TRUE. :
+if NLGEN = .TRUE.:
 \begin{list}{ }{}
 \item[\textbf{NR1ST }]
 

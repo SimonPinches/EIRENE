@@ -26,7 +26,7 @@ for the Balmer alpha emission rate per volume, etc.). At present there are two
 and the option to call a user supplied integrand.
 
 Firstly there are a number of
-Lyman- and Balmer series volume source rates (emissivity), see Subr. SIGHA.
+Lyman- and Balmer series volume source rates (emissivity), see Subr.\ SIGHA.
 Each hydrogenic line emissivity is available for coupling to up to 6 states (``donor states")
 and linear in the corresponding density (output tally), namely to the (ground) states:
 $H, H_2, H_2^+, H^+, H^-$ and $H_3^+$   (and their isotopes, isotopomeres\dots).
@@ -34,17 +34,17 @@ $H, H_2, H_2^+, H^+, H^-$ and $H_3^+$   (and their isotopes, isotopomeres\dots).
 Secondly the
 neutral atom charge exchange source rate can be integrated along a
 line of sight for a given energy of the impacting plasma ion
-(Subr. SIGCX). This routine includes re-absorption along the line
+(Subr.\ SIGCX). This routine includes re-absorption along the line
 of sight. A LOS spectrum (also: ``side-on spectrum''), energy resolved with up to
 NCHEN energies, may be obtained by this procedure.
 
 Thirdly (version
 2005 and younger) the side-on radiances of selected lines (photon
 test particle species), including reabsorption, reflection, line broadening, etc., can be obtained
-(Subr. SIGRAD). A number of different emission line shape profiles is available for these.
+(Subr.\ SIGRAD). A number of different emission line shape profiles is available for these.
 
 For testing and 3rd party defined further integrands $g(x)$ along lines of side there is a
-user defined option (Subr. SIGTST).
+user defined option (Subr.\ SIGTST).
 
 
 \medskip
@@ -139,7 +139,7 @@ In case NSPTAL=2:
 (NSPSTR to be written, current default, hard wired: hydrogenic atoms, molecules, test ions, background ions).
 
 Number of contribution to line intensity, as programmed in
-Subr. Ba$_{Alpha}$, Ba$_{Gamma}$, Ly$_{Beta}$, etc. (Currently up to 6 contributions
+Subr.\ Ba$_{Alpha}$, Ba$_{Gamma}$, Ly$_{Beta}$, etc. (Currently up to 6 contributions
 for each H atom spectral line, and the total)
 \begin{list}{ }{}
 \item[{= 1 }] coupling to ground state atom: $H(1s)$
@@ -321,13 +321,13 @@ phase).
 the energy or wavelength resolved spectra, integrated along the lines of sight, are plotted
 (irrelevant in case of NSPTAL = 2).
 \item[\textbf{PRSPEC }]
-the energy or wavelength resolved spectra, integrated along the lines of sight, are printed (from subr. OUTSIG.f)
+the energy or wavelength resolved spectra, integrated along the lines of sight, are printed (from subr.\ OUTSIG.f)
 (irrelevant in case of NSPTAL = 2).
 \item[\textbf{PLARGL }]
 the line of sight spectra, with their contributions spatially resolved along the lines of sight, are plotted.
 \item[\textbf{PRARGL }]
 the line of sight spectra, with their contributions spatially resolved along the lines of sight, are printed.
-(directly from subr. LININT.f)
+(directly from subr.\ LININT.f)
 \end{list}
 
 \subsection{Line of sight: charge exchange spectrum}
