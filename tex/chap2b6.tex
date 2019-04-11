@@ -222,15 +222,15 @@ only, see
 fast particle reflection species flag:
 
 \begin{list}{}{}
-\item[{$>$ 0}]
+\item[$>$ 0]
 If ISRF\$ $\le$ NATMI, then ISRF\$=IATM, the species
 labelling index for the reflected fast atom.
 
 If ISRF\$ $>$  NATMI
 not in use, warning and error exit.
-\item[{= 0}]
+\item[= 0]
 no fast particle reflection for this species: $p_f = 0 $
-\item[{$<$ 0}]
+\item[$<$ 0]
 not in use, warning and error exit.
 
 \end{list}
@@ -239,15 +239,15 @@ thermal particle re-emission species flag:
 
 \textbf{incident atoms, test ions and bulk ions:}
 \begin{list}{}{}
-\item[{$>$ 0}]
+\item[$>$ 0]
 If ISRT\$ $\le$ NATMI, then ISRT\$ = IATM, the species labelling
 index for the re-emitted thermal atom.
 
 If ISRT\$ $>$  NATMI, then IATM is sampled from the distribution
 DATM(IATM).
-\item[{= 0}]
+\item[= 0]
 no thermal particle re-emission for this species: $p_t = 0 $
-\item[{$<$ 0}]
+\item[$<$ 0]
 molecule is re-emitted, and -ISRT\$ is used to identify the species
 labelling index IMOL for the re-emitted molecule,
 exactly as described above for re-emitted atoms.
@@ -259,15 +259,15 @@ the so called Eley Rideal mechanism: Surface(with implanted $H) + H \rightarrow 
 \end{list}
 \textbf{incident molecules:}
 \begin{list}{}{}
-\item[{$>$ 0}]
+\item[$>$ 0]
 If ISRT\$ $\le$ NMOLI, then ISRT\$ = IMOL, the species labelling
 index for the re-emitted thermal molecule.
 
 If ISRT\$ $>$  NMOLI, then IMOL is sampled from the distribution
 DMOL(IMOL).
-\item[{= 0}]
+\item[= 0]
 no thermal particle re-emission for this species: $p_t = 0 $
-\item[{$<$ 0}]
+\item[$<$ 0]
 not in use, warning and error exit: ``\texttt{species index out of range}''
 
 In code versions older than year 2000 this ISRT$<$0 options was also used to activate sampling
@@ -308,7 +308,7 @@ because for those RPROBF = 0 by default.
 \begin{list}{}{}
 \item[\textbf{RINTEG}] ~
 \begin{list}{}{}
-\item[{$>$ 0}]
+\item[$>$ 0]
 Fixed (independent of energy and angle of incidence)  particle
 reflection coefficient.
 
@@ -320,18 +320,18 @@ and the thermal component probability $p_t$ is then recomputed as $p_t = 1 - p_f
 RINTEG $\ge 1 - p_a$ enforces the fast particle reflection model
 for all un-pumped incident particles, i.e., RPROBF = RINTEG is internally
 reset to $1 - p_a$.
-\item[{$=$ 0}]
+\item[$=$ 0]
 Default: fast particle
 reflection probability as defined by the reflection
 model chosen.
-\item[{$<$ 0}]
+\item[$<$ 0]
 The fast particle reflection probabilities RPROBF are
 set to $1.0-p_a$.  Hence: same as RINTEG=1.0
 \end{list}
 
 \item[\textbf{EINTEG}] ~
 \begin{list}{}{}
-\item[{$>$ 0}]
+\item[$>$ 0]
 Fixed (independent of energy and angle of incidence) energy
 reflection coefficient.
 
@@ -339,16 +339,16 @@ This choice replaces the energy random sampling procedure in the
 fast particle reflection model by an reflection assumption:
 $E_{out} = E_{in} \cdot EINTEG$.
 
-\item[{$=$ 0}]
+\item[$=$ 0]
 Default: no modification of energy distribution in the reflection model
 for fast particle reflection.
-\item[{$<$ 0}]
+\item[$<$ 0]
 elastic ($E_{out} = E_{in}$) reflection for all particles reflected according to
 the fast particle reflection model. Hence: same as EINTEG=1.0
 \end{list}
 \item[\textbf{AINTEG}] ~
 \begin{list}{}{}
-\item[{$>$ 0}]
+\item[$>$ 0]
 
 Fixed (independent of energy and angle of incidence) momentum
 reflection coefficient (``accommodation coefficient'') $\alpha = 1-AINTEG$
@@ -366,11 +366,11 @@ fraction is with unchanged energy $E_{in} = E_{out}$. This full Maxwell boundary
 with accommodation coefficient $\alpha=1-$AINTEG is specified with the additional choices:
 EINTEG=1.0, EWALL =-TW (TW the wall temperature, see further below: EWALL flag.
 
-\item[{= 0}]
+\item[= 0]
 Default:
 no modification of angular distributions in reflection model for
 fast particle reflection.
-\item[{$<$ 0}]
+\item[$<$ 0]
 specular reflection for all particles reflected according to
 the fast particle reflection model.  Hence: same as AINTEG=1.0
 \end{list}
@@ -464,10 +464,10 @@ SURFMOD_CARB_SPT_812K
 \item[\textbf{ILREF}]
 Flag for choice of local reflection model
 \begin{list}{}{}
-\item[{= 1}] TRIM database reflection model is used. NLTRIM
+\item[= 1] TRIM database reflection model is used. NLTRIM
 must be .TRUE.
-\item[{= 2}] ``modified Behrisch Matrix model" is used 
-\item[{= 3}] user supplied reflection model
+\item[= 2] ``modified Behrisch Matrix model" is used 
+\item[= 3] user supplied reflection model
 (see \cref{sec3.3}: Subroutine REFUSR)
 \end{list}
 
@@ -479,43 +479,43 @@ Let ILSPT = MN, with M and N single digit integers each.
 Then N controls the options for physical sputtering,
 and M controls chemical sputtering. See subroutine SPUTER.
 \begin{list}{}{}
-\item[{N = 0}]
+\item[N = 0]
 no physical sputtering at this surface
-\item[{N = 1}]
+\item[N = 1]
 constant physical sputtering rate (see parameter RECYCS below)
-\item[{N = 2}]
+\item[N = 2]
 modified Roth-Bogdansky formula for sputter
 yield, Thompson energy distribution
 and cosine angular distribution for emitted particles
 (see references \cite{kn:Sputer95} and \cite{kn:Roth96}).
-\item[{N = 9}]
+\item[N = 9]
 (was option N=3 in Eirene-2004 and older)
 
 user supplied sputtering model (see \cref{sec3.3}: Entry
 SPTUSR to subroutine REFUSR)
-\item[{M = 0}] no chemical
+\item[M = 0] no chemical
 sputtering at this surface
-\item[{M = 1}] constant chemical
+\item[M = 1] constant chemical
 sputtering rate (see parameter RECYCC below)
-\item[{M = 2}]
+\item[M = 2]
 ``Roth formula" for chemical sputter yield, thermal distribution
 for emitted particles (see reference \cite{kn:Roth99}), ``weak
 flux dependence option A6".
-\item[{M = 3}] ``Roth formula"
+\item[M = 3] ``Roth formula"
 for chemical sputter yield, thermal distribution for emitted
 particles (see reference \cite{kn:Roth99}), ``strong flux
 dependence option A7".
-\item[{M = 4}] ``Roth formula" for
+\item[M = 4] ``Roth formula" for
 chemical sputter yield, thermal distribution for emitted particles
 (see reference \cite{kn:Roth99}), ``new flux dependence option A8
 (2004)".
-\item[{M = 5}] not in use
-\item[{M = 6}]
+\item[M = 5] not in use
+\item[M = 6]
 ``Haasz-Davis 1998 formula" for chemical sputter yield
-\item[{M = 7}]
+\item[M = 7]
  ``Haasz-Davis 1998 formula" for chemical sputter yield,
 and multiplicative factor for flux dependence (Roth, 2004).
-\item[{M = 9}]
+\item[M = 9]
  (was option N=3 in Eirene-2004 and older)
 
 user supplied sputtering model (see \cref{sec3.3}: Entry SPTUSR
@@ -534,7 +534,7 @@ in blocks 3a, 3b and/or 6 (\cref{sec2.3a,sec2.3b,sec2.6}).
 sputtered particle species flag (physical sputtering).
 
 \begin{list}{}{}
-\item[{$>$ 0}]
+\item[$>$ 0]
 both the sputtered particle and the reflected particle
 (if any) will be followed.
 Their contribution to surface particle
@@ -546,13 +546,13 @@ on tallies 51 to 81 (\cref{sec.tables-new}) else,  are also updated.
 The species index of the sputtered particle (atom) is IATM=ISRS.
 Hence, on input, one must have 1 $\le$ ISRS $\le$ NATMI, otherwise: error exit.
 
-\item[{$\leq$ 0}]
+\item[$\leq$ 0]
 Same as ISRS $>$ 0, however, the species index of the sputtered particle
 is determined automatically from comparing the charge and mass numbers
 of the available atomic species (input block 4a) with the corresponding surface material (nuclear mass and charge) data of
 the surface element. If no suitable atomic test particle is is found, then only sputter tallies are scored,
 but no sputtered particles are then subsequently traced.
-\item[{$=$ 0}]
+\item[$=$ 0]
 Same as ISRS $\leq$ 0, but in this case a sputtered particle is NOT followed,
 even if its atomic test particle species could be identified.
 
@@ -573,7 +573,7 @@ dependent on the incident species index ISPZ.
 sputtered particle species flag (chemical sputtering).
 
 \begin{list}{}{}
-\item[{$>$ 0}]
+\item[$>$ 0]
 both the sputtered particle and the reflected particle
 (if any) will be followed.
 Their contribution to surface particle
@@ -585,7 +585,7 @@ The species index of the sputtered particle (atom) is IATM=ISRC,
 if ISRC $\le$ NATMI, or (molecules) IMOL, if ISRC = NATMI+IMOL and NATMI
 $<$ ISRC $\le$ NATMI+NMOLI.
 Hence, on input, ISRC $\le$ NATMI+NMOLI.
-\item[{$=$ 0}]
+\item[$=$ 0]
 There is no chemical sputtering for the particular surface
 element
 and incident species (note: ISRC=ISRC(ISPZ,MSURF), i.e., $p_c = 0$
@@ -594,7 +594,7 @@ here.
 Only the reflected particles are followed.
 Their contribution to surface particle
 and energy fluxes is stored in surface averaged tallies 1 to 24.
-\item[{$<$ 0}]
+\item[$<$ 0]
 Same as ISRC $>$ 0, however, the species index of the sputtered
 particle
 is determined automatically from comparing the charge and mass numbers
@@ -608,12 +608,12 @@ particle is a C-atom, if such an atom has been specified in input block
 \item[\textbf{ZNML}]
 = KLMN (4 digits)
 \begin{list}{}{}
-\item[{KL}]
+\item[KL]
 atomic weight of wall material. Note: the nearest integer of the
 mass number in the TRIM runs is used. For example, a copper target is
 specified in the TRIM files with an atomic weight of 63.54, and the
 corresponding TRIM file is used for surfaces with KL=64.
-\item[{MN}]
+\item[MN]
 nuclear charge number of wall material
 \end{list}
 Example: Carbon: ZNML=1206.
@@ -625,18 +625,18 @@ Example: Copper: ZNML=6429.
 Default: ZNML = 5.626E3 (stands for Fe).
 \item[\textbf{EWALL}] ~
 \begin{list}{}{}
-\item[{$<$ 0}]
+\item[$<$ 0]
 -EWALL = TW is a (surface-) temperature (\si{\electronvolt}) in a Maxwellian flux
 distribution for the thermal particle energy.
 The resulting mean
 energy is $E_{mean} = 2 \cdot TW$.
-\item[{$>$ 0}]
+\item[$>$ 0]
 +EWALL = Energy of mono-energetic (thermal) particles.
 
 The relation
 between surface temperature TW and the mean energy of particles then
 reads EWALL = $E_{mean} = 1.5 \cdot TW$.
-\item[{= 0}]
+\item[= 0]
 Energy is sampled from a Thompson distribution, using the
 flag EWBIN (see below) as parameter for the surface binding energy
 \end{list}
@@ -760,7 +760,7 @@ incident angular dependence of fast particle reflection coefficient. The
 formula \[R( \Phi ) = 1 - (1 - RPROBF)  \cdot  \cos^{EXPPL} (\Phi)\]
 is used, $e1 = EXPPL$, see \cref{eq1.18}, where:
 \begin{list}{}{}
-\item[{RPROBF}] Reflection probability from ``Behrisch
+\item[RPROBF] Reflection probability from ``Behrisch
 Matrix" model, which is valid only for normal incidence. \item
 {$\Phi$ \hfill} Angle of incidence against surface normal \item
 {R($\Phi$) \hfill} Reflection probability for particles incident
@@ -785,17 +785,17 @@ TRIM database). e2 = EXPEL, see \cref{eq1.19,eq1.20}
 incident angular dependence for angular distribution of re-emitted atom or molecule;
 
 \begin{list}{}{}
-\item[{EXPIL = 0}] ~
+\item[EXPIL = 0] ~
 
 cosine distribution (Lambertian)
-\item[{EXPIL $>$ 0}] ~
+\item[EXPIL $>$ 0] ~
 
 mixed cosine-specular model.
 
 the specular contribution increases according to \cref{eq1.21}
 with angle of incidence $\Phi$ and with
 e3 = EXPIL (recommended: $EXPIL \le 1$).
-\item[{EXPIL $>$ 100}] ~
+\item[EXPIL $>$ 100] ~
 
 specular reflection angles
 
@@ -807,10 +807,10 @@ Default: EXPIL = 0.
 ``physical sputtering" options depends upon the value of the first
 digit N of ILSPT:
 \begin{list}{}{}
-\item[{N=0}] no physical sputtering, YIELD1 = 0. RECYCS is irrelevant.
-\item[{N=1}] constant physical sputtering yield,
+\item[N=0] no physical sputtering, YIELD1 = 0. RECYCS is irrelevant.
+\item[N=1] constant physical sputtering yield,
 YIELD1 = RECYCS
-\item[{N=2}]
+\item[N=2]
 RECYCS is a multiplier for the sputtered particle flux YIELD1. YIELD1 is
 computed from the incident species, energy, angle and surface parameters
 by the sputter model $N=2$. Hence:
@@ -819,7 +819,7 @@ as computed from subroutine SPUTER
 is modified to
 
 $YIELD1 = RECYCS \cdot YIELD1 $.
-\item[{N=9}]
+\item[N=9]
 RECYCS is a free model parameter, which can be used in the user
 supplied sputter model for any particular surface element.
 
@@ -829,10 +829,10 @@ Default: RECYCS = 1.
 ``chemical sputtering" options depends upon the value of the
 second digit M of ILSPT:
 \begin{list}{}{}
-\item[{M=0}] no chemical sputtering, YIELD2 = 0. RECYCC is irrelevant.
-\item[{M=1}] constant chemical sputtering yield,
+\item[M=0] no chemical sputtering, YIELD2 = 0. RECYCC is irrelevant.
+\item[M=1] constant chemical sputtering yield,
 YIELD2 = RECYCC.
-\item[{M=2}]
+\item[M=2]
 RECYCC is a multiplier for the sputtered particle flux YIELD2. YIELD2 is
 computed from the incident species, energy, angle and surface parameters
 by the sputter model $M=2$. Hence:
@@ -841,7 +841,7 @@ as computed from subroutine SPUTER
 is modified to
 
 $YIELD2 = RECYCC \cdot YIELD2 $.
-\item[{M=9}]
+\item[M=9]
 RECYCC is a free model parameter, which can be used in the user
 supplied sputter model for any particular surface element.
 

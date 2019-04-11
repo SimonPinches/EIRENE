@@ -92,11 +92,11 @@ of sight integral.
 \item[\textbf{NSPTAL}]
 Flag for choice of preprogrammed function which is ``line integrated".
 \begin{list}{}{}
-\item[{= 1}] charge exchange source rate (SIGCX)
-\item[{= 2}] Hydrogen line emission source rate (SIGAL)
-\item[{= 3}] spectral radiance of photonic lines (SIGRAD)
+\item[= 1] charge exchange source rate (SIGCX)
+\item[= 2] Hydrogen line emission source rate (SIGAL)
+\item[= 3] spectral radiance of photonic lines (SIGRAD)
 (new in versions 2005 and younger)
-\item[{= 10}] user supplied integrand (SIGUSR)
+\item[= 10] user supplied integrand (SIGUSR)
 
 (this was option NSPTAL =3, in versions 2004 and older)
 \end{list}
@@ -104,10 +104,10 @@ Flag for choice of preprogrammed function which is ``line integrated".
 Flag for choice of linear or logarithmic axes in plots of
 spectra (vs. energy or wavelength, resp.) and of source term distribution along line of sight.
 \begin{list}{}{}
-\item[{= 0}] both axes linear
-\item[{= 1}] x axis linear, y axis logarithmic
-\item[{= 2}] x axis logarithmic, y axis linear
-\item[{= 3}] both axes logarithmic
+\item[= 0] both axes linear
+\item[= 1] x axis linear, y axis logarithmic
+\item[= 2] x axis logarithmic, y axis linear
+\item[= 3] both axes logarithmic
 \end{list}
 \item[\textbf{NSPNEW}]
 Flag for the choice whether a spectrum is plotted on the same
@@ -142,13 +142,13 @@ Number of contribution to line intensity, as programmed in
 Subr.\ Ba$_{Alpha}$, Ba$_{Gamma}$, Ly$_{Beta}$, etc. (Currently up to 6 contributions
 for each H atom spectral line, and the total)
 \begin{list}{}{}
-\item[{= 1}] coupling to ground state atom: $H(1s)$
-\item[{= 2}] coupling to continuum, bulk ion: $H^+$
-\item[{= 3}] coupling to ground state molecule: $H_2$
-\item[{= 4}] coupling to ground state molecular ion : $H_2^+$
-\item[{= 5}] coupling to negative ion: $H^-$ (new in versions 1996 and younger)
-\item[{= 6}] coupling to: $H_3^+$  (new in versions 2012 and younger)
-\item[{= 0}] total, sum over all contributions to a particular line  (was =~6, in versions 2011 and older)
+\item[= 1] coupling to ground state atom: $H(1s)$
+\item[= 2] coupling to continuum, bulk ion: $H^+$
+\item[= 3] coupling to ground state molecule: $H_2$
+\item[= 4] coupling to ground state molecular ion : $H_2^+$
+\item[= 5] coupling to negative ion: $H^-$ (new in versions 1996 and younger)
+\item[= 6] coupling to: $H_3^+$  (new in versions 2012 and younger)
+\item[= 0] total, sum over all contributions to a particular line  (was =~6, in versions 2011 and older)
 \end{list}
 
 In case NSPTAL=3:
@@ -272,12 +272,12 @@ The next card specifies the first (``pivot") point.
 \item[\textbf{IPIVOT}]
 (only needed for NLTRA option, ``toroidal approximation", sub-block 2c)
 \begin{list}{}{}
-\item[{1 $\leq$ IPIVOT $\leq$ NTTRA-1}]
+\item[1 $\leq$ IPIVOT $\leq$ NTTRA-1]
 (currently no available, error exit)\\
 number of local toroidal co-ordinate system (NTTRA: see sub-block 2c), in which this pivot point
 is specified. The pivot point is then given in cartesian coordinates is
 this local system
-\item[{IPIVOT=0}] \ \\
+\item[IPIVOT=0] \ \\
 pivot point is given in global cylindrical coordinates,\\
 XPIVOT,YPIVOT,ZPIVOT = $r,z,\phi$, with $\phi$ in degrees. The corresponding toroidal block numbers
 ITTRA are found automatically.

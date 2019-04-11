@@ -288,17 +288,17 @@ is called (\cref{sec3.7}).
 \item[\textbf{NFLAGV}]
 Flag to specify the level of printout.
 \begin{list}{}{}
-\item[{$=-1$}]
+\item[$=-1$]
 print only header
-\item[{$=0$}]
+\item[$=0$]
 additionally: print global quantities (total and block averages)
-\item[{$=1$}]
+\item[$=1$]
 additionally: print 1D profiles (if any), averaged over all (if any) higher dimensions
-\item[{$=2$}]
+\item[$=2$]
 additionally: print 2D profiles (if any), averaged over all (if any) higher dimensions
-\item[{$=3$}]
+\item[$=3$]
 additionally: print 3D profiles (if any), averaged over all (if any) higher dimensions
-\item[{$=4$}]
+\item[$=4$]
 print 3D profiles, but no lower dimensional averages
 \end{list}
 \item[\textbf{NSPEZV}]
@@ -384,17 +384,17 @@ geometrical configuration is plotted in case of a 2D geometry plot.
 This plane may be defined by either x = CONST, y = CONST or by
 z = CONST.
 \begin{list}{}{}
-\item[{PLCUT(1)}] = .TRUE.
+\item[PLCUT(1)] = .TRUE.
 
 x = CONST ; plotting plane is the yz-plane.
 
 y is the ordinate, z is the abscissa
-\item[{PLCUT(2)}] = .TRUE.
+\item[PLCUT(2)] = .TRUE.
 
 y = CONST ; plotting plane is the xz plane.
 
 z is the ordinate, x is the abscissa
-\item[{PLCUT(3)}] = .TRUE.
+\item[PLCUT(3)] = .TRUE.
 
 z = CONST ; plotting plane is the xy plane.
 
@@ -530,49 +530,49 @@ Indices to plot symbols along the particle tracks for different
 events. Up to 8 different events can be picked in any order in the
 array ISYPLT.
 \begin{list}{}{}
-\item[{0}] no symbol
-\item[{1}] symbol at particle's birth point
+\item[0] no symbol
+\item[1] symbol at particle's birth point
 (at primary source)
-\item[{2}] symbol at the point of an electron
+\item[2] symbol at the point of an electron
 impact collision event
-\item[{3}] symbol at the point of a hard
+\item[3] symbol at the point of a hard
 elastic collision event
-\item[{4}] symbol at the point of a
+\item[4] symbol at the point of a
 charge exchange event
-\item[{5}] symbol at the point of a soft
+\item[5] symbol at the point of a soft
 elastic collision event
-\item[{6}] symbol at an intersection with
+\item[6] symbol at an intersection with
 a ``non-default" or ``additional" surface
-\item[{7}] symbol at a
+\item[7] symbol at a
 non-analog particle splitting point
-\item[{8}] symbol at a
+\item[8] symbol at a
 non-analog particle killing point
 
 (``Russian Roulette")
-\item[{9}]
+\item[9]
 symbol at a periodicity surface intersection point
-\item[{10}]
+\item[10]
 symbol at restart after splitting
-\item[{11}]
+\item[11]
 symbol at collision point saved for conditional exp. estimator
-\item[{12}]
+\item[12]
 symbol at a continuation of track for conditional exp. estimator
-\item[{13}]
+\item[13]
 symbol at a particle stopped at time limit (t-dep. mode)
-\item[{14}]
+\item[14]
 symbol at a particle stopped at generation limit (t-dep. mode)
-\item[{15}]
+\item[15]
 If an error is detected, by default a symbol is always plotted.
 Plotting this symbol cannot be abandoned.
 \end{list}
 \item[\textbf{ILINIE}] ~
 \begin{list}{}{}
-\item[{$\ne 0$}]
+\item[$\ne 0$]
 connect two successive events by a straight line.
 If a continuation of a track is computed for the conditional
 expectation estimators, this part is represented by a dotted line,
 see eq. (1.2.5).
-\item[{= 0}]
+\item[= 0]
 only symbols (if any selected) will be plotted along the history
 \end{list}
 \end{list}

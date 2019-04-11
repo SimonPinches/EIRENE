@@ -444,24 +444,24 @@ must be fulfilled (otherwise: error exit).
 \item[\textbf{FILNAM}]
 Name of the data-set that contains the required reaction.
 \begin{list}{}{}
-\item[{HYDHEL}] Hydrogen and Helium data \cite{kn:Janev}
-\item[{METHAN}] Hydrocarbons data \cite{kn:Ehrhardt}
-\item[{H2VIBR}] Data for H$_2$ molecules and their isotopomeres,
+\item[HYDHEL] Hydrogen and Helium data \cite{kn:Janev}
+\item[METHAN] Hydrocarbons data \cite{kn:Ehrhardt}
+\item[H2VIBR] Data for H$_2$ molecules and their isotopomeres,
 including effects of vibrational and electronic excitation, as
 well as rates needed for radiation trapping calculations.
-\item[{AMJUEL}] supplement to HYDHEL and METHAN for neutral gas
+\item[AMJUEL] supplement to HYDHEL and METHAN for neutral gas
 transport Monte Carlo codes, e.g.\ multi-step reaction rates, etc.
-\item[{CONST}] reaction IR is a collision process with
+\item[CONST] reaction IR is a collision process with
 explicitly specified fit coefficients for cross sections or
 reaction rate coefficients, (depending upon input flag ``H123"),
 e.g., constant, power law, etc. These fitting coefficients are
 directly read from the formatted input file rather than from an
 external file.
-\item[{ADAS}] Collisional radiative rate coefficients from
+\item[ADAS] Collisional radiative rate coefficients from
 any files tabulated in the same format as \ac{ADAS} adf11 files,
 which must be located in a directory, the path to which is specified in input block 1, \cref{sec2.1},
 by one of the ``CFILE" cards described there:   \texttt{CFILE  ADAS  path/adf11/}
-\item[{PHOTON}]  line emission and line absorption constants,
+\item[PHOTON]  line emission and line absorption constants,
 as well as parameters for line shapes (line broadening constants).
 
 \end{list}
@@ -474,7 +474,7 @@ loss rate coefficient, etc.
 currently available only for: H123 = H.1, = H.2, = H.5, or = H.8, i.e., only
 for single parameter fits.
 \begin{list}{}{}
-\item[{}]
+\item[]
 in case IFTFLG = 10, 110, 210, \dots, ``single parameter", constant collision parameter. One more line \\
  \texttt{F(0), REAL}
 \\ is read.
@@ -506,62 +506,62 @@ nine parameters).
 
 \textbf{case 1:} FILNAM = HYDHEL, METHAN,  AMJUEL, H2VIBR
 \begin{list}{}{}
-\item[{H.1}]
+\item[H.1]
 single parameter fit for
 cross section $\sigma (\si{\square\centi\metre})$ as function of energy ELAB (\si{\electronvolt}),
 with ELAB = $m_{Lab} / 2  \cdot  v_{rel}^2 $
 (For the definition of $m_{Lab}$ = MASSP : see below.
-\item[{H.2}]
+\item[H.2]
 single parameter fit for rate coefficient $\langle \sigma v \rangle
 (\si{\cubic\centi\metre\per\second})$ as function of target temperature (\si{\electronvolt}), assuming ``zero
 velocity" projectile
-\item[{H.3}]
+\item[H.3]
 double parameter fit of rate coefficient $\langle \sigma v
 \rangle(\si{\cubic\centi\metre\per\second})$ as function of projectile energy (\si{\electronvolt}) and target
 temperature (\si{\electronvolt})
-\item[{H.4}]
+\item[H.4]
 double parameter fit of rate coefficient $\langle \sigma v \rangle
 (\si{\cubic\centi\metre\per\second})$ as function of target density (\si{\per\cubic\centi\metre}) and target
 temperature (\si{\electronvolt})
-\item[{H.5}]
+\item[H.5]
 single parameter fit of target particle momentum weighted rate
 coefficient \\
 $\langle~\sigma~v~\cdot~m_p~\cdot~|v_p|~\rangle$ $
 (\si{\cubic\centi\metre\per\second\atomicmassunit\centi\metre\per\second})$ as function of target temperature
 (\si{\electronvolt})
-\item[{H.6}]
+\item[H.6]
 double parameter fit of target particle velocity weighted rate
 coefficient \\
 $\langle \sigma v  \cdot  m_p  \cdot  | v_p | \rangle
 (\si{\cubic\centi\metre\per\second\atomicmassunit\centi\metre\per\second})$ as function of projectile energy (\si{\electronvolt})
 and target temperature (\si{\electronvolt})
-\item[{H.7}]
+\item[H.7]
 double parameter fit of target particle velocity weighted rate
 coefficient \\
 $\langle \sigma v \cdot m_p \cdot | v_p | \rangle
 (\si{\cubic\centi\metre\per\second\atomicmassunit\centi\metre\per\second})$ as function of target density (\si{\cubic\centi\metre})
 and target temperature (\si{\electronvolt})
-\item[{H.8}]
+\item[H.8]
 single parameter fit of target particle energy weighted rate
 coefficient \\
 $\langle \sigma v \cdot m_p / 2 \cdot v_p^2 \rangle$ 
 (\si{\cubic\centi\metre\per\second\electronvolt}) as function of target temperature (\si{\electronvolt})
-\item[{H.9}]
+\item[H.9]
 double parameter fit of target particle energy weighted rate
 coefficient \\
 $\langle \sigma v \cdot m_p / 2 \cdot v_p^2 \rangle$ 
 (\si{\cubic\centi\metre\per\second\electronvolt}) as function of projectile energy (\si{\electronvolt}) and target
 temperature (\si{\electronvolt})
-\item[{H.10}]
+\item[H.10]
 double parameter fit of target particle energy weighted rate
 coefficient \\
 $\langle \sigma v \cdot m_p / 2 \cdot v_p^2 \rangle$
 (\si{\cubic\centi\metre\per\second\electronvolt}) as function of target density (\si{\cubic\centi\metre}) and
 target temperature (\si{\electronvolt})
-\item[{H.11}]
+\item[H.11]
 single parameter fit for any other data, e.g.
 to be used in special user supplied programs.
-\item[{H.12}]
+\item[H.12]
 double parameter fit for any other data, e.g.
 to be used in special user supplied
 programs, (i.e.\ not generally understood by EIRENE, but can be used in problem
@@ -580,7 +580,7 @@ EIRENE post processing routines in code section ``output", routines: Ba$\_$alpha
 
 \textbf{case 2:} FILNAM = TAB2D  or FILNAM =ADAS
 \begin{list}{}{}
-\item[{H.4}]
+\item[H.4]
 double parameter table of rate coefficient $\langle \sigma v \rangle
 (\si{\cubic\centi\metre\per\second})$ as function of target density (\si{\per\cubic\centi\metre}) and target
 temperature (\si{\electronvolt}) read from files containing 2D tabulated rate coefficients, i.e.\ rate coefficients tabulated vs. 2 independent parameters.
@@ -593,7 +593,7 @@ and filenames starting with  ACD\dots contain recombination rate coefficients,
 from charge state Z,   Z=1, Z$_{max}$.
 The particular chemical element ELNAME and the value of charge state $Z$ is specified in the next input card,
 which is read only in case of FILNAM = TAB2D  or FILNAM = ADAS.
-\item[{H.10}]
+\item[H.10]
 same as for H123='H.4', but ionisation and recombination electron energy loss rate coefficients rather than
 reaction rate coefficients. In the original \ac{ADAS} files the names PLT\dots and PRB\dots are used for those quantities. Note:
 distinct from the AMJUEL database convention in case of \ac{ADAS} format the PLT rates (\si{\watt\per\cubic\centi\metre}) do not contain the potential energy loss
@@ -835,12 +835,12 @@ and this allows to set this asymptotic behavior explicitly here in the input fil
 various extrapolation expressions $ex_{low}(x)$ at the low end (x $<$
 RMN1, x = $E_{lab}$ or x = T) are available:
 \begin{list}{}{}
-\item[{IFEXMN = 1}] ~
+\item[IFEXMN = 1] ~
 
 $ex_{low}(x)$ = 0
 
 (e.g., cross section with nonzero threshold at RMN1)
-\item[{IFEXMN = 2}] ~
+\item[IFEXMN = 2] ~
 
 y=x/FPARM(1)
 
@@ -848,20 +848,20 @@ $ex_{low}(x) = FPARM(2) \cdot y^{FPARM(3)} \cdot \log(y)$
 
 recommended for cross section extrapolation at high energy end, for
 reactions with nonzero threshold at FPARM(1) [\si{\electronvolt}].
-\item[{IFEXMN = 3}] ~
+\item[IFEXMN = 3] ~
 
 y=log(x)
 
 $\ln(ex_{low}(x)) = FPARM(1) + y \cdot FPARM(2) $
-\item[{IFEXMN = 4}] ~
+\item[IFEXMN = 4] ~
 
 not in use
-\item[{IFEXMN = 5}] ~
+\item[IFEXMN = 5] ~
 
 $y=\log(x)$
 
 $\ln(ex_{low}(x)) =\sum_{I=1}^3 FPARM(I) \cdot y^{I-1} $
-\item[{IFEXMN $<$ 0}] ~
+\item[IFEXMN $<$ 0] ~
 
 linear extrapolation in log-log scale. Coefficients FPARM(J), J=1,2
 are automatically determined, e.g., in function CROSS, FPARM(3) = 0.D0,
@@ -943,19 +943,19 @@ option then allows more complex fragmentation processes of large
 molecules as compared to the default ID1=2.
 \item[\textbf{NRC\$}] ~
 \begin{list}{}{}
-\item[{$>$ 0}]
+\item[$>$ 0]
 total number of reaction decks to be read for this species
-\item[{= 0}]
+\item[= 0]
 default model is to be used.
-\item[{= -1}]
+\item[= -1]
 no collision processes for this particle species at all
 \end{list}
 \item[\textbf{NFOL\$}]
 controls the motion of test particles.
 \begin{list}{}{}
-\item[{$\ge$ 0}]
+\item[$\ge$ 0]
 default test particle tracing model is to be used.
-\item[{= -1}]
+\item[= -1]
 motion of test particle is not followed (static approximation).
 The test particle is destroyed immediately at it's point of birth by
 a collision.
@@ -1020,16 +1020,16 @@ pre collision bulk particle identifier
 
 = NLM
 \begin{list}{}{}
-\item[{M}]
+\item[M]
 type flag ITYP for impacting bulk particle
 (electron (ITYP = 5) or bulk ion (ITYP = 4),
 
 irrelevant, defaulted to M = 4 for bulk ion impact collision and
 defaulted to M = 5 for electron impact collisions
-\item[{L}]
+\item[L]
 irrelevant, defaulted to L = 1, because number of pre collision
 bulk particles is known from the type CRC of each collision process.
-\item[{N}]
+\item[N]
 Species index of pre collision bulk ion (corresponds to IPLS
 in bulk ion species cards, see block 5). Irrelevant for electron
 impact collisions, CRC=EI.
@@ -1246,7 +1246,7 @@ For PI (heavy particle) collision  processes:    parameters J, K and L are in us
 For RC (recombination)  collision processes:     only parameter J is in use
 
 \begin{list}{}{}
-\item[{\# = 0}]
+\item[\# = 0]
 constant loss or gain of EP (\si{\electronvolt}) per collision event.
 
 If \# $\hat{=} $ L, and if there is more than one
@@ -1256,7 +1256,7 @@ E.g.\ for reaction $e+CH_4 \rightarrow CH_3 + H + e$, and EP=ESCD=\SI{8.0}{\elec
 the fragment $CH_3$ would receive an extra energy of \SI{0.5}{\electronvolt}, and the fragment $H$ would
 receive \SI{7.5}{\electronvolt},
 both isotropically in the center of mass system of the collision.
-\item[{\# = 1}] \hfill
+\item[\# = 1] \hfill
 \begin{list}{}{}
 \item[for \# $  \hat{=} $ J]
 (spatially dependent) bulk electron temperature dependent loss $EP = -(1.5  \cdot  T_e)$ per
@@ -1278,7 +1278,7 @@ impacting bulk particle is distributed equally over all (if more than
 one) heavy particle secondaries of group 1 and 2 respectively.
 This option is currently not in use
 \end{list}
-\item[{\# = 2}]
+\item[\# = 2]
 Currently not fully implemented:
 
 Let \# stand for a pre collision bulk particle: \# $  \hat{=} $ J
@@ -1299,7 +1299,7 @@ test particle and a particle sampled from the above mentioned (shifted)
 Maxwellian. This option permits to identify one particular collision
 partner from the background population, correctly accounting for the
 energy dependence of the cross section.
-\item[{\# = 3}] KREAD option: description to be written, see example of default hydrogen
+\item[\# = 3] KREAD option: description to be written, see example of default hydrogen
 molecule reaction model, below, there: reaction 6 and 7.
 In principle an energy weighted loss rate coefficient is read in,
 a mean energy loss per collision is derived from that.
@@ -1309,9 +1309,9 @@ If this option is used for heavy particles secondaries
 distributed inversely proportional to
 the masses over all heavy particle secondaries.
 
-\item[{\# = 4}]
+\item[\# = 4]
 to be written
-\item[{\# = 5}]
+\item[\# = 5]
 to be written
 \end{list}
 \medskip

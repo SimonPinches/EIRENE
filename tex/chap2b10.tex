@@ -125,7 +125,7 @@ surface or cell averaged energy spectra
 for scaling factor for this tally (carried out in subroutine
 MCARLO)
 \begin{list}{}{}
-\item[{= 1}]
+\item[= 1]
 scale tally per unit volume [\si{\per\cubic\centi\metre}]. The tally is printed and
 plotted in the units
 
@@ -136,15 +136,15 @@ however, with FLUX converted to units [\si{\per\second}] (rather than input unit
 For the definition of the detector functions
 $g$ and $g^*$ see \cref{sec3.2}, the variable FLUX is explained in
 input block no.\ 7 (\cref{sec2.7}). This scaling is default for ``density tallies" of particles, momentum and energy.
-\item[{= 2}]
+\item[= 2]
 scale tally per unit cell. Same units as above, however not per
 \si{\cubic\centi\metre} but per cell instead.
-\item[{= 3}]
+\item[= 3]
 same as IADVE = 1, but with FLUX in Ampere, rather than \si{\per\second}.
 This scaling is default for ``source rate tallies", e.g.\ for particle, momentum and energy sources.
-\item[{= 4}]
+\item[= 4]
 same as IADVE = 2, but with FLUX in Ampere, rather than \si{\per\second}.
-\item[{else}]
+\item[else]
 no re-scaling done, units as chosen in subroutine UPTUSR.
 \end{list}
 \end{list}

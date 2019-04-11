@@ -225,19 +225,19 @@ sub-block 2A may be omitted.
 Depending upon the logical parameters in the next input card
 the ``geometry - level" variable LEVGEO is set internally.
 \begin{list}{}{}
-\item[{LEVGEO=1}]
+\item[LEVGEO=1]
 cartesian coordinates x (and y)
-\item[{LEVGEO=2}]
+\item[LEVGEO=2]
 polar coordinates r (and $\theta$)
-\item[{LEVGEO=3}]
+\item[LEVGEO=3]
 general curvilinear coordinates: a full 2D mesh (polygonal
 coordinate lines) is used in the x - y  plane. Grid cuts are
 permitted in the y-direction.
-\item[{LEVGEO=4}]
+\item[LEVGEO=4]
 a 2D ``finite element" mesh of triangles is used in the x - y plane
-\item[{LEVGEO=5}]
+\item[LEVGEO=5]
 a 3D ``finite volume" mesh of tetrahedrons used
-\item[{LEVGEO=10}]
+\item[LEVGEO=10]
 a general, user defined geometry block is used.
 All geometrical calculations are performed in problem specific routine
 VOLUSR, TIMUSR, \dots, etc.
@@ -249,10 +249,10 @@ surfaces" (input block 3b) and appropriate cell number switching.
 
 \item[\textbf{INDGRD(1)}]
 \begin{list}{}{}
-\item[{= 1}]
+\item[= 1]
 standard grid option; the input parameters are used as described
 below.
-\item[{= 2}]
+\item[= 2]
 As for INDGRD(1)=1, but
 in case of LEVGEO = 2 by this option a radial grid is defined such
 that the spacing
@@ -260,9 +260,9 @@ of radial surfaces is not equidistant at some poloidal position, but
 instead such that the area enclosed between
 two neighboring surfaces is kept constant. The input variable RGA
 is irrelevant in this case.
-\item[{= 3,4,5}]
+\item[= 3,4,5]
 not in use
-\item[{= 6}]
+\item[= 6]
 Data for NR1ST radial surfaces
 are read from the work array RWK. These
 data must have been written onto RWK in the user supplied subroutine INFCOP.
