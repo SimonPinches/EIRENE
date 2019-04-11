@@ -354,7 +354,7 @@ and the neutral particle gas are decoupled.
 \vspace{1em}
 
 Often the characteristic time constants for neutral particle transport
-phenomena are very short ($\mu$s), compared to those for plasma
+phenomena are very short (\si{\micro\second}), compared to those for plasma
 transport (ms). We can, therefore, often neglect explicit time
 dependence in the equations describing the neutral particles. This
 is done in most applications. The extension to time-dependent
@@ -925,8 +925,8 @@ The unit length $dz$ of an ignorable coordinate (here: $z$-coordinate) used in a
 is determined by the input flags in the corresponding input block for standard grid options,
 i.e. in input block 2A for the x-coordinate, input block 2B for the y-coordinate and input block
 2C for the z-coordinate, see \cref{sec2.2}. Note that the numerical value of source strength
-``FLUX" (block 7) corresponds to the choice of e.g. $dz$. If $dz=1$ cm, then ``FLUX" is the number of particles
-per unit time and per cm in z-direction. If $dz=1$ m, then the same value of variable ``FLUX"
+``FLUX" (block 7) corresponds to the choice of e.g. $dz$. If $dz=\SI{1}{\centi\metre}$, then ``FLUX" is the number of particles
+per unit time and per \si{\centi\metre} in z-direction. If $dz=\SI{1}{\metre}$, then the same value of variable ``FLUX"
 would correspond to the 100 times smaller source strength of ``FLUX" particles per unit time and per meter.
 All resulting volume averaged output tallies would have a value 100 times smaller. A particle density
 might then also be interpreted as surface density (particle per unit area).
@@ -2846,14 +2846,12 @@ given by the so called Knudsen number $Kn$:
 Kn = \frac{\lambda_{el}}{L} = \frac{1}{\sqrt{2} \sigma_{el} n_N L}
 \end{equation}
 Here $\lambda_{el}$ is the mean free path for elastic neutral
-neutral collisions, $\sigma_{el}$ is the typical collision cross section (cm$^{2}$),
-$n_N$ the gas density (cm$^{-3}$) and $L$ is a characteristic dimension
-(cm). Fixing the hard sphere molecular diameter at $d=4 \cdot
-10^{-8}$ cm results in a typical cross section $\sigma_{el}$ of $(1-2) \cdot
-10^{-15}$ cm$^2$ to be used in this Knudsen number.  For a gas temperature  of
-300 K and a pressure of 1 Pa ($n_N=2.414 \times 10^{14} cm^{-3} )$ we then obtain:
+neutral collisions, $\sigma_{el}$ is the typical collision cross section (\si{\square\centi\metre}),
+$n_N$ the gas density (\si{\per\cubic\centi\metre}) and $L$ is a characteristic dimension
+(\si{\centi\metre}). Fixing the hard sphere molecular diameter at $d=\SI{4e-8}{\centi\metre}$ results in a typical cross section $\sigma_{el}$ of \SIrange{1e-15}{2e-15}{\square\centi\metre} to be used in this Knudsen number.  For a gas temperature  of
+\SI{300}{\kelvin} and a pressure of \SI{1}{\pascal} ($n_N=\SI{2.414e14}{\per\cubic\centi\metre}$) we then obtain:
 \begin{equation}
-\lambda_{el} (cm) = 1/(2.414\times 10^{14}\times 2\times 10^{-15}) \approx 2 ~cm
+\lambda_{el} (\si{\centi\metre}) = 1/(2.414\times 10^{14}\times 2\times 10^{-15}) \approx \SI{2}{\centi\metre}
 \end{equation}
 In the \ac{BGK} approximation to the Boltzmann collision integral (see below, \cref{sec1-bgk}) only an ``effective'' mean free path
 appears, because the collision rate $\nu_{BGK}$ is an effective (relaxation) rate only. When the common assumption of an velocity independent
@@ -2867,13 +2865,13 @@ One default set of \ac{BGK} collision parameters used in EIRENE is based upon
 the concept of ``diffusion volumes'' to provide (weakly temperature dependent) binary diffusion coefficients $D_{12}$ (for cross collisions, e.g. for He + H$_2$) or a viscosity coefficient $\mu$ (for self collisions) in the gas (see \cite{kn:Reiter94}). This choice results in a \ac{BGK} collision rate coefficient $k(T)= k_0 T^{0.25}$  with the constant $k_0$ derived
 from such continuum limit considerations and the (experimentally determined) ``diffusion volumes''. Within this concept then a \ac{BGK} - mean free path \cite{kn:Kotov-Dis} follows as:
 \begin{align}
-\lambda_{BGK} (cm) &= \frac{\tilde{v}}{n \langle \sigma v\rangle} =  \frac{\sqrt{8T/\pi m}} {n k_0 T^{0.25}} \nonumber \\
-                   &= L_0 \times T[eV]^{0.25} / n[10^{14} cm^{-3}]
+\lambda_{BGK} (\si{\centi\metre}) &= \frac{\tilde{v}}{n \langle \sigma v\rangle} =  \frac{\sqrt{8T/\pi m}} {n k_0 T^{0.25}} \nonumber \\
+                   &= L_0 \times T[\si{\electronvolt}]^{0.25} / n[\SI{1e14}{\per\cubic\centi\metre}]
 \end{align}
-where the proportionality factor $L_0$ (in cm) is typically in the range between 7 and 20 ($L_0 = 20$\,cm for D--D self collisions, $L_0 = 9.75$\,cm for D$_2$--D$_2$ self collisions and $L_0 = 8.7$\,cm for D$_2$--He cross collisions). $L_0$ is the \ac{BGK} mean free path (in cm) in a gas
-at $T = 1$ eV and density $n =1 \times 10^{14}$ cm$^{-3}$.
+where the proportionality factor $L_0$ (in \si{\centi\metre}) is typically in the range between 7 and 20 ($L_0 = \SI{20}{\centi\metre}$ for D--D self collisions, $L_0 = \SI{9.75}{\centi\metre}$ for D$_2$--D$_2$ self collisions and $L_0 = \SI{8.7}{\centi\metre}$ for D$_2$--He cross collisions). $L_0$ is the \ac{BGK} mean free path (in \si{\centi\metre}) in a gas
+at $T = \SI{1}{\electronvolt}$ and density $n =\SI{1e14}{\per\cubic\centi\metre}$.
 
-For the same conditions as above: $T=300$ K ($T=0.026$ eV) and a pressure of 1 Pa ($n_N=2.414 \times 10^{14} cm^{-3} )$, one then finds $\lambda_{BGK}\approx 1.6 ~cm$
+For the same conditions as above: $T=\SI{300}{\kelvin}$ ($T=\SI{0.026}{\electronvolt}$) and a pressure of \SI{1}{\pascal} ($n_N=\SI{2.414e14}{\per\cubic\centi\metre}$), one then finds $\lambda_{BGK}\approx \SI{1.6}{\centi\metre}$
 in a $D_2$ gas.
 
 
@@ -3098,7 +3096,7 @@ the specific intensity $I_\nu$
 specific energy density $u_\nu = 1/c J_\nu$
 (energy\-/volume\-/frequency-interval), etc. Also the wavelength
 dependence may be given either using frequency $\nu$ (Hz), $\omega$
-(rad/s), wavelength $\lambda$ or energy $E = h \nu=\hbar \omega$.
+(\si{\radian\per\second}), wavelength $\lambda$ or energy $E = h \nu=\hbar \omega$.
 
 Depending upon all these choices the numerical factors in the
 definitions of the $B_{nm}$ coefficients (sometimes even in the
@@ -3342,7 +3340,7 @@ hence $2 (\lambda_{a,b}/\mu_a) \delta_{a,b} \approx 1.3$ and
 8.8 \times 10^{-8}~ n_b~T_b^{-3/2}
 \nonumber
 \end{equation}
-($n_b, T_b$ in $cm^{-3}$ and $eV$, resp.)
+($n_b, T_b$ in \si{\per\cubic\centi\metre} and \si{\electronvolt}, resp.)
 which is the solution Eq. (11) given in \cite{kn:Langer} for thermalization
 of hydrocarbon ions in a Maxwellian hydrogen plasma. The relaxation is towards an energy
 $\varepsilon_p = 3/2 T_b/(1+1/16)$, which is (very slightly) lower only than the mean energy of the target Maxwellian, due to

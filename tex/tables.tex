@@ -125,29 +125,29 @@ Input, Module: COMUSR}}
  &  \textbf{1.Dim.}
   & \textbf{Units} & \textbf{Estim.}   \\ \hline
 
- -1 & TEIN & Plasma Temperature, Electrons & 1 & $eV$ & /  \\ \hline
- -2 & TIIN & Plasma Temperature, Bulk Ions & NPLSTI & $eV$ & /  \\ \hline
- -3 & DEIN$^*$ & Plasma Density, Electrons & 1 & $cm^{-3}$ & /  \\ \hline
- -4 & DIIN & Plasma Density, Bulk Ions & NPLS & $cm^{-3}$ & / \\ \hline
+ -1 & TEIN & Plasma Temperature, Electrons & 1 & \si{\electronvolt} & /  \\ \hline
+ -2 & TIIN & Plasma Temperature, Bulk Ions & NPLSTI & \si{\electronvolt} & /  \\ \hline
+ -3 & DEIN$^*$ & Plasma Density, Electrons & 1 & \si{\per\cubic\centi\metre} & /  \\ \hline
+ -4 & DIIN & Plasma Density, Bulk Ions & NPLS & \si{\per\cubic\centi\metre} & / \\ \hline
  -5 & VXIN & Plasma Drift Velocity, x-component, Bulk Ions&NPLSV
-     & cm/sec & /                                           \\ \hline
+     & \si{\centi\metre\per\second} & /                                           \\ \hline
  -6 & VYIN & Plasma Drift Velocity, y-component, Bulk Ions&NPLSV
-     & cm/sec & /                                           \\ \hline
+     & \si{\centi\metre\per\second} & /                                           \\ \hline
  -7 & VZIN & Plasma Drift Velocity, z-component, Bulk Ions&NPLSV
-     & cm/sec & /                                           \\ \hline
+     & \si{\centi\metre\per\second} & /                                           \\ \hline
  -8 & BXIN & Magnetic field unit vector, x-component & 1 & / & /
     \\ \hline
  -9 & BYIN & Magnetic field unit vector, y-component & 1 & / & /
     \\ \hline
  -10 & BZIN & Magnetic field unit vector, z-component & 1 & / & /
     \\ \hline
- -11 & BFIN & Magnetic field strength & 1 &  Tesla & /
+ -11 & BFIN & Magnetic field strength & 1 & \si{\tesla} & /
     \\ \hline
  -12 & ADIN & Additional input tally & NAIN & see INFCOP & /
     \\ \hline
- -13 & EDRIFT$^*$ & Kinetic energy in drift motion, Bulk Ions &NPLS & $eV$ & /
+ -13 & EDRIFT$^*$ & Kinetic energy in drift motion, Bulk Ions &NPLS & \si{\electronvolt} & /
     \\ \hline
- -14 & VOL & Zone Volume & 1 & $cm^{3}$ & /
+ -14 & VOL & Zone Volume & 1 & \si{\cubic\centi\metre} & /
     \\ \hline
  -15 & WGHT $^{**}$ & unused, importance fct.  & NSPCMC & $ 1 $ & /
  \\ \hline
@@ -161,13 +161,13 @@ Input, Module: COMUSR}}
      \\ \hline
 -20   &      EZIN   &    electric field unit vector, z component  &  1  &   &  /
      \\ \hline
--21   &      EFIN   &      electric field strength  & 1  &         V/CM    &/
+-21   &      EFIN   &      electric field strength  & 1  & \si{\volt\per\centi\metre} &/
      \\ \hline
--22   &      POT   &      electric potential  & 1  &         V    &/
+-22   &      POT   &      electric potential  & 1  & \si{\volt} &/
      \\ \hline\hline
-d1    &      BVIN $^*$ &      flow velocity parallel to B field  & NPLSV  &    CM/S    &/
+d1    &      BVIN $^*$ &      flow velocity parallel to B field  & NPLSV  & \si{\centi\metre\per\second} &/
      \\ \hline
-d2    &      PARMOM $^*$ &    parallel to B flow momentum   & NPLS  &  G*CM/S    &/
+d2    &      PARMOM $^*$ &    parallel to B flow momentum   & NPLS  & \si{\gram\centi\metre\per\second} &/
      \\ \hline
 d3    &      TEDTEDX $^{**}$ &    unused  & 1  &  --    &/
      \\ \hline
@@ -240,120 +240,120 @@ Module: CESTIM}}
  & \textbf{Units} & \textbf{Estim.} \\
 \hline\hline
 \endhead
- 1 & PDENA & Particle density, Atoms & NATM & $cm^{-3}$ & TD
+ 1 & PDENA & Particle density, Atoms & NATM & \si{\per\cubic\centi\metre} & TD
  \\ \hline
- 2 & PDENM & Particle density, Molecules & NMOL & $cm^{-3}$ & TD
+ 2 & PDENM & Particle density, Molecules & NMOL & \si{\per\cubic\centi\metre} & TD
  \\ \hline
- 3 & PDENI & Particle density, Test Ions & NION  & $cm^{-3}$ & TD
+ 3 & PDENI & Particle density, Test Ions & NION  & \si{\per\cubic\centi\metre} & TD
  \\ \hline
- 4 & PDENPH & Particle density, Photons & NPHOT  & $cm^{-3}$ & TD
+ 4 & PDENPH & Particle density, Photons & NPHOT  & \si{\per\cubic\centi\metre} & TD
  \\ \hline
- 5 & EDENA & Energy density, Atoms & NATM       & eV*$cm^{-3}$ & TE
+ 5 & EDENA & Energy density, Atoms & NATM       & \si{\electronvolt\per\cubic\centi\metre} & TE
  \\ \hline
- 6 & EDENM & Energy density, Molecules & NMOL   & eV*$cm^{-3}$ & TE
+ 6 & EDENM & Energy density, Molecules & NMOL   & \si{\electronvolt\per\cubic\centi\metre} & TE
  \\ \hline
- 7 & EDENI & Energy density, Test Ions & NION   & eV*$cm^{-3}$ & TE
+ 7 & EDENI & Energy density, Test Ions & NION   & \si{\electronvolt\per\cubic\centi\metre} & TE
  \\ \hline
- 8 & EDENPH & Energy density, Photons & NPHOT   & eV*$cm^{-3}$ & TE
+ 8 & EDENPH & Energy density, Photons & NPHOT   & \si{\electronvolt\per\cubic\centi\metre} & TE
  \\ \hline
  9 & PAEL & Particle Source (Electrons) from atom-plasma coll.
-   & 1 & amp* $cm^{-3}$ & TPS  \\ \hline
+   & 1 & \si{\ampere\per\cubic\centi\metre} & TPS  \\ \hline
  10 & PAAT & Particle Source (Atoms) from atom-plasma coll.
-   & NATM & amp*$cm^{-3}$ & TPS \\ \hline
+   & NATM & \si{\ampere\per\cubic\centi\metre} & TPS \\ \hline
  11 & PAML & Particle Source (Molecules) from atom-plasma coll.
-   & NMOL & amp*$cm^{-3}$ & TPS \\  \hline
+   & NMOL & \si{\ampere\per\cubic\centi\metre} & TPS \\  \hline
  12 & PAIO & Particle Source (Test Ions) from atom-plasma coll.
-    & NION & amp*$cm^{-3}$ & TPS  \\  \hline
+    & NION & \si{\ampere\per\cubic\centi\metre} & TPS  \\  \hline
  13 & PAPHT & Particle Source (Photons) from atom-plasma coll.
-    & NPHOT & amp*$cm^{-3}$ & TPS  \\  \hline
+    & NPHOT & \si{\ampere\per\cubic\centi\metre} & TPS  \\  \hline
  14 & PAPL & Particle Source (Bulk Ions) from atom-plasma coll.
-    & NPLS & amp*$cm^{-3}$ & TPS  \\  \hline
+    & NPLS & \si{\ampere\per\cubic\centi\metre} & TPS  \\  \hline
  15 & PMEL &Particle Source (Electrons) from molecule-plasma coll.
-    & 1 & amp*$cm^{-3}$ & TPS     \\  \hline
+    & 1 & \si{\ampere\per\cubic\centi\metre} & TPS     \\  \hline
  16 & PMAT &Particle Source (Atoms) from molecule-plasma coll.
-    & NATM &amp*$cm^{-3}$ & TPS  \\  \hline
+    & NATM &\si{\ampere\per\cubic\centi\metre} & TPS  \\  \hline
  17 & PMML &Particle Source (Molecules) from molecule-plasma coll.
-    & NMOL &amp*$cm^{-3}$ & TPS   \\  \hline
+    & NMOL &\si{\ampere\per\cubic\centi\metre} & TPS   \\  \hline
  18 & PMIO &Particle Source (Test Ions) from molecule-plasma coll.
-    & NION &amp*$cm^{-3}$ & TPS     \\   \hline
+    & NION &\si{\ampere\per\cubic\centi\metre} & TPS     \\   \hline
  19 & PMPHT &Particle Source (Photons) from molecule-plasma coll.
-    & NPHOT &amp*$cm^{-3}$ & TPS     \\   \hline
+    & NPHOT &\si{\ampere\per\cubic\centi\metre} & TPS     \\   \hline
  20 & PMPL &Particle Source (Bulk Ions) from molecule-plasma coll.
-    & NPLS &amp*$cm^{-3}$ & TPS    \\    \hline
+    & NPLS &\si{\ampere\per\cubic\centi\metre} & TPS    \\    \hline
  21 & PIEL &Particle Source (Electrons) from test ion-plasma coll.
-    & 1 &amp*$cm^{-3}$ & TPS       \\   \hline
+    & 1 &\si{\ampere\per\cubic\centi\metre} & TPS       \\   \hline
  22 & PIAT &Particle Source (Atoms) from test ion-plasma coll.
-    & NATM &amp*$cm^{-3}$ & TPS    \\  \hline
+    & NATM &\si{\ampere\per\cubic\centi\metre} & TPS    \\  \hline
  23 & PIML &Particle Source (Molecules) from test ion-plasma coll.
-    & NMOL &amp*$cm^{-3}$ & TPS    \\  \hline
+    & NMOL &\si{\ampere\per\cubic\centi\metre} & TPS    \\  \hline
  24 & PIIO &Particle Source (Test Ions) from test ion-plasma coll.
-    & NION &amp*$cm^{-3}$ & TPS    \\   \hline
+    & NION &\si{\ampere\per\cubic\centi\metre} & TPS    \\   \hline
  25 & PIPHT &Particle Source (Photons) from test ion-plasma coll.
-    & NPHOT &amp*$cm^{-3}$ & TPS    \\   \hline
+    & NPHOT &\si{\ampere\per\cubic\centi\metre} & TPS    \\   \hline
  26 & PIPL &Particle Source (Bulk Ions) from test ion-plasma coll.
-    & NPLS &amp*$cm^{-3}$ & TPS    \\   \hline
+    & NPLS &\si{\ampere\per\cubic\centi\metre} & TPS    \\   \hline
  27 & PPHEL &Particle Source (Electrons) from photon-plasma coll.
-    & 1 &amp*$cm^{-3}$ & TPS       \\   \hline
+    & 1 &\si{\ampere\per\cubic\centi\metre} & TPS       \\   \hline
  28 & PPHAT &Particle Source (Atoms) from photon-plasma coll.
-    & NATM &amp*$cm^{-3}$ & TPS    \\  \hline
+    & NATM &\si{\ampere\per\cubic\centi\metre} & TPS    \\  \hline
  29 & PPHML &Particle Source (Molecules) from photon-plasma coll.
-    & NMOL &amp*$cm^{-3}$ & TPS    \\  \hline
+    & NMOL &\si{\ampere\per\cubic\centi\metre} & TPS    \\  \hline
  30 & PPHIO &Particle Source (Test Ions) from photon-plasma coll.
-    & NION &amp*$cm^{-3}$ & TPS    \\   \hline
+    & NION &\si{\ampere\per\cubic\centi\metre} & TPS    \\   \hline
  31 & PPHPHT &Particle Source (Photons) from photon-plasma coll.
-    & NPHOT &amp*$cm^{-3}$ & TPS    \\   \hline
+    & NPHOT &\si{\ampere\per\cubic\centi\metre} & TPS    \\   \hline
  32 & PPHPL &Particle Source (Bulk Ions) from photon-plasma coll.
-    & NPLS &amp*$cm^{-3}$ & TPS    \\
+    & NPLS &\si{\ampere\per\cubic\centi\metre} & TPS    \\
 \hline
 \pagebreak
  33 & EAEL &Energy Source (Electrons) from atom-plasma coll.
-    & 1 & watt*$cm^{-3}$ & T22      \\  \hline
+    & 1 & \si{\watt\per\cubic\centi\metre} & T22      \\  \hline
  34 & EAAT &Energy Source (Atoms) from atom-plasma coll.
-    & 1 & watt*$cm^{-3}$ & T23      \\   \hline
+    & 1 & \si{\watt\per\cubic\centi\metre} & T23      \\   \hline
  35 & EAML &Energy Source (Molecules) from atom-plasma coll.
-    & 1 & watt*$cm^{-3}$ & T24      \\    \hline
+    & 1 & \si{\watt\per\cubic\centi\metre} & T24      \\    \hline
  36 & EAIO &Energy Source (Test Ions) from atom-plasma coll.
-    & 1 & watt*$cm^{-3}$ & T25      \\ \hline
+    & 1 & \si{\watt\per\cubic\centi\metre} & T25      \\ \hline
  37 & EAPHT &Energy Source (Photons) from atom-plasma coll.
-    & 1 & watt*$cm^{-3}$ & T25      \\ \hline
+    & 1 & \si{\watt\per\cubic\centi\metre} & T25      \\ \hline
  38 & EAPL &Energy Source (Bulk Ions) from atom-plasma coll.
-    & 1 & watt*$cm^{-3}$ & T26   \\  \hline
+    & 1 & \si{\watt\per\cubic\centi\metre} & T26   \\  \hline
  39 & EMEL &Energy Source (Electrons) from molecule-plasma coll.
-    & 1 & watt*$cm^{-3}$ & T27   \\   \hline
+    & 1 & \si{\watt\per\cubic\centi\metre} & T27   \\   \hline
  40 & EMAT &Energy Source (Atoms) from molecule-plasma coll.
-    & 1 & watt*$cm^{-3}$ & T28  \\   \hline
+    & 1 & \si{\watt\per\cubic\centi\metre} & T28  \\   \hline
  41 & EMML &Energy Source (Molecules) from molecule-plasma coll.
-    & 1 & watt*$cm^{-3}$ & T29  \\   \hline
+    & 1 & \si{\watt\per\cubic\centi\metre} & T29  \\   \hline
  42 & EMIO &Energy Source (Test Ions) from molecule-plasma coll.
-    & 1 & watt*$cm^{-3}$ & T30  \\    \hline
+    & 1 & \si{\watt\per\cubic\centi\metre} & T30  \\    \hline
  43 & EMPHT &Energy Source (Photons) from molecule-plasma coll.
-    & 1 & watt*$cm^{-3}$ & T30  \\    \hline
+    & 1 & \si{\watt\per\cubic\centi\metre} & T30  \\    \hline
  44 & EMPL & Energy Source (Bulk Ions) from molecule-plasma coll.
-    & 1& watt*$cm^{-3}$ & T31  \\  \hline
+    & 1& \si{\watt\per\cubic\centi\metre} & T31  \\  \hline
  45 & EIEL & Energy Source (Electrons) from test ion-plasma coll.
-    & 1& watt*$cm^{-3}$ & T32   \\  \hline
+    & 1& \si{\watt\per\cubic\centi\metre} & T32   \\  \hline
  46 & EIAT & Energy Source (Atoms) from test ion-plasma coll.
-    & 1& watt*$cm^{-3}$ & T33   \\  \hline
+    & 1& \si{\watt\per\cubic\centi\metre} & T33   \\  \hline
  47 & EIML & Energy Source (Molecules) from test ion-plasma coll.
-    & 1& watt*$cm^{-3}$ & T34   \\ \hline
+    & 1& \si{\watt\per\cubic\centi\metre} & T34   \\ \hline
   48 & EIIO & Energy Source (Test Ions) from test ion-plasma coll.
-    & 1& watt*$cm^{-3}$ & T35   \\  \hline
+    & 1& \si{\watt\per\cubic\centi\metre} & T35   \\  \hline
  49 & EIPHT & Energy Source (Photons) from test ion-plasma coll.
-    & 1& watt*$cm^{-3}$ & T35   \\  \hline
+    & 1& \si{\watt\per\cubic\centi\metre} & T35   \\  \hline
  50 & EIPL & Energy Source (Bulk Ions) from test ion-plasma coll.
-    & 1& watt*$cm^{-3}$ & T36   \\  \hline
+    & 1& \si{\watt\per\cubic\centi\metre} & T36   \\  \hline
  51 & EPHEL & Energy Source (Electrons) from photon-plasma coll.
-    & 1& watt*$cm^{-3}$ & T33   \\  \hline
+    & 1& \si{\watt\per\cubic\centi\metre} & T33   \\  \hline
  52 & EPHAT & Energy Source (Atoms) from photon-plasma coll.
-    & 1& watt*$cm^{-3}$ & T33   \\  \hline
+    & 1& \si{\watt\per\cubic\centi\metre} & T33   \\  \hline
  53 & EPHML & Energy Source (Molecules) from photon-plasma coll.
-    & 1& watt*$cm^{-3}$ & T34   \\  \hline
+    & 1& \si{\watt\per\cubic\centi\metre} & T34   \\  \hline
  54 & EPHIO & Energy Source (Test Ions) from photon-plasma coll.
-    & 1& watt*$cm^{-3}$ & T35   \\  \hline
+    & 1& \si{\watt\per\cubic\centi\metre} & T35   \\  \hline
  55 & EPHPHT & Energy Source (Photons) from photon-plasma coll.
-    & 1& watt*$cm^{-3}$ & T35   \\  \hline
+    & 1& \si{\watt\per\cubic\centi\metre} & T35   \\  \hline
  56 & EPHPL & Energy Source (Bulk Ions) from photon-plasma coll.
-    & 1& watt*$cm^{-3}$ & T36   \\ \hline
+    & 1& \si{\watt\per\cubic\centi\metre} & T36   \\ \hline
  57 & ADDV & Additional volume av. Tally, Track-length estimated
     & NADV & see UPTUSR & TRL      \\  \hline
  58 & COLV & Additional volume av. Tally, Collision estimated
@@ -366,23 +366,23 @@ Module: CESTIM}}
     & NBGV & see BGK & T41        \\  \hline
  62 & ALGV &Algebraic expression in volume averaged tallies
     & NALV & Input & ALG        \\  \hline
- 63 & PGENA & Generation limit, Atoms & NATM & amp*$cm^{-3}$ & CG
+ 63 & PGENA & Generation limit, Atoms & NATM & \si{\ampere\per\cubic\centi\metre} & CG
  \\ \hline
- 64 & PGENM & Generation limit, Molecules & NMOL & amp*$cm^{-3}$ & CG
+ 64 & PGENM & Generation limit, Molecules & NMOL & \si{\ampere\per\cubic\centi\metre} & CG
  \\
 \hline
 \pagebreak
- 65 & PGENI & Generation limit, Test ions & NION & amp*$cm^{-3}$ & CG
+ 65 & PGENI & Generation limit, Test ions & NION & \si{\ampere\per\cubic\centi\metre} & CG
  \\ \hline
- 66 & PGENPH & Generation limit, Photons & NPHOT & amp*$cm^{-3}$ & CG
+ 66 & PGENPH & Generation limit, Photons & NPHOT & \si{\ampere\per\cubic\centi\metre} & CG
  \\ \hline
- 67 & EGENA & dito, Energy flux, Atoms & NATM & watt*$cm^{-3}$ & CG
+ 67 & EGENA & dito, Energy flux, Atoms & NATM & \si{\watt\per\cubic\centi\metre} & CG
  \\ \hline
- 68 & EGENM & dito, Energy flux, Molecules & NMOL & watt*$cm^{-3}$ & CG
+ 68 & EGENM & dito, Energy flux, Molecules & NMOL & \si{\watt\per\cubic\centi\metre} & CG
  \\ \hline
- 69 & EGENI & dito, Energy flux, Test ions & NION & watt*$cm^{-3}$ & CG
+ 69 & EGENI & dito, Energy flux, Test ions & NION & \si{\watt\per\cubic\centi\metre} & CG
  \\ \hline
- 70 & EGENPH & dito, Energy flux, Photons & NPHOT & watt*$cm^{-3}$ & CG
+ 70 & EGENPH & dito, Energy flux, Photons & NPHOT & \si{\watt\per\cubic\centi\metre} & CG
  \\ \hline
  71 & VGENA & dito, momentum flux, Atoms & NATM & as MAPL & CG
  \\ \hline
@@ -393,81 +393,81 @@ Module: CESTIM}}
  74 & VGENPH & dito, momentum flux, Photons & NPHOT & as MPHPL & CG
 \\ \hline
 75 & PPAT & primary particle sources rate (Atoms) from plasma & NATM &
-amp*cm{-3} & C1
+\si{\ampere\per\cubic\centi\metre} & C1
 \\ \hline
 76 & PPML & primary particle sources rate (Molecules) & NMOL &
-amp*cm{-3} & C1
+\si{\ampere\per\cubic\centi\metre} & C1
 \\ \hline
 77 & PPIO & primary particle sources rate (Test ions) & NION &
-amp*cm{-3} & C1
+\si{\ampere\per\cubic\centi\metre} & C1
 \\ \hline
 78 & PPPHT & primary particle sources rate (Photons) & NPHOT &
-amp*cm{-3} & C1
+\si{\ampere\per\cubic\centi\metre} & C1
 \\ \hline
 79 & PPPL & primary particle sources rate (Bulk Ions) & NPLS &
-amp*cm{-3} & C1
+\si{\ampere\per\cubic\centi\metre} & C1
 \\ \hline
-80 & EPAT & primary energy sources rate, Atoms & 1 & watt*cm{-3}
+80 & EPAT & primary energy sources rate, Atoms & 1 & \si{\watt\per\cubic\centi\metre}
 & C1
 \\ \hline
 81 & EPML & primary energy sources rate, Molecules & 1 &
-watt*cm{-3} & C1
+\si{\watt\per\cubic\centi\metre} & C1
 \\ \hline
 82 & EPIO & primary energy sources rate, Test ions & 1 &
-watt*cm{-3} & C1
+\si{\watt\per\cubic\centi\metre} & C1
 \\ \hline
 83 & EPPHT & primary energy sources rate, Photons & 1 &
-watt*cm{-3} & C1
+\si{\watt\per\cubic\centi\metre} & C1
 \\ \hline
 84 & EPPL & primary energy sources rate, Bulk Ions & 1 &
-watt*cm{-3} & C1
+\si{\watt\per\cubic\centi\metre} & C1
 \\ \hline
 85 & VXDENA & momentum density, x-direction, Atoms & NATM &
-g*cm/s*cm{-3} & T1
+\si{\gram\centi\metre\per\second\per\cubic\centi\metre} & T1
 \\ \hline
 86 & VXDENM & momentum density, x-direction, Molecules & NMOL &
-g*cm/s*cm{-3} & T1
+\si{\gram\centi\metre\per\second\per\cubic\centi\metre} & T1
 \\ \hline
 87 & VXDENI & momentum density, x-direction, Test Ions & NION &
-g*cm/s*cm{-3} & T1
+\si{\gram\centi\metre\per\second\per\cubic\centi\metre} & T1
 \\ \hline
 88 & VXDENPH & momentum density, x-direction, Photons & NPHOT &
-g*cm/s*cm{-3} & T1
+\si{\gram\centi\metre\per\second\per\cubic\centi\metre} & T1
 \\ \hline
 89 & VYDENA & momentum density, y-direction, Atoms & NATM &
-g*cm/s*cm{-3} & T1
+\si{\gram\centi\metre\per\second\per\cubic\centi\metre} & T1
 \\ \hline
 90 & VYDENM & momentum density, y-direction, Molecules & NMOL &
-g*cm/s*cm{-3} & T1
+\si{\gram\centi\metre\per\second\per\cubic\centi\metre} & T1
 \\ \hline
 91 & VYDENI & momentum density, y-direction, Test Ions & NION &
-g*cm/s*cm{-3} & T1
+\si{\gram\centi\metre\per\second\per\cubic\centi\metre} & T1
 \\ \hline
 92 & VYDENPL & momentum density, y-direction, Photons & NPHOT &
-g*cm/s*cm{-3} & T1
+\si{\gram\centi\metre\per\second\per\cubic\centi\metre} & T1
 \\ \hline
 93 & VZDENA & momentum density, z-direction, Atoms & NATM &
-g*cm/s*cm{-3} & T1
+\si{\gram\centi\metre\per\second\per\cubic\centi\metre} & T1
 \\ \hline
 94 & VZDENM & momentum density, z-direction, Molecules & NMOL &
-g*cm/s*cm{-3} & T1
+\si{\gram\centi\metre\per\second\per\cubic\centi\metre} & T1
 \\ \hline
 95 & VZDENI & momentum density, z-direction, Test Ions & NION &
-g*cm/s*cm{-3} & T1
+\si{\gram\centi\metre\per\second\per\cubic\centi\metre} & T1
 \\ \hline
 96 & VZDENPL & momentum density, z-direction, Photons & NPHOT &
-g*cm/s*cm{-3} & T1 \\
+\si{\gram\centi\metre\per\second\per\cubic\centi\metre} & T1 \\
 \hline \pagebreak 97 & MAPL & parallel momentum source rate (Bulk Ions) &
-NPLS & amp*g*cm/s*cm{-3} & TPM
+NPLS & \si{\ampere\gram\centi\metre\per\second\per\cubic\centi\metre} & TPM
 \\ \hline
 98 & MMPL & parallel momentum source rate, (Bulk Ions) & NPLS &
-amp*g*cm/s*cm{-3} & TPM
+\si{\ampere\gram\centi\metre\per\second\per\cubic\centi\metre} & TPM
 \\ \hline
 99 & MIPL & parallel momentum source rate, (Bulk Ions) & NPLS &
-amp*g*cm/s*cm{-3} & TPM
+\si{\ampere\gram\centi\metre\per\second\per\cubic\centi\metre} & TPM
 \\ \hline
 100 & MPHPL & parallel momentum sources rate, (Bulk Ions) & NPLS &
-amp*g*cm/s*cm{-3} & TPM
+\si{\ampere\gram\centi\metre\per\second\per\cubic\centi\metre} & TPM
 \\ \hline
 \end{longtable}
 }
@@ -511,7 +511,7 @@ vector given by input tallies Bxin, Byin, Bzin,
 then the scalar product $\langle e_{\vec B},
 \vec{\Delta Mom}\rangle$ is used for scoring.
 \item[CG]  Collision estimator for generation limit (for fluid limit) tallies. These tallies contain particle, momentum and energy fluxes
-(per cell or per $cm^3$), when particles are removed from the fully kinetic tracing, due to e.g. transition into a
+(per cell or per \si{\cubic\centi\metre}), when particles are removed from the fully kinetic tracing, due to e.g. transition into a
 diffusive or other continuum regime. These fluxes are scored in COLLIDE.F, i.e. by collision estimators by nature.
 \end{itemize}
 
@@ -546,125 +546,125 @@ Output, Module: CESTIM}}
 \hline\hline
 \endhead
  1 & POTAT &Particle Flux, incident, Atoms&NATM
-    & amp & T/C  \\ \hline
+    & \si{\ampere} & T/C  \\ \hline
  2 & PRFAAT &Particle Flux, emitted, Ats.$\Rightarrow$Atoms&NATM
-    & amp & T/C  \\  \hline
+    & \si{\ampere} & T/C  \\  \hline
  3 & PRFMAT &Particle Flux, emitted, Mls.$\Rightarrow$Atoms&NATM
-    & amp & T/C  \\  \hline
+    & \si{\ampere} & T/C  \\  \hline
  4 & PRFIAT &Particle Flux, emitted, T.I.$\Rightarrow$Atoms&NATM
-    & amp & T/C  \\  \hline
+    & \si{\ampere} & T/C  \\  \hline
  5 & PRFPHAT &Particle Flux, emitted, Pht.$\Rightarrow$Atoms&NATM
-    & amp & T/C  \\  \hline
+    & \si{\ampere} & T/C  \\  \hline
  6 & PRFPAT &Particle Flux, emitted, B.I.$\Rightarrow$Atoms&NATM
-    & amp & T/C  \\  \hline
+    & \si{\ampere} & T/C  \\  \hline
  7 & POTML &Particle Flux, incident, Molecules&NMOL
-    & amp & T/C  \\  \hline
+    & \si{\ampere} & T/C  \\  \hline
  8 & PRFAML &Particle Flux, emitted, Ats.$\Rightarrow$Molecules&NMOL
-    & amp & T/C  \\   \hline
+    & \si{\ampere} & T/C  \\   \hline
  9 & PRFMML &Particle Flux, emitted, Mls.$\Rightarrow$Molecules&NMOL
-    & amp & T/C  \\   \hline
+    & \si{\ampere} & T/C  \\   \hline
  10 & PRFIML &Particle Flux, emitted, T.I.$\Rightarrow$Molecules&NMOL
-    & amp & T/C  \\   \hline
+    & \si{\ampere} & T/C  \\   \hline
  11 & PRFPHML &Particle Flux, emitted, Pht.$\Rightarrow$Molecules&NMOL
-    & amp & T/C  \\   \hline
+    & \si{\ampere} & T/C  \\   \hline
  12 & PRFPML &Particle Flux, emitted, B.I.$\Rightarrow$Molecules&NMOL
-    & amp & T/C  \\   \hline
+    & \si{\ampere} & T/C  \\   \hline
  13 & POTIO &Particle Flux, incident, Test Ions&NION
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  14 & PRFAIO &Particle Flux, emitted, Ats.$\Rightarrow$Test Ions&NION
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  15 & PRFMIO &Particle Flux, emitted, Mls.$\Rightarrow$Test Ions&NION
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  16 & PRFIIO &Particle Flux, emitted, T.I.$\Rightarrow$Test Ions&NION
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  17 & PRFPHIO &Particle Flux, emitted, Pht.$\Rightarrow$Test Ions&NION
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  18 & PRFPIO &Particle Flux, emitted, B.I.$\Rightarrow$Test Ions&NION
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  19 & POTPHT &Particle Flux, incident, Photons&NPHOT
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  20 & PRFAPHT &Particle Flux, emitted, Ats.$\Rightarrow$Photons&NPHOT
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  21 & PRFMPHT &Particle Flux, emitted, Mls.$\Rightarrow$Photons&NPHOT
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  22 & PRFIPHT &Particle Flux, emitted, T.I.$\Rightarrow$Photons&NPHOT
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  23 & PRFPHPHT &Particle Flux, emitted, Pht.$\Rightarrow$Photons&NPHOT
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  24 & PRFPPHT &Particle Flux, emitted, B.I.$\Rightarrow$Photons&NPHOT
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  25 & POTPL &Particle Flux, incident, Bulk Ions&NPLS
-    & amp & T/C  \\
+    & \si{\ampere} & T/C  \\
 \hline
 \pagebreak
  26 & EOTAT &Energy Flux, incident, Atoms&NATM
-    & watt & T/C  \\   \hline
+    & \si{\watt} & T/C  \\   \hline
  27 & ERFAAT &Energy Flux, emitted, Ats.$\Rightarrow$Atoms&NATM
-    & watt & T/C  \\   \hline
+    & \si{\watt} & T/C  \\   \hline
  28 & ERFMAT &Energy Flux, emitted, Mls.$\Rightarrow$Atoms&NATM
-    & watt & T/C  \\   \hline
+    & \si{\watt} & T/C  \\   \hline
  29 & ERFIAT &Energy Flux, emitted, T.I.$\Rightarrow$Atoms&NATM
-    & watt & T/C  \\   \hline
+    & \si{\watt} & T/C  \\   \hline
  30 & ERFPHAT &Energy Flux, emitted, Pht.$\Rightarrow$Atoms&NATM
-    & watt & T/C  \\   \hline
+    & \si{\watt} & T/C  \\   \hline
  31 & ERFPAT &Energy Flux, emitted, B.I.$\Rightarrow$Atoms&NATM
-    & watt & T/C  \\   \hline
+    & \si{\watt} & T/C  \\   \hline
  32 & EOTML &Energy Flux, incident, Molecules&NMOL
-    & watt & T/C  \\    \hline
+    & \si{\watt} & T/C  \\    \hline
  33 & ERFAML &Energy Flux, emitted, Ats.$\Rightarrow$Molecules&NMOL
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  34 & ERFMML &Energy Flux, emitted, Mls.$\Rightarrow$Molecules&NMOL
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  35 & ERFIML &Energy Flux, emitted, T.I.$\Rightarrow$Molecules&NMOL
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  36 & ERFPHML &Energy Flux, emitted, Pht.$\Rightarrow$Molecules&NMOL
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  37 & ERFPML &Energy Flux, emitted, B.I.$\Rightarrow$Molecules&NMOL
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  38 & EOTIO &Energy Flux, incident, Test Ions&NION
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  39 & ERFAIO & Energy Flux, emitted, Ats.$\Rightarrow$Test Ions & NION
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  40 & ERFMIO & Energy Flux, emitted, Mls.$\Rightarrow$Test Ions & NION
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  41 & ERFIIO & Energy Flux, emitted, T.I.$\Rightarrow$Test Ions & NION
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  42 & ERFPHIO & Energy Flux, emitted, Pht.$\Rightarrow$Test Ions & NION
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  43 & ERFPIO & Energy Flux, emitted, B.I.$\Rightarrow$Test Ions & NION
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  44 & EOTPHT &Energy Flux, incident, Photons&NPHOT
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  45 & ERFAPHT & Energy Flux, emitted, Ats.$\Rightarrow$Photons & NPHOT
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  46 & ERFMPHT & Energy Flux, emitted, Mls.$\Rightarrow$Photons & NPHOT
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  47 & ERFIPHT & Energy Flux, emitted, T.I.$\Rightarrow$Photons & NPHOT
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  48 & ERFPHPHT & Energy Flux, emitted, Pht.$\Rightarrow$Photons & NPHOT
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  49 & ERFPPHT & Energy Flux, emitted, B.I.$\Rightarrow$Photons & NPHOT
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  50 & EOTPL &Energy Flux, incident, Bulk Ions&NPLS
-    & watt & T/C   \\   \hline\hline
+    & \si{\watt} & T/C   \\   \hline\hline
  51 & SPTAT &Sputtered Flux, by incident Atoms&NATM
-    & amp & T/C  \\ \hline
+    & \si{\ampere} & T/C  \\ \hline
  52 & SPTML &Sputtered Flux, by incident Molecules&NMOL
-    & amp & T/C  \\  \hline
+    & \si{\ampere} & T/C  \\  \hline
  53 & SPTIO &Sputtered Flux, by incident Test Ions&NION
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  54 & SPTPHT &Sputtered Flux, by incident Photons&NPHOT
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  55 & SPTPL &Sputtered Flux, by incident Bulk Ions&NPLS
-    & amp & T/C  \\  \hline
+    & \si{\ampere} & T/C  \\  \hline
  56 & SPTTOT &Sputtered Flux, total&1
-    & amp & T/C  \\  \hline\hline
+    & \si{\ampere} & T/C  \\  \hline\hline
  57 & ADDS & Additional Surface Tally & NADS
     & Input & T/C              \\  \hline
  58 & ALGS & Algebraic expression in surface averaged tallies&NALS
     & Input &                       \\  \hline
  59 & SPUMP & Pumped flux, by species   &NSPZ
-    & amp &                       \\  \hline
+    & \si{\ampere} &                       \\  \hline
 \end{longtable}
 }
 
@@ -712,73 +712,73 @@ Output, Module: CESTIM}}
 \hline\hline
 \endhead
  51 & SPTAAT &Sputtered Flux, Atoms, by incident Atoms&NATM
-    & amp & T/C  \\ \hline
+    & \si{\ampere} & T/C  \\ \hline
  52 & SPTAML &Sputtered Flux, Molecules, by incident Atoms&NMOL
-    & amp & T/C  \\  \hline
+    & \si{\ampere} & T/C  \\  \hline
  53 & SPTAIO &Sputtered Flux, Test Ions, by incident Atoms&NION
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  54 & SPTAPHT &Sputtered Flux, Photons, by incident Atoms&NPHOT
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  55 & SPTAPL &Sputtered Flux, Bulk Ions, by incident Atoms&NPLS
-    & amp & T/C  \\  \hline\hline
+    & \si{\ampere} & T/C  \\  \hline\hline
  56 & SPTMAT &Sputtered Flux, Atoms, by incident Molecules&NATM
-    & amp & T/C  \\ \hline
+    & \si{\ampere} & T/C  \\ \hline
  57 & SPTMML &Sputtered Flux, Molecules, by incident Molecules&NMOL
-    & amp & T/C  \\  \hline
+    & \si{\ampere} & T/C  \\  \hline
  58 & SPTMIO &Sputtered Flux, Test Ions, by incident Molecules&NION
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  59 & SPTMPHT &Sputtered Flux, Photons, by incident Molecules&NPHOT
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  60 & SPTMPL &Sputtered Flux, Bulk Ions, by incident Molecules&NPLS
-    & amp & T/C  \\  \hline\hline
+    & \si{\ampere} & T/C  \\  \hline\hline
  61 & SPTIAT &Sputtered Flux, Atoms, by incident Test Ions&NATM
-    & amp & T/C  \\ \hline
+    & \si{\ampere} & T/C  \\ \hline
  62 & SPTIML &Sputtered Flux, Molecules, by incident Test Ions&NMOL
-    & amp & T/C  \\  \hline
+    & \si{\ampere} & T/C  \\  \hline
  63 & SPTIIO &Sputtered Flux, Test Ions, by incident Test Ions&NION
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  64 & SPTIPHT &Sputtered Flux, Photons, by incident Test Ions&NPHOT
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  65 & SPTIPL &Sputtered Flux, Bulk Ions, by incident Test Ions&NPLS
-    & amp & T/C  \\  \hline\hline
+    & \si{\ampere} & T/C  \\  \hline\hline
  66 & SPTPHAT &Sputtered Flux, Atoms, by incident Photons&NATM
-    & amp & T/C  \\ \hline
+    & \si{\ampere} & T/C  \\ \hline
  67 & SPTPHML &Sputtered Flux, Molecules, by incident Photons&NMOL
-    & amp & T/C  \\  \hline
+    & \si{\ampere} & T/C  \\  \hline
  68 & SPTPHIO &Sputtered Flux, Test Ions, by incident Photons&NION
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  69 & SPTPHPHT &Sputtered Flux, Photons, by incident Photons&NPHOT
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  70 & SPTPHPL &Sputtered Flux, Bulk Ions, by incident Photons&NPLS
-    & amp & T/C  \\  \hline \hline
+    & \si{\ampere} & T/C  \\  \hline \hline
  71 & SPTPAT &Sputtered Flux, Atoms,  by incident Bulk Ions&NATM
-    & amp & T/C  \\ \hline
+    & \si{\ampere} & T/C  \\ \hline
  72 & SPTPML &Sputtered Flux, Molecules, by incident Bulk Ions&NMOL
-    & amp & T/C  \\  \hline
+    & \si{\ampere} & T/C  \\  \hline
  73 & SPTPIO &Sputtered Flux, Test Ions, by incident Bulk Ions&NION
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  74 & SPTPPHT &Sputtered Flux, Photons, by incident Bulk Ions&NPHOT
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  75 & SPTPPL &Sputtered Flux, Bulk Ions, by incident Bulk Ions&NPLS
-    & amp & T/C  \\  \hline \hline
+    & \si{\ampere} & T/C  \\  \hline \hline
  76 & SPTATOP &Sputtered Flux, by incident Atoms & 1
-    & amp & T/C  \\ \hline
+    & \si{\ampere} & T/C  \\ \hline
  77 & SPTMTOT &Sputtered Flux, by incident Molecules& 1
-    & amp & T/C  \\  \hline
+    & \si{\ampere} & T/C  \\  \hline
  78 & SPTITOP &Sputtered Flux, by incident Test Ions& 1
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  79 & SPTPHTOT &Sputtered Flux, by incident Photons& 1
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  80 & SPTPLTOT &Sputtered Flux, by incident Bulk Ions& 1
-    & amp & T/C  \\  \hline \hline
+    & \si{\ampere} & T/C  \\  \hline \hline
  81 & SPTTOT &Sputtered Flux, total&1
-    & amp & T/C  \\  \hline\hline
+    & \si{\ampere} & T/C  \\  \hline\hline
  82 & ADDS & Additional Surface Tally & NADS
     & Input & T/C              \\  \hline
  83 & ALGS & Algebraic expression in surface averaged tallies&NALS
     & Input &                       \\  \hline
  84 & SPUMP & Pumped flux, by species   &NSPZ
-    & amp &                       \\  \hline
+    & \si{\ampere} &                       \\  \hline
 \end{longtable}
 }
 %\end{table}
@@ -820,32 +820,32 @@ interfacing to the particular external plasma codes B2, B2.5, etc. are described
  &  \textbf{1.Dim.}
   & \textbf{Units}   \\ \hline
 
- -1 & TEIN & Plasma Temperature, Electrons & 1 & $eV$   \\ \hline
- -2 & TIIN & Plasma Temperature, Bulk Ions & NPLS & $eV$   \\ \hline
- -3 & DEIN$^*$ & Plasma Density, Electrons & 1 & $cm^{-3}$   \\ \hline
- -4 & DIIN & Plasma Density, Bulk Ions & NPLS & $cm^{-3}$  \\ \hline
- -5 & VXIN & Plasma Drift Velocity, x-component, Bulk Ions&NPLS  & cm/sec  \\ \hline
+ -1 & TEIN & Plasma Temperature, Electrons & 1 & \si{\electronvolt}   \\ \hline
+ -2 & TIIN & Plasma Temperature, Bulk Ions & NPLS & \si{\electronvolt}   \\ \hline
+ -3 & DEIN$^*$ & Plasma Density, Electrons & 1 & \si{\per\cubic\centi\metre}   \\ \hline
+ -4 & DIIN & Plasma Density, Bulk Ions & NPLS & \si{\per\cubic\centi\metre}  \\ \hline
+ -5 & VXIN & Plasma Drift Velocity, x-component, Bulk Ions&NPLS  & \si{\centi\metre\per\second}  \\ \hline
  -6 & VYIN & Plasma Drift Velocity, y-component, Bulk Ions&NPLS
-     & cm/sec                                            \\ \hline
+     & \si{\centi\metre\per\second}                                            \\ \hline
  -7 & VZIN & Plasma Drift Velocity, z-component, Bulk Ions&NPLS
-     & cm/sec                                            \\ \hline
+     & \si{\centi\metre\per\second}                                            \\ \hline
  -8 & BXIN & Magnetic field unit vector, x-component & 1 & /
     \\ \hline
  -9 & BYIN & Magnetic field unit vector, y-component & 1 & /
     \\ \hline
  -10 & BZIN & Magnetic field unit vector, z-component & 1 & /
     \\ \hline
- -11 & BFIN & Magnetic field strength & 1 &  Tesla
+ -11 & BFIN & Magnetic field strength & 1 & \si{\tesla}
     \\ \hline
  -12 & ADIN & Additional input tally & NAIN & see INFCOP
     \\ \hline
- -13 & EDRIFT$^*$ & Kinetic energy in drift motion, Bulk Ions &NPLS & $eV$
+ -13 & EDRIFT$^*$ & Kinetic energy in drift motion, Bulk Ions &NPLS & \si{\electronvolt}
     \\ \hline
- -14 & VOL & Zone Volume & 1 & $cm^{3}$
+ -14 & VOL & Zone Volume & 1 & \si{\cubic\centi\metre}
     \\ \hline
  -15 & WGHT$^{**}$ & Space and species dependent importance & NSPCMC & $ 1 $
     \\ \hline
- -22   &      POT   &      electric potential  & 1  &         V  \\ \hline
+ -22   &      POT   &      electric potential  & 1  & \si{\volt} \\ \hline
 \end{tabular}
 }
 
@@ -881,78 +881,78 @@ see INDPRO(5) options for magnetic field tallies in input block 5 (\cref{sec2.5}
  \textbf{No} & \textbf{Name} & \textbf{Macroscopic quantity}
  & \textbf{1.Dim.}
  & \textbf{Units} & \textbf{Estim.} \\ \hline
- 1 & PDENA & Particle density, Atoms & NATM & $cm^{-3}$ & T1
+ 1 & PDENA & Particle density, Atoms & NATM & \si{\per\cubic\centi\metre} & T1
  \\ \hline
- 2 & PDENM & Particle density, Molecules & NMOL & $cm^{-3}$ & T2
+ 2 & PDENM & Particle density, Molecules & NMOL & \si{\per\cubic\centi\metre} & T2
  \\ \hline
- 3 & PDENI & Particle density Test Ions & NION  & $cm^{-3}$ & T3
+ 3 & PDENI & Particle density Test Ions & NION  & \si{\per\cubic\centi\metre} & T3
  \\ \hline
- 4 & EDENA & Energy density, Atoms & NATM       & eV*$cm^{-3}$ & T4
+ 4 & EDENA & Energy density, Atoms & NATM       & \si{\electronvolt\per\cubic\centi\metre} & T4
  \\ \hline
- 5 & EDENM & Energy density, Molecules & NMOL   & eV*$cm^{-3}$ & T5
+ 5 & EDENM & Energy density, Molecules & NMOL   & \si{\electronvolt\per\cubic\centi\metre} & T5
  \\ \hline
- 6 & EDENI & Energy density, Test Ions & NION   & eV*$cm^{-3}$ & T6
+ 6 & EDENI & Energy density, Test Ions & NION   & \si{\electronvolt\per\cubic\centi\metre} & T6
  \\ \hline
  7 & PAEL & Particle Source (Electrons) from atom-plasma coll.
-   & 1 & amp* $cm^{-3}$ & T7  \\ \hline
+   & 1 & \si{\ampere\per\cubic\centi\metre} & T7  \\ \hline
  8 & PAAT & Particle Source (Atoms) from atom-plasma coll.
-   & NATM & amp*$cm^{-3}$ & T8 \\ \hline
+   & NATM & \si{\ampere\per\cubic\centi\metre} & T8 \\ \hline
  9 & PAML & Particle Source (Molecules) from atom-plasma coll.
-   & NMOL & amp*$cm^{-3}$ & T9 \\  \hline
+   & NMOL & \si{\ampere\per\cubic\centi\metre} & T9 \\  \hline
  10 & PAIO & Particle Source (Test Ions) from atom-plasma coll.
-    & NION & amp*$cm^{-3}$ & T10  \\  \hline
+    & NION & \si{\ampere\per\cubic\centi\metre} & T10  \\  \hline
  11 & PAPL & Particle Source (Bulk Ions) from atom-plasma coll.
-    & NPLS & amp*$cm^{-3}$ & T11  \\  \hline
+    & NPLS & \si{\ampere\per\cubic\centi\metre} & T11  \\  \hline
  12 & PMEL &Particle Source (Electrons) from molecule-plasma coll.
-    & 1 & amp*$cm^{-3}$ & T12     \\  \hline
+    & 1 & \si{\ampere\per\cubic\centi\metre} & T12     \\  \hline
  13 & PMAT &Particle Source (Atoms) from molecule-plasma coll.
-    & NATM &amp*$cm^{-3}$ & T13  \\  \hline
+    & NATM &\si{\ampere\per\cubic\centi\metre} & T13  \\  \hline
  14 & PMML &Particle Source (Molecules) from molecule-plasma coll.
-    & NMOL &amp*$cm^{-3}$ & T14   \\  \hline
+    & NMOL &\si{\ampere\per\cubic\centi\metre} & T14   \\  \hline
  15 & PMIO &Particle Source (Test Ions) from molecule-plasma coll.
-    &NION&amp*$cm^{3}$ & T15     \\   \hline
+    & NION &\si{\ampere\per\cubic\centi\metre} & T15   \\  \hline
  16 & PMPL &Particle Source (Bulk Ions) from molecule-plasma coll.
-    &NPLS&amp*$cm^{-3}$ & T16    \\    \hline
+    &NPLS&\si{\ampere\per\cubic\centi\metre} & T16    \\    \hline
  17 & PIEL &Particle Source (Electrons) from test ion-plasma coll.
-    &1&amp*$cm^{-3}$ & T17       \\   \hline
+    &1&\si{\ampere\per\cubic\centi\metre} & T17       \\   \hline
  18 & PIAT &Particle Source (Atoms) from test ion-plasma coll.
-    & NATM&amp*$cm^{-3}$ & T18    \\  \hline
+    & NATM&\si{\ampere\per\cubic\centi\metre} & T18    \\  \hline
  19 & PIML &Particle Source (Molecules) from test ion-plasma coll.
-    & NMOL&amp*$cm^{-3}$ & T19    \\  \hline
+    & NMOL&\si{\ampere\per\cubic\centi\metre} & T19    \\  \hline
  20 & PIIO &Particle Source (Test Ions) from test ion-plasma coll.
-    & NION&amp*$cm^{-3}$ & T20    \\   \hline
+    & NION&\si{\ampere\per\cubic\centi\metre} & T20    \\   \hline
  21 & PIPL &Particle Source (Bulk Ions) from test ion-plasma coll.
-    & NPLS&amp*$cm^{-3}$ & T21    \\   \hline
+    & NPLS&\si{\ampere\per\cubic\centi\metre} & T21    \\   \hline
  22 & EAEL&Energy Source (Electrons) from atom-plasma coll.
-    & 1 & watt*$cm^{-3}$ & T22      \\  \hline
+    & 1 & \si{\watt\per\cubic\centi\metre} & T22      \\  \hline
  23 & EAAT&Energy Source (Atoms) from atom-plasma coll.
-    & 1 & watt*$cm^{-3}$ & T23      \\   \hline
+    & 1 & \si{\watt\per\cubic\centi\metre} & T23      \\   \hline
  24 & EAML&Energy Source (Molecules) from atom-plasma coll.
-    & 1 & watt*$cm^{-3}$ & T24      \\    \hline
+    & 1 & \si{\watt\per\cubic\centi\metre} & T24      \\    \hline
  25 & EAIO&Energy Source (Test Ions) from atom-plasma coll.
-    & 1 & watt*$cm^{-3}$ & T25      \\ \hline
+    & 1 & \si{\watt\per\cubic\centi\metre} & T25      \\ \hline
  26 & EAPL&Energy Source (Bulk Ions) from atom-plasma coll.
-    & 1 & watt*$cm^{-3}$ & T26   \\  \hline
+    & 1 & \si{\watt\per\cubic\centi\metre} & T26   \\  \hline
  27 & EMEL&Energy Source (Electrons) from molecule-plasma coll.
-    & 1 & watt*$cm^{-3}$ & T27   \\   \hline
+    & 1 & \si{\watt\per\cubic\centi\metre} & T27   \\   \hline
  28 & EMAT&Energy Source (Atoms) from molecule-plasma coll.
-    & 1 & watt*$cm^{-3}$ & T28  \\   \hline
+    & 1 & \si{\watt\per\cubic\centi\metre} & T28  \\   \hline
  29 & EMML&Energy Source (Molecules) from molecule-plasma coll.
-    & 1 & watt*$cm^{-3}$ & T29  \\   \hline
+    & 1 & \si{\watt\per\cubic\centi\metre} & T29  \\   \hline
  30 & EMIO&Energy Source (Test Ions) from molecule-plasma coll.
-    & 1 & watt*$cm^{-3}$ & T30  \\    \hline
+    & 1 & \si{\watt\per\cubic\centi\metre} & T30  \\    \hline
  31 & EMPL & Energy Source (Bulk Ions) from molecule-plasma coll.
-    & 1& watt*$cm^{-3}$ & T31  \\  \hline
+    & 1& \si{\watt\per\cubic\centi\metre} & T31  \\  \hline
  32 & EIEL & Energy Source (Electrons) from test ion-plasma coll.
-    & 1& watt*$cm^{-3}$ & T32   \\  \hline
+    & 1& \si{\watt\per\cubic\centi\metre} & T32   \\  \hline
  33 & EIAT & Energy Source (Atoms) from test ion-plasma coll.
-    & 1& watt*$cm^{-3}$ & T33   \\  \hline
+    & 1& \si{\watt\per\cubic\centi\metre} & T33   \\  \hline
  34 & EIML & Energy Source (Molecules) from test ion-plasma coll.
-    & 1& watt*$cm^{-3}$ & T34   \\  \hline
+    & 1& \si{\watt\per\cubic\centi\metre} & T34   \\  \hline
  35 & EIIO & Energy Source (Test Ions) from test ion-plasma coll.
-    & 1& watt*$cm^{-3}$ & T35   \\  \hline
+    & 1& \si{\watt\per\cubic\centi\metre} & T35   \\  \hline
  36 & EIPL & Energy Source (Bulk Ions) from test ion-plasma coll.
-    & 1& watt*$cm^{-3}$ & T36   \\  \hline
+    & 1& \si{\watt\per\cubic\centi\metre} & T36   \\  \hline
  37 & ADDV & Additional volume av. Tally, Track-length estimated
     & NADV & see UPTUSR & TRL      \\  \hline
  38 & COLV & Additional volume av. Tally, Collision estimated
@@ -965,18 +965,18 @@ see INDPRO(5) options for magnetic field tallies in input block 5 (\cref{sec2.5}
     & NBGV & see BGK & T41        \\  \hline
  42 & ALGV & Algebraic expression in volume averaged tallies
     & NALV & Input & ALG        \\  \hline
- 43 & PGENA & Generation limit, Atoms & NATM & amp*$cm^{-3}$ & T1
+ 43 & PGENA & Generation limit, Atoms & NATM & \si{\ampere\per\cubic\centi\metre} & T1
  \\ \hline
- 44 & PGENM & Generation limit, Molecules & NMOL & amp*$cm^{-3}$ & T1
+ 44 & PGENM & Generation limit, Molecules & NMOL & \si{\ampere\per\cubic\centi\metre} & T1
  \\ \hline
- 45 & PGENI & Generation limit, Test ions & NION & amp*$cm^{-3}$ & T1
+ 45 & PGENI & Generation limit, Test ions & NION & \si{\ampere\per\cubic\centi\metre} & T1
  \\ \hline
- 46 & EGENA & dito, Energy flux, Atoms & NATM & watt*$cm^{-3}$ & T1
+ 46 & EGENA & dito, Energy flux, Atoms & NATM & \si{\watt\per\cubic\centi\metre} & T1
  \\ \hline
  47 & EGENM & dito, Energy flux, Molecules & NMOL
-& watt*$cm^{-3}$ & T1
+& \si{\watt\per\cubic\centi\metre} & T1
  \\ \hline
- 48 & EGENI & dito, Energy flux, Test ions & NION & watt*$cm^{-3}$ & T1
+ 48 & EGENI & dito, Energy flux, Test ions & NION & \si{\watt\per\cubic\centi\metre} & T1
  \\ \hline
  49 & VGENA & dito, momentum flux, Atoms & NATM & as COP
 & T1
@@ -1006,85 +1006,85 @@ negative, it is a loss.
    \textbf{1.Dim.}
   & \textbf{Units} & \textbf{Estim.}   \\ \hline
  1 & POTAT&Particle Flux, incident, Atoms&NATM
-    & amp & T/C  \\ \hline
+    & \si{\ampere} & T/C  \\ \hline
  2 &PRFAAT&Particle Flux, emitted, Ats.$\Rightarrow$Atoms&NATM
-    & amp & T/C  \\  \hline
+    & \si{\ampere} & T/C  \\  \hline
  3 &PRFMAT&Particle Flux, emitted, Mls.$\Rightarrow$Atoms&NATM
-    & amp & T/C  \\  \hline
+    & \si{\ampere} & T/C  \\  \hline
  4 &PRFIAT&Particle Flux, emitted, T.I.$\Rightarrow$Atoms&NATM
-    & amp & T/C  \\  \hline
+    & \si{\ampere} & T/C  \\  \hline
  5 &PRFPAT&Particle Flux, emitted, B.I.$\Rightarrow$Atoms&NATM
-    & amp & T/C  \\  \hline
+    & \si{\ampere} & T/C  \\  \hline
  6 &POTML&Particle Flux, incident, Molecules&NMOL
-    & amp & T/C  \\  \hline
+    & \si{\ampere} & T/C  \\  \hline
  7 &PRFAML&Particle Flux, emitted, Ats.$\Rightarrow$Molecules&NMOL
-    & amp & T/C  \\   \hline
+    & \si{\ampere} & T/C  \\   \hline
  8 &PRFMML&Particle Flux, emitted, Mls.$\Rightarrow$Molecules&NMOL
-    & amp & T/C  \\   \hline
+    & \si{\ampere} & T/C  \\   \hline
  9 &PRFIML&Particle Flux, emitted, T.I.$\Rightarrow$Molecules&NMOL
-    & amp & T/C  \\   \hline
+    & \si{\ampere} & T/C  \\   \hline
  10 &PRFPML&Particle Flux, emitted, B.I.$\Rightarrow$Molecules&NMOL
-    & amp & T/C  \\   \hline
+    & \si{\ampere} & T/C  \\   \hline
  11 &POTIO&Particle Flux, incident, Test Ions&NION
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  12 &PRFAIO&Particle Flux, emitted, Ats.$\Rightarrow$Test Ions&NION
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  13 &PRFMIO&Particle Flux, emitted, Mls.$\Rightarrow$Test Ions&NION
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  14 &PRFIIO&Particle Flux, emitted, T.I.$\Rightarrow$Test Ions&NION
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  15 &PRFPIO&Particle Flux, emitted, B.I.$\Rightarrow$Test Ions&NION
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  16 &POTPL&Particle Flux, incident, Bulk Ions&NPLS
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  17 &EOTAT&Energy Flux, incident, Atoms&NATM
-    & watt & T/C  \\   \hline
+    & \si{\watt} & T/C  \\   \hline
  18 &ERFAAT&Energy Flux, emitted, Ats.$\Rightarrow$Atoms&NATM
-    & watt & T/C  \\   \hline
+    & \si{\watt} & T/C  \\   \hline
  19 &ERFMAT&Energy Flux, emitted, Mls.$\Rightarrow$Atoms&NATM
-    & watt & T/C  \\   \hline
+    & \si{\watt} & T/C  \\   \hline
  20 &ERFIAT&Energy Flux, emitted, T.I.$\Rightarrow$Atoms&NATM
-    & watt & T/C  \\   \hline
+    & \si{\watt} & T/C  \\   \hline
  21 &ERFPAT&Energy Flux, emitted, B.I.$\Rightarrow$Atoms&NATM
-    & watt & T/C  \\   \hline
+    & \si{\watt} & T/C  \\   \hline
  22 &EOTML&Energy Flux, incident, Molecules&NMOL
-    & watt & T/C  \\    \hline
+    & \si{\watt} & T/C  \\    \hline
  23 &ERFAML&Energy Flux, emitted, Ats.$\Rightarrow$Molecules&NMOL
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  24 &ERFMML&Energy Flux, emitted, Mls.$\Rightarrow$Molecules&NMOL
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  25 &ERFIML&Energy Flux, emitted, T.I.$\Rightarrow$Molecules&NMOL
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  26 &ERFPML&Energy Flux, emitted, B.I.$\Rightarrow$Molecules&NMOL
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  27 &EOTIO&Energy Flux, incident, Test Ions&NION
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  28 & ERFAIO & Energy Flux, emitted, Ats.$\Rightarrow$Test Ions & NION
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  29 & ERFMIO & Energy Flux, emitted, Mls.$\Rightarrow$Test Ions & NION
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  30 & ERFIIO & Energy Flux, emitted, T.I.$\Rightarrow$Test Ions & NION
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  31 & ERFPIO & Energy Flux, emitted, B.I.$\Rightarrow$Test Ions & NION
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  32 &EOTPL&Energy Flux, incident, Bulk Ions&NPLS
-    & watt & T/C   \\   \hline
+    & \si{\watt} & T/C   \\   \hline
  33 & SPTAT&Sputtered Flux, by incident Atoms&NATM
-    & amp & T/C  \\ \hline
+    & \si{\ampere} & T/C  \\ \hline
  34 & SPTML&Sputtered Flux, by incident Molecules&NMOL
-    & amp & T/C  \\  \hline
+    & \si{\ampere} & T/C  \\  \hline
  35 & SPTIO&Sputtered Flux, by incident Test Ions&NION
-    & amp & T/C  \\    \hline
+    & \si{\ampere} & T/C  \\    \hline
  36 & SPTPL&Sputtered Flux, by incident Bulk Ions&NPLS
-    & amp & T/C  \\  \hline
+    & \si{\ampere} & T/C  \\  \hline
  37 & SPTTOT&Sputtered Flux, total&1
-    & amp & T/C  \\  \hline
+    & \si{\ampere} & T/C  \\  \hline
  38 & ADDS & Additional Surface Tally & NADS
     & Input & T/C              \\  \hline
  39 & ALGS & Algebraic expression in surface averaged tallies&NALS
     & Input &                       \\  \hline
  40 & SPUMP & Pumped flux, by species   & NSPZ
-    & amp &                       \\  \hline
+    & \si{\ampere} &                       \\  \hline
 \end{tabular}
 }
 \\

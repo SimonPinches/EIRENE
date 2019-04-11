@@ -244,7 +244,7 @@ located on surface no. ILIMI.
 \item[\textbf{RLBND }]
 flag for different options to define the boundary of the surface
 \item[\textbf{RLARE }]
-Area (in $cm^2$) of the surface element which is seen
+Area (in \si{\square\centi\metre}) of the surface element which is seen
 by the test particles. (Default: 666.0)
 (needed only for scaling of non default surface averaged tallies)
 If RLARE is not specified here, (i.e., if a value less than or equal to
@@ -311,11 +311,11 @@ as -1, and, additionally:
 
 if a particle is crossing the surface in the positive direction,
 (one sided-) surface tallies are updated, e.g., by
-default: partial particle and energy currents $J^+$ (Amp)
-and $K^+$ (Watt). These are stored in the POT... and EOT... tallies of \cref{tab3}.
+default: partial particle and energy currents $J^+$ (\si{\ampere})
+and $K^+$ (\si{\watt}). These are stored in the POT... and EOT... tallies of \cref{tab3}.
 If the particle crosses the surface in the direction opposite to the surface normal, then
-negative partial particle and energy currents $J^-$ (Amp)
-and $K^-$ (Watt) are updated. These are stored in the PRF... and ERF... tallies of
+negative partial particle and energy currents $J^-$ (\si{\ampere})
+and $K^-$ (\si{\watt}) are updated. These are stored in the PRF... and ERF... tallies of
 \cref{tab3}.
 
 \item[{= -3 }]

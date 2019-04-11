@@ -476,7 +476,7 @@ particle weight WEIGHT). Here $g$ is evaluated at the point of time $t^*$
 at which TIMCOL is called. Scaling of snapshot tallies is done by
 interpreting the linear source strength ``FLUX" scaling factor
 (given in input block 7 (\cref{sec2.7}) for each stratum) as a total
-number of particles, rather than as flux (particles/s), i.e. ``FLUX is the
+number of particles, rather than as flux (particles~\si{\per\second}), i.e. ``FLUX is the
 integral of the source distribution not only over physical space, but also over time interval $DTIMV$ from initial time $t_0$
 to time $t^*$ (\cref{sec2.13}).
 \subsubsection{B: stationary snapshot tallies}\label{sec3.2.3b}
@@ -884,10 +884,10 @@ These are:
 \begin{itemize}
 \item
 INDEX = 0     : \\
-Electron temperature (eV)
+Electron temperature (\si{\electronvolt})
 \item
 INDEX = 1     :\\
-Ion temperature (eV), NPLSI calls, one for each
+Ion temperature (\si{\electronvolt}), NPLSI calls, one for each
 ion species. I.e.:
 \begin{verbatim}
 DO IPLS=1,NPLSI
@@ -897,19 +897,19 @@ ENDDO
 \end{verbatim}
 \item
 INDEX = 1+ NPLS     : \\
-Ion density ($cm^{-3}$), NPLSI calls, one for each
+Ion density (\si{\per\cubic\centi\metre}), NPLSI calls, one for each
 ion species
 \item
 INDEX = 1+2*NPLS    :   \\
-Ion drift velocity, x direction (cm/s), NPLSI calls, one for each
+Ion drift velocity, x direction (\si{\centi\metre\per\second}), NPLSI calls, one for each
 ion species
 \item
 INDEX = 1+3*NPLS    :   \\
-Ion drift velocity, y direction (cm/s), NPLSI calls, one for each
+Ion drift velocity, y direction (\si{\centi\metre\per\second}), NPLSI calls, one for each
 ion species
 \item
 INDEX = 1+4*NPLS    :   \\
-Ion drift velocity, z direction (cm/s), NPLSI calls, one for each
+Ion drift velocity, z direction (\si{\centi\metre\per\second}), NPLSI calls, one for each
 ion species
 \item
 INDEX = 1+5*NPLS    :   \\
@@ -925,7 +925,7 @@ INDEX = 4+5*NPLS    :   \\
 Magnetic field, magnitude, (T)
 \item
 INDEX = 5+5*NPLS    :   \\
-Cell volume, ($cm^3$)
+Cell volume, (\si{\cubic\centi\metre})
 \item
 INDEX = 6+5*NPLS    :   \\
 Additional tally, NAINI calls, one for each additional quantity.
@@ -945,7 +945,7 @@ i.e. constant within a cell.
 This routine is called in case INDPRO(5)=8 for the B-field tally (e.g. from routine BFIELD.F), and in case (INDPRO(4)=8)
 for the background flow velocity tallies (from many places in the code),
 to provide either a local magnetic field (unit) vector, or a local plasma (background medium)
-flow velocity vector (cm/s), respectively, in cartesian coordinates.
+flow velocity vector (\si{\centi\metre\per\second}), respectively, in cartesian coordinates.
 
 Current implementation:
 \begin{itemize}
@@ -1131,10 +1131,10 @@ stops the track already earlier. I.e., cell number of the neighbor cell in the d
 of the flight.
 \end{list}
 \item[\textbf{TIM }]
-distance (cm) from [X0,Y0,Z0]
+distance (\si{\centi\metre}) from [X0,Y0,Z0]
 to the nearest intersection of the trajectory with a
-boundary of cell NRCELL.  Since the speed vector [VELX,VELY,VELZ] is normalized to one (cm/s),
-this distance is also the flight time (s)
+boundary of cell NRCELL.  Since the speed vector [VELX,VELY,VELZ] is normalized to one (\si{\centi\metre\per\second}),
+this distance is also the flight time (\si{\second})
 \item[\textbf{ICOS }]
 only relevant, if the trajectory has intersected a non-default surface.
 In this case, ICOS is the sign (+1 or -1) of the cosine of the angle of
@@ -1155,7 +1155,7 @@ VOLUME in case of LEVGEO=10. The call is
 CALL VOLUSR(N,A)
 \end{verbatim}
 Here N is the total number of cells in this run, and
-A is an array of length N, containing the N cell volume values in $cm^3$.
+A is an array of length N, containing the N cell volume values in \si{\cubic\centi\metre}.
 \subsection{Subroutine NORUSR}
 \label{sec3.8.4} The subroutine NORUSR provides the outer surface normal unit vector CX,CY,CZ at surfaces,
 i.e. after a particle trajectory has intersected a ``non default grid surface" at point X,Y,Z.

@@ -508,56 +508,56 @@ nine parameters).
 \begin{list}{ }{}
 \item[{H.1 }]
 single parameter fit for
-cross section $\sigma (cm^2)$ as function of energy ELAB (eV),
+cross section $\sigma (\si{\square\centi\metre})$ as function of energy ELAB (\si{\electronvolt}),
 with ELAB = $m_{Lab} / 2  \cdot  v_{rel}^2 $
 (For the definition of $m_{Lab}$ = MASSP : see below.
 \item[{H.2 }]
 single parameter fit for rate coefficient $\langle \sigma v \rangle
-(cm^3/s)$ as function of target temperature (eV), assuming ``zero
+(\si{\cubic\centi\metre\per\second})$ as function of target temperature (\si{\electronvolt}), assuming ``zero
 velocity" projectile
 \item[{H.3 }]
 double parameter fit of rate coefficient $\langle \sigma v
-\rangle(cm^3/s)$ as function of projectile energy (eV) and target
-temperature (eV)
+\rangle(\si{\cubic\centi\metre\per\second})$ as function of projectile energy (\si{\electronvolt}) and target
+temperature (\si{\electronvolt})
 \item[{H.4 }]
 double parameter fit of rate coefficient $\langle \sigma v \rangle
-(cm^3/s)$ as function of target density $(cm^{-3})$ and target
-temperature (eV)
+(\si{\cubic\centi\metre\per\second})$ as function of target density (\si{\per\cubic\centi\metre}) and target
+temperature (\si{\electronvolt})
 \item[{H.5 }]
 single parameter fit of target particle momentum weighted rate
 coefficient \\
 $\langle~\sigma~v~\cdot~m_p~\cdot~|v_p|~\rangle$ $
-(cm^3/s \cdot AMU \cdot cm/s)$ as function of target temperature
-(eV)
+(\si{\cubic\centi\metre\per\second\atomicmassunit\centi\metre\per\second})$ as function of target temperature
+(\si{\electronvolt})
 \item[{H.6 }]
 double parameter fit of target particle velocity weighted rate
 coefficient \\
 $\langle \sigma v  \cdot  m_p  \cdot  | v_p | \rangle
-(cm^3/s \cdot AMU \cdot cm/s)$ as function of projectile energy (eV)
-and target temperature (eV)
+(\si{\cubic\centi\metre\per\second\atomicmassunit\centi\metre\per\second})$ as function of projectile energy (\si{\electronvolt})
+and target temperature (\si{\electronvolt})
 \item[{H.7 }]
 double parameter fit of target particle velocity weighted rate
 coefficient \\
-$\langle \sigma v  \cdot  m_p  \cdot  | v_p | \rangle
-(cm^3/s \cdot AMU\cdot cm/s)$ as function of target density $(cm^3)$
-and target temperature (eV)
+$\langle \sigma v \cdot m_p \cdot | v_p | \rangle
+(\si{\cubic\centi\metre\per\second\atomicmassunit\centi\metre\per\second})$ as function of target density (\si{\cubic\centi\metre})
+and target temperature (\si{\electronvolt})
 \item[{H.8 }]
 single parameter fit of target particle energy weighted rate
 coefficient \\
-$\langle  \sigma v  \cdot  m_p /2  \cdot  v_p^2 \rangle
-(cm^3/s \cdot eV)$ as function of target temperature (eV)
+$\langle \sigma v \cdot m_p / 2 \cdot v_p^2 \rangle$ 
+(\si{\cubic\centi\metre\per\second\electronvolt}) as function of target temperature (\si{\electronvolt})
 \item[{H.9 }]
 double parameter fit of target particle energy weighted rate
 coefficient \\
-$\langle \sigma v  \cdot  m_p /2  \cdot  v_p^2\rangle
-(cm^3/s \cdot eV)$ as function of projectile energy (eV) and target
-temperature (eV)
+$\langle \sigma v \cdot m_p / 2 \cdot v_p^2 \rangle$ 
+(\si{\cubic\centi\metre\per\second\electronvolt}) as function of projectile energy (\si{\electronvolt}) and target
+temperature (\si{\electronvolt})
 \item[{H.10 }]
 double parameter fit of target particle energy weighted rate
 coefficient \\
-$\langle\sigma~v~\cdot~m_p/2~\cdot~v_p^2\rangle$
-$(cm^3/s \cdot eV)$ as function of target density $(cm^3)$ and
-target temperature (eV)
+$\langle \sigma v \cdot m_p / 2 \cdot v_p^2 \rangle$
+(\si{\cubic\centi\metre\per\second\electronvolt}) as function of target density (\si{\cubic\centi\metre}) and
+target temperature (\si{\electronvolt})
 \item[{H.11 }]
 single parameter fit for any other data, e.g.
 to be used in special user supplied programs.
@@ -582,8 +582,8 @@ EIRENE post processing routines in code section ``output", routines: Ba$\_$alpha
 \begin{list}{ }{}
 \item[{H.4 }]
 double parameter table of rate coefficient $\langle \sigma v \rangle
-(cm^3/s)$ as function of target density $(cm^{-3})$ and target
-temperature (eV) read from files containing 2D tabulated rate coefficients, i.e. rate coefficients tabulated vs. 2 independent parameters.
+(\si{\cubic\centi\metre\per\second})$ as function of target density (\si{\per\cubic\centi\metre}) and target
+temperature (\si{\electronvolt}) read from files containing 2D tabulated rate coefficients, i.e. rate coefficients tabulated vs. 2 independent parameters.
 This option uses the \ac{ADAS} adf11 file format as guidance and is developed\slash adapted from it for more general
 A\&M data structures.
 
@@ -596,7 +596,7 @@ which is read only in case of FILNAM = TAB2D  or FILNAM = ADAS.
 \item[{H.10 }]
 same as for H123='H.4', but ionisation and recombination electron energy loss rate coefficients rather than
 reaction rate coefficients. In the original \ac{ADAS} files the names PLT\dots and PRB\dots are used for those quantities. Note:
-distinct from the AMJUEL database convention in case of \ac{ADAS} format the PLT rates (W/cm$^3$) do not contain the potential energy loss
+distinct from the AMJUEL database convention in case of \ac{ADAS} format the PLT rates (\si{\watt\per\cubic\centi\metre}) do not contain the potential energy loss
 DP $\times$ SCD, and the PRB rates contain, in addition to their corresponding rates from AMJUEL, also
 a Bremsstrahlung contribution. Internally EIRENE subtracts this \acs{ADAS}-Bremsstrahlung from electron energy weighted PRB rates
 whenever such rates are read via the \ac{ADAS} format (i.e. whenever FILNAM = ADAS)
@@ -670,14 +670,14 @@ CRC=PH photonic processes
 
 CRC=OT other  (e.g. population coefficients, equilibrium density ratios, etc.)
 \item[\textbf{MASSP }]
-Mass number (AMU) of the first particle involved in the collision,
+Mass number (\ac{AMU}) of the first particle involved in the collision,
 for the original data as being read from the data-file. EIRENE
 automatically re-scales data according to the mass number of the
 actual first particle involved in this particular collision
 process (e.g. if data are given for H atoms in the data-file, but
 are used for D or T atoms in an EIRENE run).
 \item[\textbf{MASST }]
-Mass number (AMU) of the second particle involved in the
+Mass number (\ac{AMU}) of the second particle involved in the
 collision, for the original data as being read from the data-file.
 EIRENE automatically re-scales data according to the mass number
 of the actual second particle involved in this particular
@@ -728,7 +728,7 @@ following definitions implicit in the tables of references
 For the cross section energy scale, the relevant \textbf{laboratory frame} mass is that
 of the charged particle, assuming an ion- or electron beam incident
 onto a cold neutral gas at rest (i.e., the mass in the energy scale is \textbf{neither} the reduced mass
-\textbf{nor} is the energy given in units energy/AMU).
+\textbf{nor} is the energy given in units energy/\ac{AMU}).
 
 For rate coefficients,
 depending upon both the beam energy and the target temperature, however,
@@ -747,7 +747,7 @@ neutral target at rest.
 mass number of the original data for the energy scale in cross
 sections (H.1) and for the temperature scale in the rate
 coefficients (H.2, H.3, H.4). If MASSP = 0 , MASSP is defaulted to the electron
-mass (AMU). I.e., MASSP is the mass number of those collision
+mass (\ac{AMU}). I.e., MASSP is the mass number of those collision
 partners in the \textbf{database}, which would play the role of bulk
 particles in an EIRENE run. But then an automatic re-scaling to the true EIRENE
 bulk ions mass RMASSP(IPLS) of the \textbf{bulk particle in a particular case} is carried out.
@@ -811,8 +811,8 @@ extrapolation parameters again are expected in the atomic data file.
 This option overrules any (if available) low parameter end asymptotics for the present reaction IR, which was possibly found in the atomic data file,
 and this allows to set this asymptotic behavior explicitly here in the input file.
 
-RMN1 = minimum energy or temperature  (in eV)
-for data as read from file. For energies (cross sections) and temperatures (rate coefficients) below RMN1 (eV) the data are
+RMN1 = minimum energy or temperature  (in \si{\electronvolt})
+for data as read from file. For energies (cross sections) and temperatures (rate coefficients) below RMN1 (\si{\electronvolt}) the data are
 extrapolated using the next input card
 
  IFEXMN,FPARM(J),J=1,3.
@@ -847,7 +847,7 @@ y=x/FPARM(1)
 $ex_{low}(x) = FPARM(2) \cdot y^{FPARM(3)} \cdot \log(y)$
 
 recommended for cross section extrapolation at high energy end, for
-reactions with nonzero threshold at FPARM(1) [eV].
+reactions with nonzero threshold at FPARM(1) [\si{\electronvolt}].
 \item[{IFEXMN = 3 }] ~
 
 y=log(x)
@@ -1247,14 +1247,14 @@ For RC (recombination)  collision processes:     only parameter J is in use
 
 \begin{list}{ }{}
 \item[{\# = 0 }]
-constant loss or gain of EP (eV) per collision event.
+constant loss or gain of EP (\si{\electronvolt}) per collision event.
 
 If \# $\hat{=} $ L, and if there is more than one
 heavy particle secondary, then the energy loss/gain EP (reaction exothermicity, or kinetic energy release)
 is distributed over the secondary bulk particles inversely proportional to their masses.
-E.g. for reaction $e+CH_4 \rightarrow CH_3 + H + e$, and EP=ESCD=8.0 eV, then
-the fragment $CH_3$ would receive an extra energy of 0.5 eV, and the fragment $H$ would
-receive 7.5 eV,
+E.g. for reaction $e+CH_4 \rightarrow CH_3 + H + e$, and EP=ESCD=\SI{8.0}{\electronvolt}, then
+the fragment $CH_3$ would receive an extra energy of \SI{0.5}{\electronvolt}, and the fragment $H$ would
+receive \SI{7.5}{\electronvolt},
 both isotropically in the center of mass system of the collision.
 \item[{\# = 1 }] \hfill
 \begin{list}{ }{}
@@ -1403,7 +1403,7 @@ method is used to avoid the weighting, and without need of knowing the integral 
 collision integral.
 Currently this rejection method, for each individual collision process,
 is based upon pre-evaluation (initialisation phase of a run) of the
-product $\sigma(E_{rel}) v_{rel}$ in the hard wired energy range 0.1 to 1.e4 eV,
+product $\sigma(E_{rel}) v_{rel}$ in the hard wired energy range \SIrange{0.1}{1.e4}{\electronvolt},
 determination of the the maximum SGVMAX of that product in this energy range.
 Then during the test particle tracing a comparison ``on the fly" (and rejection, if appropriate) is carried out, of the actual
 value of this product with {RANF} $\times$ SGVMAX, {RANF} being a uniformly distributed random number.
@@ -1508,7 +1508,7 @@ found in block 5, then the corresponding default process is de-activated.
 Hence: D and He atoms are ionized by electron
 impact, using the Corona data 2.1.5 and 2.3.9, respectively, from
 reference \cite{kn:Janev}, and with constant electron energy loss
-per ionization of 13.6 and 24.588 eV, respectively.
+per ionization of \SIlist{13.6;24.588}{\electronvolt}, respectively.
 \medskip
 \paragraph{default model for hydrogenic molecules H$_2$ (and isotopomers) and their ions}
 
@@ -1752,9 +1752,9 @@ IFTFLG $=$ 2    :  generalized Morse potential as described in \cite{kn:Bachmann
 
 \textbf{b) for cross sections, rate coefficients, rates:}
 
-IFTFLG $<$ 100  :  rate coeff. or cross section, $[cm^3/s]$ or $[cm^2]$.
+IFTFLG $<$ 100  :  rate coeff. or cross section, [\si{\cubic\centi\metre\per\second}] or [\si{\square\centi\metre}].
 
-IFTFLG $>$ 100  :  rate = density * rate coeff,  $[s]$
+IFTFLG $>$ 100  :  rate = density * rate coeff,  [\si{\second}]
                  (e.g. used for spontaneous decay, e.g. radiative decay.
 
 mod(IFTFLG,100) = 10:  only one fitting coefficient is read, i.e. the cross section,
@@ -1784,7 +1784,7 @@ on CREAC(1:9,0,KK), \\
 and those for Maxwellian averaged rate coefficients on CREAC(1:9,1:9,KK).
 \medskip
 
-The second argument here controls either the particle energy (in eV) or plasma density (in particles/cm$^3/10^8$) dependence in rate coefficients.
+The second argument here controls either the particle energy (in \si{\electronvolt}) or plasma density (in particles~\SI{1e-8}{\per\cubic\centi\metre}) dependence in rate coefficients.
 
 Higher moments, such as energy-weighted rate coefficients, have been read in and stored on CREAC with a different value of KK.
 

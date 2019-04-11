@@ -88,28 +88,28 @@ $IREI: 1 \le NREI$ : number of electron impact process. See TRCAMD output from t
 IREI is assigned to which species IATM, IMOL, etc.
 \item[\textbf{NAINT = 21 }]
 electron cooling rate coefficient, EELEI3 array  (not ready)
-[eV $\cdot$ (rate-coeff in a.u.)]
+[\si{\electronvolt} $\cdot$ (rate-coeff in a.u.)]
 \item[\textbf{NAINT = 22 }]
 charge exchange rate coefficient, TABCX3 arrays
 \item[\textbf{NAINT = 23 }]
 charge exchange ion energy weighted rate coefficient, EPLCX3 arrays (not ready)
-[eV $\cdot$ (rate-coeff in a.u.)]
+[\si{\electronvolt} $\cdot$ (rate-coeff in a.u.)]
 \item[\textbf{NAINT = 24 }]
 elastic collision rate coefficient, TABEL3 arrays
 \item[\textbf{NAINT = 25 }]
 elastic collision ion energy weighted rate coefficient, EPLEL3 arrays (not ready)
-[eV $\cdot$ (rate-coeff in a.u.)]
+[\si{\electronvolt} $\cdot$ (rate-coeff in a.u.)]
 \item[\textbf{NAINT = 26 }]
 general ion impact collision rate coefficient, TABPI3 arrays
 \item[\textbf{NAINT = 27 }]
 general ion impact collision ion energy weighted rate coefficient, EPLPI3 arrays (not ready)
-[eV $\cdot$ (rate-coeff in a.u.)]
+[\si{\electronvolt} $\cdot$ (rate-coeff in a.u.)]
 \item[\textbf{NAINT = 28 }]
 recombination rate coefficient $\langle<\sigma v\rangle_{rc}  \ [a.u.]$, with the rate coefficient profile taken from TABRC1(IREC,...) arrays.
 $IREC: 1 \le NREC$ : number of recombination process. See TRCAMD output to identify, which recombination
 process is assigned to which species IPLS.
 \item[\textbf{NAINT == 29 }] electron energy loss weighted recombination rate coefficient
-[eV $\cdot$ (rate-coeff in a.u.)]
+[\si{\electronvolt} $\cdot$ (rate-coeff in a.u.)]
 \end{list}
 
 \subsection{Version B2-EIRENE-1999 and older} \label{sec2.14.1}
@@ -135,7 +135,7 @@ The particle and parallel momentum sources are also resolved with respect to rec
 The source rates are given as linear functions of default EIRENE tallies.
 Statistical error estimates (the standard deviations) of all sources transferred to B2 are evaluated in case specific routine STATS1\_COP. All printout of these sources
 and their statistical errors is case specific and done in interfacing module EIRCOP.\\
-\textbf{Particle source: [particles/time/volume], Amp/cm$^3$ }
+\textbf{Particle source: [particles/time/volume], \si{\ampere\per\cubic\centi\metre} }
  \begin{equation}
  S_n(ipls,icell) = \sum_{is} \left[PAPL_{is}(ipls,icell) + PMPL_{is}(ipls,icell) + PIPL_{is}(ipls,icell) \right]
  \end{equation}
@@ -149,7 +149,7 @@ and their statistical errors is case specific and done in interfacing module EIR
  \item
  $PIPL$ is the particle source for background plasma species $ipls$ resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no. 21.
  \end{itemize}
-\textbf{Momentum source: [mass velocity/time/volume], g cm/s Amp /cm$^3$}
+\textbf{Momentum source: [mass velocity/time/volume], \si{\gram\centi\metre\per\second\ampere\per\cubic\centi\metre}}
  \begin{equation}\label{Sm}
  S_{m\parallel}(ipls,icell) = \sum_{is,icop} \left[COPV_{is}(icop,icell) \right]
  \end{equation}
@@ -163,7 +163,7 @@ and their statistical errors is case specific and done in interfacing module EIR
  of EIRENE, the momentum sources parallel to a magnetic field have become default tallies,
  see below in \cref{sec2.14.2}.
 
-\textbf{Ion energy source: [Energy/time/Volume], Watt/cm$^3$} (for total ion energy balance, in laboratory frame)
+\textbf{Ion energy source: [Energy/time/Volume], \si{\watt\per\cubic\centi\metre}} (for total ion energy balance, in laboratory frame)
 \begin{equation}
  S_{Ei}(icell) = \sum_{is} \left[EAPL_{is}(icell) + EMPL_{is}(icell) + EIPL_{is}(icell) \right]
  \end{equation}
@@ -178,7 +178,7 @@ and their statistical errors is case specific and done in interfacing module EIR
  $EIPL$ is the ion energy source  resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no. 36.
  \end{itemize}
 
-\textbf{Electron energy source: [Energy/time/volume], Watt/cm$^3$}
+\textbf{Electron energy source: [Energy/time/volume], \si{\watt\per\cubic\centi\metre}}
 \begin{equation}
  S_{Ee}(icell) = \sum_{is} \left[EAEL_{is}(icell) + EMEL_{is}(icell) + EIEL_{is}(icell) \right]
  \end{equation}
@@ -200,22 +200,22 @@ In the 2D r-z plane (poloidal cross section of a torus) there are so called ``x-
 poloidal magnetic field (or flux surfaces), and ``y-surfaces", running from south to north,  which are aligned with the poloidal magnetic field direction.
 They are read in the following sequence,
 \begin{list}{ }{}
-\item[{= 1 }] DI :plasma ion density $[m^{-3}]$, cell centered
-\item[{= 2 }] UU :poloidal velocity $[m/s]$, x-surface centered
-\item[{= 3 }] VV :radial velocity $[m/s]$, y-surface centered
-\item[{= 4 }] TE :electron temperature $[J]$, cell centered
-\item[{= 5 }] TI :ion temperature $[J]$, cell centered
-\item[{= 6 }] PR :plasma pressure $[N/m^2]$, cell centered
-\item[{= 7 }] UP :parallel velocity $[m/s]$, x-surface centered
-\item[{= 8 }] RR :pitch angle $[1]$, cell centered
-\item[{= 9 }] FNIX: Particle fluxes along the field $[1/s]$, x-surface centered
-\item[{= 10 }] FNIY Particle fluxes across the field $[1/s]$, y-surface centered
-\item[{= 11 }] FEIX Ion energy fluxes along the field $[Watt]$, x-surface centered
-\item[{= 12 }] FEIY Ion energy fluxes across the field $[Watt]$, y-surface centered
-\item[{= 13 }] FEEX Electron energy fluxes along the field $[Watt]$, x-surface centered
-\item[{= 14 }] FEEY Electron energy fluxes across the field $[Watt]$, y-surface centered
-\item[{= 15 }] VOL: cell volume $[m^3]$, cell centered
-\item[{= 16 }] BFELD: magnitude of magnetic field $[T]$, cell centered
+\item[{= 1 }] DI :plasma ion density [\si{\per\cubic\metre}], cell centered
+\item[{= 2 }] UU :poloidal velocity [\si{\metre\per\second}], x-surface centered
+\item[{= 3 }] VV :radial velocity [\si{\metre\per\second}], y-surface centered
+\item[{= 4 }] TE :electron temperature [\si{\joule}], cell centered
+\item[{= 5 }] TI :ion temperature [\si{\joule}], cell centered
+\item[{= 6 }] PR :plasma pressure [\si{\newton\per\square\metre}], cell centered
+\item[{= 7 }] UP :parallel velocity [\si{\metre\per\second}], x-surface centered
+\item[{= 8 }] RR :pitch angle [\num{1}], cell centered
+\item[{= 9 }] FNIX: Particle fluxes along the field [\si{\per\second}], x-surface centered
+\item[{= 10 }] FNIY Particle fluxes across the field [\si{\per\second}], y-surface centered
+\item[{= 11 }] FEIX Ion energy fluxes along the field [\si{\watt}], x-surface centered
+\item[{= 12 }] FEIY Ion energy fluxes across the field [\si{\watt}], y-surface centered
+\item[{= 13 }] FEEX Electron energy fluxes along the field [\si{\watt}], x-surface centered
+\item[{= 14 }] FEEY Electron energy fluxes across the field [\si{\watt}], y-surface centered
+\item[{= 15 }] VOL: cell volume [\si{\cubic\metre}], cell centered
+\item[{= 16 }] BFELD: magnitude of magnetic field [\si{\tesla}], cell centered
 \end{list}
 
 Thereafter index mapping (accounting for grid cuts), and units conversion are carried out,  to turn these fields into EIRENE bulk ion tallies (\cref{tab1old})
@@ -355,7 +355,7 @@ bulk ion density (and flux) multiplication factor. The EIRENE bulk
 ion density (and fluxes) for species IPLS are obtained by multiplying the
 corresponding plasma code profiles for species IFLB(IPLS) with the
 factor FCTE. This option is needed, e.g., if the plasma code treats
-one ion species of mass 2.5 AMU, while EIRENE treats D ions and
+one ion species of mass \SI{2.5}{\atomicmassunit}, while EIRENE treats D ions and
 T ions separately.
 
 Note: in an iterative mode all plasma species in the plasma code
@@ -366,7 +366,7 @@ from quasi-neutrality (and used, e.g., for ionization mean free
 paths), may be inconsistent with the electron density in the
 plasma code.
 \item[\textbf{BMASS }]
-Mass of plasma code species IFLB(IPLS) is BMASS(IPLS) in AMU.
+Mass of plasma code species IFLB(IPLS) is BMASS(IPLS) in \si{\atomicmassunit}.
 \item[\textbf{NDXA,NDYA }] ~
 
 grid size in 2D plasma code. NDXA is the size of the
@@ -521,20 +521,20 @@ the following ``B2-quantities" can be selected.
 
 $1 \le NAINT \le 16 :$
 \begin{list}{ }{}
-\item[{= 1 }] DI :plasma ion density $[m^{-3}]$, also on DIIN, by IPLS species
-\item[{= 2 }] UU :poloidal velocity $[m/s]$
-\item[{= 3 }] VV :radial velocity $[m/s]$
-\item[{= 6 }] PR :plasma pressure $[N/m^2]$
-\item[{= 7 }] UP :parallel velocity $[m/s]$
-\item[{= 8 }] RR :pitch angle $[1]$
-\item[{= 9 }] FNIX: Particle fluxes along the field $[1/s]$
-\item[{= 10 }] FNIY Particle fluxes across the field $[1/s]$
-\item[{= 11 }] FEIX Ion energy fluxes along the field $[Watt]$
-\item[{= 12 }] FEIY Ion energy fluxes across the field $[Watt]$
-\item[{= 13 }] FEEX Electron energy fluxes along the field $[Watt]$
-\item[{= 14 }] FEEY Electron energy fluxes across the field $[Watt]$
-\item[{= 15 }] VOL: cell volume $[m^3]$
-\item[{= 16 }] BFELD: magnitude of magnetic field $[T]$
+\item[{= 1 }] DI :plasma ion density [\si{\per\cubic\metre}], also on DIIN, by IPLS species
+\item[{= 2 }] UU :poloidal velocity [\si{\metre\per\second}]
+\item[{= 3 }] VV :radial velocity [\si{\metre\per\second}]
+\item[{= 6 }] PR :plasma pressure [\si{\newton\per\square\metre}]
+\item[{= 7 }] UP :parallel velocity [\si{\metre\per\second}]
+\item[{= 8 }] RR :pitch angle [\num{1}]
+\item[{= 9 }] FNIX: Particle fluxes along the field [\si{\per\second}]
+\item[{= 10 }] FNIY Particle fluxes across the field [\si{\per\second}]
+\item[{= 11 }] FEIX Ion energy fluxes along the field [\si{\watt}]
+\item[{= 12 }] FEIY Ion energy fluxes across the field [\si{\watt}]
+\item[{= 13 }] FEEX Electron energy fluxes along the field [\si{\watt}]
+\item[{= 14 }] FEEY Electron energy fluxes across the field [\si{\watt}]
+\item[{= 15 }] VOL: cell volume [\si{\cubic\metre}]
+\item[{= 16 }] BFELD: magnitude of magnetic field [\si{\tesla}]
 \end{list}
 
 $21 \le NAINT \le 30 :$
@@ -629,10 +629,10 @@ achieve full symmetry of boundary condition options between east-west and north-
 (up to the real vacuum vessel)
 in which boundary conditions on strongly inclined surfaces are defined.
 \begin{list}{ }{}
-\item[{ 1 }] v\_par,x: parallel velocity $[m/s]$, x-surface (across field, East)  centered
-\item[{ 2 }] v\_par,y: parallel velocity $[m/s]$, y-surface (along field, North) centered
-\item[{ 3 }] v\_rad,x: plasma ion density $[m/s]$, x-surface (across field, East)  centered
-\item[{ 4 }] v\_rad,y: poloidal velocity $[m/s]$, y-surface (along field, North) centered
+\item[{ 1 }] v\_par,x: parallel velocity [\si{\metre\per\second}], x-surface (across field, East)  centered
+\item[{ 2 }] v\_par,y: parallel velocity [\si{\metre\per\second}], y-surface (along field, North) centered
+\item[{ 3 }] v\_rad,x: plasma ion density [\si{\metre\per\second}], x-surface (across field, East)  centered
+\item[{ 4 }] v\_rad,y: poloidal velocity [\si{\metre\per\second}], y-surface (along field, North) centered
 \item[{ 5 }] $\delta_e$\_par,x:   x-surface (across field, East)  centered
 \item[{ 6 }] $\delta_e$\_par,y:   y-surface (along field, North) centered
 \item[{ 7 }] $\delta_e$\_rad,x:   x-surface (across field, East)  centered

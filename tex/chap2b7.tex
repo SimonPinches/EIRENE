@@ -928,7 +928,7 @@ made depending upon the value of the first digit N of NEMODS:
 \item[{N = 1 }]
 Mono-energetic source $f(E) = \delta (E-E0)$ with fixed energy
 
-E0 = SORENI (eV)
+E0 = SORENI (\si{\electronvolt})
 \item[{N = 2 }]
 Mono-energetic source $f(E) = \delta (E-E0)$ with energy
 
@@ -1022,8 +1022,8 @@ input flag, see below.
 In case of .not.(NLPLS.or.NLION), $T_i(ip_0)$ =0.
 \item[{M =1 }]
 The local ion temperature
-$T_i$ is replaced by the input constant SORENI (eV) and
-$T_e$ is replaced by the constant SORENE (eV) in options
+$T_i$ is replaced by the input constant SORENI (\si{\electronvolt}) and
+$T_e$ is replaced by the constant SORENE (\si{\electronvolt}) in options
 N = 4 to N = 7.
 \item[{M =2 }]
 not in use
@@ -1044,14 +1044,14 @@ In case of .NOT.NLPLS, $\vV$ =0.
 \item[{L =1 }]
 The local drift velocity vector
 $\vV $ is replaced by the constant vector (SORVDX, SORVDY,
-SORVDZ) (cm/sec), regardless of the point of birth.
+SORVDZ) (\si{\centi\metre\per\second}), regardless of the point of birth.
 
 \item[{L =2 }]
 The local drift velocity vector
 $\vV $ is replaced by the constant vector
 (SORVDX, SORVDY, SORVDZ) $ \cdot $ CS, where CS is the isothermal ion sound
 velocity for the species and at the temperatures
-chosen above (cm/s).
+chosen above (\si{\centi\metre\per\second}).
 
 Therefore, { (SORVDX,SORVDY,SORVDZ) }
 are now understood as Mach numbers in x,y and z direction
@@ -1239,7 +1239,7 @@ VF(ISPZ,ISTEP,i)= \sum_{j=1}^{j=i} \Delta u_j \cdot FLSTEP(ISPZ,ISTEP,j)
 \end{equation}
 with, again, $\Delta u_J=RRSTEP(J+1,ISTEP)-RRSTEP(J,ISTEP)$,
 
-one for each species index separately. This cumulative flux-distribution is then in units of a flux (source strength), typically in EIRENE: in [Amp].
+one for each species index separately. This cumulative flux-distribution is then in units of a flux (source strength), typically in EIRENE: in [\si{\ampere}].
 
 After this the total flux (normalization constant) \texttt{FLTOT(ISPZ,ISTEP)} = \texttt{VF(ISPZ,ISTEP,NSMAX)} is stored,
 and then the cumulative distributions $VF$ are normalized
@@ -1343,7 +1343,7 @@ m_i    \cdot    V_S \left
 V_S^2   =
 ESHEAT(n_i,{\vec{v}}_{\pi,i} ,T_e),
 \end{equation}
-i.e., the energy $E$ of the particle is increased from $E_0$ to $E_1$ by the amount ESHEAT (eV) as
+i.e., the energy $E$ of the particle is increased from $E_0$ to $E_1$ by the amount ESHEAT (\si{\electronvolt}) as
 compared to the option without sheath acceleration, and this increased energy comes from an additional speed component $V_s$ normal towards the target surface.
 
 The sheath acceleration $ESHEAT = Z_i \cdot \Delta \Phi \cdot T_e$  is computed from the sheath voltage

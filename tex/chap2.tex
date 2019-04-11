@@ -76,28 +76,25 @@ INFCOP for interfacing with other codes.
 cgs units are used, with two exceptions:
 \medskip
 
-All \textbf{temperatures and energies} are in eV.
+All \textbf{temperatures and energies} are in \si{\electronvolt}.
 
-All \textbf{particle fluxes} are in Ampere (i.e. $\#/s \cdot 1.6022
-10^{-19}$), even neutral particle fluxes. Since energies are given in eV units, a particle flux $\times$ energy is already in Watt.
+All \textbf{particle fluxes} are in Ampere (i.e. \SI{1.6022e-19}{\#\per\second}), even neutral particle fluxes. Since energies are given in \si{\electronvolt} units, a particle flux $\times$ energy is already in \si{\watt}.
 
 
 E.g., to convert a \textbf{gas flow rate} $Q$ (= ``mass-flow rate" at temperature $T_0$), which is a quantity given with dimension
 pressure times volume divided by time, to a particle flux (source strength, given in 1/\;time), one utilizes
-the universal gas law $P \times V = N \times k_B T$ to convert from pressure times volume (typically at standard temperature $T_0= 273.15\; K$)
+the universal gas law $P \times V = N \times k_B T$ to convert from pressure times volume (typically at standard temperature $T_0= \SI{273.15}{\kelvin}$)
 to the number $N$ of particles.
-For example  $x$ sl/min (standard liters per
-minute) first divide $x$ by 22.4 (then: mol/min, at ``standard conditions" = normal pressure $1013.25\; mbar$ and normal temperature $T_0$). Next multiply by
-Avogadro's no. $N_A = 6.0221 \cdot 10^{23}$, (i.e., then particles per
-minute), then divide by $60$ (then: particles per second), and
-finally multiply by the elementary charge $1.6022 \cdot 10^{-19}$ (then
-Ampere, as used for particle fluxes in EIRENE).
-Gas (mass-) flow rates given in other units, e.g. $Torr\; m^3/s$ are converted correspondingly.
+For example  $x$ \ac{SLPM} first divide $x$ by \num{22.4} (then: \si{\mole\per\minute}, at ``standard conditions" = normal pressure \SI{1013.25}{\milli\bar} and normal temperature $T_0$). Next multiply by
+Avogadro's no. $N_A = \num{6.0221e23}$, (i.e., then particles~\si{\per\minute}), then divide by \num{60} (then: particles~\si{\per\second}), and
+finally multiply by the elementary charge \num{1.6022e-19} (then
+\si{\ampere}, as used for particle fluxes in EIRENE).
+Gas (mass-) flow rates given in other units, e.g. \si{\torr\cubic\metre\per\second} are converted correspondingly.
 
 Another frequently used dimensional quantity is the (effective) \textbf{pumping speed} $S$, and also \textbf{conductance} $L$ which both have
 dimension volume / time (e.g. litres/sec), i.e. these are ``volumetric flow rates" rather than mass flow rates. Multiplying these volume flow rates
 by the entrance gas pressure
-(or by the pressure difference in case of conductance) produces the (pump-) throughput, a mass flow rate again, i.e., at given temperature a ``pumped particle flux" (1/s).
+(or by the pressure difference in case of conductance) produces the (pump-) throughput, a mass flow rate again, i.e., at given temperature a ``pumped particle flux" (\si{\per\second}).
 
 Pumping speeds and conductances typically depend on pressure themselves, and on temperature $T$ and the type of gas (mass $m$). In the molecular flow regime
 the pressure dependence in $S, L$ diminishes, and $S$ ($L$) can be written as product $S,L =A_{S,L} \cdot v$,
@@ -107,22 +104,22 @@ Implementation of a specified volumetric flow (e.g. a given effective pumping sp
 input flag \textbf{RECYCT}
 
 
-All \textbf{densities} are in $cm^{-3}$.
+All \textbf{densities} are in \si{\per\cubic\centi\metre}.
 
-All \textbf{velocities} are in either cm/s or in (isothermal) Mach-number units.
+All \textbf{velocities} are in either \si{\centi\metre\per\second} or in (isothermal) Mach-number units.
 
-All geometrical data are in cm.
+All geometrical data are in \si{\centi\metre}.
 
-Note: consequently, e.g., energy densities are in $eV/cm^3$, and
-energy fluxes are given in $eV \cdot Amp$, i.e., in $Watt$.
+Note: consequently, e.g., energy densities are in $\si{\electronvolt\per\cubic\centi\metre}$, and
+energy fluxes are given in \si{\electronvolt\ampere}, i.e., in \si{\watt}.
 
-Hence: In order to convert from EIRENE \textbf{energy density} units ($eV/cm^3$) into  \textbf{pressure}
-units in $N/m^2$
-(i.e., Pascal: Pa) one must multiply by $1.6022 \cdot 10^{-19}$ (eV to Nm)
-and multiply by $10^6$ ($cm^{-3} \rightarrow m^{-3}$. Check: 1 Pa gas at 300 K corresponds to
-about $2.7 \cdot 10^{14} \times 0.026~ eV/cm^3 \approx 7 \cdot 10^{12}~ eV/cm^3$, or:
-a gas pressure P in Pa, at gas temperature T (Kelvin) corresponds to a gas density n with $n (m^{-3}) = P/k_B T$,
-with $k_B =1.38 \cdot 10^{-23}$ the Boltzmann constant in J/K units. At 300 K and 1 Pa, the corresponding gas density is $n=2.415...10^{20} m^{-3} = 2.415...10^{14} cm^{-3}$.
+Hence: In order to convert from EIRENE \textbf{energy density} units (\si{\electronvolt\per\cubic\centi\metre}) into  \textbf{pressure}
+units in \si{\newton\per\square\metre}
+(i.e., Pascal: \si{\pascal}) one must multiply by \num{1.6022e-19} (\si{\electronvolt} to \si{\newton\metre})
+and multiply by \num{1e6} ($\si{\per\cubic\centi\metre} \rightarrow \si{\per\cubic\metre}$). Check: \SI{1}{\pascal} gas at \SI{300}{\kelvin} corresponds to
+about $\num{2.7e14} \times \SI{0.026}{\electronvolt\per\cubic\centi\metre} \approx \SI{7e12}{\electronvolt\per\cubic\centi\metre}$, or:
+a gas pressure P in \si{\pascal}, at gas temperature T (\si{\kelvin}) corresponds to a gas density n with $n (\si{\per\cubic\metre}) = P/k_B T$,
+with $k_B = \num{1.38e-23}$ the Boltzmann constant in \si{\joule\per\kelvin} units. At \SI{300}{\kelvin} and \SI{1}{\pascal}, the corresponding gas density is $n=\SI{2.415\dots e20}{\per\cubic\metre} = \SI{2.415\dots e14}{\per\cubic\centi\metre}$.
 
 For example, energy densities as computed by EIRENE defaults
 tallies 5, 6, 7 and 8 (see \cref{tab2}) must be converted into
@@ -132,24 +129,24 @@ described above.
 
 For further scaling to other pressure units note, e.g.:
 
-101.3 Pa = 760 mTorr = 1 mBar
+\SI{101.3}{\pascal} = \SI{760}{\milli\torr} = \SI{1}{\milli\bar}
 
 
-Further: momentum is in $g~cm/s$, and a \textbf{momentum flux}
+Further: momentum is in \si{\gram\centi\metre\per\second}, and a \textbf{momentum flux}
 or momentum rate of change
-is in $g~cm/s \cdot Amp$ (per cell) and the momentum source density
+is in \si{\gram\centi\metre\per\second\ampere} (per cell) and the momentum source density
 in the EIRENE tallies for interfacing with plasma codes is then in
-$g~cm/s~Amp /cm^3$.
+\si{\gram\centi\metre\per\second\ampere\per\cubic\centi\metre}.
 
 Hence, conversion from
-$g~cm/s~Amp $
-into $Pa \cdot m^2$ (momentum source per cell in plasma momentum
-balance equations in SI units) is done by firstly multiplying with $10^{-5}$
-(then: $kg \cdot m/s \cdot Amp$)
+\si{\gram\centi\metre\per\second\ampere}
+into \si{\pascal\square\metre} (momentum source per cell in plasma momentum
+balance equations in SI units) is done by firstly multiplying with \num{1e-5}
+(then: \si{\kilo\gram\metre\per\second\ampere})
 and then dividing by
-$1.6022 \cdot 10^{-19}$ (hence: $kg \cdot m/s^2$).
-After dividing by the cell volume ($m^3$)
-the momentum source is in $Pa/m$, or $N/m^3$ (force density).
+\num{1.6022e-19} (hence: \si{\kilo\gram\metre\per\square\second}).
+After dividing by the cell volume (\si{\cubic\metre})
+the momentum source is in \si{\pascal\per\metre}, or \si{\newton\per\cubic\metre} (force density).
 
 
 \medskip

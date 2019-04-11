@@ -16,7 +16,7 @@ There are, in total, NSBOX cells in a run.
 From the assumption of quasi-neutrality, the specified charge
 state of each background ion species (including  charge state = 0 for neutral background species),
 and the data for density $n_i$ of background species labeled $i$, DIIN(IPLS,icell), an array of
-NSBOX data for the \textbf{electron density} $n_e   (cm^{-3} )$ (DEIN(icell) is
+NSBOX data for the \textbf{electron density} $n_e (\si{\per\cubic\centi\metre} )$ (DEIN(icell) is
 computed in each of the cells (see next subsection: ``derived background data").
 
 Further background tallies (or ``input tallies") defined in this block are related to a
@@ -31,13 +31,13 @@ I.e.: the background medium is
 described by several blocks of NSBOX data each, (i.e. one datum
 per grid cell), so called ``input tallies", namely
 \begin{itemize}
-    \item one array for the electron temperature $T_e $ (eV) (TEIN),
+    \item one array for the electron temperature $T_e$ (\si{\electronvolt}) (TEIN),
     \item either one common or NPLS distinct
-(one for each bulk ion species) arrays for the ion temperature(s) $T_i$ (eV) (TIIN),
-    \item NPLS arrays (one for each bulk ion species), ion densities $n_i   ( cm^{-3} )$ (DIIN),
+(one for each bulk ion species) arrays for the ion temperature(s) $T_i$ (\si{\electronvolt}) (TIIN),
+    \item NPLS arrays (one for each bulk ion species), ion densities $n_i$ (\si{\per\cubic\centi\metre}) (DIIN),
     \item either one common or NPLS distinct
 (one for each bulk ion species) arrays for the (cartesian) drift velocities
-           $\vV = ( V_x , V_y , V_z )$ (VXIN, VYIN, VZIN), either in cm/s or Mach number
+           $\vV = ( V_x , V_y , V_z )$ (VXIN, VYIN, VZIN), either in \si{\centi\metre\per\second} or Mach number
          units.
 \end{itemize}
 
@@ -96,7 +96,7 @@ which is defaulted to 1.0D0 for all cells and all NSPZMC test particle species:
 NSPZMC = NATM + NMOL + NION + NPHOT.  WGHT is currently unused, and could in principle be eliminated
 from all current runs, in particular when storage limitations are a concern.
 
-It furthermore also applies to the zone volume array VOL $cm^{-3}$, $INDPRO(12)$.
+It furthermore also applies to the zone volume array VOL \si{\per\cubic\centi\metre}, $INDPRO(12)$.
 Defaults are the cell volumes computed in EIRENE subroutine VOLUME
 from the standard mesh data.
 
@@ -107,8 +107,7 @@ data" given below. Plasma data other than these ``vacuum values" (meaning: no co
 (see below), or in the user supplied subroutine PLAUSR or with the
 INDPRO=7 option (see below, this section).
 
-Cell volumes in the additional cell region are defaulted to 1.0
-$cm^{-3}$, unless $INDPRO(12)=4, 5, 6, 7$.
+Cell volumes in the additional cell region are defaulted to \SI{1.0}{\per\cubic\centi\metre}, unless $INDPRO(12)=4, 5, 6, 7$.
 
 
 \paragraph{Vacuum zones: no collision processes}
@@ -139,14 +138,14 @@ LGVAC(ICELL,I)=TRUE for I=1,NPLSI and for I=NPLS+1.
 
 The EIRENE vacuum data are defaulted (in subroutine PLASMA) to:
 
-DVAC = 1.0000E 02 $ cm^{-3} $
+DVAC = 1.0000E 02 \si{\per\cubic\centi\metre}
 
-TVAC = 2.0000E-02 eV
+TVAC = 2.0000E-02 \si{\electronvolt}
 
 Furthermore, zero plasma drift velocities are set in cells which are
 treated as vacuum zones.
 
-VVAC = 0.0000E 00  cm/s
+VVAC = 0.0000E 00  \si{\centi\metre\per\second}
 
 for all three cartesian components and for all NPLS background particle species.
 
@@ -376,7 +375,7 @@ read NPLSI cards, for VXIN, VYIN, VZIN , IPLS = 1,NPLSI
 \textbf{New options since 2001:}
 
 By the default ($\emph{0} < \emph{INDPRO(4)} < \emph{10}$): one separate flow field for
-each bulk species is set, velocity is given in cm/sec.
+each bulk species is set, velocity is given in \si{\centi\metre\per\second}.
 
 Negative value of INDPRO(4) means: Mach number
 units instead. The sound speed \emph{cs} is taken to be the isothermal
@@ -506,7 +505,7 @@ P5 $\le$ x $\le$ RHOSRF(NR1ST) :    P(x) = P1
 Parameters P2, P3, P4 have no meaning, except for the
 magnetic-field (INDPRO(5) = 3): Here PROFS(P0, P1, P5, PVAC) is used to
 define the pitch angle profile, and it is also used to set the
-B-field strength (Tesla) by calling PROFS(P2, P3, P5, PVAC)
+B-field strength (\si{\tesla}) by calling PROFS(P2, P3, P5, PVAC)
 
 
 
@@ -585,10 +584,10 @@ This is done by a call to subroutine \verb/PLASMA_DERIV/. The
 following quantities are defined there:
 \begin{list}{ }{}
 \item[\textbf{DEIN }]
-Electron density ($cm^-3$), derived from all NPLSI
+Electron density (\si{\per\cubic\centi\metre}), derived from all NPLSI
 ion densities and the charge states NCHRGP(IPLS) of each ion species.
 \item[\textbf{EDRIFT }]
-Kinetic energy (eV) in drift motion, for each background species IPLS, derived from
+Kinetic energy (\si{\electronvolt}) in drift motion, for each background species IPLS, derived from
 the mass MASSP(IPLS) and the flow velocity VXIN,VYIN,VZIN.
 \item[\textbf{LGVAC }]
 Vacuum flag (logical) to identify regions, in which no collision data for all or
