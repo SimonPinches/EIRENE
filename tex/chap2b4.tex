@@ -527,19 +527,19 @@ temperature (\si{\electronvolt})
 single parameter fit of target particle momentum weighted rate
 coefficient \\
 $\langle~\sigma~v~\cdot~m_p~\cdot~|v_p|~\rangle$ $
-(\si{\cubic\centi\metre\per\second} \cdot AMU \cdot \si{\centi\metre\per\second})$ as function of target temperature
+(\si{\cubic\centi\metre\per\second\atomicmassunit\centi\metre\per\second})$ as function of target temperature
 (\si{\electronvolt})
 \item[{H.6 }]
 double parameter fit of target particle velocity weighted rate
 coefficient \\
 $\langle \sigma v  \cdot  m_p  \cdot  | v_p | \rangle
-(\si{\cubic\centi\metre\per\second} \cdot AMU \cdot \si{\centi\metre\per\second})$ as function of projectile energy (\si{\electronvolt})
+(\si{\cubic\centi\metre\per\second\atomicmassunit\centi\metre\per\second})$ as function of projectile energy (\si{\electronvolt})
 and target temperature (\si{\electronvolt})
 \item[{H.7 }]
 double parameter fit of target particle velocity weighted rate
 coefficient \\
 $\langle \sigma v \cdot m_p \cdot | v_p | \rangle
-(\si{\cubic\centi\metre\per\second} \cdot AMU\cdot \si{\centi\metre\per\second})$ as function of target density (\si{\cubic\centi\metre})
+(\si{\cubic\centi\metre\per\second\atomicmassunit\centi\metre\per\second})$ as function of target density (\si{\cubic\centi\metre})
 and target temperature (\si{\electronvolt})
 \item[{H.8 }]
 single parameter fit of target particle energy weighted rate
@@ -670,14 +670,14 @@ CRC=PH photonic processes
 
 CRC=OT other  (e.g. population coefficients, equilibrium density ratios, etc.)
 \item[\textbf{MASSP }]
-Mass number (AMU) of the first particle involved in the collision,
+Mass number (\ac{AMU}) of the first particle involved in the collision,
 for the original data as being read from the data-file. EIRENE
 automatically re-scales data according to the mass number of the
 actual first particle involved in this particular collision
 process (e.g. if data are given for H atoms in the data-file, but
 are used for D or T atoms in an EIRENE run).
 \item[\textbf{MASST }]
-Mass number (AMU) of the second particle involved in the
+Mass number (\ac{AMU}) of the second particle involved in the
 collision, for the original data as being read from the data-file.
 EIRENE automatically re-scales data according to the mass number
 of the actual second particle involved in this particular
@@ -728,7 +728,7 @@ following definitions implicit in the tables of references
 For the cross section energy scale, the relevant \textbf{laboratory frame} mass is that
 of the charged particle, assuming an ion- or electron beam incident
 onto a cold neutral gas at rest (i.e., the mass in the energy scale is \textbf{neither} the reduced mass
-\textbf{nor} is the energy given in units energy/AMU).
+\textbf{nor} is the energy given in units energy/\ac{AMU}).
 
 For rate coefficients,
 depending upon both the beam energy and the target temperature, however,
@@ -747,7 +747,7 @@ neutral target at rest.
 mass number of the original data for the energy scale in cross
 sections (H.1) and for the temperature scale in the rate
 coefficients (H.2, H.3, H.4). If MASSP = 0 , MASSP is defaulted to the electron
-mass (AMU). I.e., MASSP is the mass number of those collision
+mass (\ac{AMU}). I.e., MASSP is the mass number of those collision
 partners in the \textbf{database}, which would play the role of bulk
 particles in an EIRENE run. But then an automatic re-scaling to the true EIRENE
 bulk ions mass RMASSP(IPLS) of the \textbf{bulk particle in a particular case} is carried out.
