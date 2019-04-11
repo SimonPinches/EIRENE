@@ -78,7 +78,7 @@ The character string 'CRM'  (A6 or A8) identifies which particular internal CR c
 is executed, cell by cell, and whether it is run in meta-stable resolved or
 meta-stable unresolved mode.
 Currently H and He codes are available. Documentation: unfinished. Optional input cards
-control further options, such as population escape factors (opacity effects), etc\dots
+control further options, such as population escape factors (opacity effects), etc.
 
 The meaning of input variables is the same as above. This option bypasses
 data tables or data fits for collision radiative model rate coefficients, cooling rates,
@@ -571,7 +571,7 @@ but often (not always) ratios between two rate coefficients.
 
 Exception: the reduced population coefficients for hydrogenic plasmas, \\
 i.e.,
-2.1.5a, \dots, 2.1.5e, 2.2.5a, 2.2.5e, etc\dots \\
+2.1.5a, \dots, 2.1.5e, 2.2.5a, 2.2.5e, etc. \\
 are currently automatically read in
 EIRENE post processing routines in code section ``output", routines: Ba$\_$alpha, Ba$\_$beta, \dots
 
@@ -687,7 +687,7 @@ The next input deck is read only in case FILNAM = ADAS:
 \begin{list}{ }{}
 \item[\textbf{ELNAME }]
 Name of element in adf11 style formatted file, e.g.\ $Fe$ for iron, $C$ for carbon,
-$W$ for tungsten, etc\dots
+$W$ for tungsten, etc.
 \item[\textbf{IZ }]
 Charge state in adf11 file. This value is always between 1 and $Z_{max}$. For ionization rate coefficients
 $IZ$ specifies the ionization rate coefficient for the ionization process from $IZ-1$ to $IZ$,
@@ -1794,7 +1794,7 @@ accommodated into a single, more general array of generalized data type REACTION
 \subsubsection{Data structure REACDAT (from SVN versions (2008))}
 Atomic, molecular and photonic collision data are stored internally on the data structure REACDAT, which
 replaces and generalizes the older fixed array format CREAC. The purpose is to accommodate
-also data formats other than the old polynomial fits read from data files AMJUEL, HYDHEL, etc\dots,
+also data formats other than the old polynomial fits read from data files AMJUEL, HYDHEL, etc.,
 e.g.\ to allow also tabulated data (1D and 2D tables), in-build full CR codes, as well as the various input data formats for line broadening
 mechanism (line shape functions) in case of radiation transport.
 
@@ -1818,7 +1818,7 @@ LRCT	RTC	Rate coefficient is available
 LRTCMW	RTCMW	Momentum weighted rate coefficient is available
 LRTCEW	RTCEW	Energy rate coefficient is available
 LPHR	PHR	 Photonic process (line-shape, Einstein coefficients, population escape factors\dots) is available
-LOTH	OTH	Other reaction type data (reduced population coefficients, equilibrium  density ratios, etc\dots)
+LOTH	OTH	Other reaction type data (reduced population coefficients, equilibrium  density ratios, etc.)
 
 
 If the logical variable is set to .FALSE. the corresponding pointer is ``unassociated".

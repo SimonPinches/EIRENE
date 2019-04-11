@@ -65,7 +65,7 @@ ELSEIF (NMODE.NE. 0) ... see paragraphs below
 \item[\textbf{NAINI }]
 Number of additional input tallies (module COMUSR, printout: OUTPLA).
 Storage is provided for NAINI additional input tallies. These tallies may be filled
-e.g.\ in the initialization phase of a run, e.g.\ calls to PLAUSR, PROUSR, etc\dots
+e.g.\ in the initialization phase of a run, e.g.\ calls to PLAUSR, PROUSR, etc.
 \item[\textbf{NAINS }]
 species index of additional input tally (case specific, some special preprogrammed cases: see below)
 \item[\textbf{NAINT }]
@@ -128,7 +128,7 @@ are discretized in conservative form (finite volume (FV) schemes) and solved (in
 \frac{D (\frac32 \ n \ T_e)}{Dt} &= S_{Ee} + o.c.
 \end{align}
 $D/Dt$ denotes the derivative (total, or convective derivative, or partial derivative), and $o.c.$ stands for other contributions such as e.g.\ friction forces, pressure gradient forces,
-collisional heating, etc\dots
+collisional heating, etc.
 
 All source rates $S$ are resolved per stratum $is$ and per cell of the computational grid $icell$.
 The particle and parallel momentum sources are also resolved with respect to receiving plasma fluid ion species $ipls$.
