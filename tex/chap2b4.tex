@@ -56,7 +56,7 @@ ENDDO
 \end{verbatim}
 }
 
-either from external A\&M data files such as \texttt{FILNAM} = \texttt{HYDHEL}, = \texttt{METHAN}, = \texttt{AMJUEL}, = \texttt{H2VIBR},
+either from external A\&M data files such as \verb|FILNAM| = \verb|HYDHEL|, = \verb|METHAN|, = \verb|AMJUEL|, = \verb|H2VIBR|,
 for polynomial fits, or other data files
 of appropriate format.
 
@@ -93,7 +93,7 @@ For tabulated (rather than fitted) collision reaction rates,
 electron cooling rates, etc., with a format derived from the
 so called ``\ac{ADAS} database format AFD11",
 or any other properly (2D) tabulated
-data source, i.e.\ with \texttt{FILNAM = TAB2D}, or \texttt{FILNAM = ADAS}
+data source, i.e.\ with \verb|FILNAM = TAB2D|, or \verb|FILNAM = ADAS|
 the corresponding card reads:
 \begin{verbatim}
 
@@ -120,7 +120,7 @@ card is read (containing variables: ELNAME, IZ) for each IR entry, see below, to
 (e.g.\ within an \ac{ADAS} ADF11 file folder).
 
 
-For photonic emission and absorption data (line shapes), i.e.\ for \texttt{FILNAM = PHOTON},
+For photonic emission and absorption data (line shapes), i.e.\ for \verb|FILNAM = PHOTON|,
 the line is shortened to
 \begin{verbatim}
 
@@ -128,7 +128,7 @@ IR  PHOTON  H123  REAC
 
 (format: I3,1X,A6,1X,A4,Axxx)
 \end{verbatim}
-for reading from the spectroscopic line-shape database \texttt{PHOTON},
+for reading from the spectroscopic line-shape database \verb|PHOTON|,
 but additional lines are needed to
 specify the line broadening options. See below.
 
@@ -136,7 +136,7 @@ There also exists an option for specifying constant (or very simple functional d
 cross sections,
 reaction rate coefficients, reaction rates, etc.
 directly via the input file, without resorting to an external database. This has proven useful for testing purposes,
-e.g.\ comparison with simple analytic or numerical solutions. In this case: \texttt{FILNAM = CONST}, further details: see below.
+e.g.\ comparison with simple analytic or numerical solutions. In this case: \verb|FILNAM = CONST|, further details: see below.
 
 
 Later EIRENE will assign the relevant atomic,
@@ -314,21 +314,21 @@ N=5: electrons
 
 \textsl{*** 4. Data for Species Specification and Atomic Physics Module}
 
-Note: in EIRENE$_{2003}$ or later the format of input flag \texttt{REAC} described below was generalized from
-\texttt{A9}  to \texttt{Axxx}, with \texttt{xxx} $\leq 50$,  to accommodate the longer reaction information for photonic
-processes into the same format. The old format \texttt{A9} is of course automatically still recognized as special case.
+Note: in EIRENE$_{2003}$ or later the format of input flag \verb|REAC| described below was generalized from
+\verb|A9|  to \verb|Axxx|, with \verb|xxx| $\leq 50$,  to accommodate the longer reaction information for photonic
+processes into the same format. The old format \verb|A9| is of course automatically still recognized as special case.
 \begin{verbatim}
 NREACI
 DO
 \end{verbatim}
-\textbf{for ``real particles"}, databases: \texttt{FILNAM = HYDHEL, AMJUEL, METHAN, H2VIBR}
+\textbf{for ``real particles"}, databases: \verb|FILNAM = HYDHEL, AMJUEL, METHAN, H2VIBR|
 \begin{verbatim}
    IR  FILNAM  H123  REAC  CRC  MASSP  MASST  DP RMN1  RMX1
    (format: I3,1X,A6,1X,A4,Axxx,A3,2I3,3E12.4)
      IF (RMN1.GT.0.) READ IFEXMN, FPARM(J),J=1,3
      IF (RMX1.GT.0.) READ IFEXMX, FPARM(J),J=4,6
 \end{verbatim}
-\textbf{for ``real particles"}, database: \texttt{FILNAM = ADAS}
+\textbf{for ``real particles"}, database: \verb|FILNAM = ADAS|
 (or any table in an equivalent format as the \ac{ADAS} adf11 files)
 \begin{verbatim}
    IR  ADAS  H123  REAC  CRC  MASSP  MASST  DP
@@ -341,7 +341,7 @@ Extrapolation flags RMN1 and RMX1 are not in use in this case and may be omitted
 schemes are used if the plasma density and temperature is outside the tabulated range.
 \vspace{0.3cm}
 
-\textbf{for ``real particles"}, database: \texttt{FILNAM = CONST}.
+\textbf{for ``real particles"}, database: \verb|FILNAM = CONST|.
 Fit parameters are directly read from input file, up to nine coefficients.
 In EIRENE$_{2005}$ or later: Optional : Further parameter FTFLAG, length: not more than 9 characters.
 \begin{verbatim}
@@ -352,7 +352,7 @@ i.e.: Reading of FTFLAG is optional. Default for FTFLAG: =0. Parameter REAC does
 Extrapolation flags RMN1 and RMX1 are not in use in this case and may be omitted.
 
 \vspace{0.3cm}
-\textbf{for ``photons"}, database \texttt{FILNAM = PHOTON}
+\textbf{for ``photons"}, database \verb|FILNAM = PHOTON|
 \begin{verbatim}
    IR  PHOTON  H123  REAC
    (format: I3,1X,A6,1X,A4,Axxx)
@@ -460,7 +460,7 @@ external file.
 \item[ADAS] Collisional radiative rate coefficients from
 any files tabulated in the same format as \ac{ADAS} adf11 files,
 which must be located in a directory, the path to which is specified in input block 1, \cref{sec2.1},
-by one of the ``CFILE" cards described there:   \texttt{CFILE  ADAS  path/adf11/}
+by one of the ``CFILE" cards described there:   \verb|CFILE  ADAS  path/adf11/|
 \item[PHOTON]  line emission and line absorption constants,
 as well as parameters for line shapes (line broadening constants).
 
@@ -476,11 +476,11 @@ for single parameter fits.
 \begin{list}{}{}
 \item[]
 in case IFTFLG = 10, 110, 210, \dots, ``single parameter", constant collision parameter. One more line \\
- \texttt{F(0), REAL}
+ \verb|F(0), REAL|
 \\ is read.
 
 For all other values of IFTFLG, including the default IFTFLG=0, two more input lines with 9 fitting coefficients\\
-\texttt{F(I), I=0,5 (REAL)}\\ \texttt{F(I), I=6,8 (REAL)}\\ are read, in
+\verb|F(I), I=0,5 (REAL)|\\ \verb|F(I), I=6,8 (REAL)|\\ are read, in
 subroutine SLREAC from the formatted input file.
 
 The natural logarithm of cross-section: $\ln(\sigma)$ (H123 = H.1) or of a rate coefficient: $\ln(R)$ (H123 = H.2, = H.5, or = H.8) is computed as:

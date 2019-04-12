@@ -46,7 +46,7 @@ NLOLDRAN NLCASCAD NLOCTREE NLWRMSH
 
 next input lines are only for EIRENE$_{2005}$ and younger, and
 optional in these versions. There can be any number of these
-cards starting with character string \texttt{CFILE}  in the input file.
+cards starting with character string \verb|CFILE|  in the input file.
 
 ``CFILE" DBHANDLE DBFNAME
 
@@ -84,7 +84,7 @@ Most transparent, and simplest method, load balancing guaranteed. But perhaps no
 \item [\textbf{NMODE}] Operating mode
 \begin{list}{}{}
 \item [= 0 ] EIRENE run as stand-alone-code. Code coupling segment
-\texttt{couple\_Dummy.f} may be used. 
+\verb|couple_Dummy.f| may be used. 
 Input block 14 has a fixed format, see \cref{sec2.14}.
 \item [$\ne$ 0 ]
 EIRENE calls the code coupling subroutine INFCOP in the code coupling segment
@@ -425,9 +425,9 @@ database.
 \end{list}
 Example:
 
-\texttt{CFILE AMJUEL /home/path/AMdata/amjuel.tex}
+\verb|CFILE AMJUEL /home/path/AMdata/amjuel.tex|
 
-\texttt{CFILE TRIM /home/path/Surfacedata/TRIM/trim.dat}
+\verb|CFILE TRIM /home/path/Surfacedata/TRIM/trim.dat|
 
 Default:
 If the specification of an external database name and path,
@@ -465,11 +465,11 @@ data tree, respectively.
 \\
 Example:
 
-\texttt{CFILE ADAS /home/path/AMdata/Adas\_Eirene\_2010/adf11/}
+\verb|CFILE ADAS /home/path/AMdata/Adas_Eirene_2010/adf11/|
 \\
-\texttt{CFILE TRMSGL /home/path/Surfacedata/TRIM/}
+\verb|CFILE TRMSGL /home/path/Surfacedata/TRIM/|
 
-The particular data file from these trees (e.g.: \texttt{SCD96} in case of \ac{ADAS}, or \texttt{A\_on\_B}
+The particular data file from these trees (e.g.: \verb|SCD96| in case of \ac{ADAS}, or \verb|A_on_B|
 in case of TRMSGL), the
 chemical element  and the charge stage of a
 particular ion $Z = 1, \dots, Z+1$ (e.g.: C, 4), are detailed later in

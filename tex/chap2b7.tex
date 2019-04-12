@@ -64,7 +64,7 @@ and finally then sampling the velocity $\vv_0$ from $Q_3(\vv)$ conditional on sp
 
 To facilitate random sampling from $Q_k$ for a particular stratum $k$, each stratum can be further subdivided into a sum of ``substrata":
 \begin{equation}
-Q_k= \sum_j w_{k,j} Q_{k,j}  \quad \texttt{with normalisation} \quad \sum_j  w_{k,j} = 1
+Q_k= \sum_j w_{k,j} Q_{k,j}  \quad \verb|with normalisation| \quad \sum_j  w_{k,j} = 1
 \end{equation}
 There are NSRFSI substrata, and the weights $w_{k,j}, \ j = 1, \dots, NSRFSI$, are used for first determining a particular
 substratum $j_0$ by sampling, and then sampling from distribution $Q_{k,j_0}(\vr,\vv,i,t)$ of stratum $k$ as described above.
@@ -1146,7 +1146,7 @@ $0^{\circ}$ to  $360^{\circ}$.
 \label{sec2.7.1}
 The statement:
 
-\texttt{A = STEP(NSPZI,NSPZE,NSMAX(ISTEP),ISTEP)}
+\verb|A = STEP(NSPZI,NSPZE,NSMAX(ISTEP),ISTEP)|
 
 initializes (piecewise constant) step functions for random sampling by the inversion method,
 ISTEP is an index labeling one such a step function, and there may be NSTEP different step functions (species index)
@@ -1154,7 +1154,7 @@ with one common set of abscissae.
 
 The statement:
 
-\texttt{B = STEP1(IINDEX,ISTEP,RNF,ISPEZ)}
+\verb|B = STEP1(IINDEX,ISTEP,RNF,ISPEZ)|
 
 converts a uniformly distributed random number RNF into a random number sampled
 from the step function  no.\ ISTEP.
@@ -1162,21 +1162,21 @@ from the step function  no.\ ISTEP.
 \medskip
 
 Sampling of the birth-point of a trajectory is sometimes done from such
-piecewise constant functions (\texttt{EIRENE} function \texttt{STEP}(\dots) ), e.g.,
-if one digit of the flag \texttt{SORLIM} has been set to the value 4.
+piecewise constant functions (\verb|EIRENE| function \verb|STEP|(\dots) ), e.g.,
+if one digit of the flag \verb|SORLIM| has been set to the value 4.
 This is the case if, for example, a recycling ion flux distribution is given
 in discretized form on a grid along a target surface (from an external \ac{CFD} plasma solver).
 
 The
 random sampling of a coordinate $u$ is from the step-function
-\texttt{FLSTEP(RRSTEP)}. There is storage for up to \texttt{NSTEP} (see \texttt{PARMUSR})
+\verb|FLSTEP(RRSTEP)|. There is storage for up to \verb|NSTEP| (see \verb|PARMUSR|)
 such step-functions.
 
 $u_i = RRSTEP(i,ISTEP), i = 1, \dots, NSMAX(ISTEP) - 1$, is a discrete ordered (either increasing or decreasing) set of
 abscissae $u_i$, at which the piecewise constant step-function has
 a jump to $FLSTEP(u_i)$.
 
-The final interval ends at \texttt{RRSTEP(NSMAX(ISTEP),ISTEP)}
+The final interval ends at \verb|RRSTEP(NSMAX(ISTEP),ISTEP)|
 
 Internally the piecewise constant function $FLSTEP$ is translated into a (normalized) cummulative
 distribution $VF(u)$ for random number generation. FLSTEP itself is not necessarily normalized.
@@ -1184,53 +1184,53 @@ distribution $VF(u)$ for random number generation. FLSTEP itself is not necessar
 
 Let RNF be a uniform random number on the interval
 \begin{equation}\nonumber
-0.0 =\texttt{VF(RRSTEP(1,ISTEP))} \rightarrow \texttt{VF(RRSTEP(NSMAX),ISTEP)} = 1.0,
+0.0 =\verb|VF(RRSTEP(1,ISTEP))| \rightarrow \verb|VF(RRSTEP(NSMAX),ISTEP)| = 1.0,
 \end{equation}
 
 or on a sub-interval thereof.
 
-By calls to the entry \texttt{STEP1(IINDEX,ISTEP,RNF,ISPEZ)} of Function \texttt{STEP}
-the randomly sampled index $i$=\texttt{IINDEX} is returned, as well as a coordinate $u$ sampled from an
+By calls to the entry \verb|STEP1(IINDEX,ISTEP,RNF,ISPEZ)| of Function \verb|STEP|
+the randomly sampled index $i$=\verb|IINDEX| is returned, as well as a coordinate $u$ sampled from an
 uniform distribution on the $i^{th}$ increment $\Delta u_i$
-= \texttt{RRSTEP(i+1, \dots) - RRSTEP(i, \dots)}: $u$=\texttt{STEP1}
+= \verb|RRSTEP(i+1, ...) - RRSTEP(i, ...)|: $u$=\verb|STEP1|
 
-In case of \texttt{LEVGEO=1} or \texttt{LEVGEO=2} $u$ has the simple meaning of one of the
-spatial coordinates in an \texttt{EIRENE} run.
+In case of \verb|LEVGEO=1| or \verb|LEVGEO=2| $u$ has the simple meaning of one of the
+spatial coordinates in an \verb|EIRENE| run.
 
 However, $u$ need not necessarily be one of the 3 spatial
-coordinates. \texttt{RRSTEP} can also stand, e.g., for an arc-length along
-a polygon (\texttt{LEVGEO=3}), or for the cumulated length of an element in
-a selected list of sides of triangles (\texttt{LEVGEO=4}) or for the
+coordinates. \verb|RRSTEP| can also stand, e.g., for an arc-length along
+a polygon (\verb|LEVGEO=3|), or for the cumulated length of an element in
+a selected list of sides of triangles (\verb|LEVGEO=4|) or for the
 cumulated area of a surface element in a selected list of surfaces
-of tetrahedrons (\texttt{LEVGEO=5}). In these latter cases only the index
-\texttt{IINDEX} is used, and a point from an uniform distribution on the
-line-, or  surface element, to which \texttt{IINDEX} points, must
+of tetrahedrons (\verb|LEVGEO=5|). In these latter cases only the index
+\verb|IINDEX| is used, and a point from an uniform distribution on the
+line-, or  surface element, to which \verb|IINDEX| points, must
 still be sampled.
 
 
-The probability density functions \texttt{FLSTEP} for sampling a position
-(or cell index) \texttt{RR}
-are set in function \texttt{STEP} from a piecewise constant distribution
-function (e.g., from a surface flux density distribution). In the same call to \texttt{STEP} also their corresponding
-cumulative functions \texttt{VF} are obtained by integration of \texttt{FLSTEP} over \texttt{RRSTEP}, and normalization.
+The probability density functions \verb|FLSTEP| for sampling a position
+(or cell index) \verb|RR|
+are set in function \verb|STEP| from a piecewise constant distribution
+function (e.g., from a surface flux density distribution). In the same call to \verb|STEP| also their corresponding
+cumulative functions \verb|VF| are obtained by integration of \verb|FLSTEP| over \verb|RRSTEP|, and normalization.
 
 These step-functions have to be set in the initialization phase
-(by calls to function \texttt{STEP} from \texttt{SAMUSR}, \texttt{INFUSR}, etc.).
+(by calls to function \verb|STEP| from \verb|SAMUSR|, \verb|INFUSR|, etc.).
 
 
-The initialization call to function \texttt{STEP} reads:
+The initialization call to function \verb|STEP| reads:
 
-\texttt{FLUX = STEP(NSPZI,NSPZE,NSMAX(ISTEP),ISTEP)}
+\verb|FLUX = STEP(NSPZI,NSPZE,NSMAX(ISTEP),ISTEP)|
 
-This call will initialize the step-function no.\ \texttt{ISTEP}, for a range of species
-\texttt{ISPZ=NSPZI, NSPZE}.
+This call will initialize the step-function no.\ \verb|ISTEP|, for a range of species
+\verb|ISPZ=NSPZI, NSPZE|.
 
 At this point the grid RRSTEP and the distribution density FLSTEP on that grid must be defined (module CSTEP).
 RRSTEP is an ordered set of numbers, the abscissae of the points when FLSTEP jumps from one value to another.
 RRSTEP may have dimension length, area, volume or any other dimension of the independent variable for the
 piecewise constant distribution FLSTEP.
 
-In the initialization call to function STEP the distribution density \texttt{FLSTEP} (Flux per unit length or area or volume,
+In the initialization call to function STEP the distribution density \verb|FLSTEP| (Flux per unit length or area or volume,
 or whatever the dimension of RRSTEP is.)
 is then converted into
 a (set of) cumulative distribution $VF$ by
@@ -1241,7 +1241,7 @@ with, again, $\Delta u_J=RRSTEP(J+1,ISTEP)-RRSTEP(J,ISTEP)$,
 
 one for each species index separately. This cumulative flux-distribution is then in units of a flux (source strength), typically in EIRENE: in [\si{\ampere}].
 
-After this the total flux (normalization constant) \texttt{FLTOT(ISPZ,ISTEP)} = \texttt{VF(ISPZ,ISTEP,NSMAX)} is stored,
+After this the total flux (normalization constant) \verb|FLTOT(ISPZ,ISTEP)| = \verb|VF(ISPZ,ISTEP,NSMAX)| is stored,
 and then the cumulative distributions $VF$ are normalized
 to
 \begin{equation}\nonumber
@@ -1250,24 +1250,24 @@ VF(\dots,i) = VF(\dots,i)/FLTOT(\dots),  \ \ \ \ i=1,NSMAX(\dots).
 hence enforcing $VF(ISPZ,ISTEP,NSMAX) = 1$ for random sampling.
 
 
-The pdf FLSTEP, the cumulative distributions \texttt{VF}
-and normalization factors \texttt{FLTOT} themselves
-are stored in module \texttt{CSTEP.f},
+The pdf FLSTEP, the cumulative distributions \verb|VF|
+and normalization factors \verb|FLTOT| themselves
+are stored in module \verb|CSTEP.f|,
 as well as the normalized invers functions
 (quantile functions) of the cumulative distributions,
 which are needed for efficient random sampling.
 
 
 
-Default initializations of functions \texttt{STEP} are carried out in the
-initialization of surface source sampling routine \texttt{SAMSRF}, entry
-\texttt{SMSRF0}.
+Default initializations of functions \verb|STEP| are carried out in the
+initialization of surface source sampling routine \verb|SAMSRF|, entry
+\verb|SMSRF0|.
 
-Random sampling using such step-functions \texttt{STEP} is done, e.g., from
-surface source sampling routine \texttt{SAMSRF}, entry \texttt{SMSRF1}.
+Random sampling using such step-functions \verb|STEP| is done, e.g., from
+surface source sampling routine \verb|SAMSRF|, entry \verb|SMSRF1|.
 
 In addition to the value of the distribution
-\texttt{FLSTEP(i)}, the normalization constants \texttt{FLTOT} and the normalized cumulative \texttt{VF(i)} in each interval
+\verb|FLSTEP(i)|, the normalization constants \verb|FLTOT| and the normalized cumulative \verb|VF(i)| in each interval
 some further quantities may be defined as function of the interval index
 ``$i$":
 
@@ -1297,12 +1297,12 @@ electrostatic sheath potential at the  surface segment ``$i$"
 \textbf{Default step functions}
 
 Step functions for sampling the radial coordinate (at a given or sampled  poloidal and toroidal position)
-(\texttt{INDIM}=1, \texttt{SORLIM}-digit N = 4) are defined internally during the initialisation step of surface sampling routine \texttt{SAMSRF} if the selected step functions
-\texttt{SORIND=ISTEP} has not been defined externally already.
-Also in case of unstructured grids (\texttt{LEVGEO}=4,5) default step functions can be defined for non-default surfaces.
+(\verb|INDIM|=1, \verb|SORLIM|-digit N = 4) are defined internally during the initialisation step of surface sampling routine \verb|SAMSRF| if the selected step functions
+\verb|SORIND=ISTEP| has not been defined externally already.
+Also in case of unstructured grids (\verb|LEVGEO|=4,5) default step functions can be defined for non-default surfaces.
 
 
-In such cases the particle flux  spatial sampling distribution \texttt{FLSTEP} of background species $ip$ on a radial grid segment $i$ or triangle side $i$ or tetrahedron side $i$ is computed as
+In such cases the particle flux  spatial sampling distribution \verb|FLSTEP| of background species $ip$ on a radial grid segment $i$ or triangle side $i$ or tetrahedron side $i$ is computed as
 \begin{equation}
 FLSTEP(ip,i)=n_i(ip) \times cs(ip)
 \end{equation}
@@ -1313,11 +1313,11 @@ cs(ip)=\sqrt{[Z_i T_e+T_i(ip)]/m_i(ip)}.
 \end{equation}
 Here $Z_i$ denotes the ion electric charge.
 
-The mean incident ion energy $ELSTEP=E_i$ corresponds to that resulting from the \texttt{NEMOD} = 2, 3 options,
-with $E_i=3.0 T_i + 0.5 Z_i T_e$ and the sheath potential $SHSTEP= Sh$ is set to the sheath potential flag for the non-default surface: \texttt{FSHEAT}, see input block 6.
+The mean incident ion energy $ELSTEP=E_i$ corresponds to that resulting from the \verb|NEMOD| = 2, 3 options,
+with $E_i=3.0 T_i + 0.5 Z_i T_e$ and the sheath potential $SHSTEP= Sh$ is set to the sheath potential flag for the non-default surface: \verb|FSHEAT|, see input block 6.
 
 Note that by setting SHSTEP and hence parameter $Sh$, the evaluation of the full sheath potential function $\Delta \Phi$
-in energy sampling options \texttt{NEMODS}, digit N=3,5,7 and 9 is overruled by using $\Delta \Phi = Sh$ instead.
+in energy sampling options \verb|NEMODS|, digit N=3,5,7 and 9 is overruled by using $\Delta \Phi = Sh$ instead.
 
 
 \subsection{Electrostatic sheath acceleration}
@@ -1325,10 +1325,10 @@ in energy sampling options \texttt{NEMODS}, digit N=3,5,7 and 9 is overruled by 
 
 For surface sources, and ionic source particles (test ions or bulk ion, with charge $Z_i$) an acceleration of the
 sampled velocity vector $\vv_0$ towards the surface, in the direction normal to the target surface, may be added.
-I.e.\ the velocity space sampling described above (\texttt{NEMODS} options, digit N) is regarded to provide the velocity at the entrance
+I.e.\ the velocity space sampling described above (\verb|NEMODS| options, digit N) is regarded to provide the velocity at the entrance
 of the electrostatic sheath in front of a target surface.
 
-Energy sampling options \texttt{NEMODS} N= 3,5,7,9 add this sheath contribution to velocities sampled from the corresponding options N= 2,4,6, and 8, respectively.
+Energy sampling options \verb|NEMODS| N= 3,5,7,9 add this sheath contribution to velocities sampled from the corresponding options N= 2,4,6, and 8, respectively.
 
 Let $\vv_0=\vV_0$. This sheath acceleration is achieved by setting a new velocity $\vV_1$:
 
