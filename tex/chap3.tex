@@ -378,10 +378,10 @@ Then, in order to estimate a response for a detector function $g$ on
 additional tally number ITALV, a statement in subroutine UPTUSR
 should read:
 \begin{lstlisting}
- DO IC=1,NCOU
-   ICELL=NRCELL+NUPC(IC)*NR1P2+NBLCKA
-   ADDV(ITALV,ICELL) = ADDV(ITALV,ICELL) + WV * CLPC(IC) *  g
- ENDDO
+      DO IC=1,NCOU
+        ICELL=NRCELL+NUPC(IC)*NR1P2+NBLCKA
+        ADDV(ITALV,ICELL) = ADDV(ITALV,ICELL) + WV * CLPC(IC) * g
+      ENDDO
 \end{lstlisting}
 
 Here $CLPC$ is the length $l$ of the flight in the cell ICELL, $g$
@@ -415,7 +415,7 @@ additional tally number ICOLV, a statement in subroutine UPCUSR
 should read:
 
 \begin{lstlisting}
- COLV(ICOLV,ICELL) = COLV(ICOLV,ICELL) + WS * g  .
+      COLV(ICOLV,ICELL) = COLV(ICOLV,ICELL) + WS * g
 \end{lstlisting}
 
 Here $g$ is evaluated at the point of a collision, which is known
@@ -461,7 +461,7 @@ Then, in order to estimate a response for a detector function $g$ on
 snapshot tally number ISNV, a statement in subroutine UPNUSR should
 read:
 \begin{lstlisting}
- SNAPV(ISNV,ICELL) = SNAPV(ISNV,ICELL) + WSNAP * g(...)  .
+      SNAPV(ISNV,ICELL) = SNAPV(ISNV,ICELL) + WSNAP * g(...)  .
 \end{lstlisting}
 E.g., with $g=1$ this is an unbiased estimate of cell averaged particle density at
 time $t=t^*$, see \cref{est}, i.e., just counting the particle weights at $t=t^*$
@@ -890,10 +890,10 @@ INDEX = 1     :\\
 Ion temperature (\si{\electronvolt}), NPLSI calls, one for each
 ion species. I.e.:
 \begin{lstlisting}
-DO IPLS=1,NPLSI
-  CALL PROUSR(HELP,1+0*NPLSI,TI0(IPLS),...,NSURF)
-  CALL RESETP(TIIN,HELP,IPLS,1,NPLS,NSURF)
-ENDDO
+      DO IPLS=1,NPLSI
+        CALL PROUSR(HELP,1+0*NPLSI,TI0(IPLS),...,NSURF)
+        CALL RESETP(TIIN,HELP,IPLS,1,NPLS,NSURF)
+      ENDDO
 \end{lstlisting}
 \item
 INDEX = 1+ NPLS     : \\
@@ -1037,7 +1037,7 @@ Identify cell index from a point given by its three cartesian coordinates.
 The function LEAUSR is called from functions LEARC1
 and LEARCA in case of LEVGEO=10. The call is
 \begin{lstlisting}
-NCELL=LEAUSR(X,Y,Z)
+      NCELL=LEAUSR(X,Y,Z)
 \end{lstlisting}
 Here X,Y,Z are the Cartesian
 coordinates of a point inside the computational domain in centimeters.
@@ -1078,8 +1078,8 @@ block 3a, this information is returned (by a negative value of argument NEWCEL.
 
 The call is
 \begin{lstlisting}
-CALL TIMUSR (NRCELL,X0,Y0,Z0,VELX,VELY,VELZ,
-             NJUMP,NEWCEL,TIM,ICOS,IERR,NPANU,NLSRFX)
+      CALL TIMUSR (NRCELL,X0,Y0,Z0,VELX,VELY,VELZ,
+     .             NJUMP,NEWCEL,TIM,ICOS,IERR,NPANU,NLSRFX)
 \end{lstlisting}
 \textbf{Input}
 
@@ -1152,7 +1152,7 @@ See subroutine TIMER in code segment GEO3D.F
 \label{sec3.8.3} The subroutine VOLUSR is called from subroutine
 VOLUME in case of LEVGEO=10. The call is
 \begin{lstlisting}
-CALL VOLUSR(N,A)
+      CALL VOLUSR(N,A)
 \end{lstlisting}
 Here N is the total number of cells in this run, and
 A is an array of length N, containing the N cell volume values in \si{\cubic\centi\metre}.
@@ -1164,7 +1164,7 @@ It is called in the LEVGEO=10 option from subroutine
 STDCOL,  after all surface intersection settings and possible switches have been carried out,
 or directly via the entry point STDNOR of STDCOL. The call is
 \begin{lstlisting}
-CALL NORUSR(M,X,Y,Z,CX,CY,CZ,SCOS,VELX,VELY,VELZ,NRCELL)
+      CALL NORUSR(M,X,Y,Z,CX,CY,CZ,SCOS,VELX,VELY,VELZ,NRCELL)
 \end{lstlisting}
 
 

@@ -131,70 +131,70 @@ EIRENE in the initialization phase.
 
 \textsl{*** 2. Data for Standard Mesh}
 \begin{lstlisting}
- (INDGRD(J), J=1,3)
- ** 2A. x- or radial co-ordinate surfaces
- NLRAD
- IF (NLRAD) then
-    NLSLB  NLCRC  NLELL  NLTRI  NLPLG  NLFEM  NLTET NLGEN
-    NR1ST  NRSEP  NRPLG  NPPLG  NRKNOT NCOOR
-    IF (INDGRD(1).LE.5) THEN
-       IF (NLSLB.OR.NLCRC.OR.NLELL.OR.NLTRI) THEN
-          RIA  RGA  RAA  RRA
-          IF (NLELL.OR.NLTRI) THEN
-             EPIN  EPOT  EPCH  EXEP
-             ELIN  ELOT  ELCH  EXEL
-             IF (NLTRI) THEN
-               TRIN  TROT  TRCH  EXTR
+      (INDGRD(J), J=1,3)
+** 2A. x- or radial co-ordinate surfaces
+      NLRAD
+      IF (NLRAD) then
+        NLSLB  NLCRC  NLELL  NLTRI  NLPLG  NLFEM  NLTET NLGEN
+        NR1ST  NRSEP  NRPLG  NPPLG  NRKNOT NCOOR
+        IF (INDGRD(1).LE.5) THEN
+          IF (NLSLB.OR.NLCRC.OR.NLELL.OR.NLTRI) THEN
+            RIA  RGA  RAA  RRA
+            IF (NLELL.OR.NLTRI) THEN
+              EPIN  EPOT  EPCH  EXEP
+              ELIN  ELOT  ELCH  EXEL
+              IF (NLTRI) THEN
+                TRIN  TROT  TRCH  EXTR
+              ENDIF
             ENDIF
+          ELSEIF (NLPLG) THEN
+            XPCOR  YPCOR  ZPCOR  PLREFL
+           (NPOINT(1,K) NPOINT(2,K), K=1,NPPLG)
+            DO 21 I=1,NR1ST
+              (XPOL(I,J) YPOL(I,J),  J=1,NRPLG)
+  21        CONTINUE
+          ELSEIF (NLFEM) THEN
+            XPCOR  YPCOR  ZPCOR
+            NRKNOT
+            (XTRIAN(I),I=1,NRKNOT)
+            (YTRIAN(I),I=1,NRKNOT)
+            DO ITRI=1,NR1ST
+              I,NVERT(1,ITRI),NVERT(2,ITRI),NVERT(3,ITRI),
+              NEIGH(1,ITRI),NSIDE(1,ITRI),IPROP(1,ITRI),
+              NEIGH(2,ITRI),NSIDE(2,ITRI),IPROP(2,ITRI),
+              NEIGH(3,ITRI),NSIDE(3,ITRI),IPROP(3,ITRI)
+            ENDDO
           ENDIF
-       ELSEIF (NLPLG) THEN
-          XPCOR  YPCOR  ZPCOR  PLREFL
-         (NPOINT(1,K) NPOINT(2,K), K=1,NPPLG)
-          DO 21 I=1,NR1ST
-             (XPOL(I,J) YPOL(I,J),  J=1,NRPLG)
- 21       CONTINUE
-       ELSEIF (NLFEM) THEN
-         XPCOR  YPCOR  ZPCOR
-         NRKNOT
-         (XTRIAN(I),I=1,NRKNOT)
-         (YTRIAN(I),I=1,NRKNOT)
-         DO ITRI=1,NR1ST
-           I,NVERT(1,ITRI),NVERT(2,ITRI),NVERT(3,ITRI),
-             NEIGH(1,ITRI),NSIDE(1,ITRI),IPROP(1,ITRI),
-             NEIGH(2,ITRI),NSIDE(2,ITRI),IPROP(2,ITRI),
-             NEIGH(3,ITRI),NSIDE(3,ITRI),IPROP(3,ITRI)
-         ENDDO
-       ENDIF
-    ELSEIF (INDGRD(1).EQ.6) THEN
-      IF (NLSLB.OR.NLCRC.OR.NLELL.OR.NLTRI) THEN
-        RIA  RGA  RAA
-      ELSEIF (NLPLG.OR.NLFEM.OR.NLTET) THEN
-        XPCOR  YPCOR  ZPCOR
+        ELSEIF (INDGRD(1).EQ.6) THEN
+          IF (NLSLB.OR.NLCRC.OR.NLELL.OR.NLTRI) THEN
+            RIA  RGA  RAA
+          ELSEIF (NLPLG.OR.NLFEM.OR.NLTET) THEN
+            XPCOR  YPCOR  ZPCOR
+          ENDIF
+        ENDIF
       ENDIF
-    ENDIF
- ENDIF
- ** 2B. y- or poloidal grid surfaces
- NLPOL
- NLPLY  NLPLA  NLPLP
- NP2ND  NPSEP  NPPLA  NPPER
- IF (INDGRD(2).LE.5) THEN
-    YIA  YGA  YAA  YYA
- ENDIF
- ** 2C. z- or toroidal grid surfaces
- NLTOR
- NLTRZ  NLTRA  NLTRT
- NT3RD  NTSEP  NTTRA  NTPER
- IF (INDGRD(3).LE.5) THEN
-    ZIA  ZGA  ZAA  ZZA  ROA
- ENDIF
- ** 2D. mesh multiplication
- NLMLT
- NBMLT
- IF (NBMLT GT 1) (VOLCOR(NM), NM = 1,NBMLT)
- ** 2E. additional cells outside standard mesh
- NLADD
- NRADD
- IF (NRADD.GT.0) (VOLADD(NM), NM = 1,NRADD)
+** 2B. y- or poloidal grid surfaces
+      NLPOL
+      NLPLY  NLPLA  NLPLP
+      NP2ND  NPSEP  NPPLA  NPPER
+      IF (INDGRD(2).LE.5) THEN
+        YIA  YGA  YAA  YYA
+      ENDIF
+** 2C. z- or toroidal grid surfaces
+      NLTOR
+      NLTRZ  NLTRA  NLTRT
+      NT3RD  NTSEP  NTTRA  NTPER
+      IF (INDGRD(3).LE.5) THEN
+        ZIA  ZGA  ZAA  ZZA  ROA
+      ENDIF
+** 2D. mesh multiplication
+      NLMLT
+      NBMLT
+      IF (NBMLT GT 1) (VOLCOR(NM), NM = 1,NBMLT)
+** 2E. additional cells outside standard mesh
+      NLADD
+      NRADD
+      IF (NRADD.GT.0) (VOLADD(NM), NM = 1,NRADD)
 \end{lstlisting}
 
 \medskip

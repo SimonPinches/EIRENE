@@ -93,14 +93,14 @@ rather unhandy reflection data and formulas.
 
 \textsl{*** 6A. Data for General Reflection Models}
 \begin{lstlisting}
- NLTRIM
-``Path-Card'' for TRIM surface reflection files
- (machine specific, may be omitted)
+      NLTRIM
+C     ``Path-Card'' for TRIM surface reflection files
+C     (machine specific, may be omitted)
 \end{lstlisting}
 If a ``Path Card'' is included, then read an arbitrary number of
 ``Target-Projectile Specification Cards'' of the format
 \begin{lstlisting}
- A_on_B
+      A_on_B
 \end{lstlisting}
 Up to NHD6 (see PARAMETER statements, \cref{sec3.1}) data files for different
 Target-Projectile combinations can be read in EIRENE versions older than 2001. No such limitation exists in
@@ -111,13 +111,13 @@ If no ``Path Card'' has been specified, or after the
 species sampling distributions, used for source particle species sampling as well as
 for sampling post-surface event species as part of the surface reflection models
 \begin{lstlisting}
- (DATD(I) I=1,NATM)
- (DMLD(I) I=1,NMOL)
- (DIOD(I) I=1,NION)
- (DPLD(I) I=1,NPLS)
- (DPHT(I) I=1,NPHOT)  (this card is to be read only in case 
-                       NPHOT > 0)
- ERMIN  ERCUT  RPROB0  RINTEG EINTEG AINTEG
+      (DATD(I) I=1,NATM)
+      (DMLD(I) I=1,NMOL)
+      (DIOD(I) I=1,NION)
+      (DPLD(I) I=1,NPLS)
+      (DPHT(I) I=1,NPHOT)  ! (this card is to be read only in case 
+                           ! NPHOT > 0)
+      ERMIN  ERCUT  RPROB0  RINTEG EINTEG AINTEG
 \end{lstlisting}
 Note that the species index distribution cards must always be read,
 even if NATM, NMOL, NION or NPLS are zero. In this latter case at
@@ -135,19 +135,19 @@ Next, optionally, an arbitrary number of surface models, labelled by
 the character string $'modname'$, may be read.
 
 \begin{lstlisting}
-SURFMOD_modname
-    ILREF  ILSPT ISRS  ISRC
-    ZNML EWALL EWBIN TRANSP(1,N) TRANSP(2,N) FSHEAT
-    RECYCF  RECYCT  RECPRM  EXPPL  EXPEL  EXPIL
-    RECYCS  RECYCC  SPTPRM  ESPUTS ESPUTC (this line may be 
-                             omitted, then: default sputter 
-                             model, see below)
+     SURFMOD_modname
+     ILREF  ILSPT ISRS  ISRC
+     ZNML EWALL EWBIN TRANSP(1,N) TRANSP(2,N) FSHEAT
+     RECYCF  RECYCT  RECPRM  EXPPL  EXPEL  EXPIL
+     RECYCS  RECYCC  SPTPRM  ESPUTS ESPUTC ! (this line may be 
+                             ! omitted, then: default sputter 
+                             ! model, see below)
 \end{lstlisting}
 next: within each SURFMOD-sub-block there may be an
 arbitrary number of lines
 \begin{lstlisting}
-VARNAME  SPZNAME   VALUE
-(format: CHARACTER*8,X,CHARACTER*8,*)
+      VARNAME  SPZNAME   VALUE
+C     (format: CHARACTER*8,X,CHARACTER*8,*)
 \end{lstlisting}
 \medskip
 
@@ -389,7 +389,7 @@ the surface number.
 Presently this ``localization option" is available for the flags
 
 \begin{lstlisting}
-RINTEG, EINTEG, AINTEG
+      RINTEG, EINTEG, AINTEG
 \end{lstlisting}
 Overwriting
 general reflection data for some specific surfaces can
@@ -879,10 +879,10 @@ dimensioned arrays (with the same names). This is currently done
 for the parameters:
 
 \begin{lstlisting}
-    ISRS  ISRC
-    TRANSP(1, ...)  TRANSP(2, ...)
-    RECYCF  RECYCT  RECPRM  EXPPL  EXPEL  EXPIL
-    RECYCS  RECYCC  SPTPRM  ESPUTS ESPUTC
+      ISRS  ISRC
+      TRANSP(1, ...)  TRANSP(2, ...)
+      RECYCF  RECYCT  RECPRM  EXPPL  EXPEL  EXPIL
+      RECYCS  RECYCC  SPTPRM  ESPUTS ESPUTC
 \end{lstlisting}
 
 The first index is the species index, the second

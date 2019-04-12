@@ -46,13 +46,12 @@ First EIRENE reads NREACI ``non-default" atomic data cards, (if any, i.e., if NR
 
 {\small
 \begin{lstlisting}
-NREACI
-DO I=1,NREACI
-IR  FILNAM  H123  REAC  CRC  MASSP  MASST  DP RMN1 RMX1 R2MN R2MX
+      NREACI
+      DO I=1,NREACI
+        IR  FILNAM  H123  REAC  CRC  MASSP  MASST  DP RMN1 RMX1 R2MN R2MX
 
-(format: I3,1X,A6,1X,A4,Axxx,A3,2I3,3E12.4)
-ENDDO
-
+C       (format: I3,1X,A6,1X,A4,Axxx,A3,2I3,3E12.4)
+      ENDDO
 \end{lstlisting}
 }
 
@@ -68,11 +67,9 @@ Since Jan. 2018 and younger versions direct access to atomic data from internal 
 (evaluated on a cell by cell basis)
 is re-activated by
 \begin{lstlisting}
+      IR  CRM  H123  REAC  CRC  MASSP  MASST
 
-IR  CRM  H123  REAC  CRC  MASSP  MASST
-
-(format: I3,1X,A6,1X,A4,Axxx,A3,2I3,E12.4)
-
+C     (format: I3,1X,A6,1X,A4,Axxx,A3,2I3,E12.4)
 \end{lstlisting}
 The character string 'CRM'  (A6 or A8) identifies which particular internal CR code
 is executed, cell by cell, and whether it is run in meta-stable resolved or
@@ -96,23 +93,20 @@ or any other properly (2D) tabulated
 data source, i.e.\ with \lstinline|FILNAM = TAB2D|, or \lstinline|FILNAM = ADAS|
 the corresponding card reads:
 \begin{lstlisting}
+      IR  TAB2D  H123  REAC  CRC  MASSP  MASST  DP
 
-IR  TAB2D  H123  REAC  CRC  MASSP  MASST  DP
-
-(format: I3,1X,A6,1X,A4,Axxx,A3,2I3,E12.4)
-
+C     (format: I3,1X,A6,1X,A4,Axxx,A3,2I3,E12.4)
 \end{lstlisting}
 
 or, alternatively, if \ac{ADAS} ADF11 files are used directly:
 
 \begin{lstlisting}
+      IR  ADAS  H123  REAC  CRC  MASSP  MASST  DP
 
-IR  ADAS  H123  REAC  CRC  MASSP  MASST  DP
+C     (format: I3,1X,A6,1X,A4,Axxx,A3,2I3,E12.4)
+      ELNAME, IZ
 
-(format: I3,1X,A6,1X,A4,Axxx,A3,2I3,E12.4)
-ELNAME, IZ
-
-(format: 4X,A2,1X,I3)
+C     (format: 4X,A2,1X,I3)
 \end{lstlisting}
 
 In this case an additional
@@ -123,10 +117,9 @@ card is read (containing variables: ELNAME, IZ) for each IR entry, see below, to
 For photonic emission and absorption data (line shapes), i.e.\ for \lstinline|FILNAM = PHOTON|,
 the line is shortened to
 \begin{lstlisting}
+      IR  PHOTON  H123  REAC
 
-IR  PHOTON  H123  REAC
-
-(format: I3,1X,A6,1X,A4,Axxx)
+C     (format: I3,1X,A6,1X,A4,Axxx)
 \end{lstlisting}
 for reading from the spectroscopic line-shape database \lstinline|PHOTON|,
 but additional lines are needed to
@@ -226,17 +219,17 @@ for the ``bulk ions".
 
 A ``species block" has the format:
 \begin{lstlisting}
-ISPZ$ TEXT$ NMASS$ NCHAR$ NPRT$ NCHRG$ ISRF$ ISRT$ ID1$
-NRC$  NFOL$ NGEN$  NHSTS$ ID3$
- (format: I2,1X,A8,1X,12(I2,1X))
+      ISPZ$ TEXT$ NMASS$ NCHAR$ NPRT$ NCHRG$ ISRF$ ISRT$ ID1$
+      NRC$  NFOL$ NGEN$  NHSTS$ ID3$
+C     (format: I2,1X,A8,1X,12(I2,1X))
 \end{lstlisting}
 Default for ID1 is:  ID1=0
 In case ID1 $\leq$ 2, i.e., two or less post collision particle (not counting electrons)
 \begin{lstlisting}
- DO  K= 1, NRC$
-   IREAC$  IBULK$  ISCD1$  ISCD2$  ISCDE$  IESTM$  IBGK$
-   EELEC$  EBULK$  ESCD1$  EDUMMY  FREAC$  EDPOT$
- ENDDO
+      DO  K= 1, NRC$
+        IREAC$  IBULK$  ISCD1$  ISCD2$  ISCDE$  IESTM$  IBGK$
+        EELEC$  EBULK$  ESCD1$  EDUMMY  FREAC$  EDPOT$
+      ENDDO
 \end{lstlisting}
 
 New option in 2006:
@@ -247,10 +240,10 @@ $p + CH_4 \rightarrow CH_2 + H_2 + H$, etc.
 
 {\small
 \begin{lstlisting}
- DO  K= 1, NRC$
-   IREAC$  IBULK$  ISCD1$  ISCD2$  ISCD3$ ISCDE$  IESTM$  IBGK$
-   EELEC$  EBULK$  ESCD1$  EDUMMY FREAC$  EDPOT$
- ENDDO
+      DO  K= 1, NRC$
+        IREAC$  IBULK$  ISCD1$  ISCD2$  ISCD3$ ISCDE$  IESTM$  IBGK$
+        EELEC$  EBULK$  ESCD1$  EDUMMY FREAC$  EDPOT$
+      ENDDO
 \end{lstlisting}
 }
 New option in 2006:
@@ -259,10 +252,10 @@ In case ID1 = 4, i.e., four post collision particles (not counting electrons)
 
 {\footnotesize
 \begin{lstlisting}
- DO  K= 1, NRC$
-   IREAC$  IBULK$  ISCD1$  ISCD2$  ISCD3$ ISCD4$ ISCDE$  IESTM$  IBGK$
-   EELEC$  EBULK$  ESCD1$  EDUMMY FREAC$  EDPOT$
- ENDDO
+      DO  K= 1, NRC$
+        IREAC$  IBULK$  ISCD1$  ISCD2$  ISCD3$ ISCD4$ ISCDE$  IESTM$  IBGK$
+        EELEC$  EBULK$  ESCD1$  EDUMMY FREAC$  EDPOT$
+      ENDDO
 \end{lstlisting}
 }
 
@@ -318,23 +311,23 @@ Note: in EIRENE$_{2003}$ or later the format of input flag \lstinline|REAC| desc
 \lstinline|A9|  to \lstinline|Axxx|, with \lstinline|xxx| $\leq 50$,  to accommodate the longer reaction information for photonic
 processes into the same format. The old format \lstinline|A9| is of course automatically still recognized as special case.
 \begin{lstlisting}
-NREACI
-DO
+     NREACI
+     DO
 \end{lstlisting}
 \textbf{for ``real particles"}, databases: \lstinline|FILNAM = HYDHEL|, \lstinline|AMJUEL|, \lstinline|METHAN|, \lstinline|H2VIBR|
 \begin{lstlisting}
-   IR  FILNAM  H123  REAC  CRC  MASSP  MASST  DP RMN1  RMX1
-   (format: I3,1X,A6,1X,A4,Axxx,A3,2I3,3E12.4)
-     IF (RMN1.GT.0.) READ IFEXMN, FPARM(J),J=1,3
-     IF (RMX1.GT.0.) READ IFEXMX, FPARM(J),J=4,6
+       IR  FILNAM  H123  REAC  CRC  MASSP  MASST  DP RMN1  RMX1
+C      (format: I3,1X,A6,1X,A4,Axxx,A3,2I3,3E12.4)
+       IF (RMN1.GT.0.) READ IFEXMN, FPARM(J),J=1,3
+       IF (RMX1.GT.0.) READ IFEXMX, FPARM(J),J=4,6
 \end{lstlisting}
 \textbf{for ``real particles"}, database: \lstinline|FILNAM = ADAS|
 (or any table in an equivalent format as the \ac{ADAS} adf11 files)
 \begin{lstlisting}
-   IR  ADAS  H123  REAC  CRC  MASSP  MASST  DP
-   (format: I3,1X,A6,1X,A4,Axxx,A3,2I3,3E12.4)
-   ELNAME, IZ
-   (format: 4X,A2,1X,I3)
+       IR  ADAS  H123  REAC  CRC  MASSP  MASST  DP
+C      (format: I3,1X,A6,1X,A4,Axxx,A3,2I3,3E12.4)
+       ELNAME, IZ
+C      (format: 4X,A2,1X,I3)
 \end{lstlisting}
 i.e.: one additional input card is read to identify the chemical element and charge state.
 Extrapolation flags RMN1 and RMX1 are not in use in this case and may be omitted. Default (hard wired) extrapolation
@@ -345,8 +338,8 @@ schemes are used if the plasma density and temperature is outside the tabulated 
 Fit parameters are directly read from input file, up to nine coefficients.
 In EIRENE$_{2005}$ or later: Optional : Further parameter FTFLAG, length: not more than 9 characters.
 \begin{lstlisting}
-   IR  CONST  H123  FTFLAG(optional) CRC  MASSP  MASST  DP
-   (format: I3,1X,A6,1X,A4,(A9),xxxX,A3,2I3,3E12.4)
+       IR  CONST  H123  FTFLAG(optional) CRC  MASSP  MASST  DP
+C      (format: I3,1X,A6,1X,A4,(A9),xxxX,A3,2I3,3E12.4)
 \end{lstlisting}
 i.e.: Reading of FTFLAG is optional. Default for FTFLAG: =0. Parameter REAC does not exist.
 Extrapolation flags RMN1 and RMX1 are not in use in this case and may be omitted.
@@ -354,13 +347,13 @@ Extrapolation flags RMN1 and RMX1 are not in use in this case and may be omitted
 \vspace{0.3cm}
 \textbf{for ``photons"}, database \lstinline|FILNAM = PHOTON|
 \begin{lstlisting}
-   IR  PHOTON  H123  REAC
-   (format: I3,1X,A6,1X,A4,Axxx)
-   IPRFTYPE IPLSC3 IMESS IFREMD NRJPRT
-   DO IFREMD
-     II KENN  IK6
-    (format: I6,1X,A2,3X,I6)
-   ENDDO
+       IR  PHOTON  H123  REAC
+C      (format: I3,1X,A6,1X,A4,Axxx)
+       IPRFTYPE IPLSC3 IMESS IFREMD NRJPRT
+       DO IFREMD
+         II KENN  IK6
+C        (format: I6,1X,A2,3X,I6)
+       ENDDO
 \end{lstlisting}
 I.e.: after the first line there is a special format for this set of input cards in case of photonic processes,
 read from the spectral database PHOTON. In case \emph{IFREMD $>$ 0} the additional cards specify options
@@ -373,38 +366,37 @@ then stores this information on the arrays in Module COMAMF with
 label $IR$.
 
 \begin{lstlisting}
-
- * 4A. atoms species cards
- NATMI
- DO 44  IATM= 1, NATMI
+* 4A. atoms species cards
+      NATMI
+      DO 44  IATM= 1, NATMI
 \end{lstlisting}
- \textsl{* read NATMI species blocks with \$ = A}
+\textsl{* read NATMI species blocks with \$ = A}
 \begin{lstlisting}
- 44 CONTINUE
- * 4B. molecules species cards
- NMOLI
- DO 46  IMOL= 1, NMOLI
+      44 CONTINUE
+* 4B. molecules species cards
+      NMOLI
+      DO 46  IMOL= 1, NMOLI
 \end{lstlisting}
- \textsl{* read NMOLI species blocks with \$ = M}
+\textsl{* read NMOLI species blocks with \$ = M}
 \begin{lstlisting}
- 46 CONTINUE
- * 4C. test ions species cards
- NIONI
- DO 48  IION= 1, NIONI
+      46 CONTINUE
+* 4C. test ions species cards
+      NIONI
+      DO 48  IION= 1, NIONI
 \end{lstlisting}
  \textsl{* read NIONI species blocks with \$ = I}
 \begin{lstlisting}
- 48 CONTINUE
-
+      48 CONTINUE
+\end{lstlisting}
 and, for versions younger than 2003:
-
- * 4D. test ions species cards
- NPHOTI
- DO 49  IPHOT= 1, NPHOTI
+\begin{lstlisting}
+* 4D. test ions species cards
+      NPHOTI
+      DO 49  IPHOT= 1, NPHOTI
 \end{lstlisting}
  \textsl{* read NPHOTI species blocks with \$ = Ph}
 \begin{lstlisting}
- 49 CONTINUE
+      49 CONTINUE
 \end{lstlisting}
 
 \medskip
@@ -1542,7 +1534,7 @@ have been specified by the following species blocks:
   5 HYDHEL H.2 2.2.11    EI  0  2
   6 AMJUEL H.2 2.2.14    EI  0  2
   7 AMJUEL H.8 2.2.14    EI  0  2
- * NEUTRAL MOLECULES SPECIES CARDS:  NMOLI SPECIES, NMOLI=
+* NEUTRAL MOLECULES SPECIES CARDS:  NMOLI SPECIES, NMOLI=
 1
  1 D2        4  2  2  0  0  1  0  3
      1   115   113     0 00000

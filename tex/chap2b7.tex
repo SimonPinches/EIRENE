@@ -88,34 +88,34 @@ storage on the census array of this stratum has been filled up
 \medskip
 
 \begin{lstlisting}
- *** 7. Data for primary sources
- NSTRAI
- INDSRC(ISTRA), ISTRA=1,NSTRAI
- ALLOC  AMPTS
- DO 70, ISTRAI=1,NSTRAI
-   TXTSOU
-   NLAVRP  NLAVRT  NLSYMP  NLSYMT
-   NPTS  NINITL  NEMODS  NAMODS  NMINPTS
-   FLUX  SCALV   IVLSF  ISCLS  ISCLT ...
-   ...continue...ISCL1  ISCL2  ISCL3  ISCLB  ISCLA
- *Species index distribution
-   NLATM  NLMOL  NLION  NLPLS NLPHOT
-   NSPEZ
- *Distribution in physical space and time
-   NLPNT  NLLNE  NLSRF  NLVOL  NLCNS
-   NSRFSI
-     DO 75, J=1,NSRFSI
-       INUM    INDIM   INSOR   INGRDA(1)  INGRDE(1)
-                               INGRDA(2)  INGRDE(2)
-                               INGRDA(3)  INGRDE(3)
-       SORWGT  SORLIM  SORIND  SOREXP  SORIFL
-       NRSOR   NPSOR   NTSOR   NBSOR   NASOR   NISOR
-       SORAD1  SORAD2  SORAD3  SORAD4  SORAD5  SORAD6
- 75  CONTINUE
- Distribution in velocity space
-   SORENI  SORENE  SORVDX  SORVDY  SORVDZ
-   SORCOS  SORMAX  SORCTX  SORCTY  SORCTZ
- 70 CONTINUE
+*** 7. Data for primary sources
+      NSTRAI
+      INDSRC(ISTRA), ISTRA=1,NSTRAI
+      ALLOC  AMPTS
+      DO 70, ISTRAI=1,NSTRAI
+        TXTSOU
+        NLAVRP  NLAVRT  NLSYMP  NLSYMT
+        NPTS  NINITL  NEMODS  NAMODS  NMINPTS
+        FLUX  SCALV   IVLSF  ISCLS  ISCLT
+     .    ISCL1  ISCL2  ISCL3  ISCLB  ISCLA
+*Species index distribution
+        NLATM  NLMOL  NLION  NLPLS NLPHOT
+        NSPEZ
+*Distribution in physical space and time
+        NLPNT  NLLNE  NLSRF  NLVOL  NLCNS
+        NSRFSI
+        DO 75, J=1,NSRFSI
+          INUM    INDIM   INSOR   INGRDA(1)  INGRDE(1)
+                                  INGRDA(2)  INGRDE(2)
+                                  INGRDA(3)  INGRDE(3)
+          SORWGT  SORLIM  SORIND  SOREXP  SORIFL
+          NRSOR   NPSOR   NTSOR   NBSOR   NASOR   NISOR
+          SORAD1  SORAD2  SORAD3  SORAD4  SORAD5  SORAD6
+   75   CONTINUE
+*Distribution in velocity space
+       SORENI  SORENE  SORVDX  SORVDY  SORVDZ
+       SORCOS  SORMAX  SORCTX  SORCTY  SORCTZ
+   70 CONTINUE
 \end{lstlisting}
 
 \newpage

@@ -46,15 +46,15 @@ of INFCOP is available from FZ J\"ulich.
 
 \textsl{***14. Data for additional input tallies, in stand alone mode}
 \begin{lstlisting}
-IF (NMODE.EQ. 0) THEN
+      IF (NMODE.EQ. 0) THEN
 
-  NAINI, ...
-  DO  IAIN=1,NAINI
-    NAINS(IAIN) NAINT(IAIN)
-    TXTPLS(IAIN,11)
-    TXTPSP(IAIN,11) TXTPUN(IAIN,11)
-  ENDDO
-ELSEIF (NMODE.NE. 0) ... see paragraphs below
+        NAINI, ...
+        DO  IAIN=1,NAINI
+          NAINS(IAIN) NAINT(IAIN)
+          TXTPLS(IAIN,11)
+          TXTPSP(IAIN,11) TXTPUN(IAIN,11)
+        ENDDO
+      ELSEIF (NMODE.NE. 0) ... see paragraphs below
 \end{lstlisting}
 
 \textbf{Meaning of the Input Variables of block 14 in stand alone mode}
@@ -228,36 +228,36 @@ as well as to derive recycling target fluxes and boundary conditions from them.
 \textsl{***14. Data for interfacing Subroutine ``INFCOP"}
 {\small
 \begin{lstlisting}
-IF (NMODE.EQ. 0) THEN
+     IF (NMODE.EQ. 0) THEN
 ...
 ...
-ELSEIF (NMODE.NE. 0) THEN
+     ELSEIF (NMODE.NE. 0) THEN
 
-LSYMET LBALAN LCHKQUD
-NFLA NCUTB NCUTL MSHFRM NTRFRM NFULL IBRAD IBPOL IBTOR
-DO 20 IPLS=1,NPLSI
-  I IFLB(IPLS) FCTE(IPLS) BMASS(IPLS)
-20 CONTINUE
-NDXA NDYA
-NTARGI
-(NTGPRT(IT),IT=1,NTARGI)
-DO 30 IT=1,NTARGI
-  DO 33 IPRT=1,NTGPRT(IT)
-    I NDT(IT,IPRT) NINCT(..,..) NIXY(..,..) NTIN(..,..) NTEN(..,..)
-      NIFLG(..,..) NPTC(..,..) NSPZI(..,..) NSPZE(..,..)
-33 CONTINUE
-30 CONTINUE
-CHGP CHGEE CHGEI CHGMOM
-NAINB
-DO 40 IAIN=1,NAINB
-  I NAINS(IAIN) NAINT(IAIN)
-  TXTPLS(IAIN,11)
-  TXTPSP(IAIN,11) TXTPUN(IAIN,11)
-40 CONTINUE
-NAOTB
-DO 50 IAOT=1,NAOTB
-  I NAOTS(IAOT) NAOTT(IAOT)
-50 CONTINUE
+       LSYMET LBALAN LCHKQUD
+       NFLA NCUTB NCUTL MSHFRM NTRFRM NFULL IBRAD IBPOL IBTOR
+       DO 20 IPLS=1,NPLSI
+         I IFLB(IPLS) FCTE(IPLS) BMASS(IPLS)
+       20 CONTINUE
+       NDXA NDYA
+       NTARGI
+       (NTGPRT(IT),IT=1,NTARGI)
+       DO 30 IT=1,NTARGI
+         DO 33 IPRT=1,NTGPRT(IT)
+           I NDT(IT,IPRT) NINCT(..,..) NIXY(..,..) NTIN(..,..) NTEN(..,..)
+           NIFLG(..,..) NPTC(..,..) NSPZI(..,..) NSPZE(..,..)
+         33 CONTINUE
+       30 CONTINUE
+       CHGP CHGEE CHGEI CHGMOM
+       NAINB
+       DO 40 IAIN=1,NAINB
+         I NAINS(IAIN) NAINT(IAIN)
+         TXTPLS(IAIN,11)
+         TXTPSP(IAIN,11) TXTPUN(IAIN,11)
+       40 CONTINUE
+       NAOTB
+       DO 50 IAOT=1,NAOTB
+         I NAOTS(IAOT) NAOTT(IAOT)
+       50 CONTINUE
 \end{lstlisting}
 }
 

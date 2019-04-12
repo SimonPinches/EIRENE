@@ -55,17 +55,17 @@ non-default standard surface no.\ 4.
 
 \textsl{*** 3A. Data for ``Non-default Standard Surfaces''}
 \begin{lstlisting}
- NSTSI
- DO 31 ISTSI=1,NSTSI
+      NSTSI
+      DO 31 ISTSI=1,NSTSI
 \end{lstlisting}
  unless otherwise stated, N = NLIM+ISTSI is the index of the following
  surface data for surface ISTSI:
 \begin{lstlisting}
-    TXTSFL
-    ISTS, IDIMP, INUMP(ISTSI,IDIMP),
-   .IRPTA1, IRPTE1, IRPTA2, IRPTE2, IRPTA3, IRPTE3
-    ILIIN, ILSIDE, ILSWCH, ILEQUI, ILTOR, ILCOL,
-   .ILFIT ILCELL ILBOX ILPLG
+        TXTSFL
+        ISTS, IDIMP, INUMP(ISTSI,IDIMP),
+     .    IRPTA1, IRPTE1, IRPTA2, IRPTE2, IRPTA3, IRPTE3
+        ILIIN, ILSIDE, ILSWCH, ILEQUI, ILTOR, ILCOL,
+     .    ILFIT ILCELL ILBOX ILPLG
 \end{lstlisting}
 optional for non transparent surfaces (ILIIN $>$ 0):
 
@@ -75,12 +75,13 @@ interaction data
 If they are omitted, the default particle-surface model is activated for this
 particular surface element, see \cref{sec2.6}.
 \begin{lstlisting}
-    ILREF  ILSPT ISRS  ISRC
-    ZNML EWALL EWBIN TRANSP(1,N) TRANSP(2,N) FSHEAT
-    RECYCF  RECYCT  RECPRM  EXPPL  EXPEL  EXPIL
-    RECYCS  RECYCC  SPTPRM  (this line may be omitted,
-        then: default sputter model, see \cref{sec2.6})
- 31 CONTINUE
+        ILREF  ILSPT ISRS  ISRC
+        ZNML EWALL EWBIN TRANSP(1,N) TRANSP(2,N) FSHEAT
+        RECYCF  RECYCT  RECPRM  EXPPL  EXPEL  EXPIL
+        RECYCS  RECYCC  SPTPRM ! (this line may be omitted,
+                               !  then: default sputter model,
+                               !  see \cref{sec2.6})
+  31  CONTINUE
 \end{lstlisting}
 
 
@@ -101,7 +102,7 @@ many surfaces at once,
 by changes in just one location of the input file.
 
 \begin{lstlisting}
-   SURFMOD_modname
+      SURFMOD_modname
 \end{lstlisting}
 \medskip
 
