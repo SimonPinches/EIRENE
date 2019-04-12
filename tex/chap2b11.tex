@@ -81,7 +81,7 @@ to as an input volumetric tally (no.\ ITALI=13 in
 
 \textsl{* 11A Block for numerical output written on unit 6 (IUNOUT)}
 {\small
-\begin{verbatim}
+\begin{lstlisting}
  TRCPLT  TRCHST  TRCNAL  TRCREA  TRCSIG
  TRCGRD  TRCSUR  TRCREF  TRCFLE  TRCAMD
  TRCINT  TRCLST  TRCSOU  TRCREC  TRCTIM
@@ -97,21 +97,21 @@ to as an input volumetric tally (no.\ ITALI=13 in
  DO 102 J=1,NSURPR
     NSRF NPRTLS(J) NFLAGS(J) NSPEZS(J,1) NSPEZS(J,2) NTLSFL(J)
  102 CONTINUE
-\end{verbatim}
+\end{lstlisting}
 }
 optional: unless block 11B starts:
-\begin{verbatim}
+\begin{lstlisting}
 NLTVOUT
   NUMTAL(J),J=1,NLTVOUT  (12 values per card, FORMAT 12I6)
 NLTSOUT
   NUMTAL(J),J=1,NLTSOUT  (12 values per card, FORMAT 12I6)
-\end{verbatim}
+\end{lstlisting}
 
  \textsl{* 11B Data for graphical output}
 
  \textsl{* 11B.1 Data for 2D and 3D Geometry plot}
 {\small
-\begin{verbatim}
+\begin{lstlisting}
  PL1ST     PL2ND     PL3RD     PLADD  PLHST
  PLCUT(1)  PLCUT(2)  PLCUT(3)  PLBOX  PLSTOR
  PLNUMV    PLNUMS    PLARR
@@ -126,11 +126,11 @@ NLTSOUT
  CH3MX  CH3MY  CH3MZ  CH3X0  CH3Y0  CH3Z0
  ANGLE1  ANGLE2  ANGLE3
  I1TRC  I2TRC  (ISYPLT(J)  J=1,8)  ILINIE
-\end{verbatim}
+\end{lstlisting}
 }
  \textsl{* 11B.2 Data for plots of volume tallies}
 {\small
-\begin{verbatim}
+\begin{lstlisting}
  NVOLPL
  PLTSRC(J), J= 0, NSTRAI
  DO 116 N=1,NVOLPL
@@ -156,7 +156,7 @@ NLTSOUT
     TALW1(N)  TALW2(N)  FCABS1(N)  FCABS2(N) RAPSDEL(N)
   ENDIF
  116 CONTINUE
-\end{verbatim}
+\end{lstlisting}
 }
 
 \medskip

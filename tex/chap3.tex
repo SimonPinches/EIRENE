@@ -97,7 +97,7 @@ stratum is turned off later in the run due to other parameter settings.
 
 The module PARMUSR reads: (\dots stands for an integer not less than 1)
 {\footnotesize
-\begin{verbatim}
+\begin{lstlisting}
 *COMDECK PARMUSR
 C
 C  Geometry
@@ -176,7 +176,7 @@ C  NGSTAL = 0  ==> NO STORAGE FOR SPATIALLY RESOLVED SURFACE TALLIES
 C  NGSTAL = 1  ==> SPATIALLY RESOLVED SURFACE TALLIES ARE COMPUTED
 C  DEFAULT:
       PARAMETER (NGSTAL=...)
-\end{verbatim}
+\end{lstlisting}
 }
 \textbf{Meaning of the Parameter Variables (and Defaults)}
 \begin{list}{}{}
@@ -377,12 +377,12 @@ In EIRENE variables:
 Then, in order to estimate a response for a detector function $g$ on
 additional tally number ITALV, a statement in subroutine UPTUSR
 should read:
-\begin{verbatim}
+\begin{lstlisting}
  DO IC=1,NCOU
    ICELL=NRCELL+NUPC(IC)*NR1P2+NBLCKA
    ADDV(ITALV,ICELL) = ADDV(ITALV,ICELL) + WV * CLPC(IC) *  g
  ENDDO
-\end{verbatim}
+\end{lstlisting}
 
 Here $CLPC$ is the length $l$ of the flight in the cell ICELL, $g$
 is assumed to be a constant in this cell in this example. In more
@@ -414,9 +414,9 @@ Then, in order to estimate a response for a detector function g on
 additional tally number ICOLV, a statement in subroutine UPCUSR
 should read:
 
-\begin{verbatim}
+\begin{lstlisting}
  COLV(ICOLV,ICELL) = COLV(ICOLV,ICELL) + WS * g  .
-\end{verbatim}
+\end{lstlisting}
 
 Here $g$ is evaluated at the point of a collision, which is known
 to have taken place in cell ICELL in this call to subroutine
@@ -460,9 +460,9 @@ WSNAP = WEIGHT  \quad .
 Then, in order to estimate a response for a detector function $g$ on
 snapshot tally number ISNV, a statement in subroutine UPNUSR should
 read:
-\begin{verbatim}
+\begin{lstlisting}
  SNAPV(ISNV,ICELL) = SNAPV(ISNV,ICELL) + WSNAP * g(...)  .
-\end{verbatim}
+\end{lstlisting}
 E.g., with $g=1$ this is an unbiased estimate of cell averaged particle density at
 time $t=t^*$, see \cref{est}, i.e., just counting the particle weights at $t=t^*$
 provides an unbiased estimate of the particle density.
@@ -649,7 +649,7 @@ whenever this surface is intersected by a test flight.
 \medskip
 
 {\small
-\begin{verbatim}
+\begin{lstlisting}
       SUBROUTINE REFUSR
 C USER SUPPLIED SURFACE INTERACTION ROUTINE
 C INPUT : CO-ORDINATES OF INCIDENT PARTICLE
@@ -687,7 +687,7 @@ C     RECYCC(ISPZ,MSURF)=.....
      :
       RETURN
       END
-\end{verbatim}
+\end{lstlisting}
 }
 \newpage
 
@@ -735,7 +735,7 @@ Dimensions, Precision:
 \medskip
 
 {\footnotesize
-\begin{verbatim}
+\begin{lstlisting}
       SUBROUTINE SAMUSR (ISR,X0,Y0,Z0,
      .                   SORAD1,SORAD2,SORAD3,SORAD4,SORAD5,SORAD6,
      .                   IRUSR,IPUSR,ITUSR,IAUSR,IBUSR,
@@ -805,7 +805,7 @@ Dimensions, Precision:
       RETURN
 
       END
-\end{verbatim}
+\end{lstlisting}
 }
 Note: The parameters EFWL, SHWL have been introduced in 2005.
 
@@ -852,7 +852,7 @@ cells (ICELL = 1, \dots, NSBOX), if the input flag INDPRO(12) has the value INDP
 \medskip
 
 {\small
-\begin{verbatim}
+\begin{lstlisting}
       SUBROUTINE PROUSR (RHO,INDEX,P0,P1,P2,P3,P4,P5,PVAC,NDAT)
 * CALL PARMMOD
      :
@@ -875,7 +875,7 @@ C  DATA FOR VOL, NDAT=NSBOX
       ENDIF
       RETURN
       END
-\end{verbatim}
+\end{lstlisting}
 }
 
 Depending upon the value of INDEX, one has to specify a background tally
@@ -889,12 +889,12 @@ Electron temperature (\si{\electronvolt})
 INDEX = 1     :\\
 Ion temperature (\si{\electronvolt}), NPLSI calls, one for each
 ion species. I.e.:
-\begin{verbatim}
+\begin{lstlisting}
 DO IPLS=1,NPLSI
   CALL PROUSR(HELP,1+0*NPLSI,TI0(IPLS),...,NSURF)
   CALL RESETP(TIIN,HELP,IPLS,1,NPLS,NSURF)
 ENDDO
-\end{verbatim}
+\end{lstlisting}
 \item
 INDEX = 1+ NPLS     : \\
 Ion density (\si{\per\cubic\centi\metre}), NPLSI calls, one for each
@@ -939,9 +939,9 @@ It is used in particular if the magnetic field, or plasma flow field, are needed
 resolution than the one provided by the standard input plasma (background) tallies, which are cell averaged,
 i.e.\ constant within a cell.
 
-\begin{verbatim}
+\begin{lstlisting}
       SUBROUTINE VECUSR(INDEX,VEC_X,VEC_Y,VEC_Z,IPLS)
-\end{verbatim}
+\end{lstlisting}
 This routine is called in case INDPRO(5)=8 for the B-field tally (e.g.\ from routine BFIELD.F), and in case (INDPRO(4)=8)
 for the background flow velocity tallies (from many places in the code),
 to provide either a local magnetic field (unit) vector, or a local plasma (background medium)
@@ -971,10 +971,10 @@ Note: species index IPLS is the EIRENE background species index, not to be confu
 \section{User supplied post-processed tally routine TALUSR}
 \label{sec3.7}
 to be written
-\begin{verbatim}
+\begin{lstlisting}
       SUBROUTINE TALUSR(ICOUNT,VECTOR,TALTOT,TALAV,
      .                  TXTTL,TXTSP,TXTUN,ILAST,*)
-\end{verbatim}
+\end{lstlisting}
 \section{User supplied ``general geometry block"}
 \label{sec3.8} The following routines have to be provided for the
 general geometry options (LEVGEO=10 option, NLGEN=TRUE), in which no
@@ -1036,9 +1036,9 @@ Identify cell index from a point given by its three cartesian coordinates.
 
 The function LEAUSR is called from functions LEARC1
 and LEARCA in case of LEVGEO=10. The call is
-\begin{verbatim}
+\begin{lstlisting}
 NCELL=LEAUSR(X,Y,Z)
-\end{verbatim}
+\end{lstlisting}
 Here X,Y,Z are the Cartesian
 coordinates of a point inside the computational domain in centimeters.
 LEAUSR must then return
@@ -1077,10 +1077,10 @@ is not returned in general. Only if this nearest surface is one of the ``non-def
 block 3a, this information is returned (by a negative value of argument NEWCEL.
 
 The call is
-\begin{verbatim}
+\begin{lstlisting}
 CALL TIMUSR (NRCELL,X0,Y0,Z0,VELX,VELY,VELZ,
              NJUMP,NEWCEL,TIM,ICOS,IERR,NPANU,NLSRFX)
-\end{verbatim}
+\end{lstlisting}
 \textbf{Input}
 
 \begin{list}{}{}
@@ -1151,9 +1151,9 @@ See subroutine TIMER in code segment GEO3D.F
 \subsection{Subroutine VOLUSR}
 \label{sec3.8.3} The subroutine VOLUSR is called from subroutine
 VOLUME in case of LEVGEO=10. The call is
-\begin{verbatim}
+\begin{lstlisting}
 CALL VOLUSR(N,A)
-\end{verbatim}
+\end{lstlisting}
 Here N is the total number of cells in this run, and
 A is an array of length N, containing the N cell volume values in \si{\cubic\centi\metre}.
 \subsection{Subroutine NORUSR}
@@ -1163,9 +1163,9 @@ i.e.\ after a particle trajectory has intersected a ``non default grid surface" 
 It is called in the LEVGEO=10 option from subroutine
 STDCOL,  after all surface intersection settings and possible switches have been carried out,
 or directly via the entry point STDNOR of STDCOL. The call is
-\begin{verbatim}
+\begin{lstlisting}
 CALL NORUSR(M,X,Y,Z,CX,CY,CZ,SCOS,VELX,VELY,VELZ,NRCELL)
-\end{verbatim}
+\end{lstlisting}
 
 
 Here [X,Y,Z] are the cartesian coordinates

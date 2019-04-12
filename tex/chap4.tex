@@ -56,29 +56,29 @@ ask for a few sample routines INFCOP, which are available from
 the authors.
 
 In the rest of this section plasma data and geometrical (grid) information, from interfacing with an external model/code are
-described with reference to their location and size on a single large, 1D storage array \verb|RWK|.
-This array \verb|RWK| which is then used in the initialization phase of an EIRENE run to bring this information into
+described with reference to their location and size on a single large, 1D storage array \lstinline|RWK|.
+This array \lstinline|RWK| which is then used in the initialization phase of an EIRENE run to bring this information into
 regular EIRENE storage places/names.
 
-In Version from 2001 or later, rather than filling 1D array \verb|RWK|, now directly
+In Version from 2001 or later, rather than filling 1D array \lstinline|RWK|, now directly
 input tallies TEINTF, TIINTF, DIINTF, \dots etc.\ can be filled. These are pointers now to a vector (now named
-\verb|PLASMA_BACKGROUND|), but which has the same structure as the old \verb|RWK| array. Apart from that the rest remains the same
+\lstinline|PLASMA_BACKGROUND|), but which has the same structure as the old \lstinline|RWK| array. Apart from that the rest remains the same
 and the material in this section is still valid.
 
 Data are transfered from subroutine INFCOP into EIRENE via the
-EIRENE work array \verb|RWK|  (Module CSPEI).
+EIRENE work array \lstinline|RWK|  (Module CSPEI).
 They are read onto the EIRENE arrays for input volume tallies (\cref{tab1}) by calls of subroutine PROFR in
 the initialization phase individually for each tally,
 for which the flag INDPRO has the value 6 or 7 for a particular input tally
 (see \cref{sec2.5}).
-The following addresses are foreseen on \verb|RWK| for this data transferring
+The following addresses are foreseen on \lstinline|RWK| for this data transferring
 procedure:
 
 
 \textsl{Plasma data (INDPRO = 6 option)}
 
 {\footnotesize
-\begin{verbatim}
+\begin{lstlisting}
 TEIN  :  (RWK ((0         ) * NRAD + J), J=1,NSBOX)
 TIIN  :  (RWK ((1 + 0*NPLS) * NRAD + J), J=1,NSBOX,I=1,NPLS)
 DIIN  :  (RWK ((1 + 1*NPLS) * NRAD + J), J=1,NSBOX,I=1,NPLS)
@@ -91,9 +91,9 @@ BZIN  :  (RWK ((3 + 5*NPLS) * NRAD + J), J=1,NSBOX)
 BFIN  :  (RWK ((4 + 5*NPLS) * NRAD + J), J=1,NSBOX)
 VLIN  :  (RWK ((5 + 5*NPLS) * NRAD + J), J=1,NSBOX)
 ADIN  :  (RWK ((6 + 5*NPLS) * NRAD + J), J=1,NSBOX,I=1,NAIN)
-\end{verbatim}
+\end{lstlisting}
 \textsl{Geometrical data (INDGRD = 6 option)}
-\begin{verbatim}
+\begin{lstlisting}
 LEVGEO = 1 or LEVGEO = 2:
 RSURF :  (RWK ((6+5*NPLS+NAIN) * NRAD +                 J), J=1,N1ST)
 EP    :  (RWK ((6+5*NPLS+NAIN) * NRAD +   N1ST +        J), J=1,N1ST)
@@ -109,7 +109,7 @@ TRINTF:  (RWK ((6+5*NPLS+NAIN) * NRAD + J), J=1,NTMAX)
 TSURF :  (RWK ((6+5*NPLS+NAIN) * NRAD + NTMAX + J), J=1,N3RD)
 LEVGEO = 5
 THINTF:  (RWK ((6+5*NPLS+NAIN) * NRAD + J), J=1,NHMAX)
-\end{verbatim}
+\end{lstlisting}
 }
 
 \subsection{entry IF0COP} \label{sec4.1.0}
@@ -286,20 +286,20 @@ EIRENE sources are now available.
 Version 2012 and older:
 
 
-Subroutine \verb|STATIS_COP| provides these estimates for those
+Subroutine \lstinline|STATIS_COP| provides these estimates for those
 tallies which are specific to a particular coupled case. Usually
 these will be source terms for particle, momentum, and energy
 balance equations, summed over all donor species.
 
-At entry \verb|IF4COP| (see \cref{sec4.1.4} above) these
+At entry \lstinline|IF4COP| (see \cref{sec4.1.4} above) these
 may be further processed. For example, in case of coupling to the
 B2 plasma fluid code these noise estimates are integrated into
 global quantities (dimension: 1/time) and represent the
 contribution of statistical noise to the overall residuals of a B2
 run.
 
-These are printed from \verb|IF4COP|, together with the overall
-balances of a coupled run (\verb|TRCBAL| = \verb|.true.|)
+These are printed from \lstinline|IF4COP|, together with the overall
+balances of a coupled run (\lstinline|TRCBAL = .true.|)
 
 Hence: if the B2 estimated residuals are of the same order as
 these ``statistical noise residuals", then a further convergence

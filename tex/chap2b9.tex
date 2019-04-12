@@ -42,7 +42,7 @@ which otherwise, e.g.\ in case of suppression of absorption,  may be grossly mis
 \textsl{*** 9. Data for Statistics and non-analog Methods}
 
 {\small
-\begin{verbatim}
+\begin{lstlisting}
  (NLPRCA(IATM)  IATM=1,NATM) , (NLPRCM(IMOL)   IMOL =1,NMOL) ,
  (NLPRCI(IION)  IION=1,NION) , (NLPRCPH(IPHOT) IPHOT=1,NPHOT)
  NPRCSF
@@ -63,12 +63,12 @@ which otherwise, e.g.\ in case of suppression of absorption,  may be grossly mis
  ENDDO
  WMINV  WMINS  WMINC WMINL
  SPLPAR
-\end{verbatim}
+\end{lstlisting}
 }
 
  \textsl{* Cards for Standard Deviation}
 
-\begin{verbatim}
+\begin{lstlisting}
  NSIGVI  NSIGSI  NSIGCI  NSIGI_BGK  NSIGI_COP  NSIGI_SPC
  DO  93  J=1,NSIGVI
     IGH  IIH
@@ -79,7 +79,7 @@ which otherwise, e.g.\ in case of suppression of absorption,  may be grossly mis
  DO  95  J=1,NSIGCI
     IGHC(1,J) IIHC(1,J) IGHC(2,J) IIHC(2,J)
  95 CONTINUE
-\end{verbatim}
+\end{lstlisting}
 
 \medskip
 
@@ -189,18 +189,18 @@ to be estimated.
 NSIGCI must be less than or equal to the parameter NCV in PARMUSR,
 \cref{sec3.1}.
 \item[\textbf{NSIGI\_BGK}]
-if \verb|NSIGI_BGK| $>$ 0, then the standard deviations are
+if \lstinline|NSIGI_BGK| $>$ 0, then the standard deviations are
 evaluated for all tallies needed for the iteration procedure for
 the non-linear \ac{BGK} collision terms. See subroutine
-\verb|STATIS_BGK| in code segment BGK.F
+\lstinline|STATIS_BGK| in code segment BGK.F
 \item[\textbf{NSIGI\_COP}]
-if \verb|NSIGI_COP| $>$ 0, then the standard deviations are
+if \lstinline|NSIGI_COP| $>$ 0, then the standard deviations are
 evaluated for all tallies needed for the iteration procedure for
 the coupling to a plasma fluid model. The relevant tallies are
-selected in subroutine \verb|STATIS_COP| in code segment
-\verb|COUPLE_....F|, \cref{sec4.2}
+selected in subroutine \lstinline|STATIS_COP| in code segment
+\lstinline|COUPLE_....F|, \cref{sec4.2}
 \item[\textbf{NSIGI\_SPC}]
-if \verb|NSIGI_SPC| $>$ 0, then the standard deviations are
+if \lstinline|NSIGI_SPC| $>$ 0, then the standard deviations are
 evaluated for all surface flux spectra defined in sub-block 10F below.
 \item[\textbf{IGH}]
 Index of species for selected volume averaged tally

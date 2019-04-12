@@ -938,9 +938,9 @@ The efficiency for Monte Carlo Codes is the
 inverse of the \ac{FOM} of the calculation, defined
 as
 \begin{equation} \label{eq1.13}
-\verb|FOM| = statistical \ variance    \cdot   computing \ cost.
+\lstinline|FOM| = statistical \ variance    \cdot   computing \ cost.
 \end{equation}
-Note that \verb|FOM| should be approximately independent of the running
+Note that \lstinline|FOM| should be approximately independent of the running
 time, because the number of histories generated is (excluding
 overhead) proportional to the CPU costs and inversely proportional
 to the statistical variance $\sigma^2$.
@@ -2043,7 +2043,7 @@ F ( v_{\pi} )   = \int_{0}^{v_{\pi}} dv_{\pi} ' \
 cannot be inverted explicitly.
 
 
-Therefore in the EIRENE code we apply the Monte Carlo  ``biassed source sampling" concept, (module: \verb|VELOCS.F|).
+Therefore in the EIRENE code we apply the Monte Carlo  ``biassed source sampling" concept, (module: \lstinline|VELOCS.F|).
 We sample this component
 ${\tilde{v}}_{\pi}$ from a ``non-analog" truncated Maxwellian flux distribution
 $\tilde\Gamma^0_{Sh,ion,\pi}(\tilde v_{\pi})$ (see \cref{sec1.2.1a} above)

@@ -85,7 +85,7 @@ identical to the RSURF grid,
 and a ``zone centered (radial) surface labeling grid"
 RHOZNE(IR) defined by:
 
-\verb|RHOZNE(IR) = 0.5 * (RHOSRF(IR)+RHOSRF(IR+1))|
+\lstinline|RHOZNE(IR) = 0.5 * (RHOSRF(IR)+RHOSRF(IR+1))|
 
 These grids may be used for the input of closed form
 radial- or x direction
@@ -130,7 +130,7 @@ EIRENE in the initialization phase.
 \medskip
 
 \textsl{*** 2. Data for Standard Mesh}
-\begin{verbatim}
+\begin{lstlisting}
  (INDGRD(J), J=1,3)
  ** 2A. x- or radial co-ordinate surfaces
  NLRAD
@@ -195,7 +195,7 @@ EIRENE in the initialization phase.
  NLADD
  NRADD
  IF (NRADD.GT.0) (VOLADD(NM), NM = 1,NRADD)
-\end{verbatim}
+\end{lstlisting}
 
 \medskip
 
