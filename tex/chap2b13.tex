@@ -56,22 +56,22 @@ stationary case in the time-dependent mode (see below).
 
 \textsl{*** 13. Data for nonlinear and time dependent Options}
 
-\begin{verbatim}
-NPRNLI NINITL_READ NPRMUL
-IF (NLERG.AND.NPRNLI.EQ.0) NPRNLI=100
-IF (NPRNLI.GT.0) THEN
-  NPTST,NTMSTP
-  DTIMV,TIME0
+\begin{lstlisting}
+      NPRNLI NINITL_READ NPRMUL
+      IF (NLERG.AND.NPRNLI.EQ.0) NPRNLI=100
+      IF (NPRNLI.GT.0) THEN
+        NPTST,NTMSTP
+        DTIMV,TIME0
 ** 13A. DATA FOR SNAPSHOT TALLIES
-  NSNVI
-  IF (NSNVI.GT.NSNV)
-  DO 1320 J=1,NSNVI
-    ISNVE(J),ISNVS(J),ISNVT(J),ISNRC(J)
-    TXTTAL(J,NTALT)
-    TXTSPC(J,NTALT),TXTUNT(J,NTALT)
-1320  CONTINUE
-ENDIF
-\end{verbatim}
+        NSNVI
+        IF (NSNVI.GT.NSNV)
+          DO 1320 J=1,NSNVI
+            ISNVE(J),ISNVS(J),ISNVT(J),ISNRC(J)
+            TXTTAL(J,NTALT)
+            TXTSPC(J,NTALT),TXTUNT(J,NTALT)
+ 1320     CONTINUE
+        ENDIF
+\end{lstlisting}
 
 \medskip
 

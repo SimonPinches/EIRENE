@@ -96,8 +96,7 @@ parameter evaluation in routine FIND\_PARAM.f was carried out, e.g.\ in the abov
 stratum is turned off later in the run due to other parameter settings.
 
 The module PARMUSR reads: (\dots stands for an integer not less than 1)
-{\footnotesize
-\begin{verbatim}
+\begin{lstlisting}
 *COMDECK PARMUSR
 C
 C  Geometry
@@ -113,7 +112,8 @@ C  Primary Source
 C  Species and Tallies
       PARAMETER (NATM=..., NMOL=..., NION=..., NPLS=...,
                  NADV=..., NADS=...)
-      PARAMETER (NCLV=..., NSNV=..., NALV=..., NALS=..., NAIN=...)
+      PARAMETER (NCLV=..., NSNV=..., NALV=..., NALS=..., 
+     .           NAIN=...)
       PARAMETER (NCOP=..., NBGK=...)
 C  Statistics
       PARAMETER (NSD=..., NSDW=..., NCV=...)
@@ -124,7 +124,8 @@ C  Surface Reflection Data
       PARAMETER (NHD1=..., NHD2=..., NHD3=..., NHD4=...,
                  NHD5=..., NHD6=...)
 C  e.g.: TRIM Database
-C     PARAMETER (NHD1=12, NHD2=7, NHD3=5, NHD4=5, NHD5=5, NHD6=...)
+C     PARAMETER (NHD1=12, NHD2=7, NHD3=5, NHD4=5, NHD5=5, 
+C    .           NHD6=...)
 C  Diagnostic Chords Data
       PARAMETER (NCHOR=..., NCHEN=...)
 C  Interfacing routines:
@@ -137,22 +138,25 @@ C
 C  1.) IGJUM-FLAGS FOR SPEEDUP OF GEOMETRICAL CALCULATIONS
 C
 C  NOPTIM: REDUCES IGJUM3-ARRAY: IGJUM3(NOPTIM,NLIMPS)
-C          NOPTIM=N1ST*N2ND*N3RD+NADD:  NO STORAGE OPTIMIZATION,
-C                                       SPEEDUP OF GEOMETRICAL
-C                                       CALCULATIONS IS POSSIBLE
-C                                       BY CH3 FLAGS
+C          NOPTIM=N1ST*N2ND*N3RD+NADD:  NO STORAGE 
+C                                       OPTIMIZATION, SPEEDUP 
+C                                       OF GEOMETRICAL
+C                                       CALCULATIONS IS
+C                                       POSSIBLE BY CH3 FLAGS
 C          NOPTIM=1 MINIMAL STORAGE, NO SPEEDUP OF
 C                                    GEOMETRICAL CALCULATION
 C  DEFAULT:
       PARAMETER (NOPTIM=...)
 C
-C  NOPTM1: BIT-ARITHMETIC/INTEGER, E.G. 32 FOR IBM RISK, 46 FOR CRAY
+C  NOPTM1: BIT-ARITHMETIC/INTEGER, E.G. 32 FOR IBM RISK, 46 
+C          FOR CRAY
 C          DEFAULT: NOPTM1=1: NO STORAGE OPTIMIZATION
 C  DEFAULT:
       PARAMETER (NOPTM1=...)
 C
 C  2.) EXTERNAL GEOMETRY?
-C  NGEOM_USR = 1  ==> EXTERNAL GEOMETRY ROUTINES (...USR), LEVGEO=10
+C  NGEOM_USR = 1  ==> EXTERNAL GEOMETRY ROUTINES (...USR), 
+C                     LEVGEO=10
 C                     NO STORAGE FOR GEOMETRY DATA IN EIRENE
 C  NGEOM_USR = 0  ==> ELSE, NO STORAGE OPTIMIZATION
 C  DEFAULT:       PARAMETER (NGEOM_USR=...)
@@ -165,19 +169,23 @@ C  DEFAULT:
 C
 C  4.) CALCULATION OR STORAGE OF ATOMIC DATA
 C
-C  NSTORAM=0,1,2...,8,9.    =0: MINIMUM STORAGE, MAXIMUM CALCULATION
-C                           =9: MAXIMUM STORAGE, MINIMUM CALCULATION
+C  NSTORAM=0,1,2...,8,9.    =0: MINIMUM STORAGE, MAXIMUM
+C                               CALCULATION
+C                           =9: MAXIMUM STORAGE, MINIMUM
+C                               CALCULATION
 C  DEFAULT:
       PARAMETER (NSTORAM=...)
 C
 C  5.) SPATIALLY RESOLVED SURFACE TALLIES?
 C
-C  NGSTAL = 0  ==> NO STORAGE FOR SPATIALLY RESOLVED SURFACE TALLIES
-C  NGSTAL = 1  ==> SPATIALLY RESOLVED SURFACE TALLIES ARE COMPUTED
+C  NGSTAL = 0  ==> NO STORAGE FOR SPATIALLY RESOLVED SURFACE 
+C                  TALLIES
+C  NGSTAL = 1  ==> SPATIALLY RESOLVED SURFACE TALLIES ARE 
+C                  COMPUTED
 C  DEFAULT:
       PARAMETER (NGSTAL=...)
-\end{verbatim}
-}
+\end{lstlisting}
+
 \textbf{Meaning of the Parameter Variables (and Defaults)}
 \begin{list}{}{}
 \item[\textbf{N1ST}]  Maximum number of standard mesh points in x-
@@ -377,12 +385,12 @@ In EIRENE variables:
 Then, in order to estimate a response for a detector function $g$ on
 additional tally number ITALV, a statement in subroutine UPTUSR
 should read:
-\begin{verbatim}
- DO IC=1,NCOU
-   ICELL=NRCELL+NUPC(IC)*NR1P2+NBLCKA
-   ADDV(ITALV,ICELL) = ADDV(ITALV,ICELL) + WV * CLPC(IC) *  g
- ENDDO
-\end{verbatim}
+\begin{lstlisting}
+      DO IC=1,NCOU
+        ICELL=NRCELL+NUPC(IC)*NR1P2+NBLCKA
+        ADDV(ITALV,ICELL)=ADDV(ITALV,ICELL)+WV*CLPC(IC)*g
+      ENDDO
+\end{lstlisting}
 
 Here $CLPC$ is the length $l$ of the flight in the cell ICELL, $g$
 is assumed to be a constant in this cell in this example. In more
@@ -414,9 +422,9 @@ Then, in order to estimate a response for a detector function g on
 additional tally number ICOLV, a statement in subroutine UPCUSR
 should read:
 
-\begin{verbatim}
- COLV(ICOLV,ICELL) = COLV(ICOLV,ICELL) + WS * g  .
-\end{verbatim}
+\begin{lstlisting}
+      COLV(ICOLV,ICELL) = COLV(ICOLV,ICELL) + WS * g
+\end{lstlisting}
 
 Here $g$ is evaluated at the point of a collision, which is known
 to have taken place in cell ICELL in this call to subroutine
@@ -460,9 +468,9 @@ WSNAP = WEIGHT  \quad .
 Then, in order to estimate a response for a detector function $g$ on
 snapshot tally number ISNV, a statement in subroutine UPNUSR should
 read:
-\begin{verbatim}
- SNAPV(ISNV,ICELL) = SNAPV(ISNV,ICELL) + WSNAP * g(...)  .
-\end{verbatim}
+\begin{lstlisting}
+      SNAPV(ISNV,ICELL) = SNAPV(ISNV,ICELL) + WSNAP * g(...)
+\end{lstlisting}
 E.g., with $g=1$ this is an unbiased estimate of cell averaged particle density at
 time $t=t^*$, see \cref{est}, i.e., just counting the particle weights at $t=t^*$
 provides an unbiased estimate of the particle density.
@@ -648,8 +656,7 @@ whenever this surface is intersected by a test flight.
 
 \medskip
 
-{\small
-\begin{verbatim}
+\begin{lstlisting}
       SUBROUTINE REFUSR
 C USER SUPPLIED SURFACE INTERACTION ROUTINE
 C INPUT : CO-ORDINATES OF INCIDENT PARTICLE
@@ -664,10 +671,12 @@ C  DEFINE SPECIES DEPENDENT RECYCLING COEFFICIENT HERE
 C     RECYCT(ISPZ,MSURF)=.....
      :
       RETURN
-      ENTRY RF1USR (XMW,XCW,XMP,XCP,IGASF,IGAST,ZCOS,ZSIN,EXPI,
-     .              RPROB,E0TERM,*,*,*,*)
-C  RETURN 1: EIRENE STANDARD ANGULAR DISTRIBUTION (DEP. ON ``EXPI")
-C  RETURN 2: THERMAL MOLECULE MODEL (DEP. ON ``IGAST", ``E0TERM")
+      ENTRY RF1USR (XMW,XCW,XMP,XCP,IGASF,IGAST,ZCOS,ZSIN,
+     .              EXPI,RPROB,E0TERM,*,*,*,*)
+C  RETURN 1: EIRENE STANDARD ANGULAR DISTRIBUTION (DEP. ON 
+C            ``EXPI")
+C  RETURN 2: THERMAL MOLECULE MODEL (DEP. ON ``IGAST", 
+C            ``E0TERM")
 C  RETURN 3: THERMAL ATOM MODEL (DEP. ON ``IGAST", ``E0TERM")
 C  RETURN 4: ABSORB PARTICLE AT THIS SURFACE
      :
@@ -677,7 +686,8 @@ C
 C  INITIALIZE USER SUPPLIED SPUTTERING MODEL
       ENTRY SP0USR
      :
-C  DEFINE SPECIES DEPENDENT PHYSICAL SPUTTERING COEFFICIENT HERE
+C  DEFINE SPECIES DEPENDENT PHYSICAL SPUTTERING COEFFICIENT 
+C  HERE
 C     RECYCS(ISPZ,MSURF)=.....
 C  AND ALSO CHEMICAL SPUTTERING COEFFICIENT
 C     RECYCC(ISPZ,MSURF)=.....
@@ -687,8 +697,8 @@ C     RECYCC(ISPZ,MSURF)=.....
      :
       RETURN
       END
-\end{verbatim}
-}
+\end{lstlisting}
+
 \newpage
 
 \section{The user source sampling routine SAMUSR} \label{sec3.4}
@@ -734,29 +744,27 @@ Dimensions, Precision:
 
 \medskip
 
-{\footnotesize
-\begin{verbatim}
-      SUBROUTINE SAMUSR (ISR,X0,Y0,Z0,
-     .                   SORAD1,SORAD2,SORAD3,SORAD4,SORAD5,SORAD6,
-     .                   IRUSR,IPUSR,ITUSR,IAUSR,IBUSR,
-     .                   TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,
-     .                   WEISPZ)
+\begin{lstlisting}
+      SUBROUTINE SAMUSR (ISR,X0,Y0,Z0,SORAD1,SORAD2,SORAD3,
+     .                   SORAD4,SORAD5,SORAD6,IRUSR,IPUSR,
+     .                   ITUSR,IAUSR,IBUSR,TIWL,TEWL,DIWL,
+     .                   VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ)
       USE PRECISION
       USE PARMMOD
            :
-           :  ! MORE MODULES, IF NEEDED
+C MORE MODULES, IF NEEDED
            :
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: ISR, ISTR
-      REAL(DP), INTENT(IN)   :: SORAD1,SORAD2,SORAD3,SORAD4,SORAD5,
-     .                          SORAD6
+      REAL(DP), INTENT(IN)   :: SORAD1,SORAD2,SORAD3,SORAD4,
+     .                          SORAD5,SORAD6
       REAL(DP), INTENT(OUT) ::
      .          X0,Y0,Z0
       INTEGER,  INTENT(OUT) :: IRUSR,IPUSR,ITUSR,IAUSR,IBUSR
-!   NPLS: NUMBER OF BULK ION SPECIES IN EIRENE INPUT BLOCK 5
-!   NSPZ: TOTAL NUMBER OF PARTICLE SPECIES:
-!         NSPZ=NPHOT+NATM+NMOL+NION+NPLS,
-!         SEE INPUT BLOCKS 4 AND 5.
+C   NPLS: NUMBER OF BULK ION SPECIES IN EIRENE INPUT BLOCK 5
+C   NSPZ: TOTAL NUMBER OF PARTICLE SPECIES:
+C         NSPZ=NPHOT+NATM+NMOL+NION+NPLS,
+C         SEE INPUT BLOCKS 4 AND 5.
       REAL(DP), INTENT(OUT) ::
      .          TEWL,SHWL,
      .          TIWL(NPLS),DIWL(NPLS),
@@ -764,21 +772,22 @@ Dimensions, Precision:
      .          EFWL(NPLS),WEISPZ(NSPZ)
 
 
-!  INITIALIZE SAMPLING FOR SUBSTRATUM  ISR OF STRATUM ISTR
-!  ISR:  NUMBER OF SUBSTRATUM (SEE INPUT BLOCK 7)
-!  ISTR: NUMBER OF STRATUM
+C  INITIALIZE SAMPLING FOR SUBSTRATUM  ISR OF STRATUM ISTR
+C  ISR:  NUMBER OF SUBSTRATUM (SEE INPUT BLOCK 7)
+C  ISTR: NUMBER OF STRATUM
       ENTRY SM0USR (ISR,istr,sorad1,sorad2,sorad3,
      .                       sorad4,sorad5,sorad6)
 
       RETURN
 
-      ENTRY SM1USR (ISR,X0,Y0,Z0,
-     .              SORAD1,SORAD2,SORAD3,SORAD4,SORAD5,SORAD6,
-     .              IRUSR,IPUSR,ITUSR,IAUSR,IBUSR,
-     .              TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ)
-!  FIND BIRTH POINT COORDINATES. SUBSTRATUM ISR IF STRATUM ISTRA
-!  HAS ALREADY BEEN IDENTIFIED. ISTRA (IF NEEDED) IS IN MODULE COMPRT.
-!  INITIALIZE THOSE VARIABLES WHICH ARE NOT SET BELOW:
+      ENTRY SM1USR (ISR,X0,Y0,Z0,SORAD1,SORAD2,SORAD3,SORAD4,
+     .              SORAD5,SORAD6,IRUSR,IPUSR,ITUSR,IAUSR,
+     .              IBUSR,TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,
+     .              SHWL,WEISPZ)
+C  FIND BIRTH POINT COORDINATES. SUBSTRATUM ISR IF STRATUM 
+C  ISTRA HAS ALREADY BEEN IDENTIFIED. ISTRA (IF NEEDED) IS IN
+C  MODULE COMPRT.
+C  INITIALIZE THOSE VARIABLES WHICH ARE NOT SET BELOW:
       X0  =0._DP
       Y0  =0._DP
       Z0  =0._DP
@@ -799,14 +808,15 @@ Dimensions, Precision:
       EFWL=0._DP
       WEISPZ=0._DP
 
-!  HERE COMES THE PROBLEM SPECIFIC DEFINITION OF BIRTH POINT SAMPLING
+C  HERE COMES THE PROBLEM SPECIFIC DEFINITION OF BIRTH POINT
+C  SAMPLING
 
 
       RETURN
 
       END
-\end{verbatim}
-}
+\end{lstlisting}
+
 Note: The parameters EFWL, SHWL have been introduced in 2005.
 
 Note: Correction in May 2006: In previous versions of this manual the parameters TEWL and TIWL have
@@ -851,9 +861,9 @@ cells (ICELL = 1, \dots, NSBOX), if the input flag INDPRO(12) has the value INDP
 
 \medskip
 
-{\small
-\begin{verbatim}
-      SUBROUTINE PROUSR (RHO,INDEX,P0,P1,P2,P3,P4,P5,PVAC,NDAT)
+\begin{lstlisting}
+      SUBROUTINE PROUSR (RHO,INDEX,P0,P1,P2,P3,P4,P5,PVAC,
+     .                   NDAT)
 * CALL PARMMOD
      :
      :
@@ -875,8 +885,7 @@ C  DATA FOR VOL, NDAT=NSBOX
       ENDIF
       RETURN
       END
-\end{verbatim}
-}
+\end{lstlisting}
 
 Depending upon the value of INDEX, one has to specify a background tally
 on the array RHO, RHO(J),J=1,NDAT.
@@ -889,12 +898,12 @@ Electron temperature (\si{\electronvolt})
 INDEX = 1     :\\
 Ion temperature (\si{\electronvolt}), NPLSI calls, one for each
 ion species. I.e.:
-\begin{verbatim}
-DO IPLS=1,NPLSI
-  CALL PROUSR(HELP,1+0*NPLSI,TI0(IPLS),...,NSURF)
-  CALL RESETP(TIIN,HELP,IPLS,1,NPLS,NSURF)
-ENDDO
-\end{verbatim}
+\begin{lstlisting}
+      DO IPLS=1,NPLSI
+        CALL PROUSR(HELP,1+0*NPLSI,TI0(IPLS),...,NSURF)
+        CALL RESETP(TIIN,HELP,IPLS,1,NPLS,NSURF)
+      ENDDO
+\end{lstlisting}
 \item
 INDEX = 1+ NPLS     : \\
 Ion density (\si{\per\cubic\centi\metre}), NPLSI calls, one for each
@@ -939,9 +948,9 @@ It is used in particular if the magnetic field, or plasma flow field, are needed
 resolution than the one provided by the standard input plasma (background) tallies, which are cell averaged,
 i.e.\ constant within a cell.
 
-\begin{verbatim}
+\begin{lstlisting}
       SUBROUTINE VECUSR(INDEX,VEC_X,VEC_Y,VEC_Z,IPLS)
-\end{verbatim}
+\end{lstlisting}
 This routine is called in case INDPRO(5)=8 for the B-field tally (e.g.\ from routine BFIELD.F), and in case (INDPRO(4)=8)
 for the background flow velocity tallies (from many places in the code),
 to provide either a local magnetic field (unit) vector, or a local plasma (background medium)
@@ -971,10 +980,10 @@ Note: species index IPLS is the EIRENE background species index, not to be confu
 \section{User supplied post-processed tally routine TALUSR}
 \label{sec3.7}
 to be written
-\begin{verbatim}
+\begin{lstlisting}
       SUBROUTINE TALUSR(ICOUNT,VECTOR,TALTOT,TALAV,
      .                  TXTTL,TXTSP,TXTUN,ILAST,*)
-\end{verbatim}
+\end{lstlisting}
 \section{User supplied ``general geometry block"}
 \label{sec3.8} The following routines have to be provided for the
 general geometry options (LEVGEO=10 option, NLGEN=TRUE), in which no
@@ -1036,9 +1045,9 @@ Identify cell index from a point given by its three cartesian coordinates.
 
 The function LEAUSR is called from functions LEARC1
 and LEARCA in case of LEVGEO=10. The call is
-\begin{verbatim}
-NCELL=LEAUSR(X,Y,Z)
-\end{verbatim}
+\begin{lstlisting}
+      NCELL=LEAUSR(X,Y,Z)
+\end{lstlisting}
 Here X,Y,Z are the Cartesian
 coordinates of a point inside the computational domain in centimeters.
 LEAUSR must then return
@@ -1077,10 +1086,10 @@ is not returned in general. Only if this nearest surface is one of the ``non-def
 block 3a, this information is returned (by a negative value of argument NEWCEL.
 
 The call is
-\begin{verbatim}
-CALL TIMUSR (NRCELL,X0,Y0,Z0,VELX,VELY,VELZ,
-             NJUMP,NEWCEL,TIM,ICOS,IERR,NPANU,NLSRFX)
-\end{verbatim}
+\begin{lstlisting}
+      CALL TIMUSR (NRCELL,X0,Y0,Z0,VELX,VELY,VELZ,
+     .             NJUMP,NEWCEL,TIM,ICOS,IERR,NPANU,NLSRFX)
+\end{lstlisting}
 \textbf{Input}
 
 \begin{list}{}{}
@@ -1151,9 +1160,9 @@ See subroutine TIMER in code segment GEO3D.F
 \subsection{Subroutine VOLUSR}
 \label{sec3.8.3} The subroutine VOLUSR is called from subroutine
 VOLUME in case of LEVGEO=10. The call is
-\begin{verbatim}
-CALL VOLUSR(N,A)
-\end{verbatim}
+\begin{lstlisting}
+      CALL VOLUSR(N,A)
+\end{lstlisting}
 Here N is the total number of cells in this run, and
 A is an array of length N, containing the N cell volume values in \si{\cubic\centi\metre}.
 \subsection{Subroutine NORUSR}
@@ -1163,9 +1172,10 @@ i.e.\ after a particle trajectory has intersected a ``non default grid surface" 
 It is called in the LEVGEO=10 option from subroutine
 STDCOL,  after all surface intersection settings and possible switches have been carried out,
 or directly via the entry point STDNOR of STDCOL. The call is
-\begin{verbatim}
-CALL NORUSR(M,X,Y,Z,CX,CY,CZ,SCOS,VELX,VELY,VELZ,NRCELL)
-\end{verbatim}
+\begin{lstlisting}
+      CALL NORUSR(M,X,Y,Z,CX,CY,CZ,SCOS,VELX,VELY,VELZ,
+     .            NRCELL)
+\end{lstlisting}
 
 
 Here [X,Y,Z] are the cartesian coordinates

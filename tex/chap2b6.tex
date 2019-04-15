@@ -92,16 +92,16 @@ rather unhandy reflection data and formulas.
 \medskip
 
 \textsl{*** 6A. Data for General Reflection Models}
-\begin{verbatim}
- NLTRIM
-``Path-Card'' for TRIM surface reflection files
- (machine specific, may be omitted)
-\end{verbatim}
+\begin{lstlisting}
+      NLTRIM
+C     ``Path-Card'' for TRIM surface reflection files
+C     (machine specific, may be omitted)
+\end{lstlisting}
 If a ``Path Card'' is included, then read an arbitrary number of
 ``Target-Projectile Specification Cards'' of the format
-\begin{verbatim}
- A_on_B
-\end{verbatim}
+\begin{lstlisting}
+      A_on_B
+\end{lstlisting}
 Up to NHD6 (see PARAMETER statements, \cref{sec3.1}) data files for different
 Target-Projectile combinations can be read in EIRENE versions older than 2001. No such limitation exists in
 more recent versions (due to dynamic allocation of storage).
@@ -110,15 +110,15 @@ If no ``Path Card'' has been specified, or after the
 ``Target-Projectile Specification Cards", continue reading general
 species sampling distributions, used for source particle species sampling as well as
 for sampling post-surface event species as part of the surface reflection models
-\begin{verbatim}
- (DATD(I) I=1,NATM)
- (DMLD(I) I=1,NMOL)
- (DIOD(I) I=1,NION)
- (DPLD(I) I=1,NPLS)
- (DPHT(I) I=1,NPHOT)  (this card is to be read only in case 
-                       NPHOT > 0)
- ERMIN  ERCUT  RPROB0  RINTEG EINTEG AINTEG
-\end{verbatim}
+\begin{lstlisting}
+      (DATD(I) I=1,NATM)
+      (DMLD(I) I=1,NMOL)
+      (DIOD(I) I=1,NION)
+      (DPLD(I) I=1,NPLS)
+C (this card is to be read only in case NPHOT > 0)
+      (DPHT(I) I=1,NPHOT) 
+      ERMIN  ERCUT  RPROB0  RINTEG EINTEG AINTEG
+\end{lstlisting}
 Note that the species index distribution cards must always be read,
 even if NATM, NMOL, NION or NPLS are zero. In this latter case at
 least one (irrelevant) parameter must be read. E.g.\ if NION=0, i.e.
@@ -134,21 +134,21 @@ around 2001.
 Next, optionally, an arbitrary number of surface models, labelled by
 the character string $'modname'$, may be read.
 
-\begin{verbatim}
-SURFMOD_modname
-    ILREF  ILSPT ISRS  ISRC
-    ZNML EWALL EWBIN TRANSP(1,N) TRANSP(2,N) FSHEAT
-    RECYCF  RECYCT  RECPRM  EXPPL  EXPEL  EXPIL
-    RECYCS  RECYCC  SPTPRM  ESPUTS ESPUTC (this line may be 
-                             omitted, then: default sputter 
-                             model, see below)
-\end{verbatim}
+\begin{lstlisting}
+     SURFMOD_modname
+     ILREF  ILSPT ISRS  ISRC
+     ZNML EWALL EWBIN TRANSP(1,N) TRANSP(2,N) FSHEAT
+     RECYCF  RECYCT  RECPRM  EXPPL  EXPEL  EXPIL
+C (following line may be omitted, then: default sputter 
+C  model, see below)
+     RECYCS  RECYCC  SPTPRM  ESPUTS ESPUTC
+\end{lstlisting}
 next: within each SURFMOD-sub-block there may be an
 arbitrary number of lines
-\begin{verbatim}
-VARNAME  SPZNAME   VALUE
-(format: CHARACTER*8,X,CHARACTER*8,*)
-\end{verbatim}
+\begin{lstlisting}
+      VARNAME  SPZNAME   VALUE
+C     (format: CHARACTER*8,X,CHARACTER*8,*)
+\end{lstlisting}
 \medskip
 
 \textbf{Meaning of the Input Variables}
@@ -268,7 +268,7 @@ DMOL(IMOL).
 \item[= 0]
 no thermal particle re-emission for this species: $p_t = 0 $
 \item[$<$ 0]
-not in use, warning and error exit: ``\verb|species index out of range|''
+not in use, warning and error exit: ``\lstinline|species index out of range|''
 
 In code versions older than year 2000 this ISRT$<$0 options was also used to activate sampling
 the new species index IMOL from distribution DMOL. In order to avoid un-intentional species sampling
@@ -388,9 +388,9 @@ the surface number.
 
 Presently this ``localization option" is available for the flags
 
-\begin{verbatim}
-RINTEG, EINTEG, AINTEG
-\end{verbatim}
+\begin{lstlisting}
+      RINTEG, EINTEG, AINTEG
+\end{lstlisting}
 Overwriting
 general reflection data for some specific surfaces can
 be done via a call to the entry RF0USR of the user supplied reflection
@@ -423,18 +423,18 @@ each individual surface.
 \medskip
 
 An arbitrary number of such sub-blocks of 3 (or 4) lines each may
-also be defined under a certain label ``\verb|SURFMOD_modname|''
+also be defined under a certain label ``\lstinline|SURFMOD_modname|''
 and be included in the input file in block 6 directly after the
 ERMIN, \dots deck
 
 In blocks 3a and 3b surfaces may be assigned a particular local
-reflection model by a card reading \verb|SURFMOD_modname|. Many
+reflection model by a card reading \lstinline|SURFMOD_modname|. Many
 surfaces may then be linked to the same surface reflection
 sub-block.
 
 Example:
 {\footnotesize
-\begin{verbatim}
+\begin{lstlisting}
 SURFMOD_BERYL_SPT_300K
      1     2     0     0
  9.04000E+02-2.60000E-02 0.00000E+00 0.00000E+00 0.00000E+00 2.80000E+00
@@ -454,7 +454,7 @@ SURFMOD_CARB_SPT_812K
  1.20600E+03-7.00000E-02 0.00000E+00 0.00000E+00 0.00000E+00 2.80000E+00
  1.00000E+00 1.00000E+00 1.00000E+00 1.00000E+00 5.00000E-01 1.00000E+00
  1.00000E+00 1.00000E+00 1.00000E+00 0.00000E+00 0.00000E+00
-\end{verbatim}}
+\end{lstlisting}}
 
 \textbf{Meaning of the Input Variables}
 
@@ -878,12 +878,12 @@ NPHOTI + NATMI + NMOLI + NIONI + NPLSI times onto appropriately
 dimensioned arrays (with the same names). This is currently done
 for the parameters:
 
-\begin{verbatim}
-    ISRS  ISRC
-    TRANSP(1, ...)  TRANSP(2, ...)
-    RECYCF  RECYCT  RECPRM  EXPPL  EXPEL  EXPIL
-    RECYCS  RECYCC  SPTPRM  ESPUTS ESPUTC
-\end{verbatim}
+\begin{lstlisting}
+      ISRS  ISRC
+      TRANSP(1, ...)  TRANSP(2, ...)
+      RECYCF  RECYCT  RECPRM  EXPPL  EXPEL  EXPIL
+      RECYCS  RECYCC  SPTPRM  ESPUTS ESPUTC
+\end{lstlisting}
 
 The first index is the species index, the second
 index is the surface number.
@@ -902,7 +902,7 @@ For example: RECYCT(3,5) is the recycling
 coefficient for incident species 3 onto surface no.\ 5.
 
 If surface models are defined in input block 6 by the
-\verb|SURFMOD_modname| label, (rather than individually for each
+\lstinline|SURFMOD_modname| label, (rather than individually for each
 surface in blocks 3a or 3b), then these variables may be made
 species dependent by adding an arbitrary number of lines to a
 SURFMOD-deck, each of which overwriting the specification for a
@@ -913,7 +913,7 @@ species.
 In the example of SURFMOD decks given above, e.g., the first such
 additional line overwrites the original value of TRANSP(1, \dots)
 (=0.0) for species D2 with the value 0.5. I.e., all surfaces, to
-which the reflection model modname=\verb|CARB_SPT_1153|K is
+which the reflection model modname=\lstinline|CARB_SPT_1153|K is
 assigned, have a recycling coefficient =1.0 for all incident
 species, except for the D2 molecules, for which these surfaces are
 made transparent with probability 0.5, if these molecules are

@@ -28,7 +28,7 @@ cells of the computational grid. The input data in block 10
 described here are flags for activating and controlling these
 routines.
 
-Default: If the first card in this block: \verb|NADVI|, \dots,
+Default: If the first card in this block: \lstinline|NADVI|, \dots,
 contains only zeros, then the rest of this block can/must be
 omitted.
 
@@ -39,65 +39,65 @@ omitted.
 \medskip
 
 \textsl{*** 10. Data for additional tallies}
-\begin{verbatim}
-NADVI  NCLVI  NALVI  NADSI  NALSI NADSPC
-\end{verbatim}
+\begin{lstlisting}
+      NADVI  NCLVI  NALVI  NADSI  NALSI NADSPC
+\end{lstlisting}
 \textsl{* 10A. Data for additional track-length estimated volumetric
 tallies}
-\begin{verbatim}
- DO 101 IADVI=1,NADVI
-     IADVE(IADVI)  IADVS(IADVI)  IADVT(IADVI)  IADVR(IADVI)
-     TXTTAL(IADVI,NTALA)
-     TXTSPC(IADVI,NTALA)  TXTUNT(IADVI,NTALA)
- 101 CONTINUE
-\end{verbatim}
+\begin{lstlisting}
+      DO 101 IADVI=1,NADVI
+        IADVE(IADVI) IADVS(IADVI) IADVT(IADVI) IADVR(IADVI)
+        TXTTAL(IADVI,NTALA)
+        TXTSPC(IADVI,NTALA) TXTUNT(IADVI,NTALA)
+  101 CONTINUE
+\end{lstlisting}
 \textsl{* 10B. Data for additional collision estimated volumetric
             tallies}
-\begin{verbatim}
- DO 102 ICLVI=1,NCLVI
-     ICLVE(ICLVI)  ICLVS(ICLVI)  ICLVT(ICLVI)  ICLVR(ICLVI)
-     TXTTAL(ICLVI,NTALC)
-     TXTSPC(ICLVI,NTALC)  TXTUNT(ICLVI,NTALC)
- 102 CONTINUE
-\end{verbatim}
+\begin{lstlisting}
+      DO 102 ICLVI=1,NCLVI
+        ICLVE(ICLVI) ICLVS(ICLVI) ICLVT(ICLVI) ICLVR(ICLVI)
+        TXTTAL(ICLVI,NTALC)
+        TXTSPC(ICLVI,NTALC) TXTUNT(ICLVI,NTALC)
+  102 CONTINUE
+\end{lstlisting}
 \textsl{* 10C. Data for algebraic function of volumetric
              tallies}
-\begin{verbatim}
- DO 103 IALVI=1,NALVI
-     ALSTRNG
-     TXTTAL(IALVI,NTALR)
-     TXTSPC(IALVI,NTALR)  TXTUNT(IALVI,NTALR)
- 103 CONTINUE
-\end{verbatim}
+\begin{lstlisting}
+      DO 103 IALVI=1,NALVI
+        ALSTRNG
+        TXTTAL(IALVI,NTALR)
+        TXTSPC(IALVI,NTALR) TXTUNT(IALVI,NTALR)
+  103 CONTINUE
+\end{lstlisting}
 \textsl{* 10D. Data for additional surface crossing tallies}
-\begin{verbatim}
- DO 104 IADSI=1,NADSI
-     IADSE(IADSI)  IADSS(IADSI)  IADST(IADSI)  IADSR(IADSI)
-     TXTTLS(IADSI,NTLSA)
-     TXTSPS(IADSI,NTLSA)  TXTUNS(IADSI,NTLSA)
- 104 CONTINUE
-\end{verbatim}
+\begin{lstlisting}
+      DO 104 IADSI=1,NADSI
+        IADSE(IADSI) IADSS(IADSI) IADST(IADSI) IADSR(IADSI)
+        TXTTLS(IADSI,NTLSA)
+        TXTSPS(IADSI,NTLSA) TXTUNS(IADSI,NTLSA)
+  104 CONTINUE
+\end{lstlisting}
 
 \textsl{* 10E. Data for algebraic function of
 surface crossing tallies}
-\begin{verbatim}
- DO 105 IALSI=1,NALSI
-     ALSTRNG
-     TXTTLS(IALSI,NTLSR)
-     TXTSPS(IALSI,NTLSR)  TXTUNS(IALSI,NTLSR)
- 105 CONTINUE
-\end{verbatim}
+\begin{lstlisting}
+      DO 105 IALSI=1,NALSI
+        ALSTRNG
+        TXTTLS(IALSI,NTLSR)
+        TXTSPS(IALSI,NTLSR) TXTUNS(IALSI,NTLSR)
+  105 CONTINUE
+\end{lstlisting}
 
 optional, in versions Eirene$_{2003}$ and younger:
 
 \textsl{* 10F. Data for energy spectra}
-\begin{verbatim}
- DO 106 IADSP=1,NADSPC
-     ISPSRF, IPTYP, IPSPZ, ISPTYP, NSPS, ISRFCLL, IDIREC
-     SPCMN, SPCMX, SPC_SHIFT, SPCPLT_X, SPCPLT_Y, SPCPLT_SAME
-     if (idirec.ne.0) SPCVX, SPCVY, SPCVZ
- 106 CONTINUE
-\end{verbatim}
+\begin{lstlisting}
+      DO 106 IADSP=1,NADSPC
+        ISPSRF IPTYP IPSPZ ISPTYP NSPS ISRFCLL IDIREC
+        SPCMN SPCMX SPC_SHIFT SPCPLT_X SPCPLT_Y SPCPLT_SAME
+        if (idirec.ne.0) SPCVX SPCVY SPCVZ
+  106 CONTINUE
+\end{lstlisting}
 
 \textbf{Meaning of the input variables for additional volume and
 surface averaged Tallies}

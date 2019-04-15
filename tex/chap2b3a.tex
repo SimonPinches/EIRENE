@@ -54,19 +54,19 @@ non-default standard surface no.\ 4.
 \medskip
 
 \textsl{*** 3A. Data for ``Non-default Standard Surfaces''}
-\begin{verbatim}
- NSTSI
- DO 31 ISTSI=1,NSTSI
-\end{verbatim}
+\begin{lstlisting}
+      NSTSI
+      DO 31 ISTSI=1,NSTSI
+\end{lstlisting}
  unless otherwise stated, N = NLIM+ISTSI is the index of the following
  surface data for surface ISTSI:
-\begin{verbatim}
-    TXTSFL
-    ISTS, IDIMP, INUMP(ISTSI,IDIMP),
-   .IRPTA1, IRPTE1, IRPTA2, IRPTE2, IRPTA3, IRPTE3
-    ILIIN, ILSIDE, ILSWCH, ILEQUI, ILTOR, ILCOL,
-   .ILFIT ILCELL ILBOX ILPLG
-\end{verbatim}
+\begin{lstlisting}
+        TXTSFL
+        ISTS, IDIMP, INUMP(ISTSI,IDIMP),
+     .    IRPTA1, IRPTE1, IRPTA2, IRPTE2, IRPTA3, IRPTE3
+        ILIIN, ILSIDE, ILSWCH, ILEQUI, ILTOR, ILCOL,
+     .    ILFIT ILCELL ILBOX ILPLG
+\end{lstlisting}
 optional for non transparent surfaces (ILIIN $>$ 0):
 
 The next 3 (or 4) lines comprise the block for local particle-surface
@@ -74,14 +74,15 @@ interaction data
 (in analytic terminology: the boundary condition at this surface element).
 If they are omitted, the default particle-surface model is activated for this
 particular surface element, see \cref{sec2.6}.
-\begin{verbatim}
-    ILREF  ILSPT ISRS  ISRC
-    ZNML EWALL EWBIN TRANSP(1,N) TRANSP(2,N) FSHEAT
-    RECYCF  RECYCT  RECPRM  EXPPL  EXPEL  EXPIL
-    RECYCS  RECYCC  SPTPRM  (this line may be omitted,
-        then: default sputter model, see \cref{sec2.6})
- 31 CONTINUE
-\end{verbatim}
+\begin{lstlisting}
+        ILREF  ILSPT ISRS  ISRC
+        ZNML EWALL EWBIN TRANSP(1,N) TRANSP(2,N) FSHEAT
+        RECYCF  RECYCT  RECPRM  EXPPL  EXPEL  EXPIL
+C (this line may be omitted, then: default sputter model, 
+C  see \cref{sec2.6})
+        RECYCS  RECYCC  SPTPRM
+  31  CONTINUE
+\end{lstlisting}
 
 
 also, optional for non-transparent surfaces (ILIIN $>$ 0), and
@@ -100,9 +101,9 @@ quick changes of particle-surface interaction parameters, affecting
 many surfaces at once,
 by changes in just one location of the input file.
 
-\begin{verbatim}
-   SURFMOD_modname
-\end{verbatim}
+\begin{lstlisting}
+      SURFMOD_modname
+\end{lstlisting}
 \medskip
 
 \textbf{Meaning of the Input Variables for ``non-default standard

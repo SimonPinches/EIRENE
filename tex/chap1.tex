@@ -938,9 +938,9 @@ The efficiency for Monte Carlo Codes is the
 inverse of the \ac{FOM} of the calculation, defined
 as
 \begin{equation} \label{eq1.13}
-\verb|FOM| = statistical \ variance    \cdot   computing \ cost.
+\lstinline|FOM| = statistical \ variance    \cdot   computing \ cost.
 \end{equation}
-Note that \verb|FOM| should be approximately independent of the running
+Note that \lstinline|FOM| should be approximately independent of the running
 time, because the number of histories generated is (excluding
 overhead) proportional to the CPU costs and inversely proportional
 to the statistical variance $\sigma^2$.
@@ -2043,7 +2043,7 @@ F ( v_{\pi} )   = \int_{0}^{v_{\pi}} dv_{\pi} ' \
 cannot be inverted explicitly.
 
 
-Therefore in the EIRENE code we apply the Monte Carlo  ``biassed source sampling" concept, (module: \verb|VELOCS.F|).
+Therefore in the EIRENE code we apply the Monte Carlo  ``biassed source sampling" concept, (module: \lstinline|VELOCS.F|).
 We sample this component
 ${\tilde{v}}_{\pi}$ from a ``non-analog" truncated Maxwellian flux distribution
 $\tilde\Gamma^0_{Sh,ion,\pi}(\tilde v_{\pi})$ (see \cref{sec1.2.1a} above)
@@ -2370,8 +2370,7 @@ standard grid voxels.
 \caption{\label{label1l}Early example a combination of \ac{BREP} and VOXEL discretisation, around 1985
 for ALT-II pumplimiter studies at \ac{TEXTOR}. Discretisation inside the \ac{TEXTOR} tokamak vessel (torus): VOXEL, supplemented
 by about 100 (\acs{BREP}) first and second order surfaces for ALT-II scoops, pumping ducts and inner structures such as probe supports,
-getter pumps, etc..
-}
+getter pumps, etc..}
 \end{minipage}\hfill%
 \begin{minipage}{0.48\textwidth}
 \includegraphics[width=\textwidth,angle=-0]{alt_imp}
@@ -3478,8 +3477,7 @@ Corresponding variances
 are updated \emph{(per history)} after completion of each trajectory in STATS1, STATS1\_COP, STATS1\_BGK.
 \textcolor[rgb]{1.00,0.00,0.00}{Addition/revision in 2012: Updating of linear functions of default tallies, \emph{per history}, in UPFCOP, e.g.\ for code coupling tally
 COPV.
-This makes redundant the specific statistical variance evaluation in STATS1\_COP}
-}
+This makes redundant the specific statistical variance evaluation in STATS1\_COP}}
 \label{flow5}
 
 \end{figure}
