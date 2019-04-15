@@ -71,7 +71,7 @@ neutral-neutral collisions are relevant. In this latter case so called \ac{BGK} 
 are employed, and the non-linearity is dealt with by successive linearisation (i.e.\ by iteration).
 
 The strongest non-linearity in EIRENE applications is typically the back-reaction of the ``plasma-background'' (the host medium) on the
-neutral gas and radiation fields. This, however, is dealt with in an operator splitting cycling procedure (see \cref{sec4}) between a plasma solver (``diffusion-advection sub-module" solver, for given reaction terms) and EIRENE (``reaction part'' solver, for given diffusion advection solution, i.e.\ for given background medium), in which
+neutral gas and radiation fields. This, however, is dealt with in an operator splitting cycling procedure (see \cref{sec4}) between a plasma solver (``di\-ffu\-sion-advection sub-module" solver, for given reaction terms) and EIRENE (``reaction part'' solver, for given diffusion advection solution, i.e.\ for given background medium), in which
 EIRENE, within each single cycle, may still be operated in linear mode.
 
 
@@ -298,7 +298,7 @@ f_{i_0}(\vv)
 Note, however, that in case of ``self collisions" within the community of particles $i_0$, the macroscopic cross section $\Sigma_t$
 itself is a (nonlinear) function of the dependent
 variable $f_{i_0}: \Sigma_{t,i_0}(\vr,\vv,f_{i_0})$,
-since it then contains also an integration (over velocities $\vV$ of the collision partners) of $\sigma(\dots,\vV \rightarrow \dots) \times f_{i_0}(\vV)$.
+since it then contains also an integration (over velocities $\vV$ of the collision partners) of $\sigma(\dots, \vV \rightarrow \dots) \times f_{i_0}(\vV)$.
 
 \minisec{The linear form of Boltzmann transport equation}
 
@@ -1708,7 +1708,7 @@ C_E ( \vartheta_{in} )   =
 \end{equation}
 This latter moment equation can be satisfied by modifying the
 tabulated stochastic matrix $ {\underline{\underline{B}}}_{\perp}
-( E ' \rightarrow   E)$ in many different ways. In EIRENE, we
+( E' \rightarrow   E)$ in many different ways. In EIRENE, we
 first sample $ {\cal{E}}$ from $ {\underline{\underline{B}}}
 _{\perp}$ (given $ E '$) and then set
 \begin{equation}
@@ -2431,13 +2431,13 @@ g_{\lambda , \pi}^i (x,y,z)  \le   0 {},    \quad \quad \pi   =
 This means that for all unbounded surfaces $S_{i,\lambda}$ only the points, which fulfill all corresponding
 inequalities \cref{eq1.35} are regarded by EIRENE as valid parts of the finite surface element.
 
-Assume a test particle at position $ \vr_0 $ =
-(X0,Y0,Z0) moving with speed unit vector $ \vOmega_0 $
-= (VELX,VELY,VELZ). The block then has to provide the nearest
-intersection $ \vr_1$ of the straight line (``sample trajectory")
+Assume a test particle at position $\vr_0$ =
+(X0, Y0, Z0) moving with speed unit vector $\vOmega_0$
+= (VELX, VELY, VELZ). The block then has to provide the nearest
+intersection $\vr_1$ of the straight line (``sample trajectory")
 \begin{equation}\nonumber
 G(t):
- \vr_0   +   t   \vOmega_0
+ \vr_0 + t \vOmega_0
 \end{equation}
 amongst all possible intersections with the surfaces $S_i$. Moving
 the ``particle" from $\vr_0$ to $\vr_1$ and
@@ -3331,8 +3331,8 @@ equation exists in closed form:
 
 \textbf{Example: hydrocarbon ions \cite{kn:Langer}}
 
-With $\mu_b=1$ for protons, $\mu_a=16$ for CH$_4^+$, the Coulomb logarithm $\lambda_{a,b}\approx 10$,
-hence $2 (\lambda_{a,b}/\mu_a) \delta_{a,b} \approx 1.3$ and
+With $\mu_b=1$ for protons, $\mu_a=16$ for CH$_4^+$, the Coulomb logarithm $\lambda_{a,b} \approx 10$,
+hence $2 (\lambda_{a,b} / \mu_a) \delta_{a,b} \approx 1.3$ and
 \begin{equation}
 {\nu}_\varepsilon = \tilde{\nu}_\varepsilon \delta_{a,b}\approx
 8.8 \times 10^{-8}~ n_b~T_b^{-3/2}
