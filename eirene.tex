@@ -1,6 +1,11 @@
-%\documentclass[12pt,dvipdfm,a4paper]{report}
-\documentclass[12pt,DIV=14,toc=bib]{scrreprt}
-%\documentclass[12pt,dvipdfm]{report}
+\documentclass[%
+  12pt,
+  DIV=13,
+  abstract=true,
+  chapterprefix=true,
+  numbers=noendperiod,
+  toc=bib
+]{scrreprt}
 
 \parindent=0pt
 
@@ -8,25 +13,34 @@
 \usepackage{graphicx}
 \usepackage{newtxtext}
 \usepackage{newtxmath}
-\usepackage[unicode=true,
-% hypertex, % use for activating links in DVI file
-% dvipdfm, % use for bookmarks in final version
- bookmarks=true,bookmarksnumbered=true,bookmarksopen=true,
- breaklinks=false,pdfborder={0 0 0},backref=false,colorlinks=true]
- {hyperref}
-% \usepackage{bookmark} % use only together with dvipdfm option of hyperref package!
+\usepackage[%
+  unicode=true,
+  bookmarks=true,
+  bookmarksnumbered=true,
+  bookmarksopen=true,
+  breaklinks=false,
+  pdfborder={0 0 0},
+  backref=false,
+  colorlinks=true
+]{hyperref}
 \usepackage{cleveref}
 \usepackage[nolist]{acronym}
 \usepackage{siunitx}
 \usepackage{listings}
 
-\hypersetup{pdftitle={EIRENE Documentation},linkcolor=blue, citecolor=blue, urlcolor=blue, filecolor=blue}
+\hypersetup{
+  pdftitle={EIRENE Documentation},
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue,
+  filecolor=blue
+}
 
 \crefname{equation}{}{}
 
 \sisetup{
   detect-weight = true
-}%
+}
 \DeclareSIUnit\ampere{amp}
 \DeclareSIUnit\atomicmassunit{AMU}
 \DeclareSIUnit\torr{Torr}
@@ -34,7 +48,7 @@
 
 \lstset{
   language=[77]Fortran
-}%
+}
 
 \newcommand{\vOmega}{\mathbf{\Omega}}
 \newcommand{\vv}{\mathbf{v}}
@@ -66,7 +80,6 @@
 \hyphenation{to-roi-dal}
 
 \begin{document}
-
 
 \begin{titlepage}
 
