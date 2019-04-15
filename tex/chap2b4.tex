@@ -468,12 +468,13 @@ for single parameter fits.
 \begin{list}{}{}
 \item[]
 in case IFTFLG = 10, 110, 210, \dots, ``single parameter", constant collision parameter. One more line \\
- \lstinline|F(0), REAL|
-\\ is read.
+\lstinline|F(0)| (REAL)\\
+is read.
 
 For all other values of IFTFLG, including the default IFTFLG=0, two more input lines with 9 fitting coefficients\\
-\lstinline|F(I), I=0,5 (REAL)|\\ \lstinline|F(I), I=6,8 (REAL)|\\ are read, in
-subroutine SLREAC from the formatted input file.
+\lstinline|F(I), I=0,5| (REAL)\\
+\lstinline|F(I), I=6,8| (REAL)\\
+are read, in subroutine SLREAC from the formatted input file.
 
 The natural logarithm of cross-section: $\ln(\sigma)$ (H123 = H.1) or of a rate coefficient: $\ln(R)$ (H123 = H.2, = H.5, or = H.8) is computed as:
 
