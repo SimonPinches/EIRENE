@@ -77,7 +77,6 @@ procedure:
 
 \textsl{Plasma data (INDPRO = 6 option)}
 
-{\footnotesize
 \begin{lstlisting}
 TEIN  :  (RWK ((0         ) * NRAD + J), J=1,NSBOX)
 TIIN  :  (RWK ((1 + 0*NPLS) * NRAD + J), J=1,NSBOX,I=1,NPLS)
@@ -95,22 +94,32 @@ ADIN  :  (RWK ((6 + 5*NPLS) * NRAD + J), J=1,NSBOX,I=1,NAIN)
 \textsl{Geometrical data (INDGRD = 6 option)}
 \begin{lstlisting}
 LEVGEO = 1 or LEVGEO = 2:
-RSURF :  (RWK ((6+5*NPLS+NAIN) * NRAD +                 J), J=1,N1ST)
-EP    :  (RWK ((6+5*NPLS+NAIN) * NRAD +   N1ST +        J), J=1,N1ST)
-EL    :  (RWK ((6+5*NPLS+NAIN) * NRAD + 2*N1ST +        J), J=1,N1ST)
-TR    :  (RWK ((6+5*NPLS+NAIN) * NRAD + 3*N1ST +        J), J=1,N1ST)
-PSURF :  (RWK ((6+5*NPLS+NAIN) * NRAD + 4*N1ST +        J), J=1,N2ND)
-TSURF :  (RWK ((6+5*NPLS+NAIN) * NRAD + 4*N1ST + N2ND + J), J=1,N3RD)
+RSURF :  (RWK ((6+5*NPLS+NAIN) * NRAD +                 J),
+          J=1,N1ST)
+EP    :  (RWK ((6+5*NPLS+NAIN) * NRAD +   N1ST +        J),
+          J=1,N1ST)
+EL    :  (RWK ((6+5*NPLS+NAIN) * NRAD + 2*N1ST +        J),
+          J=1,N1ST)
+TR    :  (RWK ((6+5*NPLS+NAIN) * NRAD + 3*N1ST +        J),
+          J=1,N1ST)
+PSURF :  (RWK ((6+5*NPLS+NAIN) * NRAD + 4*N1ST +        J),
+          J=1,N2ND)
+TSURF :  (RWK ((6+5*NPLS+NAIN) * NRAD + 4*N1ST + N2ND + J),
+          J=1,N3RD)
 LEVGEO = 3
-PGINTF:  (RWK ((6+5*NPLS+NAIN) * NRAD + J), J=1,NPMAX)
-TSURF :  (RWK ((6+5*NPLS+NAIN) * NRAD + NPMAX + J), J=1,N3RD)
+PGINTF:  (RWK ((6+5*NPLS+NAIN) * NRAD +                 J),
+          J=1,NPMAX)
+TSURF :  (RWK ((6+5*NPLS+NAIN) * NRAD + NPMAX +         J),
+          J=1,N3RD)
 LEVGEO = 4
-TRINTF:  (RWK ((6+5*NPLS+NAIN) * NRAD + J), J=1,NTMAX)
-TSURF :  (RWK ((6+5*NPLS+NAIN) * NRAD + NTMAX + J), J=1,N3RD)
+TRINTF:  (RWK ((6+5*NPLS+NAIN) * NRAD +                 J),
+          J=1,NTMAX)
+TSURF :  (RWK ((6+5*NPLS+NAIN) * NRAD + NTMAX +         J),
+          J=1,N3RD)
 LEVGEO = 5
-THINTF:  (RWK ((6+5*NPLS+NAIN) * NRAD + J), J=1,NHMAX)
+THINTF:  (RWK ((6+5*NPLS+NAIN) * NRAD +                 J),
+          J=1,NHMAX)
 \end{lstlisting}
-}
 
 \subsection{entry IF0COP} \label{sec4.1.0}
 \textsl{Geometry data (INDGRD = 6 option)}
@@ -242,8 +251,7 @@ are scored in this routine.
 
 \newpage
 \section{Statistical noise in Monte Carlo terms for external code,
-noise-residuals: STATIS\_COP
-}
+noise-residuals: STATIS\_COP}
 \label{sec4.4}
 
 As pointed out in \cref{sec2.9}:  for all primary (not derived)

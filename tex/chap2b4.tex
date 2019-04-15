@@ -44,17 +44,15 @@ to define general test particles (objects) (atoms, molecules, test ions, photons
 
 First EIRENE reads NREACI ``non-default" atomic data cards, (if any, i.e., if NREACI $>$ 0)
 
-{\small
 \begin{lstlisting}
       NREACI
       DO I=1,NREACI
-        IR  FILNAM  H123  REAC  CRC  MASSP  MASST  DP RMN1 RMX1 
-     .    R2MN R2MX
+        IR  FILNAM  H123  REAC  CRC  MASSP  MASST  DP RMN1
+     .    RMX1 R2MN R2MX
 
 C       (format: I3,1X,A6,1X,A4,Axxx,A3,2I3,3E12.4)
       ENDDO
 \end{lstlisting}
-}
 
 either from external A\&M data files such as \lstinline|FILNAM = HYDHEL|, \lstinline|= METHAN|, \lstinline|= AMJUEL|, \lstinline|= H2VIBR|,
 for polynomial fits, or other data files
@@ -1604,14 +1602,12 @@ derived in closed analytic form for this expression.
 
 There is currently no fully equivalent counterpart to this in the AMJUEL or HYDHEL polynomial fits.
 Rather close to the minimal default volume recombination model, al least at low Te, is the choice:
-{\small
 \begin{lstlisting}
 C single step recombination rate to ground state
   1 HYDHEL H.2 2.1.8     RC  0  1
 C corresponding electron energy loss/gain
   2 HYDHEL H.8 2.1.8     RC  0  1
 \end{lstlisting}
-}
 
 For helium bulk ions ($He^+$) analytic default (radiative) volume recombination rates are given
 in \cite{kn:Janev}, reaction 2.3.13. The associated electron energy losses are

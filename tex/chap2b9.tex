@@ -41,12 +41,14 @@ which otherwise, e.g.\ in case of suppression of absorption,  may be grossly mis
 
 \textsl{*** 9. Data for Statistics and non-analog Methods}
 
-{\small
 \begin{lstlisting}
-      (NLPRCA(IATM)  IATM=1,NATM) , (NLPRCM(IMOL)   IMOL =1,NMOL) ,
-      (NLPRCI(IION)  IION=1,NION) , (NLPRCPH(IPHOT) IPHOT=1,NPHOT)
+      (NLPRCA(IATM) IATM=1,NATM) 
+     .  (NLPRCM(IMOL)   IMOL =1,NMOL)
+     .  (NLPRCI(IION) IION=1,NION) 
+     .  (NLPRCPH(IPHOT) IPHOT=1,NPHOT)
       NPRCSF
-C next: read NPRCSF integers (FORMAT 12I6) IPRSF(J) J=1,NPRCSF
+C next: read NPRCSF integers (FORMAT 12I6) 
+C       IPRSF(J) J=1,NPRCSF
       MAXLEV  MAXRAD  MAXPOL  MAXTOR  MAXADD
       DO IN=1,MAXRAD
         READ (IUNIN,66665) ID,NSSPL(IN),PRMSPL(IN)
@@ -65,7 +67,6 @@ C next: read NPRCSF integers (FORMAT 12I6) IPRSF(J) J=1,NPRCSF
       WMINV  WMINS  WMINC WMINL
       SPLPAR
 \end{lstlisting}
-}
 
  \textsl{* Cards for Standard Deviation}
 
