@@ -48,14 +48,15 @@ First EIRENE reads NREACI ``non-default" atomic data cards, (if any, i.e., if NR
 \begin{lstlisting}
       NREACI
       DO I=1,NREACI
-        IR  FILNAM  H123  REAC  CRC  MASSP  MASST  DP RMN1 RMX1 R2MN R2MX
+        IR  FILNAM  H123  REAC  CRC  MASSP  MASST  DP RMN1 RMX1 
+     .    R2MN R2MX
 
 C       (format: I3,1X,A6,1X,A4,Axxx,A3,2I3,3E12.4)
       ENDDO
 \end{lstlisting}
 }
 
-either from external A\&M data files such as \lstinline|FILNAM| = \lstinline|HYDHEL|, = \lstinline|METHAN|, = \lstinline|AMJUEL|, = \lstinline|H2VIBR|,
+either from external A\&M data files such as \lstinline|FILNAM = HYDHEL|, \lstinline|= METHAN|, \lstinline|= AMJUEL|, \lstinline|= H2VIBR|,
 for polynomial fits, or other data files
 of appropriate format.
 
@@ -238,26 +239,24 @@ needed for some
 more complex chemical reactions, such as particle rearrangement collisions
 $p + CH_4 \rightarrow CH_2 + H_2 + H$, etc.
 
-{\small
 \begin{lstlisting}
       DO  K= 1, NRC$
-        IREAC$  IBULK$  ISCD1$  ISCD2$  ISCD3$ ISCDE$  IESTM$  IBGK$
+        IREAC$  IBULK$  ISCD1$  ISCD2$  ISCD3$ ISCDE$  IESTM$
+     .    IBGK$
         EELEC$  EBULK$  ESCD1$  EDUMMY FREAC$  EDPOT$
       ENDDO
 \end{lstlisting}
-}
 New option in 2006:
 
 In case ID1 = 4, i.e., four post collision particles (not counting electrons)
 
-{\footnotesize
 \begin{lstlisting}
       DO  K= 1, NRC$
-        IREAC$  IBULK$  ISCD1$  ISCD2$  ISCD3$ ISCD4$ ISCDE$  IESTM$  IBGK$
+        IREAC$  IBULK$  ISCD1$  ISCD2$  ISCD3$ ISCD4$ ISCDE$
+     .    IESTM$  IBGK$
         EELEC$  EBULK$  ESCD1$  EDUMMY FREAC$  EDPOT$
       ENDDO
 \end{lstlisting}
-}
 
 where \textbf{\$} stands for either A (atoms), M (molecules),
 I (test ions), PH (photons) or P (bulk ions).
@@ -311,23 +310,24 @@ Note: in EIRENE$_{2003}$ or later the format of input flag \lstinline|REAC| desc
 \lstinline|A9|  to \lstinline|Axxx|, with \lstinline|xxx| $\leq 50$,  to accommodate the longer reaction information for photonic
 processes into the same format. The old format \lstinline|A9| is of course automatically still recognized as special case.
 \begin{lstlisting}
-     NREACI
-     DO
+      NREACI
+      DO
 \end{lstlisting}
 \textbf{for ``real particles"}, databases: \lstinline|FILNAM = HYDHEL|, \lstinline|AMJUEL|, \lstinline|METHAN|, \lstinline|H2VIBR|
 \begin{lstlisting}
-       IR  FILNAM  H123  REAC  CRC  MASSP  MASST  DP RMN1  RMX1
-C      (format: I3,1X,A6,1X,A4,Axxx,A3,2I3,3E12.4)
-       IF (RMN1.GT.0.) READ IFEXMN, FPARM(J),J=1,3
-       IF (RMX1.GT.0.) READ IFEXMX, FPARM(J),J=4,6
+        IR  FILNAM  H123  REAC  CRC  MASSP  MASST  DP RMN1
+     .    RMX1
+C       (format: I3,1X,A6,1X,A4,Axxx,A3,2I3,3E12.4)
+        IF (RMN1.GT.0.) READ IFEXMN, FPARM(J),J=1,3
+        IF (RMX1.GT.0.) READ IFEXMX, FPARM(J),J=4,6
 \end{lstlisting}
 \textbf{for ``real particles"}, database: \lstinline|FILNAM = ADAS|
 (or any table in an equivalent format as the \ac{ADAS} adf11 files)
 \begin{lstlisting}
-       IR  ADAS  H123  REAC  CRC  MASSP  MASST  DP
-C      (format: I3,1X,A6,1X,A4,Axxx,A3,2I3,3E12.4)
-       ELNAME, IZ
-C      (format: 4X,A2,1X,I3)
+        IR  ADAS  H123  REAC  CRC  MASSP  MASST  DP
+C       (format: I3,1X,A6,1X,A4,Axxx,A3,2I3,3E12.4)
+        ELNAME, IZ
+C       (format: 4X,A2,1X,I3)
 \end{lstlisting}
 i.e.: one additional input card is read to identify the chemical element and charge state.
 Extrapolation flags RMN1 and RMX1 are not in use in this case and may be omitted. Default (hard wired) extrapolation
@@ -338,8 +338,8 @@ schemes are used if the plasma density and temperature is outside the tabulated 
 Fit parameters are directly read from input file, up to nine coefficients.
 In EIRENE$_{2005}$ or later: Optional : Further parameter FTFLAG, length: not more than 9 characters.
 \begin{lstlisting}
-       IR  CONST  H123  FTFLAG(optional) CRC  MASSP  MASST  DP
-C      (format: I3,1X,A6,1X,A4,(A9),xxxX,A3,2I3,3E12.4)
+        IR  CONST  H123  FTFLAG  CRC  MASSP  MASST  DP
+C       (format: I3,1X,A6,1X,A4,(A9),xxxX,A3,2I3,3E12.4)
 \end{lstlisting}
 i.e.: Reading of FTFLAG is optional. Default for FTFLAG: =0. Parameter REAC does not exist.
 Extrapolation flags RMN1 and RMX1 are not in use in this case and may be omitted.
@@ -347,13 +347,13 @@ Extrapolation flags RMN1 and RMX1 are not in use in this case and may be omitted
 \vspace{0.3cm}
 \textbf{for ``photons"}, database \lstinline|FILNAM = PHOTON|
 \begin{lstlisting}
-       IR  PHOTON  H123  REAC
-C      (format: I3,1X,A6,1X,A4,Axxx)
-       IPRFTYPE IPLSC3 IMESS IFREMD NRJPRT
-       DO IFREMD
-         II KENN  IK6
-C        (format: I6,1X,A2,3X,I6)
-       ENDDO
+        IR  PHOTON  H123  REAC
+C       (format: I3,1X,A6,1X,A4,Axxx)
+        IPRFTYPE IPLSC3 IMESS IFREMD NRJPRT
+        DO IFREMD
+          II KENN  IK6
+C         (format: I6,1X,A2,3X,I6)
+        ENDDO
 \end{lstlisting}
 I.e.: after the first line there is a special format for this set of input cards in case of photonic processes,
 read from the spectral database PHOTON. In case \emph{IFREMD $>$ 0} the additional cards specify options
@@ -1605,10 +1605,10 @@ There is currently no fully equivalent counterpart to this in the AMJUEL or HYDH
 Rather close to the minimal default volume recombination model, al least at low Te, is the choice:
 {\small
 \begin{lstlisting}
-  1 HYDHEL H.2 2.1.8     RC  0  1   ! single step recombination 
-                                    ! rate to ground state
-  2 HYDHEL H.8 2.1.8     RC  0  1   ! corresponding electron 
-                                    ! energy loss/gain
+C single step recombination rate to ground state
+  1 HYDHEL H.2 2.1.8     RC  0  1
+C corresponding electron energy loss/gain
+  2 HYDHEL H.8 2.1.8     RC  0  1
 \end{lstlisting}
 }
 

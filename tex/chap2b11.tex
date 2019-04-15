@@ -102,9 +102,11 @@ to as an input volumetric tally (no.\ ITALI=13 in
 optional: unless block 11B starts:
 \begin{lstlisting}
       NLTVOUT
-      NUMTAL(J),J=1,NLTVOUT ! (12 values per card, FORMAT 12I6)
+C (12 values per card, FORMAT 12I6)
+      NUMTAL(J),J=1,NLTVOUT
       NLTSOUT
-      NUMTAL(J),J=1,NLTSOUT ! (12 values per card, FORMAT 12I6)
+C (12 values per card, FORMAT 12I6)
+      NUMTAL(J),J=1,NLTSOUT
 \end{lstlisting}
 
  \textsl{* 11B Data for graphical output}
@@ -115,12 +117,15 @@ optional: unless block 11B starts:
       PL1ST     PL2ND     PL3RD     PLADD  PLHST
       PLCUT(1)  PLCUT(2)  PLCUT(3)  PLBOX  PLSTOR
       PLNUMV    PLNUMS    PLARR
-      NPLINR NPLOTR NPLDLR NPLINP NPLOTP NPLDLP NPLINT NPLOTT NPLDLT
+      NPLINR NPLOTR NPLDLR NPLINP NPLOTP NPLDLP NPLINT NPLOTT
+     .  NPLDLT
       DO 1140 J=1,5
-        PL3A(J) TEXTLA(J) IPLTA(J) (IPLAA(J,I) IPLEA(J,I) I=1,IPLTA(J))
+        PL3A(J) TEXTLA(J) IPLTA(J) 
+     .    (IPLAA(J,I) IPLEA(J,I) I=1,IPLTA(J))
  1140 CONTINUE
       DO 1141 J=1,3
-        PL3S(J) TEXTLS(J) IPLTS(J) (IPLAS(J,I) IPLES(J,I) I=1,IPLTS(J))
+        PL3S(J) TEXTLS(J) IPLTS(J) 
+     .    (IPLAS(J,I) IPLES(J,I) I=1,IPLTS(J))
  1141 CONTINUE
       CH2MX  CH2MY         CH2X0  CH2Y0  CH2Z0
       CH3MX  CH3MY  CH3MZ  CH3X0  CH3Y0  CH3Z0

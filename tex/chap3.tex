@@ -380,7 +380,7 @@ should read:
 \begin{lstlisting}
       DO IC=1,NCOU
         ICELL=NRCELL+NUPC(IC)*NR1P2+NBLCKA
-        ADDV(ITALV,ICELL) = ADDV(ITALV,ICELL) + WV * CLPC(IC) * g
+        ADDV(ITALV,ICELL)=ADDV(ITALV,ICELL)+WV*CLPC(IC)*g
       ENDDO
 \end{lstlisting}
 
@@ -461,7 +461,7 @@ Then, in order to estimate a response for a detector function $g$ on
 snapshot tally number ISNV, a statement in subroutine UPNUSR should
 read:
 \begin{lstlisting}
-      SNAPV(ISNV,ICELL) = SNAPV(ISNV,ICELL) + WSNAP * g(...)  .
+      SNAPV(ISNV,ICELL) = SNAPV(ISNV,ICELL) + WSNAP * g(...)
 \end{lstlisting}
 E.g., with $g=1$ this is an unbiased estimate of cell averaged particle density at
 time $t=t^*$, see \cref{est}, i.e., just counting the particle weights at $t=t^*$
@@ -744,7 +744,7 @@ Dimensions, Precision:
       USE PRECISION
       USE PARMMOD
            :
-           :  ! MORE MODULES, IF NEEDED
+C MORE MODULES, IF NEEDED
            :
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: ISR, ISTR
@@ -753,10 +753,10 @@ Dimensions, Precision:
       REAL(DP), INTENT(OUT) ::
      .          X0,Y0,Z0
       INTEGER,  INTENT(OUT) :: IRUSR,IPUSR,ITUSR,IAUSR,IBUSR
-!   NPLS: NUMBER OF BULK ION SPECIES IN EIRENE INPUT BLOCK 5
-!   NSPZ: TOTAL NUMBER OF PARTICLE SPECIES:
-!         NSPZ=NPHOT+NATM+NMOL+NION+NPLS,
-!         SEE INPUT BLOCKS 4 AND 5.
+C   NPLS: NUMBER OF BULK ION SPECIES IN EIRENE INPUT BLOCK 5
+C   NSPZ: TOTAL NUMBER OF PARTICLE SPECIES:
+C         NSPZ=NPHOT+NATM+NMOL+NION+NPLS,
+C         SEE INPUT BLOCKS 4 AND 5.
       REAL(DP), INTENT(OUT) ::
      .          TEWL,SHWL,
      .          TIWL(NPLS),DIWL(NPLS),
@@ -764,9 +764,9 @@ Dimensions, Precision:
      .          EFWL(NPLS),WEISPZ(NSPZ)
 
 
-!  INITIALIZE SAMPLING FOR SUBSTRATUM  ISR OF STRATUM ISTR
-!  ISR:  NUMBER OF SUBSTRATUM (SEE INPUT BLOCK 7)
-!  ISTR: NUMBER OF STRATUM
+C  INITIALIZE SAMPLING FOR SUBSTRATUM  ISR OF STRATUM ISTR
+C  ISR:  NUMBER OF SUBSTRATUM (SEE INPUT BLOCK 7)
+C  ISTR: NUMBER OF STRATUM
       ENTRY SM0USR (ISR,istr,sorad1,sorad2,sorad3,
      .                       sorad4,sorad5,sorad6)
 
@@ -776,9 +776,9 @@ Dimensions, Precision:
      .              SORAD1,SORAD2,SORAD3,SORAD4,SORAD5,SORAD6,
      .              IRUSR,IPUSR,ITUSR,IAUSR,IBUSR,
      .              TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ)
-!  FIND BIRTH POINT COORDINATES. SUBSTRATUM ISR IF STRATUM ISTRA
-!  HAS ALREADY BEEN IDENTIFIED. ISTRA (IF NEEDED) IS IN MODULE COMPRT.
-!  INITIALIZE THOSE VARIABLES WHICH ARE NOT SET BELOW:
+C  FIND BIRTH POINT COORDINATES. SUBSTRATUM ISR IF STRATUM ISTRA
+C  HAS ALREADY BEEN IDENTIFIED. ISTRA (IF NEEDED) IS IN MODULE COMPRT.
+C  INITIALIZE THOSE VARIABLES WHICH ARE NOT SET BELOW:
       X0  =0._DP
       Y0  =0._DP
       Z0  =0._DP
@@ -799,7 +799,7 @@ Dimensions, Precision:
       EFWL=0._DP
       WEISPZ=0._DP
 
-!  HERE COMES THE PROBLEM SPECIFIC DEFINITION OF BIRTH POINT SAMPLING
+C  HERE COMES THE PROBLEM SPECIFIC DEFINITION OF BIRTH POINT SAMPLING
 
 
       RETURN
@@ -1164,7 +1164,8 @@ It is called in the LEVGEO=10 option from subroutine
 STDCOL,  after all surface intersection settings and possible switches have been carried out,
 or directly via the entry point STDNOR of STDCOL. The call is
 \begin{lstlisting}
-      CALL NORUSR(M,X,Y,Z,CX,CY,CZ,SCOS,VELX,VELY,VELZ,NRCELL)
+      CALL NORUSR(M,X,Y,Z,CX,CY,CZ,SCOS,VELX,VELY,VELZ,
+     .            NRCELL)
 \end{lstlisting}
 
 

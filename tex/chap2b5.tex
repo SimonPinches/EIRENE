@@ -168,26 +168,28 @@ by the iterative option NITER (input block 1).
 \end{lstlisting}
 \textsl{* read NPLSI species blocks with \$ = P}
 \begin{lstlisting}
-        ISPZ$ TEXT$ NMASS$ NCHAR$ NPRT$ NCHRG$ ISRF$ ISRT$ ID1$
+        ISPZ$ TEXT$ NMASS$ NCHAR$ NPRT$ NCHRG$ ISRF$ ISRT$ 
+     .    ID1$
         NRC$  NFOL$ NGEN$  NHSTS$ ID3$
 C      (format: I2,1X,A8,1X,12(I2,1X))
 
-   51 CONTINUE ! End of NPLSI species cards reading
+C End of NPLSI species cards reading
+   51 CONTINUE
 
       (INDPRO(J), J=1,12)
       IF (INDPRO(1).LE.5) THEN
         TE0  TE1  TE2  TE3  TE4  TE5
       ENDIF
       IF (INDPRO(2).LE.5) THEN
-        (TI0(I)  TI1(I)  TI2(I)  TI3(I)  TI4(I)  TI5(I)  I=1,NPLSI)
+        (TI0(I) TI1(I) TI2(I) TI3(I) TI4(I) TI5(I) I=1,NPLSI)
       ENDIF
       IF (INDPRO(3).LE.5) THEN
-        (DI0(I)  DI1(I)  DI2(I)  DI3(I)  DI4(I)  DI5(I)  I=1,NPLSI)
+        (DI0(I) DI1(I) DI2(I) DI3(I) DI4(I) DI5(I) I=1,NPLSI)
       ENDIF
       IF (INDPRO(4).LE.5) THEN
-        (VX0(I)  VX1(I)  VX2(I)  VX3(I)  VX4(I)  VX5(I)  I=1,NPLSI)
-        (VY0(I)  VY1(I)  VY2(I)  VY3(I)  VY4(I)  VY5(I)  I=1,NPLSI)
-        (VZ0(I)  VZ1(I)  VZ2(I)  VZ3(I)  VZ4(I)  VZ5(I)  I=1,NPLSI)
+        (VX0(I) VX1(I) VX2(I) VX3(I) VX4(I) VX5(I) I=1,NPLSI)
+        (VY0(I) VY1(I) VY2(I) VY3(I) VY4(I) VY5(I) I=1,NPLSI)
+        (VZ0(I) VZ1(I) VZ2(I) VZ3(I) VZ4(I) VZ5(I) I=1,NPLSI)
       ENDIF
       IF (INDPRO(5).LE.5) THEN
         B0  B1  B2  B3  B4  B5
@@ -231,7 +233,7 @@ Read data for this species from file fort.13.
 
 The additional card (only one) reads (format 2I6):
 \begin{lstlisting}
-      ISP, ITP
+      ISP ITP
 \end{lstlisting}
 ISP is the number of a bulk species on the file fort.13 (e.g.
 written in an earlier EIRENE run, see NFILEL option in input block
@@ -246,7 +248,7 @@ Read data for this species from file fort.10.
 
 The additional card (only one) reads (format 3I6):
 \begin{lstlisting}
-      ISP, ITP, ISTR
+      ISP ITP ISTR
 \end{lstlisting}
 ISP, ITP is the number and type of a test particle species on the
 file fort.10, respectively, from stratum no.\ ISTR (i.e.\ written
@@ -264,7 +266,7 @@ printout, plotting or iterative mode (input flags NITERI, NITERE, and user subro
 Saha-equilibrium of ionization states.
 The additional card (only one) reads:
 \begin{lstlisting}
-      ISP, ITP, ISTR, ...
+      ISP ITP ISTR ...
 \end{lstlisting}
 to be written 
 \item[\textbf{CDENMODEL = 'Boltzmann'}]
@@ -272,7 +274,7 @@ Set parameters
 from Boltzmann-equilibrium of excited states. The additional card
 (only one) reads (format: 3I6,6x,2E12.4)
 \begin{lstlisting}
-      ISP, ITP, ISTR, G_BOLTZMANN, DELTA_E
+      ISP ITP ISTR G_BOLTZMANN DELTA_E
 \end{lstlisting}
 docu to be written
 \item[\textbf{CDENMODEL = 'Planck'}]
@@ -282,7 +284,7 @@ Set density parameters from Corona-equilibrium to a ``donor species",
 using an excitation rate coefficient from atomic database FILNAM and a fixed radiative decay rate $A=A_{CORONA}$.
 The additional card (only one) reads (format: 3I6,1X,A6,1X,A4,A9,A3,E12.4):
 \begin{lstlisting}
-      ISP, ITP, ISTR, FILNAM , H123 , REACTION, CR, A_CORONA
+      ISP ITP ISTR FILNAM H123 REACTION CR A_CORONA
 \end{lstlisting}
 ISP, ITP is the number and type of a (donor) particle species, either one of the already defined
 bulk species IPLS: ISP=IPLS,
@@ -312,7 +314,7 @@ background species IPLS is specified via:
 \end{equation} 
 The NRE (for NRE different donor-states) additional cards read:
 \begin{lstlisting}
-      ISP, ITP, ISTR, FILNAM,  H123, REACTION, CR
+      ISP ITP ISTR FILNAM H123 REACTION CR
 \end{lstlisting}
 ISP, ITP is the number and type of a particle (donor) species $IS$, either one of the already defined
 bulk species IPLS: ISP=IPLS,

@@ -243,7 +243,8 @@ as well as to derive recycling target fluxes and boundary conditions from them.
        (NTGPRT(IT),IT=1,NTARGI)
        DO 30 IT=1,NTARGI
          DO 33 IPRT=1,NTGPRT(IT)
-           I NDT(IT,IPRT) NINCT(..,..) NIXY(..,..) NTIN(..,..) NTEN(..,..)
+           I NDT(IT,IPRT) NINCT(..,..) NIXY(..,..) NTIN(..,..)
+     .       NTEN(..,..)
            NIFLG(..,..) NPTC(..,..) NSPZI(..,..) NSPZE(..,..)
          33 CONTINUE
        30 CONTINUE

@@ -115,8 +115,8 @@ for sampling post-surface event species as part of the surface reflection models
       (DMLD(I) I=1,NMOL)
       (DIOD(I) I=1,NION)
       (DPLD(I) I=1,NPLS)
-      (DPHT(I) I=1,NPHOT)  ! (this card is to be read only in case 
-                           ! NPHOT > 0)
+C (this card is to be read only in case NPHOT > 0)
+      (DPHT(I) I=1,NPHOT) 
       ERMIN  ERCUT  RPROB0  RINTEG EINTEG AINTEG
 \end{lstlisting}
 Note that the species index distribution cards must always be read,
@@ -139,9 +139,9 @@ the character string $'modname'$, may be read.
      ILREF  ILSPT ISRS  ISRC
      ZNML EWALL EWBIN TRANSP(1,N) TRANSP(2,N) FSHEAT
      RECYCF  RECYCT  RECPRM  EXPPL  EXPEL  EXPIL
-     RECYCS  RECYCC  SPTPRM  ESPUTS ESPUTC ! (this line may be 
-                             ! omitted, then: default sputter 
-                             ! model, see below)
+C (following line may be omitted, then: default sputter 
+C  model, see below)
+     RECYCS  RECYCC  SPTPRM  ESPUTS ESPUTC
 \end{lstlisting}
 next: within each SURFMOD-sub-block there may be an
 arbitrary number of lines
