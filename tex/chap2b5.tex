@@ -41,7 +41,7 @@ per grid cell), so called ``input tallies", namely
          units.
 \end{itemize}
 
-\paragraph{Special case: Magnetic field input}
+\minisec{Special case: Magnetic field input}
 
 The unit vector  $\vb$ = $( b_1 , b_2 , b_3 )$ (BXIN, BYIN, BZIN),
 parallel to the magnetic field is set to (0.,0.,1.) by default,
@@ -82,7 +82,7 @@ PROUSR ($INDPRO(5)=5$) or, ($INDPRO(5)=4$) from external file or, ($INDPRO(5)=6,
 work array RWK, and then from subroutine PROFR).
 \medskip
 
-\paragraph{Other input tallies: ADIN, VOL, WGHT}
+\minisec{Other input tallies: ADIN, VOL, WGHT}
 The same applies to the ``additional plasma profile array" ADIN,
 $INDPRO(6)$, to permit usage of EIRENE output and graphics routines for additinal (derived) plasma
 profiles such as pressure, energy fluxes, collision rate coefficients (see input block 14 for the latter), etc., which are not
@@ -110,7 +110,7 @@ INDPRO=7 option (see below, this section).
 Cell volumes in the additional cell region are defaulted to \SI{1.0}{\per\cubic\centi\metre}, unless $INDPRO(12)=4, 5, 6, 7$.
 
 
-\paragraph{Vacuum zones: no collision processes}
+\minisec{Vacuum zones: no collision processes}
 A standard mesh zone ICELL is automatically identified as
 a vacuum zone with regard to plasma species IPL (no collisions with the
 bulk particles IPL
