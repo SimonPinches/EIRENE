@@ -958,21 +958,19 @@ flow velocity vector (\si{\centi\metre\per\second}), respectively, in cartesian 
 
 Current implementation:
 \begin{itemize}
-\item
-INDEX = 1:   \\
-return the magnetic field unit vector, cartesian coordinates. This local (at position X0,Y0,Z0, in cell NCELL) vector is used
+\item INDEX = 1:\\
+return the magnetic field unit vector, cartesian coordinates. This local (at position X0, Y0, Z0, in cell NCELL) vector is used
 instead of cell averaged input tally no.\ 5:
 
-[BXIN(ncell),BYIN(ncell),BZIN(ncell)].
+[BXIN(ncell), BYIN(ncell), BZIN(ncell)].
 
 VECUSR with INDEX=1 is called from routine BFIELD.F
-\item
-INDEX = 2:   \\
+\item INDEX = 2:\\
 return plasma (background) flow velocity vector, cartesian coordinates, for EIRENE background species IPLS.
-This local (at position X0,Y0,Z0, in cell NCELL) vector is used
+This local (at position X0, Y0, Z0, in cell NCELL) vector is used
 instead of cell averaged input tally no.\ 4:
 
-[VXIN(IPLS,ncell),VYIN(IPLS,ncell),VZIN(IPLS,ncell)].
+[VXIN(IPLS,ncell), VYIN(IPLS,ncell), VZIN(IPLS,ncell)].
 
 Note: species index IPLS is the EIRENE background species index, not to be confused with the mapped species index MPLSV(IPLS).
 \end{itemize}
@@ -1044,7 +1042,7 @@ package may be done here.
 Identify cell index from a point given by its three cartesian coordinates.
 
 The function LEAUSR is called from functions LEARC1
-and LEARCA in case of LEVGEO=10. The call is
+and LEARCA in case of LEVGEO = 10. The call is
 \begin{lstlisting}
       NCELL=LEAUSR(X,Y,Z)
 \end{lstlisting}

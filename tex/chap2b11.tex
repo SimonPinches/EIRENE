@@ -172,89 +172,59 @@ C           plot
 
 \textsl{* 11A. Block for numerical output written on unit 6}
 \begin{list}{}{}
-\item[\textbf{TRCPLT}]
-Trace-back from plot routines
-\item[\textbf{TRCHST}]
-Printout of trajectories of selected test particle histories into
+\item[\textbf{TRCPLT}] Trace-back from plot routines
+\item[\textbf{TRCHST}] Printout of trajectories of selected test particle histories into
 geometry plots.
 These histories are selected by the flags I1TRC and I2TRC, see below,
 sub-block 11B.2.
-\item[\textbf{TRCNAL}]
-Trace-back for non-analog methods, i.e.\ splitting surfaces,
+\item[\textbf{TRCNAL}] Trace-back for non-analog methods, i.e.\ splitting surfaces,
 suppression of absorption, weighted post-collision species
 sampling etc.
-\item[\textbf{TRCMOD}]
-Trace-back from routines for iterative mode (MOD\_TMSTEP, MODBGK, and problem
+\item[\textbf{TRCMOD}] Trace-back from routines for iterative mode (MOD\_TMSTEP, MODBGK, and problem
 specific routines called from MODUSR).
-\item[\textbf{TRCSIG}]
-Trace-back from post processing line integral diagnostics block
+\item[\textbf{TRCSIG}] Trace-back from post processing line integral diagnostics block
 DIAGNO, line of sight integration routines.
-\item[\textbf{TRCGRD}]
-Printout of ``standard mesh surface data"
-\item[\textbf{TRCSUR}]
-Printout of data for ``additional surfaces"
-\item[\textbf{TRCREF}]
-Printout of reflection model related data.
+\item[\textbf{TRCGRD}] Printout of ``standard mesh surface data"
+\item[\textbf{TRCSUR}] Printout of data for ``additional surfaces"
+\item[\textbf{TRCREF}] Printout of reflection model related data.
 In particular a list of all non-perfect recycling surfaces is printed,
 i.e., a list of surfaces for which there is some absorption at least for
 one incident particle species.
-\item[\textbf{TRCFLE}]
-Trace-back from subroutines WRSTRT, WRGEOM, WRPLAS (writing on and
+\item[\textbf{TRCFLE}] Trace-back from subroutines WRSTRT, WRGEOM, WRPLAS (writing on and
 reading from the dump files FT10, FT11, FT12, FT13 etc.
-\item[\textbf{TRCAMD}]
-Trace-back from atomic and molecular data routines
+\item[\textbf{TRCAMD}] Trace-back from atomic and molecular data routines
 
 XSECTA, XSECTM, XSECTI
-\item[\textbf{TRCINT}]
-Traceback from user specified interfacing routine INFCOP,
+\item[\textbf{TRCINT}] Traceback from user specified interfacing routine INFCOP,
 e.g.\ of data related to coupling of EIRENE to other codes.
-\item[\textbf{TRCLST}]
-Printout of information during the last history of each stratum.
+\item[\textbf{TRCLST}] Printout of information during the last history of each stratum.
 E.g., sampling efficiencies, and other accumulated information,
 which is only available in the history generation routines during
 particle tracing.
-\item[\textbf{TRCSOU}]
-Traceback from primary source sampling routines, e.g.\ from LOCATE,
+\item[\textbf{TRCSOU}] Traceback from primary source sampling routines, e.g.\ from LOCATE,
 SAMPNT, SAMLNE, SAMSRF, SAMVOL and SAMUSR
-\item[\textbf{TRCREC}]
-Printout of
+\item[\textbf{TRCREC}] Printout of
 EIRENE recommendations for next run on same case:
 
 A) stratified source sampling, at present:
 for proportional allocation of weights.
 
 B) weight windows, at present: to be written
-\item[\textbf{TRCTIM}]
-Printout cpu-time information for each history
-\item[\textbf{TRCBLA}]
-Global particle and energy balance for atoms is printed.
-\item[\textbf{TRCBLM}]
-Global particle and energy balance for
-molecules is printed.
-\item[\textbf{TRCBLI}]
-Global particle and
-energy balance for test ions is printed.
-\item[\textbf{TRCBLP}]
-Global particle and energy balance for bulk ions is printed.
-\item[\textbf{TRCBLE}]
-Global particle and energy balance for
-electrons is printed.
-\item[\textbf{TRCBLPH}]
-Global particle and
-energy balance for photons is printed.
-\item[\textbf{TRCTAL}]
-Print list of activated and de-activated tallies. The default settings eliminate some tallies from storage and
+\item[\textbf{TRCTIM}] Printout cpu-time information for each history
+\item[\textbf{TRCBLA}] Global particle and energy balance for atoms is printed.
+\item[\textbf{TRCBLM}] Global particle and energy balance for molecules is printed.
+\item[\textbf{TRCBLI}] Global particle and energy balance for test ions is printed.
+\item[\textbf{TRCBLP}] Global particle and energy balance for bulk ions is printed.
+\item[\textbf{TRCBLE}] Global particle and energy balance for electrons is printed.
+\item[\textbf{TRCBLPH}] Global particle and energy balance for photons is printed.
+\item[\textbf{TRCTAL}] Print list of activated and de-activated tallies. The default settings eliminate some tallies from storage and
 estimators which are likely to be irrelevant in a particular run, e.g.\ all photon related tallies are deactivated automatically
 if no radiation transfer calculation is included in a run.
 These default settings are overruled by the flags NTLVOUT and NTLSOUT at the end of this sub-block 11A, see below.
-\item[\textbf{TRCOCT}]
-to be written: printout from octree geometry optimization procedure
-\item[\textbf{TRCCEN}]
-printout from census array stored in time dependent mode: species and stratum resolved census fluxes
-\item[\textbf{TRCRNF}]
-printout from random number generation routines: setting seed, etc., mostly for testing ``correlated sampling'' options (flag: NLCRR).
-\item[\textbf{TRCHKTIM}]
-printout of cpu usage during particle tracing and scoring (excluding overhead), separated by particle type, species and strata.
+\item[\textbf{TRCOCT}] to be written: printout from octree geometry optimization procedure
+\item[\textbf{TRCCEN}] printout from census array stored in time dependent mode: species and stratum resolved census fluxes
+\item[\textbf{TRCRNF}] printout from random number generation routines: setting seed, etc., mostly for testing ``correlated sampling'' options (flag: NLCRR).
+\item[\textbf{TRCHKTIM}] printout of cpu usage during particle tracing and scoring (excluding overhead), separated by particle type, species and strata.
 \item[\textbf{TRCSRC(ISTRA),ISTRA=0,NSTRAI}] ~
 
 The selected global, volumetric and
@@ -267,13 +237,10 @@ these tallies.
 Note: printout for individual strata is only possible if the
 data for strata have been saved on file (NFILE-N=1,2 option, input block 1).
 Otherwise only the last stratum currently on storage arrays (mostly: sum over strata) is available.
-\item[\textbf{NVOLPR}]
-Total number of volume averaged tallies to be printed.
-\item[\textbf{NSPCPR}]
-Flag for printout of surface or cell based spectra (defined in input block 10F)
+\item[\textbf{NVOLPR}] Total number of volume averaged tallies to be printed.
+\item[\textbf{NSPCPR}] Flag for printout of surface or cell based spectra (defined in input block 10F)
 If NSPCPR $> 0$: spectra are printed on output stream fort.(20+ioff), name: spectra.out
-\item[\textbf{NPRTLV}]
-Index of the tally to be printed (first column in \cref{tab1} or
+\item[\textbf{NPRTLV}] Index of the tally to be printed (first column in \cref{tab1} or
 \cref{tab2}). If the tally has a species index, it is printed for all
 species,
 for which the integral of the tally over the computational area is
@@ -290,32 +257,23 @@ general sense.
 
 If NPRTLV = 0, then the user defined post processing routine TALUSR
 is called (\cref{sec3.7}).
-\item[\textbf{NFLAGV}]
-Flag to specify the level of printout.
+\item[\textbf{NFLAGV}] Flag to specify the level of printout.
 \begin{list}{}{}
-\item[$=-1$]
-print only header
-\item[$=0$]
-additionally: print global quantities (total and block averages)
-\item[$=1$]
-additionally: print 1D profiles (if any), averaged over all (if any) higher dimensions
-\item[$=2$]
-additionally: print 2D profiles (if any), averaged over all (if any) higher dimensions
-\item[$=3$]
-additionally: print 3D profiles (if any), averaged over all (if any) higher dimensions
-\item[$=4$]
-print 3D profiles, but no lower dimensional averages
+\item[$=-1$] print only header
+\item[$=0$] additionally: print global quantities (total and block averages)
+\item[$=1$] additionally: print 1D profiles (if any), averaged over all (if any) higher dimensions
+\item[$=2$] additionally: print 2D profiles (if any), averaged over all (if any) higher dimensions
+\item[$=3$] additionally: print 3D profiles (if any), averaged over all (if any) higher dimensions
+\item[$=4$] print 3D profiles, but no lower dimensional averages
 \end{list}
-\item[\textbf{NSPEZV}]
-If NSPEZV(\dots, 1) $\ne 0$, then this tally is printed only for the
+\item[\textbf{NSPEZV}] If NSPEZV(\dots, 1) $\ne 0$, then this tally is printed only for the
 species
 index range:
 
 $I1 = NSPEZV(\dots,1)$ to $I2 = MAX(I1,NSPEZV(\dots,2))$,
 
 rather than for all species relevant for the specified tally.
-\item[\textbf{NTLVFL}]
-In addition to the standard output stream fort.IUNOUT, this tally is
+\item[\textbf{NTLVFL}] In addition to the standard output stream fort.IUNOUT, this tally is
 also printed onto output stream fort.NTLVFL, for all species selected,
 and also the corresponding standard deviations are printed, if
 available.
@@ -587,9 +545,7 @@ only symbols (if any selected) will be plotted along the history
 \begin{list}{}{}
 \item[\textbf{NVOLPL}]
 Total number of pictures from volume averaged tallies.
-\item[\textbf{PLTSRC(ISTRA), (ISTRA=0,NSTRAI)}] ~
-
-Profiles of the selected
+\item[\textbf{PLTSRC(ISTRA), (ISTRA=0,NSTRAI)}] Profiles of the selected
 volumetric tallies are plotted
 for those strata for which PLTSRC(ISTRA) = .TRUE. In case
 PLTSRC(0) = .TRUE., the summation over all strata is plotted for

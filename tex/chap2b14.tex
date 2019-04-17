@@ -183,14 +183,11 @@ and their statistical errors is case specific and done in interfacing module EIR
  S_{Ee}(icell) = \sum_{is} \left[EAEL_{is}(icell) + EMEL_{is}(icell) + EIEL_{is}(icell) \right]
  \end{equation}
 
- The sum is over all strata (see  ``stratified sampling" in \cref{sec1}). $EAEL, EMEL,  EIEL$ are default EIRENE tallies (\cref{tab2old} in \cref{sec.tables-old}):
+ The sum is over all strata (see  ``stratified sampling" in \cref{sec1}). \lstinline|EAEL|, \lstinline|EMEL|,  \lstinline|EIEL| are default EIRENE tallies (\cref{tab2old} in \cref{sec.tables-old}):
  \begin{itemize}
- \item
- $EAEL$ is the electron energy source  resulting from ``atom"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no.\ 22.
- \item
- $EMEL$ is the electron energy source  resulting from ``molecule"-plasma interactions (summed over all EIRENE species of type ``molecule"), tally no.\ 27.
- \item
- $EIEL$ is the electron energy source  resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no.\ 32.
+ \item  \lstinline|EAEL| is the electron energy source  resulting from ``atom"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no.\ 22.
+ \item  \lstinline|EMEL| is the electron energy source  resulting from ``molecule"-plasma interactions (summed over all EIRENE species of type ``molecule"), tally no.\ 27.
+ \item  \lstinline|EIEL| is the electron energy source  resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no.\ 32.
  \end{itemize}
 
 The data transferred from B2 into EIRENE are either from Common BRAEIR, (a module common to both B2 and EIRENE)
@@ -475,8 +472,8 @@ NLPLS(ISTRA) = TRUE
 NLSRF(ISTRA) = TRUE
 \item Number of sub-strata NSRFSI(ISTRA)=1
 \item Mixed radial/poloidal (or: x/y) surface type: INDIM(ISTRA,1)=4
-\item Step-function sampling with SORLIM(ISTRA,1)=104, and the step
-function data FLSTEP, \dots
+\item Step-function sampling with SORLIM(ISTRA, 1) = 104, and the step
+function data FLSTEP, \dots\ 
 for the flux distribution entering the sheath region of the target are
 automatically defined.
 \item Number of step-function  SORIND(ISTRA,1)=ITARG (=ISTRA)
@@ -487,32 +484,23 @@ by this new settings of the modified parameters listed above.
 The sampling of the velocity of the incident ions
 is as specified in input block 7 for that stratum.
 \begin{list}{}{}
-\item[\textbf{CHGP}]
-The short cycle between EIRENE and the plasma code (i.e., only
+\item[\textbf{CHGP}] The short cycle between EIRENE and the plasma code (i.e., only
 recomputing of source term profiles in subroutine EIRSRT at each
 time-step, but no new random walks) is stopped, if the total volume
 integrated particle source rate has changed by more than CHGP per cent
 as compared to the previous full EIRENE run.
-\item[\textbf{CHGEE}]
-as above, but for total electron energy source rate.
-\item[\textbf{CHGEI}]
-as above, but for total ion energy source rate.
-\item[\textbf{CHGMOM}]
-as above, but for total ion parallel momentum source rate.
+\item[\textbf{CHGEE}] as above, but for total electron energy source rate.
+\item[\textbf{CHGEI}] as above, but for total ion energy source rate.
+\item[\textbf{CHGMOM}] as above, but for total ion parallel momentum source rate.
 (to be written, May 1995)
-\item[\textbf{NAINB}]
-total number (=NAINI) of additional plasma code tallies
+\item[\textbf{NAINB}] total number (=NAINI) of additional plasma code tallies
 transferred
 onto EIRENE input tally ADIN (e.g.\ in order to utilize EIRENE output
 facilities for plasma code data, or for the options described in sub
 block 10c.
-\item[\textbf{I}]
-irrelevant, labelling index
-\item[\textbf{NAINS}]
-species index of tally in B2 arrays.
-\item[\textbf{NAINT}]
-flag to determine which particular quantity is put onto input tally
-ADIN(I, \dots).
+\item[\textbf{I}] irrelevant, labelling index
+\item[\textbf{NAINS}] species index of tally in B2 arrays.
+\item[\textbf{NAINT}] flag to determine which particular quantity is put onto input tally ADIN(I, \dots).
 
 In the current version of subroutine INFCOP for interfacing to B2
 the following ``B2-quantities" can be selected.
@@ -544,14 +532,11 @@ the plasma background data of a particular run (in particular: check for extrapo
 \item[\textbf{TXTPLS, TXTPSP, TXTPUN}]~
 
 text for printout and plotting, same as described for additional output tallies in bock 10.
-\item[\textbf{NAOTB}]
-total number of additional EIRENE surface tallies transferred to
+\item[\textbf{NAOTB}] total number of additional EIRENE surface tallies transferred to
 B2 code (e.g.\ in order to allow re-scaling in B2 such that total
 number of particles (neutrals and ions) is conserved.
-\item[\textbf{NAOTS}]
-not in use
-\item[\textbf{NAOTT}]
-not in use
+\item[\textbf{NAOTS}] not in use
+\item[\textbf{NAOTT}] not in use
 \end{list}
 \subsection{Version B2-EIRENE-2000 and younger} \label{sec2.14.2}
 \medskip
@@ -579,14 +564,11 @@ I.e.\ now we have (compare to \cref{Sm}):
  S_{m\parallel}(ipls,icell) = \sum_{is} \left[MAPL_{is}(ipls,icell) + MMPL_{is}(ipls,icell) + MIPL_{is}(ipls,icell) \right]
  \end{equation}
 
- The sum is over all strata (see  ``stratified sampling" in \cref{sec1}). $MAPL, MMPL,  MIPL$ are default EIRENE tallies (\cref{tab2} in \cref{sec.tables-new}):
+ The sum is over all strata (see  ``stratified sampling" in \cref{sec1}). \lstinline|MAPL|, \lstinline|MMPL|,  \lstinline|MIPL| are default EIRENE tallies (\cref{tab2} in \cref{sec.tables-new}):
  \begin{itemize}
- \item
- $MAPL$ is the parallel momentum source for background plasma species $ipls$ resulting from ``atom"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no.\ 97.
- \item
- $MMPL$ is the parallel momentum source for background plasma species $ipls$ resulting from ``molecule"-plasma interactions (summed over all EIRENE species of type ``molecule"), tally no.\ 98.
- \item
- $MIPL$ is the parallel momentum source for background plasma species $ipls$ resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no.\ 99.
+ \item \lstinline|MAPL| is the parallel momentum source for background plasma species $ipls$ resulting from ``atom"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no.\ 97.
+ \item \lstinline|MMPL| is the parallel momentum source for background plasma species $ipls$ resulting from ``molecule"-plasma interactions (summed over all EIRENE species of type ``molecule"), tally no.\ 98.
+ \item \lstinline|MIPL| is the parallel momentum source for background plasma species $ipls$ resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no.\ 99.
  \end{itemize}
  The sign of these sources in EIRENE is such that a gain in momentum (speeding up the plasma flow) for plasma species $ipls$ is taken positive. In the interfacing routine IF3COP of module EIRCOP the sign convention
  is altered to that of the plasma fluid code, i.e.

@@ -282,7 +282,7 @@ docu to be written
 \item[\textbf{CDENMODEL = 'Corona'}]
 Set density parameters from Corona-equilibrium to a ``donor species",
 using an excitation rate coefficient from atomic database FILNAM and a fixed radiative decay rate $A=A_{CORONA}$.
-The additional card (only one) reads (format: 3I6,1X,A6,1X,A4,A9,A3,E12.4):
+The additional card (only one) reads (format: 3I6, 1X, A6, 1X, A4, A9, A3, E12.4):
 \begin{lstlisting}
       ISP ITP ISTR FILNAM H123 REACTION CR A_CORONA
 \end{lstlisting}
@@ -425,12 +425,12 @@ For the profile no.\ 12 (cell volumes) the options INDPRO(12) = 4,
 of INDPRO for these latter four profiles the default profiles
 described above (``General remarks") are set.
 
-For each profile up to 6 parameters P0 , \ldots, P5
-are read, e.g.\ TE0, \dots , TE5 for the $T_e $-profile,
-TI0, \dots , TI5 for the $T_i $-profile, and so on.
+For each profile up to 6 parameters P0 , \dots, P5
+are read, e.g.\ TE0, \dots, TE5 for the $T_e $-profile,
+TI0, \dots, TI5 for the $T_i $-profile, and so on.
 
 Depending upon the value of INDPRO one of the profile routines
-PROFN, PROFE, PROFS, \dots etc.\ is called from subroutine PLASMA.
+PROFN, PROFE, PROFS, etc.\ is called from subroutine PLASMA.
 \begin{list}{}{}
 \item[INDPRO = 1-4] ~
 
