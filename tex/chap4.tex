@@ -51,7 +51,7 @@ To write an interfacing routine INFCOP
 in order to couple EIRENE to
 another code is already a quite formidable task, a new scientific challenge and it is highly
 recommended that, in addition to the information given below,
-close interaction with scientists at FZ Juelich may be needed. One also might
+close interaction with scientists at FZ J\"ulich may be needed. One also might
 ask for a few sample routines INFCOP, which are available from
 the authors.
 
@@ -65,7 +65,7 @@ input tallies TEINTF, TIINTF, DIINTF, etc.\ can be filled. These are pointers no
 \lstinline|PLASMA_BACKGROUND|), but which has the same structure as the old \lstinline|RWK| array. Apart from that the rest remains the same
 and the material in this section is still valid.
 
-Data are transfered from subroutine INFCOP into EIRENE via the
+Data are transferred from subroutine INFCOP into EIRENE via the
 EIRENE work array \lstinline|RWK|  (Module CSPEI).
 They are read onto the EIRENE arrays for input volume tallies (\cref{tab1}) by calls of subroutine PROFR in
 the initialization phase individually for each tally,
@@ -142,7 +142,7 @@ via the statement:
 
 EQUIVALENCE (TRINTF(1),XT(1)), \dots
 
-In the LEVGEO = 5 option (3D grid of tetrahedons) THINTF is an array of length NHMAX, which
+In the LEVGEO = 5 option (3D grid of tetrahedrons) THINTF is an array of length NHMAX, which
 contains all relevant information to generate a mesh of
 tetrahedrons in the 3d computational domain. It is equivalenced to
 the common block CTETRA via the statement:
@@ -278,7 +278,7 @@ special routine in the code interfacing module: STATIS\_COP.
 This routine STATIS\_COP has now been made redundant, because all tallies needed for interfacing, including sums, differences of
 default tallies, are now available as COPV tallies, either scored in UPTCOP or, for linear combinations,  in UPFCOP,
 and for those COPV tallies standard deviations are available by default. This allows direct
-and unbiassed estimation of
+and unbiased estimation of
 variances for source terms of internal (rather than total) energy balances, or ,
 more generally, for plasma fluid equations
 formulated in the rest frame of the plasma rather than in the laboratory frame.

@@ -9,7 +9,7 @@
 The background medium (mostly plasma) consists of NPLS (sometimes
 in the code: NPLSI) different so called ``bulk particle" species,
 also referred to as ``bulk ions", by abuse of language. For each of these species
-arrays of the parameters: particle density, temperature, flow velocity (3 cartesian components),  are defined,
+arrays of the parameters: particle density, temperature, flow velocity (3 Cartesian components),  are defined,
 one value per parameter and per grid cell.
 There are, in total, NSBOX cells in a run.
 
@@ -36,7 +36,7 @@ per grid cell), so called ``input tallies", namely
 (one for each bulk ion species) arrays for the ion temperature(s) $T_i$ (\si{\electronvolt}) (TIIN),
     \item NPLS arrays (one for each bulk ion species), ion densities $n_i$ (\si{\per\cubic\centi\metre}) (DIIN),
     \item either one common or NPLS distinct
-(one for each bulk ion species) arrays for the (cartesian) drift velocities
+(one for each bulk ion species) arrays for the (Cartesian) drift velocities
            $\vV = ( V_x , V_y , V_z )$ (VXIN, VYIN, VZIN), either in \si{\centi\metre\per\second} or Mach number
          units.
 \end{itemize}
@@ -74,7 +74,7 @@ the B-field strength (BFIN) [T] together with the field pitch, solely by the inp
 below.
 
 Alternatively and in all other options an external data source for
-the B-field vector in cartesian coordinates ($INDPRO(5) = 4, \dots, 7$,
+the B-field vector in Cartesian coordinates ($INDPRO(5) = 4, \dots, 7$,
 all geometry levels $LEVGEO$) is used directly. In this latter case
 the transfer of magnetic field data (BXIN,BYIN,BZIN and BFIN) for
 each cell into EIRENE proceeds from user supplied profile subroutine
@@ -84,7 +84,7 @@ work array RWK, and then from subroutine PROFR).
 
 \minisec{Other input tallies: ADIN, VOL, WGHT}
 The same applies to the ``additional plasma profile array" ADIN,
-$INDPRO(6)$, to permit usage of EIRENE output and graphics routines for additinal (derived) plasma
+$INDPRO(6)$, to permit usage of EIRENE output and graphics routines for additional (derived) plasma
 profiles such as pressure, energy fluxes, collision rate coefficients (see input block 14 for the latter), etc., which are not
 directly needed in an EIRENE run but which may be available from
 an external plasma code, or are derived from the atomic or molecular data sets included in a particular run.
@@ -147,13 +147,13 @@ treated as vacuum zones.
 
 VVAC = 0.0000E 00  \si{\centi\metre\per\second}
 
-for all three cartesian components and for all NPLS background particle species.
+for all three Cartesian components and for all NPLS background particle species.
 
 Note: A cell can be considered a vacuum cell with respect to
 electrons, (LGVAC(\dots,NPLS+1) = TRUE), without being a vacuum cell
 for all background ions. This is because, by abuse of language,
 also neutral particle species may be used as background ``ion"
-species (NCHARP = 0), to include neutral-neutral collisions, e.g.,
+species (NCHARP = 0), to include neutral--neutral collisions, e.g.,
 by the iterative option NITER (input block 1).
 \medskip
 
@@ -348,7 +348,7 @@ the magnetic field is evaluated on the fly (along particle trajectories) by inte
 at the very point of
 particle position rather than at the cell center (=const. per cell).
 
-Options INDPRO = 1, 2, 3 are pre-programmed 1 D profiles with the first coordinate (x or radial) taken as independent parameter.
+Options INDPRO = 1, 2, 3 are preprogrammed 1 D profiles with the first coordinate (x or radial) taken as independent parameter.
 I.e.\ profiles are constant in the other 2 coordinate directions: y and z.
 
 Options INDPRO = 4, 5, 6, \dots\ allow more general, and higher dimensional profile forms.
@@ -393,7 +393,7 @@ bulk ion species).
 
 
 \item[INDPRO(5)]
-for a 1D (radial or x-) profile of PITCH (later, in initialization phase,  converted into cartesian unit B-field vector BXIN,BYIN,BZIN)
+for a 1D (radial or x-) profile of PITCH (later, in initialization phase,  converted into Cartesian unit B-field vector BXIN,BYIN,BZIN)
 
 By the default ($\emph{0} < \emph{INDPRO(5)} < \emph{10}$) the
 pitch is defined as $B_y/B_{tot}$ (LEVGEO=1), $B_{\theta}/B_{tot}$ (LEVGEO=2), or as

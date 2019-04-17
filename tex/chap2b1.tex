@@ -66,7 +66,7 @@ will appear on all plots, the full text will be echoed at the
 beginning of the printout file
  \item [\textbf{NPRLL}]
 (Formerly at this place: NMACH, flag for machine precision (round off errors), now: out.) \\
-The new (2018) flag NPRLL controls the various options for (MPI) parallelisation modes, i.e.\ the strategies
+The new (2018) flag NPRLL controls the various options for (MPI) parallelization modes, i.e.\ the strategies
 to assign processes  to strata. This is defined in PEDIST.f (initialization phase)
 by filling the matrix PROCFORSTRA(strata,processors).
 \begin{list}{}{}
@@ -75,7 +75,7 @@ the remarks towards the end of \cref{sec1.2.1b}).
 \item [= 2] not in use
 \item [= 3] not in use
 \item [= 0] new default: ``embarrassingly parallel mode'': all processes do the full MC job (all strata).\\
-Most transparent, and simplest method, load balancing guaranteed. But perhaps not optimal wrt. communication
+Most transparent, and simplest method, load balancing guaranteed. But perhaps not optimal wrt.\ communication
 \item [=-1] user defined distribution of strata to processes (subr.\ PEDIST, calls: PEDIST\_USR.f)
 \end{list}
 
@@ -139,8 +139,8 @@ iteration or cycle can take up to NTCPU seconds.
 In 2008 the definition of NTCPU was slightly changed:
 the initialisation overhead is not any longer included in NTCPU. I.e.,
 this variable NTCPU now is close to the true Monte Carlo sampling time.
-The total cpu-time, including initialisation overhead as well as post-processing
-is printed at the end of an EIRENE run (see: ``total cpu-time of this run"
+The total CPU-time, including initialisation overhead as well as post-processing
+is printed at the end of an EIRENE run (see: ``total CPU-time of this run"
 in printout file).
 \item [\textbf{NFILE}]
 Flag for the use of dump files FT10, FT11, FT12, FT13, FT14 and FT15.
@@ -154,9 +154,9 @@ files
 FT10 and FT11 to save them for plot or printout options in this or in later
 'read only' runs with the same input file.
 \item [N = 6 ] same as NFILE-N=1, but only the data for the sum over
-all strata are written (sufficient, e.g., for \acs{BGK}-iterations, or for post processing,
+all strata are written (sufficient, e.g., for \acs{BGK}-iterations, or for post-processing,
 (subroutine DIAGNO, see input block 12)
-as long as this post processing only is to be done on total results (not on
+as long as this post-processing only is to be done on total results (not on
 contributions from individual strata).
 \item [N = 2 ]
 EIRENE reads output data from an earlier run from files FT10 and
@@ -455,7 +455,7 @@ For ADAS (AMdata) and TRMSGL (Surfacedata) there is an exception from this schem
 In these cases no default file names are available.
 The notation ``ADAS" and ``TRMSGL" here are only synonymous for any atomic or surface data file
 which is stored in the same format as the so called \ac{ADAS} adf11 files and the TRIM
-conditional quantil data tables, independent on
+conditional quantile data tables, independent on
 whether these tables originate from \ac{ADAS} or TRIM.
 
 And input variable DBFNAME
@@ -483,9 +483,9 @@ if proportional allocation of sample size $N_k$ to strata source strength $S_k$ 
 for more information on stratified source sampling.
 The input flag ALLOC in input block 7 (\cref{sec2.7}) controls this allocation.
 
-Monte Carlo codes such as EIRENE are, in principle,  trivially parallelisable by just distributing the Monte Carlo
+Monte Carlo codes such as EIRENE are, in principle,  trivially parallelizable by just distributing the Monte Carlo
 trajectory calculation over the available compute nodes.
-If parallelisation is activated in combination with stratified source sampling, however, and strata are assigned to compute nodes,
+If parallelization is activated in combination with stratified source sampling, however, and strata are assigned to compute nodes,
 then load balancing may be hard to achieve together with proportional allocation of weights to strata. This is because trajectories from
 some strata may be very short (e.g.\ transport into purely absorbing media, for example of impurity particles until ionisation) and very fast to compute,
 while from other strata these trajectories may be very long and time consuming to compute, e.g.\ in near diffusive regimes with many collisions.

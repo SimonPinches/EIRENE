@@ -52,7 +52,7 @@ $f_1^{2,IP} (x,y,z) $=constant=PSURF(IP).
 
 In case NP2ND = 1 this 2rd grid is absent and the calculation automatically collapses to a 1D case,
 i.e.\ a case with only 1 set of co-ordinate points.  This does not mean that the 2rd, ignorable coordinate must be
-straight cartesian (y-direction). E.g.\ a spherically symmetric volume, but with only radial resolution in space
+straight Cartesian (y-direction). E.g.\ a spherically symmetric volume, but with only radial resolution in space
 and polar and azimuthal symmetry,
 then is still referred to as 1-dimensional calculation.
 
@@ -75,7 +75,7 @@ $f_1^{3,IT} (x,y,z)$
 
 In case NT3RD = 1 this 3rd grid is absent and the calculation automatically collapses to a 2D case,
 i.e.\ a case with only 2 sets of co-ordinate lines.  This does not mean that the 3rd, ignorable coordinate must be
-straight cartesian (z-direction). E.g.\ a full torus, but with only radial and poloidal resolution and toroidal symmetry
+straight Cartesian (z-direction). E.g.\ a full torus, but with only radial and poloidal resolution and toroidal symmetry
 then is referred to as 2-dimensional calculation.
 
 In addition to these grids and, depending on the geometry options
@@ -226,7 +226,7 @@ Depending upon the logical parameters in the next input card
 the ``geometry - level" variable LEVGEO is set internally.
 \begin{list}{}{}
 \item[LEVGEO=1]
-cartesian coordinates x (and y)
+Cartesian coordinates x (and y)
 \item[LEVGEO=2]
 polar coordinates r (and $\theta$)
 \item[LEVGEO=3]
@@ -244,7 +244,7 @@ VOLUSR, TIMUSR, etc.
 \end{list}
 If NLRAD=.FALSE., then no spatial grid is defined
 and the default geometry level LEVGEO = 1 is used.
-Volume discretisation may still be achieved ``by hand" by defining ``additional
+Volume discretization may still be achieved ``by hand" by defining ``additional
 surfaces" (input block 3b) and appropriate cell number switching.
 
 \item[\textbf{INDGRD(1)}]
@@ -358,7 +358,7 @@ In this case a flux surface labeling grid RHOSRF is not defined.
 
 Geometry level: LEVGEO = 5
 
-3D discretisation of volume by tetrahedrons. For this grid option
+3D discretization of volume by tetrahedrons. For this grid option
 please make contact to the authors.
 \item[\textbf{NLGEN = .TRUE.}] ~
 
@@ -444,14 +444,14 @@ RIA} )}^{EXEL}
 if NLTRI = .TRUE.:
 \begin{list}{}{}
 \item[\textbf{TRIN, TROT, TRCH, EXTR}]
-to be written: the option for algbraically given triangular grids is currently
+to be written: the option for algebraically given triangular grids is currently
 no available.
 
 \end{list}
 if NLPLG = .TRUE.:
 \begin{list}{}{}
 \item[\textbf{NR1ST}]
-number of polygons for discretisation in ``radial" or x direction
+number of polygons for discretization in ``radial" or x direction
 \item[\textbf{NRPLG}]
 Number of points per polygon
 \item[\textbf{NPPLG}]
@@ -493,7 +493,7 @@ y-co-ordinate of the polygon point number K on polygon number I
 if NLFEM = .TRUE.:
 \begin{list}{}{}
 \item[\textbf{NR1ST}]
-number of triangles for discretisation in x-y plane
+number of triangles for discretization in x-y plane
 \item[\textbf{XPCOR,YPCOR}] ~
 
 shift whole mesh by that vector in x,y-plane
@@ -544,7 +544,7 @@ if NLGEN = .TRUE.:
 
 number of cells in otherwise arbitrary mesh option NLGEN.
 Use problem specific routines (see \cref{sec3})
-to set up mesh, cell volumes, and flight interesction times for test partilces.
+to set up mesh, cell volumes, and flight intersection times for test particles.
 \end{list}
 
 \textsl{Data for second standard mesh: poloidal or y grid PSURF}
@@ -601,7 +601,7 @@ standard grid option
 
 not in use (default: INDGRD(3)=1)
 \end{list}
-One and only one of the next four boolean variables must be TRUE
+One and only one of the next four Boolean variables must be TRUE
 \begin{list}{}{}
 \item[\textbf{NLTRZ=TRUE}] ~
 
@@ -802,15 +802,15 @@ NBLCKA = (NBLOCK -1) * NSTRDT +NRADD
 
 tbd: add a few figures here\dots
 
-The discretisation of a domain is achieved by defining surfaces.
+The discretization of a domain is achieved by defining surfaces.
 These can be sets of coordinate surfaces $u^i(x,y,z) = const_i$
-(then producing a discretisation of the coordinate $\nabla u$).
+(then producing a discretization of the coordinate $\nabla u$).
 
 \textbf{LEVGEO = 1}
-Simple cartesian grids (1D, 2D or 3D) are used for code development, comparison with simple (semi-analytical) transport models,
+Simple Cartesian grids (1D, 2D or 3D) are used for code development, comparison with simple (semi-analytical) transport models,
 general 1D  ``one speed transport theory",
 validation of diffusion approximations, etc. The co-ordinates in the 3 directions are referred to as x,y and either z or phi, respectively,
-the latter depending on whether the third co-ordinate is linear (cartesian) or circular.
+the latter depending on whether the third co-ordinate is linear (Cartesian) or circular.
 
 \textbf{LEVGEO = 2} Typically used in connection with 1D radial core
 transport models (e.g., ``Duechs code", 1982 TRANSP 1987, RITM,
@@ -820,7 +820,7 @@ EIRENE geometry option, available since 1980). Shifted elliptical grid surfaces 
 but also in combination with a polar grid (then: 2D) and/or a cylindrical or toroidal
 resolution in the third dimension.
 
-\textbf{LEVGEO = 3} This 2D discretisation of a domain, based upon polygonal lines,  in the x-y
+\textbf{LEVGEO = 3} This 2D discretization of a domain, based upon polygonal lines,  in the x-y
 plane was originally developed for the B2-EIRENE interfacing. More generally, this option allows to
 directly use many 2D \ac{CFD} meshes directly in EIRENE for kinetic transport.
 

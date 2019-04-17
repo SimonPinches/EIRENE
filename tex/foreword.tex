@@ -51,7 +51,7 @@ Fokker Planck collision operator (a ``Krook collision operator") in 1997.
 \end{itemize}
 \bigskip
 An increasing number of EIRENE 3rd party applications is running cases in which
-EIRENE is coupled to a fluid (CDF) plasma model.
+EIRENE is coupled to a fluid (\ac{CFD}) plasma model.
 Here it provides sources and sinks due to interaction
 of ``kinetic sub-components" with the macroscopic flow, which are iteratively
 coupled (``operator splitting").
@@ -121,10 +121,10 @@ implementation via the USR-routines.
 \item integration volumes of
 volume averaged tallies can now be larger than the grid cell
 volumes, i.e., the plasma background and geometrical
-discretisation, which is not very storage sensitive, can be made
+discretization, which is not very storage sensitive, can be made
 much finer than the neutral particle volume averaged tally profile
 output.
-\item discretisation of general multiply connected 3D
+\item discretization of general multiply connected 3D
 volumes by tetrahedron-grids.
 \item photons as new type of test
 particle species. The photon\_dummy module allows simple photon
@@ -138,8 +138,8 @@ radiation trapping (excitation-hopping), iteration with neutral
 gas excitation population kinetics, etc.
 \item The code interface module EIRCOP has been supplemented by another
 quite similar program, which, however, is based upon a general
-(unstructured) discretisation of 2D geometries by triangles. With
-this option the non-linear options (neutral-neutral  and
+(unstructured) discretization of 2D geometries by triangles. With
+this option the non-linear options (neutral--neutral  and
 neutral-photon interactions), have become accessible to the
 iterative B2-EIRENE mode of operation (e.g.\ forming the version
 SOLPS4.3 currently used for ITER and DEMO divertor design studies).
@@ -157,7 +157,7 @@ Version 8.1 --- 11.1
 \item lf95 Lahey Fortran Compiler Version 6.2
 \item nagf95  NAG Fortran Compiler Version 5.0 --- 5.2
 \end{itemize}
-AIX: AIX 4.3 und 5.2
+AIX: AIX 4.3 and 5.2
 \begin{itemize}
 \item xlf95   XL Fortran for AIX Version 8.1
 \end{itemize}

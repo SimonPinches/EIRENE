@@ -7,7 +7,7 @@
 \medskip
 
 As mentioned earlier, already the hard wired options in EIRENE allow
-a large variety of linear and also of non-linear transport problems to be studied. In oder versions of EIRENE (2001 and older) in most
+a large variety of linear and also of non-linear transport problems to be studied. In older versions of EIRENE (2001 and older) in most
 cases of linear neutral gas transport in a prescribed background plasma
 the only problem specific FORTRAN that is required consisted of
 a few parameter statements (i.e., the COMMON deck PARMUSR described
@@ -84,7 +84,7 @@ In EIRENE versions after 2001 dynamic allocation of storage is implemented, the 
 PARMUSR has been removed.
 Rather than from fixed ``parameter statements", the storage (such as no.\ of species, grid size, no.\ of atomic processes, etc.) is now allocated directly
 as identified from input flags, usually with the same name as previously in module PARMUSR.
-The actual ``physical" numbers used in a particular run have an additional letter ``I'' at the end of the variabel name.
+The actual ``physical" numbers used in a particular run have an additional letter ``I'' at the end of the variable name.
 E.g.\  NATM  (storage for number of different atomic species)
 then is identical with input flag NATMI (input block 4a),
 etc. Only very few exceptions exist,
@@ -235,7 +235,7 @@ needed by EIRENE, but to facilitate presentation (block 14)
 \item[\textbf{NCOP}] Maximum number of tallies for coupling to external
 codes (block 14)
 \item[\textbf{NBGK}] Maximum number of tallies for iterative \ac{BGK} scheme
-for neutral-neutral interactions, see MODUSR, below.
+for neutral--neutral interactions, see MODUSR, below.
 \item[\textbf{NSD}] Maximum number of standard deviation profiles for
 volume averaged tallies (block 9)
 \item[\textbf{NSDW}] Maximum number of standard deviation profiles
@@ -274,7 +274,7 @@ by the parameter NSTORAM.
 The latter
 choice (e.g., NSTORAM=0, or NSTORAM=1)
 may be the better one on very large meshes (above, say, 20000
-cells, as are commonly encountered in 3D Stellarator applications).
+cells, as are commonly encountered in 3D stellarator applications).
 
 \newpage
 \section{The ``Additional Tally" routines UPTUSR, UPCUSR, UPSUSR and UPNUSR}
@@ -369,9 +369,9 @@ R   =   \frac{1}{N}   \left ( \sum_{k=1}^{N}
 \end{equation}
 of the contributions of each test particle history k.
 
-\subsection{Tracklength estimated volume tallies, UPTUSR}\label{sec3.2.1}
+\subsection{Track-length estimated volume tallies, UPTUSR}\label{sec3.2.1}
 
-The tracklength estimators $R_t$ for detector function $g$ are
+The track-length estimators $R_t$ for detector function $g$ are
 updated in subroutine UPDATE (defaults) and UPTUSR (\dots, WV, \dots)
 (additional user supplied tallies), with
 \begin{displaymath}
@@ -443,7 +443,7 @@ state approximation ``QSSA" for this species).
 \subsection{Snapshot estimated volume averaged tallies, UPNUSR}\label{sec3.2.3}
 
 By default snapshot tallies are only scored in time dependent mode, see input flags in \cref{sec2.13}.
-They can, however, also be used as a third alternative to tracklength and collision
+They can, however, also be used as a third alternative to track-length and collision
 estimators for any stationary response. In particular for diffusive processes, as e.g.
 ion transport with Fokker Planck type Coulomb collision operators,
 such ``snapshot averaging" is the most frequent option used in Monte Carlo applications to estimate
@@ -475,7 +475,7 @@ E.g., with $g=1$ this is an unbiased estimate of cell averaged particle density 
 time $t=t^*$, see \cref{est}, i.e., just counting the particle weights at $t=t^*$
 provides an unbiased estimate of the particle density.
 This is intuitively clear, but also mathematically correct since
-these snapshot estimators are formally derived as special cases of tracklength- collision
+these snapshot estimators are formally derived as special cases of track-length- collision
 or surface flux estimators (interpreting the time-horizon sub-manifold as ``time-surface", by abuse of language)
 by including in $g$ a delta function in time : $g(t,\vr,\vv)=\delta(t^*)\tilde g(\vr,\vv)$.
 
@@ -572,7 +572,7 @@ This can easily be seen by writing
 \\  \cos(\vOmega,\ve_{\rho ''}) \end{array}\right)
 \end{align}
 i.e., $ \rho= r_{\rho , i} + l  \cdot  \cos( \vOmega , \ve_{\rho} )
-$ . In other words: tracklength estimators become formally identical
+$ . In other words: track-length estimators become formally identical
 to collision estimators, for detector functions containing surface
 collision delta functions.
 
@@ -715,7 +715,7 @@ volume sampling routine SAMVOL, if the flag SORLIM(N, ISTRA)
 (input block 7) for the spatial distribution of birth points on
 sub-stratum N for stratum ISTRA has a negative value.
 
-This subroutine returns to EIRENE the (cartesian) coordiantes of
+This subroutine returns to EIRENE the (Cartesian) coordinates of
 the birth point
 
 X0,Y0,Z0
@@ -954,19 +954,19 @@ i.e.\ constant within a cell.
 This routine is called in case INDPRO(5)=8 for the B-field tally (e.g.\ from routine BFIELD.F), and in case (INDPRO(4)=8)
 for the background flow velocity tallies (from many places in the code),
 to provide either a local magnetic field (unit) vector, or a local plasma (background medium)
-flow velocity vector (\si{\centi\metre\per\second}), respectively, in cartesian coordinates.
+flow velocity vector (\si{\centi\metre\per\second}), respectively, in Cartesian coordinates.
 
 Current implementation:
 \begin{itemize}
 \item INDEX = 1:\\
-return the magnetic field unit vector, cartesian coordinates. This local (at position X0, Y0, Z0, in cell NCELL) vector is used
+return the magnetic field unit vector, Cartesian coordinates. This local (at position X0, Y0, Z0, in cell NCELL) vector is used
 instead of cell averaged input tally no.\ 5:
 
 [BXIN(ncell), BYIN(ncell), BZIN(ncell)].
 
 VECUSR with INDEX=1 is called from routine BFIELD.F
 \item INDEX = 2:\\
-return plasma (background) flow velocity vector, cartesian coordinates, for EIRENE background species IPLS.
+return plasma (background) flow velocity vector, Cartesian coordinates, for EIRENE background species IPLS.
 This local (at position X0, Y0, Z0, in cell NCELL) vector is used
 instead of cell averaged input tally no.\ 4:
 
@@ -1039,7 +1039,7 @@ package may be done here.
 \subsection{Subroutine LEAUSR}
 \label{sec3.8.1}
 
-Identify cell index from a point given by its three cartesian coordinates.
+Identify cell index from a point given by its three Cartesian coordinates.
 
 The function LEAUSR is called from functions LEARC1
 and LEARCA in case of LEVGEO = 10. The call is
@@ -1118,7 +1118,7 @@ number of EIRENE test flight (particle history). Only for diagnostic printout fr
 \item[\textbf{NLSRFX}]
 TRUE:  the starting position (X0,Y0,Z0) of the current trajectory is exactly on the cell boundary of cell
 NRCELL.  This information may by used inside TIMUSR
-to detect and exclude flight pathes of zero length (time)
+to detect and exclude flight paths of zero length (time)
 
 FALSE:  Particle trajectory does not start at the cell boundary of cell NRCELL, but inside this cell.
 \end{list}
@@ -1176,8 +1176,8 @@ or directly via the entry point STDNOR of STDCOL. The call is
 \end{lstlisting}
 
 
-Here [X,Y,Z] are the cartesian coordinates
-of an intersetcion point, located on non-default standard surface no.\ M. The routine must return
+Here [X,Y,Z] are the Cartesian coordinates
+of an intersection point, located on non-default standard surface no.\ M. The routine must return
 the surface normal unit vector [CX,CY,CZ].
 
 If surface M has a periodicity condition (i.e.\ surface flag ILIIN(M) $>$3 in input block 3a (\cref{sec2.3a})

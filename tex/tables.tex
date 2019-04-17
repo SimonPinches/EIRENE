@@ -1,7 +1,7 @@
 \chapter{Default EIRENE tallies, and selected Modules}\label{sec.tables-modules}
 \section{Tables of EIRENE tallies}\label{sec.tables}
 
-The following three tables comprise the EIRENE pre-programmed default ``tallies".
+The following three tables comprise the EIRENE preprogrammed default ``tallies".
 (Further tallies can be added via the problem specific interfacing or user routines).
 
 The term ``tally" is adopted from neutron transport applications, a
@@ -56,7 +56,7 @@ The tallies are resolved by species index of produced particle, and are to be sc
 \item[Energy source rates]
 
 name: E[A][BC], analogue to particle source rates\\
-but not resolved wrt. species index of secondary particles.
+but not resolved wrt.\ species index of secondary particles.
 \item[Momentum source rates]
 
 name: M[A][BC], analogue to particle source rates\\
@@ -76,7 +76,7 @@ and with some spatial resolution possible on standard mesh surfaces
 ISURF=NLIM,NLIM+NSTSI
 \\
 Emitted particle and energy surface averaged fluxes are split by
-the typ of the incident particle: photons (Phs.), atoms (Ats.),
+the type of the incident particle: photons (Phs.), atoms (Ats.),
 molecules (Mls.), test ions (T.I.) or bulk ions (B.I.). This
 permits scaling of these fluxes with the factors FPHOT, FATM,
 FMOL, FION, to eliminate statistical errors from the particle
@@ -89,18 +89,18 @@ PRF\dots\ are fluxes reflected or emitted due to incident particle fluxes, of ty
 fluxes of surface material).
 
 \textbf{Note:} The naming convention of \textbf{surface sputter tallies SPT\dots} differs in older versions of EIRENE.
-The full resolution wrt. to incident type and emitted species is only implemented in EIRENE revisions svn 360 and later (Jan. 2014), see \cref{tab3a}.
+The full resolution wrt.\ to incident type and emitted species is only implemented in EIRENE revisions SVN 360 and later (Jan. 2014), see \cref{tab3a}.
 
 In all older versions only much fewer sputter tallies SPT[BC] were available, i.e.\ only one type-identifier in the name of these ``sputter tallies".
 
 And [BC] (and the corresponding species index) could either mean:\\
-i)  resolution wrt. incident flux species (summing over all sputtered flux species and types) (same as in incident surface flux tallies), or \\
-ii) resolution wrt. sputtered flux (summing over all incident species and types), \\
+i)  resolution wrt.\ incident flux species (summing over all sputtered flux species and types) (same as in incident surface flux tallies), or \\
+ii) resolution wrt.\ sputtered flux (summing over all incident species and types), \\
 depending on code version. Type ii) convention was used in EIRENE versions operated at ITER-IO (e.g.\ in SOLPS4.3), all other
 EIRENE versions had convention i).
 
-The extension of Jan. 2014 now combines i) and ii) by providing the resolution wrt. emitted type and species (as ii) did) and
-simultaneously keeping the resolution wrt. incident type (i), as needed for proper scaling of particle balances (see option
+The extension of Jan. 2014 now combines i) and ii) by providing the resolution wrt.\ emitted type and species (as ii) did) and
+simultaneously keeping the resolution wrt.\ incident type (i), as needed for proper scaling of particle balances (see option
 NLSCL, input block 1).
 
 
@@ -188,7 +188,7 @@ The latter are automatically computed from the former by EIRENE.
 
 
 Primary input tallies are set or transferred from external data sources via subr.\ PLASMA.f,
-derived input tallies are set via subroutine PLASMA$\_$DERIV.f.
+derived input tallies are set via subroutine PLASMA\_DERIV.f.
 Storage for both kinds of tallies is allocated in module COMUSR.f
 
 \begin{itemize}
@@ -207,7 +207,7 @@ nor for graphics.
 \item  B-field and E-field tallies contain redundancy. Storage can be reduced
 \item  WGHT space species  weight window arrays.  Currently not in use
 
-\item  Magnetic field input is needed only for photon transport with Zeeman splitted line shapes, or
+\item  Magnetic field input is needed only for photon transport with Zeeman split line shapes, or
 in case of charged particle transport (Subr.\ FOLION). Only quite rudimentary preprogrammed input options
 for magnetic field are available, usually it is expected to receive B-field information from external files,
 see INDPRO(5) options for magnetic field tallies in input block 5 (\cref{sec2.5}).
@@ -484,7 +484,7 @@ e.g.\ MAPL:  parallel momentum source/sink for bulk particle (plasma background)
 is determined by the magnetic field unit vector (input tallies BXIN, \dots).
 
 \bigskip
-\textbf{Estimators} EIRENE resorts, by default, to tracklength
+\textbf{Estimators} EIRENE resorts, by default, to track-length
 estimators \cref{eq1.11}. Default tallies are updated (``scoring")
 in routine UPDATE. All default estimators are constant within a cell
 $m$, i.e.\ depend only upon the cell index $m$ but not on the
@@ -499,13 +499,13 @@ employed but we are gradually removing them (and plan keep them in
 the code only to provide independent checks for code-verification
 runs.)
 \begin{itemize}
-\item[TD]  Tracklength, particle density. $g_t= 1/v$, $v=VEL$ the
+\item[TD]  Track-length, particle density. $g_t= 1/v$, $v=VEL$ the
 test particle's velocity. Note that the path-integral of $g_t$ along
 a trajectory in a cell is equal to the time spend by that history in
 a cell.
-\item[TE]  Tracklength, (kinetic) energy density. In case of photon tallies, the energy used is $E0 = h\nu$
-\item[TPS] Tracklength, particle source rate
-\item[TPM] Tracklength, parallel (to B-field) momentum source/sink. The (vectorial) momentum exchange rate
+\item[TE]  Track-length, (kinetic) energy density. In case of photon tallies, the energy used is $E0 = h\nu$
+\item[TPS] Track-length, particle source rate
+\item[TPM] Track-length, parallel (to B-field) momentum source/sink. The (vectorial) momentum exchange rate
 $\vec{\Delta Mom}$ is projected to the B-field (input volume tallies Bxin, Byin, Bzin). I.e.\ if $e_{\vec B}$ is the unit
 vector given by input tallies Bxin, Byin, Bzin,
 then the scalar product $\langle e_{\vec B},
@@ -683,7 +683,7 @@ surface segments, depending upon the standard grid dimensionality.\\
 iii) by default the sputter tallies are type and species resolved with respect to incident type and species.
 E.g.\ the sputtered fluxes SPTAT(2) is the total sputtered flux (all species), sputtered by incident atoms of species IATM=2.
 Other conventions regarding sputter tallies are used in EIRENE versions operated at ITER-IO (e.g.\ SOLPS4.x), see general description above.\\
-iv) the sputter tallies have been revised at revision svn 360, Jan 2014, to allow full resolution with respect to both: incident type (for scaling)
+iv) the sputter tallies have been revised at revision SVN 360, Jan 2014, to allow full resolution with respect to both: incident type (for scaling)
 and (emitted) sputtered particle type and species, see \cref{tab3a}.
 
 %\end{table}
@@ -692,7 +692,7 @@ and (emitted) sputtered particle type and species, see \cref{tab3a}.
 \clearpage
 {\footnotesize
 \begin{longtable}{|r|l|l|l|l|c|}
-\caption{\textbf{Sputter tallies, new version, svn 360 ff, 2014,\\
+\caption{\textbf{Sputter tallies, new version, SVN 360 ff, 2014,\\
 Output, Module: CESTIM}}
 \label{tab3a}
 \\
@@ -796,13 +796,13 @@ older)}\label{sec.tables-old}
 In these older versions photon test particle tallies are not available, nor are the
 momentum source rates MAPL, \dots\ and test particle momentum fluxes VXDEN, \dots, VYDEN, \dots, VZDEN.
 In these versions such tallies may still have been available, but then in problem specific tallies
-COPV (interfacing to particular plasma fluid codes) or in tally BGKV (internal iterations due to neutral-neutral collisions
+COPV (interfacing to particular plasma fluid codes) or in tally BGKV (internal iterations due to neutral--neutral collisions
 in \ac{BGK} approximation).
 
 \medskip
 With respect to surface averaged tallies (in and outgoing surface fluxes, sputter fluxes,
 etc.) there have been major revisions in versions
-2014 or later, see ``sputter tallies, new version, svn 360 ff, 2014" in
+2014 or later, see ``sputter tallies, new version, SVN 360 ff, 2014" in
 \cref{sec.tables-new}.
 
 A particular modification (A.~Kukushkin) of the sputter tallies has been used
@@ -855,13 +855,13 @@ The latter are automatically computed from the former by EIRENE.
 
 
 Primary input tallies are set or transferred from external data sources via subr.\ PLASMA.f,
-derived input tallies are set via subroutine PLASMA$\_$DERIV.f.
+derived input tallies are set via subroutine PLASMA\_DERIV.f.
 \begin{itemize}
 \item DEIN and EDRIFT are ``derived" input tallies,
 internally computed from the ion densities (quasi-neutrality), and
 the flow field, respectively.
 \item  WGHT space species  weight window arrays.  Currently not in use
-\item  Magnetic field input is needed only for photon transport with Zeeman splitted line shapes, or
+\item  Magnetic field input is needed only for photon transport with Zeeman split line shapes, or
 in case of charged particle transport (Subr.\ FOLION). Only quite rudimentary preprogrammed input options
 for magnetic field are available, usually it is expected to receive B-field information from external files,
 see INDPRO(5) options for magnetic field tallies in input block 5 (\cref{sec2.5}).
@@ -989,6 +989,7 @@ NION & as COP & T1
  \\ \hline
 \end{tabular}
 }
+
 \textbf{Note:} $\underline{Source} $ means: if the sign is positive,
 it is a gain for the specified type of particles; if it is
 negative, it is a loss.

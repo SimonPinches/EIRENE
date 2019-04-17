@@ -39,7 +39,7 @@ If such a character string is found here, then the rest of input blocks 4 and 5 
 
 If such a library AM data set is not included, then the ``original" EIRENE procedure is followed,
 to define general test particles (objects) (atoms, molecules, test ions, photons) and assign reactions
-(A\&M datasets) to each of them from external or internal databases. This is described next:
+(A\&M data sets) to each of them from external or internal databases. This is described next:
 \bigskip
 
 First EIRENE reads NREACI ``non-default" atomic data cards, (if any, i.e., if NREACI $>$ 0)
@@ -165,8 +165,7 @@ a \cdot A + b \cdot B \longrightarrow m \cdot M + n \cdot N + \Delta E
 (Very few exceptions, with 3 or more groups of secondaries (N, M, L, \dots),
 exist and can also be treated, but these are very rare applications. See below.)
 
-Here $A,B,M$ and $N$ are labels for the type of pre- and post
-collision particles. $a,b,m$ and $n$ are the stoichiometric
+Here $A,B,M$ and $N$ are labels for the type of pre- and post-collision particles. $a,b,m$ and $n$ are the stoichiometric
 coefficients, and $\Delta E$ is the amount of internal energy
 transferred into (or at the expense of) the kinetic energy of the
 collision products $M$ and $N$.
@@ -223,7 +222,7 @@ A ``species block" has the format:
 C     (format: I2,1X,A8,1X,12(I2,1X))
 \end{lstlisting}
 Default for ID1 is:  ID1=0
-In case ID1 $\leq$ 2, i.e., two or less post collision particle (not counting electrons)
+In case ID1 $\leq$ 2, i.e., two or less post-collision particle (not counting electrons)
 \begin{lstlisting}
       DO  K= 1, NRC$
         IREAC$  IBULK$  ISCD1$  ISCD2$  ISCDE$  IESTM$  IBGK$
@@ -232,7 +231,7 @@ In case ID1 $\leq$ 2, i.e., two or less post collision particle (not counting el
 \end{lstlisting}
 
 New option in 2006:
-In case ID1 = 3, i.e., three post collision particles (not counting electrons),
+In case ID1 = 3, i.e., three post-collision particles (not counting electrons),
 needed for some
 more complex chemical reactions, such as particle rearrangement collisions
 $p + CH_4 \rightarrow CH_2 + H_2 + H$, etc.
@@ -246,7 +245,7 @@ $p + CH_4 \rightarrow CH_2 + H_2 + H$, etc.
 \end{lstlisting}
 New option in 2006:
 
-In case ID1 = 4, i.e., four post collision particles (not counting electrons)
+In case ID1 = 4, i.e., four post-collision particles (not counting electrons)
 
 \begin{lstlisting}
       DO  K= 1, NRC$
@@ -556,7 +555,7 @@ to be used in special user supplied programs.
 double parameter fit for any other data, e.g.
 to be used in special user supplied
 programs, (i.e.\ not generally understood by EIRENE, but can be used in problem
-specific ``\dots USR" routines of EIRENE, e.g.\ for post processing).
+specific ``\dots USR" routines of EIRENE, e.g.\ for post-processing).
 The data fitted in H.12 are, therefore, typically not rate-coefficients,
 but often (not always) ratios between two rate coefficients.
 
@@ -564,7 +563,7 @@ Exception: the reduced population coefficients for hydrogenic plasmas, \\
 i.e.,
 2.1.5a, \dots, 2.1.5e, 2.2.5a, 2.2.5e, etc.\\
 are currently automatically read in
-EIRENE post processing routines in code section ``output", routines: Ba$\_$alpha, Ba$\_$beta, \dots
+EIRENE post-processing routines in code section ``output", routines: Ba\_alpha, Ba\_beta, \dots
 \end{list}
 
 \textbf{case 2:} FILNAM = TAB2D  or FILNAM =ADAS
@@ -784,7 +783,7 @@ the second (if any) independent parameter (often: density) of the fits or tables
 \item[\textbf{RMN1 = RMX1 =0.0}]
 EIRENE searches for extrapolation parameters in the database, and sets
 the values ELABMIN and ELABMAX for cross section data, TMIN, TMAX for rate coefficients etc.
-Currently this works for single parameter fits only. Check routine SLREAC.F for the status wrt. to two-parameter fits.
+Currently this works for single parameter fits only. Check routine SLREAC.F for the status wrt.\ to two-parameter fits.
 If it finds
 these extrapolation parameters, it uses their values as RMN1 and RMX1, respectively. In such cases the
 next card IFEXMN, \dots\ and IFEXMX, \dots\ must also be omitted, because the
@@ -966,7 +965,7 @@ event (modification of type and/or species of a particle in a collision
 event).
 The generation counter XGENER is increased at entropy producing events (elastic and diagonal charge
 exchange collisions). If, along a trajectory, the condition $XGENER > NGEN\dots$ is met, after a collision, no test
-particle secondaries are generated, i.e.\ the history is stopped. The post collision particle flux,
+particle secondaries are generated, i.e.\ the history is stopped. The post-collision particle flux,
 parallel momentum flux and energy flux is, instead,
 put into the tallies PGENA, VGENA and EGENA for atoms,
 resp.,  PGENM, VGENM and EGENM for
@@ -1005,7 +1004,7 @@ The next three flags control number, species and type of particles
 involved in this particular collision process.
 \begin{list}{}{}
 \item[\textbf{IBULK\$}]
-pre collision bulk particle identifier
+pre-collision bulk particle identifier
 
 = NLM
 \begin{list}{}{}
@@ -1016,10 +1015,10 @@ type flag ITYP for impacting bulk particle
 irrelevant, defaulted to M = 4 for bulk ion impact collision and
 defaulted to M = 5 for electron impact collisions
 \item[L]
-irrelevant, defaulted to L = 1, because number of pre collision
+irrelevant, defaulted to L = 1, because number of pre-collision
 bulk particles is known from the type CRC of each collision process.
 \item[N]
-Species index of pre collision bulk ion (corresponds to IPLS
+Species index of pre-collision bulk ion (corresponds to IPLS
 in bulk ion species cards, see block 5). Irrelevant for electron
 impact collisions, CRC=EI.
 \end{list}
@@ -1062,9 +1061,9 @@ ISCD1 is used and ISCD2 is irrelevant.
 In case of charge exchange (CRC=CX)
 ISCD1 is used for the new state of the impacting bulk particle after the
 collision, whereas
-ISCD2 controls the options for the post collision state
+ISCD2 controls the options for the post-collision state
 of that particle which was the test particle prior to the collision.
-Consistency of the particle masses of pre and post collision particles
+Consistency of the particle masses of pre- and post-collision particles
 with this convention is checked in the initialization phase of each run.
 ``CX" collisions mean: exchange of identity, i.e.\ scattering angle $\pi$ in the center
 of mass system.
@@ -1082,7 +1081,7 @@ the ISCD1 and ISCD2 flags are
 symmetric, i.e.\ they can be interchanged without any effect on the calculation.
 \begin{list}{}{}
 \item[\textbf{ISCDE\$}]
-flags for post collision velocity space distributions for all
+flags for post-collision velocity space distributions for all
 particles involved in the collision event. This flag consists of 5 integer digits.
 
 Let us write JKLMN = ISCDE
@@ -1127,7 +1126,7 @@ I.e.: if test particle species $A$ collides with test particle species $B$ (of s
 or of different species and type), then a bulk species $AB_{bulk}$ must be present in
 input block 5, such that species $A$ and $AB_{bulk}$ have the same mass, nuclear charge and
 charge numbers. The density, flow field and temperature of collision partner $AB_{bulk}$ are iterated,
-using either the corresponding parameters estimated for species $A$ (in case of self collisions) or
+using either the corresponding parameters estimated for species $A$ (in case of self-collisions) or
 using parameters obtained from the formulas for $n_{AB}, T_{AB}, V_{AB}$ (see \cref{sec1-bgk})
 for cross collisions between species $A$ and $B$.
 
@@ -1142,7 +1141,7 @@ below in \cref{sec4-bgk}.
 parameter EP for electron energy loss per collision.
 Its meaning depends on fifth digit of ISCDE flag and is described above.
 \item[\textbf{EBULK}]
-parameter EP for pre collision bulk ion energy loss per collision.
+parameter EP for pre-collision bulk ion energy loss per collision.
 Its meaning depends on fourth digit of ISCDE flag and is described above.
 \item[\textbf{ESCD1}]
 parameter EP for velocity space distribution of secondaries.
@@ -1177,7 +1176,7 @@ The old ``fluid limit'' cut off options formerly specified at this place
 
 
 \subsection{Collision kinetics}
-In this paragraph we describe the options controlling the energies of post collision particles and the
+In this paragraph we describe the options controlling the energies of post-collision particles and the
 electron and bulk ion energy gain or loss rates.
 These options are controlled by the integer input flag ISCDE and the three
 real flags EELEC, EBULK, ESCD1 mentioned above.
@@ -1191,9 +1190,9 @@ Each of the five
 digits did control a
 different type of particle: J: electrons, K: bulk ions, L: test ions, M: molecules
 and N: atoms.  In addition to ESCD1 there was a second energy parameter ESCD2, in those days meant for
-the kinetic energy of the first and second heavy post collision particle, respectively.
+the kinetic energy of the first and second heavy post-collision particle, respectively.
 Later ESCD2 became redundant, and only ESCD1 (the sum of both old values:  ESCD1 + ESCD2,  was used since then.
-Internally the code since then distributes the total kinetic energy release ESCD1 to the two post collision
+Internally the code since then distributes the total kinetic energy release ESCD1 to the two post-collision
 particles according to the laws of energy and momentum conservation.
 
 More: to be written \dots\ needs detective work in very old code \dots
@@ -1201,9 +1200,9 @@ More: to be written \dots\ needs detective work in very old code \dots
 \textbf{Current options:}
 
 The energy losses and gains of all particles participating in a collision event
-are controlled by the input flag ISCDE, as well as by the energies EELEC, EBULK (pre collison
-energies of electrons and heavy background particles, respectively and ESCD1 (total post collision energy: KER: kinetic energy release)
-of heavy post collision particles (excluding electrons).
+are controlled by the input flag ISCDE, as well as by the energies EELEC, EBULK (pre-collision
+energies of electrons and heavy background particles, respectively and ESCD1 (total post-collision energy: KER: kinetic energy release)
+of heavy post-collision particles (excluding electrons).
 
 Let us again write JKLMN = ISCDE
 
@@ -1211,7 +1210,7 @@ Digits M and N are not in use any more.
 
 Let then furthermore the character \#
 stand for J, K, L respectively. Then J controls electrons (if any involved),
-K controls pre collision (plasma) bulk particles (if any involved),
+K controls pre-collision (plasma) bulk particles (if any involved),
 L the heavy secondary particles (if any).
 
 Each of these single integer flags controls
@@ -1219,7 +1218,7 @@ the meaning of the related energy parameters, which are read in the next card:
 
 EP=EELEC (\# $ \hat{=} $ J), for the electrons involved in the collision process
 
-EP=EBULK (\# $ \hat{=} $ K), for the pre collision bulk ions
+EP=EBULK (\# $ \hat{=} $ K), for the pre-collision bulk ions
 
 EP=ESCD  (\# $ \hat{=} $ L), for the heavy secondary particles
 (this flag L  is
@@ -1270,18 +1269,18 @@ This option is currently not in use
 \item[\# = 2]
 Currently not fully implemented:
 
-Let \# stand for a pre collision bulk particle: \# $  \hat{=} $ J
+Let \# stand for a pre-collision bulk particle: \# $  \hat{=} $ J
 or \# $  \hat{=} $ K. The energy loss of the impacting bulk
 particle is calculated from the velocity and energy weighted rate
 coefficients. In this case EP must be the labelling index IR  of
 the reaction card by which these moments have been read from the
 data-file.
 
-Let now \# stand for a post collision heavy particle group, i.e \#
+Let now \# stand for a post-collision heavy particle group, i.e \#
 $  \hat{=} $ L. Then the velocity vector of
 the secondary particle is sampled from a cross section weighted
 (and optional, if NLDRFT, shifted by the local drift velocity of the
-pre collision bulk particle) Maxwellian distribution at the local ion
+pre-collision bulk particle) Maxwellian distribution at the local ion
 temperature $T_i$.
 The cross section is taken at the relative velocity of the impacting
 test particle and a particle sampled from the above mentioned (shifted)
@@ -1306,7 +1305,7 @@ to be written
 \medskip
 \minisec{default resonant charge exchange model}
 
-The default CX model is set up in order to define collision kinetics and mean free pathes without
+The default CX model is set up in order to define collision kinetics and mean free paths without
 need for integrating cross sections into rate coefficients. It is based on total cross sections only, plus a few approximations made,
 but it retains thermal force effects.
 
@@ -1314,7 +1313,7 @@ In the default (minimal) model hydrogenic atoms (here: D atoms)
 undergo resonant charge exchange with hydrogenic ions (here: D$^+$ ions), utilizing
 the cross section data for reaction 3.1.8 (again from reference \cite{kn:Janev}, but with improved low energy asymptotics). The assumptions for processes labeled as
 CX are, generally: pure electron capture from the neutral by the ion (=``exchange of identity"
-in symmetric charge exchange), scattering angle $\pi$ in center of mass system, zero exotermicity,
+in symmetric charge exchange), scattering angle $\pi$ in center of mass system, zero exothermicity,
 i.e.\ perfect conservation of kinetic energy in center of mass system before and after collision.
 This set of assumptions translates in the procedure to first sample the velocity of a bulk ion going into the collision, and then to continue
 the former test particle trajectory with unmodified velocity, with its charge increased by one, and to continue the former bulk ion, also with unmodified velocity, with its
@@ -1616,29 +1615,29 @@ for these expressions are available currently in the external databases.
 \textbf{Further examples}
 
 to be written
-\subsection{Neutral-Neutral collisions in \ac{BGK} approximation}\label{sec4-bgk}
+\subsection{Neutral--Neutral collisions in \ac{BGK} approximation}\label{sec4-bgk}
 
 More generally: the \ac{BGK} approximation (\cref{sec1-bgk}) is employed for (bilinear) test-particle  -  test-particle collisions
 processes. From the input flags IBGKA(KK), IBGKM(KK), IBGKI(KK) (see above, \cref{sec4}) for a collision processes KK
 for atoms, molecules and test-ions, respectively,  certain internal flags are set and options are
 activated to enable iterative solutions of the transport problem with these non-linear effects. This iteration is
 carried out for the parameters density, temperature and flow velocity of a virtual background species,
-one virtual species for each bgk process KK. The \ac{BGK} collision integrals are then simulated simply by random sampling the
-post collision velocity from a drifting Maxwellian of the corresponding virtual bulk species.
+one virtual species for each \ac{BGK} process KK. The \ac{BGK} collision integrals are then simulated simply by random sampling the
+post-collision velocity from a drifting Maxwellian of the corresponding virtual bulk species.
 
 
 
 In input blocks 4a, 4b or 4c any test particle species ISPZ1 may have assigned to it one (or more than one)
-so called ``BGK" collisions, as identified by the process flag IBGK\dots(KK) .ne.\ 0.
-If that is the case, this test particle species is labeled, additionally to its label ISPZ1, also as a ``bgk species" no.\ IBGK\_SP
+so called ``\acs{BGK}" collisions, as identified by the process flag IBGK\dots(KK) .ne.\ 0.
+If that is the case, this test particle species is labeled, additionally to its label ISPZ1, also as a ``\acs{BGK}-species" no.\ IBGK\_SP
 and the corresponding internal flags NPBGKA(IATM), NPBGKM(IMOL) or NPBGKI(IION) are non-zero for this species.
-For each ``bgk-species" IBGK\_SP automatically additional tallies, so called ``bgk-tallies" are scored,
+For each ``\acs{BGK}-species" IBGK\_SP automatically additional tallies, so called ``\acs{BGK}-tallies" are scored,
 by a call to UPTBGK.F from scoring routine UPDATE.F. These additional tallies are then used to derive parameters for the iterated virtual background
 (plasma) species.
-For each bgk collision process KK a ``virtual" background species IPLS  (input block 5) is assigned in a unique way.
+For each \ac{BGK} collision process KK a ``virtual" background species IPLS  (input block 5) is assigned in a unique way.
 For these bulk particle species IPLS the internal flag IBGK = NPBGKP(IPLS,1) points
-to a particular bgk collision process IBGK and hence also to a particular test particle species ISPZ1, which
-collides with this bulk species IPLS via that bgk collision kernel no.\ IBGK.
+to a particular \acs{BGK} collision process IBGK and hence also to a particular test particle species ISPZ1, which
+collides with this bulk species IPLS via that \acs{BGK} collision kernel no.\ IBGK.
 
 In case of cross collisions a second internal flag ISPZ2= NPBGKP(IPLS,2) points to the second test particle species
 involved this is particular collision process IBGK.
@@ -1648,7 +1647,7 @@ involved this is particular collision process IBGK.
 
 
 
-In the example considered here we have the 4 neutral-neutral collision
+In the example considered here we have the 4 neutral--neutral collision
 processes: D on D2,  D on D and D2 on D2, D2 on D.
 In input block 4 there are three \ac{BGK} relaxation rate coefficients (note:
 the rate coefficient for D2 on D is equal to the one for D on D2, hence 3 rate coefficients
@@ -1671,21 +1670,21 @@ for 4 processes are sufficient).
 \end{lstlisting}
 \end{scriptsize}
 In input block 4a (for atoms), we specify 4 collision processes for D atoms.
-Processes no.\ 3 and 4 are neutral-neutral collisions.
+Processes no.\ 3 and 4 are neutral--neutral collisions.
 \begin{scriptsize}
 \begin{lstlisting}
 1 D         2  1  1  0  1 -1  1  4  (i.e.: 4 processes to be specified for this D atom)
      .
      .  2 other process decks, e.g. CX and electron impact ionization
      .
-    21  2014   (=IBULK)   1001     0   111  (=IBGK , self collision)
+    21  2014   (=IBULK)   1001     0   111  (=IBGK , self-collision)
  0.00000E+00 0.00000E+00 0.00000E+00 0.00000E+00 0.00000E+00
     23  2214   (=IBULK)   1001     0   112  (=IBGK, cross collision with IMOL=1)
  0.00000E+00 0.00000E+00 0.00000E+00 0.00000E+00 0.00000E+00
 \end{lstlisting}
 \end{scriptsize}
 In input block 4b (for molecules), we specify 7 collision processes for D2.
-Processes no.\ 6 and 7 are neutral-neutral collisions.
+Processes no.\ 6 and 7 are neutral--neutral collisions.
 \begin{scriptsize}
 \begin{lstlisting}
 1 D2       4  2  2  0  0  1  0  7   (i.e.: 7 processes to be specified for this D2 molecule)
@@ -1694,14 +1693,14 @@ Processes no.\ 6 and 7 are neutral-neutral collisions.
      .   5 other process decks.
      .
      .
-    22  2114  (=IBULK)    1001     0   112   (=IBGK, self collision)
+    22  2114  (=IBULK)    1001     0   112   (=IBGK, self-collision)
  0.00000E+00 0.00000E+00 0.00000E+00 0.00000E+00 0.00000E+00
     23  2314  (=IBULK)    1001     0   111   (=IBGK, cross collision with IATM=1)
  0.00000E+00 0.00000E+00 0.00000E+00 0.00000E+00 0.00000E+00
 \end{lstlisting}
 \end{scriptsize}
 In input block 5 there are at least 23 bulk ion species in this example. Of those
-species no.\ 20 to 23 are ``artificial" \ac{BGK} species for neutral-neutral self collisions specified
+species no.\ 20 to 23 are ``artificial" \ac{BGK} species for neutral--neutral self-collisions specified
 above by IBULK = 2014, 2114, 2214 and 2314 in blocks 4a and 4b above.
 \begin{scriptsize}
 \begin{lstlisting}
@@ -1878,7 +1877,7 @@ CT = 5  : elastic processes (`EL' in variable names).
 
 Either relaxation process approximation (H.2 data) or fully kinetic collision integral (H.0, H.1 and H.3
 data required. Optional: additional  H.9 data for mean ion energy loss). In versions from 2017 and later,
-H.0 may be omitted. The process is then is simulated as effective (condensed) scattering with an isotropic post collision distribution in COM system,
+H.0 may be omitted. The process is then is simulated as effective (condensed) scattering with an isotropic post-collision distribution in COM system,
 and the H.1, H.3 data are interpreted as diffusion cross section and rate coefficient, respectively.
 \item[CT = 6  :] ~
 
@@ -1902,7 +1901,7 @@ format/availability of interaction potential data (or of differential cross sect
 
 format/availability of cross section data: H.1.  Cross sections are needed, in addition to rate coefficients,
 mainly for heavy particle interactions: CX, EL, PI, for velocity space sampling of the incident background
-medium collision partner. Both the test particle and bulk particle velocities are then used for post collision
+medium collision partner. Both the test particle and bulk particle velocities are then used for post-collision
 velocity space sampling (e.g.\ COM scattering angle, etc.)
 \item[I2 = 2  :] ~
 

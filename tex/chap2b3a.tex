@@ -92,11 +92,11 @@ above:
 read a surface interaction model identifier to link one of the surface
 ``local reflection
 models'' defined in block 6 (\cref{sec2.6}) below to this current surface.
-The presence of such a link is identified by the string $'SURFMOD_{}'$,
+The presence of such a link is identified by the string \lstinline|SURFMOD_|,
 followed
-by a name $'modname'$. Later, in input block 6 (\cref{sec2.6}),
+by a name \lstinline|modname|. Later, in input block 6 (\cref{sec2.6}),
 a ``local reflection model'' block with that name
-$'modname'$ must be included. This option allows
+\lstinline|modname| must be included. This option allows
 quick changes of particle-surface interaction parameters, affecting
 many surfaces at once,
 by changes in just one location of the input file.

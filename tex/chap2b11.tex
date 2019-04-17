@@ -182,7 +182,7 @@ suppression of absorption, weighted post-collision species
 sampling etc.
 \item[\textbf{TRCMOD}] Trace-back from routines for iterative mode (MOD\_TMSTEP, MODBGK, and problem
 specific routines called from MODUSR).
-\item[\textbf{TRCSIG}] Trace-back from post processing line integral diagnostics block
+\item[\textbf{TRCSIG}] Trace-back from post-processing line integral diagnostics block
 DIAGNO, line of sight integration routines.
 \item[\textbf{TRCGRD}] Printout of ``standard mesh surface data"
 \item[\textbf{TRCSUR}] Printout of data for ``additional surfaces"
@@ -195,13 +195,13 @@ reading from the dump files FT10, FT11, FT12, FT13 etc.
 \item[\textbf{TRCAMD}] Trace-back from atomic and molecular data routines
 
 XSECTA, XSECTM, XSECTI
-\item[\textbf{TRCINT}] Traceback from user specified interfacing routine INFCOP,
+\item[\textbf{TRCINT}] Trace back from user specified interfacing routine INFCOP,
 e.g.\ of data related to coupling of EIRENE to other codes.
 \item[\textbf{TRCLST}] Printout of information during the last history of each stratum.
 E.g., sampling efficiencies, and other accumulated information,
 which is only available in the history generation routines during
 particle tracing.
-\item[\textbf{TRCSOU}] Traceback from primary source sampling routines, e.g.\ from LOCATE,
+\item[\textbf{TRCSOU}] Trace back from primary source sampling routines, e.g.\ from LOCATE,
 SAMPNT, SAMLNE, SAMSRF, SAMVOL and SAMUSR
 \item[\textbf{TRCREC}] Printout of
 EIRENE recommendations for next run on same case:
@@ -210,7 +210,7 @@ A) stratified source sampling, at present:
 for proportional allocation of weights.
 
 B) weight windows, at present: to be written
-\item[\textbf{TRCTIM}] Printout cpu-time information for each history
+\item[\textbf{TRCTIM}] Printout CPU-time information for each history
 \item[\textbf{TRCBLA}] Global particle and energy balance for atoms is printed.
 \item[\textbf{TRCBLM}] Global particle and energy balance for molecules is printed.
 \item[\textbf{TRCBLI}] Global particle and energy balance for test ions is printed.
@@ -224,7 +224,7 @@ These default settings are overruled by the flags NTLVOUT and NTLSOUT at the end
 \item[\textbf{TRCOCT}] to be written: printout from octree geometry optimization procedure
 \item[\textbf{TRCCEN}] printout from census array stored in time dependent mode: species and stratum resolved census fluxes
 \item[\textbf{TRCRNF}] printout from random number generation routines: setting seed, etc., mostly for testing ``correlated sampling'' options (flag: NLCRR).
-\item[\textbf{TRCHKTIM}] printout of cpu usage during particle tracing and scoring (excluding overhead), separated by particle type, species and strata.
+\item[\textbf{TRCHKTIM}] printout of CPU usage during particle tracing and scoring (excluding overhead), separated by particle type, species and strata.
 \item[\textbf{TRCSRC(ISTRA),ISTRA=0,NSTRAI}] ~
 
 The selected global, volumetric and
@@ -255,7 +255,7 @@ in which the first index does not label a particle species but something
 else, this term ``species index" then is to be understood in a more
 general sense.
 
-If NPRTLV = 0, then the user defined post processing routine TALUSR
+If NPRTLV = 0, then the user defined post-processing routine TALUSR
 is called (\cref{sec3.7}).
 \item[\textbf{NFLAGV}] Flag to specify the level of printout.
 \begin{list}{}{}
@@ -530,13 +530,11 @@ Plotting this symbol cannot be abandoned.
 \end{list}
 \item[\textbf{ILINIE}] ~
 \begin{list}{}{}
-\item[$\ne 0$]
-connect two successive events by a straight line.
+\item[$\ne 0$] connect two successive events by a straight line.
 If a continuation of a track is computed for the conditional
 expectation estimators, this part is represented by a dotted line,
-see eq. (1.2.5).
-\item[= 0]
-only symbols (if any selected) will be plotted along the history
+see \cref{eq1.12}.
+\item[= 0] only symbols (if any selected) will be plotted along the history
 \end{list}
 \end{list}
 

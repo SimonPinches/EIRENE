@@ -224,7 +224,7 @@ species and energy of the source particle.
 
 \item[\textbf{NMINPTS}]
 Minimum number of test particles enforced for this stratum, independent of NTCPU
-flag in input block 1.  Hence: setting this flag may increase EIRENE run time above the cpu-time
+flag in input block 1.  Hence: setting this flag may increase EIRENE run time above the CPU-time
 assigned to a run in the first input line in input block 1.
 Default: NMINPTS = 0
 
@@ -254,7 +254,7 @@ determines the scaling of all other volume averaged and surface
 averaged tallies. By this option, for example, one can set the
 neutral particle density to a prescribed value in one particular
 cell. Hence, one can prescribe the local Knudsen number for
-nonlinear applications including neutral-neutral interactions.
+nonlinear applications including neutral--neutral interactions.
  \end{list}
 \item[\textbf{IVLSF}]
 \begin{list}{}{}
@@ -740,7 +740,7 @@ from the specified range [INGRDA, INGRDE] in the corresponding grid,
 and the corresponding SORAD\dots\ values are then not used for those
 coordinates. In case of doubt see initialization phase of subroutine
 SAMSRF to find out which options precisely are available, or contact
-the EIRENE team at FZ-Juelich.
+the EIRENE team at FZ-J\"ulich.
 
 Only in case of \emph{additional surfaces} the information on this
 deck is always fully used.
@@ -895,7 +895,7 @@ Furthermore, let $\vV_{i,\pi}(ip_0)$ and $\vV_{i,\sigma}(ip_0)$
 be the
 components of the velocity drift vector $\vV_i(ip_0)$ normal
 and parallel,
-respectively, to a (possibly fictious) surface element
+respectively, to a (possibly fictitious) surface element
 (similar  notation as in \cref{maxw-flux}), the
 orientation of which is locally defined at the initial position of
 the test particle by the above mentioned reference ``outward normal unit
@@ -971,7 +971,7 @@ ESHEAT
 
 The velocity vector $\vV_0 = (VX_0,VY_0,VZ_0)$ is sampled from a
 truncated Maxwellian flux $f_{flux}= \vV \cdot \vC f_{max} (T_i(ip_0) ,\vV_i(ip_0) , \vC )$
-with a drifting Maxellian $f_{max}$ at temperature
+with a drifting Maxwellian $f_{max}$ at temperature
 $ T_i(ip_0) $ and drift velocity $\vV_i(ip_0) $. The (one-sided) flux is
 across a surface element described locally by the outward normal
 vector $\vC $. The mean energy from this sampling distribution is
@@ -1136,7 +1136,7 @@ $-1  \cdot  \vC $
 
 
 \end{list}
-In all pre-programmed
+In all preprogrammed
 cases the azimuthal angle (around the axis $\vC$)
 is equally distributed from
 $0^{\circ}$ to  $360^{\circ}$.
@@ -1177,7 +1177,7 @@ a jump to $FLSTEP(u_i)$.
 
 The final interval ends at \lstinline|RRSTEP(NSMAX(ISTEP),ISTEP)|
 
-Internally the piecewise constant function $FLSTEP$ is translated into a (normalized) cummulative
+Internally the piecewise constant function $FLSTEP$ is translated into a (normalized) cumulative
 distribution $VF(u)$ for random number generation. FLSTEP itself is not necessarily normalized.
 
 
@@ -1198,9 +1198,9 @@ spatial coordinates in an \lstinline|EIRENE| run.
 
 However, $u$ need not necessarily be one of the 3 spatial
 coordinates. \lstinline|RRSTEP| can also stand, e.g., for an arc-length along
-a polygon (\lstinline|LEVGEO=3|), or for the cumulated length of an element in
+a polygon (\lstinline|LEVGEO=3|), or for the accumulated length of an element in
 a selected list of sides of triangles (\lstinline|LEVGEO=4|) or for the
-cumulated area of a surface element in a selected list of surfaces
+accumulated area of a surface element in a selected list of surfaces
 of tetrahedrons (\lstinline|LEVGEO=5|). In these latter cases only the index
 \lstinline|IINDEX| is used, and a point from an uniform distribution on the
 line-, or  surface element, to which \lstinline|IINDEX| points, must
@@ -1252,7 +1252,7 @@ hence enforcing $VF(ISPZ,ISTEP,NSMAX) = 1$ for random sampling.
 The pdf FLSTEP, the cumulative distributions \lstinline|VF|
 and normalization factors \lstinline|FLTOT| themselves
 are stored in module \lstinline|CSTEP.f|,
-as well as the normalized invers functions
+as well as the normalized inverse functions
 (quantile functions) of the cumulative distributions,
 which are needed for efficient random sampling.
 

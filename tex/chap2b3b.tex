@@ -65,7 +65,7 @@ respectively.
 
 \textbf{coordinate systems, transformations:}
 
-All surfaces are specified in cartesian coordinates.
+All surfaces are specified in Cartesian coordinates.
 
 In case of NLTRA (toroidal geometry approximation), surfaces must
 be defined in the local coordinate system of toroidal cells
@@ -177,11 +177,11 @@ also optional for non transparent surfaces (ILIIN $>$ 0):
 read a surface interaction model identifier to link one of the surface
 ``local reflection
 models" defined in block 6 (\cref{sec2.6}) below to this current surface.
-The presence of such a link is identified by the string $'SURFMOD_{}'$,
+The presence of such a link is identified by the string \lstinline|SURFMOD_|,
 followed
-by a name $'modname'$. Later, in input block 6 (\cref{sec2.6}),
+by a name \lstinline|modname|. Later, in input block 6 (\cref{sec2.6}),
 a ``local reflection model" block with that name
-$'modname'$ must be included. This option allows
+\lstinline|modname| must be included. This option allows
 quick changes of particle-surface interaction parameters, affecting
 many surfaces at once,
 by changes in just one location of the input file.
@@ -575,7 +575,7 @@ is part of the computational domain. By a negative integer value of
 NN a closed polygonal region can be excluded from the computational
 domain, i.e., a hole in the domain is specified by these surfaces.
 EIRENE writes an output file appropriate for a finite element mesh
-generator (available from FZ-Juelich) to produce a triangular
+generator (available from FZ-J\"ulich) to produce a triangular
 discretization of the resulting (possibly multiply connected)
 domain. This option can be used to discretize arbitrarily complex 2D
 domains with internal and external boundaries given by the

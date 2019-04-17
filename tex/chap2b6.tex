@@ -277,7 +277,7 @@ at surfaces this option was disabled from year 2000 on.
 \end{list}
 These latter two surface-species index flags are considered to be particle properties,
 hence they are read in the particle specification blocks 4 and 5 (\cref{sec2.4,sec2.5}).
-The flags in the next card can be used to modify the pre-programmed
+The flags in the next card can be used to modify the preprogrammed
 fast particle reflection models, to some extend at least.
 \begin{list}{}{}
 \item[\textbf{ERMIN}] For incident particle energies below
@@ -423,7 +423,7 @@ each individual surface.
 \medskip
 
 An arbitrary number of such sub-blocks of 3 (or 4) lines each may
-also be defined under a certain label ``\lstinline|SURFMOD_modname|''
+also be defined under a certain label \lstinline|SURFMOD_modname|
 and be included in the input file in block 6 directly after the
 ERMIN, \dots\ deck
 
@@ -484,7 +484,7 @@ no physical sputtering at this surface
 \item[N = 1]
 constant physical sputtering rate (see parameter RECYCS below)
 \item[N = 2]
-modified Roth-Bogdansky formula for sputter
+modified Roth--Bogdansky formula for sputter
 yield, Thompson energy distribution
 and cosine angular distribution for emitted particles
 (see references \cite{kn:Sputer95} and \cite{kn:Roth96}).
@@ -511,9 +511,9 @@ chemical sputter yield, thermal distribution for emitted particles
 (2004)".
 \item[M = 5] not in use
 \item[M = 6]
-``Haasz-Davis 1998 formula" for chemical sputter yield
+``Haasz--Davis 1998 formula" for chemical sputter yield
 \item[M = 7]
- ``Haasz-Davis 1998 formula" for chemical sputter yield,
+ ``Haasz--Davis 1998 formula" for chemical sputter yield,
 and multiplicative factor for flux dependence (Roth, 2004).
 \item[M = 9]
  (was option N=3 in Eirene-2004 and older)
@@ -686,7 +686,7 @@ hit a non-transparent surface.
 
 If FSHEAT $\le$ 0.0, then a sheath potential
 computed from the local background plasma flow conditions is used (function SHEATH),
-assuming ambi-polar flow, a Boltzmann distribution for electrons and zero
+assuming ambipolar flow, a Boltzmann distribution for electrons and zero
 secondary electron emission.
 See \cref{sec1.4}. In case of zero (undefined) background plasma flow velocity at the place
 of incidence, a default of FSHEAT = 2.8 is used (corresponding to $T_e = T_i$,
