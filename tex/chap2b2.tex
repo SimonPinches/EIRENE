@@ -240,7 +240,7 @@ a 3D ``finite volume" mesh of tetrahedrons used
 \item[LEVGEO=10]
 a general, user defined geometry block is used.
 All geometrical calculations are performed in problem specific routine
-VOLUSR, TIMUSR, \dots, etc.
+VOLUSR, TIMUSR, etc.
 \end{list}
 If NLRAD=.FALSE., then no spatial grid is defined
 and the default geometry level LEVGEO = 1 is used.
@@ -567,7 +567,7 @@ Number of grid-points in y- or poloidal direction
 \item[ for the LEVGEO=1 option: ] ~
 
 the y grid PSURF is defined in the same way as the x grid, using the
-parameters YIA, YGA, \dots (\si{\centi\metre}) instead of RIA, RGA, \dots
+parameters YIA, YGA, \dots\ (\si{\centi\metre}) instead of RIA, RGA, \dots
 
 \item[ for the LEVGEO=2 option: ] ~
 
@@ -656,7 +656,7 @@ only needed in case NLTRA and .NOT.NLTOR. See above.
 \item[\textbf{ZIA,ZGA,ZAA,ZZA,ROA}] ~
 
 The 3rd  grid ZSURF is defined in the same way as the x grid, using
-the parameters ZIA, ZGA, \dots (\si{\centi\metre}) instead of RIA, RGA, \dots
+the parameters ZIA, ZGA, \dots\ (\si{\centi\metre}) instead of RIA, RGA, \dots
 
 In case of NLTRZ = TRUE , a z-grid is defined. ROA is irrelevant.
 
@@ -802,12 +802,9 @@ NBLCKA = (NBLOCK -1) * NSTRDT +NRADD
 
 tbd: add a few figures here\dots
 
-
-
 The discretisation of a domain is achieved by defining surfaces.
 These can be sets of coordinate surfaces $u^i(x,y,z) = const_i$
 (then producing a discretisation of the coordinate $\nabla u$).
-
 
 \textbf{LEVGEO = 1}
 Simple cartesian grids (1D, 2D or 3D) are used for code development, comparison with simple (semi-analytical) transport models,

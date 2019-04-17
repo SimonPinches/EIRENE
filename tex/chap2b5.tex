@@ -56,7 +56,7 @@ alternatively (since 2016) of a vector field $\vb$ = $( b_1, 0.0, b_3 )$ can be 
 In these two cases a B-field ``pitch"  profile can be selected.
 
 For example, in the first case,
-($INDPRO(5) = 1, \dots, 3$, and geometry level $LEVGEO=1,2,3$), the profile input parameters $B1, \dots B5$  control the x- or radial profile
+($INDPRO(5) = 1, \dots, 3$, and geometry level $LEVGEO=1,2,3$), the profile input parameters $B1, \dots, B5$  control the x- or radial profile
 $\mathrm{pitch}(x) = b_2/B_{tot}$. From this a cell centered
 B-field unit vector is internally constructed, by assuming that
 the first set of coordinate surfaces (x- or radial surfaces) are
@@ -70,7 +70,7 @@ via the input profile parameters $B1, \dots, B5$,
 allowing 1D simulations (x grid only) parallel to the magnetic field (PITCH = 1.0 = const).
 
 Currently only $INDPRO(5)=3$ profile option (piecewise constant profile) allows to define also
-the B-field strength (BFIN) [T] together with the field pitch, solely by the input flags $B1, \dots B5$ described
+the B-field strength (BFIN) [T] together with the field pitch, solely by the input flags $B1, \dots, B5$ described
 below.
 
 Alternatively and in all other options an external data source for
@@ -348,10 +348,10 @@ the magnetic field is evaluated on the fly (along particle trajectories) by inte
 at the very point of
 particle position rather than at the cell center (=const. per cell).
 
-Options INDPRO=1,2,3 are pre-programmed 1 D profiles with the first coordinate (x or radial) taken as independent parameter.
+Options INDPRO = 1, 2, 3 are pre-programmed 1 D profiles with the first coordinate (x or radial) taken as independent parameter.
 I.e.\ profiles are constant in the other 2 coordinate directions: y and z.
 
-Options INDPRO=4,5,6\dots allow more general, and higher dimensional profile forms.
+Options INDPRO = 4, 5, 6, \dots\ allow more general, and higher dimensional profile forms.
 
 INDPRO is an array of length 12. Each element in this array
 controls one particular input tally, namely:
@@ -613,6 +613,6 @@ indicates that this cell belongs to a grid cut, i.e., is not a valid cell for pa
 tracing.
 \item[=3]
 indicates that this cell is not a real cell but only the storage position for
-spatially averaged tallies. E.g.: cell no.\ NR1ST, 2*NR1ST, \dots, etc.
+spatially averaged tallies. E.g.: cell no.\ NR1ST, 2*NR1ST, etc.
 \end{list}
 \end{list} 

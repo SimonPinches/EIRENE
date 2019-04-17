@@ -565,8 +565,6 @@ i.e.,
 2.1.5a, \dots, 2.1.5e, 2.2.5a, 2.2.5e, etc.\\
 are currently automatically read in
 EIRENE post processing routines in code section ``output", routines: Ba$\_$alpha, Ba$\_$beta, \dots
-
-
 \end{list}
 
 \textbf{case 2:} FILNAM = TAB2D  or FILNAM =ADAS
@@ -578,15 +576,15 @@ temperature (\si{\electronvolt}) read from files containing 2D tabulated rate co
 This option uses the \ac{ADAS} adf11 file format as guidance and is developed\slash adapted from it for more general
 A\&M data structures.
 
-E.g.\ original \ac{ADAS} file-names starting with SCD\dots (ionization rate coefficients
+E.g.\ original \ac{ADAS} file-names starting with SCD\dots\ (ionization rate coefficients
 contain ionization rate coefficients to charge state Z, Z = 1, \dots, Z$_{max}$)
-and filenames starting with  ACD\dots contain recombination rate coefficients,
+and filenames starting with  ACD\dots\ contain recombination rate coefficients,
 from charge state Z,   Z=1, Z$_{max}$.
 The particular chemical element ELNAME and the value of charge state $Z$ is specified in the next input card,
 which is read only in case of FILNAM = TAB2D  or FILNAM = ADAS.
 \item[H.10]
 same as for H123='H.4', but ionisation and recombination electron energy loss rate coefficients rather than
-reaction rate coefficients. In the original \ac{ADAS} files the names PLT\dots and PRB\dots are used for those quantities. Note:
+reaction rate coefficients. In the original \ac{ADAS} files the names PLT\dots\ and PRB\dots\ are used for those quantities. Note:
 distinct from the AMJUEL database convention in case of \ac{ADAS} format the PLT rates (\si{\watt\per\cubic\centi\metre}) do not contain the potential energy loss
 DP $\times$ SCD, and the PRB rates contain, in addition to their corresponding rates from AMJUEL, also
 a Bremsstrahlung contribution. Internally EIRENE subtracts this \acs{ADAS}-Bremsstrahlung from electron energy weighted PRB rates
@@ -778,7 +776,7 @@ in any particular version of EIRENE)
 The next flags RMN1, RMX1, RMN2, RMX2 control the options to extrapolate atomic data fits
 read from files in order to obtain proper asymptotic behavior of fits.
 The default data in EIRENE and some reactions in the
-files AMJUEL, HYDHEL, \dots data-set already contain that information.
+files AMJUEL, HYDHEL, \dots\ data-set already contain that information.
 RMN1, RMN2 control the first independent parameter (often: temperature), and RMN2, RMX2 control
 the second (if any) independent parameter (often: density) of the fits or tables.
 
@@ -789,7 +787,7 @@ the values ELABMIN and ELABMAX for cross section data, TMIN, TMAX for rate coeff
 Currently this works for single parameter fits only. Check routine SLREAC.F for the status wrt. to two-parameter fits.
 If it finds
 these extrapolation parameters, it uses their values as RMN1 and RMX1, respectively. In such cases the
-next card IFEXMN, \dots and IFEXMX, \dots must also be omitted, because the
+next card IFEXMN, \dots\ and IFEXMX, \dots\ must also be omitted, because the
 corresponding information regarding the extrapolation expression (and coefficients)  is found from the atomic data file as well.
 The extrapolation expression is that of option IFEXM. = 5 (see below).
 
@@ -983,7 +981,7 @@ Define: FDLM=-10000/(NGEN+1)
 Default: FDLM = $\infty$, no fluid limit.
 
 E.g.:  NGEN\dots=-10001, then FDLM=1. Smaller (even more negative) values of
-NGEN\dots lead to larger critical Knudsen numbers FDLM, and vice versa.
+NGEN\dots\ lead to larger critical Knudsen numbers FDLM, and vice versa.
 If the collision mean free path at a collision event, compared to a local geometric dimension (cell size) falls below a certain
 value (FDLM) (fluid limit), then the trajectory is stopped
 and the above mentioned generation limit tallies are scored.
@@ -1198,7 +1196,7 @@ Later ESCD2 became redundant, and only ESCD1 (the sum of both old values:  ESCD1
 Internally the code since then distributes the total kinetic energy release ESCD1 to the two post collision
 particles according to the laws of energy and momentum conservation.
 
-More: to be written\dots needs detective work in very old code\dots
+More: to be written \dots\ needs detective work in very old code \dots
 
 \textbf{Current options:}
 
@@ -1443,13 +1441,13 @@ these are activated by setting the
 flag  NRCM(IATM) = 0 (or NRCM(IMOL) = 0, NRCI(IION) = 0, respectively, or NRCP(IPLS) = 0 in input block 5)
 for a particular atom IATM (molecule IMOL or test ion IION, or (block 5) bulk ion IPLS),
 and by omitting the corresponding reaction cards \\
-IREAC\$, \dots and \\
+IREAC\$, \dots\ and \\
 EELEC\$, \dots\\
 Then EIRENE tries to find, automatically, the corresponding species types
 and indices of the collision products in the species blocks. It then
 tries to define all variables in the cards\\
-IREAC\$, \dots and \\
-EELEC\$, \dots \\
+IREAC\$, \dots\ and \\
+EELEC\$, \dots\\
 for collision rates and collision kinetics,
 using default assumptions.\\
 If a test particle is to be assigned no collision processes at all, neither from the reaction list in block 4, nor a default process,
@@ -1756,8 +1754,6 @@ to be written
 \subsection{Internal EIRENE A\&M Data structures and conventions}
 This section is currently being written\dots
 
-
-
 \subsubsection{The CREAC array (prior to first SVN version 2008)}
 The array CREAC(1:9,-1:9,KK), KK=1,NREAC, in module COMXS is used to store (polynomial) fit coefficients for reaction no KK,
 as read in input block 4 from databases HYDHEL, AMJUEL, METHANE, H2VIBR.
@@ -1822,7 +1818,7 @@ Datatype FIT\_FORMS consists of an integer variable IFIT and 4 pointers POLY, TA
 \item	TAB2D  (old versions: ADAS) is a pointer to TAB2D (old: ADAS) data (TAB2D\_DATA or ADAS\_DATA)
 \item	LINE points to a data structure describing a photonic line (LINE\_DATA)
 \item	TAB1D  (old versions: HYD) points to a data structure, out: unfinished codes removed in 2018)
-\item	CR\dots points to a data structure used for collisional radiative models
+\item	CR\dots\ points to a data structure used for collisional radiative models
 \end{itemize}
 
 Of the 5 pointers one and only one can be associated. IFIT indicates which one is set.
@@ -1842,7 +1838,7 @@ Data type LINE\_DATA deals with all parameters specifying a photonic process. It
 
 
 Data type COLRAD holds all data needed to describe the available collisional radiative model such as
-IFLAV: type/flavour of the CR\dots model (H, H2, He, \dots)
+IFLAV: type/flavour of the CR\dots\ model (H, H2, He, \dots)
 IFORMUL: formulation used (1 or 2), i.e.\ meta-stable condensed or meta-stable resolved
 IROW\_ESC, ICOL\_ESC, POP\_ESC: population escape factor and the matrix position in which the factor should be applied.
 
