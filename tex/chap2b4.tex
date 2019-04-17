@@ -1058,7 +1058,7 @@ In case of collisions with only one heavy particle secondary (test particle or b
 re-combination CRC=RC)
 ISCD1 is used and ISCD2 is irrelevant.
 
-In case of charge exchange (CRC=CX)
+In case of charge-exchange (CRC=CX)
 ISCD1 is used for the new state of the impacting bulk particle after the
 collision, whereas
 ISCD2 controls the options for the post-collision state
@@ -1067,8 +1067,8 @@ Consistency of the particle masses of pre- and post-collision particles
 with this convention is checked in the initialization phase of each run.
 ``CX" collisions mean: exchange of identity, i.e.\ scattering angle $\pi$ in the center
 of mass system.
-I.e.\ CRC=CX is used for resonant charge exchange only.
-Non resonant charge exchange, in which e.g.\ internal energy is
+I.e.\ CRC=CX is used for resonant charge-exchange only.
+Non resonant charge-exchange, in which e.g.\ internal energy is
 converted into kinetic energy of products,
 is to be treated in the CRC=PI category of ``general heavy particle collisions".
 
@@ -1228,7 +1228,7 @@ independent of the value of flags L and ESCD).
 
 The following flags are in use:\\
 For EL (elastic) collision processes:  only parameter K is in use \\
-For CX (charge exchange) collision processes:    only parameter K is in use \\
+For CX (charge-exchange) collision processes:    only parameter K is in use \\
 For EI (electron impact) collision processes:    parameters J and L are in use \\
 For PI (heavy particle) collision  processes:    parameters J, K and L are in use \\
 For RC (recombination)  collision processes:     only parameter J is in use
@@ -1303,17 +1303,17 @@ to be written
 to be written
 \end{list}
 \medskip
-\minisec{default resonant charge exchange model}
+\minisec{default resonant charge-exchange model}
 
 The default CX model is set up in order to define collision kinetics and mean free paths without
 need for integrating cross sections into rate coefficients. It is based on total cross sections only, plus a few approximations made,
 but it retains thermal force effects.
 
 In the default (minimal) model hydrogenic atoms (here: D atoms)
-undergo resonant charge exchange with hydrogenic ions (here: D$^+$ ions), utilizing
+undergo resonant charge-exchange with hydrogenic ions (here: D$^+$ ions), utilizing
 the cross section data for reaction 3.1.8 (again from reference \cite{kn:Janev}, but with improved low energy asymptotics). The assumptions for processes labeled as
 CX are, generally: pure electron capture from the neutral by the ion (=``exchange of identity"
-in symmetric charge exchange), scattering angle $\pi$ in center of mass system, zero exothermicity,
+in symmetric charge-exchange), scattering angle $\pi$ in center of mass system, zero exothermicity,
 i.e.\ perfect conservation of kinetic energy in center of mass system before and after collision.
 This set of assumptions translates in the procedure to first sample the velocity of a bulk ion going into the collision, and then to continue
 the former test particle trajectory with unmodified velocity, with its charge increased by one, and to continue the former bulk ion, also with unmodified velocity, with its
@@ -1358,7 +1358,7 @@ would vanish indeed exactly if $\sigma \propto 1/v_{rel}$  (notation: ``Maxwelli
 resulting from interaction potentials $V(r)$ which scale as $V(r) \propto 1/r^4$).
 
 It is furthermore assumed in this default model that the ions undergoing CX carry a mean momentum of $m_i \vv_{Drift,i}$. The mean
-energy of ions undergoing charge exchange in this approximation is $1.5
+energy of ions undergoing charge-exchange in this approximation is $1.5
 \cdot T_i$  plus the kinetic energy in their drift motion $m_i/2 (\vv_{Drift,i})^2$.
 These two averages are used for the corresponding contribution in the CX momentum- and energy
 exchange rate coefficients, respectively. The resulting energy and momentum exchange rates would, again,
@@ -1406,7 +1406,7 @@ physically equivalent methods are in use.
 
 Default reactions 5.3.1 and 6.3.1 (added in April 2006, to simplify
 input for pure He plasma simulations)
-are the two resonant charge exchange processes
+are the two resonant charge-exchange processes
 
 \begin{displaymath}
 \mathrm{He + He^{+} \rightarrow He^{+}  + He}
@@ -1416,7 +1416,7 @@ are the two resonant charge exchange processes
 \mathrm{He + He^{++} \rightarrow He^{++}  + He}
 \end{displaymath}
 The weighting (or rejection-technique) was absent in versions younger
-than 99 for this particular type of (default) charge exchange collision
+than 99 for this particular type of (default) charge-exchange collision
 integral approximation, which,
 strictly speaking, had therefore led to a slight violation of the
 second law of thermodynamics (H-Theorem), due to an inconsistency between
@@ -1864,7 +1864,7 @@ H.2 or H.4 data required, optional: additional H.8 or H.10 data for electron coo
 not in use. In very old versions (1990 and older): DS, dissociation process, now combined with EI type processes
 \item[CT = 3  :] ~
 
-charge exchange (`CX' in the names of corresponding variables).
+charge-exchange (`CX' in the names of corresponding variables).
 
 Fully kinetic collision integral, but fixed scattering angle $\pi$ in COM system. (H.1 and/or H.2 or  H.3
 data required. Optional: H.9 data)
