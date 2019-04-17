@@ -1306,7 +1306,7 @@ to be written
 to be written
 \end{list}
 \medskip
-\paragraph{default resonant charge exchange model}
+\minisec{default resonant charge exchange model}
 
 The default CX model is set up in order to define collision kinetics and mean free pathes without
 need for integrating cross sections into rate coefficients. It is based on total cross sections only, plus a few approximations made,
@@ -1383,12 +1383,12 @@ $k_{CX} = \langle\sigma(v_{rel}) \cdot v_{rel}\rangle(E_0,f_i^{CX})$.
 $\sigma(v_{rel}) \propto 1/v_{rel}$).
 
 Summarizing: The current default CX model approximations consist in:
-
-a) selecting a particular distribution $f_i^{CX}$   \cref{iso-mono} rather than e.g.\ a drifting Maxwellian \\
-b) evaluating the reaction rate coefficient by \cref{sigveff} rather than a full rate coefficient integration \\
-c) approximating the energy and momentum exchange rate tallies by again employing the ``Langevin" $\sigma \propto 1/v_{rel}$ approximation\\
-d) but carrying out the full (relative velocity selective) reaction kinetics, i.e.\ here without making the $\sigma \propto 1/v_{rel}$ approximation, and, hence, retaining e.g.\ thermal force effects.
-
+\begin{itemize}
+\item[a)] selecting a particular distribution $f_i^{CX}$   \cref{iso-mono} rather than e.g.\ a drifting Maxwellian
+\item[b)] evaluating the reaction rate coefficient by \cref{sigveff} rather than a full rate coefficient integration
+\item[c)] approximating the energy and momentum exchange rate tallies by again employing the ``Langevin" $\sigma \propto 1/v_{rel}$ approximation
+\item[d)] but carrying out the full (relative velocity selective) reaction kinetics, i.e.\ here without making the $\sigma \propto 1/v_{rel}$ approximation, and, hence, retaining e.g.\ thermal force effects.
+\end{itemize}
 Instead of the weighting mentioned above, which would require knowledge of $k_{CX}$, a rejection
 method is used to avoid the weighting, and without need of knowing the integral $k_{CX}$, but still to simulate the same
 collision integral.
@@ -1455,7 +1455,7 @@ using default assumptions.\\
 If a test particle is to be assigned no collision processes at all, neither from the reaction list in block 4, nor a default process,
 then NRCM(IATM)=-1, and analogous for the other types and species of particles.
 
-\paragraph{default model for atomic H (=H,D,T) and He test particles}
+\minisec{default model for atomic H (=H,D,T) and He test particles}
 
 Assume that the bulk ion H$^+$ is specified as bulk ion species
 no.\ ``a", D$^+$ as bulk species ``b", T$^+$ as bulk species ``c"
@@ -1501,7 +1501,7 @@ impact, using the Corona data 2.1.5 and 2.3.9, respectively, from
 reference \cite{kn:Janev}, and with constant electron energy loss
 per ionization of \SIlist{13.6;24.588}{\electronvolt}, respectively.
 \medskip
-\paragraph{default model for hydrogenic molecules H$_2$ (and isotopomers) and their ions}
+\minisec{default model for hydrogenic molecules H$_2$ (and isotopomers) and their ions}
 
 For hydrogenic molecules ($\mathrm{H_2, D_2, HT,}$\dots) or molecular ions
 ($\mathrm{H_2^+, D_2^+, HT^+,}$\dots)  default dissociation, ionization and
@@ -1592,7 +1592,7 @@ coefficients are automatically split into two half and assigned to the proper pr
 
 
 \medskip
-\paragraph{default model for hydrogenic ions}
+\minisec{default model for hydrogenic ions}
 For hydrogenic bulk ions ($H^+, D^+, T^+$)
 default (radiative) volume recombination rates
 are available \cite{kn:Gordeev}. The associated electron energy losses are

@@ -71,7 +71,7 @@ neutral-neutral collisions are relevant. In this latter case so called \ac{BGK} 
 are employed, and the non-linearity is dealt with by successive linearisation (i.e.\ by iteration).
 
 The strongest non-linearity in EIRENE applications is typically the back-reaction of the ``plasma-background'' (the host medium) on the
-neutral gas and radiation fields. This, however, is dealt with in an operator splitting cycling procedure (see \cref{sec4}) between a plasma solver (``diffusion-advection sub-module" solver, for given reaction terms) and EIRENE (``reaction part'' solver, for given diffusion advection solution, i.e.\ for given background medium), in which
+neutral gas and radiation fields. This, however, is dealt with in an operator splitting cycling procedure (see \cref{sec4}) between a plasma solver (``di\-ffu\-sion-advection sub-module" solver, for given reaction terms) and EIRENE (``reaction part'' solver, for given diffusion advection solution, i.e.\ for given background medium), in which
 EIRENE, within each single cycle, may still be operated in linear mode.
 
 
@@ -298,9 +298,9 @@ f_{i_0}(\vv)
 Note, however, that in case of ``self collisions" within the community of particles $i_0$, the macroscopic cross section $\Sigma_t$
 itself is a (nonlinear) function of the dependent
 variable $f_{i_0}: \Sigma_{t,i_0}(\vr,\vv,f_{i_0})$,
-since it then contains also an integration (over velocities $\vV$ of the collision partners) of $\sigma(\dots,\vV \rightarrow \dots) \times f_{i_0}(\vV)$.
+since it then contains also an integration (over velocities $\vV$ of the collision partners) of $\sigma(\dots, \vV \rightarrow \dots) \times f_{i_0}(\vV)$.
 
-\paragraph{The linear form of Boltzmann transport equation}\hfill
+\minisec{The linear form of Boltzmann transport equation}
 
 \vspace{1em}
 
@@ -349,7 +349,7 @@ species for which the kinetic equation is solved, see below, \cref{sec1.8}. Note
 radiation transport models fall into the class of non-linear Monte Carlo applications, except for optically thin media in which case the photon gas
 and the neutral particle gas are decoupled.
 
-\paragraph{stationary kinetic transport equation}\hfill
+\minisec{stationary kinetic transport equation}
 
 \vspace{1em}
 
@@ -490,7 +490,7 @@ collision products are straight forward, but can more conveniently
 be formulated in the $C$-collision kernel formulation introduced above and used below to relate the transport equation
 to a Markovian stochastic (discrete time) process.
 
-\paragraph {linear form of \ac{WCU} equation: the generic EIRENE equation}\hfill
+\minisec{linear form of \ac{WCU} equation: the generic EIRENE equation}
 
 \vspace{1em}
 
@@ -914,8 +914,8 @@ or on whether stationary (i.e.: time is an ignorable coordinate) or time depende
 the dependent variable $\Psi$
 in the governing integral equation \cref{eq1d},
 the source strength $s$ and ``cell volume" $V$ may have different interpretations:
-\paragraph{stationary (time independent) problems}
-\paragraph{one ignorable spatial coordinate}
+\minisec{stationary (time independent) problems}
+\minisec{one ignorable spatial coordinate}
 In stationary problems with one ignorable coordinate, say, the z-coordinate,
 the source strength $s$ (input flag ``FLUX") is the flux, particles per
 unit length $dz$ in direction of $z$. Likewise, the volume $V$ is per unit length in the ignorable direction,
@@ -976,7 +976,7 @@ For large $N$ the variance per history (= variance of a single observation) $\ti
 and the final Monte Carlo estimate of variance $\tilde \sigma^2_{MC}$ \cref{MCsig}
 has the expected probabilistic $1/N$ scaling,
 i.e.\ the empirical standard deviation, which is the Monte Carlo error estimate,  scales as: $\tilde\sigma_{MC} \sim 1/\sqrt{N}$.
-\paragraph{Multiple cell crossings}
+\minisec{Multiple cell crossings}
 
 One should note that except in simple 1D cases in general one single Monte Carlo history $\omega_i$ can contribute more than
 once to the estimate $\tilde R_g$ for a particular cell of the grid or surface segment. E.g.\ test particles can cross one cell $m$ [see \cref{eq2.10b}] more than once,
@@ -992,7 +992,7 @@ cannot be evaluated ``on the fly" (per event). Instead here EIRENE first accumul
 sum $\sum X_i^2$ only once after each completed history (in subroutine. STATIS, entry STATS1). I.e., variance estimates are made after completion of each history, inside the particle loop, see \cref{flow5}.
 The full evaluation and scaling of
 expression \cref{MCsig1,MCsig} is then carried out after completion of all histories (per stratum), in entry STATS2 of subroutine STATIS.
-\paragraph{Linear functions of tallies}\label{lin-funct}
+\minisec{Linear functions of tallies}\label{lin-funct}
 Often algebraic functions of tallies (sums, products, ratios, \dots) are formed after a Monte Carlo run to produce further (post processed) output quantities
 (see input blocks 10C and 10E in \cref{sec2.10}).
 For those tallies standard deviations are not available in general, due to statistical correlation between individual tallies obtained from the same Monte Carlo run.
@@ -1025,7 +1025,7 @@ One example of such linear combination tallies is discussed in \cref{sec2.14} fo
 \ac{CFD} codes, as usually the (kinetic) reaction source terms provided by EIRENE to plasma fluid codes are such linear functions
 of default tallies.
 
-\paragraph{Statistical independence of MC histories}
+\minisec{Statistical independence of MC histories}
 
 When the Monte Carlo histories from one EIRENE run are not strictly statistically independent,
 as e.g.\ in case of stratified source sampling (see paragraph below), then a modified
@@ -1707,8 +1707,8 @@ C_E ( \vartheta_{in} )   =
 \label{eq1.19}
 \end{equation}
 This latter moment equation can be satisfied by modifying the
-tabulated stochastic matrix $ {\underline{\underline{B}}}_{\perp}
-( E ' \rightarrow   E)$ in many different ways. In EIRENE, we
+tabulated stochastic matrix ${\underline{\underline{B}}}_{\perp}
+(E' \rightarrow E)$ in many different ways. In EIRENE, we
 first sample $ {\cal{E}}$ from $ {\underline{\underline{B}}}
 _{\perp}$ (given $ E '$) and then set
 \begin{equation}
@@ -2410,7 +2410,7 @@ running EIRENE with simpler specialized and geometry optimized blocks such as GE
 or 1D models, respectively, because the saving in CPU costs in most
 cases is only around 10 - 20 \%, so these options have not been supported since the late eighties of the last century anymore.
 
-\paragraph{The geometry module of EIRENE}\hfill
+\minisec{The geometry module of EIRENE}
 
 The following operations have to be executed by the block:
 \\Suppose the three dimensional
@@ -2431,13 +2431,13 @@ g_{\lambda , \pi}^i (x,y,z)  \le   0 {},    \quad \quad \pi   =
 This means that for all unbounded surfaces $S_{i,\lambda}$ only the points, which fulfill all corresponding
 inequalities \cref{eq1.35} are regarded by EIRENE as valid parts of the finite surface element.
 
-Assume a test particle at position $ \vr_0 $ =
-(X0,Y0,Z0) moving with speed unit vector $ \vOmega_0 $
-= (VELX,VELY,VELZ). The block then has to provide the nearest
-intersection $ \vr_1$ of the straight line (``sample trajectory")
+Assume a test particle at position $\vr_0$ =
+(X0, Y0, Z0) moving with speed unit vector $\vOmega_0$
+= (VELX, VELY, VELZ). The block then has to provide the nearest
+intersection $\vr_1$ of the straight line (``sample trajectory")
 \begin{equation}\nonumber
 G(t):
- \vr_0   +   t   \vOmega_0
+ \vr_0 + t \vOmega_0
 \end{equation}
 amongst all possible intersections with the surfaces $S_i$. Moving
 the ``particle" from $\vr_0$ to $\vr_1$ and
@@ -3187,7 +3187,7 @@ of the small parameter $\delta = \rho/L$, ($\rho$:
 thermal gyro-radius, $L$ spatial length scale, e.g.\ gradient length of B-field, etc.)
 \subsubsection{Particles following the B-field}
 Simple, analytical, orbit integration, zeroth order in $\delta$.
-\paragraph{A: no electric field, no drifts}\hfill
+\minisec{A: no electric field, no drifts}
 To zeroth order in the smallness parameter $\delta=\rho/L$ , i.e.\ for $\rho \simeq 0$,
 charged particle orbits are the magnetic field lines themselves.
 The magnetic field unit vector $\textbf{b}=\textbf{B}/|\textbf{B}|$ is provided as input
@@ -3209,7 +3209,7 @@ Default is $\textbf{b}=(0.,0.,1.)$ in each cell.
 The velocity vector of each test-ion followed by EIRENE is projected onto $\textbf{b}$
 in each grid cell along the trajectory. The velocity used for pushing the particle along
 its trajectory is only the parallel component $\vv_\|=(\vv \cdot \vb) \vb$
-\paragraph{B: \textbf{E} $\times$ \textbf{B} drift only}\hfill
+\minisec{B: \textbf{E} $\times$ \textbf{B} drift only}
 Only the \textbf{E} $\times$ \textbf{B} drift is included.
 This is still zeroth order in $\delta$.
 By modifying the electric field
@@ -3257,7 +3257,7 @@ cooling or momentum transfer,  the energy, parallel and the perpendicular veloci
 modified ``continuously" during particle orbit integration, hence approximating the velocity space
 diffusion (Fokker Planck equation) by mean values of energy and momentum of the test particle.
 There are two classes of simple collision models: deterministic and stochastic.
-\paragraph{A: Deterministic relaxation in velocity space}
+\minisec{A: Deterministic relaxation in velocity space}
 The energy and/or velocity of charged test particles are modified in a fully deterministic way along the
 particle trajectory. I.e.: along with orbit integration also energy, or certain velocity components
 are evolved according to ordinary (non-stochastic) differential equations, using appropriate relaxation times.
@@ -3331,8 +3331,8 @@ equation exists in closed form:
 
 \textbf{Example: hydrocarbon ions \cite{kn:Langer}}
 
-With $\mu_b=1$ for protons, $\mu_a=16$ for CH$_4^+$, the Coulomb logarithm $\lambda_{a,b}\approx 10$,
-hence $2 (\lambda_{a,b}/\mu_a) \delta_{a,b} \approx 1.3$ and
+With $\mu_b=1$ for protons, $\mu_a=16$ for CH$_4^+$, the Coulomb logarithm $\lambda_{a,b} \approx 10$,
+hence $2 (\lambda_{a,b} / \mu_a) \delta_{a,b} \approx 1.3$ and
 \begin{equation}
 {\nu}_\varepsilon = \tilde{\nu}_\varepsilon \delta_{a,b}\approx
 8.8 \times 10^{-8}~ n_b~T_b^{-3/2}
@@ -3380,7 +3380,7 @@ vanishes at a critical energy $\varepsilon'$ distinct from from $3/2 T_b$.
 \subparagraph{A2: \ac{BGK} Coulomb-Collision operator}\hfill \\
 (Diploma Thesis Felix Reimold\dots)
 \subsubsection{The Fokker-Planck Collision Model}
-\paragraph {A:}
+\minisec{A:}
 A gyro averaged Fokker-Planck Coulomb Collision Model, which was originally
 developed for a stand alone trace impurity ion transport code DORIS
 \cite{kn:Doris,kn:Reiser98}. It was later accommodated as collision kernel in EIRENE.
@@ -3395,7 +3395,7 @@ distributions of relative velocities which are symmetric around the B-field line
 e.g.\ to accommodate parallel to B thermal force effects).
 See also: Thesis J.~Seebacher, Univ.\ Innsbruck, 2009, and \cite{kn:Seebacher}.
 
-\paragraph{B: binary Monte Carlo collision procedure}
+\minisec{B: binary Monte Carlo collision procedure}
 A procedure similar to the ``Abe, Takizuka Coulomb collision algorithm" frequently used in PIC codes \cite{kn:Takizuka}
 is employed. This procedure consists in random sampling  a bulk (background) collision partner, and then to carry out
 an effective binary collision between these two particles. It hence can be viewed as Monte Carlo ``randomization"

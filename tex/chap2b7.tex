@@ -365,7 +365,7 @@ this section and \cref{sec2.7.1}). There it is set according to the local bulk i
 composition.
 
 WEISPZ may also be transferred into a run via
-user specified source sampling (SAMUSR.f, see \cref{sec3.4} )
+user specified source sampling (SAMUSR.f, see \cref{sec3.4}).
 
 
 In all other cases NSPEZ must be positive.
@@ -870,7 +870,7 @@ or can be provided in case of user-source-sampling (SAMUSR), i.e., if  SORLIM $<
 0, or are computed from the known cell numbers and the input
 background tallies at the place of birth.
 
-Depending upon the value of the flag \textbf{NEMODS}, the following
+Depending upon the value of the flag \lstinline|NEMODS|, the following
 energy distributions $f(E|\vr_0, t_0, isp)$ are available. Note that this conditional energy distribution
 $f(E|\dots)$ may also
 depend upon the further input parameters
@@ -1240,7 +1240,7 @@ with, again, $\Delta u_J=RRSTEP(J+1,ISTEP)-RRSTEP(J,ISTEP)$,
 
 one for each species index separately. This cumulative flux-distribution is then in units of a flux (source strength), typically in EIRENE: in [\si{\ampere}].
 
-After this the total flux (normalization constant) \lstinline|FLTOT(ISPZ,ISTEP) = VF(ISPZ,ISTEP,NSMAX)| is stored,
+After this the total flux (normalization constant) \lstinline|FLTOT(ISPZ, ISTEP) = VF(ISPZ, ISTEP, NSMAX)| is stored,
 and then the cumulative distributions $VF$ are normalized
 to
 \begin{equation}\nonumber

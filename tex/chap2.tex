@@ -117,7 +117,7 @@ Hence: In order to convert from EIRENE \textbf{energy density} units (\si{\elect
 units in \si{\newton\per\square\metre}
 (i.e., Pascal: \si{\pascal}) one must multiply by \num{1.6022e-19} (\si{\electronvolt} to \si{\newton\metre})
 and multiply by \num{1e6} ($\si{\per\cubic\centi\metre} \rightarrow \si{\per\cubic\metre}$). Check: \SI{1}{\pascal} gas at \SI{300}{\kelvin} corresponds to
-about $\num{2.7e14} \times \SI{0.026}{\electronvolt\per\cubic\centi\metre} \approx \SI{7e12}{\electronvolt\per\cubic\centi\metre}$, or:
+about $\num{2.7e14} \ \times \ \SI{0.026}{\electronvolt\per\cubic\centi\metre} \approx \SI{7e12}{\electronvolt\per\cubic\centi\metre}$, or:
 a gas pressure P in \si{\pascal}, at gas temperature T (\si{\kelvin}) corresponds to a gas density n with $n (\si{\per\cubic\metre}) = P/k_B T$,
 with $k_B = \num{1.38e-23}$ the Boltzmann constant in \si{\joule\per\kelvin} units. At \SI{300}{\kelvin} and \SI{1}{\pascal}, the corresponding gas density is $n=\SI{2.415\dots e20}{\per\cubic\metre} = \SI{2.415\dots e14}{\per\cubic\centi\metre}$.
 
@@ -156,8 +156,8 @@ the momentum source is in \si{\pascal\per\metre}, or \si{\newton\per\cubic\metre
 \medskip
 
 The format statement numbers in subroutine INPUT
-start with 666\dots for reading and with
-777\dots for writing. The following conventions are used:
+start with 666\dots\ for reading and with
+777\dots\ for writing. The following conventions are used:
 \begin{list}{$ * $}{\leftmargin2.0cm\labelsep0.4cm}
 \item Standard Fortran naming conventions, i.e., variable names starting
 with the letters I, J, \dots, N are Integer, all other variables
@@ -167,8 +167,8 @@ In addition to these standard convention the following rules
 are employed:
 \begin{list}{$ * $}{\leftmargin2.0cm\labelsep0.4cm
 \parsep0.5ex plus0.2ex minus0.1ex \itemsep0ex plus0.2ex}
-\item Character strings start with the letter C\dots or with T\dots
-\item Logical variables start with NL\dots, LG\dots or with TRC\dots
+\item Character strings start with the letter C\dots\ or with T\dots
+\item Logical variables start with NL\dots, LG\dots\ or with TRC\dots
 \end{list}
 The format for a card containing only real variables: (6E12.4)
 

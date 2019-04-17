@@ -132,7 +132,7 @@ around 2001.
 
 
 Next, optionally, an arbitrary number of surface models, labelled by
-the character string $'modname'$, may be read.
+the character string \lstinline|modname|, may be read.
 
 \begin{lstlisting}
      SURFMOD_modname
@@ -313,7 +313,7 @@ Fixed (independent of energy and angle of incidence)  particle
 reflection coefficient.
 
 The fast particle reflection probabilities RPROBF are
-set to $p_f=MIN(1-p_a,RINTEG)$, regardless of the reflection model
+set to $p_f = MIN(1 - p_a, RINTEG)$, regardless of the reflection model
 selected by the flag ILREF in block 6B. $p_a$ is kept as specified,
 and the thermal component probability $p_t$ is then recomputed as $p_t = 1 - p_f - p_a$.
 

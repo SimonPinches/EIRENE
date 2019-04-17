@@ -68,7 +68,7 @@ with the polygon mesh option. The NLPLG option permits to run EIRENE
 on 2D computer generated meshes with grid cuts in one direction.
 
 Furthermore, TSURF(1), TSURF(2), \dots,
-TSURF(NT3RD) are grid-points in the third co-ordinate direction, mostly the toroidal or z direction (sub-block 2C).
+TSURF(NT3RD) are grid-points in the third co-or\-di\-nate direction, mostly the toroidal or z direction (sub-block 2C).
 A co-ordinate surface is labeled $3,IT$ and is defined by the equation
 $f_1^{3,IT} (x,y,z)$
 =constant=TSURF(IT).
@@ -282,11 +282,11 @@ Geometry level: LEVGEO = 1
 
 Cartesian geometry, the x co-ordinate is discretized by setting
 
-$x_I$=RSURF(I) I=1,NR1ST .
+$x_I$ = \lstinline|RSURF(I) I = 1, NR1ST|.
 
 Furthermore,
-the flux-surface labeling grid RHOSRF(I) is identical with
-the grid RSURF(I).
+the flux-surface labeling grid \lstinline|RHOSRF(I)| is identical with
+the grid \lstinline|RSURF(I)|.
 \item[\textbf{NLCRC = .TRUE.}] ~
 
 Geometry level: LEVGEO = 2
@@ -315,7 +315,7 @@ The radial coordinate $r$ is discretized by setting
 $r_I$=RSURF(I) I=1,NR1ST.
 
 EP and EL may vary with coordinate $r$. These parameters are stored in the
-arrays EP(I),EL(I), I=1,NR1ST which now are used in addition to
+arrays EP(I), EL(I), I = 1, NR1ST which now are used in addition to
 RSURF to define one coordinate surface in the first (radial or $x$- grid).
 
 RHOSRF: as in NLCRC option.
