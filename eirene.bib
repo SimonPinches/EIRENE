@@ -1,5 +1,4 @@
-% This file was created with JabRef 2.10.
-% Encoding: ISO8859_1
+% Encoding: ISO-8859-1
 
 
 @InBook{kn:Trubnikov,
@@ -210,24 +209,33 @@ package},
 }
 
 @Article{kn:Langer,
-  Author                   = {Langer, W.D.},
-  Journal                  = {Nuclear Fusion},
-  Year                     = {1982},
-  Number                   = {6},
-  Pages                    = {751},
-  Volume                   = {22},
-
-  Rem                      = {required}
+  author    = {W.D. Langer},
+  title     = {Penetration of molecular impurities at the edge of tokamaks},
+  journal   = {Nuclear Fusion},
+  year      = {1982},
+  volume    = {22},
+  number    = {6},
+  pages     = {751--761},
+  month     = {jun},
+  abstract  = {The transport of molecules at the plasma edge in tokamaks is discussed in order to compare how light impurities enter the plasma if they are released either in atomic or molecular form. Differences in their transport arise because of the dissimilarities between atomic and molecular reactions with the bulk of the plasma. It is found that re-cycling to the walls is more efficient for the light impurities released in molecular form, but, also, that a substantial fraction of those atoms which originate from molecules may penetrate further into the plasma.},
+  doi       = {10.1088/0029-5515/22/6/003},
+  publisher = {{IOP} Publishing},
+  url       = {https://doi.org/10.1088%2F0029-5515%2F22%2F6%2F003},
 }
 
 @Article{kn:Mueller,
-  Author                   = {M{\"u}ller, S.H. and others},
-  Journal                  = {Plasma Phys. Control. Fusion},
-  Year                     = {2009},
-  Pages                    = {105014},
-  Volume                   = {51},
-
-  Rem                      = {required}
+  author    = {S H Müller and C Holland and G R Tynan and J H Yu and V Naulin},
+  title     = {Source formulation for electron-impact ionization for fluid plasma simulations},
+  journal   = {Plasma Physics and Controlled Fusion},
+  year      = {2009},
+  volume    = {51},
+  number    = {10},
+  pages     = {105014},
+  month     = {sep},
+  abstract  = {The derivation of the correct functional form of source terms in plasma fluid theory is revisited. The relation between the fluid source terms and atomic physics differential cross sections is established for particle-impact ionization. It is shown that the interface between atomic and plasma physics is completely described by three scalar functions of the incident particle energy. These are the total cross section and the newly introduced forward momentum and energy functions, which are properties of the differential cross sections only. For electron-impact ionization, the binary-encounter-Bethe (BEB) and binary-encounter-dipole (BED) models (Kim and Rudd 1994 Phys. Rev. A 50 3954) are used to calculate these functions analytically, yielding expressions that both accurately capture the physics and can be efficiently evaluated within fluid simulation codes. The source terms explain the observed electron temperature regimes in a wide variety of basic plasma physics experiments, including the trends across different gases.},
+  doi       = {10.1088/0741-3335/51/10/105014},
+  publisher = {{IOP} Publishing},
+  url       = {https://doi.org/10.1088%2F0741-3335%2F51%2F10%2F105014},
 }
 
 @InProceedings{kn:Maddison91,
@@ -312,14 +320,34 @@ Behaviour in the {BRAAMS} {B}2 Code},
 }
 
 @Article{kn:Doris,
-  Author                   = {Reiser, D. and Reiter, D.},
-  Journal                  = {Nuclear Fusion},
-  Year                     = {1998},
-  Number                   = {2},
-  Pages                    = {165},
-  Volume                   = {38},
-
-  Rem                      = {required}
+  author    = {D Reiser and D Reiter and M.Z Tokar{\textquotesingle}},
+  title     = {Improved kinetic test particle model for impurity transport in tokamaks},
+  journal   = {Nuclear Fusion},
+  year      = {1998},
+  volume    = {38},
+  number    = {2},
+  pages     = {165--177},
+  month     = {feb},
+  abstract  = {The expression for the Coulomb collision term in Fokker-Planck form is
+  revised and generalized to the case of interaction of trace impurity ions
+  with a fluid-like background plasma. The velocity distribution of the
+  background ions is assumed as a Maxwellian in the 13 moment expansion, 
+  with parameters determined from a fluid consideration. The impurities
+  are described in the framework of a linear drift kinetic test particle 
+  model. The new Coulomb term is suitable for linear Monte Carlo 
+  procedures and provides both a correct treatment of thermalization of 
+  the test particles and an accurate kinetic description of velocity distribution
+  effects on the thermal and frictional forces. These 
+  features are missed out in existing codes for kinetic 
+  modelling of impurity transport, based on a reduced Coulomb term 
+  with these forces treated in the fluid approximation.
+  Numerical results presented for TEXTOR specific edge plasma conditions
+  emphasize the importance of the proposed more accurate treatment,
+  in particular by consideration of the influence of thermal forces on low ionized 
+  impurities.},
+  doi       = {10.1088/0029-5515/38/2/302},
+  publisher = {{IOP} Publishing},
+  url       = {https://doi.org/10.1088%2F0029-5515%2F38%2F2%2F302},
 }
 
 @InBook{kn:Reiter93,
@@ -343,14 +371,17 @@ Behaviour in the {BRAAMS} {B}2 Code},
 }
 
 @Article{kn:Reiter92b,
-  Title                    = {Progress in 2-Dimensional Plasma Edge Modelling},
-  Author                   = {Reiter, D.},
-  Journal                  = {J. Nucl. Mat.},
-  Year                     = {1992},
-  Pages                    = {241},
-  Volume                   = {196--198},
-
-  Rem                      = {required}
+  author   = {D. Reiter},
+  title    = {Progress in two-dimensional plasma edge modelling},
+  journal  = {Journal of Nuclear Materials},
+  year     = {1992},
+  volume   = {196-198},
+  pages    = {80 - 89},
+  issn     = {0022-3115},
+  note     = {Plasma-Surface Interactions in Controlled Fusion Devices},
+  abstract = {A review is given of the status of various approaches dealing with tokamak edge related issues by employing two-dimensional numerical fluid codes for the main components of the edge plasma. The predictive capabilities of these models are assessed, in particular with regard to their completeness and the reliability of the transport coefficients. As the plasma edge characteristics in the favourable high recycling regime are determined by the mutual interaction of charged and neutral particle transport effects, sophisticated kinetic (often Monte Carlo) models for the neutral particles have been built into several of these 2D fluid programs. This allows for the first time consistently to study intrinsically 2D and multispecies effects, such as flow reversal or decoupling of plasma and impurity or helium ash flows.},
+  doi      = {https://doi.org/10.1016/S0022-3115(06)80014-0},
+  url      = {http://www.sciencedirect.com/science/article/pii/S0022311506800140},
 }
 
 @TechReport{kn:Reiter84a,
@@ -375,23 +406,35 @@ stochastischer {M}odelle zur {B}eschreibung des {N}eutralgastransports},
 }
 
 @Article{kn:Reiter2004,
-  Author                   = {Reiter, D. and Baelmans, M. and others},
-  Journal                  = {Fusion Science and Technology},
-  Year                     = {2005},
-  Pages                    = {172},
-  Volume                   = {47},
-
-  Rem                      = {required}
+  author    = {D. Reiter and M. Baelmans and P. Börner},
+  title     = {The EIRENE and B2-EIRENE Codes},
+  journal   = {Fusion Science and Technology},
+  year      = {2005},
+  volume    = {47},
+  number    = {2},
+  pages     = {172-186},
+  abstract  = { AbstractThe EIRENE neutral gas transport Monte Carlo code has been developed initially for TEXTOR since the early 1980s. It is currently applied worldwide in most fusion laboratories for a large variety of different purposes. The main goal of code development was to provide a tool to investigate neutral gas transport in magnetically confined plasmas. But, due to its flexibility, it also can be used to solve more general linear kinetic transport equations by applying a stochastic rather than a numerical or analytical method of solution. Major applications of EIRENE are in connection with plasma fluid codes, in particular with the various versions of the B2 two-dimensional plasma edge fluid code. The combined code package B2-EIRENE was developed, again initially for TEXTOR applications, in the late 1980s. It too has become a standard tool in plasma edge science. It is currently mainly used for divertor configurations, such as by the ITER central team, to assist the design of the ITER divertor. Both the EIRENE and B2-EIRENE concepts are introduced and illustrated with sample applications. },
+  doi       = {10.13182/FST47-172},
+  eprint    = {https://doi.org/10.13182/FST47-172},
+  publisher = {Taylor \& Francis},
+  url       = { 
+        https://doi.org/10.13182/FST47-172
+    
+},
 }
 
 @Article{kn:Reiter92d,
-  Author                   = {Reiter, D. and Bogen, P. and Samm, U.},
-  Journal                  = {J. Nucl. Mat.},
-  Year                     = {1992},
-  Pages                    = {1059},
-  Volume                   = {196--198},
-
-  Rem                      = {required}
+  author   = {D. Reiter and P. Bogen and U. Samm},
+  title    = {Measurement and monte carlo computations of H_\alpha profiles in front of a TEXTOR limiter},
+  journal  = {Journal of Nuclear Materials},
+  year     = {1992},
+  volume   = {196-198},
+  pages    = {1059 - 1064},
+  issn     = {0022-3115},
+  note     = {Plasma-Surface Interactions in Controlled Fusion Devices},
+  abstract = {In order to assess the existing data for hydrogen reflection and penetration into boundary plasmas, the spectral profile of H_\alpha emitted in front of a TEXTOR limiter has been measured with a high resolution spectrometer and calculated with the EIRENE code. The emission has been investigated for standard recycling conditions of hydrogen, but also for the case that this recycling is superimposed by a strong puff of hydrogenic molecules injected through a hole at the limiter tip. This latter case was used to calibrate the molecular transport model. The H_\alpha profiles during recycling have been observed and calculated for both a graphite and a stainless steel limiter. As expected, the number of reflected particles strongly increases in going from the C to the Fe limiter and seems to be slightly overestimated by present surface reflection databases.},
+  doi      = {https://doi.org/10.1016/S0022-3115(06)80195-9},
+  url      = {http://www.sciencedirect.com/science/article/pii/S0022311506801959},
 }
 
 @TechReport{kn:Reiter91c,
@@ -424,13 +467,17 @@ stochastischer {M}odelle zur {B}eschreibung des {N}eutralgastransports},
 }
 
 @Article{kn:Reiter96,
-  Author                   = {Reiter, D. and May, Chr. and Baelmans, M. and others},
-  Journal                  = {J. Nucl. Mat.},
-  Year                     = {1996},
-  Pages                    = {342},
-  Volume                   = {241--243},
-
-  Rem                      = {required}
+  author   = {D. Reiter and Chr. May and M. Baelmans and P. Börner},
+  title    = {Non-linear effects on neutral gas transport in divertors},
+  journal  = {Journal of Nuclear Materials},
+  year     = {1997},
+  volume   = {241-243},
+  pages    = {342 - 348},
+  issn     = {0022-3115},
+  abstract = {The effects of neutral particles on the condition of the plasma edge play a key role in divertor and limiter physics. In computational models they are usually treated in the linear test particle approximation. However, in some divertor concepts a large neutral gas pressure is required in the divertor chamber to provide sufficient neutral-plasma interaction in the plasma fan (momentum removal and energy dissipation) and to permit adequate pumping performance. In such regimes viscous effects in the neutral gas may become relevant. We have extended the EIRENE code to solve the Boltzmann equation with a non-linear BGK-model collision term added to its standard linear collision integrals. The linear in-elastic collision integrals are reconsidered with respect to volume recombination and momentum removal efficiency from the plasma. The numerical procedure in the EIRENE Monte Carlo code is outlined. A simple test application (Couette flow) shows that the procedure works properly. First numerical studies have been carried out and the results are discussed.},
+  doi      = {https://doi.org/10.1016/S0022-3115(97)80061-X},
+  keywords = {ITER, Momentum sink, Neutral transport, Monte Carlo simulation, Atomic physics},
+  url      = {http://www.sciencedirect.com/science/article/pii/S002231159780061X},
 }
 
 @Article{kn:Reiter94,
@@ -461,33 +508,47 @@ stochastischer {M}odelle zur {B}eschreibung des {N}eutralgastransports},
 }
 
 @Article{kn:Roth99,
-  Author                   = {Roth, J.},
-  Journal                  = {J.Nucl.Mater.},
-  Year                     = {1999},
-  Pages                    = {51--57},
-  Volume                   = {266--269},
-
-  Rem                      = {required}
+  author   = {Joachim Roth},
+  title    = {Chemical erosion of carbon based materials in fusion devices},
+  journal  = {Journal of Nuclear Materials},
+  year     = {1999},
+  volume   = {266-269},
+  pages    = {51 - 57},
+  issn     = {0022-3115},
+  abstract = {In the last two years the basic erosion mechanisms of carbon due to thermal and energetic hydrogen atoms have been resolved and the range of erosion yield data has been extended into new regimes of ion flux and energy. The present paper reviews the recent achievements in fundamental understanding. Model prediction of the dependence on ion energy and flux are compared with new experimental results from fusion experiments and plasma simulators. For graphites doped with B or Si the decrease of the erosion yield as function of energy and temperature indicates which elemental steps in the erosion process are influenced.},
+  doi      = {https://doi.org/10.1016/S0022-3115(98)00658-8},
+  keywords = {Carbon, Composite materials, Chemical erosion, Flux dependence, Ion irradiation},
+  url      = {http://www.sciencedirect.com/science/article/pii/S0022311598006588},
 }
 
 @Article{kn:Roth96,
-  Author                   = {Roth, J. and Gracia-Rosales, C.},
-  Journal                  = {Nucl.Fus. 36},
-  Year                     = {1996},
-  Pages                    = {1647},
-  Volume                   = {12},
-
-  Rem                      = {required}
+  author    = {J Roth and C Garcia-Rosales},
+  title     = {Analytic description of the chemical erosion of graphite by hydrogen ions},
+  journal   = {Nuclear Fusion},
+  year      = {1996},
+  volume    = {36},
+  number    = {12},
+  pages     = {1647--1659},
+  month     = {dec},
+  abstract  = {One main concern about the use of graphite as a plasma facing material is the enhanced erosion under hydrogen bombardment due to hydrocarbon formation. In view of the lifetime evaluation of plasma exposed carbon components and of impurity production in present and future machines such as ITER, an analytical expression for the erosion yield by chemical sputtering for the relevant energies, temperatures and incident fluxes is of special importance. An extrapolation to fluxes and energies relevant for high density divertor plasmas has not been possible up to now on the basis of semiempirical fits to laboratory data. Starting from a short review of the existing empirical formulas, recent detailed investigations of the atomistic processes for the thermally activated hydrocarbon emission are described, which enable the formulation of an improved analytical description including the ion flux as a parameter. The chemical erosion of graphite by hydrogen bombardment results from two processes: the thermally activated hydrocarbon emission, Ytherm, and a surface process at low energies and low temperatures resulting from the kinetic ejection of surface hydrocarbon complexes from collisional energy transfer, Ysurf. The new analytic description can be fitted well to the existing data for ion beam erosion, and extrapolation to divertor relevant fluxes is possible. At high ion fluxes the maximum of chemical erosion is shifted to higher temperatures, where annealing of damaged structures leads to a stronger reduction of Ytherm than previously estimated. There are no data on a possible flux dependence of Ysurf, leaving still some uncertainty in extrapolation},
+  doi       = {10.1088/0029-5515/36/12/i05},
+  publisher = {{IOP} Publishing},
+  url       = {https://doi.org/10.1088%2F0029-5515%2F36%2F12%2Fi05},
 }
 
 @Article{kn:Seebacher,
-  Author                   = {Seebacher, J. and Kendl, A.},
-  Journal                  = {Computer Phaysics Communications},
-  Year                     = {2012},
-  Pages                    = {947},
-  Volume                   = {182},
-
-  Rem                      = {required}
+  author   = {J. Seebacher and A. Kendl},
+  title    = {Towards a unified linear kinetic transport model with the trace ion module for EIRENE},
+  journal  = {Computer Physics Communications},
+  year     = {2012},
+  volume   = {183},
+  number   = {4},
+  pages    = {947 - 959},
+  issn     = {0010-4655},
+  abstract = {Linear kinetic Monte Carlo particle transport models are frequently employed in fusion plasma simulations to quantify atomic and surface effects on the main plasma flow dynamics. Separate codes are used for transport of neutral particles (incl. radiation) and charged particles (trace impurity ions). Integration of both modules into main plasma fluid solvers provides then self-consistent solutions, in principle. The required interfaces are far from trivial, because rapid atomic processes in particular in the edge region of fusion plasmas require either smoothing and resampling, or frequent transfer of particles from one into the other Monte Carlo code. We propose a different scheme here, in which despite the inherently different mathematical form of kinetic equations for ions and neutrals (e.g. Fokker--Planck vs. Boltzmann collision integrals) both types of particle orbits can be integrated into one single code. We show that the approximations and shortcomings of this ``single sourcing" concept (e.g., restriction to explicit ion drift orbit integration) can be fully tolerable in a wide range of typical fusion edge plasma conditions, and be overcompensated by the code-system simplicity, as well as by inherently ensured consistency in geometry (one single numerical grid only) and (the common) atomic and surface process modules.},
+  doi      = {https://doi.org/10.1016/j.cpc.2011.12.021},
+  keywords = {Scrape off layer plasma, Monte Carlo, Trace impurity transport, EIRENE},
+  url      = {http://www.sciencedirect.com/science/article/pii/S0010465511004097},
 }
 
 @Book{kn:Spanier69a,
@@ -500,39 +561,47 @@ stochastischer {M}odelle zur {B}eschreibung des {N}eutralgastransports},
 }
 
 @Article{kn:Takizuka,
-  Author                   = {Takizuka, T. and Abe, H.},
-  Journal                  = {Journal Computational Physics},
-  Year                     = {1977},
-  Pages                    = {205-219},
-  Volume                   = {25},
-
-  Rem                      = {required}
+  author   = {Tomonor Takizuka and Hirotada Abe},
+  title    = {A binary collision model for plasma simulation with a particle code},
+  journal  = {Journal of Computational Physics},
+  year     = {1977},
+  volume   = {25},
+  number   = {3},
+  pages    = {205 - 219},
+  issn     = {0021-9991},
+  abstract = {A binary collision model by the Monte Carlo method is proposed for plasma simulations with particle codes. The model describes a collision integral of the Landau form. Collisional effects in spatially uniform plasmas are simulated, and the results are in good agreement with theoretical ones.},
+  doi      = {https://doi.org/10.1016/0021-9991(77)90099-7},
+  url      = {http://www.sciencedirect.com/science/article/pii/0021999177900997},
 }
 
 @Article{kn:WCU,
-  Title                    = {Formulation and numerical analysis of diatomic molecular dissociation using {B}oltzmann kinetic equation},
-  Author                   = {Yano, R. and Suzuki, K.},
-  Journal                  = {Physics of Fluids},
-  Year                     = {2007},
-  Pages                    = {017103},
-  Volume                   = {19},
-
-  Rem                      = {required}
+  author   = {Yano,Ryosuke and Suzuki,Kojiro and Kuroda,Hisayasu},
+  title    = {Formulation and numerical analysis of diatomic molecular dissociation using Boltzmann kinetic equation},
+  journal  = {Physics of Fluids},
+  year     = {2007},
+  volume   = {19},
+  number   = {1},
+  pages    = {017103},
+  abstract = {The direct description of chemical reactions by the Boltzmann equation still involves some difficulties in the kinetic theory. In this paper, we describe diatomic molecular dissociation due to transitions of vibrational quantum states resulting from inelastic collisions. These can be described by the Wang Chang-Uhlenbeck (WCU) equation. To avoid direct evaluation of the strong nonlinear collision kernel of the WCU equation, we used a kinetic equation. For accurate description of the dissociation process, we describe improvements we made to the conventional inelastic collision model (the so-called Morse model). Combining this inelastic collision model with the gas mixture model by Oguchi, we formulated a model for representing diatomic molecular dissociations. We validated this model by simulating a hypersonic shock layer with diatomic molecular dissociation.},
+  doi      = {10.1063/1.2427092},
+  eprint   = {https://doi.org/10.1063/1.2427092},
+  url      = { 
+        https://doi.org/10.1063/1.2427092
+    
+},
 }
 
 @Article{kn:Gordeev,
-  Title                    = {Recombination of hydrogen in a quasi-stationary thermonuclear plasma},
-  Author                   = {Gordeev Yu.S. and Zinov'ev A.N. and Petrov M.P.},
-  Journal                  = {Pis'ma Zh. Ehksp. Teor. Fiz.},
-  Year                     = {1977},
-
-  Month                    = {February},
-  Number                   = {4},
-  Pages                    = {223--227},
-  Volume                   = {25},
-
-  Rem                      = {required},
-  Url                      = {http://www.jetpletters.ac.ru/ps/1392/article_21120.shtml}
+  author  = {Gordeev Yu.S. and Zinov'ev A.N. and Petrov M.P.},
+  title   = {Recombination of hydrogen in a quasi-stationary thermonuclear plasma},
+  journal = {Zhurnal Éksperimental?no? i Teoretichesko? Fiziki},
+  year    = {1977},
+  volume  = {25},
+  number  = {4},
+  pages   = {223--227},
+  month   = {February},
+  rem     = {required},
+  url     = {http://www.jetpletters.ac.ru/ps/1392/article_21120.shtml},
 }
 
 @Book{kn:Janev95,
@@ -552,3 +621,4 @@ stochastischer {M}odelle zur {B}eschreibung des {N}eutralgastransports},
   HowPublished             = {Nuclear Fusion, Special issue 1984, Data Compendium for Plasma-Surface interactions}
 }
 
+@Comment{jabref-meta: databaseType:bibtex;}
