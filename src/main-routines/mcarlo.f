@@ -377,6 +377,7 @@ C
       if (my_pe == 0) CALL EIRENE_PEDIST(XTIM,XX1)
       if (nprs > 1) then
         call EIRENE_broad_pedist(xtim)
+        call create_all_communicators
 
 c nlident: jeder proc. von einer quelle istra bekommt gleichen seed gem. ninitl(istra).
 c         erzeugt bei zwei gleichen quellen (istra) identische ergebnisse.
