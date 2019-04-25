@@ -112,7 +112,7 @@ f(\vr, \vv, i ,t)   = \left(\frac{m}{v}\right)
 The distribution function in the form of $\tilde f$ clearly remains meaningful also in the case of massless particles (photons),
 i.e.\ for applications of EIRENE to radiation transfer problems.
 \\
-The notation used now may appear to be unnecessarily complicated, but we indent to prepare here already the
+The notation used now may appear to be unnecessarily complicated, but we intent to prepare here already the
 more general discussion in \cref{sec1.01} on the \ac{WCU} equation.
 
 We start with the original (elastic collisions only) ``Boltzmann Equation" \cite{kn:Cercignani},
@@ -163,7 +163,7 @@ f_b(\vV')  \nonumber \\
 %  gleichungszaehler auf default mode zuruecksetzen
 \renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
 There is one such equation for each ``particle species $i$" considered, but for elastic collision
-without exchange between species. Always only two of them (here: $i_0$ and $b$) a directly coupled to each other.
+without exchange between species. Always only two of them (here: $i_0$ and $b$) are directly coupled to each other.
 
 
 $Q \ (= Q_{i_0})$ is any external source (particles of species $i_0$ injected per unit volume  in phase space and per unit time).
@@ -722,12 +722,12 @@ reduce dimensionality of the response:
 \label{eq2.10b}
 g_{m,\alpha}=g \times ch_m(\vr,t) \times \delta^\alpha(\vr,t) , \quad m = 1, 2, \dots, M,
 \end{equation}
-Here, e.g.,  a surface cell $m$ would discretize  a surface $S$ characterized by a surface delta function $\delta^S$.
+Here, e.g., a surface cell $m$ would discretize a surface $S$ characterized by a surface delta function $\delta^S$.
 \end{subequations}
 
 Equation \cref{eq1.7} shows that Monte Carlo estimates (tallies) fall into the category of \emph{extensive} quantities
 (number of particles, total energy, momentum, etc., per cell). \emph{Intensive} quantities  (flow velocity, temperature, etc.)
-obtained by dividing two extensive quantities are typically difficult estimate with Monte Carlo methods
+obtained by dividing two extensive quantities are typically difficult to estimate with Monte Carlo methods
 (see: ``ratio estimates", correlation between nominator and denominator, \dots).
 If, however, the extensive quantity in the denominator is known exactly, such as e.g.\ the cell volume in a computational mesh, then, of course,
 obtaining an intensive quantity from an extensive quantity with Monte Carlo is a trivial re-scaling.
@@ -805,7 +805,7 @@ X^c_g ( \omega^n_i)   =   \sum_{l=1}^{n} g_c (x_l )
  \frac{c(x_j )}{(1 - p_a(x_j))}   \ \ ,
 \end{equation}
 and the summation index $l$ runs from the first point of collision $x_1$ until the last (absorption) at $x_n$.
-The product in the sum accounts cumulatively for branching, and absorption rates during along the Markov chain $\omega_i^n$.
+The product in the sum accounts cumulatively for branching, and absorption rates along the Markov chain $\omega_i^n$.
 
 This estimator is, for example, used in the DEGAS code
 \cite{kn:Heifetz}. It can be shown \cite{kn:Spanier69a} in a tedious but mathematically strict way that the statistical
