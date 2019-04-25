@@ -9,21 +9,17 @@
 All input data from unit IUNIN are read in subroutine  INPUT using
 formatted I/O. There are 14 "blocks", each one starting with a card
 
-\medskip
-
+\begin{lstlisting}
 *** n. TEXT
-
-\medskip
+\end{lstlisting}
 
 where n is the number of the input block, n = 1, 2, \dots, 14. Some blocks
 are subdivided into so called "sub-blocks", each one starting with a
 card
 
-\medskip
-
+\begin{lstlisting}
 ** TEXT .
-
-\medskip
+\end{lstlisting}
 
 Each input block is described in one of the
 following 14 \crefrange{sec2.1}{sec2.14}:
@@ -205,53 +201,32 @@ are only identified by EIRENE if preceded by a card starting with
 
 Example (see \cref{sec2.7} below):
 
+\begin{lstlisting}
 *** 7. Data for initial distribution of test particles
-
 * this is a comment
-
 * there are NSTRAI=2 strata in this run
-
 * this is a comment
-
  2
-
 ** Data for first stratum
-
 * this is a surface recycling source of helium ions, IPLS=2
-
 * this is a comment
-
 FFFF
-
   .
-
   .
-
   .
-
   .
-
 ** Data for second stratum
-
 * this is a hydrogen ion volume re-combination source, IPLS=1
-
 FFFF
-
   .
-
   .
-
   .
-
 *** 8. Data for some specific zones
-
   .
-
   .
-
   .
-
   .
+\end{lstlisting}
 
 and so on.
 

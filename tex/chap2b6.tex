@@ -89,10 +89,8 @@ rather unhandy reflection data and formulas.
 
 \textbf{The Input Block for General Reflection Data}
 
-\medskip
-
-\textsl{*** 6A. Data for General Reflection Models}
 \begin{lstlisting}
+*** 6A. Data for General Reflection Models
       NLTRIM
 C     ``Path-Card'' for TRIM surface reflection files
 C     (machine specific, may be omitted)
@@ -403,7 +401,9 @@ By a similar strategy, some of the species independent flags in the next
 sub-block 6B can be made species-dependent. See, for example,
 RECYCF, RECYCT, RECYCS and RECYCC below. \medskip
 
-\textsl{*** 6B. Data for Local Reflection and Sputtering Models}
+\begin{lstlisting}
+*** 6B. Data for Local Reflection and Sputtering Models}
+\end{lstlisting}
 
 \medskip
 
@@ -412,14 +412,15 @@ reflection data. Such sub-blocks can be included in each ``surface
 deck" (block 3A, 3B) to overwrite the default reflection model for
 each individual surface.
 
-    ILREF  ILSPT  ISRS  ISRC
+\begin{lstlisting}
+      ILREF  ILSPT  ISRS  ISRC
+      ZNML EWALL EWBIN TRANSP(1) TRANSP(2) FSHEAT
+      RECYCF  RECYCT  RECPRM  EXPPL  EXPEL  EXPIL
+C (following line may be omitted then: default sputter model, 
+C  see below)
+      RECYCS  RECYCC  SPTPRM  ESPUTS ESPUTC
+\end{lstlisting}
 
-    ZNML EWALL EWBIN TRANSP(1) TRANSP(2) FSHEAT
-
-    RECYCF  RECYCT  RECPRM  EXPPL  EXPEL  EXPIL
-
-    RECYCS  RECYCC  SPTPRM  ESPUTS ESPUTC (this line may be omitted\\
-                             then: default sputter model, see below)
 \medskip
 
 An arbitrary number of such sub-blocks of 3 (or 4) lines each may

@@ -32,7 +32,9 @@ At the beginning of input block 4 EIRENE first searches for the character
 string ``INCLUDE" in the input card
 directly following the card
 
-\lstinline+*** 4. DATA FOR.....+
+\begin{lstlisting}
+*** 4. DATA FOR.....
+\end{lstlisting}
 
 If such a character string is found here, then the rest of input blocks 4 and 5 is skipped and a proper
 ``A\&M model data file from a pre-compiled EIRENE AM-library can be used.
@@ -299,9 +301,9 @@ N=5: electrons
 
 \textbf{The Input block}
 
-\medskip
-
-\textsl{*** 4. Data for Species Specification and Atomic Physics Module}
+\begin{lstlisting}
+*** 4. Data for Species Specification and Atomic Physics Module
+\end{lstlisting}
 
 Note: in EIRENE$_{2003}$ or later the format of input flag \lstinline|REAC| described below was generalized from
 \lstinline|A9|  to \lstinline|Axxx|, with \lstinline|xxx| $\leq 50$,  to accommodate the longer reaction information for photonic

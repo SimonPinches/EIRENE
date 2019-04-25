@@ -51,10 +51,8 @@ properties the ``non-default standard surfaces" are stored after the
 additional surfaces. E.g.\ FLAG(NLIM+4) would store the data FLAG for
 non-default standard surface no.\ 4.
 
-\medskip
-
-\textsl{*** 3A. Data for ``Non-default Standard Surfaces''}
 \begin{lstlisting}
+*** 3A. Data for "Non-default Standard Surfaces"
       NSTSI
       DO 31 ISTSI=1,NSTSI
 \end{lstlisting}
@@ -62,9 +60,9 @@ non-default standard surface no.\ 4.
  surface data for surface ISTSI:
 \begin{lstlisting}
         TXTSFL
-        ISTS, IDIMP, INUMP(ISTSI,IDIMP),
-     .    IRPTA1, IRPTE1, IRPTA2, IRPTE2, IRPTA3, IRPTE3
-        ILIIN, ILSIDE, ILSWCH, ILEQUI, ILTOR, ILCOL,
+        ISTS IDIMP INUMP(ISTSI,IDIMP)
+     .    IRPTA1 IRPTE1 IRPTA2 IRPTE2 IRPTA3 IRPTE3
+        ILIIN ILSIDE ILSWCH ILEQUI ILTOR ILCOL
      .    ILFIT ILCELL ILBOX ILPLG
 \end{lstlisting}
 optional for non transparent surfaces (ILIIN $>$ 0):
@@ -75,12 +73,12 @@ interaction data
 If they are omitted, the default particle-surface model is activated for this
 particular surface element, see \cref{sec2.6}.
 \begin{lstlisting}
-        ILREF  ILSPT ISRS  ISRC
+        ILREF ILSPT ISRS  ISRC
         ZNML EWALL EWBIN TRANSP(1,N) TRANSP(2,N) FSHEAT
-        RECYCF  RECYCT  RECPRM  EXPPL  EXPEL  EXPIL
+        RECYCF RECYCT RECPRM EXPPL EXPEL EXPIL
 C (this line may be omitted, then: default sputter model, 
 C  see \cref{sec2.6})
-        RECYCS  RECYCC  SPTPRM
+        RECYCS RECYCC SPTPRM
   31  CONTINUE
 \end{lstlisting}
 

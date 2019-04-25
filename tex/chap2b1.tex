@@ -14,41 +14,40 @@ the simulation model (drifts included or not, etc.).
 
 \textbf{The Input Block}
 
-\medskip
-
-TXTRUN
-
-\textsl{*** 1. Data for operating mode}
+\begin{lstlisting}
+      TXTRUN
+*** 1. Data for operating mode
+\end{lstlisting}
 
 first card:  integer flags controlling global options for the entire run.
 
-NPRLL  NMODE  NTCPU  NFILE  NITER0  NITER  NTIME0  NTIME
-
-\vspace{1em}
+\begin{lstlisting}
+      NPRLL  NMODE  NTCPU  NFILE  NITER0  NITER  NTIME0  NTIME
+\end{lstlisting}
 
 next input line is only for EIRENE$_{2002}$ and younger, and optional in these
 versions. Defaults, if this card is not included, are given below.
 
-NOPTIM, NOPTM1, NGEOM\_USR, NCOUP\_INPUT, NSMSTRA, NSTORAM,
-NGSTAL, NRTAL, NREAC\_ADD
-
-\vspace{1em}
+\begin{lstlisting}
+      NOPTIM NOPTM1 NGEOM_USR NCOUP_INPUT NSMSTRA NSTORAM
+     .  NGSTAL NRTAL NREAC_ADD
+\end{lstlisting}
 
 next line (second mandatory line): logical flags for global options [format: 12(5L1,1X)].
 
-NLSCL  NLTEST  NLANA  NLDRFT  NLCRR
-\\
-NLERG NLIDENT  NLONE  NLMOVIE NLDFST
-\\
-NLOLDRAN NLCASCAD NLOCTREE NLWRMSH
-
-\vspace{1em}
+\begin{lstlisting}
+      NLSCL NLTEST NLANA NLDRFT NLCRR
+     .  NLERG NLIDENT NLONE NLMOVIE NLDFST
+     .  NLOLDRAN NLCASCAD NLOCTREE NLWRMSH
+\end{lstlisting}
 
 next input lines are only for EIRENE$_{2005}$ and younger, and
 optional in these versions. There can be any number of these
 cards starting with character string \lstinline|CFILE|  in the input file.
 
-``CFILE" DBHANDLE DBFNAME
+\begin{lstlisting}
+      "CFILE" DBHANDLE DBFNAME
+\end{lstlisting}
 
 \medskip
 
