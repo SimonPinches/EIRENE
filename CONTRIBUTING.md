@@ -16,7 +16,8 @@ Contributors can speed up the integration of corrections or improvements by focu
 * Use the `cleveref` package for in-document references, e.g. `\cref{.}`, `\Cref{.}`.
 * Use the `acronym` package for acronyms, i.e. define new acronyms via `\acro{}{}` at the end of `eirene.tex` and use any acronym via `\ac`, `\acp`, etc.
 * Use the `siunitx` package for typesetting units, e.g. `\si{\ampere}`, `\SI{1e2}{\ampere}`.
-* Remember `e.g.` and `i.e.` will trigger full stop space behind, use `e.g.\` and `.i.e.\` instead.
+* Use the `fmtcount` package for typesetting ordinals, e.g. `\ordinalnum{1}`.
+* Remember `e.g.` and `i.e.` will trigger full stop space behind, use `e.g.\` and `i.e.\` instead.
 * The space between initials and surname should be filled with `~`. It prevents the full stop space and keeps initials and surname in one line.
 
 ## Contribution flow
