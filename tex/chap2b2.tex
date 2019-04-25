@@ -31,10 +31,10 @@ There are up to 3 sets of standard co-ordinate surfaces, each set being paramete
 RSURF(i1), PSURF(i2) and TSURF(i3).
 
 Here RSURF(1), RSURF(2), \dots,
-RSURF(NR1ST) are grid-points (parameters) in the 1st co-ordinate direction, mostly the radial or x direction
+RSURF(NR1ST) are grid-points (parameters) in the \ordinalnum{1} co-ordinate direction, mostly the radial or x direction
 (depending on the
 geometry level, internal parameter LEVGEO, see below) defined by the input data in sub-block 2A.
-I.e., there are NR1STM= NR1ST-1 cells in the 1st co-ordinate direction (e.g.\ radial or x direction).
+I.e., there are NR1STM= NR1ST-1 cells in the \ordinalnum{1} co-ordinate direction (e.g.\ radial or x direction).
 With regard to the terminology in \cref{sec1.5}, \cref{eq1.34}, a
 corresponding co-ordinate surface is labelled with a double index 1,IR
 and is defined by the equation
@@ -42,7 +42,7 @@ and is defined by the equation
 $f_1^{1,IR} (x,y,z)$
 =constant=RSURF(IR).
 
-PSURF(1), PSURF(2), \dots, PSURF(NP2ND) are grid-points in the 2nd co-ordinate direction,
+PSURF(1), PSURF(2), \dots, PSURF(NP2ND) are grid-points in the \ordinalnum{2} co-ordinate direction,
 typically the poloidal or y direction (sub-block 2B), and there are
 NP2NDM=NP2ND-1 cells in this direction.
 A corresponding
@@ -73,8 +73,8 @@ A co-ordinate surface is labeled $3,IT$ and is defined by the equation
 $f_1^{3,IT} (x,y,z)$
 =constant=TSURF(IT).
 
-In case NT3RD = 1 this 3rd grid is absent and the calculation automatically collapses to a 2D case,
-i.e.\ a case with only 2 sets of co-ordinate lines.  This does not mean that the 3rd, ignorable coordinate must be
+In case NT3RD = 1 this \ordinalnum{3} grid is absent and the calculation automatically collapses to a 2D case,
+i.e.\ a case with only 2 sets of co-ordinate lines.  This does not mean that the \ordinalnum{3}, ignorable coordinate must be
 straight Cartesian (z-direction). E.g.\ a full torus, but with only radial and poloidal resolution and toroidal symmetry
 then is referred to as 2-dimensional calculation.
 
@@ -615,7 +615,7 @@ direction. The co-ordinate surfaces are given by z=TSURF(L)
 toroidal approximation is used. The coordinate line is
 a polygonal approximation of a circle, or of an angular section thereof.
 
-In case NLTOR = TRUE, the 3rd grid TSURF is a grid of
+In case NLTOR = TRUE, the \ordinalnum{3} grid TSURF is a grid of
 toroidal angles.
 The toroidal segment (or the full torus) is approximated by NT3RD-1 straight cylindrical segments.
 
@@ -655,7 +655,7 @@ Number of grid-points in z- or toroidal direction
 only needed in case NLTRA and .NOT.NLTOR. See above.
 \item[\textbf{ZIA,ZGA,ZAA,ZZA,ROA}] ~
 
-The 3rd  grid ZSURF is defined in the same way as the x grid, using
+The \ordinalnum{3} grid ZSURF is defined in the same way as the x grid, using
 the parameters ZIA, ZGA, \dots\ (\si{\centi\metre}) instead of RIA, RGA, \dots
 
 In case of NLTRZ = TRUE , a z-grid is defined. ROA is irrelevant.
@@ -731,14 +731,14 @@ boundaries (``\acs{BREP}"-geometry): the ``additional surfaces" defined in
 
 \medskip
 
-NR1ST is the number of surfaces in the 1st (radial -or x-) grid.
+NR1ST is the number of surfaces in the \ordinalnum{1} (radial -or x-) grid.
 There are NR1STM = NR1ST - 1 cells.
 
 The cell index of a particular cell is called NRCELL.
 
 1$\le$ NRCELL $\le$ NR1STM
 
-NP2ND is the number of surfaces in the 2ND (poloidal -or y-) grid.
+NP2ND is the number of surfaces in the \ordinalnum{2} (poloidal -or y-) grid.
 There are NP2NDM = NP2ND - 1 cells.
 
 The cell index of a particular cell is called NPCELL.
