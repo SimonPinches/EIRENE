@@ -43,7 +43,7 @@ Thirdly (version
 test particle species), including reabsorption, reflection, line broadening, etc., can be obtained
 (Subr.\ SIGRAD). A number of different emission line shape profiles is available for these.
 
-For testing and 3rd party defined further integrands $g(x)$ along lines of side there is a
+For testing and \ordinalnum{3} party defined further integrands $g(x)$ along lines of side there is a
 user defined option (Subr.\ SIGTST).
 
 
@@ -113,7 +113,7 @@ spectra (vs. energy or wavelength, resp.) and of source term distribution along 
 Flag for the choice whether a spectrum is plotted on the same
 picture as the previous one (NSPNEW = 0) or onto a new graph
 (otherwise).
-\item[\textbf{NSPCHR}] (Proprietary option, not for 3rd party application)
+\item[\textbf{NSPCHR}] (Proprietary option, not for \ordinalnum{3} party application)
 If NSPCHR.gt.0, then automatically all grid cells of the computational volume
 along the chord are identified and marked in pre-processing. During the particle tracing phase then, energy resolved spectra (input block 10f)
 are computed (scored) in all these cells directly from Monte Carlo histories, by automatically augmenting
@@ -164,11 +164,11 @@ line of sight, for temperature fitting.  The CX ion temperature  is fitted from 
 in the interval [NSPINI $\times$ Ti$_{max}$ , NSPEND $\times$ Ti$_{max}$ ]
 
 \item[\textbf{NSPBLC}]
-Standard mesh block number of 2nd point on line of sight.
+Standard mesh block number of \ordinalnum{2} point on line of sight.
 \item[\textbf{NSPADD}]
-Additional cell number of 2nd point on line of sight.
+Additional cell number of \ordinalnum{2} point on line of sight.
 
-If NSPADD = 0 , then this 2nd point must lie in standard mesh block
+If NSPADD = 0 , then this \ordinalnum{2} point must lie in standard mesh block
 NSPBLC.
 
 If NSPADD $\ne$ 0, then the block number NSPBLC must be
@@ -283,11 +283,11 @@ XPIVOT,YPIVOT,ZPIVOT = $r,z,\phi$, with $\phi$ in degrees. The corresponding tor
 ITTRA are found automatically.
 \end{list}
 \item[\textbf{XPIVOT}]
-1st co-ordinate of pivot point for line of sight, e.g.\ $x$
+\ordinalnum{1} co-ordinate of pivot point for line of sight, e.g.\ $x$
 \item[\textbf{YPIVOT}]
-2nd  co-ordinate of pivot point for line of sight, e.g.\ $y$
+\ordinalnum{2} co-ordinate of pivot point for line of sight, e.g.\ $y$
 \item[\textbf{ZPIVOT}]
-3rd co-ordinate of pivot point for line of sight, e.g.\ $z$
+\ordinalnum{3} co-ordinate of pivot point for line of sight, e.g.\ $z$
 \end{list}
 The next card specifies the second (``inside") point.
 
@@ -307,11 +307,11 @@ integration cannot be found automatically.)
 Meaning analogous to that of first point flag IPIVOT:
 
 \item[\textbf{XCHORD}]
-1st co-ordinate of second point for line of sight
+\ordinalnum{1} co-ordinate of second point for line of sight
 \item[\textbf{YCHORD}]
-2nd co-ordinate of second point for line of sight
+\ordinalnum{2} co-ordinate of second point for line of sight
 \item[\textbf{ZCHORD}]
-3rd co-ordinate of second point for line of sight
+\ordinalnum{3} co-ordinate of second point for line of sight
 \item[\textbf{PLCHOR}]
 the lines of sight are plotted into (2D or 3D) geometry plots.
 This, however, is automatically turned off if other plots are done between geometry plots

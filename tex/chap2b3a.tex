@@ -127,7 +127,7 @@ chosen.
 \item[= 1]
 surface from the x- (radial) standard mesh (RSURF)
 Note that for the unstructured grid options NLTRI and NLTET (i.e.\ for the 2D triangular grid option
-or for the general 3D grids of tetrahedra) all surfaces are referred to as 1st grid (x or radial) surfaces,
+or for the general 3D grids of tetrahedra) all surfaces are referred to as \ordinalnum{1} grid (x or radial) surfaces,
 by abuse of language.
 \item[= 2]
 surface from the y- (poloidal) standard mesh (PSURF)
@@ -145,21 +145,21 @@ by these flags.
 If JMP is a surface from the first mesh, then IRPTA2$\rightarrow
 $IRPTE2 and
 IRPTA3$\rightarrow
-$IRPTE3 are the surface index ranges of the 2nd and 3rd mesh,
+$IRPTE3 are the surface index ranges of the \ordinalnum{2} and \ordinalnum{3} mesh,
 respectively, for which this surface acts as non-default surface.
 IRPTA1 and IRPTE1 are irrelevant.
 
-If JMP is a surface from the 2nd mesh, then IRPTA1$\rightarrow
+If JMP is a surface from the \ordinalnum{2} mesh, then IRPTA1$\rightarrow
 $IRPTE1 and
 IRPTA3$\rightarrow
-$IRPTE3 are the surface index ranges of the 1st and 3rd mesh,
+$IRPTE3 are the surface index ranges of the \ordinalnum{1} and \ordinalnum{3} mesh,
 respectively, for which this surface acts as non-default surface.
 IRPTA2 and IRPTE2 are irrelevant.
 
-If JMP is a surface from the 3rd mesh, then IRPTA1$\rightarrow$
+If JMP is a surface from the \ordinalnum{3} mesh, then IRPTA1$\rightarrow$
 IRPTE1 and
 IRPTA2$\rightarrow$
-IRPTE2 are the surface index ranges of the 1st and 2rd mesh,
+IRPTE2 are the surface index ranges of the \ordinalnum{1} and \ordinalnum{2} mesh,
 respectively, for which this surface acts as non-default surface.
 IRPTA3 and IRPTE3 are irrelevant.
 \end{list}
