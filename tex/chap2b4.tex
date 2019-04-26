@@ -404,9 +404,9 @@ and, for versions younger than 2003:
 
 \medskip
 
-\begin{list}{}{}
+\begin{description}
 
-\item[\textbf{NREACI}]
+\item[NREACI]
 Total number of different reactions to be read.
 
 The next block has different meanings for ``real particles" and
@@ -426,15 +426,15 @@ Storage is provided for up to NREAC different additional reactions
 (see ``Parameter Statements", \cref{sec3.1}), i.e., one
 must guarantee NREACI.LE.NREAC
 
-\item[\textbf{IR}] Labeling
+\item[IR] Labeling
 index of the reaction that is read in. The condition
 
 IR.LE.NREACI
 
 must be fulfilled (otherwise: error exit).
-\item[\textbf{FILNAM}]
+\item[FILNAM]
 Name of the data-set that contains the required reaction.
-\begin{list}{}{}
+\begin{description}
 \item[HYDHEL] Hydrogen and Helium data \cite{kn:Janev}
 \item[METHAN] Hydrocarbons data \cite{kn:Ehrhardt}
 \item[H2VIBR] Data for H$_2$ molecules and their isotopomeres,
@@ -455,8 +455,8 @@ by one of the ``CFILE" cards described there:   \lstinline|CFILE  ADAS  path/adf
 \item[PHOTON]  line emission and line absorption constants,
 as well as parameters for line shapes (line broadening constants).
 
-\end{list}
-\item[\textbf{H123}] Identification flag for the type of data: interaction potential parameters, cross
+\end{description}
+\item[H123] Identification flag for the type of data: interaction potential parameters, cross
 section, rate coefficient, momentum loss rate coefficient, energy
 loss rate coefficient, etc.
 
@@ -464,7 +464,7 @@ loss rate coefficient, etc.
 
 currently available only for: H123 = H.1, = H.2, = H.5, or = H.8, i.e., only
 for single parameter fits.
-\begin{list}{}{}
+\begin{description}
 \item[]
 in case IFTFLG = 10, 110, 210, \dots, ``single parameter", constant collision parameter. One more line \\
 \lstinline|F(0)| (REAL)\\
@@ -494,10 +494,10 @@ sections or rate coefficients
 or, e.g., specific power law energy dependencies or
 temperature dependencies (second of the
 nine parameters).
-\end{list}
+\end{description}
 
 \textbf{case 1:} FILNAM = HYDHEL, METHAN,  AMJUEL, H2VIBR
-\begin{list}{}{}
+\begin{description}
 \item[H.1]
 single parameter fit for
 cross section $\sigma (\si{\square\centi\metre})$ as function of energy ELAB (\si{\electronvolt}),
@@ -566,10 +566,10 @@ i.e.,
 2.1.5a, \dots, 2.1.5e, 2.2.5a, 2.2.5e, etc.\\
 are currently automatically read in
 EIRENE post-processing routines in code section ``output", routines: Ba\_alpha, Ba\_beta, \dots
-\end{list}
+\end{description}
 
 \textbf{case 2:} FILNAM = TAB2D  or FILNAM =ADAS
-\begin{list}{}{}
+\begin{description}
 \item[H.4]
 double parameter table of rate coefficient $\langle \sigma v \rangle
 (\si{\cubic\centi\metre\per\second})$ as function of target density (\si{\per\cubic\centi\metre}) and target
@@ -599,13 +599,13 @@ files. Proper choice of DP may then turn a radiation loss rate to a total energy
 (The use of flag DP is the same as in case of the AMJUEL database or any other external database).
 Default EIRENE electron energy source tallies then may have a different meaning, depending on the choice of input flag DP and the
 particular database used (\ac{ADAS}, or AMJUEL, etc.)
-\end{list}
+\end{description}
 
 \textbf{case 3:} FILNAM = PHOTON
 to be written
 
 
-\item[\textbf{REAC}]
+\item[REAC]
 Name or number of the reaction as used in the file FILNAM.
 
 If FILNAM = METHAN, or AMJUEL, or HYDHEL, or H2VIBR,
@@ -636,7 +636,7 @@ If FILNAM = PHOTON
 to be written
 
 
-\item[\textbf{CRC}]
+\item[CRC]
 Identification for the type of the reaction process. Depending
 upon the value of this flag various assumptions are automatically
 made concerning the atomic data in the initialization phase.
@@ -659,49 +659,49 @@ CRC=RC re-combination
 CRC=PH photonic processes
 
 CRC=OT other  (e.g.\ population coefficients, equilibrium density ratios, etc.)
-\item[\textbf{MASSP}]
+\item[MASSP]
 Mass number (\ac{AMU}) of the first particle involved in the collision,
 for the original data as being read from the data-file. EIRENE
 automatically re-scales data according to the mass number of the
 actual first particle involved in this particular collision
 process (e.g.\ if data are given for H atoms in the data-file, but
 are used for D or T atoms in an EIRENE run).
-\item[\textbf{MASST}]
+\item[MASST]
 Mass number (\ac{AMU}) of the second particle involved in the
 collision, for the original data as being read from the data-file.
 EIRENE automatically re-scales data according to the mass number
 of the actual second particle involved in this particular
 collision process.
-\end{list}
+\end{description}
 The next input deck is read only in case FILNAM = ADAS:
-\begin{list}{}{}
-\item[\textbf{ELNAME}]
+\begin{description}
+\item[ELNAME]
 Name of element in adf11 style formatted file, e.g.\ $Fe$ for iron, $C$ for carbon,
 $W$ for tungsten, etc.
-\item[\textbf{IZ}]
+\item[IZ]
 Charge state in adf11 file. This value is always between 1 and $Z_{max}$. For ionization rate coefficients
 $IZ$ specifies the ionization rate coefficient for the ionization process from $IZ-1$ to $IZ$,
 i.e.\ the final charge state.
 For recombination process $IZ$ specifies the recombination rate coefficient
 for the recombination process from $IZ$ to $IZ-1$, i.e.\ the initial charge state
 for these processes.
-\end{list}
+\end{description}
 The next input decks are read only in case FILNAM = PHOTON:
-\begin{list}{}{}
-\item[\textbf{IPRFTYPE}]
-\item[\textbf{IPLSC3}]
-\item[\textbf{IMESS}]
-\item[\textbf{IFREMD}]
-\item[\textbf{NRJPRT}]
+\begin{description}
+\item[IPRFTYPE]
+\item[IPLSC3]
+\item[IMESS]
+\item[IFREMD]
+\item[NRJPRT]
 to be written
-\end{list}
+\end{description}
 Then $IFREMD$ cards are read
-\begin{list}{}{}
-\item[\textbf{II, KENN,  IK6}] \ \\
+\begin{description}
+\item[II, KENN,  IK6] \ \\
 $II$: labeling index, irrelevant\\
 $KENN$: to be written \\
 $IR$: to be written
-\end{list}
+\end{description}
 
 
 \bigskip
@@ -755,8 +755,8 @@ do not happen to coincide with MASSP and MASST.
 
 \medskip
 
-\begin{list}{}{}
-\item[\textbf{DP}]
+\begin{description}
+\item[DP]
 (only for H.8, H.9, H.10) additional (e.g., potential) energy lost or
 gained per reaction,
 which is not already included in the rates. This may be needed due to
@@ -773,7 +773,7 @@ versions later than June96 this input flag is redundant.
 (Be careful: check that this is really the case
 in any particular version of EIRENE)
 
-\end{list}
+\end{description}
 The next flags RMN1, RMX1, RMN2, RMX2 control the options to extrapolate atomic data fits
 read from files in order to obtain proper asymptotic behavior of fits.
 The default data in EIRENE and some reactions in the
@@ -781,8 +781,8 @@ files AMJUEL, HYDHEL, \dots\ data-set already contain that information.
 RMN1, RMN2 control the first independent parameter (often: temperature), and RMN2, RMX2 control
 the second (if any) independent parameter (often: density) of the fits or tables.
 
-\begin{list}{}{}
-\item[\textbf{RMN1 = RMX1 =0.0}]
+\begin{description}
+\item[RMN1 = RMX1 =0.0]
 EIRENE searches for extrapolation parameters in the database, and sets
 the values ELABMIN and ELABMAX for cross section data, TMIN, TMAX for rate coefficients etc.
 Currently this works for single parameter fits only. Check routine SLREAC.F for the status wrt.\ to two-parameter fits.
@@ -797,7 +797,7 @@ Likewise, in case of reaction rates, EIRENE searches for TMIN, TMAX
 for PMIN and PMAX (if H.3, H.4, H.6, H.7, H.9, H.10 or H.12) and the
 extrapolation parameters again are expected in the atomic data file.
 
-\item[\textbf{RMN1 $\neq 0.0$}]
+\item[RMN1 $\neq 0.0$]
 This option overrules any (if available) low parameter end asymptotics for the present reaction IR, which was possibly found in the atomic data file,
 and this allows to set this asymptotic behavior explicitly here in the input file.
 
@@ -814,17 +814,17 @@ Some cross section data, e.g.\ in the files AMJUEL, HYDHEL, etc.
 already contain the extrapolation information, and hence the default
 RNM1=0 can be used there.
 
-\item[\textbf{RMX1 $\neq 0.0$}]
+\item[RMX1 $\neq 0.0$]
 same as above, but for high parameter range extrapolation.
 This option overrules any (if available) high parameter end asymptotics for the present reaction IR, which was possibly found in the atomic data file,
 and this allows to set this asymptotic behavior explicitly here in the input file.
 
-\item[\textbf{IFEXMN, FPARM(J), J=1,3}] ~
+\item[IFEXMN, FPARM(J), J=1,3] ~
 
 
 various extrapolation expressions $ex_{low}(x)$ at the low end (x $<$
 RMN1, x = $E_{lab}$ or x = T) are available:
-\begin{list}{}{}
+\begin{description}
 \item[IFEXMN = 1] ~
 
 $ex_{low}(x)$ = 0
@@ -857,54 +857,54 @@ linear extrapolation in log-log scale. Coefficients FPARM(J), J=1,2
 are automatically determined, e.g., in function CROSS, FPARM(3) = 0.D0,
 and then extrapolation option IFEXMN = 5 is used with these coefficients
 (same as IFEXMN = 3 in this case).
-\end{list}
-\item[\textbf{IFEXMX, FPARM(J), J=4,6}] ~
+\end{description}
+\item[IFEXMX, FPARM(J), J=4,6] ~
 
 same as above, but for high parameter range extrapolation
 $ex_{high}(x)$.
 
-\end{list}
+\end{description}
 \medskip
 
 *4A. Atoms Species Cards
-\begin{list}{}{}
-\item[\textbf{NATMI}]
+\begin{description}
+\item[NATMI]
 Total number of atomic species blocks
-\item[\textbf{IATM}]
+\item[IATM]
 irrelevant; labelling index
-\end{list}
+\end{description}
 
 *4B. Molecules Species Cards
-\begin{list}{}{}
-\item[\textbf{NMOLI}]
+\begin{description}
+\item[NMOLI]
 Total number of molecule species blocks
-\item[\textbf{IMOL}]
+\item[IMOL]
 irrelevant; labelling index
-\end{list}
+\end{description}
 
 *4C. Test Ions Species Cards
-\begin{list}{}{}
-\item[\textbf{NIONI}]
+\begin{description}
+\item[NIONI]
 Total number of test ion species blocks
-\item[\textbf{IION}]
+\item[IION]
 irrelevant; labelling index
-\end{list}
+\end{description}
 
 *4D. Photon Species Cards
-\begin{list}{}{}
-\item[\textbf{NPHOTI}]
+\begin{description}
+\item[NPHOTI]
 Total number of photon species blocks
-\item[\textbf{IPHOT}]
+\item[IPHOT]
 irrelevant; labelling index
-\end{list}
+\end{description}
 
 The meaning of the variables in a species block is as follows:
-\begin{list}{}{}
-\item[\textbf{TEXT\$}] Name of the species on printout and
+\begin{description}
+\item[TEXT\$] Name of the species on printout and
 plots
-\item[\textbf{NMASS\$}] Mass number
-\item[\textbf{NCHAR\$}] Nuclear charge number
-\item[\textbf{NPRT\$}] Flux
+\item[NMASS\$] Mass number
+\item[NCHAR\$] Nuclear charge number
+\item[NPRT\$] Flux
 units carried by one particle of this type and species. The
 ``WEIGHT'' of a test flight has dimensions: ``atomic flux'',
 i.e., ``equivalent atoms per second''. For example, a methane
@@ -915,15 +915,13 @@ NPRT is used to convert fluxes into equivalent atomic fluxes, for
 scaling, (see input flag FLUX in block 7), and for flux
 conservation in non-diagonal (species changing) events at surfaces
 and in the volume. (NPRT is irrelevant for atoms, and always set to one for them.)
-\item[\textbf{NCHRG\$}] Charge state
+\item[NCHRG\$] Charge state
 (irrelevant for atoms and molecules, always set to zero for them)
-\item
-[\textbf{ISRF\$}] Species index flag for ``fast particle
+\item[ISRF\$] Species index flag for ``fast particle
 reflection model" (see block 6A), irrelevant for molecules
-\item
-[\textbf{ISRT\$}] Species index flag for ``thermal particle
+\item[ISRT\$] Species index flag for ``thermal particle
 re-emission model" (see block 6A)
-\item[\textbf{ID1\$}] not in
+\item[ID1\$] not in
 use in versions 98 to 2002. ID1 was the  ``sputtered species index'' in
 versions older than ``98'', but this species index has then become a
 surface property, see input block 3. In versions younger than 2002
@@ -931,34 +929,34 @@ this flag can be used to increase the number of secondary test
 particle groups from 2 or less (default) to 3, if ID1=3 or to 4, if ID1=4. This
 option then allows more complex fragmentation processes of large
 molecules as compared to the default ID1=2.
-\item[\textbf{NRC\$}] ~
-\begin{list}{}{}
-\item[$>$ 0]
+\item[NRC\$] ~
+\begin{description}
+\item[$> 0$]
 total number of reaction decks to be read for this species
-\item[= 0]
+\item[$= 0$]
 default model is to be used.
-\item[= -1]
+\item[$= -1$]
 no collision processes for this particle species at all
-\end{list}
-\item[\textbf{NFOL\$}]
+\end{description}
+\item[NFOL\$]
 controls the motion of test particles.
-\begin{list}{}{}
-\item[$\ge$ 0]
+\begin{description}
+\item[$\ge 0$]
 default test particle tracing model is to be used.
-\item[= -1]
+\item[$= -1$]
 motion of test particle is not followed (static approximation).
 The test particle is destroyed immediately at it's point of birth by
 a collision.
 A collision estimator is used
 rather than a track-length estimator
 for all default volumetric tallies, as described in \cref{sec3.2}.
-\end{list}
+\end{description}
 
-\item[\textbf{NGEN\$}]
+\item[NGEN\$]
 Maximum number of generations for this test particle species.
 May 2018: extended options for NGEN $<$0, ``fluid limit''.
-\begin{list}{}{}
-\item[\textbf{$>$ 0}]
+\begin{description}
+\item[$> 0$]
 Maximum number of generations for this test particle species.
 For each Monte Carlo particle history the generation counter
 XGENER
@@ -974,7 +972,7 @@ resp.,  PGENM, VGENM and EGENM for
 molecules, resp.,  PGENI, VGENI and EGENI
 for test ions, respectively and PGENPH, VGENPH and EGENPH
 for photons, respectively.
-\item[\textbf{$<$ 0}]
+\item[$< 0$]
 Flag for  ``fluid-limit", i.e.\ for critical ``Knudsen number''.
 
 Define: FDLM=-10000/(NGEN+1)
@@ -986,30 +984,30 @@ NGEN\dots\ lead to larger critical Knudsen numbers FDLM, and vice versa.
 If the collision mean free path at a collision event, compared to a local geometric dimension (cell size) falls below a certain
 value (FDLM) (fluid limit), then the trajectory is stopped
 and the above mentioned generation limit tallies are scored.
-\item[\textbf{$=$ 0}]
+\item[$= 0$]
 In case NGEN\dots = 0, (default) no generation limit is activated
 for atoms (NGENA = 0), molecules (NGENM = 0) or test ions (NGENI = 0). I.e., strictly, the default NGEN\dots = 0
 is equivalent to specifying NGEN\dots = infinity.
-\end{list}
+\end{description}
 
-\item[\textbf{NHSTS\$}]
+\item[NHSTS\$]
 (only in versions 2004 and younger): NHSTS=-1 turns off the
 trajectory plot for this particular species.
 (default: NHSTS=0)
-\item[\textbf{ID3\$}]
+\item[ID3\$]
 not in use
-\item[\textbf{IREAC\$}]
+\item[IREAC\$]
 Identification flag for collision data. IREAC\$ = IR, and IR is the
 labelling index from the reaction card (see above).
-\end{list}
+\end{description}
 The next three flags control number, species and type of particles
 involved in this particular collision process.
-\begin{list}{}{}
-\item[\textbf{IBULK\$}]
+\begin{description}
+\item[IBULK\$]
 pre-collision bulk particle identifier
 
 = NLM
-\begin{list}{}{}
+\begin{description}
 \item[M]
 type flag ITYP for impacting bulk particle
 (electron (ITYP = 5) or bulk ion (ITYP = 4),
@@ -1023,30 +1021,30 @@ bulk particles is known from the type CRC of each collision process.
 Species index of pre-collision bulk ion (corresponds to IPLS
 in bulk ion species cards, see block 5). Irrelevant for electron
 impact collisions, CRC=EI.
-\end{list}
-\item[\textbf{ISCD1\$}]
+\end{description}
+\item[ISCD1\$]
 first heavy secondary particle group identifier
 
 = IJKLM
-\item[\textbf{M}]
+\item[M]
 type flag ITYP for these first secondaries group (atoms (ITYP=1), molecules (ITYP=2),
 test ions (ITYP=3) or bulk ions (ITYP=4))
-\item[\textbf{L}]
+\item[L]
 number of secondaries of this type and species
-\item[\textbf{JK}]
+\item[JK]
 Species index of secondary (IATM, IMOL, IION, or IPLS), two digits
-\item[\textbf{I}]
+\item[I]
 relative importance of this first secondary group as compared to
 the second secondary group. If $I \le 0$, I is defaulted to I = 1
 
 (currently not in use)
-\item[\textbf{ISCD2\$}]
+\item[ISCD2\$]
 second heavy secondary particle group identifier
 
 = IJKLM.
 
 Same as ISCD1\$, but for second secondary group.
-\end{list}
+\end{description}
 
 \bigskip
 
@@ -1081,8 +1079,8 @@ by default.
 In case of  electron impact collision (CRC=EI),
 the ISCD1 and ISCD2 flags are
 symmetric, i.e.\ they can be interchanged without any effect on the calculation.
-\begin{list}{}{}
-\item[\textbf{ISCDE\$}]
+\begin{description}
+\item[ISCDE\$]
 flags for post-collision velocity space distributions for all
 particles involved in the collision event. This flag consists of 5 integer digits.
 
@@ -1096,7 +1094,7 @@ We describe the old (1999 and older) and current meanings in a separate
 paragraph below.
 
 
-\item[\textbf{IESTM}]
+\item[IESTM]
 Three digits IESTM=LMN. N, M and L are
 flags for the choice of estimators for particle, momentum and energy sink
 and source term contributions from the collision process.
@@ -1107,7 +1105,7 @@ are not available in a particle run,
 (i.e.\ are missing in the preceding list of NREAC reaction data),
 then internally a switching from track-length to collision
 estimators is carried out, and a corresponding warning is printed.
-\item[\textbf{IBGK}]
+\item[IBGK]
 
 Three digits IBGK=NML. Particle identifier for \ac{BGK} self and cross collisions.
 The format is the same as for IBULK, ISCD1 and ISCD2 species identifier flags.
@@ -1139,16 +1137,16 @@ below in \cref{sec4-bgk}.
 (Default: = 0, no iteration for non-linearity in collision kernel, no
 ``artificial background species" involved in this collision, and no
 \acs{BGK}-tallies are updated for iterating the artificial background species.)
-\item[\textbf{EELEC}]
+\item[EELEC]
 parameter EP for electron energy loss per collision.
 Its meaning depends on fifth digit of ISCDE flag and is described above.
-\item[\textbf{EBULK}]
+\item[EBULK]
 parameter EP for pre-collision bulk ion energy loss per collision.
 Its meaning depends on fourth digit of ISCDE flag and is described above.
-\item[\textbf{ESCD1}]
+\item[ESCD1]
 parameter EP for velocity space distribution of secondaries.
 Its meaning depends on third digit of ISCDE flag and is described above.
-\item[\textbf{EDUMMY}]
+\item[EDUMMY]
 (was earlier: \textbf{ESCD2}) in versions 1999 and older: the parameter ESCD2 = EP was used for velocity space distribution
 of the second secondaries
 group, whereas ESCD1 was used for the first group of secondaries.
@@ -1157,11 +1155,11 @@ secondaries is now by default
 inversely proportional to the masses of secondary particles (as follows from
 momentum conservation in binary collisions).
 For backward compatibility of input files now internally: EP = ESCD1 + EDUMMY.
-\item[\textbf{FREAC}]
+\item[FREAC]
 multiplier to scale the cross section (and rate coefficients) of this process.
 Default: FREAC = 1.0. If FREAC $\leq$ 0, it is also defaulted to 1.0. To turn off this process,
 set FREAC to a very small number: e.g.: FREAC = 1.0000 E-30
-\item[\textbf{EDPOT}]
+\item[EDPOT]
 Potential energy difference in the specified collision process.  Default: EDPOT = 0.0.
 This energy allows to derive (implicit) radiation energy losses from the multi-step electron
 collision process.
@@ -1174,7 +1172,7 @@ ERAD (radiated energy, e.g.\ from intermediate excited states).
 The old ``fluid limit'' cut off options formerly specified at this place
 (the FLDLM flag) are now controlled by the NGEN flag, see above.
 
-\end{list}
+\end{description}
 
 
 \subsection{Collision kinetics}
@@ -1235,7 +1233,7 @@ For EI (electron impact) collision processes:    parameters J and L are in use \
 For PI (heavy particle) collision  processes:    parameters J, K and L are in use \\
 For RC (recombination)  collision processes:     only parameter J is in use
 
-\begin{list}{}{}
+\begin{description}
 \item[\# = 0]
 constant loss or gain of EP (\si{\electronvolt}) per collision event.
 
@@ -1247,7 +1245,7 @@ the fragment $CH_3$ would receive an extra energy of \SI{0.5}{\electronvolt}, an
 receive \SI{7.5}{\electronvolt},
 both isotropically in the center of mass system of the collision.
 \item[\# = 1] \hfill
-\begin{list}{}{}
+\begin{description}
 \item[for \# $  \hat{=} $ J]
 (spatially dependent) bulk electron temperature dependent loss $EP = -(1.5  \cdot  T_e)$ per
 collision, where
@@ -1267,7 +1265,7 @@ a fraction EP=ESCD of the energy loss EBULK of the
 impacting bulk particle is distributed equally over all (if more than
 one) heavy particle secondaries of group 1 and 2 respectively.
 This option is currently not in use
-\end{list}
+\end{description}
 \item[\# = 2]
 Currently not fully implemented:
 
@@ -1303,7 +1301,7 @@ the masses over all heavy particle secondaries.
 to be written
 \item[\# = 5]
 to be written
-\end{list}
+\end{description}
 \medskip
 \minisec{default resonant charge-exchange model}
 
@@ -1854,7 +1852,7 @@ atomic collision models, in case of NRC\dots = 0 for a certain test particle com
 \medskip
 The first index CT characterizes the type of a process. From this ''type" parameter also certain default assumptions
 made in the code for this type of process are inferred:
-\begin{list}{}{}
+\begin{description}
 \item[CT = 1  :] ~
 
 electron impact processes (`EI' in the names of corresponding variables,
@@ -1888,14 +1886,14 @@ CT = 6  : recombination processes (`RC' in variable names).
 \item[CT = 7  :] ~
 
 CT = 7  : photonic processes (`PH' in variable names, not fully implemented. ).
-\end{list}
+\end{description}
 \medskip
 For any process IR one or more than one data set may be required.
 The availability
 of data read from input block 4 is coded as IFLAG = 0 (data not available) or else
 IFLAG $\neq$ 0. In the latter case the value of IFLAG contains further information on
 the format (independent parameters) of the corresponding data set and the resulting collision kinetics.
-\begin{list}{}{}
+\begin{description}
 \item[I2 = 0  :] ~
 
 format/availability of interaction potential data (or of differential cross sections): H.0
@@ -1914,7 +1912,7 @@ format/availability of momentum averaged rate coefficient data: either H.5, or H
 
 \item[I2 = 4  :] ~
 format/availability of energy averaged rate coefficient data: either H.8, or H.9, or H.10
-\end{list}
+\end{description}
 Meaning of IFLAG:
 
 to be written

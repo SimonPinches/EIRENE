@@ -87,23 +87,22 @@ Methods}
 
 \medskip
 
-\begin{list}{}{}
-\item[\textbf{NLPRCA}] conditional expectation estimator
+\begin{description}
+\item[NLPRCA] conditional expectation estimator
 \cref{eq1.12} is used for atom species IATM
-\item[\textbf{NLPRCM}]
+\item[NLPRCM]
 conditional expectation estimator is used for molecule species
 IMOL
-\item[\textbf{NLPRCI}] conditional expectation estimator is
+\item[NLPRCI] conditional expectation estimator is
 used for test ion species IION (not ready to use)
-\item[\textbf{NLPRCPH}] conditional expectation estimator is
+\item[NLPRCPH] conditional expectation estimator is
 used for photon species IPHOT (in versions 2004 and younger)
-\item[\textbf{IPRSF
-}] conditional expectation estimator is used, if trajectory points
+\item[IPRSF] conditional expectation estimator is used, if trajectory points
 towards additional surface IPRSF. IPRSF $\leq$ NLIMI, the total number of additional
 surfaces read in input block 3B.
 
 NPRCSF surfaces have that property of ``attracting trajectories".
-\end{list}
+\end{description}
 The next lines define so called Splitting and Russian Roulette
 surfaces (S$\&$R-surfaces). Any test-particle crossing a
 S$\&$R-surface in the negative direction is split into SPLPAR
@@ -112,45 +111,43 @@ If a particle crosses a S$\&$R-surface in the positive direction,
 then it is either killed or continues it's flight with properly
 increased weight. The surface orientation can be reversed by using
 a negative value for the the splitting parameter SPLPAR.
-\begin{list}{}{}
-\item[\textbf{MAXLEV}]
+\begin{description}
+\item[MAXLEV]
 Maximum number of levels for splitting ($\le$ 15)
-\item[\textbf{MAXRAD}]
+\item[MAXRAD]
 Total number of radial splitting surfaces (-NR1ST $\le$ MAXRAD $\le$ NR1ST)
-\begin{list}{}{}
-\item MAXRAD $<$ 0
-
+\begin{description}
+\item[$< 0$]
 -MAXRAD is used, the position of the
 radial splitting surfaces is automatically defined, and a constant
 splitting parameter (SPLPAR, see below) is used for radial splitting and RR.
-\item MAXRAD $>$ 0
-
+\item[$> 0$]
 radial surfaces with numbers NSSPL(IN), IN=1,MAXRAD are
 S$\&$R-surfaces. The splitting parameter for surface NSSPL(IN) is
 PRMSPL(IN).
-\end{list}
-\item[\textbf{MAXPOL}] Total number of poloidal splitting surfaces
+\end{description}
+\item[MAXPOL] Total number of poloidal splitting surfaces
 (0 $\le$ MAXPOL $\le$ NP2ND). The S$\&$R-surfaces and splitting
 parameters are selected as in the case of radial surfaces, see
 above. 
-\item[\textbf{MAXTOR}] Total number of toroidal splitting
+\item[MAXTOR] Total number of toroidal splitting
 surfaces (0 $\le$ MAXTOR $\le$ NT3RD). The S$\&$R-surfaces and
 splitting parameters are selected as in the case of radial
 surfaces, see above. 
-\item[\textbf{MAXADD}] Total number of
+\item[MAXADD] Total number of
 additional splitting surfaces (0 $\le$ MAXADD $\le$ NLIMI). The
 S$\&$R-surfaces and splitting parameters are selected as in the
 case of radial surfaces, see above. 
-\item[\textbf{WMINV}] minimum
+\item[WMINV] minimum
 weight used for suppression of absorption at collisions
 (``survival biasing"). If a particle goes into a collision with
 weight less than WMINV, then suppression of absorption or any
 other non-analog weight correction is abandoned, and the analog
 game is played. WMINV acts only for events in the volume including
 volume source birth events, but not for events at surfaces.
-\item[\textbf{WMINS}] Same as WMINV, but for surface events
+\item[WMINS] Same as WMINV, but for surface events
 (including surface source birth events). 
-\item[\textbf{WMINC}]
+\item[WMINC]
 minimum acceptable weight for conditional expectation estimators
 (by abuse of language). More precisely, WMINC is the minimal
 acceptable probability for a test flight to reach a particular
@@ -167,55 +164,54 @@ Note: strictly speaking this is not a non-analog method, but rather a
 particular choice of an unbiased estimator. Hence: the flag
 NLANA in input block 1 does not affect flags for conditional
 expectation estimators.
-\item[\textbf{WMINL}]
+\item[WMINL]
 to be written
 
-\item[\textbf{SPLPAR}]
+\item[SPLPAR]
 splitting parameter for default radial splitting option (MAXRAD $<0$)
-\item[\textbf{NSIGVI}]
+\item[NSIGVI]
 number of standard deviation profiles for volume averaged tallies
 to be estimated.
 NSIGVI must be less than or equal to the parameter NSD in PARMUSR,
 \cref{sec3.1}.
-\item[\textbf{NSIGSI}]
+\item[NSIGSI]
 number of standard deviation profiles for surface averaged tallies
 to be estimated.
 NSIGSI must be less than or equal to the parameter NSDW in PARMUSR,
 \cref{sec3.1}.
-\item[\textbf{NSIGCI}]
+\item[NSIGCI]
 number of correlation coefficients between volume tallies
 to be estimated.
 NSIGCI must be less than or equal to the parameter NCV in PARMUSR,
 \cref{sec3.1}.
-\item[\textbf{NSIGI\_BGK}]
+\item[NSIGI\_BGK]
 if \lstinline|NSIGI_BGK| $>$ 0, then the standard deviations are
 evaluated for all tallies needed for the iteration procedure for
 the non-linear \ac{BGK} collision terms. See subroutine
 \lstinline|STATIS_BGK| in code segment BGK.F
-\item[\textbf{NSIGI\_COP}]
+\item[NSIGI\_COP]
 if \lstinline|NSIGI_COP| $>$ 0, then the standard deviations are
 evaluated for all tallies needed for the iteration procedure for
 the coupling to a plasma fluid model. The relevant tallies are
 selected in subroutine \lstinline|STATIS_COP| in code segment
 \lstinline|COUPLE_....F|, \cref{sec4.2}
-\item[\textbf{NSIGI\_SPC}]
+\item[NSIGI\_SPC]
 if \lstinline|NSIGI_SPC| $>$ 0, then the standard deviations are
 evaluated for all surface flux spectra defined in sub-block 10F below.
-\item[\textbf{IGH}]
+\item[IGH]
 Index of species for selected volume averaged tally
-\item[\textbf{IIH}]
+\item[IIH]
 Index of volume averaged tally for which empirical standard
 deviation is to be calculated (see \cref{tab2}).
-\item[\textbf{IGHW}]
+\item[IGHW]
 Index of species for selected surface averaged tally
-\item[\textbf{IIHW}]
+\item[IIHW]
 Index of surface averaged tally for which empirical standard
 deviation is to be calculated (see \cref{tab3})
-\item[\textbf{IGHC1 IIHC1 IGHC2 IIHC2}]~
-
+\item[IGHC1 IIHC1 IGHC2 IIHC2]~
 Species and tally index for first and second tally, respectively,
 between which the correlation coefficient is evaluated
-\end{list}
+\end{description}
 
 Note: On printout the NSIGVI and NSIGSI standard deviations are
 printed as relative standard deviations, in percent. The standard

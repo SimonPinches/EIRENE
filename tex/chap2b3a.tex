@@ -109,32 +109,32 @@ surfaces"}
 
 \medskip
 
-\begin{list}{}{}
-\item[\textbf{NSTSI}]
+\begin{description}
+\item[NSTSI]
 Total number of non-default standard surfaces that do not act as
 prescribed by the default transparent standard co-ordinate surface model.
-\item[\textbf{TXTSFL}]
+\item[TXTSFL]
 Text to characterize a surface (``name of the surface'') on the
 printout file.
-\item[\textbf{ISTS}]
+\item[ISTS]
 irrelevant; labelling index
-\item[\textbf{IDIMP}]
+\item[IDIMP]
 flag to identify mesh from which this particular surface is
 chosen.
-\begin{list}{}{}
-\item[= 1]
+\begin{description}
+\item[$= 1$]
 surface from the x- (radial) standard mesh (RSURF)
 Note that for the unstructured grid options NLTRI and NLTET (i.e.\ for the 2D triangular grid option
 or for the general 3D grids of tetrahedra) all surfaces are referred to as \ordinalnum{1} grid (x or radial) surfaces,
 by abuse of language.
-\item[= 2]
+\item[$= 2$]
 surface from the y- (poloidal) standard mesh (PSURF)
-\item[= 3]
+\item[$= 3$]
 surface from the z- (toroidal) standard mesh (TSURF)
-\end{list}
-\item[\textbf{INUMP}]
+\end{description}
+\item[INUMP]
 Number of the surface in mesh RSURF, PSURF or TSURF respectively
-\item[\textbf{IRPTA,IRPTE}] ~
+\item[IRPTA,IRPTE] ~
 
 Only a subregion of the surface acts by the ``non-default options"
 specified for this particular surface. This subregion is defined
@@ -160,7 +160,7 @@ IRPTA2$\rightarrow$
 IRPTE2 are the surface index ranges of the \ordinalnum{1} and \ordinalnum{2} mesh,
 respectively, for which this surface acts as non-default surface.
 IRPTA3 and IRPTE3 are irrelevant.
-\end{list}
+\end{description}
 
 The third card
 ILIIN, \dots, ILPLG is identical to the corresponding card for ``additional surfaces",
