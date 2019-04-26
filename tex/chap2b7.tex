@@ -126,19 +126,21 @@ storage on the census array of this stratum has been filled up
 are computed
 one after the other and are linearly superimposed at the end of the run.
 
-(NSTRAI $\le$ NSTRA, see ``Parameter-Statements") \item[\textbf{INDSRC}]
+(NSTRAI $\le$ NSTRA, see ``Parameter-Statements") 
+\item[\textbf{INDSRC}] ~
+
 \begin{description}
-\item[INDSRC(ISTRA)=0--5]
+\item[$= 0 \textup{--} 5$]
 the input data for stratum ISTRA are read here,
 but may be modified in some user routine (SAMUSR) or interface routine (INFCOP,
 at entry IF2COP(ISTRA))
-\item[INDSRC(ISTRA)=6]
+\item[$= 6$]
 no input data for stratum ISTRA are read here. The definition of this stratum
 must be entirely in some problem specific routine (IF2COP, etc.).
 See \cref{sec3.4} for one such example,
 namely the default surface recycling
 source model as specified in coupled B2-EIRENE runs.
-\item[INDSRC(ISTRA)=-1]
+\item[$= -1$]
 the input data for stratum ISTRA are read here, and no attempt is made to
 modify these. I.e.\ IF2COP(ISTRA) is not called.
 \end{description}
@@ -170,7 +172,10 @@ ditto, but for toroidal (z-) co-ordinate,
 i.e., for toroidal surface
 
 TSURF((NT3RD+1)/2) or TZONE(NT3RD/2) respectively.
-\item[NPTS] NPTS $>$ 0: Maximum number of test particle histories.
+\item[NPTS] ~
+
+\begin{description}
+\item[$> 0$] Maximum number of test particle histories.
 
 If there is more than one stratum (NSTRAI $>$  1) then the total
 CPU-time NTIME (input block 1) will be distributed proportional to
@@ -179,34 +184,33 @@ test-particles only if sufficient CPU time is available. Otherwise
 a message ``NO FURTHER COMPUTATION TIME FOR THIS STRATUM" is
 printed and the particle loop for the respective stratum is
 stopped.
+\item[$= 0$] this stratum is ``turned off''.
 
-NPTS = 0: this stratum is ``turned off''.
-
-NPTS $<$ 0: no limitation in the number of particles. The entire
+\item[$< 0$] no limitation in the number of particles. The entire
 CPU time assigned to this stratum will be used up. (NPTS is reset
 to the largest integer on the machine. Hence: some care is needed
 here in case of multiple strata, in combination with the
 ALLOC-options to assign CPU time to individual strata).
+\end{description}
 
+\item[NINITL] ~
 
-\item[NINITL]
-If NINITL $>$ 0 : seed for initialization of random number
+\begin{description}
+\item[$> 0$] seed for initialization of random number
 generator. The results for all those individual strata can be
 reproduced exactly for which the same number of test-flights is
 computed as in a previous run.
-
-
-If NINITL = 0 : no initialization of random numbers for the
+\item[$= 0$] no initialization of random numbers for the
 particular stratum. In case of the first stratum, the default
 initialization is used. Runs can only be reproduced, if the same
 number of test-flights is computed for each stratum. Somewhat
 weakened correlation between subsequent runs as compared to the
-NINITL $>$ 0 option.
-
-If NINITL $<$ 0: truly random initialization (determined by machine
+NINITL $> 0$ option.
+\item[$< 0$] truly random initialization (determined by machine
 clock). These runs cannot be reproduced exactly. Subsequent runs are
 uncorrelated. (E.g.: recommended for stochastic approximation
 procedures in nonlinear applications.
+\end{description}
 \item[NEMODS]
 Flag to select one of the preprogrammed
 source energy conditional distributions
@@ -253,7 +257,8 @@ neutral particle density to a prescribed value in one particular
 cell. Hence, one can prescribe the local Knudsen number for
 nonlinear applications including neutral--neutral interactions.
  \end{description}
-\item[IVLSF]
+\item[IVLSF] ~
+
 \begin{description}
 \item[$= 1$]
 The following ISCL\dots-flags select one particular volume averaged tally
@@ -338,20 +343,16 @@ One and only one of these five variables must be .TRUE..
 \item[NSPEZ]
 Species index of the source particle
 \begin{description}
-\item[1 $\le$ NSPEZ $\le$  NATMI, NMOLI, NIONI, NPLSI]~
-
+\item[$\ge 1$, $\le$  NATMI, NMOLI, NIONI, NPLSI] 
 NSPEZ is the (fixed) species index of the source particle.
 No random sampling for the species index is done.
-\item[NSPEZ $>$  NATMI, NMOLI, NIONI, NPLSI]~
-
+\item[$>$  NATMI, NMOLI, NIONI, NPLSI] 
 (depending upon the type of the source particle) the species index
 is sampled from the distribution DATM, DMOL, DION, DPLS,
 respectively.  The ``surface species distributions'' DATM, DMOL,
 DION and DPLS are read in the block ``Data for General Reflection
 Models", see \cref{sec2.6}.
-
-\item[NSPEZ $ = $ 0]~
-
+\item[$= 0$] 
 the species index of the particle is directly sampled from the
 ``analog distribution" WEISPZ, i.e., no biased source species
 sampling. WEISPZ is defined internally by the code.
@@ -368,8 +369,7 @@ user specified source sampling (SAMUSR.f, see \cref{sec3.4}).
 In all other cases NSPEZ must be positive.
 
 
-\item[NSPEZ $<$  0]~
-
+\item[$<  0$] 
 The ``surface species distributions'' DATM, DMOL, DION and DPLS are
 considered as biased source species distributions, whereas the
 analog (physical) distribution is provided automatically by the
@@ -471,7 +471,8 @@ irrelevant; labelling index for sub-strata
 Relative frequency for starting point labelled INUM.
 The sum of SORWGT for all
 NPNTSI points is normalized to one internally.
-\item[NRSOR]
+\item[NRSOR] ~
+
 \begin{description}
 \item[$> 0$]
 x- or radial
@@ -532,7 +533,8 @@ The next deck of 4 input cards is read NSRFSI times, one deck for each ``sub-str
 \begin{description}
 \item[INUM]
 irrelevant; labelling index for sub-strata
-\item[INDIM]
+\item[INDIM] ~
+
 \begin{description}
 \item[$= 0$]
 source on ``additional surface" ASURF (see block 3B)
@@ -602,8 +604,7 @@ in toroidal or z-direction on the surface.
 \item[K]
 Index to select one of the preprogrammed distributions
 for the starting time.
-\item[M,N,L = 0] ~
-
+\item[M,N,L = 0] 
 The respective co-ordinate is computed from the 2 others and
 from the equation for surface number INSOR.
 \end{description}
@@ -1000,7 +1001,7 @@ in the energy distributions N = 4, 5, 6 or 7
 of the plasma fluids entering the sheath region
 is controlled by the second digit M of NEMODS:
 \begin{description}
-\item[M =0]
+\item[M = 0]
 $T_e$ is the local electron temperature taken from input tally TEIN
 on the grid.
 
@@ -1018,14 +1019,14 @@ These default choices of background medium species index $ip_0=IPL$ can be overr
 input flag, see below.
 
 In case of .not.(NLPLS.or.NLION), $T_i(ip_0)$ =0.
-\item[M =1]
+\item[M = 1]
 The local ion temperature
 $T_i$ is replaced by the input constant SORENI (\si{\electronvolt}) and
 $T_e$ is replaced by the constant SORENE (\si{\electronvolt}) in options
 N = 4 to N = 7.
-\item[M =2]
+\item[M = 2]
 not in use
-\item[M =3]
+\item[M = 3]
 $T_e$ is the local electron temperature, and $T_i$ is the local
 background ion temperature of ion species $ip_0 = IPL=K$, K is the fourth digit
 of the NEMODS flag, see below.
@@ -1034,17 +1035,17 @@ of the NEMODS flag, see below.
 The choice of velocity parameters $\vV$ in the energy distributions
 N=4,5,6 or 7 is controlled by the third digit L of NEMODS:
 \begin{description}
-\item[L =0]
+\item[L = 0]
 In case of NLPLS, the parameter $\vV$ is the local ion drift velocity
 for bulk ion species IPL, IPL is the species index of the source particle.
 
 In case of .NOT.NLPLS, $\vV$ =0.
-\item[L =1]
+\item[L = 1]
 The local drift velocity vector
 $\vV $ is replaced by the constant vector (SORVDX, SORVDY,
 SORVDZ) (\si{\centi\metre\per\second}), regardless of the point of birth.
 
-\item[L =2]
+\item[L = 2]
 The local drift velocity vector
 $\vV $ is replaced by the constant vector
 (SORVDX, SORVDY, SORVDZ) $ \cdot $ CS, where CS is the isothermal ion sound
@@ -1054,7 +1055,7 @@ chosen above (\si{\centi\metre\per\second}).
 Therefore, {(SORVDX,SORVDY,SORVDZ)}
 are now understood as Mach numbers in x,y and z direction
 respectively.
-\item[L =3]
+\item[L = 3]
 $\vV$ is the local
 background ion drift velocity of ion bulk species IPL=K, K is the fourth digit
 of the NEMODS flag, see below.
@@ -1096,9 +1097,10 @@ around the inner
 surface normal vector any longer, but may be tilted.
 
 \begin{description}
-\item[NAMODS = 1]~
+\item[NAMODS] ~
 
-The polar angle $\vartheta$ against the reference unit vector
+\begin{description}
+\item[$= 1$] The polar angle $\vartheta$ against the reference unit vector
 $\vC = (C_X,C_Y,C_Z)$ of the source particle's velocity is sampled from
 a cosine**P distribution around the ``inner normal vector" (-1.0)
 $\cdot \vC $, i.e., $f( \vartheta )   d \vartheta   \sim \sin(
@@ -1113,23 +1115,21 @@ cosine distribution
 \item[P $\gg$ 1]
 close to $\delta$-distribution around vector $-1  \cdot \vC $
 \end{description}
-\item[NAMODS = 2]~
-
-The polar angle against $-1  \cdot  \vC $
+\item[$= 2$] The polar angle against $-1  \cdot  \vC $
 is sampled from a
 Gaussian distribution with zero mean value, and
 the parameter P now is used
 for the standard deviation (degree) of that distribution.
 \end{description}
+\end{description}
 The second parameter Q is the cut-off angle (degree)
 for the polar angle distribution
+\textbf{note:}
+
 \begin{description}
-\item[note:]
-Q $\le 180^{\circ}$  is enforced internally
-
-Q $\le 90^{\circ}$ is enforced internally for surface sources
-
-Q = 0  for a beam, i.e., for an angular $\delta$-distribution at
+\item[$Q \le 180^{\circ}$] is enforced internally
+\item[$Q \le 90^{\circ}$] is enforced internally for surface sources
+\item[$Q = 0$]  for a beam, i.e., for an angular $\delta$-distribution at
 $-1  \cdot  \vC $
 \end{description}
 \end{description}

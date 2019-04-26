@@ -222,11 +222,14 @@ here for a species IPLS, then, after reading the species and
 reaction cards for IPLS, one (default) or NRE further input cards
 are expected.
 \begin{description}
-\item[CDENMODEL = 'Multiply']
+\item[CDENMODEL] ~
+
+\begin{description}
+\item[= 'Multiply']
 docu to be written
-\item[CDENMODEL = 'Constant']
+\item[= 'Constant']
 docu to be written
-\item[CDENMODEL = 'fort.13']
+\item[= 'fort.13']
 Read data for this species from file fort.13.
 
 The additional card (only one) reads (format 2I6):
@@ -241,7 +244,7 @@ for species IPLS are set from those of species ISP on fort.13
 ITP is the type of the particle, i.e., always: ITP=4 for this option.
 Internally set: ITP=4, bulk particle type, independent of input value for ITP.
 
-\item[CDENMODEL = 'fort.10']
+\item[= 'fort.10']
 Read data for this species from file fort.10.
 
 The additional card (only one) reads (format 3I6):
@@ -260,14 +263,14 @@ profiles are reset to those evaluated in this run, for further use in
 post processing routines such as the diagnostic module (see \cref{sec2.11}),
 printout, plotting or iterative mode (input flags NITERI, NITERE, and user subroutine MODUSR, see \cref{sec2.1})
 
-\item[CDENMODEL = 'Saha'] Set parameters from
+\item[= 'Saha'] Set parameters from
 Saha-equilibrium of ionization states.
 The additional card (only one) reads:
 \begin{lstlisting}
       ISP ITP ISTR ...
 \end{lstlisting}
 to be written 
-\item[CDENMODEL = 'Boltzmann']
+\item[= 'Boltzmann']
 Set parameters
 from Boltzmann-equilibrium of excited states. The additional card
 (only one) reads (format: 3I6,6x,2E12.4)
@@ -275,9 +278,9 @@ from Boltzmann-equilibrium of excited states. The additional card
       ISP ITP ISTR G_BOLTZMANN DELTA_E
 \end{lstlisting}
 docu to be written
-\item[CDENMODEL = 'Planck']
+\item[= 'Planck']
 (only for background photons) to be written
-\item[CDENMODEL = 'Corona']
+\item[= 'Corona']
 Set density parameters from Corona-equilibrium to a ``donor species",
 using an excitation rate coefficient from atomic database FILNAM and a fixed radiative decay rate $A=A_{CORONA}$.
 The additional card (only one) reads (format: 3I6, 1X, A6, 1X, A4, A9, A3, E12.4):
@@ -302,7 +305,7 @@ for donor species IS are taken to be those of species [ISP, ITP, ISTR].
 
 I.e.: this model constructs a background species IPLS
 which is in Corona-equilibrium with these IS = [ISP,ITP, ISTR] donor particles.
-\item[CDENMODEL = 'Colrad']
+\item[= 'Colrad']
 set parameters density, temperature and flow velocity from collisional radiative equilibrium with one or more (NRE) ``donor-species", using
 reduced population coefficients from atomic database FILNAM.
 I.e.\ the density ni(IPLS) at each position $x$ (grid cell) for this 
@@ -329,6 +332,7 @@ populations. The $POP$ coefficients are typically from externally applied collis
 I.e.\ this model constructs a background species IPLS
 which is the sum of NRE species, each of which being in local collision-radiative-equilibrium
 with its donor isotope $IS$.
+\end{description}
 \end{description}
 
 
@@ -448,8 +452,7 @@ MULTI).
 
 Here the number of copies is NBLCKS = NMULT $\cdot$ NP2ND $\cdot$
 NT3RD. see ``Input Data for Standard Mesh" (block 2).
-\item
-{INDPRO = 1 \hfill} ~
+\item[INDPRO = 1] ~
 
 
 

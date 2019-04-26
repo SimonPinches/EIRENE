@@ -786,20 +786,13 @@ TRIM database). e2 = EXPEL, see \cref{eq1.19,eq1.20}
 incident angular dependence for angular distribution of re-emitted atom or molecule;
 
 \begin{description}
-\item[EXPIL = 0] ~
-
-cosine distribution (Lambertian)
-\item[EXPIL $>$ 0] ~
-
-mixed cosine-specular model.
+\item[$= 0$] cosine distribution (Lambertian)
+\item[$> 0$] mixed cosine-specular model.
 
 the specular contribution increases according to \cref{eq1.21}
 with angle of incidence $\Phi$ and with
 e3 = EXPIL (recommended: $EXPIL \le 1$).
-\item[EXPIL $>$ 100] ~
-
-specular reflection angles
-
+\item[$> 100$] specular reflection angles
 \end{description}
 
 Default: EXPIL = 0.
@@ -808,10 +801,10 @@ Default: EXPIL = 0.
 ``physical sputtering" options depends upon the value of the first
 digit N of ILSPT:
 \begin{description}
-\item[N=0] no physical sputtering, YIELD1 = 0. RECYCS is irrelevant.
-\item[N=1] constant physical sputtering yield,
+\item[N = 0] no physical sputtering, YIELD1 = 0. RECYCS is irrelevant.
+\item[N = 1] constant physical sputtering yield,
 YIELD1 = RECYCS
-\item[N=2]
+\item[N = 2]
 RECYCS is a multiplier for the sputtered particle flux YIELD1. YIELD1 is
 computed from the incident species, energy, angle and surface parameters
 by the sputter model $N=2$. Hence:
@@ -820,7 +813,7 @@ as computed from subroutine SPUTER
 is modified to
 
 $YIELD1 = RECYCS \cdot YIELD1 $.
-\item[N=9]
+\item[N = 9]
 RECYCS is a free model parameter, which can be used in the user
 supplied sputter model for any particular surface element.
 
@@ -830,10 +823,10 @@ Default: RECYCS = 1.
 ``chemical sputtering" options depends upon the value of the
 second digit M of ILSPT:
 \begin{description}
-\item[M=0] no chemical sputtering, YIELD2 = 0. RECYCC is irrelevant.
-\item[M=1] constant chemical sputtering yield,
+\item[M = 0] no chemical sputtering, YIELD2 = 0. RECYCC is irrelevant.
+\item[M = 1] constant chemical sputtering yield,
 YIELD2 = RECYCC.
-\item[M=2]
+\item[M = 2]
 RECYCC is a multiplier for the sputtered particle flux YIELD2. YIELD2 is
 computed from the incident species, energy, angle and surface parameters
 by the sputter model $M=2$. Hence:
@@ -842,7 +835,7 @@ as computed from subroutine SPUTER
 is modified to
 
 $YIELD2 = RECYCC \cdot YIELD2 $.
-\item[M=9]
+\item[M = 9]
 RECYCC is a free model parameter, which can be used in the user
 supplied sputter model for any particular surface element.
 

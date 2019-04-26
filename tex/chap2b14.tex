@@ -80,34 +80,38 @@ NMODE=0 (subroutine INFCOP not called) option.
 These options allow verification of selected atomic/molecular data on the computational grid after evaluating the fits or data tables, using
 the plasma background data of a particular run. This option is in particular relevant for checking for extrapolation errors in A$\&$M data fits or tables)
 \begin{description}
-\item[NAINT = 20]
+\item[NAINT] ~
+
+\begin{description}
+\item[$= 20$]
 electron impact collision rate coefficient $\langle\sigma v\rangle_{ei}  \ [a.u.]$, with the rate coefficient profile taken from TABEI3(IREI, \dots) arrays.
 $IREI: 1 \le NREI$ : number of electron impact process. See TRCAMD output from the initialization phase of a run to identify, which particular electron impact process
 IREI is assigned to which species IATM, IMOL, etc.
-\item[NAINT = 21]
+\item[$= 21$]
 electron cooling rate coefficient, EELEI3 array  (not ready)
 [\si{\electronvolt} $\cdot$ (rate-coeff in a.u.)]
-\item[NAINT = 22]
+\item[$= 22$]
 charge-exchange rate coefficient, TABCX3 arrays
-\item[NAINT = 23]
+\item[$= 23$]
 charge-exchange ion energy weighted rate coefficient, EPLCX3 arrays (not ready)
 [\si{\electronvolt} $\cdot$ (rate-coeff in a.u.)]
-\item[NAINT = 24]
+\item[$= 24$]
 elastic collision rate coefficient, TABEL3 arrays
-\item[NAINT = 25]
+\item[$= 25$]
 elastic collision ion energy weighted rate coefficient, EPLEL3 arrays (not ready)
 [\si{\electronvolt} $\cdot$ (rate-coeff in a.u.)]
-\item[NAINT = 26]
+\item[$= 26$]
 general ion impact collision rate coefficient, TABPI3 arrays
-\item[NAINT = 27]
+\item[$= 27$]
 general ion impact collision ion energy weighted rate coefficient, EPLPI3 arrays (not ready)
 [\si{\electronvolt} $\cdot$ (rate-coeff in a.u.)]
-\item[NAINT = 28]
+\item[$= 28$]
 recombination rate coefficient $\langle<\sigma v\rangle_{rc}  \ [a.u.]$, with the rate coefficient profile taken from TABRC1(IREC, \dots) arrays.
 $IREC: 1 \le NREC$ : number of recombination process. See TRCAMD output to identify, which recombination
 process is assigned to which species IPLS.
-\item[NAINT == 29] electron energy loss weighted recombination rate coefficient
+\item[$= 29$] electron energy loss weighted recombination rate coefficient
 [\si{\electronvolt} $\cdot$ (rate-coeff in a.u.)]
+\end{description}
 \end{description}
 
 \subsection{Version B2-EIRENE-1999 and older} \label{sec2.14.1}

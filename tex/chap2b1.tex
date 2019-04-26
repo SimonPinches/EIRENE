@@ -69,23 +69,23 @@ The new (2018) flag NPRLL controls the various options for (MPI) parallelization
 to assign processes  to strata. This is defined in PEDIST.f (initialization phase)
 by filling the matrix PROCFORSTRA(strata,processors).
 \begin{description}
-\item [= 1] old default: attempting proportional allocation and, simultaneously, load balancing (see under: stratified sampling,
+\item[$= 1$] old default: attempting proportional allocation and, simultaneously, load balancing (see under: stratified sampling,
 the remarks towards the end of \cref{sec1.2.1b}).
-\item [= 2] not in use
-\item [= 3] not in use
-\item [= 0] new default: ``embarrassingly parallel mode'': all processes do the full MC job (all strata).\\
+\item[$= 2$] not in use
+\item[$= 3$] not in use
+\item[$= 0$] new default: ``embarrassingly parallel mode'': all processes do the full MC job (all strata).\\
 Most transparent, and simplest method, load balancing guaranteed. But perhaps not optimal wrt.\ communication
-\item [=-1] user defined distribution of strata to processes (subr.\ PEDIST, calls: PEDIST\_USR.f)
+\item[$= -1$] user defined distribution of strata to processes (subr.\ PEDIST, calls: PEDIST\_USR.f)
 \end{description}
 
 
 
 \item[NMODE] Operating mode
 \begin{description}
-\item [= 0 ] EIRENE run as stand-alone-code. Code coupling segment
+\item[$= 0$] EIRENE run as stand-alone-code. Code coupling segment
 \lstinline|couple_Dummy.f| may be used. 
 Input block 14 has a fixed format, see \cref{sec2.14}.
-\item [$\ne$ 0 ]
+\item[$\ne 0$]
 EIRENE calls the code coupling subroutine INFCOP in the code coupling segment
 %\begin{lstlisting}
 \lstinline|couple_Name.f|
@@ -115,8 +115,8 @@ Any other data (e.g., surface- or volume source distributions overruling
 the data in input block 7)
 are expected from entry IF2COP.
 
-\item [$>$ 0 ]
-If NMODE $>$ 0, subroutine INFCOP is called once again after each
+\item[$> 0$]
+If NMODE $> 0$, subroutine INFCOP is called once again after each
 completed stratum (at the entry IF3COP(ISTRAA,ISTRAE)) to return
 data to another code (post-processing). The call to IF3COP is from
 subroutine MCARLO, at the end of the DO 1000 -loop over the strata. One

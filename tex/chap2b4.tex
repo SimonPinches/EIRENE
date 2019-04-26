@@ -782,7 +782,7 @@ RMN1, RMN2 control the first independent parameter (often: temperature), and RMN
 the second (if any) independent parameter (often: density) of the fits or tables.
 
 \begin{description}
-\item[RMN1 = RMX1 =0.0]
+\item[RMN1 = RMX1 = 0.0]
 EIRENE searches for extrapolation parameters in the database, and sets
 the values ELABMIN and ELABMAX for cross section data, TMIN, TMAX for rate coefficients etc.
 Currently this works for single parameter fits only. Check routine SLREAC.F for the status wrt.\ to two-parameter fits.
@@ -1853,39 +1853,25 @@ atomic collision models, in case of NRC\dots = 0 for a certain test particle com
 The first index CT characterizes the type of a process. From this ''type" parameter also certain default assumptions
 made in the code for this type of process are inferred:
 \begin{description}
-\item[CT = 1  :] ~
-
-electron impact processes (`EI' in the names of corresponding variables,
+\item[CT = 1] electron impact processes (`EI' in the names of corresponding variables,
 some older variable names also: `DS').
 
 H.2 or H.4 data required, optional: additional H.8 or H.10 data for electron cooling rates.
-\item[CT = 2  :] ~
-
-not in use. In very old versions (1990 and older): DS, dissociation process, now combined with EI type processes
-\item[CT = 3  :] ~
-
-charge-exchange (`CX' in the names of corresponding variables).
+\item[CT = 2] not in use. In very old versions (1990 and older): DS, dissociation process, now combined with EI type processes
+\item[CT = 3] charge-exchange (`CX' in the names of corresponding variables).
 
 Fully kinetic collision integral, but fixed scattering angle $\pi$ in COM system. (H.1 and/or H.2 or  H.3
 data required. Optional: H.9 data)
-\item[CT = 4  :] ~
-
-CT = 4  : heavy particle collisions (`PI' in variable names)
-\item[CT = 5  :] ~
-
-CT = 5  : elastic processes (`EL' in variable names).
+\item[CT = 4] heavy particle collisions (`PI' in variable names)
+\item[CT = 5] elastic processes (`EL' in variable names).
 
 Either relaxation process approximation (H.2 data) or fully kinetic collision integral (H.0, H.1 and H.3
 data required. Optional: additional  H.9 data for mean ion energy loss). In versions from 2017 and later,
 H.0 may be omitted. The process is then is simulated as effective (condensed) scattering with an isotropic post-collision distribution in COM system,
 and the H.1, H.3 data are interpreted as diffusion cross section and rate coefficient, respectively.
-\item[CT = 6  :] ~
+\item[CT = 6] recombination processes (`RC' in variable names).
 
-CT = 6  : recombination processes (`RC' in variable names).
-
-\item[CT = 7  :] ~
-
-CT = 7  : photonic processes (`PH' in variable names, not fully implemented. ).
+\item[CT = 7] photonic processes (`PH' in variable names, not fully implemented. ).
 \end{description}
 \medskip
 For any process IR one or more than one data set may be required.
@@ -1894,24 +1880,15 @@ of data read from input block 4 is coded as IFLAG = 0 (data not available) or el
 IFLAG $\neq$ 0. In the latter case the value of IFLAG contains further information on
 the format (independent parameters) of the corresponding data set and the resulting collision kinetics.
 \begin{description}
-\item[I2 = 0  :] ~
-
-format/availability of interaction potential data (or of differential cross sections): H.0
-\item[I2 = 1  :] ~
-
-format/availability of cross section data: H.1.  Cross sections are needed, in addition to rate coefficients,
+\item[I2 = 0] format/availability of interaction potential data (or of differential cross sections): H.0
+\item[I2 = 1] format/availability of cross section data: H.1.  Cross sections are needed, in addition to rate coefficients,
 mainly for heavy particle interactions: CX, EL, PI, for velocity space sampling of the incident background
 medium collision partner. Both the test particle and bulk particle velocities are then used for post-collision
 velocity space sampling (e.g.\ COM scattering angle, etc.)
-\item[I2 = 2  :] ~
+\item[I2 = 2] format/availability of rate coefficient data: either H.2, or H.3, or H.4
+\item[I2 = 3] format/availability of momentum averaged rate coefficient data: either H.5, or H.6 or H.7
 
-format/availability of rate coefficient data: either H.2, or H.3, or H.4
-\item[I2 = 3  :] ~
-
-format/availability of momentum averaged rate coefficient data: either H.5, or H.6 or H.7
-
-\item[I2 = 4  :] ~
-format/availability of energy averaged rate coefficient data: either H.8, or H.9, or H.10
+\item[I2 = 4] format/availability of energy averaged rate coefficient data: either H.8, or H.9, or H.10
 \end{description}
 Meaning of IFLAG:
 

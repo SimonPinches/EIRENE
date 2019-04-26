@@ -216,36 +216,41 @@ INDGRD(3)  for the toroidal (or z-direction) grid
 \textsl{Data for first standard mesh: radial or x grid RSURF}
 
 \begin{description}
-\item[NLRAD= .TRUE.] ~
+\item[NLRAD = .TRUE.] ~
 
 A radial or x grid is defined. Otherwise the complete
 sub-block 2A may be omitted.
 Depending upon the logical parameters in the next input card
 the ``geometry - level" variable LEVGEO is set internally.
 \begin{description}
-\item[LEVGEO=1]
+\item[LEVGEO] ~
+
+\begin{description}
+\item[$= 1$]
 Cartesian coordinates x (and y)
-\item[LEVGEO=2]
+\item[$= 2$]
 polar coordinates r (and $\theta$)
-\item[LEVGEO=3]
+\item[$= 3$]
 general curvilinear coordinates: a full 2D mesh (polygonal
 coordinate lines) is used in the x - y  plane. Grid cuts are
 permitted in the y-direction.
-\item[LEVGEO=4]
+\item[$= 4$]
 a 2D ``finite element" mesh of triangles is used in the x - y plane
-\item[LEVGEO=5]
+\item[$= 5$]
 a 3D ``finite volume" mesh of tetrahedrons used
-\item[LEVGEO=10]
+\item[$= 10$]
 a general, user defined geometry block is used.
 All geometrical calculations are performed in problem specific routine
 VOLUSR, TIMUSR, etc.
+\end{description}
 \end{description}
 If NLRAD=.FALSE., then no spatial grid is defined
 and the default geometry level LEVGEO = 1 is used.
 Volume discretization may still be achieved ``by hand" by defining ``additional
 surfaces" (input block 3b) and appropriate cell number switching.
 
-\item[INDGRD(1)]
+\item[INDGRD(1)] ~
+
 \begin{description}
 \item[$= 1$]
 standard grid option; the input parameters are used as described
@@ -551,23 +556,23 @@ to set up mesh, cell volumes, and flight intersection times for test particles.
 A poloidal or y grid is defined. Otherwise the complete block 2B
 may be omitted and the volume averaged tallies are then automatically
 integrated over this co-ordinate.
-\item[INDGRD(2) = 1] ~
+\item[INDGRD(2)] ~
 
-standard grid option
-\item[INDGRD(2) = 2,3,4,5,6] ~
-
-not in use  (default: INDGRD(2)=1)
+\begin{description}
+\item[$= 1$] standard grid option
+\item[$= 2, 3, 4, 5, 6$] not in use  (default: INDGRD(2)=1)
+\end{description}
 \item[NP2ND]
 Number of grid-points in y- or poloidal direction
 \item[YIA,YGA,YAA,YYA] ~
 
 \begin{description}
-\item[ for the LEVGEO=1 option: ] ~
+\item[for the LEVGEO=1 option:] ~
 
 the y grid PSURF is defined in the same way as the x grid, using the
 parameters YIA, YGA, \dots\ (\si{\centi\metre}) instead of RIA, RGA, \dots
 
-\item[ for the LEVGEO=2 option: ] ~
+\item[for the LEVGEO=2 option:] ~
 
 the poloidal angle $\theta$ grid PSURF is defined in the same way as the radial $r$ grid was,
 using
@@ -591,29 +596,29 @@ A toroidal or z grid is defined. Otherwise the complete block 2C
 may be omitted, defaults described below are used and the volume averaged tallies are then automatically
 integrated over this co-ordinate.
 
-In case NLTOR = TRUE, sub-block 2C must be read.
-\item[INDGRD(3) = 1] ~
+In case NLTOR = .TRUE., sub-block 2C must be read.
+\item[INDGRD(3)] ~
 
-standard grid option
-\item[INDGRD(3) = 2,3,4,5,6] ~
-
-not in use (default: INDGRD(3)=1)
+\begin{description}
+\item[$= 1$] standard grid option
+\item[$= 2, 3, 4, 5, 6$] not in use (default: INDGRD(3)=1)
+\end{description}
 \end{description}
 One and only one of the next four Boolean variables must be TRUE
 \begin{description}
-\item[NLTRZ=TRUE] ~
+\item[NLTRZ = .TRUE.] ~
 
 cylindrical approximation is used, i.e., TSURF is a grid in z
 direction. The co-ordinate surfaces are given by z=TSURF(L)
 
-(Default: NLTRZ = TRUE)
+(Default: NLTRZ = .TRUE.)
 
-\item[NLTRA = TRUE] ~
+\item[NLTRA = .TRUE.] ~
 
 toroidal approximation is used. The coordinate line is
 a polygonal approximation of a circle, or of an angular section thereof.
 
-In case NLTOR = TRUE, the \ordinalnum{3} grid TSURF is a grid of
+In case NLTOR = .TRUE., the \ordinalnum{3} grid TSURF is a grid of
 toroidal angles.
 The toroidal segment (or the full torus) is approximated by NT3RD-1 straight cylindrical segments.
 
@@ -640,7 +645,7 @@ for the other radial surfaces. RMTOR converges to ROA with increasing
 NTTRA. NTTRA $\simeq$ 30 is already a very good approximation.
 
 (Default: NLTRA = FALSE).
-\item[NLTRT = TRUE] ~
+\item[NLTRT = .TRUE.] ~
 
 torus co-ordinates R,PHI,THETA. Presently being developed for
 NLSLB,NLPLG and NLTRI options.
@@ -656,9 +661,9 @@ only needed in case NLTRA and .NOT.NLTOR. See above.
 The \ordinalnum{3} grid ZSURF is defined in the same way as the x grid, using
 the parameters ZIA, ZGA, \dots\ (\si{\centi\metre}) instead of RIA, RGA, \dots
 
-In case of NLTRZ = TRUE , a z-grid is defined. ROA is irrelevant.
+In case of NLTRZ = .TRUE., a z-grid is defined. ROA is irrelevant.
 
-In case of NLTRA = TRUE ,
+In case of NLTRA = .TRUE.,
 ZIA and ZAA are toroidal angles (in degrees). A grid of toroidal angles
 is defined. For example use ZIA=0.0 and ZAA=360.0 for a full torus.
 In case NLTOR this grid also defines the toroidal resolution.
@@ -804,30 +809,30 @@ The discretization of a domain is achieved by defining surfaces.
 These can be sets of coordinate surfaces $u^i(x,y,z) = const_i$
 (then producing a discretization of the coordinate $\nabla u$).
 
-\textbf{LEVGEO = 1}
-Simple Cartesian grids (1D, 2D or 3D) are used for code development, comparison with simple (semi-analytical) transport models,
+\begin{description}
+\item[LEVGEO] ~
+
+\begin{description}
+\item[$= 1$] Simple Cartesian grids (1D, 2D or 3D) are used for code development, comparison with simple (semi-analytical) transport models,
 general 1D  ``one speed transport theory",
 validation of diffusion approximations, etc. The co-ordinates in the 3 directions are referred to as x,y and either z or phi, respectively,
 the latter depending on whether the third co-ordinate is linear (Cartesian) or circular.
-
-\textbf{LEVGEO = 2} Typically used in connection with 1D radial core
+\item[$= 2$] Typically used in connection with 1D radial core
 transport models (e.g., ``Duechs code", 1982 TRANSP 1987, RITM,
 (1996), \dots), circular limiter tokamaks, or for simple parametric
 studies in toroidal or cylindrical coordinates (this is the oldest
 EIRENE geometry option, available since 1980). Shifted elliptical grid surfaces (1D),
 but also in combination with a polar grid (then: 2D) and/or a cylindrical or toroidal
 resolution in the third dimension.
-
-\textbf{LEVGEO = 3} This 2D discretization of a domain, based upon polygonal lines,  in the x-y
+\item[$= 3$] This 2D discretization of a domain, based upon polygonal lines,  in the x-y
 plane was originally developed for the B2-EIRENE interfacing. More generally, this option allows to
 directly use many 2D \ac{CFD} meshes directly in EIRENE for kinetic transport.
-
-\textbf{LEVGEO = 4} This example shows the extension of the 2D
+\item[$= 4$] This example shows the extension of the 2D
 B2-grid, polynomial option LEVGEO = 3, into the outer
 ``vacuum"-region by utilizing the LEVGEO = 4 option (plenum, vacuum
 chamber, grid refinement)
-
-\textbf{LEVGEO = 5} general 3D grid based upon tetrahedrons
-
-\textbf{LEVGEO = 10} user supplied geometry option. All grid relevant computations are
+\item[$= 5$] general 3D grid based upon tetrahedrons
+\item[$= 10$] user supplied geometry option. All grid relevant computations are
 done in user specified (problem specific) routines: EIRENE module:  USER.f
+\end{description}
+\end{description}

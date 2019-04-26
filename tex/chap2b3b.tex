@@ -367,34 +367,34 @@ no switch is operated
 \item[N]
 EIRENE flag ITIME
 \begin{description}
-\item[N = 1]
+\item[$= 1$]
 The calculation of the step sizes in the standard
 mesh is abandoned for a particle which crosses
 the surface in the positive direction, and is
 reactivated, if the particle strikes in the negative direction
-\item[N = 2]
+\item[$= 2$]
 as 1, but with the direction of the surface normal reversed for this option.
 \end{description}
 \item[M]
 EIRENE flag IFPATH
 \begin{description}
-\item[M = 1]
+\item[$= 1$]
 Abandon the calculation of the collision rates (entry into the
 vacuum) for a particle which is striking the surface in the direction
 of the surface normal. For particles incident from the other direction,
 evaluation of collision rates is reactivated.
-\item[M = 2]
+\item[$= 2$]
 as 1, but with the direction of the surface normal reversed.
 \end{description}
 \item[L]
 EIRENE flag IUPDTE
 \begin{description}
-\item[L = 1]
+\item[$= 1$]
 Abandon the updating of volume-averaged tallies for a particle
 which is striking the surface in the direction of the surface normal.
 For particles incident from the other direction,
 updating of volume averaged tallies is reactivated.
-\item[L = 2]
+\item[$= 2$]
 as 1, but with the direction of the surface normal reversed for this option.
 \end{description}
 \end{description}
@@ -407,31 +407,31 @@ mesh cell.
 for particles in an additional cell, i.e., not in one of the ``standard
 mesh" blocks:
 \begin{description}
-\item[K = 1]
+\item[$= 1$]
 Increase the actual additional
 cell number NACELL for a particle striking the surface
 in the direction of the surface normal by ILACLL. Decrease NACELL by
 ILACLL if the particle is striking in the negative direction.
 Specification of ILACLL is via the input variable ILCELL, see below.
-\item[K = 2]
-as K = 1, but with the direction of the surface normal reversed for this option.
+\item[$= 2$]
+as K $= 1$, but with the direction of the surface normal reversed for this option.
 \end{description}
 for particles inside the ``standard mesh ", i.e., not in the ``additional
 cell region"
 \begin{description}
-\item[K = 1]
+\item[$= 1$]
 Increase the standard mesh block
 number NBLOCK for a particle striking the surface
 in the direction of the surface normal by ILBLCK. Decrease NBLOCK by
 ILBLCK if the particle is striking in the negative direction.
 Specification of ILBLCK is via the input variable ILCELL, see below.
-\item[K = 2]
-as K = 1, but with the direction of the surface normal reversed.
+\item[$= 2$]
+as K $= 1$, but with the direction of the surface normal reversed.
 \end{description}
 \item[J] for particles at the boundary between ``additional"
 and ``standard" mesh regions.
 \begin{description}
-\item[J = 1]
+\item[$= 1$]
 entrance into standard mesh, block no.
 
 NBLOCK = ILBLCK
@@ -445,14 +445,14 @@ Specification of ILACLL and ILBLCK is via the input variable
 ILCELL, see below.
 If ILACLL = 0, then no switch to additional cell is operated.
 (E.g.: for surfaces which are reflecting from this side).
-\item[J = 2] as J = 1. The direction of
+\item[$= 2$] as J $= 1$. The direction of
 the surface normal does not matter here.
 \end{description}
 \item[I]
 similar to J-flag, i.e., for transitions between standard and
 additional meshes, but different cell number switching.
 \begin{description}
-\item[I = 1]
+\item[$= 1$]
 Entrance into standard mesh, block no.
 
 NBLOCK = NACELL+ILBLCK,
@@ -474,7 +474,7 @@ if the particle is striking in the negative direction.
 
 Specification of ILACLL and ILBLCK
 is via the input variable ILCELL, see below.
-\item[I = 2]
+\item[$= 2$]
 as I = 1, but with the direction of the surface normal reversed.
 \end{description}
 \end{description}
