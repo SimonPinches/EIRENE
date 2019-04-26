@@ -221,12 +221,15 @@ of the selected species IPLS. If the string CDENMODEL is found
 here for a species IPLS, then, after reading the species and
 reaction cards for IPLS, one (default) or NRE further input cards
 are expected.
-\begin{list}{}{}
-\item[\textbf{CDENMODEL = 'Multiply'}]
+\begin{description}
+\item[CDENMODEL] ~
+
+\begin{description}
+\item[= 'Multiply']
 docu to be written
-\item[\textbf{CDENMODEL = 'Constant'}]
+\item[= 'Constant']
 docu to be written
-\item[\textbf{CDENMODEL = 'fort.13'}]
+\item[= 'fort.13']
 Read data for this species from file fort.13.
 
 The additional card (only one) reads (format 2I6):
@@ -241,7 +244,7 @@ for species IPLS are set from those of species ISP on fort.13
 ITP is the type of the particle, i.e., always: ITP=4 for this option.
 Internally set: ITP=4, bulk particle type, independent of input value for ITP.
 
-\item[\textbf{CDENMODEL = 'fort.10'}]
+\item[= 'fort.10']
 Read data for this species from file fort.10.
 
 The additional card (only one) reads (format 3I6):
@@ -260,14 +263,14 @@ profiles are reset to those evaluated in this run, for further use in
 post processing routines such as the diagnostic module (see \cref{sec2.11}),
 printout, plotting or iterative mode (input flags NITERI, NITERE, and user subroutine MODUSR, see \cref{sec2.1})
 
-\item[\textbf{CDENMODEL = 'Saha'}] Set parameters from
+\item[= 'Saha'] Set parameters from
 Saha-equilibrium of ionization states.
 The additional card (only one) reads:
 \begin{lstlisting}
       ISP ITP ISTR ...
 \end{lstlisting}
 to be written 
-\item[\textbf{CDENMODEL = 'Boltzmann'}]
+\item[= 'Boltzmann']
 Set parameters
 from Boltzmann-equilibrium of excited states. The additional card
 (only one) reads (format: 3I6,6x,2E12.4)
@@ -275,9 +278,9 @@ from Boltzmann-equilibrium of excited states. The additional card
       ISP ITP ISTR G_BOLTZMANN DELTA_E
 \end{lstlisting}
 docu to be written
-\item[\textbf{CDENMODEL = 'Planck'}]
+\item[= 'Planck']
 (only for background photons) to be written
-\item[\textbf{CDENMODEL = 'Corona'}]
+\item[= 'Corona']
 Set density parameters from Corona-equilibrium to a ``donor species",
 using an excitation rate coefficient from atomic database FILNAM and a fixed radiative decay rate $A=A_{CORONA}$.
 The additional card (only one) reads (format: 3I6, 1X, A6, 1X, A4, A9, A3, E12.4):
@@ -302,7 +305,7 @@ for donor species IS are taken to be those of species [ISP, ITP, ISTR].
 
 I.e.: this model constructs a background species IPLS
 which is in Corona-equilibrium with these IS = [ISP,ITP, ISTR] donor particles.
-\item[\textbf{CDENMODEL = 'Colrad'}]
+\item[= 'Colrad']
 set parameters density, temperature and flow velocity from collisional radiative equilibrium with one or more (NRE) ``donor-species", using
 reduced population coefficients from atomic database FILNAM.
 I.e.\ the density ni(IPLS) at each position $x$ (grid cell) for this 
@@ -329,11 +332,12 @@ populations. The $POP$ coefficients are typically from externally applied collis
 I.e.\ this model constructs a background species IPLS
 which is the sum of NRE species, each of which being in local collision-radiative-equilibrium
 with its donor isotope $IS$.
-\end{list}
+\end{description}
+\end{description}
 
 
-\begin{list}{}{}
-\item[\textbf{INDPRO}] Flag-array for the type of profile. The
+\begin{description}
+\item[INDPRO] Flag-array for the type of profile. The
 last digit (between 1 and 9) controls the type of profile. A
 second digit and/or the sign control further options, as described
 below.
@@ -353,7 +357,7 @@ Options INDPRO = 4, 5, 6, \dots\ allow more general, and higher dimensional prof
 
 INDPRO is an array of length 12. Each element in this array
 controls one particular input tally, namely:
-\begin{list}{}{}
+\begin{description}
 \item[INDPRO(1)]  for TEIN
 
 \item[INDPRO(2)]  for TIIN
@@ -413,7 +417,7 @@ for WGHT (to be written)
 \item[INDPRO(12)]
 for VOL.
 
-\end{list}
+\end{description}
 
 For the input tally profiles no.\ 6 and 7 (ADIN, WGHT) only the options INDPRO=5 or INDPRO=6
 exist.
@@ -429,7 +433,7 @@ TI0, \dots, TI5 for the $T_i $-profile, and so on.
 
 Depending upon the value of INDPRO one of the profile routines
 PROFN, PROFE, PROFS, etc.\ is called from subroutine PLASMA.
-\begin{list}{}{}
+\begin{description}
 \item[INDPRO = 1-4] ~
 
 NR1STM plasma data are defined on the
@@ -448,8 +452,7 @@ MULTI).
 
 Here the number of copies is NBLCKS = NMULT $\cdot$ NP2ND $\cdot$
 NT3RD. see ``Input Data for Standard Mesh" (block 2).
-\item
-{INDPRO = 1 \hfill} ~
+\item[INDPRO = 1] ~
 
 
 
@@ -574,43 +577,43 @@ ICELL=NSURF+1,NSURF+NRADD.
 
 to be written
 
-\end{list}
-\end{list}
+\end{description}
+\end{description}
 \subsection{Derived Background Data} \label{sec2.5.1}
 Given the data describing the background medium (plasma) in each
 cell (on common block COMUSR) a set of further, ``derived
 background data" profiles is computed and stored also on COMUSR.
 This is done by a call to subroutine \lstinline|PLASMA_DERIV|. The
 following quantities are defined there:
-\begin{list}{}{}
-\item[\textbf{DEIN}]
+\begin{description}
+\item[DEIN]
 Electron density (\si{\per\cubic\centi\metre}), derived from all NPLSI
 ion densities and the charge states NCHRGP(IPLS) of each ion species.
-\item[\textbf{EDRIFT}]
+\item[EDRIFT]
 Kinetic energy (\si{\electronvolt}) in drift motion, for each background species IPLS, derived from
 the mass MASSP(IPLS) and the flow velocity VXIN,VYIN,VZIN.
-\item[\textbf{LGVAC}]
+\item[LGVAC]
 Vacuum flag (logical) to identify regions, in which no collision data for all or
 certain background species are computed, i.e., the collisionalities are set to zero
 in these cells for those background species. See also explanation above, with respect
 to the EIRENE vacuum data TVAC,DVAC,VVAC.
-\item[\textbf{NSTGRD}]
+\item[NSTGRD]
 flag for special treatment of some selected cells
-\begin{list}{}{}
-\item[=0]
+\begin{description}
+\item[$= 0$]
 default
-\item[=1]
+\item[$= 1$]
 This cell is a dead cell, not to be seen by
 the particles (isolated from the computational
 domain. NSTGRD(ICELL)=1 can be specified in
 problem specific routines (\dots USR) or in
 routines interfacing EIRENE with external codes: INFCOP (code segment:
 COUPLE\dots)
-\item[=2]
+\item[$= 2$]
 indicates that this cell belongs to a grid cut, i.e., is not a valid cell for particle
 tracing.
-\item[=3]
+\item[$= 3$]
 indicates that this cell is not a real cell but only the storage position for
 spatially averaged tallies. E.g.: cell no.\ NR1ST, 2*NR1ST, etc.
-\end{list}
-\end{list} 
+\end{description}
+\end{description} 

@@ -121,41 +121,43 @@ storage on the census array of this stratum has been filled up
 
 \medskip
 
-\begin{list}{}{}
-\item[\textbf{NSTRAI}] Number of different sources (``Strata"), which
+\begin{description}
+\item[NSTRAI] Number of different sources (``Strata"), which
 are computed
 one after the other and are linearly superimposed at the end of the run.
 
-(NSTRAI $\le$ NSTRA, see ``Parameter-Statements") \item[\textbf{INDSRC}]
-\begin{list}{}{}
-\item[INDSRC(ISTRA)=0--5]
+(NSTRAI $\le$ NSTRA, see ``Parameter-Statements") 
+\item[\textbf{INDSRC}] ~
+
+\begin{description}
+\item[$= 0 \textup{--} 5$]
 the input data for stratum ISTRA are read here,
 but may be modified in some user routine (SAMUSR) or interface routine (INFCOP,
 at entry IF2COP(ISTRA))
-\item[INDSRC(ISTRA)=6]
+\item[$= 6$]
 no input data for stratum ISTRA are read here. The definition of this stratum
 must be entirely in some problem specific routine (IF2COP, etc.).
 See \cref{sec3.4} for one such example,
 namely the default surface recycling
 source model as specified in coupled B2-EIRENE runs.
-\item[INDSRC(ISTRA)=-1]
+\item[$= -1$]
 the input data for stratum ISTRA are read here, and no attempt is made to
 modify these. I.e.\ IF2COP(ISTRA) is not called.
-\end{list}
-\item[\textbf{ALLOC}]  Allocation of CPU-time to stratum weighted as
+\end{description}
+\item[ALLOC]  Allocation of CPU-time to stratum weighted as
 
 (1-ALLOC)*NPTS+ALLOC*FLUX
-\item[\textbf{AMPTS}]  (available since 2014 in master version) Multiplier, used simultaneously
+\item[AMPTS]  (available since 2014 in master version) Multiplier, used simultaneously
 for permitted total CPU time NTCPU (input block 1), and for specified number of MC histories NPTS(ISTRA) (see below).
 Default: AMPTS=1.0
-\item[\textbf{TXTSOU}]
+\item[TXTSOU]
 Text to characterize the stratum (name of the source) on the
 printout file.
-\item[\textbf{NLAVRP}]
+\item[NLAVRP]
 = .TRUE.\ not in use
-\item[\textbf{NLAVRT}]
+\item[NLAVRT]
 = .TRUE.\ not in use
-\item[\textbf{NLSYMP}]
+\item[NLSYMP]
 = .TRUE.
 
 Symmetrize profiles with respect to poloidal (y-) co-ordinate $x^2$,
@@ -163,15 +165,17 @@ i.e., with respect to the poloidal surface $x^2=$
 PSURF((NP2ND+1)/2) in case NP2ND
 is an odd integer, or with respect to the cell center
 $x^2=$ PZONE(NP2ND/2) in case NP2ND is an even integer.
-\item[\textbf{NLSYMT}]
+\item[NLSYMT]
 = .TRUE.
 
 ditto, but for toroidal (z-) co-ordinate,
 i.e., for toroidal surface
 
 TSURF((NT3RD+1)/2) or TZONE(NT3RD/2) respectively.
-\item[\textbf{NPTS
-}] NPTS $>$ 0: Maximum number of test particle histories.
+\item[NPTS] ~
+
+\begin{description}
+\item[$> 0$] Maximum number of test particle histories.
 
 If there is more than one stratum (NSTRAI $>$  1) then the total
 CPU-time NTIME (input block 1) will be distributed proportional to
@@ -180,55 +184,54 @@ test-particles only if sufficient CPU time is available. Otherwise
 a message ``NO FURTHER COMPUTATION TIME FOR THIS STRATUM" is
 printed and the particle loop for the respective stratum is
 stopped.
+\item[$= 0$] this stratum is ``turned off''.
 
-NPTS = 0: this stratum is ``turned off''.
-
-NPTS $<$ 0: no limitation in the number of particles. The entire
+\item[$< 0$] no limitation in the number of particles. The entire
 CPU time assigned to this stratum will be used up. (NPTS is reset
 to the largest integer on the machine. Hence: some care is needed
 here in case of multiple strata, in combination with the
 ALLOC-options to assign CPU time to individual strata).
+\end{description}
 
+\item[NINITL] ~
 
-\item[\textbf{NINITL}]
-If NINITL $>$ 0 : seed for initialization of random number
+\begin{description}
+\item[$> 0$] seed for initialization of random number
 generator. The results for all those individual strata can be
 reproduced exactly for which the same number of test-flights is
 computed as in a previous run.
-
-
-If NINITL = 0 : no initialization of random numbers for the
+\item[$= 0$] no initialization of random numbers for the
 particular stratum. In case of the first stratum, the default
 initialization is used. Runs can only be reproduced, if the same
 number of test-flights is computed for each stratum. Somewhat
 weakened correlation between subsequent runs as compared to the
-NINITL $>$ 0 option.
-
-If NINITL $<$ 0: truly random initialization (determined by machine
+NINITL $> 0$ option.
+\item[$< 0$] truly random initialization (determined by machine
 clock). These runs cannot be reproduced exactly. Subsequent runs are
 uncorrelated. (E.g.: recommended for stochastic approximation
 procedures in nonlinear applications.
-\item[\textbf{NEMODS}]
+\end{description}
+\item[NEMODS]
 Flag to select one of the preprogrammed
 source energy conditional distributions
 given the source particle's position and
 species.
 (See: ``distribution in velocity space", below)
-\item[\textbf{NAMODS}]
+\item[NAMODS]
 Flag to select one of the preprogrammed conditional
 source angular distributions given the position,
 species and energy of the source particle.
 (See: ``distribution in velocity space", below)
 
-\item[\textbf{NMINPTS}]
+\item[NMINPTS]
 Minimum number of test particles enforced for this stratum, independent of NTCPU
 flag in input block 1.  Hence: setting this flag may increase EIRENE run time above the CPU-time
 assigned to a run in the first input line in input block 1.
 Default: NMINPTS = 0
 
-\item[\textbf{FLUX, SCALV}]~
+\item[FLUX, SCALV]~
 
-\begin{list}{}{}
+\begin{description}
 \item[SCALV=0]
 (default) FLUX = Source strength in Ampere.
 
@@ -253,22 +256,23 @@ averaged tallies. By this option, for example, one can set the
 neutral particle density to a prescribed value in one particular
 cell. Hence, one can prescribe the local Knudsen number for
 nonlinear applications including neutral--neutral interactions.
- \end{list}
-\item[\textbf{IVLSF}]
-\begin{list}{}{}
-\item[=1]
+ \end{description}
+\item[IVLSF] ~
+
+\begin{description}
+\item[$= 1$]
 The following ISCL\dots-flags select one particular volume averaged tally
-\item[=2]
+\item[$= 2$]
 The following ISCL\dots-flags select one particular surface averaged
 tally
-\end{list}
-\item[\textbf{ISCLS}]
+\end{description}
+\item[ISCLS]
 species index of selected tally
-\item[\textbf{ISCLT}]
+\item[ISCLT]
 tally number of selected tally (refer to \cref{tab2,tab3})
-\item[\textbf{ISCL1, ISCL2, ISCL3, ISCLB, ISCLA}]~
+\item[ISCL1, ISCL2, ISCL3, ISCLB, ISCLA]~
 
-\begin{list}{}{}
+\begin{description}
 \item[IVLSF=1]~
 
 cell numbers NRCELL, NPCELL, NTCELL, NBLOCK, NACELL, respectively.
@@ -281,8 +285,8 @@ NBLOCK=NBMLT+1 (see \cref{sec2.2}) and
 the proper value of NACELL.
 \item[IVLSF=2]
 to be written
-\end{list}
-\end{list}
+\end{description}
+\end{description}
 
 \medskip
 
@@ -290,26 +294,26 @@ to be written
 
 \medskip
 
-\begin{list}{}{}
-\item[\textbf{NLATM}]
+\begin{description}
+\item[NLATM]
 = .TRUE.
 
 Atomic source. History starts in subroutine FOLNEUT with
 type index ITYP=1, species index
 ISP = IATM and initial weight NPRTA(IATM) (see block 4A)
-\item[\textbf{NLMOL}]
+\item[NLMOL]
 = .TRUE.
 
 Molecule source. History starts in subroutine FOLNEUT with type
 index ITYP=2, species
 index ISP = IMOL and initial weight NPRTM(IMOL) (see block 4B)
-\item[\textbf{NLION}]
+\item[NLION]
 = .TRUE.
 
 Test ion source. History starts in subroutine FOLION with type index
 ITYP=3, species
 index ISP = IION and initial weight NPRTI(IION) (see block 4C)
-\item[\textbf{NLPHOT}]
+\item[NLPHOT]
 = .TRUE.
 
 Photon source. History starts in subroutine FOLNEUT with type index
@@ -321,7 +325,7 @@ we mostly use the bulk particle volume recombination source (see next) to
 simulated radiative decay from excited states as birth profile for (bound-bound)
 line-photons.
 
-\item[\textbf{NLPLS}]
+\item[NLPLS]
 = .TRUE.
 
 Bulk ion source. Initial co-ordinates of a bulk ion with species
@@ -331,28 +335,24 @@ then a surface reflection model or a volume re-combination
 model is called and atoms, molecules or test ions with species index
 either IATM, IMOL, IION or IPHOT
 are created.
-\end{list}
+\end{description}
 
 One and only one of these five variables must be .TRUE..
 
-\begin{list}{}{}
-\item[\textbf{NSPEZ}]
+\begin{description}
+\item[NSPEZ]
 Species index of the source particle
-\begin{list}{}{}
-\item[1 $\le$ NSPEZ $\le$  NATMI, NMOLI, NIONI, NPLSI]~
-
+\begin{description}
+\item[$\ge 1$, $\le$  NATMI, NMOLI, NIONI, NPLSI] 
 NSPEZ is the (fixed) species index of the source particle.
 No random sampling for the species index is done.
-\item[NSPEZ $>$  NATMI, NMOLI, NIONI, NPLSI]~
-
+\item[$>$  NATMI, NMOLI, NIONI, NPLSI] 
 (depending upon the type of the source particle) the species index
 is sampled from the distribution DATM, DMOL, DION, DPLS,
 respectively.  The ``surface species distributions'' DATM, DMOL,
 DION and DPLS are read in the block ``Data for General Reflection
 Models", see \cref{sec2.6}.
-
-\item[NSPEZ $ = $ 0]~
-
+\item[$= 0$] 
 the species index of the particle is directly sampled from the
 ``analog distribution" WEISPZ, i.e., no biased source species
 sampling. WEISPZ is defined internally by the code.
@@ -369,8 +369,7 @@ user specified source sampling (SAMUSR.f, see \cref{sec3.4}).
 In all other cases NSPEZ must be positive.
 
 
-\item[NSPEZ $<$  0]~
-
+\item[$<  0$] 
 The ``surface species distributions'' DATM, DMOL, DION and DPLS are
 considered as biased source species distributions, whereas the
 analog (physical) distribution is provided automatically by the
@@ -379,7 +378,7 @@ SAMSRF or SAMVOL respectively. An appropriate weight correction is
 carried out after sampling from DATM, DMOL, DION or DPLS,
 respectively, in subroutine LOCATE.
 
-\end{list}
+\end{description}
 
 Note: If a step function (function STEP, see below) is used for
 sampling the start position of a test particle on a surface, then
@@ -390,7 +389,7 @@ default can be overruled  when SORIND has three digits.
 
 
 
-\end{list}
+\end{description}
 
 \medskip
 
@@ -437,18 +436,18 @@ this reference vector $\vC$ points \emph{away}
 from the direction of
 preferential test particle emission.
 
-\begin{list}{}{}
-\item[\textbf{NLPNT}]
+\begin{description}
+\item[NLPNT]
 = .TRUE.\ Point Source
-\item[\textbf{NLLNE}]
+\item[NLLNE]
 = .TRUE.\ Line Source  (not ready)
-\item[\textbf{NLSRF}]
+\item[NLSRF]
 = .TRUE.\ Surface Source
-\item[\textbf{NLVOL}]
+\item[NLVOL]
 = .TRUE.\ Volume Source
-\item[\textbf{NLCNS}]
+\item[NLCNS]
 = .TRUE.\ Initial conditions source (sampling from census array), for time-depen\-dent mode of operation, see input blocks 1. and 13.
-\end{list}
+\end{description}
 
 One and only one of these 5 variables must be .TRUE.
 
@@ -457,51 +456,52 @@ One and only one of these 5 variables must be .TRUE.
 \textcolor[rgb]{0.00,0.00,1.00}{\textbf{Point source}}
 Flags for the ``distribution in physical space" not mentioned here
 are irrelevant for point sources.
-\begin{list}{}{}
-\item[\textbf{NSRFSI (=NPNTSI)}]
+\begin{description}
+\item[NSRFSI (=NPNTSI)]
 Total number of different points, over which the starting points
 for this stratum are distributed (corresponds to ``sub-strata" option for surface and
 volume sources,
 there to facilitate sampling of spatial coordinates).
-\end{list}
+\end{description}
 The next deck of 4 input cards is read NSRFSI times, one deck for each ``sub-stratum".
-\begin{list}{}{}
-\item[\textbf{INUM}]
+\begin{description}
+\item[INUM]
 irrelevant; labelling index for sub-strata
-\item[\textbf{SORWGT}]
+\item[SORWGT]
 Relative frequency for starting point labelled INUM.
 The sum of SORWGT for all
 NPNTSI points is normalized to one internally.
-\item[\textbf{NRSOR}]
-\begin{list}{}{}
-\item[$>$ 0]
+\item[NRSOR] ~
+
+\begin{description}
+\item[$> 0$]
 x- or radial
 cell number NRCELL of the zone containing the point source.
-\item[= 0]
+\item[$= 0$]
 NRCELL is found automatically from the ``standard mesh" zoning.
-\item[$<$ 0]
+\item[$< 0$]
 only for surface sources (NLSRF), see below.
-\end{list}
-\item[\textbf{NPSOR}]
+\end{description}
+\item[NPSOR]
 ditto, for y- or poloidal cell number NPCELL
-\item[\textbf{NTSOR}]
+\item[NTSOR]
 ditto, for z- or toroidal cell number NTCELL
-\item[\textbf{NBSOR}]
+\item[NBSOR]
 standard mesh block number NBLOCK. Defaulted to NBLOCK = 1,
 if NBSOR $\le$ 0
-\item[\textbf{NASOR}]
+\item[NASOR]
 additional cell number NACELL, if point source is located
 outside the standard mesh. Defaulted to NACELL = 0, if at least one
 of the variables NRCELL, NPCELL or NTCELL are larger than zero.
-\item[\textbf{NISOR}]
+\item[NISOR]
 polygon index IPOLG. Meaningless if NLPLG = .FALSE.
-\item[\textbf{SORAD1}]
+\item[SORAD1]
 x-co-ordinate of source point X0
-\item[\textbf{SORAD2}]
+\item[SORAD2]
 y-co-ordinate of source point Y0
-\item[\textbf{SORAD3}]
+\item[SORAD3]
 z-co-ordinate of source point Z0
-\item[\textbf{SORAD4, SORAD5, SORAD6}] ~
+\item[SORAD4, SORAD5, SORAD6] ~
 
 are the x,y and z components of a reference directional
 vector $\vC =$ (CRTX, CRTY, CRTZ)
@@ -509,7 +509,7 @@ which may be used to distinguish one particular direction for the
 distribution in velocity space (see below). Internally this vector
 is normalized to length 1. Irrelevant for an isotropic velocity
 distribution.
-\end{list}
+\end{description}
 
 \medskip
 
@@ -524,30 +524,33 @@ to be written
 Flags for the ``distribution in physical space" not mentioned here are
 irrelevant for surface sources.
 
-\begin{list}{}{}
-\item[\textbf{NSRFSI}]
+\begin{description}
+\item[NSRFSI]
 Total number of different surfaces, or surface segments, over which the starting points
 for this stratum are distributed (``sub-strata", to facilitate sampling of spatial coordinates).
-\end{list}
+\end{description}
 The next deck of 4 input cards is read NSRFSI times, one deck for each ``sub-stratum".
-\begin{list}{}{}
-\item[\textbf{INUM}]
+\begin{description}
+\item[INUM]
 irrelevant; labelling index for sub-strata
-\item[\textbf{INDIM}]
-\begin{list}{}{}
-\item[= 0]
+\item[INDIM] ~
+
+\begin{description}
+\item[$= 0$]
 source on ``additional surface" ASURF (see block 3B)
-\item[= 1]
+\item[$= 1$]
 source on ``standard surface" RSURF, x- (or radial) mesh
 
-(see block 2A and 3A) \item[= 2] source on ``standard surface"
+(see block 2A and 3A) 
+\item[$= 2$] source on ``standard surface"
 PSURF, y- (or poloidal) mesh
 
-(see block 2B and 3A) \item[= 3] source on ``standard surface"
+(see block 2B and 3A) 
+\item[$= 3$] source on ``standard surface"
 TSURF, z- (or toroidal) mesh
 
 (see block 2C and 3A)
-\item[= 4]
+\item[$= 4$]
 source on a surface composed of one or more segments of radial and/or
 poloidal polygons. The further details of the spatial distribution
 are defined in code coupling routines, i.e., the code coupling routine
@@ -565,19 +568,19 @@ onto that surface
 vs. arc-length.
 The flags INSOR, INGRDA and INGRDE described below are set automatically
 in this option and hence need not be specified.
-\end{list}
-\item[\textbf{INSOR}]
+\end{description}
+\item[INSOR]
 number of the surface in the mesh RSURF, PSURF, TSURF or ASURF
 respectively. (Redundant in case INDIM=4)
-\item[\textbf{INGRDA, INGRDE}]
+\item[INGRDA, INGRDE]
 same as IRPTA, IRPTE flags in input block 3a. Defines subrange
 on standard surfaces, on which the source is distributed.
 Irrelevant for sources on additional surfaces.
-\item[\textbf{SORWGT}]
+\item[SORWGT]
 Relative frequency for starting points
 on surface labelled INUM. The sum  of SORWGT for all
 NSRFSI surfaces is normalized to one internally.
-\item[\textbf{SORLIM}]
+\item[SORLIM]
 = KLMN
 
 if SORLIM $\le$ 0, the user supplied
@@ -588,7 +591,7 @@ co-ordinates (X0,Y0,Z0), see \cref{sec3.4}.
 if SORLIM $>$  0, then one of the preprogrammed options is used
 (the digits L,M and N are relevant only for surface sources).
 In this case:
-\begin{list}{}{}
+\begin{description}
 \item[N]
 Index to select one of the preprogrammed distributions
 in radial or x-direction on the surface.
@@ -601,11 +604,10 @@ in toroidal or z-direction on the surface.
 \item[K]
 Index to select one of the preprogrammed distributions
 for the starting time.
-\item[M,N,L = 0] ~
-
+\item[M,N,L = 0] 
 The respective co-ordinate is computed from the 2 others and
 from the equation for surface number INSOR.
-\end{list}
+\end{description}
 
 Thus, one and only one of these 3 digits must be equal to 0,
 because the
@@ -622,7 +624,7 @@ toroidal (or z) co-ordinate is sampled according to the flags M and L.
 Correspondingly in case  INDIM=2 one must
 specify M=0, and  in case INDIM=3 the flag L=0 has to be set (is redundant).
 
-\begin{list}{}{}
+\begin{description}
 \item[L,M,N = 1]
 $\delta$-distribution at (a+b)/2
 \item[L,M,N = 2]
@@ -653,8 +655,8 @@ Uniform distribution in [TIME0,TIME0+DTIMV] for time of particle
 birth.\\
 Default: K=2 in time-dependent mode (NTIME $>$0) and K=1, TIME0=0 in
 time-independent mode (NTIME = 0), see \cref{sec2.1}.
-\end{list}
-\item[\textbf{SORIND}]
+\end{description}
+\item[SORIND]
 Flag to choose one from the various step functions (SORLIM-option
 4), which have been defined in the initialization phase. Up to NSTEP
 (PARMUSR, see \cref{sec3.1}) step functions can be described
@@ -674,9 +676,9 @@ the sampled particle is still determined by the flag NSPEZ, see
 above.
 
 
-\item[\textbf{SOREXP}]
+\item[SOREXP]
 Decay length $\lambda$  in the exponential distribution (option 3)
-\item[\textbf{SORIFL}]
+\item[SORIFL]
 The first of the 4 digits can be used to overrule the default
 orientation of the surface normal at the birth point, or if
 ILSIDE = 0 for this particular surface.
@@ -692,43 +694,43 @@ in section 2.3B assuming incidence in the positive direction.
 If any of this 3 digits equals zero, than the ILSWCH flag for
 this particular surface is activated. (See also: section 2.3B,
 input flag ILSWCH)
-\item[\textbf{NRSOR}]
+\item[NRSOR]
 as for point source, but additionally:
 
 If NRSOR  $<$   0, NRCELL is found from the step-function data (see
 below: Function STEP,  \cref{sec2.7.1}) (if N is equal to 4) or
 is returned from SAMUSR  (if  SORLIM  $<$   0)
-\item[\textbf{NPSOR}]
+\item[NPSOR]
 as for point source, but additionally:
 
 If NPSOR  $<$   0, NPCELL is found from the step-function data (see
 below: Function STEP,  \cref{sec2.7.1}) (if M is equal to 4) or
 is returned from SAMUSR  (if  SORLIM  $<$   0)
-\item[\textbf{NTSOR}]
+\item[NTSOR]
 as for point source, but additionally:
 
 If NTSOR  $<$   0, NTCELL is found from the step-function data (see
 below: Function STEP,  \cref{sec2.7.1}) (if L is equal to 4) or
 is returned from SAMUSR  (if  SORLIM  $<$   0)
-\item[\textbf{NBSOR}]
+\item[NBSOR]
 as for point source, but additionally:
 
 If NBSOR  $<$   0, NBLOCK is found from the step-function data (see
 below: Function STEP,  \cref{sec2.7.1}) (if N is equal to 4) or
 is returned from SAMUSR  (if  SORLIM  $<$   0)
-\item[\textbf{NASOR}]
+\item[NASOR]
 as for point source, but additionally:
 
 If NASOR  $<$   0, NACELL is found from the step-function data (see
 below: Function STEP, \cref{sec2.7.1}) (if N is equal to 4) or
 is returned from SAMUSR  (if  SORLIM  $<$   0)
-\item[\textbf{NISOR}]
+\item[NISOR]
 as for point source, but additionally:
 
 If NISOR $<$  0, IPOLG is found from the step-function data (see
 below: Function STEP, \cref{sec2.7.1}) (if N is equal to 4) or
 is returned from SAMUSR  (if  SORLIM $ < $  0)
-\end{list}
+\end{description}
 The six parameters in the next card SORAD\dots\ are used to define the
 sampling intervals in the three co-ordinate directions x, y and z.
 For some geometry options and surface types (i.e., \emph{radial,
@@ -742,22 +744,22 @@ the EIRENE team at FZ-J\"ulich.
 
 Only in case of \emph{additional surfaces} the information on this
 deck is always fully used.
-\begin{list}{} {}
-\item[\textbf{SORAD1}]
+\begin{description}
+\item[SORAD1]
 Left endpoint a of interval [a,b] for
 x- or radial co-ordinate
-\item[\textbf{SORAD2}]
+\item[SORAD2]
 Right endpoint b of interval [a,b] for
 x- or radial co-ordinate
-\item[\textbf{SORAD3}]
+\item[SORAD3]
 as SORAD1, for y- or poloidal co-ordinate
-\item[\textbf{SORAD4}]
+\item[SORAD4]
 as SORAD2, for y- or poloidal co-ordinate
-\item[\textbf{SORAD5}]
+\item[SORAD5]
 as SORAD1, for z- or toroidal co-ordinate
-\item[\textbf{SORAD6}]
+\item[SORAD6]
 as SORAD2, for z- or toroidal co-ordinate
-\end{list}
+\end{description}
 
 The reference direction unit vector $\vC = (CRTX,CRTY,CRTZ)$
 for the velocity space distribution
@@ -775,21 +777,21 @@ surface source option. (see ``Standard Mesh Surfaces" and/or
 Flags for the ``distribution in physical space" not mentioned here are
 irrelevant for volume sources.
 
-\begin{list}{}{}
-\item[\textbf{NSRFSI}]
+\begin{description}
+\item[NSRFSI]
 Total number of subregions of the standard mesh in which the starting points
 for this stratum are distributed (``sub-strata", to facilitate sampling of spatial coordinates).
-\end{list}
+\end{description}
 The next deck of 4 input cards is read NSRFSI times, one deck for each ``sub-stratum".
-\begin{list}{}{}
-\item[\textbf{INUM}]
+\begin{description}
+\item[INUM]
 irrelevant; labelling index for sub-strata
-\item[\textbf{INDIM, INSOR}]
+\item[INDIM, INSOR]
 not in use for volume sources
-\item[\textbf{INGRDA, INGRDE}]
+\item[INGRDA, INGRDE]
 same as IRPTA, IRPTE flags in input block 3a. Defines subregion
 of standard mesh, on which the source is distributed.
-\item[\textbf{SORLIM}]
+\item[SORLIM]
 if SORLIM $\le$ 0, the user supplied
 Subroutine SAMUSR
 is called to sample all 3 initial
@@ -797,7 +799,7 @@ co-ordinates (X0,Y0,Z0),
 see \cref{sec3.4}.
 
 If SORLIM $>$  0, then the preprogrammed option is used.
-\item[\textbf{SORIND}]
+\item[SORIND]
 identifies volume recombination reaction IRRC for bulk plasma species IPLS,
 as specified in input block 5, reaction decks for bulk ions.
 (E.g., to distinguish between effects from
@@ -819,14 +821,14 @@ Note: Both the source strength FLUX and the relative weight of subregions
 (if any)
 SORWGT are automatically determined from the volume source data on the
 atomic data array TABRC1(IRRC,ICELL).
-\item[\textbf{SORAD1}]
+\item[SORAD1]
 unused. Parameter for user supplied sampling routine SAMUSR
-\item[\textbf{SORAD2}]
+\item[SORAD2]
 unused. Parameter for user supplied sampling routine SAMUSR
-\item[\textbf{SORAD3}]
+\item[SORAD3]
 unused. Parameter for user supplied sampling routine SAMUSR
 
-\item[\textbf{SORAD4, SORAD5, SORAD6}] ~
+\item[SORAD4, SORAD5, SORAD6] ~
 
 are the x,y and z components of a reference directional
 vector $\vC =$ (CRTX, CRTY, CRTZ)
@@ -835,7 +837,7 @@ distribution in velocity space (see below). Internally this vector
 is normalized to length 1. Irrelevant for an isotropic velocity
 distribution. (Same as for point sources, see above)
 \
-\end{list}
+\end{description}
 
 \medskip
 
@@ -915,13 +917,13 @@ Check \cref{sec1.5} for generalizations, e.g.\ to also include magnetic pre-shea
 
 
 
-\begin{list}{}{}
-\item[\textbf{NEMODS}]
+\begin{description}
+\item[NEMODS]
 = KLMN
 
 The choice of one of the following energy distributions is
 made depending upon the value of the first digit N of NEMODS:
-\begin{list}{}{}
+\begin{description}
 \item[N = 1]
 Mono-energetic source $f(E) = \delta (E-E0)$ with fixed energy
 
@@ -993,13 +995,13 @@ $E0 = E_i(ip_0)$, with $E_i(ip_0)$ being the local mean incident ion energy, for
 \item[N = 9]
 (only for surface sources)
 As N=8, but with added sheath acceleration, see \cref{sec2.7.2} below
-\end{list}
+\end{description}
 The choice of temperature parameters $T_e$ and $T_i(ip_0)$
 in the energy distributions N = 4, 5, 6 or 7
 of the plasma fluids entering the sheath region
 is controlled by the second digit M of NEMODS:
-\begin{list}{}{}
-\item[M =0]
+\begin{description}
+\item[M = 0]
 $T_e$ is the local electron temperature taken from input tally TEIN
 on the grid.
 
@@ -1017,33 +1019,33 @@ These default choices of background medium species index $ip_0=IPL$ can be overr
 input flag, see below.
 
 In case of .not.(NLPLS.or.NLION), $T_i(ip_0)$ =0.
-\item[M =1]
+\item[M = 1]
 The local ion temperature
 $T_i$ is replaced by the input constant SORENI (\si{\electronvolt}) and
 $T_e$ is replaced by the constant SORENE (\si{\electronvolt}) in options
 N = 4 to N = 7.
-\item[M =2]
+\item[M = 2]
 not in use
-\item[M =3]
+\item[M = 3]
 $T_e$ is the local electron temperature, and $T_i$ is the local
 background ion temperature of ion species $ip_0 = IPL=K$, K is the fourth digit
 of the NEMODS flag, see below.
 
-\end{list}
+\end{description}
 The choice of velocity parameters $\vV$ in the energy distributions
 N=4,5,6 or 7 is controlled by the third digit L of NEMODS:
-\begin{list}{}{}
-\item[L =0]
+\begin{description}
+\item[L = 0]
 In case of NLPLS, the parameter $\vV$ is the local ion drift velocity
 for bulk ion species IPL, IPL is the species index of the source particle.
 
 In case of .NOT.NLPLS, $\vV$ =0.
-\item[L =1]
+\item[L = 1]
 The local drift velocity vector
 $\vV $ is replaced by the constant vector (SORVDX, SORVDY,
 SORVDZ) (\si{\centi\metre\per\second}), regardless of the point of birth.
 
-\item[L =2]
+\item[L = 2]
 The local drift velocity vector
 $\vV $ is replaced by the constant vector
 (SORVDX, SORVDY, SORVDZ) $ \cdot $ CS, where CS is the isothermal ion sound
@@ -1053,7 +1055,7 @@ chosen above (\si{\centi\metre\per\second}).
 Therefore, {(SORVDX,SORVDY,SORVDZ)}
 are now understood as Mach numbers in x,y and z direction
 respectively.
-\item[L =3]
+\item[L = 3]
 $\vV$ is the local
 background ion drift velocity of ion bulk species IPL=K, K is the fourth digit
 of the NEMODS flag, see below.
@@ -1064,14 +1066,14 @@ The digit K (unless zero) is used to specify one of the
 background ion species IPL, from which the $T_i(IPL), \vV(IPL) $
 parameters in the sampling distributions described above are taken.
 
-\end{list}
-\item[\textbf{SORCOS, SORMAX}]~
+\end{description}
+\item[SORCOS, SORMAX]~
 
 Depending upon the value of the
 flag \textbf{NAMODS} (see below) various different angular distributions
 may be selected. Each one depends upon the two parameters P = SORCOS and
 Q = SORMAX.
-\item[\textbf{SORCTX, SORCTY, SORCTZ}]~
+\item[SORCTX, SORCTY, SORCTZ]~
 
 If this input vector is NOT zero:
 
@@ -1094,46 +1096,43 @@ of the polar angle may then not necessarily be centered
 around the inner
 surface normal vector any longer, but may be tilted.
 
-\begin{list}{}{}
-\item[NAMODS = 1]~
+\begin{description}
+\item[NAMODS] ~
 
-The polar angle $\vartheta$ against the reference unit vector
+\begin{description}
+\item[$= 1$] The polar angle $\vartheta$ against the reference unit vector
 $\vC = (C_X,C_Y,C_Z)$ of the source particle's velocity is sampled from
 a cosine**P distribution around the ``inner normal vector" (-1.0)
 $\cdot \vC $, i.e., $f( \vartheta )   d \vartheta   \sim \sin(
 \vartheta )  \cdot  \cos^p ( \vartheta )   d \vartheta$.
 
 Important special cases:
-\begin{list}{}{}
+\begin{description}
 \item[P = 0]
 isotropic distribution
 \item[P = 1]
 cosine distribution
 \item[P $\gg$ 1]
 close to $\delta$-distribution around vector $-1  \cdot \vC $
-\end{list}
-\item[NAMODS = 2]~
-
-The polar angle against $-1  \cdot  \vC $
+\end{description}
+\item[$= 2$] The polar angle against $-1  \cdot  \vC $
 is sampled from a
 Gaussian distribution with zero mean value, and
 the parameter P now is used
 for the standard deviation (degree) of that distribution.
-\end{list}
+\end{description}
+\end{description}
 The second parameter Q is the cut-off angle (degree)
 for the polar angle distribution
-\begin{list}{}{}
-\item[note:]
-Q $\le 180^{\circ}$  is enforced internally
+\textbf{note:}
 
-Q $\le 90^{\circ}$ is enforced internally for surface sources
-
-Q = 0  for a beam, i.e., for an angular $\delta$-distribution at
+\begin{description}
+\item[$Q \le 180^{\circ}$] is enforced internally
+\item[$Q \le 90^{\circ}$] is enforced internally for surface sources
+\item[$Q = 0$]  for a beam, i.e., for an angular $\delta$-distribution at
 $-1  \cdot  \vC $
-\end{list}
-
-
-\end{list}
+\end{description}
+\end{description}
 In all preprogrammed
 cases the azimuthal angle (around the axis $\vC$)
 is equally distributed from
@@ -1268,7 +1267,7 @@ In addition to the value of the distribution
 some further quantities may be defined as function of the interval index
 ``$i$":
 
-\begin{list}{}{}
+\begin{description}
 \item[TESTEP]
 electron temperature at the surface segment ``$i$"
 \item[TISTEP]
@@ -1289,7 +1288,7 @@ additional cell number of the surface segment ``$i$"
 ion energy flux at the surface segment ``$i$" (array of length NPLS)
 \item[SHSTEP]
 electrostatic sheath potential at the  surface segment ``$i$"
-\end{list}
+\end{description}
 
 \textbf{Default step functions}
 

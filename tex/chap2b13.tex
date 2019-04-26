@@ -76,8 +76,8 @@ stationary case in the time-dependent mode (see below).
 
 \medskip
 
-\begin{list}{}{}
-\item[\textbf{NPRNLI}] Total number of test particles in time
+\begin{description}
+\item[NPRNLI] Total number of test particles in time
 dependent arrays (``census arrays") (in old versions before 2001: NPRNLI must be $\le$ NPRNL,
 see: PARMUSR). The scoring on census arrays stops at latest when NPRNLI scores are on
 the census array.
@@ -92,12 +92,12 @@ In case NLERG = TRUE  (see input block 1), a time horizon is
 absolutely necessary in order to prevent infinite histories.
 Therefore, in case NLERG=TRUE and NPRNLI=0 an automatic correction
 to NPRNLI=100 is carried out.
-\item[\textbf{NINITL\_READ}]  (new: 2013) Same as NINITL in block 7: provides random number seed for ``time-stratum" (sampling from census
+\item[NINITL\_READ]  (new: 2013) Same as NINITL in block 7: provides random number seed for ``time-stratum" (sampling from census
 array  (default: =0, no fresh initialization of random number generator for this stratum)
-\item[\textbf{NPRMUL}] (new: 2013) Multiplicative factor for NPRNLI, in order to increase size of census
+\item[NPRMUL] (new: 2013) Multiplicative factor for NPRNLI, in order to increase size of census
 to more than 999999 particles, which otherwise would be the maximum due to I6 formatted integer input. 
 Default: = 0: no multiplication carried out
-\item[\textbf{NPTST}] Same as NPTS in block 7.
+\item[NPTST] Same as NPTS in block 7.
 This is the number of histories, which are continued from a
 previous time-cycle (``Time dependence stratum ISTRA=NSTRAI+1").
 The initial coordinates are randomly sampled (with replacement)
@@ -128,7 +128,7 @@ is enforced, rather than random sampling from old census.
 
 
 Default: NPTST=0
-\item[\textbf{NTMSTP}]
+\item[NTMSTP]
 Total number of time-steps for particle tracing.
 Each trajectory can score on census up to NTMSTP times.
 Particle trajectories are stopped after NTMSTP time-steps.
@@ -163,18 +163,18 @@ as the track-length estimator or the collision estimator. Note that
 in order to obtain this stationary estimate from snapshot estimates
 an additional multiplicative factor DTIMV (\si{\second}) (see next) is applied
 to snapshot tallies in case NTMSTP $<$ 0.
-\item[\textbf{DTIMV}]
+\item[DTIMV]
 Length of each individual internal time-step (\si{\second})
 
 Default: DTIMV=1.D-02
 
-\item[\textbf{TIME0}]
+\item[TIME0]
 Initial time $t_0$ of the first time-step.
 (irrelevant, only for printout and book-keeping)
 
 Default: TIME0=0.
 
-\item[\textbf{NSNVI}]
+\item[NSNVI]
 Number of snapshot tallies computed from census arrays. In old
 EIRENE versions without dynamic allocation of storage NSNVI must be
 less or equal NSNV (see PARMUSR), and the detector functions are
@@ -182,7 +182,7 @@ user supplied in subroutine UPNUSR, see Sub-\cref{sec3.2.3}.
 
 Default: NSNVI=0
 
-\end{list}
+\end{description}
 The meaning of the next three cards is the same as for the corresponding
 cards in block 10A, 10B or 10D.
 

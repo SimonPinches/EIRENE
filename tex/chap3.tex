@@ -187,83 +187,83 @@ C  DEFAULT:
 \end{lstlisting}
 
 \textbf{Meaning of the Parameter Variables (and Defaults)}
-\begin{list}{}{}
-\item[\textbf{N1ST}]  Maximum number of standard mesh points in x-
+\begin{description}
+\item[N1ST]  Maximum number of standard mesh points in x-
 (radial) direction (block 2a)
-\item[\textbf{N2ND}] Maximum number of standard mesh points in y-
+\item[N2ND] Maximum number of standard mesh points in y-
 (poloidal) direction (block 2b)
-\item[\textbf{N3RD}] Maximum number of standard mesh points in z-
+\item[N3RD] Maximum number of standard mesh points in z-
 (toroidal) direction (block 2c)
-\item[\textbf{NADD}] Maximum number of additional zones defined by the
+\item[NADD] Maximum number of additional zones defined by the
 additional surfaces (block 2d)
-\item[\textbf{NTOR}] Maximum number of toroidal segments for
+\item[NTOR] Maximum number of toroidal segments for
 approximation of torus by cylindrical segments (block 2c)
-\item[\textbf{NLIM}] Maximum number of ``additional surfaces" (block 3b)
-\item[\textbf{NSTS}] Maximum number of non-default standard surface
+\item[NLIM] Maximum number of ``additional surfaces" (block 3b)
+\item[NSTS] Maximum number of non-default standard surface
 models (block 3a)
-\item[\textbf{NPLG}] Maximum number of points in one polygon (block 2a)
-\item[\textbf{NPPART}] Maximum number of valid parts in one polygon (block 2a)
-\item[\textbf{NKNOT}] Maximum number of knots for mesh of triangles (block 2a)
-\item[\textbf{NTRI}] Maximum number of triangles (block 2a)
-\item[\textbf{NCOORD}] Maximum number of knots for mesh of
+\item[NPLG] Maximum number of points in one polygon (block 2a)
+\item[NPPART] Maximum number of valid parts in one polygon (block 2a)
+\item[NKNOT] Maximum number of knots for mesh of triangles (block 2a)
+\item[NTRI] Maximum number of triangles (block 2a)
+\item[NCOORD] Maximum number of knots for mesh of
 tetrahedrons (block 2a)
-\item[\textbf{NTETRA}] Maximum number of tetrahedrons (block 2a)
-\item[\textbf{NSTRA}] Maximum number of strata (sources) (block 7)
-\item[\textbf{NSRFS}] Maximum number of sub-strata in one stratum (block 7)
-\item[\textbf{NSTEP}] Maximum number of different step functions used for
+\item[NTETRA] Maximum number of tetrahedrons (block 2a)
+\item[NSTRA] Maximum number of strata (sources) (block 7)
+\item[NSRFS] Maximum number of sub-strata in one stratum (block 7)
+\item[NSTEP] Maximum number of different step functions used for
 primary source sampling (block 7)
-\item[\textbf{NATM}] Maximum number of different atom species (block 4a)
-\item[\textbf{NMOL}] Maximum number of different molecule species (block 4b)
-\item[\textbf{NION}] Maximum number of different test ion species (block 4c)
-\item[\textbf{NPLS}] Maximum number of different bulk ion species (block 5)
-\item[\textbf{NADV}] Maximum number of additional volume averaged
+\item[NATM] Maximum number of different atom species (block 4a)
+\item[NMOL] Maximum number of different molecule species (block 4b)
+\item[NION] Maximum number of different test ion species (block 4c)
+\item[NPLS] Maximum number of different bulk ion species (block 5)
+\item[NADV] Maximum number of additional volume averaged
 tallies, track-length estimated (block 10a)
-\item[\textbf{NADS}] Maximum number of additional surface averaged
+\item[NADS] Maximum number of additional surface averaged
 tallies  (block 10d)
-\item[\textbf{NCLV}] Maximum number of additional volume averaged
+\item[NCLV] Maximum number of additional volume averaged
 tallies, collision estimated (block 10b)
-\item[\textbf{NSNV}] Maximum number of additional volume averaged
+\item[NSNV] Maximum number of additional volume averaged
 tallies, snapshot estimated (in time dependent mode only) (block 13)
-\item[\textbf{NALV}] Maximum number of algebraic
+\item[NALV] Maximum number of algebraic
 tallies obtained from volume
 averaged tallies (block 10c)
-\item[\textbf{NALS}] Maximum number of algebraic
+\item[NALS] Maximum number of algebraic
 tallies obtained from
 surface averaged tallies (block 10e)
-\item[\textbf{NAIN}] Maximum number of additional input tallies, not
+\item[NAIN] Maximum number of additional input tallies, not
 needed by EIRENE, but to facilitate presentation (block 14)
-\item[\textbf{NCOP}] Maximum number of tallies for coupling to external
+\item[NCOP] Maximum number of tallies for coupling to external
 codes (block 14)
-\item[\textbf{NBGK}] Maximum number of tallies for iterative \ac{BGK} scheme
+\item[NBGK] Maximum number of tallies for iterative \ac{BGK} scheme
 for neutral--neutral interactions, see MODUSR, below.
-\item[\textbf{NSD}] Maximum number of standard deviation profiles for
+\item[NSD] Maximum number of standard deviation profiles for
 volume averaged tallies (block 9)
-\item[\textbf{NSDW}] Maximum number of standard deviation profiles
+\item[NSDW] Maximum number of standard deviation profiles
 for surface averaged tallies (block 9)
-\item[\textbf{NCV}] Maximum number of covariance estimates (block 9)
-\item[\textbf{NREAC}] Maximum number of atomic reactions from external
+\item[NCV] Maximum number of covariance estimates (block 9)
+\item[NREAC] Maximum number of atomic reactions from external
 files (block 4)
-\item[\textbf{NRRC}] Maximum number of re-combination processes (blocks 4,5)
-\item[\textbf{NREI}] Maximum number of electron impact processes
+\item[NRRC] Maximum number of re-combination processes (blocks 4,5)
+\item[NREI] Maximum number of electron impact processes
 (blocks 4,5)
-\item[\textbf{NRCX}] Maximum number of charge-exchange reactions (blocks 4,5)
-\item[\textbf{NREL}] Maximum number of elastic reactions
+\item[NRCX] Maximum number of charge-exchange reactions (blocks 4,5)
+\item[NREL] Maximum number of elastic reactions
 (blocks 4,5)
-\item[\textbf{NRPI}] Maximum number of ion impact reactions (blocks 4,5)
-\end{list}
+\item[NRPI] Maximum number of ion impact reactions (blocks 4,5)
+\end{description}
 Reflection database parameters: see example above. NHD6 is the maximum
 number of different target-projectile combinations, for which databases can be included.
-\begin{list}{}{}
-\item[\textbf{NCHOR}] Maximum number of lines of sight for diagnostics module (block 12)
-\item[\textbf{NCHEN}] Maximum number of energy values for spectra computed
+\begin{description}
+\item[NCHOR] Maximum number of lines of sight for diagnostics module (block 12)
+\item[NCHEN] Maximum number of energy values for spectra computed
 in diagnostics module (block 12)
-\item[\textbf{NDX, NDY, NFL}]~
+\item[NDX, NDY, NFL]~
 
 Problem specific, in case of coupling to external code.
 See input block 14. Otherwise (stand alone mode): just set to 1.
-\item[\textbf{NPRNL}] Maximum number of particles stored on census array, for
+\item[NPRNL] Maximum number of particles stored on census array, for
 time dependent mode (block 13)
-\end{list}
+\end{description}
 
 In addition to these parameters, which depend upon the size of the
 particular problem under investigation, there are a few further
@@ -1009,8 +1009,8 @@ In case NLGEN, only a reduced set of the standard EIRENE options is available, a
 five user routines mentioned above and described below may have to be
 supplemented by some further options from
 the problem specific segment USER.F .
-\begin{list}{}{}
-\item[\textbf{Input block 5}]
+\begin{description}
+\item[Input block 5]
 
 only the INDPRO = 3, 5 and 6 options are available. INDPRO = 3 provides
 constant profiles, same value in each cell.  Hence, in case of
@@ -1018,18 +1018,18 @@ non-constant
 background parameters one has to resort to subroutine PROUSR
 (INDPRO=5), or to the code segment INFCOP (INDPRO=6) for coupling to another
 source (code) for the data of the background medium.
-\item[\textbf{Input block 7}]
+\item[Input block 7]
 only the point source option is available. In case of surface
 sources or volume sources, the subroutine SAMUSR has to be called,
 see \cref{sec3.4}.
-\item[\textbf{Input block 11}]
+\item[Input block 11]
 only the printout options are available, no graphics output
 options are available. However, subroutine PLTUSR(LOG,J) is called
 from the 2D geometry plotting routine PLT2D (LOG=.TRUE., J = number of
 surface to be plotted) and
 from the 3D geometry plotting routine PLT3D (LOG=.FALSE., J =
 number of surface to be plotted)
-\end{list}
+\end{description}
 \subsection{Subroutine INIUSR}
 \label{sec3.8.0} This subroutine is called from subroutine INPUT,
 after reading from the formatted input file and after (optional)
@@ -1090,71 +1090,69 @@ The call is
 \end{lstlisting}
 \textbf{Input}
 
-\begin{list}{}{}
-\item[\textbf{NRCELL}]
+\begin{description}
+\item[NRCELL]
 Actual cell number, for which the intersection to the cell boundary has to be found.
 If NJUMP=0, i.e., for the first call of a new trajectory (e.g., after a
 collision), the starting point X0,Y0,Z0 must be in that cell.
 In later calls for the same trajectory (NJUMP $>$ 0), NRCELL has been automatically updated,
 i.e., it must not necessarily contain the starting point
 X0,Y0,Z0, and the flight time (distance) from the starting point is accumulated.
-\item[\textbf{X0,Y0,Z0}]
+\item[X0,Y0,Z0]
 Cartesian coordinates of the starting point of a trajectory.
-\item[\textbf{VELX,VELY,VELZ}]~
+\item[VELX,VELY,VELZ]~
 
 unit (speed-) vector pointing in the
 direction of the flight.
-\item[\textbf{NJUMP}]
-\begin{list}{}{}
-\item[\textbf{$= 0$}]
+\item[NJUMP]
+\begin{description}
+\item[$= 0$]
 this is the first call for a particular trajectory.
-\item[\textbf{$\neq 0$}]
+\item[$\neq 0$]
 this is a later call for a particular trajectory. The initial position and
 speed unit vector are the same as in the previous call. Hence: the geometrical
 parameters depending only on those need not be evaluated again.
-\end{list}
-\item[\textbf{NPANU}]
+\end{description}
+\item[NPANU]
 number of EIRENE test flight (particle history). Only for diagnostic printout from TIMUSR.
-\item[\textbf{NLSRFX}]
+\item[NLSRFX]
 TRUE:  the starting position (X0,Y0,Z0) of the current trajectory is exactly on the cell boundary of cell
 NRCELL.  This information may by used inside TIMUSR
 to detect and exclude flight paths of zero length (time)
 
 FALSE:  Particle trajectory does not start at the cell boundary of cell NRCELL, but inside this cell.
-\end{list}
+\end{description}
 
 \textbf{Output}
 
-\begin{list}{}{}
-\item[\textbf{NEWCEL}]
-\begin{list}{}{}
-\item[\textbf{$< 0 $}]
+\begin{description}
+\item[NEWCEL]
+\begin{description}
+\item[$< 0$]
 trajectory has intersected one of the non-default surfaces (input block 3a).
 ABS(NEWCEL) is the number of that surface (corresponding to running index
 ISTSI in input block 3a).
-\item[\textbf{$> 0$}]
+\item[$> 0$]
 number of next cell, in which the flight would continue, if no collision event
 stops the track already earlier. I.e., cell number of the neighbor cell in the direction
 of the flight.
-\end{list}
-\item[\textbf{TIM}]
+\end{description}
+\item[TIM]
 distance (\si{\centi\metre}) from [X0,Y0,Z0]
 to the nearest intersection of the trajectory with a
 boundary of cell NRCELL.  Since the speed vector [VELX,VELY,VELZ] is normalized to one (\si{\centi\metre\per\second}),
 this distance is also the flight time (\si{\second})
-\item[\textbf{ICOS}]
+\item[ICOS]
 only relevant, if the trajectory has intersected a non-default surface.
 In this case, ICOS is the sign (+1 or -1) of the cosine of the angle of
 incidence against the surface normal (this latter unit vector, [CRTX,CRTY,CRTZ]
 may, e.g., be found in TIMUSR by a call
 to NORUSR, see \cref{sec3.8.4}).
-\item[\textbf{IERR}]
+\item[IERR]
 error flag. Presently
 any value different from 0 will lead to an immediate end of the run.
 See subroutine TIMER in code segment GEO3D.F
-
-
-\end{list}
+\end{description}
 \subsection{Subroutine VOLUSR}
 \label{sec3.8.3} The subroutine VOLUSR is called from subroutine
 VOLUME in case of LEVGEO=10. The call is
