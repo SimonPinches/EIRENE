@@ -719,7 +719,7 @@ C
 C-----------------------------------------------------------------------
 C
   994 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTEI: EXIT CALLED '
+      WRITE (iunout,*) 'ERROR IN XSTEI: EXIT CALLED'
       WRITE (iunout,*)
      .  'SPECIES INDEX OF SECONDARY PARTICLE OUT OF RANGE'
       WRITE (iunout,*) 'KK ',KK

@@ -117,7 +117,7 @@ C
      .          VELYO, VELZO, BX, BY, BZ, V0_PARBO, VELO, SCNDP,
      .          EDEL, VDEL, SIG, V0_PARB, FP, FLTEST, ZEP3, VELQ, VX,
      .          VY, VZ, VPLASP, RMAIO, RMMIO, RMIIO, BF, ZEP
-cdr  .         ,ss,ssr  ! for consistency test only. Now de-activated
+cdr  .         ,ss,ssr  ! for consistency test only. Now deactivated
       REAL(DP) :: SIG_ELIM, SIG_TOT_N, SIG_TOT_O, SIG_TEST
       INTEGER ::
 c    .           IICX, IIEI, IIPI, IIEL,
@@ -130,11 +130,11 @@ c    .
      .           IATMN, IPLSN, NCLLO, IPLSV,  I, J, IPL
       INTEGER :: NEII_RED,LGEI_RED(0:NREI)
 
-Cdr  additional arrays for  ANALOG CASCADE and SPLITTING AT COLLISIONS.
+Cdr  additional arrays for ANALOG CASCADE and SPLITTING AT COLLISIONS.
 Cdr (should be set in initialization phase, not here)
 CDR  check: are the corresponding arrays PATEI,PMLEI, PIOEI real
 CDR         or integer (1/2 particle possible?)
-      INTEGER, ALLOCATABLE, SAVE :: NAMIEI(:),NAMIPI(:)
+      INTEGER, ALLOCATABLE :: NAMIEI(:),NAMIPI(:)
 
 
 csw add n 2lines
@@ -1007,7 +1007,7 @@ C
       WRITE (iunout,*) 'IREI=  ',IREI,' IS SUPPRESSED, BUT'
       WRITE (iunout,*) 'COLLISION ESTIMATOR WAS SELECTED  '
       WRITE (iunout,*)
-     .  'SET WMINV = INFTY, OR USE TRACKLENGTH ESTIM. '
+     .  'SET WMINV = INFINITY, OR USE TRACKLENGTH ESTIM. '
       CALL EIRENE_EXIT_OWN(1)
 C
   999 WRITE (iunout,*) 'ERROR IN COLLIDE '

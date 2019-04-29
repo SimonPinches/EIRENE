@@ -51,7 +51,6 @@ C
       USE EIRMOD_CGEOM
       USE EIRMOD_CSDVI
       USE EIRMOD_CSDVI_BGK
-      USE EIRMOD_CSDVI_COP
       USE EIRMOD_COMPRT
       USE EIRMOD_COMNNL
       USE EIRMOD_COMSOU
@@ -118,7 +117,6 @@ C  NOTHING TO BE DONE, DATA ARE ALREADY FOR "SUM OVER STRATA"
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
-     .             NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .             NSIGI_SPC,TRCFLE)
       ELSE
         WRITE (iunout,*) 'ERROR IN MODBGK: DATA FOR STRATUM ISTRA= ',
@@ -155,7 +153,7 @@ cdr  PLS:  ELECTRON DENSITY PARAMETER in CR MODELS
 cdr       (NOT TO BE CONFUSED WITH THE DENSITY FACTOR BETWEEN RATES AND RATE COEFF.)
 cdr: set hard-wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3
 cdr: at this lower limit density the fits are produced such
-cdr: that they collapse to the Corona limit values.
+cdr: that they collapse to the corona limit values.
       ALLOCATE (PLS(NSTORDR))
       DEIMIN=LOG(1.D8)
       IF (NSTORDR >= NRAD) THEN
@@ -761,13 +759,13 @@ c
         ENDIF
 c
         CALL EIRENE_LEER(2)
-        WRITE (iunout,*) 'PARTICLE, MOMENTUM AND ENERGY EXCHANGE RATES '
+        WRITE (iunout,*) 'PARTICLE, MOMENTUM AND ENERGY EXCHANGE RATES'
         CALL EIRENE_LEER(1)
-        WRITE (iunout,'(1X,A8,1X,1PE12.4)') 'RATN=   ',RATN*ELCHA
-        WRITE (iunout,'(1X,A8,1X,3(1PE12.4))') 'RATM=   ',
+        CALL EIRENE_MASR1('RATN=   ',RATN*ELCHA)
+        WRITE (iunout,'(1X,A8,3X,3(1PE12.4))') 'RATM=   ',
      .                    RATM(1)*ELCHA*CNDYN,
      .                    RATM(2)*ELCHA*CNDYN,RATM(3)*ELCHA*CNDYN
-        WRITE (iunout,'(1X,A8,1X,1PE12.4)') 'RATE=   ',RATE*ELCHA
+        CALL EIRENE_MASR1('RATE=   ',RATE*ELCHA)
         CALL EIRENE_LEER(2)
         WRITE (iunout,*) 'RESIDUA (1/SEC)'
         CALL EIRENE_LEER(1)
@@ -799,9 +797,9 @@ C
 ! STORAGE FOR INPUT TALLIES 1 (TEIN) TO 13 (ADIN), WITHOUT NO.3 (DEIN)
       NRWK1=6+NPLS+NPLSTI+3*NPLSV+NAIN  ! STORAGE FOR INPUT TALLIES 1 TO 13, WITHOUT NO.3
       IF (NIDV < NRWK1) THEN
-        WRITE (iunout,*) ' PLASMA_BCKGRND ARRAY IS TOO SMALL TO HOLD '
-        WRITE (iunout,*) ' PLASMA DATA '
-        WRITE (iunout,*) ' CHECK PARAMETER NSMSTRA '
+        WRITE (iunout,*) ' PLASMA_BCKGRND ARRAY IS TOO SMALL TO HOLD'
+        WRITE (iunout,*) ' PLASMA DATA'
+        WRITE (iunout,*) ' CHECK PARAMETER NSMSTRA'
         CALL EIRENE_EXIT_OWN(1)
       END IF
       CALL EIRENE_ALLOC_BCKGRND
@@ -918,14 +916,14 @@ C  FIND CORRESPONDING 2ND CROSS-COLLISION TALLY
           CALL EIRENE_LEER(1)
           IF (TRCMOD) THEN
             WRITE (iunout,*)
-     .        'MODBGK: CORRESPONDING CROSS-COLLISION SPECIES '
+     .        'MODBGK: CORRESPONDING CROSS-COLLISION SPECIES'
             WRITE (iunout,*) 'IPLS1,IPLS2 ',IPLS1,IPLS2
           ENDIF
           IF (LMARK(IPLS1).OR.LMARK(IPLS2)) GOTO 800
 C  IPLS2 IS THE SECOND CROSS-COLLISION TALLY
           IF (TRCMOD) THEN
             WRITE (iunout,*)
-     .        'MODBGK: MODIFY PARAMETERS FOR CROSS-COLLISIONALITIES '
+     .        'MODBGK: MODIFY PARAMETERS FOR CROSS-COLLISIONALITIES'
             WRITE (iunout,*) 'IPLS1,IPLS2 ',IPLS1,IPLS2
             CALL EIRENE_LEER(1)
           ENDIF

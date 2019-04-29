@@ -39,7 +39,6 @@ C
       USE EIRMOD_CGEOM
       USE EIRMOD_CSDVI
       USE EIRMOD_CSDVI_BGK
-      USE EIRMOD_CSDVI_COP
       USE EIRMOD_COMSOU
       USE EIRMOD_CTEXT
       USE EIRMOD_COUTAU
@@ -132,7 +131,6 @@ C  NOTHING TO BE DONE
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
-     .             NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .             NSIGI_SPC,TRCFLE)
         IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
           CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRAD,NR1ST,NP2ND,NT3RD,
@@ -146,7 +144,6 @@ C  NOTHING TO BE DONE
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
-     .             NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .             NSIGI_SPC,TRCFLE)
         IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
           CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRAD,NR1ST,NP2ND,NT3RD,
@@ -161,37 +158,49 @@ C  NOTHING TO BE DONE
 
    10 CONTINUE
 C
-      IF (ISTRA.EQ.0)
-     .HEAD='SUM OVER STRATA
-     .          '
+      IF (ISTRA.EQ.0) HEAD=
+     . 'SUM OVER STRATA                                             '//
+     . '          '
       IF (ISTRA.NE.0) THEN
-      HEAD='STRATUM NO.
-     .          '
-      WRITE (HEAD(13:15),'(I3)') ISTRA
+        HEAD=
+     .   'STRATUM NO.                                               '//
+     .   '            '
+        WRITE (HEAD(13:15),'(I3)') ISTRA
       ENDIF
 C
-      HEAD0='VOLUME-AVERAGED BACKGROUND TALLY, INPUT
-     .           '
-      HEAD1='DEFAULT VOLUME-AVERAGED TALLY, TRACKLENGTH-ESTIMATED
-     .           '
-      HEAD2='ADDITIONAL VOLUME-AVERAGED TALLY, TRACKLENGTH-ESTIMATED
-     .           '
-      HEAD3='ADDITIONAL VOLUME-AVERAGED TALLY, COLLISION-ESTIMATED
-     .           '
-      HEAD4='VOLUME-AVERAGED TALLY, SNAPSHOT-ESTIMATED
-     .           '
-      HEAD5='VOLUME-AVERAGED TALLY, FOR COUPLING TO PLASMA CODE
-     .           '
-      HEAD6='BGK TALLY
-     .           '
-      HEAD7='ALGEBRAIC FUNCTION OF VOLUME-AVERAGED TALLIES
-     .           '
-      HEAD8='RELATIVE STANDARD DEVIATION
-     .           '
-      HEAD9='SPECTRUM (VS. ENERGY, EV)
-     .           '
-      HEAD10='SPECTRUM (VS. WAVELENGTH, NM)
-     .            '
+      HEAD0=
+     . 'VOLUME-AVERAGED BACKGROUND TALLY, INPUT                    '//
+     . '           '
+      HEAD1=
+     . 'DEFAULT VOLUME-AVERAGED TALLY, TRACKLENGTH-ESTIMATED       '//
+     . '           '
+      HEAD2=
+     . 'ADDITIONAL VOLUME-AVERAGED TALLY, TRACKLENGTH-ESTIMATED    '//
+     . '           '
+      HEAD3=
+     . 'ADDITIONAL VOLUME-AVERAGED TALLY, COLLISION-ESTIMATED      '//
+     . '           '
+      HEAD4=
+     . 'VOLUME-AVERAGED TALLY, SNAPSHOT-ESTIMATED                  '//
+     . '           '
+      HEAD5=
+     . 'VOLUME-AVERAGED TALLY, FOR COUPLING TO PLASMA CODE         '//
+     . '           '
+      HEAD6=
+     . 'BGK TALLY                                                  '//
+     . '           '
+      HEAD7=
+     . 'ALGEBRAIC FUNCTION OF VOLUME-AVERAGED TALLIES              '//
+     . '           '
+      HEAD8=
+     . 'RELATIVE STANDARD DEVIATION                                '//
+     . '           '
+      HEAD9=
+     . 'SPECTRUM (VS. ENERGY, EV)                                  '//
+     . '           '
+      HEAD10=
+     . 'SPECTRUM (VS. WAVELENGTH, NM)                              '//
+     . '           '
 C
       IALG=0
 C
@@ -501,12 +510,12 @@ C  USER-DEFINED ABSCISSA, XXP2D_USR
               GOTO 139
             ENDIF
 C
-C  TRY DEFAULT OPTION TO SET PLOT GRID FROM 1.ST (RADIAL) GRID
+C  TRY DEFAULT OPTION TO SET PLOT GRID FROM 1ST (RADIAL) GRID
 C
             IXSET2=0
             IF (LEVGEO.EQ.1.OR.LEVGEO.EQ.2) THEN
 C   USE RADIAL SURFACE-CENTERED GRID "RHOSRF"
-C   ...SAME FOR EACH Y- OR POLOIDAL , IF APPLICABLE
+C   ...SAME FOR EACH Y- OR POLOIDAL, IF APPLICABLE
               DO 130 I=1,NR1ST
                 XXP2D(I)=RHOSRF(I)
   130         CONTINUE
@@ -531,7 +540,7 @@ C   ...FOR EACH POLOIDAL AND TOROIDAL POSITION, IF APPLICABLE
               XXP2D(NSURF+1:NRAD)=0.
               IXSET2=1
             ELSE
-C   NO 2D PLOTOPTIONS AVAILABLE
+C   NO 2D PLOT OPTIONS AVAILABLE
             ENDIF
             XMI=XXP2D(NPLIN2(IBLD,1))*(1.+1.E-6)
             XMA=XXP2D(NPLOT2(IBLD,1))/(1.+1.E-6)

@@ -1,6 +1,6 @@
       MODULE EIRMOD_CREF
 cdr  june 17: remove parameter NFLR. Redundant. Was same as NHD6
-cdr  may 18 : perhaps unnecessary hard coding of dimensions in some arrays,
+cdr  may 18 : perhaps unnecessary hard-coding of dimensions in some arrays,
 cdr           rather than using parameters NHD1,...NHD5 ??
 
       USE EIRMOD_PRECISION
@@ -72,11 +72,10 @@ C  storage for TRIM database reflection model
       ALLOCATE (HFTR3(NHD1,NHD2,NHD3,NHD4,NHD5,NHD6))
 
 C  storage for general reflection model (both: "Behrisch-Matrix" and database models)
-C  generalized to become surface specific (allows for different values per surface)
+C  generalized to become surface-specific (allows for different values per surface)
       ALLOCATE (RINTEG(0:NLIMPS))
       ALLOCATE (EINTEG(0:NLIMPS))
       ALLOCATE (AINTEG(0:NLIMPS))
-
 
       WRITE (IUNMEM,'(A,T25,I15)')
      .       ' CREF ',(NCREF+3*(NLIMPS+1))*8 + MCREF*4 + NHD6*500 +
@@ -85,9 +84,9 @@ C  generalized to become surface specific (allows for different values per surfa
       RPROB0    => RCREF(1)
       ERMIN     => RCREF(2)
       ERCUT     => RCREF(3)
-cdr these next arrays contain hard coded assumptions on parameters NHDI.
+cdr these next arrays contain hard-coded assumptions on parameters NHDI.
 cdr Why can we not use NHDI directly?
-      ENAR      => RCREF(4:15)  ! here for NHD1=12.
+      ENAR      => RCREF( 4:15)  ! here for NHD1=12.
       DENAR     => RCREF(16:26)  ! here for NHD1=12
       WIAR      => RCREF(27:33)  ! here for NHD2=7.
       DWIAR     => RCREF(34:39)

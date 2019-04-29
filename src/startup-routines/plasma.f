@@ -139,11 +139,11 @@ cdr one profile iplsti set at a time
           TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
         case (2)
           CALL EIRENE_PROFE (HELP,TI0(IPLSTI),TI1(IPLSTI),TI2(IPLSTI),
-     .                                 TI4(IPLSTI),TI5(IPLSTI),TVAC)
+     .                            TI4(IPLSTI),TI5(IPLSTI),TVAC)
           TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
         case (3)
           CALL EIRENE_PROFS (HELP,TI0(IPLSTI),TI1(IPLSTI),
-     .                     TI5(IPLSTI),TVAC)
+     .                            TI5(IPLSTI),TVAC)
           TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
         case (4)
 c  INDPRO=4:  read tally from stream TIO(IPLSTI)
@@ -188,11 +188,11 @@ cdr first dimension of arrays:  NDIM .ne. NPLS possible ?
 cdr one profile ipls set at a time
         case (1)
           CALL EIRENE_PROFN (HELP,DI0(IPLS),DI1(IPLS),DI2(IPLS),
-     .                   DI3(IPLS),DI4(IPLS),DI5(IPLS),DVAC)
+     .                       DI3(IPLS),DI4(IPLS),DI5(IPLS),DVAC)
           DIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
         case (2)
           CALL EIRENE_PROFE (HELP,DI0(IPLS),DI1(IPLS),DI2(IPLS),
-     .                   DI4(IPLS),DI5(IPLS),DVAC)
+     .                       DI4(IPLS),DI5(IPLS),DVAC)
           DIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
         case (3)
           CALL EIRENE_PROFS (HELP,DI0(IPLS),DI1(IPLS),DI5(IPLS),DVAC)

@@ -6,7 +6,7 @@
 !pb 090309  rewritten to use automatic arrays as output buffer in mpi_reduce
 !pb 090309  loops reorganized
 !pb 270309  typos corrected
-!sw 091112  added support for csdvi_cop and csdvi_bgk
+!sw 091112  added support for csdvi_bgk
 
 cdr Nov. 15:  comments needed. copv tallies: variances for coupling ??
 cdr                            to be checked again after changes in 2013
@@ -33,19 +33,16 @@ C> - tallies
       SUBROUTINE EIRENE_CALSTR
 
       USE EIRMOD_PRECISION, ONLY: DP
-      USE EIRMOD_PARMMOD, ONLY: NATM, NION, NMOL, NPHOT, NPLS, NSTRA,
-     .                          NLMPGS, NRTALS, NCPV_STAT, NCV, NLIMPS,
+      USE EIRMOD_PARMMOD, ONLY: NATM, NION, NMOL, NPHOT, NPLS,
+     .                          NLMPGS, NRTALS, NCV, NLIMPS,
      .                          NRTAL, NADSPC, NVOLTL, NSDW, NSD, NSRFTL
       USE EIRMOD_CAI, ONLY: XMCT
       USE EIRMOD_COMUSR, ONLY: NATMI, NIONI, NMOLI, NPHOTI, NPLSI
-      USE EIRMOD_COMSOU, ONLY: NLSRON
       USE EIRMOD_CESTIM, ONLY: ESTIML, ESTIMS, ESTIMV
       USE EIRMOD_CSPEZ, ONLY: LOGATM, LOGION, LOGMOL, LOGPHOT, LOGPLS
       USE EIRMOD_COMPRT, ONLY: ISTRA
-      USE EIRMOD_CPES, ONLY: MY_PE, NPESTA, NEED_CALSTR, CALC_STRATUM
+      USE EIRMOD_CPES, ONLY: NEED_CALSTR, CALC_STRATUM, GET_STRATUM_COMM
       USE EIRMOD_CSDVI, ONLY: NSIGI_SPC, SDVI1, SDVI2, SIGMAC, SGMCS
-      USE EIRMOD_CSDVI_COP, ONLY: EE_COP, EES_COP, SDVIA_COP, SGMS_COP,
-     .                            SIGMA_COP, STV_COP, STVS_COP
       USE EIRMOD_CSDVI_BGK, ONLY: EE_BGK, EES_BGK, NBGV_STAT, SDVIA_BGK,
      .                            SGMS_BGK, SIGMA_BGK, STV_BGK, STVS_BGK
       USE EIRMOD_COUTAU
@@ -61,44 +58,27 @@ C> - tallies
       real(dp), allocatable :: dummyw(:), helpw(:)
       integer :: calstr_comm
       integer :: ier1, ier, ir, i, ispc, my_pe_gr,
-     .           mxdim, ns, j, istr
+     .           mxdim, ns, j
       logical, allocatable :: lhelp(:)
-      logical :: lhelpa(0:natm),lhelpm(0:nmol), lhelpi(0:nion),
-     .           lhelpp(0:npls), lhelpph(0:nphot),
-     .           use_split
-
-C Perform split only if there is in total more than one master process.
-C Otherwise use mpi_comm_world as communicator to avoid unnecessary
-C split.
-      if ( all( npesta == 0 .or. .not. nlsron ) ) then
-        calstr_comm = mpi_comm_world
-        use_split = .FALSE.
-      else
-!pb     istra is a pointer, type check failure with Intel compiler under Windows
-        istr = istra
-        call mpi_comm_split (mpi_comm_world,istr,my_pe-npesta(istra),
-     .                       calstr_comm,ier)
-        if (ier /= mpi_success) then
-          call eirene_masage
-     .    ('ERROR IN SUBROUTINE EIRENE_CALSTR at mpi_comm_split.')
-          call eirene_exit_own(1)
-        end if
-        use_split = .TRUE.
-      end if
+      logical :: lhelpa(0:natm), lhelpm(0:nmol), lhelpi(0:nion),
+     .           lhelpp(0:npls), lhelpph(0:nphot)
 
 C This subroutine is only called if PROCFORSTR(ISTRA,MY_PE), check is duplication.
 C Could not check whether need_calstr(istra) can be moved outside of this subroutine.
       if( need_calstr(istra) .and. calc_stratum(istra)) then
 CDR  more than one single processor was active on this stratum ISTRA,
 CDR  and my_pe is one of them
+        calstr_comm = get_stratum_comm(istra)
 
-        call mpi_barrier(calstr_comm,ier)
-c
 c  my_pe_gr=0 indicates: my_pe is the master processor for istra
 C Would it make more sense to turn my_pe_gr into a logical?
 C Need to clarify what eirene_calstr_usr does with my_pe_gr.
-c
-        my_pe_gr = my_pe-npesta(istra)
+        call mpi_comm_rank(calstr_comm, my_pe_gr, ier)
+        if (ier /= mpi_success) then
+          call eirene_masage
+     .     ('ERROR IN SUBROUTINE EIRENE_CALSTR at mpi_comm_rank.')
+          call eirene_exit_own(1)
+        end if
 
         mxdim = max(nvoltl,nsrftl,nsd,nsdw,
      .              nmoli+1,natmi+1,nioni+1,nphoti+1,nplsi+1)
@@ -307,56 +287,6 @@ C  covariances between two volume-averaged tallies
           if (my_pe_gr==0) sgmcs(2,1:ncv) = helpv(1:ncv)
         end if
 
-csw 09nov2012 reduce csdvi_cop
-        if (ncpv_stat > 0) then
-          allocate(dummyw(max(nrtals,ncpv_stat)+1))
-          allocate(helpw(max(nrtals,ncpv_stat)+1))
-
-          do i=1,ncpv_stat
-            dummyw(1:nrtals) = sigma_cop(i,1:nrtals)
-            call mpi_reduce(dummyw,helpw,nrtals,
-     .                      mpi_double_precision,mpi_sum,
-     .                      0,calstr_comm,ier1)
-            if(my_pe_gr==0) sigma_cop(i,1:nrtals) = helpw(1:nrtals)
-
-            dummyw(1:nrtals) = stv_cop(i,1:nrtals)
-            call mpi_reduce(dummyw,helpw,nrtals,
-     .                      mpi_double_precision,mpi_sum,
-     .                      0,calstr_comm,ier1)
-            if(my_pe_gr==0) stv_cop(i,1:nrtals) = helpw(1:nrtals)
-
-            dummyw(1:nrtals) = sdvia_cop(i,1:nrtals)
-            call mpi_reduce(dummyw,helpw,nrtals,
-     .                      mpi_double_precision,mpi_sum,
-     .                      0,calstr_comm,ier1)
-            if(my_pe_gr==0) sdvia_cop(i,1:nrtals) = helpw(1:nrtals)
-
-            dummyw(1:nrtals) = ee_cop(i,1:nrtals)
-            call mpi_reduce(dummyw,helpw,nrtals,
-     .                      mpi_double_precision,mpi_sum,
-     .                      0,calstr_comm,ier1)
-            if(my_pe_gr==0) ee_cop(i,1:nrtals) = helpw(1:nrtals)
-          enddo
-
-          call mpi_reduce(sgms_cop(1:ncpv_stat),helpv,ncpv_stat,
-     .                    mpi_double_precision,mpi_sum,
-     .                    0,calstr_comm,ier1)
-          if (my_pe_gr==0) sgms_cop(1:ncpv_stat) = helpv(1:ncpv_stat)
-
-          call mpi_reduce(stvs_cop(1:ncpv_stat),helpv,ncpv_stat,
-     .                    mpi_double_precision,mpi_sum,
-     .                    0,calstr_comm,ier1)
-          if (my_pe_gr==0) stvs_cop(1:ncpv_stat) = helpv(1:ncpv_stat)
-
-          call mpi_reduce(ees_cop(1:ncpv_stat),helpv,ncpv_stat,
-     .                    mpi_double_precision,mpi_sum,
-     .                    0,calstr_comm,ier1)
-          if (my_pe_gr==0) ees_cop(1:ncpv_stat) = helpv(1:ncpv_stat)
-
-          deallocate(dummyw)
-          deallocate(helpw)
-        endif
-csw
 
 csw 09nov2012 reduce csdvi_bgk
         if (nbgv_stat > 0) then
@@ -443,13 +373,9 @@ c  collect user or case-specific information from all PEs that worked on
 c  stratum no. ISTRA.  Depends on ...usr.f  or ...cop.f routines.
 c  Strictly there should also be an analogue call to eirene_calstr_cop.f
 
-        call mpi_barrier(calstr_comm,ier)
         call eirene_calstr_usr (my_pe_gr, calstr_comm)
 
       endif
-
-      if (use_split) call mpi_comm_free (calstr_comm,ier)
-      call mpi_barrier(mpi_comm_world,ier)
 
       if (allocated(helpv)) deallocate (helpv)
       if (allocated(dummyv)) deallocate (dummyv)

@@ -86,7 +86,7 @@ C
       select case (LEVGEO)
       case (1)
 C
-C 1D SLAB-MODEL, DY = YDF, DZ = ZDF
+C 1D SLAB MODEL, DY = YDF, DZ = ZDF
 C
         DO 110 IR=1,NR1STM
           AREA1(IR)=(RSURF(IR+1)-RSURF(IR))*YDF

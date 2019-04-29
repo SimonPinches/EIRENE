@@ -344,7 +344,7 @@ csw 03sep2013 AARRRGH!!!!          read(iunin,*) onetwo(i),limpos(i)
           N=max(npplg/3,1)*4
 csw 03sep2013
           IF(NASMOD.NE.N) THEN
-            WRITE(iunout,*) "WARNING: NASMOD.NE.npplg", NASMOD,npplg
+            WRITE(iunout,*) "WARNING: NASMOD.NE.NPPLG", NASMOD,npplg
             DO I=1,NASMOD
               WRITE(iunout,'(''P'',I3,'' FOR SEG '',I3)')
      w                   ONETWO(I),LIMPOS(I)
@@ -357,31 +357,31 @@ cdr  NASMOD = N = max(npplg/3,1)*4
               write(iunout,*) 'Geometry fixup skipped'
               goto 1001
             end if
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1       '' LINKED TO INNER LEFT TARGET'')') onetwo(1),limpos(1)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1       '' LINKED TO OUTER LEFT TARGET'')') onetwo(2),limpos(2)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1       '' LINKED TO INNER RIGHT TARGET'')') onetwo(3),limpos(3)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1       '' LINKED TO OUTER RIGHT TARGET'')') onetwo(4),limpos(4)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO INNER LEFT TARGET'')') onetwo(1),limpos(1)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO OUTER LEFT TARGET'')') onetwo(2),limpos(2)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO INNER RIGHT TARGET'')') onetwo(3),limpos(3)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO OUTER RIGHT TARGET'')') onetwo(4),limpos(4)
           else if (npplg.eq.6) then
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1       '' LINKED TO INNER LEFT TARGET'')') onetwo(1),limpos(1)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1       '' LINKED TO INNER LEFT TARGET'')') onetwo(2),limpos(2)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1       '' LINKED TO OUTER RIGHT TARGET'')') onetwo(3),limpos(3)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1       '' LINKED TO OUTER RIGHT TARGET'')') onetwo(4),limpos(4)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1       '' LINKED TO OUTER LEFT TARGET'')') onetwo(5),limpos(5)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1       '' LINKED TO OUTER LEFT TARGET'')') onetwo(6),limpos(6)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1       '' LINKED TO INNER RIGHT TARGET'')') onetwo(7),limpos(7)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1       '' LINKED TO INNER RIGHT TARGET'')') onetwo(8),limpos(8)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO INNER LEFT TARGET'')') onetwo(1),limpos(1)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO INNER LEFT TARGET'')') onetwo(2),limpos(2)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO OUTER RIGHT TARGET'')') onetwo(3),limpos(3)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO OUTER RIGHT TARGET'')') onetwo(4),limpos(4)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO OUTER LEFT TARGET'')') onetwo(5),limpos(5)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO OUTER LEFT TARGET'')') onetwo(6),limpos(6)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO INNER RIGHT TARGET'')') onetwo(7),limpos(7)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO INNER RIGHT TARGET'')') onetwo(8),limpos(8)
           else
             write(iunout,*) 'Case NPPLG = ',NPPLG,' not coded. '
           end if
@@ -705,31 +705,31 @@ C INNER RIGHT TARGET
               write(iunout,*) 'Geometry fixup skipped'
               goto 1001
             end if
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1       '' LINKED TO INNER LEFT TARGET'')') onetwo(1),limpos(1)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1       '' LINKED TO OUTER LEFT TARGET'')') onetwo(2),limpos(2)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1       '' LINKED TO INNER RIGHT TARGET'')') onetwo(3),limpos(3)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1       '' LINKED TO OUTER RIGHT TARGET'')') onetwo(4),limpos(4)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO INNER LEFT TARGET'')') onetwo(1),limpos(1)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO OUTER LEFT TARGET'')') onetwo(2),limpos(2)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO INNER RIGHT TARGET'')') onetwo(3),limpos(3)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO OUTER RIGHT TARGET'')') onetwo(4),limpos(4)
           else if (npplg.eq.6) then
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1       '' LINKED TO INNER LEFT TARGET'')') onetwo(1),limpos(1)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1       '' LINKED TO INNER LEFT TARGET'')') onetwo(2),limpos(2)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1       '' LINKED TO OUTER RIGHT TARGET'')') onetwo(3),limpos(3)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1       '' LINKED TO OUTER RIGHT TARGET'')') onetwo(4),limpos(4)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1       '' LINKED TO OUTER LEFT TARGET'')') onetwo(5),limpos(5)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1       '' LINKED TO OUTER LEFT TARGET'')') onetwo(6),limpos(6)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1       '' LINKED TO INNER RIGHT TARGET'')') onetwo(7),limpos(7)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,
-     1       '' LINKED TO INNER RIGHT TARGET'')') onetwo(8),limpos(8)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO INNER LEFT TARGET'')') onetwo(1),limpos(1)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO INNER LEFT TARGET'')') onetwo(2),limpos(2)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO OUTER RIGHT TARGET'')') onetwo(3),limpos(3)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO OUTER RIGHT TARGET'')') onetwo(4),limpos(4)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO OUTER LEFT TARGET'')') onetwo(5),limpos(5)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO OUTER LEFT TARGET'')') onetwo(6),limpos(6)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO INNER RIGHT TARGET'')') onetwo(7),limpos(7)
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO INNER RIGHT TARGET'')') onetwo(8),limpos(8)
           else
             write(iunout,*) 'Case NPPLG = ',NPPLG,' not coded. '
           end if
@@ -849,7 +849,7 @@ C
               end do
             endif
           else
-            write(*,*) 'Setting IGJUM3 to 0 for ',NSURF,NLIMI
+            write(iunout,*) 'Setting IGJUM3 to 0 for ',NSURF,NLIMI
             if (nlimpb.ge.nlimps) then
               do I=1,NLIMI
                 do J=1,NOPTIM

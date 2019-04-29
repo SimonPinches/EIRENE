@@ -45,7 +45,7 @@ cdr  next 5 lines: status of generator, initialized with previous call to h1rnin
 *
       IF (FIRST) THEN
          IF (FLAG .NE. CHECK) THEN
-cdr         WRITE(6,*) ' H1RN (RANMAR): INITIALIZED WITH DEFAULT SEED'
+cdr         WRITE(IUNOUT,*) ' H1RN (RANMAR): INITIALIZED WITH DEFAULT SEED'
 cdr  changed back to single default seed also used in ranset
 cdr         ISEED1      = 12345
 cdr         ISEED2      = 98765

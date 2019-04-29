@@ -1,10 +1,10 @@
 c  new in 2004:
 c  density models to contruct background data from other given data :
-c      Saha, Boltzmann, Corona, Colrad, File (fort.13, or: fort.10)
+c      Saha, Boltzmann, corona, col-rad, file (fort.13, or: fort.10)
 c
 c  presently:  "File" and "Boltzmann": may affect electron density.
 c              hence: done prior to electron density, etc...
-c              "Corona", "Colrad", "Saha": need electron density as
+c              "corona", "colrad", "Saha": need electron density as
 c                            input, or, at least, do not affect n_e
 c                            hence: done after electron density, etc...
 C  may05
@@ -99,7 +99,6 @@ c   LGVAC(...,0)     : background vacuum flag
       USE EIRMOD_CESTIM
       use EIRMOD_csdvi
       use EIRMOD_csdvi_bgk
-      use EIRMOD_csdvi_cop
       use EIRMOD_comsou
       use EIRMOD_cspei
 
@@ -196,7 +195,7 @@ c             ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
           CASE (FORT//'10')
 
 c   itold = ??
-c   check: itold ge 0 and itold.le 3
+c   check: itold ge 0 and itold le 3
             IOLD=TDMPAR(IPLS)%TDM%ISP(1)
             IOLDTI=MPLSTI(IOLD)
             IOLDV=MPLSV(IOLD)
@@ -835,7 +834,6 @@ C  NOTHING TO BE DONE
      .               NSDVI1,SDVI1,NSDVI2,SDVI2,
      .               NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .               NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
-     .               NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .               NSIGI_SPC,TRCFLE)
           IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
             CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRTAL,NR1TAL,NP2TAL,NT3TAL,
@@ -849,7 +847,6 @@ C  NOTHING TO BE DONE
      .               NSDVI1,SDVI1,NSDVI2,SDVI2,
      .               NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .               NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
-     .               NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .               NSIGI_SPC,TRCFLE)
           IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
             CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRTAL,NR1TAL,NP2TAL,NT3TAL,
