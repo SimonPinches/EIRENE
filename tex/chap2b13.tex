@@ -148,9 +148,9 @@ additional and NSTSI non-default standard surfaces.
 The time-surface is transparent for NTMSTP-1 steps
 and absorbing afterwards, i.e., absorbing at time t = NTMSTP $\times$ DTIMV.
 Snapshot tallies are averages over NTMSTP time-steps.
-\\
+
 Default: NTMSTP=1
-\\
+
 If NTMSTP $<$ 0, then each particle can score an unlimited number of
 times on census, i.e., the time-surface is always transparent. This
 option can be used for initialization of census arrays for time
@@ -206,5 +206,5 @@ The actual number of a score in subroutine TIMCOL for the present
 stratum ISTRA  is \textbf{IPRNLS}, and after
 the score IPRNLS is increased by one. IPRNLS is reset to zero at the
 beginning of sampling for each stratum.
-\\
+
 Scaling of census array fluxes:   to be written

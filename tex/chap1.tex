@@ -39,14 +39,15 @@ to an increase in the dimensionality by one, by adding a time
 co-ordinate and treating it, formally, in a rather symmetric
 fashion with the other spatial coordinates. See also reference
 \cite{kn:Reiter94}.
-\\
+
 Two kinds of non-linearities may be accounted for:
-\\
+
 In \cref{sec1.7} the nonlinear behavior resulting from
 background data, which depend on neutral particle transport
 (sources and sinks), is discussed. The algorithm of the B2-EIRENE
 code system \cite{kn:Reiter92b}
-is described. More details on this can be found in the report \cite{kn:Maddison94}.\\
+is described. More details on this can be found in the report \cite{kn:Maddison94}.
+
 In the final section of this introductory \cref{sec1.8} the
 non-linear \ac{BGK} formalism and the \ac{DMCS} method
 for self collisions between neutral particles, as implemented in
@@ -96,7 +97,7 @@ reads:
 \[
 n_i(\vr,t) = \int d^3{v} \ f(\vr,\vv,i,t)
 \]
-\\
+
 Instead of $\vv$ we sometimes utilize the kinetic energy
 $E$, $E=m/2 \cdot v^2$, and the unit (speed) vector
 $\vOmega = \vv/|\vv|$ in the
@@ -111,7 +112,7 @@ f(\vr, \vv, i ,t)   = \left(\frac{m}{v}\right)
 \]
 The distribution function in the form of $\tilde f$ clearly remains meaningful also in the case of massless particles (photons),
 i.e.\ for applications of EIRENE to radiation transfer problems.
-\\
+
 The notation used now may appear to be unnecessarily complicated, but we intent to prepare here already the
 more general discussion in \cref{sec1.01} on the \ac{WCU} equation.
 
@@ -338,7 +339,7 @@ f(\vv') \nonumber \\
 \addtocounter{equation}{-1}
 which, in the linear case (no self collisions, $f_b$ given externally) is a linear equation for the distribution
 function $f = f_{i_0}(\vx,\vv,t)$ for species $i_0$.
-\\
+
 Clearly a computationally crucial simplification is provided in this linear case, which means neglect of all
 interactions within the community of species $``i"$, retaining only: $i_0 + b \rightarrow \cdots$ events.
 In practice for neutral particle (species group $i$) transport in plasmas (species group $b$) this mostly means neglect of neutral--neutral interaction,
@@ -362,7 +363,7 @@ problems is rather straight forward and the procedure in the
 EIRENE code for such cases is described in \cref{sec1.6} below.
 This is because in a Monte Carlo transport procedure
 time can be treated in a completely symmetric fashion with the spatial coordinates.
-\\
+
 For stationary (time-independent) problems the (scalar) transport flux (``angular flux") $\Phi$, where
 \begin{subequations}
 \begin{equation}\label{trans-flux}
@@ -474,7 +475,7 @@ to $(i'l',b'l_1')$.
 Again, as already in the Boltzmann equation restricted to elastic collisions, the pre- and post-collision velocities
 $\vv',\vV'$ and $\vv,\vV$, respectively, are not independent, but constrained by momentum and energy conservation, and the corresponding constrains
 are contained in the multi-differential cross sections, e.g.\ in form of delta functions.
-\\
+
 For more than two post-collision objects (e.g.\ fission, dissociative excitation, stimulated radiation emission, etc.), this notation is readily generalized by
 adding more superscript labels and more post-collision velocities.
 
@@ -583,7 +584,8 @@ comprises all collision processes with no next generation
 particles within the community of particles considered by the coupled set of kinetic transport equations.
 (Ionisation of a neutral atom is a loss, if the resulting ion is not considered further, or dealt with
 by a \ac{CFD} code outside the Monte Carlo procedure).
-\\The kernel $T$ describes the motion of the test
+
+The kernel $T$ describes the motion of the test
 particles between the collision events. Let, again,  $
 \vOmega'$ denote the unit vector in the direction of
 particle flight $\vv'/|\vv'|$, and let $ \vOmega_2'$ and $
@@ -648,7 +650,8 @@ ds \Sigma_t ( \vr '  +  s \vOmega )
 \end{displaymath}
 in equation \cref{eq1.5} is well known as ``optical thickness of
 the medium" in linear transport theory.
-\\ The inhomogeneity $S$ in equation \cref{eq1d} is, excluding
+
+The inhomogeneity $S$ in equation \cref{eq1d} is, excluding
 normalization, the distribution density of first collisions,
 whereas the integral term in equation \cref{eq1d} describes the
 contribution to $\Psi$ from all higher generations. The quantity $S$
@@ -686,7 +689,8 @@ It can be shown that a unique solution $\Psi(x)$ exists subject to
 appropriate boundary conditions and under only mild restrictions
 (basically on the constants $c_k$ and $ p_a $) to ensure that the
 particle generation process stays sub-critical.
-\\ Usually, a detailed knowledge of $\Phi$ or $\Psi$
+
+Usually, a detailed knowledge of $\Phi$ or $\Psi$
 is not required, but only a set of ``responses", R, defined by
 \begin{equation} \label{eq1.7}
 R   = \quad  < \Psi | g_c > \quad  =   \int dx   \Psi (x)
@@ -817,7 +821,7 @@ R   =   E(X^c )   =   \int  d( \omega )   X^c_g ( \omega ) h( \omega
 with $h(\omega)$ being the probability density for finding a chain
 $\omega$  from the Markov process defined above, i.e.\ $X^c$ is an
 unbiased estimator for response $R$.
-\\
+
 Other estimators (``track-length type estimators") are employed
 frequently. These estimators are unbiased as well but have higher
 moments different from those of $ X^c$. Instead of evaluating the
@@ -845,7 +849,8 @@ results in a track-length type ``conditional expectation
 estimator" $ X^e$, which, together with $X^c$ and the
 ``traditional" track-length estimator $ X^t$, may be used as one
 further option in the EIRENE code.
-\\ This estimator $ X^e$ is obtained from $ X^t$ by
+
+This estimator $ X^e$ is obtained from $ X^t$ by
 extending the line integration, which is restricted to the path
 from $ x_l$ to $ x_{l+1}$ in formula \cref{eq1.11}, to the line
 segment from $ x_l$ to $ x_{end}$. Here $ x_{end}$ is the nearest
@@ -1067,7 +1072,7 @@ function, $ g(x)$, if a weighting factor,
 is included in the formula for the estimator $X(\omega )$, y being
 an actual random number generated from $ g $. This choice
 can in some cases increase the efficiency of the algorithm.
-\\
+
 The only restrictions on the choice of non-analog sampling functions $g(x)$
 (besides practical ones) are:
 
@@ -1654,7 +1659,8 @@ C_{wf}$ since $C_{wt}$ is generally a mono-energetic and cosine
 angular distribution or a Maxwellian flux distribution at wall
 temperature, and $C_{wa}$ only describes the transition into the
 ``limbo state" $ x_a$ ``absorbed particle".
-\\ It is usual
+
+It is usual
 in neutral gas models to replace $C_{wf}$ with numerical or
 analytical fits to moments of $C_{wf}$, e.g., such as the
 particle and energy reflection coefficients $ C_P$ and $ C_E$. The
@@ -1756,7 +1762,8 @@ two parameters e1 and e2 account for particle and energy
 reflection coefficients that continuously increase with incident
 angle (recommended: e1=1, e2=0.5 from comparison with TRIM code
 calculations, see below).
-\\ The third parameter e3 can be used to take into
+
+The third parameter e3 can be used to take into
 account an increasing contribution of specular reflection at near
 grazing incidence. e3=0 gives a pure cosine distribution, e3=1
 reproduces the distribution given in \cite{kn:Heifetz}. In general
@@ -1773,7 +1780,7 @@ $ \vartheta_{in} $.
 A simpler, ``fixed momentum accommodation coefficient model", in which the dependence of this decomposition
 on incident angle $\vartheta_{in} $ is absent, can also be activated, e.g.\  for testing, (see flag: AINTG
 in cards for surface reflection models, \cref{sec2.6}).
-\\
+
 The interaction of neutrals and ions with a solid surface for
 target-projectile combinations other than H onto stainless steel
 are modelled using a reduced energy scaling.
@@ -1858,7 +1865,8 @@ complete option available at present and recommend to further
 extend the databases to additional projectile - target
 combinations, and in particular to sputtering and self-sputtering
 data (such as, e.g., C onto C, or Be, etc.).
-\\ For an INTOR benchmark case for neutral particle Monte Carlo Codes
+
+For an INTOR benchmark case for neutral particle Monte Carlo Codes
 \cite{kn:Benchmark} the choice of a particular surface reflection
 model had no strong impact on the results. This was shown by
 running the EIRENE code with all three models (``Behrisch Matrix",
@@ -2113,7 +2121,8 @@ should be chosen to be $ T_{i} / {\tilde{T}_{\pi,i}}   =   1 - 0.6026  \cdot
 {\cal V}_{\pi}$. This choice optimizes the statistical performance in the given Mach number range. In
 principle, of course, any other $\tilde{T_{\pi}} $ could have been used
 without introducing bias into
-the algorithm.\\
+the algorithm.
+
 The mean energy of ions generated by this sampling procedure is
 (note: the distribution $\Gamma^0$ is  already normalized to flux
 one):
@@ -2413,7 +2422,8 @@ cases is only around 10 - 20 \%, so these options have not been supported since 
 \minisec{The geometry module of EIRENE}
 
 The following operations have to be executed by the block:
-\\Suppose the three dimensional
+
+Suppose the three dimensional
 computational volume is discretized by a mesh of $n$ surfaces
 \mbox{$S_i, i = 1, 2, \dots, n$.} Each of these surfaces is defined by a
 set of $\Lambda_i$ equations (unbounded surfaces):
@@ -2446,7 +2456,7 @@ sampled from the transport kernel $T(l)$ \cref{eq1.5} is reached,
 allows to generate histories with all information available along
 the track to evaluate the estimators mentioned in
 \cref{sec1.1}.
-\\
+
 In EIRENE $f$ and $g$ are general \ordinalnum{2} order (with linear surfaces
 as special case) algebraic equations of the form
 \begin{align}
@@ -2784,7 +2794,7 @@ to be too low  to provide strong convergence on a regular basis and for full sca
 In these latter, more complex cases the entropy producing collisions and surface interactions lead to a rapid de-correlation
 of trajectories, leading to a low level of correlation only, while, with the same algorithm, that level of correlation
 can be very high in geometrically and/or physically very simple cases.
-\\
+
 \medskip
 
 For this consider two plasma solutions obtained with a \ac{CFD} plasma code coupled iteratively to EIRENE,
@@ -2902,7 +2912,7 @@ the report: N.A.~Derzko, ``Review of Monte Carlo Methods in kinetic Theory", UTI
 University of Toronto, Institute of aerospace studies, April 1972.
 (This review also includes a discussion of a third Monte Carlo scheme, the so called ``Integral evaluation method" of
 A.~Nordsieck and B.L.~Hicks.)
-\\
+
 In rarefied gas dynamics problems for fusion reactor design, in particular for the ITER divertor design, the Haviland method,
 but applied to a Boltzmann equation with a (non-linear) \ac{BGK} collision integral,
 was first developed for the EIRENE code around 1995 (see Reiter et al.\ \cite{kn:Reiter96}),
@@ -3049,7 +3059,8 @@ explanation (e.g.\ diffraction, or interference). However, the
 linear wave-optics phenomenon of polarization and the linear
 quantum optics phenomenon of fluorescence [absorption of a certain
 wavelength (line), and re-emission at another wavelength
-(line)] can conveniently be added to our linear geometric optics model.\\
+(line)] can conveniently be added to our linear geometric optics model.
+
 % Oxenius
 We are concerned with the kinetic theory of interacting particles
 and photons, where the behaviour of each species is governed by a
@@ -3261,7 +3272,8 @@ There are two classes of simple collision models: deterministic and stochastic.
 The energy and/or velocity of charged test particles are modified in a fully deterministic way along the
 particle trajectory. I.e.: along with orbit integration also energy, or certain velocity components
 are evolved according to ordinary (non-stochastic) differential equations, using appropriate relaxation times.
-\subparagraph{A1: Only energy relaxation}\hfill \\
+\subparagraph{A1: Only energy relaxation}\hfill
+
 The simplest Coulomb Collision model is an averaged \acs{BGK}-type
 relaxation of energy of test particles towards the mean energy of the Maxwellian
 background ions. In the earliest versions of the EIRENE code (mid
@@ -3377,7 +3389,8 @@ of a plane parallel (mono-energetic) flux, and energy exchange of this non-equil
 with a Maxwellian background
 vanishes at a critical energy $\varepsilon'$ distinct from from $3/2 T_b$.
 \cite[paragraph 19]{kn:Trubnikov}.
-\subparagraph{A2: \ac{BGK} Coulomb-Collision operator}\hfill \\
+\subparagraph{A2: \ac{BGK} Coulomb-Collision operator}\hfill
+
 (Diploma Thesis Felix Reimold\dots)
 \subsubsection{The Fokker-Planck Collision Model}
 \minisec{A:}

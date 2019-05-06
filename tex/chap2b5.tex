@@ -383,7 +383,8 @@ each bulk species is set, velocity is given in \si{\centi\metre\per\second}.
 
 Negative value of INDPRO(4) means: Mach number
 units instead. The sound speed \emph{cs} is taken to be the isothermal
-ion acoustic speed of species IPLS.\\
+ion acoustic speed of species IPLS.
+
 \emph{ABS(INDPRO(4)} is then used as flag for the choice of profile type.
 
 Values of INDPRO(4) larger than 10: use only the last digit, and only one common flow
@@ -470,7 +471,8 @@ $P(x) = P1+( P0 - P1 ) \cdot
 \medskip
 
 in particular :  $\begin{array}{l} x = RHOSRF(1)   \rightarrow   P(x) =
-P0 \\
+P0 
+
 x = P5   \rightarrow   P(x) = P1 \end{array}$
 
 \medskip
@@ -528,7 +530,8 @@ NDAT data must be defined on
 
 RHO(J), J = 1, NDAT
 e.g.\ by using the profile parameters P0, \dots, P5 and any user
-supplied profile function. See \cref{sec3.6}.\\
+supplied profile function. See \cref{sec3.6}.
+
 (NDAT=NSURF)
 
 The flag INDEX is as for the ``INDPRO = 6" option, see below, and

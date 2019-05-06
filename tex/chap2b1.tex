@@ -64,7 +64,8 @@ Each text card must start with *. The first of these text lines
 will appear on all plots, the full text will be echoed at the
 beginning of the printout file
 \item[NPRLL]
-(Formerly at this place: NMACH, flag for machine precision (round off errors), now: out.) \\
+(Formerly at this place: NMACH, flag for machine precision (round off errors), now: out.)
+
 The new (2018) flag NPRLL controls the various options for (MPI) parallelization modes, i.e.\ the strategies
 to assign processes  to strata. This is defined in PEDIST.f (initialization phase)
 by filling the matrix PROCFORSTRA(strata,processors).
@@ -73,7 +74,8 @@ by filling the matrix PROCFORSTRA(strata,processors).
 the remarks towards the end of \cref{sec1.2.1b}).
 \item[$= 2$] not in use
 \item[$= 3$] not in use
-\item[$= 0$] new default: ``embarrassingly parallel mode'': all processes do the full MC job (all strata).\\
+\item[$= 0$] new default: ``embarrassingly parallel mode'': all processes do the full MC job (all strata).
+
 Most transparent, and simplest method, load balancing guaranteed. But perhaps not optimal wrt.\ communication
 \item[$= -1$] user defined distribution of strata to processes (subr.\ PEDIST, calls: PEDIST\_USR.f)
 \end{description}
@@ -248,7 +250,8 @@ for book keeping and printout. EIRENE labels the time steps from NTIME0 to NTIME
 \item[NTIME]
 Total number of iterations (``cycles") in time carried out in one single run.
 The total time
-per cycle is defined as NTMSTP $\cdot$ DTIMV (see below, input block 13).\\
+per cycle is defined as NTMSTP $\cdot$ DTIMV (see below, input block 13).
+
 After each time-cycle the subroutine TMSTEP is called.
 In this routine the ``census arrays", which store the test particle
 population at time $t_i$:
@@ -277,8 +280,10 @@ for the distribution function
 $f(\underline{r},\underline{v},i,t=t_0)$. The source strength FLUX
 is computed from that initial condition.
 \item[NOPTIM]
-Default: NRAD, = total number of grid cells \\
-(verify this default in case of older versions: there it may have been NOPTIM=1)\\
+Default: NRAD, = total number of grid cells
+
+(verify this default in case of older versions: there it may have been NOPTIM=1)
+
 NOPTIM is the first dimension of the arrays IGJUM3(ICELL,ISURF), which may be
 used for optimizing code performance by reducing unnecessary geometrical calculations.
 See `CH3-cards' in input block 8 (\cref{sec2.8}).
@@ -411,11 +416,14 @@ Their presence is identified by the starting character string CFILE of these car
 \item[DBHANDLE]
 Name of the database which is specified in this ``CFILE" card.
 The format of a data file is identified in EIRENE by its name.
-Possible database names currently recognized are:\\
+Possible database names currently recognized are:
+
 AMJUEL, HYDHEL, METHAN, H2VIBR, HYDRTC, ADAS,  SPECTR,
 PHOTON, POLARI,
-\medskip\\
-SPUTER, TRIM,  TRMSGL, \\
+\medskip
+
+SPUTER, TRIM,  TRMSGL,
+
 with volumetric collision databases in the first block, and
 surface interaction databases in the second.
 \item[DBFNAME]
@@ -439,15 +447,24 @@ data files also different default names are recognized.
 
 Default file names to be used in this local directory currently are
 
-AMJUEL, \\
-HYDHEL, \\
-METHAN or ``METHANE", for database name METHAN\\
-H2VIBR,\\
-HYDRTC,  \\
-SPECTR, \\
-PHOTON, \\
-POLARI, \\
-SPUTER, \\
+AMJUEL,
+
+HYDHEL,
+
+METHAN or ``METHANE", for database name METHAN
+
+H2VIBR,
+
+HYDRTC,
+
+SPECTR,
+
+PHOTON,
+
+POLARI,
+
+SPUTER,
+
 TRIM or ``fort.21",  for database name TRIM
 
 For ADAS (AMdata) and TRMSGL (Surfacedata) there is an exception from this scheme.
@@ -461,11 +478,11 @@ And input variable DBFNAME
 specifies only the path to the directory
 which is the root of the data tabulated in \ac{ADAS} (tabular) format and the TRIM format
 data tree, respectively.
-\\
+
 Example:
 
 \lstinline|CFILE ADAS /home/path/AMdata/Adas_Eirene_2010/adf11/|
-\\
+
 \lstinline|CFILE TRMSGL /home/path/Surfacedata/TRIM/|
 
 The particular data file from these trees (e.g.: \lstinline|SCD96| in case of \ac{ADAS}, or \lstinline|A_on_B|

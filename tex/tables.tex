@@ -27,9 +27,9 @@ that has been affected.
 Each \textbf{volume averaged response} is a spatial function,
 averaged over a grid cell, hence: a piecewise constant function, which is constant in each grid
 cell ICELL:
-\\
+
 ICELL=1,NRAD.  %
-\\
+
 Default volumetric particle, energy and momentum source tallies are
 split by the \textbf{type} (but not the individual species index of
 the incident test particle) involved in a collision process: photons
@@ -49,17 +49,22 @@ Tally naming convention:
 \begin{description}
 \item[Particle source rates]
 
-name: P[A][BC], with\\
-A: type of incident particle, A = A (atoms), M (molecules), I (test ions),  PH (photons), P (bulk particle)\\
-BC: type of produced particle, BC = AT (atoms), ML (molecules) , IO (test ions), PHT (photons), EL (electrons) , PL (bulk particles)\\
+name: P[A][BC], with
+
+A: type of incident particle, A = A (atoms), M (molecules), I (test ions),  PH (photons), P (bulk particle)
+
+BC: type of produced particle, BC = AT (atoms), ML (molecules) , IO (test ions), PHT (photons), EL (electrons) , PL (bulk particles)
+
 The tallies are resolved by species index of produced particle, and are to be scaled (NLSCL option) by type of incident test particle.
 \item[Energy source rates]
 
-name: E[A][BC], analogue to particle source rates\\
+name: E[A][BC], analogue to particle source rates
+
 but not resolved wrt.\ species index of secondary particles.
 \item[Momentum source rates]
 
-name: M[A][BC], analogue to particle source rates\\
+name: M[A][BC], analogue to particle source rates
+
 only available for [A] = A, M, I, PH  and for [BC]=PL,
 i.e.\ currently default tallies are only available for momentum sources/sinks for background (plasma) particles caused by
 test particles, resolved by type of test particle (name of tally) and by species of bulk particle (\ordinalnum{1} index in array).
@@ -68,13 +73,13 @@ test particles, resolved by type of test particle (name of tally) and by species
 \textbf{Surface averaged responses} are also spatial
 functions, averaged over surface segments, hence:
 piecewise constant on each surface ISURF or surface segment:
-\\
+
 ISURF=1,NLIMI.
-\\
+
 and with some spatial resolution possible on standard mesh surfaces
-\\
+
 ISURF=NLIM,NLIM+NSTSI
-\\
+
 Emitted particle and energy surface averaged fluxes are split by
 the type of the incident particle: photons (Phs.), atoms (Ats.),
 molecules (Mls.), test ions (T.I.) or bulk ions (B.I.). This
@@ -84,7 +89,8 @@ balances (see NLSCL option, input block 1).
 
 \medskip
 Naming conventions for emitted surface fluxes are analogue to those for volumetric source rates,
-i.e.\ PRF[A][BC],  SPT[A][BC] with A and BC having the same meaning as described above for volume tallies.\\
+i.e.\ PRF[A][BC],  SPT[A][BC] with A and BC having the same meaning as described above for volume tallies.
+
 PRF\dots\ are fluxes reflected or emitted due to incident particle fluxes, of type [A], SPT[A][BC] are sputtered fluxes (additional
 fluxes of surface material).
 
@@ -93,9 +99,12 @@ The full resolution wrt.\ to incident type and emitted species is only implement
 
 In all older versions only much fewer sputter tallies SPT[BC] were available, i.e.\ only one type-identifier in the name of these ``sputter tallies".
 
-And [BC] (and the corresponding species index) could either mean:\\
-i)  resolution wrt.\ incident flux species (summing over all sputtered flux species and types) (same as in incident surface flux tallies), or \\
-ii) resolution wrt.\ sputtered flux (summing over all incident species and types), \\
+And [BC] (and the corresponding species index) could either mean:
+
+i)  resolution wrt.\ incident flux species (summing over all sputtered flux species and types) (same as in incident surface flux tallies), or 
+
+ii) resolution wrt.\ sputtered flux (summing over all incident species and types), 
+
 depending on code version. Type ii) convention was used in EIRENE versions operated at ITER-IO (e.g.\ in SOLPS4.3), all other
 EIRENE versions had convention i).
 
@@ -668,21 +677,25 @@ Output, Module: CESTIM}}
 \end{longtable}
 }
 
-\textbf{Note:}\\
+\textbf{Note:}
+
 i) The tallies listed here are two dimensional arrays. The \ordinalnum{2} index I2
 is the number of the surface or the surface segment.
  For
 I2 = 1, \dots, NLIMI the tallies correspond to the ``Additional Surfaces",
-(input block 3B).\\
+(input block 3B).
+
 ii)
 For I2 = NLIM + 1, NLIM + NSTSI * NGITT the data correspond to the
 ``Non-default Standard Surfaces" (input block 3A).
 On each such surface of block 3A,
 there is a spatial resolution with up to NGITT
-surface segments, depending upon the standard grid dimensionality.\\
+surface segments, depending upon the standard grid dimensionality.
+
 iii) by default the sputter tallies are type and species resolved with respect to incident type and species.
 E.g.\ the sputtered fluxes SPTAT(2) is the total sputtered flux (all species), sputtered by incident atoms of species IATM=2.
-Other conventions regarding sputter tallies are used in EIRENE versions operated at ITER-IO (e.g.\ SOLPS4.x), see general description above.\\
+Other conventions regarding sputter tallies are used in EIRENE versions operated at ITER-IO (e.g.\ SOLPS4.x), see general description above.
+
 iv) the sputter tallies have been revised at revision SVN 360, Jan 2014, to allow full resolution with respect to both: incident type (for scaling)
 and (emitted) sputtered particle type and species, see \cref{tab3a}.
 
@@ -783,7 +796,8 @@ Output, Module: CESTIM}}
 }
 %\end{table}
 
-\textbf{Note:}\\
+\textbf{Note:}
+
 This extended set of sputter tallies has now species naming conventions SPT[A][BC] fully identical to those for volumetric source rates,
 as well as those for emitted particle and energy fluxes from surfaces.
 The full terminological equivalence leads to presence of quite strange sputter tallies (e.g.\ bulk ion fluxes sputtered by incident photons,
@@ -1088,7 +1102,7 @@ negative, it is a loss.
     & \si{\ampere} &                       \\  \hline
 \end{tabular}
 }
-\\
+
 \textbf{Note:} The tallies listed here are two dimensional arrays.
 The \ordinalnum{2} index I2 is the number of the surface or the surface
 segment.

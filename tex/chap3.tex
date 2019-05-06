@@ -15,11 +15,11 @@ below in \cref{sec3.1}).
 
 In it one had defined the
 storage requirements for this particular case.
-\\
+
 \textbf{In versions EIRENE$_{2002}$ and younger this pre-assignment
 of storage has been removed, by a dynamical allocation of storage
 throughout.}
-\\
+
 Some controllable storage options (e.g.: trading CPU - vs. storage -
 optimization), formerly under: ``parameters for storage
 reductions'' in PARMUSR, can now be set in an additional, but
@@ -333,7 +333,7 @@ with detector functions $ \hat{g}   =   g /
 Here $\Sigma$ (dimension: 1/length) is the local total macroscopic
 cross section, i.e., the inverse of the local mean free path length.
 The estimators may, in general, be composed of
-\\ a ``track-length estimate"
+a ``track-length estimate"
 \begin{equation} \label{tracklest}
 ^k{R_t}  =
 \sum_{i=0}^{k_{n-1}}   \ ^k w_i^* \  I_{l,i}
@@ -820,7 +820,8 @@ C  SAMPLING
 Note: The parameters EFWL, SHWL have been introduced in 2005.
 
 Note: Correction in May 2006: In previous versions of this manual the parameters TEWL and TIWL have
-been interchanged with respect to the calling statements in the EIRENE code. \\
+been interchanged with respect to the calling statements in the EIRENE code. 
+
 (Thanks to Jose Guasp, (CIEMAT, Spain) for pointing this out.)
 
 \newpage
@@ -890,13 +891,9 @@ C  DATA FOR VOL, NDAT=NSBOX
 Depending upon the value of INDEX, one has to specify a background tally
 on the array RHO, RHO(J),J=1,NDAT.
 These are:
-\begin{itemize}
-\item
-INDEX = 0     : \\
-Electron temperature (\si{\electronvolt})
-\item
-INDEX = 1     :\\
-Ion temperature (\si{\electronvolt}), NPLSI calls, one for each
+\begin{description}
+\item[INDEX = 0] Electron temperature (\si{\electronvolt})
+\item[INDEX = 1] Ion temperature (\si{\electronvolt}), NPLSI calls, one for each
 ion species. I.e.:
 \begin{lstlisting}
       DO IPLS=1,NPLSI
@@ -904,41 +901,21 @@ ion species. I.e.:
         CALL RESETP(TIIN,HELP,IPLS,1,NPLS,NSURF)
       ENDDO
 \end{lstlisting}
-\item
-INDEX = 1+ NPLS     : \\
-Ion density (\si{\per\cubic\centi\metre}), NPLSI calls, one for each
+\item[INDEX = 1+ NPLS] Ion density (\si{\per\cubic\centi\metre}), NPLSI calls, one for each
 ion species
-\item
-INDEX = 1+2*NPLS    :   \\
-Ion drift velocity, x direction (\si{\centi\metre\per\second}), NPLSI calls, one for each
+\item[INDEX = 1+2*NPLS] Ion drift velocity, x direction (\si{\centi\metre\per\second}), NPLSI calls, one for each
 ion species
-\item
-INDEX = 1+3*NPLS    :   \\
-Ion drift velocity, y direction (\si{\centi\metre\per\second}), NPLSI calls, one for each
+\item[INDEX = 1+3*NPLS] Ion drift velocity, y direction (\si{\centi\metre\per\second}), NPLSI calls, one for each
 ion species
-\item
-INDEX = 1+4*NPLS    :   \\
-Ion drift velocity, z direction (\si{\centi\metre\per\second}), NPLSI calls, one for each
+\item[INDEX = 1+4*NPLS] Ion drift velocity, z direction (\si{\centi\metre\per\second}), NPLSI calls, one for each
 ion species
-\item
-INDEX = 1+5*NPLS    :   \\
-Magnetic field, x component, (AU)
-\item
-INDEX = 2+5*NPLS    :   \\
-Magnetic field, y component, (AU)
-\item
-INDEX = 3+5*NPLS    :   \\
-Magnetic field, z component, (AU)
-\item
-INDEX = 4+5*NPLS    :   \\
-Magnetic field, magnitude, (T)
-\item
-INDEX = 5+5*NPLS    :   \\
-Cell volume, (\si{\cubic\centi\metre})
-\item
-INDEX = 6+5*NPLS    :   \\
-Additional tally, NAINI calls, one for each additional quantity.
-\end{itemize}
+\item[INDEX = 1+5*NPLS] Magnetic field, x component, (AU)
+\item[INDEX = 2+5*NPLS] Magnetic field, y component, (AU)
+\item[INDEX = 3+5*NPLS] Magnetic field, z component, (AU)
+\item[INDEX = 4+5*NPLS] Magnetic field, magnitude, (T)
+\item[INDEX = 5+5*NPLS] Cell volume, (\si{\cubic\centi\metre})
+\item[INDEX = 6+5*NPLS] Additional tally, NAINI calls, one for each additional quantity.
+\end{description}
 
 \subsection{User supplied background data routine VECUSR}
 \label{sec3.6.2}
@@ -957,23 +934,21 @@ to provide either a local magnetic field (unit) vector, or a local plasma (backg
 flow velocity vector (\si{\centi\metre\per\second}), respectively, in Cartesian coordinates.
 
 Current implementation:
-\begin{itemize}
-\item INDEX = 1:\\
-return the magnetic field unit vector, Cartesian coordinates. This local (at position X0, Y0, Z0, in cell NCELL) vector is used
+\begin{description}
+\item[INDEX = 1] return the magnetic field unit vector, Cartesian coordinates. This local (at position X0, Y0, Z0, in cell NCELL) vector is used
 instead of cell averaged input tally no.\ 5:
 
 [BXIN(ncell), BYIN(ncell), BZIN(ncell)].
 
 VECUSR with INDEX=1 is called from routine BFIELD.F
-\item INDEX = 2:\\
-return plasma (background) flow velocity vector, Cartesian coordinates, for EIRENE background species IPLS.
+\item[INDEX = 2] return plasma (background) flow velocity vector, Cartesian coordinates, for EIRENE background species IPLS.
 This local (at position X0, Y0, Z0, in cell NCELL) vector is used
 instead of cell averaged input tally no.\ 4:
 
 [VXIN(IPLS,ncell), VYIN(IPLS,ncell), VZIN(IPLS,ncell)].
 
 Note: species index IPLS is the EIRENE background species index, not to be confused with the mapped species index MPLSV(IPLS).
-\end{itemize}
+\end{description}
 
 \section{User supplied post-processed tally routine TALUSR}
 \label{sec3.7}

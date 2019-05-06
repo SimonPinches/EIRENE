@@ -466,13 +466,18 @@ currently available only for: H123 = H.1, = H.2, = H.5, or = H.8, i.e., only
 for single parameter fits.
 \begin{description}
 \item[]
-in case IFTFLG = 10, 110, 210, \dots, ``single parameter", constant collision parameter. One more line \\
-\lstinline|F(0)| (REAL)\\
+in case IFTFLG = 10, 110, 210, \dots, ``single parameter", constant collision parameter. One more line
+
+\lstinline|F(0)| (REAL)
+
 is read.
 
-For all other values of IFTFLG, including the default IFTFLG=0, two more input lines with 9 fitting coefficients\\
-\lstinline|F(I), I=0,5| (REAL)\\
-\lstinline|F(I), I=6,8| (REAL)\\
+For all other values of IFTFLG, including the default IFTFLG=0, two more input lines with 9 fitting coefficients
+
+\lstinline|F(I), I=0,5| (REAL)
+
+\lstinline|F(I), I=6,8| (REAL)
+
 are read, in subroutine SLREAC from the formatted input file.
 
 The natural logarithm of cross-section: $\ln(\sigma)$ (H123 = H.1) or of a rate coefficient: $\ln(R)$ (H123 = H.2, = H.5, or = H.8) is computed as:
@@ -517,36 +522,41 @@ double parameter fit of rate coefficient $\langle \sigma v \rangle
 temperature (\si{\electronvolt})
 \item[H.5]
 single parameter fit of target particle momentum weighted rate
-coefficient \\
+coefficient 
+
 $\langle~\sigma~v~\cdot~m_p~\cdot~|v_p|~\rangle$ $
 (\si{\cubic\centi\metre\per\second\atomicmassunit\centi\metre\per\second})$ as function of target temperature
 (\si{\electronvolt})
 \item[H.6]
 double parameter fit of target particle velocity weighted rate
-coefficient \\
+coefficient 
+
 $\langle \sigma v  \cdot  m_p  \cdot  | v_p | \rangle
 (\si{\cubic\centi\metre\per\second\atomicmassunit\centi\metre\per\second})$ as function of projectile energy (\si{\electronvolt})
 and target temperature (\si{\electronvolt})
 \item[H.7]
 double parameter fit of target particle velocity weighted rate
-coefficient \\
+coefficient
+
 $\langle \sigma v \cdot m_p \cdot | v_p | \rangle
 (\si{\cubic\centi\metre\per\second\atomicmassunit\centi\metre\per\second})$ as function of target density (\si{\cubic\centi\metre})
 and target temperature (\si{\electronvolt})
 \item[H.8]
 single parameter fit of target particle energy weighted rate
-coefficient \\
+coefficient
+
 $\langle \sigma v \cdot m_p / 2 \cdot v_p^2 \rangle$ 
 (\si{\cubic\centi\metre\per\second\electronvolt}) as function of target temperature (\si{\electronvolt})
 \item[H.9]
 double parameter fit of target particle energy weighted rate
-coefficient \\
+coefficient
+
 $\langle \sigma v \cdot m_p / 2 \cdot v_p^2 \rangle$ 
 (\si{\cubic\centi\metre\per\second\electronvolt}) as function of projectile energy (\si{\electronvolt}) and target
 temperature (\si{\electronvolt})
 \item[H.10]
 double parameter fit of target particle energy weighted rate
-coefficient \\
+coefficient
 $\langle \sigma v \cdot m_p / 2 \cdot v_p^2 \rangle$
 (\si{\cubic\centi\metre\per\second\electronvolt}) as function of target density (\si{\cubic\centi\metre}) and
 target temperature (\si{\electronvolt})
@@ -561,9 +571,11 @@ specific ``\dots USR" routines of EIRENE, e.g.\ for post-processing).
 The data fitted in H.12 are, therefore, typically not rate-coefficients,
 but often (not always) ratios between two rate coefficients.
 
-Exception: the reduced population coefficients for hydrogenic plasmas, \\
+Exception: the reduced population coefficients for hydrogenic plasmas,
+
 i.e.,
-2.1.5a, \dots, 2.1.5e, 2.2.5a, 2.2.5e, etc.\\
+2.1.5a, \dots, 2.1.5e, 2.2.5a, 2.2.5e, etc.\
+
 are currently automatically read in
 EIRENE post-processing routines in code section ``output", routines: Ba\_alpha, Ba\_beta, \dots
 \end{description}
@@ -697,9 +709,12 @@ to be written
 \end{description}
 Then $IFREMD$ cards are read
 \begin{description}
-\item[II, KENN,  IK6] \ \\
-$II$: labeling index, irrelevant\\
-$KENN$: to be written \\
+\item[II, KENN,  IK6] ~
+ 
+$II$: labeling index, irrelevant
+
+$KENN$: to be written
+
 $IR$: to be written
 \end{description}
 
@@ -1163,9 +1178,12 @@ set FREAC to a very small number: e.g.: FREAC = 1.0000 E-30
 Potential energy difference in the specified collision process.  Default: EDPOT = 0.0.
 This energy allows to derive (implicit) radiation energy losses from the multi-step electron
 collision process.
-The incident electron energy difference(loss or gain) per collision EELEC is the sum:\\
-ESCD1 (kinetic energy released in educts, KER) plus\\
-EDPOT (potential energy difference) plus \\
+The incident electron energy difference(loss or gain) per collision EELEC is the sum:
+
+ESCD1 (kinetic energy released in educts, KER) plus
+
+EDPOT (potential energy difference) plus
+
 ERAD (radiated energy, e.g.\ from intermediate excited states).
 
 
@@ -1226,11 +1244,16 @@ only in use for CRC=EI and CRC=PI collisions, whereas for EL, CX and RC type col
 the kinetic energy of heavy products is determined by default models assigned to these types of processes,
 independent of the value of flags L and ESCD).
 
-The following flags are in use:\\
-For EL (elastic) collision processes:  only parameter K is in use \\
-For CX (charge-exchange) collision processes:    only parameter K is in use \\
-For EI (electron impact) collision processes:    parameters J and L are in use \\
-For PI (heavy particle) collision  processes:    parameters J, K and L are in use \\
+The following flags are in use:
+
+For EL (elastic) collision processes:  only parameter K is in use
+
+For CX (charge-exchange) collision processes:    only parameter K is in use
+
+For EI (electron impact) collision processes:    parameters J and L are in use
+
+For PI (heavy particle) collision  processes:    parameters J, K and L are in use
+
 For RC (recombination)  collision processes:     only parameter J is in use
 
 \begin{description}
@@ -1439,16 +1462,23 @@ If default atomic data are requested for some test particle species,
 these are activated by setting the
 flag  NRCM(IATM) = 0 (or NRCM(IMOL) = 0, NRCI(IION) = 0, respectively, or NRCP(IPLS) = 0 in input block 5)
 for a particular atom IATM (molecule IMOL or test ion IION, or (block 5) bulk ion IPLS),
-and by omitting the corresponding reaction cards \\
-IREAC\$, \dots\ and \\
-EELEC\$, \dots\\
+and by omitting the corresponding reaction cards
+
+IREAC\$, \dots\ and
+
+EELEC\$, \dots
+
 Then EIRENE tries to find, automatically, the corresponding species types
 and indices of the collision products in the species blocks. It then
-tries to define all variables in the cards\\
-IREAC\$, \dots\ and \\
-EELEC\$, \dots\\
+tries to define all variables in the cards
+
+IREAC\$, \dots\ and
+
+EELEC\$, \dots
+
 for collision rates and collision kinetics,
-using default assumptions.\\
+using default assumptions.
+
 If a test particle is to be assigned no collision processes at all, neither from the reaction list in block 4, nor a default process,
 then NRCM(IATM)=-1, and analogous for the other types and species of particles.
 
@@ -1760,11 +1790,14 @@ Other options, such as those for photonic processes, for internal CR codes, or f
 behaviour outside the fit validity range, had their own
 independent data structures.
 
-For a given process KK the fits coefficients for:\\
+For a given process KK the fits coefficients for:
+
 interaction potentials were stored on
-CREAC(1:9,-1,KK), \\
+CREAC(1:9,-1,KK), 
+
 those for cross-sections
-on CREAC(1:9,0,KK), \\
+on CREAC(1:9,0,KK),
+
 and those for Maxwellian averaged rate coefficients on CREAC(1:9,1:9,KK).
 \medskip
 
