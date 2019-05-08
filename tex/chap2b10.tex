@@ -102,7 +102,9 @@ surface averaged tallies
 \item[NADSPC] Total number of
 surface or cell averaged energy spectra
 \end{description}
+
 \subsection{Additional volume averaged tallies, track-length estimator}\label{sec2.10A}
+
 \begin{description}
 \item[IADVE] flag
 for scaling factor for this tally (carried out in subroutine
@@ -165,7 +167,9 @@ this tally in output routines.
 \item[TXTUNT]
 Text describing the units of this tally in output routines.
 \end{description}
+
 \subsection{Additional volume averaged tallies, collision estimator}\label{sec2.10B}
+
 \begin{description}
 \item[ICLVE]
 as IADVE above, for collision estimated tally (subroutine UPCUSR).
@@ -184,7 +188,9 @@ replaced.
 (subroutine UPCUSR).
 \item[TXTTAL, TXTSPC, TXTUNT]: as above
 \end{description}
+
 \subsection{Algebraic expression in volume averaged tallies}\label{sec2.10C}
+
 \begin{description}
 \item[ALSTRNG] character string which is interpreted as an
 algebraic expression in some volume averaged tallies. An operand
@@ -224,7 +230,9 @@ tally, by abuse of language (tally number = -14, see \cref{tab1}).
 \item[TXTTAL, TXTSPC, TXTUNT]
 as above.
 \end{description}
+
 \subsubsection{frequently used algebraic tallies}
+
 \begin{itemize}
 \item{mean energy} ~
 
@@ -254,6 +262,7 @@ of atoms, with atomic weight $\langle 2.0\rangle$ in atomic mass units in this e
 The numerical factor $1.8792e+35$ is, in EIRENE unit conversion variables, is given
 by CVELI2/AMUA/AMUA, (defined in SETCON.F), and the momentum density tallies 85, 89 and 93 are in \si{\gram\centi\metre\per\second\per\cubic\centi\metre}.
 \end{itemize}
+
 \subsection{Additional surface averaged tallies}\label{sec2.10E}
 
 as in sub-block 10A or 10B, but for surface averaged tallies rather than
@@ -313,6 +322,7 @@ and is the same for ISURF=7, =8, =9, =10 or =11, and zero for all
 other surfaces.
 
 \subsection{Energy spectra in selected cells or surfaces}\label{sec2.10G}
+
 Additional, spectrally resolved, tallies, either surface averaged or cell based.
 Printout of these spectra is activated in input block 11a, flag NSPCPR.
 

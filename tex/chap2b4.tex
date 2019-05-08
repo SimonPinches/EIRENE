@@ -1209,6 +1209,7 @@ The old ``fluid limit'' cut off options formerly specified at this place
 
 
 \subsection{Collision kinetics}
+
 In this paragraph we describe the options controlling the energies of post-collision particles and the
 electron and bulk ion energy gain or loss rates.
 These options are controlled by the integer input flag ISCDE and the three
@@ -1472,6 +1473,7 @@ Maxwellian distribution of ion collision partners rather than from
 a drifting isotropic mono-energetic distribution.
 
 \subsection{Default atomic and molecular data}
+
 If default atomic data are requested for some test particle species,
 these are activated by setting the
 flag  NRCM(IATM) = 0 (or NRCM(IMOL) = 0, NRCI(IION) = 0, respectively, or NRCP(IPLS) = 0 in input block 5)
@@ -1661,6 +1663,7 @@ for these expressions are available currently in the external databases.
 \textbf{Further examples}
 
 to be written
+
 \subsection{Neutral--Neutral collisions in \ac{BGK} approximation}\label{sec4-bgk}
 
 More generally: the \ac{BGK} approximation (\cref{sec1-bgk}) is employed for (bilinear) test-particle  -  test-particle collisions
@@ -1761,6 +1764,7 @@ C    .
 
 
 \subsection{Fitting expressions (IFTFLG)}
+
 For
 the databases HYDHEL, AMJUEL, H2VIBR and METHANE
 the default fitting expressions (IFTFLG=0) are single or double parametric polynomial
@@ -1793,9 +1797,11 @@ rate coefficient or rate is constant.
 to be written
 
 \subsection{Internal EIRENE A\&M Data structures and conventions}
+
 This section is currently being written\dots
 
 \subsubsection{The CREAC array (prior to first SVN version 2008)}
+
 The array CREAC(1:9,-1:9,KK), KK=1,NREAC, in module COMXS is used to store (polynomial) fit coefficients for reaction no KK,
 as read in input block 4 from databases HYDHEL, AMJUEL, METHANE, H2VIBR.
 Other options, such as those for photonic processes, for internal CR codes, or for tabulated data, or parameters for asymptotic
@@ -1822,6 +1828,7 @@ In 2008 all data structures for atomic\slash molecular or photonic processes or 
 accommodated into a single, more general array of generalized data type REACTION\_DATA
 
 \subsubsection{Data structure REACDAT (from SVN versions (2008))}
+
 Atomic, molecular and photonic collision data are stored internally on the data structure REACDAT, which
 replaces and generalizes the older fixed array format CREAC. The purpose is to accommodate
 also data formats other than the old polynomial fits read from data files AMJUEL, HYDHEL, etc.,
@@ -1942,7 +1949,9 @@ velocity space sampling (e.g.\ COM scattering angle, etc.)
 Meaning of IFLAG:
 
 to be written
+
 \subsubsection{storage saving mode}
+
 The storage saving mode: atomic\slash molecular data ``on the fly" routines
 Available and tested (Jan 2016)
 

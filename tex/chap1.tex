@@ -58,6 +58,7 @@ the EIRENE code, is described.
 
 \section{The linear Boltzmann equation for the distribution function
 \texorpdfstring{$f$}{f}} \label{sec1.0}
+
 EIRENE solves a multi species set of coupled ``Boltzmann''-type equations, in arbitrary 3D geometries.
 Strictly speaking it is the Boltzmann equation generalized from its original single species form with
 bi-linear collision kernel for elastic collisions,
@@ -754,6 +755,7 @@ fluid code, one may then have to interpret these Monte Carlo estimates properly,
 they may have to be interpolated to the grid points, or be properly rescaled in case of time-dependent applications.
 
 \subsection{The Green's function concept}\label{sec_green}
+
 We return to Equation \cref{2.8b}, where the function $F(\vv,i;\vr'\rightarrow \vr))$ was defined.
 For a finite domain, see \cref{eq1.5b}, and introducing again the shortcut $l$ for $(\vr'+l\vOmega,\vv,i)$
 this becomes:
@@ -774,6 +776,7 @@ to be written
 
 
 \newpage
+
 \section{Monte Carlo solution of equation 1} \label{sec1.2}
 
 A statistical solution to equation \cref{eq1b} is straight forward,
@@ -802,7 +805,9 @@ R  \approx   \tilde{R} = \frac{1}{N} \sum_{i=1}^{N}   X_g(\omega_i) .
 The proper choice of the number of histories $N$ depends on the variance $\sigma^2(X_g)$ of the estimator $X_g$ and is highly problem specific.
 In EIRENE it can range from $N=2$ for conditional expectation estimators and point sources in phase space, up to
 values of several millions for $N$.
+
 \subsection{Unbiased estimators}\label{sec1.2.a}
+
 One possible choice for $X(\omega )$ is the so called ``collision
 estimator" $X^c$, which, for a chain no.\ $i$,  $\omega_i^n$ of length $n$ reads:
 \begin{equation} \label{eq1.9}
@@ -880,6 +885,7 @@ flag WMINC, see \cref{sec2.10}.
 
 
 \subsection{Scaling of tallies}\label{sec1.2.0}
+
 With increasing $N$, the number of Monte Carlo histories,
 the unbiased estimators $X$ given in previous \cref{sec1.2.a} provide arbitrarily precise approximations for the responses $R_g=\langle\Psi|g\rangle$,
 for detector function $g$ and dependent variable $\Psi$ \cref{eq1d}. The precise meaning and physical dimensions of $g$ and $\Psi$
@@ -915,6 +921,7 @@ In this latter case great care is needed, however, that the cell volumes are pro
 \emph{as seen by the test flights} for otherwise not only unscaled profiles, but even wrong (biased) profile shapes will be obtained.
 
 \subsubsection{Scaling in problems with ignorable coordinates}\label{sec1.2.0a}
+
 As seen in the previous paragraph, the absolute values of estimates are scaled
 with the ratio $s/V$ of source strength to cell volume. Depending on ignorable coordinates in any particular problem,
 or on whether stationary (i.e.: time is an ignorable coordinate) or time dependent transport problems are considered,
@@ -941,6 +948,7 @@ might then also be interpreted as surface density (particle per unit area).
 
 
 \subsection{Statistical errors, Efficiency (\acs{FOM})} \label{sec1.2.1}
+
 The efficiency for Monte Carlo Codes is the
 inverse of the \ac{FOM} of the calculation, defined
 as
@@ -1152,7 +1160,9 @@ inverted cumulative distribution, i.e., as conditional quantile
 functions.
 
 \subsubsection{Stratified Source Sampling}
-\label{sec1.2.1b} The EIRENE code resorts to a ``stratified
+\label{sec1.2.1b}
+
+The EIRENE code resorts to a ``stratified
 sampling" technique. This technique is one the few Monte Carlo variance reducing techniques
 which are quite straight forward, easy to implement and, most importantly,
 behave in a well predicable way. It is therefore recommended to always use ``source stratification"
@@ -1311,6 +1321,7 @@ In a typical EIRENE application many such responses for a large variety of detec
 Therefore this ``optimal allocation" schemes are not currently implemented.
 
 \subsubsection{Testing the stratification}
+
 The proper implementation of the stratification, for all kinds of output tallies (such as volume averaged tallies,
 surface averaged tallies, spectral tallies) can be verified by including two:  $M=2$ (or more: $M$) identical strata,
 even with identical number of test-histories $N_k$ and identical random number seeds for those.
@@ -1320,6 +1331,7 @@ only approximately, as it would be the case without stratification by simply enh
 for a stratum by a factor two (a factor $M$, respectively).
 
 \subsection{Source sampling} \label{sec1.2.2}
+
 Source sampling in EIRENE is carried out in routine LOCATE.F. This routine converts uniform random numbers into
 random numbers with distribution $S_k$, the k-stratum part of the inhomogeneous term $S$.
 Again sequential sampling \cref{eq1.15a} from conditional distributions is applied.
@@ -1346,16 +1358,23 @@ I.e., formally a sampling from  kernel $C(\vx,\vv,i_b \rightarrow i_t, \dots)$ i
 Stratification of sources has been described in \cref{sec1.2.1b}.
 
 \subsubsection{time-census sources}
+
 \subsubsection{Point sources}
+
 \subsubsection{Line sources}
+
 \subsubsection{Surface-sources}
+
 and see special section on ``plasma surface recycling source
 sampling", \cref{sec1.4}.
+
 \subsubsection{Volume sources}
+
 special case: volume (radiative or three-body) recombination of plasma ions and electrons to neutrals.
 Also used for: spontaneous photon emission source in radiative transfer simulations.
 
 \subsection{Sampling a free flight from the transport kernel T} \label{sec1.2.3}
+
 The conditional sampling distribution $T(\vr'\rightarrow \vr)$ for the next point of collision (event), given a test flight
 is at position $\vr'$, traveling with velocity $\vv'$, is given by \cref{eq1.5}.
 
@@ -1460,6 +1479,7 @@ we have the opposite case: $|\vv|\gg v_b^{therm}$ and then the rate coefficient 
 the simple product $\sigma(v) v$ with $v$ being the test particle velocity.
 
 \subsubsection{Alternative: fixed time step (or constant path length increment)}
+
 If the particle orbit between two events (the Green's function) is not given explicitly,
 e.g., not as simple straight line, then the orbit has to be integrated numerically, using small
 time steps $\Delta t$ or path length increments $\Delta \vx$.
@@ -1612,7 +1632,9 @@ either a drifting Maxwellian in the laboratory frame, or a mono-energetic isotro
 Next the scattering angle $\theta$ is found in the center of mass frame, either from the total cross section and the interaction
 potential, for from differential cross sections, for other, more approximate assumptions. Finally the post-collision velocity
 $\vv$ is obtained by transforming back into the laboratory frame.
+
 \subsection{charge-exchange, VELOCX}
+
 In this case an exchange of identity is assumed:  $i = i_{b'},   i_b = i'$, which corresponds to a scattering angle
 $\theta = \pi$ in the center of mass system. In this special case sampling is most convenient in the
 in the rest frame of background medium $b$, rather than in the center of mass frame. This means again first sampling
@@ -1621,11 +1643,17 @@ $\vv_{b'}$ from
 w_{k,i_{b'}}(\vv_{b'}) \sim \sigma_{cx}(|\vv'-\vv_{b'}|) |\vv'-\vv_{b'}| f_{i_{b'}}(\vv_{b'})
 \end{displaymath}
 and then, after transformation from the rest frame of species $b$ back into the laboratory frame, simply setting $\vv = \vv_{b'}$
+
 \subsection{electron-impact collisions, VELOEI}
+
 \subsection{general heavy-particle-impact collisions, VELOPI}
+
 \subsection{photon processes (emission, absorption, scattering)}
+
 documentation to be written
+
 \newpage
+
 \section{Surface Reflection Models} \label{sec1.3}
 
 Within the terminology introduced in \cref{sec1.1} the effects
@@ -1693,6 +1721,7 @@ Hence $C_E = \bar {E}/E' \cdot C_P$, with $\bar {E}$ denoting the
 mean energy of the reflected particles.
 
 \subsection{The Behrisch matrix reflection model} \label{sec1.3.1}
+
 One model, the matrix model due to Behrisch \cite{kn:Behrisch}, is
 hardwired in EIRENE (and in many other codes such as AURORA,
 BALDUR, TRANSP developed in the early eighties of the last century).
@@ -1789,6 +1818,7 @@ target-projectile combinations other than H onto stainless steel
 are modelled using a reduced energy scaling.
 
 \subsection{TRIM code database reflection models} \label{sec1.3.2}
+
 Complementary to the surface model described above, EIRENE is
 coupled to computer generated reflection databases, produced with
 the TRIM code (see references \cite{kn:Eckstein} and
@@ -1890,6 +1920,7 @@ computed line shapes of certain electronic transitions ($
 H_{\alpha} $ lines etc.), see e.g., reference \cite{kn:Reiter92d}.
 
 \newpage
+
 \section{Recycling surface sources} \label{sec1.4}
 
 It has been found (mid eighties of last century: within INTOR framework) as a result of benchmark calculations with
@@ -2308,6 +2339,7 @@ $Z_i=2$) this sheath factor becomes $\approx -2.98$.
 
 
 \subsection{The magnetic pre-sheath} \label{sec1.4.2}
+
 In most situations when EIRENE is applied to plasma surface interaction studies the ion-plasma flow velocity $\vV_i$
 is predominantly parallel to a $\vB$ field: $V_{\parallel,i} \approx |\vV_i|$, and it is this parallel ion flow velocity,
 which is usually available from \ac{CFD} plasma simulations, via boundary conditions specified for the (parallel component of the) momentum balance equation
@@ -2319,7 +2351,9 @@ in particular to derive the currents $j_{\pi,eSh}$ and flow components $V_{\pi,i
 to be written\dots
 
 \newpage
+
 \section{Combinatorial description of geometry} \label{sec1.5}
+
 EIRENE is a Monte Carlo Code. Defining geometry in a Monte Carlo code is complex and laborious.
 
 
@@ -2495,7 +2529,9 @@ not intersect a flight path originating at a particular surface or
 in a particular cell).
 
 \newpage
+
 \section{time dependent mode of operation} \label{sec1.6}
+
 The section is currently rewritten. Please refer to the
 -J.~Nucl.~Mater.\ paper: D.~Reiter et al., Vol 220--222 (1995), 987--992 (ref.\ \cite{kn:Reiter94}).
 
@@ -2518,7 +2554,9 @@ mode.
 Please contact us for an update on this situation, if you wish to
 use that option.
 \newpage
+
 \section{non-linear effects: coupling to plasma fluid models} \label{sec1.7}
+
 The section is currently rewritten. Please refer to the report
 J\"ul-2872, Feb 1994, by G.~Maddi\-son and D.~Reiter for details (ref.\ 
 \cite{kn:Maddison94}).
@@ -2783,6 +2821,7 @@ method of ``saturated residuals", ref.\ \cite{kn:Maddison94}}
 \end{figure}
 
 \subsection{correlated sampling}
+
 A generic feature of coupled B2-EIRENE runs seems to be the loss of exponential decaying residuals (errors in B2 balances) down to machine precision,
 which, in stand alone B2 runs, is a signature of having achieved convergence.
 When coupled to EIRENE, at least with uncorrelated EIRENE trajectories between subsequent EIRENE calls (e.g.: between time steps
@@ -2824,6 +2863,7 @@ It is clear from \cref{cov} that small effects $\Delta E$ (such as those due to 
 \newpage
 
 \section{non-linear effects: neutral--neutral collisions}  \label{sec1.8}
+
 Neutral--neutral collisions make the Boltzmann collision integral
 non-linear (bi-linear). More generally, inclusion of any binary
 collisions between two test-particle species $i_0, j_0$, elastic
@@ -2897,7 +2937,9 @@ a neutral fluid model (diffusion approximation, Euler, or Navier Stokes, etc.) i
 while $Kn \gg 1$ leads to the (linear) free molecular flow regime, in which
 only the linear collisions terms (collisions of neutrals with surfaces and a
 given ``plasma'' host medium) are retained.
+
 \subsection{\ac{BGK} approximation}\label{sec1-bgk}
+
 currently under development. Please contact us for details and
 status.
 
@@ -3041,6 +3083,7 @@ for the next iteration cycle.
 
 
 \subsection{Direct Simulation (\acs{DMCS}) of self-collisions}
+
 The \ac{DMCS} method was implemented in EIRENE in the late eighties of the last century,
 but then abandoned due to its limitations to physically rather simple cases (e.g.\ no feedback
 with the consistent bulk plasma state, the often dominant non-linearity in fusion applications).
@@ -3048,6 +3091,7 @@ Currently it is not developed nor supported  any more. Contact us for details an
 status. Further details can be found in Ref. \cite{kn:Behringer}
 
 \section{Radiation transport, photon gas simulations}
+
 % dissertation Veach, 1997
 The extensions of EIRENE towards radiative transfer problems, and also the material in this
 present short description, is largely based on the monograph by Oxenius: \cite{kn:Oxenius}.
@@ -3154,7 +3198,9 @@ particle transport problems.
 %uhlenbusch,einstein,chandrasekhar,... verwenden u(nu), also
 % um faktor 4pi/c andere
 %relation zwischen a12 und b12.
+
 \subsection{Line shape options}
+
 Emission of photons from a particular line is simulated by sampling
 firstly the location of emission, and secondly the frequency and direction of emission.
 Spatial distribution of photon emission is treated in EIRENE in exactly the same way as
@@ -3182,7 +3228,9 @@ The following line shape options are currently available:
 
 
 \newpage
+
 \section{Charged Particle Transport}
+
 EIRENE also follows charged particles since EIRENE$_{1987}$. The particle tracing is
 carried out in Subroutine FOLION.
 We refer to this ``default" ion transport model as the \emph{``minimal trace ion model"}, as opposed to
@@ -3203,11 +3251,15 @@ by which they are either reflected, slowed down or accelerated,
 depending on the sign of their charge relative to the sheath
 potential.
 \end{itemize}
+
 \subsection{Orbit integration}
+
 Orbit integration in a magnetized plasma is carried out to various orders
 of the small parameter $\delta = \rho/L$, ($\rho$:
 thermal gyro-radius, $L$ spatial length scale, e.g.\ gradient length of B-field, etc.)
+
 \subsubsection{Particles following the B-field}
+
 Simple, analytical, orbit integration, zeroth order in $\delta$.
 \minisec{A: no electric field, no drifts}
 To zeroth order in the smallness parameter $\delta=\rho/L$, i.e.\ for $\rho \simeq 0$,
@@ -3237,13 +3289,17 @@ This is still zeroth order in $\delta$.
 By modifying the electric field
 in each cell into one effective \textbf{E$^*$} field, some features of  guiding centre drifts
 (namely: the grad B drift) can be already captured at this level.
+
 \subsubsection{Guiding centre approximation}
+
 To first order in $\delta$ a number of so called guiding centre drifts arise. Their inclusion
 into EIRENE (module FOLION) is a later code extension, and not fully operational yet.
 Once this option is fully implemented, guiding centre currents will be derivable from EIRENE runs
 as volume tallies. These guiding centre currents, supplemented by the (divergence free)
 magnetisation currents, are one important component of the plasma currents.
+
 \subsection{Coulomb Collision Models}
+
 In this section conventional notation for masses of colliding charged test particles labeled $a$ and field (background) particles $b$
 is used:   $m_a, m_b$ for the masses,
 for atomic mass numbers
@@ -3271,6 +3327,7 @@ on test particle velocity (or energy) and background temperature as the ``Beam-M
 of format H.3, H.4, H.5 for in-elastic collisions described in section 4 (atomic and molecular data input, \cref{sec2.4})
 
 \subsubsection{Simple Coulomb Collision Models}
+
 Strongly simplified Coulomb collision models are usually sufficient for molecular ions,
 because of the molecular (radical) ion's typically very short lifetime until further fragmentation (dissociative excitation,
 dissociative recombination, etc.) to atomic products. In order to roughly account for thermalization effects
@@ -3403,7 +3460,9 @@ vanishes at a critical energy $\varepsilon'$ distinct from from $3/2 T_b$.
 \subparagraph{A2: \ac{BGK} Coulomb-Collision operator}\hfill
 
 (Diploma Thesis Felix Reimold\dots)
+
 \subsubsection{The Fokker-Planck Collision Model}
+
 \minisec{A:}
 A gyro averaged Fokker-Planck Coulomb Collision Model, which was originally
 developed for a stand alone trace impurity ion transport code DORIS
@@ -3427,7 +3486,9 @@ of the algorithm A, in which the integration over background distribution is car
 
 
 \newpage
+
 \section{Parallelization of EIRENE Code}
+
 EIRENE is often coupled iteratively to finite volume or finite element \ac{CFD} codes, which provide the host medium (plasma background).
 Then EIRENE is used as kinetic neutral particle transport module,
 providing, often in iterative mode, the reaction part in the overall

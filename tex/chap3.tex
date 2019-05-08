@@ -72,6 +72,7 @@ option (NLGEN, LEVGEO=10, see block 2a) are described in
 \newpage
 
 \section{Parameter Statements (for EIRENE-2001 or older)} \label{sec3.1}
+
 The deck ``PARMUSR" is the first part of the user
 supplied Fortran
 file. It contains parameter statements used in an EIRENE run
@@ -276,6 +277,7 @@ may be the better one on very large meshes (above, say, 20000
 cells, as are commonly encountered in 3D stellarator applications).
 
 \newpage
+
 \section{The ``Additional Tally" routines UPTUSR, UPCUSR, UPSUSR and UPNUSR}
 \label{sec3.2}
 
@@ -397,7 +399,9 @@ is assumed to be a constant in this cell in this example. In more
 general cases, when detector $g$ varies along the track, the product
 $l \cdot g$ is to be replaced by the line integral $\int g~ dl$
 along this track.
+
 \subsection{Collision estimated volume tallies, UPCUSR}\label{sec3.2.2}
+
 The default collision estimated contributions $R_c$ are updated in
 subroutine COLLIDE. Subroutine COLLIDE is called from the particle
 tracing subroutines FOLNEUT and FOLION (defaults). Non default
@@ -448,7 +452,9 @@ estimators for any stationary response. In particular for diffusive processes, a
 ion transport with Fokker Planck type Coulomb collision operators,
 such ``snapshot averaging" is the most frequent option used in Monte Carlo applications to estimate
 stationary moments. See paragraph B below.
+
 \subsubsection{A: time dependent estimates}
+
 The default
 snapshot estimated tallies at a fixed time $t^*$, see
 \cref{sec2.13}, are updated in subroutine TIMCOL. Currently these are
@@ -489,7 +495,9 @@ interpreting the linear source strength ``FLUX" scaling factor
 number of particles, rather than as flux (particles~\si{\per\second}), i.e.\ ``FLUX is the
 integral of the source distribution not only over physical space, but also over time interval $DTIMV$ from initial time $t_0$
 to time $t^*$ (\cref{sec2.13}).
+
 \subsubsection{B: stationary snapshot tallies}\label{sec3.2.3b}
+
 A stationary value of snapshot tallies, to be compared with other
 tallies in stationary mode, is obtained by setting the flag NTMSTP
 of block 13 (\cref{sec2.13}) to negative values. Stationary results in
@@ -828,12 +836,18 @@ been interchanged with respect to the calling statements in the EIRENE code.
 
 \section{The user routines to overrule input data}
 \label{sec3.5}
+
 \subsection{The user geometry data routine GEOUSR} \label{sec3.5.1}
+
  to be written
+
 \newpage
+
 \subsection{User supplied background data routine PLAUSR}
 \label{sec3.5.2}
+
  to be written
+
 \section{The user routines for profiles PROUSR}
 \label{sec3.6}
 
@@ -922,6 +936,7 @@ ion species
 
 \subsection{User supplied background data routine VECUSR}
 \label{sec3.6.2}
+
 This routine is called at a particular position (X0, Y0, Z0) in grid cell NCELL, and returns a vector quantity.
 Position and cell number information are taken from module EIRMOD\_COMPRT.F.
 It is used in particular if the magnetic field, or plasma flow field, are needed with a higher spatial
@@ -956,6 +971,7 @@ Note: species index IPLS is the EIRENE background species index, not to be confu
 
 \section{User supplied post-processed tally routine TALUSR}
 \label{sec3.7}
+
 to be written
 
 \begin{lstlisting}
@@ -964,7 +980,9 @@ to be written
 \end{lstlisting}
 
 \section{User supplied ``general geometry block"}
-\label{sec3.8} The following routines have to be provided for the
+\label{sec3.8}
+
+The following routines have to be provided for the
 general geometry options (LEVGEO=10 option, NLGEN=TRUE), in which no
 specific geometry data are available from EIRENE input, and all the
 geometrical parameters for particle tracing and scoring of tallies
@@ -1011,12 +1029,16 @@ surface to be plotted) and
 from the 3D geometry plotting routine PLT3D (LOG=.FALSE., J =
 number of surface to be plotted)
 \end{description}
+
 \subsection{Subroutine INIUSR}
-\label{sec3.8.0} This subroutine is called from subroutine INPUT,
+\label{sec3.8.0}
+
+This subroutine is called from subroutine INPUT,
 after reading from the formatted input file and after (optional)
 calls to interfacing routines INFCOP. Any initialization
 (including definition of COMMON blocks) for the user geometry
 package may be done here.
+
 \subsection{Subroutine LEAUSR}
 \label{sec3.8.1}
 
@@ -1062,6 +1084,7 @@ LEAUSR is expected to return the cell index NCELL.
 
 \subsection{Subroutine TIMUSR}
 \label{sec3.8.2}
+
 The subroutine TIMUSR is called from TIMER (block GEO3D) in case of LEVGEO=10 (general external geometry option).
 Distinct from the other geometry levels in TIMER, the number of the nearest intersected surface (MRSURF) along the trajectory
 is not returned in general. Only if this nearest surface is one of the ``non-default standard surfaces" defined in input
@@ -1139,8 +1162,11 @@ error flag. Presently
 any value different from 0 will lead to an immediate end of the run.
 See subroutine TIMER in code segment GEO3D.F
 \end{description}
+
 \subsection{Subroutine VOLUSR}
-\label{sec3.8.3} The subroutine VOLUSR is called from subroutine
+\label{sec3.8.3}
+
+The subroutine VOLUSR is called from subroutine
 VOLUME in case of LEVGEO=10. The call is
 
 \begin{lstlisting}
@@ -1149,8 +1175,11 @@ VOLUME in case of LEVGEO=10. The call is
 
 Here N is the total number of cells in this run, and
 A is an array of length N, containing the N cell volume values in \si{\cubic\centi\metre}.
+
 \subsection{Subroutine NORUSR}
-\label{sec3.8.4} The subroutine NORUSR provides the outer surface normal unit vector CX,CY,CZ at surfaces,
+\label{sec3.8.4}
+
+The subroutine NORUSR provides the outer surface normal unit vector CX,CY,CZ at surfaces,
 i.e.\ after a particle trajectory has intersected a ``non default grid surface" at point X,Y,Z.
 
 It is called in the LEVGEO=10 option from subroutine
