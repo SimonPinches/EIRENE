@@ -83,10 +83,10 @@ EIRENE, within each single cycle, may still be operated in linear mode.
 The term \textsl{$\mu$-space} in this report refers to the phase
 space of a single particle. The quantity of interest is then the
 \textsl{one particle distribution function}  \textit{f}
-\[
+\begin{displaymath}
 f(\vr, \vv, i, t)  \quad \mbox{or} \quad \tilde f(\vr, E, \vOmega, i, t)
 \quad \mbox{or} \quad f(x) ,
-\]
+\end{displaymath}
 where the state $x$ of the $\mu$-space is characterized by a
 position vector $\vr$, a velocity vector
 $\vv$, a species index $i$ ($i$ stands for, e.g.,
@@ -94,9 +94,9 @@ H, D, T, D$_2$, DT, He, CH$_n$, \dots) and the time $t$.
 
 The number density $n_i(\vr)$ for species $i$ then
 reads:
-\[
+\begin{displaymath}
 n_i(\vr,t) = \int d^3{v} \ f(\vr,\vv,i,t)
-\]
+\end{displaymath}
 
 Instead of $\vv$ we sometimes utilize the kinetic energy
 $E$, $E=m/2 \cdot v^2$, and the unit (speed) vector
@@ -106,10 +106,10 @@ direction of particle motion. Hence:
 f(\vr)d^3v = \tilde f(E, \vOmega)dEd\Omega \quad \mbox{where}  ~~d^3v = v^2dv d\Omega \quad \mbox{and} ~~ d\Omega = \sin \theta d\theta d\phi
 \end{equation}
 and
-\[
+\begin{displaymath}
 f(\vr, \vv, i ,t)   = \left(\frac{m}{v}\right)
 \tilde{f}(\vr, E, \vOmega, i, t)
-\]
+\end{displaymath}
 The distribution function in the form of $\tilde f$ clearly remains meaningful also in the case of massless particles (photons),
 i.e.\ for applications of EIRENE to radiation transfer problems.
 
@@ -3094,7 +3094,10 @@ broadening effects later.
 For a thermal radiation field (temperature T) in a gas of atoms
 with density $n_1$ (lower state) and $n_2$ (upper state) the rate
 equation expressing balance between emission and absorption reads:
-\[n_1 B_{12} R_\nu(T)= n_2[A_{21}+B_{21} R_\nu(T)]\].
+\begin{displaymath}
+n_1 B_{12} R_\nu(T)= n_2[A_{21}+B_{21} R_\nu(T)]
+\end{displaymath}
+.
 
 $R_\nu(T)$ is a specific function characterizing the wavelength and
 temperature dependence of the
