@@ -179,12 +179,12 @@ block 7.  Whether input block 7 or input block 14 is used for
 a particular surface source ISTRA $\le$ NTARGI is controlled by
 the flag INDSRC.  For sources ISTRA $>$ NTARGI the input flag INDSRC  is irrelevant.
 
-if INDSRC(ISTRA) $<$ 0 then interfacing routine IF2COP is not called.
+If INDSRC(ISTRA) $<$ 0 then interfacing routine IF2COP is not called.
 Input data are used from block 7, see \cref{sec2.7}.
 
 \medskip
 
-if INDSRC(ISTRA) = 0--5, then the input flags described in
+If INDSRC(ISTRA) = 0--5, then the input flags described in
 \cref{sec2.7} are used to define the spatial distribution of a
 recycling source on a grid boundary (function STEP(ISTEP), see
 \cref{sec2.7.1}) as well as the distribution in velocity
@@ -198,7 +198,7 @@ recycling source ITARG defined from the data in input block 14.
 
 \medskip
 
-if INDSRC(ISTRA) = 6, then the input flags described in \cref{sec2.14}
+If INDSRC(ISTRA) = 6, then the input flags described in \cref{sec2.14}
 are used to define the entire surface recycling source automatically. The
 corresponding data in input block 7 for this stratum are not used and
 may be omitted. Stratum ISTRA corresponds to the target recycling source
@@ -265,7 +265,7 @@ EIRENE tallies the empirical standard deviation can also be obtained,
 if requested, by setting proper flags in input block 9.
 
 
-Furthermore: (since Nov. 2013): the new option UPFCOP, to obtain statistical estimates of linear
+Furthermore: (since Nov.\ 2013): the new option UPFCOP, to obtain statistical estimates of linear
 combination of standard tallies, by evaluating these composite scores after each trajectory
 from the individual tally scores. This option is restricted to \textbf{linear} combinations of tallies, because
 only then the sum over events and the sum over trajectories commute.
@@ -277,7 +277,7 @@ versions 99 and younger, by major code optimization (indirect addressing) in the
 parts. In versions 2012 and younger the same optimization was carried out also for
 standard deviations of all surface averaged tallies.
 
-In Versions  Oct. 2013 and older some standard deviation tallies of special interest for code interfacing
+In Versions  Oct.\ 2013 and older some standard deviation tallies of special interest for code interfacing
 (such as total, summed over species, source rates) have been implemented in a
 special routine in the code interfacing module: STATIS\_COP.
 
@@ -324,4 +324,4 @@ Otherwise: The coupled B2-EIRENE run has failed to converge to the
 solution within the statistical noise.
 
 This is also represented by the convergence measure of ``saturated
-residuals"
+residuals".
