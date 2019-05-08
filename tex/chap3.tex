@@ -156,15 +156,15 @@ C  DEFAULT:
       PARAMETER (NOPTM1=...)
 C
 C  2.) EXTERNAL GEOMETRY?
-C  NGEOM_USR = 1  ==> EXTERNAL GEOMETRY ROUTINES (...USR), 
+C  NGEOM_USR = 1 ==> EXTERNAL GEOMETRY ROUTINES (...USR), 
 C                     LEVGEO=10
 C                     NO STORAGE FOR GEOMETRY DATA IN EIRENE
-C  NGEOM_USR = 0  ==> ELSE, NO STORAGE OPTIMIZATION
+C  NGEOM_USR = 0 ==> ELSE, NO STORAGE OPTIMIZATION
 C  DEFAULT:       PARAMETER (NGEOM_USR=...)
 C
 C  3.) SUM OVER STRATA
-C  NSMSTRA = 0  ==> SUM OVER STRATA IS NOT PERFORMED
-C  NSMSTRA = 1  ==> SUM OVER STRATA IS PERFORMED
+C  NSMSTRA = 0 ==> SUM OVER STRATA IS NOT PERFORMED
+C  NSMSTRA = 1 ==> SUM OVER STRATA IS PERFORMED
 C  DEFAULT:
       PARAMETER (NSMSTRA=...)
 C
@@ -179,9 +179,9 @@ C  DEFAULT:
 C
 C  5.) SPATIALLY RESOLVED SURFACE TALLIES?
 C
-C  NGSTAL = 0  ==> NO STORAGE FOR SPATIALLY RESOLVED SURFACE 
+C  NGSTAL = 0 ==> NO STORAGE FOR SPATIALLY RESOLVED SURFACE 
 C                  TALLIES
-C  NGSTAL = 1  ==> SPATIALLY RESOLVED SURFACE TALLIES ARE 
+C  NGSTAL = 1 ==> SPATIALLY RESOLVED SURFACE TALLIES ARE 
 C                  COMPUTED
 C  DEFAULT:
       PARAMETER (NGSTAL=...)
@@ -300,8 +300,8 @@ The ``volume averaged tallies" estimated by EIRENE (see \cref{tab2})
 are profiles of
 ``responses"
 \begin{displaymath}
-R_g   =    <    f | g   >
-=   \sum_{j}   \int d^3 \vv
+R_g = <    f | g   >
+= \sum_{j}   \int d^3 \vv
 \int_{volume} d^3 \vr \ g(\vr , \vv
 , j)     \cdot     f(\vr , \vv , j)\label{est}
 \end{displaymath}
@@ -313,37 +313,37 @@ estimators are not based upon moments of distribution function $f$
 but upon moments of the flux
 \begin{displaymath}
 \Phi ( j_S , \vr ,
-\vv )   =   |
+\vv ) = |
 \vv |  f(j_S , \vr , \vv),
 \end{displaymath}
 hence
-on detector functions $g^{*}  =   g / | \vv |
+on detector functions $g^{*} = g / | \vv |
 $.
 
 Occasionally also
 moments of the pre-collision density
 \begin{displaymath}
 \Psi ( j_S ,
-\vr , \vv )   =
+\vr , \vv ) =
 \Phi ( j_S , \vr , \vv )
     \cdot     \Sigma ( j_S , \vr , \vv )
 \end{displaymath}
 are utilized, then
-with detector functions $ \hat{g}   =   g /
+with detector functions $ \hat{g} = g /
 (| \vv | \ \Sigma)    $.
 Here $\Sigma$ (dimension: 1/length) is the local total macroscopic
 cross section, i.e., the inverse of the local mean free path length.
 The estimators may, in general, be composed of
 a ``track-length estimate"
 \begin{equation} \label{tracklest}
-^k{R_t}  =
+^k{R_t} =
 \sum_{i=0}^{k_{n-1}}   \ ^k w_i^* \  I_{l,i}
-  =   \sum_{i=0}^{k_{n-1}} \ ^k w_i^*
+ = \sum_{i=0}^{k_{n-1}} \ ^k w_i^*
 \int_{\vr_i}^{\vr_{i+1}}   dl \  g^{*} (l)     ,
 \end{equation}
 and a ``collision estimate" :
 \begin{equation} \label{collest}
-^k{R_c}  =   \sum_{i=1}^{k_n}   \ ^k{\hat{w_i}} \
+^k{R_c} = \sum_{i=1}^{k_n}   \ ^k{\hat{w_i}} \
 \hat{g} ( \vr_i )     .
 \end{equation}
 Here $  ^k{\hat{w_i}}$ is the weight of history number
@@ -365,7 +365,7 @@ particle").
 
 The tallies are estimated as arithmetic means
 \begin{equation}
-R   =   \frac{1}{N}   \left ( \sum_{k=1}^{N}
+R = \frac{1}{N}   \left ( \sum_{k=1}^{N}
 (^k{R_t}  +  {^k{R_c}} ) \right )
 \end{equation}
 of the contributions of each test particle history k.
@@ -376,7 +376,7 @@ The track-length estimators $R_t$ for detector function $g$ are
 updated in subroutine UPDATE (defaults) and UPTUSR (\dots, WV, \dots)
 (additional user supplied tallies), with
 \begin{displaymath}
-WV   =
+WV =
 {^k{w_{i}^{*}}}  /   | \vv | \quad .
 \end{displaymath}
 In EIRENE variables:
@@ -406,7 +406,7 @@ tracing subroutines FOLNEUT and FOLION (defaults). Non default
 collision tallies are updated in UPCUSR(\dots, WS, IND) (additional user
 supplied tallies, called from COLLIDE). Here we have
 \begin{displaymath}
-WS   =  {^k{\hat{w_i}}}
+WS = {^k{\hat{w_i}}}
   /   ( | \vv |  \Sigma ) \quad .
 \end{displaymath}
 In EIRENE variables:
@@ -461,7 +461,7 @@ mode (see input block 13). Non default snapshot tallies can be
 scored in UPNUSR (additional user supplied tallies, called from
 TIMCOL). Here we have
 \begin{displaymath}
-WSNAP   =  {^k{\hat{w_i}}}   \quad .
+WSNAP = {^k{\hat{w_i}}}   \quad .
 \end{displaymath}
 In EIRENE variables:
 \begin{displaymath}
@@ -538,7 +538,7 @@ terminologies. Then a ``surface response function" $ g_S $ defined
 as
 
 \begin{displaymath}
-g_S (j, \vr , \vv )   =
+g_S (j, \vr , \vv ) =
 \delta(\rho)  \cdot  g(j, \vr , \vv )
 \end{displaymath}
 
@@ -547,7 +547,7 @@ detector function $g$ was, but now surface averaged instead of
 volume averaged:
 
 \begin{displaymath}
-\int_{surface}   d^2 s  \ g  \cdot    f    =
+\int_{surface}   d^2 s  \ g  \cdot    f =
 \int_{volume}  d^3 r \
 g_S   \cdot   f
 \end{displaymath}
@@ -557,9 +557,9 @@ for track-length estimates, equation \cref{tracklest}, now reduce
 to:
 
 \begin{equation}
-I_{l,i}   =
+I_{l,i} =
 \int_{\vr_i}^{\vr_{i+1}}
-dl \  \delta(\rho)  \cdot  g^{*} (l)   =
+dl \  \delta(\rho)  \cdot  g^{*} (l) =
 g^{*} (\rho=0)  /  \cos( \ve_{\rho}, \vOmega )
 \end{equation}
 
@@ -599,7 +599,7 @@ the detector function $g$ is evaluated at the strike point $ \vr_S $
 and, as above, $ {^k{\omega^{*}_i}}  $ is the weight of the history
 k after event i and before event i+1. Note:
 \begin{displaymath}
- WEIGHT = {^k {w^{*}_i}}  =
+ WEIGHT = {^k {w^{*}_i}} =
 ^k {\hat{w_{i+1}}}
 \end{displaymath}
 in our terminology.

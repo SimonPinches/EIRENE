@@ -107,7 +107,7 @@ f(\vr)d^3v = \tilde f(E, \vOmega)dEd\Omega \quad \mbox{where}  ~~d^3v = v^2dv d\
 \end{equation}
 and
 \begin{displaymath}
-f(\vr, \vv, i ,t)   = \left(\frac{m}{v}\right)
+f(\vr, \vv, i ,t) = \left(\frac{m}{v}\right)
 \tilde{f}(\vr, E, \vOmega, i, t)
 \end{displaymath}
 The distribution function in the form of $\tilde f$ clearly remains meaningful also in the case of massless particles (photons),
@@ -367,7 +367,7 @@ time can be treated in a completely symmetric fashion with the spatial coordinat
 For stationary (time-independent) problems the (scalar) transport flux (``angular flux") $\Phi$, where
 \begin{subequations}
 \begin{equation}\label{trans-flux}
-\Phi (x)   :=   | \vv |  \cdot f( \vr , \vv , i)   ,
+\Phi (x) := | \vv |  \cdot f( \vr , \vv , i)   ,
 \end{equation}
 with, again, $| \vv| \Omega = \vv$,
 is sometimes used as dependent variable, in preference to the distribution $f(x)$.
@@ -384,7 +384,7 @@ the transport equation then reduces to the more compact form:
  \Phi(\vr,\vv,t) +
 \Sigma_t(\vr,\vv)
 \Phi(\vr,\vv)
-  =  Q(\vr,\vv,t) +
+ = Q(\vr,\vv,t) +
 \int d^3{v}' \ C(\vr;\vv' \rightarrow \vv)
 \Phi(\vr,\vv')
 \end{equation}
@@ -404,7 +404,7 @@ collision density $\Psi$ is used, i.e.,
 \end{subequations}
 where, again, the ``macroscopic cross section" $\Sigma_t$ is the
 total inverse local mean free path (dimension: 1/length), and $\nu_t$ is the collision frequency (dimension: 1/time). This
-cross section can be written as a sum $ \Sigma_t   =   \sum
+cross section can be written as a sum $ \Sigma_t = \sum
 \Sigma_k$ over macroscopic cross sections for the different types
 (identified by the index $k$) of collision processes. Further
 details about this ``macroscopic cross section" and its relation
@@ -543,7 +543,7 @@ usually decomposed, in our context, into a collision- and a
 transport kernel, i.e., $C$ and $T$ , where
 \begin{equation} \label{eq1.2}
 K(\vr  ' , \vv  ' , i ' \rightarrow
-\vr  , \vv , i)   =   C( \vr ' ;
+\vr  , \vv , i) = C( \vr ' ;
 \vv ' , i '   \rightarrow   \vv , i)  \cdot T(
 \vv , i; \vr ' \rightarrow \vr )   .
 \end{equation}
@@ -554,19 +554,19 @@ undergone a collision at position $\vr ' $. This kernel
 can further be decomposed into:
 \begin{equation} \label{eq1.3}
 C( \vr ' , \vv ' , i '   \rightarrow
-\vv , i) =   \sum_{k} {p_k  \ C_k ( \vr ' ;
+\vv , i) = \sum_{k} {p_k  \ C_k ( \vr ' ;
               \vv ' , i '   \rightarrow \vv, i)} \
-, \ p_k   =    \frac{\Sigma_k}{\Sigma_t}
+, \ p_k = \frac{\Sigma_k}{\Sigma_t}
 \end{equation}
 with summation over the index $k$ for the different types of
 collision processes under consideration and $p_k$ defined as the
 (conditional) probability for a collision to be of type $k$. The
 normalizing factor
 \begin{equation} \label{eq1.4}
-c_k (x ')   =
+c_k (x ') =
   \sum_{i}   \int d^3v \  C_k (
 \vr ' , \vv ' , i ' \rightarrow
-\vv , i ) \   , \  {\cal{C}}_k   =    \frac{1}{c_k}
+\vv , i ) \   , \  {\cal{C}}_k = \frac{1}{c_k}
 C_k
 \end{equation}
 gives the mean number of secondaries for this collision process.
@@ -578,7 +578,7 @@ space" in the language of mathematical topology). This ``limbo
 state", once it is reached, is never left again if the kernels $T$
 or $C$ are employed as transition probabilities. Formally, an
 additional collision kernel $C_a (x \rightarrow x_a )$ and an
-absorption probability $ p_a   =   \Sigma_a / \Sigma_t$ must be
+absorption probability $ p_a = \Sigma_a / \Sigma_t$ must be
 included in the collision kernel. The quantity $ \Sigma_a$
 comprises all collision processes with no next generation
 particles within the community of particles considered by the coupled set of kinetic transport equations.
@@ -619,7 +619,7 @@ of the initial velocity $\vv'$.
 Thus, although strictly being a conditional (on $x'$) distribution in phase space, for an infinite medium $T$ can be interpreted as the
 distribution density for the distance $l$ for a free flight
 starting from $\vr '$ to the next point of collision
-$\vr  = \vr ' + l \cdot \vOmega'$. We shall frequently omit the arguments $\vv',i'$ to simplify notation, because neither initial velocity
+$\vr = \vr ' + l \cdot \vOmega'$. We shall frequently omit the arguments $\vv',i'$ to simplify notation, because neither initial velocity
 nor species change during a free flight.
 
 For a finite medium this distribution can be generalized to (writing shorter $l$ for $(\vr'+l\vOmega',\vv',i')$:
@@ -660,7 +660,7 @@ can be written as:
 % gleichungsnummern fest auf eq. 1.6a setzen
 \renewcommand{\theequation}{1.6a}
 \begin{equation} \label{eq1.6a}
-S(x)  =  \int dx '   Q(x ' )  \cdot T(x ' \rightarrow x) ,
+S(x) = \int dx '   Q(x ' )  \cdot T(x ' \rightarrow x) ,
 \end{equation}
 % gleichungsnummern einen runterzaehlen.
 \addtocounter{equation}{-1}
@@ -676,7 +676,7 @@ after a collision event
 % gleichungsnummern fest auf eq. 1.6b setzen
 \renewcommand{\theequation}{1.6b}
 \begin{equation} \label{eq1.6b}
-\chi (x)   =   \int dx '
+\chi (x) = \int dx '
 \Psi(x ' )  \cdot C(x ' \rightarrow x).
 \end{equation}
 % gleichungsnummern einen runterzaehlen.
@@ -693,8 +693,8 @@ particle generation process stays sub-critical.
 Usually, a detailed knowledge of $\Phi$ or $\Psi$
 is not required, but only a set of ``responses", R, defined by
 \begin{equation} \label{eq1.7}
-R   = \quad  < \Psi | g_c > \quad  =   \int dx   \Psi (x)
- \cdot g_c (x)   \quad   \left (    = \quad  < \Phi | g_t > \quad  =
+R = \quad  < \Psi | g_c > \quad = \int dx   \Psi (x)
+ \cdot g_c (x)   \quad   \left ( = \quad  < \Phi | g_t > \quad =
 \int dx   \Phi (x)  \cdot g_t (x)   \right ),
 \end{equation}
 where $g_c (x)$, $g_t (x)$ are given ``detector functions".
@@ -716,7 +716,7 @@ each including a characteristic function
 g_m=g \times ch_m(\vr,t)  , \quad m = 1, 2, \dots, M, \end{equation}
 i.e., $ch_m (\vr,t)=1$
 inside the numerical mesh cell (or time interval) labeled with the cell index $m$,
-and $ ch_m (\vr,t)  =0 $ outside this cell.
+and $ ch_m (\vr,t) =0 $ outside this cell.
 Thus profiles of cell volume averaged responses are readily obtained in a single Monte Carlo run.
 
 Estimates of surface fluxes, or point estimates e.g.\ in time,
@@ -781,7 +781,7 @@ A discrete Markov chain is defined using $Q$ as an initial
 distribution and $L = T  \cdot  C$ (order of $C$ and $T$ reversed
 compared to $K$, $K = C \cdot T$) as a transition probability. Histories $\omega^n$
 from this stochastic process are generated according to $\omega^n
-=   (x_0, x_1, x_2, \dots, x_n)$, (where $x_j   =   x_a $ for all $
+= (x_0, x_1, x_2, \dots, x_n)$, (where $x_j = x_a $ for all $
 j   \ge   n$ and $ x_i   \ne   x_a $ for all $ i   <   n$), with
 $x_n$ being the first state after transition into the absorbing
 state $x_a$. $ x_0$ denotes the initial state distributed as
@@ -795,7 +795,7 @@ $i = 1, 2, \dots, N$, the responses $R$
 \cref{eq1.7} with respect to detector function $g$ are estimated as the arithmetic mean
 of functions (``statistics'', or  ``estimators'') $X_g(\omega )$, i.e.
 \begin{equation} \label{eq1.8}
-R  \approx   \tilde{R}   =    \frac{1}{N} \sum_{i=1}^{N}   X_g(\omega_i) .
+R  \approx   \tilde{R} = \frac{1}{N} \sum_{i=1}^{N}   X_g(\omega_i) .
 \end{equation}
 The proper choice of the number of histories $N$ depends on the variance $\sigma^2(X_g)$ of the estimator $X_g$ and is highly problem specific.
 In EIRENE it can range from $N=2$ for conditional expectation estimators and point sources in phase space, up to
@@ -804,7 +804,7 @@ values of several millions for $N$.
 One possible choice for $X(\omega )$ is the so called ``collision
 estimator" $X^c$, which, for a chain no.\ $i$,  $\omega_i^n$ of length $n$ reads:
 \begin{equation} \label{eq1.9}
-X^c_g ( \omega^n_i)   =   \sum_{l=1}^{n} g_c (x_l )
+X^c_g ( \omega^n_i) = \sum_{l=1}^{n} g_c (x_l )
  \cdot   \prod_{j=1}^{l-1}
  \frac{c(x_j )}{(1 - p_a(x_j))}   \ \ ,
 \end{equation}
@@ -815,7 +815,7 @@ This estimator is, for example, used in the DEGAS code
 \cite{kn:Heifetz}. It can be shown \cite{kn:Spanier69a} in a tedious but mathematically strict way that the statistical
 expectation E($X^c$) produces:
 \begin{equation} \label{eq1.10}
-R   =   E(X^c )   =   \int  d( \omega )   X^c_g ( \omega ) h( \omega
+R = E(X^c ) = \int  d( \omega )   X^c_g ( \omega ) h( \omega
 )
 \end{equation}
 with $h(\omega)$ being the probability density for finding a chain
@@ -829,12 +829,12 @@ detector function $ g_c(x)$ at the points of collisions, $ x_l   ,
 $ (as $ X^c$ does), they involve line integrals of $ g_t(x)$ along
 the trajectories, e.g.,
 \begin{equation} \label{eq1.11}
-X^t_g ( \omega^{n}_i )   =    \sum_{l=0}^{n-1}   \left \{
+X^t_g ( \omega^{n}_i ) = \sum_{l=0}^{n-1}   \left \{
 \int_{x_l}^{x_{l+1}} ds \  g_t (s) \right \}
   \cdot   \prod_{j=1}^{l-1}
  \frac{c(x_j )}{(1 - p_a(x_j))}   ,
 \end{equation}
-with $ R   =   E(X^t )   =   E(X^c)$.
+with $ R = E(X^t ) = E(X^c)$.
 In literature mostly the detector function $g_t$ is taken to be constant within a grid cell.
 The line integral in \cref{eq1.11} then collapses to the product $g_t s_l$, with $s_l$ being the distance
 (``track-length'') travelled in cell during step $l$.
@@ -860,7 +860,7 @@ the next point of collision, into which the generated history
 would not necessarily reach. This ``conditional expectation
 estimator" reads:
 \begin{equation} \label{eq1.12}
- X^e_g ( \omega^n_i )   =
+ X^e_g ( \omega^n_i ) =
   \sum_{l=0}^{n-1}  \left \{\int_{x_l}^{x_{end}}
 ds \  g_t (s)    \cdot   \exp \left (
  - \int_{0}^{s} ds '   \Sigma_t (
@@ -898,7 +898,7 @@ number of particles.  The volume, e.g.\ of a grid cell, is also an extensive qua
 profiles of cell averaged intensive quantities (e.g.\ density profiles) are obtained.
 The final unbiased estimate, in absolute units, for any of the unbiased estimators $X_g$ for detector function $g$ discussed above, then is:
 \begin{equation} \label{eq1.8b}
-R_g  =\langle\Psi|g\rangle \approx   \tilde{R}_g(N)   =    \frac{s}{V_m\times N} \sum_{i=1}^{N}   X_g(
+R_g =\langle\Psi|g\rangle \approx   \tilde{R}_g(N) = \frac{s}{V_m\times N} \sum_{i=1}^{N}   X_g(
 \omega_i) , \quad N \gg 1
 \end{equation}
 with $N$ being the number of Monte Carlo histories.
@@ -1067,7 +1067,7 @@ arising during the course of generating the chains $\omega$
 (``particle histories") can be replaced by another ``non-analog"
 function, $ g(x)$, if a weighting factor,
 \begin{equation} \label{eq1.13a}
- w(y)   =   f(y) / g(y)
+ w(y) = f(y) / g(y)
 \end{equation}
 is included in the formula for the estimator $X(\omega )$, y being
 an actual random number generated from $ g $. This choice
@@ -1199,7 +1199,7 @@ EIRENE provides estimates of linear functionals (``moments",
 ``responses")
 
 \begin{equation}  \label{fredhalt}
-\langle g,\phi_S\rangle    = \langle S,\phi^*_g\rangle
+\langle g,\phi_S\rangle = \langle S,\phi^*_g\rangle
 \end{equation}
 
 As described above, $g$ is the detector function (``weighting
@@ -1218,7 +1218,7 @@ integrals by arbitrarily decomposing the domain of integration,
 i.e., by decomposing the source $S$ into sub-sources (``strata")
 $S_k$ with
 \begin{equation}
-R_g = \int d\vx~ \phi_S \cdot g    = \langle S,\phi^*_g\rangle  =\sum_k^{M} \langle S_k,\phi^*_g\rangle = \sum_k^{M} \int d\mu_{S_k} \phi^*_g
+R_g = \int d\vx~ \phi_S \cdot g = \langle S,\phi^*_g\rangle =\sum_k^{M} \langle S_k,\phi^*_g\rangle = \sum_k^{M} \int d\mu_{S_k} \phi^*_g
 \end{equation}
 This is the concept of ``stratified sampling", which, for Monte Carlo
 particle transfer procedures in particular actually turns out to
@@ -1262,7 +1262,7 @@ R = E\{\tilde R^*(N)\} = E\{\tilde R(N)\}
 where $E\{X\}$ denotes the ``expectation value" of random variable $X$.
 Furthermore:
 \begin{equation}\label{varstra}
-\tilde \sigma^2_{k}(N_k)  = \frac{1}{N_k}\tilde \sigma^2_{1k}(N_k); \quad \tilde \sigma^{2^*}(N)  = \sum_k \frac{s_k^2}{s^2}\frac{1}{N_k}\tilde \sigma^2_{1k}(N_k)
+\tilde \sigma^2_{k}(N_k) = \frac{1}{N_k}\tilde \sigma^2_{1k}(N_k); \quad \tilde \sigma^{2^*}(N) = \sum_k \frac{s_k^2}{s^2}\frac{1}{N_k}\tilde \sigma^2_{1k}(N_k)
 \end{equation}
 where again the asterisk indicates the value obtained with stratification.
 The right equation follows from the sum rule for variances and because
@@ -1278,7 +1278,7 @@ N_k=\frac{s_k}{s} N, \quad k = 1, 2, \dots, M
 \end{equation}
 one finds from \cref{varstra} for the variance of the stratified sample:
 \begin{equation}
- \tilde \sigma^{2^*}(N)  = \sum \frac{s_k}{s}\tilde \sigma^2_{k}(N_k)
+ \tilde \sigma^{2^*}(N) = \sum \frac{s_k}{s}\tilde \sigma^2_{k}(N_k)
 \end{equation}
 which can be substantially smaller than the variance from the simple sample \cref{varsimp} of size $N$, if the
 subdivision into strata is made such that the variability within strata $\sigma_k^2$ is less then the variability
@@ -1528,19 +1528,19 @@ nature of the various collision processes taken into account.
 The collision kernel $C$ was written as (see \cref{eq1.3})
 \begin{displaymath}
 C( \vr ' , \vv ' , i '   \rightarrow
-\vv , i) =   \sum_{k} {p_k  C_k ( \vr ' ;
+\vv , i) = \sum_{k} {p_k  C_k ( \vr ' ;
               \vv ' , i '   \rightarrow \vv, i)} \
-, \ p_k   =    \frac{\Sigma_k}{\Sigma_t}
+, \ p_k = \frac{\Sigma_k}{\Sigma_t}
 \end{displaymath}
 with summation over the index $k$ for the different types of
 collision processes under consideration and $p_k$ defined as the
 probability for a collision to be of type $k$. The normalizing
 factor
 \begin{displaymath}
-c_k (x ')   =
+c_k (x ') =
   \sum_{i}   \int d \vv \ C_k (
 \vr ' , \vv ' , i ' \rightarrow
-\vv , i ) \   , \  {\cal{C}}_k   =    \frac{1}{c_k}
+\vv , i ) \   , \  {\cal{C}}_k = \frac{1}{c_k}
 C_k
 \end{displaymath}
 was the mean number of secondaries for this collision process $k$. The normalized
@@ -1635,7 +1635,7 @@ more convenient for Monte Carlo applications to describe this
 interaction as just one special type of collision process in the
 collision kernel $C$ of equation \cref{eq1.3}, i.e.\ as
 \begin{equation} \label{eq1.14}
-C   =   p_w    \cdot   C_w    + \sum_{k}  p_k   C_k   ,
+C = p_w    \cdot   C_w    + \sum_{k}  p_k   C_k   ,
 \end{equation}
 with $ p_w (\vr )$ = 1, if $ \vr $ is a point
 on a surface, and $ p_w (\vr)$ = 0 elsewhere. The
@@ -1647,7 +1647,7 @@ kernel $ C_{wf}$ (fast particle reflection), $ C_{wt}$ (thermal
 particle re-emission) and $ C_{wa}$ (particle absorption) with
 respective probabilities, $ p_f , p_t$  and $ p_ a$, such that
 \begin{equation}
-C_w   = C_{wf}   +   C_{wt}   +   C_{wa}   =
+C_w = C_{wf}   +   C_{wt}   +   C_{wa} =
   p_f   {\cal{C}}_{wf}   +
   p_t   {\cal{C}}_{wt}   +   p_a
 {\cal{C}}_{wa}  , \quad p_f + p_t + p_a = 1 . \label{eq1.15}
@@ -1670,18 +1670,18 @@ the particles leaving the surface.
 
 One has  for the particle reflection coefficient:
 \begin{equation}
-C_P   =   \sum_{i}   \int d \vv \   C_{wf} (
+C_P = \sum_{i}   \int d \vv \   C_{wf} (
 \vr ; \vv ' , i ' \rightarrow   \vv
 ,i) \label{eq1.16}
 \end{equation}
-Note that $ C_P   =   p_f = c_{wf}$ in the terminology of
+Note that $ C_P = p_f = c_{wf}$ in the terminology of
 \cref{eq1.4}.
 
 The energy reflection coefficient is defined as:
 \begin{equation}
-C_E    =    \frac{1}{E '}    \cdot \sum_{i}   \int d \vv
+C_E = \frac{1}{E '}    \cdot \sum_{i}   \int d \vv
 \   E    \cdot C_{wf} (\vr ; \vv ' , i '
-\rightarrow   \vv ,i)   =
+\rightarrow   \vv ,i) =
  \frac{1}{E '}     \cdot   {\tilde{C}}_E
 \label{eq1.17}
 \end{equation}
@@ -1701,13 +1701,13 @@ table of values for $ C_{P_\perp} (E ')$ and a stochastic matrix $
 normal incidence. For other incident angles $ \vartheta_{in}$ the
 moments are modified in EIRENE by the relations:
 \begin{equation}
-C_P ( \vartheta_{in} )   =   1   - (   1   -   C_{P_\perp})
+C_P ( \vartheta_{in} ) = 1   - (   1   -   C_{P_\perp})
  \cdot   \cos^{e1} ( \vartheta_{in} )
 \label{eq1.18}
 \end{equation}
 and
 \begin{equation}
-C_E ( \vartheta_{in} )   =
+C_E ( \vartheta_{in} ) =
   1   -   (   1   -   C_{E_\perp})
  \cdot   \cos^{e2} ( \vartheta_{in} )    .
 \label{eq1.19}
@@ -1718,12 +1718,12 @@ tabulated stochastic matrix ${\underline{\underline{B}}}_{\perp}
 first sample $ {\cal{E}}$ from $ {\underline{\underline{B}}}
 _{\perp}$ (given $ E '$) and then set
 \begin{equation}
-E   =   E '   -   (   E ' - {\cal{E}}  )
+E = E '   -   (   E ' - {\cal{E}}  )
  \cdot   \cos^{e2} ( \vartheta_{in} )    .
 \label{eq1.20}
 \end{equation}
 The linearity of E in $ {\cal{E}}$ gives an expectation value $\bar
-{E}$ with $ \bar {E} / E ' \cdot C_P( \vartheta_{in} )  = C_E (
+{E}$ with $ \bar {E} / E ' \cdot C_P( \vartheta_{in} ) = C_E (
 \vartheta_{in} )$, with $C_P $ and $C_E$ as given by equations
 \cref{eq1.18} and \cref{eq1.19}, respectively.
 
@@ -1739,12 +1739,12 @@ distribution around $ - \ve_x$. The speed unit vector $
 \vOmega $ of the reflected particle in EIRENE is then
 given by
 \begin{align}
-\Omega_x & =  - \cos( \hat{\vartheta}_r ) f_1 ( \vartheta_{in}
+\Omega_x & = - \cos( \hat{\vartheta}_r ) f_1 ( \vartheta_{in}
 )   +   \sin( \hat{\vartheta}_r )
 \sin( \varphi_r)   f_2 ( \vartheta_{in} )     ,   \nonumber\\
-\Omega_y & =  \sin( \hat{\vartheta}_r )
+\Omega_y & = \sin( \hat{\vartheta}_r )
 \cos( \varphi_r )     ,                           \nonumber\\
-\Omega_z & =  \sin( \hat{\vartheta}_r ) \sin( \varphi_r )
+\Omega_z & = \sin( \hat{\vartheta}_r ) \sin( \varphi_r )
 f_1( \vartheta_{in} )   + \cos( \hat{\vartheta}_r )   f_2(
 \vartheta_{in} )  , \label{eq1.21}
 \end{align}
@@ -1769,11 +1769,11 @@ grazing incidence. e3=0 gives a pure cosine distribution, e3=1
 reproduces the distribution given in \cite{kn:Heifetz}. In general
 this model describes a fraction of specular versus cosine
 reflection, which increases with $ \vartheta_{in}$. And in the
-(purely mathematical) limit of $ \vartheta_{in}   =   90^{\circ}$,
+(purely mathematical) limit of $ \vartheta_{in} = 90^{\circ}$,
 it results in pure specular reflection. Furthermore, the parameter $e3$ controls
 the speed at which the specular part $a_{spec} (
 \vOmega; \vartheta_{in})$ of the angular distribution $a
-(\vOmega; \vartheta_{in})   =   a_{spec} ( \vOmega; \vartheta_{in})
+(\vOmega; \vartheta_{in}) = a_{spec} ( \vOmega; \vartheta_{in})
   +   a_{cosin} ( \vOmega; \vartheta_{in})$ increases with incident angle
 $ \vartheta_{in} $.
 
@@ -1902,7 +1902,7 @@ To describe this, we first write the volumetric source $Q$ (particles per unit t
 in terms of a  surface flux $\Gamma_w$ and a surface delta-function. The
 surface (wall) flux $\Gamma_w$ thus has dimension: particles per unit time, per velocity space unit, and per unit area:
 \begin{equation}
-Q_w( \vr , \vv , i )   = \Gamma_w (
+Q_w( \vr , \vv , i ) = \Gamma_w (
 \vr, \vv , i )    \cdot   \delta_w ( \pi )     ,
 \label{eq1.22}
 \end{equation}
@@ -1975,7 +1975,7 @@ i.e.\ with a drift velocity of at least ion sound speed in the direction paralle
 In this case the action of the magnetic pre-sheath must be accommodated in the sheath kernel $T_{Sh}$, which we might
 even consider to split into a magnetic pre-sheath (MP) kernel and an electrostatic sheath (Sh) kernel:
 \begin{equation}
-T_{Sh} =  T_{mpSh}(\vr_{mpSh}, \vv_{mpSh} \rightarrow \vr_{eSh}, \vv_{eSh}) \cdot  T_{eSh}(\vr_{eSh},\vv_{eSh} \rightarrow \mbox{wall})
+T_{Sh} = T_{mpSh}(\vr_{mpSh}, \vv_{mpSh} \rightarrow \vr_{eSh}, \vv_{eSh}) \cdot  T_{eSh}(\vr_{eSh},\vv_{eSh} \rightarrow \mbox{wall})
 \end{equation}
 with the subscripts $mpSh$ and $eSh$ labelling the plasma side magnetic pre-sheath entrance and the electrostatic sheath entrance, respectively.
 
@@ -1993,12 +1993,12 @@ One of the standard options in EIRENE, in particular in applications in which EI
 is a truncated forward drifting Maxwellian ion flux distribution (options: NEMODS = 6,7, \cref{sec2.7}).
 The kinetic plasma ion flux distribution entering the electrostatic sheath is given as
 \begin{equation}
-\Gamma^0_{Sh,ion}   = \frac{1}{\alpha^2}   \cdot   v_{\pi}   \cdot
+\Gamma^0_{Sh,ion} = \frac{1}{\alpha^2}   \cdot   v_{\pi}   \cdot
   \exp \left ( - \frac{1}{v_{T_i}^2}
 (\vv - \vV_d )^2  \right )    , \quad
 v_{\pi} > 0 \label{eq1.23}
 \end{equation}
-with $v_{T_i}  =   \sqrt{2 kT_i/m_i}$, the thermal ion velocity, normalizing constant
+with $v_{T_i} = \sqrt{2 kT_i/m_i}$, the thermal ion velocity, normalizing constant
 $\alpha^2$ and with the drift velocity $\vV_d$. See \cref{sec2.7} for a description of related EIRENE input flags.
 The
 superscript 0 indicates normalization of the flux to one particle per unit time and unit area:
@@ -2015,7 +2015,7 @@ $\Gamma^0_{Sh,ion}(\vv)$ factorizes into the three uni-variate distributions
 The first two factors here are simply (shifted) Gaussian distributions and sampling random velocities $v_1, v_2$ from them is trivial (e.g.: Box Muller method),
 whereas the third factor is a one-sided drifting Maxwellian flux distribution:
 \begin{equation}
-\Gamma^0_{Sh,ion,\pi}(v_\pi)   = \frac{1}{\alpha^2_\pi}   \cdot   v_{\pi}   \cdot
+\Gamma^0_{Sh,ion,\pi}(v_\pi) = \frac{1}{\alpha^2_\pi}   \cdot   v_{\pi}   \cdot
   \exp \left ( - \frac{1}{v_{T_i}^2}
 (v_\pi - V_{d,\pi} )^2  \right )    , \quad
 v_{\pi} > 0
@@ -2023,12 +2023,12 @@ v_{\pi} > 0
 The normalizing factor $\alpha_{\pi}^2$ for this (now uni-variate) distribution of the normal component  $v_\pi$
   reads:
 \begin{equation}
-\alpha_{\pi}^2   =  \frac12 v_{T_i}^2  \cdot  \exp(-{\cal V}^2_{\pi} )
+\alpha_{\pi}^2 = \frac12 v_{T_i}^2  \cdot  \exp(-{\cal V}^2_{\pi} )
    g({\cal V}_{\pi} )  ,
 \label{eq1.27}
 \end{equation}
 with ${\cal V}_{\pi} = V_{d,\pi}/   v_{T_i} $ and $
-g(x)   =   1   +   \sqrt{\pi} ~  x ~  [1 + \mathrm{erf}(x)] ~  \exp(x^2
+g(x) = 1   +   \sqrt{\pi} ~  x ~  [1 + \mathrm{erf}(x)] ~  \exp(x^2
 )$.
 
 (Note that the dimensionless velocity $\cal V$ normalized by the thermal speed introduced here is related to the Mach number $M$
@@ -2045,7 +2045,7 @@ $\Gamma^0_{Sh,ion,\pi}$ is not trivial even for this seemingly simplest sheath e
 distribution function $F$ of a 1D forward drifting Maxwellian (with
 cut-off at $v_{\pi}=0$):
 \begin{equation}
-F ( v_{\pi} )   = \int_{0}^{v_{\pi}} dv_{\pi} ' \
+F ( v_{\pi} ) = \int_{0}^{v_{\pi}} dv_{\pi} ' \
 \Gamma^{0}_{Sh,ion,\pi} ( v_{\pi} ' ) \label{eq1.25}
 \end{equation}
 cannot be inverted explicitly.
@@ -2058,7 +2058,7 @@ $\tilde\Gamma^0_{Sh,ion,\pi}(\tilde v_{\pi})$ (see \cref{sec1.2.1a} above)
 with zero drift in $\pi$-direction but with different ``non-analog" $\pi$- temperature ${\tilde{T}}_{\pi,i},
 ({\tilde{T}}_{\pi,i}   \ne T_i   , {\tilde{V}} _{d,\pi} = 0 )$.
 \begin{equation}
-\tilde\Gamma^0_{Sh,ion,\pi}(\tilde v_\pi)   = \frac{1}{\tilde \alpha^2_\pi}   \cdot   \tilde v_{\pi}   \cdot
+\tilde\Gamma^0_{Sh,ion,\pi}(\tilde v_\pi) = \frac{1}{\tilde \alpha^2_\pi}   \cdot   \tilde v_{\pi}   \cdot
   \exp \left ( - \frac{1}{v_{\tilde T_{\pi,i}}^2}
 (\tilde v_\pi )^2  \right )    , \quad
 \tilde v_{\pi} > 0
@@ -2070,9 +2070,9 @@ a fully legitimate sampling distribution because it fulfils the ``Radon--Nikodym
 Sampling from this non-analog distribution can
 be done by setting, e.g.,
 \begin{equation}
-\tilde{v}_{\pi}   = {\tilde{\alpha}}_{\pi}   \cdot   \sqrt{-\ln(
+\tilde{v}_{\pi} = {\tilde{\alpha}}_{\pi}   \cdot   \sqrt{-\ln(
 \xi )  \cdot 2} = v_{\tilde T_{\pi,i}} \cdot   \sqrt{-\ln(
-\xi )}  \quad  \mbox{since: \ }  \tilde{\alpha}_{\pi}   =\frac{1}{\sqrt{2}}
+\xi )}  \quad  \mbox{since: \ }  \tilde{\alpha}_{\pi} =\frac{1}{\sqrt{2}}
 v_{\tilde T_{\pi,i}} \quad \mbox{for \ } \tilde{V}_{d,\pi} = 0
 \label{eq1.26}
 \end{equation}
@@ -2084,7 +2084,7 @@ $\xi$  being a uniformly distributed random number between 0 and
 In order to find the weight correction factor associated with this non-analog
 procedure, we first note that from \cref{normfac} we have
 \begin{displaymath}
-{\tilde{\cal V}}_{\pi} = 0 \rightarrow g({\tilde{\cal V}}_{\pi}) =1, \mbox{and}  \quad \tilde{\alpha}_{\pi}   = \frac{1}{\sqrt{2}}v_{\tilde{T_i}}
+{\tilde{\cal V}}_{\pi} = 0 \rightarrow g({\tilde{\cal V}}_{\pi}) =1, \mbox{and}  \quad \tilde{\alpha}_{\pi} = \frac{1}{\sqrt{2}}v_{\tilde{T_i}}
 \end{displaymath}
 This gives the following result for the (multiplicative) weight
 correction factor $w ( \tilde{v}_{\pi} )$, see equation \cref{eq1.13a}, to be applied for each sampled non-analog velocity component
@@ -2093,7 +2093,7 @@ $\tilde v_\pi$:
 w ( \tilde{v}_{\pi} ) = \frac{\Gamma^0_{Sh,ion,\pi} (
 {\tilde{v}}_{\pi} )}{\tilde{\Gamma}^0_{Sh,ion,\pi} ( \tilde{v}_{\pi}
 )}
- =  \frac{\tilde{T}_{\pi,i}}{T_i}
+ = \frac{\tilde{T}_{\pi,i}}{T_i}
 \exp \left (  \frac{2 \tilde{v}_{\pi}  V_{d, \pi}}{v_{Ti}^2}    -
 \frac {{\tilde{v}_{\pi}}^2}{v_{T_i}^2} \left ( 1   -
 \frac{T_i}{{\tilde{T}_{\pi,i}}}  \right ) \right )
@@ -2112,12 +2112,12 @@ g({\cal V}_{\pi})^2
  \cdot  \frac{1}{(2-b)   b}   -   1
 \label{eq1.29}
 \end{equation}
-where $b   =   2   -  T / {\tilde{T}}$. We use the
+where $b = 2   -  T / {\tilde{T}}$. We use the
 ansatz $b = C  \cdot   {\cal V}_{\pi} + 1$ and compute numerically that
 value of C which minimizes $\sigma^2$ in the range $0 \le {\cal V}_{\pi}
 \le 1$. We find C = 0.6026. This means that the ratio of the
 ``real" temperature $T_i$ and the non-analog temperature $\tilde{T}_{\pi,i}$
-should be chosen to be $ T_{i} / {\tilde{T}_{\pi,i}}   =   1 - 0.6026  \cdot
+should be chosen to be $ T_{i} / {\tilde{T}_{\pi,i}} = 1 - 0.6026  \cdot
 {\cal V}_{\pi}$. This choice optimizes the statistical performance in the given Mach number range. In
 principle, of course, any other $\tilde{T_{\pi}} $ could have been used
 without introducing bias into
@@ -2143,18 +2143,18 @@ one):
 with the half sided integration for the $\pi$-component of
 $\vv$, and:
  \begin{equation}
-\gamma_E   =    2 + {\cal V}_\sigma^2    + \left[{\cal V}_\pi^2    +   0.5
+\gamma_E = 2 + {\cal V}_\sigma^2    + \left[{\cal V}_\pi^2    +   0.5
 \cdot \frac{g({\cal V}_{\pi} )  - 1}{g({\cal V}_{\pi} )}\right]       , \label{eq1.31}
 \end{equation}
 Here we have decomposed the drift velocity $\vV_d$ into a
 normal (to the surface) $\pi$-component $\vV_{d,\pi}$ and a $\sigma$-component $\vV_{d,\sigma}$ parallel to
 the wall surface.
 \begin{equation}
-{\cal V}_{\sigma}   = \frac{| \vV_d   -   \vV_{d,
+{\cal V}_{\sigma} = \frac{| \vV_d   -   \vV_{d,
 \pi} |} {v_{T_i}} = \frac{| \vV_{d,\sigma} |} {v_{T_i}}. \label{eq1.32}
 \end{equation}
 Note that for ${\cal V}_{\pi}$ = 0 \cref{eq1.31} reduces to the expected formula
-$\gamma_E   =   2   + {{\cal V}_{\sigma}}^2$  for a half sided Maxwellian flux with only drift components parallel to the surface.
+$\gamma_E = 2   + {{\cal V}_{\sigma}}^2$  for a half sided Maxwellian flux with only drift components parallel to the surface.
 
 Furthermore, if ${\cal V}_{\sigma}
 = 0$ (normal incidence of the mean flow) and ${\cal V}_{\pi} \rightarrow 1$ (i.e.\ for the Bohm sheath
@@ -2428,13 +2428,13 @@ computational volume is discretized by a mesh of $n$ surfaces
 \mbox{$S_i, i = 1, 2, \dots, n$.} Each of these surfaces is defined by a
 set of $\Lambda_i$ equations (unbounded surfaces):
 \begin{equation}
-f_{\lambda}^i (x,y,z)   =   0 {},    \quad \quad \lambda   =
+f_{\lambda}^i (x,y,z) = 0 {},    \quad \quad \lambda =
 1, 2, \dots, \Lambda_i {}, \label{eq1.34}
 \end{equation}
 and, optional, for each unbounded surface $\lambda$  a subset of $ \Pi_{\lambda} $
 inequalities (e.g.\ for turning the unbounded surfaces into finite segments):
 \begin{equation}
-g_{\lambda , \pi}^i (x,y,z)  \le   0 {},    \quad \quad \pi   =
+g_{\lambda , \pi}^i (x,y,z)  \le   0 {},    \quad \quad \pi =
 1, 2, \dots, \Pi_{\lambda} {}. \label{eq1.35}
 \end{equation}
 
@@ -2469,7 +2469,7 @@ a_9  \cdot  yz \label{eq1.36}
 Hence in the geometrical block nothing else but second order
 equations
 \begin{equation}\nonumber
-t^2   +   p \cdot  t   +   q   =   0
+t^2   +   p \cdot  t   +   q = 0
 \end{equation}
 have to be solved
 accurately and as efficiently as possible. We note in passing that
@@ -2873,7 +2873,7 @@ One default set of \ac{BGK} collision parameters used in EIRENE is based upon
 the concept of ``diffusion volumes'' to provide (weakly temperature dependent) binary diffusion coefficients $D_{12}$ (for cross collisions, e.g.\ for He + H$_2$) or a viscosity coefficient $\mu$ (for self collisions) in the gas (see \cite{kn:Reiter94}). This choice results in a \ac{BGK} collision rate coefficient $k(T)= k_0 T^{0.25}$  with the constant $k_0$ derived
 from such continuum limit considerations and the (experimentally determined) ``diffusion volumes''. Within this concept then a \ac{BGK} - mean free path \cite{kn:Kotov-Dis} follows as:
 \begin{align}
-\lambda_{BGK} (\si{\centi\metre}) &= \frac{\tilde{v}}{n \langle \sigma v\rangle} =  \frac{\sqrt{8T/\pi m}} {n k_0 T^{0.25}} \nonumber \\
+\lambda_{BGK} (\si{\centi\metre}) &= \frac{\tilde{v}}{n \langle \sigma v\rangle} = \frac{\sqrt{8T/\pi m}} {n k_0 T^{0.25}} \nonumber \\
                    &= L_0 \times T[\si{\electronvolt}]^{0.25} / n[\SI{1e14}{\per\cubic\centi\metre}]
 \end{align}
 where the proportionality factor $L_0$ (in \si{\centi\metre}) is typically in the range between 7 and 20 ($L_0 = \SI{20}{\centi\metre}$ for D--D self collisions, $L_0 = \SI{9.75}{\centi\metre}$ for D$_2$--D$_2$ self collisions and $L_0 = \SI{8.7}{\centi\metre}$ for D$_2$--He cross collisions). $L_0$ is the \ac{BGK} mean free path (in \si{\centi\metre}) in a gas
@@ -2958,7 +2958,7 @@ initial value problem for the distribution function $f_A$ is not as simple any m
 parameters $(n, \vv, T)$ in $f^0$ become fictitious local parameters related to the five moments of $f_A(\vv)$
 weighted with $\nu(\vv)$:
 \begin{equation}
-\int \nu(\vv) M_i(\vv) f^0(\vv) d^3(v) =  \int \nu(\vv) M_i(\vv) f_A(\vv) d^3(v) \ \ \ i=1, \dots, 5
+\int \nu(\vv) M_i(\vv) f^0(\vv) d^3(v) = \int \nu(\vv) M_i(\vv) f_A(\vv) d^3(v) \ \ \ i=1, \dots, 5
 \end{equation}
 Here $M_i(\vv)$ are the five collisional invariants: $M_1 = 1$ (particle conservation),
 $M_{2,3,4} = (v_x,v_y,v_z)$ (momentum conservation), and $M_5 = m/2 v^2$ (energy conservation).
@@ -3373,7 +3373,7 @@ The \emph{full expression for the energy relaxation frequency} $\nu_\varepsilon^
 \end{equation}
 where $x^{a/b}$ has been defined above, relation \cref{xab}
 \begin{equation}
-\nu_0^{a,b}  =  n_b Z_a^2 Z_b^2\lambda_{a,b}\cdot 4 \pi  /(\mu_a^2~  v_a^3)
+\nu_0^{a,b} = n_b Z_a^2 Z_b^2\lambda_{a,b}\cdot 4 \pi  /(\mu_a^2~  v_a^3)
 \end{equation}
  and the Maxwell integral $\Psi(x)$:
 \begin{align}
