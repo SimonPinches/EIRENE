@@ -164,7 +164,9 @@ by the iterative option NITER (input block 1).
       NPLSI
       DO 51  J= 1, NPLSI
 \end{lstlisting}
+
 \textsl{* read NPLSI species blocks with \$ = P}
+
 \begin{lstlisting}
         ISPZ$ TEXT$ NMASS$ NCHAR$ NPRT$ NCHRG$ ISRF$ ISRT$ 
      .    ID1$
@@ -196,6 +198,7 @@ C End of NPLSI species cards reading
         VL0  VL1  VL2  VL3  VL4  VL5
       ENDIF
 \end{lstlisting}
+
 Currently option INDPRO=6 and INDPRO=7 are not available for cell volumes (input tally no.\ 12).
 \medskip
 
@@ -210,9 +213,11 @@ in block 4 (\cref{sec2.4}) for the test particle species cards specified there.
 
 However, after the ID3 flag, there may be 2 additional input
 flags: (only for Eirene$_{2003}$ and younger):
+
 \begin{lstlisting}
 ... CDENMODEL NRE
 \end{lstlisting}
+
 Format: \dots,1X,A10,1X,I2.
 
 These flags, if included, control
@@ -233,9 +238,11 @@ docu to be written
 Read data for this species from file fort.13.
 
 The additional card (only one) reads (format 2I6):
+
 \begin{lstlisting}
       ISP ITP
 \end{lstlisting}
+
 ISP is the number of a bulk species on the file fort.13 (e.g.
 written in an earlier EIRENE run, see NFILEL option in input block
 1). The parameters (fields of density, temperature, flow velocity)
@@ -248,9 +255,11 @@ Internally set: ITP=4, bulk particle type, independent of input value for ITP.
 Read data for this species from file fort.10.
 
 The additional card (only one) reads (format 3I6):
+
 \begin{lstlisting}
       ISP ITP ISTR
 \end{lstlisting}
+
 ISP, ITP is the number and type of a test particle species on the
 file fort.10, respectively, from stratum no.\ ISTR (i.e.\ written
 onto fort.10 either in the present run or an earlier EIRENE run,
@@ -266,17 +275,21 @@ printout, plotting or iterative mode (input flags NITERI, NITERE, and user subro
 \item[= 'Saha'] Set parameters from
 Saha-equilibrium of ionization states.
 The additional card (only one) reads:
+
 \begin{lstlisting}
       ISP ITP ISTR ...
 \end{lstlisting}
+
 to be written 
 \item[= 'Boltzmann']
 Set parameters
 from Boltzmann-equilibrium of excited states. The additional card
 (only one) reads (format: 3I6,6x,2E12.4)
+
 \begin{lstlisting}
       ISP ITP ISTR G_BOLTZMANN DELTA_E
 \end{lstlisting}
+
 docu to be written
 \item[= 'Planck']
 (only for background photons) to be written
@@ -284,9 +297,11 @@ docu to be written
 Set density parameters from Corona-equilibrium to a ``donor species",
 using an excitation rate coefficient from atomic database FILNAM and a fixed radiative decay rate $A=A_{CORONA}$.
 The additional card (only one) reads (format: 3I6, 1X, A6, 1X, A4, A9, A3, E12.4):
+
 \begin{lstlisting}
       ISP ITP ISTR FILNAM H123 REACTION CR A_CORONA
 \end{lstlisting}
+
 ISP, ITP is the number and type of a (donor) particle species, either one of the already defined
 bulk species IPLS: ISP=IPLS,
 (for ITP=4), or from the file fort.10 (for ITP=0,1,2 or 3)
@@ -314,9 +329,11 @@ background species IPLS is specified via:
  ni(IPLS,x)= \sum_{IS} n_{IS}(x) \times POP_{IS}(x)
 \end{equation} 
 The NRE (for NRE different donor-states) additional cards read:
+
 \begin{lstlisting}
       ISP ITP ISTR FILNAM H123 REACTION CR
 \end{lstlisting}
+
 ISP, ITP is the number and type of a particle (donor) species $IS$, either one of the already defined
 bulk species IPLS: ISP=IPLS,
 (for ITP=4, then ISTR is irrelevant), or from the file fort.10 (for ITP=0,1,2 or 3)

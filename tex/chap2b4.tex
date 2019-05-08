@@ -67,11 +67,13 @@ information on the proper asymptotic behavior are then read (see below).
 Since Jan. 2018 and younger versions direct access to atomic data from internal CR codes
 (evaluated on a cell by cell basis)
 is re-activated by
+
 \begin{lstlisting}
       IR  CRM  H123  REAC  CRC  MASSP  MASST
 
 C     (format: I3,1X,A6,1X,A4,Axxx,A3,2I3,E12.4)
 \end{lstlisting}
+
 The character string 'CRM'  (A6 or A8) identifies which particular internal CR code
 is executed, cell by cell, and whether it is run in meta-stable resolved or
 meta-stable unresolved mode.
@@ -93,6 +95,7 @@ so called ``\ac{ADAS} database format AFD11",
 or any other properly (2D) tabulated
 data source, i.e.\ with \lstinline|FILNAM = TAB2D|, or \lstinline|FILNAM = ADAS|
 the corresponding card reads:
+
 \begin{lstlisting}
       IR  TAB2D  H123  REAC  CRC  MASSP  MASST  DP
 
@@ -117,11 +120,13 @@ card is read (containing variables: ELNAME, IZ) for each IR entry, see below, to
 
 For photonic emission and absorption data (line shapes), i.e.\ for \lstinline|FILNAM = PHOTON|,
 the line is shortened to
+
 \begin{lstlisting}
       IR  PHOTON  H123  REAC
 
 C     (format: I3,1X,A6,1X,A4,Axxx)
 \end{lstlisting}
+
 for reading from the spectroscopic line-shape database \lstinline|PHOTON|,
 but additional lines are needed to
 specify the line broadening options. See below.
@@ -218,13 +223,16 @@ species block for each of the heavy background particles, i.e.,
 for the ``bulk ions".
 
 A ``species block" has the format:
+
 \begin{lstlisting}
       ISPZ$ TEXT$ NMASS$ NCHAR$ NPRT$ NCHRG$ ISRF$ ISRT$ ID1$
       NRC$  NFOL$ NGEN$  NHSTS$ ID3$
 C     (format: I2,1X,A8,1X,12(I2,1X))
 \end{lstlisting}
+
 Default for ID1 is:  ID1=0
 In case ID1 $\leq$ 2, i.e., two or less post-collision particle (not counting electrons)
+
 \begin{lstlisting}
       DO  K= 1, NRC$
         IREAC$  IBULK$  ISCD1$  ISCD2$  ISCDE$  IESTM$  IBGK$
@@ -245,6 +253,7 @@ $p + CH_4 \rightarrow CH_2 + H_2 + H$, etc.
         EELEC$  EBULK$  ESCD1$  EDUMMY FREAC$  EDPOT$
       ENDDO
 \end{lstlisting}
+
 New option in 2006:
 
 In case ID1 = 4, i.e., four post-collision particles (not counting electrons)
@@ -308,11 +317,14 @@ N=5: electrons
 Note: in EIRENE$_{2003}$ or later the format of input flag \lstinline|REAC| described below was generalized from
 \lstinline|A9|  to \lstinline|Axxx|, with \lstinline|xxx| $\leq 50$,  to accommodate the longer reaction information for photonic
 processes into the same format. The old format \lstinline|A9| is of course automatically still recognized as special case.
+
 \begin{lstlisting}
       NREACI
       DO
 \end{lstlisting}
+
 \textbf{for ``real particles"}, databases: \lstinline|FILNAM = HYDHEL|, \lstinline|AMJUEL|, \lstinline|METHAN|, \lstinline|H2VIBR|
+
 \begin{lstlisting}
         IR  FILNAM  H123  REAC  CRC  MASSP  MASST  DP RMN1
      .    RMX1
@@ -320,14 +332,17 @@ C       (format: I3,1X,A6,1X,A4,Axxx,A3,2I3,3E12.4)
         IF (RMN1.GT.0.) READ IFEXMN, FPARM(J),J=1,3
         IF (RMX1.GT.0.) READ IFEXMX, FPARM(J),J=4,6
 \end{lstlisting}
+
 \textbf{for ``real particles"}, database: \lstinline|FILNAM = ADAS|
 (or any table in an equivalent format as the \ac{ADAS} adf11 files)
+
 \begin{lstlisting}
         IR  ADAS  H123  REAC  CRC  MASSP  MASST  DP
 C       (format: I3,1X,A6,1X,A4,Axxx,A3,2I3,3E12.4)
         ELNAME, IZ
 C       (format: 4X,A2,1X,I3)
 \end{lstlisting}
+
 i.e.: one additional input card is read to identify the chemical element and charge state.
 Extrapolation flags RMN1 and RMX1 are not in use in this case and may be omitted. Default (hard wired) extrapolation
 schemes are used if the plasma density and temperature is outside the tabulated range.
@@ -336,15 +351,18 @@ schemes are used if the plasma density and temperature is outside the tabulated 
 \textbf{for ``real particles"}, database: \lstinline|FILNAM = CONST|.
 Fit parameters are directly read from input file, up to nine coefficients.
 In EIRENE$_{2005}$ or later: Optional : Further parameter FTFLAG, length: not more than 9 characters.
+
 \begin{lstlisting}
         IR  CONST  H123  FTFLAG  CRC  MASSP  MASST  DP
 C       (format: I3,1X,A6,1X,A4,(A9),xxxX,A3,2I3,3E12.4)
 \end{lstlisting}
+
 i.e.: Reading of FTFLAG is optional. Default for FTFLAG: =0. Parameter REAC does not exist.
 Extrapolation flags RMN1 and RMX1 are not in use in this case and may be omitted.
 
 \vspace{0.3cm}
 \textbf{for ``photons"}, database \lstinline|FILNAM = PHOTON|
+
 \begin{lstlisting}
         IR  PHOTON  H123  REAC
 C       (format: I3,1X,A6,1X,A4,Axxx)
@@ -354,6 +372,7 @@ C       (format: I3,1X,A6,1X,A4,Axxx)
 C         (format: I6,1X,A2,3X,I6)
         ENDDO
 \end{lstlisting}
+
 I.e.: after the first line there is a special format for this set of input cards in case of photonic processes,
 read from the spectral database PHOTON. In case \emph{IFREMD $>$ 0} the additional cards specify options
 for ``foreign pressure line broadening".
@@ -368,33 +387,27 @@ label $IR$.
 * 4A. atoms species cards
       NATMI
       DO 44  IATM= 1, NATMI
-\end{lstlisting}
-\textsl{* read NATMI species blocks with \$ = A}
-\begin{lstlisting}
+* read NATMI species blocks with $ = A
       44 CONTINUE
 * 4B. molecules species cards
       NMOLI
       DO 46  IMOL= 1, NMOLI
-\end{lstlisting}
-\textsl{* read NMOLI species blocks with \$ = M}
-\begin{lstlisting}
+* read NMOLI species blocks with $ = M
       46 CONTINUE
 * 4C. test ions species cards
       NIONI
       DO 48  IION= 1, NIONI
-\end{lstlisting}
- \textsl{* read NIONI species blocks with \$ = I}
-\begin{lstlisting}
+* read NIONI species blocks with $ = I
       48 CONTINUE
 \end{lstlisting}
+
 and, for versions younger than 2003:
+
 \begin{lstlisting}
 * 4D. test ions species cards
       NPHOTI
       DO 49  IPHOT= 1, NPHOTI
-\end{lstlisting}
- \textsl{* read NPHOTI species blocks with \$ = Ph}
-\begin{lstlisting}
+* read NPHOTI species blocks with $ = Ph
       49 CONTINUE
 \end{lstlisting}
 
@@ -1516,6 +1529,7 @@ NATMI= 2
      5 ***14   211 ***14 00000
   0.0000E 00  0.0000E 00  0.0000E 00
 \end{lstlisting}
+
 Here $\ast$ is the species index of the D$^+$ bulk ion in input
 block 5, $\ast\ast$ is the species index of the He$^+$ bulk ion in
 input block 5, and $\ast\ast\ast$ is the species index of the He$^{++}$ bulk ion in
@@ -1550,6 +1564,7 @@ In order to distinguish $D_2$ from $HT$, is also uses the name TEXTM
 the name (then: $D_2$, or $D_2^+$) or for ``H" or ``T"  (then: $HT$,
 or $HT^+$). The default reaction kinetics are set as if they would
 have been specified by the following species blocks:
+
 \begin{lstlisting}
 * ATOMIC REACTION CARDS  NREACI=
 7
@@ -1629,6 +1644,7 @@ derived in closed analytic form for this expression.
 
 There is currently no fully equivalent counterpart to this in the AMJUEL or HYDHEL polynomial fits.
 Rather close to the minimal default volume recombination model, al least at low Te, is the choice:
+
 \begin{lstlisting}
 C single step recombination rate to ground state
   1 HYDHEL H.2 2.1.8     RC  0  1
@@ -1682,11 +1698,11 @@ processes: D on D2,  D on D and D2 on D2, D2 on D.
 In input block 4 there are three \ac{BGK} relaxation rate coefficients (note:
 the rate coefficient for D2 on D is equal to the one for D on D2, hence 3 rate coefficients
 for 4 processes are sufficient).
-\begin{scriptsize}
+\begin{footnotesize}
 \begin{lstlisting}
-     .
-     .   some 20 other reaction cards in this example
-     .
+C     .
+C     .   some 20 other reaction cards in this example
+C     .
 
  21 CONST  H.2           EL  1  1
  -2.1091E+01  0.2500E 00  0.0000E 00  0.0000E 00  0.0000E 00  0.0000E 00
@@ -1698,15 +1714,16 @@ for 4 processes are sufficient).
  -2.0357E+01  0.2500E 00  0.0000E 00  0.0000E 00  0.0000E 00  0.0000E 00
   0.0000E 00  0.0000E 00  0.0000E 00  0.0000E 00  0.0000E 00  0.0000E 00
 \end{lstlisting}
-\end{scriptsize}
+\end{footnotesize}
 In input block 4a (for atoms), we specify 4 collision processes for D atoms.
 Processes no.\ 3 and 4 are neutral--neutral collisions.
 \begin{scriptsize}
 \begin{lstlisting}
-1 D         2  1  1  0  1 -1  1  4  (i.e.: 4 processes to be specified for this D atom)
-     .
-     .  2 other process decks, e.g. CX and electron impact ionization
-     .
+1 D         2  1  1  0  1 -1  1  4
+C (i.e.: 4 processes to be specified for this D atom)
+C     .
+C     .  2 other process decks, e.g. CX and electron impact ionization
+C     .
     21  2014   (=IBULK)   1001     0   111  (=IBGK , self-collision)
  0.00000E+00 0.00000E+00 0.00000E+00 0.00000E+00 0.00000E+00
     23  2214   (=IBULK)   1001     0   112  (=IBGK, cross collision with IMOL=1)
@@ -1717,12 +1734,11 @@ In input block 4b (for molecules), we specify 7 collision processes for D2.
 Processes no.\ 6 and 7 are neutral--neutral collisions.
 \begin{scriptsize}
 \begin{lstlisting}
-1 D2       4  2  2  0  0  1  0  7   (i.e.: 7 processes to be specified for this D2 molecule)
-     .
-     .
-     .   5 other process decks.
-     .
-     .
+1 D2       4  2  2  0  0  1  0  7
+C (i.e.: 7 processes to be specified for this D2 molecule)
+C     .
+C     .   5 other process decks.
+C     .
     22  2114  (=IBULK)    1001     0   112   (=IBGK, self-collision)
  0.00000E+00 0.00000E+00 0.00000E+00 0.00000E+00 0.00000E+00
     23  2314  (=IBULK)    1001     0   111   (=IBGK, cross collision with IATM=1)
@@ -1732,19 +1748,15 @@ Processes no.\ 6 and 7 are neutral--neutral collisions.
 In input block 5 there are at least 23 bulk ion species in this example. Of those
 species no.\ 20 to 23 are ``artificial" \ac{BGK} species for neutral--neutral self-collisions specified
 above by IBULK = 2014, 2114, 2214 and 2314 in blocks 4a and 4b above.
-\begin{scriptsize}
 \begin{lstlisting}
-    .
-    .
-    .  19 other bulk ion species decks.
-    .
-    .
+C    .
+C    .  19 other bulk ion species decks.
+C    .
 20 D(B)      2  1  1  0  1  1  0  0
 21 D2(B)     4  2  2  0  1  1  0  0
 22 DD2(B)    2  1  1  0  1  1  0  0
 23 D2D(B)    4  2  2  0  1  1  0  0
 \end{lstlisting}
-\end{scriptsize}
 
 
 

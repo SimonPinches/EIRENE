@@ -96,6 +96,7 @@ parameter evaluation in routine FIND\_PARAM.f was carried out, e.g.\ in the abov
 stratum is turned off later in the run due to other parameter settings.
 
 The module PARMUSR reads: (\dots\ stands for an integer not less than 1)
+
 \begin{lstlisting}
 *COMDECK PARMUSR
 C
@@ -385,6 +386,7 @@ In EIRENE variables:
 Then, in order to estimate a response for a detector function $g$ on
 additional tally number ITALV, a statement in subroutine UPTUSR
 should read:
+
 \begin{lstlisting}
       DO IC=1,NCOU
         ICELL=NRCELL+NUPC(IC)*NR1P2+NBLCKA
@@ -468,9 +470,11 @@ WSNAP = WEIGHT  \quad .
 Then, in order to estimate a response for a detector function $g$ on
 snapshot tally number ISNV, a statement in subroutine UPNUSR should
 read:
+
 \begin{lstlisting}
       SNAPV(ISNV,ICELL) = SNAPV(ISNV,ICELL) + WSNAP * g(...)
 \end{lstlisting}
+
 E.g., with $g=1$ this is an unbiased estimate of cell averaged particle density at
 time $t=t^*$, see \cref{est}, i.e., just counting the particle weights at $t=t^*$
 provides an unbiased estimate of the particle density.
@@ -895,12 +899,14 @@ These are:
 \item[INDEX = 0] Electron temperature (\si{\electronvolt})
 \item[INDEX = 1] Ion temperature (\si{\electronvolt}), NPLSI calls, one for each
 ion species. I.e.:
+
 \begin{lstlisting}
       DO IPLS=1,NPLSI
         CALL PROUSR(HELP,1+0*NPLSI,TI0(IPLS),...,NSURF)
         CALL RESETP(TIIN,HELP,IPLS,1,NPLS,NSURF)
       ENDDO
 \end{lstlisting}
+
 \item[INDEX = 1+ NPLS] Ion density (\si{\per\cubic\centi\metre}), NPLSI calls, one for each
 ion species
 \item[INDEX = 1+2*NPLS] Ion drift velocity, x direction (\si{\centi\metre\per\second}), NPLSI calls, one for each
@@ -928,6 +934,7 @@ i.e.\ constant within a cell.
 \begin{lstlisting}
       SUBROUTINE VECUSR(INDEX,VEC_X,VEC_Y,VEC_Z,IPLS)
 \end{lstlisting}
+
 This routine is called in case INDPRO(5)=8 for the B-field tally (e.g.\ from routine BFIELD.F), and in case (INDPRO(4)=8)
 for the background flow velocity tallies (from many places in the code),
 to provide either a local magnetic field (unit) vector, or a local plasma (background medium)
@@ -953,10 +960,12 @@ Note: species index IPLS is the EIRENE background species index, not to be confu
 \section{User supplied post-processed tally routine TALUSR}
 \label{sec3.7}
 to be written
+
 \begin{lstlisting}
       SUBROUTINE TALUSR(ICOUNT,VECTOR,TALTOT,TALAV,
      .                  TXTTL,TXTSP,TXTUN,ILAST,*)
 \end{lstlisting}
+
 \section{User supplied ``general geometry block"}
 \label{sec3.8} The following routines have to be provided for the
 general geometry options (LEVGEO=10 option, NLGEN=TRUE), in which no
@@ -1018,9 +1027,11 @@ Identify cell index from a point given by its three Cartesian coordinates.
 
 The function LEAUSR is called from functions LEARC1
 and LEARCA in case of LEVGEO = 10. The call is
+
 \begin{lstlisting}
       NCELL=LEAUSR(X,Y,Z)
 \end{lstlisting}
+
 Here X,Y,Z are the Cartesian
 coordinates of a point inside the computational domain in centimeters.
 LEAUSR must then return
@@ -1059,10 +1070,12 @@ is not returned in general. Only if this nearest surface is one of the ``non-def
 block 3a, this information is returned (by a negative value of argument NEWCEL.
 
 The call is
+
 \begin{lstlisting}
       CALL TIMUSR (NRCELL,X0,Y0,Z0,VELX,VELY,VELZ,
      .             NJUMP,NEWCEL,TIM,ICOS,IERR,NPANU,NLSRFX)
 \end{lstlisting}
+
 \textbf{Input}
 
 \begin{description}
@@ -1131,9 +1144,11 @@ See subroutine TIMER in code segment GEO3D.F
 \subsection{Subroutine VOLUSR}
 \label{sec3.8.3} The subroutine VOLUSR is called from subroutine
 VOLUME in case of LEVGEO=10. The call is
+
 \begin{lstlisting}
       CALL VOLUSR(N,A)
 \end{lstlisting}
+
 Here N is the total number of cells in this run, and
 A is an array of length N, containing the N cell volume values in \si{\cubic\centi\metre}.
 \subsection{Subroutine NORUSR}
@@ -1143,6 +1158,7 @@ i.e.\ after a particle trajectory has intersected a ``non default grid surface" 
 It is called in the LEVGEO=10 option from subroutine
 STDCOL,  after all surface intersection settings and possible switches have been carried out,
 or directly via the entry point STDNOR of STDCOL. The call is
+
 \begin{lstlisting}
       CALL NORUSR(M,X,Y,Z,CX,CY,CZ,SCOS,VELX,VELY,VELZ,
      .            NRCELL)

@@ -101,22 +101,28 @@ together with the globally valid input data for particle surface interactions.
 C     ``CH0-cards" (may be omitted)
 C     (format: 3A,69A)
 \end{lstlisting}
+
 arbitrary number of strings $\pm n/m$, separated by blanks. n and m
 must be integer variables $1 \le n,m \le NLIMI$.
+
 \begin{lstlisting}
       DO  ILIMI=1,NLIMI
         TXTSFL
 C       ``CH1-cards" (may be omitted)
 C       (format: 3A,69A)
 \end{lstlisting}
+
 arbitrary number of strings $\pm n/m$, separated by blanks. n and m
 must be integer variables $1\le n,m\le NLIMI$.
+
 \begin{lstlisting}
 C       ``CH2-cards" (may be omitted)
 C       (format: 3A,69A)
 \end{lstlisting}
+
 arbitrary number of strings $\pm$ n/m, separated by blanks. n and m
 must be integer variables $1\le n,m\le NLIMI$.
+
 \begin{lstlisting}
         RLBND  RLARE  RLWMN  RLWMX
         ILIIN ILSIDE ILSWCH ILEQUI ILTOR ILCOL ILFIT ILCELL 
@@ -125,11 +131,15 @@ must be integer variables $1\le n,m\le NLIMI$.
           A0LM  A1LM  A2LM  A3LM  A4LM  A5LM
           A6LM  A7LM  A8LM  A9LM
 \end{lstlisting}
+
 let RLBND = -KL, then first read L cards:
+
 \begin{lstlisting}
           ALIMS  XLIMS  YLIMS  ZLIMS
 \end{lstlisting}
+
 and then read K blocks next:
+
 \begin{lstlisting}
           ALIMS0  XLIMS1  YLIMS1  ZLIMS1  XLIMS2  YLIMS2
           ZLIMS2  XLIMS3  YLIMS3  ZLIMS3
@@ -155,12 +165,14 @@ and then read K blocks next:
           ENDIF
         ENDIF
 \end{lstlisting}
+
 optional for non transparent surfaces (ILIIN $>$ 0):
 
 The next 3 (or 4) lines comprise the block for local particle-surface interaction data
 (in analytic terminology: the boundary condition at this surface element).
 If they are omitted, the default particle-surface model is activated for this
 particular surface element, see \cref{sec2.6}.
+
 \begin{lstlisting}
         ILREF  ILSPT ISRS  ISRC
         ZNML EWALL EWBIN TRANSP(1,N) TRANSP(2,N) FSHEAT
@@ -192,15 +204,14 @@ optional: read one or several blocks of five cards each for orthogonal
 mapping. The presence of each such block is identified by the
 first card of that block containing the string $'TRANSFORM'$ followed
 by the other four cards:
+
 \begin{lstlisting}
         TRANSFORM
         ITINI,ITEND
         XLCOR,YLCOR,ZLCOR
         XLREF,YLREF,ZLREF
         XLROT,YLROT,ZLROT,ALROT
-\end{lstlisting}
 
-\begin{lstlisting}
 C (end of ILIMI loop)
       ENDDO
 \end{lstlisting}

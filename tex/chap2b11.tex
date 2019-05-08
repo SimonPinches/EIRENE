@@ -77,10 +77,9 @@ to as an input volumetric tally (no.\ ITALI=13 in
 
 \medskip
 
-\textsl{* 11 Data for numerical and graphical output}
-
-\textsl{* 11A Block for numerical output written on unit 6 (IUNOUT)}
 \begin{lstlisting}
+* 11 Data for numerical and graphical output
+* 11A Block for numerical output written on unit 6 (IUNOUT)
       TRCPLT  TRCHST  TRCNAL  TRCREA  TRCSIG
       TRCGRD  TRCSUR  TRCREF  TRCFLE  TRCAMD
       TRCINT  TRCLST  TRCSOU  TRCREC  TRCTIM
@@ -100,6 +99,7 @@ to as an input volumetric tally (no.\ ITALI=13 in
 \end{lstlisting}
 
 optional: unless block 11B starts:
+
 \begin{lstlisting}
       NLTVOUT
 C (12 values per card, FORMAT 12I6)
@@ -109,10 +109,9 @@ C (12 values per card, FORMAT 12I6)
       NUMTAL(J),J=1,NLTSOUT
 \end{lstlisting}
 
-\textsl{* 11B Data for graphical output}
-
-\textsl{* 11B.1 Data for 2D and 3D Geometry plot}
 \begin{lstlisting}
+* 11B Data for graphical output
+* 11B.1 Data for 2D and 3D Geometry plot
       PL1ST     PL2ND     PL3RD     PLADD  PLHST
       PLCUT(1)  PLCUT(2)  PLCUT(3)  PLBOX  PLSTOR
       PLNUMV    PLNUMS    PLARR
@@ -130,10 +129,7 @@ C (12 values per card, FORMAT 12I6)
       CH3MX  CH3MY  CH3MZ  CH3X0  CH3Y0  CH3Z0
       ANGLE1  ANGLE2  ANGLE3
       I1TRC  I2TRC  (ISYPLT(J)  J=1,8)  ILINIE
-\end{lstlisting}
-
-\textsl{* 11B.2 Data for plots of volume tallies}
-\begin{lstlisting}
+* 11B.2 Data for plots of volume tallies
       NVOLPL
       PLTSRC(J), J= 0, NSTRAI
       DO 116 N=1,NVOLPL

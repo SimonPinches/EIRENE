@@ -56,8 +56,10 @@ non-default standard surface no.\ 4.
       NSTSI
       DO 31 ISTSI=1,NSTSI
 \end{lstlisting}
+
  unless otherwise stated, N = NLIM+ISTSI is the index of the following
  surface data for surface ISTSI:
+
 \begin{lstlisting}
         TXTSFL
         ISTS IDIMP INUMP(ISTSI,IDIMP)
@@ -65,6 +67,7 @@ non-default standard surface no.\ 4.
         ILIIN ILSIDE ILSWCH ILEQUI ILTOR ILCOL
      .    ILFIT ILCELL ILBOX ILPLG
 \end{lstlisting}
+
 optional for non transparent surfaces (ILIIN $>$ 0):
 
 The next 3 (or 4) lines comprise the block for local particle-surface
@@ -72,6 +75,7 @@ interaction data
 (in analytic terminology: the boundary condition at this surface element).
 If they are omitted, the default particle-surface model is activated for this
 particular surface element, see \cref{sec2.6}.
+
 \begin{lstlisting}
         ILREF ILSPT ISRS  ISRC
         ZNML EWALL EWBIN TRANSP(1,N) TRANSP(2,N) FSHEAT
@@ -102,6 +106,7 @@ by changes in just one location of the input file.
 \begin{lstlisting}
       SURFMOD_modname
 \end{lstlisting}
+
 \medskip
 
 \textbf{Meaning of the Input Variables for ``non-default standard
