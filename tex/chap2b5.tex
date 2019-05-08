@@ -1,7 +1,5 @@
 \section{Input for Plasma Background} \label{sec2.5}
 
-\medskip
-
 \textbf{General remarks}
 
 \medskip
@@ -80,6 +78,7 @@ the transfer of magnetic field data (BXIN,BYIN,BZIN and BFIN) for
 each cell into EIRENE proceeds from user supplied profile subroutine
 PROUSR ($INDPRO(5)=5$) or, ($INDPRO(5)=4$) from external file or, ($INDPRO(5)=6,7$), via
 work array RWK, and then from subroutine PROFR).
+
 \medskip
 
 \minisec{Other input tallies: ADIN, VOL, WGHT}
@@ -155,6 +154,7 @@ for all background ions. This is because, by abuse of language,
 also neutral particle species may be used as background ``ion"
 species (NCHARP = 0), to include neutral--neutral collisions, e.g.,
 by the iterative option NITER (input block 1).
+
 \medskip
 
 \textbf{The Input Block}
@@ -200,6 +200,7 @@ C End of NPLSI species cards reading
 \end{lstlisting}
 
 Currently option INDPRO=6 and INDPRO=7 are not available for cell volumes (input tally no.\ 12).
+
 \medskip
 
 \textbf{Meaning of the Input Variables for Plasma Parameters}

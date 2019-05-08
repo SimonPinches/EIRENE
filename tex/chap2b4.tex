@@ -1,8 +1,6 @@
 \section{Input Data for Species Specification
 and Atomic Physics Module} \label{sec2.4}
 
-\medskip
-
 \textbf{General remarks}
 
 \medskip
@@ -26,6 +24,7 @@ from the input file.
 Masses in EIRENE (RMASSA, RMASSM, RMASSI, RMASSP assigned to the objects ``atoms", ``molecules",
 ``test ions", ``photons" and ``bulk ions", respectively) are in units of the proton mass, which is taken to
 be 1.0073 in atomic mass units.
+
 \medskip
 
 At the beginning of input block 4 EIRENE first searches for the character
@@ -283,6 +282,7 @@ In order to de-activate all possible reactions (also the default
 reactions) for a particular test particle species, e.g., to simulate the collision-less ``Knudsen flow" of a gas or optically thin
 line radiation, one must set NRC\$
 $=-1$ for this test particle species.
+
 \medskip
 
 Usually, a particular particle type and species in the species blocks
@@ -378,6 +378,7 @@ read from the spectral database PHOTON. In case \emph{IFREMD $>$ 0} the addition
 for ``foreign pressure line broadening".
 
 \medskip
+
 Then the subroutine SLREAC is called, which picks the atomic data
 (fit coefficients) for reaction ``IR" from the file FILNAM. It
 then stores this information on the arrays in Module COMAMF with
@@ -892,6 +893,7 @@ same as above, but for high parameter range extrapolation
 $ex_{high}(x)$.
 
 \end{description}
+
 \medskip
 
 *4A. Atoms Species Cards
@@ -1338,7 +1340,7 @@ to be written
 \item[\# = 5]
 to be written
 \end{description}
-\medskip
+
 \minisec{default resonant charge-exchange model}
 
 The default CX model is set up in order to define collision kinetics and mean free paths without
@@ -1469,7 +1471,6 @@ but neutrals emerging from CX collisions are sampled from the local drifting
 Maxwellian distribution of ion collision partners rather than from
 a drifting isotropic mono-energetic distribution.
 
-\medskip
 \subsection{Default atomic and molecular data}
 If default atomic data are requested for some test particle species,
 these are activated by setting the
@@ -1541,7 +1542,7 @@ Hence: D and He atoms are ionized by electron
 impact, using the Corona data 2.1.5 and 2.3.9, respectively, from
 reference \cite{kn:Janev}, and with constant electron energy loss
 per ionization of \SIlist{13.6;24.588}{\electronvolt}, respectively.
-\medskip
+
 \minisec{default model for hydrogenic molecules H$_2$ (and isotopomers) and their ions}
 
 For hydrogenic molecules ($\mathrm{H_2, D_2, HT,}$\dots) or molecular ions
@@ -1633,7 +1634,6 @@ In case of mixed molecules, such as $DT$, $HT$ or $HD$  some rate
 coefficients are automatically split into two half and assigned to the proper product atomic particles.
 
 
-\medskip
 \minisec{default model for hydrogenic ions}
 For hydrogenic bulk ions ($H^+, D^+, T^+$)
 default (radiative) volume recombination rates
@@ -1811,6 +1811,7 @@ those for cross-sections
 on CREAC(1:9,0,KK),
 
 and those for Maxwellian averaged rate coefficients on CREAC(1:9,1:9,KK).
+
 \medskip
 
 The second argument here controls either the particle energy (in \si{\electronvolt}) or plasma density (in particles~\SI{1e-8}{\per\cubic\centi\metre}) dependence in rate coefficients.
@@ -1895,6 +1896,7 @@ phase (routines XSTEI, XSTCX, XSTEL, XSTPI, ) of a run from the atomic\slash mol
 atomic collision models, in case of NRC\dots = 0 for a certain test particle component).
 
 \medskip
+
 The first index CT characterizes the type of a process. From this ''type" parameter also certain default assumptions
 made in the code for this type of process are inferred:
 \begin{description}
@@ -1918,7 +1920,9 @@ and the H.1, H.3 data are interpreted as diffusion cross section and rate coeffi
 
 \item[CT = 7] photonic processes (`PH' in variable names, not fully implemented. ).
 \end{description}
+
 \medskip
+
 For any process IR one or more than one data set may be required.
 The availability
 of data read from input block 4 is coded as IFLAG = 0 (data not available) or else

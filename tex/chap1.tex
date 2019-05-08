@@ -1,5 +1,7 @@
 \chapter{The neutral gas transport equation; Monte-Carlo terminology} \label{sec1} 
+
 \textbf{General Remarks}
+
 \medskip
 
 
@@ -1104,6 +1106,7 @@ first be turned off, (NLANA flag in input block 1), for otherwise
 the pictures may be grossly misleading.
 
 \medskip
+
 We consider the procedures for random sampling from univariate
 distributions as known, and refer to the many textbooks on that,
 in particular to the ``random sampling library"
@@ -2332,11 +2335,13 @@ Of the three typical options for definition of the target geometry in Monte Carl
 EIRENE uses a combination of the latter two concepts.
 
 \medskip
+
 In \ac{CSG} a solid object is ``constructed" from the intersection, union or other Boolean operations of several ``half-spaces".
 Each half space in specified by a relation $F(x,y,z)\le 0$, typically $F$ is a low order polynomial.
 For example the neutronics \ac{MCNP} code used e.g.\ for ITER nuclear safety studies, is based on \ac{CSG}.
 
 \medskip
+
 In \ac{BREP} geometry, surfaces and volumes are build up from constituent parts.
 These parts may be related with algebraic functions (elementary \acp{BREP})
 or complex functions such as Bezier functions or B-splines (advanced \acp{BREP}).
@@ -2348,6 +2353,7 @@ EIRENE uses only algebraic functions, up to second order
 (some  extensions to raise the order to fourth order have been started recently but are not ready to use).
 
 \medskip
+
 In ``Voxel geometry", a 2D or a 3D object is constructed from identically shaped volume elements (``voxels"). In EIRENE these may be triangles
  or quadrangles in 2D, or tetrahedra in 3D. New options to accommodate trilinear hexaedra as 3D voxels are currently being developed in connection with 3D edge codes such as EMC3. The bounding surfaces of these voxels are referred to as
 ``standard grid surfaces" in EIRENE, see \cref{sec2.2}. These volume discretization meshes (VOXELS) can be read into EIRENE
@@ -2371,6 +2377,7 @@ implemented (in EIRENE module timea.f) on the basis of OCTREE concepts adopted f
 
 
 \medskip
+
 A complete set of surfaces in an EIRENE geometry may consist of a combination of both: standard surfaces (hence: defining standard grid cells, (voxels), and additional surfaces, defining a general \ac{BREP} discretization (additional cells).  A more complicated situation arises when additional surfaces intersect
 standard grid voxels.
 \begin{figure}[h]
@@ -2403,6 +2410,7 @@ surface elements building up the wall can be defined as bounded algebraic surfac
 i.e.\ as ``additional surfaces, \ac{BREP}", or can be bounding surfaces of the voxels, if the ``grid of voxels" extends up to the real wall, or a combination of both.
 
 \medskip
+
 As can be seen from the flowcharts, all the geometrical
 calculations needed for tracing test flights and for estimating
 volume- and surface averaged tallies are compiled in a ``geometry

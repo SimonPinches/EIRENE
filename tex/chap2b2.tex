@@ -1,7 +1,4 @@
 \section{Input for Standard Mesh} \label{sec2.2}
-%
-
-\medskip
 
 \textbf{General Remarks}
 
@@ -371,7 +368,9 @@ Arbitrary geometrical configuration. Mesh consists of NR1ST arbitrarily
 shapes cells (in any dimension).
 Particle tracing routines
 must be provided by user (VOLUSR, SAMUSR, TIMUSR, LEAUSR)
+
 \medskip
+
 \item[NR1ST]
 Number of grid-points in the radial (or x-direction) standard mesh
 
@@ -590,7 +589,9 @@ YIA=0., YGA=0., YAA=1., YYA=1. in case of LEVGEO=1,
 and YIA=0., YGA=0., YAA=360., YYA=360. in case of LEVGEO=2.
 
 \end{description}
+
 \medskip
+
 \textsl{Data for third standard mesh: toroidal or z grid TSURF}
 \begin{description}
 \item[NLTOR]
@@ -794,6 +795,7 @@ or, alternatively, by giving the position in the 1-dimensional cell array
 NCELL
 
 \medskip
+
 The relation between these two options is:
 
 NCELL = NRCELL + ((NPECLL-1)*NR1P2) + (NTCELL-1))*NP2T3 + NBLCKA

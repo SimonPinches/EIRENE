@@ -1,7 +1,5 @@
 \section{Data for interfacing Subroutine ``INFCOP" (example)} \label{sec2.14}
 
-\medskip
-
 \textbf{General remarks}
 
 \medskip %
@@ -116,7 +114,7 @@ process is assigned to which species IPLS.
 \end{description}
 
 \subsection{Version B2-EIRENE-1999 and older} \label{sec2.14.1}
-\medskip
+
 B2 solves a set of continuum equations for electrons and ions, and EIRENE solves a set of kinetic transport equations
 for other species, not in the continuum description (e.g.\ neutrals, radiation, trace ions, \dots)
 In this hybrid fluid-kinetic formulation the EIRENE code provides
@@ -535,7 +533,7 @@ number of particles (neutrals and ions) is conserved.
 \item[NAOTT] not in use
 \end{description}
 \subsection{Version B2-EIRENE-2000 and younger} \label{sec2.14.2}
-\medskip
+
 The first thing to note is that due to introduction of photons as a forth type of test particle (for radiation transfer simulations) the numbering of tallies
 (source rates) to be transferred from EIRENE into B2 has changed.
 For example the particle source rates \lstinline|PAPL|, \lstinline|PMPL|, \lstinline|PIPL| are now default EIRENE tallies
@@ -577,9 +575,11 @@ the positive poloidal grid coordinate direction.
 ``INFCOP"}
 
 \medskip
+
 input block 14: unchanged, as compared to \cref{sec2.14.1}
 
 \medskip
+
 Additional data to those described in previous sub-\cref{sec2.14.1} are read,
 basically to account for non-orthogonal grids and for direct transfer of surface recycling
 boundary conditions into EIRENE.
@@ -622,7 +622,6 @@ surface is a x or y surface. One cell, however, may have either one or two recyc
 one north- and one east surface.
 
 \subsection{Version B2-EIRENE-wide-grid (2011 and later)} \label{sec2.14.3}
-\medskip
 
 Further adaptations in case of ``wide grid" option, to accommodate   mixed fluxes (e.g.\ west and north)
 at a single boundary element.
@@ -656,6 +655,7 @@ Maximum number of short cycling steps, before a full EIRENE run is enforced for 
 \textbf{Magnetic field conventions in B2, B2.5 interfaces}
 
 \medskip
+
 The next three flags (introduced in March 2015) allow to change the orientation of the magnetic
 field as reconstructed form B2 or B2.5 parameters. The magnetic field itself is typically not used
 in coupled B2-EIRENE cases, however the ``parallel momentum exchange" tallies transferred from
@@ -715,7 +715,6 @@ in diamagnetic or radial directions, when plasma drifts and electrical currents 
 
 
 \subsection{Version B2.5-EIRENE (2012 and later)} \label{sec2.14.4}
-\medskip
 
 One distinction to the earlier versions of interfaces to the B2 plasma fluid code is that in B2.5
 the energy conservation equation is solved for the internal energy only (i.e.\ the thermal energy, rather than for the total energy, as in B2.)

@@ -1,7 +1,5 @@
 \chapter{Problem specific Routines} \label{sec3}
 
-\medskip
-
 \textbf{General remarks}
 
 \medskip
@@ -521,7 +519,9 @@ tallies in EIRENE, with respect to dimensionality of phase space of the problem
 (1D, 2D, 3D, stationary or time-dependent) are given in \cref{sec1.2.0}.
 
 \subsection{Surface averaged tallies, UPSUSR}\label{sec3.2.4}
+
 \medskip
+
 Finally we note that ``surface averaged tallies" (\cref{tab3})
 may be considered just as special cases of the ``volume averaged
 tallies" described above, if appropriate use is made of $\delta$
@@ -631,8 +631,6 @@ source, whereas the default surface tallies don't.
 
 \section{The user surface reflection model REFUSR} \label{sec3.3}
 
-\medskip
-
 \textbf{General remarks}:
 
 \medskip
@@ -706,8 +704,6 @@ C     RECYCC(ISPZ,MSURF)=.....
 \newpage
 
 \section{The user source sampling routine SAMUSR} \label{sec3.4}
-
-\medskip
 
 \textbf{General remarks}:
 
@@ -840,6 +836,7 @@ been interchanged with respect to the calling statements in the EIRENE code.
  to be written
 \section{The user routines for profiles PROUSR}
 \label{sec3.6}
+
 \medskip
 
 \textbf{General remarks}:
@@ -1050,6 +1047,7 @@ or, alternatively, by giving the cell index in the 1-dimensional cell array
 NCELL
 
 \medskip
+
 The relation between these two options is:
 
 NCELL = NRCELL + ((NPECLL-1)*NR1P2) + (NTCELL-1))*NP2T3 + NBLCKA
