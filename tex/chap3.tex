@@ -281,7 +281,7 @@ cells, as are commonly encountered in 3D stellarator applications).
 \section{The ``Additional Tally" routines UPTUSR, UPCUSR, UPSUSR and UPNUSR}
 \label{sec3.2}
 
-Let $   f(\vr , \vv ,j_S)$ be the distribution function in the 6
+Let $   f(\vr, \vv,j_S)$ be the distribution function in the 6
 dimensional $\mu$ -space for particle species $j_S$, S = PH:
 Photons, S = A: Atoms, S = M: Molecules, S = I: Test Ions, S = P:
 Bulk Ions
@@ -289,10 +289,10 @@ Bulk Ions
 e.g.:
 \begin{align}
     &  \\
-j_A & = H  , D , T , He , C , O  ,  \dots \nonumber \\
-j_M & = H_2  , D_2,  HD , CH_4 , H_2 O ,  \dots \nonumber \\
-j_I & = H_2^+ , CH_3^+ ,  C^+ , O^{++} , \dots  \nonumber \\
-j_P & = H^+  , D^+ , He^+  ,  He^{++} , C^+ , \dots \nonumber
+j_A & = H, D, T, He, C, O,  \dots \nonumber \\
+j_M & = H_2, D_2,  HD, CH_4, H_2 O,  \dots \nonumber \\
+j_I & = H_2^+, CH_3^+,  C^+, O^{++}, \dots  \nonumber \\
+j_P & = H^+, D^+, He^+,  He^{++}, C^+, \dots \nonumber
 \end{align}
 The distinction between ``Test Ions" and ``Bulk Ions" is problem specific,
 see input blocks 4 and 5.
@@ -302,8 +302,8 @@ are profiles of
 \begin{displaymath}
 R_g = <    f | g   >
 = \sum_{j}   \int d^3 \vv
-\int_{volume} d^3 \vr \ g(\vr , \vv
-, j)     \cdot     f(\vr , \vv , j)\label{est}
+\int_{volume} d^3 \vr \ g(\vr, \vv
+, j)     \cdot     f(\vr, \vv, j)\label{est}
 \end{displaymath}
 for several preprogrammed and an arbitrary number of additional user
 supplied ``detector functions" $g$. Here the summation over $j$ is only
@@ -312,9 +312,9 @@ not over background particles (``bulk ions", electrons). The default EIRENE
 estimators are not based upon moments of distribution function $f$
 but upon moments of the flux
 \begin{displaymath}
-\Phi ( j_S , \vr ,
+\Phi ( j_S, \vr,
 \vv ) = |
-\vv |  f(j_S , \vr , \vv),
+\vv |  f(j_S, \vr, \vv),
 \end{displaymath}
 hence
 on detector functions $g^{*} = g / | \vv |
@@ -323,10 +323,10 @@ $.
 Occasionally also
 moments of the pre-collision density
 \begin{displaymath}
-\Psi ( j_S ,
-\vr , \vv ) =
-\Phi ( j_S , \vr , \vv )
-    \cdot     \Sigma ( j_S , \vr , \vv )
+\Psi ( j_S,
+\vr, \vv ) =
+\Phi ( j_S, \vr, \vv )
+    \cdot     \Sigma ( j_S, \vr, \vv )
 \end{displaymath}
 are utilized, then
 with detector functions $ \hat{g} = g /
@@ -339,7 +339,7 @@ a ``track-length estimate"
 ^k{R_t} =
 \sum_{i=0}^{k_{n-1}}   \ ^k w_i^* \  I_{l,i}
  = \sum_{i=0}^{k_{n-1}} \ ^k w_i^*
-\int_{\vr_i}^{\vr_{i+1}}   dl \  g^{*} (l)     ,
+\int_{\vr_i}^{\vr_{i+1}}   dl \  g^{*} (l),
 \end{equation}
 and a ``collision estimate" :
 \begin{equation} \label{collest}
@@ -531,15 +531,15 @@ from $\underline{r}_i$ to $\underline{r}_{i+1}$ with speed unit
 vector $\underline{\Omega} = \underline{v}  / (| \underline{v} |)$.
 I.e., the surface is described locally by the equation $\rho=0$ at
 the point $\vr_S \in S$, at which we may define an orthonormal basis
-$ \ve_{\rho}, \ve_ {\rho'} , \ve_{\rho''}$. Furthermore, $\vr_S =
+$ \ve_{\rho}, \ve_ {\rho'}, \ve_{\rho''}$. Furthermore, $\vr_S =
 \vr_{i+1} $, which means that one may treat surface events exactly
 in the same way as collisions with the background medium in our
 terminologies. Then a ``surface response function" $ g_S $ defined
 as
 
 \begin{displaymath}
-g_S (j, \vr , \vv ) =
-\delta(\rho)  \cdot  g(j, \vr , \vv )
+g_S (j, \vr, \vv ) =
+\delta(\rho)  \cdot  g(j, \vr, \vv )
 \end{displaymath}
 
 is the detector function for the same response $ R_g $ as previously
@@ -565,17 +565,17 @@ g^{*} (\rho=0)  /  \cos( \ve_{\rho}, \vOmega )
 
 if the surface is intersected
 during the test-flight from $ \vr_i $
-to $ \vr_{i+1} $ , and $ I_{l,i} = 0 $ else.
+to $ \vr_{i+1} $, and $ I_{l,i} = 0 $ else.
 This can easily be seen by writing
 \begin{align}
  \vr_{l,i} & = \vr_i + l  \cdot
- \left(\begin{array} {c} \cos(\vOmega , 
+ \left(\begin{array} {c} \cos(\vOmega, 
 \ve_{\rho}
 )
-\\  \cos(\vOmega , \ve_{\rho '} )
+\\  \cos(\vOmega, \ve_{\rho '} )
 \\  \cos(\vOmega,\ve_{\rho ''}) \end{array}\right)
 \end{align}
-i.e., $ \rho= r_{\rho , i} + l  \cdot  \cos( \vOmega , \ve_{\rho} )
+i.e., $ \rho= r_{\rho, i} + l  \cdot  \cos( \vOmega, \ve_{\rho} )
 $ . In other words: track-length estimators become formally identical
 to collision estimators, for detector functions containing surface
 collision delta functions.
@@ -593,7 +593,7 @@ here $IS$ is the index of the surface which is being crossed,
 $ITALS$ is the labelling number of the surface tally. Furthermore,
 \begin{displaymath}
 WC= {^k{\omega^{*}_i}}  /  [ |\vv |
-  \cdot   \cos( \vOmega , \ve_{\rho} ) ] ,
+  \cdot   \cos( \vOmega, \ve_{\rho} ) ],
 \end{displaymath}
 the detector function $g$ is evaluated at the strike point $ \vr_S $
 and, as above, $ {^k{\omega^{*}_i}}  $ is the weight of the history

@@ -13,9 +13,9 @@ in time dependent mode) is given as a function $Q(i, \vr,t
 distribution from which the species index $ isp $, the starting
 point $\vr $, the velocity vector $\vv $ and
 the starting time $ t $ are sampled in subroutine LOCATE. $(isp,
-\vr,t , \vv)$ is the state of the starting
+\vr,t, \vv)$ is the state of the starting
 particle, which then will be ``followed" (traced) in subroutine FOLNEUT or
-FOLION. There are five primary types of spatiotemporal distributions for primary sources (``Strata") , namely
+FOLION. There are five primary types of spatiotemporal distributions for primary sources (``Strata"), namely
 Point sources, Line sources (to be written), Surface sources,
 Volume sources and ``Census sources". The first four are uniform in a time-interval (or time-independent),
 and the fifth one is an initial distribution (in volume) at a given point in time.
@@ -881,7 +881,7 @@ depend upon the further input parameters
 and is conditional on the birth position (and time) $\vr_0,t_0$
 of the test particle
 via local plasma parameters
-$T_e, T_i , \vV_i, \dots$, as well as on the
+$T_e, T_i, \vV_i, \dots$, as well as on the
 selected species index $isp$ of the newly launched
 test particle.
 
@@ -942,7 +942,7 @@ As N=2, but with added sheath acceleration, see \cref{sec2.7.2} below
 \item[N = 4]
 Mono-energetic source f(E) = $\delta$ (E-E0) with energy
 
-E0 = EMAX($T_i(ip_0) ,V_{i,\pi}(ip_0) ,V_{i,\sigma}(ip_0)$)
+E0 = EMAX($T_i(ip_0),V_{i,\pi}(ip_0),V_{i,\sigma}(ip_0)$)
 
 where EMAX is the mean energy from a truncated (one-sided) shifted Maxwellian flux
 at temperature $T_i(ip_0)$ drifting by a velocity
@@ -953,7 +953,7 @@ One obtains (see \cref{eq1.30}, omitting unnecessary indices) in \cref{sec1}) by
 
 with $\gamma_E = (
 {\cal V}_{\pi}^2  +   2   +  {\cal V}_{\sigma}^ 2   )   +   0.5
-\frac{g({\cal V}_{\pi} ) - 1}{g ({\cal V}_{\pi} )}$ ,
+\frac{g({\cal V}_{\pi} ) - 1}{g ({\cal V}_{\pi} )}$,
 
 ${\cal V} = V / \sqrt{\frac{{2 T_i}}{{m_i}}}$, and $g(x) = 1 +
 \sqrt{\pi} x  [ 1 + \mbox{erf}(x) ]   \exp(x^2 )$.
@@ -964,14 +964,14 @@ isothermal Mach number if $T_i(ip_0) = T_e$, see again \cref{maxw-flux}).
 (only for surface sources)
 As N=4, but with added sheath acceleration, see \cref{sec2.7.2} below
 
-E0 = EMAX($T_i(ip_0) ,V_{i,\pi}(ip_0) ,V_{i,\sigma}(ip_0)$) +
+E0 = EMAX($T_i(ip_0),V_{i,\pi}(ip_0),V_{i,\sigma}(ip_0)$) +
 ESHEAT
 \item[N = 6]
 
 \emph{surface source}
 
 The velocity vector $\vV_0 = (VX_0,VY_0,VZ_0)$ is sampled from a
-truncated Maxwellian flux $f_{flux}= \vV \cdot \vC f_{max} (T_i(ip_0) ,\vV_i(ip_0) , \vC )$
+truncated Maxwellian flux $f_{flux}= \vV \cdot \vC f_{max} (T_i(ip_0),\vV_i(ip_0), \vC )$
 with a drifting Maxwellian $f_{max}$ at temperature
 $ T_i(ip_0) $ and drift velocity $\vV_i(ip_0) $. The (one-sided) flux is
 across a surface element described locally by the outward normal
@@ -981,7 +981,7 @@ that given by option N=4.
 \emph{point or volume source}
 
 The velocity vector $\vV_0 = (VX_0,VY_0,VZ_0)$ is sampled from a
-truncated Maxwellian density distribution $f_{max} (T_i(ip_0) ,\vV_i(ip_0) , \vC
+truncated Maxwellian density distribution $f_{max} (T_i(ip_0),\vV_i(ip_0), \vC
 )$ at temperature $ T_i(ip_0) $ and which is shifted by a velocity $\vV_i(ip_0) $
 
 \item[N = 7]
@@ -1338,7 +1338,7 @@ m_i    \cdot    V_S \left
 ( {\vV}_0
 \vC \right )   +   \frac{m_i}{2}
 V_S^2 =
-ESHEAT(n_i,{\vec{v}}_{\pi,i} ,T_e),
+ESHEAT(n_i,{\vec{v}}_{\pi,i},T_e),
 \end{equation}
 i.e., the energy $E$ of the particle is increased from $E_0$ to $E_1$ by the amount ESHEAT (\si{\electronvolt}) as
 compared to the option without sheath acceleration, and this increased energy comes from an additional speed component $V_s$ normal towards the target surface.

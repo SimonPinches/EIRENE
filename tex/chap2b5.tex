@@ -37,13 +37,13 @@ per grid cell), so called ``input tallies", namely
     \item NPLS arrays (one for each bulk ion species), ion densities $n_i$ (\si{\per\cubic\centi\metre}) (DIIN),
     \item either one common or NPLS distinct
 (one for each bulk ion species) arrays for the (Cartesian) drift velocities
-           $\vV = ( V_x , V_y , V_z )$ (VXIN, VYIN, VZIN), either in \si{\centi\metre\per\second} or Mach number
+           $\vV = ( V_x, V_y, V_z )$ (VXIN, VYIN, VZIN), either in \si{\centi\metre\per\second} or Mach number
          units.
 \end{itemize}
 
 \minisec{Special case: Magnetic field input}
 
-The unit vector  $\vb$ = $( b_1 , b_2 , b_3 )$ (BXIN, BYIN, BZIN),
+The unit vector  $\vb$ = $( b_1, b_2, b_3 )$ (BXIN, BYIN, BZIN),
 parallel to the magnetic field is set to (0.,0.,1.) by default,
 i.e.\ pointing in z- (or toroidal-) direction. The default magnetic
 field strength is $|\vB|=1$ T in all grid cells. This default
@@ -121,7 +121,7 @@ if at least one of the following conditions is met:
 
 for electrons: IPL=NPLS+1:
 
-TEIN(ICELL) $\le$ TVAC ,
+TEIN(ICELL) $\le$ TVAC,
 
 DEIN(ICELL) $\le$ DVAC
 
@@ -388,10 +388,10 @@ be read for each bulk ion species IPLS.  For example: \emph{INDPRO(2)=15} or \em
 separate ion temperature must be specified for each bulk ion species,
 and the profile type is 5. (\emph{INDPRO(2)=-5} would do the same.)
 \item[INDPRO(3)]
-read NPLSI cards, for DIIN , IPLS = 1,NPLSI
+read NPLSI cards, for DIIN, IPLS = 1,NPLSI
 
 \item[INDPRO(4)]
-read NPLSI cards, for VXIN, VYIN, VZIN , IPLS = 1,NPLSI
+read NPLSI cards, for VXIN, VYIN, VZIN, IPLS = 1,NPLSI
 
 \textbf{New options since 2001:}
 
@@ -445,7 +445,7 @@ For the profile no.\ 12 (cell volumes) the options INDPRO(12) = 4,
 of INDPRO for these latter four profiles the default profiles
 described above (``General remarks") are set.
 
-For each profile up to 6 parameters P0 , \dots, P5
+For each profile up to 6 parameters P0, \dots, P5
 are read, e.g.\ TE0, \dots, TE5 for the $T_e $-profile,
 TI0, \dots, TI5 for the $T_i $-profile, and so on.
 

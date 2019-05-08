@@ -719,7 +719,7 @@ $p_f = RPROBF(E_{in},\Theta_{in},ispez,wall)$ for the ``fast'' particle
 reflection
 model, as specified by other flags for this surface, is modified to
 \begin{equation}\label{rprobf}
-RPROBF(E_{in},\Theta_{in},ispez,wall) = AMIN( RECYCF \cdot RPROBF, RECYCT) ,
+RPROBF(E_{in},\Theta_{in},ispez,wall) = AMIN( RECYCF \cdot RPROBF, RECYCT),
 \end{equation}
 where RPROBF was evaluated from the reflection
 model specified by ILREF.
@@ -759,7 +759,7 @@ certain surfaces, see \cref{sec2.6.1} below.
 
 Note: RPROBF = 0 for incident molecules (ITYP=2) by default.
 
-Default: RECYCT = 1. , i.e.\ $p_a = 0$
+Default: RECYCT = 1., i.e.\ $p_a = 0$
 \item[RECPRM]
 free model parameter for user supplied recycling models $ILREF=9$.
 

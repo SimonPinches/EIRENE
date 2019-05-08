@@ -85,7 +85,7 @@ space of a single particle. The quantity of interest is then the
 \textsl{one particle distribution function}  \textit{f}
 \begin{displaymath}
 f(\vr, \vv, i, t)  \quad \mbox{or} \quad \tilde f(\vr, E, \vOmega, i, t)
-\quad \mbox{or} \quad f(x) ,
+\quad \mbox{or} \quad f(x),
 \end{displaymath}
 where the state $x$ of the $\mu$-space is characterized by a
 position vector $\vr$, a velocity vector
@@ -107,7 +107,7 @@ f(\vr)d^3v = \tilde f(E, \vOmega)dEd\Omega \quad \mbox{where}  ~~d^3v = v^2dv d\
 \end{equation}
 and
 \begin{displaymath}
-f(\vr, \vv, i ,t) = \left(\frac{m}{v}\right)
+f(\vr, \vv, i,t) = \left(\frac{m}{v}\right)
 \tilde{f}(\vr, E, \vOmega, i, t)
 \end{displaymath}
 The distribution function in the form of $\tilde f$ clearly remains meaningful also in the case of massless particles (photons),
@@ -367,7 +367,7 @@ time can be treated in a completely symmetric fashion with the spatial coordinat
 For stationary (time-independent) problems the (scalar) transport flux (``angular flux") $\Phi$, where
 \begin{subequations}
 \begin{equation}\label{trans-flux}
-\Phi (x) := | \vv |  \cdot f( \vr , \vv , i)   ,
+\Phi (x) := | \vv |  \cdot f( \vr, \vv, i),
 \end{equation}
 with, again, $| \vv| \Omega = \vv$,
 is sometimes used as dependent variable, in preference to the distribution $f(x)$.
@@ -398,7 +398,7 @@ collisionality (i.e., if $\Sigma_t(x) \ne 0$ everywhere) the (pre-)
 collision density $\Psi$ is used, i.e.,
 \begin{equation}\label{defPsi}
 \Psi (x)
-= \Sigma_{t} (x)  \cdot \Phi (x) =\nu_t(x) \cdot f(x)  , \hspace{1cm} \Sigma_t =
+= \Sigma_{t} (x)  \cdot \Phi (x) =\nu_t(x) \cdot f(x), \hspace{1cm} \Sigma_t =
 \Sigma_t(\vr,E,\vOmega,i)= \nu_t(\vr,E,\vOmega,i)/|\vv|
 \end{equation}
 \end{subequations}
@@ -540,12 +540,12 @@ collisions (jumps). The integral $\int dx'$ in \cref{eq1d} is to be understood a
 an integral over all initial coordinates, i.e.\ over the entire physical space, the full velocity space and a
 summation over all species indices. The transition kernel $K$ is
 usually decomposed, in our context, into a collision- and a
-transport kernel, i.e., $C$ and $T$ , where
+transport kernel, i.e., $C$ and $T$, where
 \begin{equation} \label{eq1.2}
-K(\vr  ' , \vv  ' , i ' \rightarrow
-\vr  , \vv , i) = C( \vr ' ;
-\vv ' , i '   \rightarrow   \vv , i)  \cdot T(
-\vv , i; \vr ' \rightarrow \vr )   .
+K(\vr  ', \vv  ', i ' \rightarrow
+\vr, \vv, i) = C( \vr ' ;
+\vv ', i '   \rightarrow   \vv, i)  \cdot T(
+\vv, i; \vr ' \rightarrow \vr )   .
 \end{equation}
 The kernel $C$ is (excluding normalization) the conditional
 distribution for new co-ordinates ($\vv $,i) given that
@@ -553,9 +553,9 @@ a particle of species $i'$ and with velocity $\vv'$ has
 undergone a collision at position $\vr ' $. This kernel
 can further be decomposed into:
 \begin{equation} \label{eq1.3}
-C( \vr ' , \vv ' , i '   \rightarrow
-\vv , i) = \sum_{k} {p_k  \ C_k ( \vr ' ;
-              \vv ' , i '   \rightarrow \vv, i)} \
+C( \vr ', \vv ', i '   \rightarrow
+\vv, i) = \sum_{k} {p_k  \ C_k ( \vr ' ;
+              \vv ', i '   \rightarrow \vv, i)} \
 , \ p_k = \frac{\Sigma_k}{\Sigma_t}
 \end{equation}
 with summation over the index $k$ for the different types of
@@ -565,8 +565,8 @@ normalizing factor
 \begin{equation} \label{eq1.4}
 c_k (x ') =
   \sum_{i}   \int d^3v \  C_k (
-\vr ' , \vv ' , i ' \rightarrow
-\vv , i ) \   , \  {\cal{C}}_k = \frac{1}{c_k}
+\vr ', \vv ', i ' \rightarrow
+\vv, i ) \ , \  {\cal{C}}_k = \frac{1}{c_k}
 C_k
 \end{equation}
 gives the mean number of secondaries for this collision process.
@@ -597,8 +597,8 @@ the transport kernel $T$ then reads as
 follows:
 \begin{subequations}
 \begin{align} \label{eq1.5}
-(T(l)=)\ \ T ( \vv' , i'; \vr ' \rightarrow  \vr
-) &= \Sigma_t ( \vr  ,\vv', i') \cdot \exp
+(T(l)=)\ \ T ( \vv', i'; \vr ' \rightarrow  \vr
+) &= \Sigma_t ( \vr,\vv', i') \cdot \exp
 \left [   - \int_{0}^{l=\vOmega' ( \vr -
 \vr ' )} ds \Sigma_t ( \vr '  +  s
 \vOmega', \vv', i' )  \right ]
@@ -608,7 +608,7 @@ follows:
 \vr - \vr ' ))
   \cdot   H (\vOmega'
 ( \vr  - \vr  ' )) \\
- &= \Sigma_t ( \vr  ,\vv' , i') \cdot F( \vv' , i'; \vr ' \rightarrow  \vr
+ &= \Sigma_t ( \vr,\vv', i') \cdot F( \vv', i'; \vr ' \rightarrow  \vr
 ) \quad 0\le l \le \infty \label{2.8b}
 \end{align}
 \end{subequations}
@@ -660,7 +660,7 @@ can be written as:
 % gleichungsnummern fest auf eq. 1.6a setzen
 \renewcommand{\theequation}{1.6a}
 \begin{equation} \label{eq1.6a}
-S(x) = \int dx '   Q(x ' )  \cdot T(x ' \rightarrow x) ,
+S(x) = \int dx '   Q(x ' )  \cdot T(x ' \rightarrow x),
 \end{equation}
 % gleichungsnummern einen runterzaehlen.
 \addtocounter{equation}{-1}
@@ -713,7 +713,7 @@ each including a characteristic function
 \begin{subequations}\label{eq2.10}
 \begin{equation}
 \label{eq2.10a}
-g_m=g \times ch_m(\vr,t)  , \quad m = 1, 2, \dots, M, \end{equation}
+g_m=g \times ch_m(\vr,t), \quad m = 1, 2, \dots, M, \end{equation}
 i.e., $ch_m (\vr,t)=1$
 inside the numerical mesh cell (or time interval) labeled with the cell index $m$,
 and $ ch_m (\vr,t) =0 $ outside this cell.
@@ -724,7 +724,7 @@ are also included in this concept if proper use is made of delta functions to
 reduce dimensionality of the response:
 \begin{equation}
 \label{eq2.10b}
-g_{m,\alpha}=g \times ch_m(\vr,t) \times \delta^\alpha(\vr,t) , \quad m = 1, 2, \dots, M,
+g_{m,\alpha}=g \times ch_m(\vr,t) \times \delta^\alpha(\vr,t), \quad m = 1, 2, \dots, M,
 \end{equation}
 Here, e.g., a surface cell $m$ would discretize a surface $S$ characterized by a surface delta function $\delta^S$.
 \end{subequations}
@@ -788,7 +788,7 @@ state $x_a$. $ x_0$ denotes the initial state distributed as
 described by $Q$. Thus, the length n of the chain $ \omega^n$ is
 itself a random variable. A random sampling procedure to generate
 such chains is carried out in Monte Carlo codes by converting
-machine generated (pseudo-) random numbers $ \xi_{i_1} , \xi_{i_2}
+machine generated (pseudo-) random numbers $ \xi_{i_1}, \xi_{i_2}
 , \dots$ into random numbers with the distributions $Q$, $T$ and
 $C$. Having computed N  chains $ \omega_i$,
 $i = 1, 2, \dots, N$, the responses $R$
@@ -825,14 +825,14 @@ unbiased estimator for response $R$.
 Other estimators (``track-length type estimators") are employed
 frequently. These estimators are unbiased as well but have higher
 moments different from those of $ X^c$. Instead of evaluating the
-detector function $ g_c(x)$ at the points of collisions, $ x_l   ,
+detector function $ g_c(x)$ at the points of collisions, $ x_l,
 $ (as $ X^c$ does), they involve line integrals of $ g_t(x)$ along
 the trajectories, e.g.,
 \begin{equation} \label{eq1.11}
 X^t_g ( \omega^{n}_i ) = \sum_{l=0}^{n-1}   \left \{
 \int_{x_l}^{x_{l+1}} ds \  g_t (s) \right \}
   \cdot   \prod_{j=1}^{l-1}
- \frac{c(x_j )}{(1 - p_a(x_j))}   ,
+ \frac{c(x_j )}{(1 - p_a(x_j))},
 \end{equation}
 with $ R = E(X^t ) = E(X^c)$.
 In literature mostly the detector function $g_t$ is taken to be constant within a grid cell.
@@ -866,7 +866,7 @@ ds \  g_t (s)    \cdot   \exp \left (
  - \int_{0}^{s} ds '   \Sigma_t (
   s ' ) \right ) \right \}
    \cdot   \prod_{j=1}^{l-1}
- \frac{c(x_j )}{(1 - p_a(x_j))}   ,
+ \frac{c(x_j )}{(1 - p_a(x_j))},
 \end{equation}
 If $ x_{end}$ is taken to be the nearest point on each mesh cell
 boundary, then the estimator \cref{eq1.12} reduces, as a special
@@ -899,7 +899,7 @@ profiles of cell averaged intensive quantities (e.g.\ density profiles) are obta
 The final unbiased estimate, in absolute units, for any of the unbiased estimators $X_g$ for detector function $g$ discussed above, then is:
 \begin{equation} \label{eq1.8b}
 R_g =\langle\Psi|g\rangle \approx   \tilde{R}_g(N) = \frac{s}{V_m\times N} \sum_{i=1}^{N}   X_g(
-\omega_i) , \quad N \gg 1
+\omega_i), \quad N \gg 1
 \end{equation}
 with $N$ being the number of Monte Carlo histories.
 Correct interpretation of the results of an EIRENE run hence requires knowledge of the
@@ -915,7 +915,7 @@ In this latter case great care is needed, however, that the cell volumes are pro
 \subsubsection{Scaling in problems with ignorable coordinates}\label{sec1.2.0a}
 As seen in the previous paragraph, the absolute values of estimates are scaled
 with the ratio $s/V$ of source strength to cell volume. Depending on ignorable coordinates in any particular problem,
-or on whether stationary (i.e.: time is an ignorable coordinate) or time dependent transport problems are considered ,
+or on whether stationary (i.e.: time is an ignorable coordinate) or time dependent transport problems are considered,
 the dependent variable $\Psi$
 in the governing integral equation \cref{eq1d},
 the source strength $s$ and ``cell volume" $V$ may have different interpretations:
@@ -987,7 +987,7 @@ One should note that except in simple 1D cases in general one single Monte Carlo
 once to the estimate $\tilde R_g$ for a particular cell of the grid or surface segment. E.g.\ test particles can cross one cell $m$ [see \cref{eq2.10b}] more than once,
 with each cell crossing ``$j$" leaving a score (contribution) $X_{i,j}$ to estimator $X_g(\omega_i)$. Then:
 \begin{equation}\label{mccross}
-X_i=\sum_{j=1}^{J_i} X_{i,j} \quad ,
+X_i=\sum_{j=1}^{J_i} X_{i,j} \quad,
 \end{equation}
 with $J_i$ being the number of contributions  (e.g.\ cell crossings) to the estimator, from particle history no.\ $i$.
 The summation in \cref{eq1.8} and hence also the second sum on the right hand side of  \cref{MCsig1} can still be accumulated
@@ -1166,7 +1166,7 @@ parallelization in combination with stratified source sampling  requires some at
 
 
 Stratified sampling means that the primary source
-distribution $Q(\vr,\vv,t)$ , see Equation \cref{eq1a}, or more generally, for $S(x)$ in \cref{eq1d}, can be decomposed into a sum of
+distribution $Q(\vr,\vv,t)$, see Equation \cref{eq1a}, or more generally, for $S(x)$ in \cref{eq1d}, can be decomposed into a sum of
 $M$ independent sources (this applies for both: the source distribution $S$ itself and the corresponding source strength $s$):
 \begin{equation}\label{sss}
 S = \sum_k^{M} S_k ; \quad s=\sum_k^{M} s_k
@@ -1232,7 +1232,7 @@ because with stratification  the Monte Carlo histories are not strictly independ
 Grouping the $N$ statistically independent test flights (random samples) into $M$ strata, leads to Monte Carlo particle
 numbers $N_k$ sampled from stratum $k$ (i.e., with birth points sampled only from source $S_k$) with:
 \begin{equation}\label{Nstra}
-\sum_{k=1}^{M} N_k = N   \quad , \quad  N_k > 0 ~ \quad \mbox{for}~~ ~ k = 1, \dots, M
+\sum_{k=1}^{M} N_k = N   \quad, \quad  N_k > 0 ~ \quad \mbox{for}~~ ~ k = 1, \dots, M
 \end{equation}
 where, again, we omit the subscript $g$ for the particular tally (response function) from now on.
 
@@ -1272,7 +1272,7 @@ To see this we write the trivial identity:
 \begin{equation}\label{varsimp}
 \tilde \sigma^2(N) = \sum_{k=1}^{M}\frac{s_k}{s} \tilde\sigma^2(N)
 \end{equation}
-For example, in case of ``proportional allocation" of CPU-time to strata according to their source strength $s_k$ , i.e.,  $N_k \propto s_k$ :
+For example, in case of ``proportional allocation" of CPU-time to strata according to their source strength $s_k$, i.e.,  $N_k \propto s_k$ :
 \begin{equation}\label{propalloc}
 N_k=\frac{s_k}{s} N, \quad k = 1, 2, \dots, M
 \end{equation}
@@ -1516,7 +1516,7 @@ integrated numerically with time-steps.
 The general rules for sampling from multivariate distributions
 outlined in \cref{sec1.2.1}, Equation \cref{eq1.15a} also
 apply here. In the EIRENE code sampling from the collision kernel is carried out in subr.\ COLLIDE, which is called when a collision is
-known to have occurred at a pre-collision particle state vector [position, velocity, species (and, optional: time)] $( \vr ' , \vv ' , i ')$
+known to have occurred at a pre-collision particle state vector [position, velocity, species (and, optional: time)] $( \vr ', \vv ', i ')$
 by a sequence of random decisions regarding the type of collision process $k$, the species index of the post-collision test particle $i$,
 and the new post-collision velocity $\vv$.  Collisions are instantaneous in time.
 Branching and/or absorption is accounted for by statistical weights.
@@ -1527,9 +1527,9 @@ nature of the various collision processes taken into account.
 
 The collision kernel $C$ was written as (see \cref{eq1.3})
 \begin{displaymath}
-C( \vr ' , \vv ' , i '   \rightarrow
-\vv , i) = \sum_{k} {p_k  C_k ( \vr ' ;
-              \vv ' , i '   \rightarrow \vv, i)} \
+C( \vr ', \vv ', i '   \rightarrow
+\vv, i) = \sum_{k} {p_k  C_k ( \vr ' ;
+              \vv ', i '   \rightarrow \vv, i)} \
 , \ p_k = \frac{\Sigma_k}{\Sigma_t}
 \end{displaymath}
 with summation over the index $k$ for the different types of
@@ -1539,8 +1539,8 @@ factor
 \begin{displaymath}
 c_k (x ') =
   \sum_{i}   \int d \vv \ C_k (
-\vr ' , \vv ' , i ' \rightarrow
-\vv , i ) \   , \  {\cal{C}}_k = \frac{1}{c_k}
+\vr ', \vv ', i ' \rightarrow
+\vv, i ) \ , \  {\cal{C}}_k = \frac{1}{c_k}
 C_k
 \end{displaymath}
 was the mean number of secondaries for this collision process $k$. The normalized
@@ -1572,11 +1572,11 @@ $\vv$ given the type of the process is $k$ and the
 species of the post-collision trajectory is $i$. Let $(n_{k,i},
 i = 1, \dots, I_k)$ be the number of post-collision particles of
 species $i$ from process $k$, and $n_k = \sum_{i} n_{k,i}$.
-I.e., omitting pre-collision state parameters $(\vr ' , \vv ' , i ')$:
+I.e., omitting pre-collision state parameters $(\vr ', \vv ', i ')$:
 \begin{displaymath}
 n_{k,i} = \int d \vv \ C_k (
-\vr ' , \vv ' , i ' \rightarrow
-\vv , i )
+\vr ', \vv ', i ' \rightarrow
+\vv, i )
 \end{displaymath}
 Then, normalizing,
 \begin{displaymath}
@@ -1591,7 +1591,7 @@ Finally, writing
 C_{k} = \sum_i n_{k,i} w_{k,i}(\vv)
 \end{displaymath}
 defines the post-collision velocity distribution $w_{k,i}$, given: a collision has occurred at
-pre-collision state $(\vr ' , \vv ' , i ')$, then a type of process $k$ has been sampled, then a post-collision species
+pre-collision state $(\vr ', \vv ', i ')$, then a type of process $k$ has been sampled, then a post-collision species
 $i$ has been identified. Sampling $(\vv)$ from $w_{k,i}(\vv)$ is carried out in routines VELOCX, VELOEL, VELOEI, VELOPI,
 depending on the type $k$ of process identified. In all cases first a transformation into the rest frame of the
 interacting background species $i_b'$ is carried out.
@@ -1635,7 +1635,7 @@ more convenient for Monte Carlo applications to describe this
 interaction as just one special type of collision process in the
 collision kernel $C$ of equation \cref{eq1.3}, i.e.\ as
 \begin{equation} \label{eq1.14}
-C = p_w    \cdot   C_w    + \sum_{k}  p_k   C_k   ,
+C = p_w    \cdot   C_w    + \sum_{k}  p_k   C_k,
 \end{equation}
 with $ p_w (\vr )$ = 1, if $ \vr $ is a point
 on a surface, and $ p_w (\vr)$ = 0 elsewhere. The
@@ -1645,12 +1645,12 @@ distance to the nearest surface along the track of the particle.
 The reflection kernel $ C_w$ is further decomposed it into a
 kernel $ C_{wf}$ (fast particle reflection), $ C_{wt}$ (thermal
 particle re-emission) and $ C_{wa}$ (particle absorption) with
-respective probabilities, $ p_f , p_t$  and $ p_ a$, such that
+respective probabilities, $ p_f, p_t$  and $ p_ a$, such that
 \begin{equation}
 C_w = C_{wf}   +   C_{wt}   +   C_{wa} =
   p_f   {\cal{C}}_{wf}   +
   p_t   {\cal{C}}_{wt}   +   p_a
-{\cal{C}}_{wa}  , \quad p_f + p_t + p_a = 1 . \label{eq1.15}
+{\cal{C}}_{wa}, \quad p_f + p_t + p_a = 1 . \label{eq1.15}
 \end{equation}
 Here ${\cal{C}}$ are, as above, the normalized versions of the collision kernels $C$.
 
@@ -1671,7 +1671,7 @@ the particles leaving the surface.
 One has  for the particle reflection coefficient:
 \begin{equation}
 C_P = \sum_{i}   \int d \vv \   C_{wf} (
-\vr ; \vv ' , i ' \rightarrow   \vv
+\vr ; \vv ', i ' \rightarrow   \vv
 ,i) \label{eq1.16}
 \end{equation}
 Note that $ C_P = p_f = c_{wf}$ in the terminology of
@@ -1680,8 +1680,8 @@ Note that $ C_P = p_f = c_{wf}$ in the terminology of
 The energy reflection coefficient is defined as:
 \begin{equation}
 C_E = \frac{1}{E '}    \cdot \sum_{i}   \int d \vv
-\   E    \cdot C_{wf} (\vr ; \vv ' , i '
-\rightarrow   \vv ,i) =
+\   E    \cdot C_{wf} (\vr ; \vv ', i '
+\rightarrow   \vv,i) =
  \frac{1}{E '}     \cdot   {\tilde{C}}_E
 \label{eq1.17}
 \end{equation}
@@ -1729,7 +1729,7 @@ The linearity of E in $ {\cal{E}}$ gives an expectation value $\bar
 
 To describe the angular distribution of re-emitted particles, conditional
 on incident energy and angle,  let
-$ \ve_x ,   \ve_y ,   \ve_z$ define
+$ \ve_x,   \ve_y,   \ve_z$ define
 an orthonormal basis at the strike-point of a test-particle on a
 surface. Here let $ \ve_x$ be the unit vector parallel
 to the outer surface normal and let the incident particle travel
@@ -1741,18 +1741,18 @@ given by
 \begin{align}
 \Omega_x & = - \cos( \hat{\vartheta}_r ) f_1 ( \vartheta_{in}
 )   +   \sin( \hat{\vartheta}_r )
-\sin( \varphi_r)   f_2 ( \vartheta_{in} )     ,   \nonumber\\
+\sin( \varphi_r)   f_2 ( \vartheta_{in} ),   \nonumber\\
 \Omega_y & = \sin( \hat{\vartheta}_r )
-\cos( \varphi_r )     ,                           \nonumber\\
+\cos( \varphi_r ),                           \nonumber\\
 \Omega_z & = \sin( \hat{\vartheta}_r ) \sin( \varphi_r )
 f_1( \vartheta_{in} )   + \cos( \hat{\vartheta}_r )   f_2(
-\vartheta_{in} )  , \label{eq1.21}
+\vartheta_{in} ), \label{eq1.21}
 \end{align}
 with
 \begin{align}
 \sin( \hat{\vartheta}_r ) & = f_1( \vartheta
-_{in})   \sin( \vartheta_r )     , \nonumber\\
- f_1( \vartheta_{in} )    & = \cos^{e3} ( \vartheta_{in} ) ,
+_{in})   \sin( \vartheta_r ), \nonumber\\
+ f_1( \vartheta_{in} )    & = \cos^{e3} ( \vartheta_{in} ),
 \nonumber\\
  f_2( \vartheta_{in} )    & =
 (   1   -   f_1  \cdot f_1 )^{\frac{1}{2}} . \nonumber
@@ -1902,8 +1902,8 @@ To describe this, we first write the volumetric source $Q$ (particles per unit t
 in terms of a  surface flux $\Gamma_w$ and a surface delta-function. The
 surface (wall) flux $\Gamma_w$ thus has dimension: particles per unit time, per velocity space unit, and per unit area:
 \begin{equation}
-Q_w( \vr , \vv , i ) = \Gamma_w (
-\vr, \vv , i )    \cdot   \delta_w ( \pi )     ,
+Q_w( \vr, \vv, i ) = \Gamma_w (
+\vr, \vv, i )    \cdot   \delta_w ( \pi ),
 \label{eq1.22}
 \end{equation}
 where $\pi$ is a coordinate normal to the surface $S_w$:
@@ -1926,14 +1926,14 @@ fold $\Gamma_{Sh,ion}$ with a (magnetic plus electrostatic) sheath transmission
 kernel $T_{Sh}$ and with the surface reflection (incl. sputtering) kernel $C_w$,
 equation \cref{eq1.14}:
  \begin{align}
-\Gamma_w ( \vr , \vv  , i ) & = \sum_{i '}
+\Gamma_w ( \vr, \vv, i ) & = \sum_{i '}
 \int\! \int\! \int d^3 r' d^3 v'  d^3
-v'' \Gamma_{Sh,ion} ( \vr ' ,
-\vv '' , i ' ) \nonumber\\
-& \phantom{=} \cdot T_{Sh} (i ' ; \vr ' ,
-\vv '' \rightarrow \vr , \vv  ' )
+v'' \Gamma_{Sh,ion} ( \vr ',
+\vv '', i ' ) \nonumber\\
+& \phantom{=} \cdot T_{Sh} (i ' ; \vr ',
+\vv '' \rightarrow \vr, \vv  ' )
  \cdot  C_w ( \vr ;
-\vv ' , i ' \rightarrow \vv , i )
+\vv ', i ' \rightarrow \vv, i )
 \label{eq1.24}
 \end{align}
 The summation over $i '$ is performed over all ion species
@@ -1956,10 +1956,10 @@ kernel for the velocities $\vv'' \rightarrow \vv'$.
 
 
 Random numbers from $\Gamma_w$ are generated conveniently by
-sampling, firstly, $(\vr ' , \vv  '' , i ' ) $
-from $\Gamma_{Sh,ion}$, next generating $(\vr ,
+sampling, firstly, $(\vr ', \vv  '', i ' ) $
+from $\Gamma_{Sh,ion}$, next generating $(\vr,
 \vv ' ) $ from $T_{Sh}$ and then, finally, sampling the weights, velocities and species indices of re-emitted (neutral) particles
-$(\vv , i)$ from the conditional distribution $C_w $, which is conditional on one ion (species $i'$) having hit the
+$(\vv, i)$ from the conditional distribution $C_w $, which is conditional on one ion (species $i'$) having hit the
 target at position $\vr' = \vr$ and with velocity $\vv '$.
 
 A frequently employed assumption for $\Gamma_{Sh,ion}$ is a one sided (only positive velocity components into the sheath)
@@ -1995,7 +1995,7 @@ The kinetic plasma ion flux distribution entering the electrostatic sheath is gi
 \begin{equation}
 \Gamma^0_{Sh,ion} = \frac{1}{\alpha^2}   \cdot   v_{\pi}   \cdot
   \exp \left ( - \frac{1}{v_{T_i}^2}
-(\vv - \vV_d )^2  \right )    , \quad
+(\vv - \vV_d )^2  \right ), \quad
 v_{\pi} > 0 \label{eq1.23}
 \end{equation}
 with $v_{T_i} = \sqrt{2 kT_i/m_i}$, the thermal ion velocity, normalizing constant
@@ -2017,14 +2017,14 @@ whereas the third factor is a one-sided drifting Maxwellian flux distribution:
 \begin{equation}
 \Gamma^0_{Sh,ion,\pi}(v_\pi) = \frac{1}{\alpha^2_\pi}   \cdot   v_{\pi}   \cdot
   \exp \left ( - \frac{1}{v_{T_i}^2}
-(v_\pi - V_{d,\pi} )^2  \right )    , \quad
+(v_\pi - V_{d,\pi} )^2  \right ), \quad
 v_{\pi} > 0
 \end{equation}
 The normalizing factor $\alpha_{\pi}^2$ for this (now uni-variate) distribution of the normal component  $v_\pi$
   reads:
 \begin{equation}
 \alpha_{\pi}^2 = \frac12 v_{T_i}^2  \cdot  \exp(-{\cal V}^2_{\pi} )
-   g({\cal V}_{\pi} )  ,
+   g({\cal V}_{\pi} ),
 \label{eq1.27}
 \end{equation}
 with ${\cal V}_{\pi} = V_{d,\pi}/   v_{T_i} $ and $
@@ -2056,11 +2056,11 @@ We sample this component
 ${\tilde{v}}_{\pi}$ from a ``non-analog" truncated Maxwellian flux distribution
 $\tilde\Gamma^0_{Sh,ion,\pi}(\tilde v_{\pi})$ (see \cref{sec1.2.1a} above)
 with zero drift in $\pi$-direction but with different ``non-analog" $\pi$- temperature ${\tilde{T}}_{\pi,i},
-({\tilde{T}}_{\pi,i}   \ne T_i   , {\tilde{V}} _{d,\pi} = 0 )$.
+({\tilde{T}}_{\pi,i}   \ne T_i, {\tilde{V}} _{d,\pi} = 0 )$.
 \begin{equation}
 \tilde\Gamma^0_{Sh,ion,\pi}(\tilde v_\pi) = \frac{1}{\tilde \alpha^2_\pi}   \cdot   \tilde v_{\pi}   \cdot
   \exp \left ( - \frac{1}{v_{\tilde T_{\pi,i}}^2}
-(\tilde v_\pi )^2  \right )    , \quad
+(\tilde v_\pi )^2  \right ), \quad
 \tilde v_{\pi} > 0
 \end{equation}
 Note that although this non-analog
@@ -2138,13 +2138,13 @@ one):
    dv_\pi \
  (v_1^2+v_2^2+v_\pi^2)    \cdot
 \Gamma^0_{Sh,ion} (\vv ' ) \label{eq1.30} \\\nonumber
-&= T_i    \cdot   \gamma_E    ,
+&= T_i    \cdot   \gamma_E,
 \end{align}
 with the half sided integration for the $\pi$-component of
 $\vv$, and:
  \begin{equation}
 \gamma_E = 2 + {\cal V}_\sigma^2    + \left[{\cal V}_\pi^2    +   0.5
-\cdot \frac{g({\cal V}_{\pi} )  - 1}{g({\cal V}_{\pi} )}\right]       , \label{eq1.31}
+\cdot \frac{g({\cal V}_{\pi} )  - 1}{g({\cal V}_{\pi} )}\right], \label{eq1.31}
 \end{equation}
 Here we have decomposed the drift velocity $\vV_d$ into a
 normal (to the surface) $\pi$-component $\vV_{d,\pi}$ and a $\sigma$-component $\vV_{d,\sigma}$ parallel to
@@ -2434,7 +2434,7 @@ f_{\lambda}^i (x,y,z) = 0 {},    \quad \quad \lambda =
 and, optional, for each unbounded surface $\lambda$  a subset of $ \Pi_{\lambda} $
 inequalities (e.g.\ for turning the unbounded surfaces into finite segments):
 \begin{equation}
-g_{\lambda , \pi}^i (x,y,z)  \le   0 {},    \quad \quad \pi =
+g_{\lambda, \pi}^i (x,y,z)  \le   0 {},    \quad \quad \pi =
 1, 2, \dots, \Pi_{\lambda} {}. \label{eq1.35}
 \end{equation}
 
@@ -2528,7 +2528,7 @@ The historically oldest option is the ``semi implicit" scheme, see \cref{flow02}
 the severe CPU time constrains in the late eighties of the last century, when B2-EIRENE was first
 developed, see Reiter et al.,  (\cite{kn:Net}).
 
-Later mostly the simpler ``explicit scheme" , \cref{flow01} was employed in applications, which, although probably being much slower
+Later mostly the simpler ``explicit scheme", \cref{flow01} was employed in applications, which, although probably being much slower
 in ``code turn-around time", did require less attention by the person running the code, i.e.\ seemed to be
 numerically more robust, in particular in cold, recombining divertor plasma conditions.
 
@@ -3202,7 +3202,7 @@ thermal gyro-radius, $L$ spatial length scale, e.g.\ gradient length of B-field,
 \subsubsection{Particles following the B-field}
 Simple, analytical, orbit integration, zeroth order in $\delta$.
 \minisec{A: no electric field, no drifts}
-To zeroth order in the smallness parameter $\delta=\rho/L$ , i.e.\ for $\rho \simeq 0$,
+To zeroth order in the smallness parameter $\delta=\rho/L$, i.e.\ for $\rho \simeq 0$,
 charged particle orbits are the magnetic field lines themselves.
 The magnetic field unit vector $\textbf{b}=\textbf{B}/|\textbf{B}|$ is provided as input
 vector in each cell of the computational
@@ -3287,7 +3287,7 @@ a test-ion $a$ in a field of background ions $b$ (field particles) with temperat
 $T_b$ is given as:
 \begin{equation}\label{eq.relax1}
 \frac{d\varepsilon_a}{dt}=-\nu_\varepsilon^{a,b} \cdot
-\varepsilon_a  \quad , \quad  \varepsilon_a(t=0)=\varepsilon_a^0
+\varepsilon_a  \quad, \quad  \varepsilon_a(t=0)=\varepsilon_a^0
 \end{equation}
 In general this is a non-linear equation because the energy exchange collision
 rate (energy transfer rate) $\nu_\varepsilon^{a,b}$ depends on
