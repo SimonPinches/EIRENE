@@ -23,7 +23,7 @@ surface tallies in the list after the sputter tallies.
 These latter revisions are described in \cref{tab3a}, and only for that section of the surface tally list
 that has been affected.
 
-\
+\vspace{1em}
 
 Each \textbf{volume averaged response} is a spatial function,
 averaged over a grid cell, hence: a piecewise constant function, which is constant in each grid
@@ -103,9 +103,10 @@ In all older versions only much fewer sputter tallies SPT[BC] were available, i.
 
 And [BC] (and the corresponding species index) could either mean:
 
-i)  resolution wrt.\ incident flux species (summing over all sputtered flux species and types) (same as in incident surface flux tallies), or 
-
-ii) resolution wrt.\ sputtered flux (summing over all incident species and types), 
+\begin{itemize}
+\item[i)]  resolution wrt.\ incident flux species (summing over all sputtered flux species and types) (same as in incident surface flux tallies), or 
+\item[ii)] resolution wrt.\ sputtered flux (summing over all incident species and types), 
+\end{itemize}
 
 depending on code version. Type ii) convention was used in EIRENE versions operated at ITER-IO (e.g.\ in SOLPS4.3), all other
 EIRENE versions had convention i).
@@ -128,13 +129,11 @@ to the ``Time-Surface" (the census array) then.
 younger)}\label{sec.tables-new}
 
 \begin{table}[h]
-\caption{\textbf{Input Tallies for Background,
-Input, Module: COMUSR}}
-\bigskip
+\caption{\textbf{Input Tallies for Background, Input, Module: COMUSR}}
 \label{tab1} 
 \begin{footnotesize}
-\begin{tabular} {|r|l|l|l|l|c|} \hline
-
+\begin{tabular} {|r|l|l|l|l|c|} 
+\hline
  \textbf{No} & \textbf{Name} & \textbf{Macroscopic quantity}
  &  \textbf{1.Dim.}
   & \textbf{Units} & \textbf{Estim.}   \\ \hline
@@ -235,10 +234,8 @@ is possible. Default: $\vec{E} = 0$
 
 \clearpage
 \begin{footnotesize}
-%\begin{longtable}[t]{|r|l|l|l|l|c|}
 \begin{longtable}{|r|l|l|l|l|c|}
-\caption{\textbf{Volume Averaged Tallies, Output,
-Module: CESTIM}}
+\caption{\textbf{Volume Averaged Tallies, Output, Module: CESTIM}}
 \label{tab2}
 \\
 \hline
@@ -512,7 +509,7 @@ In some instances still collision estimators \cref{eq1.9} are
 employed but we are gradually removing them (and plan keep them in
 the code only to provide independent checks for code-verification
 runs.)
-\begin{itemize}
+\begin{description}
 \item[TD]  Track-length, particle density. $g_t= 1/v$, $v=VEL$ the
 test particle's velocity. Note that the path-integral of $g_t$ along
 a trajectory in a cell is equal to the time spend by that history in
@@ -527,7 +524,7 @@ then the scalar product $\langle e_{\vec B},
 \item[CG]  Collision estimator for generation limit (for fluid limit) tallies. These tallies contain particle, momentum and energy fluxes
 (per cell or per \si{\cubic\centi\metre}), when particles are removed from the fully kinetic tracing, due to e.g.\ transition into a
 diffusive or other continuum regime. These fluxes are scored in COLLIDE.F, i.e.\ by collision estimators by nature.
-\end{itemize}
+\end{description}
 
 
 %\newpage
@@ -540,19 +537,18 @@ diffusive or other continuum regime. These fluxes are scored in COLLIDE.F, i.e.\
 \clearpage
 \begin{footnotesize}
 \begin{longtable}{|r|l|l|l|l|c|}
-\caption{\textbf{Surface Averaged Tallies,
-Output, Module: CESTIM}}
+\caption{\textbf{Surface Averaged Tallies, Output, Module: CESTIM}}
 \label{tab3}
-\\
+\\ 
 \hline
-
  \textbf{No} & \textbf{Name} & \textbf{Macroscopic quantity}
 &
    \textbf{1.Dim.}
   & \textbf{Units} & \textbf{Estim.}   \\
 \hline\hline
 \endfirsthead
-\caption[]{(continued)}\\
+\caption[]{(continued)}
+\\
 \hline
  \textbf{No} & \textbf{Name} & \textbf{Macroscopic quantity}
  & \textbf{1.Dim.}
@@ -684,38 +680,33 @@ Output, Module: CESTIM}}
 
 \textbf{Note:}
 
-i) The tallies listed here are two dimensional arrays. The \ordinalnum{2} index I2
+\begin{itemize}
+\item[i)] The tallies listed here are two dimensional arrays. The \ordinalnum{2} index I2
 is the number of the surface or the surface segment.
  For
 I2 = 1, \dots, NLIMI the tallies correspond to the ``Additional Surfaces",
 (input block 3B).
-
-ii)
-For I2 = NLIM + 1, NLIM + NSTSI * NGITT the data correspond to the
+\item[ii)] For I2 = NLIM + 1, NLIM + NSTSI * NGITT the data correspond to the
 ``Non-default Standard Surfaces" (input block 3A).
 On each such surface of block 3A,
 there is a spatial resolution with up to NGITT
 surface segments, depending upon the standard grid dimensionality.
-
-iii) by default the sputter tallies are type and species resolved with respect to incident type and species.
+\item[iii)] by default the sputter tallies are type and species resolved with respect to incident type and species.
 E.g.\ the sputtered fluxes SPTAT(2) is the total sputtered flux (all species), sputtered by incident atoms of species IATM=2.
 Other conventions regarding sputter tallies are used in EIRENE versions operated at ITER-IO (e.g.\ SOLPS4.x), see general description above.
-
-iv) the sputter tallies have been revised at revision SVN 360, Jan 2014, to allow full resolution with respect to both: incident type (for scaling)
+\item[iv)] the sputter tallies have been revised at revision SVN 360, Jan 2014, to allow full resolution with respect to both: incident type (for scaling)
 and (emitted) sputtered particle type and species, see \cref{tab3a}.
-
+\end{itemize}
 %\end{table}
 
 \newpage
 \clearpage
 \begin{footnotesize}
 \begin{longtable}{|r|l|l|l|l|c|}
-\caption{\textbf{Sputter tallies, new version, SVN 360 ff, 2014,\\
-Output, Module: CESTIM}}
+\caption{\textbf{Sputter tallies, new version, SVN 360 ff, 2014, Output, Module: CESTIM}}
 \label{tab3a}
 \\
 \hline
-
  \textbf{No} & \textbf{Name} & \textbf{Macroscopic quantity}
 &
    \textbf{1.Dim.}
@@ -834,11 +825,10 @@ interfacing to the particular external plasma codes B2, B2.5, etc.\ are describe
 
 \begin{table}[ht]
 \caption{\textbf{Input Tallies for Background, Input, Common: COMUSR}}
-\bigskip
 \label{tab1old}
-\begin{footnotesize}
-\begin{tabular} {|r|l|l|l|l|} \hline
-
+\begin{small}
+\begin{tabular} {|r|l|l|l|l|} 
+\hline
  \textbf{No} & \textbf{Name} & \textbf{Macroscopic quantity}
  &  \textbf{1.Dim.}
   & \textbf{Units}   \\ \hline
@@ -870,7 +860,9 @@ interfacing to the particular external plasma codes B2, B2.5, etc.\ are describe
     \\ \hline
  -22   &      POT   &      electric potential  & 1  & \si{\volt} \\ \hline
 \end{tabular}
-\end{footnotesize}
+\end{small}
+
+\vspace{1em}
 
 \textbf{Note:}
 We distinguish between so called primary input tallies, and derived input tallies.
@@ -901,7 +893,8 @@ see INDPRO(5) options for magnetic field tallies in input block 5 (\cref{sec2.5}
 \caption{\textbf{Volume Averaged Tallies, Output, Common: CESTIM}}
 \label{tab2old}
 \begin{footnotesize}
-\begin{tabular}{|r|l|l|l|l|c|} \hline
+\begin{tabular}{|r|l|l|l|l|c|} 
+\hline
  \textbf{No} & \textbf{Name} & \textbf{Macroscopic quantity}
  & \textbf{1.Dim.}
  & \textbf{Units} & \textbf{Estim.} \\ \hline
@@ -1022,11 +1015,10 @@ negative, it is a loss.
 \newpage
 \begin{table}[t]
 \caption{\textbf{Surface Averaged Tallies, Output, Common: CESTIM}}
-\bigskip
 \label{tab3old}
 \begin{footnotesize}
-\begin{tabular}{|r|l|l|l|l|c|} \hline
-
+\begin{tabular}{|r|l|l|l|l|c|} 
+\hline
  \textbf{No} & \textbf{Name} & \textbf{Macroscopic quantity}
 &
    \textbf{1.Dim.}
