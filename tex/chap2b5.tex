@@ -25,8 +25,7 @@ I.e.: the background medium is described by several blocks of NSBOX data each, (
 
 \minisec{Special case: Magnetic field input}
 
-The unit vector  $\vb$ = $( b_1, b_2, b_3 )$ (BXIN, BYIN, BZIN), parallel to the magnetic field is set to (0.,0.,1.
-) by default,
+The unit vector  $\vb$ = $( b_1, b_2, b_3 )$ (BXIN, BYIN, BZIN), parallel to the magnetic field is set to (0.,0.,1.) by default,
 i.e.\ pointing in z- (or toroidal-) direction.
 The default magnetic field strength is $|\vB|=1$ T in all grid cells.
 This default setting may be overruled by using the \emph{INDPRO(5)} flag and the corresponding input parameters (see below).
@@ -68,9 +67,7 @@ Plasma data other than these ``vacuum values" (meaning: no collision processes i
 Cell volumes in the additional cell region are defaulted to \SI{1.0}{\per\cubic\centi\metre}, unless $INDPRO(12)=4, 5, 6, 7$.
 
 \minisec{Vacuum zones: no collision processes}
-A standard mesh zone ICELL is automatically identified as a vacuum zone with regard to plasma species IPL (no collisions with the bulk particles IPL there, \emph{LGVAC(ICELL,IPL)=.TRUE.
-},
-for electrons: IPL=NPLS+1)
+A standard mesh zone ICELL is automatically identified as a vacuum zone with regard to plasma species IPL (no collisions with the bulk particles IPL there, \emph{LGVAC(ICELL,IPL)=.TRUE.}, for electrons: IPL=NPLS+1)
 
 if at least one of the following conditions is met:
 

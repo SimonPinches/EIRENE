@@ -96,8 +96,7 @@ EIRENE stops working on a particular stratum if either the assigned CPU-time for
         \begin{description}
           \item[$= 0 \textup{--} 5$] the input data for stratum ISTRA are read here, but may be modified in some user routine (SAMUSR) or interface routine (INFCOP, at entry IF2COP(ISTRA))
           \item[$= 6$] no input data for stratum ISTRA are read here.
-                The definition of this stratum must be entirely in some problem specific routine (IF2COP, etc.)
-                .
+                The definition of this stratum must be entirely in some problem specific routine (IF2COP, etc.).
                 See \cref{sec3.4} for one such example, namely the default surface recycling source model as specified in coupled B2-EIRENE runs.
           \item[$= -1$] the input data for stratum ISTRA are read here, and no attempt is made to modify these.
                 I.e.\ IF2COP(ISTRA) is not called.
@@ -232,8 +231,7 @@ EIRENE stops working on a particular stratum if either the assigned CPU-time for
         Initial co-ordinates of a bulk ion with species index ISP = IPLS and initial weight NPRTP(IPLS) (see block 5) are generated as primary source particles, then a surface reflection model or a volume re-combination model is called and atoms, molecules or test ions with species index either IATM, IMOL, IION or IPHOT are created.
 \end{description}
 
-One and only one of these five variables must be .TRUE.
-.
+One and only one of these five variables must be .TRUE..
 
 \begin{description}
   \item[NSPEZ] Species index of the source particle
@@ -625,8 +623,7 @@ Check \cref{sec1.5} for generalizations, e.g.\ to also include magnetic pre-shea
 
                 These default choices of background medium species index $ip_0=IPL$ can be overruled by the K digit of this input flag, see below.
 
-                In case of .not.
-                (NLPLS.or.NLION), $T_i(ip_0)$ =0.
+                In case of .not.(NLPLS.or.NLION), $T_i(ip_0)$ =0.
           \item[M = 1] The local ion temperature $T_i$ is replaced by the input constant SORENI (\si{\electronvolt}) and $T_e$ is replaced by the constant SORENE (\si{\electronvolt}) in options N = 4 to N = 7.
           \item[M = 2] not in use
           \item[M = 3] $T_e$ is the local electron temperature, and $T_i$ is the local background ion temperature of ion species $ip_0 = IPL=K$, K is the fourth digit of the NEMODS flag, see below.
@@ -746,8 +743,7 @@ In these latter cases only the index \lstinline|IINDEX| is used, and a point fro
 The probability density functions \lstinline|FLSTEP| for sampling a position (or cell index) \lstinline|RR| are set in function \lstinline|STEP| from a piecewise constant distribution function (e.g., from a surface flux density distribution).
 In the same call to \lstinline|STEP| also their corresponding cumulative functions \lstinline|VF| are obtained by integration of \lstinline|FLSTEP| over \lstinline|RRSTEP|, and normalization.
 
-These step-functions have to be set in the initialization phase (by calls to function \lstinline|STEP| from \lstinline|SAMUSR|, \lstinline|INFUSR|, etc.)
-.
+These step-functions have to be set in the initialization phase (by calls to function \lstinline|STEP| from \lstinline|SAMUSR|, \lstinline|INFUSR|, etc.).
 
 The initialization call to function \lstinline|STEP| reads:
 
@@ -759,10 +755,7 @@ At this point the grid RRSTEP and the distribution density FLSTEP on that grid m
 RRSTEP is an ordered set of numbers, the abscissae of the points when FLSTEP jumps from one value to another.
 RRSTEP may have dimension length, area, volume or any other dimension of the independent variable for the piecewise constant distribution FLSTEP.
 
-In the initialization call to function STEP the distribution density \lstinline|FLSTEP| (Flux per unit length or area or volume, or whatever the dimension of RRSTEP is.
-)
-is then converted into
-a (set of) cumulative distribution $VF$ by
+In the initialization call to function STEP the distribution density \lstinline|FLSTEP| (Flux per unit length or area or volume, or whatever the dimension of RRSTEP is.) is then converted into a (set of) cumulative distribution $VF$ by
 \begin{equation}
   \nonumber
   VF(ISPZ,ISTEP,i)= \sum_{j=1}^{j=i} \Delta u_j \cdot FLSTEP(ISPZ,ISTEP,j)

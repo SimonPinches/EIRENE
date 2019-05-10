@@ -4,8 +4,7 @@
 
 \medskip 
 
-The variables in this block control some of the more general options in EIRENE such as overall running time, usage of dump files but also a few parameters depending on the simulation model (drifts included or not, etc.)
-.
+The variables in this block control some of the more general options in EIRENE such as overall running time, usage of dump files but also a few parameters depending on the simulation model (drifts included or not, etc.).
 
 \medskip
 
@@ -78,8 +77,7 @@ There can be any number of these cards starting with character string \lstinline
           \item[$= 0$] EIRENE run as stand-alone-code.
                 Code coupling segment \lstinline|couple_Dummy.f| may be used.
                 Input block 14 has a fixed format, see \cref{sec2.14}.
-          \item[$\ne 0$] EIRENE calls the code coupling subroutine INFCOP in the code coupling segment \lstinline|couple_Name.f| where 'Name' is a character string identifying the particular external code, to which EIRENE is to be coupled (e.g.: Name = B2, Name = DIVIMP, Name = U-file, Name = FIDAP, Name = EMC3, Name = OSM, etc.)
-                .
+          \item[$\ne 0$] EIRENE calls the code coupling subroutine INFCOP in the code coupling segment \lstinline|couple_Name.f| where 'Name' is a character string identifying the particular external code, to which EIRENE is to be coupled (e.g.: Name = B2, Name = DIVIMP, Name = U-file, Name = FIDAP, Name = EMC3, Name = OSM, etc.).
 
                 Hence: the routine INFCOP is called by EIRENE for communication with external data sources, e.g., external data structures for iterative mode by coupling to other codes.
                 The calling program for the first 3 entries of INFCOP is subroutine INPUT, and the call to subroutine INFCOP is after reading 13 blocks from the formatted input file (READ (IUNIN, \dots)).
@@ -229,9 +227,7 @@ The switches 10--15 in this card may have version specific meanings and are for 
   \item[NLTEST] Tests for consistency between cell numbers and geometrical data along the particle tracks are carried out at each point of collision.
         If inconsistencies are detected, the history is stopped and an error message is printed.
         The contribution of these particles to the particle- and energy balances is stored in the bins ``PTRASH" and ``ETRASH" respectively.
-  \item[NLANA] De-activates (NLANA=.TRUE.
-        ) all non-analog sampling distributions, such as
-        biased source sampling, splitting, etc.
+  \item[NLANA] De-activates (NLANA=.TRUE.) all non-analog sampling distributions, such as biased source sampling, splitting, etc.
         Select NLANA=.TRUE., if particle trajectory plots are used to get an intuitive picture of what is going on physically.
   \item[NLDRFT] Drift component in the bulk ions velocity distribution is included, i.e.\ the assumed underlying distribution in velocity space is a drifting Maxwellian for volumetric background tallies of bulk particles.
         (see input block 5, input tallies VXIN, VYIN, VZIN)).

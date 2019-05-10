@@ -6,9 +6,7 @@
 
 EIRENE follows atoms, molecules or test ions in a 3-dimensional computational box.
 This box is discretized by zones (mesh cells), the boundaries of which are defined either by regular ``standard mesh surfaces", i.e., co-ordinate surfaces, (\ac{BREP} representation of geometry, \cref{sec1.5}) which are described here, and/or by zones whose boundaries are defined more generally by ``additional surfaces" (see below block 3B).
-Alternative to this \ac{BREP} option there is also the option of unstructured meshes (Voxel representation, loc.\ cit.
-) of triangles ( in 2D)
-or tetrahedra (in 3D).
+Alternative to this \ac{BREP} option there is also the option of unstructured meshes (Voxel representation, loc.\ cit.) of triangles ( in 2D) or tetrahedra (in 3D).
 
 In 2-dimensional applications the co-ordinate surfaces automatically collapse to coordinate lines, and in 1-dimensional applications they collapse to coordinate (grid) points.
 
@@ -334,8 +332,7 @@ if NLTRI = .TRUE.:
   \item[TRIN, TROT, TRCH, EXTR] to be written: the option for algebraically given triangular grids is currently no available.
 
 \end{description}
-if NLPLG = .
-TRUE.:
+if NLPLG = .TRUE.:
 \begin{description}
   \item[NR1ST] number of polygons for discretization in ``radial" or x direction
   \item[NRPLG] Number of points per polygon
@@ -397,14 +394,12 @@ if NLFEM = .TRUE.:
         In case IPROP $<$ 0, this vector points into the triangle.
         This is relevant at surface options with ILSIDE $\not=$ 0.
 \end{description}
-if NLTET = .
-TRUE.:
+if NLTET = .TRUE.:
 
 Documentation not available here.
 Make contact with the authors.
 
-if NLGEN = .
-TRUE.:
+if NLGEN = .TRUE.:
 \begin{description}
   \item[NR1ST] 
 
