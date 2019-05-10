@@ -135,8 +135,7 @@ if the storage on the census array of this stratum has been filled up (Message:
           \item[$= 6$] no input data for stratum
                 ISTRA are read here.
                 The definition of this stratum must be entirely in some problem specific
-                routine (IF2COP, etc.)
-                .
+                routine (IF2COP, etc.).
                 See \cref{sec3.4} for one such example, namely the default surface recycling
                 source model as specified in coupled B2-EIRENE runs.
           \item[$= -1$] the input data for stratum ISTRA are read here, and no attempt is
@@ -319,8 +318,7 @@ if the storage on the census array of this stratum has been filled up (Message:
         IPHOT are created.
 \end{description}
 
-One and only one of these five variables must be .TRUE.
-.
+One and only one of these five variables must be .TRUE..
 
 \begin{description}
   \item[NSPEZ] Species index of the source particle
@@ -919,8 +917,7 @@ pre-sheath models inside EIRENE.
                 These default choices of background medium species index $ip_0=IPL$ can be
                 overruled by the K digit of this input flag, see below.
 
-                In case of .not.
-                (NLPLS.or.NLION), $T_i(ip_0)$ =0.
+                In case of .not.(NLPLS.or.NLION), $T_i(ip_0)$ =0.
           \item[M = 1] The local ion temperature $T_i$ is replaced by the input constant
                 SORENI (\si{\electronvolt}) and $T_e$ is replaced by the constant SORENE
                 (\si{\electronvolt}) in options N = 4 to N = 7.
@@ -1104,9 +1101,7 @@ functions \lstinline|VF| are obtained by integration of
 \lstinline|FLSTEP| over \lstinline|RRSTEP|, and normalization.
 
 These step-functions have to be set in the initialization phase (by calls to
-function \lstinline|STEP| from \lstinline|SAMUSR|,
-\lstinline|INFUSR|, etc.)
-.
+function \lstinline|STEP| from \lstinline|SAMUSR|, \lstinline|INFUSR|, etc.).
 
 The initialization call to function \lstinline|STEP| reads:
 
@@ -1123,9 +1118,8 @@ RRSTEP may have dimension length, area, volume or any other dimension of the
 independent variable for the piecewise constant distribution FLSTEP.
 
 In the initialization call to function STEP the distribution density
-\lstinline|FLSTEP| (Flux per unit length or area or volume, or whatever
-the dimension of RRSTEP is.
-) is then converted into a (set of) cumulative
+\lstinline|FLSTEP| (Flux per unit length or area or volume, or whatever the 
+dimension of RRSTEP is.) is then converted into a (set of) cumulative
 distribution $VF$ by
 \begin{equation}
   \nonumber

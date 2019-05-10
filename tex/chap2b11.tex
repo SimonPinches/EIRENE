@@ -232,8 +232,7 @@ C           plot
   \item[TRCSRC(ISTRA), ISTRA = 0, NSTRAI] ~ 
 
         The selected global, volumetric and surface crossing tallies are printed for
-        those strata for which TRCSTR(ISTRA) = .TRUE.
-        .
+        those strata for which TRCSTR(ISTRA) = .TRUE..
         In case TRCSTR(0) = .TRUE., the results after summation over all strata is
         printed for these tallies.
 
@@ -243,8 +242,8 @@ C           plot
         sum over strata) is available.
   \item[NVOLPR] Total number of volume averaged tallies to be printed.
   \item[NSPCPR] Flag for printout of surface or cell based spectra (defined in
-        input block 10F) If NSPCPR $> 0$: spectra are printed on output stream fort.
-        (20+ioff), name: spectra.out
+        input block 10F) If NSPCPR $> 0$: spectra are printed on output stream 
+        fort.(20+ioff), name: spectra.out
   \item[NPRTLV] Index of the tally to be printed
         (first column in \cref{tab1} or \cref{tab2}).
         If the tally has a species index, it is printed for all species, for which the
@@ -355,14 +354,12 @@ activated and deactivated tallies.
                 x = CONST ; plotting plane is the yz-plane.
 
                 y is the ordinate, z is the abscissa
-          \item[PLCUT(2)] = .
-                TRUE.
+          \item[PLCUT(2)] = .TRUE.
 
                 y = CONST ; plotting plane is the xz plane.
 
                 z is the ordinate, x is the abscissa
-          \item[PLCUT(3)] = .
-                TRUE.
+          \item[PLCUT(3)] = .TRUE.
 
                 z = CONST ; plotting plane is the xy plane.
 
@@ -381,8 +378,7 @@ activated and deactivated tallies.
   \item[PLARR] plot arrows to indicate the outer
         surface normal vector (only in LEVGEO=3, partly in LEVGEO=2, for non-default
         standard surfaces (input block 3a).
-        Not functional (any more?
-        ) for additional surfaces.
+        Not functional (any more?) for additional surfaces.
   \item[PLIDL] print output files for further processing in external  tools
         (e.g.\ for FZJ proprietary IDL graphics tool).
         The grid information as well as all input and output tallies (excluding the
@@ -470,8 +466,7 @@ refers to the second (y or poloidal) standard mesh, the third card refers to
 the third (z or toroidal) standard mesh.
 Each group may consist of subgroups, and each subgroup is defined by an
 interval of standard surface labeling indices ISURF, from the full range of all
-(i.e NR1ST, NP2ND or NT3RD, resp.
-) standard surfaces.
+(i.e NR1ST, NP2ND or NT3RD, resp.) standard surfaces.
 
 \begin{description}
   \item[I1TRC] Number of first particle history to be traced in printout and/or

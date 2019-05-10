@@ -6,8 +6,7 @@
 
 The variables in this block control some of the more general options in EIRENE
 such as overall running time, usage of dump files but also a few parameters
-depending on the simulation model (drifts included or not, etc.)
-.
+depending on the simulation model (drifts included or not, etc.).
 
 \medskip
 
@@ -97,8 +96,7 @@ There can be any number of these cards starting with character string
                 coupling segment \lstinline|couple_Name.f| where 'Name' is a character string
                 identifying the particular external code, to which EIRENE is to be coupled
                 (e.g.: Name = B2, Name = DIVIMP, Name = U-file, Name = FIDAP, Name = EMC3, Name
-                = OSM, etc.)
-                .
+                = OSM, etc.).
 
                 Hence: the routine INFCOP is called by EIRENE for communication with external
                 data sources, e.g., external data structures for iterative mode by coupling to
@@ -335,9 +333,8 @@ internal code options only.
         printed.
         The contribution of these particles to the particle- and energy balances is
         stored in the bins ``PTRASH" and ``ETRASH" respectively.
-  \item[NLANA] De-activates (NLANA=.TRUE.
-        ) all non-analog sampling
-        distributions, such as biased source sampling, splitting, etc.
+  \item[NLANA] De-activates (NLANA=.TRUE.) all non-analog sampling distributions, such 
+        as biased source sampling, splitting, etc.
         Select NLANA=.TRUE., if particle trajectory plots are used to get an intuitive
         picture of what is going on physically.
   \item[NLDRFT] Drift component in the bulk ions velocity distribution is

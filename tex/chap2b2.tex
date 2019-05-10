@@ -12,8 +12,7 @@ surfaces, (\ac{BREP} representation of geometry, \cref{sec1.5}) which are
 described here, and/or by zones whose boundaries are defined more generally by
 ``additional surfaces" (see below block 3B).
 Alternative to this \ac{BREP} option there is also the option of unstructured
-meshes (Voxel representation, loc.\ cit.
-) of triangles ( in 2D) or tetrahedra
+meshes (Voxel representation, loc.\ cit.) of triangles ( in 2D) or tetrahedra
 (in 3D).
 
 In 2-dimensional applications the co-ordinate surfaces automatically collapse
@@ -271,8 +270,7 @@ This variable defines the so called ``geometry level" of a run, i.e.\ the
 internal EIRENE variable LEVGEO 
 
 \begin{description}
-  \item[NLSLB = .TRUE.
-        ] ~
+  \item[NLSLB = .TRUE.] ~
 
         Geometry level: LEVGEO = 1 
 
@@ -282,8 +280,7 @@ internal EIRENE variable LEVGEO
 
         Furthermore, the flux-surface labeling grid \lstinline|RHOSRF(I)| is identical
         with the grid \lstinline|RSURF(I)|.
-  \item[NLCRC = .TRUE.
-        ] ~
+  \item[NLCRC = .TRUE.] ~
 
         Geometry level: LEVGEO = 2 
 
@@ -293,14 +290,12 @@ internal EIRENE variable LEVGEO
         The third coordinate (either $z$ or toroidal angle $\phi$) is either ignorable
         or discretized according to options described below (block 2c).
 
-        The radial surfaces are given by $r^2 = x^2 + y^2 = \mathrm{const.
-          }
-        $ and radial coordinate $r$ is discretized by setting $r_I$=RSURF(I) I=1,NR1ST.
+        The radial surfaces are given by $r^2 = x^2 + y^2 = \mathrm{const.}$ and radial
+        coordinate $r$ is discretized by setting $r_I$=RSURF(I) I=1,NR1ST.
         Furthermore RHOSRF(I) = $\sqrt{\frac{AREA}{\pi}}$ where AREA is the area inside
         surface number $I$.
         Thus for this option one has again: RHOSRF(I) = RSURF(I), I=1,NR1ST.
-  \item[NLELL = .TRUE.
-        ] ~
+  \item[NLELL = .TRUE.] ~
 
         Geometry level: LEVGEO = 2 
 
@@ -317,14 +312,12 @@ internal EIRENE variable LEVGEO
         RHOSRF: as in NLCRC option.
 
         Note: RHOSRF and RSURF may differ in this case.
-  \item[NLTRI = .TRUE.
-        ] ~
+  \item[NLTRI = .TRUE.] ~
 
         Geometry level: LEVGEO = 2 
 
         to be written: triangularity in mesh of nested closed algebraic surfaces
-  \item[NLPLG = .TRUE.
-        ] ~
+  \item[NLPLG = .TRUE.] ~
 
         Geometry level: LEVGEO = 3 
 
@@ -341,8 +334,7 @@ internal EIRENE variable LEVGEO
 
         In this case RHOSRF(1)=0., and RHOSRF(I) is the area enclosed by polygon number
         1 and polygon number I.
-  \item[NLFEM = .TRUE.
-        ] ~
+  \item[NLFEM = .TRUE.] ~
 
         Geometry level: LEVGEO = 4 
 
@@ -350,15 +342,13 @@ internal EIRENE variable LEVGEO
         knots.
 
         In this case a flux surface labeling grid RHOSRF is not defined.
-  \item[NLTET = .TRUE.
-        ] ~
+  \item[NLTET = .TRUE.] ~
 
         Geometry level: LEVGEO = 5 
 
         3D discretization of volume by tetrahedrons.
         For this grid option please make contact to the authors.
-  \item[NLGEN = .TRUE.
-        ] ~
+  \item[NLGEN = .TRUE.] ~
 
         Geometry level: LEVGEO = 10 
 
@@ -437,8 +427,7 @@ if NLTRI = .TRUE.:
         triangular grids is currently no available.
 
 \end{description}
-if NLPLG = .
-TRUE.:
+if NLPLG = .TRUE.:
 \begin{description}
   \item[NR1ST] number of polygons for discretization in ``radial" or x direction
   \item[NRPLG] Number of points per polygon
@@ -521,14 +510,12 @@ if NLFEM = .TRUE.:
         In case IPROP $<$ 0, this vector points into the triangle.
         This is relevant at surface options with ILSIDE $\not=$ 0.
 \end{description}
-if NLTET = .
-TRUE.:
+if NLTET = .TRUE.:
 
 Documentation not available here.
 Make contact with the authors.
 
-if NLGEN = .
-TRUE.:
+if NLGEN = .TRUE.:
 \begin{description}
   \item[NR1ST] 
 
