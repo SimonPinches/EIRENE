@@ -54,6 +54,7 @@ In the final section of this introductory \cref{sec1.8} the
 non-linear \ac{BGK} formalism and the \ac{DMCS} method
 for self collisions between neutral particles, as implemented in
 the EIRENE code, is described.
+
 \newpage
 
 \section{The linear Boltzmann equation for the distribution function
@@ -2508,6 +2509,7 @@ mode.
 
 Please contact us for an update on this situation, if you wish to
 use that option.
+
 \newpage
 
 \section{non-linear effects: coupling to plasma fluid models} \label{sec1.7}
@@ -2898,7 +2900,7 @@ given ``plasma'' host medium) are retained.
 currently under development. Please contact us for details and
 status.
 
-See flowchart 9.1 (\cref{flow6}).
+See \cref{flow6}.
 
 Further details can be found in Ref.\ \cite{kn:Reiter96}.
 \bigskip
@@ -3469,13 +3471,14 @@ problem specific matrix: PROCFORSTRA(NSTRA,0:NPRES-1),
 to be filled in startup routine pedist.f
 
 \dots\ to be written \dots
+
 \newpage
 
 \section{EIRENE flow charts} \label{sec1.9}
 
 
 \begin{figure}[h]
-\includegraphics[width=14cm]{flowchart1.eps}
+\includegraphics[width=14cm]{flowchart1}
 \caption{Structure: EIRENE code.}
 \label{flow1}
 \end{figure}
@@ -3484,7 +3487,7 @@ to be filled in startup routine pedist.f
 
 \begin{figure}
 \includegraphics[height=\textwidth]{flowchart2}
-\caption{Flowchart: Program EIRENE.}
+\caption{Program EIRENE.}
 \label{flow2}
 \end{figure}
 
@@ -3492,14 +3495,15 @@ to be filled in startup routine pedist.f
 
 \begin{figure}
 \includegraphics[height=22cm]{flowchart3}
-\caption{Flowchart 2: Subroutine INPUT.}
+\caption{Subroutine INPUT.}
 \label{flow3}
 \end{figure}
 
 \newpage
+
 \begin{figure}
 \includegraphics[height=22cm]{flowchart4}
-\caption{Flowchart 6: Subroutine MCARLO.}
+\caption{Subroutine MCARLO.}
 \label{flow4}
 \end{figure}
 
@@ -3507,8 +3511,7 @@ to be filled in startup routine pedist.f
 
 \begin{figure}
 \includegraphics[height=16cm]{flowchart5_new}
-\caption{Flowchart 6.3: 
-Particle loop in subr.\ MCARLO.  Default volume averaged tallies are updated, ``on the fly" \emph{(per event)} in routines UPDATE,
+\caption{Particle loop in subr.\ MCARLO.  Default volume averaged tallies are updated, ``on the fly" \emph{(per event)} in routines UPDATE,
 problem specific tallies
 for code-code interfacing (COPV(\dots), e.g.\ B2-EIRENE) in UPDCOP, specific tallies for non-linear \ac{BGK} operators (BGKV(\dots)) in UPDBGK.
 Corresponding variances
@@ -3519,10 +3522,12 @@ This makes redundant the specific statistical variance evaluation in STATS1\_COP
 \label{flow5}
 
 \end{figure}
+
 \newpage
+
 
 \begin{figure}
 \includegraphics[height=22cm]{flowchart6}
-\caption{Flowchart 9.1: Iterative mode for neutral--neutral interactions.}
+\caption{Iterative mode for neutral--neutral interactions.}
 \label{flow6}
 \end{figure}
