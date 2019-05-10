@@ -397,7 +397,7 @@ modifyLineBreaks:
     oneSentencePerLine:
         manipulateSentences: 1     
         removeSentenceLineBreaks: 1
-        textWrapSentences: 0
+        textWrapSentences: 80
         sentenceIndent: ""
         sentencesFollow:
             par: 1
@@ -419,7 +419,7 @@ modifyLineBreaks:
             questionMark: 1
             other: '(?:\.\)(?!,?.?\h*\n*[a-z]))|(?:(?<!(?:(?:e\.g)|(?:i\.e)|(?:etc))))\.(?!(?:[a-z]|[A-Z]|\-|~|\\|\,|:|[0-9]))|(?:\\{2})|(?::\n)'
     textWrapOptions:
-        columns: 0
+        columns: 80
         separator: ""
         perCodeBlockBasis: 0
         all: 0

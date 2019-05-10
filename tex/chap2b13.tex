@@ -4,26 +4,49 @@
 
 \medskip 
 
-The data in this block are used to define a discretization in time, and the test-particle self interaction effects.
+The data in this block are used to define a discretization in time, and the
+test-particle self interaction effects.
 %
-These latter options are based upon the ``Bird's \ac{DMCS}" procedure, and are currently not in use (see \cite{kn:Behringer} for a detailed description of its implementation in EIRENE).
-They can be activated by replacing the current dummy routine STOSS, which is called after each time-step from subroutine EIRENE, by a routine that reads the particle population from the ``census arrays" described below, and which then carries out the binary self-collisions (modification of the individual particle velocity vectors).
-The rest of the code for time dependency and the \ac{DMCS} algorithm is the same and described in this section.
-Note that, currently, with the use of a dummy routine STOSS, non-linear self collision effects can still be simulated, in \ac{BGK} approximation, by using the iterative mode of operation (NITERI, NITERE, input block 1), see \cref{sec1.8}.
+These latter options are based upon the ``Bird's \ac{DMCS}" procedure, and are
+currently not in use (see \cite{kn:Behringer} for a detailed description of its
+implementation in EIRENE).
+They can be activated by replacing the current dummy routine STOSS, which is
+called after each time-step from subroutine EIRENE, by a routine that reads the
+particle population from the ``census arrays" described below, and which then
+carries out the binary self-collisions (modification of the individual particle
+velocity vectors).
+The rest of the code for time dependency and the \ac{DMCS} algorithm is the
+same and described in this section.
+Note that, currently, with the use of a dummy routine STOSS, non-linear self
+collision effects can still be simulated, in \ac{BGK} approximation, by using
+the iterative mode of operation (NITERI, NITERE, input block 1), see
+\cref{sec1.8}.
 
-As for the time-dependence options, it is important to note that there are two kinds of time-steps.
+As for the time-dependence options, it is important to note that there are two
+kinds of time-steps.
 One is the so called ``time-cycle".
-Each time cycle is a more or less complete EIRENE run in its own, even if several (NTIME, see \cref{sec2.1}) such time-cycles are carried out in one single job.
-In each time-cycle, a time-horizon is set and the trajectories are stopped (at latest) if they have survived until then.
-All relevant particle coordinates (position, velocity, type and species, cell indices, etc.) are stored at this time-horizon on the so called ``census-arrays".
+Each time cycle is a more or less complete EIRENE run in its own, even if
+several (NTIME, see \cref{sec2.1}) such time-cycles are carried out in one
+single job.
+In each time-cycle, a time-horizon is set and the trajectories are stopped (at
+latest) if they have survived until then.
+All relevant particle coordinates (position, velocity, type and species, cell
+indices, etc.) are stored at this time-horizon on the so called
+``census-arrays".
 
-Each time cycle may consist of one or more than one (NTMSTP, see below) ``internal time steps".
-At the end of each of these time-steps, the relevant snapshot tallies are updated (subroutine TIMCOL).
-These are the volumetric ``snapshot tallies", the default ``time-surface tallies" (particle and energy fluxes) and the ``census arrays".
+Each time cycle may consist of one or more than one (NTMSTP, see below)
+``internal time steps".
+At the end of each of these time-steps, the relevant snapshot tallies are
+updated (subroutine TIMCOL).
+These are the volumetric ``snapshot tallies", the default ``time-surface
+tallies" (particle and energy fluxes) and the ``census arrays".
 Hence: these tallies are averaged over NTMSTP (internal) time-steps.
 For more details on snapshot tallies see \cref{sec3.2.3}.
 
-This distinction between complete ``time cycles" and ``internal time steps" is particularly relevant for obtaining truly steady state results on the census arrays, e.g., in order to continue a stationary case in the time-dependent mode (see below).
+This distinction between complete ``time cycles" and ``internal time steps" is
+particularly relevant for obtaining truly steady state results on the census
+arrays, e.g., in order to continue a stationary case in the time-dependent mode
+(see below).
 
 \medskip
 
@@ -54,34 +77,61 @@ This distinction between complete ``time cycles" and ``internal time steps" is p
 \medskip 
 
 \begin{description}
-  \item[NPRNLI] Total number of test particles in time dependent arrays (``census arrays") (in old versions before 2001: NPRNLI must be $\le$ NPRNL, see: PARMUSR).
-        The scoring on census arrays stops at latest when NPRNLI scores are on the census array.
+  \item[NPRNLI] Total number of test particles in time
+        dependent arrays (``census arrays") (in old versions before 2001: NPRNLI must
+        be $\le$ NPRNL, see: PARMUSR).
+        The scoring on census arrays stops at latest when NPRNLI scores are on the
+        census array.
 
-        If NPRNLI $>0$, but the rest of the data in this block are not specified, then a default time-horizon is defined.
+        If NPRNLI $>0$, but the rest of the data in this block are not specified, then
+        a default time-horizon is defined.
         See default values specified below.
 
         If NPRNLI $=0$, no census arrays are scored 
 
-        In case NLERG = TRUE  (see input block 1), a time horizon is absolutely necessary in order to prevent infinite histories.
-        Therefore, in case NLERG=TRUE and NPRNLI=0 an automatic correction to NPRNLI=100 is carried out.
-  \item[NINITL\_READ]  (new: 2013) Same as NINITL in block 7: provides random number seed for ``time-stratum" (sampling from census array  (default: =0, no fresh initialization of random number generator for this stratum)
-  \item[NPRMUL] (new: 2013) Multiplicative factor for NPRNLI, in order to increase size of census to more than 999999 particles, which otherwise would be the maximum due to I6 formatted integer input.
+        In case NLERG = TRUE  (see input block 1), a time horizon is absolutely
+        necessary in order to prevent infinite histories.
+        Therefore, in case NLERG=TRUE and NPRNLI=0 an automatic correction to
+        NPRNLI=100 is carried out.
+  \item[NINITL\_READ]  (new: 2013) Same as NINITL in block 7: provides random
+        number seed for ``time-stratum" (sampling from census array  (default: =0, no
+        fresh initialization of random number generator for this stratum)
+  \item[NPRMUL]
+        (new: 2013) Multiplicative factor for NPRNLI, in order to increase size of
+        census to more than 999999 particles, which otherwise would be the maximum due
+        to I6 formatted integer input.
         Default: = 0: no multiplication carried out
-  \item[NPTST] Same as NPTS in block 7.
-        This is the number of histories, which are continued from a previous time-cycle (``Time dependence stratum ISTRA=NSTRAI+1").
-        The initial coordinates are randomly sampled (with replacement) from the census-array data from an earlier time-cycle.
-        The probability for sampling a particular particle from the census array is proportional to its weight stored on the census array as well.
-        Due to ``sampling with replacement" an individual particle, which is on census, may be sampled more than once, or not at all, with the likelihood for these events given by its weight (``warm restart").
-        This census array is either defined at the end of the previous time cycle in the same run (subr.\ TMSTEP), or it is read from an earlier run from stream 15 (via a call to subr.\ RSNAP from subr.\ INPUT) in the initial phase of the run, for the very first time-cycle (continuation of an earlier sequence of time-cycles).
+  \item[NPTST] Same as NPTS in block
+        7.
+        This is the number of histories, which are continued from a previous time-cycle
+        (``Time dependence stratum ISTRA=NSTRAI+1").
+        The initial coordinates are randomly sampled (with replacement) from the
+        census-array data from an earlier time-cycle.
+        The probability for sampling a particular particle from the census array is
+        proportional to its weight stored on the census array as well.
+        Due to ``sampling with replacement" an individual particle, which is on census,
+        may be sampled more than once, or not at all, with the likelihood for these
+        events given by its weight (``warm restart").
+        This census array is either defined at the end of the previous time cycle in
+        the same run (subr.\ TMSTEP), or it is read from an earlier run from stream 15
+        (via a call to subr.\ RSNAP from subr.\ INPUT) in the initial phase of the run,
+        for the very first time-cycle (continuation of an earlier sequence of
+        time-cycles).
 
         If NPTST $=$ 0, then NPTST is reset to IPRNL.
-        IPRNL is the the number of scores on the census array in the previous time cycle.
+        IPRNL is the the number of scores on the census array in the previous time
+        cycle.
 
-        If NPTST $<$ 0, then NPTST is reset to IPRNL, and the random sampling from the census array is now replaced by a one-to-one re-launch of all particles from the census array without random sampling (``cold restart").
-        Until Aug.\ 2015 this option was available only in connection with the NLMOVIE option (movies of trajectories) and had led to other modifications of the run parameters as well.
+        If NPTST $<$ 0, then NPTST is reset to IPRNL, and the random sampling from the
+        census array is now replaced by a one-to-one re-launch of all particles from
+        the census array without random sampling (``cold restart").
+        Until Aug.\ 2015 this option was available only in connection with the NLMOVIE
+        option (movies of trajectories) and had led to other modifications of the run
+        parameters as well.
         (Automatically then internally: NLMOVIE = TRUE).
         New: NLMOVIE AND NPTST $<$ 0 options are now independent from each other.
-        In both cases: one by one re-launch from old census is enforced, rather than random sampling from old census.
+        In both cases: one by one re-launch from old census is enforced, rather than
+        random sampling from old census.
 
         Default: NPTST=0
   \item[NTMSTP] Total number of time-steps for particle tracing.
@@ -90,21 +140,35 @@ This distinction between complete ``time cycles" and ``internal time steps" is p
 
         Default: NTMSTP=1 
 
-        For convenience and by abuse of language, we refer to the 3-dimensional hyper-surface $t=t_n$ of the four dimensional $(\vr,t)$-space as ``time-surface", and, hence, tallies evaluated at fixed time $t_n$ (``snapshot-tallies") are surface averaged tallies in this terminology.
+        For convenience and by abuse of language, we refer to the 3-dimensional
+        hyper-surface $t=t_n$ of the four dimensional $(\vr,t)$-space as
+        ``time-surface", and, hence, tallies evaluated at fixed time $t_n$
+        (``snapshot-tallies") are surface averaged tallies in this terminology.
 
-        Fluxes onto this surface are stored on the arrays for a surface no.\ NLIM+NSTSI+1, which is added automatically to the NLIM additional and NSTSI non-default standard surfaces.
+        Fluxes onto this surface are stored on the arrays for a surface no.\
+        NLIM+NSTSI+1, which is added automatically to the NLIM additional and NSTSI
+        non-default standard surfaces.
 
-        The time-surface is transparent for NTMSTP-1 steps and absorbing afterwards, i.e., absorbing at time t = NTMSTP $\times$ DTIMV.
+        The time-surface is transparent for NTMSTP-1 steps and absorbing afterwards,
+        i.e., absorbing at time t = NTMSTP $\times$ DTIMV.
         Snapshot tallies are averages over NTMSTP time-steps.
 
         Default: NTMSTP=1 
 
-        If NTMSTP $<$ 0, then each particle can score an unlimited number of times on census, i.e., the time-surface is always transparent.
-        This option can be used for initialization of census arrays for time dependent runs.
-        The census arrays then represent a stationary distribution corresponding to a certain constant (in time) influx of particles, rather than an estimate at a fixed time.
-        Hence, for any fixed detector function (volume averaged tally), the snapshot estimator should give the same results (up to statistical precision) as the track-length estimator or the collision estimator.
-        Note that in order to obtain this stationary estimate from snapshot estimates an additional multiplicative factor DTIMV (\si{\second}) (see next) is applied to snapshot tallies in case NTMSTP $<$ 0.
-  \item[DTIMV] Length of each individual internal time-step (\si{\second}) 
+        If NTMSTP $<$ 0, then each particle can score an unlimited number of times on
+        census, i.e., the time-surface is always transparent.
+        This option can be used for initialization of census arrays for time dependent
+        runs.
+        The census arrays then represent a stationary distribution corresponding to a
+        certain constant (in time) influx of particles, rather than an estimate at a
+        fixed time.
+        Hence, for any fixed detector function (volume averaged tally), the snapshot
+        estimator should give the same results (up to statistical precision) as the
+        track-length estimator or the collision estimator.
+        Note that in order to obtain this stationary estimate from snapshot estimates
+        an additional multiplicative factor DTIMV (\si{\second}) (see next) is applied
+        to snapshot tallies in case NTMSTP $<$ 0.
+  \item[DTIMV] Length of each individual internal time-step (\si{\second})
 
         Default: DTIMV=1.D-02 
 
@@ -114,25 +178,34 @@ This distinction between complete ``time cycles" and ``internal time steps" is p
         Default: TIME0=0.
 
   \item[NSNVI] Number of snapshot tallies computed from census arrays.
-        In old EIRENE versions without dynamic allocation of storage NSNVI must be less or equal NSNV (see PARMUSR), and the detector functions are user supplied in subroutine UPNUSR, see Sub-\cref{sec3.2.3}.
+        In old EIRENE versions without dynamic allocation of storage NSNVI must be less
+        or equal NSNV (see PARMUSR), and the detector functions are user supplied in
+        subroutine UPNUSR, see Sub-\cref{sec3.2.3}.
 
         Default: NSNVI=0 
 
 \end{description}
-The meaning of the next three cards is the same as for the corresponding cards in block 10A, 10B or 10D.
+The meaning of the next three cards is the same as for the
+corresponding cards in block 10A, 10B or 10D.
 
 \bigskip
 \textbf{Census Arrays}
 
-All particle co-ordinates at time $t_i$ for history number IHIST, i.e., position, cell indices, velocity etc.\ are stored on arrays RPART(IHIST, \dots) (Real) and IPART(IHIST, \dots) (Integer) in subroutine TIMCOL.
-This subroutine TIMCOL is called if ``a collision with the time surface $t=t_i$" has occurred.
+All particle co-ordinates at time $t_i$ for history number IHIST, i.e.,
+position, cell indices, velocity etc.\ are stored on arrays RPART(IHIST, \dots)
+(Real) and IPART(IHIST, \dots) (Integer) in subroutine TIMCOL.
+This subroutine TIMCOL is called if ``a collision with the time surface
+$t=t_i$" has occurred.
 
-The number of scores on the old census arrays (from a previous completed time-cycle in a current run or from an earlier run) is \textbf{IPRNL}.
+The number of scores on the old census arrays (from a previous completed
+time-cycle in a current run or from an earlier run) is \textbf{IPRNL}.
 
-The actual number of a score in subroutine TIMCOL is \textbf{IPRNLI}, and after the score IPRNLI is increased by one.
+The actual number of a score in subroutine TIMCOL is \textbf{IPRNLI}, and after
+the score IPRNLI is increased by one.
 IPRNLI is set to zero at the beginning of a run.
 
-The actual number of a score in subroutine TIMCOL for the present stratum ISTRA  is \textbf{IPRNLS}, and after the score IPRNLS is increased by one.
+The actual number of a score in subroutine TIMCOL for the present stratum ISTRA
+is \textbf{IPRNLS}, and after the score IPRNLS is increased by one.
 IPRNLS is reset to zero at the beginning of sampling for each stratum.
 
 Scaling of census array fluxes:   to be written

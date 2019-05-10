@@ -7,18 +7,34 @@
 Data in input block 14 control additional input for an EIRENE run.
 %
 
-In case NMODE $= 0$ (see input block 1), i.e., no call to interfacing subroutine INFCOP, only the additional input tallies ADIN (see \cref{tab1}), if any, are specified here.
+In case NMODE $= 0$ (see input block 1), i.e., no call to interfacing
+subroutine INFCOP, only the additional input tallies ADIN (see \cref{tab1}), if
+any, are specified here.
 
-Otherwise, if NMODE $\neq 0$ the data in this block are read from the code interfacing subroutine INFCOP (at entry IF0COP) rather than from subroutine INPUT.
-They may be used to modify or complete the model defined by the formatted input file so far.
-For example, by this option the entire geometry specification (blocks 2,3) can be modified or overwritten by a few geometry parameters without rewriting input blocks 2 and 3.
-This allows rapid geometry optimization (geometry parameter studies), which otherwise would require to generate a large set of different geometry input blocks.
-As this routine is problem specific, it must be written by the user and, therefore, input can be from any file and in any format chosen there.
+Otherwise, if NMODE $\neq 0$ the data in this block are read from the code
+interfacing subroutine INFCOP (at entry IF0COP) rather than from subroutine
+INPUT.
+They may be used to modify or complete the model defined by the formatted input
+file so far.
+For example, by this option the entire geometry specification (blocks 2,3) can
+be modified or overwritten by a few geometry parameters without rewriting input
+blocks 2 and 3.
+This allows rapid geometry optimization (geometry parameter studies), which
+otherwise would require to generate a large set of different geometry input
+blocks.
+As this routine is problem specific, it must be written by the user and,
+therefore, input can be from any file and in any format chosen there.
 
-Subroutine INFCOP is also used for interfacing with other codes, such as plasma transport codes.
-By use of the flags INDGRD (block 2), INDPRO (block 5) and INDSRC (block 7) data may be transferred from subroutine INFCOP into EIRENE geometry arrays, background medium arrays and source distribution arrays, respectively, in a preprogrammed format.
+Subroutine INFCOP is also used for interfacing with other codes, such as plasma
+transport codes.
+By use of the flags INDGRD (block 2), INDPRO (block 5) and INDSRC (block 7)
+data may be transferred from subroutine INFCOP into EIRENE geometry arrays,
+background medium arrays and source distribution arrays, respectively, in a
+preprogrammed format.
 This is described in \cref{sec4} in general terms.
-Here we give examples for one frequently used option, namely the coupling of EIRENE to the 2 dimensional plasma transport code B2 \cite{kn:Braams} (the ``B2-EIRENE" code system, \cite{kn:Reiter91b},\cite{kn:Reiter92b}).
+Here we give examples for one frequently used option, namely the coupling of
+EIRENE to the 2 dimensional plasma transport code B2 \cite{kn:Braams} (the
+``B2-EIRENE" code system, \cite{kn:Reiter91b},\cite{kn:Reiter92b}).
 A corresponding version of INFCOP is available from FZ J\"ulich.
 
 \textbf{The Input Block (in ``stand alone" case NMODE = 0)} 
@@ -36,158 +52,268 @@ A corresponding version of INFCOP is available from FZ J\"ulich.
       ELSEIF (NMODE.NE. 0) ... see paragraphs below
 \end{lstlisting} 
 
-\textbf{Meaning of the Input Variables of block 14 in stand alone mode} 
+\textbf{Meaning of the Input Variables of block 14 in stand alone mode}
 
 \medskip 
 
 \begin{description}
-  \item[NAINI] Number of additional input tallies (module COMUSR, printout: OUTPLA).
+  \item[NAINI] Number of additional input tallies (module
+        COMUSR, printout:
+        OUTPLA).
         Storage is provided for NAINI additional input tallies.
-        These tallies may be filled e.g.\ in the initialization phase of a run, e.g.\ calls to PLAUSR, PROUSR, etc.
-  \item[NAINS] species index of additional input tally (case specific, some special preprogrammed cases: see below)
-  \item[NAINT] number index of additional input tally (case specific, some special preprogrammed cases: see below)
-  \item[TXTPLS(IAIN,11),TXTPSP(IAIN,11) TXTPUN(IAIN,11)] text (name of tally), species and units used for printout and plotting of this tally
+        These tallies may be filled e.g.\ in the initialization phase of a run, e.g.\
+        calls to PLAUSR, PROUSR, etc.
+  \item[NAINS] species index of additional input
+        tally (case specific, some special preprogrammed cases: see below)
+  \item[NAINT]
+        number index of additional input tally (case specific, some special
+        preprogrammed cases: see below)
+  \item[TXTPLS(IAIN,11),TXTPSP(IAIN,11)
+        TXTPUN(IAIN,11)] text (name of tally), species and units used for printout and
+        plotting of this tally
 \end{description}
-Currently the following options have been preprogrammed:
+Currently the following options have
+been preprogrammed:
 
 20 $\le$ NAINT $\le$ 29 :
 
-normalized EIRENE atomic/molecular data profiles (rate coefficients in atomic units), as evaluated on computational grid,
+normalized EIRENE atomic/molecular data profiles (rate coefficients in atomic
+units), as evaluated on computational grid,
 using input atomic and molecular data.
-These can be selected also in the NMODE=0 (subroutine INFCOP not called) option.
-These options allow verification of selected atomic/molecular data on the computational grid after evaluating the fits or data tables, using the plasma background data of a particular run.
-This option is in particular relevant for checking for extrapolation errors in A$\&$M data fits or tables)
+These can be selected also in the NMODE=0 (subroutine INFCOP not called)
+option.
+These options allow verification of selected atomic/molecular data on the
+computational grid after evaluating the fits or data tables, using the plasma
+background data of a particular run.
+This option is in particular relevant for checking for extrapolation errors in
+A$\&$M data fits or tables)
 \begin{description}
-  \item[NAINT] ~ 
+  \item[NAINT] ~
 
         \begin{description}
-          \item[$= 20$] electron impact collision rate coefficient $\langle\sigma v\rangle_{ei}$ [a.u.], with the rate coefficient profile taken from TABEI3(IREI, \dots) arrays.
+          \item[$= 20$] electron impact collision rate coefficient
+                $\langle\sigma v\rangle_{ei}$ [a.u.
+                  ], with the rate coefficient profile taken
+                from TABEI3(IREI, \dots) arrays.
                 $IREI: 1 \le NREI$ : number of electron impact process.
-                See TRCAMD output from the initialization phase of a run to identify, which particular electron impact process IREI is assigned to which species IATM, IMOL, etc.
-          \item[$= 21$] electron cooling rate coefficient, EELEI3 array  (not ready) [\si{\electronvolt} $\cdot$ (rate-coeff in a.u.)]
+                See TRCAMD output from the initialization phase of a run to identify, which
+                particular electron impact process IREI is assigned to which species IATM,
+                IMOL, etc.
+          \item[$= 21$] electron cooling rate coefficient, EELEI3 array  (not
+                ready) [\si{\electronvolt} $\cdot$ (rate-coeff in a.u.)
+                  ]
           \item[$= 22$]
                 charge-exchange rate coefficient, TABCX3 arrays
           \item[$= 23$]
-                charge-exchange ion energy weighted rate coefficient, EPLCX3 arrays (not ready)
+                charge-exchange ion energy weighted rate coefficient, EPLCX3
+                arrays (not ready)
                 [\si{\electronvolt}
-                    $\cdot$ (rate-coeff in a.u.)]
+                    $\cdot$ (rate-coeff in a.u.)
+                  ]
           \item[$= 24$]
                 elastic collision rate coefficient, TABEL3 arrays
           \item[$= 25$]
-                elastic collision ion energy weighted rate coefficient, EPLEL3 arrays (not ready)
+                elastic collision ion energy weighted rate coefficient, EPLEL3
+                arrays (not ready)
                 [\si{\electronvolt}
-                    $\cdot$ (rate-coeff in a.u.)]
+                    $\cdot$ (rate-coeff in a.u.)
+                  ]
           \item[$= 26$]
                 general ion impact collision rate coefficient, TABPI3 arrays
           \item[$= 27$]
-                general ion impact collision ion energy weighted rate coefficient, EPLPI3 arrays (not ready)
+                general ion impact collision ion energy weighted rate
+                coefficient, EPLPI3 arrays (not ready)
                 [\si{\electronvolt}
-                    $\cdot$ (rate-coeff in a.u.)]
+                    $\cdot$ (rate-coeff in a.u.)
+                  ]
           \item[$= 28$]
-                recombination rate coefficient $\langle<\sigma v\rangle_{rc}  \ [a.u.]$, with the rate coefficient profile taken from TABRC1(IREC, \dots) arrays.
+                recombination rate coefficient $\langle<\sigma v\rangle_{rc}  \
+                  [a.u.]$, with the rate coefficient profile taken from TABRC1(IREC, \dots)
+                arrays.
                 $IREC: 1 \le NREC$ : number of recombination process.
-                See TRCAMD output to identify, which recombination process is assigned to which species IPLS.
-          \item[$= 29$] electron energy loss weighted recombination rate coefficient [\si{\electronvolt} $\cdot$ (rate-coeff in a.u.)]
+                See TRCAMD output to identify, which recombination process is assigned to which
+                species IPLS.
+          \item[$= 29$] electron energy loss weighted recombination rate coefficient
+                  [\si{\electronvolt} $\cdot$ (rate-coeff in a.u.)
+                  ]
         \end{description}
 \end{description}
 
 \subsection{Version B2-EIRENE-1999 and older} \label{sec2.14.1}
 
-B2 solves a set of continuum equations for electrons and ions, and EIRENE solves a set of kinetic transport equations for other species, not in the continuum description (e.g.\ neutrals, radiation, trace ions, \dots) In this hybrid fluid-kinetic formulation the EIRENE code provides volumetric particle, parallel momentum and electron and ion energy sources $S_n, S_{m\parallel}, S_{Ei}, S_{Ee}$, respectively, from those ``kinetic species", for the B2 continuum equations for the orthogonal set of ``species in fluid description".
-Formally, these volumetric source rates arise in the particle, parallel momentum and energy balances.
-For the B2 code these balances are discretized in conservative form (finite volume (FV) schemes) and solved (in the laboratory frame of reference):
+B2 solves a set of continuum equations for electrons and ions, and EIRENE
+solves a set of kinetic transport equations for other species, not in the
+continuum description (e.g.\ neutrals, radiation, trace ions, \dots) In this
+hybrid fluid-kinetic formulation the EIRENE code provides volumetric particle,
+parallel momentum and electron and ion energy sources $S_n, S_{m\parallel},
+  S_{Ei}, S_{Ee}$, respectively, from those ``kinetic species", for the B2
+continuum equations for the orthogonal set of ``species in fluid description".
+Formally, these volumetric source rates arise in the particle, parallel
+momentum and energy balances.
+For the B2 code these balances are discretized in conservative form (finite
+volume (FV) schemes) and solved (in the laboratory frame of reference):
 \begin{align}
-  \frac{D(n_{ipls})}{Dt}                                     & = S_n(ipls) +  o.c. \quad   ipls = 1, \dots, NFLA \\
+  \frac{D(n_{ipls})}{Dt}                                     & = S_n(ipls) +
+  o.c. \quad   ipls = 1, \dots, NFLA                                            \\
   \frac{D ( m_{ipls} \ n_{ipls} \ V_{\parallel,{ipls}})}{Dt} & = S_{m\parallel}
   (ipls) + o.c.
-  \quad   ipls = 1, \dots, NFLA                                                                                  \\
+  \quad   ipls = 1, \dots, NFLA
+  \\
   \frac{D (\frac32 \ n \ T_i+\sum_{ipls}\frac{m_{ipls}}{2}
-  V^2_{\parallel,ipls})}{Dt}                                 & = S_{Ei} + o.c.                                   \\
+  V^2_{\parallel,ipls})}{Dt}                                 & = S_{Ei} + o.c.
+  \\
   \frac{D (\frac32 \ n \ T_e)}{Dt}                           & = S_{Ee} + o.c.
 \end{align}
-$D/Dt$ denotes the derivative (total, or convective derivative, or partial derivative), and $o.c.
-$ stands for other contributions such as e.g.\ friction forces, pressure gradient forces, collisional heating, etc. 
+$D/Dt$ denotes the derivative (total, or convective derivative, or partial
+derivative), and $o.c.
+$ stands for other contributions such as e.g.\ friction forces, pressure
+gradient forces, collisional heating, etc. 
 
-All source rates $S$ are resolved per stratum $is$ and per cell of the computational grid $icell$.
-The particle and parallel momentum sources are also resolved with respect to receiving plasma fluid ion species $ipls$.
+All source rates $S$ are resolved per stratum $is$ and per cell of the
+computational grid $icell$.
+The particle and parallel momentum sources are also resolved with respect to
+receiving plasma fluid ion species $ipls$.
 The source rates are given as linear functions of default EIRENE tallies.
-Statistical error estimates (the standard deviations) of all sources transferred to B2 are evaluated in case specific routine STATS1\_COP.
-All printout of these sources and their statistical errors is case specific and done in interfacing module EIRCOP.
+Statistical error estimates (the standard deviations) of all sources
+transferred to B2 are evaluated in case specific routine STATS1\_COP.
+All printout of these sources and their statistical errors is case specific and
+done in interfacing module EIRCOP.
 
-\textbf{Particle source: [particles/time/volume], \si{\ampere\per\cubic\centi\metre}}
+\textbf{Particle source: [particles/time/volume],
+\si{\ampere\per\cubic\centi\metre}}
 \begin{equation}
-  S_n(ipls,icell) = \sum_{is} \left[PAPL_{is}(ipls,icell) + PMPL_{is}(ipls,icell) + PIPL_{is}(ipls,icell) \right]
+  S_n(ipls,icell) =
+  \sum_{is} \left[PAPL_{is}(ipls,icell) + PMPL_{is}(ipls,icell) +
+    PIPL_{is}(ipls,icell) \right]
 \end{equation}
 
 The sum is over all strata (see  ``stratified sampling" in \cref{sec1}).
-\lstinline|PAPL|, \lstinline|PMPL|,  \lstinline|PIPL| are default EIRENE tallies (\cref{tab2old} in \cref{sec.tables-old}):
+\lstinline|PAPL|, \lstinline|PMPL|,  \lstinline|PIPL| are
+default EIRENE tallies (\cref{tab2old} in \cref{sec.tables-old}):
 \begin{itemize}
-  \item \lstinline|PAPL| is the particle source for background plasma species $ipls$ resulting from ``at\-om"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no.\ 11.
-  \item \lstinline|PMPL| is the particle source for background plasma species $ipls$ resulting from ``mol\-e\-cule"-plasma interactions (summed over all EIRENE species of type ``molecule"), tally no.\ 16.
-  \item \lstinline|PIPL| is the particle source for background plasma species $ipls$ resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no.\ 21.
+  \item \lstinline|PAPL| is the particle source for background plasma
+        species $ipls$ resulting from ``at\-om"-plasma interactions (summed over all
+        EIRENE species of type ``atom"), tally no.\ 11.
+  \item \lstinline|PMPL| is the particle source for background plasma
+        species $ipls$ resulting from ``mol\-e\-cule"-plasma interactions (summed over
+        all EIRENE species of type ``molecule"), tally no.\ 16.
+  \item \lstinline|PIPL| is the particle source for background plasma
+        species $ipls$ resulting from ``test ion"-plasma interactions (summed over all
+        EIRENE species of type ``test ion"), tally no.\ 21.
 \end{itemize}
-\textbf{Momentum source: [mass velocity/time/volume], \si{\gram\centi\metre\per\second\ampere\per\cubic\centi\metre}}
+\textbf{Momentum source: [mass velocity/time/volume],
+\si{\gram\centi\metre\per\second\ampere\per\cubic\centi\metre}}
 \begin{equation}
-  \label{Sm} S_{m\parallel}(ipls,icell) = \sum_{is,icop} \left[COPV_{is}(icop,icell) \right]
+  \label{Sm} S_{m\parallel}(ipls,icell) = \sum_{is,icop}
+  \left[COPV_{is}(icop,icell) \right]
 \end{equation}
 
 The sum is over all strata (see  ``stratified sampling" in \cref{sec1}).
-$COPV$ is the problem specific tally for code interfacing, tally no.\ 40, and it is scored in the routine UPDCOP (different versions exist for different plasma fluid codes), \cref{tab2old} in \cref{sec.tables-old}):
+$COPV$ is the problem specific tally for code interfacing, tally no.\ 40, and
+it is scored in the routine UPDCOP (different versions exist for different
+plasma fluid codes), \cref{tab2old} in \cref{sec.tables-old}):
 
-The sign of these sources in EIRENE is such that a gain in momentum for plasma species $ipls$ is taken positive.
-In the interfacing routine IF3COP of module EIRCOP the sign convention is altered to that of the plasma fluid code, i.e.\ it then involves the flow direction relative to the magnetic field vector.
-Note that in more recent versions of EIRENE, the momentum sources parallel to a magnetic field have become default tallies, see below in \cref{sec2.14.2}.
+The sign of these sources in EIRENE is such that a gain in momentum for plasma
+species $ipls$ is taken positive.
+In the interfacing routine IF3COP of module EIRCOP the sign convention is
+altered to that of the plasma fluid code, i.e.\ it then involves the flow
+direction relative to the magnetic field vector.
+Note that in more recent versions of EIRENE, the momentum sources parallel to a
+magnetic field have become default tallies, see below in \cref{sec2.14.2}.
 
-\textbf{Ion energy source: [Energy/time/Volume], \si{\watt\per\cubic\centi\metre}} (for total ion energy balance, in laboratory frame)
+\textbf{Ion energy source: [Energy/time/Volume],
+\si{\watt\per\cubic\centi\metre}} (for total ion energy balance, in laboratory
+frame)
 \begin{equation}
-  S_{Ei}(icell) = \sum_{is} \left[EAPL_{is}(icell) + EMPL_{is}(icell) + EIPL_{is}(icell) \right]
+  S_{Ei}(icell) = \sum_{is} \left[EAPL_{is}(icell) +
+    EMPL_{is}(icell) + EIPL_{is}(icell) \right]
 \end{equation}
 
 The sum is over all strata (see  ``stratified sampling" in \cref{sec1}).
-\lstinline|EAPL|, \lstinline|EMPL|, \lstinline|EIPL| are default EIRENE tallies (\cref{tab2old} in \cref{sec.tables-old}):
+\lstinline|EAPL|, \lstinline|EMPL|, \lstinline|EIPL| are
+default EIRENE tallies (\cref{tab2old} in \cref{sec.tables-old}):
 \begin{itemize}
-  \item \lstinline|EAPL| is the ion energy source  resulting from ``atom"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no.\ 26.
-  \item \lstinline|EMPL| is the ion energy source  resulting from ``molecule"-plasma interactions (summed over all EIRENE species of type ``molecule"), tally no.\ 31.
-  \item \lstinline|EIPL| is the ion energy source  resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no.\ 36.
+  \item \lstinline|EAPL| is the ion energy source	resulting from
+        ``atom"-plasma interactions (summed over all EIRENE species of type ``atom"),
+        tally no.\ 26.
+  \item \lstinline|EMPL| is the ion energy source	resulting from
+        ``molecule"-plasma interactions (summed over all EIRENE species of type
+        ``molecule"), tally no.\ 31.
+  \item \lstinline|EIPL| is the ion energy source	resulting from ``test
+        ion"-plasma interactions (summed over all EIRENE species of type ``test ion"),
+        tally no.\ 36.
 \end{itemize}
 
-\textbf{Electron energy source: [Energy/time/volume], \si{\watt\per\cubic\centi\metre}}
+\textbf{Electron energy source: [Energy/time/volume],
+\si{\watt\per\cubic\centi\metre}}
 \begin{equation}
-  S_{Ee}(icell) = \sum_{is} \left[EAEL_{is}(icell) + EMEL_{is}(icell) + EIEL_{is}(icell) \right]
+  S_{Ee}(icell) = \sum_{is}
+  \left[EAEL_{is}(icell) + EMEL_{is}(icell) + EIEL_{is}(icell) \right]
 \end{equation}
 
 The sum is over all strata (see  ``stratified sampling" in \cref{sec1}).
-\lstinline|EAEL|, \lstinline|EMEL|,  \lstinline|EIEL| are default EIRENE tallies (\cref{tab2old} in \cref{sec.tables-old}):
+\lstinline|EAEL|, \lstinline|EMEL|,  \lstinline|EIEL| are
+default EIRENE tallies (\cref{tab2old} in \cref{sec.tables-old}):
 \begin{itemize}
-  \item  \lstinline|EAEL| is the electron energy source  resulting from ``atom"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no.\ 22.
-  \item  \lstinline|EMEL| is the electron energy source  resulting from ``molecule"-plasma interactions (summed over all EIRENE species of type ``molecule"), tally no.\ 27.
-  \item  \lstinline|EIEL| is the electron energy source  resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no.\ 32.
+  \item  \lstinline|EAEL| is the electron energy source	resulting from
+        ``atom"-plasma interactions (summed over all EIRENE species of type ``atom"),
+        tally no.\ 22.
+  \item  \lstinline|EMEL| is the electron energy source	resulting from
+        ``molecule"-plasma interactions (summed over all EIRENE species of type
+        ``molecule"), tally no.\ 27.
+  \item  \lstinline|EIEL| is the electron energy source	resulting from
+        ``test ion"-plasma interactions (summed over all EIRENE species of type ``test
+        ion"), tally no.\ 32.
 \end{itemize}
 
-The data transferred from B2 into EIRENE are either from Common BRAEIR, (a module common to both B2 and EIRENE) or from the stream FORT.31.
-Due to the ``staggered grid" discretization in the B2 code, there as cell centred as well as surface centred quantities.
-In the 2D r-z plane (poloidal cross section of a torus) there are so called ``x-surfaces", running from west to east, which are perpendicular to the poloidal magnetic field (or flux surfaces), and ``y-surfaces", running from south to north,  which are aligned with the poloidal magnetic field direction.
+The data transferred from B2 into EIRENE are either from Common BRAEIR, (a
+module common to both B2 and EIRENE) or from the stream FORT.31.
+Due to the ``staggered grid" discretization in the B2 code, there as cell
+centred as well as surface centred quantities.
+In the 2D r-z plane (poloidal cross section of a torus) there are so called
+``x-surfaces", running from west to east, which are perpendicular to the
+poloidal magnetic field (or flux surfaces), and ``y-surfaces", running from
+south to north,  which are aligned with the poloidal magnetic field direction.
 They are read in the following sequence,
 \begin{description}
-  \item[$= 1$] DI :plasma ion density [\si{\per\cubic\metre}], cell centered
-  \item[$= 2$] UU :poloidal velocity [\si{\metre\per\second}], x-surface centered
-  \item[$= 3$] VV :radial velocity [\si{\metre\per\second}], y-surface centered
-  \item[$= 4$] TE :electron temperature [\si{\joule}], cell centered
-  \item[$= 5$] TI :ion temperature [\si{\joule}], cell centered
-  \item[$= 6$] PR :plasma pressure [\si{\newton\per\square\metre}], cell centered
-  \item[$= 7$] UP :parallel velocity [\si{\metre\per\second}], x-surface centered
-  \item[$= 8$] RR :pitch angle [\num{1}], cell centered
-  \item[$= 9$] FNIX: Particle fluxes along the field [\si{\per\second}], x-surface centered
-  \item[$= 10$] FNIY Particle fluxes across the field [\si{\per\second}], y-surface centered
-  \item[$= 11$] FEIX Ion energy fluxes along the field [\si{\watt}], x-surface centered
-  \item[$= 12$] FEIY Ion energy fluxes across the field [\si{\watt}], y-surface centered
-  \item[$= 13$] FEEX Electron energy fluxes along the field [\si{\watt}], x-surface centered
-  \item[$= 14$] FEEY Electron energy fluxes across the field [\si{\watt}], y-surface centered
-  \item[$= 15$] VOL: cell volume [\si{\cubic\metre}], cell centered
-  \item[$= 16$] BFELD: magnitude of magnetic field [\si{\tesla}], cell centered
+  \item[$= 1$] DI
+        :plasma ion density [\si{\per\cubic\metre}], cell centered
+  \item[$= 2$] UU
+        :poloidal velocity [\si{\metre\per\second}], x-surface centered
+  \item[$= 3$] VV
+        :radial velocity [\si{\metre\per\second}], y-surface centered
+  \item[$= 4$] TE
+        :electron temperature [\si{\joule}], cell centered
+  \item[$= 5$] TI :ion
+        temperature [\si{\joule}], cell centered
+  \item[$= 6$] PR :plasma pressure
+          [\si{\newton\per\square\metre}], cell centered
+  \item[$= 7$] UP :parallel
+        velocity [\si{\metre\per\second}], x-surface centered
+  \item[$= 8$] RR :pitch
+        angle [\num{1}], cell centered
+  \item[$= 9$] FNIX: Particle fluxes along the
+        field [\si{\per\second}], x-surface centered
+  \item[$= 10$] FNIY Particle fluxes
+        across the field [\si{\per\second}], y-surface centered
+  \item[$= 11$] FEIX Ion
+        energy fluxes along the field [\si{\watt}], x-surface centered
+  \item[$= 12$]
+        FEIY Ion energy fluxes across the field [\si{\watt}], y-surface centered
+  \item[$= 13$] FEEX Electron energy fluxes along the field [\si{\watt}],
+        x-surface centered
+  \item[$= 14$] FEEY Electron energy fluxes across the field
+          [\si{\watt}], y-surface centered
+  \item[$= 15$] VOL: cell volume
+          [\si{\cubic\metre}], cell centered
+  \item[$= 16$] BFELD: magnitude of magnetic
+        field [\si{\tesla}], cell centered
 \end{description}
 
-Thereafter index mapping (accounting for grid cuts), and units conversion are carried out,  to turn these fields into EIRENE bulk ion tallies (\cref{tab1old}) as well as to derive recycling target fluxes and boundary conditions from them.
+Thereafter index mapping (accounting for grid cuts), and units conversion are
+carried out,  to turn these fields into EIRENE bulk ion tallies
+(\cref{tab1old}) as well as to derive recycling target fluxes and boundary
+conditions from them.
 
 \textbf{The Input Block} 
 
@@ -226,7 +352,7 @@ Thereafter index mapping (accounting for grid cuts), and units conversion are ca
        50 CONTINUE
 \end{lstlisting} 
 
-\textbf{Meaning of the Input Variables for interfacing Subroutine ``INFCOP"} 
+\textbf{Meaning of the Input Variables for interfacing Subroutine ``INFCOP"}
 
 \medskip 
 
@@ -235,7 +361,8 @@ Thereafter index mapping (accounting for grid cuts), and units conversion are ca
         \begin{description}
           \item[=.TRUE.
                 ]
-                Upside-down symmetry of all tallies transferred to external code
+                Upside-down symmetry of all tallies transferred to external
+                code
                 via common block EIRBRA) is enforced.
 
                 Symmetry plane is the PSURF/2.
@@ -245,7 +372,9 @@ Thereafter index mapping (accounting for grid cuts), and units conversion are ca
                 interval in this co-ordinate.
 
                 This option has historical reasons.
-                The very first B2-EIRENE runs ever have been performed for ``upside-down symmetric" ITER double null configurations (Reiter et al., 1991, \cite{kn:Reiter91b}).
+                The very first B2-EIRENE runs ever have been performed for ``upside-down
+                symmetric" ITER double null configurations (Reiter et al., 1991,
+                \cite{kn:Reiter91b}).
                 In more recent versions this option may not be available anymore.
 
           \item[=.FALSE.
@@ -256,194 +385,324 @@ Thereafter index mapping (accounting for grid cuts), and units conversion are ca
         \begin{description}
           \item[=.TRUE.
                 ]
-                Global particle and energy flux balance is performed and printed at
-                the end of an EIRENE stand alone run (steady state or single time-step)
+                Global particle and energy flux balance is performed and
+                printed at
+                the end of an EIRENE stand alone run (steady state or single
+                time-step)
                 and at the end of a short cycle between
                 a plasma transport code and EIRENE.
-                These balances compare plasma particle and energy fluxes at the boundaries, volume sources in plasma balance equations and neutral-plasma interaction sources and sinks.
+                These balances compare plasma particle and energy fluxes at the boundaries,
+                volume sources in plasma balance equations and neutral-plasma interaction
+                sources and sinks.
           \item[=.FALSE.
                 ]
                 no such balances are computed
         \end{description}
 
   \item[NFLA] Number of different (bulk) ion species in plasma code.
-  \item[NCUTB] Number of mesh cells in each grid cut in plasma code (specific to grid generator used in connection with B2 fluid code).
-  \item[NCUTL] Number of mesh cells in each grid cut in EIRENE 
+  \item[NCUTB] Number of mesh cells in each grid cut in plasma code (specific to
+        grid generator used in connection with B2 fluid code).
+  \item[NCUTL] Number of mesh cells in each grid cut in EIRENE
 
-        \underline{Note:} if NCUT $\ne$ NCUTL, the index mapping routines INDMAP and INDMPI are called at each call to the interfacing routines.
+        \underline{Note:} if NCUT $\ne$ NCUTL, the index mapping routines INDMAP and
+        INDMPI are called at each call to the interfacing routines.
 
-  \item[MSHFRM, NTRFRM, NFULL] new flags, available only since 2013, see \cref{sec2.14.3}
-  \item[IBRAD, IBPOL, IBTOR] new flags for magnetic field orientation, available only since March 2015, see \cref{sec2.14.3}
-  \item[I] irrelevant, labelling index for EIRENE bulk ion species IPLS, runs from 1 to NPLS
+  \item[MSHFRM, NTRFRM, NFULL] new flags, available only since 2013, see
+        \cref{sec2.14.3}
+  \item[IBRAD, IBPOL, IBTOR] new flags for magnetic field
+        orientation, available only since March 2015, see \cref{sec2.14.3}
+  \item[I]
+        irrelevant, labelling index for EIRENE bulk ion species IPLS, runs from 1 to
+        NPLS
   \item[IFLB]
         \begin{description}
-          \item[$> 0$] labelling index of bulk ion species in plasma code.
+          \item[$> 0$] labelling index of bulk ion
+                species in plasma code.
                 EIRENE bulk ion species IPLS corresponds to plasma code species IFLB(IPLS).
                 Hence:
                 IFLB $\le$ NFLA, otherwise: error exit.
 
-                The drift velocity vector for all EIRENE species IPLS is set identical to the drift velocity of the plasma code species IFLB(IPLS).
+                The drift velocity vector for all EIRENE species IPLS is set identical to the
+                drift velocity of the plasma code species IFLB(IPLS).
 
-                Only one common ion temperature is available from B2, B2.5 code runs, even for multi-species applications.
-                The bulk ion temperature TIIN(IPLS, \dots) for all EIRENE species IPLS, which are read from the plasma code data files, i.e., for all species with IFLB(IPLS) $>$ 0
-          \item[$< 0$] The plasma density, flow field and temperature field for EIRENE species IPLS is read from the input stream fort.II, with II=-IFLB.
+                Only one common ion temperature is available from B2, B2.5 code runs, even for
+                multi-species applications.
+                The bulk ion temperature TIIN(IPLS, \dots) for all EIRENE species IPLS, which
+                are read from the plasma code data files, i.e., for all species with IFLB(IPLS)
+                $>$ 0
+          \item[$< 0$] The plasma density, flow field and temperature field for
+                EIRENE species IPLS is read from the input stream fort.II, with II=-IFLB.
                 (Currently only II=13).
-                This file fort.13 must be available, e.g., from a previous EIRENE run, in which NFILEL = 1 or NFILEL = 3 options have been used to produce that file.
+                This file fort.13 must be available, e.g., from a previous EIRENE run, in which
+                NFILEL = 1 or NFILEL = 3 options have been used to produce that file.
                 (see input block 1).
-                This option permits iteration on some species, which are not treated in the plasma code, e.g.: for neutral--neutral interactions.
-          \item[$= 0$] The corresponding bulk ion species IPLS in EIRENE has zero density, i.e.\ bulk ions of this species are not present in this EIRENE run.
+                This option permits iteration on some species, which are not treated in the
+                plasma code, e.g.: for neutral--neutral interactions.
+          \item[$= 0$] The corresponding bulk ion species IPLS in EIRENE has zero
+                density, i.e.\ bulk ions of this species are not present in this EIRENE run.
                 Note the issue re.
                 electron density and quasi-neutrality mentioned
                 above.
         \end{description}
   \item[FCTE] bulk ion density (and flux) multiplication factor.
-        The EIRENE bulk ion density (and fluxes) for species IPLS are obtained by multiplying the corresponding plasma code profiles for species IFLB(IPLS) with the factor FCTE.
-        This option is needed, e.g., if the plasma code treats one ion species of mass \SI{2.5}{\atomicmassunit}, while EIRENE treats D ions and T ions separately.
+        The EIRENE bulk ion density (and fluxes) for species IPLS are obtained by
+        multiplying the corresponding plasma code profiles for species IFLB(IPLS) with
+        the factor FCTE.
+        This option is needed, e.g., if the plasma code treats one ion species of mass
+        \SI{2.5}{\atomicmassunit}, while EIRENE treats D ions and T ions separately.
 
-        Note: in an iterative mode all plasma species in the plasma code should also be in EIRENE.
-        There may be more in EIRENE, with charge state zero (see introduction to \cref{sec2.4}), but not less, because otherwise the electron density computed in EIRENE from quasi-neutrality (and used, e.g., for ionization mean free paths), may be inconsistent with the electron density in the plasma code.
-  \item[BMASS] Mass of plasma code species IFLB(IPLS) is BMASS(IPLS) in \si{\atomicmassunit}.
+        Note: in an iterative mode all plasma species in the plasma code should also be
+        in EIRENE.
+        There may be more in EIRENE, with charge state zero (see introduction to
+        \cref{sec2.4}), but not less, because otherwise the electron density computed
+        in EIRENE from quasi-neutrality (and used, e.g., for ionization mean free
+        paths), may be inconsistent with the electron density in the plasma code.
+  \item[BMASS] Mass of plasma code species IFLB(IPLS) is BMASS(IPLS) in
+        \si{\atomicmassunit}.
   \item[NDXA,NDYA] ~ 
 
         grid size in 2D plasma code.
-        NDXA is the size of the grid tangential to the flux surfaces, and NDYA is the size of the grid normal to the flux surfaces.
+        NDXA is the size of the grid tangential to the flux surfaces, and NDYA is the
+        size of the grid normal to the flux surfaces.
 
-        These grid sizes have to be equal to the grid sizes (\ordinalnum{1} and \ordinalnum{2} grid RSURF and PSURF) of the mesh, on which plasma code data are specified for EIRENE.
+        These grid sizes have to be equal to the grid sizes (\ordinalnum{1} and
+        \ordinalnum{2} grid RSURF and PSURF) of the mesh, on which plasma code data are
+        specified for EIRENE.
 
         I.e., NDYA=NR1ST-1 and NDXA=NP2ND-1 must be obeyed.
-  \item[NTARGI] Number of different surface recycling sources defined from the plasma code surface effluxes at specified boundaries.
-  \item[NTGPRT] Number of different surface segments (radially or poloidally), by which this target recycling stratum no.\ ITARGI is composed.
+  \item[NTARGI] Number of different surface recycling sources defined from the
+        plasma code surface effluxes at specified boundaries.
+  \item[NTGPRT] Number of different surface segments (radially or poloidally), by
+        which this target recycling stratum no.\ ITARGI is composed.
 \end{description}
 
-The following NTGPRT(ITARG) cards are used to specify these selected recycling boundaries and to set up the appropriate EIRENE surface source flags.
-These flags partially overrule those specified in block 7 (\cref{sec2.7}) (surface sources), see below.
-If even INDSRC = 6 for that particular stratum in block 7 (\cref{sec2.7}), then no further data must be read for this stratum in input block 7 (\cref{sec2.7}) and the full specification of that recycling source is done in subroutine INFCOP automatically from the plasma code data and the next NTGPRT input cards for this stratum.
+The following NTGPRT(ITARG) cards are used to specify these selected recycling
+boundaries and to set up the appropriate EIRENE surface source flags.
+These flags partially overrule those specified in block 7 (\cref{sec2.7})
+(surface sources), see below.
+If even INDSRC = 6 for that particular stratum in block 7 (\cref{sec2.7}), then
+no further data must be read for this stratum in input block 7 (\cref{sec2.7})
+and the full specification of that recycling source is done in subroutine
+INFCOP automatically from the plasma code data and the next NTGPRT input cards
+for this stratum.
 
 \begin{description}
   \item[IT] irrelevant, surface source labelling index
-  \item[NDT] number of surface in plasma code mesh, either in tangential or in normal direction.
-        If the plasma code uses cell centered indexing, then the north and the east surfaces of a cell are labeled by the indices of the cell.
-        In EIRENE cell indexing, the south and the west surface have the same index as the corresponding cell in the first (radial) and second (poloidal) mesh, respectively.
-        Therefore NDT may be different from the surface labelling index in EIRENE input block 3a (\cref{sec2.3a}).
-        Note also that NDT refers to cell numbers after index mapping, if NCUTL is not equal to NCUTB.
+  \item[NDT] number of
+        surface in plasma code mesh, either in tangential or in normal direction.
+        If the plasma code uses cell centered indexing, then the north and the east
+        surfaces of a cell are labeled by the indices of the cell.
+        In EIRENE cell indexing, the south and the west surface have the same index as
+        the corresponding cell in the first (radial) and second (poloidal) mesh,
+        respectively.
+        Therefore NDT may be different from the surface labelling index in EIRENE input
+        block 3a (\cref{sec2.3a}).
+        Note also that NDT refers to cell numbers after index mapping, if NCUTL is not
+        equal to NCUTB.
   \item[NINCT]
         \begin{description}
-          \item[$= 1$] positive (i.e., outer) surface normal is in the positive co-ordinate direction (as it is the case by default for EIRENE standard co-ordinate surfaces).
-          \item[$= -1$] positive surfaces normal is in the negative co-ordinate direction.
+          \item[$= 1$] positive (i.e., outer) surface
+                normal is in the positive co-ordinate direction (as it is the case by default
+                for EIRENE standard co-ordinate surfaces).
+          \item[$= -1$] positive surfaces normal is in the negative co-ordinate
+                direction.
         \end{description}
   \item[NIXY]
         \begin{description}
-          \item[$= 1$] surface in the direction normal to the flux surface, i.e., it belongs to the \ordinalnum{2} EIRENE mesh PSURF (usually: divertor target)
-          \item[$= 2$] surface is in the tangential direction, i.e., it belongs to the \ordinalnum{1} EIRENE mesh RSURF (usually: vessel, liner, interface to vacuum region)
+          \item[$= 1$] surface in the direction normal to
+                the flux surface, i.e., it belongs to the \ordinalnum{2} EIRENE mesh PSURF
+                (usually: divertor target)
+          \item[$= 2$] surface is in the tangential direction,
+                i.e., it belongs to the \ordinalnum{1} EIRENE mesh RSURF (usually: vessel,
+                liner, interface to vacuum region)
         \end{description}
-  \item[NTIN,NTEN] ~ 
+  \item[NTIN,NTEN] ~
 
-        The surface source is restricted to the cells ranging from cell number NTIN to cell number NTEN-1, along the co-ordinate surface.
+        The surface source is restricted to the cells ranging from cell number NTIN to
+        cell number NTEN-1, along the co-ordinate surface.
 
         Note that NTIN and NTEN label cell boundaries, hence the NTEN-1 above.
 
-        Note further: the total number of surface cells in one surface recycling source ITARG (i.e., summed over NTGPRT(ITARG)) must not be larger then NR1ST+NP2ND  (see definition of parameter NGITT in Common Deck PARMMOD).
-  \item[NIFLG] This corresponds to the SORIFL flag in input block 7, and is needed only if INDSRC=6, i.e., if the source is specified by data from block 14 alone.
-  \item[NPTC] This corresponds to the NPTS flag in input block 7, and is needed only if INDSRC=6, i.e., if the source is specified by data from block 14 alone.
+        Note further: the total number of surface cells in one surface recycling source
+        ITARG (i.e., summed over NTGPRT(ITARG)) must not be larger then NR1ST+NP2ND
+        (see definition of parameter NGITT in Common Deck PARMMOD).
+  \item[NIFLG] This corresponds to the SORIFL flag in input block 7, and is
+        needed only if INDSRC=6, i.e., if the source is specified by data from block 14
+        alone.
+  \item[NPTC] This corresponds to the NPTS flag in input block 7, and is needed
+        only if INDSRC=6, i.e., if the source is specified by data from block 14 alone.
   \item[NSPZI,NSPZE] ~ 
 
         Species range for this stratum.
-        Only the EIRENE fluids IPLS corresponding to plasma code fluids IFL with  NSPZI $<$ IFL $<$ NSPZE are sampled from this stratum.
+        Only the EIRENE fluids IPLS corresponding to plasma code fluids IFL with  NSPZI
+        $<$ IFL $<$ NSPZE are sampled from this stratum.
         See index map ILFB(IPLS) specified above in this same input block.
 
-        One (geometrical) target may appear several times, with different species ranges.
-        This permits to apply stratified sampling within the species distribution, and hence to remove statistical noise resulting from species source sampling.
+        One (geometrical) target may appear several times, with different species
+        ranges.
+        This permits to apply stratified sampling within the species distribution, and
+        hence to remove statistical noise resulting from species source sampling.
 \end{description}
 
-The following automatic adjustments to input flags from block 7 are then carried out for strata ISTRA = 1, NTARGI (species and birth point sampling)
+The following automatic adjustments to input flags from block 7 are then
+carried out for strata ISTRA = 1, NTARGI (species and birth point sampling)
 \begin{itemize}
-  \item The source strength FLUX(ISTRA) is reset to the value as computed from the plasma code data (fluxes) at the corresponding surface and the species range specified.
+  \item The source strength FLUX(ISTRA) is reset to the value as
+        computed from the plasma code data (fluxes) at the corresponding surface and
+        the species range specified.
   \item Initial species distribution is sampled from bulk ion population:
         NLPLS(ISTRA) = TRUE
   \item Stratum ISTRA is a surface source:
         NLSRF(ISTRA) = TRUE
   \item Number of sub-strata NSRFSI(ISTRA)=1
-  \item Mixed radial/poloidal (or: x/y) surface type: INDIM(ISTRA,1)=4
-  \item Step-function sampling with SORLIM(ISTRA, 1) = 104, and the step function data FLSTEP, \dots\ for the flux distribution entering the sheath region of the target are automatically defined.
+  \item Mixed
+        radial/poloidal (or: x/y) surface type: INDIM(ISTRA,1)=4
+  \item Step-function
+        sampling with SORLIM(ISTRA, 1) = 104, and the step function data FLSTEP, \dots\
+        for the flux distribution entering the sheath region of the target are
+        automatically defined.
   \item Number of step-function  SORIND(ISTRA,1)=ITARG (=ISTRA)
 \end{itemize}
-The other input flags for birth-point sampling in input block 7 have then become irrelevant by this new settings of the modified parameters listed above.
+The
+other input flags for birth-point sampling in input block 7 have then become
+irrelevant by this new settings of the modified parameters listed above.
 
-The sampling of the velocity of the incident ions is as specified in input block 7 for that stratum.
+The sampling of the velocity of the incident ions is as specified in input
+block 7 for that stratum.
 \begin{description}
-  \item[CHGP] The short cycle between EIRENE and the plasma code (i.e., only recomputing of source term profiles in subroutine EIRSRT at each time-step, but no new random walks) is stopped, if the total volume integrated particle source rate has changed by more than CHGP per cent as compared to the previous full EIRENE run.
+  \item[CHGP] The short cycle between EIRENE and the plasma code (i.e., only
+        recomputing of source term profiles in subroutine EIRSRT at each time-step, but
+        no new random walks) is stopped, if the total volume integrated particle source
+        rate has changed by more than CHGP per cent as compared to the previous full
+        EIRENE run.
   \item[CHGEE] as above, but for total electron energy source rate.
   \item[CHGEI] as above, but for total ion energy source rate.
   \item[CHGMOM] as above, but for total ion parallel momentum source rate.
         (to be written, May 1995)
-  \item[NAINB] total number (=NAINI) of additional plasma code tallies transferred onto EIRENE input tally ADIN (e.g.\ in order to utilize EIRENE output facilities for plasma code data, or for the options described in sub block 10c.
+  \item[NAINB] total number (=NAINI) of additional
+        plasma code tallies transferred onto EIRENE input tally ADIN (e.g.\ in order to
+        utilize EIRENE output facilities for plasma code data, or for the options
+        described in sub block 10c.
   \item[I] irrelevant, labelling index
-  \item[NAINS] species index of tally in B2 arrays.
-  \item[NAINT] flag to determine which particular quantity is put onto input tally ADIN(I, \dots).
+  \item[NAINS] species index of tally in B2
+        arrays.
+  \item[NAINT] flag to determine which particular quantity is put onto input
+        tally ADIN(I, \dots).
 
-        In the current version of subroutine INFCOP for interfacing to B2 the following ``B2-quantities" can be selected.
+        In the current version of subroutine INFCOP for interfacing to B2 the following
+        ``B2-quantities" can be selected.
 
         $1 \le NAINT \le 16 :$
         \begin{description}
-          \item[$= 1$] DI :plasma ion density [\si{\per\cubic\metre}], also on DIIN, by IPLS species
-          \item[$= 2$] UU :poloidal velocity [\si{\metre\per\second}]
-          \item[$= 3$] VV :radial velocity [\si{\metre\per\second}]
-          \item[$= 6$] PR :plasma pressure [\si{\newton\per\square\metre}]
-          \item[$= 7$] UP :parallel velocity [\si{\metre\per\second}]
+          \item[$= 1$] DI :plasma ion density
+                  [\si{\per\cubic\metre}], also on DIIN, by IPLS species
+          \item[$= 2$] UU
+                :poloidal velocity [\si{\metre\per\second}]
+          \item[$= 3$] VV :radial velocity
+                  [\si{\metre\per\second}]
+          \item[$= 6$] PR :plasma pressure
+                  [\si{\newton\per\square\metre}]
+          \item[$= 7$] UP :parallel velocity
+                  [\si{\metre\per\second}]
           \item[$= 8$] RR :pitch angle [\num{1}]
-          \item[$= 9$] FNIX: Particle fluxes along the field [\si{\per\second}]
-          \item[$= 10$] FNIY Particle fluxes across the field [\si{\per\second}]
-          \item[$= 11$] FEIX Ion energy fluxes along the field [\si{\watt}]
-          \item[$= 12$] FEIY Ion energy fluxes across the field [\si{\watt}]
-          \item[$= 13$] FEEX Electron energy fluxes along the field [\si{\watt}]
-          \item[$= 14$] FEEY Electron energy fluxes across the field [\si{\watt}]
+          \item[$= 9$]
+                FNIX: Particle fluxes along the field [\si{\per\second}]
+          \item[$= 10$] FNIY
+                Particle fluxes across the field [\si{\per\second}]
+          \item[$= 11$] FEIX Ion
+                energy fluxes along the field [\si{\watt}]
+          \item[$= 12$] FEIY Ion energy fluxes
+                across the field [\si{\watt}]
+          \item[$= 13$] FEEX Electron energy fluxes along
+                the field [\si{\watt}]
+          \item[$= 14$] FEEY Electron energy fluxes across the
+                field [\si{\watt}]
           \item[$= 15$] VOL: cell volume [\si{\cubic\metre}]
-          \item[$= 16$] BFELD: magnitude of magnetic field [\si{\tesla}]
+          \item[$=
+                  16$] BFELD: magnitude of magnetic field [\si{\tesla}]
         \end{description}
 
-        $21 \le NAINT \le 30 :$ normalized EIRENE atomic/molecular data profiles (rate coefficients in atomic units).
-        These can be selected also in the NMODE=0 (subroutine INFCOP not called) option, see previous paragraph for their description.
-        These options allow verification of selected atomic/molecular data on the computational grid and evaluated using the plasma background data of a particular run (in particular: check for extrapolation errors in A$\&$M data) 
+        $21 \le NAINT \le 30 :$ normalized EIRENE atomic/molecular data profiles (rate
+        coefficients in atomic units).
+        These can be selected also in the NMODE=0 (subroutine INFCOP not called)
+        option, see previous paragraph for their description.
+        These options allow verification of selected atomic/molecular data on the
+        computational grid and evaluated using the plasma background data of a
+        particular run (in particular: check for extrapolation errors in A$\&$M data)
 
   \item[TXTPLS, TXTPSP, TXTPUN]~ 
 
-        text for printout and plotting, same as described for additional output tallies in bock 10.
-  \item[NAOTB] total number of additional EIRENE surface tallies transferred to B2 code (e.g.\ in order to allow re-scaling in B2 such that total number of particles (neutrals and ions) is conserved.
+        text for printout and plotting, same as described for additional output tallies
+        in bock 10.
+  \item[NAOTB] total number of additional EIRENE surface tallies transferred to
+        B2 code (e.g.\ in order to allow re-scaling in B2 such that total number of
+        particles (neutrals and ions) is conserved.
   \item[NAOTS] not in use
   \item[NAOTT] not in use
 \end{description}
 
-\subsection{Version B2-EIRENE-2000 and younger} \label{sec2.14.2} 
+\subsection{Version B2-EIRENE-2000 and younger} \label{sec2.14.2}
 
-The first thing to note is that due to introduction of photons as a forth type of test particle (for radiation transfer simulations) the numbering of tallies (source rates) to be transferred from EIRENE into B2 has changed.
-For example the particle source rates \lstinline|PAPL|, \lstinline|PMPL|, \lstinline|PIPL| are now default EIRENE tallies listed in \cref{tab2} in \cref{sec.tables-new} rather than in \cref{tab2old} in \cref{sec.tables-old}:
+The first thing to note is that due to introduction of photons as a forth type
+of test particle (for radiation transfer simulations) the numbering of tallies
+(source rates) to be transferred from EIRENE into B2 has changed.
+For example the particle source rates \lstinline|PAPL|,
+\lstinline|PMPL|, \lstinline|PIPL| are now default EIRENE tallies
+listed in \cref{tab2} in \cref{sec.tables-new} rather than in \cref{tab2old} in
+\cref{sec.tables-old}:
 \begin{itemize}
-  \item \lstinline|PAPL| is the particle source for background plasma species $ipls$ resulting from ``at\-om"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no.\ 14.
-  \item \lstinline|PMPL| is the particle source for background plasma species $ipls$ resulting from ``mol\-e\-cule"-plasma interactions (summed over all EIRENE species of type ``molecule"), tally no.\ 20.
-  \item \lstinline|PIPL| is the particle source for background plasma species $ipls$ resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no.\ 26.
+  \item \lstinline|PAPL| is the particle source for background plasma
+        species $ipls$ resulting from ``at\-om"-plasma interactions (summed over all
+        EIRENE species of type ``atom"), tally no.\ 14.
+  \item \lstinline|PMPL| is the particle source for background plasma
+        species $ipls$ resulting from ``mol\-e\-cule"-plasma interactions (summed over
+        all EIRENE species of type ``molecule"), tally no.\ 20.
+  \item \lstinline|PIPL| is the particle source for background plasma
+        species $ipls$ resulting from ``test ion"-plasma interactions (summed over all
+        EIRENE species of type ``test ion"), tally no.\ 26.
 \end{itemize}
-Default tally no.\ 32 might be added here as well, once photo-ionization processes are activated in an EIRENE run.
-Analogous statements, i.e.\ modifications of volume averaged tally numbers, apply for the other source rates (for electron and ion energy balance), as compared to those described above in \cref{sec2.14.1}.
+Default tally no.\ 32 might be added here as well, once photo-ionization
+processes are activated in an EIRENE run.
+Analogous statements, i.e.\ modifications of volume averaged tally numbers,
+apply for the other source rates (for electron and ion energy balance), as
+compared to those described above in \cref{sec2.14.1}.
 
-One further difference is that momentum source terms (for parallel momentum balance equations of plasma fluid codes) have become default tallies (MAPL, MMPL, MIPL), rather than problem specific tallies (COPV).
-These are now scored in routine UPDATE, together will all other tallies listed in \cref{tab2}, rather than in the coupling-specific routine UPTCOP.
+One further difference is that momentum source terms (for parallel momentum
+balance equations of plasma fluid codes) have become default tallies (MAPL,
+MMPL, MIPL), rather than problem specific tallies (COPV).
+These are now scored in routine UPDATE, together will all other tallies listed
+in \cref{tab2}, rather than in the coupling-specific routine UPTCOP.
 I.e.\ now we have (compare to \cref{Sm}):
 \begin{equation}
-  S_{m\parallel}(ipls,icell) = \sum_{is} \left[MAPL_{is}(ipls,icell) + MMPL_{is}(ipls,icell) + MIPL_{is}(ipls,icell) \right]
+  S_{m\parallel}(ipls,icell) = \sum_{is} \left[MAPL_{is}(ipls,icell) +
+    MMPL_{is}(ipls,icell) + MIPL_{is}(ipls,icell) \right]
 \end{equation}
 
 The sum is over all strata (see  ``stratified sampling" in \cref{sec1}).
-\lstinline|MAPL|, \lstinline|MMPL|,  \lstinline|MIPL| are default EIRENE tallies (\cref{tab2} in \cref{sec.tables-new}):
+\lstinline|MAPL|, \lstinline|MMPL|,  \lstinline|MIPL| are
+default EIRENE tallies (\cref{tab2} in \cref{sec.tables-new}):
 \begin{itemize}
-  \item \lstinline|MAPL| is the parallel momentum source for background plasma species $ipls$ resulting from ``atom"-plasma interactions (summed over all EIRENE species of type ``atom"), tally no.\ 97.
-  \item \lstinline|MMPL| is the parallel momentum source for background plasma species $ipls$ resulting from ``molecule"-plasma interactions (summed over all EIRENE species of type ``molecule"), tally no.\ 98.
-  \item \lstinline|MIPL| is the parallel momentum source for background plasma species $ipls$ resulting from ``test ion"-plasma interactions (summed over all EIRENE species of type ``test ion"), tally no.\ 99.
+  \item \lstinline|MAPL| is the parallel momentum source for background
+        plasma species $ipls$ resulting from ``atom"-plasma interactions (summed over
+        all EIRENE species of type ``atom"), tally no.\ 97.
+  \item \lstinline|MMPL| is the parallel momentum source for background
+        plasma species $ipls$ resulting from ``molecule"-plasma interactions (summed
+        over all EIRENE species of type ``molecule"), tally no.\ 98.
+  \item \lstinline|MIPL| is the parallel momentum source for background
+        plasma species $ipls$ resulting from ``test ion"-plasma interactions (summed
+        over all EIRENE species of type ``test ion"), tally no.\ 99.
 \end{itemize}
-The sign of these sources in EIRENE is such that a gain in momentum (speeding up the plasma flow) for plasma species $ipls$ is taken positive.
-In the interfacing routine IF3COP of module EIRCOP the sign convention is altered to that of the plasma fluid code, i.e. it then involves the flow direction relative to the magnetic field vector.
-Note that in all B2-EIRENE versions until March 2015 the poloidal unit vector is always taken to be given by the poloidal magnetic field component, i.e., the poloidal magnetic field component is always taken to point in the positive poloidal grid coordinate direction.
+The sign of these sources in EIRENE is such that a gain in momentum (speeding
+up the plasma flow) for plasma species $ipls$ is taken positive.
+In the interfacing routine IF3COP of module EIRCOP the sign convention is
+altered to that of the plasma fluid code, i.e. it then involves the flow
+direction relative to the magnetic field vector.
+Note that in all B2-EIRENE versions until March 2015 the poloidal unit vector
+is always taken to be given by the poloidal magnetic field component, i.e., the
+poloidal magnetic field component is always taken to point in the positive
+poloidal grid coordinate direction.
 
-\textbf{Meaning of the Input Variables for interfacing Subroutine ``INFCOP"} 
+\textbf{Meaning of the Input Variables for interfacing Subroutine ``INFCOP"}
 
 \medskip 
 
@@ -451,43 +710,72 @@ input block 14: unchanged, as compared to \cref{sec2.14.1}
 
 \medskip 
 
-Additional data to those described in previous sub-\cref{sec2.14.1} are read, basically to account for non-orthogonal grids and for direct transfer of surface recycling boundary conditions into EIRENE.
+Additional data to those described in previous sub-\cref{sec2.14.1} are read,
+basically to account for non-orthogonal grids and for direct transfer of
+surface recycling boundary conditions into EIRENE.
 
 From input stream FORT.29 two angles are read for each cell:
 \begin{description}
-  \item[$= 1$] ALPHXB: angle of B-field against R-coordinate (x-coordinate in EIRENE, $[radians]$,  evaluated at B2-x-surface (East, West)  surface-centered
-  \item[$= 2$] ALPHYB: angle of B field against R-coordinate (x-coordinate in EIRENE, $[radians]$,  evaluated at B2-y-surface (North, South) surface-centered
+  \item[$= 1$] ALPHXB: angle of B-field against R-coordinate (x-coordinate in
+        EIRENE, $[radians]$,  evaluated at B2-x-surface (East, West)  surface-centered
+  \item[$= 2$] ALPHYB: angle of B field against R-coordinate (x-coordinate in
+        EIRENE, $[radians]$,  evaluated at B2-y-surface (North, South) surface-centered
 \end{description}
 
-\begin{figure}[h] \label{eirene-coord-2} \includegraphics[width=12.0cm]{eirene-coord-2} \caption{Definition of  angles $\alpha_x$=ALPHXB and $\alpha_y$=ALPHYB, respectively, for inclined (non-orthogonal) B2-grids to be used in EIRENE code.
+\begin{figure}[h] \label{eirene-coord-2}
+  \includegraphics[width=12.0cm]{eirene-coord-2} \caption{Definition of  angles $\alpha_x$=ALPHXB and $\alpha_y$=ALPHYB, respectively, for inclined (non-orthogonal) B2-grids to be used in EIRENE code.
   }
 \end{figure}
 
-Then there are 14 arrays for definitions of boundary conditions (stream FORT.31 or Common BRAEIR), in order to achieve full symmetry of boundary condition options between east-west and north-south cell faces.
-This is in particular useful for cases with wide grids (up to the real vacuum vessel) in which boundary conditions on strongly inclined surfaces are defined.
+Then there are 14 arrays for definitions of boundary conditions (stream FORT.31
+or Common BRAEIR), in order to achieve full symmetry of boundary condition
+options between east-west and north-south cell faces.
+This is in particular useful for cases with wide grids (up to the real vacuum
+vessel) in which boundary conditions on strongly inclined surfaces are defined.
 \begin{description}
-  \item[1] v\_par,x: parallel velocity [\si{\metre\per\second}], x-surface (across field, East)  centered
-  \item[2] v\_par,y: parallel velocity [\si{\metre\per\second}], y-surface (along field, North) centered
-  \item[3] v\_rad,x: plasma ion density [\si{\metre\per\second}], x-surface (across field, East)  centered
-  \item[4] v\_rad,y: poloidal velocity [\si{\metre\per\second}], y-surface (along field, North) centered
-  \item[5] $\delta_e$\_par,x:   x-surface (across field, East)  centered
-  \item[6] $\delta_e$\_par,y:   y-surface (along field, North) centered
-  \item[7] $\delta_e$\_rad,x:   x-surface (across field, East)  centered
-  \item[8] $\delta_e$\_rad,y:   y-surface (along field, North) centered
-  \item[9] $\delta_i$\_par,x:   x-surface (across field, East)  centered
-  \item[10] $\delta_i$\_par,y:   y-surface (along field, North) centered
-  \item[11] $\delta_i$\_rad,x:   x-surface (across field, East)  centered
-  \item[12] $\delta_i$\_rad,y:   y-surface (along field, North) centered
-  \item[13] sheath\_x:   x-surface (across field, East)  centered
-  \item[14] sheath\_y:   y-surface (along field, North) centered
+  \item[1] v\_par,x: parallel velocity [\si{\metre\per\second}], x-surface
+        (across field, East)  centered
+  \item[2] v\_par,y: parallel velocity
+          [\si{\metre\per\second}], y-surface (along field, North) centered
+  \item[3]
+        v\_rad,x: plasma ion density [\si{\metre\per\second}], x-surface (across field,
+        East)  centered
+  \item[4] v\_rad,y: poloidal velocity [\si{\metre\per\second}],
+        y-surface (along field, North) centered
+  \item[5] $\delta_e$\_par,x:
+        x-surface (across field, East)	centered
+  \item[6] $\delta_e$\_par,y:
+        y-surface (along field, North) centered
+  \item[7] $\delta_e$\_rad,x:
+        x-surface (across field, East)	centered
+  \item[8] $\delta_e$\_rad,y:
+        y-surface (along field, North) centered
+  \item[9] $\delta_i$\_par,x:
+        x-surface (across field, East)	centered
+  \item[10] $\delta_i$\_par,y:
+        y-surface (along field, North) centered
+  \item[11] $\delta_i$\_rad,x:
+        x-surface (across field, East)	centered
+  \item[12] $\delta_i$\_rad,y:
+        y-surface (along field, North) centered
+  \item[13] sheath\_x:	x-surface
+        (across field, East)  centered
+  \item[14] sheath\_y:   y-surface (along field,
+        North) centered
 \end{description}
-On any particular surface element only either the x or the y values are set, depending upon whether this surface is a x or y surface.
-One cell, however, may have either one or two recycling surfaces, one north- and one east surface.
+On any particular surface element only either
+the x or the y values are set, depending upon whether this surface is a x or y
+surface.
+One cell, however, may have either one or two recycling surfaces, one north-
+and one east surface.
 
 \subsection{Version B2-EIRENE-wide-grid (2011 and later)} \label{sec2.14.3}
 
-Further adaptations in case of ``wide grid" option, to accommodate   mixed fluxes (e.g.\ west and north) at a single boundary element.
-Also additional: flags for magnetic field orientation, e.g.\ to allow poloidal and/or toroidal magnetic field components to be reversed, opposed to B2 radial and poloidal grid orientation.
+Further adaptations in case of ``wide grid" option, to accommodate   mixed
+fluxes (e.g.\ west and north) at a single boundary element.
+Also additional: flags for magnetic field orientation, e.g.\ to allow poloidal
+and/or toroidal magnetic field components to be reversed, opposed to B2 radial
+and poloidal grid orientation.
 
 To be written 
 
@@ -495,8 +783,10 @@ Meaning of additional flags from input block 14  (format: see \cref{sec2.14}):
 \begin{description}
   \item[MSHFRM] three different options for reading of B2 grid:
 
-        MSHFRM = 0: ``Linda" format, historically oldest format, default, e.g.\ used in SOLPS.
-        Originates from LINDA grid generating code, G.~Maddison, mid eighties last century.
+        MSHFRM = 0: ``Linda" format, historically oldest format, default, e.g.\ used in
+        SOLPS.
+        Originates from LINDA grid generating code, G.~Maddison, mid eighties last
+        century.
 
         MSHFRM = 1: ``Sonnet" format 
 
@@ -504,81 +794,143 @@ Meaning of additional flags from input block 14  (format: see \cref{sec2.14}):
 
   \item[NTRFRM] two different formats for triangular grid files are supported:
 
-        NTRFRM = 0:  old format, (first all x coordinates, then all y coordinates) 
+        NTRFRM = 0:  old format, (first all x coordinates, then all y coordinates)
 
         NTRFRM = 1:  new format, (x,y coordinate per point, one point per input line)
-  \item[NFULL] Maximum number of short cycling steps, before a full EIRENE run is enforced for all strata
+  \item[NFULL] Maximum number of short cycling steps, before a full EIRENE run is
+        enforced for all strata
 \end{description}
 
 \textbf{Magnetic field conventions in B2, B2.5 interfaces} 
 
 \medskip 
 
-The next three flags (introduced in March 2015) allow to change the orientation of the magnetic field as reconstructed form B2 or B2.5 parameters.
-The magnetic field itself is typically not used in coupled B2-EIRENE cases, however the ``parallel momentum exchange" tallies transferred from EIRENE to B2 (MAPL, MMPL, MIPL, or in older versions, certain COPV tallies) are based on a projection of the vectorial momentum exchange rate onto the parallel to $\vB$ component.
-Introducing the radial, poloidal and toroidal magnetic field components $(B_r,B_\theta,B_\phi)$ the default (and exclusive, until March 2015) option \textbf{in all B2-EIRENE versions ever, until then}, was to assume that
+The next three flags (introduced in March 2015) allow to change the orientation
+of the magnetic field as reconstructed form B2 or B2.5 parameters.
+The magnetic field itself is typically not used in coupled B2-EIRENE cases,
+however the ``parallel momentum exchange" tallies transferred from EIRENE to B2
+(MAPL, MMPL, MIPL, or in older versions, certain COPV tallies) are based on a
+projection of the vectorial momentum exchange rate onto the parallel to $\vB$
+component.
+Introducing the radial, poloidal and toroidal magnetic field components
+$(B_r,B_\theta,B_\phi)$ the default (and exclusive, until March 2015) option
+\textbf{in all B2-EIRENE versions ever, until then}, was to assume that
 \begin{description}
   \item[$B_r = (\vB \cdot \ver)$] ~ 
 
         the radial magnetic field B$_r$ is zero: B$_r$ =0 always.
-        But note that the B2, B2.5 radial grid index is typically IY, whereas the EIRENE x-or radial grid index is IX, IR.
+        But note that the B2, B2.5 radial grid index is typically IY, whereas the
+        EIRENE x-or radial grid index is IX, IR.
 
   \item[$B_\theta = (\vB \cdot \veth)$] ~ 
 
-        the poloidal magnetic field is in the direction of increasing coordinate of the poloidal B2 (B2.5) grid index IX, but EIRENE y- or poloidal grid index IY, or IP.
+        the poloidal magnetic field is in the direction of increasing coordinate of the
+        poloidal B2 (B2.5) grid index IX, but EIRENE y- or poloidal grid index IY, or
+        IP.
         Expressed in unit vectors: $\ve_{B_\theta} = \veth$, by default.
-        Its magnitude (relative to the toroidal magnetic field, is determined by the B2, B2.5 pitch angle array RR(icell) and the absolute magnetic field strength $|\vB|$ (the latter often being defaulted to $|\vB|=1$, because irrelevant on the EIRENE side for neutral particles, but notably not for photons (Zeeman splitting) nor for the kinetic (guiding center) trace ion options.
+        Its magnitude (relative to the toroidal magnetic field, is determined by the
+        B2, B2.5 pitch angle array RR(icell) and the absolute magnetic field strength
+        $|\vB|$ (the latter often being defaulted to $|\vB|=1$, because irrelevant on
+        the EIRENE side for neutral particles, but notably not for photons (Zeeman
+        splitting) nor for the kinetic (guiding center) trace ion options.
 
         $B_\theta = |\vB| \cdot $ pitch.
   \item[$B_\phi = (\vB \cdot \veph)$] ~ 
 
-        the toroidal magnetic field is normal to the poloidal (x-y) plane in the EIRENE z (periodic cylinder, NLTRZ-option ) or PHI (approximated torus, NLTRA option) coordinate.
-        Its strength, relative to the poloidal field, is given by the B2, B2.5 pitch array RR(icell):
+        the toroidal magnetic field is normal to the poloidal (x-y) plane in the EIRENE
+        z (periodic cylinder, NLTRZ-option ) or PHI (approximated torus, NLTRA option)
+        coordinate.
+        Its strength, relative to the poloidal field, is given by the B2, B2.5 pitch
+        array RR(icell):
         B$_\phi$ = = $|\vB| \cdot \sqrt{1-\mbox{pitch}^2}$.
-        Its orientation is strictly irrelevant due to assumed toroidal symmetry, except in case of kinetic (guiding center) ion tracing by EIRENE.
-        In the latter case it would matter indeed, e.g.\ to fix the $\nabla \vB$ drift direction.
+        Its orientation is strictly irrelevant due to assumed toroidal symmetry, except
+        in case of kinetic (guiding center) ion tracing by EIRENE.
+        In the latter case it would matter indeed, e.g.\ to fix the $\nabla \vB$ drift
+        direction.
 \end{description}
 \emph{Note: The confusing notational convention of x and y coordinates in B2-EIRENE still exists because B2 originally started as 1D parallel code, with the only coordinate being along the field, whereas EIRENE also started as 1D code, but with the first coordinate being the radial direction. (Both codes originated separately, in the early eighties of the last century, before they have been coupled together in the late eighties.)
 }
 
 \begin{description}
   \item[IBRAD] not in use
-  \item[IBPOL] if $< 0$, then the poloidal field orientation on the EIRENE side is changed compared to the default: now $\ve_{B_\theta} = -\veth$, i.e.\ (BXIN,BYIN) $\rightarrow - $(BXIN,BYIN) in module eirmod\_infcop.f
-  \item[IBTOR] if $< 0$, then the toroidal field orientation on the EIRENE side is changed compared to the default: now $\ve_{B_\phi} = -\veph$, i.e.\ (BZIN) $\rightarrow - $(BZIN) in module eirmod\_infcop.f .
+  \item[IBPOL] if $< 0$, then the poloidal field
+        orientation on the EIRENE side is changed compared to the default: now
+        $\ve_{B_\theta} = -\veth$, i.e.\ (BXIN,BYIN) $\rightarrow - $(BXIN,BYIN) in
+        module eirmod\_infcop.f
+  \item[IBTOR] if $< 0$, then the toroidal field
+        orientation on the EIRENE side is changed compared to the default: now
+        $\ve_{B_\phi} = -\veph$, i.e.\ (BZIN) $\rightarrow - $(BZIN) in module
+        eirmod\_infcop.f .
 \end{description}
 
-These additional B-field options now also introduce an ambiguity in the definition of parallel (to $\vB$) momentum exchange terms between plasma ions (in continuum approximation) and kinetic neutrals, see definition of momentum source tallies MAPL, MMPL and MIPL in \cref{sec.tables-new}.
-Since prior to introducing the IBPOL, IPTOR flags there was  $\ve_\| = \ve_{\vB}$ always, it made no difference which ``parallel to $\vB$" unit vector was used for projections.
-With the additional freedom in the choice of B-field signs, i.e.\ with $\ve_\| = \pm \ve_{\vB}$, the proper choice of using either $\ve_\|$ or $\ve_{\vB}$ used for projecting the vectorial momentum exchange rates onto a ``parallel" direction must depend on conventions used in the plasma continuum code.
-Current default in EIRENE is to use $+\ve_{\vB}$ for this projection for the mentioned momentum source tallies.
-The same applies for momentum source terms in diamagnetic or radial directions, when plasma drifts and electrical currents are explicitly accounted for in B2 or B2.5 applications.
+These additional B-field options now also introduce an ambiguity in the
+definition of parallel (to $\vB$) momentum exchange terms between plasma ions
+(in continuum approximation) and kinetic neutrals, see definition of momentum
+source tallies MAPL, MMPL and MIPL in \cref{sec.tables-new}.
+Since prior to introducing the IBPOL, IPTOR flags there was  $\ve_\| =
+  \ve_{\vB}$ always, it made no difference which ``parallel to $\vB$" unit vector
+was used for projections.
+With the additional freedom in the choice of B-field signs, i.e.\ with $\ve_\|
+  = \pm \ve_{\vB}$, the proper choice of using either $\ve_\|$ or $\ve_{\vB}$
+used for projecting the vectorial momentum exchange rates onto a ``parallel"
+direction must depend on conventions used in the plasma continuum code.
+Current default in EIRENE is to use $+\ve_{\vB}$ for this projection for the
+mentioned momentum source tallies.
+The same applies for momentum source terms in diamagnetic or radial directions,
+when plasma drifts and electrical currents are explicitly accounted for in B2
+or B2.5 applications.
 
-\subsection{Version B2.5-EIRENE (2012 and later)} \label{sec2.14.4} 
+\subsection{Version B2. 5-EIRENE (2012 and later)} \label{sec2.14.4} 
 
-One distinction to the earlier versions of interfaces to the B2 plasma fluid code is that in B2.5 the energy conservation equation is solved for the internal energy only (i.e.\ the thermal energy, rather than for the total energy, as in B2.)
+One distinction to the earlier versions of interfaces to the B2 plasma fluid
+code is that in B2.5 the energy conservation equation is solved for the
+internal energy only (i.e.\ the thermal energy, rather than for the total
+energy, as in B2.)
 
-The ion energy source term $S_{Ei-internal}(icell)$ transferred from EIRENE to B2.5 in grid cell $icell$ reads:
+The ion energy source term $S_{Ei-internal}(icell)$ transferred from EIRENE to
+B2.5 in grid cell $icell$ reads:
 \begin{equation}
   \label{Sei-intern}
-  S_{Ei-internal}(icell)= S_{Ei-total}(icell) - UA \times S_m(icell) + EKIN \times S_n(icell)
+  S_{Ei-internal}(icell)= S_{Ei-total}(icell) - UA \times S_m(icell) + EKIN
+  \times S_n(icell)
 \end{equation}
-with $S_{Ei-total}, S_m(icell), S_n(icell)$ being the total ion energy source rate, the momentum source rate and the particle source rate, respectively, as defined in \cref{sec2.14.2} for the interface to the B2 plasma solver.
-The coefficients $UA$ and $EKIN$ are the parallel plasma flow velocity $V_\parallel$ and the kinetic energy carried by the parallel plasma flow: $EKIN = (m_{ipls}/2) V_\parallel^2$.
-This equation applies for a single plasma fluid case (one single plasma species $ipls$).
-Relation \cref{Sei-intern} for the internal energy source follows from either substituting the lower order moment equations into the total energy moment equation, or by forming the energy moment equation directly by averaging the kinetic equation with velocities in the plasma frame:
-$w = v - V$, i.e.\ by averaging the kinetic equation with $(m/2) w^2$ rather than $(m/2) v^2$ with $V$ the plasma flow velocity \cite{kn:Mueller}.
+with $S_{Ei-total}, S_m(icell), S_n(icell)$
+being the total ion energy source rate, the momentum source rate and the
+particle source rate, respectively, as defined in \cref{sec2.14.2} for the
+interface to the B2 plasma solver.
+The coefficients $UA$ and $EKIN$ are the parallel plasma flow velocity
+$V_\parallel$ and the kinetic energy carried by the parallel plasma flow: $EKIN
+  = (m_{ipls}/2) V_\parallel^2$.
+This equation applies for a single plasma fluid case (one single plasma species
+$ipls$).
+Relation \cref{Sei-intern} for the internal energy source follows from either
+substituting the lower order moment equations into the total energy moment
+equation, or by forming the energy moment equation directly by averaging the
+kinetic equation with velocities in the plasma frame:
+$w = v - V$, i.e.\ by averaging the kinetic equation with $(m/2) w^2$ rather
+than $(m/2) v^2$ with $V$ the plasma flow velocity \cite{kn:Mueller}.
 
-In case of multi-fluid plasmas we use, without proof  (to be checked !) simply the same formula, but with the second and third term replaced by the sum over all (receiving) plasma ion species:
+In case of multi-fluid plasmas we use, without proof  (to be checked !) simply
+the same formula, but with the second and third term replaced by the sum over
+all (receiving) plasma ion species:
 \begin{equation}
   \sum_{ipls}
   UA(ipls) S_m(ipls,icell) \ , \quad \sum_{ipls} EKIN(ipls) S_n(ipls,icell)
 \end{equation}
 
-In any case we see that the internal energy source term can be written as linear function of default tallies listed in \cref{sec2.14.2,sec2.14.3}.
-Hence they can be scored \emph{per history} in newly introduced routine UPFCOP (see \cref{flow5}), directly on tally COPV.
-Therefore the statistical error estimates for code interfacing tallies ($S_n, S_m, S_{Ei}, S_{Ee}, \dots$) are directly available, using the standard printout and graphical output procedures of EIRENE, see discussion in \cref{lin-funct} on evaluation of statistical variances for linear functions of tallies.
+In any case we see that the internal energy source term can be written as
+linear function of default tallies listed in \cref{sec2.14.2,sec2.14.3}.
+Hence they can be scored \emph{per history} in newly introduced routine UPFCOP
+(see \cref{flow5}), directly on tally COPV.
+Therefore the statistical error estimates for code interfacing tallies ($S_n,
+  S_m, S_{Ei}, S_{Ee}, \dots$) are directly available, using the standard
+printout and graphical output procedures of EIRENE, see discussion in
+\cref{lin-funct} on evaluation of statistical variances for linear functions of
+tallies.
 
-Prior to implementation of routine UPFCOP such variances have been evaluated in case specific codes STATS1\_COP.
+Prior to implementation of routine UPFCOP such variances have been evaluated in
+case specific codes STATS1\_COP.
 
-Other differences between earlier versions of EIRCOP and the one for B2.5 (2012) are related to different interpolation schemes, the cell centered vs.\ surface centred fluxes, and cell indexing, in B2.5 as compared to B2.
-
+Other differences between earlier versions of EIRCOP and the one for B2.5
+(2012) are related to different interpolation schemes, the cell centered vs.\
+surface centred fluxes, and cell indexing, in B2.5 as compared to B2.

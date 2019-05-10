@@ -3,91 +3,168 @@
 \label{forew2}
 \bigskip
 
-The first edition of this EIRENE code user manual was published as KFA report J\"UL-2599 in March 1992, \cite{kn:Reiter92a}.
-It basically was a collection of my notes on the meaning of the various input data options for EIRENE.
-Over the years too many such input flags had accumulated to memorize the meaning of each individual one.
+The first edition of this EIRENE code user manual was published as KFA report
+J\"UL-2599 in March 1992, \cite{kn:Reiter92a}.
+It basically was a collection of my notes on the meaning of the various input
+data options for EIRENE.
+Over the years too many such input flags had accumulated to memorize the
+meaning of each individual one.
 
-Since the EIRENE code became a quite popular tool also for many other colleagues, it was decided to provide these notes as a kind of ``user's manual'' in a somewhat completed and edited form.
+Since the EIRENE code became a quite popular tool also for many other
+colleagues, it was decided to provide these notes as a kind of ``user's
+manual'' in a somewhat completed and edited form.
 
-In the meantime the distribution of the EIRENE code has become even wider, and it seems timely to update the previous manual, although most of it's content is still a relevant source of information for a third party application of the code.
-Apart from several minor corrections, e.g., of spelling errors and unclear language, the major new features as compared to the previous edition are the following:
+In the meantime the distribution of the EIRENE code has become even wider, and
+it seems timely to update the previous manual, although most of it's content is
+still a relevant source of information for a third party application of the
+code.
+Apart from several minor corrections, e.g., of spelling errors and unclear
+language, the major new features as compared to the previous edition are the
+following:
 
 \begin{itemize}
   \item[-] time dependent mode + snapshot estimators (\cref{sec2.13})
-  \item[-] internally consistent "I-integral" approach for coupled neutral (kinetic) - plasma (fluid) simulations (partially disabled again shortly after its implementation, because of spurious oscillatory behaviour of some derivatives of polynomial fits for rate coefficients)
-  \item[-] individual background ``ion" temperatures TI(IPLS) for each background species (e.g., for neutral background particles)
+  \item[-]
+        internally consistent "I-integral" approach for coupled neutral (kinetic) -
+        plasma (fluid) simulations (partially disabled again shortly after its
+        implementation, because of spurious oscillatory behaviour of some derivatives
+        of polynomial fits for rate coefficients)
+  \item[-] individual background ``ion"
+        temperatures TI(IPLS) for each background species (e.g., for neutral background
+        particles)
   \item[-] simulation of self collisions in \ac{BGK} approximation
-  \item[-] some new collision processes and data, such as net re-combination energy losses (radiation + potential), elastic neutral - ion collisions, multi-step break-up of molecules
+  \item[-] some new collision processes and data, such as net re-combination
+        energy losses (radiation + potential), elastic neutral - ion collisions,
+        multi-step break-up of molecules
   \item[-] RAPS graphics interfaces
-  \item[-] user defined geometry block.
-        In this new mode of operation, geometry level LEVGEO=10, EIRENE knows nothing (not even the dimensionality) about the geometrical aspects of the problem.
-        Everything concerning grids, cell volumes, flight times within cell etc.\ is in user supplied routines.
-        No default graphics options are available, of course, in this mode of operation.
-        (This option was developed and is used in context with EMC3-EIRENE since about 1999)
-  \item[-] Particle tracing routines FOLATM and FOLMOL for neutral atoms and neutral molecules are combined into one single routine FOLNEUT for neutral particles.
+  \item[-]
+        user defined geometry block.
+        In this new mode of operation, geometry level LEVGEO=10, EIRENE knows nothing
+        (not even the dimensionality) about the geometrical aspects of the problem.
+        Everything concerning grids, cell volumes, flight times within cell etc.\ is in
+        user supplied routines.
+        No default graphics options are available, of course, in this mode of
+        operation.
+        (This option was developed and is used in context with EMC3-EIRENE since about
+        1999)
+  \item[-] Particle tracing routines FOLATM and FOLMOL for neutral atoms
+        and neutral molecules are combined into one single routine FOLNEUT for neutral
+        particles.
 
-        The particle tracing routine FOLION for charged test particles has been updated considerably, including now a simple approximation to the Fokker Planck collision operator (a ``Krook collision operator") in 1997.
+        The particle tracing routine FOLION for charged test particles has been updated
+        considerably, including now a simple approximation to the Fokker Planck
+        collision operator (a ``Krook collision operator") in 1997.
 \end{itemize}
 \bigskip
-An increasing number of EIRENE \ordinalnum{3} party applications is running cases in which
+An increasing number of EIRENE \ordinalnum{3} party applications is running
+cases in which
 EIRENE is coupled to a fluid (\ac{CFD}) plasma model.
-Here it provides sources and sinks due to interaction of ``kinetic sub-components" with the macroscopic flow, which are iteratively coupled (``operator splitting").
+Here it provides sources and sinks due to interaction of ``kinetic
+sub-components" with the macroscopic flow, which are iteratively coupled
+(``operator splitting").
 
-The first such coupled \acs{CFD} - EIRENE code was SOLXY-EIRENE (\cite{kn:Gerhauser88a}) and had led to implementation of the so called ``correlated sampling" option in EIRENE, as necessary to achieve convergence measured by comparison with solution using an analog analytic neutral particle model.
+The first such coupled \acs{CFD} - EIRENE code was SOLXY-EIRENE
+(\cite{kn:Gerhauser88a}) and had led to implementation of the so called
+``correlated sampling" option in EIRENE, as necessary to achieve convergence
+measured by comparison with solution using an analog analytic neutral particle
+model.
 
-The widely used B2-EIRENE code system \cite{kn:Reiter91b} is another such example of a coupled \acs{CFD}-Monte Carlo diffusion-advection-reaction code.
+The widely used B2-EIRENE code system \cite{kn:Reiter91b} is another such
+example of a coupled \acs{CFD}-Monte Carlo diffusion-advection-reaction code.
 
-A new section describing this code coupling part of the EIRENE code has been added.
-It describes the ``sandwich" file EIRCOP which was written to permit linkage between EIRENE and a \ac{CFD} plasma fluid model (one, two, or three dimensional).
-Initial and boundary value problems can be treated in a rather self-consistent manner.
+A new section describing this code coupling part of the EIRENE code has been
+added.
+It describes the ``sandwich" file EIRCOP which was written to permit linkage
+between EIRENE and a \ac{CFD} plasma fluid model (one, two, or three
+dimensional).
+Initial and boundary value problems can be treated in a rather self-consistent
+manner.
 
-For B2-EIRENE this code interfacing segment was developed largely under support of a KFA-EURATOM contract (\cite{kn:Net}), and first applications have been published for ITER configurations, see \cite{kn:Reiter91b} and \cite{kn:Maddison91}.
-Main new features in EIRENE for this project was implementation of multiply connected 2D curvilinear grids into EIRENE, so that the \ac{CFD} and Monte Carlo code operate on identical meshes, without any interpolation necessary.
-Also the ``short-cycle" option, a semi-implicit correction scheme for Monte Carlo source terms between large \ac{CFD} $\Delta t$ cycles, without new or at least with strongly reduced MC runs in between, was implemented.
+For B2-EIRENE this code interfacing segment was developed largely under support
+of a KFA-EURATOM contract (\cite{kn:Net}), and first applications have been
+published for ITER configurations, see \cite{kn:Reiter91b} and
+\cite{kn:Maddison91}.
+Main new features in EIRENE for this project was implementation of multiply
+connected 2D curvilinear grids into EIRENE, so that the \ac{CFD} and Monte
+Carlo code operate on identical meshes, without any interpolation necessary.
+Also the ``short-cycle" option, a semi-implicit correction scheme for Monte
+Carlo source terms between large \ac{CFD} $\Delta t$ cycles, without new or at
+least with strongly reduced MC runs in between, was implemented.
 
-Subsequently a large number of application runs, in particular those carried out at IPP-Garching (Ralf Schneider et al.) and AEA-Culham Laboratories
+Subsequently a large number of application runs, in particular those carried
+out at IPP-Garching (Ralf Schneider et al.
+) and AEA-Culham Laboratories
 (Geoff Maddison) have lead to identification of many critical issues
 and limitations of the code and to permanent improvements
 until these days.
-Typical convergence behaviour of the combined code system (``saturated residuals") is described in the new \cref{sec1.7}, written in collaboration with G.P.Maddison, AEA Culham Laboratories.
+Typical convergence behaviour of the combined code system (``saturated
+residuals") is described in the new \cref{sec1.7}, written in collaboration
+with G.P.Maddison, AEA Culham Laboratories.
 
-Detlev Reiter, Spring         1998 
+Detlev Reiter, Spring	      1998 
 
-\section*{Foreword to \ordinalnum{3} edition} \label{forew3} \bigskip During the year 2001 a major revision of the EIRENE code has been carried out, largely in order to implement a somewhat more modern FORTRAN structure into the code.
-EIRENE code versions from this particular year 2001 then have sometimes been referred to as ``EIRENE-FACELIFT"  (= EIRENE$_{2001}$ in the notation of this manual).
+\section*{Foreword to \ordinalnum{3} edition} \label{forew3} \bigskip During
+the year 2001 a major revision of the EIRENE code has been carried out, largely
+in order to implement a somewhat more modern FORTRAN structure into the code.
+EIRENE code versions from this particular year 2001 then have sometimes been
+referred to as ``EIRENE-FACELIFT"  (= EIRENE$_{2001}$ in the notation of this
+manual).
 
-In particular a dynamical allocation of storage (rather than the hitherto necessary pre-assign\-ment of storage in the PARAMETER statements collected in the previous PARMUSR file) is now in place.
-This dynamic memory management has led to a replacement of the previous ``Common-Blocks'' now by ``Modules'', and to the entire elimination of the ``Equivalence'' statements used for storage economy in earlier versions.
+In particular a dynamical allocation of storage (rather than the hitherto
+necessary pre-assign\-ment of storage in the PARAMETER statements collected in
+the previous PARMUSR file) is now in place.
+This dynamic memory management has led to a replacement of the previous
+``Common-Blocks'' now by ``Modules'', and to the entire elimination of the
+``Equivalence'' statements used for storage economy in earlier versions.
 
 Further main upgrades are related to:
 \begin{itemize}
-  \item incident-species dependent surface interaction models, pumping speeds, sputter models etc., can now be controlled by input flags, rather than the previous quite difficult implementation via the USR-routines.
-  \item integration volumes of volume averaged tallies can now be larger than the grid cell volumes, i.e., the plasma background and geometrical discretization, which is not very storage sensitive, can be made much finer than the neutral particle volume averaged tally profile output.
-  \item discretization of general multiply connected 3D volumes by tetrahedron-grids.
+  \item incident-species dependent surface interaction models, pumping speeds,
+        sputter models etc., can now be controlled by input flags, rather than the
+        previous quite difficult implementation via the USR-routines.
+  \item integration volumes of volume averaged tallies can now be larger than the
+        grid cell volumes, i.e., the plasma background and geometrical discretization,
+        which is not very storage sensitive, can be made much finer than the neutral
+        particle volume averaged tally profile output.
+  \item discretization of general multiply connected 3D volumes by
+        tetrahedron-grids.
   \item photons as new type of test particle species.
-        The photon\_dummy module allows simple photon transport (one-speed Boltzmann-equation) with spatial profiles of spontaneous emission, Doppler line broadening, for optically thin lines only, with inclusion of (multiple) surface reflection.
-        The full photon module additionally allows for various other line broadening mechanisms and photon re-absorption, stimulated emission, radiation trapping (excitation-hopping), iteration with neutral gas excitation population kinetics, etc.
-  \item The code interface module EIRCOP has been supplemented by another quite similar program, which, however, is based upon a general (unstructured) discretization of 2D geometries by triangles.
-        With this option the non-linear options (neutral--neutral  and neutral-photon interactions), have become accessible to the iterative B2-EIRENE mode of operation (e.g.\ forming the version SOLPS4.3 currently used for ITER and DEMO divertor design studies).
+        The photon\_dummy module allows simple photon transport (one-speed
+        Boltzmann-equation) with spatial profiles of spontaneous emission, Doppler line
+        broadening, for optically thin lines only, with inclusion of (multiple) surface
+        reflection.
+        The full photon module additionally allows for various other line broadening
+        mechanisms and photon re-absorption, stimulated emission, radiation trapping
+        (excitation-hopping), iteration with neutral gas excitation population
+        kinetics, etc.
+  \item The code interface module EIRCOP has been supplemented by
+        another quite similar program, which, however, is based upon a general
+        (unstructured) discretization of 2D geometries by triangles.
+        With this option the non-linear options (neutral--neutral  and neutral-photon
+        interactions), have become accessible to the iterative B2-EIRENE mode of
+        operation (e.g.\ forming the version SOLPS4.3 currently used for ITER and DEMO
+        divertor design studies).
 \end{itemize}
 
-EIRENE versions 2003 and younger have been compiled and successfully tested at FZ-J{\"u}lich on the following systems and compilers:
+EIRENE versions 2003 and younger have been compiled and successfully tested at
+FZ-J{\"u}lich on the following systems and compilers:
 
-Linux: Suse 11.1 and all predecessors down to Suse 6.***:
+Linux: Suse 11.1 and all predecessors down to Suse 6.
+***:
 \begin{itemize}
   \item pgf90 Portland Compiler Version 5.2-4  --- 10.1
   \item ifort Intel Fortran Compiler
         Version 8.1 --- 11.1
   \item lf95 Lahey Fortran Compiler Version 6.2
-  \item nagf95  NAG Fortran Compiler Version 5.0 --- 5.2
+  \item nagf95	NAG Fortran Compiler Version 5.0 --- 5.2
 \end{itemize}
 AIX: AIX 4.3 and 5.2
 \begin{itemize}
-  \item xlf95   XL Fortran for AIX Version 8.1
+  \item xlf95	XL Fortran for AIX Version 8.1
 \end{itemize}
 Windows: Windows 2000 und Windows XP
 \begin{itemize}
   \item Compaq Visual Fortran Version 6.6
 \end{itemize}
 
-Detlev Reiter, Spring         2010
+Detlev Reiter, Spring	      2010

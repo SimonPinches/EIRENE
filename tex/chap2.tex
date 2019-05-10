@@ -4,7 +4,8 @@
 
 \medskip 
 
-All input data from unit IUNIN are read in subroutine  INPUT using formatted I/O.
+All input data from unit IUNIN are read in subroutine  INPUT using formatted
+I/O.
 There are 14 "blocks", each one starting with a card 
 
 \begin{lstlisting}
@@ -12,13 +13,15 @@ There are 14 "blocks", each one starting with a card
 \end{lstlisting} 
 
 where n is the number of the input block, n = 1, 2, \dots, 14.
-Some blocks are subdivided into so called "sub-blocks", each one starting with a card 
+Some blocks are subdivided into so called "sub-blocks", each one starting with
+a card 
 
 \begin{lstlisting}
 ** TEXT .
 \end{lstlisting} 
 
-Each input block is described in one of the following 14 \crefrange{sec2.1}{sec2.14}:
+Each input block is described in one of the following 14
+\crefrange{sec2.1}{sec2.14}:
 
 \medskip
 
@@ -54,7 +57,10 @@ Each input block is described in one of the following 14 \crefrange{sec2.1}{sec2
 
 \medskip
 
-This last block 14 may be read in from the user supplied part (with any format specified there) from this same unit IUNIN, (but equally well from any other unit specified there), e.g., from the subroutine INFCOP for interfacing with other codes.
+This last block 14 may be read in from the user supplied part (with any format
+specified there) from this same unit IUNIN, (but equally well from any other
+unit specified there), e.g., from the subroutine INFCOP for interfacing with
+other codes.
 
 \medskip
 
@@ -68,46 +74,93 @@ cgs units are used, with two exceptions:
 
 All \textbf{temperatures and energies} are in \si{\electronvolt}.
 
-All \textbf{particle fluxes} are in Ampere (i.e.\ \SI{1.6022e-19}{\#\per\second}), even neutral particle fluxes.
-Since energies are given in \si{\electronvolt} units, a particle flux $\times$ energy is already in \si{\watt}.
+All \textbf{particle fluxes} are in Ampere (i.e.\
+\SI{1.6022e-19}{\#\per\second}), even neutral particle fluxes.
+Since energies are given in \si{\electronvolt} units, a particle flux $\times$
+energy is already in \si{\watt}.
 
-E.g., to convert a \textbf{gas flow rate} $Q$ (= ``mass-flow rate" at temperature $T_0$), which is a quantity given with dimension pressure times volume divided by time, to a particle flux (source strength, given in 1/\;time), one utilizes the universal gas law $P \times V = N \times k_B T$ to convert from pressure times volume (typically at standard temperature $T_0= \SI{273.15}{\kelvin}$) to the number $N$ of particles.
-For example  $x$ \ac{SLPM} first divide $x$ by \num{22.4} (then: \si{\mole\per\minute}, at ``standard conditions" = normal pressure \SI{1013.25}{\milli\bar} and normal temperature $T_0$).
-Next multiply by Avogadro's no.\ $N_A = \num{6.0221e23}$, (i.e., then particles~\si{\per\minute}), then divide by \num{60} (then: particles~\si{\per\second}), and finally multiply by the elementary charge \num{1.6022e-19} (then \si{\ampere}, as used for particle fluxes in EIRENE).
-Gas (mass-) flow rates given in other units, e.g.\ \si{\torr\cubic\metre\per\second} are converted correspondingly.
+E.g., to convert a \textbf{gas flow rate} $Q$ (= ``mass-flow rate" at
+temperature $T_0$), which is a quantity given with dimension pressure times
+volume divided by time, to a particle flux (source strength, given in
+1/\;time), one utilizes the universal gas law $P \times V = N \times k_B T$ to
+convert from pressure times volume (typically at standard temperature $T_0=
+  \SI{273.15}{\kelvin}$) to the number $N$ of particles.
+For example  $x$ \ac{SLPM} first divide $x$ by \num{22.4} (then:
+\si{\mole\per\minute}, at ``standard conditions" = normal pressure
+\SI{1013.25}{\milli\bar} and normal temperature $T_0$).
+Next multiply by Avogadro's no.\ $N_A = \num{6.0221e23}$, (i.e., then
+particles~\si{\per\minute}), then divide by \num{60} (then:
+particles~\si{\per\second}), and finally multiply by the elementary charge
+\num{1.6022e-19}
+(then \si{\ampere}, as used for particle fluxes in EIRENE).
+Gas (mass-) flow rates given in other units, e.g.\
+\si{\torr\cubic\metre\per\second} are converted correspondingly.
 
-Another frequently used dimensional quantity is the (effective) \textbf{pumping speed} $S$, and also \textbf{conductance} $L$ which both have dimension volume / time (e.g.\ litres/sec), i.e.\ these are ``volumetric flow rates" rather than mass flow rates.
-Multiplying these volume flow rates by the entrance gas pressure (or by the pressure difference in case of conductance) produces the (pump-) throughput, a mass flow rate again, i.e., at given temperature a ``pumped particle flux" (\si{\per\second}).
+Another frequently used dimensional quantity is the (effective) \textbf{pumping speed} $S$, and also \textbf{conductance} $L$ which both have dimension volume
+/ time (e.g.\ litres/sec), i.e.\ these are ``volumetric flow rates" rather than
+mass flow rates.
+Multiplying these volume flow rates by the entrance gas pressure (or by the
+pressure difference in case of conductance) produces the (pump-) throughput, a
+mass flow rate again, i.e., at given temperature a ``pumped particle flux"
+(\si{\per\second}).
 
-Pumping speeds and conductances typically depend on pressure themselves, and on temperature $T$ and the type of gas (mass $m$).
-In the molecular flow regime the pressure dependence in $S, L$ diminishes, and $S$ ($L$) can be written as product $S,L =A_{S,L} \cdot v$, of an area and velocity, with $v \propto \sqrt{T/m}$.
-Implementation of a specified volumetric flow (e.g.\ a given effective pumping speed at pumps) in EIRENE is via effective surface area and  sticking probabilities, see \cref{sec2.6.1}, input flag \textbf{RECYCT} 
+Pumping speeds and conductances typically depend on pressure themselves, and on
+temperature $T$ and the type of gas (mass $m$).
+In the molecular flow regime the pressure dependence in $S, L$ diminishes, and
+$S$ ($L$) can be written as product $S,L =A_{S,L} \cdot v$, of an area and
+velocity, with $v \propto \sqrt{T/m}$.
+Implementation of a specified volumetric flow (e.g.\ a given effective pumping
+speed at pumps) in EIRENE is via effective surface area and  sticking
+probabilities, see \cref{sec2.6.1}, input flag \textbf{RECYCT}
 
 All \textbf{densities} are in \si{\per\cubic\centi\metre}.
 
-All \textbf{velocities} are in either \si{\centi\metre\per\second} or in (isothermal) Mach-number units.
+All \textbf{velocities} are in either \si{\centi\metre\per\second} or in
+(isothermal) Mach-number units.
 
 All geometrical data are in \si{\centi\metre}.
 
-Note: consequently, e.g., energy densities are in $\si{\electronvolt\per\cubic\centi\metre}$, and energy fluxes are given in \si{\electronvolt\ampere}, i.e., in \si{\watt}.
+Note: consequently, e.g., energy densities are in
+$\si{\electronvolt\per\cubic\centi\metre}$, and energy fluxes are given in
+\si{\electronvolt\ampere}, i.e., in \si{\watt}.
 
-Hence: In order to convert from EIRENE \textbf{energy density} units (\si{\electronvolt\per\cubic\centi\metre}) into  \textbf{pressure} units in \si{\newton\per\square\metre} (i.e., Pascal: \si{\pascal}) one must multiply by \num{1.6022e-19} (\si{\electronvolt} to \si{\newton\metre}) and multiply by \num{1e6} ($\si{\per\cubic\centi\metre} \rightarrow \si{\per\cubic\metre}$).
-Check: \SI{1}{\pascal} gas at \SI{300}{\kelvin} corresponds to about $\num{2.7e14} \ \times \ \SI{0.026}{\electronvolt\per\cubic\centi\metre} \approx \SI{7e12}{\electronvolt\per\cubic\centi\metre}$, or:
-a gas pressure P in \si{\pascal}, at gas temperature T (\si{\kelvin}) corresponds to a gas density n with $n (\si{\per\cubic\metre}) = P/k_B T$,
+Hence: In order to convert from EIRENE \textbf{energy density} units
+(\si{\electronvolt\per\cubic\centi\metre}) into  \textbf{pressure} units in
+\si{\newton\per\square\metre} (i.e., Pascal: \si{\pascal}) one must multiply by
+\num{1.6022e-19} (\si{\electronvolt} to \si{\newton\metre}) and multiply by
+\num{1e6} ($\si{\per\cubic\centi\metre} \rightarrow \si{\per\cubic\metre}$).
+Check: \SI{1}{\pascal} gas at \SI{300}{\kelvin} corresponds to about
+$\num{2.7e14} \ \times \ \SI{0.026}{\electronvolt\per\cubic\centi\metre}
+  \approx \SI{7e12}{\electronvolt\per\cubic\centi\metre}$, or:
+a gas pressure P in \si{\pascal}, at gas temperature T (\si{\kelvin})
+corresponds to a gas density n with $n (\si{\per\cubic\metre}) = P/k_B T$,
 with $k_B = \num{1.38e-23}
 $ the Boltzmann constant in \si{\joule\per\kelvin} units.
-At \SI{300}{\kelvin} and \SI{1}{\pascal}, the corresponding gas density is $n=\SI{2.415\dots e20}{\per\cubic\metre} = \SI{2.415\dots e14}{\per\cubic\centi\metre}$.
+At \SI{300}{\kelvin} and \SI{1}{\pascal}, the corresponding gas density is
+$n=\SI{2.415\dots e20}{\per\cubic\metre} = \SI{2.415\dots e14}{\per\cubic\centi\metre}$.
 
-For example, energy densities as computed by EIRENE defaults tallies 5, 6, 7 and 8 (see \cref{tab2}) must be converted into ``temperature densities" (a factor 2/3, if one neglects the energy of the directed motion) and then be re-scaled to pressure units as described above.
+For example, energy densities as computed by EIRENE defaults tallies 5, 6, 7
+and 8 (see \cref{tab2}) must be converted into ``temperature densities" (a
+factor 2/3, if one neglects the energy of the directed motion) and then be
+re-scaled to pressure units as described above.
 
 For further scaling to other pressure units note, e.g.:
 
 \SI{101.3}{\pascal} = \SI{760}{\milli\torr} = \SI{1}{\milli\bar}
 
-Further: momentum is in \si{\gram\centi\metre\per\second}, and a \textbf{momentum flux} or momentum rate of change is in \si{\gram\centi\metre\per\second\ampere} (per cell) and the momentum source density in the EIRENE tallies for interfacing with plasma codes is then in \si{\gram\centi\metre\per\second\ampere\per\cubic\centi\metre}.
+Further: momentum is in \si{\gram\centi\metre\per\second}, and a
+\textbf{momentum flux} or momentum rate of change is in
+\si{\gram\centi\metre\per\second\ampere} (per cell) and the momentum source
+density in the EIRENE tallies for interfacing with plasma codes is then in
+\si{\gram\centi\metre\per\second\ampere\per\cubic\centi\metre}.
 
-Hence, conversion from \si{\gram\centi\metre\per\second\ampere} into \si{\pascal\square\metre} (momentum source per cell in plasma momentum balance equations in SI units) is done by firstly multiplying with \num{1e-5} (then: \si{\kilo\gram\metre\per\second\ampere}) and then dividing by \num{1.6022e-19} (hence: \si{\kilo\gram\metre\per\square\second}).
-After dividing by the cell volume (\si{\cubic\metre}) the momentum source is in \si{\pascal\per\metre}, or \si{\newton\per\cubic\metre} (force density).
+Hence, conversion from \si{\gram\centi\metre\per\second\ampere} into
+\si{\pascal\square\metre} (momentum source per cell in plasma momentum balance
+equations in SI units) is done by firstly multiplying with \num{1e-5} (then:
+\si{\kilo\gram\metre\per\second\ampere}) and then dividing by \num{1.6022e-19}
+(hence: \si{\kilo\gram\metre\per\square\second}).
+After dividing by the cell volume (\si{\cubic\metre}) the momentum source is in
+\si{\pascal\per\metre}, or \si{\newton\per\cubic\metre} (force density).
 
 \medskip
 
@@ -115,33 +168,45 @@ After dividing by the cell volume (\si{\cubic\metre}) the momentum source is in 
 
 \medskip 
 
-The format statement numbers in subroutine INPUT start with 666\dots\ for reading and with 777\dots\ for writing.
+The format statement numbers in subroutine INPUT start with 666\dots\ for
+reading and with 777\dots\ for writing.
 The following conventions are used:
 \begin{itemize}
-  \item Standard Fortran naming conventions, i.e., variable names starting with the letters I, J, \dots, N are Integer, all other variables are Real.
+  \item Standard Fortran naming conventions, i.e., variable names starting with
+        the letters I, J, \dots, N are Integer, all other variables are Real.
 \end{itemize}
 In addition to these standard convention the following rules are employed:
 \begin{itemize}
   \item Character strings start with the letter C\dots\ or with T\dots
-  \item Logical variables start with NL\dots, LG\dots\ or with TRC\dots
+  \item
+        Logical variables start with NL\dots, LG\dots\ or with TRC\dots
 \end{itemize}
-The format for a card containing only real variables: (6E12.4) 
+The format for a card containing only real variables: (6E12.4)
 
-The format for a card containing only integer variables: (12I6) 
+The format for a card containing only integer variables: (12I6)
 
-The format for a card containing only logical variables: (12(5L1,1X)) 
+The format for a card containing only logical variables: (12(5L1,1X))
 
 The format for a card containing text: (A72) 
 
-The format for a card containing K (K $<$ 6) integer variables first and then up to 6-K real variables next: (K(I6,6x),(6-K)E12.4) 
+The format for a card containing K (K $<$ 6) integer variables first and then
+up to 6-K real variables next: (K(I6,6x),(6-K)E12.4) 
 
-An input card starting with '*' is recognized as a comment line, i.e., it does not contain input data.
-These comment lines should not start with  '**' or '***', because in this latter case EIRENE would assume that the input for the current block is completed.
-It would expect the first card of the following block (or '* comment\dots' lines belonging to this next block) as next card.
-Any data not read from the input file, before the following block is read, are set to default values.
+An input card starting with '*' is recognized as a comment line, i.e., it does
+not contain input data.
+These comment lines should not start with  '**' or '***', because in this
+latter case EIRENE would assume that the input for the current block is
+completed.
+It would expect the first card of the following block (or '* comment\dots'
+lines belonging to this next block) as next card.
+Any data not read from the input file, before the following block is read, are
+set to default values.
 
-An arbitrary number of such comment lines may be included in the input file, but each block of comment lines must always be put at the beginning of a block or sub-block.
-I.e., comment lines are only identified by EIRENE if preceded by a card starting with '**' or '***' indicating a new sub-block or block respectively.
+An arbitrary number of such comment lines may be included in the input file,
+but each block of comment lines must always be put at the beginning of a block
+or sub-block.
+I.e., comment lines are only identified by EIRENE if preceded by a card
+starting with '**' or '***' indicating a new sub-block or block respectively.
 
 \medskip
 
@@ -179,4 +244,5 @@ and so on.
 \medskip
 
 In very few cases formats other than these are used.
-They are then explicitly mentioned in this manual and in case of doubt the user should check in subroutine INPUT.
+They are then explicitly mentioned in this manual and in case of doubt the user
+should check in subroutine INPUT.
