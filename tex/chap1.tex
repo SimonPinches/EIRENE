@@ -143,8 +143,6 @@ The familiar Boltzmann
 equation for the distribution function $f=f_{i_0}$ for a particular species (a particular component of a gas mixture) $i_0$
 reads
 
-% gleichungsnummern fest auf eq. 1a setzen
-\renewcommand{\theequation}{1.1a}
 \begin{align} \label{eq1a}
 \lbrack\frac\partial{\partial t} + \vv \cdot
 \nabla_{\vr} +
@@ -159,13 +157,12 @@ f_b(\vV')  \nonumber \\
 \sigma(\vv,\vV;\vv',\vV')
 |\vv-\vV| f(\vv) f_b(\vV)
 \nonumber \\  
-& + Q(\vr,\vv,t)
+& + Q(\vr,\vv,t) \tag{1.1a}
 \end{align}
 
 % gleichungsnummern einen hochzaehlen.
-%\addtocounter{equation}{+1}
-%  gleichungszaehler auf default mode zuruecksetzen
-\renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
+\addtocounter{equation}{+1}
+
 There is one such equation for each ``particle species $i$" considered, but for elastic collision
 without exchange between species. Always only two of them (here: $i_0$ and $b$) are directly coupled to each other.
 
@@ -225,8 +222,6 @@ D_t^{i_0} = \frac\partial{\partial t} + \vv \cdot
 \end{equation}
 for the left hand side (convective part) of \cref{eq1a}, leads to the Boltzmann equation in more commonly used text book form:
 
-% gleichungsnummern fest auf eq. 1.1a1 setzen
-\renewcommand{\theequation}{1.1a1}
 \begin{align} \label{eq1a1}\nonumber
 D_t^{i_0} \ f_{i_0}(\vr,\vv,t)
 & = 
@@ -235,13 +230,11 @@ D_t^{i_0} \ f_{i_0}(\vr,\vv,t)
 |\vv-\vV| \left[f_{i_0}(\vv')
 f_b(\vV')- f_{i_0}(\vv) f_b(\vV)\right]
 \nonumber \\  
-& + Q_{i_0}(\vr,\vv,t)
+& + Q_{i_0}(\vr,\vv,t) \tag{1.1a1}
 \end{align}
 
 % gleichungsnummern einen hochzaehlen.
-%\addtocounter{equation}{+1}
-%  gleichungszaehler auf default mode zuruecksetzen
-\renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
+\addtocounter{equation}{+1}
 
 and the velocities $\vv',\vV $ are uniquely determined by $\vv, \vV'$ and scattering angles $\Omega$ via mass and energy conservation \cref{massenergy}.
 
@@ -321,8 +314,6 @@ With these formal substitutions the Boltzmann equation for distribution function
 form which is often more convenient, in particular in linear
 transport theory (from now on omitting subscript $i_0$ on all terms):
 
-% gleichungsnummern fest auf eq. 1.1b setzen
-\renewcommand{\theequation}{1.1b}
 \begin{align} \label{eq1b}
 \lbrack\frac\partial{\partial t} + \vv \cdot
 \nabla_{\vr} +
@@ -334,12 +325,8 @@ f(\vv)
 \int d^3{v}' \ C(\vv' \rightarrow \vv)
 |\vv'|
 f(\vv') \nonumber \\
-  &+ Q(\vr,\vv,t)
+  &+ Q(\vr,\vv,t) \tag{1.1b}
 \end{align}
-%  gleichungszaehler auf default mode zuruecksetzen
-\renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
-% gleichungsnummern einen runterzaehlen.
-\addtocounter{equation}{-1}
 which, in the linear case (no self collisions, $f_b$ given externally) is a linear equation for the distribution
 function $f = f_{i_0}(\vx,\vv,t)$ for species $i_0$.
 
@@ -380,8 +367,6 @@ i.e.\ as the zeroth $\Omega$ - moment of $\Phi(\vr,\vv,i)$.
 In particular for stationary ($\partial/\partial t = 0$)  and force free ($\vF = 0$) problems, as e.g.\ often encountered in linear transport theory such as
 neutronics, radiation transport, neutral particle transport in plasmas, etc.,
 the transport equation then reduces to the more compact form:
-% gleichungsnummern fest auf eq. 1.1c setzen
-\renewcommand{\theequation}{1.1c}
 \begin{equation} \label{eq1c}
 \nabla_{\vr}
  \Phi(\vr,\vv,t) +
@@ -389,12 +374,8 @@ the transport equation then reduces to the more compact form:
 \Phi(\vr,\vv)
  = Q(\vr,\vv,t) +
 \int d^3{v}' \ C(\vr;\vv' \rightarrow \vv)
-\Phi(\vr,\vv')
+\Phi(\vr,\vv') \tag{1.1c}
 \end{equation}
-%  gleichungszaehler auf default mode zuruecksetzen
-\renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
-% gleichungsnummern einen runterzaehlen.
-\addtocounter{equation}{-1}
 
 Alternatively, in computational domains with non-vanishing
 collisionality (i.e., if $\Sigma_t(x) \ne 0$ everywhere) the (pre-)
@@ -511,15 +492,9 @@ same transport equation can also be written in integral form. This formal proced
 
 The resulting integral equation is often most conveniently written for the (ingoing-) collision density $\Psi$ \cref{defPsi} rather than for
 transport flux $\Phi$:
-% gleichungsnummern fest auf eq. 1.1d setzen
-\renewcommand{\theequation}{1.1d}
 \begin{equation} \label{eq1d}
-\Psi(x) = S(x) + \int dx ' \Psi (x ') \cdot K(x '\rightarrow x)  .
+\Psi(x) = S(x) + \int dx ' \Psi (x ') \cdot K(x '\rightarrow x)  . \tag{1.1d}
 \end{equation}
-% gleichungsnummern einen runterzaehlen.
-\addtocounter{equation}{-1}
-%  gleichungszaehler auf default mode zuruecksetzen
-\renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
 This equation has the general form of the backward integral
 equation of a Markovian jump-process and it is therefore
 particularly well suited for a Monte Carlo method of solution. The
@@ -660,15 +635,9 @@ whereas the integral term in equation \cref{eq1d} describes the
 contribution to $\Psi$ from all higher generations. The quantity $S$
 can be written as:
 %\begin{subequations}  subeqs. functioniert nicht bei latex2html
-% gleichungsnummern fest auf eq. 1.6a setzen
-\renewcommand{\theequation}{1.6a}
 \begin{equation} \label{eq1.6a}
-S(x) = \int dx '   Q(x ' )  \cdot T(x ' \rightarrow x),
+S(x) = \int dx '   Q(x ' )  \cdot T(x ' \rightarrow x), \tag{1.6a}
 \end{equation}
-% gleichungsnummern einen runterzaehlen.
-\addtocounter{equation}{-1}
-%  gleichungszaehler auf default mode zuruecksetzen
-\renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
 with a source density $Q$. As the problem is linear, $Q$ can be
 normalized to 1 and, thus, $Q$ can be considered a distribution
 density in $\mu$ -space for the ``\textsl{primary}" birth points of
@@ -676,16 +645,10 @@ particles, as, e.g., opposed to the ``\textsl{secondary}" birth point
 distribution (or ``post collision density") $\chi$ of particles
 after a collision event
 
-% gleichungsnummern fest auf eq. 1.6b setzen
-\renewcommand{\theequation}{1.6b}
 \begin{equation} \label{eq1.6b}
 \chi (x) = \int dx '
-\Psi(x ' )  \cdot C(x ' \rightarrow x).
+\Psi(x ' )  \cdot C(x ' \rightarrow x). \tag{1.6b}
 \end{equation}
-% gleichungsnummern einen runterzaehlen.
-\addtocounter{equation}{-1}
-%  gleichungszaehler auf default mode zuruecksetzen
-\renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
 %\end{subequations}  subeqs. functioniert nicht bei latex2html
 
 It can be shown that a unique solution $\Psi(x)$ exists subject to
