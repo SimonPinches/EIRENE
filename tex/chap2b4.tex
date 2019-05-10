@@ -1,49 +1,33 @@
-\section{Input Data for Species Specification
-and Atomic Physics Module} \label{sec2.4}
+\section{Input Data for Species Specification and Atomic Physics Module} \label{sec2.4}
 
-\textbf{General remarks}
+\textbf{General remarks} 
 
-\medskip
+\medskip 
 
-EIRENE can handle up to NATM ``atom" species, NMOL ``molecule"
-species, NION ``test ion" species, NPHOT ``photon" species (lines)
-and NREAC different atomic, molecular or photonic reactions
-between these ``test particles" and the ``bulk ions" or electrons.
-There may be up to NPLS ``bulk ion" species, and one electron gas
-derived internally from the assumption of local charge neutrality.
-Amongst the heavy background particles (the ``bulk ions") may be
-species with charge state zero, i.e., neutral particles. By abuse
-of language, we refer to them as ``bulk ions" as well, but we
-mean in this case: heavy background particles, i.e.\ more general objects.
+EIRENE can handle up to NATM ``atom" species, NMOL ``molecule" species, NION ``test ion" species, NPHOT ``photon" species (lines) and NREAC different atomic, molecular or photonic reactions between these ``test particles" and the ``bulk ions" or electrons.
+There may be up to NPLS ``bulk ion" species, and one electron gas derived internally from the assumption of local charge neutrality.
+Amongst the heavy background particles (the ``bulk ions") may be species with charge state zero, i.e., neutral particles.
+By abuse of language, we refer to them as ``bulk ions" as well, but we mean in this case: heavy background particles, i.e.\ more general objects.
 
-NATM, NMOL, NION, NPHOT, NPLS and NREAC are specified in the
-parameter block ``PARMUSR", see: ``Parameter Statements" (\cref{sec3.1} 
-below, for versions EIRENE$_{2000}$ and older), or are determined automatically
-from the input file.
+NATM, NMOL, NION, NPHOT, NPLS and NREAC are specified in the parameter block ``PARMUSR", see: ``Parameter Statements" (\cref{sec3.1} below, for versions EIRENE$_{2000}$ and older), or are determined automatically from the input file.
 
-Masses in EIRENE (RMASSA, RMASSM, RMASSI, RMASSP assigned to the objects ``atoms", ``molecules",
-``test ions", ``photons" and ``bulk ions", respectively) are in units of the proton mass, which is taken to
-be 1.0073 in atomic mass units.
+Masses in EIRENE (RMASSA, RMASSM, RMASSI, RMASSP assigned to the objects ``atoms", ``molecules", ``test ions", ``photons" and ``bulk ions", respectively) are in units of the proton mass, which is taken to be 1.0073 in atomic mass units.
 
 \medskip
 
-At the beginning of input block 4 EIRENE first searches for the character
-string ``INCLUDE" in the input card
-directly following the card
+At the beginning of input block 4 EIRENE first searches for the character string ``INCLUDE" in the input card directly following the card 
 
 \begin{lstlisting}
 *** 4. DATA FOR.....
-\end{lstlisting}
+\end{lstlisting} 
 
-If such a character string is found here, then the rest of input blocks 4 and 5 is skipped and a proper
-``A\&M model data file from a pre-compiled EIRENE AM-library can be used.
+If such a character string is found here, then the rest of input blocks 4 and 5 is skipped and a proper ``A\&M model data file from a pre-compiled EIRENE AM-library can be used.
 
-If such a library AM data set is not included, then the ``original" EIRENE procedure is followed,
-to define general test particles (objects) (atoms, molecules, test ions, photons) and assign reactions
-(A\&M data sets) to each of them from external or internal databases. This is described next:
+If such a library AM data set is not included, then the ``original" EIRENE procedure is followed, to define general test particles (objects) (atoms, molecules, test ions, photons) and assign reactions (A\&M data sets) to each of them from external or internal databases.
+This is described next:
 \bigskip
 
-First EIRENE reads NREACI ``non-default" atomic data cards, (if any, i.e., if NREACI $>$ 0)
+First EIRENE reads NREACI ``non-default" atomic data cards, (if any, i.e., if NREACI $>$ 0) 
 
 \begin{lstlisting}
       NREACI
@@ -53,47 +37,32 @@ First EIRENE reads NREACI ``non-default" atomic data cards, (if any, i.e., if NR
 
 C       (format: I3,1X,A6,1X,A4,Axxx,A3,2I3,3E12.4)
       ENDDO
-\end{lstlisting}
+\end{lstlisting} 
 
-either from external A\&M data files such as \lstinline|FILNAM = HYDHEL|, \lstinline|= METHAN|, \lstinline|= AMJUEL|, \lstinline|= H2VIBR|,
-for polynomial fits, or other data files
-of appropriate format.
+either from external A\&M data files such as \lstinline|FILNAM = HYDHEL|, \lstinline|= METHAN|, \lstinline|= AMJUEL|, \lstinline|= H2VIBR|, for polynomial fits, or other data files of appropriate format.
 
-RMN1, RMX1, R2MN, R2MX  (unless all set to default, =0.0) define the validity range of the fit, or table,
-and additional cards containing
-information on the proper asymptotic behavior are then read (see below).
+RMN1, RMX1, R2MN, R2MX  (unless all set to default, =0.0) define the validity range of the fit, or table, and additional cards containing information on the proper asymptotic behavior are then read (see below).
 
-Since Jan.\ 2018 and younger versions direct access to atomic data from internal CR codes
-(evaluated on a cell by cell basis)
-is re-activated by
+Since Jan.\ 2018 and younger versions direct access to atomic data from internal CR codes (evaluated on a cell by cell basis) is re-activated by 
 
 \begin{lstlisting}
       IR  CRM  H123  REAC  CRC  MASSP  MASST
 
 C     (format: I3,1X,A6,1X,A4,Axxx,A3,2I3,E12.4)
-\end{lstlisting}
+\end{lstlisting} 
 
-The character string 'CRM'  (A6 or A8) identifies which particular internal CR code
-is executed, cell by cell, and whether it is run in meta-stable resolved or
-meta-stable unresolved mode.
-Currently H and He codes are available. Documentation: unfinished. Optional input cards
-control further options, such as population escape factors (opacity effects), etc.
+The character string 'CRM'  (A6 or A8) identifies which particular internal CR code is executed, cell by cell, and whether it is run in meta-stable resolved or meta-stable unresolved mode.
+Currently H and He codes are available.
+Documentation: unfinished.
+Optional input cards control further options, such as population escape factors (opacity effects), etc. 
 
-The meaning of input variables is the same as above. This option bypasses
-data tables or data fits for collision radiative model rate coefficients, cooling rates,
-or population coefficients. The internal CR code is executed cell by cell in the
-initialisation phase. In older versions of EIRENE the intrinsic hydrogen collision radiative
-code had to be invoked from special, problem specific routines,
-as e.g.\ done for non-linear coupling
-between gas and radiation field since about 2002 in a particular version of MODUSR.f.
+The meaning of input variables is the same as above.
+This option bypasses data tables or data fits for collision radiative model rate coefficients, cooling rates, or population coefficients.
+The internal CR code is executed cell by cell in the initialisation phase.
+In older versions of EIRENE the intrinsic hydrogen collision radiative code had to be invoked from special, problem specific routines, as e.g.\ done for non-linear coupling between gas and radiation field since about 2002 in a particular version of MODUSR.f.
 Parameter DP (potential energy shift) is currently not available here.
 
-For tabulated (rather than fitted) collision reaction rates,
-electron cooling rates, etc., with a format derived from the
-so called ``\ac{ADAS} database format AFD11",
-or any other properly (2D) tabulated
-data source, i.e.\ with \lstinline|FILNAM = TAB2D|, or \lstinline|FILNAM = ADAS|
-the corresponding card reads:
+For tabulated (rather than fitted) collision reaction rates, electron cooling rates, etc., with a format derived from the so called ``\ac{ADAS} database format AFD11", or any other properly (2D) tabulated data source, i.e.\ with \lstinline|FILNAM = TAB2D|, or \lstinline|FILNAM = ADAS| the corresponding card reads:
 
 \begin{lstlisting}
       IR  TAB2D  H123  REAC  CRC  MASSP  MASST  DP
@@ -101,7 +70,8 @@ the corresponding card reads:
 C     (format: I3,1X,A6,1X,A4,Axxx,A3,2I3,E12.4)
 \end{lstlisting}
 
-or, alternatively, if \ac{ADAS} ADF11 files are used directly:
+or, alternatively, if \ac{ADAS}
+ADF11 files are used directly:
 
 \begin{lstlisting}
       IR  ADAS  H123  REAC  CRC  MASSP  MASST  DP
@@ -112,114 +82,71 @@ C     (format: I3,1X,A6,1X,A4,Axxx,A3,2I3,E12.4)
 C     (format: 4X,A2,1X,I3)
 \end{lstlisting}
 
-In this case an additional
-card is read (containing variables: ELNAME, IZ) for each IR entry, see below, to identify the species and ion charge state within the data file
-(e.g.\ within an \ac{ADAS} ADF11 file folder).
+In this case an additional card is read (containing variables: ELNAME, IZ) for each IR entry, see below, to identify the species and ion charge state within the data file (e.g.\ within an \ac{ADAS} ADF11 file folder).
 
-
-For photonic emission and absorption data (line shapes), i.e.\ for \lstinline|FILNAM = PHOTON|,
-the line is shortened to
+For photonic emission and absorption data (line shapes), i.e.\ for \lstinline|FILNAM = PHOTON|, the line is shortened to 
 
 \begin{lstlisting}
       IR  PHOTON  H123  REAC
 
 C     (format: I3,1X,A6,1X,A4,Axxx)
-\end{lstlisting}
+\end{lstlisting} 
 
-for reading from the spectroscopic line-shape database \lstinline|PHOTON|,
-but additional lines are needed to
-specify the line broadening options. See below.
+for reading from the spectroscopic line-shape database \lstinline|PHOTON|, but additional lines are needed to specify the line broadening options.
+See below.
 
-There also exists an option for specifying constant (or very simple functional dependencies)
-cross sections,
-reaction rate coefficients, reaction rates, etc.
-directly via the input file, without resorting to an external database. This has proven useful for testing purposes,
-e.g.\ comparison with simple analytic or numerical solutions. In this case: \lstinline|FILNAM = CONST|, further details: see below.
+There also exists an option for specifying constant (or very simple functional dependencies) cross sections, reaction rate coefficients, reaction rates, etc. directly via the input file, without resorting to an external database.
+This has proven useful for testing purposes, e.g.\ comparison with simple analytic or numerical solutions.
+In this case: \lstinline|FILNAM = CONST|, further details: see below.
 
+Later EIRENE will assign the relevant atomic, molecular or photonic processes to each test particle (and also to bulk particles) from either this set of NREACI processes, or from a small set of internal ``default processes", which are hard wired in EIRENE.
 
-Later EIRENE will assign the relevant atomic,
-molecular or photonic processes to each test particle (and also to bulk particles) from either this
-set of NREACI processes, or from a small set of internal ``default
-processes", which are hard wired in EIRENE.
-
-In versions younger than 2002 each reaction in these databases can contain
-a string 'fit-flag = value', with IFTFLG=value. IFTFLG is used in EIRENE
-to identify the type of fitting expression to be evaluated with the fitting
-coefficients from the database.
+In versions younger than 2002 each reaction in these databases can contain a string 'fit-flag = value', with IFTFLG=value.
+IFTFLG is used in EIRENE to identify the type of fitting expression to be evaluated with the fitting coefficients from the database.
 
 By default: IFTFLG=0 for all data, i.e., single or double polynomial fits.
 
-In addition to the fit coefficients themselves also the validity range of the fits, and
-additional coefficients for asymptotic expressions beyond this range,
-can the read from the data files (if available)
-or can be specified explicitly for each set of data in the input file.
+In addition to the fit coefficients themselves also the validity range of the fits, and additional coefficients for asymptotic expressions beyond this range, can the read from the data files (if available) or can be specified explicitly for each set of data in the input file.
 
-All atomic rate coefficients and cross sections can be scaled with a constant
-factor (FREAC, see below), for sensitivity studies.
+All atomic rate coefficients and cross sections can be scaled with a constant factor (FREAC, see below), for sensitivity studies.
 
-Excluded from this scaling option are all photonic processes and those elastic collisions
-for which EIRENE uses an interaction potential (H.0-type data),
-because here the scaling would not have the expected effect on
-transport, but rather it would only modify the effective
-small angle scattering cut-off in the binary collisions.
+Excluded from this scaling option are all photonic processes and those elastic collisions for which EIRENE uses an interaction potential (H.0-type data), because here the scaling would not have the expected effect on transport, but rather it would only modify the effective small angle scattering cut-off in the binary collisions.
 
 Atomic and molecular processes are always of the following type:
 
 \begin{displaymath}
-a \cdot A + b \cdot B \longrightarrow m \cdot M + n \cdot N + \Delta E
+  a \cdot A + b \cdot B \longrightarrow m \cdot M + n \cdot N + \Delta E
 \end{displaymath}
-(Very few exceptions, with 3 or more groups of secondaries (N, M, L, \dots),
-exist and can also be treated, but these are very rare applications. See below.)
+(Very few exceptions, with 3 or more groups of secondaries (N, M, L, \dots), exist and can also be treated, but these are very rare applications.
+See below.)
 
-Here $A,B,M$ and $N$ are labels for the type of pre- and post-collision particles. $a,b,m$ and $n$ are the stoichiometric
-coefficients, and $\Delta E$ is the amount of internal energy
-transferred into (or at the expense of) the kinetic energy of the
-collision products $M$ and $N$.
+Here $A,B,M$ and $N$ are labels for the type of pre- and post-collision particles.
+$a,b,m$ and $n$ are the stoichiometric coefficients, and $\Delta E$ is the amount of internal energy transferred into (or at the expense of) the kinetic energy of the collision products $M$ and $N$.
 
 The following conventions are always in use:
 
-At least one of A, B, M or N must stand for a ``test particle",
-for otherwise this process is not relevant for the transport
-problem solved by EIRENE.
+At least one of A, B, M or N must stand for a ``test particle", for otherwise this process is not relevant for the transport problem solved by EIRENE.
 \begin{itemize}
-\item particles $A$ are \textbf{always} ``bulk particles", i.e., from the
-list of ``bulk ions" (input block 5) or electrons. \item particle
-$B$ may be one ``test particle". Then this process $A + B
-\rightarrow \dots$ must be included in the list of reaction decks
-for this test particle B. Hence: $b = 1$ then.
+  \item particles $A$ are \textbf{always} ``bulk particles", i.e., from the list of ``bulk ions" (input block 5) or electrons.
+  \item particle $B$ may be one ``test particle".
+        Then this process $A + B \rightarrow \dots$ must be included in the list of reaction decks for this test particle B.
+        Hence: $b = 1$ then.
 
-\item particle $B$ may also be one ``bulk particle". Then this process
-may be included in input block 7 as a volume-source (recombination of two bulk
-particles into at least one test particle
-$M$ and/or $N$,
+  \item particle $B$ may also be one ``bulk particle".
+        Then this process may be included in input block 7 as a volume-source (recombination of two bulk particles into at least one test particle $M$ and/or $N$, 
 
-\item particles $M$ and/or $N$ can be either secondary ``test
-particles" or secondary ``bulk particles".
-\item non-linear
-processes, i.e., processes in which both A and B should, in
-principle, stand for test particles, can be included by specifying
-particle A both as bulk particle in input block 5 and, simultaneously,
-as test particle in input block 4. The parameters for the
-``artificial bulk species" A are iterated in a sequence of EIRENE
-runs (option: NITER, input block 1, and code module MODUSR.f).
-In cases in which species M and/or N are also available as
-(``real" or ``artificial")  bulk species, there is the choice to
-specify secondaries from a reaction either as test-particles and
-to continue the history with those after a collision event, or, alternatively, to specify
-them as bulk particles, and stop the trajectory. In this latter
-case one must add a volume source to launch these ``secondaries"
-via a proper spatially distributed source in the next iteration.
-By using this option carefully, and combining it with the
-stratified source sampling technique, coupling to external
-codes/models can be made either more or less ``implicit".
+  \item particles $M$ and/or $N$ can be either secondary ``test particles" or secondary ``bulk particles".
+  \item non-linear processes, i.e., processes in which both A and B should, in principle, stand for test particles, can be included by specifying particle A both as bulk particle in input block 5 and, simultaneously, as test particle in input block 4.
+        The parameters for the ``artificial bulk species" A are iterated in a sequence of EIRENE runs (option: NITER, input block 1, and code module MODUSR.f).
+        In cases in which species M and/or N are also available as (``real" or ``artificial")  bulk species, there is the choice to specify secondaries from a reaction either as test-particles and to continue the history with those after a collision event, or, alternatively, to specify them as bulk particles, and stop the trajectory.
+        In this latter case one must add a volume source to launch these ``secondaries" via a proper spatially distributed source in the next iteration.
+        By using this option carefully, and combining it with the stratified source sampling technique, coupling to external codes/models can be made either more or less ``implicit".
 
-Some care is needed here to avoid double-counting.
+        Some care is needed here to avoid double-counting.
 \end{itemize}
 
-Next EIRENE expects one so called ``species block" for each test
-particle species. Later, in input block 5, it will also expect one
-species block for each of the heavy background particles, i.e.,
-for the ``bulk ions".
+Next EIRENE expects one so called ``species block" for each test particle species.
+Later, in input block 5, it will also expect one species block for each of the heavy background particles, i.e., for the ``bulk ions".
 
 A ``species block" has the format:
 
@@ -229,21 +156,17 @@ A ``species block" has the format:
 C     (format: I2,1X,A8,1X,12(I2,1X))
 \end{lstlisting}
 
-Default for ID1 is:  ID1=0
-In case ID1 $\leq$ 2, i.e., two or less post-collision particle (not counting electrons)
+Default for ID1 is:  ID1=0 In case ID1 $\leq$ 2, i.e., two or less post-collision particle (not counting electrons) 
 
 \begin{lstlisting}
       DO  K= 1, NRC$
         IREAC$  IBULK$  ISCD1$  ISCD2$  ISCDE$  IESTM$  IBGK$
         EELEC$  EBULK$  ESCD1$  EDUMMY  FREAC$  EDPOT$
       ENDDO
-\end{lstlisting}
+\end{lstlisting} 
 
 New option in 2006:
-In case ID1 = 3, i.e., three post-collision particles (not counting electrons),
-needed for some
-more complex chemical reactions, such as particle rearrangement collisions
-$p + CH_4 \rightarrow CH_2 + H_2 + H$, etc.
+In case ID1 = 3, i.e., three post-collision particles (not counting electrons), needed for some more complex chemical reactions, such as particle rearrangement collisions $p + CH_4 \rightarrow CH_2 + H_2 + H$, etc. 
 
 \begin{lstlisting}
       DO  K= 1, NRC$
@@ -251,11 +174,11 @@ $p + CH_4 \rightarrow CH_2 + H_2 + H$, etc.
      .    IBGK$
         EELEC$  EBULK$  ESCD1$  EDUMMY FREAC$  EDPOT$
       ENDDO
-\end{lstlisting}
+\end{lstlisting} 
 
 New option in 2006:
 
-In case ID1 = 4, i.e., four post-collision particles (not counting electrons)
+In case ID1 = 4, i.e., four post-collision particles (not counting electrons) 
 
 \begin{lstlisting}
       DO  K= 1, NRC$
@@ -263,67 +186,47 @@ In case ID1 = 4, i.e., four post-collision particles (not counting electrons)
      .    IESTM$  IBGK$
         EELEC$  EBULK$  ESCD1$  EDUMMY FREAC$  EDPOT$
       ENDDO
-\end{lstlisting}
+\end{lstlisting} 
 
-where \textbf{\$} stands for either A (atoms), M (molecules),
-I (test ions), PH (photons) or P (bulk ions).
-I.e., a species block consists of one species specification card
-ISPZ\$ \dots, and NRC\$ ``reaction decks" of two cards each.
+where \textbf{\$} stands for either A (atoms), M (molecules), I (test ions), PH (photons) or P (bulk ions).
+I.e., a species block consists of one species specification card ISPZ\$ \dots, and NRC\$ ``reaction decks" of two cards each.
 
-For some particle species (in particular for hydrogenic atoms,
-molecules and molecular ions, and for helium atoms) EIRENE has default
-A\&M data, to which it resorts, if no reaction cards are in the input
-deck (i.e., if NRC\$=0, see below) for a particular species.
-These default models are described
-at the end of this section. They are overruled by the
-reaction cards.
+For some particle species (in particular for hydrogenic atoms, molecules and molecular ions, and for helium atoms) EIRENE has default A\&M data, to which it resorts, if no reaction cards are in the input deck (i.e., if NRC\$=0, see below) for a particular species.
+These default models are described at the end of this section.
+They are overruled by the reaction cards.
 
-In order to de-activate all possible reactions (also the default
-reactions) for a particular test particle species, e.g., to simulate the collision-less ``Knudsen flow" of a gas or optically thin
-line radiation, one must set NRC\$
-$=-1$ for this test particle species.
+In order to de-activate all possible reactions (also the default reactions) for a particular test particle species, e.g., to simulate the collision-less ``Knudsen flow" of a gas or optically thin line radiation, one must set NRC\$ $=-1$ for this test particle species.
 
 \medskip
 
-Usually, a particular particle type and species in the species blocks
-is identified by an
-integer IPART\$=LMN (3 digits).
-Here N fixes the type of the particle, M is the number of
-particles characterized by IPART\$ and L is the species index within the specified
-group (type) of particles.
+Usually, a particular particle type and species in the species blocks is identified by an integer IPART\$=LMN (3 digits).
+Here N fixes the type of the particle, M is the number of particles characterized by IPART\$ and L is the species index within the specified group (type) of particles.
 
 The following values of N are currently in use:
 \begin{itemize}
-\item
-N=0: photons (versions 2004 and younger)
-\item
-N=1: atoms
-\item
-N=2: molecules
-\item
-N=3: test ions
-\item
-N=4: bulk ions
-\item
-N=5: electrons
+  \item N=0: photons (versions 2004 and younger)
+  \item N=1: atoms
+  \item N=2: molecules
+  \item N=3: test ions
+  \item N=4: bulk ions
+  \item N=5: electrons
 \end{itemize}
 
-\textbf{The Input block}
+\textbf{The Input block} 
 
 \begin{lstlisting}
 *** 4. Data for Species Specification and Atomic Physics Module
-\end{lstlisting}
+\end{lstlisting} 
 
-Note: in EIRENE$_{2003}$ or later the format of input flag \lstinline|REAC| described below was generalized from
-\lstinline|A9|  to \lstinline|Axxx|, with \lstinline|xxx| $\leq 50$,  to accommodate the longer reaction information for photonic
-processes into the same format. The old format \lstinline|A9| is of course automatically still recognized as special case.
+Note: in EIRENE$_{2003}$ or later the format of input flag \lstinline|REAC| described below was generalized from \lstinline|A9|  to \lstinline|Axxx|, with \lstinline|xxx| $\leq 50$,  to accommodate the longer reaction information for photonic processes into the same format.
+The old format \lstinline|A9| is of course automatically still recognized as special case.
 
 \begin{lstlisting}
       NREACI
       DO
 \end{lstlisting}
 
-\textbf{for ``real particles"}, databases: \lstinline|FILNAM = HYDHEL|, \lstinline|AMJUEL|, \lstinline|METHAN|, \lstinline|H2VIBR|
+\textbf{for ``real particles"}, databases: \lstinline|FILNAM = HYDHEL|, \lstinline|AMJUEL|, \lstinline|METHAN|, \lstinline|H2VIBR| 
 
 \begin{lstlisting}
         IR  FILNAM  H123  REAC  CRC  MASSP  MASST  DP RMN1
@@ -331,21 +234,20 @@ processes into the same format. The old format \lstinline|A9| is of course autom
 C       (format: I3,1X,A6,1X,A4,Axxx,A3,2I3,3E12.4)
         IF (RMN1.GT.0.) READ IFEXMN, FPARM(J),J=1,3
         IF (RMX1.GT.0.) READ IFEXMX, FPARM(J),J=4,6
-\end{lstlisting}
+\end{lstlisting} 
 
-\textbf{for ``real particles"}, database: \lstinline|FILNAM = ADAS|
-(or any table in an equivalent format as the \ac{ADAS} adf11 files)
+\textbf{for ``real particles"}, database: \lstinline|FILNAM = ADAS| (or any table in an equivalent format as the \ac{ADAS} adf11 files) 
 
 \begin{lstlisting}
         IR  ADAS  H123  REAC  CRC  MASSP  MASST  DP
 C       (format: I3,1X,A6,1X,A4,Axxx,A3,2I3,3E12.4)
         ELNAME, IZ
 C       (format: 4X,A2,1X,I3)
-\end{lstlisting}
+\end{lstlisting} 
 
 i.e.: one additional input card is read to identify the chemical element and charge state.
-Extrapolation flags RMN1 and RMX1 are not in use in this case and may be omitted. Default (hard wired) extrapolation
-schemes are used if the plasma density and temperature is outside the tabulated range.
+Extrapolation flags RMN1 and RMX1 are not in use in this case and may be omitted.
+Default (hard wired) extrapolation schemes are used if the plasma density and temperature is outside the tabulated range.
 \vspace{0.3cm}
 
 \textbf{for ``real particles"}, database: \lstinline|FILNAM = CONST|.
@@ -357,11 +259,13 @@ In EIRENE$_{2005}$ or later: Optional : Further parameter FTFLAG, length: not mo
 C       (format: I3,1X,A6,1X,A4,(A9),xxxX,A3,2I3,3E12.4)
 \end{lstlisting}
 
-i.e.: Reading of FTFLAG is optional. Default for FTFLAG: =0. Parameter REAC does not exist.
+i.e.: Reading of FTFLAG is optional.
+Default for FTFLAG: =0.
+Parameter REAC does not exist.
 Extrapolation flags RMN1 and RMX1 are not in use in this case and may be omitted.
 
 \vspace{0.3cm}
-\textbf{for ``photons"}, database \lstinline|FILNAM = PHOTON|
+\textbf{for ``photons"}, database \lstinline|FILNAM = PHOTON| 
 
 \begin{lstlisting}
         IR  PHOTON  H123  REAC
@@ -371,18 +275,15 @@ C       (format: I3,1X,A6,1X,A4,Axxx)
           II KENN  IK6
 C         (format: I6,1X,A2,3X,I6)
         ENDDO
-\end{lstlisting}
+\end{lstlisting} 
 
-I.e.: after the first line there is a special format for this set of input cards in case of photonic processes,
-read from the spectral database PHOTON. In case \emph{IFREMD $>$ 0} the additional cards specify options
-for ``foreign pressure line broadening".
+I.e.: after the first line there is a special format for this set of input cards in case of photonic processes, read from the spectral database PHOTON.
+In case \emph{IFREMD $>$ 0} the additional cards specify options for ``foreign pressure line broadening".
 
 \medskip
 
-Then the subroutine SLREAC is called, which picks the atomic data
-(fit coefficients) for reaction ``IR" from the file FILNAM. It
-then stores this information on the arrays in Module COMAMF with
-label $IR$.
+Then the subroutine SLREAC is called, which picks the atomic data (fit coefficients) for reaction ``IR" from the file FILNAM.
+It then stores this information on the arrays in Module COMAMF with label $IR$.
 
 \begin{lstlisting}
 * 4A. atoms species cards
@@ -414,1098 +315,701 @@ and, for versions younger than 2003:
 
 \medskip
 
-\textbf{Meaning of the input variables}
+\textbf{Meaning of the input variables} 
 
-\medskip
+\medskip 
 
 \begin{description}
 
-\item[NREACI]
-Total number of different reactions to be read.
+  \item[NREACI] Total number of different reactions to be read.
 
-The next block has different meanings for ``real particles" and
-``photons". Cross section and rate coefficients are specified for
-particles, but emission and absorption line shapes are specified for
-photons.
+        The next block has different meanings for ``real particles" and ``photons".
+        Cross section and rate coefficients are specified for particles, but emission and absorption line shapes are specified for photons.
 
-\textbf{``real particles"}
+        \textbf{``real particles"} 
 
-An interaction potential $V(r)$, cross section $\sigma$ plus a
-reaction rate coefficient $\langle\sigma v\rangle$ for one process counts as one reaction,
-but higher order rate coefficients such as energy or momentum weighted rate coefficients for
-the same process count as new reaction and must be labelled by a
-different index $IR$ (see below).
+        An interaction potential $V(r)$, cross section $\sigma$ plus a reaction rate coefficient $\langle\sigma v\rangle$ for one process counts as one reaction, but higher order rate coefficients such as energy or momentum weighted rate coefficients for the same process count as new reaction and must be labelled by a different index $IR$ (see below).
 
-Storage is provided for up to NREAC different additional reactions
-(see ``Parameter Statements", \cref{sec3.1}), i.e., one
-must guarantee NREACI.LE.NREAC
+        Storage is provided for up to NREAC different additional reactions (see ``Parameter Statements", \cref{sec3.1}), i.e., one must guarantee NREACI.LE.NREAC 
 
-\item[IR] Labeling
-index of the reaction that is read in. The condition
+  \item[IR] Labeling index of the reaction that is read in.
+        The condition 
 
-IR.LE.NREACI
+        IR.LE.NREACI 
 
-must be fulfilled (otherwise: error exit).
-\item[FILNAM]
-Name of the data-set that contains the required reaction.
-\begin{description}
-\item[HYDHEL] Hydrogen and Helium data \cite{kn:Janev}
-\item[METHAN] Hydrocarbons data \cite{kn:Ehrhardt}
-\item[H2VIBR] Data for H$_2$ molecules and their isotopomeres,
-including effects of vibrational and electronic excitation, as
-well as rates needed for radiation trapping calculations.
-\item[AMJUEL] supplement to HYDHEL and METHAN for neutral gas
-transport Monte Carlo codes, e.g.\ multi-step reaction rates, etc.
-\item[CONST] reaction IR is a collision process with
-explicitly specified fit coefficients for cross sections or
-reaction rate coefficients, (depending upon input flag ``H123"),
-e.g., constant, power law, etc. These fitting coefficients are
-directly read from the formatted input file rather than from an
-external file.
-\item[ADAS] Collisional radiative rate coefficients from
-any files tabulated in the same format as \ac{ADAS} adf11 files,
-which must be located in a directory, the path to which is specified in input block 1, \cref{sec2.1},
-by one of the ``CFILE" cards described there:   \lstinline|CFILE  ADAS  path/adf11/|
-\item[PHOTON]  line emission and line absorption constants,
-as well as parameters for line shapes (line broadening constants).
+        must be fulfilled (otherwise: error exit).
+  \item[FILNAM] Name of the data-set that contains the required reaction.
+        \begin{description}
+          \item[HYDHEL] Hydrogen and Helium data \cite{kn:Janev}
+          \item[METHAN] Hydrocarbons data \cite{kn:Ehrhardt}
+          \item[H2VIBR] Data for H$_2$ molecules and their isotopomeres, including effects of vibrational and electronic excitation, as well as rates needed for radiation trapping calculations.
+          \item[AMJUEL] supplement to HYDHEL and METHAN for neutral gas transport Monte Carlo codes, e.g.\ multi-step reaction rates, etc.
+          \item[CONST] reaction IR is a collision process with explicitly specified fit coefficients for cross sections or reaction rate coefficients, (depending upon input flag ``H123"), e.g., constant, power law, etc. These fitting coefficients are directly read from the formatted input file rather than from an external file.
+          \item[ADAS] Collisional radiative rate coefficients from any files tabulated in the same format as \ac{ADAS} adf11 files, which must be located in a directory, the path to which is specified in input block 1, \cref{sec2.1}, by one of the ``CFILE" cards described there:   \lstinline|CFILE  ADAS  path/adf11/|
+          \item[PHOTON]  line emission and line absorption constants, as well as parameters for line shapes (line broadening constants).
 
-\end{description}
-\item[H123] Identification flag for the type of data: interaction potential parameters, cross
-section, rate coefficient, momentum loss rate coefficient, energy
-loss rate coefficient, etc.
+        \end{description}
+  \item[H123] Identification flag for the type of data: interaction potential parameters, cross section, rate coefficient, momentum loss rate coefficient, energy loss rate coefficient, etc. 
 
-\textbf{case 0:} FILNAM = CONST
+        \textbf{case 0:} FILNAM = CONST 
 
-currently available only for: H123 = H.1, = H.2, = H.5, or = H.8, i.e., only
-for single parameter fits.
-\begin{description}
-\item[]
-in case IFTFLG = 10, 110, 210, \dots, ``single parameter", constant collision parameter. One more line
+        currently available only for: H123 = H.1, = H.2, = H.5, or = H.8, i.e., only for single parameter fits.
+        \begin{description}
+          \item[] in case IFTFLG = 10, 110, 210, \dots, ``single parameter", constant collision parameter.
+                One more line 
 
-\lstinline|F(0)| (REAL)
+                \lstinline|F(0)| (REAL) 
 
-is read.
+                is read.
 
-For all other values of IFTFLG, including the default IFTFLG=0, two more input lines with 9 fitting coefficients
+                For all other values of IFTFLG, including the default IFTFLG=0, two more input lines with 9 fitting coefficients 
 
-\lstinline|F(I), I=0,5| (REAL)
+                \lstinline|F(I), I=0,5| (REAL) 
 
-\lstinline|F(I), I=6,8| (REAL)
+                \lstinline|F(I), I=6,8| (REAL) 
 
-are read, in subroutine SLREAC from the formatted input file.
+                are read, in subroutine SLREAC from the formatted input file.
 
-The natural logarithm of cross-section: $\ln(\sigma)$ (H123 = H.1) or of a rate coefficient: $\ln(R)$ (H123 = H.2, = H.5, or = H.8) is computed as:
+                The natural logarithm of cross-section: $\ln(\sigma)$ (H123 = H.1) or of a rate coefficient: $\ln(R)$ (H123 = H.2, = H.5, or = H.8) is computed as:
 
-$\ln(\sigma) = \sum_{I=0}^8 F(I) \cdot \ln(E_{lab})^I $
+                $\ln(\sigma) = \sum_{I=0}^8 F(I) \cdot \ln(E_{lab})^I $ 
 
-and, likewise, a rate coefficient $R$ is evaluated as:
+                and, likewise, a rate coefficient $R$ is evaluated as:
 
-$\ln(R) = \sum_{I=0}^8 F(I) \cdot \ln(T)^I $
+                $\ln(R) = \sum_{I=0}^8 F(I) \cdot \ln(T)^I $ 
 
-Here $E_{lab}$ is the relative energy of impact, but with the mass
-of the charged particle (i.e., for a target of neutral particles
-at rest, see below), and $T$ is the electron or ion temperature,
-depending on the type of impacting plasma particle.
+                Here $E_{lab}$ is the relative energy of impact, but with the mass of the charged particle (i.e., for a target of neutral particles at rest, see below), and $T$ is the electron or ion temperature, depending on the type of impacting plasma particle.
 
-This option permits specification of constant cross
-sections or rate coefficients
-(only the first of the nine parameters nonzero),
-or, e.g., specific power law energy dependencies or
-temperature dependencies (second of the
-nine parameters).
-\end{description}
+                This option permits specification of constant cross sections or rate coefficients (only the first of the nine parameters nonzero), or, e.g., specific power law energy dependencies or temperature dependencies (second of the nine parameters).
+        \end{description}
 
-\textbf{case 1:} FILNAM = HYDHEL, METHAN,  AMJUEL, H2VIBR
-\begin{description}
-\item[H.1]
-single parameter fit for
-cross section $\sigma (\si{\square\centi\metre})$ as function of energy ELAB (\si{\electronvolt}),
-with ELAB = $m_{Lab} / 2  \cdot  v_{rel}^2 $
-(For the definition of $m_{Lab}$ = MASSP : see below.
-\item[H.2]
-single parameter fit for rate coefficient $\langle \sigma v \rangle
-(\si{\cubic\centi\metre\per\second})$ as function of target temperature (\si{\electronvolt}), assuming ``zero
-velocity" projectile
-\item[H.3]
-double parameter fit of rate coefficient $\langle \sigma v
-\rangle(\si{\cubic\centi\metre\per\second})$ as function of projectile energy (\si{\electronvolt}) and target
-temperature (\si{\electronvolt})
-\item[H.4]
-double parameter fit of rate coefficient $\langle \sigma v \rangle
-(\si{\cubic\centi\metre\per\second})$ as function of target density (\si{\per\cubic\centi\metre}) and target
-temperature (\si{\electronvolt})
-\item[H.5]
-single parameter fit of target particle momentum weighted rate
-coefficient 
+        \textbf{case 1:} FILNAM = HYDHEL, METHAN,  AMJUEL, H2VIBR
+        \begin{description}
+          \item[H.1] single parameter fit for cross section $\sigma (\si{\square\centi\metre})$ as function of energy ELAB (\si{\electronvolt}), with ELAB = $m_{Lab} / 2  \cdot  v_{rel}^2 $ (For the definition of $m_{Lab}$ = MASSP : see below.
+          \item[H.2] single parameter fit for rate coefficient $\langle \sigma v \rangle (\si{\cubic\centi\metre\per\second})$ as function of target temperature (\si{\electronvolt}), assuming ``zero velocity" projectile
+          \item[H.3] double parameter fit of rate coefficient $\langle \sigma v \rangle(\si{\cubic\centi\metre\per\second})$ as function of projectile energy (\si{\electronvolt}) and target temperature (\si{\electronvolt})
+          \item[H.4] double parameter fit of rate coefficient $\langle \sigma v \rangle (\si{\cubic\centi\metre\per\second})$ as function of target density (\si{\per\cubic\centi\metre}) and target temperature (\si{\electronvolt})
+          \item[H.5] single parameter fit of target particle momentum weighted rate coefficient 
 
-$\langle~\sigma~v~\cdot~m_p~\cdot~|v_p|~\rangle$ $
-(\si{\cubic\centi\metre\per\second\atomicmassunit\centi\metre\per\second})$ as function of target temperature
-(\si{\electronvolt})
-\item[H.6]
-double parameter fit of target particle velocity weighted rate
-coefficient 
+                $\langle~\sigma~v~\cdot~m_p~\cdot~|v_p|~\rangle$ $ (\si{\cubic\centi\metre\per\second\atomicmassunit\centi\metre\per\second})$ as function of target temperature (\si{\electronvolt})
+          \item[H.6] double parameter fit of target particle velocity weighted rate coefficient 
 
-$\langle \sigma v  \cdot  m_p  \cdot  | v_p | \rangle
-(\si{\cubic\centi\metre\per\second\atomicmassunit\centi\metre\per\second})$ as function of projectile energy (\si{\electronvolt})
-and target temperature (\si{\electronvolt})
-\item[H.7]
-double parameter fit of target particle velocity weighted rate
-coefficient
+                $\langle \sigma v  \cdot  m_p  \cdot  | v_p | \rangle (\si{\cubic\centi\metre\per\second\atomicmassunit\centi\metre\per\second})$ as function of projectile energy (\si{\electronvolt}) and target temperature (\si{\electronvolt})
+          \item[H.7] double parameter fit of target particle velocity weighted rate coefficient 
 
-$\langle \sigma v \cdot m_p \cdot | v_p | \rangle
-(\si{\cubic\centi\metre\per\second\atomicmassunit\centi\metre\per\second})$ as function of target density (\si{\cubic\centi\metre})
-and target temperature (\si{\electronvolt})
-\item[H.8]
-single parameter fit of target particle energy weighted rate
-coefficient
+                $\langle \sigma v \cdot m_p \cdot | v_p | \rangle (\si{\cubic\centi\metre\per\second\atomicmassunit\centi\metre\per\second})$ as function of target density (\si{\cubic\centi\metre}) and target temperature (\si{\electronvolt})
+          \item[H.8] single parameter fit of target particle energy weighted rate coefficient 
 
-$\langle \sigma v \cdot m_p / 2 \cdot v_p^2 \rangle$ 
-(\si{\cubic\centi\metre\per\second\electronvolt}) as function of target temperature (\si{\electronvolt})
-\item[H.9]
-double parameter fit of target particle energy weighted rate
-coefficient
+                $\langle \sigma v \cdot m_p / 2 \cdot v_p^2 \rangle$ (\si{\cubic\centi\metre\per\second\electronvolt}) as function of target temperature (\si{\electronvolt})
+          \item[H.9] double parameter fit of target particle energy weighted rate coefficient 
 
-$\langle \sigma v \cdot m_p / 2 \cdot v_p^2 \rangle$ 
-(\si{\cubic\centi\metre\per\second\electronvolt}) as function of projectile energy (\si{\electronvolt}) and target
-temperature (\si{\electronvolt})
-\item[H.10]
-double parameter fit of target particle energy weighted rate
-coefficient
-$\langle \sigma v \cdot m_p / 2 \cdot v_p^2 \rangle$
-(\si{\cubic\centi\metre\per\second\electronvolt}) as function of target density (\si{\cubic\centi\metre}) and
-target temperature (\si{\electronvolt})
-\item[H.11]
-single parameter fit for any other data, e.g.
-to be used in special user supplied programs.
-\item[H.12]
-double parameter fit for any other data, e.g.
-to be used in special user supplied
-programs, (i.e.\ not generally understood by EIRENE, but can be used in problem
-specific ``\dots USR" routines of EIRENE, e.g.\ for post-processing).
-The data fitted in H.12 are, therefore, typically not rate-coefficients,
-but often (not always) ratios between two rate coefficients.
+                $\langle \sigma v \cdot m_p / 2 \cdot v_p^2 \rangle$ (\si{\cubic\centi\metre\per\second\electronvolt}) as function of projectile energy (\si{\electronvolt}) and target temperature (\si{\electronvolt})
+          \item[H.10] double parameter fit of target particle energy weighted rate coefficient $\langle \sigma v \cdot m_p / 2 \cdot v_p^2 \rangle$ (\si{\cubic\centi\metre\per\second\electronvolt}) as function of target density (\si{\cubic\centi\metre}) and target temperature (\si{\electronvolt})
+          \item[H.11] single parameter fit for any other data, e.g. to be used in special user supplied programs.
+          \item[H.12] double parameter fit for any other data, e.g. to be used in special user supplied programs, (i.e.\ not generally understood by EIRENE, but can be used in problem specific ``\dots USR" routines of EIRENE, e.g.\ for post-processing).
+                The data fitted in H.12 are, therefore, typically not rate-coefficients, but often (not always) ratios between two rate coefficients.
 
-Exception: the reduced population coefficients for hydrogenic plasmas,
+                Exception: the reduced population coefficients for hydrogenic plasmas, 
 
-i.e.,
-2.1.5a, \dots, 2.1.5e, 2.2.5a, 2.2.5e, etc.\
+                i.e., 2.1.5a, \dots, 2.1.5e, 2.2.5a, 2.2.5e, etc.\ 
 
-are currently automatically read in
-EIRENE post-processing routines in code section ``output", routines: Ba\_alpha, Ba\_beta, \dots
-\end{description}
+                are currently automatically read in EIRENE post-processing routines in code section ``output", routines: Ba\_alpha, Ba\_beta, \dots
+        \end{description}
 
-\textbf{case 2:} FILNAM = TAB2D  or FILNAM =ADAS
-\begin{description}
-\item[H.4]
-double parameter table of rate coefficient $\langle \sigma v \rangle
-(\si{\cubic\centi\metre\per\second})$ as function of target density (\si{\per\cubic\centi\metre}) and target
-temperature (\si{\electronvolt}) read from files containing 2D tabulated rate coefficients, i.e.\ rate coefficients tabulated vs.\ 2 independent parameters.
-This option uses the \ac{ADAS} adf11 file format as guidance and is developed\slash adapted from it for more general
-A\&M data structures.
+        \textbf{case 2:} FILNAM = TAB2D  or FILNAM =ADAS
+        \begin{description}
+          \item[H.4] double parameter table of rate coefficient $\langle \sigma v \rangle (\si{\cubic\centi\metre\per\second})$ as function of target density (\si{\per\cubic\centi\metre}) and target temperature (\si{\electronvolt}) read from files containing 2D tabulated rate coefficients, i.e.\ rate coefficients tabulated vs.\ 2 independent parameters.
+                This option uses the \ac{ADAS} adf11 file format as guidance and is developed\slash adapted from it for more general A\&M data structures.
 
-E.g.\ original \ac{ADAS} file-names starting with SCD\dots\ (ionization rate coefficients
-contain ionization rate coefficients to charge state Z, Z = 1, \dots, Z$_{max}$)
-and filenames starting with  ACD\dots\ contain recombination rate coefficients,
-from charge state Z,   Z=1, Z$_{max}$.
-The particular chemical element ELNAME and the value of charge state $Z$ is specified in the next input card,
-which is read only in case of FILNAM = TAB2D  or FILNAM = ADAS.
-\item[H.10]
-same as for H123='H.4', but ionisation and recombination electron energy loss rate coefficients rather than
-reaction rate coefficients. In the original \ac{ADAS} files the names PLT\dots\ and PRB\dots\ are used for those quantities. Note:
-distinct from the AMJUEL database convention in case of \ac{ADAS} format the PLT rates (\si{\watt\per\cubic\centi\metre}) do not contain the potential energy loss
-DP $\times$ SCD, and the PRB rates contain, in addition to their corresponding rates from AMJUEL, also
-a Bremsstrahlung contribution. Internally EIRENE subtracts this \acs{ADAS}-Bremsstrahlung from electron energy weighted PRB rates
-whenever such rates are read via the \ac{ADAS} format (i.e.\ whenever FILNAM = ADAS)
+                E.g.\ original \ac{ADAS} file-names starting with SCD\dots\ (ionization rate coefficients contain ionization rate coefficients to charge state Z, Z = 1, \dots, Z$_{max}$) and filenames starting with  ACD\dots\ contain recombination rate coefficients, from charge state Z,   Z=1, Z$_{max}$.
+                The particular chemical element ELNAME and the value of charge state $Z$ is specified in the next input card, which is read only in case of FILNAM = TAB2D  or FILNAM = ADAS.
+          \item[H.10] same as for H123='H.4', but ionisation and recombination electron energy loss rate coefficients rather than reaction rate coefficients.
+                In the original \ac{ADAS} files the names PLT\dots\ and PRB\dots\ are used for those quantities.
+                Note:
+                distinct from the AMJUEL database convention in case of \ac{ADAS} format the PLT rates (\si{\watt\per\cubic\centi\metre}) do not contain the potential energy loss
+                DP $\times$ SCD, and the PRB rates contain, in addition to their corresponding rates from AMJUEL, also
+                a Bremsstrahlung contribution.
+                Internally EIRENE subtracts this \acs{ADAS}-Bremsstrahlung from electron energy weighted PRB rates whenever such rates are read via the \ac{ADAS} format (i.e.\ whenever FILNAM = ADAS) 
 
-Note: in general the potential energy difference DP may or may not be included in the definition of energy rate coefficients H.8, H.9 and H.10 as read
-from a particular database. For example the energy rate coefficients may, in effect,  be either a radiation loss rate or a total electron energy loss/gain rate.
+                Note: in general the potential energy difference DP may or may not be included in the definition of energy rate coefficients H.8, H.9 and H.10 as read from a particular database.
+                For example the energy rate coefficients may, in effect,  be either a radiation loss rate or a total electron energy loss/gain rate.
 
-This database specific convention may be altered by EIRENE input flag DP during the internal preparation of atomic data
-files. Proper choice of DP may then turn a radiation loss rate to a total energy loss/gain rate, and vice versa.
-(The use of flag DP is the same as in case of the AMJUEL database or any other external database).
-Default EIRENE electron energy source tallies then may have a different meaning, depending on the choice of input flag DP and the
-particular database used (\ac{ADAS}, or AMJUEL, etc.)
-\end{description}
+                This database specific convention may be altered by EIRENE input flag DP during the internal preparation of atomic data files.
+                Proper choice of DP may then turn a radiation loss rate to a total energy loss/gain rate, and vice versa.
+                (The use of flag DP is the same as in case of the AMJUEL database or any other external database).
+                Default EIRENE electron energy source tallies then may have a different meaning, depending on the choice of input flag DP and the particular database used (\ac{ADAS}, or AMJUEL, etc.)
+        \end{description}
 
-\textbf{case 3:} FILNAM = PHOTON
-to be written
+        \textbf{case 3:} FILNAM = PHOTON to be written 
 
+  \item[REAC] Name or number of the reaction as used in the file FILNAM.
 
-\item[REAC]
-Name or number of the reaction as used in the file FILNAM.
+        If FILNAM = METHAN, or AMJUEL, or HYDHEL, or H2VIBR, 
 
-If FILNAM = METHAN, or AMJUEL, or HYDHEL, or H2VIBR,
+        REAC is the number (label) of a cross section or of a rate coefficient fit.
+        E.g.: REAC = 2.15.2 in file METHAN for the reaction $ e + CH_4^+ \rightarrow CH_3^+ + H + e $.
 
-REAC is the number (label) of a cross section or of a rate coefficient fit.
-E.g.: REAC = 2.15.2 in file METHAN for the reaction
-$ e + CH_4^+
-\rightarrow CH_3^+ + H + e $.
+        If FILNAM = CONST, 
 
-If FILNAM = CONST,
+        then REAC can be used to input the flag IFTFLG.
+        Whether or not REAC is to be interpreted as IFTFLG is identified by presence of the string FT  (e.g.: 'REAC' = 'FT 110' would lead to IFTFLG = 110 for this reaction).
 
- then REAC can be used to input the flag IFTFLG.
-Whether or not REAC is to be interpreted as IFTFLG is identified by
-presence of the string FT  (e.g.: 'REAC' = 'FT 110' would lead to
-IFTFLG = 110 for this reaction).
+        If FILNAM = ADAS, 
 
-If FILNAM = ADAS,
+        then the character string REAC identifies the particular file within the directory identified by the path given for \ac{ADAS} files in input block 1, see card: ``CFILE" DBHANDLE DBFNAME in block 1 (\cref{sec2.1}).
+        For example, REAC = SCD96, then the file \lstinline|SCD96_h.dat|, is read, in this example this is for ionisation rate coefficients of H atoms.
+        In this latter example the additional input species identifier ELNAME  reads: H (for hydrogen).
+        In Module \lstinline|eirene_read-adas.f|, called from \lstinline|SLREAC.f|, the corresponding data table is then read into EIRENE.
 
-then the character string REAC identifies the particular file within the
-directory identified by the path given for \ac{ADAS} files in input block 1,
-see card: ``CFILE" DBHANDLE DBFNAME in block 1 (\cref{sec2.1}). For example, REAC = SCD96, then the file \lstinline|SCD96_h.dat|,
-is read, in this example this is for ionisation rate coefficients of H atoms.
-In this latter example the additional input species identifier ELNAME  reads: H (for hydrogen).
-In Module \lstinline|eirene_read-adas.f|, called from \lstinline|SLREAC.f|, the corresponding data table is then read into EIRENE.
+        If FILNAM = PHOTON 
 
-If FILNAM = PHOTON
+        to be written 
 
-to be written
+  \item[CRC] Identification for the type of the reaction process.
+        Depending upon the value of this flag various assumptions are automatically made concerning the atomic data in the initialization phase.
 
+        \medskip
 
-\item[CRC]
-Identification for the type of the reaction process. Depending
-upon the value of this flag various assumptions are automatically
-made concerning the atomic data in the initialization phase.
+        CRC=EI electron impact collision, i.e., ionization, excitation or de-excitation or dissociation.
+        (In older EIRENE version CRC=DS was also in use.
+        This is now automatically identified with CRC=EI) 
 
-\medskip
+        CRC=CX (quasi-) resonant charge-exchange 
 
-CRC=EI electron impact collision, i.e., ionization, excitation or
-de-excitation or dissociation.
-(In older EIRENE version CRC=DS was also in use. This is now
-automatically identified with CRC=EI)
+        CRC=EL elastic collision 
 
-CRC=CX (quasi-) resonant charge-exchange
+        CRC=PI in-elastic ion impact collision (not fully implemented) 
 
-CRC=EL elastic collision
+        CRC=RC re-combination 
 
-CRC=PI in-elastic ion impact collision (not fully implemented)
+        CRC=PH photonic processes 
 
-CRC=RC re-combination
-
-CRC=PH photonic processes
-
-CRC=OT other  (e.g.\ population coefficients, equilibrium density ratios, etc.)
-\item[MASSP]
-Mass number (\ac{AMU}) of the first particle involved in the collision,
-for the original data as being read from the data-file. EIRENE
-automatically re-scales data according to the mass number of the
-actual first particle involved in this particular collision
-process (e.g.\ if data are given for H atoms in the data-file, but
-are used for D or T atoms in an EIRENE run).
-\item[MASST]
-Mass number (\ac{AMU}) of the second particle involved in the
-collision, for the original data as being read from the data-file.
-EIRENE automatically re-scales data according to the mass number
-of the actual second particle involved in this particular
-collision process.
+        CRC=OT other  (e.g.\ population coefficients, equilibrium density ratios, etc.)
+  \item[MASSP] Mass number (\ac{AMU}) of the first particle involved in the collision, for the original data as being read from the data-file.
+        EIRENE automatically re-scales data according to the mass number of the actual first particle involved in this particular collision process (e.g.\ if data are given for H atoms in the data-file, but are used for D or T atoms in an EIRENE run).
+  \item[MASST] Mass number (\ac{AMU}) of the second particle involved in the collision, for the original data as being read from the data-file.
+        EIRENE automatically re-scales data according to the mass number of the actual second particle involved in this particular collision process.
 \end{description}
 The next input deck is read only in case FILNAM = ADAS:
 \begin{description}
-\item[ELNAME]
-Name of element in adf11 style formatted file, e.g.\ $Fe$ for iron, $C$ for carbon,
-$W$ for tungsten, etc.
-\item[IZ]
-Charge state in adf11 file. This value is always between 1 and $Z_{max}$. For ionization rate coefficients
-$IZ$ specifies the ionization rate coefficient for the ionization process from $IZ-1$ to $IZ$,
-i.e.\ the final charge state.
-For recombination process $IZ$ specifies the recombination rate coefficient
-for the recombination process from $IZ$ to $IZ-1$, i.e.\ the initial charge state
-for these processes.
+  \item[ELNAME] Name of element in adf11 style formatted file, e.g.\ $Fe$ for iron, $C$ for carbon, $W$ for tungsten, etc.
+  \item[IZ] Charge state in adf11 file.
+        This value is always between 1 and $Z_{max}$.
+        For ionization rate coefficients $IZ$ specifies the ionization rate coefficient for the ionization process from $IZ-1$ to $IZ$, i.e.\ the final charge state.
+        For recombination process $IZ$ specifies the recombination rate coefficient for the recombination process from $IZ$ to $IZ-1$, i.e.\ the initial charge state for these processes.
 \end{description}
 The next input decks are read only in case FILNAM = PHOTON:
 \begin{description}
-\item[IPRFTYPE]
-\item[IPLSC3]
-\item[IMESS]
-\item[IFREMD]
-\item[NRJPRT]
-to be written
+  \item[IPRFTYPE]
+  \item[IPLSC3]
+  \item[IMESS]
+  \item[IFREMD]
+  \item[NRJPRT] to be written
 \end{description}
 Then $IFREMD$ cards are read
 \begin{description}
-\item[II, KENN,  IK6] ~
- 
-$II$: labeling index, irrelevant
+  \item[II, KENN,  IK6] ~ 
 
-$KENN$: to be written
+        $II$: labeling index, irrelevant 
 
-$IR$: to be written
+        $KENN$: to be written 
+
+        $IR$: to be written
 \end{description}
 
+\bigskip 
 
-\bigskip
+$\underline{Note:} $ 
 
-$\underline{Note:} $
+The nomenclature used in reference \cite{kn:Janev} has lead to a certain confusion with regard to the masses of the particles involved in a particular collision process.
+A series of test calculations has revealed the following definitions implicit in the tables of references \cite{kn:Janev} and \cite{kn:Ehrhardt}:
 
-The nomenclature used in reference \cite{kn:Janev} has lead to a certain
-confusion
-with regard to the masses of the particles involved in a particular
-collision process. A series of test calculations has revealed the
-following definitions implicit in the tables of references
-\cite{kn:Janev} and \cite{kn:Ehrhardt}:
+For the cross section energy scale, the relevant \textbf{laboratory frame} mass is that of the charged particle, assuming an ion- or electron beam incident onto a cold neutral gas at rest (i.e., the mass in the energy scale is \textbf{neither} the reduced mass \textbf{nor} is the energy given in units energy/\ac{AMU}).
 
-For the cross section energy scale, the relevant \textbf{laboratory frame} mass is that
-of the charged particle, assuming an ion- or electron beam incident
-onto a cold neutral gas at rest (i.e., the mass in the energy scale is \textbf{neither} the reduced mass
-\textbf{nor} is the energy given in units energy/\ac{AMU}).
+For rate coefficients, depending upon both the beam energy and the target temperature, however, the neutral particles are considered to be the beam particles, i.e., their mass is the relevant mass for the energy scale now, whereas the charged particles are considered as target, with their mass being the relevant mass for the temperature scale.
 
-For rate coefficients,
-depending upon both the beam energy and the target temperature, however,
-the neutral particles are considered to be the beam particles, i.e.,
-their
-mass is the relevant mass for the energy scale now, whereas the charged
-particles are considered as target, with their mass being the
-relevant mass for the
-temperature scale.
-
-Following these conventions, EIRENE assumes that cross sections
-have been measured with the charged particle as projectile and the
-neutral target at rest.
+Following these conventions, EIRENE assumes that cross sections have been measured with the charged particle as projectile and the neutral target at rest.
 
 \textcolor[rgb]{1.00,0.00,0.00}{\texttt{MASSP}} is assumed to have been the relevant
 mass number of the original data for the energy scale in cross
 sections (H.1) and for the temperature scale in the rate
-coefficients (H.2, H.3, H.4). If MASSP = 0, MASSP is defaulted to the electron
-mass (\ac{AMU}). I.e., MASSP is the mass number of those collision
-partners in the \textbf{database}, which would play the role of bulk
-particles in an EIRENE run. But then an automatic re-scaling to the true EIRENE
-bulk ions mass RMASSP(IPLS) of the \textbf{bulk particle in a particular case} is carried out.
+coefficients (H.2, H.3, H.4).
+If MASSP = 0, MASSP is defaulted to the electron mass (\ac{AMU}).
+I.e., MASSP is the mass number of those collision partners in the \textbf{database}, which would play the role of bulk particles in an EIRENE run.
+But then an automatic re-scaling to the true EIRENE bulk ions mass RMASSP(IPLS) of the \textbf{bulk particle in a particular case} is carried out.
 
 \textcolor[rgb]{1.00,0.00,0.00}{\texttt{MASST}} is assumed to have been the relevant mass number in the \textbf{database}
 for the
 projectile energy scale in H.3, H.6 and H.9, i.e., for the test
-particles in an EIRENE run. Also this is then automatically re-scaled to the \textbf{test particle in a particular case}
+particles in an EIRENE run.
+Also this is then automatically re-scaled to the \textbf{test particle in a particular case} 
 
-EIRENE then automatically converts the energy/temperature scales
-in the data fits to the correct scales for the particular particles
-masses (isotopes)
-involved in a collision event during the simulation process, if these
-do not happen to coincide with MASSP and MASST.
+EIRENE then automatically converts the energy/temperature scales in the data fits to the correct scales for the particular particles masses (isotopes) involved in a collision event during the simulation process, if these do not happen to coincide with MASSP and MASST.
 
 \medskip
 
 \begin{description}
-\item[DP]
-(only for H.8, H.9, H.10) additional (e.g., potential) energy lost or
-gained per reaction,
-which is not already included in the rates. This may be needed due to
-the logarithmic fits used and if changes in sign arise. For
-example, in case of recombination of hydrogen ions, AMJUEL H.10, 2.1.8,
-DP=+13.6 must be specified.
+  \item[DP] (only for H.8, H.9, H.10) additional (e.g., potential) energy lost or gained per reaction, which is not already included in the rates.
+        This may be needed due to the logarithmic fits used and if changes in sign arise.
+        For example, in case of recombination of hydrogen ions, AMJUEL H.10, 2.1.8, DP=+13.6 must be specified.
 
-In reaction decks H.8, H.9 or H.10 in AMJUEL, this value of DP
-is
-now automatically read (and overwrites the value
-specified here). Hence: in the EIRENE
-versions later than June96 this input flag is redundant.
+        In reaction decks H.8, H.9 or H.10 in AMJUEL, this value of DP is now automatically read (and overwrites the value specified here).
+        Hence: in the EIRENE versions later than June96 this input flag is redundant.
 
-(Be careful: check that this is really the case
-in any particular version of EIRENE)
+        (Be careful: check that this is really the case in any particular version of EIRENE) 
 
 \end{description}
-The next flags RMN1, RMX1, RMN2, RMX2 control the options to extrapolate atomic data fits
-read from files in order to obtain proper asymptotic behavior of fits.
-The default data in EIRENE and some reactions in the
-files AMJUEL, HYDHEL, \dots\ data-set already contain that information.
-RMN1, RMN2 control the first independent parameter (often: temperature), and RMN2, RMX2 control
-the second (if any) independent parameter (often: density) of the fits or tables.
+The next flags RMN1, RMX1, RMN2, RMX2 control the options to extrapolate atomic data fits read from files in order to obtain proper asymptotic behavior of fits.
+The default data in EIRENE and some reactions in the files AMJUEL, HYDHEL, \dots\ data-set already contain that information.
+RMN1, RMN2 control the first independent parameter (often: temperature), and RMN2, RMX2 control the second (if any) independent parameter (often: density) of the fits or tables.
 
 \begin{description}
-\item[RMN1 = RMX1 = 0.0]
-EIRENE searches for extrapolation parameters in the database, and sets
-the values ELABMIN and ELABMAX for cross section data, TMIN, TMAX for rate coefficients etc.
-Currently this works for single parameter fits only. Check routine SLREAC.F for the status wrt.\ to two-parameter fits.
-If it finds
-these extrapolation parameters, it uses their values as RMN1 and RMX1, respectively. In such cases the
-next card IFEXMN, \dots\ and IFEXMX, \dots\ must also be omitted, because the
-corresponding information regarding the extrapolation expression (and coefficients)  is found from the atomic data file as well.
-The extrapolation expression is that of option IFEXM. = 5 (see below).
+  \item[RMN1 = RMX1 = 0.0] EIRENE searches for extrapolation parameters in the database, and sets the values ELABMIN and ELABMAX for cross section data, TMIN, TMAX for rate coefficients etc. Currently this works for single parameter fits only.
+        Check routine SLREAC.F for the status wrt.\ to two-parameter fits.
+        If it finds these extrapolation parameters, it uses their values as RMN1 and RMX1, respectively.
+        In such cases the next card IFEXMN, \dots\ and IFEXMX, \dots\ must also be omitted, because the corresponding information regarding the extrapolation expression (and coefficients)  is found from the atomic data file as well.
+        The extrapolation expression is that of option IFEXM.
+        = 5 (see below).
 
-Likewise, in case of reaction rates, EIRENE searches for TMIN, TMAX
-(for single parameter fits H.2, H.5, H.8 and H.11) and additionally
-for PMIN and PMAX (if H.3, H.4, H.6, H.7, H.9, H.10 or H.12) and the
-extrapolation parameters again are expected in the atomic data file.
+        Likewise, in case of reaction rates, EIRENE searches for TMIN, TMAX (for single parameter fits H.2, H.5, H.8 and H.11) and additionally for PMIN and PMAX (if H.3, H.4, H.6, H.7, H.9, H.10 or H.12) and the extrapolation parameters again are expected in the atomic data file.
 
-\item[RMN1 $\neq 0.0$]
-This option overrules any (if available) low parameter end asymptotics for the present reaction IR, which was possibly found in the atomic data file,
-and this allows to set this asymptotic behavior explicitly here in the input file.
+  \item[RMN1 $\neq 0.0$] This option overrules any (if available) low parameter end asymptotics for the present reaction IR, which was possibly found in the atomic data file, and this allows to set this asymptotic behavior explicitly here in the input file.
 
-RMN1 = minimum energy or temperature  (in \si{\electronvolt})
-for data as read from file. For energies (cross sections) and temperatures (rate coefficients) below RMN1 (\si{\electronvolt}) the data are
-extrapolated using the next input card
+        RMN1 = minimum energy or temperature  (in \si{\electronvolt}) for data as read from file.
+        For energies (cross sections) and temperatures (rate coefficients) below RMN1 (\si{\electronvolt}) the data are extrapolated using the next input card 
 
- IFEXMN,FPARM(J),J=1,3.
+        IFEXMN,FPARM(J),J=1,3.
 
-See below, and e.g., subroutine
-CROSS for the various options.
+        See below, and e.g., subroutine CROSS for the various options.
 
-Some cross section data, e.g.\ in the files AMJUEL, HYDHEL, etc.
-already contain the extrapolation information, and hence the default
-RNM1=0 can be used there.
+        Some cross section data, e.g.\ in the files AMJUEL, HYDHEL, etc. already contain the extrapolation information, and hence the default RNM1=0 can be used there.
 
-\item[RMX1 $\neq 0.0$]
-same as above, but for high parameter range extrapolation.
-This option overrules any (if available) high parameter end asymptotics for the present reaction IR, which was possibly found in the atomic data file,
-and this allows to set this asymptotic behavior explicitly here in the input file.
+  \item[RMX1 $\neq 0.0$] same as above, but for high parameter range extrapolation.
+        This option overrules any (if available) high parameter end asymptotics for the present reaction IR, which was possibly found in the atomic data file, and this allows to set this asymptotic behavior explicitly here in the input file.
 
-\item[IFEXMN, FPARM(J), J=1,3] ~
+  \item[IFEXMN, FPARM(J), J=1,3] ~ 
 
+        various extrapolation expressions $ex_{low}(x)$ at the low end (x $<$ RMN1, x = $E_{lab}$ or x = T) are available:
+        \begin{description}
+          \item[IFEXMN = 1] ~ 
 
-various extrapolation expressions $ex_{low}(x)$ at the low end (x $<$
-RMN1, x = $E_{lab}$ or x = T) are available:
-\begin{description}
-\item[IFEXMN = 1] ~
+                $ex_{low}(x)$ = 0 
 
-$ex_{low}(x)$ = 0
+                (e.g., cross section with nonzero threshold at RMN1)
+          \item[IFEXMN = 2] ~ 
 
-(e.g., cross section with nonzero threshold at RMN1)
-\item[IFEXMN = 2] ~
+                y=x/FPARM(1) 
 
-y=x/FPARM(1)
+                $ex_{low}(x) = FPARM(2) \cdot y^{FPARM(3)} \cdot \log(y)$ 
 
-$ex_{low}(x) = FPARM(2) \cdot y^{FPARM(3)} \cdot \log(y)$
+                recommended for cross section extrapolation at high energy end, for reactions with nonzero threshold at FPARM(1) [\si{\electronvolt}].
+          \item[IFEXMN = 3] ~ 
 
-recommended for cross section extrapolation at high energy end, for
-reactions with nonzero threshold at FPARM(1) [\si{\electronvolt}].
-\item[IFEXMN = 3] ~
+                y=log(x) 
 
-y=log(x)
+                $\ln(ex_{low}(x)) = FPARM(1) + y \cdot FPARM(2) $
+          \item[IFEXMN = 4] ~ 
 
-$\ln(ex_{low}(x)) = FPARM(1) + y \cdot FPARM(2) $
-\item[IFEXMN = 4] ~
+                not in use
+          \item[IFEXMN = 5] ~ 
 
-not in use
-\item[IFEXMN = 5] ~
+                $y=\log(x)$ 
 
-$y=\log(x)$
+                $\ln(ex_{low}(x)) =\sum_{I=1}^3 FPARM(I) \cdot y^{I-1} $
+          \item[IFEXMN $<$ 0] ~ 
 
-$\ln(ex_{low}(x)) =\sum_{I=1}^3 FPARM(I) \cdot y^{I-1} $
-\item[IFEXMN $<$ 0] ~
+                linear extrapolation in log-log scale.
+                Coefficients FPARM(J), J=1,2 are automatically determined, e.g., in function CROSS, FPARM(3) = 0.D0, and then extrapolation option IFEXMN = 5 is used with these coefficients (same as IFEXMN = 3 in this case).
+        \end{description}
+  \item[IFEXMX, FPARM(J), J=4,6] ~ 
 
-linear extrapolation in log-log scale. Coefficients FPARM(J), J=1,2
-are automatically determined, e.g., in function CROSS, FPARM(3) = 0.D0,
-and then extrapolation option IFEXMN = 5 is used with these coefficients
-(same as IFEXMN = 3 in this case).
-\end{description}
-\item[IFEXMX, FPARM(J), J=4,6] ~
-
-same as above, but for high parameter range extrapolation
-$ex_{high}(x)$.
+        same as above, but for high parameter range extrapolation $ex_{high}(x)$.
 
 \end{description}
 
 \medskip
 
-*4A. Atoms Species Cards
+*4A.
+Atoms Species Cards
 \begin{description}
-\item[NATMI]
-Total number of atomic species blocks
-\item[IATM]
-irrelevant; labelling index
+  \item[NATMI] Total number of atomic species blocks
+  \item[IATM] irrelevant; labelling index
 \end{description}
 
-*4B. Molecules Species Cards
+*4B.
+Molecules Species Cards
 \begin{description}
-\item[NMOLI]
-Total number of molecule species blocks
-\item[IMOL]
-irrelevant; labelling index
+  \item[NMOLI] Total number of molecule species blocks
+  \item[IMOL] irrelevant; labelling index
 \end{description}
 
-*4C. Test Ions Species Cards
+*4C.
+Test Ions Species Cards
 \begin{description}
-\item[NIONI]
-Total number of test ion species blocks
-\item[IION]
-irrelevant; labelling index
+  \item[NIONI] Total number of test ion species blocks
+  \item[IION] irrelevant; labelling index
 \end{description}
 
-*4D. Photon Species Cards
+*4D.
+Photon Species Cards
 \begin{description}
-\item[NPHOTI]
-Total number of photon species blocks
-\item[IPHOT]
-irrelevant; labelling index
+  \item[NPHOTI] Total number of photon species blocks
+  \item[IPHOT] irrelevant; labelling index
 \end{description}
 
 The meaning of the variables in a species block is as follows:
 \begin{description}
-\item[TEXT\$] Name of the species on printout and
-plots
-\item[NMASS\$] Mass number
-\item[NCHAR\$] Nuclear charge number
-\item[NPRT\$] Flux
-units carried by one particle of this type and species. The
-``WEIGHT'' of a test flight has dimensions: ``atomic flux'',
-i.e., ``equivalent atoms per second''. For example, a methane
-molecule $CH_4$ should have $NPRT_{CH_4} = 5$, if H atoms and C
-atoms have $NPRT_H = NPRT_C = 1$.
+  \item[TEXT\$] Name of the species on printout and plots
+  \item[NMASS\$] Mass number
+  \item[NCHAR\$] Nuclear charge number
+  \item[NPRT\$] Flux units carried by one particle of this type and species.
+        The ``WEIGHT'' of a test flight has dimensions: ``atomic flux'', i.e., ``equivalent atoms per second''.
+        For example, a methane molecule $CH_4$ should have $NPRT_{CH_4} = 5$, if H atoms and C atoms have $NPRT_H = NPRT_C = 1$.
 
-NPRT is used to convert fluxes into equivalent atomic fluxes, for
-scaling, (see input flag FLUX in block 7), and for flux
-conservation in non-diagonal (species changing) events at surfaces
-and in the volume. (NPRT is irrelevant for atoms, and always set to one for them.)
-\item[NCHRG\$] Charge state
-(irrelevant for atoms and molecules, always set to zero for them)
-\item[ISRF\$] Species index flag for ``fast particle
-reflection model" (see block 6A), irrelevant for molecules
-\item[ISRT\$] Species index flag for ``thermal particle
-re-emission model" (see block 6A)
-\item[ID1\$] not in
-use in versions 98 to 2002. ID1 was the  ``sputtered species index'' in
-versions older than ``98'', but this species index has then become a
-surface property, see input block 3. In versions younger than 2002
-this flag can be used to increase the number of secondary test
-particle groups from 2 or less (default) to 3, if ID1=3 or to 4, if ID1=4. This
-option then allows more complex fragmentation processes of large
-molecules as compared to the default ID1=2.
-\item[NRC\$] ~
-\begin{description}
-\item[$> 0$]
-total number of reaction decks to be read for this species
-\item[$= 0$]
-default model is to be used.
-\item[$= -1$]
-no collision processes for this particle species at all
+        NPRT is used to convert fluxes into equivalent atomic fluxes, for scaling, (see input flag FLUX in block 7), and for flux conservation in non-diagonal (species changing) events at surfaces and in the volume.
+        (NPRT is irrelevant for atoms, and always set to one for them.)
+  \item[NCHRG\$] Charge state (irrelevant for atoms and molecules, always set to zero for them)
+  \item[ISRF\$] Species index flag for ``fast particle reflection model" (see block 6A), irrelevant for molecules
+  \item[ISRT\$] Species index flag for ``thermal particle re-emission model" (see block 6A)
+  \item[ID1\$] not in use in versions 98 to 2002.
+        ID1 was the  ``sputtered species index'' in versions older than ``98'', but this species index has then become a surface property, see input block 3.
+        In versions younger than 2002 this flag can be used to increase the number of secondary test particle groups from 2 or less (default) to 3, if ID1=3 or to 4, if ID1=4.
+        This option then allows more complex fragmentation processes of large molecules as compared to the default ID1=2.
+  \item[NRC\$] ~
+        \begin{description}
+          \item[$> 0$] total number of reaction decks to be read for this species
+          \item[$= 0$] default model is to be used.
+          \item[$= -1$] no collision processes for this particle species at all
+        \end{description}
+  \item[NFOL\$] controls the motion of test particles.
+        \begin{description}
+          \item[$\ge 0$] default test particle tracing model is to be used.
+          \item[$= -1$] motion of test particle is not followed (static approximation).
+                The test particle is destroyed immediately at it's point of birth by a collision.
+                A collision estimator is used rather than a track-length estimator for all default volumetric tallies, as described in \cref{sec3.2}.
+        \end{description}
+
+  \item[NGEN\$] Maximum number of generations for this test particle species.
+        May 2018: extended options for NGEN $<$0, ``fluid limit''.
+        \begin{description}
+          \item[$> 0$] Maximum number of generations for this test particle species.
+                For each Monte Carlo particle history the generation counter XGENER is reset to zero at birth, after surface events and after a non-diagonal event (modification of type and/or species of a particle in a collision event).
+                The generation counter XGENER is increased at entropy producing events (elastic and diagonal charge exchange collisions).
+                If, along a trajectory, the condition $XGENER > NGEN\dots$ is met, after a collision, no test particle secondaries are generated, i.e.\ the history is stopped.
+                The post-collision particle flux, parallel momentum flux and energy flux is, instead, put into the tallies PGENA, VGENA and EGENA for atoms, resp.,  PGENM, VGENM and EGENM for molecules, resp.,  PGENI, VGENI and EGENI for test ions, respectively and PGENPH, VGENPH and EGENPH for photons, respectively.
+          \item[$< 0$] Flag for  ``fluid-limit", i.e.\ for critical ``Knudsen number''.
+
+                Define: FDLM=-10000/(NGEN+1) 
+
+                Default: FDLM = $\infty$, no fluid limit.
+
+                E.g.:  NGEN\dots=-10001, then FDLM=1.
+                Smaller (even more negative) values of NGEN\dots\ lead to larger critical Knudsen numbers FDLM, and vice versa.
+                If the collision mean free path at a collision event, compared to a local geometric dimension (cell size) falls below a certain value (FDLM) (fluid limit), then the trajectory is stopped and the above mentioned generation limit tallies are scored.
+          \item[$= 0$] In case NGEN\dots = 0, (default) no generation limit is activated for atoms (NGENA = 0), molecules (NGENM = 0) or test ions (NGENI = 0).
+                I.e., strictly, the default NGEN\dots = 0 is equivalent to specifying NGEN\dots = infinity.
+        \end{description}
+
+  \item[NHSTS\$] (only in versions 2004 and younger): NHSTS=-1 turns off the trajectory plot for this particular species.
+        (default: NHSTS=0)
+  \item[ID3\$] not in use
+  \item[IREAC\$] Identification flag for collision data.
+        IREAC\$ = IR, and IR is the labelling index from the reaction card (see above).
 \end{description}
-\item[NFOL\$]
-controls the motion of test particles.
+The next three flags control number, species and type of particles involved in this particular collision process.
 \begin{description}
-\item[$\ge 0$]
-default test particle tracing model is to be used.
-\item[$= -1$]
-motion of test particle is not followed (static approximation).
-The test particle is destroyed immediately at it's point of birth by
-a collision.
-A collision estimator is used
-rather than a track-length estimator
-for all default volumetric tallies, as described in \cref{sec3.2}.
-\end{description}
+  \item[IBULK\$] pre-collision bulk particle identifier 
 
-\item[NGEN\$]
-Maximum number of generations for this test particle species.
-May 2018: extended options for NGEN $<$0, ``fluid limit''.
-\begin{description}
-\item[$> 0$]
-Maximum number of generations for this test particle species.
-For each Monte Carlo particle history the generation counter
-XGENER
-is reset to zero at birth, after surface events and after a non-diagonal
-event (modification of type and/or species of a particle in a collision
-event).
-The generation counter XGENER is increased at entropy producing events (elastic and diagonal charge
-exchange collisions). If, along a trajectory, the condition $XGENER > NGEN\dots$ is met, after a collision, no test
-particle secondaries are generated, i.e.\ the history is stopped. The post-collision particle flux,
-parallel momentum flux and energy flux is, instead,
-put into the tallies PGENA, VGENA and EGENA for atoms,
-resp.,  PGENM, VGENM and EGENM for
-molecules, resp.,  PGENI, VGENI and EGENI
-for test ions, respectively and PGENPH, VGENPH and EGENPH
-for photons, respectively.
-\item[$< 0$]
-Flag for  ``fluid-limit", i.e.\ for critical ``Knudsen number''.
+        = NLM
+        \begin{description}
+          \item[M] type flag ITYP for impacting bulk particle (electron (ITYP = 5) or bulk ion (ITYP = 4), 
 
-Define: FDLM=-10000/(NGEN+1)
+                irrelevant, defaulted to M = 4 for bulk ion impact collision and defaulted to M = 5 for electron impact collisions
+          \item[L] irrelevant, defaulted to L = 1, because number of pre-collision bulk particles is known from the type CRC of each collision process.
+          \item[N] Species index of pre-collision bulk ion (corresponds to IPLS in bulk ion species cards, see block 5).
+                Irrelevant for electron impact collisions, CRC=EI.
+        \end{description}
+  \item[ISCD1\$] first heavy secondary particle group identifier 
 
-Default: FDLM = $\infty$, no fluid limit.
+        = IJKLM
+  \item[M] type flag ITYP for these first secondaries group (atoms (ITYP=1), molecules (ITYP=2), test ions (ITYP=3) or bulk ions (ITYP=4))
+  \item[L] number of secondaries of this type and species
+  \item[JK] Species index of secondary (IATM, IMOL, IION, or IPLS), two digits
+  \item[I] relative importance of this first secondary group as compared to the second secondary group.
+        If $I \le 0$, I is defaulted to I = 1 
 
-E.g.:  NGEN\dots=-10001, then FDLM=1. Smaller (even more negative) values of
-NGEN\dots\ lead to larger critical Knudsen numbers FDLM, and vice versa.
-If the collision mean free path at a collision event, compared to a local geometric dimension (cell size) falls below a certain
-value (FDLM) (fluid limit), then the trajectory is stopped
-and the above mentioned generation limit tallies are scored.
-\item[$= 0$]
-In case NGEN\dots = 0, (default) no generation limit is activated
-for atoms (NGENA = 0), molecules (NGENM = 0) or test ions (NGENI = 0). I.e., strictly, the default NGEN\dots = 0
-is equivalent to specifying NGEN\dots = infinity.
-\end{description}
+        (currently not in use)
+  \item[ISCD2\$] second heavy secondary particle group identifier 
 
-\item[NHSTS\$]
-(only in versions 2004 and younger): NHSTS=-1 turns off the
-trajectory plot for this particular species.
-(default: NHSTS=0)
-\item[ID3\$]
-not in use
-\item[IREAC\$]
-Identification flag for collision data. IREAC\$ = IR, and IR is the
-labelling index from the reaction card (see above).
-\end{description}
-The next three flags control number, species and type of particles
-involved in this particular collision process.
-\begin{description}
-\item[IBULK\$]
-pre-collision bulk particle identifier
+        = IJKLM.
 
-= NLM
-\begin{description}
-\item[M]
-type flag ITYP for impacting bulk particle
-(electron (ITYP = 5) or bulk ion (ITYP = 4),
-
-irrelevant, defaulted to M = 4 for bulk ion impact collision and
-defaulted to M = 5 for electron impact collisions
-\item[L]
-irrelevant, defaulted to L = 1, because number of pre-collision
-bulk particles is known from the type CRC of each collision process.
-\item[N]
-Species index of pre-collision bulk ion (corresponds to IPLS
-in bulk ion species cards, see block 5). Irrelevant for electron
-impact collisions, CRC=EI.
-\end{description}
-\item[ISCD1\$]
-first heavy secondary particle group identifier
-
-= IJKLM
-\item[M]
-type flag ITYP for these first secondaries group (atoms (ITYP=1), molecules (ITYP=2),
-test ions (ITYP=3) or bulk ions (ITYP=4))
-\item[L]
-number of secondaries of this type and species
-\item[JK]
-Species index of secondary (IATM, IMOL, IION, or IPLS), two digits
-\item[I]
-relative importance of this first secondary group as compared to
-the second secondary group. If $I \le 0$, I is defaulted to I = 1
-
-(currently not in use)
-\item[ISCD2\$]
-second heavy secondary particle group identifier
-
-= IJKLM.
-
-Same as ISCD1\$, but for second secondary group.
+        Same as ISCD1\$, but for second secondary group.
 \end{description}
 
 \bigskip
 
-$\underline{Note:} $
+$\underline{Note:} $ 
 
-The number of secondary electrons (if any) need not be specified, it is
-computed internally from charge conservation.
+The number of secondary electrons (if any) need not be specified, it is computed internally from charge conservation.
 
-In case of collisions with only one heavy particle secondary (test particle or bulk ``ion")
-(electron impact collision CRC=EI, or
-re-combination CRC=RC)
-ISCD1 is used and ISCD2 is irrelevant.
+In case of collisions with only one heavy particle secondary (test particle or bulk ``ion") (electron impact collision CRC=EI, or re-combination CRC=RC) ISCD1 is used and ISCD2 is irrelevant.
 
-In case of charge-exchange (CRC=CX)
-ISCD1 is used for the new state of the impacting bulk particle after the
-collision, whereas
-ISCD2 controls the options for the post-collision state
-of that particle which was the test particle prior to the collision.
-Consistency of the particle masses of pre- and post-collision particles
-with this convention is checked in the initialization phase of each run.
-``CX" collisions mean: exchange of identity, i.e.\ scattering angle $\pi$ in the center
-of mass system.
+In case of charge-exchange (CRC=CX) ISCD1 is used for the new state of the impacting bulk particle after the collision, whereas ISCD2 controls the options for the post-collision state of that particle which was the test particle prior to the collision.
+Consistency of the particle masses of pre- and post-collision particles with this convention is checked in the initialization phase of each run.
+``CX" collisions mean: exchange of identity, i.e.\ scattering angle $\pi$ in the center of mass system.
 I.e.\ CRC=CX is used for resonant charge-exchange only.
-Non resonant charge-exchange, in which e.g.\ internal energy is
-converted into kinetic energy of products,
-is to be treated in the CRC=PI category of ``general heavy particle collisions".
+Non resonant charge-exchange, in which e.g.\ internal energy is converted into kinetic energy of products, is to be treated in the CRC=PI category of ``general heavy particle collisions".
 
-In case of  elastic collision (CRC=EL), the ISCD1 and ISCD2 flags are
-are irrelevant, because the colliding particles retain their identity
-by default.
+In case of  elastic collision (CRC=EL), the ISCD1 and ISCD2 flags are are irrelevant, because the colliding particles retain their identity by default.
 
-In case of  electron impact collision (CRC=EI),
-the ISCD1 and ISCD2 flags are
-symmetric, i.e.\ they can be interchanged without any effect on the calculation.
+In case of  electron impact collision (CRC=EI), the ISCD1 and ISCD2 flags are symmetric, i.e.\ they can be interchanged without any effect on the calculation.
 \begin{description}
-\item[ISCDE\$]
-flags for post-collision velocity space distributions for all
-particles involved in the collision event. This flag consists of 5 integer digits.
+  \item[ISCDE\$] flags for post-collision velocity space distributions for all particles involved in the collision event.
+        This flag consists of 5 integer digits.
 
-Let us write JKLMN = ISCDE
+        Let us write JKLMN = ISCDE 
 
-The meaning of some of these digits (LMN) has undergone changes in the years 2000 -- 2005,
-M and N have become entirely redundant for collision energetics and may now, in versions younger than
-2017, control other options (radiation loss, (appearance) potential difference, etc., see below)
+        The meaning of some of these digits (LMN) has undergone changes in the years 2000 -- 2005, M and N have become entirely redundant for collision energetics and may now, in versions younger than 2017, control other options (radiation loss, (appearance) potential difference, etc., see below) 
 
-We describe the old (1999 and older) and current meanings in a separate
-paragraph below.
+        We describe the old (1999 and older) and current meanings in a separate paragraph below.
 
+  \item[IESTM] Three digits IESTM=LMN.
+        N, M and L are flags for the choice of estimators for particle, momentum and energy sink and source term contributions from the collision process.
+        (Default: = 0 ``track-length estimators".)
+        In some cases, when track-length estimators can not be used because the corresponding momentum or energy weighted Maxwellian rate coefficients are not available in a particle run, (i.e.\ are missing in the preceding list of NREAC reaction data), then internally a switching from track-length to collision estimators is carried out, and a corresponding warning is printed.
+  \item[IBGK] 
 
-\item[IESTM]
-Three digits IESTM=LMN. N, M and L are
-flags for the choice of estimators for particle, momentum and energy sink
-and source term contributions from the collision process.
-(Default: = 0 ``track-length estimators".)
-In some cases, when track-length estimators can not be used because
-the corresponding momentum or energy weighted Maxwellian rate coefficients
-are not available in a particle run,
-(i.e.\ are missing in the preceding list of NREAC reaction data),
-then internally a switching from track-length to collision
-estimators is carried out, and a corresponding warning is printed.
-\item[IBGK]
+        Three digits IBGK=NML.
+        Particle identifier for \ac{BGK} self and cross collisions.
+        The format is the same as for IBULK, ISCD1 and ISCD2 species identifier flags.
+        I.e., it has three digits, pointing to the type and to the species index within that type-group.
+        The second digit is irrelevant and defaulted to one (only binary collisions are considered).
+        This flag controls options for non-linear test-particle - test-particle collision.
 
-Three digits IBGK=NML. Particle identifier for \ac{BGK} self and cross collisions.
-The format is the same as for IBULK, ISCD1 and ISCD2 species identifier flags.
-I.e., it has three digits, pointing to the type and to the species index within that type-group.
-The second digit is irrelevant and defaulted to one (only binary collisions are considered).
-This flag controls options for non-linear
-test-particle - test-particle collision.
+        Let ISPZ be the species index of a test-particle.
+        If the collision is a self-collisions, this flag IBGK must point to the species ISPZ itself.
+        Otherwise it must point to the \ordinalnum{2} test particle species ISPZ2, which is involved in the \acs{BGK}-cross collision term.
 
-Let ISPZ be the species index of a test-particle.
-If the collision is a self-collisions, this flag IBGK must point to
-the species ISPZ itself. Otherwise it must point to the \ordinalnum{2} test particle
-species ISPZ2, which is involved in the \acs{BGK}-cross collision term.
+        IBGK must be consistent with IBULK, which in this case is the ``artificial background species" (= result from previous iteration) in the linearization of the collision operator.
 
-IBGK must be consistent with IBULK, which in this case is the ``artificial
-background species" (= result from previous iteration) in the linearization of the collision operator.
+        I.e.: if test particle species $A$ collides with test particle species $B$ (of same or of different species and type), then a bulk species $AB_{bulk}$ must be present in input block 5, such that species $A$ and $AB_{bulk}$ have the same mass, nuclear charge and charge numbers.
+        The density, flow field and temperature of collision partner $AB_{bulk}$ are iterated, using either the corresponding parameters estimated for species $A$ (in case of self-collisions) or using parameters obtained from the formulas for $n_{AB}, T_{AB}, V_{AB}$ (see \cref{sec1-bgk}) for cross collisions between species $A$ and $B$.
 
-I.e.: if test particle species $A$ collides with test particle species $B$ (of same
-or of different species and type), then a bulk species $AB_{bulk}$ must be present in
-input block 5, such that species $A$ and $AB_{bulk}$ have the same mass, nuclear charge and
-charge numbers. The density, flow field and temperature of collision partner $AB_{bulk}$ are iterated,
-using either the corresponding parameters estimated for species $A$ (in case of self-collisions) or
-using parameters obtained from the formulas for $n_{AB}, T_{AB}, V_{AB}$ (see \cref{sec1-bgk})
-for cross collisions between species $A$ and $B$.
+        The flag IBULK must point to the corresponding species IPLS=$AB_{BULK}$ in block 5.
 
-The flag IBULK must point to the corresponding species IPLS=$AB_{BULK}$ in block 5.
+        An example for input specifications of non-linear \ac{BGK} collisions is given below in \cref{sec4-bgk}.
+        (Default: = 0, no iteration for non-linearity in collision kernel, no ``artificial background species" involved in this collision, and no \acs{BGK}-tallies are updated for iterating the artificial background species.)
+  \item[EELEC] parameter EP for electron energy loss per collision.
+        Its meaning depends on fifth digit of ISCDE flag and is described above.
+  \item[EBULK] parameter EP for pre-collision bulk ion energy loss per collision.
+        Its meaning depends on fourth digit of ISCDE flag and is described above.
+  \item[ESCD1] parameter EP for velocity space distribution of secondaries.
+        Its meaning depends on third digit of ISCDE flag and is described above.
+  \item[EDUMMY] (was earlier: \textbf{ESCD2}) in versions 1999 and older: the parameter ESCD2 = EP was used for velocity space distribution of the second secondaries group, whereas ESCD1 was used for the first group of secondaries.
+        Now: this parameter ESCD2 is not in use anymore.
+        Distribution of energy (kinetic energy release) EP over secondaries is now by default inversely proportional to the masses of secondary particles (as follows from momentum conservation in binary collisions).
+        For backward compatibility of input files now internally: EP = ESCD1 + EDUMMY.
+  \item[FREAC] multiplier to scale the cross section (and rate coefficients) of this process.
+        Default: FREAC = 1.0.
+        If FREAC $\leq$ 0, it is also defaulted to 1.0.
+        To turn off this process, set FREAC to a very small number: e.g.: FREAC = 1.0000 E-30
+  \item[EDPOT] Potential energy difference in the specified collision process.
+        Default: EDPOT = 0.0.
+        This energy allows to derive (implicit) radiation energy losses from the multi-step electron collision process.
+        The incident electron energy difference(loss or gain) per collision EELEC is the sum:
 
-An example for input specifications of non-linear \ac{BGK} collisions is given
-below in \cref{sec4-bgk}.
-(Default: = 0, no iteration for non-linearity in collision kernel, no
-``artificial background species" involved in this collision, and no
-\acs{BGK}-tallies are updated for iterating the artificial background species.)
-\item[EELEC]
-parameter EP for electron energy loss per collision.
-Its meaning depends on fifth digit of ISCDE flag and is described above.
-\item[EBULK]
-parameter EP for pre-collision bulk ion energy loss per collision.
-Its meaning depends on fourth digit of ISCDE flag and is described above.
-\item[ESCD1]
-parameter EP for velocity space distribution of secondaries.
-Its meaning depends on third digit of ISCDE flag and is described above.
-\item[EDUMMY]
-(was earlier: \textbf{ESCD2}) in versions 1999 and older: the parameter ESCD2 = EP was used for velocity space distribution
-of the second secondaries
-group, whereas ESCD1 was used for the first group of secondaries.
-Now: this parameter ESCD2 is not in use anymore. Distribution of energy (kinetic energy release) EP over
-secondaries is now by default
-inversely proportional to the masses of secondary particles (as follows from
-momentum conservation in binary collisions).
-For backward compatibility of input files now internally: EP = ESCD1 + EDUMMY.
-\item[FREAC]
-multiplier to scale the cross section (and rate coefficients) of this process.
-Default: FREAC = 1.0. If FREAC $\leq$ 0, it is also defaulted to 1.0. To turn off this process,
-set FREAC to a very small number: e.g.: FREAC = 1.0000 E-30
-\item[EDPOT]
-Potential energy difference in the specified collision process.  Default: EDPOT = 0.0.
-This energy allows to derive (implicit) radiation energy losses from the multi-step electron
-collision process.
-The incident electron energy difference(loss or gain) per collision EELEC is the sum:
+        ESCD1 (kinetic energy released in educts, KER) plus 
 
-ESCD1 (kinetic energy released in educts, KER) plus
+        EDPOT (potential energy difference) plus 
 
-EDPOT (potential energy difference) plus
+        ERAD (radiated energy, e.g.\ from intermediate excited states).
 
-ERAD (radiated energy, e.g.\ from intermediate excited states).
-
-
-The old ``fluid limit'' cut off options formerly specified at this place
-(the FLDLM flag) are now controlled by the NGEN flag, see above.
+        The old ``fluid limit'' cut off options formerly specified at this place (the FLDLM flag) are now controlled by the NGEN flag, see above.
 
 \end{description}
-
 
 \subsection{Collision kinetics}
 
-In this paragraph we describe the options controlling the energies of post-collision particles and the
-electron and bulk ion energy gain or loss rates.
-These options are controlled by the integer input flag ISCDE and the three
-real flags EELEC, EBULK, ESCD1 mentioned above.
+In this paragraph we describe the options controlling the energies of post-collision particles and the electron and bulk ion energy gain or loss rates.
+These options are controlled by the integer input flag ISCDE and the three real flags EELEC, EBULK, ESCD1 mentioned above.
 
-\textbf{Very old options} (before around year 2000) will only briefly be described here,
-but in general these must be inferred from the coding on a case by case basis.
+\textbf{Very old options} (before around year 2000) will only briefly be described here, but in general these must be inferred from the coding on a case by case basis.
 
-Let us write JKLMN = ISCDE
+Let us write JKLMN = ISCDE 
 
-Each of the five
-digits did control a
-different type of particle: J: electrons, K: bulk ions, L: test ions, M: molecules
-and N: atoms.  In addition to ESCD1 there was a second energy parameter ESCD2, in those days meant for
-the kinetic energy of the first and second heavy post-collision particle, respectively.
+Each of the five digits did control a different type of particle: J: electrons, K: bulk ions, L: test ions, M: molecules and N: atoms.
+In addition to ESCD1 there was a second energy parameter ESCD2, in those days meant for the kinetic energy of the first and second heavy post-collision particle, respectively.
 Later ESCD2 became redundant, and only ESCD1 (the sum of both old values:  ESCD1 + ESCD2,  was used since then.
-Internally the code since then distributes the total kinetic energy release ESCD1 to the two post-collision
-particles according to the laws of energy and momentum conservation.
+Internally the code since then distributes the total kinetic energy release ESCD1 to the two post-collision particles according to the laws of energy and momentum conservation.
 
-More: to be written \dots\ needs detective work in very old code \dots
+More: to be written \dots\ needs detective work in very old code \dots 
 
-\textbf{Current options:}
+\textbf{Current options:} 
 
-The energy losses and gains of all particles participating in a collision event
-are controlled by the input flag ISCDE, as well as by the energies EELEC, EBULK (pre-collision
-energies of electrons and heavy background particles, respectively and ESCD1 (total post-collision energy: KER: kinetic energy release)
-of heavy post-collision particles (excluding electrons).
+The energy losses and gains of all particles participating in a collision event are controlled by the input flag ISCDE, as well as by the energies EELEC, EBULK (pre-collision energies of electrons and heavy background particles, respectively and ESCD1 (total post-collision energy: KER: kinetic energy release) of heavy post-collision particles (excluding electrons).
 
-Let us again write JKLMN = ISCDE
+Let us again write JKLMN = ISCDE 
 
 Digits M and N are not in use any more.
 
-Let then furthermore the character \#
-stand for J, K, L respectively. Then J controls electrons (if any involved),
-K controls pre-collision (plasma) bulk particles (if any involved),
-L the heavy secondary particles (if any).
+Let then furthermore the character \# stand for J, K, L respectively.
+Then J controls electrons (if any involved), K controls pre-collision (plasma) bulk particles (if any involved), L the heavy secondary particles (if any).
 
-Each of these single integer flags controls
-the meaning of the related energy parameters, which are read in the next card:
+Each of these single integer flags controls the meaning of the related energy parameters, which are read in the next card:
 
-EP=EELEC (\# $ \hat{=} $ J), for the electrons involved in the collision process
+EP=EELEC (\# $ \hat{=} $ J), for the electrons involved in the collision process 
 
-EP=EBULK (\# $ \hat{=} $ K), for the pre-collision bulk ions
+EP=EBULK (\# $ \hat{=} $ K), for the pre-collision bulk ions 
 
-EP=ESCD  (\# $ \hat{=} $ L), for the heavy secondary particles
-(this flag L  is
-only in use for CRC=EI and CRC=PI collisions, whereas for EL, CX and RC type collision processes
-the kinetic energy of heavy products is determined by default models assigned to these types of processes,
-independent of the value of flags L and ESCD).
+EP=ESCD  (\# $ \hat{=} $ L), for the heavy secondary particles (this flag L  is only in use for CRC=EI and CRC=PI collisions, whereas for EL, CX and RC type collision processes the kinetic energy of heavy products is determined by default models assigned to these types of processes, independent of the value of flags L and ESCD).
 
 The following flags are in use:
 
-For EL (elastic) collision processes:  only parameter K is in use
+For EL (elastic) collision processes:  only parameter K is in use 
 
-For CX (charge-exchange) collision processes:    only parameter K is in use
+For CX (charge-exchange) collision processes:    only parameter K is in use 
 
-For EI (electron impact) collision processes:    parameters J and L are in use
+For EI (electron impact) collision processes:    parameters J and L are in use 
 
-For PI (heavy particle) collision  processes:    parameters J, K and L are in use
+For PI (heavy particle) collision  processes:    parameters J, K and L are in use 
 
-For RC (recombination)  collision processes:     only parameter J is in use
+For RC (recombination)  collision processes:     only parameter J is in use 
 
 \begin{description}
-\item[\# = 0]
-constant loss or gain of EP (\si{\electronvolt}) per collision event.
+  \item[\# = 0] constant loss or gain of EP (\si{\electronvolt}) per collision event.
 
-If \# $\hat{=} $ L, and if there is more than one
-heavy particle secondary, then the energy loss/gain EP (reaction exothermicity, or kinetic energy release)
-is distributed over the secondary bulk particles inversely proportional to their masses.
-E.g.\ for reaction $e+CH_4 \rightarrow CH_3 + H + e$, and EP=ESCD=\SI{8.0}{\electronvolt}, then
-the fragment $CH_3$ would receive an extra energy of \SI{0.5}{\electronvolt}, and the fragment $H$ would
-receive \SI{7.5}{\electronvolt},
-both isotropically in the center of mass system of the collision.
-\item[\# = 1] \hfill
-\begin{description}
-\item[for \# $  \hat{=} $ J]
-(spatially dependent) bulk electron temperature dependent loss $EP = -(1.5  \cdot  T_e)$ per
-collision, where
-$T_e$  is the local electron temperature at the point of collision.
-\item[for \# $  \hat{=} $ K]
-(spatially dependent) bulk ion energy dependent loss $EP = -(1.5  \cdot  T_i + E_{Drift})$ per
-collision, where $T_i$ is the local bulk ion temperature
-at the point of collision, and $E_{Drift}$
-is the kinetic energy of the drift motion (VXIN,VYIN,VZIN) of
-the background ions, see input block 5.
-Both contributions are evaluated for background bulk species IPLS which is the bulk collision partner
-in this particular reaction.
-The local drift energy contribution $E_{Drift}$ is added only in case NLDRFT=TRUE, see
-input block 1 (\cref{sec2.1})
-\item[for \# $  \hat{=} $ L]
-a fraction EP=ESCD of the energy loss EBULK of the
-impacting bulk particle is distributed equally over all (if more than
-one) heavy particle secondaries of group 1 and 2 respectively.
-This option is currently not in use
-\end{description}
-\item[\# = 2]
-Currently not fully implemented:
+        If \# $\hat{=} $ L, and if there is more than one heavy particle secondary, then the energy loss/gain EP (reaction exothermicity, or kinetic energy release) is distributed over the secondary bulk particles inversely proportional to their masses.
+        E.g.\ for reaction $e+CH_4 \rightarrow CH_3 + H + e$, and EP=ESCD=\SI{8.0}{\electronvolt}, then the fragment $CH_3$ would receive an extra energy of \SI{0.5}{\electronvolt}, and the fragment $H$ would receive \SI{7.5}{\electronvolt}, both isotropically in the center of mass system of the collision.
+  \item[\# = 1] \hfill
+        \begin{description}
+          \item[for \# $  \hat{=} $ J] (spatially dependent) bulk electron temperature dependent loss $EP = -(1.5  \cdot  T_e)$ per collision, where $T_e$  is the local electron temperature at the point of collision.
+          \item[for \# $  \hat{=} $ K] (spatially dependent) bulk ion energy dependent loss $EP = -(1.5  \cdot  T_i + E_{Drift})$ per collision, where $T_i$ is the local bulk ion temperature at the point of collision, and $E_{Drift}$ is the kinetic energy of the drift motion (VXIN,VYIN,VZIN) of the background ions, see input block 5.
+                Both contributions are evaluated for background bulk species IPLS which is the bulk collision partner in this particular reaction.
+                The local drift energy contribution $E_{Drift}$ is added only in case NLDRFT=TRUE, see input block 1 (\cref{sec2.1})
+          \item[for \# $  \hat{=} $ L] a fraction EP=ESCD of the energy loss EBULK of the impacting bulk particle is distributed equally over all (if more than one) heavy particle secondaries of group 1 and 2 respectively.
+                This option is currently not in use
+        \end{description}
+  \item[\# = 2] Currently not fully implemented:
 
-Let \# stand for a pre-collision bulk particle: \# $  \hat{=} $ J
-or \# $  \hat{=} $ K. The energy loss of the impacting bulk
-particle is calculated from the velocity and energy weighted rate
-coefficients. In this case EP must be the labelling index IR  of
-the reaction card by which these moments have been read from the
-data-file.
+        Let \# stand for a pre-collision bulk particle: \# $  \hat{=} $ J or \# $  \hat{=} $ K.
+        The energy loss of the impacting bulk particle is calculated from the velocity and energy weighted rate coefficients.
+        In this case EP must be the labelling index IR  of the reaction card by which these moments have been read from the data-file.
 
-Let now \# stand for a post-collision heavy particle group, i.e \#
-$  \hat{=} $ L. Then the velocity vector of
-the secondary particle is sampled from a cross section weighted
-(and optional, if NLDRFT, shifted by the local drift velocity of the
-pre-collision bulk particle) Maxwellian distribution at the local ion
-temperature $T_i$.
-The cross section is taken at the relative velocity of the impacting
-test particle and a particle sampled from the above mentioned (shifted)
-Maxwellian. This option permits to identify one particular collision
-partner from the background population, correctly accounting for the
-energy dependence of the cross section.
-\item[\# = 3] KREAD option: description to be written, see example of default hydrogen
-molecule reaction model, below, there: reaction 6 and 7.
-In principle an energy weighted loss rate coefficient is read in,
-a mean energy loss per collision is derived from that.
+        Let now \# stand for a post-collision heavy particle group, i.e \# $  \hat{=} $ L.
+        Then the velocity vector of the secondary particle is sampled from a cross section weighted (and optional, if NLDRFT, shifted by the local drift velocity of the pre-collision bulk particle) Maxwellian distribution at the local ion temperature $T_i$.
+        The cross section is taken at the relative velocity of the impacting test particle and a particle sampled from the above mentioned (shifted) Maxwellian.
+        This option permits to identify one particular collision partner from the background population, correctly accounting for the energy dependence of the cross section.
+  \item[\# = 3] KREAD option: description to be written, see example of default hydrogen molecule reaction model, below, there: reaction 6 and 7.
+        In principle an energy weighted loss rate coefficient is read in, a mean energy loss per collision is derived from that.
 
-If this option is used for heavy particles secondaries
-(i.e.\ the third digit of ISCDE has the value 3), than this energy is again
-distributed inversely proportional to
-the masses over all heavy particle secondaries.
+        If this option is used for heavy particles secondaries (i.e.\ the third digit of ISCDE has the value 3), than this energy is again distributed inversely proportional to the masses over all heavy particle secondaries.
 
-\item[\# = 4]
-to be written
-\item[\# = 5]
-to be written
+  \item[\# = 4] to be written
+  \item[\# = 5] to be written
 \end{description}
 
-\minisec{default resonant charge-exchange model}
+\minisec{default resonant charge-exchange model} 
 
-The default CX model is set up in order to define collision kinetics and mean free paths without
-need for integrating cross sections into rate coefficients. It is based on total cross sections only, plus a few approximations made,
-but it retains thermal force effects.
+The default CX model is set up in order to define collision kinetics and mean free paths without need for integrating cross sections into rate coefficients.
+It is based on total cross sections only, plus a few approximations made, but it retains thermal force effects.
 
-In the default (minimal) model hydrogenic atoms (here: D atoms)
-undergo resonant charge-exchange with hydrogenic ions (here: D$^+$ ions), utilizing
-the cross section data for reaction 3.1.8 (again from reference \cite{kn:Janev}, but with improved low energy asymptotics). The assumptions for processes labeled as
-CX are, generally: pure electron capture from the neutral by the ion (=``exchange of identity"
-in symmetric charge-exchange), scattering angle $\pi$ in center of mass system, zero exothermicity,
-i.e.\ perfect conservation of kinetic energy in center of mass system before and after collision.
-This set of assumptions translates in the procedure to first sample the velocity of a bulk ion going into the collision, and then to continue
-the former test particle trajectory with unmodified velocity, with its charge increased by one, and to continue the former bulk ion, also with unmodified velocity, with its
-charge decreased by one
-(i.e., as neutral particle in case of singly charged bulk ions).
+In the default (minimal) model hydrogenic atoms (here: D atoms) undergo resonant charge-exchange with hydrogenic ions (here: D$^+$ ions), utilizing the cross section data for reaction 3.1.8 (again from reference \cite{kn:Janev}, but with improved low energy asymptotics).
+The assumptions for processes labeled as CX are, generally: pure electron capture from the neutral by the ion (=``exchange of identity" in symmetric charge-exchange), scattering angle $\pi$ in center of mass system, zero exothermicity, i.e.\ perfect conservation of kinetic energy in center of mass system before and after collision.
+This set of assumptions translates in the procedure to first sample the velocity of a bulk ion going into the collision, and then to continue the former test particle trajectory with unmodified velocity, with its charge increased by one, and to continue the former bulk ion, also with unmodified velocity, with its charge decreased by one (i.e., as neutral particle in case of singly charged bulk ions).
 
+The ISCDE parameters (reaction kinetics) for default CX processes are zero: ISCDE = JKLMN = 00000 (or: = 00001, which has the same meaning because the fifth digit N is presently irrelevant).
+The second digit (i.e., here K = 0) controls the options for the velocity of the background ion going into the collision.
+For the default model choice K=0 the following model is activated:
 
-The ISCDE parameters (reaction kinetics) for default CX processes are zero: ISCDE = JKLMN = 00000 (or: = 00001, which
-has the same meaning because the fifth digit N is presently irrelevant).
-The second digit (i.e., here K = 0) controls the options for the velocity
-of the background ion going into the collision. For the default model choice K=0 the following model is
-activated:
-
-With respect to the distribution of ions going into a CX collision $f_{in \ CX}(\vec v_i)$ the background ion velocity distribution $f_i^{CX}(\vv_i)$
-is assumed to
-be a \emph{drifting, isotropic in the plasma frame, and mono-energetic distribution}, with the root mean square speed $\overline{v_i} = \sqrt{3 ~ kT_i/m_i}$ taken as
-representative speed of the ions,
-in the ion (plasma) frame. I.e., this isotropic plasma frame distribution is shifted by
-$\vv_{Drift,ipls}$ in the laboratory frame:
-\begin{equation}\label{iso-mono}
-f_i^{CX}(\vv_i-\vv_{Drift,i})d^3v_i=\frac{1}{4\pi}\frac{1}{(v_i)^2}\delta(v_i-\overline{v_i})d^3v_i \quad  v_i = |\vv_i|
+With respect to the distribution of ions going into a CX collision $f_{in \ CX}(\vec v_i)$ the background ion velocity distribution $f_i^{CX}(\vv_i)$ is assumed to be a \emph{drifting, isotropic in the plasma frame, and mono-energetic distribution}, with the root mean square speed $\overline{v_i} = \sqrt{3 ~ kT_i/m_i}$ taken as representative speed of the ions, in the ion (plasma) frame.
+I.e., this isotropic plasma frame distribution is shifted by $\vv_{Drift,ipls}$ in the laboratory frame:
+\begin{equation}
+  \label{iso-mono}
+  f_i^{CX}
+  (\vv_i-\vv_{Drift,i})d^3v_i=\frac{1}{4\pi}\frac{1}{(v_i)^2}\delta(v_i-\overline{v_i})d^3v_i \quad  v_i = |\vv_i|
 \end{equation}
 
-
-The $f_i^{CX}$ weighted
-reaction rate coefficient itself is approximated, namely it is evaluated as
-\begin{equation}\label{sigveff}
-\langle\sigma_{CX} \cdot v_{rel}\rangle \approx \sigma(v_{eff}) \cdot v_{eff}
+The $f_i^{CX}$ weighted reaction rate coefficient itself is approximated, namely it is evaluated as
+\begin{equation}
+  \label{sigveff} \langle\sigma_{CX} \cdot v_{rel}\rangle \approx \sigma(v_{eff}) \cdot v_{eff}
 \end{equation}
 
-with an effective relative velocity
+with an effective relative velocity 
 
 \begin{displaymath}
-v_{eff} = \sqrt{3 kT_i/m_i + (\vv_0 - \vv_{Drift,i})^2}
+  v_{eff} = \sqrt{3 kT_i/m_i + (\vv_0 - \vv_{Drift,i})^2}
 \end{displaymath}
-This approximation to the rate coefficient, for this particular model choice of $f_i^{CX}$, is almost
-exact. It is assuming that the effect of the
-scalar product $-\vv_i\cdot \vv_0$ in the relative velocity
-between ion- and neutral velocity becomes negligible after integrating
-$\sigma(v_{rel}) \cdot v_{rel}$ over solid angle, which
-would vanish indeed exactly if $\sigma \propto 1/v_{rel}$  (notation: ``Maxwellian Molecule collision kinetics", or ``Langevin cross section"
-resulting from interaction potentials $V(r)$ which scale as $V(r) \propto 1/r^4$).
+This approximation to the rate coefficient, for this particular model choice of $f_i^{CX}$, is almost exact.
+It is assuming that the effect of the scalar product $-\vv_i\cdot \vv_0$ in the relative velocity between ion- and neutral velocity becomes negligible after integrating $\sigma(v_{rel}) \cdot v_{rel}$ over solid angle, which would vanish indeed exactly if $\sigma \propto 1/v_{rel}$  (notation: ``Maxwellian Molecule collision kinetics", or ``Langevin cross section" resulting from interaction potentials $V(r)$ which scale as $V(r) \propto 1/r^4$).
 
-It is furthermore assumed in this default model that the ions undergoing CX carry a mean momentum of $m_i \vv_{Drift,i}$. The mean
-energy of ions undergoing charge-exchange in this approximation is $1.5
-\cdot T_i$  plus the kinetic energy in their drift motion $m_i/2 (\vv_{Drift,i})^2$.
-These two averages are used for the corresponding contribution in the CX momentum- and energy
-exchange rate coefficients, respectively. The resulting energy and momentum exchange rates would, again,
-be fully correct in case of ``Maxwellian molecule collisions" :$\sigma \propto 1/v_{rel}$
+It is furthermore assumed in this default model that the ions undergoing CX carry a mean momentum of $m_i \vv_{Drift,i}$.
+The mean energy of ions undergoing charge-exchange in this approximation is $1.5 \cdot T_i$  plus the kinetic energy in their drift motion $m_i/2 (\vv_{Drift,i})^2$.
+These two averages are used for the corresponding contribution in the CX momentum- and energy exchange rate coefficients, respectively.
+The resulting energy and momentum exchange rates would, again, be fully correct in case of ``Maxwellian molecule collisions" :$\sigma \propto 1/v_{rel}$ 
 
-The velocity of the impacting ion is sampled without this ``Maxwellian Molecule" approximation being made. I.e.,
-consequently, sampling is from the a drifting, isotropic and mono-energetic distribution $f_i^{CX}$ \cref{iso-mono}
-\textbf{weighted} by $\sigma(v_{rel}) \cdot |\vv_{rel}|$, with $v_{rel}$ the relative
-velocity between the two collision partners. The sampling distribution $f_{in \ CX}$ for the velocity $\vv_i^{CX}$
-of ions going into a CX event depends on the pre-collision test particle velocity $\vv_0$ as well and is (as also in general cases) given by:
+The velocity of the impacting ion is sampled without this ``Maxwellian Molecule" approximation being made.
+I.e., consequently, sampling is from the a drifting, isotropic and mono-energetic distribution $f_i^{CX}$ \cref{iso-mono} \textbf{weighted} by $\sigma(v_{rel}) \cdot |\vv_{rel}|$, with $v_{rel}$ the relative velocity between the two collision partners.
+The sampling distribution $f_{in \ CX}$ for the velocity $\vv_i^{CX}$ of ions going into a CX event depends on the pre-collision test particle velocity $\vv_0$ as well and is (as also in general cases) given by:
 
 \begin{equation}
-f_{in \ CX} (\vv_i^{CX},\vv_0)= \left[\sigma(v_{rel}) \cdot v_{rel} \cdot f_i^{CX}(\vv_i)\right] /k_{CX}
+  f_{in \ CX}
+  (\vv_i^{CX},\vv_0)= \left[\sigma(v_{rel}) \cdot v_{rel} \cdot f_i^{CX}(\vv_i)\right] /k_{CX}
 \end{equation}
 where the normalisation constant (rate coefficient) $k_{CX}$ is the rate coefficient obtained by averaging over $f_i^{CX}$:
 $k_{CX} = \langle\sigma(v_{rel}) \cdot v_{rel}\rangle(E_0,f_i^{CX})$.
 
-(Note: from this relation is is clearly seen that, in general, $f_i^{CX} = f_{in \ CX}$ if and only if
-$\sigma(v_{rel}) \propto 1/v_{rel}$).
+(Note: from this relation is is clearly seen that, in general, $f_i^{CX} = f_{in \ CX}$ if and only if $\sigma(v_{rel}) \propto 1/v_{rel}$).
 
 Summarizing: The current default CX model approximations consist in:
 \begin{itemize}
-\item[a)] selecting a particular distribution $f_i^{CX}$   \cref{iso-mono} rather than e.g.\ a drifting Maxwellian
-\item[b)] evaluating the reaction rate coefficient by \cref{sigveff} rather than a full rate coefficient integration
-\item[c)] approximating the energy and momentum exchange rate tallies by again employing the ``Langevin" $\sigma \propto 1/v_{rel}$ approximation
-\item[d)] but carrying out the full (relative velocity selective) reaction kinetics, i.e.\ here without making the $\sigma \propto 1/v_{rel}$ approximation, and, hence, retaining e.g.\ thermal force effects.
+  \item[a)] selecting a particular distribution $f_i^{CX}$   \cref{iso-mono} rather than e.g.\ a drifting Maxwellian
+  \item[b)] evaluating the reaction rate coefficient by \cref{sigveff} rather than a full rate coefficient integration
+  \item[c)] approximating the energy and momentum exchange rate tallies by again employing the ``Langevin" $\sigma \propto 1/v_{rel}$ approximation
+  \item[d)] but carrying out the full (relative velocity selective) reaction kinetics, i.e.\ here without making the $\sigma \propto 1/v_{rel}$ approximation, and, hence, retaining e.g.\ thermal force effects.
 \end{itemize}
-Instead of the weighting mentioned above, which would require knowledge of $k_{CX}$, a rejection
-method is used to avoid the weighting, and without need of knowing the integral $k_{CX}$, but still to simulate the same
-collision integral.
-Currently this rejection method, for each individual collision process,
-is based upon pre-evaluation (initialisation phase of a run) of the
-product $\sigma(E_{rel}) v_{rel}$ in the hard wired energy range \SIrange{0.1}{1.e4}{\electronvolt},
-determination of the the maximum SGVMAX of that product in this energy range.
-Then during the test particle tracing a comparison ``on the fly" (and rejection, if appropriate) is carried out, of the actual
-value of this product with {RANF} $\times$ SGVMAX, {RANF} being a uniformly distributed random number.
-If the relative collision energy of the incident test particle and the sampled bulk collision partner
-happens to fall outside
-this energy range for rejection, then rejection sampling is abandoned and the sample
-is accepted.
+Instead of the weighting mentioned above, which would require knowledge of $k_{CX}$, a rejection method is used to avoid the weighting, and without need of knowing the integral $k_{CX}$, but still to simulate the same collision integral.
+Currently this rejection method, for each individual collision process, is based upon pre-evaluation (initialisation phase of a run) of the product $\sigma(E_{rel}) v_{rel}$ in the hard wired energy range \SIrange{0.1}{1.e4}{\electronvolt}, determination of the the maximum SGVMAX of that product in this energy range.
+Then during the test particle tracing a comparison ``on the fly" (and rejection, if appropriate) is carried out, of the actual value of this product with {RANF} $\times$ SGVMAX, {RANF} being a uniformly distributed random number.
+If the relative collision energy of the incident test particle and the sampled bulk collision partner happens to fall outside this energy range for rejection, then rejection sampling is abandoned and the sample is accepted.
 
+Check in subr.\ VELOCX to find out which of the two physically equivalent methods are in use.
 
-Check in subr.\ VELOCX to find out which of the two
-physically equivalent methods are in use.
-
-Default reactions 5.3.1 and 6.3.1 (added in April 2006, to simplify
-input for pure He plasma simulations)
-are the two resonant charge-exchange processes
+Default reactions 5.3.1 and 6.3.1 (added in April 2006, to simplify input for pure He plasma simulations) are the two resonant charge-exchange processes 
 
 \begin{displaymath}
-\mathrm{He + He^{+} \rightarrow He^{+}  + He}
+  \mathrm{He + He^{+} \rightarrow He^{+}  + He}
 \end{displaymath}
 
 \begin{displaymath}
-\mathrm{He + He^{++} \rightarrow He^{++}  + He}
+  \mathrm{He + He^{++} \rightarrow He^{++}  + He}
 \end{displaymath}
-The weighting (or rejection-technique) was absent in versions younger
-than 99 for this particular type of (default) charge-exchange collision
-integral approximation, which,
-strictly speaking, had therefore led to a slight violation of the
-second law of thermodynamics (H-Theorem), due to an inconsistency between
-the in-scattering term (determined by $\sigma_{CX}$
-and the out-scattering term (determined by $\langle\sigma_{CX} v_{rel}\rangle)$ in
-the Boltzmann CX collision integral,
-although mass and energy
-had been strictly conserved in each collision.
+The weighting (or rejection-technique) was absent in versions younger than 99 for this particular type of (default) charge-exchange collision integral approximation, which, strictly speaking, had therefore led to a slight violation of the second law of thermodynamics (H-Theorem), due to an inconsistency between the in-scattering term (determined by $\sigma_{CX}$ and the out-scattering term (determined by $\langle\sigma_{CX} v_{rel}\rangle)$ in the Boltzmann CX collision integral, although mass and energy had been strictly conserved in each collision.
 
-Alternative to the choice ISCDE = 00000 made in the default model
-one may also use ISCDE = 01000 (with all the rest kept identical).
-In this case the rate coefficients are evaluated in the same way as described above,
-but neutrals emerging from CX collisions are sampled from the local drifting
-Maxwellian distribution of ion collision partners rather than from
-a drifting isotropic mono-energetic distribution.
+Alternative to the choice ISCDE = 00000 made in the default model one may also use ISCDE = 01000 (with all the rest kept identical).
+In this case the rate coefficients are evaluated in the same way as described above, but neutrals emerging from CX collisions are sampled from the local drifting Maxwellian distribution of ion collision partners rather than from a drifting isotropic mono-energetic distribution.
 
 \subsection{Default atomic and molecular data}
 
-If default atomic data are requested for some test particle species,
-these are activated by setting the
-flag  NRCM(IATM) = 0 (or NRCM(IMOL) = 0, NRCI(IION) = 0, respectively, or NRCP(IPLS) = 0 in input block 5)
-for a particular atom IATM (molecule IMOL or test ion IION, or (block 5) bulk ion IPLS),
-and by omitting the corresponding reaction cards
+If default atomic data are requested for some test particle species, these are activated by setting the flag  NRCM(IATM) = 0 (or NRCM(IMOL) = 0, NRCI(IION) = 0, respectively, or NRCP(IPLS) = 0 in input block 5) for a particular atom IATM (molecule IMOL or test ion IION, or (block 5) bulk ion IPLS), and by omitting the corresponding reaction cards 
 
-IREAC\$, \dots\ and
+IREAC\$, \dots\ and 
 
-EELEC\$, \dots
+EELEC\$, \dots 
 
-Then EIRENE tries to find, automatically, the corresponding species types
-and indices of the collision products in the species blocks. It then
-tries to define all variables in the cards
+Then EIRENE tries to find, automatically, the corresponding species types and indices of the collision products in the species blocks.
+It then tries to define all variables in the cards 
 
-IREAC\$, \dots\ and
+IREAC\$, \dots\ and 
 
-EELEC\$, \dots
+EELEC\$, \dots 
 
-for collision rates and collision kinetics,
-using default assumptions.
+for collision rates and collision kinetics, using default assumptions.
 
-If a test particle is to be assigned no collision processes at all, neither from the reaction list in block 4, nor a default process,
-then NRCM(IATM)=-1, and analogous for the other types and species of particles.
+If a test particle is to be assigned no collision processes at all, neither from the reaction list in block 4, nor a default process, then NRCM(IATM)=-1, and analogous for the other types and species of particles.
 
 \minisec{default model for atomic H (=H,D,T) and He test particles}
 
-Assume that the bulk ion H$^+$ is specified as bulk ion species
-no.\ ``a", D$^+$ as bulk species ``b", T$^+$ as bulk species ``c"
-and He$^+$ as bulk ion species no.\ ``d", then the default atomic
-collision models for H  (and isotopes) and He are
-identical to a model that would result from the following
-specifications in input block 4.
+Assume that the bulk ion H$^+$ is specified as bulk ion species no.\ ``a", D$^+$ as bulk species ``b", T$^+$ as bulk species ``c" and He$^+$ as bulk ion species no.\ ``d", then the default atomic collision models for H  (and isotopes) and He are identical to a model that would result from the following specifications in input block 4.
 
 For atoms D (likewise for H or T), e.g., IATM=1, and atoms He (e.g., IATM=2):
 
@@ -1533,40 +1037,22 @@ NATMI= 2
   0.0000E 00  0.0000E 00  0.0000E 00
 \end{lstlisting}
 
-Here $\ast$ is the species index of the D$^+$ bulk ion in input
-block 5, $\ast\ast$ is the species index of the He$^+$ bulk ion in
-input block 5, and $\ast\ast\ast$ is the species index of the He$^{++}$ bulk ion in
-input block 5. If a corresponding background species is not
-found in block 5, then the corresponding default process is de-activated.
+Here $\ast$ is the species index of the D$^+$ bulk ion in input block 5, $\ast\ast$ is the species index of the He$^+$ bulk ion in input block 5, and $\ast\ast\ast$ is the species index of the He$^{++}$ bulk ion in input block 5.
+If a corresponding background species is not found in block 5, then the corresponding default process is de-activated.
 
-
-Hence: D and He atoms are ionized by electron
-impact, using the Corona data 2.1.5 and 2.3.9, respectively, from
-reference \cite{kn:Janev}, and with constant electron energy loss
-per ionization of \SIlist{13.6;24.588}{\electronvolt}, respectively.
+Hence: D and He atoms are ionized by electron impact, using the Corona data 2.1.5 and 2.3.9, respectively, from reference \cite{kn:Janev}, and with constant electron energy loss per ionization of \SIlist{13.6;24.588}{\electronvolt}, respectively.
 
 \minisec{default model for hydrogenic molecules H$_2$ (and isotopomers) and their ions}
 
-For hydrogenic molecules ($\mathrm{H_2, D_2, HT,}$\dots) or molecular ions
-($\mathrm{H_2^+, D_2^+, HT^+,}$\dots)  default dissociation, ionization and
-dissociative recombination data are available.
+For hydrogenic molecules ($\mathrm{H_2, D_2, HT,}$\dots) or molecular ions ($\mathrm{H_2^+, D_2^+, HT^+,}$\dots)  default dissociation, ionization and dissociative recombination data are available.
 
-EIRENE  uses the 6 reaction rate coefficients  H.2  2.2.5, 2.2.9, 2.2.10, 2.2.11,
-2.2.12  from the data-set HYDHEL,  \cite{kn:Janev} and H.2, H.8 rate coefficients for 2.2.14
-from the data-set AMJUEL.
-(In versions older than Spring 2015 data: H.2 2.2.14 were taken from HYDHEL and H.8
-was not available, but a hard coded approximation
-to H.8 was used internally.
+EIRENE  uses the 6 reaction rate coefficients  H.2  2.2.5, 2.2.9, 2.2.10, 2.2.11, 2.2.12  from the data-set HYDHEL,  \cite{kn:Janev} and H.2, H.8 rate coefficients for 2.2.14 from the data-set AMJUEL.
+(In versions older than Spring 2015 data: H.2 2.2.14 were taken from HYDHEL and H.8 was not available, but a hard coded approximation to H.8 was used internally.
 This older default is very close, but not strictly identical to the newer one.)
 
-EIRENE again
-tries to identify the reaction products from the mass and nuclear
-charge number of the respective molecule IMOL (or test ion IION).
-In order to distinguish $D_2$ from $HT$, is also uses the name TEXTM
-(or TEXTI), by looking for the appearance of the character ``D" in
-the name (then: $D_2$, or $D_2^+$) or for ``H" or ``T"  (then: $HT$,
-or $HT^+$). The default reaction kinetics are set as if they would
-have been specified by the following species blocks:
+EIRENE again tries to identify the reaction products from the mass and nuclear charge number of the respective molecule IMOL (or test ion IION).
+In order to distinguish $D_2$ from $HT$, is also uses the name TEXTM (or TEXTI), by looking for the appearance of the character ``D" in the name (then: $D_2$, or $D_2^+$) or for ``H" or ``T"  (then: $HT$, or $HT^+$).
+The default reaction kinetics are set as if they would have been specified by the following species blocks:
 
 \begin{lstlisting}
 * ATOMIC REACTION CARDS  NREACI=
@@ -1600,49 +1086,26 @@ have been specified by the following species blocks:
 
 As above, $\ast$ stands for the species index of the $D^+$ bulk ion.
 
-An exact reproduction of an EIRENE run (identical test particle trajectories)
-with the hydrogen default model requires also the
-the sequence of processes to be the same as described here,
-due to random sampling of events at points of collision along Monte Carlo
-trajectories.
+An exact reproduction of an EIRENE run (identical test particle trajectories) with the hydrogen default model requires also the the sequence of processes to be the same as described here, due to random sampling of events at points of collision along Monte Carlo trajectories.
 
-Note that for reaction 6, dissociative recombination of the $D_2^+$ molecular ion
-the energy
-dependence of the cross section leads to
-a mean electron energy loss per event $\overline E_{el}$ of
-about $0.896\dots \cdot T_e$, see reference \cite{kn:Reiter93}, rather than the perhaps expected $3/2 \cdot T_e$.
-This approximation is used
-in the default model for the electron energy loss $E_{el}$ per collision
-and for the total
-kinetic energy  release $E_K$ shared by the two product atoms.
-The reaction card no.\ 7 above: AMJUEL H.8 2.1.14, together with the rate coefficient AMJUEL H.2 2.2.14 for this process, provides values identical to
-this default. Due to the linear form (on a log-log scale) of this AMJUEL H.2 rate coefficient, an algebraic manipulation of the AMJUEL fit coefficients
-results in the exact electron energy loss for this process, without independent fitting of energy weighted rates.
-\begin{equation}\label{elloss}
-\langle\sigma v_e E_{el}\rangle = \overline{E_{el}} \cdot \langle\sigma v_e\rangle = kT_e \langle\sigma v_e\rangle \cdot
-\left(3/2 + \frac{d \ln \langle\sigma v_e\rangle}{d \ln(kT_e)}\right)
+Note that for reaction 6, dissociative recombination of the $D_2^+$ molecular ion the energy dependence of the cross section leads to a mean electron energy loss per event $\overline E_{el}$ of about $0.896\dots \cdot T_e$, see reference \cite{kn:Reiter93}, rather than the perhaps expected $3/2 \cdot T_e$.
+This approximation is used in the default model for the electron energy loss $E_{el}$ per collision and for the total kinetic energy  release $E_K$ shared by the two product atoms.
+The reaction card no.\ 7 above: AMJUEL H.8 2.1.14, together with the rate coefficient AMJUEL H.2 2.2.14 for this process, provides values identical to this default.
+Due to the linear form (on a log-log scale) of this AMJUEL H.2 rate coefficient, an algebraic manipulation of the AMJUEL fit coefficients results in the exact electron energy loss for this process, without independent fitting of energy weighted rates.
+\begin{equation}
+  \label{elloss}
+  \langle\sigma v_e E_{el}\rangle = \overline{E_{el}} \cdot \langle\sigma v_e\rangle = kT_e \langle\sigma v_e\rangle \cdot
+  \left(3/2 + \frac{d \ln \langle\sigma v_e\rangle}{d \ln(kT_e)}\right)
 \end{equation}
 
-The velocity distribution of the dissociation products is
-isotropic in the center of mass system (taken to be the system
-moving with the incident molecule), and the dissociation energy is
-shared by the dissociation products so as to preserve momentum.
-I.e., in case of unsymmetrical hydrogenic molecules the two
-dissociation products to not receive the same share of the
-dissociation kinetic energy release (KER), but instead KER is distributed inversely proportional
-to their masses.
+The velocity distribution of the dissociation products is isotropic in the center of mass system (taken to be the system moving with the incident molecule), and the dissociation energy is shared by the dissociation products so as to preserve momentum.
+I.e., in case of unsymmetrical hydrogenic molecules the two dissociation products to not receive the same share of the dissociation kinetic energy release (KER), but instead KER is distributed inversely proportional to their masses.
 
-In case of mixed molecules, such as $DT$, $HT$ or $HD$  some rate
-coefficients are automatically split into two half and assigned to the proper product atomic particles.
-
+In case of mixed molecules, such as $DT$, $HT$ or $HD$  some rate coefficients are automatically split into two half and assigned to the proper product atomic particles.
 
 \minisec{default model for hydrogenic ions}
-For hydrogenic bulk ions ($H^+, D^+, T^+$)
-default (radiative) volume recombination rates
-are available \cite{kn:Gordeev}. The associated electron energy losses are
-derived in closed analytic form for this expression.
-
-
+For hydrogenic bulk ions ($H^+, D^+, T^+$) default (radiative) volume recombination rates are available \cite{kn:Gordeev}.
+The associated electron energy losses are derived in closed analytic form for this expression.
 
 There is currently no fully equivalent counterpart to this in the AMJUEL or HYDHEL polynomial fits.
 Rather close to the minimal default volume recombination model, al least at low Te, is the choice:
@@ -1654,55 +1117,38 @@ C corresponding electron energy loss/gain
   2 HYDHEL H.8 2.1.8     RC  0  1
 \end{lstlisting}
 
-For helium bulk ions ($He^+$) analytic default (radiative) volume recombination rates are given
-in \cite{kn:Janev}, reaction 2.3.13. The associated electron energy losses are
-derived in closed analytic form for this expression inside EIRENE.
-Again: no fully corresponding identical fits
-for these expressions are available currently in the external databases.
+For helium bulk ions ($He^+$) analytic default (radiative) volume recombination rates are given in \cite{kn:Janev}, reaction 2.3.13.
+The associated electron energy losses are derived in closed analytic form for this expression inside EIRENE.
+Again: no fully corresponding identical fits for these expressions are available currently in the external databases.
 
-\textbf{Further examples}
+\textbf{Further examples} 
 
-to be written
+to be written 
 
-\subsection{Neutral--Neutral collisions in \ac{BGK} approximation}\label{sec4-bgk}
+\subsection{Neutral--Neutral collisions in \ac{BGK} approximation}\label{sec4-bgk} 
 
-More generally: the \ac{BGK} approximation (\cref{sec1-bgk}) is employed for (bilinear) test-particle  -  test-particle collisions
-processes. From the input flags IBGKA(KK), IBGKM(KK), IBGKI(KK) (see above, \cref{sec4}) for a collision processes KK
-for atoms, molecules and test-ions, respectively,  certain internal flags are set and options are
-activated to enable iterative solutions of the transport problem with these non-linear effects. This iteration is
-carried out for the parameters density, temperature and flow velocity of a virtual background species,
-one virtual species for each \ac{BGK} process KK. The \ac{BGK} collision integrals are then simulated simply by random sampling the
-post-collision velocity from a drifting Maxwellian of the corresponding virtual bulk species.
+More generally: the \ac{BGK} approximation (\cref{sec1-bgk}) is employed for (bilinear) test-particle  -  test-particle collisions processes.
+From the input flags IBGKA(KK), IBGKM(KK), IBGKI(KK) (see above, \cref{sec4}) for a collision processes KK for atoms, molecules and test-ions, respectively,  certain internal flags are set and options are activated to enable iterative solutions of the transport problem with these non-linear effects.
+This iteration is carried out for the parameters density, temperature and flow velocity of a virtual background species, one virtual species for each \ac{BGK} process KK.
+The \ac{BGK} collision integrals are then simulated simply by random sampling the post-collision velocity from a drifting Maxwellian of the corresponding virtual bulk species.
 
-
-
-In input blocks 4a, 4b or 4c any test particle species ISPZ1 may have assigned to it one (or more than one)
-so called ``\acs{BGK}" collisions, as identified by the process flag IBGK\dots(KK) .ne.\ 0.
-If that is the case, this test particle species is labeled, additionally to its label ISPZ1, also as a ``\acs{BGK}-species" no.\ IBGK\_SP
-and the corresponding internal flags NPBGKA(IATM), NPBGKM(IMOL) or NPBGKI(IION) are non-zero for this species.
-For each ``\acs{BGK}-species" IBGK\_SP automatically additional tallies, so called ``\acs{BGK}-tallies" are scored,
-by a call to UPTBGK.F from scoring routine UPDATE.F. These additional tallies are then used to derive parameters for the iterated virtual background
-(plasma) species.
+In input blocks 4a, 4b or 4c any test particle species ISPZ1 may have assigned to it one (or more than one) so called ``\acs{BGK}" collisions, as identified by the process flag IBGK\dots(KK) .ne.\ 0.
+If that is the case, this test particle species is labeled, additionally to its label ISPZ1, also as a ``\acs{BGK}-species" no.\ IBGK\_SP and the corresponding internal flags NPBGKA(IATM), NPBGKM(IMOL) or NPBGKI(IION) are non-zero for this species.
+For each ``\acs{BGK}-species" IBGK\_SP automatically additional tallies, so called ``\acs{BGK}-tallies" are scored, by a call to UPTBGK.F from scoring routine UPDATE.F.
+These additional tallies are then used to derive parameters for the iterated virtual background (plasma) species.
 For each \ac{BGK} collision process KK a ``virtual" background species IPLS  (input block 5) is assigned in a unique way.
-For these bulk particle species IPLS the internal flag IBGK = NPBGKP(IPLS,1) points
-to a particular \acs{BGK} collision process IBGK and hence also to a particular test particle species ISPZ1, which
-collides with this bulk species IPLS via that \acs{BGK} collision kernel no.\ IBGK.
+For these bulk particle species IPLS the internal flag IBGK = NPBGKP(IPLS,1) points to a particular \acs{BGK} collision process IBGK and hence also to a particular test particle species ISPZ1, which collides with this bulk species IPLS via that \acs{BGK} collision kernel no.\ IBGK.
 
-In case of cross collisions a second internal flag ISPZ2= NPBGKP(IPLS,2) points to the second test particle species
-involved this is particular collision process IBGK.
-
+In case of cross collisions a second internal flag ISPZ2= NPBGKP(IPLS,2) points to the second test particle species involved this is particular collision process IBGK.
 
 \medskip
 
-
-
-In the example considered here we have the 4 neutral--neutral collision
-processes: D on D2,  D on D and D2 on D2, D2 on D.
+In the example considered here we have the 4 neutral--neutral collision processes: D on D2,  D on D and D2 on D2, D2 on D.
 In input block 4 there are three \ac{BGK} relaxation rate coefficients (note:
 the rate coefficient for D2 on D is equal to the one for D on D2, hence 3 rate coefficients
 for 4 processes are sufficient).
 \begin{footnotesize}
-\begin{lstlisting}
+  \begin{lstlisting}
 C     .
 C     .   some 20 other reaction cards in this example
 C     .
@@ -1721,7 +1167,7 @@ C     .
 In input block 4a (for atoms), we specify 4 collision processes for D atoms.
 Processes no.\ 3 and 4 are neutral--neutral collisions.
 \begin{scriptsize}
-\begin{lstlisting}
+  \begin{lstlisting}
 1 D         2  1  1  0  1 -1  1  4
 C (i.e.: 4 processes to be specified for this D atom)
 C     .
@@ -1736,7 +1182,7 @@ C     .
 In input block 4b (for molecules), we specify 7 collision processes for D2.
 Processes no.\ 6 and 7 are neutral--neutral collisions.
 \begin{scriptsize}
-\begin{lstlisting}
+  \begin{lstlisting}
 1 D2       4  2  2  0  0  1  0  7
 C (i.e.: 7 processes to be specified for this D2 molecule)
 C     .
@@ -1748,9 +1194,8 @@ C     .
  0.00000E+00 0.00000E+00 0.00000E+00 0.00000E+00 0.00000E+00
 \end{lstlisting}
 \end{scriptsize}
-In input block 5 there are at least 23 bulk ion species in this example. Of those
-species no.\ 20 to 23 are ``artificial" \ac{BGK} species for neutral--neutral self-collisions specified
-above by IBULK = 2014, 2114, 2214 and 2314 in blocks 4a and 4b above.
+In input block 5 there are at least 23 bulk ion species in this example.
+Of those species no.\ 20 to 23 are ``artificial" \ac{BGK} species for neutral--neutral self-collisions specified above by IBULK = 2014, 2114, 2214 and 2314 in blocks 4a and 4b above.
 \begin{lstlisting}
 C    .
 C    .  19 other bulk ion species decks.
@@ -1761,57 +1206,45 @@ C    .
 23 D2D(B)    4  2  2  0  1  1  0  0
 \end{lstlisting}
 
-
-
 \subsection{Fitting expressions (IFTFLG)}
 
-For
-the databases HYDHEL, AMJUEL, H2VIBR and METHANE
-the default fitting expressions (IFTFLG=0) are single or double parametric polynomial
-expressions for the logarithm $\ln(F)$ of function $F$, in the independent
-variables $\ln(p_1), \ln(p_2)$,
-as described in \cite{kn:Janev} or \cite{kn:Ehrhardt} for
-the databases HYDHEL and METHANE, respectively.
+For the databases HYDHEL, AMJUEL, H2VIBR and METHANE the default fitting expressions (IFTFLG=0) are single or double parametric polynomial expressions for the logarithm $\ln(F)$ of function $F$, in the independent variables $\ln(p_1), \ln(p_2)$, as described in \cite{kn:Janev} or \cite{kn:Ehrhardt} for the databases HYDHEL and METHANE, respectively.
 
 The following options are available in recent versions of the code:
 
+\textbf{a) for interaction potentials (elastic processes):} 
 
-\textbf{a) for interaction potentials (elastic processes):}
+IFTFLG $=$ 0    :  default, not in use 
 
-IFTFLG $=$ 0    :  default, not in use
+IFTFLG $=$ 2    :  generalized Morse potential as described in \cite{kn:Bachmann} 
 
-IFTFLG $=$ 2    :  generalized Morse potential as described in \cite{kn:Bachmann}
+\textbf{b) for cross sections, rate coefficients, rates:} 
 
-\textbf{b) for cross sections, rate coefficients, rates:}
+IFTFLG $<$ 100  :  rate coeff.
+or cross section, [\si{\cubic\centi\metre\per\second}] or [\si{\square\centi\metre}].
 
-IFTFLG $<$ 100  :  rate coeff. or cross section, [\si{\cubic\centi\metre\per\second}] or [\si{\square\centi\metre}].
-
-IFTFLG $>$ 100  :  rate = density * rate coeff,  [\si{\second}]
-                 (e.g.\ used for spontaneous decay, e.g.\ radiative decay.
+IFTFLG $>$ 100  :  rate = density * rate coeff,  [\si{\second}] (e.g.\ used for spontaneous decay, e.g.\ radiative decay.
 
 mod(IFTFLG,100) = 10:  only one fitting coefficient is read, i.e.\ the cross section,
 rate coefficient or rate is constant.
 
-\textbf{c) for photonic processes (line shape profiles:}
+\textbf{c) for photonic processes (line shape profiles:} 
 
-to be written
+to be written 
 
-\subsection{Internal EIRENE A\&M Data structures and conventions}
+\subsection{Internal EIRENE A\&M Data structures and conventions} 
 
-This section is currently being written\dots
+This section is currently being written\dots 
 
-\subsubsection{The CREAC array (prior to first SVN version 2008)}
+\subsubsection{The CREAC array (prior to first SVN version 2008)} 
 
-The array CREAC(1:9,-1:9,KK), KK=1,NREAC, in module COMXS is used to store (polynomial) fit coefficients for reaction no KK,
-as read in input block 4 from databases HYDHEL, AMJUEL, METHANE, H2VIBR.
-Other options, such as those for photonic processes, for internal CR codes, or for tabulated data, or parameters for asymptotic
-behaviour outside the fit validity range, had their own
-independent data structures.
+The array CREAC(1:9,-1:9,KK), KK=1,NREAC, in module COMXS is used to store (polynomial) fit coefficients for reaction no KK, as read in input block 4 from databases HYDHEL, AMJUEL, METHANE, H2VIBR.
+Other options, such as those for photonic processes, for internal CR codes, or for tabulated data, or parameters for asymptotic behaviour outside the fit validity range, had their own independent data structures.
 
 For a given process KK the fits coefficients for:
 
 interaction potentials were stored on
-CREAC(1:9,-1,KK), 
+CREAC(1:9,-1,KK),
 
 those for cross-sections
 on CREAC(1:9,0,KK),
@@ -1824,26 +1257,22 @@ The second argument here controls either the particle energy (in \si{\electronvo
 
 Higher moments, such as energy-weighted rate coefficients, have been read in and stored on CREAC with a different value of KK.
 
-In 2008 all data structures for atomic\slash molecular or photonic processes or CR codes have been
-accommodated into a single, more general array of generalized data type REACTION\_DATA
+In 2008 all data structures for atomic\slash molecular or photonic processes or CR codes have been accommodated into a single, more general array of generalized data type REACTION\_DATA 
 
-\subsubsection{Data structure REACDAT (from SVN versions (2008))}
+\subsubsection{Data structure REACDAT (from SVN versions (2008))} 
 
-Atomic, molecular and photonic collision data are stored internally on the data structure REACDAT, which
-replaces and generalizes the older fixed array format CREAC. The purpose is to accommodate
-also data formats other than the old polynomial fits read from data files AMJUEL, HYDHEL, etc.,
-e.g.\ to allow also tabulated data (1D and 2D tables), in-build full CR codes, as well as the various input data formats for line broadening
-mechanism (line shape functions) in case of radiation transport.
+Atomic, molecular and photonic collision data are stored internally on the data structure REACDAT, which replaces and generalizes the older fixed array format CREAC.
+The purpose is to accommodate also data formats other than the old polynomial fits read from data files AMJUEL, HYDHEL, etc., e.g.\ to allow also tabulated data (1D and 2D tables), in-build full CR codes, as well as the various input data formats for line broadening mechanism (line shape functions) in case of radiation transport.
 
 REACDAT(KK=1,NREAC) is an array of datatype REACTION\_DATA.
 
 Each element of REACDAT(IR) holds
 \begin{itemize}
-\item	logical variables: LPOT, LCRS, LRTC, LRTCMW, LRTCEW,  LPHR, LOTH
-\item	pointers:  POT, CRS, RTC, RTCMW, RTCEW, PHR, OTH (the data themselves)
-\item	real: ETH
-\item	real: RTMAX, ERTMAX
-\item	integer: NOSEC (number of secondary particle groups)
+  \item	logical variables: LPOT, LCRS, LRTC, LRTCMW, LRTCEW,  LPHR, LOTH
+  \item	pointers:  POT, CRS, RTC, RTCMW, RTCEW, PHR, OTH (the data themselves)
+  \item	real: ETH
+  \item	real: RTMAX, ERTMAX
+  \item	integer: NOSEC (number of secondary particle groups)
 \end{itemize}
 
 The logicals denote the presence or absence of different types of data for a particular collision the process KK.
@@ -1857,7 +1286,6 @@ LRTCEW	RTCEW	Energy rate coefficient is available
 LPHR	PHR	 Photonic process (line-shape, Einstein coefficients, population escape factors\dots) is available
 LOTH	OTH	Other reaction type data (reduced population coefficients, equilibrium  density ratios, etc.)
 
-
 If the logical variable is set to .FALSE.\ the corresponding pointer is ``unassociated".
 
 NOSEC specifies the number of secondary particles produced by the reaction.
@@ -1866,85 +1294,82 @@ Pointers POT, CRS, RTC, RTCMW, RTCEW, OTH, PHR are of datatype FIT\_FORMS.
 
 Datatype FIT\_FORMS consists of an integer variable IFIT and 4 pointers POLY, TAB2D, LINE and CR\dots
 \begin{itemize}
-\item	POLY is a pointer to a data structure for polygon fits (POLY\_DATA)
-\item	TAB2D  (old versions: ADAS) is a pointer to TAB2D (old: ADAS) data (TAB2D\_DATA or ADAS\_DATA)
-\item	LINE points to a data structure describing a photonic line (LINE\_DATA)
-\item	TAB1D  (old versions: HYD) points to a data structure, out: unfinished codes removed in 2018)
-\item	CR\dots\ points to a data structure used for collisional radiative models
+  \item	POLY is a pointer to a data structure for polygon fits (POLY\_DATA)
+  \item	TAB2D  (old versions: ADAS) is a pointer to TAB2D (old: ADAS) data (TAB2D\_DATA or ADAS\_DATA)
+  \item	LINE points to a data structure describing a photonic line (LINE\_DATA)
+  \item	TAB1D  (old versions: HYD) points to a data structure, out: unfinished codes removed in 2018)
+  \item	CR\dots\ points to a data structure used for collisional radiative models
 \end{itemize}
 
-Of the 5 pointers one and only one can be associated. IFIT indicates which one is set.
+Of the 5 pointers one and only one can be associated.
+IFIT indicates which one is set.
 
-RC1MIN, RC1MAX, RC2MIN, RC2MAX: ranges for first and second parameter in the fit formula. Outside the range an approximation should be used
-IFEX1MN, IFEX1MX, IFEX2MN, IFEX2MX: option indicating approximation models
-FP1L, FP1R, FP2B, FP2T: fit coefficients for approximation model
+RC1MIN, RC1MAX, RC2MIN, RC2MAX: ranges for first and second parameter in the fit formula.
+Outside the range an approximation should be used IFEX1MN, IFEX1MX, IFEX2MN, IFEX2MX: option indicating approximation models FP1L, FP1R, FP2B, FP2T: fit coefficients for approximation model 
 
 Data structure POLY\_DATA is used to store data belonging to polynomial fit.
 It consists of a 2 dimensional array DBLPOL for holding the fit coefficients.
 Variables RC1MN and RC1MX describing the validity range of the fit, flags IFEX1MN and IFEX1MX and array FPARM1(6) specifying extrapolation options.
 
-Data structure TAB2D\_DATA describes data read from database with tabulated rate coefficients, e.g.\ \ac{ADAS}. It consists of two integer variables NDENS and NTEMP denoting the number of densities and temperatures in the fit table.
-Arrays DENS and TEMP hold the densities and temperatures respectively. Array FIT contains the 2d fit. The arrays DDE and DTE are used to precalculate delta\_DENS and delta\_TEMP.
+Data structure TAB2D\_DATA describes data read from database with tabulated rate coefficients, e.g.\ \ac{ADAS}.
+It consists of two integer variables NDENS and NTEMP denoting the number of densities and temperatures in the fit table.
+Arrays DENS and TEMP hold the densities and temperatures respectively.
+Array FIT contains the 2d fit.
+The arrays DDE and DTE are used to precalculate delta\_DENS and delta\_TEMP.
 
-Data type LINE\_DATA deals with all parameters specifying a photonic process. It comprises a reaction name REACNAME, profile parameters E0, E1, AIK, G1, G2, C2, C3, C4, C6, B12, B21 and flags IGND, IRCART, IPROFILETYPE, IFREMD, NRJPRT, IMESS. Additionally there are arrays  C6A(12), IPLSC6(12), KENN(12).
+Data type LINE\_DATA deals with all parameters specifying a photonic process.
+It comprises a reaction name REACNAME, profile parameters E0, E1, AIK, G1, G2, C2, C3, C4, C6, B12, B21 and flags IGND, IRCART, IPROFILETYPE, IFREMD, NRJPRT, IMESS.
+Additionally there are arrays  C6A(12), IPLSC6(12), KENN(12).
 
-
-Data type COLRAD holds all data needed to describe the available collisional radiative model such as
-IFLAV: type/flavour of the CR\dots\ model (H, H2, He, \dots)
-IFORMUL: formulation used (1 or 2), i.e.\ meta-stable condensed or meta-stable resolved
-IROW\_ESC, ICOL\_ESC, POP\_ESC: population escape factor and the matrix position in which the factor should be applied.
+Data type COLRAD holds all data needed to describe the available collisional radiative model such as IFLAV: type/flavour of the CR\dots\ model (H, H2, He, \dots) IFORMUL: formulation used (1 or 2), i.e.\ meta-stable condensed or meta-stable resolved IROW\_ESC, ICOL\_ESC, POP\_ESC: population escape factor and the matrix position in which the factor should be applied.
 
 \subsubsection{The MODCOL array}:
 
-The integer array IFLAG = MODCOL(CT, I2 = 0, \dots, 4, IR) is the internally used identifier for
-the various collision process options and related data availability. It is constructed in the initialization
-phase (routines XSTEI, XSTCX, XSTEL, XSTPI, ) of a run from the atomic\slash molecular data read in input block 4
-(or hard wired from the minimal default
-atomic collision models, in case of NRC\dots = 0 for a certain test particle component).
+The integer array IFLAG = MODCOL(CT, I2 = 0, \dots, 4, IR) is the internally used identifier for the various collision process options and related data availability.
+It is constructed in the initialization phase (routines XSTEI, XSTCX, XSTEL, XSTPI, ) of a run from the atomic\slash molecular data read in input block 4 (or hard wired from the minimal default atomic collision models, in case of NRC\dots = 0 for a certain test particle component).
 
 \medskip
 
-The first index CT characterizes the type of a process. From this ''type" parameter also certain default assumptions
-made in the code for this type of process are inferred:
+The first index CT characterizes the type of a process.
+From this ''type" parameter also certain default assumptions made in the code for this type of process are inferred:
 \begin{description}
-\item[CT = 1] electron impact processes (`EI' in the names of corresponding variables,
-some older variable names also: `DS').
+  \item[CT = 1] electron impact processes (`EI' in the names of corresponding variables, some older variable names also: `DS').
 
-H.2 or H.4 data required, optional: additional H.8 or H.10 data for electron cooling rates.
-\item[CT = 2] not in use. In very old versions (1990 and older): DS, dissociation process, now combined with EI type processes
-\item[CT = 3] charge-exchange (`CX' in the names of corresponding variables).
+        H.2 or H.4 data required, optional: additional H.8 or H.10 data for electron cooling rates.
+  \item[CT = 2] not in use.
+        In very old versions (1990 and older): DS, dissociation process, now combined with EI type processes
+  \item[CT = 3] charge-exchange (`CX' in the names of corresponding variables).
 
-Fully kinetic collision integral, but fixed scattering angle $\pi$ in COM system. (H.1 and/or H.2 or  H.3
-data required. Optional: H.9 data)
-\item[CT = 4] heavy particle collisions (`PI' in variable names)
-\item[CT = 5] elastic processes (`EL' in variable names).
+        Fully kinetic collision integral, but fixed scattering angle $\pi$ in COM system.
+        (H.1 and/or H.2 or  H.3 data required.
+        Optional: H.9 data)
+  \item[CT = 4] heavy particle collisions (`PI' in variable names)
+  \item[CT = 5] elastic processes (`EL' in variable names).
 
-Either relaxation process approximation (H.2 data) or fully kinetic collision integral (H.0, H.1 and H.3
-data required. Optional: additional  H.9 data for mean ion energy loss). In versions from 2017 and later,
-H.0 may be omitted. The process is then is simulated as effective (condensed) scattering with an isotropic post-collision distribution in COM system,
-and the H.1, H.3 data are interpreted as diffusion cross section and rate coefficient, respectively.
-\item[CT = 6] recombination processes (`RC' in variable names).
+        Either relaxation process approximation (H.2 data) or fully kinetic collision integral (H.0, H.1 and H.3 data required.
+        Optional: additional  H.9 data for mean ion energy loss).
+        In versions from 2017 and later, H.0 may be omitted.
+        The process is then is simulated as effective (condensed) scattering with an isotropic post-collision distribution in COM system, and the H.1, H.3 data are interpreted as diffusion cross section and rate coefficient, respectively.
+  \item[CT = 6] recombination processes (`RC' in variable names).
 
-\item[CT = 7] photonic processes (`PH' in variable names, not fully implemented. ).
+  \item[CT = 7] photonic processes (`PH' in variable names, not fully implemented.
+        ).
 \end{description}
 
 \medskip
 
 For any process IR one or more than one data set may be required.
-The availability
-of data read from input block 4 is coded as IFLAG = 0 (data not available) or else
-IFLAG $\neq$ 0. In the latter case the value of IFLAG contains further information on
-the format (independent parameters) of the corresponding data set and the resulting collision kinetics.
+The availability of data read from input block 4 is coded as IFLAG = 0 (data not available) or else IFLAG $\neq$ 0.
+In the latter case the value of IFLAG contains further information on the format (independent parameters) of the corresponding data set and the resulting collision kinetics.
 \begin{description}
-\item[I2 = 0] format/availability of interaction potential data (or of differential cross sections): H.0
-\item[I2 = 1] format/availability of cross section data: H.1.  Cross sections are needed, in addition to rate coefficients,
-mainly for heavy particle interactions: CX, EL, PI, for velocity space sampling of the incident background
-medium collision partner. Both the test particle and bulk particle velocities are then used for post-collision
-velocity space sampling (e.g.\ COM scattering angle, etc.)
-\item[I2 = 2] format/availability of rate coefficient data: either H.2, or H.3, or H.4
-\item[I2 = 3] format/availability of momentum averaged rate coefficient data: either H.5, or H.6 or H.7
+  \item[I2 = 0] format/availability of interaction potential data (or of differential cross sections): H.0
+  \item[I2 = 1] format/availability of cross section data: H.1.
+        Cross sections are needed, in addition to rate coefficients, mainly for heavy particle interactions: CX, EL, PI, for velocity space sampling of the incident background medium collision partner.
+        Both the test particle and bulk particle velocities are then used for post-collision velocity space sampling (e.g.\ COM scattering angle, etc.)
+  \item[I2 = 2] format/availability of rate coefficient data: either H.2, or H.3, or H.4
+  \item[I2 = 3] format/availability of momentum averaged rate coefficient data: either H.5, or H.6 or H.7 
 
-\item[I2 = 4] format/availability of energy averaged rate coefficient data: either H.8, or H.9, or H.10
+  \item[I2 = 4] format/availability of energy averaged rate coefficient data: either H.8, or H.9, or H.10
 \end{description}
 Meaning of IFLAG:
 

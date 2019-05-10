@@ -1,77 +1,42 @@
 \chapter{Routines for interfacing with other codes: EIRCOP}
 \label{sec4}
 
-\textbf{General remarks}
+\textbf{General remarks} 
 
-\medskip  %
+\medskip 
 
-The ``background'' or ``host'' medium, usually the ``plasma'' is fixed in an EIRENE run, and usually either specified
-in input block 5 (\cref{sec2.5}), or the background volume tallies are simply ready from data files.
+The ``background'' or ``host'' medium, usually the ``plasma'' is fixed in an EIRENE run, and usually either specified in input block 5 (\cref{sec2.5}), or the background volume tallies are simply ready from data files.
+%
 
-However the mutual coupling between test-particle species treated by EIRENE and the background medium may be very
-strong, even if the test particle density is quite low compared to the background (plasma) density. This is
-because in-elastic collisions may lead to strong particle, momentum and/or energy sources for the balances governing the
-background medium, and these ``chemical sources" may even be the dominant terms for the global flow problem,
-at least in some parts of the computational volume (e.g.
-typically in the divertor of fusion reactors). Original diffusion-advection equations for a background medium
-there may turn into diffusion-advection-reaction type equations and even change their mathematical characteristics.
+However the mutual coupling between test-particle species treated by EIRENE and the background medium may be very strong, even if the test particle density is quite low compared to the background (plasma) density.
+This is because in-elastic collisions may lead to strong particle, momentum and/or energy sources for the balances governing the background medium, and these ``chemical sources" may even be the dominant terms for the global flow problem, at least in some parts of the computational volume (e.g. typically in the divertor of fusion reactors).
+Original diffusion-advection equations for a background medium there may turn into diffusion-advection-reaction type equations and even change their mathematical characteristics.
 
-For such type of ``background medium models'' (often ``Navier Stokes like" or related) then special interfacing procedures
-between the kinetic Monte Carlo component (EIRENE) and the numerical background model are required.
+For such type of ``background medium models'' (often ``Navier Stokes like" or related) then special interfacing procedures between the kinetic Monte Carlo component (EIRENE) and the numerical background model are required.
 
-For the EIRENE code such procedures have been developed in the late eighties, originally for the SOLXY 2D plasma code (\cite{kn:Gerhauser88a})
-but have then been transferred and extended for the rather well established (at that time) 2D multi-fluid plasma solver B2.
+For the EIRENE code such procedures have been developed in the late eighties, originally for the SOLXY 2D plasma code (\cite{kn:Gerhauser88a}) but have then been transferred and extended for the rather well established (at that time) 2D multi-fluid plasma solver B2.
 
-The EIRENE modules developed for code interfacing are described in this section, original references are: Reiter, \cite{kn:Net}, and first applications \cite{kn:Reiter91b} (1991)
-and the most detailed discussion probably still is the FZ J\"ulich report JUEL-2872,
-Maddison, Reiter, \cite{kn:Maddison94},  (1994).
+The EIRENE modules developed for code interfacing are described in this section, original references are: Reiter, \cite{kn:Net}, and first applications \cite{kn:Reiter91b} (1991) and the most detailed discussion probably still is the FZ J\"ulich report JUEL-2872, Maddison, Reiter, \cite{kn:Maddison94},  (1994).
 
-Special Monte Carlo options, such as correlated sampling 
-(see flag NLCRR in input block 1, \cref{sec2.1}) or the semi-implicit
-coupling schemes based on source term adaptations/rescalings 
-to reduce Monte Carlo run-time in these iterative non-linear schemes
-(jargon: ``short cycles"), have also had their
-origin in those early studies, loc cit., but have meanwhile been generalized significantly, e.g.\ to allow selective
-``short cycling" for individual strata,
-while for others (notably for volume recombination sources)
-full new Monte Carlo estimates are retained.
+Special Monte Carlo options, such as correlated sampling (see flag NLCRR in input block 1, \cref{sec2.1}) or the semi-implicit coupling schemes based on source term adaptations/rescalings to reduce Monte Carlo run-time in these iterative non-linear schemes (jargon: ``short cycles"), have also had their origin in those early studies, loc cit., but have meanwhile been generalized significantly, e.g.\ to allow selective ``short cycling" for individual strata, while for others (notably for volume recombination sources) full new Monte Carlo estimates are retained.
 
-
-
-
-The names of all routines in the interfacing block
-end with \dots COP.
+The names of all routines in the interfacing block end with \dots COP.
 
 \section{Routine for interfacing INFCOP} \label{sec4.1}
 
+To write an interfacing routine INFCOP in order to couple EIRENE to another code is already a quite formidable task, a new scientific challenge and it is highly recommended that, in addition to the information given below, close interaction with scientists at FZ J\"ulich may be needed.
+One also might ask for a few sample routines INFCOP, which are available from the authors.
 
-To write an interfacing routine INFCOP
-in order to couple EIRENE to
-another code is already a quite formidable task, a new scientific challenge and it is highly
-recommended that, in addition to the information given below,
-close interaction with scientists at FZ J\"ulich may be needed. One also might
-ask for a few sample routines INFCOP, which are available from
-the authors.
+In the rest of this section plasma data and geometrical (grid) information, from interfacing with an external model/code are described with reference to their location and size on a single large, 1D storage array \lstinline|RWK|.
+This array \lstinline|RWK| which is then used in the initialization phase of an EIRENE run to bring this information into regular EIRENE storage places/names.
 
-In the rest of this section plasma data and geometrical (grid) information, from interfacing with an external model/code are
-described with reference to their location and size on a single large, 1D storage array \lstinline|RWK|.
-This array \lstinline|RWK| which is then used in the initialization phase of an EIRENE run to bring this information into
-regular EIRENE storage places/names.
+In Version from 2001 or later, rather than filling 1D array \lstinline|RWK|, now directly input tallies TEINTF, TIINTF, DIINTF, etc.\ can be filled.
+These are pointers now to a vector (now named \lstinline|PLASMA_BACKGROUND|), but which has the same structure as the old \lstinline|RWK| array.
+Apart from that the rest remains the same and the material in this section is still valid.
 
-In Version from 2001 or later, rather than filling 1D array \lstinline|RWK|, now directly
-input tallies TEINTF, TIINTF, DIINTF, etc.\ can be filled. These are pointers now to a vector (now named
-\lstinline|PLASMA_BACKGROUND|), but which has the same structure as the old \lstinline|RWK| array. Apart from that the rest remains the same
-and the material in this section is still valid.
-
-Data are transferred from subroutine INFCOP into EIRENE via the
-EIRENE work array \lstinline|RWK|  (Module CSPEI).
-They are read onto the EIRENE arrays for input volume tallies (\cref{tab1}) by calls of subroutine PROFR in
-the initialization phase individually for each tally,
-for which the flag INDPRO has the value 6 or 7 for a particular input tally
-(see \cref{sec2.5}).
-The following addresses are foreseen on \lstinline|RWK| for this data transferring
-procedure:
-
+Data are transferred from subroutine INFCOP into EIRENE via the EIRENE work array \lstinline|RWK|  (Module CSPEI).
+They are read onto the EIRENE arrays for input volume tallies (\cref{tab1}) by calls of subroutine PROFR in the initialization phase individually for each tally, for which the flag INDPRO has the value 6 or 7 for a particular input tally (see \cref{sec2.5}).
+The following addresses are foreseen on \lstinline|RWK| for this data transferring procedure:
 
 \textsl{Plasma data (INDPRO = 6 option)}
 
@@ -127,82 +92,55 @@ THINTF:  (RWK ((6+5*NPLS+NAIN) * NRAD +                 J),
 
 \medskip
 
-In the LEVGEO = 3 option (2D grid of quadrangles) PGINTF is an array of length NPMAX,
-which contains all relevant
-information to generate a 2D mesh of polygons in the x-y plane.
-It is equivalenced to the common block CPOLYG
-via the statement:
+In the LEVGEO = 3 option (2D grid of quadrangles) PGINTF is an array of length NPMAX, which contains all relevant information to generate a 2D mesh of polygons in the x-y plane.
+It is equivalenced to the common block CPOLYG via the statement:
 
-EQUIVALENCE (PGINTF(1),XPLG(1,1)), \dots
+EQUIVALENCE (PGINTF(1),XPLG(1,1)), \dots 
 
-In the LEVGEO = 4 option (2D grid of triangles) TRINTF is an array of length NTMAX,
-which contains all relevant
-information to generate a mesh of triangles in the x-y plane.
-It is equivalenced to the common block CTRIA
-via the statement:
+In the LEVGEO = 4 option (2D grid of triangles) TRINTF is an array of length NTMAX, which contains all relevant information to generate a mesh of triangles in the x-y plane.
+It is equivalenced to the common block CTRIA via the statement:
 
-EQUIVALENCE (TRINTF(1),XT(1)), \dots
+EQUIVALENCE (TRINTF(1),XT(1)), \dots 
 
-In the LEVGEO = 5 option (3D grid of tetrahedrons) THINTF is an array of length NHMAX, which
-contains all relevant information to generate a mesh of
-tetrahedrons in the 3d computational domain. It is equivalenced to
-the common block CTETRA via the statement:
+In the LEVGEO = 5 option (3D grid of tetrahedrons) THINTF is an array of length NHMAX, which contains all relevant information to generate a mesh of tetrahedrons in the 3d computational domain.
+It is equivalenced to the common block CTETRA via the statement:
 
-EQUIVALENCE (THINTF(1),XT(1)), \dots
+EQUIVALENCE (THINTF(1),XT(1)), \dots 
 
-\subsection{entry IF1COP} \label{sec4.1.1}
+\subsection{entry IF1COP} \label{sec4.1.1} 
 
-\textsl{Plasma (background) data (INDPRO = 6 option)}
+\textsl{Plasma (background) data (INDPRO = 6 option)} 
 
+\medskip 
 
-\medskip
+to be written 
 
+\subsection{entry IF2COP(ISTRA)} \label{sec4.1.2} 
 
-to be written
+\textsl{Primary source data (INDSRC = 6 option)} 
 
-\subsection{entry IF2COP(ISTRA)} \label{sec4.1.2}
+\medskip 
 
-\textsl{Primary source data (INDSRC = 6 option)}
-
-\medskip
-
-In case of an EIRENE run, in which input information is obtained
-from an external code (e.g.: B2, EMC3, DIVIMP, \dots), the
-stratification of the primary source should be such that the first
-NTARGI (see \cref{sec2.14}) strata are determined by the plasma
-fluxes onto surfaces (``recycling surface sources"). In this case
-the surface source distribution $Q_S(\vr,\vv,i,t)$ (\cref{sec1.2}) can be defined automatically from the interfacing
-routine, using the data specified in input block 14. The remaining
-primary sources NTARGI+1, \dots, NSTRAI (e.g.\ gas puff, volume
-recombination sources, etc.) still have to defined in input
-block 7.  Whether input block 7 or input block 14 is used for
-a particular surface source ISTRA $\le$ NTARGI is controlled by
-the flag INDSRC.  For sources ISTRA $>$ NTARGI the input flag INDSRC  is irrelevant.
+In case of an EIRENE run, in which input information is obtained from an external code (e.g.: B2, EMC3, DIVIMP, \dots), the stratification of the primary source should be such that the first NTARGI (see \cref{sec2.14}) strata are determined by the plasma fluxes onto surfaces (``recycling surface sources").
+In this case the surface source distribution $Q_S(\vr,\vv,i,t)$ (\cref{sec1.2}) can be defined automatically from the interfacing routine, using the data specified in input block 14.
+The remaining primary sources NTARGI+1, \dots, NSTRAI (e.g.\ gas puff, volume recombination sources, etc.) still have to defined in input block 7.
+Whether input block 7 or input block 14 is used for a particular surface source ISTRA $\le$ NTARGI is controlled by the flag INDSRC.
+For sources ISTRA $>$ NTARGI the input flag INDSRC  is irrelevant.
 
 If INDSRC(ISTRA) $<$ 0 then interfacing routine IF2COP is not called.
 Input data are used from block 7, see \cref{sec2.7}.
 
 \medskip
 
-If INDSRC(ISTRA) = 0--5, then the input flags described in
-\cref{sec2.7} are used to define the spatial distribution of a
-recycling source on a grid boundary (function STEP(ISTEP), see
-\cref{sec2.7.1}) as well as the distribution in velocity
-space. The step function itself and the total source strength
-FLUX(ISTRA), however, are defined in IF2COP, using data from input
-block 14, see \cref{sec2.14}, for target recycling source ITARG. In
-this case the sampling range from the spatial surface distribution
-and the species distribution specified in input block 7 must be
-equal to or a subrange of the the step-function for target
-recycling source ITARG defined from the data in input block 14.
+If INDSRC(ISTRA) = 0--5, then the input flags described in \cref{sec2.7} are used to define the spatial distribution of a recycling source on a grid boundary (function STEP(ISTEP), see \cref{sec2.7.1}) as well as the distribution in velocity space.
+The step function itself and the total source strength FLUX(ISTRA), however, are defined in IF2COP, using data from input block 14, see \cref{sec2.14}, for target recycling source ITARG.
+In this case the sampling range from the spatial surface distribution and the species distribution specified in input block 7 must be equal to or a subrange of the the step-function for target recycling source ITARG defined from the data in input block 14.
 
 \medskip
 
-If INDSRC(ISTRA) = 6, then the input flags described in \cref{sec2.14}
-are used to define the entire surface recycling source automatically. The
-corresponding data in input block 7 for this stratum are not used and
-may be omitted. Stratum ISTRA corresponds to the target recycling source
-ITARG from block 14.
+If INDSRC(ISTRA) = 6, then the input flags described in \cref{sec2.14} are used to define the entire surface recycling source automatically.
+The corresponding data in input block 7 for this stratum are not used and may be omitted.
+Stratum ISTRA corresponds to the target recycling source ITARG from block 14.
 
 \subsection{entry IF3COP(ISTRAA,ISTRAE)}  \label{sec4.1.3}
 
@@ -210,118 +148,69 @@ ITARG from block 14.
 
 \medskip
 
-At this entry data are transferred back from EIRENE to the
-interfacing module (and from there, after possibly further processing, to the external code). This entry is called from the ``strata-loop" in subr.
-MCARLO, after all trajectories for a particular stratum ISTRA have
-been sampled and after all volume and surface tallies have been
-scaled and processed to their final form.
+At this entry data are transferred back from EIRENE to the interfacing module (and from there, after possibly further processing, to the external code).
+This entry is called from the ``strata-loop" in subr.
+MCARLO, after all trajectories for a particular stratum ISTRA have been sampled and after all volume and surface tallies have been scaled and processed to their final form.
 
 The call to IF3COP is controlled by the flag NMODE (input block 1).
 
-At entry IF3COP to module INFCOP data are expected
-for all strata ISTRA in the range ISTRA = ISTRAA,ISTRAE.
-There they may be further prepared (e.g.\ normalized, or scaled to other units)
-for transfer to the external code
+At entry IF3COP to module INFCOP data are expected for all strata ISTRA in the range ISTRA = ISTRAA,ISTRAE.
+There they may be further prepared (e.g.\ normalized, or scaled to other units) for transfer to the external code 
 
-\subsection{entry IF4COP} \label{sec4.1.4}
+\subsection{entry IF4COP} \label{sec4.1.4} 
 
-\textsl{post-processing after one complete cycle: overall balances, statistics, etc.}
+\textsl{post-processing after one complete cycle: overall balances, statistics, etc.} 
 
-\section{Routines for cycling of EIRENE with external codes: EIRSRT}
-\label{sec4.2}
+\section{Routines for cycling of EIRENE with external codes: EIRSRT} \label{sec4.2} 
 
-In this subroutine the ``cycling" between EIRENE and external
-codes is controlled. There are various options, such as
- ``full time dependent
-(explicit)", ``quasi-stationary (explicit)", and
-``quasi-stationary (implicit)".
+In this subroutine the ``cycling" between EIRENE and external codes is controlled.
+There are various options, such as ``full time dependent (explicit)", ``quasi-stationary (explicit)", and ``quasi-stationary (implicit)".
 
-\section{Routines for special tallies needed for code coupling:
-UPTCOP}
+\section{Routines for special tallies needed for code coupling: UPTCOP}
 \label{sec4.3}
 
-Updating of code interface tallies COPV, ``along the fly". These tallies
-are specific to the particular
-background plasma \ac{CFD} code, hence module UPTCOP is part of the code interfacing module.
-Apart from scoring along Monte Carlo histories in this special routine
-(rather than in EIRENE routine UPDATE),
-the tally COPV is scaled, averaged, printed and plotted as any other EIRENE tally.
+Updating of code interface tallies COPV, ``along the fly".
+These tallies are specific to the particular background plasma \ac{CFD} code, hence module UPTCOP is part of the code interfacing module.
+Apart from scoring along Monte Carlo histories in this special routine (rather than in EIRENE routine UPDATE), the tally COPV is scaled, averaged, printed and plotted as any other EIRENE tally.
 
-In older versions of EIRENE (before 2002) in particular momentum exchange rates (i.e.\ friction terms) in the
-direction parallel to the magnetic field have been programmed here in UPTCOP.
-Meanwhile these have become default tallies (i.e.\ scoring moved to UPDATE,
- see \cref{sec.tables}. Still some particular
-coupling tallies, e.g.\ to render the coupling procedure more implicit,
-are scored in this routine.
+In older versions of EIRENE (before 2002) in particular momentum exchange rates (i.e.\ friction terms) in the direction parallel to the magnetic field have been programmed here in UPTCOP.
+Meanwhile these have become default tallies (i.e.\ scoring moved to UPDATE, see \cref{sec.tables}.
+Still some particular coupling tallies, e.g.\ to render the coupling procedure more implicit, are scored in this routine.
 
 \newpage
 
-\section{Statistical noise in Monte Carlo terms for external code,
-noise-residuals: STATIS\_COP}
+\section{Statistical noise in Monte Carlo terms for external code, noise-residuals: STATIS\_COP}
 \label{sec4.4}
 
-As pointed out in \cref{sec2.9}:  for all primary (not derived)
-EIRENE tallies the empirical standard deviation can also be obtained,
-if requested, by setting proper flags in input block 9.
+As pointed out in \cref{sec2.9}:  for all primary (not derived) EIRENE tallies the empirical standard deviation can also be obtained, if requested, by setting proper flags in input block 9.
 
+Furthermore: (since Nov.\ 2013): the new option UPFCOP, to obtain statistical estimates of linear combination of standard tallies, by evaluating these composite scores after each trajectory from the individual tally scores.
+This option is restricted to \textbf{linear} combinations of tallies, because only then the sum over events and the sum over trajectories commute.
 
-Furthermore: (since Nov.\ 2013): the new option UPFCOP, to obtain statistical estimates of linear
-combination of standard tallies, by evaluating these composite scores after each trajectory
-from the individual tally scores. This option is restricted to \textbf{linear} combinations of tallies, because
-only then the sum over events and the sum over trajectories commute.
+The original considerable CPU penalty for evaluating standard deviations along with the mean values (the tallies themselves) was avoided, at least for volume averaged tallies, in EIRENE versions 99 and younger, by major code optimization (indirect addressing) in these parts.
+In versions 2012 and younger the same optimization was carried out also for standard deviations of all surface averaged tallies.
 
-The original considerable CPU penalty for evaluating standard deviations along with
-the mean values (the tallies themselves)
-was avoided, at least for volume averaged tallies, in EIRENE
-versions 99 and younger, by major code optimization (indirect addressing) in these
-parts. In versions 2012 and younger the same optimization was carried out also for
-standard deviations of all surface averaged tallies.
+In Versions  Oct.\ 2013 and older some standard deviation tallies of special interest for code interfacing (such as total, summed over species, source rates) have been implemented in a special routine in the code interfacing module: STATIS\_COP.
 
-In Versions  Oct.\ 2013 and older some standard deviation tallies of special interest for code interfacing
-(such as total, summed over species, source rates) have been implemented in a
-special routine in the code interfacing module: STATIS\_COP.
-
-This routine STATIS\_COP has now been made redundant, because all tallies needed for interfacing, including sums, differences of
-default tallies, are now available as COPV tallies, either scored in UPTCOP or, for linear combinations,  in UPFCOP,
-and for those COPV tallies standard deviations are available by default. This allows direct
-and unbiased estimation of
-variances for source terms of internal (rather than total) energy balances, or,
-more generally, for plasma fluid equations
-formulated in the rest frame of the plasma rather than in the laboratory frame.
-For example the B2.5 version of the B2
-2D plasma transport code contains the energy balance equations in the plasma frame,
-but the momentum balance equations
-in the laboratory frame. For all combinations direct statistical error estimates of
-EIRENE sources are now available.
-
+This routine STATIS\_COP has now been made redundant, because all tallies needed for interfacing, including sums, differences of default tallies, are now available as COPV tallies, either scored in UPTCOP or, for linear combinations,  in UPFCOP, and for those COPV tallies standard deviations are available by default.
+This allows direct and unbiased estimation of variances for source terms of internal (rather than total) energy balances, or, more generally, for plasma fluid equations formulated in the rest frame of the plasma rather than in the laboratory frame.
+For example the B2.5 version of the B2 2D plasma transport code contains the energy balance equations in the plasma frame, but the momentum balance equations in the laboratory frame.
+For all combinations direct statistical error estimates of EIRENE sources are now available.
 
 \bigskip
 
 Version 2012 and older:
 
+Subroutine \lstinline|STATIS_COP| provides these estimates for those tallies which are specific to a particular coupled case.
+Usually these will be source terms for particle, momentum, and energy balance equations, summed over all donor species.
 
-Subroutine \lstinline|STATIS_COP| provides these estimates for those
-tallies which are specific to a particular coupled case. Usually
-these will be source terms for particle, momentum, and energy
-balance equations, summed over all donor species.
+At entry \lstinline|IF4COP| (see \cref{sec4.1.4} above) these may be further processed.
+For example, in case of coupling to the B2 plasma fluid code these noise estimates are integrated into global quantities (dimension: 1/time) and represent the contribution of statistical noise to the overall residuals of a B2 run.
 
-At entry \lstinline|IF4COP| (see \cref{sec4.1.4} above) these
-may be further processed. For example, in case of coupling to the
-B2 plasma fluid code these noise estimates are integrated into
-global quantities (dimension: 1/time) and represent the
-contribution of statistical noise to the overall residuals of a B2
-run.
+These are printed from \lstinline|IF4COP|, together with the overall balances of a coupled run (\lstinline|TRCBAL = .true.|) 
 
-These are printed from \lstinline|IF4COP|, together with the overall
-balances of a coupled run (\lstinline|TRCBAL = .true.|)
+Hence: if the B2 estimated residuals are of the same order as these ``statistical noise residuals", then a further convergence of the combined code can only be achieved by either increasing the CPU-time for EIRENE.
 
-Hence: if the B2 estimated residuals are of the same order as
-these ``statistical noise residuals", then a further convergence
-of the combined code can only be achieved by either increasing the
-CPU-time for EIRENE.
+Otherwise: The coupled B2-EIRENE run has failed to converge to the solution within the statistical noise.
 
-Otherwise: The coupled B2-EIRENE run has failed to converge to the
-solution within the statistical noise.
-
-This is also represented by the convergence measure of ``saturated
-residuals".
+This is also represented by the convergence measure of ``saturated residuals".

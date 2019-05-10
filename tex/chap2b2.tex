@@ -1,128 +1,73 @@
 \section{Input for Standard Mesh} \label{sec2.2}
 
-\textbf{General Remarks}
+\textbf{General Remarks} 
 
-\medskip
+\medskip 
 
-EIRENE follows atoms, molecules or test ions in a 3-dimensional
-computational box. This box is discretized by
-zones (mesh cells), the boundaries of which are
-defined either by regular ``standard mesh surfaces", i.e., co-ordinate
-surfaces, (\ac{BREP} representation of geometry, \cref{sec1.5}) which are described here, and/or by zones whose
-boundaries are defined more generally
-by ``additional surfaces" (see below block 3B).
-Alternative to this \ac{BREP} option there is also the option of unstructured meshes (Voxel representation, loc.\ cit.) of triangles ( in 2D)
+EIRENE follows atoms, molecules or test ions in a 3-dimensional computational box.
+This box is discretized by zones (mesh cells), the boundaries of which are defined either by regular ``standard mesh surfaces", i.e., co-ordinate surfaces, (\ac{BREP} representation of geometry, \cref{sec1.5}) which are described here, and/or by zones whose boundaries are defined more generally by ``additional surfaces" (see below block 3B).
+Alternative to this \ac{BREP} option there is also the option of unstructured meshes (Voxel representation, loc.\ cit.
+) of triangles ( in 2D)
 or tetrahedra (in 3D).
 
-In 2-dimensional applications the co-ordinate surfaces automatically collapse to
-coordinate lines, and in 1-dimensional applications they collapse to coordinate (grid) points.
+In 2-dimensional applications the co-ordinate surfaces automatically collapse to coordinate lines, and in 1-dimensional applications they collapse to coordinate (grid) points.
 
-As long as test particles travel inside the ``standard mesh", all
-cell indexing computations are done automatically. At transition into
-the more general ``additional mesh" and inside these additional
-cells, this indexing has
-to be specified by the flags ILSWCH, ILCELL etc.\ by the user, in
-input block 3B.
+As long as test particles travel inside the ``standard mesh", all cell indexing computations are done automatically.
+At transition into the more general ``additional mesh" and inside these additional cells, this indexing has to be specified by the flags ILSWCH, ILCELL etc.\ by the user, in input block 3B.
 
-There are up to 3 sets of standard co-ordinate surfaces, each set being parameterised by the arrays
-RSURF(i1), PSURF(i2) and TSURF(i3).
+There are up to 3 sets of standard co-ordinate surfaces, each set being parameterised by the arrays RSURF(i1), PSURF(i2) and TSURF(i3).
 
-Here RSURF(1), RSURF(2), \dots,
-RSURF(NR1ST) are grid-points (parameters) in the \ordinalnum{1} co-ordinate direction, mostly the radial or x direction
-(depending on the
-geometry level, internal parameter LEVGEO, see below) defined by the input data in sub-block 2A.
+Here RSURF(1), RSURF(2), \dots, RSURF(NR1ST) are grid-points (parameters) in the \ordinalnum{1} co-ordinate direction, mostly the radial or x direction (depending on the geometry level, internal parameter LEVGEO, see below) defined by the input data in sub-block 2A.
 I.e., there are NR1STM= NR1ST-1 cells in the \ordinalnum{1} co-ordinate direction (e.g.\ radial or x direction).
-With regard to the terminology in \cref{sec1.5}, \cref{eq1.34}, a
-corresponding co-ordinate surface is labelled with a double index 1,IR
-and is defined by the equation
+With regard to the terminology in \cref{sec1.5}, \cref{eq1.34}, a corresponding co-ordinate surface is labelled with a double index 1,IR and is defined by the equation 
 
-$f_1^{1,IR} (x,y,z)$
-=constant=RSURF(IR).
+$f_1^{1,IR} (x,y,z)$ =constant=RSURF(IR).
 
-PSURF(1), PSURF(2), \dots, PSURF(NP2ND) are grid-points in the \ordinalnum{2} co-ordinate direction,
-typically the poloidal or y direction (sub-block 2B), and there are
-NP2NDM=NP2ND-1 cells in this direction.
-A corresponding
-co-ordinate surface is labelled $2,IP$ and is defined by the equation
+PSURF(1), PSURF(2), \dots, PSURF(NP2ND) are grid-points in the \ordinalnum{2} co-ordinate direction, typically the poloidal or y direction (sub-block 2B), and there are NP2NDM=NP2ND-1 cells in this direction.
+A corresponding co-ordinate surface is labelled $2,IP$ and is defined by the equation 
 
 $f_1^{2,IP} (x,y,z) $=constant=PSURF(IP).
 
-In case NP2ND = 1 this 2rd grid is absent and the calculation automatically collapses to a 1D case,
-i.e.\ a case with only 1 set of co-ordinate points.  This does not mean that the 2rd, ignorable coordinate must be
-straight Cartesian (y-direction). E.g.\ a spherically symmetric volume, but with only radial resolution in space
-and polar and azimuthal symmetry,
-then is still referred to as 1-dimensional calculation.
+In case NP2ND = 1 this 2rd grid is absent and the calculation automatically collapses to a 1D case, i.e.\ a case with only 1 set of co-ordinate points.
+This does not mean that the 2rd, ignorable coordinate must be straight Cartesian (y-direction).
+E.g.\ a spherically symmetric volume, but with only radial resolution in space and polar and azimuthal symmetry, then is still referred to as 1-dimensional calculation.
 
-In case of the NLPLG option (mesh in x-y plane generated by a
-set of polygons)
-for simplicity and by an abuse of language we sometimes refer to
-the polygons themselves as radial surfaces or ``radial polygons"
-RSURF and refer to the
-polygons obtained by connecting all points with a particular index along
-the various radial polygons as ``poloidal polygons" PSURF.
-No use is made in EIRENE of the arrays RSURF and PSURF in connection
-with the polygon mesh option. The NLPLG option permits to run EIRENE
-on 2D computer generated meshes with grid cuts in one direction.
+In case of the NLPLG option (mesh in x-y plane generated by a set of polygons) for simplicity and by an abuse of language we sometimes refer to the polygons themselves as radial surfaces or ``radial polygons" RSURF and refer to the polygons obtained by connecting all points with a particular index along the various radial polygons as ``poloidal polygons" PSURF.
+No use is made in EIRENE of the arrays RSURF and PSURF in connection with the polygon mesh option.
+The NLPLG option permits to run EIRENE on 2D computer generated meshes with grid cuts in one direction.
 
-Furthermore, TSURF(1), TSURF(2), \dots,
-TSURF(NT3RD) are grid-points in the third co-or\-di\-nate direction, mostly the toroidal or z direction (sub-block 2C).
-A co-ordinate surface is labeled $3,IT$ and is defined by the equation
-$f_1^{3,IT} (x,y,z)$
-=constant=TSURF(IT).
+Furthermore, TSURF(1), TSURF(2), \dots, TSURF(NT3RD) are grid-points in the third co-or\-di\-nate direction, mostly the toroidal or z direction (sub-block 2C).
+A co-ordinate surface is labeled $3,IT$ and is defined by the equation $f_1^{3,IT} (x,y,z)$ =constant=TSURF(IT).
 
-In case NT3RD = 1 this \ordinalnum{3} grid is absent and the calculation automatically collapses to a 2D case,
-i.e.\ a case with only 2 sets of co-ordinate lines.  This does not mean that the \ordinalnum{3}, ignorable coordinate must be
-straight Cartesian (z-direction). E.g.\ a full torus, but with only radial and poloidal resolution and toroidal symmetry
-then is referred to as 2-dimensional calculation.
+In case NT3RD = 1 this \ordinalnum{3} grid is absent and the calculation automatically collapses to a 2D case, i.e.\ a case with only 2 sets of co-ordinate lines.
+This does not mean that the \ordinalnum{3}, ignorable coordinate must be straight Cartesian (z-direction).
+E.g.\ a full torus, but with only radial and poloidal resolution and toroidal symmetry then is referred to as 2-dimensional calculation.
 
-In addition to these grids and, depending on the geometry options
-chosen, EIRENE then computes further ``derived" grid arrays, for example
-a ``(radial) surface labeling grid" RHOSRF, which may or may not be
-identical to the RSURF grid,
-and a ``zone centered (radial) surface labeling grid"
-RHOZNE(IR) defined by:
+In addition to these grids and, depending on the geometry options chosen, EIRENE then computes further ``derived" grid arrays, for example a ``(radial) surface labeling grid" RHOSRF, which may or may not be identical to the RSURF grid, and a ``zone centered (radial) surface labeling grid" RHOZNE(IR) defined by:
 
 \lstinline|RHOZNE(IR) = 0.5 * (RHOSRF(IR)+RHOSRF(IR+1))|
 
-These grids may be used for the input of closed form
-radial- or x direction
-plasma profiles or as abscissae in plots of e.g.
-poloidally (or y) and toroidally
-(or z) averaged tallies.
+These grids may be used for the input of closed form radial- or x direction plasma profiles or as abscissae in plots of e.g. poloidally (or y) and toroidally (or z) averaged tallies.
 
-We have found it convenient to allow for several (NBMLT)
-identical copies
-of such ``standard meshes", separated and bounded by arbitrary
-``additional surfaces".
-Input flags for this ``mesh multiplication"
-option are comprised in sub-block 2D.
+We have found it convenient to allow for several (NBMLT) identical copies of such ``standard meshes", separated and bounded by arbitrary ``additional surfaces".
+Input flags for this ``mesh multiplication" option are comprised in sub-block 2D.
 
-As mentioned above,
-in addition to these regular grids one can define cells of almost
-arbitrary complexity by using the ``additional surfaces" defined in
-sub-block 3B. Such surfaces are labeled $0,IA$  in EIRENE.
-Appropriate cell number switching flags must be set
-on transparent additional
-surfaces separating these general ``additional cells".
-Data relevant for the
-additional cells (e.g.\ the volume)
-are read in sub-block 2E. The number of additional cells
-is NRADD.
+As mentioned above, in addition to these regular grids one can define cells of almost arbitrary complexity by using the ``additional surfaces" defined in sub-block 3B.
+Such surfaces are labeled $0,IA$  in EIRENE.
+Appropriate cell number switching flags must be set on transparent additional surfaces separating these general ``additional cells".
+Data relevant for the additional cells (e.g.\ the volume) are read in sub-block 2E.
+The number of additional cells is NRADD.
 
-Therefore, the total number of cells in an EIRENE run is NSBOX, with
+Therefore, the total number of cells in an EIRENE run is NSBOX, with 
 
 NSBOX = (NR1ST $\cdot$ NP2ND $\cdot$ NT3RD) $\cdot$ NBMLT + NRADD .
 
-Cell volumes in the standard mesh region, as well as the center of
-mass vector in each of these cells are computed automatically. The
-corresponding data in the additional cell region must be specified
-by the user, e.g.\ in the input block 2E or 8, or in the user
-supplied routine GEOUSR (\cref{sec3.6}), which is called by
-EIRENE in the initialization phase.
+Cell volumes in the standard mesh region, as well as the center of mass vector in each of these cells are computed automatically.
+The corresponding data in the additional cell region must be specified by the user, e.g.\ in the input block 2E or 8, or in the user supplied routine GEOUSR (\cref{sec3.6}), which is called by EIRENE in the initialization phase.
 
 \medskip
 
-\textbf{The Input Block}
+\textbf{The Input Block} 
 
 \begin{lstlisting}
 *** 2. Data for Standard Mesh
@@ -190,403 +135,314 @@ EIRENE in the initialization phase.
       NLADD
       NRADD
       IF (NRADD.GT.0) (VOLADD(NM), NM = 1,NRADD)
-\end{lstlisting}
+\end{lstlisting} 
 
-\medskip
+\medskip 
 
-\textbf{Meaning of the Input Variables}
+\textbf{Meaning of the Input Variables} 
 
-\medskip
+\medskip 
 
 \begin{description}
-\item[INDGRD]
-This index controls the meaning of input variables of different
-standard grid options.
+  \item[INDGRD] This index controls the meaning of input variables of different standard grid options.
 
-INDGRD(1)  for the radial (or x-direction) grid
+        INDGRD(1)  for the radial (or x-direction) grid 
 
-INDGRD(2)  for the poloidal (or y-direction) grid
+        INDGRD(2)  for the poloidal (or y-direction) grid 
 
-INDGRD(3)  for the toroidal (or z-direction) grid
+        INDGRD(3)  for the toroidal (or z-direction) grid
 \end{description}
 
-\textsl{Data for first standard mesh: radial or x grid RSURF}
+\textsl{Data for first standard mesh: radial or x grid RSURF} 
 
 \begin{description}
-\item[NLRAD = .TRUE.] ~
+  \item[NLRAD = .TRUE.
+        ] ~
 
-A radial or x grid is defined. Otherwise the complete
-sub-block 2A may be omitted.
-Depending upon the logical parameters in the next input card
-the ``geometry - level" variable LEVGEO is set internally.
-\begin{description}
-\item[LEVGEO] ~
+        A radial or x grid is defined.
+        Otherwise the complete sub-block 2A may be omitted.
+        Depending upon the logical parameters in the next input card the ``geometry - level" variable LEVGEO is set internally.
+        \begin{description}
+          \item[LEVGEO] ~ 
 
-\begin{description}
-\item[$= 1$]
-Cartesian coordinates x (and y)
-\item[$= 2$]
-polar coordinates r (and $\theta$)
-\item[$= 3$]
-general curvilinear coordinates: a full 2D mesh (polygonal
-coordinate lines) is used in the x - y  plane. Grid cuts are
-permitted in the y-direction.
-\item[$= 4$]
-a 2D ``finite element" mesh of triangles is used in the x - y plane
-\item[$= 5$]
-a 3D ``finite volume" mesh of tetrahedrons used
-\item[$= 10$]
-a general, user defined geometry block is used.
-All geometrical calculations are performed in problem specific routine
-VOLUSR, TIMUSR, etc.
-\end{description}
-\end{description}
-If NLRAD=.FALSE., then no spatial grid is defined
-and the default geometry level LEVGEO = 1 is used.
-Volume discretization may still be achieved ``by hand" by defining ``additional
-surfaces" (input block 3b) and appropriate cell number switching.
+                \begin{description}
+                  \item[$= 1$] Cartesian coordinates x (and y)
+                  \item[$= 2$] polar coordinates r (and $\theta$)
+                  \item[$= 3$] general curvilinear coordinates: a full 2D mesh (polygonal coordinate lines) is used in the x - y  plane.
+                        Grid cuts are permitted in the y-direction.
+                  \item[$= 4$] a 2D ``finite element" mesh of triangles is used in the x - y plane
+                  \item[$= 5$] a 3D ``finite volume" mesh of tetrahedrons used
+                  \item[$= 10$] a general, user defined geometry block is used.
+                        All geometrical calculations are performed in problem specific routine VOLUSR, TIMUSR, etc.
+                \end{description}
+        \end{description}
+        If NLRAD=.FALSE., then no spatial grid is defined and the default geometry level LEVGEO = 1 is used.
+        Volume discretization may still be achieved ``by hand" by defining ``additional surfaces" (input block 3b) and appropriate cell number switching.
 
-\item[INDGRD(1)] ~
+  \item[INDGRD(1)] ~ 
 
-\begin{description}
-\item[$= 1$]
-standard grid option; the input parameters are used as described
-below.
-\item[$= 2$]
-As for INDGRD(1)=1, but
-in case of LEVGEO = 2 by this option a radial grid is defined such
-that the spacing
-of radial surfaces is not equidistant at some poloidal position, but
-instead such that the area enclosed between
-two neighboring surfaces is kept constant. The input variable RGA
-is irrelevant in this case.
-\item[$= 3, 4, 5$]
-not in use
-\item[$= 6$]
-Data for NR1ST radial surfaces
-are read from the work array RWK. These
-data must have been written onto RWK in the user supplied subroutine INFCOP.
-By this option grid parameters may directly be transferred into
-EIRENE from other files, e.g.\ from plasma transport codes
-(see below: \cref{sec2.14}. Data for interfacing routine INFCOP).
-\end{description}
+        \begin{description}
+          \item[$= 1$] standard grid option; the input parameters are used as described below.
+          \item[$= 2$] As for INDGRD(1)=1, but in case of LEVGEO = 2 by this option a radial grid is defined such that the spacing of radial surfaces is not equidistant at some poloidal position, but instead such that the area enclosed between two neighboring surfaces is kept constant.
+                The input variable RGA is irrelevant in this case.
+          \item[$= 3, 4, 5$] not in use
+          \item[$= 6$] Data for NR1ST radial surfaces are read from the work array RWK.
+                These data must have been written onto RWK in the user supplied subroutine INFCOP.
+                By this option grid parameters may directly be transferred into EIRENE from other files, e.g.\ from plasma transport codes (see below: \cref{sec2.14}.
+                Data for interfacing routine INFCOP).
+        \end{description}
 \end{description}
 
 One and only one of the next 8 logical variables NLSLB $\dots$ NLTET, NLGEN must be .TRUE.
-This variable defines the so called ``geometry level" of a run, i.e.\ the internal EIRENE variable LEVGEO
+This variable defines the so called ``geometry level" of a run, i.e.\ the internal EIRENE variable LEVGEO 
 
 \begin{description}
-\item[NLSLB = .TRUE.] ~
+  \item[NLSLB = .TRUE.
+        ] ~
 
-Geometry level: LEVGEO = 1
+        Geometry level: LEVGEO = 1 
 
-Cartesian geometry, the x co-ordinate is discretized by setting
+        Cartesian geometry, the x co-ordinate is discretized by setting 
 
-$x_I$ = \lstinline|RSURF(I) I = 1, NR1ST|.
+        $x_I$ = \lstinline|RSURF(I) I = 1, NR1ST|.
 
-Furthermore,
-the flux-surface labeling grid \lstinline|RHOSRF(I)| is identical with
-the grid \lstinline|RSURF(I)|.
-\item[NLCRC = .TRUE.] ~
+        Furthermore, the flux-surface labeling grid \lstinline|RHOSRF(I)| is identical with the grid \lstinline|RSURF(I)|.
+  \item[NLCRC = .TRUE.
+        ] ~
 
-Geometry level: LEVGEO = 2
+        Geometry level: LEVGEO = 2 
 
-Cylindrical or toroidal geometry,
-1D (``radial") mesh of concentric, circular surfaces. Polar coordinates are
-used in the x-y plane. The third coordinate (either $z$ or toroidal angle $\phi$)
-is either ignorable or discretized according to options described below (block 2c).
+        Cylindrical or toroidal geometry, 1D (``radial") mesh of concentric, circular surfaces.
+        Polar coordinates are used in the x-y plane.
+        The third coordinate (either $z$ or toroidal angle $\phi$) is either ignorable or discretized according to options described below (block 2c).
 
-The radial surfaces are given by
-$r^2 = x^2 + y^2 = \mathrm{const.}$ and
-radial coordinate $r$ is discretized by setting $r_I$=RSURF(I) I=1,NR1ST.
-Furthermore RHOSRF(I) = $\sqrt{\frac{AREA}{\pi}}$ where
-AREA is the area inside surface
-number $I$.
-Thus for this option one has again: RHOSRF(I) = RSURF(I), I=1,NR1ST.
-\item[NLELL = .TRUE.] ~
+        The radial surfaces are given by $r^2 = x^2 + y^2 = \mathrm{const.
+          }
+        $ and radial coordinate $r$ is discretized by setting $r_I$=RSURF(I) I=1,NR1ST.
+        Furthermore RHOSRF(I) = $\sqrt{\frac{AREA}{\pi}}$ where AREA is the area inside surface number $I$.
+        Thus for this option one has again: RHOSRF(I) = RSURF(I), I=1,NR1ST.
+  \item[NLELL = .TRUE.
+        ] ~
 
-Geometry level: LEVGEO = 2
+        Geometry level: LEVGEO = 2 
 
-Mesh of nested, but not necessarily concentric or confocal elliptical
-flux surfaces.
-The equation for the ``radial" surface
-is $(x - EP)^2 + (  y/EL )^2 = r^2$.
-The radial coordinate $r$ is discretized by setting
-$r_I$=RSURF(I) I=1,NR1ST.
+        Mesh of nested, but not necessarily concentric or confocal elliptical flux surfaces.
+        The equation for the ``radial" surface is $(x - EP)^2 + (  y/EL )^2 = r^2$.
+        The radial coordinate $r$ is discretized by setting $r_I$=RSURF(I) I=1,NR1ST.
 
-EP and EL may vary with coordinate $r$. These parameters are stored in the
-arrays EP(I), EL(I), I = 1, NR1ST which now are used in addition to
-RSURF to define one coordinate surface in the first (radial or $x$- grid).
+        EP and EL may vary with coordinate $r$.
+        These parameters are stored in the arrays EP(I), EL(I), I = 1, NR1ST which now are used in addition to RSURF to define one coordinate surface in the first (radial or $x$- grid).
 
-RHOSRF: as in NLCRC option.
+        RHOSRF: as in NLCRC option.
 
-Note: RHOSRF and RSURF may differ in this case.
-\item[NLTRI = .TRUE.] ~
+        Note: RHOSRF and RSURF may differ in this case.
+  \item[NLTRI = .TRUE.
+        ] ~
 
-Geometry level: LEVGEO = 2
+        Geometry level: LEVGEO = 2 
 
-to be written: triangularity in mesh of nested closed algebraic
-surfaces
-\item[NLPLG = .TRUE.] ~
+        to be written: triangularity in mesh of nested closed algebraic surfaces
+  \item[NLPLG = .TRUE.
+        ] ~
 
-Geometry level: LEVGEO = 3
+        Geometry level: LEVGEO = 3 
 
-The mesh in the x-y plane
-is described by NR1ST polygonal arcs of length NRPLG
-each. A polygon
-may consist of several ``valid" and ``invalid"
-parts (to account for ``grid cuts" in \ac{CFD} meshes).
-The ``invalid" parts of a polygon are not seen by test particles and are
-allowed for in EIRENE only in order to facilitate index mapping
-in case of runs coupled to plasma transport models,
-which resort to computer
-generated meshes including grid cuts.
+        The mesh in the x-y plane is described by NR1ST polygonal arcs of length NRPLG each.
+        A polygon may consist of several ``valid" and ``invalid" parts (to account for ``grid cuts" in \ac{CFD} meshes).
+        The ``invalid" parts of a polygon are not seen by test particles and are allowed for in EIRENE only in order to facilitate index mapping in case of runs coupled to plasma transport models, which resort to computer generated meshes including grid cuts.
 
-The polygons must not intersect each other.
+        The polygons must not intersect each other.
 
-In this case RHOSRF(1)=0., and RHOSRF(I) is the area enclosed by
-polygon number 1 and polygon number I.
-\item[NLFEM = .TRUE.] ~
+        In this case RHOSRF(1)=0., and RHOSRF(I) is the area enclosed by polygon number 1 and polygon number I.
+  \item[NLFEM = .TRUE.
+        ] ~
 
-Geometry level: LEVGEO = 4
+        Geometry level: LEVGEO = 4 
 
-The mesh in the x-y plane
-consists of NR1ST triangles, composed from NRKNOT knots.
+        The mesh in the x-y plane consists of NR1ST triangles, composed from NRKNOT knots.
 
-In this case a flux surface labeling grid RHOSRF is not defined.
-\item[NLTET = .TRUE.] ~
+        In this case a flux surface labeling grid RHOSRF is not defined.
+  \item[NLTET = .TRUE.
+        ] ~
 
-Geometry level: LEVGEO = 5
+        Geometry level: LEVGEO = 5 
 
-3D discretization of volume by tetrahedrons. For this grid option
-please make contact to the authors.
-\item[NLGEN = .TRUE.] ~
+        3D discretization of volume by tetrahedrons.
+        For this grid option please make contact to the authors.
+  \item[NLGEN = .TRUE.
+        ] ~
 
-Geometry level: LEVGEO = 10
+        Geometry level: LEVGEO = 10 
 
-Arbitrary geometrical configuration. Mesh consists of NR1ST arbitrarily
-shapes cells (in any dimension).
-Particle tracing routines
-must be provided by user (VOLUSR, SAMUSR, TIMUSR, LEAUSR)
+        Arbitrary geometrical configuration.
+        Mesh consists of NR1ST arbitrarily shapes cells (in any dimension).
+        Particle tracing routines must be provided by user (VOLUSR, SAMUSR, TIMUSR, LEAUSR) 
 
-\medskip
+        \medskip 
 
-\item[NR1ST]
-Number of grid-points in the radial (or x-direction) standard mesh
+  \item[NR1ST] Number of grid-points in the radial (or x-direction) standard mesh 
 
-if NR1ST $\le$ 1, no radial (or x-direction)
-standard mesh is defined.
-\item[NRSEP]
-This flag is active for LEVGEO = 1 or LEVGEO = 2. Otherwise it is irrelevant.
+        if NR1ST $\le$ 1, no radial (or x-direction) standard mesh is defined.
+  \item[NRSEP] This flag is active for LEVGEO = 1 or LEVGEO = 2.
+        Otherwise it is irrelevant.
 
-The first (x- or radial) standard mesh is composed by two equidistant x- or radial grids
-of co-ordinate surfaces with different grid density.
-There are NR1ST-NRSEP+1 grid-points in the first, and NRSEP
-grid-points in the second part. The grid-point RSURF(NR1ST-NRSEP+1)
-belongs to both parts.
-\item[RIA]
-left endpoint of standard grid (internally set $\ge 0$ if LEVGEO =2);
-RSURF(1)=RIA
-\item[RGA]
-boundary separating first and second part of standard grid with
-different grid-point densities; RSURF(NR1ST-NRSEP+1)=RGA
-\item[RAA]
-right endpoint of standard grid: RSURF(NR1ST)=RAA
-\item[RRA]
-if RRA $>$ RAA, one additional, outer void zone is defined
+        The first (x- or radial) standard mesh is composed by two equidistant x- or radial grids of co-ordinate surfaces with different grid density.
+        There are NR1ST-NRSEP+1 grid-points in the first, and NRSEP grid-points in the second part.
+        The grid-point RSURF(NR1ST-NRSEP+1) belongs to both parts.
+  \item[RIA] left endpoint of standard grid (internally set $\ge 0$ if LEVGEO =2); RSURF(1)=RIA
+  \item[RGA] boundary separating first and second part of standard grid with different grid-point densities; RSURF(NR1ST-NRSEP+1)=RGA
+  \item[RAA] right endpoint of standard grid: RSURF(NR1ST)=RAA
+  \item[RRA] if RRA $>$ RAA, one additional, outer void zone is defined 
 
-RSURF(NR1ST) = RRA, and the parameter RAA now determines the surface no.\ NR1ST - 1.
+        RSURF(NR1ST) = RRA, and the parameter RAA now determines the surface no.\ NR1ST - 1.
 
-(irrelevant, if RRA $\le$ RAA)
+        (irrelevant, if RRA $\le$ RAA)
 \end{description}
 
 if NLELL = .TRUE.:
 \begin{description}
-\item[EPIN]
-Value of EP(r) for cylindrical co-ordinate surface number 1 with
-$r_1$=RIA
-(see: NLCRC = .TRUE.\ option above)
-\item[EPOT]
-Value of EP(r) for cylindrical surface number NR1ST with
+  \item[EPIN] Value of EP(r) for cylindrical co-ordinate surface number 1 with $r_1$=RIA (see: NLCRC = .TRUE.\ option above)
+  \item[EPOT] Value of EP(r) for cylindrical surface number NR1ST with 
 
-$r_{NR1ST}$=RAA
-\item[EPCH]
-Value of EP(r) for cylindrical surface number NR1ST+1 with
+        $r_{NR1ST}$=RAA
+  \item[EPCH] Value of EP(r) for cylindrical surface number NR1ST+1 with 
 
-$r_{NR1ST+1}$=RRA
+        $r_{NR1ST+1}$=RRA 
 
-(irrelevant if RRA $\le$ RAA)
-\item[EXEP]
-The variation of the ``shift function" EP(r) with r is given by
+        (irrelevant if RRA $\le$ RAA)
+  \item[EXEP] The variation of the ``shift function" EP(r) with r is given by 
 
-$EP(r) = EPIN + {( \frac{r - RIA}{RAA -
-RIA} )}^{EXEP}
-\cdot (EPOT - EPIN)$
-\item[ELIN]
-Value of EL(r) for cylindrical surface number 1 with
+        $EP(r) = EPIN + {( \frac{r - RIA}{RAA - RIA} )}^{EXEP} \cdot (EPOT - EPIN)$
+  \item[ELIN] Value of EL(r) for cylindrical surface number 1 with 
 
-$r_1$=RIA (see: NLELL = .TRUE.\ option)
-\item[ELOT]
-Value of EL(r) for cylindrical surface number NR1ST
+        $r_1$=RIA (see: NLELL = .TRUE.\ option)
+  \item[ELOT] Value of EL(r) for cylindrical surface number NR1ST 
 
-with $r_{NR1ST}$=RAA
-\item[ELCH]
-Value of EL(r) for cylindrical surface number NR1ST+1 with
+        with $r_{NR1ST}$=RAA
+  \item[ELCH] Value of EL(r) for cylindrical surface number NR1ST+1 with 
 
-$r_{NR1ST+1}$=RRA
+        $r_{NR1ST+1}$=RRA 
 
-(irrelevant for RRA $\le$ RAA)
-\item[EXEL]
-The variation of the ``ellipticity function" EL(r) with
-r is given by
+        (irrelevant for RRA $\le$ RAA)
+  \item[EXEL] The variation of the ``ellipticity function" EL(r) with r is given by 
 
-$EL(r) = ELIN + {( \frac{r - RIA}{RAA -
-RIA} )}^{EXEL}
-\cdot (ELOT - ELIN)$
+        $EL(r) = ELIN + {( \frac{r - RIA}{RAA - RIA} )}^{EXEL} \cdot (ELOT - ELIN)$
 \end{description}
 
 if NLTRI = .TRUE.:
 \begin{description}
-\item[TRIN, TROT, TRCH, EXTR]
-to be written: the option for algebraically given triangular grids is currently
-no available.
+  \item[TRIN, TROT, TRCH, EXTR] to be written: the option for algebraically given triangular grids is currently no available.
 
 \end{description}
-if NLPLG = .TRUE.:
+if NLPLG = .
+TRUE.:
 \begin{description}
-\item[NR1ST]
-number of polygons for discretization in ``radial" or x direction
-\item[NRPLG]
-Number of points per polygon
-\item[NPPLG]
-Number of valid parts on each polygon.
-Each polygon is described by the x and y
-co-ordinates of
-NRPLG points. It is not necessary that all this
-points are used for the
-polygon. One can cut the polygon into several valid parts interrupted
-by parts which are not seen by the test particles. ( Default :
-NPPLG = 1 ). This option facilitates the use of 2-d computer generated
-meshes which contain topological grid cuts.
-\item[XPCOR,YPCOR] ~
+  \item[NR1ST] number of polygons for discretization in ``radial" or x direction
+  \item[NRPLG] Number of points per polygon
+  \item[NPPLG] Number of valid parts on each polygon.
+        Each polygon is described by the x and y co-ordinates of NRPLG points.
+        It is not necessary that all this points are used for the polygon.
+        One can cut the polygon into several valid parts interrupted by parts which are not seen by the test particles.
+        ( Default :
+        NPPLG = 1 ).
+        This option facilitates the use of 2-d computer generated meshes which contain topological grid cuts.
+  \item[XPCOR,YPCOR] ~ 
 
-shift whole mesh by that vector in x,y-plane
-\item[RFPOL]
-if RFPOL $>$ 0., one additional polygon zone is defined,
-at a distance RFPOL outside the polygon NR1ST,
-and then NR1ST is increased by one.
+        shift whole mesh by that vector in x,y-plane
+  \item[RFPOL] if RFPOL $>$ 0., one additional polygon zone is defined, at a distance RFPOL outside the polygon NR1ST, and then NR1ST is increased by one.
 
-(irrelevant, if RFPOL $\le 0$.)
-\item[NPOINT(1,J)] ~
+        (irrelevant, if RFPOL $\le 0$.)
+  \item[NPOINT(1,J)] ~ 
 
-Index of the first point of the valid part number J
-(same for each radial polygon)
+        Index of the first point of the valid part number J (same for each radial polygon) 
 
-( Default : NPOINT(1,1) = 1 )
-\item[NPOINT(2,J)] ~
+        ( Default : NPOINT(1,1) = 1 )
+  \item[NPOINT(2,J)] ~ 
 
-Index of the last point of the valid part number J
-(same for each radial polygon)
+        Index of the last point of the valid part number J (same for each radial polygon) 
 
-( Default : NPOINT(2,1) = NRPLG )
-\item[XPOL(K,I)]
-x-co-ordinate of the polygon point number K on polygon number I
-\item[YPOL(K,I)]
-y-co-ordinate of the polygon point number K on polygon number I
+        ( Default : NPOINT(2,1) = NRPLG )
+  \item[XPOL(K,I)] x-co-ordinate of the polygon point number K on polygon number I
+  \item[YPOL(K,I)] y-co-ordinate of the polygon point number K on polygon number I
 \end{description}
 if NLFEM = .TRUE.:
 \begin{description}
-\item[NR1ST]
-number of triangles for discretization in x-y plane
-\item[XPCOR,YPCOR] ~
+  \item[NR1ST] number of triangles for discretization in x-y plane
+  \item[XPCOR,YPCOR] ~ 
 
-shift whole mesh by that vector in x,y-plane
-\item[NRKNOT]
-There are NRKNOT knots, by which the triangles are defined
-\item[XTRIAN,YTRIAN] ~
+        shift whole mesh by that vector in x,y-plane
+  \item[NRKNOT] There are NRKNOT knots, by which the triangles are defined
+  \item[XTRIAN,YTRIAN] ~ 
 
-x and y co-ordinates of the knots, respectively.
-\item[NVERT(I,ITRI)] ~
+        x and y co-ordinates of the knots, respectively.
+  \item[NVERT(I,ITRI)] ~ 
 
-Each triangle ITRI is defined by 3 points $P_1, P_2$ and $P_3$ from
-the set of NRKNOT knots.
+        Each triangle ITRI is defined by 3 points $P_1, P_2$ and $P_3$ from the set of NRKNOT knots.
 
-NVERT(I,ITRI) is the number of
-point $P_I$ (I=1,2,3) in the set of knots for triangle ITRI.
-\item[NEIGH(I,ITRI)] ~
+        NVERT(I,ITRI) is the number of point $P_I$ (I=1,2,3) in the set of knots for triangle ITRI.
+  \item[NEIGH(I,ITRI)] ~ 
 
-The three sides of each triangle $S_1, S_2, S_3$ are defined such that
-$S_1$ connects $P_1$ and $P_2$, $S_2$ connects $P_2$ and $P_3$ and $S_3$
-connects $P_1$ and $P_3$.
+        The three sides of each triangle $S_1, S_2, S_3$ are defined such that $S_1$ connects $P_1$ and $P_2$, $S_2$ connects $P_2$ and $P_3$ and $S_3$ connects $P_1$ and $P_3$.
 
-NEIGH(I,ITRI) is the number of the neighboring triangle at side $S_I$
-for I=1,2,3.
-\item[NSIDE(I,ITRI)] ~
+        NEIGH(I,ITRI) is the number of the neighboring triangle at side $S_I$ for I=1,2,3.
+  \item[NSIDE(I,ITRI)] ~ 
 
-NSIDE(I,ITRI) is the number (1,2 or 3) of the side of the neighboring
-triangle, which corresponds to side $S_I$ of the triangle ITRI
-to be written
-\item[IPROP(I,ITRI)] ~
+        NSIDE(I,ITRI) is the number (1,2 or 3) of the side of the neighboring triangle, which corresponds to side $S_I$ of the triangle ITRI to be written
+  \item[IPROP(I,ITRI)] ~ 
 
-ISTS = ABS(IPROP) is the integer, by which a
-particular surface property is assigned to
-side I of the triangle ITRI. ISTS=0 stands for default grid option (transparent
-surface, cell indexing is done automatically). Otherwise ISTS is the number of
-an additional (ISTS $<$ NLIMI) or non-default standard (NLIM $<$ ISTS $<$NLIM+NSTSI)
-surface option as read in sub-blocks 3a or 3b, respectively.
-By default the normal vector of each side of a triangle points out of the triangle.
-In case IPROP $<$ 0, this vector points into the triangle.
-This is relevant at surface options with ILSIDE $\not=$ 0.
+        ISTS = ABS(IPROP) is the integer, by which a particular surface property is assigned to side I of the triangle ITRI.
+        ISTS=0 stands for default grid option (transparent surface, cell indexing is done automatically).
+        Otherwise ISTS is the number of an additional (ISTS $<$ NLIMI) or non-default standard (NLIM $<$ ISTS $<$NLIM+NSTSI) surface option as read in sub-blocks 3a or 3b, respectively.
+        By default the normal vector of each side of a triangle points out of the triangle.
+        In case IPROP $<$ 0, this vector points into the triangle.
+        This is relevant at surface options with ILSIDE $\not=$ 0.
 \end{description}
-if NLTET = .TRUE.:
+if NLTET = .
+TRUE.:
 
-Documentation not available here. Make contact with the authors.
+Documentation not available here.
+Make contact with the authors.
 
-if NLGEN = .TRUE.:
+if NLGEN = .
+TRUE.:
 \begin{description}
-\item[NR1ST]
+  \item[NR1ST] 
 
-number of cells in otherwise arbitrary mesh option NLGEN.
-Use problem specific routines (see \cref{sec3})
-to set up mesh, cell volumes, and flight intersection times for test particles.
+        number of cells in otherwise arbitrary mesh option NLGEN.
+        Use problem specific routines (see \cref{sec3}) to set up mesh, cell volumes, and flight intersection times for test particles.
 \end{description}
 
 \textsl{Data for second standard mesh: poloidal or y grid PSURF}
 \begin{description}
-\item[NLPOL]
-A poloidal or y grid is defined. Otherwise the complete block 2B
-may be omitted and the volume averaged tallies are then automatically
-integrated over this co-ordinate.
-\item[INDGRD(2)] ~
+  \item[NLPOL] A poloidal or y grid is defined.
+        Otherwise the complete block 2B may be omitted and the volume averaged tallies are then automatically integrated over this co-ordinate.
+  \item[INDGRD(2)] ~ 
 
-\begin{description}
-\item[$= 1$] standard grid option
-\item[$= 2, 3, 4, 5, 6$] not in use  (default: INDGRD(2)=1)
-\end{description}
-\item[NP2ND]
-Number of grid-points in y- or poloidal direction
-\item[YIA,YGA,YAA,YYA] ~
+        \begin{description}
+          \item[$= 1$] standard grid option
+          \item[$= 2, 3, 4, 5, 6$] not in use  (default: INDGRD(2)=1)
+        \end{description}
+  \item[NP2ND] Number of grid-points in y- or poloidal direction
+  \item[YIA,YGA,YAA,YYA] ~ 
 
-\begin{description}
-\item[for the LEVGEO=1 option:] ~
+        \begin{description}
+          \item[for the LEVGEO=1 option:] ~ 
 
-the y grid PSURF is defined in the same way as the x grid, using the
-parameters YIA, YGA, \dots\ (\si{\centi\metre}) instead of RIA, RGA, \dots
+                the y grid PSURF is defined in the same way as the x grid, using the parameters YIA, YGA, \dots\ (\si{\centi\metre}) instead of RIA, RGA, \dots 
 
-\item[for the LEVGEO=2 option:] ~
+          \item[for the LEVGEO=2 option:] ~ 
 
-the poloidal angle $\theta$ grid PSURF is defined in the same way as the radial $r$ grid was,
-using
-the parameters YIA, YGA, \dots(poloidal angle in degree) instead of RIA, RGA, \dots
+                the poloidal angle $\theta$ grid PSURF is defined in the same way as the radial $r$ grid was, using the parameters YIA, YGA, \dots(poloidal angle in degree) instead of RIA, RGA, \dots 
 
-for all options LEVGEO $>$ 2:
-this input card is irrelevant.
-\end{description}
-Defaults: (needed for scaling, i.e., cell volumes):
+                for all options LEVGEO $>$ 2:
+                this input card is irrelevant.
+        \end{description}
+        Defaults: (needed for scaling, i.e., cell volumes):
 
-YIA=0., YGA=0., YAA=1., YYA=1. in case of LEVGEO=1,
+        YIA=0., YGA=0., YAA=1., YYA=1.
+        in case of LEVGEO=1,
 
-and YIA=0., YGA=0., YAA=360., YYA=360. in case of LEVGEO=2.
+        and YIA=0., YGA=0., YAA=360., YYA=360. in case of LEVGEO=2.
 
 \end{description}
 
@@ -594,148 +450,117 @@ and YIA=0., YGA=0., YAA=360., YYA=360. in case of LEVGEO=2.
 
 \textsl{Data for third standard mesh: toroidal or z grid TSURF}
 \begin{description}
-\item[NLTOR]
-A toroidal or z grid is defined. Otherwise the complete block 2C
-may be omitted, defaults described below are used and the volume averaged tallies are then automatically
-integrated over this co-ordinate.
+  \item[NLTOR] A toroidal or z grid is defined.
+        Otherwise the complete block 2C may be omitted, defaults described below are used and the volume averaged tallies are then automatically integrated over this co-ordinate.
 
-In case NLTOR = .TRUE., sub-block 2C must be read.
-\item[INDGRD(3)] ~
+        In case NLTOR = .TRUE., sub-block 2C must be read.
+  \item[INDGRD(3)] ~ 
 
-\begin{description}
-\item[$= 1$] standard grid option
-\item[$= 2, 3, 4, 5, 6$] not in use (default: INDGRD(3)=1)
-\end{description}
+        \begin{description}
+          \item[$= 1$] standard grid option
+          \item[$= 2, 3, 4, 5, 6$] not in use (default: INDGRD(3)=1)
+        \end{description}
 \end{description}
 One and only one of the next four Boolean variables must be TRUE
 \begin{description}
-\item[NLTRZ = .TRUE.] ~
+  \item[NLTRZ = .TRUE.
+        ] ~
 
-cylindrical approximation is used, i.e., TSURF is a grid in z
-direction. The co-ordinate surfaces are given by z=TSURF(L)
+        cylindrical approximation is used, i.e., TSURF is a grid in z
+        direction.
+        The co-ordinate surfaces are given by z=TSURF(L) 
 
-(Default: NLTRZ = .TRUE.)
+        (Default: NLTRZ = .TRUE.)
 
-\item[NLTRA = .TRUE.] ~
+  \item[NLTRA = .TRUE.
+        ] ~
 
-toroidal approximation is used. The coordinate line is
-a polygonal approximation of a circle, or of an angular section thereof.
+        toroidal approximation is used.
+        The coordinate line is a polygonal approximation of a circle, or of an angular section thereof.
 
-In case NLTOR = .TRUE., the \ordinalnum{3} grid TSURF is a grid of
-toroidal angles.
-The toroidal segment (or the full torus) is approximated by NT3RD-1 straight cylindrical segments.
+        In case NLTOR = .TRUE., the \ordinalnum{3} grid TSURF is a grid of toroidal angles.
+        The toroidal segment (or the full torus) is approximated by NT3RD-1 straight cylindrical segments.
 
-In case NLTOR = FALSE, there are NTTRA toroidal periodicity boundaries,
-such that the toroidal segment is approximated, again, by NTTRAM=NTTRA-1 straight
-cylinders, but without toroidal resolution in the results.
-(Note: If NLTOR, then: NTTRA = NT3RD, internally.)
+        In case NLTOR = FALSE, there are NTTRA toroidal periodicity boundaries, such that the toroidal segment is approximated, again, by NTTRAM=NTTRA-1 straight cylinders, but without toroidal resolution in the results.
+        (Note: If NLTOR, then: NTTRA = NT3RD, internally.)
 
-The torus axis of the entire mesh can be shifted in radial
-direction by adding a radial offset ROA (see below) to the x
-coordinates of the poloidal mesh (RSURF,PSURF).
+        The torus axis of the entire mesh can be shifted in radial direction by adding a radial offset ROA (see below) to the x coordinates of the poloidal mesh (RSURF,PSURF).
 
-The radial shift of the poloidal mesh
-RMTOR of the approximated torus is computed from ROA
-such that the volume
-inside radial surface NR1ST is exactly equal to the volume
-of an exact torus with poloidal cross section defined by the
-shifted radial grid (first standard mesh: RSURF).
+        The radial shift of the poloidal mesh RMTOR of the approximated torus is computed from ROA such that the volume inside radial surface NR1ST is exactly equal to the volume of an exact torus with poloidal cross section defined by the shifted radial grid (first standard mesh: RSURF).
 
-Due to the approximations made by
-defining a torus by NTTRAM = NTTRA - 1 straight cylinders,
-this condition is fulfilled only approximately
-for the other radial surfaces. RMTOR converges to ROA with increasing
-NTTRA. NTTRA $\simeq$ 30 is already a very good approximation.
+        Due to the approximations made by defining a torus by NTTRAM = NTTRA - 1 straight cylinders, this condition is fulfilled only approximately for the other radial surfaces.
+        RMTOR converges to ROA with increasing NTTRA.
+        NTTRA $\simeq$ 30 is already a very good approximation.
 
-(Default: NLTRA = FALSE).
-\item[NLTRT = .TRUE.] ~
+        (Default: NLTRA = FALSE).
+  \item[NLTRT = .TRUE.
+        ] ~
 
-torus co-ordinates R,PHI,THETA. Presently being developed for
-NLSLB,NLPLG and NLTRI options.
-Not ready for use.
-\item[NT3RD]
-Number of grid-points in z- or toroidal direction
+        torus co-ordinates R,PHI,THETA.
+        Presently being developed for NLSLB,NLPLG and NLTRI options.
+        Not ready for use.
+  \item[NT3RD] Number of grid-points in z- or toroidal direction 
 
-(default: NT3RD = 1, i.e.\ no grid is defined)
-\item[NTTRA]
-only needed in case NLTRA and .NOT.NLTOR. See above.
-\item[ZIA,ZGA,ZAA,ZZA,ROA] ~
+        (default: NT3RD = 1, i.e.\ no grid is defined)
+  \item[NTTRA] only needed in case NLTRA and .NOT.NLTOR.
+        See above.
+  \item[ZIA,ZGA,ZAA,ZZA,ROA] ~ 
 
-The \ordinalnum{3} grid ZSURF is defined in the same way as the x grid, using
-the parameters ZIA, ZGA, \dots\ (\si{\centi\metre}) instead of RIA, RGA, \dots
+        The \ordinalnum{3} grid ZSURF is defined in the same way as the x grid, using the parameters ZIA, ZGA, \dots\ (\si{\centi\metre}) instead of RIA, RGA, \dots 
 
-In case of NLTRZ = .TRUE., a z-grid is defined. ROA is irrelevant.
+        In case of NLTRZ = .TRUE., a z-grid is defined.
+        ROA is irrelevant.
 
-In case of NLTRA = .TRUE.,
-ZIA and ZAA are toroidal angles (in degrees). A grid of toroidal angles
-is defined. For example use ZIA=0.0 and ZAA=360.0 for a full torus.
-In case NLTOR this grid also defines the toroidal resolution.
-If .NOT.NLTOR, then periodicity at the endpoints ZIA and ZAA is automatically
-enforced.
+        In case of NLTRA = .TRUE., ZIA and ZAA are toroidal angles (in degrees).
+        A grid of toroidal angles is defined.
+        For example use ZIA=0.0 and ZAA=360.0 for a full torus.
+        In case NLTOR this grid also defines the toroidal resolution.
+        If .NOT.NLTOR, then periodicity at the endpoints ZIA and ZAA is automatically enforced.
 
-ROA is the radial shift of the poloidal cross section defined by the x-y grids.
-E.g.: if the x-y- grids are given with magnetic axis as origin, then ROA is the major radius.
-If the x-y- grids are already given with respect to the torus axis at their origin, then ROA =0 (or better e.g.: $1.0E-4 = \mbox{ROA} \ll 1$)
+        ROA is the radial shift of the poloidal cross section defined by the x-y grids.
+        E.g.: if the x-y- grids are given with magnetic axis as origin, then ROA is the major radius.
+        If the x-y- grids are already given with respect to the torus axis at their origin, then ROA =0 (or better e.g.: $1.0E-4 = \mbox{ROA} \ll 1$) 
 
-Note: ROA affects evaluation of cell volumes.
+        Note: ROA affects evaluation of cell volumes.
 
-Note also: in case of geometry and trajectory plots (input block 11),  this major radius offset ROA of poloidal cross sections has to be taken into
-account when defining plot-frames.
+        Note also: in case of geometry and trajectory plots (input block 11),  this major radius offset ROA of poloidal cross sections has to be taken into account when defining plot-frames.
 
-(Defaults: NLTRA = FALSE, ZIA = 0, ZAA = 1)
+        (Defaults: NLTRA = FALSE, ZIA = 0, ZAA = 1) 
 
 \end{description}
 \textsl{Data for mesh multiplication}
 \begin{description}
-\item[NLMLT]
-the complete ``Standard Mesh" data are copied NBMLT times
-\item[NBMLT]
-Number of identical copies of the standard mesh. Transition from one
-such mesh (called ``block" in EIRENE) into another one has to be defined
-by transparent additional surfaces (see block 3B)
-\item[VOLCOR]
-The volumes of all cells of the standard mesh
-as computed by EIRENE (in subroutine. VOLUME) are multiplied
-by one common factor VOLCOR for each ``block".
+  \item[NLMLT] the complete ``Standard Mesh" data are copied NBMLT times
+  \item[NBMLT] Number of identical copies of the standard mesh.
+        Transition from one such mesh (called ``block" in EIRENE) into another one has to be defined by transparent additional surfaces (see block 3B)
+  \item[VOLCOR] The volumes of all cells of the standard mesh as computed by EIRENE (in subroutine.
+        VOLUME) are multiplied by one common factor VOLCOR for each ``block".
 \end{description}
 \textsl{Data for additional zones outside the Standard mesh}
 \begin{description}
-\item[NLADD]
-There are cells in the computational volume, which are defined
-through ``additional surfaces" as cell boundaries.
-E.g.\ a standard mesh (if there is one) is augmented by ``additional
-cells" in this case.
-If NLADD = FALSE, the complete block 2D may be omitted and
-the defaults are used.
-\item[NRADD]
-Number of additional zones. The  cell indexing along test
-flights in these zones has to be specified explicitly by making use of
-the ILSWCH, ILCELL parameters (block 3B)
+  \item[NLADD] There are cells in the computational volume, which are defined through ``additional surfaces" as cell boundaries.
+        E.g.\ a standard mesh (if there is one) is augmented by ``additional cells" in this case.
+        If NLADD = FALSE, the complete block 2D may be omitted and the defaults are used.
+  \item[NRADD] Number of additional zones.
+        The  cell indexing along test flights in these zones has to be specified explicitly by making use of the ILSWCH, ILCELL parameters (block 3B) 
 
-(Default: NRADD = 0 ).
-\item[VOLADD]
-Volume (\si{\per\cubic\centi\metre}) of each additional zone as seen by the
-test-particles.
+        (Default: NRADD = 0 ).
+  \item[VOLADD] Volume (\si{\per\cubic\centi\metre}) of each additional zone as seen by the test-particles.
 \end{description}
 
 \subsection{Mesh Parameters} \label{sec2.2.1}
 
-As stated above,
-the computational volume in an EIRENE run is subdivided into NSBOX cells,
+As stated above, the computational volume in an EIRENE run is subdivided into NSBOX cells, 
 
 NSBOX = (NR1ST $\cdot$ NP2ND $\cdot$ NT3RD) $\cdot$ NBMLT + NRADD .
 
 The can mesh consist two different parts.
 
-The first is the so called ``standard mesh" part (``VOXEL-geometry"), defined
-by the grids RSURF, PSURF and TSURF. There may then be NBMLT copies of that
-mesh, separated by additional surfaces (see below, \cref{sec2.3b}
-(default: NBMLT=1).
+The first is the so called ``standard mesh" part (``VOXEL-geometry"), defined by the grids RSURF, PSURF and TSURF.
+There may then be NBMLT copies of that mesh, separated by additional surfaces (see below, \cref{sec2.3b} (default: NBMLT=1).
 
-The second part is the so called ``additional cell region". Up to
-NRADD additional cells, of arbitrary shape, are defined by their
-boundaries (``\acs{BREP}"-geometry): the ``additional surfaces" defined in
-\cref{sec2.3b}.
+The second part is the so called ``additional cell region".
+Up to NRADD additional cells, of arbitrary shape, are defined by their boundaries (``\acs{BREP}"-geometry): the ``additional surfaces" defined in \cref{sec2.3b}.
 
 \medskip
 
@@ -760,7 +585,7 @@ The cell index of a particular cell is called NTCELL.
 
 1$\le$ NTCELL $\le$ NT3RDM
 
-For the cells of the standard mesh, NACELL = 0
+For the cells of the standard mesh, NACELL = 0 
 
 For the cells in the ``additional cell region" :
 
@@ -768,19 +593,14 @@ For the cells in the ``additional cell region" :
 
 and
 
-NRCELL = 0, NPCELL = 1, NTCELL = 1
+NRCELL = 0, NPCELL = 1, NTCELL = 1 
 
-\medskip
+\medskip 
 
-The last radial (or x-) cell (number NR1ST), for any NPCELL, NTCELL
-inside the standard mesh,
-is not a real geometrical cell. It is used to store
-the radial (or x-) average of the volume averaged tallies.
+The last radial (or x-) cell (number NR1ST), for any NPCELL, NTCELL inside the standard mesh, is not a real geometrical cell.
+It is used to store the radial (or x-) average of the volume averaged tallies.
 
-Likewise, the last poloidal (or y-) cell (number NP2ND) is not a
-real geometrical cell, but used to store
-the poloidal (or y-) average of the volume averaged tallies (for any
-NRCELL, NTCELL inside the standard mesh)
+Likewise, the last poloidal (or y-) cell (number NP2ND) is not a real geometrical cell, but used to store the poloidal (or y-) average of the volume averaged tallies (for any NRCELL, NTCELL inside the standard mesh) 
 
 NTCELL = NT3RD: analogically.
 
@@ -790,55 +610,42 @@ A particular cell can be specified in one of two possible ways:
 
 Either by giving the 5 cell numbers:
 
-NRCELL, NPCELL, NTCELL, NBLOCK, NACELL
+NRCELL, NPCELL, NTCELL, NBLOCK, NACELL 
 
-or, alternatively, by giving the position in the 1-dimensional cell array
+or, alternatively, by giving the position in the 1-dimensional cell array 
 
-NCELL
+NCELL 
 
-\medskip
+\medskip 
 
 The relation between these two options is:
 
-NCELL = NRCELL + ((NPECLL-1)*NR1P2) + (NTCELL-1))*NP2T3 + NBLCKA
+NCELL = NRCELL + ((NPECLL-1)*NR1P2) + (NTCELL-1))*NP2T3 + NBLCKA 
 
-with
+with 
 
-NBLCKA = (NBLOCK -1) * NSTRDT +NRADD
+NBLCKA = (NBLOCK -1) * NSTRDT +NRADD 
 
-\subsection{geometry level LEVGEO: symmetry and dimensionality of a run}
-\label{sec2.2.2}
+\subsection{geometry level LEVGEO: symmetry and dimensionality of a run} \label{sec2.2.2} 
 
-tbd: add a few figures here\dots
+tbd: add a few figures here\dots 
 
 The discretization of a domain is achieved by defining surfaces.
-These can be sets of coordinate surfaces $u^i(x,y,z) = const_i$
-(then producing a discretization of the coordinate $\nabla u$).
+These can be sets of coordinate surfaces $u^i(x,y,z) = const_i$ (then producing a discretization of the coordinate $\nabla u$).
 
 \begin{description}
-\item[LEVGEO] ~
+  \item[LEVGEO] ~ 
 
-\begin{description}
-\item[$= 1$] Simple Cartesian grids (1D, 2D or 3D) are used for code development, comparison with simple (semi-analytical) transport models,
-general 1D  ``one speed transport theory",
-validation of diffusion approximations, etc. The co-ordinates in the 3 directions are referred to as x,y and either z or phi, respectively,
-the latter depending on whether the third co-ordinate is linear (Cartesian) or circular.
-\item[$= 2$] Typically used in connection with 1D radial core
-transport models (e.g., ``Duechs code", 1982 TRANSP 1987, RITM,
-(1996), \dots), circular limiter tokamaks, or for simple parametric
-studies in toroidal or cylindrical coordinates (this is the oldest
-EIRENE geometry option, available since 1980). Shifted elliptical grid surfaces (1D),
-but also in combination with a polar grid (then: 2D) and/or a cylindrical or toroidal
-resolution in the third dimension.
-\item[$= 3$] This 2D discretization of a domain, based upon polygonal lines,  in the x-y
-plane was originally developed for the B2-EIRENE interfacing. More generally, this option allows to
-directly use many 2D \ac{CFD} meshes directly in EIRENE for kinetic transport.
-\item[$= 4$] This example shows the extension of the 2D
-B2-grid, polynomial option LEVGEO = 3, into the outer
-``vacuum"-region by utilizing the LEVGEO = 4 option (plenum, vacuum
-chamber, grid refinement)
-\item[$= 5$] general 3D grid based upon tetrahedrons
-\item[$= 10$] user supplied geometry option. All grid relevant computations are
-done in user specified (problem specific) routines: EIRENE module:  USER.f
-\end{description}
+        \begin{description}
+          \item[$= 1$] Simple Cartesian grids (1D, 2D or 3D) are used for code development, comparison with simple (semi-analytical) transport models, general 1D  ``one speed transport theory", validation of diffusion approximations, etc. The co-ordinates in the 3 directions are referred to as x,y and either z or phi, respectively, the latter depending on whether the third co-ordinate is linear (Cartesian) or circular.
+          \item[$= 2$] Typically used in connection with 1D radial core transport models (e.g., ``Duechs code", 1982 TRANSP 1987, RITM, (1996), \dots), circular limiter tokamaks, or for simple parametric studies in toroidal or cylindrical coordinates (this is the oldest EIRENE geometry option, available since 1980).
+                Shifted elliptical grid surfaces (1D), but also in combination with a polar grid (then: 2D) and/or a cylindrical or toroidal resolution in the third dimension.
+          \item[$= 3$] This 2D discretization of a domain, based upon polygonal lines,  in the x-y plane was originally developed for the B2-EIRENE interfacing.
+                More generally, this option allows to directly use many 2D \ac{CFD} meshes directly in EIRENE for kinetic transport.
+          \item[$= 4$] This example shows the extension of the 2D B2-grid, polynomial option LEVGEO = 3, into the outer ``vacuum"-region by utilizing the LEVGEO = 4 option (plenum, vacuum chamber, grid refinement)
+          \item[$= 5$] general 3D grid based upon tetrahedrons
+          \item[$= 10$] user supplied geometry option.
+                All grid relevant computations are
+                done in user specified (problem specific) routines: EIRENE module:  USER.f
+        \end{description}
 \end{description}

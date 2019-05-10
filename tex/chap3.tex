@@ -1,100 +1,60 @@
 \chapter{Problem specific Routines} \label{sec3}
 
-\textbf{General remarks}
+\textbf{General remarks} 
 
-\medskip
+\medskip 
 
-As mentioned earlier, already the hard wired options in EIRENE allow
-a large variety of linear and also of non-linear transport problems to be studied. In older versions of EIRENE (2001 and older) in most
-cases of linear neutral gas transport in a prescribed background plasma
-the only problem specific FORTRAN that is required consisted of
-a few parameter statements (i.e., the COMMON deck PARMUSR described
-below in \cref{sec3.1}).  
+As mentioned earlier, already the hard wired options in EIRENE allow a large variety of linear and also of non-linear transport problems to be studied.
+In older versions of EIRENE (2001 and older) in most cases of linear neutral gas transport in a prescribed background plasma the only problem specific FORTRAN that is required consisted of a few parameter statements (i.e., the COMMON deck PARMUSR described below in \cref{sec3.1}).
 
-In it one had defined the
-storage requirements for this particular case.
+In it one had defined the storage requirements for this particular case.
 
-\textbf{In versions EIRENE$_{2002}$ and younger this pre-assignment
-of storage has been removed, by a dynamical allocation of storage
-throughout.}
+\textbf{In versions EIRENE$_{2002}$ and younger this pre-assignment of storage has been removed, by a dynamical allocation of storage throughout.
+}
 
-Some controllable storage options (e.g.: trading CPU - vs.\ storage -
-optimization), formerly under: ``parameters for storage
-reductions'' in PARMUSR, can now be set in an additional, but
-optional input line at the beginning of input block 1 (as new
-second line in this block), see \cref{sec2.1}.
+Some controllable storage options (e.g.: trading CPU - vs.\ storage - optimization), formerly under: ``parameters for storage reductions'' in PARMUSR, can now be set in an additional, but optional input line at the beginning of input block 1 (as new second line in this block), see \cref{sec2.1}.
 
 \vspace{1em}
 
-The names of all other routines in the user specified block
-end with \dots USR.
+The names of all other routines in the user specified block end with \dots USR.
 
 \smallskip
 
-The description of the ``additional tally" routines UPTUSR, UPCUSR,
-UPSUSR and UPNUSR given below (\cref{sec3.2}) is meant as a
-guide for the more experienced users of the code only. These
-routines allow to extend the number of responses estimated by EIRENE
-almost arbitrarily.
+The description of the ``additional tally" routines UPTUSR, UPCUSR, UPSUSR and UPNUSR given below (\cref{sec3.2}) is meant as a guide for the more experienced users of the code only.
+These routines allow to extend the number of responses estimated by EIRENE almost arbitrarily.
 
-The number of options for fast particle surface interaction models
-can be increased by adding subroutines REFUSR and SPTUSR,
-which have to provide the particle data (after reflection or sputtering, respectively)
-(velocity vector, weight, type, species, etc.) after
-a test particle has collided with a non-transparent surface and neither
-absorption, nor specular reflection nor the ``thermal particle re-emission"
-is identified as
-surface event by the flags and the random sampling procedure. The use of
-this routine REFUSR is described in \cref{sec3.3}.
+The number of options for fast particle surface interaction models can be increased by adding subroutines REFUSR and SPTUSR, which have to provide the particle data (after reflection or sputtering, respectively) (velocity vector, weight, type, species, etc.) after a test particle has collided with a non-transparent surface and neither absorption, nor specular reflection nor the ``thermal particle re-emission" is identified as surface event by the flags and the random sampling procedure.
+The use of this routine REFUSR is described in \cref{sec3.3}.
 
-By including a birth point sampling routine SAMUSR, one can easily
-model any spatial distribution of the primary source, in addition to the
-preprogrammed options described in \cref{sec2.7}.
+By including a birth point sampling routine SAMUSR, one can easily model any spatial distribution of the primary source, in addition to the preprogrammed options described in \cref{sec2.7}.
 This is explained in \cref{sec3.4}.
 
-Some geometrical variables, such as cell volumes, surface coefficients,
-etc., may be re-defined or modified after reading the input data.
-This is done by a call to routine GEOUSR, called from EIRENE
-subroutine INPUT. See \cref{sec3.5.1} below. Similarly,
-any background data (plasma profiles) may explicitly be modified
-in routine PLAUSR (see \cref{sec3.5.2}).
+Some geometrical variables, such as cell volumes, surface coefficients, etc., may be re-defined or modified after reading the input data.
+This is done by a call to routine GEOUSR, called from EIRENE subroutine INPUT.
+See \cref{sec3.5.1} below.
+Similarly, any background data (plasma profiles) may explicitly be modified in routine PLAUSR (see \cref{sec3.5.2}).
 
-The routine for additional background profiles PROUSR (called for
-those background tallies, for which INDPRO=5, see block 5, is described
-in \cref{sec3.6}. It is recommended to use this option,
-if a particular closed form expression for the background profile
-is needed. It is then more convenient than the external data file
-options INDPRO=6, or INDPRO=7, see \cref{sec4}.
+The routine for additional background profiles PROUSR (called for those background tallies, for which INDPRO=5, see block 5, is described in \cref{sec3.6}.
+It is recommended to use this option, if a particular closed form expression for the background profile is needed.
+It is then more convenient than the external data file options INDPRO=6, or INDPRO=7, see \cref{sec4}.
 
-The various routines needed for the general user supplied geometry
-option (NLGEN, LEVGEO=10, see block 2a) are described in
-\cref{sec3.8}. Simple examples are also given there.
+The various routines needed for the general user supplied geometry option (NLGEN, LEVGEO=10, see block 2a) are described in \cref{sec3.8}.
+Simple examples are also given there.
 \newpage
 
 \section{Parameter Statements (for EIRENE-2001 or older)} \label{sec3.1}
 
-The deck ``PARMUSR" is the first part of the user
-supplied Fortran
-file. It contains parameter statements used in an EIRENE run
-and it determines the storage required to run EIRENE on a particular
-problem.
+The deck ``PARMUSR" is the first part of the user supplied Fortran file.
+It contains parameter statements used in an EIRENE run and it determines the storage required to run EIRENE on a particular problem.
 
-In EIRENE versions after 2001 dynamic allocation of storage is implemented, the module
-PARMUSR has been removed.
-Rather than from fixed ``parameter statements", the storage (such as no.\ of species, grid size, no.\ of atomic processes, etc.) is now allocated directly
-as identified from input flags, usually with the same name as previously in module PARMUSR.
+In EIRENE versions after 2001 dynamic allocation of storage is implemented, the module PARMUSR has been removed.
+Rather than from fixed ``parameter statements", the storage (such as no.\ of species, grid size, no.\ of atomic processes, etc.) is now allocated directly as identified from input flags, usually with the same name as previously in module PARMUSR.
 The actual ``physical" numbers used in a particular run have an additional letter ``I'' at the end of the variable name.
-E.g.\  NATM  (storage for number of different atomic species)
-then is identical with input flag NATMI (input block 4a),
-etc. Only very few exceptions exist,
-in which the storage parameters may be larger than the actual physical parameters in a run,
-such as: NSTRA and NSTRAI, the number of strata.
+E.g.\  NATM  (storage for number of different atomic species) then is identical with input flag NATMI (input block 4a), etc. Only very few exceptions exist, in which the storage parameters may be larger than the actual physical parameters in a run, such as: NSTRA and NSTRAI, the number of strata.
 
-Such deviations may happen if a parameter is altered in the code after the automatic storage
-parameter evaluation in routine FIND\_PARAM.f was carried out, e.g.\ in the above example, if the census
-stratum is turned off later in the run due to other parameter settings.
+Such deviations may happen if a parameter is altered in the code after the automatic storage parameter evaluation in routine FIND\_PARAM.f was carried out, e.g.\ in the above example, if the census stratum is turned off later in the run due to other parameter settings.
 
-The module PARMUSR reads: (\dots\ stands for an integer not less than 1)
+The module PARMUSR reads: (\dots\ stands for an integer not less than 1) 
 
 \begin{lstlisting}
 *COMDECK PARMUSR
@@ -184,208 +144,135 @@ C  NGSTAL = 1 ==> SPATIALLY RESOLVED SURFACE TALLIES ARE
 C                  COMPUTED
 C  DEFAULT:
       PARAMETER (NGSTAL=...)
-\end{lstlisting}
+\end{lstlisting} 
 
 \textbf{Meaning of the Parameter Variables (and Defaults)}
 \begin{description}
-\item[N1ST]  Maximum number of standard mesh points in x-
-(radial) direction (block 2a)
-\item[N2ND] Maximum number of standard mesh points in y-
-(poloidal) direction (block 2b)
-\item[N3RD] Maximum number of standard mesh points in z-
-(toroidal) direction (block 2c)
-\item[NADD] Maximum number of additional zones defined by the
-additional surfaces (block 2d)
-\item[NTOR] Maximum number of toroidal segments for
-approximation of torus by cylindrical segments (block 2c)
-\item[NLIM] Maximum number of ``additional surfaces" (block 3b)
-\item[NSTS] Maximum number of non-default standard surface
-models (block 3a)
-\item[NPLG] Maximum number of points in one polygon (block 2a)
-\item[NPPART] Maximum number of valid parts in one polygon (block 2a)
-\item[NKNOT] Maximum number of knots for mesh of triangles (block 2a)
-\item[NTRI] Maximum number of triangles (block 2a)
-\item[NCOORD] Maximum number of knots for mesh of
-tetrahedrons (block 2a)
-\item[NTETRA] Maximum number of tetrahedrons (block 2a)
-\item[NSTRA] Maximum number of strata (sources) (block 7)
-\item[NSRFS] Maximum number of sub-strata in one stratum (block 7)
-\item[NSTEP] Maximum number of different step functions used for
-primary source sampling (block 7)
-\item[NATM] Maximum number of different atom species (block 4a)
-\item[NMOL] Maximum number of different molecule species (block 4b)
-\item[NION] Maximum number of different test ion species (block 4c)
-\item[NPLS] Maximum number of different bulk ion species (block 5)
-\item[NADV] Maximum number of additional volume averaged
-tallies, track-length estimated (block 10a)
-\item[NADS] Maximum number of additional surface averaged
-tallies  (block 10d)
-\item[NCLV] Maximum number of additional volume averaged
-tallies, collision estimated (block 10b)
-\item[NSNV] Maximum number of additional volume averaged
-tallies, snapshot estimated (in time dependent mode only) (block 13)
-\item[NALV] Maximum number of algebraic
-tallies obtained from volume
-averaged tallies (block 10c)
-\item[NALS] Maximum number of algebraic
-tallies obtained from
-surface averaged tallies (block 10e)
-\item[NAIN] Maximum number of additional input tallies, not
-needed by EIRENE, but to facilitate presentation (block 14)
-\item[NCOP] Maximum number of tallies for coupling to external
-codes (block 14)
-\item[NBGK] Maximum number of tallies for iterative \ac{BGK} scheme
-for neutral--neutral interactions, see MODUSR, below.
-\item[NSD] Maximum number of standard deviation profiles for
-volume averaged tallies (block 9)
-\item[NSDW] Maximum number of standard deviation profiles
-for surface averaged tallies (block 9)
-\item[NCV] Maximum number of covariance estimates (block 9)
-\item[NREAC] Maximum number of atomic reactions from external
-files (block 4)
-\item[NRRC] Maximum number of re-combination processes (blocks 4,5)
-\item[NREI] Maximum number of electron impact processes
-(blocks 4,5)
-\item[NRCX] Maximum number of charge-exchange reactions (blocks 4,5)
-\item[NREL] Maximum number of elastic reactions
-(blocks 4,5)
-\item[NRPI] Maximum number of ion impact reactions (blocks 4,5)
+  \item[N1ST]  Maximum number of standard mesh points in x- (radial) direction (block 2a)
+  \item[N2ND] Maximum number of standard mesh points in y- (poloidal) direction (block 2b)
+  \item[N3RD] Maximum number of standard mesh points in z- (toroidal) direction (block 2c)
+  \item[NADD] Maximum number of additional zones defined by the additional surfaces (block 2d)
+  \item[NTOR] Maximum number of toroidal segments for approximation of torus by cylindrical segments (block 2c)
+  \item[NLIM] Maximum number of ``additional surfaces" (block 3b)
+  \item[NSTS] Maximum number of non-default standard surface models (block 3a)
+  \item[NPLG] Maximum number of points in one polygon (block 2a)
+  \item[NPPART] Maximum number of valid parts in one polygon (block 2a)
+  \item[NKNOT] Maximum number of knots for mesh of triangles (block 2a)
+  \item[NTRI] Maximum number of triangles (block 2a)
+  \item[NCOORD] Maximum number of knots for mesh of tetrahedrons (block 2a)
+  \item[NTETRA] Maximum number of tetrahedrons (block 2a)
+  \item[NSTRA] Maximum number of strata (sources) (block 7)
+  \item[NSRFS] Maximum number of sub-strata in one stratum (block 7)
+  \item[NSTEP] Maximum number of different step functions used for primary source sampling (block 7)
+  \item[NATM] Maximum number of different atom species (block 4a)
+  \item[NMOL] Maximum number of different molecule species (block 4b)
+  \item[NION] Maximum number of different test ion species (block 4c)
+  \item[NPLS] Maximum number of different bulk ion species (block 5)
+  \item[NADV] Maximum number of additional volume averaged tallies, track-length estimated (block 10a)
+  \item[NADS] Maximum number of additional surface averaged tallies  (block 10d)
+  \item[NCLV] Maximum number of additional volume averaged tallies, collision estimated (block 10b)
+  \item[NSNV] Maximum number of additional volume averaged tallies, snapshot estimated (in time dependent mode only) (block 13)
+  \item[NALV] Maximum number of algebraic tallies obtained from volume averaged tallies (block 10c)
+  \item[NALS] Maximum number of algebraic tallies obtained from surface averaged tallies (block 10e)
+  \item[NAIN] Maximum number of additional input tallies, not needed by EIRENE, but to facilitate presentation (block 14)
+  \item[NCOP] Maximum number of tallies for coupling to external codes (block 14)
+  \item[NBGK] Maximum number of tallies for iterative \ac{BGK} scheme for neutral--neutral interactions, see MODUSR, below.
+  \item[NSD] Maximum number of standard deviation profiles for volume averaged tallies (block 9)
+  \item[NSDW] Maximum number of standard deviation profiles for surface averaged tallies (block 9)
+  \item[NCV] Maximum number of covariance estimates (block 9)
+  \item[NREAC] Maximum number of atomic reactions from external files (block 4)
+  \item[NRRC] Maximum number of re-combination processes (blocks 4,5)
+  \item[NREI] Maximum number of electron impact processes (blocks 4,5)
+  \item[NRCX] Maximum number of charge-exchange reactions (blocks 4,5)
+  \item[NREL] Maximum number of elastic reactions (blocks 4,5)
+  \item[NRPI] Maximum number of ion impact reactions (blocks 4,5)
 \end{description}
-Reflection database parameters: see example above. NHD6 is the maximum
-number of different target-projectile combinations, for which databases can be included.
+Reflection database parameters: see example above.
+NHD6 is the maximum number of different target-projectile combinations, for which databases can be included.
 \begin{description}
-\item[NCHOR] Maximum number of lines of sight for diagnostics module (block 12)
-\item[NCHEN] Maximum number of energy values for spectra computed
-in diagnostics module (block 12)
-\item[NDX, NDY, NFL]~
+  \item[NCHOR] Maximum number of lines of sight for diagnostics module (block 12)
+  \item[NCHEN] Maximum number of energy values for spectra computed in diagnostics module (block 12)
+  \item[NDX, NDY, NFL]~ 
 
-Problem specific, in case of coupling to external code.
-See input block 14. Otherwise (stand alone mode): just set to 1.
-\item[NPRNL] Maximum number of particles stored on census array, for
-time dependent mode (block 13)
+        Problem specific, in case of coupling to external code.
+        See input block 14.
+        Otherwise (stand alone mode): just set to 1.
+  \item[NPRNL] Maximum number of particles stored on census array, for time dependent mode (block 13)
 \end{description}
 
-In addition to these parameters, which depend upon the size of the
-particular problem under investigation, there are a few further
-parameters in PARMUSR, which can be used to optimize storage versus CPU
-performance. E.g., atomic data can either be stored in great detail, or
-they can be recomputed whenever they are actually needed. This is controlled
-by the parameter NSTORAM.
-The latter
-choice (e.g., NSTORAM=0, or NSTORAM=1)
-may be the better one on very large meshes (above, say, 20000
-cells, as are commonly encountered in 3D stellarator applications).
+In addition to these parameters, which depend upon the size of the particular problem under investigation, there are a few further parameters in PARMUSR, which can be used to optimize storage versus CPU performance.
+E.g., atomic data can either be stored in great detail, or they can be recomputed whenever they are actually needed.
+This is controlled by the parameter NSTORAM.
+The latter choice (e.g., NSTORAM=0, or NSTORAM=1) may be the better one on very large meshes (above, say, 20000 cells, as are commonly encountered in 3D stellarator applications).
 
 \newpage
 
 \section{The ``Additional Tally" routines UPTUSR, UPCUSR, UPSUSR and UPNUSR}
 \label{sec3.2}
 
-Let $   f(\vr, \vv,j_S)$ be the distribution function in the 6
-dimensional $\mu$ -space for particle species $j_S$, S = PH:
+Let $   f(\vr, \vv,j_S)$ be the distribution function in the 6 dimensional $\mu$ -space for particle species $j_S$, S = PH:
 Photons, S = A: Atoms, S = M: Molecules, S = I: Test Ions, S = P:
-Bulk Ions
+Bulk Ions 
 
 e.g.:
 \begin{align}
-    &  \\
-j_A & = H, D, T, He, C, O,  \dots \nonumber \\
-j_M & = H_2, D_2,  HD, CH_4, H_2 O,  \dots \nonumber \\
-j_I & = H_2^+, CH_3^+,  C^+, O^{++}, \dots  \nonumber \\
-j_P & = H^+, D^+, He^+,  He^{++}, C^+, \dots \nonumber
+      &                                                  \\
+  j_A & = H, D, T, He, C, O,  \dots \nonumber            \\
+  j_M & = H_2, D_2,  HD, CH_4, H_2 O,  \dots \nonumber   \\
+  j_I & = H_2^+, CH_3^+,  C^+, O^{++}, \dots  \nonumber  \\
+  j_P & = H^+, D^+, He^+,  He^{++}, C^+, \dots \nonumber
 \end{align}
-The distinction between ``Test Ions" and ``Bulk Ions" is problem specific,
-see input blocks 4 and 5.
-The ``volume averaged tallies" estimated by EIRENE (see \cref{tab2})
-are profiles of
-``responses"
+The distinction between ``Test Ions" and ``Bulk Ions" is problem specific, see input blocks 4 and 5.
+The ``volume averaged tallies" estimated by EIRENE (see \cref{tab2}) are profiles of ``responses"
 \begin{displaymath}
-R_g = <    f | g   >
-= \sum_{j}   \int d^3 \vv
-\int_{volume} d^3 \vr \ g(\vr, \vv
-, j)     \cdot     f(\vr, \vv, j)\label{est}
+  R_g = <    f | g   > = \sum_{j}   \int d^3 \vv \int_{volume} d^3 \vr \ g(\vr, \vv , j)     \cdot     f(\vr, \vv, j)\label{est}
 \end{displaymath}
-for several preprogrammed and an arbitrary number of additional user
-supplied ``detector functions" $g$. Here the summation over $j$ is only
-over test particle species, i.e., atoms, molecules or test ions, and
-not over background particles (``bulk ions", electrons). The default EIRENE
-estimators are not based upon moments of distribution function $f$
-but upon moments of the flux
+for several preprogrammed and an arbitrary number of additional user supplied ``detector functions" $g$.
+Here the summation over $j$ is only over test particle species, i.e., atoms, molecules or test ions, and not over background particles (``bulk ions", electrons).
+The default EIRENE estimators are not based upon moments of distribution function $f$ but upon moments of the flux
 \begin{displaymath}
-\Phi ( j_S, \vr,
-\vv ) = |
-\vv |  f(j_S, \vr, \vv),
+  \Phi ( j_S, \vr, \vv ) = | \vv |  f(j_S, \vr, \vv),
 \end{displaymath}
-hence
-on detector functions $g^{*} = g / | \vv |
-$.
+hence on detector functions $g^{*} = g / | \vv | $.
 
-Occasionally also
-moments of the pre-collision density
+Occasionally also moments of the pre-collision density
 \begin{displaymath}
-\Psi ( j_S,
-\vr, \vv ) =
-\Phi ( j_S, \vr, \vv )
-    \cdot     \Sigma ( j_S, \vr, \vv )
+  \Psi ( j_S, \vr, \vv ) = \Phi ( j_S, \vr, \vv ) \cdot     \Sigma ( j_S, \vr, \vv )
 \end{displaymath}
-are utilized, then
-with detector functions $ \hat{g} = g /
-(| \vv | \ \Sigma)    $.
-Here $\Sigma$ (dimension: 1/length) is the local total macroscopic
-cross section, i.e., the inverse of the local mean free path length.
-The estimators may, in general, be composed of
-a ``track-length estimate"
-\begin{equation} \label{tracklest}
-^k{R_t} =
-\sum_{i=0}^{k_{n-1}}   \ ^k w_i^* \  I_{l,i}
- = \sum_{i=0}^{k_{n-1}} \ ^k w_i^*
-\int_{\vr_i}^{\vr_{i+1}}   dl \  g^{*} (l),
+are utilized, then with detector functions $ \hat{g} = g / (| \vv | \ \Sigma)    $.
+Here $\Sigma$ (dimension: 1/length) is the local total macroscopic cross section, i.e., the inverse of the local mean free path length.
+The estimators may, in general, be composed of a ``track-length estimate"
+\begin{equation}
+  \label{tracklest} ^k{R_t} = \sum_{i=0}^{k_{n-1}}   \ ^k w_i^* \  I_{l,i} = \sum_{i=0}^{k_{n-1}} \ ^k w_i^* \int_{\vr_i}^{\vr_{i+1}}   dl \  g^{*} (l),
 \end{equation}
 and a ``collision estimate" :
-\begin{equation} \label{collest}
-^k{R_c} = \sum_{i=1}^{k_n}   \ ^k{\hat{w_i}} \
-\hat{g} ( \vr_i )     .
+\begin{equation}
+  \label{collest}
+  ^k{R_c} = \sum_{i=1}^{k_n}   \ ^k{\hat{w_i}} \
+  \hat{g}
+  ( \vr_i )     .
 \end{equation}
-Here $  ^k{\hat{w_i}}$ is the weight of history number
-$k$ before
-going into collision number
-$i$ and $ ^k{w_{i}^{*}}$ is the
-weight of history number $k$ when coming out of collision number $i$.
-In $R_t$ the sum is over line
-integrals along the track of a test flight
-from point of collision $ \vr_i$
-to the next one at $\vr_{i+1}, i=0,1,
-\dots, ^k{n-1} $, whereas in $R_c$ the sum is over
-the points of collisions $\vr_i, i=1,2, \dots,
-^kn$. Here $i=0$ corresponds to the point of birth, and
-$^kn$ the number of the last collision
-along the track (i.e., the collision
-which leads into the final state ``absorbed
-particle").
+Here $  ^k{\hat{w_i}}$ is the weight of history number $k$ before going into collision number $i$ and $ ^k{w_{i}^{*}}$ is the weight of history number $k$ when coming out of collision number $i$.
+In $R_t$ the sum is over line integrals along the track of a test flight from point of collision $ \vr_i$ to the next one at $\vr_{i+1}, i=0,1, \dots, ^k{n-1} $, whereas in $R_c$ the sum is over the points of collisions $\vr_i, i=1,2, \dots, ^kn$.
+Here $i=0$ corresponds to the point of birth, and $^kn$ the number of the last collision along the track (i.e., the collision which leads into the final state ``absorbed particle").
 
 The tallies are estimated as arithmetic means
 \begin{equation}
-R = \frac{1}{N}   \left ( \sum_{k=1}^{N}
-(^k{R_t}  +  {^k{R_c}} ) \right )
+  R = \frac{1}{N}   \left ( \sum_{k=1}^{N} (^k{R_t}  +  {^k{R_c}} ) \right )
 \end{equation}
 of the contributions of each test particle history k.
 
 \subsection{Track-length estimated volume tallies, UPTUSR}\label{sec3.2.1}
 
-The track-length estimators $R_t$ for detector function $g$ are
-updated in subroutine UPDATE (defaults) and UPTUSR (\dots, WV, \dots)
-(additional user supplied tallies), with
+The track-length estimators $R_t$ for detector function $g$ are updated in subroutine UPDATE (defaults) and UPTUSR (\dots, WV, \dots) (additional user supplied tallies), with
 \begin{displaymath}
-WV =
-{^k{w_{i}^{*}}}  /   | \vv | \quad .
+  WV = {^k{w_{i}^{*}}}  /   | \vv | \quad .
 \end{displaymath}
 In EIRENE variables:
 \begin{displaymath}
- WV = WEIGHT/VEL  \quad .
+  WV = WEIGHT/VEL  \quad .
 \end{displaymath}
-Then, in order to estimate a response for a detector function $g$ on
-additional tally number ITALV, a statement in subroutine UPTUSR
-should read:
+Then, in order to estimate a response for a detector function $g$ on additional tally number ITALV, a statement in subroutine UPTUSR should read:
 
 \begin{lstlisting}
       DO IC=1,NCOU
@@ -394,247 +281,154 @@ should read:
       ENDDO
 \end{lstlisting}
 
-Here $CLPC$ is the length $l$ of the flight in the cell ICELL, $g$
-is assumed to be a constant in this cell in this example. In more
-general cases, when detector $g$ varies along the track, the product
-$l \cdot g$ is to be replaced by the line integral $\int g~ dl$
-along this track.
+Here $CLPC$ is the length $l$ of the flight in the cell ICELL, $g$ is assumed to be a constant in this cell in this example.
+In more general cases, when detector $g$ varies along the track, the product $l \cdot g$ is to be replaced by the line integral $\int g~ dl$ along this track.
 
 \subsection{Collision estimated volume tallies, UPCUSR}\label{sec3.2.2}
 
-The default collision estimated contributions $R_c$ are updated in
-subroutine COLLIDE. Subroutine COLLIDE is called from the particle
-tracing subroutines FOLNEUT and FOLION (defaults). Non default
-collision tallies are updated in UPCUSR(\dots, WS, IND) (additional user
-supplied tallies, called from COLLIDE). Here we have
+The default collision estimated contributions $R_c$ are updated in subroutine COLLIDE.
+Subroutine COLLIDE is called from the particle tracing subroutines FOLNEUT and FOLION (defaults).
+Non default collision tallies are updated in UPCUSR(\dots, WS, IND) (additional user supplied tallies, called from COLLIDE).
+Here we have
 \begin{displaymath}
-WS = {^k{\hat{w_i}}}
-  /   ( | \vv |  \Sigma ) \quad .
+  WS = {^k{\hat{w_i}}} /   ( | \vv |  \Sigma ) \quad .
 \end{displaymath}
 In EIRENE variables:
 \begin{displaymath}
-WS = WEIGHT/SIGTOT = WEIGHT/VEL \cdot ZMFP \quad .
+  WS = WEIGHT/SIGTOT = WEIGHT/VEL \cdot ZMFP \quad .
 \end{displaymath}
 
-$IND=1$ indicates a call before sampling from the collision
-kernel, and $IND=2$ indicates calls with the parameters (velocity,
-weight, \dots) of the particle emerging from the collision. At each
-collision, the subroutine UPCUSR is called once before and once
-after the collision.
+$IND=1$ indicates a call before sampling from the collision kernel, and $IND=2$ indicates calls with the parameters (velocity, weight, \dots) of the particle emerging from the collision.
+At each collision, the subroutine UPCUSR is called once before and once after the collision.
 
-Then, in order to estimate a response for a detector function g on
-additional tally number ICOLV, a statement in subroutine UPCUSR
-should read:
+Then, in order to estimate a response for a detector function g on additional tally number ICOLV, a statement in subroutine UPCUSR should read:
 
 \begin{lstlisting}
       COLV(ICOLV,ICELL) = COLV(ICOLV,ICELL) + WS * g
 \end{lstlisting}
 
-Here $g$ is evaluated at the point of a collision, which is known
-to have taken place in cell ICELL in this call to subroutine
-UPCUSR.
+Here $g$ is evaluated at the point of a collision, which is known to have taken place in cell ICELL in this call to subroutine UPCUSR.
 
-We note that track-length estimates ADDV reduce to collision
-estimates COLV, if ADDV is updated at the points of collision only
-and if the EIRENE variable ZMFP (local mean free path length) is
-used rather than CLPD. This fact is used by EIRENE for ``condensed
-particle species" (NFOL\$ flag in block 4). This is used, for
-example, if the motion of test ions along field lines is not
-followed explicitly but if, instead, the particles undergo a next
-collision immediately at their places of birth (i.e.: quasi steady
-state approximation ``QSSA" for this species).
+We note that track-length estimates ADDV reduce to collision estimates COLV, if ADDV is updated at the points of collision only and if the EIRENE variable ZMFP (local mean free path length) is used rather than CLPD.
+This fact is used by EIRENE for ``condensed particle species" (NFOL\$ flag in block 4).
+This is used, for example, if the motion of test ions along field lines is not followed explicitly but if, instead, the particles undergo a next collision immediately at their places of birth (i.e.: quasi steady state approximation ``QSSA" for this species).
 
 \subsection{Snapshot estimated volume averaged tallies, UPNUSR}\label{sec3.2.3}
 
 By default snapshot tallies are only scored in time dependent mode, see input flags in \cref{sec2.13}.
-They can, however, also be used as a third alternative to track-length and collision
-estimators for any stationary response. In particular for diffusive processes, as e.g.
-ion transport with Fokker Planck type Coulomb collision operators,
-such ``snapshot averaging" is the most frequent option used in Monte Carlo applications to estimate
-stationary moments. See paragraph B below.
+They can, however, also be used as a third alternative to track-length and collision estimators for any stationary response.
+In particular for diffusive processes, as e.g. ion transport with Fokker Planck type Coulomb collision operators, such ``snapshot averaging" is the most frequent option used in Monte Carlo applications to estimate stationary moments.
+See paragraph B below.
 
 \subsubsection{A: time dependent estimates}
 
-The default
-snapshot estimated tallies at a fixed time $t^*$, see
-\cref{sec2.13}, are updated in subroutine TIMCOL. Currently these are
-only the census tallies and the particle- and energy fluxes at
-census. Subroutine TIMCOL is called from the particle tracing
-subroutines FOLNEUT and FOLION (defaults), in case of time dependent
-mode (see input block 13). Non default snapshot tallies can be
-scored in UPNUSR (additional user supplied tallies, called from
-TIMCOL). Here we have
+The default snapshot estimated tallies at a fixed time $t^*$, see \cref{sec2.13}, are updated in subroutine TIMCOL.
+Currently these are only the census tallies and the particle- and energy fluxes at census.
+Subroutine TIMCOL is called from the particle tracing subroutines FOLNEUT and FOLION (defaults), in case of time dependent mode (see input block 13).
+Non default snapshot tallies can be scored in UPNUSR (additional user supplied tallies, called from TIMCOL).
+Here we have
 \begin{displaymath}
-WSNAP = {^k{\hat{w_i}}}   \quad .
+  WSNAP = {^k{\hat{w_i}}}   \quad .
 \end{displaymath}
 In EIRENE variables:
 \begin{displaymath}
-WSNAP = WEIGHT  \quad .
+  WSNAP = WEIGHT  \quad .
 \end{displaymath}
-Then, in order to estimate a response for a detector function $g$ on
-snapshot tally number ISNV, a statement in subroutine UPNUSR should
-read:
+Then, in order to estimate a response for a detector function $g$ on snapshot tally number ISNV, a statement in subroutine UPNUSR should read:
 
 \begin{lstlisting}
       SNAPV(ISNV,ICELL) = SNAPV(ISNV,ICELL) + WSNAP * g(...)
 \end{lstlisting}
 
-E.g., with $g=1$ this is an unbiased estimate of cell averaged particle density at
-time $t=t^*$, see \cref{est}, i.e., just counting the particle weights at $t=t^*$
-provides an unbiased estimate of the particle density.
-This is intuitively clear, but also mathematically correct since
-these snapshot estimators are formally derived as special cases of track-length- collision
-or surface flux estimators (interpreting the time-horizon sub-manifold as ``time-surface", by abuse of language)
-by including in $g$ a delta function in time : $g(t,\vr,\vv)=\delta(t^*)\tilde g(\vr,\vv)$.
+E.g., with $g=1$ this is an unbiased estimate of cell averaged particle density at time $t=t^*$, see \cref{est}, i.e., just counting the particle weights at $t=t^*$ provides an unbiased estimate of the particle density.
+This is intuitively clear, but also mathematically correct since these snapshot estimators are formally derived as special cases of track-length- collision or surface flux estimators (interpreting the time-horizon sub-manifold as ``time-surface", by abuse of language) by including in $g$ a delta function in time : $g(t,\vr,\vv)=\delta(t^*)\tilde g(\vr,\vv)$.
 
-Subroutine UPNUSR must at least include module COMPRT (for the
-particle weight WEIGHT). Here $g$ is evaluated at the point of time $t^*$
-at which TIMCOL is called. Scaling of snapshot tallies is done by
-interpreting the linear source strength ``FLUX" scaling factor
-(given in input block 7 (\cref{sec2.7}) for each stratum) as a total
-number of particles, rather than as flux (particles~\si{\per\second}), i.e.\ ``FLUX is the
-integral of the source distribution not only over physical space, but also over time interval $DTIMV$ from initial time $t_0$
-to time $t^*$ (\cref{sec2.13}).
+Subroutine UPNUSR must at least include module COMPRT (for the particle weight WEIGHT).
+Here $g$ is evaluated at the point of time $t^*$ at which TIMCOL is called.
+Scaling of snapshot tallies is done by interpreting the linear source strength ``FLUX" scaling factor (given in input block 7 (\cref{sec2.7}) for each stratum) as a total number of particles, rather than as flux (particles~\si{\per\second}), i.e.\ ``FLUX is the integral of the source distribution not only over physical space, but also over time interval $DTIMV$ from initial time $t_0$ to time $t^*$ (\cref{sec2.13}).
 
 \subsubsection{B: stationary snapshot tallies}\label{sec3.2.3b}
 
-A stationary value of snapshot tallies, to be compared with other
-tallies in stationary mode, is obtained by setting the flag NTMSTP
-of block 13 (\cref{sec2.13}) to negative values. Stationary results in
-this ``time dependent mode" are obtained by launching all test
-flights at time $t_0$, but scoring snapshot tallies not only at
-$t^*=t_1=t_0+DTIMV$, but also at $t_2=t_0+2~ DTIMV, t_3=t_0+3~
-DTIMV, \dots,$ i.e.\ at all times $t_n=t_0+n~ DTIMV$ until the flight
-terminates. If the source distribution and the background medium
-parameters are constant in time, then the snapshot score
-contribution from time $t_i$ can be interpreted as score at
-$t^*=t_1$ resulting from the source at earlier time $t_0-(i-1)
-DTIMV$. Hence this stationary snapshot score at $t^*$ is in fact an
-integration over all contributions from earlier times $t < t_0$.
+A stationary value of snapshot tallies, to be compared with other tallies in stationary mode, is obtained by setting the flag NTMSTP of block 13 (\cref{sec2.13}) to negative values.
+Stationary results in this ``time dependent mode" are obtained by launching all test flights at time $t_0$, but scoring snapshot tallies not only at $t^*=t_1=t_0+DTIMV$, but also at $t_2=t_0+2~ DTIMV, t_3=t_0+3~ DTIMV, \dots,$ i.e.\ at all times $t_n=t_0+n~ DTIMV$ until the flight terminates.
+If the source distribution and the background medium parameters are constant in time, then the snapshot score contribution from time $t_i$ can be interpreted as score at $t^*=t_1$ resulting from the source at earlier time $t_0-(i-1) DTIMV$.
+Hence this stationary snapshot score at $t^*$ is in fact an integration over all contributions from earlier times $t < t_0$.
 
-When scaling the time-
-snapshot tallies at $t=t^*$ in this stationary mode to absolute units, then an extra multiplicative factor $DTIMV$
-(i.e., the time interval between subsequent scores along a particle history) is
-applied for snapshot tallies, because the stationary (time-averaged) volume averaged
-tallies are scaled interpreting the stratum source strength $FLUX$
-as flux: ``atomic particles per second", whereas the snapshot
-tallies require this same scaling factor $FLUX$ to be the absolute
-number of (atomic) particles (flux integrated over one time interval
-from $t_0$ to $t_1=t_0+DTIMV$).
+When scaling the time- snapshot tallies at $t=t^*$ in this stationary mode to absolute units, then an extra multiplicative factor $DTIMV$ (i.e., the time interval between subsequent scores along a particle history) is applied for snapshot tallies, because the stationary (time-averaged) volume averaged tallies are scaled interpreting the stratum source strength $FLUX$ as flux: ``atomic particles per second", whereas the snapshot tallies require this same scaling factor $FLUX$ to be the absolute number of (atomic) particles (flux integrated over one time interval from $t_0$ to $t_1=t_0+DTIMV$).
 
-Further considerations regarding the scaling factors for volume averaged
-tallies in EIRENE, with respect to dimensionality of phase space of the problem
-(1D, 2D, 3D, stationary or time-dependent) are given in \cref{sec1.2.0}.
+Further considerations regarding the scaling factors for volume averaged tallies in EIRENE, with respect to dimensionality of phase space of the problem (1D, 2D, 3D, stationary or time-dependent) are given in \cref{sec1.2.0}.
 
 \subsection{Surface averaged tallies, UPSUSR}\label{sec3.2.4}
 
 \medskip
 
-Finally we note that ``surface averaged tallies" (\cref{tab3})
-may be considered just as special cases of the ``volume averaged
-tallies" described above, if appropriate use is made of $\delta$
--functions. Let therefore $\rho$ be a co-ordinate normal to a
-surface S at the strike point $\underline{r}_S $ of a test flight
-from $\underline{r}_i$ to $\underline{r}_{i+1}$ with speed unit
-vector $\underline{\Omega} = \underline{v}  / (| \underline{v} |)$.
-I.e., the surface is described locally by the equation $\rho=0$ at
-the point $\vr_S \in S$, at which we may define an orthonormal basis
-$ \ve_{\rho}, \ve_ {\rho'}, \ve_{\rho''}$. Furthermore, $\vr_S =
-\vr_{i+1} $, which means that one may treat surface events exactly
-in the same way as collisions with the background medium in our
-terminologies. Then a ``surface response function" $ g_S $ defined
-as
+Finally we note that ``surface averaged tallies" (\cref{tab3}) may be considered just as special cases of the ``volume averaged tallies" described above, if appropriate use is made of $\delta$ -functions.
+Let therefore $\rho$ be a co-ordinate normal to a surface S at the strike point $\underline{r}_S $ of a test flight from $\underline{r}_i$ to $\underline{r}_{i+1}$ with speed unit vector $\underline{\Omega} = \underline{v}  / (| \underline{v} |)$.
+I.e., the surface is described locally by the equation $\rho=0$ at the point $\vr_S \in S$, at which we may define an orthonormal basis $ \ve_{\rho}, \ve_ {\rho'}, \ve_{\rho''}$.
+Furthermore, $\vr_S = \vr_{i+1} $, which means that one may treat surface events exactly in the same way as collisions with the background medium in our terminologies.
+Then a ``surface response function" $ g_S $ defined as 
 
 \begin{displaymath}
-g_S (j, \vr, \vv ) =
-\delta(\rho)  \cdot  g(j, \vr, \vv )
+  g_S (j, \vr, \vv ) = \delta(\rho)  \cdot  g(j, \vr, \vv )
 \end{displaymath}
 
-is the detector function for the same response $ R_g $ as previously
-detector function $g$ was, but now surface averaged instead of
-volume averaged:
+is the detector function for the same response $ R_g $ as previously detector function $g$ was, but now surface averaged instead of volume averaged:
 
 \begin{displaymath}
-\int_{surface}   d^2 s  \ g  \cdot    f =
-\int_{volume}  d^3 r \
-g_S   \cdot   f
+  \int_{surface}   d^2 s  \ g  \cdot    f =
+  \int_{volume}  d^3 r \
+  g_S   \cdot   f
 \end{displaymath}
 
-Therefore, the line integrals $ I_{l,i} $ in the formula given above
-for track-length estimates, equation \cref{tracklest}, now reduce
-to:
+Therefore, the line integrals $ I_{l,i} $ in the formula given above for track-length estimates, equation \cref{tracklest}, now reduce to:
 
 \begin{equation}
-I_{l,i} =
-\int_{\vr_i}^{\vr_{i+1}}
-dl \  \delta(\rho)  \cdot  g^{*} (l) =
-g^{*} (\rho=0)  /  \cos( \ve_{\rho}, \vOmega )
+  I_{l,i} = \int_{\vr_i}^{\vr_{i+1}} dl \  \delta(\rho)  \cdot  g^{*} (l) = g^{*} (\rho=0)  /  \cos( \ve_{\rho}, \vOmega )
 \end{equation}
 
-if the surface is intersected
-during the test-flight from $ \vr_i $
-to $ \vr_{i+1} $, and $ I_{l,i} = 0 $ else.
+if the surface is intersected during the test-flight from $ \vr_i $ to $ \vr_{i+1} $, and $ I_{l,i} = 0 $ else.
 This can easily be seen by writing
 \begin{align}
- \vr_{l,i} & = \vr_i + l  \cdot
- \left(\begin{array} {c} \cos(\vOmega, 
-\ve_{\rho}
-)
-\\  \cos(\vOmega, \ve_{\rho '} )
-\\  \cos(\vOmega,\ve_{\rho ''}) \end{array}\right)
+  \vr_{l,i} & = \vr_i + l  \cdot \left(
+    \begin{array} {c} \cos(\vOmega, \ve_{\rho} ) \\
+      \cos(\vOmega, \ve_{\rho '} )
+      \\  \cos(\vOmega,\ve_{\rho ''})
+    \end{array}
+  \right)
 \end{align}
-i.e., $\rho= r_{\rho, i} + l  \cdot  \cos( \vOmega, \ve_{\rho} )$. 
-In other words: track-length estimators become formally identical
-to collision estimators, for detector functions containing surface
-collision delta functions.
+i.e., $\rho= r_{\rho, i} + l  \cdot  \cos( \vOmega, \ve_{\rho} )$.
+In other words: track-length estimators become formally identical to collision estimators, for detector functions containing surface collision delta functions.
 
-
-
-
-Consequently, a statement in subroutine UPSUSR(WEIGHT,IND)
-for this surface averaged tally must read:
+Consequently, a statement in subroutine UPSUSR(WEIGHT,IND) for this surface averaged tally must read:
 \begin{displaymath}
-ADDS(ITALS,IS)=ADDS(ITALS,IS) + WC   \cdot   g  \quad ;
+  ADDS(ITALS,IS)=ADDS(ITALS,IS) + WC   \cdot   g  \quad ;
 \end{displaymath}
 
-here $IS$ is the index of the surface which is being crossed,
-$ITALS$ is the labelling number of the surface tally. Furthermore,
+here $IS$ is the index of the surface which is being crossed, $ITALS$ is the labelling number of the surface tally.
+Furthermore,
 \begin{displaymath}
-WC= {^k{\omega^{*}_i}}  /  [ |\vv |
-  \cdot   \cos( \vOmega, \ve_{\rho} ) ],
+  WC= {^k{\omega^{*}_i}}  /  [ |\vv | \cdot   \cos( \vOmega, \ve_{\rho} ) ],
 \end{displaymath}
-the detector function $g$ is evaluated at the strike point $ \vr_S $
-and, as above, $ {^k{\omega^{*}_i}}  $ is the weight of the history
-k after event i and before event i+1. Note:
+the detector function $g$ is evaluated at the strike point $ \vr_S $ and, as above, $ {^k{\omega^{*}_i}}  $ is the weight of the history k after event i and before event i+1.
+Note:
 \begin{displaymath}
- WEIGHT = {^k {w^{*}_i}} =
-^k {\hat{w_{i+1}}}
+  WEIGHT = {^k {w^{*}_i}} = ^k {\hat{w_{i+1}}}
 \end{displaymath}
 in our terminology.
 
-The flag IND has the value 1, if the particle is incident onto the
-surface, and IND = 2 if the particle is emitted from the surface.
+The flag IND has the value 1, if the particle is incident onto the surface, and IND = 2 if the particle is emitted from the surface.
 
-Some care is needed because the local surface normal unit vector $
-\ve_{\rho} $ at the strike point $ \vr_S $ is not known in
-subroutine UPSUSR unless the surface input variable ILIIN (see input
-block 3) is positive (equal to 1,2,3 or 4) for the surface $S$. In
-all other cases, this vector (defined by its Cartesian components
-CRTX,CRTY,CRTZ in EIRENE) has to be computed in subroutine UPSUSR at
-each entry, if it is needed for updating the surface averaged tally.
+Some care is needed because the local surface normal unit vector $ \ve_{\rho} $ at the strike point $ \vr_S $ is not known in subroutine UPSUSR unless the surface input variable ILIIN (see input block 3) is positive (equal to 1,2,3 or 4) for the surface $S$.
+In all other cases, this vector (defined by its Cartesian components CRTX,CRTY,CRTZ in EIRENE) has to be computed in subroutine UPSUSR at each entry, if it is needed for updating the surface averaged tally.
 
-Subroutine UPSUSR is called whenever the default surface tallies are
-updated. For one sided surface tallies (ILIIN=-2 or ILIIN=-4), therefore,
-UPSUSR is also only called for one sided tallies only.
+Subroutine UPSUSR is called whenever the default surface tallies are updated.
+For one sided surface tallies (ILIIN=-2 or ILIIN=-4), therefore, UPSUSR is also only called for one sided tallies only.
 
 In addition to these calls, UPSUSR is also called from surface source routines.
-For test particles emitted from source surfaces (or generated from incident bulk ions after
-reflection or sputtering)
-the call is UPSUSR(WEIGHT,2). For bulk ions (ITYP=4) incident onto a source surface
-the call is UPSUSR(-WEIGHT,1).
+For test particles emitted from source surfaces (or generated from incident bulk ions after reflection or sputtering) the call is UPSUSR(WEIGHT,2).
+For bulk ions (ITYP=4) incident onto a source surface the call is UPSUSR(-WEIGHT,1).
 
-Therefore, the tallies ADDS include the direct source contribution, if the source is a surface
-source, whereas the default surface tallies don't.
+Therefore, the tallies ADDS include the direct source contribution, if the source is a surface source, whereas the default surface tallies don't.
 \newpage
 
 \section{The user surface reflection model REFUSR} \label{sec3.3}
@@ -643,28 +437,18 @@ source, whereas the default surface tallies don't.
 
 \medskip
 
-This subroutine is called in the initialization phase of an EIRENE
-run, at entry RF0USR, from subroutine REFLEC, and at entry SP0USR, from
-subroutine SPUTER. At these entries the user supplied reflection models
-and sputtering models (if any),
-respectively, may be initialized.
+This subroutine is called in the initialization phase of an EIRENE run, at entry RF0USR, from subroutine REFLEC, and at entry SP0USR, from subroutine SPUTER.
+At these entries the user supplied reflection models and sputtering models (if any), respectively, may be initialized.
 
-Later, during the Monte
-Carlo sampling phase, it is called via entry RF1USR, whenever a test
-flight intersects a surface NLLI, for which the fast particle reflection
-model flag ILREF(NLLI) has been set equal to ILREF(NLLI)=3.
+Later, during the Monte Carlo sampling phase, it is called via entry RF1USR, whenever a test flight intersects a surface NLLI, for which the fast particle reflection model flag ILREF(NLLI) has been set equal to ILREF(NLLI)=3.
 
-Furthermore, if
-for a certain surface NLLI a user specified ``sputter model" is activated
-by the flag ILSPT(NLLI)=3,
-then REFUSR is called at the entry SP1USR,
-whenever this surface is intersected by a test flight.
+Furthermore, if for a certain surface NLLI a user specified ``sputter model" is activated by the flag ILSPT(NLLI)=3, then REFUSR is called at the entry SP1USR, whenever this surface is intersected by a test flight.
 
 \medskip
 
-\textbf{Format of subroutine}
+\textbf{Format of subroutine} 
 
-\medskip
+\medskip 
 
 \begin{lstlisting}
       SUBROUTINE REFUSR
@@ -707,50 +491,43 @@ C     RECYCC(ISPZ,MSURF)=.....
      :
       RETURN
       END
-\end{lstlisting}
+\end{lstlisting} 
 
-\newpage
+\newpage 
 
-\section{The user source sampling routine SAMUSR} \label{sec3.4}
+\section{The user source sampling routine SAMUSR} \label{sec3.4} 
 
 \textbf{General remarks}:
 
 \medskip
 
-This subroutine is called from the point source sampling routine
-SAMPNT, the surface source sampling routine SAMSRF, or from the
-volume sampling routine SAMVOL, if the flag SORLIM(N, ISTRA)
-(input block 7) for the spatial distribution of birth points on
-sub-stratum N for stratum ISTRA has a negative value.
+This subroutine is called from the point source sampling routine SAMPNT, the surface source sampling routine SAMSRF, or from the volume sampling routine SAMVOL, if the flag SORLIM(N, ISTRA) (input block 7) for the spatial distribution of birth points on sub-stratum N for stratum ISTRA has a negative value.
 
-This subroutine returns to EIRENE the (Cartesian) coordinates of
-the birth point
+This subroutine returns to EIRENE the (Cartesian) coordinates of the birth point 
 
-X0,Y0,Z0
+X0,Y0,Z0 
 
-cell index information
+cell index information 
 
-IRUSR,IPUSR,ITUSR,IAUSR,IBUSR
+IRUSR,IPUSR,ITUSR,IAUSR,IBUSR 
 
 as well as local plasma background data at this place of birth:
 
-TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ
+TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ 
 
-The input parameters (EIRENE input block 7 for primary sources)
+The input parameters (EIRENE input block 7 for primary sources) 
 
-SORAD1,SORAD2,SORAD3,SORAD4,SORAD5,SORAD6
+SORAD1,SORAD2,SORAD3,SORAD4,SORAD5,SORAD6 
 
 can be used in this problem specific routine.
 
 Dimensions, Precision:
 
-
-
 \medskip
 
-\textbf{Format of subroutine}
+\textbf{Format of subroutine} 
 
-\medskip
+\medskip 
 
 \begin{lstlisting}
       SUBROUTINE SAMUSR (ISR,X0,Y0,Z0,SORAD1,SORAD2,SORAD3,
@@ -823,12 +600,11 @@ C  SAMPLING
       RETURN
 
       END
-\end{lstlisting}
+\end{lstlisting} 
 
 Note: The parameters EFWL, SHWL have been introduced in 2005.
 
-Note: Correction in May 2006: In previous versions of this manual the parameters TEWL and TIWL have
-been interchanged with respect to the calling statements in the EIRENE code. 
+Note: Correction in May 2006: In previous versions of this manual the parameters TEWL and TIWL have been interchanged with respect to the calling statements in the EIRENE code.
 
 (Thanks to Jose Guasp, (CIEMAT, Spain) for pointing this out.)
 
@@ -839,14 +615,14 @@ been interchanged with respect to the calling statements in the EIRENE code.
 
 \subsection{The user geometry data routine GEOUSR} \label{sec3.5.1}
 
- to be written
+to be written
 
 \newpage
 
 \subsection{User supplied background data routine PLAUSR}
 \label{sec3.5.2}
 
- to be written
+to be written
 
 \section{The user routines for profiles PROUSR}
 \label{sec3.6}
@@ -857,25 +633,19 @@ been interchanged with respect to the calling statements in the EIRENE code.
 
 \medskip
 
-Purpose: set input tallies (background medium), on the grid (one number per tally per cell)
-For more general input tallies, evaluated ``on the fly" at a particular position, see routine VECUSR
-below (\cref{sec3.6.2}).
+Purpose: set input tallies (background medium), on the grid (one number per tally per cell) For more general input tallies, evaluated ``on the fly" at a particular position, see routine VECUSR below (\cref{sec3.6.2}).
 
-This subroutine is called from the subroutine PLASMA
-if the input flag INDPRO (input block 5) has the value INDPRO(IPRO)=5
-for a particular background tally IPRO.
-Only the data for cells from the standard mesh (ICELL = 1, \dots, NSURF)
-are used. Default ``vacuum data" are set for all cells in the ``additional
-cell region" ICELL = NSURF + 1, \dots, NSBOX.
+This subroutine is called from the subroutine PLASMA if the input flag INDPRO (input block 5) has the value INDPRO(IPRO)=5 for a particular background tally IPRO.
+Only the data for cells from the standard mesh (ICELL = 1, \dots, NSURF) are used.
+Default ``vacuum data" are set for all cells in the ``additional cell region" ICELL = NSURF + 1, \dots, NSBOX.
 
-PROUSR is called, furthermore, from subroutine INPUT to provide cell volumes for all
-cells (ICELL = 1, \dots, NSBOX), if the input flag INDPRO(12) has the value INDPRO(12)=5
+PROUSR is called, furthermore, from subroutine INPUT to provide cell volumes for all cells (ICELL = 1, \dots, NSBOX), if the input flag INDPRO(12) has the value INDPRO(12)=5 
 
-\medskip
+\medskip 
 
-\textbf{Format of subroutine}
+\textbf{Format of subroutine} 
 
-\medskip
+\medskip 
 
 \begin{lstlisting}
       SUBROUTINE PROUSR (RHO,INDEX,P0,P1,P2,P3,P4,P5,PVAC,
@@ -901,37 +671,32 @@ C  DATA FOR VOL, NDAT=NSBOX
       ENDIF
       RETURN
       END
-\end{lstlisting}
+\end{lstlisting} 
 
-Depending upon the value of INDEX, one has to specify a background tally
-on the array RHO, RHO(J),J=1,NDAT.
+Depending upon the value of INDEX, one has to specify a background tally on the array RHO, RHO(J),J=1,NDAT.
 These are:
 \begin{description}
-\item[INDEX = 0] Electron temperature (\si{\electronvolt})
-\item[INDEX = 1] Ion temperature (\si{\electronvolt}), NPLSI calls, one for each
-ion species. I.e.:
+  \item[INDEX = 0] Electron temperature (\si{\electronvolt})
+  \item[INDEX = 1] Ion temperature (\si{\electronvolt}), NPLSI calls, one for each ion species.
+        I.e.:
 
-\begin{lstlisting}
+        \begin{lstlisting}
       DO IPLS=1,NPLSI
         CALL PROUSR(HELP,1+0*NPLSI,TI0(IPLS),...,NSURF)
         CALL RESETP(TIIN,HELP,IPLS,1,NPLS,NSURF)
       ENDDO
 \end{lstlisting}
 
-\item[INDEX = 1+ NPLS] Ion density (\si{\per\cubic\centi\metre}), NPLSI calls, one for each
-ion species
-\item[INDEX = 1+2*NPLS] Ion drift velocity, x direction (\si{\centi\metre\per\second}), NPLSI calls, one for each
-ion species
-\item[INDEX = 1+3*NPLS] Ion drift velocity, y direction (\si{\centi\metre\per\second}), NPLSI calls, one for each
-ion species
-\item[INDEX = 1+4*NPLS] Ion drift velocity, z direction (\si{\centi\metre\per\second}), NPLSI calls, one for each
-ion species
-\item[INDEX = 1+5*NPLS] Magnetic field, x component, (AU)
-\item[INDEX = 2+5*NPLS] Magnetic field, y component, (AU)
-\item[INDEX = 3+5*NPLS] Magnetic field, z component, (AU)
-\item[INDEX = 4+5*NPLS] Magnetic field, magnitude, (T)
-\item[INDEX = 5+5*NPLS] Cell volume, (\si{\cubic\centi\metre})
-\item[INDEX = 6+5*NPLS] Additional tally, NAINI calls, one for each additional quantity.
+  \item[INDEX = 1+ NPLS] Ion density (\si{\per\cubic\centi\metre}), NPLSI calls, one for each ion species
+  \item[INDEX = 1+2*NPLS] Ion drift velocity, x direction (\si{\centi\metre\per\second}), NPLSI calls, one for each ion species
+  \item[INDEX = 1+3*NPLS] Ion drift velocity, y direction (\si{\centi\metre\per\second}), NPLSI calls, one for each ion species
+  \item[INDEX = 1+4*NPLS] Ion drift velocity, z direction (\si{\centi\metre\per\second}), NPLSI calls, one for each ion species
+  \item[INDEX = 1+5*NPLS] Magnetic field, x component, (AU)
+  \item[INDEX = 2+5*NPLS] Magnetic field, y component, (AU)
+  \item[INDEX = 3+5*NPLS] Magnetic field, z component, (AU)
+  \item[INDEX = 4+5*NPLS] Magnetic field, magnitude, (T)
+  \item[INDEX = 5+5*NPLS] Cell volume, (\si{\cubic\centi\metre})
+  \item[INDEX = 6+5*NPLS] Additional tally, NAINI calls, one for each additional quantity.
 \end{description}
 
 \subsection{User supplied background data routine VECUSR}
@@ -939,34 +704,28 @@ ion species
 
 This routine is called at a particular position (X0, Y0, Z0) in grid cell NCELL, and returns a vector quantity.
 Position and cell number information are taken from module EIRMOD\_COMPRT.F.
-It is used in particular if the magnetic field, or plasma flow field, are needed with a higher spatial
-resolution than the one provided by the standard input plasma (background) tallies, which are cell averaged,
-i.e.\ constant within a cell.
+It is used in particular if the magnetic field, or plasma flow field, are needed with a higher spatial resolution than the one provided by the standard input plasma (background) tallies, which are cell averaged, i.e.\ constant within a cell.
 
 \begin{lstlisting}
       SUBROUTINE VECUSR(INDEX,VEC_X,VEC_Y,VEC_Z,IPLS)
 \end{lstlisting}
 
-This routine is called in case INDPRO(5)=8 for the B-field tally (e.g.\ from routine BFIELD.F), and in case (INDPRO(4)=8)
-for the background flow velocity tallies (from many places in the code),
-to provide either a local magnetic field (unit) vector, or a local plasma (background medium)
-flow velocity vector (\si{\centi\metre\per\second}), respectively, in Cartesian coordinates.
+This routine is called in case INDPRO(5)=8 for the B-field tally (e.g.\ from routine BFIELD.F), and in case (INDPRO(4)=8) for the background flow velocity tallies (from many places in the code), to provide either a local magnetic field (unit) vector, or a local plasma (background medium) flow velocity vector (\si{\centi\metre\per\second}), respectively, in Cartesian coordinates.
 
 Current implementation:
 \begin{description}
-\item[INDEX = 1] return the magnetic field unit vector, Cartesian coordinates. This local (at position X0, Y0, Z0, in cell NCELL) vector is used
-instead of cell averaged input tally no.\ 5:
+  \item[INDEX = 1] return the magnetic field unit vector, Cartesian coordinates.
+        This local (at position X0, Y0, Z0, in cell NCELL) vector is used instead of cell averaged input tally no.\ 5:
 
-[BXIN(ncell), BYIN(ncell), BZIN(ncell)].
+        [BXIN(ncell), BYIN(ncell), BZIN(ncell)].
 
-VECUSR with INDEX=1 is called from routine BFIELD.F
-\item[INDEX = 2] return plasma (background) flow velocity vector, Cartesian coordinates, for EIRENE background species IPLS.
-This local (at position X0, Y0, Z0, in cell NCELL) vector is used
-instead of cell averaged input tally no.\ 4:
+        VECUSR with INDEX=1 is called from routine BFIELD.F
+  \item[INDEX = 2] return plasma (background) flow velocity vector, Cartesian coordinates, for EIRENE background species IPLS.
+        This local (at position X0, Y0, Z0, in cell NCELL) vector is used instead of cell averaged input tally no.\ 4:
 
-[VXIN(IPLS,ncell), VYIN(IPLS,ncell), VZIN(IPLS,ncell)].
+        [VXIN(IPLS,ncell), VYIN(IPLS,ncell), VZIN(IPLS,ncell)].
 
-Note: species index IPLS is the EIRENE background species index, not to be confused with the mapped species index MPLSV(IPLS).
+        Note: species index IPLS is the EIRENE background species index, not to be confused with the mapped species index MPLSV(IPLS).
 \end{description}
 
 \section{User supplied post-processed tally routine TALUSR}
@@ -982,228 +741,161 @@ to be written
 \section{User supplied ``general geometry block"}
 \label{sec3.8}
 
-The following routines have to be provided for the
-general geometry options (LEVGEO=10 option, NLGEN=TRUE), in which no
-specific geometry data are available from EIRENE input, and all the
-geometrical parameters for particle tracing and scoring of tallies
-are transferred from outside.
+The following routines have to be provided for the general geometry options (LEVGEO=10 option, NLGEN=TRUE), in which no specific geometry data are available from EIRENE input, and all the geometrical parameters for particle tracing and scoring of tallies are transferred from outside.
 
 \begin{itemize}
-\item
-INIUSR (initialize user specified geometry block), see \cref{sec3.8.0}
-\item
-LEAUSR(x) (return cell number, for any given position x), see
-\cref{sec3.8.1}
-\item
-TIMUSR (flight time to next cell boundary, and next cell number
-or surface number), see \cref{sec3.8.2}
-\item
-VOLUSR (volume of each grid cell),
-see \cref{sec3.8.3}
-\item
-NORUSR (outer surface normal, for any given position on a surface),
-see \cref{sec3.8.4}
+  \item INIUSR (initialize user specified geometry block), see \cref{sec3.8.0}
+  \item LEAUSR(x) (return cell number, for any given position x), see \cref{sec3.8.1}
+  \item TIMUSR (flight time to next cell boundary, and next cell number or surface number), see \cref{sec3.8.2}
+  \item VOLUSR (volume of each grid cell), see \cref{sec3.8.3}
+  \item NORUSR (outer surface normal, for any given position on a surface), see \cref{sec3.8.4}
 \end{itemize}
-In case NLGEN, only a reduced set of the standard EIRENE options is available, and the
-five user routines mentioned above and described below may have to be
-supplemented by some further options from
-the problem specific segment USER.F .
+In case NLGEN, only a reduced set of the standard EIRENE options is available, and the five user routines mentioned above and described below may have to be supplemented by some further options from the problem specific segment USER.F .
 \begin{description}
-\item[Input block 5]
+  \item[Input block 5] 
 
-only the INDPRO = 3, 5 and 6 options are available. INDPRO = 3 provides
-constant profiles, same value in each cell.  Hence, in case of
-non-constant
-background parameters one has to resort to subroutine PROUSR
-(INDPRO=5), or to the code segment INFCOP (INDPRO=6) for coupling to another
-source (code) for the data of the background medium.
-\item[Input block 7]
-only the point source option is available. In case of surface
-sources or volume sources, the subroutine SAMUSR has to be called,
-see \cref{sec3.4}.
-\item[Input block 11]
-only the printout options are available, no graphics output
-options are available. However, subroutine PLTUSR(LOG,J) is called
-from the 2D geometry plotting routine PLT2D (LOG=.TRUE., J = number of
-surface to be plotted) and
-from the 3D geometry plotting routine PLT3D (LOG=.FALSE., J =
-number of surface to be plotted)
+        only the INDPRO = 3, 5 and 6 options are available.
+        INDPRO = 3 provides constant profiles, same value in each cell.
+        Hence, in case of non-constant background parameters one has to resort to subroutine PROUSR (INDPRO=5), or to the code segment INFCOP (INDPRO=6) for coupling to another source (code) for the data of the background medium.
+  \item[Input block 7] only the point source option is available.
+        In case of surface sources or volume sources, the subroutine SAMUSR has to be called, see \cref{sec3.4}.
+  \item[Input block 11] only the printout options are available, no graphics output options are available.
+        However, subroutine PLTUSR(LOG,J) is called from the 2D geometry plotting routine PLT2D (LOG=.TRUE., J = number of surface to be plotted) and from the 3D geometry plotting routine PLT3D (LOG=.FALSE., J = number of surface to be plotted)
 \end{description}
 
-\subsection{Subroutine INIUSR}
-\label{sec3.8.0}
+\subsection{Subroutine INIUSR} \label{sec3.8.0} 
 
-This subroutine is called from subroutine INPUT,
-after reading from the formatted input file and after (optional)
-calls to interfacing routines INFCOP. Any initialization
-(including definition of COMMON blocks) for the user geometry
-package may be done here.
+This subroutine is called from subroutine INPUT, after reading from the formatted input file and after (optional) calls to interfacing routines INFCOP.
+Any initialization (including definition of COMMON blocks) for the user geometry package may be done here.
 
 \subsection{Subroutine LEAUSR}
 \label{sec3.8.1}
 
 Identify cell index from a point given by its three Cartesian coordinates.
 
-The function LEAUSR is called from functions LEARC1
-and LEARCA in case of LEVGEO = 10. The call is
+The function LEAUSR is called from functions LEARC1 and LEARCA in case of LEVGEO = 10.
+The call is 
 
 \begin{lstlisting}
       NCELL=LEAUSR(X,Y,Z)
-\end{lstlisting}
+\end{lstlisting} 
 
-Here X,Y,Z are the Cartesian
-coordinates of a point inside the computational domain in centimeters.
-LEAUSR must then return
-the number of the cell to which this point belongs.
+Here X,Y,Z are the Cartesian coordinates of a point inside the computational domain in centimeters.
+LEAUSR must then return the number of the cell to which this point belongs.
 
-Note (see \cref{sec2.2}): Any particular cell in EIRENE can be specified in
-one of two possible ways:
+Note (see \cref{sec2.2}): Any particular cell in EIRENE can be specified in one of two possible ways:
 
 Either by giving the 5 cell numbers:
 
-NRCELL, NPCELL, NTCELL, NBLOCK, NACELL
+NRCELL, NPCELL, NTCELL, NBLOCK, NACELL 
 
-in the first,(radial) second (poloidal) third (toroidal) grid or additional cell region,
-or, alternatively, by giving the cell index in the 1-dimensional cell array
+in the first,(radial) second (poloidal) third (toroidal) grid or additional cell region, or, alternatively, by giving the cell index in the 1-dimensional cell array 
 
-NCELL
+NCELL 
 
-\medskip
+\medskip 
 
 The relation between these two options is:
 
-NCELL = NRCELL + ((NPECLL-1)*NR1P2) + (NTCELL-1))*NP2T3 + NBLCKA
+NCELL = NRCELL + ((NPECLL-1)*NR1P2) + (NTCELL-1))*NP2T3 + NBLCKA 
 
-with
+with 
 
-NBLCKA = (NBLOCK -1) * NSTRDT +NRADD
+NBLCKA = (NBLOCK -1) * NSTRDT +NRADD 
 
 LEAUSR is expected to return the cell index NCELL.
-
-
 
 \subsection{Subroutine TIMUSR}
 \label{sec3.8.2}
 
 The subroutine TIMUSR is called from TIMER (block GEO3D) in case of LEVGEO=10 (general external geometry option).
-Distinct from the other geometry levels in TIMER, the number of the nearest intersected surface (MRSURF) along the trajectory
-is not returned in general. Only if this nearest surface is one of the ``non-default standard surfaces" defined in input
-block 3a, this information is returned (by a negative value of argument NEWCEL.
+Distinct from the other geometry levels in TIMER, the number of the nearest intersected surface (MRSURF) along the trajectory is not returned in general.
+Only if this nearest surface is one of the ``non-default standard surfaces" defined in input block 3a, this information is returned (by a negative value of argument NEWCEL.
 
-The call is
+The call is 
 
 \begin{lstlisting}
       CALL TIMUSR (NRCELL,X0,Y0,Z0,VELX,VELY,VELZ,
      .             NJUMP,NEWCEL,TIM,ICOS,IERR,NPANU,NLSRFX)
-\end{lstlisting}
+\end{lstlisting} 
 
-\textbf{Input}
-
-\begin{description}
-\item[NRCELL]
-Actual cell number, for which the intersection to the cell boundary has to be found.
-If NJUMP=0, i.e., for the first call of a new trajectory (e.g., after a
-collision), the starting point X0,Y0,Z0 must be in that cell.
-In later calls for the same trajectory (NJUMP $>$ 0), NRCELL has been automatically updated,
-i.e., it must not necessarily contain the starting point
-X0,Y0,Z0, and the flight time (distance) from the starting point is accumulated.
-\item[X0,Y0,Z0]
-Cartesian coordinates of the starting point of a trajectory.
-\item[VELX,VELY,VELZ]~
-
-unit (speed-) vector pointing in the
-direction of the flight.
-\item[NJUMP]
-\begin{description}
-\item[$= 0$]
-this is the first call for a particular trajectory.
-\item[$\neq 0$]
-this is a later call for a particular trajectory. The initial position and
-speed unit vector are the same as in the previous call. Hence: the geometrical
-parameters depending only on those need not be evaluated again.
-\end{description}
-\item[NPANU]
-number of EIRENE test flight (particle history). Only for diagnostic printout from TIMUSR.
-\item[NLSRFX]
-TRUE:  the starting position (X0,Y0,Z0) of the current trajectory is exactly on the cell boundary of cell
-NRCELL.  This information may by used inside TIMUSR
-to detect and exclude flight paths of zero length (time)
-
-FALSE:  Particle trajectory does not start at the cell boundary of cell NRCELL, but inside this cell.
-\end{description}
-
-\textbf{Output}
+\textbf{Input} 
 
 \begin{description}
-\item[NEWCEL]
+  \item[NRCELL] Actual cell number, for which the intersection to the cell boundary has to be found.
+        If NJUMP=0, i.e., for the first call of a new trajectory (e.g., after a collision), the starting point X0,Y0,Z0 must be in that cell.
+        In later calls for the same trajectory (NJUMP $>$ 0), NRCELL has been automatically updated, i.e., it must not necessarily contain the starting point X0,Y0,Z0, and the flight time (distance) from the starting point is accumulated.
+  \item[X0,Y0,Z0] Cartesian coordinates of the starting point of a trajectory.
+  \item[VELX,VELY,VELZ]~ 
+
+        unit (speed-) vector pointing in the direction of the flight.
+  \item[NJUMP]
+        \begin{description}
+          \item[$= 0$] this is the first call for a particular trajectory.
+          \item[$\neq 0$] this is a later call for a particular trajectory.
+                The initial position and speed unit vector are the same as in the previous call.
+                Hence: the geometrical parameters depending only on those need not be evaluated again.
+        \end{description}
+  \item[NPANU] number of EIRENE test flight (particle history).
+        Only for diagnostic printout from TIMUSR.
+  \item[NLSRFX] TRUE:  the starting position (X0,Y0,Z0) of the current trajectory is exactly on the cell boundary of cell NRCELL.
+        This information may by used inside TIMUSR to detect and exclude flight paths of zero length (time) 
+
+        FALSE:  Particle trajectory does not start at the cell boundary of cell NRCELL, but inside this cell.
+\end{description}
+
+\textbf{Output} 
+
 \begin{description}
-\item[$< 0$]
-trajectory has intersected one of the non-default surfaces (input block 3a).
-ABS(NEWCEL) is the number of that surface (corresponding to running index
-ISTSI in input block 3a).
-\item[$> 0$]
-number of next cell, in which the flight would continue, if no collision event
-stops the track already earlier. I.e., cell number of the neighbor cell in the direction
-of the flight.
-\end{description}
-\item[TIM]
-distance (\si{\centi\metre}) from [X0,Y0,Z0]
-to the nearest intersection of the trajectory with a
-boundary of cell NRCELL.  Since the speed vector [VELX,VELY,VELZ] is normalized to one (\si{\centi\metre\per\second}),
-this distance is also the flight time (\si{\second})
-\item[ICOS]
-only relevant, if the trajectory has intersected a non-default surface.
-In this case, ICOS is the sign (+1 or -1) of the cosine of the angle of
-incidence against the surface normal (this latter unit vector, [CRTX,CRTY,CRTZ]
-may, e.g., be found in TIMUSR by a call
-to NORUSR, see \cref{sec3.8.4}).
-\item[IERR]
-error flag. Presently
-any value different from 0 will lead to an immediate end of the run.
-See subroutine TIMER in code segment GEO3D.F
+  \item[NEWCEL]
+        \begin{description}
+          \item[$< 0$] trajectory has intersected one of the non-default surfaces (input block 3a).
+                ABS(NEWCEL) is the number of that surface (corresponding to running index ISTSI in input block 3a).
+          \item[$> 0$] number of next cell, in which the flight would continue, if no collision event stops the track already earlier.
+                I.e., cell number of the neighbor cell in the direction of the flight.
+        \end{description}
+  \item[TIM] distance (\si{\centi\metre}) from [X0,Y0,Z0] to the nearest intersection of the trajectory with a boundary of cell NRCELL.
+        Since the speed vector [VELX,VELY,VELZ] is normalized to one (\si{\centi\metre\per\second}), this distance is also the flight time (\si{\second})
+  \item[ICOS] only relevant, if the trajectory has intersected a non-default surface.
+        In this case, ICOS is the sign (+1 or -1) of the cosine of the angle of incidence against the surface normal (this latter unit vector, [CRTX,CRTY,CRTZ] may, e.g., be found in TIMUSR by a call to NORUSR, see \cref{sec3.8.4}).
+  \item[IERR] error flag.
+        Presently any value different from 0 will lead to an immediate end of the run.
+        See subroutine TIMER in code segment GEO3D.F
 \end{description}
 
-\subsection{Subroutine VOLUSR}
-\label{sec3.8.3}
+\subsection{Subroutine VOLUSR} \label{sec3.8.3} 
 
-The subroutine VOLUSR is called from subroutine
-VOLUME in case of LEVGEO=10. The call is
+The subroutine VOLUSR is called from subroutine VOLUME in case of LEVGEO=10.
+The call is 
 
 \begin{lstlisting}
       CALL VOLUSR(N,A)
-\end{lstlisting}
+\end{lstlisting} 
 
-Here N is the total number of cells in this run, and
-A is an array of length N, containing the N cell volume values in \si{\cubic\centi\metre}.
+Here N is the total number of cells in this run, and A is an array of length N, containing the N cell volume values in \si{\cubic\centi\metre}.
 
 \subsection{Subroutine NORUSR}
 \label{sec3.8.4}
 
-The subroutine NORUSR provides the outer surface normal unit vector CX,CY,CZ at surfaces,
-i.e.\ after a particle trajectory has intersected a ``non default grid surface" at point X,Y,Z.
+The subroutine NORUSR provides the outer surface normal unit vector CX,CY,CZ at surfaces, i.e.\ after a particle trajectory has intersected a ``non default grid surface" at point X,Y,Z.
 
-It is called in the LEVGEO=10 option from subroutine
-STDCOL,  after all surface intersection settings and possible switches have been carried out,
-or directly via the entry point STDNOR of STDCOL. The call is
+It is called in the LEVGEO=10 option from subroutine STDCOL,  after all surface intersection settings and possible switches have been carried out, or directly via the entry point STDNOR of STDCOL.
+The call is 
 
 \begin{lstlisting}
       CALL NORUSR(M,X,Y,Z,CX,CY,CZ,SCOS,VELX,VELY,VELZ,
      .            NRCELL)
-\end{lstlisting}
+\end{lstlisting} 
 
+Here [X,Y,Z] are the Cartesian coordinates of an intersection point, located on non-default standard surface no.\ M.
+The routine must return the surface normal unit vector [CX,CY,CZ].
 
-Here [X,Y,Z] are the Cartesian coordinates
-of an intersection point, located on non-default standard surface no.\ M. The routine must return
-the surface normal unit vector [CX,CY,CZ].
-
-If surface M has a periodicity condition (i.e.\ surface flag ILIIN(M) $>$3 in input block 3a (\cref{sec2.3a})
-then this routine must also carry out the periodicity transformation for the test particle (which may be different
-for neutral particles and for charged (test ion) particles).
+If surface M has a periodicity condition (i.e.\ surface flag ILIIN(M) $>$3 in input block 3a (\cref{sec2.3a}) then this routine must also carry out the periodicity transformation for the test particle (which may be different for neutral particles and for charged (test ion) particles).
 
 Periodicity is carried out, in general, by moving particles to another surface and/or altering its speed unit vector.
 
-In this cases the code expects on output in [X,Y,Z] the new coordinates, on integer variable M the new surface number, and, if applicable,
-on [VELX,VELY,VELZ] the new speed unit vector. NRCELL must contain the cell number, into which the new flight enters from surface M.
+In this cases the code expects on output in [X,Y,Z] the new coordinates, on integer variable M the new surface number, and, if applicable, on [VELX,VELY,VELZ] the new speed unit vector.
+NRCELL must contain the cell number, into which the new flight enters from surface M.
 
 Currently NORUSR is called for all non default surfaces in the general (external) geometry level LEVGEO=10, i.e.\ for NRGEN = T.
 
