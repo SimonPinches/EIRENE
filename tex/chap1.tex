@@ -165,7 +165,6 @@ without exchange between species. Always only two of them (here: $i_0$ and $b$) 
 
 
 $Q \ (= Q_{i_0})$ is any external source (particles of species $i_0$ injected per unit volume  in phase space and per unit time).
-\
 
 Integration in the first term on the right hand side (``gain term") of this equation is over the (pre-collision) velocities $\vv',
 \vV'$  as well as over one of the two post-collision velocities: $\vV$, the velocity of species $b$.
@@ -961,7 +960,7 @@ The summation in \cref{eq1.8} and hence also the second sum on the right hand si
 ``on the fly" while generating the Monte Carlo histories (i.e.\ at no extra CPU cost).
 However, because, of course  $X_i^2 \neq  \sum X_{i,j}^2$, the first sum on the right hand side of \cref{MCsig1}
 cannot be evaluated ``on the fly" (per event). Instead here EIRENE first accumulates the sum \cref{mccross} $X_i$ for individual test flight ``$i$", and updates the
-sum $\sum X_i^2$ only once after each completed history (in subroutine. STATIS, entry STATS1). I.e., variance estimates are made after completion of each history, inside the particle loop, see \cref{flow5}.
+sum $\sum X_i^2$ only once after each completed history (in subroutine STATIS, entry STATS1). I.e., variance estimates are made after completion of each history, inside the particle loop, see \cref{flow5}.
 The full evaluation and scaling of
 expression \cref{MCsig1,MCsig} is then carried out after completion of all histories (per stratum), in entry STATS2 of subroutine STATIS.
 \minisec{Linear functions of tallies}\label{lin-funct}
@@ -1106,7 +1105,7 @@ sampling first $x_1$ from the (univariate) first factor in
 (univariate) second factor, and so on.
 
 This transformation of a multivariate (k-) distribution to a uniform distribution
-on a k-hy\-per\-cube is sometimes referred to as ``Rosenblatt transformation" (M. Rosenblatt, Ann. Math. Statistics 23: 470-472, (1952)).
+on a k-hy\-per\-cube is sometimes referred to as ``Rosenblatt transformation" (M.~Rosenblatt, Ann.\ Math.\ Statistics 23: 470-472, (1952)).
 
 One particular example of this scheme is the ``TRIM database
 surface reflection model" (see below, \cref{sec1.3.2}).
@@ -1322,8 +1321,7 @@ Stratification of sources has been described in \cref{sec1.2.1b}.
 
 \subsubsection{Surface-sources}
 
-and see special section on ``plasma surface recycling source
-sampling", \cref{sec1.4}.
+and see special section on ``plasma surface recycling source sampling", \cref{sec1.4}.
 
 \subsubsection{Volume sources}
 
@@ -1463,8 +1461,8 @@ Strictly, in this case the exact position of the first collision during this ste
 by inversion, the time step has to be shortened and the particle has to be moved to the sampled point of collision in the
 interval $\Delta \vx$. However, various approximations are now usually made, to simplify coding.
 \begin{itemize}
-\item{} Ignore the fact that more than one collisions could have happened during $\Delta t$.
-\item{} replace $G_T(l_0)$ by $l_0/\lambda ~ (= \Delta t v \Sigma_t(\vv)$, see above) when comparing with uniform random number $\xi$
+\item Ignore the fact that more than one collisions could have happened during $\Delta t$.
+\item replace $G_T(l_0)$ by $l_0/\lambda ~ (= \Delta t v \Sigma_t(\vv)$, see above) when comparing with uniform random number $\xi$
 \end{itemize}
 The second assumption results from Taylor expansion for sufficiently small $\Delta t$ such that $l_0/\lambda \ll 1$.
 
@@ -1746,15 +1744,15 @@ _{in})   \sin( \vartheta_r ), \nonumber\\
  f_2( \vartheta_{in} )    & =
 (   1   -   f_1  \cdot f_1 )^{\frac{1}{2}} . \nonumber
 \end{align}
-In total we have defined three parameters e1, e2, e3. The first
-two parameters e1 and e2 account for particle and energy
+In total we have defined three parameters $e1$, $e2$, $e3$. The first
+two parameters $e1$ and $e2$ account for particle and energy
 reflection coefficients that continuously increase with incident
-angle (recommended: e1=1, e2=0.5 from comparison with TRIM code
+angle (recommended: $e1=1$, $e2=0.5$ from comparison with TRIM code
 calculations, see below).
 
-The third parameter e3 can be used to take into
+The third parameter $e3$ can be used to take into
 account an increasing contribution of specular reflection at near
-grazing incidence. e3=0 gives a pure cosine distribution, e3=1
+grazing incidence. $e3=0$ gives a pure cosine distribution, $e3=1$
 reproduces the distribution given in \cite{kn:Heifetz}. In general
 this model describes a fraction of specular versus cosine
 reflection, which increases with $ \vartheta_{in}$. And in the
@@ -1802,7 +1800,8 @@ in the solid.
 \caption{\textbf{Surface reflection database (TRIM Code)}}
 \label{tabref}
 \begin{center}
-\begin{tabular} {|r|l|l|r|} \hline
+\begin{tabular}{|r|l|l|r|}
+ \hline
  \textbf{No} & \textbf{Projectile} & \textbf{Target}
  &  \textbf{ZNML}
  \\ \hline \hline
@@ -1866,7 +1865,7 @@ anymore).
 
 It was found that this had little influence on global parameters
 as, e.g., the pumping efficiency for the particular geometry (5.4
-\%, 5.3 \% and 5.2 \% respectively.). On the other hand, it can
+\%, 5.3 \% and 5.2 \% respectively). On the other hand, it can
 easily be imagined that in other cases (different plasma
 conditions, more detailed geometries) the choice of the reflection
 kernel $ C_{wf} $ can be more important for the result. Certainly
@@ -1914,7 +1913,7 @@ To convert from a forward directed ion flux distribution
 $\Gamma_{Sh,ion}(\vv)$ at the plasma-sheath interface $S_{Sh}$ to a
 neutral flux distribution back from the wall surface $S_w$, we
 fold $\Gamma_{Sh,ion}$ with a (magnetic plus electrostatic) sheath transmission
-kernel $T_{Sh}$ and with the surface reflection (incl. sputtering) kernel $C_w$,
+kernel $T_{Sh}$ and with the surface reflection (incl.\ sputtering) kernel $C_w$,
 equation \cref{eq1.14}:
  \begin{align}
 \Gamma_w ( \vr, \vv, i ) & = \sum_{i '}
@@ -2316,7 +2315,7 @@ EIRENE is a Monte Carlo Code. Defining geometry in a Monte Carlo code is complex
 
 Of the three typical options for definition of the target geometry in Monte Carlo Codes:
 \begin{itemize}
-\item {}
+\item 
     ``\ac{CSG}",
 \item
     ``\ac{BREP}"
@@ -2427,14 +2426,14 @@ computational volume is discretized by a mesh of $n$ surfaces
 \mbox{$S_i, i = 1, 2, \dots, n$.} Each of these surfaces is defined by a
 set of $\Lambda_i$ equations (unbounded surfaces):
 \begin{equation}
-f_{\lambda}^i (x,y,z) = 0 {},    \quad \quad \lambda =
-1, 2, \dots, \Lambda_i {}, \label{eq1.34}
+f_{\lambda}^i (x,y,z) = 0 ,    \quad \quad \lambda =
+1, 2, \dots, \Lambda_i , \label{eq1.34}
 \end{equation}
 and, optional, for each unbounded surface $\lambda$  a subset of $ \Pi_{\lambda} $
 inequalities (e.g.\ for turning the unbounded surfaces into finite segments):
 \begin{equation}
-g_{\lambda, \pi}^i (x,y,z)  \le   0 {},    \quad \quad \pi =
-1, 2, \dots, \Pi_{\lambda} {}. \label{eq1.35}
+g_{\lambda, \pi}^i (x,y,z)  \le   0 ,    \quad \quad \pi =
+1, 2, \dots, \Pi_{\lambda} . \label{eq1.35}
 \end{equation}
 
 This means that for all unbounded surfaces $S_{i,\lambda}$ only the points, which fulfill all corresponding
@@ -2902,7 +2901,7 @@ status.
 
 See flowchart 9.1 (\cref{flow6}).
 
-Further details can be found in Ref. \cite{kn:Reiter96}.
+Further details can be found in Ref.\ \cite{kn:Reiter96}.
 \bigskip
 
 The \ac{BGK} approximation used in the EIRENE code to model neutral--neutral collisions,
@@ -3045,7 +3044,7 @@ The \ac{DMCS} method was implemented in EIRENE in the late eighties of the last 
 but then abandoned due to its limitations to physically rather simple cases (e.g.\ no feedback
 with the consistent bulk plasma state, the often dominant non-linearity in fusion applications).
 Currently it is not developed nor supported  any more. Contact us for details and
-status. Further details can be found in Ref. \cite{kn:Behringer}
+status. Further details can be found in Ref.\ \cite{kn:Behringer}
 
 \section{Radiation transport, photon gas simulations}
 
@@ -3085,7 +3084,7 @@ defined one-particle states.
 
 For continuum radiation (bound-free or free-free) the frequency of
 the photon in the atoms rest frame may be replaced by the
-frequency in the lab. frame, because all cross sections are slowly
+frequency in the lab.\ frame, because all cross sections are slowly
 varying functions of frequency. By contrast, for line-radiation
 due to bound-bound transitions, the Doppler effect must be taken
 into account in all quantities that vary rapidly as function of
@@ -3327,7 +3326,7 @@ v_a\ll \sqrt{(2T_b/m_b)},\quad  \mbox{i.e.} \quad  x^{a/b} = \mu_bv_a^2/2kT_b \l
 as often particularly
 appropriate for molecular ions $a$,
 In this limit one has for the basic ``Spitzer
-rates" (loc. cit.):
+rates" (loc.\ cit.):
 \begin{align}
 \nu_s^{a,b} & = n_b Z_a^2 Z_b^2\lambda_{a,b}\cdot
 6.8 \times 10^{-8}~\frac{\mu_b^{1/2}}{\mu_a} \left(1+\frac{\mu_b}{\mu_a}\right)T_b^{-3/2}\\
