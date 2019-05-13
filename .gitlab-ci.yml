@@ -1,4 +1,4 @@
-image: janstuemmel/latex
+image: jugit-registry.fz-juelich.de/eirene/eirene-ci-image/master
 
 build:
   script:
