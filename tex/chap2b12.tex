@@ -1,53 +1,54 @@
 \section{Data for Diagnostic Module} \label{sec2.12}
 
-\textbf{General remarks}
+\textbf{General remarks} 
 
-\medskip  %
+\medskip 
 
-The data in this block are used to define a line-of-sight (LOS)
-across the computational domain, along which line integrals $I$
-\begin{equation}\label{eqLOS}
-I = \int_{LOS} g(l) dl = \int_{P_1}^{P_2} g(l) dl
+The data in this block are used to define a line-of-sight (LOS) across the
+computational domain, along which line integrals $I$
+\begin{equation}
+  \label{eqLOS} I = \int_{LOS} g(l) dl = \int_{P_1}^{P_2} g(l) dl
 \end{equation}
-are evaluated (by launching a ``virtual" test particle along the LOS and scoring
-the response function $g(x)$ along its track, using the EIRENE particle tracing routines.
+are evaluated (by launching a ``virtual" test particle along the LOS and
+scoring the response function $g(x)$ along its track, using the EIRENE particle
+tracing routines.
+%
 
-This is done in subroutine
-LININT, which is called from subroutine DIAGNO at the end (post
-processing phase) of an EIRENE run. The spatial dependence of the
-function $g(l)$ is defined as function of one or more of the
-estimated volume averaged tallies (e.g., atom density), and/or
+This is done in subroutine LININT, which is called from subroutine DIAGNO at
+the end (post processing phase) of an EIRENE run.
+The spatial dependence of the function $g(l)$ is defined as function of one or
+more of the estimated volume averaged tallies (e.g., atom density), and/or
 input tallies (e.g.\ plasma temperatures) and/or a small set of preprogrammed
-additional tallies, such as volumetric line emissivities for various H and He lines (e.g.\ Ba\_alpha.f
-for the Balmer alpha emission rate per volume, etc.). At present there are two
-(version 2004 and older) or three preprogrammed functions $g(l)$,
-and the option to call a user supplied integrand.
+additional tallies, such as volumetric line emissivities for various H and He
+lines (e.g.\ Ba\_alpha.f for the Balmer alpha emission rate per volume, etc.).
+At present there are two (version 2004 and older) or three preprogrammed
+functions $g(l)$, and the option to call a user supplied integrand.
 
-Firstly there are a number of
-Lyman- and Balmer series volume source rates (emissivity), see Subr.\ SIGHA.
-Each hydrogenic line emissivity is available for coupling to up to 6 states (``donor states")
-and linear in the corresponding density (output tally), namely to the (ground) states:
-$H, H_2, H_2^+, H^+, H^-$ and $H_3^+$   (and their isotopes, isotopomeres\dots).
+Firstly there are a number of Lyman- and Balmer series volume source rates
+(emissivity), see Subr.\ SIGHA.
+Each hydrogenic line emissivity is available for coupling to up to 6 states
+(``donor states") and linear in the corresponding density (output tally),
+namely to the (ground) states:
+$H, H_2, H_2^+, H^+, H^-$ and $H_3^+$	(and their isotopes,
+isotopomeres\dots).
 
-Secondly the
-neutral atom charge-exchange source rate can be integrated along a
-line of sight for a given energy of the impacting plasma ion
-(Subr.\ SIGCX). This routine includes re-absorption along the line
-of sight. A LOS spectrum (also: ``side-on spectrum''), energy resolved with up to
-NCHEN energies, may be obtained by this procedure.
+Secondly the neutral atom charge-exchange source rate can be integrated along a
+line of sight for a given energy of the impacting plasma ion (Subr.\ SIGCX).
+This routine includes re-absorption along the line of sight.
+A LOS spectrum (also: ``side-on spectrum''), energy resolved with up to NCHEN
+energies, may be obtained by this procedure.
 
-Thirdly (version
-2005 and younger) the side-on radiances of selected lines (photon
-test particle species), including reabsorption, reflection, line broadening, etc., can be obtained
-(Subr.\ SIGRAD). A number of different emission line shape profiles is available for these.
+Thirdly (version 2005 and younger) the side-on radiances of selected lines
+(photon test particle species), including reabsorption, reflection, line
+broadening, etc., can be obtained (Subr.\ SIGRAD).
+A number of different emission line shape profiles is available for these.
 
-For testing and \ordinalnum{3} party defined further integrands $g(x)$ along lines of side there is a
-user defined option (Subr.\ SIGTST).
-
+For testing and \ordinalnum{3} party defined further integrands $g(x)$ along
+lines of side there is a user defined option (Subr.\ SIGTST).
 
 \medskip
 
-\textbf{The Input Block}
+\textbf{The Input Block} 
 
 \begin{lstlisting}
 *** 12. Data for Diagnostic Module
@@ -63,275 +64,286 @@ user defined option (Subr.\ SIGTST).
   121   CONTINUE
         PLCHOR PLSPEC PRSPEC PLARGL PRARGL
       ENDIF
-\end{lstlisting}
+\end{lstlisting} 
 
-\medskip
+\medskip 
 
 \textbf{Meaning of the Input Variables for Diagnostic Module}
 
-\medskip
+\medskip 
 
 \begin{description}
-\item[NCHORI]
-Total number of different line of sights
-\item[NCHENI]
-$\mid$NCHENI$\mid$ is the total number of energies, at which the
-spectrum is evaluated (irrelevant e.g.\ for total signals, such as Lyman and Balmer
-emissivity without line shape resolution).
+  \item[NCHORI] Total number of different line of sights
+  \item[NCHENI] $\mid$NCHENI$\mid$ is the total number of energies, at which the
+        spectrum is evaluated (irrelevant e.g.\ for total signals, such as Lyman and
+        Balmer emissivity without line shape resolution).
 
-The energy grid is equidistant on a linear scale, if NCHENI $\ge$ 0,
-and equidistant on a logarithmic scale otherwise. (Same as for NSPS parameter in input block 10F
-for spectrally resolved default tallies.)
-\item[TXTSIG]
-Text in printout at the beginning of the data from this line
-of sight integral.
-\item[NSPTAL]
-Flag for choice of preprogrammed function which is ``line integrated".
-\begin{description}
-\item[$= 1$] charge-exchange source rate (SIGCX)
-\item[$= 2$] Hydrogen line emission source rate (SIGAL)
-\item[$= 3$] spectral radiance of photonic lines (SIGRAD)
-(new in versions 2005 and younger)
-\item[$= 10$] user supplied integrand (SIGUSR)
+        The energy grid is equidistant on a linear scale, if NCHENI $\ge$ 0, and
+        equidistant on a logarithmic scale otherwise.
+        (Same as for NSPS parameter in input block 10F for spectrally resolved default
+        tallies.)
+  \item[TXTSIG] Text in printout at the beginning of the data from this line of
+        sight integral.
+  \item[NSPTAL] Flag for choice of preprogrammed function which is ``line
+        integrated".
+        \begin{description}
+          \item[$= 1$] charge-exchange source rate (SIGCX)
+          \item[$= 2$] Hydrogen line
+                emission source rate (SIGAL)
+          \item[$= 3$] spectral radiance of photonic lines
+                (SIGRAD) (new in versions 2005 and younger)
+          \item[$= 10$] user supplied
+                integrand (SIGUSR) 
 
-(this was option NSPTAL =3, in versions 2004 and older)
+                (this was option NSPTAL =3, in versions 2004 and older)
+        \end{description}
+  \item[NSPSCL] Flag for choice of linear or logarithmic axes in plots of spectra
+        (vs.\ energy or wavelength, resp.) and of source term distribution along 
+        line of sight.
+        \begin{description}
+          \item[$= 0$] both axes linear
+          \item[$= 1$] x axis linear, y axis logarithmic
+          \item[$= 2$] x axis logarithmic, y axis linear
+          \item[$= 3$] both axes
+                logarithmic
+        \end{description}
+  \item[NSPNEW] Flag for the choice whether a
+        spectrum is plotted on the same picture as the previous one (NSPNEW = 0) or
+        onto a new graph (otherwise).
+  \item[NSPCHR] (Proprietary option, not for \ordinalnum{3} party application) If
+        NSPCHR.gt.0, then automatically all grid cells of the computational volume
+        along the chord are identified and marked in pre-processing.
+        During the particle tracing phase then, energy resolved spectra (input block
+        10f) are computed (scored) in all these cells directly from Monte Carlo
+        histories, by automatically augmenting input block 10f (additional energy
+        resolved tallies: ''spectra") correspondingly.
+        These spectra are line-of-sight spectra in the direction of the chord specified
+        here (direction SPCVX, SPCVY, SPCVZ in augmented input block 10f is taken to be
+        a unit vector along this present line of sight).
+  \item[NSPSTR] Index for stratum, which is to be used for line integration
+        (NSPSTR = 0: sum over strata).
+  \item[NSPSPZ] Index for species which is to be used for line integration
+
+        In case NSPTAL=1:
+
+        Index for atomic species IATM, with IATM $\leq$ NATM, for which charge-exchange
+        spectrum is to be computed (NSPSPZ = 0: sum over atom species index)
+
+        In case NSPTAL=2:
+
+        (NSPSTR to be written, current default, hard wired: hydrogenic atoms,
+        molecules, test ions, background ions).
+
+        Number of contribution to line intensity, as programmed in Subr.\
+        Ba\textsubscript{Alpha}, Ba\textsubscript{Gamma}, Ly\textsubscript{Beta}, etc.
+        (Currently up to 6 contributions for each H atom spectral line, and the total)
+        \begin{description}
+          \item[$= 1$] coupling to ground state atom: $H(1s)$
+          \item[$= 2$] coupling to continuum, bulk ion: $H^+$
+          \item[$= 3$] coupling to
+                ground state molecule: $H_2$
+          \item[$= 4$] coupling to ground state molecular
+                ion : $H_2^+$
+          \item[$= 5$] coupling to negative ion: $H^-$ (new in versions
+                1996 and younger)
+          \item[$= 6$] coupling to: $H_3^+$  (new in versions 2012 and
+                younger)
+          \item[$= 0$] total, sum over all contributions to a particular line
+                (was =~6, in versions 2011 and older)
+        \end{description}
+
+        In case NSPTAL=3:
+
+        Index for photon species (line), i.e.\ for IPHOT, with IPHOT $\leq$ NPHOT, for
+        which side-on spectrum is to be computed (NSPSPZ = 0: sum over photon species
+        index, not ready)
+  \item[NSPINI, NSPEND] only for NSPTAL=1:
+
+        Multipliers for the maximum ion temperature Ti$_{max}$ found along line of
+        sight, for temperature fitting.
+        The CX ion temperature	is fitted from the CX line of side spectrum in the
+        interval [NSPINI $\times$ Ti$_{max}$, NSPEND $\times$ Ti$_{max}$ ]
+
+  \item[NSPBLC] Standard mesh block number of \ordinalnum{2} point on line of
+        sight.
+  \item[NSPADD] Additional cell number of \ordinalnum{2} point on line of sight.
+
+        If NSPADD = 0, then this \ordinalnum{2} point must lie in standard mesh block
+        NSPBLC.
+
+        If NSPADD $\ne$ 0, then the block number NSPBLC must be NSPBLC = NBMLT+1, i.e.\
+        the second point on the line of sight is in the ``additional cell region".
+  \item[EMIN1, EMAX1] ~ 
+
+        for NSPTAL=1,3,10:
+
+        minimum and maximum energy for spectral resolution, respectively.
+
+        for NSPTAL=2:
+
+        \textcolor[rgb]{1.00,0.00,0.00}{(DR, Oct.\ 2016 currently not
+          available, use old option, see below)}
+
+        Parameter to identify the particular hydrogen line.
+        Emin1 and Emax1 are interpreted as integer principal quantum numbers $n,m$ of
+        the lower and upper state for the transition.
+
+        EMIN1 = 1, EMAX1 = 3:  Lyman-beta line 
+
+        EMIN1 = 2, EMAX1 = 6:  Balmer-delta line 
+
+        EMIN1 = 2, EMAX1 = 5:  Balmer-gamma line 
+
+        EMIN1 = 2, EMAX1 = 4:  Balmer-beta line 
+
+        EMIN1 = 2, EMAX1 = 3:  Balmer-alpha line 
+
+        Old input version (still maintained for backward compatibility of input files:
+        EMIN1 is an energy parameter to identify the particular hydrogen line and EMAX1
+        is not used.
+        EMIN1 is given in \si{\electronvolt}, by $Ry \times \left(1/n^2-1/m^2\right)$,
+        with $Ry=\num{13.6}$ (\si{\electronvolt}).
+
+        EMIN1 = 12.089: Lyman-beta line 
+
+        EMIN1 = 3.0222: Balmer-delta line 
+
+        EMIN1 = 2.8560: Balmer-gamma line 
+
+        EMIN1 = 2.5500: Balmer-beta line 
+
+        EMIN1 = 1.8889: Balmer-alpha line 
+
+        Other side on line emissivities can be obtained using the user supplied line of
+        side integral SIGUSR (option NSPTAL=10) and analogy to the preprogrammed
+        options, as well as the internal EIRENE hydrogen atom collisional radiative
+        routine \emph{H-COLRAD.F} to obtain the required reduced population
+        coefficients for $H^*(n)$.
+        For the preprogrammed options these latter coefficients for $n=2,3,4,5,6$ are
+        stored in AMJUEL, section H12, see this web page under: EIRENE AMS data files.
+
+  \item[ESHIFT] (for NSPTAL=1, 3, 10 options only) 
+
+        energy shift for spectral resolution in printout, and plot
 \end{description}
-\item[NSPSCL]
-Flag for choice of linear or logarithmic axes in plots of
-spectra (vs.\ energy or wavelength, resp.) and of source term distribution along line of sight.
-\begin{description}
-\item[$= 0$] both axes linear
-\item[$= 1$] x axis linear, y axis logarithmic
-\item[$= 2$] x axis logarithmic, y axis linear
-\item[$= 3$] both axes logarithmic
-\end{description}
-\item[NSPNEW]
-Flag for the choice whether a spectrum is plotted on the same
-picture as the previous one (NSPNEW = 0) or onto a new graph
-(otherwise).
-\item[NSPCHR] (Proprietary option, not for \ordinalnum{3} party application)
-If NSPCHR.gt.0, then automatically all grid cells of the computational volume
-along the chord are identified and marked in pre-processing. During the particle tracing phase then, energy resolved spectra (input block 10f)
-are computed (scored) in all these cells directly from Monte Carlo histories, by automatically augmenting
-input block 10f (additional energy resolved tallies: ''spectra") correspondingly.
-These spectra are line-of-sight spectra
-in the direction of the chord specified here
-(direction SPCVX, SPCVY, SPCVZ in augmented input block 10f
-is taken to
-be a unit vector along this present line of sight).
-\item[NSPSTR]
-Index for stratum, which is to be used for line integration
-(NSPSTR = 0: sum over strata).
-\item[NSPSPZ]
-Index for species which is to be used for line integration
 
-In case NSPTAL=1:
-
-Index for atomic species IATM, with IATM $\leq$ NATM, for which charge-exchange spectrum is to
-be computed (NSPSPZ = 0: sum over atom species index)
-
-In case NSPTAL=2:
-
-(NSPSTR to be written, current default, hard wired: hydrogenic atoms, molecules, test ions, background ions).
-
-Number of contribution to line intensity, as programmed in
-Subr.\ Ba\textsubscript{Alpha}, Ba\textsubscript{Gamma}, Ly\textsubscript{Beta}, etc. (Currently up to 6 contributions
-for each H atom spectral line, and the total)
-\begin{description}
-\item[$= 1$] coupling to ground state atom: $H(1s)$
-\item[$= 2$] coupling to continuum, bulk ion: $H^+$
-\item[$= 3$] coupling to ground state molecule: $H_2$
-\item[$= 4$] coupling to ground state molecular ion : $H_2^+$
-\item[$= 5$] coupling to negative ion: $H^-$ (new in versions 1996 and younger)
-\item[$= 6$] coupling to: $H_3^+$  (new in versions 2012 and younger)
-\item[$= 0$] total, sum over all contributions to a particular line  (was =~6, in versions 2011 and older)
-\end{description}
-
-In case NSPTAL=3:
-
-Index for photon species (line), i.e.\ for IPHOT, with IPHOT $\leq$ NPHOT,
-for which side-on spectrum
-is to be computed (NSPSPZ = 0: sum over photon species index, not ready)
-\item[NSPINI, NSPEND]
-only for NSPTAL=1:
-
-Multipliers for the maximum ion temperature Ti$_{max}$ found along
-line of sight, for temperature fitting.  The CX ion temperature  is fitted from the CX line of side spectrum
-in the interval [NSPINI $\times$ Ti$_{max}$, NSPEND $\times$ Ti$_{max}$ ]
-
-\item[NSPBLC]
-Standard mesh block number of \ordinalnum{2} point on line of sight.
-\item[NSPADD]
-Additional cell number of \ordinalnum{2} point on line of sight.
-
-If NSPADD = 0, then this \ordinalnum{2} point must lie in standard mesh block
+The line integration is carried out along a line defined by two points, a pivot
+point $P_{pivot}$ and a second point $P_{scnd}$.
+The second point must lie inside mesh block no.
 NSPBLC.
-
-If NSPADD $\ne$ 0, then the block number NSPBLC must be
-NSPBLC = NBMLT+1, i.e.\ the second point on the line of sight is in the
-``additional cell region".
-\item[EMIN1, EMAX1] ~
-
-for NSPTAL=1,3,10:
-
-minimum and maximum energy for spectral resolution, respectively.
-
-for NSPTAL=2:
-
-\textcolor[rgb]{1.00,0.00,0.00}{(DR, Oct.\ 2016 currently not available, use old option, see below)}
-
-Parameter to identify the particular hydrogen line. Emin1 and Emax1 are interpreted as
-integer principal quantum numbers $n,m$ of the lower and upper state for the transition.
-
-EMIN1 = 1, EMAX1 = 3:  Lyman-beta line
-
-EMIN1 = 2, EMAX1 = 6:  Balmer-delta line
-
-EMIN1 = 2, EMAX1 = 5:  Balmer-gamma line
-
-EMIN1 = 2, EMAX1 = 4:  Balmer-beta line
-
-EMIN1 = 2, EMAX1 = 3:  Balmer-alpha line
-
-Old input version (still maintained for backward compatibility of input files:
-EMIN1 is an energy parameter to identify the particular hydrogen line
-and EMAX1 is not used. EMIN1 is given in \si{\electronvolt}, by $Ry \times \left(1/n^2-1/m^2\right)$, with $Ry=\num{13.6}$ (\si{\electronvolt}).
-
-EMIN1 = 12.089: Lyman-beta line
-
-EMIN1 = 3.0222: Balmer-delta line
-
-EMIN1 = 2.8560: Balmer-gamma line
-
-EMIN1 = 2.5500: Balmer-beta line
-
-EMIN1 = 1.8889: Balmer-alpha line
-
-Other side on line emissivities can be obtained using the user supplied line of side integral SIGUSR (option NSPTAL=10) and analogy to
-the preprogrammed options, as well as the internal EIRENE hydrogen atom collisional radiative routine \emph{H-COLRAD.F} to
-obtain the required reduced population coefficients for $H^*(n)$. For the preprogrammed options these latter coefficients for $n=2,3,4,5,6$ are stored in
-AMJUEL, section H12, see this web page under:  EIRENE AMS data files.
-
-\item[ESHIFT] (for
-NSPTAL=1, 3, 10 options only)
-
-energy shift for spectral resolution in printout, and plot
-\end{description}
-
-The line integration is carried out along a line defined by two
-points, a pivot point $P_{pivot}$ and a second point
-$P_{scnd}$. The second point must lie inside mesh block no.
-NSPBLC. Starting from this ``second point", and moving in the
-direction towards the ``first point"  $P_{pivot}$, the first intersection
-$P_1$ with a non transparent additional or non default standard
-surface is computed. This is the starting point for line of sight
-integration. Then the line integration is carried out starting
-a ``virtual particle" from this point $P_1$, into the computational area, until the next
-intersection $P_2$ with any non transparent additional or non
-default standard surface is found.
+Starting from this ``second point", and moving in the direction towards the
+``first point"	    $P_{pivot}$, the first intersection $P_1$ with a non
+transparent additional or non default standard surface is computed.
+This is the starting point for line of sight integration.
+Then the line integration is carried out starting a ``virtual particle" from
+this point $P_1$, into the computational area, until the next intersection
+$P_2$ with any non transparent additional or non default standard surface is
+found.
 
 \medskip
 
 Note 1:
 
-When specifying the coordinates of the points $P_{pivot}$ and $P_{scnd}$ to select a particular line of sight,
-the same rules must be followed 
-as also for specifying birth point locations of ``real" particles (input block 7).
-These starting points are assumed to be given \textbf{inside a cell, not exactly on a cell boundary}. For example
-coordinates z0=0.0 must be avoided if a z-grid surface coincides with this position. 
-This latter is often the case e.g.\ already
-when default options for toroidal curvature (NLTRA option in block 2c) are used, 
-even in otherwise only 1D (radial, x) or only 2D (radial and poloidal, x,y) resolved
-cases. The line of side points then must
-be specified at least with a small incremental distance to such coordinate surfaces, e.g.\ z0=1.0E-5 in the example.
+When specifying the coordinates of the points $P_{pivot}$ and $P_{scnd}$ to
+select a particular line of sight, the same rules must be followed as also for
+specifying birth point locations of ``real" particles (input block 7).
+These starting points are assumed to be given \textbf{inside a cell, not 
+exactly on a cell boundary}.
+For example coordinates z0=0.0 must be avoided if a z-grid surface coincides
+with this position.
+This latter is often the case e.g.\ already when default options for toroidal
+curvature (NLTRA option in block 2c) are used, even in otherwise only 1D
+(radial, x) or only 2D (radial and poloidal, x,y) resolved cases.
+The line of side points then must be specified at least with a small
+incremental distance to such coordinate surfaces, e.g.\ z0=1.0E-5 in the
+example.
 
 Note 2:
 
-The line integration (virtual particle flight) stops at the first non-transparent surface encountered along
-the line of sight. In cases when only the boundary plasma domain is simulated, the interface to the core plasma region is often 
-such a ``non-transparent surface" (mostly set to be purely absorbing). To allow line of sight \textbf{integration across this central core region}
-e.g.\ to capture both  top and bottom machine contributions along a line of sight, the following work-around can be used:
+The line integration (virtual particle flight) stops at the first
+non-transparent surface encountered along the line of sight.
+In cases when only the boundary plasma domain is simulated, the interface to
+the core plasma region is often such a ``non-transparent surface" (mostly set
+to be purely absorbing).
+To allow line of sight \textbf{integration across this central core region}
+e.g.\ to capture both  top and bottom machine contributions along a line of
+sight, the following work-around can be used:
 
-a) set the core boundary transparent, and switch (ILSWCH option block 3) into an unused additional cell, 
+a) set the core boundary transparent, and switch (ILSWCH option block 3) into
+an unused additional cell,
 e.g.\ additional cell no.\ NC.
 
-b) define a fixed ``virtual core plasma" in this additional cell no.\ NC, e.g.\ by the options in input block 8, 
-such that during ``real" particle simulations the test particles get either absorbed in the core of reflected (by scattering)
-back into the boundary plasma domain. 
+b) define a fixed ``virtual core plasma" in this additional cell no.\ NC, e.g.\
+by the options in input block 8,
+such that during ``real" particle simulations the test particles get either
+absorbed in the core of reflected (by scattering)
+back into the boundary plasma domain.
 
-For example in EMC3-EIRENE runs high plasma density and temperature are used in virtual inner core cells,
-which hence to not contribute significantly and artificially to line of sight integrals of atomic or molecular emission
-lines, which cross that core region.
+For example in EMC3-EIRENE runs high plasma density and temperature are used in
+virtual inner core cells, which hence to not contribute significantly and
+artificially to line of sight integrals of atomic or molecular emission lines,
+which cross that core region.
 
 \medskip
 
 The next card specifies the first (``pivot") point.
 
-
 \begin{description}
-\item[IPIVOT]
-(only needed for NLTRA option, ``toroidal approximation", sub-block 2c)
-\begin{description}
-\item[1 $\leq$ IPIVOT $\leq$ NTTRA-1]
-(currently no available, error exit)
+  \item[IPIVOT] (only needed for NLTRA option, ``toroidal approximation",
+        sub-block 2c)
+        \begin{description}
+          \item[1 $\leq$ IPIVOT $\leq$ NTTRA-1]
+                (currently no available, error exit) 
 
-number of local toroidal co-ordinate system (NTTRA: see sub-block 2c), in which this pivot point
-is specified. The pivot point is then given in Cartesian coordinates is
-this local system
-\item[IPIVOT = 0] ~
+                number of local toroidal co-ordinate system (NTTRA: see sub-block 2c), in which
+                this pivot point is specified.
+                The pivot point is then given in Cartesian coordinates is this local system
+          \item[IPIVOT = 0] ~ 
 
-pivot point is given in global cylindrical coordinates,
+                pivot point is given in global cylindrical coordinates, 
 
-XPIVOT,YPIVOT,ZPIVOT = $r,z,\phi$, with $\phi$ in degrees. The corresponding toroidal block numbers
-ITTRA are found automatically.
+                XPIVOT,YPIVOT,ZPIVOT = $r,z,\phi$, with $\phi$ in degrees.
+                The corresponding toroidal block numbers ITTRA are found automatically.
+        \end{description}
+  \item[XPIVOT] \ordinalnum{1} co-ordinate of pivot point for line of sight,
+        e.g.\ $x$
+  \item[YPIVOT] \ordinalnum{2} co-ordinate of pivot point for line of
+        sight, e.g.\ $y$
+  \item[ZPIVOT] \ordinalnum{3} co-ordinate of pivot point for
+        line of sight, e.g.\ $z$
 \end{description}
-\item[XPIVOT]
-\ordinalnum{1} co-ordinate of pivot point for line of sight, e.g.\ $x$
-\item[YPIVOT]
-\ordinalnum{2} co-ordinate of pivot point for line of sight, e.g.\ $y$
-\item[ZPIVOT]
-\ordinalnum{3} co-ordinate of pivot point for line of sight, e.g.\ $z$
-\end{description}
-The next card specifies the second (``inside") point.
+The next card specifies the second
+(``inside") point.
 
-The second point on the line of sight must either
-be inside the first
-(radial or x-) mesh,
-or the additional cell
-number of the mesh cell, to which this point belongs, must be specified
-by the NSPBLC and NSPADD flags.
+The second point on the line of sight must either be inside the first (radial
+or x-) mesh, or the additional cell number of the mesh cell, to which this
+point belongs, must be specified by the NSPBLC and NSPADD flags.
 
-(For otherwise the initial point for the line
-integration cannot be found automatically.)
+(For otherwise the initial point for the line integration cannot be found
+automatically.)
 
 \begin{description}
-\item[ICHORD]
-(only needed for NLTRA option, sub-block 2c)
+  \item[ICHORD] (only needed for NLTRA option, sub-block 2c) 
 
-Meaning analogous to that of first point flag IPIVOT:
+        Meaning analogous to that of first point flag IPIVOT:
 
-\item[XCHORD]
-\ordinalnum{1} co-ordinate of second point for line of sight
-\item[YCHORD]
-\ordinalnum{2} co-ordinate of second point for line of sight
-\item[ZCHORD]
-\ordinalnum{3} co-ordinate of second point for line of sight
-\item[PLCHOR]
-the lines of sight are plotted into (2D or 3D) geometry plots.
-This, however, is automatically turned off if other plots are done between geometry plots
-(initialization phase) and line-of-sight integration (post processing
-phase).
-\item[PLSPEC]
-the energy or wavelength resolved spectra, integrated along the lines of sight, are plotted
-(irrelevant in case of NSPTAL = 2).
-\item[PRSPEC]
-the energy or wavelength resolved spectra, integrated along the lines of sight, are printed (from subr.\ OUTSIG.f)
-(irrelevant in case of NSPTAL = 2).
-\item[PLARGL]
-the line of sight spectra, with their contributions spatially resolved along the lines of sight, are plotted.
-\item[PRARGL]
-the line of sight spectra, with their contributions spatially resolved along the lines of sight, are printed.
-(directly from subr.\ LININT.f)
+  \item[XCHORD] \ordinalnum{1} co-ordinate of second point for line of sight
+  \item[YCHORD] \ordinalnum{2} co-ordinate of second point for line of sight
+  \item[ZCHORD] \ordinalnum{3} co-ordinate of second point for line of sight
+  \item[PLCHOR] the lines of sight are plotted into (2D or 3D) geometry plots.
+        This, however, is automatically turned off if other plots are done between
+        geometry plots (initialization phase) and line-of-sight integration (post
+        processing phase).
+  \item[PLSPEC] the energy or wavelength resolved spectra, integrated along the
+        lines of sight, are plotted (irrelevant in case of NSPTAL = 2).
+  \item[PRSPEC] the energy or wavelength resolved spectra, integrated along the
+        lines of sight, are printed (from subr.\ OUTSIG.f) (irrelevant in case of
+        NSPTAL = 2).
+  \item[PLARGL] the line of sight spectra, with their contributions spatially
+        resolved along the lines of sight, are plotted.
+  \item[PRARGL] the line of sight spectra, with their contributions spatially
+        resolved along the lines of sight, are printed.
+        (directly from subr.\ LININT.f)
 \end{description}
 
 \subsection{Line of sight: charge-exchange spectrum}

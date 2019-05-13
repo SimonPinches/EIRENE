@@ -4,103 +4,97 @@
 %for "Additional Surfaces"}}
 %\setcounter{section}{3}
 
-\textbf{General remarks}
+\textbf{General remarks} 
 
-\medskip
+\medskip 
 
-Internally each additional
-surface is defined by an algebraic equation and
-some algebraic inequalities specifying the boundary of that surface,
-i.e., that part of the surface which is seen by the test particles.
-By changing the sign of all coefficients in the algebraic equation
-the orientation of the surface normal vectors are reversed.
+Internally each additional surface is defined by an algebraic equation and some
+algebraic inequalities specifying the boundary of that surface, i.e., that part
+of the surface which is seen by the test particles.
+By changing the sign of all coefficients in the algebraic equation the
+orientation of the surface normal vectors are reversed.
 
-The intersection with the nearest surface along a trajectory is
-found by checking surfaces in the sequence of their input
-(in subroutine TIMEA of the geometry block GEO3D).
-This must be taken into consideration,
-if there are two parts of one surface
+The intersection with the nearest surface along a trajectory is found by
+checking surfaces in the sequence of their input (in subroutine TIMEA of the
+geometry block GEO3D).
+This must be taken into consideration, if there are two parts of one surface
 specified by different boundaries and with non-empty intersection.
-In this case always the surface later in the input sequence is seen
-by the test particles.
+In this case always the surface later in the input sequence is seen by the test
+particles.
 
-One can define two distinct plane surfaces as one surface of
-second order, provided that this is
-compatible with the options available for
-surface boundaries.
+One can define two distinct plane surfaces as one surface of second order,
+provided that this is compatible with the options available for surface
+boundaries.
 
-We will refer to positive and negative directions of flights for
-particles intersecting a surface. By ``positive" it is meant that
-the angle between the trajectory of the particle and the surface
-normal at the point of intersection is less than 90 degrees,
-``negative" has the opposite meaning.
+We will refer to positive and negative directions of flights for particles
+intersecting a surface.
+By ``positive" it is meant that the angle between the trajectory of the
+particle and the surface normal at the point of intersection is less than 90
+degrees, ``negative" has the opposite meaning.
 
-\textbf{speeding up geometry calculations:}
+\textbf{speeding up geometry calculations:} 
 
-For optimization of CPU performance the checking of intersections with surfaces along a test flight 
-can be abandoned depending upon
-the current position of a test particle.
+For optimization of CPU performance the checking of intersections with surfaces
+along a test flight can be abandoned depending upon the current position of a
+test particle.
 
-For particles in cell no.\ NCELL all surfaces MSURF
-with IGJUM3(NCELL, MSURF) = 1 are not checked.
-For particles on surface MS all other surfaces MSURF with
-IGJUM1(MS, MSURF) = 1 are not checked. 
+For particles in cell no.\ NCELL all surfaces MSURF with IGJUM3(NCELL, MSURF) =
+1 are not checked.
+For particles on surface MS all other surfaces MSURF with IGJUM1(MS, MSURF) = 1
+are not checked.
 
-The integer matrix IGJUM1 can
-be set either in this block, see CH1 cards described
-below, or in some user-specified problem specific routines (e.g.
-GEOUSR). The integer matrix IGJUM3 can be set via the CH3 cards in input block 8, or, 
-again, e.g.\ in problem specific routines such as GEOUSR. 
+The integer matrix IGJUM1 can be set either in this block, see CH1 cards
+described below, or in some user-specified problem specific routines (e.g.
+GEOUSR).
+The integer matrix IGJUM3 can be set via the CH3 cards in input block 8, or,
+again, e.g.\ in problem specific routines such as GEOUSR.
 
-\textbf{ignorable coordinates:}
+\textbf{ignorable coordinates:} 
 
-Surfaces with ignorable coordinates are specified either by
-setting the corresponding coefficients in the surface equation to zero,
-or, in case of 2-point, 3-point, 4-point of 5-point options, by setting
-the corresponding coordinates of the points to -1.D20 and +1.D20,
-respectively.
+Surfaces with ignorable coordinates are specified either by setting the
+corresponding coefficients in the surface equation to zero, or, in case of
+2-point, 3-point, 4-point of 5-point options, by setting the corresponding
+coordinates of the points to -1.D20 and +1.D20, respectively.
 \smallskip
 
-\textbf{coordinate systems, transformations:}
+\textbf{coordinate systems, transformations:} 
 
 All surfaces are specified in Cartesian coordinates.
 
-In case of NLTRA (toroidal geometry approximation), surfaces must
-be defined in the local coordinate system of toroidal cells
-centered at the ``magnetic axis", (xa,ya) = (RMTOR,0.), i.e.,
-excluding the major radius of the torus.
+In case of NLTRA (toroidal geometry approximation), surfaces must be defined in
+the local coordinate system of toroidal cells centered at the ``magnetic axis",
+(xa,ya) = (RMTOR,0.), i.e., excluding the major radius of the torus.
 
-To facilitate input of the geometrical data, each single
-(or a set of)
-surface(s) can be transformed by a Cartesian mapping after
-specification
-of the surface coefficients and boundaries in some ``convenient"
-coordinate frame, by including ``TRANSFORM cards" at the end of
-an input block for a particular surface. One such ``TRANSFORM-deck"
-can act on an entire range of surfaces, but only on those which have
-been read previous to the ``TRANSFORM-deck". Hence, in order to transform
-the entire set of additional surfaces by one deck, this deck must come after
-the last surface (no.\ NLIMI, see below).
+To facilitate input of the geometrical data, each single (or a set of)
+surface(s) can be transformed by a Cartesian mapping after specification of the
+surface coefficients and boundaries in some ``convenient" coordinate frame, by
+including ``TRANSFORM cards" at the end of an input block for a particular
+surface.
+One such ``TRANSFORM-deck" can act on an entire range of surfaces, but only on
+those which have been read previous to the ``TRANSFORM-deck".
+Hence, in order to transform the entire set of additional surfaces by one deck,
+this deck must come after the last surface (no.\ NLIMI, see below).
 
-\textbf{Particle-surface interaction models}
+\textbf{Particle-surface interaction models} 
 
-Although the (local) data for particle surface interaction models
-for each specific additional surface
-can be read in this input block, their meaning is described in block 6 (\cref{sec2.6})
-together with the globally valid input data for particle surface interactions.
+Although the (local) data for particle surface interaction models for each
+specific additional surface can be read in this input block, their meaning is
+described in block 6 (\cref{sec2.6}) together with the globally valid input
+data for particle surface interactions.
 
 \medskip
 
-\textbf{The Input Block}
+\textbf{The Input Block} 
 
 \begin{lstlisting}
 *** 3B. Data for Additional Surfaces
       NLIMI
 C     ``CH0-cards" (may be omitted)
 C     (format: 3A,69A)
-\end{lstlisting}
+\end{lstlisting} 
 
-arbitrary number of strings $\pm n/m$, separated by blanks. n and m
+arbitrary number of strings $\pm n/m$, separated by blanks.
+n and m
 must be integer variables $1 \le n,m \le NLIMI$.
 
 \begin{lstlisting}
@@ -166,8 +160,9 @@ and then read K blocks next:
 
 optional for non transparent surfaces (ILIIN $>$ 0):
 
-The next 3 (or 4) lines comprise the block for local particle-surface interaction data
-(in analytic terminology: the boundary condition at this surface element).
+The next 3 (or 4) lines comprise the block for local particle-surface
+interaction data (in analytic terminology: the boundary condition at this
+surface element).
 If they are omitted, the default particle-surface model is activated for this
 particular surface element, see \cref{sec2.6}.
 
@@ -186,22 +181,21 @@ read a surface interaction model identifier to link one of the surface
 ``local reflection
 models" defined in block 6 (\cref{sec2.6}) below to this current surface.
 The presence of such a link is identified by the string \lstinline|SURFMOD_|,
-followed
-by a name \lstinline|modname|. Later, in input block 6 (\cref{sec2.6}),
-a ``local reflection model" block with that name
-\lstinline|modname| must be included. This option allows
-quick changes of particle-surface interaction parameters, affecting
-many surfaces at once,
-by changes in just one location of the input file.
+followed by a name \lstinline|modname|.
+Later, in input block 6 (\cref{sec2.6}), a ``local reflection model" block with
+that name \lstinline|modname| must be included.
+This option allows quick changes of particle-surface interaction parameters,
+affecting many surfaces at once, by changes in just one location of the input
+file.
 
 \begin{lstlisting}
         SURFMOD_modname
 \end{lstlisting}
 
 optional: read one or several blocks of five cards each for orthogonal
-mapping. The presence of each such block is identified by the
-first card of that block containing the string $'TRANSFORM'$ followed
-by the other four cards:
+mapping.
+The presence of each such block is identified by the first card of that block
+containing the string $'TRANSFORM'$ followed by the other four cards:
 
 \begin{lstlisting}
         TRANSFORM
@@ -218,564 +212,515 @@ C (end of ILIMI loop)
 
 \textbf{Meaning of the Input Variables for additional surfaces}
 
-\medskip
+\medskip 
 
 \begin{description}
-\item[CH0 n1/m1 n2/m2 \dots]
+  \item[CH0 n1/m1 n2/m2 \dots] 
 
-surfaces from the range n1 to m1, n2 to m2, \dots, are ignored by
-EIRENE. Specifying a surface in such a CH0-card is identical to
-taking it out from the input file. It may be more convenient in
-some cases, however, to use the CH0 option, because the labelling
-index of the remaining valid surfaces is not altered then. No
-input is read for these surfaces, and the input segment for the
-next valid surface (identified by the string '*text') is read
-next. \item[NLIMI] number of surfaces in the input block
-\item[TXTSUR] Text to identify a surface (``name of the
-surface") on the printout file 
-\item[CH1(ILIMI) n1/m1 n2/m2 \dots]
+        surfaces from the range n1 to m1, n2 to m2, \dots, are ignored by EIRENE.
+        Specifying a surface in such a CH0-card is identical to taking it out from the
+        input file.
+        It may be more convenient in some cases, however, to use the CH0 option,
+        because the labelling index of the remaining valid surfaces is not altered
+        then.
+        No input is read for these surfaces, and the input segment for the next valid
+        surface (identified by the string '*text') is read next.
+  \item[NLIMI] number of surfaces in the input block
+  \item[TXTSUR] Text to
+        identify a surface (``name of the surface") on the printout file
+  \item[CH1(ILIMI) n1/m1 n2/m2 \dots] 
 
-surfaces from the range n1 to m1, n2 to m2, \dots, are considered
-invisible for a
-particle located on this current surface ILIMI.
-Intersection of trajectories starting from surface ILIMI with those
-``invisible" surfaces is not checked.
-\item[CH2(ILIMI) n1/m1 n2/m2 \dots]
+        surfaces from the range n1 to m1, n2 to m2, \dots, are considered invisible for
+        a particle located on this current surface ILIMI.
+        Intersection of trajectories starting from surface ILIMI with those
+        ``invisible" surfaces is not checked.
+  \item[CH2(ILIMI) n1/m1 n2/m2 \dots] 
 
-Only for second order surfaces ILIMI, n1-m1, \dots
-The first of the two possible intersections is ignored for particles
-located on surface no.\ ILIMI.
+        Only for second order surfaces ILIMI, n1-m1, \dots The first of the two
+        possible intersections is ignored for particles located on surface no.\ ILIMI.
 \end{description}
 
 \textsl{General Data for Surfaces}
 \begin{description}
-\item[RLBND]
-flag for different options to define the boundary of the surface
-\item[RLARE]
-Area (in \si{\square\centi\metre}) of the surface element which is seen
-by the test particles. (Default: 666.0)
-(needed only for scaling of non default surface averaged tallies)
-If RLARE is not specified here, (i.e., if a value less than or equal to
-zero is read) then EIRENE tries to evaluate this area itself.
-For some surfaces this is still not possible automatically.
-\item[RLWMN]
-lower weight limit for space weight window for particles crossing
-the surface in positive direction. (not in use)
-\item[RLWMX]
-upper weight limit for space weight window for particles crossing
-the surface in positive direction. (not in use)
-\item[ILIIN]
-defines the type of surface
-\begin{description}
-\item[$> 0$] non-transparent surface
-\begin{description}
-\item[$= 1$]
-reflecting, partly or purely absorbing surface.
+  \item[RLBND] flag for different options to define the boundary of the surface
+  \item[RLARE] Area (in \si{\square\centi\metre}) of the surface element which is
+        seen by the test particles.
+        (Default: 666.0) (needed only for scaling of non default surface averaged
+        tallies) If RLARE is not specified here, (i.e., if a value less than or equal
+        to zero is read) then EIRENE tries to evaluate this area itself.
+        For some surfaces this is still not possible automatically.
+  \item[RLWMN] lower weight limit for space weight window for particles crossing
+        the surface in positive direction.
+        (not in use)
+  \item[RLWMX] upper weight limit for space weight window for
+        particles crossing the surface in positive direction.
+        (not in use)
+  \item[ILIIN] defines the type of surface
+        \begin{description}
+          \item[$> 0$] non-transparent surface
+                \begin{description}
+                  \item[$= 1$]
+                        reflecting, partly or purely absorbing surface.
 
-local reflection model has to be specified unless default model is
-to be used; all surface tallies (see \cref{tab3})
-are updated and a switch can be operated.
-\item[$= 2$]
-purely absorbing surface ;. surface tallies for incident fluxes
-(i.e., POT\dots\ and EOT\dots\ tallies in \cref{tab3})
-are updated and the particle history is stopped then.
-\item[$= 3$]
-mirror for incident
-test particles. I.e., specular reflection for neutral
-test particles, and for charged test particles the sign of the
-velocity component parallel to the B-field is reversed.
-\item[$= 4$]
-periodicity surface, with regard to x, y, or z coordinate, depending
-upon whether this surface is a standard x, y, or z grid surface,
-respectively. Move particle to x / radial grid surface no.\ m, m
-integer (or to y / poloidal or to z / toroidal surface no.\ m,
-respectively)
-and continue track from there with otherwise identical particle parameters.
+                        local reflection model has to be specified unless
+                        default model is
+                        to be used; all surface tallies (see \cref{tab3})
+                        are updated and a switch can be operated.
+                  \item[$= 2$] purely absorbing surface ;.
+                        surface tallies for incident fluxes
+                        (i.e., POT\dots\ and EOT\dots\ tallies in \cref{tab3})
+                        are updated and the particle history is stopped then.
+                  \item[$= 3$] mirror for incident test particles.
+                        I.e., specular reflection for neutral test particles, and for charged test
+                        particles the sign of the velocity component parallel to the B-field is
+                        reversed.
+                  \item[$= 4$] periodicity surface, with regard to x, y, or z coordinate,
+                        depending upon whether this surface is a standard x, y, or z grid surface,
+                        respectively.
+                        Move particle to x / radial grid surface no.\ m, m integer (or to y / poloidal
+                        or to z / toroidal surface no.\ m, respectively) and continue track from there
+                        with otherwise identical particle parameters.
 
-This option is currently implemented only for Cartesian grids (NLSLB
-and NLTRZ) and for non-default standard grid surfaces only.
-\end{description}
-The periodicity options are not fully implemented yet. Please
-contact the author for the current status of your particular
-version.
-\item[$\le 0$] transparent surface (for example: hole
-in one of the other ``additional surfaces"). Particle and energy
-fluxes onto and from these surfaces do not contribute to global
-balances.
-\begin{description}
-\item[$= 0$]
-Particle history is not interrupted
+                        This option is currently implemented only for Cartesian grids (NLSLB and NLTRZ)
+                        and for non-default standard grid surfaces only.
+                \end{description}
+                The periodicity options are not fully implemented yet.
+                Please contact the author for the current status of your particular version.
+          \item[$\le 0$] transparent surface (for example: hole in one of the other
+                ``additional surfaces").
+                Particle and energy fluxes onto and from these surfaces do not contribute to
+                global balances.
+                \begin{description}
+                  \item[$= 0$] Particle history is not interrupted 
 
-No surface tallies are updated, no switches can be operated.
-Fastest option.
-\item[$= -1$]
-Particle history will be stopped and restarted.
-A switch can be operated.
-I.e., this surface is used only for switching (see below: ILSWCH)
-or re-initializing the particle's track at the point of intersection.
-No surface tallies are updated.
-\item[$= -2$]
-as -1, and, additionally:
+                        No surface tallies are updated, no switches can be operated.
+                        Fastest option.
+                  \item[$= -1$] Particle history will be stopped and restarted.
+                        A switch can be operated.
+                        I.e., this surface is used only for switching (see below: ILSWCH) or
+                        re-initializing the particle's track at the point of intersection.
+                        No surface tallies are updated.
+                  \item[$= -2$] as -1, and, additionally:
 
-if a particle is crossing the surface in the positive direction,
-(one sided-) surface tallies are updated, e.g., by
-default: partial particle and energy currents $J^+$ (\si{\ampere})
-and $K^+$ (\si{\watt}). These are stored in the POT\dots\ and EOT\dots\ tallies of \cref{tab3}.
-If the particle crosses the surface in the direction opposite to the surface normal, then
-negative partial particle and energy currents $J^-$ (\si{\ampere})
-and $K^-$ (\si{\watt}) are updated. These are stored in the PRF\dots\ and ERF\dots\ tallies of
-\cref{tab3}.
+                        if a particle is crossing the surface in the positive
+                        direction,
+                        (one sided-) surface tallies are updated, e.g., by
+                        default: partial particle and energy currents $J^+$
+                        (\si{\ampere})
+                        and $K^+$ (\si{\watt}).
+                        These are stored in the POT\dots\ and EOT\dots\ tallies of \cref{tab3}.
+                        If the particle crosses the surface in the direction opposite to the surface
+                        normal, then negative partial particle and energy currents $J^-$ (\si{\ampere})
+                        and $K^-$ (\si{\watt}) are updated.
+                        These are stored in the PRF\dots\ and ERF\dots\ tallies of \cref{tab3}.
 
-\item[$= -3$]
-Net currents (e.g.\ $J^+ - J^-$),
-are evaluated, and stored on the POT\dots\ and EOT\dots\ tallies (see \cref{tab3}).
-The PRF\dots\ and ERF\dots\ tallies are empty for these surfaces.
-\item[$\leq -4$] Not in use. Currently: same as ILIIN=-2 option.
-\end{description}
-\end{description}
-\item[ILSIDE] ~
-\begin{description}
-\item[$= 0$]
-both sides of the surface act as described by
-ILIIN option (default).
-\item[$= 1$]
-particles incident on the surface in the negative direction
-will be absorbed (i.e., ILIIN = 2 option from that side).
-\item[$= 2$]
-particles incident on the surface in the negative direction
-will be killed and the message
+                  \item[$= -3$] Net currents (e.g.\ $J^+ - J^-$), are evaluated, and stored on
+                        the POT\dots\ and EOT\dots\ tallies (see \cref{tab3}).
+                        The PRF\dots\ and ERF\dots\ tallies are empty for these surfaces.
+                  \item[$\leq -4$] Not in use.
+                        Currently: same as ILIIN=-2 option.
+                \end{description}
+        \end{description}
+  \item[ILSIDE] ~
+        \begin{description}
+          \item[$= 0$] both sides of the surface act
+                as described by ILIIN option (default).
+          \item[$= 1$] particles incident on the surface in the negative direction will
+                be absorbed (i.e., ILIIN = 2 option from that side).
+          \item[$= 2$] particles incident on the surface in the negative direction will
+                be killed and the message 
 
-``ERROR IN ADDCOL"
+                ``ERROR IN ADDCOL" 
 
- or
+                or 
 
-``ERROR IN STDCOL"
+                ``ERROR IN STDCOL" 
 
-will be printed.
-The contribution of these particles to the particle- and energy flux
-balances will be called PTRASH and ETRASH respectively. This option
-should be used for geometry testing whenever the user expects particles
-incident only from one side.
-\item[$= 3$]
-particles incident on the surface in the negative direction will
-not see the surface, i.e., this surface acts like a (semi)
-transparent surface
-(ILIIN = 0 option) from that side.
-\item[$= -1$]
-as 1, but with the opposite direction of the surface normal
-\item[$= -2$]
-as 2, but with the opposite direction of the surface normal
-\item[$= -3$]
-as 3, but with the opposite direction of the surface normal
-\end{description}
-\item[ILSWCH]
-= IJKLMN, i.e.\ six digits I, J, K, L, M and N
-\begin{description}
-\item[$= 0$]
-no switch is operated
-\item[N]
-EIRENE flag ITIME
-\begin{description}
-\item[$= 1$]
-The calculation of the step sizes in the standard
-mesh is abandoned for a particle which crosses
-the surface in the positive direction, and is
-reactivated, if the particle strikes in the negative direction
-\item[$= 2$]
-as 1, but with the direction of the surface normal reversed for this option.
-\end{description}
-\item[M]
-EIRENE flag IFPATH
-\begin{description}
-\item[$= 1$]
-Abandon the calculation of the collision rates (entry into the
-vacuum) for a particle which is striking the surface in the direction
-of the surface normal. For particles incident from the other direction,
-evaluation of collision rates is reactivated.
-\item[$= 2$]
-as 1, but with the direction of the surface normal reversed.
-\end{description}
-\item[L]
-EIRENE flag IUPDTE
-\begin{description}
-\item[$= 1$]
-Abandon the updating of volume-averaged tallies for a particle
-which is striking the surface in the direction of the surface normal.
-For particles incident from the other direction,
-updating of volume averaged tallies is reactivated.
-\item[$= 2$]
-as 1, but with the direction of the surface normal reversed for this option.
-\end{description}
-\end{description}
+                will be printed.
+                The contribution of these particles to the particle- and energy flux balances
+                will be called PTRASH and ETRASH respectively.
+                This option should be used for geometry testing whenever the user expects
+                particles incident only from one side.
+          \item[$= 3$] particles incident on the surface in the negative direction will
+                not see the surface, i.e., this surface acts like a (semi) transparent surface
+                (ILIIN = 0 option) from that side.
+          \item[$= -1$] as 1, but with the opposite direction of the surface normal
+          \item[$= -2$] as 2, but with the opposite direction of the surface normal
+          \item[$= -3$] as 3, but with the opposite direction of the surface normal
+        \end{description}
+  \item[ILSWCH] = IJKLMN, i.e.\ six digits I, J, K, L, M and N
+        \begin{description}
+          \item[$= 0$] no switch is operated
+          \item[N] EIRENE flag
+                ITIME
+                \begin{description}
+                  \item[$= 1$] The calculation of the step sizes in the
+                        standard mesh is abandoned for a particle which crosses the surface in the
+                        positive direction, and is reactivated, if the particle strikes in the negative
+                        direction
+                  \item[$= 2$] as 1, but with the direction of the surface normal
+                        reversed for this option.
+                \end{description}
+          \item[M] EIRENE flag IFPATH
+                \begin{description}
+                  \item[$= 1$] Abandon the
+                        calculation of the collision rates (entry into the vacuum) for a particle which
+                        is striking the surface in the direction of the surface normal.
+                        For particles incident from the other direction, evaluation of collision rates
+                        is reactivated.
+                  \item[$= 2$] as 1, but with the direction of the surface normal reversed.
+                \end{description}
+          \item[L] EIRENE flag IUPDTE
+                \begin{description}
+                  \item[$= 1$] Abandon the
+                        updating of volume-averaged tallies for a particle which is striking the
+                        surface in the direction of the surface normal.
+                        For particles incident from the other direction, updating of volume averaged
+                        tallies is reactivated.
+                  \item[$= 2$] as 1, but with the direction of the surface normal reversed for
+                        this option.
+                \end{description}
+        \end{description}
 
-I,J,K
-flags for switching cell numbers at transition into a different
-mesh cell.
-\begin{description}
-\item[K]
-for particles in an additional cell, i.e., not in one of the ``standard
-mesh" blocks:
-\begin{description}
-\item[$= 1$]
-Increase the actual additional
-cell number NACELL for a particle striking the surface
-in the direction of the surface normal by ILACLL. Decrease NACELL by
-ILACLL if the particle is striking in the negative direction.
-Specification of ILACLL is via the input variable ILCELL, see below.
-\item[$= 2$]
-as K $= 1$, but with the direction of the surface normal reversed for this option.
-\end{description}
-for particles inside the ``standard mesh ", i.e., not in the ``additional
-cell region"
-\begin{description}
-\item[$= 1$]
-Increase the standard mesh block
-number NBLOCK for a particle striking the surface
-in the direction of the surface normal by ILBLCK. Decrease NBLOCK by
-ILBLCK if the particle is striking in the negative direction.
-Specification of ILBLCK is via the input variable ILCELL, see below.
-\item[$= 2$]
-as K $= 1$, but with the direction of the surface normal reversed.
-\end{description}
-\item[J] for particles at the boundary between ``additional"
-and ``standard" mesh regions.
-\begin{description}
-\item[$= 1$]
-entrance into standard mesh, block no.
+        I,J,K flags for switching cell numbers at transition into a different mesh
+        cell.
+        \begin{description}
+          \item[K] for particles in an additional cell, i.e., not in one of the
+                ``standard mesh" blocks:
+                \begin{description}
+                  \item[$= 1$] Increase the actual additional cell number NACELL for a particle
+                        striking the surface in the direction of the surface normal by ILACLL.
+                        Decrease NACELL by ILACLL if the particle is striking in the negative
+                        direction.
+                        Specification of ILACLL is via the input variable ILCELL, see below.
+                  \item[$= 2$] as K $= 1$, but with the direction of the surface normal reversed
+                        for this option.
+                \end{description}
+                for particles inside the ``standard mesh ", i.e., not in the
+                ``additional
+                cell region"
+                \begin{description}
+                  \item[$= 1$] Increase the standard mesh block number NBLOCK for a particle
+                        striking the surface in the direction of the surface normal by ILBLCK.
+                        Decrease NBLOCK by ILBLCK if the particle is striking in the negative
+                        direction.
+                        Specification of ILBLCK is via the input variable ILCELL, see below.
+                  \item[$= 2$] as K $= 1$, but with the direction of the surface normal reversed.
+                \end{description}
+          \item[J] for particles at the boundary between ``additional" and ``standard"
+                mesh regions.
+                \begin{description}
+                  \item[$= 1$] entrance into standard mesh, block no.
 
-NBLOCK = ILBLCK
+                        NBLOCK = ILBLCK 
 
-or
-exit from standard mesh into additional cell
+                        or exit from standard mesh into additional cell 
 
-NACELL = ILACLL.
+                        NACELL = ILACLL.
 
-Specification of ILACLL and ILBLCK is via the input variable
-ILCELL, see below.
-If ILACLL = 0, then no switch to additional cell is operated.
-(E.g.: for surfaces which are reflecting from this side).
-\item[$= 2$] as J $= 1$. The direction of
-the surface normal does not matter here.
-\end{description}
-\item[I]
-similar to J-flag, i.e., for transitions between standard and
-additional meshes, but different cell number switching.
-\begin{description}
-\item[$= 1$]
-Entrance into standard mesh, block no.
+                        Specification of ILACLL and ILBLCK is via the input variable ILCELL, see below.
+                        If ILACLL = 0, then no switch to additional cell is operated.
+                        (E.g.: for surfaces which are reflecting from this side).
+                  \item[$= 2$] as J $= 1$.
+                        The direction of the surface normal does not matter here.
+                \end{description}
+          \item[I] similar to J-flag, i.e., for transitions between standard and
+                additional meshes, but different cell number switching.
+                \begin{description}
+                  \item[$= 1$] Entrance into standard mesh, block no.
 
-NBLOCK = NACELL+ILBLCK,
+                        NBLOCK = NACELL+ILBLCK, 
 
-if the particle is striking in the positive direction, or
+                        if the particle is striking in the positive direction, or 
 
-NBLOCK = NACELL-ILBLCK,
+                        NBLOCK = NACELL-ILBLCK, 
 
-if the particle is striking in the negative direction.
-Exit from standard mesh into additional cell
+                        if the particle is striking in the negative direction.
+                        Exit from standard mesh into additional cell 
 
-NACELL = NBLOCK+ILACLL,
+                        NACELL = NBLOCK+ILACLL, 
 
-for a particle striking the surface in the positive direction, or
+                        for a particle striking the surface in the positive direction, or
 
-NACELL = NBLOCK-ILACLL,
+                        NACELL = NBLOCK-ILACLL, 
 
-if the particle is striking in the negative direction.
+                        if the particle is striking in the negative direction.
 
-Specification of ILACLL and ILBLCK
-is via the input variable ILCELL, see below.
-\item[$= 2$]
-as I = 1, but with the direction of the surface normal reversed.
-\end{description}
-\end{description}
+                        Specification of ILACLL and ILBLCK is via the input variable ILCELL, see below.
+                  \item[$= 2$] as I = 1, but with the direction of the surface normal reversed.
+                \end{description}
+        \end{description}
 
-If a test particle history starts from a surface (NLSRF option),
-then ILSWCH acts as if this particle had struck the surface prior
-to the birth process in the positive direction. This default
-setting is only available for ILSIDE $\neq$ 0 and can (must) be
-overruled by the SORIFL flag (see \cref{sec2.7}), e.g.\ if a
-surface source needs to be defined on a surface with ILSIDE = 0.
-\item[ILEQUI] The algebraic equations for the surfaces J
-and IABS(ILEQUI(J)) will be described by exactly the same
-coefficients (up to a common sign, if ILEQUI(J) .lt.\ 0). For
-example a triangle can be specified by the three corners and
-another part of the same plane surface can be specified directly
-by its algebraic coefficients. To avoid round-off errors one
-should use the ILEQUI option in such cases, in particular if
-surface J is a transparent ``hole" in surface ILEQUI(J), or vice
-versa.
+        If a test particle history starts from a surface (NLSRF option), then ILSWCH
+        acts as if this particle had struck the surface prior to the birth process in
+        the positive direction.
+        This default setting is only available for ILSIDE $\neq$ 0 and can (must) be
+        overruled by the SORIFL flag (see \cref{sec2.7}), e.g.\ if a surface source
+        needs to be defined on a surface with ILSIDE = 0.
+  \item[ILEQUI] The algebraic equations for the surfaces J and IABS(ILEQUI(J))
+        will be described by exactly the same coefficients (up to a common sign, if
+        ILEQUI(J) .lt.\ 0).
+        For example a triangle can be specified by the three corners and another part
+        of the same plane surface can be specified directly by its algebraic
+        coefficients.
+        To avoid round-off errors one should use the ILEQUI option in such cases, in
+        particular if surface J is a transparent ``hole" in surface ILEQUI(J), or vice
+        versa.
 
-Default: ILEQUI = 0
-\item[ILTOR]
-For NLTRA option only (see block 2c):
+        Default: ILEQUI = 0
+  \item[ILTOR] For NLTRA option only (see block 2c):
 
-if ILTOR$>$0 :
+        if ILTOR$>$0 :
 
-the surface is defined with respect to the local coordinate system
-of the toroidal segment with ``cell-number" ILTOR, hence: $1 \le
-$ILTOR $\le $NTTRAM.
+        the surface is defined with respect to the local coordinate system
+        of the toroidal segment with ``cell-number" ILTOR, hence: $1 \le
+        $ILTOR $\le $NTTRAM.
 
-if ILTOR=0 :
+        if ILTOR=0 :
 
-the surface is defined with respect to any local coordinate system.
-I.e., the surface equations are taken to be the same in each local system.
+        the surface is defined with respect to any local coordinate system.
+        I.e., the surface equations are taken to be the same in each local system.
 
-If the surface equations are z-independent, then this surface is
-toroidally symmetric (within the NLTRA-approximation).
+        If the surface equations are z-independent, then this surface is toroidally
+        symmetric (within the NLTRA-approximation).
 
-Otherwise the surface has NTTRAM-fold periodicity.
+        Otherwise the surface has NTTRAM-fold periodicity.
 
-This flag is irrelevant for NLTRZ (i.e.,
-if cylindrical coordinates are used) or for NLTRT.
+        This flag is irrelevant for NLTRZ (i.e., if cylindrical coordinates are used)
+        or for NLTRT.
 
-Default: ILTOR = 0
-\item[ILCOL]
-Flag for the color that is used for plotting this surface on 2d or
-3d geometry plots. If ILCOL $\le 0$  than -ILCOL is used and the
-surface area is filled in by that color on the 3d geometry plots.
+        Default: ILTOR = 0
+  \item[ILCOL] Flag for the color that is used for plotting
+        this surface on 2d or 3d geometry plots.
+        If ILCOL $\le 0$  than -ILCOL is used and the surface area is filled in by that
+        color on the 3d geometry plots.
 
-Default: ILCOL=1
-\item[ILFIT]
-= MN
+        Default: ILCOL=1
+  \item[ILFIT] = MN 
 
-This option is relevant
-only for surfaces with one ignorable coordinate,
-i.e.\ it only works
-for the $2. \le RLBND \le 3$. surface boundary options.
+        This option is relevant only for surfaces with one ignorable coordinate, i.e.\
+        it only works for the $2.
+          \le RLBND \le 3$. surface boundary options.
 
-It is a tool to facilitate
-a neat fitting of surfaces,
-in particular for connecting curved
-and plane surfaces (i.e.\ to avoid particle leakage due to numerical
-round-off errors in the algebraic surface coefficients.
+        It is a tool to facilitate a neat fitting of surfaces, in particular for
+        connecting curved and plane surfaces (i.e.\ to avoid particle leakage due to
+        numerical round-off errors in the algebraic surface coefficients.
 
-M and N (3 digits each, M may be omitted if not needed)
-are the numbers of the surfaces (which must have
-the same ignorable
-coordinate) the boundaries of which should match to those of
-the actual surface J. The boundaries of these neighboring surfaces
-M and N must be specified by the RLBND = 1 or RLBND = 1.5 option.
+        M and N (3 digits each, M may be omitted if not needed) are the numbers of the
+        surfaces (which must have the same ignorable coordinate) the boundaries of
+        which should match to those of the actual surface J.
+        The boundaries of these neighboring surfaces M and N must be specified by the
+        RLBND = 1 or RLBND = 1.5 option.
 
-The fitting is achieved by a small automatic internal modification
-of the surface data P1 and/or P2 of surface number J in subroutine
-SETFIT. Printout of the modifications made there is activated with
-the TRCSUR flag (input block 11).
-\item[ILCELL]
-Parameter ILBLCK and ILACLL for the ILSWCH flags described above.
-Let ILCELL = NM, with N and M being integers with 3 digits each.
-Then N = ILBLCK and M = ILACLL.
+        The fitting is achieved by a small automatic internal modification of the
+        surface data P1 and/or P2 of surface number J in subroutine SETFIT.
+        Printout of the modifications made there is activated with the TRCSUR flag
+        (input block 11).
+  \item[ILCELL] Parameter ILBLCK and ILACLL for the ILSWCH flags described above.
+        Let ILCELL = NM, with N and M being integers with 3 digits each.
+        Then N = ILBLCK and M = ILACLL.
 
-\item[ILBOX] to be written
-\item[ILPLG] EIRENE can write out information for a finite element
-mesh generator to produce a grid of triangles for a multiply
-connected 2D domain with cracks and holes. The various (inner and
-outer) boundaries are given as polygonal lines, which are composed
-of selected standard grid surface segments (NLPLG option) and/or
-additional surfaces (2 $\le$ RLBND $<$ 3 option).
+  \item[ILBOX] to be written
+  \item[ILPLG] EIRENE can write out information for a
+        finite element mesh generator to produce a grid of triangles for a multiply
+        connected 2D domain with cracks and holes.
+        The various (inner and outer) boundaries are given as polygonal lines, which
+        are composed of selected standard grid surface segments (NLPLG option) and/or
+        additional surfaces (2 $\le$ RLBND $<$ 3 option).
 
-This flag identifies closed polygonal lines composed of additional
-surfaces given by the 2-point option and/or of standard surfaces in
-the x-y-plane. For example if ILPLG(I) = NN, for surfaces I = I1, I2,
-\dots, IN, (NN a positive integer) then these IN surfaces form a closed
-polygonal line in the x-y-plane. The region inside this closed line
-is part of the computational domain. By a negative integer value of
-NN a closed polygonal region can be excluded from the computational
-domain, i.e., a hole in the domain is specified by these surfaces.
-EIRENE writes an output file appropriate for a finite element mesh
-generator (available from FZ-J\"ulich) to produce a triangular
-discretization of the resulting (possibly multiply connected)
-domain. This option can be used to discretize arbitrarily complex 2D
-domains with internal and external boundaries given by the
-additional or non-default standard surfaces.
+        This flag identifies closed polygonal lines composed of additional surfaces
+        given by the 2-point option and/or of standard surfaces in the x-y-plane.
+        For example if ILPLG(I) = NN, for surfaces I = I1, I2, \dots, IN, (NN a
+        positive integer) then these IN surfaces form a closed polygonal line in the
+        x-y-plane.
+        The region inside this closed line is part of the computational domain.
+        By a negative integer value of NN a closed polygonal region can be excluded
+        from the computational domain, i.e., a hole in the domain is specified by these
+        surfaces.
+        EIRENE writes an output file appropriate for a finite element mesh generator
+        (available from FZ-J\"ulich) to produce a triangular discretization of the
+        resulting (possibly multiply connected) domain.
+        This option can be used to discretize arbitrarily complex 2D domains with
+        internal and external boundaries given by the additional or non-default
+        standard surfaces.
 
-These finite element grids can be combined with the regular grids by using
-the problem specific geometry routines (see section 3)
-or the code interfacing routines INFCOP
-(see section 4).
+        These finite element grids can be combined with the regular grids by using the
+        problem specific geometry routines (see section 3) or the code interfacing
+        routines INFCOP (see section 4).
 \end{description}
 
 \medskip
 
-\textbf{Surface coefficients and boundaries of surfaces}
+\textbf{Surface coefficients and boundaries of surfaces} 
 
-\medskip
+\medskip 
 
 The surface equation:
 \begin{align}
-A0LM & + A1LM  \cdot  x + A2LM \cdot y + A3LM  \cdot z +  \nonumber\\
-     & + A4LM  \cdot x^2 + A5LM  \cdot y^2 + A6LM  \cdot z^2 + \nonumber\\
-     & + A7LM  \cdot xy + A8LM  \cdot xz + A9LM  \cdot yz = 0
+  A0LM & + A1LM  \cdot	x + A2LM \cdot y + A3LM  \cdot z +  \nonumber        \\
+       & + A4LM  \cdot x^2 + A5LM  \cdot y^2 + A6LM  \cdot z^2 + \nonumber \\
+       & + A7LM  \cdot xy + A8LM  \cdot xz + A9LM  \cdot yz = 0
 \end{align}
-The positive surface normal $(n_x, n_y, n_z)$
-depends upon the point of impact (x,y,z) and is defined by the
-vector
+The positive surface normal $(n_x, n_y, n_z)$ depends upon the point of impact
+(x,y,z) and is defined by the vector
 \begin{align}
-n_x  & = A1LM  + 2  \cdot   A4LM  \cdot  x    +
-  A7LM  \cdot  y    +      A8LM  \cdot  z    \nonumber\\
-n_y  & = A2LM    +
-A7LM  \cdot  x    +     2  \cdot   A5LM  \cdot  y    +
-A9LM  \cdot  z   \nonumber\\
-n_z  & = A3LM    +
-A8LM  \cdot  x +  A9LM  \cdot  y +
-2  \cdot   A6LM  \cdot  z       \nonumber
+  n_x & = A1LM  + 2  \cdot
+  A4LM  \cdot  x	  + A7LM  \cdot  y    +      A8LM \cdot  z    \nonumber \\
+  n_y & = A2LM	  +
+  A7LM	\cdot  x    +	  2  \cdot   A5LM  \cdot  y    +
+  A9LM	\cdot  z   \nonumber
+  \\
+  n_z & = A3LM	  +
+  A8LM	\cdot  x +  A9LM  \cdot  y +
+  2  \cdot   A6LM  \cdot  z	  \nonumber
 \end{align}
 For a plane surface the following reduction is valid:
 
-($n_x, n_y, n_z$) = (A1LM,A2LM,A3LM)
+($n_x, n_y, n_z$) = (A1LM,A2LM,A3LM) 
 
-\medskip
+\medskip 
 
-The boundary of the
-valid part of the surface may be described by 4 different options,
-depending upon the value of the flag RLBND.
+The boundary of the valid part of the surface may be described by 4 different
+options, depending upon the value of the flag RLBND.
 \begin{description}
-\item[RLBND = 0] ~
+  \item[RLBND = 0] ~ 
 
-No boundary inequalities specified, i.e.\ the whole surface
-is seen by the test particles.
-\item[0  $<$   RLBND  $<$   2] ~
+        No boundary inequalities specified, i.e.\ the whole surface is seen by the test
+        particles.
+  \item[0  $<$	 RLBND	$<$   2] ~ 
 
-\begin{description}
-\item[$= 1$] Only that part of the surface, which lies inside the
-right parallelepiped defined by the two vectors
-(XLIMS1, YLIMS1, ZLIMS1) and (XLIMS2, YLIMS2, ZLIMS2),
-is seen by the particles.
-I.e.\ the three inequalities
+        \begin{description}
+          \item[$= 1$] Only that part of the surface, which lies
+                inside the right parallelepiped defined by the two vectors (XLIMS1, YLIMS1,
+                ZLIMS1) and (XLIMS2, YLIMS2, ZLIMS2), is seen by the particles.
+                I.e.\ the three inequalities 
 
-$XLIMS1 \le x \le XLIMS2$
+                $XLIMS1 \le x \le XLIMS2$ 
 
-$YLIMS1 \le y \le YLIMS2$
+                $YLIMS1 \le y \le YLIMS2$ 
 
-$ZLIMS1 \le z \le ZLIMS2$
+                $ZLIMS1 \le z \le ZLIMS2$ 
 
-are checked at the point of intersection (x,y,z).
-\item[$= 1.5$] Complement to RLBND = 1.
+                are checked at the point of intersection (x,y,z).
+          \item[$= 1.5$] Complement to RLBND = 1.
 
-Only the surface element outside the parallelepiped is seen by the
-particles. \end{description}
-\item[RLBND $\ge$ 2] ~
+                Only the surface element outside the parallelepiped is seen by the particles.
+        \end{description}
+  \item[RLBND $\ge$ 2] ~ 
 
-In this case the surface will be
-defined by the input of the coordinates of
-at least 2 and at highest 5 points on a plane surface.
-If there are only 2 points, the surface is parallel to one axis.
-If there are 3 or more points, then
-the boundary of this plane surface is a closed polygon
-$(P_1, \dots, P_n, P_1)$.
-Therefore, the correct order of points at input is relevant.
-The orientation of the positive
-surface normal vector is defined by the first 3 points,
-and it is given by the vector product
-$(P3 - P1) \times (P3 - P2)$. Thus, the orientation
-can be reversed e.g.\ by interchanging
-$P_2$ and $P_3$.
-\begin{description}
-\item[$= 2.1$] plane surface parallel to z axis.
-The surface equation of this plane reads ax + by + c = 0 with the
-coefficients a,b and c such that the points $P_1, P_2$
-lie on this surface
-and the valid part of that surface ranges from $P_1$ to
-$P_2$ in the xy-plane.
-The z-coordinates of these two points define the
-boundaries in z direction
-\item[$= 2.2$] Complement to RLBND = 2.1
-\item[$= 2.4$] as RLBND=2.1 option, but with z and y exchanged. I.e., now the y
-coordinates of the points $P_1, P_2$ are the boundaries
-of the surface ax+bz+c=0 in y direction.
-\item[$= 2.5$] Complement to RLBND = 2.4
-\item[$= 2.7$] as RLBND=2.1 option, but with z and x exchanged. I.e., now the x
-coordinates of the points $P_1, P_2$ are the boundaries
-of the surface ay+bz+c+0 in x direction.
-\item[$= 2.8$] Complement to RLBND = 2.7
-\item[$= 3$] plane triangle defined by the corners $P_1,
-P_2, P_3$
+        In this case the surface will be defined by the input of the coordinates of at
+        least 2 and at highest 5 points on a plane surface.
+        If there are only 2 points, the surface is parallel to one axis.
+        If there are 3 or more points, then the boundary of this plane surface is a
+        closed polygon $(P_1, \dots, P_n, P_1)$.
+        Therefore, the correct order of points at input is relevant.
+        The orientation of the positive surface normal vector is defined by the first 3
+        points, and it is given by the vector product $(P3 - P1) \times (P3 - P2)$.
+        Thus, the orientation can be reversed e.g.\ by interchanging $P_2$ and $P_3$.
+        \begin{description}
+          \item[$= 2.1$] plane surface parallel to z axis.
+                The surface equation of this plane reads ax + by + c = 0 with the coefficients
+                a,b and c such that the points $P_1, P_2$ lie on this surface and the valid
+                part of that surface ranges from $P_1$ to $P_2$ in the xy-plane.
+                The z-coordinates of these two points define the boundaries in z direction
+          \item[$= 2.2$] Complement to RLBND = 2.1
+          \item[$= 2.4$] as RLBND=2.1 option,
+                but with z and y exchanged.
+                I.e., now the y coordinates of the points $P_1, P_2$ are the boundaries of the
+                surface ax+bz+c=0 in y direction.
+          \item[$= 2.5$] Complement to RLBND = 2.4
+          \item[$= 2.7$] as RLBND=2.1 option,
+                but with z and x exchanged.
+                I.e., now the x coordinates of the points $P_1, P_2$ are the boundaries of the
+                surface ay+bz+c+0 in x direction.
+          \item[$= 2.8$] Complement to RLBND = 2.7
+          \item[$= 3$] plane triangle defined by
+                the corners $P_1, P_2, P_3$ 
 
-$P_1$=(P1(1),P1(2),P1(3))
+                $P_1$=(P1(1),P1(2),P1(3)) 
 
-$P_2$=(P2(1),P2(2),P2(3))
+                $P_2$=(P2(1),P2(2),P2(3)) 
 
-$P_3$=(P3(1),P3(2),P3(3))
-\item[$= 3.5$] complement to RLBND = 3; only
-The plane surface outside the triangle is seen by the test
-particles.
-\item[$= 4$] plane quadrangle; surface inside the polygon
+                $P_3$=(P3(1),P3(2),P3(3))
+          \item[$= 3.5$] complement to RLBND = 3; only The
+                plane surface outside the triangle is seen by the test particles.
+          \item[$= 4$] plane quadrangle; surface inside the polygon 
 
-($P_1, P_2, P_4, P_3, P_1$).
+                ($P_1, P_2, P_4, P_3, P_1$).
 
-Here $P_1, P_2, P_3$ are as in the RLBND=3
-option, and $P_4$ = (P4(1), P4(2), P4(3))
+                Here $P_1, P_2, P_3$ are as in the RLBND=3 option, and $P_4$ = (P4(1), P4(2),
+                P4(3)) 
 
-Thus this surface is the union of the triangles with vertices
-$P_1$, $P_2$, $P_3$ and $P_2$,
-$P_4$, $P_3$ respectively.
-\item[$= 4.5$] complement to RLBND = 4; only the part of the plane surface
-outside the quadrangle is seen by the test particles
-\item[$= 5$] plane quint-angle; surface inside the polygon ($P_1$,
-$P_2$, $P_4$, $P_5$, $P_3$, $P_1$)
-$P_1$, $P_2$, $P_3$, $P_4$ as RLBND=4, and
-$P_5$ = (P5(1), P5(2), P5(3))
-\item[$= 5.5$] complement to RLBND = 5; only the part of the plane
-surface outside the quint-angle is seen by the test particles.
-\end{description}
-\item[RLBND < 0] ~
+                Thus this surface is the union of the triangles with vertices $P_1$, $P_2$,
+                $P_3$ and $P_2$, $P_4$, $P_3$ respectively.
+          \item[$= 4.5$] complement to RLBND = 4; only the part of the plane surface
+                outside the quadrangle is seen by the test particles
+          \item[$= 5$] plane
+                quint-angle; surface inside the polygon ($P_1$, $P_2$, $P_4$, $P_5$, $P_3$,
+                $P_1$) $P_1$, $P_2$, $P_3$, $P_4$ as RLBND=4, and $P_5$ = (P5(1), P5(2), P5(3))
+          \item[$= 5.5$] complement to RLBND = 5; only the part of the plane surface
+                outside the quint-angle is seen by the test particles.
+        \end{description}
+  \item[RLBND < 0] ~ 
 
--KL
+        -KL 
 
-The surface is bounded by L linear inequalities and by K
-second order inequalities.
+        The surface is bounded by L linear inequalities and by K second order
+        inequalities.
 
-$ALIMS + XLIMS  *  x + YLIMS  *  y + ZLIMS  *  z
-\le 0 $
-\raggedleft (L inequalities)
+        $ALIMS + XLIMS	*  x + YLIMS  *  y + ZLIMS  *  z \le 0 $ \raggedleft (L
+        inequalities) 
 
-\begin{align}
-ALIMS0 & + XLIMS1  \cdot  x + YLIMS1  \cdot  y + ZLIMS1  \cdot  z
-\nonumber \\
-       & + XLIMS2  \cdot  x^2 + YLIMS2  \cdot  y^2 + ZLIMS2  \cdot  z^2
-\nonumber \\
-       & + XLIMS3  \cdot  xy + YLIMS3  \cdot  xz + ZLIMS3  \cdot  yz \le 0
-\nonumber
-\end{align}
-\raggedleft (K inequalities)
+        \begin{align}
+          ALIMS0 & + XLIMS1  \cdot	x + YLIMS1	\cdot  y + ZLIMS1
+          \cdot  z \nonumber                                                 \\
+                 & + XLIMS2  \cdot  x^2 + YLIMS2  \cdot  y^2 + ZLIMS2  \cdot
+          z^2
+          \nonumber
+          \\
+                 & + XLIMS3  \cdot  xy + YLIMS3  \cdot	xz + ZLIMS3  \cdot  yz
+          \le 0
+          \nonumber
+        \end{align}
+        \raggedleft (K inequalities)
 \end{description}
 
-The meanings of the input variables for the local reflection model
-are described below (see: \cref{sec2.6}: ``Input Data for Surface
-Interaction Models").
+The meanings of the input variables for the local reflection model are
+described below (see: \cref{sec2.6}: ``Input Data for Surface Interaction
+Models").
 
 The meanings of the input variables for a transformation block are:
 
 \begin{description}
-\item[ITINI, ITEND] ~
+  \item[ITINI, ITEND] ~ 
 
-The transformation defined by the next 3 cards is carried out for
-additional surfaces from number ITINI through ITEND The
-transformation is carried out as soon as this transformation deck
-is found. Hence, if such a transformation deck is found after
-``additional surface" no.\ IS, then one must guarantee: ITINI $\le$
-IS and ITEND $\le$ IS.
+        The transformation defined by the next 3 cards is carried out for additional
+        surfaces from number ITINI through ITEND The transformation is carried out as
+        soon as this transformation deck is found.
+        Hence, if such a transformation deck is found after ``additional surface" no.\
+        IS, then one must guarantee: ITINI $\le$ IS and ITEND $\le$ IS.
 
-\item[XLCOR, YLCOR, ZLCOR] ~
+  \item[XLCOR, YLCOR, ZLCOR] ~ 
 
-Translation:
+        Translation:
 
-The origin of the coordinate system is shifted by the
-vector
+        The origin of the coordinate system is shifted by the vector
 
-XLCOR,YLCOR,ZLCOR
-\item[XLREF, YLREF, ZLREF] ~
+        XLCOR,YLCOR,ZLCOR
+  \item[XLREF, YLREF, ZLREF] ~ 
 
-Reflection:
+        Reflection:
 
-to be written
+        to be written
 
-No transformation if XLREF,YLREF,ZLREF = (0,0,0)
-\item[XLREF, YLREF, ZLREF] ~
+        No transformation if XLREF,YLREF,ZLREF = (0,0,0)
+  \item[XLREF, YLREF, ZLREF] ~
 
-Rotation:
+        Rotation:
 
-The vector XLROT,YLROT,ZLROT defines the axis of rotation.
+        The vector XLROT,YLROT,ZLROT defines the axis of rotation.
 
-ALROT is the angle of rotation (in degrees)
+        ALROT is the angle of rotation (in degrees)
 
-No transformation if ALROT=0 or axis of rotation= (0,0,0)
+        No transformation if ALROT=0 or axis of rotation= (0,0,0)
 \end{description}
