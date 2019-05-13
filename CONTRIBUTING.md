@@ -19,6 +19,7 @@ Contributors can speed up the integration of corrections or improvements by focu
 * Use the `fmtcount` package for typesetting ordinals, e.g. `\ordinalnum{1}`.
 * Remember `e.g.` and `i.e.` will trigger full stop space behind, use `e.g.\` and `i.e.\` instead.
 * The space between initials and surname should be filled with `~`. It prevents the full stop space and keeps initials and surname in one line.
+* Use two spaces for indentation and restrict text per line by 80 characters.
 
 ## Contribution flow
 
