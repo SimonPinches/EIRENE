@@ -713,8 +713,10 @@ From input stream FORT.29 two angles are read for each cell:
 \end{description}
 
 \begin{figure}[h] \label{eirene-coord-2}
-  \includegraphics[width=12.0cm]{eirene-coord-2} \caption{Definition of  angles $\alpha_x$=ALPHXB and $\alpha_y$=ALPHYB, respectively, for inclined (non-orthogonal) B2-grids to be used in EIRENE code.
-  }
+  \includegraphics[width=12.0cm]{eirene-coord-2} 
+  \caption{Definition of angles $\alpha_x$=ALPHXB and $\alpha_y$=ALPHYB, 
+    respectively, for inclined (non-orthogonal) B2-grids to be used in EIRENE 
+    code.}
 \end{figure}
 
 Then there are 14 arrays for definitions of boundary conditions (stream FORT.31
@@ -838,8 +840,12 @@ $(B_r,B_\theta,B_\phi)$ the default (and exclusive, until March 2015) option
         In the latter case it would matter indeed, e.g.\ to fix the $\nabla \vB$ drift
         direction.
 \end{description}
-\emph{Note: The confusing notational convention of x and y coordinates in B2-EIRENE still exists because B2 originally started as 1D parallel code, with the only coordinate being along the field, whereas EIRENE also started as 1D code, but with the first coordinate being the radial direction. (Both codes originated separately, in the early eighties of the last century, before they have been coupled together in the late eighties.)
-}
+\emph{Note: The confusing notational convention of x and y coordinates in 
+  B2-EIRENE still exists because B2 originally started as 1D parallel code, with 
+  the only coordinate being along the field, whereas EIRENE also started as 1D 
+  code, but with the first coordinate being the radial direction. 
+  (Both codes originated separately, in the early eighties of the last century, 
+  before they have been coupled together in the late eighties.)}
 
 \begin{description}
   \item[IBRAD] not in use

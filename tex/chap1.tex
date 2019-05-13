@@ -54,7 +54,8 @@ particles, as implemented in the EIRENE code, is described.
 
 \newpage
 
-\section{The linear Boltzmann equation for the distribution function \texorpdfstring{$f$}{f}} \label{sec1.0}
+\section{The linear Boltzmann equation for the distribution function
+  \texorpdfstring{$f$}{f}} \label{sec1.0}
 
 EIRENE solves a multi species set of coupled ``Boltzmann''-type equations, in
 arbitrary 3D geometries.
@@ -551,7 +552,8 @@ $\{i_0l_0\}$ from class $``\{il\}"$, the community of ``test particles'' and
 one member $\{b_0l_{1_0}\}$ from the disjunct class $``\{bl_1\}"$, the ``bulk",
 ``background" medium, or in our case, simply ``plasma" species.
 
-\section{The linear integral equation for the collision density \texorpdfstring{$\Psi$}{psi}} \label{sec1.1}
+\section{The linear integral equation for the collision density
+  \texorpdfstring{$\Psi$}{psi}} \label{sec1.1}
 
 By formally integrating the characteristics for  \cref{eq1c} the same transport
 equation can also be written in integral form.
@@ -2243,7 +2245,12 @@ entrance and the electrostatic sheath entrance, respectively.
 
 \begin{figure}[h]
   \includegraphics[height=9.0cm]{magn_pre_sheath}
-  \caption{Transition region between fluid plasma (\ac{CFD}) and wall surface, schematic. The plasma flow is specified by \ac{CFD} models at the entrance surface of the magnetic pre-sheath MP (taken normal to the magnetic field $\vec{B}$). $\Delta \Phi$ is the fraction of the total sheath potential drop inside the electrostatic sheath.
+  \caption{Transition region between fluid plasma (\ac{CFD}) and wall surface, 
+    schematic. 
+    The plasma flow is specified by \ac{CFD} models at the entrance surface of 
+    the magnetic pre-sheath MP (taken normal to the magnetic field $\vec{B}$). 
+    $\Delta \Phi$ is the fraction of the total sheath potential drop inside the 
+    electrostatic sheath.
   }
   \label{magpresheath}
 \end{figure}
@@ -2261,8 +2268,8 @@ given as
   v_{\pi}   \cdot \exp \left ( - \frac{1}{v_{T_i}^2} (\vv - \vV_d )^2    \right
   ), \quad v_{\pi} > 0 \label{eq1.23}
 \end{equation}
-with $v_{T_i} = \sqrt{2 kT_i/m_i}$, the thermal ion velocity, normalizing constant $\alpha^2$ and with
-the drift velocity $\vV_d$.
+with $v_{T_i} = \sqrt{2 kT_i/m_i}$, the thermal ion velocity, normalizing 
+constant $\alpha^2$ and with the drift velocity $\vV_d$.
 See \cref{sec2.7} for a description of related EIRENE input flags.
 The superscript 0 indicates normalization of the flux to one particle per unit
 time and unit area:
@@ -2692,16 +2699,19 @@ grid voxels.
 \begin{figure}[h]
   \begin{minipage}{0.48\textwidth}
     \includegraphics[width=\textwidth, angle=+90]{ALT-II}
-    \caption{\label{label1l}
-      Early example a combination of \ac{BREP} and VOXEL discretization, around 1985 for ALT-II pump limiter studies at \ac{TEXTOR}. Discretization inside the \ac{TEXTOR} tokamak vessel (torus): VOXEL, supplemented by about 100 (\acs{BREP}) first and second order surfaces for ALT-II scoops, pumping ducts and inner structures such as probe supports, getter pumps, etc..
-    }
+    \caption{\label{label1l} Early example a combination of \ac{BREP} and VOXEL 
+      discretization, around 1985 for ALT-II pump limiter studies at \ac{TEXTOR}. 
+      Discretization inside the \ac{TEXTOR} tokamak vessel (torus): VOXEL, 
+      supplemented by about 100 (\acs{BREP}) first and second order surfaces for 
+      ALT-II scoops, pumping ducts and inner structures such as probe supports, 
+      getter pumps, etc..}
   \end{minipage}
   \hfill%
   \begin{minipage}{0.48\textwidth}
     \includegraphics[width=\textwidth,angle=-0]{alt_imp}
-    \caption{%
-      \label{label1r}
-      Same as left Figure, but \ac{BREP} part only, and EIRENE re-run with more modern 3D visualisation graphics program, 2009. \vspace{1.2cm}}
+    \caption{\label{label1r} Same as left Figure, but \ac{BREP} part only, and 
+      EIRENE re-run with more modern 3D visualisation graphics program, 2009. 
+      \vspace{1.2cm}}
   \end{minipage}
 \end{figure}
 
@@ -2895,7 +2905,10 @@ The \cref{flow03} illustrates this mode of operation.
 
 \begin{figure}[h]
   \includegraphics[width=\textwidth]{flowchart9}
-  \caption{Explicit coupling scheme between EIRENE and a \ac{CFD} code (for plasma flow): After each plasma code cycle (or time step) a full new Monte Carlo run is carried out. \label{flow01}}
+  \caption{Explicit coupling scheme between EIRENE and a \ac{CFD} code (for 
+    plasma flow): After each plasma code cycle (or time step) a full new Monte 
+    Carlo run is carried out.
+    \label{flow01}}
 \end{figure}
 
 %{\center
@@ -2951,8 +2964,13 @@ The \cref{flow03} illustrates this mode of operation.
 \begin{figure}[h]
   \includegraphics[width=\textwidth]{flowchart7}
   \caption{``Semi implicit" coupling scheme between EIRENE and a \ac{CFD} code
-    (e.g.\ BRAAMS B2 for plasma flow), involving internal
-    re-iteration on sources terms without new Monte Carlo trajectories, much less frequent Monte Carlo runs than in ``explicit" mode of operation, but unresolved issues still re volume recombination contribution. LINDA is a grid generating tool providing a numerical discretization mesh which is common for B2 and EIRENE. \label{flow02}}
+    (e.g.\ BRAAMS B2 for plasma flow), involving internal re-iteration on sources 
+    terms without new Monte Carlo trajectories, much less frequent Monte Carlo 
+    runs than in ``explicit" mode of operation, but unresolved issues still re 
+    volume recombination contribution. 
+    LINDA is a grid generating tool providing a numerical discretization mesh 
+    which is common for B2 and EIRENE. 
+    \label{flow02}}
 \end{figure}
 %{\Huge "implicit coupling"}
 
@@ -3101,8 +3119,9 @@ The \cref{flow03} illustrates this mode of operation.
 
 \begin{figure}{h}
   \includegraphics[height=20cm]{converg}
-  \caption{Convergence of B2/EIRENE, measured by B2-residuals. Method: implicit coupling, method of ``saturated residuals", ref.\ \cite{kn:Maddison94}.
-  }
+  \caption{Convergence of B2/EIRENE, measured by B2-residuals. 
+    Method: implicit coupling, method of ``saturated residuals", ref.\ 
+    \cite{kn:Maddison94}.}
   \label{converg}
 \end{figure}
 
@@ -3637,13 +3656,13 @@ As a consequence toroidal curvature effects are not yet properly seen by
 charged particles in that case, and the corresponding toroidal curvature drift
 had been added separately in \cite{kn:Seebacher}.
 
-Default is $\textbf{b}=(0.,0.,1.
-  )$ in each cell.
+Default is $\textbf{b}=(0.,0.,1.)$ in each cell.
 The velocity vector of each test-ion followed by EIRENE is projected onto
 $\textbf{b}$ in each grid cell along the trajectory.
 The velocity used for pushing the particle along its trajectory is only the
-parallel component $\vv_\|=(\vv \cdot \vb) \vb$ \minisec{B: \textbf{E} $\times$ \textbf{B} drift only} Only the \textbf{E} $\times$ \textbf{B} drift is
-included.
+parallel component $\vv_\|=(\vv \cdot \vb) \vb$.
+\minisec{B: \textbf{E} $\times$ \textbf{B} drift only} 
+Only the \textbf{E} $\times$ \textbf{B} drift is included.
 This is still zeroth order in $\delta$.
 By modifying the electric field in each cell into one effective \textbf{E$^*$}
 field, some features of  guiding centre drifts (namely: the grad B drift) can
@@ -3821,8 +3840,11 @@ small test particle velocity limit.
 And this is also exactly the approximation which was also used in EIRENE since
 about 1987 for all test ions traveling in a bath of background ions.
 
-\textcolor[rgb]{1.00,0.00,0.00}{To be done: in case of drifting Maxwellian background: first transform into plasma frame, such that stationary Maxw.\ background, then relax test particle energy in this frame, then transform back\dots To be done: isotropization: currently the ratio $v_{\perp B} $ to $v_{\parallel B}$ relative to the B-field	is preserved.
-}
+\textcolor[rgb]{1.00,0.00,0.00}{To be done: in case of drifting Maxwellian 
+background: first transform into plasma frame, such that stationary Maxw.\ 
+background, then relax test particle energy in this frame, then transform 
+back\dots To be done: isotropization: currently the ratio $v_{\perp B}$ to 
+$v_{\parallel B}$ relative to the B-field is preserved.}
 
 \vspace{1cm}
 The \emph{full expression for the energy relaxation frequency}
@@ -3972,8 +3994,18 @@ to be filled in startup routine pedist.f
 
 \begin{figure}
   \includegraphics[height=16cm]{flowchart5_new}
-  \caption{Particle loop in subr.\ MCARLO. Default volume averaged tallies are updated, ``on the fly" \emph{(per event)} in routines UPDATE, problem specific tallies for code-code interfacing (COPV(\dots), e.g.\ B2-EIRENE) in UPDCOP, specific tallies for non-linear \ac{BGK} operators (BGKV(\dots)) in UPDBGK. Corresponding variances are updated \emph{(per history)} after completion of each trajectory in STATS1, STATS1\_COP, STATS1\_BGK. \textcolor[rgb]{1.00,0.00,0.00}{Addition/revision in 2012: Updating of linear functions of default tallies, \emph{per history}, in UPFCOP, e.g.\ for code coupling tally COPV. This makes redundant the specific statistical variance evaluation in STATS1\_COP}.
-  }
+  \caption{Particle loop in subr.\ MCARLO. 
+    Default volume averaged tallies are updated, ``on the fly" 
+    \emph{(per event)} in routines UPDATE, problem specific tallies for code-code 
+    interfacing (COPV(\dots), e.g.\ B2-EIRENE) in UPDCOP, specific tallies for 
+    non-linear \ac{BGK} operators (BGKV(\dots)) in UPDBGK. 
+    Corresponding variances are updated \emph{(per history)} after completion of 
+    each trajectory in STATS1, STATS1\_COP, STATS1\_BGK. 
+    \textcolor[rgb]{1.00,0.00,0.00}{Addition/revision in 2012: Updating of linear 
+    functions of default tallies, \emph{per history}, in UPFCOP, e.g.\ for code 
+    coupling tally COPV. 
+    This makes redundant the specific statistical variance evaluation in 
+    STATS1\_COP}.}
   \label{flow5}
 
 \end{figure}

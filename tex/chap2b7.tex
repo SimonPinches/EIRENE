@@ -663,9 +663,10 @@ The next deck of 4 input cards is read NSRFSI times, one deck for each
 The six parameters in the next card
 SORAD\dots\ are used to define the sampling intervals in the three co-ordinate
 directions x, y and z.
-For some geometry options and surface types (i.e., \emph{radial, poloidal, toroidal,} or \emph{additional}) these boundaries of the sampling interfaces,
+For some geometry options and surface types (i.e., \emph{radial, poloidal, 
+toroidal,} or \emph{additional}) these boundaries of the sampling interfaces,
 in some co-ordinates, are automatically found from the specified range [INGRDA,
-    INGRDE] in the corresponding grid, and the corresponding SORAD\dots\ values are
+INGRDE] in the corresponding grid, and the corresponding SORAD\dots\ values are
 then not used for those coordinates.
 In case of doubt see initialization phase of subroutine SAMSRF to find out
 which options precisely are available, or contact the EIRENE team at
@@ -1131,7 +1132,8 @@ one for each species index separately.
 This cumulative flux-distribution is then in units of a flux (source strength),
 typically in EIRENE: in [\si{\ampere}].
 
-After this the total flux (normalization constant) \lstinline|FLTOT(ISPZ, ISTEP) = VF(ISPZ, ISTEP, NSMAX)| is
+After this the total flux (normalization constant) 
+\lstinline|FLTOT(ISPZ, ISTEP) = VF(ISPZ, ISTEP, NSMAX)| is
 stored, and then the cumulative distributions $VF$ are normalized to
 \begin{equation}
   \nonumber VF(\dots,i) = VF(\dots,i)/FLTOT(\dots),  \ \ \ \
