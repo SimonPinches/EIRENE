@@ -1,8 +1,35 @@
 image: jugit-registry.fz-juelich.de/eirene/eirene-ci-image/master
 
 build:
+  stage: build
   script:
     - latexmk -pdfdvi eirene.tex
   artifacts:
     paths:
       - "*.pdf"
+
+deploy:
+  stage: deploy
+  #only:
+  #  - master
+  dependencies:
+    - build
+  before_script:
+    # Run ssh-agent (inside the build environment)
+    - eval $(ssh-agent -s)
+    # Add the required SSH keys to the agent store
+    # We're using tr to fix line endings which makes ed25519 keys work
+    # without extra base64 encoding.
+    - echo "${SSH_KEY_WEBSITE}" | tr -d '\r' | ssh-add - > /dev/null
+    # Create the SSH directory and give it the right permissions
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    # Use ssh-keyscan to scan the keys of your private servers.
+    - ssh-keyscan apps.fz-juelich.de >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - rsync -t -e ssh eirene.pdf eirene@apps.fz-juelich.de:/var/www/eirene
+  environment:
+    name: Website
+    url: http://www.eirene.de/eirene.pdf
+
