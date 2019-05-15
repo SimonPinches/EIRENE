@@ -1,3 +1,5 @@
+image: jugit-registry.fz-juelich.de/eirene/eirene-ci-image/master
+
 include:
     - '.update_fork_branches.yml'
     - '.tag_and_deploy.yml'
@@ -216,6 +218,9 @@ test_EMC3-EIRENE_H_multiStrata:
     
 run_EMC3-EIRENE_H_multiStrataMpi:
     <<: *run
+    before_script:
+        # Bypass mpirun abort due to execution as root
+        - export MPIRUN_FLAGS='--allow-run-as-root'
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi"
     dependencies:
@@ -231,6 +236,9 @@ test_EMC3-EIRENE_H_multiStrataMpi:
     
 run_EMC3-EIRENE_H_multiStrataMpi2:
     <<: *run
+    before_script:
+        # Bypass mpirun abort due to execution as root
+        - export MPIRUN_FLAGS='--allow-run-as-root'
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi2"
     dependencies:
@@ -246,6 +254,9 @@ test_EMC3-EIRENE_H_multiStrataMpi2:
     
 run_EMC3-EIRENE_H_multiStrataMpi3:
     <<: *run
+    before_script:
+        # Bypass mpirun abort due to execution as root
+        - export MPIRUN_FLAGS='--allow-run-as-root'
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi3"
     dependencies:
