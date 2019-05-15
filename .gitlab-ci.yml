@@ -10,8 +10,8 @@ build:
 
 deploy:
   stage: deploy
-  #only:
-  #  - master
+  only:
+    - master
   dependencies:
     - build
   before_script:
