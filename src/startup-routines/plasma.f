@@ -490,7 +490,7 @@ C  CHECK FOR ZERO MAGNETIC FIELD IN ANY CELL (INCL. ADD. CELL REGION)
 C
 C  ADDITIONAL INPUT TALLIES
 
-      IF (.NOT.LADIN) GOTO 1160
+      IF (LADIN) THEN
       IND=INDPRO(6)
       NDIM=SIZE(ADIN,DIM=1)
       IF (NDIM.LT.NAINI) GOTO 999
@@ -521,9 +521,10 @@ cdr distinct from indpro=1,...5:  now one single call for all K=1,NAINI
           EXIT
         end select
   160 CONTINUE
+      END IF
 C
 C  ELECTRIC FIELD
-      IF (.NOT.(LEXIN.AND.LEYIN.AND.LEZIN.AND.LEFIN)) GOTO 170
+      IF (LEXIN.AND.LEYIN.AND.LEZIN.AND.LEFIN) THEN
       IND=INDPRO(7)
 C  DEFAULT: E==0.0 (no electric field), only options ind=5,6,7 overrule this
 c          (transfer from problem-specific codes or external data structures)
@@ -549,6 +550,7 @@ c          (transfer from problem-specific codes or external data structures)
         CALL EIRENE_PROFR (EZIN,9+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
         CALL EIRENE_PROFR (EFIN,10+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
       end select
+      END IF
 C
 CDR
 C   SET VACUUM DATA IN ADDITIONAL REGIONS OUTSIDE THE
