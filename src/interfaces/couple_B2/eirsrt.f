@@ -6,8 +6,8 @@ cdr Nov.  17:   1) sync with couple_B2 from git repository. done
 cdr             2) ESIG array: additional argument IPLS: done.
 cdr             3) RTIS% pointer to sploda,.....
 cdr             4) rates SEIODA, SEINWA added (was missing, used for ipls total ion energy density)
-cdr                now: SEIOD(.., NPLS), SEINW(...,NPLS) added  
-cdr Oct.  18:   connect ledrift  (availability of EDRIFT tally)   
+cdr                now: SEIOD(.., NPLS), SEINW(...,NPLS) added
+cdr Oct.  18:   connect ledrift  (availability of EDRIFT tally)
 
 C  MAIN INTERFACING ROUTINE FOR COUPLED CFD-PLASMA - EIRENE APPLICATIONS
 

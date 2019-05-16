@@ -3517,7 +3517,7 @@ cdr  is this now any different from sni set above?
 cdr  add pppl_cop contribution to internal energy sources rate
               bv = 0._dp
               if (lbvin) bv = bvin(iplsv,itri)
-              copv(icp3+3,in)=copv(icp3+3,in) + 
+              copv(icp3+3,in)=copv(icp3+3,in) +
      .            cvrssp(ipls)*bv**2*PPPL_COP(IPLS,IN)
               lhit(in) = .true.
             end do  ! ITRI LOOP
@@ -3623,9 +3623,9 @@ c  skip working on internal lin. comb. of tallies, unless sufficient storage
 !pb 30012013 sei internal
               bv = 0._dp
               if (lbvin) bv = bvin(iplsv,itri)
-              copv(icp3+3,in)=copv(icp3+3,in) - 
+              copv(icp3+3,in)=copv(icp3+3,in) -
      .            bv*MPPL_COP(IPLS,IN)*SIGNUM*
-     .            cveli2/amua*2._DP 
+     .            cveli2/amua*2._DP
               lhit(in) = .true.
             end do  !itri loop
             copv(icp2+ipls,:) = copv(icp2+ipls,:) * flxi

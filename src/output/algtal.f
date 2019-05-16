@@ -4,7 +4,7 @@ cpb: Sept 16:  bug fix: case added for 2 constant operators next to each other
 
 c  revised, to accomodate more algebraic, analytic and differentiation operations.
 c  1) get_intal.f :  pick input tally, return it on the fine grid, 
-c                    and also return the weighting function for averaqging onto the
+c                    and also return the weighting function for averaging onto the
 C                    coarse (scoring) grid (if any)   
 C
       SUBROUTINE EIRENE_ALGTAL
@@ -12,7 +12,7 @@ cdr  purpose:  take character string CHRTAL(IALV)  (IALV=1,NALVI)
 cdr            carry out the coded operations on input and/or output tallies
 cdr            write resulting tally ALGV(IALV,ICELL), ICELL is from coarse 
 cdr            (scoring) grid:  ICELL=NCLTAL(IC), IC=1,NSBOX, ICELL=1,NSBOX_TAL
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -221,7 +221,7 @@ c  2nd OPERAND IS AN INPUT TALLY: fetch an input tally, case 1 to case 25
 cdr  input tally(itl,:) is returned as OP(:), 
 cdr  weighting fct is returned as WEI(:).
      
-cdr  weighted sum over subcells: in=ncltal(i) 
+cdr  weighted sum over subcells: in=ncltal(i)
             SUMWEI = EPS60
             VEC2 = 0._DP
             DO I=1,NSBOX
@@ -272,36 +272,36 @@ C
 !         IF (OPER(IOP).EQ.'+ ') THEN
             DO 50 I=1,NSBOX_TAL
               RESULT(II,I)=VEC1(I)+VEC2(I)
-  50        CONTINUE
+   50       CONTINUE
           CASE ('- ')
 !         ELSEIF (OPER(IOP).EQ.'- ') THEN
             DO 60 I=1,NSBOX_TAL
               RESULT(II,I)=VEC1(I)-VEC2(I)
-  60        CONTINUE
+   60       CONTINUE
           CASE ('* ')
 !         ELSEIF (OPER(IOP).EQ.'* ') THEN
             DO 70 I=1,NSBOX_TAL
               RESULT(II,I)=VEC1(I)*VEC2(I)
-  70        CONTINUE
+   70       CONTINUE
           CASE ('/ ')
 !         ELSEIF (OPER(IOP).EQ.'/ ') THEN
             DO 81 I=1,NSBOX_TAL
               IF (VEC2(I).NE.0.D0) GOTO 82
-  81        CONTINUE
+   81       CONTINUE
 C  DIVISION BY IDENTICALLY ZERO TALLY. ALGEBR. TALLY CANNOT BE EVALUATED. RETURN ZERO TALLY
             DO 83 I=1,NSBOX_TAL
               RESULT(II,I)=0.
-  83        CONTINUE
+   83       CONTINUE
             GOTO 120
-  82        DO 80 I=1,NSBOX_TAL
+   82       DO 80 I=1,NSBOX_TAL
               RESULT(II,I)=VEC1(I)/(VEC2(I)+EPS30)
-  80        CONTINUE
+   80       CONTINUE
 
           CASE ('^ ')
 !         ELSEIF (OPER(IOP).EQ.'^ ') THEN
             DO 85 I=1,NSBOX_TAL
               RESULT(II,I)=VEC1(I)**VEC2(I)
-  85        CONTINUE
+   85       CONTINUE
           CASE ('QA', 'QB', 'QC')
 ! dF/dX, dF/dY, dF/dZ
             DO I=1,NSBOX_TAL
@@ -410,7 +410,7 @@ C
      .          (OPER(J),(IZIF(K,J),K=1,4),J=1,NOP)
           GOTO 160
 C
-96        CONTINUE
+   96     CONTINUE
           WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL '
           WRITE (iunout,*)
      .      ' OPERAND OF EXPONENTIAL FUNCTION > 150'
@@ -420,7 +420,7 @@ C
      .          (OPER(J),(IZIF(K,J),K=1,4),J=1,NOP)
           GOTO 160
 C
-97        CONTINUE
+   97     CONTINUE
           WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL '
           WRITE (iunout,*)
      .      ' EIRENE SCORES ON COMPLEX CELLS, CALCULATION OF',

@@ -477,7 +477,7 @@ C
             CASE(2)
               IMOL=N2NDX(IRCX,2)
               E0=CVRSSM(IMOL)*VELO*VELO
- 
+
             CASE(3)
               IION=N2NDX(IRCX,2)
               E0=CVRSSI(IION)*VELO*VELO

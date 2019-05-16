@@ -413,8 +413,8 @@ C
            IREI=LGIEI(JION,IIEI)
 !pb 09022016            ESIG=EPLEI(IREI,2)  this was incorrect,
 cdr                     because it was already summed over ipls
-          ESIG=EPLEI(IREI,JPLS,2)  ! only KER -part is corrected in short cycle
-          DO IN=1,NDXY
+           ESIG=EPLEI(IREI,JPLS,2)  ! only KER -part is corrected in short cycle
+           DO IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
               RTIS%SEIODI(IN,JION)=RTIS%SEIODI(IN,JION)+
      .                        TABEI1(IREI,IN)*ESIG
@@ -422,7 +422,7 @@ cdr                     because it was already summed over ipls
               RTIS%SEIODI(IN,JION)=RTIS%SEIODI(IN,JION)+
      .                        EIRENE_FTABEI1(IREI,IN)*ESIG
             END IF
-          ENDDO
+           ENDDO
           END DO
          END DO
         END DO

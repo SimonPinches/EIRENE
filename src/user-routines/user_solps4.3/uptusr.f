@@ -119,7 +119,7 @@ cdr only signum needed: default tbd: signum=1
             VAL_PARB(1:NPLSI) = 0._DP
           END IF
           IF (LPARMOM) THEN
-            VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)         
+            VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)
           ELSE
             VSIG_PARB(1:NPLSI) = 0._DP
           END IF
@@ -165,7 +165,7 @@ c  sign:  for neutrals.
 ccc
 ccc  next: parallel momentum exchange rates due to CX, ATOMS
 ccc
- 
+
              IF (LBXIN.AND.LBYIN.AND.LBZIN) THEN
                V0_PARB=VEL*
      .               (VELX*BXIN(IRDO)+VELY*BYIN(IRDO)+VELZ*BZIN(IRDO))
@@ -257,7 +257,7 @@ cdr only signum needed: default tbd: signum=1
             VAL_PARB(1:NPLSI) = 0._DP
           END IF
           IF (LPARMOM) THEN
-            VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)       
+            VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)
           ELSE
             VSIG_PARB(1:NPLSI) = 0._DP
           END IF

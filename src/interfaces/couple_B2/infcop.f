@@ -2639,9 +2639,9 @@ cdr  tbd:  check storage on copv tallies, ncpv ??
 !pb 30012013 sei internal
                 bv = 0._dp
                 if (lbvin) bv = bvin(iplsv,in)
-                cpv_cmp(icp3+3,inc,istrai)=cpv_cmp(icp3+3,inc,istrai) - 
+                cpv_cmp(icp3+3,inc,istrai)=cpv_cmp(icp3+3,inc,istrai) -
      .                  bv*MPPL_COP(IPLS,INC)*SIGNUM*
-     .                  cveli2/amua*2._DP 
+     .                  cveli2/amua*2._DP
               end do
             end do
 

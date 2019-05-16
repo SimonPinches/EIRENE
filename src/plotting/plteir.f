@@ -295,7 +295,7 @@ cdr  tbd:  summing with proper weighting, as in outtal.f
                 CASE (1)
                   VECTOR(1:NSBOX,ICURV) = TEIN(1:NSBOX)
                 CASE (2)
-                  VECTOR(1:NSBOX,ICURV) = SUM(TIIN(1:NF,1:NSBOX),1)                
+                  VECTOR(1:NSBOX,ICURV) = SUM(TIIN(1:NF,1:NSBOX),1)
                 CASE (3)
                   VECTOR(1:NSBOX,ICURV) = DEIN(1:NSBOX)
                 CASE (4)
