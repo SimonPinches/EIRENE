@@ -292,6 +292,9 @@ coverage_report:
         - master
     except:
         - schedules
+    before_script:
+        # Bypass mpirun abort due to execution as root
+        - export MPIRUN_FLAGS='--allow-run-as-root'
     script:
         - mkdir buildCoverage
         - cd buildCoverage
