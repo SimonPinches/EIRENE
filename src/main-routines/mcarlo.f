@@ -1,6 +1,6 @@
 c  nov.16th 2005: npts_save = npts always, not only for nlmovie option
 c                 because otherwise in iterative mode a stratum cannot be
-c                 re-activated, once it was de-activated in a particlar iteration.
+c                 re-activated, once it was deactivated in a particlar iteration.
 c                 v.kotov
 c  19.12.05:  bug: no printout of surface tally std. dev., for sum over strata
 c             bug fix: here in mcarlo.f: sigmaw = stvw and sgmws=stvws added
@@ -55,7 +55,6 @@ C
       USE EIRMOD_CGEOM
       USE EIRMOD_CSDVI
       USE EIRMOD_CSDVI_BGK
-      USE EIRMOD_CSDVI_COP
       USE EIRMOD_COMPRT
       USE EIRMOD_CPES
       USE EIRMOD_COMNNL
@@ -185,10 +184,6 @@ cdr   write (iunout,*) 'cpu time for stats0 ', tim2-tim1
       CALL EIRENE_STATS0_BGK
       TIM2=EIRENE_SECOND_OWN()
 cdr   write (iunout,*) 'cpu time for stats0_bgk ', tim2-tim1
-      tim1 = tim2
-      CALL EIRENE_STATS0_COP
-      TIM2=EIRENE_SECOND_OWN()
-cdr   write (iunout,*) 'cpu time for stats0_cop ', tim2-tim1
       tim1 = tim2
       CALL EIRENE_STATS0_SPC
       TIM2=EIRENE_SECOND_OWN()
@@ -325,21 +320,16 @@ C
       TIMen=EIRENE_SECOND_OWN()
 
       CALL EIRENE_LEER(2)
-      CALL EIRENE_MASAGE
-     .  ('LOOP OVER STRATA STARTS AT CPU TIME(SEC):    ')
+      CALL EIRENE_MASAGE('LOOP OVER STRATA STARTS AT CPU TIME (SEC) :')
 CVKMPI       CALL EIRENE_MASR1 ('STARTTIM',XTIM(0))
       CALL EIRENE_MASR1 ('STARTTIM',SECND) !VKMPI
-      CALL EIRENE_MASAGE
-     .  ('CPU TIME ASSIGNED TO STRATA (SEC) :          ')
+      CALL EIRENE_MASAGE('CPU TIME ASSIGNED TO STRATA (SEC) :')
       IF (ALLOC.EQ.0.D0) THEN
-        CALL EIRENE_MASAGE
-     .  ('PROPORTIONAL NPTS(ISTRA)                     ')
+        CALL EIRENE_MASAGE('PROPORTIONAL NPTS(ISTRA)')
       ELSEIF (ALLOC.EQ.1.) THEN
-        CALL EIRENE_MASAGE
-     .  ('PROPORTIONAL FLUX(ISTRA)                     ')
+        CALL EIRENE_MASAGE('PROPORTIONAL FLUX(ISTRA)')
       ELSE
-        CALL EIRENE_MASAGE
-     .  ('WEIGHTED ALLOCATION BETWEEN NPTS AND FLUX    ')
+        CALL EIRENE_MASAGE('WEIGHTED ALLOCATION BETWEEN NPTS AND FLUX')
       ENDIF
       DO 9 ISTRA=1,NSTRAI
 CVKMPI        DELT=XTIM(ISTRA)-XTIM(ISTRA-1)
@@ -387,6 +377,7 @@ C
       if (my_pe == 0) CALL EIRENE_PEDIST(XTIM,XX1)
       if (nprs > 1) then
         call EIRENE_broad_pedist(xtim)
+        call create_all_communicators
 
 c nlident: jeder proc. von einer quelle istra bekommt gleichen seed gem. ninitl(istra).
 c         erzeugt bei zwei gleichen quellen (istra) identische ergebnisse.
@@ -402,10 +393,10 @@ c not nlident: ninitl wird auf dem processor geaendert, add my_pe*10000
           WRITE (IUNOUT,*) 'NLIDENT: '
           WRITE (IUNOUT,*) 'DEBUG MODE FOR PARALLELIZATION IS ACTIVE'
           WRITE (IUNOUT,*) 'IF MULTIPLE CORES PER STRATUM, THEN ALL'
-          WRITE (IUNOUT,*) 'ASSIGNED CORES KEEP IDENTICAL RANDOM SEED. '
+          WRITE (IUNOUT,*) 'ASSIGNED CORES KEEP IDENTICAL RANDOM SEED.'
           WRITE (IUNOUT,*) 'FOR ANY GIVEN STRATUM ISTRA, ALL NCIS CORES'
-          WRITE (IUNOUT,*) 'ASSIGNED TO ISTRA MUST PRODUCE IDENTICAL '
-          WRITE (IUNOUT,*) 'OUTPUT. ALSO VARIANCES PER STRATUM MUST  '
+          WRITE (IUNOUT,*) 'ASSIGNED TO ISTRA MUST PRODUCE IDENTICAL'
+          WRITE (IUNOUT,*) 'OUTPUT. ALSO VARIANCES PER STRATUM MUST'
           WRITE (IUNOUT,*) 'SCALE EXACTLY WITH 1/NCIS(ISTRA),'
           WRITE (IUNOUT,*) 'NOT ONLY ON STATISTICAL AVERAGE'
           WRITE (IUNOUT,*) '......................................... '
@@ -858,10 +849,6 @@ C   MEAN SQUARE
      .                                    (NSBOX_TAL,NR1TAL,NP2TAL,
      .                                     NT3TAL,NLIMPS,
      .                                     NLSYMP(ISTRA),NLSYMT(ISTRA))
-            IF (NSIGI_COP.GT.0) CALL EIRENE_STATS1_COP
-     .                                    (NSBOX_TAL,NR1TAL,NP2TAL,
-     .                                     NT3TAL,NLIMPS,
-     .                                     NLSYMP(ISTRA),NLSYMT(ISTRA))
             IF (NSIGI_SPC.GT.0) CALL EIRENE_STATS1_SPC
      .                                    (NSBOX_TAL,NR1TAL,NP2TAL,
      .                                     NT3TAL,NLIMPS,
@@ -969,8 +956,8 @@ C
             WTT=WTT-WTOTP(JPLS,ISTRA)*NPRT(NSPAMI+JPLS)
   203     CONTINUE
           CALL EIRENE_LEER(2)
-          WRITE (iunout,*) 'TOTAL WEIGHT OF PRIMARY SOURCE PARTICLES '
-          WRITE (iunout,*) 'BULK IONS, ATOMS, MOLECULES, TEST IONS '
+          WRITE (iunout,*) 'TOTAL WEIGHT OF PRIMARY SOURCE PARTICLES'
+          WRITE (iunout,*) 'BULK IONS, ATOMS, MOLECULES, TEST IONS'
           CALL EIRENE_MASR5 ('WTPLS,WTATM,WTMOL,WTION,WTPHOT          ',
      .     WTOTP(0,ISTRA),WTOTA(0,ISTRA),WTOTM(0,ISTRA),WTOTI(0,ISTRA),
      .     WTOTPH(0,ISTRA))
@@ -1007,16 +994,6 @@ C  CONVERT TO %
                 SIGMA_BGK(IB,J)=MAX(0._DP,SIGMA_BGK(IB,J)-EPS6)*100.D0
   212         CONTINUE
   211       CONTINUE
-          ENDIF
-          IF (NSIGI_COP.GT.0) THEN
-            CALL EIRENE_STATS2_COP(XMCP(ISTRA),FSIG,ZFLUX)
-C  CONVERT TO %
-            DO 213 IC=1,NCPVI_STAT
-              SGMS_COP(IC)=MAX(0._DP,SGMS_COP(IC)-EPS6)*100.D0
-              DO 214 J=1,NSBOX_TAL
-                SIGMA_COP(IC,J)=MAX(0._DP,SIGMA_COP(IC,J)-EPS6)*100.D0
-  214         CONTINUE
-  213       CONTINUE
           ENDIF
           IF (NSIGI_SPC.GT.0) THEN
             CALL EIRENE_STATS2_SPC(XMCP(ISTRA),FSIG,ZFLUX)
@@ -1182,7 +1159,6 @@ cdr npesta is the master processor for stratum no ISTRA
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
      .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .              NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
-     .              NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .              NSIGI_SPC,TRCFLE)
             endif
           ENDIF
@@ -1228,7 +1204,7 @@ C  covariances
 C
  1111     CONTINUE
           WRITE(iunout,*)
-     .           'CUMULATED CPU TIME USED UNTIL END OF STRATUM ISTRA '
+     .           'CUMULATED CPU TIME USED UNTIL END OF STRATUM ISTRA'
           WRITE(iunout,*) 'ISTRA, CPU(S) ',ISTRA,EIRENE_SECOND_OWN()
           CALL EIRENE_LEER(2)
        END IF ! CALC_STRATUM(ISTRA)
@@ -1296,7 +1272,6 @@ C  STRATA
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
      .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .              NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
-     .              NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .              NSIGI_SPC,TRCFLE)
         ENDIF
         GOTO 2000
@@ -1348,15 +1323,6 @@ C  BGK TALLY VARIANCES
  1272       CONTINUE
  1271     CONTINUE
         ENDIF
-C  PROBLEM-SPECIFIC COUPLING TALLY VARIANCES
-        IF (NSIGI_COP.GT.0) THEN
-          DO 1273 IC=1,NCPVI_STAT
-            SGMS_COP(IC)=STVS_COP(IC)
-            DO 1274 J=1,NSBOX_TAL
-              SIGMA_COP(IC,J)=STV_COP(IC,J)
- 1274       CONTINUE
- 1273     CONTINUE
-        ENDIF
 C
 C   ALGEBRAIC EXPRESSION IN TALLIES, SUM OVER STRATA  1571--1579
 C
@@ -1396,7 +1362,6 @@ C
      .                NSDVI1,SDVI1,NSDVI2,SDVI2,
      .                NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .                NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
-     .                NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .                NSIGI_SPC,
 cdr spectrum tally variances are already in ESTIML
      .                TRCFLE)

@@ -6,7 +6,6 @@ c  19.12.05:  stvw, stvws = 0   included
       USE EIRMOD_CSPEI
       USE EIRMOD_CSDVI
       USE EIRMOD_CSDVI_BGK
-      USE EIRMOD_CSDVI_COP
       USE EIRMOD_COMSOU
       USE EIRMOD_CESTIM
 
@@ -36,13 +35,6 @@ C  BGK ARRAYS:
         EES_BGK=0._DP
         STV_BGK=0._DP
         EE_BGK=0._DP
-      ENDIF
-C  COP ARRAYS:
-      IF (NSIGI_COP.GT.0) THEN
-        STVS_COP=0._DP
-        EES_COP=0._DP
-        STV_COP=0._DP
-        EE_COP=0._DP
       ENDIF
 
 C  SPECTRA

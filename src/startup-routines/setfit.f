@@ -431,30 +431,30 @@ C
 C
       RETURN
   990 CONTINUE
-      WRITE (iunout,*) 'ERROR IN SUBR. SETFIT '
+      WRITE (iunout,*) 'ERROR IN SUBR. SETFIT'
       WRITE (iunout,*)
      .  'INCONSISTENCY IN IGNORABLE COORDINATES DETECTED'
       WRITE (iunout,*) 'BETWEEN REQUESTING SURFACE I= ',I,' AND IE= ',IE
       WRITE (iunout,*) 'JUMLIM(I),LINFX,LINFY,LINFZ ',
      .                  JUMLIM(I),LINFX,LINFY,LINFZ
-      WRITE (iunout,*) 'EXIT CALLED '
+      WRITE (iunout,*) 'EXIT CALLED'
       CALL EIRENE_EXIT_OWN(1)
   991 CONTINUE
-      WRITE (iunout,*) 'ERROR IN SUBR. SETFIT '
+      WRITE (iunout,*) 'ERROR IN SUBR. SETFIT'
       WRITE (iunout,*) 'FIT OPTION FOR RLB(IE) = ',RLB(IE),
      .                 ' NOT FORESEEN'
       WRITE (iunout,*) 'REQUEST FROM SURFACE NO. ',I
-      WRITE (iunout,*) 'IE = ',IE,' EXIT CALLED '
+      WRITE (iunout,*) 'IE = ',IE,' EXIT CALLED'
       CALL EIRENE_EXIT_OWN(1)
   992 CONTINUE
-      WRITE (iunout,*) 'ERROR IN SUBR. SETFIT '
+      WRITE (iunout,*) 'ERROR IN SUBR. SETFIT'
       WRITE (iunout,*) 'THE VALID AREAS DO NOT INTERSECT'
       WRITE (iunout,*) 'I,IE ',I,IE
       CALL EIRENE_EXIT_OWN(1)
   993 CONTINUE
-      WRITE (iunout,*) 'ERROR IN SUBR. SETFIT '
+      WRITE (iunout,*) 'ERROR IN SUBR. SETFIT'
       WRITE (iunout,*) 'STRAIGHT LINE NO I= ',I,' COLLAPSED TO A POINT'
       WRITE (iunout,*)
-     .  'SURFACE NO. I IS REDUNDANT. USE EIRMOD_CH0 I/I OPTION '
+     .  'SURFACE NO. I IS REDUNDANT. USE EIRMOD_CH0 I/I OPTION'
       CALL EIRENE_EXIT_OWN(1)
       END

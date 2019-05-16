@@ -827,7 +827,7 @@ C
           LHITP=.FALSE.
 C
           DO 6012 J=1,NPPLG
-            DO 6012 K=NPOINT(1,J),NPOINT(2,J)-1
+            DO K=NPOINT(1,J),NPOINT(2,J)-1
 
               IF (I.EQ.MPOL.and.K.EQ.JPOL) cycle
 
@@ -850,6 +850,7 @@ C
                 TIMPOL(I,NTIM(I))=T1
                 IIMPOL(I,NTIM(I))=K
               ENDIF
+            END DO
  6012     CONTINUE
 C
  6015     ISW=0
@@ -1511,7 +1512,7 @@ C  NJUMP=3:  INTERNAL GRID SURFACE, STOP AND GO.
       ENDIF
 #endif
 
-c     if (nltrc.and.tim.ne.zt) write (6,*) 'error, npanu ',npanu,tim,zt
+c     if (nltrc.and.tim.ne.zt) write (iunout,*) 'error, npanu ',npanu,tim,zt
 
       CALL EIRENE_TIMUSR(NRCELL,X0,Y0,Z0,VELX,VELY,VELZ,NJUMP,
      .                   NEWCEL,TIM,ICOS,IERR,NPANU,NLSRFX)

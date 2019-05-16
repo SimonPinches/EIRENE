@@ -55,7 +55,7 @@ C
 
 cdr: set hard-wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3
 cdr: at this lower limit density the fits are produced such
-cdr: that they collapse to the Corona limit values.
+cdr: that they collapse to the corona limit values.
       DEIMIN=LOG(1.D8)
       IF (NSTORDR >= NRAD) THEN
         DO 10 J=1,NSBOX
@@ -104,7 +104,7 @@ C  correction due to energy dependence in rec. cross-section
 C  corsum=d(ln<sig v>)/d(ln Te)
 c  corsum approx -0.5 for Te --> 0
 c  corsum approx  0.0 for Te approx 11.43
-c  corsum approx +1.0 for Te --> infty
+c  corsum approx +1.0 for Te --> infinity
                     corsum=(-0.5_dp*zx+0.59)/(zx+0.59)
                     EELRC1(IRRC,J)=-(1.5+CORSUM)*TEIN(J)*TABRC1(IRRC,J)
    51             CONTINUE
@@ -155,7 +155,7 @@ C  correction due to energy dependence in rec. cross-section
 C  corsum=d(ln<sig v>)/d(ln Te)
 c  corsum approx -0.5 for Te --> 0
 c  corsum approx  0.0 for Te approx 11.5
-c  corsum approx +1.0 for Te --> infty
+c  corsum approx +1.0 for Te --> infinity
                     corsum=(-0.5_dp*zx+0.35)/(zx+0.35)
                     EELRC1(IRRC,J)=-(1.5+CORSUM)*TEIN(J)*TABRC1(IRRC,J)
    53             CONTINUE
@@ -206,7 +206,7 @@ C  RECOMBINATION MODEL FOR BULK IONS
               LGPRC(IPLS,IDSC)=IRRC
 cdr  for notational consistency: here should come a call to routine xstrc,
 cdr  for RC type processes
-cdr  as already in case of xsecta, xsectm, xsecti, etc..,
+cdr  as already in case of xsecta, xsectm, xsecti, etc...
 cdr  There for the corresponding ei,el,cx and pi processes
 cdr  this next stuff should go into xstrc.f
               ITYP=EIRENE_IDEZ(ISCD1P(IPLS,NRC),1,3)
@@ -528,33 +528,33 @@ C
       RETURN
 C
   990 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED '
+      WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED'
       WRITE (iunout,*) 'INVALID SPECIES INDEX FOR RECOMBINATION'
       CALL EIRENE_EXIT_OWN(1)
   992 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED '
+      WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED'
       WRITE (iunout,*) 'NREC TOO SMALL, CHECK PARAMETER STATEMENTS'
       CALL EIRENE_EXIT_OWN(1)
   993 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED '
+      WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED'
       WRITE (iunout,*) 'MASS CONSERVATION VIOLATED, IPLS,IRRC ',
      .                  IPLS,IRRC
       CALL EIRENE_EXIT_OWN(1)
   994 CONTINUE
       WRITE (iunout,*) 'ERROR DETECTED IN XSECTP.'
-      WRITE (iunout,*) 'REACTION NO. KK= ',KK, 'NOT READ FROM FILE '
+      WRITE (iunout,*) 'REACTION NO. KK= ',KK, 'NOT READ FROM FILE'
       WRITE (iunout,*) 'IPLS = ',IPLS
       WRITE (iunout,*) 'ISWR(KK) = ',ISWR(KK)
       WRITE (iunout,*) 'EXIT CALLED'
       CALL EIRENE_EXIT_OWN(1)
   995 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED '
+      WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED'
       WRITE (iunout,*)
      .  'SPECIES INDEX OF SECONDARY PARTICLE OUT OF RANGE'
       WRITE (iunout,*) 'KK ',KK
       CALL EIRENE_EXIT_OWN(1)
   996 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED '
+      WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED'
       WRITE (iunout,*)
      .  'WRONG REACTION INDEX SPECIFIED FOR KREAD IN REACTION KK'
       WRITE (iunout,*) 'KK ',KK

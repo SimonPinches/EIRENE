@@ -86,7 +86,7 @@ C
       select case (LEVGEO)
       case (1)
 C
-C 1D SLAB-MODEL, DY = YDF, DZ = ZDF
+C 1D SLAB MODEL, DY = YDF, DZ = ZDF
 C
         DO 110 IR=1,NR1STM
           AREA1(IR)=(RSURF(IR+1)-RSURF(IR))*YDF
@@ -138,10 +138,11 @@ C
 C   1D GRID OF POLYGONS
 C
         DO 139 K=1,NPPLG
-          DO 139 J=NPOINT(1,K),NPOINT(2,K)-1
+         DO J=NPOINT(1,K),NPOINT(2,K)-1
           AR=EIRENE_ARTRIA(0._DP,0._DP,XPOL(1,J),YPOL(1,J),
      .                          XPOL(1,J+1),YPOL(1,J+1))
           AREA1(0)=AREA1(0)+AR
+         END DO
   139   CONTINUE
         AREA1(0)=ABS(AREA1(0))
 C
@@ -156,8 +157,9 @@ C
 C
         DO 131 IR=1,NR1STM
           DO 132 K=1,NPPLG
-            DO 132 J=NPOINT(1,K),NPOINT(2,K)-1
+            DO J=NPOINT(1,K),NPOINT(2,K)-1
               AREA1(IR)=AREA1(IR)+AREAP(IR,J)
+            END DO
   132     CONTINUE
   131   CONTINUE
 C
@@ -167,10 +169,11 @@ C   PARTICLES SEE A TORUS
             XC=0.
             AR=0.
             DO 135 JP=1,NPPLG
-              DO 135 J=NPOINT(1,JP),NPOINT(2,JP)-1
+              DO J=NPOINT(1,JP),NPOINT(2,JP)-1
                 IN = IR + (J-1)*NR1ST
                 XC=XC+AREAP(IR,J)*XCOM(IN)
                 AR=AR+AREAP(IR,J)
+              END DO
   135       CONTINUE
             XC=XC/(AR+EPS60)
 !PB            VOL(IR)=AREA1(IR)*(XC+RMTOR)*PI2A
@@ -189,10 +192,11 @@ C   PARTICLES SEE A TORUS APPROXIMATED BY NTTRAM STRAIGHT CYLINDERS
             XC=0.
             AR=0.
             DO 137 JP=1,NPPLG
-              DO 137 J=NPOINT(1,JP),NPOINT(2,JP)-1
+              DO J=NPOINT(1,JP),NPOINT(2,JP)-1
                 IN = IR + (J-1)*NR1ST
                 XC=XC+AREAP(IR,J)*XCOM(IN)
                 AR=AR+AREAP(IR,J)
+              END DO
   137       CONTINUE
             XC=XC/(AR+EPS60)
             VOL(IR)=AREA1(IR)*(XC+RMTOR)*PI2AT
@@ -349,12 +353,13 @@ C
         DO 220 I=1,NR1STM
           NCELL1 = I+(      (KP-1)*NP2T3)*NR1P2
           VSAVE = VOL(NCELL1)
-          DO 220 J=1,NP2NDM
+          DO J=1,NP2NDM
             FAC2=(PSURF(J+1)-PSURF(J))/YDF
             NCELLJ=I+((J-1)+(KP-1)*NP2T3)*NR1P2
             XCOM(NCELLJ)=RHOZNE(I)
             YCOM(NCELLJ)=PHZONE(J)
             VOL(NCELLJ)=VSAVE*FAC2
+          END DO
   220   CONTINUE
 C
       case (2)
@@ -379,7 +384,7 @@ C
 C
         IF (NLTRT) THEN
           DO 262 I=1,NR1STM
-            DO 262 J=1,NP2NDM
+            DO J=1,NP2NDM
               K=1
               NCELL=I+((J-1)+(K-1)*NP2T3)*NR1P2
 !PB              VOL(NCELL)=AREA(NCELL)*(XCOM(NCELL)+RMTOR)*PI2A
@@ -388,30 +393,33 @@ C
               WRITE (iunout,*) 'ERROR IN SUBR. VOLUME, VOL.LT.0'
               CALL EIRENE_MASJ2('J,I             ',I,J)
 C             CALL EIRENE_EXIT_OWN(1)
+            END DO
   262     CONTINUE
         ELSEIF (NLTRZ) THEN
           DO 260 I=1,NR1STM
-            DO 260 J=1,NP2NDM
+            DO J=1,NP2NDM
               K=1
               NCELL=I+((J-1)+(K-1)*NP2T3)*NR1P2
               VOL(NCELL)=AREA(NCELL)*ZDF
               IF (VOL(NCELL).GE.0.D0) GOTO 260
               WRITE (iunout,*) 'ERROR IN SUBR. VOLUME, VOL.LT.0'
               CALL EIRENE_MASJ2('J,I             ',I,J)
-C             CALL EXIT_OWN(1)
+C             CALL EIRENE_EXIT_OWN(1)
+            END DO
   260     CONTINUE
         ELSEIF (NLTRA) THEN
 !PB          PI2AT=TANAL/ALPHA*PI2A
           PI2AT=TANAL/ALPHA*ZDF
           DO 261 I=1,NR1STM
-            DO 261 J=1,NP2NDM
+            DO J=1,NP2NDM
               K=1
               NCELL=I+((J-1)+(K-1)*NP2T3)*NR1P2
               VOL(NCELL)=AREA(NCELL)*(XCOM(NCELL)+RMTOR)*PI2AT
               IF (VOL(NCELL).GE.0.D0) GOTO 261
               WRITE (iunout,*) 'ERROR IN SUBR. VOLUME, VOL.LT.0'
               CALL EIRENE_MASJ2('J,I             ',I,J)
-C             CALL EXIT_OWN(1)
+C             CALL EIRENE_EXIT_OWN(1)
+            END DO
   261     CONTINUE
         ENDIF
 C
@@ -419,8 +427,8 @@ C
 C
         IF (NLTRT) THEN
           DO 265 I=1,NR1STM
-            DO 265 JP=1,NPPLG
-              DO 265 J=NPOINT(1,JP),NPOINT(2,JP)-1
+            DO JP=1,NPPLG
+              DO J=NPOINT(1,JP),NPOINT(2,JP)-1
                 K=1
                 NCELL=I+((J-1)+(K-1)*NP2T3)*NR1P2
                 LDAMCEL(NCELL) = AREAP(I,J) <= EPS30
@@ -440,13 +448,15 @@ C                 CALL EIRENE_EXIT_OWN(1)
                 ELSE
                   VOL(NCELL) = 0._DP
                 END IF
+              END DO
+            END DO
   265     CONTINUE
         ELSEIF (NLTRA) THEN
 !PB          PI2AT=TANAL/ALPHA*PI2A
           PI2AT=TANAL/ALPHA*ZDF
           DO 267 I=1,NR1STM
-            DO 267 JP=1,NPPLG
-              DO 267 J=NPOINT(1,JP),NPOINT(2,JP)-1
+            DO JP=1,NPPLG
+              DO J=NPOINT(1,JP),NPOINT(2,JP)-1
                 K=1
                 NCELL=I+((J-1)+(K-1)*NP2T3)*NR1P2
                 LDAMCEL(NCELL) = AREAP(I,J) <= EPS30
@@ -465,11 +475,13 @@ C                 CALL EIRENE_EXIT_OWN(1)
                 ELSE
                   VOL(NCELL) = 0._DP
                 END IF
+              END DO
+            END DO 
   267     CONTINUE
         ELSEIF (NLTRZ) THEN
           DO 268 I=1,NR1STM
-            DO 268 JP=1,NPPLG
-              DO 268 J=NPOINT(1,JP),NPOINT(2,JP)-1
+            DO JP=1,NPPLG
+              DO J=NPOINT(1,JP),NPOINT(2,JP)-1
                 K=1
                 NCELL=I+((J-1)+(K-1)*NP2T3)*NR1P2
                 LDAMCEL(NCELL) = AREAP(I,J) <= EPS30
@@ -488,6 +500,8 @@ C                 CALL EIRENE_EXIT_OWN(1)
                 ELSE
                   VOL(NCELL) = 0._DP
                 END IF
+              END DO
+            END DO
   268     CONTINUE
         ENDIF
 C
@@ -515,13 +529,15 @@ C
 C
         IT=1
         DO 320 J=1,NP2ND
-        DO 320 I=1,NR1ST
+         DO I=1,NR1ST
           NCELL1 = I+((J-1)            )*NR1P2
           VSAVE=VOL(NCELL1)
-          DO 320 K=1,NT3RDM
+          DO K=1,NT3RDM
             FAC3=(ZSURF(K+1)-ZSURF(K))/ZDF
             NCELLK=I+((J-1)+(K-1)*NP2T3)*NR1P2
             VOL(NCELLK)=VSAVE*FAC3
+          END DO
+         END DO
   320   CONTINUE
 C
       ENDIF

@@ -7,7 +7,6 @@ C
       USE EIRMOD_PARMMOD
       USE EIRMOD_CSDVI
       USE EIRMOD_CSDVI_BGK
-      USE EIRMOD_CSDVI_COP
       USE EIRMOD_CGRID
       USE EIRMOD_CSPEI
       USE EIRMOD_CCONA
@@ -37,17 +36,6 @@ C  BGK TALLIES
           ST=MAX(0._DP,STVS_BGK(K))
           STVS_BGK(K)=SQRT(ST)/(ABS(EES_BGK(K))+EPS60)
  1217   CONTINUE
-      ENDIF
-C  COUPLE TALLIES
-      IF (NSIGI_COP.GT.0) THEN
-        DO K=1,NCPVI_STAT
-          DO I=1,NSBOX_TAL
-            ST=MAX(0._DP,STV_COP(K,I))
-            STV_COP(K,I)=SQRT(ST)/(ABS(EE_COP(K,I))+EPS60)
-          END DO
-          ST=MAX(0._DP,STVS_COP(K))
-          STVS_COP(K)=SQRT(ST)/(ABS(EES_COP(K))+EPS60)
-        END DO
       ENDIF
 C  SPECTRUM TALLIES
       IF ((NSTRAI > 1) .AND. (NSMSTRA > 0)) THEN
@@ -99,15 +87,6 @@ C
  1251   CONTINUE
       ENDIF
 C
-      IF (NSIGI_COP.GT.0) THEN
-        DO IB=1,NCPVI_STAT
-          STVS_COP(IB)=STVS_COP(IB)*100.D0
-          DO J=1,NSBOX_TAL
-            STV_COP(IB,J)=STV_COP(IB,J)*100.D0
-          END DO
-        END DO
-      ENDIF
-
       IF ((NSTRAI > 1) .AND. (NSMSTRA > 0)) THEN
         IF (NSIGI_SPC.GT.0) THEN
           DO ISPC=1,NADSPC

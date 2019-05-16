@@ -1,9 +1,11 @@
+c  jan. 2019:  lgdft removed.  read (....,IOSTAT=IO)
 c  oct. 2018:  iflg=0 read primary source data (incl. stepfunctions)
 c              else   no reading of primary source data 
 c             (also not of  stepfunctions)
 c              remove redundant logical tally LGDFT
 c  feb. 2018:  restructured because of switchable input tallies
 c              Tests: are the same input tallies active in read and write runs?
+
 c  sept. 05:  five more tallies added to step function, see also CSTEP.f
 c  nov.  05:  add eltot and ve to step function data
 
@@ -20,7 +22,6 @@ C           = 0   do not read primary source data COMSOU
 C          else   do also read data from COMSOU
 
       SUBROUTINE EIRENE_WRPLAM_LONG(TRCFLE,IFLG)
-      USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
       USE EIRMOD_COMPRT, ONLY: IUNOUT
@@ -187,5 +188,5 @@ c  read primary source parameters
      .                 ' IN ARRAY PLSTLS ARE DIFFERENT FROM',
      .                 ' PRIOR JOB WHICH WROTE FORT.13 '
       CALL EIRENE_EXIT_OWN(1)
-     
+
       END

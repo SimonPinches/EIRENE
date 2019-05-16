@@ -38,10 +38,7 @@ C
       CHARACTER(17) :: CH
       CHARACTER(20) :: CHAXS(3)
 C
-      DO 1 I=1,3
-      DO 1 J=1,128
-      DO 1 K=1,128
-    1   XYZ(I,J,K)=-75.75E20
+      XYZ=-75.75E20
 C
       IF (LEVGEO.LE.1.OR.LEVGEO.GT.3.OR..NOT.LPTOR3(IBLD)) THEN
         WRITE (iunout,*) 'PLOTOPTION NOT READY. RETURN FROM PL3DPG '
@@ -60,8 +57,8 @@ C
       RMI=1.D60
       RMA=-1.D60
       DO 10 I=1,NR1ST
-        DO 10 J=1,NPPLG
-          DO 10 K=NPOINT(1,J),NPOINT(2,J)
+        DO J=1,NPPLG
+          DO K=NPOINT(1,J),NPOINT(2,J)
             XMI=MIN(XMI,XPOL(I,K))
             XMA=MAX(XMA,XPOL(I,K))
             YMI=MIN(YMI,YPOL(I,K))
@@ -78,6 +75,8 @@ C  SEARCH MINIMA AND MAXIMA OF DEPENDENT VARIABLE Z=ARR
                 RMA=MAX(RMA,ARR(IR))
               ENDIF
             ENDIF
+          END DO
+        END DO
    10 CONTINUE
 C
       REMIN=ZMI

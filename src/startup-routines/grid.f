@@ -73,16 +73,16 @@ C    IND=3:  3RD GRID, Z OR TOROIDAL COORDINATE
 C STATEMENT FUNCTION FOR GRID PARAMETERS FOR LEVGEO=2 OPTION
       ELPARM(R,PIN,POUT,EX1)=(PIN-POUT)*(1.-R**EX1)**1.+POUT
 C
-      GOTO(100,200,300),IND
+      SELECT CASE (IND)
 C
 C   RADIAL GRID
 C
-  100 CONTINUE
+      CASE (1) ! IND
 C
       IF (NR1ST.LT.2) RETURN
 C
-      select case (LEVGEO)
-      case (1)
+      SELECT CASE (LEVGEO)
+      CASE (1) ! LEVGEO
 C
 C  GRID DATA GENERATION FOR LEVGEO.EQ.1
 C
@@ -114,7 +114,7 @@ C
           CALL EIRENE_LEER(2)
         ENDIF
 C
-      case (2)
+      CASE (2) ! LEVGEO
 C
 C  GRID DATA GENERATION FOR LEVGEO.EQ.2
 C
@@ -406,7 +406,7 @@ C
 C
         CALL EIRENE_SNEIGH
 C
-      case (4)
+      CASE (4) ! LEVGEO
 C
 C  GRID DATA GENERATION FOR LEVGEO.EQ.4
 C
@@ -657,7 +657,7 @@ C
         ENDIF
 C
 C
-      case (5)
+      CASE (5) ! LEVGEO
 C
 C  GRID DATA GENERATION FOR LEVGEO.EQ.5
 C
@@ -771,7 +771,7 @@ C  SIDE 3-1-4
             IF ((NTBAR(IS,ITET) == 0) .AND. (INMTIT(IS,ITET) == 0)) THEN
               IC=IC+1
               WRITE (iunout,*) ' TETRAHEDRON WITH NO NEIGHBORS AND NO ',
-     .                    'REFLECTION MODEL FOUND '
+     .                    'REFLECTION MODEL FOUND'
               WRITE (iunout,*) ' ITET = ',ITET,' ISIDE = ',IS
               write (iunout,*) nteck(itside(1,is),itet),
      .                    nteck(itside(2,is),itet),
@@ -780,7 +780,7 @@ C  SIDE 3-1-4
             IF (NTBAR(IS,ITET) < 0) THEN
               IF (SUM(NTBAR(1:4,ITET)) > -4) THEN
                 WRITE (iunout,*)
-     .            ' TETRAHEDRON WITH NEIGHBOR -1 DETECTED '
+     .            ' TETRAHEDRON WITH NEIGHBOR -1 DETECTED'
                 WRITE (iunout,*) ' ITET = ',ITET,' ISIDE = ',IS
                 WRITE (iunout,*) ' NTBAR(ITET) = ',NTBAR(1:4,ITET)
                 IC=IC+1
@@ -796,7 +796,7 @@ C  SIDE 3-1-4
 c  transparent surfaces, that switch into additional cells, are legal.
 c  all other transparent cell faces must either have a neighbor, or a surface boundary condition.
                 WRITE (iunout,*) 'SIDE',IS,' OF TETRAHEDRON ',ITET,
-     .              ' IS TRANSPARENT BUT HAS NO NEIGHBOR '
+     .              ' IS TRANSPARENT BUT HAS NO NEIGHBOR'
                 LERROR = .TRUE.
               END IF
             END IF
@@ -867,12 +867,12 @@ C  CHECK OUTER NORMALS
 
         ENDIF
 C
-      case (10)
+      CASE (10) ! LEVGEO
 C
 C  GENERAL GEOMETRY OPTION: NOTHING TO DONE HERE
         NCORNER=0
 C
-      end select
+      END SELECT
 C
 C  SET GEOMETRICAL CONSTANTS FOR IGNORABLE Y OR POLOIDAL COORDINATE
 C  THESE MAY BE REVISED IF A 2ND (Y- OR POL.) GRID IS DEFINED BELOW
@@ -1005,8 +1005,8 @@ C
 C
 C  SET SURFACE AREA OF NON-DEFAULT STANDARD SURFACES
 C
-      select case (LEVGEO)
-      case (1)
+      SELECT CASE (LEVGEO)
+      CASE (1) ! LEVGEO
         DO 180 ISTS=1,NSTSI
           IF (INUMP(ISTS,1).NE.0) THEN
             IR=INUMP(ISTS,1)
@@ -1020,7 +1020,7 @@ C
           ENDIF
   180   CONTINUE
 
-      case (4)
+      CASE (4) ! LEVGEO
         DO ISTS=1,NSTSI
           NLJ=NLIM+ISTS
           SAREA(NLJ)=0.
@@ -1138,11 +1138,9 @@ C     ELSEIF (LEVGEO.EQ....) THEN
       END DO
 
 C
-      RETURN
-C
 C   POLOIDAL OR Y-GRID
 C
-  200 CONTINUE
+      CASE (2) ! IND
 C
 C  IF NLSYMP, Y-GRID MUST BE SYMMETRIC: PSURF(I)=PSURF(NP2ND-I+1)
 C
@@ -1451,11 +1449,9 @@ C TO BE WRITTEN
       END DO
 
 C
-      RETURN
-C
 C   TOROIDAL OR Z-GRID
 C
-  300 CONTINUE
+      CASE (3) ! IND
 C
 C  IF NLSYMT, Z-GRID MUST BE SYMMETRIC
 C
@@ -1520,6 +1516,7 @@ C
         END DO
       END DO
 C
+      END SELECT ! IND
       RETURN
 C
   991 CONTINUE

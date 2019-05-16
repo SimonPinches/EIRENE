@@ -189,10 +189,10 @@ c  K  leading dimension of input tally ITAL
 C
           TOTAL=0.D0
           DO 121 IB=1,NBMLT
-          NBLCKA=NSTRD*(IB-1)
-          DO 121 IR=1,NXM
-          DO 121 IP=1,NYM
-          DO 121 IT=1,NZM
+           NBLCKA=NSTRD*(IB-1)
+           DO IR=1,NXM
+           DO IP=1,NYM
+           DO IT=1,NZM
             I=IR + ((IP-1)+(IT-1)*NP2T3)*NR1P2 + NBLCKA
             SELECT CASE (ITAL)
             CASE (1)
@@ -256,6 +256,9 @@ C  (31...NTALI) GRADIENTS
               HELPW(I,K)=1.D0
             END SELECT
             TOTAL=TOTAL+HELPW(I,K)
+           END DO
+           END DO
+           END DO
   121     CONTINUE
 C
 C  SAME LOOP AGAIN, OVER ADDITIONAL CELL REGION

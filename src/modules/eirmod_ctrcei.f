@@ -6,7 +6,6 @@ cdr           and remove (deactivate) the unused trcdbg... flags inherited from
 cdr           V.K. proprietary versions
       MODULE EIRMOD_CTRCEI
 
-      USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
 
       IMPLICIT NONE

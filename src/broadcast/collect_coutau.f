@@ -25,8 +25,9 @@ c    npesta(istra):  master processor ("group-leader") for each stratum ISTRA
 c
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: NADSPC, NLIMPS, NLMPGS, NRTAL, NSTRA,
-     .                          NSMSTRA
-      USE EIRMOD_CPES, ONLY: MY_PE, I_AM_LEADER
+     .                          NSMSTRA, NSTRAP
+      USE EIRMOD_CAI, ONLY: XMCT
+      USE EIRMOD_CPES, ONLY: MY_PE, I_AM_LEADER, GET_LEADER_COMM
       USE EIRMOD_COUTAU, ONLY: NOUTAU, EIRENE_WRITE_COUTAU,
      .                         EIRENE_READ_COUTAU
       USE EIRMOD_CSPEZ, ONLY: LOGATM, LOGION, LOGMOL, LOGPHOT, LOGPLS
@@ -42,34 +43,27 @@ c
       IMPLICIT NONE
 
       REAL(DP), ALLOCATABLE :: OUTAU(:), help(:)
-      integer :: ier, imaster, icomgrp, ier1, i,
+      integer :: ier, icomgrp, ier1, i,
      .           mxdim, ns, ir
       logical, allocatable :: lhelp(:)
 
-C When the current process is a master processes of any stratum it gets imaster= "1".
       if (i_am_leader()) then
-        imaster = 1
-      else
-        imaster=MPI_UNDEFINED
-      end if
-
-      call mpi_barrier(mpi_comm_world,ier)
-
-      call mpi_comm_split (mpi_comm_world,imaster,my_pe,icomgrp,ier)
-
-      if (imaster == 1) then
+        icomgrp = get_leader_comm()
         ALLOCATE (OUTAU(NOUTAU))
         CALL EIRENE_WRITE_COUTAU (OUTAU, IUNOUT)
 
         mxdim = max(noutau,nidv,nids,3*nsigci,nsigvi,nsigsi)
         allocate (help(mxdim))
 
-
         CALL MPI_REDUCE(OUTAU,help,NOUTAU,
      .                  mpi_double_precision,mpi_sum,0,icomgrp,ier)
 
         if (my_pe == 0) CALL EIRENE_READ_COUTAU (help, IUNOUT)
         DEALLOCATE (OUTAU)
+
+        CALL MPI_REDUCE(XMCT,help,NSTRAP,
+     .                  mpi_double_precision,mpi_sum,0,icomgrp,ier)
+        if (my_pe == 0) XMCT = help(:NSTRAP)
 
         mxdim = (max(NMOLI,NATMI,NIONI,NPHOTI,NPLSI)+1)*(NSTRA+1)
         allocate (lhelp(mxdim))
@@ -213,6 +207,7 @@ c  variances of surface-averaged output tallies
      .                      MPI_DOUBLE_PRECISION,MPI_SUM,0,ICOMGRP,IER1)
             if (my_pe == 0) FF(1:NSIGSI,IR) = help(1:nsigsi)
           end do
+
           CALL MPI_REDUCE(STVWS,help,NSIGSI,
      .                    MPI_DOUBLE_PRECISION,MPI_SUM,0,ICOMGRP,IER1)
           if (my_pe == 0) STVWS(1:NSIGSI) = help(1:nsigsi)
@@ -224,11 +219,7 @@ c  variances of surface-averaged output tallies
 
         deallocate (help)
 
-        call mpi_comm_free(icomgrp,ier)
-
-      end if ! imaster=1
-
-      call mpi_barrier(mpi_comm_world,ier)
+      end if ! I_am_leader
 
       return
       end subroutine eirene_collect_coutau

@@ -957,7 +957,7 @@ c
       i3 = index(zeile(i2+1:),' ')
       write (form,'(A4,i0,a1,i0,a2)') '(5(E',i2+i3-1,'.',i2-i1-1,'))'
       backspace kard
-c     write (6,*) 'plasm: detected format ', form
+c     write (iunout,*) 'plasm: detected format ', form
 
       ND1 = NDIMX + 2
       LIM = (ND1/5)*5 - 4

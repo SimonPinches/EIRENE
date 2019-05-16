@@ -17,7 +17,7 @@ cdr  26.11.15: additional parameter IC in call to H_colrad,
 cdr            for later use to identify "visited cells"
 cdr  sept. 16: started to add extrapolation options. not ready....
 cdr  jan.  18: call driver routine for CR models: colrad.f
-cdr            tbd:  eletron energy loss rates can change sign.
+cdr            tbd: electron energy loss rates can change sign.
 cdr            Be careful with log(e_src). Routine should only be called with
 cdr            LEXP=.true.
 
@@ -248,7 +248,7 @@ c..............................................................
 
 !  proprietary option: not ready
         goto 990
-! SINGLE PARAMETER 1D TABLE  (E.G. HYDKIN)
+! SINGLE PARAMETER 1D TABLE (E.G. HYDKIN)
 cdr  extrapolation data: for 1d tabulated data:  option not ready (only CxHy data ?)
 cdr  to be added here
 

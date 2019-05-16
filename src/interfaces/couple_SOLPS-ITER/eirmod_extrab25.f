@@ -451,8 +451,8 @@
       !C map 1d-EIRENE neutral densities and temperatures on 2d-arrays
       !c and change the units to SI for plotting in B2
       !c
-cdr   write(6,*) 'istra ',istra
-cdr   write(6,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
+cdr   write(iunout,*) 'istra ',istra
+cdr   write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
       !crfs     IF (WTOTP(0,ISTRA).EQ.0.) GOTO 60
       do iatm=1,natmi
         volcel = 0.d0
@@ -933,7 +933,7 @@ cdr   write(6,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
 
       !c*** print some neutral fluxes across the "non-default" surfaces
 
-      write(6,'(/17x,2(2x,a8),100(3x,a6,i2))') '  area','  power',
+      write(iunout,'(/17x,2(2x,a8),100(3x,a6,i2))') '  area','  power',
      .             ('atflx',i,i=1,natmi),('mlflx',i,i=1,nmoli),
      .             ('atflxr',i,i=1,natmi),('mlflxr',i,i=1,nmoli),
      .             ('atflxp',i,i=1,natmi),('mlflxp',i,i=1,nmoli),
@@ -964,7 +964,7 @@ cdr   write(6,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
      .      wldra(j,1,0).ne.0 .or. wldrm(j,1,0).ne.0 .or.
      .      wldpa(j,1,0).ne.0 .or. wldpm(j,1,0).ne.0 .or.
      .      wldpp(j,1,0).ne.0)
-     .         write(6,'(a,i4,1p,100e11.3)')
+     .         write(iunout,'(a,i4,1p,100e11.3)')
      .           'non-def-surf ',i, 1.e-4*sarea(j), 1.e-6*wldnek(j,0),
      .               (wldna(j,k,0),k=1,natmi),(wldnm(j,k,0),k=1,nmoli),
      .               (wldra(j,k,0),k=1,natmi),(wldrm(j,k,0),k=1,nmoli),

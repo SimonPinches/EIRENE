@@ -7,7 +7,7 @@ c             4) additional species index (ipls) in eapl,empl,eipl
 c             5) LLCUT included
 c             6) BFINTF set  (as in couple_B2, still not from B2.5 plasma files)
 c             7) if not lshort: call eirene_save_tallies
-c             8) sigma_cop removed. Ressni, ressee,..., now: per stratum. Allocatable
+c             8) Ressni, ressee,..., now: per stratum. Allocatable
 c             9) clarify: dimensions (allocations) in braeir: b2 vs. b2.5 ??
 c            10) add. elstep, eemax,esheath in step fct. NEMODS=2,3, RATHER 8,9
 c            11) EPEL --> EPEL_COP  (also in couple_B2)
@@ -108,7 +108,6 @@ C
       USE EIRMOD_CGEOM
       USE EIRMOD_CSDVI
       USE EIRMOD_CSDVI_BGK
-      USE EIRMOD_CSDVI_COP
       USE EIRMOD_COMPRT
       USE EIRMOD_COMNNL
       USE EIRMOD_COMSOU
@@ -1793,7 +1792,6 @@ C  NOTHING TO BE DONE
      .               NSDVI1,SDVI1,NSDVI2,SDVI2,
      .               NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .               NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
-     .               NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .               NSIGI_SPC,TRCFLE)
         ELSE
           WRITE (iunout,*) 'ERROR IN INFCOP: STRATUM ISTRAI= ',ISTRAI

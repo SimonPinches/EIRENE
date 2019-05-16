@@ -42,7 +42,6 @@ C ALSO: NREACI --> NREACI+1 IS USED.
       USE EIRMOD_CGEOM
       USE EIRMOD_CSDVI
       USE EIRMOD_CSDVI_BGK
-      USE EIRMOD_CSDVI_COP
       USE EIRMOD_COMPRT
       USE EIRMOD_COMSOU
       USE EIRMOD_CLGIN
@@ -175,7 +174,6 @@ C     NOTHING TO BE DONE
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
-     .             NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .             NSIGI_SPC,TRCFLE)
       ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.IST.EQ.0) THEN
         IESTR=IST
@@ -184,7 +182,6 @@ C     NOTHING TO BE DONE
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
-     .             NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .             NSIGI_SPC,TRCFLE)
       ELSE
         WRITE (IUNOUT,*) 'ERROR IN HE_EMIS: DATA FOR STRATUM ISTRA= ',
@@ -250,10 +247,11 @@ C
         DPL=0.
         DO 150 J=0,JEND
           DEJ=DEF**J    !  =1.0 FOR J=0
-          DO 150 I=0,8
+          DO I=0,8
             TEI=TEF**I
             DAT =DAT + DA(I,J)*TEI*DEJ
             DPL =DPL + DB(I,J)*TEI*DEJ
+          END DO
   150   CONTINUE
         DAT =EXP(DAT)
         DPL =EXP(DPL)
@@ -381,7 +379,6 @@ C  WRITE ON STREAM 11 DATA FOR STRATUM NO. IST
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
      .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .              NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
-     .              NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .              NSIGI_SPC,TRCFLE)
 C
         IRC=2
@@ -399,7 +396,6 @@ C  WRITE ON STREAM 11 ONLY DATA FOR SUM OVER STRATA
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
      .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .              NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
-     .              NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .              NSIGI_SPC,TRCFLE)
 C
         IRC=2

@@ -186,7 +186,6 @@ C
       USE EIRMOD_CGEOM
       USE EIRMOD_CSDVI
       USE EIRMOD_CSDVI_BGK
-      USE EIRMOD_CSDVI_COP
       USE EIRMOD_COMPRT
       USE EIRMOD_COMNNL
       USE EIRMOD_COMSOU
@@ -1099,7 +1098,7 @@ C
         IF (IGJUM0(I)==0) THEN
 C  SURFACE I IS ACTIVE
           IF (ILPLG(I).NE.0) THEN
-C  SURFACE I IS PART IF A CONTOUR USED FOR THE MESHGENERATOR
+C  SURFACE I IS PART IF A CONTOUR USED FOR THE MESH GENERATOR
             VSX=P2(1,I)-P1(1,I)
             VSY=P2(2,I)-P1(2,I)
             VS=SQRT(VSX**2+VSY**2)+EPS60
@@ -1248,19 +1247,19 @@ C  NCLTAL(ITRI):  TRIANGLE ITRI IS PART OF ORIGINAL STRUCTURED GRID CELL IX,IY,
 C                 WITH IX,IY, CODED IN THE 1D ARRAY FORM (NCELL) OF EIRENE STANDARD GRIDS
 C                 NCELL=NCLTAL(ITRI)
       IF (LCOARSE) THEN
-      	write (iunout,*) 'SCORING OF VOLUME-AVERAGED TALLIES  '
+        write (iunout,*) 'SCORING OF VOLUME-AVERAGED TALLIES  '
         write (iunout,*) 'IS ON COARSE GRID CELLS NCELL ONLY. '
-      DO ITRI=1,NTRII
-        IY=IYTRI(ITRI)
-        IX=IXTRI(ITRI)
-        IF (IX .GT. 0) THEN
-           IN=IY+(IX-1)*NR1TAL
-           NCLTAL(ITRI)=IN
-        ELSE   ! ADDITIONAL TRIA CELLS, OUTSIDE OLD STRUCTURED GRID
-           icoadd = icoadd+1
-           NCLTAL(ITRI)=icoadd
-        ENDIF
-      ENDDO
+        DO ITRI=1,NTRII
+          IY=IYTRI(ITRI)
+          IX=IXTRI(ITRI)
+          IF (IX .GT. 0) THEN
+            IN=IY+(IX-1)*NR1TAL
+            NCLTAL(ITRI)=IN
+          ELSE   ! ADDITIONAL TRIA CELLS, OUTSIDE OLD STRUCTURED GRID
+            icoadd = icoadd+1
+            NCLTAL(ITRI)=icoadd
+          ENDIF
+        ENDDO
 
       ELSEIF (.NOT.LCOARSE) THEN
         write (iunout,*) 'SCORING OF VOLUME-AVERAGED TALLIES  '
@@ -1307,8 +1306,7 @@ C  PLUS THOSE FROM INPUT FILE BLOCK 2E (NRADD)
 C  TOTAL NUMBER OF CELLS OF COARSE GRID: STRUCTURED GRID PLUS ALL ADDITIONAL CELLS
       NSBOX_TAL=NSURF_TAL+NRADD_TAL
 
-
-C  save old COURSE grid structure
+C  save old COARSE grid structure
 
       nr1tal_save=nr1tal
       np2tal_save=np2tal
@@ -1728,7 +1726,7 @@ C
 CDR  set density from B2 array DNIB, for each fluid
 CDR  set plasma flow velocity field from B2 arrays UPB (parallel velocity)
 c  without drifts:
-c  upb * pitch:  poloidal velocity (i.e. cartesian x,y direction).
+c  upb * pitch: poloidal velocity (i.e. cartesian x,y direction).
 c  poloidal field direction is given by that of the poloidal cell face PU..(in),
 C  i.e. along a flux surface. (PU(...) is cell-centered)
 c  and upb*(1-pitch^2): toroidal velocity  (i.e. cartesian z direction (nltrz) or
@@ -1817,8 +1815,8 @@ C  READ DATA FOR "IPLS" FROM EIRENE DUMP FILE FT13
                WRITE(IUNOUT,*) 'IPLS, IPLSV,IPLSTI ',IPLS,IPLSV,IPLSTI
             ENDIF
 
-            IPLSTI = MPLSTI(IPLS)
-            IPLSV = MPLSV(IPLS)
+            IPLSTI= MPLSTI(IPLS)
+            IPLSV= MPLSV(IPLS)
             DIINTF(IPLS,:)=DIIN(IPLS,:)
             VXINTF(IPLSV,:)=VXIN(IPLSV,:)
             VYINTF(IPLSV,:)=VYIN(IPLSV,:)
@@ -2000,7 +1998,7 @@ C
         WRITE (iunout,*) 'ITARG: TARGET NUMBER '
         WRITE (iunout,*) 'IPRT : SUBSECTION OF TARGET '
         WRITE (iunout,*)
-     .        'NPBS : BRAAMS (SURFACE) X-CELL INDEX OF TARGET '
+     .     'NPBS : BRAAMS (SURFACE) X-CELL INDEX OF TARGET '
         WRITE (iunout,*) 'NPBC : BRAAMS (ZONE) P-CELL INDEX OF TARGET '
         WRITE (iunout,*) 'NPES : POLOIDAL SURFACE INDEX OF TARGET'
         WRITE (iunout,*) '       IN EIRENE MESH'
@@ -2837,8 +2835,8 @@ C
  6100 CONTINUE
       WRITE (iunout,'(1X,I3,1P,1E11.3)') NRWL(ITARG),
      .                                 RRSTEP(ITARG,NRWL(ITARG))
-      CALL EIRENE_MASR1 ('EEMAX    ',EEMAX)
-      CALL EIRENE_MASR1 ('EESHT    ',EESHT)
+      CALL EIRENE_MASR1 ('EEMAX   ',EEMAX)
+      CALL EIRENE_MASR1 ('EESHT   ',EESHT)
 C
       ETOT=EEMAX+EESHT
       EFLX(ITARG)=EEMAX+EESHT
@@ -2958,7 +2956,6 @@ C  NOTHING TO BE DONE
      .               NSDVI1,SDVI1,NSDVI2,SDVI2,
      .               NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .               NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
-     .               NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .               NSIGI_SPC,TRCFLE)
         ELSE
           WRITE (iunout,*) 'ERROR IN INFCOP: STRATUM ISTRAI= ',ISTRAI
@@ -2993,6 +2990,8 @@ C  IF THE SOURCE STRENGTH IS TO BE CHANGED DURING THE SHORT CYCLE (E.G.: VOL-REC
 C  THEN FLXEIR HAS TO BE RESET TO SCALE TO NEW SOURCE STRENGTH DURING SHORT CYCLE
           FLXEIR(ISTRAI)=1._DP
         ENDIF
+C
+C  FIRSTLY INITIALIZE SOURCE TERM ARRAYS
 
 C
         CHPM  = 0._DP
@@ -3529,7 +3528,8 @@ cdr  add pppl_cop contribution to internal energy sources rate
 
             IF (.NOT.LSHORT) THEN
 
-!pb replace sigma_cop
+cdr:  try to find stat. variance for particle balance sources
+cdr   ntalm is a copv tally.
               istat_cop = 0
               do i = 1, nsigvi
                 if ((iih(i) == ntalm).and.(igh(i) == NPLSI+IPLS)) then
@@ -3634,7 +3634,8 @@ c  skip working on internal lin. comb. of tallies, unless sufficient storage
 
             IF (.NOT.LSHORT) THEN
 
-!pb replace sigma_cop
+cdr:  try to find stat. variance for momentum balance sources
+cdr   ntalm is a copv tally.
               istat_cop = 0
               do i = 1, nsigvi
                 if ((iih(i) == ntalm).and.(igh(i) == 2*NPLSI+IPLS)) then
@@ -3732,7 +3733,8 @@ cdr  this is now identical to see above ?
 
         IF (.NOT.LSHORT) THEN
 
-!pb replace sigma_cop
+cdr:  try to find stat. variance for electron energy balance sources
+cdr   ntalm is a copv tally.
           istat_cop = 0
           do i = 1, nsigvi
             if ((iih(i) == ntalm).and.(igh(i) == ICP3+1)) then
@@ -3753,9 +3755,6 @@ cdr  this is now identical to see above ?
                 IN=IY+(IX-1)*NR1TAL_SAVE
 
                 SEERES=(EAEL(IN)+EMEL(IN)+EIEL(IN))*VOLTAL(IN)*FLX_EIR
-!pb              RESSEE(ISTRAI)=RESSEE(ISTRAI)+
-!pb     .                       ABS(SIGMA_COP(2*NPLSI+1,IN)*
-!pb     .                       SEERES/100.D0)
                 RESSEE(ISTRAI)=RESSEE(ISTRAI)+
      .                         ABS(SIGMA(ISTAT_COP,IN)*
      .                         SEERES/100.D0)
@@ -3788,7 +3787,7 @@ C  or     (    lcoarse) already scored on B2.5 grid cell INC=IY+(IX-1)*NR1TAL
      .                 (EAPL(IPLS,INC)+EMPL(IPLS,INC)+
      .                  EIPL(IPLS,INC)+
      .                  EPPL_COP(IPLS,INC))*VOLTAL(INC)*ELCHA
-                  CHEIS=CHEIS+CHEIM(INC)*VOLTAL(IN)
+                  CHEIS=CHEIS+CHEIM(INC)*VOLTAL(INC)
                   SEIS=SEIS+(EAPL(IPLS,INC)+EMPL(IPLS,INC)+
      .                       EIPL(IPLS,INC)+
      .                       EPPL_COP(IPLS,INC))*VOLTAL(INC)
@@ -3840,7 +3839,8 @@ c  skip working on internal lin. comb. of tallies, unless sufficient storage
 
       IF (.NOT.LSHORT) THEN
 
-!pb replace sigma_cop
+cdr:  try to find stat. variance for ion energy balance sources
+cdr   ntalm is a copv tally.
           istat_cop = 0
           do i = 1, nsigvi
             if ((iih(i) == ntalm).and.(igh(i) == ICP3+2)) then
@@ -3860,9 +3860,6 @@ c  skip working on internal lin. comb. of tallies, unless sufficient storage
                IN=IY+(IX-1)*NR1TAL_SAVE
                SEIRES=(EAPL(IPLS,IN)+EMPL(IPLS,IN)+
      .                 EIPL(IPLS,IN))*VOLTAL(IN)*FLX_EIR
-!pb                RESSEI(ISTRAI)=RESSEI(ISTRAI)+
-!pb     .                       ABS(SIGMA_COP(2*NPLSI+2,IN)*
-!pb     .                       SEIRES/100.D0)
                   RESSEI(ISTRAI)=RESSEI(ISTRAI)+
      .                           ABS(SIGMA(ISTAT_COP,IN)*
      .                           SEIRES/100.D0)

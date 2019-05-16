@@ -5,7 +5,7 @@ C*DK INDTAL
 C
 C   called from subr. STATIS
 C               subr. STATIS_BGK
-C               subr. STATIS_COP
+C
 C   SIMILAR TO SUBR. INTTAL:
 C   PROVIDE ARRAY IND(J,K), J=1,NRAD, K=1,8
 C   THE VALUES IN = IND(J,K) , FOR EACH CELL J,

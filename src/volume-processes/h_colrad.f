@@ -444,28 +444,28 @@ c    Extrapolate energy rate coeff ebeta beyond Te0 =500 eV
       EQUIVALENCE (RECOMB(1,26),RECMB26(1))
 
 C     INITIALIZATION
-      DO 1 I=1,40
-      S(I)=0.0
-      ALPHA(I)=0.0
-      BETA(I)=0.0
-      EBETA(I)=0.0
-      UION(I)=0.0
-      DO 1 J=1,40
-      C(I,J)=0.0
-      F(I,J)=0.0
-      U(I,J)=0.0
-    1 CONTINUE
+      S=0.0
+      ALPHA=0.0
+      BETA=0.0
+      EBETA=0.0
+      UION=0.0
+      C=0.0
+      F=0.0
+      U=0.0
 
       TE=TEMP*1.1605E4     !  Te in Kelvin, TEMP in eV
       TEL10=log10(temp)
       UH=13.595
 
       DO 101 I=1,40
-      P=I
-  101 UION(I)=13.595/TEMP/P**2
+        P=I
+        UION(I)=13.595/TEMP/P**2
+  101 CONTINUE
       DO 102 I=1,40
-      DO 102 J=1,40
-  102 U(I,J)=UION(I)-UION(J)
+      DO J=1,40
+        U(I,J)=UION(I)-UION(J)
+      END DO
+  102 CONTINUE
 
 c  excitation   :            C
 c  de-excitation:            F  (by detailed balance)
@@ -476,7 +476,8 @@ c  three body recombination: ALPHA (inverse to ionization S)
         CALL EIRENE_EXCOFF(U,OSC,TEMP,C,F,S,ALPHA)
 
         DO 105 I=1,40
-  105     ALPHA(I)=S(I)*SAHA(I)
+          ALPHA(I)=S(I)*SAHA(I)
+  105   CONTINUE
 
       ELSE
 ! Te lt than 5000 Kelvin:  calculate ALPHA, and derive S for transition to n=1
@@ -484,7 +485,8 @@ c  three body recombination: ALPHA (inverse to ionization S)
         CALL EIRENE_EXCOFF(U,OSC,TEMP,C,F,S,ALPHA)
         S(1)=ALPHA(1)/SAHA(1)
         DO 19 I=2,40
-   19     ALPHA(I)=S(I)*SAHA(I)
+          ALPHA(I)=S(I)*SAHA(I)
+   19   CONTINUE
       END IF
 
 c   next: radiative recombination: BETA
@@ -504,8 +506,8 @@ c                                  electron energy-weighted rate, both: into P s
 c  the high temp behaviour (above about 500 - 1000 eV) is spurious, and gets very wrong for ebeta
 c         if (i.eq.1) then
 c           ratio=ebeta(i)/beta(i)
-c           write (6,*) 'calc: temp, i, B, EB, RATIO ',
-c    .                 temp, I, BETA(i),EBETA(I), RATIO
+c           write (iunout,*) 'calc: temp, i, B, EB, RATIO ',
+c    .                       temp, I, BETA(i),EBETA(I), RATIO
 c         endif
 
 C  for high Te use the d ln(K)/d ln(T) from the old Claudine (Mahn-Welge) code.
@@ -542,12 +544,10 @@ C
       DIMENSION S(40),ALPHA(40)
       INTEGER I, J
 C
-      DO 1 I=1,40
-      S(I)=0.0
-      ALPHA(I)=0.0
-      DO 1 J=1,40
-      C(I,J)=0.0
-    1 F(I,J)=0.0
+      S=0.0
+      ALPHA=0.0
+      C=0.0
+      F=0.0
 
       TE=TEMP*1.1605E4
 
@@ -558,30 +558,35 @@ C*********  1 -> J
       Q=J
       CALL EIRENE_COF1N(U(I,J),OSC(I,J),TE,F1,I,J)
       F(J,1)=F1
-  100 C(1,J)=Q**2/EXP(U(1,J))*F(J,1)  !/P**2, but P=1 here
+      C(1,J)=Q**2/EXP(U(1,J))*F(J,1)  !/P**2, but P=1 here
+  100 CONTINUE
 
 C*********  2-10 -> J
       DO 110 I=2,10
       P=I
-      DO 110 J=I+1,40
+      DO J=I+1,40
       Q=J
       CALL EIRENE_COFVR(U(I,J),OSC(I,J),TEMP,CV,I,J)
       CALL EIRENE_COFJO(U(I,J),OSC(I,J),TE,CJ,I,J)
 
       GG=((P-2.)/8.)**0.25
       C(I,J)=(1.-GG)*CJ+GG*CV
-  110 F(J,I)=P**2/Q**2*EXP(U(I,J))*C(I,J)
+      F(J,I)=P**2/Q**2*EXP(U(I,J))*C(I,J)
+      END DO
+  110 CONTINUE
 
 
 C*********  I(>11) -> J
 
       DO 120 I=11,39
       P=I
-      DO 120 J=I+1,40
+      DO J=I+1,40
       Q=J
       CALL EIRENE_COFVR(U(I,J),OSC(I,J),TEMP,CV,I,J)
       C(I,J)=CV
-  120 F(J,I)=P**2/Q**2*EXP(U(I,J))*C(I,J)
+      F(J,I)=P**2/Q**2*EXP(U(I,J))*C(I,J)
+      END DO
+  120 CONTINUE
 
 C*********  S  1 ->  ionization
       I=1
@@ -603,12 +608,14 @@ C*********  S  2-10 ->
       CALL EIRENE_COFVS(TEMP,SV,I)
 
       GGG=((P-2.)/8.)**0.25
-  210 S(I)=(1.-GGG)*SJ+GGG*SV
+      S(I)=(1.-GGG)*SJ+GGG*SV
+  210 CONTINUE
 
 C*********  S  I(>11) ->
       DO 220 I=11,40
       CALL EIRENE_COFVS(TEMP,SV,I)
-  220 S(I)=SV
+      S(I)=SV
+  220 CONTINUE
       RETURN
       END
 
@@ -799,7 +806,8 @@ C
       DO 350 N=3,40
       G(0,N)=0.9935+0.2328/N-0.1296/N**2
       G(1,N)=-0.6282/N+0.5598/N**2-0.5299/N**3
-  350 G(2,N)=0.3887/N**2-1.181/N**3+1.470/N**4
+      G(2,N)=0.3887/N**2-1.181/N**3+1.470/N**4
+  350 CONTINUE
 
       IF (I.EQ.1) THEN
 
@@ -811,7 +819,8 @@ C
       RX=-0.59
       A=0.0
       DO 223 K=0,2
-  223 A=A+G(K,1)/(K+3)
+      A=A+G(K,1)/(K+3)
+  223 CONTINUE
       A=A*1.9603*P
 
       B=0.66667*P**2*(5-0.603)
@@ -843,7 +852,8 @@ C
       Z=R+Y
       A=0.0
       DO 222 K=0,2
-  222 A=A+G(K,I)/(K+3)
+      A=A+G(K,I)/(K+3)
+  222 CONTINUE
       A=A*1.9603*P
       B=0.66667*P**2*(5+BN)
       C1=2*P**2
@@ -895,7 +905,8 @@ C
       DO 350 N=3,40
       G(0,N)=0.9935+0.2328/N-0.1296/N**2
       G(1,N)=-0.6282/N+0.5598/N**2-0.5299/N**3
-  350 G(2,N)=0.3887/N**2-1.181/N**3+1.470/N**4
+      G(2,N)=0.3887/N**2-1.181/N**3+1.470/N**4
+  350 CONTINUE
 
 C     IF (I.EQ.1) THEN
       PP=I
@@ -907,7 +918,8 @@ C     IF (I.EQ.1) THEN
 
       A=0.0
       DO 223 K=0,2
-  223 A=A+G(K,1)/(K+3)
+      A=A+G(K,1)/(K+3)
+  223 CONTINUE
       A=A*1.9603*P
 
       B=0.66667*P**2*(5-0.603)
@@ -1014,8 +1026,8 @@ cdr   EPSR=1.0D-5  slowed down code by factor of 100 !!
       NMIN=15
       NMAX=511
 
-      CALL  EIRENE_AQC8(A,B,EIRENE_GAUNT3,EPSR,NMIN,NMAX, S)
-      CALL  EIRENE_AQC8(A,B,EIRENE_GAUNT4,EPSR,NMIN,NMAX,ES)
+      CALL EIRENE_AQC8(A,B,EIRENE_GAUNT3,EPSR,NMIN,NMAX, S)
+      CALL EIRENE_AQC8(A,B,EIRENE_GAUNT4,EPSR,NMIN,NMAX,ES)
 C
 
 
@@ -1082,21 +1094,25 @@ C
 
         DO 202 L=2,K
 cdr stoss bevoelkerung von k von unten
-  202     W(K,L)=C(L,K)*DENSEL
+          W(K,L)=C(L,K)*DENSEL
+  202   CONTINUE
 
 cc diagonale
 cc entvoelkerung durch stoesse nach unten
         SUMF=0.
         DO 301 I=1,K-1
-  301     SUMF=SUMF+F(K,I)
+          SUMF=SUMF+F(K,I)
+  301   CONTINUE
 cc entvoelkerung durch stoesse nach oben
         SUMC=0.
         DO 302 I=K+1,LIM
-  302     SUMC=SUMC+C(K,I)
+          SUMC=SUMC+C(K,I)
+  302   CONTINUE
 cc  spontan nach unten
         SUMA=0.
         DO 303 I=1,K-1
-  303     SUMA=SUMA+A(K,I)
+          SUMA=SUMA+A(K,I)
+  303   CONTINUE
 cdr entvoelkerung von k: stoesse nach unten, nach oben, ionis, spontan
 cdr                      nach unten
         W(K,K)=-(DENSEL*(SUMF+SUMC+S(K))+SUMA)
@@ -1105,7 +1121,8 @@ cc diagonale fertig
 
         DO 203 L=K+1,LUP
 cdr bevoelkerung durch: stoesse von oben, spontan von oben
-  203     W(K,L)=DENSEL*F(L,K)+A(L,K)
+          W(K,L)=DENSEL*F(L,K)+A(L,K)
+  203   CONTINUE
 
   201 CONTINUE
 cdr k loop finished, k=2, lup-1 (d.h. ohne letzte Zeile)
@@ -1114,18 +1131,21 @@ cdr k loop finished, k=2, lup-1 (d.h. ohne letzte Zeile)
 c  special treatment letzter zustand lup: 2-->lup, 3-->lup,..., gibt es nur bei excitation, nicht
 c                                  bei de-exit, auch nicht bei rad rec.
       DO 211 L=2,LUP-1
-
-  211 W(LUP,L)=C(L,LUP)*DENSEL
+        W(LUP,L)=C(L,LUP)*DENSEL
+  211 CONTINUE
 c  beitrag des letzten zustandes lup zu diagonal
       SUMF=0.
       DO 311 I=1,LUP-1
-  311 SUMF=SUMF+F(LUP,I)
+        SUMF=SUMF+F(LUP,I)
+  311 CONTINUE
       SUMC=0.0
       DO 313 I=LUP+1,LIM   !Boltzmann LTE contribution fuer LIM gt. LUP
-  313 SUMC=SUMC+C(LUP,I)
+        SUMC=SUMC+C(LUP,I)
+  313 CONTINUE
       SUMA=0.
       DO 312 I=1,LUP-1
-  312 SUMA=SUMA+A(LUP,I)
+        SUMA=SUMA+A(LUP,I)
+  312 CONTINUE
 
       W(LUP,LUP)=-(DENSEL*(SUMF+SUMC+S(LUP))+SUMA)
 
@@ -1135,10 +1155,12 @@ C  RECHTE SEITEN:
 c  vorbereiten fuer recombination, Saha correction
         SUMFS=0.0
         DO 500 I=LUP+1,LIM
-  500     SUMFS=SUMFS+F(I,K)*SAHA(I)
+          SUMFS=SUMFS+F(I,K)*SAHA(I)
+  500   CONTINUE
         SUMAS=0.0
         DO 501 I=LUP+1,LIM
-  501     SUMAS=SUMAS+SAHA(I)*A(I,K)
+          SUMAS=SUMAS+SAHA(I)*A(I,K)
+  501   CONTINUE
 c
 c  matrixelemente: 1/s  (densel*rate coeff. )
 c  rechte seiten : cm**3/s, nicht: 1/s, also fuer elektronendichte=1
@@ -1159,8 +1181,10 @@ cdr OK, AS LONG AS lup<38
 cdr reduziere w indices um 1: auf wa: i=1,lup-1,j=1,(lup-1)+3
 
       DO 402 I=1,LUP-1
-      DO 402 J=1,LUP-1+3
-  402   WA(I,J)=W(I+1,J+1)
+        DO J=1,LUP-1+3
+          WA(I,J)=W(I+1,J+1)
+        END DO
+  402 CONTINUE
 
 c  two or three right linearly additive hand side terms?
       ie=2
@@ -1221,7 +1245,8 @@ C  IONIS. TRANSITION TO CONTINUUM
       SCR=S(1)
       DO 5001 I=2,LUP
         SUSCR=C(1,I)-R1(I)*(F(I,1)*DENSEL+A(I,1))
- 5001 SCR=SCR+SUSCR
+        SCR=SCR+SUSCR
+ 5001 CONTINUE
 
 C  RECOMB. TRANSITION TO (1)
       ALPCR1=DENSEL*ALPHA(1)+BETA(1)
@@ -1229,11 +1254,10 @@ C  RECOMB. TRANSITION TO (1)
       ALPCR2=0.0
 
       DO 5003 I=2,LIM
-
- 5003 ALPCR2=ALPCR2+R0(I)*(DENSEL*F(I,1)+A(I,1))
+        ALPCR2=ALPCR2+R0(I)*(DENSEL*F(I,1)+A(I,1))
+ 5003 CONTINUE
 
       ALPCR=ALPCR1+ALPCR2
-
 
 C  FROM EXTERNAL, TRANSITION TO CONTINUUM
       SCR_EXT=0.00
@@ -1242,7 +1266,8 @@ C  FROM EXTERNAL, TRANSITION TO CONTINUUM
 
       DO 5002 I=2,LUP
         SUSRAD=Q_EXT(I)-R_EXT(I)*(F(I,1)*DENSEL+A(I,1))
- 5002 SCR_EXT=SCR_EXT+SUSRAD
+        SCR_EXT=SCR_EXT+SUSRAD
+ 5002 CONTINUE
 
 C  ALP_EXT STILL MISSING: from external to ground state
 
@@ -1301,7 +1326,7 @@ C
 C  EFFECTIVE ELECTRON COOLING CORRESPONDING TO
 C  "ORDINARY" COUPLING TO GROUND STATE S(I)
 C
-C     PART I
+C  PART I
 C  1(EXTERN)--> inf.  R1(1)=1
       UH=13.595
       DE=(E_AT(1)-UH)
@@ -1438,8 +1463,8 @@ ctt   E_ALPCR_TT=E_ALPCR_T+ALPCR *DEALP
 c  e_alpcr_TT:  test quantity, should be equal to E_alpcr
 c  e_alpcr_T :  this would be the shifted (radiation alone part) e.g. fitted in amjuel format
 
-c     WRITE (6,*) 'DE,TE, E_ALPCR, E_ALPCR_TT, E_ALPCR_T , alpcr'
-c     WRITE (6,*) log10(DENSEL),TEMP,E_ALPCR,E_ALPCR_TT,E_alpcr_T,alpcr
+c     WRITE (IUNOUT,*) 'DE,TE, E_ALPCR, E_ALPCR_TT, E_ALPCR_T , alpcr'
+c     WRITE (IUNOUT,*) log10(DENSEL),TEMP,E_ALPCR,E_ALPCR_TT,E_alpcr_T,alpcr
 
 C  contribution for "ordinary" coupling to H+ state done
 
@@ -1659,7 +1684,8 @@ C     NUMMERN DER UNBEKANNTEN AUF IW ABSPEICHERN.
 C     ******************************************************************
 C
       DO 1 K=1,NG
-    1    IW(K)=K
+        IW(K)=K
+    1 CONTINUE
 C
 C     ******************************************************************
 C     DIE A-MATRIX AUF DREIECKS-FORM BRINGEN.
@@ -1696,7 +1722,8 @@ C
                      DO 4 N=I,NG
                         H=A(I,N)
                         A(I,N)=A(IZ,N)
-    4                   A(IZ,N)=H
+                        A(IZ,N)=H
+    4                CONTINUE
                      HB=B(1:NBI,I)
                      B(1:NBI,I)=B(1:NBI,IZ)
                      B(1:NBI,IZ)=HB(1:NBI)
@@ -1713,7 +1740,8 @@ C
                      DO 5 M=1,NG
                         AK=A(M,KS)
                         A(M,KS)=A(M,I)
-    5                   A(M,I)=AK
+                        A(M,I)=AK
+    5                CONTINUE
                      ENDIF
 C
 C        ===============================================================
@@ -1729,7 +1757,8 @@ C
             IF(ABS(A(M,I)).GT.ZERO) THEN
                                     Q=A(M,I)*AP
                                     DO 7 N=I,NG
-    7                                  A(M,N)=A(M,N)-A(I,N)*Q
+                                       A(M,N)=A(M,N)-A(I,N)*Q
+    7                               CONTINUE
                                     B(1:NBI,M)=B(1:NBI,M)-B(1:NBI,I)*Q
                                     ENDIF
     8       CONTINUE
@@ -1743,10 +1772,12 @@ C         AUF B(I) SCHREIBEN UND AN DAS AUFRUFENDE PROGRAMM ZURUECKGEBEN
 C     ******************************************************************
 C
       DO 12 M=1,NG
-   12    R(1:NBI,M)=B(1:NBI,M)/A(M,M)
+         R(1:NBI,M)=B(1:NBI,M)/A(M,M)
+   12 CONTINUE
       DO 14 M=1,NG
          II=IW(M)
-   14    B(1:NBI,II)=R(1:NBI,M)
+         B(1:NBI,II)=R(1:NBI,M)
+   14 CONTINUE
 C
        RETURN
 

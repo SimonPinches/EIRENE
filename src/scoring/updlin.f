@@ -33,8 +33,8 @@ cdr  for linear combination of tallies
       USE EIRMOD_COUTAU
 
       IMPLICIT NONE
-      
-      INTEGER :: ICP, ICP2, ICP3, ICP4, ICP5, 
+
+      INTEGER :: ICP, ICP2, ICP3, ICP4, ICP5,
      .           ICO, IR, IPL, IPLV, NMTSP, IRD
       INTEGER, SAVE :: IFIRST=0
 

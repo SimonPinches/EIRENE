@@ -14,7 +14,6 @@ c
 c  if in very first call ise <=0:  try a default seed.
 c  if that happens in a later call:  error exit.
 
-      USE EIRMOD_PRECISION
       USE EIRMOD_CLOGAU
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       implicit none

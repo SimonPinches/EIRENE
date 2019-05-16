@@ -60,8 +60,9 @@ C
         IZ=IYM*NR1ST
 C
         DO 1 I=1,N1STS
-          DO 1 J=1,N2NDPLGS
+          DO J=1,N2NDPLGS
             FALT(I,J)=-75.75E20
+          END DO
     1   CONTINUE
 C
         IF (LOGL) THEN
@@ -73,11 +74,12 @@ C
 C  SET ONTO 2D ARRAY FOR PLOTTING
 C
         DO 20 I=1,NX
-          DO 20 J=1,IYM
+          DO J=1,IYM
             DXXX=ARR(I+(J-1)*NR1ST)
             FALT(I,J)=DXXX
             X(I,J)=XPOL(I,J)
             Y(I,J)=YPOL(I,J)
+          END DO
    20   CONTINUE
 C
         IXM=NX-1
@@ -93,13 +95,14 @@ C
         YMIN=Y(1,1)
         YMAX=Y(1,1)
         DO 25 J=1,IXM
-        DO 25 I=1,IYM
+         DO I=1,IYM
           FMIN=MIN(FMIN,FALT(J,I))
           FMAX=MAX(FMAX,FALT(J,I))
           XMIN=MIN(XMIN,X(J,I))
           XMAX=MAX(XMAX,X(J,I))
           YMIN=MIN(YMIN,Y(J,I))
           YMAX=MAX(YMAX,Y(J,I))
+         END DO
    25   CONTINUE
 C
         REMIN=ZMI
@@ -116,9 +119,10 @@ C
         ENDIF
 C
         DO 30 J=1,IXM
-        DO 30 I=1,IYM
+         DO I=1,IYM
           FALT(J,I)=MIN(REMAX,FALT(J,I))
           FALT(J,I)=MAX(REMIN,FALT(J,I))
+         END DO
    30   CONTINUE
 C
 C  PLOT SMOOTH SURFACE

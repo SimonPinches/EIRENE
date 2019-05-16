@@ -161,11 +161,12 @@ c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
      .          SCOS_NEW, XOLD, YOLD
 C      REAL(DP) :: TI
       REAL(DP), EXTERNAL :: RANF_EIRENE
-      INTEGER :: ISTS, EIRENE_LEARC2, NCOUS, ICOU, J, JJ, IPL,
-     .           NRCELL_OLD,
-     .           ICO, NLI, NLE, NPCELL_OLD, JCOL, NRC, NTCELL_OLD,
+      INTEGER :: ISTS, NCOUS, ICOU, J, JJ, IPL,
+     .           NRCELL_OLD, NTCELL_OLD,
+     .           ICO, NLI, NLE, NPCELL_OLD, JCOL, NRC, 
      .           NRCOLD, IPLTI, I, IM, IFLAG, ICOUN,NTEST,
-     .           EIRENE_LEARC1, IDUM, IFPB, indf, NJUMP_EMC3 = 0
+     .           EIRENE_LEARC1, EIRENE_LEARC2, 
+     .           IDUM, IFPB, indf, NJUMP_EMC3 = 0
       LOGICAL :: LCNDEXP
 
 
@@ -255,208 +256,22 @@ C
 C  the particle may be sitting exactly on a surface (nlsrf...=.true.).
 C
 C  this part is special for ions: due to projection of velocity
-C  onto Gyro Center motion (or even onto B-field) the correct
+C  onto Guiding Center Motion (or even onto B-field) the correct
 C  angle relative to surface may be lost (e.g. cosin lt 0 may result).
 c  Also NINC may be different, depending on whether computed with full
 c  or with reduced (guiding centre) velocity
 C
-C  Hence: Was the correct new cell number NCELL used, in case of nlsrf?
+C  Check if the correct new cell number NCELL is used, in case of nlsrf?
 C  Fiddle around a bit with cell number and flight direction in this case.
 c  using the reduced (guiding centre) velocity to find orientation
 C  relative to surface, and possibly correct side of surface, i.e. cell
-c  number
+c  number. In that case: goto 1005 and try again with new cell number.
+c  Else: continue at 1002
+
+      CALL SRFCHK(VLXPAR,VLYPAR,VLYPAR,SG,*1005)
+      GOTO 1002
 
 
-      IF (NLSRFX) THEN
-
-c  particle is exactly on one of the radial grid surfaces (MRSURF)
-c  radial cell no. NRCELL may be wrong
-c  check orientation of parallel motion relative to radial coordinate
-
-        NRCELL_OLD=NRCELL
-
-        select case (levgeo)
-        case(1)
-          SG=SIGN(1._DP,VLXPAR)
-          IF (SG.LT.0) THEN
-            NRCELL=MRSURF-1
-          ELSEIF (SG.GT.0) THEN
-            NRCELL=MRSURF
-          ENDIF
-        case(2)
-          PUX= X0-EP1(MRSURF)
-          PUY= Y0/ELL(MRSURF)/ELL(MRSURF)
-          PN=SQRT(PUX*PUX+PUY*PUY+EPS60)
-          PUX=PUX/PN
-          PUY=PUY/PN
-          SG=VLXPAR*PUX+VLYPAR*PUY
-          IF (ABS(SG) .LT. EPS6) THEN
-            NLSRFX=.FALSE.
-            SH=SIGN(1._DP,SG)*CELDIA(NCELL)*1.D-2
-            X0 = X0 + SH*PUX
-            Y0 = Y0 + SH*PUY
-          END IF
-          IF (SG.LT.0) THEN
-            NRCELL=NGHPLS(1,MRSURF,NPCELL)
-          ELSEIF (SG.GT.0) THEN
-            NRCELL=NGHPLS(3,MRSURF,NPCELL)
-          ENDIF
-        case (3)
-          IFPB = 1
-          XOLD = X0
-          YOLD = Y0
-          IDUM = NPCELL
-          SG=VLXPAR*PLNX(MRSURF,NPCELL)+VLYPAR*PLNY(MRSURF,NPCELL)
-          DO
-            IF (ABS(SG) .LT. EPS6) THEN
-              NLSRFX=.FALSE.
-              SH=SIGN(1._DP,SG)*CELDIA(NCELL)*1.D-2
-              X0 = XOLD + SH*PLNX(MRSURF,NPCELL)*IFPB
-              Y0 = YOLD + SH*PLNY(MRSURF,NPCELL)*IFPB
-            END IF
-            IF (SG.LT.0) THEN
-              NRCELL=NGHPLS(1,MRSURF,NPCELL)
-            ELSEIF (SG.GT.0) THEN
-              NRCELL=NGHPLS(3,MRSURF,NPCELL)
-            ELSE
-              NRCELL=EIRENE_LEARC1(X0,Y0,Z0,IDUM,MRSURF-1,MRSURF,
-     .                             NLSRFX,NLSRFY,NPANU,'FOLION      ')
-            ENDIF
-            IF (NPCELL == IDUM) EXIT
-            IFPB = -1
-          END DO
-        case (4)
-          SG=VLXPAR*PTRIX(IPOLG,MRSURF)+
-     .       VLYPAR*PTRIY(IPOLG,MRSURF)
-          IF (ABS(SG) .LT. EPS6) THEN
-            SH=SIGN(1._DP,SG)*CELDIA(NCELL)*1.D-2
-            X0 = X0  +SH*PTRIX(IPOLG,MRSURF)
-            Y0 = Y0  +SH*PTRIY(IPOLG,MRSURF)
-            WRITE (IUNOUT,*) 'ON SURFACE IN FOLION, NPANU = ',NPANU
-            WRITE (IUNOUT,*) 'AND MOVING PARALLEL TO SURFACE'
-            WRITE (IUNOUT,*) 'PUSH INTO SUSPECTED NEXT CELL, SH = ',SH
-            NLSRFX=.FALSE.
-            IF (SG.GT.0.0_DP) THEN
-c             NTEST=EIRENE_LEARC1(X0,Y0,Z0,IPOLG,1,NR1STM,
-c    .                            NLSRFX,NLSRFY,NPANU,'FOLION      ')
-c             if (ntest.ne.nrcell)
-c    .           write (iunout,*) 'sg,ntest,nchbar ',
-C    .                             SG,NTEST,NCHBAR(IPOLG,MRSURF)
-              NRCELL=NCHBAR(IPOLG,MRSURF)
-              IPOLG=NSEITE(IPOLG,MRSURF)
-              MRSURF=NRCELL
-            ENDIF
-          ELSEIF (SG.GT.0.0_DP) THEN  !  SG IS GT EPS6
-            NTEST=NCHBAR(IPOLG,MRSURF)
-            IF (NTEST.EQ.0) THEN
-C  NO NEIGHBOR. PUSH BACK INTO OLD CELL.
-              SH=-CELDIA(NCELL)*1.D-2
-              WRITE (IUNOUT,*) 'ON SURFACE IN FOLION, NPANU = ',NPANU
-              WRITE (IUNOUT,*) 'PUSH BACK INTO OLD CELL: SH = ',SH
-              WRITE (iunout,*) 'NRCELL = ',NRCELL
-              NLSRFX=.FALSE.
-c  strictly: particle should be pushed towards COM.
-              X0 = X0  +SH*PTRIX(IPOLG,MRSURF)
-              Y0 = Y0  +SH*PTRIY(IPOLG,MRSURF)
-            ELSE
-c  neighbor found. continue in neighbor cell.
-              NRCELL=NTEST
-              IPOLG=NSEITE(IPOLG,MRSURF)
-              MRSURF=NRCELL
-            ENDIF
-          ELSEIF (SG.LT.0.0_DP) THEN ! SG IS LT.- EPS6
-C  CONTINUE FLIGHT IN ORIGINAL CELL.
-C  NOTHING TO BE DONE
-          ENDIF
-        case (5)
-          SG=VLXPAR*PTETX(IPOLG,MRSURF)+
-     .       VLYPAR*PTETY(IPOLG,MRSURF)+
-     .       VLZPAR*PTETZ(IPOLG,MRSURF)
-          IF (ABS(SG) .LT. EPS6) THEN
-C  TO BE WRITTEN
-            WRITE (iunout,*) 'PARALLEL TO SURFACE IN FOLION ',NPANU
-            WRITE (IUNOUT,*) 'CORRECTION FOR LEVGEO=5: TO BE DONE'
-            CALL EIRENE_EXIT_OWN(1)
-          ELSEIF (SG.GT.0) THEN
-            NRCELL=NTBAR(IPOLG,MRSURF)
-            IPOLG=NTSEITE(IPOLG,MRSURF)
-            MRSURF=NRCELL
-          ELSEIF (SG.LT.0) THEN
-C  NOTHING TO BE DONE
-          ENDIF
-        case (10)
-!PB EXPLICITLY ALLOW FOR LEVGEO=10
-!PB NOTHING TO BE DONE
-        case default
-          write (iunout,*) 'levgeo in folion  ', levgeo
-          write (iunout,*) 'option not ready, exit called'
-          call EIRENE_exit_own(1)
-        end select
-
-        IF (NRCELL.NE.NRCELL_OLD) THEN
-          ico=ico+1
-          if (ico.le.1) goto 1005
-        ENDIF
-
-
-      ELSEIF (NLSRFY) THEN
-
-
-c  particle is on one of the poloidal grid surfaces (MPSURF)
-C  POLOIDAL CELL NO. NPCELL MAY BE WRONG
-C  CHECK ORIENTATION OF PARALLEL MOTION RELATIVE TO POLOIDAL COORDINATE
-C
-        NPCELL_OLD=NPCELL
-        select case (LEVGEO)
-        case (1)
-          SG=SIGN(1._DP,VLYPAR)
-          IF (SG.LT.0) THEN
-            NPCELL=MPSURF-1
-          ELSEIF (SG.GT.0) THEN
-            NPCELL=MPSURF
-          ENDIF
-        case (2:3)
-          SG=VLXPAR*PPLNX(NRCELL,MPSURF)+VLYPAR*PPLNY(NRCELL,MPSURF)
-          IF (SG.LT.0) THEN
-            npcell=nghpls(4,nrcell,mpsurf)
-            ipolg=npcell
-C  ACCOUNT FOR CUTS, PERIODICITY, ETC.
-C           mpsurf is correct
-          ELSEIF (SG.GT.0) THEN
-            npcell=nghpls(2,nrcell,mpsurf)
-            ipolg=npcell
-C  ACCOUNT FOR CUTS, PERIODICITY, ETC.
-            mpsurf=npcell
-          ENDIF
-        end select
-        IF (NPCELL.NE.NPCELL_OLD) THEN
-          ico=ico+1
-          if (ico.le.1) goto 1005
-        ENDIF
-
-
-      ELSEIF (NLSRFZ) THEN
-
-
-c  particle is on one of the toroidal grid surfaces (MTSURF)
-C  TOROIDAL CELL NO. NTCELL MAY BE WRONG
-C  CHECK ORIENTATION OF PARALLEL MOTION RELATIVE TO POLOIDAL COORDINATE
-C
-        NTCELL_OLD=NTCELL
-C  VLZPAR IS THE RELEVANT VELOCITY COMPONENT, BOTH FOR
-C  NLTRZ AND NLTRT OPTION
-        SG=SIGN(1._DP,VLZPAR)
-        IF (SG.LT.0) THEN
-          NTCELL=MTSURF-1
-        ELSEIF (SG.GT.0) THEN
-          NTCELL=MTSURF
-        ENDIF
-        IF (NTCELL.NE.NTCELL_OLD) THEN
-          ico=ico+1
-          if (ico.le.1) goto 1005
-        ENDIF
-
-      ENDIF
 
 c***********************************************************************
 c  CORRECTIONS FOR PARTICLES SITTING EXACTLY ON SURFACES DONE.
@@ -464,8 +279,6 @@ c***********************************************************************
 
 c  at this point: V_PARALLEL, V_PERP known,
 c                 gyrophase: to be sampled, if needed
-
-      GOTO 1002
 C
  1001 CONTINUE
       IF (IC_ION.EQ.1.AND.NLTRC.AND.TRCHST)
@@ -895,7 +708,7 @@ c  for interactions with electrons this is usually irrelevant
 
       IF (IFPATH.NE.1.OR.NRC.LT.0) THEN
         XSTORV(:)=0.D0
-        DO 214 J=1,NCOU
+        DO J=1,NCOU
           JJ=J
 cdr  next 2 lines added, Aug. 18. Strictly not necessary, but safer
 cdr  (allows using NCELL later also in this case).
@@ -908,7 +721,7 @@ cdr  (allows using NCELL later also in this case).
           IF (NLTOR) NTCELL=NCOUNT(J)
 C         VEL=VELS
           GOTO 213
-  214   CONTINUE
+        END DO
       ELSE
 c switch to parallel gc velocity
         IF (LCART) THEN
@@ -922,7 +735,7 @@ c switch to parallel gc velocity
           VEL =VELPAR
           LCART=.FALSE.
         ENDIF
-        DO 212 J=1,NCOU
+        DO J=1,NCOU
           JJ=J
           NCELL=NRCELL+NUPC(J)*NR1P2+NBLCKA
           IF (LDAMCEL(NCELL)) GOTO 9912
@@ -956,7 +769,7 @@ C         ELSEIF (JCOL.EQ.0) THEN
 C   CONDITIONAL EXPECTATION ESTIMATOR FOR TEST IONS: TO BE WRITTEN
 C         ENDIF
 C
-  212   CONTINUE
+        END DO
         VELX=VELXS
         VELY=VELYS
         VELZ=VELZS
@@ -1546,7 +1359,7 @@ C
       GOTO 999
 C
   994 CALL EIRENE_MASAGE
-     .  ('ERROR IN FOLION, AT SURFACE DELTA EVENT       ')
+     .  ('ERROR IN FOLION, AT SURFACE DELTA EVENT')
       WRITE (iunout,*) 'IION,NPANU ',IION,NPANU
       GOTO 999
 C
@@ -1566,17 +1379,16 @@ C
       ENDIF
       GOTO 999
   996 CALL EIRENE_MASAGE
-     .  ('ERROR IN FOLION, COND. EXP. ESTIM. NOT IN USE ')
+     .  ('ERROR IN FOLION, COND. EXP. ESTIM. NOT IN USE')
       GOTO 999
   997 CALL EIRENE_MASAGE
-     .  ('ERROR IN FOLION,  DETECTED IN SUBR. CLLTST    ')
-      CALL EIRENE_MASAGE
-     .  ('PARTICLE IS KILLED                            ')
+     .  ('ERROR IN FOLION,  DETECTED IN SUBR. CLLTST')
+      CALL EIRENE_MASAGE('PARTICLE IS KILLED')
 C   DETAILED PRINTOUT ALREADY DONE FROM SUBR. CLLTST
       IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
       GOTO 999
 C
-  998 WRITE (iunout,*) 'ERROR IN FOLION, SPECIES INDEX OUT OF RANGE '
+  998 WRITE (iunout,*) 'ERROR IN FOLION, SPECIES INDEX OUT OF RANGE'
       WRITE (iunout,*) ' NPANU,IION ',NPANU,IION
       GOTO 999
 C

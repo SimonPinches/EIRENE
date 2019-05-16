@@ -138,7 +138,7 @@ C  SPECTRAL CUT-OFF FOR SOURCE RATE: ONLY FOR PHOTONS SO FAR.
           IF (KK.GT.0) THEN
             ICCT=NREACT(KK)
           ENDIF
-          DO 3 J=1,NSBOX
+          DO J=1,NSBOX
             ADD=0.
 C  EXCLUDE DEAD CELLS (GRID CUTS, ISOLATED CELLS FROM COUPLE_.., ETC)
 C  EXCLUDE IPLS-VACUUM CELLS
@@ -160,6 +160,7 @@ C  SPECTRAL CUT-OFF FOR SOURCE RATE (ONLY USED FOR PHOTONS SO FAR)
 
             FREC(IFPLS,IIRC,J)  =FREC(IFPLS,IIRC,J-1)+ADD
             SREC(IPLS,IRRC)     =SREC(IPLS,IRRC)+ADD
+          END DO
     3   CONTINUE
     2 CONTINUE
 
@@ -173,8 +174,9 @@ C  SUM OVER SPECIES AND RECOMBINATION TYPE INDICES
           SREC(IPLS,0)=SREC(IPLS,0)+SREC(IPLS,IRRC)
           SREC(0,IRRC)=SREC(0,IRRC)+SREC(IPLS,IRRC)
           SREC(0,0)   =SREC(0,0)   +SREC(IPLS,IRRC)
-          DO 5 J=1,NSBOX
+          DO J=1,NSBOX
             FREC(IFPLS,0,J)=FREC(IFPLS,0,J)+FREC(IFPLS,IIRC,J)
+          END DO
     5   CONTINUE
     4 CONTINUE
 C
@@ -199,7 +201,7 @@ C
             IF (KK.GT.0) THEN
               ICCT=NREACT(KK)
             ENDIF
-            DO 6 J=1,NSBOX
+            DO J=1,NSBOX
               IF (NSTGRD(J).EQ.0.AND..NOT.LGVAC(J,IPLS)) THEN
 c  FREC is in Amp, so ADD is in: eV * Amp = Watt
                 REC=FREC(IFPLS,IIRC,J)-FREC(IFPLS,IIRC,J-1)
@@ -242,6 +244,7 @@ cdr  take center of gravity in cell, if needed (last parameter (logical) in bfie
                 MOM(IPLS,IRRC)=MOM(IPLS,IRRC)-ADD
                 MOM(IPLS,0)   =MOM(IPLS,0   )-ADD
               ENDIF
+            END DO
     6     CONTINUE
 C
 C  associated electron cooling/heating rate: eelrc: EV *CM**3/S
@@ -312,11 +315,11 @@ C
           ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
           DO 11 IIRC=1,NPRCI(IPLS)
             IRRC=LGPRC(IPLS,IIRC)
-            CALL EIRENE_MASAJR('IPLS,IRRC, SREC         ',
+            CALL EIRENE_MASAJR('IPLS,IRRC,SREC          ',
      .                   TEXTS(ISPZ),IRRC,-SREC(IPLS,IRRC))
    11     CONTINUE
           IF (NPRCI(IPLS).GT.1) THEN
-            CALL EIRENE_MASAJR('IPLS,TOT., SREC(IPLS,0) ',
+            CALL EIRENE_MASAJR('IPLS,TOT.,SREC(IPLS,0)  ',
      .                   TEXTS(ISPZ),0   ,-SREC(IPLS,0))
           ENDIF
    10   CONTINUE
@@ -414,7 +417,7 @@ C  ACCOUNT FOR INGRDA(IVOLSI,ISTRA,...), INGRDE(IVOLSI,ISTRA,...)
                 WRITE (iunout,*) 'WARNING FROM SAMVL0, ISTRA= ',ISTRA
                 WRITE (iunout,*)
      .            'NEW INPUT FOR INGRDA(.,.,1),INGRDE(.,.,1)'
-                WRITE (iunout,*) 'AUTOMATIC CORRECTION CARRIED OUT '
+                WRITE (iunout,*) 'AUTOMATIC CORRECTION CARRIED OUT'
                 INGRDA(IVL,I,1)=1
                 INGRDE(IVL,I,1)=MAX0(1,NR1ST)
                 CALL EIRENE_LEER(1)
@@ -426,7 +429,7 @@ C  ACCOUNT FOR INGRDA(IVOLSI,ISTRA,...), INGRDE(IVOLSI,ISTRA,...)
                 WRITE (iunout,*) 'WARNING FROM SAMVL0, ISTRA= ',ISTRA
                 WRITE (iunout,*)
      .            'NEW INPUT FOR INGRDA(.,.,2),INGRDE(.,.,2)'
-                WRITE (iunout,*) 'AUTOMATIC CORRECTION CARRIED OUT '
+                WRITE (iunout,*) 'AUTOMATIC CORRECTION CARRIED OUT'
                 INGRDA(IVL,I,2)=1
                 INGRDE(IVL,I,2)=MAX0(1,NP2ND)
                 CALL EIRENE_LEER(1)
@@ -438,7 +441,7 @@ C  ACCOUNT FOR INGRDA(IVOLSI,ISTRA,...), INGRDE(IVOLSI,ISTRA,...)
                 WRITE (iunout,*) 'WARNING FROM SAMVL0, ISTRA= ',ISTRA
                 WRITE (iunout,*)
      .            'NEW INPUT FOR INGRDA(.,.,3),INGRDE(.,.,3)'
-                WRITE (iunout,*) 'AUTOMATIC CORRECTION CARRIED OUT '
+                WRITE (iunout,*) 'AUTOMATIC CORRECTION CARRIED OUT'
                 INGRDA(IVL,I,3)=1
                 INGRDE(IVL,I,3)=MAX0(1,NT3RD)
                 CALL EIRENE_LEER(1)
@@ -490,9 +493,9 @@ C  SUM OVER ALL RECOMBINATION PROCESSES FOR SPECIES IPLS
 C  TRY OTHER RECOMBINATION PROCESS ASSIGNED TO IPLS
                   GOTO 52
                 ENDIF
-                DO 51 IR=IR1,IR2-1
-                  DO 51 IP=IP1,IP2-1
-                    DO 51 IT=IT1,IT2-1
+                DO IR=IR1,IR2-1
+                  DO IP=IP1,IP2-1
+                    DO IT=IT1,IT2-1
                       NCELL=IR+((IP-1)+(IT-1)*NP2T3)*NR1P2
                       REC=FREC(IFPLS,IFRC,NCELL)-
      .                    FREC(IFPLS,IFRC,NCELL-1)
@@ -503,7 +506,9 @@ C  INDIRECT ADDRESSING
                         EISUM=EISUM-1.5*TIIN(IPLSTI,NCELL)*REC
                         IF (LEDRIFT) EISUM=EISUM-EDRIFT(IPLS,NCELL)*REC
                       ENDIF
-   51           CONTINUE
+                    END DO
+                  END DO
+                END DO
    52         CONTINUE   ! summing over irrc
 c
               IF (SUM.EQ.0.D0) THEN

@@ -2,7 +2,6 @@ cdr  sept 18: typo in CTEXT(2)  (size of array) corrected
 
       MODULE EIRMOD_CTEXT
 
-      USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
 
       IMPLICIT NONE

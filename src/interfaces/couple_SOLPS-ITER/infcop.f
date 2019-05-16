@@ -31,7 +31,7 @@ cpb  15.09.15:  added: default bfield =1 (tesla), if bfield=0, cell wise.
 
 
 cdr  start to use species-resolved energy tallies.
-cdr  nov.15:  eapl,empl,eipl:  now species-resolved
+cdr  nov.15:  eapl,empl,eipl: now species-resolved
 cdr           --> eppl_cop, eploda get an additional species index ipls
 C
 cdr  dec. 15: not ready.  started to comment, and to extend copv tallies
@@ -99,7 +99,7 @@ C   UPDATES:
 C   OPTION TO EVALUATE B-FIELD VECTORS FROM GRIDADAP FILE FT29
 C   FOR NON-ORTHOGONAL GRIDS
 C
-C   THIS CODE SEGMENT CONTAINES VARIOUS SUBROUTINES NEEDED FOR
+C   THIS CODE SEGMENT CONTAINS VARIOUS SUBROUTINES NEEDED FOR
 C   INTERFACING THE EIRENE CODE TO PLASMA FLUID CODES.
 C   IT READS GEOMETRICAL DATA (MESHES) FROM FILE FT30
 C   AND PRODUCES THE EIRENE INPUT DATA (BLOCK 2).
@@ -168,7 +168,6 @@ C
       USE EIRMOD_CGEOM
       USE EIRMOD_CSDVI
       USE EIRMOD_CSDVI_BGK
-      USE EIRMOD_CSDVI_COP
       USE EIRMOD_COMPRT
       USE EIRMOD_COMNNL
       USE EIRMOD_COMSOU
@@ -198,7 +197,7 @@ c
       integer :: ier,istrx,irank,istrr, irnk
       real*8, allocatable :: dumvec(:)
       real*8, allocatable :: save_estimv(:,:),save_estims(:,:),
-     .                       save_sigma_cop(:,:),wtotp_dum(:,:)
+     .                       wtotp_dum(:,:)
 csw
 C
 C  GEOMETRICAL DATA FROM GRIDADAP
@@ -348,7 +347,7 @@ cdr  sputter fluxes
       REAL(DP), ALLOCATABLE, SAVE ::
      . TORL(:,:), ESHT(:,:), ELTEST(:,:), ORI(:,:)
 
-      real(dp),allocatable :: helpw(:)
+      real(dp), allocatable :: helpw(:)
 
       logical :: lhit(nrad)
 
@@ -383,7 +382,7 @@ C
 C
       GOTO 99990
 C
-C  TO INITIALISE THE SHORT CYCLING, THE GEOMETRY HAS TO BE
+C  TO INITIALIZE THE SHORT CYCLING, THE GEOMETRY HAS TO BE
 C  DEFINED ONCE (ENTRY: INTER0)
 C
       ENTRY EIRENE_INTER0
@@ -420,7 +419,7 @@ C
 cdr March 18: removed from input block 14. Unclear meaning.
       lchkqud = .false.
 cdr
-      mshfrm = 0   !  optional flag for geometry file format: linda, carree, sonnet
+      mshfrm = 0   !  optional flag for geometry file format: linda, carre, sonnet
       NLSHRT13 = .TRUE.  !  only short version of fort13 is used: calls WRPLAM_SHRT, RPLAM_SHRT
       ntrfrm = 0
 C
@@ -458,8 +457,8 @@ c  flags for orientation of radial (not in use), poloidal and toroidal magnetic 
         ENDIF
         DO 20 IPL=1,NPLSI
           READ (IUNIN,'(2I6,2E12.4)') I,IFLB(IPL),FCTE(IPL),BMASS(IPL)
-          IF (TRCINT)
-     .    WRITE (iunout,*)          IPL,IFLB(IPL),FCTE(IPL),BMASS(IPL)
+          IF (TRCINT) WRITE (iunout,'(2I6,2E12.4)')
+     .                              IPL,IFLB(IPL),FCTE(IPL),BMASS(IPL)
    20   CONTINUE
         READ (IUNIN,'(2I6)') NDXA,NDYA
         IF (TRCINT) WRITE (iunout,*) 'NDXA,NDYA= ',NDXA,NDYA
@@ -807,18 +806,18 @@ C
             END IF
             ALN=ALPHYB(IX,IY)
             ALS=ALPHYB(IX,IY-1)
-! cell centered angle of B_pol (psi-contour line) against eirene x-coordinate
+! cell-centered angle of B_pol (psi-contour line) against eirene x-coordinate
             ALX=0.25D0*(ALE+ALW+ALN+ALS)
 c           write (iunout,'(1x,2i3,1P,5e12.3)') iy,ix,
 c    .                                          ale,alw,aln,als,alx
-! cell centered unit vector along poloidal direcion
+! cell-centered unit vector along poloidal direction
             PUX(IN)=COS(ALX)
             PUY(IN)=SIN(ALX)
-! cell centered unit vector along "radial" (grad psi) direcion,
+! cell-centered unit vector along "radial" (grad psi) direction,
 !                    strictly orthonormal to  PU (poloidal) direction
             PVX(IN)=-PUY(IN)
             PVY(IN)=PUX(IN)
-! surface centered: nothing to be done, the values on fort.29 are already surface centered
+! surface-centered: nothing to be done, the values on fort.29 are already surface-centered
 !                   on east and north sides of a cell, respectively
             PUXE(IN)=COS(ALE)
             PUYE(IN)=SIN(ALE)
@@ -866,7 +865,7 @@ C
 C
 C     READ IN THE NUMBER OF TRIANGLES AND ATTRIBUTES OF THE TRIANGLES
       READ(34,*) NTRII
-      WRITE(iunout,*) 'NTRII  = ',NTRII
+      WRITE(iunout,*) 'NTRII = ',NTRII
 
 C
 C  EACH ELEMENT (TRIANGLE) IS GIVEN BY 3 POINTS
@@ -880,7 +879,7 @@ C          1.................2
 C                  1
 C
 C
-      if (ntrfrm == 0) then
+      IF (NTRFRM == 0) THEN
         READ(33,*) (XTRIAN(I),I=1,NRKNOT)
         READ(33,*) (YTRIAN(I),I=1,NRKNOT)
 
@@ -896,11 +895,11 @@ c next: write file 'triang_new.npco_char'
            ENDDO
            close (unit=jun)
          end if
-      else
+      ELSE
         DO I=1,NRKNOT
           READ(33,*) J,XTRIAN(I),YTRIAN(I)
         ENDDO
-      end if
+      END IF
 C
       IF (NTRII.GT.NRAD.OR.NTRII.GT.NTRI) THEN
         WRITE (iunout,*) ' PARAMETER ERROR DETECTED IN INFUSR '
@@ -1109,9 +1108,9 @@ C  ISTS=INMTI(ISIDE,NRCELL), ISIDE=1, 2, OR 3
 C
       DO I=1,NLIMI
         IF (IGJUM0(I)==0) THEN
-C  SURFACE I IS ACTIV
+C  SURFACE I IS ACTIVE
           IF (ILPLG(I).NE.0) THEN
-C  SURFACE I IS PART IF A CONTOUR USED FOR THE MESHGENERATOR
+C  SURFACE I IS PART IF A CONTOUR USED FOR THE MESH GENERATOR
             VSX=P2(1,I)-P1(1,I)
             VSY=P2(2,I)-P1(2,I)
             VS=SQRT(VSX**2+VSY**2)+EPS60
@@ -1319,8 +1318,7 @@ C  PLUS THOSE FROM INPUT FILE BLOCK 2E (NRADD)
 C  TOTAL NUMBER OF CELLS OF COARSE GRID: STRUCTURED GRID PLUS ALL ADDITIONAL CELLS
       NSBOX_TAL=NSURF_TAL+NRADD_TAL
 
-
-C  save old COURSE grid structure
+C  save old COARSE grid structure
 
       nr1tal_save=nr1tal
       np2tal_save=np2tal
@@ -1342,7 +1340,6 @@ c  reset scoring grid parameters back to fine tally grid
       ENDIF
 
       NGITT = COUNT(INMTI(1:3,1:NTRII) .NE. 0)
-
 
 C  CARRY OUT SOME CONSISTENCY CHECKS ON NEW TRIAGULAR GRID
       DO ITRI=1,NTRII
@@ -1588,7 +1585,7 @@ C  SET THE NUMBER OF COLUMNS PER CUT FROM NCUTB (BRAAMS IMPLEMENTATION)
 C  TO WHAT IS FOUND FROM THE EIRENE GEOMETRY FILE (NCUTL)
 C
       IF (NCUTL.EQ.NCUTB_SAVE) GOTO 2101
-C  FIRST THE ZONE CENTERED DATA
+C  FIRST THE ZONE-CENTERED DATA
       CALL EIRENE_INDMAP (DNIB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (TEB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,NCUTB,NCUTL,
@@ -1599,7 +1596,7 @@ C  FIRST THE ZONE CENTERED DATA
      .             NPOINT,NPLP)
       CALL EIRENE_INDMAP (PRB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,NCUTB,NCUTL,
      .             NPOINT,NPLP)
-C  NOW THE SURFACE CENTERED DATA
+C  NOW THE SURFACE-CENTERED DATA
       CALL EIRENE_INDMAP (FNIXB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (FNIYB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
@@ -1611,7 +1608,7 @@ C  distinct from B2: these velocities are now cell centered in b2.5
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (UPB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .             NCUTB,NCUTL,NPOINT,NPLP)
-C   same in B2 and in B2.5:  these ENERGY fluxes are surface centered
+C  same in B2 and in B2.5: these ENERGY fluxes are surface-centered
       CALL EIRENE_INDMAP (FEIXB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (FEIYB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,
@@ -1764,7 +1761,6 @@ C       VLINTF(ITRI)=1.
 C
 C  SET SAME ION TEMPERATURE FOR ALL EIRENE BACKGROUND SPECIES
 C
-
       DO 2150 IPLSTI=1,NPLSTI
       DO 2150 ITRI=1,NSBOX
         TIINTF(IPLSTI,ITRI)=TIINTF(1,ITRI)
@@ -1773,9 +1769,9 @@ C
 CDR  set density from B2 array DNIB, for each fluid
 CDR  set plasma flow velocity field from B2 arrays UPB (parallel velocity)
 c  without drifts:
-c  upb * pitch:  poloidal velocity (i.e. cartesian x,y direction).
+c  upb * pitch: poloidal velocity (i.e. cartesian x,y direction).
 c  poloidal field direction is given by that of the poloidal cell face PU..(in),
-C  i.e. along a flux surface. (PU(...) is cell centered)
+C  i.e. along a flux surface. (PU(...) is cell-centered)
 c  and upb*(1-pitch^2): toroidal velocity  (i.e. cartesian z direction (nltrz) or
 c                                                toroidal phi direction (nltra)
 c  sign of flowfield follows the sign of poloidal grid in B2.
@@ -1882,7 +1878,7 @@ C
 C
 C  READ OTHER B2.5 ARRAYS INTO EIRENE, FOR PRINTOUT AND PLOTTING
 C
-c  density, species index as in B2 code, cell centered
+c  density, species index as in B2 code, cell-centered
       DO 2300 IAIN=1,NAINB
         IF (NAINT(IAIN).EQ.1.AND.NAINS(IAIN).GT.0.AND.
      .      NAINS(IAIN).LE.NFLA) THEN
@@ -1893,7 +1889,7 @@ c  density, species index as in B2 code, cell centered
               ADINTF(IAIN,IN)=0.
             ENDIF
  2321     CONTINUE
-c  poloidal (projection) flow velocity, species index as in B2 code, north surface centered
+c  poloidal (projection) flow velocity, species index as in B2 code, north surface-centered
         ELSEIF (NAINT(IAIN).EQ.2.AND.NAINS(IAIN).GT.0.AND.
      .      NAINS(IAIN).LE.NFLA) THEN
           DO 2322 IN=1,NTRII
@@ -1903,7 +1899,7 @@ c  poloidal (projection) flow velocity, species index as in B2 code, north surfa
               ADINTF(IAIN,IN)=0.
             ENDIF
  2322     CONTINUE
-c  radial drift velocity, species index as in B2 code, east surface centered
+c  radial drift velocity, species index as in B2 code, east surface-centered
         ELSEIF (NAINT(IAIN).EQ.3.AND.NAINS(IAIN).GT.0.AND.
      .      NAINS(IAIN).LE.NFLA) THEN
           DO 2323 IN=1,NTRII
@@ -1913,7 +1909,7 @@ c  radial drift velocity, species index as in B2 code, east surface centered
               ADINTF(IAIN,IN)=0.
             ENDIF
  2323     CONTINUE
-c  plasma pressure, cell centered, no species index
+c  plasma pressure, cell-centered, no species index
         ELSEIF (NAINT(IAIN).EQ.6) THEN
           DO 2326 IN=1,NTRII
             IF (IXTRI(IN).GT.0) THEN
@@ -1922,7 +1918,7 @@ c  plasma pressure, cell centered, no species index
               ADINTF(IAIN,IN)=0.
             ENDIF
  2326     CONTINUE
-c  parallel velocity, species index as in B2 code, north surface centered
+c  parallel velocity, species index as in B2 code, north surface-centered
         ELSEIF (NAINT(IAIN).EQ.7.AND.NAINS(IAIN).GT.0.AND.
      .      NAINS(IAIN).LE.NFLA) THEN
           DO 2327 IN=1,NTRII
@@ -2048,6 +2044,11 @@ csw 04dec2014 collecting normals for B2.5/B2 cells per triangle
       allocate(plnytri(ntrii))
       allocate(pplnxtri(ntrii))
       allocate(pplnytri(ntrii))
+! in case of "cycle" in do-loop below values may be uninitialized. Therefore,
+      plnxtri = 0
+      plnytri = 0
+      pplnxtri = 0
+      pplnytri = 0
       do it=1,ntrii
         ix=ixtri(it)
         iy=iytri(it)
@@ -2169,11 +2170,11 @@ C
 C  NINCT= 1: PLASMA FLUX IN SAME   DIRECTION AS B2 COORDINATE
 C  NINCT=-1: PLASMA FLUX IN OPPOS. DIRECTION AS B2 COORDINATE
 C  BRAAMS X-CELL CONTAINING THE TARGET DATA (BOUNDARY CONDITIONS)
-C  (SURFACE CENTERED, EAST OR NORTH) (AFTER INDEX MAPPING)
+C  (SURFACE-CENTERED, EAST OR NORTH) (AFTER INDEX MAPPING)
 C  (E.G. SURFACE NO.0 AND SURFACE NO. NX) AT TARGETS.
         NPBS=NDT(ITARG,IPRT)
 C  BRAAMS P-CELL CONTAINING THE TARGET DATA (BOUNDARY CONDITIONS)
-C  (ZONE CENTERED) (AFTER INDEX MAPPING)
+C  (ZONE-CENTERED) (AFTER INDEX MAPPING)
 C
 C  THIS LINE, IF B2-BOUNDARY CONDITIONS ARE COMPUTED FROM GUARD CELLS
 C  (E.G. CELL NO.0 AND CELL NO. NX+1) AT TARGETS.
@@ -2298,7 +2299,7 @@ C
           IF ((IX < 0) .OR. (IY < 0)) CYCLE
           IG=IG+1
           IF (IG.GT.NGITT) GOTO 999
-C  TESTEP, TISTEP: ZONE CENTERED TEMPERATURE IN BOUNDARY ZONE (EV)
+C  TESTEP, TISTEP: ZONE-CENTERED TEMPERATURE IN BOUNDARY ZONE (EV)
           ORI(ITARG,IG) = NINCT(ITARG,IPRT)
           TESTEP(ITARG,IG) = TEB(NPBC,IY)*T
 C  RRSTEP,IRSTEP,IPSTEP: GEOMETRICAL INFORMATION ALONG TARGET
@@ -2328,11 +2329,11 @@ C  TORL: TOROIDAL LENGTH (CM) AT TARGET SEGMENT IY: CENTER OF GRAVITY
             IPLSV=MPLSV(IPLS)
             ELSTEP(IPLS,ITARG,IG)=0.
             TISTEP(IPLSTI,ITARG,IG) = TIB(NPBC,IY)*T
-C  DISTEP: ZONE CENTERED DENSITY IN BOUNDARY ZONE
+C  DISTEP: ZONE-CENTERED DENSITY IN BOUNDARY ZONE
             IFL=IFLB(IPLS)
             IF (IFL.LE.0.OR.IFL.GT.NFLA) GOTO 3013
             DISTEP(IPLS,ITARG,IG)=DNIB(NPBC,IY,IFL)*D(IPLS)
-C  FLSTEP: SURFACE CENTERED FLUX (AMP/CM ALONG TARGET)
+C  FLSTEP: SURFACE-CENTERED FLUX (AMP/CM ALONG TARGET)
             IF (NSPZI(ITARG,IPRT).LE.IFL.AND.
      .                               IFL.LE.NSPZE(ITARG,IPRT)) THEN
               IIPLS=MIN0(IIPLS,IPLS)
@@ -2380,8 +2381,8 @@ C  SET DEFAULT ION ENERGY FLUXES FROM B2.5-BOUNDARY CONDITIONS
               ENDIF
             ENDIF
 
-C  VXSTEP,VYSTEP,VZSTEP: SURFACE CENTERED FLOW VELOCITY (CM/S)
-C  NOTE: PV VECTOR IS CELL CENTERED, BUT EXACT VECTOR CAN BE FOUND FROM
+C  VXSTEP,VYSTEP,VZSTEP: SURFACE-CENTERED FLOW VELOCITY (CM/S)
+C  NOTE: PV VECTOR IS CELL-CENTERED, BUT EXACT VECTOR CAN BE FOUND FROM
 C        DATA FOR POLOIDAL POLYGON NPES
             IN=IY+(NPEC-1)*NR1TAL_SAVE
 
@@ -2538,7 +2539,7 @@ C
           IF ( (IX < 0) .OR. (IY < 0) ) CYCLE
           IG=IG+1
           IF (IG.GT.NGITT) GOTO 999
-C  TESTEP, TISTEP: ZONE CENTERED TEMPERATURE IN BOUNDARY ZONE (EV)
+C  TESTEP, TISTEP: ZONE-CENTERED TEMPERATURE IN BOUNDARY ZONE (EV)
           ORI(ITARG,IG) = NINCT(ITARG,IPRT)
           TESTEP(ITARG,IG) = TEB(IX,NPBC)*T
 C  RRSTEP,IRSTEP,IPSTEP: GEOMETRICAL INFORMATION ALONG TARGET
@@ -2567,11 +2568,11 @@ C  TORL: TOROIDAL LENGTH (CM) AT TARGET SEGMENT IY: CENTER OF GRAVITY
             IPLSV=MPLSV(IPLS)
             ELSTEP(IPLS,ITARG,IG)=0.
             TISTEP(IPLSTI,ITARG,IG) = TIB(IX,NPBC)*T
-C  DISTEP: ZONE CENTERED DENSITY IN BOUNDARY ZONE (EV)
+C  DISTEP: ZONE-CENTERED DENSITY IN BOUNDARY ZONE (EV)
             IFL=IFLB(IPLS)
             IF (IFL.LE.0.OR.IFL.GT.NFLA) GOTO 3023
             DISTEP(IPLS,ITARG,IG)=DNIB(IX,NPBC,IFL)*D(IPLS)
-C  FLSTEP: SURFACE CENTERED FLUX (AMP/CM ALONG TARGET)
+C  FLSTEP: SURFACE-CENTERED FLUX (AMP/CM ALONG TARGET)
             IF (NSPZI(ITARG,IPRT).LE.IFL.AND.
      .                               IFL.LE.NSPZE(ITARG,IPRT)) THEN
               IIPLS=MIN0(IIPLS,IPLS)
@@ -2616,8 +2617,8 @@ C  SET DEFAULT ION ENERGY FLUXES FROM B2 BOUNDARY CONDITIONS
               ENDIF
             ENDIF
 C
-C  VXSTEP,VYSTEP,VZSTEP: SURFACE CENTERED FLOW VELOCITY (CM/S)
-C  NOTE: PU VECTOR IS CELL CENTERED, BUT EXACT VECTOR CAN BE FOUND FROM
+C  VXSTEP,VYSTEP,VZSTEP: SURFACE-CENTERED FLOW VELOCITY (CM/S)
+C  NOTE: PU VECTOR IS CELL-CENTERED, BUT EXACT VECTOR CAN BE FOUND FROM
 C        RADIAL POLYGON NPES DATA
             IN=NPEC+(IX-1)*NR1TAL_SAVE
             PUXS=XPOL(NPES,IX+1)-XPOL(NPES,IX)
@@ -2667,7 +2668,7 @@ C
 C
       IF (TRCINT) CALL EIRENE_LEER(2)
 C
-C  INITIALISE FUNCTION STEP (FOR RANDOM SAMPLING ALONG TARGET)
+C  INITIALIZE FUNCTION STEP (FOR RANDOM SAMPLING ALONG TARGET)
 C  SET SOME SOURCE PARAMETERS EXPLICITLY TO ENFORCE INPUT CONSISTENCY
 C  also: sum over species: flstep(0,...), elstep(0,...) will be set.
 C
@@ -2929,8 +2930,8 @@ C
  6100 CONTINUE
       WRITE (iunout,'(1X,I3,1P,1E11.3)') NRWL(ITARG),
      .                                 RRSTEP(ITARG,NRWL(ITARG))
-      CALL EIRENE_MASR1 ('EEMAX    ',EEMAX)
-      CALL EIRENE_MASR1 ('EESHT    ',EESHT)
+      CALL EIRENE_MASR1 ('EEMAX   ',EEMAX)
+      CALL EIRENE_MASR1 ('EESHT   ',EESHT)
 C
       ETOT=EEMAX+EESHT
       EFLX(ITARG)=EEMAX+EESHT
@@ -3009,6 +3010,7 @@ csw 14jul2011
         ALLOCATE (RESSEI(0:NSTRA))
 
         ALLOCATE (FLXEIR(NSTRA))
+
         CALL EIRENE_ALLOC_BRASPOI
         CALL EIRENE_ALLOC_EIRBRA(NDX, NDY, NFL, NSTRA,IFOFF)
 C
@@ -3084,10 +3086,9 @@ csw 08mar2013 check for nprs >= nstrai too
           elseif(my_pe == 0.and.my_pe /= irnk) then
             allocate(save_estimv(nvoltl,nrtal))
             allocate(save_estims(nsrftl,nlmpgs))
-!pb 08.01.2014            allocate(save_sigma_cop(ncpv_stat,nrtals))
+
             save_estimv=estimv
             save_estims=estims
-!pb 08.01.2014            save_sigma_cop=sigma_cop
             call mpi_recv(estimv,nrtal*nvoltl,
      .               MPI_DOUBLE_PRECISION,
      .               irnk,istrai, MPI_COMM_WORLD,
@@ -3096,10 +3097,6 @@ csw 08mar2013 check for nprs >= nstrai too
      .               MPI_DOUBLE_PRECISION,
      .               irnk,istrai, MPI_COMM_WORLD,
      .               MPI_STATUS_IGNORE,ier)
-!pb 08.01.2014            call mpi_recv(sigma_cop,ncpv_stat*nrtals,
-!pb 08.01.2014     .               MPI_DOUBLE_PRECISION,
-!pb 08.01.2014     .               irnk,istrai, MPI_COMM_WORLD,
-!pb 08.01.2014     .               MPI_STATUS_IGNORE,ier)
             allocate(wtotp_dum(0:npls,0:nstra))
             call mpi_recv(wtotp_dum(0,0),(npls+1)*(nstra+1),
      .               MPI_DOUBLE_PRECISION,
@@ -3116,9 +3113,6 @@ csw 08mar2013 check for nprs >= nstrai too
               call mpi_send(estims,nsrftl*nlmpgs,
      .                 MPI_DOUBLE_PRECISION,0,istrai,
      .                 MPI_COMM_WORLD,ier)
-!pb 08.01.2014              call mpi_send(sigma_cop,ncpv_stat*nrtals,
-!pb 08.01.2014     .                 MPI_DOUBLE_PRECISION,0,istrai,
-!pb 08.01.2014     .                 MPI_COMM_WORLD,ier)
               call mpi_send(wtotp(0,0),(npls+1)*(nstra+1),
      .                 MPI_DOUBLE_PRECISION,0,istrai,
      .                 MPI_COMM_WORLD,ier)
@@ -3148,7 +3142,6 @@ C  NOTHING TO BE DONE
      .               NSDVI1,SDVI1,NSDVI2,SDVI2,
      .               NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .               NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
-     .               NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .               NSIGI_SPC,TRCFLE)
           ELSE
             WRITE (iunout,*) 'ERROR IN INFCOP: STRATUM ISTRAI= ',ISTRAI
@@ -3535,7 +3528,6 @@ cdr  only one bulk ion species per volume source stratum supported
                   lhit(inc) = .true.
                 end if
 
-
 ! ALL INPUT TALLIES, TAB.., FTAB.., VOL, ARE ON UNDERLYING FINE GRID.
 ! and hence: RECADD,PIADD,EIADD,EEADD also on fine grid.
 !  here we scale with volume of triangle cell
@@ -3757,7 +3749,8 @@ C  or     (    lcoarse) already scored on B2.5 grid cell INC=IY+(IX-1)*NR1TAL
 
             IF (.NOT.LSHORT) THEN
 
-!pb replace sigma_cop
+cdr:  try to find stat. variance for particle balance sources
+cdr   ntalm is a copv tally.
               istat_cop = 0
               do i = 1, nsigvi
                 if ((iih(i) == ntalm).and.(igh(i) == NPLSI+IPLS)) then
@@ -3834,7 +3827,8 @@ cdr  associated(curpoi) is taken for granted here !?
 
             IF (.NOT.LSHORT) THEN
 
-!pb replace sigma_cop
+cdr:  try to find stat. variance for momentum balance sources
+cdr   ntalm is a copv tally.
               istat_cop = 0
               do i = 1, nsigvi
                 if ((iih(i) == ntalm).and.(igh(i) == 2*NPLSI+IPLS)) then
@@ -3909,7 +3903,8 @@ C  or     (    lcoarse) already scored on B2.5 grid cell INC=IY+(IX-1)*NR1TAL
 
         IF (.NOT.LSHORT) THEN
 
-!pb replace sigma_cop
+cdr:  try to find stat. variance for electron energy balance sources
+cdr   ntalm is a copv tally.
           istat_cop = 0
           do i = 1, nsigvi
             if ((iih(i) == ntalm).and.(igh(i) == 3*NPLSI+1)) then
@@ -3987,7 +3982,8 @@ C  or     (    lcoarse) already scored on B2.5 grid cell INC=IY+(IX-1)*NR1TAL
 
       IF (.NOT.LSHORT) THEN
 
-!pb replace sigma_cop
+cdr:  try to find stat. variance for ion energy balance sources
+cdr   ntalm is a copv tally.
           istat_cop = 0
           do i = 1, nsigvi
             if ((iih(i) == ntalm).and.(igh(i) == 3*NPLSI+2)) then
@@ -4081,13 +4077,17 @@ C
           IF (LSTOP)
      .      WRITE (iunout,*) 'STOP SHORT CYCLE: ALL B2 TIMESTEPS DONE '
 
+!  DO AT LEAST ONE MORE TIME STEP
+CDR  DECIDE FOR THIS CURRENT STRATUM ISTRAI:
+CDR  SHORT CYCLE (IMPLICIT CORRECTION) ONLY, OR FULL MONTE CARLO
+
 
           DO 7558 IFL=1,NFLA
             TEST=CHPS(IFL)/(SNIS(IFL)+1.D-60)*100.
               write (iunout,*) ' global change in sni,ifl ',test,ifl
             IF (ABS(TEST).GT.CHGP) THEN
               LSTP3=.TRUE.
-              LTEST=.FALSE.  !  stop short cycle mode. Full new set of  trajectories.
+              LTEST=.FALSE.  !  stop short cycle mode. Full new set of trajectories.
               WRITE (iunout,*) 'STOP SHORT CYCLE: PART. SOURCES: ',
      .                     SNIS(IFL),CHPS(IFL),TEST
               WRITE (iunout,*) 'STRATUM ISTRAI, SPECIES IFL ',
@@ -4621,6 +4621,7 @@ C
       SSNI=0.
       SSEI=0.
       SSEE=0.
+
       DO 10150 ISTR=1,NSTRAI
         ISTRA = ISTR
         IF (XMCP(ISTRA).LE.1) GOTO 10150
@@ -4654,6 +4655,7 @@ C
 C     WRITE (37,*) 'RADIATION LOSSES VIA NEUTRAL CHANNEL ',ISTRA
 C     WRITE (37,8888) 0.,0.,0.
 C
+
         SSNI(1:NFLA)=SSNI(1:NFLA)+SSN(1:NFLA)*FLX
         SSEI=SSEI+SSI*FLX/ELCHA
         SSEE=SSEE+SSE*FLX/ELCHA
@@ -4666,7 +4668,7 @@ C
       WRITE (37,*) 'BREMSSTRAHLUNG '
       WRITE (37,8888) 0.,0.,B2BREM
 C
-      WRITE (37,*) 'CHARGED IMPURITY RAD.,IONIS. AND RECOMB. '
+      WRITE (37,*) 'CHARGED IMPURITY RAD.,IONIZ. AND RECOMB. '
       WRITE (37,8888) 0.,0.,B2RAD
 C
       WRITE (37,*) 'ELECTRIC FIELD TERMS (PRESSURE GRADIENTS)'
@@ -4830,6 +4832,7 @@ cdr     CALL EIRENE_MASRR1 (' RESSMO    ',RESSMO(0,1:NFLA),NFLA,5)
         helpw(1:nfla) = RESSMO(0,1:NFLA)
         CALL EIRENE_MASRR1 (' RESSMO    ',HELPW,NFLA,5)
         if (allocated(helpw)) deallocate (helpw)
+
       ENDIF  !LBALAN
 C
 c sputtering
@@ -5140,7 +5143,7 @@ C
 
 
 
-C DEFINE  NORMAL DIRECTION FOR SURFACE-AVERAGED TALLIES (SEE FOLNEUT.F)
+C DEFINE NORMAL DIRECTION FOR SURFACE-AVERAGED TALLIES (SEE FOLNEUT.F)
        SUBROUTINE CORRECTNSS
 
          IF(ITRI.GT.NTRIS.OR.NBAR.GT.NTRIS.OR.
@@ -5221,10 +5224,10 @@ CVK END
 
       END
 
-C> \brief Any property requirering hand-over in parallel part.
+C> \brief Any property requiring hand-over in parallel part.
 C>
 C> This interfacing routine is called in the parallel part of EIRENE
-C> after the broadcase of any other quantity and before MCARLO.
+C> after the broadcast of any other quantity and before MCARLO.
       SUBROUTINE EIRENE_INFCOP_PRE_MCARLO
       RETURN
       END SUBROUTINE EIRENE_INFCOP_PRE_MCARLO

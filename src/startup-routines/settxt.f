@@ -19,7 +19,6 @@ C  Entry    : STTXT1
 C  Set 1st index range per tally: nspan(itl), nspen(itl), for vol and surf. tallies,
 c                                 for pointers to large tally arrays
 c
-      USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
       USE EIRMOD_CTEXT
@@ -250,9 +249,10 @@ C  MOMENTUM DENSITY TALLIES
      . 'MOMENTUM SOURCE (BULK IONS) FROM PHOTON-PLASMA INTERACTION  '
 C
       DO 1 J=1,NTALV
-        DO 1 I=2,N1MX
+        DO I=2,N1MX
           TEXT72=TXTTAL(1,J)
           TXTTAL(I,J)=TEXT72
+        END DO
     1 CONTINUE
 C
       TXTUNT(1,1)='CM**-3                  '
@@ -362,9 +362,10 @@ C  PARALLEL MOMENTUM SOURCES (BULK IONS)
       TXTUNT(1,99)='G*CM/S*AMP*CM**-3       '
       TXTUNT(1,100)='G*CM/S*AMP*CM**-3       '
       DO 2 J=1,NTALV
-        DO 2 I=2,N1MX
+        DO I=2,N1MX
           TEXT24=TXTUNT(1,J)
           TXTUNT(I,J)=TEXT24
+        END DO
     2 CONTINUE
 
 C  SURFACE-AVERAGED TALLIES

@@ -467,8 +467,8 @@ c     end select
      .                           DRFT,E00,IPROF)
      .         RESULT(RES)
 c  zeeman - profile - splitting
-c  input: photon energy x (ev)
-c  output:  value of zeeman splitted absorption profile
+c  input:   x:    photon energy [eV]
+c  output:  res:  value of zeeman splitted absorption profile
 c   iprof:  6:  delta
 c           7:  doppler
 c           8:  lorentz
@@ -3037,10 +3037,10 @@ c     CALL EIRENE_LEER(1)
       RETURN
 C
   996 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSectph: EXIT CALLED '
+      WRITE (iunout,*) 'ERROR IN XSectph: EXIT CALLED'
       WRITE (iunout,*) 'NO CROSS-SECTION AVAILABLE FOR NON-DEFAULT OT'
       WRITE (iunout,*) 'KK,IPHT,IPL0 ',KK,IPHT,IPL0
-      WRITE (iunout,*) 'EITHER PROVIDE CROSS-SECTION OR USE DIFFERENT '
+      WRITE (iunout,*) 'EITHER PROVIDE CROSS-SECTION OR USE DIFFERENT'
       WRITE (iunout,*) 'POST-COLLISION SAMPLING FLAG ISCDEA'
       CALL EIRENE_EXIT_OWN(1)
       return

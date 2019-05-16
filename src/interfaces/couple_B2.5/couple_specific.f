@@ -793,7 +793,7 @@ C  LOOP FOR THE SPECIES
 C
       DO 500 IF=1,NFLA
 C
-C  INITIALIZE DUMMY
+C  INITIALISE DUMMY
 C
         DO 10 IY=0,NDY+1
           DO 10 IX=0,NDX+1
@@ -873,7 +873,7 @@ C  LOOP OVER THE SPECIES
 C
       DO 500 IF=1,NFLA
 C
-C  INITIALIZE DUMMY
+C  INITIALISE DUMMY
 C
         DO 10 IY=0,NDY+1
           DO 10 IX=0,NDX+1
@@ -957,7 +957,7 @@ c
       i3 = index(zeile(i2+1:),' ')
       write (form,'(A4,i0,a1,i0,a2)') '(5(E',i2+i3-1,'.',i2-i1-1,'))'
       backspace kard
-c     write (6,*) 'plasm: detected format ', form
+c     write (iunout,*) 'plasm: detected format ', form
 
       ND1 = NDIMX + 2
       LIM = (ND1/5)*5 - 4

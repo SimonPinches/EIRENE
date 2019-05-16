@@ -74,11 +74,9 @@ cdr
       USE EIRMOD_CGEOM
       USE EIRMOD_CSDVI
       USE EIRMOD_CSDVI_BGK
-      USE EIRMOD_CSDVI_COP
       USE EIRMOD_CTETRA
       USE EIRMOD_COMPRT
       USE EIRMOD_CPES
-      USE EIRMOD_COMNNL
       USE EIRMOD_COMSOU
       USE EIRMOD_CSTEP
       USE EIRMOD_COMSPL
@@ -239,28 +237,6 @@ cdr:  LSMOPRO, NMODE:  what is special about them to require treatment as except
 
       CALL MPI_BCAST (LLOGAU,NLOGAU,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
 
-      CALL MPI_BCAST (DTIMV,1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (DTIMVI,1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (DTIMVN,1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (TIME0,1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (RPART,NPRNL*NPARTT,MPI_REAL8,
-     .                0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (RPARTC,NPRNL*NPARTT,MPI_REAL8,
-     .                0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (RPARTW,NPRNL+1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (NPRNLI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (IPRNLI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (IPRNLS,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (IPRNL ,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (NPTST ,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (NTMSTP,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (ITMSTP,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (IPART,NPRNL*MPARTT,MPI_INTEGER,
-     .                0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (IPARTC,NPRNL*MPARTT,MPI_INTEGER,
-     .                0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (NPRNLS,NSTRA,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-
       IF (ALLOCATED(RCMSIG)) THEN
         CALL MPI_BCAST (RCMSIG,NCMSIG,MPI_REAL8,0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (FUFFER,NCHOR*NCHEN,MPI_REAL8,
@@ -368,7 +344,7 @@ c  RC post-collision energetics
       CALL MPI_BCAST (EELRC1,NREC*NSTORDR,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
 c  PI post-collision energetics
-      CALL MPI_BCAST (EELPI1,NRPI*NSTORDR,MPI_REAL8,
+      CALL MPI_BCAST (EELPI3,NRPI*NSTORDR*NSTORDT,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EHVPI3,NRPI*NSTORDR*NSTORDT,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
@@ -793,8 +769,6 @@ cdr dimensioning of LCUT array corrected:
       CALL MPI_BCAST (IGHC,2*NCV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
       CALL MPI_BCAST (NBGVI_STAT,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-
-      CALL MPI_BCAST (NCPVI_STAT,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
       CALL MPI_BCAST (FLSTEP,NSTPP1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (ELSTEP,NSTPP1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -1581,62 +1555,9 @@ C.....................................................................
      .                  MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
 C.....................................................................
-      ELSE IF (RP%IFIT == 4) THEN
-! 1D TABLES. E.G. HYDKIN DATA
-        IF (MY_PE .NE. 0) THEN
-          IF (.NOT.ASSOCIATED(RP%HYD)) THEN
-             ALLOCATE (RP%HYD)
-             NULLIFY(RP%HYD%TEMPS)
-             NULLIFY(RP%HYD%RATES)
-             NULLIFY(RP%HYD%RATIO)
-          END IF
-        END IF
+C     ELSE IF (RP%IFIT == 4) THEN
+! 1D TABLES. E.G. FORMERLY: HYDKIN DATA:  moved to "snippets_hydkin"
 
-        CALL MPI_BCAST (RP%HYD%NTEMPS,1,MPI_INTEGER,
-     .                  0,MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST (RP%HYD%REACNAME,50,MPI_CHARACTER,
-     .                  0,MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST (RP%HYD%REAC_STRING,50,MPI_CHARACTER,
-     .                  0,MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST (RP%HYD%RPRT,100,MPI_CHARACTER,
-     .                  0,MPI_COMM_WORLD,ier)
-
-        IF (MY_PE .NE. 0) THEN
-          IF (ASSOCIATED(RP%HYD%TEMPS)) THEN
-            IF (RP%HYD%NTEMPS.ne.UBOUND(RP%HYD%TEMPS,1)) THEN
-               DEALLOCATE (RP%HYD%TEMPS)
-               NULLIFY (RP%HYD%TEMPS)
-               ALLOCATE (RP%HYD%TEMPS(RP%HYD%NTEMPS))
-            ENDIF
-          ELSE
-            ALLOCATE (RP%HYD%TEMPS(RP%HYD%NTEMPS))
-          ENDIF
-          IF (ASSOCIATED(RP%HYD%RATES)) THEN
-            IF (RP%HYD%NTEMPS.ne.UBOUND(RP%HYD%RATES,1)) THEN
-               DEALLOCATE (RP%HYD%RATES)
-               NULLIFY (RP%HYD%RATES)
-               ALLOCATE (RP%HYD%RATES(RP%HYD%NTEMPS))
-            ENDIF
-          ELSE
-            ALLOCATE (RP%HYD%RATES(RP%HYD%NTEMPS))
-          ENDIF
-          IF (ASSOCIATED(RP%HYD%RATIO)) THEN
-            IF (RP%HYD%NTEMPS.ne.UBOUND(RP%HYD%RATIO,1)) THEN
-               DEALLOCATE (RP%HYD%RATIO)
-               NULLIFY (RP%HYD%RATIO)
-               ALLOCATE (RP%HYD%RATIO(RP%HYD%NTEMPS))
-            END IF
-          ELSE
-            ALLOCATE (RP%HYD%RATIO(RP%HYD%NTEMPS))
-          ENDIF
-        END IF
-
-        CALL MPI_BCAST (RP%HYD%TEMPS,RP%HYD%NTEMPS,MPI_REAL8,
-     .                  0,MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST (RP%HYD%RATES,RP%HYD%NTEMPS,MPI_REAL8,
-     .                  0,MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST (RP%HYD%RATIO,RP%HYD%NTEMPS,MPI_REAL8,
-     .                  0,MPI_COMM_WORLD,ier)
 C.....................................................................
       ELSE IF (RP%IFIT == 5 ) THEN
 cdr  internal CR Model
@@ -1661,6 +1582,11 @@ C STUFF TO TRANSFER POPULATION ESCAPE FACTORS INTO INTERNAL CRM ROUTINES
 C.....................................................................
       ELSE
 cdr     INVALID RP%IFIT
+
+        WRITE (iunout,*) 'ERROR IN BROADCAST:' 
+        WRITE (iunout,*) 'IFIT DATA FORMAT NO AVAILABLE'
+        WRITE (iunout,*) 'IFIT ',RP%IFIT
+        CALL EIRENE_EXIT_OWN(1) 
       END IF
 
       RETURN

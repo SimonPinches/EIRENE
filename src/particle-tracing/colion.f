@@ -117,7 +117,7 @@ C
      .          VELYO, VELZO, BX, BY, BZ, V0_PARBO, VELO, SCNDP,
      .          EDEL, VDEL, SIG, V0_PARB, FP, FLTEST, ZEP3, VELQ, VX,
      .          VY, VZ, VPLASP, RMAIO, RMMIO, RMIIO, BF, ZEP
-cdr  .         ,ss,ssr  ! for consistency test only. Now de-activated
+cdr  .         ,ss,ssr  ! for consistency test only. Now deactivated
       REAL(DP) :: SIG_ELIM, SIG_TOT_N, SIG_TOT_O, SIG_TEST
       INTEGER ::
      .           IICX, IIEI, IIPI, IIEL,
@@ -130,11 +130,11 @@ c    .
      .           IATMN, IPLSN, NCLLO, IPLSV,  I, J, IPL
       INTEGER :: NEII_RED,LGEI_RED(0:NREI)
 
-Cdr  additional arrays for  ANALOG CASCADE and SPLITTING AT COLLISIONS.
+Cdr  additional arrays for ANALOG CASCADE and SPLITTING AT COLLISIONS.
 Cdr (should be set in initialization phase, not here)
 CDR  check: are the corresponding arrays PATEI,PMLEI, PIOEI real
 CDR         or integer (1/2 particle possible?)
-      INTEGER, ALLOCATABLE, SAVE :: NAMIEI(:),NAMIPI(:)
+      INTEGER, ALLOCATABLE :: NAMIEI(:),NAMIPI(:)
 
 
 csw add n 2lines
@@ -175,7 +175,7 @@ C  ABSORPTION BIASING: CURRENTLY ONLY IMPLEMENTED FOR "EI-TYPE" (ELECTRON IMPACT
 
 C  SUPPRESS THOSE IREI PROCESSES WITH ZERO
 C                      TEST PARTICLE SECONDARIES
- 
+
       SIG_ELIM=0.
       SIG_TOT_N=SIGTOT
       SIG_TOT_O=SIGTOT
@@ -277,7 +277,7 @@ cdr EIAT, EIML, EIIO :  SCORE EXACT GAINS LATER.
             DO IP=1,IPPLEI(IREI,0)
 
 cdr: this is incorrect. esigei must be split into ipl secondaries
-cdr  it only happens to be correct if the post collision bulk species are all the same (=ipl),
+cdr  it only happens to be correct if the post-collision bulk species are all the same (=ipl),
 cdr  because then esigei is the total for this species.
               IPL=IPPLEI(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
@@ -535,7 +535,7 @@ C  FOLLOW FIRST SECONDARY, SPEED FROM BULK POPULATION
           CALL EIRENE_VELOCX
      .         (NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,NOLD,VELQ,
      .          NFLAG,IRCX,DUMT,DUMV)
- 
+
           SELECT CASE (ITYP)
 C
           CASE(1)
@@ -980,7 +980,7 @@ C
       WRITE (iunout,*) 'IREI=  ',IREI,' IS SUPPRESSED, BUT'
       WRITE (iunout,*) 'COLLISION ESTIMATOR WAS SELECTED  '
       WRITE (iunout,*)
-     .  'SET WMINV = INFTY, OR USE TRACKLENGTH ESTIM. '
+     .  'SET WMINV = INFINITY, OR USE TRACKLENGTH ESTIM. '
       CALL EIRENE_EXIT_OWN(1)
 C
   999 WRITE (iunout,*) 'ERROR IN COLLIDE '

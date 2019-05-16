@@ -249,7 +249,7 @@ C
 C   Y-Z PLOT ON X=CONST PLANE
       ELSEIF (LEVGEO.EQ.1.AND.LPRAD3(IBLD)) THEN
         IR=1
-        write (6,*) ' celint in lprad3 block '
+        write (iunout,*) ' celint in lprad3 block '
         IF (NLRAD) IR=IPROJ3(IBLD,ICURV)
         IF (IR.LE.0.OR.IR.GT.NR1ST) IR=1
         YWERT(1:N1ST+N2ND,1:N2ND+N3RD) = 0._DP

@@ -162,7 +162,7 @@ C  MUSR, INTEGER
 
 C  LUSR, LOGICAL
       LOGICAL, ALLOCATABLE, PUBLIC, SAVE ::
-     L         LGVAC(:,:) 
+     L         LGVAC(:,:)
 
       LOGICAL, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      L         LIVTALI(:)

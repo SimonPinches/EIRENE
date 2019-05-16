@@ -61,7 +61,7 @@ C  CURRENTLY:  BULK ION TEMP (-2), BULK ION DENSITY (-4), AND BULK ION DRIFT VEL
       INTEGER :: JPRTAL(5) = (/-2,-4,-5,-6,-7/)
 C
 cdr: extensive or intensive quantities? Needed for averaging....
-C  TYPE OF TALLY: TALTYP=0: #              (#-UNITS)          
+C  TYPE OF TALLY: TALTYP=0: #              (#-UNITS)
 C                 TALTYP=1: #-DENSITY      (#-UNITS/CM**3)
 C                 TALTYP=2: VOLUME         (CM**3)
 C                 TALTYP=3: DIMENSIONLESS  (1)
@@ -296,9 +296,9 @@ C
 c                         ! otherwise: helpp=helps
             DO 121 IB=1,NBMLT
              NBLCKA=NSTRD*(IB-1)
-            DO 121 IR=1,NXM
-            DO 121 IP=1,NYM
-            DO 121 IT=1,NZM
+             DO IR=1,NXM
+             DO IP=1,NYM
+             DO IT=1,NZM
               I_FINE=IR + ((IP-1)+(IT-1)*NP2T3)*NR1P2 + NBLCKA
 C  COARSE-GRAINING OF INPUT TALLY ITAL ONTO GRID DEFINED BY NCLTPR(I-FINE),
 C  STRUCTURE NR1TAL,NP2TAL,....
@@ -339,7 +339,7 @@ C  14) CELL VOLUME  = UNWEIGHTED SUM
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=1.D0
               CASE (12,15)
-C  12) ADDITIONAL TALLY (NO.12) 
+C  12) ADDITIONAL TALLY (NO.12)
 C  15) WEIGHT FUNCTION  (NO.15)
 C  "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
@@ -402,6 +402,9 @@ C  (25 .. NTALI) GRADIENTS
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               END SELECT
+             END DO
+             END DO
+             END DO
   121       CONTINUE
 C
 C  SAME LOOP AGAIN, (IDENTICAL CODE INSIDE LOOP) OVER ADDITIONAL CELL REGION
@@ -417,7 +420,7 @@ C  ELECTR. TEMPERATURE: NE*VOLUME-WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)*DEIN(I_FINE)*VOL(I_FINE) 
                 HELPW(I)=HELPW(I)+DEIN(I_FINE)*VOL(I_FINE)
               CASE (2)
-C  ION TEMPERTURE: NI(K)*VOLUME-WEIGHTED AVERAGES
+C  ION TEMPERATURE: NI(K)*VOLUME-WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
@@ -583,7 +586,7 @@ C   PRINT ONLY THE HEADER FOR TALLY, BECAUSE TALLY IDENTICAL ZERO
      .                      NR1PR,NP2PR,NT3PR,NBMLT,NSBPR,-1,0)
             CALL
      .         EIRENE_MASAGE
-     .              ('IDENTICAL ZERO, NOT PRINTED                  ')
+     .              ('IDENTICAL ZERO, NOT PRINTED')
             CALL EIRENE_LEER(2)
   119     CONTINUE
         ENDIF

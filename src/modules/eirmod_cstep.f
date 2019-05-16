@@ -3,7 +3,7 @@ c  step functions for specification of incident fluxes on
 c                 surfaces, with spatial resolution along surface
 C    FLSTEP: total ion particle flux at sheath entrance (s.e.)
 C    ELSTEP: total ion energy flux   at sheath entrance (s.e.)
-C    RRSTEP: abszissa, i.e. arclength along target (cm)
+C    RRSTEP: abscissa, i.e. arclength along target (cm)
 c
 c  JET-2005: patch 1
 c  9.9.05: new step function parameters:
