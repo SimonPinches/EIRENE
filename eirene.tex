@@ -36,6 +36,10 @@
 \usepackage{listings}
 \usepackage{fmtcount}
 \usepackage{lscape}
+\usepackage[%
+  labelformat=simple,
+  labelsep=colon
+]{subcaption}
 
 \hypersetup{
   pdftitle={EIRENE Documentation},
@@ -58,6 +62,9 @@
 \lstset{
   language=[77]Fortran
 }
+
+\DeclareCaptionSubType*{figure}
+\renewcommand\thesubfigure{Figure~\thefigure~(\alph{subfigure})}
 
 \newcommand{\vOmega}{\mathbf{\Omega}}
 \newcommand{\vv}{\mathbf{v}}

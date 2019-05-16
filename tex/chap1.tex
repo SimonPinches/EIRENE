@@ -2697,22 +2697,18 @@ cells).
 A more complicated situation arises when additional surfaces intersect standard
 grid voxels.
 \begin{figure}[h]
-  \begin{minipage}{0.48\textwidth}
-    \includegraphics[width=\textwidth, angle=+90]{ALT-II}
-    \caption{\label{label1l} Early example a combination of \ac{BREP} and VOXEL 
-      discretization, around 1985 for ALT-II pump limiter studies at \ac{TEXTOR}. 
-      Discretization inside the \ac{TEXTOR} tokamak vessel (torus): VOXEL, 
-      supplemented by about 100 (\acs{BREP}) first and second order surfaces for 
-      ALT-II scoops, pumping ducts and inner structures such as probe supports, 
-      getter pumps, etc..}
-  \end{minipage}
-  \hfill%
-  \begin{minipage}{0.48\textwidth}
-    \includegraphics[width=\textwidth,angle=-0]{alt_imp}
-    \caption{\label{label1r} Same as left Figure, but \ac{BREP} part only, and 
-      EIRENE re-run with more modern 3D visualisation graphics program, 2009. 
-      \vspace{1.2cm}}
-  \end{minipage}
+  \centering
+  \subcaptionbox{\label{label1l} Early example a combination of \ac{BREP} and VOXEL 
+    discretization, around 1985 for ALT-II pump limiter studies at \ac{TEXTOR}. 
+    Discretization inside the \ac{TEXTOR} tokamak vessel (torus): VOXEL, 
+    supplemented by about 100 (\acs{BREP}) first and second order surfaces for 
+    ALT-II scoops, pumping ducts and inner structures such as probe supports, 
+    getter pumps, etc..}
+    {\includegraphics[width=0.48\textwidth, angle=90]{ALT-II}}
+  \hfill
+  \subcaptionbox{\label{label1r} Same as left Figure, but \ac{BREP} part only, and 
+    EIRENE re-run with more modern 3D visualisation graphics program, 2009.}
+    {\includegraphics[width=0.48\textwidth]{alt_imp}}
 \end{figure}
 
 If these surfaces are transparent, they can be used to conveniently ``measure"
