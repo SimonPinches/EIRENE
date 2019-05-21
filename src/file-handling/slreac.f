@@ -54,7 +54,6 @@ c            FILNAM=AMJUEL, HYDHEL, METHAN, H2VIBR, CONST: polynomial fits
 CC           FILNAM=TAB2D, ADAS: special treatment, see below.
 C            FILNAM=CR...: nothing to be done here, use internal CR code xx_colrad.f
 c                          currently available: h_colrad.f
-C            FILNAM=HYDRTC: proprietary option, disabled. Nothing to be done here  ??
 C
 c    H123  : identifier for data type in filnam, e.g. H.1, H.2, H.3, ...
 
