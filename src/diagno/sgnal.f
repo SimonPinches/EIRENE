@@ -490,9 +490,11 @@ c  summation over contributions (different isotopes but same emission reactions,
 
         IF (ANY(NCHTAL == 3)) ND = MAX(ND, NPHOTI)
 
+        IF (ANY(NCLTAL == 5)) ND = MAX(ND, 10)
         IF (ANY(NCHTAL == 10)) ND = MAX(ND, NSPZ)
 
         ALLOCATE (PSIG(0:ND))
+        PSIG = 0._DP
       END IF
 
       IF (NCHTAL(ICHORI).EQ.1)  NSPI=NATMI  ! post-collision CX atomic species
