@@ -28,6 +28,7 @@ stages:
         - git checkout ${SAMPLE_CASE_VERSION}
         - cd ${PATH_CASE}
         - make
+    retry: 2
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
