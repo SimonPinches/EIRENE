@@ -43,7 +43,7 @@ stages:
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
-            - EIRENE-sample-cases/${PATH_CASE}
+            - EIRENE-sample-cases/${PATH_CASE}/output
         when: always
 
 .test: &test
@@ -53,11 +53,6 @@ stages:
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
         - make test
-    artifacts:
-        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
-        paths:
-            - EIRENE-sample-cases/${PATH_CASE}/output/
-        when: on_failure
 
 build_library:
     stage: build:library
@@ -91,6 +86,7 @@ test_standalone_1D-H_slab:
     variables:
         PATH_CASE: "1D-H_slab"
     dependencies:
+        - build_standalone_1D_slab
         - run_standalone_1D-H_slab
 
 build_standalone_1D_slab_with_farming:
@@ -116,6 +112,7 @@ test_standalone_1D-H_slab_with_farming:
     only:
         - PB/feature/farming
     dependencies:
+        - build_standalone_1D_slab_with_farming
         - run_standalone_1D-H_slab_with_farming
 
 build_standalone_2D_slab:
@@ -135,6 +132,7 @@ test_standalone_2D-D_slab:
     variables:
         PATH_CASE: "2D-D_slab"
     dependencies:
+        - build_standalone_2D_slab
         - run_standalone_2D-D_slab
 
 build_standalone_ITER_1573:
@@ -159,6 +157,7 @@ test_standalone_ITER_1573:
     variables:
         PATH_CASE: "ITER_1573"
     dependencies:
+        - build_standalone_ITER_1573
         - run_standalone_ITER_1573
 
 build_EMC3-EIRENE:
