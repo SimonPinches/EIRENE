@@ -1,6 +1,6 @@
 CDR May 2017
 C  this entire routine is probabaly redundant, as well as all bgkv_stat tallies
-c   ALL TALLIES bgkv (ntalb=61), pdena, edena,pdenm,edenm are now also default tallies,
+c   ALL TALLIES bgkv (ntalb=61), pdena,edena,pdenm,edenm are now also default tallies,
 c               and their variances are available by default variance routines.
 c   bgkv tallies: currently coincide with vxden*,vyden*,vzden* momentum densities.
 c   But we may need special BGKV tallies in case of velocity-dependent rates, or

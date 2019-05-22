@@ -1,6 +1,6 @@
 C  TO BE DONE: ADD PARAMETERS DUMMY AND ESBPARM, AS IN EIRENE_RDTRIM
 C
-C  read (try to read) IFLR = NHD6  (=12) pre-defined target projectile combinations.
+C  read (try to read) IFLR = NHD6  (=12) pre-defined target-projectile combinations.
 C
 C
       SUBROUTINE EIRENE_REFDAT(TMM,TCC,WMM,WCC)
@@ -10,7 +10,7 @@ c          iun =21+ifoff  (input stream for TRIM.dat)
 
 C  This is the old (and default) model for reading TRIM conditional quantile tables, for reflection.
 
-c  more recent input of TRIM files:  subr. RDTRIM: there: read individual trim files: A_on_B
+c  more recent input of TRIM files: subr. RDTRIM: there: read individual trim files: A_on_B
 c  as selected in input block 6.
 C
 C  THIS SUBROUTINE READS REFLECTION DATA PRODUCED BY BCA MONTE CARLO CODES,

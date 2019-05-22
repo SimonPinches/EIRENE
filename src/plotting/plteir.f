@@ -39,7 +39,6 @@ C
       USE EIRMOD_CGEOM
       USE EIRMOD_CSDVI
       USE EIRMOD_CSDVI_BGK
-      USE EIRMOD_CSDVI_COP
       USE EIRMOD_COMSOU
       USE EIRMOD_CTEXT
       USE EIRMOD_COUTAU
@@ -132,7 +131,6 @@ C  NOTHING TO BE DONE
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
-     .             NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .             NSIGI_SPC,TRCFLE)
         IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
           CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRAD,NR1ST,NP2ND,NT3RD,
@@ -146,7 +144,6 @@ C  NOTHING TO BE DONE
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
-     .             NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .             NSIGI_SPC,TRCFLE)
         IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
           CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRAD,NR1ST,NP2ND,NT3RD,
@@ -161,37 +158,49 @@ C  NOTHING TO BE DONE
 
    10 CONTINUE
 C
-      IF (ISTRA.EQ.0)
-     .HEAD='SUM OVER STRATA
-     .          '
+      IF (ISTRA.EQ.0) HEAD=
+     . 'SUM OVER STRATA                                             '//
+     . '          '
       IF (ISTRA.NE.0) THEN
-      HEAD='STRATUM NO.
-     .          '
-      WRITE (HEAD(13:15),'(I3)') ISTRA
+        HEAD=
+     .   'STRATUM NO.                                               '//
+     .   '            '
+        WRITE (HEAD(13:15),'(I3)') ISTRA
       ENDIF
 C
-      HEAD0='VOLUME-AVERAGED BACKGROUND TALLY, INPUT
-     .           '
-      HEAD1='DEFAULT VOLUME-AVERAGED TALLY, TRACKLENGTH-ESTIMATED
-     .           '
-      HEAD2='ADDITIONAL VOLUME-AVERAGED TALLY, TRACKLENGTH-ESTIMATED
-     .           '
-      HEAD3='ADDITIONAL VOLUME-AVERAGED TALLY, COLLISION-ESTIMATED
-     .           '
-      HEAD4='VOLUME-AVERAGED TALLY, SNAPSHOT-ESTIMATED
-     .           '
-      HEAD5='VOLUME-AVERAGED TALLY, FOR COUPLING TO PLASMA CODE
-     .           '
-      HEAD6='BGK TALLY
-     .           '
-      HEAD7='ALGEBRAIC FUNCTION OF VOLUME-AVERAGED TALLIES
-     .           '
-      HEAD8='RELATIVE STANDARD DEVIATION
-     .           '
-      HEAD9='SPECTRUM (VS. ENERGY, EV)
-     .           '
-      HEAD10='SPECTRUM (VS. WAVELENGTH, NM)
-     .            '
+      HEAD0=
+     . 'VOLUME-AVERAGED BACKGROUND TALLY, INPUT                    '//
+     . '           '
+      HEAD1=
+     . 'DEFAULT VOLUME-AVERAGED TALLY, TRACKLENGTH-ESTIMATED       '//
+     . '           '
+      HEAD2=
+     . 'ADDITIONAL VOLUME-AVERAGED TALLY, TRACKLENGTH-ESTIMATED    '//
+     . '           '
+      HEAD3=
+     . 'ADDITIONAL VOLUME-AVERAGED TALLY, COLLISION-ESTIMATED      '//
+     . '           '
+      HEAD4=
+     . 'VOLUME-AVERAGED TALLY, SNAPSHOT-ESTIMATED                  '//
+     . '           '
+      HEAD5=
+     . 'VOLUME-AVERAGED TALLY, FOR COUPLING TO PLASMA CODE         '//
+     . '           '
+      HEAD6=
+     . 'BGK TALLY                                                  '//
+     . '           '
+      HEAD7=
+     . 'ALGEBRAIC FUNCTION OF VOLUME-AVERAGED TALLIES              '//
+     . '           '
+      HEAD8=
+     . 'RELATIVE STANDARD DEVIATION                                '//
+     . '           '
+      HEAD9=
+     . 'SPECTRUM (VS. ENERGY, EV)                                  '//
+     . '           '
+      HEAD10=
+     . 'SPECTRUM (VS. WAVELENGTH, NM)                              '//
+     . '           '
 C
       IALG=0
 C
@@ -237,6 +246,7 @@ C  PLOT OUTPUT TALLIES ONLY FOR STRATA WITH TWO OR MORE HISTORIES
             IF (JTAL.GT.0.AND.XMCP(ISTRA).LE.1) GOTO 10000
 C  PLOT INPUT TALLIES ONLY ONCE PER ITERATION
             IF (JTAL.LT.0.AND.ISAVE.NE.ISTRA) GOTO 10000
+c
             TXHEAD=HEAD0
             IF (JTAL.GT.0)     TXHEAD=HEAD1
             IF (JTAL.EQ.NTALA) TXHEAD=HEAD2
@@ -261,10 +271,16 @@ C
             LSDVI(ICURV)=.FALSE.
             LPLOT2(ICURV)=.FALSE.
             ISPZ=ISPTAL(IBLD,ICURV)
+
             IF (JTAL.LT.0.) THEN
+cdr  here we deal with input tallies (and gradients thereof)
+cdr  ITL = IABS(JTAL)
               NF=NFRSTP(ITL)
               VECTOR(:,ICURV)=0.
               IF (ISPZ.EQ.0) THEN
+cdr  sum over species:  this is non-sense in case of intensive quantities, such as Ti,V_in
+cdr                     and also in case of derivatives.
+cdr  tbd:  summing with proper weighting, as in outtal.f
                 SELECT CASE (ITL)
                 CASE (1)
                   VECTOR(1:NSBOX,ICURV) = TEIN(1:NSBOX)
@@ -315,7 +331,9 @@ C
                   CALL EIRENE_LEER(1)
                   GOTO 10000
                 END SELECT
+
               ELSEIF (ISPZ.GT.0.AND.ISPZ.LE.NF) THEN
+cdr  individual species indices
                 SELECT CASE (ITL)
                 CASE (1)
                   VECTOR(1:NSBOX,ICURV) = TEIN(1:NSBOX)
@@ -366,6 +384,7 @@ C
                   CALL EIRENE_LEER(1)
                   GOTO 10000
                 END SELECT
+
               ELSE
                 IF (TRCPLT) THEN
                   WRITE (iunout,*) 'SPECIES INDEX OUT OF RANGE '
@@ -378,17 +397,23 @@ C
                 PLTL3D(IBLD)=.FALSE.
                 GOTO 110
               ENDIF
+
             ELSEIF (JTAL.GE.0) THEN
+cdr  plot output tallies
+              NFT=NFSTVI(ITL)
+              NF=NFIRST(ITL)
+              VECTOR(:,ICURV)=0.
+              
               IF (.NOT.LIVTALV(JTAL)) THEN
                 WRITE (iunout,*) TXTTAL(1,JTAL)
                 WRITE (iunout,*) 'TALLY SWITCHED OFF '
                 WRITE (iunout,*) 'ALL PLOTS FOR THIS TALLY TURNED OFF '
                 GOTO 10000
               END IF
-              NFT=NFSTVI(ITL)
-              NF=NFIRST(ITL)
+
               IF (ISPZ.EQ.0) THEN
-                VECTOR(:,ICURV)=0.
+c  sum over species
+
                 DO 122 K=1,NFT
                   DO I=1,NRAD
                     VECTOR(I,ICURV)=VECTOR(I,ICURV)+
@@ -485,12 +510,12 @@ C  USER-DEFINED ABSCISSA, XXP2D_USR
               GOTO 139
             ENDIF
 C
-C  TRY DEFAULT OPTION TO SET PLOT GRID FROM 1.ST (RADIAL) GRID
+C  TRY DEFAULT OPTION TO SET PLOT GRID FROM 1ST (RADIAL) GRID
 C
             IXSET2=0
             IF (LEVGEO.EQ.1.OR.LEVGEO.EQ.2) THEN
 C   USE RADIAL SURFACE-CENTERED GRID "RHOSRF"
-C   ...SAME FOR EACH Y- OR POLOIDAL , IF APPLICABLE
+C   ...SAME FOR EACH Y- OR POLOIDAL, IF APPLICABLE
               DO 130 I=1,NR1ST
                 XXP2D(I)=RHOSRF(I)
   130         CONTINUE
@@ -515,7 +540,7 @@ C   ...FOR EACH POLOIDAL AND TOROIDAL POSITION, IF APPLICABLE
               XXP2D(NSURF+1:NRAD)=0.
               IXSET2=1
             ELSE
-C   NO 2D PLOTOPTIONS AVAILABLE
+C   NO 2D PLOT OPTIONS AVAILABLE
             ENDIF
             XMI=XXP2D(NPLIN2(IBLD,1))*(1.+1.E-6)
             XMA=XXP2D(NPLOT2(IBLD,1))/(1.+1.E-6)

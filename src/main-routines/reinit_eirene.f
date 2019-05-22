@@ -42,7 +42,7 @@ C     reinitialization start
 csw 18apr07
       call EIRENE_SPUTER_REINIT
 
-      call EIRENE_BA_ALPHA_REINIT
+cdr   call EIRENE_BA_ALPHA_REINIT
 !pb   call EIRENE_BA_GAMMA_REINIT
 !pb   call EIRENE_LY_BETA_REINIT
       call EIRENE_LININT_REINIT  !cdr, july 17, added

@@ -4,7 +4,7 @@ cdr   The current seed (status) is iseed on Commen CMEM, a new seed is returned 
 c
 
 cdr   April 17:
-cdr   Used only in case of correlated sampling, (and of MPI ??)
+cdr   Used only in case of correlated sampling, (and of MPI ?)
 cdr   two random generators:
 cdr   1) Random number generator H1RN
 cdr   see reference of F. James 1990 review paper: F. James, CPC, 60 (1990) 329, sec 3.3

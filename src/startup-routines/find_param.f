@@ -284,7 +284,7 @@ C
 C  READ DATA FOR STANDARD MESH, 200---299
 
 
-      WRITE (iunout,*) '*** 2. DATA FOR VOXEL GRID GENERATION '
+      WRITE (iunout,*) '*** 2. DATA FOR VOXEL GRID GENERATION'
 
 C
       DO WHILE (ZEILE(1:1) .EQ. '*')
@@ -572,7 +572,7 @@ C  FIND START OF NEXT INPUT BLOCK: 3B
 C
 C  READ DATA FOR ADDITIONAL SURFACES 350--399
 C
-      WRITE (iunout,*) '*** 3B. DATA FOR ADDITIONAL SURFACES           '
+      WRITE (iunout,*) '*** 3B. DATA FOR ADDITIONAL SURFACES'
       READ (IUNIN,'(A72)') ZEILE
       DO WHILE (ZEILE(1:1) .EQ. '*')
         READ (IUNIN,'(A72)') ZEILE
@@ -976,7 +976,7 @@ cdr these next 2 lines for V_IN(ipls)
         WRITE (IUNOUT,*) 'DUE TO INDPRO(4) > 10'  !dr above, for Ti, we say:  < 0
         IF (LMULVI) THEN
           WRITE (IUNOUT,*) 'DIMENSION OF V_IN ARRAYS OVERWRITTEN'
-          WRITE (IUNOUT,*) 'BECAUSE BGK REACTIONS ARE  PRESENT'
+          WRITE (IUNOUT,*) 'BECAUSE BGK REACTIONS ARE PRESENT'
           NPLSV = NPLS
         END IF
         WRITE (IUNOUT,*) ' NPLSV = ',NPLSV
@@ -1092,7 +1092,6 @@ cdr  here NSTEP is set to the largest step function number specified on SORIND
 C
       END DO
       DEALLOCATE (INDSRC)
-
 
       READ (IUNIN,'(A72)') ZEILE
 C
@@ -1331,7 +1330,7 @@ c  read number of lines, and the flag MOD_ADDV for storage mode on ADDV tallies
           READ (IUNIN,6666) NUM_COMPO  ! components of line ILINE
           READ (IUNIN,*)
           IF (MOD_ADDV == 0) THEN
-cdr  minimal storage, but each time when a new lines comes,
+cdr  minimal storage, but each time when a new line comes,
 cdr  the emissivity profiles on ADDV must be re-calculated
             NADV_ADD = MAX(NADV_ADD, (NUM_COMPO + 1))
           ELSE
@@ -1343,7 +1342,7 @@ cdr  all possible emissivity profiles are kept on ADDV tallies.
             READ (IUNIN,*) NUM_CONTRIB     ! contributions to component JCOMP for line ILINE
             IREAC_ADD = IREAC_ADD + NUM_CONTRIB
 cdr  specify all required contributions explicitly.
-cdr  In the old default with was automatically detected
+cdr  In the old default width was automatically detected
 cdr     from mass and charge states/numbers of hydrogenic particles.
 cdr     And only one set of emission data for all contributions was used,
 cdr     plus one or two population ratios.

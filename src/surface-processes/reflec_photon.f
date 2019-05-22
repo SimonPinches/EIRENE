@@ -1,6 +1,6 @@
 CDR  NOV 17 : lemtspw arguments corrected
 cdr  jan 18 : start to implement bi-directional reflectance functions
-cdr  dec. 18: remove unfinished "hollmann databse model"
+cdr  dec.18: remove unfinished "hollmann databse model"
 C
 C
       SUBROUTINE EIRENE_REFLEC_photon
@@ -126,7 +126,7 @@ cdr cumulative distribution of (spec-ref)-(lambert)-(absorb) fractions: prfcf,pr
 
 
 
-cdr parameters for bidirectional reflectance function
+cdr parameters for bi-directional reflectance function
         EXPP=EXPPL(ISPZ,MSURF)
         EXPE=EXPEL(ISPZ,MSURF)
         EXPI=EXPIL(ISPZ,MSURF)
@@ -137,7 +137,7 @@ cdr parameters for bidirectional reflectance function
         ISPZO=ISPZ
 C
 C
-C   TENTATIVELY ASSUME  REFLECTION
+C   TENTATIVELY ASSUME REFLECTION
         LGPART=.TRUE.
 
 C   CHECK FOR ABSORPTION, LAMBERTIAN OR SPECULAR COMPONENT
@@ -146,7 +146,7 @@ C   CHECK FOR ABSORPTION, LAMBERTIAN OR SPECULAR COMPONENT
 C   ABSORPTION
           GOTO 700
         ELSEIF (ZEP1.GT.PRFCF) THEN
-C   LAMBERTIAN (COSINE DISTRIBUTION
+C   LAMBERTIAN (COSINE) DISTRIBUTION
           GOTO 600
         ELSE
 C   COSINE OF ANGLE OF INCIDENCE against outer normal
@@ -162,14 +162,14 @@ C  ABSORB THIS PHOTON
         GOTO 700
       ENDIF
 C
-C  UNFINISHED DATABASE MODEL REMOVED HERE OLD STATEMENT LABLES: 100 TO 130.
+C  UNFINISHED DATABASE MODEL REMOVED HERE. OLD STATEMENT LABELS: 100 TO 130.
 C
 !PB  to be revised
 !    RPROB: propability of the photon to be reflected
       RPROB = 0._dp
 
-C   DECIDE IF PARTICLE IS TO BE REFLECTED OR ABSORBED
-C   (NO THERMAL RE-EMISSION MODEL FOR INCIDENT PHOTONS)
+C  DECIDE IF PARTICLE IS TO BE REFLECTED OR ABSORBED
+C  (NO THERMAL RE-EMISSION MODEL FOR INCIDENT PHOTONS)
 C
       IF (WEIGHT.GT.WMIN) THEN
 C  WITH SUPPRESSION OF ABSORPTION

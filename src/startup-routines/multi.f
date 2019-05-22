@@ -6,8 +6,9 @@ cdr  entry multig:  copy grid data NBMLT times
 cdr  entry multip:  indpro<=3: copy 1D profiles NP2ND*NT3RD*NBMLT times
 cdr                 indpro>=4: copy    profiles            *NBMLT times
 cdr                 indpro =4: check this option: tbd.
+cdr                 Currently available for indpro(I), I=1,2,3,4,5,6
+cdr                 indpro(7) (electr. field): still missing here 
 
-      USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
       USE EIRMOD_CINIT
@@ -50,6 +51,7 @@ C  IS THIS A SPACE FOR AVERAGING: THEN DO NOT COPY
         IF (NP2ND.GT.1.AND.MOD(J,NP2ND).EQ.0) GOTO 210
         IF (NT3RD.GT.1.AND.NP2ND.LE.1.AND.MOD(J,NT3RD).EQ.0) GOTO 210
         IF (NT3RD.GT.1.AND.NP2ND.GT.1.AND.J.GT.NP2ND*(NT3RD-1)) GOTO 210
+
         IF (INDPRO(1).LT.4) THEN
           DO 201 I=1,NR1ST
             TEIN(I+(J-1)*NR1ST)=TEIN(I)

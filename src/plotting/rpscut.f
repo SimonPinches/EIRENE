@@ -298,6 +298,8 @@
 
       subroutine EIRENE_berechne_koordinaten
 
+      use eirmod_comprt, only: iunout
+
       implicit none
       real(dp) :: a(3), b(3), c(3), orig(3)
       real(dp) :: am(2,2), amm1(2,2), rhs(2), x(3)
@@ -323,9 +325,9 @@
         b(2) = 1._dp
         b(3) = -(a(1)+a(2))/a(3)
       else
-        write (6,*) ' Problem in berechne_koordinaten '
-        write (6,*) ' die Koeffizienten der Schnittebene sind 0 '
-        write (6,*) cutplane
+        write (iunout,*) ' Problem in berechne_koordinaten '
+        write (iunout,*) ' die Koeffizienten der Schnittebene sind 0 '
+        write (iunout,*) cutplane
         call EIRENE_exit_own (1)
       end if
 
@@ -374,8 +376,9 @@
       detam = am(1,1)*am(2,2) - am(1,2)*am(2,1)
 
       if (abs(detam) < eps10) then
-        write (6,*) ' problem in berechne_koordinaten '
-        write (6,*) ' gls zur koordinatentransformation nicht loesbar'
+        write (iunout,*) ' problem in berechne_koordinaten '
+        write (iunout,*)
+     .    ' gls zur koordinatentransformation nicht loesbar'
         call EIRENE_exit_own (1)
       end if
 

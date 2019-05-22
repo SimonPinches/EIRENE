@@ -4,14 +4,16 @@ cdr june 17:  separate WRMESH (WRITING) and PLMESH (PLOTTING).
 cdr Nov. 18:  fixes from ITER branch
 
       SUBROUTINE EIRENE_WRMESH
-c  create closed polygonal contours, from the eirene standard and additional surfaces
+c  create closed polygonal contours, from the eirene standard and
+c  additional surfaces
 c  use ILPLG(isurf) flag, from input blocks 3A LEVGEO=3 OR LEVGEO=4,
 C                         or certain additional surfaces, input block 3B,
 c                         0<RLB<2.
 c  This set of closed contours, together with their orientation, can be used
 c  in 2D grid generators to produce multiply connected triangular grids.
 c  The orientation indicates whether the inner or outer part of a closed contour
-c  is a valid computational volume for triangular grid generation (not needed for plotting)
+c  is a valid computational volume for triangular grid generation (not needed
+c  for plotting)
 
 
 c  EIRENE_WRMESH: Write closed contours onto output stream 78+ifoff.
@@ -44,8 +46,6 @@ c  EIRENE_PLMESH: plots these contours, using GR plot software.
       LOGICAL  :: LCLOSED, LFOUND
       LOGICAL, ALLOCATABLE :: FOUND(:,:)
 
-
-
 C ANZAHL DER KONTOUREN BESTIMMEN
 C ILPLG WIRD IM INPUT BLOCK 3 EINGELESEN
       CALL EIRENE_LEER(2)
@@ -69,11 +69,10 @@ C ILPLG WIRD IM INPUT BLOCK 3 EINGELESEN
         call EIRENE_leer(1)
         write (iunout,*) 'No contours specified in blocks 3a,3b'
         write (iunout,*)
-     .    'No input file ', FORT, '78 for FEM mesh generator written '
+     .    'No input file ', FORT, '78 for FEM mesh generator written'
         call EIRENE_leer(2)
         return
       endif
-
 
       IF (.NOT.ALLOCATED(NCONPOINT)) THEN
         ALLOCATE (NCONPOINT(NCONT))
@@ -347,7 +346,7 @@ C STUECKE DER AKTUELLEN KONTOUR WERDEN SORTIERT
      >                    irip(i,1),irip(i,2),
      >                    partcont(i,1,1),partcont(i,1,2),
      >                    partcont(i,2,1),partcont(i,2,2)
-            WRITE(iunout,*) 'USE NEXT POINT '
+            WRITE(iunout,*) 'USE NEXT POINT'
             IP=I+1
             write(iunout,'(I4,3(1X,I4),4(1X,G14.7))') iP,idiag(iP),
      >                    irip(ip,1),irip(ip,2),
@@ -395,7 +394,7 @@ C  - GEGEN UHRZEIGERSINN FUER AEUSSERE BEGRENZUNGEN DES GEBIETES (NEGATIV)
         DO I=1,IPOIN
           IF (PARTCONT(I,2,2) .LT. YMN) THEN
             YMN = PARTCONT(I,2,2)
-            IMN=I
+            IMN = I
           ENDIF
         ENDDO
 
@@ -485,7 +484,6 @@ C  IUHR=ILPLG < 0 ==> ENTGEGEN DEM UHRZEIGERSINN AUSGEBEN
  1000   CONTINUE
       ENDDO    ! END OF DO ICONT.... LOOP
       NCONTOUR=ICO
-
 
       call EIRENE_leer(1)
       write (iunout,*)

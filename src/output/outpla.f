@@ -58,6 +58,7 @@ C  INDICATOR FOR THE TALLIES THAT MAY HAVE BEEN MODIFIED IN POSTPROCESSING
 C  CURRENTLY:  BULK ION TEMP (-2), BULK ION DENSITY (-4), AND BULK ION DRIFT VELOCITY (-5,-6,-7)
       INTEGER :: JPRTAL(5) = (/-2,-4,-5,-6,-7/)
 C
+cdr: extensive or intensive quantities? Needed for averaging....
 C  TYPE OF TALLY: TALTYP=0: #              (#-UNITS)
 C                 TALTYP=1: # DENSITY      (#-UNITS/CM**3)
 C                 TALTYP=2: VOLUME         (CM**3)
@@ -145,6 +146,7 @@ c  positive tally numbers ital: output tallies, printed from OUTEIR.
             NFTE=MAX(NFTI,NSPEZV(IPRV,2))
           ENDIF
           DO 119 K=NFTI,NFTE
+c  check for valid range of tally ITALI
             IF (K.GT.NFSTPI(ITALI)) THEN
               CALL EIRENE_LEER(1)
               WRITE (iunout,*)
@@ -153,6 +155,7 @@ c  positive tally numbers ital: output tallies, printed from OUTEIR.
               CALL EIRENE_LEER(1)
               GOTO 119
             ENDIF
+
             SELECT CASE (ITALI)
             CASE (1)
               HELPP(1:NSBOX) = TEIN(1:NSBOX)
@@ -257,66 +260,66 @@ C  COARSE-GRAINING OF INPUT TALLY ITAL ONTO GRID DEFINED BY NCLTPR(I-FINE),
 C  STRUCTURE NR1TAL,NP2TAL,....
 C  WHEN THERE IS ONLY ONE SINGLE GRID, THEN NCLTPR(I)==I, AND NO COARSE-GRAINING IS DONE
               I=NCLTPR(I_FINE)
-              IF (ITALI.EQ.1) THEN
+              SELECT CASE (ITALI)
+              CASE (1)
 C  1) ELECTR. TEMPERATURE: NE*VOLUME-WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)*DEIN(I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DEIN(I_FINE)*VOL(I_FINE)
-              ELSEIF (ITALI.EQ.2) THEN
+              CASE (2)
 C  2) ION TEMPERTURE: NI(K)*VOLUME-WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
-              ELSEIF (ITALI.EQ.3.OR.ITALI.EQ.4) THEN
+              CASE (3:4)
 C  3,4) PARTICLE DENSITY PROFILES: VOLUME-WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+VOL(I_FINE)
-              ELSEIF (ITALI.EQ.5.OR.ITALI.EQ.6.OR.ITALI.EQ.7) THEN
+              CASE (5:7)
 C  5,6,7) ION DRIFT VELOCITY: NI(K)*VOLUME-WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
-              ELSEIF (ITALI.GE.8.AND.ITALI.LE.11) THEN
+              CASE (8:11)
 C  8,9,10,11) B-FIELD UNIT VECTOR, B-FIELD STRENGTH "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-              ELSEIF (ITALI.EQ.16.OR.ITALI.EQ.17) THEN
+              CASE (16:17)
 C  16,17) B_PERP-FIELD: "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-              ELSEIF (ITALI.EQ.14) THEN
+              CASE (14)
 C  14) CELL VOLUME  = UNWEIGHTED SUM
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=1.D0
-              ELSEIF (ITALI.EQ.12.OR.ITALI.EQ.15) THEN
+              CASE (12,15)
 C  12) ADDITIONAL TALLY (NO.12)
 C  15) WEIGHT FUNCTION  (NO.15)
 C  "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-              ELSEIF (ITALI.EQ.13) THEN
+              CASE (13)
 C  13) ION DRIFT ENERGY: NI(K)*VOLUME-WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
-              ELSEIF (ITALI.GE.18.AND.ITALI.LE.21) THEN
+              CASE (18:21)
 C  18,19,29,21) E-FIELD UNIT VECTOR, E-FIELD STRENGTH
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-              ELSEIF (ITALI.EQ.22) THEN
+              CASE (22)
 C  22) (ELECTRIC) POTENTIAL
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-              ENDIF
+              END SELECT
              END DO
              END DO
              END DO
   121       CONTINUE
-
 C
 C  SAME LOOP AGAIN, (IDENTICAL CODE INSIDE LOOP) OVER ADDITIONAL CELL REGION
             DO 122 I_FINE=NSURF+1,NSURF+NRADD
@@ -325,61 +328,62 @@ C  COARSE-GRAINING OF INPUT TALLY ITAL ONTO GRID DEFINED BY NCLTPR(I-FINE),
 C  STRUCTURE NR1TAL,NP2TAL,....
 C  WHEN THERE IS ONLY ONE SINGLE GRID, THEN NCLTPR(I)==I, AND NO COARSE-GRAINING IS DONE
               I=NCLTPR(I_FINE)
-              IF (ITALI.EQ.1) THEN
+              SELECT CASE (ITALI)
+              CASE (1)
 C  ELECTR. TEMPERATURE: NE*VOLUME-WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)*DEIN(I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DEIN(I_FINE)*VOL(I_FINE)
-              ELSEIF (ITALI.EQ.2) THEN
+              CASE (2)
 C  ION TEMPERATURE: NI(K)*VOLUME-WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
-              ELSEIF (ITALI.EQ.3.OR.ITALI.EQ.4) THEN
+              CASE (3:4)
 C  PARTICLE DENSITY PROFILES: VOLUME-WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+VOL(I_FINE)
-              ELSEIF (ITALI.EQ.5.OR.ITALI.EQ.6.OR.ITALI.EQ.7) THEN
+              CASE (5:7)
 C  ION DRIFT VELOCITY: NI(K)*VOLUME-WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
-              ELSEIF (ITALI.GE.8.AND.ITALI.LE.11) THEN
+              CASE (8:11)
 C  B-FIELD UNIT VECTOR, B-FIELD STRENGTH "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-              ELSEIF (ITALI.EQ.16.OR.ITALI.EQ.17) THEN
+              CASE (16:17)
 C  B_PERP-FIELD: "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-              ELSEIF (ITALI.EQ.14) THEN
+              CASE (14)
 C  CELL VOLUME  = UNWEIGHTED SUM
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=1.D0
-              ELSEIF (ITALI.EQ.12.OR.ITALI.EQ.15) THEN
+              CASE (12,15)
 C  ADDITIONAL TALLY (NO.12)
 C  WEIGHT FUNCTION  (NO.15)
 C  "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-              ELSEIF (ITALI.EQ.13) THEN
+              CASE (13)
 C  ION DRIFT ENERGY: NI(K)*VOLUME-WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
-              ELSEIF (ITALI.GE.18.AND.ITALI.LE.21) THEN
+              CASE (18:21)
 C  E-FIELD UNIT VECTOR, E-FIELD STRENGTH
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-              ELSEIF (ITALI.EQ.22) THEN
+              CASE (22)
 C  (ELECTRIC) POTENTIAL
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-              ENDIF
+              END SELECT
   122       CONTINUE
 
 C  COARSE-GRAINING: NORMALIZE WEIGHTED SUMS BY THEIR WEIGHT
@@ -456,7 +460,7 @@ C   PRINT ONLY THE HEADER FOR TALLY, BECAUSE TALLY IDENTICAL ZERO
      .                      NR1PR,NP2PR,NT3PR,NBMLT,NSBPR,-1,0)
             CALL
      .         EIRENE_MASAGE
-     .              ('IDENTICAL ZERO, NOT PRINTED                  ')
+     .              ('IDENTICAL ZERO, NOT PRINTED')
             CALL EIRENE_LEER(2)
   119     CONTINUE
         ENDIF

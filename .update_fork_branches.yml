@@ -3,8 +3,6 @@
     only: 
         - schedules
     before_script:
-        # Install ssh-agent and git
-        - apt-get update -y && apt-get -y install openssh-client git git-svn
         # Run ssh-agent (inside the build environment)
         - eval $(ssh-agent -s)
         # Add the required SSH keys to the agent store

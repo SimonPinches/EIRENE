@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(EIRENE Fortran)
 
-# Set a default build type if none was specified
+# Set a default build type if none was specified.
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "Setting build type to 'Release' as none was specified.")
   set(CMAKE_BUILD_TYPE "Release" CACHE
@@ -17,12 +17,17 @@ endif()
 # Adds compiler flags to all build types.
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
   set(CMAKE_Fortran_FLAGS_RELEASE "-fp-model source")
-  set(CMAKE_Fortran_FLAGS_DEBUG "-g -warn all,nointerfaces -check all")
+  set(CMAKE_Fortran_FLAGS_DEBUG "-g -warn all,nointerfaces -check all -traceback")
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(CMAKE_Fortran_FLAGS_RELEASE "-O3")
   set(CMAKE_Fortran_FLAGS_DEBUG "-g -Wall -fcheck=all")
   set(CMAKE_Fortran_FLAGS_COVERAGE "-g -fprofile-arcs -ftest-coverage")
 endif()
+
+# Output names and postfix.
+set(EIRENE_LIBRARY_NAME "EIRENE" CACHE STRING "EIRENE library name")
+set(EIRENE_EXECUTABLE_NAME "eirene" CACHE STRING "EIRENE executable name")
+set(EIRENE_POSTFIX "" CACHE STRING "EIRENE output names postfix")
 
 # Libraries used for plotting
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -82,7 +87,7 @@ endif()
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# Control of interface and user-routines to compile:
+# Control of interface and user-routines to compile.
 set(EIRENE_INTERFACE "Dummy" CACHE STRING "EIRENE interface to compile")
 set(EIRENE_USER-ROUTINES "default" CACHE STRING "EIRENE user-routines to compile")
 
@@ -92,14 +97,14 @@ message(STATUS   "       will be set. Try e.g. -DEIRENE_INTERFACE=SOLPS-ITER.  "
 message(STATUS   "       If flag -DEIRENE_USER-ROUTINES is unspecified, \"default\"")
 message(STATUS   "       will be set. Try e.g. -DEIRENE_USER-ROUTINES=iter.  ")
 
-# Add option to control whether trace output will be compiled
+# Add option to control whether trace output will be compiled.
 option(TRACE "Build with trace output" OFF)
 if (TRACE)
   message("-- Adding TRACE flag...")
   add_definitions(-DTRACE)
 endif()
 
-# Add option to control whether MPI will be use
+# Add option to control whether MPI will be use.
 option(MPI "Build with MPI" ON)
 if (MPI)
   message("-- Adding USE_MPI flag...")
@@ -135,7 +140,7 @@ list(GET src_main-routines 0 fortran_file)
 get_filename_component(fortran_dir ${fortran_file} PATH)
 list(REMOVE_ITEM src_main-routines ${fortran_dir}/eirene_main.f)
 
-# Decide whether to use plotting or plot_dummy
+# Decide whether to use plotting or plot_dummy.
 set(plotpath "")
 if( LibGRS AND LibGKS AND LibX11 AND Libz AND LibXt )
   list(APPEND plotpath ${src_plotting})
@@ -143,7 +148,7 @@ else()
   list(APPEND plotpath ${src_plot_dummy})
 endif()
 
-# Specify interface and user-routines to use
+# Specify interface and user-routines to use.
 set(src_interface/x ${src_interfaces/couple_${EIRENE_INTERFACE}})
 set(src_user-routines/x ${src_user-routines/user_${EIRENE_USER-ROUTINES}})
 if( NOT src_interface/x )
@@ -176,13 +181,16 @@ if(LibGKS AND LibGRS AND LibX11 AND Libz AND LibXt)
   target_link_libraries(eirene EIRENE ${LibGRS} ${LibGKS} ${LibX11} ${LibXt})
 endif()
 
-# Sets output directory of the library and executbales.
+# Sets output directory of the library and executbale and output name 
+# of the executable.
 set_target_properties(EIRENE PROPERTIES
                       ARCHIVE_OUTPUT_DIRECTORY 
-                      ${PROJECT_BINARY_DIR}/../lib${CMAKE_BUILD_TYPE})
+                      ${PROJECT_BINARY_DIR}/../lib${CMAKE_BUILD_TYPE}
+                      OUTPUT_NAME ${EIRENE_LIBRARY_NAME}${EIRENE_POSTFIX})
 set_target_properties(eirene PROPERTIES
                       RUNTIME_OUTPUT_DIRECTORY 
-                      ${PROJECT_BINARY_DIR}/../bin${CMAKE_BUILD_TYPE})
+                      ${PROJECT_BINARY_DIR}/../bin${CMAKE_BUILD_TYPE}
+                      OUTPUT_NAME ${EIRENE_EXECUTABLE_NAME}${EIRENE_POSTFIX})
 
 # Gets the git revision hash and stores it in the variable 'git_hash'.
 find_package(Git)

@@ -44,7 +44,6 @@ C
       USE EIRMOD_CGRID
       USE EIRMOD_CTRCEI
       USE EIRMOD_CSDVI
-      USE EIRMOD_CSDVI_COP
       USE EIRMOD_CSDVI_BGK
       USE EIRMOD_COMPRT
       USE EIRMOD_COMSOU
@@ -148,7 +147,6 @@ C  NOTHING TO BE DONE
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
-     .             NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .             NSIGI_SPC,TRCFLE)
         IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
           CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRAD,NR1ST,NP2ND,NT3RD,
@@ -161,7 +159,6 @@ C  NOTHING TO BE DONE
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
-     .             NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .             NSIGI_SPC,TRCFLE)
         IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
           CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRAD,NR1ST,NP2ND,NT3RD,
@@ -318,8 +315,8 @@ C           IF (IATM.LE.0.OR.IATM.GT.NATMI) GOTO 100
 C           DO 101 IR=1,NSBOX
 C             RECADD(IATM,IR)=RECADD(IATM,IR)+
 C    .                        TABRC1(KREC,IR)*DIIN(IPLS,IR)*ELCHA
-  101       CONTINUE
-  100   CONTINUE
+C 101     CONTINUE
+C 100   CONTINUE
         write (iunout,*) 'sgnal, cx: ichord,istra,sum ',
      .                      ichori,istra
         write (iunout,*) 'volumetric emission to be written'

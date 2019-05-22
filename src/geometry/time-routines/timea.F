@@ -560,7 +560,7 @@ c  create HNF coefficients (normalized vector and distance)
         ENDIF
    97 CONTINUE
 
-   99 CONTINUE
+c.....................................................
 
       IF (NLOCTREE) then
 c  calling an internal subroutine for preparing octree procedure:

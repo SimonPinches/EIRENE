@@ -5,8 +5,6 @@
     except: 
         - schedules
     before_script:
-        # Install required programs
-        - apt-get update && apt-get -y install git openssh-client
         # Configure git user information
         - git config --global user.email "noreply@${SERVER_DOMAIN}"
         - git config --global user.name "GitLab CI"
@@ -80,8 +78,6 @@ tag_database_methane:
         # not (yet) supported by GitLab
         #    - $CI_COMMIT_TAG == $(git tag --sort=v:refname -l $DATABASE-* | tail -n 1)
     before_script:
-        # Install required programs
-        - apt-get update && apt-get -y install git latexmk texlive-generic-recommended texlive-fonts-recommended openssh-client
         # Run ssh-agent (inside the build environment)
         - eval $(ssh-agent -s)
         # Add the required SSH keys to the agent store
@@ -165,8 +161,6 @@ deploy_database_website_methane:
         # not (yet) supported by GitLab
         #    - $CI_COMMIT_TAG == $(git tag --sort=v:refname -l $DATABASE-* | tail -n 1)
     before_script:
-        # Install required programs
-        - apt-get update && apt-get -y install git ant default-jdk openssh-client
         # Configure git user information
         - git config --global user.email "noreply@${SERVER_DOMAIN}"
         - git config --global user.name "GitLab CI"

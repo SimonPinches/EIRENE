@@ -6,10 +6,10 @@ cdr  nov.17    : dead flag: nlstor, (and call store...) now removed
 c.........................................................................
 c
 c  comprt contains particle coordinates along track
-c  the full information for respart after splitting is contained in the
+c  the full information for restart after splitting is contained in the
 c  npartc (real) and mpartc (integer) variables.
 c
-c  a reduced set for re-start from a census array (initital condition in time)
+c  a reduced set for restart from a census array (initial condition in time)
 c  is contained in the
 c  npartt (real) and mpartt (integer) variables.
 

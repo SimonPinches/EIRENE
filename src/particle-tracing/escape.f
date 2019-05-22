@@ -1,6 +1,6 @@
 cdr march 18  : bug fix re semi-transp. surfaces.
 cdr             This intermediate bug was introduced in jan 18 commit
-cdr jan. 18   : outpoing flux tallies scored in eirene_update_surface(ind=1)
+cdr jan. 18   : outgoing flux tallies scored in eirene_update_surface(ind=1)
 cdr             semi-transp fluxes: score only incident and emitted current fractions
 cdr             for which surfaces are NOT transparent.
 cdr             update_sptflx: different meaning of flag IND. More consistent
@@ -415,7 +415,7 @@ C
         LTRANS=RATR.LE.TRANSP(ISPZ,ISG,MSURF)
 
         IF (LTRANS) THEN
-C  A NON TRANSPARENT SURFACE IS MADE TRANSPARENT FOR THIS
+C  A NON-TRANSPARENT SURFACE IS MADE TRANSPARENT FOR THIS
 C  PARTICULAR PARTICLE
 C  STANDARD OR ADDITIONAL SURFACE?
           MS=MSURF
@@ -623,7 +623,7 @@ C
 C
 C   .............................
 C   .                           .
-C   .  NON TRANSPARENT SURFACE  .
+C   .  NON-TRANSPARENT SURFACE  .
 C   .............................
 C
       XGENER=0.

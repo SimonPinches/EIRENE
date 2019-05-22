@@ -75,7 +75,7 @@ C
 C  CALLED AT ENTRY LOCAT1 FOR EACH NEW LAUNCHED MONTE CARLO TRAJECTORY
 C  FROM PARTICLE LOOP IN SUBR. MCARLO
 C     PURPOSE: SET INITIAL TEST FLIGHT STATE, DEFINED BY THE VARIABLES
-C              NO. 1 ... TO NPARTC,  AND 1 ... TO MPARTC OF COMMON BLOCK "COMPRT"
+C              NO. 1 ... TO NPARTC, AND 1 ... TO MPARTC OF COMMON BLOCK "COMPRT"
 C              I.E.,
 C                  X0... TO IUPDTE
 C     UPDATE SOURCE ESTIMATORS FOR BALANCES: PPPL,PPML,PPAT, EPPL,  ETC.
@@ -83,7 +83,7 @@ C     UPDATE CUMULATED SOURCE WEIGHT FOR SCALING: WTOTA, WTOTP, ETC.
 C
 C
 C  CALLED PROGRAMS: SAMPNT (POINT SOURCE)
-C                   SAMLNE (LINE SOURCE)  (NOT READY)
+C                   SAMLNE (LINE SOURCE) (NOT READY)
 C                   SAMSRF (SURFACE SOURCE)
 C                   SAMVOL (VOLUME SOURCE)
 C  LOCAL VARIABLES: TEWL,TIWL(IPLS),DIWL(IPLS),
@@ -240,7 +240,7 @@ C
       ENDIF
 C
       IF (NLVOL(ISTRA).AND.NLPLS(ISTRA).AND.NEMOD1.EQ.1) THEN
-        WRITE (iunout,*) 'WARNING: NEMOD1=1: NEW MEANING: '
+        WRITE (iunout,*) 'WARNING: NEMOD1=1: NEW MEANING:'
         WRITE (iunout,*) '                   MONOENERGETIC SOURCE'
       ENDIF
       IF (TRCSOU) THEN
@@ -337,7 +337,7 @@ C   AT PRESENT: ONLY ONE SUBSTRATUM
         ISECT=1
 C
         IF (NTIME.GT.0.AND.NPTST.GE.0.) THEN
-C   RANDOM SEARCH IN RPARTW ARRAY:  "bootstrapping"
+C   RANDOM SEARCH IN RPARTW ARRAY: "bootstrapping"
           A=RANF_EIRENE()*RPARTW(IPRNL)
 C   BINARY SEARCH
           I1=0
@@ -422,8 +422,8 @@ C Volume source
             ETOTPH(ISTRA)=ETOTPH(ISTRA)+E0*WEIGHT
             LOGPHOT(IPHOT,ISTRA)=.TRUE.
           CASE DEFAULT
-            WRITE (iunout,*) 'ERROR IN LOCATE, CALL EIRENE_EXIT '
-            WRITE (iunout,*) 'INVALID ITYP ON CENSUS     '
+            WRITE (iunout,*) 'ERROR IN LOCATE, CALL EIRENE_EXIT'
+            WRITE (iunout,*) 'INVALID ITYP ON CENSUS'
             CALL EIRENE_EXIT_OWN(1)
         END SELECT
 
@@ -708,7 +708,7 @@ C
 C  FIND SPECIES INDEX AND RELATED CONSTANTS 100---199
 C
 C  SAMPLING IS CONTROLLED BY INPUT FLAG NSPEZ:
-C  A)  NSPEZ < 0:  NON-ANALOG SMAPLING FROM INPUT DISTRIBUTION DPLS, DATM, DMOL,....
+C  A)  NSPEZ < 0:  NON-ANALOG SAMPLING FROM INPUT DISTRIBUTION DPLS, DATM, DMOL,....
 C                  AND WEIGHTING WITH WEISPZ
 C  B)  NSPEZ = 0:  SAMPLING FROM WEISPZ
 C  C)  NSPEZ =ISP: INSIDE VALID RANGE FOR ITYP:  SET SPECIES INDEX TO THIS FIXED VALUE
@@ -1037,7 +1037,7 @@ C  .....................................
 C
 C  FIND VELOCITY VECTOR NEXT
 C  .....................................
-!     set "old" particle velocity for VELOCX
+!  set tentative "old" particle velocity for VELOCX (unused)
       VXO = 0._DP
       VYO = 0._DP
       VZO = 0._DP
@@ -1716,7 +1716,7 @@ C
 C
             IF (NLTRC.AND.TRCHST) THEN
               IF (LGPART) THEN
-                WRITE (iunout,*) 'AFTER SUBR. REFLEC: '
+                WRITE (iunout,*) 'AFTER SUBR. REFLEC:'
                 WRITE (iunout,'(1X,A8)') TEXTS(ISPZ)
                 CALL EIRENE_MASR6 (
      .             'VELX,VELY,VELZ,VEL,E0,WEIGHT                    ',
@@ -1726,9 +1726,9 @@ C
               ENDIF
             ENDIF
 C
-C  NOW:  SCORE SURFACE TALLIES.  REEMITTED CURRENTS
+C  NOW: SCORE SURFACE TALLIES. REEMITTED CURRENTS
 C
-C  (VOLUME TALLIES PPAT,PPML,....WILL BE DONE BELOW,
+C  (VOLUME TALLIES PPAT,PPML,... WILL BE DONE BELOW,
 C                   ONCE FOR NLPNT,NLLNE,NLSRF,NLVOL)
 C
 C
@@ -1776,8 +1776,8 @@ C  FIND TYPE AND SPECIES OF NEW TEST PARTICLE FROM RECOMB. PROCESS: IRRC
             ISTEP=SORIND(IVOLM,ISTRA)
             IF (ISTEP.EQ.0) THEN
               IF (SORLIM(IVOLM,ISTRA).LE.0._DP) THEN
-                WRITE (iunout,*) 'SPECIES DISTRIBUTION AFTER SAMUSR ? '
-                WRITE (iunout,*) 'EXIT FROM LOCATE '
+                WRITE (iunout,*) 'SPECIES DISTRIBUTION AFTER SAMUSR ?'
+                WRITE (iunout,*) 'EXIT FROM LOCATE'
                 CALL EIRENE_EXIT_OWN(1)
               ENDIF
 C  FIND RECOMBINATION PROCESS IRRC (AMONGST THOSE AVAILABLE FOR IPLS)
@@ -1962,7 +1962,7 @@ C  CORRECT FOR DOPPLER SHIFT: XNU = XNU_0*(1+N*VEL_B/CLIGHT)
 c
 c  put spectrum no. 1, and use energy range from input block 10F
 c             if (nadspc < 1) then
-c               write (iunout,*) 'locate: no storage for spectr. no. 1  '
+c               write (iunout,*) 'locate: no storage for spectr. no. 1'
 c               call eirene_exit_own(1)
 c             endif
 c             msurf=estiml(1)%ispcsrf
@@ -1987,7 +1987,7 @@ c           IF (NLTRC) CALL CHCTRC(X0,Y0,Z0,0,1)
 c  parts for plotting emission spectrum removed from here --> development branch
 
             IF (NLTRC.AND.TRCHST) THEN
-              WRITE (iunout,*) 'AFTER RECOMBINATION: '
+              WRITE (iunout,*) 'AFTER RECOMBINATION:'
               CALL EIRENE_MASJ6
      .             ('ITYP,IPHOT,IATM,IMOL,IION,IPLS                  ',
      .               ITYP,IPHOT,IATM,IMOL,IION,IPLS)
@@ -2120,7 +2120,7 @@ C  SET NRCELL FROM MRSURF AND SG
           ELSEIF (SG.GT.0) THEN
             NRCELL=MRSURF
           ELSE
-            WRITE (iunout,*) 'ERROR EXIT IN LOCATE, SG=0 '
+            WRITE (iunout,*) 'ERROR EXIT IN LOCATE, SG=0'
             CALL EIRENE_EXIT_OWN(1)
           ENDIF
 
@@ -2137,7 +2137,7 @@ C  POLOIDAL CELL NO. MAY BE WRONG
         ELSEIF (SG.GT.0) THEN
           NPCELL=MPSURF
         ELSE
-          WRITE (iunout,*) 'ERROR EXIT IN LOCATE, SG=0 '
+          WRITE (iunout,*) 'ERROR EXIT IN LOCATE, SG=0'
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
         IPOLG=NPCELL
@@ -2176,18 +2176,18 @@ C
       WRITE (iunout,*)
      .  'THUS NO OUTER NORMAL CAN BE DEFINED. EXIT CALLED'
       WRITE (iunout,*)
-     .  'SET EITHER ILSIDE NE 0 OR USE EIRMOD_SORIFL FLAG '
-      WRITE (iunout,*) 'MSURF,ISTSF,NRCELL,NPCELL,NTCELL '
+     .  'SET EITHER ILSIDE NE 0 OR USE EIRMOD_SORIFL FLAG'
+      WRITE (iunout,*) 'MSURF,ISTSF,NRCELL,NPCELL,NTCELL'
       WRITE (iunout,*)  MSURF,ITRSF,NRCELL,NPCELL,NTCELL
       CALL EIRENE_EXIT_OWN(1)
   991 CONTINUE
-      WRITE (iunout,*) 'ERROR IN LOCATE: INCONSISTENT INPUT FLAGS   '
+      WRITE (iunout,*) 'ERROR IN LOCATE: INCONSISTENT INPUT FLAGS'
       WRITE (iunout,*) 'MSURF = ',MSURF
       CALL EIRENE_EXIT_OWN(1)
   992 CONTINUE
-      WRITE (iunout,*) 'ERROR IN LOCATE: RADON-NIKODYM CONDITION    '
+      WRITE (iunout,*) 'ERROR IN LOCATE: RADON-NIKODYM CONDITION'
       WRITE (iunout,*) 'VIOLATED FOR NON-ANALOG SOURCE SPECIES SAMPLING'
-      WRITE (iunout,*) 'CHECK DATM,DMOL,DION OR DPLS ARRAYS (BLOCK) 6 '
+      WRITE (iunout,*) 'CHECK DATM,DMOL,DION OR DPLS ARRAYS (BLOCK) 6'
       CALL EIRENE_EXIT_OWN(1)
   995 CONTINUE
       WRITE (iunout,*) 'PARTICLE LAUNCHED OUTSIDE THE COMPUTATIONAL BOX'

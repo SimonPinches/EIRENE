@@ -1,5 +1,5 @@
-!  03.08.06:  data structure for reaction data redefined
-!  25.04.07:  reading of rate coefficients from HYDKIN database added
+!  03.08.06: data structure for reaction data redefined
+!  25.04.07: reading of rate coefficients from HYDKIN database added
 c  changed in 2011:  new atomic/molecular data structure introduced,
 c                    REACDAT(IR)% ..., replaces array CREAC(...)
 C
@@ -15,7 +15,7 @@ cdr          taken over from ITER-IO branch
 
 cdr:  possible conflict with file fort.29, which is also used in coupling to B2
 cdr:  subr. infcop.f, there to provide extra information regarding grid distortion
-cdr:  june 16:  added H.5 - H.7 options for H_COL case.
+cdr:  june 16: added H.5 - H.7 options for H_COL case.
 cdr            started to clarify extrapolation options for polynomial fits. Not ready
 cdr            some comments corrected
 cdr   Aug. 16: reading Tmin, Emin from hydhel disabled.
@@ -24,6 +24,9 @@ c     Sept.16: two new internal subroutines,
 c              a) READ_RANGE:  to read validity range information,
 c              b) READ_COEFFS: three parameters for each validity boundary, for extrapolation options
 c    June  17: read_colrad (for old H-COL option (now CRM)) moved to separate routine.
+cdr  Jan   19:  filnam=CRM --> CR... to prepare merge with branch ...emis....,
+cdr             H, He internal CR codes, formulation I, II (MS resolved or not)
+cdr  Feb   19:  remove obsolete (and unfinished) option HYDRTC 
 C
 C
       SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
@@ -48,10 +51,9 @@ c
 c
 C    FILNAM: read A&M data from file filnam,
 c            FILNAM=AMJUEL, HYDHEL, METHAN, H2VIBR, CONST: polynomial fits
-CC           FILNAM=TAB2D, ADAS:  special treatment, see below.
-C            FILNAM=CRM: nothing to be done here, use internal CR code xx_colrad.f
-c                        currently available: h_colrad.f
-C            FILNAM=HYDRTC: proprietary option, disabled. Nothing to be done here  ??
+CC           FILNAM=TAB2D, ADAS: special treatment, see below.
+C            FILNAM=CR...: nothing to be done here, use internal CR code xx_colrad.f
+c                          currently available: h_colrad.f
 C
 c    H123  : identifier for data type in filnam, e.g. H.1, H.2, H.3, ...
 
@@ -67,8 +69,8 @@ C               BETTER MAKE AN OWN INPUT PARAMETER IFTFLG IN CASE OPTION FILNAM=
 cdr what does that mean for CRM? ADAS ?  what about "spectral database"?
 cdr where described, where read ?
 
-C            in case FILNAM = TAB2D, ADAS:  the file name DSN = REAC_ELNAME.dat is opened
-C                                           (stream 29+ifoff)
+C            in case FILNAM = TAB2D, ADAS: the file name DSN = REAC_ELNAME.dat is opened
+C                                          (stream 29+ifoff)
 C                                  and then subroutine read_tab2d.f is called.
 
 c    CRC   : type of process, e.g. EI, CX, EL, PI, RC, OT, etc.
@@ -85,12 +87,12 @@ c           Default: RiMX = exp(20.)
 c    FPi    Fitting coefficients for extrapolation (three for MIN and three for MAX, each)
 c
 c    JFEXiMN Flag for selecting extrapolation expression, left end (minimum)
-c            =0  :  no data yet, try to read extrapolation from atomic data file here
-c            else:  extrapolation is set explicitly in input file, block 4a
+c            =0  : no data yet, try to read extrapolation from atomic data file here
+c            else: extrapolation is set explicitly in input file, block 4a
 c                  skip reading extrapolation data from data file, even if they are available
 c    JFEXiMX Flag for selecting extrapolation expression, right end (maximum)
-c            =0  :  no data yet, try to read extrapolation from atomic data file here
-c            else:  extrapolation is set explicitly in input file, block 4a
+c            =0  : no data yet, try to read extrapolation from atomic data file here
+c            else: extrapolation is set explicitly in input file, block 4a
 c                  skip reading extrapolation data from data file, even if they are available
 
 c  specific input, only available in case FILNAM=ADAS
@@ -192,7 +194,7 @@ C
       CHARACTER(LEN=*), INTENT(IN) :: REAC, ELNAME
       CHARACTER(3), INTENT(IN) :: CRC
 cdr  asymptotics parameters already read from input block 4?
-cdr  if not:  try to read from external A&M data file
+cdr  if not: try to read from external A&M data file
 cdr  in either case: store these on data structure REACDAT, in call to: set_reaction_data(IR,...)
       INTEGER,  INTENT(IN OUT) :: JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
       REAL(DP), INTENT(IN OUT) :: RC1MIN, RC1MAX, FP1(6),
@@ -273,7 +275,7 @@ C
       IF (INDEX(FILNAM,'CONST').NE.0) THEN
         LCONST=.TRUE.
 !  nothing to be done
-      ELSEIF (INDEX(FILNAM,'CRM').NE.0) THEN
+      ELSEIF (INDEX(FILNAM,'CR').NE.0) THEN
         LCONST=.FALSE.
 !  nothing to be done
       ELSE   ! in all other cases: open data file, stream 29+ifoff
@@ -320,7 +322,7 @@ C  THE A&M DATA FILE FILNAM IS NOW OPENDED, ON STREAM 29 (+ifoff)
           WRITE (iunout,*) ' OR '
           WRITE (iunout,*) ' TAB1D, TAB2D '
           WRITE (iunout,*) ' OR '
-          WRITE (iunout,*) ' CRM'
+          WRITE (iunout,*) ' CR'
           WRITE (iunout,*) ' OR '
           WRITE (iunout,*) ' CONST '
           WRITE (iunout,*) ' OR '
@@ -380,7 +382,7 @@ C  H.1
         IFLG=1
 C  DEFAULT CROSS-SECTION: 8TH-ORDER POLYNOMIAL OF LN(SIGMA) VS LN(E)
         IFTFLG(IR,1)=0
-c  (laboratory)  energy range, asymptotics
+c  (laboratory) energy range, asymptotics
         CH1L='al0'
         CH1R='ar0'
         C1L = 'ELABMIN'
@@ -553,7 +555,7 @@ C  H.12
       ENDIF
 
 
-      IF (INDEX(FILNAM,'CRM').NE.0) THEN
+      IF (INDEX(FILNAM,'CR').NE.0) THEN
         CALL EIRENE_READ_COLRAD (IR,REAC,ISW,IZ1,
      .                           IROW_ESC,ICOL_ESC,POP_ESC)
 c  close unit=29+ifoff:   done in READ_COLRAD.f
@@ -567,18 +569,6 @@ c  close unit=29+ifoff:   done in READ_TAB2D.f
         RETURN
       END IF
 
-      IF (INDEX(FILNAM,'HYDRTC').NE.0) THEN
-cdr  proprietary option at FZ Juelich.
-cdr  Not ready, and not to be used by 3rd party
-        CLOSE (UNIT=29+ifoff)
-        CH123 = H123
-        CCRC = CRC
-        CALL EIRENE_READ_HYDKIN
-     .      (IR,DBFNAME(IFILE),CH123,REAC,CCRC,RC1MIN,RC1MAX,
-     .       E_EL,E_K,.FALSE.)
-        RETURN
-      END IF
-C
       IF (INDEX(FILNAM,'CONST').NE.0) THEN
         IND=INDEX(REACSTR,'FT')
         IF (IND /= 0) THEN
@@ -606,7 +596,7 @@ C
 C  READ FROM DATA FILE, stream 29
 C
 C  already ruled out here (done at this point):
-C  FILNAM= "CRM", "CONST", "ADAS", "HYDRTC", "PHOTON"
+C  FILNAM= "CR...", "CONST", "ADAS",  "PHOTON"
 C  in all these cases: already returned to calling program
 C
 C......................................................................
@@ -870,12 +860,12 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
           WRITE (IUNOUT,*) ' LOWER RANGE FOR 1ST PARAMETER OF FIT',
      .          ' SPECIFIED BUT',
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED'
-          WRITE (IUNOUT,*) 'IFLG = ',if1mn
+          CALL EIRENE_MASJ1R('IF1MN,R1MN      ',if1mn,r1mn)
           IF (IF1MN.EQ.4)
      .      WRITE (IUNOUT,*) 'I.E.: CONTINUATION AS CONSTANT'
           CALL EIRENE_LEER(1)
         ELSEIF (LGR1MIN) THEN
-          WRITE (IUNOUT,*) 'ASYMPTOTICS FROM SLREAC '
+          WRITE (IUNOUT,*) 'ASYMPTOTICS FROM SLREAC'
           WRITE (IUNOUT,*) 'REACTION ',IR, 'TYPE ',H123
           WRITE (IUNOUT,*) 'LOWER RANGE FOR 1ST PARAMETER OF FIT'
           CALL EIRENE_MASJ1R('IF1MN,R1MN      ',if1mn,r1mn)
@@ -894,18 +884,18 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
 
       IF (JFEX1MX == 0) THEN
         IF (LGR1MAX .AND. .NOT. LGC1MAX.and.if1mx.ge.3.) THEN
-          WRITE (IUNOUT,*) ' WARNING FROM SLREAC '
-          WRITE (IUNOUT,*) ' REACTION ',IR, 'TYPE ',H123
+          WRITE (IUNOUT,*) ' WARNING FROM SLREAC'
+          WRITE (IUNOUT,*) ' REACTION ',IR, ' TYPE ',H123
           WRITE (IUNOUT,*) ' UPPER RANGE FOR 1ST PARAMETER OF FIT',
      .          ' SPECIFIED BUT',
-     .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
-          WRITE (IUNOUT,*) 'IFLG = ',if1mx
+     .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED'
+          CALL EIRENE_MASJ1R('IF1MX,R1MX      ',if1mx,r1mx)
           IF (IF1MX.EQ.4)
-     .      WRITE (IUNOUT,*) 'I.E.: CONTINUATION AS CONSTANT '
+     .      WRITE (IUNOUT,*) 'I.E.: CONTINUATION AS CONSTANT'
           CALL EIRENE_LEER(1)
         ELSEIF (LGR1MAX) THEN
-          WRITE (IUNOUT,*) 'ASYMPTOTICS FROM SLREAC '
-          WRITE (IUNOUT,*) 'REACTION ',IR, 'TYPE ',H123
+          WRITE (IUNOUT,*) 'ASYMPTOTICS FROM SLREAC'
+          WRITE (IUNOUT,*) 'REACTION ',IR, ' TYPE ',H123
           WRITE (IUNOUT,*) 'UPPER RANGE FOR 1ST PARAMETER OF FIT'
           CALL EIRENE_MASJ1R('IF1MX,R1MX      ',if1mx,r1mx)
           if (if1mx.ge.3)
@@ -923,18 +913,18 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
 
       IF (JFEX2MN == 0) THEN
         IF (LGR2MIN .AND. .NOT. LGC2MIN.and.if2mn.ge.3.) THEN
-          WRITE (IUNOUT,*) ' WARNING FROM SLREAC '
-          WRITE (IUNOUT,*) ' REACTION ',IR, 'TYPE ',H123
+          WRITE (IUNOUT,*) ' WARNING FROM SLREAC'
+          WRITE (IUNOUT,*) ' REACTION ',IR, ' TYPE ',H123
           WRITE (IUNOUT,*) ' LOWER RANGE FOR 2ND PARAMETER OF FIT',
      .          ' SPECIFIED BUT',
-     .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
-          WRITE (IUNOUT,*) 'IFLG = ',if2mn
+     .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED'
+          CALL EIRENE_MASJ1R('IF2MN,R2MN      ',if2mn,r2mn)
           IF (IF2MN.EQ.4)
-     .      WRITE (IUNOUT,*) 'I.E.: CONTINUATION AS CONSTANT '
+     .      WRITE (IUNOUT,*) 'I.E.: CONTINUATION AS CONSTANT'
           CALL EIRENE_LEER(1)
         ELSEIF (LGR2MIN) THEN
-          WRITE (IUNOUT,*) 'ASYMPTOTICS FROM SLREAC '
-          WRITE (IUNOUT,*) 'REACTION ',IR, 'TYPE ',H123
+          WRITE (IUNOUT,*) 'ASYMPTOTICS FROM SLREAC'
+          WRITE (IUNOUT,*) 'REACTION ',IR, ' TYPE ',H123
           WRITE (IUNOUT,*) 'LOWER RANGE FOR 2ND PARAMETER OF FIT'
           CALL EIRENE_MASJ1R('IF2MN,R2MN      ',if2mn,r2mn)
           if (if2mn.ge.3)
@@ -951,18 +941,18 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
 
       IF (JFEX2MX == 0) THEN
         IF (LGR2MAX .AND. .NOT. LGC2MAX.and.if2mx.ge.3.) THEN
-          WRITE (IUNOUT,*) ' WARNING FROM SLREAC '
-          WRITE (IUNOUT,*) ' REACTION ',IR, 'TYPE ',H123
+          WRITE (IUNOUT,*) ' WARNING FROM SLREAC'
+          WRITE (IUNOUT,*) ' REACTION ',IR, ' TYPE ',H123
           WRITE (IUNOUT,*) ' UPPER RANGE FOR 2ND PARAMETER OF FIT',
      .          ' SPECIFIED BUT',
-     .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED '
-          WRITE (IUNOUT,*) 'IFLG = ',if2mx
+     .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED'
+          CALL EIRENE_MASJ1R('IF2MX,R2MX      ',if2mx,r2mx)
           IF (IF2MX.EQ.4)
-     .      WRITE (IUNOUT,*) 'I.E.: CONTINUATION AS CONSTANT '
+     .      WRITE (IUNOUT,*) 'I.E.: CONTINUATION AS CONSTANT'
           CALL EIRENE_LEER(1)
         ELSEIF (LGR2MAX) THEN
-          WRITE (IUNOUT,*) 'ASYMPTOTICS FROM SLREAC '
-          WRITE (IUNOUT,*) 'REACTION ',IR, 'TYPE ',H123
+          WRITE (IUNOUT,*) 'ASYMPTOTICS FROM SLREAC'
+          WRITE (IUNOUT,*) 'REACTION ',IR, ' TYPE ',H123
           WRITE (IUNOUT,*) 'UPPER RANGE FOR 2ND PARAMETER OF FIT'
           CALL EIRENE_MASJ1R('IF2MX,R2MX      ',if2mx,r2mx)
           if (if2mx.ge.3)

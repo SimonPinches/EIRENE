@@ -125,7 +125,7 @@ C
      R SPTPPL(:,:),
 ! next: incident type: atoms, molecs., test ions, photons, bulk ions,
 ! but no emitted species index, only surface index
-! analog to spttot, but: a,m,i,pl,ph, in tally name, incident type resolved
+! analog to spttot, but: a,m,i,pl,ph, in tally name, incident type-resolved
      R sptatot(:), sptmtot(:), sptitot(:), sptphtot(:), sptpltot(:),
      R SPTTOT(:),
 C
@@ -143,7 +143,7 @@ C  FROM HERE: NO POINTERS ?
       LOGICAL, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      L LMISTALV(:), LMISTALS(:)
 c  logical, for each volume-averaged tally.
-c  either active tally (if true) or de-activated tally, no storage (if false)
+c  either active tally (if true) or deactivated tally, no storage (if false)
       LOGICAL, PUBLIC, POINTER, SAVE ::
      L LPDENA, LPDENM, LPDENI, LPDENPH,
      L LEDENA, LEDENM, LEDENI, LEDENPH,
@@ -198,7 +198,7 @@ c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
      L LMSVZDENA, LMSVZDENM, LMSVZDENI, LMSVZDENPH,
      L LMSMAPL,  LMSMMPL,  LMSMIPL,  LMSMPHPL
 c  logical, for each surface-averaged tally, particle flux.
-c  either active tally (if true) or de-activated tally, no storage (if false)
+c  either active tally (if true) or deactivated tally, no storage (if false)
       LOGICAL, PUBLIC, POINTER, SAVE ::
      L LPOTAT,
      L LPRFAAT, LPRFMAT, LPRFIAT, LPRFPHAT,
@@ -238,7 +238,7 @@ C
      L LMSPOTPL
 C
 c  logical, for each surface-averaged tally, energy flux.
-c  either active tally (if true) or de-activated tally, no storage (if false)
+c  either active tally (if true) or deactivated tally, no storage (if false)
       LOGICAL, PUBLIC, POINTER, SAVE ::
      L LEOTAT,
      L LERFAAT, LERFMAT, LERFIAT, LERFPHAT, LERFPAT,
@@ -874,15 +874,12 @@ c  ntalr =62
       END IF
       IF (LMPHPL) THEN
 !pb   I would have expected the compiler to find the length of
-!pb   array ESTIMV automatically but ifort version 12.0.4 doesn't
+!pb   array ESTIMV automatically but ifort version 12.0.4 does not
 !pb 20.06.2012        MPHPL => ESTIMV(NADDV(100)+1: ,:)
         MPHPL => ESTIMV(NADDV(100)+1:NVOLTL ,:)
       ELSE
         MPHPL => CEMETERYV(0:0,:)
       END IF
-
-
-C  SURFACE-AVERAGED TALLIES
 
 C  SURFACE-AVERAGED TALLIES:
 C     if tally is active in this run     : Pointer to allocatable array ESTIMS

@@ -12,7 +12,7 @@ c     * *********************************************************
       real(dp), intent(in) :: xx(n), x
       integer :: bl, bm, bu
 
-c  savest version:
+c  safest version:
 c  all tests included
       entry EIRENE_binsearch_0(xx,n,x,i)
 

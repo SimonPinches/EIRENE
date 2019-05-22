@@ -168,7 +168,7 @@ C
           AL1MAX=RC1MAX
           COU1MAX=EXP(EXPO1)
 
-        ELSEIF  (IFEX1MX.GT.0) THEN
+        ELSEIF (IFEX1MX.GT.0) THEN
 C  IFEX1MX IS GT 0, USE ONE OF THE PREPROGRAMMED EXTRAPOLATION SCHEMES
 C  PROVIDE FIT EXPRESSION AT BOUNDARY RC1MAX
 C  EVALUATED AT SECOND PARAMETER AL2, WHICH MUST BE INSIDE ITS VALID RANGE
@@ -285,8 +285,8 @@ C
           AL2MAX=RC2MAX
           COU2MAX=EXP(EXPO1)
 
-        ELSEIF  (IFEX2MX.GT.0) THEN
-C  IFEX1MX IS GT 0, USE ONE OF THE PREPROGRAMMED EXTRAPOLATION SCHEMES
+        ELSEIF (IFEX2MX.GT.0) THEN
+C  IFEX2MX IS GT 0, USE ONE OF THE PREPROGRAMMED EXTRAPOLATION SCHEMES
 C  PROVIDE FIT EXPRESSION AT BOUNDARY RC2MAX
 C  EVALUATED AT FIRST PARAMETER AL1, WHICH MUST BE INSIDE ITS VALID RANGE
           S01=RC2MAX
@@ -337,9 +337,9 @@ cdr  is obtained by summing over the 9 terms
       end do
 
 cdr  this second evaluation may not be needed, if only a collapsed fit is wanted.
-cdr  or if al2=0.0  (as in H.4, H.10, AMJUEL fits, for automatic Corona limit.
+cdr  or if al2=0.0  (as in H.4, H.10, AMJUEL fits, for automatic corona limit.
 
-cdr  H.4, H.10, H.12 fits from AMJUEL: Corona at p2 <= log(ne/10**8) = rc2min = 0.0
+cdr  H.4, H.10, H.12 fits from AMJUEL: corona at p2 <= log(ne/10**8) = rc2min = 0.0
 cdr   if p2.le.0.0, just return cou=dum(0) = fit2(AL1,AL2)
 
       cou = dum(9)

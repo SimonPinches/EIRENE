@@ -198,7 +198,7 @@
 !* r(n(l,rl),rr)
 !*
 !*   n                r
-!*  / `_           _.' \
+!*  / '_           _.' \
 !* l    r    =>   n     rr
 !*     / \       / \
 !*    rl  rr    l   rl
@@ -243,7 +243,7 @@
 !* l(ll,n(lr,r))
 !*
 !*       n        l
-!*    _.' \      / `_
+!*    _.' \      / '_
 !*   l     r => ll   n
 !*  / \             / \
 !* ll  lr          lr  r
@@ -293,7 +293,7 @@
 !* 5(2(1,4),6(,7))
 !*
 !*   2             2
-!*  / `-._        / `_            5
+!*  / '-._        / '_            5
 !* 1      6      1    5          / \
 !*       / \  =>     / \    =>  2   6
 !*      5   7       4   6       ^    \
@@ -410,7 +410,7 @@
       relation = EIRENE_cmp(x, y, z,
      .                      node%xco, node%yco, node%zco, node%dist)
       IF (relation == EQUAL) THEN
-         ! Do not insert dublicate key/value
+         ! Do not insert duplicate key/value
          inserted = .FALSE.
          ind = node%ind
          retnode => node
@@ -522,7 +522,7 @@
 !* n(l(:,:),r(rl(,rlr),rr)) =>
 !* rll(l(:,:),r(rl(,rlr),rr))
 !*    n                    n                 rll
-!*   / `--...___          / `-..__          /   `-..__
+!*   / '--...___          / '-..__          /   '-..__
 !*  l           r        l        r        l          r
 !*  ^      __.-' \   =>  ^   __.-' \   =>  ^     __.-' \
 !* : :    rl      rr    : : rl      rr    : :   rl      rr

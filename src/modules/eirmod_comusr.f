@@ -3,6 +3,7 @@ cdr             commenting,
 cdr             lusr, musr, nusr, nplpr1, nplpr2, nsfprm made local,
 cdr             rather than public
 cpb  Dec. 2017: remove type SPECT_ARRAY, not needed in Fortran 2003
+cdr             remove redundant tally LGDFT (also from LUSR)
 
       MODULE EIRMOD_COMUSR
 
@@ -58,6 +59,8 @@ C     PLASMA PROFILES ON CELL VERTICES
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R        CORNER_PROFILES(:,:)
 
+c  storage for setting tallies at cell vertices, rather than cell centres,
+c  for interpolations
       REAL(DP), POINTER, PUBLIC, SAVE ::
      .        TEINCORNER(:),   TIINCORNER(:,:), DEINCORNER(:),
      .        DIINCORNER(:,:),
@@ -96,13 +99,11 @@ C  MUSR, INTEGER
 
 C  LUSR, LOGICAL
       LOGICAL, ALLOCATABLE, PUBLIC, SAVE ::
-     L         LGVAC(:,:), LGDFT(:)
-
+     L         LGVAC(:,:)
       LOGICAL, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      L         LSMOPRO(:)
-
       LOGICAL, PUBLIC, POINTER, SAVE ::
-     L         LTESMO, LTISMO, LDESMO, LDISMO,
+     L         LTESMO, LTISMO, LDESMO, LDISMO,    ! ldesmo: unused?
      L         LVSMO,  LBSMO,  LESMO,  LPOTSMO
 
 C FROM HERE ON: NO EQUIVALENCE
@@ -135,7 +136,7 @@ C FROM HERE ON: NO EQUIVALENCE
 
       INTEGER, INTENT(IN) :: ICAL
 
-      IF (.NOT.ALLOCATED(LSMOPRO)) ALLOCATE (LSMOPRO(12))
+      IF (.NOT.ALLOCATED(LSMOPRO)) ALLOCATE (LSMOPRO(12))  ! used only lsmopro(1:7) ?
 
       IF (ICAL == 1) THEN
 
@@ -152,7 +153,7 @@ cdr BVIN: add nplsv to nplpr2 and remove npls from nplprm. tbd:  check correct d
      .       6*(1+NPHOTP)*(1+NATMP)*(1+NMOLP)*(1+NIONP)*(1+NPLSP)+NSPZ*6
      .       +2*NPLS+NSPZ*NPLS
 
-        LUSR=NRAD*(NPLS+2)+NRAD
+        LUSR=NRAD*(NPLS+2)+NRAD   ! lgvac + lspccll
 
 C NPLPR1 + ... = NPLPRM
         ALLOCATE (TEIN(NRAD))
@@ -209,6 +210,7 @@ c  3 nrtal tallies ?  only for thermal force ??  size of nrtal ??
 
         ALLOCATE (TEXTS(NSPZ))
 c  integer species and background tally data
+
         ALLOCATE (NMASSA(MAX(1,NATM)))
         ALLOCATE (NCHARA(MAX(1,NATM)))
         ALLOCATE (NFOLA(MAX(1,NATM)))
@@ -258,11 +260,12 @@ c  integer species and background tally data
         ALLOCATE (NSPENW(NTALS))
 c  logicals
         ALLOCATE (LGVAC(NRAD,0:NPLS+1))
-        ALLOCATE (LGDFT(NRAD))
         ALLOCATE (LSPCCLL(NRAD))
 
         WRITE (IUNMEM,'(A,T25,I15)')
-     .        ' COMUSR(1) ',NUSR*8 + MUSR*4 + (LUSR+12)*4 + 3*NRTAL*8
+     .        ' COMUSR(1) ',NUSR*8 + MUSR*4 + 
+     .                     (LUSR+12)*4 + !  lgvac+lspccll+lsmopro
+     .                      3*NRTAL*8
 
       ELSE IF (ICAL == 2) THEN
 c  NAIN: first dimension of adin is now fixed.  correct nplprm with nain*nrad
@@ -320,6 +323,7 @@ cdr  are there any FEM interpolated background tallies in this run?
 
       IF (LTESMO) NTOT = NTOT + 1
       IF (LTISMO) NTOT = NTOT + NPLSTI
+cdr   IF (LDESMO) ....?  unused
       IF (LDISMO) NTOT = NTOT + NPLS + 1
       IF (LVSMO)  NTOT = NTOT + 4*NPLSV
       IF (LBSMO)  NTOT = NTOT + 4
@@ -534,7 +538,6 @@ c
       DEALLOCATE (NAINS)
       DEALLOCATE (NAINT)
       DEALLOCATE (LGVAC)
-      DEALLOCATE (LGDFT)
       DEALLOCATE (LSPCCLL)
       DEALLOCATE (LSMOPRO)
 
@@ -665,7 +668,6 @@ c
         NSPANW = 0
         NSPENW = 0
         LGVAC  = .FALSE.
-        LGDFT  = .FALSE.
         LSPCCLL = .FALSE.
 
       ELSE IF (ICAL == 2) THEN

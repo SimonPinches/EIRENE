@@ -36,7 +36,7 @@ cdr          so no effect on any result.  Few further comments corrected
 cdr sept 16: nmdsi -> nmeii, nidsi -> nieii
 cdr dec. 16: some more comments re sign convention for momentum sources
 cdr Nov. 17: merging of entries for atoms, molecules, test ions, from
-cdr          branch "code-combine (p.b.), plus some naming conventions re-enforced
+cdr          branch "code-combine" (p.b.), plus some naming conventions re-enforced
 cdr          tbd: entry update_photons now own routine: update_phot. to be integrated still.
 
 
@@ -662,9 +662,10 @@ C
           END DO
 
 c  set parameters for parallel momentum of incident bulk particle
-c  val_parb   : parallel velocity component, incl. sign, relavive to B
+c  val_parb   : parallel velocity component, incl. sign, relative to B
 c  vsig_parb  : parallel momentum, modulus (always positive)
           IF ((INDPRO(4) == 8) .AND. (INDPRO(5) == 8)) THEN
+cdr vdion: for which ipl? 
             vion=EIRENE_vdion(irdo)
             VAL_PARB(1:NPLSI) =VION
             VSIG_PARB(1:NPLSI)=CNDYNP(1:NPLSI)*vion*
@@ -688,11 +689,11 @@ c  parmom_0  : parallel momentum
           V0_PARB=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
           PARMOM_0=V0_PARB*CNDYNX
 C                       *SIGN(1._DP,VAL_PARB(IPL))  !this sign factor is applied below
-C  WITH WITH FACTOR: NO MATTER HOW THE SIGN OF PARALLEL MOMENTUM IS DEFINED:
+C  WITH THIS FACTOR: NO MATTER HOW THE SIGN OF PARALLEL MOMENTUM IS DEFINED:
 C     THE PLASMA MOMENTUM IS TAKEN POSITIVE (PARMOM=|PARMOM|), AND
 C     |PARMOM_0| IS ADDED TO IPL MOMENTUM (SOURCE),  IF THE NEUTRAL V_PAR
 C                     HAS THE SAME SIGN AS THE IPL PLASMA ION V_PAR.
-c     |PARMOM_0| IS SUBTRACTED IF IT HAS OPPOSITE SIGN
+c     |PARMOM_0| IS SUBTRACTED FROM IPL MOMENTUM (SOURCE), IF IT HAS OPPOSITE SIGN
 
 
 C  CHARGE EXCHANGE CONTRIBUTION FROM SPECIES IXSPZ

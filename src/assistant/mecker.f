@@ -10,7 +10,6 @@ C
 C     AUSGABE DER REGELVERLETZUNGEN
 C
 C-----------------------------------------------------------------------
-      USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
 

@@ -1,5 +1,5 @@
 
-!pb  18.12.06:  NPARTC and NPARTT reduced because of cancelation of XNUE
+!pb  18.12.06:  NPARTC and NPARTT reduced because of cancellation of XNUE
 !    20.06.07:  NUM_PARM = maximum number of parameters introduced
 cdr  input tallies   ntali, increased from 21 to 22 (electr. potential)
 cdr  surface tallies ntals, increased from 59 to 79 (more sputter tallies)
@@ -17,8 +17,10 @@ cpb  Dec. 17: remove type SPECT_ARRAY, not needed in Fortran 2003
 cdr   dec.17: add nspztotw, at same place as formerly NTALW was.
 cdr           fully corresponds to vol tally parameter nspztot,
 cdr           but is for surface tally pointers
+cpb  input tallies   ntali, increased from 22 to 24 (BVIN, PARMOM)
 cdr  jan.18:  added: NUM_LINES, NADV_ADD
-cdr  nov.18:  notational clenaup: separate OT from PH (photonic) processes
+cdr  nov.18:  notational cleanup: separate OT from PH (photonic) processes
+cpb  dez.18:  ntalg, increased from 24 to 30, free slots for future use
 c
       MODULE EIRMOD_PARMMOD
 c
@@ -102,7 +104,7 @@ C> Indicates whether output files 'output.*' should be appended or overwritten
      I NGTSFT, NLIMPS, NLMPGS
 
       INTEGER, PUBLIC, SAVE ::
-     I NBGV,   NBMAX,   NPTAL,  NCPV_STAT, NSCOP
+     I NBGV,   NBMAX,   NPTAL
 
       INTEGER, PUBLIC, SAVE ::
      I NSTRAP
@@ -231,6 +233,7 @@ C                                   ARE IDENTICAL FOR SURFACE AVERAGES)
 C                           NTLSR: INDEX OF THE ALGEBRAIC TALLY
 
 C                       NTALI: TOTAL NUMBER OF INPUT TALLIES
+C                           NTALG: NUMBER OF INPUT TALLIES, EXCLUDING THE OPT. GRADIENT TALLIES
 C                           NTALN: INDEX OF THE ADDITIONAL INPUT TALLIES
 C                           NTALO: INDEX OF THE CELL VOLUME TALLIES
 
@@ -330,10 +333,7 @@ C
      P         NATMP+NMOLP+NIONP+NPHOTP+NPLSP+5*NPLSP+
      P         3*(NATMP+NMOLP+NIONP+NPHOTP)+4*NPLSP
 
-!pb arrays in module CSDVI_COP no longer needed
-!pb     NCPV_STAT=(NCPV+NPLS+2)*NSWIT+1
-        NCPV_STAT=1
-        NSCOP=NCPV_STAT*NRTALS
+
 
       ELSE IF (ICAL == 3) THEN
 
@@ -429,7 +429,7 @@ c  storage reduction parameters
       INT_PARM( 61) = NSTORAM
       INT_PARM( 62) = NGSTAL
 
-C     INT_PARM( 63) =        !free, not in use.
+C     INT_PARM( 63) =        ! free, not in use
 
       INT_PARM( 64) = NRAD
       INT_PARM( 65) = NSWIT
@@ -456,8 +456,8 @@ C     INT_PARM( 81) =        !dr free, not in use.
       INT_PARM( 82) = NBGV   !dr either nbgk or nbgv should be made redundant
       INT_PARM( 83) = NBMAX
       INT_PARM( 84) = NPTAL
-      INT_PARM( 85) = NCPV_STAT
-      INT_PARM( 86) = NSCOP
+c     INT_PARM( 85) = free
+c     INT_PARM( 86) = free
 
       INT_PARM( 87) = NSTRAP
 
@@ -645,8 +645,8 @@ C     NCPV        = INT_PARM( 81)  !dr  out, NCOP eliminted, only NCPV retained.
       NBGV        = INT_PARM( 82)
       NBMAX       = INT_PARM( 83)
       NPTAL       = INT_PARM( 84)
-      NCPV_STAT   = INT_PARM( 85)
-      NSCOP       = INT_PARM( 86)
+c     NCPV_STAT   = free          !dr  out, NCPC_stat eliminted.
+c     NSCOP       = free
 
       NSTRAP      = INT_PARM( 87)
 

@@ -2,7 +2,6 @@
 
       SUBROUTINE EIRENE_SUCHE_NACHBARN
 
-      USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CTETRA
 
@@ -71,7 +70,7 @@ C      INTEGER :: IC
 !        NULLIFY(COORTET(IC)%PTET)
 !      END DO
 C Allocation took already place in make_tetra.f, but output within
-C make_tetra.f is difficult. Threfore this location is best for output
+C make_tetra.f is difficult. Therefore this location is best for output
 C of the allocated memory:
       WRITE (IUNMEM,'(A,T25,I15)') ' Nachbar-Liste ',MCLSTR*8
 

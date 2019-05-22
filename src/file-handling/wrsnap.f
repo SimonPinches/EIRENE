@@ -26,7 +26,7 @@ C
       OPEN (UNIT=15+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 15+ifoff
 C
-      IF (TRCFLE) WRITE (iunout,*) 'WRITE 15: IPRNL,FLUX,DTIMV '
+      IF (TRCFLE) WRITE (iunout,*) 'WRITE 15: IPRNL,FLUX,DTIMV'
       WRITE (15+ifoff) IPRNL,FLUX(ISTR),DTIMV
       WRITE (15+ifoff) ((RPARTC(J,I),J=1,NPARTT),I=1,IPRNL)
       WRITE (15+ifoff)  (RPARTW(  I)            ,I=0,IPRNL)
@@ -41,7 +41,7 @@ C
       REWIND 15+ifoff
       READ (15+ifoff) IPRNL,FLUX(ISTR),DTIMV
 
-      IF (TRCFLE) WRITE (iunout,*) 'READ 15: IPRNL,FLUX,DTIMV '
+      IF (TRCFLE) WRITE (iunout,*) 'READ 15: IPRNL,FLUX,DTIMV'
 
 cdr  tbd:
 cdr  fort.15 (census) was written in a previous run.
@@ -52,7 +52,7 @@ cdr  make sure that iprnl in previous run was not larger than in present run.
         WRITE (IUNOUT,*)
      .     ' ERROR WHEN READING CENSUS ARRAY FOR T-DEP MODE'
         WRITE (IUNOUT,*)
-     .     ' OLD CENSUS FILE CANNOT BE READ, BECAUSE NPRNL TOO SMALL '
+     .     ' OLD CENSUS FILE CANNOT BE READ, BECAUSE NPRNL TOO SMALL'
         CALL EIRENE_MASJ2(' NPRNL, IPRNL=  ',NPRNL,IPRNL)
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
