@@ -169,7 +169,8 @@ c    transfer of background (plasma) tallies into eirene
 c    currently: no efield information ?
 
 
-      NIDC=1*NPLS+NAIN+6+NPLSTI+4*NPLSV
+!pb   NIDC=1*NPLS+NAIN+6+NPLSTI+4*NPLSV
+      NIDC=1*NPLS+NAIN+6+NPLSTI+3*NPLSV
 
       IF (.NOT.ALLOCATED(PLASMA_BCKGRND)) THEN
 
@@ -191,8 +192,10 @@ c    currently: no efield information ?
         BZINTF => PLASMA_BCKGRND(1+3+1*NPLS+NPLSTI+3*NPLSV, :)
         BFINTF => PLASMA_BCKGRND(1+4+1*NPLS+NPLSTI+3*NPLSV, :)
         VLINTF => PLASMA_BCKGRND(1+5+1*NPLS+NPLSTI+3*NPLSV, :)
+!pb     ADINTF => PLASMA_BCKGRND(1+6+1*NPLS+NPLSTI+3*NPLSV :
+!pb  .                             6+1*NPLS+NPLSTI+4*NPLSV+NAIN, :)
         ADINTF => PLASMA_BCKGRND(1+6+1*NPLS+NPLSTI+3*NPLSV :
-     .                             6+1*NPLS+NPLSTI+4*NPLSV+NAIN, :)
+     .                             6+1*NPLS+NPLSTI+3*NPLSV+NAIN, :)
 
         CALL EIRENE_INIT_BCKGRND
 
