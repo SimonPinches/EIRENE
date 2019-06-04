@@ -1250,6 +1250,8 @@ C  OUTPUT:
      .                     MPI_COMM_WORLD,ier)
            CALL MPI_BCAST (ESTIML(I)%IDIREC,1,MPI_INTEGER,0,
      .                     MPI_COMM_WORLD,ier)
+           CALL MPI_BCAST (ESTIML(I)%LOG,1,MPI_LOGICAL,0,
+     .                     MPI_COMM_WORLD,ier)
            IF (MY_PE .NE. 0) THEN
              NSPS = ESTIML(I)%NSPC
 !pb             write (0,*) ' smestl, my_pe, imerk, nsps ',
