@@ -177,14 +177,15 @@ cdr
           CASE (FORT//'13')
 
 cdr  read all plasma background data (all ipls), each time. Better: move outside IPLS loop.
-            CALL EIRENE_ALLOC_BCKGRND
-            ALLOCATE(DEINTF(NRAD))
-            OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
-            REWIND 13+ifoff
-            READ (13+ifoff,IOSTAT=IO) TEINTF,TIINTF,DEINTF,DIINTF,
-     .                                VXINTF,VYINTF,VZINTF
-            IF (TRCFLE) WRITE (iunout,*) 'READ 13: RCMUSR, IO= ',IO
-            CLOSE (UNIT=13+ifoff)
+!            CALL EIRENE_ALLOC_BCKGRND
+!            ALLOCATE(DEINTF(NRAD))
+!            OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
+!            REWIND 13+ifoff
+!            READ (13+ifoff,IOSTAT=IO) TEINTF,TIINTF,DEINTF,DIINTF,
+!     .                                VXINTF,VYINTF,VZINTF
+!            IF (TRCFLE) WRITE (iunout,*) 'READ 13: RCMUSR, IO= ',IO
+!            CLOSE (UNIT=13+ifoff)
+            CALL EIRENE_RPLAM(TRCFLE,10)
 
             IF (IO.EQ.0) THEN
               IOLD=TDMPAR(IPLS)%TDM%ISP(1)

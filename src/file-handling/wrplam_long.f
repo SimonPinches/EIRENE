@@ -17,11 +17,13 @@ C  read plasma (background) data, source distribution and atomic data
 C  from unit 13.
 C
 C  trcfle:  confirm writing on printout on unit IUNOUT
-C  IFLG  :  only for  RPLAM:
-C           = 0   do not read primary source data COMSOU
-C          else   do also read data from COMSOU
+C  IFLGIN  :  only for  RPLAM:
+C           /= 0   do not read primary source data COMSOU
+C            = 0   do also read data from COMSOU
+C            = 10  read only plasma background
 
-      SUBROUTINE EIRENE_WRPLAM_LONG(TRCFLE,IFLG)
+      SUBROUTINE EIRENE_WRPLAM_LONG(TRCFLE,IFLGIN)
+      USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
       USE EIRMOD_COMPRT, ONLY: IUNOUT
@@ -29,13 +31,16 @@ C          else   do also read data from COMSOU
       USE EIRMOD_COMSOU
       USE EIRMOD_CSTEP
       USE EIRMOD_COMXS
+      USE EIRMOD_CSPEI
       IMPLICIT NONE
-      INTEGER, INTENT(IN) :: IFLG
+      INTEGER, INTENT(IN) :: IFLGIN
       LOGICAL TRCFLE
 cdr  for testing: are identical input tallies active in write and read ?
-      INTEGER :: NFRS(NTALI), NAD(NTALI), IO, I
+      INTEGER :: NFRS(NTALI), NAD(NTALI), IO, I, IFLG
       LOGICAL :: LIVT(NTALI)
+      REAL(DP), ALLOCATABLE :: PTL(:,:)
 C
+      IFLG = IFLGIN 
       OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 13+ifoff
 
@@ -93,7 +98,12 @@ c  write primary source parameters
 C
 c...............................................................
 C
-      ENTRY EIRENE_RPLAM_LONG(TRCFLE,IFLG)
+      ENTRY EIRENE_RPLAM_LONG(TRCFLE,IFLGIN)
+
+      IFLG = IFLGIN 
+      IF (.NOT.ALLOCATED(PTL))
+     .  ALLOCATE(PTL, MOLD=PLSTLS)
+
       OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 13+ifoff
 
@@ -112,9 +122,25 @@ c   verify: same active tallies as in previous write?
       IF (ANY(NFRSTP(1:NTALI) /= NFRS(1:NTALI))) GOTO 992
       IF (ANY(NADDP(1:NTALI) /= NAD(1:NTALI))) GOTO 993
 
-      READ (13+ifoff,IOSTAT=IO) PLSTLS
+!PB      READ (13+ifoff,IOSTAT=IO) PLSTLS
+      READ (13+ifoff,IOSTAT=IO) PTL
       IF (TRCFLE) WRITE (iunout,*) 'READ 13: input tallies PLSTLS '
       IF (IO /= 0) GOTO 990
+      IF (IFLG == 10) THEN
+        CALL EIRENE_ALLOC_BCKGRND
+        TEINTF(1:NRAD) = PTL(NADDP(1)+1,1:NRAD)
+        IF (INTLOPTS(2) >= 0) 
+     .    TIINTF(1:NPLSTI,1:NRAD) = PTL(NADDP(2)+1:NADDP(3),1:NRAD)       
+        DIINTF(1:NPLS,1:NRAD) = PTL(NADDP(4)+1:NADDP(5),1:NRAD)
+        VXINTF(1:NPLSV,1:NRAD) = PTL(NADDP(5)+1:NADDP(6),1:NRAD)
+        VYINTF(1:NPLSV,1:NRAD) = PTL(NADDP(6)+1:NADDP(7),1:NRAD)
+        VZINTF(1:NPLSV,1:NRAD) = PTL(NADDP(7)+1:NADDP(8),1:NRAD)
+        DEALLOCATE (PTL)
+        RETURN
+      ELSE
+        PLSTLS = PTL
+        DEALLOCATE (PTL)
+      END IF
 
       READ (13+ifoff,IOSTAT=IO)
 C  REAL
