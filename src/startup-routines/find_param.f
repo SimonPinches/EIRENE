@@ -131,7 +131,8 @@ C  TEST PARTICLE SPECIES AND TALLIES
       NSNV=0
       NALV=0
       NALS=0
-      NAIN=1
+!PB   NAIN=1
+      NAIN=0
       NCPV=0
       NBGK=0
       NADSPC=0
