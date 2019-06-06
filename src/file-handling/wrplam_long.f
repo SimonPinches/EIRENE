@@ -34,6 +34,7 @@ C            = 10  read only plasma background
       USE EIRMOD_CSPEI
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: IFLGIN
+      INTEGER, INTENT(INOUT) :: IRET
       LOGICAL TRCFLE
 cdr  for testing: are identical input tallies active in write and read ?
       INTEGER :: NFRS(NTALI), NAD(NTALI), IO, I, IFLG
@@ -98,18 +99,28 @@ c  write primary source parameters
 C
 c...............................................................
 C
-      ENTRY EIRENE_RPLAM_LONG(TRCFLE,IFLGIN)
+      ENTRY EIRENE_RPLAM_LONG(TRCFLE,IFLGIN,IRET)
 
-      IFLG = IFLGIN 
+      IFLG = IFLGIN
+      IRET = 0
       IF (.NOT.ALLOCATED(PTL))
      .  ALLOCATE(PTL, MOLD=PLSTLS)
+      IF (IFLG == 10) CALL EIRENE_ALLOC_BCKGRND    
 
       OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 13+ifoff
 
       READ (13+ifoff,IOSTAT=IO) LIVT
       IF (TRCFLE) WRITE (iunout,*) 'READ 13: LIVTALI '
-      IF (IO /= 0) GOTO 990
+      IF (IO /= 0) THEN
+        DEALLOCATE (PTL)
+        IF (IFLG == 10) THEN  ! plasma_bckground = 0 in EIRENE_ALLOC_BCKGRND
+          IRET = IO
+          RETURN
+        ELSE 
+          GOTO 990
+        END IF
+      END IF
 c   verify: same active tallies as in previous write?
       DO I=1, NTALI
         IF ((LIVTALI(I).AND.LIVT(I)).OR.
@@ -127,7 +138,6 @@ c   verify: same active tallies as in previous write?
       IF (TRCFLE) WRITE (iunout,*) 'READ 13: input tallies PLSTLS '
       IF (IO /= 0) GOTO 990
       IF (IFLG == 10) THEN
-        CALL EIRENE_ALLOC_BCKGRND
         TEINTF(1:NRAD) = PTL(NADDP(1)+1,1:NRAD)
         IF (INTLOPTS(2) >= 0) 
      .    TIINTF(1:NPLSTI,1:NRAD) = PTL(NADDP(2)+1:NADDP(3),1:NRAD)       
@@ -193,7 +203,7 @@ c  read primary source parameters
         IF (TRCFLE) WRITE (iunout,*) 'SOURCE DATA NOT READ FROM FORT.13' 
       END IF
 
-
+      IRET = IO
       CLOSE (UNIT=13+ifoff)
       RETURN
 

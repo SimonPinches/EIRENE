@@ -119,7 +119,7 @@ c   LGVAC(...,0)     : background vacuum flag
      .           I, J, JEND, IAIN, ISPZ,
      .           IO, IPLSTI, IPLSV, IOLDTI, IOLDV, IBS,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
-     .           ITAL, K, KK, NFTI, NFTE
+     .           ITAL, K, KK, NFTI, NFTE, JPLS
  
       TYPE(EIRENE_SPECTRUM) :: SPEC
       LOGICAL :: FOUND
@@ -169,7 +169,9 @@ c   LGVAC(...,0)     : background vacuum flag
 cdr
 
       IBS = 0
-      DO IPLS=1,NPLSI
+      IF (ANY(CDENMODEL == FORT//'13')) CALL EIRENE_RPLAM(TRCFLE,10,IO)
+      DO JPLS=1,NPLSI
+        IPLS = JPLS
         IPLSTI=MPLSTI(IPLS)
         IPLSV=MPLSV(IPLS)
 
@@ -185,7 +187,7 @@ cdr  read all plasma background data (all ipls), each time. Better: move outside
 !     .                                VXINTF,VYINTF,VZINTF
 !            IF (TRCFLE) WRITE (iunout,*) 'READ 13: RCMUSR, IO= ',IO
 !            CLOSE (UNIT=13+ifoff)
-            CALL EIRENE_RPLAM(TRCFLE,10)
+!pb            CALL EIRENE_RPLAM(TRCFLE,10)
 
             IF (IO.EQ.0) THEN
               IOLD=TDMPAR(IPLS)%TDM%ISP(1)
@@ -200,7 +202,7 @@ c             ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
                 VZIN(IPLSV,:)=VZINTF(IOLDV,:)
               END IF
             ENDIF
-            DEALLOCATE(DEINTF)
+!            DEALLOCATE(DEINTF)
 
           CASE (FORT//'10')
 
