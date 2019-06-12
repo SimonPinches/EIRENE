@@ -134,7 +134,7 @@ Cdr  additional arrays for ANALOG CASCADE and SPLITTING AT COLLISIONS.
 Cdr (should be set in initialization phase, not here)
 CDR  check: are the corresponding arrays PATEI,PMLEI, PIOEI real
 CDR         or integer (1/2 particle possible?)
-      INTEGER, ALLOCATABLE, SAVE :: NAMIEI(:),NAMIPI(:)
+      INTEGER, ALLOCATABLE :: NAMIEI(:),NAMIPI(:)
 
 
 csw add n 2lines

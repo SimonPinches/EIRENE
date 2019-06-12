@@ -1,6 +1,5 @@
       subroutine eirene_outidlconf
 
-      use eirmod_precision
       use eirmod_parmmod
       USE EIRMOD_CTEXT
       USE EIRMOD_CGRID

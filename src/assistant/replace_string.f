@@ -2,7 +2,6 @@
 
       subroutine EIRENE_replace_string (inchar,rem,rep,iunout)
 
-      use eirmod_precision
       use eirmod_parmmod
 
       implicit none

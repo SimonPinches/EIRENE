@@ -19,6 +19,7 @@
         - chmod 644 ~/.ssh/known_hosts
         # Change origin push URL to get write access to EIRENE repository
         - git remote set-url --push origin git@${SERVER_DOMAIN}:eirene/eirene.git
+    retry: 2
 
 update_fork_branches_ITER:
     <<: *update_fork_branches

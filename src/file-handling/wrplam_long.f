@@ -22,7 +22,6 @@ C           = 0   do not read primary source data COMSOU
 C          else   do also read data from COMSOU
 
       SUBROUTINE EIRENE_WRPLAM_LONG(TRCFLE,IFLG)
-      USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CINIT, ONLY: FORT
       USE EIRMOD_COMUSR

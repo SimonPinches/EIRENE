@@ -104,7 +104,7 @@ C> Indicates whether output files 'output.*' should be appended or overwritten
      I NGTSFT, NLIMPS, NLMPGS
 
       INTEGER, PUBLIC, SAVE ::
-     I NBGV,   NBMAX,   NPTAL,  NCPV_STAT, NSCOP
+     I NBGV,   NBMAX,   NPTAL
 
       INTEGER, PUBLIC, SAVE ::
      I NSTRAP
@@ -333,10 +333,7 @@ C
      P         NATMP+NMOLP+NIONP+NPHOTP+NPLSP+5*NPLSP+
      P         3*(NATMP+NMOLP+NIONP+NPHOTP)+4*NPLSP
 
-!pb arrays in module CSDVI_COP no longer needed
-!pb     NCPV_STAT=(NCPV+NPLS+2)*NSWIT+1
-        NCPV_STAT=1
-        NSCOP=NCPV_STAT*NRTALS
+
 
       ELSE IF (ICAL == 3) THEN
 
@@ -459,8 +456,8 @@ C     INT_PARM( 81) =        !dr free, not in use.
       INT_PARM( 82) = NBGV   !dr either nbgk or nbgv should be made redundant
       INT_PARM( 83) = NBMAX
       INT_PARM( 84) = NPTAL
-      INT_PARM( 85) = NCPV_STAT
-      INT_PARM( 86) = NSCOP
+c     INT_PARM( 85) = free
+c     INT_PARM( 86) = free
 
       INT_PARM( 87) = NSTRAP
 
@@ -648,8 +645,8 @@ C     NCPV        = INT_PARM( 81)  !dr  out, NCOP eliminted, only NCPV retained.
       NBGV        = INT_PARM( 82)
       NBMAX       = INT_PARM( 83)
       NPTAL       = INT_PARM( 84)
-      NCPV_STAT   = INT_PARM( 85)
-      NSCOP       = INT_PARM( 86)
+c     NCPV_STAT   = free          !dr  out, NCPC_stat eliminted.
+c     NSCOP       = free
 
       NSTRAP      = INT_PARM( 87)
 

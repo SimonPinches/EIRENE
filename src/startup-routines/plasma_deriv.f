@@ -99,7 +99,6 @@ c   LGVAC(...,0)     : background vacuum flag
       USE EIRMOD_CESTIM
       use EIRMOD_csdvi
       use EIRMOD_csdvi_bgk
-      use EIRMOD_csdvi_cop
       use EIRMOD_comsou
       use EIRMOD_cspei
 
@@ -835,7 +834,6 @@ C  NOTHING TO BE DONE
      .               NSDVI1,SDVI1,NSDVI2,SDVI2,
      .               NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .               NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
-     .               NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .               NSIGI_SPC,TRCFLE)
           IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
             CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRTAL,NR1TAL,NP2TAL,NT3TAL,
@@ -849,7 +847,6 @@ C  NOTHING TO BE DONE
      .               NSDVI1,SDVI1,NSDVI2,SDVI2,
      .               NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .               NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
-     .               NSCOP,SIGMA_COP,NCPV_STAT,SGMS_COP,
      .               NSIGI_SPC,TRCFLE)
           IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
             CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRTAL,NR1TAL,NP2TAL,NT3TAL,

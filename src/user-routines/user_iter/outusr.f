@@ -5,7 +5,6 @@ C  in case of an underlying coarser grid, these additional tallies
 C  are set on this coarse grid.
 C
       SUBROUTINE EIRENE_OUTUSR
-      USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
 
       IMPLICIT NONE

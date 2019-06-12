@@ -16,7 +16,7 @@ C  AND TO SPEED UP
       INTEGER, INTENT(IN) :: IFLAG
       INTEGER, PARAMETER :: MAXIT=100
       REAL(DP) :: DF, XDIST, F, EIRENE_FI, TEMP, DX, DXOLD, XH,
-     .            EIRENE_RTSAF, XL
+     .            EIRENE_RTSAF, XL, POI
       INTEGER :: J
 
       XL=X1
@@ -27,8 +27,10 @@ C
       DX=MIN(XDIST,F/DF)
       DXOLD=DX
       EIRENE_RTSAF=XH-DX
+      POI = EIRENE_RTSAF
 C
-      F=EIRENE_FI(EIRENE_RTSAF,ER,B,IFLAG,P,DF)
+!pb      F=EIRENE_FI(EIRENE_RTSAF,ER,B,IFLAG,P,DF)
+      F=EIRENE_FI(POI,ER,B,IFLAG,P,DF)
 
       IF(F.LT.0.D0) THEN
         XL=EIRENE_RTSAF
@@ -42,16 +44,19 @@ C
           DXOLD=DX
           DX=0.5*(XH-XL)
           EIRENE_RTSAF=XL+DX
+          POI=EIRENE_RTSAF
         ELSE
           DXOLD=DX
           DX=F/DF
           TEMP=EIRENE_RTSAF
           EIRENE_RTSAF=EIRENE_RTSAF-DX
+          POI=EIRENE_RTSAF
         ENDIF
 C
         IF(ABS(DX).LT.XACC) RETURN
 C
-        F=EIRENE_FI(EIRENE_RTSAF,ER,B,IFLAG,P,DF)
+!pb        F=EIRENE_FI(EIRENE_RTSAF,ER,B,IFLAG,P,DF)
+        F=EIRENE_FI(POI,ER,B,IFLAG,P,DF)
         IF(F.LT.0.D0) THEN
           XL=EIRENE_RTSAF
         ELSE
