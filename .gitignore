@@ -4,9 +4,6 @@ build*
 doc*
 lib*
 
-# Ignore cmake generated files
-src/assistant/version.f
-
 # Ignore temporary files
 *~
 

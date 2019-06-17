@@ -220,20 +220,20 @@ if(GIT_FOUND)
                     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/.. 
                     OUTPUT_VARIABLE git_full_hash 
                     OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+    # Configures the version CMakeLists file.
+    configure_file(${PROJECT_SOURCE_DIR}/cmake/version.cmake.in
+                   version.cmake
+                   @ONLY)
+
+    # Trigger the EIRENE version output.
+    add_custom_target(version 
+                      ${CMAKE_COMMAND} -D PROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}
+                                       -P version.cmake)
+    add_dependencies(EIRENE version)
+    add_dependencies(eirene version)
   endif()
 endif()
-
-# Configures the version CMakeLists file.
-configure_file(${PROJECT_SOURCE_DIR}/cmake/version.cmake.in
-               version.cmake
-               @ONLY)
-
-# Trigger the EIRENE version output.
-add_custom_target(version 
-                  ${CMAKE_COMMAND} -D PROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}
-                                   -P version.cmake)
-add_dependencies(EIRENE version)
-add_dependencies(eirene version)
 
 # Adds a target to generate a documentation with Doxygen.
 find_package(Doxygen)
