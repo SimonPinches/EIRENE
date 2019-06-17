@@ -1,0 +1,18 @@
+# Pass git hash variables
+set(git_date @git_date@)
+set(git_hash @git_hash@)
+set(git_branch @git_branch@)
+
+# Maximum length of branch name allowed in Fortran's fixed-format
+set(max_length 60)
+
+# Shorten branch name to maximum fixed-format length
+string(LENGTH @git_branch@ length)
+if(length GREATER max_length)
+  string(SUBSTRING @git_branch@ 0 ${max_length} git_branch)
+  set(git_branch "${git_branch}...)\"")
+endif()
+
+# Configures the version output.
+configure_file(@PROJECT_SOURCE_DIR@/cmake/version.f.in 
+               @PROJECT_SOURCE_DIR@/assistant/version.f)
