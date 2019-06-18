@@ -14,7 +14,6 @@ c     * *********************************************************
 
 c  safest version:
 c  all tests included
-      entry EIRENE_binsearch_0(xx,n,x,i)
 
       bl=0
       bu=n+1
@@ -57,12 +56,18 @@ c  binary search
         end if
       end if
 c
-      return
+      END
 
+      SUBROUTINE EIRENE_binsearch_2(xx,n,x,i)
 c  fast version:
 c  we already know: a)  xx is monotonically increasing (not decreasing)
 c                   b)  x  lies between xx(1) and xx(n)
-      entry EIRENE_binsearch_2(xx,n,x,i)
+      use EIRMOD_PRECISION
+      implicit none
+      integer, intent(in) :: n
+      integer, intent(out) :: i
+      real(dp), intent(in) :: xx(n), x
+      integer :: bl, bm, bu
 
       bl=0
       bu=n+1

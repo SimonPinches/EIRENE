@@ -4,11 +4,11 @@ c              range of spectra corrected: 0 -- nspc+1, rather than 1 -- nspc
 c    Jan.  16: remove redundant PSGM
 C.........................................................................................
 
-cdr  ENTRY WRSTRT:
+cdr  SUBROUTINE WRSTRT:
 cdr  write MC estimated tallies, per stratum, onto fort.10
 cdr    (volume-averaged, surface-averaged, spectra, and their standard deviations)
 
-cdr  ENTRY RSTRT:
+cdr  SUBROUTINE RSTRT:
 cdr  read MC estimated tallies, per stratum, onto fort.10
 cdr    (volume-averaged, surface-averaged, spectra, and their standard deviations)
 cdr     e.g. for printout, plotting etc.. of results from specified strata
@@ -253,14 +253,32 @@ C  SET RANGE OF SPECTRUM ISPC, ADD BIN 0 AND NSPC+1 FOR LOW AND HIGH END OF SPEC
 
       CLOSE (UNIT=10+ifoff)
 C
-      RETURN
+      END
 C
-      ENTRY EIRENE_RSTRT(IG,NSTRAI,IESTM1,IESTM2,IESTM3,
+      SUBROUTINE EIRENE_RSTRT(IG,NSTRAI,IESTM1,IESTM2,IESTM3,
      .            TALLYV,TALLYS,TALLYL,
      .            ISDVI1,STAT1,ISDVI2,STAT2,
      .            ISDVC1,SIGC,ISDVC2,SIGCS,
      .            IBGKI,SIG_BGK,JBGKI,SIGS_BGK,
      .            ISPCI,TRCFLE)
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD, ONLY: EIRENE_SPECTRUM, IFOFF
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
+      IMPLICIT NONE
+
+      TYPE(EIRENE_SPECTRUM), INTENT(INOUT) :: TALLYL(*)
+      REAL(DP), INTENT(INOUT) :: TALLYV(*), TALLYS(*),
+     .                         STAT1(*), SIG_BGK(*)
+      REAL(DP), INTENT(INOUT) :: STAT2(*), SIGC(*), SIGCS(*)
+      REAL(DP), INTENT(INOUT) :: SIGS_BGK(*)
+      INTEGER, INTENT(IN) :: IG, NSTRAI, IESTM1, IESTM2, ISDVI1, ISDVI2,
+     .                       ISDVC1, ISDVC2, IBGKI, JBGKI, 
+     .                       IESTM3, ISPCI
+      LOGICAL, INTENT(IN) :: TRCFLE
+
+      INTEGER :: IMAX11, IMAX12, IMAX21, IMAX22, IMAX23, IMAX24, IMAX2,
+     .           IMAX31, IMAX32, NRECL, IRC, ISTRA,
+     .           JINI, J, JEND, IMAX, ISPC, IMAXS, NSPECI,NSPECE
 C
 C  READ DATA FOR SINGLE STRATA OR SUM OVER STRATA FROM TEMP. FILE FORT.10
 C

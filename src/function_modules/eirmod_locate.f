@@ -1,3 +1,55 @@
+      MODULE EIRMOD_LOCATE
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_COMUSR
+      USE EIRMOD_CESTIM
+      USE EIRMOD_CCONA
+      USE EIRMOD_CLOGAU
+      USE EIRMOD_CUPD
+      USE EIRMOD_CPOLYG
+      USE EIRMOD_CGRID
+      USE EIRMOD_CSPEZ
+      USE EIRMOD_CZT1
+      USE EIRMOD_CTRCEI
+      USE EIRMOD_CGEOM
+      USE EIRMOD_CTETRA
+      USE EIRMOD_COMPRT
+      USE EIRMOD_COMNNL
+      USE EIRMOD_COMSOU
+      USE EIRMOD_COMSPL
+      USE EIRMOD_CLGIN
+      USE EIRMOD_COUTAU
+      USE EIRMOD_COMXS
+      USE EIRMOD_CTRIG
+      USE EIRMOD_CRAND
+      USE EIRMOD_CSPEI
+      USE EIRMOD_CFPLK
+      USE EIRMOD_PHOTON
+      USE EIRMOD_SAMVOL, ONLY: EIRENE_SAMVL1
+      USE EIRMOD_RANF, ONLY: RANF_EIRENE
+      USE EIRMOD_ADDCOL, ONLY: EIRENE_ADDNOR
+      USE EIRMOD_VELOCX, ONLY: EIRENE_VELOCX
+      USE EIRMOD_SWITCH_PARTINFO, ONLY: EIRENE_SWITCH_PARTINFO
+      USE EIRMOD_SAMSRF, ONLY: EIRENE_SAMSF1
+      USE EIRMOD_STDCOL, ONLY: EIRENE_STDNOR
+
+      IMPLICIT NONE
+      PRIVATE
+
+      PUBLIC :: EIRENE_LOCATE, EIRENE_LOCAT0, EIRENE_LOCAT1, 
+     .           EIRENE_LOCAT2
+
+      REAL(DP), ALLOCATABLE, SAVE :: WMM(:), WEISPZ(:), X1LINE(:,:),
+     .                               X2LINE(:,:)
+      REAL(DP), SAVE :: SNORM
+      INTEGER, SAVE :: NEMOD1, NEMOD2, NEMOD3, NEMDSP
+      INTEGER, ALLOCATABLE, SAVE :: IICSOR(:), ITISOR(:),
+     .                              IUPSOR(:), IFPSOR(:)
+      INTEGER, SAVE :: NLIMSQ
+      INTEGER, EXTERNAL :: EIRENE_IDEZ
+
+      CONTAINS
+
 c  jan05:  2nd bulk secondary for irrc processes in pppl, eppl
 c          (also affected: comxs, xstrc, xsectp)
 c
@@ -106,81 +158,18 @@ C                   ANALOG SPECIES SAMPLING DISTRIBUTION
 C                   SPECIES SAMPLING MAY ALSO BE DONE BY BIASED SOURCE
 C                   SAMPLING, USING THE DATM,DMOL,DION OR DPLS DISTRIB.
 C
-      USE EIRMOD_PRECISION
-      USE EIRMOD_PARMMOD
-      USE EIRMOD_COMUSR
-      USE EIRMOD_CESTIM
-      USE EIRMOD_CCONA
-      USE EIRMOD_CLOGAU
-      USE EIRMOD_CUPD
-      USE EIRMOD_CPOLYG
-      USE EIRMOD_CGRID
-      USE EIRMOD_CSPEZ
-      USE EIRMOD_CZT1
-      USE EIRMOD_CTRCEI
-      USE EIRMOD_CGEOM
-      USE EIRMOD_CTETRA
-      USE EIRMOD_COMPRT
-      USE EIRMOD_COMNNL
-      USE EIRMOD_COMSOU
-      USE EIRMOD_COMSPL
-      USE EIRMOD_CLGIN
-      USE EIRMOD_COUTAU
-      USE EIRMOD_COMXS
-      USE EIRMOD_CTRIG
-      USE EIRMOD_CRAND
-      USE EIRMOD_CSPEI
-      USE EIRMOD_CFPLK
-      USE EIRMOD_PHOTON
 
       IMPLICIT NONE
 
-      INTEGER, INTENT(IN) :: IPANU
-      REAL(DP) :: DUMT(3),DUMV(3)
-      REAL(DP), ALLOCATABLE, SAVE :: WMM(:), WEISPZ(:), X1LINE(:,:),
-     .                               X2LINE(:,:)
-      REAL(DP) :: VXWL(NPLS), VYWL(NPLS), VZWL(NPLS), VPWL(NPLS),
-     .            TIWL(NPLS), DIWL(NPLS), EFWL(NPLS), SHWL, TEWL,
-     .            CUMDIS(0:NREC)
-      REAL(DP) :: YIELD1, YIELD2, FMASS, FCHAR, VELXS, VELYS,
-     .          EIRENE_FTABRC1,
-     .          VELZS, E0S, WEIGHS, VELS, FLX, VPARZ, VPAR, VTERM,
-     .          VPERP, VPARX, VPARY, EIRENE_EMAXW, ESHET, EIRENE_SHEATH,
-     .          GAMMA,
-     .          VYSPTP, VZSPTP, ESPTC, ESPTP, VSPTP, VXSPTP, VSPTC, SG,
-     .          VXSPTC, VYSPTC, VZSPTC, A, ZV, SUM1, ZEP1, CUR,
-     .          EMAX, VWD, VXWD, VYWD, VZWD, CS, VELQ, VO, SUMM,
-     .          VXO, VYO, VZO, DAT, RSQDV, RSQDV2, DML, FR, DIO, DPL,
-     .          TIWD, TEWD, DPH, E00,
-     .          res
-      REAL(DP) :: VEL_B, VELX_B, VELY_B, VELZ_B, VN, xl, xr, xm, yl,
-     .            yr, ym,
-     .            EIRENE_fpathph, zmfp_cut, zmfp_e0, zmfp_e00,
-     .            fac_e0, fac_e00,
-     .            xleft, xright
-C      REAL(DP) :: B_NU, pla
-      real(dp) :: cflag(7,MSTOR0)
-      REAL(DP), SAVE :: SNORM
-      REAL(DP), EXTERNAL :: RANF_EIRENE
-      INTEGER, ALLOCATABLE, SAVE :: IICSOR(:), ITISOR(:),
-     .                              IUPSOR(:), IFPSOR(:)
-      INTEGER, SAVE :: NEMOD1, NEMOD2, NEMOD3, NEMDSP
-      INTEGER :: ISSPTP, ISSPTC, ISTS, IP, ISPZS, IRC, IIRC, IRRC,
-     .           I2, IM, I1, IMP, NPANUO, ILINE, ISURF, ITRSF,
-     .           IPOINT, ISOUR, ISRFS, I, ISTEP,
-     .           JATM, JMOL, JION, JPLS, JPHOT, JSPZ,
-     .           ISECT, IDUMM, ICOS, NFLAG, NCELLT,
-     .           IPLV, IDUM, IO, NO, IVOLM, ISOR, INDTEC, IPL, IPP,
-     .           IPLTI, IRPH, KK,
-     .           ITYP_OLD, IGASP_OLD, IGASC_OLD
-C      INTEGER :: ILOOP, IPLSTI, NLOOP
-      INTEGER, SAVE :: NLIMSQ
-      INTEGER, EXTERNAL :: EIRENE_IDEZ
-      LOGICAL :: NLSPUT, NLTST, NL_add_Doppler
-      integer :: ityp_b1,ityp_b2,ipls_b1,ipls_b2
-      real(dp) :: weight_b1,weight_b2,e0_b1,e0_b2
+
+      CALL EIRENE_LOCAT0
+      END SUBROUTINE EIRENE_LOCATE
+
+      SUBROUTINE EIRENE_LOCAT0
+      IMPLICIT NONE
+      REAL(DP) :: SUMM, SUM1
+      INTEGER :: JSPZ, ISOUR, ISRFS, IDUMM, I
 C
-      ENTRY EIRENE_LOCAT0
 C
 C  PREPARE DATA FOR SAMPLING SUBSTRATA FOR STRATUM ISTRA: 1--10
 C
@@ -275,8 +264,46 @@ C
       END IF
 
       RETURN
+      END SUBROUTINE EIRENE_LOCAT0
 C
-      ENTRY EIRENE_LOCAT1(IPANU)
+      SUBROUTINE EIRENE_LOCAT1(IPANU)
+      IMPLICIT NONE
+      REAL(DP) :: DUMT(3),DUMV(3)
+      REAL(DP) :: YIELD1, YIELD2, FMASS, FCHAR, VELXS, VELYS,
+     .          EIRENE_FTABRC1,
+     .          VELZS, E0S, WEIGHS, VELS, FLX, VPARZ, VPAR, VTERM,
+     .          VPERP, VPARX, VPARY, EIRENE_EMAXW, ESHET, EIRENE_SHEATH,
+     .          GAMMA,
+     .          VYSPTP, VZSPTP, ESPTC, ESPTP, VSPTP, VXSPTP, VSPTC, SG,
+     .          VXSPTC, VYSPTC, VZSPTC, SUM1, ZEP1, CUR,
+     .          EMAX, VWD, VXWD, VYWD, VZWD, CS, VELQ, VO, SUMM,
+     .          VXO, VYO, VZO, DAT, RSQDV, RSQDV2, DML, FR, DIO, DPL,
+     .          TIWD, TEWD, DPH, E00,
+     .          res
+      REAL(DP) :: VEL_B, VELX_B, VELY_B, VELZ_B, VN, xl, xr, xm, yl,
+     .            yr, ym,
+     .            EIRENE_fpathph, zmfp_cut, zmfp_e0, zmfp_e00,
+     .            fac_e0, fac_e00
+      real(dp) :: cflag(7,MSTOR0)
+      real(dp) :: weight_b1,weight_b2,e0_b1,e0_b2
+      REAL(DP) :: xleft, xright, A, ZV
+      REAL(DP) :: VXWL(NPLS), VYWL(NPLS), VZWL(NPLS), VPWL(NPLS),
+     .            TIWL(NPLS), DIWL(NPLS), EFWL(NPLS), SHWL, TEWL,
+     .            CUMDIS(0:NREC)
+      INTEGER :: ISSPTP, ISSPTC, ISTS, IP, ISPZS, IRC, IIRC, IRRC,
+     .           ISOUR, ISRFS, I, ISTEP,
+     .           IDUMM, NFLAG, 
+     .           IPLV, IDUM, IO, NO, IPL, IPP,
+     .           IPLTI, IRPH, KK, JSPZ,
+     .           ITYP_OLD, IGASP_OLD, IGASC_OLD
+      LOGICAL :: NLSPUT, NLTST, NL_add_Doppler
+      INTEGER, INTENT(IN) :: IPANU
+      INTEGER :: NPANUO, NCELLT, IPOINT,
+     .           ityp_b1,ityp_b2,ipls_b1,ipls_b2,ISECT, I1, I2, IM, IMP,
+     .           ILINE, ISURF, ITRSF, ICOS, IVOLM, ISOR, INDTEC,
+     .           JATM, JMOL, JION, JPLS, JPHOT
+      
+      save
 C
 C  TENTATIVELY ASSUME: A TEST PARTICLE WILL BE BORN
       LGPART=.TRUE.
@@ -641,10 +668,10 @@ C
 C  FIND SURFACE NORMAL AT PLACE OF BIRTH
 C
         IF (INDIM(ISURF,ISTRA).EQ.0) THEN
-          CALL EIRENE_ADDNOR(X0,Y0,Z0,SCOS,MSURF,IPERID,*55,*55)
+          CALL EIRENE_ADDNOR(X0,Y0,Z0,SCOS,MSURF,IPERID)
         ELSEIF (INDIM(ISURF,ISTRA).GT.0) THEN
           CALL EIRENE_STDNOR
-     .  (X0,Y0,Z0,INDIM(ISURF,ISTRA),SCOS,MSURF,*55,*55)
+     .  (X0,Y0,Z0,INDIM(ISURF,ISTRA),SCOS,MSURF)
         ENDIF
    55   CONTINUE
 C
@@ -2157,20 +2184,6 @@ C  TOROIDAL CELL NO. MAY BE WRONG
         IF (NLTST) GOTO 995
       ENDIF
       RETURN
-
-      ENTRY EIRENE_LOCAT2
-
-      IF (ALLOCATED(WMM)) THEN
-        DEALLOCATE (WMM)
-        DEALLOCATE (WEISPZ)
-        DEALLOCATE (IICSOR)
-        DEALLOCATE (ITISOR)
-        DEALLOCATE (IUPSOR)
-        DEALLOCATE (IFPSOR)
-      END IF
-
-      RETURN
-C
   990 CONTINUE
       WRITE (iunout,*) 'ERROR IN LOCATE: ILSIDE OF SOURCE SURFACE IS 0.'
       WRITE (iunout,*)
@@ -2217,4 +2230,21 @@ C
   999 CONTINUE
       WRITE (iunout,*) 'ERROR IN LOCATE: TYPE OR SPECIES OUT OF RANGE'
       CALL EIRENE_EXIT_OWN(1)
-      END
+      END SUBROUTINE EIRENE_LOCAT1
+
+      SUBROUTINE EIRENE_LOCAT2
+      IMPLICIT NONE
+
+      IF (ALLOCATED(WMM)) THEN
+        DEALLOCATE (WMM)
+        DEALLOCATE (WEISPZ)
+        DEALLOCATE (IICSOR)
+        DEALLOCATE (ITISOR)
+        DEALLOCATE (IUPSOR)
+        DEALLOCATE (IFPSOR)
+      END IF
+
+      RETURN
+      END SUBROUTINE EIRENE_LOCAT2
+C
+      END MODULE EIRMOD_LOCATE

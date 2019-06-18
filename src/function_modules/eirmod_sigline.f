@@ -1,4 +1,17 @@
-!pb  100107 ENTRY SIGHA_REINIT added
+      MODULE EIRMOD_SIGLINE
+      USE EIRMOD_PRECISION
+      
+      IMPLICIT NONE
+      PRIVATE
+
+      PUBLIC :: EIRENE_SIGLINE, EIRENE_SIGLINE_REINIT
+
+      REAL(DP), SAVE :: PENOLD=-1._DP
+      INTEGER, SAVE :: ISTOLD=-1, ITROLD=-1
+
+      CONTAINS
+     
+!pb  100107 SUBROUTINE SIGHA_REINIT added
 CDR  parameter PEN introduced, to identify hydrogen line by central energy
 Cdr Aug.16:  The identification of particular lines
 cdr          by upper and lower energy level (input flags EMIN1,EMAX1 in block 12)
@@ -72,14 +85,10 @@ C
       INTEGER, INTENT(IN) :: INIT, JJJ, ICHORI
       REAL(DP), INTENT(IN) :: ZDS, DUMMY2, PEN
       REAL(DP), INTENT(IN OUT) :: PSIG(0:), ARGST(0:,:)
-      REAL(DP) :: PENOLD
       INTEGER :: LNO
       INTEGER :: JCOMP, IADV
-      INTEGER :: ISTOLD, ISP, NCELC, ICELL, ITROLD
+      INTEGER :: ISP, NCELC, ICELL
       LOGICAL :: LARGST
-      DATA ISTOLD/-1/
-      DATA ITROLD/-1/
-      DATA PENOLD/-1._DP/
 C
       SAVE
 C
@@ -132,14 +141,14 @@ c  sum over components of line LNO
         IF (LARGST) ARGST(0,JJJ) = ADDV(IADV,NCELC)
       END IF
 C
-      RETURN
+      END
 
 C     Following lines added for reinitialisation of eirene (DMH)
 
-      ENTRY EIRENE_SIGLINE_REINIT
+      SUBROUTINE EIRENE_SIGLINE_REINIT
       ISTOLD = -1
       ITROLD = -1
       PENOLD = -1._DP
-      RETURN
-
       END
+
+      END MODULE EIRMOD_SIGLINE

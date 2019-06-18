@@ -56,7 +56,10 @@ C+---------------------------------------------------------------+
       USE EIRMOD_CTRIG
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_CCONA
+      USE EIRMOD_LEARC1, ONLY: EIRENE_LEARC1
+
       IMPLICIT NONE
+
       REAL(DP) :: FACTOR, EIRENE_STEP
       INTEGER :: NLINES, ITRI, ISIDE, I, NBIN, ISTRA, ISRFS, ISOR, JJJ,
      .           ITEC1, ITEC2, ITEC3, ISTEP, INDSRF, IS1, IERROR, IPLS
@@ -68,7 +71,7 @@ C+---------------------------------------------------------------+
      .            errbx, errby, errbz, errbf, bxmax, bymax, bzmax,
      .            bfmax, dfdx, dfdy, dfdz, xref2, yref2, bzref2, facbz2,
      .            xref3, yref3, bzref3, facbz3
-      integer :: nref, icell, EIRENE_learc1, nplcll, ipolg, nref2, nref3
+      integer :: nref, icell, nplcll, ipolg, nref2, nref3
       CHARACTER(256) :: line,sstr,filename
       character(2) :: cstr2
       integer, allocatable :: indextmp(:),itritmp(:),isidetmp(:)

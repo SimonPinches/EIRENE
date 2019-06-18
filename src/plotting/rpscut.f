@@ -8,6 +8,7 @@
       use EIRMOD_ccona
       use EIRMOD_cplot
       use EIRMOD_module_avltree
+      USE EIRMOD_SECOND_OWN, ONLY: EIRENE_second_own
 
       implicit none
 
@@ -29,7 +30,7 @@
      .        2, 3,
      .        3, 4 /), (/ 2, 6 /) )
       integer, save :: nkanten, ifirst=0
-      real(dp) :: timi, timen, EIRENE_second_own
+      real(dp) :: timi, timen
       real(dp), allocatable, save :: spar(:)
       integer :: i, itri
 

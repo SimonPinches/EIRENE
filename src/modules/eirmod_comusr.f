@@ -18,6 +18,7 @@ cdr             remove redundant tally LGDFT (also from LUSR)
      P          EIRENE_INIT_COMUSR, EIRENE_ALLOC_CORNERS,
      P          EIRENE_COMUSR_REINIT
 
+      INTEGER, SAVE :: IFIRST=0
       INTEGER, SAVE ::
      P NPLPR1, NSFPRM, NPLPR2  ! internal, not public. former storage tests in setprm are abandoned
       INTEGER, PUBLIC, SAVE ::
@@ -553,7 +554,6 @@ c
       SUBROUTINE EIRENE_INIT_COMUSR(ICAL)
 
       INTEGER, INTENT(IN) :: ICAL
-      INTEGER, SAVE :: IFIRST=0
 
       IF (IFIRST == 0) THEN
         LSMOPRO = .FALSE.
@@ -694,11 +694,13 @@ c  at this call: first dimension of adin is known, as well as size of cop and bg
       END IF
 
       RETURN
+      END SUBROUTINE EIRENE_INIT_COMUSR
 
-      ENTRY EIRENE_COMUSR_REINIT
+      SUBROUTINE EIRENE_COMUSR_REINIT
+      IMPLICIT NONE
       IFIRST = 0
       RETURN
 
-      END SUBROUTINE EIRENE_INIT_COMUSR
+      END SUBROUTINE EIRENE_COMUSR_REINIT
 
       END MODULE EIRMOD_COMUSR

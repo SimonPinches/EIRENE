@@ -1,10 +1,10 @@
 cdr
-c  at entry WRPLAM:
+c  at subroutine WRPLAM:
 C  write plasma (background) data, source distribution and atomic data
 C  onto unit fort.13.
 C
 cdr
-c  at entry RPLAM:
+c  at subroutine RPLAM:
 C  read plasma (background) data, source distribution and atomic data
 C  from unit 13.
 C
@@ -32,11 +32,17 @@ cdr  NLSHRT13  :  SET TRUE IN INFCOP, COUPLE_SOLPS_ITER. REDUCED SIZE FORT 13.
       ELSE
         CALL EIRENE_WRPLAM_LONG (TRCFLE,IFLG)
       ENDIF
-      RETURN
+      END SUBROUTINE EIRENE_WRPLAM
 C
 c.............................................
 
-      ENTRY EIRENE_RPLAM(TRCFLE,IFLG)
+      SUBROUTINE EIRENE_RPLAM(TRCFLE,IFLG)
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_CLOGAU
+
+      IMPLICIT NONE
+      INTEGER, INTENT(IN) :: IFLG
+      LOGICAL, INTENT(IN) :: TRCFLE
 c.............................................
 
       IF (NLSHRT13) THEN
@@ -44,6 +50,4 @@ c.............................................
       ELSE
         CALL EIRENE_RPLAM_LONG (TRCFLE,IFLG)
       ENDIF
-      RETURN
-
-      END SUBROUTINE EIRENE_WRPLAM
+      END SUBROUTINE EIRENE_RPLAM

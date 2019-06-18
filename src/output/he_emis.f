@@ -427,13 +427,8 @@ C
         DEALLOCATE (OUTAU)
         IF (TRCFLE)   WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
       ENDIF
-C
       RETURN
-
-      entry EIRENE_HE_EMIS_reinit
-      ifirst=0
-      return
-
+C
   999 CONTINUE
       WRITE (IUNOUT,*) 'ERROR IN SUBR. HE_EMIS '
       WRITE (IUNOUT,*) 'NO STORAGE AVAILABLE ON ADDITIONAL TALLY ADDV '
@@ -442,3 +437,10 @@ C
       WRITE (IUNOUT,*) 'CHECK INPUT BLOCK 10A '
       CALL EIRENE_EXIT_OWN(1)
       END SUBROUTINE EIRENE_HE_EMIS
+
+ctk      SUBROUTINE EIRENE_HE_EMIS_reinit
+ctk      IMPLICIT NONE
+ctk      ifirst=0
+ctk      return
+
+ctk      END SUBROUTINE EIRENE_HE_EMIS_reinit

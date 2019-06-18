@@ -1,3 +1,14 @@
+      MODULE EIRMOD_RANF
+      USE EIRMOD_PRECISION
+      IMPLICIT NONE
+      PRIVATE
+
+      PUBLIC :: ranf_eirene, ranf_eirene_reinit
+
+      integer, save :: ifirst=0
+ 
+      CONTAINS
+
 cdr  april 2016:  looked at current default random number generator.
 cdr               it seems to be a rather trivial congruential generator,
 cdr               even without additive constant  (c=0.0)
@@ -44,9 +55,7 @@ C
       implicit none
       integer :: iseed
       common /cmem/ iseed
-      integer, save :: ifirst=0
-      real(dp) :: ra, dummy, ranf_eirene,
-     .            ranf_eirene_reinit, h1rn
+      real(dp) :: ra, dummy, ranf_eirene, h1rn
 
 cdr  parameters for SURAND  (IBM, 1968)
       INTEGER D2P32M
@@ -87,13 +96,16 @@ c  save the seed for next random number.
       END IF
 
 c  done
-      return
+      end function ranf_eirene
 
 C     The following ENTRY is for reinitialization of EIRENE
 
-      ENTRY ranf_eirene_reinit
+      FUNCTION ranf_eirene_reinit
+      real(dp) :: ranf_eirene_reinit
 cdr   indicate that random number generator is not initialized.
       ifirst = 0
       ranf_eirene_reinit = 0.D0
       return
-      end
+      end FUNCTION ranf_eirene_reinit
+
+      END MODULE EIRMOD_RANF

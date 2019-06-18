@@ -28,12 +28,15 @@ c
       USE EIRMOD_PRECISION
       USE EIRMOD_CLOGAU
       USE EIRMOD_COMPRT, ONLY: IUNOUT
+      USE EIRMOD_RANF, ONLY: RANF_EIRENE
+      USE EIRMOD_RANSET, ONLY: RANSET_EIRENE
       implicit none
       integer, intent(in) :: ise
       integer :: iseed,idumran
       common /cmem/ iseed
-      real(dp) :: ran, ranf_eirene
-      integer, external :: ranset_eirene
+ctk      real(dp) :: ran, ranf_eirene
+      real(dp) :: ran
+ctk      integer, external :: ranset_eirene
 
       IF (NLOLDRAN) THEN
 c  1st generator: H1RN  (RANMAR)

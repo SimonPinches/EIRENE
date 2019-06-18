@@ -33,6 +33,8 @@ C
       USE EIRMOD_PHOTON
       USE EIRMOD_CPES
       USE EIRMOD_CSDVI
+      USE EIRMOD_RANF, ONLY: RANF_EIRENE
+      USE EIRMOD_RANSET, ONLY: RANSET_EIRENE
 
       IMPLICIT NONE
 
@@ -48,9 +50,10 @@ C
      .            FR1, ZCPHI, ZSPHI, ZCTHET, ZSTHET, VX, VY, VZ,
      .            RPROB, PRFCF, PRFCT, PABS, PLAMBERT, WABS,
      .            ZEP1
-      REAL(DP), EXTERNAL :: RANF_EIRENE
-      INTEGER, EXTERNAL :: RANGET_EIRENE, EIRENE_IDEZ,
-     .                     RANSET_EIRENE
+ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
+ctk      INTEGER, EXTERNAL :: RANGET_EIRENE, EIRENE_IDEZ,
+ctk     .                     RANSET_EIRENE
+      INTEGER, EXTERNAL :: RANGET_EIRENE, EIRENE_IDEZ
 C
 C---------------------------------------------------------------------
 C
