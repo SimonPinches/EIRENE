@@ -90,7 +90,7 @@ cdr  number returned from ranf() will be based. This seed is also saved in Commo
 
 C     The following ENTRY is for reinitialization of EIRENE
 
-      FUNCTION ranset_eirene_reinit
+      FUNCTION ranset_eirene_reinit()
       implicit none
       integer :: ranset_eirene_reinit
       ifirst = 0

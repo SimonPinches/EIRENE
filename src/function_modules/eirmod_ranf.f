@@ -100,7 +100,7 @@ c  done
 
 C     The following ENTRY is for reinitialization of EIRENE
 
-      FUNCTION ranf_eirene_reinit
+      FUNCTION ranf_eirene_reinit()
       real(dp) :: ranf_eirene_reinit
 cdr   indicate that random number generator is not initialized.
       ifirst = 0

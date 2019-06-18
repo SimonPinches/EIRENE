@@ -19,7 +19,7 @@ c
       EIRENE_second_own=time-start
       END
 C
-      FUNCTION EIRENE_RESET_SECOND
+      FUNCTION EIRENE_RESET_SECOND()
       implicit none
       real(dp) :: EIRENE_reset_second
 
