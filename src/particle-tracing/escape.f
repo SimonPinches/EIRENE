@@ -329,7 +329,7 @@ C
 
 !  PARTICLE TYPE AND SPECIES MAY HAVE CHANGED
 !  PREPARE POINTER FOR UNIFIED SUBROUTINES
-      CALL EIRENE_SWITCH_PARTINFO   !  HIER NICHT NOETIG ??
+      CALL EIRENE_SWITCH_PARTINFO   !dr  HERE NOT NEEDED?
 
 C
    10 CONTINUE
@@ -765,7 +765,7 @@ c are INTENT(IN) !
 C
 C  ...............................................
 C  .                                             .
-C  .  REFLECTION MODEL FOR ATOMS OR ATOMIC IONS  .
+C  .  REFLECTION MODEL FOR ATOMS OR TEST IONS    .
 C  ...............................................
 C
       ELSEIF (ITYP.EQ.1.OR.ITYP.EQ.3) THEN
