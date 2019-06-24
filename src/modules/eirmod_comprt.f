@@ -154,7 +154,7 @@ c  up to here: for census, npartt
       XGENER => RPST(12)
 c  up to here: for splitting, npartc
 
-      IPST  => IPSTD(2:MPARTC+1)  !  full (2: mpartc+1) particle information, integer
+      IPST  => IPSTD(2:MPARTC+1)  !  full (2:mpartc+1) particle information, integer
 
       IPSTT => IPSTD(1:MPARTT)    !  reduced (1:mpartt), for census
 

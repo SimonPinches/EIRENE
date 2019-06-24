@@ -40,7 +40,7 @@ C   2D GEOMETRY (AND TRAJECTORY) PLOT
 
       IMPLICIT NONE
 C
-      INTEGER,PARAMETER :: NTXHST=20
+      INTEGER,PARAMETER :: NTXHST=21
 
       REAL(DP), ALLOCATABLE :: XX(:), YY(:)
       REAL(DP) :: DSD(3), AFF(3,3), AFFI(3,3)
@@ -53,25 +53,29 @@ C
      .          XT2, XTIP, P, YTIP, TR, RS, EP, EL, XT, YT, XTN, YTN,
      .          DXX, DYY, A, B, XN0
       REAL(SP) :: XPS(5), YPS(5)
-      INTEGER :: ISPL(NTXHST),ICLR(2*NSTS+1),IDSH(2*NSTS+1),
+      INTEGER :: ICLR(2*NSTS+1),IDSH(2*NSTS+1),
      .           ISWC(2*NSTS+1), INON(2*NSTS+1)
       INTEGER, ALLOCATABLE :: IFARB(:,:), IDASH(:,:), ICPSPZ(:)
       INTEGER :: ICP, ISTR, IC, IC1, IC2, NCTPNT, IDUMMY, ICT, IEN,
      .           ITH, ITHPL, IAN, NTDUM, NTT, IECKE2, EIRENE_LEARCA,
      .           NT, ICOLOR, NU, J, ISYM, IFLAG, IERR, IWRIT,
-     .           IR, IP, ISTS, IN, IY, IB, IT, IA, NRET, I, NSW, ISW,
+     .           IR, IP, ISTS, IN, IY, IB, IT, IA, IAA,
+     .           NRET, I, NSW, ISW,
      .           ISP, IHELP, K, IFL, ISYM_ERR, IRA, IRE, IPA, IPE,
      .           ITA, ITE, JJ
       LOGICAL :: PLSAV1, PLSAV2, LSTORE, LWR
       CHARACTER(20) :: TXTHST(NTXHST)
+      INTEGER :: ISPL(NTXHST)
       CHARACTER(10) :: CX, CY, CX0, CY0, CZ0
       CHARACTER(6) :: CH
 
       SAVE
       DATA ABSMAX,ORDMAX/21.,21./
       DATA XNULL,YNULL/9.,4./,XWN,YWN/0.,0./
-      DATA IWRIT/0/,ISPL/2,101,103,205,100,206,208,104,105,
-     .                   106,107,108,200,201,202,204,207,4,104,105/
+      DATA IWRIT/0/,
+     .      ISPL/  2,101,103,205,100,206,208,104,105,106,
+     .           107,108,200,201,202,204,207,4  ,104,105,
+     .           102/
       DATA TXTHST
      .           /'LOCATE(1)           ',
      .            'ELECTR. IMPACT(2)   ',
@@ -93,7 +97,8 @@ C
      .            'ERROR DETECTED      ',     ! SYMBOL FOR PARTICLE TRACING ERROR.
 c  next symbols/text: only for printout, not on plot.
      .            'INT.GRID SURFACE(19)',
-     .            'DIFFUSION STEP(20)  '/
+     .            'DIFFUSION STEP(20)  ',
+     .            'STATIC LOOP(21)     '/
 C
 C  SYMBOL FOR PARTICLE TRACING ERROR, CURRENTLY NO. 18
       ISYM_ERR=18   !  SYMBOL NO. 18 IS CURRENTLY HARD-WIRED FOR TRACING ERRORS, SUBR., FOLNEUT, FOLION, ETC...
@@ -1472,6 +1477,7 @@ C  IFLAG.NE.0 TRACK FROM LAST POSITION (PREVIOUS CALL) TO XPLO,YPLO,ZPLO
 C  ISYM       NUMBER OF SYMBOL FOR THE CURRENT EVENT
 C
 C  TEXT FOR PARTICLE HISTORIES PLOT, ONLY AT FIRST CALL TO THIS ENTRY
+C  LEGEND ONLY FOR THOSE SYMBOLS WHICH ARE SELECTED (ISYPLT(1:8) FLAG)
 C
       XN=XN2D
       YN=YN2D
@@ -1484,14 +1490,19 @@ C
      .                               REAL(ORDMAX,KIND(1.E0)))
         XNP05=XN+0.5/FX
         CALL GRNWPN(1)
-        DO IA=1,NTXHST-1
-          YYIA=YN-(0.75*(IA-1))/FY
-          CALL GRJMPS
-     .  (REAL(XN,KIND(1.E0)),REAL(YYIA+0.15,KIND(1.E0)),
-     .                 ISPL(IA))
-          CALL GRTXT
-     .  (REAL(XNP05,KIND(1.E0)),REAL(YYIA,KIND(1.E0)),20,
-     .                TXTHST(IA))
+        IAA=0
+        DO IA=1,NTXHST
+          DO J=1,8
+            IF (IA.NE.ABS(ISYPLT(J)).AND.IA.NE.ISYM_ERR) CYCLE
+C  SYMBOL IA (OR ISYM_ERR) ACTIVATED ON PLOT.
+            IAA=IAA+1
+            YYIA=YN-(0.75*(IAA-1))/FY
+            CALL GRJMPS (REAL(XN,KIND(1.E0)),REAL(YYIA+0.15,KIND(1.E0)),
+     .                   ISPL(IA))
+            CALL GRTXT (REAL(XNP05,KIND(1.E0)),REAL(YYIA,KIND(1.E0)),20,
+     .                  TXTHST(IA))
+            EXIT
+          ENDDO
         ENDDO
 C
         IF (NLPL3D) THEN
@@ -1823,8 +1834,9 @@ C     following ENTRY is for reinitialization of EIRENE (DMH)
       XWN = 0.
       YWN =0.
       IWRIT = 0
-      ISPL = (/2,101,103,205,100,206,208,104,105,
-     .         106,107,108,200,201,202,204,207,4,104,105/)
+      ISPL = (/  2,101,103,205,100,206,208,104,105,106,
+     .         107,108,200,201,202,204,207,4  ,104,105,
+     .         102/) 
 csw 20oct08
       if(allocated(icpspz)) deallocate(icpspz)
       if(allocated(idash)) deallocate(idash)

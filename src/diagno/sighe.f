@@ -1,4 +1,5 @@
-CDR  from W.Z, (HELIUM) DERIVED FROM FROM SIGHA (HYDROGEN)
+CDR  originally from W.Z, (HELIUM), DERIVED FROM FROM SIGHA (HYDROGEN).
+cdr  PEN wavelength, rather than transition energy ?
 c
 c
       SUBROUTINE EIRENE_SIGHE(INIT,JJJ,ZDS,PEN,PSIG,DUMMY2,ARGST)
@@ -6,19 +7,19 @@ c
 CDR  this routine evaluates ("side on") helium atom ("He") emissivities,
 cdr  integrated along a line of sight (PSIG) and also the integrand resolved along
 cdr  line of sight (ARGST).
-c    Currently there are up to 2 contributions to each particular preprogrammed
+c    Currently there are up to 2 components to each particular preprogrammed
 c    transition (depending on population coefficient data stored
 c    in file AMJUEL, section H.11 and H.12
-c  aug.16: available transitions in H-atom:
+c  aug.16: available transitions in He-atom:
 c          ba-alpha  (3S - 2P, singlet,  728 nm)
 c          ba-alpha  (3S - 2P, triplet,  706 nm)
 c          ba-alpha  (3P - 2S, singlet,  501 nm)
 c          ba-alpha  (3D - 2P, singlet,  667 nm)
 c          ba-beta   (4D - 2P, singlet,  492 nm)
-c    for each of these lines there are separate contributions from
+c    for each of these lines there are separate components from
 c    1) coupling to He
 c    2) coupling to He+
-c    0) total, sum over these 6 contributions
+c    0) total, sum over these 2 components
 c
 c
 C
@@ -29,7 +30,7 @@ C          JJJ:    INDEX OF SEGMENT ALONG CHORD
 C          ZDS:    LENGTH OF SEGMENT NO. JJJ
 C          PEN:    CENTRAL wavelength OF LINE (nm)
 C  OUTPUT: CONTRIB. FROM CELL NCELL AND CHORD SEGMENT JJJ TO:
-C          THE H LINE FLUX PSIG(I),I=0,5 CONTRIBUTIONS
+C          THE He LINE FLUX PSIG(I),I=0,2 COMPONENTS
 C          FROM ATOMS (only Ground state, MS unresolved), and BULK IONS
 C          THE INTEGRAND ARGST IS SUCH THAT INTEGR.(ARGST*DL) = PSIG
 C
