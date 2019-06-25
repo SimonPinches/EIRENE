@@ -35,9 +35,10 @@ cdr  set from the external code, or in EIRSRT, and are problem-specific.
 
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
+      USE EIRMOD_SECOND_OWN, ONLY: EIRENE_SECOND_OWN
       IMPLICIT NONE
       REAL(DP) :: DT
-      REAL(DP) :: EIRENE_SECOND_OWN, TIMI, TIMEND
+      REAL(DP) :: TIMI, TIMEND
       INTEGER :: ITNR
       LOGICAL :: NLM,NLL,MPI_INIT
 C

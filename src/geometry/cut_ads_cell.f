@@ -9,9 +9,10 @@
       use EIRMOD_ccona
       use EIRMOD_comusr
       use EIRMOD_comprt
+      use EIRMOD_LEARC1, ONLY: EIRENE_LEARC1
 
       implicit none
-      integer :: EIRENE_learc1, ilim, ic1, ic2, is1, is2, izell, izello,
+      integer :: ilim, ic1, ic2, is1, is2, izell, izello,
      .           is, j, no, igo, ihit1, ihit2, i
       real(dp) :: xx, yy, richtx, richty, ax, ay, v, vx, vy, t
       logical :: lc1(3), lc2(3), lhit1, lhit2

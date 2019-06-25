@@ -160,7 +160,7 @@ endif()
 
 # Adds EIRENE library to the project.
 add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno} 
-                   ${src_file-handling} ${src_geometry}
+                   ${src_file-handling} ${src_function_modules} ${src_geometry}
                    ${src_geometry/time-routines} ${src_interface/x} 
                    ${src_iterate} ${src_main-routines} ${src_mathematics} 
                    ${src_modules} ${src_output} ${src_particle-tracing} 

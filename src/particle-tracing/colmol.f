@@ -107,6 +107,10 @@ C
       USE EIRMOD_CLOGAU
       USE EIRMOD_CSPEZ
       USE EIRMOD_PHOTON
+      USE EIRMOD_RANF, ONLY: RANF_EIRENE
+      USE EIRMOD_VELOPI, ONLY: EIRENE_VELOPI
+      USE EIRMOD_VELOEL, ONLY: EIRENE_VELOEL
+      USE EIRMOD_VELOCX, ONLY: EIRENE_VELOCX
 
       IMPLICIT NONE
 
@@ -141,7 +145,7 @@ csw add n 2lines
 cdr   INTEGER :: kk,updf,t1
 cdr   real(dp):: sump
 csw external
-      real(dp), external :: ranf_eirene
+ctk      real(dp), external :: ranf_eirene
 
       SAVE
 

@@ -1,3 +1,17 @@
+      MODULE EIRMOD_COLRAD
+      use EIRMOD_precision
+      IMPLICIT NONE
+      PRIVATE
+
+      real(dp), allocatable, save :: h_stor(:,:)
+      logical, allocatable, save :: lvis_h(:)
+      real(dp), allocatable, save :: pop0(:), pop1(:), pop_ext(:),
+     .                               q_ext(:),
+     .                               pop_esc(:,:)
+
+      PUBLIC :: eirene_colrad, eirene_colrad_reinit, 
+     .          eirene_dealloc_colrad
+
 cdr jan 18:  distinct from solps4.3 version: e_alpcr correct now.
 cdr          (electron cooling/heating terms associated with recombination
 cdr feb 18:  l_ext, q_ext, lopaque, pop_esc: must not change,
@@ -6,6 +20,7 @@ c            so far: q_ext not connected (l_ext=.false.)
 cdr may 18:  add population escape factors pop_esc(40,40), for hydrogen atom.
 cdr          default: optically thin: pop_esc=1
 
+      CONTAINS
 
       subroutine eirene_colrad (ir, icrm, ivar,
      .                          icell, p1, p2, res)
@@ -46,11 +61,6 @@ cdr          default: optically thin: pop_esc=1
 ctt  .           ,E_ALPCR_T, E_SCR_T, E_SCR_EXT_T   these arrays are for testing only
       integer :: i, irow_esc, icol_esc, irc
 
-      real(dp), allocatable, save :: pop0(:), pop1(:), pop_ext(:),
-     .                               q_ext(:),
-     .                               pop_esc(:,:)
-      real(dp), allocatable, save :: h_stor(:,:)
-      logical, allocatable, save :: lvis_h(:)
       logical :: l_ext
 
 c  try to avoid repeated calls to CR model in same plasma grid cell
@@ -230,7 +240,10 @@ cdr  it may be a rate, an energly loss rate or a reduced population coefficient
          call eirene_exit_own(1)
       end if
 
-      entry eirene_colrad_reinit
+      call eirene_colrad_reinit
+      END subroutine eirene_colrad
+
+      SUBROUTINE eirene_colrad_reinit
 cdr this must be done after each internal iteration or time-cycle
 
       if (allocated(lvis_h)) then
@@ -241,9 +254,9 @@ cdr this must be done after each internal iteration or time-cycle
          h_stor = 0._dp
       end if
 
-      return
+      END
 
-      entry eirene_dealloc_colrad
+      SUBROUTINE eirene_dealloc_colrad
 
       if (allocated(lvis_h)) deallocate (lvis_h)
       if (allocated(h_stor)) deallocate (h_stor)
@@ -257,4 +270,5 @@ cdr this must be done after each internal iteration or time-cycle
 
       return
 
-      end subroutine eirene_colrad
+      end 
+      END MODULE EIRMOD_COLRAD

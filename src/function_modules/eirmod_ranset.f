@@ -1,3 +1,14 @@
+      MODULE EIRMOD_RANSET
+      USE EIRMOD_PRECISION
+      IMPLICIT NONE
+      PRIVATE
+
+      PUBLIC :: ranset_eirene, ranset_eirene_reinit
+
+      integer, save :: ifirst=0
+ 
+      CONTAINS
+
 cdr   initialize random number generator, set the random number seed "iseed",
 cdr   store that in Common CMEM, and initialize random generator.
 c
@@ -22,8 +33,6 @@ cdr   integer :: iseed1, iseed2, ! older version of h1rn with two seeds
       integer :: iseed
 cdr  status of RANMAR (H1RN) generator is stored in Common RASET (after call to H1RNIN)
       common /cmem/ iseed
-      integer :: ranset_eirene_reinit
-      integer, save :: ifirst=0
 
       IF (NLOLDRAN) THEN
 cdr there are various variants of initializer RMARIN, taking either
@@ -77,12 +86,16 @@ cdr  just return iseed, the current legal seed used, on which the next random
 cdr  number returned from ranf() will be based. This seed is also saved in Common CMEM
       ranset_eirene=iseed
 
-      return
+      end function ranset_eirene
 
 C     The following ENTRY is for reinitialization of EIRENE
 
-      ENTRY ranset_eirene_reinit
+      FUNCTION ranset_eirene_reinit()
+      implicit none
+      integer :: ranset_eirene_reinit
       ifirst = 0
       ranset_eirene_reinit = 0
       return
-      end
+      end FUNCTION ranset_eirene_reinit
+
+      END MODULE EIRMOD_RANSET

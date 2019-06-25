@@ -1,3 +1,48 @@
+      MODULE EIRMOD_LEARC1
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
+      USE EIRMOD_CGRID
+      USE EIRMOD_CGEOM
+      USE EIRMOD_CCONA
+      USE EIRMOD_CPOLYG
+      USE EIRMOD_CLOGAU
+      USE EIRMOD_CTRIG
+
+      IMPLICIT NONE
+      PRIVATE
+
+      PUBLIC :: EIRENE_LEARC1, EIRENE_LEARC1_RESET
+
+      INTEGER, SAVE :: IFIRST=0
+      REAL(DP), ALLOCATABLE, SAVE ::
+     R D12(:,:), D12I(:,:), D14(:,:), D14I(:,:), OBSC(:,:)
+
+CTK DATENSTRUKTUR FUER DREIECKS UND VIERECKSGITTER
+      TYPE :: CELL
+        INTEGER :: TRIANGLE
+        TYPE(CELL),POINTER :: NEXT
+      END TYPE CELL
+
+      TYPE :: CELL4
+        INTEGER :: IX
+        INTEGER :: IY
+        TYPE(CELL4),POINTER :: NEXT
+      END TYPE CELL4
+
+      TYPE :: POIFELD
+        TYPE (CELL),POINTER :: P
+      END TYPE POIFELD
+
+      TYPE :: POI4
+        TYPE (CELL4),POINTER :: P
+      END TYPE POI4
+
+      TYPE (POIFELD),ALLOCATABLE,SAVE :: HEADS(:,:)
+      TYPE (POI4),ALLOCATABLE,SAVE :: HEADS4(:,:)
+
+      CONTAINS
+
 !pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
 !pb  01.07.10:  for LEVGEO==4 a search for the nearest triangle side was added
 !    18.04.16:  default return value added in cleanup loop, J.Lore
@@ -35,16 +80,6 @@ C  LEVGEO=1 :....  nlcirc, nlell: ok. nltri: to be done.
 C  LEVGEO=5 :  separate routine: LEARCT
 C  LEVGEO=10:  separate routine: LEAUSR
 C
-      USE EIRMOD_PRECISION
-      USE EIRMOD_PARMMOD
-      USE EIRMOD_COMPRT, ONLY: IUNOUT
-      USE EIRMOD_CGRID
-      USE EIRMOD_CGEOM
-      USE EIRMOD_CCONA
-      USE EIRMOD_CPOLYG
-      USE EIRMOD_CLOGAU
-      USE EIRMOD_CTRIG
-
       IMPLICIT NONE
 
       REAL(DP), INTENT(IN) :: X, Y, Z
@@ -61,49 +96,23 @@ C
      .          XS2, YS1, YS2, O1, O2, DD
       REAL(DP), SAVE :: XMIN, YMIN, DISTX, DISTY, XMAX, YMAX,
      .                  EPDY, EPDXDY, EPDX
-      INTEGER, SAVE :: IFIRST
       INTEGER :: K, L, IM, LM, KH, EIRENE_LEARCT, EIRENE_LEAUSR,
      .           IMARK, LMARK,
      .           I, J, IE, EIRENE_LEARC1, IA, INTR1, INTR2,
      .           IX, IY, INUM, IHEADX1, IHEADX2, IHEADY1, IHEADY2,
-     .           EIRENE_LEARC1_RESET, I1, I2, I3
+     .           I1, I2, I3
 
-      REAL(DP), ALLOCATABLE, SAVE ::
-     R D12(:,:), D12I(:,:), D14(:,:), D14I(:,:), OBSC(:,:)
       LOGICAL :: LG(N1STS,N2NDPLGS), LG1(NRADS)
 
-CTK DATENSTRUKTUR FUER DREIECKS UND VIERECKSGITTER
-      TYPE :: CELL
-        INTEGER :: TRIANGLE
-        TYPE(CELL),POINTER :: NEXT
-      END TYPE CELL
-
-      TYPE :: CELL4
-        INTEGER :: IX
-        INTEGER :: IY
-        TYPE(CELL4),POINTER :: NEXT
-      END TYPE CELL4
-
-      TYPE :: POIFELD
-        TYPE (CELL),POINTER :: P
-      END TYPE POIFELD
-
-      TYPE :: POI4
-        TYPE (CELL4),POINTER :: P
-      END TYPE POI4
 
       TYPE (POIFELD) :: HELPCUR(4)
-      TYPE (POIFELD),ALLOCATABLE,SAVE :: HEADS(:,:)
       TYPE (CELL),POINTER :: CUR
 csw 04aug08
       type(cell),pointer :: curhelp
 csw 04aug08
       TYPE (POI4) :: HELPCUR4(4)
-      TYPE (POI4),ALLOCATABLE,SAVE :: HEADS4(:,:)
       TYPE (CELL4),POINTER :: CUR4,HELPP
 C
-
-      DATA IFIRST /0/
 
 C  tbd:  move into levgeo=4 branch, as already done in levgeo=3 branch
 csw 04aug08
@@ -881,11 +890,62 @@ C
 C
       ENDIF
 C
-C
       RETURN
 
+      contains
 
-      ENTRY EIRENE_LEARC1_RESET
+      function dist_point_line (px, py, gx, gy, vx, vy)
+
+!  compute distance between point P=(px,py) and straight line
+!  g = (gx,gy) + t_g*(vx,vy)
+
+      implicit none
+      real(dp), intent(in) :: px, py, gx, gy, vx, vy
+      real(dp) :: dist_point_line, wx, wy, det, deth, t_h
+
+!  find straight line h = P + t_h*(wx,wy) and h perpendicular to g
+      if (abs(vy) < eps10) then
+        wy = 1._dp
+        wx = 0._dp
+      else
+        wx = 1._dp
+        wy = -vx / vy
+      end if
+
+!  find intersection point of g and h from
+!  (px,py)+t_h*(wx,wy) = (gx,gy) + t_g*(vx,vy)
+      det = vx*wy - vy*wx
+
+      if (abs(det) < eps10) then
+! if line collapses to a point take distance P=(px,py) to (gx,gy)
+        dist_point_line = sqrt ((px-gy)**2 + (py-gy)**2)
+
+      else
+
+        deth = vx*(gy-py) - vy*(gx-px)
+        t_h = deth / det
+
+!  footpoint f=(fx,fy) is given by
+!      fx = px + t_h*wx
+!      fy = py + t_h*wy
+!      dist_point_line = sqrt((fx-px)**2+(fy-py)**2)
+        dist_point_line = sqrt( t_h**2*(wx**2+wy**2) )
+
+      end if
+
+      return
+      end function dist_point_line
+C
+      END
+
+
+      FUNCTION EIRENE_LEARC1_RESET()
+      IMPLICIT NONE
+      INTEGER :: EIRENE_LEARC1_RESET
+      INTEGER :: I, J
+      TYPE (CELL4),POINTER :: CUR4,HELPP
+      TYPE (CELL),POINTER :: CUR
+      type(cell),pointer :: curhelp
 
       EIRENE_LEARC1_RESET = 0
 
@@ -936,50 +996,6 @@ C
         return
       end select
 
-      return
-
-      contains
-
-      function dist_point_line (px, py, gx, gy, vx, vy)
-
-!  compute distance between point P=(px,py) and straight line
-!  g = (gx,gy) + t_g*(vx,vy)
-
-      implicit none
-      real(dp), intent(in) :: px, py, gx, gy, vx, vy
-      real(dp) :: dist_point_line, wx, wy, det, deth, t_h
-
-!  find straight line h = P + t_h*(wx,wy) and h perpendicular to g
-      if (abs(vy) < eps10) then
-        wy = 1._dp
-        wx = 0._dp
-      else
-        wx = 1._dp
-        wy = -vx / vy
-      end if
-
-!  find intersection point of g and h from
-!  (px,py)+t_h*(wx,wy) = (gx,gy) + t_g*(vx,vy)
-      det = vx*wy - vy*wx
-
-      if (abs(det) < eps10) then
-! if line collapses to a point take distance P=(px,py) to (gx,gy)
-        dist_point_line = sqrt ((px-gy)**2 + (py-gy)**2)
-
-      else
-
-        deth = vx*(gy-py) - vy*(gx-px)
-        t_h = deth / det
-
-!  footpoint f=(fx,fy) is given by
-!      fx = px + t_h*wx
-!      fy = py + t_h*wy
-!      dist_point_line = sqrt((fx-px)**2+(fy-py)**2)
-        dist_point_line = sqrt( t_h**2*(wx**2+wy**2) )
-
-      end if
-
-      return
-      end function dist_point_line
-
       END
+
+      END MODULE EIRMOD_LEARC1

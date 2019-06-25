@@ -74,6 +74,28 @@ C
       CHARACTER(9) :: REAC1, REAC2
       CHARACTER(3) :: CRC
       CHARACTER(6) :: CISTRA
+
+      INTERFACE
+         SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
+     .                          RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
+     .                          RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+     .                          ELNAME, IZ1,
+     .                          IROW_ESC, ICOL_ESC, POP_ESC)
+         USE EIRMOD_PRECISION
+         USE EIRMOD_PARMMOD
+         IMPLICIT NONE
+         INTEGER,      INTENT(IN) :: IR, IZ1
+         INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC
+         REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC
+         CHARACTER(8), INTENT(IN) :: FILNAM
+         CHARACTER(4), INTENT(IN) :: H123
+         CHARACTER(LEN=*), INTENT(IN) :: REAC, ELNAME
+         CHARACTER(3), INTENT(IN) :: CRC
+         INTEGER,  INTENT(IN OUT) :: JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
+         REAL(DP), INTENT(IN OUT) :: RC1MIN, RC1MAX, FP1(6),
+     .                            RC2MIN, RC2MAX, FP2(6)
+         END SUBROUTINE EIRENE_SLREAC
+      END INTERFACE
 C
       SAVE
 C
@@ -405,13 +427,8 @@ C
         DEALLOCATE (OUTAU)
         IF (TRCFLE)   WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
       ENDIF
-C
       RETURN
-
-      entry EIRENE_HE_EMIS_reinit
-      ifirst=0
-      return
-
+C
   999 CONTINUE
       WRITE (IUNOUT,*) 'ERROR IN SUBR. HE_EMIS '
       WRITE (IUNOUT,*) 'NO STORAGE AVAILABLE ON ADDITIONAL TALLY ADDV '
@@ -420,3 +437,10 @@ C
       WRITE (IUNOUT,*) 'CHECK INPUT BLOCK 10A '
       CALL EIRENE_EXIT_OWN(1)
       END SUBROUTINE EIRENE_HE_EMIS
+
+ctk      SUBROUTINE EIRENE_HE_EMIS_reinit
+ctk      IMPLICIT NONE
+ctk      ifirst=0
+ctk      return
+
+ctk      END SUBROUTINE EIRENE_HE_EMIS_reinit

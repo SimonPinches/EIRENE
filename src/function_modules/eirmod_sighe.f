@@ -1,3 +1,16 @@
+      MODULE EIRMOD_SIGHE
+      USE EIRMOD_PRECISION
+      
+      IMPLICIT NONE
+      PRIVATE
+
+      PUBLIC :: EIRENE_SIGHE, EIRENE_SIGHE_REINIT
+
+      REAL(DP), SAVE :: PENOLD=-1._DP
+      INTEGER, SAVE :: ISTOLD=-1, ITROLD=-1
+
+      CONTAINS
+     
 CDR  originally from W.Z, (HELIUM), DERIVED FROM FROM SIGHA (HYDROGEN).
 cdr  PEN wavelength, rather than transition energy ?
 c
@@ -34,6 +47,7 @@ C          THE He LINE FLUX PSIG(I),I=0,2 COMPONENTS
 C          FROM ATOMS (only Ground state, MS unresolved), and BULK IONS
 C          THE INTEGRAND ARGST IS SUCH THAT INTEGR.(ARGST*DL) = PSIG
 C
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CESTIM
@@ -47,13 +61,9 @@ C
       INTEGER, INTENT(IN) :: INIT, JJJ
       REAL(DP), INTENT(IN) :: ZDS, DUMMY2, PEN
       REAL(DP), INTENT(IN OUT) :: PSIG(0:), ARGST(0:,:)
-      REAL(DP) :: PENOLD
-      INTEGER :: ISTOLD, ISP, NCELC, ICELL, ITROLD
+      INTEGER :: ISP, NCELC, ICELL
       LOGICAL :: LARGST
       CHARACTER(9) :: REAC1, REAC2
-      DATA ISTOLD/-1/
-      DATA ITROLD/-1/
-      DATA PENOLD/-1._DP/
 C
       SAVE
 C
@@ -131,14 +141,14 @@ C
         ARGST(0,JJJ)=ADDV(NADVI+3,NCELC)
       END IF
 C
-      RETURN
+      END
 
 C     Following lines added for reinitialisation of eirene (DMH)
 
-      ENTRY EIRENE_SIGHE_REINIT
+      SUBROUTINE EIRENE_SIGHE_REINIT
       ISTOLD = -1
       ITROLD = -1
       PENOLD = -1._DP
-      RETURN
+      END
 
-      END SUBROUTINE EIRENE_SIGHE
+      END MODULE EIRMOD_SIGHE

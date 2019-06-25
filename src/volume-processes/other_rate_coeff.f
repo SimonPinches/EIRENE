@@ -55,6 +55,7 @@ cdr           ifit=4 option was missing (1D tables). added, but not checked.
       use EIRMOD_ccona
       use EIRMOD_ctrcei, only: trcamd
       use EIRMOD_comprt, only: iunout
+      use EIRMOD_COLRAD, ONLY: EIRENE_COLRAD
 
       implicit none
 

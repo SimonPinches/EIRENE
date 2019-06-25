@@ -34,6 +34,7 @@ c
       USE EIRMOD_COMUSR, ONLY: ISPEZI, NPRT, NSPH, NSPA, NSPAM
       USE EIRMOD_COMPRT, ONLY: IUNOUT, ISPZ, ISTRA, IPSTT, RPSTT, WEIGHT
       USE EIRMOD_CPES, ONLY: MY_PE, NPRS
+      USE EIRMOD_RANF, ONLY: RANF_EIRENE
       USE EIRMOD_MPI
 
       IMPLICIT NONE
@@ -44,7 +45,7 @@ c
      .            totflux, sumrpw, sclfac, add,
      .            totrpw,
      .            addph, adda, addm, addi
-      real(dp), external :: ranf_eirene
+ctk      real(dp), external :: ranf_eirene
       integer, allocatable :: iranpro(:), ibuf(:,:)
       integer :: ier, i, ncoreal, itotal, il, im, iu, ipe,
      .           ityp, iphot, iatm, imol, iion

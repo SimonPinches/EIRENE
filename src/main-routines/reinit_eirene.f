@@ -5,13 +5,26 @@
       use EIRMOD_COMUSR
       use EIRMOD_COUTAU
       use EIRMOD_CRECH
+      use EIRMOD_LININT, ONLY: EIRENE_LININT_REINIT
+      use EIRMOD_SIGLINE, ONLY: EIRENE_SIGLINE_REINIT
+      use EIRMOD_COLRAD, ONLY: EIRENE_COLRAD_REINIT
+      use EIRMOD_SAMVOL, ONLY: EIRENE_SAMVOL_REINIT
+      use EIRMOD_UPTBGK, ONLY: EIRENE_UPTBGK_REINIT
+      use EIRMOD_STATIS_BGK, ONLY: EIRENE_STATIS_BGK_REINIT
+      use EIRMOD_RANF, ONLY: RANF_EIRENE_REINIT
+      use EIRMOD_RANSET, ONLY: RANSET_EIRENE_REINIT
+      use EIRMOD_VELOPI, ONLY: EIRENE_VELOPI_REINIT
+      use EIRMOD_VELOEL, ONLY: EIRENE_VELOEL_REINIT
+      use EIRMOD_VELOCX, ONLY: EIRENE_VELOCX_REINIT
+      use EIRMOD_SWITCH_PARTINFO, ONLY: EIRENE_REINIT_PARTINFO
 
       implicit none
 
-      REAL(DP) :: dummy, ranf_eirene_reinit
+      REAL(DP) :: dummy
+ctk     , ranf_eirene_reinit
 C      REAL(DP) :: H1RN_REINIT
       integer :: idummy
-      INTEGER, EXTERNAL :: ranset_eirene_reinit
+ctk      INTEGER, EXTERNAL :: ranset_eirene_reinit
 
 C     reinitialization start
       call EIRENE_EIRENE_REINIT
@@ -26,6 +39,7 @@ C     reinitialization start
 
       call EIRENE_STCOOR_REINIT
       call EIRENE_SAMVOL_REINIT
+      call EIRENE_VELOPI_REINIT
       call EIRENE_VELOCX_REINIT
       call EIRENE_VELOEL_REINIT
 
