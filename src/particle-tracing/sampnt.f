@@ -32,6 +32,7 @@ c    ISTRA         (no. of stratum), via Common
       USE EIRMOD_COMPRT
       USE EIRMOD_COMSOU
       USE EIRMOD_CTRIG
+      USE EIRMOD_LEARC1, ONLY: EIRENE_LEARC1
 
       IMPLICIT NONE
 
@@ -39,7 +40,7 @@ c    ISTRA         (no. of stratum), via Common
      .                         VXWL(*), VYWL(*), VZWL(*), WEISPZ(*)
       INTEGER, INTENT(IN) :: NLPT
       REAL(DP) :: X01, CNORM, WINK
-      INTEGER :: NT, EIRENE_LEARCA, EIRENE_LEARC1, EIRENE_LEARC2,
+      INTEGER :: NT, EIRENE_LEARCA, EIRENE_LEARC2,
      .           EIRENE_LEARCT, EIRENE_LEAUSR, IPOINT, JSPZ,
      .           IAUSR, IBUSR, IRUSR, IPUSR, ITUSR, IPLSTI, IPLSV
 C

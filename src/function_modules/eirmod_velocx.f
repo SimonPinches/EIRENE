@@ -1,3 +1,13 @@
+      MODULE EIRMOD_VELOCX
+      IMPLICIT NONE
+      PRIVATE
+
+      PUBLIC :: EIRENE_VELOCX, EIRENE_VELOCX_REINIT
+
+      INTEGER, SAVE :: IFIRST = 0
+
+      CONTAINS
+
 !pb  100107: ENTRY VELOCX_REINIT added for reinitialization of EIRENE
 !pb  110311: avoid relative velocity VREL=0
 !pb  110311: ensure ELMIN <= ELAB <= ELMAX
@@ -73,6 +83,7 @@ C
       USE EIRMOD_COMPRT
       USE EIRMOD_COMXS
       USE EIRMOD_CLAST
+      USE EIRMOD_RANF, ONLY: RANF_EIRENE
 
       IMPLICIT NONE
 
@@ -87,10 +98,9 @@ C
      .          TEST, VREL, ELAB, CXS,
      .          VR, VRQ, EIRENE_CROSS, ELMAX, ELMIN
 C      REAL(DP) :: ELB
-      REAL(DP), EXTERNAL :: RANF_EIRENE
+ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
 
       INTEGER :: ICOUNT, J, JJ, IRL, IREAC
-      INTEGER :: IFIRST = 0
 
       SAVE
 C
@@ -309,9 +319,13 @@ C
       WRITE (iunout,*)
      .  'PARAMETER ERROR IN SUBR. VELOCX. EXIT CALLED'
       CALL EIRENE_EXIT_OWN(1)
+      END SUBROUTINE EIRENE_VELOCX
 
-C  the following ENTRY is for reinitialization of EIRENE
-      ENTRY EIRENE_VELOCX_REINIT
+C  the following SUBROUTINE is for reinitialization of EIRENE
+      SUBROUTINE EIRENE_VELOCX_REINIT
+      IMPLICIT NONE
       IFIRST = 0
       return
-      END
+      END SUBROUTINE EIRENE_VELOCX_REINIT
+
+      END MODULE EIRMOD_VELOCX

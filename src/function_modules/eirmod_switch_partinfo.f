@@ -1,3 +1,34 @@
+      module eirmod_switch_partinfo
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_COMUSR
+      USE EIRMOD_COMPRT
+      USE EIRMOD_CESTIM
+      USE EIRMOD_COMXS
+      USE EIRMOD_CZT1
+      USE EIRMOD_CSPEZ
+      USE EIRMOD_CTRCEI
+      USE EIRMOD_COMSOU
+      USE EIRMOD_SECOND_OWN, ONLY: eirene_second_own
+
+       
+      IMPLICIT NONE
+      real(dp), allocatable, save :: time_array(:,:,:)
+      integer, save :: istra_old=-1,
+     .                 ityp_old=-1,
+     .                 iphot_old=-1,
+     .                 iatm_old=-1,
+     .                 imol_old=-1,
+     .                 iion_old=-1,
+     .                 ipls_old=-1
+
+      PRIVATE
+
+      PUBLIC :: eirene_switch_partinfo, eirene_output_partinfo, 
+     .          eirene_reinit_partinfo
+
+      CONTAINS
+
 cdr  Jan 18:  bypass this actions for photons (ityp=0). Code not ready for photon transport.
 cpb:  added: cpu time statistics by particle type, species and stratum: time_array
 cdr: Apr.18: testing, cleaning of time_array options (minor bug fix)
@@ -15,30 +46,10 @@ c
 c  Input:  istra, ityp, iphot, iatm, imol, iion, ipls
 c  Output: ixspz,nmetoff,logphot,logatm,logmol,logion
 
-      USE EIRMOD_PRECISION
-      USE EIRMOD_PARMMOD
-      USE EIRMOD_COMUSR
-      USE EIRMOD_COMPRT
-      USE EIRMOD_CESTIM
-      USE EIRMOD_COMXS
-      USE EIRMOD_CZT1
-      USE EIRMOD_CSPEZ
-      USE EIRMOD_CTRCEI
-      USE EIRMOD_COMSOU
-
       implicit none
 
-      integer, save :: istra_old=-1,
-     .                 ityp_old=-1,
-     .                 iphot_old=-1,
-     .                 iatm_old=-1,
-     .                 imol_old=-1,
-     .                 iion_old=-1,
-     .                 ipls_old=-1
-      real(dp), allocatable, save :: time_array(:,:,:)
       real(dp) :: tim_spent
       real(dp), save :: tim_start=0._dp, tim_end=0._dp
-      real(dp) :: eirene_second_own
       integer :: istr, it, is
 
       if ((ityp_old == ityp) .and. (iatm_old == iatm) .and.
@@ -377,7 +388,11 @@ C  save stratum, old type, species
 
       return
 
-      entry eirene_output_partinfo
+      end subroutine eirene_switch_partinfo
+
+      subroutine eirene_output_partinfo
+      implicit none
+      integer :: istr, it, is
 
       call eirene_leer(2)
 
@@ -462,8 +477,10 @@ C  save stratum, old type, species
 
       end do
       return
+      end subroutine eirene_output_partinfo
 
-      entry eirene_reinit_partinfo
+      subroutine eirene_reinit_partinfo
+      implicit none
 
       if (allocated(time_array)) deallocate(time_array)
       istra_old=-1
@@ -475,4 +492,6 @@ C  save stratum, old type, species
       ipls_old=-1
 
       return
-      end subroutine eirene_switch_partinfo
+      end subroutine eirene_reinit_partinfo
+
+      end module eirmod_switch_partinfo

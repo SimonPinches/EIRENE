@@ -94,6 +94,11 @@ C
       USE EIRMOD_COMXS
       USE EIRMOD_CTRIG
       USE EIRMOD_CTRCEI
+      USE EIRMOD_TIMEA, ONLY: EIRENE_TIMEA1
+      USE EIRMOD_RANF, ONLY: RANF_EIRENE
+      USE EIRMOD_ADDCOL, ONLY: EIRENE_ADDCOL
+      USE EIRMOD_STDCOL, ONLY: EIRENE_STDCOL
+      USE EIRMOD_SWITCH_PARTINFO, ONLY: EIRENE_SWITCH_PARTINFO
 
       IMPLICIT NONE
 
@@ -110,13 +115,14 @@ C
      .          EX, EXPM, FF, WMINC_LOCAL, PR, PPR,   ! cond exp. est
      .          EIRENE_FPATH,
      .          SCOS_NEW
-      REAL(DP), EXTERNAL :: RANF_EIRENE, EIRENE_FUNEXP
+ctk      REAL(DP), EXTERNAL :: RANF_EIRENE, EIRENE_FUNEXP
+      REAL(DP), EXTERNAL :: EIRENE_FUNEXP
       INTEGER :: NBLCKC, NCELLC, NRCLLC, NACLLC, ITIMEC, IPERIDC,
      .           IFPTHC, IUPDTC, NPCLLC, NTCLLC, NTSAVE, NPSAVE,
      .           EIRENE_LEARC2, J, NCOUS, NLE, NRC, JCOL, NLI, ISTS,
      .           NPCOLC,
      .           JJ, NPCELC, NTCELC, NTCOLC, IFLAG, I, IM,
-     .           NCLLN
+     .           NCLLN, iret
       LOGICAL :: NLPR, LCNDEXP
       TYPE(CELL_INFO), POINTER :: NEW_CELL
 
@@ -146,6 +152,20 @@ C  CHECK FOR VALID SPECIES INDEX
         IF (IATM.LE.0.OR.IATM.GT.NATMI) GOTO 998
       ELSEIF (ITYP.EQ.2) THEN
         IF (IMOL.LE.0.OR.IMOL.GT.NMOLI) GOTO 998
+      ENDIF
+
+      IF (ITYP.EQ.1) THEN
+        LOGATM(IATM,ISTRA)=.TRUE.
+        NLPR=NLPRCA(IATM)
+        NRC=NRCA(IATM)
+      ELSEIF (ITYP.EQ.2) THEN
+        LOGMOL(IMOL,ISTRA)=.TRUE.
+        NLPR=NLPRCM(IMOL)
+        NRC=NRCM(IMOL)
+      ELSEIF (ITYP.EQ.0) then
+        LOGPHOT(IPHOT,ISTRA)=.TRUE.
+        NLPR=NLPRCPH(IPHOT)
+        NRC=NRCPH(IPHOT)
       ENDIF
 C
 C  THE CELL NUMBER NRCELL, IPOLG, IPERID, NPCELL, NTCELL, NACELL, NBLOCK
@@ -206,40 +226,60 @@ C  PREPARE CELL NUMBERS FOR FIRST FLIGHT
           TL=0.D0
           IPOLGN=IPOLG
           IF (NLSRFA) THEN
-            CALL EIRENE_ADDCOL (X0,Y0,Z0,SCOS,*101,*380)
+            CALL EIRENE_ADDCOL (X0,Y0,Z0,SCOS,iret)
+            if (IRET .EQ. 1) GOTO 101
+            if (IRET .eq. 2) GOTO 380
           ELSEIF (NLSRFX) THEN
             select case (LEVGEO)
             case (:3)
               ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
               MSURFG=NPCELL+(NTCELL-1)*NP2T3
-              IF (ILIIN(NLIM+ISTS) .NE. 0)
-     .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
+              IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
+                 CALL EIRENE_STDCOL (ISTS,1,SCOS,IRET)
+                 if (IRET .EQ. 1) GOTO 101
+                 if (IRET .eq. 2) GOTO 380
+              ENDIF
             case (4)
               ISTS=ABS(INMTI(IPOLGN,MRSURF))  !dr NLIM already added in ISTS ?
               MSURFG=INSPAT(IPOLGN,MRSURF)
-              IF (ILIIN(ISTS) .NE. 0)
-     .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
+              IF (ILIIN(ISTS) .NE. 0) THEN
+                 CALL EIRENE_STDCOL (ISTS,1,SCOS,IRET)
+                 if (IRET .EQ. 1) GOTO 101
+                 if (IRET .eq. 2) GOTO 380
+              ENDIF
             case (5)
               ISTS=ABS(INMTIT(IPOLGN,MRSURF)) !dr NLIM already added in ISTS ?
 C             MSURFG= ??
-              IF (ILIIN(ISTS) .NE. 0)
-     .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
+              IF (ILIIN(ISTS) .NE. 0) THEN
+                 CALL EIRENE_STDCOL (ISTS,1,SCOS,IRET)
+                 if (IRET .EQ. 1) GOTO 101
+                 if (IRET .eq. 2) GOTO 380
+              ENDIF
             case (10)
               ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
 C             MSURFG= ??
-              IF (ILIIN(NLIM+ISTS) .NE. 0)
-     .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
+              IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
+                 CALL EIRENE_STDCOL (ISTS,1,SCOS,IRET)
+                 if (IRET .EQ. 1) GOTO 101
+                 if (IRET .eq. 2) GOTO 380
+              ENDIF
             end select
           ELSEIF (NLSRFY) THEN
             ISTS=INMP2I(IRCELL,MPSURF,ITCELL)
             MSURFG=NRCELL+(NTCELL-1)*NR1P2
-            IF (ILIIN(NLIM+ISTS) .NE. 0)
-     .        CALL EIRENE_STDCOL (ISTS,2,SCOS,*101,*380)
+            IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
+               CALL EIRENE_STDCOL (ISTS,2,SCOS,IRET)
+               if (IRET .EQ. 1) GOTO 101
+               if (IRET .eq. 2) GOTO 380
+            ENDIF
           ELSEIF (NLSRFZ) THEN
             ISTS=INMP3I(IRCELL,IPCELL,MTSURF)
             MSURFG=NRCELL+(NPCELL-1)*NR1P2
-            IF (ILIIN(NLIM+ISTS) .NE. 0)
-     .        CALL EIRENE_STDCOL (ISTS,3,SG,*101,*380)
+            IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
+               CALL EIRENE_STDCOL (ISTS,3,SG,IRET)
+               if (IRET .EQ. 1) GOTO 101
+               if (IRET .eq. 2) GOTO 380
+            ENDIF
           ENDIF
 C         WRITE (IUNOUT,*) 'FOLNEUT: I SHOULD NOT BE HERE'
         ENDIF
@@ -603,9 +643,13 @@ cdr     IFLAG= ?
 C
 C  STOP TRACK ?
 C
-      IF (ISRFCL.EQ.1) CALL EIRENE_ADDCOL(XLI,YLI,ZLI,SG,*104,*380)
-      IF (ISRFCL.EQ.2) CALL EIRENE_TIMCOL(PR,            *104,*800)
-      IF (ISRFCL.EQ.3) CALL EIRENE_TORCOL(               *104)
+      IF (ISRFCL.EQ.1) THEN
+         CALL EIRENE_ADDCOL (XLI,YLI,ZLI,SG,IRET)
+         if (IRET .EQ. 1) GOTO 104
+         if (IRET .eq. 2) GOTO 380
+      ENDIF
+      IF (ISRFCL.EQ.2) CALL EIRENE_TIMCOL (PR,            *104,*800)
+      IF (ISRFCL.EQ.3) CALL EIRENE_TORCOL (               *104)
 C
 C  NO, CONTINUE TRACK
 C
@@ -619,8 +663,11 @@ C  ESCAPE AT 1ST GRID SURFACE (X OR RADIAL) MRSURF
           SG=ISIGN(1,NINCX)
           NLSRFX=.TRUE.
           MSURFG=NPCELL+(NTCELL-1)*NP2T3
-          IF (ILIIN(NLIM+ISTS) .NE. 0)
-     .      CALL EIRENE_STDCOL (ISTS,1,SG,*104,*380)
+          IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
+             CALL EIRENE_STDCOL (ISTS,1,SG,IRET)
+             if (IRET .EQ. 1) GOTO 104
+             if (IRET .eq. 2) GOTO 380
+          ENDIF
         ENDIF
 
 C  ESCAPE AT 2ND GRID SURFACE (Y OR POLOIDAL) NO. MPSURF
@@ -629,8 +676,11 @@ C  ESCAPE AT 2ND GRID SURFACE (Y OR POLOIDAL) NO. MPSURF
           SG=ISIGN(1,NINCY)
           NLSRFY=.TRUE.
           MSURFG=NRCELL+(NTCELL-1)*NR1P2
-          IF (ILIIN(NLIM+ISTS) .NE. 0)
-     .      CALL EIRENE_STDCOL (ISTS,2,SG,*104,*380)
+          IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
+             CALL EIRENE_STDCOL (ISTS,2,SG,IRET)
+             if (IRET .EQ. 1) GOTO 104
+             if (IRET .eq. 2) GOTO 380
+          ENDIF
         ENDIF
 
 C  ESCAPE AT 3RD GRID SURFACE (Z OR TOROIDAL) MTSURF
@@ -639,8 +689,11 @@ C  ESCAPE AT 3RD GRID SURFACE (Z OR TOROIDAL) MTSURF
           SG=ISIGN(1,NINCZ)
           NLSRFZ=.TRUE.
           MSURFG=NRCELL+(NPCELL-1)*NR1P2
-          IF (ILIIN(NLIM+ISTS) .NE. 0)
-     .      CALL EIRENE_STDCOL (ISTS,3,SG,*104,*380)
+          IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
+             CALL EIRENE_STDCOL (ISTS,3,SG,IRET)
+             if (IRET .EQ. 1) GOTO 104
+             if (IRET .eq. 2) GOTO 380
+          ENDIF
         ENDIF
 C
 C  ESCAPE AT GRID SURFACE BUILT FROM TRIANGLE SIDES IN X-Y PLANE: MRSURF
@@ -652,8 +705,11 @@ C  ESCAPE AT GRID SURFACE BUILT FROM TRIANGLE SIDES IN X-Y PLANE: MRSURF
      .                  VELY*PTRIY(IPOLGN,MRSURF))
           NLSRFX=.TRUE.
           MSURFG=INSPAT(IPOLGN,MRSURF)
-          IF (ILIIN(ISTS) .NE. 0)
-     .      CALL EIRENE_STDCOL (ISTS,1,SG,*104,*381)
+          IF (ILIIN(ISTS) .NE. 0) THEN
+             CALL EIRENE_STDCOL (ISTS,1,SG,IRET)
+             if (IRET .EQ. 1) GOTO 104
+             if (IRET .eq. 2) GOTO 381
+          ENDIF
   381     CONTINUE
           SG=INMTINSS(IPOLGN,MRSURF)                            !VK
           GOTO 380                                              !VK
@@ -666,8 +722,11 @@ C  ESCAPE AT 3RD (Z OR TOROIDAL) GRID SURFACE FOR TRIANGULAR X-Y GRID OPTION: MT
             SG=ISIGN(1,NINCZ)
             NLSRFZ=.TRUE.
             MSURFG=NRCELL+(NPCELL-1)*NR1P2
-            IF (ILIIN(NLIM+ISTS) .NE. 0) 
-     .        CALL EIRENE_STDCOL(ISTS,3,SG,*104,*380)
+            IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
+               CALL EIRENE_STDCOL(ISTS,3,SG,IRET)
+             if (IRET .EQ. 1) GOTO 104
+             if (IRET .eq. 2) GOTO 380
+            ENDIF
           ENDIF
         END IF
 C
@@ -680,9 +739,12 @@ C  ESCAPE AT GRID SURFACE BUILD FROM TETRAHEDRA SIDES: MRSURF
      .                  VELZ*PTETZ(IPOLGN,MRSURF))
           NLSRFX=.TRUE.
 C         MSURFG= ??
-          IF (ILIIN(ISTS) .NE. 0)
-     .      CALL EIRENE_STDCOL (ISTS,1,SG,*104,*380)
-        ENDIF
+          IF (ILIIN(ISTS) .NE. 0) THEN
+             CALL EIRENE_STDCOL (ISTS,1,SG,IRET)
+             if (IRET .EQ. 1) GOTO 104
+             if (IRET .eq. 2) GOTO 380
+          ENDIF
+       ENDIF
 
 C  ESCAPE TO GRID SURFACE ON USER-DEFINED GEOMETRY BLOCK: MRSURF
       case (10)
@@ -690,8 +752,11 @@ C  ESCAPE TO GRID SURFACE ON USER-DEFINED GEOMETRY BLOCK: MRSURF
         IF (NLRAD.AND.ISTS.NE.0) THEN
           SG=ISIGN(1,NINCX)
           NLSRFX=.TRUE.
-          IF (ILIIN(NLIM+ISTS) .NE. 0)
-     .      CALL EIRENE_STDCOL (ISTS,1,SG,*104,*380)
+          IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
+             CALL EIRENE_STDCOL (ISTS,1,SG,IRET)
+             if (IRET .EQ. 1) GOTO 104
+             if (IRET .eq. 2) GOTO 380
+          ENDIF
         ENDIF
       end select
 C

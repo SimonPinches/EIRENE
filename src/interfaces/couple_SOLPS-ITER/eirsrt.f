@@ -83,6 +83,7 @@ csw 12apr2011
 csw
       use eirmod_extrab25
       use eirmod_mpi
+      USE EIRMOD_SECOND_OWN
 
       IMPLICIT NONE
 c
@@ -99,8 +100,7 @@ C
 
       REAL(DP) :: FLUXS(NSTRA)
       REAL(DP) :: EIRENE_FTABEI1, EIRENE_FEELEI1, ESIG,
-     .            EIRENE_RESET_SECOND, DUMMY,
-     .            EIRENE_SECOND_OWN, DTIMVO
+     .            DUMMY, DTIMVO
       INTEGER :: IN, IAEI, IMEI, IIEI, IREI, IFIRST, K, JC, NDXY,
      .           J, IRC, NREC10, NREC11, ITNR, IPLSTI, IST_RATE, IST,
      .           JATM, JMOL, JION, JPLS,

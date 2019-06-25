@@ -1,28 +1,4 @@
-Cdr:  at some point (after 2010) this routine was extended by an "octree option" to
-c     to speed up calculation for intersections of rays with add. surfaces
-c     implemented as triangles in 3d space (rlb >=3 options>).
-
-cdr Jan 2017:  the octree option NLOCTREE is part of a proprietary development branch
-c              at FZJ, and should not be used by a 3rd party. It is likely not finished.
-cdr see: TODO comment below. Further: is the sequence of additional surfaces changed
-c        by doing the RLB< 3 surfaces first and the RLB >=3 surfaces next?
-c        This may invalidate some of the surface options which depend on the
-c        order of additional surfaces, see manual, input block 3b
-cdr  Feb 2017:  some documentation, and clearer separation of NLOCTREE options
-cdr             from the default (.NOT.NLOCTREE) procedure.  More to do.....
-C
-      SUBROUTINE EIRENE_TIMEA
-C
-C   1 ST INTERSECTION OF THE RAY X+T*VX,Y+T*VY,Z+T*VZ WITH ONE OF THE NLIM
-C   ADDITIONAL SURFACES, DEFINED BY 1.ST OR 2.ND ORDER EQUATIONS IN INPUT BLOCK 3B.
-C   IT IS ALSO CHECKED, WHETHER THIS INTERSECTION TAKES PLACE INSIDE THE
-C   SPECIFIED BOUNDARIES OF THOSE SURFACES
-C
-C  ENTRY TIMEA0: INITIALIZATION, PRE-COMPUTING SOME EXPRESSIONS, CONSISTENCY CHECKS, ETC..
-C                IN CASE: NLOCTREE: SET UP OCTREE, FOR SPEED UP OF GEOMETRICAL CALCULATIONS
-C  ENTRY TIMEA1: FIND CLOSEST LEGAL INTERSECTION POINT. MORE COMMENTS: SEE AT ENTRY TIMEA1.
-C
-C
+      MODULE EIRMOD_TIMEA
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -42,65 +18,65 @@ C
 c     in case: NLOCTREE...
 c     using special octree stuff, to speed up additional surface handling
       USE EIRMOD_OCTREE
+      IMPLICIT NONE
+      PRIVATE
+
+      PUBLIC :: EIRENE_TIMEA0, EIRENE_TIMEA3_VTKOUT,
+     .          EIRENE_TIMEA1, EIRENE_TIMEA0_OC
+
+c     the octree
+      TYPE(octree), POINTER, SAVE :: TREE
+c     active surface ids of surfs not in octree saved in lookup table
+      INTEGER, DIMENSION(:), ALLOCATABLE, SAVE :: NOTOCSURFS
+c     how many surfaces are not in the octree (NSURFNOT)
+      INTEGER, SAVE :: NSURFNOT = 0
+
+      CONTAINS
+
+Cdr:  at some point (after 2010) this routine was extended by an "octree option" to
+c     to speed up calculation for intersections of rays with add. surfaces
+c     implemented as triangles in 3d space (rlb >=3 options>).
+
+cdr Jan 2017:  the octree option NLOCTREE is part of a proprietary development branch
+c              at FZJ, and should not be used by a 3rd party. It is likely not finished.
+cdr see: TODO comment below. Further: is the sequence of additional surfaces changed
+c        by doing the RLB< 3 surfaces first and the RLB >=3 surfaces next?
+c        This may invalidate some of the surface options which depend on the
+c        order of additional surfaces, see manual, input block 3b
+cdr  Feb 2017:  some documentation, and clearer separation of NLOCTREE options
+cdr             from the default (.NOT.NLOCTREE) procedure.  More to do.....
+C
+      SUBROUTINE EIRENE_TIMEA0
+C
+C   1 ST INTERSECTION OF THE RAY X+T*VX,Y+T*VY,Z+T*VZ WITH ONE OF THE NLIM
+C   ADDITIONAL SURFACES, DEFINED BY 1.ST OR 2.ND ORDER EQUATIONS IN INPUT BLOCK 3B.
+C   IT IS ALSO CHECKED, WHETHER THIS INTERSECTION TAKES PLACE INSIDE THE
+C   SPECIFIED BOUNDARIES OF THOSE SURFACES
+C
+C  ENTRY TIMEA0: INITIALIZATION, PRE-COMPUTING SOME EXPRESSIONS, CONSISTENCY CHECKS, ETC..
+C                IN CASE: NLOCTREE: SET UP OCTREE, FOR SPEED UP OF GEOMETRICAL CALCULATIONS
+C  ENTRY TIMEA1: FIND CLOSEST LEGAL INTERSECTION POINT. MORE COMMENTS: SEE AT ENTRY TIMEA1.
+C
+C
 
       IMPLICIT NONE
 
-      INTERFACE
-        FUNCTION EIRENE_TIMEA_BuildOctree() RESULT(tree)
-          USE EIRMOD_OCTREE
-          TYPE(octree), POINTER :: tree
-        END FUNCTION
-
-        SUBROUTINE EIRENE_TIMEA_CheckInter(
-     .             MSURF,NCELL,NLI,NLE,NNTCL,XX,YY,ZZ,TMT,
-     .             VXX,VYY,VZZ,VV,
-     .             MASURF,XR,YR,ZR,SG,TL,NLTRC,LCNDEXP,
-     .             ACTSURFS, NACTSURFS)
-          USE EIRMOD_PRECISION
-          INTEGER, INTENT(in) :: MSURF,NCELL,NLI,NLE,NNTCL,NACTSURFS
-          INTEGER, DIMENSION(:), INTENT(in) :: ACTSURFS
-          INTEGER, INTENT(out) :: MASURF
-          LOGICAL, INTENT(out) :: LCNDEXP
-          LOGICAL, INTENT(in) :: NLTRC
-          REAL(DP), INTENT(in) :: XX, YY, ZZ, VXX, VYY, VZZ, VV, TMT
-          REAL(DP), INTENT(out) :: XR, YR, ZR, SG, TL
-        END SUBROUTINE
-      END INTERFACE
 C
       REAL(DP) :: XB(3), XC(3), XD(3), XE(3), XF(3), XG(3)
-      REAL(DP) :: TMIN,
-     .          XX, YY, ZZ, XR, YR, ZR,
-     .          DZ3, TL, XS, DZ, TEST4, TEST5, DY, DL, DX1, DX, SG,
-     .          VV, VXX, VYY, VZZ, TMT, B, XK5, V445, XN5, V335, XK4,
+      REAL(DP) :: DZ3, XS, DZ, TEST4, TEST5, DY, DL, DX1, DX,
+     .          B, XK5, V445, XN5, V335, XK4,
      .          V334, V3V45, XN4, AT, XNORM, V224, CG1, CG2,
      .          CG3, AR1, C, D, E, F, G, XK3, HELP, V2V34, XN3,
-     .          AR2, V113, V1V23, V223, AR3, DY2, X_S, Y_S, Z_S,
-     .          SG_S
+     .          AR2, V113, V1V23, V223, AR3, DY2
 C      REAL(DP) :: XLS1, XLS2, XLS3, XMS1, XMS2, XMS3
 
       INTEGER :: IPLGN, ITRII,
-     .           ISTS, I1000, J, I, IPERID, NTCELL, NCELL, MSURF,
-     .           NLI, NLE, MASURF, ISPZ, NNTCL, IAB, JUM, MASURF_S,
-     .           TRCNUM
+     .           ISTS, I1000, J, I,
+     .           ISPZ, IAB, JUM
       INTEGER, EXTERNAL :: EIRENE_IDEZ
-      LOGICAL, INTENT(OUT) :: LCNDEXP
-      LOGICAL :: NLTRC, LCNDEXP_S
-
-c     the octree
-      TYPE(octree), POINTER :: TREE
-c     active surface ids of surfs not in octree saved in lookup table
-      INTEGER, DIMENSION(:), ALLOCATABLE :: NOTOCSURFS
-c     how many surfaces are not in the octree (NSURFNOT)
-      INTEGER :: NSURFNOT = 0
-c     some vars for checking on intersection/where we are
-      TYPE(ocnode), POINTER :: block
-      LOGICAL :: status
-      REAL(DP), DIMENSION(3) :: ip, start, direction
-      REAL(DP) :: runlength, norm
 
       SAVE
 C
-      ENTRY EIRENE_TIMEA0
 C
 C  INITIALIZATION: SET SOME SWITCHES, PRECOMPUTE ALGEBRAIC EXPRESSIONS
 C                  TO SPEED UP LATER COMPUTATION OF INTERSECTION POINTS
@@ -582,10 +558,11 @@ c               i.e. OCTREE optimization in in-active
       ENDIF
 
 
-      RETURN
+      END SUBROUTINE EIRENE_TIMEA0
 
 c  write the octree to vtk tool output
-      ENTRY EIRENE_TIMEA3_VTKOUT
+      SUBROUTINE EIRENE_TIMEA3_VTKOUT
+      IMPLICIT NONE
         if (associated(tree) .and. NLOCTREE) then
 c  call octree function to plot the tree recursive
           call OCTREE_PrintVTK(tree, IVTKOUT)
@@ -594,12 +571,47 @@ c  call octree function to plot the tree recursive
           call OCTREE_PrintGraphviz(tree, 200)
           close(200)
         end if
-      RETURN
+      END SUBROUTINE EIRENE_TIMEA3_VTKOUT
 
 C
-      ENTRY EIRENE_TIMEA1
+      SUBROUTINE EIRENE_TIMEA1
      . (MSURF,NCELL,NLI,NLE,NTCELL,IPERID,XX,YY,ZZ,TMT,
      .  VXX,VYY,VZZ,VV,MASURF,XR,YR,ZR,SG,TL,NLTRC,LCNDEXP)
+      IMPLICIT NONE
+
+      REAL(DP) :: TMIN, TL
+      REAL(DP) :: XX, YY, ZZ, TMT, VXX, VYY, VZZ, VV, X_S, Y_S, Z_S,
+     .          SG_S, XR, YR, ZR, SG
+     .          
+      INTEGER MSURF, NNTCL, NTCELL, IPERID, MASURF, NCELL, 
+     .        NLI, NLE, MASURF_S
+      LOGICAL, INTENT(OUT) :: LCNDEXP
+      LOGICAL :: NLTRC, LCNDEXP_S
+c     some vars for checking on intersection/where we are
+      TYPE(ocnode), POINTER :: block
+      REAL(DP), DIMENSION(3) :: ip, start, direction
+      REAL(DP) :: runlength, norm
+      LOGICAL :: status
+
+
+      SAVE 
+
+      INTERFACE
+        SUBROUTINE EIRENE_TIMEA_CheckInter(
+     .             MSURF,NCELL,NLI,NLE,NNTCL,XX,YY,ZZ,TMT,
+     .             VXX,VYY,VZZ,VV,
+     .             MASURF,XR,YR,ZR,SG,TL,NLTRC,LCNDEXP,
+     .             ACTSURFS, NACTSURFS)
+          USE EIRMOD_PRECISION
+          INTEGER, INTENT(in) :: MSURF,NCELL,NLI,NLE,NNTCL,NACTSURFS
+          INTEGER, DIMENSION(:), INTENT(in) :: ACTSURFS
+          INTEGER, INTENT(out) :: MASURF
+          LOGICAL, INTENT(out) :: LCNDEXP
+          LOGICAL, INTENT(in) :: NLTRC
+          REAL(DP), INTENT(in) :: XX, YY, ZZ, VXX, VYY, VZZ, VV, TMT
+          REAL(DP), INTENT(out) :: XR, YR, ZR, SG, TL
+        END SUBROUTINE
+      END INTERFACE
 
 !pb 08.01.14
       LCNDEXP = .FALSE.
@@ -769,20 +781,32 @@ c       check if we are inside of the octree space anymore...
 !trc        WRITE(TRCNUM,*) MASURF, XX, YY, ZZ, XR, YR, ZR, VXX, VYY, VZZ
 !trc      end if
 
-      RETURN
+      END SUBROUTINE EIRENE_TIMEA1
 
-c     entry to call the octree building internal subroutine
-      ENTRY EIRENE_TIMEA0_OC
+c     subroutine to call the octree building internal subroutine
+      SUBROUTINE EIRENE_TIMEA0_OC
+      IMPLICIT NONE
         CALL EIRENE_TIMEA0_BUILDOC()
       RETURN
+      END SUBROUTINE EIRENE_TIMEA0_OC
 
 c................................................................
 
 c     defining the internal subroutine for the octree build
-      CONTAINS
 
       SUBROUTINE EIRENE_TIMEA0_BUILDOC()
-      INTEGER J
+      IMPLICIT NONE
+      INTEGER J, TRCNUM
+
+      SAVE
+
+      INTERFACE
+        FUNCTION EIRENE_TIMEA_BuildOctree() RESULT(tree)
+          USE EIRMOD_OCTREE
+          TYPE(octree), POINTER :: tree
+        END FUNCTION
+      END INTERFACE
+
 cdr  this routine is only called if NLOCTREE
 c
 c    It returns NOTOCSURFS(1:NSURFNOT), a list of additional surfaces not
@@ -829,4 +853,5 @@ c  that are no tri/quad/quintangles
 
       END SUBROUTINE EIRENE_TIMEA0_BUILDOC
 
-      END
+
+      END MODULE EIRMOD_TIMEA

@@ -1,3 +1,13 @@
+      MODULE EIRMOD_UPTBGK
+      IMPLICIT NONE
+      PRIVATE
+
+      PUBLIC :: EIRENE_UPTBGK, EIRENE_uptbgk_reinit
+
+      INTEGER, SAVE :: IFIRST=0
+
+      CONTAINS
+
 cdr Aug. 2015: revisited:  comments,...
 c
 c  code segment: bgk
@@ -58,10 +68,9 @@ C
       REAL(DP), INTENT(IN) :: WV
       INTEGER, INTENT(IN) :: NPBGK, IFLAG
       REAL(DP) :: DIST, WTRV, WTRVX, WTRVY, WTRVZ
-      INTEGER :: I, NMTSP, IUPD2, IUPD3, IRD, IFIRST, NSBGK, IBGK_SP,
+      INTEGER :: I, NMTSP, IUPD2, IUPD3, IRD, NSBGK, IBGK_SP,
      .           IML, IIO, IUPD1, ITP, ISP, IAT, IRDO
       CHARACTER(8) :: TXT
-      DATA IFIRST/0/
       SAVE
 C
       IF (IFIRST.EQ.0) THEN
@@ -165,11 +174,14 @@ C  THE BGK TALLIES NO. IUPD1,IUPD2,IUPD3 NEED TO BE SCORED.
         BGKV(IUPD3,IRD)=BGKV(IUPD3,IRD)+WTRVZ
    51 CONTINUE
 
-      RETURN
+      END SUBROUTINE EIRENE_UPTBGK
 
 csw 19apr07
-      entry EIRENE_uptbgk_reinit
+      SUBROUTINE EIRENE_uptbgk_reinit
+      IMPLICIT NONE
       ifirst=0
       return
 csw
-      END
+      END SUBROUTINE EIRENE_uptbgk_reinit
+
+      END MODULE EIRMOD_UPTBGK

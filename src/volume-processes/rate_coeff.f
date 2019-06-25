@@ -45,6 +45,7 @@ cdr            rename q1,q2 to pp1,pp2: modified input parameters p1, p2.
       use EIRMOD_comxs
       use EIRMOD_ctrcei, only: trcamd
       use EIRMOD_comprt, only: iunout
+      use EIRMOD_COLRAD, ONLY: EIRENE_COLRAD
 
       implicit none
 

@@ -406,12 +406,39 @@ C
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO COLLISION ESTIMATOR'
         IESTEL(IREL,3)=1
       ENDIF
-      RETURN
+      return
+C
+  993 CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSTEL, SPECIES ISP: '
+      WRITE (iunout,*) ISP,IREL
+      CALL EIRENE_EXIT_OWN(1)
+  995 CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSTEL: EXIT CALLED '
+      WRITE (iunout,*)
+     .  'STORAGE SAVING MODE NOT READY; KK, IREL'
+      WRITE (iunout,*) 'KK, IREL ',KK,IREL
+      CALL EIRENE_EXIT_OWN(1)
+      END
 C
 C-----------------------------------------------------------------------
 C
 
-      ENTRY EIRENE_XSTEL_2(IREL,IPL)
+      SUBROUTINE EIRENE_XSTEL_2(IREL,IPL)
+CTK      USE EIRMOD_PRECISION
+CTK      USE EIRMOD_PARMMOD
+      USE EIRMOD_COMUSR
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
+CTK      USE EIRMOD_CCONA
+CTK      USE EIRMOD_CGRID
+CTK      USE EIRMOD_CZT1
+      USE EIRMOD_COMXS
+CTK      use EIRMOD_ctrcei, only: trcamd
+
+      IMPLICIT NONE
+      INTEGER, INTENT(IN) :: IREL, IPL
+      INTEGER :: IBGK, ISPZB, ITYPB
+      INTEGER, EXTERNAL :: EIRENE_IDEZ
+
 C
       CALL EIRENE_LEER(2)
       WRITE (iunout,*) 'ELASTIC COLLISION NO. IREL= ',IREL
@@ -457,18 +484,4 @@ C
       WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',
      .                  FACREL(IREL,1)
       CALL EIRENE_LEER(1)
-
-
-      RETURN
-C
-  993 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTEL, SPECIES ISP: '
-      WRITE (iunout,*) ISP,IREL
-      CALL EIRENE_EXIT_OWN(1)
-  995 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTEL: EXIT CALLED '
-      WRITE (iunout,*)
-     .  'STORAGE SAVING MODE NOT READY; KK, IREL'
-      WRITE (iunout,*) 'KK, IREL ',KK,IREL
-      CALL EIRENE_EXIT_OWN(1)
       END

@@ -6,7 +6,7 @@ C> 2. find RATIO(istra) : ratio between used and recommended no. of particles.
 C>     (the procedure should approach RATIO approx 1.0, after cycling.
 C> 3. write NRECOM, RATIO and XMCT on stream 14.
 C>
-C> At entry rrec:
+C> At subroutine rrec:
 C> - read NRECOM, RATIO, XMCT from stream 14.
       SUBROUTINE EIRENE_WRREC
 C
@@ -127,9 +127,13 @@ C  SECONDLY: WEIGHT WINDOWS
 C
 C  TO BE WRITTEN
 C
-      RETURN
+      END
 C
-      ENTRY EIRENE_RREC
+      SUBROUTINE EIRENE_RREC
+      USE EIRMOD_PARMMOD, ONLY: IFOFF
+      USE EIRMOD_CAI, ONLY: NRECOM, RATIO, XMCT
+      USE EIRMOD_CTRCEI, ONLY: TRCFLE
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
 C
       OPEN (UNIT=14+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 14+ifoff
