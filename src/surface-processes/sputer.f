@@ -163,6 +163,7 @@ C
      .                         IGJUM0, ISPUT, ILIIN, NSTSI
       USE EIRMOD_CINIT, only: NDBNAMES, DBHANDLE, DBFNAME
       USE EIRMOD_CPES, only: MY_PE, NPRS
+      USE EIRMOD_RANF, ONLY: RANF_EIRENE
 
       IMPLICIT NONE
 
@@ -196,7 +197,7 @@ C  target index 0   : data evaluated "on the fly"
      .          PRFCC, FLX, G2, G3, YTHERM, ERELKT, C, EREL,
      .          ENWALL, TWALL, PRFCS, ETHE0, E0ETF, SE, COSIN, QQS,
      .          VXR, VYR, VZR, VWL, WGHTVS   ! FOR SAMPLING WITH VELOCS
-      REAL(DP), EXTERNAL :: RANF_EIRENE
+ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER, ALLOCATABLE, SAVE :: IPROJ(:),IPROJS(:),ITARG(:),
      .                              ISPZSP_DEF(:)
       INTEGER :: MS, ITYPP, IATMP, IATMC, MSS, IMOLC, ITYPC,

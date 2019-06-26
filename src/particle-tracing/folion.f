@@ -141,6 +141,12 @@ C
       USE EIRMOD_COMXS
       USE EIRMOD_CTRIG
       USE EIRMOD_CTRCEI
+      USE EIRMOD_LEARC1, ONLY: EIRENE_LEARC1
+      USE EIRMOD_TIMEA, ONLY: EIRENE_TIMEA1
+      USE EIRMOD_RANF, ONLY: RANF_EIRENE
+      USE EIRMOD_ADDCOL, ONLY: EIRENE_ADDCOL
+      USE EIRMOD_STDCOL, ONLY: EIRENE_STDCOL
+      USE EIRMOD_SWITCH_PARTINFO, ONLY: EIRENE_SWITCH_PARTINFO
 
       IMPLICIT NONE
 
@@ -161,13 +167,13 @@ c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
      .          DELFAC, TIFAC,
      .          SCOS_NEW, XOLD, YOLD
 C      REAL(DP) :: TI
-      REAL(DP), EXTERNAL :: RANF_EIRENE
+ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: ISTS, NCOUS, ICOU, J, JJ, IPL,
      .           NRCELL_OLD, NTCELL_OLD,
      .           ICO, NLI, NLE, NPCELL_OLD, JCOL, NRC, 
      .           NRCOLD, IPLTI, I, IM, IFLAG, ICOUN,NTEST,
-     .           EIRENE_LEARC1, EIRENE_LEARC2, 
-     .           IDUM, IFPB, indf, NJUMP_EMC3 = 0
+     .           EIRENE_LEARC2, 
+     .           IDUM, IFPB, indf, NJUMP_EMC3 = 0, IRET
       LOGICAL :: LCNDEXP
 
 
@@ -254,6 +260,11 @@ C
  1004 CONTINUE
 
 C  FOLLOW MOTION OF TEST ION OR "STATIC APPROXIMATION"?
+C     IF (ITYP.EQ.3) THEN
+        LOGION(IION,ISTRA)=.TRUE.
+C       NLPR=   : NOT AVAILABLE
+        NRC=NRCI(IION)
+C     ENDIF
       IF (IFPATH.NE.1.OR.NRC.LT.0) GOTO 1002
 C  STOP STATIC LOOP AFTER 100 GENERATIONS LATEST TO AVOID ACCIDENTAL INFINITE LOOPS
       IF (IC_ION.GT.100) GOTO 1002
@@ -341,40 +352,60 @@ C PUSH PARTICLE TO SURFACE, USE REDUCED (GC) VELOCITY
             LCART=.FALSE.
           ENDIF
           IF (NLSRFA) THEN
-            CALL EIRENE_ADDCOL (X0,Y0,Z0,SCOS,*101,*380)
+            CALL EIRENE_ADDCOL (X0,Y0,Z0,SCOS,IRET)
+            IF (IRET .EQ. 1) GOTO 101
+            IF (IRET .EQ. 2) GOTO 380
           ELSEIF (NLSRFX) THEN
             select case (LEVGEO)
             case (:3)
               ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
               MSURFG=NPCELL+(NTCELL-1)*NP2T3
-              IF (ILIIN(NLIM+ISTS) .NE. 0)
-     .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
+              IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
+                 CALL EIRENE_STDCOL (ISTS,1,SCOS,IRET)
+                 IF (IRET .EQ. 1) GOTO 101
+                 IF (IRET .EQ. 2) GOTO 380
+              ENDIF
             case (4)
               ISTS=ABS(INMTI(IPOLGN,MRSURF))  !dr NLIM already added in ISTS ?
               MSURFG=INSPAT(IPOLGN,MRSURF)
-              IF (ILIIN(ISTS) .NE. 0)
-     .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
-            case (5)
+              IF (ILIIN(ISTS) .NE. 0) THEN
+                 CALL EIRENE_STDCOL (ISTS,1,SCOS,IRET)
+                 IF (IRET .EQ. 1) GOTO 101
+                 IF (IRET .EQ. 2) GOTO 380
+              ENDIF
+             case (5)
               ISTS=ABS(INMTIT(IPOLGN,MRSURF)) !dr NLIM already added in ISTS ?
 C             MSURFG= ??
-              IF (ILIIN(ISTS) .NE. 0)
-     .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
+              IF (ILIIN(ISTS) .NE. 0) THEN
+                 CALL EIRENE_STDCOL (ISTS,1,SCOS,IRET)
+                 IF (IRET .EQ. 1) GOTO 101
+                 IF (IRET .EQ. 2) GOTO 380
+              ENDIF
             case (10)
               ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
 C             MSURFG= ??
-              IF (ILIIN(NLIM+ISTS) .NE. 0)
-     .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
+              IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
+                 CALL EIRENE_STDCOL (ISTS,1,SCOS,IRET)
+                 IF (IRET .EQ. 1) GOTO 101
+                 IF (IRET .EQ. 2) GOTO 380
+              ENDIF
             end select
           ELSEIF (NLSRFY) THEN
             ISTS=INMP2I(IRCELL,MPSURF,ITCELL)
             MSURFG=NRCELL+(NTCELL-1)*NR1P2
-            IF (ILIIN(NLIM+ISTS) .NE. 0)
-     .        CALL EIRENE_STDCOL (ISTS,2,SCOS,*101,*380)
+            IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
+               CALL EIRENE_STDCOL (ISTS,2,SCOS,IRET)
+               IF (IRET .EQ. 1) GOTO 101
+               IF (IRET .EQ. 2) GOTO 380
+            ENDIF
           ELSEIF (NLSRFZ) THEN
             ISTS=INMP3I(IRCELL,IPCELL,MTSURF)
             MSURFG=NRCELL+(NPCELL-1)*NR1P2
-            IF (ILIIN(NLIM+ISTS) .NE. 0)
-     .        CALL EIRENE_STDCOL (ISTS,3,SG,*101,*380)
+            IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
+               CALL EIRENE_STDCOL (ISTS,3,SG,IRET)
+               IF (IRET .EQ. 1) GOTO 101
+               IF (IRET .EQ. 2) GOTO 380
+            ENDIF
           ENDIF
 C         WRITE (IUNOUT,*) 'FOLION: I SHOULD NOT BE HERE'
         ENDIF
@@ -785,7 +816,9 @@ c  switch to parallel gc velocity
       ENDIF
       IF (ISRFCL.EQ.1) THEN
 c  will fpkcol change the collision with additional surface?
- 2214   CALL EIRENE_ADDCOL(XLI,YLI,ZLI,SG,*104,*380)
+ 2214   CALL EIRENE_ADDCOL(XLI,YLI,ZLI,SG,IRET)
+        IF (IRET .EQ. 1) GOTO 104
+        IF (IRET .EQ. 2) GOTO 380
       ELSEIF (ISRFCL.EQ.2) THEN
         CALL EIRENE_FPKCOL(               *104,*2215,*9991,3)
  2215   CALL EIRENE_TIMCOL(AX(2),         *104,*800)
@@ -830,8 +863,11 @@ C  ESCAPE AT 1ST GRID SURFACE (X OR RADIAL) MRSURF
           SG=ISIGN(1,NINCX)
           NLSRFX=.TRUE.
           MSURFG=NPCELL+(NTCELL-1)*NP2T3
-          IF (ILIIN(NLIM+ISTS) .NE. 0)
-     .      CALL EIRENE_STDCOL (ISTS,1,SG,*104,*380)
+          IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
+             CALL EIRENE_STDCOL(ISTS,1,SG,IRET)
+             IF (IRET .EQ. 1) GOTO 104
+             IF (IRET .EQ. 2) GOTO 380
+          ENDIF
         ENDIF
 
 C  ESCAPE AT 2ND GRID SURFACE (Y OR POLOIDAL) NO. MPSURF
@@ -840,8 +876,11 @@ C  ESCAPE AT 2ND GRID SURFACE (Y OR POLOIDAL) NO. MPSURF
           SG=ISIGN(1,NINCY)
           NLSRFY=.TRUE.
           MSURFG=NRCELL+(NTCELL-1)*NR1P2
-          IF (ILIIN(NLIM+ISTS) .NE. 0)
-     .      CALL EIRENE_STDCOL (ISTS,2,SG,*104,*380)
+          IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
+             CALL EIRENE_STDCOL(ISTS,2,SG,IRET)
+             IF (IRET .EQ. 1) GOTO 104
+             IF (IRET .EQ. 2) GOTO 380
+          ENDIF
         ENDIF
 
 C  ESCAPE AT 3RD GRID SURFACE (Z OR TOROIDAL) MTSURF
@@ -850,8 +889,11 @@ C  ESCAPE AT 3RD GRID SURFACE (Z OR TOROIDAL) MTSURF
           SG=ISIGN(1,NINCZ)
           NLSRFZ=.TRUE.
           MSURFG=NRCELL+(NPCELL-1)*NR1P2
-          IF (ILIIN(NLIM+ISTS) .NE. 0)
-     .      CALL EIRENE_STDCOL (ISTS,3,SG,*104,*380)
+          IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
+             CALL EIRENE_STDCOL(ISTS,3,SG,IRET)
+             IF (IRET .EQ. 1) GOTO 104
+             IF (IRET .EQ. 2) GOTO 380
+          ENDIF
         ENDIF
 C
 C  ESCAPE AT GRID SURFACE BUILT FROM TRIANGLE SIDES IN X-Y PLANE: MRSURF
@@ -863,8 +905,11 @@ C  ESCAPE AT GRID SURFACE BUILT FROM TRIANGLE SIDES IN X-Y PLANE: MRSURF
             MSURFG=INSPAT(IPOLGN,MRSURF)
             SG=SIGN(1._DP,VELX*PTRIX(IPOLGN,MRSURF)+
      .                    VELY*PTRIY(IPOLGN,MRSURF))
-            IF (ILIIN(ISTS) .NE. 0) CALL EIRENE_STDCOL
-     .                                   (ISTS,1,SG,*104,*380)
+            IF (ILIIN(ISTS) .NE. 0) THEN
+               CALL EIRENE_STDCOL(ISTS,1,SG,IRET)
+               IF (IRET .EQ. 1) GOTO 104
+               IF (IRET .EQ. 2) GOTO 380
+            ENDIF
           ENDIF
         END IF
 
@@ -875,8 +920,11 @@ C  ESCAPE AT 3RD (Z OR TOROIDAL) GRID SURFACE FOR TRIANGULAR X-Y GRID OPTION: MT
             SG=ISIGN(1,NINCZ)
             NLSRFZ=.TRUE.
             MSURFG=NRCELL+(NPCELL-1)*NR1P2
-            IF (ILIIN(NLIM+ISTS) .NE. 0) 
-     .        CALL EIRENE_STDCOL(ISTS,3,SG,*104,*380)
+            IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
+               CALL EIRENE_STDCOL(ISTS,3,SG,IRET)
+               IF (IRET .EQ. 1) GOTO 104
+               IF (IRET .EQ. 2) GOTO 380
+            ENDIF
           ENDIF
         END IF
 C
@@ -889,8 +937,11 @@ C  ESCAPE AT GRID SURFACE BUILT FROM TETRAHEDRA SIDES: MRSURF
      .                  VELZ*PTETZ(IPOLGN,MRSURF))
           NLSRFX=.TRUE.
 C         MSURFG= ??
-          IF (ILIIN(ISTS) .NE. 0)
-     .      CALL EIRENE_STDCOL (ISTS,1,SG,*104,*380)
+          IF (ILIIN(ISTS) .NE. 0) THEN
+             CALL EIRENE_STDCOL(ISTS,1,SG,IRET)
+             IF (IRET .EQ. 1) GOTO 104
+             IF (IRET .EQ. 2) GOTO 380
+          ENDIF
         ENDIF
 
 C  ESCAPE TO GRID SURFACE ON USER-DEFINED GEOMETRY BLOCK: MRSURF
@@ -899,8 +950,11 @@ C  ESCAPE TO GRID SURFACE ON USER-DEFINED GEOMETRY BLOCK: MRSURF
         IF (NLRAD.AND.ISTS.NE.0) THEN
           SG=ISIGN(1,NINCX)
           NLSRFX=.TRUE.
-          IF (ILIIN(NLIM+ISTS) .NE. 0)
-     .      CALL EIRENE_STDCOL (ISTS,1,SG,*104,*380)
+          IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
+             CALL EIRENE_STDCOL(ISTS,1,SG,IRET)
+             IF (IRET .EQ. 1) GOTO 104
+             IF (IRET .EQ. 2) GOTO 380
+          ENDIF
         ENDIF
       end select
 C
@@ -1435,8 +1489,9 @@ C
       USE EIRMOD_COMPRT
       USE EIRMOD_CRAND
       USE EIRMOD_CINIT
+      USE EIRMOD_RANF, ONLY: RANF_EIRENE
       IMPLICIT NONE
-      REAL(DP), EXTERNAL :: RANF_EIRENE
+ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
       REAL(DP), INTENT(IN) :: X,Y,Z,VELS
       REAL(DP) :: BVEC_1(3), VVEC(3), GYRO, BBF
       INTEGER :: IND

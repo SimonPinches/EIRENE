@@ -2,13 +2,22 @@ CDR   June 17:  comments, and fix re option indpro=4 (unused so far)
 C     May  05:  "no multip on averaging cells" corrected for 3D grids
 C
       SUBROUTINE EIRENE_MULTI
-cdr  entry multig:  copy grid data NBMLT times
-cdr  entry multip:  indpro<=3: copy 1D profiles NP2ND*NT3RD*NBMLT times
+cdr  subroutine multig:  copy grid data NBMLT times
+cdr  subroutine multip:  indpro<=3: copy 1D profiles NP2ND*NT3RD*NBMLT times
 cdr                 indpro>=4: copy    profiles            *NBMLT times
 cdr                 indpro =4: check this option: tbd.
 cdr                 Currently available for indpro(I), I=1,2,3,4,5,6
 cdr                 indpro(7) (electr. field): still missing here 
 
+      IMPLICIT NONE
+
+      CALL EIRENE_MULTIG
+      END SUBROUTINE EIRENE_MULTI
+C
+C  GEOMETRY DATA
+C
+      SUBROUTINE EIRENE_MULTIG
+C
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
       USE EIRMOD_CINIT
@@ -17,12 +26,8 @@ cdr                 indpro(7) (electr. field): still missing here
 
       IMPLICIT NONE
 
-      INTEGER :: I, J, K
-C
-C  GEOMETRY DATA
-C
-      ENTRY EIRENE_MULTIG
-C
+      INTEGER :: I, J
+
 C  ZONE VOLUMES, KNOWN IN ZONE 1 TO NSTRD
       DO 130 J=2,NBMLT
         DO 120 I=1,NSTRD
@@ -33,11 +38,20 @@ C  ZONE VOLUMES, KNOWN IN ZONE 1 TO NSTRD
         VOL(I)=VOL(I)*VOLCOR(1)
   140 CONTINUE
 C
-      RETURN
+      END SUBROUTINE EIRENE_MULTIG
 C
 C  PLASMA DATA
 C
-      ENTRY EIRENE_MULTIP
+      SUBROUTINE EIRENE_MULTIP
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_COMUSR
+      USE EIRMOD_CINIT
+      USE EIRMOD_CGRID
+      USE EIRMOD_CGEOM
+
+      IMPLICIT NONE
+
+      INTEGER :: I, J, K
 C
 C  INDPRO.LT.4: ONLY RADIAL PLASMA PROFILES ARE GIVEN
 C  RADIAL PLASMA PROFILES, KNOWN IN ZONES 1 TO NR1ST
@@ -140,4 +154,4 @@ C  INDPRO.GT.4: ONLY NSTRD=NR1ST*NP2ND*NT3RD PLASMA DATA GIVEN
   310 CONTINUE
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_MULTIP

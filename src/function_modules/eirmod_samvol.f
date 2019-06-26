@@ -1,3 +1,40 @@
+      MODULE EIRMOD_SAMVOL
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_COMUSR
+      USE EIRMOD_CCONA
+      USE EIRMOD_CLOGAU
+      USE EIRMOD_CINIT
+      USE EIRMOD_CPOLYG
+      USE EIRMOD_CGRID
+      USE EIRMOD_CZT1
+      USE EIRMOD_CTRCEI
+      USE EIRMOD_CGEOM
+      USE EIRMOD_COMPRT
+      USE EIRMOD_COMSOU
+      USE EIRMOD_COMXS
+      USE EIRMOD_CSPEI
+      USE EIRMOD_CTRIG
+      USE EIRMOD_CTETRA
+      USE EIRMOD_PHOTON
+      USE EIRMOD_RANF, ONLY: RANF_EIRENE
+
+      IMPLICIT NONE
+      PRIVATE
+
+      PUBLIC :: EIRENE_SAMVOL, EIRENE_SAMVL0, EIRENE_SAMVL1, 
+     .          EIRENE_SAMVOL_REINIT
+
+      REAL(DP), ALLOCATABLE, SAVE :: FREC(:,:,:), VSOURC(:,:), VSMXI(:)
+      REAL(DP), ALLOCATABLE, SAVE :: RQ21(:), PS21(:)
+      REAL(DP), ALLOCATABLE, SAVE :: ASIMP(:,:)
+      INTEGER, ALLOCATABLE, SAVE  :: ISOURC(:,:), ICMX(:),
+     .                               IFREC(:)
+      INTEGER, SAVE :: ISTROLD=-1
+      LOGICAL, ALLOCATABLE, SAVE :: LPLSSR(:)
+
+      CONTAINS
+
 chf Nov.  18 : samvol_usr added, for levgeo=10 option
 cdr Jan   18 : only notational change, to distinguish surface substrata from volume substrata
 cdr  5.14.15 : vecusr called with ncell, and 0,0,0 (center of gravity)
@@ -23,51 +60,8 @@ c                     AT ENTRY SMVOL1 AND SMUSR1
 C
       SUBROUTINE EIRENE_SAMVOL
 
-      USE EIRMOD_PRECISION
-      USE EIRMOD_PARMMOD
-      USE EIRMOD_COMUSR
-      USE EIRMOD_CCONA
-      USE EIRMOD_CLOGAU
-      USE EIRMOD_CINIT
-      USE EIRMOD_CPOLYG
-      USE EIRMOD_CGRID
-      USE EIRMOD_CZT1
-      USE EIRMOD_CTRCEI
-      USE EIRMOD_CGEOM
-      USE EIRMOD_COMPRT
-      USE EIRMOD_COMSOU
-      USE EIRMOD_COMXS
-      USE EIRMOD_CSPEI
-      USE EIRMOD_CTRIG
-      USE EIRMOD_CTETRA
-      USE EIRMOD_PHOTON
       IMPLICIT NONE
 C
-
-      REAL(DP), INTENT(OUT) :: TEWL, SHWL, TIWL(*), DIWL(*),
-     .                         VXWL(*), VYWL(*), VZWL(*),
-     .                         EFWL(*), WEISPZ(*)
-      INTEGER, INTENT(IN) :: NVLM
-      REAL(DP), ALLOCATABLE, SAVE :: FREC(:,:,:), VSOURC(:,:), VSMXI(:)
-      REAL(DP), ALLOCATABLE, SAVE :: RQ21(:), PS21(:)
-      REAL(DP), ALLOCATABLE, SAVE :: ASIMP(:,:)
-      INTEGER, ALLOCATABLE, SAVE  :: ISOURC(:,:), ICMX(:),
-     .                               IFREC(:)
-      REAL(DP) :: ZEP1, X1, Y1, X2, Y2, X3, Y3, RR, RRI, WINK,
-     .            ZRM1, CNORM, EPR, ELR, RRD, RRN, ZZ, X01, Z1, Z2, Z3,
-     .            REC, BX, BY, BZ, ADD, EIRENE_FTABRC1, CDYN,
-     .            VX, VY, VZ, VPARA, EELRC,
-     .            EIRENE_FEELRC1, SUMM, EISUMM, EISUM, SUM,
-     .            X4, Y4, Z4, MOMPARA, BREMS, TOT_BREMS(NPLS), Z, BF,
-     .            EIRENE_BREMS, XC, YC, ZC
-      REAL(DP), EXTERNAL :: RANF_EIRENE
-      INTEGER :: IC1, IC2, ICELL, IAUSR, IBUSR, IRUSR, IPUSR,
-     .           ITUSR, IN, IIRC, IRC, IRRC, J, IT1, IT2, ISTEP, IFRC,
-     .           IR2, IP1, IP2, IND, IR, IP, IT, IVOLSI, I,
-     .           ICC, IR1, IVL, ISTR, IL, IU, IM, MXREC, MXPLS, IFPLS,
-     .           IPLSTI, IPLSV, KK, ICCT
-      INTEGER, SAVE :: ISTROLD=-1
-      LOGICAL, ALLOCATABLE, SAVE :: LPLSSR(:)
 C
 C  AT ENTRY SAMVL0:
 C    DEFINE THE CUMULATIVE DISTRIBUTION FUNCTION
@@ -83,9 +77,23 @@ C
 C  AT ENTRY SAMVL1:
 C    THE INITIAL COORDINATES OF A TEST FLIGHT ARE SAMPLED,
 C    AND THE CELL NUMBERS ARE COMPUTED
+      
+      CALL EIRENE_SAMVL0
+
+      END SUBROUTINE EIRENE_SAMVOL
 C
-      ENTRY EIRENE_SAMVL0
-C
+      SUBROUTINE EIRENE_SAMVL0
+      IMPLICIT NONE
+      REAL(DP) :: ADD, EIRENE_FTABRC1, CDYN, REC, XC, YC, ZC, 
+     .            BX, BY, BZ, BF, VX, VY, VZ, EIRENE_FEELRC1, 
+     .            VPARA, EELRC, MOMPARA, TOT_BREMS(NPLS), Z,
+     .            BREMS, EIRENE_BREMS,
+     .            SUMM, EISUMM, EISUM, SUM,
+     .            X1, Y1, X2, Y2, X3, Y3
+      INTEGER :: ISTR, MXREC, MXPLS, IVOLSI, IVL,
+     .           IFPLS, IIRC, IRRC, I, J, KK, ICCT, IPLSTI, IPLSV,
+     .           IR1, IR2, IP1, IP2, IT1, IT2, IR, IP, IT,
+     .           ICC, IRC, ISTEP, IFRC, IND
 
       IF (.NOT.ALLOCATED(FREC)) THEN
 
@@ -586,12 +594,28 @@ c  then 2nd: sample uniformly within this triangle
         END DO
       end select
 C
-      RETURN
+
+      END SUBROUTINE EIRENE_SAMVL0
 C
 C  AT THIS POINT: CALLED FROM PARTICLE LOOP TO INITIALIZE TEST FLIGHT
 C
-      ENTRY EIRENE_SAMVL1
+      SUBROUTINE EIRENE_SAMVL1
      .      (NVLM,TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ)
+      IMPLICIT NONE
+
+      REAL(DP), INTENT(OUT) :: TEWL, SHWL, TIWL(*), DIWL(*),
+     .                         VXWL(*), VYWL(*), VZWL(*),
+     .                         EFWL(*), WEISPZ(*)
+      INTEGER, INTENT(IN) :: NVLM
+      REAL(DP) :: ADD, X1, Y1, X2, Y2, X3, Y3, ZEP1, ZRM1, WINK,
+     .            RR, RRI, RRD, RRN, EPR, ELR, Z1, Z2, Z3, ZZ,
+     .            X4, Y4, Z4, X01, CNORM
+      INTEGER :: IFPLS, IIRC, IRRC, IVOLSI, IVL, ICC, IRC,
+     .           IR1, IR2, IP1, IP2, IT1, IT2, IR, IP, IT, ISTEP, 
+     .           IFRC, IAUSR, IBUSR, IRUSR, ITUSR, IPUSR,
+     .           IC1, IC2, IL, IU, IM, ICELL, IN
+ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
+
 C  USER-SUPPLIED SOURCE
 C
       IF (SORLIM(NVLM,ISTRA).LT.0) THEN
@@ -944,8 +968,9 @@ C
       VZWL(1:NPLSI)=VZIN(MPLSV(1:NPLSI),NCELL)
       EFWL(1:NPLSI)=0._DP
       SHWL=0._DP
-C
+
       RETURN
+C
 C
   990 CONTINUE
       WRITE (iunout,*) 'ERROR IN SAMVOL'
@@ -962,9 +987,13 @@ C
       WRITE (iunout,*) 'UNWRITTEN OPTION IN SAMVOL'
       CALL EIRENE_EXIT_OWN(1)
 
+
+      END SUBROUTINE EIRENE_SAMVL1
+
 C     the following ENTRY is for reinitialization of EIRENE (DMH)
 
-      ENTRY EIRENE_SAMVOL_REINIT
+      SUBROUTINE EIRENE_SAMVOL_REINIT
+      IMPLICIT NONE
 
       ISTROLD = -1
 
@@ -981,4 +1010,6 @@ C     the following ENTRY is for reinitialization of EIRENE (DMH)
 
       return
 
-      END
+      END SUBROUTINE EIRENE_SAMVOL_REINIT
+
+      END MODULE EIRMOD_SAMVOL

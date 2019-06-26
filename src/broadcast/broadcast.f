@@ -83,6 +83,7 @@ cdr
       USE EIRMOD_PHOTON
       USE EIRMOD_CFPLK
       USE EIRMOD_MPI
+      USE EIRMOD_TIMEA, ONLY: EIRENE_TIMEA0_OC
       IMPLICIT NONE
 
       INTEGER :: IER, I, NSPS, KK, NRC, NNROT, IR, NREF, IRF, IAN, NMT,
@@ -1261,6 +1262,8 @@ C  OUTPUT:
            CALL MPI_BCAST (ESTIML(I)%ISRFCLL,1,MPI_INTEGER,0,
      .                     MPI_COMM_WORLD,ier)
            CALL MPI_BCAST (ESTIML(I)%IDIREC,1,MPI_INTEGER,0,
+     .                     MPI_COMM_WORLD,ier)
+           CALL MPI_BCAST (ESTIML(I)%LOG,1,MPI_LOGICAL,0,
      .                     MPI_COMM_WORLD,ier)
            IF (MY_PE .NE. 0) THEN
              NSPS = ESTIML(I)%NSPC

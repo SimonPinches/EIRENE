@@ -12,12 +12,12 @@ cdr Only the input tallies of the last (virtual) plasma species: nfla+1,...nplsi
 cdr are written/read using I/O stream fort.13. The ones 1,...,nfla are directly transferred 
 cdr from external plasma code/ external data set
 
-c  if NLSRT13=true : wrplam_short and (entry) rplam_short are called from WRPLAM,
-c  if NLSRT13=false: wrplam_long and (entry) rplam_long are called from WRPLAM,
+c  if NLSRT13=true : wrplam_short and rplam_short are called from WRPLAM,
+c  if NLSRT13=false: wrplam_long and rplam_long are called from WRPLAM,
 c
 
 cdr this is the SHORT version of WRPLAM.F
-cdr It writes and reads (entry RPLAM_SHRT) background data onto/from fort.13
+cdr It writes and reads (RPLAM_SHRT) background data onto/from fort.13
 cdr Distinct from WRPLAM_long here only the background tallies are written/read,
 cdr (tallies T, n, V for ipls=1,nplsi), but not the atomic data,
 cdr nor the primary source sampling information.
@@ -62,10 +62,21 @@ cdr  have to come last in the list of all background species.
 
       CLOSE (UNIT=13+ifoff)
 
-      RETURN
+      END SUBROUTINE EIRENE_WRPLAM_SHRT
 C .......................................................................
 
-      ENTRY EIRENE_RPLAM_SHRT(TRCFLE)
+      SUBROUTINE EIRENE_RPLAM_SHRT(TRCFLE)
+      USE EIRMOD_PRECISION, ONLY: DP
+      USE EIRMOD_PARMMOD, ONLY: IFOFF, NRAD
+      USE EIRMOD_CINIT, ONLY: FORT
+      USE EIRMOD_COMUSR, ONLY: NPLSI, TIIN, DIIN, VXIN, VYIN, VZIN
+      USE EIRMOD_CCOUPL, ONLY: NFLA
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
+
+      IMPLICIT NONE
+
+      LOGICAL,INTENT(IN) :: TRCFLE
+      INTEGER IO
 
 C ........................................................................
 
@@ -116,4 +127,4 @@ cdr  have to come last in the list of all background species.
 
       RETURN
 
-      END SUBROUTINE EIRENE_WRPLAM_SHRT
+      END SUBROUTINE EIRENE_RPLAM_SHRT

@@ -12,7 +12,7 @@ c  nov.  05:  add eltot and ve to step function data
 C  write plasma (background) data, source distribution and atomic data
 C  on unit 13.
 C
-c  at entry RPLAM:
+c  at subroutine RPLAM:
 C  read plasma (background) data, source distribution and atomic data
 C  from unit 13.
 C
@@ -85,11 +85,25 @@ c  write primary source parameters
      .             ISTUF,NSMAX,NSPSTI,NSPSTE
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: module EIRMOD_CSTEP.f'
       CLOSE (UNIT=13+ifoff)
-      RETURN
+      END
 C
 c...............................................................
 C
-      ENTRY EIRENE_RPLAM_LONG(TRCFLE,IFLG)
+      SUBROUTINE EIRENE_RPLAM_LONG(TRCFLE,IFLG)
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_CINIT, ONLY: FORT
+      USE EIRMOD_COMUSR
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
+      USE EIRMOD_CZT1
+      USE EIRMOD_COMSOU
+      USE EIRMOD_CSTEP
+      USE EIRMOD_COMXS
+      IMPLICIT NONE
+      INTEGER, INTENT(IN) :: IFLG
+      LOGICAL TRCFLE
+cdr, jan 2019
+      INTEGER :: IO
+
       OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 13+ifoff
       READ (13+ifoff,IOSTAT=IO)

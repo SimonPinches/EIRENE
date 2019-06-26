@@ -1,3 +1,22 @@
+      MODULE EIRMOD_LININT
+      USE EIRMOD_PRECISION
+      USE EIRMOD_LEARC1, ONLY: EIRENE_LEARC1
+      USE EIRMOD_SIGHE, ONLY: EIRENE_SIGHE
+      USE EIRMOD_SIGLINE, ONLY: EIRENE_SIGLINE
+      USE EIRMOD_TIMEA, ONLY: EIRENE_TIMEA1
+      USE EIRMOD_ADDCOL, ONLY: EIRENE_ADDCOL
+      USE EIRMOD_STDCOL, ONLY: EIRENE_STDCOL
+      
+      IMPLICIT NONE
+      PRIVATE
+
+      PUBLIC :: EIRENE_LININT, EIRENE_LININT2, EIRENE_LININT_REINIT
+
+      REAL(DP), SAVE, ALLOCATABLE :: AA(:),XNTG(:),VPLOT(:,:)
+      REAL(DP), SAVE, ALLOCATABLE :: ARGST(:,:)
+
+      CONTAINS
+     
 cdr Jan 18  :  additional parameter ICHORI in calls to SIHGA
 cdr            added: MX_compo
 cdr Oct 17  :
@@ -12,7 +31,7 @@ c               output with spatial resolution along LOS.
 c               Made ARGST allocatable, conditional on PRARGL,PLARGL
 cdr             plargl only, if prargl. To be done in input.f
 CDR             ditto: made allocatable AA, XNTG, VPLOT
-CDR  DE-ALLOCATE added: entry linint2, also: linint_reinit (still empty)
+CDR  DE-ALLOCATE added: subroutine linint2, also: linint_reinit (still empty)
 !pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
 C
 C
@@ -72,7 +91,6 @@ C
       REAL(DP), INTENT(IN OUT) :: PSIG(0:)
       REAL(DP), INTENT(IN OUT) :: TIMAX
       INTEGER :: IPLOTS, IERR
-      REAL(DP), ALLOCATABLE :: ARGST(:,:)
       REAL(DP) :: XMI,XMA
       REAL(DP) :: X0S, PHIS, Y0S, VELXS, VELYS, VELZS, Z0S, ZD1, YD1,
      .          TRACKS, ZDS, XD0, YD0, ZD0, X22, PHI22, XLI, YLI, ZLI,
@@ -82,10 +100,9 @@ C
      .           MSURFS, NTCLLS, J, JJJ, IPOLGS, IPERID_2,
      .           EIRENE_LEARCA, NLE, NLI, ISTS, NRCLLS, EIRENE_LEARC2,
      .           IPERID_1,
-     .           EIRENE_LEARC1, I, IM, NCELC, NCH, MX_COMPO, ND
+     .           I, IM, NCELC, NCH, MX_COMPO, ND, IRET
       TYPE(CELL_INFO), POINTER :: NEW_CELL
 C   ARRAYS FOR PLOTTING, AND RESOLUTION ALONG LINE OF SIGHT
-      REAL(DP), ALLOCATABLE :: AA(:),XNTG(:),VPLOT(:,:)
 
       REAL(DP), ALLOCATABLE :: YPLOT(:,:),
      .                         YMN2(:), YMX2(:),
@@ -106,14 +123,6 @@ C   ARRAYS FOR PLOTTING, AND RESOLUTION ALONG LINE OF SIGHT
           REAL(DP), INTENT(IN OUT) :: PSIG(0:)
           REAL(DP), INTENT(IN OUT) :: ARGST(0:,:)
         END SUBROUTINE EIRENE_SIGCX
-        SUBROUTINE EIRENE_SIGLINE(INIT,JJJ,ZDS,PEN,PSIG,
-     .                            DUM2,ARGST,ICHORI)
-          USE EIRMOD_PRECISION
-          INTEGER, INTENT(IN) :: INIT, JJJ, ICHORI
-          REAL(DP), INTENT(IN) :: ZDS, PEN, DUM2
-          REAL(DP), INTENT(IN OUT) :: PSIG(0:)
-          REAL(DP), INTENT(IN OUT) :: ARGST(0:,:)
-        END SUBROUTINE EIRENE_SIGLINE
         SUBROUTINE EIRENE_SIGRAD(IFIRST,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
           USE EIRMOD_PRECISION
           INTEGER, INTENT(IN) :: IFIRST, JJJ
@@ -129,13 +138,6 @@ C   ARRAYS FOR PLOTTING, AND RESOLUTION ALONG LINE OF SIGHT
           REAL(DP), INTENT(IN) :: ZDS, DUMMY1, DUMMY2
           REAL(DP), INTENT(IN OUT) :: PSIG(0:), ARGST(0:,:)
         END SUBROUTINE EIRENE_SIGTST
-        SUBROUTINE EIRENE_SIGHE(IFIRST,JJJ,ZDS,DUM1,PSIG,DUM2,ARGST)
-          USE EIRMOD_PRECISION
-          INTEGER, INTENT(IN) :: IFIRST, JJJ
-          REAL(DP), INTENT(IN) :: ZDS, DUM1, DUM2
-          REAL(DP), INTENT(IN OUT) :: PSIG(0:)
-          REAL(DP), INTENT(IN OUT) :: ARGST(0:,:)
-        END SUBROUTINE EIRENE_SIGHE
         SUBROUTINE EIRENE_SIGUSR(IFIRST,JJJ,ZDS,DUMMY1,PSIG,
      .             DUMMY2,ARGST,XD0,YD0,ZD0,XD1,YD1,ZD1)
           USE EIRMOD_PRECISION
@@ -526,7 +528,11 @@ C
 C
 C  STOP TRACK ?
 C
-      IF (ISRFCL.EQ.1) CALL EIRENE_ADDCOL (XLI,YLI,ZLI,SG,*14  ,*38 )
+      IF (ISRFCL.EQ.1) then
+         CALL EIRENE_ADDCOL (XLI,YLI,ZLI,SG,IRET)
+         if (IRET .eq. 1) GOTO 14
+         IF (IRET .EQ. 2) GOTO 38
+      endif
 C     IF (ISRFCL.EQ.2) CALL TIMCOL (...                          )
       IF (ISRFCL.EQ.3) CALL EIRENE_TORCOL (               *14 )
 C
@@ -544,21 +550,27 @@ C
           SG=ISIGN(1,NINCX)
           NLSRFX=.TRUE.
           MSURFG=NPCELL+(NTCELL-1)*NP2T3
-          CALL EIRENE_STDCOL (ISTS,1,SG,*14,*38)
+          CALL EIRENE_STDCOL (ISTS,1,SG,IRET)
+          if (IRET .eq. 1) GOTO 14
+          IF (IRET .EQ. 2) GOTO 38
         ENDIF
         ISTS=INMP2I(IRCELL,MPSURF,ITCELL)
         IF (NLPOL.AND.ISTS.NE.0) THEN
           SG=ISIGN(1,NINCY)
           NLSRFY=.TRUE.
           MSURFG=NRCELL+(NTCELL-1)*NR1P2
-          CALL EIRENE_STDCOL (ISTS,2,SG,*14,*38)
+          CALL EIRENE_STDCOL (ISTS,2,SG,IRET)
+          if (IRET .eq. 1) GOTO 14
+          IF (IRET .EQ. 2) GOTO 38
         ENDIF
         ISTS=INMP3I(IRCELL,IPCELL,MTSURF)
         IF (NLTOR.AND.ISTS.NE.0) THEN
           SG=ISIGN(1,NINCZ)
           NLSRFZ=.TRUE.
           MSURFG=NRCELL+(NPCELL-1)*NR1P2
-          CALL EIRENE_STDCOL (ISTS,3,SG,*14,*38)
+          CALL EIRENE_STDCOL (ISTS,3,SG,IRET)
+          if (IRET .eq. 1) GOTO 14
+          IF (IRET .EQ. 2) GOTO 38
         ENDIF
 C
       case (4)
@@ -567,7 +579,9 @@ C
           SG=ISIGN(1,NINCX)
           NLSRFX=.TRUE.
           MSURFG=INSPAT(IPOLGN,MRSURF)
-          CALL EIRENE_STDCOL (ISTS,1,SG,*14,*38)
+          CALL EIRENE_STDCOL (ISTS,1,SG,IRET)
+          if (IRET .eq. 1) GOTO 14
+          IF (IRET .EQ. 2) GOTO 38
         ENDIF
 C
       case (5)
@@ -577,7 +591,9 @@ C
           IF (NRCELL == 0) SG = -1.D0
           NLSRFX=.TRUE.
 C         MSURFG= ??
-          CALL EIRENE_STDCOL (ISTS,1,SG,*14,*38)
+          CALL EIRENE_STDCOL (ISTS,1,SG,IRET)
+          if (IRET .eq. 1) GOTO 14
+          IF (IRET .EQ. 2) GOTO 38
         ENDIF
 C
       case (10)
@@ -585,7 +601,9 @@ C
         IF (NLRAD.AND.ISTS.NE.0) THEN
           SG=ISIGN(1,NINCX)
           NLSRFX=.TRUE.
-          CALL EIRENE_STDCOL (ISTS,1,SG,*14,*38)
+          CALL EIRENE_STDCOL (ISTS,1,SG,IRET)
+          if (IRET .eq. 1) GOTO 14
+          IF (IRET .EQ. 2) GOTO 38
         ENDIF
       end select
 C
@@ -865,7 +883,11 @@ C
 C
 C  STOP TRACK ?
 C
-      IF (ISRFCL.EQ.1) CALL EIRENE_ADDCOL (XLI,YLI,ZLI,SG,*104,*380)
+      IF (ISRFCL.EQ.1) THEN
+         CALL EIRENE_ADDCOL (XLI,YLI,ZLI,SG,IRET)
+         IF (IRET .EQ. 1) GOTO 104
+         IF (IRET .eq. 2) GOTO 380
+      ENDIF
 C     IF (ISRFCL.EQ.2) CALL TIMCOL (...            *104,*800)
       IF (ISRFCL.EQ.3) CALL EIRENE_TORCOL (               *104)
 C
@@ -881,21 +903,27 @@ C
           SG=ISIGN(1,NINCX)
           NLSRFX=.TRUE.
           MSURFG=NPCELL+(NTCELL-1)*NP2T3
-          CALL EIRENE_STDCOL (ISTS,1,SG,*104,*380)
+          CALL EIRENE_STDCOL (ISTS,1,SG,IRET)
+          if (IRET .eq. 1) GOTO 104
+          IF (IRET .EQ. 2) GOTO 380
         ENDIF
         ISTS=INMP2I(IRCELL,MPSURF,ITCELL)
         IF (NLPOL.AND.ISTS.NE.0) THEN
           SG=ISIGN(1,NINCY)
           NLSRFY=.TRUE.
           MSURFG=NRCELL+(NTCELL-1)*NR1P2
-          CALL EIRENE_STDCOL (ISTS,2,SG,*104,*380)
+          CALL EIRENE_STDCOL (ISTS,2,SG,IRET)
+          if (IRET .eq. 1) GOTO 104
+          IF (IRET .EQ. 2) GOTO 380
         ENDIF
         ISTS=INMP3I(IRCELL,IPCELL,MTSURF)
         IF (NLTOR.AND.ISTS.NE.0) THEN
           SG=ISIGN(1,NINCZ)
           NLSRFZ=.TRUE.
           MSURFG=NRCELL+(NPCELL-1)*NR1P2
-          CALL EIRENE_STDCOL (ISTS,3,SG,*104,*380)
+          CALL EIRENE_STDCOL (ISTS,3,SG,IRET)
+          if (IRET .eq. 1) GOTO 104
+          IF (IRET .EQ. 2) GOTO 380
         ENDIF
 C
       case (4)
@@ -904,7 +932,9 @@ C
           SG=ISIGN(1,NINCX)
           NLSRFX=.TRUE.
           MSURFG=INSPAT(IPOLGN,MRSURF)
-          CALL EIRENE_STDCOL (ISTS,1,SG,*104,*380)
+          CALL EIRENE_STDCOL (ISTS,1,SG,IRET)
+          if (IRET .eq. 1) GOTO 104
+          IF (IRET .EQ. 2) GOTO 380
         ENDIF
 C
       case (5)
@@ -914,7 +944,9 @@ C
           IF (NRCELL == 0) SG = -1.D0
           NLSRFX=.TRUE.
 C         MSURFG= ??
-          CALL EIRENE_STDCOL (ISTS,1,SG,*104,*380)
+          CALL EIRENE_STDCOL (ISTS,1,SG,IRET)
+          if (IRET .eq. 1) GOTO 104
+          IF (IRET .EQ. 2) GOTO 380
         ENDIF
 C
       case (10)
@@ -922,7 +954,9 @@ C
         IF (NLRAD.AND.ISTS.NE.0) THEN
           SG=ISIGN(1,NINCX)
           NLSRFX=.TRUE.
-          CALL EIRENE_STDCOL (ISTS,1,SG,*104,*380)
+          CALL EIRENE_STDCOL (ISTS,1,SG,IRET)
+          if (IRET .eq. 1) GOTO 104
+          IF (IRET .EQ. 2) GOTO 380
         ENDIF
       end select
 C
@@ -1110,9 +1144,9 @@ C
       CALL EIRENE_MASAGE
      .  ('AA AND VPLOT. EXIT CALLED                      ')
       CALL EIRENE_EXIT_OWN(1)
-      RETURN
+      END
 
-      ENTRY EIRENE_LININT2
+      SUBROUTINE EIRENE_LININT2
 
       IF (ALLOCATED(ARGST)) THEN
 c  these arrays have been allocated for PRSPEC option.
@@ -1130,3 +1164,5 @@ c  these arrays have been allocated for PRSPEC option.
 c  clarify role of ifirst<0 first.
       RETURN
       END
+
+      END MODULE EIRMOD_LININT

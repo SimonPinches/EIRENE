@@ -25,6 +25,7 @@ c       has been worked on before this function is called for the first time
         USE EIRMOD_COMPRT, only: iunout
         USE EIRMOD_CTRCEI, only: trcoct
         USE EIRMOD_OCTREE
+        USE EIRMOD_SECOND_OWN, ONLY: EIRENE_SECOND_OWN
         IMPLICIT NONE
 c       define an explicit interface to the block building function
         INTERFACE
@@ -39,7 +40,7 @@ c       define an explicit interface to the block building function
         TYPE(octree), POINTER :: TREE
         TYPE(ocNode), POINTER :: ROOT
         REAL(DP), DIMENSION(2) :: XLIM, YLIM, ZLIM
-        REAL(DP) :: EIRENE_SECOND_OWN, start
+        REAL(DP) :: start
         INTEGER :: J, LAYERS, NSURFACES
 
         if (trcoct) then
