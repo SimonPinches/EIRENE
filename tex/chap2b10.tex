@@ -191,6 +191,26 @@ If either ICLVS or ICLVT is out of range, no default tally is replaced.
         The string may contain an arbitrary (but $\le$ 20) number of operands, and of
         operators +, -, *, /, **, and of properly nested parentheses (\dots).
 
+        As of June 2019 evaluation of some mathematical functions have been introduced.
+        Available functions consist of ``ABS'' (absolute value), ``EXP'' (exponential
+        function), ``LN'' (natural logarithm), ``LOG'' (decimal logarithm).
+        Additionally functions ``DX'', ``DY'' and ``DZ'' for calculation of partial derivatives
+        in the respective carthesian coordinate are available. 
+        For the moment the code is only able to store two intermediate result for further
+        calculations. Thus the expression for calculating the mean free path from
+        the momentum density vector
+
+        $(DX( \langle 1,85 \rangle) + DY(\langle 1,89 \rangle) + DZ(\langle 1,93 \rangle)) / 
+          \langle 1.66D-24 \rangle / \langle 2.E0 \rangle $
+          
+        will result in a warning messages. Nevertheless this problem can be overcome by
+        introducing an additional pair of parenthesis. Thus
+
+        $((DX( \langle 1,85 \rangle) + DY(\langle 1,89 \rangle)) + DZ(\langle 1,93 \rangle)) / 
+          \langle 1.66D-24 \rangle / \langle 2.E0 \rangle $
+
+        will produce the correct result.
+
         Standard deviations are not available, generally, for algebraic tallies.
         For linear combinations of tallies it is, in principle, possible to obtain also
         the standard deviations, this evaluation of error estimates for such
@@ -264,15 +284,17 @@ If either ICLVS or ICLVT is out of range, no default tally is replaced.
 \subsection{Additional surface averaged tallies}\label{sec2.10E}
 
 as in sub-block 10A or 10B, but for surface averaged tallies rather than
-volume averaged tallies.
+volume averaged tallies. 
+
+
 
 Note: for surface averaged tallies collision and track-length estimators are
 identical, see \cref{sec3.2.4}.
 
 \subsection{Algebraic expression in surface averaged tallies}\label{sec2.10F}
 
-as in sub-block 10C, but for surface averaged tallies rather
-than volume averaged tallies.
+as in sub-block 10C except for the calculation of partial derivatives, 
+but for surface averaged tallies rather than volume averaged tallies.
 The corresponding tally numbers are listed in \cref{tab3}.
 
 There is one generalization available here compared to the options for volume
