@@ -611,19 +611,24 @@ C
             GOTO 392
           ENDIF
 C
-          IF (OPER(IOP).EQ.'+') THEN
+          SELECT CASE (OPER(IOP))
+          CASE ('+ ')
+!         IF (OPER(IOP).EQ.'+') THEN
             DO 350 I=1,NLIMPS
               RESULT(II,I)=VEC1(I)+VEC2(I)
   350       CONTINUE
-          ELSEIF (OPER(IOP).EQ.'-') THEN
+          CASE ('- ')
+!         ELSEIF (OPER(IOP).EQ.'-') THEN
             DO 360 I=1,NLIMPS
               RESULT(II,I)=VEC1(I)-VEC2(I)
   360       CONTINUE
-          ELSEIF (OPER(IOP).EQ.'*') THEN
+          CASE ('* ')
+!         ELSEIF (OPER(IOP).EQ.'*') THEN
             DO 370 I=1,NLIMPS
               RESULT(II,I)=VEC1(I)*VEC2(I)
   370       CONTINUE
-          ELSEIF (OPER(IOP).EQ.'/') THEN
+          CASE ('/ ')
+!         ELSEIF (OPER(IOP).EQ.'/') THEN
             DO 381 I=1,NLIMPS
               IF (VEC2(I).NE.0.D0) GOTO 382
   381       CONTINUE
@@ -635,13 +640,39 @@ C  DIVISION BY ZERO TALLY. ALGEBR. TALLY IRRELEVANT. RETURN ZERO TALLY
   382       DO 380 I=1,NLIMPS
               RESULT(II,I)=VEC1(I)/(VEC2(I)+EPS30)
   380       CONTINUE
-          ELSEIF (OPER(IOP).EQ.'^') THEN
+          CASE ('^ ')
+!         ELSEIF (OPER(IOP).EQ.'^') THEN
             DO 385 I=1,NLIMPS
               RESULT(II,I)=VEC1(I)**VEC2(I)
   385       CONTINUE
-          ELSE
+          CASE ('QA', 'QB', 'QC')
+            GOTO 394
+          CASE ('QD')
+! exp
+            IF (ANY(VEC1(1:NLIMPS) > 150._DP)) GOTO 396
+            RESULT(II,1:NLIMPS) = EXP(VEC1(1:NLIMPS))
+          CASE ('QE')
+! ln
+            WHERE (VEC1(1:NLIMPS) > 1.E-20_DP)
+              RESULT(II,1:NLIMPS) = LOG(VEC1(1:NLIMPS))
+            ELSEWHERE
+              RESULT(II,1:NLIMPS) = LOG(1.E-20_DP)
+            END WHERE
+          CASE ('QF')
+! log10
+            WHERE (VEC1(1:NLIMPS) > 1.E-20_DP)
+              RESULT(II,1:NLIMPS) = LOG10(VEC1(1:NLIMPS))
+            ELSEWHERE
+              RESULT(II,1:NLIMPS) = LOG10(1.E-20_DP)
+            END WHERE
+          CASE ('QG')
+! abs
+            RESULT(II,1:NLIMPS) = ABS(VEC1(1:NLIMPS))
+          CASE DEFAULT
+!         ELSE
             GOTO 393
-          ENDIF
+!         ENDIF
+          END SELECT
 C
           GOTO 400
 C
@@ -674,6 +705,15 @@ C
           WRITE (iunout,'(1X,A,4I4)')
      .          (OPER(J),(IZIF(K,J),K=1,4),J=1,NOP)
           GOTO 500
+  394     CONTINUE
+C
+          WRITE (iunout,*) ' DERIVATIVES ARE NOT FORESEEN FOR',
+     .                     ' ALOGBRAIC SURFACE TALLIES '
+          WRITE (iunout,*) ' NO CALCULATION IS DONE FOR TALLY NO. ',IALS
+          WRITE (iunout,*) CHRTLS(IALS)
+          WRITE (iunout,'(1X,A,4I4)')
+     .          (OPER(J),(IZIF(K,J),K=1,4),J=1,NOP)
+          GOTO 500
 C
   395     CONTINUE
           WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL '
@@ -681,6 +721,16 @@ C
      .      ' OPERAND OF ALGEBRAIC EXPRESSION IS SWITCHED OFF'
           WRITE (iunout,*) ' NO CALCULATION IS DONE FOR TALLY NO. ',IALS
           WRITE (iunout,*) CHRTLS(IALS)
+          WRITE (iunout,'(1X,A,4I4)')
+     .          (OPER(J),(IZIF(K,J),K=1,4),J=1,NOP)
+          GOTO 500
+C
+  396     CONTINUE
+          WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL '
+          WRITE (iunout,*)
+     .      ' OPERAND OF EXPONENTIAL FUNCTION > 150'
+          WRITE (iunout,*) ' NO CALCULATION IS DONE FOR TALLY NO. ',IALS
+          WRITE (iunout,*) CHRTAL(IALS)
           WRITE (iunout,'(1X,A,4I4)')
      .          (OPER(J),(IZIF(K,J),K=1,4),J=1,NOP)
           GOTO 500
