@@ -3465,7 +3465,8 @@ C
         CALL EIRENE_MASRR1 (' TARGETS,EE',SFEET(1),NTARGI,5)
         DO ITARG=1,NTARGI
           DO IFL=1,NFLA
-             WRITE(iunout,'(A,I0,A,ES12.4)') 'TARGETS, NI(IFL =',IFL,') ',
+             WRITE(iunout,'(A,I0,A,ES12.4)') 
+     .            'TARGETS, NI(IFL =',IFL,') ',
      .             SFNIT(ITARG,IFL)
           ENDDO
           CALL EIRENE_LEER(1)
