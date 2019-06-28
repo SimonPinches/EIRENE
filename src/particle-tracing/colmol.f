@@ -19,7 +19,7 @@ c             i.e.  momentum collision estimators, or generation limit
 c             otherwise: avoid calls to bfield.f
 c
 cdr  5. 8.15: ARGUMENTS ADDED TO VECUSR
-cdr 20.10.15: arguments in chctrc: type of collision process: corrected for PI and OT
+cdr 20.10.15: arguments in chctrc: type of collision process: corrected for PI and PH
 cdr 24.11.15:  bug fix re coll est for pi processes, in colion: eiml --> eiio
 cdr Dec.15  :  bug fix pi reaction and cascading was wrong:
 cdr            irei, rather than irpi, and p2nd
@@ -107,6 +107,10 @@ C
       USE EIRMOD_CLOGAU
       USE EIRMOD_CSPEZ
       USE EIRMOD_PHOTON
+      USE EIRMOD_RANF, ONLY: RANF_EIRENE
+      USE EIRMOD_VELOPI, ONLY: EIRENE_VELOPI
+      USE EIRMOD_VELOEL, ONLY: EIRENE_VELOEL
+      USE EIRMOD_VELOCX, ONLY: EIRENE_VELOCX
 
       IMPLICIT NONE
 
@@ -141,7 +145,7 @@ csw add n 2lines
 cdr   INTEGER :: kk,updf,t1
 cdr   real(dp):: sump
 csw external
-      real(dp), external :: ranf_eirene
+ctk      real(dp), external :: ranf_eirene
 
       SAVE
 

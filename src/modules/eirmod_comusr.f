@@ -28,6 +28,7 @@ cdr             input tally no. 25 added: PSI, poloidal magn. flux. Units?
      P          EIRENE_ASSOCIATE_COMUSR,
      P          EIRENE_COMUSR_REINIT
 
+      INTEGER, SAVE :: IFIRST=0
       INTEGER, SAVE ::
      P NPLPR1, NSFPRM, NPLPR2  ! internal, not public. former storage tests in setprm are abandoned
       INTEGER, PUBLIC, SAVE ::
@@ -1417,7 +1418,6 @@ C
       SUBROUTINE EIRENE_INIT_COMUSR(ICAL)
 
       INTEGER, INTENT(IN) :: ICAL
-      INTEGER, SAVE :: IFIRST=0
 
       IF (IFIRST == 0) THEN
         LSMOPRO = .FALSE.
@@ -1697,11 +1697,13 @@ c  Cemetery for inactive input tallies (no storage)
       END IF
 
       RETURN
+      END SUBROUTINE EIRENE_INIT_COMUSR
 
-      ENTRY EIRENE_COMUSR_REINIT
+      SUBROUTINE EIRENE_COMUSR_REINIT
+      IMPLICIT NONE
       IFIRST = 0
       RETURN
 
-      END SUBROUTINE EIRENE_INIT_COMUSR
+      END SUBROUTINE EIRENE_COMUSR_REINIT
 
       END MODULE EIRMOD_COMUSR

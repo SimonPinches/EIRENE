@@ -1,10 +1,10 @@
 cdr
-c  at entry WRPLAM:
+c  at subroutine WRPLAM:
 C  write plasma (background) data, source distribution and atomic data
 C  onto unit fort.13.
 C
 cdr
-c  at entry RPLAM:
+c  at subroutine RPLAM:
 C  read plasma (background) data, source distribution and atomic data
 C  from unit 13.
 C
@@ -22,12 +22,9 @@ cdr  NLSHRT13  :  SET TRUE IN INFCOP, COUPLE_SOLPS_ITER. REDUCED SIZE FORT 13.
       SUBROUTINE EIRENE_WRPLAM(TRCFLE,IFLG)
       USE EIRMOD_PARMMOD
       USE EIRMOD_CLOGAU
-      USE EIRMOD_COMUSR
-      USE EIRMOD_CSPEI
 
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: IFLG
-      INTEGER, INTENT(INOUT) :: IRET
       LOGICAL, INTENT(IN) :: TRCFLE
 
       IF (NLSHRT13) THEN
@@ -35,11 +32,20 @@ cdr  NLSHRT13  :  SET TRUE IN INFCOP, COUPLE_SOLPS_ITER. REDUCED SIZE FORT 13.
       ELSE
         CALL EIRENE_WRPLAM_LONG (TRCFLE,IFLG)
       ENDIF
-      RETURN
+      END SUBROUTINE EIRENE_WRPLAM
 C
 c.............................................
 
-      ENTRY EIRENE_RPLAM(TRCFLE,IFLG,IRET)
+      SUBROUTINE EIRENE_RPLAM(TRCFLE,IFLG,IRET)
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_CLOGAU
+      USE EIRMOD_COMUSR
+      USE EIRMOD_CSPEI
+
+      IMPLICIT NONE
+      INTEGER, INTENT(IN) :: IFLG
+      INTEGER, INTENT(INOUT) :: IRET
+      LOGICAL, INTENT(IN) :: TRCFLE
 c.............................................
 
       IRET = 0
@@ -55,6 +61,4 @@ c.............................................
       ELSE
         CALL EIRENE_RPLAM_LONG (TRCFLE,IFLG,IRET)
       ENDIF
-      RETURN
-
-      END SUBROUTINE EIRENE_WRPLAM
+      END SUBROUTINE EIRENE_RPLAM

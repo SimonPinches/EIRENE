@@ -322,6 +322,7 @@ c           ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
             DEALLOCATE (BASE_TEMP)
         END SELECT
       END DO
+      IF (ALLOCATED(DEINTF)) DEALLOCATE(DEINTF)
 
 c......................................................................
 

@@ -102,6 +102,7 @@ cpb jan. 18:  array NFSTPI moved to module EIRMOD_COMUSR
 
       INTEGER, PUBLIC, SAVE ::
      I NOUTA1, NOUTA2, NOUTAS, NOUTAU, NOUTTL
+      INTEGER, SAVE :: IFRST=0
 
       CONTAINS
 
@@ -616,7 +617,6 @@ csw 19mar2013
 
       LOGICAL, INTENT(IN) :: LOGARR(NSTRA)
       INTEGER :: ISTRA
-      INTEGER, SAVE :: IFRST=0
 
       DO ISTRA=0,NSTRA
 
@@ -857,13 +857,15 @@ cdr  energy sources from pl, for electrons:  tally epeli missing ??
       IFRST = 1
 
       RETURN
+      END SUBROUTINE EIRENE_INIT_COUTAU
 
 C     The following ENTRY is for reinitialization of EIRENE
 
-      ENTRY EIRENE_INIT_COUTAU_REINIT
+      SUBROUTINE EIRENE_INIT_COUTAU_REINIT
+      IMPLICIT NONE
       IFRST = 0
       return
-      END SUBROUTINE EIRENE_INIT_COUTAU
+      END SUBROUTINE EIRENE_INIT_COUTAU_REINIT
 
 
       SUBROUTINE EIRENE_WRITE_COUTAU (OUTAU,IUNOUT)

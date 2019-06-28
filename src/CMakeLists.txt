@@ -160,7 +160,7 @@ endif()
 
 # Adds EIRENE library to the project.
 add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno} 
-                   ${src_file-handling} ${src_geometry}
+                   ${src_file-handling} ${src_function_modules} ${src_geometry}
                    ${src_geometry/time-routines} ${src_interface/x} 
                    ${src_iterate} ${src_main-routines} ${src_mathematics} 
                    ${src_modules} ${src_output} ${src_particle-tracing} 
@@ -194,25 +194,59 @@ set_target_properties(eirene PROPERTIES
 
 # Gets the git revision hash and stores it in the variable 'git_hash'.
 find_package(Git)
+
 if(GIT_FOUND)
   if(EXISTS ${PROJECT_SOURCE_DIR}/../.git)
-    set(git_hash_command log --pretty=format:"%ci %H %d" --abbrev-commit -1)
+    set(git_hash_command log --pretty=format:"%ci" --abbrev-commit -1)
+    execute_process(COMMAND ${GIT_EXECUTABLE} ${git_hash_command} 
+                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/.. 
+                    OUTPUT_VARIABLE git_date 
+                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+    set(git_hash_command log --pretty=format:"%H" --abbrev-commit -1)
     execute_process(COMMAND ${GIT_EXECUTABLE} ${git_hash_command} 
                     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/.. 
                     OUTPUT_VARIABLE git_hash 
                     OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+    set(git_hash_command log --pretty=format:"%d" --abbrev-commit -1)
+    execute_process(COMMAND ${GIT_EXECUTABLE} ${git_hash_command} 
+                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/.. 
+                    OUTPUT_VARIABLE git_branch 
+                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+    set(git_hash_command log --pretty=format:"%ci %H %d" --abbrev-commit -1)
+    execute_process(COMMAND ${GIT_EXECUTABLE} ${git_hash_command} 
+                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/.. 
+                    OUTPUT_VARIABLE git_full_hash 
+                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+    # Configures the version CMakeLists file.
+    configure_file(${PROJECT_SOURCE_DIR}/cmake/version.cmake.in
+                   version.cmake
+                   @ONLY)
+
+    # Trigger the EIRENE version output.
+    add_custom_target(version 
+                      ${CMAKE_COMMAND} -D PROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}
+                                       -P version.cmake)
+    add_dependencies(EIRENE version)
+    add_dependencies(eirene version)
   endif()
 endif()
 
 # Adds a target to generate a documentation with Doxygen.
 find_package(Doxygen)
+
 if(DOXYGEN_FOUND)
   configure_file(${PROJECT_SOURCE_DIR}/cmake/Doxyfile.in 
                  ${PROJECT_BINARY_DIR}/../doc/Doxyfile @ONLY)
+
   add_custom_target(doc
                    ${DOXYGEN_EXECUTABLE} Doxyfile
                    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/../doc
                    COMMENT "Generating documentation with Doxygen" VERBATIM)
+
   message("-----------------------------------------------------")
   message("To generate the documentation, type \"make doc\"")
   message("-----------------------------------------------------")

@@ -1,0 +1,18 @@
+C> \brief Print EIRENEs git version hash.
+C>
+C> Prints/sends the date, branch and version hash of EIRENE to the 
+C> usual output unit.
+      SUBROUTINE EIRENE_VERSION
+
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
+
+      CALL EIRENE_HEADNG('GIT REVISION USED IN THIS RUN',72)
+
+      WRITE(IUNOUT,*) 'DATE:   ', 
+     . '@git_date@'
+      WRITE(IUNOUT,*) 'HASH:   ', 
+     . '@git_hash@'
+      WRITE(IUNOUT,*) 'BRANCH:',
+     . '@git_branch@'
+
+      END SUBROUTINE EIRENE_VERSION

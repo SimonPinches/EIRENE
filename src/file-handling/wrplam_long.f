@@ -12,7 +12,7 @@ c  nov.  05:  add eltot and ve to step function data
 C  write plasma (background) data, source distribution and atomic data
 C  on unit 13.
 C
-c  at entry RPLAM:
+c  at subroutine RPLAM:
 C  read plasma (background) data, source distribution and atomic data
 C  from unit 13.
 C
@@ -31,15 +31,11 @@ C            = 10  read only plasma background
       USE EIRMOD_COMSOU
       USE EIRMOD_CSTEP
       USE EIRMOD_COMXS
-      USE EIRMOD_CSPEI
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: IFLGIN
-      INTEGER, INTENT(INOUT) :: IRET
       LOGICAL TRCFLE
 cdr  for testing: are identical input tallies active in write and read ?
-      INTEGER :: NFRS(NTALI), NAD(NTALI), IO, I, IFLG
-      LOGICAL :: LIVT(NTALI)
-      REAL(DP), ALLOCATABLE :: PTL(:,:)
+      INTEGER :: IFLG
 C
       IFLG = IFLGIN 
       OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
@@ -95,11 +91,29 @@ c  write primary source parameters
      .             ISTUF,NSMAX,NSPSTI,NSPSTE
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: module EIRMOD_CSTEP.f'
       CLOSE (UNIT=13+ifoff)
-      RETURN
+      END
 C
 c...............................................................
 C
-      ENTRY EIRENE_RPLAM_LONG(TRCFLE,IFLGIN,IRET)
+      SUBROUTINE EIRENE_RPLAM_LONG(TRCFLE,IFLGIN,IRET)
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_CINIT, ONLY: FORT
+      USE EIRMOD_COMUSR
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
+      USE EIRMOD_CZT1
+      USE EIRMOD_COMSOU
+      USE EIRMOD_CSTEP
+      USE EIRMOD_COMXS
+      USE EIRMOD_CSPEI
+      IMPLICIT NONE
+      INTEGER, INTENT(IN) :: IFLGIN
+      INTEGER, INTENT(INOUT) :: IRET
+      LOGICAL TRCFLE
+cdr, jan 2019
+      INTEGER :: NFRS(NTALI), NAD(NTALI), IO, I, IFLG
+      LOGICAL :: LIVT(NTALI)
+      REAL(DP), ALLOCATABLE :: PTL(:,:)
 
       IFLG = IFLGIN
       IRET = 0

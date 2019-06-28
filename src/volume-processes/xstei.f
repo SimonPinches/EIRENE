@@ -494,9 +494,46 @@ C
       ENDIF
       RETURN
 C
+C
 C-----------------------------------------------------------------------
 C
-      ENTRY EIRENE_XSTEI_1(IREI)
+  994 CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSTEI: EXIT CALLED'
+      WRITE (iunout,*)
+     .  'SPECIES INDEX OF SECONDARY PARTICLE OUT OF RANGE'
+      WRITE (iunout,*) 'KK ',KK
+      CALL EIRENE_EXIT_OWN(1)
+  996 CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSTEI, MODCLF(KK) ',MODCLF(KK)
+      WRITE (iunout,*) IREI,KK
+      CALL EIRENE_EXIT_OWN(1)
+  997 CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSTEI: ISCDE FLAG'
+      WRITE (iunout,*) 'IREI, EFLAG ',IREI,EFLAG
+      CALL EIRENE_EXIT_OWN(1)
+  998 CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSTEI: INVALID KREAD'
+      WRITE (iunout,*) IREI,KREAD
+      CALL EIRENE_EXIT_OWN(1)
+      END
+C
+C
+C-----------------------------------------------------------------------
+C
+      SUBROUTINE EIRENE_XSTEI_1(IREI)
+      USE EIRMOD_PRECISION
+CTK      USE EIRMOD_PARMMOD
+      USE EIRMOD_COMUSR
+CTK      USE EIRMOD_COMPRT, ONLY: IUNOUT
+CTK      USE EIRMOD_CCONA
+CTK      USE EIRMOD_CGRID
+      USE EIRMOD_COMXS
+CTK      use EIRMOD_ctrcei, only: trcamd
+
+      IMPLICIT NONE
+      INTEGER, INTENT(IN) :: IREI
+      INTEGER :: IA, IPP, IO, ISPZ, IAT, IM, IIO, IML
+      REAL(DP) :: P2N
 C
 C  SET TOTAL NUMBER OF SECONDARIES BY TYPE OF SECONDARY: P..DS(IREI,0)
 C  AND
@@ -548,10 +585,25 @@ C          NORMALIZATION DOES NOT EXTEND OVER SECONDARY BULK PARTICLES
   550 CONTINUE
 C
       RETURN
+      END
 C
 C-----------------------------------------------------------------------
 C
-      ENTRY EIRENE_XSTEI_2(IREI)
+      SUBROUTINE EIRENE_XSTEI_2(IREI)
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_COMUSR
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
+      USE EIRMOD_CCONA
+      USE EIRMOD_CGRID
+      USE EIRMOD_COMXS
+CTK      use EIRMOD_ctrcei, only: trcamd
+
+      IMPLICIT NONE
+      INTEGER, INTENT(IN) :: IREI
+      REAL(DP) :: EN, EA, EI, EIRENE_FEHVEI1, EIRENE_FEELEI1
+      INTEGER :: IPP, IP, IRAD, IO, IIO, IMIN, IMAX, IAT, IA, IML, IM
+
 C
       CALL EIRENE_LEER(2)
       WRITE (iunout,*) 'ELEC. IMPACT REACTION NO. IREI= ',IREI
@@ -714,28 +766,4 @@ C
 
 
       RETURN
-C
-C
-C-----------------------------------------------------------------------
-C
-  994 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTEI: EXIT CALLED'
-      WRITE (iunout,*)
-     .  'SPECIES INDEX OF SECONDARY PARTICLE OUT OF RANGE'
-      WRITE (iunout,*) 'KK ',KK
-      CALL EIRENE_EXIT_OWN(1)
-  996 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTEI, MODCLF(KK) ',MODCLF(KK)
-      WRITE (iunout,*) IREI,KK
-      CALL EIRENE_EXIT_OWN(1)
-  997 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTEI: ISCDE FLAG'
-      WRITE (iunout,*) 'IREI, EFLAG ',IREI,EFLAG
-      CALL EIRENE_EXIT_OWN(1)
-  998 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTEI: INVALID KREAD'
-      WRITE (iunout,*) IREI,KREAD
-      CALL EIRENE_EXIT_OWN(1)
-      RETURN
-C
       END

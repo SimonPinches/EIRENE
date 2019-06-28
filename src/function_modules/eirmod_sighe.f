@@ -1,4 +1,18 @@
-CDR  from W.Z, (HELIUM) DERIVED FROM FROM SIGHA (HYDROGEN)
+      MODULE EIRMOD_SIGHE
+      USE EIRMOD_PRECISION
+      
+      IMPLICIT NONE
+      PRIVATE
+
+      PUBLIC :: EIRENE_SIGHE, EIRENE_SIGHE_REINIT
+
+      REAL(DP), SAVE :: PENOLD=-1._DP
+      INTEGER, SAVE :: ISTOLD=-1, ITROLD=-1
+
+      CONTAINS
+     
+CDR  originally from W.Z, (HELIUM), DERIVED FROM FROM SIGHA (HYDROGEN).
+cdr  PEN wavelength, rather than transition energy ?
 c
 c
       SUBROUTINE EIRENE_SIGHE(INIT,JJJ,ZDS,PEN,PSIG,DUMMY2,ARGST)
@@ -6,19 +20,19 @@ c
 CDR  this routine evaluates ("side on") helium atom ("He") emissivities,
 cdr  integrated along a line of sight (PSIG) and also the integrand resolved along
 cdr  line of sight (ARGST).
-c    Currently there are up to 2 contributions to each particular preprogrammed
+c    Currently there are up to 2 components to each particular preprogrammed
 c    transition (depending on population coefficient data stored
 c    in file AMJUEL, section H.11 and H.12
-c  aug.16: available transitions in H-atom:
+c  aug.16: available transitions in He-atom:
 c          ba-alpha  (3S - 2P, singlet,  728 nm)
 c          ba-alpha  (3S - 2P, triplet,  706 nm)
 c          ba-alpha  (3P - 2S, singlet,  501 nm)
 c          ba-alpha  (3D - 2P, singlet,  667 nm)
 c          ba-beta   (4D - 2P, singlet,  492 nm)
-c    for each of these lines there are separate contributions from
+c    for each of these lines there are separate components from
 c    1) coupling to He
 c    2) coupling to He+
-c    0) total, sum over these 6 contributions
+c    0) total, sum over these 2 components
 c
 c
 C
@@ -29,10 +43,11 @@ C          JJJ:    INDEX OF SEGMENT ALONG CHORD
 C          ZDS:    LENGTH OF SEGMENT NO. JJJ
 C          PEN:    CENTRAL wavelength OF LINE (nm)
 C  OUTPUT: CONTRIB. FROM CELL NCELL AND CHORD SEGMENT JJJ TO:
-C          THE H LINE FLUX PSIG(I),I=0,5 CONTRIBUTIONS
+C          THE He LINE FLUX PSIG(I),I=0,2 COMPONENTS
 C          FROM ATOMS (only Ground state, MS unresolved), and BULK IONS
 C          THE INTEGRAND ARGST IS SUCH THAT INTEGR.(ARGST*DL) = PSIG
 C
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CESTIM
@@ -46,13 +61,9 @@ C
       INTEGER, INTENT(IN) :: INIT, JJJ
       REAL(DP), INTENT(IN) :: ZDS, DUMMY2, PEN
       REAL(DP), INTENT(IN OUT) :: PSIG(0:), ARGST(0:,:)
-      REAL(DP) :: PENOLD
-      INTEGER :: ISTOLD, ISP, NCELC, ICELL, ITROLD
+      INTEGER :: ISP, NCELC, ICELL
       LOGICAL :: LARGST
       CHARACTER(9) :: REAC1, REAC2
-      DATA ISTOLD/-1/
-      DATA ITROLD/-1/
-      DATA PENOLD/-1._DP/
 C
       SAVE
 C
@@ -130,14 +141,14 @@ C
         ARGST(0,JJJ)=ADDV(NADVI+3,NCELC)
       END IF
 C
-      RETURN
+      END
 
 C     Following lines added for reinitialisation of eirene (DMH)
 
-      ENTRY EIRENE_SIGHE_REINIT
+      SUBROUTINE EIRENE_SIGHE_REINIT
       ISTOLD = -1
       ITROLD = -1
       PENOLD = -1._DP
-      RETURN
+      END
 
-      END SUBROUTINE EIRENE_SIGHE
+      END MODULE EIRMOD_SIGHE

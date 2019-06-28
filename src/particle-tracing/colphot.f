@@ -103,6 +103,7 @@ C
       USE EIRMOD_CLOGAU
       USE EIRMOD_CSPEZ
       USE EIRMOD_PHOTON
+      USE EIRMOD_RANF, ONLY: RANF_EIRENE
 
       IMPLICIT NONE
 
@@ -129,7 +130,7 @@ csw add n 2lines
       INTEGER :: iaph,irph,kk,updf,t1
       real(dp):: sump
 csw external
-      real(dp), external :: ranf_eirene
+ctk      real(dp), external :: ranf_eirene
 
       SAVE
 

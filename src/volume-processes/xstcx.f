@@ -472,10 +472,66 @@ C
       ENDIF
       RETURN
 C
+C
+C-----------------------------------------------------------------------
+C
+  990 CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED'
+      WRITE (iunout,*) 'INVALID SPECIES INDEX FOR CX ',IRCX
+      CALL EIRENE_EXIT_OWN(1)
+  991 CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED'
+      WRITE (iunout,*) 'CHARGE CONSERVATION VIOLATED'
+      WRITE (iunout,*) 'IRCX, TEST-SPECIES, BULK SPECIES ',IRCX,
+     .                  TEXTS(ISP),TEXTS(NSPAMI+IPL)
+      CALL EIRENE_EXIT_OWN(1)
+  992 CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED'
+      WRITE (iunout,*)
+     .  'INTERACTING PARTICLES INCONSISTENT (MASS OR CHARGE)'
+      WRITE (iunout,*) 'KK ',KK
+      WRITE (iunout,*) 'IRCX, TEST-SPECIES, BULK SPECIES ',IRCX,
+     .                  TEXTS(ISP),TEXTS(NSPAMI+IPL)
+      CALL EIRENE_EXIT_OWN(1)
+  993 CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED'
+      WRITE (iunout,*)
+     .  'EBULK_ION .LE.0, BUT MONOENERGETIC DISTRIBUTION?'
+      WRITE (iunout,*) 'CHECK ENERGY FLAG ISCDEA'
+      WRITE (iunout,*) 'KK,ISCDEA ',KK,ISCDEA
+      CALL EIRENE_EXIT_OWN(1)
+  994 CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED'
+      WRITE (iunout,*)
+     .  'SPECIES INDEX OF SECONDARY PARTICLE OUT OF RANGE'
+      WRITE (iunout,*) 'KK ',KK
+      CALL EIRENE_EXIT_OWN(1)
+  996 CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED'
+      WRITE (iunout,*) 'NO CROSS-SECTION AVAILABLE FOR NON-DEFAULT CX'
+      WRITE (iunout,*) 'KK ',KK
+      WRITE (iunout,*) 'EITHER PROVIDE CROSS-SECTION OR USE DIFFERENT'
+      WRITE (iunout,*) 'POST-COLLISION SAMPLING FLAG ISCDEA'
+      CALL EIRENE_EXIT_OWN(1)
+      END
+C
 C-----------------------------------------------------------------------
 C
 
-      ENTRY EIRENE_XSTCX_2(IRCX,IPL)
+      SUBROUTINE EIRENE_XSTCX_2(IRCX,IPL)
+CTK      USE EIRMOD_PRECISION
+CTK      USE EIRMOD_PARMMOD
+      USE EIRMOD_COMUSR
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
+CTK      USE EIRMOD_CCONA
+CTK      USE EIRMOD_CGRID
+CTK      USE EIRMOD_CZT1
+      USE EIRMOD_COMXS
+CTK      use EIRMOD_ctrcei, only: trcamd
+      IMPLICIT NONE
+      INTEGER, INTENT(IN) :: IRCX, IPL
+      INTEGER :: ITYP1, ITYP2, ISPZ1, ISPZ2
+      CHARACTER(8) :: TEXTS1, TEXTS2
 C
       CALL EIRENE_LEER(2)
       WRITE (iunout,*) 'CHARGE EXCHANGE REACTION NO. IRCX= ',IRCX
@@ -518,48 +574,4 @@ C
      .                  FACRCX(IRCX,1)
       CALL EIRENE_LEER(1)
 
-
-      RETURN
-C
-C
-C-----------------------------------------------------------------------
-C
-  990 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED'
-      WRITE (iunout,*) 'INVALID SPECIES INDEX FOR CX ',IRCX
-      CALL EIRENE_EXIT_OWN(1)
-  991 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED'
-      WRITE (iunout,*) 'CHARGE CONSERVATION VIOLATED'
-      WRITE (iunout,*) 'IRCX, TEST-SPECIES, BULK SPECIES ',IRCX,
-     .                  TEXTS(ISP),TEXTS(NSPAMI+IPL)
-      CALL EIRENE_EXIT_OWN(1)
-  992 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED'
-      WRITE (iunout,*)
-     .  'INTERACTING PARTICLES INCONSISTENT (MASS OR CHARGE)'
-      WRITE (iunout,*) 'KK ',KK
-      WRITE (iunout,*) 'IRCX, TEST-SPECIES, BULK SPECIES ',IRCX,
-     .                  TEXTS(ISP),TEXTS(NSPAMI+IPL)
-      CALL EIRENE_EXIT_OWN(1)
-  993 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED'
-      WRITE (iunout,*)
-     .  'EBULK_ION .LE.0, BUT MONOENERGETIC DISTRIBUTION?'
-      WRITE (iunout,*) 'CHECK ENERGY FLAG ISCDEA'
-      WRITE (iunout,*) 'KK,ISCDEA ',KK,ISCDEA
-      CALL EIRENE_EXIT_OWN(1)
-  994 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED'
-      WRITE (iunout,*)
-     .  'SPECIES INDEX OF SECONDARY PARTICLE OUT OF RANGE'
-      WRITE (iunout,*) 'KK ',KK
-      CALL EIRENE_EXIT_OWN(1)
-  996 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED'
-      WRITE (iunout,*) 'NO CROSS-SECTION AVAILABLE FOR NON-DEFAULT CX'
-      WRITE (iunout,*) 'KK ',KK
-      WRITE (iunout,*) 'EITHER PROVIDE CROSS-SECTION OR USE DIFFERENT'
-      WRITE (iunout,*) 'POST-COLLISION SAMPLING FLAG ISCDEA'
-      CALL EIRENE_EXIT_OWN(1)
       END

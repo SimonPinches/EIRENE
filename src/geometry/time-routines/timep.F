@@ -75,6 +75,7 @@ C
       USE EIRMOD_COMPRT
       USE EIRMOD_COMSOU
       USE EIRMOD_CLGIN
+      USE EIRMOD_LEARC1, ONLY: EIRENE_LEARC1
 
       IMPLICIT NONE
 
@@ -86,7 +87,7 @@ C
      .           NRCLLP, LHELP, J2, INCY, JN, ICOU, NYSAVE, NHELP,
      .           I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS,
      .           IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J, JJ,
-     .           EIRENE_LEARCA, EIRENE_LEARC2, EIRENE_LEARC1,
+     .           EIRENE_LEARCA, EIRENE_LEARC2, 
      .           NJC, ITEST, JSH, NN ,IN, itc
       INTEGER :: NCOUNS(N2ND+N3RD)
 cdr logicals for intersection with poloidal surfaces
