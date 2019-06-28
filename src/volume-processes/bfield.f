@@ -14,10 +14,10 @@ cdr              Not fully available for all levgeo=1,2,3 optins. Check FEMINT.f
 
       subroutine eirene_bfield (icell, x, y, z, bx, by, bz, bf,l)
 
-      use eirmod_precision
-      use eirmod_parmmod
-      use eirmod_comusr
-      use eirmod_cinit
+      use eirmod_precision, only: dp
+      use eirmod_comusr, only: BXIN, BYIN, BZIN, BFIN, BXINCORNER, 
+     >                         BYINCORNER, BZINCORNER, BFINCORNER, LBSMO
+      use eirmod_cinit, only: INDPRO
 
       implicit none
 
