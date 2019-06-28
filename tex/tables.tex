@@ -28,10 +28,11 @@ These latter revisions are described in \cref{tab3a}, and only for that section
 of the surface tally list that has been affected.
 
 Options for switching on and off of input tallies have been added to the code 
-in 2019. At the same time the input data has been reviewed and additional 
-input tallies have been made available. For this reason the table of input 
-tallies is given twice once for the current EIRENE version (June 2019) and once
-for previous versions.
+in 2019. 
+At the same time the input data has been reviewed and additional input tallies
+have been made available.
+For this reason the table of input tallies is given twice once for the current
+EIRENE version (June 2019) and once for previous versions.
 
 \vspace{1em}
 
@@ -152,7 +153,7 @@ to the ``Time-Surface" (the census array) then.
 
 \begin{landscape}
   \begin{longtable}{|r|l|l|l|l|c|c|} 
-    \caption{\textbf{Input Tallies for Background, Input, Module: COMUSR, EIRENE version June 2019}}
+    \caption{\textbf{Input Tallies for Background, Input, Module: COMUSR, EIRENE version June 2019.}}
     \label{tab1new}
     \\
     \hline
@@ -621,8 +622,8 @@ to the ``Time-Surface" (the census array) then.
 
   \textbf{Note:} 
 
-  We distinguish between so called primary input tallies, and
-  derived input tallies, the latter being  indicated by $^*$.
+  We distinguish between so called primary input tallies, and derived input 
+  tallies, the latter being indicated by $^*$.
   The latter are automatically computed from the former by EIRENE.
 
   Primary input tallies are set or transferred from external data sources via
@@ -630,21 +631,20 @@ to the ``Time-Surface" (the census array) then.
   Storage for both kinds of tallies is allocated in module COMUSR.f
 
   \begin{itemize}
-    \item NPLSTI: number of different bulk particle (bulk ion) temperatures in a
-	  run.
+    \item NPLSTI: number of different bulk particle (bulk ion) temperatures in a run.
 	  See input block 5.
-	  Default: NPLSTI=NPLS 
-    \item NPLSV: number of different bulk particle (bulk ion) flow velocities
-	  in a run.
+	  Default: NPLSTI=NPLS. 
+    \item NPLSV: number of different bulk particle (bulk ion) flow velocities in a
+          run.
 	  See input block 5.
-	  Default: NPLSV=NPLS 
-    \item Some input tallies such as electron and ion temperatures and densities
-          as well as drift velocities and magnetic field are not allowed to be switched 
-          off.
+	  Default: NPLSV=NPLS.
+    \item Some input tallies such as electron and ion temperatures and densities as 
+          well as drift velocities and magnetic field are not allowed to be 
+          switched off.
     \item DEIN and EDRIFT are ``derived" input tallies, internally computed from
 	  the ion densities (quasi-neutrality), and the flow field, respectively.
     \item Tallies -26 -- -30 are intentionally left free for future use and are
-          switched off per default
+          switched off per default.
     \item Tallies -31 -- -120 are further ``internal" derived quantities, providing
           derivatives in carthesian coordinates (gradient vector) of input tallies
           -1 -- -25 and are switched off if not explicitely switched on in the 
@@ -652,22 +652,23 @@ to the ``Time-Surface" (the census array) then.
     \item All input tallies are available for printing, plotting and for use in 
           algebraic expressions in volume averaged tallies when switched on.
     \item B-field and E-field tallies contain redundancy.
-	  Storage can be reduced
+	  Storage can be reduced.
     \item WGHT space species  weight window arrays.
 	  Currently not in use and switched off.
     \item Magnetic field input is needed only for photon transport with Zeeman
-	  split line shapes, or in case of charged particle transport (Subr.\ FOLION).
+	  split line shapes, or in case of charged particle transport (Subr.\ 
+          FOLION).
 	  Only quite rudimentary preprogrammed input options for magnetic field are
-	  available, usually it is expected to receive B-field information from external
-	  files, see INDPRO(5) options for magnetic field tallies in input block 5
-	  (\cref{sec2.5}).
+	  available, usually it is expected to receive B-field information from 
+          external files, see INDPRO(5) options for magnetic field tallies in input
+          block 5 (\cref{sec2.5}).
     \item For electric fields (needed only for charged particle transport) only
 	  input via external files is possible.
-	  Default: $\vec{E} = 0$
+	  Default: $\vec{E} = 0$.
   \end{itemize}
 
   \begin{longtable}{|r|l|l|l|l|c|} 
-    \caption{\textbf{Input Tallies for Background, Input, Module: COMUSR, EIRENE version prior to June 2019}}
+    \caption{\textbf{Input Tallies for Background, Input, Module: COMUSR, EIRENE version prior to June 2019.}}
     \label{tab1}
     \\
     \hline

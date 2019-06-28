@@ -621,23 +621,22 @@ cards are expected.
         \end{description}
 \end{description}
 
-For Eirene versions newer than June 2019 additional input for use with
-input tallies is available.
+For Eirene versions newer than June 2019 additional input for use with input 
+tallies is available.
 
 \begin{description}
-  \item[``Option-Card''] If Eirene finds a card containing the string 
-        ``OPTIONAL'' it assumes that there might be an arbitrary number 
-        of input cards describing additional options for input tallies.
+  \item[``Option-Card''] If EIRENE finds a card containing the string ``OPTIONAL''
+        it assumes that there might be an arbitrary number of input cards 
+        describing additional options for input tallies.
   \item[ITAL] index of input tally, -NTALI < ITAL < 0
   \item[IOPT] option flag
-       \begin{description}
-         \item[$< 0$] switch off tally ITAL
-         \item[$= 0$] keep default
-         \item[$= 1$] explicitely switch on tally ITAL
-         \item[$= 2$] prepare for smoothing, interpolate tally ITAL
-                      to cornerpoints
-         \item[$= 3$] switch on gradients for tally ITAL
-       \end{description}
+        \begin{description}
+          \item[$< 0$] switch off tally ITAL
+          \item[$= 0$] keep default
+          \item[$= 1$] explicitely switch on tally ITAL
+          \item[$= 2$] prepare for smoothing, interpolate tally ITAL to cornerpoints
+          \item[$= 3$] switch on gradients for tally ITAL
+        \end{description}
 \end{description}
 
 \subsection{Derived Background Data} \label{sec2.5.1} 
