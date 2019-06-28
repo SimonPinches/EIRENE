@@ -53,7 +53,7 @@ c  magnetic field
       LIVTALI(23)  = NPLSV>0      ! BVIN, else: sign(1.,bvin)=1.0   
       LIVTALI(24)  = NPLS>0       ! PARMOM, else: = 0.0
 
-C  CURRENTLY THE LAST INPUT TALLY IS TALLY NO. 24 (=NTALG)
+C  CURRENTLY THE LAST USED INPUT TALLY IS TALLY NO. 25 (NTALG=30)
 
 C  INTLOPT < 0  : SWITCH OFF TALLY
 C          = 0  : KEEP DEFAULT

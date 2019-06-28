@@ -69,7 +69,7 @@ C  gradient tallies:  derivatives wrt. cartesian coordinates
       TXTPLS(1,36)='dTI/dZ                                           '
       TXTPLS(1,37)='dNE/dX                                           '
       TXTPLS(1,38)='dNE/dY                                           '
-      TXTPLS(1,38)='dNE/dZ                                           '
+      TXTPLS(1,39)='dNE/dZ                                           '
       TXTPLS(1,40)='dNI/dX                                           '
       TXTPLS(1,41)='dNI/dY                                           '
       TXTPLS(1,42)='dNI/dZ                                           '

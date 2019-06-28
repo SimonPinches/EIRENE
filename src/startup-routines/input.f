@@ -238,7 +238,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
      .           NB, NS, NA, ISTR, IOPT,
      .           NRC, IADV, NUM_COMPO, NUM_CONTRIB, ICNT, IDMDL, IND,
-     .           ILINE, JCOMP, KCONTR, IROW_ESC, ICOL_ESC, IRET
+     .           ILINE, JCOMP, KCONTR, IROW_ESC, ICOL_ESC, IRET, ITAL
       INTEGER, SAVE :: NZADD, NITER0
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       INTEGER, DIMENSION(1) :: ISTR_A
@@ -2426,9 +2426,9 @@ c  -ntali<ital<0,  then: ital=iabs(ital)
           DO 
             READ (IUNIN,'(A72)',IOSTAT=IO) ZEILE
             IF ((IO /= 0) .OR. (ZEILE(1:3) .EQ. '***')) EXIT
-            READ (ZEILE,6666) J, IOPT
-            IF ((J >= 0) .OR. (J < -NTALI)) CYCLE         
-            INTLOPTS(IABS(J)) = IOPT
+            READ (ZEILE,6666) ITAL, IOPT
+            IF ((ITAL >= 0) .OR. (ITAL < -NTALI)) CYCLE         
+            INTLOPTS(IABS(ITAL)) = IOPT
           END DO
         END IF
       END IF
