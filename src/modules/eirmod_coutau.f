@@ -2,9 +2,6 @@ c nov. 2015:  species index ipls added for energy-pl tallies:
 c             eapli,empli,eipli,ephpli,eppli
 cdr dec. 15:  comments added. missing tallies ppeli, epeli, etc..??
 cpb jan. 18:  array NFSTPI moved to module EIRMOD_COMUSR
-cdr aug 18 :  XMCT removed from read/write ft11, but still in coutau.
-cdr           Perhaps to be simplified: Move XMCT into storage for
-cdr           writing on ft14.
       MODULE EIRMOD_COUTAU
 
       USE EIRMOD_PRECISION
@@ -375,7 +372,6 @@ cdr  etote still missing ??
       ALLOCATE (NFSTVI(NTALV))
       ALLOCATE (NFSTWI(NTALS))
 
-cdr  coutau still contains xmct, but NOUTAU does not. So needs NSTRAP to be added here
       WRITE (IUNMEM,'(A,T25,I15)')
      .       ' COUTAU ',NOUTAU*8 + NOUTTL*4
 
