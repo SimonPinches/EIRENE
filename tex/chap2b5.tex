@@ -209,6 +209,15 @@ C End of NPLSI species cards reading
       IF (INDPRO(12).LE.5) THEN
         VL0  VL1  VL2  VL3  VL4  VL5
       ENDIF
+C     ``Option-Card'' for additional information for input tallies
+C     only for Eirene version newer than June 2019
+\end{lstlisting} 
+
+If an ``Option-Card'' is encountered then
+read an arbitrary number ``input tally option cards'' of the format
+
+\begin{lstlisting}
+      ITAL IOPT
 \end{lstlisting} 
 
 Currently option INDPRO=6 and INDPRO=7 are not available for cell volumes
@@ -609,6 +618,24 @@ cards are expected.
 
                 to be written 
 
+        \end{description}
+\end{description}
+
+For Eirene versions newer than June 2019 additional input for use with input 
+tallies is available.
+
+\begin{description}
+  \item[``Option-Card''] If EIRENE finds a card containing the string ``OPTIONAL''
+        it assumes that there might be an arbitrary number of input cards 
+        describing additional options for input tallies.
+  \item[ITAL] index of input tally, -NTALI < ITAL < 0
+  \item[IOPT] option flag
+        \begin{description}
+          \item[$< 0$] switch off tally ITAL
+          \item[$= 0$] keep default
+          \item[$= 1$] explicitely switch on tally ITAL
+          \item[$= 2$] prepare for smoothing, interpolate tally ITAL to cornerpoints
+          \item[$= 3$] switch on gradients for tally ITAL
         \end{description}
 \end{description}
 
