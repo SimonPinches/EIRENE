@@ -61,7 +61,7 @@ C
      .           NF, NFT, I, IA, N, IXSET2, ISPZ, IALG, N1SDVI, ISAVE,
      .           IFIRST, IALV, ITL, JTAL, IBLD, ICURV, IE, IXSET3, IS,
      .           IERR, ICINC, IYSET3, IX, I2M, J, IRAD, I0, I1, I2, IT,
-     .           INDX, ITT, ITP
+     .           INDX, ITT, ITP, KK
       LOGICAL :: LPLOT2(NPLT), LSDVI(NPLT), LPLTT2, LINLOG, L_SAME
       CHARACTER(24) :: TXUNIT(NPLT), TXSPEC(NPLT)
       CHARACTER(24) :: TXUNT1, TXSPC1
@@ -277,6 +277,16 @@ cdr  here we deal with input tallies (and gradients thereof)
 cdr  ITL = IABS(JTAL)
               NF=NFRSTP(ITL)
               VECTOR(:,ICURV)=0.
+
+!  INPUT TALLY SWITCHED OFF ?
+              IF (.NOT.LIVTALI(ITL)) THEN
+                WRITE (iunout,*) TXTPLS(1,ITL)
+                WRITE (iunout,*) ' TALLY NOT AVAILABLE (PLTEIR)',
+     .                           ' JTAL = ', JTAL
+                CALL EIRENE_LEER(1)
+                CYCLE
+              END IF  
+
               IF (ISPZ.EQ.0) THEN
 cdr  sum over species:  this is non-sense in case of intensive quantities, such as Ti,V_in
 cdr                     and also in case of derivatives.
@@ -324,6 +334,20 @@ cdr  tbd:  summing with proper weighting, as in outtal.f
                   VECTOR(1:NSBOX,ICURV) = EZIN(1:NSBOX)
                 CASE (21)
                   VECTOR(1:NSBOX,ICURV) = EFIN(1:NSBOX)
+                CASE (22)
+                  VECTOR(1:NSBOX,ICURV) = POT(1:NSBOX)
+                CASE (23)
+                  VECTOR(1:NSBOX,ICURV) = SUM(BVIN(1:NF,1:NSBOX),1)
+                CASE (24)
+                  VECTOR(1:NSBOX,ICURV) = SUM(PARMOM(1:NF,1:NSBOX),1)
+                CASE (25)
+                  VECTOR(1:NSBOX,ICURV) = PSI(1:NSBOX)
+! INPUT TALLIES 26 -- 30:  CURRENTLY UNUSED (FREE)
+! GRADIENTS OF INPUT TALLIES
+                CASE (31:120)     ! ntali=120, constant required here
+                  KK = NADDP(ITL)
+                  VECTOR(1:NSBOX,ICURV) = 
+     .                   SUM(PLSTLS(KK+1:KK+NF,1:NSBOX),1)
                 CASE DEFAULT
                   WRITE (iunout,*) ' WRONG TALLY NUMBER IN PLTEIR',
      .                        ' JTAL = ',JTAL
@@ -377,12 +401,25 @@ cdr  individual species indices
                   VECTOR(1:NSBOX,ICURV) = EZIN(1:NSBOX)
                 CASE (21)
                   VECTOR(1:NSBOX,ICURV) = EFIN(1:NSBOX)
+                CASE (22)
+                  VECTOR(1:NSBOX,ICURV) = POT(1:NSBOX)
+                CASE (23)
+                  VECTOR(1:NSBOX,ICURV) = BVIN(MPLSV(ISPZ),1:NSBOX)
+                CASE (24)
+                  VECTOR(1:NSBOX,ICURV) = PARMOM(ISPZ,1:NSBOX)
+                CASE (25)
+                  VECTOR(1:NSBOX,ICURV) = PSI(1:NSBOX)
+! INPUT TALLIES 26 -- 30:  CURRENTLY UNUSED (FREE)
+! GRADIENTS
+                CASE (31:120)     ! ntali=120, constant required here
+                  KK = NADDP(ITL)+ISPZ
+                  VECTOR(1:NSBOX,ICURV) = PLSTLS(KK,1:NSBOX)
                 CASE DEFAULT
                   WRITE (iunout,*) ' WRONG TALLY NUMBER IN PLTEIR',
      .                        ' JTAL = ',JTAL
                   WRITE (iunout,*) ' NO PLOT PERFORMED '
                   CALL EIRENE_LEER(1)
-                  GOTO 10000
+                  CYCLE
                 END SELECT
 
               ELSE
@@ -408,7 +445,7 @@ cdr  plot output tallies
                 WRITE (iunout,*) TXTTAL(1,JTAL)
                 WRITE (iunout,*) 'TALLY SWITCHED OFF '
                 WRITE (iunout,*) 'ALL PLOTS FOR THIS TALLY TURNED OFF '
-                GOTO 10000
+                CYCLE
               END IF
 
               IF (ISPZ.EQ.0) THEN

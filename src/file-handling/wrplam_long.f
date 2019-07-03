@@ -17,13 +17,14 @@ C  read plasma (background) data, source distribution and atomic data
 C  from unit 13.
 C
 C  trcfle:  confirm writing on printout on unit IUNOUT
-C  IFLG  :  only for  RPLAM:
-C           = 0   do not read primary source data COMSOU
-C          else   do also read data from COMSOU
+C  IFLGIN  :  only for  RPLAM:
+C           /= 0   do not read primary source data COMSOU
+C            = 0   do also read data from COMSOU
+C            = 10  read only plasma background
 
-      SUBROUTINE EIRENE_WRPLAM_LONG(TRCFLE,IFLG)
+      SUBROUTINE EIRENE_WRPLAM_LONG(TRCFLE,IFLGIN)
+      USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
-      USE EIRMOD_CINIT, ONLY: FORT
       USE EIRMOD_COMUSR
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_CZT1
@@ -31,22 +32,27 @@ C          else   do also read data from COMSOU
       USE EIRMOD_CSTEP
       USE EIRMOD_COMXS
       IMPLICIT NONE
-      INTEGER, INTENT(IN) :: IFLG
+      INTEGER, INTENT(IN) :: IFLGIN
       LOGICAL TRCFLE
-cdr, jan 2019
-      INTEGER :: IO
-
+cdr  for testing: are identical input tallies active in write and read ?
+      INTEGER :: IFLG
 C
+      IFLG = IFLGIN 
       OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 13+ifoff
+
+C  write those input tallies which are active in the present run
+      WRITE (13+ifoff) LIVTALI
+      IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: LIVTALI '
+      WRITE (13+ifoff) NFRSTP, NADDP
+      IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: NFRSTP, NADDP '
+      WRITE (13+ifoff) PLSTLS
+      IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: input tallies PLSTLS '
+C
       WRITE (13+ifoff)
 C  REAL
-     R           TEIN,TIIN,DEIN,DIIN,VXIN,VYIN,VZIN,
-     R           BXIN,BYIN,BZIN,BFIN,ADIN,EDRIFT,
-     R           VOL,WGHT,BXPERP,BYPERP,
-     R           EXIN,EYIN,EZIN,EFIN,
      R           FLXOUT,SAREA,
-     R           TEINL,TIINL,DEINL,DIINL,BVIN,PARMOM,
+     R           TEINL,TIINL,DEINL,DIINL,
      R           RMASSI,RMASSA,RMASSM,RMASSP,
      R           DIOD,DATD,DMLD,DPLD,DPHD,
      R           DION,DATM,DMOL,DPLS,DPHOT,
@@ -60,7 +66,7 @@ C  MUSR, INTEGER
      I           NSPAMI,NIONI,NIONIM,NMASSI,NCHARI,NCHRGI,NFOLI,NGENI,
      I           NSPTOT,NPLSI,NPLSIM,NMASSP,NCHARP,NCHRGP,NBITS,
      I           NSNVI,NCPVI,NADVI,NBGVI,NALVI,NCLVI,NADSI,NALSI,NAINI,
-     I           NPRT,ISPEZ,ISPEZI,
+     I           NPRT,ISPEZ,ISPEZI,MPLSTI,MPLSV,
 C  LUSR, LOGICAL
      L           LGVAC,LSMOPRO
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: module EIRMOD_COMUSR.f '
@@ -89,7 +95,8 @@ c  write primary source parameters
 C
 c...............................................................
 C
-      SUBROUTINE EIRENE_RPLAM_LONG(TRCFLE,IFLG)
+      SUBROUTINE EIRENE_RPLAM_LONG(TRCFLE,IFLGIN,IRET)
+      USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CINIT, ONLY: FORT
       USE EIRMOD_COMUSR
@@ -98,22 +105,71 @@ C
       USE EIRMOD_COMSOU
       USE EIRMOD_CSTEP
       USE EIRMOD_COMXS
+      USE EIRMOD_CSPEI
       IMPLICIT NONE
-      INTEGER, INTENT(IN) :: IFLG
+      INTEGER, INTENT(IN) :: IFLGIN
+      INTEGER, INTENT(INOUT) :: IRET
       LOGICAL TRCFLE
 cdr, jan 2019
-      INTEGER :: IO
+      INTEGER :: NFRS(NTALI), NAD(NTALI), IO, I, IFLG
+      LOGICAL :: LIVT(NTALI)
+      REAL(DP), ALLOCATABLE :: PTL(:,:)
+
+      IFLG = IFLGIN
+      IRET = 0
+      IF (.NOT.ALLOCATED(PTL))
+     .  ALLOCATE(PTL, MOLD=PLSTLS)
+      IF (IFLG == 10) CALL EIRENE_ALLOC_BCKGRND    
 
       OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 13+ifoff
+
+      READ (13+ifoff,IOSTAT=IO) LIVT
+      IF (TRCFLE) WRITE (iunout,*) 'READ 13: LIVTALI '
+      IF (IO /= 0) THEN
+        DEALLOCATE (PTL)
+        IF (IFLG == 10) THEN  ! plasma_bckground = 0 in EIRENE_ALLOC_BCKGRND
+          IRET = IO
+          RETURN
+        ELSE 
+          GOTO 990
+        END IF
+      END IF
+c   verify: same active tallies as in previous write?
+      DO I=1, NTALI
+        IF ((LIVTALI(I).AND.LIVT(I)).OR.
+     .      (.NOT.LIVTALI(I).AND..NOT.LIVT(I))) CYCLE
+        GOTO 991
+      END DO
+      READ (13+ifoff,IOSTAT=IO) NFRS, NAD
+      IF (TRCFLE) WRITE (iunout,*) 'READ 13: NFRSTP, NADDP '
+      IF (IO /= 0) GOTO 990
+      IF (ANY(NFRSTP(1:NTALI) /= NFRS(1:NTALI))) GOTO 992
+      IF (ANY(NADDP(1:NTALI) /= NAD(1:NTALI))) GOTO 993
+
+!PB      READ (13+ifoff,IOSTAT=IO) PLSTLS
+      READ (13+ifoff,IOSTAT=IO) PTL
+      IF (TRCFLE) WRITE (iunout,*) 'READ 13: input tallies PLSTLS '
+      IF (IO /= 0) GOTO 990
+      IF (IFLG == 10) THEN
+        TEINTF(1:NRAD) = PTL(NADDP(1)+1,1:NRAD)
+        IF (INTLOPTS(2) >= 0) 
+     .    TIINTF(1:NPLSTI,1:NRAD) = PTL(NADDP(2)+1:NADDP(3),1:NRAD)       
+        DIINTF(1:NPLS,1:NRAD) = PTL(NADDP(4)+1:NADDP(5),1:NRAD)
+        VXINTF(1:NPLSV,1:NRAD) = PTL(NADDP(5)+1:NADDP(6),1:NRAD)
+        VYINTF(1:NPLSV,1:NRAD) = PTL(NADDP(6)+1:NADDP(7),1:NRAD)
+        VZINTF(1:NPLSV,1:NRAD) = PTL(NADDP(7)+1:NADDP(8),1:NRAD)
+        DEALLOCATE (PTL)
+        RETURN
+      ELSE
+        PLSTLS = PTL
+        DEALLOCATE (PTL)
+      END IF
+
       READ (13+ifoff,IOSTAT=IO)
 C  REAL
-     R           TEIN,TIIN,DEIN,DIIN,VXIN,VYIN,VZIN,
-     R           BXIN,BYIN,BZIN,BFIN,ADIN,EDRIFT,
-     R           VOL,WGHT,BXPERP,BYPERP,
-     R           EXIN,EYIN,EZIN,EFIN,
      R           FLXOUT,SAREA,
-     R           TEINL,TIINL,DEINL,DIINL,BVIN,PARMOM,
+     R           TEINL,TIINL,DEINL,DIINL,
      R           RMASSI,RMASSA,RMASSM,RMASSP,
      R           DIOD,DATD,DMLD,DPLD,DPHD,
      R           DION,DATM,DMOL,DPLS,DPHOT,
@@ -127,7 +183,7 @@ C  MUSR, INTEGER
      I           NSPAMI,NIONI,NIONIM,NMASSI,NCHARI,NCHRGI,NFOLI,NGENI,
      I           NSPTOT,NPLSI,NPLSIM,NMASSP,NCHARP,NCHRGP,NBITS,
      I           NSNVI,NCPVI,NADVI,NBGVI,NALVI,NCLVI,NADSI,NALSI,NAINI,
-     I           NPRT,ISPEZ,ISPEZI,
+     I           NPRT,ISPEZ,ISPEZI,MPLSTI,MPLSV,
 C  LUSR, LOGICAL
      L           LGVAC,LSMOPRO
       IF (TRCFLE) WRITE (iunout,*) 'READ 13: module EIRMOD_COMUSR.f '
@@ -161,7 +217,7 @@ c  read primary source parameters
         IF (TRCFLE) WRITE (iunout,*) 'SOURCE DATA NOT READ FROM FORT.13' 
       END IF
 
-
+      IRET = IO
       CLOSE (UNIT=13+ifoff)
       RETURN
 

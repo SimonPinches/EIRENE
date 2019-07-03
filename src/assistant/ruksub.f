@@ -8,8 +8,7 @@ C-----------------------------------------------------------------------
 C
 C     FUNKTION:
 C
-C     ERSETZEN VON '^' DURCH '**' UND EINFUEGEN VON 'Z' FUER
-C     ZERLEGUNG
+C     EINFUEGEN VON 'Z' FUER ZERLEGUNG
 C
 C-----------------------------------------------------------------------
       IMPLICIT NONE
@@ -51,34 +50,6 @@ C
          INTEGER :: I, J
 
       DO 10, J=1,TEIL
-C
-C        ERSETZEN VON '^' DURCH '**' IN PART(J)
-C
-         I=2
-   20    IF (I .LT. IPART(J)) THEN
-            IF (PART(J)(I:I) .EQ. '^') THEN
-CPB            HILFE=PART(J)(1:I-1)//'**'//PART(J)(I+1:IPART(J))//' '
-CPB            I=I+1
-CPB            IPART(J)=IPART(J)+1
-CPB            PART(J)=HILFE
-            ENDIF
-            I=I+1
-            GOTO 20
-         ENDIF
-C
-C        ERSETZEN VON '^' DURCH '**' IN ARITH(J)
-C
-         I=2
-   30    IF (I .LT. IARITH(J)) THEN
-            IF (ARITH(J)(I:I) .EQ. '^') THEN
-CPB            HILFE=ARITH(J)(1:I-1)//'**'//ARITH(J)(I+1:IARITH(J))//' '
-CPB            I=I+1
-CPB            IARITH(J)=IARITH(J)+1
-CPB            ARITH(J)=HILFE
-            ENDIF
-            I=I+1
-            GOTO 30
-         ENDIF
 C
 C        EINFUEGEN  VON 'Z' FUER ZERLEGUNG IN PART(J)
 C

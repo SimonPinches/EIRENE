@@ -229,8 +229,9 @@ c
      .           fwhm,shift,dvdw,drft
 c      real(dp) :: d1, d2, e1, e2, g1, g2, ipl2, l0, l00, omega_max,
 c     .            omega_min
-      real(dp):: ctheta2,dbz,bf
+      real(dp):: ctheta,ctheta2,dbz
       real(dp):: t_e,t_p,t_g
+      real(dp):: bx, by, bz, bf
 
 c  reaction data for process kkin are now loaded into "reaction"
 c  includes also reaction%b12.
@@ -241,6 +242,8 @@ c
       iid = reaction%ircart
       fac=0._dp
       hwvdw=0._dp
+      ctheta =0._dp
+      ctheta2=0._dp
 
 cdr  find $fac(E0)$: the value of the line profile $fac(E$
 cdr  (emission profile or absorption profile) at E0:
@@ -340,9 +343,17 @@ c  Stark  broadening by electrons
 c  Stark  broadening by ions: protons, deuterons, tritons
            T_p=T_e
 c  Zeeman splitting
-           Bf=Bfin(icell)
-           ctheta2=velx*bxin(icell)+vely*byin(icell)+velz*bzin(icell)
-           ctheta2=ctheta2*ctheta2
+           bx = 0._dp
+           by = 0._dp
+           bz = 1._dp
+           bf = 1._dp
+           if (lbxin) bx = bxin(icell)
+           if (lbyin) by = byin(icell)
+           if (lbzin) bz = bzin(icell)
+           if (lbfin) Bf = Bfin(icell)
+           ctheta=velx*bx+vely*by+velz*bz
+           ctheta2=ctheta*ctheta
+
            if(iptype == 10) then
 c  No Doppler broadening by absorbing gas
 c            T_g=0
@@ -963,8 +974,12 @@ cdr
       logical, intent(out) :: nldoppl
       real(dp) :: e00,dnd,drft,gam,fwhm,shift,dvdw,de
 c      real(dp) :: dl, l0, l00
-      real(dp) :: ctheta2,dbz,zep1,v,T_e,T_p,T_g
+      real(dp) :: ctheta,ctheta2,dbz,zep1,v,T_e,T_p,T_g
+      real(dp) :: bx, by, bz, bf
       integer :: ictoff
+
+      ctheta =0._dp
+      ctheta2=0._dp
 
 !  idreac: kk from last call to get_reaction
       if (idreac /= kk) call EIRENE_get_reaction(kk)
@@ -1098,11 +1113,18 @@ c  stark  broadening by ions: protons, deuterons, tritons
 c  doppler broadening by emitting gas: hydrogen, deuterium, tritium
          T_g=0.0
          v=0.0
-         ctheta2=velx*bxin(icell)+vely*byin(icell)+velz*bzin(icell)
-         ctheta2=ctheta2*ctheta2
-         zep1 = EIRENE_sam_zm_stark(dein(icell),T_e,T_p,T_g,
-     .                       Bfin(icell),
-     .                       ctheta2,E00,v)
+         bx = 0._dp
+         by = 0._dp
+         bz = 1._dp
+         bf = 1._dp
+         if (lbxin) bx = bxin(icell)
+         if (lbyin) by = byin(icell)
+         if (lbzin) bz = bzin(icell)
+         if (lbfin) Bf = Bfin(icell)
+         ctheta=velx*bx+vely*by+velz*bz
+         ctheta2=ctheta*ctheta
+         zep1 = EIRENE_sam_zm_stark(dein(icell),T_e,T_p,T_g,Bf,
+     .                              ctheta2,E00,v)
          res = zep1
          nldoppl=.false.
       case(11)
@@ -1113,11 +1135,18 @@ c  stark  broadening by ions: protons, deuterons, tritons
 c  doppler broadening by emitting gas: hydrogen, deuterium, tritium
          T_g=TIIN(mplsti(ipl2),icell)
          v=vn/100._dp
-         ctheta2=velx*bxin(icell)+vely*byin(icell)+velz*bzin(icell)
-         ctheta2=ctheta2*ctheta2
-         zep1 = EIRENE_sam_zm_stark(dein(icell),T_e,T_p,T_g,
-     .                       Bfin(icell),
-     .                       ctheta2,E00,v)
+         bx = 0._dp
+         by = 0._dp
+         bz = 1._dp
+         bf = 1._dp
+         if (lbxin) bx = bxin(icell)
+         if (lbyin) by = byin(icell)
+         if (lbzin) bz = bzin(icell)
+         if (lbfin) Bf = Bfin(icell)
+         ctheta=velx*bx+vely*by+velz*bz
+         ctheta2=ctheta*ctheta
+         zep1 = EIRENE_sam_zm_stark(dein(icell),T_e,T_p,T_g,Bf,
+     .                              ctheta2,E00,v)
          res = zep1
          nldoppl=.false.
 
@@ -1750,11 +1779,20 @@ c  FWHM-Griem, done,  not in use.
       integer, intent(in) :: icell
       real(dp), intent(out) :: ctheta2,dbz
       real(dp)  :: ctheta
+      real(dp)  :: bx, by, bz, bf
 
-      ctheta=velx*bxin(icell)+vely*byin(icell)+velz*bzin(icell)
+      bx = 0._dp
+      by = 0._dp
+      bz = 1._dp
+      bf = 1._dp
+      if (lbxin) bx = bxin(icell)
+      if (lbyin) by = byin(icell)
+      if (lbzin) bz = bzin(icell)
+      if (lbfin) Bf = Bfin(icell)
+      ctheta=velx*bx+vely*by+velz*bz
       ctheta2=ctheta*ctheta
 c
-      dbz=bfin(icell)*mub
+      dbz=bf*mub
 
       return
       END subroutine EIRENE_zeeman_normalprof
@@ -2877,9 +2915,9 @@ C        SAMPLE COLLIDING ION FROM DRIFTING MONOENERGETIC ISOTROPIC DISTRIBUTION
           IF (NSTORDR >= NRAD) THEN
             write (iunout,*) ' in ph_xsectph, nstordr>nrad ',idsc
             IPL0TI=MPLSTI(IPL0)
-            DO J=1,NSBOX
-              EPLPH3(Idsc,J,1)=1.5*TIIN(IPL0TI,J)+EDRIFT(IPL0,J)
-            ENDDO
+            EPLPH3(Idsc,1:NSBOX,1)=1.5*TIIN(IPL0TI,1:NSBOX)
+            IF (LEDRIFT) EPLPH3(Idsc,1:NSBOX,1)=
+     .                   EPLPH3(Idsc,1:NSBOX,1)+EDRIFT(IPL0,1:NSBOX)
             NELRPH(Idsc) = -3
           ELSE
             write (iunout,*) ' in ph_xsectph, nstordr<nrad '
@@ -2889,9 +2927,9 @@ C        SAMPLE COLLIDING ION FROM DRIFTING MONOENERGETIC ISOTROPIC DISTRIBUTION
           write (iunout,*) ' in ph_xsectph, nseot4=0, ebulk > 0 '
           IF (NSTORDR >= NRAD) THEN
             write (iunout,*) ' in ph_xsectph, nstordr>nrad '
-            DO 251 J=1,NSBOX
-              EPLPH3(Idsc,J,1)=EBULK+EDRIFT(IPL0,J)
-  251       CONTINUE
+            EPLPH3(Idsc,1:NSBOX,1)=EBULK
+            IF (LEDRIFT) EPLPH3(Idsc,1:NSBOX,1)=
+     .                   EPLPH3(Idsc,1:NSBOX,1)+EDRIFT(IPL0,1:NSBOX)
             NELRPH(Idsc) = -2
           ELSE
             NELRPH(Idsc) = -2
@@ -2909,9 +2947,9 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
         IF (EBULK.LE.0.D0) THEN
           IF (NSTORDR >= NRAD) THEN
             IPL0TI=MPLSTI(IPL0)
-            DO 252 J=1,NSBOX
-              EPLPH3(Idsc,J,1)=1.5*TIIN(IPL0TI,J)+EDRIFT(IPL0,J)
-  252       CONTINUE
+            EPLPH3(Idsc,1:NSBOX,1)=1.5*TIIN(IPL0TI,1:NSBOX)
+            IF (LEDRIFT) EPLPH3(Idsc,1:NSBOX,1)=
+     .                   EPLPH3(Idsc,1:NSBOX,1)+EDRIFT(IPL0,1:NSBOX)
             NELRPH(Idsc) = -3
           ELSE
             NELRPH(Idsc) = -3
@@ -2923,9 +2961,9 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           WRITE (iunout,*) 'RATHER THAN WITH T = TIIN '
           CALL EIRENE_LEER(1)
           IF (NSTORDR >= NRAD) THEN
-            DO 2511 J=1,NSBOX
-              EPLPH3(Idsc,J,1)=EBULK+EDRIFT(IPL0,J)
- 2511       CONTINUE
+            EPLPH3(Idsc,1:NSBOX,1)=EBULK
+            IF (LEDRIFT) EPLPH3(Idsc,1:NSBOX,1)=
+     .                   EPLPH3(Idsc,1:NSBOX,1)+EDRIFT(IPL0,1:NSBOX)
             NELRPH(Idsc) = -2
           ELSE
             NELRPH(Idsc) = -2

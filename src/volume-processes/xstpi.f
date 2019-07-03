@@ -367,18 +367,18 @@ C        SAMPLE COLLIDING ION FROM DRIFTING MONOENERGETIC ISOTROPIC DISTRIBUTION
 c        WITH WEIGHTING/REJECTION
         IF (EBULK.LE.0.D0) THEN
           IF (NSTORDR >= NRAD) THEN
-            DO J=1,NSBOX
-              EPLPI3(IRPI,J,1)=1.5*TIIN(IPLTI,J)+EDRIFT(IPL,J)
-            ENDDO
+            EPLPI3(IRPI,1:NSBOX,1)=1.5*TIIN(IPLTI,1:NSBOX)
+            IF (LEDRIFT) EPLPI3(IRPI,1:NSBOX,1)=
+     .                   EPLPI3(IRPI,1:NSBOX,1)+EDRIFT(IPL,1:NSBOX)
             NELRPI(IRPI) = -3
           ELSE
             NELRPI(IRPI) = -3
           END IF
         ELSE ! EBULK GT.0
           IF (NSTORDR >= NRAD) THEN
-            DO 151 J=1,NSBOX
-              EPLPI3(IRPI,J,1)=EBULK+EDRIFT(IPL,J)
-  151       CONTINUE
+            EPLPI3(IRPI,1:NSBOX,1)=EBULK
+            IF (LEDRIFT) EPLPI3(IRPI,1:NSBOX,1)=
+     .                   EPLPI3(IRPI,1:NSBOX,1)+EDRIFT(IPL,1:NSBOX)
             NELRPI(IRPI) = -2
           ELSE
             NELRPI(IRPI) = -2
@@ -393,9 +393,9 @@ C  4.1B) ENERGY LOSS RATE OF IMP. ION = (1.5*TI+EDRIFT)* RATE COEFF.
 C        SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
         IF (EBULK.LE.0.D0) THEN
           IF (NSTORDR >= NRAD) THEN
-            DO 252 J=1,NSBOX
-              EPLPI3(IRPI,J,1)=1.5*TIIN(IPLTI,J)+EDRIFT(IPL,J)
-  252       CONTINUE
+            EPLPI3(IRPI,1:NSBOX,1)=1.5*TIIN(IPLTI,1:NSBOX)
+            IF (LEDRIFT) EPLPI3(IRPI,1:NSBOX,1)=
+     .                   EPLPI3(IRPI,1:NSBOX,1)+EDRIFT(IPL,1:NSBOX)
             NELRPI(IRPI) = -3
           ELSE
             NELRPI(IRPI) = -3
@@ -408,9 +408,9 @@ C        SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
           WRITE (iunout,*) 'NOT FULLY IMPLEMENTED (VELOPI) '
           CALL EIRENE_LEER(1)
           IF (NSTORDR >= NRAD) THEN
-            DO 2511 J=1,NSBOX
-              EPLPI3(IRPI,J,1)=EBULK+EDRIFT(IPL,J)
- 2511       CONTINUE
+            EPLPI3(IRPI,1:NSBOX,1)=EBULK
+            IF (LEDRIFT) EPLPI3(IRPI,1:NSBOX,1)=
+     .                   EPLPI3(IRPI,1:NSBOX,1)+EDRIFT(IPL,1:NSBOX)
             NELRPI(IRPI) = -2
           ELSE
             NELRPI(IRPI) = -2

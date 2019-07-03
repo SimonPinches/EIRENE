@@ -100,7 +100,7 @@ C
 
       REAL(DP) :: FLUXS(NSTRA)
       REAL(DP) :: EIRENE_FTABEI1, EIRENE_FEELEI1, ESIG,
-     .            DUMMY, DTIMVO
+     .            DUMMY, DTIMVO, EN
       INTEGER :: IN, IAEI, IMEI, IIEI, IREI, IFIRST, K, JC, NDXY,
      .           J, IRC, NREC10, NREC11, ITNR, IPLSTI, IST_RATE, IST,
      .           JATM, JMOL, JION, JPLS,
@@ -422,8 +422,11 @@ C
           DO JPLS=1,NPLSI
             IPLSTI= MPLSTI(JPLS)
             DO IN=1,NDXY
-              RTIS%SEIOD(IN,JPLS)=DIIN(JPLS,IN)*
-     .                        (1.5*TIIN(IPLSTI,IN)+EDRIFT(JPLS,IN))
+!pb           RTIS%SEIOD(IN,JPLS)=DIIN(JPLS,IN)*
+!pb     .                    (1.5*TIIN(IPLSTI,IN)+EDRIFT(JPLS,IN))
+              EN = 1.5*TIIN(IPLSTI,IN)
+              IF (LEDRIFT) EN = EN + EDRIFT(JPLS,IN)
+              RTIS%SEIOD(IN,JPLS)=DIIN(JPLS,IN)*EN
             ENDDO
           ENDDO
 C
@@ -728,8 +731,11 @@ C
         DO JPLS=1,NPLSI
           IPLSTI= MPLSTI(JPLS)
           DO IN=1,NDXY
-            SEINW(IN,JPLS)=DIIN(JPLS,IN)*
-     .                      (1.5*TIIN(IPLSTI,IN)+EDRIFT(JPLS,IN))
+!pb            SEINW(IN,JPLS)=DIIN(JPLS,IN)*
+!pb     .                      (1.5*TIIN(IPLSTI,IN)+EDRIFT(JPLS,IN))
+            EN = 1.5*TIIN(IPLSTI,IN)
+            IF (LEDRIFT) EN = EN + EDRIFT(JPLS,IN)
+            SEINW(IN,JPLS)=DIIN(JPLS,IN)*EN
           ENDDO
         ENDDO
 C

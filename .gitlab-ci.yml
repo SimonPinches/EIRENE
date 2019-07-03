@@ -6,7 +6,7 @@ include:
 
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
-    SAMPLE_CASE_VERSION: '1b491634885a2fee4095f9d625feea15eaf18665'
+    SAMPLE_CASE_VERSION: 877eed0c2ade8ae2879b78282cc7d68f4a793072
 
 stages:
     - build:library
