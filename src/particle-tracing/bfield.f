@@ -16,7 +16,8 @@ cdr              Not fully available for all levgeo=1,2,3 optins. Check FEMINT.f
 
       use eirmod_precision, only: dp
       use eirmod_comusr, only: BXIN, BYIN, BZIN, BFIN, BXINCORNER, 
-     >                         BYINCORNER, BZINCORNER, BFINCORNER, LBSMO
+     >                         BYINCORNER, BZINCORNER, BFINCORNER, LBSMO,
+     >                         LBXIN, LBYIN, LBZIN, LBFIN
       use eirmod_cinit, only: INDPRO
 
       implicit none
