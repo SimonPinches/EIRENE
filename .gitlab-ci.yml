@@ -6,7 +6,7 @@ include:
 
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
-    SAMPLE_CASE_VERSION: 2b6191b7d30716e92ba1cd3374e31660bec3885e
+    SAMPLE_CASE_VERSION: a0a015c4a06e060d84f718bed021b633cb151e83
 
 stages:
     - build:library
@@ -206,6 +206,26 @@ test_standalone_2D-D_polygon:
     dependencies:
         - build_standalone_2D_polygon
         - run_standalone_2D-D_polygon
+
+build_standalone_cylinder:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "cylinder"
+
+run_standalone_cylinder:
+    <<: *run
+    variables:
+        PATH_CASE: "cylinder"
+    dependencies:
+        - build_standalone_cylinder
+
+test_standalone_cylinder:
+    <<: *test
+    variables:
+        PATH_CASE: "cylinder"
+    dependencies:
+        - build_standalone_cylinder
+        - run_standalone_cylinder
 
 build_EMC3-EIRENE:
     <<: *build_executable
