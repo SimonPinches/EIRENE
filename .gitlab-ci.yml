@@ -6,7 +6,7 @@ include:
 
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
-    SAMPLE_CASE_VERSION: 877eed0c2ade8ae2879b78282cc7d68f4a793072
+    SAMPLE_CASE_VERSION: 2b6191b7d30716e92ba1cd3374e31660bec3885e
 
 stages:
     - build:library
@@ -181,6 +181,31 @@ test_standalone_ITER_1573:
     dependencies:
         - build_standalone_ITER_1573
         - run_standalone_ITER_1573
+
+build_standalone_2D_polygon:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "2D-D_polygon"
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - libRelease/
+            - EIRENE-sample-cases/${PATH_CASE}
+
+run_standalone_2D-D_polygon:
+    <<: *run
+    variables:
+        PATH_CASE: "2D-D_polygon"
+    dependencies:
+        - build_standalone_2D_polygon
+
+test_standalone_2D-D_polygon:
+    <<: *test
+    variables:
+        PATH_CASE: "2D-D_polygon"
+    dependencies:
+        - build_standalone_2D_polygon
+        - run_standalone_2D-D_polygon
 
 build_EMC3-EIRENE:
     <<: *build_executable
