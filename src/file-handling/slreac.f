@@ -221,7 +221,8 @@ cdr  for reading asymptotics parameters from data files
       CHARACTER(1) :: CUT, BACK
       CHARACTER(4) :: CH123
       CHARACTER(3) :: CCRC
-      CHARACTER(8) :: SECTION, FITFLAG
+      CHARACTER(8) :: SECTION
+      CHARACTER(9) :: FITFLAG
       CHARACTER(7) :: C1L, C1R, C2L, C2R, CMR, CEMR
       LOGICAL :: LGC1MIN,LGC1MAX,LGC2MIN,LGC2MAX,
      .           LGR1MIN,LGR1MAX,LGR2MIN,LGR2MAX
@@ -239,7 +240,7 @@ C
 
       I0=0
       CREACD = 0._DP
-      FITFLAG ='fit-flag'
+      FITFLAG ='fit-flag '
 
 c  some additional  (optional) reaction data:  threshold energy,
 c                                              max rate coeff sigma*v_rel,
