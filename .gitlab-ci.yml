@@ -1,4 +1,4 @@
-image: jugit-registry.fz-juelich.de/eirene/eirene-ci-image/master
+image: jugit-registry.fz-juelich.de/eirene/eirene-ci-image/debianstretch
 
 include:
     - '.update_fork_branches.yml'
@@ -6,7 +6,7 @@ include:
 
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
-    SAMPLE_CASE_VERSION: '1b491634885a2fee4095f9d625feea15eaf18665'
+    SAMPLE_CASE_VERSION: a0a015c4a06e060d84f718bed021b633cb151e83
 
 stages:
     - build:library
@@ -181,6 +181,51 @@ test_standalone_ITER_1573:
     dependencies:
         - build_standalone_ITER_1573
         - run_standalone_ITER_1573
+
+build_standalone_2D_polygon:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "2D-D_polygon"
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - libRelease/
+            - EIRENE-sample-cases/${PATH_CASE}
+
+run_standalone_2D-D_polygon:
+    <<: *run
+    variables:
+        PATH_CASE: "2D-D_polygon"
+    dependencies:
+        - build_standalone_2D_polygon
+
+test_standalone_2D-D_polygon:
+    <<: *test
+    variables:
+        PATH_CASE: "2D-D_polygon"
+    dependencies:
+        - build_standalone_2D_polygon
+        - run_standalone_2D-D_polygon
+
+build_standalone_cylinder:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "cylinder"
+
+run_standalone_cylinder:
+    <<: *run
+    variables:
+        PATH_CASE: "cylinder"
+    dependencies:
+        - build_standalone_cylinder
+
+test_standalone_cylinder:
+    <<: *test
+    variables:
+        PATH_CASE: "cylinder"
+    dependencies:
+        - build_standalone_cylinder
+        - run_standalone_cylinder
 
 build_EMC3-EIRENE:
     <<: *build_executable

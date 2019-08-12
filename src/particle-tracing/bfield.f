@@ -14,10 +14,11 @@ cdr              Not fully available for all levgeo=1,2,3 optins. Check FEMINT.f
 
       subroutine eirene_bfield (icell, x, y, z, bx, by, bz, bf,l)
 
-      use eirmod_precision
-      use eirmod_parmmod
-      use eirmod_comusr
-      use eirmod_cinit
+      use eirmod_precision, only: dp
+      use eirmod_comusr, only: BXIN, BYIN, BZIN, BFIN, BXINCORNER, 
+     >                         BYINCORNER, BZINCORNER, BFINCORNER, 
+     >                         LBSMO, LBXIN, LBYIN, LBZIN, LBFIN
+      use eirmod_cinit, only: INDPRO
 
       implicit none
 
@@ -47,11 +48,16 @@ cdr    use logical input flag L:  return either value at COM or local value at x
          bz = bz * bni
 
       ELSE
-
-         BX=BXIN(ICELL)
-         BY=BYIN(ICELL)
-         BZ=BZIN(ICELL)
-         BF=BFIN(ICELL)
+cdr if no BFIELD input tallies: 
+cdr use default B-field: 1 [T] in z-direction
+         BX = 0._DP
+         BY = 0._DP
+         BZ = 1._DP
+         BF = 1._DP
+         IF (LBXIN) BX=BXIN(ICELL)
+         IF (LBYIN) BY=BYIN(ICELL)
+         IF (LBZIN) BZ=BZIN(ICELL)
+         IF (LBFIN) BF=BFIN(ICELL)
 
       END IF
 

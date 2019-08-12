@@ -240,7 +240,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
      .           NB, NS, NA, ISTR, IOPT,
      .           NRC, IADV, NUM_COMPO, NUM_CONTRIB, ICNT, IDMDL, IND,
-     .           ILINE, JCOMP, KCONTR, IROW_ESC, ICOL_ESC
+     .           ILINE, JCOMP, KCONTR, IROW_ESC, ICOL_ESC, IRET, ITAL
       INTEGER, SAVE :: NZADD, NITER0
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       INTEGER, DIMENSION(1) :: ISTR_A
@@ -2269,8 +2269,33 @@ C  amongst the 12 input tallies read here.
 C  formerly: LSMOPRO(J) flag.
 C  Smoothing is currently only for tallies 1 to 7.
         IF (ABS(INDPRO(J)) > 100) THEN
-          LSMOPRO(J) = .TRUE.
           INDPRO(J) = MOD(INDPRO(J),100)
+          SELECT CASE(J)
+          CASE (1)
+            LTESMO = .TRUE.
+          CASE (2)
+            LTISMO = .TRUE.
+          CASE (3)
+            LDESMO = .TRUE.
+            LDISMO = .TRUE.
+          CASE (4)
+            LVXSMO = .TRUE.
+            LVYSMO = .TRUE.
+            LVZSMO = .TRUE.
+          CASE (5)
+            LBXSMO = .TRUE.
+            LBYSMO = .TRUE.
+            LBZSMO = .TRUE.
+            LBFSMO = .TRUE.
+          CASE (6)
+            LADSMO = .TRUE.
+          CASE (7)
+            LEXSMO = .TRUE.
+            LEYSMO = .TRUE.
+            LEZSMO = .TRUE.
+            LEFSMO = .TRUE.
+            LPOTSMO = .TRUE.     ! smoothed electric potential
+          END SELECT
         END IF
       ENDDO
 
@@ -2378,8 +2403,10 @@ c  cell volume -profile card, OPTIONAL
 
       IF (INDPRO(12).LE.5) THEN
         READ (IUNIN,'(A72)',IOSTAT=IO) ZEILE
+        CALL EIRENE_UPPERCASE(ZEILE)
         IREAD=1
-        IF ((IO /= 0) .OR. (ZEILE(1:3) .EQ. '***')) THEN
+        IF ((IO /= 0) .OR. (ZEILE(1:3) .EQ. '***')
+     .                .OR. (ZEILE(1:3) .EQ. 'OPT')) THEN
           WRITE (iunout,*) 'ONE INPUT LINE MISSING IN BLOCK 5'
           WRITE (iunout,*) 'AUTOMATIC CORRECTION PERFORMED'
           VL0=0
@@ -2388,6 +2415,25 @@ c  cell volume -profile card, OPTIONAL
           IREAD=0
         ENDIF
       ENDIF
+
+c  check for optional input cards.
+c  Here: explicitly switch off input tallies, or gradients gradients: INTLOPTS(ITAL),
+c  -ntali<ital<0,  then: ital=iabs(ital)
+
+      IF (IREAD == 0) READ (IUNIN,'(A72)',IOSTAT=IO) ZEILE
+      IREAD = 1
+      IF ((IO == 0) .AND. (ZEILE(1:3) .NE. '***')) THEN
+        CALL EIRENE_UPPERCASE(ZEILE)
+        IF (INDEX(ZEILE,'OPTIONAL') > 0) THEN
+          DO 
+            READ (IUNIN,'(A72)',IOSTAT=IO) ZEILE
+            IF ((IO /= 0) .OR. (ZEILE(1:3) .EQ. '***')) EXIT
+            READ (ZEILE,6666) ITAL, IOPT
+            IF ((ITAL >= 0) .OR. (ITAL < -NTALI)) CYCLE         
+            INTLOPTS(IABS(ITAL)) = IOPT
+          END DO
+        END IF
+      END IF
 
       IF (LINCL45) THEN
         CLOSE (IUNIN)
@@ -4739,9 +4785,12 @@ C  1ST: SPECIES FLAGS:
 
       IF (NPHOTI > 0) CALL EIRENE_PH_INIT(1)
       CALL EIRENE_SETAMD(0)
-      CALL EIRENE_ALLOC_COMUSR(2)
+
+!pb      CALL EIRENE_ALLOC_COMUSR(2)
       CALL EIRENE_ALLOC_CTEXT(2)
 
+      CALL EIRENE_SETTXT_INTAL
+      CALL EIRENE_SETPRM_INTAL
       CALL EIRENE_SETTXT
 
       IF (NADVI > 0) THEN
@@ -5324,7 +5373,7 @@ c  (SHORT VERSION OF FORT.13 ONLY).
 C  READ ONLY PLASMA DATA OF THOSE BACKGROUND SPECIES
 C  WHICH ARE NOT CONTAINED IN EXTERNAL PLASMA CODE,
 C  I.E. ONLY THOSE WHICH ARE NEEDED FOR INTERNAL EIRENE CYCLING (NON-LINEARITIES)
-        IF (NFILEL.EQ.3) CALL EIRENE_RPLAM(TRCFLE,0)
+        IF (NFILEL.EQ.3) CALL EIRENE_RPLAM(TRCFLE,0,IRET)
 
 C
 C  COMPUTE SOME 'DERIVED' PLASMA DATA PROFILES FROM THE INPUT PROFILES
@@ -5355,11 +5404,11 @@ C
         IF ((ITIMV > 1) .AND. NLMOVIE) IFLG = 1
 cdr  iflg rather than nfilel  ??
         IF ((NFILEL == 2) .OR. (NFILEL == 3)) THEN
-          CALL EIRENE_RPLAM(TRCFLE,IFLG)
+          CALL EIRENE_RPLAM(TRCFLE,IFLG,IRET)
 
 cdr  from now on: iflg=nfilel
         ELSEIF (NFILEL == 4) THEN
-          CALL EIRENE_RPLAM(TRCFLE,NFILEL)
+          CALL EIRENE_RPLAM(TRCFLE,NFILEL,IRET)
         END IF
         CALL EIRENE_XSECTPH
 

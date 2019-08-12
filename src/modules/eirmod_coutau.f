@@ -1,6 +1,7 @@
 c nov. 2015:  species index ipls added for energy-pl tallies:
 c             eapli,empli,eipli,ephpli,eppli
 cdr dec. 15:  comments added. missing tallies ppeli, epeli, etc..??
+cpb jan. 18:  array NFSTPI moved to module EIRMOD_COMUSR
       MODULE EIRMOD_COUTAU
 
       USE EIRMOD_PRECISION
@@ -97,7 +98,7 @@ cdr dec. 15:  comments added. missing tallies ppeli, epeli, etc..??
 
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NADDI(:),  NFRSTI(:), NDDWI(:),  NFRTWI(:),
-     I NFSTVI(:), NFSTWI(:), NFSTPI(:)
+     I NFSTVI(:), NFSTWI(:)
 
       INTEGER, PUBLIC, SAVE ::
      I NOUTA1, NOUTA2, NOUTAS, NOUTAU, NOUTTL
@@ -114,7 +115,7 @@ cdr dec. 15:  comments added. missing tallies ppeli, epeli, etc..??
       NOUTA2 = NSFTLP*NSTRAP
       NOUTAS = (1*NPHOTP+1*NATMP+1*NMOLP+1*NPLSP+2*NIONP+15)*NSTRAP
       NOUTAU = NOUTA1+NOUTA2+NOUTAS
-      NOUTTL = 3*(NTALV+NTALS)+NTALI
+      NOUTTL = 3*(NTALV+NTALS)
 
       ALLOCATE (PDENAI(0:NATM,0:NSTRA))
       ALLOCATE (PDENMI(0:NMOL,0:NSTRA))
@@ -371,7 +372,6 @@ cdr  etote still missing ??
       ALLOCATE (NFRTWI(NTALS))
       ALLOCATE (NFSTVI(NTALV))
       ALLOCATE (NFSTWI(NTALS))
-      ALLOCATE (NFSTPI(NTALI))
 
       WRITE (IUNMEM,'(A,T25,I15)')
      .       ' COUTAU ',NOUTAU*8 + NOUTTL*4
@@ -382,7 +382,6 @@ cdr  etote still missing ??
       NFRTWI = 0
       NFSTVI = 0
       NFSTWI = 0
-      NFSTPI = 0
 csw 19mar2013
       xmcp=0
 
@@ -609,7 +608,6 @@ csw 19mar2013
       DEALLOCATE (NFRTWI)
       DEALLOCATE (NFSTVI)
       DEALLOCATE (NFSTWI)
-      DEALLOCATE (NFSTPI)
 
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_COUTAU
@@ -622,7 +620,7 @@ csw 19mar2013
 
       DO ISTRA=0,NSTRA
 
-        IF (ISTRA >= 1 .AND. IFRST > 0) THEN
+        IF ((ISTRA >= 1) .AND. (IFRST > 0)) THEN
           IF (.NOT. LOGARR(ISTRA)) CYCLE
         END IF
 

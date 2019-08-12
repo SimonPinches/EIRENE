@@ -7,6 +7,7 @@ cdr             2) ESIG array: additional argument IPLS: done.
 cdr             3) RTIS% pointer to sploda,.....
 cdr             4) rates SEIODA, SEINWA added (was missing, used for ipls total ion energy density)
 cdr                now: SEIOD(.., NPLS), SEINW(...,NPLS) added
+cdr Oct.  18:   connect ledrift  (availability of EDRIFT tally)
 
 C  MAIN INTERFACING ROUTINE FOR COUPLED CFD-PLASMA - EIRENE APPLICATIONS
 
@@ -66,6 +67,7 @@ C     B2VP :  VOLUMETRIC ENERGY EXCHANGE (ELECTRONS-IONS) DUE TO WORK DONE BY EL
       USE EIRMOD_COMXS
       USE EIRMOD_CSPEI
       USE EIRMOD_BRASCL
+      USE EIRMOD_SECOND_OWN
 
       IMPLICIT NONE
 C
@@ -75,12 +77,11 @@ C
 
       REAL(DP) :: FLUXS(NSTRA)
       REAL(DP) :: EIRENE_FTABEI1, EIRENE_FEELEI1, ESIG,
-     .            EIRENE_RESET_SECOND, DUMMY,
-     .            EIRENE_SECOND_OWN, DTIMVO
+     .            DUMMY, DTIMVO, EN
       INTEGER :: IN, IAEI, IMEI, IIEI, IREI, IFIRST, K, JC, NDXY,
      .           J, IRC, NREC10, NREC11, ITNR, IPLSTI, IST_RATE, IST,
      .           JATM, JMOL, JION, JPLS,
-     .           IFRSTR, ISTH, ISTNEW, ISTIN, ISTRAI
+     .           IFRSTR, ISTH, ISTNEW, ISTIN, ISTRAI, ICOSTP
       REAL(DP), ALLOCATABLE :: OUTAU(:)
       INTEGER, ALLOCATABLE :: IHELP(:)
       LOGICAL :: LSTP, LLST, LPLASM
@@ -330,8 +331,11 @@ C
           DO JPLS=1,NPLSI
             IPLSTI= MPLSTI(JPLS)
             DO IN=1,NDXY
-              RTIS%SEIOD(IN,JPLS)=DIIN(JPLS,IN)*
-     .                        (1.5*TIIN(IPLSTI,IN)+EDRIFT(JPLS,IN))
+!pb              RTIS%SEIOD(IN,JPLS)=DIIN(JPLS,IN)*
+!pb     .                        (1.5*TIIN(IPLSTI,IN)+EDRIFT(JPLS,IN))
+              EN = 1.5*TIIN(IPLSTI,IN)
+              IF (LEDRIFT) EN = EN + EDRIFT(JPLS,IN)
+              RTIS%SEIOD(IN,JPLS)=DIIN(JPLS,IN)*EN
             ENDDO
           ENDDO
 C
@@ -618,8 +622,11 @@ C
         DO JPLS=1,NPLSI
           IPLSTI= MPLSTI(JPLS)
           DO IN=1,NDXY
-            SEINW(IN,JPLS)=DIIN(JPLS,IN)*
-     .                      (1.5*TIIN(IPLSTI,IN)+EDRIFT(JPLS,IN))
+!pb            SEINW(IN,JPLS)=DIIN(JPLS,IN)*
+!pb     .                      (1.5*TIIN(IPLSTI,IN)+EDRIFT(JPLS,IN))
+             EN = 1.5*TIIN(IPLSTI,IN)
+             IF (LEDRIFT) EN = EN + EDRIFT(JPLS,IN)
+             SEINW(IN,JPLS)=DIIN(JPLS,IN)*EN
           ENDDO
         ENDDO
 C

@@ -27,7 +27,7 @@ C
       REAL(DP) :: TALTYP(NTALI)
       REAL(DP) :: HELPI, TOTAL
       INTEGER :: IR, IP, IT, I, NBLCKA, IB, ITAL, NXM, NYM, NZM,
-     .           K, NFTI, NFTE, MXSPZ, IOUT
+     .           K, KK, NFTI, NFTE, MXSPZ, IOUT
       CHARACTER(50) :: FNAME, FORMA, FORME, FORME2
 C
 C  TYPE OF TALLY: TALTYP=0: #              (#-UNITS)
@@ -36,7 +36,8 @@ C                 TALTYP=2: VOLUME         (CM**3)
 C                 TALTYP=3: DIMENSIONLESS  (1)
 C                 TALTYP=4: UNKNOWN        (?)
 c
-c  number of volumetric input tallies: ntali = 22
+c  number of volumetric input tallies: ntali = 24(tallies) + 3*24(gradients)
+
       TALTYP(1)=0
       TALTYP(2)=0
       TALTYP(3)=1
@@ -59,6 +60,16 @@ c  number of volumetric input tallies: ntali = 22
       TALTYP(20)=0
       TALTYP(21)=0
       TALTYP(22)=0
+      TALTYP(23)=0
+      TALTYP(24)=0
+      TALTYP(25)=0  ! psi
+      TALTYP(26)=0  ! free26
+      TALTYP(27)=0  ! free27
+      TALTYP(28)=0  ! free28
+      TALTYP(29)=0  ! free29
+      TALTYP(30)=0  ! free30
+c  gradients of input tallies
+      TALTYP(31:NTALI)=0
 
       MXSPZ = MAXVAL(NFSTPI(1:NTALI))
 
@@ -89,9 +100,18 @@ C
 
       DO 100 ITAL=1,NTALI
 
+!  TALLY SWITCHED OFF ?
+        IF (.NOT.LIVTALI(ITAL)) THEN
+           WRITE (iunout,*) ' TALLY NOT AVAILABLE (OUTIDLPLA)',
+     .                      ' ITAL = ', ITAL
+           CALL EIRENE_LEER(1)
+           CYCLE
+        END IF
+
         NFTI=1
         NFTE=NFSTPI(ITAL)
 
+c  K  leading dimension of input tally ITAL
         DO 119 K=NFTI,NFTE
 
           SELECT CASE (ITAL)
@@ -139,6 +159,26 @@ C
             HELPP(1:NSBOX,K) = EFIN(1:NSBOX)
           CASE (22)
             HELPP(1:NSBOX,K) = POT(1:NSBOX)
+          CASE (23)
+            HELPP(1:NSBOX,K) = BVIN(MPLSV(K),1:NSBOX)
+          CASE (24)
+            HELPP(1:NSBOX,K) = PARMOM(K,1:NSBOX)
+          CASE (25)
+            HELPP(1:NSBOX,K) = PSI(1:NSBOX)
+          CASE (26)
+            HELPP(1:NSBOX,K) = FREE26(1:NSBOX)
+          CASE (27)
+            HELPP(1:NSBOX,K) = FREE27(1:NSBOX)
+          CASE (28)
+            HELPP(1:NSBOX,K) = FREE28(1:NSBOX)
+          CASE (29)
+            HELPP(1:NSBOX,K) = FREE29(1:NSBOX)
+          CASE (30)
+            HELPP(1:NSBOX,K) = FREE30(1:NSBOX)
+          CASE (31:120)          ! ntali=120, constant required here
+!  GRADIENTS
+            KK = NADDP(ITAL)+K
+            HELPP(1:NSBOX,K) = PLSTLS(KK,1:NSBOX)
           CASE DEFAULT
             WRITE (iunout,*) ' WRONG TALLY NUMBER (OUTIDLPLA), ITAL = '
      .                        ,ITAL
@@ -154,40 +194,67 @@ C
            DO IP=1,NYM
            DO IT=1,NZM
             I=IR + ((IP-1)+(IT-1)*NP2T3)*NR1P2 + NBLCKA
-            IF (ITAL.EQ.1) THEN
+            SELECT CASE (ITAL)
+            CASE (1)
 C  ELECTR. TEMPERATURE: NE*VOLUME-WEIGHTED AVERAGES
               HELPW(I,K)=DEIN(I)*VOL(I)
-            ELSEIF (ITAL.EQ.2) THEN
-C  ION TEMPERATURE: NI(K)*VOLUME-WEIGHTED AVERAGES
+            CASE (2)
+C  ION TEMPERTURE: NI(K)*VOLUME-WEIGHTED AVERAGES
               HELPW(I,K)=DIIN(K,I)*VOL(I)
-            ELSEIF (ITAL.EQ.3.OR.ITAL.EQ.4) THEN
+            CASE (3:4)
 C  PARTICLE DENSITY PROFILES: VOLUME-WEIGHTED AVERAGES
               HELPW(I,K)=VOL(I)
-            ELSEIF (ITAL.EQ.5.OR.ITAL.EQ.6.OR.ITAL.EQ.7) THEN
+            CASE (5:7,23)
 C  ION DRIFT VELOCITY: NI(K)*VOLUME-WEIGHTED AVERAGES
+C  FLOW VELOCITY PARALLEL B
               HELPW(I,K)=DIIN(K,I)*VOL(I)
-            ELSEIF (ITAL.GE.8.AND.ITAL.LE.11) THEN
+            CASE (8:11)
 C  B-FIELD UNIT VECTOR, B-FIELD STRENGTH "1 - WEIGHTED" AVERAGES
               HELPW(I,K)=1.D0
               IF (NSTGRD(I).GT.0) HELPW(I,K)=0.D0
-            ELSEIF (ITAL.EQ.16.OR.ITAL.EQ.17) THEN
+            CASE (16:17)
 C  B_PERP-FIELD: "1 - WEIGHTED" AVERAGES
               HELPW(I,K)=1.D0
               IF (NSTGRD(I).GT.0) HELPW(I,K)=0.D0
-            ELSEIF (ITAL.EQ.12.OR.ITAL.EQ.14.OR.ITAL.EQ.15) THEN
+            CASE (12,14:15)
 C  ADDITIONAL TALLY, CELL VOLUME, WEIGHT FUNCTION "1 - WEIGHTED" AVERAGES
               HELPW(I,K)=1.D0
               IF (NSTGRD(I).GT.0) HELPW(I,K)=0.D0
-            ELSEIF (ITAL.EQ.13) THEN
+            CASE (13)
 C  ION DRIFT ENERGY
               HELPW(I,K)=DIIN(K,I)*VOL(I)
-            ELSEIF (ITAL.GE.18.AND.ITAL.LE.21) THEN
+            CASE (18:21)
 C  E-FIELD UNIT VECTOR, E-FIELD STRENGTH
               HELPW(I,K)=1.D0
-            ELSEIF (ITAL.EQ.22) THEN
+            CASE (22)
 C  ELECTRIC POTENTIAL
               HELPW(I,K)=1.D0
-            ENDIF
+            CASE (24)
+C  PARALLEL TO B FLOW MOMENTUM
+              HELPW(I,K)=1.D0
+            CASE (25)
+C  PSI   
+              HELPW(I,K)=1.D0
+            CASE (26)
+C  FREE26   
+              HELPW(I,K)=1.D0
+            CASE (27)
+C  FREE27   
+              HELPW(I,K)=1.D0
+            CASE (28)
+C  FREE28   
+              HELPW(I,K)=1.D0
+            CASE (29)
+C  FREE29   
+              HELPW(I,K)=1.D0
+            CASE (30)
+C  FREE30   
+              HELPW(I,K)=1.D0
+
+            CASE (31:120)  ! ntali=120, constant required here
+C  (31...NTALI) GRADIENTS
+              HELPW(I,K)=1.D0
+            END SELECT
             TOTAL=TOTAL+HELPW(I,K)
            END DO
            END DO
@@ -196,42 +263,67 @@ C  ELECTRIC POTENTIAL
 C
 C  SAME LOOP AGAIN, OVER ADDITIONAL CELL REGION
           DO 122 I=NSURF+1,NSURF+NRADD
-            IF (ITAL.EQ.1) THEN
+            SELECT CASE (ITAL)
+            CASE (1)
 C  ELECTR. TEMPERATURE: NE*VOLUME-WEIGHTED AVERAGES
               HELPW(I,K)=DEIN(I)*VOL(I)
-            ELSEIF (ITAL.EQ.2) THEN
-C  ION TEMPERATURE: NI(K)*VOLUME-WEIGHTED AVERAGES
+            CASE (2)
+C  ION TEMPERTURE: NI(K)*VOLUME-WEIGHTED AVERAGES
               HELPW(I,K)=DIIN(K,I)*VOL(I)
-            ELSEIF (ITAL.EQ.3.OR.ITAL.EQ.4) THEN
+            CASE (3:4)
 C  PARTICLE DENSITY PROFILES: VOLUME-WEIGHTED AVERAGES
               HELPW(I,K)=VOL(I)
-            ELSEIF (ITAL.EQ.5.OR.ITAL.EQ.6.OR.ITAL.EQ.7) THEN
+            CASE (5:7,23)
 C  ION DRIFT VELOCITY: NI(K)*VOLUME-WEIGHTED AVERAGES
+C  FLOW VELOCITY PARALLEL B
               HELPW(I,K)=DIIN(K,I)*VOL(I)
-            ELSEIF (ITAL.GE.8.AND.ITAL.LE.11) THEN
+            CASE (8:11)
 C  B-FIELD UNIT VECTOR, B-FIELD STRENGTH "1 - WEIGHTED" AVERAGES
               HELPW(I,K)=1.D0
               IF (NSTGRD(I).GT.0) HELPW(I,K)=0.D0
-            ELSEIF (ITAL.EQ.16.OR.ITAL.EQ.17) THEN
+            CASE (16:17)
 C  B_PERP-FIELD: "1 - WEIGHTED" AVERAGES
               HELPW(I,K)=1.D0
               IF (NSTGRD(I).GT.0) HELPW(I,K)=0.D0
-            ELSEIF (ITAL.EQ.12.OR.ITAL.EQ.14.OR.ITAL.EQ.15) THEN
-C  ADDITIONAL TALLY (NO.12)
-C  CELL VOLUME      (NO.14)
-C  WEIGHT FUNCTION  (NO.15)
+            CASE (12,14:15)
+C  ADDITIONAL TALLY, CELL VOLUME, WEIGHT FUNCTION " 1 - WEIGHTED" AVERAGES
               HELPW(I,K)=1.D0
               IF (NSTGRD(I).GT.0) HELPW(I,K)=0.D0
-            ELSEIF (ITAL.EQ.13) THEN
+            CASE (13)
 C  ION DRIFT ENERGY: NI(K)*VOLUME-WEIGHTED AVERAGES
               HELPW(I,K)=DIIN(K,I)*VOL(I)
-            ELSEIF (ITAL.GE.18.AND.ITAL.LE.21) THEN
+            CASE (18:21)
 C  E-FIELD UNIT VECTOR, E-FIELD STRENGTH
               HELPW(I,K)=1.D0
-            ELSEIF (ITAL.EQ.22) THEN
+            CASE (22)
 C  ELECTRIC POTENTIAL
               HELPW(I,K)=1.D0
-            ENDIF
+            CASE (24)
+C  PARALLEL TO B FLOW MOMENTUM
+              HELPW(I,K)=1.D0
+            CASE (25)
+C  PSI   
+              HELPW(I,K)=1.D0
+            CASE (26)
+C  FREE26   
+              HELPW(I,K)=1.D0
+            CASE (27)
+C  FREE27   
+              HELPW(I,K)=1.D0
+            CASE (28)
+C  FREE28   
+              HELPW(I,K)=1.D0
+            CASE (29)
+C  FREE29   
+              HELPW(I,K)=1.D0
+            CASE (30)
+C  FREE30   
+              HELPW(I,K)=1.D0
+
+            CASE (31:120)  ! ntali=120, constant required here
+C  (31:NTALI) GRADIENTS
+              HELPW(I,K)=1.D0
+            END SELECT
             TOTAL=TOTAL+HELPW(I,K)
   122     CONTINUE
 C

@@ -452,7 +452,7 @@ C  E.G. FOR CX RECOMBINATION
           IF (IESTCX(IRCX,3).NE.0) GOTO 999
           ITYP=4
           COLTYP=2
-          NCELL = NCLLO
+          NCELL=NCLLO
           RETURN
         ENDIF
 
@@ -608,10 +608,11 @@ C  SET THE POST-COLLISION TEST PARTICLE PARALLEL VELOCITY = OLD PRE-COLLISION BU
                   CALL EIRENE_VECUSR(2,NCELL,X0,Y0,Z0,VX,VY,VZ,IPLS,
      .                               .TRUE.)
                   VPLASP=VX*BX+VY*BY+VZ*BZ
+                  SIG=SIGN(1._DP,VPLASP)
                 ELSE
-                  VPLASP=BVIN(IPLSV,NCLLO)
+                  SIG=1._DP
+                  IF (LBVIN) SIG =SIGN(1._DP,BVIN(IPLSV,NCLLO))
                 ENDIF
-                SIG=SIGN(1._DP,VPLASP)
 C  ASSUME: OLD (INCIDENT) ION MOMENTUM IS EQUAL TO NEW MOLECULE MOMENTUM
                 MMPL(IPLS,NCELL)=MMPL(IPLS,NCELL)-WEIGHT*V0_PARB*SIG
                 LMETSP(NSPAMI+IPLS)=.TRUE.
@@ -808,10 +809,11 @@ C
               CALL EIRENE_VECUSR(2,NCELL,X0,Y0,Z0,VX,VY,VZ,IPLS,
      .                           .TRUE.)
               VPLASP=VX*BX+VY*BY+VZ*BZ
+              SIG=SIGN(1._DP,VPLASP)
             ELSE
-              VPLASP=BVIN(IPLSV,NCLLO)
+              SIG=1._DP
+              IF (LBVIN) SIG=SIGN(1._DP,BVIN(IPLSV,NCLLO))
             ENDIF
-            SIG=SIGN(1._DP,VPLASP)
             MMPL(IPLS,NCELL)=MMPL(IPLS,NCELL)+VDEL*SIG
             LMETSP(NSPAMI+IPLS)=.TRUE.
           END IF

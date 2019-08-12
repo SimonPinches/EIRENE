@@ -111,13 +111,16 @@ c   LGVAC(...,0)     : background vacuum flag
      .            TEIDEJ, EIRENE_RATE_COEFF, RC1MIN, RC1MAX,
      .            RC2MIN, RC2MAX, BXP, BYP, BNORM
       REAL(DP) :: COEF1D(0:8), COEF2D(0:8,0:8), FP1(6), FP2(6)
+      REAL(DP) :: bx,by,bz
       REAL(DP), ALLOCATABLE :: DEINTF(:), SUMNI(:), SUMMNI(:),
-     .                         BASE_DENSITY(:), BASE_TEMP(:)
+     .                         BASE_DENSITY(:), BASE_TEMP(:),
+     .                         TALLY(:)
       INTEGER :: IR, IN, IP, IPM, IPLS, IOLD, ISW, IRE, I1,
-     .           I, J, JEND,
+     .           I, J, JEND, IAIN, ISPZ,
      .           IO, IPLSTI, IPLSV, IOLDTI, IOLDV, IBS,
-     .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
-
+     .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
+     .           ITAL, K, KK, NFTI, NFTE, JPLS
+ 
       TYPE(EIRENE_SPECTRUM) :: SPEC
       LOGICAL :: FOUND
 
@@ -127,6 +130,12 @@ c   LGVAC(...,0)     : background vacuum flag
           real(dp), intent(in) :: f(:)
           real(dp), intent(out) :: fcorner(:)
         end subroutine eirene_cell_to_corner
+        subroutine eirene_calc_grad (f, fdx, fdy, fdz, lfdx, lfdy, lfdz)
+          use eirmod_precision
+          real(dp), intent(in) :: f(:)
+          real(dp), intent(out) :: fdx(:), fdy(:), fdz(:)
+          logical, intent(in) :: lfdx, lfdy, lfdz
+        end subroutine eirene_calc_grad 
 
         SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
      .             RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
@@ -160,17 +169,9 @@ c   LGVAC(...,0)     : background vacuum flag
 cdr
 
       IBS = 0
-      IF (ANY(CDENMODEL == FORT//'13')) THEN
-        CALL EIRENE_ALLOC_BCKGRND
-        ALLOCATE(DEINTF(NRAD))
-        OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
-        REWIND 13+ifoff
-        READ (13+ifoff,IOSTAT=IO) TEINTF,TIINTF,DEINTF,DIINTF,
-     .                            VXINTF,VYINTF,VZINTF
-        IF (TRCFLE) WRITE (iunout,*) 'READ 13: RCMUSR, IO= ',IO
-        CLOSE (UNIT=13+ifoff)
-      END IF
-      DO IPLS=1,NPLSI
+      IF (ANY(CDENMODEL == FORT//'13')) CALL EIRENE_RPLAM(TRCFLE,10,IO)
+      DO JPLS=1,NPLSI
+        IPLS = JPLS
         IPLSTI=MPLSTI(IPLS)
         IPLSV=MPLSV(IPLS)
 
@@ -178,14 +179,15 @@ cdr
           CASE (FORT//'13')
 
 cdr  read all plasma background data (all ipls), each time. Better: move outside IPLS loop.
-!           CALL EIRENE_ALLOC_BCKGRND
-!           ALLOCATE(DEINTF(NRAD))
-!           OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
-!           REWIND 13+ifoff
-!           READ (13+ifoff,IOSTAT=IO) TEINTF,TIINTF,DEINTF,DIINTF,
-!    .                                VXINTF,VYINTF,VZINTF
-!           IF (TRCFLE) WRITE (iunout,*) 'READ 13: RCMUSR, IO= ',IO
-!           CLOSE (UNIT=13+ifoff)
+!            CALL EIRENE_ALLOC_BCKGRND
+!            ALLOCATE(DEINTF(NRAD))
+!            OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
+!            REWIND 13+ifoff
+!            READ (13+ifoff,IOSTAT=IO) TEINTF,TIINTF,DEINTF,DIINTF,
+!     .                                VXINTF,VYINTF,VZINTF
+!            IF (TRCFLE) WRITE (iunout,*) 'READ 13: RCMUSR, IO= ',IO
+!            CLOSE (UNIT=13+ifoff)
+!pb            CALL EIRENE_RPLAM(TRCFLE,10)
 
             IF (IO.EQ.0) THEN
               IOLD=TDMPAR(IPLS)%TDM%ISP(1)
@@ -638,6 +640,7 @@ C
 C  NEXT: SET SOME "DERIVED" FIELDS:  EDRIFT, BPERP, BVIN, PARMOM, LGVAC, TIINL, DIINL,ZT1, ZRG
 
 C  SET DRIFT ENERGY (EV)
+      IF (LEDRIFT) THEN
       DO J=1,NSBOX
         DO IPLS=1,NPLSI
           IPLSV=MPLSV(IPLS)
@@ -659,10 +662,13 @@ C               WRITE(iunout,*)'WARNING PLASMA_DERIV: IPLS>1 NO DRIFT!'
           ENDIF
         END DO
       END DO
+      END IF
 C
 C  SET B_PERP UNIT VECTOR in POL PLANE (X,Y) FOR 2D cases
 C      B_PAR IS ALREADY GIVEN AS INPUT TALLY BXIN,BYIN,BZIN
 C
+c  IF BXIN AND BYIN ARE NOT AVAILABLE: LBXPERP=LBYPERP=.FALSE.
+      IF (LBXPERP .AND. LBYPERP) THEN
       DO J=1,NSBOX
         IF (ABS(BXIN(J)) > EPS10) THEN
            BYP = 1._DP
@@ -685,8 +691,7 @@ C  NORMALIZE
         BXPERP(J)=BXP/BNORM
         BYPERP(J)=BYP/BNORM
       END DO
-
-
+      END IF
 
       DO 5103 J=1,NSBOX
 C  SET 'VACUUM REGION FLAGS'
@@ -696,7 +701,8 @@ C  LGVAC(...,NPLS+1)     NO REACTION RATES FOR BACKGROUND ELECTRONS
 C                        BUT PERHAPS FOR NEUTRAL BACKGROUND
         DO 5106 IPLS=1,NPLSI
           IPLSTI=MPLSTI(IPLS)
-          EMPLS=1.5*TIIN(IPLSTI,J)+EDRIFT(IPLS,J)
+          EMPLS=1.5*TIIN(IPLSTI,J)
+          IF (LEDRIFT) EMPLS=EMPLS+EDRIFT(IPLS,J)
           DIPLS=DIIN(IPLS,J)
           LGVAC(J,IPLS)=EMPLS.LE.TVAC.OR.DIPLS.LE.DVAC
           LGVAC(J,0)   =LGVAC(J,0).AND.LGVAC(J,IPLS)
@@ -727,16 +733,24 @@ C  FACTOR FOR ROOT MEAN SQUARE SPEED
         FCRG=CVEL2A/SQRT(RMASSP(IPLS))
         IPLSTI=MPLSTI(IPLS)
         IPLSV=MPLSV(IPLS)
-        BVIN(IPLSV,:)=0._DP
-        PARMOM(IPLS,:)=0._DP
+        IF (LBVIN) BVIN(IPLSV,:)=0._DP
+        IF (LPARMOM) PARMOM(IPLS,:)=0._DP
         DO J=1,NSBOX
           ZTII=MAX(TVAC,MIN(TIIN(IPLSTI,J),1.E10_DP))
           TIINL(IPLSTI,J)=LOG(ZTII)
-          BVIN(IPLSV,J)=BXIN(J)*VXIN(IPLSV,J)+
-     .                  BYIN(J)*VYIN(IPLSV,J)+
-     .                  BZIN(J)*VZIN(IPLSV,J)
-          PARMOM(IPLS,J)=BVIN(IPLSV,J)*SIGN(1._DP,BVIN(IPLSV,J))*
-     .                   AMUA*RMASSP(IPLS)
+          bx=0._dp
+          by=0._dp
+          bz=1._dp     
+          if (lbxin) bx=bxin(j)
+          if (lbyin) by=byin(j)
+          if (lbzin) bz=bzin(j)
+          IF (LBVIN) 
+     .      BVIN(IPLSV,J)=BX*VXIN(IPLSV,J)+
+     .                    BY*VYIN(IPLSV,J)+
+     .                    BZ*VZIN(IPLSV,J)
+          IF (LPARMOM.AND.LBVIN)
+     .      PARMOM(IPLS,J)=BVIN(IPLSV,J)*SIGN(1._DP,BVIN(IPLSV,J))*
+     .                     AMUA*RMASSP(IPLS)
 
 C
 C  ZT1: FOR "EFFECTIVE" PLASMA PARTICLE VELOCITY IN CROSS-SECTIONS
@@ -772,38 +786,133 @@ C
         end do
       END IF
 
-      IF (LDISMO) THEN
-        call eirene_cell_to_corner(DEIN,DEINCORNER)
-        do ipls = 1, npls
-          call eirene_cell_to_corner(DIIN(ipls,:),DIINCORNER(:,ipls))
-        end do
+      IF (LDESMO) THEN
+	call eirene_cell_to_corner(DEIN,DEINCORNER)
       END IF
+
+      IF (LDISMO) THEN
+        do ipls = 1, npls
+ 	  call eirene_cell_to_corner(DIIN(ipls,:),DIINCORNER(:,ipls))
+        ENDDO
+      ENDIF 
+  
+      IF (LEDRIFTSMO) THEN
+        do ipls = 1, npls
+         call eirene_cell_to_corner(EDRIFT(ipls,:),EDRIFTCORNER(:,ipls))
+        ENDDO
+      ENDIF
+      IF (LPARMOMSMO) THEN
+        do ipls = 1, npls 
+         call eirene_cell_to_corner(PARMOM(ipls,:),PARMOMCORNER(:,ipls))
+        end do
+      ENDIF
 
       IF (LVSMO) THEN
         do iplsv = 1, nplsv
-          call eirene_cell_to_corner(VXIN(iplsv,:),VXINCORNER(:,iplsv))
-          call eirene_cell_to_corner(VYIN(iplsv,:),VYINCORNER(:,iplsv))
-          call eirene_cell_to_corner(VZIN(iplsv,:),VZINCORNER(:,iplsv))
-          call eirene_cell_to_corner(BVIN(iplsv,:),BVINCORNER(:,iplsv))
+          if (lvxsmo)
+     . 	   call eirene_cell_to_corner(VXIN(iplsv,:),VXINCORNER(:,iplsv))
+          if (lvysmo)
+     .     call eirene_cell_to_corner(VYIN(iplsv,:),VYINCORNER(:,iplsv))
+          if (lvzsmo)
+     .     call eirene_cell_to_corner(VZIN(iplsv,:),VZINCORNER(:,iplsv))
+          if (lbvsmo)
+     .     call eirene_cell_to_corner(BVIN(iplsv,:),BVINCORNER(:,iplsv))
         end do
       END IF
 
       IF (LBSMO) THEN
-        call eirene_cell_to_corner(BXIN,BXINCORNER)
-        call eirene_cell_to_corner(BYIN,BYINCORNER)
-        call eirene_cell_to_corner(BZIN,BZINCORNER)
-        call eirene_cell_to_corner(BFIN,BFINCORNER)
+C  SMOOTH B-FIELD
+        if (lbxsmo) call eirene_cell_to_corner(BXIN,BXINCORNER)
+        if (lbysmo) call eirene_cell_to_corner(BYIN,BYINCORNER)
+        if (lbzsmo) call eirene_cell_to_corner(BZIN,BZINCORNER)
+        if (lbfsmo) call eirene_cell_to_corner(BFIN,BFINCORNER)
       END IF
 
       IF (LESMO) THEN
-        call eirene_cell_to_corner(EXIN,EXCORNER)
-        call eirene_cell_to_corner(EYIN,EYCORNER)
-        call eirene_cell_to_corner(EZIN,EZCORNER)
-        call eirene_cell_to_corner(EFIN,EFCORNER)
+C  SMOOTH E-FIELD
+        if (lexsmo)  call eirene_cell_to_corner(EXIN,EXCORNER)
+        if (leysmo)  call eirene_cell_to_corner(EYIN,EYCORNER)
+        if (lezsmo)  call eirene_cell_to_corner(EZIN,EZCORNER)
+        if (lefsmo)  call eirene_cell_to_corner(EFIN,EFCORNER)
+        if (lpotsmo) call eirene_cell_to_corner(POT,POTCORNER)
+      END IF
+     
+      IF (LADSMO) THEN
+        do iain = 1, nain
+          call eirene_cell_to_corner(ADIN(iain,:),ADCORNER(:,iain))
+        end do
+      END IF
+ 
+      IF (LVOLSMO) THEN
+        call eirene_cell_to_corner(VOL,VOLCORNER)
+      END IF
+     
+      IF (LWGHTSMO) THEN
+        do ispz = 1, nspzmc
+          call eirene_cell_to_corner(WGHT(ispz,:),WGHTCORNER(:,ispz))
+        end do
       END IF
 
+      IF (LBXPSMO) THEN
+        call eirene_cell_to_corner(BXPERP,BXPERPCORNER)
+      END IF
 
+      IF (LBYPSMO) THEN
+        call eirene_cell_to_corner(BYPERP,BYPERPCORNER)
+      END IF
+
+      IF (LPOTSMO) THEN
+        call eirene_cell_to_corner(POT,POTCORNER)
+      END IF
+
+      IF (LPSISMO) THEN
+        call eirene_cell_to_corner(PSI,PSICORNER)
+      END IF
+
+      IF (LFREE26SMO) THEN
+        call eirene_cell_to_corner(FREE26,FREE26CORNER)
+      END IF
+
+      IF (LFREE27SMO) THEN
+        call eirene_cell_to_corner(FREE27,FREE27CORNER)
+      END IF
+
+      IF (LFREE28SMO) THEN
+        call eirene_cell_to_corner(FREE28,FREE28CORNER)
+      END IF
+
+      IF (LFREE29SMO) THEN
+        call eirene_cell_to_corner(FREE29,FREE29CORNER)
+      END IF
+
+      IF (LFREE30SMO) THEN
+        call eirene_cell_to_corner(FREE30,FREE30CORNER)
+      END IF
 C
+C  GRADIENTS
+      IF (ANY(LIVTALI(NTALG:NTALI))) THEN
+        ALLOCATE (TALLY(NCORNER))
+        DO ITAL = 1, NTALG
+C  ITAL : NO. OF TALLY OF WHICH GRADIENT IS TO BE CALCULATED
+C  KK   : INDEX OF GRADIENT TALLY
+          KK = NTALG + (ITAL-1)*3 
+          IF (ANY(LIVTALI(KK+1:KK+3))) THEN
+            NFTI = 1
+            NFTE=NFSTPI(KK+1)
+            DO K=NFTI, NFTE
+              TALLY(:)=CORNER_PROFILES(:,NADDCOR(ITAL)+K)
+              CALL EIRENE_CALC_GRAD(TALLY,
+     .                              PLSTLS(NADDP(KK+1)+K,:),
+     .                              PLSTLS(NADDP(KK+2)+K,:),
+     .                              PLSTLS(NADDP(KK+3)+K,:),
+     .                              LIVTALI(KK+1),
+     .                              LIVTALI(KK+2),
+     .                              LIVTALI(KK+3))
+            END DO
+          END IF
+        END DO
+        DEALLOCATE (TALLY)
+      END IF
 C
 C  SAVE PLASMA DATA AND ATOMIC DATA ON FORT.13
 C

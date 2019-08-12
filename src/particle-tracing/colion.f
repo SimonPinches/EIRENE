@@ -305,7 +305,7 @@ C  NO !
           LGPART=.FALSE.
           ITYP=4
           COLTYP=2
-          NCELL = NCLLO
+          NCELL=NCLLO
           RETURN
         ENDIF
 
@@ -329,8 +329,8 @@ cdr  this NAMIEI is the underlying discrete pdf, which led to the normalized cum
           NAMIEI = 0
 
           NAMIEI(1:NSPH)         = 0    !  PPHEI(IREI,1:NPHOTI) IS NOT YET SET IN XSTEI.F
-          NAMIEI(NSPH+1:NSPA) = PATEI(IREI,1:NATMI)
-          NAMIEI(NSPA+1:NSPAM) = PMLEI(IREI,1:NMOLI)
+          NAMIEI(NSPH+1:NSPA)    = PATEI(IREI,1:NATMI)
+          NAMIEI(NSPA+1:NSPAM)   = PMLEI(IREI,1:NMOLI)
           NAMIEI(NSPAM+1:NSPAMI) = PIOEI(IREI,1:NIONI)
 
 !  RESET WEIGHT BACK TO ORIGINAL VALUE
@@ -608,10 +608,11 @@ C  SET THE POST-COLLISION TEST PARTICLE PARALLEL VELOCITY = OLD PRE-COLLISION BU
                   CALL EIRENE_VECUSR(2,NCELL,X0,Y0,Z0,VX,VY,VZ,IPLS,
      .                               .TRUE.)
                   VPLASP=VX*BX+VY*BY+VZ*BZ
+                  SIG=SIGN(1._DP,VPLASP)
                 ELSE
-                  VPLASP=BVIN(IPLSV,NCLLO)
+                  SIG=1._DP
+                  IF (LBVIN) SIG =SIGN(1._DP,BVIN(IPLSV,NCLLO))
                 ENDIF
-                SIG=SIGN(1._DP,VPLASP)
 C ASSUME: OLD (INCIDENT) ION MOMENTUM IS EQUAL TO NEW ATOM MOMENTUM
                 MIPL(IPLS,NCELL)=MIPL(IPLS,NCELL)-WEIGHT*V0_PARB*SIG
                 LMETSP(NSPAMI+IPLS)=.TRUE.
@@ -631,7 +632,7 @@ C  ASSUME: NEW ION MOMENTUM IS EQUAL TO INCIDENT TEST ION MOMENTUM
               ENDIF
             ENDIF
             COLTYP=2
-            NCELL = NCLLO
+            NCELL=NCLLO
             RETURN
 
           CASE(2)
@@ -696,9 +697,9 @@ C
 C  FOLLOW 2ND SECONDARY, SPEED OF PREVIOUS TEST PARTICLE
           ITYP=N2NDX(IRCX,1)
 
-          SELECT CASE (ITYP)
+          SELECT CASE(ITYP)
 C
-          CASE (1)
+          CASE(1)
             IATM=N2NDX(IRCX,2)
             XGENER=0.D0
 C
@@ -710,7 +711,7 @@ C
             NCELL = NCLLO
             RETURN
 C
-          CASE (2)
+          CASE(2)
             IMOL=N2NDX(IRCX,2)
             XGENER=0.D0
 C
@@ -722,7 +723,7 @@ C
             NCELL = NCLLO
             RETURN
 C
-          CASE (3)
+          CASE(3)
             IION=N2NDX(IRCX,2)
             XGENER=0.D0
 C
@@ -814,10 +815,11 @@ C
               CALL EIRENE_VECUSR(2,NCELL,X0,Y0,Z0,VX,VY,VZ,IPLS,
      .                           .TRUE.)
               VPLASP=VX*BX+VY*BY+VZ*BZ
+              SIG=SIGN(1._DP,VPLASP)
             ELSE
-              VPLASP=BVIN(IPLSV,NCLLO)
+              SIG=1._DP
+              IF (LBVIN) SIG=SIGN(1._DP,BVIN(IPLSV,NCLLO))
             ENDIF
-            SIG=SIGN(1._DP,VPLASP)
             MIPL(IPLS,NCELL)=MIPL(IPLS,NCELL)+VDEL*SIG
             LMETSP(NSPAMI+IPLS)=.TRUE.
           END IF

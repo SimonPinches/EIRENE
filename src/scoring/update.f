@@ -680,8 +680,16 @@ C  PARMOM AND BVIN NOT KNOWN FROM PLASMA_DERIV
      .                        SIGN(1._DP,VAL_PARB(IPL))
             END DO
           ELSE
-            VAL_PARB(1:NPLSI) =BVIN(MPLSV(1:NPLSI),IRDO)
-            VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)
+            VAL_PARB(1:NPLSI) = 0._DP
+            VSIG_PARB(1:NPLSI)= 0._DP
+
+cdr  from here on: only signum=sign(1.,val_parp) is used.
+cdr  tbd for consistency (default signum if bvin is not set:) 
+cdr       signum=1.
+cdr       if (lbvin) signum=sign(1.,val_parp)
+       
+            IF (LBVIN)   VAL_PARB(1:NPLSI) =BVIN(MPLSV(1:NPLSI),IRDO)
+            IF (LPARMOM) VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)         
           END IF
 c
 c  set parameters for parallel momentum of incident neutral particle

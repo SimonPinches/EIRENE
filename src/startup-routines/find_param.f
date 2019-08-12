@@ -50,14 +50,15 @@ C
       INTEGER :: INDGRD(3), INDPRO(12), IDUM(12)
       INTEGER, ALLOCATABLE :: INDSRC(:), IEIGEN(:)
       INTEGER :: NFR, ISOR, NSRFSI, NRADD,
-     .           NREACI, NSTSI, NLIMI, NVOLPL, NSP, ICO,
+     .           NREACI, NREAC_ADD, NREAC_LINES,
+     .           NSTSI, NLIMI, NVOLPL, NSP, ICO,
      .           NSURPR, NVOLPR, NPRNLI, NCHORI,
      .           NCHENI, NSIGI_BGK, NSIGSI, ID, NSIGVI,
      .           NSIGI_COP, NR1ST, NRSEP, NTIME0,
      .           NP1, NP2, NRKNOT, NRPLG, NPPLG,
      .           NITER0, NTPER, NTTRA, NCOOR, NTET,
      .           NT3RD, NTSEP, NTRII, NP2ND, NPPER, NPSEP, NPPLA,
-     .           NSIGCI, IREAD, NCOPII, NCOPIE, NREAC_ADD,
+     .           NSIGCI, IREAD, NCOPII, NCOPIE, 
      .           NRC, NRE, NLINES, LL, NB1, NB2, NB3, NS1,
      .           NS2, NS3, INM1, INM2, INM3, INMDL, IEND, ITOK, IER,
      .           N_REAC, N_SPEC, N_ATOMS, N_MOL, N_IONS, N_TESTIONS,
@@ -68,8 +69,7 @@ C
      .           NCHTAL, MOD_ADDV, NUM_COMPO,
      .           NUM_CONTRIB, ISP, ITP, IRATIO,
      .           I, J, K,
-     .           ILINE, JCOMP, KCONTR, IREAC_ADD,
-     .           NREAC_LINES
+     .           ILINE, JCOMP, KCONTR, IREAC_ADD           
       REAL(DP) :: SORIND, SORLIM, DUMM1, ROA, ZAA, ZZA, ZGA, YAA, YYA,
      .            ZIA, YP, XP, YIA, YGA, EMIN1, EMAX1
       LOGICAL :: NLSCL, NLTEST, NLANA, NLDRFT, NLCRR, NLERG, NLIDENT,
@@ -131,7 +131,8 @@ C  TEST PARTICLE SPECIES AND TALLIES
       NSNV=0
       NALV=0
       NALS=0
-      NAIN=1
+!PB   NAIN=1
+      NAIN=0
       NCPV=0
       NBGK=0
       NADSPC=0
@@ -146,7 +147,10 @@ C  STATISTICS
       NCV=1
 C  ATOMIC DATA
       NREAC=1
+cdr I think nreac_add is fully redundant now --> tbd: remove 
       NREAC_ADD=0
+c  total no. of reaction cards read in block 4
+      NREAC_LINES=0
       NREC=1
       NREI=1
       NRCX=1

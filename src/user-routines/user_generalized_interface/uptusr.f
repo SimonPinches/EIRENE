@@ -87,10 +87,12 @@ C
                   END IF
                   PPPL_COP(IPLS,INC)=PPPL_COP(IPLS,INC)+RECADD
                   SUMN=SUMN+RECADD*VOL(IN)
-                  PIADD=PARMOM(IPLS,IN)*RECADD
+                  PIADD=0._DP
+                  IF (LPARMOM) PIADD=PARMOM(IPLS,IN)*RECADD
                   CPPV(IPLS,INC)=CPPV(IPLS,INC)+PIADD
                   SUMM=SUMM+PIADD*VOL(IN)
-                  EIADD=(1.5*TIIN(IPLSTI,IN)+EDRIFT(IPLS,IN))*RECADD
+                  EIADD=1.5*TIIN(IPLSTI,IN)*RECADD
+                  IF (LEDRIFT) EIADD=EIADD+EDRIFT(IPLS,IN)*RECADD
                   EPPL_COP(INC)=EPPL_COP(INC)+EIADD
                   SUMEI=SUMEI+EIADD*VOL(IN)
                   EPEL(INC)=EPEL(INC)+EEADD

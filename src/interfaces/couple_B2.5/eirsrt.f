@@ -77,8 +77,7 @@ C
 
       REAL(DP) :: FLUXS(NSTRA)
       REAL(DP) :: EIRENE_FTABEI1, EIRENE_FEELEI1, ESIG,
-     .            DUMMY,
-     .            DTIMVO
+     .            DUMMY, DTIMVO
       INTEGER :: IN, IAEI, IMEI, IIEI, IREI, IFIRST, K, JC, NDXY,
      .           J, IRC, NREC10, NREC11, ITNR, IPLSTI, IST_RATE, IST,
      .           JATM, JMOL, JION, JPLS,
@@ -276,8 +275,11 @@ C
           DO JPLS=1,NPLSI
             IPLSTI= MPLSTI(JPLS)
             DO IN=1,NDXY
-              RTIS%SEIOD(IN,JPLS)=DIIN(JPLS,IN)*
-     .                        (1.5*TIIN(IPLSTI,IN)+EDRIFT(JPLS,IN))
+!pb              RTIS%SEIOD(IN,JPLS)=DIIN(JPLS,IN)*
+!pb     .                      (1.5*TIIN(IPLSTI,IN)+EDRIFT(JPLS,IN))
+              EN = 1.5*TIIN(IPLSTI,IN)
+              IF (LEDRIFT) EN = EN + EDRIFT(JPLS,IN)
+              RTIS%SEIOD(IN,JPLS)=DIIN(JPLS,IN)*EN
             ENDDO
           ENDDO
 C
@@ -413,7 +415,7 @@ C
 !pb 09022016            ESIG=EPLEI(IREI,2)  this was incorrect,
 cdr                     because it was already summed over ipls
            ESIG=EPLEI(IREI,JPLS,2)  ! only KER -part is corrected in short cycle
-          DO IN=1,NDXY
+           DO IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
               RTIS%SEIODI(IN,JION)=RTIS%SEIODI(IN,JION)+
      .                        TABEI1(IREI,IN)*ESIG
@@ -421,7 +423,7 @@ cdr                     because it was already summed over ipls
               RTIS%SEIODI(IN,JION)=RTIS%SEIODI(IN,JION)+
      .                        EIRENE_FTABEI1(IREI,IN)*ESIG
             END IF
-          ENDDO
+           ENDDO
           END DO
          END DO
         END DO
@@ -557,8 +559,11 @@ C
         DO JPLS=1,NPLSI
           IPLSTI= MPLSTI(JPLS)
           DO IN=1,NDXY
-            SEINW(IN,JPLS)=DIIN(JPLS,IN)*
-     .                      (1.5*TIIN(IPLSTI,IN)+EDRIFT(JPLS,IN))
+!pb            SEINW(IN,JPLS)=DIIN(JPLS,IN)*
+!pb     .                      (1.5*TIIN(IPLSTI,IN)+EDRIFT(JPLS,IN))
+	    EN = 1.5*TIIN(IPLSTI,IN)
+            IF (LEDRIFT) EN = EN + EDRIFT(JPLS,IN)
+            SEINW(IN,JPLS)=DIIN(JPLS,IN)*EN
           ENDDO
         ENDDO
 C
