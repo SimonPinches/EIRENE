@@ -1,4 +1,4 @@
-image: jugit-registry.fz-juelich.de/eirene/eirene-ci-image/master
+image: jugit-registry.fz-juelich.de/eirene/eirene-ci-image/debianstretch
 
 include:
     - '.update_fork_branches.yml'
