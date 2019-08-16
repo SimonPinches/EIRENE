@@ -33,11 +33,9 @@ update_fork_branches_ITER:
         - git remote set-url --push iter no_push
         # Fetch available branches from ITER
         - git fetch iter
-        # Checkout and push branches to EIRENE repository
-        - git checkout forks/iter/master && git merge iter/master || git checkout -b forks/iter/master iter/master 
-        - git push -u origin forks/iter/master:forks/iter/master
-        - git checkout forks/iter/develop && git merge iter/develop || git checkout -b forks/iter/develop iter/develop
-        - git push -u origin forks/iter/develop:forks/iter/develop
+        # Push branches to EIRENE repository
+        - git push -f -u origin iter/master:refs/heads/forks/iter/master
+        - git push -f -u origin iter/develop:refs/heads/forks/iter/develop
 
 update_fork_branches_CEA:
     <<: *update_fork_branches
@@ -54,11 +52,9 @@ update_fork_branches_CEA:
         - git remote add -t master -t eirene_up2date cea eirene_cea || git remote set-url cea eirene_cea
         # Fetch available branches from CEA
         - git fetch cea
-        # Checkout and push branches to EIRENE repository
-        - git checkout forks/cea/master && git merge cea/master || git checkout -b forks/cea/master cea/master 
-        - git push -u origin forks/cea/master:forks/cea/master
-        - git checkout forks/cea/eirene_up2date && git merge cea/eirene_up2date || git checkout -b forks/cea/eirene_up2date cea/eirene_up2date
-        - git push -u origin forks/cea/eirene_up2date:forks/cea/eirene_up2date
+        # Push branches to EIRENE repository
+        - git push -f -u origin cea/master:refs/heads/forks/cea/master
+        - git push -f -u origin cea/eirene_up2date:refs/heads/forks/cea/eirene_up2date
 
 update_fork_branches_JET:
     <<: *update_fork_branches
@@ -76,13 +72,9 @@ update_fork_branches_JET:
         # Fetch available branches from JET
         - git fetch jet
         - git fetch jet_new
-        # Checkout and push branches to EIRENE repository
-        - git checkout forks/jet/master && git merge jet/master || git checkout -b forks/jet/master jet/master 
-        - git push -u origin forks/jet/master:forks/jet/master
-        - git checkout forks/jet/develop && git merge jet/develop || git checkout -b forks/jet/develop jet/develop
-        - git push -u origin forks/jet/develop:forks/jet/develop
-        - git checkout forks/jet_new/JET_master && git merge jet_new/JET_master || git checkout -b forks/jet_new/JET_master jet_new/JET_master
-        - git push -u origin forks/jet_new/JET_master:forks/jet_new/JET_master
-        - git checkout forks/jet_new/v170517_NewJuel && git merge jet_new/v170517_NewJuel || git checkout -b forks/jet_new/v170517_NewJuel jet_new/v170517_NewJuel
-        - git push -u origin forks/jet_new/v170517_NewJuel:forks/jet_new/v170517_NewJuel
+        # Push branches to EIRENE repository
+        - git push -f -u origin jet/master:refs/heads/forks/jet/master
+        - git push -f -u origin jet/develop:refs/heads/forks/jet/develop
+        - git push -f -u origin jet_new/JET_master:refs/heads/forks/jet_new/JET_master
+        - git push -f -u origin jet_new/v170517_NewJuel:refs/heads/forks/jet_new/v170517_NewJuel
 
