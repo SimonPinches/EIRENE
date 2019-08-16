@@ -34,8 +34,8 @@ update_fork_branches_ITER:
         # Fetch available branches from ITER
         - git fetch iter
         # Push branches to EIRENE repository
-        - git push -f -u origin iter/master:forks/iter/master
-        - git push -f -u origin iter/develop:forks/iter/develop
+        - git push -f -u origin iter/master:refs/heads/forks/iter/master
+        - git push -f -u origin iter/develop:refs/heads/forks/iter/develop
 
 update_fork_branches_CEA:
     <<: *update_fork_branches
@@ -53,8 +53,8 @@ update_fork_branches_CEA:
         # Fetch available branches from CEA
         - git fetch cea
         # Push branches to EIRENE repository
-        - git push -f -u origin cea/master:forks/cea/master
-        - git push -f -u origin cea/eirene_up2date:forks/cea/eirene_up2date
+        - git push -f -u origin cea/master:refs/heads/forks/cea/master
+        - git push -f -u origin cea/eirene_up2date:refs/heads/forks/cea/eirene_up2date
 
 update_fork_branches_JET:
     <<: *update_fork_branches
@@ -73,8 +73,8 @@ update_fork_branches_JET:
         - git fetch jet
         - git fetch jet_new
         # Push branches to EIRENE repository
-        - git push -f -u origin jet/master:forks/jet/master
-        - git push -f -u origin jet/develop:forks/jet/develop
-        - git push -f -u origin jet_new/JET_master:forks/jet_new/JET_master
-        - git push -f -u origin jet_new/v170517_NewJuel:forks/jet_new/v170517_NewJuel
+        - git push -f -u origin jet/master:refs/heads/forks/jet/master
+        - git push -f -u origin jet/develop:refs/heads/forks/jet/develop
+        - git push -f -u origin jet_new/JET_master:refs/heads/forks/jet_new/JET_master
+        - git push -f -u origin jet_new/v170517_NewJuel:refs/heads/forks/jet_new/v170517_NewJuel
 
