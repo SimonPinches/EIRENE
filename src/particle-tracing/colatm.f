@@ -474,11 +474,11 @@ c  (i.e. scattering angle = PI), energy may have changed.
           IF (ITYP /= 4) THEN
             SELECT CASE (ITYP)
 C
-            CASE (1)
+            CASE(1)
               IATM=N2NDX(IRCX,2)
               E0=CVRSSA(IATM)*VELO*VELO
 
-            CASE (2)
+            CASE(2)
               IMOL=N2NDX(IRCX,2)
               E0=CVRSSM(IMOL)*VELO*VELO
 
@@ -667,10 +667,11 @@ C  SET THE POST-COLLISION TEST PARTICLE PARALLEL VELOCITY = OLD PRE-COLLISION BU
                   CALL EIRENE_VECUSR(2,NCELL,X0,Y0,Z0,VX,VY,VZ,IPLS,
      .                               .TRUE.)
                   VPLASP=VX*BX+VY*BY+VZ*BZ
+                  SIG=SIGN(1._DP,VPLASP)
                 ELSE
-                  VPLASP = BVIN(IPLSV,NCLLO)
+                  SIG=1._DP
+                  IF (LBVIN) SIG =SIGN(1._DP,BVIN(IPLSV,NCLLO))
                 ENDIF
-                SIG=SIGN(1._DP,VPLASP)
 C  ASSUME: OLD (INCIDENT) ION MOMENTUM IS EQUAL TO NEW ATOM MOMENTUM
                 MAPL(IPLS,NCELL)=MAPL(IPLS,NCELL)-WEIGHT*V0_PARB*SIG
                 LMETSP(NSPAMI+IPLS)=.TRUE.
@@ -842,10 +843,11 @@ C
               CALL EIRENE_VECUSR(2,NCELL,X0,Y0,Z0,VX,VY,VZ,IPLS,
      .                           .TRUE.)
               VPLASP=VX*BX+VY*BY+VZ*BZ
+              SIG=SIGN(1._DP,VPLASP)
             ELSE
-              VPLASP=BVIN(IPLSV,NCLLO)
+              SIG=1._DP
+              IF (LBVIN) SIG=SIGN(1._DP,BVIN(IPLSV,NCLLO))
             ENDIF
-            SIG=SIGN(1._DP,VPLASP)
             MAPL(IPLS,NCELL)=MAPL(IPLS,NCELL)+VDEL*SIG
             LMETSP(NSPAMI+IPLS)=.TRUE.
           END IF

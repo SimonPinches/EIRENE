@@ -182,7 +182,7 @@ c    .          DELTE_PARA, DELTI_PARA, DELTE_PERP, DELTI_PERP, TES,TIS,
      .          SFEEWX, SFEINY, PM1, DRR, UU, PITB,
      .          FLX_EIR, SUMN_OLD, SNIRES, SMORES, SEERES, SEIRES,
      .          fltt, e0b2, dmaxiso, dminiso, CFAC, 
-     .          eamisum, eplsum
+     .          eamisum, eplsum, bv
       INTEGER :: NRWL(NSTRA)
 
       INTEGER, SAVE :: J, IRC, JC, INC,
@@ -2384,10 +2384,12 @@ C  EXCLUDE IPLS-VACUUM CELLS
                     END IF
                     PPPL_COP(IPLS,INC)=PPPL_COP(IPLS,INC)+RECADD
                     SUMN=SUMN+RECADD*VOL(IN)
-                    PIADD=PARMOM(IPLS,IN)*RECADD
+                    PIADD=0._DP
+                    IF (LPARMOM) PIADD=PARMOM(IPLS,IN)*RECADD
                     MPPL_COP(IPLS,INC)=MPPL_COP(IPLS,INC)+PIADD
                     SUMM=SUMM+PIADD*VOL(IN)
-                    EIADD=(1.5*TIIN(IPLSTI,IN)+EDRIFT(IPLS,IN))*RECADD
+                    EIADD=1.5*TIIN(IPLSTI,IN)*RECADD
+                    IF (LEDRIFT) EIADD=EIADD+EDRIFT(IPLS,IN)*RECADD
                     EPPL_COP(IPLS,INC)=EPPL_COP(IPLS,INC)+EIADD
                     SUMEI=SUMEI+EIADD*VOL(IN)
                     EPEL_COP(INC)=EPEL_COP(INC)+EEADD
@@ -2557,9 +2559,11 @@ cdr  is this now any different from sni set above?
 
 
 cdr  add pppl contribution to internal energy sources rate
+                bv = 0._dp
+                if (lbvin) bv = bvin(iplsv,inn)
                 cpv_cmp(icp4+ipls,in,istrai)=
-     .                  cpv_cmp(icp4+ipls,in,istrai) +
-     .                  cvrssp(ipls)*bvin(iplsv,inn)**2*PPPL_COP(IPLS,IN)
+     .                  cpv_cmp(icp4+ipls,in,istrai) + 
+     .                  cvrssp(ipls)*bv**2*PPPL_COP(IPLS,IN)
               end do  ! iy
             end do    ! ix
 
@@ -2604,7 +2608,8 @@ cdr   ipls contributes to plasma code species ifl
               DO 7533 IY=1,NDYA
                 IN=IY+(IX-1)*NR1ST
                 INC=NCLTAL(IN)
-                SIGNUM=SIGN(1._DP,BVIN(IPLSV,IN))
+                SIGNUM=1._DP
+                IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IN))
                 SMOCL=(MAPL(IPLS,INC)+MMPL(IPLS,INC)+MIPL(IPLS,INC)+
      .                 MPPL_COP(IPLS,INC))*
      .                 VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
@@ -2623,7 +2628,8 @@ cdr  tbd:  check storage on copv tallies, ncpv ??
               DO IY=1,NDYA
                 IN=IY+(IX-1)*NR1ST
                 INC=NCLTAL(IN)
-                SIGNUM=SIGN(1._DP,BVIN(IPLSV,IN))
+                SIGNUM=1._DP
+                IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IN))
                 cfac = (MAPL(IPLS,INC)+MMPL(IPLS,INC)+MIPL(IPLS,INC))/
      .                 (cpv_cmp(icp2+ipls,inc,istrai) + eps60)
                 cpv_cmp(icp2+ipls,inc,istrai)=
@@ -2631,8 +2637,10 @@ cdr  tbd:  check storage on copv tallies, ncpv ??
      .                  MPPL_COP(IPLS,INC))*
      .                  VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
 !pb 30012013 sei internal
+                bv = 0._dp
+                if (lbvin) bv = bvin(iplsv,in)
                 cpv_cmp(icp3+3,inc,istrai)=cpv_cmp(icp3+3,inc,istrai) -
-     .                  bvin(iplsv,in)*MPPL_COP(IPLS,INC)*SIGNUM*
+     .                  bv*MPPL_COP(IPLS,INC)*SIGNUM*
      .                  cveli2/amua*2._DP
               end do
             end do
@@ -2655,7 +2663,8 @@ cdr   ntalm is a copv tally.
                   DO IY=1,NDYA
                     IN=IY+(IX-1)*NR1ST
                     INC=NCLTAL(IN)
-                    SIGNUM=SIGN(1._DP,BVIN(IPLSV,IN))
+                    SIGNUM=1._DP
+                    IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IN))
                     SMORES=(MAPL(IPLS,INC)+MMPL(IPLS,INC)+
      .                 MIPL(IPLS,INC))*VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
                     RESSMO(ISTRAI,IFL)=RESSMO(ISTRAI,IFL)+
@@ -3456,7 +3465,8 @@ C
         CALL EIRENE_MASRR1 (' TARGETS,EE',SFEET(1),NTARGI,5)
         DO ITARG=1,NTARGI
           DO IFL=1,NFLA
-             WRITE(iunout,'(A,I0,A,ES12.4)') 'TARGETS, NI(IFL =',IFL,') ',
+             WRITE(iunout,'(A,I0,A,ES12.4)') 
+     .            'TARGETS, NI(IFL =',IFL,') ',
      .             SFNIT(ITARG,IFL)
           ENDDO
           CALL EIRENE_LEER(1)

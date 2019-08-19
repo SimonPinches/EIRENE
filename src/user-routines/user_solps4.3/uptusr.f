@@ -41,12 +41,49 @@ C
      .                        WV
       INTEGER, INTENT(IN) :: IFLAG
       INTEGER ::   ICOU,K,IRD,IACX,IRCX, IRDO,nti,nte,ia,
-     .             IMCX,IMEL,IREL
+     .             IMCX,IMEL,IREL,IFIRST,I
       REAL(DP) ::  DIST,WTR,WTRSIG
       REAL(DP) :: VSIG_PARB(NPLS), VAL_PARB(NPLS),
      .            VSIG_PERP(NPLS), VAL_PERP(NPLS),
      .            V0_PARB,PARMOM_0,
      .            V0_PERP,PERPMOM_0
+     .           ,DD, VR, VP
+      REAL(DP), ALLOCATABLE, SAVE :: VPX(:),VPY(:),VRX(:),VRY(:)
+      DATA IFIRST/0/
+
+      IF (IFIRST.EQ.0) THEN
+        IFIRST=1
+C
+CDR
+CDR  PROVIDE A RADIAL UNIT VECTOR PER CELL
+CDR  VPX,VPY,  NEEDED FOR PROJECTING PARTICLE VELOCITIES
+CDR  SAME FOR POLOIDAL UNIT VECTOR VRX,VRY
+C
+        if(allocated(vpx)) deallocate(vpx,vpy,vrx,vry)
+        ALLOCATE (VPX(NRAD))
+        ALLOCATE (VPY(NRAD))
+        ALLOCATE (VRX(NRAD))
+        ALLOCATE (VRY(NRAD))
+        VPX=0.
+        VPY=0.
+        VRX=0.
+        VRY=0.
+        IF (LBXIN.AND.LBYIN.AND.LBXPERP.AND.LBYPERP) THEN
+!          DO I=1,ntrii
+          DO I=1,nrad
+!           VPX(I)=PLNXTRI(i)    ! radial unit vector 
+!           VPY(I)=PLNYTRI(i)    ! => bxperp, byperp
+!           VRX(I)=PPLNXTRI(i)   ! poloidal unit vector
+!           VRY(I)=PPLNYTRI(i)   ! => BXIN, BYIN TO BE NORMALIZED
+cdr tbd: check liftali: bx,by,,bxperp,byperp
+            VPX(I)=BXPERP(i)     ! radial unit vector <= bxperp, byperp
+            VPY(I)=BYPERP(i)     ! 
+            DD = SQRT(BXIN(I)**2 + BYIN(I)**2)
+            VRX(I)=BXIN(i)/DD    ! poloidal unit vector <= BXIN, BYIN TO BE NORMALIZED 
+            VRY(I)=BYIN(i)/DD    ! 
+          END DO
+        END IF
+      ENDIF
 
 C
 C  ON INPUT:  WV=WEIGHT/VEL
@@ -57,13 +94,13 @@ C  ATOMS, CX ENERGY
       IF (ITYP.NE.1) GOTO 999
 
 C  CHECK: STORAGE FOR AT LEAST 8 ADDITIONAL TRACKLENGTH-ESTIMATED TALLIES?
-      IF (NADV.LT.8*NATMI) THEN
+      IF (NADV.LT.12*NATMI) THEN
         GOTO 9999
       ELSE
 C  THIS ROUTINE: SCORE 8 ADDITIONAL TALLIES ADDV
 c  initial species index for ADDV tally: nspan
         nti=NSPAN(ntala)
-        nte=Nti+8*NATM-1
+        nte=Nti+12*NATM-1
         LMETSP(nti:nte)=.TRUE.
       ENDIF
 C
@@ -75,8 +112,17 @@ C
 c  set parallel plasma flow parameters
 c  assume here: bvin, parmom are set in plasma_deriv.
 c               In case of other options (indpro): see update.f
-          VAL_PARB(1:NPLSI) =BVIN(MPLSV(1:NPLSI),IRDO)
-          VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)
+cdr only signum needed: default tbd: signum=1
+          IF (LBVIN) THEN
+            VAL_PARB(1:NPLSI) =BVIN(MPLSV(1:NPLSI),IRDO)
+          ELSE
+            VAL_PARB(1:NPLSI) = 0._DP
+          END IF
+          IF (LPARMOM) THEN
+            VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)
+          ELSE
+            VSIG_PARB(1:NPLSI) = 0._DP
+          END IF
 C  for the time being: no perpendicular plasma flow.
          VAL_PERP(1:NPLSI) =0.0
          VSIG_PERP(1:NPLSI)=0.0
@@ -120,8 +166,12 @@ ccc
 ccc  next: parallel momentum exchange rates due to CX, ATOMS
 ccc
 
-             V0_PARB=VEL*
+             IF (LBXIN.AND.LBYIN.AND.LBZIN) THEN
+               V0_PARB=VEL*
      .               (VELX*BXIN(IRDO)+VELY*BYIN(IRDO)+VELZ*BZIN(IRDO))
+             ELSE
+               V0_PARB=0._DP
+             END IF
              PARMOM_0=V0_PARB*CNDYNA(IATM)
 
 c   next: PERP NEUTRAL MOMENTUM = neutral momentum - par-neutral momentum
@@ -160,6 +210,15 @@ c  volumetric net ion parallel momentum loss/gain rate due to charge exchange
   560       CONTINUE
   590     CONTINUE
 
+C  RADIAL GESCHWINDIGKEITSKOMPONENTE  (CM/SEC)
+          VR=(VELX*VPX(IRDO)+VELY*VPY(IRDO))*VEL
+          ADDV(IA+8*NATM+IATM,IRD)=ADDV(IA+8*NATM+IATM,IRD)+WTR*VR
+          ADDV(IA+9*NATM+IATM,IRD)=ADDV(IA+9*NATM+IATM,IRD)+WTR*VR*E0
+C  POLOIDALE GESCHWINDIGKEITSKOMPONENTE (CM/SEC)
+          VP=(VELX*VRX(IRDO)+VELY*VRY(IRDO))*VEL
+          ADDV(IA+10*NATM+IATM,IRD)=ADDV(IA+10*NATM+IATM,IRD)+WTR*VP
+          ADDV(IA+11*NATM+IATM,IRD)=ADDV(IA+11*NATM+IATM,IRD)+WTR*VP*E0
+
   200 CONTINUE  ! NCOU LOOP
 C
 C
@@ -174,13 +233,13 @@ C  MOLECULES, CX ENERGY
       IF (ITYP.NE.2) GOTO 1999
 
 C  CHECK: STORAGE FOR AT LEAST 4 MORE ADDITIONAL TRACKLENGTH-ESTIMATED TALLIES?
-      IF (NADV.LT.8*NATMI+4*NMOLI) THEN
+      IF (NADV.LT.12*NATMI+8*NMOLI) THEN
         GOTO 9999
       ELSE
 C  THIS ROUTINE: SCORE 4 ADDITIONAL TALLIES ADDV
 c  initial species index for ADDV tally: nspan
-        nti=NSPAN(ntala)+8*NATM
-        nte=Nti+4*NMOL-1
+        nti=NSPAN(ntala)+12*NATM
+        nte=Nti+8*NMOL-1
         LMETSP(nti:nte)=.TRUE.
       ENDIF
 C
@@ -191,8 +250,17 @@ C
           IRD=NCLTAL(IRDO)
 c  assume here: bvin, parmom are set in plasma_deriv.
 c               In case of other options (indpro): see update.f
-          VAL_PARB(1:NPLSI) =BVIN(MPLSV(1:NPLSI),IRDO)
-          VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)
+cdr only signum needed: default tbd: signum=1
+          IF (LBVIN) THEN
+            VAL_PARB(1:NPLSI) =BVIN(MPLSV(1:NPLSI),IRDO)
+          ELSE
+            VAL_PARB(1:NPLSI) = 0._DP
+          END IF
+          IF (LPARMOM) THEN
+            VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)
+          ELSE
+            VSIG_PARB(1:NPLSI) = 0._DP
+          END IF
 C
           IF (LGVAC(IRDO,0)) GOTO 1200
 C
@@ -205,7 +273,7 @@ C
 C
           IF (LGMCX(IMOL,0,0).EQ.0) GOTO 1590
             DO 1560 IMCX=1,NMCXI(IMOL)
-              IA=8*NATM  !  increment for addv tally 1st index:  cx energy, molecules
+              IA=12*NATM  !  increment for addv tally 1st index:  cx energy, molecules
               IRCX=LGMCX(IMOL,IMCX,0)
               IPLS=LGMCX(IMOL,IMCX,1)
               IF (LGVAC(IRDO,IPLS)) GOTO 1560
@@ -229,6 +297,16 @@ ccc
 
  1560       CONTINUE
  1590     CONTINUE
+
+C  RADIAL GESCHWINDIGKEITSKOMPONENTE (CM/SEC)
+          VR=(VELX*VPX(IRDO)+VELY*VPY(IRDO))*VEL
+          ADDV(IA+4*NMOL+IMOL,IRD)=ADDV(IA+4*NMOL+IMOL,IRD)+WTR*VR
+          ADDV(IA+5*NMOL+IMOL,IRD)=ADDV(IA+5*NMOL+IMOL,IRD)+WTR*VR*E0
+C  POLOIDALE GESCHWINDIGKEITSKOMPONENTE (CM/SEC)
+          VP=(VELX*VRX(IRDO)+VELY*VRY(IRDO))*VEL
+          ADDV(IA+6*NMOL+IMOL,IRD)=ADDV(IA+6*NMOL+IMOL,IRD)+WTR*VP
+          ADDV(IA+7*NMOL+IMOL,IRD)=ADDV(IA+7*NMOL+IMOL,IRD)+WTR*VP*E0
+
  1200 CONTINUE
 C
 C
@@ -241,13 +319,13 @@ C
 C  MOLECULES, EL ENERGY
       IF (ITYP.NE.2) GOTO 2999
 
-C  CHECK: STORAGE FOR AT LEAST 4 MORE ADDITIONAL TRACKLENGTH-ESTIMATED TALLIES?
-      IF (NADV.LT.8*NATMI+8*NMOLI) THEN
+C  CHECK: STORAGE FOR AT LEAST 4 MORE ADDITIONAL TRACKLENGTH ESTIMATED TALLIES?
+      IF (NADV.LT.12*NATMI+12*NMOLI) THEN
         GOTO 9999
       ELSE
 C  THIS ROUTINE: SCORE 4 ADDITIONAL TALLIES ADDV
 c  initial species index for ADDV tally: nspan
-        nti=NSPAN(ntala)+8*NATM+4*NMOL
+        nti=NSPAN(ntala)+12*NATM+8*NMOL
         nte=Nti+4*NMOL-1
         LMETSP(nti:nte)=.TRUE.
       ENDIF
@@ -269,7 +347,7 @@ C
 C
           IF (LGMEL(IMOL,0,0).EQ.0) GOTO 2590
             DO 2560 IMEL=1,NMELI(IMOL)
-              IA=8*NATM+4*NMOL  !  increment for addv tally 1st index:  el energy, molecules
+              IA=12*NATM+8*NMOL  !  increment for addv tally 1st index:  el energy, molecules
               IREL=LGMEL(IMOL,IMEL,0)
               IPLS=LGMEL(IMOL,IMEL,1)
               IF (LGVAC(IRDO,IPLS)) GOTO 2560

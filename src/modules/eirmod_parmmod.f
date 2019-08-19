@@ -114,7 +114,7 @@ C> Indicates whether output files 'output.*' should be appended or overwritten
      I NPLSP,  NPHOTP, NADVP,  NADSP,
      I NCLVP,  NALVP,  NALSP,
      I NSNVP,  NCPVP,  NBGVP,
-     I NTALI,  NTALN,  NTALO,  NTALV,
+     I NTALI,  NTALG,  NTALN,  NTALO,  NTALV,
      I NTALA,  NTALC,  NTALT,
      I NTALM,  NTALB,  NTALR,
      I NTALS,  NTLSA,  NTLSR,  NSPZTOTW,
@@ -122,7 +122,8 @@ C> Indicates whether output files 'output.*' should be appended or overwritten
 
       INTEGER, PUBLIC, SAVE ::
      I NVOLTL, NVLTLP,
-     I NSRFTL, NSFTLP
+     I NSRFTL, NSFTLP,
+     I NINPTL
 
       INTEGER, PUBLIC, SAVE ::
      I NH0,    NH1,    NH2,    NH3
@@ -233,9 +234,11 @@ C                                   ARE IDENTICAL FOR SURFACE AVERAGES)
 C                           NTLSR: INDEX OF THE ALGEBRAIC TALLY
 
 C                       NTALI: TOTAL NUMBER OF INPUT TALLIES
-C                           NTALG: NUMBER OF INPUT TALLIES, EXCLUDING THE OPT. GRADIENT TALLIES
+C                           NTALG: NUMBER OF INPUT TALLIES, 
+C                                  EXCLUDING THE OPTIONAL GRADIENT TALLIES
+C                           NTALI=NTALG+(3*NTALG), FOR THREE DERIVATIVES PER TALLY
 C                           NTALN: INDEX OF THE ADDITIONAL INPUT TALLIES
-C                           NTALO: INDEX OF THE CELL VOLUME TALLIES
+C                           NTALO: INDEX OF THE CELL VOLUME TALLY
 
         NIONP=NION+1
         NATMP=NATM+1
@@ -249,14 +252,19 @@ C                           NTALO: INDEX OF THE CELL VOLUME TALLIES
         NALSP=NALS+1
         NSNVP=NSNV+1
 
-        NTALI=22   ! total number of VOLUME INPUT TALLIES:
-c                    INCREASED IN 2014 FROM 21 TO 22
-c  additional volume-averaged input tallies
-        NTALN=12
-        NTALO=14
+        NTALG=30        ! number of VOLUME INPUT TALLIES,  WITHOUT COUNTING GRADIENT TALLIES:
+c                         INCREASED IN 2014 FROM 21 TO 22
+c                         INCREASED IN 2018 FROM 22 TO 24
+c                         INCREASED IN 2018 FROM 24 TO 30
+        NTALI=NTALG*4   ! total number of VOLUME INPUT TALLIES
+c                         INCLUDE ALL POSSIBLE GRADIENT TALLIES d(TL)/dX, d(TL)/dY,  d(TL)/dZ...
+
+c  additional volume-averaged INPUT tallies at fixed storage locations:
+        NTALN=12  ! (ADIN: ADDITIONAL INPUT TALLIES)
+        NTALO=14  ! (CELL VOLUME)
 
         NTALV=100  ! total number of VOLUME-AVERAGED OUTPUT TALLIES
-c  additional volume-averaged output tallies
+c  additional volume-averaged output tallies at fixed storage locations
         NTALA=57
         NTALC=58
         NTALT=59
@@ -539,6 +547,9 @@ cdr   INT_PARM(140) = not in use
       INT_PARM(148) = NUM_LINES
       INT_PARM(149) = NADV_ADD
 
+      INT_PARM(150) = NINPTL
+      INT_PARM(151) = NTALG   
+ 
       RETURN
       END SUBROUTINE EIRENE_COLLECT_PARM
 
@@ -726,6 +737,9 @@ cdr   not in use  = INT_PARM(140)
 
       NUM_LINES   = INT_PARM(148)
       NADV_ADD    = INT_PARM(149)
+
+      NINPTL      = INT_PARM(150)
+      NTALG       = INT_PARM(151)
 
       RETURN
       END SUBROUTINE EIRENE_DISTRIB_PARM

@@ -16,6 +16,8 @@ cdr                                          and use abs(nflagv) as before nflag
 cdr to be done: loops 121 and 122 are identical, once i_fine is set. eliminate one of them?
 cdr             inttal and intvol are largely identical, remove one ?
 cdr             prttal and prtvol are largely identical, remove one ?
+cdr oct 18    : all input tallies selectable, also derived tallies.
+cdr             also: gradient tallies of input tallies: currently no. 25--96
 
 C
       SUBROUTINE EIRENE_OUTPLA(ICAL)
@@ -52,7 +54,7 @@ C
       REAL(DP) :: TALAV, HELPI, TALTOT, TOTALW
       INTEGER :: IR, IP, IT, I, I_FINE, NBLCKA, IB, IPRV, ITAL,
      .           NXM, NYM, NZM, NR1PR, NP2PR, NT3PR, NSBPR, NFLGPR,
-     .           ITALI, K, NF, NFTI, NFTE
+     .           ITALI, K, NF, NFTI, NFTE, KK
 
 C  INDICATOR FOR THE TALLIES THAT MAY HAVE BEEN MODIFIED IN POSTPROCESSING
 C  CURRENTLY:  BULK ION TEMP (-2), BULK ION DENSITY (-4), AND BULK ION DRIFT VELOCITY (-5,-6,-7)
@@ -60,7 +62,7 @@ C  CURRENTLY:  BULK ION TEMP (-2), BULK ION DENSITY (-4), AND BULK ION DRIFT VEL
 C
 cdr: extensive or intensive quantities? Needed for averaging....
 C  TYPE OF TALLY: TALTYP=0: #              (#-UNITS)
-C                 TALTYP=1: # DENSITY      (#-UNITS/CM**3)
+C                 TALTYP=1: #-DENSITY      (#-UNITS/CM**3)
 C                 TALTYP=2: VOLUME         (CM**3)
 C                 TALTYP=3: DIMENSIONLESS  (1)
 C                 TALTYP=4: UNKNOWN        (?)
@@ -86,7 +88,19 @@ C                 TALTYP=4: UNKNOWN        (?)
       TALTYP(20)=0
       TALTYP(21)=0
       TALTYP(22)=0
+      TALTYP(23)=0  ! bvin   units ??
+      TALTYP(24)=0  ! parmom units ??
+      TALTYP(25)=0  ! psi units ??
 
+      TALTYP(26)=0  ! free26 units ??
+      TALTYP(27)=0  ! free27 units ??
+      TALTYP(28)=0  ! free28 units ??
+      TALTYP(29)=0  ! free29 units ??
+      TALTYP(30)=0  ! free30 units ??
+
+cdr to be done: weighting function for gradient tallies. Tentatively set =0
+      TALTYP(31:NTALI)=0
+ 
       IF (ICAL == 1) THEN
 !  IS ANY DENSITY MODEL DEFINED ?
         IF (ALL(CDENMODEL == REPEAT(' ',LEN(CDENMODEL)))) RETURN
@@ -138,6 +152,13 @@ c  negative tally numbers ital: background (input) tallies, printed here
 c  positive tally numbers ital: output tallies, printed from OUTEIR.
         IF (ITAL.LT.0) THEN
           ITALI=-ITAL
+!  TALLY SWITCHED OFF ?
+          IF (.NOT.LIVTALI(ITALI)) THEN
+            WRITE (iunout,*) ' TALLY NOT AVAILABLE (OUTPLA)',
+     .                       ' ITAL = ', ITAL
+            CALL EIRENE_LEER(1)
+            CYCLE
+          END IF
           NF=NFRSTP(ITALI)
           NFTI=1
           NFTE=NFSTPI(ITALI)
@@ -206,6 +227,29 @@ c  check for valid range of tally ITALI
               HELPP(1:NSBOX) = EFIN(1:NSBOX)
             CASE (22)
               HELPP(1:NSBOX) = POT(1:NSBOX)
+            CASE (23)
+              IF ((ICAL == 1).AND.(VERIFY(CDENMODEL(K),' ') == 0)) CYCLE
+              HELPP(1:NSBOX) = BVIN(MPLSV(K),1:NSBOX)
+            CASE (24)
+              IF ((ICAL == 1).AND.(VERIFY(CDENMODEL(K),' ') == 0)) CYCLE
+              HELPP(1:NSBOX) = PARMOM(K,1:NSBOX)
+            CASE (25)
+              HELPP(1:NSBOX) = PSI(1:NSBOX)
+            CASE (26)
+              HELPP(1:NSBOX) = FREE26(1:NSBOX)
+            CASE (27)
+              HELPP(1:NSBOX) = FREE27(1:NSBOX)
+            CASE (28)
+              HELPP(1:NSBOX) = FREE28(1:NSBOX)
+            CASE (29)
+              HELPP(1:NSBOX) = FREE29(1:NSBOX)
+            CASE (30)
+              HELPP(1:NSBOX) = FREE30(1:NSBOX)
+c
+            CASE (31:120)  ! ntali=120, constant required here
+!  GRADIENTS
+              KK = NADDP(ITALI)+K
+              HELPP(1:NSBOX) = PLSTLS(KK,1:NSBOX)
             CASE DEFAULT
               WRITE (iunout,*)
      .          ' WRONG TALLY NUMBER (OUTPLA), ITAL = ',ITAL
@@ -274,8 +318,9 @@ C  2) ION TEMPERTURE: NI(K)*VOLUME-WEIGHTED AVERAGES
 C  3,4) PARTICLE DENSITY PROFILES: VOLUME-WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+VOL(I_FINE)
-              CASE (5:7)
+              CASE (5:7,23)
 C  5,6,7) ION DRIFT VELOCITY: NI(K)*VOLUME-WEIGHTED AVERAGES
+C  23) FLOW VELOCITY PARALLEL B
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
@@ -315,6 +360,47 @@ C  22) (ELECTRIC) POTENTIAL
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (24)
+C  24) PARALLEL TO B FLOW MOMENTUM
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (25)
+C  25) PSI
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (26)
+C  26) FREE26
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (27)
+C  27) FREE27
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (28)
+C  28) FREE28
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (29)
+C  29) FREE29
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (30)
+C  30) FREE30
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+
+              CASE (31:120)  ! ntali=120, constant required here
+C  (25 .. NTALI) GRADIENTS
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               END SELECT
              END DO
              END DO
@@ -342,8 +428,9 @@ C  ION TEMPERATURE: NI(K)*VOLUME-WEIGHTED AVERAGES
 C  PARTICLE DENSITY PROFILES: VOLUME-WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+VOL(I_FINE)
-              CASE (5:7)
+              CASE (5:7,23)
 C  ION DRIFT VELOCITY: NI(K)*VOLUME-WEIGHTED AVERAGES
+C  FLOW VELOCITY PARALLEL TO B FIELD
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
@@ -381,6 +468,45 @@ C  E-FIELD UNIT VECTOR, E-FIELD STRENGTH
               CASE (22)
 C  (ELECTRIC) POTENTIAL
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (24)
+C  PARALLEL TO B FLOW MOMENTUM  
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+C  25) PSI
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (26)
+C  26) FREE26
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (27)
+C  27) FREE27
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (28)
+C  28) FREE28
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (29)
+C  29) FREE29
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (30)
+C  30) FREE30
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
+                HELPW(I)=HELPW(I)+1.D0
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (31:120)  ! ntali=120, constant required here
+C  GRADIENTS
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               END SELECT

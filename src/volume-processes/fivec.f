@@ -25,7 +25,7 @@ C
       REAL(DP) :: AR(128), AFI(128)
       INTEGER :: NFI
       COMMON /CFI/ AR,AFI,NFI
-      SAVE /CFI/
+      SAVE /CFI/    !CDR DO WE NEED THIS ?
 
       B2=B*B
 C

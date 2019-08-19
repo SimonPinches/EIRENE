@@ -87,6 +87,13 @@ c
       AU=0.6120D-08
 
 
+      IF (.NOT.LADIN) THEN
+        WRITE (IUNOUT,*) ' INPUT TALLY ADIN NOT AVAILABLE',
+     .                   ' FOR STORING OF RATES IN AMDIAG '
+        CALL EIRENE_LEER(1)
+        RETURN
+      END IF
+
       DO 190 IAIN=1,NAINI
         NS=NAINS(IAIN)    !  ns stands for ircx,irei,irel,irpi,irpi,..., internal number of process
         NA=NAINT(IAIN)    !  na stands for tally:  TAB..3(...),  EPL..3(...)

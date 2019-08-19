@@ -169,10 +169,10 @@ C
 C
 C        UMWANDELN DER ZAHL TEIL IN EINE ZEICHENKETTE TEILCH
 C
-         WRITE(TEILCH,'(I2)') TEIL
-         IF (TEIL .LT. 10) THEN
-            TEILCH(1:1)='0'
-         ENDIF
+         WRITE(TEILCH,'(I2.2)') TEIL
+!         IF (TEIL .LT. 10) THEN
+!            TEILCH(1:1)='0'
+!         ENDIF
 C
 C        ABSPEICHERN DER TEIL-TEN ELEMENTARZERLEGUNG
 C

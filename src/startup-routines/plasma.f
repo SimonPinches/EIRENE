@@ -66,17 +66,18 @@ C  INDPRO=9 MEANS: THESE ARRAYS ARE ALREADY SET IN COUPLE_... (SUBR. INFCOP)
       IF (INDPRO(4) /= 9) VYIN = 0.D0
       IF (INDPRO(4) /= 9) VZIN = 0.D0
 c  magnetic field
-      IF (INDPRO(5) /= 9) BXIN = 0.D0
-      IF (INDPRO(5) /= 9) BYIN = 0.D0
-      IF (INDPRO(5) /= 9) BZIN = 0.D0
-      IF (INDPRO(5) /= 9) BFIN = 0.D0
+      IF (LBXIN .AND. (INDPRO(5) /= 9)) BXIN = 0.D0
+      IF (LBYIN .AND. (INDPRO(5) /= 9)) BYIN = 0.D0
+      IF (LBZIN .AND. (INDPRO(5) /= 9)) BZIN = 0.D0
+      IF (LBFIN .AND. (INDPRO(5) /= 9)) BFIN = 0.D0
 
-      IF (INDPRO(6) /= 9) ADIN = 0.D0
+      IF (LADIN .AND. (INDPRO(6) /= 9)) ADIN = 0.D0
 c  electric field
-      IF (INDPRO(7) /= 9) EXIN = 0.D0
-      IF (INDPRO(7) /= 9) EYIN = 0.D0
-      IF (INDPRO(7) /= 9) EZIN = 0.D0
-      IF (INDPRO(7) /= 9) EFIN = 0.D0
+      IF (LEXIN .AND. (INDPRO(7) /= 9)) EXIN = 0.D0
+      IF (LEYIN .AND. (INDPRO(7) /= 9)) EYIN = 0.D0
+      IF (LEZIN .AND. (INDPRO(7) /= 9)) EZIN = 0.D0
+      IF (LEFIN .AND. (INDPRO(7) /= 9)) EFIN = 0.D0
+      IF (LPOT .AND.  (INDPRO(7) /= 9)) POT  = 0.D0
 
       ALLOCATE (HELP(NRAD))
       ALLOCATE (HELP2(NRAD))
@@ -334,6 +335,9 @@ CDR FACT is the isothermal ion acoustic speed, [cm/s], for species IPLS=JPLS
 C
 C
 C  MAGNETIC FIELD UNIT VECTOR
+C
+      IF (.NOT.(LBXIN.AND.LBYIN.AND.LBZIN.AND.LBFIN)) GOTO 154
+
 C  FOR IND=4,5,6,7 OR 9: ALSO THE ABSOLUTE B-FIELD STRENGTH BF CAN BE SET
       IND=INDPRO(5)
 C  DEFAULT: 1 TESLA BFIELD IN Z-DIRECTION, IE., PITCH=0
@@ -481,8 +485,12 @@ C  CHECK FOR ZERO MAGNETIC FIELD IN ANY CELL (INCL. ADD. CELL REGION)
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
   153 CONTINUE
+
+  154 CONTINUE  !  BFIELD SPECIFIED AT ALL ??
 C
 C  ADDITIONAL INPUT TALLIES
+
+      IF (LADIN) THEN
       IND=INDPRO(6)
       NDIM=SIZE(ADIN,DIM=1)
       IF (NDIM.LT.NAINI) GOTO 999
@@ -513,8 +521,10 @@ cdr distinct from indpro=1,...5:  now one single call for all K=1,NAINI
           EXIT
         end select
   160 CONTINUE
+      END IF
 C
 C  ELECTRIC FIELD
+      IF (LEXIN.AND.LEYIN.AND.LEZIN.AND.LEFIN) THEN
       IND=INDPRO(7)
 C  DEFAULT: E==0.0 (no electric field), only options ind=5,6,7 overrule this
 c          (transfer from problem-specific codes or external data structures)
@@ -540,6 +550,7 @@ c          (transfer from problem-specific codes or external data structures)
         CALL EIRENE_PROFR (EZIN,9+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
         CALL EIRENE_PROFR (EFIN,10+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
       end select
+      END IF
 C
 CDR
 C   SET VACUUM DATA IN ADDITIONAL REGIONS OUTSIDE THE
@@ -580,29 +591,33 @@ C
    19     CONTINUE
         ENDDO
       ENDIF
-      IF (INDPRO(5).LE.6 .OR. INDPRO(5).EQ.9) THEN
-        DO J=NSURF+1,NSURF+NRADD
-          BXIN(J)=0.
-          BYIN(J)=0.
-          BZIN(J)=1.
-          BFIN(J)=1.
-        ENDDO
+      IF (LBXIN.AND.LBYIN.AND.LBZIN.AND.LBFIN) THEN
+        IF (INDPRO(5).LE.6 .OR. INDPRO(5).EQ.9) THEN
+          DO J=NSURF+1,NSURF+NRADD
+            BXIN(J)=0.
+            BYIN(J)=0.
+            BZIN(J)=1.
+            BFIN(J)=1.
+          ENDDO
+        ENDIF
       ENDIF
-      IF (INDPRO(6).LE.6 .OR. INDPRO(6).EQ.9) THEN
+      IF (LADIN .AND. (INDPRO(6).LE.6 .OR. INDPRO(6).EQ.9)) THEN
         DO J=NSURF+1,NSURF+NRADD
           DO 20 IAIN=1,NAINI
             ADIN(IAIN,J)=0.
    20     CONTINUE
         ENDDO
       ENDIF
-      IF (INDPRO(7) == 5 .OR. INDPRO(5).EQ.6
-     .                   .OR. INDPRO(5).EQ.9) THEN
-        DO J=NSURF+1,NSURF+NRADD
-          EXIN(J)=0.
-          EYIN(J)=0.
-          EZIN(J)=0.
-          EFIN(J)=1.
-        ENDDO
+      IF (LEXIN.AND.LEYIN.AND.LEZIN.AND.LEFIN) THEN
+        IF (INDPRO(7) == 5 .OR. INDPRO(5).EQ.6
+     .                     .OR. INDPRO(5).EQ.9) THEN
+          DO J=NSURF+1,NSURF+NRADD
+            EXIN(J)=0.
+            EYIN(J)=0.
+            EZIN(J)=0.
+            EFIN(J)=1.
+          ENDDO
+        ENDIF
       ENDIF
 
       DEALLOCATE(HELP)
