@@ -35,7 +35,7 @@ cdr             input tally no. 25 added: PSI, poloidal magn. flux. Units?
      P NPLPRM  ! nplprm, is also used in setprm, for a storage test.
 c
       INTEGER, SAVE ::
-     P NUSR,   MUSR,   LUSR             ! also only local in this module, apparently
+     P MUSR,   LUSR             ! also only local in this module, apparently
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R         PLSTLS(:,:)
 
@@ -1047,7 +1047,7 @@ C  TALLIES 31--130: DERIVATIVES WRT. X,Y,Z COORDINATES OF TALLIES 1--30
 
       INTEGER, INTENT(IN) :: IUNOUT
       INTEGER :: N1DIM(12)
-      INTEGER :: NTOT, ICO, NLST, I, J, NLSTTL, NTOT2
+      INTEGER :: NTOT, I, J, NLSTTL, NTOT2
 
 
       IF (ALLOCATED(CORNER_PROFILES)) RETURN

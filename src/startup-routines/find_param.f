@@ -66,12 +66,12 @@ C
      .           IATM, IMOL, IION, IPHOT, IPLS,
      .           ISTRA, ISPZ,
      .           NUMSEC, IC, NINITL_READ,
-     .           NCHTAL, MOD_ADDV, NUM_COMPO,
+     .           MOD_ADDV, NUM_COMPO,
      .           NUM_CONTRIB, ISP, ITP, IRATIO,
      .           I, J, K,
      .           ILINE, JCOMP, KCONTR, IREAC_ADD           
       REAL(DP) :: SORIND, SORLIM, DUMM1, ROA, ZAA, ZZA, ZGA, YAA, YYA,
-     .            ZIA, YP, XP, YIA, YGA, EMIN1, EMAX1
+     .            ZIA, YP, XP, YIA, YGA
       LOGICAL :: NLSCL, NLTEST, NLANA, NLDRFT, NLCRR, NLERG, NLIDENT,
      .           NLONE, NLMOVIE, LINCL45, NLCASCAD, NLDFST,
      .           NLOLDRAN, NLOCTREE, NLWRMSH

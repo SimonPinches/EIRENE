@@ -43,10 +43,10 @@ C
       INTEGER, INTENT(INOUT) :: IGASF, IGAST
       INTEGER, SAVE :: IFIRST=0, NPANOLD=0
       INTEGER :: MODREF, ISPZO,
-     .           IMAT, IREFL, MSS, IDUMMY
-      REAL(DP) :: DUMMY, XMW, XCW, E0TERM, EBIND,
+     .           MSS, IDUMMY
+      REAL(DP) :: DUMMY, XMW, XCW,
      .            EXPP, EXPE, EXPI, RINTG, EINTG, AINTG, COSIN,
-     .            THETA, XLAMBDA, THETA_OUT, ALPHA_OUT,
+     .            THETA_OUT, ALPHA_OUT,
      .            FR1, ZCPHI, ZSPHI, ZCTHET, ZSTHET, VX, VY, VZ,
      .            RPROB, PRFCF, PRFCT, PABS, PLAMBERT, WABS,
      .            ZEP1

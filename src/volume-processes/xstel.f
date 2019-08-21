@@ -68,8 +68,7 @@ C
      .            EIRENE_ENERGY_RATE_COEFF,
      .            TB, TII,
      .            FP1(6),FP2(6)
-      INTEGER :: NSEEL4, NEND, J, KREAD, MODC,  IPLTI,
-     .           IBGK, ISPZB, ITYPB
+      INTEGER :: NSEEL4, NEND, J, KREAD, MODC,  IPLTI
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt

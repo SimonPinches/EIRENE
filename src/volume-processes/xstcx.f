@@ -78,11 +78,10 @@ C
      .            EIRENE_RATE_COEFF,
      .            EIRENE_ENERGY_RATE_COEFF, TB, TII,
      .            FP1(6),FP2(6)
-      INTEGER :: ITYP1, ITYP2, ISPZ1, ISPZ2, KREAD,
+      INTEGER :: ITYP1, ITYP2, KREAD,
      .           J, NEND, MODC, NSECX4, IPL2, IIO2, IPLTI,
      .           NCBULK, NCGBLK
       INTEGER, EXTERNAL :: EIRENE_IDEZ
-      CHARACTER(8) :: TEXTS1, TEXTS2
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt
 

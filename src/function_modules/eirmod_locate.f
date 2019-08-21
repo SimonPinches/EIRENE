@@ -275,26 +275,21 @@ C
      .          VPERP, VPARX, VPARY, EIRENE_EMAXW, ESHET, EIRENE_SHEATH,
      .          GAMMA,
      .          VYSPTP, VZSPTP, ESPTC, ESPTP, VSPTP, VXSPTP, VSPTC, SG,
-     .          VXSPTC, VYSPTC, VZSPTC, SUM1, ZEP1, CUR,
+     .          VXSPTC, VYSPTC, VZSPTC, ZEP1, CUR,
      .          EMAX, VWD, VXWD, VYWD, VZWD, CS, VELQ, VO, SUMM,
      .          VXO, VYO, VZO, DAT, RSQDV, RSQDV2, DML, FR, DIO, DPL,
-     .          TIWD, TEWD, DPH, E00,
-     .          res
-      REAL(DP) :: VEL_B, VELX_B, VELY_B, VELZ_B, VN, xl, xr, xm, yl,
-     .            yr, ym,
-     .            EIRENE_fpathph, zmfp_cut, zmfp_e0, zmfp_e00,
-     .            fac_e0, fac_e00
-      real(dp) :: cflag(7,MSTOR0)
+     .          TIWD, TEWD, DPH
+      REAL(DP) :: VEL_B, VELX_B, VELY_B, VELZ_B, VN
       real(dp) :: weight_b1,weight_b2,e0_b1,e0_b2
       REAL(DP) :: xleft, xright, A, ZV
       REAL(DP) :: VXWL(NPLS), VYWL(NPLS), VZWL(NPLS), VPWL(NPLS),
      .            TIWL(NPLS), DIWL(NPLS), EFWL(NPLS), SHWL, TEWL,
      .            CUMDIS(0:NREC)
       INTEGER :: ISSPTP, ISSPTC, ISTS, IP, ISPZS, IRC, IIRC, IRRC,
-     .           ISOUR, ISRFS, I, ISTEP,
-     .           IDUMM, NFLAG, 
+     .           I, ISTEP,
+     .           NFLAG, 
      .           IPLV, IDUM, IO, NO, IPL, IPP,
-     .           IPLTI, IRPH, KK, JSPZ,
+     .           IPLTI, KK,
      .           ITYP_OLD, IGASP_OLD, IGASC_OLD
       LOGICAL :: NLSPUT, NLTST, NL_add_Doppler
       INTEGER, INTENT(IN) :: IPANU

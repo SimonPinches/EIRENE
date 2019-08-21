@@ -90,38 +90,13 @@ C
       REAL(DP), INTENT(IN OUT) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
      .                            XSTORV2(NSTORV,N2ND+N3RD)
       INTEGER, INTENT(IN) :: IFLAG
-      REAL(DP) :: WTRSIG, DIST, WTR, WTRE0, WV, VELQ, CNDYNPH, WTRV,
-     .            V0_PARB, PARMOM_0, P, BX, BY, BZ, BF, VION
-      REAL(DP) :: VSIG_PARB(NPLS), VAL_PARB(NPLS), VX(NPLS), VY(NPLS),
-     .            VZ(NPLS),XC,YC,ZC
-      INTEGER :: IRD,  I, IRDO, INUM,
-     .           IPL, IAT, IA,
-     .           IM,  IIO, IP, IML, II, NPBGK,
-     .           IBGK, I1, I2, IPLV
+      REAL(DP) :: WTRSIG, DIST, WTR, WTRE0, WV, VELQ, CNDYNPH, WTRV
+      INTEGER :: IRD,  I, IRDO, INUM
 C SECONDARY SPECIES IDENTIFIERS
       INTEGER ::  IAT1,IAT2,IML1,IML2,IIO1,IIO2,IPH1,IPH2,IPL1,IPL2
-C EL PROCESSES
-      INTEGER ::      IAEL,IREL
-      INTEGER ::      IMEL
-      INTEGER ::      IIEL
-C CX PROCESSES
-      INTEGER ::      IACX,IRCX
-      INTEGER ::      IMCX
-      INTEGER ::      IICX
 C PH PROCESSES
       INTEGER ::      IAPH,IRPH
 C    .               ,UPDF        ! out, something for stim. emiss ?
-C PI PROCESSES
-      INTEGER ::      IAPI,IRPI
-      INTEGER ::      IMPI
-      INTEGER ::      IIPI
-C EI PROCESSES
-      INTEGER ::      IAEI,IREI
-      INTEGER ::      IMEI
-      INTEGER ::      IIEI
-
-      REAL(DP) :: EIRENE_VDION
-
 
 C
 C

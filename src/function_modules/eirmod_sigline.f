@@ -87,7 +87,7 @@ C
       REAL(DP), INTENT(IN OUT) :: PSIG(0:), ARGST(0:,:)
       INTEGER :: LNO
       INTEGER :: JCOMP, IADV
-      INTEGER :: ISP, NCELC, ICELL
+      INTEGER :: NCELC
       LOGICAL :: LARGST
 C
       SAVE

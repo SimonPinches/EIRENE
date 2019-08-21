@@ -114,7 +114,7 @@ ctk      INTEGER, EXTERNAL :: RANSET_EIRENE
      .           IGFFT, IALV, IDV, I, IER, IRC, NMX,
      .           NINIST, IPANU, ISEED_ISTRA, ISEED_IPTSI, IDUMRAN,
      .           ISTR, NPTTOT, NREC11, IB,
-     .           IC, IGFF, IADD, INDX, ICLV, IADV,
+     .           IGFF, IADD, INDX, ICLV, IADV,
      .           INODES, J, IPTSI, IT, IMCP,
      .           ISUM, NPX, IS, NEW_ITER, ISPC, IN,
      .           JATM, JMOL, JION, JPHOT, JPLS

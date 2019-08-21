@@ -59,22 +59,20 @@ C
       INTEGER, INTENT(IN) :: IRPI, ISP, IPL, IFRST, ISCND, ITHRD, IFRTH,
      .                       ISCDE, IESTM, KK
       REAL(DP) :: CF(9)
-      REAL(DP) :: ADD, ADDL, RMTEST, RMBULK, FCTKKL, P2N, TMASS,
+      REAL(DP) :: ADD, ADDL, RMTEST, RMBULK, FCTKKL, TMASS,
      .            ADDT, ADDTL, PMASS,
      .            CHRDIF, COU, ACCMAS, XLFTMAS,
      .            ACCINI, ACCINP, ACCMSM, ACCMSI, ACCMSA, ACCINA,
      .            ACCINM, ACCMSP, ACCINV,
-     .            EFLAG, EIRENE_FEHVPI3,
-     .            EIRENE_FEELPI3,
+     .            EFLAG,
      .            EIRENE_RATE_COEFF,
      .            EIRENE_ENERGY_RATE_COEFF,
-     .            EI, EA, EN, TB, TII,
+     .            TB, TII,
      .            FP1(6),FP2(6)
-      INTEGER :: NSEPI4, NSEPI5, NEND, J, IO, IA,
+      INTEGER :: NSEPI4, NSEPI5, NEND, J, 
      .           ITYP1, ISPZ1, INUM1,
-     .           IML, IM, MODC, IIO, IPLTI, IP, IAT,
-     .           ICOUNT, IAA, IMM, III, IPP, KREAD, IERR, IMIN, IMAX,
-     .           IRAD
+     .           IML, MODC, IIO, IPLTI, IP, IAT,
+     .           ICOUNT, IAA, IMM, III, IPP, KREAD, IERR
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt

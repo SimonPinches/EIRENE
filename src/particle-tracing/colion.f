@@ -119,8 +119,8 @@ C
       REAL(DP) :: DUMT(3), DUMV(3)
       REAL(DP) :: ZEP1, SIGSUM, WGHTO, FRSTP, PTOT, E0O, VELXO,
      .          VELYO, VELZO, BX, BY, BZ, V0_PARBO, VELO, SCNDP,
-     .          EDEL, VDEL, SIG, V0_PARB, FP, FLTEST, ZEP3, VELQ, VX,
-     .          VY, VZ, VPLASP, RMAIO, RMMIO, RMIIO, BF, ZEP
+     .          EDEL, VDEL, SIG, V0_PARB, ZEP3, VELQ, VX,
+     .          VY, VZ, VPLASP, RMAIO, RMIIO, BF, ZEP
 cdr  .         ,ss,ssr  ! for consistency test only. Now deactivated
       REAL(DP) :: SIG_ELIM, SIG_TOT_N, SIG_TOT_O, SIG_TEST
       INTEGER ::
@@ -129,7 +129,7 @@ c    .           IMCX, IMEI, IMPI, IMEL,
 c    .           IACX, IAEI, IAPI, IAEL, IAPH,
 c    .
      .           IOLD, NOLD,
-     .           IRCX, IREI, IRPI, IREL, IRPH,
+     .           IRCX, IREI, IRPI, IREL,
      .           IBGK, IP, NFLAG,
      .           IATMN, IPLSN, NCLLO, IPLSV,  I, J, IPL
       INTEGER :: NEII_RED,LGEI_RED(0:NREI)

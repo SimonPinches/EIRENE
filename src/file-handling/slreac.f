@@ -202,7 +202,7 @@ cdr  in either case: store these on data structure REACDAT, in call to: set_reac
 cdr
       REAL(DP) :: RTMAX, ERTMAX, ETH
       CHARACTER(50) :: REACSTR
-      REAL(DP) :: CONST, E_EL, E_K
+      REAL(DP) :: CONST
       LOGICAL :: LCONST
       REAL(DP) :: CREACD(9,9)  ! INTERMEDIATE STORAGE FOR FIT PARAMETERS
 
@@ -219,8 +219,6 @@ cdr  for reading asymptotics parameters from data files
       CHARACTER(3) :: CH1L, CH1R, CH2L, CH2R
       CHARACTER(200) :: DSN, DIR
       CHARACTER(1) :: CUT, BACK
-      CHARACTER(4) :: CH123
-      CHARACTER(3) :: CCRC
       CHARACTER(8) :: SECTION
       CHARACTER(9) :: FITFLAG
       CHARACTER(7) :: C1L, C1R, C2L, C2R, CMR, CEMR

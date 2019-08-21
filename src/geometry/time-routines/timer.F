@@ -118,8 +118,8 @@ C
      .          Y0TEST, ZA, T, PT1, PT2, PT3, PT4, V1, ESURF,
      .          XTEST, YTEST, X0SURF, DSRF, Y0Q, T1, T2, T3, T4, PNORMI
       INTEGER :: IRICH(2,4), ITSIDE(3,4)
-      INTEGER :: IZELLO, NTIMT, IOB, I1, I2, ISW, KAN, KEN,
-     .           EIRENE_ILLZ, IHELP, IZELL, NTMS, MXSF, NTMZ, NRMSRF,
+      INTEGER :: IZELLO, NTIMT, IOB, I1, I2, ISW, 
+     .           IHELP, IZELL, NTMS, MXSF, NTMZ, NRMSRF,
      .           ICOS, IERR, IRS, NEWCEL, ITET, IT, IL, IS, NRI, MS, IR,
      .           ICALL, ITFRST, ISTS, MMSURF, J, K, I, JPOL,
      .           MPOL, IPOLGO, EIRENE_LEARC2, IP, ICELLR, MSAVE, ITRI,

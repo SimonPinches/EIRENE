@@ -160,20 +160,19 @@ c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
      .          PR, WS, COLTYP, X0ERR, Y0ERR, Z0ERR,
      .          FNUI,
      .          VELXS, VELYS, VELZS, VELS,
-     .          PUX, PUY, SG,
+     .          SG,
      .          VCOS,
      .          ZLOG, ZINT1, ZEP1, ZTST, ZINT2,
-     .          ZMFP, PN, SH, EIRENE_FPATH, ZTC,
+     .          ZMFP, EIRENE_FPATH, ZTC,
      .          DELFAC, TIFAC,
-     .          SCOS_NEW, XOLD, YOLD
+     .          SCOS_NEW
 C      REAL(DP) :: TI
 ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: ISTS, NCOUS, ICOU, J, JJ, IPL,
-     .           NRCELL_OLD, NTCELL_OLD,
-     .           ICO, NLI, NLE, NPCELL_OLD, JCOL, NRC, 
-     .           NRCOLD, IPLTI, I, IM, IFLAG, ICOUN,NTEST,
+     .           ICO, NLI, NLE, JCOL, NRC, 
+     .           NRCOLD, IPLTI, I, IM, ICOUN,
      .           EIRENE_LEARC2, 
-     .           IDUM, IFPB, indf, NJUMP_EMC3 = 0, IRET
+     .           indf, NJUMP_EMC3 = 0, IRET
       LOGICAL :: LCNDEXP
 
 

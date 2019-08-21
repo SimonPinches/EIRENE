@@ -59,9 +59,9 @@ C
 
       REAL(DP) :: DUMMY(NRTAL), FP1(6),FP2(6)
       REAL(DP) :: DAT, DPL, DDA, DPP,
-     .          RATIO2, RATIO7, TEI, DEJ,
+     .          TEI, DEJ,
      .          SIGADD1, SIGADD2, SIGADD,
-     .          TEF, DEF, DEE00, E_DIFF, EINSTEIN,
+     .          TEF, DEF, E_DIFF, EINSTEIN,
      .          POWALF, POWALF1, POWALF2,
      .          DE, TE, RC1MIN,RC2MIN, RC1MAX, RC2MAX
 
