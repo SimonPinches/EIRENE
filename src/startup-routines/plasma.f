@@ -330,8 +330,6 @@ CDR FACT is the isothermal ion acoustic speed, [cm/s], for species IPLS=JPLS
  1142     CONTINUE
  1141   CONTINUE
       ENDIF
-
- 1140 CONTINUE
 C
 C
 C  MAGNETIC FIELD UNIT VECTOR
@@ -387,10 +385,8 @@ c                 include also additional cells
         CALL EIRENE_PROFR (BZIN,3+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
         CALL EIRENE_PROFR (BFIN,4+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
       end select
-  150 CONTINUE
 
 C  CONVERT PITCH ANGLE INTO B-FIELD UNIT VECTOR
- 1400   CONTINUE
 	IF (IND <= 3) then
 C  AT THIS POINT: INDPRO= 1,2, OR =3. 
 C                 HELP2 IS KNOWN ONLY IN CASE INDPRO=3

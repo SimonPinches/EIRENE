@@ -1588,12 +1588,6 @@ C
  6665 FORMAT (12(5L1,1X))
  6666 FORMAT (12I6)
 C
- 6999 WRITE (IUNOUT,*) 'Empty input file found!'
-      WRITE (IUNOUT,*)
-     . 'Either remove it or replace it with a correct file.'
-      CALL EIRENE_EXIT_OWN(1)
- 7999 WRITE (IUNOUT,*) 'Could not open input file!'
-      CALL EIRENE_EXIT_OWN(1)
       RETURN
 
       END

@@ -25,7 +25,7 @@ C
       IF (X.LT.R(1)-1.D-12) GOTO 20
 
 cdr  this loop should be replaced with a binary search
-   13 DO 10 J=2,N
+      DO 10 J=2,N
         I=J
         IF (X-R(J).LE.0.0) GOTO 15
    10 CONTINUE

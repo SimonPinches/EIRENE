@@ -2237,8 +2237,6 @@ C
         CALL EIRENE_LEER(2)
       ENDIF
 C
-  600 CONTINUE
-C
 C  INTEGRATED BULK ION SOURCE TERMS  600 -- 700
 C
       IF (.NOT.TRCBLP) GOTO 700
@@ -2704,7 +2702,5 @@ C
       if (allocated(X1D)) deallocate (X1D)
       if (allocated(dummy)) deallocate (dummy)
 
- 6666 FORMAT (3X,1A8,8X,12(A4,2X,A8,3X))
- 7777 FORMAT (1X,3A8)
       RETURN
       END

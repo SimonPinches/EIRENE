@@ -1527,9 +1527,4 @@ C
       WRITE (iunout,*) 'GRID DATA INCONSISTENCY: 2ND GRID.  YAA > YIA ?'
       WRITE (iunout,*) 'YIA,YAA = ',YIA,YAA
       CALL EIRENE_EXIT_OWN(1)
-  993 CONTINUE
-      WRITE (iunout,*) 'GRID DATA INCONSISTENCY: 1ST GRID.  RAA > RIA ?'
-      WRITE (iunout,*) 'RIA,RAA = ',RIA,RAA
-      WRITE (iunout,*) 'RIA,RAA = ',RIA,RAA
-      CALL EIRENE_EXIT_OWN(1)
       END

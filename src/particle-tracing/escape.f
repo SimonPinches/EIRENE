@@ -621,8 +621,6 @@ C
       ENDIF
 C
 C
-  100 CONTINUE
-C
 C   .............................
 C   .                           .
 C   .  NON-TRANSPARENT SURFACE  .
@@ -655,8 +653,6 @@ C  .                                                    .
 C  .  REFLECTION MODEL 600--699 FOR INCIDENT MOLECULES  .
 C  ......................................................
 C
-C
-  600 CONTINUE
 C
       IF (ITYP.EQ.2) THEN
 C
