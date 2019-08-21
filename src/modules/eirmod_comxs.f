@@ -1033,7 +1033,7 @@ cdr  ical=1:  ??
 cdr  ical=2:  ??
 
       INTEGER, INTENT(IN) :: ICAL
-      INTEGER :: IREAC, IL
+      INTEGER :: IREAC
 
       IF (ICAL == 1) THEN
         NAEII   = 0

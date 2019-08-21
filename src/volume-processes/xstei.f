@@ -69,18 +69,16 @@ C
      .                       ISCDE, IESTM, KK
       REAL(DP) :: CF(9)
       REAL(DP) :: EFLAG, CHRDIF, FCTKKL,
-     .          EIRENE_FEHVEI1, EE, TB, TEE,
-     .          EIRENE_FEELEI1, EN,
-     .          P2N, EA, EI,
+     .          EE, TB, TEE,
      .          ACCINI, ACCINP, ACCMSM, ACCMSI, ACCMAS,
      .          ACCMSA, ACCINA, ACCINM, ACCMSP, ACCINV, COU,
      .          EIRENE_RATE_COEFF,
      .          EIRENE_ENERGY_RATE_COEFF,
      .          DELE,
      .          FP1(6),FP2(6)
-      INTEGER :: MODC, KREAD, IM, IA, IERR, J, IPP, IP, IRAD, IO,
-     .           ISPZ, III, INUM, ITYP, ISPE, ICOUNT, IAT,
-     .           IMM, IIO, IAA, IML, IMIN, IMAX
+      INTEGER :: MODC, KREAD, IERR, J, IPP, IP,
+     .           III, INUM, ITYP, ISPE, ICOUNT, IAT,
+     .           IMM, IIO, IAA, IML
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt

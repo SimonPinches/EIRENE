@@ -86,10 +86,13 @@ C
       INTEGER :: EIRENE_ILLZ, IANP, I, IENP, JHELP, ISW, JJC, J1,
      .           NRCLLP, LHELP, J2, INCY, JN, ICOU, NYSAVE, NHELP,
      .           I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS,
-     .           IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J, JJ,
+     .           IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J,
      .           EIRENE_LEARCA, EIRENE_LEARC2, 
      .           NJC, ITEST, JSH, NN ,IN, itc
       INTEGER :: NCOUNS(N2ND+N3RD)
+#ifdef TRACE
+      INTEGER :: JJ
+#endif
 cdr logicals for intersection with poloidal surfaces
       LOGICAL :: LHITP(N2NDPLGS), LHITP0
       LOGICAL :: lnincz

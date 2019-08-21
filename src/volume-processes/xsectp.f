@@ -40,7 +40,7 @@ C
       IMPLICIT NONE
 
       REAL(DP), ALLOCATABLE :: PLS(:)
-      REAL(DP) :: DELE, FCTKKL, EEMX, ZX, DEIMIN, RMASS2, FACTKK,
+      REAL(DP) :: DELE, FCTKKL, ZX, DEIMIN, RMASS2, FACTKK,
      .            RMASS2_2, CORSUM, COU, EIRENE_RATE_COEFF,
      .            EIRENE_ENERGY_RATE_COEFF,
      .            BREMS, Z, eirene_brems

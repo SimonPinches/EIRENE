@@ -100,31 +100,30 @@ C
       REAL(DP) :: DENIO(NPLS), ZTI(NPLS)
       REAL(DP) :: PVELQ(NPLSV)
       REAL(DP) :: TBCX3(9), TBEL3(9), TBPI3(9), FP(6)
-      REAL(DP) :: EPCX3(9), EPEL3(9), EPPI3(9)  !EPPI3: TO BE DONE
+      REAL(DP) :: EPCX3(9), EPEL3(9)  !EPPI3: TO BE DONE
       REAL(DP) :: EIRENE_FPATH,
      .          EIRENE_CROSS,
      .          EIRENE_RATE_COEFF, EIRENE_SNGL_POLY,
      .          EIRENE_ENERGY_RATE_COEFF,
      .          CEL,CXS, VEFFQ,VEFF,
-     .          TBEL, TBCX, TBPI, TBOT,
+     .          TBEL,
      .          SIGMAX,  EHEAVY,
      .          DENEL, VX, VY, VZ, PVELQ0, ELAB,
      .          VRELQ, VREL, XC,YC,ZC,
-     .          CII, ELB,TII,V0_REL,VI_TH,VE_TH,
+     .          CII, ELB,TII,V0_REL,
      .          EXPO,
 cdr  functions for 'on the fly' evaluation of a&m data
      .          EIRENE_FEELEI1, EIRENE_FEELPI3,
      .          EIRENE_FEHVEI1, EIRENE_FEHVPI3,
-     .          EIRENE_FEPLCX3, EIRENE_FEPLPI3, EIRENE_FEPLEL3,
+     .          EIRENE_FEPLCX3, EIRENE_FEPLEL3,
      .          EIRENE_FTABCX3, EIRENE_FTABPI3,
      .          EIRENE_FTABEI1,
 !pb
      .          EIRENE_FPATHPH,
 
-     .          RCMIN, RCMAX,
-     .          ERATE
+     .          RCMIN, RCMAX
       INTEGER :: IBGK, IXEL, IREL, IXEI, IREI, IXPI, IRPI,
-     .                 IXCX, IRCX, IXPH, IRPH,
+     .                 IXCX, IRCX, 
      .           J, KK, IPLSTI,
      .           IPLSV, IREAC
 

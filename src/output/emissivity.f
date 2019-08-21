@@ -32,7 +32,7 @@ cdr  write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
       implicit none
 
       integer, intent(in) :: istr, lstart, lend
-      integer :: i, j, k, iline, jcomp, kcontr,
+      integer :: i, j, k, iline, 
      .           iads, iadv, isp(3), itp(3), iratio, irc,
      .           irc_rat(2), ncelc, ndens, idens
       real(dp) :: density(3), sigadd, add, powalf, powalfs,

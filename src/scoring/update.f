@@ -100,7 +100,7 @@ C
      .            V0_PARB, PARMOM_0, P, BX, BY, BZ, BF, VION
       REAL(DP) :: VSIG_PARB(NPLS), VAL_PARB(NPLS), VX(NPLS), VY(NPLS),
      .            VZ(NPLS),XC,YC,ZC
-      INTEGER :: IRD,  I, IRDO, INUM,
+      INTEGER :: IRD,  I, IRDO,
      .           IPL, IAT, IA,
      .           IM,  IIO, IP, IML, II, NPBGK,
      .           IBGK, IPLV
@@ -110,8 +110,6 @@ C EL PROCESSES
       INTEGER ::      IXEL,IREL
 C CX PROCESSES
       INTEGER ::      IXCX,IRCX
-C PH PROCESSES
-      INTEGER ::      IAPH,IRPH
 C PI PROCESSES
       INTEGER ::      IXPI,IRPI
 C EI PROCESSES

@@ -109,21 +109,16 @@ C
 
       REAL(DP), INTENT(IN) :: CFLAG(7,MSTOR0), DIST
       REAL(DP), INTENT(OUT) :: COLTYP
-      REAL(DP) :: DUMT(3), DUMV(3)
-      REAL(DP) :: ZEP1, SIGSUM, WGHTO, FRSTP, PTOT, E0O, VELXO,
-     .          VELYO, VELZO, BX, BY, BZ, V0_PARBO, VELO, SCNDP,
-     .          EDEL, VDEL, SIG, V0_PARB, FP, FLTEST, ZEP3, VELQ, VX,
-     .          VY, VZ, VPLASP, RMAIO, RMMIO, RMIIO, BF, ZEP
-      REAL(DP) :: SIG_ELIM, SIG_TOT_N, SIG_TOT_O, SIG_TEST
-      INTEGER :: IICX, IIEI, IMEL, IOLD, NOLD, IACX, IRCX, IAEI, IREI,
-     .           IBGK, IAEL, IREL, IP, IMEI, IMCX, IAPI, NFLAG,
-     .           IATMN, IPLSN, IRPI, NCLLO, IPLSV, IMPI, IIPI, I, J, IPL
-      INTEGER :: NEII_RED,LGEI_RED(0:NREI)
+      REAL(DP) :: ZEP1, SIGSUM, WGHTO, FRSTP, E0O, VELXO,
+     .          VELYO, VELZO, VELO, SCNDP,
+     .          ZEP3
+      INTEGER :: IOLD, NOLD, IREI,
+     .           NCLLO
 
 Cdr  additional arrays for ANALOG CASCADE and SPLITTING AT COLLISIONS.
 Cdr (should be set in initialization phase, not here)
 CDR  check: are the corresponding arrays PATEI,PMLEI, PIOEI real or integer (1/2 particle possible?)
-      INTEGER, ALLOCATABLE :: NAMIEI(:),NAMIPI(:)
+C      INTEGER, ALLOCATABLE :: NAMIEI(:),NAMIPI(:)
 
 
 csw add n 2lines

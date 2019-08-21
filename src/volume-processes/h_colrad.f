@@ -248,7 +248,7 @@ C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
       DIMENSION SAHA(40)
-      INTEGER I, II, III, J, JJ
+      INTEGER I
 
       TE=TEMP*1.1605E4
 
@@ -1007,7 +1007,7 @@ C
 C   integrate functions gaunt3(x), for S and gaunt4, for ES, from 0 to 20
 C
       USE EIRMOD_PRECISION
-      USE EIRMOD_COMPRT, ONLY: IUNOUT
+C      USE EIRMOD_COMPRT, ONLY: IUNOUT
 
       IMPLICIT REAL(DP) (A-H,O-Z)
       REAL(DP) EIRENE_GAUNT3,EIRENE_GAUNT4,PP,XPP,A,B,EPSR

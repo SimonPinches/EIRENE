@@ -2848,7 +2848,7 @@ c allocate
       IMPLICIT NONE
       integer, intent(in) :: ipht,nrc,idsc,ipl
       integer :: kk,ipl0,ipl1,ipl2,ityp0,ityp1,ityp2,
-     .    ifnd,mode,updf,j,nseot4,ierr,ipl0ti
+     .    ifnd,mode,updf,nseot4,ierr,ipl0ti
       real(dp) :: factkk, ebulk
 
       kk=ireacph(ipht,nrc)

@@ -50,7 +50,6 @@ c  Output: ixspz,nmetoff,logphot,logatm,logmol,logion
 
       real(dp) :: tim_spent
       real(dp), save :: tim_start=0._dp, tim_end=0._dp
-      integer :: istr, it, is
 
       if ((ityp_old == ityp) .and. (iatm_old == iatm) .and.
      .    (imol_old == imol) .and. (iion_old == iion) .and.
