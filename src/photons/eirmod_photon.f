@@ -105,7 +105,6 @@ c           some more speed ups in lorvdwprof. still much more to be done
       USE EIRMOD_CTRCEI
       USE EIRMOD_CUPD
       USE EIRMOD_CZT1
-      USE EIRMOD_LEARC1, ONLY: EIRENE_LEARC1
       USE EIRMOD_RANF, ONLY: RANF_EIRENE
 
       IMPLICIT NONE
@@ -134,7 +133,7 @@ csw constants
       real(dp), public, save :: hwvdw
 
 csw external
-      integer, external :: eirene_idez, eirene_learc2
+      integer, external :: eirene_idez
 ctk      real(dp), external :: ranf_eirene
 
 !pb black body removal begin (try to eliminate saturated line core part)

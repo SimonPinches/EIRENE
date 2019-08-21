@@ -162,6 +162,8 @@ c  extrapolation data:  for 2d polynomial fits
 
 c  rescale parameter p2  (currently only by 1e-8 for density):  pp2
         pp2 = p2
+        rrc2min=rc2min
+        rrc2max=rc2max
         if (ip2shft > 0) then
           pp2 = pp2 - dsub
           rrc2min=rc2min - dsub
