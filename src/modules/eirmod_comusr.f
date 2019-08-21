@@ -35,7 +35,7 @@ cdr             input tally no. 25 added: PSI, poloidal magn. flux. Units?
      P NPLPRM  ! nplprm, is also used in setprm, for a storage test.
 c
       INTEGER, SAVE ::
-     P NUSR,   MUSR,   LUSR             ! also only local in this module, apparently
+     P MUSR,   LUSR             ! also only local in this module, apparently
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R         PLSTLS(:,:)
 
