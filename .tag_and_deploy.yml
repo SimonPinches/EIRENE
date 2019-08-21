@@ -4,6 +4,7 @@
         - master
     except: 
         - schedules
+    dependencies: []
     before_script:
         # Configure git user information
         - git config --global user.email "noreply@${SERVER_DOMAIN}"
@@ -77,6 +78,7 @@ tag_database_methane:
         # would be ideal to trigger job only if tag is latest
         # not (yet) supported by GitLab
         #    - $CI_COMMIT_TAG == $(git tag --sort=v:refname -l $DATABASE-* | tail -n 1)
+    dependencies: []
     before_script:
         # Run ssh-agent (inside the build environment)
         - eval $(ssh-agent -s)
@@ -160,6 +162,7 @@ deploy_database_website_methane:
         # would be ideal to trigger job only if tag is latest
         # not (yet) supported by GitLab
         #    - $CI_COMMIT_TAG == $(git tag --sort=v:refname -l $DATABASE-* | tail -n 1)
+    dependencies: []
     before_script:
         # Configure git user information
         - git config --global user.email "noreply@${SERVER_DOMAIN}"
