@@ -400,7 +400,6 @@ c    set drift velocities at cell center
      .                               FLSTEP(IPLS,ISTEP,K)
     2         CONTINUE
             END DO
-    3       CONTINUE
 C
 C  LAST INTERVAL BOUNDARY FOR SAMPLING DISTRIBUTION
 C
@@ -1622,12 +1621,6 @@ C
       WRITE (iunout,*)
      .  'SOURCE ON ADDITIONAL SURFACE BUT INVALID "JCALC"'
       WRITE (iunout,*) 'CHANGE INPUT FLAG "INDTEC"'
-      CALL EIRENE_EXIT_OWN(1)
-  994 CONTINUE
-      WRITE (iunout,*) 'ERROR IN SAMPLE. EXIT CALLED'
-      WRITE (iunout,*)
-     .  'ARCLENGTH REQUESTED ON STANDARD SURFACE BUT LEVGEO'
-      WRITE (iunout,*) 'IS NOT = 3. THIS OPTION IS STILL TO BE WRITTEN'
       CALL EIRENE_EXIT_OWN(1)
   995 CONTINUE
       WRITE (iunout,*) ' ERROR IN SAMSRF '

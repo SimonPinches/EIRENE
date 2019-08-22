@@ -158,7 +158,6 @@ c  PH processes (photonic reactions)
 cdr:  unfinished. Do not use.
 c
 csw
-   60 CONTINUE
       if(phv_lgphot(iphot,0,0) == 0) goto 70
       do 61 ipph=1,phv_nphoti(iphot)
         IRPH=phv_lgphot(iphot,ipph,0)  !  -->  lgxph, with x=ph, IRPH corresponds to: irei, ircx, ....
@@ -251,8 +250,6 @@ C  MEAN ENERGY FROM DRIFTING MAXWELLIAN
 c
 C     TOTAL
 C
-  100 CONTINUE
-
 C
 C  CUT-OFF RESIDUAL RATES, WHICH SHOULD STRICTLY BE ZERO
 C  TO AVOID SPURIOUS ENTRIES TO COLLISION RATE TALLIES

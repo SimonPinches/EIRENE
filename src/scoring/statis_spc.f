@@ -156,6 +156,5 @@ C
         DEALLOCATE (SD)
       END DO
 C
- 2200 CONTINUE
       RETURN
       END

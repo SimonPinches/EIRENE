@@ -942,14 +942,14 @@ C           IFPLS=IFREC(IPLS)
 C           WEISPZ(IPL)=(FREC(IFPLS,0,1))/
 C    .                  (FREC(0,  0,1))
 C           IF (WEISPZ(IPL).LT.0) GOTO 991
-  640     CONTINUE
+C 640     CONTINUE
 C       ELSE
 C         DO 645 IPL=1,NPLSI
 C           IFPLS=IFREC(IPLS)
 C           WEISPZ(IPL)=(FREC(IFPLS,0,NCELL)-FREC(IFPLS,0,NCELL-1))/
 C     .                 (FREC(0,    0,NCELL)-FREC(0,    0,NCELL-1))
 C           IF (WEISPZ(IPL).LT.0) GOTO 991
-  645     CONTINUE
+C 645     CONTINUE
 C       ENDIF
 C     ENDIF
 C
@@ -973,16 +973,9 @@ C
       RETURN
 C
 C
-  990 CONTINUE
-      WRITE (iunout,*) 'ERROR IN SAMVOL'
-      CALL EIRENE_EXIT_OWN(1)
   991 CONTINUE
       WRITE (iunout,*) 'SAMPLING ERROR IN SAMVOL'
       WRITE (iunout,*) 'NCELL,NSURF,NSBOX ',NCELL,NSURF,NSBOX
-      CALL EIRENE_EXIT_OWN(1)
-  997 CONTINUE
-      WRITE (iunout,*) 'SORIND (=IRRC) OUT OF RANGE IN SAMVOL'
-      WRITE (iunout,*) 'IRRC,NREC ',IRRC,NREC
       CALL EIRENE_EXIT_OWN(1)
   999 CONTINUE
       WRITE (iunout,*) 'UNWRITTEN OPTION IN SAMVOL'

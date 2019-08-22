@@ -78,5 +78,4 @@ C
         RETURN
       ENDIF
 C
-  997 CONTINUE
       END

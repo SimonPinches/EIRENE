@@ -218,11 +218,4 @@ C**********************************************************************
 380   CONTINUE
       RETURN 3
 
-C
-999   PTRASH(ISTRA)=PTRASH(ISTRA)-WEIGHT
-      ETRASH(ISTRA)=ETRASH(ISTRA)-WEIGHT*E0
-      LGPART=.FALSE.
-      WEIGHT=0.
-9991  CALL EIRENE_LEER(1)
-      RETURN
       END

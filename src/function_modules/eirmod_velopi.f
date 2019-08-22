@@ -275,8 +275,6 @@ C
 C
 C  STEP 1 FINISHED, INCIDENT BULK ION (IPLS) VELOCITY IS SET: VXI,VYI,VZI
 C
-  200 CONTINUE
-C
 C  STEP 2:
 
 C assume: scattering angle = 0 in COM, (as for EI collisions)

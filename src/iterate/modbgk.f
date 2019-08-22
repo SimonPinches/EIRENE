@@ -906,8 +906,6 @@ c
 C
       CALL EIRENE_PLASMA_DERIV(0)
 C
-  600 CONTINUE
-C
 C .........................................................................
 C  NOW: NEW COLLISION RATES MUST BE SET FOR THE NEXT ITERATION
 C .........................................................................
@@ -1090,10 +1088,5 @@ C
 C
   995 CONTINUE
       WRITE (iunout,*) 'SPECIES ERROR IN MODBGK'
-      CALL EIRENE_EXIT_OWN(1)
-C
-  999 CONTINUE
-      WRITE (iunout,*) 'ERROR IN MODBGK. IPLS,IBGK_SP= ',
-     .                  IPLS,IBGK1,IBGK2
       CALL EIRENE_EXIT_OWN(1)
       END

@@ -309,8 +309,6 @@ C  SIGADD: PHOTONS/SEC/CM**3
 
 c...............................................................................
 C     to be done: contributions from atomic He ions in TEST IONS
-
-  500   CONTINUE
 C
 C
         SIGADD=SIGADD1+SIGADD2

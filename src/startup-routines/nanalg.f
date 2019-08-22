@@ -31,7 +31,6 @@ C---------------------------------------------------------------------
       NLSPLT(1:N1ST+N2ND+N3RD+NLIM)=.FALSE.
 C
 C
-  100 CONTINUE
 C  SET RADIAL SPLITTING SURFACES
       IF(NR1ST.LE.2) GOTO 200
 C

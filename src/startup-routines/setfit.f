@@ -446,11 +446,6 @@ C
       WRITE (iunout,*) 'REQUEST FROM SURFACE NO. ',I
       WRITE (iunout,*) 'IE = ',IE,' EXIT CALLED'
       CALL EIRENE_EXIT_OWN(1)
-  992 CONTINUE
-      WRITE (iunout,*) 'ERROR IN SUBR. SETFIT'
-      WRITE (iunout,*) 'THE VALID AREAS DO NOT INTERSECT'
-      WRITE (iunout,*) 'I,IE ',I,IE
-      CALL EIRENE_EXIT_OWN(1)
   993 CONTINUE
       WRITE (iunout,*) 'ERROR IN SUBR. SETFIT'
       WRITE (iunout,*) 'STRAIGHT LINE NO I= ',I,' COLLAPSED TO A POINT'

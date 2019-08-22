@@ -492,13 +492,6 @@ C
       WRITE (iunout,*) 'IRCX, TEST-SPECIES, BULK SPECIES ',IRCX,
      .                  TEXTS(ISP),TEXTS(NSPAMI+IPL)
       CALL EIRENE_EXIT_OWN(1)
-  993 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED'
-      WRITE (iunout,*)
-     .  'EBULK_ION .LE.0, BUT MONOENERGETIC DISTRIBUTION?'
-      WRITE (iunout,*) 'CHECK ENERGY FLAG ISCDEA'
-      WRITE (iunout,*) 'KK,ISCDEA ',KK,ISCDEA
-      CALL EIRENE_EXIT_OWN(1)
   994 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED'
       WRITE (iunout,*)
