@@ -27,7 +27,7 @@ c  all tests included
         else
 c  binary search
           do while (bu-bl.gt.1)
-            bm=(bu+bl)*0.5
+            bm=int((bu+bl)*0.5)
             if(x.ge.xx(bm)) then
               bl=bm
             else
@@ -45,7 +45,7 @@ c  binary search
         else
 c  binary search
           do while (bu-bl.gt.1)
-            bm=(bu+bl)*0.5
+            bm=int((bu+bl)*0.5)
             if(x.le.xx(bm)) then
               bl=bm
             else
@@ -74,7 +74,7 @@ c                   b)  x  lies between xx(1) and xx(n)
 
 c  binary search
       do while (bu-bl.gt.1)
-        bm=(bu+bl)*0.5
+        bm=int((bu+bl)*0.5)
         if(x.ge.xx(bm))then
           bl=bm
         else

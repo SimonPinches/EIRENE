@@ -484,7 +484,7 @@ C  ACCOUNT FOR INGRDA(IVOLSI,ISTRA,...), INGRDE(IVOLSI,ISTRA,...)
                 IT2=2
               ENDIF
 
-              ISTEP=SORIND(IVL,ISTRA)
+              ISTEP=IDINT(SORIND(IVL,ISTRA))
               IFPLS=IFREC(IPLS)
               DO 52 IIRC=1,NPRCI(IPLS)
                 IRRC=LGPRC(IPLS,IIRC)
@@ -681,7 +681,7 @@ C
             IT2=2
           ENDIF
 
-          ISTEP=SORIND(IVL,ISTRA)
+          ISTEP=IDINT(SORIND(IVL,ISTRA))
           IFPLS=IFREC(IPLS)
           DO IIRC=1,NPRCI(IPLS)
             IRRC=LGPRC(IPLS,IIRC)
@@ -732,7 +732,7 @@ cdr analog sampling, no weighting
 
 c  binary search
         DO WHILE (IU-IL.gt.1)
-          IM=(IU+IL)*0.5
+          IM=INT((IU+IL)*0.5)
           IF(ZEP1.GE.VSOURC(NVLM,IM)) THEN
             IL=IM
           ELSE

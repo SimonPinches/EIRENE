@@ -366,7 +366,7 @@ C
         DO  ISTRA=1,NSTRAI
           XFACT=XTIM(ISTRA)/XX1 !VKMPI
           XPRNLS       =NPRNLI*XFACT+0.5
-          NPRNLS(ISTRA)=XPRNLS
+          NPRNLS(ISTRA)=IDINT(XPRNLS)
         ENDDO
    10   ISUM=SUM(NPRNLS(1:NSTRAI))
         IF (ISUM.NE.NPRNLI) THEN
@@ -470,7 +470,7 @@ C  REDEFINE NPTS ACCORDING TO XTIM(ISTRA)
             DO IS=1,NSTRAI-1
               XFACT=XTIM(IS)/XTIM(0)  !PB  XTIM(IS): CPU TIME ASSIGNED TO STRATUM IS
               XPRNLI=NPTTOT*XFACT+0.5
-              NPTS(IS)=XPRNLI
+              NPTS(IS)=IDINT(XPRNLI)
               ISUM=ISUM+NPTS(IS)
               WRITE(iunout,*) 'ISTRA, NPTS = ',IS,NPTS(IS)
             ENDDO
@@ -726,7 +726,7 @@ C  FOR TEST ONLY: PRINT FIRST RANDOM NUMBER PER TRAJECTORY
               ENDIF
 
 c  derive one more seed, for reflec.f. cdr: unfinished....
-              ISEEDR=ISEED_ISTRA*0.3D0
+              ISEEDR=IDINT(ISEED_ISTRA*0.3D0)
 
               INIV1=0
               INIV2=0
@@ -980,7 +980,7 @@ C
      .     WTOTP(0,ISTRA),WTOTA(0,ISTRA),WTOTM(0,ISTRA),WTOTI(0,ISTRA),
      .     WTOTPH(0,ISTRA))
           WRITE (iunout,*) 'TOTAL NUMBER OF MONTE CARLO HISTORIES'
-          IMCP=XMCP(ISTRA)
+          IMCP=IDINT(XMCP(ISTRA))
           CALL EIRENE_MASJ1 ('NPART   ',IMCP)
 C
 C
