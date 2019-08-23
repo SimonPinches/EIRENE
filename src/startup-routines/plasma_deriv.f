@@ -787,12 +787,12 @@ C
       END IF
 
       IF (LDESMO) THEN
-	call eirene_cell_to_corner(DEIN,DEINCORNER)
+        call eirene_cell_to_corner(DEIN,DEINCORNER)
       END IF
 
       IF (LDISMO) THEN
         do ipls = 1, npls
- 	  call eirene_cell_to_corner(DIIN(ipls,:),DIINCORNER(:,ipls))
+          call eirene_cell_to_corner(DIIN(ipls,:),DIINCORNER(:,ipls))
         ENDDO
       ENDIF 
   
@@ -810,7 +810,7 @@ C
       IF (LVSMO) THEN
         do iplsv = 1, nplsv
           if (lvxsmo)
-     . 	   call eirene_cell_to_corner(VXIN(iplsv,:),VXINCORNER(:,iplsv))
+     .     call eirene_cell_to_corner(VXIN(iplsv,:),VXINCORNER(:,iplsv))
           if (lvysmo)
      .     call eirene_cell_to_corner(VYIN(iplsv,:),VYINCORNER(:,iplsv))
           if (lvzsmo)
