@@ -21,7 +21,7 @@ module eirmod_mpi
 #endif
   end interface
 
-  contains 
+  contains
 #endif
 
 #else
@@ -29,7 +29,7 @@ module eirmod_mpi
   ! Dummy MPI module for serial compilation
   implicit none
   integer, parameter :: mpi_success = 0
-  integer, parameter :: mpi_failure = 1 
+  integer, parameter :: mpi_failure = 1
   integer, parameter :: mpi_comm_world = 0
   integer, parameter :: mpi_comm_self = 0
   integer, parameter :: mpi_comm_null = -1
@@ -50,27 +50,27 @@ module eirmod_mpi
                  MPI_SUM = 1,              &
                  MPI_LOR = 2,              &
                  MPI_IN_PLACE = 0
-                 
+
   integer, parameter :: MPI_REQUEST_NULL = 0
   integer, parameter :: MPI_VERSION = 2
   integer, parameter :: MPI_SUBVERSION = 2
-  
-  
+
+
   interface mpi_allgather
     module procedure mpi_allgather_i0, mpi_allgather_i1
     module procedure mpi_allgather_l0
   end interface
-  
+
   interface mpi_allreduce
     module procedure mpi_allreduce_i0
   end interface
-  
+
   interface mpi_gather
      module procedure mpi_gather_i0_i1
      module procedure mpi_gather_i1_i1
      module procedure mpi_gather_r1_r1
   end interface
-  
+
   interface mpi_ireduce
     ! During execution, we check the MPI version to avoid calling these if an
     ! older MPI library is used. If we still call MPI_IREDUCE, then it is an
@@ -81,19 +81,19 @@ module eirmod_mpi
     module procedure mpi_ireduce_i0_l1
     module procedure mpi_ireduce_l1_l1
   end interface
-  
+
   interface mpi_send
     module procedure mpi_send_dum_a0, mpi_send_dum_a1, mpi_send_dum_a2
     module procedure mpi_send_dum_a3
     module procedure mpi_send_dum_i0, mpi_send_dum_i1, mpi_send_dum_i2
   end interface
-  
+
   interface mpi_recv
     module procedure mpi_recv_dum_a0, mpi_recv_dum_a1, mpi_recv_dum_a2
     module procedure mpi_recv_dum_a3
     module procedure mpi_recv_dum_i0, mpi_recv_dum_i1, mpi_recv_dum_i2
   end interface
-  
+
   interface mpi_reduce
     module procedure mpi_reduce_i0_i0, mpi_reduce_i1_i1
     module procedure mpi_reduce_inplace_r0, mpi_reduce_inplace_r1, mpi_reduce_inplace_r2, &
@@ -101,26 +101,26 @@ module eirmod_mpi
     module procedure mpi_reduce_r0_r0, mpi_reduce_r1_r1, mpi_reduce_r2_r2, &
       mpi_reduce_r3_r3, mpi_reduce_r4_r4
   end interface
-  
+
   interface mpi_bcast
-      module procedure MPI_BCAST_DUM_L, MPI_BCAST_DUM_L1, MPI_BCAST_DUM_L2 
-      module procedure MPI_BCAST_DUM_R_DP 
-      module procedure MPI_BCAST_DUM_A1, MPI_BCAST_DUM_A2 
-      module procedure MPI_BCAST_DUM_A3, MPI_BCAST_DUM_A4 
-      module procedure MPI_BCAST_DUM_I0, MPI_BCAST_DUM_I1 
+      module procedure MPI_BCAST_DUM_L, MPI_BCAST_DUM_L1, MPI_BCAST_DUM_L2
+      module procedure MPI_BCAST_DUM_R_DP
+      module procedure MPI_BCAST_DUM_A1, MPI_BCAST_DUM_A2
+      module procedure MPI_BCAST_DUM_A3, MPI_BCAST_DUM_A4
+      module procedure MPI_BCAST_DUM_I0, MPI_BCAST_DUM_I1
       module procedure MPI_BCAST_DUM_I2, MPI_BCAST_DUM_I3
   end interface
-   
+
   interface mpi_testall
     module procedure mpi_testall_i0, mpi_testall_i1
   end interface
-  
+
   interface mpi_waitall
     module procedure mpi_waitall_i0, mpi_waitall_i1
   end interface
-  
+
   contains
-  
+
   subroutine mpi_abort(comm, errorcode, ierr)
     use eirmod_comprt
     implicit none
@@ -130,7 +130,7 @@ module eirmod_mpi
     write (iunout,*) 'MPI ABORT: Shut down with error code: ', errorcode
     stop
   end subroutine
-  
+
   subroutine mpi_bcast_dum_l (buffer,cnt,datatype,root,comm,ier)
     implicit none
     integer, intent(out) :: ier
@@ -146,7 +146,7 @@ module eirmod_mpi
     integer, intent(in) :: cnt,datatype,root,comm
     ier = MPI_SUCCESS
   end subroutine
-  
+
   subroutine mpi_bcast_dum_l2 (buffer,cnt,datatype,root,comm,ier)
     implicit none
     integer, intent(out) :: ier
@@ -154,7 +154,7 @@ module eirmod_mpi
     integer, intent(in) :: cnt,datatype,root,comm
     ier = MPI_SUCCESS
   end subroutine
-  
+
   subroutine mpi_bcast_dum_r_dp (buffer,cnt,datatype,root,comm,ier)
     use eirmod_precision
     implicit none
@@ -199,7 +199,7 @@ module eirmod_mpi
     integer, intent(in) :: cnt,datatype,root,comm
     ier = MPI_SUCCESS
   end subroutine
-  
+
   subroutine mpi_bcast_dum_i0 (buffer,cnt,datatype,root,comm,ier)
     use eirmod_precision
     implicit none
@@ -217,7 +217,7 @@ module eirmod_mpi
     integer, intent(in) :: cnt,datatype,root,comm
     ier = MPI_SUCCESS
   end subroutine
-  
+
     subroutine mpi_bcast_dum_i2 (buffer,cnt,datatype,root,comm,ier)
     use eirmod_precision
     implicit none
@@ -235,7 +235,7 @@ module eirmod_mpi
     integer, intent(in) :: cnt,datatype,root,comm
     ier = MPI_SUCCESS
   end subroutine
-  
+
   subroutine mpi_allgather_i0 (data1, nsend, sendtype, data2, nrecv, recvtype, &
     comm, ierror )
   integer, intent(in) :: nsend
@@ -246,7 +246,7 @@ module eirmod_mpi
   ierror = MPI_SUCCESS
   data2(1) = data1
   end subroutine
-  
+
   subroutine mpi_allgather_i1 (data1, nsend, sendtype, data2, nrecv, recvtype, &
     comm, ierror )
   integer, intent(in) :: nsend
@@ -272,7 +272,7 @@ module eirmod_mpi
   ierror = MPI_SUCCESS
   data2(1) = data1
   end subroutine
-  
+
   subroutine mpi_allreduce_i0 (data1, data2, n, dtype, op, comm, ierror )
   integer, intent(in) :: n
   integer, intent(in) :: data1
@@ -301,7 +301,7 @@ module eirmod_mpi
     write(iunout,*) 'Error MPI_IREDUCE called, but it is not implemented'
     call mpi_abort(MPI_COMM_WORLD, -1, ierror)
   end subroutine
-  
+
   subroutine mpi_ireduce_i0_l1 (data1, data2, n, datatype, operation, receiver, &
     comm, request, ierror )
     ! first argument is MPI_IN_PLACE flag
@@ -316,7 +316,7 @@ module eirmod_mpi
     write(iunout,*) 'Error MPI_IREDUCE called, but it is not implemented'
     call mpi_abort(MPI_COMM_WORLD, -1, ierror)
   end subroutine
-  
+
   subroutine mpi_ireduce_r1_r1 (data1, data2, n, datatype, operation, receiver, &
     comm, request, ierror )
     ! first argument is MPI_IN_PLACE flag
@@ -331,7 +331,7 @@ module eirmod_mpi
     write(iunout,*) 'Error MPI_IREDUCE called, but it is not implemented'
     call mpi_abort(MPI_COMM_WORLD, -1, ierror)
   end subroutine
-  
+
   subroutine mpi_ireduce_l1_l1 (data1, data2, n, datatype, operation, receiver, &
     comm, request, ierror )
     ! first argument is MPI_IN_PLACE flag
@@ -398,9 +398,9 @@ module eirmod_mpi
       ierror = MPI_FAILURE
     end if
     request = 0
-    data2 = data1    
+    data2 = data1
   end subroutine
-  
+
   subroutine mpi_ireduce_i0_l1 (data1, data2, n, datatype, operation, receiver, &
     comm, request, ierror )
     ! first argument is MPI_IN_PLACE flag
@@ -440,7 +440,7 @@ module eirmod_mpi
       ierror = MPI_FAILURE
     end if
     request = 0
-    data2 = data1    
+    data2 = data1
   end subroutine
   
   subroutine mpi_ireduce_l1_l1 (data1, data2, n, datatype, operation, receiver, &
@@ -458,7 +458,7 @@ module eirmod_mpi
       ierror = MPI_FAILURE
     end if
     request = 0
-    data2 = data1    
+    data2 = data1
   end subroutine
 #endif
 
@@ -478,7 +478,7 @@ module eirmod_mpi
       ierror = MPI_FAILURE
     endif
   end subroutine
-  
+
   subroutine mpi_reduce_inplace_r1 (data1, data2, n, datatype, operation, receiver, &
     comm, ierror )
     ! first argument is MPI_IN_PLACE flag
@@ -495,7 +495,7 @@ module eirmod_mpi
       ierror = MPI_FAILURE
     endif
   end subroutine
-  
+
   subroutine mpi_reduce_inplace_r2 (data1, data2, n, datatype, operation, receiver, &
     comm, ierror )
     ! first argument is MPI_IN_PLACE flag
@@ -528,7 +528,7 @@ module eirmod_mpi
       ierror = MPI_FAILURE
     endif
   end subroutine
-  
+
   subroutine mpi_reduce_inplace_r4 (data1, data2, n, datatype, operation, receiver, &
     comm, ierror )
     ! first argument is MPI_IN_PLACE flag
@@ -578,7 +578,7 @@ module eirmod_mpi
     endif
     data2 = data1
   end subroutine
-  
+
   subroutine mpi_reduce_r2_r2 (data1, data2, n, datatype, operation, receiver, &
     comm, ierror )
     implicit none
@@ -595,7 +595,7 @@ module eirmod_mpi
     endif
     data2 = data1
   end subroutine
-  
+
   subroutine mpi_reduce_r3_r3 (data1, data2, n, datatype, operation, receiver, &
     comm, ierror )
     implicit none
@@ -612,7 +612,7 @@ module eirmod_mpi
     endif
     data2 = data1
   end subroutine
-  
+
   subroutine mpi_reduce_r4_r4 (data1, data2, n, datatype, operation, receiver, &
     comm, ierror )
     implicit none
@@ -629,7 +629,7 @@ module eirmod_mpi
     endif
     data2 = data1
   end subroutine
-  
+
   subroutine mpi_gather_i0_i1(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, &
     root, comm, ierr)
     implicit none
@@ -658,7 +658,7 @@ module eirmod_mpi
     if (sendcount.eq.recvcount) then
       ierr = mpi_success
       recvbuf(1:recvcount) = sendbuf(1:sendcount)
-    else 
+    else
       ierr = mpi_failure
     endif
   end subroutine
@@ -676,7 +676,7 @@ module eirmod_mpi
     if (sendcount.eq.recvcount) then
       ierr = mpi_success
       recvbuf(1:recvcount) = sendbuf(1:sendcount)
-    else 
+    else
       ierr = mpi_failure
     endif
   end subroutine
@@ -697,7 +697,7 @@ module eirmod_mpi
    newcomm = group
    ierr = mpi_success
   end subroutine
-  
+
   subroutine mpi_comm_free(comm, ierr)
    implicit none
    integer, intent(inout) :: comm
@@ -705,7 +705,7 @@ module eirmod_mpi
    comm = mpi_comm_null
    ierr = mpi_success
   end subroutine
-  
+
   subroutine mpi_comm_rank (comm, me, ierr)
     implicit none
     integer, intent(in) :: comm
@@ -713,7 +713,7 @@ module eirmod_mpi
     me = 0
     ierr = MPI_SUCCESS
   end subroutine
-  
+
   subroutine mpi_comm_size (comm, size, ierr)
     implicit none
     integer, intent(in) :: comm
@@ -725,7 +725,7 @@ module eirmod_mpi
     endif
     ierr = MPI_SUCCESS
   end subroutine
-  
+
   subroutine mpi_get_version(major, minor, ierr)
     implicit none
     integer, intent(out) :: major, minor, ierr
@@ -767,7 +767,7 @@ module eirmod_mpi
       newgroup = group
     endif
   end subroutine
-  
+
   subroutine mpi_group_free(group, ierr)
     implicit none
     integer, intent(inout) :: group
@@ -813,7 +813,7 @@ module eirmod_mpi
       call eirene_exit_own(1)
     endif
   end subroutine
-  
+
   subroutine mpi_send_dum_a0 (buffer,cnt,datatype,dest,tag,comm,ier)
     use eirmod_precision
     use eirmod_comprt
@@ -827,7 +827,7 @@ module eirmod_mpi
     write(iunout,*) &
      '         Results are only correct if send and recv buffers are the same'
   end subroutine
-  
+
   subroutine mpi_send_dum_a1 (buffer,cnt,datatype,dest,tag,comm,ier)
     use eirmod_precision
     use eirmod_comprt
@@ -841,7 +841,7 @@ module eirmod_mpi
     write(iunout,*) &
      '         Results are only correct if send and recv buffers are the same'
   end subroutine
-  
+
   subroutine mpi_send_dum_a2(buffer,cnt,datatype,dest,tag,comm,ier)
     use eirmod_precision
     use eirmod_comprt
@@ -869,7 +869,7 @@ module eirmod_mpi
     write(iunout,*) &
      '         Results are only correct if send and recv buffers are the same'
   end subroutine
-  
+
   subroutine mpi_send_dum_i0 (buffer,cnt,datatype,dest,tag,comm,ier)
     use eirmod_precision
     use eirmod_comprt
@@ -883,7 +883,7 @@ module eirmod_mpi
     write(iunout,*) &
      '         Results are only correct if send and recv buffers are the same'
   end subroutine
-  
+
   subroutine mpi_send_dum_i1 (buffer,cnt,datatype,dest,tag,comm,ier)
     use eirmod_precision
     use eirmod_comprt
@@ -897,7 +897,7 @@ module eirmod_mpi
     write(iunout,*) &
      '         Results are only correct if send and recv buffers are the same'
   end subroutine
-  
+
   subroutine mpi_send_dum_i2 (buffer,cnt,datatype,dest,tag,comm,ier)
     use eirmod_precision
     use eirmod_comprt
@@ -911,7 +911,7 @@ module eirmod_mpi
     write(iunout,*) &
      '         Results are only correct if send and recv buffers are the same'
   end subroutine
-                      
+
   subroutine mpi_recv_dum_a0(buffer,cnt,datatype,source,tag,comm,st,ier)
     use eirmod_precision
     use eirmod_comprt
@@ -940,7 +940,7 @@ module eirmod_mpi
     write(iunout,*) &
      '         Results are only correct if send and recv buffers are the same'
   end subroutine
-  
+
   subroutine mpi_recv_dum_a2(buffer,cnt,datatype,source,tag,comm,st,ier)
     use eirmod_precision
     use eirmod_comprt
@@ -970,7 +970,7 @@ module eirmod_mpi
     write(iunout,*) &
      '         Results are only correct if send and recv buffers are the same'
   end subroutine
-  
+
   subroutine mpi_recv_dum_i0(buffer,cnt,datatype,source,tag,comm,st,ier)
     use eirmod_precision
     use eirmod_comprt
@@ -999,7 +999,7 @@ module eirmod_mpi
     write(iunout,*) &
      '         Results are only correct if send and recv buffers are the same'
   end subroutine
-  
+
   subroutine mpi_recv_dum_i2(buffer,cnt,datatype,source,tag,comm,st,ier)
     use eirmod_precision
     use eirmod_comprt
@@ -1014,7 +1014,7 @@ module eirmod_mpi
     write(iunout,*) &
      '         Results are only correct if send and recv buffers are the same'
   end subroutine
-  
+
   subroutine mpi_waitall_i0(n, requests, status, ierr)
   ! status must be MPI_STATUSES_IGNORE in this case
     implicit none
