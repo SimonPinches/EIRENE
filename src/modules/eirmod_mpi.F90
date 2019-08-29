@@ -33,6 +33,7 @@ module eirmod_mpi
   integer, parameter :: mpi_comm_world = 0
   integer, parameter :: mpi_comm_self = 0
   integer, parameter :: mpi_comm_null = -1
+  integer, parameter :: mpi_undefined = -32766
 
   integer, parameter :: mpi_group_null = mpi_comm_null
   integer, parameter :: mpi_group_empty = mpi_group_null
@@ -63,12 +64,26 @@ module eirmod_mpi
 
   interface mpi_allreduce
     module procedure mpi_allreduce_i0
+    module procedure mpi_allreduce_r0
   end interface
 
   interface mpi_gather
      module procedure mpi_gather_i0_i1
      module procedure mpi_gather_i1_i1
+     module procedure mpi_gather_r0_r0
+     module procedure mpi_gather_r0_r1
      module procedure mpi_gather_r1_r1
+  end interface
+
+  interface mpi_gatherv
+     module procedure mpi_gatherv_i2_i2
+     module procedure mpi_gatherv_r2_r2
+  end interface
+
+  interface mpi_scatter
+     module procedure mpi_scatter_i0_i0
+     module procedure mpi_scatter_i1_i0
+     module procedure mpi_scatter_i1_i1
   end interface
 
   interface mpi_ireduce
@@ -96,6 +111,7 @@ module eirmod_mpi
 
   interface mpi_reduce
     module procedure mpi_reduce_i0_i0, mpi_reduce_i1_i1
+    module procedure mpi_reduce_L1_L1, mpi_reduce_L2_L1
     module procedure mpi_reduce_inplace_r0, mpi_reduce_inplace_r1, mpi_reduce_inplace_r2, &
       mpi_reduce_inplace_r3, mpi_reduce_inplace_r4
     module procedure mpi_reduce_r0_r0, mpi_reduce_r1_r1, mpi_reduce_r2_r2, &
@@ -107,8 +123,12 @@ module eirmod_mpi
       module procedure MPI_BCAST_DUM_R_DP
       module procedure MPI_BCAST_DUM_A1, MPI_BCAST_DUM_A2
       module procedure MPI_BCAST_DUM_A3, MPI_BCAST_DUM_A4
+      module procedure MPI_BCAST_DUM_A5, MPI_BCAST_DUM_A6
       module procedure MPI_BCAST_DUM_I0, MPI_BCAST_DUM_I1
       module procedure MPI_BCAST_DUM_I2, MPI_BCAST_DUM_I3
+      module procedure MPI_BCAST_DUM_I6
+      module procedure MPI_BCAST_DUM_C0, MPI_BCAST_DUM_C1
+      module procedure MPI_BCAST_DUM_C2
   end interface
 
   interface mpi_testall
@@ -200,6 +220,24 @@ module eirmod_mpi
     ier = MPI_SUCCESS
   end subroutine
 
+  subroutine mpi_bcast_dum_a5 (buffer,cnt,datatype,root,comm,ier)
+    use eirmod_precision
+    implicit none
+    integer, intent(out) :: ier
+    real(dp) :: buffer(:,:,:,:,:)
+    integer, intent(in) :: cnt,datatype,root,comm
+    ier = MPI_SUCCESS
+  end subroutine
+
+  subroutine mpi_bcast_dum_a6 (buffer,cnt,datatype,root,comm,ier)
+    use eirmod_precision
+    implicit none
+    integer, intent(out) :: ier
+    real(dp) :: buffer(:,:,:,:,:,:)
+    integer, intent(in) :: cnt,datatype,root,comm
+    ier = MPI_SUCCESS
+  end subroutine
+
   subroutine mpi_bcast_dum_i0 (buffer,cnt,datatype,root,comm,ier)
     use eirmod_precision
     implicit none
@@ -233,6 +271,42 @@ module eirmod_mpi
     integer, intent(out) :: ier
     integer :: buffer(:,:,:)
     integer, intent(in) :: cnt,datatype,root,comm
+    ier = MPI_SUCCESS
+  end subroutine
+
+  subroutine mpi_bcast_dum_i6 (buffer,cnt,datatype,root,comm,ier)
+    use eirmod_precision
+    implicit none
+    integer, intent(out) :: ier
+    integer :: buffer(:,:,:,:,:,:)
+    integer, intent(in) :: cnt,datatype,root,comm
+    ier = MPI_SUCCESS
+  end subroutine
+
+  subroutine mpi_bcast_dum_c0 (buffer,cnt,datatype,root,comm,ier)
+    use eirmod_precision
+    implicit none
+    integer, intent(out) :: ier
+    integer, intent(in) :: cnt,datatype,root,comm
+    character(*) :: buffer
+    ier = MPI_SUCCESS
+  end subroutine
+
+  subroutine mpi_bcast_dum_c1 (buffer,cnt,datatype,root,comm,ier)
+    use eirmod_precision
+    implicit none
+    integer, intent(out) :: ier
+    integer, intent(in) :: cnt,datatype,root,comm
+    character(*) :: buffer(*)
+    ier = MPI_SUCCESS
+  end subroutine
+
+  subroutine mpi_bcast_dum_c2 (buffer,cnt,datatype,root,comm,ier)
+    use eirmod_precision
+    implicit none
+    integer, intent(out) :: ier
+    integer, intent(in) :: cnt,datatype,root,comm
+    character(*) :: buffer(1,*)
     ier = MPI_SUCCESS
   end subroutine
 
@@ -283,6 +357,16 @@ module eirmod_mpi
   data2 = data1
   end subroutine
 
+  subroutine mpi_allreduce_r0 (data1, data2, n, dtype, op, comm, ierror )
+  use eirmod_precision
+  integer, intent(in) :: n
+  real(dp), intent(in) :: data1
+  real(dp), intent(out) :: data2
+  integer, intent(in) :: op, comm, dtype
+  integer, intent(out) :: ierror
+  ierror = MPI_SUCCESS
+  data2 = data1
+  end subroutine
 #endif
 
 #if MPI_VERSION < 3 || !defined(USE_MPI)
@@ -380,6 +464,38 @@ module eirmod_mpi
       ierror = MPI_FAILURE
     end if
     data2 = data1
+  end subroutine
+
+  subroutine mpi_reduce_L1_L1 ( data1, data2, n, datatype, operation, receiver, &
+    comm, ierror )
+    implicit none
+    integer, intent(in) :: n, comm
+    logical, intent(in) :: data1(n)
+    logical, intent(out) :: data2(n)
+    integer, intent(in) :: datatype, operation, receiver
+    integer, intent(out) :: ierror
+    if ( datatype == mpi_logical ) then
+      ierror = mpi_success
+    else
+      ierror = MPI_FAILURE
+    end if
+    data2 = data1
+  end subroutine
+
+  subroutine mpi_reduce_L2_L1 ( data1, data2, n, datatype, operation, receiver, &
+    comm, ierror )
+    implicit none
+    integer, intent(in) :: n, comm
+    logical, intent(in) :: data1(:,:)
+    logical, intent(out) :: data2(n)
+    integer, intent(in) :: datatype, operation, receiver
+    integer, intent(out) :: ierror
+    if ( datatype == mpi_logical ) then
+      ierror = mpi_success
+    else
+      ierror = MPI_FAILURE
+    end if
+    data2(1:n) = data1(1:n,1)
   end subroutine
 
 #ifdef GFORTRAN
@@ -663,6 +779,38 @@ module eirmod_mpi
     endif
   end subroutine
 
+  subroutine mpi_gather_r0_r0(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, &
+    root, comm, ierr)
+    implicit none
+    integer, intent(in) :: sendcount
+    double precision, intent(in) :: sendbuf
+    integer, intent(in) :: sendtype, recvtype
+    integer, intent(in) :: recvcount
+    double precision, intent(out) :: recvbuf
+    integer, intent(in) :: root, comm
+    integer, intent(out) :: ierr
+    if (sendcount.eq.recvcount) then
+      ierr = mpi_success
+      recvbuf = sendbuf
+    else
+      ierr = mpi_failure
+    endif
+  end subroutine
+
+  subroutine mpi_gather_r0_r1(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, &
+    root, comm, ierr)
+    implicit none
+    integer, intent(in) :: sendcount
+    double precision, intent(in) :: sendbuf
+    integer, intent(in) :: sendtype, recvtype
+    integer, intent(in) :: recvcount
+    double precision, intent(out) :: recvbuf(recvcount)
+    integer, intent(in) :: root, comm
+    integer, intent(out) :: ierr
+    ierr = mpi_success
+    recvbuf(1:recvcount) = sendbuf
+  end subroutine
+
   subroutine mpi_gather_r1_r1(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, &
     root, comm, ierr)
     implicit none
@@ -687,6 +835,15 @@ module eirmod_mpi
     integer, intent(out) :: group
     integer, intent(out) :: ierr
     group = comm
+    ierr = mpi_success
+  end subroutine
+
+  subroutine mpi_comm_split(comm, color, key, newcomm, ierr)
+    implicit none
+    integer, intent(in) :: comm, color, key
+    integer, intent(out) :: newcomm
+    integer, intent(out) :: ierr
+    newcomm = comm
     ierr = mpi_success
   end subroutine
 
@@ -795,7 +952,45 @@ module eirmod_mpi
     ierr = mpi_success
   end subroutine
 
-  subroutine mpi_scatter(sendbuf, sendcount, sendtype,  &
+  subroutine mpi_scatter_i0_i0(sendbuf, sendcount, sendtype,  &
+             recvbuf, recvcount, recvtype, root, comm, ierr)
+    use eirmod_comprt
+    implicit none
+    integer, intent(in) :: sendcount, recvcount
+    integer, intent(in) :: sendbuf
+    integer, intent(out) :: recvbuf
+    integer, intent(in) :: sendtype, recvtype, root, comm
+    integer, intent(out) :: ierr
+    if (sendcount == recvcount) then
+      ierr = MPI_SUCCESS
+      recvbuf = sendbuf
+    else
+      write (iunout,*) 'MPI SCATTER: buffer size missmatch: ', &
+       sendcount, recvcount
+      call eirene_exit_own(1)
+    endif
+  end subroutine
+
+  subroutine mpi_scatter_i1_i0(sendbuf, sendcount, sendtype,  &
+             recvbuf, recvcount, recvtype, root, comm, ierr)
+    use eirmod_comprt
+    implicit none
+    integer, intent(in) :: sendcount, recvcount
+    integer, intent(in) :: sendbuf(sendcount)
+    integer, intent(out) :: recvbuf
+    integer, intent(in) :: sendtype, recvtype, root, comm
+    integer, intent(out) :: ierr
+    if (sendcount == recvcount) then
+      ierr = MPI_SUCCESS
+      recvbuf = sendbuf(1)
+    else
+      write (iunout,*) 'MPI SCATTER: buffer size missmatch: ', &
+       sendcount, recvcount
+      call eirene_exit_own(1)
+    endif
+  end subroutine
+
+  subroutine mpi_scatter_i1_i1(sendbuf, sendcount, sendtype,  &
              recvbuf, recvcount, recvtype, root, comm, ierr)
     use eirmod_comprt
     implicit none
@@ -812,6 +1007,59 @@ module eirmod_mpi
        sendcount, recvcount
       call eirene_exit_own(1)
     endif
+  end subroutine
+
+  subroutine mpi_gatherv_r2_r2 (sendbuf, sendcount, sendtype,  &
+             recvbuf, recvcount, recvdistrib, recvtype, root, comm, ierr)
+    use eirmod_precision
+    use eirmod_comprt
+    implicit none
+    integer, intent(in) :: sendcount, recvcount(*)
+    real(dp), intent(in) :: sendbuf(:,:)
+    integer, intent(in) :: recvdistrib(*)
+    real(dp), intent(out) :: recvbuf(:,:)
+    integer, intent(in) :: sendtype, recvtype, root, comm
+    integer, intent(out) :: ierr
+    integer :: i
+    ierr = MPI_SUCCESS
+    do i=1, sendcount
+      recvbuf(recvdistrib(i),1) = sendbuf(i,1)
+    end do
+  end subroutine
+
+  subroutine mpi_gatherv_i2_i2 (sendbuf, sendcount, sendtype,  &
+             recvbuf, recvcount, recvdistrib, recvtype, root, comm, ierr)
+    use eirmod_comprt
+    implicit none
+    integer, intent(in) :: sendcount, recvcount(*)
+    integer, intent(in) :: sendbuf(:,:)
+    integer, intent(in) :: recvdistrib(*)
+    integer, intent(out) :: recvbuf(:,:)
+    integer, intent(in) :: sendtype, recvtype, root, comm
+    integer, intent(out) :: ierr
+    integer :: i
+    ierr = MPI_SUCCESS
+    do i=1, sendcount
+      recvbuf(recvdistrib(i),1) = sendbuf(i,1)
+    end do
+  end subroutine
+
+  subroutine mpi_scatterv (sendbuf, sendcount, senddistrib, sendtype,  &
+             recvbuf, recvcount, recvtype, root, comm, ierr)
+    use eirmod_precision
+    use eirmod_comprt
+    implicit none
+    integer, intent(in) :: sendcount(*), recvcount
+    real(dp), intent(in) :: sendbuf(*)
+    integer, intent(in) :: senddistrib(*)
+    real(dp), intent(out) :: recvbuf(recvcount)
+    integer, intent(in) :: sendtype, recvtype, root, comm
+    integer, intent(out) :: ierr
+    integer :: i
+    ierr = MPI_SUCCESS
+    do i=1, recvcount
+      recvbuf(i) = sendbuf(senddistrib(i))
+    end do
   end subroutine
 
   subroutine mpi_send_dum_a0 (buffer,cnt,datatype,dest,tag,comm,ier)
