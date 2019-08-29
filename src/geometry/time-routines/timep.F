@@ -191,8 +191,8 @@ C  TEST POLOIDAL SURFACE NO. MPTEST FOR REENTRY
                 NCOUP=1
                 LUPC(NCOUP)=MPTEST
                 IRSAVE=IR
-                MUPC(NCOUP)=IDINT(SIGN(1._DP,VELX*PPLNX(IR,MPTEST)+
-     .                                       VELY*PPLNY(IR,MPTEST)))
+                MUPC(NCOUP)=INT(SIGN(1._DP,VELX*PPLNX(IR,MPTEST)+
+     .                                     VELY*PPLNY(IR,MPTEST)))
                 JUPC(NCOUP)=1
                 ZRD=T1
     2       CONTINUE
@@ -466,7 +466,7 @@ C  PARTICLE OUTSIDE STANDARD MESH, BUT THETA GRID EXTENDS TO INFINITY
             X00=X00+VELX*ZRAD
             Y00=Y00+VELY*ZRAD
             WIN1=MOD(ATAN2(Y00,X00)+PI2A-PSURF(1),PI2A)+PSURF(1)
-            NPCELL=IDINT(WIN1/YDF*DBLE(NP2NDM)+1.)
+            NPCELL=INT(WIN1/YDF*DBLE(NP2NDM)+1.)
             GOTO 5000
           ENDIF
 C
@@ -478,7 +478,7 @@ C
           X000=X00+VELX*ZRAD
           Y000=Y00+VELY*ZRAD
           WIN1=MOD(ATAN2(Y000,X000)+PI2A-PSURF(1),PI2A)+PSURF(1)
-          NJC=IDINT(WIN1/YDF*DBLE(NP2NDM)+1.)
+          NJC=INT(WIN1/YDF*DBLE(NP2NDM)+1.)
 C
           TWIN1=0.
           NCOUP=0
@@ -587,8 +587,8 @@ C
 #endif
             NCOUP=NCOUP+1
             LUPC(NCOUP)=I
-            MUPC(NCOUP)=IDINT(SIGN(1._DP,VELX*PPLNX(NRCELL,I)+
-     .                                   VELY*PPLNY(NRCELL,I)))
+            MUPC(NCOUP)=INT(SIGN(1._DP,VELX*PPLNX(NRCELL,I)+
+     .                                 VELY*PPLNY(NRCELL,I)))
             IF (MUPC(NCOUP).EQ.-1) THEN
               JUPC(NCOUP)=I
               ALPD(NCOUP)=T1

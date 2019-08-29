@@ -171,7 +171,7 @@ C  ***PREPARE OUTPUT
    33 CONTINUE
       Q(M2,N1)=1.
    34 DO 37 I=1,M
-      K=IDINT(Q(I,N2))
+      K=INT(Q(I,N2))
       B=Q(I,N1)
       IF(K.GT.0) GO TO 35
       K=-K

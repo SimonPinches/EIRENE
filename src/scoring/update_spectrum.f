@@ -91,8 +91,8 @@ C  set "type" specific parameters:  IS, CDYN
             ELSEIF (EB >= ESTIML(ISPC)%SPCMAX) THEN
               I = ESTIML(ISPC)%NSPC + 1
             ELSE
-              I = IDINT((EB - ESTIML(ISPC)%SPCMIN) *
-     .                   ESTIML(ISPC)%SPCDELI + 1)
+              I = INT((EB - ESTIML(ISPC)%SPCMIN) *
+     .                 ESTIML(ISPC)%SPCDELI + 1)
             END IF
             ESTIML(ISPC)%SPC(I) = ESTIML(ISPC)%SPC(I) + ADD
             ESTIML(ISPC)%ESP_MIN= MIN(ESTIML(ISPC)%ESP_MIN,EB)
@@ -148,8 +148,8 @@ cdr  meaning of ind:   not in use for cell based spectra    ??  iflag in calling
               ELSEIF (EB >= ESTIML(ISPC)%SPCMAX) THEN
                 I = ESTIML(ISPC)%NSPC + 1
               ELSE
-                I = IDINT((EB - ESTIML(ISPC)%SPCMIN) *
-     .                     ESTIML(ISPC)%SPCDELI + 1)
+                I = INT((EB - ESTIML(ISPC)%SPCMIN) *
+     .                   ESTIML(ISPC)%SPCDELI + 1)
               END IF
               ESTIML(ISPC)%SPC(I) = ESTIML(ISPC)%SPC(I) + ADD
               ESTIML(ISPC)%ESP_MIN =

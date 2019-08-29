@@ -484,7 +484,7 @@ C  ACCOUNT FOR INGRDA(IVOLSI,ISTRA,...), INGRDE(IVOLSI,ISTRA,...)
                 IT2=2
               ENDIF
 
-              ISTEP=IDINT(SORIND(IVL,ISTRA))
+              ISTEP=INT(SORIND(IVL,ISTRA))
               IFPLS=IFREC(IPLS)
               DO 52 IIRC=1,NPRCI(IPLS)
                 IRRC=LGPRC(IPLS,IIRC)
@@ -681,7 +681,7 @@ C
             IT2=2
           ENDIF
 
-          ISTEP=IDINT(SORIND(IVL,ISTRA))
+          ISTEP=INT(SORIND(IVL,ISTRA))
           IFPLS=IFREC(IPLS)
           DO IIRC=1,NPRCI(IPLS)
             IRRC=LGPRC(IPLS,IIRC)

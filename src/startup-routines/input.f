@@ -1251,7 +1251,7 @@ C  READ BOUNDARY DATA
           READ (IUNIN,6664) XLIMS1(1,I),YLIMS1(1,I),ZLIMS1(1,I),
      .                      XLIMS2(1,I),YLIMS2(1,I),ZLIMS2(1,I)
         ELSEIF (RLB(I).LE.0.D0) THEN
-          IH=IDINT(-RLB(I))
+          IH=INT(-RLB(I))
           ILIN(I)=EIRENE_IDEZ(IH,1,2)
           ISCN(I)=EIRENE_IDEZ(IH,2,2)
           DO 363 J=1,ILIN(I)
@@ -4456,7 +4456,7 @@ c  non-default standard surfaces have a negative surface index on printout
         IF (ILIIN(J).EQ.2) RECYCT(:,J)=0.
 C
         SAVE=ZNML(J)
-        ZNML(J)=DBLE(IDINT(SAVE/100.D0))
+        ZNML(J)=DBLE(INT(SAVE/100.D0))
         ZNCL(J)=SAVE-100.*ZNML(J)
         DO 2001 JSPZ=1,NSPZ
           ISRF(JSPZ,J)=ISRF(JSPZ,1)
@@ -5032,7 +5032,7 @@ C  SET VOLUMES, IN ADDITIONAL CELL REGION
           IF (NLADD) CALL EIRENE_VOLUME(4)
         ELSEIF (INDPRO(12).EQ.4) THEN
 C  READ VOLUMES FROM STREAM ISTREAM=VL0
-          ISTREAM=IDINT(VL0)
+          ISTREAM=INT(VL0)
           ITALI=NTALO
           CALL EIRENE_READTL(TXTPLS(1,ITALI),TXTPSP(1,ITALI),
      .                TXTPUN(1,ITALI),

@@ -2553,7 +2553,7 @@ C
           H    = 0.0D0
           KAPN = 0
           QRHO = DSQRT(QRHO)
-          NU   = IDINT(3 + (1442/(26*QRHO+77)))
+          NU   = INT(3 + (1442/(26*QRHO+77)))
         ELSE
           QRHO = (1-Y)*DSQRT(1-QRHO)
           H    = 1.88*QRHO

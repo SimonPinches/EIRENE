@@ -90,7 +90,7 @@ cdr  congruential generator, I_i+1 = a * I_i + c  (mod m),  c=0, a=16807, m=2**3
 
          RA=Z*D2PN31
 c  save the seed for next random number.
-         ISEED=IDINT(Z)
+         ISEED=INT(Z)
 
          ranf_eirene=ra
       END IF
