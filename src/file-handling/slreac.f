@@ -226,7 +226,7 @@ cdr  for reading asymptotics parameters from data files
      .           LGR1MIN,LGR1MAX,LGR2MIN,LGR2MAX
 C
 ! defining backslash character
-      BACK="\"
+      BACK=ACHAR(92)
       SECTION=BACK // 'section'
       BEND=BACK // 'end'
 C
