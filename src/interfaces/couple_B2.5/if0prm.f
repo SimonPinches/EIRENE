@@ -16,7 +16,7 @@ C   NCPVI :  no. of special couple tallies
 
 c  also set: NDX,NDY,NFL, NDXP, NDYP
 
-      SUBROUTINE EIRENE_IF0PRM(IUNIN,IUNOUT)
+      SUBROUTINE EIRENE_IF0PRM(IUNIN)
 
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -25,7 +25,7 @@ c  also set: NDX,NDY,NFL, NDXP, NDYP
 
       IMPLICIT NONE
 
-      INTEGER, INTENT(IN) :: IUNIN,IUNOUT
+      INTEGER, INTENT(IN) :: IUNIN
       INTEGER :: NFLA, NCUTB, NCUTL, NDXA, NDYA, IPL, NTARGI, IT, IPRT,
      .           NAINB, IAIN, NAOTB, IAOT, NRKNOT,
      .           NTRII

@@ -1475,7 +1475,7 @@ C
       ELSE
         NAINI=0
         NCPVI=0
-        CALL EIRENE_IF0PRM(IUNIN,IUNOUT)
+        CALL EIRENE_IF0PRM(IUNIN)
       ENDIF
 
 cdr  some parameters may have gotten changed in IF0PRM, case-specific

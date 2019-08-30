@@ -865,8 +865,7 @@ C   MEAN SQUARE
      .                                     NLSYMP(ISTRA),NLSYMT(ISTRA))
             IF (NSIGI_BGK.GT.0) CALL EIRENE_STATS1_BGK
      .                                    (NSBOX_TAL,NR1TAL,NP2TAL,
-     .                                     NT3TAL,NLIMPS,
-     .                                     NLSYMP(ISTRA),NLSYMT(ISTRA))
+     .                                     NT3TAL)
             IF (NSIGI_SPC.GT.0) CALL EIRENE_STATS1_SPC
      .                                    (NSBOX_TAL,NR1TAL,NP2TAL,
      .                                     NT3TAL,NLIMPS,

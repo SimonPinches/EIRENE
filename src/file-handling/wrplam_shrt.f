@@ -6,7 +6,7 @@ c
 C
 C MODIFIED BY V. KOTOV  (when ?)
 C
-      SUBROUTINE EIRENE_WRPLAM_SHRT(TRCFLE)
+      SUBROUTINE EIRENE_WRPLAM_SHRT
 
 cdr Only the input tallies of the last (virtual) plasma species: nfla+1,...nplsi
 cdr are written/read using I/O stream fort.13. The ones 1,...,nfla are directly transferred 
@@ -37,7 +37,6 @@ cdr         non-linear iterations.
 
       IMPLICIT NONE
 
-      LOGICAL,INTENT(IN) :: TRCFLE
       INTEGER IO
 
 
