@@ -238,7 +238,7 @@ cdr first dimension of arrays:  NDIM .ne. NPLSV possible ?
 
       DO 140 IPLSV=1,NPLSV
         select case (IND)
-	case (1)
+        case (1)
 cdr one vector component profile (vx,vy,vz), and one value of iplsv set at a time
           CALL EIRENE_PROFN (HELP,VX0(IPLSV),VX1(IPLSV),VX2(IPLSV),
      .                   VX3(IPLSV),VX4(IPLSV),VX5(IPLSV),VVAC)
@@ -387,7 +387,7 @@ c                 include also additional cells
       end select
 
 C  CONVERT PITCH ANGLE INTO B-FIELD UNIT VECTOR
-	IF (IND <= 3) then
+        IF (IND <= 3) then
 C  AT THIS POINT: INDPRO= 1,2, OR =3. 
 C                 HELP2 IS KNOWN ONLY IN CASE INDPRO=3
         IF (LEVGEO.EQ.1) THEN

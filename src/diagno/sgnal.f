@@ -214,7 +214,7 @@ C  BALMER ALPHA
         JFEX2MN = 0
         JFEX2MX = 0
 C
-        ELNAME = 'H     '
+        ELNAME = 'H '
         IZ=0
 
 
