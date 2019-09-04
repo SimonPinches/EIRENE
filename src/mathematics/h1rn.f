@@ -1,14 +1,14 @@
 C  random number generator RANMAR, F. James, CPC 60, (1990), 329-344
 C  period length: 2**144
 *
-      FUNCTION H1RN(DUMMY)
+      FUNCTION H1RN()
 *
 *#**********************************************************************
 *# RANDOM NUMBER GENERATOR AS ADVOCATED BY F. JAMES FROM PROPOSAL OF   *
 *# MARSAGLIA AND ZAMAN FSU-SCRI-87-50 AND MODIFIED BY F. JAMES 1988 TO *
 *# PRODUCE VECTOR OF NUMBERS.                                          *
 *# ENTRIES ARE:                                                        *
-*#     FUNCTION    H1RN(DUMMY)     SINGLE RANDOM NUMBER                *
+*#     FUNCTION    H1RN()          SINGLE RANDOM NUMBER                *
 *#     SUBROUTINE  H1RNV(VEC,LEN)  VECTOR OF RANDOM NUMBERS            *
 *#     SUBROUTINE  H1RNIN(IJ,KL)   INITIALISE WITH SEEDS               *
 *#     SUBROUTINE  H1RNIV(VEC)     INITIALISE/RESTART WITH SEED ARRAY  *
@@ -26,7 +26,6 @@ C  period length: 2**144
 *
       USE EIRMOD_PRECISION
       IMPLICIT NONE
-      REAL(DP), INTENT(IN) :: DUMMY
       REAL(DP) :: H1RN
 cdr   INTEGER :: ISEED1, ISEED2
       INTEGER :: ISEED

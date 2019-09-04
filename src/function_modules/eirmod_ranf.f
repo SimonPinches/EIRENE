@@ -55,7 +55,7 @@ C
       implicit none
       integer :: iseed
       common /cmem/ iseed
-      real(dp) :: ra, dummy, ranf_eirene, h1rn
+      real(dp) :: ra, ranf_eirene, h1rn
 
 cdr  parameters for SURAND  (IBM, 1968)
       INTEGER D2P32M
@@ -69,7 +69,7 @@ cdr April 2017:  h1rn is a variant of RANMAR. It has period 2**144, if properly 
 cdr              initialization is by a 32 bit integer
 cdr here: initialization enforced with seeds 0<= iseed<=900.000.000 in subr. ranset.
 cdr       for each such seed a different sequence of average length 10**30 is produced.
-         ranf_eirene=h1rn(dummy)
+         ranf_eirene=h1rn()
 
       ELSE
 

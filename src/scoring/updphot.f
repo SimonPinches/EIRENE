@@ -111,7 +111,7 @@ C
 c     NPBGK=NPBGKPH(IPHOT)
 C
       IF (NADVI.GT.0) CALL EIRENE_UPTUSR(XSTOR2,XSTORV2,WV,IFLAG)
-      IF (NCPVI.GT.0) CALL EIRENE_UPTCOP(XSTOR2,XSTORV2,WV,IFLAG)
+      IF (NCPVI.GT.0) CALL EIRENE_UPTCOP(XSTOR2,XSTORV2,WV)
 cdr generalise flag NPBGK to mean: model collision term for bi-linear collision
 cdr only in this case: set background radiation intensity profiles.
 cdr   IF (NPBGK.GT.0) CALL ....
