@@ -252,7 +252,7 @@ cdr rpselect(0) war schon gesetzt.
             else
 c  binary search amongst processors
               DO WHILE (IU-IL.gt.1)
-                IM=(IU+IL)*0.5
+                IM=INT((IU+IL)*0.5)
                 if (im.gt.nprs-1) then
                   write (iunout,*) 'error in do while, collect census'
                   call eirene_exit_own(1)
@@ -361,7 +361,7 @@ c
 
 c  binary search
           DO WHILE (IU-IL.gt.1)
-            IM=(IU+IL)*0.5
+            IM=INT((IU+IL)*0.5)
             IF (RA.GE.RPARTW(IM)) THEN
               IL=IM
             ELSE

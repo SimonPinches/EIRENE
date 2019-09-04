@@ -22,7 +22,7 @@
          Q(I,NCA+1) = B(I)
    10 CONTINUE
       CALL EIRENE_MA20A(Q,RES,X,R,S,NRA+2,NRA,NCA,TOL)
-      KBASIS = Q(NRA+1,NCA+2)
+      KBASIS = INT(Q(NRA+1,NCA+2))
 
       DEALLOCATE (Q)
       DEALLOCATE (R)

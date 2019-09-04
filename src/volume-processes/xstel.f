@@ -296,7 +296,7 @@ C  use i-integral expressions. to be written
       ELSEIF (NSEEL4.EQ.3) THEN
 C  4.1C)  ENERGY LOSS RATE OF IMP. ION = EN.-WEIGHTED RATE
 C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN, WITH WEIGHTING/REJECTION
-        KREAD=EBULK
+        KREAD=INT(EBULK)
         IF (KREAD.EQ.0) THEN
 c  data for mean ion energy loss are not available
 c  use collision estimator for energy balance

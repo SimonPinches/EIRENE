@@ -336,7 +336,7 @@ C  4.B)  ENERGY LOSS RATE OF IMP. ELECTRON = -1.5*TE*RATE COEFF.
 C
               ELSEIF (NSERC5.EQ.3) THEN
 
-                KREAD=EELECP(IPLS,NRC)
+                KREAD=INT(EELECP(IPLS,NRC))
                 IF ((KREAD < 1) .OR. (KREAD > NREACI)) GOTO 996
                 MODC=EIRENE_IDEZ(MODCLF(KREAD),5,5)
 c  special treatment in case bremsstrahlung is contained in energy loss rate
