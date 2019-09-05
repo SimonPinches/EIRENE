@@ -13,6 +13,12 @@ cdr                            to be checked again after changes in 2013
 cdr dec. 15:  eppli: now resolved wrt. species index ipls, added
 cdr july 17:  comments re. call to user routine: calstr_usr.
 cpb Dec. 17:  remove type SPECT_ARRAY, not needed in Fortran 2003
+cdr Mar. 19:  further comments, 
+cdr           tbd: sync coding for estiml variances with those of other variance tallies 
+cdr           tbd: Make allocatable: helps, dummys
+cdr           Dimensioning of covariance tallies is likely incorrect:
+cdr           Can cause problems in case of few cells (0-d "box" cases)
+cdr           with many covariance tallies.
 
 C> \brief Collect results from worker processes onto master process of
 C> stratum
@@ -189,7 +195,7 @@ c  energy balance tallies:  from bulk (ipls) to species a,m,i,ph,pl
 
 C
 C
-c  all other volume-averaged tallies: estimv
+c  all volume-averaged tallies: estimv
         allocate (helpv(nrtal+1), dummyv(nrtal+1))
         do ir=1,nvoltl
           dummyv(1:nrtal) = estimv(ir,1:nrtal)
@@ -199,6 +205,7 @@ c  all other volume-averaged tallies: estimv
         end do
 
 c  all surface-averaged tallies: estims
+cdr     allocate (helps(nlmpgs+1), dummys(nlmpgs+1))
         do ir=1,nsrftl
           dummys(1:nlmpgs) = estims(ir,1:nlmpgs)
           call mpi_reduce(dummys,helps,nlmpgs,
@@ -206,7 +213,9 @@ c  all surface-averaged tallies: estims
           if (my_pe_gr==0) estims(ir,1:nlmpgs) = helps(1:nlmpgs)
         end do
 
-c   energy-resolved ("spectra") tallies
+c  all energy-resolved ("spectra") tallies: estiml%spc
+cdr  different treatment because tallies and their variances are mixed 
+cdr  into a single data structure, distinct from all other tallies?
         do ispc=1,nadspc
           ns = estiml(ispc)%nspc
           allocate (helpest(ns+2))
@@ -215,7 +224,7 @@ c   energy-resolved ("spectra") tallies
      .         mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
           if (my_pe_gr==0) estiml(ispc)%spc(0:ns+1)=helpest(1:ns+2)
 
-c  standard deviation of energy-resolved "spectra"
+c  standard deviation of energy-resolved "spectra": estiml%sdv,...?
           if (nsigi_spc > 0) then
             call mpi_reduce(estiml(ispc)%sdv,helpest,
      .                      estiml(ispc)%nspc+2,
@@ -228,7 +237,7 @@ c  standard deviation of energy-resolved "spectra"
      .           mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
             if (my_pe_gr==0)
      .        estiml(ispc)%sgm(0:ns+1) = helpest(1:ns+2)
-
+cdr fixed sometime in 2018 ?
 !            call mpi_reduce(estiml(ispc)%sgms,helpest,1,
 !     .           mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
 !            if (my_pe_gr==0) estiml(ispc)%sgms = helpest(1)
@@ -240,7 +249,7 @@ c  standard deviation of energy-resolved "spectra"
           deallocate (helpest)
         end do   !nadspc
 
-C  standard deviation of volume-averaged tallies
+C  standard deviation of volume-averaged tallies. sdvi1: sigma, sgms
         if (nsd > 0) then
           do ir=1,nsd
             dummyv(1:nrtal+1) = sdvi1(ir,1:nrtal+1)
@@ -250,7 +259,7 @@ C  standard deviation of volume-averaged tallies
           end do
         end if
 
-C  standard deviation of surface-averaged tallies
+C  standard deviation of surface-averaged tallies.  sdvi2: sigmaw,sgmws
         if (nsdw > 0) then
           do ir=1,nsdw
             dummys(1:nlimps+1) = sdvi2(ir,1:nlimps+1)
@@ -260,7 +269,7 @@ C  standard deviation of surface-averaged tallies
           end do
         end if
 
-C  covariances between two volume-averaged tallies
+C  covariances between two volume-averaged tallies.  sigmac,sgmcs
         if (ncv > 0) then
           do i=0,2
             do j=1,ncv
@@ -272,6 +281,7 @@ C  covariances between two volume-averaged tallies
           end do
 
           dummyv(1:ncv) = sgmcs(0,1:ncv)
+cdr in case of nrtal < ncv: crash ?
           call mpi_reduce(dummyv,helpv,ncv,
      .         mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
           if (my_pe_gr==0) sgmcs(0,1:ncv) = helpv(1:ncv)
