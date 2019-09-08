@@ -49,6 +49,7 @@ cdr  Oct. 18:  input tallies on PLSTLS(NINPTL). includes 18 old input tallies bu
 cdr            now also derived tallies: EDRIFT, BVIN, PARMOM
 cdr  tbd:      broadcast: livtali etc. move to correct position
 cdr  Jan. 19:  separate routine for broadcast of CCOUPL
+cdr  ???       apparently also COMNNL removed here from broadcasting
 
       SUBROUTINE EIRENE_BROADCAST
 cdr
@@ -937,6 +938,10 @@ cdr dimensioning of LCUT array corrected:
 
       CALL MPI_BCAST (RCZT1,NZT1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (RCZT2,NZT2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+cdr these next two fields ZT1 and ZRG should go into COMXS,
+cdr they belong, logically, to the pre-computed 
+cdr plasma tallies DEINL, DIINL, TEINL, TIINL used to speed up code.
+cdr They all should be removed in "storage save mode"
       CALL MPI_BCAST (ZT1,NPLS*NRAD,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (ZRG,NPLS*NRAD,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
@@ -944,6 +949,9 @@ cdr dimensioning of LCUT array corrected:
       CALL MPI_BCAST (ICINIT,MCINIT,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LCNIT,LCINIT,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
 
+
+cdr  "density models", to set derived plasma background species IPLS
+cdr  e.g. corona, colrad, const, saha,.....
       CALL MPI_BCAST (CDENMODEL,10*NPLS,MPI_CHARACTER,0,
      .                MPI_COMM_WORLD,ier)
 
@@ -1254,8 +1262,7 @@ C  OUTPUT:
      .                     MPI_COMM_WORLD,ier)
            IF (MY_PE .NE. 0) THEN
              NSPS = ESTIML(I)%NSPC
-!pb             write (0,*) ' smestl, my_pe, imerk, nsps ',
-!pb     .                     my_pe, imerk, nsps
+
              IF (.NOT.ASSOCIATED(ESTIML(I)%SPC)) THEN
                ALLOCATE(ESTIML(I)%SPC(0:NSPS+1))
                ALLOCATE(ESTIML(I)%SDV(0:NSPS+1))
