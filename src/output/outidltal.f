@@ -2,7 +2,6 @@ C
 c  written by P. Boerner, for FZJ proprietary IDL plotting tool.
 c  not intended for 3rd party use.
 c  last modified: jan 2017
-cdr correction: 3 digits rather than 2 digits for I0 in outtal file name
 
       SUBROUTINE EIRENE_OUTIDLTAL
 

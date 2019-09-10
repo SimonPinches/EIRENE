@@ -1346,7 +1346,7 @@ cdr  all possible emissivity profiles are kept on ADDV tallies.
             READ (IUNIN,*) NUM_CONTRIB     ! contributions to component JCOMP for line ILINE
             IREAC_ADD = IREAC_ADD + NUM_CONTRIB
 cdr  specify all required contributions explicitly.
-cdr  In the old default this was automatically detected
+cdr  In the old default width was automatically detected
 cdr     from mass and charge states/numbers of hydrogenic particles.
 cdr     And only one set of emission data for all contributions was used,
 cdr     plus one or two population ratios.

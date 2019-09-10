@@ -1,10 +1,10 @@
 c  new in 2004:
 c  density models to contruct background data from other given data :
-c      Saha, Boltzmann, Corona, Colrad, File (fort.13, or: fort.10)
+c      Saha, Boltzmann, corona, col-rad, file (fort.13, or: fort.10)
 c
 c  presently:  "File" and "Boltzmann": may affect electron density.
 c              hence: done prior to electron density, etc...
-c              "Corona", "Colrad", "Saha": need electron density as
+c              "corona", "colrad", "Saha": need electron density as
 c                            input, or, at least, do not affect n_e
 c                            hence: done after electron density, etc...
 C  may05
@@ -44,8 +44,6 @@ cdr:           postprocessing Balmer lines, etc:  to be confirmed that this now
 cdr:           still works properly
 cdr: jan 2017: generalized asymptotics options for A&M data structures included
 cdr:           cleanup. logical FOUND seems to be redundant
-cdr  may 2019: spectra here ? probaby wrong place. (corona, colrad ?).
-cdr            unused? remove ?
 
 c
       SUBROUTINE EIRENE_PLASMA_DERIV (ICALL)
@@ -149,8 +147,7 @@ c   LGVAC(...,0)     : background vacuum flag
         REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC
         CHARACTER(8), INTENT(IN) :: FILNAM
         CHARACTER(4), INTENT(IN) :: H123
-        CHARACTER(LEN=*), INTENT(IN) :: REAC
-        CHARACTER(2), INTENT(IN) :: ELNAME
+        CHARACTER(LEN=*), INTENT(IN) :: REAC, ELNAME
         CHARACTER(3), INTENT(IN) :: CRC
         INTEGER,  INTENT(IN OUT) :: JFEX1MN, JFEX1MX,JFEX2MN, JFEX2MX
         REAL(DP), INTENT(IN OUT) :: RC1MIN, RC1MAX, FP1(6),
@@ -205,6 +202,7 @@ c             ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
                 VZIN(IPLSV,:)=VZINTF(IOLDV,:)
               END IF
             ENDIF
+!            DEALLOCATE(DEINTF)
 
           CASE (FORT//'10')
 
@@ -333,7 +331,7 @@ C  COMPUTE SOME 'DERIVED' PLASMA DATA PROFILES FROM THE INPUT PROFILES
 C
 C  SET ELECTRON DENSITY FROM QUASI-NEUTRALITY, FURTHER: TEINL, DEINL, LGVAC(..,0:NPLS+1)
       LGVAC=.TRUE.
-      DO J=1,NSBOX
+      DO 5102 J=1,NSBOX
         DEIN(J)=0.
         DO IPLS=1,NPLSI
           DEIN(J)=DEIN(J)+DBLE(NCHRGP(IPLS))*DIIN(IPLS,J)
@@ -347,7 +345,7 @@ C  SET 'LOG OF TEMPERATURE AND DENSITY' ARRAYS
         DEPLS=DEIN(J)
         LGVAC(J,NPLS+1)=TEPLS.LE.TVAC.OR.DEPLS.LE.DVAC
         LGVAC(J,0)     =LGVAC(J,0).AND.LGVAC(J,NPLS+1)
-      END DO
+ 5102 CONTINUE
 
 c.....................................................................
 C
@@ -376,10 +374,6 @@ C
           CALL EIRENE_EXIT_OWN(1)
 c...............................................................saha: done
         CASE ('CORONA    ')
-cdr  density of a background "isotope" IPLS is derived from balance between
-cdr  a single step excitation or ionisation 
-cdr  from a donor state IOLD=TDMPAR(IPLS)%TDM%ISP(1), 
-cdr  and a radiative decay A_CORONA of that "isotope" IPLS. 
           IOLD=TDMPAR(IPLS)%TDM%ISP(1)
           IOLDTI=MPLSTI(IOLD)
           IOLDV=MPLSV(IOLD)
@@ -410,15 +404,14 @@ c  data for corona model found and stored on REACDAT(NREACI+1)
             RCORONA = EIRENE_RATE_COEFF(NREACI+1,IR,TEF,0._DP,.TRUE.,0)
             END IF
 c  now RCORONA contains the excitation rate coefficient (cm**3/s),
-c  and AMI is the inverse of the radiative decay rate (s).
-c  Compute new density of species IPLS from equilibrium between
+c  and AMI is the inverse of the radiative decay rate (s)
+c  compute new density of species ipls from equilibrium between
 c  these two processes for the given "ground state" density BASE_DENSITY
 
             DIIN(IPLS,IR)=BASE_DENSITY(IR)*RCORONA*DEIN(IR)*AM1
             DIIN(IPLS,IR)=MAX(DVAC,DIIN(IPLS,IR))
 
 cdr  what is this?  background spectrum ?
-cdr  if so, why in corona part?
             IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
               IF (LSPCCLL(IR)) THEN
                 CALL EIRENE_GET_SPECTRUM (IR,1,SPEC,FOUND)
@@ -436,10 +429,6 @@ cdr  if so, why in corona part?
 c...............................................................corona: done
 
         CASE ('COLRAD    ')
-cdr  density of a background "isotope" IPLS is derived from collision radiative
-cdr  models, as an CR equilibrium population of excited states. 
-cdr  From one or several donor states (components/contributions)
-cdr  IOLD=TDMPAR(IPLS)%TDM%ISP(IRE) 
           IF (.NOT.ALLOCATED(SUMNI)) THEN
             ALLOCATE (SUMNI(NRAD))
             ALLOCATE (SUMMNI(NRAD))
@@ -506,11 +495,6 @@ c  only temperature dependence in reduced population coefficient
                 SUMNI(IR) = SUMNI(IR) + BASE_DENSITY(IR)
                 SUMMNI(IR) = SUMMNI(IR) + NMASSP(IOLD)*BASE_DENSITY(IR)
 
-cdr  unclear code. perhaps redundant
-cdr  spectra related to colrad ?? I can imagine spectra in case of fort.10 density model
-cdr  perhaps: if base-density is a test paeticle density, for which spectra are available?
-cdr  perhaps wrong place
-cdr  all this: perhaps move to diagno part? and only of background spectra are needed at all
                 IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
                   IF (LSPCCLL(IR)) THEN
                     CALL EIRENE_GET_SPECTRUM (IR,IRE,SPEC,FOUND)
@@ -585,12 +569,6 @@ c  collapse CR 2-parameter fit to a single parameter fit (first block) for coron
                 SUMNI(IR) = SUMNI(IR) + BASE_DENSITY(IR)
                 SUMMNI(IR) = SUMMNI(IR) + NMASSP(IOLD)*BASE_DENSITY(IR)
 
-cdr  oct 18: this must be wrong. What have spectra to do with CR models ?
-cdr          Perhaps a left over from the obsolete corresponding option
-cdr          in diagno, i.e. attempts to prepare line of sight scored 
-cdr          spectrally resolved densities, e.g. for photonic options ?  
-
-cdr identical code as above for H.11 ?
                 IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
                   IF (LSPCCLL(IR)) THEN
                     CALL EIRENE_GET_SPECTRUM (IR,IRE,SPEC,FOUND)
@@ -643,13 +621,10 @@ c  scale merged contributions from all contributing densities
 c .................................................................colrad done
 
         CASE DEFAULT
-          write (iunout,*) 'unknown DENSITY MODEL option, ipls= ',ipls
-          call eirene_exit_own(1)
+!  NOTHING TO BE DONE HERE, ALREADY COMPLETED
         END SELECT ! density model
 
-
-      END DO   ! ipls
-
+      END DO
       IF (ALLOCATED(SUMNI)) THEN
         DEALLOCATE (SUMNI)
         DEALLOCATE (SUMMNI)
@@ -689,8 +664,7 @@ C               WRITE(iunout,*)'WARNING PLASMA_DERIV: IPLS>1 NO DRIFT!'
       END DO
       END IF
 C
-C  SET B_PERP UNIT VECTOR in POL PLANE (X,Y) FOR 2D cases,
-C      i.e. the 2D vector grad(PSI(X,Y)) in 2D cases.
+C  SET B_PERP UNIT VECTOR in POL PLANE (X,Y) FOR 2D cases
 C      B_PAR IS ALREADY GIVEN AS INPUT TALLY BXIN,BYIN,BZIN
 C
 c  IF BXIN AND BYIN ARE NOT AVAILABLE: LBXPERP=LBYPERP=.FALSE.
@@ -836,7 +810,7 @@ C
       IF (LVSMO) THEN
         do iplsv = 1, nplsv
           if (lvxsmo)
-     . 	   call eirene_cell_to_corner(VXIN(iplsv,:),VXINCORNER(:,iplsv))
+     .     call eirene_cell_to_corner(VXIN(iplsv,:),VXINCORNER(:,iplsv))
           if (lvysmo)
      .     call eirene_cell_to_corner(VYIN(iplsv,:),VYINCORNER(:,iplsv))
           if (lvzsmo)
@@ -944,7 +918,6 @@ C  SAVE PLASMA DATA AND ATOMIC DATA ON FORT.13
 C
 
       IF ((NFILEL ==1) .OR. (NFILEL ==3) .OR. (NFILEL ==4)) THEN
-cdr      NFILEL=3  probably wrong,  jan. 2016
          CALL EIRENE_WRPLAM(TRCFLE,0)
       END IF
 

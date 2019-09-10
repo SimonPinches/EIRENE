@@ -17,8 +17,7 @@ cdr to be done: loops 121 and 122 are identical, once i_fine is set. eliminate o
 cdr             inttal and intvol are largely identical, remove one ?
 cdr             prttal and prtvol are largely identical, remove one ?
 cdr oct 18    : all input tallies selectable, also derived tallies.
-cdr             also: gradient tallies of input tallies: currently no. 31--120
-cdr may 19:     remove NF=NFRSTP(ITAL)  (unused, Meaning ??), comments...
+cdr             also: gradient tallies of input tallies: currently no. 25--96
 
 C
       SUBROUTINE EIRENE_OUTPLA(ICAL)
@@ -55,7 +54,7 @@ C
       REAL(DP) :: TALAV, HELPI, TALTOT, TOTALW
       INTEGER :: IR, IP, IT, I, I_FINE, NBLCKA, IB, IPRV, ITAL,
      .           NXM, NYM, NZM, NR1PR, NP2PR, NT3PR, NSBPR, NFLGPR,
-     .           ITALI, K, NFTI, NFTE, KK
+     .           ITALI, K, NF, NFTI, NFTE, KK
 
 C  INDICATOR FOR THE TALLIES THAT MAY HAVE BEEN MODIFIED IN POSTPROCESSING
 C  CURRENTLY:  BULK ION TEMP (-2), BULK ION DENSITY (-4), AND BULK ION DRIFT VELOCITY (-5,-6,-7)
@@ -101,7 +100,7 @@ C                 TALTYP=4: UNKNOWN        (?)
 
 cdr to be done: weighting function for gradient tallies. Tentatively set =0
       TALTYP(31:NTALI)=0
-
+ 
       IF (ICAL == 1) THEN
 !  IS ANY DENSITY MODEL DEFINED ?
         IF (ALL(CDENMODEL == REPEAT(' ',LEN(CDENMODEL)))) RETURN
@@ -160,11 +159,10 @@ c  positive tally numbers ital: output tallies, printed from OUTEIR.
             CALL EIRENE_LEER(1)
             CYCLE
           END IF
-
+          NF=NFRSTP(ITALI)
           NFTI=1
           NFTE=NFSTPI(ITALI)
           IF (NSPEZV(IPRV,1).GT.0) THEN
-c  print tally only for selected species indices
             NFTI=NSPEZV(IPRV,1)
             NFTE=MAX(NFTI,NSPEZV(IPRV,2))
           ENDIF
@@ -183,7 +181,6 @@ c  check for valid range of tally ITALI
             CASE (1)
               HELPP(1:NSBOX) = TEIN(1:NSBOX)
             CASE (2)
-cdr  missing here: verify cdenmodel(k) ?
               HELPP(1:NSBOX) = TIIN(MPLSTI(K),1:NSBOX)
             CASE (3)
               HELPP(1:NSBOX) = DEIN(1:NSBOX)
@@ -365,43 +362,43 @@ C  22) (ELECTRIC) POTENTIAL
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (24)
 C  24) PARALLEL TO B FLOW MOMENTUM
-                HELPP(I)=HELPP(I)+HELPS(I_FINE)
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (25)
 C  25) PSI
-                HELPP(I)=HELPP(I)+HELPS(I_FINE)
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (26)
 C  26) FREE26
-                HELPP(I)=HELPP(I)+HELPS(I_FINE)
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (27)
 C  27) FREE27
-                HELPP(I)=HELPP(I)+HELPS(I_FINE)
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (28)
 C  28) FREE28
-                HELPP(I)=HELPP(I)+HELPS(I_FINE)
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (29)
 C  29) FREE29
-                HELPP(I)=HELPP(I)+HELPS(I_FINE)
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (30)
 C  30) FREE30
-                HELPP(I)=HELPP(I)+HELPS(I_FINE)
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
 
               CASE (31:120)  ! ntali=120, constant required here
 C  (25 .. NTALI) GRADIENTS
-                HELPP(I)=HELPP(I)+HELPS(I_FINE)
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               END SELECT
@@ -474,42 +471,42 @@ C  (ELECTRIC) POTENTIAL
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (24)
-C  PARALLEL TO B FLOW MOMENTUM
-                HELPP(I)=HELPP(I)+HELPS(I_FINE)
+C  PARALLEL TO B FLOW MOMENTUM  
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
 C  25) PSI
-                HELPP(I)=HELPP(I)+HELPS(I_FINE)
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (26)
 C  26) FREE26
-                HELPP(I)=HELPP(I)+HELPS(I_FINE)
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (27)
 C  27) FREE27
-                HELPP(I)=HELPP(I)+HELPS(I_FINE)
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (28)
 C  28) FREE28
-                HELPP(I)=HELPP(I)+HELPS(I_FINE)
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (29)
 C  29) FREE29
-                HELPP(I)=HELPP(I)+HELPS(I_FINE)
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (30)
 C  30) FREE30
-                HELPP(I)=HELPP(I)+HELPS(I_FINE)
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (31:120)  ! ntali=120, constant required here
 C  GRADIENTS
-                HELPP(I)=HELPP(I)+HELPS(I_FINE)
+                HELPP(I)=HELPP(I)+HELPS(I_FINE)  
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               END SELECT

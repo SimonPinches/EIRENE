@@ -1,17 +1,6 @@
-cdr  Oct. 18: further comments: 
-
-cdr           This routine implicity makes some assumptions regarding the
-cdr           species in input block 4a,b,c,d:
-cdr           H2  (type=2)
-cdr           H+  (type=4)
-cdr           H   (type=1)
-cdr   to be checked: contributions? multiple isotopes ?
-
-
       subroutine eirene_setup_default_emissivity
 
-cdr originally programmed by PB 2017
-cdr Routine is called from subr. INPUT.f, input block 12.
+cdr  called from subr. INPUT.f
 cdr april 18:  the calculation of volumetric line emissitivies
 cdr            and their storing on additional tallies ADDV
 cdr            has been generalized,
@@ -19,7 +8,7 @@ cdr            replacing the former 6 routines:
 cdr            ba_alpha.f, ba_beta.f, ba_gamma.f, ba_delta.f,
 cdr            ly_alpha.f, ly_beta.f
 
-cdr  this present routine:
+cdr  this present routine (pb, 2017):
 cdr  Try to reproduce the old version of these 6 routines,
 cdr  by using the new structures EMIS_LINES%....
 cdr
@@ -32,19 +21,14 @@ cdr                            on ADDV tallies),
 cdr  hard-coded here: use pop. coeffs from amjuel H.12, and
 cdr                   use ratios for short living radicals (H2+, H3+, H-)
 cdr                   from amjuel H.11 and H.12
-cdr  hard coded: 
-cdr              H2+, H- and H3+ QSS states, because of hard coded density ratios.
-cdr              H2+ must be produced from both EI and IC processes, because
-cdr              hard coded ratio H.12 2.0c is used here.
 cdr
-cdr  tbd:  make consistent notation "component vs. contribution":  DONE !
-cdr  
-cdr  The ADDV tallies are filled later,
-cdr  in calls to emissivity.f from MCARLO, per stratum. 
-
-cdr  Apparently we need at least one chord and nchtal=2, (even if unused)
-cdr  to fill the ADDV arrays, because of a hidden link between emissivity options
-cdr  and line-of-sight options.
+cdr  tbd:  make consistent notation "component vs. contribution"
+cdr  tbd:  below we now still have 6*6=36 times mostly identical code.
+cdr  I believe:
+cdr  all that this routine does is: define CNT%.., and set emis_lines%...=CNT%..
+cdr  for each of the 36 hydrogenic components. The ADDV tallies are filled later,
+cdr  in calls to emission.f from sigha. So we need at least one chord and nchtal=2,
+cdr  to fill the addv arrays.
 cdr
 
       use eirmod_precision
@@ -76,7 +60,7 @@ c     NUM_contrib  = inferred from input file, species specification block 4.
 
 
 ************************************************
-* BALMER ALPHA, LINE NO. 1, all 6 components
+* BALMER ALPHA, LINE NO. 1
 ************************************************
 
       EMIS_LINES(1)%LINE_NAME = 'BA_ALPHA'
@@ -684,7 +668,7 @@ C  H(n=5)/H+
         END IF
       END DO
 
-C  COMPONENT 3: LINEAR IN H2  -MOLEC.    DENSITY
+C  CONTRIBUTION LINEAR IN H2  -MOLEC.    DENSITY
 C  H(n=5)/H2(g)
 
       EMIS_LINES(3)%COMPO(3)%COMPO_NAME = 'DIATOMIC NEUTRAL HYDR. MOL'
@@ -759,7 +743,7 @@ C  H(n=5)/H2+(g)
         END IF
       END DO
 
-C  COMPONENT 5: LINEAR IN H- NEG. ION DENSITY
+C  CONTRIBUTION LINEAR IN H- NEG. ION DENSITY
 C  H(n=5)/H-
 
       EMIS_LINES(3)%COMPO(5)%COMPO_NAME =
@@ -799,7 +783,7 @@ C  H(n=5)/H-
         END IF
       END DO
 
-C  COMPONENT 6: LINEAR IN H3+ MOL. ION DENSITY
+C  CONTRIBUTION LINEAR IN H3+ MOL. ION DENSITY
 C  H(n=5)/H3+
 
       EMIS_LINES(3)%COMPO(6)%COMPO_NAME =
@@ -904,7 +888,7 @@ C  H(n=6)/H(n=1)
         END IF
       END DO
 
-C  COMPONENT 2: LINEAR IN H+ ION DENSITY
+C  CONTRIBUTION LINEAR IN H+ ION DENSITY
 C  H(n=6)/H+
 
       EMIS_LINES(4)%COMPO(2)%COMPO_NAME = 'ATOMIC HYDR. ION'
@@ -939,7 +923,7 @@ C  H(n=6)/H+
         END IF
       END DO
 
-C  COMPONENT 3: LINEAR IN H2 MOLEC. DENSITY
+C  CONTRIBUTION LINEAR IN H2 MOLEC. DENSITY
 C  H(n=6)/H2(g)
 
       EMIS_LINES(4)%COMPO(3)%COMPO_NAME = 'DIATOMIC NEUTRAL HYDR. MOL'
@@ -1014,7 +998,7 @@ C  H(n=6)/H2+(g)
         END IF
       END DO
 
-C  COMPONENT 5: LINEAR IN H- NEG. ION DENSITY
+C  CONTRIBUTION LINEAR IN H- NEG. ION DENSITY
 C  H(n=6)/H-
 
       EMIS_LINES(4)%COMPO(5)%COMPO_NAME =
