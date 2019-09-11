@@ -34,13 +34,13 @@ cdr NFLA is iccpl2(3) in corresponding non-default modules
 
         IF (ALLOCATED(ICCPL2)) RETURN
 
-        MCOUPL2 = 3
+        MCOUPL2 = 1
         ALLOCATE (ICCPL2(MCOUPL2))
 
         WRITE (IUNMEM,'(A,T25,I15)')
      .        ' CCOUPL ',MCOUPL2*4
 
-        NFLA       => ICCPL2(3)
+        NFLA       => ICCPL2(1)
 
 
       ELSE IF (ICAL == 2) THEN
