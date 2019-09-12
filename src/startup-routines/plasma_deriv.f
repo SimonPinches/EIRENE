@@ -643,8 +643,10 @@ c  scale merged contributions from all contributing densities
 c .................................................................colrad done
 
         CASE DEFAULT
-          write (iunout,*) 'unknown DENSITY MODEL option, ipls= ',ipls
-          call eirene_exit_own(1)
+!pb this select case construct does not check all possible options
+!pb therefore no error exit 
+!pb          write (iunout,*) 'unknown DENSITY MODEL option, ipls= ',ipls
+!pb          call eirene_exit_own(1)
         END SELECT ! density model
 
 
