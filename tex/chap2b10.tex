@@ -191,15 +191,16 @@ If either ICLVS or ICLVT is out of range, no default tally is replaced.
         The string may contain an arbitrary (but $\le$ 20) number of operands, and of
         operators +, -, *, /, **, and of properly nested parentheses (\dots).
 
-        As of June 2019 evaluation of some mathematical functions have been introduced.
+        With Eirene version Eirene\_revised\_input\_tallies evaluation of some mathematical
+        functions have been introduced.
         Available functions consist of ``ABS'' (absolute value), ``EXP'' (exponential
         function), ``LN'' (natural logarithm), ``LOG'' (decimal logarithm).
         Additionally functions ``DX'', ``DY'' and ``DZ'' for calculation of partial 
         derivatives in the respective carthesian coordinate are available. 
         For the moment the code is only able to store two intermediate result for 
         further calculations.
-        Thus the expression for calculating the mean free path from the momentum 
-        density vector 
+        Thus the expression for calculating the divergence of the transport
+        flux of atom species 1 which in this case consists of D atoms
         \begin{equation*}
           (DX( \langle 1,85 \rangle) + DY(\langle 1,89 \rangle) + DZ(\langle 1,93 
           \rangle)) / \langle 1.66D-24 \rangle / \langle 2.E0 \rangle
@@ -217,7 +218,7 @@ If either ICLVS or ICLVT is out of range, no default tally is replaced.
         Standard deviations are not available, generally, for algebraic tallies.
         For linear combinations of tallies it is, in principle, possible to obtain also
         the standard deviations, this evaluation of error estimates for such
-        combinations of tally is, however, is currently  carried out only in a
+        combinations of tally is, however, currently  carried out only in a
         proprietary code segment (available from the author).
 
         E.g., the total electron particle source due to test particle - plasma
