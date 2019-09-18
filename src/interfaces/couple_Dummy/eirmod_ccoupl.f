@@ -1,4 +1,8 @@
 cdr Aug 19:  added forgotten broadcast of iccpl2(:)
+cdr          Perhaps obsolete code, but this way it works
+cdr          also with MPI. Is NFLA really still needed in case of
+cdr          dummy-interfacing routines? If not, code here
+cdr          can be strongly simplified
 
       MODULE EIRMOD_CCOUPL
 

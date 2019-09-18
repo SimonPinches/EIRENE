@@ -111,7 +111,7 @@ C EL PROCESSES
 C CX PROCESSES
       INTEGER ::      IXCX,IRCX
 C PH PROCESSES
-      INTEGER ::      IAPH,IRPH
+      INTEGER ::      IAPH,IRPH  ! for later use, photons
 C PI PROCESSES
       INTEGER ::      IXPI,IRPI
 C EI PROCESSES
