@@ -190,7 +190,8 @@ C
         REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC
         CHARACTER(8), INTENT(IN) :: FILNAM
         CHARACTER(4), INTENT(IN) :: H123
-        CHARACTER(LEN=*), INTENT(IN) :: REAC, ELNAME
+        CHARACTER(LEN=*), INTENT(IN) :: REAC
+        CHARACTER(2), INTENT(IN) :: ELNAME
         CHARACTER(3), INTENT(IN) :: CRC
         INTEGER,  INTENT(IN OUT) :: JFEX1MN, JFEX1MX,JFEX2MN, JFEX2MX
         REAL(DP), INTENT(IN OUT) :: RC1MIN, RC1MAX, FP1(6),
@@ -213,6 +214,7 @@ C
 
 C  RUN TIME STATISTICS IN INITIALIZATION PHASE, WITHIN INPUT.F
 cdr   REAL(DP) :: tpb1, tpb2, EIRENE_SECOND_OWN, timea
+c
 C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
       REAL(DP) :: AMPTS
 
@@ -271,17 +273,18 @@ C  IN THIS RUN. ITIMV IS THE ACTUAL TIMESTEP NUMBER
 C
 C  INITIALISE SOME DATA AND SET DEFAULTS
 C
-      IREAD=1
-C
+      IREAD=0
+      IERROR=0
+
 C  UNIT NUMBER FOR INPUT FILE: MUST BE DIFFERENT FROM: 5,8,10,11,12
 C  13,14, AND 15
 !pb IUNIN set in COMPRT
-!pb      IUNIN=1+ifoff
+!pb   IUNIN=1+ifoff
 C
 C  UNIT NUMBER FOR OUTPUT FILE: MUST BE DIFFERENT FROM: 5,8,10,11,12
 C  13,14, AND 15 AND IUNIN
 !pb IUNOUT has already been set in subroutine EIRENE
-!pb      IUNOUT=6+ifoff
+!pb   IUNOUT=6+ifoff
 C
       IF (IITER.GT.1) THEN
         CALL EIRENE_MASBOX
@@ -296,9 +299,6 @@ C
         CALL EIRENE_MASJ1('ITIMV   ',ITIMV)
         GOTO 4000
       ENDIF
-C
-      IREAD=0
-      IERROR=0
 C
       NAINI=0
       NCPVI=0
@@ -1096,7 +1096,6 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
      .      'SURFACES" (SPLITTING, R.R., WEIGHT WINDOWS,..)'
           ILCOL(NLJ)=ILCOL(NLJ)-2
         ENDIF
-C 312   CONTINUE
         READ (IUNIN,'(A72)') ZEILE
         IREAD=1
         IF (ZEILE(1:1).EQ.'*') THEN
@@ -1447,7 +1446,6 @@ C  Normal start of reading database A&M processes
 !pbcrm
       IREAD = 0
 C
-!xpb411 IF (IREAD == 0) READ (IUNIN,'(A80)') ZEILE
   411 IF (IREAD == 0) READ (IUNIN,'(A420)') ZEILE
       IF (ZEILE(1:1).NE.'*') THEN
 C
@@ -1575,7 +1573,7 @@ C  READ FLAGS MP, MT, DPP, R1MN, R1MX, R2MN, R2MX FROM CHR
           READ (IUNIN,'(4X,A2,1X,I3)') ELNAME,IZ
           CALL EIRENE_LOWERCASE(ELNAME)
         ELSE
-          ELNAME = ' '
+          ELNAME = '  '
           IZ = 0
         END IF
 
@@ -2206,7 +2204,7 @@ c  default: only for bulk ions
             IF (INDEX(TDMPAR(JPLS)%TDM%H123(1),'H.2') == 0) THEN
               WRITE (iunout,*)
      .          ' WRONG REACTION SPECIFIED FOR CORONA MODEL'
-              WRITE (iunout,*) ' ONLY H.2 REACTIONS ARE PERMITTED'
+              WRITE (iunout,*) ' ONLY RATE COEFFICIENTS ARE PERMITTED'
               WRITE (iunout,*) ' IPLS = ',JPLS
               CALL EIRENE_EXIT_OWN(1)
             END IF
@@ -2225,7 +2223,7 @@ c  default: only for bulk ions
      .            INDEX(TDMPAR(JPLS)%TDM%H123(1),'H.12') == 0) THEN
                 WRITE (iunout,*)
      .            ' WRONG REACTION SPECIFIED FOR COLRAD MODEL'
-                WRITE (iunout,*) ' ONLY H.11 OR H.12 REACTIONS'
+                WRITE (iunout,*) ' ONLY H.11 OR H.12 (OT) REACTION DATA'
                 WRITE (IUNOUT,*) ' ARE PERMITTED'
                 WRITE (iunout,*) ' IPLS = ',JPLS
                 CALL EIRENE_EXIT_OWN(1)
@@ -3290,6 +3288,9 @@ cdr   X.B. correction Sept 17, from SOLPS-ITER branch,
           ELSEIF (NSPS < 0) THEN
             NSPSA=-NSPS
             ESPEC%LOG = .TRUE.
+cdr  missing here: check for SPCMN, SPCMX > 0.
+cdr  In particular in case IDIREC > 0 scores may fall into negative bins.
+cdr  tbd: Rule out combination of IDIREC > 0 and NSPS < 0
             ESPEC%SPCMIN = log10(SPCMN)
             ESPEC%SPCMAX = log10(SPCMX)
             ESPEC%SPCDEL = log10(SPCMX/SPCMN)/REAL(NSPSA,DP)
@@ -3705,9 +3706,9 @@ cdr  e.g. different isotopes,... but same rates, same population factors in each
                 END IF
 
 cdr  read QSS ratio between two densities, e.g.:  H2+/H2, if nfoli(H2+)=-1.
-cdr  If density n_B of parent state for upper level is not amongst the densities
+cdr  If density n_B of parent state (e.g. H2+) for upper level is not amongst the densities
 cdr  known in this run,
-cdr  but is in an (QSS) equilibrium with such a density n_A instead.
+cdr  but is in an (QSS) equilibrium (nfol<0) with such a density n_A (e.g. H2) instead.
                 IF (CNT%IRATIO > 0) THEN
 cdr  read QSS density ratio n_B/n_A(Te,ne). Then the
 cdr  upper state population is n_B *pop_B(upper)= n_A * ratio * pop_B(upper)
@@ -3775,7 +3776,7 @@ c                         is stored on num_compo+1
 ! define OLD default emissivity model for chords, for backward compatibility.
 cdr  allocate storage and fill structure EMIS-LINES
 cdr  such that old default options are recovered.
-cdr This is exclusive: as soon as at least one emission profile is
+cdr This is exclusive: as soon as at least one line-emission profile is
 cdr read from block "12.0", no default emissivities are set at all.
       IF (NLEMIS.AND..NOT.ALLOCATED(EMIS_LINES))
      .   CALL EIRENE_SETUP_DEFAULT_EMISSIVITY
@@ -3903,11 +3904,14 @@ cdr  Alternatively the energy parameters EMIN1 may be used.
         READ (IUNIN,66664) ICHORD(ICHORI),
      .                     XCHORD(ICHORI),YCHORD(ICHORI),ZCHORD(ICHORI)
         NLSTCHR(ICHORI) = ISTCHR > 0  ! automatically add directional cell-based spectra, along line of sight
- 1220 CONTINUE
+ 1220 CONTINUE   ! ichori
+
       READ (IUNIN,'(A72)') ZEILE
       call fix_logical_input(zeile,5)
       READ (ZEILE,6665) PLCHOR,PLSPEC,PRSPEC,PLARGL,PRARGL
- 1230 CONTINUE
+
+ 1230 CONTINUE  ! nchori > 0
+
 C  SKIP READING REST OF THIS BLOCK
       READ (IUNIN,'(A72)') ZEILE
       IREAD=0
@@ -4759,8 +4763,6 @@ C  1ST: SPECIES FLAGS:
 
       IF (NPHOTI > 0) CALL EIRENE_PH_INIT(1)
       CALL EIRENE_SETAMD(0)
-
-!pb      CALL EIRENE_ALLOC_COMUSR(2)
       CALL EIRENE_ALLOC_CTEXT(2)
 
       CALL EIRENE_SETTXT_INTAL
@@ -5511,12 +5513,15 @@ C
 c  number of spectra directly estimated from Monte Carlo trajectories
 
       NADSPC_S = 0   !  surface-based
+cdr  surface based directional missing? Already programmed in OUTSPEC.
       NADSPC_C = 0   !  cell-based
       NADSPC_D = 0   !  cell-based, directional
       NADSPC_CD = 0  !  cell-based, total
 
       DO J = 1, NADSPC
 !  directional spectrum in geometrical cell
+cdr I do not know what that option is. Unfinished or redundant?
+cdr Partially used in OUTSPEC, but not for calling UPDATE_SPECTRUM.
         IF (ESTIML(J)%ISRFCLL == 2) THEN
           ISPZ=IADTYP(ESTIML(J)%IPRTYP) + ESTIML(J)%IPRSP
           NBACK_SPEC = NBACK_SPEC + COUNT(ISPZ_BACK(ISPZ,:)>0)
@@ -5526,7 +5531,13 @@ c  number of spectra directly estimated from Monte Carlo trajectories
         IF (ESTIML(J)%ISRFCLL == 0) THEN
 C  COUNT SURFACE SPECTRA
           NADSPC_S=NADSPC_S+1
+cdr  later: idirec > 0 is used to distuingish total from directional spectra.
+cdr  here we should add directional surface spectra. In OUTSPEC already done.
+
         ELSEIF (ESTIML(J)%ISRFCLL == 1) THEN
+cdr  later: isrfcll seems to have a different meaning.
+cdr         =1: score in scoring cell (of coarse grid)
+cdr         =2  score in geometry cell (of fine grid)
 C  COUNT CELL-BASED SPECTRA
           NADSPC_C=NADSPC_C+1
         ELSEIF (ESTIML(J)%ISRFCLL == 2) THEN

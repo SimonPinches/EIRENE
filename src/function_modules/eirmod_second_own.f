@@ -1,4 +1,6 @@
       MODULE EIRMOD_SECOND_OWN
+cdr  used for internal run time monitoring
+
       USE EIRMOD_PRECISION
       IMPLICIT NONE
       PRIVATE
