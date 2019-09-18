@@ -419,6 +419,8 @@ c  these two processes for the given "ground state" density BASE_DENSITY
 
 cdr  what is this?  background spectrum ?
 cdr  if so, why in corona part?
+cdr  Spectral distribution of excited state assumed to
+cdr  be that of donor-state?
             IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
               IF (LSPCCLL(IR)) THEN
                 CALL EIRENE_GET_SPECTRUM (IR,1,SPEC,FOUND)
