@@ -15,6 +15,7 @@ C
       USE EIRMOD_CGRID
       USE EIRMOD_CGEOM
       USE EIRMOD_CSPEZ
+      USE EIRMOD_PLTEIR, ONLY: EIRENE_PLTEIR
       IMPLICIT NONE
       real(dp) :: dummy(nrtal)
       integer :: iadv
