@@ -33,6 +33,7 @@ c    ISTRA         (no. of stratum), via Common
       USE EIRMOD_COMSOU
       USE EIRMOD_CTRIG
       USE EIRMOD_LEARC1, ONLY: EIRENE_LEARC1
+      USE EIRMOD_SAMUSR, ONLY: EIRENE_SAMUSR
 
       IMPLICIT NONE
 
@@ -46,7 +47,7 @@ c    ISTRA         (no. of stratum), via Common
 C
       IPOINT=NLPT
       IF (SORLIM(IPOINT,ISTRA).LT.0.D0) THEN
-        CALL EIRENE_SM1USR(NLPT,X0,Y0,Z0,
+        CALL EIRENE_SAMUSR(NLPT,X0,Y0,Z0,
      .              SORAD1(NLPT,ISTRA),SORAD2(NLPT,ISTRA),
      .              SORAD3(NLPT,ISTRA),SORAD4(NLPT,ISTRA),
      .              SORAD5(NLPT,ISTRA),SORAD6(NLPT,ISTRA),

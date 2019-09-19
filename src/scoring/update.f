@@ -794,9 +794,11 @@ C
         END IF
    51 CONTINUE
       RETURN
+      END SUBROUTINE EIRENE_UPDATE
 
-      entry EIRENE_update_reinit
+      SUBROUTINE EIRENE_update_reinit
+      IMPLICIT NONE
 
       return
 
-      END
+      END SUBROUTINE EIRENE_update_reinit

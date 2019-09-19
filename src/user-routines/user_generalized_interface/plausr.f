@@ -44,7 +44,7 @@ c
      .              fitmp(:,:),feltmp(:,:),
      .              vptmp(:,:),mctmp(:,:),
      .              usrvaltmp(:,:)
-      REAL(DP), ALLOCATABLE :: PSI(:), PSI_CORNER(:), copy(:)
+      REAL(DP), ALLOCATABLE :: PS(:), PS_CORNER(:), copy(:)
 
       integer, parameter :: fp=31
       integer :: ll,ier,j,ind, jj

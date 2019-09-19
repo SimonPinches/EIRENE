@@ -27,8 +27,7 @@ c
 
       IMPLICIT NONE
 
-      INTEGER :: IATM, IION, IPLS, IMOL, ISPZ, IPHOT, I, J, N1,
-     .           N2, N3, N4, N5, N6, N7, N8, N9, N10, N11
+      INTEGER :: I, J
       CHARACTER(24) :: TEXT24
       CHARACTER(72) :: TEXT72
 
@@ -566,8 +565,18 @@ c  sputter tallies
       END DO
      
       RETURN
+      END SUBROUTINE EIRENE_SETTXT
 C
-      ENTRY EIRENE_STTXT1
+      SUBROUTINE EIRENE_STTXT1
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_COMUSR
+      USE EIRMOD_CTEXT
+      USE EIRMOD_COUTAU
+      USE EIRMOD_CLOGAU
+
+      IMPLICIT NONE
+      INTEGER :: IATM, IION, IPLS, IMOL, ISPZ, IPHOT, N1,
+     .           N2, N3, N4, N5, N6, N7, N8, N9, N10, N11
 C
 C
       NFSTVI(1)=NATMI
@@ -1399,4 +1408,4 @@ C
       TXTSPW(1,45)='                        '
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_STTXT1

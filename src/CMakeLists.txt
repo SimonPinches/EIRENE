@@ -145,7 +145,9 @@ set(plotpath "")
 if( LibGRS AND LibGKS AND LibX11 AND Libz AND LibXt )
   list(APPEND plotpath ${src_plotting})
 else()
-  list(APPEND plotpath ${src_plot_dummy})
+#  list(APPEND plotpath ${src_plot_dummy})
+  list(APPEND plotpath ${src_plotting})
+  list(APPEND plotpath ${src_grsoft-dummy})
 endif()
 
 # Specify interface and user-routines to use.
@@ -165,7 +167,7 @@ add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno}
                    ${src_iterate} ${src_main-routines} ${src_mathematics} 
                    ${src_modules} ${src_output} ${src_particle-tracing} 
                    ${src_photons} ${plotpath} ${src_sampling} 
-                   ${src_scoring} ${src_startup-routines} 
+                   ${src_scoring} ${src_startup-routines}  
                    ${src_surface-processes} ${src_tetrahedra} 
                    ${src_user-routines/x} ${src_volume-processes})
 

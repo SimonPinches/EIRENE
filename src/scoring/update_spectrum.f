@@ -165,10 +165,12 @@ cdr  meaning of ind:   not in use for cell based spectra    ??  iflag in calling
       END IF
 
       RETURN
+      END SUBROUTINE EIRENE_UPDATE_SPECTRUM
 
 csw 21oct08
-      entry EIRENE_update_spectrum_reinit
+      SUBROUTINE EIRENE_update_spectrum_reinit
+      IMPLICIT NONE
 
       return
 csw
-      END SUBROUTINE EIRENE_UPDATE_SPECTRUM
+      END SUBROUTINE EIRENE_update_spectrum_reinit

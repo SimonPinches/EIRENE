@@ -134,7 +134,6 @@ csw constants
 
 csw external
       integer, external :: eirene_idez
-ctk      real(dp), external :: ranf_eirene
 
 !pb black body removal begin (try to eliminate saturated line core part)
 !     unfinished
@@ -2846,7 +2845,7 @@ c allocate
 
       SUBROUTINE EIRENE_PH_XSECTPH(ipht,nrc,idsc)
       IMPLICIT NONE
-      integer, intent(in) :: ipht,nrc,idsc,ipl
+      integer, intent(in) :: ipht,nrc,idsc
       integer :: kk,ipl0,ipl1,ipl2,ityp0,ityp1,ityp2,
      .    ifnd,mode,updf,nseot4,ierr,ipl0ti
       real(dp) :: factkk, ebulk
@@ -3011,9 +3010,20 @@ c       WRITE (iunout,*) 'AUTOMATICALLY RESET TO TRACKLENGTH ESTIMATOR '
 c       CALL EIRENE_LEER(1)
 c       IESTCX(IRCX,3)=0
 c     ENDIF
+      return
+  996 CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSectph: EXIT CALLED'
+      WRITE (iunout,*) 'NO CROSS-SECTION AVAILABLE FOR NON-DEFAULT OT'
+      WRITE (iunout,*) 'KK,IPHT,IPL0 ',KK,IPHT,IPL0
+      WRITE (iunout,*) 'EITHER PROVIDE CROSS-SECTION OR USE DIFFERENT'
+      WRITE (iunout,*) 'POST-COLLISION SAMPLING FLAG ISCDEA'
+      CALL EIRENE_EXIT_OWN(1)
       RETURN
+      END SUBROUTINE EIRENE_PH_XSECTPH
 C
-      ENTRY EIRENE_XSTPH_2(Idsc,IPL)
+      SUBROUTINE EIRENE_XSTPH_2(Idsc,IPL)
+      IMPLICIT NONE
+      integer, intent(in) :: idsc,ipl
 C
 c     CALL EIRENE_LEER(1)
 c     WRITE (iunout,*) 'Photon REACTION NO. Idsc= ',Idsc
@@ -3037,15 +3047,7 @@ c    .                    'I2ND2= ',TEXTS2
 c     CALL EIRENE_LEER(1)
       RETURN
 C
-  996 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSectph: EXIT CALLED'
-      WRITE (iunout,*) 'NO CROSS-SECTION AVAILABLE FOR NON-DEFAULT OT'
-      WRITE (iunout,*) 'KK,IPHT,IPL0 ',KK,IPHT,IPL0
-      WRITE (iunout,*) 'EITHER PROVIDE CROSS-SECTION OR USE DIFFERENT'
-      WRITE (iunout,*) 'POST-COLLISION SAMPLING FLAG ISCDEA'
-      CALL EIRENE_EXIT_OWN(1)
-      return
-      END SUBROUTINE EIRENE_PH_XSECTPH
+      END SUBROUTINE EIRENE_XSTPH_2
 
 c
 c  experimental routine for black body removal
