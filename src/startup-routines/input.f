@@ -2497,7 +2497,7 @@ C  PATH SPECIFICATION FOR DATABASE FOUND
             CALL EIRENE_EXIT_OWN(1)
           END IF
           FILE=REPEAT(' ',420)
-          FILE(1:)=PATH(1:I2-1)
+          FILE(1:I2-1)=PATH(1:I2-1)
           WRITE (iunout,*) ' PATH = ',FILE(1:I2-1)
 C  PATH FOUND. NEXT: READ ONE OR MORE CARDS FILNAM A_ON_B
 C         NFR=0  !dr now already set above

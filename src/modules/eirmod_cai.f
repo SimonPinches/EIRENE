@@ -26,7 +26,8 @@ C> Recommended number of test particles for next MC cycle.
 
       SUBROUTINE EIRENE_ALLOC_CAI
 
-      USE EIRMOD_PARMMOD, ONLY: IUNMEM, NSTRA
+      USE EIRMOD_PARMMOD
+     . , ONLY: IUNMEM, NSTRA
 
       IF (ALLOCATED(RATIO)) RETURN
 

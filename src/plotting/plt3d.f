@@ -188,12 +188,14 @@ C
         IF (.NOT.PL3A(I)) GOTO 100
         DO 10 IP=1,IPLTA(I)
          DO J=IPLAA(I,IP),IPLEA(I,IP)
-          IF (J.GT.NLIMI) GOTO 10
+!pb300919 IF (J.GT.NLIMI) GOTO 10
+          IF (J.GT.NLIMI) CYCLE
           IF (IGJUM0(J).NE.0) THEN
             IF (TRCPLT) THEN
               WRITE (iunout,*) 'SURFACE NO. ',J,' OUT'
             ENDIF
-            GOTO 10
+!pb300919   GOTO 10
+            CYCLE
           ELSE
             IF (NLTRA.AND.ILTOR(J).LE.0) THEN
 C  STILL TO BE WRITTEN: BETTER WAY OF IDENTIFYING TOROIDALLY SYMMETRIC
@@ -206,7 +208,8 @@ C                       SURFACE
      .              ' TOROIDALLY SYMMETRIC'
                   WRITE (iunout,*) 'PLOT LATER INTO STANDARD MESH '
                 ENDIF
-                GOTO 10
+!pb300919       GOTO 10
+                CYCLE
               ELSE
                 LPERID(J)=.TRUE.
                 NJZ=0
@@ -282,7 +285,8 @@ C**ZYLINDER: FINDE ACHSE
                   T2=(ZLIMS2(1,J)-ZZ0)/CZ
                 ELSE
                   PLABLE(J)=.TRUE.
-                  GOTO 10
+!pb300919         GOTO 10
+                  CYCLE
                 ENDIF
 C  ZYLINDER: GGFLS MEHRERE TEILSTUECKE
                 CALL EIRENE_CTQUA
@@ -323,7 +327,8 @@ C**KEGEL: BISLANG NUR EIN STUECK MOEGLICH. FINDE ACHSE
                   T2=(ZLIMS2(1,J)-ZZ0)/CZ
                 ELSE
                   PLABLE(J)=.TRUE.
-                  GOTO 10
+!pb300919         GOTO 10
+                  CYCLE
                 ENDIF
                 CALL EIRENE_CONE (ZX0,ZY0,ZZ0,CX,CY,CZ,T1,T2,
      .                     RZYL,NZAD,NINNE,NIN,ILCOL(J),
@@ -358,7 +363,8 @@ C**PAAR VON EBENEN (ODER EINE DOPPELEBENE)
                 ENDIF
               ELSE
                 PLABLE(J)=.TRUE.
-                GOTO 10
+!pb300919       GOTO 10
+                CYCLE  
               ENDIF
 C**EINE EBENE
             ELSEIF (JUMLIM(J).NE.0) THEN
@@ -410,7 +416,8 @@ C**PAAR VON EBENEN ODER DOPPELEBENE ?
      .                        ILCOL(J),IGFIL(J).NE.0,J)
                 ELSE
                   PLABLE(J)=.TRUE.
-                  GOTO 10
+!pb300919         GOTO 10
+                  CYCLE
                 ENDIF
 C**ZYLINDER ?
               ELSEIF (MERK.EQ.4) THEN
@@ -451,7 +458,8 @@ C**ZYLINDER BEGRENZT VON 2 EBENEN
                      IF (TRCPLT) WRITE (iunout,*)
      .                  ' FEHLER IN BERANDUNG VON FLAECHE ',J
                      PLABLE(J)=.TRUE.
-                     GOTO 10
+!pb300919            GOTO 10
+                     CYCLE
                    ENDIF
                    IF (TA.LT.TB) THEN
                      T1=TA-2.*RZYL
@@ -488,7 +496,8 @@ C**ZYLINDER BEGRENZT VON ECHT GEKRUEMMTEN FLAECHE 2TER ORDNUNG
                     WRITE (iunout,*)
      .                ' FEHLER IN DER BERANDUNG VON FLAECHE',J
                     PLABLE(J)=.TRUE.
-                    GOTO 10
+!pb300919           GOTO 10
+                    CYCLE
                   ENDIF
                   IF (TA.LT.TB) THEN
                     T1=TA-2.*RZYL
@@ -506,7 +515,8 @@ C**ZYLINDER BEGRENZT VON ECHT GEKRUEMMTEN FLAECHE 2TER ORDNUNG
      .                      J,10,AL,10,AR,0._DP,360._DP)
                 ELSE
                   PLABLE(J)=.TRUE.
-                  GOTO 10
+!pb300919         GOTO 10
+                  CYCLE
                 ENDIF
                ENDIF
 C**KUGEL, ELLIPSOID
@@ -516,7 +526,8 @@ C**KUGEL, ELLIPSOID
      .               ZLIMS2(1,J),RLB(J),ILCOL(J),5,5,5)
               ELSE
                 PLABLE(J)=.TRUE.
-                GOTO 10
+!pb300919       GOTO 10
+                CYCLE
               ENDIF
 C
 C**EBENE MIT RLB.LT.0 OPTION
@@ -557,7 +568,8 @@ C**EBENE BEGRENZT DURCH EINEN ODER MEHRERE ZYLINDER?
                     WRITE (iunout,*)
      .                ' FEHLER IN DER BERANDUNG VON FLAECHE',J
                     PLABLE(J)=.TRUE.
-                    GOTO 10
+!pb300919           GOTO 10
+                    CYCLE
                   ENDIF
                   T1=TA-2.*RZYL
                   T2=TA+4.*RZYL
@@ -568,13 +580,15 @@ C**EBENE BEGRENZT DURCH EINEN ODER MEHRERE ZYLINDER?
      .                         0._DP,360._DP)
                 ELSE
                   PLABLE(J)=.TRUE.
-                  GOTO 10
+!pb300919         GOTO 10
+                  CYCLE
                 ENDIF
                 IF (IB.LT.ISCN(J)) GOTO 20
 C**EBENE BEGRENZT DURCH ALLE ANDERE OPTIONEN
               ELSE
                 PLABLE(J)=.TRUE.
-                GOTO 10
+!pb300919       GOTO 10
+                CYCLE
               ENDIF
 C
             ENDIF
