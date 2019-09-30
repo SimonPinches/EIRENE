@@ -214,7 +214,8 @@ C
               IF (NSTGRD(J).EQ.0.AND..NOT.LGVAC(J,IPLS)) THEN
 c  FREC is in Amp, so ADD is in: eV * Amp = Watt
                 REC=FREC(IFPLS,IIRC,J)-FREC(IFPLS,IIRC,J-1)
-                IF (REC.LE.0.D0) GOTO 6
+!pb300919       IF (REC.LE.0.D0) GOTO 6
+                IF (REC.LE.0.D0) CYCLE
                 ADD=1.5*TIIN(IPLSTI,J)*REC
                 IF (LEDRIFT) ADD=ADD+EDRIFT(IPLS,J)*REC
 C  SPECTRAL CUT-OFF, CURRENTLY ONLY FOR PHOTONS
