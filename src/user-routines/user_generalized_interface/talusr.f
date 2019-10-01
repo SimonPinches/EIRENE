@@ -1,7 +1,7 @@
 c
 c
       subroutine EIRENE_talusr (ICOUNT,VECTOR,TALTOT,TALAV,
-     .              TXTTL,TXTSP,TXTUN,ILAST,*)
+     .              TXTTL,TXTSP,TXTUN,ILAST,IRET)
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
 
@@ -16,7 +16,7 @@ c
       USE EIRMOD_CESTIM
       implicit NONE
       integer, intent(in) :: icount
-      integer, intent(out) :: ilast
+      integer, intent(out) :: ilast, iret
       real(dp), intent(inout) :: VECTOR(*), TALTOT, TALAV
 
       real(dp), allocatable, save :: algv_corner(:,:), dummy(:)
@@ -38,6 +38,7 @@ c
       TXTUN=' '
 
       ilast=1
+      iret = 0
 
       if (istra > 0) then
 
@@ -183,5 +184,6 @@ c
       TALTOT = 0.
       TALAV = 0.
 
-      return 1
+      iret = 1
+      return
       end

@@ -173,7 +173,7 @@ ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
      .           ICO, NLI, NLE, JCOL, NRC, 
      .           NRCOLD, IPLTI, I, IM, ICOUN,
      .           EIRENE_LEARC2, 
-     .           indf, NJUMP_EMC3 = 0, IRET
+     .           indf, NJUMP_EMC3 = 0, IRET, IRT_STAT
       LOGICAL :: LCNDEXP
 
 
@@ -285,7 +285,9 @@ C  relative to surface, and possibly correct side of surface, i.e. cell
 c  number. In that case: goto 1005 and try again with new cell number.
 c  Else: continue at 1002
 
-      CALL SRFCHK(VLXPAR,VLYPAR,VLYPAR,SG,*1005)
+!PB   CALL SRFCHK(VLXPAR,VLYPAR,VLYPAR,SG,*1005)
+      CALL SRFCHK(VLXPAR,VLYPAR,VLYPAR,SG,IRET)
+      IF (IRET == 1) GOTO 1005
       IF (ic_ion.gt.1) THEN 
         write (iunout,*) 'error re static loop, ic_ion=', ic_ion
         call eirene_exit_own(1)
@@ -308,8 +310,13 @@ C  STATIC APPROXIMATION
 C  SIMULATE NEXT COLLISION INSTANTANEOUSLY
 C***********************************************************************
 
+!PB      CALL EIRENE_FOLSTAT_ION(IC_ION,VLXPAR,VLYPAR,VLZPAR,CFLAG,
+!PB     .     *101,*230,*380)
       CALL EIRENE_FOLSTAT_ION(IC_ION,VLXPAR,VLYPAR,VLZPAR,CFLAG,
-     .                        *101,*230,*380)
+     .                        IRT_STAT)
+      IF (IRT_STAT == 1) GOTO 101
+      IF (IRT_STAT == 2) GOTO 230
+      IF (IRT_STAT == 3) GOTO 380
 C.............................................................
 
 C
@@ -817,13 +824,30 @@ c  will fpkcol change the collision with additional surface?
         IF (IRET .EQ. 1) GOTO 104
         IF (IRET .EQ. 2) GOTO 380
       ELSEIF (ISRFCL.EQ.2) THEN
-        CALL EIRENE_FPKCOL(               *104,*2215,*9991,3)
- 2215   CALL EIRENE_TIMCOL(AX(2),         *104,*800)
+!pb     CALL EIRENE_FPKCOL(               *104,*2215,*9991,3)
+        CALL EIRENE_FPKCOL(IRET,3)
+        IF (IRET .EQ. 1) GOTO 104
+        IF (IRET .EQ. 2) GOTO 2215
+        IF (IRET .EQ. 3) GOTO 9991
+!PB 2215 CALL EIRENE_TIMCOL(AX(2),         *104,*800)
+ 2215   CALL EIRENE_TIMCOL(AX(2),IRET)
+        IF (IRET .EQ. 1) GOTO 104
+        IF (IRET .EQ. 2) GOTO 800
       ELSEIF (ISRFCL.EQ.3) THEN
-        CALL EIRENE_FPKCOL(               *104,*2216,*9991,3)
- 2216   CALL EIRENE_TORCOL(               *104)
+!pb     CALL EIRENE_FPKCOL(               *104,*2216,*9991,3)
+        CALL EIRENE_FPKCOL(IRET,3)
+        IF (IRET .EQ. 1) GOTO 104
+        IF (IRET .EQ. 2) GOTO 2216
+        IF (IRET .EQ. 3) GOTO 9991
+!PB 2216 CALL EIRENE_TORCOL(               *104)
+ 2216   CALL EIRENE_TORCOL(IRET)
+        IF (IRET .EQ. 1) GOTO 104
       ELSEIF (ISRFCL.EQ.4) THEN
-        CALL EIRENE_FPKCOL(               *104,*100,*9991,0)
+!pb     CALL EIRENE_FPKCOL(               *104,*100,*9991,0)
+        CALL EIRENE_FPKCOL(IRET,0)
+        IF (IRET .EQ. 1) GOTO 104
+        IF (IRET .EQ. 2) GOTO 100
+        IF (IRET .EQ. 3) GOTO 9991
       ENDIF
 
 C changing back to full cartesian velocities
@@ -1138,7 +1162,11 @@ cdr  try to tell external code: particle on surface, but it is an old particle, 
         IF (LDAMCEL(NCELL)) GOTO 9912
 C  DELTA COLLISION AT SURFACE DONE, NEW CELL FOUND (ausser fuer levgeo 10...)
 
-        CALL EIRENE_FPKCOL(*104,*229,*9991,3)
+!pb     CALL EIRENE_FPKCOL(*104,*229,*9991,3)
+        CALL EIRENE_FPKCOL(IRET,3)
+        IF (IRET == 1) GOTO 104
+        IF (IRET == 2) GOTO 229
+        IF (IRET == 3) GOTO 9991
 
 C  FIND NEW B-FIELD, NEW REDUCED (GC) VELOCITY
   229   CONTINUE
@@ -1275,7 +1303,11 @@ C
 C  FOR NONTRANSPARENT SURFACES:
 C  ACCELERATION IN SHEATH IS DONE IN SUBR. ESCAPE
 C
-      CALL EIRENE_ESCAPE(PR,SG,*100,*104,*996)
+!pb   CALL EIRENE_ESCAPE(PR,SG,*100,*104,*996)
+      CALL EIRENE_ESCAPE(PR,SG,IRET)
+      IF (IRET == 1) GOTO 100
+      IF (IRET == 2) GOTO 104
+      IF (IRET == 3) GOTO 996
       RETURN
 C
 C   100: START NEW ION TRACK AFTER SURFACE EVENT

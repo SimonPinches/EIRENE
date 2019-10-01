@@ -6,7 +6,7 @@ c  instantaneously.
 c  Careful: infinite loops are possible, if no collisions or surface
 c  events lead out of the community of static loop particles
 c
-      SUBROUTINE EIRENE_FOLSTAT_ION(IC_PART,VLX,VLY,VLZ,CFLAG,*,*,*)
+      SUBROUTINE EIRENE_FOLSTAT_ION(IC_PART,VLX,VLY,VLZ,CFLAG,IRET)
 C  FOLLOW IONS IN STATIC LOOP
 
 C  IN CALLING PROGRAM ALREADY VERIFIED: FINITE CHANCE TO LEAVE STATIC LOOP. 
@@ -36,7 +36,8 @@ C
 
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: VLX,VLY,VLZ
-      INTEGER,  INTENT(IN) :: IC_PART  ! = IC_ION OR IC_NEUT, FROM CALLING PROGRAMS FOLION, FOLNEUT, RESP.
+      INTEGER,  INTENT(IN) :: IC_PART ! = IC_ION OR IC_NEUT, FROM CALLING PROGRAMS FOLION, FOLNEUT, RESP.
+      INTEGER,  INTENT(OUT) :: IRET
 
       REAL(DP) :: CFLAG(7,MSTOR0)
       REAL(DP) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
@@ -44,9 +45,10 @@ C
       REAL(DP) :: SCOS_NEW, ZMFP, ZTC, SG,
      .            VELXS, VELYS, VELZS, VELS,
      .            EIRENE_FPATH
-      INTEGER :: ISTS, IFLAG
+      INTEGER :: ISTS, IFLAG, IRT
 
-
+      IRET = 0
+      
 c  particle enters the static loop, NFOL$(ISPZ)=-1
 
       IF (IC_PART.EQ.1.AND.NLTRC.AND.TRCHST) THEN !FIRST ENTRY TO STATIC LOOP
@@ -64,6 +66,7 @@ C***********************************************************************
 C  WEIGHT TOO SMALL? STOP HISTORY
       IF (WEIGHT.LT.EPS30) THEN
         LGPART=.FALSE.
+        IRET = 0
         RETURN
       ENDIF
 C
@@ -167,40 +170,67 @@ C FOR PUSHING PARTICLE TO SURFACE IN ADDCOL/STDCOL, USE REDUCED (GC) VELOCITY
             LCART=.FALSE.
           ENDIF
           IF (NLSRFA) THEN
-            CALL EIRENE_ADDCOL (X0,Y0,Z0,SCOS,*101,*380)
+!pb         CALL EIRENE_ADDCOL (X0,Y0,Z0,SCOS,*101,*380)
+            CALL EIRENE_ADDCOL (X0,Y0,Z0,SCOS,IRT)
+            IF (IRT == 1) GOTO 101
+            IF (IRT == 2) GOTO 380
           ELSEIF (NLSRFX) THEN
             select case (LEVGEO)
             case (:3)
               ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
               MSURFG=NPCELL+(NTCELL-1)*NP2T3
+!pb           IF (ILIIN(NLIM+ISTS) .NE. 0)
+!pb   .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
               IF (ILIIN(NLIM+ISTS) .NE. 0)
-     .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
+     .          CALL EIRENE_STDCOL (ISTS,1,SCOS,IRT)
+              IF (IRT == 1) GOTO 101
+              IF (IRT == 2) GOTO 380
             case (4)
               ISTS=ABS(INMTI(IPOLGN,MRSURF))
               MSURFG=INSPAT(IPOLGN,MRSURF)
+!pb           IF (ILIIN(ISTS) .NE. 0)
+!pb  .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
               IF (ILIIN(ISTS) .NE. 0)
-     .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
+     .          CALL EIRENE_STDCOL (ISTS,1,SCOS,IRT)
+              IF (IRT == 1) GOTO 101
+              IF (IRT == 2) GOTO 380
             case (5)
               ISTS=ABS(INMTIT(IPOLGN,MRSURF))
 C             MSURFG= ??
+!pb           IF (ILIIN(ISTS) .NE. 0)
+!pb  .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
               IF (ILIIN(ISTS) .NE. 0)
-     .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
-            case (10)
+     .          CALL EIRENE_STDCOL (ISTS,1,SCOS,IRT)
+              IF (IRT == 1) GOTO 101
+              IF (IRT == 2) GOTO 380
+           case (10)
               ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
 C             MSURFG= ??
+!pb           IF (ILIIN(NLIM+ISTS) .NE. 0)
+!pb  .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
               IF (ILIIN(NLIM+ISTS) .NE. 0)
-     .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
+     .          CALL EIRENE_STDCOL (ISTS,1,SCOS,IRT)
+              IF (IRT == 1) GOTO 101
+              IF (IRT == 2) GOTO 380
             end select
           ELSEIF (NLSRFY) THEN
             ISTS=INMP2I(IRCELL,MPSURF,ITCELL)
             MSURFG=NRCELL+(NTCELL-1)*NR1P2
+!pb         IF (ILIIN(NLIM+ISTS) .NE. 0)
+!pb  .        CALL EIRENE_STDCOL (ISTS,2,SCOS,*101,*380)
             IF (ILIIN(NLIM+ISTS) .NE. 0)
-     .        CALL EIRENE_STDCOL (ISTS,2,SCOS,*101,*380)
+     .        CALL EIRENE_STDCOL (ISTS,2,SCOS,IRT)
+              IF (IRT == 1) GOTO 101
+              IF (IRT == 2) GOTO 380
           ELSEIF (NLSRFZ) THEN
             ISTS=INMP3I(IRCELL,IPCELL,MTSURF)
             MSURFG=NRCELL+(NPCELL-1)*NR1P2
+!pb         IF (ILIIN(NLIM+ISTS) .NE. 0)
+!pb  .        CALL EIRENE_STDCOL (ISTS,3,SG,*101,*380)
             IF (ILIIN(NLIM+ISTS) .NE. 0)
-     .        CALL EIRENE_STDCOL (ISTS,3,SG,*101,*380)
+     .        CALL EIRENE_STDCOL (ISTS,3,SG,IRT)
+              IF (IRT == 1) GOTO 101
+              IF (IRT == 2) GOTO 380
           ENDIF
           WRITE (IUNOUT,*) 'FOLSTAT_ION: I SHOULD NOT BE HERE'
         ENDIF
@@ -210,13 +240,17 @@ C**********************************************************************
 C   STATIC LOOP FINISHED. REGULAR PARTICLE TRACKING CONTINUES
 C**********************************************************************
 
+      IRET = 0
       RETURN
 
-101   CONTINUE
-      RETURN 1
-230   CONTINUE
-      RETURN 2
-380   CONTINUE
-      RETURN 3
+ 101  CONTINUE
+      IRET = 1
+      RETURN
+ 230  CONTINUE
+      IRET = 2
+      RETURN 
+ 380  CONTINUE
+      IRET = 3
+      RETURN
 
       END

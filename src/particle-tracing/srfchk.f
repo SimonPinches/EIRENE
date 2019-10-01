@@ -1,5 +1,6 @@
 C
-      SUBROUTINE SRFCHK(VX,VY,VZ,SG,*)
+!pb   SUBROUTINE SRFCHK(VX,VY,VZ,SG,*)
+      SUBROUTINE SRFCHK(VX,VY,VZ,SG,IRET)
 c  RETURN 1   TRY ONCE AGAIN, WITH FRESH NCELL NUMBERS, SG
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -14,11 +15,14 @@ c  RETURN 1   TRY ONCE AGAIN, WITH FRESH NCELL NUMBERS, SG
 
       IMPLICIT NONE
 
+      INTEGER, INTENT(OUT) :: IRET
       REAL(DP), INTENT(IN) :: VX,VY,VZ
       REAL(DP) :: SG, SH, PUX,PUY,PN, XOLD,YOLD
       INTEGER :: NRCELL_OLD,NPCELL_OLD,NTCELL_OLD, NTEST, ICO,
      .           IDUM, IFPB
 
+      IRET = 0
+      
       IF (NLSRFX) THEN
 
 c  particle is exactly on one of the radial grid surfaces (MRSURF)
@@ -147,8 +151,12 @@ C  NOTHING TO BE DONE
 
         IF (NRCELL.NE.NRCELL_OLD) THEN
           ico=ico+1
-          if (ico.le.1) return 1  ! GO BACK AND TRY AGAIN WITH NEW CELL NUMBER
-        ENDIF
+!pb       if (ico.le.1) return 1  ! GO BACK AND TRY AGAIN WITH NEW CELL NUMBER
+          if (ico.le.1) then      ! GO BACK AND TRY AGAIN WITH NEW CELL NUMBER
+            iret = 1
+            return
+          end if
+          ENDIF
 
 
       ELSEIF (NLSRFY) THEN
@@ -183,7 +191,11 @@ C  ACCOUNT FOR CUTS, PERIODICITY, ETC.
         end select
         IF (NPCELL.NE.NPCELL_OLD) THEN
           ico=ico+1
-          if (ico.le.1) return 1  ! GO BACK AND TRY AGAIN WITH NEW CELL NUMBER
+!pb       if (ico.le.1) return 1  ! GO BACK AND TRY AGAIN WITH NEW CELL NUMBER
+          if (ico.le.1) then      ! GO BACK AND TRY AGAIN WITH NEW CELL NUMBER
+            iret = 1
+            return
+          end if
         ENDIF
 
 
@@ -205,11 +217,15 @@ C  NLTRZ AND NLTRT OPTION
         ENDIF
         IF (NTCELL.NE.NTCELL_OLD) THEN
           ico=ico+1
-          if (ico.le.1) return 1 ! GO BACK AND TRY AGAIN WITH NEW CELL NUMBER
+!pb       if (ico.le.1) return 1 ! GO BACK AND TRY AGAIN WITH NEW CELL NUMBER
+          if (ico.le.1) then     ! GO BACK AND TRY AGAIN WITH NEW CELL NUMBER
+            iret = 1
+            return
+          end if
         ENDIF
 
       ENDIF
 
-
+      IRET = 0
       RETURN
       END

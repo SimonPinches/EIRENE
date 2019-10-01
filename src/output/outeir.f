@@ -48,7 +48,7 @@ C
      .            TALTOT, DIF, SMSPT
       INTEGER :: IALS, IALV, J, JJ, IS, NFTI, NFTE, I0, K, NF, N, IALG,
      .           ITAL, IPRV, KMAX, KK, ILAST, ICOUNT, I, IINDEX, ISPC,
-     .           IT
+     .           IT, IRET
       INTEGER :: IADTYP(0:4)
       LOGICAL :: LCOVN(NCV)
 C
@@ -168,8 +168,11 @@ C
         IF (ITAL.EQ.0) THEN
 C   CALL TO TALUSR: A POSTPROCESSED USER-SUPPLIED TALLY
           ICOUNT=1
+!pb  120  CALL EIRENE_TALUSR(ICOUNT,VECTOR,TALTOT,TALAV,
+!pb  .                TXTTL,TXTSP,TXTUN,ILAST,*121)
   120     CALL EIRENE_TALUSR(ICOUNT,VECTOR,TALTOT,TALAV,
-     .                TXTTL,TXTSP,TXTUN,ILAST,*121)
+     .                       TXTTL,TXTSP,TXTUN,ILAST,IRET)
+          IF (IRET == 1) GOTO 121
           WRITE (iunout,*) 'USER-SUPPLIED POSTPROCESSED TALLY NO. ',
      .                ICOUNT
           CALL EIRENE_PRTTAL(TXTTL,TXTSP,TXTUN,
