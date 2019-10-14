@@ -3,7 +3,7 @@ c  this version: find vibrational temperature of H2.
 c  i.e. H2(v) must be treated as separate molec. species
 c
       SUBROUTINE EIRENE_TALUSR(ICOUNT,VECTOR,TALTOT,TALAV,
-     .                  TXTTL,TXTSP,TXTUN,ILAST,*)
+     .                  TXTTL,TXTSP,TXTUN,ILAST,IRET)
 
 C  USER-SUPPLIED POST-PROCESSED TALLY NO. ICOUNT, FOR STRATUM ISTRA,
 C  STORED ON VECTOR. (ISTRA IS KNOWN FROM COMMON COMPRT)
@@ -30,7 +30,7 @@ C
 
       implicit NONE
       integer, intent(in) :: icount
-      integer, intent(out) :: ilast
+      integer, intent(out) :: ilast, iret
       real(dp), intent(inout) :: VECTOR(*), TALTOT, TALAV
 
       character(len=*) :: txttl,txtsp,txtun
@@ -43,5 +43,6 @@ C
 C  WRITE DIRECTLY ONTO OUTPUT STREAM IUNOUT, I.E.: NOT: RETURN 1, BUT: RETURN
 
       ILAST=0
+      iret = 0
       RETURN
       END

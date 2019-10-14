@@ -123,7 +123,7 @@ ctk      REAL(DP), EXTERNAL :: RANF_EIRENE, EIRENE_FUNEXP
      .           EIRENE_LEARC2, J, NCOUS, NLE, NRC, JCOL, NLI, ISTS,
      .           NPCOLC,
      .           JJ, NPCELC, NTCELC, NTCOLC, IFLAG, I, IM,
-     .           NCLLN, iret
+     .           NCLLN, IRET, IRT_STAT
       LOGICAL :: NLPR, LCNDEXP
       TYPE(CELL_INFO), POINTER :: NEW_CELL
 
@@ -195,8 +195,13 @@ C  STATIC APPROXIMATION
 C  SIMULATE NEXT COLLISION INSTANTANEOUSLY
 C***********************************************************************
 
+!pb   CALL EIRENE_FOLSTAT_NEUT(IC_NEUT,VELX,VELY,VELZ,CFLAG,
+!pb  .                        *101,*230,*380)
       CALL EIRENE_FOLSTAT_NEUT(IC_NEUT,VELX,VELY,VELZ,CFLAG,
-     .                        *101,*230,*380)
+     .                         IRT_STAT)
+      IF (IRT_STAT == 1) GOTO 101
+      IF (IRT_STAT == 2) GOTO 230
+      IF (IRT_STAT == 3) GOTO 380
 C.............................................................
 
 C
@@ -643,12 +648,27 @@ C
 C  STOP TRACK ?
 C
       IF (ISRFCL.EQ.1) THEN
-         CALL EIRENE_ADDCOL (XLI,YLI,ZLI,SG,IRET)
-         if (IRET .EQ. 1) GOTO 104
-         if (IRET .eq. 2) GOTO 380
+        CALL EIRENE_ADDCOL (XLI,YLI,ZLI,SG,IRET)
+        IF (IRET .EQ. 1) GOTO 104
+        IF (IRET .eq. 2) GOTO 380
       ENDIF
-      IF (ISRFCL.EQ.2) CALL EIRENE_TIMCOL (PR,            *104,*800)
-      IF (ISRFCL.EQ.3) CALL EIRENE_TORCOL (               *104)
+!pb   IF (ISRFCL.EQ.2) THEN
+      IF (ISRFCL.EQ.2) THEN
+        CALL EIRENE_TIMCOL (PR,IRET)
+        IF (IRET .EQ. 1) GOTO 104
+        IF (IRET .eq. 2) GOTO 800
+      ENDIF
+!pb   IF (ISRFCL.EQ.2) CALL EIRENE_TIMCOL (PR,            *104,*800)
+      IF (ISRFCL.EQ.2)THEN
+        CALL EIRENE_TIMCOL (PR,IRET)
+        IF (IRET .EQ. 1) GOTO 104
+        IF (IRET .eq. 2) GOTO 800
+      ENDIF
+!pb   IF (ISRFCL.EQ.3) CALL EIRENE_TORCOL (               *104)
+      IF (ISRFCL.EQ.3) THEN
+        CALL EIRENE_TORCOL (IRET)
+        IF (IRET .EQ. 1) GOTO 104
+      ENDIF
 C
 C  NO, CONTINUE TRACK
 C
@@ -793,7 +813,10 @@ C  CHECK IF WE HAVE ENCOUNTERED A SPLITTING ZONE
 C  SPLITTING AND RR NOT READY FOR LEVGEO.GE.4
       IF (LEVGEO.LE.3) THEN
         IF (NLSPLT(MRSURF).AND.NLEVEL.LT.MAXLEV.AND.ICOL.EQ.0) THEN
-          CALL EIRENE_SPLTRR(1,MRSURF,NINCX,*210,*700)
+!PB       CALL EIRENE_SPLTRR(1,MRSURF,NINCX,*210,*700)
+          CALL EIRENE_SPLTRR(1,MRSURF,NINCX,IRET)
+          IF (IRET == 1) GOTO 210
+          IF (IRET == 2) GOTO 700
         ENDIF
       ENDIF
 C
@@ -943,7 +966,11 @@ c     PR= cond. exp probability to reach this surface. PR=1. by default
 C
 C  UPDATE EFFLUXES ONTO SURFACE AND REFLECT PARTICLE
 C
-      CALL EIRENE_ESCAPE(PPR,SG,*100,*104,*512)
+!pb   CALL EIRENE_ESCAPE(PPR,SG,*100,*104,*512)
+      CALL EIRENE_ESCAPE(PPR,SG,IRET)
+      IF (IRET == 1) GOTO 100
+      IF (IRET == 2) GOTO 104
+      IF (IRET == 3) GOTO 512
 C
 C   GOTO 100: START NEW TRACK OF NEUTRAL PARTICLE
 C   GOTO 104: CONTINUE THIS TRACK, TRANSPARENT SURFACE IS CROSSED

@@ -534,7 +534,11 @@ C
          IF (IRET .EQ. 2) GOTO 38
       endif
 C     IF (ISRFCL.EQ.2) CALL TIMCOL (...                          )
-      IF (ISRFCL.EQ.3) CALL EIRENE_TORCOL (               *14 )
+C     IF (ISRFCL.EQ.3) CALL EIRENE_TORCOL (               *14 )
+      IF (ISRFCL.EQ.3) THEN
+        CALL EIRENE_TORCOL (IRET)
+        IF (IRET .eq. 1) GOTO 14
+      END IF
 C
 C  NO, CONTINUE TRACK
 C
@@ -885,8 +889,17 @@ C
          IF (IRET .EQ. 1) GOTO 104
          IF (IRET .eq. 2) GOTO 380
       ENDIF
-C     IF (ISRFCL.EQ.2) CALL TIMCOL (...            *104,*800)
-      IF (ISRFCL.EQ.3) CALL EIRENE_TORCOL (               *104)
+C     IF (ISRFCL.EQ.2) THEN
+C       CALL TIMCOL (...,IRET)
+C       IF (IRET .EQ. 1) GOTO 104
+C       IF (IRET .eq. 2) GOTO 800
+C      ENDIF
+        
+c     IF (ISRFCL.EQ.3) CALL EIRENE_TORCOL (               *104)
+      IF (ISRFCL.EQ.3) THEN
+        CALL EIRENE_TORCOL (IRET)
+        IF (IRET .EQ. 1) GOTO 104
+      ENDIF
 C
 C  NO, CONTINUE TRACK
 C

@@ -10,7 +10,8 @@ cdr nov. 15:  multiple bulk ion species, new array fnuiar(ipl)
 cdr           to be done:  proper definition of eipl, and e0new, in cases
 cdr                        of multiple background ion species
 C
-      SUBROUTINE EIRENE_FPKCOL(*,*,*,IND)
+!pb   SUBROUTINE EIRENE_FPKCOL(*,*,*,IND)
+      SUBROUTINE EIRENE_FPKCOL(IRET,IND)
 C
 C  IF IND=0 (DEFAULT)
 C  1.) ADVANCE PARTICLE BY TIMESTEP DUR, AND THEN
@@ -57,12 +58,17 @@ C
       USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
 
       IMPLICIT NONE
-
+      
+      INTEGER, INTENT(IN) :: IND
+      INTEGER, INTENT(OUT) :: IRET
+      
       REAL(DP) :: DUR, E0OLD, E0NEW, VNEW, WS, FAC, GYRO,
      .            BVEC_1(3), VVEC(3), VELS, FNUI, EWG
-      INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IND, IPL
+      INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IPL
 ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
-C  SAVE INCIDENT SPECIES: IOLD
+C     SAVE INCIDENT SPECIES: IOLD
+      
+      IRET = 0
       IOLD=IION
       E0OLD=E0
       NCELLT=NCLTAL(NCELL)
@@ -188,7 +194,8 @@ c strictly: e0new, vnew should be modified, due to new gyro phase.
 
       VEL=VNEW
       E0=E0NEW
-      RETURN 2
+      IRET = 2
+      RETURN
 C
 C  POST-COLLISION ESTIMATOR
 C
@@ -196,7 +203,8 @@ C     IF (NCLVI.GT.0) THEN
 C       WS=WEIGHT/SIGTOT
 C       CALL UPCUSR(WS,2)
 C     ENDIF
-      RETURN 2
+      IRET = 2
+      RETURN
 C
   991 CALL EIRENE_MASAGE
      .  ('ERROR IN FPKCOL, CALLED WITH LCART=TRUE')
@@ -222,5 +230,6 @@ C
       LGPART=.FALSE.
       WEIGHT=0.
       CALL EIRENE_LEER(1)
-      RETURN 3
+      IRET = 3
+      RETURN
       END
