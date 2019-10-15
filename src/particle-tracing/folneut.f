@@ -652,12 +652,6 @@ C
         IF (IRET .EQ. 1) GOTO 104
         IF (IRET .eq. 2) GOTO 380
       ENDIF
-!pb   IF (ISRFCL.EQ.2) THEN
-      IF (ISRFCL.EQ.2) THEN
-        CALL EIRENE_TIMCOL (PR,IRET)
-        IF (IRET .EQ. 1) GOTO 104
-        IF (IRET .eq. 2) GOTO 800
-      ENDIF
 !pb   IF (ISRFCL.EQ.2) CALL EIRENE_TIMCOL (PR,            *104,*800)
       IF (ISRFCL.EQ.2)THEN
         CALL EIRENE_TIMCOL (PR,IRET)
