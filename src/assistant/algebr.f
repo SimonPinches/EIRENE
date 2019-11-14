@@ -305,7 +305,7 @@ C
 cdr This routine writes "complain-messages"
 cdr from ALGEBR, i.e. from the routines
 cdr that try to decipher the coded algebraic
-cdr expressions for the algebr. tallies
+cdr expressions for the algebraic tallies
 cdr ALGV, ALGS specified in input block 10C and 10E, resp.
 cdr Mecker.f should be moved into ALGEBR.f
 
