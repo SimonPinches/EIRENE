@@ -746,6 +746,8 @@ c  data for photon line transport
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NREACI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
+      CALL MPI_BCAST (MAXSPC,5,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+
 cdr something for the internal CRM options, of blocks 4,12 here: H_Colrad.
       CALL MPI_BCAST (NHCOL_STORE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (M_HCOL,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)

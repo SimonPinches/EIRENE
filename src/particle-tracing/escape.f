@@ -983,7 +983,11 @@ C
 C     NLTRJ = .FALSE.
 C     TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
 
-      IF  (ITYP.EQ.ITYP_OLD) RETURN 1
+!pb   IF  (ITYP.EQ.ITYP_OLD) RETURN 1
+      IF  (ITYP.EQ.ITYP_OLD) THEN
+        IRET = 1
+        RETURN
+      END IF
       IF ((ITYP.EQ.1.AND.ITYP_OLD.EQ.2).OR.
      .     (ITYP.EQ.2.AND.ITYP_OLD.EQ.1)) THEN
         IRET = 1
