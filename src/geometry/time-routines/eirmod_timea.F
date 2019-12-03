@@ -22,7 +22,8 @@ c     using special octree stuff, to speed up additional surface handling
       PRIVATE
 
       PUBLIC :: EIRENE_TIMEA0, EIRENE_TIMEA3_VTKOUT,
-     .          EIRENE_TIMEA1, EIRENE_TIMEA0_OC
+     .          EIRENE_TIMEA1, EIRENE_TIMEA0_OC,
+     .          EIRENE_TIMEA_REINIT
 
 c     the octree
       TYPE(octree), POINTER, SAVE :: TREE
@@ -853,5 +854,12 @@ c  that are no tri/quad/quintangles
 
       END SUBROUTINE EIRENE_TIMEA0_BUILDOC
 
+      
+      SUBROUTINE EIRENE_TIMEA_REINIT
 
+      if (ALLOCATED(NOTOCSURFS)) DEALLOCATE (NOTOCSURFS)
+      if (ASSOCIATED(tree)) call OCTREE_DeleteTree(tree)
+      
+      END SUBROUTINE EIRENE_TIMEA_REINIT
+      
       END MODULE EIRMOD_TIMEA
