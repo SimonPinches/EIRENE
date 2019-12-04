@@ -23,7 +23,7 @@ c     using special octree stuff, to speed up additional surface handling
 
       PUBLIC :: EIRENE_TIMEA0, EIRENE_TIMEA3_VTKOUT,
      .          EIRENE_TIMEA1, EIRENE_TIMEA0_OC,
-     .          EIRENE_TIMEA_REINIT
+     .          EIRENE_DEALLOC_TIMEA
 
 c     the octree
       TYPE(octree), POINTER, SAVE :: TREE
@@ -539,6 +539,9 @@ c  create HNF coefficients (normalized vector and distance)
 
 c.....................................................
 
+!pb 04122019
+!pb   clean up in case NLIMI changed from a prior iteration      
+      call eirene_dealloc_timea
       IF (NLOCTREE) then
 c  calling an internal subroutine for preparing octree procedure:
 c  set flag NOTOCSURFS of those additional surfaces, which are not
@@ -855,11 +858,11 @@ c  that are no tri/quad/quintangles
       END SUBROUTINE EIRENE_TIMEA0_BUILDOC
 
       
-      SUBROUTINE EIRENE_TIMEA_REINIT
+      SUBROUTINE EIRENE_DEALLOC_TIMEA
 
       if (ALLOCATED(NOTOCSURFS)) DEALLOCATE (NOTOCSURFS)
       if (ASSOCIATED(tree)) call OCTREE_DeleteTree(tree)
       
-      END SUBROUTINE EIRENE_TIMEA_REINIT
+      END SUBROUTINE EIRENE_DEALLOC_TIMEA
       
       END MODULE EIRMOD_TIMEA

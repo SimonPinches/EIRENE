@@ -22,7 +22,6 @@
       use EIRMOD_REFLEC, ONLY: EIRENE_REFLEC_REINIT
       use EIRMOD_SPUTER, ONLY: EIRENE_SPUTER_REINIT
       use EIRMOD_STCOOR, ONLY: EIRENE_STCOOR_REINIT
-      use EIRMOD_TIMEA, ONLY: EIRENE_TIMEA_REINIT
 
       implicit none
 
@@ -75,8 +74,6 @@ cdr   call EIRENE_BA_ALPHA_REINIT
       call eirene_colrad_reinit
 
       call eirene_reinit_partinfo
-
-      call eirene_timea_reinit
 
 C     reinitialization end
 
