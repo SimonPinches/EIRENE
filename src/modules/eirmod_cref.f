@@ -1,7 +1,9 @@
       MODULE EIRMOD_CREF
+cdr Data for surface reflection models
+
 cdr  june 17: remove parameter NFLR. Redundant. Was same as NHD6
 cdr  may 18 : perhaps unnecessary hard-coding of dimensions in some arrays,
-cdr           rather than using parameters NHD1,...NHD5 ??
+cdr           rather than using parameters NHD1,...NHD5 ?
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -78,20 +80,21 @@ C  generalized to become surface-specific (allows for different values per surfa
       ALLOCATE (AINTEG(0:NLIMPS))
 
       WRITE (IUNMEM,'(A,T25,I15)')
-     .       ' CREF ',(NCREF+3*(NLIMPS+1))*8 + MCREF*4 + NHD6*500 +
+     .       ' CREF ',(NCREF+3*(NLIMPS+1))*8 + MCREF*4 +
+     .                 NHD6*500 +  ! reffile array: character-string for path to datafiles
      .                (NHD1*NHD2*NHD6*(1+NHD3*(1+NHD4*(1+NHD5))))*8
 
       RPROB0    => RCREF(1)
       ERMIN     => RCREF(2)
       ERCUT     => RCREF(3)
-cdr these next arrays contain hard-coded assumptions on parameters NHDI.
-cdr Why can we not use NHDI directly?
+cdr these next arrays contain hard-coded assumptions on parameters NHDx.
+cdr Why can we not use NHDx directly?
       ENAR      => RCREF( 4:15)  ! here for NHD1=12.
-      DENAR     => RCREF(16:26)  ! here for NHD1=12
+      DENAR     => RCREF(16:26)  ! here for NHD1=12, 12-1=11
       WIAR      => RCREF(27:33)  ! here for NHD2=7.
-      DWIAR     => RCREF(34:39)
-      RAAR      => RCREF(40:44)
-      DRAAR     => RCREF(45:48)
+      DWIAR     => RCREF(34:39)  ! here for NID2=7, 7-1=6
+      RAAR      => RCREF(40:44)  !              =5 
+      DRAAR     => RCREF(45:48)  !                  5-1=4
 
       TM        => RCREF(49+0*NHD6 : 48+1*NHD6)
       TC        => RCREF(49+1*NHD6 : 48+2*NHD6)

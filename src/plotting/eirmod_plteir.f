@@ -297,7 +297,7 @@ cdr  ITL = IABS(JTAL)
               END IF  
 
               IF (ISPZ.EQ.0) THEN
-cdr  sum over species:  this is non-sense in case of intensive quantities, such as Ti,V_in
+cdr  sum over species:  this is nonsense in case of intensive quantities, such as Ti,V_in
 cdr                     and also in case of derivatives.
 cdr  tbd:  summing with proper weighting, as in outtal.f
                 SELECT CASE (ITL)

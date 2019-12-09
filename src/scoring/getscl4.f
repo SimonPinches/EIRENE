@@ -27,7 +27,7 @@ c  The factor FC(1) is then to be applied to all tallies (volumetric or surface 
 c  which scale linearly with the external source B(1) for particles of type 1 (i.e. for "atoms").
 c  Similarly for the other typs, FC(2),... etc...
 
-c  most of the programming below deals with possible zeros in rows and columns,
+c  most of the programming below deals with possible zeroes in rows and columns,
 c  i.e. with cases that some type of particle (e.g. photons) may no be present.
 c
 c
@@ -402,9 +402,9 @@ C
 !  FOR THE TIME BEING
 
       CALL EIRENE_LEER(1)
-      WRITE (iunout,*)
-     .  'EIRENE RECOMMENDED RESCALING OF VOLUME-AVERAGED'
-      WRITE (iunout,*) 'TALLIES DUE TO STATISTICAL ERRORS IN BALANCE'
+      WRITE (iunout,'(1X,2A)')
+     .  'EIRENE RECOMMENDED RESCALING OF VOLUME-AVERAGED ',
+     .  'TALLIES DUE TO STATISTICAL ERRORS IN BALANCE'
       CALL EIRENE_MASR4 ('FATM,FMOL,FION,FPHOT            ',
      .             FC(1),FC(2),FC(3),FC(4))
       CALL EIRENE_LEER(2)

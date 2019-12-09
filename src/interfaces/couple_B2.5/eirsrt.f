@@ -81,7 +81,7 @@ C
       INTEGER :: IN, IAEI, IMEI, IIEI, IREI, IFIRST, K, JC, NDXY,
      .           J, IRC, NREC10, NREC11, ITNR, IPLSTI, IST_RATE, IST,
      .           JATM, JMOL, JION, JPLS,
-     .           IFRSTR, ISTH, ISTNEW, ISTIN, ISTRAI
+     .           ISTRAI
       REAL(DP), ALLOCATABLE :: OUTAU(:)
       INTEGER, ALLOCATABLE :: IHELP(:)
       LOGICAL :: LSTP, LLST, LPLASM

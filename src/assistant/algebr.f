@@ -169,7 +169,7 @@ chr               als zwischenergebnis
                     if (feldind == 0) then
                       READ(PART(I)(12:12),'(I1)') IZIF(1,I)
                       IZIF(2,I)=0
-                    else   
+                    else
                       IK=INDEX(ERSETZ(FELDIND),',')
                       IF (IK.EQ.0) THEN
                         IC = IC + 1
@@ -302,7 +302,7 @@ C
 
       CONTAINS
 
-cdr This routine writes "complain-messages"
+cdr This routine writes "complaint messages"
 cdr from ALGEBR, i.e. from the routines
 cdr that try to decipher the coded algebraic
 cdr expressions for the algebraic tallies

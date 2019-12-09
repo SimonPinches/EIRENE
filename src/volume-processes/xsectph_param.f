@@ -1,5 +1,5 @@
 C  28.6.05
-C nnrot --> nrPH, for subr. find_param, setamd, after removing phv_nrota,
+C nnrot --> nrph, for subr. find_param, setamd, after removing phv_nrota,
 C                 and phv_nrotph
 C
       SUBROUTINE EIRENE_XSECTPH_PARAM

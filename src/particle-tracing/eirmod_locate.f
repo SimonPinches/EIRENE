@@ -1523,7 +1523,7 @@ csw
 cdr  ilspt=0 in case of transparent surfaces was a safety procedure in subr. input.f
 cdr  this has now been bypassed. Better: do that in couple_b2 (case-specific), but not in eirene itself
 
-C  SAVE INCIDENT PARTICLE'S SPEED AND ENERGY
+C  SAVE INCIDENT PARTICLE SPEED AND ENERGY
               E0S=E0
               WEIGHS=WEIGHT
               VELS=VEL
@@ -2052,8 +2052,6 @@ C  VOLUME TALLIES FOR TEST SECONDARIES
               IF (LPPPHT) PPPHT(IPHOT,NCELLT)=PPPHT(IPHOT,NCELLT)+WEIGHT
               IF (LEPPHT) EPPHT(NCELLT)=EPPHT(NCELLT)+E0*WEIGHT
               LAST_EVENT%ISPEZ = IPHOT
-              STEMIS=E0*WEIGHT
-              STWEI=WEIGHT
           END SELECT
 C  TALLIES FOR BULK-SECONDARIES (IF ANY)
           IF (ITYP_B1.EQ.4) THEN

@@ -156,6 +156,7 @@ c  total no. of reaction cards read in block 4
       NRCX=1
       NREL=1
       NRPI=1
+C
 C  LINE-OF-SIGHT DIAGNOSTICS
       NCHOR=0
       NCHEN=0
@@ -215,7 +216,7 @@ C  NUMBER OF BACKGROUND SPECTRA
       NBACK_SPEC=0
 
 
-c  NEXT:  BROWSE INPUT FILE AND IDENTIFY THE REAL STORAGE NEEDS.
+c  NEXT:  BROWSE INPUT FILE AND IDENTIFY THE STORAGE NEEDS.
 c   e.g. NPARMI, then set the storage (for allocatable arrays): NPARM = MAX(NPARM,NPARMI)
 c   in most cases then: NPARM=NPARMI
 
@@ -514,6 +515,7 @@ C
       IF (NLTOR.AND.NLTRA) NTTRA=NT3RD
 cdr  storage for 3nd coordinate grid only, if NLTOR=T
       IF (NLTOR) N3RD = MAX(N3RD,NT3RD)
+
 CDR STORAGE FOR TOROIDAL EFFECTS, EVEN IF
 CDR NO TOROIDAL RESOLUTION IS USED
       NTOR = MAX(NTOR,NTTRA)
@@ -714,7 +716,7 @@ cdr     READ (ZEILE(12:14),'(I3)') NMASSM(IMOL)
         DO K=1,NRC
 cpb......................................
 cdr:  try to identify if there are so-called BGK collisions, input flag IBGK:
-cdr:  to be generalized: there may be other reactions, which require multiple Ti profiles
+cdr:  to be generalized: there may be other reactions, which require multiple (IPLS) profiles
           READ (IUNIN,'(12I6)') IDUM(1:12)
           IF (NUMSEC < 3) THEN
             LMULTI = LMULTI .OR. (IDUM(7) /= 0)
@@ -751,7 +753,7 @@ cdr     READ (ZEILE(12:14),'(I3)') NMASSI(IION)
         DO K=1,NRC
 cpb......................................
 cdr:  try to identify if there are so-called BGK collisions, input flag IBGK::
-cdr:  to be generalized: there may be other reactions, which require multiple Ti profiles
+cdr:  to be generalized: there may be other reactions, which require multiple (IPLS) profiles
           READ (IUNIN,'(12I6)') IDUM(1:12)
           IF (NUMSEC < 3) THEN
             LMULTI = LMULTI .OR. (IDUM(7) /= 0)
@@ -819,6 +821,8 @@ C
 
       ALLOCATE (BULK_NAME(NPLSI))
       BULK_NAME = REPEAT(' ',15)
+
+c  count special plasma background models:
       ICO = 0
       DO IPLS=1,NPLSI
         READ (IUNIN,'(A72)') ZEILE
@@ -834,6 +838,7 @@ C
      .        INDEX(ULINE,'COLRAD')+
      .        INDEX(ULINE,'CONSTANT')
         IF (INMDL > 0) ICO = ICO + 1
+
         READ (ZEILE(33:35),'(I3)') NRC
         DO K=1,NRC
           READ (IUNIN,*)
@@ -1066,7 +1071,7 @@ cdr  this must be highly case specfic. To be reconsidered !!
       READ (IUNIN,*)
       DO ISTRA=1,NSTRAI
         IF (INDSRC(ISTRA) == 6) CYCLE
-C * 7ABCD...: STRATUM NAME
+C * ZEILE...: STRATUM NAME
         READ (IUNIN,'(A72)') ZEILE
         WRITE (IUNOUT,'(A1,A72)') ' ',ZEILE
         READ (IUNIN,*)
@@ -1374,7 +1379,7 @@ cdr do we require a second QSS population ratio for this contribution?
                 END IF
               END IF  !  IRATIO
             END DO    !  NUM_CONTRIB   (POSSIBLE D, H, T CONTRIBUTE TO GROUND STATE EMISSIVITY)
-          END DO      !  NUM_COMPO     (E.G.  GROUND STATE
+          END DO      !  NUM_COMPO     (E.G. GROUND STATE)
         END DO        !  NUM_LINES     (E.G. BA-ALPHA)
 
 c  STORAGE FOR ADDITIONAL TALLIES NADV_ADD, AND REACTIONS IREAC_ADD (LINE EMISSIVITIES)
@@ -1399,8 +1404,8 @@ cdr this next condition for old default: better also check for nchtal=2 ??
 ! USE MAXIMUM POSSIBLE NUMBER OF CONTRIBUTIONS, AS NCHAR AND NCHRG ARE NOT YET AVAILABLE
         NUM_CONTRIB =
      .   NATMI + NMOLI + 2*NMOLI + 2*NMOLI + 3*NMOLI + NPLSI
-cdr  ?? perhaps: in old default only one line possible at a time?
-cdr  ?? but why then: num_lines=6 rather than num_lines=1 ?
+cdr  ? perhaps: in old default only one line possible at a time?
+cdr  ? but why then: num_lines=6 rather than num_lines=1 ?
         NREAC = NREAC + NUM_CONTRIB*NUM_COMPO  !dr: this must be way too large
 
       END IF

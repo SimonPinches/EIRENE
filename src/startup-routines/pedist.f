@@ -156,6 +156,7 @@ C>   processes to one stratum.
         DO ISTRA=1,NSTRA
           CALL EIRENE_MASJ1R ('STRATUM, TIME   ',ISTRA,XTIM(ISTRA))
         END DO
+        CALL EIRENE_LEER(1)
 
       ELSE
 
@@ -188,6 +189,7 @@ C>   processes to one stratum.
           DO ISTRA=1,NSTRA
             WRITE (iunout,*) ISTRA,TIMPE(ISTRA)
           ENDDO
+          CALL EIRENE_LEER(1)
 
           WRITE (iunout,*) ' NPRS_FREE ',NPRS_FREE
 
@@ -202,7 +204,6 @@ C>   processes to one stratum.
           WRITE (iunout,*) ' NPESTR'
           WRITE (iunout,'(12I6)') (NPESTR(ISTRA),ISTRA=1,NSTRA)
           WRITE (iunout,*) ' NPRS_FREE ',NPRS_FREE
-
 
         else
 

@@ -59,7 +59,7 @@ c  may  15: argument in first call to vecusr: ipls, rather than iplsv, now every
 c  aug. 15: arguments in vecusr added: ncell, x0, y0, z0
 C  NOV. 15: INDSRF: SURFACE NUMBER FOR SHEATH MODEL, ONLY IN CASE OF STEP FUNCTION OPTION
 CDR         now: default is ALWAYS set. INDSRF is e.g. argument in call to fct. SHEATH(...)
-cdr nov.16: istra --> istrai, ispz -->jspz, and a bit more info on diagnostic prinout
+cdr nov.16: istra --> istrai, ispz -->jspz, and a bit more info on diagnostic printout
 cdr dec.17: cleanup, comments
 C
       SUBROUTINE EIRENE_SAMSRF
@@ -809,11 +809,11 @@ C
       DO 1000 J=1,3
         IK=NLSF+(J-1)*NSRFS
         GOTO (10,20,30,40),INDTEC(IK,ISTRA)
-C   ZZ(JCALC) IS TO BE CALCULATED FROM SURFACE-EQUATION
+C   ZZ(JCALC) IS TO BE CALCULATED FROM SURFACE EQUATION
           IF (JCALC.NE.0) GOTO 997
           JCALC=J
           GOTO 1000
-C   DELTA DISTRIBUTION AT CENTER OF INTERVALL
+C   DELTA DISTRIBUTION AT CENTER OF INTERVAL
    10   CONTINUE
           ZZ(J)=(ALEFT(J,NLSF,ISTRA)+BRGHT(J,NLSF,ISTRA))*0.5
           GOTO 1000
@@ -1632,8 +1632,9 @@ C
       CALL EIRENE_EXIT_OWN(1)
   996 CONTINUE
       WRITE (iunout,*) 'ERROR IN SAMSRF. EXIT CALLED'
-      WRITE (iunout,*) 'ARCLENGTH BL GREATER THAN THE LENGTH OF THE '
-      WRITE (iunout,*) 'POLYGONE    BL = ',BL
+      WRITE (iunout,*)
+     . 'ARCLENGTH BL GREATER THAN THE LENGTH OF THE POLYGON'
+      WRITE (iunout,*) 'BL = ',BL
       CALL EIRENE_EXIT_OWN(1)
   997 CONTINUE
       WRITE (iunout,*) 'ERROR IN SAMSRF. EXIT CALLED'
@@ -1644,13 +1645,13 @@ C
       CALL EIRENE_EXIT_OWN(1)
   998 CONTINUE
       WRITE (iunout,*) 'ERROR IN SAMSRF. EXIT CALLED'
-      WRITE (iunout,*) 'X0,Y0,Z0 ',X0,Y0,Z0
+      CALL EIRENE_MASR3('X0, Y0, Z0              ',X0,Y0,Z0)
       WRITE (iunout,*) 'BUT OUTSIDE THE VALID AREA OF THIS SURFACE'
       CALL EIRENE_EXIT_OWN(1)
   999 CONTINUE
       WRITE (iunout,*) 'ERROR IN SAMSRF. EXIT CALLED'
       WRITE (iunout,*) 'INITIAL CELL NUMBER INVALID OR DET NEGATIVE'
-      WRITE (iunout,*) 'X0,Y0,Z0,DET ',X0,Y0,Z0,DET
+      CALL EIRENE_MASR4('X0, Y0, Z0, DET                 ',X0,Y0,Z0,DET)
       WRITE (iunout,*) 'ISTEP ',ISTEP
       WRITE (iunout,*) 'NBLOCK,NACELL,NRCELL ',NBLOCK,NACELL,NRCELL
       WRITE (iunout,*) 'NPCELL,NTCELL,IPOLG ',NPCELL,NTCELL,IPOLG

@@ -72,7 +72,7 @@ C          ARE NOT INCLUDED IN SOURCE/SINK TALLIES.
 C          IN CASE OF EAPL THIS IS IMPORTANT, IN ORDER NOT TO MIX ENERGY SOURCES FOR REAL BACKGROUND
 C          IONS WITH ENERGY SOURCES FOR VIRTUAL BACKGROUND "IONS" (MISSING SPECIES INDEX)
 C          BUT:  CURRENTLY MISSING IN EAAT: CONTRIBUTIONS OF ENERGY EXCHANGE DUE TO BGK COLLISIONS
-C          (BOTH SOURCE (DUE TO C) AND SINK (DUE TO B)
+C          (BOTH SOURCE (DUE TO C) AND SINK (DUE TO B))
 
 
       USE EIRMOD_PRECISION
@@ -342,7 +342,7 @@ C
    44   CONTINUE
    43   CONTINUE
 C
-C  ELASTIC NEUTRAL BULK-ION COLLISION CONTRIBUTION
+C  ELASTIC NEUTRAL BULK ION COLLISION CONTRIBUTION
 C
         IF (LGXEL(IXSPZ,0,0).EQ.0) GOTO 60
 C  DEFAULT TRACKLENGTH ESTIMATOR
@@ -693,7 +693,7 @@ cdr       if (lbvin) signum=sign(1.,val_parp)
           END IF
 c
 c  set parameters for parallel momentum of incident neutral particle
-c  v0_parb   : parallel velocity component, incl. sign, relavive to B
+c  v0_parb   : parallel velocity component, incl. sign, relative to B
 c  parmom_0  : parallel momentum
           V0_PARB=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
           PARMOM_0=V0_PARB*CNDYNX

@@ -5,6 +5,7 @@ c  11.04.15:  SPATOT RENAMED TO PMPTOT (pumped flux, rather than sputtered flux)
 c  dec.15:    species-resolved bulk ion energy balance eapl,empl,...etc..
 cdr aug.16:   X1D(1:nrad): for 1d grids: spatial coordinate, for printout
 cdr           new argument in prttal  (same: outpla, calls to prttal)
+cdr aug.19:   bugfix: PAMLI instead of PMMLI in one instance (only affects printout)
 C
       SUBROUTINE EIRENE_OUTEIR(INDOUT)
 
@@ -530,6 +531,7 @@ C   ATOMS FROM PRIMARY SOURCE
      .                WTOTA,LOGATM,ISTRA,0,NATM,0,NSTRA,TEXTS(NSPH+1))
         CALL EIRENE_MASAGE('SUM OVER SPECIES')
         CALL EIRENE_MASR1 ('TOTAL=  ',WTOTA(0,ISTRA))
+        CALL EIRENE_LEER(1)
       ENDIF
 C
       IF (.NOT.LPPAT) THEN
@@ -544,6 +546,7 @@ C
      .                PPATI,LOGATM,ISTRA,0,NATM,0,NSTRA,TEXTS(NSPH+1))
         CALL EIRENE_MASAGE('SUM OVER SPECIES')
         CALL EIRENE_MASR1 ('TOTAL=  ',PPATI(0,ISTRA))
+        CALL EIRENE_LEER(1)
       ENDIF
 C
       IF (.NOT.LPAAT) THEN

@@ -271,7 +271,7 @@ CVKMPI      SECND=XTIM(0)
 
       timan=secnd
 C
-C  REMAINING CPU TIME, SUBSTRACT N2 SECONDS FOR PRINTOUT AND PLOTS
+C  REMAINING CPU TIME, SUBTRACT N2 SECONDS FOR PRINTOUT AND PLOTS
 !pb   XX1=XX-N2
 
 C  CHANGED:  use XX=NTCPU seconds of cpu-time for calculation of trajectories
@@ -513,7 +513,8 @@ c  and otherwise enforces that or stops the run.
 
 c  find random number seed from truly random procedure from wall clock time (use date and time)
           ELSEIF (NINITL(ISTRA).LT.0) THEN
-            CALL DATE_AND_TIME(CDATE,CTIME)  ! a number between 0 and 23:59:59 --> 5.094.060
+cdr  format of CDATE: hhmmss.xxx
+            CALL DATE_AND_TIME(CDATE,CTIME)  ! a number between 0 and 235959 
             READ(CTIME(1:6),*) NINITL(ISTRA)
 !pb 28012016
 !  add number of calls to MCARLO in order to avoid same random seeds in very short
@@ -714,9 +715,9 @@ c  then re-initialize with original seed
               idumran=ranset_eirene(iseed_iptsi)
 ! save a derived new seed for next particle.
 ! after returning a new seed, the status of the random number generator is
-! in ranget.f arleady reset back to iseed_iptsi
+! in ranget.f already reset back to iseed_iptsi
               iseed_istra=ranget_eirene(iseed_iptsi)
-! now we have the seed iseed_iptsi to start the histrory.
+! now we have the seed iseed_iptsi to start the history.
 
 C  FOR TEST ONLY: PRINT FIRST RANDOM NUMBER PER TRAJECTORY
               IF (TRCRNF) THEN

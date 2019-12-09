@@ -2,16 +2,17 @@
 cdr  sept. 2015: npartt=11, rather than 12 (xgener not stored on census)
 cdr  april 2017: some cleanup carried over from solps_iter branch
 cdr  nov.17    : dead flag: nlstor, (and call store...) now removed
+cdr  oct.19    :  started to remove unused variables, ..._mean, stemis, etc.
 
 c.........................................................................
 c
-c  comprt contains particle coordinates along track
-c  the full information for restart after splitting is contained in the
+c  COMPRT contains particle coordinates along track.
+c  The full information for restart after splitting is contained in the
 c  npartc (real) and mpartc (integer) variables.
 c
-c  a reduced set for restart from a census array (initial condition in time)
-c  is contained in the
-c  npartt (real) and mpartt (integer) variables.
+c  A reduced set for restart from a census array (initial condition in time)
+c  is contained in the smaller
+c  NPARTT (real) and MPARTT (integer) variables.
 
 c  mpartc, npartc and mpartt, npartt are set in eirmod_parmmod
 
@@ -26,7 +27,15 @@ c  mpartc, npartc and mpartt, npartt are set in eirmod_parmmod
       PRIVATE
 
       PUBLIC :: EIRENE_ALLOC_COMPRT, EIRENE_DEALLOC_COMPRT,
-     P          EIRENE_INIT_COMPRT, EVENT_TYPE
+     P          EIRENE_INIT_COMPRT
+
+cdr..............................................
+cdr   event-type is currently unused (still set in locate). Formerly: characterize
+cdr   previous event, e.g. for modified scoring.
+cdr   For example: removal of emission and
+cdr   absorption within same cell from scoring.
+
+      PUBLIC :: EVENT_TYPE
 
       TYPE :: EVENT_TYPE
         INTEGER :: NCELL, ITYP, ISPEZ, IFLAG
@@ -34,6 +43,8 @@ c  mpartc, npartc and mpartt, npartt are set in eirmod_parmmod
       END TYPE EVENT_TYPE
 
       TYPE(EVENT_TYPE), PUBLIC, SAVE :: LAST_EVENT
+cdr   later use: last_event%e0, last_event%weight ...
+cdr..............................................
 
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE :: RPST(:)
 
@@ -60,13 +71,14 @@ C  SOME FURTHER REAL VARIABLES USED ALONG PARTICLE TRAJECTORY
      R CRTX,   CRTY,   CRTZ,   SCOS,   SCOS_SAVE,  WGHTSP, WGHTSC,
      R CRTXG,  CRTYG,  CRTZG
 
-      REAL(DP), PUBLIC, SAVE ::
-     R VEL_MEAN, VELX_MEAN, VELY_MEAN, VELZ_MEAN, E0_MEAN
+c............................................................
+cdr the following variables are unused. Left over from former, mostly
+cdr unfinished options. To be removed?
 
-      REAL(DP), PUBLIC, SAVE :: STEMIS, STWEI, DE0_RAYL, DE0_RAYR
-
+      REAL(DP), PUBLIC, SAVE :: DE0_RAYL, DE0_RAYR
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE :: E0_RAY(:)
 
+c.............................................................
       INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE :: IPSTD(:)
 
       INTEGER, PUBLIC, POINTER, SAVE :: IPST(:), IPSTT(:)
@@ -200,6 +212,10 @@ c  up to here: for splitting, mpartc
 
 
       SUBROUTINE EIRENE_INIT_COMPRT (NPRS)
+cdr:  called from ??
+cdr   purpose ??
+C NPRS: NUMBER OF COMPUTE THREADS IN MPI PARALLEL MODE
+C     needed for IUNOUT
 
       INTEGER, INTENT(IN) :: NPRS
 
@@ -276,9 +292,10 @@ c  up to here: for splitting, mpartc
       DE0_RAYR = 0._DP
 
 c  io files
-c     IUNIN = 1
+cdr same code as in subr. EIRENE
       IUNOUT = 6 + IFOFF
       IF (NPRS > 1) IUNOUT = 7 + IFOFF
+
       IVTKOUT= 28
 
 

@@ -1,10 +1,11 @@
 c  new in 2004:
 c  density models to contruct background data from other given data :
-c      Saha, Boltzmann, Corona, Colrad, File (fort.13, or: fort.10)
+c      Saha, Boltzmann, Planck, 
+c      corona, colrad, file (fort.13, or fort.10)
 c
 c  presently:  "File" and "Boltzmann": may affect electron density.
 c              hence: done prior to electron density, etc...
-c              "Corona", "Colrad", "Saha": need electron density as
+c              "Corona", "Colrad", "Saha", "Planck": need electron density as
 c                            input, or, at least, do not affect n_e
 c                            hence: done after electron density, etc...
 C  may05
@@ -181,17 +182,6 @@ cdr
         SELECT CASE (CDENMODEL(IPLS))
           CASE (FORT//'13')
 
-cdr  read all plasma background data (all ipls), each time. Better: move outside IPLS loop.
-!            CALL EIRENE_ALLOC_BCKGRND
-!            ALLOCATE(DEINTF(NRAD))
-!            OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
-!            REWIND 13+ifoff
-!            READ (13+ifoff,IOSTAT=IO) TEINTF,TIINTF,DEINTF,DIINTF,
-!     .                                VXINTF,VYINTF,VZINTF
-!            IF (TRCFLE) WRITE (iunout,*) 'READ 13: RCMUSR, IO= ',IO
-!            CLOSE (UNIT=13+ifoff)
-!pb            CALL EIRENE_RPLAM(TRCFLE,10)
-
             IF (IO.EQ.0) THEN
               IOLD=TDMPAR(IPLS)%TDM%ISP(1)
 c             ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
@@ -324,6 +314,7 @@ c           ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
             DEALLOCATE (BASE_TEMP)
         END SELECT
       END DO
+
       IF (ALLOCATED(DEINTF)) DEALLOCATE(DEINTF)
 
 c......................................................................
@@ -419,8 +410,6 @@ c  these two processes for the given "ground state" density BASE_DENSITY
 
 cdr  what is this?  background spectrum ?
 cdr  if so, why in corona part?
-cdr  Spectral distribution of excited state assumed to
-cdr  be that of donor-state?
             IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
               IF (LSPCCLL(IR)) THEN
                 CALL EIRENE_GET_SPECTRUM (IR,1,SPEC,FOUND)
@@ -645,10 +634,7 @@ c  scale merged contributions from all contributing densities
 c .................................................................colrad done
 
         CASE DEFAULT
-!pb this select case construct does not check all possible options
-!pb therefore no error exit 
-!pb          write (iunout,*) 'unknown DENSITY MODEL option, ipls= ',ipls
-!pb          call eirene_exit_own(1)
+!  NOTHING TO BE DONE HERE, ALREADY COMPLETED
         END SELECT ! density model
 
 
@@ -823,7 +809,7 @@ C
       IF (LDISMO) THEN
         do ipls = 1, npls
           call eirene_cell_to_corner(DIIN(ipls,:),DIINCORNER(:,ipls))
-        ENDDO
+        end do
       ENDIF 
   
       IF (LEDRIFTSMO) THEN

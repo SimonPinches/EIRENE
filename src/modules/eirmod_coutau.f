@@ -2,7 +2,12 @@ c nov. 2015:  species index ipls added for energy-pl tallies:
 c             eapli,empli,eipli,ephpli,eppli
 cdr dec. 15:  comments added. missing tallies ppeli, epeli, etc..??
 cpb jan. 18:  array NFSTPI moved to module EIRMOD_COMUSR
+
       MODULE EIRMOD_COUTAU
+cdr  mostly global tallies integrated from more deeply 
+cdr  resolved tallies,
+cdr  integration done during post MC-loop processing.
+cdr  Few are directly scored: ptrash, etrash, .... xmcp 
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -376,14 +381,16 @@ cdr  etote still missing ??
       WRITE (IUNMEM,'(A,T25,I15)')
      .       ' COUTAU ',NOUTAU*8 + NOUTTL*4
 
+cdr this should go to another place?
       NADDI  = 0
       NFRSTI = 0
       NDDWI  = 0
       NFRTWI = 0
       NFSTVI = 0
       NFSTWI = 0
+
 csw 19mar2013
-      xmcp=0
+      xmcp=0  !dr  this is done in init_coutau. So can go out here?
 
       RETURN
       END SUBROUTINE EIRENE_ALLOC_COUTAU
@@ -393,6 +400,7 @@ csw 19mar2013
 
       IF (.NOT.ALLOCATED(PDENAI)) RETURN
 
+c tallies obtained by integration from volumetric tallies
       DEALLOCATE (PDENAI)
       DEALLOCATE (PDENMI)
       DEALLOCATE (PDENII)
@@ -495,6 +503,7 @@ csw 19mar2013
       DEALLOCATE (MIPLI)
       DEALLOCATE (MPHPLI)
 
+c  integrated surface averaged tallies
       DEALLOCATE (POTATI)
       DEALLOCATE (PRFAAI)
       DEALLOCATE (PRFMAI)
@@ -520,6 +529,7 @@ csw 19mar2013
       DEALLOCATE (PRFPHPHTI)
       DEALLOCATE (PRFPPHTI)
       DEALLOCATE (POTPLI)
+c
       DEALLOCATE (EOTATI)
       DEALLOCATE (ERFAAI)
       DEALLOCATE (ERFMAI)
@@ -545,6 +555,7 @@ csw 19mar2013
       DEALLOCATE (ERFPHPHTI)
       DEALLOCATE (ERFPPHTI)
       DEALLOCATE (EOTPLI)
+c
       DEALLOCATE (SPTAATI)
       DEALLOCATE (SPTAMLI)
       DEALLOCATE (SPTAIOI)
@@ -580,6 +591,7 @@ csw 19mar2013
       DEALLOCATE (ALGSI)
       DEALLOCATE (SPUMPI)
 
+c  global fluxes from primary source
       DEALLOCATE (WTOTA)
       DEALLOCATE (WTOTM)
       DEALLOCATE (WTOTI)
@@ -591,10 +603,13 @@ csw 19mar2013
       DEALLOCATE (ETOTI)
       DEALLOCATE (ETOTP)
       DEALLOCATE (ETOTPH)
+
+c scored "on the flight"
       DEALLOCATE (XMCP)
       DEALLOCATE (FLUXT)
       DEALLOCATE (FLXFAC)
       DEALLOCATE (EELFI)
+cdr trash: particles killed during tracing, "fail-safe"
       DEALLOCATE (PTRASH)
       DEALLOCATE (ETRASH)
       DEALLOCATE (FASCL)
@@ -602,6 +617,7 @@ csw 19mar2013
       DEALLOCATE (FISCL)
       DEALLOCATE (FPHSCL)
 
+c size of tallies
       DEALLOCATE (NADDI)
       DEALLOCATE (NFRSTI)
       DEALLOCATE (NDDWI)

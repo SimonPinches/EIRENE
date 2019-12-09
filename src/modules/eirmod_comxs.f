@@ -6,11 +6,12 @@ cdr           via negative ngen..(..) flags
 cdr Apr. 18: further pointer, targets set for photons, towards code synchronisation
 cdr          across particle types, incl. photons
 cdr Nov. 17: p2nds --> p2nei (now in full analogy with p2npi)
-cdr Nov. 16: MODULE FOR ALL ATOMIC/MOLECULAR/PHOTONIC DATA STRUCTURES.
 cdr
 cdr  MXCOLLS --> MSTOR0
 
       MODULE EIRMOD_COMXS
+
+cdr MODULE FOR ALL ATOMIC/MOLECULAR/PHOTONIC DATA STRUCTURES.
 
 !  jan-05: natprc_2,..... introduced
 !  07.12.05: bugfix: IFTFLG is now available for default reactions too
@@ -41,7 +42,7 @@ cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
 !pb  MAY  16:  tabds1 -> tabei1
 !pb  MAY  16:  nrds   -> nrei
 !pb  JUL  16:  ehvds1 -> ehvei1
-cdr  Sept 16:  nmdsi  -> nmeii, nidsi -> nieii,..
+cdr  Sept 16:  nmdsi  -> nmeii, nidsi -> nieii, ...
 cdr  Jan  18:  added colrad_data, alloc_fit_form, rp%ifit=5 option: use internal crm code
 cdr  sept 18:  prepare reviving "storage save mode" (for large 3D grids):
 cdr            first: rationalize naming of integer flags for collision models
@@ -148,11 +149,12 @@ c
       INTEGER, PUBLIC, SAVE :: IDREAC
 
       TYPE(REACTION_DATA), ALLOCATABLE, PUBLIC, SAVE :: REACDAT(:)
+cdr....................................................................
 
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R        XSTOR(:,:), XSTORV(:)
 
-cdr  local (on the flight) atomic-moleculer reaction data
+cdr  local (on the flight) atomic-molecular reaction data
       REAL(DP), PUBLIC, POINTER, SAVE ::
 c  reaction rates, by reaction
      R SIGVCX(:),   SIGVPI(:),   SIGVEI(:),   SIGVEL(:),   SIGVPH(:),
@@ -695,6 +697,7 @@ c   for particle (1), momentum (2) and energy (3) source rates, resp.
 c  again: some arrays for species distribution of secondaries
 c         derived from P..EI and P..PI, above.
 c         for speeding up scoring in update, collide
+cdr unclear meaning. Perhaps redundant. But might be useful?
         ALLOCATE (IPATEI(NREI,0:NATM))
         ALLOCATE (IPMLEI(NREI,0:NMOL))
         ALLOCATE (IPIOEI(NREI,0:NION))
@@ -1253,7 +1256,6 @@ c  reaction threshold (if any)
         EPLPI3  = 0._DP
         EPLCX3  = 0._DP
         EPLEL3  = 0._DP
-
         EPLPH3  = 0._DP
 
         EATPI   = 0._DP
@@ -1602,6 +1604,8 @@ cdr options for extrapolation from data tables or from validity range of fits.
 
         IF (RP%IFIT < 0) THEN
 ! DATA FOR PHOTONIC LINE
+cdr  most of this stuff: obsolete, from lighting applications, 
+cdr  high pressure gas discharge lamps, around 2002.. should not be here!
           IF (.NOT.ASSOCIATED(RP%LINE)) ALLOCATE (RP%LINE)
           READ (13+IFOFF) RP%LINE%E0, RP%LINE%E1, RP%LINE%AIK,
      .              RP%LINE%G1, RP%LINE%G2, RP%LINE%C2,
@@ -1666,6 +1670,7 @@ cdr options for extrapolation from data tables or from validity range of fits.
 
 
       SUBROUTINE EIRENE_GET_REACTION (IR)
+cdr ?  still needed? only for "line"?
 
       INTEGER, INTENT(IN) :: IR
 

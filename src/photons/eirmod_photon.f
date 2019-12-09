@@ -20,7 +20,7 @@ cdr    to high pressure gas discharge lamps.
 cdr    It was largely re-written later, re-structured, several times,
 cdr    for use in (non-linear) stand alone eirene
 cdr    (applications to high density divertor plasmas with hydrogen resonance line re-absorption)
-cdr    Further re-writing (2006-2007): V.Kotov, to support iterations for self consistently
+cdr    Further re-writing (2006-2007): V.Kotov, to support iterations for self-consistently
 cdr    coupled 2D B2-EIRENE plasma solutions.
 cdr    transport code.
 cdr
@@ -225,7 +225,8 @@ c
       real(dp):: gam,e00,
      .           v,dnd,xx,yy,pnue,pnue0,
      .           fwhm,shift,dvdw,drft
-c      real(dp) :: d1, d2, e1, e2, g1, g2, ipl2, l0, l00, omega_max,
+c      integer :: ipl2
+c      real(dp) :: d1, d2, e1, e2, g1, g2, l0, l00, omega_max,
 c     .            omega_min
       real(dp):: ctheta,ctheta2,dbz
       real(dp):: t_e,t_p,t_g
@@ -243,7 +244,7 @@ c
       ctheta =0._dp
       ctheta2=0._dp
 
-cdr  find $fac(E0)$: the value of the line profile $fac(E$
+cdr  find $fac(E0)$: the value of the line profile $fac(E)$
 cdr  (emission profile or absorption profile) at E0:
 cdr  the current photon energy.
 cdr  units of fac:  1/eV, because: integral dE fac(E) = 1.0
@@ -1796,10 +1797,9 @@ c
       END subroutine EIRENE_zeeman_normalprof
 
 C.........................................................................................
-c  evaluate line shape functions at fixed frequency (or wavelength or energy) x
+c  evaluate line shape functions at fixed frequency (or wavelength or energy) 
 c  1) lorentz                          --> evaluates lorentz profile
 c  2) doppler                          --> evaluates doppler profile
-c  planck
 c  3) faddeeva  (via humlick function) --> evaluates lorentz-doppler convol. (Voigt profile)
 c  faddeeva2
 c  lorvdw                              --> evaluates lorentz-vdWalls convolution

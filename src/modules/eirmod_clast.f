@@ -1,4 +1,11 @@
       MODULE EIRMOD_CLAST
+cdr  Stores parameters from rejection sampling,
+cdr  currently only: heavy particles collision routines: 
+cdr  velocx, veloel, velopi.
+cdr  In case of TRCLST (module comprt), these rejection efficiency 
+cdr  diagnostics are printed during the last test flight.
+cdr  What if the last test flight has no CX, EL, or PI collision?
+cdr  In case of parallel execution: set TRCLST = false
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD

@@ -229,7 +229,7 @@ C
 C  ADDITIONAL TRACKLENGTH-ESTIMATED TALLIES FOR THE STRATUM ISTRA
 C  TALLY ADDV; NO. NTALA
 C  # is a placeholder for the units of the detector function used
-C  for scoring these additional tallies (see manual, block 10 
+C  for scoring these additional tallies (see manual, block 10) 
 C
       IF (LADDV) THEN
         DO 230 IADV=1,NADVI
@@ -414,7 +414,7 @@ C  DO NOT SCALE AT ALL
   265   CONTINUE
       END IF
 C
-C  OTHER TALLIES ESTIMATED FROM HISTORIES, NO FIRST (SPECIES) INDEX)
+C  OTHER TALLIES ESTIMATED FROM HISTORIES, NO FIRST (SPECIES) INDEX
 C
       DO 270 J=1,NSBOX_TAL
         IF (LPAEL)  PAEL(J) =PAEL(J) *ZVOLIW(J)

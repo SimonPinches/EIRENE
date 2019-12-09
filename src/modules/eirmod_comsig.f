@@ -1,8 +1,9 @@
 cdr  aug. 17: added prspec, prargl;
-cdr           separate printout for energy (spectrally) resolved
-cdr           from spatially (along LOS) resolved data.
-cdr           Was so far all mixed with TRCSIG (for debugging printout)
+cdr           Separate printout for energy (spectrally) resolved
+cdr           from printout for spatially (along LOS) resolved data.
+cdr           This was, so far, all mixed with TRCSIG (for debugging printout)
 cdr  Jan. 2018  mod_addv added, as well as CNT data structure.
+
       MODULE EIRMOD_COMSIG
 
       USE EIRMOD_PRECISION
@@ -49,6 +50,11 @@ cdr  Jan. 2018  mod_addv added, as well as CNT data structure.
 
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE :: NLSTCHR(:)
 
+cdr data structures below are for line emission options,
+cdr and generalize the older Ba_alpha, Ba_beta, ..., Ly_beta hard coded
+cdr six hydrogenic line emission routines (6 lines), and, by coincidence, also
+cdr six components per line: H, H+, H-, H2, H2+, H3+.
+
       CHARACTER(80), PUBLIC, ALLOCATABLE, SAVE :: CH_LINE_NAME(:)
 
       TYPE TCONTRIB
@@ -86,8 +92,8 @@ cdr  Jan. 2018  mod_addv added, as well as CNT data structure.
 
       IF (ALLOCATED(RCMSIG)) RETURN
 
-      NCMSIG=11*NCHOR
-      MCMSIG=11*NCHOR
+      NCMSIG=11*NCHOR  ! 11 reals per line of sight, XCHORD,....
+      MCMSIG=11*NCHOR  ! 11 integers per line of sight, IPIVOT,....
 
       ALLOCATE (RCMSIG(NCMSIG))
       ALLOCATE (FUFFER(NCHOR,NCHEN))

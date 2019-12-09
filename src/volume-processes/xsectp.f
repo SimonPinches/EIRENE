@@ -147,7 +147,7 @@ C
                   DO 53 J=1,NSBOX
                     ZX=EIONHE/MAX(1.E-5_DP,TEIN(J))
 C  rate = [rate coeff <sig v>] times [electr. density],  1/s per ion
-c    1.96e-14*sqrt(eionhe/Ry) = 3.5487E-14
+c    1.96e-14*sqrt(EionHe/Ry) = 3.5487E-14
                     TABRC1(IRRC,J)=3.5487E-14*ZX**1.5/(ZX+0.35)*DEIN(J)
 C  maxw. electron energy loss rate due to recombination
 c                   corsum=0._dp  !  old default: 1.5*Te
@@ -295,7 +295,8 @@ C  DO NOT STORE DATA, BUT COMPUTE THEM WHEN NEEDED
                   NREARC(IRRC) = KK
                 END IF
                 MODCOL(6,2,IRRC)=1
-              ENDIF
+              ENDIF  ! NSERC3
+
               FACRRC(IRRC,1) = FACTKK
               FACRRC(IRRC,2) = LOG(FACTKK)
 C
@@ -414,7 +415,7 @@ c  bremsstrahlung correction done.
                     JELRRC(IRRC)=9
                   END IF
                   MODCOL(6,4,IRRC)=1
-                ENDIF   ! MODC =3
+                ENDIF   ! MODC =1 or =3
 
                 FACRRC(IRRC,1) = FACTKK
                 FACRRC(IRRC,2) = LOG(FACTKK)
@@ -435,10 +436,10 @@ c                 ELSE  ! ??
                   END IF
 C
                 ENDIF   ! DELPOT
-              ENDIF  !  MODC =1 OR =3
+              ENDIF  !  NSERCS
             ELSE
               GOTO 997
-            ENDIF  !  NSERC5
+            ENDIF  !  iswr(kk)
 C
    82     CONTINUE
           NPRCI(IPLS)=IDSC

@@ -103,7 +103,7 @@ C
 
 !WZ:  E_DIFF = E(n) - E(m) [eV], energy difference in eV
 !WZ:  EINSTEIN = A_ik [1/s], spontaneous decay / radiative trans. rate
-!WZ:  EINSTEIN / A_ik are from Goto's CR model.
+!WZ:  EINSTEIN / A_ik are from the Goto CR model.
       if ( REAC1.EQ.'2.2a     ' ) then      ! 31S->21P
         E_DIFF = 1.7022945862
         EINSTEIN = 1.82910E+07

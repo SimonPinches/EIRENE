@@ -11,7 +11,7 @@ c
 cdr Sept.15   Bug fix: generation limit, xgener moved in front of 100 continue
 Cdr Nov.14    evaluation of NUPC(1) in static loop corrected (for 1D applications)
 Cdr Oct 14 TO BE DONE: clarify role of iflag. now also used for calc-spectrum?
-cdr Oct.14             spectra scoring only called if cell based spectra are defined
+cdr Oct.14             spectra scoring only called if cell-based spectra are defined
 c
 c   ???     LDAMCEL(icell) introduced ??  "damaged cell" ??, comes via eirmod_cgeom.
 c   ???     checking for 3rd grid intersection in case levgeo=4
@@ -20,7 +20,7 @@ C
 !PB 30.01.08: optimization of calculation of intersection with additional surfaces
 !             corrected
 !PB 22.03.07: LEVGEO=6 --> LEVGEO=10
-!PB 12.01.06: calls to update_spectrum introduced for cell based spectra
+!PB 12.01.06: calls to update_spectrum introduced for cell-based spectra
 !dr 2016:     now conditional on NADSPC_CD >= 1
 !PB 02.03.06: Store trajectory from birth place to first collision with the
 !             wall. It is assumed that conditional epectation estimator is

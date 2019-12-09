@@ -205,7 +205,6 @@ c  all volume-averaged tallies: estimv
         end do
 
 c  all surface-averaged tallies: estims
-cdr     allocate (helps(nlmpgs+1), dummys(nlmpgs+1))
         do ir=1,nsrftl
           dummys(1:nlmpgs) = estims(ir,1:nlmpgs)
           call mpi_reduce(dummys,helps,nlmpgs,
@@ -237,10 +236,7 @@ c  standard deviation of energy-resolved "spectra": estiml%sdv,...?
      .           mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
             if (my_pe_gr==0)
      .        estiml(ispc)%sgm(0:ns+1) = helpest(1:ns+2)
-cdr fixed sometime in 2018 ?
-!            call mpi_reduce(estiml(ispc)%sgms,helpest,1,
-!     .           mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-!            if (my_pe_gr==0) estiml(ispc)%sgms = helpest(1)
+
             call mpi_reduce(estiml(ispc)%sgms,helpc,1,
      .           mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
             if (my_pe_gr==0) estiml(ispc)%sgms = helpc

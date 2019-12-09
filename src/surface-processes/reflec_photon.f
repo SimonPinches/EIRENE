@@ -1,6 +1,6 @@
 CDR  NOV 17 : lemtspw arguments corrected
 cdr  jan 18 : start to implement bi-directional reflectance functions
-cdr  dec.18: remove unfinished "hollmann databse model"
+cdr  dec.18 : remove unfinished "hollmann database model"
 C
 C
       SUBROUTINE EIRENE_REFLEC_photon
@@ -94,7 +94,7 @@ C  tbd:  introduce counter of max. possible random numbers used up to this point
 C  see report Kalos, 1955, on correlated sampling, synchronisation...
 C
       IF (NLCRR.AND.(NPANU.NE.NPANOLD).AND..FALSE.) THEN
-C  re-INITIALIZE RANDOM NUMBERS FOR EACH PARTICLE, TO GENERATE CORRELATION
+C  RE-INITIALIZE RANDOM NUMBERS FOR EACH PARTICLE, TO GENERATE CORRELATION
 
         idummy=ranset_eirene(iseedr)
         DUMMY=RANF_EIRENE()
@@ -131,10 +131,6 @@ cdr prfct is cumulated SUM of emitted (Lambertian) and specular reflected (BDRF)
 cdr cumulative distribution of (spec-ref)-(lambert)-(absorb) fractions: prfcf,prfct,1.0
         prfcf=min(prfcf,prfct)
         plambert=prfct-prfcf
-
-
-
-
 
 cdr parameters for bi-directional reflectance function
         EXPP=EXPPL(ISPZ,MSURF)

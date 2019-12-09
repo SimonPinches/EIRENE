@@ -1,4 +1,9 @@
       MODULE EIRMOD_CGEOM
+cdr  precomputed grid quantities: cell volumes, center of mass,
+cdr  typical cell diameter
+
+cdr  cleanup needed
+cdr  comments re: cell_elem, cell_list needed
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -19,18 +24,24 @@
      R AREA(:),   CELDIA(:), XCOM(:), YCOM(:),
      R XPOINT(:), YPOINT(:)
 
+cdr  only for polygons ?
       REAL(DP), PUBLIC, POINTER, SAVE ::
      R XPOL(:,:), YPOL(:,:)
 
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
-     I NPOINT(:,:),   NSTGRD(:), NGHPLS(:,:,:),
-     I NGHPOL(:,:,:), NCLTAL(:), INDPOINT(:,:), NOPNT(:)
+     I NPOINT(:,:),   NSTGRD(:),
+     I NGHPLS(:,:,:),  ! neighboring polygon surface
+     I NGHPOL(:,:,:),  ! neighboring polygon cell
+     I NCLTAL(:),      ! index mapping: fine - coarse grid
+     I INDPOINT(:,:), NOPNT(:)
 
       INTEGER, PUBLIC, SAVE :: NCGM1, NCGM2, NNODES
 
+cdr  damaged cell ?
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE ::
      L LDAMCEL(:)
 
+cdr  comments ??
       TYPE :: CELL_ELEM
         INTEGER :: NOCELL
         TYPE(CELL_ELEM), POINTER :: NEXT_CELL

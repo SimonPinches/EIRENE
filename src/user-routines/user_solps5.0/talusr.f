@@ -38,6 +38,7 @@ C
       USE EIRMOD_CSPEZ
       USE EIRMOD_CSDVI
       USE EIRMOD_CSDVI_BGK
+
       implicit NONE
       integer, intent(in) :: icount
       integer, intent(out) :: ilast, iret

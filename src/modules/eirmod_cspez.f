@@ -1,4 +1,6 @@
       MODULE EIRMOD_CSPEZ
+cdr  indicate that a certain species has been encountered for a certain stratum,
+cdr  to reduce unnecessary printout of zero tallies
 
       USE EIRMOD_PARMMOD
 

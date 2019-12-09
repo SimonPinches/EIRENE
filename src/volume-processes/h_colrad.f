@@ -40,13 +40,15 @@ C   ASSUME: QUASI STEADY STATE OF H*(N) WITH H, H+
 C
 C   INPUT:
 
-C   TEMP      : ELECTRON TEMPERATUR
+C   TEMP      : ELECTRON TEMPERATURE
 C   DENSEL    : ELECTRON DENSITY
 C
 C   L_EXT     : 3RD (EXTERNAL) SOURCE OF EXCITED STATES (E.G. PHOTO-EXCITATION)
 C   L_EXT, Q_EXT(N): ???   ->  H*(N)  external source rate, e.g. molecules,
 C                                     or photo-excitation
-C   LOPAQUE, POP_ESC:  population escape factor
+
+C   LOPAQUE:  make ALL Lyman transitions entirely black (older option) 
+C   POP_ESC:  population escape factor matrix for individual transitions
 
 C
 C
@@ -79,7 +81,7 @@ C***********************************************************************
      .                            ALPCR, SCR, SCR_EXT,
      .                            E_ALPCR, E_SCR, E_SCR_EXT,
 ctt  .                           ,E_ALPCR_T, E_SCR_T, E_SCR_EXT_T
-     .                            POP_ESC)
+     .                            POP_ESC)  ! input: selected pop esc factors for some lines
       USE EIRMOD_PRECISION
 C     USE EIRMOD_CCRM
       USE EIRMOD_COMPRT, ONLY: IUNOUT
@@ -119,8 +121,8 @@ c  pop_esc= 0: opt. thick
 c
 c  only once and for all !!
 c
-      lopaque=.false.
-!PB   POP_ESC=1.
+      lopaque=.false.  ! .true.: fully Lyman opaque, all transitions to ground state blocked
+
 
       IF (IFRST == 0) THEN  ! must be redone, if lopaque or pop_esc change
 cdr  better: move lopaque, pop_esc outside this routine. And check always
@@ -1067,8 +1069,7 @@ cdr careful: integration of gaunt4 fails above Te gt 4500 eV
       END
 
 C***********************************************************************
-      SUBROUTINE
-     .  EIRENE_POPCOF_M(DENSEL,SAHA,C,F,S,A,ALPHA,BETA,LUP,LIM,
+      SUBROUTINE EIRENE_POPCOF_M(DENSEL,SAHA,C,F,S,A,ALPHA,BETA,LUP,LIM,
      &      R0,R1,R_EXT,
      &            Q_EXT,L_EXT)
 C
@@ -1215,8 +1216,8 @@ coupling to Q_EXT
       END
 
 C***********************************************************************
-      SUBROUTINE
-     .  EIRENE_IONREC(C,S,SAHA,A,ALPHA,BETA,R0,R1,DENSEL,LUP,LIM,
+      SUBROUTINE EIRENE_IONREC
+     &                 (C,S,SAHA,A,ALPHA,BETA,R0,R1,DENSEL,LUP,LIM,
      &                  F,R_EXT,Q_EXT, L_EXT,
      &                  ALPCR,SCR,SCR_EXT)
 C

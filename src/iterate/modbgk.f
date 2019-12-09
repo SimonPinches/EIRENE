@@ -1,12 +1,34 @@
+cdr Nov  19:   From testing modbgk in internal eirene iterations
+cdr            i.e. not via B2, or other plasma codes:
+cdr
+cdr            Bug fixes: alloc of plasma_bckground was too late.
+cdr            In ca. 2008, when merging SOLPS4.3 and the Master EIRENE
+cdr            version at FZ Juelich further 
+cdr            bugs regarding cross-collisions got implemented:
+cdr            Cross-collisions led to erroneous Ti and Ni profiles,
+cdr            due to wrong setting of TIINTF, DIINTF pointers.
+cdr            Runs were perhaps still correct, (by luck?) 
+cdr            but convergence monitoring was entirely wrong since. 
+cdr            New further convergence diagnostics added, and code cleanup,
+cdr            documentation.
+cdr Sept 19:   problems with NIDC, reuse of plasma_bckgrnd structure
+cdr            only diin, Tiin, V_xyzIN of bgk virt. species should be
+cdr            modified.
+cdr            Storage on plasma_bckgrnd ?
+cdr            In EMC3 case MODBGK is not used at all, instead the
+cdr            affected virt. plasma data
+cdr            are directly modified in infcop_emc3.
+
+
 c   modbgk  FZJ-MASTER, eirene_git, sept. 2014
 
 C       ??     INDIRECT SPECIES INDEXING IPLSV, IPLSTI INCLUDED, FOR TIIN and VXIN,VYIN,VZIN
 CDR            This is risky, because bgk collisions
 cdr            may then overwrite temperatures/velocities for non-bgk background
 CDR            depending on setting of MPLSTI(ipls) and MPLSV(ipls) arrays.
-cdr            in case of bgk: always multiple temperatures and multiple flow velocities.
+cdr            in case of bgk: always use fully multiple temperatures and multiple flow velocities.
 
-cdr  tbd:  implement corresponding check.
+cdr  implemented corresponding check.
 
 c
 c  to be done: cross-temperature correction (Kotov)  (already done in solps-iter part)
@@ -21,8 +43,8 @@ C
 
 cdr 29.08.15 :  CROSSTEMP WAS INTRODUCED BY VK SO THAT different
 c               EFFECTIVE COLLISION RATE IS EVALUATED
-c               WITH THIS EFFECTIVE TEMPERATURE
-c               this appears to be another option for the 5th (free)
+c               WITH THIS EFFECTIVE TEMPERATURE.
+c               This appears to be another option for the 5th (free)
 c               bgk model parameter, to match certain transport coefficients.
 c               (the other 4 are fixed by conservation laws.
 c
@@ -100,7 +122,7 @@ C
       WRITE (iunout,*) 'MODBGK CALLED AFTER ITERATION IITER= ',IITER
       CALL EIRENE_LEER(3)
 C
-cdr  FOR STOCH. APPROX. UNDER-RELAXTION.  NOT IN USE
+cdr  FOR STOCH. APPROX. UNDER-RELAXATION.  NOT IN USE
       A_ROBIN=1.D0/REAL(IITER,KIND(1.D0))
 
 c  iterate on tallies from "sum over strata".
@@ -175,7 +197,7 @@ C    "CROSS-COLLISION TEMPERATURE" CORRECTION
       ICROSS=0 !VK COUNTER
 CVK END
 
-cdr  set bgk volume-averaged tallies BGKV, which MAY HAVE been scored on goarser grid only,
+cdr  set bgk volume-averaged tallies BGKV, which MAY HAVE been scored on coarser grid only,
 CDR  now also on fine grid, because input tallies may be needed on finer grid.
 cdr  Assume: constant "extensive" fine grid values IN ALL I_fine cells
 cdr  within one coarse grid cell IRD
@@ -329,9 +351,10 @@ C  FIND INDEX IREL
         ENDDO
         GOTO 995
 
-C  AT THIS POINT: COLLISION PARTNER AMONGST TEST PARTICLES HAS BEEN IDENTIFIED
-C  (ITYP1, IATM1, IMOL1, IION1)
-C  AS WELL AS THE NUMBER OF COLLISION PROCESS IREL1
+C  AT THIS POINT: COLLISION PARTNER AMONGST TEST PARTICLES
+C  interacting with virtual background IPLS
+C  HAS BEEN IDENTIFIED: (ITYP1, JATM, JMOL, JION)
+C  AS WELL AS THE LABEL NUMBER OF COLLISION PROCESS IREL1
 C  DENSITY AND ENERGY DENSITY TALLIES OF COLLISION PARTNER "PDEN,EDEN"
 C  HAVE NOW BEEN SET ON FINE GRID
 C
@@ -340,16 +363,19 @@ C
    50   CONTINUE
 C
         IF (NPBGKP(IPLS,2).EQ.0) THEN
+
+C  SELF-COLLISION: ALL DONE
           ITYP2(IPLS)=-1
           ISPZ2(IPLS)=0
 C
         ELSEIF (NPBGKP(IPLS,2).NE.0) THEN
 C
 C  CROSS-COLLISION, FIND SECOND COLLISION PARTNER
+
 C  THIS IS NOT THE INGOING COLLIDING TEST PARTICLE, WHICH WE HAVE ALREADY IDENTIFIED,
 C  (AND WHICH, E.G., DETERMINES MASS AND DENSITY OF ARTIFICIAL BACKGROUND PARTICLE IPLS)
 C  BUT, INSTEAD, IT IS THE TEST PARTICLE WHICH PLAYS THE ROLE
-c  OF THE "SECOND" PARTICLE, AMONGST THE TEST PARTICLES
+C  OF THE "SECOND" PARTICLE, AMONGST THE TEST PARTICLES
 C
           ITYP2(IPLS)=EIRENE_IDEZ(NPBGKP(IPLS,2),1,3)
           ISPZ2(IPLS)=EIRENE_IDEZ(NPBGKP(IPLS,2),3,3)
@@ -397,11 +423,14 @@ cdr  Those IRD should not appear here  (hopefully)
             ENDDO
             IBGK2=NPBGKI(IION2)
           ENDIF
+
+cdr  relevant further BGK tallies for this cross-collision
+cdr  parameters of second involved species.
           IUP12=(IBGK2-1)*3+1
           IUP22=(IBGK2-1)*3+2
           IUP32=(IBGK2-1)*3+3
 C
-        ENDIF
+        ENDIF  ! Cross-collision, two different test species
 c
 cdr:  Parameters of virtual background species are set,
 cdr   their densities, energy densities.
@@ -437,8 +466,7 @@ C
      .                                ISPZ1(IPLS),IBGK1,IREL1(IPLS)
         ENDIF
 C
-
-
+C
 C  this cell loop is referring to the underlying 'fine' grid, not the coarse grid
 C                              on which the eirene tallies had been updated.
 
@@ -784,7 +812,7 @@ C    .                   ,RATM(2)/(RRM+EPS60),RATM(3)/(RRM+EPS60))
         CALL EIRENE_LEER(2)
 C
 C.................................................................
- 1000 CONTINUE
+ 1000 CONTINUE  ! IPLS LOOP
 C.................................................................
 
       CALL EIRENE_LEER(2)
@@ -955,6 +983,8 @@ C  IPLS2 IS THE SECOND CROSS-COLLISION TALLY
           LMARK(IPLS1)=.TRUE.
           LMARK(IPLS2)=.TRUE.
 CVK
+cdr crosstemp are the temperature for evaluating the new cross-collision rates.
+cdr These must be symmetric to make also the collision rates symmetic.
           ICROSS1=CROSSINDEX(IPLS1)
           ICROSS2=CROSSINDEX(IPLS2)
           IF(ABS(CROSSTEMP(ICROSS1,1)-CROSSTEMP(ICROSS2,1)).GT.EPS12)
@@ -1010,10 +1040,12 @@ C
 C
 C
 C  COMPUTE SOME 'DERIVED' PLASMA DATA PROFILES FROM THE MODIFIED PROFILES
+C  DIIN,TIIN  (such as lgvac, tiinl, diinl,...)
 C
       CALL EIRENE_PLASMA_DERIV(0)
 C
-C  RESET BGK ATOMIC AND MOLECULAR DATA ARRAYS
+C  RESET BGK ATOMIC AND MOLECULAR DATA ARRAYS TO NEW BACKGROUND
+cdr  careful: the pointers diintf, tiintf,...etc. are used. 
 C
       DO IPLS=1,NPLSI
         IF (NPBGKP(IPLS,1).NE.0) THEN
@@ -1062,7 +1094,8 @@ C  CROSS-COLLISION, RESET EPLEL3 FOR TRACKLENGTH ESTIMATOR
 C
       TRCAMD=TRCSAV
 C
-C
+C  TABEL3, EPLEL3 are set now with intermediate ni, Ti, Vi.
+
 C  RESTORE PLASMA DATA FROM PLASMA_BCKGRND ARRAY
 C
       CALL EIRENE_PLASMA
@@ -1074,6 +1107,7 @@ C
       IFLG=0
       CALL EIRENE_WRPLAM(TRCFLE,IFLG)
 C
+cdr  remove temporary storage
       DEALLOCATE (PDEN)
       DEALLOCATE (EDEN)
       DEALLOCATE (PDEN2)

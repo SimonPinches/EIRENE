@@ -1,4 +1,11 @@
       MODULE EIRMOD_CSPEI
+cdr Handle storage for:
+c   cspei: Standard deviations, co.-variances, etc.
+c   plasma-bckgrnd: For interfacing with external plasma code)
+c
+c   Size of plasma_bckgrnd:  currently NIINTF (formerly: NIDC)
+c   to be checked: consistent with usage of plasma_bckgrnd 
+c   also in modbgk? 
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD

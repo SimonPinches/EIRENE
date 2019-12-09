@@ -54,9 +54,9 @@ c   electron energy losses per collision from the default EI processes -4 ....-1
         CASE (-3)
           GOTO 999  !  DEFAULT PROCESS KK=-3: NOT IN USE FOR EI PROCESSES
         CASE (-4)
-            EIRENE_FEELEI1=-EIONH   !  DEFAULT PROCESS KK=-4  H + E --> H+ + 2E
+            EIRENE_FEELEI1=-EIONH  ! DEFAULT PROCESS KK=-4:  H + E --> H+ + 2E
         CASE (-5)
-            EIRENE_FEELEI1=-10.5  ! DEFAULT PROCESS KK=-5:  H2 + E --> H+H +E,
+            EIRENE_FEELEI1=-10.5   ! DEFAULT PROCESS KK=-5:  H2 + E --> H + H + E
         CASE (-6)
             EIRENE_FEELEI1=-25.0  ! DEFAULT PROCESS KK=-6:  H2 + E --> H + H+  +2E
         CASE (-7)
@@ -64,13 +64,13 @@ c   electron energy losses per collision from the default EI processes -4 ....-1
         CASE (-8)
             EIRENE_FEELEI1=-10.5  ! DEFAULT PROCESS KK=-8: H2+ + E --> H + H+ +E  (DE)
         CASE (-9)
-            EIRENE_FEELEI1=-15.5  ! DEFAULT PROCESS KK=-9: H2+ + E --> H+ H+  +2E   (DI)
+            EIRENE_FEELEI1=-15.5   ! DEFAULT PROCESS KK=-9: H2+ + E --> H+ + H+ + 2E (DI)
         CASE (-10)  ! DEFAULT PROCESS KK=-10: H2+ E --> H + H, DISS. RECOMBINATION (DR)
 C  FOR THE FACTOR -0.896... SEE: EIRENE MANUAL, INPUT BLOCK 4, EXAMPLES
             DE_10=8.964355004318D-01
             EIRENE_FEELEI1=-DE_10*TEIN(K)
         CASE (-11)
-            EIRENE_FEELEI1=-EIONHE   !  DEFAULT PROCESS KK=-1  HE+E --> HE+ +2E
+            EIRENE_FEELEI1=-EIONHE ! DEFAULT PROCESS KK=-11: HE + E --> HE+ + 2E
         END SELECT
 
 c  non-default models, data from external databases, KK=KREAD for el. energy-weighted rates

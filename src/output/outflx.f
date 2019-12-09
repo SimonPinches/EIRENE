@@ -1,7 +1,7 @@
 C  printout surface fluxes (incl. sputter fluxes) for stratum 'istra'
 C  loop over all surfaces selected in input block 11 for printout
 
-cdr Feb. 2015:  total sputer tallies now included, resolved wrt. incident type
+cdr Feb. 2015:  total sputter tallies now included, resolved wrt. incident type
 cdr these total tallies may include sputtering of unidentified wall material,
 cdr  hence may be different from the totals obtained by sum over sputtered species-resolved fluxes
 cdr  e.g. sptatot may be larger than summt, etc....
@@ -1347,7 +1347,7 @@ C     ELSEIF(ILIIN = -3): NOTHING TO BE DONE HERE, NET FLUXES ARE ALREADY PRINTE
       ENDIF
 C
 C
-C   REEMITTED FLUXES, NEXT: FROM INCIDENT TEST-IONS
+C   REEMITTED FLUXES, NEXT: FROM INCIDENT TEST IONS
       SUMMTI=0.
       SUMMEI=0.
       SUMA=0.
@@ -3047,7 +3047,7 @@ C  SURFACE-AVERAGED TALLY NO. 75
       IF (SPTTOT(I) > 0._DP.and.spttot(i).ne.ttspt) THEN
         CALL EIRENE_LEER (1)
         WRITE (IUNOUT,*) 'TOT. FLX SPUTTERED  '
-        write (iunout,*) '(not scaled by NLSCL option). '
+        write (iunout,*) '(not scaled by NLSCL option)'
         write (iunout,*) 'May include unidentified sputtered species'
         CALL EIRENE_MASR1 ('TOT. FLX',SPTTOT(I))
         DO N=1,NSIGSI

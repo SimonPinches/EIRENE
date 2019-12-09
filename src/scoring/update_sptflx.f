@@ -1,7 +1,7 @@
 c  score sputtered fluxes
 c  modified in spring 2014: old version: resolved wrt. incident type
 cdr:  Sept. 2014: input flag 'IND' added,
-cdr   Jan 18    : ind=0 --> ind=1,  and ind=1 --> ind=2, to synronize with
+cdr   Jan 18    : ind=0 --> ind=1,  and ind=1 --> ind=2, to synchronize with
 cdr               other surface scoring (e.g. update_surface)
 c
 cdr       ind=1: FOR TOTAL TALLIES (due to sputtering by "incident" particles)
@@ -142,7 +142,7 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
          CASE DEFAULT
             WRITE (IUNOUT,*) ' ERROR IN EIRENE_UPDATE_SPTFLX '
             WRITE (IUNOUT,*)
-     .           ' PARTICLE OF UNKNOWN TYPE SPUTERED '
+     .           ' PARTICLE OF UNKNOWN TYPE SPUTTERED '
             WRITE (IUNOUT,*) ' ITYP = ', ITYP
          END SELECT
 
@@ -247,7 +247,7 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
          CASE DEFAULT
             WRITE (IUNOUT,*) ' ERROR IN EIRENE_UPDATE_SPTFLX '
             WRITE (IUNOUT,*)
-     .           ' PARTICLE OF UNKNOWN TYPE SPUTERED '
+     .           ' PARTICLE OF UNKNOWN TYPE SPUTTERED '
             WRITE (IUNOUT,*) ' ITYP = ', ITYP
          END SELECT
 
@@ -300,7 +300,7 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
          CASE DEFAULT
             WRITE (IUNOUT,*) ' ERROR IN EIRENE_UPDATE_SPTFLX '
             WRITE (IUNOUT,*)
-     .           ' PARTICLE OF UNKNOWN TYPE SPUTERED '
+     .           ' PARTICLE OF UNKNOWN TYPE SPUTTERED '
             WRITE (IUNOUT,*) ' ITYP = ', ITYP
          END SELECT
 
@@ -353,7 +353,7 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
          CASE DEFAULT
             WRITE (IUNOUT,*) ' ERROR IN EIRENE_UPDATE_SPTFLX '
             WRITE (IUNOUT,*)
-     .           ' PARTICLE OF UNKNOWN TYPE SPUTERED '
+     .           ' PARTICLE OF UNKNOWN TYPE SPUTTERED '
             WRITE (IUNOUT,*) ' ITYP = ', ITYP
          END SELECT
 
