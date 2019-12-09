@@ -428,7 +428,7 @@ C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
      .                     LSYMET,LBALAN,LCOARSE
 
         READ (IUNIN,'(5I6)') NFLA,NCUTB,NCUTL,IMF,
-cdr  imf  flag for different formats of geometry file: linda, sonnet, carree. What is What?
+cdr  imf  flag for different formats of geometry file: linda, sonnet, carre. What is What?
      .                       ntrfrm
         IF (IMF /= 0) MSHFRM=IMF
         NCUTB_SAVE=NCUTB
@@ -4574,7 +4574,7 @@ C
           WRITE (iunout,*) ' NON-RECYCLING FLUXES AT SOUTH EDGE '
           CALL EIRENE_MASR2(' SFEISY,SFEESY  ',SFEISY,SFEESY)
           DO IFL=1,NFLA
-            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNISY(IFL)=',IFL,') ',
+            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNISY(IFL =',IFL,') ',
      .                                       SFNISY(IFL)
           ENDDO
         ENDIF
@@ -4582,7 +4582,7 @@ C
           WRITE (iunout,*) ' NON-RECYCLING FLUXES AT NORTH EDGE'
           CALL EIRENE_MASR2(' SFEINY,SFEENY  ',SFEINY,SFEENY)
           DO IFL=1,NFLA
-            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNINY(IFL)=',IFL,') ',
+            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNINY(IFL =',IFL,') ',
      .                                       SFNINY(IFL)
           ENDDO
         ENDIF
@@ -4590,7 +4590,7 @@ C
           WRITE (iunout,*) ' NON-RECYCLING FLUXES AT WEST EDGE '
           CALL EIRENE_MASR2(' SFEIWX,SFEEWX  ',SFEIWX,SFEEWX)
           DO IFL=1,NFLA
-            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNIWX(IFL)=',IFL,') ',
+            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNIWX(IFL =',IFL,') ',
      .                                       SFNIWX(IFL)
           ENDDO
         ENDIF
@@ -4598,7 +4598,7 @@ C
           WRITE (iunout,*) ' NON-RECYCLING FLUXES AT EAST EDGE '
           CALL EIRENE_MASR2(' SFEIEX,SFEEEX  ',SFEIEX,SFEEEX)
           DO IFL=1,NFLA
-            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNIEX(IFL)=',IFL,') ',
+            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNIEX(IFL =',IFL,') ',
      .                                       SFNIEX(IFL)
           ENDDO
         ENDIF
@@ -4616,7 +4616,7 @@ C
         CALL EIRENE_LEER(1)
         CALL EIRENE_MASR2(' TOTALS, EI,EE  ',SFEIT(0),SFEET(0))
         DO IFL=1,NFLA
-           WRITE(iunout,'(A,I0,A,ES12.4)') 'TOTALS, NI(IFL)=',IFL,') ',
+           WRITE(iunout,'(A,I0,A,ES12.4)') 'TOTALS, NI(IFL =',IFL,') ',
      .                                      SFNIT(0,IFL)
         ENDDO
 
@@ -4643,14 +4643,14 @@ C
 
         CALL EIRENE_MASR2(' BALANI,BALANE  ',BALANI,BALANE)
         DO IFL=1,NFLA
-           WRITE(iunout,'(A,I0,A,ES12.4)') 'BALANN(IFL)=',IFL,') ',
+           WRITE(iunout,'(A,I0,A,ES12.4)') 'BALANN(IFL =',IFL,') ',
      .                                      BALANN(IFL)
         ENDDO
         CALL EIRENE_LEER(1)
 
         CALL EIRENE_MASR2('REL.ERR.(%)RI,RE',RI,RE)
         DO IFL=1,NFLA
-           WRITE(iunout,'(A,I0,A,ES12.4)') 'RN(IFL)=',IFL,') ',RN(IFL)
+           WRITE(iunout,'(A,I0,A,ES12.4)') 'RN(IFL =',IFL,') ',RN(IFL)
         ENDDO
         CALL EIRENE_LEER(1)
         MINSPEZ=99

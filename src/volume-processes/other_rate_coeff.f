@@ -25,7 +25,7 @@ cdr           ifit=4 option was missing (1D tables). added, but not checked.
 !  ifit=1:   single polynomial fit, use P1, (e.g. HYDHEL, H.2)
 !  ifit=2:   double polynomial fit, use P1, P2, (e.g. HYDHEL, H.3, AMJUEL, H.4, H.12,...)
 !  ifit=3:   interpolation in 2-parameter table (e.g. ADAS)
-!  ifit=4:   interpolation in single parameter table (e.g. open ADAS, HYDKIN,....)
+!  ifit=4:   interpolation in single parameter table (e.g. open ADAS,...)
 !  ifit=5:   use internal eirene collision radiative code. To be generalized
 !            (currently here also other rates, orate  for this particular option.
 !            More logical if the latter are moved

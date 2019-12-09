@@ -1,5 +1,9 @@
       MODULE EIRMOD_CGRID
 
+cdr  Standard grid surfaces, input block 3a
+cdr  Also some derived grid parameters to speed up MC calculation
+cdr  Also some zone-centered grid parameters RHOZNE, PHZONE, ZZONE, etc.
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
 

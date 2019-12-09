@@ -85,7 +85,6 @@ c  atomic surface tallies
             IF (LSPTPHAT) SPTPHAT(IATM,J)=SPTPHAT(IATM,J)*FPHOT
 cdr  ?? scaling with bulk flux?
 cdr         IF (LSPTPAT) SPTPAT(IATM,J)=SPTPAT(IATM,J)*FATM
-
             IF (LSPUMP) SPUMP(NSPH+IATM,J)=SPUMP(NSPH+IATM,J)*FATM
   310     CONTINUE
 
@@ -124,7 +123,6 @@ c  integrated atomic tallies, both volumetric and surface-averaged
           SPTPHATI(IATM,ISTRA)=SPTPHATI(IATM,ISTRA)*FPHOT
 cdr  ?? scaling with bulk flux ??
 cdr       SPTPATI(IATM,ISTRA)=SPTPATI(IATM,ISTRA)*FATM
-
           SPUMPI(NSPH+IATM,ISTRA)=SPUMPI(NSPH+IATM,ISTRA)*FATM
 
  2111   CONTINUE

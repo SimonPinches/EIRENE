@@ -474,24 +474,22 @@ C  ESTIMATOR FOR CONTRIBUTION TO COLLISION RATES FROM THIS REACTION
       IESTEI(IREI,3)=EIRENE_IDEZ(IESTM,3,3)
 C
       IF (IESTEI(IREI,1).NE.0) THEN
-        CALL EIRENE_LEER(1)
         WRITE (iunout,*)
      .    'WARNING: COLL.EST NOT AVAILABLE FOR PART. BALANCE '
         WRITE (iunout,*) 'IREI = ',IREI
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO TRACKLENGTH ESTIMATOR '
+        CALL EIRENE_LEER(1)
         IESTEI(IREI,1)=0
       ENDIF
       IF (IESTEI(IREI,2).NE.0) THEN
-        CALL EIRENE_LEER(1)
         WRITE (iunout,*)
      .    'WARNING: COLL.EST NOT AVAILABLE FOR MOM. BALANCE '
         WRITE (iunout,*) 'IREI = ',IREI
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO TRACKLENGTH ESTIMATOR '
-        IESTEI(IREI,2)=0
         CALL EIRENE_LEER(1)
+        IESTEI(IREI,2)=0
       ENDIF
       RETURN
-C
 C
 C-----------------------------------------------------------------------
 C

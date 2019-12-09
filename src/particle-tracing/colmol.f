@@ -216,7 +216,7 @@ C  REDUCE WEIGHT ACCORDINGLY
               IF (IESTEI(IREI,2).NE.0) GOTO 990
               IF (IESTEI(IREI,3).NE.0) GOTO 990
             ELSE
-C  NO, THIS PROCESS REMAINS ACTIVE, BECAUSE THERE ARE TEST-PARTICLE SECONDARIES
+C  NO, THIS PROCESS REMAINS ACTIVE, BECAUSE THERE ARE TEST PARTICLE SECONDARIES
               NEII_RED=NEII_RED+1
               LGEI_RED(NEII_RED)=IREI
             ENDIF
@@ -342,12 +342,13 @@ cdr  generate secondaries, one by one, call veloei, and store them on splitting 
             DO J=1, NAMIEI(I)   ! THERE ARE NAMIEI(I) COPIES OF THIS SECONDARY 'I'
 C  FIND A "RANDOM NUMBER" TO ENFORCE "SAMPLING" OF THIS PARTICULAR SPECIES 'I' IN VELOEI
 cdr
+cdr WIP: unclear code here. Still not unraveled.
 cdr die drei zeilen hier vor: ggfls. sehr lange do loop, meist aber nur 1 oder hoechstens 2 treffer
-cdr (1 oder 2 test folgeteilchen). grund in der der naechsten zeile soll ggfls 2 mal das gleiche
+cdr (1 oder 2 test folgeteilchen). Grund: in der naechsten zeile soll ggfls 2 mal das gleiche
 cdr teilchen durch zep ausgewaehlt werden.
 cdr
 cdr alternative: p2nei folgeteilchen gibt es. anstatt zep zu setzen: nur loop ueber diese, deren
-cdr ispz dann fest mitgeben, und in veloel nicht auswürfeln
+cdr ispz dann fest mitgeben, und in veloel nicht mehr auswuerfeln
 
               ZEP = 0.5_DP * (P2ND(IREI,I-1)+P2ND(IREI,I))
 
@@ -771,7 +772,8 @@ C       ITYP=2
      .              NFLAG,IREL,RMMIO)
 C
         IMOL=IOLD
-C  NOT: WEIGHT=WGHTO, BECAUSE WEIGHT MAY HAVE CHANGED DUE TO NON-ANALOGUE SAMPLING IN VELOEL
+C  NOT: WEIGHT=WGHTO, BECAUSE WEIGHT MAY HAVE CHANGED 
+C       DUE TO NON-ANALOGUE SAMPLING IN VELOEL
         E0=CVRSSM(IMOL)*VELQ
 
 

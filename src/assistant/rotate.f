@@ -1,5 +1,5 @@
 c  variables for rotate.f and subroutine rotati.f renamed, now different
-c  variable names at both subrtoutines.
+c  variable names at both subroutines.
 C  OCT.14 ONLY COMMENTS, PARAMETERS VLOC AND VLABI SET TO INTENT IN
 C
 C*DK ROTATE

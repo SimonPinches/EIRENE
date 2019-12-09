@@ -1,4 +1,4 @@
-!  30.08.06:  broadcast of density-models and spectra introduced
+!  30.08.06:  broadcast of density models and spectra introduced
 !             broadcast of logicals for living and missing tallies added
 !             broadcast of reaction data adopted to new structure
 !  10.01.07:  increase number of entries in LLOGAU

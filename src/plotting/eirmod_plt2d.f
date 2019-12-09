@@ -1,4 +1,18 @@
+cdr  28.4.04:  nhsts(ispz) option connected (to select species
+cdr            for trajectory plot. see modification to input.f, 28.4.04
+cdr  24.8.06:  plot symbols corrected to more recent GR  software standards
+!pb  5.10.06:  plot for triangle geometry in x-z plane added
+!pb  11.04.08: remove restriction NTTRA<100
+cdr  JAN 2014: add a bit more trcplt diagnostics for non-def. std. surfaces.
+cdr  jan 2014: remove old (redundant) code, in case levgeo=3, rad. pol. surfaces
+cdr  may 2018: plarr (surface normal) only for levgeo 2 and levgeo 3.
+cdr            if levgeo=2 and nlcrc: then polygon grid may not be defined.
+cdr             tbd: print warning...
+
+C   2D GEOMETRY (AND TRAJECTORY) PLOT
+
       MODULE EIRMOD_PLT2D
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR

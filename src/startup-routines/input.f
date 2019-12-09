@@ -53,8 +53,8 @@ cdr             option lhyddef. error exit. Tests of that interface options star
 !dr             Also other density model may now refere to test
 !dr             particle tallies, for postprocessing and iteration
 !pb  02.03.06:  NLRAY: switch on raytracing method for stratum
-!pb  20.01.06:  line of sight for cell based spectrum introduced
-!pb  12.01.06:  flag for cell based spectrum added in block 10F
+!pb  20.01.06:  line of sight for cell-based spectrum introduced
+!pb  12.01.06:  flag for cell-based spectrum added in block 10F
 C    24.09 05:  CALL TO IF2COP NOW LATER, AFTER ALL PLASMA DATA ARE SET
 C               SO THAT IF2COP CAN BE USED WITHOUT HAVING TO USE IF1COP
 C
@@ -117,6 +117,7 @@ C
 
       IMPLICIT NONE
 
+C
       TYPE TEMPERATURE
         DOUBLE PRECISION          :: TE, TI
         INTEGER                   :: IN, IDION
@@ -415,7 +416,8 @@ C THIS LINE:  NOPTIM, NSTORAM,.... is read in FIND_PARAM and modified in SET_PAR
      .                    NSMSTRA,NSTORAM,NGSTAL,NRTAL1,NREAC_ADD
         READ (IUNIN,'(A72)') ZEILE
       END IF
-C  repeat the same as in find param....:
+
+cdr  repeat the same code as in find_param....?
 C  NSTORAM IS REDEFINED, FINALLY EITHER =0  (A&M STORAGE SAVE MODE)
 C                                    OR =9  (FULL A&M STORAGE MODE, =DEFAULT)
       NSTORAM = MIN(NSTORAM,9)
@@ -432,10 +434,17 @@ C
 
 C  OPTIONAL INPUT CARDS, FOR PATHWAYS AND NAME DEFINITIONS
 C                        FOR EXTERNAL DATABASES: AMJUEL, HYDHEL,.....
-C  DATA FILES NOT ENTERED HERE:
-c              BY DEFAULT: THE EXTERNAL DATA FILES ARE EXPECTED IN THE SAME
+
+C  IF DATA FILES ARE NOT ENTERED HERE:
+c              THEN BY DEFAULT: THE EXTERNAL DATA FILES ARE EXPECTED IN THE SAME
 C              DIRECTORY AS THE ONE FROM WHICH THE RUN IS STARTED.
 C
+cdr scan for optional CFILE lines: path to external database files
+cdr Parse input card for PATH = DBFNAME
+
+cdr  probably identical code as just done in find_param.f, repeated here.
+cdr  begin
+
       READ (IUNIN,'(A420)') ZEILE
       IREAD=1
       I1 = INDEX(ZEILE,'CFILE')
@@ -466,6 +475,7 @@ c   currently: 16 types of files are recognized
       END DO
 
 C  READING OF OPTIONAL DATABASE NAME AND PATH-CARDS DONE.
+
 C  CONTINUE WITH MANDATORY INPUT.  IREAD=1 AT THIS POINT
 
 C  READING OF INPUT BLOCK 1 DONE
@@ -936,6 +946,7 @@ C
         IREAD=0
         GOTO 250
       ENDIF
+
       READ (ZEILE,6665) NLADD
       IREAD=0
 C
@@ -1351,6 +1362,7 @@ C
   369   CONTINUE
 C
   360 CONTINUE
+      CALL EIRENE_LEER(1)
 C
 C  READ DATA FOR SPECIES SPECIFICATION AND ATOMIC PHYSICS MODULE
 C  400--499
@@ -1688,6 +1700,7 @@ C
      .               IROW_ESC,ICOL_ESC,POP_ESC) ! (optional) additional input card read CR  internal models
         GOTO 411
       ENDIF
+      IF (TRCAMD) CALL EIRENE_LEER(1)
 C
       WRITE (iunout,*)
      . '*** 4A. NEUTRAL ATOMS SPECIES CARDS, NATMI SPECIES'
@@ -2205,7 +2218,7 @@ c  default: only for bulk ions
             IF (INDEX(TDMPAR(JPLS)%TDM%H123(1),'H.2') == 0) THEN
               WRITE (iunout,*)
      .          ' WRONG REACTION SPECIFIED FOR CORONA MODEL'
-              WRITE (iunout,*) ' ONLY RATE COEFFICIENTS ARE PERMITTED'
+              WRITE (iunout,*) ' ONLY H.2 REACTION DATA ARE PERMITTED'
               WRITE (iunout,*) ' IPLS = ',JPLS
               CALL EIRENE_EXIT_OWN(1)
             END IF
@@ -2397,7 +2410,7 @@ c  cell volume -profile card, OPTIONAL
         IREAD=1
         IF ((IO /= 0) .OR. (ZEILE(1:3) .EQ. '***')
      .                .OR. (ZEILE(1:3) .EQ. 'OPT')) THEN
-          WRITE (iunout,*) 'ONE INPUT LINE MISSING IN BLOCK 5'
+          WRITE (iunout,*) 'ONE INPUT LINE (VOL) MISSING IN BLOCK 5'
           WRITE (iunout,*) 'AUTOMATIC CORRECTION PERFORMED'
           VL0=0
         ELSE
@@ -2406,9 +2419,11 @@ c  cell volume -profile card, OPTIONAL
         ENDIF
       ENDIF
 
-c  check for optional input cards.
-c  Here: explicitly switch off input tallies, or gradients gradients: INTLOPTS(ITAL),
-c  -ntali<ital<0,  then: ital=iabs(ital)
+c  check for "OPTIONAL" input cards.
+c  Here: explicitly switch off input tallies,
+c        or activate gradient tallies: INTLOPTS(ITAL)
+c  ITAL:  -ntali<ital<0, then: ital=iabs(ital).
+c  IOPT:   turn off or add gradient tally
 
       IF (IREAD == 0) READ (IUNIN,'(A72)',IOSTAT=IO) ZEILE
       IREAD = 1
@@ -2488,7 +2503,7 @@ C  NEXT VALID INPUT CARD FOUND
         ELSE
 C  PATH SPECIFICATION FOR DATABASE FOUND
           LTRIM_OLD=.FALSE.
-          READ (ZEILE(7:),'(A400)') PATH
+          READ (ZEILE(7:LEN(ZEILE)),'(A400)') PATH
           PATH=ADJUSTL(PATH)
           I2=INDEX(PATH,' ')
           IF ((I2 == 0) .AND. (ZEILE(408:408) /= ' ')) THEN
@@ -3775,9 +3790,9 @@ c                         is stored on num_compo+1
 
 ! no definition of emissivity lines was read in
 ! define OLD default emissivity model for chords, for backward compatibility.
-cdr  allocate storage and fill structure EMIS-LINES
+cdr  allocate storage and fill structure EMIS_LINES
 cdr  such that old default options are recovered.
-cdr This is exclusive: as soon as at least one line-emission profile is
+cdr This is exclusive: as soon as at least one line emission profile is
 cdr read from block "12.0", no default emissivities are set at all.
       IF (NLEMIS.AND..NOT.ALLOCATED(EMIS_LINES))
      .   CALL EIRENE_SETUP_DEFAULT_EMISSIVITY
@@ -5111,12 +5126,11 @@ C
 C
 C   WRITE A LIST OF CLOSED POLYGONIAL LINES, DETERMINED
 C   FROM EIRENE ADDITIONAL AND NON-DEFAULT STANDARD SURFACES
-C  (WITH THEIR ORIENTATION)
-C   ONTO STREAM 78+IFOFF
+C   (WITH THEIR ORIENTATION) ONTO STREAM 78+IFOFF
 C   FOR FURTHER USE IN TRIANGULARISATION CODES, WHICH MAY THEN
 C   PRODUCE GRIDS OF UNSTRUCTURED TRIANGLES INSIDE THESE CLOSED
-C   POLYGONS, (EXCLUDING THOSE AREAS WHICH ARE DESCRIBED BY
-C   CLOSED POLYGONS WITH NEGATIVE ORIENTATION
+C   POLYGONS (EXCLUDING THOSE AREAS WHICH ARE DESCRIBED BY
+C   CLOSED POLYGONS WITH NEGATIVE ORIENTATION)
 C
         IF (NLWRMSH) THEN
           CALL EIRENE_WRMESH
@@ -5532,7 +5546,7 @@ cdr Partially used in OUTSPEC, but not for calling UPDATE_SPECTRUM.
         IF (ESTIML(J)%ISRFCLL == 0) THEN
 C  COUNT SURFACE SPECTRA
           NADSPC_S=NADSPC_S+1
-cdr  later: idirec > 0 is used to distuingish total from directional spectra.
+cdr  later: idirec > 0 is used to distinguish total from directional spectra.
 cdr  here we should add directional surface spectra. In OUTSPEC already done.
 
         ELSEIF (ESTIML(J)%ISRFCLL == 1) THEN

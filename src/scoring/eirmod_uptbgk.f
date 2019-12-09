@@ -13,7 +13,7 @@ c
 c  code segment: bgk
 c
 c  only needed, if some test particle species are labeled as "bgk species"
-c               with one or more elastic non-linear self interactions
+c               with one or more elastic nonlinear self-interactions
 c               to be treated by iteration.
 c               This segment contains a routine UPTBGK which updates the tallies
 c               required for iteration (carried out in MODBGK).

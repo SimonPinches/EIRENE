@@ -2,10 +2,10 @@
 !pb APR   16:   eelds  -> eelei
 !pb MAY   16:   tabds1 -> tabei1
 cdr Nov   16    finalizing notational synchronisation (..DS.. (legacy) --> ..EI..)
-cdr Nov.  17:   1) sync with couple_B2 from git repository. done
-cdr             2) ESIG array: additional argument IPLS: done.
-cdr             3) RTIS% pointer to sploda,.....
-cdr             4) rates SEIODA, SEINWA added (was missing, used for ipls total ion energy density)
+cdr Nov.  17:   1: sync with couple_B2 from git repository. done
+cdr             2: ESIG array: additional argument IPLS: done.
+cdr             3: RTIS% pointer to sploda,.....
+cdr             4: rates SEIODA, SEINWA added (was missing, used for ipls total ion energy density)
 cdr                now: SEIOD(.., NPLS), SEINW(...,NPLS) added
 
 C  MAIN INTERFACING ROUTINE FOR COUPLED CFD-PLASMA - EIRENE APPLICATIONS

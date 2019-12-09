@@ -151,11 +151,13 @@ C  EVALUATE FIT EXPRESSION IFTFLG=3:
           WRITE (iunout,*) 'REACTION NO. ',IR
           CALL EIRENE_EXIT_OWN(1)
         END IF
-      ELSE
+
+      ELSE  ! K out of range?
         WRITE (iunout,*) 'ERROR IN CROSS: K= ',K
         WRITE (iunout,*) 'CALLED FROM ',TEXT
         WRITE (iunout,*) 'REACTION NO. ',IR
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
+
       RETURN
       END

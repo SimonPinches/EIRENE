@@ -16,7 +16,8 @@ CDR  Aug. 2015  : PROGRAMMING AND NOTATION SYNCHRONIZED WITH VELOCX.F
 CDR  5.8.15 : ARGUMENTS ADDED TO VECUSR
 cdr  4.9.15 : npbgkp(ipls,1).ne.0, rather than nchrgp(ipls)=0 to identify bgk collisions
 cdr           There may be also neutral atom -test ion  bgk collisions, in which case
-cdr           the virtual bgk background species may be an ion ? (not contributing to electron density, however).
+cdr           the virtual bgk background species may be an ion ?
+cdr           (not contributing to electron density, however).
 cdr           example He  He+  collisions, when both are test species.
 cdr           Or, e.g. elastic component in H + p
 cdr  Jan. 17: Added option: isotropic in COM frame, iflag=0, when modcol(5,0,..)=0
@@ -25,6 +26,7 @@ cdr                         (this was default for bgk collisions so far, with OL
 cdr March 18: Slight changes in notation, to sync with a new proprietary version of this
 cdr           routine which carries out cross-section integration directly
 cdr           from interaction potentials without intermediate fits. veloel_TEST.ff
+cdr Nov.  19: More clearly separate NFLAG, IFLAG options
 C
       SUBROUTINE EIRENE_VELOEL(K,VXO,VYO,VZO,VLO,IOLD,NOLD,VELQ,NFLAG,
      .                         IREL,RMASS)
@@ -133,7 +135,7 @@ c       P_A_B(8)=-3.*P(1)/4.                    (=V(RW) )
       SAVE
 C
 c initialize arrays for "on the fly" rejection efficiency estimates
-C IFLAG=1 AND IFLAG=3 OPTIONS
+C NFLAG=1 AND NFLAG=3 OPTIONS
       IF (IFIRST.EQ.0) THEN
         IFIRST=1
         DO IRL=1,NRELI
@@ -253,7 +255,8 @@ C  ALL OTHER CASES: MAXWELLIAN AT LOCAL TEMPERATURE TIIN AND DRIFT VDR
         VZN=VZN*ZARGZ+VZDR
       ENDIF
 C
-C  DRIFTING MAXWELLIAN DISTRIBUTION (FOR MAXWELL-1/r^4-POTENTIAL: SIGMA*V = CONST.)
+C  DRIFTING MAXWELLIAN DISTRIBUTION (FOR MAXWELL-1/r^4-POTENTIAL: 
+C  SIGMA*V = CONST(T), BUT INDEPENDENT OF V)
 C
       IF (NFLAG.EQ.2) THEN
 C
@@ -330,7 +333,6 @@ C    IFLAG=0        :  ISOTROPIC, IN CENTER OF MASS
 C    IFLAG=IFTFLG>0 :  FIT FORM OF INTERACTION POTENTIAL (ELASTIC COLLISION IREL)
 C
 C
-
       IF (NPBGKP(IPLS,1).NE.0.OR.MODCOL(5,0,IREL).EQ.-1) THEN
 
 C  ELASTIC TEST PARTICLE COLLISION IN BGK APPROXIMATION (E.G.: NEUTRAL-NEUTRAL)
@@ -484,10 +486,12 @@ C
       RETURN
 C
   995 CONTINUE
-      WRITE (iunout,*) 'ERROR IN VELOEL, NO ELASTIC COLLISION DATA'
-      WRITE (iunout,*) 'AVAILABLE '
-      WRITE (iunout,*) 'ITYP,IATM,IMOL,IION,IPLS ',
-     .                  ITYP,IATM,IMOL,IION,IPLS
+      WRITE (iunout,*)
+     . 'ERROR IN VELOEL, NO ELASTIC COLLISION DATA AVAILABLE'
+      CALL EIRENE_MASJ5 ('ITYP,IATM,IMOL,IION,IPLS                ',
+     .                    ITYP,IATM,IMOL,IION,IPLS)
+      CALL EIRENE_MASJ4 ('NFLAG, IFLAG, IREL, IDREAC      ',
+     .                    NFLAG, IFLAG, IREL, IDREAC)
       CALL EIRENE_EXIT_OWN(1)
   999 CONTINUE
       WRITE (iunout,*)

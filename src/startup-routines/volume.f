@@ -387,12 +387,10 @@ C
             DO J=1,NP2NDM
               K=1
               NCELL=I+((J-1)+(K-1)*NP2T3)*NR1P2
-!PB              VOL(NCELL)=AREA(NCELL)*(XCOM(NCELL)+RMTOR)*PI2A
               VOL(NCELL)=AREA(NCELL)*(XCOM(NCELL)+RMTOR)*ZDF
-!pb300919     IF (VOL(NCELL).GE.0.D0) GOTO 262
               IF (VOL(NCELL).GE.0.D0) CYCLE
               WRITE (iunout,*) 'ERROR IN SUBR. VOLUME, VOL.LT.0'
-              CALL EIRENE_MASJ2('J,I             ',I,J)
+              CALL EIRENE_MASJ2('I,J             ',I,J)
 C             CALL EIRENE_EXIT_OWN(1)
             END DO
   262     CONTINUE
@@ -402,10 +400,9 @@ C             CALL EIRENE_EXIT_OWN(1)
               K=1
               NCELL=I+((J-1)+(K-1)*NP2T3)*NR1P2
               VOL(NCELL)=AREA(NCELL)*ZDF
-!pb300919     IF (VOL(NCELL).GE.0.D0) GOTO 260
               IF (VOL(NCELL).GE.0.D0) CYCLE
               WRITE (iunout,*) 'ERROR IN SUBR. VOLUME, VOL.LT.0'
-              CALL EIRENE_MASJ2('J,I             ',I,J)
+              CALL EIRENE_MASJ2('I,J             ',I,J)
 C             CALL EIRENE_EXIT_OWN(1)
             END DO
   260     CONTINUE
@@ -417,10 +414,9 @@ C             CALL EIRENE_EXIT_OWN(1)
               K=1
               NCELL=I+((J-1)+(K-1)*NP2T3)*NR1P2
               VOL(NCELL)=AREA(NCELL)*(XCOM(NCELL)+RMTOR)*PI2AT
-!pb300919     IF (VOL(NCELL).GE.0.D0) GOTO 261
               IF (VOL(NCELL).GE.0.D0) CYCLE
               WRITE (iunout,*) 'ERROR IN SUBR. VOLUME, VOL.LT.0'
-              CALL EIRENE_MASJ2('J,I             ',I,J)
+              CALL EIRENE_MASJ2('I,J             ',I,J)
 C             CALL EIRENE_EXIT_OWN(1)
             END DO
   261     CONTINUE
@@ -444,10 +440,9 @@ C
 !PB                VOL(NCELL)=ABS(AREAP(I,J))*(XCOM(NCELL)+RMTOR)*PI2A
                 IF (NSTGRD(NCELL) == 0) THEN
                   VOL(NCELL)=ABS(AREAP(I,J))*(XCOM(NCELL)+RMTOR)*ZDF
-!pb300919         IF (VOL(NCELL).GE.0.D0) GOTO 265
                   IF (VOL(NCELL).GE.0.D0) CYCLE
                   WRITE (iunout,*) 'ERROR IN SUBR. VOLUME, VOL.LT.0'
-                  CALL EIRENE_MASJ2('J,I             ',I,J)
+                  CALL EIRENE_MASJ2('I,J             ',I,J)
 C                 CALL EIRENE_EXIT_OWN(1)
                 ELSE
                   VOL(NCELL) = 0._DP
@@ -472,10 +467,9 @@ C                 CALL EIRENE_EXIT_OWN(1)
                 END IF
                 IF (NSTGRD(NCELL) == 0) THEN
                   VOL(NCELL)=ABS(AREAP(I,J))*(XCOM(NCELL)+RMTOR)*PI2AT
-!pb300919         IF (VOL(NCELL).GE.0.D0) GOTO 267
                   IF (VOL(NCELL).GE.0.D0) CYCLE
                   WRITE (iunout,*) 'ERROR IN SUBR. VOLUME, VOL.LT.0'
-                  CALL EIRENE_MASJ2('J,I             ',I,J)
+                  CALL EIRENE_MASJ2('I,J             ',I,J)
 C                 CALL EIRENE_EXIT_OWN(1)
                 ELSE
                   VOL(NCELL) = 0._DP
@@ -500,7 +494,7 @@ C                 CALL EIRENE_EXIT_OWN(1)
                   VOL(NCELL)=ABS(AREAP(I,J))*ZDF
                   IF (ABS(VOL(NCELL)) < EPS10) THEN
                     WRITE (iunout,*) 'ERROR IN SUBR. VOLUME, VOL.EQ.0'
-                    CALL EIRENE_MASJ2('J,I             ',I,J)
+                    CALL EIRENE_MASJ2('I,J             ',I,J)
                   END IF
                 ELSE
                   VOL(NCELL) = 0._DP

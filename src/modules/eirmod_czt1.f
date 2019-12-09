@@ -1,5 +1,5 @@
 cdr Dec. 16.  added cndyn arrays into RCZT1 (formerly in : update, etc....)
-cdr Apr. 18:  added: RSQDVPH,...CNDYNPH, for species-wise synchonised pointers and targets
+cdr Apr. 18:  added: RSQDVPH,...CNDYNPH, for species-wise synchronised pointers and targets
 
       MODULE EIRMOD_CZT1
 

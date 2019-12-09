@@ -32,8 +32,8 @@ c       define an explicit interface to the block building function
           RECURSIVE SUBROUTINE EIRENE_TIMEA_BuildBlocks(TREE, PARENT)
             USE EIRMOD_PRECISION
             USE EIRMOD_OCTREE
-            TYPE(ocNode), POINTER, INTENT(IN) :: PARENT
-            TYPE(ocTree), POINTER, INTENT(IN) :: TREE
+            TYPE(ocNode), POINTER, INTENT(IN OUT) :: PARENT
+            TYPE(ocTree), POINTER, INTENT(IN OUT) :: TREE
           END SUBROUTINE EIRENE_TIMEA_BuildBlocks
         END INTERFACE
 
@@ -171,8 +171,8 @@ c       definie explicit interfaces to the checking routines
           END FUNCTION
         END INTERFACE
 
-        TYPE(ocNode), POINTER, INTENT(IN) :: PARENT
-        TYPE(ocTree), POINTER, INTENT(IN) :: TREE
+        TYPE(ocNode), POINTER, INTENT(IN OUT) :: PARENT
+        TYPE(ocTree), POINTER, INTENT(IN OUT) :: TREE
         TYPE(ocNode), POINTER :: CHILD
         INTEGER :: I, J, SID
         REAL(DP) :: DISTANCE

@@ -1,5 +1,11 @@
       MODULE EIRMOD_CADGEO
 
+cdr Sept. 19
+cdr Data for "additional surfaces": BREP formulation,
+cdr      1st or 2nd order algebraic surfaces, and their boundaries
+cdr Mostly read in input block 3B, (input.f), and some precomputed
+cdr      coefficients set in TIMEA0 to speed up MC computation.
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
 

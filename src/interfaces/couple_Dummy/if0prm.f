@@ -14,8 +14,6 @@ c   NKNOT :
 C   NTRII :
 C   NCPVI :  no. of special couple tallies
 
-c  also set: NDX,NDY,NFL, NDXP, NDYP
-
       SUBROUTINE EIRENE_IF0PRM(IUNIN)
 
       USE EIRMOD_PARMMOD

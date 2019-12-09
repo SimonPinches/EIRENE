@@ -3,7 +3,11 @@
 !PB 22.05.07: NPTSDEL ADDED
 !             NPTSDEL IS THE NUMBER OF PARTICLES AFTER WHICH THE RANDOM NUMBER
 !             GENERATOR IS INITIALISED WITH A NEW SEED
+
       MODULE EIRMOD_COMSOU
+cdr  parameter for primary source sampling (LOCATE.F), read from INPUT.f block 7,
+cdr  for point, line, surface, and volume source distributions, as well as
+cdr  for velocity space distributions.
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD

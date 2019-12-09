@@ -107,8 +107,9 @@ cdr                          !  set here: pot(1:9,irel)=reacdat(kk):.....
 cdr  use diffusion cross-section and diffusion rate coeff. for transport
         modcol(5,0,irel)=0   !  isotropic scattering IN COM
         if (NPBGKP(IPL,1).eq.0) then
+          CALL EIRENE_LEER(1)
           WRITE (IUNOUT,*) 'WARNING FROM XSTEL: '
-          WRITE (IUNOUT,*) 'KK, IREL ',KK,IREL
+          WRITE (IUNOUT,*) 'KK, IREL, IPL ',KK,IREL,IPL
           WRITE (IUNOUT,*) 'NO SCATTERING ANGLE INFORMATION PROVIDED'
           WRITE (IUNOUT,*) 'BUT ALSO NO BGK RELAXATION.'
           WRITE (IUNOUT,*) 'USE ISOTROPIC SCATTERING'

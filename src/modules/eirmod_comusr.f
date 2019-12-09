@@ -48,14 +48,17 @@ C  THE FIRST NPLPR1 DATA ARE PRIMARY INPUT PROFILES, SET IN SUBROUTINE PLASMA
      R        TEIN(:),        TIIN(:,:),      DEIN(:),     DIIN(:,:),
      R        VXIN(:,:),      VYIN(:,:),      VZIN(:,:),
      R        BXIN(:),        BYIN(:),        BZIN(:),     BFIN(:),
-     R        ADIN(:,:),      VOL(:),         WGHT(:,:),
+     R        ADIN(:,:),  ! up to this point: also storage on PLASMA_BCKGRND (for data transfer)
+     R        VOL(:),         WGHT(:,:),
      R        EXIN(:),        EYIN(:),        EZIN(:),     EFIN(:),
      R        POT(:),
 c  derived from primary input profils, in subr. PLASMA_DERIV  
-c  (strictly: DEIN is also a derived tally) :
+c  (strictly: tally no. -3: DEIN, is also a derived tally) :
      R        BXPERP(:),      BYPERP(:),
      R        BVIN(:,:),      PARMOM(:,:),    EDRIFT(:,:),
-     R        PSI(:),         FREE26(:),      FREE27(:),
+c  B-field fluxfunction PSI, corresponds to POT for electric field
+     R        PSI(:),
+     R        FREE26(:),      FREE27(:),
      R        FREE28(:),      FREE29(:),      FREE30(:),
 
 c  Tallies 31 --120: optional: gradients of all scalar input tallies.
@@ -103,7 +106,7 @@ C  SIMILAR (TO BE MOVED HERE (?)) ZTI, ZT1,....
 
      R        TEINL(:),  TIINL(:,:),  DEINL(:),  DIINL(:,:),
 
-C  NSFPRM:  SURFACE AVERAGED INPUT TALLIES (BY ABUSE OF LANGUAGE).
+C  NSFPRM:  SURFACE-AVERAGED INPUT TALLIES (BY ABUSE OF LANGUAGE).
      R        FLXOUT(:), SAREA(:),
 C
      R        DIOD(:),   DATD(:),     DMLD(:),   DPLD(:),    DPHD(:),
@@ -169,7 +172,7 @@ C  LUSR, LOGICAL
      L         LIVTALI(:)
 c
 C  FLAGS FOR "SMOOTHED INPUT TALLIES" (for  interpolation from cell vertices into cell)
-C  (REQUIRES AVAILABILITY OF ...CORNER(:) TALLIES
+C  (REQUIRES AVAILABILITY OF ...CORNER(:) TALLIES)
       LOGICAL, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      L         LSMOPRO(:)
 
@@ -1540,7 +1543,6 @@ cdr oct 18: initialization of input volumetric tallies moved to ICAL==2
         LGVAC  = .FALSE.
         LSPCCLL = .FALSE.
         LIVTALI = .TRUE.
-
         
         LTEIN      => LIVTALI(1)
         LTIIN      => LIVTALI(2)

@@ -1,6 +1,6 @@
 cdr aug. 18   bug fix: remove virtual neutral background species
 cdr           from coulomb collision frequency evaluation
-cdr aprl.18   bug fix re. parallel distace (zt,ztc,mfp,...) and
+cdr aprl.18   bug fix re. parallel distance (zt,ztc,mfp,...) and
 cdr           scoring distance clpd (full gyro motion distance)
 cdr           clpd  is switched back and forth. Needs clean-up.
 cdr Oct. 17   minor sync with folneut
@@ -16,7 +16,7 @@ c               also for proper printout from chctrc for trace ions.
 
 c  njump=3, for internal grid surface und timusr. reset time=0
 c  error exit from fpkcol: goto 9991, da alles bereits in fpkcol erledigt (ptrash....)
-C  OCT 14.:  cell based spectra scoring called only if cell based spectra are defined
+C  OCT 14.:  cell-based spectra scoring called only if cell-based spectra are defined
 !DR  eps12 --> eps6 for testing cosine of angle of incidence.
 !DR  levgeo=4:  if nlsrfx: correction of nrcell for SG gt.0 SG lt.eps6
 c
@@ -25,7 +25,7 @@ c
 C  MAY05: CALL UPDATE FROM STATIC LOOP WITH IFLAG=4 (RATHER =1)
 C         WG. COLL EST. ON 1ST FLIGHT AFTER BIRTH.
 C  Sept 05: also vel=velpar before call  to ...col  routines.
-!PB 12.01.06: calls to UPDATE_SPECTRUM introduced for cell based spectra
+!PB 12.01.06: calls to UPDATE_SPECTRUM introduced for cell-based spectra
 !PB 18.04.06: xstorv=0 in "vacuum region" added
 !DR  4.08.06: check v_par=0, otherwise stop trajectory (lable 992)
 !DR 10.08.06: cut-off Ti with T_vac for collision frequency, for
@@ -80,7 +80,7 @@ C  .............................................................................
 C
       SUBROUTINE EIRENE_FOLION
 C
-C     CHARGED PARTICLE, LAUNCHED AT X0,Y0,Z0, IN CELL NRCELL, IPOLG,
+C     CHARGED PARTICLE, LAUNCHED AT X0,Y0,Z0 IN CELL NRCELL, IPOLG,
 C     IPERID, NPCELL, NTCELL, NACELL, NBLOCK, WITH VELOCITY VELX,VELY,VELX
 C     IS FOLLOWED.
 C     (MODULE: COMPRT.F)
@@ -506,7 +506,7 @@ c  check all additional surfaces in index range nli, nle
      .  (MSURF,NCELL,NLI,NLE,NTCELL,IPERID,X0,Y0,Z0,TIME,
      .               VLXPAR,VLYPAR,VLZPAR,VELPAR,
      .               MASURF,XLI,YLI,ZLI,SG,TL,NLTRC,LCNDEXP)
-C       NLPR= :NOT AVAILABLE FOR TEST IONS
+C       NLPR: NOT AVAILABLE FOR TEST IONS
 c
         ZDT1=TL
         ZTST=TL
@@ -547,7 +547,6 @@ ctest     a=a*(1.+1./16.)**0.5-a*1.5*200./0.1
 ctest     aa=fnueqi_1(0.1d0,1.d14,200.d0,1,1)
 ctest     aaa=fnueqi_2(0.1d0,1.d14,200.d0,1,1)
 ctest     write (iunout,*) 'a,aa,aaa', a,aa,aaa
-ctest     write (*,*) 'a,aa,aaa', a,aa,aaa
 ctest     stop
 
 C  default Coulomb collision model (simple energy relaxation, e.g. also: NRC=0)

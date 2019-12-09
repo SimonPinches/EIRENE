@@ -214,7 +214,6 @@ C
               IF (NSTGRD(J).EQ.0.AND..NOT.LGVAC(J,IPLS)) THEN
 c  FREC is in Amp, so ADD is in: eV * Amp = Watt
                 REC=FREC(IFPLS,IIRC,J)-FREC(IFPLS,IIRC,J-1)
-!pb300919       IF (REC.LE.0.D0) GOTO 6
                 IF (REC.LE.0.D0) CYCLE
                 ADD=1.5*TIIN(IPLSTI,J)*REC
                 IF (LEDRIFT) ADD=ADD+EDRIFT(IPLS,J)*REC
@@ -300,6 +299,7 @@ cdr   endif
     7   CONTINUE    !  npls loop
 
 C  BREMSSTRAHLUNG ORIGINATING FROM IONS IPLS, CHARGE Z=NCHRGP(IPLS)
+C  only: atomic ions. Exclude here for the time being: molecular ions
         TOT_BREMS = 0._DP
         DO IPLS=1,NPLSI
           IF (NCHRGP(IPLS) == 0) CYCLE

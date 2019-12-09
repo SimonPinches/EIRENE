@@ -4,7 +4,7 @@ cdr             All current calls are with either isc=0 or isc=1.
 cdr             isc=2: is apparently unused but ready?
 cdr  16.05.19:  log spectra disabled for directional spectra (with negative signs of EB possible)
 cdr             IDIREC=1 option is not available here for surface spectra (forgotten?).
-cdr             but already programed in OUTSPEC. "Failed Safe" added for now.
+cdr             but already programed in OUTSPEC. "Fail-safe" added for now.
 cdr             Lots of identical code twice in ISC=0 and ISC > 0. Can be reduced.
 cdr  29.05.19:  Bug fix: binning for directional volumetrix spectra
 cdr             use E0_par times sign(vel,chord), 
@@ -16,14 +16,14 @@ cdr             with sign (tbd)
 C  update contributions to surface- or volume/line-averaged energy spectra
 c  wt:  particle weight, (or wt=wpr, conditional particle weight)
 c
-c  cell crossing   : (conditional) tracklength estimator for cell based spectra
+c  cell crossing   : (conditional) tracklength estimator for cell-based spectra
 c  surface crossing: here tracklength estim. collapses to a collision estim.
 
 c  isc:    =0: update surface-averaged spectra,
 c       ind:  =1: particle incident on surface
 c       ind:  =2: particle reemitted from surface
 
-c  isc:  =1,2: else (update cell based spectra)
+c  isc:  =1,2: else (update cell-based spectra)
 c       isc =1:  score in coarse (scoring) grid
 c       isc =2:  score in fine (geometry)  grid
 c       ind:  not in use  (often: ind = iflag in calling programs,
@@ -130,10 +130,10 @@ cdr  score SPC(I), ESP_MIN and ESP_MAX
 
       ELSE
 
-! CELL BASED SPECTRA
+! CELL-BASED SPECTRA
 
 cdr  meaning of isc = 1,2  see subr. input, flag ISRFCLL
-cdr  meaning of ind:   not in use for cell based spectra    ??  iflag in calling program ??
+cdr  meaning of ind:   not in use for cell-based spectra    ??  iflag in calling program ??
 
         WV=WEIGHT/VEL
         DO IC=1,NCOU

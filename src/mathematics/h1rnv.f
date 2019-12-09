@@ -1,5 +1,7 @@
 *
       SUBROUTINE H1RNV(RVEC,LEN)
+cdr Return a vector RVEC, of length LEN, of random numbers 
+cdr from H1RN (=RANMAR) generator, in a single call.
 *
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT

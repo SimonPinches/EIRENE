@@ -31,7 +31,7 @@ cdr            LEXP=.true.
 !       or energy gain.
 ! It must be positive, because also ln(erate) or log(erate) is used,
 !    in certain data formats.
-! If it is loss, rather than a gain, sign change to be done in calling routine,
+! If it is a loss, rather than a gain, sign change to be done in calling routine,
 !   as well as a shift (if any) by potential energy loss rate
 !   (e.g. conversion from electron cooling rate to radiation loss rate)
 
@@ -39,7 +39,7 @@ cdr            LEXP=.true.
 !  ifit=1:   single polynomial fit, use P1, (e.g. HYDHEL, AMJUEL, H.8)
 !  ifit=2:   double polynomial fit, use P1, P2, (e.g. HYDHEL, H.9, AMJUEL, H.10,...)
 !  ifit=3:   interpolation in 2 parameter table (e.g. ADAS)
-!  ifit=4:   interpolation in single parameter table (e.g. open ADAS, HYDKIN,....)
+!  ifit=4:   interpolation in single parameter table (e.g. open ADAS, ...)
 !  ifit=5:   use internal eirene collision radiative code. To be generalized
 !            (currently here also energy rates, erate  for this particular option.
 !            More logical if the latter are moved

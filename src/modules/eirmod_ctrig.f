@@ -1,4 +1,5 @@
       MODULE EIRMOD_CTRIG
+cdr  Data for triangular meshes: LEVGEO=4      
 
 !pb 07.12.06: use POINTER rather than ALLOCATABLE in datatype definition
 !pb           at this place ALLOCATABLE is allowed only in FORTRAN 2000

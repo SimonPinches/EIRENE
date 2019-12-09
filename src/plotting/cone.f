@@ -92,12 +92,12 @@ C PLOTTE DIE KREISE
       DO 2 I=1,NK
         T=T1+(I-1)*DT
         IF (I.EQ.1.AND.ILEFT.NE.0) THEN
-          CALL
-     .  EIRENE_SCCONE(X0,Y0,Z0,-VX,-VY,-VZ,ALF,TH,T1,BX,BY,BZ,CX,CY,CZ,
+          CALL EIRENE_SCCONE(X0,Y0,Z0,-VX,-VY,-VZ,ALF,
+     .                TH,T1,BX,BY,BZ,CX,CY,CZ,
      .                DANG,AL,ILEFT,XP,YP,1,NA+1,1)
         ELSEIF (I.EQ.NK.AND.IRIGHT.NE.0) THEN
-          CALL
-     .  EIRENE_SCCONE(X0,Y0,Z0,VX,VY,VZ,ALF,TH,T2,BX,BY,BZ,CX,CY,CZ,
+          CALL EIRENE_SCCONE(X0,Y0,Z0,VX,VY,VZ,ALF,
+     .                TH,T2,BX,BY,BZ,CX,CY,CZ,
      .                DANG,AR,IRIGHT,XP,YP,1,NA+1,1)
         ELSE
           PX=X0+T*VX

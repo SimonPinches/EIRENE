@@ -4,12 +4,15 @@
 !  jul-06: database handle added for ADAS
 !  20.06.07: deallocate tdmpar
 cdr dec 18 : remove obsolete photon-reflection data files graphite_ext and mo_ext
+cdr aug 19 : add legal filename: AMMONX (ifile=12)
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
 
       IMPLICIT NONE
 
       PRIVATE
+CDR FOR DIRECT TRANSFER OF INFO FROM FIND_PARAM.F INTO INPUT.F
+      INTEGER, PUBLIC, SAVE :: INDPRO2_SAVE
 
       PUBLIC :: EIRENE_ALLOC_CINIT, EIRENE_DEALLOC_CINIT,
      .          EIRENE_INIT_CINIT,
@@ -72,6 +75,7 @@ cdr dec 18 : remove obsolete photon-reflection data files graphite_ext and mo_ex
 
       CHARACTER(400), PUBLIC, SAVE :: DBFNAME(NDBNAMES)
       CHARACTER(6), PUBLIC, SAVE :: DBHANDLE(NDBNAMES)
+
 C> Default output file prefix
 #ifndef HPUX
       CHARACTER(*), PUBLIC, PARAMETER :: FORT    = 'FORT.'
@@ -177,6 +181,7 @@ C> Default output file prefix
       INDGRD => ICINIT(13 : 15)
       INDSRC => ICINIT(16 : 15+NSTRA)
 
+cdr units used for inut of backround profiles: V, B, Ti
       NLMACH => LCNIT(1)
       NLMLTI => LCNIT(2)
       NLMLV  => LCNIT(3)
@@ -240,7 +245,7 @@ C
       TRICH=1._DP
 
 C
-C  INITIALIZE DATABASE NAMES
+C  INITIALIZE DATABASE NAMES, KEY WORDS FOR PERMITTED NAMES
 C
       DBHANDLE(1) = 'AMJUEL'
       DBHANDLE(2) = 'METHAN'
@@ -260,6 +265,8 @@ C
       DBHANDLE(16) = 'HYDREA'
       DBHANDLE(17) = 'TAB2D '
 
+C  FOR READING CFILE CARDS,
+C  DEFAULT FOR DATABASE NAMES, CAN BE OVERWRITTEN BY CFILE CARDS
       DBFNAME = REPEAT(' ',LEN(DBFNAME(1)))
       DBFNAME(1) = 'AMJUEL'
       DBFNAME(2) = 'METHANE'

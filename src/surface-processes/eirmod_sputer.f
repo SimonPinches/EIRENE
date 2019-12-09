@@ -147,11 +147,11 @@ C
 C jan 05: (E.Tsitrone)
 C test flux dependence, two expressions for low and high flux, A6 and A7, loc.cit.
 C and connect both to provide smooth dependence as ftc. of flux,
-C now same as in Warrier code and in E.Tsitrone's code
+C now same as in Warrier code and in E.Tsitrone code
 C
 C june 05: connecting the flux dep. A6 and A7 removed again.
 C          keep again as independent options for flx dep. sputtering yield
-C          as in all previous versions (and as in Roth's original code).
+C          as in all previous versions (and as in Roth original code).
 C
 C sept 05: use database name for opening SPUTER database
 c may 06:  modifications for: photons do not sputter !
@@ -296,7 +296,7 @@ cdr sept 18:  use F format rather than E format (removes some compiler warnings)
 
       if (nprs > 1) call EIRENE_broadsput(es,m2m1,etf,eth,q,28,11)
 
-C  ASSIGN SPUTER DATA TO EIRENE PROJECTILE-TARGET COMBINATIONS
+C  ASSIGN SPUTTER DATA TO EIRENE PROJECTILE-TARGET COMBINATIONS
 C  FOR THIS PARTICULAR RUN
 C
 C  IDENTIFY TARGET ATOMIC MASS NUMBER NTAMU
@@ -1024,7 +1024,7 @@ c  d.reiter: single--> double prec.
 C
 C  *********************************************************************
 C  *                                                                   *
-C  *  CHEMICAL SPUTTERING FROM Haasz's NEW DATA (February 1997)        *
+C  *  CHEMICAL SPUTTERING FROM Haasz NEW DATA (February 1997)          *
 C  *  - poly. fit: Y = a0 + a1*log(E) + a2*log(E)^2 + a3*log(E)^3      *
 C  *  E0  (eV)       -  Ion or neutral incident energy                 *
 C  *  TEMP (K)       -  Temperature at target or wall                  *
@@ -1162,7 +1162,7 @@ c  d.reiter: single--> double prec.
 C
 C  *********************************************************************
 C  *                                                                   *
-C  *  CHEMICAL SPUTTERING FROM Haasz's NEW DATA (February 1997)        *
+C  *  CHEMICAL SPUTTERING FROM Haasz NEW DATA (February 1997)          *
 C  *  - poly. fit: Y = a0 + a1*log(E) + a2*log(E)^2 + a3*log(E)^3      *
 C  *  with the addition of a new fit below 10 eV as suggested by       *
 C  *  J.Davis and parameterized by G. Porter; now interpolates between *

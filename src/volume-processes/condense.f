@@ -1,5 +1,5 @@
 !pb APR  16: piods -> pioei
-cdr Nov 16: nmdsi --> nmeii,  and comments
+cdr Nov 16: nmdsi -> nmeii,  and comments
 
 C
 C

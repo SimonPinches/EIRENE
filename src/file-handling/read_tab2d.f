@@ -1,3 +1,10 @@
+cdr  dec. 2019: this routine consists of 2 parts:
+c               part 1: parsing of data files for
+c                       2d tables. Format of files:
+c                       to be described
+c               part 2: transfer the information onto
+c                       eirene data structure REACDAT(ir)
+cdr
 !pb  21.11.06: index error corrected in defintion of ap%dte
 
       subroutine EIRENE_read_tab2d (ir,reac,isw,iz1)
@@ -22,7 +29,7 @@ c  to be done: units, log-lin, scaling, asymptotics
 
       use EIRMOD_precision
       use EIRMOD_parmmod
-      use EIRMOD_comxs
+      use EIRMOD_comxs   !dr:  this contains: type(adas_data)
       use EIRMOD_comprt, only: iunout
 
       implicit none
@@ -73,6 +80,9 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
 
       read (29+ifoff,*)
 
+cdr probably: distuingish between "MS resolved" and "MS unresolved"?
+cdr           by using a certain file name convention? 
+cdr           Is REAC(..) only use here?
       lc = len_trim(reac)
       if (reac(lc:lc) == 'r') then
         read (29+ifoff,*)
@@ -116,7 +126,8 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
 
       close (29+ifoff)
 
-! set up differenz arrays for first and 2nd independent parameter
+! set up difference arrays (increments) for first 
+!        and 2nd independent parameter
 
       do ide=1,nde-1
         ap%dde(ide) = 1._dp / (ap%dens(ide+1) - ap%dens(ide))
@@ -126,7 +137,9 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
         ap%dte(ite) = 1._dp / (ap%temp(ite+1) - ap%temp(ite))
       end do
 
-
+cdr part 1 done. Next:
+cdr transfer this stuff to data structure REACDAT
+c
       select case (isw)
 
       case (0)
@@ -182,7 +195,7 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
 
       case (5:7)
         IF (REACDAT(IR)%LRTCMW) THEN
-          WRITE (IUNOUT,*) ' MOMEMTUM-WEIGHTED RATE COEFFICIENT',
+          WRITE (IUNOUT,*) ' MOMENTUM-WEIGHTED RATE COEFFICIENT',
      .                     ' ALREADY SPECIFIED FOR REACTION', IR
           DEALLOCATE (AP)
           WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'

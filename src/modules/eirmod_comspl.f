@@ -2,6 +2,11 @@
 !               RSPLST(15,NPARTC) --> RSPLST(NPARTC,15)
 !               ISPLST(15,MPARTC) --> ISPLST(MPARTC,15)
 !    20.06.07:  MAXLEVEL=15 defined, used in dimensioning of RSPLST and ISPLST
+cdr  oct 19:
+cdr             MAXLEVEL is the "depth" of splitting cascades.
+cdr             Formerly: MAXLEVEL=15
+cdr             now (2013) hard coded: MAXLEVEL =300, why? 
+cdr             Is this intended indeed?
 
       MODULE EIRMOD_COMSPL
 
@@ -25,7 +30,6 @@
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R RSPLST(:,:)
 
-!pb 03122013      INTEGER, PUBLIC, PARAMETER :: MAXLEVEL=15
       INTEGER, PUBLIC, PARAMETER :: MAXLEVEL=300
 
       INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE :: ICMSPL(:)
@@ -41,11 +45,12 @@
       LOGICAL, PUBLIC, TARGET, ALLOCATABLE, SAVE :: LCMSPL(:)
 
       LOGICAL, PUBLIC, POINTER, SAVE ::
-     L NLSPLT(:),
-     L NLPRCA(:), NLPRCM(:), NLPRCI(:), NLPRCPH(:)
+     L NLSPLT(:),  ! indicate non dev. surfacs as "splitting-rr" surfaces
 
+     L NLPRCA(:), NLPRCM(:), NLPRCI(:), NLPRCPH(:)
+cdr  NLPRCS should also become POINTER, belongs to NLPRCA; ..., cond exp. est.
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE ::
-     L NLPRCS(:)
+     L NLPRCS(:)  ! indicate additional surfaces as attractors for cond. exp. est.
 
       INTEGER, PUBLIC, SAVE ::
      I NCMSPL, MCMSPL, KCMSPL
@@ -59,9 +64,11 @@
       IF (ALLOCATED(RCMSPL)) RETURN
 
       NCMSPL=2*(N1ST+N2ND+N3RD+NLIM)+5
-!pb 03122013      MCMSPL=N1ST+N2ND+N3RD+NLIM+21
       MCMSPL=N1ST+N2ND+N3RD+NLIM+MAXLEVEL+6
-      KCMSPL=N1ST+N2ND+N3RD+NLIM+NATM+NMOL+NION+NPHOT
+
+      KCMSPL=N1ST+N2ND+N3RD+NLIM+   ! splitting surfaces
+     .       NATM+NMOL+NION+NPHOT   ! cond exp. est., by species
+cdr  .      +NLIMPS                 ! for NLPRCS, tbd.
 
       ALLOCATE (RCMSPL(NCMSPL))
       ALLOCATE (ICMSPL(MCMSPL))
@@ -69,7 +76,7 @@
 
       ALLOCATE (RSPLST(NPARTC,MAXLEVEL))
       ALLOCATE (ISPLST(MPARTC,MAXLEVEL))
-      ALLOCATE (NLPRCS(0:NLIMPS))
+
 
       WRITE (IUNMEM,'(A,T25,I15)')
      .       ' COMSPL ',(NCMSPL+MAXLEVEL*NPARTC)*8 +
@@ -89,15 +96,20 @@
       MAXPOL => ICMSPL(4)
       MAXTOR => ICMSPL(5)
       MAXADD => ICMSPL(6)
-!pb 03122013      NODES  => ICMSPL(7:21)
-!pb 03122013      NSSPL  => ICMSPL(22:MCMSPL)
+
+cdr formerly: maxlevel=15 was hard coded, now: maxlevel=300 ?
       NODES  => ICMSPL(7:6+MAXLEVEL)
       NSSPL  => ICMSPL(7+MAXLEVEL:MCMSPL)
 
+cdr
+c  conditional expectation estimator, if trajectory "sees" additional surface ILIM
+      ALLOCATE (NLPRCS(0:NLIMPS))
+cdr conditional expectation estimator for A, M, I, PH
       NLPRCA => LCMSPL(1:NATM)
       NLPRCM => LCMSPL(1+NATM:NATM+NMOL)
       NLPRCI => LCMSPL(1+NATM+NMOL:NATM+NMOL+NION)
       NLPRCPH=> LCMSPL(1+NATM+NMOL+NION:NATM+NMOL+NION+NPHOT)
+cdr  NLSPLT(ISURF): surface isurf is a "splitting-rr" surface
       NLSPLT => LCMSPL(1+NATM+NMOL+NION+NPHOT:KCMSPL)
 
       CALL EIRENE_INIT_COMSPL

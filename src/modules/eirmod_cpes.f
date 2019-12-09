@@ -18,8 +18,8 @@ cdr July 18  remove nsteff, redundant
       public :: need_calstr, calc_stratum
 
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
-cdr  npesta(istra): master processor for ISTRA
-cdr  npestr(istra): total no. of processor working on ISTRA
+cdr  npesta(istra): no. of master processor for ISTRA
+cdr  npestr(istra): total number of processors working on ISTRA
      I         NPESTR(:), NPESTA(:)
 
       INTEGER, PUBLIC, SAVE :: NPRS, MY_PE
@@ -230,7 +230,8 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
       NPESTR = 0
       NPESTA = 0
 
-      PROCFORSTRA=.TRUE. !VK
+c  correspondence table: Strata vs. PEs
+      PROCFORSTRA=.TRUE. !  Trivial parallelisation: All PEs work on all strata
 
       RETURN
       END SUBROUTINE EIRENE_INIT_CPES

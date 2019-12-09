@@ -1,9 +1,10 @@
 !    20.06.07: constant NLOGAU = number of logicals introduced
-cdr  April 2017:  NEXCS added to logicals (something from Vlad for photons?),
+cdr  April 2017:  NEXVS added to logicals (something from Vlad for photons?),
 cdr               nlogau=38
 cdr  Jan. 2018:   NLEMIS added, nlogau=39
 
       MODULE EIRMOD_CLOGAU
+cdr global control switches, all set in input.f      
 
 
       IMPLICIT NONE
