@@ -113,7 +113,7 @@ C
       REAL(DP) :: ZEP1, SIGSUM, WGHTO, FRSTP, E0O, VELXO,
      .          VELYO, VELZO, VELO, SCNDP,
      .          ZEP3
-      INTEGER :: IOLD, NOLD, IREI,
+      INTEGER :: IOLD, NOLD,
      .           NCLLO
 
 Cdr  additional arrays for ANALOG CASCADE and SPLITTING AT COLLISIONS.

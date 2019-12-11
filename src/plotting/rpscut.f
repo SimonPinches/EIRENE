@@ -32,7 +32,7 @@
       integer, save :: nkanten, ifirst=0
       real(dp) :: timi, timen
       real(dp), allocatable, save :: spar(:)
-      integer :: i, itri
+      integer :: i
 
 
 !pb   if (.not.allocated(tetra_kanten)) then
@@ -517,7 +517,7 @@
 
       implicit none
       integer :: iknot(6), ipunkt(4)
-      integer :: itet, icount, j, ih, i1, i2, i3, ico
+      integer :: i, itri, itet, icount, j, ih, i1, i2, i3, ico
       real(dp) :: ar, EIRENE_artri3
 
       if (.not.allocated(itetno)) allocate (itetno(ntri))

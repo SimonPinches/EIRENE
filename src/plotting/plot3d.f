@@ -45,7 +45,7 @@ C
       REAL :: YHLF, XHLF, FMIN, FMAX, REMIN, REMAX,
      .        XMIN, XMAX, YMIN, YMAX
       REAL, ALLOCATABLE :: AR(:)
-      INTEGER :: I, J, IXM, IYM, IZ, IZN, IER, LAR, IX, IY
+      INTEGER :: I, J, IXM, IYM, IZ, IER, LAR, IX, IY
       CHARACTER(17) :: CH
       CHARACTER(20) :: CHAXS(3)
 C
@@ -87,7 +87,6 @@ C
 C
 C     SEARCH FOR MINIMUM AND MAXIMUM AND REPLACE, IF REQUIRED
 C
-        IZN=IXM*IYM
         FMIN=FALT(1,1)
         FMAX=FALT(1,1)
         XMIN=X(1,1)

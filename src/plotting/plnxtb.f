@@ -21,16 +21,15 @@ C
       WRITE (iunout,*) 'PLNXTB CALLED FROM ',NAME
       WRITE (iunout,*) 'K,IFRST1,IFRST2 ',K,IFRST1,IFRST2
 
-      GOTO (1,2,3),K
-    1 IF (IFRST1.EQ.1) THEN
+      select case (K)
+      case (1)
+        IF (IFRST1.EQ.1) THEN
         CALL GRNXTF
-        RETURN
       ELSE
         IFRST1=1
       ENDIF
-      RETURN
-C
-    2 IF (IFRST1.EQ.0) THEN
+      case (2)
+        IF (IFRST1.EQ.0) THEN
         CALL GRSCLC (0.,0.0,39.5,28.7)
         CALL GRSCLC (3.,3.5,39.5,28.7)
         IFRST1=1
@@ -43,9 +42,7 @@ C
       ELSE
         CALL GRSCLC (3.,3.5,39.5,28.7)
       ENDIF
-      RETURN
-
-    3 CONTINUE
+      case (3)
       IF (IFRST1.EQ.1) CALL GRNXTF
       IFRST1=0
       IF (IFRST2.EQ.1) THEN
@@ -53,5 +50,6 @@ C
         CALL GRSCLC (3.,3.5,39.5,28.7)
       ENDIF
       IFRST2=0
+      end select
       RETURN
       END

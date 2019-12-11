@@ -98,7 +98,7 @@ C>   processes to one stratum.
       REAL(DP), INTENT(IN) :: XX1 !< remaining CPU time
       REAL(DP) :: TIMPE(0:NSTRA), TSTRPE(NSTRA,0:NPRS-1)
       REAL(DP) :: FACP, DELT, SUMTIM, TMEAN, TPE
-      INTEGER :: IPE, K, I, ISTRA, NPRS_FREE, NPRS_OPT,n
+      INTEGER :: IPE, K, I, ISTRA, NPRS_FREE, NPRS_OPT, N
       INTEGER, DIMENSION(1) :: NSTRPE(0:NPRS-1)
 
       PROCFORSTRA = .FALSE.
@@ -222,8 +222,8 @@ csw attempting better work load balancing
           enddo
 
           do istra=1,nstra
-            write(iunout,'(a,2i6,2(1x,e13.6))')
-     .              'XMCT ',istra,npestr(istra),xmct(istra),xmcp(istra)
+            write(iunout,'(a,2i6,1p,2(1x,e13.6))') 'XMCT ',
+     .       istra,npestr(istra),xmct(istra),xmcp(istra)
           enddo
         endif
 
@@ -274,7 +274,7 @@ csw
 
 ! for each stratum define the number of the first processor NPESTA
 ! NPESTA(istra) is the "Master processor" for stratum no. ISTRA.
-
+! This processor is the stratum leader.
 ! It does calculations for this stratum.
 ! This is used to determine the groups of further processors in the
 ! accumulation of the results for one stratum
@@ -287,6 +287,7 @@ csw
         WRITE (iunout,'(12I6)') (I,NPESTA(I),I=1,NSTRA)
 
         XTIM(1:NSTRA) = XX1
+        CALL EIRENE_LEER(1)
         CALL EIRENE_MASAGE
      .    ('REDEFINED CPU TIME ASSIGNED TO STRATA (SEC) :')
         DO ISTRA=1,NSTRA

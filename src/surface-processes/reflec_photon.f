@@ -115,6 +115,10 @@ C
 C   MODREF=0: "PERFECTLY ABSORBING SURFACE", DEFAULT
 C   MODREF=1: "DATABASE REFLECTION MODEL"  (out)
 C
+!PB  to be revised
+!    RPROB: propability of the photon to be reflected
+      RPROB = 0._dp
+
       IF (MODREF.EQ.1) THEN
         GOTO 992  ! THIS MODEL IS CURRENTLY NOT AVAILABLE
       ELSEIF (MODREF.EQ.2) THEN
@@ -122,10 +126,10 @@ C
 CDR BDRF MODEL, WITH GAUSSIAN LOBE IN SPECULAR PART AND LAMBERTIAN IN THERMAL PART
 
 cdr reflected (specular) fraction
-        PRFCF=max(0.,(min(1.,RECYCF(ISPZ,MSURF))))
+        PRFCF=max(0._DP,(min(1._DP,RECYCF(ISPZ,MSURF))))
 cdr prfct: total reemitted  fraction.
 cdr pabs : (1-recyct) is the absorbed fraction
-        PRFCT=max(0.,(min(1.,RECYCT(ISPZ,MSURF))))
+        PRFCT=max(0._DP,(min(1._DP,RECYCT(ISPZ,MSURF))))
         PABS=1.-PRFCT
 cdr prfct is cumulated SUM of emitted (Lambertian) and specular reflected (BDRF) part
 cdr cumulative distribution of (spec-ref)-(lambert)-(absorb) fractions: prfcf,prfct,1.0
@@ -160,7 +164,6 @@ C   COSINE OF ANGLE OF INCIDENCE against outer normal
           IF (COSIN.LT.0.D0) GOTO 993
         ENDIF
 
-
 c  SPECULAR LOBE, BDRF MODEL.
         GOTO 600
       ELSE
@@ -170,10 +173,6 @@ C  ABSORB THIS PHOTON
 C
 C  UNFINISHED DATABASE MODEL REMOVED HERE. OLD STATEMENT LABELS: 100 TO 130.
 C
-!PB  to be revised
-!    RPROB: propability of the photon to be reflected
-      RPROB = 0._dp
-
 C  DECIDE IF PARTICLE IS TO BE REFLECTED OR ABSORBED
 C  (NO THERMAL RE-EMISSION MODEL FOR INCIDENT PHOTONS)
 C
@@ -218,7 +217,7 @@ C  (I.E., 5 DEGREES AGAINST SURFACE TANGENTIAL PLANE)
       ZCTHET=MIN(0.999999_DP,MAX(0.08716_DP,ZCTHET))
       ZSTHET=SQRT(1.-ZCTHET*ZCTHET)
 C
-C  AZIMUTAL ANGLE OF REFLECTION (PHI)
+C  AZIMUTHAL ANGLE OF REFLECTION (PHI)
 C
       ZCPHI=COS(ALPHA_OUT)
       ZCPHI=MAX(-.999999_DP,MIN(0.999999_DP,ZCPHI))

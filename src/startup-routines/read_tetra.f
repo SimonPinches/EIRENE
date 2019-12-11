@@ -206,7 +206,7 @@ C
               WRITE (iunout,*) ' NEIGHBOR TET ',JT,' SIDE ',JS,
      .                         ' CONSISTS OF POINTS ', JP
               IER = 5
-              exit iloop
+              if (.true.) exit iloop
             end do iloop
           ENDIF
         ENDDO

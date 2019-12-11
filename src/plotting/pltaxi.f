@@ -124,7 +124,7 @@ C
                   DO RJ=1,9
                      ARG=RJ*10.**RI
                      T=LOG10(ARG)
-                     IF (RJ.LT.2.) THEN
+                     IF (RJ.LT.2) THEN
                         CALL GRSPTS(20)
                      ELSE
                         CALL GRSPTS(16)
@@ -389,7 +389,7 @@ C
                  DO RJ=1,9
                     ARG=RJ*10.**RI
                     T=LOG10(ARG)
-                    IF (RJ.LT.2.) THEN
+                    IF (RJ.LT.2) THEN
                        CALL GRSPTS(20)
                     ELSE
                        CALL GRSPTS(16)

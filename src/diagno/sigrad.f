@@ -50,7 +50,7 @@ C
       LOGICAL :: LARGST
 c
 c
-      DATA ZMAX/40./
+      DATA ZMAX/40._DP/
 
       LARGST = SIZE(ARGST,2) >= NSBOX
       TIMAX=0.0

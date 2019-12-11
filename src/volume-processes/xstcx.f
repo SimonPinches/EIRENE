@@ -82,6 +82,7 @@ C
      .           J, NEND, MODC, NSECX4, IPL2, IIO2, IPLTI,
      .           NCBULK, NCGBLK
       INTEGER, EXTERNAL :: EIRENE_IDEZ
+      REAL(DP), PARAMETER :: EMINL=-2.3_DP
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt
 
@@ -224,7 +225,7 @@ C       NEND=9
             IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
 cdr  safety cut-off at TI= 0.1 eV. (TVAC=0.02)
-              tii = max(-2.3_dp,tii)
+              tii = max(eminl,tii)
 c  evaluate 2 parametric fit,
 c  collapse this to a one parameter fit CF for EB dependence, evaluated at TII.
               rp => reacdat(KK)%rtc%poly
@@ -254,7 +255,6 @@ C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
             TB=MAX(-100._DP,TB)
             TABCX3(IRCX,J,1)=EXP(TB)
           END DO
-C         JEREACX(IRCX) = 9
         ELSE  ! ??
 C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
           write (iunout,*) 'storage save mode not available yet for CX'
@@ -402,7 +402,7 @@ C  ENERGY RATE COEFFICIENT(TI,EBEAM)
               DO 257 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
-                tii = max(-2.3_dp,tii)
+                tii = max(eminl,tii)
 c old
 c old           CALL EIRENE_PREP_RTCS (KREAD,5,TII,CF)
 c old

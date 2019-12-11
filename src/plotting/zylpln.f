@@ -18,7 +18,7 @@ C
       REAL(DP) :: AFF(3,3),AFFI(3,3),PHIAN(20,9),PHIEN(20,9),ANGLE(19),
      .          TAR(20),AL(4),AR(4)
       REAL(DP) :: B0, B1, B2, PHI, PHIH, HILF, TMND, HILFD, X, Y, Z,
-     .          PHID, BETC, C1, COSD, SIND, HYP, DLT, BPLN, CPHI, E, T,
+     .          BETC, C1, COSD, SIND, HYP, DLT, BPLN, CPHI, E, T,
      .          TMXD, TTEST, TMIN, EC, V1, C2, C3, TMAX, V2, V3,
      .          TEST
       INTEGER :: IPAR(20)
@@ -26,8 +26,6 @@ C
      .           I, IHILF
 
 C
-      PHID=180.-ACOS(1./SQRT(2.))*RADDEG
-C     PHID=0.
       ITEST=0
       WRITE (iunout,*) ' ZYLPLN CALLED FOR JS = ',JS
       WRITE (iunout,*) ' ZX0,ZY0,ZZ0 ',ZX0,ZY0,ZZ0

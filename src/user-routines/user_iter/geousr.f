@@ -64,11 +64,10 @@ C
       USE EIRMOD_CINIT
       USE EIRMOD_CPOLYG
       IMPLICIT NONE
-      CHARACTER(80) :: ZEILE
-      REAL(DP) :: XCOOR, YCOOR, ZCOOR, xan, xen, yan, yen, zan, zen
+!      CHARACTER(80) :: ZEILE
+      REAL(DP) :: XCOOR, YCOOR, ZCOOR
       INTEGER :: NADMOD, NASMOD, NORMOD, NRS, IPUNKT, I,NSSIR, NSSIP,
-     .           IDIR, IR, IP, IT, IC, IN, NAS
-      logical :: lx1,lx2,lx3,lx4,ly1,ly2,ly3,ly4
+     .           IDIR, IR, IP, NAS
 C
 C MODIFY GEOMETRY
 C
@@ -210,7 +209,7 @@ c======================================================================
 
       logical :: first, normalcase, hlp_found
       integer :: onetwo(8),limpos(8),xpolpos(8),ypolpos(8)
-      character(80) :: geometry_comment
+!      character(80) :: geometry_comment
       REAL(DP), PARAMETER :: hlp_tol=0.001
 
       INTEGER :: I, J, K, NBITS, M, N, L
@@ -218,27 +217,36 @@ c======================================================================
 csw 03sep2013
       INTEGER :: NADMOD,NASMOD, NRS,IPUNKT !VK
       REAL(DP) :: XCOOR,YCOOR,ZCOOR !VK
-      real(dp) ::  xpt, ypt, XN, YN
+      real(dp) ::  XN, YN
       integer ixn,iyn
 csw
-      save first,onetwo,limpos,geometry_comment
+      save first,onetwo,limpos
       data first /.true./
 c======================================================================
 c*** At the first invocation, read the data from the Eirene input file
 c*** and define the grid corners
 c
       IF (NLPLG) THEN
+        N=max(npplg/3,1)*4
         if(first) then
-!pb        read(iunin,'(a80)') geometry_comment
+          READ (IUNIN,'(2I6)') NADMOD,NASMOD
+          WRITE(iunout,*) "GEOUSR: NADMOD,NASMOD",NADMOD,NASMOD
           do i=1,8
             onetwo(i)=0
             limpos(i)=0
           end do
+          IF (NASMOD.EQ.N) THEN
 C INNER LEFT TARGET
           xpolpos(1)=1
           ypolpos(1)=npoint(1,1)
           xpolpos(2)=nr1st
           ypolpos(2)=npoint(1,1)
+          elseif (NASMOD.EQ.2 .and. NPPLG.EQ.1) THEN
+            xpolpos(1)=nr1st
+            ypolpos(1)=npoint(1,1)
+            xpolpos(2)=nr1st
+            ypolpos(2)=npoint(2,1)
+          end if
 C OUTER RIGHT TARGET
           if(npplg.le.3) then
             xpolpos(3)=1
@@ -269,56 +277,49 @@ C INNER RIGHT TARGET
           end if
 
 csw 03sep2013
-          READ (IUNIN,'(2I6)') NADMOD,NASMOD
-          WRITE(iunout,*) "GEOUSR: NADMOD,NASMOD",NADMOD,NASMOD
 
           DO I=1,NADMOD
             READ (IUNIN,'(2I6,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
 
-            GOTO (1,2,3,4,5,6),IPUNKT
-            WRITE (iunout,*) 'WRONG POINT NUMBER IN INFCOP '
-            WRITE (iunout,*) 'INPUT LINE READING'
-            WRITE (iunout,'(2I6,1P,3E12.4)')
-     .                                  NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
-            WRITE (iunout,*) ' IS IGNORED '
-            GOTO 10
-
-    1       CONTINUE
+            SELECT CASE (IPUNKT)
+            CASE (1)
             P1(1,NRS)=XCOOR
             P1(2,NRS)=YCOOR
             P1(3,NRS)=ZCOOR
-            GOTO 10
 
-    2       CONTINUE
+            CASE (2)
             P2(1,NRS)=XCOOR
             P2(2,NRS)=YCOOR
             P2(3,NRS)=ZCOOR
-            GOTO 10
 
-    3       CONTINUE
+            CASE (3)
             P3(1,NRS)=XCOOR
             P3(2,NRS)=YCOOR
             P3(3,NRS)=ZCOOR
-            GOTO 10
 
-    4       CONTINUE
+            CASE (4)
             P4(1,NRS)=XCOOR
             P4(2,NRS)=YCOOR
             P4(3,NRS)=ZCOOR
-            GOTO 10
 
-    5       CONTINUE
+            CASE (5)
             P5(1,NRS)=XCOOR
             P5(2,NRS)=YCOOR
             P5(3,NRS)=ZCOOR
-            GOTO 10
 
-    6       CONTINUE
+            CASE (6)
             P6(1,NRS)=XCOOR
             P6(2,NRS)=YCOOR
             P6(3,NRS)=ZCOOR
 
-   10       CONTINUE
+            CASE DEFAULT
+              WRITE (iunout,*) 'WRONG POINT NUMBER IN INFCOP '
+              WRITE (iunout,*) 'INPUT LINE READING'
+              WRITE (iunout,'(2I6,1P,3E12.4)')
+     .                                  NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
+              WRITE (iunout,*) ' IS IGNORED '
+
+            END SELECT
           ENDDO
 C
 csw
@@ -341,14 +342,20 @@ csw 03sep2013 AARRRGH!!!!          read(iunin,*) onetwo(i),limpos(i)
           first=.false.
 !         write(iunout,*) 'GEOMETRY FOR'
 !         write(iunout,'(a80)') geometry_comment
-          N=max(npplg/3,1)*4
 csw 03sep2013
           IF(NASMOD.NE.N) THEN
+            IF (NPPLG.EQ.1 .AND. NASMOD.EQ.2) THEN
+              write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1         ''' LINKED TO LEFT TARGET'')') onetwo(1),limpos(1)
+              write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1         ''' LINKED TO RIGHT TARGET'')') onetwo(2),limpos(2)
+            ELSE
             WRITE(iunout,*) "WARNING: NASMOD.NE.NPPLG", NASMOD,npplg
             DO I=1,NASMOD
               WRITE(iunout,'(''P'',I3,'' FOR SEG '',I3)')
      w                   ONETWO(I),LIMPOS(I)
             END DO
+            END IF
 csw
 
 cdr  NASMOD = N = max(npplg/3,1)*4
@@ -391,16 +398,16 @@ c*** Switch off the additional surfaces corresponding to the targets,
 c*** that is, the surfaces between the ones to be linked to the grid
 c*** corners.
 c
-        n=max(npplg/3,1)*4
-c      print '(/(2i8))',(limpos(i),onetwo(i),i=1,n)
+c      write (iunout,'(/(2i8))') (limpos(i),onetwo(i),i=1,n)
 csw 03sep2013      do 990 i=1,n
         do 990 i=1,nasmod
           if(onetwo(i).eq.2) then
             m=limpos(i)
             hlp_p1=p2(1,m)
             hlp_p2=p2(2,m)
-c           print *,'onetwo=2. igjum0= ',igjum0(j),',  i,hlp_p1,hlp_p2 =
-c           print *,i,hlp_p1,hlp_p2
+c           write (iunout,*) 'onetwo=2. igjum0= ',igjum0(j),
+c      ,    ',i,hlp_p1,hlp_p2 = '
+c           write (iunout,*) i,hlp_p1,hlp_p2
             do 980 l=1,nlimi
               do j=1,nlimi
                 hlp_found=.false.
@@ -637,11 +644,11 @@ c======================================================================
 
       logical :: first, normalcase, hlp_found
       integer :: onetwo(8),limpos(8),xpolpos(8),ypolpos(8)
-      character(80) :: geometry_comment
+!      character(80) :: geometry_comment
       REAL(DP), PARAMETER :: hlp_tol=0.001_DP
       INTEGER :: I, J, K, NBITS, M, N, L
       REAL(DP) :: HLP_P1, HLP_P2
-      save first,onetwo,limpos,geometry_comment
+      save first,onetwo,limpos
       data first /.true./
 c======================================================================
 c*** At the first invocation, read the data from the Eirene input file

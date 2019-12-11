@@ -34,7 +34,7 @@ cdr  write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
       integer, intent(in) :: istr, lstart, lend
       integer :: i, j, k, iline, 
      .           iads, iadv, isp(3), itp(3), iratio, irc,
-     .           irc_rat(2), ncelc, ndens, idens
+     .           irc_rat(2), icell, ncelc, ndens, idens
       real(dp) :: density(3), sigadd, add, powalf, powalfs,
      .            einstein, trans_en, DE, TE, TEF, DEF, popcf,
      .            EIRENE_OTHER_RATE_COEFF,
@@ -43,7 +43,7 @@ cdr  write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
       REAL(DP), ALLOCATABLE :: OUTAU(:)
       logical :: lwrite
       CHARACTER(6) :: CISTRA
-      character(len=:), allocatable :: ctest2
+      character(len=80) :: ctest2
 
       CALL EIRENE_LEER(2)
       CALL EIRENE_FTCRI(ISTR,CISTRA)
@@ -57,12 +57,12 @@ cdr  write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
 
       do i = lstart, lend
         ILINE=I
-        ctest2 = adjustl(trim(emis_lines(iline)%line_name))
-        WRITE (iunout,*) 'LINE no. ',ILINE,', ',CTEST2,':'
-
-        write (iunout,'(A,ES12.4)') 'EINSTEIN COEFFICIENT',
+        ctest2 = emis_lines(iline)%line_name
+        WRITE (iunout,'(1X,A,I2,3A)') 'LINE no. ',
+     .                                 ILINE,', ',trim(CTEST2),':'
+        write (iunout,'(1X,A,ES12.4)') 'EINSTEIN COEFFICIENT',
      .                               emis_lines(i)%einstein
-        write (iunout,'(A,ES12.4/1x)') 'TRANSITION ENERGY   ',
+        write (iunout,'(1X,A,ES12.4/1x)') 'TRANSITION ENERGY   ',
      .                               emis_lines(i)%trans_en
 
         WRITE (iunout,*) ' FLUX (AMP) AND POWER (WATT) BY '
@@ -94,19 +94,19 @@ cdr run over components
             ndens = count(itp >= 0)
             lwrite = .true.
 
-            DO NCELL=1,NSBOX
+            DO ICELL=1,NSBOX
 C
-C  LOCAL BACKGROUND DATA ARE IN CELL NCELL
+C  LOCAL BACKGROUND DATA ARE IN CELL ICELL
 C  LOCAL TEST PARTICLE DATA ARE IN (PERHAPS COARSER) SCORING CELL NCELC
 C  ACCUMULATE THE EMISSIVITIES ALSO ON THE "SCORING" GRID.
 C
-              NCELC=NCLTAL(NCELL)
+              NCELC=NCLTAL(ICELL)
 C
-              IF (NSTGRD(NCELL) > 0) CYCLE
-              IF (LGVAC(NCELL,NPLS+1)) CYCLE
+              IF (NSTGRD(ICELL) > 0) CYCLE
+              IF (LGVAC(ICELL,NPLS+1)) CYCLE
 
-              TE=TEIN(NCELL)
-              DE=DEIN(NCELL)
+              TE=TEIN(ICELL)
+              DE=DEIN(ICELL)
 
               DEF=LOG(DE)
               TEF=max(-2.30_DP,LOG(TE)) ! cut-off at 0.1 eV
@@ -122,9 +122,9 @@ C
                   case (3)
                     density(idens) = pdeni(isp(idens),ncelc)
                   case (4)
-                    density(idens) = diin(isp(idens),ncell)
+                    density(idens) = diin(isp(idens),icell)
                   case (5)
-                    density(idens) = dein(ncell)
+                    density(idens) = dein(icell)
                   case default
                     density(idens) = 0._dp
                     if (lwrite) then
@@ -141,7 +141,7 @@ C
                 end select
               end do
 c  population coefficient, relative to density(1)
-              popcf= EIRENE_OTHER_RATE_COEFF(IRC,NCELL,TEF,DEF,.TRUE.,1)
+              popcf= EIRENE_OTHER_RATE_COEFF(IRC,ICELL,TEF,DEF,.TRUE.,1)
               add = popcf*density(1)
 
 c  density ratio, if true parent density is not available (or in QSS mode)
@@ -157,7 +157,7 @@ c  this works when the second species involved in loss and gain
 c  for species H2+ from H2 is the same, here: electron density, and hence cancels.
               if (iratio > 0) then
 
-                ratio1 = EIRENE_OTHER_RATE_COEFF(IRC_RAT(1),NCELL,
+                ratio1 = EIRENE_OTHER_RATE_COEFF(IRC_RAT(1),ICELL,
      .                                          TEF,DEF,.TRUE.,1)
                 add = add*ratio1
 c
@@ -170,21 +170,21 @@ c  this works when the second species involved in loss and gain rate
 c  for species H3+ from H2+ is not the same,
 c  here: electron density, and H2 density, hence: does not cancel.
                 if (iratio == 2) then
-                  ratio2 = EIRENE_OTHER_RATE_COEFF(IRC_RAT(2),NCELL,
+                  ratio2 = EIRENE_OTHER_RATE_COEFF(IRC_RAT(2),ICELL,
      .                                             TEF,DEF,.TRUE.,1)
                   add = add * density(2) / density(3) *ratio2
                 end if
               end if
 
-cdr so far: add is scored on the fine grid cell "ncell".
+cdr so far: add is scored on the fine grid cell "icell".
 cdr         add volume-weighted contribution to coarse cell "ncelc"
-              sigadd = add * einstein * vol(ncell)
+              sigadd = add * einstein * vol(icell)
 
               addv(iadv,ncelc) = addv(iadv,ncelc) + sigadd
               addv(iads,ncelc) = addv(iads,ncelc) + sigadd
 
               powalf = powalf + sigadd
-            end do               ! ncell
+            end do               ! icell
 
           end do ! k contributions (summed) of component j of line iline
 

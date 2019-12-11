@@ -180,7 +180,7 @@ cdr
         IPLSV=MPLSV(IPLS)
 
         SELECT CASE (CDENMODEL(IPLS))
-          CASE (FORT//'13')
+          CASE ('FORT.13','FTN13')
 
             IF (IO.EQ.0) THEN
               IOLD=TDMPAR(IPLS)%TDM%ISP(1)
@@ -196,7 +196,7 @@ c             ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
               END IF
             ENDIF
 
-          CASE (FORT//'10')
+          CASE ('FORT.10','FTN10')
 
 c   itold = ??
 c   check: itold ge 0 and itold le 3
@@ -499,7 +499,7 @@ c  only temperature dependence in reduced population coefficient
 
 cdr  unclear code. perhaps redundant
 cdr  spectra related to colrad ?? I can imagine spectra in case of fort.10 density model
-cdr  perhaps: if base-density is a test paeticle density, for which spectra are available?
+cdr  perhaps: if base-density is a test particle density, for which spectra are available?
 cdr  perhaps wrong place
 cdr  all this: perhaps move to diagno part? and only of background spectra are needed at all
                 IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
