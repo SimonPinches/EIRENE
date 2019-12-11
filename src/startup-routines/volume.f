@@ -52,7 +52,7 @@ C
       REAL(DP), ALLOCATABLE, SAVE :: AREAP(:,:)
       REAL(DP) :: AREA1(0:N1ST)
       REAL(DP) :: PC1(3), PC2(3), PC3(3), PC4(3)
-      REAL(DP) :: AREAR, VOLSR, EIRENE_CAL_VOL, TWOTHIRD, VSAVE, FAC2,
+      REAL(DP) :: AREAR, EIRENE_CAL_VOL, TWOTHIRD, VSAVE, FAC2,
      .          FAC3,
      .          PI2AT, AELL, DONE, DNULL, SY, X1, X2, Y1, XNULL, SX,
      .          EIRENE_ARTRIA, AR, XC, Y2, X3, Y3, X4, Y4
@@ -66,9 +66,8 @@ C     IND=2: 2-ND GRID, POL. RESOLUTION
 C     IND=3: 3-RD GRID, TOR. RESOLUTION
 C     IND=4: ADDITIONAL CELL REGION
 C
-      GOTO(100,200,300,400),IND
-C
-  100 CONTINUE
+      SELECT CASE (IND)
+      CASE (1)
 C
       IF (.NOT.ALLOCATED(AREAP)) ALLOCATE (AREAP(N1STS,N2NDPLGS))
 
@@ -295,7 +294,6 @@ C
 C
 C  SET RADIAL SURFACE LABELING MESHES RHOSRF AND RHOZNE
 C
-      VOLSR=0.
       AREAR=0.
       select case (LEVGEO)
       case (1)
@@ -340,11 +338,9 @@ C
         CALL EIRENE_LEER(2)
       ENDIF
 C
-      RETURN
-C
 C  2D (R-THETA OR X-Y) VOLUME ELEMENTS
 C
-  200 CONTINUE
+      CASE (2) ! IND
 C
       select case (LEVGEO)
       case (1)
@@ -368,7 +364,7 @@ C
         IT=1
         DO 240 IR=1,NR1STM
           IRP=IR+1
-          DO 250 IP=1,NP2NDM
+          DO IP=1,NP2NDM
             IPP=IP+1
             CALL EIRENE_ARELLP(EP1(IRP),EP1(IR),ELL(IRP),ELL(IR),
      .                  TRI(IRP),TRI(IR),
@@ -379,7 +375,7 @@ C
             AREA(NCELL)=AELL
             XCOM(NCELL)=SX
             YCOM(NCELL)=SY
-  250     CONTINUE
+          END DO
   240   CONTINUE
 C
         IF (NLTRT) THEN
@@ -518,11 +514,9 @@ C  GENERAL GEOMETRY OPTION: NOTHING TO BE DONE HERE
 C
       end select
 C
-      RETURN
-C
 C    2D (R-Z), (R-PHI) OR (X-Z) VOLUME ELEMENTS
 C
-  300 CONTINUE
+      CASE (3) ! IND
 C
       IF (NLTRZ.OR.NLTRA.OR.NLTRT) THEN
 C
@@ -541,11 +535,9 @@ C
 C
       ENDIF
 C
-      RETURN
-C
 C   ADDITIONAL CELL VOLUMES
 C
-  400 CONTINUE
+      CASE (4) ! IND
 C
 C   ADDITIONAL CELL VOLUMES ARE DEFAULTED TO 1. AT PRESENT
 C
@@ -560,6 +552,7 @@ C
 
       DEALLOCATE (AREAP)
 C
+      END SELECT ! IND
       RETURN
 C
       END

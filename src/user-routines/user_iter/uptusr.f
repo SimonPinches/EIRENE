@@ -35,7 +35,7 @@ C
 CDR
       REAL(DP), ALLOCATABLE, SAVE :: VPX(:),VPY(:),VRX(:),VRY(:)
 CDR
-      INTEGER :: IAT, IPL, I, IR, IP, IRD
+      INTEGER :: I, IRD
       INTEGER, SAVE :: IFIRST, IA0, IA1, IA2, IA3, IA4
       integer :: icou
       real(dp) :: wtr,vr,vp,dist
@@ -67,10 +67,10 @@ C
 
 cdr  increments for tally number iadv
         IA0=0               !  RADIAL CURRENT
-        IA1=NATMI+NMOLI     !  RADIAL ENREGY FLUX
-        IA2=2*IA1           !  POLOIDAL CURRENT
-        IA3=3*IA1           !  POLOIDAL ENERGY FLUX
-        IA4=4*IA1           !  FLUX (ANGLE-AVERAGED)
+        IA1=IA0+NATMI+NMOLI !  RADIAL ENREGY FLUX
+        IA2=IA1+NATMI+NMOLI !  POLOIDAL CURRENT
+        IA3=IA2+NATMI+NMOLI !  POLOIDAL ENERGY FLUX
+        IA4=IA3+NATMI+NMOLI !  FLUX (ANGLE-AVERAGED)
       ENDIF
 
 csw
@@ -100,7 +100,7 @@ CDR
 C  particle current, radial component  (CM/SEC)
           VR=(VELX*VPX(IRD)+VELY*VPY(IRD))*VEL
           if(ia0+iatm.gt.nadv) goto 20
-          ADDV(IATM,IRD)=ADDV(IATM,IRD)+WTR*VR
+          ADDV(IA0+IATM,IRD)=ADDV(IA0+IATM,IRD)+WTR*VR
           if(ia1+iatm.gt.nadv) goto 20
           ADDV(IA1+IATM,IRD)=ADDV(IA1+IATM,IRD)+WTR*VR*E0
 C  particle current, poloidal component (CM/SEC)

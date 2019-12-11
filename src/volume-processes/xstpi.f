@@ -59,7 +59,7 @@ C
       INTEGER, INTENT(IN) :: IRPI, ISP, IPL, IFRST, ISCND, ITHRD, IFRTH,
      .                       ISCDE, IESTM, KK
       REAL(DP) :: CF(9)
-      REAL(DP) :: ADD, ADDL, RMTEST, RMBULK, FCTKKL, TMASS,
+      REAL(DP) :: ADD, ADDL, FCTKKL, TMASS,
      .            ADDT, ADDTL, PMASS,
      .            CHRDIF, COU, ACCMAS, XLFTMAS,
      .            ACCINI, ACCINP, ACCMSM, ACCMSI, ACCMSA, ACCINA,
@@ -72,8 +72,9 @@ C
       INTEGER :: NSEPI4, NSEPI5, NEND, J, 
      .           ITYP1, ISPZ1, INUM1,
      .           IML, MODC, IIO, IPLTI, IP, IAT,
-     .           ICOUNT, IAA, IMM, III, IPP, KREAD, IERR
+     .           ICOUNT, IAA, IMM, III, IPP, KREAD
       INTEGER, EXTERNAL :: EIRENE_IDEZ
+      REAL(DP),PARAMETER :: EMINL=-2.3_DP
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt
 
@@ -85,8 +86,6 @@ C  SET NON-DEFAULT ION IMPACT COLLISION PROCESS NO. IRPI
 C
       IF (IPL.LE.0.OR.IPL.GT.NPLSI) GOTO 990
       IF (MASSP(KK).LE.0.OR.MASST(KK).LE.0) GOTO 992
-      RMBULK=RMASSP(IPL)
-      RMTEST=RMASS
       IPLTI=MPLSTI(IPL)
 
       XLFTMAS=RMASS+RMASSP(IPL)
@@ -298,7 +297,7 @@ C           NEND=9
             DO J=1,NSBOX
               IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
-              tii = max(-2.3_dp,tii) ! this is another cut-off, at TIIN <=0.1 eV rather than at TVAC = 0.02 ev
+              tii = max(eminl,tii) ! this is another cut-off, at TIIN <=0.1 eV rather than at TVAC = 0.02 ev
 c old
 c old         CALL EIRENE_PREP_RTCS (KK,3,TII,CF)
 c old
@@ -471,7 +470,7 @@ C  ENERGY RATE COEFFICIENT(TI,EBEAM)
               DO 257 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
-                tii = max(-2.3_dp,tii)
+                tii = max(eminl,tii)
 c old
 c old           CALL EIRENE_PREP_RTCS (KREAD,5,TII,CF)
 c old
@@ -568,7 +567,6 @@ C  4.3C)  SECONDARY HEAVY ENERGY GAIN RATE = EN.-WEIGHTED RATE(TI)
         FACRPI(IRPI,1)=FACTKK
         FACRPI(IRPI,2)=LOG(FACTKK)
       ELSE
-        IERR=2
         GOTO 997
       ENDIF
 C

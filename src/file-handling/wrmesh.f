@@ -24,7 +24,7 @@ c  EIRENE_PLMESH: plots these contours, using GR plot software.
       USE EIRMOD_PARMMOD
       USE EIRMOD_CADGEO
       USE EIRMOD_COMPRT, ONLY: IUNOUT
-      USE EIRMOD_CINIT, ONLY: FORT
+      USE EIRMOD_CINIT, ONLY: FORT_LC
       USE EIRMOD_CPOLYG
       USE EIRMOD_CGEOM
       USE EIRMOD_CLGIN
@@ -69,7 +69,8 @@ C ILPLG WIRD IM INPUT BLOCK 3 EINGELESEN
         call EIRENE_leer(1)
         write (iunout,*) 'No contours specified in blocks 3a,3b'
         write (iunout,*)
-     .    'No input file ', FORT, '78 for FEM mesh generator written'
+     .    'No input file '//fort_lc//
+     .    '78 for FEM mesh generator written'
         call EIRENE_leer(2)
         return
       endif
@@ -399,6 +400,8 @@ C  - GEGEN UHRZEIGERSINN FUER AEUSSERE BEGRENZUNGEN DES GEBIETES (NEGATIV)
         ENDDO
 
         IF (IPOIN > 1) THEN
+C  SONDERFALL IMN=IPOIN ENTFAELLT, DA ERSTER PUNKT GLEICH LETZTER
+C  PUNKT GILT
           IF (IMN .EQ. 0) THEN
             XT = PARTCONT(1,1,1)
             YT = PARTCONT(1,1,2)
@@ -409,8 +412,6 @@ C  PUNKT, DER IM UMLAUF DER NAECHSTE IST
             X2 = PARTCONT(1,2,1)
             Y2 = PARTCONT(1,2,2)
           ELSE
-C  SONDERFALL IMN=IPOIN ENTFAELLT, DA ERSTER PUNKT GLEICH LETZTER
-C  PUNKT GILT
             XT = PARTCONT(IMN,2,1)
             YT = PARTCONT(IMN,2,2)
 C  PUNKT, DER IM UMLAUF DER VORHERGEHENDE IST
@@ -487,7 +488,7 @@ C  IUHR=ILPLG < 0 ==> ENTGEGEN DEM UHRZEIGERSINN AUSGEBEN
 
       call EIRENE_leer(1)
       write (iunout,*)
-     .  'input file ', FORT, '78 for FEM mesh generator written'
+     .  'input file ', FORT_LC, '78 for FEM mesh generator written'
       call EIRENE_leer(2)
 
 cdr

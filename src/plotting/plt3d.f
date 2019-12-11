@@ -35,6 +35,7 @@ C              IF (NLCRC.OR.NLELL.OR.NLTRI) THEN
       REAL(DP) :: AL(10), AR(10), XP(NPLY), YP(NPLY), ZPLOT(N3RD+NTOR),
      .          XSAVE(NPLY,N3RD+NTOR), YSAVE(NPLY,N3RD+NTOR),
      .          PHIAN(9),PHIEN(9)
+      REAL(DP) :: P1W(3), P2W(3), P3W(3), P4W(3), P5W(3)
       REAL(DP) :: XX(101),YY(101)
       REAL(DP) :: DM, RS, Y, TR, EP, EL, PHI, TA, TD, F1B, F2B, F3B,
      .          TB, RR, X, Z, CH2MXS, CH2MYS,
@@ -46,7 +47,7 @@ C              IF (NLCRC.OR.NLELL.OR.NLTRI) THEN
       REAL(SP) :: XPS(NPLY),YPS(NPLY)
       INTEGER:: ILT(N3RD+NTOR)
       INTEGER :: IR, IBR, IST, IS, NR, I1, IZ, NP, II, K, ID, NA, ISTP,
-     .           IA, IAN, IEN, KIN, ISSTD, IBA, NJZ, J, JJ, IPZ,
+     .           IA, IAN, IEN, ISSTD, IBA, NJZ, J, JJ, IPZ,
      .           IP, I, NINNE, NZAD, NIN, MERK2, IPR, IB, MERK,
      .           IJZ, JP, IPRT, ibp, ibz
       LOGICAL :: PLABLE(NLIM), LPERID(NLIM), LSYMET(NLIM),
@@ -381,7 +382,13 @@ C**RLB >= 3 ? EIN EBENENSTUECK, DURCH POLYGON BEGRENZT
 C
           ELSEIF (RLB(J).GT.2.) THEN
 C
-            CALL EIRENE_PRLLO(P1(:,J),P2(:,J),P3(:,J),P4(:,J),P5(:,J),
+            P1W(1:3) = P1(1:3,J)
+            P2W(1:3) = P2(1:3,J)
+            P3W(1:3) = P3(1:3,J)
+            P4W(1:3) = P4(1:3,J)
+            P5W(1:3) = P5(1:3,J)
+
+            CALL EIRENE_PRLLO(P1W,P2W,P3W,P4W,P5W,
      .                 ILCOL(J),IGFIL(J).NE.0)
 C
 C**RLB < 0 ? ERST EINIGE OPTIONEN VORHANDEN, REST: CALL PLTUSR
@@ -731,7 +738,6 @@ C
                 DO 1160 K=1,NPPLG
                   IAN=NPOINT(1,K)
                   IEN=NPOINT(2,K)
-                  KIN=NR+1
                   DO 1165 J=IAN,IEN
                     IF (NR.GE.NPLY) THEN
                       WRITE (iunout,*) 'FROM PLT3D: NOT ENOUGH STORAGE '

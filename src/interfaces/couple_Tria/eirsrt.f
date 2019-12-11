@@ -609,11 +609,11 @@ C
         DO JPLS=1,NPLSI
           IPLSTI= MPLSTI(JPLS)
           DO IN=1,NDXY
-!pb            SEINW(IN,IPLS)=DIIN(IPLS,IN)*
-!pb     .                      (1.5*TIIN(IPLSTI,IN)+EDRIFT(IPLS,IN))
+!pb            SEINW(IN,JPLS)=DIIN(JPLS,IN)*
+!pb     .                      (1.5*TIIN(IPLSTI,IN)+EDRIFT(JPLS,IN))
             EN = 1.5*TIIN(IPLSTI,IN)
-            IF (LEDRIFT) EN = EN + EDRIFT(IPLS,IN)
-            SEINW(IN,IPLS)=DIIN(IPLS,IN)*EN
+            IF (LEDRIFT) EN = EN + EDRIFT(JPLS,IN)
+            SEINW(IN,JPLS)=DIIN(JPLS,IN)*EN
           ENDDO
         ENDDO
 C

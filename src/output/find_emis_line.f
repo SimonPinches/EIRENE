@@ -55,7 +55,7 @@ cdr          by calling  EIRENE_EMISSIVITY(...)
       integer, intent(out) :: lno
       real(dp) :: ener_il
       integer :: iline
-      character(len=:), allocatable :: ctest1, ctest2
+      character(len=80) :: ctest1, ctest2
       logical :: found
 
       lno = 0
@@ -67,10 +67,10 @@ cdr  to set volumetric emission profiles on ADDV array, also without any chords.
 
       if (len_trim(ch_line_name(ichori)) > 0) then
 ! find corresponding line from line names
-        ctest1 = adjustl(trim(ch_line_name(ichori)))
+        ctest1 = ch_line_name(ichori)
 
         do iline = 1, num_lines
-           ctest2 = adjustl(trim(emis_lines(iline)%line_name))
+           ctest2 = emis_lines(iline)%line_name
            if (ctest1 == ctest2) then
              found = .true.
              lno = iline
@@ -81,10 +81,10 @@ CDR
         IF (FOUND) THEN
           WRITE (IUNOUT,*) 'EMISSION LINE identified by NAME,',
      .                     ' iline=',LNO
-          WRITE (IUNOUT,*) 'name: ',CTEST2   ! =CTEST1
+          WRITE (IUNOUT,*) 'name: ',trim(CTEST2)   ! =CTEST1
         ELSE
           WRITE (IUNOUT,*) 'NO EMISSION LINE identified by NAME'
-          WRITE (IUNOUT,*) 'name: ',CTEST1
+          WRITE (IUNOUT,*) 'name: ',trim(CTEST1)
         ENDIF
       else
         WRITE (IUNOUT,*) 'NO EMISSION LINE identified by NAME'

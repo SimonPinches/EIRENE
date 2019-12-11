@@ -61,4 +61,6 @@ c.............................................
       ELSE
         CALL EIRENE_RPLAM_LONG (TRCFLE,IFLG,IRET)
       ENDIF
+      RETURN
+
       END SUBROUTINE EIRENE_RPLAM

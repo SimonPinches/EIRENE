@@ -60,7 +60,7 @@ C    IND=3:  3RD GRID, Z OR TOROIDAL COORDINATE
       INTEGER :: IP, IRP, IPP, IT, KDN, KUP, NCELL, IR, I, K, IUP, IDN,
      .           J, IND, NLOCAL, ND, IC3, IC4, ITET, IC1, IC2, IC, NLJ,
      .           IFLAG, ISTS, IECKE2, MSURFG, IS, IT1, NCELL1, NSRFTR,
-     .           NT, IS1, IM, IMP
+     .           NT, IS1, IM, IMP, JLIM
       LOGICAL :: LERROR
       LOGICAL, ALLOCATABLE :: VISITED(:,:)
 !pb
@@ -637,7 +637,7 @@ C
           WRITE (iunout,*) ' I,(XTRIAN(J),YTRIAN(J),J=1,3) '
           CALL EIRENE_LEER(1)
           DO 163 I=1,NTRII
-            WRITE (iunout,'(/1X,I4,1X,1P,6E12.4)')
+            WRITE (iunout,'(1X,I4,1X,1P,6E12.4)')
      .                               I,(XTRIAN(NECKE(J,I)),
      .                                  YTRIAN(NECKE(J,I)),J=1,3)
   163     CONTINUE
@@ -645,12 +645,22 @@ C
           WRITE (iunout,*) ' NGITT SET TO ',NGITT
 
           DO J=1, NLIMPS
+            IF (J.LE.NLIM) THEN
+              JLIM = J
+            ELSE
+              JLIM = -(J-NLIM)
+            ENDIF
             WRITE (IUNOUT,*)
-            WRITE (IUNOUT,*) ' SURFACE NO. ',J
-            WRITE (IUNOUT,'(3A6,A12)') 'J','ITRI','ISIDE','BLGT'
+            WRITE (IUNOUT,*) ' SURFACE NO. ',JLIM
+            WRITE (IUNOUT,'(5A6,A12)') 'J','ITRI','ISIDE',
+     .                                 'IP1','IP2','BLGT'
             DO I=1, SURF_TRIAN(J)%NUMTR
-              WRITE (IUNOUT,'(3I6,ES12.4)') I, SURF_TRIAN(J)%ITRIAS(I),
-     .                                         SURF_TRIAN(J)%ITRISI(I),
+              IT = SURF_TRIAN(J)%ITRIAS(I)
+              IS = SURF_TRIAN(J)%ITRISI(I)
+              IS1 = IS + 1
+              IF (IS1 > 3) IS1 = 1
+              WRITE (IUNOUT,'(5I6,ES12.4)') I, IT, IS, NECKE(IS,IT),
+     .                                         NECKE(IS1,IT),
      .                                         SURF_TRIAN(J)%BGLT(I+1)
             END DO
           END DO

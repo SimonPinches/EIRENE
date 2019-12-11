@@ -76,7 +76,7 @@ C
      .          EIRENE_ENERGY_RATE_COEFF,
      .          DELE,
      .          FP1(6),FP2(6)
-      INTEGER :: MODC, KREAD, IERR, J, IPP, IP,
+      INTEGER :: MODC, KREAD, J, IPP, IP,
      .           III, INUM, ITYP, ISPE, ICOUNT, IAT,
      .           IMM, IIO, IAA, IML
       INTEGER, EXTERNAL :: EIRENE_IDEZ
@@ -312,7 +312,6 @@ C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
         ENDIF
         MODCOL(1,2,IREI)=1 !  indicate: rate coefficient as fct. of local plasma conditions only
       ELSE
-        IERR=1
         GOTO 996
       ENDIF
 
@@ -420,7 +419,6 @@ c  DELE= -IONISATION POTENTIAL TURNS EELEI INTO A RADIATION LOSS COMPONENT ONLY
                   END IF
                 ENDIF
       ELSE
-        IERR=2
         GOTO 997
       ENDIF
 C
@@ -464,7 +462,6 @@ C  4.B3)  ENERGY RATE = EN.-WEIGHTED RATE(TE)
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
       ELSE
-        IERR=2
         GOTO 997
       ENDIF
 C

@@ -164,7 +164,7 @@ c     RETURNS: pointer to the new node
         REAL(DP), DIMENSION(2), INTENT(IN) :: X, Y, Z
         INTEGER, DIMENSION(3), INTENT(IN) :: NUMBER
         TYPE(ocNode), POINTER, INTENT(IN) :: PARENT
-        TYPE(ocTree), POINTER, INTENT(IN) :: TREE
+        TYPE(ocTree), POINTER, INTENT(IN OUT) :: TREE
 
         TYPE(ocNode), POINTER :: NODE
 c       the x, y, z coordinates for building the new node
@@ -230,8 +230,8 @@ c     --- CREATE CHILDREN OF A NODE ---
 c     parent : pointer to the parent node (whose children we create ;) )
 
         IMPLICIT NONE
-        TYPE(ocNode), POINTER, INTENT(IN) :: PARENT
-        TYPE(ocTree), POINTER, INTENT(IN) :: TREE
+        TYPE(ocNode), POINTER, INTENT(IN OUT) :: PARENT
+        TYPE(ocTree), POINTER, INTENT(IN OUT) :: TREE
         TYPE(ocNode), POINTER :: TMPNODE
         INTEGER, DIMENSION(3) :: TMPNUMBER
         INTEGER :: I, LAYER
@@ -293,7 +293,7 @@ c     num  : index number of the surface that is added
 c     node : pointer to the node to which we add the surface
       SUBROUTINE OCTREE_AddSurface(NUM, NODE)
         IMPLICIT NONE
-        TYPE(ocNode), POINTER, INTENT(IN) :: NODE
+        TYPE(ocNode), POINTER, INTENT(IN OUT) :: NODE
         INTEGER, INTENT(IN) :: NUM
 
         node%nsurfaces = node%nsurfaces + 1

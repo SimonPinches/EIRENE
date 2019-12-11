@@ -400,19 +400,20 @@ C
           A2LM(I)=A2LM(I)/XNORM
           A3LM(I)=A3LM(I)/XNORM
           JUM=JUMLIM(I)
-          GOTO (91,92,93),JUM
-   91       ALM(I)=-A0LM(I)/A1LM(I)
+          SELECT CASE (JUM)
+          CASE (1)
+            ALM(I)=-A0LM(I)/A1LM(I)
             BLM(I)=-A2LM(I)/A1LM(I)
             CLM(I)=-A3LM(I)/A1LM(I)
-          GOTO 97
-   92       ALM(I)=-A0LM(I)/A2LM(I)
+          CASE (2)
+            ALM(I)=-A0LM(I)/A2LM(I)
             BLM(I)=-A1LM(I)/A2LM(I)
             CLM(I)=-A3LM(I)/A2LM(I)
-          GOTO 97
-   93       ALM(I)=-A0LM(I)/A3LM(I)
+          CASE (3)
+            ALM(I)=-A0LM(I)/A3LM(I)
             BLM(I)=-A1LM(I)/A3LM(I)
             CLM(I)=-A2LM(I)/A3LM(I)
-   97     CONTINUE
+          END SELECT
 C
           IF (TRCSUR) THEN
             WRITE (iunout,*) ' A0-A3 ',A0LM(I),A1LM(I),A2LM(I),A3LM(I)

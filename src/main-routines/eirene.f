@@ -32,7 +32,8 @@ C
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: EIRENE_SET_PARMMOD, IFOFF, LOUTAPP,
      >                          NBGK, NRCX, NREC, NREI, NREL, NRPI,
-     >                          NSMSTRA, NTALB
+     >                          NSMSTRA, NTALB,
+     >                          IUNMEM
       USE EIRMOD_COMUSR, ONLY: EIRENE_ALLOC_COMUSR,
      >                         EIRENE_DEALLOC_COMUSR, IITER, ITIMV,
      >                         NBGVI, NFILEK, NITER, NMODE, NTIME,
@@ -263,6 +264,7 @@ C
         CALL EIRENE_ALLOC_CSDVI(2)
         CALL EIRENE_ALLOC_CSDVI_BGK
         CALL EIRENE_ALLOC_CLAST
+        CLOSE(IUNMEM)
 
         CALL EIRENE_STTXT1
 C

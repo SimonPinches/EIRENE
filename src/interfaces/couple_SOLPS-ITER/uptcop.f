@@ -35,14 +35,13 @@ C
       REAL(DP), INTENT(IN) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
      .                        XSTORV2(NSTORV,N2ND+N3RD), WV
 
-      REAL(DP) :: P, WTRSIG, EION, V0_PARB, PARMOM_0, DIST, WTR
-      INTEGER :: IAEL, IREL, IPL2, IAEI, IRDS, IBGK, IICX, IIEI, IIEL,
-     .           IMEL, IPL1, I, IPL, IIO, IRD, IP, IR, IML, IAT, IFIRST,
-     .           IRCX, IADD, ICOU, IACX, IRDD, IMCX, IMEI, IPLSTI,
-     .           IPLSV, IPLV
-      INTEGER, SAVE :: NMTSP
+      REAL(DP) :: WTRSIG, EION, DIST, WTR
+      INTEGER :: IRD, IFIRST,
+     .           IRCX, ICOU, IACX, IRDD, IPLSTI
+      INTEGER :: NMTSP
 
 CDR
+!     INTEGER :: I, IP, IR
 !     REAL(DP), ALLOCATABLE, SAVE ::
 !    .         VPX(:),    VPY(:),    VRX(:),    VRY(:)
 CDR

@@ -50,6 +50,7 @@ cdr            now also derived tallies: EDRIFT, BVIN, PARMOM
 cdr  tbd:      broadcast: livtali etc. move to correct position
 cdr  Jan. 19:  separate routine for broadcast of CCOUPL
 cdr  ???       apparently also COMNNL removed here from broadcasting
+cdr  Nov. 19:  bugfix re %poly% dimensioning. ND --> ND1 
 
       SUBROUTINE EIRENE_BROADCAST
 cdr
@@ -936,8 +937,6 @@ cdr dimensioning of LCUT array corrected:
 !+++++++++++ IYS 27.02.2015
 !+++++++++++ In this block dynamical structures are proceeded with care
 
-
-
       CALL MPI_BCAST (RCZT1,NZT1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (RCZT2,NZT2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 cdr these next two fields ZT1 and ZRG should go into COMXS,
@@ -1370,7 +1369,7 @@ c     on the "root" node, where this is already done via timea0 after input
 
       IMPLICIT NONE
       TYPE(FIT_FORMS), POINTER :: RP
-      INTEGER :: IER, ND, ND2
+      INTEGER :: IER, ND1, ND2
 
 C.....................................................................
 cdr broadcast A&M data, general for a process, independent of data structure RP%IFIT
@@ -1456,33 +1455,32 @@ C.....................................................................
 C  POLYNOMIAL FIT, either 1D  (RP%IFIT=1),
 C                  or     2D  (RP%IFIT=2)
         IF (MY_PE == 0) THEN
-          ND = UBOUND(RP%POLY%DBLPOL,1)
+          ND1 = UBOUND(RP%POLY%DBLPOL,1)
           ND2 = UBOUND(RP%POLY%DBLPOL,2)
         END IF
 
-        CALL MPI_BCAST (ND,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (ND1,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (ND2,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
         IF (MY_PE .NE. 0) THEN
           IF (associated(RP%POLY)) THEN ! IYS 27.02.2015
             IF (associated(RP%POLY%DBLPOL)) THEN
-              IF (ND.ne.UBOUND(RP%POLY%DBLPOL,1) .and.
+              IF (ND1.ne.UBOUND(RP%POLY%DBLPOL,1) .or.
      &             ND2.ne.UBOUND(RP%POLY%DBLPOL,2)) THEN
                 DEALLOCATE(RP%POLY%DBLPOL)
                 NULLIFY(RP%POLY%DBLPOL)
-                ALLOCATE (RP%POLY%DBLPOL(ND,ND2))
-              ELSE
+                ALLOCATE (RP%POLY%DBLPOL(ND1,ND2))
               ENDIF
             ELSE
-              ALLOCATE (RP%POLY%DBLPOL(ND,ND2))
+              ALLOCATE (RP%POLY%DBLPOL(ND1,ND2))
             ENDIF
           ELSE
             ALLOCATE (RP%POLY)
-            ALLOCATE (RP%POLY%DBLPOL(ND,ND2))
+            ALLOCATE (RP%POLY%DBLPOL(ND1,ND2))
           END IF
         END IF
 
-        CALL MPI_BCAST (RP%POLY%DBLPOL,ND*ND2,MPI_REAL8,
+        CALL MPI_BCAST (RP%POLY%DBLPOL,ND1*ND2,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
 
 C.....................................................................

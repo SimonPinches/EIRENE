@@ -42,7 +42,7 @@ c    ISTRA         (no. of stratum), via Common
       INTEGER, INTENT(IN) :: NLPT
       REAL(DP) :: X01, CNORM, WINK
       INTEGER :: NT, EIRENE_LEARCA, EIRENE_LEARC2,
-     .           EIRENE_LEARCT, EIRENE_LEAUSR, IPOINT, JSPZ,
+     .           EIRENE_LEARCT, EIRENE_LEAUSR, IPOINT, JPLS, JSPZ,
      .           IAUSR, IBUSR, IRUSR, IPUSR, ITUSR, IPLSTI, IPLSV
 C
       IPOINT=NLPT
@@ -187,19 +187,19 @@ C
 c  set local plasma parameters in cell of point source
 c
       TEWL=TEIN(NCELL)
-      DO 13 IPLS=1,NPLSI
-        IPLSTI=MPLSTI(IPLS)
-        IPLSV=MPLSV(IPLS)
-        TIWL(IPLS)=TIIN(IPLSTI,NCELL)
+      DO 13 JPLS=1,NPLSI
+        IPLSTI=MPLSTI(JPLS)
+        IPLSV=MPLSV(JPLS)
+        TIWL(JPLS)=TIIN(IPLSTI,NCELL)
         IF (INDPRO(4) == 8) THEN
           CALL EIRENE_VECUSR (2,NCELL,X0,Y0,Z0,
-     .         VXWL(IPLS),VYWL(IPLS),VZWL(IPLS),IPLS,.TRUE.)
+     .         VXWL(JPLS),VYWL(JPLS),VZWL(JPLS),JPLS,.TRUE.)
         ELSE
-          VXWL(IPLS)=VXIN(IPLSV,NCELL)
-          VYWL(IPLS)=VYIN(IPLSV,NCELL)
-          VZWL(IPLS)=VZIN(IPLSV,NCELL)
+          VXWL(JPLS)=VXIN(IPLSV,NCELL)
+          VYWL(JPLS)=VYIN(IPLSV,NCELL)
+          VZWL(JPLS)=VZIN(IPLSV,NCELL)
         END IF
-        DIWL(IPLS)=DIIN(IPLS,NCELL)
+        DIWL(JPLS)=DIIN(JPLS,NCELL)
    13 CONTINUE
 C
       DO 20 JSPZ=1,NSPZ

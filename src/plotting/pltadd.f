@@ -36,11 +36,11 @@ C
      .          ARC, YINI, XAN, XP, YP, X, Y, XS, YS, SQ, SQR,
      .          VR1, VR2, VR3, AMNPY, AMNPZ, AMXPY, AMXPZ, XMU,
      .          EIRENE_FMU, XP1, V1, V2, V3, XCHL, XCHR, YCHL, YCHR,
-     .          DCHX, AMXPX, AMNPX, DCHY, YP1, TANA, SINAQ,
+     .          DCHX, AMXPX, AMNPX, DCHY, YP1, SINAQ,
      .          COSAQ, ALF, DELS, DET, DETS, EIRENE_DETER,
      .          SCA, DH, EH, CK, DK, EK, BK, XP2, YP2, AK, AKEK2,
      .          S, DEL, AKEK, FK, DKCK, DKCK2
-      INTEGER :: INN1, INN2, INN3, I, INN4, INN, IS, ICOLOR, J,
+      INTEGER :: INN1, INN2, INN3, I, INN4, INN, IS, ICOLOR,
      .           ICUT, ISURF
       LOGICAL :: L1, L2, L3, L4, L5
       LOGICAL :: LBOX, LLISTE
@@ -125,7 +125,6 @@ C   PLOT SURFACES
 C
       DO 200 ISURF=MANF,MEND
         IF (ILCOL(ISURF) == 666) GOTO 200
-        J=ISURF
         IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS) INOSF=ISURF
 C
 C  PLOT SURFACE NO. ISURF
@@ -535,7 +534,6 @@ C
         IF (BK.EQ.0.) THEN
           COSA=1.
           SINA=0.
-          TANA=0.
           A=AK
           C=CK
           D=DK
@@ -550,7 +548,6 @@ C
             SINA=SIN(ALF)
           ENDIF
           COSA=COS(ALF)
-          TANA=TAN(ALF)
           SINAQ=SINA*SINA
           COSAQ=1.-SINAQ
           SCA=SINA*COSA
