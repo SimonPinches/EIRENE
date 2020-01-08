@@ -1,6 +1,6 @@
 C  statistical variance of spectra
 C  NOTE:
-C  distinct from the other variances (volume tallies, surface tallies, bgk and cop tallies)
+C  distinct from the other variances (volume tallies, surface tallies, covariances)
 c  here in case of spectra tallies the variances are contained in the same structure (ESTIML)
 c  as the tallies themselves.
 c  nomenclature, however has been synchronized (oct. 2014)

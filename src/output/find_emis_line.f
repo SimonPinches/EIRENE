@@ -45,7 +45,6 @@ cdr          by calling  EIRENE_EMISSIVITY(...)
       use eirmod_ctrcei
       USE EIRMOD_CESTIM
       USE EIRMOD_CSDVI
-      USE EIRMOD_CSDVI_BGK
       USE EIRMOD_COMPRT
 
       implicit none
@@ -130,7 +129,6 @@ C  NOTHING TO BE DONE
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .             NSIGI_SPC,TRCFLE)
       ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.ISTR.EQ.0) THEN
         IESTR=ISTR
@@ -138,7 +136,6 @@ C  NOTHING TO BE DONE
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .             NSIGI_SPC,TRCFLE)
       ELSE
         WRITE (IUNOUT,*) 'ERROR IN FIND_EMIS_LINE: ' //

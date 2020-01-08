@@ -5,7 +5,6 @@ c  19.12.05:  stvw, stvws = 0   included
       USE EIRMOD_PARMMOD
       USE EIRMOD_CSPEI
       USE EIRMOD_CSDVI
-      USE EIRMOD_CSDVI_BGK
       USE EIRMOD_COMSOU
       USE EIRMOD_CESTIM
 
@@ -29,13 +28,6 @@ C  ARRAYS: EE,FF,....
       EES    = 0._DP
       FF     = 0._DP
       FFS    = 0._DP
-C  BGK ARRAYS:
-      IF (NSIGI_BGK.GT.0) THEN
-        STVS_BGK=0._DP
-        EES_BGK=0._DP
-        STV_BGK=0._DP
-        EE_BGK=0._DP
-      ENDIF
 
 C  SPECTRA
       IF ((NSTRAI > 1) .AND. (NSMSTRA > 0)) THEN

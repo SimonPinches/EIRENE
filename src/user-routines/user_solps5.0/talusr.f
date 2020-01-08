@@ -37,7 +37,6 @@ C
       USE EIRMOD_COMSOU
       USE EIRMOD_CSPEZ
       USE EIRMOD_CSDVI
-      USE EIRMOD_CSDVI_BGK
 
       implicit NONE
       integer, intent(in) :: icount
@@ -94,7 +93,6 @@ c  re-write on stream 10
      .               ESTIMV,ESTIMS,ESTIML,
      .               NSDVI1,SDVI1,NSDVI2,SDVI2,
      .               NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .               NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .               NSIGI_SPC,TRCFLE)
 C
 C  re-write record no. 2 in stream 11
@@ -111,7 +109,6 @@ c  re-write on stream 10
      .               ESTIMV,ESTIMS,ESTIML,
      .               NSDVI1,SDVI1,NSDVI2,SDVI2,
      .               NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .               NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .               NSIGI_SPC,TRCFLE)
 C
 C  re-write record no. 2 in stream 11
