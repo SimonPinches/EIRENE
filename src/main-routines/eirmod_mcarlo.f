@@ -14,7 +14,6 @@
       USE EIRMOD_CTRCEI
       USE EIRMOD_CGEOM
       USE EIRMOD_CSDVI
-      USE EIRMOD_CSDVI_BGK
       USE EIRMOD_COMPRT
       USE EIRMOD_CPES
       USE EIRMOD_COMNNL
@@ -29,8 +28,6 @@
       USE EIRMOD_MPI
       USE EIRMOD_SECOND_OWN, ONLY: EIRENE_SECOND_OWN
       USE EIRMOD_SAMVOL, ONLY: EIRENE_SAMVL0
-      USE EIRMOD_STATIS_BGK, ONLY: EIRENE_STATS0_BGK, EIRENE_STATS1_BGK,
-     .                             EIRENE_STATS2_BGK
       USE EIRMOD_RANF, ONLY: RANF_EIRENE, RANSET_EIRENE, RANGET_EIRENE
       USE EIRMOD_SWITCH_PARTINFO, ONLY: EIRENE_SWITCH_PARTINFO,
      .                                  EIRENE_OUTPUT_PARTINFO
@@ -200,10 +197,6 @@ C
       CALL EIRENE_STATS0
       TIM2=EIRENE_SECOND_OWN()
 cdr   write (iunout,*) 'cpu time for stats0 ', tim2-tim1
-      tim1 = tim2
-      CALL EIRENE_STATS0_BGK
-      TIM2=EIRENE_SECOND_OWN()
-cdr   write (iunout,*) 'cpu time for stats0_bgk ', tim2-tim1
       tim1 = tim2
       CALL EIRENE_STATS0_SPC
       TIM2=EIRENE_SECOND_OWN()
@@ -866,9 +859,6 @@ C   MEAN SQUARE
      .                                    (NSBOX_TAL,NR1TAL,NP2TAL,
      .                                     NT3TAL,NLIMPS,
      .                                     NLSYMP(ISTRA),NLSYMT(ISTRA))
-            IF (NSIGI_BGK.GT.0) CALL EIRENE_STATS1_BGK
-     .                                    (NSBOX_TAL,NR1TAL,NP2TAL,
-     .                                     NT3TAL)
             IF (NSIGI_SPC.GT.0) CALL EIRENE_STATS1_SPC
      .                                    (NSBOX_TAL,NR1TAL,NP2TAL,
      .                                     NT3TAL,NLIMPS,
@@ -1004,16 +994,6 @@ C
 C  CONVERT TO %
             SDVI1=MAX(0._DP,SDVI1-EPS6)*100.D0
             SDVI2=MAX(0._DP,SDVI2-EPS6)*100.D0
-          ENDIF
-          IF (NSIGI_BGK.GT.0) THEN
-            CALL EIRENE_STATS2_BGK(XMCP(ISTRA),FSIG,ZFLUX)
-C  CONVERT TO %
-            DO 211 IB=1,NBGVI_STAT
-              SGMS_BGK(IB)=MAX(0._DP,SGMS_BGK(IB)-EPS6)*100.D0
-              DO 212 J=1,NSBOX_TAL
-                SIGMA_BGK(IB,J)=MAX(0._DP,SIGMA_BGK(IB,J)-EPS6)*100.D0
-  212         CONTINUE
-  211       CONTINUE
           ENDIF
           IF (NSIGI_SPC.GT.0) THEN
             CALL EIRENE_STATS2_SPC(XMCP(ISTRA),FSIG,ZFLUX)
@@ -1178,7 +1158,6 @@ cdr npesta is the master processor for stratum no ISTRA
      .              ESTIMV,ESTIMS,ESTIML,
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
      .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .              NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .              NSIGI_SPC,TRCFLE)
             endif
           ENDIF
@@ -1291,7 +1270,6 @@ C  STRATA
      .              ESTIMV,ESTIMS,ESTIML,
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
      .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .              NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .              NSIGI_SPC,TRCFLE)
         ENDIF
         GOTO 2000
@@ -1334,15 +1312,6 @@ C  CELL- AND SURFACE-AVERAGED DEFAULT TALLY VARIANCES
         SGMS   = STVS
         SIGMAW = STVW
         SGMWS  = STVWS
-C  BGK TALLY VARIANCES
-        IF (NSIGI_BGK.GT.0) THEN
-          DO 1271 IB=1,NBGVI_STAT
-            SGMS_BGK(IB)=STVS_BGK(IB)
-            DO 1272 J=1,NSBOX_TAL
-              SIGMA_BGK(IB,J)=STV_BGK(IB,J)
- 1272       CONTINUE
- 1271     CONTINUE
-        ENDIF
 C
 C   ALGEBRAIC EXPRESSION IN TALLIES, SUM OVER STRATA  1571--1579
 C
@@ -1381,7 +1350,6 @@ C
      .                ESTIMV,ESTIMS,ESTIML,
      .                NSDVI1,SDVI1,NSDVI2,SDVI2,
      .                NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .                NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .                NSIGI_SPC,
 cdr spectrum tally variances are already in ESTIML
      .                TRCFLE)

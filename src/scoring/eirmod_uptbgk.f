@@ -38,10 +38,6 @@ c  Note:  for ES-BGK models (correct Prandtl number models) more than 3 bgk tall
 c         are needed per BGK species ibgk_sp (non-diagonal pressure tensor elements)
 c
 c  A routine (MODBGK) carries out the iterations at the end of an iteration step.
-
-c  The standard deviations for the "bgk tallies" are
-c  computed in subroutine STATIS_BGK   ??? why  ???
-C
 c
 c
       SUBROUTINE EIRENE_UPTBGK(XSTOR2,XSTORV2,WV,NPBGK)

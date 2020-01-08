@@ -41,7 +41,6 @@ C ALSO: NREACI --> NREACI+1 IS USED.
       USE EIRMOD_CTRCEI
       USE EIRMOD_CGEOM
       USE EIRMOD_CSDVI
-      USE EIRMOD_CSDVI_BGK
       USE EIRMOD_COMPRT
       USE EIRMOD_COMSOU
       USE EIRMOD_CLGIN
@@ -196,7 +195,6 @@ C     NOTHING TO BE DONE
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .             NSIGI_SPC,TRCFLE)
       ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.IST.EQ.0) THEN
         IESTR=IST
@@ -204,7 +202,6 @@ C     NOTHING TO BE DONE
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .             NSIGI_SPC,TRCFLE)
       ELSE
         WRITE (IUNOUT,*) 'ERROR IN HE_EMIS: DATA FOR STRATUM ISTRA= ',
@@ -399,7 +396,6 @@ C  WRITE ON STREAM 11 DATA FOR STRATUM NO. IST
      .              ESTIMV,ESTIMS,ESTIML,
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
      .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .              NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .              NSIGI_SPC,TRCFLE)
 C
         IRC=2
@@ -416,7 +412,6 @@ C  WRITE ON STREAM 11 ONLY DATA FOR SUM OVER STRATA
      .              ESTIMV,ESTIMS,ESTIML,
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
      .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .              NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .              NSIGI_SPC,TRCFLE)
 C
         IRC=2

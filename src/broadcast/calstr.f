@@ -6,7 +6,6 @@
 !pb 090309  rewritten to use automatic arrays as output buffer in mpi_reduce
 !pb 090309  loops reorganized
 !pb 270309  typos corrected
-!sw 091112  added support for csdvi_bgk
 
 cdr Nov. 15:  comments needed. copv tallies: variances for coupling ??
 cdr                            to be checked again after changes in 2013
@@ -49,14 +48,12 @@ C> - tallies
       USE EIRMOD_COMPRT, ONLY: ISTRA
       USE EIRMOD_CPES, ONLY: NEED_CALSTR, CALC_STRATUM, GET_STRATUM_COMM
       USE EIRMOD_CSDVI, ONLY: NSIGI_SPC, SDVI1, SDVI2, SIGMAC, SGMCS
-      USE EIRMOD_CSDVI_BGK, ONLY: EE_BGK, EES_BGK, NBGV_STAT, SDVIA_BGK,
-     .                            SGMS_BGK, SIGMA_BGK, STV_BGK, STVS_BGK
       USE EIRMOD_COUTAU
       USE EIRMOD_MPI
 
       IMPLICIT NONE
 
-      real(dp), allocatable :: help(:), helpest(:), helpv(:), dummyv(:)
+      real(dp), allocatable :: helpest(:), helpv(:), dummyv(:)
       real(dp) :: helpa(0:natm), helpm(0:nmol), helpi(0:nion),
      .            helpp(0:npls), helpph(0:nphot),
      .            helps(nlmpgs+1), helpc
@@ -88,8 +85,6 @@ C Need to clarify what eirene_calstr_usr does with my_pe_gr.
 
         mxdim = max(nvoltl,nsrftl,nsd,nsdw,
      .              nmoli+1,natmi+1,nioni+1,nphoti+1,nplsi+1)
-
-        allocate (help(mxdim))
 
 cdr missing: wtotph ??
 
@@ -293,59 +288,6 @@ cdr in case of nrtal < ncv: crash ?
           if (my_pe_gr==0) sgmcs(2,1:ncv) = helpv(1:ncv)
         end if
 
-
-csw 09nov2012 reduce csdvi_bgk
-        if (nbgv_stat > 0) then
-          allocate(dummyw(max(nrtals,nbgv_stat)+1))
-          allocate(helpw(max(nrtals,nbgv_stat)+1))
-
-          do i=1,nbgv_stat
-            dummyw(1:nrtals) = sigma_bgk(i,1:nrtals)
-            call mpi_reduce(dummyw,helpw,nrtals,
-     .                      mpi_double_precision,mpi_sum,
-     .                      0,calstr_comm,ier1)
-            if(my_pe_gr==0) sigma_bgk(i,1:nrtals) = helpw(1:nrtals)
-
-            dummyw(1:nrtals) = stv_bgk(i,1:nrtals)
-            call mpi_reduce(dummyw,helpw,nrtals,
-     .                      mpi_double_precision,mpi_sum,
-     .                      0,calstr_comm,ier1)
-            if(my_pe_gr==0) stv_bgk(i,1:nrtals) = helpw(1:nrtals)
-
-            dummyw(1:nrtals) = sdvia_bgk(i,1:nrtals)
-            call mpi_reduce(dummyw,helpw,nrtals,
-     .                      mpi_double_precision,mpi_sum,
-     .                      0,calstr_comm,ier1)
-            if(my_pe_gr==0) sdvia_bgk(i,1:nrtals) = helpw(1:nrtals)
-
-            dummyw(1:nrtals) = ee_bgk(i,1:nrtals)
-            call mpi_reduce(dummyw,helpw,nrtals,
-     .                      mpi_double_precision,mpi_sum,
-     .                      0,calstr_comm,ier1)
-            if(my_pe_gr==0) ee_bgk(i,1:nrtals) = helpw(1:nrtals)
-          enddo
-
-          call mpi_reduce(sgms_bgk(1:nbgv_stat),helpv,nbgv_stat,
-     .                    mpi_double_precision,mpi_sum,
-     .                    0,calstr_comm,ier1)
-          if (my_pe_gr==0) sgms_bgk(1:nbgv_stat) = helpv(1:nbgv_stat)
-
-          call mpi_reduce(stvs_bgk(1:nbgv_stat),helpv,nbgv_stat,
-     .                    mpi_double_precision,mpi_sum,
-     .                    0,calstr_comm,ier1)
-          if (my_pe_gr==0) stvs_bgk(1:nbgv_stat) = helpv(1:nbgv_stat)
-
-          call mpi_reduce(ees_bgk(1:nbgv_stat),helpv,nbgv_stat,
-     .                    mpi_double_precision,mpi_sum,
-     .                    0,calstr_comm,ier1)
-          if (my_pe_gr==0) ees_bgk(1:nbgv_stat) = helpv(1:nbgv_stat)
-
-          deallocate(dummyw)
-          deallocate(helpw)
-        endif
-csw
-
-        deallocate(help)
         mxdim = max (nmoli+1,natmi+1,nioni+1,nphoti+1,nplsi+1)
 
         allocate (lhelp(mxdim))

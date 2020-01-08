@@ -2,7 +2,6 @@ cdr sept. 18:   iopt:  ?? further optional input lines at the end of block 5?
 cdr  sept.18:   XDR format options for fort.13 stream: removed.
 cdr  apr. 18:   fully connected and tested: trchktm option, in block 11.
 cdr  july 17 :  GR cleanup: wrmesh option split into writing and plotting
-cdr  june  17:  NSIGV_COP=0, removing a hidden link to case-specific coupling routines
 Cdr  april 17:  some cleanup (spelling, trim(character)) adopted from sols_iter version
 cdr             added: logical NEXVS   (default: F. Unclear meaning, so far...)
 c               added: logical TRCRNF  (traceback for random seeds for correlated sampling)
@@ -3063,11 +3062,9 @@ C  DATA FOR STANDARD DEVIATION
       READ (IUNIN,*)
       CALL EIRENE_LEER(1)
       WRITE (iunout,*) '       CARDS FOR STANDARD DEVIATION'
-      READ (IUNIN,6666) NSIGVI,NSIGSI,NSIGCI,NSIGI_BGK,NSIGI_COP,
-     .                  NSIGI_SPC
+      READ (IUNIN,6666) NSIGVI,NSIGSI,NSIGCI,NSIGI_SPC
       WRITE (iunout,*) '       NSIGVI,NSIGSI,NSIGCI = ',
      .                         NSIGVI,NSIGSI,NSIGCI
-      WRITE (iunout,*) '       NSIGI_BGK = ',NSIGI_BGK
       WRITE (iunout,*) '       NSIGI_SPC            = ',NSIGI_SPC
       CALL EIRENE_LEER(1)
       DO 913 J=1,NSIGVI
@@ -4963,9 +4960,6 @@ C
           END IF
         END DO
       END IF
-
-      IF (.NOT.LBGKV) NSIGI_BGK=0
-
 C
 C  NO MODIFICATION OF INPUT VARIABLES BEYOND THIS POINT
 C  WITHOUT WARNING

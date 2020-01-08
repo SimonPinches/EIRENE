@@ -26,7 +26,6 @@ cdr  write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
       use eirmod_ctrcei
       USE EIRMOD_CESTIM
       USE EIRMOD_CSDVI
-      USE EIRMOD_CSDVI_BGK
       USE EIRMOD_COMPRT
 
       implicit none
@@ -249,7 +248,6 @@ C  WRITE ON STREAM 11 DATA FOR STRATUM NO. ISTR
      .              ESTIMV,ESTIMS,ESTIML,
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
      .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .              NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .              NSIGI_SPC,TRCFLE)
 C
         IRC=2
@@ -266,7 +264,6 @@ C  WRITE ON STREAM 11 ONLY DATA FOR SUM OVER STRATA
      .              ESTIMV,ESTIMS,ESTIML,
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
      .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .              NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .              NSIGI_SPC,TRCFLE)
 C
         IRC=2

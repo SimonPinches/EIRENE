@@ -21,7 +21,6 @@ C
       USE EIRMOD_CTRCEI
       USE EIRMOD_CGEOM
       USE EIRMOD_CSDVI
-      USE EIRMOD_CSDVI_BGK
       USE EIRMOD_COMPRT
       USE EIRMOD_COMNNL
       USE EIRMOD_COMSOU
@@ -85,7 +84,6 @@ C  NOTHING TO BE DONE
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .             NSIGI_SPC,TRCFLE)
         IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
           CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRTAL,NR1TAL,NP2TAL,NT3TAL,
@@ -98,7 +96,6 @@ C  NOTHING TO BE DONE
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .             NSIGI_SPC,TRCFLE)
         IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
 
@@ -249,45 +246,6 @@ C
             CALL EIRENE_LEER(3)
 C
   106       CONTINUE
-C  CHECK IF BGK STANDARD DEVIATION IS AVAILABLE FOR THIS TALLY "ITAL"
-            IF (NSIGI_BGK.GT.0) THEN
-              IF (ITAL.EQ.NTALB) THEN
-                KMAX=NBGVI_STAT
-                KK=K
-              ELSEIF (ITAL.EQ.1) THEN
-                KMAX=NATMI
-                KK=NBGVI+K
-              ELSEIF (ITAL.EQ.5) THEN
-                KMAX=NATMI
-                KK=NBGVI+NATMI+K
-              ELSEIF (ITAL.EQ.2) THEN
-                KMAX=NMOLI
-                KK=NBGVI+2*NATMI+K
-              ELSEIF (ITAL.EQ.6) THEN
-                KMAX=NMOLI
-                KK=NBGVI+2*NATMI+NMOLI+K
-              ELSE
-                KMAX=0
-              ENDIF
-              IF (K.GT.KMAX) GOTO 119
-              DO I=1,NSBOX_TAL
-                VECTOR(I)=SIGMA_BGK(KK,I)
-              ENDDO
-              SMEAN=SGMS_BGK(KK)
-C
-              CALL EIRENE_MASAGE('RELATIVE STANDARD DEVIATION (BGK)')
-              TXTSP=TXTSPC(K,ITAL)
-              CALL EIRENE_PRTTAL
-     .                   (TXTTAL(K,ITAL),TXTSP,'%                     ',
-     .                    VECTOR,X1D,
-     .                    NR1TAL,NP2TAL,NT3TAL,NBMLT,NSBOX_TAL,
-     .                    NFLAGV(IPRV),NTLVFL(IPRV))
-              CALL EIRENE_LEER(2)
-              CALL EIRENE_MASAGE('STANDARD DEVIATION OF MEAN VALUE (%)')
-              CALL EIRENE_MASR1 ('MEAN    ',SMEAN)
-              CALL EIRENE_LEER(3)
-              GOTO 119
-            ENDIF
 C
 C  CHECK IF COVARIANCE IS AVAILABLE
             DO 103 N=1,NSIGCI

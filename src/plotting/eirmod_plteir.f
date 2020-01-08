@@ -14,7 +14,6 @@
       USE EIRMOD_CTRCEI
       USE EIRMOD_CGEOM
       USE EIRMOD_CSDVI
-      USE EIRMOD_CSDVI_BGK
       USE EIRMOD_COMSOU
       USE EIRMOD_CTEXT
       USE EIRMOD_COUTAU
@@ -35,7 +34,6 @@ cdr            the fluxes outside the range of spectra.
 cpb  30.7.04:  deal with switched off tallies
 cdr  10.6.05:  further modifications of plot for spectra (text,
 c              total, plot vs. wavelength, plot 2 spectra into same frame
-c    7.12.06:  in call to rstrt: one argument was wrong: sgms_cop --> sgms_bgk
 !pb  18.12.06: general checking of XMCP removed to allow plots of
 !              input tallies even is no Monte Carlo particle has been followed
 !    10.01.07: ENTRY PLTEIR_REINIT added for reinitialization of EIRENE
@@ -139,7 +137,6 @@ C  NOTHING TO BE DONE
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .             NSIGI_SPC,TRCFLE)
         IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
           CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRAD,NR1ST,NP2ND,NT3RD,
@@ -152,7 +149,6 @@ C  NOTHING TO BE DONE
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .             NSIGI_SPC,TRCFLE)
         IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
           CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRAD,NR1ST,NP2ND,NT3RD,
