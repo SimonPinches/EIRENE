@@ -285,7 +285,7 @@ c  number. In that case: goto 1005 and try again with new cell number.
 c  Else: continue at 1002
 
 !PB   CALL SRFCHK(VLXPAR,VLYPAR,VLYPAR,SG,*1005)
-      CALL SRFCHK(VLXPAR,VLYPAR,VLYPAR,SG,IRET)
+      CALL EIRENE_SRFCHK(VLXPAR,VLYPAR,VLYPAR,SG,ICO,IRET)
       IF (IRET == 1) GOTO 1005
       IF (ic_ion.gt.1) THEN 
         write (iunout,*) 'error re static loop, ic_ion=', ic_ion

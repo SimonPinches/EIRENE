@@ -133,7 +133,7 @@ c  extrapolation data:  for 1d polynomial fits
 
         orate = eirene_sngl_poly(reacdat(ir)%oth%poly%dblpol(1:9,1),
      .                   p1, rc1min, rc1max, fp1, jfex1mn, jfex1mx,
-     .                   trcamd)
+     .                   trcamd, lexp)
 
 C       if (.not. lexp)  orate=orate
         if (lexp)        orate = exp(max(-100._dp,orate))

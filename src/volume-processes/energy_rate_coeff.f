@@ -150,7 +150,7 @@ c  extrapolation data: for 1d polynomial fits
 
         res = eirene_sngl_poly(reacdat(ir)%rtcew%poly%dblpol(1:9,1),
      .                           p1,rc1min,rc1max,fp1,jfex1mn,jfex1mx,
-     .                           trcamd)
+     .                           trcamd,lexp)
 
 ! RES is ln(energy rate), with energy rate >0.
 ! If it is loss, rather than a gain, sign change to be done in calling routine,

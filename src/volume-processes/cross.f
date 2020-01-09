@@ -79,7 +79,7 @@ C  FILL CROSS-SECTION DATA, SINGLE PARAMETER POLYNOMIAL IN AL=LN(E)
           EXPO = EIRENE_SNGL_POLY(RPP%DBLPOL,AL,
      .                            RPC%RC1MIN,RPC%RC1MAX,FP,
      .                            RPC%JFEX1MN,RPC%JFEX1MX,
-     .                            TRCAMD)
+     .                            TRCAMD,.TRUE.)
           EIRENE_CROSS = EXP(MAX(-100._DP,EXPO))
 
           EIRENE_CROSS = EIRENE_CROSS*FACT
