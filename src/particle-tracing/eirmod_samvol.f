@@ -36,6 +36,10 @@
 
       CONTAINS
 
+cdr Nov.  19 : Nested do 6 loop: erroneous exit from loop
+cdr            corrected (300919): Possible significant
+cdr            effect on diagnostic output (EIO loss) 
+cdr Sept. 19 : added: nprt(ispz)=1 condition for bremsstrahlung (exclude molec. ions) 
 chf Nov.  18 : samvol_usr added, for levgeo=10 option
 cdr Jan   18 : only notational change, to distinguish surface substrata from volume substrata
 cdr  5.14.15 : vecusr called with ncell, and 0,0,0 (center of gravity)
@@ -302,7 +306,8 @@ C  BREMSSTRAHLUNG ORIGINATING FROM IONS IPLS, CHARGE Z=NCHRGP(IPLS)
 C  only: atomic ions. Exclude here for the time being: molecular ions
         TOT_BREMS = 0._DP
         DO IPLS=1,NPLSI
-          IF (NCHRGP(IPLS) == 0) CYCLE
+          ISPZ=NSPAMI+IPLS
+          IF (NCHRGP(IPLS) == 0.OR.NPRT(ISPZ).GT.1) CYCLE
           Z = NCHRGP(IPLS)
           DO J = 1, NSBOX
             IF (LGVAC(J,NPLS+1).OR.LGVAC(J,IPLS)) CYCLE
@@ -396,7 +401,8 @@ C
           IPLS=NSPEZ(ISTRA)
           IF (IPLS.LE.0.OR.IPLS.GT.NPLSI) THEN
             WRITE (iunout,*) 'SOURCE SPECIES INDEX NSPEZ OUT OF RANGE'
-            WRITE (iunout,*) 'ISTRA, NSPEZ(ISTRA) ',ISTRA,NSPEZ(ISTRA)
+            WRITE (iunout,*) 'ISTRA, NSPEZ(ISTRA)   ',
+     .                        ISTRA, NSPEZ(ISTRA)
             CALL EIRENE_EXIT_OWN(1)
           ENDIF
           IPLSTI = MPLSTI(IPLS)
@@ -422,7 +428,8 @@ C  ACCOUNT FOR INGRDA(IVOLSI,ISTRA,...), INGRDE(IVOLSI,ISTRA,...)
               ICC=0
               IRC=-1
               IF (NR1ST.GT.1) THEN
-              IF (INGRDA(IVL,I,1).LE.0..OR.INGRDE(IVL,I,1).LE.0.D0) THEN
+              IF (INGRDA(IVL,I,1).LE.0 .OR.
+     .            INGRDE(IVL,I,1).LE.0) THEN
                 CALL EIRENE_LEER(1)
                 WRITE (iunout,*) 'WARNING FROM SAMVL0, ISTRA= ',ISTRA
                 WRITE (iunout,*)
@@ -434,7 +441,8 @@ C  ACCOUNT FOR INGRDA(IVOLSI,ISTRA,...), INGRDE(IVOLSI,ISTRA,...)
               ENDIF
               ENDIF
               IF (NP2ND.GT.1) THEN
-              IF (INGRDA(IVL,I,2).LE.0..OR.INGRDE(IVL,I,2).LE.0.D0) THEN
+              IF (INGRDA(IVL,I,2).LE.0 .OR.
+     .            INGRDE(IVL,I,2).LE.0) THEN
                 CALL EIRENE_LEER(1)
                 WRITE (iunout,*) 'WARNING FROM SAMVL0, ISTRA= ',ISTRA
                 WRITE (iunout,*)
@@ -446,7 +454,8 @@ C  ACCOUNT FOR INGRDA(IVOLSI,ISTRA,...), INGRDE(IVOLSI,ISTRA,...)
               ENDIF
               ENDIF
               IF (NT3RD.GT.1) THEN
-              IF (INGRDA(IVL,I,3).LE.0..OR.INGRDE(IVL,I,3).LE.0.D0) THEN
+              IF (INGRDA(IVL,I,3).LE.0 .OR.
+     .            INGRDE(IVL,I,3).LE.0) THEN
                 CALL EIRENE_LEER(1)
                 WRITE (iunout,*) 'WARNING FROM SAMVL0, ISTRA= ',ISTRA
                 WRITE (iunout,*)
@@ -826,7 +835,7 @@ C
           X0=RR*COS(WINK)
           Y0=RR*SIN(WINK)
         ELSEIF (NLELL) THEN
-CDR NOT READY. STRICKLY, THETA AND R ARE CORRELATED. USE
+CDR NOT READY. STRICTLY, THETA AND R ARE CORRELATED. USE
 CDR            MARGINAL AND CONDITIONAL DISTRIBUTION F1(R) AND
 CDR            F2(PHI, GIVEN R)
 C  POLOIDAL COORDINATE

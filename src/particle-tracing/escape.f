@@ -12,7 +12,7 @@ cdr aug.17    :  bug fix. cond exp. estimator, on purely absorbing surface.
 c                return 3, if icol=1, even for purely absorbing surfaces.
 c                plus some minor clean-up, commenting.
 c 06.08.15    :  arguments added to vecusr
-c   aug.15    :  periodicity and icol=1, return 3 rather than return 2
+c   aug.15    :  periodicity and icol=1, return iret=3 rather than return iret=2
 C   OCT.14    :  ARGUMENTS IN VELOCS: WEIGHT AND VWL
 C   OCT.14    :  SPUTTERING:  SCORE FLUXES ALSO IN CASE SPUTTERED PARTICLES ARE NOT FOLLOWED
 c                new meaning of isrs, isrc=0:  sputter, score fluxes, but do not follow.
@@ -56,10 +56,10 @@ C        ICOL:  =1:  CONDITIONAL EXPECTATION ESTIMATOR, AND AN EARLIER COLLISION
 C                    ALONG THIS TRACK IS STORED
 C
 C  RETURN  : STOP TRACK OF THIS PARTICLE TYPE. RETURN TO SUBR. MCARLO
-C  RETURN 1: START NEW TRACK OF SAME TYPE IN CALLING PROGRAM
+C  RETURN IRET=1: START NEW TRACK OF SAME TYPE IN CALLING PROGRAM
 C            (I.E. IN FOLNEUT OR FOLION)
-C  RETURN 2: CONTINUE THIS TRACK IN CALLING PROGRAM (TRANSP. SURFACE)
-C  RETURN 3: RESTORE COLLISION DATA, CONDITIONAL EXPECTATION WAS USED
+C  RETURN IRET=2: CONTINUE THIS TRACK IN CALLING PROGRAM (TRANSP. SURFACE)
+C  RETURN IRET=3: RESTORE COLLISION DATA, CONDITIONAL EXPECTATION WAS USED
 C
 C
       USE EIRMOD_PRECISION
@@ -981,7 +981,6 @@ C
 C     NLTRJ = .FALSE.
 C     TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
 
-!pb   IF  (ITYP.EQ.ITYP_OLD) RETURN 1
       IF  (ITYP.EQ.ITYP_OLD) THEN
         IRET = 1
         RETURN

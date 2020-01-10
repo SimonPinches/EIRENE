@@ -1,4 +1,8 @@
       MODULE EIRMOD_LOCATE
+c  eirene_locat0:
+c  eirene_locat1:
+c  eirene_locat2:  deallocate temporary arrays
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -39,8 +43,7 @@
       IMPLICIT NONE
       PRIVATE
 
-      PUBLIC :: EIRENE_LOCATE, EIRENE_LOCAT0, EIRENE_LOCAT1, 
-     .           EIRENE_LOCAT2
+      PUBLIC :: EIRENE_LOCAT0, EIRENE_LOCAT1, EIRENE_LOCAT2
 
       REAL(DP), ALLOCATABLE, SAVE :: WMM(:), WEISPZ(:), X1LINE(:,:),
      .                               X2LINE(:,:)
@@ -106,8 +109,6 @@ cdr feb 18 :  M.R.:  bug fix re WEIGHT in one-by-one resampling from census.
 cdr           (was proprietary option, no effects for 3rd parties).
 cdr mar 18 :  prepare missing option: MSURF in case of levgeo=5 plus additional surfaces
 cdr
-
-      SUBROUTINE EIRENE_LOCATE
 c  old option:
 c              sorind=irrc for volume sources
 c  new option (additionally):
@@ -161,13 +162,6 @@ C                   ANALOG SPECIES SAMPLING DISTRIBUTION
 C                   SPECIES SAMPLING MAY ALSO BE DONE BY BIASED SOURCE
 C                   SAMPLING, USING THE DATM,DMOL,DION OR DPLS DISTRIB.
 C
-
-      IMPLICIT NONE
-
-
-      CALL EIRENE_LOCAT0
-      END SUBROUTINE EIRENE_LOCATE
-
       SUBROUTINE EIRENE_LOCAT0
       IMPLICIT NONE
       REAL(DP) :: SUMM, SUM1
@@ -289,10 +283,10 @@ C
      .            TIWL(NPLS), DIWL(NPLS), EFWL(NPLS), SHWL, TEWL,
      .            CUMDIS(0:NREC)
       INTEGER :: ISSPTP, ISSPTC, ISTS, IP, ISPZS, IRC, IIRC, IRRC,
-     .           I, ISTEP,
+     .           I, ISTEP, IDIMM,
      .           NFLAG, 
      .           IPLV, IDUM, IO, NO, IPL, IPP,
-     .           IPLTI, KK,
+     .           IPLTI, KK, IRET,
      .           ITYP_OLD, IGASP_OLD, IGASC_OLD
       LOGICAL :: NLSPUT, NLTST, NL_add_Doppler
       INTEGER, INTENT(IN) :: IPANU
@@ -539,6 +533,7 @@ C   NEXT FIND POSITION ON THIS SOURCE SURFACE, AS WELL AS
 C   CELL INDICES, LOCAL TEMPERATURES TIWL AND TEWL, AND
 C   LOCAL PLASMA DRIFT VELOCITIES VXWL,VYWL,VZWL FOR EACH BULK
 C   ION SPECIES IPLS=1,NPLSI
+C   Also return INDIM(isurf,istra) with values: 1,2,3 or 4.
 C
         IF (.NOT.NLCNS(ISTRA)) THEN
           CALL EIRENE_SAMSF1 (ISURF,
@@ -664,12 +659,13 @@ C
         ENDIF
 C
 C  FIND SURFACE NORMAL AT PLACE OF BIRTH
+CDR It must be ruled out at this place that MSURF is a periodicity surface
 C
-        IF (INDIM(ISURF,ISTRA).EQ.0) THEN
+        IDIMM=INDIM(ISURF,ISTRA)
+        IF (IDIMM.EQ.0) THEN
           CALL EIRENE_ADDNOR(X0,Y0,Z0,SCOS,MSURF,IPERID)
-        ELSEIF (INDIM(ISURF,ISTRA).GT.0) THEN
-          CALL EIRENE_STDNOR
-     .  (X0,Y0,Z0,INDIM(ISURF,ISTRA),SCOS,MSURF)
+        ELSEIF (IDIMM.GT.0) THEN
+          CALL EIRENE_STDNOR(X0,Y0,Z0,IDIMM,SCOS,MSURF)
         ENDIF
 C
 C  VOLUME SOURCE MODEL  71---90
@@ -2167,7 +2163,8 @@ C  TOROIDAL CELL NO. MAY BE WRONG
       ENDIF
 
       IF (NLTEST) THEN
-        CALL EIRENE_CLLTST(*997)
+        CALL EIRENE_CLLTST(IRET)
+        IF (IRET.EQ.1) GOTO 997
       ELSE
         NLTST=.FALSE.
         NLTST=NLTST.OR.(NLRAD.AND.(NRCELL.GT.NR1ST.OR.NRCELL.LT.0))

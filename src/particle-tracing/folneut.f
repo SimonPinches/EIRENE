@@ -195,8 +195,6 @@ C  STATIC APPROXIMATION
 C  SIMULATE NEXT COLLISION INSTANTANEOUSLY
 C***********************************************************************
 
-!pb   CALL EIRENE_FOLSTAT_NEUT(IC_NEUT,VELX,VELY,VELZ,CFLAG,
-!pb  .                        *101,*230,*380)
       CALL EIRENE_FOLSTAT_NEUT(IC_NEUT,VELX,VELY,VELZ,CFLAG,
      .                         IRT_STAT)
       IF (IRT_STAT == 1) GOTO 101
@@ -230,9 +228,9 @@ C  PREPARE CELL NUMBERS FOR FIRST FLIGHT
           TL=0.D0
           IPOLGN=IPOLG
           IF (NLSRFA) THEN
-            CALL EIRENE_ADDCOL (X0,Y0,Z0,SCOS,iret)
+            CALL EIRENE_ADDCOL (X0,Y0,Z0,SCOS,IRET)
             if (IRET .EQ. 1) GOTO 101
-            if (IRET .eq. 2) GOTO 380
+            if (IRET .EQ. 2) GOTO 380
           ELSEIF (NLSRFX) THEN
             select case (LEVGEO)
             case (:3)
@@ -241,7 +239,7 @@ C  PREPARE CELL NUMBERS FOR FIRST FLIGHT
               IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
                  CALL EIRENE_STDCOL (ISTS,1,SCOS,IRET)
                  if (IRET .EQ. 1) GOTO 101
-                 if (IRET .eq. 2) GOTO 380
+                 if (IRET .EQ. 2) GOTO 380
               ENDIF
             case (4)
               ISTS=ABS(INMTI(IPOLGN,MRSURF))  !dr NLIM already added in ISTS ?
@@ -249,7 +247,7 @@ C  PREPARE CELL NUMBERS FOR FIRST FLIGHT
               IF (ILIIN(ISTS) .NE. 0) THEN
                  CALL EIRENE_STDCOL (ISTS,1,SCOS,IRET)
                  if (IRET .EQ. 1) GOTO 101
-                 if (IRET .eq. 2) GOTO 380
+                 if (IRET .EQ. 2) GOTO 380
               ENDIF
             case (5)
               ISTS=ABS(INMTIT(IPOLGN,MRSURF)) !dr NLIM already added in ISTS ?
@@ -257,7 +255,7 @@ C             MSURFG= ??
               IF (ILIIN(ISTS) .NE. 0) THEN
                  CALL EIRENE_STDCOL (ISTS,1,SCOS,IRET)
                  if (IRET .EQ. 1) GOTO 101
-                 if (IRET .eq. 2) GOTO 380
+                 if (IRET .EQ. 2) GOTO 380
               ENDIF
             case (10)
               ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
@@ -265,7 +263,7 @@ C             MSURFG= ??
               IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
                  CALL EIRENE_STDCOL (ISTS,1,SCOS,IRET)
                  if (IRET .EQ. 1) GOTO 101
-                 if (IRET .eq. 2) GOTO 380
+                 if (IRET .EQ. 2) GOTO 380
               ENDIF
             end select
           ELSEIF (NLSRFY) THEN
@@ -274,7 +272,7 @@ C             MSURFG= ??
             IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
                CALL EIRENE_STDCOL (ISTS,2,SCOS,IRET)
                if (IRET .EQ. 1) GOTO 101
-               if (IRET .eq. 2) GOTO 380
+               if (IRET .EQ. 2) GOTO 380
             ENDIF
           ELSEIF (NLSRFZ) THEN
             ISTS=INMP3I(IRCELL,IPCELL,MTSURF)
@@ -282,7 +280,7 @@ C             MSURFG= ??
             IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
                CALL EIRENE_STDCOL (ISTS,3,SG,IRET)
                if (IRET .EQ. 1) GOTO 101
-               if (IRET .eq. 2) GOTO 380
+               if (IRET .EQ. 2) GOTO 380
             ENDIF
           ENDIF
 C         WRITE (IUNOUT,*) 'FOLNEUT: I SHOULD NOT BE HERE'
@@ -650,13 +648,13 @@ C
       IF (ISRFCL.EQ.1) THEN
         CALL EIRENE_ADDCOL (XLI,YLI,ZLI,SG,IRET)
         IF (IRET .EQ. 1) GOTO 104
-        IF (IRET .eq. 2) GOTO 380
+        IF (IRET .EQ. 2) GOTO 380
       ENDIF
 !pb   IF (ISRFCL.EQ.2) CALL EIRENE_TIMCOL (PR,            *104,*800)
       IF (ISRFCL.EQ.2)THEN
         CALL EIRENE_TIMCOL (PR,IRET)
         IF (IRET .EQ. 1) GOTO 104
-        IF (IRET .eq. 2) GOTO 800
+        IF (IRET .EQ. 2) GOTO 800
       ENDIF
 !pb   IF (ISRFCL.EQ.3) CALL EIRENE_TORCOL (               *104)
       IF (ISRFCL.EQ.3) THEN
@@ -679,7 +677,7 @@ C  ESCAPE AT 1ST GRID SURFACE (X OR RADIAL) MRSURF
           IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
              CALL EIRENE_STDCOL (ISTS,1,SG,IRET)
              if (IRET .EQ. 1) GOTO 104
-             if (IRET .eq. 2) GOTO 380
+             if (IRET .EQ. 2) GOTO 380
           ENDIF
         ENDIF
 
@@ -692,7 +690,7 @@ C  ESCAPE AT 2ND GRID SURFACE (Y OR POLOIDAL) NO. MPSURF
           IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
              CALL EIRENE_STDCOL (ISTS,2,SG,IRET)
              if (IRET .EQ. 1) GOTO 104
-             if (IRET .eq. 2) GOTO 380
+             if (IRET .EQ. 2) GOTO 380
           ENDIF
         ENDIF
 
@@ -705,7 +703,7 @@ C  ESCAPE AT 3RD GRID SURFACE (Z OR TOROIDAL) MTSURF
           IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
              CALL EIRENE_STDCOL (ISTS,3,SG,IRET)
              if (IRET .EQ. 1) GOTO 104
-             if (IRET .eq. 2) GOTO 380
+             if (IRET .EQ. 2) GOTO 380
           ENDIF
         ENDIF
 C
@@ -721,7 +719,7 @@ C  ESCAPE AT GRID SURFACE BUILT FROM TRIANGLE SIDES IN X-Y PLANE: MRSURF
           IF (ILIIN(ISTS) .NE. 0) THEN
              CALL EIRENE_STDCOL (ISTS,1,SG,IRET)
              if (IRET .EQ. 1) GOTO 104
-             if (IRET .eq. 2) GOTO 381
+             if (IRET .EQ. 2) GOTO 381
           ENDIF
   381     CONTINUE
           SG=INMTINSS(IPOLGN,MRSURF)                            !VK
@@ -738,7 +736,7 @@ C  ESCAPE AT 3RD (Z OR TOROIDAL) GRID SURFACE FOR TRIANGULAR X-Y GRID OPTION: MT
             IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
                CALL EIRENE_STDCOL(ISTS,3,SG,IRET)
              if (IRET .EQ. 1) GOTO 104
-             if (IRET .eq. 2) GOTO 380
+             if (IRET .EQ. 2) GOTO 380
             ENDIF
           ENDIF
         END IF
@@ -755,7 +753,7 @@ C         MSURFG= ??
           IF (ILIIN(ISTS) .NE. 0) THEN
              CALL EIRENE_STDCOL (ISTS,1,SG,IRET)
              if (IRET .EQ. 1) GOTO 104
-             if (IRET .eq. 2) GOTO 380
+             if (IRET .EQ. 2) GOTO 380
           ENDIF
        ENDIF
 
@@ -768,7 +766,7 @@ C  ESCAPE TO GRID SURFACE ON USER-DEFINED GEOMETRY BLOCK: MRSURF
           IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
              CALL EIRENE_STDCOL (ISTS,1,SG,IRET)
              if (IRET .EQ. 1) GOTO 104
-             if (IRET .eq. 2) GOTO 380
+             if (IRET .EQ. 2) GOTO 380
           ENDIF
         ENDIF
       end select
@@ -912,7 +910,10 @@ C  TEST FOR CORRECT CELL NUMBER AT COLLISION POINT
 C  KILL PARTICLE, IF TOO LARGE ROUND-OFF ERRORS DURING
 C  PARTICLE TRACING
 C
-      IF (NLTEST) CALL EIRENE_CLLTST(*997)
+      IF (NLTEST) THEN
+        CALL EIRENE_CLLTST(IRET)
+        IF (IRET .EQ. 1) GOTO 997
+      ENDIF
 C
 C  SAMPLE FROM COLLISION KERNEL FOR NEUTRAL PARTICLES
 C  AT PRESENT: NO SUPPRESSION OF ABSORPTION AT IONISATION
@@ -1177,8 +1178,9 @@ C   DETAILED PRINTOUT ALREADY DONE FROM SUBR. CLLTST
       GOTO 999
 C
   998 CALL EIRENE_MASAGE('ERROR IN FOLNEUT, SPECIES INDEX OUT OF RANGE')
-      WRITE (iunout,*) ' NPANU,ITYP,IATM,IMOL,IPHOT ',
-     .                   NPANU,ITYP,IATM,IMOL,IPHOT
+      CALL EIRENE_MASJ5
+     . ('NPANU, ITYP, IATM, IMOL, IPHOT          ',
+     .   NPANU, ITYP, IATM, IMOL, IPHOT)
       GOTO 999
 C
   999 CONTINUE

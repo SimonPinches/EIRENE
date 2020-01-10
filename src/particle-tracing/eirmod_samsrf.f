@@ -1,4 +1,12 @@
       MODULE EIRMOD_SAMSRF
+C
+C  THIS SUBROUTINE SAMPLES THE INITIAL COORDINATES OF A PARTICLE
+C  HISTORY, WHICH STARTS ON A SURFACE
+C
+c  eirene_samsf0:
+c  eirene_samsf1:
+c  eirene_samsf2:  deallocate temporary arrays
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -25,8 +33,7 @@
       IMPLICIT NONE
       PRIVATE
 
-      PUBLIC :: EIRENE_SAMSRF, EIRENE_SAMSF0, EIRENE_SAMSF1, 
-     .          EIRENE_SAMSF2
+      PUBLIC :: EIRENE_SAMSF0, EIRENE_SAMSF1, EIRENE_SAMSF2
 
       REAL(DP), ALLOCATABLE, SAVE ::
      .        ALEFT(:,:,:), BRGHT(:,:,:), XI(:,:,:), XE(:,:,:)
@@ -62,21 +69,10 @@ CDR         now: default is ALWAYS set. INDSRF is e.g. argument in call to fct. 
 cdr nov.16: istra --> istrai, ispz -->jspz, and a bit more info on diagnostic printout
 cdr dec.17: cleanup, comments
 C
-      SUBROUTINE EIRENE_SAMSRF
-C
-C  THIS SUBROUTINE SAMPLES THE INITIAL COORDINATES OF A PARTICLE
-C  HISTORY, WHICH STARTS ON A SURFACE
-C
-
-      IMPLICIT NONE
+      SUBROUTINE EIRENE_SAMSF0
 
 C  INITIALIZE DATA FOR SURFACE SAMPLING FOR STRATUM NO. ISTRAI
 C
-      CALL EIRENE_SAMSF0
-
-      END SUBROUTINE EIRENE_SAMSRF
-
-      SUBROUTINE EIRENE_SAMSF0
       IMPLICIT NONE
       REAL(DP):: FF, TORL(NSTEP,NGITT), FL, EIRENE_STEP, GAMMA, CUR, 
      .           VX,VY,VZ,XC,YC,ZC, RANDIF,
@@ -131,7 +127,7 @@ C  NO. USER-DEFINED SOURCE SAMPLING. NOW INITIALIZE USER-SUPPLIED SOURCE SAMPLIN
           GOTO 1
         ENDIF
 C
-        IF (INDIM(ISRFS,ISTRAI).EQ.1.) THEN
+        IF (INDIM(ISRFS,ISTRAI) .EQ. 1) THEN
 
 c  source is on radial (x-) grid surface x= const. r= const, etc...
 c  the poloidal range of source region should be on ingrd..(...,2),
