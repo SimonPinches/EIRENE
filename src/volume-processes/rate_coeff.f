@@ -120,7 +120,7 @@ c  extrapolation data:  for 1d polynomial fits
 
         rate = eirene_sngl_poly(reacdat(ir)%rtc%poly%dblpol(1:9,1),
      .                   p1, rc1min, rc1max, fp1, jfex1mn, jfex1mx,
-     .                   trcamd)
+     .                   trcamd, lexp)
 
 C       if (.not. lexp)  rate=rate
         if (lexp)        rate = exp(max(-100._dp,rate))

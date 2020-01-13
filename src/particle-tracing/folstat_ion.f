@@ -4,7 +4,7 @@ c March 2019: extracted from folion: static loop:
 c  particles do not move, but carry out next collision or surface event
 c  instantaneously. 
 c  Careful: infinite loops are possible, if no collisions or surface
-c  events lead out of the community of static loop particles
+c  events lead away from the community of static loop particles
 c
       SUBROUTINE EIRENE_FOLSTAT_ION(IC_PART,VLX,VLY,VLZ,CFLAG,IRET)
 C  FOLLOW IONS IN STATIC LOOP
@@ -179,8 +179,6 @@ C FOR PUSHING PARTICLE TO SURFACE IN ADDCOL/STDCOL, USE REDUCED (GC) VELOCITY
             case (:3)
               ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
               MSURFG=NPCELL+(NTCELL-1)*NP2T3
-!pb           IF (ILIIN(NLIM+ISTS) .NE. 0)
-!pb   .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
               IF (ILIIN(NLIM+ISTS) .NE. 0)
      .          CALL EIRENE_STDCOL (ISTS,1,SCOS,IRT)
               IF (IRT == 1) GOTO 101
@@ -188,8 +186,6 @@ C FOR PUSHING PARTICLE TO SURFACE IN ADDCOL/STDCOL, USE REDUCED (GC) VELOCITY
             case (4)
               ISTS=ABS(INMTI(IPOLGN,MRSURF))
               MSURFG=INSPAT(IPOLGN,MRSURF)
-!pb           IF (ILIIN(ISTS) .NE. 0)
-!pb  .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
               IF (ILIIN(ISTS) .NE. 0)
      .          CALL EIRENE_STDCOL (ISTS,1,SCOS,IRT)
               IF (IRT == 1) GOTO 101
@@ -197,8 +193,6 @@ C FOR PUSHING PARTICLE TO SURFACE IN ADDCOL/STDCOL, USE REDUCED (GC) VELOCITY
             case (5)
               ISTS=ABS(INMTIT(IPOLGN,MRSURF))
 C             MSURFG= ??
-!pb           IF (ILIIN(ISTS) .NE. 0)
-!pb  .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
               IF (ILIIN(ISTS) .NE. 0)
      .          CALL EIRENE_STDCOL (ISTS,1,SCOS,IRT)
               IF (IRT == 1) GOTO 101
@@ -206,8 +200,6 @@ C             MSURFG= ??
            case (10)
               ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
 C             MSURFG= ??
-!pb           IF (ILIIN(NLIM+ISTS) .NE. 0)
-!pb  .          CALL EIRENE_STDCOL (ISTS,1,SCOS,*101,*380)
               IF (ILIIN(NLIM+ISTS) .NE. 0)
      .          CALL EIRENE_STDCOL (ISTS,1,SCOS,IRT)
               IF (IRT == 1) GOTO 101
@@ -216,8 +208,6 @@ C             MSURFG= ??
           ELSEIF (NLSRFY) THEN
             ISTS=INMP2I(IRCELL,MPSURF,ITCELL)
             MSURFG=NRCELL+(NTCELL-1)*NR1P2
-!pb         IF (ILIIN(NLIM+ISTS) .NE. 0)
-!pb  .        CALL EIRENE_STDCOL (ISTS,2,SCOS,*101,*380)
             IF (ILIIN(NLIM+ISTS) .NE. 0)
      .        CALL EIRENE_STDCOL (ISTS,2,SCOS,IRT)
               IF (IRT == 1) GOTO 101
@@ -225,8 +215,6 @@ C             MSURFG= ??
           ELSEIF (NLSRFZ) THEN
             ISTS=INMP3I(IRCELL,IPCELL,MTSURF)
             MSURFG=NRCELL+(NPCELL-1)*NR1P2
-!pb         IF (ILIIN(NLIM+ISTS) .NE. 0)
-!pb  .        CALL EIRENE_STDCOL (ISTS,3,SG,*101,*380)
             IF (ILIIN(NLIM+ISTS) .NE. 0)
      .        CALL EIRENE_STDCOL (ISTS,3,SG,IRT)
               IF (IRT == 1) GOTO 101

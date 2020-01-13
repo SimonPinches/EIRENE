@@ -1,8 +1,8 @@
 !pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
 !cdr 22.06.16:  error exit in learc1 replaced by return (levgeo 1 and levgeo 2)
-!cdr
+!cdr dec.  19:  IRET=1 rather than return *
 C
-      SUBROUTINE EIRENE_CLLTST(*)
+      SUBROUTINE EIRENE_CLLTST(IRET)
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -15,12 +15,14 @@ C
 
       IMPLICIT NONE
 
+      INTEGER, INTENT(OUT) :: IRET
       REAL(DP) :: PHITEST, ZTESTO, PHIT, X0T, Z0T, TTT, ZTESTU,
      .          WINK
       INTEGER :: NTEST2, EIRENE_LEARC2, IPOLGT, EIRENE_LEARCT, NTEST0,
      .           EIRENE_LEARCA, EIRENE_LEAUSR, NTEST1
 
 C
+      IRET=0
 
       IF (NACELL.GT.0) RETURN
 C
@@ -46,7 +48,8 @@ C
         WRITE (iunout,*) 'WRONG CELL NUMBER IN RADIAL DIRECTION'
         CALL EIRENE_MASJ3
      .        ('NRCELL,NTEST0,NPANU      ',NRCELL,NTEST0,NPANU)
-        RETURN 1
+        IRET=1
+        RETURN
       ENDIF
 C
 C  TEST FOR POLOIDAL CELL INDEX
@@ -73,7 +76,8 @@ C
           WRITE (iunout,*) 'WRONG CELL NUMBER IN POLOIDAL DIRECTION'
           CALL EIRENE_MASJ3
      .           ('NPCELL,NTEST1,NPANU     ',NPCELL,NTEST1,NPANU)
-          RETURN 1
+          IRET=1
+          RETURN
         ENDIF
       ENDIF
 C
@@ -106,7 +110,8 @@ C
             ZTESTU=ZFULL*(NTCELL-1)
             CALL EIRENE_MASR3
      .             ('ZTESTU,PHI,ZTESTO=      ',ZTESTU,PHI,ZTESTO)
-            RETURN 1
+            IRET=1
+            RETURN
           ENDIF
         ENDIF
 C
@@ -129,14 +134,16 @@ C
           WRITE (iunout,*) 'WRONG COORDINATES IN TOROIDAL DIRECTION'
           CALL EIRENE_MASJ1 ('NPANU   ',NPANU)
           CALL EIRENE_MASR3 ('X0,Z0,TTT                ',X0,Z0,TTT)
-          RETURN 1
+          IRET=1
+          RETURN
         ENDIF
 C
         IF (NTEST2.NE.IPERID.AND..NOT.NLSRFZ) THEN
           WRITE (iunout,*) 'WRONG CELL NUMBER IN TOROIDAL DIRECTION'
           CALL EIRENE_MASJ3
      .              ('IPERID,NTEST2,NPANU     ',IPERID,NTEST2,NPANU)
-          RETURN 1
+          IRET=1
+          RETURN
         ENDIF
 C
       ELSEIF (.NOT.NLTOR.AND.NLTRZ) THEN

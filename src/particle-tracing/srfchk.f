@@ -1,24 +1,38 @@
 C
-!pb   SUBROUTINE SRFCHK(VX,VY,VZ,SG,*)
-      SUBROUTINE SRFCHK(VX,VY,VZ,SG,IRET)
-c  RETURN 1   TRY ONCE AGAIN, WITH FRESH NCELL NUMBERS, SG
-      USE EIRMOD_PRECISION
-      USE EIRMOD_PARMMOD
-      USE EIRMOD_COMPRT
-      USE EIRMOD_CCONA
-      USE EIRMOD_CGEOM
-      USE EIRMOD_CTRIG
-      USE EIRMOD_CTETRA
-      USE EIRMOD_CPOLYG
-      USE EIRMOD_CGRID
+cdr  march 2019: bug fix: counter ICO was not transfered --> infinite loops possible
+C
+      SUBROUTINE EIRENE_SRFCHK(VX,VY,VZ,SG,ICO,EPSLIM,IRET)
+C  newly added in March 2019:  code snipped removed from FOLION.F
+C                              similar code snippet still to be removed from LOCATE.F
+CDR  CHECK FOR CORRECT ORIENTATION OF FLIGHT "SG" AND CELL NUMBERS,
+CDR  IF A TEST PARTICLE STARTS FROM STITTING EXACTLY ON A SURFACE
+CDR  |SG| LE EPSLIM IS TAKEN TO MEAN: MOTION PARALLEL TO A SURFACE
+
+c  RETURN  IRET=1   TRY ONCE AGAIN, WITH FRESH NCELL NUMBERS, AND FRESH VALUE OF SG
+c  ICO        =0 CALLED ON FIRST TRY, ICO SET IN CALLING PROGRAM
+C  ICO        =1 CALLED ON SECOND TRY, WITH NEW GUESSES FOR SG, NEW CELL NUMBERS
+C  ICO        >1 GIVE UP, TRY TO CONTINUE TRAJECTORY ANYWAY.
+      USE EIRMOD_PRECISION, ONLY: DP
+      USE EIRMOD_COMPRT, ONLY: IPOLG, IUNOUT, MPSURF, MRSURF, MTSURF,
+     >                         NCELL, NLSRFX, NLSRFY, NLSRFZ, NPANU, 
+     >                         NPCELL, NRCELL, NTCELL, X0, Y0, Z0 
+      USE EIRMOD_CCONA, ONLY: EPS60
+      USE EIRMOD_CGEOM, ONLY: CELDIA, NGHPLS
+      USE EIRMOD_CTRIG, ONLY: NCHBAR, NSEITE, PTRIX, PTRIY
+      USE EIRMOD_CTETRA, ONLY: NTBAR, NTSEITE, PTETX, PTETY, PTETZ
+      USE EIRMOD_CPOLYG, ONLY: PLNX, PLNY, PPLNX, PPLNY
+      USE EIRMOD_CGRID, ONLY: ELL, EP1, LEVGEO
       USE EIRMOD_LEARC1, ONLY: EIRENE_LEARC1
 
       IMPLICIT NONE
 
       INTEGER, INTENT(OUT) :: IRET
       REAL(DP), INTENT(IN) :: VX,VY,VZ
-      REAL(DP) :: SG, SH, PUX,PUY,PN, XOLD,YOLD
-      INTEGER :: NRCELL_OLD,NPCELL_OLD,NTCELL_OLD, NTEST, ICO,
+      REAL(DP), INTENT(INOUT) :: EPSLIM
+      REAL(DP), INTENT(OUT) :: SG
+      INTEGER, INTENT(INOUT) :: ICO
+      REAL(DP) :: SH, PUX,PUY,PN, XOLD,YOLD
+      INTEGER :: NRCELL_OLD,NPCELL_OLD,NTCELL_OLD, NTEST,
      .           IDUM, IFPB
 
       IRET = 0
@@ -26,13 +40,14 @@ c  RETURN 1   TRY ONCE AGAIN, WITH FRESH NCELL NUMBERS, SG
       IF (NLSRFX) THEN
 
 c  particle is exactly on one of the radial grid surfaces (MRSURF)
-c  radial cell no. NRCELL may be wrong
-c  check orientation of parallel motion relative to radial coordinate
+c  radial cell no. NRCELL may be wrong.
+c  Check orientation of particle motion relative to radial coordinate
 
         NRCELL_OLD=NRCELL
 
         select case (levgeo)
         case(1)
+cdr  celdia not yet defined. Tbd.
           SG=SIGN(1._DP,VX)
           IF (SG.LT.0) THEN
             NRCELL=MRSURF-1
@@ -46,7 +61,7 @@ c  check orientation of parallel motion relative to radial coordinate
           PUX=PUX/PN
           PUY=PUY/PN
           SG=VX*PUX+VY*PUY
-          IF (ABS(SG) .LT. EPS6) THEN
+          IF (ABS(SG) .LT. EPSLIM) THEN
             NLSRFX=.FALSE.
             SH=SIGN(1._DP,SG)*CELDIA(NCELL)*1.D-2
             X0 = X0 + SH*PUX
@@ -64,7 +79,7 @@ c  check orientation of parallel motion relative to radial coordinate
           IDUM = NPCELL
           SG=VX*PLNX(MRSURF,NPCELL)+VY*PLNY(MRSURF,NPCELL)
           DO
-            IF (ABS(SG) .LT. EPS6) THEN
+            IF (ABS(SG) .LT. EPSLIM) THEN
               NLSRFX=.FALSE.
               SH=SIGN(1._DP,SG)*CELDIA(NCELL)*1.D-2
               X0 = XOLD + SH*PLNX(MRSURF,NPCELL)*IFPB
@@ -84,7 +99,7 @@ c  check orientation of parallel motion relative to radial coordinate
         case (4)
           SG=VX*PTRIX(IPOLG,MRSURF)+
      .       VY*PTRIY(IPOLG,MRSURF)
-          IF (ABS(SG) .LT. EPS6) THEN
+          IF (ABS(SG) .LT. EPSLIM) THEN
             SH=SIGN(1._DP,SG)*CELDIA(NCELL)*1.D-2
             X0 = X0  +SH*PTRIX(IPOLG,MRSURF)
             Y0 = Y0  +SH*PTRIY(IPOLG,MRSURF)
@@ -102,7 +117,7 @@ C    .                             SG,NTEST,NCHBAR(IPOLG,MRSURF)
               IPOLG=NSEITE(IPOLG,MRSURF)
               MRSURF=NRCELL
             ENDIF
-          ELSEIF (SG.GT.0.0_DP) THEN  !  SG IS GT EPS6
+          ELSEIF (SG.GT.0.0_DP) THEN  ! SG IS GT EPSLIM (=EPS6 FOR ICO LE 1)
             NTEST=NCHBAR(IPOLG,MRSURF)
             IF (NTEST.EQ.0) THEN
 C  NO NEIGHBOR. PUSH BACK INTO OLD CELL.
@@ -120,7 +135,7 @@ c  neighbor found. continue in neighbor cell.
               IPOLG=NSEITE(IPOLG,MRSURF)
               MRSURF=NRCELL
             ENDIF
-          ELSEIF (SG.LT.0.0_DP) THEN ! SG IS LT.- EPS6
+          ELSEIF (SG.LT.0.0_DP) THEN ! SG IS LT.- EPSLIM (=EPS6 FOR ICO LE 1)
 C  CONTINUE FLIGHT IN ORIGINAL CELL.
 C  NOTHING TO BE DONE
           ENDIF
@@ -128,7 +143,7 @@ C  NOTHING TO BE DONE
           SG=VX*PTETX(IPOLG,MRSURF)+
      .       VY*PTETY(IPOLG,MRSURF)+
      .       VZ*PTETZ(IPOLG,MRSURF)
-          IF (ABS(SG) .LT. EPS6) THEN
+          IF (ABS(SG) .LT. EPSLIM) THEN
 C  TO BE WRITTEN
             WRITE (iunout,*) 'PARALLEL TO SURFACE IN SRFCHK ',NPANU
             WRITE (IUNOUT,*) 'CORRECTION FOR LEVGEO=5: TO BE DONE'
@@ -151,20 +166,23 @@ C  NOTHING TO BE DONE
 
         IF (NRCELL.NE.NRCELL_OLD) THEN
           ico=ico+1
-!pb       if (ico.le.1) return 1  ! GO BACK AND TRY AGAIN WITH NEW CELL NUMBER
-          if (ico.le.1) then      ! GO BACK AND TRY AGAIN WITH NEW CELL NUMBER
+          if (ico.le.1) then
+! GO BACK AND TRY AGAIN WITH NEW CELL NUMBER
             iret = 1
             return
+          elseif (ico.le.2) then
+            epslim=epslim*10.0_DP
+            iret = 1
+            return  ! GO BACK AND TRY AGAIN WITH NEW CELL NUMBER
           end if
           ENDIF
-
 
       ELSEIF (NLSRFY) THEN
 
 
 c  particle is on one of the poloidal grid surfaces (MPSURF)
 C  POLOIDAL CELL NO. NPCELL MAY BE WRONG
-C  CHECK ORIENTATION OF PARALLEL MOTION RELATIV TO POLOIDAL COORDINATE
+C  CHECK ORIENTATION OF PARTICLE MOTION RELATIV TO POLOIDAL COORDINATE
 C
         NPCELL_OLD=NPCELL
         select case (LEVGEO)
@@ -191,10 +209,13 @@ C  ACCOUNT FOR CUTS, PERIODICITY, ETC.
         end select
         IF (NPCELL.NE.NPCELL_OLD) THEN
           ico=ico+1
-!pb       if (ico.le.1) return 1  ! GO BACK AND TRY AGAIN WITH NEW CELL NUMBER
           if (ico.le.1) then      ! GO BACK AND TRY AGAIN WITH NEW CELL NUMBER
             iret = 1
             return
+          elseif (ico.le.2) then
+            epslim=epslim*10.0_DP
+            iret = 1
+            return  ! GO BACK AND TRY AGAIN WITH NEW CELL NUMBER
           end if
         ENDIF
 
@@ -217,14 +238,28 @@ C  NLTRZ AND NLTRT OPTION
         ENDIF
         IF (NTCELL.NE.NTCELL_OLD) THEN
           ico=ico+1
-!pb       if (ico.le.1) return 1 ! GO BACK AND TRY AGAIN WITH NEW CELL NUMBER
           if (ico.le.1) then     ! GO BACK AND TRY AGAIN WITH NEW CELL NUMBER
             iret = 1
             return
+          elseif (ico.le.2) then
+            epslim=epslim*10.0_DP
+            iret = 1
+            return  ! GO BACK AND TRY AGAIN WITH NEW CELL NUMBER
           end if
         ENDIF
 
       ENDIF
+
+      IF (ICO.LE.1) THEN
+        IRET=0
+        RETURN
+      ENDIF
+
+999   CONTINUE
+      WRITE (IUNOUT,*) 'WARNING: ICO GE.3, INFINITE LOOP IN SRFCHK ?'
+      WRITE (IUNOUT,*) 'PARTICLE MOTION NEARLY WITHIN A SURFACE'
+      WRITE (IUNOUT,*) 'SG ',SG
+      WRITE (IUNOUT,*) 'TRY TO CONTINUE TRACK ANYWAY', NPANU, ICO
 
       IRET = 0
       RETURN

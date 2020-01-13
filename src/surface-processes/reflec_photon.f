@@ -83,7 +83,7 @@ C
      .           MSS, IDUMMY
       REAL(DP) :: DUMMY, XMW, XCW,
      .            EXPP, EXPE, EXPI, RINTG, EINTG, AINTG, COSIN,
-     .            THETA_OUT, ALPHA_OUT,
+     .            THETA_OUT=0._DP, ALPHA_OUT=0._DP,
      .            FR1, ZCPHI, ZSPHI, ZCTHET, ZSTHET, VX, VY, VZ,
      .            RPROB, PRFCF, PRFCT, PABS, PLAMBERT, WABS,
      .            ZEP1

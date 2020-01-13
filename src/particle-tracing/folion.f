@@ -87,11 +87,6 @@ C     (MODULE: COMPRT.F)
 c
 c
 c
-c
-c
-c
-c
-C
 C  ON INPUT:
 C     ITYP=3
 C     IC_NEUT = 0  NEWBORN CHARGED PARTICLE, OR CONTINUATION FROM NEUTRAL PARTICLE FULL TRACK
@@ -165,9 +160,7 @@ c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
      .          ZLOG, ZINT1, ZEP1, ZTST, ZINT2,
      .          ZMFP, EIRENE_FPATH, ZTC,
      .          DELFAC, TIFAC,
-     .          SCOS_NEW
-C      REAL(DP) :: TI
-ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
+     .          SCOS_NEW, XOLD, YOLD, EPSLIM
       INTEGER :: ISTS, NCOUS, ICOU, J, JJ, IPL,
      .           ICO, NLI, NLE, JCOL, NRC, 
      .           NRCOLD, IPLTI, I, IM, ICOUN,
@@ -196,7 +189,6 @@ c
 
 
       XGENER=0.D0
-      ico=0
 
 C  CHECK FOR VALID SPECIES INDEX
       IF (ITYP.EQ.3.AND.(IION.LE.0.OR.IION.GT.NIONI)) GOTO 998
@@ -209,6 +201,8 @@ C  IF NLSRFY, SURFACE INDEX MPSURF MUST BE DEFINED AT THIS POINT
 C  IF NLSRFZ, SURFACE INDEX MTSURF MUST BE DEFINED AT THIS POINT
 C  IF NLSRFA, SURFACE INDEX MASURF MUST BE DEFINED AT THIS POINT
 C
+      ICO=0  ! counter for particles sitting on surface: allow for two attemps in srfchk.
+      EPSLIM=EPS6
  1005 NUPC(1)=NPCELL-1+(NTCELL-1)*NP2T3
       NCELL=NRCELL+NUPC(1)*NR1P2+NBLCKA
       IF (LDAMCEL(NCELL)) GOTO 9912
@@ -264,7 +258,7 @@ C       NLPR=   : NOT AVAILABLE
         NRC=NRCI(IION)
 C     ENDIF
       IF (IFPATH.NE.1.OR.NRC.LT.0) GOTO 1002
-C  STOP STATIC LOOP AFTER 100 GENERATIONS LATEST TO AVOID ACCIDENTAL INFINITE LOOPS
+C  STOP STATIC LOOP AFTER 100 GENERATIONS LATEST, TO AVOID ACCIDENTAL INFINITE LOOPS
       IF (IC_ION.GT.100) GOTO 1002
 
       IF (NFOLI(IION).EQ.-1) GOTO 1001 ! go to static loop
@@ -284,10 +278,9 @@ C  relative to surface, and possibly correct side of surface, i.e. cell
 c  number. In that case: goto 1005 and try again with new cell number.
 c  Else: continue at 1002
 
-!PB   CALL SRFCHK(VLXPAR,VLYPAR,VLYPAR,SG,*1005)
-      CALL SRFCHK(VLXPAR,VLYPAR,VLYPAR,SG,IRET)
+      CALL EIRENE_SRFCHK(VLXPAR,VLYPAR,VLZPAR,SG,ICO,EPSLIM,IRET)
       IF (IRET == 1) GOTO 1005
-      IF (ic_ion.gt.1) THEN 
+      IF (ic_ion.gt.2) THEN
         write (iunout,*) 'error re static loop, ic_ion=', ic_ion
         call eirene_exit_own(1)
       ENDIF
@@ -309,8 +302,6 @@ C  STATIC APPROXIMATION
 C  SIMULATE NEXT COLLISION INSTANTANEOUSLY
 C***********************************************************************
 
-!PB      CALL EIRENE_FOLSTAT_ION(IC_ION,VLXPAR,VLYPAR,VLZPAR,CFLAG,
-!PB     .     *101,*230,*380)
       CALL EIRENE_FOLSTAT_ION(IC_ION,VLXPAR,VLYPAR,VLZPAR,CFLAG,
      .                        IRT_STAT)
       IF (IRT_STAT == 1) GOTO 101
@@ -700,7 +691,7 @@ cdr  (allows using NCELL later also in this case).
           IF (NLPOL) NPCELL=NCOUNP(J)
           IF (NLTOR) NTCELL=NCOUNT(J)
 C         VEL=VELS
-          GOTO 213
+          IF (.TRUE.) GOTO 213
         END DO
       ELSE
 c switch to parallel gc velocity
@@ -738,7 +729,7 @@ C  COLLISION IN SECTION J OF CURRENT TRACK
               VELZ=VELZS
               VEL =VELS
               LCART=.TRUE.
-              GOTO 213
+              IF (.TRUE.) GOTO 213
 CCC         ENDIF
 C  THESE NEXT TWO LINES CAN NEVER BE REACHED, BECAUSE ONLY ONE
 C  CELL FOR EACH TRACK OF IONS (DISTINCT FROM FOLNEUT).
@@ -1158,7 +1149,7 @@ cdr  try to tell external code: particle on surface, but it is an old particle, 
         NUPC(1)=NPCELL-1+(NTCELL-1)*NP2T3
         NCELL=NRCELL+NUPC(1)*NR1P2+NBLCKA
         IF (LDAMCEL(NCELL)) GOTO 9912
-C  DELTA COLLISION AT SURFACE DONE, NEW CELL FOUND (ausser fuer levgeo 10...)
+C  DELTA COLLISION AT SURFACE DONE, NEW CELL FOUND (except in case levgeo 10 ?)
 
 !pb     CALL EIRENE_FPKCOL(*104,*229,*9991,3)
         CALL EIRENE_FPKCOL(IRET,3)
@@ -1170,9 +1161,12 @@ C  FIND NEW B-FIELD, NEW REDUCED (GC) VELOCITY
   229   CONTINUE
 C STORE NEW FULL VELOCITY
         VELS = VEL
-        CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,1)  !dieser aufruf ist
-!  falsch, bei levgeo=10 weil dort in emc3 routine gesprungen wird und dort aber die neue zellenummer erst spaeter kommt.
-!  in fpkcol schon neues B feld gesetzt. Ferner hier wird neues vel von fpkcol wieder kaputt gemacht
+        CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,1)
+cdr Warnung: this call is probably incorrect in case of levgeo=10.
+!   Jump to external (e.g. emc3) routine)
+!   but there the cell number may be set only later.
+!   In fpkcol a new B field may already have been set.
+!   Futhermore: a new vel vector from fpkcol may get curruped here.
 
         ICO = 0
         GOTO 1004
@@ -1194,7 +1188,10 @@ C  TEST FOR CORRECT CELL NUMBER AT COLLISION POINT
 C  KILL PARTICLE, IF TOO LARGE ROUND-OFF ERRORS DURING
 C  PARTICLE TRACING
 C
-      IF (NLTEST) CALL EIRENE_CLLTST(*997)
+      IF (NLTEST) THEN
+        CALL EIRENE_CLLTST(IRET)
+        IF (IRET.EQ.1) GOTO 997
+      ENDIF
 C
 C  SAMPLE FROM COLLISION KERNEL FOR TEST IONS
 C  AT PRESENT: NO SUPPRESSION OF ABSORPTION AT IONIZATION
@@ -1391,7 +1388,8 @@ C
   996 CALL EIRENE_MASAGE
      .  ('ERROR IN FOLION, COND. EXP. ESTIM. NOT IN USE')
       GOTO 999
-  997 CALL EIRENE_MASAGE('ERROR IN FOLION, DETECTED IN SUBR. CLLTST')
+  997 CALL EIRENE_MASAGE
+     .  ('ERROR IN FOLION, DETECTED IN SUBR. CLLTST')
       CALL EIRENE_MASAGE('PARTICLE IS KILLED')
 C   DETAILED PRINTOUT ALREADY DONE FROM SUBR. CLLTST
       IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)

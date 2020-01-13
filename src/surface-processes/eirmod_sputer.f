@@ -74,7 +74,7 @@ C  CHEMICAL EROSION DATA
 
       INTEGER, ALLOCATABLE, SAVE :: IPROJ(:),IPROJS(:),ITARG(:),
      .                              ISPZSP_DEF(:)
-      INTEGER :: ICOUNT
+      INTEGER, SAVE :: ICOUNT
 
 
 
