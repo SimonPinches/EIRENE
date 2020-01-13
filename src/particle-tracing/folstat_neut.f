@@ -151,7 +151,7 @@ C  PREPARE CELL NUMBERS FOR FIRST FLIGHT
           IF (NLSRFA) THEN
             CALL EIRENE_ADDCOL (X0,Y0,Z0,SCOS,IRT)
             IF (IRT == 1) GOTO 101
-            IF (IRT == 1) GOTO 380
+            IF (IRT == 2) GOTO 380
           ELSEIF (NLSRFX) THEN
             select case (LEVGEO)
             case (:3)
@@ -160,28 +160,28 @@ C  PREPARE CELL NUMBERS FOR FIRST FLIGHT
               IF (ILIIN(NLIM+ISTS) .NE. 0)
      .          CALL EIRENE_STDCOL (ISTS,1,SCOS,IRT)
               IF (IRT == 1) GOTO 101
-              IF (IRT == 1) GOTO 380
+              IF (IRT == 2) GOTO 380
             case (4)
               ISTS=ABS(INMTI(IPOLGN,MRSURF))
               MSURFG=INSPAT(IPOLGN,MRSURF)
               IF (ILIIN(ISTS) .NE. 0)
      .          CALL EIRENE_STDCOL (ISTS,1,SCOS,IRT)
               IF (IRT == 1) GOTO 101
-              IF (IRT == 1) GOTO 380
+              IF (IRT == 2) GOTO 380
             case (5)
               ISTS=ABS(INMTIT(IPOLGN,MRSURF))
 C             MSURFG= ??
               IF (ILIIN(ISTS) .NE. 0)
      .          CALL EIRENE_STDCOL (ISTS,1,SCOS,IRT)
               IF (IRT == 1) GOTO 101
-              IF (IRT == 1) GOTO 380
+              IF (IRT == 2) GOTO 380
             case (10)
               ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
 C             MSURFG= ??
               IF (ILIIN(NLIM+ISTS) .NE. 0)
      .          CALL EIRENE_STDCOL (ISTS,1,SCOS,IRT)
               IF (IRT == 1) GOTO 101
-              IF (IRT == 1) GOTO 380
+              IF (IRT == 2) GOTO 380
             end select
           ELSEIF (NLSRFY) THEN
             ISTS=INMP2I(IRCELL,MPSURF,ITCELL)
@@ -189,14 +189,14 @@ C             MSURFG= ??
             IF (ILIIN(NLIM+ISTS) .NE. 0)
      .        CALL EIRENE_STDCOL (ISTS,2,SCOS,IRT)
             IF (IRT == 1) GOTO 101
-            IF (IRT == 1) GOTO 380
+            IF (IRT == 2) GOTO 380
           ELSEIF (NLSRFZ) THEN
             ISTS=INMP3I(IRCELL,IPCELL,MTSURF)
             MSURFG=NRCELL+(NPCELL-1)*NR1P2
             IF (ILIIN(NLIM+ISTS) .NE. 0)
      .        CALL EIRENE_STDCOL (ISTS,3,SG,IRT)
             IF (IRT == 1) GOTO 101
-            IF (IRT == 1) GOTO 380
+            IF (IRT == 2) GOTO 380
           ENDIF
           WRITE (IUNOUT,*) 'FOLSTAT_NEUT: I SHOULD NOT BE HERE'
         ENDIF
