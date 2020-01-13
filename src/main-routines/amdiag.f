@@ -309,7 +309,7 @@ c  in fpatha,m,i, we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFCX(IRCX))
               ELB=log(max(0.1003_DP,1.5_DP*TIIN(iplti,icell)*EBFAC))
               TBCX3(1:NSTORDT) = TABCX3(IRCX,ICELL,1:NSTORDT)
               EXPO = EIRENE_SNGL_POLY(TBCX3,ELB,RCMIN,RCMAX,FP,0,0,
-     .                                TRCAMD )
+     .                                TRCAMD, .TRUE. )
               ADIN(IAIN,ICELL)=
      .        exp(expo)/(diin(ipl,icell)+eps30)/AU
             enddo
@@ -419,7 +419,7 @@ c  in fpatha,m,i we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFEL(IREL))
               ELB=log(max(0.1003_DP,1.5_DP*TIIN(iplti,icell)*EBFAC))
               TBEL3(1:NSTORDT) = TABEL3(IREL,ICELL,1:NSTORDT)
               EXPO = EIRENE_SNGL_POLY(TBEL3,ELB,RCMIN,RCMAX,FP,0,0,
-     .                                TRCAMD)
+     .                                TRCAMD, .TRUE.)
               ADIN(IAIN,ICELL)=
      .        exp(expo)/(diin(ipl,icell)+eps30)/AU
             enddo
@@ -531,9 +531,9 @@ c  in fpatha,m,i we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
               ELB=log(max(0.1003_DP,1.5_DP*TIIN(iplti,icell)*EBFAC))
               TBPI3(1:NSTORDT) = TABPI3(IRPI,ICELL,1:NSTORDT)
               EXPO = EIRENE_SNGL_POLY(TBPI3,ELB,RCMIN,RCMAX,FP,0,0,
-     .                                TRCAMD)
+     .                                TRCAMD, .TRUE.)
               ADIN(IAIN,ICELL)=
-     .        exp(expo)/(diin(ipl,icell)+eps30)/AU
+     .             exp(expo)/(diin(ipl,icell)+eps30)/AU
             enddo
             goto 5000  !done
           ELSE ! MM= MODCOL.gt.2:  NOT READY

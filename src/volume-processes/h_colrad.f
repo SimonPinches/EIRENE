@@ -40,13 +40,15 @@ C   ASSUME: QUASI STEADY STATE OF H*(N) WITH H, H+
 C
 C   INPUT:
 
-C   TEMP      : ELECTRON TEMPERATUR
+C   TEMP      : ELECTRON TEMPERATURE
 C   DENSEL    : ELECTRON DENSITY
 C
 C   L_EXT     : 3RD (EXTERNAL) SOURCE OF EXCITED STATES (E.G. PHOTO-EXCITATION)
 C   L_EXT, Q_EXT(N): ???   ->  H*(N)  external source rate, e.g. molecules,
 C                                     or photo-excitation
-C   LOPAQUE, POP_ESC:  population escape factor
+
+C   LOPAQUE:  make ALL Lyman transitions entirely black (older option) 
+C   POP_ESC:  population escape factor matrix for individual transitions
 
 C
 C
@@ -79,7 +81,7 @@ C***********************************************************************
      .                            ALPCR, SCR, SCR_EXT,
      .                            E_ALPCR, E_SCR, E_SCR_EXT,
 ctt  .                           ,E_ALPCR_T, E_SCR_T, E_SCR_EXT_T
-     .                            POP_ESC)
+     .                            POP_ESC)  ! input: selected pop esc factors for some lines
       USE EIRMOD_PRECISION
 C     USE EIRMOD_CCRM
       USE EIRMOD_COMPRT, ONLY: IUNOUT
@@ -119,8 +121,8 @@ c  pop_esc= 0: opt. thick
 c
 c  only once and for all !!
 c
-      lopaque=.false.
-!PB   POP_ESC=1.
+      lopaque=.false.  ! .true.: fully Lyman opaque, all transitions to ground state blocked
+
 
       IF (IFRST == 0) THEN  ! must be redone, if lopaque or pop_esc change
 cdr  better: move lopaque, pop_esc outside this routine. And check always
@@ -248,7 +250,7 @@ C
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
       DIMENSION SAHA(40)
-      INTEGER I, II, III, J, JJ
+      INTEGER I
 
       TE=TEMP*1.1605E4
 
@@ -1007,7 +1009,7 @@ C
 C   integrate functions gaunt3(x), for S and gaunt4, for ES, from 0 to 20
 C
       USE EIRMOD_PRECISION
-      USE EIRMOD_COMPRT, ONLY: IUNOUT
+C      USE EIRMOD_COMPRT, ONLY: IUNOUT
 
       IMPLICIT REAL(DP) (A-H,O-Z)
       REAL(DP) EIRENE_GAUNT3,EIRENE_GAUNT4,PP,XPP,A,B,EPSR
@@ -1067,8 +1069,7 @@ cdr careful: integration of gaunt4 fails above Te gt 4500 eV
       END
 
 C***********************************************************************
-      SUBROUTINE
-     .  EIRENE_POPCOF_M(DENSEL,SAHA,C,F,S,A,ALPHA,BETA,LUP,LIM,
+      SUBROUTINE EIRENE_POPCOF_M(DENSEL,SAHA,C,F,S,A,ALPHA,BETA,LUP,LIM,
      &      R0,R1,R_EXT,
      &            Q_EXT,L_EXT)
 C
@@ -1215,8 +1216,8 @@ coupling to Q_EXT
       END
 
 C***********************************************************************
-      SUBROUTINE
-     .  EIRENE_IONREC(C,S,SAHA,A,ALPHA,BETA,R0,R1,DENSEL,LUP,LIM,
+      SUBROUTINE EIRENE_IONREC
+     &                 (C,S,SAHA,A,ALPHA,BETA,R0,R1,DENSEL,LUP,LIM,
      &                  F,R_EXT,Q_EXT, L_EXT,
      &                  ALPCR,SCR,SCR_EXT)
 C
@@ -1851,8 +1852,8 @@ c               exp(-t)/t dt
       X=S
       Y=ABS(X)
       Z=0.25_DP*Y
-      IF(Z-1.0D0)11,11,12
-   11 VALUE=((((((((((((((((((((-.483702D-8*Z+.2685377D-7)*Z-
+      IF (Z.LE.1.0D0) THEN
+       VALUE=((((((((((((((((((((-.483702D-8*Z+.2685377D-7)*Z-
      1 .11703642D-6)*Z+.585911692D-6)*Z-.2843937873D-5)*Z+
      1 .1284394756D-4)*Z-.547380648948D-4)*Z+.21992775413732D-3)*Z-
      1 .8290046678016D-3)*Z+.0029187885699858)*Z-.0095523774824170)*Z+
@@ -1861,8 +1862,8 @@ c               exp(-t)/t dt
      1 2.6666666666702)*Z-3.5555555555546)*Z+3.9999999999994)*Z-
      1 3.9999999999996)*Z+.57721566490143+LOG(Y)
       VALUE=-VALUE
-      GO TO 13
-   12 Z=1.0D0/Z
+      ELSE
+       Z=1.0D0/Z
       VALUE=(((((((((((((((((((-.77769007188383D-3*Z+.84295295893998D-2
      1 )*Z-.04272827083185)*Z+.13473041266261)*Z-.29671551148)*Z+
      1 .48618806480858)*Z-.61743468824936)*Z+.62656052544291)*Z-
@@ -1876,7 +1877,8 @@ c       value=0
 c     else
         VALUE=VALUE*EXP(-Y)
 c     endif
-   13 VAL=VALUE
+      ENDIF
+      VAL=VALUE
       EIRENE_MMDEI=VAL
       ier=0
       RETURN

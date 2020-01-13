@@ -68,9 +68,9 @@ C
      .            EIRENE_ENERGY_RATE_COEFF,
      .            TB, TII,
      .            FP1(6),FP2(6)
-      INTEGER :: NSEEL4, NEND, J, KREAD, MODC,  IPLTI,
-     .           IBGK, ISPZB, ITYPB
+      INTEGER :: NSEEL4, NEND, J, KREAD, MODC,  IPLTI
       INTEGER, EXTERNAL :: EIRENE_IDEZ
+      REAL(DP), PARAMETER :: EMINL=-2.3_DP
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt
 
@@ -108,8 +108,9 @@ cdr                          !  set here: pot(1:9,irel)=reacdat(kk):.....
 cdr  use diffusion cross-section and diffusion rate coeff. for transport
         modcol(5,0,irel)=0   !  isotropic scattering IN COM
         if (NPBGKP(IPL,1).eq.0) then
+          CALL EIRENE_LEER(1)
           WRITE (IUNOUT,*) 'WARNING FROM XSTEL: '
-          WRITE (IUNOUT,*) 'KK, IREL ',KK,IREL
+          WRITE (IUNOUT,*) 'KK, IREL, IPL ',KK,IREL,IPL
           WRITE (IUNOUT,*) 'NO SCATTERING ANGLE INFORMATION PROVIDED'
           WRITE (IUNOUT,*) 'BUT ALSO NO BGK RELAXATION.'
           WRITE (IUNOUT,*) 'USE ISOTROPIC SCATTERING'
@@ -170,7 +171,7 @@ C       NEND=9
             IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
 ! this is another cut-off, at TIIN <=0.1 eV rather than at TVAC = 0.02 ev
-              tii = max(-2.3_dp,tii)
+              tii = max(eminl,tii)
 c old
 c old         CALL EIRENE_PREP_RTCS (KK,3,TII,CF)
 c old
@@ -205,7 +206,6 @@ C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
             TB=MAX(-100._DP,TB)
             TABEL3(IREL,J,1)=EXP(TB)
           END DO
-C         JEREAEL(IREL) = 9
         ELSE  ! ??
 
 C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
@@ -297,7 +297,7 @@ C  use i-integral expressions. to be written
       ELSEIF (NSEEL4.EQ.3) THEN
 C  4.1C)  ENERGY LOSS RATE OF IMP. ION = EN.-WEIGHTED RATE
 C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN, WITH WEIGHTING/REJECTION
-        KREAD=EBULK
+        KREAD=INT(EBULK)
         IF (KREAD.EQ.0) THEN
 c  data for mean ion energy loss are not available
 c  use collision estimator for energy balance
@@ -345,7 +345,7 @@ C  ENERGY RATE COEFFICIENT(TI,EBEAM)
               DO 257 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
-                tii = max(-2.3_dp,tii)
+                tii = max(eminl,tii)
 c old
 c old           CALL EIRENE_PREP_RTCS (KREAD,5,TII,CF)
 c old
@@ -391,19 +391,19 @@ C  ESTIMATOR FOR CONTRIBUTION TO COLLISION RATES FROM THIS REACTION
 C
 
       IF (IESTEL(IREL,2).EQ.0.AND.NPBGKP(IPL,1).EQ.0) THEN
-        CALL EIRENE_LEER(1)
         WRITE (iunout,*)
      .    'WARNING: TR.L.EST NOT AVAILABLE FOR MOM. BALANCE'
         WRITE (iunout,*) 'IREL = ',IREL
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO COLLISION ESTIMATOR'
+        CALL EIRENE_LEER(1)
         IESTEL(IREL,2)=1
       ENDIF
       IF (IESTEL(IREL,3).EQ.0.AND.NPBGKP(IPL,1).EQ.0) THEN
-        CALL EIRENE_LEER(1)
         WRITE (iunout,*)
      .    'WARNING: TR.L.EST NOT AVAILABLE FOR EN. BALANCE'
         WRITE (iunout,*) 'IREL = ',IREL
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO COLLISION ESTIMATOR'
+        CALL EIRENE_LEER(1)
         IESTEL(IREL,3)=1
       ENDIF
       return

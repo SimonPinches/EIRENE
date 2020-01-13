@@ -6,7 +6,7 @@ cdr             (old version: all strata or no stratum at all)
 cdr          --Documentation of new version started
 c
 cdr          --seiod, seinw separated from seioda, seinwa. Have different meaning
-cdr            ("ion energy density in plasma flow, per species) !
+cdr            (ion energy density in plasma flow, per species) !
 cdr             --> missing rescaling of EI rates from atoms is now possible.
 cdr            seioda(..npls) --> seioda(..natm), and seiod(..npls): additional new array
 cdr          --Made alloc, dealloc, init:  more symmetric code between od and nw arrays

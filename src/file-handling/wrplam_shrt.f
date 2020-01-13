@@ -6,7 +6,7 @@ c
 C
 C MODIFIED BY V. KOTOV  (when ?)
 C
-      SUBROUTINE EIRENE_WRPLAM_SHRT(TRCFLE)
+      SUBROUTINE EIRENE_WRPLAM_SHRT
 
 cdr Only the input tallies of the last (virtual) plasma species: nfla+1,...nplsi
 cdr are written/read using I/O stream fort.13. The ones 1,...,nfla are directly transferred 
@@ -37,20 +37,19 @@ cdr         non-linear iterations.
 
       IMPLICIT NONE
 
-      LOGICAL,INTENT(IN) :: TRCFLE
       INTEGER IO
 
 
       OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 13+ifoff
       IF(.NOT.ASSOCIATED(NFLA)) THEN
-        WRITE(iunout,*)
+        WRITE(iunout,'(4a)')
      w         "ERROR IN WRPLAM_SHRT: NFLA WAS NOT ASSOCIATED. ",
      w         "NO DATA WILL BE STORED IN ", FORT, "13"
         RETURN
       END IF
 cdr  only write plasma background data for species, which are not already
-cdr  transfered via Common BRAEIR, i.e. only:  nfla+1,....nplsi
+cdr  transfered via common BRAEIR, i.e. only:  nfla+1,....nplsi
 cdr  I.e. the virtual background species for non-linear iterations
 cdr  have to come last in the list of all background species.
       IF(NFLA.LT.NPLSI) THEN
@@ -91,7 +90,7 @@ C ........................................................................
 
       REWIND 13+ifoff
       IF(.NOT.ASSOCIATED(NFLA)) THEN
-        WRITE(IUNOUT,*)
+        WRITE(IUNOUT,'(4a)')
      w       "ERROR IN RPLAM_SHRT: NFLA IS NOT ASSOCIATED. ",
      w       "NO DATA WILL BE READ FROM ", FORT, "13"
         RETURN
@@ -116,7 +115,7 @@ cdr  have to come last in the list of all background species.
 
   200 CONTINUE
 
-      WRITE(iunout,*) 
+      WRITE(iunout,'(4a)')
      w 'ERROR IN RPLAM_SHRT: CANNOT READ ', FORT, '13: ',
      w 'ZERO BACKGROUND WILL BE ASSIGNED'
       TIIN(NFLA+1:NPLSI,1:NRAD)=0._DP

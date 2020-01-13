@@ -23,6 +23,7 @@ C              IF (NLCRC.OR.NLELL.OR.NLTRI) THEN
       USE EIRMOD_CTEXT
       USE EIRMOD_CLGIN
       USE EIRMOD_COMPRT, ONLY: IUNOUT
+      USE EIRMOD_PL3D, ONLY: EIRENE_PL3D
 
       IMPLICIT NONE
 
@@ -34,6 +35,7 @@ C              IF (NLCRC.OR.NLELL.OR.NLTRI) THEN
       REAL(DP) :: AL(10), AR(10), XP(NPLY), YP(NPLY), ZPLOT(N3RD+NTOR),
      .          XSAVE(NPLY,N3RD+NTOR), YSAVE(NPLY,N3RD+NTOR),
      .          PHIAN(9),PHIEN(9)
+      REAL(DP) :: P1W(3), P2W(3), P3W(3), P4W(3), P5W(3)
       REAL(DP) :: XX(101),YY(101)
       REAL(DP) :: DM, RS, Y, TR, EP, EL, PHI, TA, TD, F1B, F2B, F3B,
      .          TB, RR, X, Z, CH2MXS, CH2MYS,
@@ -45,7 +47,7 @@ C              IF (NLCRC.OR.NLELL.OR.NLTRI) THEN
       REAL(SP) :: XPS(NPLY),YPS(NPLY)
       INTEGER:: ILT(N3RD+NTOR)
       INTEGER :: IR, IBR, IST, IS, NR, I1, IZ, NP, II, K, ID, NA, ISTP,
-     .           IA, IAN, IEN, KIN, ISSTD, IBA, NJZ, J, JJ, IPZ,
+     .           IA, IAN, IEN, ISSTD, IBA, NJZ, J, JJ, IPZ,
      .           IP, I, NINNE, NZAD, NIN, MERK2, IPR, IB, MERK,
      .           IJZ, JP, IPRT, ibp, ibz
       LOGICAL :: PLABLE(NLIM), LPERID(NLIM), LSYMET(NLIM),
@@ -187,12 +189,14 @@ C
         IF (.NOT.PL3A(I)) GOTO 100
         DO 10 IP=1,IPLTA(I)
          DO J=IPLAA(I,IP),IPLEA(I,IP)
-          IF (J.GT.NLIMI) GOTO 10
+!pb300919 IF (J.GT.NLIMI) GOTO 10
+          IF (J.GT.NLIMI) CYCLE
           IF (IGJUM0(J).NE.0) THEN
             IF (TRCPLT) THEN
               WRITE (iunout,*) 'SURFACE NO. ',J,' OUT'
             ENDIF
-            GOTO 10
+!pb300919   GOTO 10
+            CYCLE
           ELSE
             IF (NLTRA.AND.ILTOR(J).LE.0) THEN
 C  STILL TO BE WRITTEN: BETTER WAY OF IDENTIFYING TOROIDALLY SYMMETRIC
@@ -205,7 +209,8 @@ C                       SURFACE
      .              ' TOROIDALLY SYMMETRIC'
                   WRITE (iunout,*) 'PLOT LATER INTO STANDARD MESH '
                 ENDIF
-                GOTO 10
+!pb300919       GOTO 10
+                CYCLE
               ELSE
                 LPERID(J)=.TRUE.
                 NJZ=0
@@ -281,7 +286,8 @@ C**ZYLINDER: FINDE ACHSE
                   T2=(ZLIMS2(1,J)-ZZ0)/CZ
                 ELSE
                   PLABLE(J)=.TRUE.
-                  GOTO 10
+!pb300919         GOTO 10
+                  CYCLE
                 ENDIF
 C  ZYLINDER: GGFLS MEHRERE TEILSTUECKE
                 CALL EIRENE_CTQUA
@@ -322,7 +328,8 @@ C**KEGEL: BISLANG NUR EIN STUECK MOEGLICH. FINDE ACHSE
                   T2=(ZLIMS2(1,J)-ZZ0)/CZ
                 ELSE
                   PLABLE(J)=.TRUE.
-                  GOTO 10
+!pb300919         GOTO 10
+                  CYCLE
                 ENDIF
                 CALL EIRENE_CONE (ZX0,ZY0,ZZ0,CX,CY,CZ,T1,T2,
      .                     RZYL,NZAD,NINNE,NIN,ILCOL(J),
@@ -357,7 +364,8 @@ C**PAAR VON EBENEN (ODER EINE DOPPELEBENE)
                 ENDIF
               ELSE
                 PLABLE(J)=.TRUE.
-                GOTO 10
+!pb300919       GOTO 10
+                CYCLE  
               ENDIF
 C**EINE EBENE
             ELSEIF (JUMLIM(J).NE.0) THEN
@@ -374,7 +382,13 @@ C**RLB >= 3 ? EIN EBENENSTUECK, DURCH POLYGON BEGRENZT
 C
           ELSEIF (RLB(J).GT.2.) THEN
 C
-            CALL EIRENE_PRLLO(P1(:,J),P2(:,J),P3(:,J),P4(:,J),P5(:,J),
+            P1W(1:3) = P1(1:3,J)
+            P2W(1:3) = P2(1:3,J)
+            P3W(1:3) = P3(1:3,J)
+            P4W(1:3) = P4(1:3,J)
+            P5W(1:3) = P5(1:3,J)
+
+            CALL EIRENE_PRLLO(P1W,P2W,P3W,P4W,P5W,
      .                 ILCOL(J),IGFIL(J).NE.0)
 C
 C**RLB < 0 ? ERST EINIGE OPTIONEN VORHANDEN, REST: CALL PLTUSR
@@ -409,7 +423,8 @@ C**PAAR VON EBENEN ODER DOPPELEBENE ?
      .                        ILCOL(J),IGFIL(J).NE.0,J)
                 ELSE
                   PLABLE(J)=.TRUE.
-                  GOTO 10
+!pb300919         GOTO 10
+                  CYCLE
                 ENDIF
 C**ZYLINDER ?
               ELSEIF (MERK.EQ.4) THEN
@@ -450,7 +465,8 @@ C**ZYLINDER BEGRENZT VON 2 EBENEN
                      IF (TRCPLT) WRITE (iunout,*)
      .                  ' FEHLER IN BERANDUNG VON FLAECHE ',J
                      PLABLE(J)=.TRUE.
-                     GOTO 10
+!pb300919            GOTO 10
+                     CYCLE
                    ENDIF
                    IF (TA.LT.TB) THEN
                      T1=TA-2.*RZYL
@@ -487,7 +503,8 @@ C**ZYLINDER BEGRENZT VON ECHT GEKRUEMMTEN FLAECHE 2TER ORDNUNG
                     WRITE (iunout,*)
      .                ' FEHLER IN DER BERANDUNG VON FLAECHE',J
                     PLABLE(J)=.TRUE.
-                    GOTO 10
+!pb300919           GOTO 10
+                    CYCLE
                   ENDIF
                   IF (TA.LT.TB) THEN
                     T1=TA-2.*RZYL
@@ -505,7 +522,8 @@ C**ZYLINDER BEGRENZT VON ECHT GEKRUEMMTEN FLAECHE 2TER ORDNUNG
      .                      J,10,AL,10,AR,0._DP,360._DP)
                 ELSE
                   PLABLE(J)=.TRUE.
-                  GOTO 10
+!pb300919         GOTO 10
+                  CYCLE
                 ENDIF
                ENDIF
 C**KUGEL, ELLIPSOID
@@ -515,7 +533,8 @@ C**KUGEL, ELLIPSOID
      .               ZLIMS2(1,J),RLB(J),ILCOL(J),5,5,5)
               ELSE
                 PLABLE(J)=.TRUE.
-                GOTO 10
+!pb300919       GOTO 10
+                CYCLE
               ENDIF
 C
 C**EBENE MIT RLB.LT.0 OPTION
@@ -556,7 +575,8 @@ C**EBENE BEGRENZT DURCH EINEN ODER MEHRERE ZYLINDER?
                     WRITE (iunout,*)
      .                ' FEHLER IN DER BERANDUNG VON FLAECHE',J
                     PLABLE(J)=.TRUE.
-                    GOTO 10
+!pb300919           GOTO 10
+                    CYCLE
                   ENDIF
                   T1=TA-2.*RZYL
                   T2=TA+4.*RZYL
@@ -567,13 +587,15 @@ C**EBENE BEGRENZT DURCH EINEN ODER MEHRERE ZYLINDER?
      .                         0._DP,360._DP)
                 ELSE
                   PLABLE(J)=.TRUE.
-                  GOTO 10
+!pb300919         GOTO 10
+                  CYCLE
                 ENDIF
                 IF (IB.LT.ISCN(J)) GOTO 20
 C**EBENE BEGRENZT DURCH ALLE ANDERE OPTIONEN
               ELSE
                 PLABLE(J)=.TRUE.
-                GOTO 10
+!pb300919       GOTO 10
+                CYCLE
               ENDIF
 C
             ENDIF
@@ -716,7 +738,6 @@ C
                 DO 1160 K=1,NPPLG
                   IAN=NPOINT(1,K)
                   IEN=NPOINT(2,K)
-                  KIN=NR+1
                   DO 1165 J=IAN,IEN
                     IF (NR.GE.NPLY) THEN
                       WRITE (iunout,*) 'FROM PLT3D: NOT ENOUGH STORAGE '

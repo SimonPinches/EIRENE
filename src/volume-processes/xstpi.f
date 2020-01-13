@@ -59,23 +59,22 @@ C
       INTEGER, INTENT(IN) :: IRPI, ISP, IPL, IFRST, ISCND, ITHRD, IFRTH,
      .                       ISCDE, IESTM, KK
       REAL(DP) :: CF(9)
-      REAL(DP) :: ADD, ADDL, RMTEST, RMBULK, FCTKKL, P2N, TMASS,
+      REAL(DP) :: ADD, ADDL, FCTKKL, TMASS,
      .            ADDT, ADDTL, PMASS,
      .            CHRDIF, COU, ACCMAS, XLFTMAS,
      .            ACCINI, ACCINP, ACCMSM, ACCMSI, ACCMSA, ACCINA,
      .            ACCINM, ACCMSP, ACCINV,
-     .            EFLAG, EIRENE_FEHVPI3,
-     .            EIRENE_FEELPI3,
+     .            EFLAG,
      .            EIRENE_RATE_COEFF,
      .            EIRENE_ENERGY_RATE_COEFF,
-     .            EI, EA, EN, TB, TII,
+     .            TB, TII,
      .            FP1(6),FP2(6)
-      INTEGER :: NSEPI4, NSEPI5, NEND, J, IO, IA,
+      INTEGER :: NSEPI4, NSEPI5, NEND, J, 
      .           ITYP1, ISPZ1, INUM1,
-     .           IML, IM, MODC, IIO, IPLTI, IP, IAT,
-     .           ICOUNT, IAA, IMM, III, IPP, KREAD, IERR, IMIN, IMAX,
-     .           IRAD
+     .           IML, MODC, IIO, IPLTI, IP, IAT,
+     .           ICOUNT, IAA, IMM, III, IPP, KREAD
       INTEGER, EXTERNAL :: EIRENE_IDEZ
+      REAL(DP),PARAMETER :: EMINL=-2.3_DP
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt
 
@@ -87,8 +86,6 @@ C  SET NON-DEFAULT ION IMPACT COLLISION PROCESS NO. IRPI
 C
       IF (IPL.LE.0.OR.IPL.GT.NPLSI) GOTO 990
       IF (MASSP(KK).LE.0.OR.MASST(KK).LE.0) GOTO 992
-      RMBULK=RMASSP(IPL)
-      RMTEST=RMASS
       IPLTI=MPLSTI(IPL)
 
       XLFTMAS=RMASS+RMASSP(IPL)
@@ -300,7 +297,7 @@ C           NEND=9
             DO J=1,NSBOX
               IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
-              tii = max(-2.3_dp,tii) ! this is another cut-off, at TIIN <=0.1 eV rather than at TVAC = 0.02 ev
+              tii = max(eminl,tii) ! this is another cut-off, at TIIN <=0.1 eV rather than at TVAC = 0.02 ev
 c old
 c old         CALL EIRENE_PREP_RTCS (KK,3,TII,CF)
 c old
@@ -425,7 +422,7 @@ C  use i-integral expressions. to be written
       ELSEIF (NSEPI4.EQ.3) THEN
 C  4.1C)  ENERGY LOSS RATE OF IMP. ION = EN.-WEIGHTED RATE
 C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN, WITH WEIGHTING/REJECTION
-        KREAD=EBULK
+        KREAD=INT(EBULK)
         IF (KREAD.EQ.0) THEN
 c  data for mean ion energy loss are not available
 c  use collision estimator for energy balance
@@ -473,7 +470,7 @@ C  ENERGY RATE COEFFICIENT(TI,EBEAM)
               DO 257 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
-                tii = max(-2.3_dp,tii)
+                tii = max(eminl,tii)
 c old
 c old           CALL EIRENE_PREP_RTCS (KREAD,5,TII,CF)
 c old
@@ -547,7 +544,7 @@ C        NOT A VALID OPTION
 
       ELSEIF (EFLAG.EQ.3) THEN
 C  4.3C)  SECONDARY HEAVY ENERGY GAIN RATE = EN.-WEIGHTED RATE(TI)
-        KREAD=EHEAVY
+        KREAD=INT(EHEAVY)
         MODC=EIRENE_IDEZ(MODCLF(KREAD),5,5)
         IF (MODC.EQ.1) THEN
           IF (NSTORDR >= NRAD) THEN
@@ -570,7 +567,6 @@ C  4.3C)  SECONDARY HEAVY ENERGY GAIN RATE = EN.-WEIGHTED RATE(TI)
         FACRPI(IRPI,1)=FACTKK
         FACRPI(IRPI,2)=LOG(FACTKK)
       ELSE
-        IERR=2
         GOTO 997
       ENDIF
 C
@@ -610,24 +606,11 @@ C
       WRITE (iunout,*) 'ERROR IN XSTPI: EXIT CALLED'
       WRITE (iunout,*) 'INVALID SPECIES INDEX FOR PI ',IRPI
       CALL EIRENE_EXIT_OWN(1)
-  991 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTPI: EXIT CALLED'
-      WRITE (iunout,*) 'CHARGE CONSERVATION VIOLATED'
-      WRITE (iunout,*) 'IRPI, TEST SPECIES, BULK SPECIES ',IRPI,
-     .                  TEXTS(ISP),TEXTS(NSPAMI+IPL)
-      CALL EIRENE_EXIT_OWN(1)
   992 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTPI: EXIT CALLED'
       WRITE (iunout,*)
      .  'MASS NUMBERS OF INTERACTING PARTICLES INCONSISTENT'
       WRITE (iunout,*) 'KK ',KK
-      CALL EIRENE_EXIT_OWN(1)
-  993 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTPI: EXIT CALLED'
-      WRITE (iunout,*)
-     .  'EBULK_ION .LE.0, BUT MONOENERGETIC DISTRIBUTION?'
-      WRITE (iunout,*) 'CHECK ENERGY FLAG ISCDEA'
-      WRITE (iunout,*) 'KK,ISCDEA ',KK,ISCDEA
       CALL EIRENE_EXIT_OWN(1)
   994 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTPI: EXIT CALLED'
@@ -648,9 +631,6 @@ C
   997 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTPI: ISCDE FLAG'
       WRITE (iunout,*) IRPI
-      CALL EIRENE_EXIT_OWN(1)
-  999 CONTINUE
-      WRITE (iunout,*) 'INSUFFICIENT STORAGE FOR PI: NRPI=',NRPI
       CALL EIRENE_EXIT_OWN(1)
 
       END

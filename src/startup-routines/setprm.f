@@ -38,8 +38,7 @@ C
       IMPLICIT NONE
 
       REAL(DP) :: RSAVE
-      INTEGER :: ISAVE, NTESTP, J, ITAL, NLSTTL, NLSTTW
-      INTEGER :: NPLPRM_TEST
+      INTEGER :: ISAVE, J, ITAL, NLSTTL, NLSTTW
       LOGICAL :: LEXTALV(NTALV), LEXTALS(NTALS),
      .           LEXGENA, LEXGENM, LEXGENI, LEXGENPH
 C
@@ -55,7 +54,7 @@ C  SWITCH OFF SOME VOLUME-AVERAGED OUTPUT TALLIES AUTOMATICALLY;
 C  TRY TO KEEP ONLY THOSE TALLIES THAT ARE NEEDED FOR THE TYPE OF
 C  SPECIES PRESENT IN THE PARTICULAR CASE.
 c   e.g.  no photon tallies unless photons are included (NPHOT>0)
-c   e.g.  no test-ion tallies unless test ions are included (NION>0)
+c   e.g.  no test ion tallies unless test ions are included (NION>0)
 c   e.g.  no generation limit tallies unless there is, indeed a
 c         generation limit activated
 

@@ -100,31 +100,30 @@ C
       REAL(DP) :: DENIO(NPLS), ZTI(NPLS)
       REAL(DP) :: PVELQ(NPLSV)
       REAL(DP) :: TBCX3(9), TBEL3(9), TBPI3(9), FP(6)
-      REAL(DP) :: EPCX3(9), EPEL3(9), EPPI3(9)  !EPPI3: TO BE DONE
+      REAL(DP) :: EPCX3(9), EPEL3(9)  !EPPI3: TO BE DONE
       REAL(DP) :: EIRENE_FPATH,
      .          EIRENE_CROSS,
      .          EIRENE_RATE_COEFF, EIRENE_SNGL_POLY,
      .          EIRENE_ENERGY_RATE_COEFF,
      .          CEL,CXS, VEFFQ,VEFF,
-     .          TBEL, TBCX, TBPI, TBOT,
+     .          TBEL,
      .          SIGMAX,  EHEAVY,
      .          DENEL, VX, VY, VZ, PVELQ0, ELAB,
      .          VRELQ, VREL, XC,YC,ZC,
-     .          CII, ELB,TII,V0_REL,VI_TH,VE_TH,
-     .          EXPO,
+     .          CII, ELB,TII,V0_REL,
+     .          EXPO, 
 cdr  functions for 'on the fly' evaluation of a&m data
      .          EIRENE_FEELEI1, EIRENE_FEELPI3,
      .          EIRENE_FEHVEI1, EIRENE_FEHVPI3,
-     .          EIRENE_FEPLCX3, EIRENE_FEPLPI3, EIRENE_FEPLEL3,
+     .          EIRENE_FEPLCX3, EIRENE_FEPLEL3,
      .          EIRENE_FTABCX3, EIRENE_FTABPI3,
      .          EIRENE_FTABEI1,
 !pb
      .          EIRENE_FPATHPH,
 
-     .          RCMIN, RCMAX,
-     .          ERATE
+     .          RCMIN, RCMAX
       INTEGER :: IBGK, IXEL, IREL, IXEI, IREI, IXPI, IRPI,
-     .                 IXCX, IRCX, IXPH, IRPH,
+     .                 IXCX, IRCX, 
      .           J, KK, IPLSTI,
      .           IPLSV, IREAC
 
@@ -183,7 +182,7 @@ C
 C  ELECTRON IMPACT COLLISION - RATE - COEFFICIENT
 C  NO MASS SCALING NEEDED FOR BULK ELECTRONS
 C
-   20 IF (LGXEI(IXSPZ,0).EQ.0.OR.LGVAC(K,NPLS+1)) GOTO 30
+      IF (LGXEI(IXSPZ,0).EQ.0.OR.LGVAC(K,NPLS+1)) GOTO 30
       DO 10 IXEI=1,NXEII
         IREI=LGXEI(IXSPZ,IXEI)
         IF (MODCOL(1,2,IREI).EQ.1) THEN
@@ -261,24 +260,24 @@ C           HENCE: USE BEAM-BEAM RATE INSTEAD.
             SIGVPI(IRPI)=CII*VREL*DENIO(IPLS)
           ELSE
 C  Set hard-wired MINIMUM PROJECTILE ENERGY: 0.1 EV
-          ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
-          V0_REL=SQRT(PVELQ(IPLSV))
+            ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
+            V0_REL=SQRT(PVELQ(IPLSV))
 ! scale log temperature to target temperature for proper isotope, for rate coefficient, i.e. use charged particle mass
-          TII=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
-          IF (NSTORDR >= NRAD) THEN
-            TBPI3(1:NSTORDT) = TABPI3(IRPI,K,1:NSTORDT)
-            FP = 0._DP
-            RCMIN = -HUGE(1._DP)
-            RCMAX = HUGE(1._DP)
+            TII=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
+            IF (NSTORDR >= NRAD) THEN
+              TBPI3(1:NSTORDT) = TABPI3(IRPI,K,1:NSTORDT)
+              FP = 0._DP
+              RCMIN = -HUGE(1._DP)
+              RCMAX = HUGE(1._DP)
               EXPO = EIRENE_SNGL_POLY(TBPI3,ELB,RCMIN,RCMAX,FP,0,0,
-     .                                TRCAMD)
-          ELSE
+     .                                TRCAMD,.TRUE.)
+            ELSE
 ! CALCULATE RATE COEFFICIENT "ON THE FLY"
-            KK=NREAPI(IRPI)
+              KK=NREAPI(IRPI)
               EXPO = EIRENE_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .             + DIINL(IPLS,K) + FACRPI(IRPI,2)
-          ENDIF
-          SIGVPI(IRPI)=EXP(EXPO)
+            ENDIF
+            SIGVPI(IRPI)=EXP(EXPO)
           END IF
 
 C  MODEL 3:
@@ -383,7 +382,7 @@ C   TMASS FOR RATE COEFF. BEAM VELOCITY
               RCMIN = -HUGE(1._DP)
               RCMAX = HUGE(1._DP)
               EXPO = EIRENE_SNGL_POLY(TBCX3,ELB,RCMIN,RCMAX,FP,0,0,
-     .                                TRCAMD)
+     .                                TRCAMD,.TRUE.)
             ELSE
 ! CALCULATE RATE COEFFICIENT ON THE FLY
 CDR  THIS SHOULD BE DONE IN FTABCX3.  NOT READY
@@ -455,7 +454,7 @@ cdr         endif
               RCMIN = -HUGE(1._DP)
               RCMAX = HUGE(1._DP)
               EXPO = EIRENE_SNGL_POLY(EPCX3,ELB,RCMIN,RCMAX,FP,0,0,
-     .                                TRCAMD)
+     .                                TRCAMD,.TRUE.)
             ELSE
 ! CALCULATE ENERGY-WEIGHTED RATE COEFFICIENT ON THE FLY
               KK=NELRCX(IRCX)
@@ -535,7 +534,7 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
               RCMIN = -HUGE(1._DP)
               RCMAX = HUGE(1._DP)
               EXPO = EIRENE_SNGL_POLY(TBEL3,ELB,RCMIN,RCMAX,FP,0,0,
-     .                                TRCAMD)
+     .                                TRCAMD,.TRUE.)
             ELSE
 cdr  here should be call to ftabel3,  to be done
 ! CALCULATE RATE COEFFICIENT ON THE FLY
@@ -603,7 +602,7 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
               RCMIN = -HUGE(1._DP)
               RCMAX = HUGE(1._DP)
               EXPO = EIRENE_SNGL_POLY(EPEL3,ELB,RCMIN,RCMAX,FP,0,0,
-     .                                TRCAMD)
+     .                                TRCAMD,.TRUE.)
             ELSE
 ! CALCULATE ENERGY-WEIGHTED RATE COEFFICIENT ON THE FLY
               KK=NELREL(IREL)
@@ -635,10 +634,7 @@ C
 C
 C     TOTAL
 C
-  100 CONTINUE
-
-C
-C  CUT-OFF RESIDUAL RATES, WHICH SHOULD STRICTLY BE ZERO
+C  CUT OFF RESIDUAL RATES, WHICH SHOULD STRICTLY BE ZERO
 C  TO AVOID SPURIOUS ENTRIES TO COLLISION RATE TALLIES
 C  CURRENTLY: CUT-OFF AT 1E-10 TIMES SIGMAX
 C

@@ -33,7 +33,7 @@ C
       REAL(DP) :: CONST(20)
       INTEGER :: IIND(20), IZIF(4,20)
       INTEGER :: I, ITL, IALV, NOP, IOP, K, ILIMPS,
-     .           IINDEX, II, J, IALS, IN, KK, NF, IC, IER
+     .           II, J, IALS, IN, NF, IC, IER
       LOGICAL :: LFREE1, LFREE2
       LOGICAL, ALLOCATABLE :: LLIMPS(:)
       LOGICAL :: LLMPS
@@ -296,7 +296,6 @@ C  DIVISION BY IDENTICALLY ZERO TALLY. ALGEBR. TALLY CANNOT BE EVALUATED. RETURN
    82       DO 80 I=1,NSBOX_TAL
               RESULT(II,I)=VEC1(I)/(VEC2(I)+EPS30)
    80       CONTINUE
-
           CASE ('^ ')
 !         ELSEIF (OPER(IOP).EQ.'^ ') THEN
             DO 85 I=1,NSBOX_TAL
@@ -504,15 +503,12 @@ C  TALLY HOLEN
               IF (IZIF(1,IOP).GT.NFRSTW(IZIF(2,IOP))*NLIMPS) GOTO 391
               ILIMPS=(IZIF(1,IOP)-1)/NFRSTW(IZIF(2,IOP))+1
               ISPZ=IZIF(1,IOP)-(ILIMPS-1)*NFRSTW(IZIF(2,IOP))
-              IINDEX=NADDW(IZIF(2,IOP))*NLMPGS+IZIF(1,IOP)+NESTM1
               IZIF(1,IOP)=ISPZ
               VEC1(1)=ESTIMS(NADDW(IZIF(2,IOP))+IZIF(1,IOP),ILIMPS)
               LLIMPS(ILIMPS)=.TRUE.
               LLMPS=.TRUE.
             ELSE
             DO 310 I=1,NLIMPS
-              IINDEX=NADDW(IZIF(2,IOP))*NLMPGS+(I-1)*NFRSTW(IZIF(2,IOP))
-     .              +IZIF(1,IOP)+NESTM1
               VEC1(I)=ESTIMS(NADDW(IZIF(2,IOP))+IZIF(1,IOP),I)
   310       CONTINUE
             ENDIF
@@ -556,15 +552,12 @@ C  TALLY HOLEN
               IF (IZIF(3,IOP).GT.NFRSTW(IZIF(4,IOP))*NLIMPS) GOTO 391
               ILIMPS=(IZIF(3,IOP)-1)/NFRSTW(IZIF(4,IOP))+1
               ISPZ=IZIF(3,IOP)-(ILIMPS-1)*NFRSTW(IZIF(4,IOP))
-              IINDEX=NADDW(IZIF(4,IOP))*NLMPGS+IZIF(3,IOP)+NESTM1
               IZIF(3,IOP)=ISPZ
               VEC2(1)=ESTIMS(NADDW(IZIF(4,IOP))+IZIF(3,IOP),ILIMPS)
               LLIMPS(ILIMPS)=.TRUE.
               LLMPS=.TRUE.
             ELSE
             DO 330 I=1,NLIMPS
-              IINDEX=NADDW(IZIF(4,IOP))*NLMPGS+(I-1)*NFRSTW(IZIF(4,IOP))
-     .              +IZIF(3,IOP)+NESTM1
               VEC2(I)=ESTIMS(NADDW(IZIF(4,IOP))+IZIF(3,IOP),I)
   330       CONTINUE
             ENDIF
@@ -758,14 +751,15 @@ C
       IF (NALSI > 0) DEALLOCATE (LLIMPS)
 C
       RETURN
-  999 CONTINUE
-      WRITE (iunout,*) 'STORAGE CONFLICT IN ALGTAL, BECAUSE NRAD<NLIMPS'
-      CALL EIRENE_EXIT_OWN(1)
-      return
+C 999 CONTINUE
+C     WRITE (iunout,*) 'STORAGE CONFLICT IN ALGTAL, BECAUSE NRAD<NLIMPS'
+C     CALL EIRENE_EXIT_OWN(1)
+C     return
 
       CONTAINS
 
       SUBROUTINE EIRENE_GET_INTAL
+      INTEGER KK
 cdr fetch input tally no. ITL, return as OP(:)
 cdr also set weighting function WEI(:) for averaging in calling routine 
 
@@ -775,7 +769,7 @@ cdr also set weighting function WEI(:) for averaging in calling routine
       IF (.NOT.LIVTALI(ITL)) THEN
         WRITE (iunout,*) ' WRONG TALLY NOT AVAILABLE ALGTAL IALV = ',
      .                      IALV, ' ITAL = ', ITL
-        WRITE (iunout,*) ' NO ALGBRAIC TALLY CALCULATED '
+        WRITE (iunout,*) ' NO ALGEBRAIC TALLY CALCULATED '
         CALL EIRENE_LEER(1)
         IER = 1
       END IF
@@ -930,7 +924,7 @@ c  electr. Potential
         OP(1:NSBOX) = POT(1:NSBOX)
         WEI(1:NSBOX) = 1._DP
       CASE (23)
-c  flow velocity parallele to B field
+c  flow velocity parallel to B field
         OP(1:NSBOX) = BVIN(MPLSV(K),1:NSBOX)
         WEI(1:NSBOX) = 1._DP
       CASE (24)
@@ -971,7 +965,7 @@ c
       CASE DEFAULT
         WRITE (iunout,*) ' WRONG TALLY NUMBER IN ALGTAL IALV = ',
      .                      IALV
-        WRITE (iunout,*) ' NO ALGBRAIC TALLY CALCULATED '
+        WRITE (iunout,*) ' NO ALGEBRAIC TALLY CALCULATED '
         CALL EIRENE_LEER(1)
         IER = 1
       END SELECT

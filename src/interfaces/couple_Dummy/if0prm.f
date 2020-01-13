@@ -14,14 +14,12 @@ c   NKNOT :
 C   NTRII :
 C   NCPVI :  no. of special couple tallies
 
-c  also set: NDX,NDY,NFL, NDXP, NDYP
-
-      SUBROUTINE EIRENE_IF0PRM(IUNIN,IUNOUT)
+      SUBROUTINE EIRENE_IF0PRM(IUNIN)
 
       USE EIRMOD_PARMMOD
       IMPLICIT NONE
 
-      INTEGER, INTENT(IN) :: IUNIN,IUNOUT
+      INTEGER, INTENT(IN) :: IUNIN
 
       NCPV=0
       NAIN=0

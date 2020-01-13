@@ -25,7 +25,7 @@ c         fdx,fdy,fdz,  corresponding derivatives df/dx (dx: in cm)
       real(dp), intent(out) :: fdx(:), fdy(:), fdz(:)
       logical, intent(in) :: lfdx, lfdy, lfdz
 
-      integer :: i, j, ir, ipart, ip, ic, in, it, ierr
+      integer :: i, ir, ipart, ip, in, it, ierr
       real(dp) :: xc, yc, zc, dx, dy, dz
 
       interface

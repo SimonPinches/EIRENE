@@ -22,7 +22,6 @@ cpb  Dec. 2017: remove type SPECT_ARRAY, not needed in Fortran 2003
      .                  TALLYV,TALLYS,TALLYL,
      .                  ISDVI1,STAT1,ISDVI2,STAT2,
      .                  ISDVC1,SIGC,ISDVC2,SIGCS,
-     .                  IBGKI,SIG_BGK,JBGKI,SIGS_BGK,
      .                  ISPCI,TRCFLE)
 
       USE EIRMOD_PRECISION
@@ -32,16 +31,15 @@ cpb  Dec. 2017: remove type SPECT_ARRAY, not needed in Fortran 2003
 
       TYPE(EIRENE_SPECTRUM), INTENT(INOUT) :: TALLYL(*)
       REAL(DP), INTENT(INOUT) :: TALLYV(*), TALLYS(*),
-     .                         STAT1(*), SIG_BGK(*)
+     .                           STAT1(*)
       REAL(DP), INTENT(INOUT) :: STAT2(*), SIGC(*), SIGCS(*)
-      REAL(DP), INTENT(INOUT) :: SIGS_BGK(*)
       INTEGER, INTENT(IN) :: IG, NSTRAI, IESTM1, IESTM2, ISDVI1, ISDVI2,
-     .                       ISDVC1, ISDVC2, IBGKI, JBGKI, 
+     .                       ISDVC1, ISDVC2, 
      .                       IESTM3, ISPCI
       LOGICAL, INTENT(IN) :: TRCFLE
 
       INTEGER :: IMAX11, IMAX12, IMAX21, IMAX22, IMAX23, IMAX24, IMAX2,
-     .           IMAX31, IMAX32, NRECL, IRC, ISTRA,
+     .           NRECL, IRC, ISTRA,
      .           JINI, J, JEND, IMAX, ISPC, IMAXS, NSPECI,NSPECE
 
 C
@@ -55,9 +53,7 @@ C
       IMAX23=ISDVC1/NRECL+1
       IMAX24=ISDVC2/NRECL+1
       IMAX2=IMAX21+IMAX22+IMAX23+IMAX24
-      IMAX31=IBGKI/NRECL+1
-      IMAX32=JBGKI/NRECL+1
-
+ 
       IMAXS=0
       DO ISPC=1,IESTM3
         IMAXS=IMAXS+1
@@ -67,14 +63,14 @@ C  SPECTRUM BINS RANGE FROM 0 TO NSPC+1
           IMAXS=IMAXS+4*((1+TALLYL(ISPC)%NSPC+1)/NRECL+1)
         END IF
       END DO
-      IMAX=IMAX11+IMAX12+IMAX2+IMAX31+IMAX32+IMAXS
+      IMAX=IMAX11+IMAX12+IMAX2+IMAXS
       ISTRA=IG
       IRC=ISTRA*IMAX+1
       IF (TRCFLE.AND.IG.NE.0) WRITE (iunout,*) 'WRITE STRATUM NO. ',IG
       IF (TRCFLE.AND.IG.EQ.0) WRITE (iunout,*) 'WRITE SUM OVER STRATA '
 C
       OPEN (UNIT=10+ifoff,ACCESS='DIRECT',FORM='UNFORMATTED',
-!pb     .      RECL=8*NRECL,STATUS='UNKNOWN',FILE='fort.10')
+!pb     .      RECL=8*NRECL,STATUS='UNKNOWN',FILE=fort_lc//'10')
      .      RECL=8*NRECL,STATUS='UNKNOWN')
 
       JINI=1
@@ -160,40 +156,10 @@ C
      .                             IRC,JINI,JEND
       ENDIF
       WRITE (10+ifoff,REC=IRC) (SIGCS(J),J=JINI,JEND)
-      IF (JEND.EQ.ISDVC2) GOTO 4
+      IF (JEND.EQ.ISDVC2) GOTO 62
       JINI=JEND+1
       IRC=IRC+1
       GOTO 26
-C
-    4 CONTINUE
-      IF (TRCFLE) WRITE (iunout,*) 'STATIS_BGK'
-      IRC=IRC+1
-      JINI=1
-    5 JEND=MIN0(JINI-1+NRECL,IBGKI)
-      IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.IBGKI)) THEN
-        WRITE (iunout,*) 'WRITE 10 IRC,JINI,JEND ',
-     .                             IRC,JINI,JEND
-      ENDIF
-      WRITE (10+ifoff,REC=IRC) (SIG_BGK(J),J=JINI,JEND)
-      IF (JEND.EQ.IBGKI) GOTO 6
-      JINI=JEND+1
-      IRC=IRC+1
-      GOTO 5
-C
-    6 CONTINUE
-      IF (TRCFLE) WRITE (iunout,*) 'SUM STATIS_BGK'
-      IRC=IRC+1
-      JINI=1
-   61 JEND=MIN0(JINI-1+NRECL,JBGKI)
-      IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.JBGKI)) THEN
-        WRITE (iunout,*) 'WRITE 10 IRC,JINI,JEND ',
-     .                             IRC,JINI,JEND
-      ENDIF
-      WRITE (10+ifoff,REC=IRC) (SIGS_BGK(J),J=JINI,JEND)
-      IF (JEND.EQ.JBGKI) GOTO 62
-      JINI=JEND+1
-      IRC=IRC+1
-      GOTO 61
 C
    62 CONTINUE
 
@@ -259,7 +225,6 @@ C
      .            TALLYV,TALLYS,TALLYL,
      .            ISDVI1,STAT1,ISDVI2,STAT2,
      .            ISDVC1,SIGC,ISDVC2,SIGCS,
-     .            IBGKI,SIG_BGK,JBGKI,SIGS_BGK,
      .            ISPCI,TRCFLE)
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD, ONLY: EIRENE_SPECTRUM, IFOFF
@@ -268,16 +233,15 @@ C
 
       TYPE(EIRENE_SPECTRUM), INTENT(INOUT) :: TALLYL(*)
       REAL(DP), INTENT(INOUT) :: TALLYV(*), TALLYS(*),
-     .                         STAT1(*), SIG_BGK(*)
+     .                         STAT1(*)
       REAL(DP), INTENT(INOUT) :: STAT2(*), SIGC(*), SIGCS(*)
-      REAL(DP), INTENT(INOUT) :: SIGS_BGK(*)
       INTEGER, INTENT(IN) :: IG, NSTRAI, IESTM1, IESTM2, ISDVI1, ISDVI2,
-     .                       ISDVC1, ISDVC2, IBGKI, JBGKI, 
+     .                       ISDVC1, ISDVC2,  
      .                       IESTM3, ISPCI
       LOGICAL, INTENT(IN) :: TRCFLE
 
       INTEGER :: IMAX11, IMAX12, IMAX21, IMAX22, IMAX23, IMAX24, IMAX2,
-     .           IMAX31, IMAX32, NRECL, IRC, ISTRA,
+     .           NRECL, IRC, ISTRA,
      .           JINI, J, JEND, IMAX, ISPC, IMAXS, NSPECI,NSPECE
 C
 C  READ DATA FOR SINGLE STRATA OR SUM OVER STRATA FROM TEMP. FILE FORT.10
@@ -290,8 +254,6 @@ C
       IMAX23=ISDVC1/NRECL+1
       IMAX24=ISDVC2/NRECL+1
       IMAX2=IMAX21+IMAX22+IMAX23+IMAX24
-      IMAX31=IBGKI/NRECL+1
-      IMAX32=JBGKI/NRECL+1
  
       IMAXS=0
       DO ISPC=1,IESTM3
@@ -302,7 +264,7 @@ C  SPECTRUM BINS RANGE FROM 0 TO NSPC+1
           IMAXS=IMAXS+4*((1+TALLYL(ISPC)%NSPC+1)/NRECL+1)
         END IF
       END DO
-      IMAX=IMAX11+IMAX12+IMAX2+IMAX31+IMAX32+IMAXS
+      IMAX=IMAX11+IMAX12+IMAX2+IMAXS
       ISTRA=IG
       IRC=ISTRA*IMAX+1
       IF (TRCFLE.AND.IG.NE.0) WRITE (iunout,*) 'READ STRATUM NO. ',IG
@@ -395,40 +357,10 @@ C
      .                            IRC,JINI,JEND
       ENDIF
       READ (10+ifoff,REC=IRC) (SIGCS(J),J=JINI,JEND)
-      IF (JEND.EQ.ISDVC2) GOTO 40
+      IF (JEND.EQ.ISDVC2) GOTO 66
       JINI=JEND+1
       IRC=IRC+1
       GOTO 36
-C
-   40 CONTINUE
-      IF (TRCFLE) WRITE (iunout,*) 'STATIS_BGK'
-      IRC=IRC+1
-      JINI=1
-   50 JEND=MIN0(JINI-1+NRECL,IBGKI)
-      IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.IBGKI)) THEN
-        WRITE (iunout,*) 'READ 10 IRC,JINI,JEND ',
-     .                            IRC,JINI,JEND
-      ENDIF
-      READ (10+ifoff,REC=IRC) (SIG_BGK(J),J=JINI,JEND)
-      IF (JEND.EQ.IBGKI) GOTO 60
-      JINI=JEND+1
-      IRC=IRC+1
-      GOTO 50
-C
-   60 CONTINUE
-      IF (TRCFLE) WRITE (iunout,*) 'SUM STATIS_BGK'
-      IRC=IRC+1
-      JINI=1
-   65 JEND=MIN0(JINI-1+NRECL,JBGKI)
-      IF (TRCFLE.AND.(JINI.EQ.1.OR.JEND.EQ.JBGKI)) THEN
-        WRITE (iunout,*) 'READ 10 IRC,JINI,JEND ',
-     .                            IRC,JINI,JEND
-      ENDIF
-      READ (10+ifoff,REC=IRC) (SIGS_BGK(J),J=JINI,JEND)
-      IF (JEND.EQ.JBGKI) GOTO 66
-      JINI=JEND+1
-      IRC=IRC+1
-      GOTO 65
 C
    66 CONTINUE
 

@@ -6,17 +6,17 @@
 
       USE EIRMOD_PRECISION
       USE EIRMOD_CCONA
+      USE EIRMOD_PL3D, ONLY: EIRENE_PL3D
 
       IMPLICIT NONE
 
       REAL(DP), INTENT(IN) :: X0, Y0, Z0, CX, CY, CZ, XLIMS1, YLIMS1,
      .                      ZLIMS1, XLIMS2, YLIMS2, ZLIMS2, RLB
       INTEGER, INTENT(IN) :: ILCOL, NX, NY, NZ
-      REAL(DP) :: XP(2*101), YP(2*101), PHIAN(9), PHIEN(9)
+      REAL(DP) :: PHIAN(9), PHIEN(9)
       REAL(DP) :: RX, RY, RZ, DPH, DZ, X, Y, Z, ZE, RAD, XS, YS, PHI,
      .          DX, DY, XA, XE, YA, YE, ZA
       INTEGER :: IPART, IPRT, N, IZ, IX, IY, I
-      INTEGER :: IP(2*101)
 
       XA = MAX(X0-CX,XLIMS1)
       XE = MIN(X0+CX,XLIMS2)

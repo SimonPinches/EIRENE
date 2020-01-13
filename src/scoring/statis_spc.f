@@ -1,6 +1,6 @@
 C  statistical variance of spectra
 C  NOTE:
-C  distinct from the other variances (volume tallies, surface tallies, bgk and cop tallies)
+C  distinct from the other variances (volume tallies, surface tallies, covariances)
 c  here in case of spectra tallies the variances are contained in the same structure (ESTIML)
 c  as the tallies themselves.
 c  nomenclature, however has been synchronized (oct. 2014)
@@ -12,7 +12,6 @@ c  e.g.  SMESTL(ISPC)%GG   <--> ee, ff
 c  etc.
 C
       SUBROUTINE EIRENE_STATIS_SPC
-
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -25,29 +24,54 @@ C
 
       IMPLICIT NONE
 
-      REAL(DP), INTENT(IN) :: XN, FSIG, ZFLUX
-      INTEGER, INTENT(IN) :: NBIN, NRIN, NPIN, NTIN, NSIN
-      LOGICAL, INTENT(IN) :: LP, LT
+      CALL EIRENE_STATS0_SPC
+      END SUBROUTINE EIRENE_STATIS_SPC
+
+C
+      SUBROUTINE EIRENE_STATS0_SPC
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_COMUSR
+      USE EIRMOD_CESTIM
+      USE EIRMOD_CCONA
+      USE EIRMOD_CGRID
+      USE EIRMOD_CSDVI
+      USE EIRMOD_COUTAU
+      USE EIRMOD_COMSOU
+      IMPLICIT NONE
 
       REAL(DP), ALLOCATABLE :: SD(:)
-      REAL(DP) :: XNM, DS, ZFLUXQ, D2S, SG,
-     .            DSA, DD, D, SG2, DA, SD1, SD1S
-      INTEGER :: NSB, NP2, NR1, NT3, I, ISPC,NSPECI,NSPECE
-C
-      SAVE
-C
-      ENTRY EIRENE_STATS0_SPC
+      INTEGER :: ISPC
 
+      SAVE
       IF (NADSPC > 0) THEN
         DO ISPC=1,NADSPC
           ESTIML(ISPC)%IMETSP = 0
         END DO
       END IF
 C
-      RETURN
+      END SUBROUTINE EIRENE_STATS0_SPC
 
 C
-      ENTRY EIRENE_STATS1_SPC(NBIN,NRIN,NPIN,NTIN,NSIN,LP,LT)
+      SUBROUTINE EIRENE_STATS1_SPC(NBIN,NRIN,NPIN,NTIN,NSIN,LP,LT)
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_COMUSR
+      USE EIRMOD_CESTIM
+      USE EIRMOD_CCONA
+      USE EIRMOD_CGRID
+      USE EIRMOD_CSDVI
+      USE EIRMOD_COUTAU
+      USE EIRMOD_COMSOU
+      IMPLICIT NONE
+
+      INTEGER, INTENT(IN) :: NBIN, NRIN, NPIN, NTIN, NSIN
+      LOGICAL, INTENT(IN) :: LP, LT
+
+      REAL(DP), ALLOCATABLE :: SD(:)
+      REAL(DP) :: SD1, SD1S
+      INTEGER :: NSB, NP2, NR1, NT3, I, ISPC, NSPECI, NSPECE
+
       NSB=NBIN
       NR1=NRIN
       NP2=NPIN
@@ -91,12 +115,30 @@ c  sigma = ESTIML(ISPC)%SGM(I)  now is cumulated squared contribution after flig
       END DO
 C
 C
-      RETURN
+      END SUBROUTINE EIRENE_STATS1_SPC
 
 
 C  next entry:
 c  scale statistical variance. called after all flights from a given stratum istra
-      ENTRY EIRENE_STATS2_SPC(XN,FSIG,ZFLUX)
+      SUBROUTINE EIRENE_STATS2_SPC(XN,FSIG,ZFLUX)
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_COMUSR
+      USE EIRMOD_CESTIM
+      USE EIRMOD_CCONA
+      USE EIRMOD_CGRID
+      USE EIRMOD_CSDVI
+      USE EIRMOD_COUTAU
+      USE EIRMOD_COMSOU
+      IMPLICIT NONE
+
+      REAL(DP), INTENT(IN) :: XN, FSIG, ZFLUX
+
+      REAL(DP), ALLOCATABLE :: SD(:)
+      REAL(DP) :: XNM, DS, ZFLUXQ, D2S, SG, SG2, DSA, D, DA, DD
+      INTEGER I, ISPC, NSPECI, NSPECE
+
+      SAVE
 C
 C  1. FALL  ALLE BEITRAEGE GLEICHES VORZEICHEN: SIG ZWISCHEN 0 UND 1
 C           (=1, FALLS NUR EIN BEITRAG UNGLEICH 0, ODER (KUENSTLICH
@@ -156,6 +198,5 @@ C
         DEALLOCATE (SD)
       END DO
 C
- 2200 CONTINUE
       RETURN
-      END
+      END SUBROUTINE EIRENE_STATS2_SPC

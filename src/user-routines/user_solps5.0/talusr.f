@@ -3,7 +3,7 @@ c  this version: find vibrational temperature of H2.
 c  i.e. H2(v) must be treated as separate molec. species
 c
       SUBROUTINE EIRENE_TALUSR(ICOUNT,VECTOR,TALTOT,TALAV,
-     .                  TXTTL,TXTSP,TXTUN,ILAST,*)
+     .                  TXTTL,TXTSP,TXTUN,ILAST,IRET)
 
 C  USER-SUPPLIED POST-PROCESSED TALLY NO. ICOUNT, FOR STRATUM ISTRA,
 C  STORED ON VECTOR. (ISTRA IS KNOWN FROM COMMON COMPRT)
@@ -37,10 +37,10 @@ C
       USE EIRMOD_COMSOU
       USE EIRMOD_CSPEZ
       USE EIRMOD_CSDVI
-      USE EIRMOD_CSDVI_BGK
+
       implicit NONE
       integer, intent(in) :: icount
-      integer, intent(out) :: ilast
+      integer, intent(out) :: ilast, iret
       real(dp), intent(inout) :: VECTOR(*), TALTOT, TALAV
 C
       real(dp) :: EN(15),YLD(15),RESULT(20)
@@ -93,7 +93,6 @@ c  re-write on stream 10
      .               ESTIMV,ESTIMS,ESTIML,
      .               NSDVI1,SDVI1,NSDVI2,SDVI2,
      .               NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .               NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .               NSIGI_SPC,TRCFLE)
 C
 C  re-write record no. 2 in stream 11
@@ -110,7 +109,6 @@ c  re-write on stream 10
      .               ESTIMV,ESTIMS,ESTIML,
      .               NSDVI1,SDVI1,NSDVI2,SDVI2,
      .               NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .               NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .               NSIGI_SPC,TRCFLE)
 C
 C  re-write record no. 2 in stream 11
@@ -127,5 +125,6 @@ C
 C  WRITE DIRECTLY ONTO OUTPUT STREAM IUNOUT, I.E.: NOT: RETURN 1, BUT: RETURN
 
       ILAST=0
+      IRET = 0
       RETURN
       END

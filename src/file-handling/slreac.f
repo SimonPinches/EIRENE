@@ -202,7 +202,7 @@ cdr  in either case: store these on data structure REACDAT, in call to: set_reac
 cdr
       REAL(DP) :: RTMAX, ERTMAX, ETH
       CHARACTER(50) :: REACSTR
-      REAL(DP) :: CONST, E_EL, E_K
+      REAL(DP) :: CONST
       LOGICAL :: LCONST
       REAL(DP) :: CREACD(9,9)  ! INTERMEDIATE STORAGE FOR FIT PARAMETERS
 
@@ -219,15 +219,14 @@ cdr  for reading asymptotics parameters from data files
       CHARACTER(3) :: CH1L, CH1R, CH2L, CH2R
       CHARACTER(200) :: DSN, DIR
       CHARACTER(1) :: CUT, BACK
-      CHARACTER(4) :: CH123
-      CHARACTER(3) :: CCRC
-      CHARACTER(8) :: SECTION, FITFLAG
+      CHARACTER(8) :: SECTION
+      CHARACTER(9) :: FITFLAG
       CHARACTER(7) :: C1L, C1R, C2L, C2R, CMR, CEMR
       LOGICAL :: LGC1MIN,LGC1MAX,LGC2MIN,LGC2MAX,
      .           LGR1MIN,LGR1MAX,LGR2MIN,LGR2MAX
 C
 ! defining backslash character
-      BACK="\\"
+      BACK=ACHAR(92)
       SECTION=BACK // 'section'
       BEND=BACK // 'end'
 C
@@ -239,7 +238,7 @@ C
 
       I0=0
       CREACD = 0._DP
-      FITFLAG ='fit-flag'
+      FITFLAG ='fit-flag '
 
 c  some additional  (optional) reaction data:  threshold energy,
 c                                              max rate coeff sigma*v_rel,
@@ -984,10 +983,6 @@ C
   990 WRITE (iunout,*) ' NO DATA FOUND FOR REACTION ',H123,' ',REAC,
      .                 ' IN DATA SET ',FILNAM
       WRITE (iunout,*) ' IR,MODCLF(IR) ',IR,MODCLF(IR)
-      CLOSE (UNIT=29+ifoff)
-      CALL EIRENE_EXIT_OWN(1)
-  991 WRITE (iunout,*) ' INVALID CONSTANT IN SLREAC. CONST= ',CONST
-      WRITE (iunout,*) ' CHECK "REACTION CARDS" FOR REACTION NO. ',IR
       CLOSE (UNIT=29+ifoff)
       CALL EIRENE_EXIT_OWN(1)
  6664 FORMAT (6E12.4)

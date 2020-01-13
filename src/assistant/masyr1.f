@@ -6,7 +6,7 @@ c  print one column of a 2d array, at fixed position of 2nd index I2.
 c  the first index (1:n1) is a species index.
 c  print the name(ix) and the value of B(ix,I2)
 c  species names are on 1d array TX
-c  only non-zero entries are printed.
+c  only nonzero entries are printed.
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
@@ -28,7 +28,7 @@ c  only non-zero entries are printed.
       IF (KE.EQ.0) RETURN
       WRITE (iunout,60) A
    60 FORMAT (1X,A9)
-    5 WRITE (iunout,61) (KK(K),B(KKK(K),I2),K=1,KE)
+      WRITE (iunout,61) (KK(K),B(KKK(K),I2),K=1,KE)
    61 FORMAT (3(1X,1A8,1PE12.4,2X))
       RETURN
       END

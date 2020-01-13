@@ -69,7 +69,7 @@ cdr Nov.18:  notational cleanup: separate OT from PH processes. E.g.: IROT --> I
 
 
 
-      SUBROUTINE EIRENE_COLPHOT(CFLAG,COLTYP,DIST)
+      SUBROUTINE EIRENE_COLPHOT(CFLAG,COLTYP)
 C
 C  SAMPLE FROM COLLISION KERNEL C
 C
@@ -104,27 +104,22 @@ C
       USE EIRMOD_CSPEZ
       USE EIRMOD_PHOTON
       USE EIRMOD_RANF, ONLY: RANF_EIRENE
+      USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
 
       IMPLICIT NONE
 
-      REAL(DP), INTENT(IN) :: CFLAG(7,MSTOR0), DIST
+      REAL(DP), INTENT(IN) :: CFLAG(7,MSTOR0)
       REAL(DP), INTENT(OUT) :: COLTYP
-      REAL(DP) :: DUMT(3), DUMV(3)
-      REAL(DP) :: ZEP1, SIGSUM, WGHTO, FRSTP, PTOT, E0O, VELXO,
-     .          VELYO, VELZO, BX, BY, BZ, V0_PARBO, VELO, SCNDP,
-     .          EDEL, VDEL, SIG, V0_PARB, FP, FLTEST, ZEP3, VELQ, VX,
-     .          VY, VZ, VPLASP, RMAIO, RMMIO, RMIIO, BF, ZEP
-      REAL(DP) :: SIG_ELIM, SIG_TOT_N, SIG_TOT_O, SIG_TEST
-      INTEGER :: IICX, IIEI, IMEL, IOLD, NOLD, IACX, IRCX, IAEI, IREI,
-     .           IBGK, IAEL, IREL, IP, IMEI, IMCX, IAPI, NFLAG,
-     .           IATMN, IPLSN, IRPI, NCLLO, IPLSV, IMPI, IIPI, I, J, IPL
-      INTEGER :: NEII_RED,LGEI_RED(0:NREI)
+      REAL(DP) :: ZEP1, SIGSUM, WGHTO, FRSTP, E0O, VELXO,
+     .          VELYO, VELZO, VELO, SCNDP,
+     .          ZEP3
+      INTEGER :: IOLD, NOLD,
+     .           NCLLO
 
 Cdr  additional arrays for ANALOG CASCADE and SPLITTING AT COLLISIONS.
 Cdr (should be set in initialization phase, not here)
 CDR  check: are the corresponding arrays PATEI,PMLEI, PIOEI real or integer (1/2 particle possible?)
-      INTEGER, ALLOCATABLE :: NAMIEI(:),NAMIPI(:)
-
+C      INTEGER, ALLOCATABLE :: NAMIEI(:),NAMIPI(:)
 
 csw add n 2lines
       INTEGER :: iaph,irph,kk,updf,t1
@@ -405,13 +400,6 @@ C     GENERAL IMPACT COLLISION: NOT READY
       GOTO 999
 C
 
-C
-  990 WRITE (iunout,*) 'ERROR IN COLLIDE '
-      WRITE (iunout,*) 'IREI=  ',IREI,' IS SUPPRESSED, BUT'
-      WRITE (iunout,*) 'COLLISION ESTIMATOR WAS SELECTED  '
-      WRITE (iunout,*)
-     .  'SET WMINV = INFINITY, OR USE TRACKLENGTH ESTIM. '
-      CALL EIRENE_EXIT_OWN(1)
 C
   999 WRITE (iunout,*) 'ERROR IN COLLIDE '
       WRITE (iunout,*) 'ITYP ',ITYP,IPHOT,IATM,IMOL,IION,IPLS

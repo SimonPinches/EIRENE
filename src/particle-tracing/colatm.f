@@ -111,6 +111,7 @@ C
       USE EIRMOD_VELOPI, ONLY: EIRENE_VELOPI
       USE EIRMOD_VELOEL, ONLY: EIRENE_VELOEL
       USE EIRMOD_VELOCX, ONLY: EIRENE_VELOCX
+      USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
 
       IMPLICIT NONE
 
@@ -120,16 +121,16 @@ C
       REAL(DP) :: ZEP1, SIGSUM, WGHTO, FRSTP, PTOT, E0O, VELXO,
      .          VELYO, VELZO, BX, BY, BZ, V0_PARBO, VELO, SCNDP,
      .          EDEL, VDEL, SIG, V0_PARB, FP, FLTEST, ZEP3, VELQ, VX,
-     .          VY, VZ, VPLASP, RMAIO, RMMIO, RMIIO, BF, ZEP
+     .          VY, VZ, VPLASP, RMAIO, BF, ZEP
 cdr  .         ,ss,ssr  ! for consistency test only. Now deactivated
       REAL(DP) :: SIG_ELIM, SIG_TOT_N, SIG_TOT_O, SIG_TEST
       INTEGER ::
 c    .           IICX, IIEI, IIPI, IIEL,
 c    .           IMCX, IMEI, IMPI, IMEL,
-     .           IACX, IAEI, IAPI, IAEL, IAPH,
+     .           IACX, IAEI, IAPI, IAEL, !IAPH,
 c    .
      .           IOLD, NOLD,
-     .           IRCX, IREI, IRPI, IREL, IRPH,
+     .           IRCX, IREI, IRPI, IREL, !IRPH,
      .           IBGK, IP, NFLAG,
      .           IATMN, IPLSN, NCLLO, IPLSV,  I, J, IPL
       INTEGER :: NEII_RED,LGEI_RED(0:NREI)
@@ -328,9 +329,9 @@ cdr  this NAMIEI is the underlying discrete pdf, which led to the normalized cum
           NAMIEI = 0
 
           NAMIEI(1:NSPH)         = 0    !  PPHEI(IREI,1:NPHOTI) IS NOT YET SET IN XSTEI.F
-          NAMIEI(NSPH+1:NSPA)    = PATEI(IREI,1:NATMI)
-          NAMIEI(NSPA+1:NSPAM)   = PMLEI(IREI,1:NMOLI)
-          NAMIEI(NSPAM+1:NSPAMI) = PIOEI(IREI,1:NIONI)
+          NAMIEI(NSPH+1:NSPA)    = INT(PATEI(IREI,1:NATMI))
+          NAMIEI(NSPA+1:NSPAM)   = INT(PMLEI(IREI,1:NMOLI))
+          NAMIEI(NSPAM+1:NSPAMI) = INT(PIOEI(IREI,1:NIONI))
 
 !  RESET WEIGHT BACK TO ORIGINAL VALUE
           WEIGHT=WEIGHT / PTOT
@@ -534,7 +535,7 @@ C  NEW SPECIES TYPE, INDEX AND ENERGY
         IF (ZEP3.LE.FRSTP) THEN
 C  FOLLOW FIRST SECONDARY, SPEED FROM BULK POPULATION
           ITYP=N1STX(IRCX,1)
-          NFLAG=CFLAG(3,IRCX)
+          NFLAG=INT(CFLAG(3,IRCX))
           CALL EIRENE_VELOCX
      .         (NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,NOLD,VELQ,
      .          NFLAG,IRCX,DUMT,DUMV)
@@ -798,7 +799,7 @@ C  NEW SPECIES INDEX AND ENERGY
 C       WEIGHT=WEIGHT*1.
 C  FOLLOW SECONDARY, NEW SPEED FROM SUBROUTINE VELOEL
 C       ITYP=1
-        NFLAG=CFLAG(5,IREL)
+        NFLAG=INT(CFLAG(5,IREL))
         RMAIO=RMASSA(IOLD)
         CALL EIRENE_VELOEL(NCLLO,VELXO,VELYO,VELZO,VELO,IOLD,NOLD,VELQ,
      .              NFLAG,IREL,RMAIO)
@@ -916,7 +917,7 @@ C  ARE THERE TEST PARTICLE SECONDARIES AT ALL?
           RETURN
         ENDIF
 C
-        NFLAG=CFLAG(4,IRPI)
+        NFLAG=INT(CFLAG(4,IRPI))
         RMAIO=RMASSA(IOLD)
 
 Cdr  PTOT=0,1,2,etc..., = integer,  number of next generation particles
@@ -927,9 +928,9 @@ Cdr  PTOT=0,1,2,etc..., = integer,  number of next generation particles
             ALLOCATE(NAMIPI(NSPAMI))
           END IF
           NAMIPI = 0
-          NAMIPI(NSPH+1:NSPA) = PATPI(IRPI,1:NATMI)
-          NAMIPI(NSPA+1:NSPAM) = PMLPI(IRPI,1:NMOLI)
-          NAMIPI(NSPAM+1:NSPAMI) = PIOPI(IRPI,1:NIONI)
+          NAMIPI(NSPH+1:NSPA) = INT(PATPI(IRPI,1:NATMI))
+          NAMIPI(NSPA+1:NSPAM) = INT(PMLPI(IRPI,1:NMOLI))
+          NAMIPI(NSPAM+1:NSPAMI) = INT(PIOPI(IRPI,1:NIONI))
 
 !  RESET WEIGHT TO ORIGINAL VALUE
           WEIGHT=WEIGHT / PTOT

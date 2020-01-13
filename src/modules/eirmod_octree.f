@@ -25,7 +25,8 @@
      .          OCTREE_CreateChildren, OCTREE_AddSurface,
      .          OCTREE_GetLeafchild, OCTREE_Traverse,
      .          OCTREE_CheckBlock, OCTREE_CheckVolume,
-     .          OCTREE_Cramer, OCTREE_PrintVTK, OCTREE_PrintGraphviz
+     .          OCTREE_Cramer, OCTREE_PrintVTK, OCTREE_PrintGraphviz,
+     .          OCTREE_DeleteTree 
 
 c     lookup table for the correct combination of coords in
 c     OCTREE_CreateChildren
@@ -163,7 +164,7 @@ c     RETURNS: pointer to the new node
         REAL(DP), DIMENSION(2), INTENT(IN) :: X, Y, Z
         INTEGER, DIMENSION(3), INTENT(IN) :: NUMBER
         TYPE(ocNode), POINTER, INTENT(IN) :: PARENT
-        TYPE(ocTree), POINTER, INTENT(IN) :: TREE
+        TYPE(ocTree), POINTER, INTENT(IN OUT) :: TREE
 
         TYPE(ocNode), POINTER :: NODE
 c       the x, y, z coordinates for building the new node
@@ -229,8 +230,8 @@ c     --- CREATE CHILDREN OF A NODE ---
 c     parent : pointer to the parent node (whose children we create ;) )
 
         IMPLICIT NONE
-        TYPE(ocNode), POINTER, INTENT(IN) :: PARENT
-        TYPE(ocTree), POINTER, INTENT(IN) :: TREE
+        TYPE(ocNode), POINTER, INTENT(IN OUT) :: PARENT
+        TYPE(ocTree), POINTER, INTENT(IN OUT) :: TREE
         TYPE(ocNode), POINTER :: TMPNODE
         INTEGER, DIMENSION(3) :: TMPNUMBER
         INTEGER :: I, LAYER
@@ -292,7 +293,7 @@ c     num  : index number of the surface that is added
 c     node : pointer to the node to which we add the surface
       SUBROUTINE OCTREE_AddSurface(NUM, NODE)
         IMPLICIT NONE
-        TYPE(ocNode), POINTER, INTENT(IN) :: NODE
+        TYPE(ocNode), POINTER, INTENT(IN OUT) :: NODE
         INTEGER, INTENT(IN) :: NUM
 
         node%nsurfaces = node%nsurfaces + 1
@@ -660,6 +661,35 @@ c       to print their labels
           end do
         end if
       END SUBROUTINE PrintDot
+
+      SUBROUTINE OCTREE_DeleteTree (tree)
+        TYPE(ocTree), POINTER, INTENT(IN OUT) :: tree
+
+        call OCTREE_Delete(tree%root)
+        deallocate (tree%root)
+        deallocate (tree)
+        nullify(tree)
+        
+      END SUBROUTINE OCTREE_DeleteTree 
+      
+      RECURSIVE SUBROUTINE OCTREE_Delete (block)
+        TYPE(ocNode), POINTER, INTENT(IN OUT) :: block
+        TYPE(OcNode), POINTER :: child
+        INTEGER :: i
+
+        if (.not.associated(block)) return
+        
+        if (allocated(block%children)) then
+          do i = 1, 8
+            child => block%children(i)%node
+            call OCTREE_Delete(block%children(i)%node)
+            nullify(block%children(i)%node)
+            deallocate(child)
+          end do
+          if (allocated(block%surfaces)) deallocate (block%surfaces)
+        end if
+        
+      END SUBROUTINE OCTREE_Delete
 
 
       END MODULE EIRMOD_OCTREE

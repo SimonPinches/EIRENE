@@ -1,4 +1,8 @@
       MODULE EIRMOD_CUPD
+cdr originally for tracing particles across several geometry cells in a
+cdr single step. Must be threadprivate
+
+cdr  contains redundant coding: cell_info, type traject,....
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD

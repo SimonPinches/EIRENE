@@ -3,7 +3,7 @@ C>        model
 C>
 C> 1. find NRECOM(istra): recommended number of test particles for next MC cycle.
 C> 2. find RATIO(istra) : ratio between used and recommended no. of particles.
-C>     (the procedure should approach RATIO approx 1.0, after cycling.
+C>     (the procedure should approach RATIO approx 1.0, after cycling)
 C> 3. write NRECOM, RATIO and XMCT on stream 14.
 C>
 C> At subroutine rrec:
@@ -11,7 +11,7 @@ C> - read NRECOM, RATIO, XMCT from stream 14.
       SUBROUTINE EIRENE_WRREC
 C
 cdr:  Aug 18:  xmct is not used here at all. Instead CPUFAC is just somehow
-cdr            infered by other considerations.
+cdr            inferred by other considerations.
 C
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: IFOFF, NSTRA
@@ -84,7 +84,7 @@ cdr  instead of cpufac one should use XMCT(istra) information
 C  SCALE XNEXP TO CONSERVE TOTAL NUMBER OF REQUESTED TRACKS
         XNEXP(ISTRA)=XNEXP(ISTRA)*DBLE(NREQ)/(XNSUM+EPS60)
 C  CONVERT XNEXP TO AN INTEGER
-        NRECOM(ISTRA)=IDINT(REAL(XNEXP(ISTRA),KIND(1.D0)))
+        NRECOM(ISTRA)=INT(REAL(XNEXP(ISTRA),KIND(1.D0)))
         IF (XNEXP(ISTRA)-DBLE(NRECOM(ISTRA)).GT.0.5)
      .      NRECOM(ISTRA)=NRECOM(ISTRA)+1
         RATIO(ISTRA)=WREC(ISTRA)/(WTOTT(ISTRA)/(WSUM+EPS60)+EPS60)

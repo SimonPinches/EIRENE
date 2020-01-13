@@ -30,7 +30,7 @@ cdr nov. 17:  nspztotw introduced, in analogy with nspztot
      I IIH(:),    IGH(:),
      I IIHW(:),   IGHW(:),
      I ICOV(:),
-     I NSIGI,     NSIGVI,   NSIGSI, NSIGCI, NSIGI_BGK, NSIGI_COP,
+     I NSIGI,     NSIGVI,   NSIGSI, NSIGCI, 
      I NSIGI_SPC,
 C SPEED UP OF SUBROUTINE STATIS
      I IMETCL(:), ICLMT(:), NCLMT, NCLMTS,
@@ -89,8 +89,8 @@ C SPEED UP OF SUBROUTINE STATIS
         NSIGVI    => ISDVI(2)
         NSIGSI    => ISDVI(3)
         NSIGCI    => ISDVI(4)
-        NSIGI_BGK => ISDVI(5)
-        NSIGI_COP => ISDVI(6)
+c   out           => ISDVI(5)
+c   out           => ISDVI(6)
         NSIGI_SPC => ISDVI(7)
         NCLMT     => ISDVI(8)
         NCLMTS    => ISDVI(9)

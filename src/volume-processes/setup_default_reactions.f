@@ -33,7 +33,7 @@ c
       integer :: ir  ! corresponds to flags k, kk, istore,..... in calling programs
 
 
-!  SPECIFY DEFAULT MODEL FOR RATE COEFFCIENTS,
+!  SPECIFY DEFAULT MODEL FOR RATE COEFFICIENTS,
 !  FILL REACDAT..%RTC...
 
 

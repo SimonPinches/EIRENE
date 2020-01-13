@@ -9,7 +9,7 @@ cdr  the same fit format is also used most of the time in the eirene-home
 cdr  databases amjuel, h2vibr,
 
       function EIRENE_sngl_poly (cf, al, rcmin, rcmax, fpp,
-     .                                   ifexmn, ifexmx, trc)
+     .                           ifexmn, ifexmx, trc, lexp)
      .                   result(cou)
 c  input:
 c  cf    : fit coefficients for fit f(parm=)=sum_1^9 (cf(i) log(parm)^(i-1))
@@ -25,6 +25,12 @@ cdr                    and call extrap.f with model IFEX=3
 cdr           ifex>0:  evaluate fit at corresponding boundary,
 cdr                    and call extrap.f with model IFEX
 
+c  trc   : flag for print output
+c  lexp  : flag indication that the result is used in a subsequent
+c          call to the exponential function (EXP)
+c          a cutoff at COU == -100 is introduced to avoid floating
+c          point underflo exceptions 
+      
       use EIRMOD_precision
       USE EIRMOD_COMPRT, ONLY: IUNOUT
 
@@ -33,11 +39,11 @@ cdr                    and call extrap.f with model IFEX
       real(dp), intent(in) :: cf(9), fpp(6)
       real(dp), intent(in) :: al, rcmin, rcmax
       integer, intent(in) :: ifexmn, ifexmx
+      logical, intent(in) :: trc, lexp
       real(dp) :: p1, cou, fp(6), s01, s02, ds12, expo1, expo2, ccxm1,
      .            ccxm2, almin,almax,coumin,coumax,
      .            EIRENE_extrap
       integer :: ii, if8, ifex
-      logical :: trc
 
       p1=al
 
@@ -162,6 +168,7 @@ C  PARAMETER "P1=AL" IS WITHIN VALID RANGE OF FIT:
         cou = cou * p1 + cf(ii)
       end do
 
-
+      if (lexp) cou = max(-100._dp, cou)
+      
       return
       end function EIRENE_sngl_poly

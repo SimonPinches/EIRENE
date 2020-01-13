@@ -2,6 +2,7 @@ C
 c  written by P. Boerner, for FZJ proprietary IDL plotting tool.
 c  not intended for 3rd party use.
 c  last modified: jan 2017
+cdr correction: 3 digits rather than 2 digits for I0 in outtal file name
 
       SUBROUTINE EIRENE_OUTIDLTAL
 
@@ -17,7 +18,6 @@ c  last modified: jan 2017
       USE EIRMOD_CTRCEI
       USE EIRMOD_CGEOM
       USE EIRMOD_CSDVI
-      USE EIRMOD_CSDVI_BGK
       USE EIRMOD_COMPRT
       USE EIRMOD_COMNNL
       USE EIRMOD_COMSOU
@@ -82,7 +82,6 @@ C  NOTHING TO BE DONE
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .             NSIGI_SPC,TRCFLE)
           IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
             CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRTAL,NR1TAL,NP2TAL,NT3TAL,
@@ -94,7 +93,6 @@ C  NOTHING TO BE DONE
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .             NSIGI_SPC,TRCFLE)
           IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
             CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRTAL,NR1TAL,NP2TAL,NT3TAL,

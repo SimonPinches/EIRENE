@@ -185,7 +185,6 @@ C
       USE EIRMOD_CCOUPL
       USE EIRMOD_CGEOM
       USE EIRMOD_CSDVI
-      USE EIRMOD_CSDVI_BGK
       USE EIRMOD_COMPRT
       USE EIRMOD_COMNNL
       USE EIRMOD_COMSOU
@@ -428,7 +427,7 @@ C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
      .                     LSYMET,LBALAN,LCOARSE
 
         READ (IUNIN,'(5I6)') NFLA,NCUTB,NCUTL,IMF,
-cdr  imf  flag for different formats of geometry file: linda, sonnet, carree. What is What?
+cdr  imf  flag for different formats of geometry file: linda, sonnet, carre. What is What?
      .                       ntrfrm
         IF (IMF /= 0) MSHFRM=IMF
         NCUTB_SAVE=NCUTB
@@ -765,7 +764,7 @@ C
 C
 !  ALPHXB, ALPHYB GIVE THE DIRECTION OF THE B-FIELD IN THE
 !  CARTESIAN PLANE
-        write (iunout,*) 'testoutput from fort.29 in infcop'
+        write (iunout,*) 'testoutput from '//fort_lc//'29 in infcop'
         write (iunout,*) 'irad,ipol, angles.....'
         DO IY=1,NDYA
           DO IX =1,NDXA
@@ -814,7 +813,7 @@ C
       ELSE
         CALL EIRENE_LEER(1)
         WRITE (iunout,*)
-     .    ' NO FILE FORT.29 WITH MODIFIED GRID INFO. FOUND '
+     .    ' NO FILE '//FORT//'29 WITH MODIFIED GRID INFO. FOUND '
         WRITE (iunout,*) ' OLD VERSION CALCULATION MAGN. FIELD FROM ',
      .                   ' GRID IS USED '
         WRITE (iunout,*) ' GRID IS ASSUMED TO BE ORTHOGONAL '
@@ -833,14 +832,23 @@ C
       OPEN (UNIT=34,ACCESS='SEQUENTIAL',FORM='FORMATTED')
       OPEN (UNIT=35,ACCESS='SEQUENTIAL',FORM='FORMATTED')
 C
-      READ(33,*) NRKNOT
+      READ(33,*,IOSTAT=IO) NRKNOT
+      IF(IO.NE.0) NRKNOT=0
       WRITE(iunout,*) 'NRKNOT = ',NRKNOT
-
-
 C
 C     READ IN THE NUMBER OF TRIANGLES AND ATTRIBUTES OF THE TRIANGLES
-      READ(34,*) NTRII
+      READ(34,*,IOSTAT=IO) NTRII
+      IF(IO.NE.0) NTRII=0
       WRITE(iunout,*) 'NTRII = ',NTRII
+
+      READ (35,*,IOSTAT=IO,ERR=1985) IDUMMY
+      IF(IO.NE.0) IDUMMY=0
+      IF (IDUMMY /= NTRII) THEN
+        WRITE (IUNOUT,*) ' NUMBER OF TRIANGLES DO NOT MATCH '
+        WRITE (IUNOUT,*) ' IN ELEMENTE AND NEIGHBOR FILES'
+        WRITE (IUNOUT,*) ' PLEASE CHECK THE GEOMETRY '
+        CALL EIRENE_EXIT_OWN(1)
+      END IF
 
 C
 C  EACH ELEMENT (TRIANGLE) IS GIVEN BY 3 POINTS
@@ -887,14 +895,6 @@ C
         READ(34,*) J,NECKE(1,I),NECKE(2,I),NECKE(3,I)
       ENDDO
 
-      READ (35,*) IDUMMY
-      IF (IDUMMY /= NTRII) THEN
-        WRITE (IUNOUT,*) ' NUMBERS OF TRIANGLES DO NOT MATCH '
-        WRITE (IUNOUT,*) ' IN FILES ...ELEMENTE AND ...NEIGHBORS'
-        WRITE (IUNOUT,*) ' CHECK THE GEOMETRY, EXIT CALLED '
-        CALL EIRENE_EXIT_OWN(1)
-      END IF
-
       DO I=1,NTRII
 cdr  june 17:
 cdr: careful: I ne J possible. Unless triangles are sorted as J= 1,2,3... on fort.35
@@ -911,6 +911,10 @@ C    >                   NCHBAR(2,J),NSEITE(2,J),NCHBAR(3,J),NSEITE(3,J)
 C THE SPECIAL SURFACE PROPERTY (IF ANY) IS ON INMTI ARRAY, AND TRANSFERED INTO
 C EIRENE VIA COMMON.
       ENDDO
+
+      CLOSE (UNIT=33)
+      CLOSE (UNIT=34)
+      CLOSE (UNIT=35)
 
 C  FOR ALL QUADRANGLES BUILD LIST OF TRIANGLES BELONGING
 C  TO THE QUADRANGLE
@@ -1447,7 +1451,7 @@ C
       IF (NLPLAS) THEN
         WRITE (IUNOUT,*) 'PLASMA DATA EXPECTED ON BRAEIR'
       ELSE
-        WRITE (IUNOUT,*) 'PLASMA DATA EXPECTED ON FORT.31'
+        WRITE (IUNOUT,*) 'PLASMA DATA EXPECTED ON '//FORT//'31'
       ENDIF
 C  SKIP READING PLASMA, IF NLPLAS
       IF (NLPLAS) GOTO 2100
@@ -1480,7 +1484,7 @@ C
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
 
-      CALL EIRENE_ALLOC_BRAEIR(NDX,NDY,NFL,IFOFF)
+      CALL EIRENE_ALLOC_BRAEIR(NDX,NDY,NFL)
 C
 C  B2-BRAAMS CODE SPECIFIC BEGIN
       NRED=(NPPLG-1)*(NCUTL-NCUTB)
@@ -1811,7 +1815,8 @@ C  READ DATA FOR "IPLS" FROM EIRENE DUMP FILE FT13
           ENDIF
           IF (IO.EQ.0) THEN
             IF (TRCINT) THEN
-               WRITE(IUNOUT,*) 'PLASMA DATA FOR IPLS READ FROM FORT.13'
+               WRITE(IUNOUT,*)
+     w              'PLASMA DATA FOR IPLS READ FROM '//FORT//'13'
                WRITE(IUNOUT,*) 'IPLS, IPLSV,IPLSTI ',IPLS,IPLSV,IPLSTI
             ENDIF
 
@@ -2916,7 +2921,7 @@ C
         ALLOCATE (FLXEIR(NSTRA))
 
         CALL EIRENE_ALLOC_BRASPOI
-        CALL EIRENE_ALLOC_EIRBRA(NDX, NDY, NFL, NSTRA,IFOFF)
+        CALL EIRENE_ALLOC_EIRBRA(NDX, NDY, NFL, NSTRA)
 C
         RESSNI = 0._DP
         RESSMO = 0._DP
@@ -2955,7 +2960,6 @@ C  NOTHING TO BE DONE
      .               ESTIMV,ESTIMS,ESTIML,
      .               NSDVI1,SDVI1,NSDVI2,SDVI2,
      .               NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .               NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .               NSIGI_SPC,TRCFLE)
         ELSE
           WRITE (iunout,*) 'ERROR IN INFCOP: STRATUM ISTRAI= ',ISTRAI
@@ -4398,7 +4402,7 @@ C  BALANCE CONTRIB. X-GRID REC. SOURCE
             END IF
             DO 10132 IY=NTIN(I,IPRT),NTEN(I,IPRT)-1
               DO 10131 IFL=NSPZI(I,IPRT),NSPZE(I,IPRT)
-                IF (NINCT(I,IPRT)*FNIXB(NPBS,IY,IFL).GT.0) THEN
+                IF (NINCT(I,IPRT)*FNIXB(NPBS,IY,IFL).GT.0._DP) THEN
                   SFNIT(I,IFL)=SFNIT(I,IFL)-
      .                   NINCT(I,IPRT)*FNIXB(NPBS,IY,IFL)
 
@@ -4437,7 +4441,7 @@ C  BALANCE CONTRIB. FROM Y-GRID RECYCLING SOURCE
             DO 10135 IX=NTIN(I,IPRT),NTEN(I,IPRT)-1
               IF (LLCUT(IX)) GOTO 10135
               DO 10136 IFL=NSPZI(I,IPRT),NSPZE(I,IPRT)
-                IF (NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL).GT.0.) THEN
+                IF (NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL).GT.0._DP) THEN
                   SFNIT(I,IFL)=SFNIT(I,IFL)-
      .                   NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)
 
@@ -4574,7 +4578,7 @@ C
           WRITE (iunout,*) ' NON-RECYCLING FLUXES AT SOUTH EDGE '
           CALL EIRENE_MASR2(' SFEISY,SFEESY  ',SFEISY,SFEESY)
           DO IFL=1,NFLA
-            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNISY(IFL)=',IFL,') ',
+            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNISY(IFL =',IFL,') ',
      .                                       SFNISY(IFL)
           ENDDO
         ENDIF
@@ -4582,7 +4586,7 @@ C
           WRITE (iunout,*) ' NON-RECYCLING FLUXES AT NORTH EDGE'
           CALL EIRENE_MASR2(' SFEINY,SFEENY  ',SFEINY,SFEENY)
           DO IFL=1,NFLA
-            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNINY(IFL)=',IFL,') ',
+            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNINY(IFL =',IFL,') ',
      .                                       SFNINY(IFL)
           ENDDO
         ENDIF
@@ -4590,7 +4594,7 @@ C
           WRITE (iunout,*) ' NON-RECYCLING FLUXES AT WEST EDGE '
           CALL EIRENE_MASR2(' SFEIWX,SFEEWX  ',SFEIWX,SFEEWX)
           DO IFL=1,NFLA
-            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNIWX(IFL)=',IFL,') ',
+            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNIWX(IFL =',IFL,') ',
      .                                       SFNIWX(IFL)
           ENDDO
         ENDIF
@@ -4598,7 +4602,7 @@ C
           WRITE (iunout,*) ' NON-RECYCLING FLUXES AT EAST EDGE '
           CALL EIRENE_MASR2(' SFEIEX,SFEEEX  ',SFEIEX,SFEEEX)
           DO IFL=1,NFLA
-            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNIEX(IFL)=',IFL,') ',
+            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNIEX(IFL =',IFL,') ',
      .                                       SFNIEX(IFL)
           ENDDO
         ENDIF
@@ -4616,7 +4620,7 @@ C
         CALL EIRENE_LEER(1)
         CALL EIRENE_MASR2(' TOTALS, EI,EE  ',SFEIT(0),SFEET(0))
         DO IFL=1,NFLA
-           WRITE(iunout,'(A,I0,A,ES12.4)') 'TOTALS, NI(IFL)=',IFL,') ',
+           WRITE(iunout,'(A,I0,A,ES12.4)') 'TOTALS, NI(IFL =',IFL,') ',
      .                                      SFNIT(0,IFL)
         ENDDO
 
@@ -4643,14 +4647,14 @@ C
 
         CALL EIRENE_MASR2(' BALANI,BALANE  ',BALANI,BALANE)
         DO IFL=1,NFLA
-           WRITE(iunout,'(A,I0,A,ES12.4)') 'BALANN(IFL)=',IFL,') ',
+           WRITE(iunout,'(A,I0,A,ES12.4)') 'BALANN(IFL =',IFL,') ',
      .                                      BALANN(IFL)
         ENDDO
         CALL EIRENE_LEER(1)
 
         CALL EIRENE_MASR2('REL.ERR.(%)RI,RE',RI,RE)
         DO IFL=1,NFLA
-           WRITE(iunout,'(A,I0,A,ES12.4)') 'RN(IFL)=',IFL,') ',RN(IFL)
+           WRITE(iunout,'(A,I0,A,ES12.4)') 'RN(IFL =',IFL,') ',RN(IFL)
         ENDDO
         CALL EIRENE_LEER(1)
         MINSPEZ=99

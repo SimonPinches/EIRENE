@@ -42,7 +42,7 @@ c  default radiative rate coefficient, see xstrc.f
       ELSEIF (KK == -2) THEN  ! E + He+ --> He + hv
          ZX=EIONHE/MAX(1.E-5_DP,TEIN(K))
 C  rate = [rate coeff <sig v>] times [electr. density],  1/s per ion
-c    1.96e-14*sqrt(eionhe/Ry) = 3.5487E-14
+c    1.96e-14*sqrt(EionHe/Ry) = 3.5487E-14
          TBRC=3.5487E-14*ZX**1.5/(ZX+0.35)*DEIN(K)
 
       ELSEIF (KK .LE. 0 ) THEN

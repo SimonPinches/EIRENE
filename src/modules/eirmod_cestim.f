@@ -20,8 +20,7 @@ cpb Dec. 17: remove type SPECT_ARRAY, not needed in Fortran 2003
      P          EIRENE_ASSOCIATE_CESTIM,
      P          EIRENE_INIT_CESTIM
 
-!      TYPE(SPECT_ARRAY), PUBLIC, ALLOCATABLE, SAVE :: ESTIML(:)
-!      TYPE(SPECT_ARRAY), PUBLIC, ALLOCATABLE, SAVE :: SMESTL(:)
+
       TYPE(EIRENE_SPECTRUM), PUBLIC, ALLOCATABLE, TARGET, SAVE ::
      .        ESTIML(:)
       TYPE(EIRENE_SPECTRUM), PUBLIC, ALLOCATABLE, TARGET, SAVE ::
@@ -112,7 +111,8 @@ C
      R ERFPPHT(:,:),
 C
      R EOTPL(:,:),
-C
+C  FULL MATRIX: SPUTTERED FLUXES RESOLVED BY INCIDENT TYPE 
+C               AND EMITTED TYPE AND SPECIES
      R SPTAAT(:,:), SPTMAT(:,:), SPTIAT(:,:), SPTPHAT(:,:),
      R SPTPAT(:,:),
      R SPTAML(:,:), SPTMML(:,:), SPTIML(:,:), SPTPHML(:,:),
@@ -197,6 +197,7 @@ c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
      L LMSVYDENA, LMSVYDENM, LMSVYDENI, LMSVYDENPH,
      L LMSVZDENA, LMSVZDENM, LMSVZDENI, LMSVZDENPH,
      L LMSMAPL,  LMSMMPL,  LMSMIPL,  LMSMPHPL
+
 c  logical, for each surface-averaged tally, particle flux.
 c  either active tally (if true) or deactivated tally, no storage (if false)
       LOGICAL, PUBLIC, POINTER, SAVE ::
@@ -889,6 +890,7 @@ C     if tally is deactivated in this run: Pointer to CEMETERYS
       ELSE
         POTAT => CEMETERYS(0:0,:)
       END IF
+
       IF (LPRFAAT) THEN
         PRFAAT => ESTIMS(NADDW(2)+1:NADDW(3),:)
       ELSE
@@ -920,6 +922,7 @@ C
       ELSE
         POTML => CEMETERYS(0:0,:)
       END IF
+
       IF (LPRFAML) THEN
         PRFAML => ESTIMS(NADDW(8)+1:NADDW(9),:)
       ELSE
@@ -951,6 +954,7 @@ C
       ELSE
         POTIO => CEMETERYS(0:0,:)
       END IF
+
       IF (LPRFAIO) THEN
         PRFAIO => ESTIMS(NADDW(14)+1:NADDW(15),:)
       ELSE
@@ -982,6 +986,7 @@ C
       ELSE
         POTPHT => CEMETERYS(0:0,:)
       END IF
+
       IF (LPRFAPHT) THEN
         PRFAPHT => ESTIMS(NADDW(20)+1:NADDW(21),:)
       ELSE
@@ -1019,6 +1024,7 @@ C
       ELSE
         EOTAT => CEMETERYS(0:0,:)
       END IF
+
       IF (LERFAAT) THEN
         ERFAAT => ESTIMS(NADDW(27)+1:NADDW(28),:)
       ELSE
@@ -1144,6 +1150,9 @@ C
         EOTPL => CEMETERYS(0:0,:)
       END IF
 C
+C  SPUTTER TALLIES  
+C
+C  EMITTED TYPE: ATOMS
       IF (LSPTAAT) THEN
         SPTAAT => ESTIMS(NADDW(51)+1:NADDW(52),:)
       ELSE
@@ -1169,6 +1178,8 @@ C
       ELSE
         SPTPAT => CEMETERYS(0:0,:)
       END IF
+
+C  EMITTED TYPE: MOLECULES
       IF (LSPTAML) THEN
         SPTAML => ESTIMS(NADDW(56)+1:NADDW(57),:)
       ELSE
@@ -1194,6 +1205,8 @@ C
       ELSE
         SPTPML => CEMETERYS(0:0,:)
       END IF
+
+C  EMITTED TYPE: TEST IONS
       IF (LSPTAIO) THEN
         SPTAIO => ESTIMS(NADDW(61)+1:NADDW(62),:)
       ELSE
@@ -1219,6 +1232,8 @@ C
       ELSE
         SPTPIO => CEMETERYS(0:0,:)
       END IF
+
+C  EMITTED TYPE: PHOTONS
       IF (LSPTAPHT) THEN
         SPTAPHT => ESTIMS(NADDW(66)+1:NADDW(67),:)
       ELSE
@@ -1244,6 +1259,8 @@ C
       ELSE
         SPTPPHT => CEMETERYS(0:0,:)
       END IF
+
+C  EMITTED TYPE: BULK IONS
       IF (LSPTAPL) THEN
         SPTAPL => ESTIMS(NADDW(71)+1:NADDW(72),:)
       ELSE
@@ -1269,6 +1286,8 @@ C
       ELSE
         SPTPPL => CEMETERYS(0:0,:)
       END IF
+
+C  TOTALS
       IF (LSPTATOT) THEN
         SPTATOT => ESTIMS(NADDW(76)+1,:)
       ELSE
@@ -1299,18 +1318,26 @@ C
       ELSE
         SPTTOT => CEMETERYS(0,:)
       END IF
+
+C  ADDITIONAL SURFACE TALLIES
       IF (LADDS) THEN
         ADDS => ESTIMS(NADDW(82)+1:NADDW(83),:)
       ELSE
         ADDS => CEMETERYS(0:0,:)
       END IF
+
+C  ALGEBRAIC SURFACE TALLIES
       IF (LALGS) THEN
         ALGS => ESTIMS(NADDW(83)+1:NADDW(84),:)
       ELSE
         ALGS => CEMETERYS(0:0,:)
       END IF
+
+C  PUMPED FLUXES
       IF (LSPUMP) THEN
+cdr this coding now seems inconsistent with corresponding coding for last vol. av. tally.
         SPUMP => ESTIMS(NADDW(84)+1:,:)
+cdr     SPUMP => ESTIMS(NADDW(84)+1:NADDW(85),:)   ! clearer, safer ? see above, for vol. av. tallies
       ELSE
         SPUMP => CEMETERYS(0:0,:)
       END IF
@@ -1641,6 +1668,7 @@ C
         LERFPHPHT => LIVTALS(48)
         LERFPPHT  => LIVTALS(49)
         LEOTPL    => LIVTALS(50)
+C  SPUTTER TALLIES:  51 -- 75
         LSPTAAT   => LIVTALS(51)
         LSPTAML   => LIVTALS(52)
         LSPTAIO   => LIVTALS(53)
@@ -1671,7 +1699,9 @@ C
         LSPTITOT  => LIVTALS(78)
         LSPTPHTOT => LIVTALS(79)
         LSPTPLTOT => LIVTALS(80)
+C
         LSPTTOT   => LIVTALS(81)
+C
         LADDS     => LIVTALS(82)
         LALGS     => LIVTALS(83)
         LSPUMP    => LIVTALS(84)
@@ -1726,6 +1756,7 @@ C
         LMSERFPHPHT => LMISTALS(48)
         LMSERFPPHT  => LMISTALS(49)
         LMSEOTPL    => LMISTALS(50)
+C  SPUTTER TALLIES: 51 -- 75
         LMSSPTAAT   => LMISTALS(51)
         LMSSPTAML   => LMISTALS(52)
         LMSSPTAIO   => LMISTALS(53)
@@ -1751,6 +1782,7 @@ C
         LMSSPTPIO   => LMISTALS(73)
         LMSSPTPPHT  => LMISTALS(74)
         LMSSPTPPL   => LMISTALS(75)
+C
         LMSSPTATOT  => LMISTALS(76)
         LMSSPTMTOT  => LMISTALS(77)
         LMSSPTITOT  => LMISTALS(78)

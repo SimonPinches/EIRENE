@@ -29,7 +29,7 @@ cdr  aug.15:  ibgk_sp:  no of bgk species. to be distinguished from ibgk: no of 
 !pb  APR  16:  pelds  -> pelei, eelds -> eelei
 !pb  MAY  16:  tabds1 -> tabds1
 !pb  JUL  16:  ehvds1 -> ehvds1
-cdr  Sept 16:  nmdsi  -> nmeii
+cdr  SEP 16:  nmdsi  -> nmeii
 cdr  May 18:  The fluid limit (critical cx Knudsen number) is now set from NGENM(imol) flag,
 cdr           rather than from the former fldlmm(imol,kk) flag (which is removed now).
 cdr           default: FDLMCX=0.0 (from initialisation phase) means:
@@ -597,16 +597,22 @@ C  BULK PARTICLE INDEX
             LGMEL(IMOL,IDSC,1)=IPLS
 C
 C  SPECIAL TREATMENT: BGK COLLISIONS AMONGST TEST PARTICLES
+C  
             IF (IBGKM(IMOL,NRC).NE.0) THEN
               IF (NPBGKM(IMOL).EQ.0) THEN
 C  IMOL HAS NOT YET BEEN LABELLED AS BGK SPECIES.
-C  DO THIS HERE: IMOL IS BGK SPECIES NO. IBGK_SP, AND HAS 3 ADDITIONAL BGK TALLIES IN UPTBGK
+C  DO THIS HERE: IMOL IS BGK SPECIES NO. IBGK_SP, 
+C  AND HAS 3 ADDITIONAL BGK TALLIES IN UPTBGK
                 NRBGI=NRBGI+3
                 IBGK_SP=NRBGI/3
                 NPBGKM(IMOL)=IBGK_SP
+              ELSE
+cdr imol is already a bgk species.
+        
               ENDIF
               IF (NPBGKP(IPLS,1).EQ.0) THEN
                 NPBGKP(IPLS,1)=NPBGKM(IMOL)
+cdr this is too special.
               ELSE
                 GOTO 999
               ENDIF
@@ -614,7 +620,8 @@ C  SELF- OR CROSS-COLLISION?
               ITYPB=EIRENE_IDEZ(IBGKM(IMOL,NRC),1,3)
               ISPZB=EIRENE_IDEZ(IBGKM(IMOL,NRC),3,3)
               IF (ITYPB.NE.2.OR.ISPZB.NE.IMOL) THEN
-C  CROSS-COLLISION !
+C  CROSS-COLLISION ! SET THE SECOND TEST PARTICLE SPECIES
+C                    INVOLVED IN THIS PROCESS
                 IF (NPBGKP(IPLS,2).EQ.0) THEN
                   NPBGKP(IPLS,2)=IBGKM(IMOL,NRC)
                 ELSE
@@ -815,12 +822,6 @@ C
       WRITE (iunout,*) 'IMOL = ',IMOL
       WRITE (iunout,*) 'ISWR(KK) = ',ISWR(KK)
       WRITE (iunout,*) 'EXIT CALLED'
-      CALL EIRENE_EXIT_OWN(1)
-  996 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSECTM: EXIT CALLED'
-      WRITE (iunout,*) 'NO COLLISION DATA AVAILABLE FOR THE CHOICE'
-      WRITE (iunout,*) 'OF POST-COLLISION SAMPLING FLAG ISCDEA'
-      WRITE (iunout,*) 'OR OTHER COLLISION DATA INCONSISTENCY'
       CALL EIRENE_EXIT_OWN(1)
   998 CONTINUE
       WRITE (iunout,*) 'INSUFFICIENT STORAGE FOR PI: NRPI=',NRPI

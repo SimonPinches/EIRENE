@@ -8,6 +8,7 @@ C  CALLED FROM CONE
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
+      USE EIRMOD_PL3D, ONLY: EIRENE_PL3D
 
       IMPLICIT NONE
 
@@ -17,24 +18,18 @@ C
      .                      BX, BY, BZ, CX, CY, CZ, DANG
       INTEGER, INTENT(IN) :: I, JA, JE, IXS
       REAL(DP) :: EPS12, XK2, YK2, PXX1, PYY1, PZZ1, PXX2, PYY2, PZZ2,
-     .          PX2, PY2, PZ2, XK1, YK1, PHI, DET, ALAM1, ALAM2, ROOT,
+     .          XK1, YK1, PHI, DET, ALAM1, ALAM2, ROOT,
      .          XX, YY, ZZ, CC, PX21, PY21, PZ21, ALAMDA, AA, BB, XN,
-     .          RAD1, RAD2, PX1, PY1, PZ1
+     .          RAD1, RAD2
       INTEGER :: J, IX
       LOGICAL LERR
 
-      DATA EPS12 /1.E-12/
+      DATA EPS12 /1.E-12_DP/
 
       LERR=.FALSE.
       IX=IXS-1
       RAD1=T1*TAN(ALF)
       RAD2=T2*TAN(ALF)
-      PX1=X0+T1*VX
-      PY1=Y0+T1*VY
-      PZ1=Z0+T1*VZ
-      PX2=X0+T2*VX
-      PY2=Y0+T2*VY
-      PZ2=Z0+T2*VZ
       DO 100 J=JA,JE
         PHI=(J-1)*DANG
         XK1=RAD1*COS(PHI)

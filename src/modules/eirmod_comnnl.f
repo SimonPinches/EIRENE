@@ -3,6 +3,13 @@
 !               IPART (MPRNL,NPARTT) --> IPART (MPARTT,NPRNL)
 !               RPARTC(NPRNL,NPARTT) --> RPARTC(NPARTT,NPRNL)
 !               IPARTC(MPRNL,NPARTT) --> IPARTC(MPARTT,NPRNL)
+cdr:  rpart, ipart:  "true census" arrays, real and integer.
+cdr:  rpartc,ipartc: copies of census arrays, needed for sampling (bootstrapping)
+cdr                  from old census, while already filling the new census
+cdr   rpartw:  cumulated weight from census, set at the end of timestep (TMSTEP.f)
+cdr            from the weights stored on rpart, for bootstrapping in next timestep
+cdr            (in subr. LOCATE.f)
+
 
       MODULE EIRMOD_COMNNL
 

@@ -90,7 +90,6 @@ C
       USE EIRMOD_CZT1
       USE EIRMOD_COMPRT
       USE EIRMOD_COMXS
-      USE EIRMOD_CTRCEI , ONLY: TRCAMD
       USE EIRMOD_CSPEI
       USE EIRMOD_PHOTON
 
@@ -107,7 +106,7 @@ C
      .            XC,YC,ZC,
 cdr  functions for 'on the fly' evaluation of a&m data
      .            EIRENE_FEPLPH3
-      INTEGER :: J, KK, irph, ipph, IL,
+      INTEGER :: J, KK, irph, ipph, IL, jpls,
      .           IPLSV
 C
 C  SET DEFAULTS: NO REACTIONS
@@ -125,23 +124,23 @@ C   LOCAL PLASMA PARAMETERS
 C
       DENEL=DEIN(K)
 
-      DO 2 IPLS=1,NPLSI
-        ZTI(IPLS)=ZT1(IPLS,K)
-        DENIO(IPLS)=DIIN(IPLS,K)
+      DO 2 JPLS=1,NPLSI
+        ZTI(JPLS)=ZT1(JPLS,K)
+        DENIO(JPLS)=DIIN(JPLS,K)
     2 CONTINUE
 C
 C  TRANSFORM TEST PARTICLE VELOCITY TO FRAME MOVING WITH BULK SPECIES IPLS
 C            PVELQ(IPLSV) IS THE VELOCITY IN THESE REFERENCE FRAMES, SQUARED 
 C
       PVELQ0=VEL*VEL
-      DO 3 IPLS=1,NPLS
-        IPLSV=MPLSV(IPLS)
+      DO 3 JPLS=1,NPLS
+        IPLSV=MPLSV(JPLS)
         IF (NLDRFT) THEN
           IF (INDPRO(4) == 8) THEN
             XC=0.
             YC=0.
             ZC=0.
-            CALL EIRENE_VECUSR (2,K,XC,YC,ZC,VX,VY,VZ,IPLS,.FALSE.)
+            CALL EIRENE_VECUSR (2,K,XC,YC,ZC,VX,VY,VZ,JPLS,.FALSE.)
           ELSE
             VX=VXIN(IPLSV,K)
             VY=VYIN(IPLSV,K)
@@ -159,10 +158,9 @@ c  PH processes (photonic reactions)
 cdr:  unfinished. Do not use.
 c
 csw
-   60 CONTINUE
       if(phv_lgphot(iphot,0,0) == 0) goto 70
       do 61 ipph=1,phv_nphoti(iphot)
-        IRPH=phv_lgphot(iphot,ipph,0)  !  -->  lgxph, with x=ph, IRPH corresponds to: irei, ircx, ....
+        irph =phv_lgphot(iphot,ipph,0) !  -->  lgxph, with x=ph, IRPH corresponds to: irei, ircx, ....
         ipls =phv_lgphot(iphot,ipph,1) !  -->  ipls: bulk, mit der interation, wie bei anderen auch.
         il   =phv_lgphot(iphot,ipph,2) !  -->   diese gibt es nicht bei ei, pi, cx,... prozessen
 cdr     il wird hier nirgends verwendet! kann ev. ganz raus aus photonenmodul
@@ -252,10 +250,8 @@ C  MEAN ENERGY FROM DRIFTING MAXWELLIAN
 c
 C     TOTAL
 C
-  100 CONTINUE
-
 C
-C  CUT-OFF RESIDUAL RATES, WHICH SHOULD STRICTLY BE ZERO
+C  CUT OFF RESIDUAL RATES, WHICH SHOULD STRICTLY BE ZERO
 C  TO AVOID SPURIOUS ENTRIES TO COLLISION RATE TALLIES
 C  CURRENTLY: CUT-OFF AT 1E-10 TIMES SIGMAX
 C

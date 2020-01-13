@@ -28,7 +28,7 @@ C
       USE EIRMOD_CTETRA
       USE EIRMOD_CGRPTL
       USE EIRMOD_CCONA
-      USE EIRMOD_COMPRT, ONLY: IUNOUT
+cdr   USE EIRMOD_COMPRT, ONLY: IUNOUT
 
       IMPLICIT NONE
 
@@ -37,7 +37,6 @@ C
      .           NST, I, NSTAB, NRPS, IT, IF, IA, IE, ANZ
       integer :: ird1,ird2,ird3,ird4,ird5,ird6,ird7,ird8
       integer :: igroups, ipoints, ipl
-      integer :: is, is1, anz2
       real(DP), ALLOCATABLE :: phelp(:,:),valcont(:), xcont(:), ycont(:)
       real(DP) :: xm, ym, length_m_p, xgeomin, xgeomax,
      .            ygeomin, ygeomax, epsrel, ahelp, vecax, vecay, vecbx,
@@ -228,7 +227,7 @@ C
         DO 1100 IR=1,NR1ST
           DO 2100 IT=1,NT3RD
 
-C  FORT 60+IF WAS WRITTEN IN RPSCOL OR RPSVEC IN SAME DO LOOPS
+C  FORT 70+IF WAS WRITTEN IN RPSCOL OR RPSVEC IN SAME DO LOOPS
             DO 2105 IF=1,IRAPS
               READ (IUNRAPSVEC+IF,*) YWERT(IF)
  2105       CONTINUE
@@ -322,7 +321,7 @@ C
      .                  ypol(ir,NPOINT(1,IPPLG):NPOINT(2,IPPLG))))
               DO 30 IP=NPOINT(1,IPPLG),NPOINT(2,IPPLG)
 
-C  FORT 60+IF WAS WRITTEN IN RPSCOL OR RPSVEC IN SAME DO LOOPS
+C  FORT 70+IF WAS WRITTEN IN RPSCOL OR RPSVEC IN SAME DO LOOPS
                 DO 25 IF=1,IRAPS
                   READ (IUNRAPSVEC+IF,*) YWERT(IF)
    25           CONTINUE
@@ -700,12 +699,12 @@ C
           igr=igroups+1
           epsrel = (xgeomax-xgeomin+ygeomax-ygeomin)/2.*eps5
           do icont=1,ncontour
-            write(IUNRAPS,*) 'xcontour ycontour icont: ',icont
+            write(IUNRAPS+ifoff,*) 'xcontour ycontour icont: ',icont
             do ipoint = 1,nconpoint(icont)
-               write(IUNRAPS,'(2es12.4)') xcontour(ipoint,icont),
+               write(IUNRAPS+ifoff,'(2es12.4)') xcontour(ipoint,icont),
      .              ycontour(ipoint,icont)
             enddo
-            write(IUNRAPS,*)
+            write(IUNRAPS+ifoff,*)
 c           bereinigte contour erstellen
             xcont(1:nconpoint(icont))=xcontour(1:nconpoint(icont),icont)
             ycont(1:nconpoint(icont))=ycontour(1:nconpoint(icont),icont)
@@ -856,9 +855,9 @@ c     punkt in richtung m verschieben
              endif
             enddo
             do ipl=0,iplane-1
-               write(IUNRAPS,*) 'origx origy neux neuy'
+               write(IUNRAPS+ifoff,*) 'origx origy neux neuy'
                do ipoint=1,ncont-1
-                  write(IUNRAPS,'(4es12.4)')
+                  write(IUNRAPS+ifoff,'(4es12.4)')
      .                 xcont(ipoint), ycont(ipoint),
      .                 phelp(ipoint,1),phelp(ipoint,2)
 c     punkte schreiben

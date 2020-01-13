@@ -66,6 +66,7 @@ c  surface-averaged spectra
      .                     ' ADDITIONAL SURFACE ',I
           END IF
           IF (ESTIML(ISPC)%IDIREC > 0) THEN
+cdr  this option apparently does not exist yet, in update_spectrum
             WRITE (iunout,'(A,3(ES12.4,A1))')
      .      ' IN DIRECTION (',ESTIML(ISPC)%SPCVX,',',
      .      ESTIML(ISPC)%SPCVY,',',ESTIML(ISPC)%SPCVZ,')'
@@ -80,7 +81,7 @@ c  surface-averaged spectra
      .                'INCIDENT ENERGY FLUX IN WATT/BIN(EV)    '
             UNITOUT=UNITINT(2)
           END IF
-c  "cell based spectra"
+cdr  "cell-based spectra", scoring cell (coarse grid)
         ELSE IF (ESTIML(ISPC)%ISRFCLL == 1)  THEN
           WRITE (IOUT,'(A,A,I6)') ' SPECTRUM CALCULATED FOR',
      .                   ' SCORING CELL ',I
@@ -99,7 +100,8 @@ c  "cell based spectra"
             WRITE (iunout,'(A20,A)') ' TYPE OF SPECTRUM : ',
      .        'SPECTRAL MOMENTUM DENSITY IN (G*CM/S)/CM**3/BIN(EV)    '
           END IF
-c  directional spectra in cell
+cdr  "cell-based spectra", geometry cell (fine grid)
+cdr  otherwise: identical code as above
         ELSE IF (ESTIML(ISPC)%ISRFCLL == 2)  THEN
           WRITE (IOUT,'(A,A,I6)') ' SPECTRUM CALCULATED FOR',
      .                   ' GEOMETRICAL CELL ',I

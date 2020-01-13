@@ -56,11 +56,12 @@ cdr  sept 18: typo in CTEXT(2)  (size of array) corrected
       ELSE IF (ICAL == 2) THEN
 
         IF (ALLOCATED(TXTTAL)) RETURN
-
+cdr output tallies
         ALLOCATE (TXTTAL(N1MX,NTALV))
-        ALLOCATE (TXTPLS(N1MX,NTALI))
         ALLOCATE (TXTSPC(N1MX,NTALV))
         ALLOCATE (TXTUNT(N1MX,NTALV))
+cdr input tallies
+        ALLOCATE (TXTPLS(N1MX,NTALI))
         ALLOCATE (TXTPSP(N1MX,NTALI))
         ALLOCATE (TXTPUN(N1MX,NTALI))
 
@@ -121,9 +122,10 @@ cdr  sept 18: typo in CTEXT(2)  (size of array) corrected
       ELSE IF (ICAL == 2) THEN
 
         TXTTAL = ' '
-        TXTPLS = ' '
         TXTSPC = ' '
         TXTUNT = ' '
+
+        TXTPLS = ' '
         TXTPSP = ' '
         TXTPUN = ' '
 

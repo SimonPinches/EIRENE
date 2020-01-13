@@ -12,7 +12,7 @@ cdr aug.17    :  bug fix. cond exp. estimator, on purely absorbing surface.
 c                return 3, if icol=1, even for purely absorbing surfaces.
 c                plus some minor clean-up, commenting.
 c 06.08.15    :  arguments added to vecusr
-c   aug.15    :  periodicity and icol=1, return 3 rather than return 2
+c   aug.15    :  periodicity and icol=1, return iret=3 rather than return iret=2
 C   OCT.14    :  ARGUMENTS IN VELOCS: WEIGHT AND VWL
 C   OCT.14    :  SPUTTERING:  SCORE FLUXES ALSO IN CASE SPUTTERED PARTICLES ARE NOT FOLLOWED
 c                new meaning of isrs, isrc=0:  sputter, score fluxes, but do not follow.
@@ -39,7 +39,8 @@ CDR 25.02.04: return, return1 for reflected flux tallies moved after call
 CDR 25.02.04:                 to upsusr, update_spectrum (from eirene_02)
 
 C
-      SUBROUTINE EIRENE_ESCAPE(PR,SG,*,*,*)
+!PB   SUBROUTINE EIRENE_ESCAPE(PR,SG,*,*,*)
+      SUBROUTINE EIRENE_ESCAPE(PR,SG,IRET)
 C
 C  PROCESS ESCAPING PARTICLES
 C  INPUT:
@@ -55,10 +56,10 @@ C        ICOL:  =1:  CONDITIONAL EXPECTATION ESTIMATOR, AND AN EARLIER COLLISION
 C                    ALONG THIS TRACK IS STORED
 C
 C  RETURN  : STOP TRACK OF THIS PARTICLE TYPE. RETURN TO SUBR. MCARLO
-C  RETURN 1: START NEW TRACK OF SAME TYPE IN CALLING PROGRAM
+C  RETURN IRET=1: START NEW TRACK OF SAME TYPE IN CALLING PROGRAM
 C            (I.E. IN FOLNEUT OR FOLION)
-C  RETURN 2: CONTINUE THIS TRACK IN CALLING PROGRAM (TRANSP. SURFACE)
-C  RETURN 3: RESTORE COLLISION DATA, CONDITIONAL EXPECTATION WAS USED
+C  RETURN IRET=2: CONTINUE THIS TRACK IN CALLING PROGRAM (TRANSP. SURFACE)
+C  RETURN IRET=3: RESTORE COLLISION DATA, CONDITIONAL EXPECTATION WAS USED
 C
 C
       USE EIRMOD_PRECISION
@@ -82,10 +83,14 @@ C
       USE EIRMOD_CSDVI
       USE EIRMOD_RANF, ONLY: RANF_EIRENE
       USE EIRMOD_SWITCH_PARTINFO, ONLY: EIRENE_SWITCH_PARTINFO
+      USE EIRMOD_SPUTER, ONLY: EIRENE_SPUTR1
+      USE EIRMOD_REFLEC, ONLY: EIRENE_REFLC1
+      USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
 
       IMPLICIT NONE
 
       REAL(DP), INTENT(IN) :: PR, SG
+      INTEGER, INTENT(OUT) :: IRET
       REAL(DP) :: DIWL(NPLS), VPWL(NPLS)
       REAL(DP) :: VXSPTC, VYSPTC, VZSPTC, VSPTC, ESPTC, VXSPTP,
      .          VYSPTP, VZSPTP, ESPTP, VELXS, VELYS, VELZS, VSPTP, TW,
@@ -100,7 +105,8 @@ ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
      .           ITYP_OLD,IGASP_OLD,IGASC_OLD
       LOGICAL :: NLSPUT, LTRANS
 C
-
+      IRET = 0
+      
       IF (IMETWL(MSURF) == 0) THEN
         NWLMT = NWLMT+1
         IWLMT(NWLMT) = MSURF
@@ -128,15 +134,18 @@ C  CONDITIONAL EXPECTATION ESTIMATOR: HAS THIS PARTICLE COLLIDED IN THE VOLUME,
 C  BEFORE IT HIT THE WALL?
         IF (ICOL.EQ.1) then
           colflag = .true.  ! probably unused, perhaps in TIM?
-          RETURN 3
+          IRET = 3
+          RETURN
         ENDIF
 C  NO, PARTICLE HAS ARRIVED AT PERIODICITY SURFACE MSURF
         IF (.NOT.LGPART) THEN
           WRITE (IUNOUT,*) 'ERROR AT PERIODICITY SURFACE, LGPART=FALSE '
+          IRET = 0
           RETURN
         ENDIF
         IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,11)
-        RETURN 1
+        IRET = 1
+        RETURN 
       ENDIF
 C
 C  .............................
@@ -173,6 +182,7 @@ c         FLX=FLXOUT(MSURFG)
         FLX=FLXOUT(MSURF)
       ELSE
         WRITE (iunout,*) 'ERROR IN ESCAPE: MSURF=0. KILL PARTICLE '
+        IRET = 0
         RETURN
       ENDIF
 C
@@ -315,7 +325,8 @@ C             VEL=SQRT(E0)*RSQDVI(IION)
                 EVCQ=VCQ/(RSQDVI(IION)*RSQDVI(IION))
                 WRITE (IUNOUT,*)  'ESHEAT,EVCQ,E0 ',ESHET,EVCQ,E0
               ENDIF
-              RETURN 1
+              IRET = 1
+              RETURN
             ENDIF  !  REFLECT AT SHEATH OR TRANSMISSION ?
           ENDIF !  SHEATH > < 0 ?
 
@@ -342,7 +353,10 @@ C  ADDITIONAL OUTGOING SURFACE FLUX TALLIES
 C
 C  STOP TRAJECTORY, WITHOUT SPUTTERING, FOR SOME REASON IN SUBROUTINE ADDCOL OR STDCOL
 C
-      IF (.NOT.LGPART.AND.WPR.LE.0.0.AND.ICOL.EQ.0) RETURN
+      IF (.NOT.LGPART.AND.WPR.LE.0.0.AND.ICOL.EQ.0) THEN
+        IRET = 0
+        RETURN
+      END IF
 
 C  PURELY ABSORBING SURFACE. ALSO: NO SPUTTERING HERE
       IF (ILIIN(MSURF).EQ.2) GOTO 50
@@ -465,11 +479,16 @@ C
         NLTRJ = .FALSE.
         TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
 
-        IF (ICOL.EQ.1) RETURN 3 ! conditional expectation estimator. Continue.
-C
+!pb     IF (ICOL.EQ.1) RETURN 3 ! conditional expectation estimator. Continue.
+        IF (ICOL.EQ.1) THEN
+          IRET = 3
+          RETURN                ! conditional expectation estimator. Continue.
+        END IF
+C     
         WEIGHT=0.D0
         LGPART=.FALSE.
 
+        IRET = 0
         RETURN
       ENDIF
 C
@@ -537,7 +556,8 @@ C  SCORED ABOVE.
         IF (NADSI.GE.1) CALL EIRENE_UPSUSR (WPR,2)
         IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM (WPR,2,0)
         COLFLAG = .TRUE.
-        RETURN 2
+        IRET = 2
+        RETURN
 C
 C  ... OR: PERFECT SPECULAR REFLECTION
 C
@@ -550,8 +570,13 @@ C
         IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM (WPR,2,0)
 C       NLTRJ = .FALSE.
 C       TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
-        IF (ICOL.EQ.1) RETURN 3
-        RETURN 1
+!pb     IF (ICOL.EQ.1) RETURN 3
+        IF (ICOL.EQ.1) THEN
+          IRET = 3
+          RETURN
+        END IF
+        IRET = 1        
+        RETURN
       ENDIF
 C
 C   .........................
@@ -617,11 +642,10 @@ C
         IF (NADSI.GE.1) CALL EIRENE_UPSUSR (WPR,2)
         IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM (WPR,2,0)
         colflag = .true.
-      RETURN 2
+        IRET = 2
+        RETURN
       ENDIF
 C
-C
-  100 CONTINUE
 C
 C   .............................
 C   .                           .
@@ -640,7 +664,8 @@ C
       IF (ICOL.EQ.1) THEN
 cdr     NLTRJ = .FALSE.
 cdr     TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
-        RETURN 3
+        IRET = 3
+        RETURN
       END IF
 C
 C  ..........................................................................
@@ -655,8 +680,6 @@ C  .                                                    .
 C  .  REFLECTION MODEL 600--699 FOR INCIDENT MOLECULES  .
 C  ......................................................
 C
-C
-  600 CONTINUE
 C
       IF (ITYP.EQ.2) THEN
 C
@@ -677,6 +700,7 @@ C  WITH SUPPRESSION OF ABSORPTION
           ENDIF
           IF (WEIGHT.GT.EPS30) GOTO 610
           LGPART=.FALSE.
+          IRET = 0
           RETURN
         ELSEIF (RECYCT(ISPZ,MSURF).NE.1.D0) THEN
 C  NO SUPPRESSION OF ABSORPTION
@@ -691,6 +715,7 @@ C  ABSORB THIS PARTICLE
             LMETSPW(ISPZ) = .TRUE.
           ENDIF
           LGPART=.FALSE.
+          IRET = 0
           RETURN
         ENDIF
 C
@@ -718,6 +743,7 @@ C  NO THERMAL EMISSION, ABSORB INSTEAD
             LMETSPW(ISPZ) = .TRUE.
           ENDIF
           LGPART=.FALSE.
+          IRET = 0
           RETURN
         ELSEIF (IMOL.LT.0) THEN
 C  NOT IN USE
@@ -734,7 +760,6 @@ C
         IF (E0TERM.GT.0) THEN
 C  MONOENERGETIC DISTRIBUTION
           E0=E0TERM
-          E0_MEAN=E0
           VEL=RSQDVM(IMOL)*SQRT(E0)
 C   AZIMUTHAL ANGLE: EQUIDISTRIBUTION
 C   POLAR ANGLE: COSINE
@@ -759,7 +784,6 @@ c are INTENT(IN) !
      .                      CVRSSM(IMOL),
      .                     -CRTX,-CRTY,-CRTZ,
      .                      E0,VELX,VELY,VELZ,VEL)
-          E0_MEAN=2._DP*TW
         ELSE
           WRITE (iunout,*) 'ERROR IN ESCAPE, EXIT CALLED'
           CALL EIRENE_EXIT_OWN(1)
@@ -944,6 +968,7 @@ C
 C
 C  UPDATE REFLECTED PARTICLE AND ENERGY FLUX
 C
+      IRET = 0
       IF (.NOT.LGPART) RETURN
 C
 C  ITYP_OLD.NE.ITNEW=ITYP POSSIBLE
@@ -956,9 +981,16 @@ C
 C     NLTRJ = .FALSE.
 C     TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
 
-      IF  (ITYP.EQ.ITYP_OLD) RETURN 1
+      IF  (ITYP.EQ.ITYP_OLD) THEN
+        IRET = 1
+        RETURN
+      END IF
       IF ((ITYP.EQ.1.AND.ITYP_OLD.EQ.2).OR.
-     .    (ITYP.EQ.2.AND.ITYP_OLD.EQ.1)) RETURN 1
+     .     (ITYP.EQ.2.AND.ITYP_OLD.EQ.1)) THEN
+        IRET = 1
+        RETURN
+      END IF
+      IRET = 0
       RETURN
 C
   995 CONTINUE

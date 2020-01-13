@@ -1,3 +1,10 @@
+cdr  Aug 19  : Cleanup. The routine MECKER is
+cdr            now contained here.
+cdr            tbd:
+cdr            Similarly: ZERLEG, RUKSUB, OPRAND,
+cdr            SUBTIT, SCHRIT, SIGNOK can also
+cdr            be made local to this present module.
+cdr
 Cdr  Sept. 16: Bug fix: added option: two or more constants next to each other
 C
 C-----------------------------------------------------------------------
@@ -162,7 +169,7 @@ chr               als zwischenergebnis
                     if (feldind == 0) then
                       READ(PART(I)(12:12),'(I1)') IZIF(1,I)
                       IZIF(2,I)=0
-                    else   
+                    else
                       IK=INDEX(ERSETZ(FELDIND),',')
                       IF (IK.EQ.0) THEN
                         IC = IC + 1
@@ -292,4 +299,75 @@ C
 C     ENDE VON ALGEBR
 C
       RETURN
+
+      CONTAINS
+
+cdr This routine writes "complaint messages"
+cdr from ALGEBR, i.e. from the routines
+cdr that try to decipher the coded algebraic
+cdr expressions for the algebraic tallies
+cdr ALGV, ALGS specified in input block 10C and 10E, resp.
+cdr Mecker.f should be moved into ALGEBR.f
+
+
+C-----------------------------------------------------------------------
+                SUBROUTINE EIRENE_MECKER(ERROR)
+C-----------------------------------------------------------------------
+C
+C     FUNKTION:
+C
+C     AUSGABE DER REGELVERLETZUNGEN
+C
+C-----------------------------------------------------------------------
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
+      IMPLICIT NONE
+
+C
+C     EINGABEPARAMETER :
+C
+         INTEGER, INTENT(IN) :: ERROR
+C           : FEHLERVARIABLE: > 0, FALLS EIN FEHLER AUFGETRETEN
+
+
+      IF     (ERROR .EQ.  1) THEN
+        WRITE(iunout,*) 'DER AUSDRUCK ENTHAELT EIN UNGUELTIGES ZEICHEN.'
+      ELSEIF (ERROR .EQ.  2) THEN
+        WRITE(iunout,*)
+     >  'ZWISCHEN ZWEI KLAMMERAUSDRUECKEN BEFINDET SICH',
+     >  ' KEIN OPERATOR.'
+      ELSEIF (ERROR .EQ.  3) THEN
+         WRITE(iunout,*) 'EIN KLAMMERAUSDRUCK IST LEER.'
+      ELSEIF (ERROR .EQ.  4) THEN
+         WRITE(iunout,*) 'DER AUSDRUCK IST FALSCH GEKLAMMERT.'
+      ELSEIF (ERROR .EQ.  5) THEN
+         WRITE(iunout,*) 'DER AUSDRUCK ENTHAELT MEHR ALS 3 INEINANDER',
+     >              'GESCHACHTELTE KLAMMERN.'
+      ELSEIF (ERROR .EQ.  6) THEN
+        WRITE(iunout,*)
+     >  'EIN OPERAND BESTEHT AUS MEHR ALS ZWEI BUCHSTABEN.'
+      ELSEIF (ERROR .EQ.  7) THEN
+         WRITE(iunout,*) 'ZWEI OPERATOREN STEHEN NEBENEINANDER.'
+      ELSEIF (ERROR .EQ.  8) THEN
+         WRITE(iunout,*) 'NACH EINEM OPERATOR FOLGT EINE SCHLIESSENDE',
+     >              ' KLAMMER.'
+      ELSEIF (ERROR .EQ.  9) THEN
+        WRITE(iunout,*)
+     >  'DAS ERSTES ZEICHEN DES AUSDRUCKS IST OPERATOR, ',
+     >  'UND KEIN PRAEFIX.'
+      ELSEIF (ERROR .EQ. 10) THEN
+         WRITE(iunout,*) 'DER AUSDRUCK ENDET MIT EINEM OPERATOR.'
+      ELSEIF (ERROR .EQ. 11) THEN
+         WRITE(iunout,*) 'DAS ERSTE ZEICHEN IN EINEM KLAMMERAUSDRUCK',
+     >              ' IST EIN OPERATOR.'
+      ELSEIF (ERROR .EQ. 12) THEN
+         WRITE(iunout,*) 'DER AUSDRUCK ENTHAELT MEHR ALS 15 OPERATOREN.'
+      ELSEIF (ERROR .EQ. 13) THEN
+         WRITE(iunout,*) 'DIE (ANZAHL DER OPERANDEN)-1 IST UNGLEICH ',
+     >              ' DER (ANZAHL DER OPERATOREN).'
+      ENDIF
+C
+C     ENDE VON MECKER
+C
+      END SUBROUTINE EIRENE_MECKER
+
       END

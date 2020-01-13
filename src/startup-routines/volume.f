@@ -52,7 +52,7 @@ C
       REAL(DP), ALLOCATABLE, SAVE :: AREAP(:,:)
       REAL(DP) :: AREA1(0:N1ST)
       REAL(DP) :: PC1(3), PC2(3), PC3(3), PC4(3)
-      REAL(DP) :: AREAR, VOLSR, EIRENE_CAL_VOL, TWOTHIRD, VSAVE, FAC2,
+      REAL(DP) :: AREAR, EIRENE_CAL_VOL, TWOTHIRD, VSAVE, FAC2,
      .          FAC3,
      .          PI2AT, AELL, DONE, DNULL, SY, X1, X2, Y1, XNULL, SX,
      .          EIRENE_ARTRIA, AR, XC, Y2, X3, Y3, X4, Y4
@@ -66,9 +66,8 @@ C     IND=2: 2-ND GRID, POL. RESOLUTION
 C     IND=3: 3-RD GRID, TOR. RESOLUTION
 C     IND=4: ADDITIONAL CELL REGION
 C
-      GOTO(100,200,300,400),IND
-C
-  100 CONTINUE
+      SELECT CASE (IND)
+      CASE (1)
 C
       IF (.NOT.ALLOCATED(AREAP)) ALLOCATE (AREAP(N1STS,N2NDPLGS))
 
@@ -295,7 +294,6 @@ C
 C
 C  SET RADIAL SURFACE LABELING MESHES RHOSRF AND RHOZNE
 C
-      VOLSR=0.
       AREAR=0.
       select case (LEVGEO)
       case (1)
@@ -340,11 +338,9 @@ C
         CALL EIRENE_LEER(2)
       ENDIF
 C
-      RETURN
-C
 C  2D (R-THETA OR X-Y) VOLUME ELEMENTS
 C
-  200 CONTINUE
+      CASE (2) ! IND
 C
       select case (LEVGEO)
       case (1)
@@ -368,7 +364,7 @@ C
         IT=1
         DO 240 IR=1,NR1STM
           IRP=IR+1
-          DO 250 IP=1,NP2NDM
+          DO IP=1,NP2NDM
             IPP=IP+1
             CALL EIRENE_ARELLP(EP1(IRP),EP1(IR),ELL(IRP),ELL(IR),
      .                  TRI(IRP),TRI(IR),
@@ -379,7 +375,7 @@ C
             AREA(NCELL)=AELL
             XCOM(NCELL)=SX
             YCOM(NCELL)=SY
-  250     CONTINUE
+          END DO
   240   CONTINUE
 C
         IF (NLTRT) THEN
@@ -387,11 +383,10 @@ C
             DO J=1,NP2NDM
               K=1
               NCELL=I+((J-1)+(K-1)*NP2T3)*NR1P2
-!PB              VOL(NCELL)=AREA(NCELL)*(XCOM(NCELL)+RMTOR)*PI2A
               VOL(NCELL)=AREA(NCELL)*(XCOM(NCELL)+RMTOR)*ZDF
-              IF (VOL(NCELL).GE.0.D0) GOTO 262
+              IF (VOL(NCELL).GE.0.D0) CYCLE
               WRITE (iunout,*) 'ERROR IN SUBR. VOLUME, VOL.LT.0'
-              CALL EIRENE_MASJ2('J,I             ',I,J)
+              CALL EIRENE_MASJ2('I,J             ',I,J)
 C             CALL EIRENE_EXIT_OWN(1)
             END DO
   262     CONTINUE
@@ -401,9 +396,9 @@ C             CALL EIRENE_EXIT_OWN(1)
               K=1
               NCELL=I+((J-1)+(K-1)*NP2T3)*NR1P2
               VOL(NCELL)=AREA(NCELL)*ZDF
-              IF (VOL(NCELL).GE.0.D0) GOTO 260
+              IF (VOL(NCELL).GE.0.D0) CYCLE
               WRITE (iunout,*) 'ERROR IN SUBR. VOLUME, VOL.LT.0'
-              CALL EIRENE_MASJ2('J,I             ',I,J)
+              CALL EIRENE_MASJ2('I,J             ',I,J)
 C             CALL EIRENE_EXIT_OWN(1)
             END DO
   260     CONTINUE
@@ -415,9 +410,9 @@ C             CALL EIRENE_EXIT_OWN(1)
               K=1
               NCELL=I+((J-1)+(K-1)*NP2T3)*NR1P2
               VOL(NCELL)=AREA(NCELL)*(XCOM(NCELL)+RMTOR)*PI2AT
-              IF (VOL(NCELL).GE.0.D0) GOTO 261
+              IF (VOL(NCELL).GE.0.D0) CYCLE
               WRITE (iunout,*) 'ERROR IN SUBR. VOLUME, VOL.LT.0'
-              CALL EIRENE_MASJ2('J,I             ',I,J)
+              CALL EIRENE_MASJ2('I,J             ',I,J)
 C             CALL EIRENE_EXIT_OWN(1)
             END DO
   261     CONTINUE
@@ -441,9 +436,9 @@ C
 !PB                VOL(NCELL)=ABS(AREAP(I,J))*(XCOM(NCELL)+RMTOR)*PI2A
                 IF (NSTGRD(NCELL) == 0) THEN
                   VOL(NCELL)=ABS(AREAP(I,J))*(XCOM(NCELL)+RMTOR)*ZDF
-                  IF (VOL(NCELL).GE.0.D0) GOTO 265
+                  IF (VOL(NCELL).GE.0.D0) CYCLE
                   WRITE (iunout,*) 'ERROR IN SUBR. VOLUME, VOL.LT.0'
-                  CALL EIRENE_MASJ2('J,I             ',I,J)
+                  CALL EIRENE_MASJ2('I,J             ',I,J)
 C                 CALL EIRENE_EXIT_OWN(1)
                 ELSE
                   VOL(NCELL) = 0._DP
@@ -468,9 +463,9 @@ C                 CALL EIRENE_EXIT_OWN(1)
                 END IF
                 IF (NSTGRD(NCELL) == 0) THEN
                   VOL(NCELL)=ABS(AREAP(I,J))*(XCOM(NCELL)+RMTOR)*PI2AT
-                  IF (VOL(NCELL).GE.0.D0) GOTO 267
+                  IF (VOL(NCELL).GE.0.D0) CYCLE
                   WRITE (iunout,*) 'ERROR IN SUBR. VOLUME, VOL.LT.0'
-                  CALL EIRENE_MASJ2('J,I             ',I,J)
+                  CALL EIRENE_MASJ2('I,J             ',I,J)
 C                 CALL EIRENE_EXIT_OWN(1)
                 ELSE
                   VOL(NCELL) = 0._DP
@@ -495,7 +490,7 @@ C                 CALL EIRENE_EXIT_OWN(1)
                   VOL(NCELL)=ABS(AREAP(I,J))*ZDF
                   IF (ABS(VOL(NCELL)) < EPS10) THEN
                     WRITE (iunout,*) 'ERROR IN SUBR. VOLUME, VOL.EQ.0'
-                    CALL EIRENE_MASJ2('J,I             ',I,J)
+                    CALL EIRENE_MASJ2('I,J             ',I,J)
                   END IF
                 ELSE
                   VOL(NCELL) = 0._DP
@@ -519,11 +514,9 @@ C  GENERAL GEOMETRY OPTION: NOTHING TO BE DONE HERE
 C
       end select
 C
-      RETURN
-C
 C    2D (R-Z), (R-PHI) OR (X-Z) VOLUME ELEMENTS
 C
-  300 CONTINUE
+      CASE (3) ! IND
 C
       IF (NLTRZ.OR.NLTRA.OR.NLTRT) THEN
 C
@@ -542,11 +535,9 @@ C
 C
       ENDIF
 C
-      RETURN
-C
 C   ADDITIONAL CELL VOLUMES
 C
-  400 CONTINUE
+      CASE (4) ! IND
 C
 C   ADDITIONAL CELL VOLUMES ARE DEFAULTED TO 1. AT PRESENT
 C
@@ -561,9 +552,7 @@ C
 
       DEALLOCATE (AREAP)
 C
+      END SELECT ! IND
       RETURN
 C
-  999 CONTINUE
-      WRITE (iunout,*) 'UNWRITTEN OPTION CALLED IN SUBR. VOLUME '
-      CALL EIRENE_EXIT_OWN(1)
       END

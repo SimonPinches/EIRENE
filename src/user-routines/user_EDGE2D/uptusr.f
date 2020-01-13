@@ -35,7 +35,7 @@ CDR
       REAL(DP), ALLOCATABLE, SAVE :: VPX(:),VPY(:),VRX(:),VRY(:)
 CDR
       INTEGER :: IAT, IPL, I, IR, IP, IRD
-      INTEGER, SAVE :: IFIRST, IA1, IA2, IA3, NA4, INDEXM, INDEXF
+      INTEGER, SAVE :: IFIRST, IA0, IA1, IA2, IA3, NA4, INDEXM, INDEXF
       DATA IFIRST/0/
 csw
       real(dp) :: dist,wtr
@@ -94,10 +94,11 @@ C
             VRY(IRD)=PPLNY(IR,IP)
           END DO
         END DO
-        IA1=NATMI+NMOLI
-        IA2=2*IA1
-        IA3=3*IA1
-        NA4=4*IA1
+        IA0=0
+        IA1=IA0+NATMI+NMOLI
+        IA2=IA1+NATMI+NMOLI
+        IA3=IA2+NATMI+NMOLI
+        NA4=IA3+NATMI+NMOLI
         INDEXM=NPLSI
         INDEXF=2*NPLSI
 csw

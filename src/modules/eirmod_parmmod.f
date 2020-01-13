@@ -180,7 +180,7 @@ C
         IF (NOPTIM < 0) NOPTIM = NRAD
 
 C  NSWIT: ELIMINATE SOME ARRAYS IN CASE OF LEVGEO=10 OPTION
-C                     (GEOMETRY ARRAYS OUTSIDE EIRENE-CODE)
+C                     (GEOMETRY ARRAYS OUTSIDE EIRENE CODE)
 C  ngeom_usr=1:  use eirene grid tallies RSURF, PSURF,...  (default)
 c  ngeom_usr=0:  eirene grid tallies are eliminated, no storage, (e.g. in case of levgeo=10)
         NSWIT=1-NGEOM_USR
@@ -216,10 +216,10 @@ C  PRIMARY SOURCE
         NSTRAP=NSTRA+1
 
 C  SPECIES AND TALLIES  NTALV: TOTAL NUMBER OF VOLUME OUTPUT TALLIES
-C                           NTALA: INDEX OF THE ADDITIONAL TRACKLENGTH
-C                                  ESTIMATED TALLY
-C                           NTALC: INDEX OF THE ADDITIONAL COLLISION
-C                                  ESTIMATED TALLY
+C                           NTALA: INDEX OF THE ADDITIONAL
+C                                  TRACKLENGTH-ESTIMATED TALLY
+C                           NTALC: INDEX OF THE ADDITIONAL
+C                                  COLLISION-ESTIMATED TALLY
 C                           NTALT: INDEX OF THE TIME DEP. TALLY
 C                                  (SNAPSHOT ESTIMATOR)
 C                           NTALM: INDEX OF THE TALLIES FOR COUPLING,

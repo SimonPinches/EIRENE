@@ -131,8 +131,8 @@
       integer, intent(in) :: nnx,nny
       call eirene_find_param
       call eirene_set_parmmod(1)
-      call eirene_alloc_braeir(nnx,nny,nfl,ifoff)
-      call eirene_alloc_eirbra(nnx,nny,nfl,nstra,ifoff)
+      call eirene_alloc_braeir(nnx,nny,nfl)
+      call eirene_alloc_eirbra(nnx,nny,nfl,nstra)
       allocate (flux_save(nstra))
       flux_save=0.d0
       end subroutine

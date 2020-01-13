@@ -2,10 +2,10 @@
 !pb APR   16:   eelds  -> eelei
 !pb MAY   16:   tabds1 -> tabei1
 cdr Nov   16    finalizing notational synchronisation (..DS.. (legacy) --> ..EI..)
-cdr Nov.  17:   1) sync with couple_B2 from git repository. done
-cdr             2) ESIG array: additional argument IPLS: done.
-cdr             3) RTIS% pointer to sploda,.....
-cdr             4) rates SEIODA, SEINWA added (was missing, used for ipls total ion energy density)
+cdr Nov.  17:   1: sync with couple_B2 from git repository. done
+cdr             2: ESIG array: additional argument IPLS: done.
+cdr             3: RTIS% pointer to sploda,.....
+cdr             4: rates SEIODA, SEINWA added (was missing, used for ipls total ion energy density)
 cdr                now: SEIOD(.., NPLS), SEINW(...,NPLS) added
 
 C  MAIN INTERFACING ROUTINE FOR COUPLED CFD-PLASMA - EIRENE APPLICATIONS
@@ -58,7 +58,6 @@ C     B2VP :  VOLUMETRIC ENERGY EXCHANGE (ELECTRONS-IONS) DUE TO WORK DONE BY EL
       USE EIRMOD_CCOUPL
       USE EIRMOD_CGEOM
       USE EIRMOD_CSDVI
-      USE EIRMOD_CSDVI_BGK
       USE EIRMOD_COMPRT
       USE EIRMOD_COMNNL
       USE EIRMOD_COMSOU
@@ -609,11 +608,11 @@ C
         DO JPLS=1,NPLSI
           IPLSTI= MPLSTI(JPLS)
           DO IN=1,NDXY
-!pb            SEINW(IN,IPLS)=DIIN(IPLS,IN)*
-!pb     .                      (1.5*TIIN(IPLSTI,IN)+EDRIFT(IPLS,IN))
+!pb            SEINW(IN,JPLS)=DIIN(JPLS,IN)*
+!pb     .                      (1.5*TIIN(IPLSTI,IN)+EDRIFT(JPLS,IN))
             EN = 1.5*TIIN(IPLSTI,IN)
-            IF (LEDRIFT) EN = EN + EDRIFT(IPLS,IN)
-            SEINW(IN,IPLS)=DIIN(IPLS,IN)*EN
+            IF (LEDRIFT) EN = EN + EDRIFT(JPLS,IN)
+            SEINW(IN,JPLS)=DIIN(JPLS,IN)*EN
           ENDDO
         ENDDO
 C

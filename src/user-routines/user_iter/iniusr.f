@@ -1,6 +1,6 @@
 
       SUBROUTINE EIRENE_iniUSR
-csw 22jul2011 modifications of input from b2.neutrals.namelist
+csw 22jul2011 modifications of input from b2.neutrals.parameters
 csw already read in into extrab25 module
       use eirmod_precision
       use eirmod_parmmod

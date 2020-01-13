@@ -45,7 +45,6 @@ cdr          by calling  EIRENE_EMISSIVITY(...)
       use eirmod_ctrcei
       USE EIRMOD_CESTIM
       USE EIRMOD_CSDVI
-      USE EIRMOD_CSDVI_BGK
       USE EIRMOD_COMPRT
 
       implicit none
@@ -55,7 +54,7 @@ cdr          by calling  EIRENE_EMISSIVITY(...)
       integer, intent(out) :: lno
       real(dp) :: ener_il
       integer :: iline
-      character(len=:), allocatable :: ctest1, ctest2
+      character(len=80) :: ctest1, ctest2
       logical :: found
 
       lno = 0
@@ -67,10 +66,10 @@ cdr  to set volumetric emission profiles on ADDV array, also without any chords.
 
       if (len_trim(ch_line_name(ichori)) > 0) then
 ! find corresponding line from line names
-        ctest1 = adjustl(trim(ch_line_name(ichori)))
+        ctest1 = ch_line_name(ichori)
 
         do iline = 1, num_lines
-           ctest2 = adjustl(trim(emis_lines(iline)%line_name))
+           ctest2 = emis_lines(iline)%line_name
            if (ctest1 == ctest2) then
              found = .true.
              lno = iline
@@ -81,10 +80,10 @@ CDR
         IF (FOUND) THEN
           WRITE (IUNOUT,*) 'EMISSION LINE identified by NAME,',
      .                     ' iline=',LNO
-          WRITE (IUNOUT,*) 'name: ',CTEST2   ! =CTEST1
+          WRITE (IUNOUT,*) 'name: ',trim(CTEST2)   ! =CTEST1
         ELSE
           WRITE (IUNOUT,*) 'NO EMISSION LINE identified by NAME'
-          WRITE (IUNOUT,*) 'name: ',CTEST1
+          WRITE (IUNOUT,*) 'name: ',trim(CTEST1)
         ENDIF
       else
         WRITE (IUNOUT,*) 'NO EMISSION LINE identified by NAME'
@@ -130,7 +129,6 @@ C  NOTHING TO BE DONE
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .             NSIGI_SPC,TRCFLE)
       ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.ISTR.EQ.0) THEN
         IESTR=ISTR
@@ -138,7 +136,6 @@ C  NOTHING TO BE DONE
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .             NSBGK,SIGMA_BGK,NBGV_STAT,SGMS_BGK,
      .             NSIGI_SPC,TRCFLE)
       ELSE
         WRITE (IUNOUT,*) 'ERROR IN FIND_EMIS_LINE: ' //

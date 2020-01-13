@@ -6,13 +6,18 @@
 !pb 090309  rewritten to use automatic arrays as output buffer in mpi_reduce
 !pb 090309  loops reorganized
 !pb 270309  typos corrected
-!sw 091112  added support for csdvi_bgk
 
 cdr Nov. 15:  comments needed. copv tallies: variances for coupling ??
 cdr                            to be checked again after changes in 2013
 cdr dec. 15:  eppli: now resolved wrt. species index ipls, added
 cdr july 17:  comments re. call to user routine: calstr_usr.
 cpb Dec. 17:  remove type SPECT_ARRAY, not needed in Fortran 2003
+cdr Mar. 19:  further comments, 
+cdr           tbd: sync coding for estiml variances with those of other variance tallies 
+cdr           tbd: Make allocatable: helps, dummys
+cdr           Dimensioning of covariance tallies is likely incorrect:
+cdr           Can cause problems in case of few cells (0-d "box" cases)
+cdr           with many covariance tallies.
 
 C> \brief Collect results from worker processes onto master process of
 C> stratum
@@ -43,14 +48,12 @@ C> - tallies
       USE EIRMOD_COMPRT, ONLY: ISTRA
       USE EIRMOD_CPES, ONLY: NEED_CALSTR, CALC_STRATUM, GET_STRATUM_COMM
       USE EIRMOD_CSDVI, ONLY: NSIGI_SPC, SDVI1, SDVI2, SIGMAC, SGMCS
-      USE EIRMOD_CSDVI_BGK, ONLY: EE_BGK, EES_BGK, NBGV_STAT, SDVIA_BGK,
-     .                            SGMS_BGK, SIGMA_BGK, STV_BGK, STVS_BGK
       USE EIRMOD_COUTAU
       USE EIRMOD_MPI
 
       IMPLICIT NONE
 
-      real(dp), allocatable :: help(:), helpest(:), helpv(:), dummyv(:)
+      real(dp), allocatable :: helpest(:), helpv(:), dummyv(:)
       real(dp) :: helpa(0:natm), helpm(0:nmol), helpi(0:nion),
      .            helpp(0:npls), helpph(0:nphot),
      .            helps(nlmpgs+1), helpc
@@ -82,8 +85,6 @@ C Need to clarify what eirene_calstr_usr does with my_pe_gr.
 
         mxdim = max(nvoltl,nsrftl,nsd,nsdw,
      .              nmoli+1,natmi+1,nioni+1,nphoti+1,nplsi+1)
-
-        allocate (help(mxdim))
 
 cdr missing: wtotph ??
 
@@ -189,7 +190,7 @@ c  energy balance tallies:  from bulk (ipls) to species a,m,i,ph,pl
 
 C
 C
-c  all other volume-averaged tallies: estimv
+c  all volume-averaged tallies: estimv
         allocate (helpv(nrtal+1), dummyv(nrtal+1))
         do ir=1,nvoltl
           dummyv(1:nrtal) = estimv(ir,1:nrtal)
@@ -206,7 +207,9 @@ c  all surface-averaged tallies: estims
           if (my_pe_gr==0) estims(ir,1:nlmpgs) = helps(1:nlmpgs)
         end do
 
-c   energy-resolved ("spectra") tallies
+c  all energy-resolved ("spectra") tallies: estiml%spc
+cdr  different treatment because tallies and their variances are mixed 
+cdr  into a single data structure, distinct from all other tallies?
         do ispc=1,nadspc
           ns = estiml(ispc)%nspc
           allocate (helpest(ns+2))
@@ -215,7 +218,7 @@ c   energy-resolved ("spectra") tallies
      .         mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
           if (my_pe_gr==0) estiml(ispc)%spc(0:ns+1)=helpest(1:ns+2)
 
-c  standard deviation of energy-resolved "spectra"
+c  standard deviation of energy-resolved "spectra": estiml%sdv,...?
           if (nsigi_spc > 0) then
             call mpi_reduce(estiml(ispc)%sdv,helpest,
      .                      estiml(ispc)%nspc+2,
@@ -229,9 +232,6 @@ c  standard deviation of energy-resolved "spectra"
             if (my_pe_gr==0)
      .        estiml(ispc)%sgm(0:ns+1) = helpest(1:ns+2)
 
-!            call mpi_reduce(estiml(ispc)%sgms,helpest,1,
-!     .           mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-!            if (my_pe_gr==0) estiml(ispc)%sgms = helpest(1)
             call mpi_reduce(estiml(ispc)%sgms,helpc,1,
      .           mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
             if (my_pe_gr==0) estiml(ispc)%sgms = helpc
@@ -240,7 +240,7 @@ c  standard deviation of energy-resolved "spectra"
           deallocate (helpest)
         end do   !nadspc
 
-C  standard deviation of volume-averaged tallies
+C  standard deviation of volume-averaged tallies. sdvi1: sigma, sgms
         if (nsd > 0) then
           do ir=1,nsd
             dummyv(1:nrtal+1) = sdvi1(ir,1:nrtal+1)
@@ -250,7 +250,7 @@ C  standard deviation of volume-averaged tallies
           end do
         end if
 
-C  standard deviation of surface-averaged tallies
+C  standard deviation of surface-averaged tallies.  sdvi2: sigmaw,sgmws
         if (nsdw > 0) then
           do ir=1,nsdw
             dummys(1:nlimps+1) = sdvi2(ir,1:nlimps+1)
@@ -260,7 +260,7 @@ C  standard deviation of surface-averaged tallies
           end do
         end if
 
-C  covariances between two volume-averaged tallies
+C  covariances between two volume-averaged tallies.  sigmac,sgmcs
         if (ncv > 0) then
           do i=0,2
             do j=1,ncv
@@ -272,6 +272,7 @@ C  covariances between two volume-averaged tallies
           end do
 
           dummyv(1:ncv) = sgmcs(0,1:ncv)
+cdr in case of nrtal < ncv: crash ?
           call mpi_reduce(dummyv,helpv,ncv,
      .         mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
           if (my_pe_gr==0) sgmcs(0,1:ncv) = helpv(1:ncv)
@@ -287,59 +288,6 @@ C  covariances between two volume-averaged tallies
           if (my_pe_gr==0) sgmcs(2,1:ncv) = helpv(1:ncv)
         end if
 
-
-csw 09nov2012 reduce csdvi_bgk
-        if (nbgv_stat > 0) then
-          allocate(dummyw(max(nrtals,nbgv_stat)+1))
-          allocate(helpw(max(nrtals,nbgv_stat)+1))
-
-          do i=1,nbgv_stat
-            dummyw(1:nrtals) = sigma_bgk(i,1:nrtals)
-            call mpi_reduce(dummyw,helpw,nrtals,
-     .                      mpi_double_precision,mpi_sum,
-     .                      0,calstr_comm,ier1)
-            if(my_pe_gr==0) sigma_bgk(i,1:nrtals) = helpw(1:nrtals)
-
-            dummyw(1:nrtals) = stv_bgk(i,1:nrtals)
-            call mpi_reduce(dummyw,helpw,nrtals,
-     .                      mpi_double_precision,mpi_sum,
-     .                      0,calstr_comm,ier1)
-            if(my_pe_gr==0) stv_bgk(i,1:nrtals) = helpw(1:nrtals)
-
-            dummyw(1:nrtals) = sdvia_bgk(i,1:nrtals)
-            call mpi_reduce(dummyw,helpw,nrtals,
-     .                      mpi_double_precision,mpi_sum,
-     .                      0,calstr_comm,ier1)
-            if(my_pe_gr==0) sdvia_bgk(i,1:nrtals) = helpw(1:nrtals)
-
-            dummyw(1:nrtals) = ee_bgk(i,1:nrtals)
-            call mpi_reduce(dummyw,helpw,nrtals,
-     .                      mpi_double_precision,mpi_sum,
-     .                      0,calstr_comm,ier1)
-            if(my_pe_gr==0) ee_bgk(i,1:nrtals) = helpw(1:nrtals)
-          enddo
-
-          call mpi_reduce(sgms_bgk(1:nbgv_stat),helpv,nbgv_stat,
-     .                    mpi_double_precision,mpi_sum,
-     .                    0,calstr_comm,ier1)
-          if (my_pe_gr==0) sgms_bgk(1:nbgv_stat) = helpv(1:nbgv_stat)
-
-          call mpi_reduce(stvs_bgk(1:nbgv_stat),helpv,nbgv_stat,
-     .                    mpi_double_precision,mpi_sum,
-     .                    0,calstr_comm,ier1)
-          if (my_pe_gr==0) stvs_bgk(1:nbgv_stat) = helpv(1:nbgv_stat)
-
-          call mpi_reduce(ees_bgk(1:nbgv_stat),helpv,nbgv_stat,
-     .                    mpi_double_precision,mpi_sum,
-     .                    0,calstr_comm,ier1)
-          if (my_pe_gr==0) ees_bgk(1:nbgv_stat) = helpv(1:nbgv_stat)
-
-          deallocate(dummyw)
-          deallocate(helpw)
-        endif
-csw
-
-        deallocate(help)
         mxdim = max (nmoli+1,natmi+1,nioni+1,nphoti+1,nplsi+1)
 
         allocate (lhelp(mxdim))

@@ -2,6 +2,7 @@
 
 
       MODULE EIRMOD_CRECH
+cdr  something for plotting additional surface. may be omitted in case "plot_dummy".
 
       USE EIRMOD_PRECISION
 

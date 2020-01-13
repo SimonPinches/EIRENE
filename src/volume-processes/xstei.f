@@ -69,18 +69,16 @@ C
      .                       ISCDE, IESTM, KK
       REAL(DP) :: CF(9)
       REAL(DP) :: EFLAG, CHRDIF, FCTKKL,
-     .          EIRENE_FEHVEI1, EE, TB, TEE,
-     .          EIRENE_FEELEI1, EN,
-     .          P2N, EA, EI,
+     .          EE, TB, TEE,
      .          ACCINI, ACCINP, ACCMSM, ACCMSI, ACCMAS,
      .          ACCMSA, ACCINA, ACCINM, ACCMSP, ACCINV, COU,
      .          EIRENE_RATE_COEFF,
      .          EIRENE_ENERGY_RATE_COEFF,
      .          DELE,
      .          FP1(6),FP2(6)
-      INTEGER :: MODC, KREAD, IM, IA, IERR, J, IPP, IP, IRAD, IO,
-     .           ISPZ, III, INUM, ITYP, ISPE, ICOUNT, IAT,
-     .           IMM, IIO, IAA, IML, IMIN, IMAX
+      INTEGER :: MODC, KREAD, J, IPP, IP,
+     .           III, INUM, ITYP, ISPE, ICOUNT, IAT,
+     .           IMM, IIO, IAA, IML
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt
@@ -314,7 +312,6 @@ C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
         ENDIF
         MODCOL(1,2,IREI)=1 !  indicate: rate coefficient as fct. of local plasma conditions only
       ELSE
-        IERR=1
         GOTO 996
       ENDIF
 
@@ -359,7 +356,7 @@ C  4.A2) ENERGY LOSS RATE OF IMP. ELECTRON = 1.5*TE*RATECOEFF
 
       ELSEIF (EFLAG.EQ.3) THEN
 C  4.A3) ENERGY LOSS RATE OF IMP. ELECTRON = EN.-WEIGHTED RATE(TE), NO. KREAD
-                KREAD=EELEC
+                KREAD=INT(EELEC)
                 IF ((KREAD < 1) .OR. (KREAD > NREACI)) GOTO 998
                 MODC=EIRENE_IDEZ(MODCLF(KREAD),5,5)
                 IF (MODC.EQ.1) THEN
@@ -422,7 +419,6 @@ c  DELE= -IONISATION POTENTIAL TURNS EELEI INTO A RADIATION LOSS COMPONENT ONLY
                   END IF
                 ENDIF
       ELSE
-        IERR=2
         GOTO 997
       ENDIF
 C
@@ -446,7 +442,7 @@ C        NOT A VALID OPTION
 
       ELSEIF (EFLAG.EQ.3) THEN
 C  4.B3)  ENERGY RATE = EN.-WEIGHTED RATE(TE)
-        KREAD=EHEAVY
+        KREAD=INT(EHEAVY)
         MODC=EIRENE_IDEZ(MODCLF(KREAD),5,5)
         FACREI(IREI,1)=FACTKK
         FACREI(IREI,2)=LOG(FACTKK)
@@ -466,7 +462,6 @@ C  4.B3)  ENERGY RATE = EN.-WEIGHTED RATE(TE)
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
       ELSE
-        IERR=2
         GOTO 997
       ENDIF
 C
@@ -476,24 +471,22 @@ C  ESTIMATOR FOR CONTRIBUTION TO COLLISION RATES FROM THIS REACTION
       IESTEI(IREI,3)=EIRENE_IDEZ(IESTM,3,3)
 C
       IF (IESTEI(IREI,1).NE.0) THEN
-        CALL EIRENE_LEER(1)
         WRITE (iunout,*)
      .    'WARNING: COLL.EST NOT AVAILABLE FOR PART. BALANCE '
         WRITE (iunout,*) 'IREI = ',IREI
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO TRACKLENGTH ESTIMATOR '
+        CALL EIRENE_LEER(1)
         IESTEI(IREI,1)=0
       ENDIF
       IF (IESTEI(IREI,2).NE.0) THEN
-        CALL EIRENE_LEER(1)
         WRITE (iunout,*)
      .    'WARNING: COLL.EST NOT AVAILABLE FOR MOM. BALANCE '
         WRITE (iunout,*) 'IREI = ',IREI
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO TRACKLENGTH ESTIMATOR '
-        IESTEI(IREI,2)=0
         CALL EIRENE_LEER(1)
+        IESTEI(IREI,2)=0
       ENDIF
       RETURN
-C
 C
 C-----------------------------------------------------------------------
 C

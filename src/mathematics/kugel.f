@@ -1,7 +1,7 @@
 C
 C
 C
-      SUBROUTINE EIRENE_KUGEL(A,LAMBDA,X0,Y0,Z0,CX,CY,CZ,R,EPS)
+      SUBROUTINE EIRENE_KUGEL(A,LAMBDA,X0,Y0,Z0,CX,CY,CZ,R)
 **********************************************************************
 *                                                    17. Maerz 1995  *
 *     Inde =13 ===> Es liegt ein Ellipsoid vor.                      *
@@ -30,7 +30,7 @@ C
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
       REAL(DP), INTENT(OUT) :: X0, Y0, Z0, CX, CY, CZ, R
-      REAL(DP), INTENT(IN) :: LAMBDA(3), A(4,4), EPS
+      REAL(DP), INTENT(IN) :: LAMBDA(3), A(4,4)
       REAL(DP) :: A3(3,3), DD, AA, D1, D2, D3, D4, ADD, EIRENE_SARRUS
 C
 C     DATA              EPS  / 5.D-10 /

@@ -10,7 +10,8 @@ cdr Jan 2016 : comments,  and: stop scoring census not only after total number
 cdr            of allowed census scores is reached,
 cdr            but instead do so also for each stratum, and for the scores per stratum limit.
 
-      SUBROUTINE EIRENE_TIMCOL (PR,*,*)
+!pb   SUBROUTINE EIRENE_TIMCOL (PR,*,*)
+      SUBROUTINE EIRENE_TIMCOL (PR,IRET)
 C
 C  COLLISION WITH "TIME SURFACE", FIND NEW COORDINATES
 C  UPDATE (TIME-) SURFACE TALLIES
@@ -18,8 +19,8 @@ C  UPDATE USER-SUPPLIED SNAPSHOT-ESTIMATED TALLIES (CALL UPNUSR)
 C  PUT PARTICLE ONTO CENSUS ARRAYS
 C  AND EITHER STOP HISTORY OR CONTINUE
 
-C  RETURN 1: CONTINUE FLIGHT
-C  RETURN 2: STOP FLIGHT
+C  RETURN: IRET = 1, CONTINUE FLIGHT
+C  RETURN: IRET = 2, STOP FLIGHT
 C
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: MPARTT, NLIM, NPARTT, NPRNL
@@ -46,13 +47,16 @@ C
      >                         NTMSTP, RPART, TIME0
       USE EIRMOD_CLGIN, ONLY: NSTSI
       USE EIRMOD_CSDVI, ONLY: LMETSPW
+      USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
 
       IMPLICIT NONE
 
       REAL(DP), INTENT(IN) :: PR
+      INTEGER, INTENT(OUT) :: IRET
       INTEGER  :: IND
       REAL(DP) :: DIST, WGHTSG
 C
+      IRET = 0
       X0=X0+VELX*TT
       Y0=Y0+VELY*TT
       Z0=Z0+VELZ*TT
@@ -160,14 +164,17 @@ cdr out end
 c spatial resolution on time-surface is not available. MSURFG ?
         IF (LSPUMP) SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
         IF (LSPUMP) LMETSPW(ISPZ)    = .TRUE.
-        RETURN 2
+        IRET = 2
+        RETURN 
 
       ELSE
 C  OTHERWISE: RESTORE WEIGHT = WEIGHT/PR, TIME, AND CONTINUE ANOTHER TIME STEP
         WEIGHT=WEIGHT/PR
         ITMSTP=ITMSTP+1
         TIME=TIME0
-        RETURN 1
+        IRET = 1
+        RETURN
       ENDIF
+      IRET = 0
       RETURN
       END

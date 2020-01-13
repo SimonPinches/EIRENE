@@ -293,7 +293,7 @@ C
                IF (NUE.LT. 0.D0) THEN
 C                 ELLIPSOID
                   INDE = 13
-                  CALL EIRENE_KUGEL(AM4,LAMORI,X0,Y0,Z0,CX,CY,CZ,R,EPS)
+                  CALL EIRENE_KUGEL(AM4,LAMORI,X0,Y0,Z0,CX,CY,CZ,R)
                ELSEIF (ABS(NUE).LT.EPS) THEN
 C                 1 PUNKT
                   INDE = 14
@@ -342,12 +342,12 @@ C                 ZWEI PARALLELE EBENEN
 C                 PARALLEL ZUR X2 - X3- EBENE
                   INDE = 2
                   CALL EIRENE_PAREBE
-     .             (EV,LAMBDA,NUE,M,B0,B1,B2,B3,C0,C1,C2,C3,EPS)
+     .             (EV,LAMBDA,NUE,M,B0,B1,B2,B3,C0,C1,C2,C3)
                ELSEIF (ABS(NUE).LT.EPS) THEN
 C                 DOPPELEBENE
 C                 X2 - X3 -EBENE
                   INDE = 1
-                  CALL EIRENE_DOPEBE(EV,LAMBDA,0._DP,M,B0,B1,B2,B3,EPS)
+                  CALL EIRENE_DOPEBE(EV,LAMBDA,0._DP,M,B0,B1,B2,B3)
                ENDIF
             ENDIF
          ENDIF

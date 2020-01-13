@@ -20,7 +20,7 @@ cdr    to high pressure gas discharge lamps.
 cdr    It was largely re-written later, re-structured, several times,
 cdr    for use in (non-linear) stand alone eirene
 cdr    (applications to high density divertor plasmas with hydrogen resonance line re-absorption)
-cdr    Further re-writing (2006-2007): V.Kotov, to support iterations for self consistently
+cdr    Further re-writing (2006-2007): V.Kotov, to support iterations for self-consistently
 cdr    coupled 2D B2-EIRENE plasma solutions.
 cdr    transport code.
 cdr
@@ -105,7 +105,6 @@ c           some more speed ups in lorvdwprof. still much more to be done
       USE EIRMOD_CTRCEI
       USE EIRMOD_CUPD
       USE EIRMOD_CZT1
-      USE EIRMOD_LEARC1, ONLY: EIRENE_LEARC1
       USE EIRMOD_RANF, ONLY: RANF_EIRENE
 
       IMPLICIT NONE
@@ -134,8 +133,7 @@ csw constants
       real(dp), public, save :: hwvdw
 
 csw external
-      integer, external :: eirene_idez, eirene_learc2
-ctk      real(dp), external :: ranf_eirene
+      integer, external :: eirene_idez
 
 !pb black body removal begin (try to eliminate saturated line core part)
 !     unfinished
@@ -227,7 +225,8 @@ c
       real(dp):: gam,e00,
      .           v,dnd,xx,yy,pnue,pnue0,
      .           fwhm,shift,dvdw,drft
-c      real(dp) :: d1, d2, e1, e2, g1, g2, ipl2, l0, l00, omega_max,
+c      integer :: ipl2
+c      real(dp) :: d1, d2, e1, e2, g1, g2, l0, l00, omega_max,
 c     .            omega_min
       real(dp):: ctheta,ctheta2,dbz
       real(dp):: t_e,t_p,t_g
@@ -245,7 +244,7 @@ c
       ctheta =0._dp
       ctheta2=0._dp
 
-cdr  find $fac(E0)$: the value of the line profile $fac(E$
+cdr  find $fac(E0)$: the value of the line profile $fac(E)$
 cdr  (emission profile or absorption profile) at E0:
 cdr  the current photon energy.
 cdr  units of fac:  1/eV, because: integral dE fac(E) = 1.0
@@ -1798,10 +1797,9 @@ c
       END subroutine EIRENE_zeeman_normalprof
 
 C.........................................................................................
-c  evaluate line shape functions at fixed frequency (or wavelength or energy) x
+c  evaluate line shape functions at fixed frequency (or wavelength or energy) 
 c  1) lorentz                          --> evaluates lorentz profile
 c  2) doppler                          --> evaluates doppler profile
-c  planck
 c  3) faddeeva  (via humlick function) --> evaluates lorentz-doppler convol. (Voigt profile)
 c  faddeeva2
 c  lorvdw                              --> evaluates lorentz-vdWalls convolution
@@ -2554,7 +2552,7 @@ C
           H    = 0.0D0
           KAPN = 0
           QRHO = DSQRT(QRHO)
-          NU   = IDINT(3 + (1442/(26*QRHO+77)))
+          NU   = INT(3 + (1442/(26*QRHO+77)))
         ELSE
           QRHO = (1-Y)*DSQRT(1-QRHO)
           H    = 1.88*QRHO
@@ -2847,9 +2845,9 @@ c allocate
 
       SUBROUTINE EIRENE_PH_XSECTPH(ipht,nrc,idsc)
       IMPLICIT NONE
-      integer, intent(in) :: ipht,nrc,idsc,ipl
+      integer, intent(in) :: ipht,nrc,idsc
       integer :: kk,ipl0,ipl1,ipl2,ityp0,ityp1,ityp2,
-     .    ifnd,mode,updf,j,nseot4,ierr,ipl0ti
+     .    ifnd,mode,updf,nseot4,ierr,ipl0ti
       real(dp) :: factkk, ebulk
 
       kk=ireacph(ipht,nrc)
@@ -3012,9 +3010,20 @@ c       WRITE (iunout,*) 'AUTOMATICALLY RESET TO TRACKLENGTH ESTIMATOR '
 c       CALL EIRENE_LEER(1)
 c       IESTCX(IRCX,3)=0
 c     ENDIF
+      return
+  996 CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSectph: EXIT CALLED'
+      WRITE (iunout,*) 'NO CROSS-SECTION AVAILABLE FOR NON-DEFAULT OT'
+      WRITE (iunout,*) 'KK,IPHT,IPL0 ',KK,IPHT,IPL0
+      WRITE (iunout,*) 'EITHER PROVIDE CROSS-SECTION OR USE DIFFERENT'
+      WRITE (iunout,*) 'POST-COLLISION SAMPLING FLAG ISCDEA'
+      CALL EIRENE_EXIT_OWN(1)
       RETURN
+      END SUBROUTINE EIRENE_PH_XSECTPH
 C
-      ENTRY EIRENE_XSTPH_2(Idsc,IPL)
+      SUBROUTINE EIRENE_XSTPH_2(Idsc,IPL)
+      IMPLICIT NONE
+      integer, intent(in) :: idsc,ipl
 C
 c     CALL EIRENE_LEER(1)
 c     WRITE (iunout,*) 'Photon REACTION NO. Idsc= ',Idsc
@@ -3038,15 +3047,7 @@ c    .                    'I2ND2= ',TEXTS2
 c     CALL EIRENE_LEER(1)
       RETURN
 C
-  996 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSectph: EXIT CALLED'
-      WRITE (iunout,*) 'NO CROSS-SECTION AVAILABLE FOR NON-DEFAULT OT'
-      WRITE (iunout,*) 'KK,IPHT,IPL0 ',KK,IPHT,IPL0
-      WRITE (iunout,*) 'EITHER PROVIDE CROSS-SECTION OR USE DIFFERENT'
-      WRITE (iunout,*) 'POST-COLLISION SAMPLING FLAG ISCDEA'
-      CALL EIRENE_EXIT_OWN(1)
-      return
-      END SUBROUTINE EIRENE_PH_XSECTPH
+      END SUBROUTINE EIRENE_XSTPH_2
 
 c
 c  experimental routine for black body removal

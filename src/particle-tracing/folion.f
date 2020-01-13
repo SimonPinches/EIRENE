@@ -1,6 +1,6 @@
 cdr aug. 18   bug fix: remove virtual neutral background species
 cdr           from coulomb collision frequency evaluation
-cdr aprl.18   bug fix re. parallel distace (zt,ztc,mfp,...) and
+cdr aprl.18   bug fix re. parallel distance (zt,ztc,mfp,...) and
 cdr           scoring distance clpd (full gyro motion distance)
 cdr           clpd  is switched back and forth. Needs clean-up.
 cdr Oct. 17   minor sync with folneut
@@ -16,7 +16,7 @@ c               also for proper printout from chctrc for trace ions.
 
 c  njump=3, for internal grid surface und timusr. reset time=0
 c  error exit from fpkcol: goto 9991, da alles bereits in fpkcol erledigt (ptrash....)
-C  OCT 14.:  cell based spectra scoring called only if cell based spectra are defined
+C  OCT 14.:  cell-based spectra scoring called only if cell-based spectra are defined
 !DR  eps12 --> eps6 for testing cosine of angle of incidence.
 !DR  levgeo=4:  if nlsrfx: correction of nrcell for SG gt.0 SG lt.eps6
 c
@@ -25,7 +25,7 @@ c
 C  MAY05: CALL UPDATE FROM STATIC LOOP WITH IFLAG=4 (RATHER =1)
 C         WG. COLL EST. ON 1ST FLIGHT AFTER BIRTH.
 C  Sept 05: also vel=velpar before call  to ...col  routines.
-!PB 12.01.06: calls to UPDATE_SPECTRUM introduced for cell based spectra
+!PB 12.01.06: calls to UPDATE_SPECTRUM introduced for cell-based spectra
 !PB 18.04.06: xstorv=0 in "vacuum region" added
 !DR  4.08.06: check v_par=0, otherwise stop trajectory (lable 992)
 !DR 10.08.06: cut-off Ti with T_vac for collision frequency, for
@@ -80,18 +80,13 @@ C  .............................................................................
 C
       SUBROUTINE EIRENE_FOLION
 C
-C     CHARGED PARTICLE, LAUNCHED AT X0,Y0,Z0, IN CELL NRCELL, IPOLG,
+C     CHARGED PARTICLE, LAUNCHED AT X0,Y0,Z0 IN CELL NRCELL, IPOLG,
 C     IPERID, NPCELL, NTCELL, NACELL, NBLOCK, WITH VELOCITY VELX,VELY,VELX
 C     IS FOLLOWED.
 C     (MODULE: COMPRT.F)
 c
 c
 c
-c
-c
-c
-c
-C
 C  ON INPUT:
 C     ITYP=3
 C     IC_NEUT = 0  NEWBORN CHARGED PARTICLE, OR CONTINUATION FROM NEUTRAL PARTICLE FULL TRACK
@@ -141,12 +136,12 @@ C
       USE EIRMOD_COMXS
       USE EIRMOD_CTRIG
       USE EIRMOD_CTRCEI
-      USE EIRMOD_LEARC1, ONLY: EIRENE_LEARC1
       USE EIRMOD_TIMEA, ONLY: EIRENE_TIMEA1
       USE EIRMOD_RANF, ONLY: RANF_EIRENE
       USE EIRMOD_ADDCOL, ONLY: EIRENE_ADDCOL
       USE EIRMOD_STDCOL, ONLY: EIRENE_STDCOL
       USE EIRMOD_SWITCH_PARTINFO, ONLY: EIRENE_SWITCH_PARTINFO
+      USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
 
       IMPLICIT NONE
 
@@ -160,20 +155,17 @@ c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
      .          PR, WS, COLTYP, X0ERR, Y0ERR, Z0ERR,
      .          FNUI,
      .          VELXS, VELYS, VELZS, VELS,
-     .          PUX, PUY, SG,
+     .          SG,
      .          VCOS,
      .          ZLOG, ZINT1, ZEP1, ZTST, ZINT2,
-     .          ZMFP, PN, SH, EIRENE_FPATH, ZTC,
+     .          ZMFP, EIRENE_FPATH, ZTC,
      .          DELFAC, TIFAC,
-     .          SCOS_NEW, XOLD, YOLD
-C      REAL(DP) :: TI
-ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
+     .          SCOS_NEW, XOLD, YOLD, EPSLIM
       INTEGER :: ISTS, NCOUS, ICOU, J, JJ, IPL,
-     .           NRCELL_OLD, NTCELL_OLD,
-     .           ICO, NLI, NLE, NPCELL_OLD, JCOL, NRC, 
-     .           NRCOLD, IPLTI, I, IM, IFLAG, ICOUN,NTEST,
+     .           ICO, NLI, NLE, JCOL, NRC, 
+     .           NRCOLD, IPLTI, I, IM, ICOUN,
      .           EIRENE_LEARC2, 
-     .           IDUM, IFPB, indf, NJUMP_EMC3 = 0, IRET
+     .           indf, NJUMP_EMC3 = 0, IRET, IRT_STAT
       LOGICAL :: LCNDEXP
 
 
@@ -197,7 +189,6 @@ c
 
 
       XGENER=0.D0
-      ico=0
 
 C  CHECK FOR VALID SPECIES INDEX
       IF (ITYP.EQ.3.AND.(IION.LE.0.OR.IION.GT.NIONI)) GOTO 998
@@ -210,6 +201,8 @@ C  IF NLSRFY, SURFACE INDEX MPSURF MUST BE DEFINED AT THIS POINT
 C  IF NLSRFZ, SURFACE INDEX MTSURF MUST BE DEFINED AT THIS POINT
 C  IF NLSRFA, SURFACE INDEX MASURF MUST BE DEFINED AT THIS POINT
 C
+      ICO=0  ! counter for particles sitting on surface: allow for two attemps in srfchk.
+      EPSLIM=EPS6
  1005 NUPC(1)=NPCELL-1+(NTCELL-1)*NP2T3
       NCELL=NRCELL+NUPC(1)*NR1P2+NBLCKA
       IF (LDAMCEL(NCELL)) GOTO 9912
@@ -222,7 +215,6 @@ c  parallel and perpendicular unit velocity componentes VELPAR
 c  find B-field in cell NCELL
       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,0)
 
- 1003 CONTINUE
       VELXS=VELX
       VELYS=VELY
       VELZS=VELZ
@@ -266,7 +258,7 @@ C       NLPR=   : NOT AVAILABLE
         NRC=NRCI(IION)
 C     ENDIF
       IF (IFPATH.NE.1.OR.NRC.LT.0) GOTO 1002
-C  STOP STATIC LOOP AFTER 100 GENERATIONS LATEST TO AVOID ACCIDENTAL INFINITE LOOPS
+C  STOP STATIC LOOP AFTER 100 GENERATIONS LATEST, TO AVOID ACCIDENTAL INFINITE LOOPS
       IF (IC_ION.GT.100) GOTO 1002
 
       IF (NFOLI(IION).EQ.-1) GOTO 1001 ! go to static loop
@@ -286,8 +278,9 @@ C  relative to surface, and possibly correct side of surface, i.e. cell
 c  number. In that case: goto 1005 and try again with new cell number.
 c  Else: continue at 1002
 
-      CALL SRFCHK(VLXPAR,VLYPAR,VLYPAR,SG,*1005)
-      IF (ic_ion.gt.1) THEN 
+      CALL EIRENE_SRFCHK(VLXPAR,VLYPAR,VLZPAR,SG,ICO,EPSLIM,IRET)
+      IF (IRET == 1) GOTO 1005
+      IF (ic_ion.gt.2) THEN
         write (iunout,*) 'error re static loop, ic_ion=', ic_ion
         call eirene_exit_own(1)
       ENDIF
@@ -310,7 +303,10 @@ C  SIMULATE NEXT COLLISION INSTANTANEOUSLY
 C***********************************************************************
 
       CALL EIRENE_FOLSTAT_ION(IC_ION,VLXPAR,VLYPAR,VLZPAR,CFLAG,
-     .                        *101,*230,*380)
+     .                        IRT_STAT)
+      IF (IRT_STAT == 1) GOTO 101
+      IF (IRT_STAT == 2) GOTO 230
+      IF (IRT_STAT == 3) GOTO 380
 C.............................................................
 
 C
@@ -476,8 +472,6 @@ C  AT THIS POINT: LCART=F
       ZTST=1.D30
       ZT=0.0
 C
-  110 CONTINUE
-
       NCOU=1
       NUPC(1)=0
       NCOUNT(1)=1
@@ -502,7 +496,7 @@ c  check all additional surfaces in index range nli, nle
      .  (MSURF,NCELL,NLI,NLE,NTCELL,IPERID,X0,Y0,Z0,TIME,
      .               VLXPAR,VLYPAR,VLZPAR,VELPAR,
      .               MASURF,XLI,YLI,ZLI,SG,TL,NLTRC,LCNDEXP)
-C       NLPR= :NOT AVAILABLE FOR TEST IONS
+C       NLPR: NOT AVAILABLE FOR TEST IONS
 c
         ZDT1=TL
         ZTST=TL
@@ -543,7 +537,6 @@ ctest     a=a*(1.+1./16.)**0.5-a*1.5*200./0.1
 ctest     aa=fnueqi_1(0.1d0,1.d14,200.d0,1,1)
 ctest     aaa=fnueqi_2(0.1d0,1.d14,200.d0,1,1)
 ctest     write (iunout,*) 'a,aa,aaa', a,aa,aaa
-ctest     write (*,*) 'a,aa,aaa', a,aa,aaa
 ctest     stop
 
 C  default Coulomb collision model (simple energy relaxation, e.g. also: NRC=0)
@@ -581,7 +574,7 @@ C  SCAN OVER SEGMENT
 
 C  BEFORE THIS SCAN: ZTST, ZDT1, CLPD(1):  MAX. POSSIBLE DISTANCE, DUE TO TIME STEP, FP_COL OR ADD. SURF.
 C
-  210 CONTINUE
+CCC  210 CONTINUE
 C
 C
 C  TS:   DISTANCE TO NEXT RADIAL SURFACE OF STANDARD MESH
@@ -698,7 +691,7 @@ cdr  (allows using NCELL later also in this case).
           IF (NLPOL) NPCELL=NCOUNP(J)
           IF (NLTOR) NTCELL=NCOUNT(J)
 C         VEL=VELS
-          GOTO 213
+          IF (.TRUE.) GOTO 213
         END DO
       ELSE
 c switch to parallel gc velocity
@@ -736,7 +729,7 @@ C  COLLISION IN SECTION J OF CURRENT TRACK
               VELZ=VELZS
               VEL =VELS
               LCART=.TRUE.
-              GOTO 213
+              IF (.TRUE.) GOTO 213
 CCC         ENDIF
 C  THESE NEXT TWO LINES CAN NEVER BE REACHED, BECAUSE ONLY ONE
 C  CELL FOR EACH TRACK OF IONS (DISTINCT FROM FOLNEUT).
@@ -816,17 +809,34 @@ c  switch to parallel gc velocity
       ENDIF
       IF (ISRFCL.EQ.1) THEN
 c  will fpkcol change the collision with additional surface?
- 2214   CALL EIRENE_ADDCOL(XLI,YLI,ZLI,SG,IRET)
+        CALL EIRENE_ADDCOL(XLI,YLI,ZLI,SG,IRET)
         IF (IRET .EQ. 1) GOTO 104
         IF (IRET .EQ. 2) GOTO 380
       ELSEIF (ISRFCL.EQ.2) THEN
-        CALL EIRENE_FPKCOL(               *104,*2215,*9991,3)
- 2215   CALL EIRENE_TIMCOL(AX(2),         *104,*800)
+!pb     CALL EIRENE_FPKCOL(               *104,*2215,*9991,3)
+        CALL EIRENE_FPKCOL(IRET,3)
+        IF (IRET .EQ. 1) GOTO 104
+        IF (IRET .EQ. 2) GOTO 2215
+        IF (IRET .EQ. 3) GOTO 9991
+!PB 2215 CALL EIRENE_TIMCOL(AX(2),         *104,*800)
+ 2215   CALL EIRENE_TIMCOL(AX(2),IRET)
+        IF (IRET .EQ. 1) GOTO 104
+        IF (IRET .EQ. 2) GOTO 800
       ELSEIF (ISRFCL.EQ.3) THEN
-        CALL EIRENE_FPKCOL(               *104,*2216,*9991,3)
- 2216   CALL EIRENE_TORCOL(               *104)
+!pb     CALL EIRENE_FPKCOL(               *104,*2216,*9991,3)
+        CALL EIRENE_FPKCOL(IRET,3)
+        IF (IRET .EQ. 1) GOTO 104
+        IF (IRET .EQ. 2) GOTO 2216
+        IF (IRET .EQ. 3) GOTO 9991
+!PB 2216 CALL EIRENE_TORCOL(               *104)
+ 2216   CALL EIRENE_TORCOL(IRET)
+        IF (IRET .EQ. 1) GOTO 104
       ELSEIF (ISRFCL.EQ.4) THEN
-        CALL EIRENE_FPKCOL(               *104,*100,*9991,0)
+!pb     CALL EIRENE_FPKCOL(               *104,*100,*9991,0)
+        CALL EIRENE_FPKCOL(IRET,0)
+        IF (IRET .EQ. 1) GOTO 104
+        IF (IRET .EQ. 2) GOTO 100
+        IF (IRET .EQ. 3) GOTO 9991
       ENDIF
 
 C changing back to full cartesian velocities
@@ -837,8 +847,6 @@ C changing back to full cartesian velocities
       LCART=.TRUE.
 C
 C  NO, CONTINUE TRACK
-C
-  216 CONTINUE
 C
 C  NEXT CELL - CHECK FOR ESCAPE OR NON-DEFAULT ACTING STANDARD SURFACE
 
@@ -1141,17 +1149,24 @@ cdr  try to tell external code: particle on surface, but it is an old particle, 
         NUPC(1)=NPCELL-1+(NTCELL-1)*NP2T3
         NCELL=NRCELL+NUPC(1)*NR1P2+NBLCKA
         IF (LDAMCEL(NCELL)) GOTO 9912
-C  DELTA COLLISION AT SURFACE DONE, NEW CELL FOUND (ausser fuer levgeo 10...)
+C  DELTA COLLISION AT SURFACE DONE, NEW CELL FOUND (except in case levgeo 10 ?)
 
-        CALL EIRENE_FPKCOL(*104,*229,*9991,3)
+!pb     CALL EIRENE_FPKCOL(*104,*229,*9991,3)
+        CALL EIRENE_FPKCOL(IRET,3)
+        IF (IRET == 1) GOTO 104
+        IF (IRET == 2) GOTO 229
+        IF (IRET == 3) GOTO 9991
 
 C  FIND NEW B-FIELD, NEW REDUCED (GC) VELOCITY
   229   CONTINUE
 C STORE NEW FULL VELOCITY
         VELS = VEL
-        CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,1)  !dieser aufruf ist
-!  falsch, bei levgeo=10 weil dort in emc3 routine gesprungen wird und dort aber die neue zellenummer erst spaeter kommt.
-!  in fpkcol schon neues B feld gesetzt. Ferner hier wird neues vel von fpkcol wieder kaputt gemacht
+        CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,1)
+cdr Warnung: this call is probably incorrect in case of levgeo=10.
+!   Jump to external (e.g. emc3) routine)
+!   but there the cell number may be set only later.
+!   In fpkcol a new B field may already have been set.
+!   Futhermore: a new vel vector from fpkcol may get curruped here.
 
         ICO = 0
         GOTO 1004
@@ -1173,13 +1188,16 @@ C  TEST FOR CORRECT CELL NUMBER AT COLLISION POINT
 C  KILL PARTICLE, IF TOO LARGE ROUND-OFF ERRORS DURING
 C  PARTICLE TRACING
 C
-      IF (NLTEST) CALL EIRENE_CLLTST(*997)
+      IF (NLTEST) THEN
+        CALL EIRENE_CLLTST(IRET)
+        IF (IRET.EQ.1) GOTO 997
+      ENDIF
 C
 C  SAMPLE FROM COLLISION KERNEL FOR TEST IONS
 C  AT PRESENT: NO SUPPRESSION OF ABSORPTION AT IONIZATION
 C  FIND NEW WEIGHT, SPECIES INDEX, VELOCITY AND RETURN
 C
-      CALL EIRENE_COLION(CFLAG,COLTYP,DIST)
+      CALL EIRENE_COLION(CFLAG,COLTYP)
       ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
 
 !  PARTICLE TYPE AND SPECIES MIGHT HAVE CHANGED
@@ -1280,7 +1298,11 @@ C
 C  FOR NONTRANSPARENT SURFACES:
 C  ACCELERATION IN SHEATH IS DONE IN SUBR. ESCAPE
 C
-      CALL EIRENE_ESCAPE(PR,SG,*100,*104,*996)
+!pb   CALL EIRENE_ESCAPE(PR,SG,*100,*104,*996)
+      CALL EIRENE_ESCAPE(PR,SG,IRET)
+      IF (IRET == 1) GOTO 100
+      IF (IRET == 2) GOTO 104
+      IF (IRET == 3) GOTO 996
       RETURN
 C
 C   100: START NEW ION TRACK AFTER SURFACE EVENT
@@ -1343,10 +1365,6 @@ C
       WRITE (IUNOUT,*) 'NPANU,LCART ',NPANU,LCART
       IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
       GOTO 999
-  993 CALL EIRENE_MASAGE('ERROR IN FOLION, NO PARTICLE TRACING BUT')
-      CALL EIRENE_MASAGE('IFPATH.NE.1. PARTICLE IS KILLED')
-      WRITE (iunout,*) 'IION ',IION
-      GOTO 999
 C
   994 CALL EIRENE_MASAGE('ERROR IN FOLION, AT SURFACE DELTA EVENT')
       WRITE (iunout,*) 'IION,NPANU ',IION,NPANU
@@ -1370,7 +1388,8 @@ C
   996 CALL EIRENE_MASAGE
      .  ('ERROR IN FOLION, COND. EXP. ESTIM. NOT IN USE')
       GOTO 999
-  997 CALL EIRENE_MASAGE('ERROR IN FOLION, DETECTED IN SUBR. CLLTST')
+  997 CALL EIRENE_MASAGE
+     .  ('ERROR IN FOLION, DETECTED IN SUBR. CLLTST')
       CALL EIRENE_MASAGE('PARTICLE IS KILLED')
 C   DETAILED PRINTOUT ALREADY DONE FROM SUBR. CLLTST
       IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)

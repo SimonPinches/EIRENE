@@ -107,7 +107,7 @@ C  ELECTRON TEMPERATURE
         CALL EIRENE_PROFS (TEIN,TE0,TE1,TE5,TVAC)
       CASE (4)
 c  INDPRO=4:  read tally from stream TEO
-        ISTREAM=TE0
+        ISTREAM=INT(TE0)
         ITALI=1
         CALL EIRENE_READTL(TXTPLS(1,ITALI),TXTPSP(1,ITALI),
      .              TXTPUN(1,ITALI),
@@ -148,7 +148,7 @@ cdr one profile iplsti set at a time
           TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
         case (4)
 c  INDPRO=4:  read tally from stream TIO(IPLSTI)
-          ISTREAM=TI0(IPLSTI)
+          ISTREAM=INT(TI0(IPLSTI))
           ITALI=2
           CALL EIRENE_READTL(TXTPLS(IPLSTI,ITALI),TXTPSP(IPLSTI,ITALI),
      .              TXTPUN(IPLSTI,ITALI),
@@ -200,7 +200,7 @@ cdr one profile ipls set at a time
           DIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
         case (4)
 c  INDPRO=4:  read tally from stream DIO(IPLS)
-          ISTREAM=DI0(IPLS)
+          ISTREAM=INT(DI0(IPLS))
           ITALI=4
           CALL EIRENE_READTL(TXTPLS(IPLS,ITALI),TXTPSP(IPLS,ITALI),
      .              TXTPUN(IPLS,ITALI),
@@ -238,7 +238,7 @@ cdr first dimension of arrays:  NDIM .ne. NPLSV possible ?
 
       DO 140 IPLSV=1,NPLSV
         select case (IND)
-	case (1)
+        case (1)
 cdr one vector component profile (vx,vy,vz), and one value of iplsv set at a time
           CALL EIRENE_PROFN (HELP,VX0(IPLSV),VX1(IPLSV),VX2(IPLSV),
      .                   VX3(IPLSV),VX4(IPLSV),VX5(IPLSV),VVAC)
@@ -315,7 +315,7 @@ cdr first dimension of arrays:  always NPLSV
   140 CONTINUE
 
 C  SCALE FROM MACH NUMBER PROFILE TO CM/SEC PROFILE?
-C  USE ISOTHERMAL ACCOUSTIC SPEED OF ION IPLS.
+C  USE ISOTHERMAL ACOUSTIC SPEED OF ION IPLS.
       IF (NLMACH .AND. (IND <= 5)) THEN
         DO 1141 JPLS=1,NPLSI
           IPLSTI=MPLSTI(JPLS)
@@ -330,8 +330,6 @@ CDR FACT is the isothermal ion acoustic speed, [cm/s], for species IPLS=JPLS
  1142     CONTINUE
  1141   CONTINUE
       ENDIF
-
- 1140 CONTINUE
 C
 C
 C  MAGNETIC FIELD UNIT VECTOR
@@ -387,11 +385,9 @@ c                 include also additional cells
         CALL EIRENE_PROFR (BZIN,3+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
         CALL EIRENE_PROFR (BFIN,4+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
       end select
-  150 CONTINUE
 
 C  CONVERT PITCH ANGLE INTO B-FIELD UNIT VECTOR
- 1400   CONTINUE
-	IF (IND <= 3) then
+        IF (IND <= 3) then
 C  AT THIS POINT: INDPRO= 1,2, OR =3. 
 C                 HELP2 IS KNOWN ONLY IN CASE INDPRO=3
         IF (LEVGEO.EQ.1) THEN

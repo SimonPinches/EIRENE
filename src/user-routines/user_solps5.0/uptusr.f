@@ -71,10 +71,10 @@ C
 
 cdr  increments for tally number iadv
         IA0=0               !  RADIAL CURRENT
-        IA1=NATMI+NMOLI     !  RADIAL ENERGY FLUX
-        IA2=2*IA1           !  POLOIDAL CURRENT
-        IA3=3*IA1           !  POLOIDAL ENERGY FLUX
-        IA4=4*IA1           !  FLUX (ANGLE-AVERAGED)
+        IA1=IA0+NATMI+NMOLI !  RADIAL ENERGY FLUX
+        IA2=IA1+NATMI+NMOLI !  POLOIDAL CURRENT
+        IA3=IA2+NATMI+NMOLI !  POLOIDAL ENERGY FLUX
+        IA4=IA3+NATMI+NMOLI !  FLUX (ANGLE-AVERAGED)
       ENDIF
 
 

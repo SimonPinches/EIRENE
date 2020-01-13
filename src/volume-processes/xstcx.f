@@ -78,11 +78,11 @@ C
      .            EIRENE_RATE_COEFF,
      .            EIRENE_ENERGY_RATE_COEFF, TB, TII,
      .            FP1(6),FP2(6)
-      INTEGER :: ITYP1, ITYP2, ISPZ1, ISPZ2, KREAD,
+      INTEGER :: ITYP1, ITYP2, KREAD,
      .           J, NEND, MODC, NSECX4, IPL2, IIO2, IPLTI,
      .           NCBULK, NCGBLK
       INTEGER, EXTERNAL :: EIRENE_IDEZ
-      CHARACTER(8) :: TEXTS1, TEXTS2
+      REAL(DP), PARAMETER :: EMINL=-2.3_DP
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt
 
@@ -225,7 +225,7 @@ C       NEND=9
             IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
 cdr  safety cut-off at TI= 0.1 eV. (TVAC=0.02)
-              tii = max(-2.3_dp,tii)
+              tii = max(eminl,tii)
 c  evaluate 2 parametric fit,
 c  collapse this to a one parameter fit CF for EB dependence, evaluated at TII.
               rp => reacdat(KK)%rtc%poly
@@ -255,7 +255,6 @@ C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
             TB=MAX(-100._DP,TB)
             TABCX3(IRCX,J,1)=EXP(TB)
           END DO
-C         JEREACX(IRCX) = 9
         ELSE  ! ??
 C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
           write (iunout,*) 'storage save mode not available yet for CX'
@@ -355,7 +354,7 @@ C  use i-integral expressions. to be written
       ELSEIF (NSECX4.EQ.3) THEN
 C  4.1C)  ENERGY LOSS RATE OF IMP. ION = EN.-WEIGHTED RATE
 C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN, WITH WEIGHTING/REJECTION
-        KREAD=EBULK
+        KREAD=INT(EBULK)
         IF (KREAD.EQ.0) THEN
 c  data for mean ion energy loss are not available
 c  use collision estimator for energy balance
@@ -403,7 +402,7 @@ C  ENERGY RATE COEFFICIENT(TI,EBEAM)
               DO 257 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
-                tii = max(-2.3_dp,tii)
+                tii = max(eminl,tii)
 c old
 c old           CALL EIRENE_PREP_RTCS (KREAD,5,TII,CF)
 c old
@@ -446,28 +445,28 @@ C
       ITYP2=N2NDX(IRCX,1)
 
       IF (IESTCX(IRCX,1).NE.0.AND.(ITYP1.NE.1.OR.ITYP2.NE.4)) THEN
-        CALL EIRENE_LEER(1)
         WRITE (iunout,*)
      .    'WARNING: COLL.EST NOT AVAILABLE FOR PART. BALANCE '
         WRITE (iunout,*) 'IRCX = ',IRCX
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO TRACKLENGTH ESTIMATOR '
+        CALL EIRENE_LEER(1)
         IESTCX(IRCX,1)=0
       ENDIF
       IF (IESTCX(IRCX,2).NE.0.AND.(ITYP1.NE.1.OR.ITYP2.NE.4)) THEN
-        CALL EIRENE_LEER(1)
         WRITE (iunout,*)
      .    'WARNING: COLL.EST NOT AVAILABLE FOR MOM. BALANCE '
         WRITE (iunout,*) 'IRCX = ',IRCX
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO TRACKLENGTH ESTIMATOR '
+        CALL EIRENE_LEER(1)
         IESTCX(IRCX,2)=0
       ENDIF
 
       IF (IESTCX(IRCX,3).NE.0.AND.(ITYP1.NE.1.OR.ITYP2.NE.4)) THEN
-        CALL EIRENE_LEER(1)
         WRITE (iunout,*)
      .    'WARNING: COLL.EST NOT AVAILABLE FOR EN. BALANCE '
         WRITE (iunout,*) 'IRCX = ',IRCX
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO TRACKLENGTH ESTIMATOR '
+        CALL EIRENE_LEER(1)
         IESTCX(IRCX,3)=0
       ENDIF
       RETURN
@@ -492,13 +491,6 @@ C
       WRITE (iunout,*) 'KK ',KK
       WRITE (iunout,*) 'IRCX, TEST-SPECIES, BULK SPECIES ',IRCX,
      .                  TEXTS(ISP),TEXTS(NSPAMI+IPL)
-      CALL EIRENE_EXIT_OWN(1)
-  993 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED'
-      WRITE (iunout,*)
-     .  'EBULK_ION .LE.0, BUT MONOENERGETIC DISTRIBUTION?'
-      WRITE (iunout,*) 'CHECK ENERGY FLAG ISCDEA'
-      WRITE (iunout,*) 'KK,ISCDEA ',KK,ISCDEA
       CALL EIRENE_EXIT_OWN(1)
   994 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED'

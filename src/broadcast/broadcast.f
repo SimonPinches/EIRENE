@@ -1,4 +1,4 @@
-!  30.08.06:  broadcast of density-models and spectra introduced
+!  30.08.06:  broadcast of density models and spectra introduced
 !             broadcast of logicals for living and missing tallies added
 !             broadcast of reaction data adopted to new structure
 !  10.01.07:  increase number of entries in LLOGAU
@@ -49,6 +49,8 @@ cdr  Oct. 18:  input tallies on PLSTLS(NINPTL). includes 18 old input tallies bu
 cdr            now also derived tallies: EDRIFT, BVIN, PARMOM
 cdr  tbd:      broadcast: livtali etc. move to correct position
 cdr  Jan. 19:  separate routine for broadcast of CCOUPL
+cdr  ???       apparently also COMNNL removed here from broadcasting
+cdr  Nov. 19:  bugfix re %poly% dimensioning. ND --> ND1 
 
       SUBROUTINE EIRENE_BROADCAST
 cdr
@@ -73,7 +75,6 @@ cdr
       USE EIRMOD_CCOUPL
       USE EIRMOD_CGEOM
       USE EIRMOD_CSDVI
-      USE EIRMOD_CSDVI_BGK
       USE EIRMOD_CTETRA
       USE EIRMOD_COMPRT
       USE EIRMOD_CPES
@@ -91,8 +92,7 @@ cdr
       USE EIRMOD_TIMEA, ONLY: EIRENE_TIMEA0_OC
       IMPLICIT NONE
 
-      INTEGER :: IER, I, NSPS, KK, NRC, NNROT, IR, NREF, IRF, IAN, NMT,
-     .           imerk
+      INTEGER :: IER, I, NSPS, KK, NRC, NNROT, IR, NREF, IRF, IAN, NMT
       REAL(DP) :: RHELP(3)
       INTEGER, ALLOCATABLE :: IHELP(:)
       CHARACTER, ALLOCATABLE :: CHELP(:)
@@ -746,6 +746,8 @@ c  data for photon line transport
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NREACI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
+      CALL MPI_BCAST (MAXSPC,5,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+
 cdr something for the internal CRM options, of blocks 4,12 here: H_Colrad.
       CALL MPI_BCAST (NHCOL_STORE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (M_HCOL,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -768,8 +770,6 @@ cdr dimensioning of LCUT array corrected:
       CALL MPI_BCAST (ISDVI,MSDVI,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (IIHC,2*NCV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (IGHC,2*NCV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-
-      CALL MPI_BCAST (NBGVI_STAT,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
       CALL MPI_BCAST (FLSTEP,NSTPP1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (ELSTEP,NSTPP1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -934,10 +934,12 @@ cdr dimensioning of LCUT array corrected:
 !+++++++++++ IYS 27.02.2015
 !+++++++++++ In this block dynamical structures are proceeded with care
 
-
-
       CALL MPI_BCAST (RCZT1,NZT1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (RCZT2,NZT2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+cdr these next two fields ZT1 and ZRG should go into COMXS,
+cdr they belong, logically, to the pre-computed 
+cdr plasma tallies DEINL, DIINL, TEINL, TIINL used to speed up code.
+cdr They all should be removed in "storage save mode"
       CALL MPI_BCAST (ZT1,NPLS*NRAD,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (ZRG,NPLS*NRAD,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
@@ -945,6 +947,9 @@ cdr dimensioning of LCUT array corrected:
       CALL MPI_BCAST (ICINIT,MCINIT,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LCNIT,LCINIT,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
 
+
+cdr  "density models", to set derived plasma background species IPLS
+cdr  e.g. corona, colrad, const, saha,.....
       CALL MPI_BCAST (CDENMODEL,10*NPLS,MPI_CHARACTER,0,
      .                MPI_COMM_WORLD,ier)
 
@@ -1255,8 +1260,7 @@ C  OUTPUT:
      .                     MPI_COMM_WORLD,ier)
            IF (MY_PE .NE. 0) THEN
              NSPS = ESTIML(I)%NSPC
-!pb             write (0,*) ' smestl, my_pe, imerk, nsps ',
-!pb     .                     my_pe, imerk, nsps
+
              IF (.NOT.ASSOCIATED(ESTIML(I)%SPC)) THEN
                ALLOCATE(ESTIML(I)%SPC(0:NSPS+1))
                ALLOCATE(ESTIML(I)%SDV(0:NSPS+1))
@@ -1362,7 +1366,7 @@ c     on the "root" node, where this is already done via timea0 after input
 
       IMPLICIT NONE
       TYPE(FIT_FORMS), POINTER :: RP
-      INTEGER :: IER, ND, ND2
+      INTEGER :: IER, ND1, ND2
 
 C.....................................................................
 cdr broadcast A&M data, general for a process, independent of data structure RP%IFIT
@@ -1448,33 +1452,32 @@ C.....................................................................
 C  POLYNOMIAL FIT, either 1D  (RP%IFIT=1),
 C                  or     2D  (RP%IFIT=2)
         IF (MY_PE == 0) THEN
-          ND = UBOUND(RP%POLY%DBLPOL,1)
+          ND1 = UBOUND(RP%POLY%DBLPOL,1)
           ND2 = UBOUND(RP%POLY%DBLPOL,2)
         END IF
 
-        CALL MPI_BCAST (ND,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (ND1,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (ND2,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
         IF (MY_PE .NE. 0) THEN
           IF (associated(RP%POLY)) THEN ! IYS 27.02.2015
             IF (associated(RP%POLY%DBLPOL)) THEN
-              IF (ND.ne.UBOUND(RP%POLY%DBLPOL,1) .and.
+              IF (ND1.ne.UBOUND(RP%POLY%DBLPOL,1) .or.
      &             ND2.ne.UBOUND(RP%POLY%DBLPOL,2)) THEN
                 DEALLOCATE(RP%POLY%DBLPOL)
                 NULLIFY(RP%POLY%DBLPOL)
-                ALLOCATE (RP%POLY%DBLPOL(ND,ND2))
-              ELSE
+                ALLOCATE (RP%POLY%DBLPOL(ND1,ND2))
               ENDIF
             ELSE
-              ALLOCATE (RP%POLY%DBLPOL(ND,ND2))
+              ALLOCATE (RP%POLY%DBLPOL(ND1,ND2))
             ENDIF
           ELSE
             ALLOCATE (RP%POLY)
-            ALLOCATE (RP%POLY%DBLPOL(ND,ND2))
+            ALLOCATE (RP%POLY%DBLPOL(ND1,ND2))
           END IF
         END IF
 
-        CALL MPI_BCAST (RP%POLY%DBLPOL,ND*ND2,MPI_REAL8,
+        CALL MPI_BCAST (RP%POLY%DBLPOL,ND1*ND2,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
 
 C.....................................................................

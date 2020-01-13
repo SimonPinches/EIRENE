@@ -79,7 +79,7 @@ C  FILL CROSS-SECTION DATA, SINGLE PARAMETER POLYNOMIAL IN AL=LN(E)
           EXPO = EIRENE_SNGL_POLY(RPP%DBLPOL,AL,
      .                            RPC%RC1MIN,RPC%RC1MAX,FP,
      .                            RPC%JFEX1MN,RPC%JFEX1MX,
-     .                            TRCAMD)
+     .                            TRCAMD,.TRUE.)
           EIRENE_CROSS = EXP(MAX(-100._DP,EXPO))
 
           EIRENE_CROSS = EIRENE_CROSS*FACT
@@ -151,11 +151,13 @@ C  EVALUATE FIT EXPRESSION IFTFLG=3:
           WRITE (iunout,*) 'REACTION NO. ',IR
           CALL EIRENE_EXIT_OWN(1)
         END IF
-      ELSE
+
+      ELSE  ! K out of range?
         WRITE (iunout,*) 'ERROR IN CROSS: K= ',K
         WRITE (iunout,*) 'CALLED FROM ',TEXT
         WRITE (iunout,*) 'REACTION NO. ',IR
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
+
       RETURN
       END

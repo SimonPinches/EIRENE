@@ -5,15 +5,18 @@ cdr  dec. 15 : species index added in volumetric energy tallies for bulk ions
 cdr            eapl,empl,eipl,ephpl,eppl (38, 44, 50, 56 and 84)
 cdr  March 18: X.B.: bug fix re scaling of addv, copv, snapv, copv,
 cdr                  in case scltal =4 this was erroneously overwritten with 0.
+cdr May 19:    scoring of volumetric spectra: ISRFCLL unclear. Use VOL or VOLTAL ?
+cdr            scaling with FATM, FMOL,... done elsewhere?
 
       SUBROUTINE EIRENE_SCAL_VOLAV_TALLIES (ISTR, ZWW, ZW,
      .                               ZVOLIN, ZVOLIW, SCLTAL, N1DIM)
 cdr
 c  scaling of volume-averaged tallies:
 c  zvolin : source strength(amp)/vol(cell volume cm^-3)/elementary-charge(amp/(1/s)),
-c           --> e.g. flight times(s) to densities (cm^-3)
+c           --> e.g. converts cumulated flight times [s] to densities [cm^-3]
 c  zvoliw : source strength(amp)/vol(cell volume cm^-3),
-c           --> e.g. events per cell(1) to source rates (amp/cm^-3)
+c           --> e.g. converts counted events per cell [1] to source rates (amp/cm^-3)
+c                or  also: cumulated (flight times/reaction time) [1] to source rates (amp/cm^-3)
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -225,6 +228,8 @@ C
 C
 C  ADDITIONAL TRACKLENGTH-ESTIMATED TALLIES FOR THE STRATUM ISTRA
 C  TALLY ADDV; NO. NTALA
+C  # is a placeholder for the units of the detector function used
+C  for scoring these additional tallies (see manual, block 10) 
 C
       IF (LADDV) THEN
         DO 230 IADV=1,NADVI
@@ -240,13 +245,13 @@ C  SCALE # PER CELL
               ADDV(IADV,J)=ADDV(IADV,J)*ZW
   232       CONTINUE
             SCLTAL(IADV,NTALA)=2
-C  SCALE AMP/S PER VOLUME
+C  SCALE # AMP/S PER VOLUME
           ELSEIF (IADVE(IADV).EQ.3) THEN
             DO 233 J=1,NSBOX_TAL
               ADDV(IADV,J)=ADDV(IADV,J)*ZVOLIW(J)
   233       CONTINUE
             SCLTAL(IADV,NTALA)=3
-C  SCALE AMP/S PER CELL
+C  SCALE # AMP/S PER CELL
           ELSEIF (IADVE(IADV).EQ.4) THEN
             DO 234 J=1,NSBOX_TAL
               ADDV(IADV,J)=ADDV(IADV,J)*ZWW
@@ -277,13 +282,13 @@ C  SCALE # PER CELL
   237       CONTINUE
             SCLTAL(ICLV,NTALC)=2
           ELSEIF (ICLVE(ICLV).EQ.3) THEN
-C  SCALE AMP/S PER VOLUME
+C  SCALE # AMP/S PER VOLUME
             DO 238 J=1,NSBOX_TAL
               COLV(ICLV,J)=COLV(ICLV,J)*ZVOLIW(J)
   238       CONTINUE
             SCLTAL(ICLV,NTALC)=3
           ELSEIF (ICLVE(ICLV).EQ.4) THEN
-C  SCALE AMP/S PER CELL
+C  SCALE # AMP/S PER CELL
             DO 239 J=1,NSBOX_TAL
               COLV(ICLV,J)=COLV(ICLV,J)*ZWW
   239       CONTINUE
@@ -316,13 +321,13 @@ C  SCALE # PER CELL
   247       CONTINUE
             SCLTAL(ISNV,NTALT)=2
           ELSEIF (ISNVE(ISNV).EQ.3) THEN
-C  SCALE AMP/S PER VOLUME
+C  SCALE # AMP/S PER VOLUME
             DO 248 J=1,NSBOX_TAL
               SNAPV(ISNV,J)=SNAPV(ISNV,J)*FACDT*ZVOLIW(J)
   248       CONTINUE
             SCLTAL(ISNV,NTALT)=3
           ELSEIF (ISNVE(ISNV).EQ.4) THEN
-C  SCALE AMP/S PER CELL
+C  SCALE # AMP/S PER CELL
             DO 249 J=1,NSBOX_TAL
               SNAPV(ISNV,J)=SNAPV(ISNV,J)*FACDT*ZWW
   249       CONTINUE
@@ -355,13 +360,13 @@ C  SCALE # PER CELL
   257       CONTINUE
             SCLTAL(ICPV,NTALM)=2
           ELSEIF (ICPVE(ICPV).EQ.3) THEN
-C  SCALE AMP/S PER VOLUME
+C  SCALE # AMP/S PER VOLUME
             DO 258 J=1,NSBOX_TAL
               COPV(ICPV,J)=COPV(ICPV,J)*ZVOLIW(J)
   258       CONTINUE
             SCLTAL(ICPV,NTALM)=3
           ELSEIF (ICPVE(ICPV).EQ.4) THEN
-C  SCALE AMP/S PER CELL
+C  SCALE # AMP/S PER CELL
             DO 259 J=1,NSBOX_TAL
               COPV(ICPV,J)=COPV(ICPV,J)*ZWW
   259       CONTINUE
@@ -391,13 +396,13 @@ C  SCALE # PER CELL
   267       CONTINUE
             SCLTAL(IBGV,NTALB)=2
           ELSEIF (IBGVE(IBGV).EQ.3) THEN
-C  SCALE AMP/S PER VOLUME
+C  SCALE # AMP/S PER VOLUME
             DO 268 J=1,NSBOX_TAL
               BGKV(IBGV,J)=BGKV(IBGV,J)*ZVOLIW(J)
   268       CONTINUE
             SCLTAL(IBGV,NTALB)=3
           ELSEIF (IBGVE(IBGV).EQ.4) THEN
-C  SCALE AMP/S PER CELL
+C  SCALE # AMP/S PER CELL
             DO 269 J=1,NSBOX_TAL
               BGKV(IBGV,J)=BGKV(IBGV,J)*ZWW
   269       CONTINUE
@@ -409,7 +414,7 @@ C  DO NOT SCALE AT ALL
   265   CONTINUE
       END IF
 C
-C  OTHER TALLIES ESTIMATED FROM HISTORIES, NO FIRST (SPECIES) INDEX)
+C  OTHER TALLIES ESTIMATED FROM HISTORIES, NO FIRST (SPECIES) INDEX
 C
       DO 270 J=1,NSBOX_TAL
         IF (LPAEL)  PAEL(J) =PAEL(J) *ZVOLIW(J)
@@ -483,11 +488,11 @@ C   SCALE AND INTEGRATE VOLUMETRIC SPECTRA
         IF (ESTIML(ISPC)%ISRFCLL /= 0) THEN
           ICL = ESTIML(ISPC)%ISPCSRF
           IF (ESTIML(ISPC)%ISRFCLL == 1) THEN
-!  scoring cell
-            ZFAC = ZVOLIN(ICL)
+!  scoring cell (coarse grid)
+            ZFAC = ZVOLIN(ICL)     ! ZW/VOL or ZW/VOLTAL ?
           ELSE IF (ESTIML(ISPC)%ISRFCLL == 2) THEN
-!  geometry cell
-            ZFAC = ZW / VOL(ICL)
+!  geometry cell (fine grid)
+            ZFAC = ZW / VOL(ICL)   ! ZW/VOL or ZW/VOLTAL ?
           ELSE
             ZFAC = 1._DP
             WRITE (IUNOUT,*) ' NO SCALING PERFORMED FOR SPECTRUM NO. ',
@@ -514,13 +519,21 @@ C   SCALE AND INTEGRATE VOLUMETRIC SPECTRA
             ELSE
               DEL = ERIGHT-ELEFT+EPS60
             END IF
+cdr 1/DE, DE= energy increment for bin no. I.
             DELI = 1._DP/(DEL+EPS60)
-C  SCALE: FROM SCORING PER ENERGY BIN --> TALLY UNITS: PER EV
+
+C  SCALE: FROM SCORING TALLY UNITS # PER ENERGY BIN --> TALLY UNITS # PER EV
             ESTIML(ISPC)%SPC(I) =
-     .       ESTIML(ISPC)%SPC(I)*ZFAC*DELI
-C  INTEGRATE
+     .      ESTIML(ISPC)%SPC(I)*ZFAC*DELI
+C  INTEGRATE--> TALLY UNITS
+cdr  Test tbd: in case of total (not directional) spectrum, i.e. for IDIREC=0, this
+cdr            integral must coindide with the particle density PDEN.. or the energy density EDEN..,
+cdr            in the selected cell, depending on ISPTYP=1, 
+cdr            or ISPTYP=2, respectively.
+cdr  See text in scale_surf_tallies: this test should
+cdr  also work for directional resolved spectra.
             ESTIML(ISPC)%SPCS = ESTIML(ISPC)%SPCS +
-     .       ESTIML(ISPC)%SPC(I)*DEL
+     .                          ESTIML(ISPC)%SPC(I)*DEL
           END DO
         END IF
       END DO

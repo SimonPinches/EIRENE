@@ -354,7 +354,7 @@ C  THIRD PROCESS   H2+   -->   H + H:  DEFAULT PROCESS NO. KK=-10, diss.rec
           EATEI(IREI,IATM1,2)=1./RMASSA(IATM1)/ACCINV
           EATEI(IREI,IATM2,2)=1./RMASSA(IATM2)/ACCINV
 
-cdr  eatei, emlei, eioei(...,.,...) are secondary energy per secondary partile iat, iml, iio.
+cdr  eatei, emlei, eioei(...,.,...) are secondary energy per secondary particle iat, iml, iio.
 cdr  eatei, emlei, eioei(...,0,...) is total per species
 cdr  this is different now for eplei.
 cdr  eplei  is secondary energy per secondary bulk species, i.e. twice, if two secondaries of same species.
@@ -747,12 +747,6 @@ C
       WRITE (iunout,*) 'IION = ',IION
       WRITE (iunout,*) 'ISWR(KK) = ',ISWR(KK)
       WRITE (iunout,*) 'EXIT CALLED'
-      CALL EIRENE_EXIT_OWN(1)
-  996 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSECTI: EXIT CALLED'
-      WRITE (iunout,*) 'NO COLLISION DATA AVAILABLE FOR THE CHOICE'
-      WRITE (iunout,*) 'OF POST-COLLISION SAMPLING FLAG ISCDEA'
-      WRITE (iunout,*) 'OR OTHER COLLISION DATA INCONSISTENCY'
       CALL EIRENE_EXIT_OWN(1)
   998 CONTINUE
       WRITE (iunout,*) 'INSUFFICIENT STORAGE FOR PI: NRPI=',NRPI

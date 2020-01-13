@@ -44,7 +44,7 @@ C      INTEGER :: IC
                           cycle iloop
                         endif
                       end do jloop
-                      cycle jsloop
+                      if (.true.) cycle jsloop
                      end do iloop
                     NTBAR(IS,ITET) = JTET ! NEIGHBOR FOUND
                     NTSEITE(IS,ITET) = JS

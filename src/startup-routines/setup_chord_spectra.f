@@ -163,7 +163,7 @@ C  SAVE ESTIML, SMESTL,...
            ispc = ispc + 1
            espec => estiml(ispc)
 
-           espec%isrfcll = 2 ! SURFACE OR CELL BASED OR DIRECTIONAL CELL BASED
+           espec%isrfcll = 2 ! SURFACE OR CELL-BASED OR DIRECTIONAL CELL-BASED
            espec%ispcsrf = cur%no_cell
            espec%iprtyp = iprtyp   !TYP
            espec%iprsp = nspspz(ichori)  !SPECIES

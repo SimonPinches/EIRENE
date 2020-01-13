@@ -16,7 +16,7 @@ C
       LOGICAL, INTENT(OUT) :: LERR
       REAL(DP) :: EPS12, XN, AA, DET, ROOT, BB, CC
 
-      DATA EPS12 /1.E-12/
+      DATA EPS12 /1.E-12_DP/
 
       LERR=.FALSE.
       IF (I.LE.4) THEN

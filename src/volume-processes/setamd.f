@@ -1,6 +1,6 @@
 C 27.6.05:  PHV_NROTA, PHV_NROTPH REMOVED
 cdr  nov. 15:  comments,  irds --> irei
-cdr  april 16:  added: fail safe (exit) step in case of more than one (distinct) bulk
+cdr  april 16:  added: fail-safe (exit) step in case of more than one (distinct) bulk
 cdr             secondaries.
 cdr             This is temporarily necessary, as a consequence of making the
 cdr             (bulk) ion energy sources eapl, empl, eipl species-dependent

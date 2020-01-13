@@ -81,7 +81,7 @@ c       where we have the x as the number below, returning for every block
 c       make sure we are looking at a tria/quadr/quintangle
         IF (RLB(SID).ge.3) THEN
 c         for every triangle we may get (triangle = 1, quadrangle = 2, quintangle = 3)
-c         make a test run! (wow... thats much work to do...)
+c         make a test run! (wow... that is much work to do...)
           DO T=1,int((RLB(SID)-2))
 c           get us these points of the triangle we look at
             SELECT CASE(T)
@@ -220,7 +220,9 @@ C                 AND THE DISTANCE "TL" ALONG RAY UNTIL INTERSECTION POINT.
         USE EIRMOD_CLGIN
         USE EIRMOD_CTRIG
         USE EIRMOD_COMSPL
+#ifdef TRACE
         USE EIRMOD_COMPRT, ONLY: IUNOUT
+#endif
         IMPLICIT NONE
 
         INTERFACE
@@ -336,8 +338,10 @@ C
             VX=COS(ROT)*VSAVE-SIN(ROT)*VZ
             VZ=SIN(ROT)*VSAVE+COS(ROT)*VZ
             NN=ILTOR(J)
+C#ifdef TRACE
 C           WRITE (iunout,*) 'J,ILTOR(J),X,Z,VX,VZ ',
 C    .                        J,ILTOR(J),X,Z,VX,VZ
+C#endif
 C  X,Z,VX AND VZ ARE NOW GIVEN IN CELL NN=ILTOR(J). SO ARE THE COEFFICIENTS
 C  OF SURFACE NO. J. FIND INTERSECTION IN THIS LOCAL SYSTEM
           ELSEIF (ILTOR(J).EQ.0) THEN
@@ -348,8 +352,10 @@ C  IN EACH TOROIDAL CELL, THUS ESPECIALLY IN CELL NN
             Z=ZS
             VX=VXS
             VZ=VZS
+C#ifdef TRACE
 C           WRITE (iunout,*) 'J,ILTOR(J),X,Z,VX,VZ ',
 C    .                        J,ILTOR(J),X,Z,VX,VZ
+C#endif
           ENDIF
         ENDIF
 C
@@ -410,7 +416,7 @@ C  NO
 C
 C  RLB(J) .EQ. 0.  NO FURTHER CONSTRAINS FOR THIS SURFACE. STATEMENT 11---20
 C
-   11   IF (TMI.LE.EPS12) GOTO 12
+        IF (TMI.LE.EPS12) GOTO 12
         IF (LTSTCXP) THEN
           LCNDEXP =.TRUE.
           GOTO 100

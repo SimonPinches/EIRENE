@@ -1,7 +1,7 @@
 cdr Oct 17  :
 cdr from W.Zholobenko: add         He emission lines, new options NCHTAL=5
 cdr                    analogous to H emission lines,             NCHTAL=2
-cdr  itp (select type) of compinent relevant for LOS (not in use yet)
+cdr  itp (select type) of component relevant for LOS (not in use yet)
 cdr  Aug. 16:  re LOS option:
 cdr            the option described in the manual regarding
 cdr            use of emin1, emax1 to identify a particular spectroscopic

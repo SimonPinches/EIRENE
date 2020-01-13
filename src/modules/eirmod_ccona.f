@@ -1,8 +1,9 @@
 C   6.12.05   AU_TO_CM2 added here (and removed from fpatha, veloel)
 C   1.01.06   hplnk_bar = hplnk/2Pi added here (and set in setcon.f)
-C  22.12.06   Periodic Table of Elements introduced
-C  16.01.06   function FIND_ELEMENT identifies an element in the PTE
-C             and returns the element number
+C  22.12.06   Periodic Table of Elements (PTE) introduced.
+C  16.01.06   Functions SET_PTE_ELEMENT and FIND_PTE_ELEMENT 
+C             identify a chemical element in the PTE
+C             and returns the element number, resp.
 !  20.06.07   constant NCONA = number of constants in module introduced
 
       MODULE EIRMOD_CCONA
@@ -36,6 +37,7 @@ C             and returns the element number
      R AU_TO_CM2, HPLNK_BAR,
      R EPSILON0,AMUAKG,FAKVTH,FAKLAM,COULOMBLOG,MY0,FAKTAUT !JS
 
+cdr elements of periodic table 1:111, plus two heavier hydrogen isotops
       TYPE (PTE_TYPE), PUBLIC, SAVE :: PTE(113)
 
       CONTAINS
@@ -98,6 +100,12 @@ C             and returns the element number
 
 
       SUBROUTINE EIRENE_SET_PTE_ELEMENT (IEL,NAME,AB,EM,CH)
+
+cdr  Called from SETCON.
+cdr  Set elements of periodic table, 1:111, identify them by
+cdr  name (NAME), short name in periodic table (ABBR),
+cdr  nuclear mass (EL_MASS), nuclear charge (EL_CHARGE)
+cdr  112:113: heavier isotops of hydrogen
 
       INTEGER, INTENT(IN) :: IEL
       CHARACTER(*), INTENT(IN) :: NAME, AB

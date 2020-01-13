@@ -214,7 +214,8 @@ c  read primary source parameters
         IF (TRCFLE) WRITE (iunout,*) 'READ 13: module EIRMOD_CSTEP.f '
         IF (IO /= 0) GOTO 990
       ELSE
-        IF (TRCFLE) WRITE (iunout,*) 'SOURCE DATA NOT READ FROM FORT.13' 
+        IF (TRCFLE)
+     .   WRITE (iunout,*) 'SOURCE DATA NOT READ FROM ', FORT, '13'
       END IF
 
       IRET = IO
@@ -222,21 +223,21 @@ c  read primary source parameters
       RETURN
 
  990  CONTINUE
-      WRITE (IUNOUT,*) ' ERROR READING FILE FORT.13 '
+      WRITE (IUNOUT,*) ' ERROR READING FILE '//FORT//'13 '
       CALL EIRENE_EXIT_OWN(1)
  991  CONTINUE
       WRITE (IUNOUT,*) ' AVAILABLE INPUT TALLIES ARE DIFFERENT FROM',
-     .                 ' PRIOR JOB WHICH WROTE FORT.13 '
+     .                 ' PRIOR JOB WHICH WROTE '//FORT//'13 '
       CALL EIRENE_EXIT_OWN(1)
  992  CONTINUE
       WRITE (IUNOUT,*) ' LEADING DIMENSIONS OF INPUT TALLIES ARE',
      .                 ' DIFFERENT FROM',
-     .                 ' PRIOR JOB WHICH WROTE FORT.13 '
+     .                 ' PRIOR JOB WHICH WROTE '//FORT//'13 '
       CALL EIRENE_EXIT_OWN(1)
  993  CONTINUE
       WRITE (IUNOUT,*) ' STARTING POSITIONS OF INPUT TALLIES ',
      .                 ' IN ARRAY PLSTLS ARE DIFFERENT FROM',
-     .                 ' PRIOR JOB WHICH WROTE FORT.13 '
+     .                 ' PRIOR JOB WHICH WROTE '//FORT//'13 '
       CALL EIRENE_EXIT_OWN(1)
 
       END

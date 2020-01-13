@@ -40,7 +40,7 @@ C
       IMPLICIT NONE
 
       REAL(DP), ALLOCATABLE :: PLS(:)
-      REAL(DP) :: DELE, FCTKKL, EEMX, ZX, DEIMIN, RMASS2, FACTKK,
+      REAL(DP) :: DELE, FCTKKL, ZX, DEIMIN, RMASS2, FACTKK,
      .            RMASS2_2, CORSUM, COU, EIRENE_RATE_COEFF,
      .            EIRENE_ENERGY_RATE_COEFF,
      .            BREMS, Z, eirene_brems
@@ -147,7 +147,7 @@ C
                   DO 53 J=1,NSBOX
                     ZX=EIONHE/MAX(1.E-5_DP,TEIN(J))
 C  rate = [rate coeff <sig v>] times [electr. density],  1/s per ion
-c    1.96e-14*sqrt(eionhe/Ry) = 3.5487E-14
+c    1.96e-14*sqrt(EionHe/Ry) = 3.5487E-14
                     TABRC1(IRRC,J)=3.5487E-14*ZX**1.5/(ZX+0.35)*DEIN(J)
 C  maxw. electron energy loss rate due to recombination
 c                   corsum=0._dp  !  old default: 1.5*Te
@@ -295,7 +295,8 @@ C  DO NOT STORE DATA, BUT COMPUTE THEM WHEN NEEDED
                   NREARC(IRRC) = KK
                 END IF
                 MODCOL(6,2,IRRC)=1
-              ENDIF
+              ENDIF  ! NSERC3
+
               FACRRC(IRRC,1) = FACTKK
               FACRRC(IRRC,2) = LOG(FACTKK)
 C
@@ -336,7 +337,7 @@ C  4.B)  ENERGY LOSS RATE OF IMP. ELECTRON = -1.5*TE*RATE COEFF.
 C
               ELSEIF (NSERC5.EQ.3) THEN
 
-                KREAD=EELECP(IPLS,NRC)
+                KREAD=INT(EELECP(IPLS,NRC))
                 IF ((KREAD < 1) .OR. (KREAD > NREACI)) GOTO 996
                 MODC=EIRENE_IDEZ(MODCLF(KREAD),5,5)
 c  special treatment in case bremsstrahlung is contained in energy loss rate
@@ -414,7 +415,7 @@ c  bremsstrahlung correction done.
                     JELRRC(IRRC)=9
                   END IF
                   MODCOL(6,4,IRRC)=1
-                ENDIF   ! MODC =3
+                ENDIF   ! MODC =1 or =3
 
                 FACRRC(IRRC,1) = FACTKK
                 FACRRC(IRRC,2) = LOG(FACTKK)
@@ -435,10 +436,10 @@ c                 ELSE  ! ??
                   END IF
 C
                 ENDIF   ! DELPOT
-              ENDIF  !  MODC =1 OR =3
+              ENDIF  !  NSERCS
             ELSE
               GOTO 997
-            ENDIF  !  NSERC5
+            ENDIF  !  iswr(kk)
 C
    82     CONTINUE
           NPRCI(IPLS)=IDSC
@@ -527,10 +528,6 @@ C
 C
       RETURN
 C
-  990 CONTINUE
-      WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED'
-      WRITE (iunout,*) 'INVALID SPECIES INDEX FOR RECOMBINATION'
-      CALL EIRENE_EXIT_OWN(1)
   992 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTP: EXIT CALLED'
       WRITE (iunout,*) 'NREC TOO SMALL, CHECK PARAMETER STATEMENTS'

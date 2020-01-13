@@ -1,6 +1,6 @@
 CDR  NOV 17 : lemtspw arguments corrected
 cdr  jan 18 : start to implement bi-directional reflectance functions
-cdr  dec.18: remove unfinished "hollmann databse model"
+cdr  dec.18 : remove unfinished "hollmann database model"
 C
 C
       SUBROUTINE EIRENE_REFLEC_photon
@@ -18,51 +18,25 @@ C       ITYP = 0  PHOTON IPHOT IS RETURNED TO CALLING PROGRAM
 C     LGPART= FALSE  NO PARTICLE IS RETURNED (ABSORPTION)
 C       ITYP = -1
 C
-      USE EIRMOD_PRECISION
-      USE EIRMOD_PARMMOD
-      USE EIRMOD_CTRCEI
-      USE EIRMOD_CADGEO
-      USE EIRMOD_CLGIN
-      USE EIRMOD_COMUSR
-      USE EIRMOD_CLOGAU
-      USE EIRMOD_CESTIM
-      USE EIRMOD_COMPRT
-      USE EIRMOD_CRAND
-      USE EIRMOD_CREF
-      USE EIRMOD_CCONA
-      USE EIRMOD_PHOTON
-      USE EIRMOD_CPES
-      USE EIRMOD_CSDVI
-      USE EIRMOD_RANF, ONLY: RANF_EIRENE
-      USE EIRMOD_RANSET, ONLY: RANSET_EIRENE
 
       IMPLICIT NONE
 
-      REAL(DP), INTENT(IN) :: WMIN, XMP, XCP
-      INTEGER, INTENT(IN) :: NPRIN
-      INTEGER, INTENT(INOUT) :: IGASF, IGAST
-      INTEGER, SAVE :: IFIRST=0, NPANOLD=0
-      INTEGER :: MODREF, ISPZO,
-     .           IMAT, IREFL, MSS, IDUMMY
-      REAL(DP) :: DUMMY, XMW, XCW, E0TERM, EBIND,
-     .            EXPP, EXPE, EXPI, RINTG, EINTG, AINTG, COSIN,
-     .            THETA, XLAMBDA, THETA_OUT, ALPHA_OUT,
-     .            FR1, ZCPHI, ZSPHI, ZCTHET, ZSTHET, VX, VY, VZ,
-     .            RPROB, PRFCF, PRFCT, PABS, PLAMBERT, WABS,
-     .            ZEP1
-ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
-ctk      INTEGER, EXTERNAL :: RANGET_EIRENE, EIRENE_IDEZ,
-ctk     .                     RANSET_EIRENE
-      INTEGER, EXTERNAL :: RANGET_EIRENE, EIRENE_IDEZ
 C
 C---------------------------------------------------------------------
 C
 
+      CALL EIRENE_REFLC0_PHOTON
+      END SUBROUTINE EIRENE_REFLEC_photon
+
 C
 C  INITIALIZE SURFACE REFLECTION MODELS FOR PHOTONS
 C
-      ENTRY EIRENE_REFLC0_PHOTON
+      SUBROUTINE EIRENE_REFLC0_PHOTON
+      USE EIRMOD_CTRCEI
+      IMPLICIT NONE
 C
+      INTEGER, SAVE :: IFIRST=0
+
       IF (IFIRST.EQ.1) RETURN
       IFIRST=1
 C
@@ -79,15 +53,48 @@ C  ALREADY DONE FROM REFLC0
 C
 C
       RETURN
+      END SUBROUTINE EIRENE_REFLC0_PHOTON
 C
-      ENTRY EIRENE_REFLC1_PHOTON (WMIN,XMP,XCP,NPRIN,IGASF,IGAST)
+      SUBROUTINE EIRENE_REFLC1_PHOTON (WMIN,XMP,XCP,NPRIN,IGASF,IGAST)
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_CTRCEI
+      USE EIRMOD_CADGEO
+      USE EIRMOD_CLGIN
+      USE EIRMOD_COMUSR
+      USE EIRMOD_CLOGAU
+      USE EIRMOD_CESTIM
+      USE EIRMOD_COMPRT
+      USE EIRMOD_CRAND
+      USE EIRMOD_CREF
+      USE EIRMOD_CCONA
+      USE EIRMOD_PHOTON
+      USE EIRMOD_CPES
+      USE EIRMOD_CSDVI
+      USE EIRMOD_RANF, ONLY: RANF_EIRENE, RANSET_EIRENE, RANGET_EIRENE
+      USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
+      IMPLICIT NONE
+
+      REAL(DP), INTENT(IN) :: WMIN, XMP, XCP
+      INTEGER, INTENT(IN) :: NPRIN
+      INTEGER, INTENT(INOUT) :: IGASF, IGAST
+      INTEGER, SAVE :: NPANOLD=0
+      INTEGER :: MODREF, ISPZO,
+     .           MSS, IDUMMY
+      REAL(DP) :: DUMMY, XMW, XCW,
+     .            EXPP, EXPE, EXPI, RINTG, EINTG, AINTG, COSIN,
+     .            THETA_OUT=0._DP, ALPHA_OUT=0._DP,
+     .            FR1, ZCPHI, ZSPHI, ZCTHET, ZSTHET, VX, VY, VZ,
+     .            RPROB, PRFCF, PRFCT, PABS, PLAMBERT, WABS,
+     .            ZEP1
+      INTEGER, EXTERNAL :: EIRENE_IDEZ
 C
 C  RE-SYNCHRONIZE RANDOM NUMBERS (CORRELATED SAMPLING):  out.
 C  tbd:  introduce counter of max. possible random numbers used up to this point
 C  see report Kalos, 1955, on correlated sampling, synchronisation...
 C
       IF (NLCRR.AND.(NPANU.NE.NPANOLD).AND..FALSE.) THEN
-C  re-INITIALIZE RANDOM NUMBERS FOR EACH PARTICLE, TO GENERATE CORRELATION
+C  RE-INITIALIZE RANDOM NUMBERS FOR EACH PARTICLE, TO GENERATE CORRELATION
 
         idummy=ranset_eirene(iseedr)
         DUMMY=RANF_EIRENE()
@@ -108,6 +115,10 @@ C
 C   MODREF=0: "PERFECTLY ABSORBING SURFACE", DEFAULT
 C   MODREF=1: "DATABASE REFLECTION MODEL"  (out)
 C
+!PB  to be revised
+!    RPROB: propability of the photon to be reflected
+      RPROB = 0._dp
+
       IF (MODREF.EQ.1) THEN
         GOTO 992  ! THIS MODEL IS CURRENTLY NOT AVAILABLE
       ELSEIF (MODREF.EQ.2) THEN
@@ -115,19 +126,15 @@ C
 CDR BDRF MODEL, WITH GAUSSIAN LOBE IN SPECULAR PART AND LAMBERTIAN IN THERMAL PART
 
 cdr reflected (specular) fraction
-        PRFCF=max(0.,(min(1.,RECYCF(ISPZ,MSURF))))
+        PRFCF=max(0._DP,(min(1._DP,RECYCF(ISPZ,MSURF))))
 cdr prfct: total reemitted  fraction.
 cdr pabs : (1-recyct) is the absorbed fraction
-        PRFCT=max(0.,(min(1.,RECYCT(ISPZ,MSURF))))
+        PRFCT=max(0._DP,(min(1._DP,RECYCT(ISPZ,MSURF))))
         PABS=1.-PRFCT
 cdr prfct is cumulated SUM of emitted (Lambertian) and specular reflected (BDRF) part
 cdr cumulative distribution of (spec-ref)-(lambert)-(absorb) fractions: prfcf,prfct,1.0
         prfcf=min(prfcf,prfct)
         plambert=prfct-prfcf
-
-
-
-
 
 cdr parameters for bi-directional reflectance function
         EXPP=EXPPL(ISPZ,MSURF)
@@ -157,7 +164,6 @@ C   COSINE OF ANGLE OF INCIDENCE against outer normal
           IF (COSIN.LT.0.D0) GOTO 993
         ENDIF
 
-
 c  SPECULAR LOBE, BDRF MODEL.
         GOTO 600
       ELSE
@@ -167,10 +173,6 @@ C  ABSORB THIS PHOTON
 C
 C  UNFINISHED DATABASE MODEL REMOVED HERE. OLD STATEMENT LABELS: 100 TO 130.
 C
-!PB  to be revised
-!    RPROB: propability of the photon to be reflected
-      RPROB = 0._dp
-
 C  DECIDE IF PARTICLE IS TO BE REFLECTED OR ABSORBED
 C  (NO THERMAL RE-EMISSION MODEL FOR INCIDENT PHOTONS)
 C
@@ -215,7 +217,7 @@ C  (I.E., 5 DEGREES AGAINST SURFACE TANGENTIAL PLANE)
       ZCTHET=MIN(0.999999_DP,MAX(0.08716_DP,ZCTHET))
       ZSTHET=SQRT(1.-ZCTHET*ZCTHET)
 C
-C  AZIMUTAL ANGLE OF REFLECTION (PHI)
+C  AZIMUTHAL ANGLE OF REFLECTION (PHI)
 C
       ZCPHI=COS(ALPHA_OUT)
       ZCPHI=MAX(-.999999_DP,MIN(0.999999_DP,ZCPHI))
@@ -276,4 +278,4 @@ C
       WEIGHT=0.
       RETURN
 C
-      END
+      END SUBROUTINE EIRENE_REFLC1_PHOTON

@@ -24,7 +24,7 @@ c  binary search
         bu=n+1
 
    80   if (bu-bl.gt.1) then
-          bm=(bu+bl)*0.5
+          bm=int((bu+bl)*0.5)
           if ((xx(n).ge.xx(1)).eqv.(x.ge.xx(bm))) then
             bl=bm
           else

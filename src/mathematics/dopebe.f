@@ -1,7 +1,7 @@
 C
 C
 C
-      SUBROUTINE EIRENE_DOPEBE(EV,LAMBDA,NUE,M,B0,B1,B2,B3,EPS)
+      SUBROUTINE EIRENE_DOPEBE(EV,LAMBDA,NUE,M,B0,B1,B2,B3)
 **********************************************************************
 *                                                     1. JUNI 1988   *
 *     Inde = 1 ===> Es liegt eine Doppelebenen zur u2,-u3 Ebene vor  *
@@ -18,7 +18,7 @@ C
       USE EIRMOD_PRECISION
       IMPLICIT NONE
 
-      REAL(DP), INTENT(IN) :: LAMBDA( 3 ), EV(3,3), EPS,
+      REAL(DP), INTENT(IN) :: LAMBDA( 3 ), EV(3,3),
      >                       M(3), NUE
       REAL(DP), INTENT(OUT) :: B0, B1, B2, B3
       REAL(DP) :: NORM, P(3)

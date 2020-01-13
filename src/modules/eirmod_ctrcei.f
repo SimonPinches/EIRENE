@@ -4,6 +4,7 @@ cdr mar 18:   add trchktm (species-resolved cpu consumption),
 cdr           read in first line block 11.
 cdr           and remove (deactivate) the unused trcdbg... flags inherited from
 cdr           V.K. proprietary versions
+
       MODULE EIRMOD_CTRCEI
 
       USE EIRMOD_PARMMOD
@@ -61,6 +62,7 @@ CVK END
 
 
       SUBROUTINE EIRENE_ALLOC_CTRCEI
+      IMPLICIT NONE
 
       IF (ALLOCATED(LTRCEI)) RETURN
 
@@ -70,9 +72,7 @@ CVK END
       ALLOCATE (LTRCEI(LCTRC))
       ALLOCATE (ITRCEI(MCTRC))
       ALLOCATE (TRCSRC(0:NSTRA))
-!pb      ALLOCATE (NSPEZV(NSPEZV_DIM,2))
       ALLOCATE (NSPEZV(NVLPR,2))
-!pb      ALLOCATE (NSPEZS(NLIMPS,2))
       ALLOCATE (NSPEZS(NSRPR,2))
 
       WRITE (IUNMEM,'(A,T25,I15)')
@@ -153,13 +153,16 @@ c     TRCDBGC  => TRCDBG(9)
 
       SUBROUTINE EIRENE_DEALLOC_CTRCEI
 
-      IF (.NOT.ALLOCATED(LTRCEI)) RETURN
-
+      IF (ALLOCATED(LTRCEI)) THEN
       DEALLOCATE (LTRCEI)
       DEALLOCATE (ITRCEI)
-      DEALLOCATE (TRCSRC)
       DEALLOCATE (NSPEZV)
       DEALLOCATE (NSPEZS)
+      END IF
+
+      IF (ALLOCATED(TRCSRC)) THEN
+        DEALLOCATE (TRCSRC)
+      END IF
 
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_CTRCEI

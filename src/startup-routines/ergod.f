@@ -19,7 +19,7 @@ C  BASED UPON AN ERGODIC PRINCIPLE
       IMPLICIT NONE
 
       REAL(DP) :: SORL4
-      INTEGER :: ISTR, ISPR, ISTR2, J, ISTR_ERG
+      INTEGER :: ISTR, ISPR, ISTR2, J, JATM, JMOL, JION, JSPZ, ISTR_ERG
       INTEGER, EXTERNAL :: EIRENE_IDEZ
 C
 C  1.)  MAKE ALL NON-TRANSPARENT SURFACES 100% REFLECTING, 1.5 EV MONOENERGETIC
@@ -32,30 +32,30 @@ C
           ILSIDE(J)=0
           EWALL(J)=1.5
 C         RINTEG(J)=0.0
-          DO ISPZ=1,NSPZ
-            EXPIL(ISPZ,J)=0.0
+          DO JSPZ=1,NSPZ
+            EXPIL(JSPZ,J)=0.0
 C  THESE SETTINGS: EITHER RESULT ON PDENA(1,...), THEN: PDENM(1,....)=0.
 C                  OR     RESULT ON PDENM(1,...), THEN: PDENA(1,....)=0.
-            TRANSP(ISPZ,1,J)=0.0
-            TRANSP(ISPZ,2,J)=0.0
-            RECYCF(ISPZ,J)=0.0
-            RECYCT(ISPZ,J)=1.0
-            ISRF(ISPZ,J)=0
-            ISRT(ISPZ,J)=1
+            TRANSP(JSPZ,1,J)=0.0
+            TRANSP(JSPZ,2,J)=0.0
+            RECYCF(JSPZ,J)=0.0
+            RECYCT(JSPZ,J)=1.0
+            ISRF(JSPZ,J)=0
+            ISRT(JSPZ,J)=1
           ENDDO
         ENDIF
       ENDDO
 C
 C  2.)  TURN OFF ALL VOLUME PROCESSES
 C
-      DO IATM=1,NATM
-        NRCA(IATM)=-1
+      DO JATM=1,NATM
+        NRCA(JATM)=-1
       ENDDO
-      DO IMOL=1,NMOL
-        NRCM(IMOL)=-1
+      DO JMOL=1,NMOL
+        NRCM(JMOL)=-1
       ENDDO
-      DO IION=1,NION
-        NRCI(IION)=-1
+      DO JION=1,NION
+        NRCI(JION)=-1
       ENDDO
 C
 C  3.)  TURN ON TIME HORIZON, CENSUS ARRAYS, ETC.

@@ -86,10 +86,13 @@ C
       INTEGER :: EIRENE_ILLZ, IANP, I, IENP, JHELP, ISW, JJC, J1,
      .           NRCLLP, LHELP, J2, INCY, JN, ICOU, NYSAVE, NHELP,
      .           I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS,
-     .           IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J, JJ,
+     .           IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J,
      .           EIRENE_LEARCA, EIRENE_LEARC2, 
      .           NJC, ITEST, JSH, NN ,IN, itc
       INTEGER :: NCOUNS(N2ND+N3RD)
+#ifdef TRACE
+      INTEGER :: JJ
+#endif
 cdr logicals for intersection with poloidal surfaces
       LOGICAL :: LHITP(N2NDPLGS), LHITP0
       LOGICAL :: lnincz
@@ -188,8 +191,8 @@ C  TEST POLOIDAL SURFACE NO. MPTEST FOR REENTRY
                 NCOUP=1
                 LUPC(NCOUP)=MPTEST
                 IRSAVE=IR
-                MUPC(NCOUP)=SIGN(1._DP,VELX*PPLNX(IR,MPTEST)+
-     .                                 VELY*PPLNY(IR,MPTEST))
+                MUPC(NCOUP)=INT(SIGN(1._DP,VELX*PPLNX(IR,MPTEST)+
+     .                                     VELY*PPLNY(IR,MPTEST)))
                 JUPC(NCOUP)=1
                 ZRD=T1
     2       CONTINUE
@@ -405,8 +408,6 @@ C
         GOTO 5000
 C
 C
-   30   CONTINUE
-C
 C  LAST CELL, TRACK DOES NOT END ON A POLOIDAL SURFACE
 C
 C  INDEX OF LAST CELL NOT KNOWN (E.G. DUE TO ADD. SURFACE) ?
@@ -465,7 +466,7 @@ C  PARTICLE OUTSIDE STANDARD MESH, BUT THETA GRID EXTENDS TO INFINITY
             X00=X00+VELX*ZRAD
             Y00=Y00+VELY*ZRAD
             WIN1=MOD(ATAN2(Y00,X00)+PI2A-PSURF(1),PI2A)+PSURF(1)
-            NPCELL=WIN1/YDF*DBLE(NP2NDM)+1.
+            NPCELL=INT(WIN1/YDF*DBLE(NP2NDM)+1.)
             GOTO 5000
           ENDIF
 C
@@ -477,7 +478,7 @@ C
           X000=X00+VELX*ZRAD
           Y000=Y00+VELY*ZRAD
           WIN1=MOD(ATAN2(Y000,X000)+PI2A-PSURF(1),PI2A)+PSURF(1)
-          NJC=WIN1/YDF*DBLE(NP2NDM)+1.
+          NJC=INT(WIN1/YDF*DBLE(NP2NDM)+1.)
 C
           TWIN1=0.
           NCOUP=0
@@ -586,8 +587,8 @@ C
 #endif
             NCOUP=NCOUP+1
             LUPC(NCOUP)=I
-            MUPC(NCOUP)=SIGN(1._DP,VELX*PPLNX(NRCELL,I)+
-     .                             VELY*PPLNY(NRCELL,I))
+            MUPC(NCOUP)=INT(SIGN(1._DP,VELX*PPLNX(NRCELL,I)+
+     .                                 VELY*PPLNY(NRCELL,I)))
             IF (MUPC(NCOUP).EQ.-1) THEN
               JUPC(NCOUP)=I
               ALPD(NCOUP)=T1
@@ -914,7 +915,6 @@ C  NEXT CELL
 C
 C  LAST CELL
 C
- 3100   CONTINUE
 #ifdef TRACE
         IF (NLTRC) WRITE (iunout,*) 'LAST CELL ',ZRAD,DUM
 #endif
@@ -1005,11 +1005,6 @@ C
       ZRAD=SUM
       RETURN
 C
- 9990 CONTINUE
-      WRITE (iunout,*) 'ERROR IN TIMEP ',J2,J1,VELY
-      WRITE (iunout,*) 'J2 OUT OF RANGE, NP2ND= ',NP2ND
-      RETURN  ! changed to avoid job crash in long runs
-!     CALL EIRENE_EXIT_OWN(1)
  9991  CONTINUE
       WRITE (iunout,*)
      .  'REENTRANCE FROM VACUUM REGION UNFINISHED IN TIMEP'

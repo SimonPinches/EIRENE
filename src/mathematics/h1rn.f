@@ -1,16 +1,17 @@
 C  random number generator RANMAR, F. James, CPC 60, (1990), 329-344
 C  period length: 2**144
 *
-      FUNCTION H1RN(DUMMY)
+      FUNCTION H1RN()
 *
 *#**********************************************************************
 *# RANDOM NUMBER GENERATOR AS ADVOCATED BY F. JAMES FROM PROPOSAL OF   *
 *# MARSAGLIA AND ZAMAN FSU-SCRI-87-50 AND MODIFIED BY F. JAMES 1988 TO *
 *# PRODUCE VECTOR OF NUMBERS.                                          *
 *# ENTRIES ARE:                                                        *
-*#     FUNCTION    H1RN(DUMMY)     SINGLE RANDOM NUMBER                *
+*#     FUNCTION    H1RN()          SINGLE RANDOM NUMBER                *
 *#     SUBROUTINE  H1RNV(VEC,LEN)  VECTOR OF RANDOM NUMBERS            *
-*#     SUBROUTINE  H1RNIN(IJ,KL)   INITIALISE WITH SEEDS               *
+*# cdr SUBROUTINE  H1RNIN(IJ,KL)   INITIALISE WITH 2 SEEDS             *
+*#     SUBROUTINE  H1RNIN(IJKL)    INITIALISE WITH 1 SEED              *
 *#     SUBROUTINE  H1RNIV(VEC)     INITIALISE/RESTART WITH SEED ARRAY  *
 *#     SUBROUTINE  H1RNSV(VEC)     SAVE SEED ARRAY VEC(100)            *
 *#                                                                     *
@@ -20,19 +21,19 @@ C  period length: 2**144
 *#        OUTPUT IT.                                                   *
 *#                                                                     *
 *# CHANGED BY: G. GRINDHAMMER AT: 90/03/14                             *
-*# REASON :                                                            *
+*# REASON : ?                                                           *
 *# CHANGED BACK TO ORIGINAL BY D REITER AT 17/04/05                    *
 *#**********************************************************************
 *
       USE EIRMOD_PRECISION
       IMPLICIT NONE
-      REAL(DP), INTENT(IN) :: DUMMY
       REAL(DP) :: H1RN
 cdr   INTEGER :: ISEED1, ISEED2
       INTEGER :: ISEED
       CHARACTER(16) :: CHECK
 
-cdr  next 5 lines: status of generator, initialized with previous call to h1rnin
+cdr  next 5 lines: status of generator, already initialized with previous call 
+cdr  either to h1rnin(ijkl) or to H1RNIV(VEC), with VEC(100)
       CHARACTER(16) :: FLAG
       REAL(DP) :: U, C, CD, CM
       INTEGER :: I, J
@@ -45,15 +46,19 @@ cdr  next 5 lines: status of generator, initialized with previous call to h1rnin
 *
       IF (FIRST) THEN
          IF (FLAG .NE. CHECK) THEN
+
+cdr  apparently H1RN is called without initialization.
+cdr  Use default Marsaglia-Zaman seeds:
 cdr         WRITE(IUNOUT,*) ' H1RN (RANMAR): INITIALIZED WITH DEFAULT SEED'
-cdr  changed back to single default seed also used in ranset
-cdr         ISEED1      = 12345
-cdr         ISEED2      = 98765
+cdr  changed back to single default seed, also used in seed driver routine RANSET
+cdr         ISEED1      = 1802  ! = ij
+cdr         ISEED2      = 9373  ! = kl
 cdr         CALL H1RNIN(ISEED1,ISEED2)
 
 cdr this single default seed produces the 4 Marsaglia-Zaman seeds.
+c   ijkl= ij*30082+kl
 cdr Loc.cit. F.James, CPC (1990), p340
-            iseed = 54217137
+            ISEED = 54217137  ! = ijkl
             CALL H1RNIN(ISEED)
          ENDIF
          FIRST = .FALSE.

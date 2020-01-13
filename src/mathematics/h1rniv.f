@@ -1,9 +1,13 @@
 *
 *
       SUBROUTINE H1RNIV(VEC)
+cdr  input:  vector (seed array) VEC(100), which fully describes a status of the
+cdr          RANMAR generator.
+cdr  output: Common RASET1, RASET2, such that random generator is re-initialized
+cdr          according to status vector VEC(100)
 *
       USE EIRMOD_PRECISION
-      USE EIRMOD_COMPRT, ONLY: IUNOUT
+C     USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: VEC(100)
       INTEGER :: IC
@@ -23,9 +27,9 @@
       JP = NINT(VEC(100))
 *
       FLAG = 'H1RN INITIALISED'
-      WRITE(IUNOUT,*)
-     .           ' H1RNIV: H1RN (RANMAR) INITIALISED/RESTARTED WITH',
-     >           ' SEED ARRAY VEC(100)'
+c     WRITE(IUNOUT,*)
+c    .           ' H1RNIV: H1RN (RANMAR) INITIALISED/RESTARTED WITH',
+c    >           ' SEED ARRAY VEC(100)'
 *
       RETURN
       END
