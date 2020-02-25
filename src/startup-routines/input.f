@@ -3733,7 +3733,7 @@ cdr  upper state population is n_B *pop_B(upper)= n_A * ratio * pop_B(upper)
      .                INDEX(CNT%FRATIO(1),'TAB2D') .NE. 0) THEN
                     READ (IUNIN,'(4X,A2,1X,I3)') CNT%RAT_ELEMENT(1),
      .                                           CNT%IZ_RAT(1)
-                    CALL EIRENE_LOWERCASE(CNT%ELEMENT)
+                    CALL EIRENE_LOWERCASE(CNT%RAT_ELEMENT(1))
                   ELSE
                     CNT%RAT_ELEMENT(1) = '  '
                     CNT%IZ_RAT(1) = 0
@@ -3755,7 +3755,7 @@ cdr   See routine emissivity.f for further explanations.
      .                  INDEX(CNT%FRATIO(2),'TAB2D') .NE. 0) THEN
                       READ (IUNIN,'(4X,A2,1X,I3)') CNT%RAT_ELEMENT(2),
      .                                             CNT%IZ_RAT(2)
-                      CALL EIRENE_LOWERCASE(CNT%ELEMENT)
+                      CALL EIRENE_LOWERCASE(CNT%RAT_ELEMENT(2))
                     ELSE
                       CNT%RAT_ELEMENT(2) = '  '
                       CNT%IZ_RAT(2) = 0
