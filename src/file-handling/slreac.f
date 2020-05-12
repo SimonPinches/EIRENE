@@ -199,6 +199,18 @@ cdr  in either case: store these on data structure REACDAT, in call to: set_reac
       INTEGER,  INTENT(IN OUT) :: JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
       REAL(DP), INTENT(IN OUT) :: RC1MIN, RC1MAX, FP1(6),
      .                            RC2MIN, RC2MAX, FP2(6)
+
+      INTERFACE
+        subroutine EIRENE_read_colrad (ir,reac,isw,iz1,
+     .                                 ir_esc,ic_esc,p_esc)
+        use EIRMOD_precision
+        integer, intent(in) :: ir, isw, iz1
+        integer, intent(in), optional :: ir_esc, ic_esc
+        real(dp) , intent(in), optional :: p_esc
+        character(len=*), intent(in) :: reac
+        end subroutine EIRENE_read_colrad
+      END INTERFACE
+
 cdr
       REAL(DP) :: RTMAX, ERTMAX, ETH
       CHARACTER(50) :: REACSTR

@@ -33,7 +33,7 @@ C  target index 0   : data evaluated "on the fly"
       REAL(DP), SAVE :: ETH(28,0:11),Q(28,0:11),M2M1(28,0:11),ES(28)
       REAL(DP), SAVE :: ETF(28,0:11)
 
-      REAL(DP),      SAVE :: RTAMU(28),ZTAR(28)
+      REAL(DP), SAVE :: RTAMU(28),ZTAR(28)
       REAL(DP), SAVE :: BT1 = 7.0, BT2 = -0.54, BT3 = 0.15, BT4 = 1.12
 
 C  NPROJ: PROJECTILE IDENTIFIER
@@ -46,7 +46,7 @@ C  NTARG:  TARGET IDENTIFIER
      .           5224,5525,5626,5927,5928,6429,7031,7332,
      .           9140,9341,9642,10646,10847,11549,18173,
      .           18474,19578,19779,20782,23892/)
-      INTEGER,       SAVE :: NTAMU(28)
+      INTEGER, SAVE :: NTAMU(28)
       CHARACTER(20), dimension(28), SAVE :: TTARG = (/
      .           'LITHIUM             ', 'BERYLLIUM           ',
      .           'BOR                 ', 'GRAPHITE            ',
@@ -63,9 +63,9 @@ C  NTARG:  TARGET IDENTIFIER
      .           'PLATINUM            ', 'GOLD                ',
      .           'LEAD                ', 'URANIUM             '/)
 
-      REAL(DP),      SAVE :: RM1,RM2,Z1,Z2,Z123,Z223,ES23,
-     .                       FM2M1,GM2M1,GZ1Z213,GZ1Z212,XETF
-      REAL(DP),SAVE :: TWOTHIRD,ONETHIRD,ONESIXTH,FIVESIXTH
+      REAL(DP), SAVE :: RM1,RM2,Z1,Z2,Z123,Z223,ES23,
+     .                  FM2M1,GM2M1,GZ1Z213,GZ1Z212,XETF
+      REAL(DP), SAVE :: TWOTHIRD,ONETHIRD,ONESIXTH,FIVESIXTH
 
 C  CHEMICAL EROSION DATA
       REAL(DP), dimension(3), SAVE :: D = (/250.,125.,83./)
