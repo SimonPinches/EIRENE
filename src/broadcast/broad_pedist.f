@@ -11,6 +11,8 @@ C> the PEDIST routines.
 
       REAL(DP), INTENT(IN) :: XTIM(0:NSTRA)
 
+      CALL MPI_BCAST (NLIDENT,1,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
+
       SELECT CASE( NPRLL )
         CASE( -1 )
           CALL EIRENE_BROAD_PEDIST_USR( XTIM )

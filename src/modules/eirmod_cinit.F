@@ -15,10 +15,10 @@ CDR FOR DIRECT TRANSFER OF INFO FROM FIND_PARAM.F INTO INPUT.F
       INTEGER, PUBLIC, SAVE :: INDPRO2_SAVE
 
       PUBLIC :: EIRENE_ALLOC_CINIT, EIRENE_DEALLOC_CINIT,
-     .          EIRENE_INIT_CINIT,
+     .          EIRENE_INIT_CINIT, EIRENE_BROADCAST_CINIT,
      .          TDENMODEL, TDENMODAR
 
-      INTEGER, PUBLIC, SAVE ::
+      INTEGER, SAVE ::
      I         NCINIT, MCINIT, LCINIT
 
       REAL(DP),  PUBLIC, TARGET, ALLOCATABLE, SAVE :: RCINIT(:)
@@ -292,5 +292,112 @@ C  DEFAULT FOR DATABASE NAMES, CAN BE OVERWRITTEN BY CFILE CARDS
 
       RETURN
       END SUBROUTINE EIRENE_INIT_CINIT
+
+
+      SUBROUTINE EIRENE_BROADCAST_CINIT
+      USE EIRMOD_CPES, ONLY : MY_PE
+      USE EIRMOD_MPI
+      INTEGER :: IER, IPLS, NREF, IRF, IAN
+      REAL(DP) :: RHELP(3)
+      INTEGER, ALLOCATABLE :: IHELP(:)
+      CHARACTER, ALLOCATABLE :: CHELP(:)
+
+      IF (MY_PE /= 0) CALL EIRENE_ALLOC_CINIT
+
+      CALL MPI_BCAST (RCINIT,NCINIT,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (ICINIT,MCINIT,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (LCNIT,LCINIT,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
+
+cdr  "density models", to set derived plasma background species IPLS
+cdr  e.g. corona, colrad, const, saha,.....
+      CALL MPI_BCAST (CDENMODEL,10*NPLS,MPI_CHARACTER,0,
+     .                MPI_COMM_WORLD,ier)
+
+      DO IPLS=1,NPLS
+
+        IF (VERIFY(CDENMODEL(IPLS),' ') == 0) CYCLE
+
+        IF (MY_PE == 0) NREF = TDMPAR(IPLS)%TDM%NRE
+        CALL MPI_BCAST(NREF,1,MPI_INTEGER,0,
+     .                 MPI_COMM_WORLD,ier)
+
+        ALLOCATE (IHELP(3*NREF))
+        ALLOCATE (CHELP(1:24*NREF))
+
+        IF (MY_PE == 0) THEN
+          RHELP(1) = TDMPAR(IPLS)%TDM%G_BOLTZ
+          RHELP(2) = TDMPAR(IPLS)%TDM%DELTAE
+          RHELP(3) = TDMPAR(IPLS)%TDM%A_CORONA
+          IHELP(1:NREF) = TDMPAR(IPLS)%TDM%ISP(1:NREF)
+          IHELP(1+NREF:2*NREF) = TDMPAR(IPLS)%TDM%ITP(1:NREF)
+          IHELP(1+2*NREF:3*NREF) = TDMPAR(IPLS)%TDM%ISTR(1:NREF)
+          IAN = 0
+          DO IRF=1,NREF
+            CHELP(IAN+1:IAN+8) = TRANSFER(TDMPAR(IPLS)%TDM%FNAME(IRF),
+     .                                    CHELP)
+            CHELP(IAN+9:IAN+12) = TRANSFER(TDMPAR(IPLS)%TDM%H123(IRF),
+     .                                    CHELP)
+            CHELP(IAN+13:IAN+21) = TRANSFER(
+     .                        TDMPAR(IPLS)%TDM%REACTION(IRF),CHELP)
+            CHELP(IAN+22:IAN+24) = TRANSFER(TDMPAR(IPLS)%TDM%CR(IRF),
+     .                                    CHELP)
+            IAN = IAN + 24
+          END DO
+        END IF
+
+        CALL MPI_BCAST(RHELP,3,MPI_REAL8,0,
+     .                MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST(IHELP,3*NREF,MPI_INTEGER,0,
+     .                MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST(CHELP,24*NREF,MPI_CHARACTER,0,
+     .                MPI_COMM_WORLD,ier)
+
+        IF (MY_PE > 0) THEN
+csw
+!pb       if(.not.allocated(tdmpar)) then
+          if(.not.associated(tdmpar(ipls)%tdm)) then
+csw
+            ALLOCATE (TDMPAR(IPLS)%TDM)
+            ALLOCATE (TDMPAR(IPLS)%TDM%ISP(NREF))
+            ALLOCATE (TDMPAR(IPLS)%TDM%ITP(NREF))
+            ALLOCATE (TDMPAR(IPLS)%TDM%ISTR(NREF))
+            ALLOCATE (TDMPAR(IPLS)%TDM%FNAME(NREF))
+            ALLOCATE (TDMPAR(IPLS)%TDM%H123(NREF))
+            ALLOCATE (TDMPAR(IPLS)%TDM%REACTION(NREF))
+            ALLOCATE (TDMPAR(IPLS)%TDM%CR(NREF))
+csw
+          endif
+csw
+          TDMPAR(IPLS)%TDM%NRE = NREF
+          TDMPAR(IPLS)%TDM%G_BOLTZ = RHELP(1)
+          TDMPAR(IPLS)%TDM%DELTAE = RHELP(2)
+          TDMPAR(IPLS)%TDM%A_CORONA = RHELP(3)
+          TDMPAR(IPLS)%TDM%ISP(1:NREF) = IHELP(1:NREF)
+          TDMPAR(IPLS)%TDM%ITP(1:NREF) = IHELP(1+NREF:2*NREF)
+          TDMPAR(IPLS)%TDM%ISTR(1:NREF) = IHELP(1+2*NREF:3*NREF)
+          IAN = 0
+          DO IRF=1,NREF
+            TDMPAR(IPLS)%TDM%FNAME(IRF) = TRANSFER(CHELP(IAN+1:IAN+8),
+     .            TDMPAR(IPLS)%TDM%FNAME(IRF))
+            TDMPAR(IPLS)%TDM%H123(IRF) = TRANSFER(CHELP(IAN+9:IAN+12),
+     .            TDMPAR(IPLS)%TDM%H123(IRF))
+            TDMPAR(IPLS)%TDM%REACTION(IRF) =
+     .            TRANSFER(CHELP(IAN+13:IAN+21),
+     .            TDMPAR(IPLS)%TDM%REACTION(IRF))
+            TDMPAR(IPLS)%TDM%CR(IRF) = TRANSFER(CHELP(IAN+22:IAN+24),
+     .            TDMPAR(IPLS)%TDM%CR(IRF))
+            IAN = IAN + 24
+          END DO
+        END IF
+
+        DEALLOCATE (IHELP)
+        DEALLOCATE (CHELP)
+
+      END DO
+
+      CALL MPI_BCAST(DBFNAME,100*NDBNAMES,MPI_CHARACTER,0,
+     .               MPI_COMM_WORLD,ier)
+
+      END SUBROUTINE EIRENE_BROADCAST_CINIT
 
       END MODULE EIRMOD_CINIT

@@ -14,7 +14,7 @@ C             and returns the element number, resp.
       PRIVATE
 
       PUBLIC :: EIRENE_ALLOC_CCONA, PTE_TYPE, EIRENE_SET_PTE_ELEMENT,
-     P          EIRENE_FIND_ELEMENT
+     P          EIRENE_FIND_ELEMENT, EIRENE_BROADCAST_CCONA
 
       TYPE PTE_TYPE
         CHARACTER(13) :: NAME
@@ -22,7 +22,7 @@ C             and returns the element number, resp.
         REAL(DP) :: EL_MASS, EL_CHARGE
       END TYPE
 
-      INTEGER, PUBLIC, PARAMETER :: NCONA=50
+      INTEGER, PARAMETER :: NCONA=50
       REAL(DP), PUBLIC, TARGET, SAVE :: RCONA(NCONA)
 
       REAL(DP), PUBLIC, POINTER, SAVE ::
@@ -138,4 +138,16 @@ cdr  112:113: heavier isotops of hydrogen
       return
       END FUNCTION EIRENE_FIND_ELEMENT
 
+
+      SUBROUTINE EIRENE_BROADCAST_CCONA
+      USE EIRMOD_CPES, ONLY : MY_PE
+      USE EIRMOD_MPI
+      INTEGER :: IER
+      
+      IF (MY_PE /= 0) CALL EIRENE_ALLOC_CCONA
+
+      CALL MPI_BCAST (RCONA,NCONA,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      
+      END SUBROUTINE EIRENE_BROADCAST_CCONA
+      
       END MODULE EIRMOD_CCONA

@@ -189,7 +189,8 @@ C  NEWER VERSION:  READ SOME SELECTED (IN INPUT FILE) TRIM A_ON_B FILES
           ENDIF
         endif
 
-        if (nprs > 1) call EIRENE_broadref
+!PB     if (nprs > 1) call EIRENE_broadref
+        if (nprs > 1) call EIRENE_BROADCAST_CREF
 C
 C  SET FACTORS FOR REDUCED ENERGY SCALING FOR ALL TARGET/PROJECTILE
 C  COMBINATIONS AVAILABLE IN DATABASE MODEL
@@ -222,7 +223,8 @@ C
         INW=1
         INR=1
         NHD6=1
-        if (nprs > 1) call EIRENE_broadref
+!pb     if (nprs > 1) call EIRENE_broadref
+        if (nprs > 1) call EIRENE_BROADCAST_CREF
       ENDIF
 C
 C  SET ADDITIONAL DATA FOR "BEHRISCH MATRIX REFLECTION MODEL"
