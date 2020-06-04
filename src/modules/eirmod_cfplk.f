@@ -13,6 +13,7 @@ C   local, along the trajectory
 
       PUBLIC :: EIRENE_ALLOC_CFPLK, EIRENE_DEALLOC_CFPLK
 
+cdr  begin threadprivate  here
       REAL(DP), PUBLIC, SAVE ::
      R E0PAR, VELPAR, VELPER, VLXPAR, VLYPAR, VLZPAR, SIGPAR,
      R BVEC(3), BBX, BBY, BBZ,
@@ -20,6 +21,11 @@ C   local, along the trajectory
       LOGICAL, public, save :: LCART,COLFLAG
 
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE :: FNUIAR(:)
+
+!$OMP  THREADPRIVATE(E0PAR,VELPAR,VELPER,VLXPAR,VLYPAR,VLZPAR,SIGPAR,
+!$OMP& BVEC,BBX,BBY,BBZ,TAUE,LCART,COLFLAG,FNUIAR)       
+       
+cdr  end threadprivate here
 
       CONTAINS
 
