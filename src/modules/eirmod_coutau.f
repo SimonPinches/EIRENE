@@ -101,6 +101,8 @@ cdr  Few are directly scored: ptrash, etrash, .... xmcp
      R PTRASH(:),   ETRASH(:),
      R FASCL(:),    FMSCL(:),    FISCL(:),    FPHSCL(:)
 
+!$OMP  THREADPRIVATE(PTRASH,ETRASH)
+
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NADDI(:),  NFRSTI(:), NDDWI(:),  NFRTWI(:),
      I NFSTVI(:), NFSTWI(:)

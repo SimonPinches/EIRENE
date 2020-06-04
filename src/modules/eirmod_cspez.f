@@ -17,6 +17,10 @@ cdr  to reduce unnecessary printout of zero tallies
 
       LOGICAL, POINTER, PUBLIC, SAVE :: LOGXSPZ
 
+!$OMP  THREADPRIVATE(LOGXSPZ)      
+
+      
+
       CONTAINS
 
       SUBROUTINE EIRENE_ALLOC_CSPEZ

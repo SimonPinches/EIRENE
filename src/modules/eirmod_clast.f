@@ -27,6 +27,10 @@ cdr  In case of parallel execution: set TRCLST = false
      I         NEMEAN(:),IFLREL(:),
      I         NPMEAN(:),IFLRPI(:)
 
+cym
+!$OMP threadprivate(XCMEAN,XEMEAN,XPMEAN,
+!$OMP& SGCVMX,SGEVMX,SGPVMX,NCMEAN,NEMEAN,NPMEAN,
+!$OMP& IFLRCX,IFLREL,IFLRPI)
 
       CONTAINS
 

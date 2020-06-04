@@ -55,6 +55,18 @@ cdr  NLPRCS should also become POINTER, belongs to NLPRCA; ..., cond exp. est.
       INTEGER, PUBLIC, SAVE ::
      I NCMSPL, MCMSPL, KCMSPL
 
+!$OMP  THREADPRIVATE(WMINV,WMINS,WMINC,WMINL,SPLPAR,RNUMB,PRMSPL,
+!$OMP& RSPLST,MAXLEV,NLEVEL,MAXRAD,MAXPOL,MAXTOR,MAXADD,NODES,NSSPL,
+!$OMP& ISPLST,
+cym again not private 18/04 
+cym nlsplt,nlprca,nlprcm,nlprci,nlprcph,nlprcs,
+cym - not private, initialized in this module
+cym!$omp& ncmspl,mcmspl,kcmspl,
+cym again not private 18/04
+cym!$omp& lcmspl,
+!$OMP& RCMSPL,ICMSPL)
+
+cdr  end threadprivate here
 
       CONTAINS
 

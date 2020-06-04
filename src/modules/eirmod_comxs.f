@@ -169,6 +169,13 @@ c  inverse mean free path
      R ZMFPI
 
       REAL(DP), PUBLIC, SAVE :: ZMFPTHI, TDGTEMX
+      
+!$OMP  THREADPRIVATE(SIGVCX,SIGVPI,SIGVEI,SIGVEL,SIGVPH,XSTOR,XSTORV, 
+!$OMP& ESIGCX,ESIGPI,ESIGEI,ESIGEL,ESIGPH,VSIGCX,VSIGPI,VSIGEL,SIGCXT,
+!$OMP& SIGPIT,SIGEIT,SIGELT,SIGPHT,SIGTOT,SIGBGK,ZMFPI,ZMFPTHI,TDGTEMX)
+
+
+
 
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R TABEI1(:,:),   TABRC1(:,:),
@@ -214,6 +221,9 @@ c  post-collision energies: to EL (electrons), PI (background) or HV (heavy test
       INTEGER, PUBLIC, POINTER, SAVE ::
      I NXEII, NXCXI, NXELI, NXPII,
      I NPBGKX
+cym p2nei removed from threadprivate list
+!$OMP  THREADPRIVATE(NXEII,NXCXI,NXELI,NXPII,NPBGKX) 
+
 
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NAEIIM(:),   NMEIIM(:),   NIEIIM(:),
@@ -257,6 +267,8 @@ c  post-collision energies: to EL (electrons), PI (background) or HV (heavy test
 !  POINTER FOR UNIFIED "A,M,I,PH" SUBROUTINES
       INTEGER, PUBLIC, POINTER, SAVE ::
      I LGXCX(:,:,:), LGXEI(:,:), LGXEL(:,:,:), LGXPI(:,:,:)
+!$OMP  THREADPRIVATE(LGXCX,LGXEI,LGXEL,LGXPI) 
+
 
       INTEGER, PUBLIC, SAVE ::
      I NRPII, NREII, NRCXI, NRELI, NRRCI, NRBGI

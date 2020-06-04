@@ -63,6 +63,8 @@ cdr  for velocity space distributions.
      L NLMOL(:),  NLATM(:),  NLION(:),  NLPLS(:),  NLPHOT(:),
      L NLAVRP(:), NLAVRT(:), NLSRON(:), NLRAY(:)
 
+!$OMP  THREADPRIVATE(NLRAY,LCMSOU)
+
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE ::
      L NLSYMP(:), NLSYMT(:)
 

@@ -50,6 +50,12 @@ cdr  contains redundant coding: cell_info, type traject,....
      I NCOUNP(:), NCOUNT(:),
      I LUPC(:),   MUPC(:)
 
+!$OMP  THREADPRIVATE(X00,Y00,Z00,X01,Y01,Z01,ALPD,BLPD,CLPD,NCOUP,NCOUT,
+!$OMP& NCOU,NNTCLL,IRCELL,IPCELL,ITCELL,ISRFCL,JUPC,KUPC,NUPC,NCOUNP,
+!$OMP& NCOUNT,LUPC,MUPC)
+ 
+   
+
       CONTAINS
 
 
