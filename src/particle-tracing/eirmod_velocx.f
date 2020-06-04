@@ -1,10 +1,40 @@
       MODULE EIRMOD_VELOCX
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_COMUSR
+      USE EIRMOD_CCONA
+      USE EIRMOD_CLOGAU
+      USE EIRMOD_CRAND
+      USE EIRMOD_CINIT
+      USE EIRMOD_CZT1
+      USE EIRMOD_CTRCEI
+      USE EIRMOD_COMPRT
+      USE EIRMOD_COMXS
+      USE EIRMOD_CLAST
+      USE EIRMOD_RANF, ONLY: RANF_EIRENE
       IMPLICIT NONE
       PRIVATE
 
       PUBLIC :: EIRENE_VELOCX, EIRENE_VELOCX_REINIT
 
       INTEGER, SAVE :: IFIRST = 0
+
+      REAL(DP) :: VXN, VYN, VZN, VX,VY,VZ, VN, VXI, VYI, VZI,
+     .          ZARGX, ZARGY, ZARGZ,
+     .          VXDR, VYDR, VZDR, VRELQ,
+     .          TEST, VREL, ELAB, CXS,
+     .          VR, VRQ, ELMAX, ELMIN
+C      REAL(DP) :: ELB
+ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
+
+      INTEGER :: ICOUNT, J, JJ, IRL, IREAC
+
+      SAVE
+
+!$omp threadprivate(ifirst,vxn,vyn,vzn,vx,vy,vz,vn,vxi,vyi,vzi,
+!$OMP& zargx,zargy,zargz,vxdr,vydr,vzdr,vrelq,test,vrel,elab,
+!$OMP& cxs,vr,vrq,elmax,elmin,icount,j,jj,irl,ireac)
+
 
       CONTAINS
 
@@ -70,39 +100,16 @@ C  MAXWELLIAN (NFLAG=2), WEIGHTED BY SIGMA*VREL (NFLAG=3)
 
 C  ADDITIONALLY:
 C  USED E.G. FOR VOLUME RECOMBINATION SOURCE (NFLAG=2)
-C
-      USE EIRMOD_PRECISION
-      USE EIRMOD_PARMMOD
-      USE EIRMOD_COMUSR
-      USE EIRMOD_CCONA
-      USE EIRMOD_CLOGAU
-      USE EIRMOD_CRAND
-      USE EIRMOD_CINIT
-      USE EIRMOD_CZT1
-      USE EIRMOD_CTRCEI
-      USE EIRMOD_COMPRT
-      USE EIRMOD_COMXS
-      USE EIRMOD_CLAST
-      USE EIRMOD_RANF, ONLY: RANF_EIRENE
-
+C      
       IMPLICIT NONE
 
       REAL(DP), INTENT(IN) :: DUMT(3), DUMV(3)
       REAL(DP), INTENT(IN) :: VXO, VYO, VZO, VLO
       REAL(DP), INTENT(OUT) :: VELQ
       INTEGER, INTENT(IN) :: K, IOLD, NOLD, NFLAG, IRCX
+      REAL(DP) ::EIRENE_CROSS
 
-      REAL(DP) :: VXN, VYN, VZN, VX,VY,VZ, VN, VXI, VYI, VZI,
-     .          ZARGX, ZARGY, ZARGZ,
-     .          VXDR, VYDR, VZDR, VRELQ,
-     .          TEST, VREL, ELAB, CXS,
-     .          VR, VRQ, EIRENE_CROSS, ELMAX, ELMIN
-C      REAL(DP) :: ELB
-ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
-
-      INTEGER :: ICOUNT, J, JJ, IRL, IREAC
-
-      SAVE
+cpg      SAVE
 C
 c initialize arrays for "on the fly" rejection efficiency estimates
 C IFLAG=1 AND IFLAG=3 OPTIONS
@@ -141,6 +148,7 @@ c
           endif
         enddo
 
+!$OMP CRITICAL
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) 'FIRST CALL TO VELOCX FOR IRCX= ',IRCX
         WRITE (iunout,*) 'PREPARE REJECTION TECHNIQUE '
@@ -155,6 +163,8 @@ c
           WRITE (iunout,*) 'NO TRUE MAXIMUM FOUND, USE WEIGHTING '
         ENDIF
         CALL EIRENE_LEER(1)
+!$OMP END CRITICAL
+
       ENDIF
     1 CONTINUE
 

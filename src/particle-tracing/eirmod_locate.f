@@ -36,9 +36,11 @@ c  eirene_locat2:  deallocate temporary arrays
       USE EIRMOD_SWITCH_PARTINFO, ONLY: EIRENE_SWITCH_PARTINFO
       USE EIRMOD_SAMSRF, ONLY: EIRENE_SAMSF1
       USE EIRMOD_STDCOL, ONLY: EIRENE_STDNOR
-      USE EIRMOD_SPUTER, ONLY: EIRENE_SPUTR1
-      USE EIRMOD_REFLEC, ONLY: EIRENE_REFLC1
       USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
+      use eirmod_reflec
+      use eirmod_sheath, only: eirene_sheath 
+      use eirmod_sputer, only: eirene_sputr1
+!$    use omp_lib
 
       IMPLICIT NONE
       PRIVATE
@@ -53,6 +55,95 @@ c  eirene_locat2:  deallocate temporary arrays
      .                              IUPSOR(:), IFPSOR(:)
       INTEGER, SAVE :: NLIMSQ
       INTEGER, EXTERNAL :: EIRENE_IDEZ
+
+cym copied from subroutine LOCATE1 -> threadprivate because of save
+
+      REAL(DP) :: DUMT(3),DUMV(3)
+      REAL(DP) :: YIELD1, YIELD2, FMASS, FCHAR, VELXS, VELYS,
+     .          VELZS, E0S, WEIGHS, VELS, FLX, VPARZ, VPAR, VTERM,
+     .          VPERP, VPARX, VPARY, 
+     .          ESHET, 
+     .          GAMMA,
+     .          VYSPTP, VZSPTP, ESPTC, ESPTP, VSPTP, VXSPTP, VSPTC, SG,
+     .          VXSPTC, VYSPTC, VZSPTC, SUM1, ZEP1, CUR,
+     .          EMAX, VWD, VXWD, VYWD, VZWD, CS, VELQ, VO, SUMM,
+     .          VXO, VYO, VZO, DAT, RSQDV, RSQDV2, DML, FR, DIO, DPL,
+     .          TIWD, TEWD, DPH, E00,
+     .          res
+      REAL(DP) :: VEL_B, VELX_B, VELY_B, VELZ_B, VN, xl, xr, xm, yl,
+     .            yr, ym,
+     .            EIRENE_fpathph, zmfp_cut, zmfp_e0, zmfp_e00,
+     .            fac_e0, fac_e00
+cym allocatable too
+c      real(dp) :: cflag(7,MSTOR0)
+      real(dp), allocatable :: cflag(:,:)
+
+      real(dp) :: weight_b1,weight_b2,e0_b1,e0_b2
+      REAL(DP) :: xleft, xright, A, ZV
+cym have to be changed to allocatable
+c      REAL(DP) :: VXWL(NPLS), VYWL(NPLS), VZWL(NPLS), VPWL(NPLS),
+c     .            TIWL(NPLS), DIWL(NPLS), EFWL(NPLS), SHWL, TEWL,
+c     .            CUMDIS(0:NREC)
+      REAL(DP), allocatable :: VXWL(:), VYWL(:), VZWL(:), VPWL(:),
+     .             TIWL(:), DIWL(:), EFWL(:), CUMDIS(:)
+      REAL(DP) :: SHWL, TEWL       
+cym end change
+
+      INTEGER :: ISSPTP, ISSPTC, ISTS, IP, ISPZS, IRC, IIRC, IRRC,
+     .           ISOUR, ISRFS, I, ISTEP,
+     .           IDUMM, NFLAG, 
+     .           IPLV, IDUM, IO, NO, IPL, IPP,
+     .           IPLTI, IRPH, KK, JSPZ,
+     .           ITYP_OLD, IGASP_OLD, IGASC_OLD
+      LOGICAL :: NLSPUT, NLTST, NL_add_Doppler
+
+      INTEGER :: NPANUO, NCELLT, IPOINT,
+     .           ityp_b1,ityp_b2,ipls_b1,ipls_b2,ISECT, I1, I2, IM, IMP,
+     .           ILINE, ISURF, ITRSF, ICOS, IVOLM, ISOR, INDTEC,
+     .           JATM, JMOL, JION, JPLS, JPHOT
+
+      INTEGER :: IRET, IDIMM
+
+cym adding externals
+      real(dp), external :: EIRENE_EMAXW, EIRENE_FTABRC1
+
+!$OMP threadprivate(DUMT, DUMV,
+!$OMP& YIELD1, YIELD2, FMASS, FCHAR, VELXS, VELYS,
+!$OMP& VELZS, E0S, WEIGHS, VELS, FLX, VPARZ, VPAR, VTERM,
+!$OMP& VPERP, VPARX, VPARY, 
+!$OMP& ESHET,
+!$OMP& GAMMA,
+!$OMP& VYSPTP, VZSPTP, ESPTC, ESPTP, VSPTP, VXSPTP, VSPTC, SG,
+!$OMP& VXSPTC, VYSPTC, VZSPTC, SUM1, ZEP1, CUR,
+!$OMP& EMAX, VWD, VXWD, VYWD, VZWD, CS, VELQ, VO, SUMM,
+!$OMP& VXO, VYO, VZO, DAT, RSQDV, RSQDV2, DML, FR, DIO, DPL,
+!$OMP& TIWD, TEWD, DPH, E00,
+!$OMP& res,
+!$OMP& VEL_B, VELX_B, VELY_B, VELZ_B, VN, xl, xr, xm, yl,
+!$OMP& yr, ym,
+!$OMP& EIRENE_fpathph, zmfp_cut, zmfp_e0, zmfp_e00,
+!$OMP& fac_e0, fac_e00,
+!$OMP& cflag,
+!$OMP& weight_b1,weight_b2,e0_b1,e0_b2,
+!$OMP& xleft, xright, A, ZV,
+!$OMP& VXWL, VYWL, VZWL, VPWL,
+!$OMP& TIWL, DIWL, EFWL, SHWL, TEWL,
+!$OMP& CUMDIS,
+!$OMP& ISSPTP, ISSPTC, ISTS, IP, ISPZS, IRC, IIRC, IRRC,
+!$OMP& ISOUR, ISRFS, I, ISTEP,
+!$OMP& IDUMM, NFLAG, 
+!$OMP& IPLV, IDUM, IO, NO, IPL, IPP,
+!$OMP& IPLTI, IRPH, KK, JSPZ,
+!$OMP& ITYP_OLD, IGASP_OLD, IGASC_OLD,
+!$OMP& NLSPUT, NLTST, NL_add_Doppler,
+!$OMP& NPANUO, NCELLT, IPOINT,
+!$OMP& ityp_b1,ityp_b2,ipls_b1,ipls_b2,ISECT, I1, I2, IM, IMP,
+!$OMP& ILINE, ISURF, ITRSF, ICOS, IVOLM, ISOR, INDTEC,
+!$OMP& JATM, JMOL, JION, JPLS, JPHOT,
+!$OMP& IRET, IDIMM)
+      
+      save
+
 
       CONTAINS
 
@@ -265,37 +356,31 @@ C
 C
       SUBROUTINE EIRENE_LOCAT1(IPANU)
       IMPLICIT NONE
-      REAL(DP) :: DUMT(3),DUMV(3)
-      REAL(DP) :: YIELD1, YIELD2, FMASS, FCHAR, VELXS, VELYS,
-     .          EIRENE_FTABRC1,
-     .          VELZS, E0S, WEIGHS, VELS, FLX, VPARZ, VPAR, VTERM,
-     .          VPERP, VPARX, VPARY, EIRENE_EMAXW, ESHET, EIRENE_SHEATH,
-     .          GAMMA,
-     .          VYSPTP, VZSPTP, ESPTC, ESPTP, VSPTP, VXSPTP, VSPTC, SG,
-     .          VXSPTC, VYSPTC, VZSPTC, ZEP1, CUR,
-     .          EMAX, VWD, VXWD, VYWD, VZWD, CS, VELQ, VO, SUMM,
-     .          VXO, VYO, VZO, DAT, RSQDV, RSQDV2, DML, FR, DIO, DPL,
-     .          TIWD, TEWD, DPH
-      REAL(DP) :: VEL_B, VELX_B, VELY_B, VELZ_B, VN
-      real(dp) :: weight_b1,weight_b2,e0_b1,e0_b2
-      REAL(DP) :: xleft, xright, A, ZV
-      REAL(DP) :: VXWL(NPLS), VYWL(NPLS), VZWL(NPLS), VPWL(NPLS),
-     .            TIWL(NPLS), DIWL(NPLS), EFWL(NPLS), SHWL, TEWL,
-     .            CUMDIS(0:NREC)
-      INTEGER :: ISSPTP, ISSPTC, ISTS, IP, ISPZS, IRC, IIRC, IRRC,
-     .           I, ISTEP, IDIMM,
-     .           NFLAG, 
-     .           IPLV, IDUM, IO, NO, IPL, IPP,
-     .           IPLTI, KK, IRET,
-     .           ITYP_OLD, IGASP_OLD, IGASC_OLD
-      LOGICAL :: NLSPUT, NLTST, NL_add_Doppler
+      
       INTEGER, INTENT(IN) :: IPANU
-      INTEGER :: NPANUO, NCELLT, IPOINT,
-     .           ityp_b1,ityp_b2,ipls_b1,ipls_b2,ISECT, I1, I2, IM, IMP,
-     .           ILINE, ISURF, ITRSF, ICOS, IVOLM, ISOR, INDTEC,
-     .           JATM, JMOL, JION, JPLS, JPHOT
+cym      INTEGER :: NPANUO, NCELLT, IPOINT,
+cym     .           ityp_b1,ityp_b2,ipls_b1,ipls_b2,ISECT, I1, I2, IM, IMP,
+cym     .           ILINE, ISURF, ITRSF, ICOS, IVOLM, ISOR, INDTEC,
+cym     .           JATM, JMOL, JION, JPLS, JPHOT
       
       save
+
+
+cym allocate newly allocatable arrays
+      if (.not.allocated(VXWL)) then
+        allocate(VXWL(NPLS))
+        allocate(VYWL(NPLS))
+        allocate(VZWL(NPLS))
+        allocate(VPWL(NPLS))
+        allocate(TIWL(NPLS))
+        allocate(DIWL(NPLS))
+        allocate(EFWL(NPLS))
+        allocate(CUMDIS(0:NREC))
+        allocate(cflag(7,MSTOR0))
+      endif
+cym see where this should be deallocated
+cym end      
+
 C
 C  TENTATIVELY ASSUME: A TEST PARTICLE WILL BE BORN
       LGPART=.TRUE.
@@ -418,18 +503,27 @@ C
         SELECT CASE( ITYP )
           CASE( 1 )
 C Volume source
+!$OMP ATOMIC
             WTOTA(IATM,ISTRA)=WTOTA(IATM,ISTRA)+WEIGHT
+!$OMP ATOMIC
             ETOTA(ISTRA)=ETOTA(ISTRA)+E0*WEIGHT
+!$OMP ATOMIC WRITE
             LOGATM(IATM,ISTRA)=.TRUE.
           CASE( 2 )
 C Volume source
+!$OMP ATOMIC
             WTOTM(IMOL,ISTRA)=WTOTM(IMOL,ISTRA)+WEIGHT
+!$OMP ATOMIC
             ETOTM(ISTRA)=ETOTM(ISTRA)+E0*WEIGHT
+!$OMP ATOMIC WRITE
             LOGMOL(IMOL,ISTRA)=.TRUE.
           CASE( 3 )
 C Volume source
+!$OMP ATOMIC
             WTOTI(IION,ISTRA)=WTOTI(IION,ISTRA)+WEIGHT
+!$OMP ATOMIC
             ETOTI(ISTRA)=ETOTI(ISTRA)+E0*WEIGHT
+!$OMP ATOMIC WRITE
             LOGION(IION,ISTRA)=.TRUE.
           CASE( 4 )
 C Surface source parameter set below
@@ -437,8 +531,11 @@ C add part for volume source (see above), i.e. check whether needed or
 C elseif below can be used.
           CASE( 0 )
 C Volume source
+!$OMP ATOMIC
             WTOTPH(IPHOT,ISTRA)=WTOTPH(IPHOT,ISTRA)+WEIGHT
+!$OMP ATOMIC
             ETOTPH(ISTRA)=ETOTPH(ISTRA)+E0*WEIGHT
+!$OMP ATOMIC WRITE
             LOGPHOT(IPHOT,ISTRA)=.TRUE.
           CASE DEFAULT
             WRITE (iunout,*) 'ERROR IN LOCATE, CALL EIRENE_EXIT'
@@ -447,7 +544,11 @@ C Volume source
         END SELECT
 
         IF (ITYP.GE.0 .AND. ITYP.LE.3) THEN
-          IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
+        IF (NLTRC) THEN
+!$OMP CRITICAL
+          CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
+!$OMP END CRITICAL
+        ENDIF
 C
           GOTO 5000
         ENDIF
@@ -1075,7 +1176,7 @@ C
           ELSE
             GOTO 998
           ENDIF
-
+!$OMP ATOMIC WRITE
           LOGATM(IATM,ISTRA)=.TRUE.
           IF (EMAX.GT.0) THEN
             E0=EMAX
@@ -1143,7 +1244,11 @@ C
      .      CALL EIRENE_UPSUSR(WEIGHT,2)
           IF (NADSPC.GE.1.AND.NLSRF(ISTRA))
      .      CALL EIRENE_UPDATE_SPECTRUM(WEIGHT,2,0)
-          IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
+          IF (NLTRC) THEN
+!$OMP CRITICAL
+            CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
+!$OMP END CRITICAL
+          ENDIF
 
         CASE (2)
 C
@@ -1158,6 +1263,7 @@ C
             GOTO 998
           ENDIF
 C
+!$OMP ATOMIC WRITE
           LOGMOL(IMOL,ISTRA)=.TRUE.
           IF (EMAX.GT.0.D0) THEN
 C  MONOENERGETIC DISTRIBUTION
@@ -1216,11 +1322,17 @@ C
             GOTO 998
           ENDIF
 C
+!$OMP ATOMIC
           WTOTM(IMOL,ISTRA)=WTOTM(IMOL,ISTRA)+WEIGHT
+!$OMP ATOMIC
           ETOTM(ISTRA)=ETOTM(ISTRA)+WEIGHT*E0
           IF (NADSI.GE.1) CALL EIRENE_UPSUSR(WEIGHT,2)
           IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM(WEIGHT,2,0)
-          IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
+          IF (NLTRC) THEN
+!$OMP CRITICAL
+            CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
+!$OMP END CRITICAL
+          ENDIF
 
         CASE (3)
 C
@@ -1275,7 +1387,7 @@ C   NO SHEATH POTENTIAL TO BE ADDED
           ELSE
             ESHET=0.
           ENDIF
-
+!$OMP ATOMIC WRITE
           LOGION(IION,ISTRA)=.TRUE.
           IF (EMAX.GT.0.D0) THEN
 C  CONSTANT VELOCITY
@@ -1334,12 +1446,17 @@ C
             GOTO 998
           ENDIF
 C
+!$OMP ATOMIC
           WTOTI(IION,ISTRA)=WTOTI(IION,ISTRA)+WEIGHT
+!$OMP ATOMIC
           ETOTI(ISTRA)=ETOTI(ISTRA)+E0*WEIGHT
           IF (NADSI.GE.1) CALL EIRENE_UPSUSR(WEIGHT,2)
           IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM(WEIGHT,2,0)
-          IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
-
+          IF (NLTRC) THEN
+!$OMP CRITICAL
+            CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
+!$OMP END CRITICAL
+          ENDIF
         CASE (4)
 C
 C  BULK IONS?   500  ---  599
@@ -1408,6 +1525,7 @@ C
             CRTY=-CRTY
             CRTZ=-CRTZ
 C
+!$OMP ATOMIC WRITE
             LOGPLS(IPLS,ISTRA)=.TRUE.
             IF (EMAX.GT.0.D0) THEN
 C  CONSTANT VELOCITY
@@ -1474,12 +1592,20 @@ C             CHEMICAL SPUTTERING LFUX DEPENDENCE
             ENDIF
 
 C  WTOTP, ETOTP: INTEGRAL FLUXES FOR SCALING
+!$OMP ATOMIC
             WTOTP(IPLS,ISTRA)=WTOTP(IPLS,ISTRA)-WEIGHT
+!$OMP ATOMIC
             ETOTP(ISTRA)=ETOTP(ISTRA)-E0*WEIGHT
 C  NEW (2004) VOLUME-AVERAGED TALLIES
 C  PPPL, EPPL AND THEIR INTEGRALS: ALSO FOR GLOBAL PARTICLE BALANCE
-            IF (LPPPL) PPPL(IPLS,NCELLT)=PPPL(IPLS,NCELLT)-WEIGHT
-            IF (LEPPL) EPPL(IPLS,NCELLT)=EPPL(IPLS,NCELLT)-E0*WEIGHT
+            IF (LPPPL) THEN
+!$OMP ATOMIC
+               PPPL(IPLS,NCELLT)=PPPL(IPLS,NCELLT)-WEIGHT
+            ENDIF
+            IF (LEPPL) THEN
+!$OMP ATOMIC
+               EPPL(IPLS,NCELLT)=EPPL(IPLS,NCELLT)-E0*WEIGHT
+            ENDIF
 C  SURFACE-AVERAGED TALLIES (NOTE: FLUXES HERE COUNTED POSITIVE,
 C                            BUT INTEGRALS OF OUTGOING SURFACE FLUXES
 C                            POTPLI,... ARE TAKEN NEGATIVE).
@@ -1490,7 +1616,11 @@ C  POTPL,EOTPL,....FOR PRINTOUT OF SURFACE FLUXES
             IF (NADSI.GE.1) CALL EIRENE_UPSUSR(-WEIGHT,1)
             IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM(-WEIGHT,1,0)
 C
-            IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
+            IF (NLTRC) THEN
+!$OMP CRITICAL
+              CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
+!$OMP END CRITICAL
+            ENDIF
 C
 C  REFLECT THIS ION AS TEST PARTICLE FROM SURFACE NO. MSURF
 C
@@ -1584,12 +1714,14 @@ C
 C.....................................................................
 C
               IF (NLTRC.AND.TRCHST) THEN
+!$OMP CRITICAL
                 WRITE (iunout,*) 'AFTER SUBR. SPUTER: PHYS. SPUTTERING'
                 WRITE (iunout,'(1X,A8)') TEXTS(ISPZ)
                 CALL EIRENE_MASR1('YIELDP  ',YIELD1)
                 CALL EIRENE_MASR6 (
      .             'VELX,VELY,VELZ,VEL,E0,WEIGHT                    ',
      .              VELX,VELY,VELZ,VEL,E0,WEIGHT)
+!$OMP END CRITICAL
               ENDIF
 C
 cdr  species index of physically sputtered particle is known.
@@ -1606,17 +1738,38 @@ C                                             IF THEY ARE FOLLOWED. OTHERWISE: O
 C
               SELECT CASE (ITYP)
                 CASE (1)
+!$OMP ATOMIC WRITE
                   LOGATM(IATM,ISTRA)=.TRUE.
-                  IF (LPPAT) PPAT(IATM,NCELLT)=PPAT(IATM,NCELLT)+WEIGHT
-                  IF (LEPAT) EPAT(NCELLT)=EPAT(NCELLT)+E0*WEIGHT
+                  IF (LPPAT) THEN
+!$OMP ATOMIC
+                    PPAT(IATM,NCELLT)=PPAT(IATM,NCELLT)+WEIGHT
+                  ENDIF
+                  IF (LEPAT) THEN
+!$OMP ATOMIC
+                    EPAT(NCELLT)=EPAT(NCELLT)+E0*WEIGHT
+                  ENDIF
                 CASE (2)
+!$OMP ATOMIC WRITE
                   LOGMOL(IMOL,ISTRA)=.TRUE.
-                  IF (LPPML) PPML(IMOL,NCELLT)=PPML(IMOL,NCELLT)+WEIGHT
-                  IF (LEPML) EPML(NCELLT)=EPML(NCELLT)+E0*WEIGHT
+                  IF (LPPML) THEN
+!$OMP ATOMIC
+                    PPML(IMOL,NCELLT)=PPML(IMOL,NCELLT)+WEIGHT
+                  ENDIF
+                  IF (LEPML) THEN
+!$OMP ATOMIC
+                    EPML(NCELLT)=EPML(NCELLT)+E0*WEIGHT
+                  ENDIF
                 CASE (3)
+!$OMP ATOMIC WRITE
                   LOGION(IION,ISTRA)=.TRUE.
-                  IF (LPPIO) PPIO(IION,NCELLT)=PPIO(IION,NCELLT)+WEIGHT
-                  IF (LEPIO) EPIO(NCELLT)=EPIO(NCELLT)+E0*WEIGHT
+                  IF (LPPIO) THEN
+!$OMP ATOMIC
+                    PPIO(IION,NCELLT)=PPIO(IION,NCELLT)+WEIGHT
+                  ENDIF
+                  IF (LEPIO) THEN
+!$OMP ATOMIC
+                    EPIO(NCELLT)=EPIO(NCELLT)+E0*WEIGHT
+                  ENDIF
               END SELECT
 
 
@@ -1658,12 +1811,14 @@ C
 C.....................................................................
 C
               IF (NLTRC.AND.TRCHST) THEN
+!$OMP CRITICAL
                 WRITE (iunout,*) 'AFTER SUBR. SPUTER: CHEM. SPUTTERING'
                 WRITE (iunout,'(1X,A8)') TEXTS(ISPZ)
                 CALL EIRENE_MASR1('YIELDC  ',YIELD2)
                 CALL EIRENE_MASR6 (
      .             'VELX,VELY,VELZ,VEL,E0,WEIGHT                    ',
      .              VELX,VELY,VELZ,VEL,E0,WEIGHT)
+!$OMP END CRITICAL
               ENDIF
 C
 cdr  species index of physically sputtered particle is known.
@@ -1679,17 +1834,38 @@ C                                             IF THEY ARE FOLLOWED. OTHERWISE: O
 C
               SELECT CASE (ITYP)
                 CASE (1)
+!$OMP ATOMIC WRITE
                   LOGATM(IATM,ISTRA)=.TRUE.
-                  IF (LPPAT) PPAT(IATM,NCELLT)=PPAT(IATM,NCELLT)+WEIGHT
-                  IF (LEPAT) EPAT(NCELLT)=EPAT(NCELLT)+E0*WEIGHT
+                  IF (LPPAT) THEN
+!$OMP ATOMIC
+                     PPAT(IATM,NCELLT)=PPAT(IATM,NCELLT)+WEIGHT
+                  ENDIF
+                  IF (LEPAT) THEN
+!$OMP ATOMIC
+                     EPAT(NCELLT)=EPAT(NCELLT)+E0*WEIGHT
+                  ENDIF
                 CASE (2)
+!$OMP ATOMIC WRITE
                   LOGMOL(IMOL,ISTRA)=.TRUE.
-                  IF (LPPML) PPML(IMOL,NCELLT)=PPML(IMOL,NCELLT)+WEIGHT
-                  IF (LEPML) EPML(NCELLT)=EPML(NCELLT)+E0*WEIGHT
+                  IF (LPPML) THEN
+!$OMP ATOMIC
+                     PPML(IMOL,NCELLT)=PPML(IMOL,NCELLT)+WEIGHT
+                  ENDIF
+                  IF (LEPML) THEN
+!$OMP ATOMIC
+                     EPML(NCELLT)=EPML(NCELLT)+E0*WEIGHT
+                  ENDIF
                 CASE (3)
+!$OMP ATOMIC WRITE
                   LOGION(IION,ISTRA)=.TRUE.
-                  IF (LPPIO) PPIO(IION,NCELLT)=PPIO(IION,NCELLT)+WEIGHT
-                  IF (LEPIO) EPIO(NCELLT)=EPIO(NCELLT)+E0*WEIGHT
+                  IF (LPPIO) THEN
+!$OMP ATOMIC
+                     PPIO(IION,NCELLT)=PPIO(IION,NCELLT)+WEIGHT
+                  ENDIF
+                  IF (LEPIO) THEN
+!$OMP ATOMIC
+                     EPIO(NCELLT)=EPIO(NCELLT)+E0*WEIGHT
+                  ENDIF
               END SELECT
 
 
@@ -1734,8 +1910,11 @@ C
             ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
 C
             IF (NLTRC.AND.TRCHST) THEN
+cym
+!$OMP CRITICAL
               IF (LGPART) THEN
-                WRITE (iunout,*) 'AFTER SUBR. REFLEC:'
+                WRITE (iunout,*) 'AFTER SUBR. REFLEC:' !,' ithread =',
+!     .              omp_get_thread_num() 
                 WRITE (iunout,'(1X,A8)') TEXTS(ISPZ)
                 CALL EIRENE_MASR6 (
      .             'VELX,VELY,VELZ,VEL,E0,WEIGHT                    ',
@@ -1743,6 +1922,7 @@ C
               ELSE
                 WRITE (iunout,*) 'ABSORBED IN SUBR. REFLEC'
               ENDIF
+!$OMP END CRITICAL
             ENDIF
 C
 C  NOW: SCORE SURFACE TALLIES. REEMITTED CURRENTS
@@ -1777,13 +1957,27 @@ c           DUMV(3)=0._DP
             CALL EIRENE_VELOCX(NCELL,VXO,VYO,VZO,VO,IO,NO,VELQ,NFLAG,
      .                         IDUM,DUMT,DUMV)
             E0=VELQ*CVRSSP(IPLS)
+!$OMP ATOMIC WRITE
             LOGPLS(IPLS,ISTRA)=.TRUE.
+!$OMP ATOMIC
             WTOTP(IPLS,ISTRA)=WTOTP(IPLS,ISTRA)-WEIGHT
+!$OMP ATOMIC
             ETOTP(ISTRA)=ETOTP(ISTRA)-E0*WEIGHT
-            IF (LPPPL) PPPL(IPLS,NCELLT)=PPPL(IPLS,NCELLT)-WEIGHT
-            IF (LEPPL) EPPL(IPLS,NCELLT)=EPPL(IPLS,NCELLT)-E0*WEIGHT
+            IF (LPPPL) THEN
+!$OMP ATOMIC
+               PPPL(IPLS,NCELLT)=PPPL(IPLS,NCELLT)-WEIGHT
+            ENDIF
+            IF (LEPPL) THEN
+!$OMP ATOMIC
+               EPPL(IPLS,NCELLT)=EPPL(IPLS,NCELLT)-E0*WEIGHT
+            ENDIF
 C           IF (LEPEL) EPEL(NCELLT)=EPEL(NCELLT)- ???  ELECTRON ENERGY LOSS/GAIN ASSOCIATED WITH PROCESS IRRC
-            IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
+            IF (NLTRC) THEN
+!$OMP CRITICAL
+              CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
+!$OMP END CRITICAL
+            ENDIF
+
 C
 C  BULK SPECIES DONE
 C  NEXT: IDENTIFY RESULTING TEST PARTICLE SPECIES
@@ -1836,6 +2030,7 @@ C  IS THERE A BULK SECONDARY ?
               ITYP_B1=4
               IPLS_B1=NPLPRC(IRRC)
               IF (IPLS_B1.LE.0.OR.IPLS_B1.GT.NPLSI) GOTO 999
+!$OMP ATOMIC WRITE
               LOGPLS(IPLS_B1,ISTRA)=.TRUE.
               WEIGHT_B1=WEIGHT
               E0_B1=E0
@@ -1877,6 +2072,7 @@ C   BULK SECONDARY ?
               ITYP_B2=4
               IPLS_B2=NPLPRC_2(IRRC)
               IF (IPLS_B2.LE.0.OR.IPLS_B2.GT.NPLSI) GOTO 999
+!$OMP ATOMIC WRITE
               LOGPLS(IPLS_B2,ISTRA)=.TRUE.
               WEIGHT_B2=WEIGHT
               E0_B2=E0
@@ -2029,39 +2225,81 @@ C
 C  VOLUME TALLIES FOR TEST SECONDARIES
           SELECT CASE (ITYP)
             CASE (1)
+!$OMP ATOMIC WRITE
               LOGATM(IATM,ISTRA)=.TRUE.
-              IF (LPPAT) PPAT(IATM,NCELLT)=PPAT(IATM,NCELLT)+WEIGHT
-              IF (LEPAT) EPAT(NCELLT)=EPAT(NCELLT)+E0*WEIGHT
+              IF (LPPAT) THEN
+!$OMP ATOMIC
+                PPAT(IATM,NCELLT)=PPAT(IATM,NCELLT)+WEIGHT
+              ENDIF
+              IF (LEPAT) THEN
+!$OMP ATOMIC
+                 EPAT(NCELLT)=EPAT(NCELLT)+E0*WEIGHT
+              ENDIF
               LAST_EVENT%ISPEZ = IATM
             CASE (2)
+!$OMP ATOMIC WRITE
               LOGMOL(IMOL,ISTRA)=.TRUE.
-              IF (LPPML) PPML(IMOL,NCELLT)=PPML(IMOL,NCELLT)+WEIGHT
-              IF (LEPML) EPML(NCELLT)=EPML(NCELLT)+E0*WEIGHT
+              IF (LPPML) THEN
+!$OMP ATOMIC
+                 PPML(IMOL,NCELLT)=PPML(IMOL,NCELLT)+WEIGHT
+              ENDIF
+              IF (LEPML) THEN
+!$OMP ATOMIC
+                 EPML(NCELLT)=EPML(NCELLT)+E0*WEIGHT
+              ENDIF
               LAST_EVENT%ISPEZ = IMOL
             CASE (3)
+!$OMP ATOMIC WRITE
               LOGION(IION,ISTRA)=.TRUE.
-              IF (LPPIO) PPIO(IION,NCELLT)=PPIO(IION,NCELLT)+WEIGHT
-              IF (LEPIO) EPIO(NCELLT)=EPIO(NCELLT)+E0*WEIGHT
+              IF (LPPIO) THEN
+!$OMP ATOMIC
+                 PPIO(IION,NCELLT)=PPIO(IION,NCELLT)+WEIGHT
+              ENDIF
+              IF (LEPIO) THEN
+!$OMP ATOMIC
+                 EPIO(NCELLT)=EPIO(NCELLT)+E0*WEIGHT
+              ENDIF
               LAST_EVENT%ISPEZ = IION
             CASE (0)
+!$OMP ATOMIC WRITE
               LOGPHOT(IPHOT,ISTRA)=.TRUE.
-              IF (LPPPHT) PPPHT(IPHOT,NCELLT)=PPPHT(IPHOT,NCELLT)+WEIGHT
-              IF (LEPPHT) EPPHT(NCELLT)=EPPHT(NCELLT)+E0*WEIGHT
+              IF (LPPPHT) THEN
+!$OMP ATOMIC
+                 PPPHT(IPHOT,NCELLT)=PPPHT(IPHOT,NCELLT)+WEIGHT
+              ENDIF
+              IF (LEPPHT) THEN
+!$OMP ATOMIC
+                 EPPHT(NCELLT)=EPPHT(NCELLT)+E0*WEIGHT
+              ENDIF
               LAST_EVENT%ISPEZ = IPHOT
           END SELECT
 C  TALLIES FOR BULK-SECONDARIES (IF ANY)
           IF (ITYP_B1.EQ.4) THEN
+!$OMP ATOMIC WRITE
             LOGPLS(IPLS_B1,ISTRA)=.TRUE.
-            IF (LPPPL) PPPL(IPLS_B1,NCELLT)=PPPL(IPLS_B1,NCELLT)+
+            IF (LPPPL) THEN
+!$OMP ATOMIC
+              PPPL(IPLS_B1,NCELLT)=PPPL(IPLS_B1,NCELLT)+
      .                                      WEIGHT_B1
-            IF (LEPPL) EPPL(IPLS_B1,NCELLT)=EPPL(IPLS_B1,NCELLT)+
+            ENDIF
+            IF (LEPPL) THEN
+!$OMP ATOMIC
+              EPPL(IPLS_B1,NCELLT)=EPPL(IPLS_B1,NCELLT)+
      .                                      E0_B1*WEIGHT_B1
+            ENDIF
           ELSEIF (ITYP_B2.EQ.4) THEN
+!$OMP ATOMIC WRITE
             LOGPLS(IPLS_B2,ISTRA)=.TRUE.
-            IF (LPPPL) PPPL(IPLS_B2,NCELLT)=PPPL(IPLS_B2,NCELLT)+
+            IF (LPPPL)THEN
+!$OMP ATOMIC
+               PPPL(IPLS_B2,NCELLT)=PPPL(IPLS_B2,NCELLT)+
      .                                      WEIGHT_B2
-            IF (LEPPL) EPPL(IPLS_B2,NCELLT)=EPPL(IPLS_B2,NCELLT)+
+            ENDIF
+            IF (LEPPL) THEN
+!$OMP ATOMIC
+              EPPL(IPLS_B2,NCELLT)=EPPL(IPLS_B2,NCELLT)+
      .                                      E0_B2*WEIGHT_B2
+            ENDIF
           ENDIF
 C  TALLIES FOR SECONDARY ELECTRONS  (TO BE DONE)
 C
@@ -2205,7 +2443,11 @@ C  TOROIDAL CELL NO. MAY BE WRONG
   997 CONTINUE
       WRITE (iunout,*)
      .  'TEST PARTICLE LAUNCHED WITH INVALID CELL INDICES'
-      IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+      IF (NLTRC) THEN
+!$OMP CRITICAL
+        CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+!$OMP END CRITICAL
+      ENDIF
       WEIGHT=0.
       LGPART=.FALSE.
       RETURN

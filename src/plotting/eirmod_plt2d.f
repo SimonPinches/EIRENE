@@ -39,6 +39,8 @@ C   2D GEOMETRY (AND TRAJECTORY) PLOT
       USE EIRMOD_CTRIG
       USE EIRMOD_PL3D, ONLY: EIRENE_PL3D
       USE EIRMOD_STCOOR, ONLY: EIRENE_STCOOR
+cym      
+      use eirmod_tstchm, only : EIRENE_TSTCHM
       IMPLICIT NONE
       PRIVATE
 
@@ -56,7 +58,22 @@ C   2D GEOMETRY (AND TRAJECTORY) PLOT
      .                                  207,4,104,105,102/)
       INTEGER, ALLOCATABLE, SAVE :: IFARB(:,:), IDASH(:,:), ICPSPZ(:)
       INTEGER, SAVE :: ITHPL, IN, ISYM_ERR
+
+cym CHKTRC variables - need to be threadprivate & there is a SAVE ...
+
+      REAL(DP) :: XNP05, YYIA, XN1, YN, FX, FY, XN2, Z1, XN3, YNP, XN,
+     .          YWO, XWO, XR, THET, PPHI, XPL, RWN, YPL, ZPL, ZWN, XN0
+      INTEGER :: IA, I, J, ICP, ISTR, IC, NTDUM, NTT,
+     .           NT, ICOLOR, ISP, IAA
+      LOGICAL :: LWR
       
+!$OMP THREADPRIVATE(XNP05, YYIA, XN1, YN, FX, FY, XN2, Z1, XN3, YNP, 
+!$OMP&              XN, YWO, XWO, XR, THET, PPHI, XPL, RWN, YPL, ZPL,
+!$OMP&              ZWN, XN0,
+!$OMP&              IA, I, J, ICP, ISTR, IC, NTDUM, NTT,
+!$OMP&              NT, ICOLOR,ISP, IAA, LWR,
+!$OMP&              IN)
+
       CONTAINS
 
 cdr  28.4.04:  nhsts(ispz) option connected (to select species
@@ -1478,15 +1495,24 @@ C  PLOT PARTICLE HISTORIES IN GEOMETRY-PLOT
 C
       SUBROUTINE EIRENE_CHCTRC(XPLO,YPLO,ZPLO,IFLAG,ISYM)
       IMPLICIT NONE
-      REAL(DP) :: XNP05, YYIA, XN1, YN, FX, FY, XN2, Z1, XN3, YNP, XN,
-     .          YWO, XWO, XR, THET, PPHI, XPL, RWN, YPL, ZPL, ZWN, 
-     .          XPLO, YPLO, ZPLO, XN0
-      INTEGER :: IA, I, J, ICP, ISTR, IC, NTDUM, NTT,  EIRENE_LEARCA,
-     .           NT, ICOLOR, ISYM, IFLAG, ISP, IAA
-      LOGICAL :: LWR
+      REAL(DP) :: XPLO, YPLO, ZPLO
+      INTEGER :: IFLAG,ISYM
+
+cym cccccccc  need to be private, SAVE requires action ... ccccccccccccccc
+cym      REAL(DP) :: XNP05, YYIA, XN1, YN, FX, FY, XN2, Z1, XN3, YNP, XN,
+cym     .          YWO, XWO, XR, THET, PPHI, XPL, RWN, YPL, ZPL, ZWN, 
+cym     .          XPLO, YPLO, ZPLO, XN0
+cym      INTEGER :: IA, I, J, ICP, ISTR, IC, NTDUM, NTT,  EIRENE_LEARCA,
+cym     .           NT, ICOLOR, ISYM, IFLAG, ISP, IAA
+cym      LOGICAL :: LWR
+cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+      INTEGER :: EIRENE_LEARCA
       CHARACTER(20) :: TXTHST(NTXHST)
 
-      SAVE
+cym removed ... check if ok
+cym      SAVE
+ccccccccccccc
       DATA TXTHST
      .           /'LOCATE(1)           ',
      .            'ELECTR. IMPACT(2)   ',

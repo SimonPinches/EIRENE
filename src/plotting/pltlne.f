@@ -5,6 +5,8 @@ C
 
       USE EIRMOD_PRECISION
       USE EIRMOD_STCOOR, ONLY: EIRENE_STCOOR
+cym
+      use eirmod_tstchm, only : EIRENE_TSTCHM
 
       IMPLICIT NONE
 

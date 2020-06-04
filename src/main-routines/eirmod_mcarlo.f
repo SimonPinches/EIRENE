@@ -33,11 +33,19 @@
      .                                  EIRENE_OUTPUT_PARTINFO
       USE EIRMOD_LOCATE, ONLY: EIRENE_LOCAT0, EIRENE_LOCAT1
       USE EIRMOD_SAMSRF, ONLY: EIRENE_SAMSF0
-      USE EIRMOD_SPUTER, ONLY: EIRENE_SPUTR0
+      USE EIRMOD_SPUTER, ONLY: EIRENE_SPUTR0,
+cym these variables need copyin
+     .                        ETH,Q,M2M1,ES,ETF
       USE EIRMOD_STATIS, ONLY: EIRENE_STATS0, EIRENE_STATS1, 
-     .                         EIRENE_STATS2
+     .                         EIRENE_STATS2,
+cym variables that need to be allocated/associated for workler threads
+cym will disappear when parallel zone will encompass the whole code
+     .                         IIND
       USE EIRMOD_UPDLIN
-      USE EIRMOD_REFLEC, ONLY: EIRENE_REFLC0
+      USE EIRMOD_REFLEC, ONLY: EIRENE_REFLC0,
+cym variables that need to be allocated/associated for workler threads
+cym will disappear when parallel zone will encompass the whole code
+     .                         IREDUC,FREDUC,EREDUC
       USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
 
       IMPLICIT NONE
@@ -90,6 +98,9 @@ c
 C
 C  MONTE CARLO CALCULATION
 C
+cym      
+      USE EIRMOD_COMXS, ONLY: XSTOR,XSTORV,MSTOR1,MSTOR2,NSTORV
+cym
       IMPLICIT NONE
 C
       CHARACTER(6) :: CIS
@@ -107,7 +118,7 @@ C
      .          tim1, tim2,
      .          rn1
 
-
+cym IC ?
       INTEGER :: NPTS_SAVE(NSTRA), NINITL_SAVE(NSTRA)
       INTEGER :: ISDV, IALS, ISTRAA, ISTRAE, ICELL,
      .           IGFFT, IALV, IDV, I, IER, IRC, NMX,
@@ -131,6 +142,23 @@ C
 C  OVERHEAD FOR POST PROCESSING (SECONDS)
 C      DATA N2/2/
 C
+cpg     
+      INTEGER  :: OMP_GET_NUM_PROCS, OMP_GET_NUM_THREADS,
+     .            OMP_GET_THREAD_NUM,ITHREAD,NTHREADS,MY_ID   
+
+      CHARACTER(LEN=15) :: NOM_FIC, NUMERO, NOM_BASE
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc    
+cym shared variables used as buffer to initialize private pointer variables
+cym copyin does not work for allocatable pointer arrrays      
+
+      INTEGER,TARGET :: BISDVI(MSDVI)
+      INTEGER,TARGET :: BIPSTD(MPARTC+1),BICMSPL(MCMSPL)
+      REAL(DP),TARGET :: BRPST(NPARTC),BRCMSPL(NCMSPL),
+     . BXSTOR(MSTOR1,MSTOR2),BXSTORV(NSTORV),BRCGRID(NCGRD)
+      LOGICAL,TARGET :: BLCMSOU(14,NSTRA)
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
 C@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 C
       TIMI=EIRENE_SECOND_OWN()
@@ -395,11 +423,11 @@ C
 c nlident: jeder proc. von einer quelle istra bekommt gleichen seed gem. ninitl(istra).
 c         erzeugt bei zwei gleichen quellen (istra) identische ergebnisse.
 c not nlident: ninitl wird auf dem processor geaendert, add my_pe*10000
-        if (.not.nlident) then
-          do istra=1,nstrai
-            if (ninitl(istra) > 0)
-     .        ninitl(istra)=ninitl(istra)+my_pe*10000
-          enddo
+        IF (.NOT.NLIDENT) THEN
+          DO ISTRA=1,NSTRAI
+            IF (NINITL(ISTRA) > 0)
+     .        NINITL(ISTRA)=NINITL(ISTRA)+MY_PE*10000
+          ENDDO
         ELSE
           CALL EIRENE_LEER(1)
           WRITE (IUNOUT,*) '......................................... '
@@ -494,15 +522,96 @@ c??
           XMCT(ISTRA)=0.
           IPANU=0
 C
+cym initialize buffers used for broadcasting of private variables       
+          BISDVI=ISDVI             
+          BIPSTD=IPSTD
+          BRPST=RPST
+          BRCMSPL=RCMSPL
+          BICMSPL=ICMSPL
+          BLCMSOU=LCMSOU
+          BXSTOR=XSTOR
+          BXSTORV=XSTORV
+          BRCGRID=RCGRID
+
 C  INITIALIZE RANDOM NUMBER GENERATOR FOR STRATUM ISTRA
 
+!$OMP  PARALLEL  DEFAULT(SHARED)
+!$OMP& FIRSTPRIVATE(IPTSI,I,IN,ISPC,LGSTOP,
+!$OMP& SECND1,IPANU,INODES,SECND2,SECDEL,ITHREAD,NTHREADS,MY_ID,NINIST,
+!$OMP& CDATE,CTIME,NOM_FIC,NUMERO,NOM_BASE,ISEED_ISTRA,ISEED_IPTSI,J)
+cym as for mpi_reduce: logical .or.
+!$OMP& REDUCTION(.OR.:LOGATM,LOGMOL,LOGION,LOGPLS,LOGPHOT)
+!$OMP& COPYIN(ETH,Q,M2M1,ES,ETF)
+           
+      ITHREAD=OMP_GET_THREAD_NUM()
+      NTHREADS=OMP_GET_NUM_THREADS()
+
+       IF (ITHREAD>0) THEN
+cym     this will not work correctly combined with mpi !
+         IUNOUT=200+ITHREAD
+cym      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+         CALL ALLOCATE_AND_ASSOCIATE_FOR_WORKER_THREADS()
+cym      !!! broadcast for pointers not allowed in copyin !!!!
+         ISDVI=BISDVI             
+         IPSTD=BIPSTD
+         RPST=BRPST
+         RCMSPL=BRCMSPL
+         ICMSPL=BICMSPL
+         LCMSOU=BLCMSOU
+         XSTOR=BXSTOR
+         XSTORV=BXSTORV
+         RCGRID=BRCGRID    
+      ENDIF
+    
+C***********************************************************************
+cpg   for testing
+cpg        NOM_BASE='TESTSEED'
+cpg        WRITE( NUMERO, * ) ITHREAD
+cpg        NUMERO = ADJUSTL( NUMERO )
+cpg        NOM_FIC = TRIM(NOM_BASE)//TRIM(NUMERO)//'.TXT'
+cpg        OPEN(UNIT=30+ITHREAD, FILE=NOM_FIC, STATUS='REPLACE')
+        
+C***********************************************************************
+C  INITIALIZE RANDOM NUMBER GENERATOR FOR STRATUM ISTRA
+           
 C  find random number generator seed, from input flag NINITL(ISTRA)
-          IF (NINITL(ISTRA).GT.0) THEN
-            NINIST=NINITL(ISTRA)
+          IF (NINITL(istra).GT.0) THEN
+            IF (.NOT.NLIDENT) THEN
+              MY_ID= ITHREAD + (MY_PE-1)*NTHREADS
+              ninist=NINITL(ISTRA)+MY_ID*10000 !one seed per thread to generate independent numbers
+cym uncommented
+              write(30+ithread,*) ninist
+cpg              write(30+ithread,*) 'iptsi->',iseed_iptsi,'  ',iptsi,
+cpg     .         ' istra->',iseed_istra,
+cpg     .         ' RN1->',RN1
+            
+           ELSE
+
+             CALL EIRENE_LEER(1)
+!$OMP SINGLE
+         WRITE (IUNOUT,*) '......................................... '
+         WRITE (IUNOUT,*) 'NLIDENT: '
+         WRITE (IUNOUT,*) 'DEBUG MODE FOR PARALLELIZATION IS ACTIVE'
+         WRITE (IUNOUT,*) 'IF MULTIPLE CORES PER STRATUM, THEN ALL'
+         WRITE (IUNOUT,*) 'ASSIGNED CORES KEEP IDENTICAL RANDOM SEED.'
+         WRITE (IUNOUT,*) 'FOR ANY GIVEN STRATUM ISTRA,ALL NCIS CORES'
+         WRITE (IUNOUT,*) 'ASSIGNED TO ISTRA MUST PRODUCE IDENTICAL'
+         WRITE (IUNOUT,*) 'OUTPUT. ALSO VARIANCES PER STRATUM MUST'
+         WRITE (IUNOUT,*) 'SCALE EXACTLY WITH 1/NCIS(ISTRA),'
+         WRITE (IUNOUT,*) 'NOT ONLY ON STATISTICAL AVERAGE'
+         WRITE (IUNOUT,*) '......................................... '
+             
+             CALL EIRENE_LEER(1)
+!$OMP END SINGLE 
+cym same seed for everybody (all threads of all processes -> debug)
+             NINIST=NINITL(ISTRA)
+cpg              write(30+ithread,*) ninist
+           ENDIF          
+
 c  initialize random number generator with chosen input seed NINIST
 c  ranset checks, if this is a legal seed for a particular generator,
 c  and otherwise enforces that or stops the run.
-            iseed_istra=ranset_eirene(ninist)
+            ISEED_ISTRA=RANSET_EIRENE(NINIST)
 
 c  find random number seed from truly random procedure from wall clock time (use date and time)
           ELSEIF (NINITL(ISTRA).LT.0) THEN
@@ -512,25 +621,30 @@ cdr  format of CDATE: hhmmss.xxx
 !pb 28012016
 !  add number of calls to MCARLO in order to avoid same random seeds in very short
 !  cycles with an external code
-            NINITL(ISTRA) = NINITL(ISTRA) + ICO_CALL
-            IF (.NOT.NLIDENT) ninitl(istra)=ninitl(istra)+my_pe*10000
-            NINIST=NINITL(ISTRA)
-            iseed_istra=ranset_eirene(ninist)
+          NINITL(ISTRA) = NINITL(ISTRA) + ICO_CALL
+            
+         IF (.NOT.NLIDENT) then
+            MY_ID= ITHREAD + (MY_PE-1)*NTHREADS
+            NINIST=NINITL(ISTRA)+MY_ID*10000
+            ISEED_ISTRA=RANSET_EIRENE(NINIST)
+         ENDIF
 
           ELSEIF (NINITL(ISTRA).EQ.0) THEN
 C  DO NOT RE-INITIALIZE RANDOM GENERATOR FOR THIS STRATUM, NOTHING TO BE DONE HERE
 C  INTERNAL DEFAULT FIRST SEED IS TAKEN FOR FIRST STRATUM. FROM THEN ON: NO FURTHER SEEDING.
-            iseed_istra=ranset_eirene(0)
+            ISEED_ISTRA=RANSET_EIRENE(0)
 
           ENDIF
 
           IF (TRCRNF) THEN
+!$OMP CRITICAL
             WRITE (iunout,*) 'INITIALIZE RANDOM NUMBERS FOR STRATUM ',
-     .                       'ISTRA= ',ISTRA
+     .                       'ISTRA= ',ISTRA, 'thread# = ',ithread
             WRITE (iunout,*) 'NINITL(ISTRA) SET TO ',NINITL(ISTRA)
             WRITE (iunout,*) 'ISEED_ISTRA (LEGAL SEED, AS USED) ',
      .                        ISEED_ISTRA
             CALL EIRENE_LEER(1)
+!$OMP END CRITICAL
           ENDIF
 
 c  remove remaining old generated random number vectors from earlier strata
@@ -557,10 +671,13 @@ C
 C
 C  CLEAR WORK AREA FOR THIS STRATUM
 C
+cym check whether that is needed on all threads ?
+cym previously called by master thread only
           CALL EIRENE_CLEAR_STRATUM
 C
 C  ENFORCE TOROIDAL OR POLOIDAL SYMMETRY FOR THIS STRATUM
 C
+!$OMP MASTER
           IF (NLAVRP(ISTRA)) THEN
             NLPOLS=NLPOL
             NLPOL=.FALSE.
@@ -576,7 +693,10 @@ C for this stratum?
           IPRNLS=0
 C
 C This will never happen as NLSRON status have not changed...
-          IF (.NOT.NLSRON(ISTRA)) CYCLE
+cym fortunate that it 'never happens' because not compatible with OpenMP
+cym if NLSRON status is 'fixed' would require another way of implementing
+cym          IF (.NOT.NLSRON(ISTRA)) CYCLE
+cym ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 C
 C  INITIALIZE SUBR. LOCATE
 C
@@ -597,6 +717,9 @@ CVKMPI        XTIM(ISTRA)=XTIM(ISTRA)+OVER_ACC
           TIMI=EIRENE_SECOND_OWN()            !VKMPI
           XTIM(ISTRA)=XTIM(ISTRA)+TIMI !VKMPI
 C
+
+!$OMP END MASTER
+
 cdr  LGLAST = T: LAST TRAJECTORY OF PRESENT STRATUM ISTRA
         LGLAST=.FALSE.
 cdr  LGSTOP = T: same as lglast, but only due to npts or cpu-time criterion
@@ -607,13 +730,18 @@ C
 C
 csw 19feb2013
 !pb 03122013        timstart=mpi_wtime()
+cym see whether that's ok - omp_wtime ?
+!$OMP MASTER
           call system_clock (itimstart, itimrate)
+!$OMP END MASTER
 csw
 
+!$OMP BARRIER
 
 C  PARTICLE LOOP WITHIN STRATUM ISTRA
 
-          DO 100 IPTSI=1,NPTS(ISTRA)
+!$OMP DO 
+        DO 100 IPTSI=1,NPTS(istra)
 
 C  SOME PREPARATORY WORK, ONCE FOR EACH NEW PARTICLE HISTORIE
 C
@@ -647,6 +775,13 @@ C...........................................................................
 
 C LGSTOP is always equal LGLAST, see line 681
 C Should not this be (.NOT.LGLAST.AND.LGSTOP)?
+
+
+cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cym this is NOT yet working with OpenMP - goto 101 removed
+cym correct solution may involve an IF enclosing the particle loop 
+cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
             IF (LGLAST.AND.LGSTOP) THEN
               CALL EIRENE_LEER(1)
               WRITE (iunout,*)
@@ -664,7 +799,9 @@ cdr           CALL EIRENE_MASJ2 ('ISTRA,IPANU=    ',ISTRA,IPANU)
                 CALL EIRENE_MASJ1 ('IPRNLS= ',IPRNLS)
               ENDIF
               IF (TRCLST) CALL EIRENE_OUTLST
-              GOTO 101
+cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cym             GOTO 101
+cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccc
             ELSEIF (LGLAST.AND..NOT.LGSTOP) THEN
               CALL EIRENE_LEER(1)
               WRITE (iunout,*) 'CENSUS ARRAYS FILLED FOR THIS STRATUM'
@@ -678,7 +815,9 @@ cdr           CALL EIRENE_MASJ2 ('ISTRA,IPANU=    ',ISTRA,IPANU)
               WRITE (iunout,*) 'M.C. HISTORIES THAT SCORED AT CENSUS'
               CALL EIRENE_MASJ1 ('IPRNLS= ',IPRNLS)
               IF (TRCLST) CALL EIRENE_OUTLST
-              GOTO 101
+cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cym             GOTO 101
+cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccc
             ENDIF
 
 C  WALL CLOCK TIME AT START OF NEXT MONTE CARLO HISTORY
@@ -703,13 +842,13 @@ C
 c  current seed within current stratum is iseed_istra
 c  NLCRR: get new tentative seed, and save this for next particle.
 c  then re-initialize with original seed
-              iseed_iptsi=iseed_istra
+              ISEED_IPTSI=ISEED_ISTRA
 ! we need this well defined status of random generator below in ranget.
-              idumran=ranset_eirene(iseed_iptsi)
+              IDUMRAN=RANSET_EIRENE(ISEED_IPTSI)
 ! save a derived new seed for next particle.
 ! after returning a new seed, the status of the random number generator is
 ! in ranget.f already reset back to iseed_iptsi
-              iseed_istra=ranget_eirene(iseed_iptsi)
+              ISEED_ISTRA=RANGET_EIRENE(ISEED_IPTSI)
 ! now we have the seed iseed_iptsi to start the history.
 
 C  FOR TEST ONLY: PRINT FIRST RANDOM NUMBER PER TRAJECTORY
@@ -757,7 +896,8 @@ c  nptsdel(istra)*iproc(istra) trajectories for stratum ISTRA
                 NINIST=NINITL(ISTRA)+IPTSI/NPTSDEL(ISTRA)*10000
 c  initialize random number generator with a "legal" seed,
                 idumran=ranset_eirene(ninist)
-
+cym
+                write(999,*) NINIST
                 INIV1=0
                 INIV2=0
                 INIV3=0
@@ -821,7 +961,11 @@ C  RESTORE VARIABLES AND START NEW TRACK
               NLSRFY=MPSURF.GT.0
               NLSRFZ=MTSURF.GT.0
               NLSRFA=MASURF.GT.0
-              IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,12)
+              IF (NLTRC) THEN
+!$OMP CRITICAL
+                CALL EIRENE_CHCTRC(X0,Y0,Z0,0,12)
+!$OMP END CRITICAL
+              ENDIF
 
 !  PARTICLE TYPE AND SPECIES MAY HAVE CHANGED
 !  PREPARE POINTER FOR UNIFIED SUBROUTINES FPATH, UPDATE, ETC.
@@ -871,6 +1015,10 @@ C
             ENDIF
   100     CONTINUE    !  nprt(istra)
 
+!$OMP END DO
+ 
+!$OMP MASTER
+                  
           CALL EIRENE_LEER(1)
 
           WRITE (iunout,*) 'ALL REQUESTED TRAJECTORIES COMPLETED'
@@ -891,6 +1039,14 @@ C
 C         GOTO 101
 
   101     CONTINUE
+
+!$OMP END MASTER
+
+          IF (ITHREAD>0) THEN
+            CALL DEALLOCATE_FOR_WORKER_THREADS()
+          ENDIF
+  
+!$OMP END PARALLEL
 C
 C
           XMCT(istra)=timused
@@ -1420,5 +1576,242 @@ C
 
       RETURN
       END
+
+      SUBROUTINE ALLOCATE_AND_ASSOCIATE_FOR_WORKER_THREADS()
+      USE EIRMOD_COMXS
+      USE EIRMOD_REFLEC
+      USE EIRMOD_STATIS
+      USE EIRMOD_CLAST
+      USE EIRMOD_CFPLK, ONLY: FNUIAR  
+      IMPLICIT NONE
+
+      ALLOCATE (ISDVI(MSDVI))     
+      ALLOCATE (LMETSP(NSPZTOT))
+      ALLOCATE (LMETSPW(NSPZTOTW))
+      ALLOCATE (ISPEZI(NSPZ,-1:4))
+        
+      ALLOCATE (LCMSOU(14,NSTRA))
+      ALLOCATE (TIMINT(NRADS))
+      ALLOCATE (TIMPOL(N1STS,N2NDPLGS))
+      ALLOCATE (NTIM(NRADS))
+      ALLOCATE (IIMPOL(N1STS,N2NDPLGS))
+      ALLOCATE (IIMINT(NRADS))
+        
+      ALLOCATE (RPST(NPARTC))
+      ALLOCATE (IPSTD(MPARTC+1))
+      ALLOCATE (RCMSPL(NCMSPL))
+      ALLOCATE (ICMSPL(MCMSPL))
+
+      ALLOCATE (ALPD(N2ND))
+      ALLOCATE (BLPD(N3RD))
+      ALLOCATE (CLPD(N2ND+N3RD))
+
+      ALLOCATE (JUPC(N2ND))
+      ALLOCATE (KUPC(N3RD))
+      ALLOCATE (NUPC(N2ND+N3RD))
+      ALLOCATE (NCOUNP(N2ND+N3RD))
+      ALLOCATE (NCOUNT(N2ND+N3RD))
+      ALLOCATE (LUPC(N2ND))
+      ALLOCATE (MUPC(N2ND))
+        
+      ALLOCATE (PTRASH(0:NSTRA))
+      ALLOCATE (ETRASH(0:NSTRA))
+      ALLOCATE (RCGRID(NCGRD))
+        
+      ALLOCATE(EREDUC(NSPZ,0:NLIMPS))
+      ALLOCATE(FREDUC(NSPZ,0:NLIMPS))
+      ALLOCATE(IREDUC(NSPZ,0:NLIMPS))
+  
+      ALLOCATE (RMASSPH(MAX(1,NPHOT)))
+       
+      AllOCATE (IIND(NRTAL))
+      ALLOCATE (XSTOR(MSTOR1,MSTOR2))       
+      ALLOCATE (XSTORV(NSTORV))
+
+cym arrays from eirmod_clast
+      ALLOCATE (XCMEAN(NRCX))
+      ALLOCATE (SGCVMX(NRCX))
+      ALLOCATE (XEMEAN(NREL))
+      ALLOCATE (SGEVMX(NREL))
+      ALLOCATE (XPMEAN(NRPI))
+      ALLOCATE (SGPVMX(NRPI))
+
+      ALLOCATE (NCMEAN(NRCX))
+      ALLOCATE (IFLRCX(NRCX))
+      ALLOCATE (NEMEAN(NREL))
+      ALLOCATE (IFLREL(NREL))
+      ALLOCATE (NPMEAN(NRPI))
+      ALLOCATE (IFLRPI(NRPI))
+
+      ALLOCATE (FNUIAR(NPLS))
+      FNUIAR=0._dp
+                   
+      NCLMT     => ISDVI(8)
+      NCLMTS    => ISDVI(9)
+      NWLMT     => ISDVI(10)         
+      NWLMTS    => ISDVI(11)
+      ICLMT     => ISDVI(12+2*NSD+2*NSDW+NCV+NRTAL :
+     .                     11+2*NSD+2*NSDW+NCV+2*NRTAL)
+      IMETCL    => ISDVI(12+2*NSD+2*NSDW+NCV :
+     .                     11+2*NSD+2*NSDW+NCV+NRTAL)
+      IMETWL    => ISDVI(12+2*NSD+2*NSDW+NCV+2*NRTAL :
+     .                11+2*NSD+2*NSDW+NCV+2*NRTAL+NLIMPS)
+      IWLMT    => ISDVI(12+2*NSD+2*NSDW+NCV+2*NRTAL+NLIMPS : MSDVI)
+         
+      ISPZ   => IPSTD( 9)
+      NT3RD  => ICGRID( 8)
+      MRSURF => IPSTD(10)
+      MPSURF => IPSTD(11)
+      MTSURF => IPSTD(12)
+      MASURF => IPSTD(13)
+      MSURF  => IPSTD(14)
+      NLRAY  => LCMSOU(14,:)
+            
+      RPSTT => RPST
+
+      X0     => RPST( 1)
+      Y0     => RPST( 2)
+      Z0     => RPST( 3)
+      VEL    => RPST( 4)
+      VELX   => RPST( 5)
+      VELY   => RPST( 6)
+      VELZ   => RPST( 7)
+      E0     => RPST( 8)
+      WEIGHT => RPST( 9)
+      TIME   => RPST(10)
+      PHI    => RPST(11)
+
+      XGENER => RPST(12)
+
+      IPST  => IPSTD(2:MPARTC+1)
+      IPSTT => IPSTD(1:MPARTT)
+
+      NPANU  => IPSTD(1)
+      IPOLG  => IPSTD(2)
+      IPERID => IPSTD(3)
+      NCELL  => IPSTD(4)
+      ITIME  => IPSTD(5)
+      IFPATH => IPSTD(6)
+      IUPDTE => IPSTD(7)
+cpg      ISTRA  => IPSTD( 8)
+      ISPZ   => IPSTD(9)
+    
+      MSURFG => IPSTD(15)
+      WMINV  => RCMSPL(1)
+      WMINS  => RCMSPL(2)
+      WMINC  => RCMSPL(3)
+      WMINL  => RCMSPL(4)
+      SPLPAR => RCMSPL(5)
+      RNUMB  => RCMSPL(6:5+ N1ST+N2ND+N3RD+NLIM)
+      PRMSPL => RCMSPL(6+   N1ST+N2ND+N3RD+NLIM : NCMSPL)
+
+      MAXLEV => ICMSPL(1)
+      NLEVEL => ICMSPL(2)
+      MAXRAD => ICMSPL(3)
+      MAXPOL => ICMSPL(4)
+      MAXTOR => ICMSPL(5)
+      MAXADD => ICMSPL(6)
+
+      NODES  => ICMSPL(7:6+ MAXLEVEL)
+      NSSPL  => ICMSPL(7  + MAXLEVEL:MCMSPL)
+       
+      SIGVCX => XSTOR(:,1)
+      SIGVPI => XSTOR(:,2)
+      SIGVEI => XSTOR(:,3)
+      SIGVEL => XSTOR(:,4)
+      SIGVPH => XSTOR(:,22)
+
+      ESIGCX => XSTOR(:,5:6)
+      ESIGPI => XSTOR(:,7:11)
+      ESIGEI => XSTOR(:,12:16)
+      ESIGEL => XSTOR(:,17:18)
+      ESIGPH => XSTOR(:,23:24)
+
+      VSIGCX => XSTOR(:,19)
+      VSIGPI => XSTOR(:,20)
+      VSIGEL => XSTOR(:,21)
+        
+      SIGCXT  => XSTORV(1)
+      SIGPIT  => XSTORV(2)
+      SIGEIT  => XSTORV(3)
+      SIGELT  => XSTORV(4)
+      SIGPHT  => XSTORV(5)
+      SIGTOT  => XSTORV(6)
+      SIGBGK  => XSTORV(7)
+      ZMFPI   => XSTORV(8)
+     
+      EP1    => RCGRID(1+1*N1ST : 2*N1ST)
+
+      END SUBROUTINE ALLOCATE_AND_ASSOCIATE_FOR_WORKER_THREADS
+
+
+      SUBROUTINE DEALLOCATE_FOR_WORKER_THREADS
+      USE EIRMOD_COMXS
+      USE EIRMOD_REFLEC
+      USE EIRMOD_STATIS
+      USE EIRMOD_CLAST
+      USE EIRMOD_CFPLK, ONLY: FNUIAR  
+      IMPLICIT NONE
+      
+      DEALLOCATE(ISDVI)
+      DEALLOCATE(LMETSP)
+      DEALLOCATE(LMETSPW)
+      DEALLOCATE(ISPEZI)
+        
+      DEALLOCATE(TIMINT)
+      DEALLOCATE(TIMPOL)
+      DEALLOCATE(NTIM)
+      DEALLOCATE(IIMPOL)
+      DEALLOCATE(IIMINT)
+        
+      DEALLOCATE(RPST)
+      DEALLOCATE(IPSTD)
+      DEALLOCATE(RCMSPL)
+      DEALLOCATE(ICMSPL)
+
+      DEALLOCATE(ALPD)
+      DEALLOCATE(BLPD)
+      DEALLOCATE(CLPD)
+     
+      DEALLOCATE (JUPC)
+      DEALLOCATE (KUPC)
+      DEALLOCATE (LUPC)
+      DEALLOCATE (MUPC)
+      DEALLOCATE(NUPC)
+      DEALLOCATE(NCOUNP)
+      DEALLOCATE(NCOUNT)
+   
+      DEALLOCATE(PTRASH)
+      DEALLOCATE(ETRASH)
+         
+      DEALLOCATE(EREDUC)
+      DEALLOCATE(FREDUC)
+      DEALLOCATE(IREDUC)
+             
+      DEALLOCATE(XSTOR)
+      DEALLOCATE(XSTORV)
+      DEALLOCATE(LCMSOU)
+       
+      DEALLOCATE(IIND)
+      DEALLOCATE(RCGRID)
+             
+      DEALLOCATE (XCMEAN)
+      DEALLOCATE (SGCVMX)
+      DEALLOCATE (XEMEAN)
+      DEALLOCATE (SGEVMX)
+      DEALLOCATE (XPMEAN)
+      DEALLOCATE (SGPVMX)
+
+      DEALLOCATE (NCMEAN)
+      DEALLOCATE (IFLRCX)
+      DEALLOCATE (NEMEAN)
+      DEALLOCATE (IFLREL)
+      DEALLOCATE (NPMEAN)
+      DEALLOCATE (IFLRPI)
+
+      DEALLOCATE (FNUIAR)
+ 
+      END SUBROUTINE DEALLOCATE_FOR_WORKER_THREADS
+
 
       END MODULE EIRMOD_MCARLO

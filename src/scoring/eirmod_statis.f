@@ -15,7 +15,10 @@
       PRIVATE
 
       PUBLIC :: EIRENE_STATIS, EIRENE_STATS0, EIRENE_STATS1, 
-     .          EIRENE_STATS2, EIRENE_STATS3
+     .          EIRENE_STATS2, EIRENE_STATS3,
+cym will be removed once the parallel zone encompasses the whole code
+     .          IIND           
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc      
 
       REAL(DP), ALLOCATABLE, SAVE :: VECTOR(:), VECTRC(:,:),
      .          SD(:),   SDC(:,:)
@@ -24,8 +27,24 @@
      .                              IADDC(:,:), IGFFC(:,:),
      .                              IND(:,:),   IIND(:),    INDSS(:,:)
 
-      REAL(DP) :: SD2
+      REAL(DP) :: D1, DS1, D2S, DS2, DSA, DD22, DD11, D2, DD12,
+     .          ZFLUXQ, DS, SD2S, SD2, SG2, SG, DA, D, DD,
+     .          D2S11, D2S22, D2S12, SG12, SG1,
+     .          SAV, SD1S, SD1, XNM
+      INTEGER :: ISCO2, NR1, NP2, NT3, INP, IGF, IC,
+     .           I, IRU, IIN, J, IR, IGS,
+     .           ICO,  IS, ITL2, ISCO1, ITL1, IGE,
+     .           NSYM, IGI, ITL, ISCO, NSYH, J1, J2, IP, IG, IT
       INTEGER, SAVE :: NSB, NRW
+
+      !$OMP THREADPRIVATE (vector,vectrc,iadd,igff,iaddw,igffw,
+!$OMP& iaddc,igffc,ind,IIND,indss,SD,SDC,
+!$OMP& D1, DS1, D2S, DS2, DSA, DD22, DD11, D2, DD12,
+!$OMP& ZFLUXQ, DS, SD2S, SD2, SG2, SG, DA, D, DD,
+!$OMP& D2S11, D2S22, D2S12, SG12, SG1,SAV, SD1S, SD1, XNM,
+!$OMP& ISCO2, NR1, NP2, NT3, INP, IGF, IC, I, IRU, IIN, J, IR, IGS,
+!$OMP& ICO,  IS, ITL2, ISCO1, ITL1, IGE,
+!$OMP& NSYM, IGI, ITL, ISCO, NSYH, J1, J2, IP, IG, IT,nsb,nrw)
 
       CONTAINS
 
@@ -123,10 +142,10 @@ C
       INTEGER, INTENT(IN) :: NBIN, NRIN, NPIN, NTIN, NSIN
       LOGICAL, INTENT(IN) :: LP, LT
 C
-      REAL(DP) :: SAV, SD1S, SD1, SD2S
-      INTEGER :: NR1, NP2, NT3, I, J, IRU, IGS, IC, IIN, INP, IGF, ITL, 
-     .           ISCO, IGE, IGI, NSYM, NSYH, J1, J2, IR, IP, IG, IT, 
-     .           ICO, IS, ISCO2, ITL2, ISCO1, ITL1
+cym      REAL(DP) :: SAV, SD1S, SD1, SD2S
+cym      INTEGER :: NR1, NP2, NT3, I, J, IRU, IGS, IC, IIN, INP, IGF, ITL, 
+cym     .           ISCO, IGE, IGI, NSYM, NSYH, J1, J2, IR, IP, IG, IT, 
+cym     .           ICO, IS, ISCO2, ITL2, ISCO1, ITL1
 
 
       NSB=NBIN
@@ -484,11 +503,11 @@ c  scale statistical variance. called after all flights from a given stratum ist
 
       REAL(DP), INTENT(IN) :: XN, FSIG, ZFLUX
 
-      REAL(DP) :: D1, DS1, D2S, DS2, DSA, DD22, DD11, D2, DD12,
-     .          ZFLUXQ, DS, SG2, SG, DA, D, DD,
-     .          D2S11, D2S22, D2S12, SG12, SG1,
-     .          XNM, SD1
-      INTEGER :: IC, IR, IS, IIN, I, J, INP, IGF, IGS, IRU
+cym      REAL(DP) :: D1, DS1, D2S, DS2, DSA, DD22, DD11, D2, DD12,
+cym     .          ZFLUXQ, DS, SG2, SG, DA, D, DD,
+cym     .          D2S11, D2S22, D2S12, SG12, SG1,
+cym     .          XNM, SD1
+cym      INTEGER :: IC, IR, IS, IIN, I, J, INP, IGF, IGS, IRU
 
 C
 C  1. FALL  ALLE BEITRAEGE GLEICHES VORZEICHEN: SIG ZWISCHEN 0 UND 1

@@ -18,12 +18,16 @@
       USE EIRMOD_RANF, ONLY: RANF_EIRENE, RANSET_EIRENE, RANGET_EIRENE
       USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
       USE EIRMOD_REFUSR, ONLY: EIRENE_REFUSR, EIRENE_REFUSR_INIT
+!$    USE OMP_LIB
 
       IMPLICIT NONE
       PRIVATE
 
       PUBLIC :: EIRENE_REFLEC, EIRENE_REFLC0, EIRENE_REFLC1, 
-     .          EIRENE_REFLEC_REINIT
+     .          EIRENE_REFLEC_REINIT,
+cym will be removed once the parallel zone encompasses the code
+     .          IREDUC,FREDUC,EREDUC      
+cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       REAL(DP), SAVE, ALLOCATABLE :: EREDUC(:,:), FREDUC(:,:)
       INTEGER , SAVE, ALLOCATABLE :: IREDUC(:,:)
@@ -64,6 +68,76 @@ C---------------------------------------------------------------------
      .  ZRANGE(0:12),ZDE(12),ZDEL(12),ZENGY(0:12),ZR(0:12),ZIDE(12,12),
      .  ZIDED(12,12),XSP(13),YSP(13),ASP(13),BSP(13),CSP(13),DSP(13),
      .  E0AV(0:12),QUOTR(0:11),QUOTE(0:11)
+
+      REAL(DP)       :: ERDUC, EFCT
+
+      REAL(DP) :: VX, VY, VZ, ED, ZCTHET, ZSTHET, RO4, ZCPHI,
+     .          ZSPHI, RO5, PRBRF, WATOM, RPROBA, ZE0,
+     .          ZA, A, VXR, VYR, VZR, VWL, WGHTVS,
+     .          ZTHET, ZE, ESUM, EFAC, ZDELTA, COSI2, WABS, WLOSS, TW,
+     .          FLPRT, WMOLEC, RPROBM, FR2, PRTEST, RPROBL, DUMMY,
+     .          XCH, XMFE, XMH, EPSHFE, E0TERM, XCW, EBIND, PRFCT,
+     .          PRFCF, XMW, CON, ZWDR, EOQ,
+     .          XCFE, DX, RO1, EQSAVE, ZEP1, RO3,
+     .          EMINR, EMAXR, RPROB, APROB, COSIN,
+     .          EXPP, EXPI, EXPE, RINTG, AINTG, EINTG,
+     .          EQTO, ETEST, EQT, F1, WFAC, F2,
+     .          FR1, RO2
+      REAL(DP) :: RF, RF1, RF2, RF3, RF4, RF5, RF6, RF7, RF8, 
+     .          RF9, RF10, RF11, RF12, RF13, RF14, RF15, RF16,
+     .          RFF1, RFF2, RFF3, RFF4, RFF5, RFF6, RFF7, RFF8,
+     .          RFFF1, RFFF2, RFFF3, RFFF4,
+     .          RFFFF1, RFFFF2
+ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
+
+      INTEGER::  IRANGE, IRM, INDR2, INDR3P, MSS,
+     .           IBOX, ILIM, JP, ISP, ISTS, I, MODREF,
+     .           NRE, NREP,
+     .           ICOANGL,
+     .           J, NRI, INDR3, ISAVE, INDEP, INDWP, INDE, INDR2P,
+     .           INDR1P, INDR1, ISPZO, INDW, IDUMMY, IRET
+
+ 
+ctk      INTEGER, EXTERNAL :: RANGET_EIRENE, RANSET_EIRENE
+cym      INTEGER, EXTERNAL :: RANGET_EIRENE
+      LOGICAL :: NLDATA, NLBEHR
+    
+      integer , save :: ifile
+      
+           
+      SAVE
+           
+!$OMP THREADPRIVATE (IFILE,
+!$OMP& ZRANGES,ZENGYS,ZRS,ZIDES,
+!$OMP& ZRANGE,ZDE,ZDEL,ZENGY,ZR,ZIDE,
+!$OMP& ZIDED,XSP,YSP,ASP,BSP,CSP,DSP,
+!$OMP& E0AV,QUOTR,QUOTE,
+!$OMP& EREDUC, FREDUC, IREDUC,
+!$OMP& ERDUC,EFCT,
+!$OMP& VX, VY, VZ, ED, ZCTHET, ZSTHET, RO4, ZCPHI,
+!$OMP& ZSPHI, RO5, PRBRF, WATOM, RPROBA, ZE0,
+!$OMP& ZA, A, VXR, VYR, VZR, VWL, WGHTVS,
+!$OMP& ZTHET, ZE, ESUM, EFAC, ZDELTA, COSI2, WABS, WLOSS, TW,
+!$OMP& FLPRT, WMOLEC, RPROBM, FR2, PRTEST, RPROBL, DUMMY,
+!$OMP& XCH, XMFE, XMH, EPSHFE, E0TERM, XCW, EBIND, PRFCT,
+!$OMP& PRFCF, XMW, CON, ZWDR, EOQ, 
+!$OMP& XCFE, DX, RO1, EQSAVE, ZEP1, RO3,
+!$OMP& EMINR, EMAXR, RPROB, APROB, COSIN,
+!$OMP& EXPP, EXPI, EXPE, RINTG, AINTG, EINTG,
+!$OMP& EQTO, ETEST, EQT, F1, WFAC, F2,
+!$OMP& FR1,RO2,
+!$OMP& RF, RF1, RF2, RF3, RF4, RF5, RF6, RF7, RF8, RF9, RF10,
+!$OMP& RF11, RF12, RF13, RF14, RF15, RF16,
+!$OMP& RFF1, RFF2, RFF3, RFF4, RFF5, RFF6, RFF7, RFF8,
+!$OMP& RFFF1, RFFF2, RFFF3, RFFF4,
+!$OMP& RFFFF1,RFFFF2, 
+!$OMP& NPANOLD, IDIM, IRANGE, IRM, INDR2, INDR3P, MSS,
+!$OMP& IBOX, ILIM, JP, ISP, ISTS, I, MODREF, 
+!$OMP& NRE, NREP,
+!$OMP& ICOUNT, IFIRST, ICOANGL,
+!$OMP& J, NRI, INDR3, ISAVE, INDEP, INDWP, INDE, INDR2P,
+!$OMP& INDR1P, INDR1, ISPZO, INDW, IDUMMY,IRET)
+
 
       CONTAINS
 
@@ -135,12 +209,13 @@ C  INITIALIZE SURFACE REFLECTION MODELS
 C
       SUBROUTINE EIRENE_REFLC0
       IMPLICIT NONE
+      INTEGER :: EIRENE_LEARCA
+cym      REAL(DP) :: DX, XCFE, XCH, XMFE, XMH, EPSHFE
+cym      INTEGER :: I, J, INDR3, NRE, NRI, NREP, EIRENE_LEARCA, ILIM, JP, 
+cym     .           ISP, ISTS
+cym      LOGICAL :: NLDATA, NLBEHR
 
-      REAL(DP) :: DX, XCFE, XCH, XMFE, XMH, EPSHFE
-      INTEGER :: I, J, INDR3, NRE, NRI, NREP, EIRENE_LEARCA, ILIM, JP, 
-     .           ISP, ISTS
-      LOGICAL :: NLDATA, NLBEHR
-
+cym is that still useful ?
       SAVE
 C
       IF (.NOT.ALLOCATED(EREDUC)) ALLOCATE(EREDUC(NSPZ,0:NLIMPS))
@@ -382,31 +457,35 @@ c      LOGICAL :: NLDATA, NLBEHR
 
       SUBROUTINE EIRENE_REFLC1 (WMIN,XMP,XCP,NPRIN,IGASF,IGAST)
       IMPLICIT NONE
+      REAL(DP) :: WMIN, XMP, XCP
+      INTEGER :: NPRIN, IGASF, IGAST
+      
 c DATA FOR REDUCED ENERGY SCALING
-      REAL(DP)       :: ERDUC, EFCT
-      REAL(DP) :: VX, VY, VZ, ED, ZCTHET, ZSTHET, RO4, ZCPHI,
-     .          ZSPHI, RO5, PRBRF, WATOM, RPROBA, ZE0,
-     .          ZA, A, VXR, VYR, VZR, VWL, WGHTVS,
-     .          ZTHET, ZE, ESUM, EFAC, ZDELTA, COSI2, WABS, WLOSS, TW,
-     .          FLPRT, WMOLEC, RPROBM, FR2, PRTEST, RPROBL, DUMMY,
-     .          E0TERM, XCW, EBIND, PRFCT,
-     .          PRFCF, XMW, XMP, WMIN,
-     .          XCP, RO1, EQSAVE, ZEP1, RO3,
-     .          EMINR, EMAXR, RPROB, APROB, COSIN,
-     .          EXPP, EXPI, EXPE, RINTG, AINTG, EINTG,
-     .          EQTO, ETEST, EQT, F1, WFAC, F2,
-     .          FR1, RO2
-      REAL(DP) :: RF, RF1, RF2, RF3, RF4, RF5, RF6, RF7, RF8, RF9, RF10,
-     .          RF11, RF12, RF13, RF14, RF15, RF16,
-     .          RFF1, RFF2, RFF3, RFF4, RFF5, RFF6, RFF7, RFF8,
-     .          RFFF1, RFFF2, RFFF3, RFFF4,
-     .          RFFFF1, RFFFF2
-      INTEGER :: IRANGE, IRM, INDR2, INDR3P, MSS, I, J,
-     .           IBOX, MODREF, IGAST, INDR3,
-     .           IGASF, NPRIN, 
-     .           ISAVE, INDEP, INDWP, INDE, INDR2P,
-     .           INDR1P, INDR1, ISPZO, IFILE, INDW, IDUMMY, IRET
+cym      REAL(DP)       :: ERDUC, EFCT
+cym      REAL(DP) :: VX, VY, VZ, ED, ZCTHET, ZSTHET, RO4, ZCPHI,
+cym     .          ZSPHI, RO5, PRBRF, WATOM, RPROBA, ZE0,
+cym     .          ZA, A, VXR, VYR, VZR, VWL, WGHTVS,
+cym     .          ZTHET, ZE, ESUM, EFAC, ZDELTA, COSI2, WABS, WLOSS, TW,
+cym     .          FLPRT, WMOLEC, RPROBM, FR2, PRTEST, RPROBL, DUMMY,
+cym     .          E0TERM, XCW, EBIND, PRFCT,
+cym     .          PRFCF, XMW, XMP, WMIN,
+cym     .          XCP, RO1, EQSAVE, ZEP1, RO3,
+cym     .          EMINR, EMAXR, RPROB, APROB, COSIN,
+cym     .          EXPP, EXPI, EXPE, RINTG, AINTG, EINTG,
+cym     .          EQTO, ETEST, EQT, F1, WFAC, F2,
+cym     .          FR1, RO2
+cym      REAL(DP) :: RF, RF1, RF2, RF3, RF4, RF5, RF6, RF7, RF8, RF9, RF10,
+cym     .          RF11, RF12, RF13, RF14, RF15, RF16,
+cym     .          RFF1, RFF2, RFF3, RFF4, RFF5, RFF6, RFF7, RFF8,
+cym     .          RFFF1, RFFF2, RFFF3, RFFF4,
+cym     .          RFFFF1, RFFFF2
+cym      INTEGER :: IRANGE, IRM, INDR2, INDR3P, MSS, I, J,
+cym     .           IBOX, MODREF, IGAST, INDR3,
+cym     .           IGASF, NPRIN, 
+cym     .           ISAVE, INDEP, INDWP, INDE, INDR2P,
+cym     .           INDR1P, INDR1, ISPZO, IFILE, INDW, IDUMMY, IRET
 
+cym is that useful ??
       SAVE
 
 C.................................................................
@@ -549,6 +628,8 @@ C  FIND DATABASE FILE WITH SCALING RATIO CLOSEST TO ONE
         ENDIF
   120 CONTINUE
       IF (ICOUNT.LT.5.AND.TRCREF) THEN
+!$OMP CRITICAL
+        write (iunout,*) 'ithread = ',omp_get_thread_num()
         WRITE (iunout,*) 'TRIM REFLECTION DATA REQUESTED BUT NOT'
         WRITE (iunout,*) 'AVAILABLE FOR THE TARGET-PROJECTILE SYSTEM:'
         WRITE (iunout,*) 'ISP,ISURF,XMWALL,XCWALL,XMPART,XCPART'
@@ -563,6 +644,7 @@ C  FIND DATABASE FILE WITH SCALING RATIO CLOSEST TO ONE
         WRITE (iunout,*) 'ERDC(J), F_REDUC = ',ERDC(ISAVE),EQSAVE
         CALL EIRENE_LEER(1)
         ICOUNT=ICOUNT+1
+!$OMP END CRITICAL
       ENDIF
       IFILE=ISAVE
       EFCT=EQSAVE
@@ -1306,7 +1388,11 @@ c
       WRITE (iunout,*) 'STOP HISTORY NO. NPANU= ',NPANU
       GOTO 999
 C
-  999 IF (NLTRC)  CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+  999 IF (NLTRC) THEN
+!$OMP CRITICAL
+        CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+!$OMP END CRITICAL
+      ENDIF
       LGPART=.FALSE.
       WEIGHT=0.
       RETURN

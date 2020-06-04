@@ -86,6 +86,8 @@ C
       USE EIRMOD_SPUTER, ONLY: EIRENE_SPUTR1
       USE EIRMOD_REFLEC, ONLY: EIRENE_REFLC1
       USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
+      use eirmod_sheath, only: eirene_sheath
+
 
       IMPLICIT NONE
 
@@ -97,7 +99,7 @@ C
      .          E0TERM, FR2, COSI2, ZVZ, WABS,
      .          CUR, GAMMA, TEWL, VX, VY, VZ, FCHAR, WPR, FMASS,
      .          FLX, YIELD1, YIELD2, VELS, WEIGHS, E0S, ESHET,EVCQ,
-     .          VSHETQ, V, VELSH, VC, VCQ, VC2, EIRENE_SHEATH, SPLFLG,
+     .          VSHETQ, V, VELSH, VC, VCQ, VC2, SPLFLG,
      .          VXR, VYR, VZR, VWL, WGHTVS, RATR
 ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: ISG, ISPZS, I, J, IDIM, MS, IC, IP, ISTS,
@@ -143,9 +145,12 @@ C  NO, PARTICLE HAS ARRIVED AT PERIODICITY SURFACE MSURF
           IRET = 0
           RETURN
         ENDIF
-        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,11)
-        IRET = 1
-        RETURN 
+        IF (NLTRC) THEN
+!$OMP CRITICAL
+          CALL EIRENE_CHCTRC(X0,Y0,Z0,0,11)
+!$OMP END CRITICAL
+        ENDIF
+        RETURN 1
       ENDIF
 C
 C  .............................
@@ -319,11 +324,13 @@ C             VEL=SQRT(E0)*RSQDVI(IION)
               NLTRJ = .FALSE.
               TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
               IF (NLTRC) THEN
+!$OMP CRITICAL
                 WRITE (IUNOUT,*) 'REFLECT FROM SHEATH AT MSURF= ',MSURF
                 WRITE (IUNOUT,*) 'NEW SPEED UNIT VECTOR: VELX,VELY,VELZ'
                 WRITE (IUNOUT,*)  VELX,VELY,VELZ
                 EVCQ=VCQ/(RSQDVI(IION)*RSQDVI(IION))
                 WRITE (IUNOUT,*)  'ESHEAT,EVCQ,E0 ',ESHET,EVCQ,E0
+!$OMP END CRITICAL
               ENDIF
               IRET = 1
               RETURN
@@ -450,9 +457,11 @@ C  CELL NUMBER SWITCHES LIKE A TRANSPARENT DEFAULT STANDARD SURFACE IN STDCOL
             IF (IDIM.EQ.3) NTCELL=NTCELL+NINCZ
           ENDIF
           IF (NLTRC) THEN
+!$OMP CRITICAL
             CALL EIRENE_LEER(1)
             WRITE (iunout,*) 'SURFACE MSURF= ',MS,' IS MADE TRANSPARENT'
             WRITE (iunout,*) 'ORIENTATION, SPECIES: ',ISG,ISPZ
+!$OMP END CRITICAL
           ENDIF
         ENDIF
 C

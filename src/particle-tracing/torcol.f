@@ -62,7 +62,11 @@ C
      .                           NPANU,'TORCOL 1')
       ENDIF
 C
-      IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,11)
+      IF (NLTRC) THEN
+!$OMP CRITICAL
+        CALL EIRENE_CHCTRC(X0,Y0,Z0,16,11)
+!$OMP END CRITICAL
+      ENDIF
 C
       IF (.NOT.NLTOR) THEN
 C

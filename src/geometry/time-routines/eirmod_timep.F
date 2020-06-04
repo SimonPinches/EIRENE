@@ -7,7 +7,44 @@ cdr   (indicator for "damaged cells" in 2D (x-y) plane.
 cdr   LDAMCEL is set in initialization phase
 
 cdr  sept 17: sync with timet
+cym 04/2020 turned into a module because of SAVE attribute
+
+      module eirmod_timep
+      use eirmod_precision
+      implicit none
+      private
+
+      public :: eirene_timep
 C
+      REAL(DP) :: HELP, GS, GC, F, XNEN, DUM, SUM, BB, DY, X0TEST,
+     .          Y0TEST, V1, V2, T1, ZRADS, ZRD, WIN1, X000, Z0T,
+     .          TWIN1, XT, Y000, TSS, X0T, Y0T
+      INTEGER :: IANP, I, IENP, JHELP, ISW, JJC, J1,
+     .           NRCLLP, LHELP, J2, INCY, JN, ICOU, NYSAVE, NHELP,
+     .           I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS,
+     .           IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J, JJ,
+cym     .           EIRENE_LEARCA, EIRENE_LEARC2, 
+     .           NJC, ITEST, JSH, NN ,IN, itc
+      
+cdr logicals for intersection with poloidal surfaces
+      LOGICAL :: LHITP0
+      LOGICAL :: lnincz
+
+!$OMP THREADPRIVATE(HELP, GS, GC, F, XNEN, DUM, SUM, BB, DY, X0TEST,
+!$OMP&  Y0TEST, V1, V2, T1, ZRADS, ZRD, WIN1, X000, Z0T,
+!$OMP&  TWIN1, XT, Y000, TSS, X0T, Y0T,
+!$OMP&  IANP, I, IENP, JHELP, ISW, JJC, J1,
+!$OMP&  NRCLLP, LHELP, J2, INCY, JN, ICOU, NYSAVE, NHELP,
+!$OMP&  I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS,
+!$OMP&  IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J, JJ,
+!$OMP&  NJC, ITEST, JSH, NN ,IN, itc,
+!$OMP&  LHITP0, lnincz)
+
+cym is this really useful ?
+      SAVE
+
+      contains
+
       SUBROUTINE EIRENE_TIMEP (ZRAD)
 C
 C   CALCULATE TIME SEGMENTS FOR 2D-OR 3D PROFILES,
@@ -80,26 +117,31 @@ C
       IMPLICIT NONE
 
       REAL(DP), INTENT(INOUT) :: ZRAD
-      REAL(DP) :: HELP, GS, GC, F, XNEN, DUM, SUM, BB, DY, X0TEST,
-     .          Y0TEST, V1, V2, T1, ZRADS, ZRD, WIN1, X000, Z0T,
-     .          TWIN1, XT, Y000, TSS, X0T, Y0T
-      INTEGER :: EIRENE_ILLZ, IANP, I, IENP, JHELP, ISW, JJC, J1,
-     .           NRCLLP, LHELP, J2, INCY, JN, ICOU, NYSAVE, NHELP,
-     .           I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS,
-     .           IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J,
-     .           EIRENE_LEARCA, EIRENE_LEARC2, 
-     .           NJC, ITEST, JSH, NN ,IN, itc
+
+cym stays here because not correct in module declaration
+cym therefore: save not there, same in timer.F
+cym check this is correct
+cdr logicals for intersection with poloidal surfaces
+      LOGICAL :: LHITP(N2NDPLGS)
       INTEGER :: NCOUNS(N2ND+N3RD)
 #ifdef TRACE
       INTEGER :: JJ
 #endif
-cdr logicals for intersection with poloidal surfaces
-      LOGICAL :: LHITP(N2NDPLGS), LHITP0
-      LOGICAL :: lnincz
-      SAVE
+
+      INTEGER :: EIRENE_ILLZ
+      INTEGER :: EIRENE_LEARCA, EIRENE_LEARC2
+      
+cym cccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cym local variables moved to module declaration section
+cym cccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+cym removed - check - if indeed useless could have been supressed without
+cym turning this to a module
+cym      SAVE
 C
 #ifdef TRACE
       IF (NLTRC) THEN
+!$OMP CRITICAL
         CALL EIRENE_LEER(1)
         IF (NRCELL.GT.0) THEN
           WRITE (iunout,*) 'TIMEP FROM INSIDE, NPANU ', NPANU
@@ -110,6 +152,7 @@ C
           WRITE (iunout,*) 'MRSURF,MPSURF,MTSURF,ZRAD '
           WRITE (iunout,*)  MRSURF,MPSURF,MTSURF,ZRAD
         ENDIF
+!$OMP END CRITICAL
       ENDIF
 #endif
 C
@@ -128,8 +171,10 @@ C       NCOUT=NCOUT
         IF (NCOUT.GT.1) IPOLGN=0
 #ifdef TRACE
         IF (NLTRC)
+!$OMP CRITICAL
      .    WRITE (iunout,*) 'because NLTOR/NLTRA: ZRAD,NTCELL ',
      .                                           ZRAD,NTCELL
+!$OMP END CRITICAL
 #endif
       ELSE
         NCOUT=1
@@ -181,12 +226,19 @@ C  TEST POLOIDAL SURFACE NO. MPTEST FOR REENTRY
      .              (YPOL(IR,MPTEST)-Y00)*VVTX(IR,MPTEST))
      .             /(VELX*VVTY(IR,MPTEST)-VELY*VVTX(IR,MPTEST)+EPS60)
 #ifdef TRACE
-                IF (NLTRC) WRITE (iunout,*) 'IR,MPTEST,T1 ',IR,MPTEST,T1
+                IF (NLTRC) THEN
+!$OMP CRITICAL
+                  WRITE (iunout,*) 'IR,MPTEST,T1 ',IR,MPTEST,T1
+!$OMP END CRITICAL
+                ENDIF
 #endif
                 IF (T1.LT.0..OR.T1.GE.ZRD) CYCLE
 #ifdef TRACE
-                IF (NLTRC)
-     .            WRITE (iunout,*) 'VALID INTERSECTION AT T1= ',T1
+                IF (NLTRC) THEN
+!$OMP CRITICAL
+                  WRITE (iunout,*) 'VALID INTERSECTION AT T1= ',T1
+!$OMP END CRITICAL
+                ENDIF
 #endif
                 NCOUP=1
                 LUPC(NCOUP)=MPTEST
@@ -217,8 +269,10 @@ C  NCOUP=1 AT THIS POINT
           NINCZ=0
 #ifdef TRACE
           IF (NLTRC) THEN
+!$OMP CRITICAL
             WRITE (iunout,*) 'REENTRY FOUND, MPSURF,ZRAD = ',MPSURF,ZRAD
             WRITE (iunout,*) 'IRCELL ',IRCELL
+!$OMP END CRITICAL
           ENDIF
 #endif
           GOTO 31
@@ -231,7 +285,9 @@ C  NO REENTRY FOUND
           MPSURF=0
 #ifdef TRACE
           IF (NLTRC) THEN
+!$OMP CRITICAL
             WRITE (iunout,*) 'NO REENTRY INTO POLOIDAL GRID FOUND '
+!$OMP END CRITICAL
           ENDIF
 #endif
           X00=X00+ZRAD*VELX
@@ -249,11 +305,13 @@ C
         ENDIF
 #ifdef TRACE
         IF (NLTRC) THEN
+!$OMP CRITICAL
           WRITE (iunout,*) ' TIMEP IN NEIGHBOR PART '
           WRITE (iunout,*) ' ALPD ',(ALPD(J),J=1,NCOUP)
           WRITE (iunout,*) ' JUPC ',(JUPC(J),J=1,NCOUP)
           WRITE (iunout,*) ' LUPC ',(LUPC(J),J=1,NCOUP)
           WRITE (iunout,*) ' MUPC ',(MUPC(J),J=1,NCOUP)
+!$OMP END CRITICAL
         ENDIF
 #endif
         NLSRFY=.FALSE.
@@ -315,8 +373,10 @@ C  TRACK ENDS ON ONE OF THE NON-DEFAULT POLOIDAL SURFACES
 C
 #ifdef TRACE
             IF (NLTRC) THEN
+!$OMP CRITICAL
               WRITE (iunout,*) ' TRACK TERMINATED'
               WRITE (iunout,*) ' ITEST,ILIIN ',ITEST,ILIIN(IN)
+!$OMP END CRITICAL
             ENDIF
 #endif
             NCOUPE=J
@@ -339,8 +399,10 @@ C  STOP TRACK ANYHOW
 C
 #ifdef TRACE
             IF (NLTRC) THEN
+!$OMP CRITICAL
               WRITE (iunout,*) ' TRACK TERMINATED'
               WRITE (iunout,*) ' ITYP,ILIIN ',ITYP,ILIIN(IN)
+!$OMP END CRITICAL
             ENDIF
 #endif
             if (ldamcel(itc)) lgpart=.false.
@@ -394,10 +456,12 @@ C
   311   CONTINUE
 #ifdef TRACE
         IF (NLTRC) THEN
+!$OMP CRITICAL
           WRITE (iunout,*) ' ALPD ',(ALPD(J),J=1,NCOUP)
           WRITE (iunout,*) ' JUPC ',(JUPC(J),J=1,NCOUP)
           WRITE (iunout,*) ' LUPC ',(LUPC(J),J=1,NCOUP)
           WRITE (iunout,*) ' MUPC ',(MUPC(J),J=1,NCOUP)
+!$OMP END CRITICAL
         ENDIF
 #endif
 C
@@ -434,10 +498,12 @@ C
         NCOUP=NCOUPE
 #ifdef TRACE
         IF (NLTRC) THEN
+!$OMP CRITICAL
           WRITE (iunout,*) ' ALPD ',(ALPD(J),J=1,NCOUP)
           WRITE (iunout,*) ' JUPC ',(JUPC(J),J=1,NCOUP)
           WRITE (iunout,*) ' LUPC ',(LUPC(J),J=1,NCOUP)
           WRITE (iunout,*) ' MUPC ',(MUPC(J),J=1,NCOUP)
+!$OMP END CRITICAL
         ENDIF
 #endif
 C
@@ -553,7 +619,9 @@ C
             LHITP(J)=V1*V2.LE.0.
 #ifdef TRACE
             IF (NLTRC) THEN
+!$OMP CRITICAL
               IF (LHITP(J)) WRITE (iunout,*) 'LHITP=TRUE FOR ',J
+!$OMP END CRITICAL
             ENDIF
 #endif
   112     CONTINUE
@@ -579,11 +647,19 @@ C
      .          (YPOL(NRCELL,I)-Y00)*VVTX(NRCELL,I))
      .         /(VELX*VVTY(NRCELL,I)-VELY*VVTX(NRCELL,I)+EPS60)
 #ifdef TRACE
-            IF (NLTRC) WRITE (iunout,*) 'I,T1 ',I,T1
+            IF (NLTRC) THEN
+!$OMP CRITICAL
+              WRITE (iunout,*) 'I,T1 ',I,T1
+!$OMP END CRITICAL
+            ENDIF
 #endif
             IF (T1.LT.0..OR.T1.GE.ZRAD) GOTO 114
 #ifdef TRACE
-            IF (NLTRC) WRITE (iunout,*) 'VALID INTERSECTION AT T1= ',T1
+            IF (NLTRC) THEN
+!$OMP CRITICAL
+              WRITE (iunout,*) 'VALID INTERSECTION AT T1= ',T1
+!$OMP END CRITICAL
+            ENDIF
 #endif
             NCOUP=NCOUP+1
             LUPC(NCOUP)=I
@@ -624,11 +700,13 @@ C
         IF (ISW.GT.0.AND.NCOUP.GT.2) GOTO 115
 #ifdef TRACE
         IF (NLTRC.AND.NCOUP.GT.0) THEN
+!$OMP CRITICAL
           WRITE (iunout,*) ' NACH SORTIEREN '
           WRITE (iunout,*) ' ALPD ',(ALPD(J),J=1,NCOUP)
           WRITE (iunout,*) ' JUPC ',(JUPC(J),J=1,NCOUP)
           WRITE (iunout,*) ' LUPC ',(LUPC(J),J=1,NCOUP)
           WRITE (iunout,*) ' MUPC ',(MUPC(J),J=1,NCOUP)
+!$OMP END CRITICAL
         ENDIF
 #endif
 C
@@ -637,9 +715,11 @@ C
             IF (JUPC(J).LE.0.OR.JUPC(J).GE.NP2ND) THEN
 #ifdef TRACE
               IF (NLTRC) THEN
+!$OMP CRITICAL
                 WRITE (iunout,*) ' VERTAUSCHE ALPD(',J,') UND (',J+1,')'
                 WRITE (iunout,*) ' ALPD = ',ALPD(J),ALPD(J+1)
                 WRITE (iunout,*) ' JUPC = ',JUPC(J),JUPC(J+1)
+!$OMP END CRITICAL
               ENDIF
 #endif
               HELP=ALPD(J)
@@ -674,8 +754,10 @@ C  TRACK ENDS ON ONE OF THE NON-DEFAULT POLOIDAL SURFACES
 C
 #ifdef TRACE
             IF (NLTRC) THEN
+!$OMP CRITICAL
               WRITE (iunout,*) ' TRACK TERMINATED'
               WRITE (iunout,*) ' ITEST,ILIIN ',ITEST,ILIIN(IN)
+!$OMP END CRITICAL
             ENDIF
 #endif
             NCOUPE=J
@@ -720,10 +802,12 @@ C
           NCOUP=NCOUPE
 #ifdef TRACE
           IF (NLTRC) THEN
+!$OMP CRITICAL
             WRITE (iunout,*) ' ALPD ',(ALPD(J),J=1,NCOUP)
             WRITE (iunout,*) ' JUPC ',(JUPC(J),J=1,NCOUP)
             WRITE (iunout,*) ' LUPC ',(LUPC(J),J=1,NCOUP)
             WRITE (iunout,*) ' MUPC ',(MUPC(J),J=1,NCOUP)
+!$OMP END CRITICAL
           ENDIF
 #endif
 C
@@ -758,7 +842,11 @@ C  TIME FROM Y00 TO PSURF
             DY=PSURF(MPTEST)-Y00
             F=DY/BB
 #ifdef TRACE
-            IF (NLTRC) WRITE (iunout,*) 'MPTEST,F,DY ',MPTEST,F,DY
+            IF (NLTRC) THEN
+!$OMP CRITICAL
+              WRITE (iunout,*) 'MPTEST,F,DY ',MPTEST,F,DY
+!$OMP END CRITICAL
+            ENDIF
 #endif
             IF (F.LE.ZRD.AND.F.GT.0.D0) THEN
               X0TEST=X00+VELX*F
@@ -791,8 +879,10 @@ C  NCOUP=1 AT THIS POINT
           NINCZ=0
 #ifdef TRACE
           IF (NLTRC) THEN
+!$OMP CRITICAL
             WRITE (iunout,*) 'REENTRY FOUND, MPSURF,ZRAD = ',MPSURF,ZRAD
             WRITE (iunout,*) 'IRCELL ',IRCELL
+!$OMP END CRITICAL
           ENDIF
 #endif
           Y00=Y00+VELY*ZRD
@@ -808,8 +898,11 @@ C  NO REENTRY FOUND
 C  CHECK VALID RANGE ON MRSURF
             Y0TEST=Y00+VELY*ZRAD
 #ifdef TRACE
-            IF (NLTRC)
-     .        WRITE (iunout,*) 'CHECK VALID RANGE: Y0TEST ',Y0TEST
+            IF (NLTRC) THEN
+!$OMP CRITICAL
+              WRITE (iunout,*) 'CHECK VALID RANGE: Y0TEST ',Y0TEST
+!$OMP END CRITICAL
+            ENDIF
 #endif
             IF (Y0TEST.GE.PSURF(1).AND.Y0TEST.LE.PSURF(NP2ND)) THEN
               IPCELL=EIRENE_LEARCA(Y0TEST,PSURF,1,NP2ND,1,
@@ -825,7 +918,9 @@ C  CHECK VALID RANGE ON MRSURF
           NINCY=0
 #ifdef TRACE
           IF (NLTRC) THEN
+!$OMP CRITICAL
             WRITE (iunout,*) 'NO REENTRY FOUND '
+!$OMP END CRITICAL
           ENDIF
 #endif
           Y00=Y00+ZRD*VELY
@@ -837,7 +932,11 @@ C
  2900   CONTINUE
         Y000=Y00+VELY*ZRAD
 #ifdef TRACE
-        IF (NLTRC) WRITE (iunout,*) 'Y000,Y00,ZRAD ',Y000,Y00,ZRAD
+        IF (NLTRC) THEN
+!$OMP CRITICAL
+          WRITE (iunout,*) 'Y000,Y00,ZRAD ',Y000,Y00,ZRAD
+!$OMP END CRITICAL
+        ENDIF
 #endif
 C
         DUM=0.
@@ -881,7 +980,11 @@ C  TIME FROM Y00 TO PSURF
         BB=VELY+EPS60
         F=DY/BB
 #ifdef TRACE
-        IF (NLTRC) WRITE (iunout,*) 'J2,F,DY ',J2,F,DY
+        IF (NLTRC) THEN
+!$OMP CRITICAL
+          WRITE (iunout,*) 'J2,F,DY ',J2,F,DY
+!$OMP END CRITICAL
+        ENDIF
 #endif
         IF (F.LE.ZRAD) THEN
           JUPC(NCOUP)=J1
@@ -916,7 +1019,11 @@ C
 C  LAST CELL
 C
 #ifdef TRACE
-        IF (NLTRC) WRITE (iunout,*) 'LAST CELL ',ZRAD,DUM
+        IF (NLTRC) THEN
+!$OMP CRITICAL
+          WRITE (iunout,*) 'LAST CELL ',ZRAD,DUM
+!$OMP END CRITICAL
+        ENDIF
 #endif
         IF (MPSURF.EQ.0) THEN
           NPCELL=J1
@@ -938,7 +1045,11 @@ C   ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 C
  5000 CONTINUE
 #ifdef TRACE
-      IF (NLTRC) WRITE (iunout,*) 'NCOUP= ',NCOUP
+      IF (NLTRC) THEN
+!$OMP CRITICAL
+        WRITE (iunout,*) 'NCOUP= ',NCOUP
+!$OMP END CRITICAL
+      ENDIF
 #endif
       DO 5100 J=1,NCOUP
         CLPD(IADD+J)=ALPD(J)
@@ -953,9 +1064,11 @@ C
         ENDIF
 #ifdef TRACE
         IF (NLTRC) THEN
+!$OMP CRITICAL
           JJ=J+IADD
           WRITE (iunout,*) 'TIMEP: JJ,CLPD(JJ),NUPC(JJ),NCOUNP(JJ) ',
      .                             JJ,CLPD(JJ),NUPC(JJ),NCOUNP(JJ)
+!$OMP END CRITICAL
         ENDIF
 #endif
  5100 CONTINUE
@@ -979,9 +1092,12 @@ C
         IADD=IADD+NCOUP
         ncoup=jn
 #ifdef TRACE
-        IF (NLTRC)
-     .    WRITE (iunout,*) 'NEXT TOR. CELL: ZRAD,NTCELL,IADD ',
+        IF (NLTRC) THEN
+!$OMP CRITICAL
+          WRITE (iunout,*) 'NEXT TOR. CELL: ZRAD,NTCELL,IADD ',
      .                                      ZRAD,NTCELL,IADD
+!$OMP END CRITICAL
+        ENDIF
 #endif
         GOTO 10000
       ENDIF
@@ -1009,4 +1125,6 @@ C
       WRITE (iunout,*)
      .  'REENTRANCE FROM VACUUM REGION UNFINISHED IN TIMEP'
       CALL EIRENE_EXIT_OWN(1)
-      END
+      END subroutine eirene_timep
+
+      end module eirmod_timep

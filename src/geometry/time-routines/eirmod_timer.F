@@ -9,7 +9,113 @@ C
 C  FULL EIRENE GEOMETRY BLOCK  (GEO3D)
 C
 C
+      MODULE EIRMOD_TIMER
+
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_COMUSR
+      USE EIRMOD_CTSURF
+      USE EIRMOD_CADGEO
+      USE EIRMOD_CCONA
+      USE EIRMOD_CLOGAU
+      USE EIRMOD_CUPD
+      USE EIRMOD_CPOLYG
+      USE EIRMOD_CGRID
+      USE EIRMOD_CGEOM
+      USE EIRMOD_CTETRA
+      USE EIRMOD_COMPRT
+      USE EIRMOD_CLGIN
+      USE EIRMOD_CTRIG
+
+!$ use OMP_LIB
+
+      implicit none  
+      
+      private
+      
+      PUBLIC :: EIRENE_TIMER
+           
+      REAL(DP) :: A(3,3), B(3), AB(3,3),PTS(4) 
+      REAL(DP) :: SIG1, SIG2, DET, XMU, XETA, AX, AY, V,
+     .          TIMTET,
+     .          ZZ, RICHTY, HELP, TM, RICHTX, YY, XX, S3, TIMT, TIM,
+     .          S2, A1, A2, A3, B1, B2, B3, S1, V2, V3, ZR, ZEP1,
+     .          ZSQRT, PS, VELYQ, XX0, VVELX, VELXQ, ZT1, ZT2, YVY,
+     .          ZC1, DXA, TST, XA, ZB2, ZAB, ZAB2, ZB, Z0TEST,
+     .          Y0TEST, ZA, T, PT1, PT2, PT3, PT4, V1, ESURF,
+     .          XTEST, YTEST, X0SURF, DSRF, Y0Q, T1, T2, T3, T4, PNORMI
+      INTEGER :: IRICH(2,4), ITSIDE(3,4)
+      INTEGER :: IZELLO, NTIMT, IOB, I1, I2, ISW, KAN, KEN,
+     .           EIRENE_ILLZ, IHELP, IZELL, NTMS, MXSF, NTMZ, NRMSRF,
+     .           ICOS, IERR, IRS, NEWCEL, ITET, IT, IL, IS, NRI, MS, IR,
+     .           ICALL, ITFRST, ISTS, MMSURF, J, K, I, JPOL,
+     .           MPOL, IPOLGO, IP, ICELLR, MSAVE, ITRI,
+     .           ISTS_CELL, ISD, nclpb, icts
+!pb      INTEGER, ALLOCATABLE, SAVE :: ITRINO(:), ISIDNO(:)
+!pb      INTEGER, SAVE :: NSTS_CELL
+#ifdef TRACE
+      INTEGER :: ICOUP
+!$OMP THREADPRIVATE (icoup)           
+#endif
+      INTEGER, ALLOCATABLE :: ITRINO(:), ISIDNO(:)
+      INTEGER :: NSTS_CELL
+
+cpg      LOGICAL :: LHITP(N2NDPLGS) ! for finding re-entry into levgeo=3 grid
+      LOGICAL :: LCTS(4)
+      LOGICAL :: LNGB1, LNGB2, LNGB3, LNGB4,
+     .           LCT1, LCT2, LCT3, LCT4 
+
+cpg - not OpenMP compatible
+cpg      EQUIVALENCE (LCTS(1),LCT1), (LCTS(2),LCT2),
+cpg     .            (LCTS(3),LCT3), (LCTS(4),LCT4)
+
+cpg      EQUIVALENCE (PTS(1),PT1),   (PTS(2),PT2),
+cpg     .            (PTS(3),PT3),   (PTS(4),PT4)
+ 
+      
+!$OMP THREADPRIVATE (A, B, AB,LCT1,LCT2,LCT3,LCT4,PT1,PT2,PT3,PT4,
+!$OMP& SIG1, SIG2, DET, XMU, XETA, AX, AY, V,TIMTET,
+!$OMP& ZZ, RICHTY, HELP, TM, RICHTX, YY, XX, S3, TIMT, TIM,
+!$OMP& S2, A1, A2, A3, B1, B2, B3, S1, V2, V3, ZR, ZEP1,
+!$OMP& ZSQRT, PS, VELYQ, XX0, VVELX, VELXQ, ZT1, ZT2, YVY,
+!$OMP& ZC1, DXA, TST, XA, ZB2, ZAB, ZAB2, ZB, Z0TEST,
+!$OMP& Y0TEST, ZA, T, V1, ESURF,
+!$OMP& XTEST, YTEST, X0SURF, DSRF, Y0Q, T1, T2, T3, T4, PNORMI,
+!$OMP& IRICH, ITSIDE,
+!$OMP& IZELLO, NTIMT, IOB, I1, I2, ISW, KAN, KEN,
+!$OMP& EIRENE_ILLZ, IHELP, IZELL, NTMS, MXSF, NTMZ, NRMSRF,
+!$OMP& ICOS, IERR, IRS, NEWCEL, ITET, IT, IL, IS, NRI, MS, IR,
+!$OMP& ICALL, ITFRST, ISTS, MMSURF, J, K, I, JPOL,
+!$OMP& MPOL, IPOLGO, IP, ICELLR, MSAVE, ITRI,
+!$OMP& ISTS_CELL, ISD, nclpb, icts,
+!$OMP& ITRINO, ISIDNO, NSTS_CELL,LNGB1, LNGB2, LNGB3, LNGB4,
+!$OMP& LCTS,PTS)
+
+  
+      DATA ITSIDE /1,2,3,
+     .             1,4,2,
+     .             2,4,3,
+     .             3,4,1/
+      DATA IRICH / 1, -3,
+     .             4,  1,
+     .             5,  2,
+     .             6,  3 /
+      DATA ICALL /0/
+      DATA ITFRST /0/
+
+cpg      SAVE
+      
+      
+
+      CONTAINS  
+
       SUBROUTINE EIRENE_TIMER (PT)
+      IMPLICIT NONE 
+        REAL(DP), INTENT(OUT) :: PT
+        REAL(DP) ::EIRENE_SARRUS
+        LOGICAL :: LHITP(N2NDPLGS) ! for finding re-entry into levgeo=3 grid
+        LOGICAL :: EIRENE_BITGET
+        INTEGER :: EIRENE_LEARC2
 C
 C  THIS SUBROUTINE CALCULATES DISTANCES TO INTERSECTION POINTS IN THE 1ST STANDARD
 C  MESH "RSURF" (X- OR RADIAL DIRECTION)
@@ -89,79 +195,66 @@ C  ADDITIONALLY, IF NLTET:
 C
 C    TO BE WRITTEN
 C
-      USE EIRMOD_PRECISION
-      USE EIRMOD_PARMMOD
-      USE EIRMOD_COMUSR
-      USE EIRMOD_CTSURF
-      USE EIRMOD_CADGEO
-      USE EIRMOD_CCONA
-      USE EIRMOD_CLOGAU
-      USE EIRMOD_CUPD
-      USE EIRMOD_CPOLYG
-      USE EIRMOD_CGRID
-      USE EIRMOD_CGEOM
-      USE EIRMOD_CTETRA
-      USE EIRMOD_COMPRT
-      USE EIRMOD_CLGIN
-      USE EIRMOD_CTRIG
 
-      IMPLICIT NONE
 
-      REAL(DP), INTENT(OUT) :: PT
-      REAL(DP) :: A(3,3), B(3), AB(3,3), PTS(4)
-      REAL(DP) :: SIG1, SIG2, DET, XMU, XETA, EIRENE_SARRUS, AX, AY, V,
-     .          TIMTET,
-     .          ZZ, RICHTY, HELP, TM, RICHTX, YY, XX, S3, TIMT, TIM,
-     .          S2, A1, A2, A3, B1, B2, B3, S1, V2, V3, ZR, ZEP1,
-     .          ZSQRT, PS, VELYQ, XX0, VVELX, VELXQ, ZT1, ZT2, YVY,
-     .          ZC1, DXA, TST, XA, ZB2, ZAB, ZAB2, ZB, Z0TEST,
-     .          Y0TEST, ZA, T, PT1, PT2, PT3, PT4, V1, ESURF,
-     .          XTEST, YTEST, X0SURF, DSRF, Y0Q, T1, T2, T3, T4, PNORMI
-      INTEGER :: IRICH(2,4), ITSIDE(3,4)
-      INTEGER :: IZELLO, NTIMT, IOB, I1, I2, ISW, 
-     .           IHELP, IZELL, NTMS, MXSF, NTMZ, NRMSRF,
-     .           ICOS, IERR, IRS, NEWCEL, ITET, IT, IL, IS, NRI, MS, IR,
-     .           ICALL, ITFRST, ISTS, MMSURF, J, K, I, JPOL,
-     .           MPOL, IPOLGO, EIRENE_LEARC2, IP, ICELLR, MSAVE, ITRI,
-     .           ISTS_CELL, ISD, nclpb, icts
+cym      REAL(DP), INTENT(OUT) :: PT
+cym      REAL(DP) :: A(3,3), B(3), AB(3,3), PTS(4)
+cym      REAL(DP) :: SIG1, SIG2, DET, XMU, XETA, EIRENE_SARRUS, AX, AY, V,
+cym     .          TIMTET,
+cym     .          ZZ, RICHTY, HELP, TM, RICHTX, YY, XX, S3, TIMT, TIM,
+cym     .          S2, A1, A2, A3, B1, B2, B3, S1, V2, V3, ZR, ZEP1,
+cym     .          ZSQRT, PS, VELYQ, XX0, VVELX, VELXQ, ZT1, ZT2, YVY,
+cym     .          ZC1, DXA, TST, XA, ZB2, ZAB, ZAB2, ZB, Z0TEST,
+cym     .          Y0TEST, ZA, T, PT1, PT2, PT3, PT4, V1, ESURF,
+cym     .          XTEST, YTEST, X0SURF, DSRF, Y0Q, T1, T2, T3, T4, PNORMI
+cym      INTEGER :: IRICH(2,4), ITSIDE(3,4)
+cym      INTEGER :: IZELLO, NTIMT, IOB, I1, I2, ISW, 
+cym     .           IHELP, IZELL, NTMS, MXSF, NTMZ, NRMSRF,
+cym     .           ICOS, IERR, IRS, NEWCEL, ITET, IT, IL, IS, NRI, MS, IR,
+cym     .           ICALL, ITFRST, ISTS, MMSURF, J, K, I, JPOL,
+cym     .           MPOL, IPOLGO, EIRENE_LEARC2, IP, ICELLR, MSAVE, ITRI,
+cym     .           ISTS_CELL, ISD, nclpb, icts
 !pb      INTEGER, ALLOCATABLE, SAVE :: ITRINO(:), ISIDNO(:)
 !pb      INTEGER, SAVE :: NSTS_CELL
-#ifdef TRACE
-      INTEGER :: ICOUP
-#endif
-      INTEGER, ALLOCATABLE :: ITRINO(:), ISIDNO(:)
-      INTEGER :: NSTS_CELL
+cym #ifdef TRACE
+cym      INTEGER :: ICOUP
+cym #endif
+cym      INTEGER, ALLOCATABLE :: ITRINO(:), ISIDNO(:)
+cym      INTEGER :: NSTS_CELL
+cym
+cym      LOGICAL :: LHITP(N2NDPLGS) ! for finding re-entry into levgeo=3 grid
+cym      LOGICAL :: LCTS(4)
+cym      LOGICAL :: LNGB1, LNGB2, LNGB3, LNGB4,
+cym     .           LCT1, LCT2, LCT3, LCT4, EIRENE_BITGET
+cym
+cym      EQUIVALENCE (LCTS(1),LCT1), (LCTS(2),LCT2),
+cym     .            (LCTS(3),LCT3), (LCTS(4),LCT4)
+cym      EQUIVALENCE (PTS(1),PT1),   (PTS(2),PT2),
+cym     .            (PTS(3),PT3),   (PTS(4),PT4)
+cym
+cym      DATA ITSIDE /1,2,3,
+cym     .             1,4,2,
+cym     .             2,4,3,
+cym     .             3,4,1/
+cym      DATA IRICH / 1, -3,
+cym     .             4,  1,
+cym     .             5,  2,
+cym     .             6,  3 /
+cym      DATA ICALL /0/
+cym      DATA ITFRST /0/
 
-      LOGICAL :: LHITP(N2NDPLGS) ! for finding re-entry into levgeo=3 grid
-      LOGICAL :: LCTS(4)
-      LOGICAL :: LNGB1, LNGB2, LNGB3, LNGB4,
-     .           LCT1, LCT2, LCT3, LCT4, EIRENE_BITGET
-
-      EQUIVALENCE (LCTS(1),LCT1), (LCTS(2),LCT2),
-     .            (LCTS(3),LCT3), (LCTS(4),LCT4)
-      EQUIVALENCE (PTS(1),PT1),   (PTS(2),PT2),
-     .            (PTS(3),PT3),   (PTS(4),PT4)
-
-      DATA ITSIDE /1,2,3,
-     .             1,4,2,
-     .             2,4,3,
-     .             3,4,1/
-      DATA IRICH / 1, -3,
-     .             4,  1,
-     .             5,  2,
-     .             6,  3 /
-      DATA ICALL /0/
-      DATA ITFRST /0/
-
+cym is this one really necessary ?
       SAVE
 C
 #ifdef TRACE
       IF (NLTRC) THEN
+!$OMP CRITICAL
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) 'TIMER, INIT.: NRCELL,NLSRFX,MRSURF,TT,TL'
         WRITE (iunout,*)                NRCELL,NLSRFX,MRSURF,TT,TL
         WRITE (iunout,*) '              NPCELL,NLSRFY,MPSURF'
         WRITE (iunout,*)                NPCELL,NLSRFY,MPSURF
+!$OMP END CRITICAL
       ENDIF
 #endif
 C
@@ -249,8 +342,10 @@ C  TRY TO FIND REENTRY SURFACE. CHECK ONLY NON-DEFAULT RADIAL SURFACES
       ENDIF
 #ifdef TRACE
       IF (NLTRC) THEN
+!$OMP CRITICAL
         WRITE (iunout,*) 'TIMER, OUT: PT,MRSURF,NINCX'
         WRITE (iunout,*)              PT,MRSURF,NINCX
+!$OMP END CRITICAL
       ENDIF
 #endif
       RETURN
@@ -267,8 +362,10 @@ C****CIRCULAR MESH   (CONCENTRIC)
 C
 #ifdef TRACE
       IF (NLTRC) THEN
+!$OMP CRITICAL
         WRITE (iunout,*) 'NJUMP,NINCX,NRCELL '
         WRITE (iunout,*)  NJUMP,NINCX,NRCELL
+!$OMP END CRITICAL
       ENDIF
 #endif
       IF (NJUMP.EQ.0) THEN
@@ -499,7 +596,9 @@ C
       IF (NLPOL) IPOLGN=EIRENE_LEARC2(XTEST,YTEST,NRCELL,NPANU,'TIMER')
 #ifdef TRACE
       IF (NLTRC)
+!$OMP CRITICAL
      .  WRITE (iunout,*) 'IPOLGN,NRCELL FROM TIMER ',IPOLGN,NRCELL
+!$OMP END CRITICAL
 #endif
       IF (NRI.EQ.0) THEN
         RETURN
@@ -525,7 +624,11 @@ C  POLYGON MESH
 C
       IF (NRCELL.NE.0) THEN
 #ifdef TRACE
-        IF (NLTRC) WRITE (iunout,*) ' TIMER: IN NEIGHBOR PART'
+        IF (NLTRC) THEN
+!$OMP CRITICAL
+          WRITE (iunout,*) ' TIMER: IN NEIGHBOR PART'
+!$OMP END CRITICAL
+        ENDIF
 #endif
         LNGB1=.TRUE.
         LNGB2=.TRUE.
@@ -570,10 +673,14 @@ C
 C  CALCULATE INTERSECTIONS OF FLIGHT WITH CELL BOUNDARIES
  6001   CONTINUE
 #ifdef TRACE
-        IF (NLTRC) WRITE (iunout,*) ' IR,IP,LNGB1,LNGB2,LNGB3,LNGB4',
+        IF (NLTRC) THEN
+!$OMP CRITICAL
+          WRITE (iunout,*) ' IR,IP,LNGB1,LNGB2,LNGB3,LNGB4',
      .                           IR,IP,LNGB1,LNGB2,LNGB3,LNGB4
-        IF (NLTRC) WRITE (iunout,*) ' velx, vely, velz ',
+          WRITE (iunout,*) ' velx, vely, velz ',
      .                           velx, vely, velz
+!$OMP END CRITICAL
+        ENDIF
 #endif
         T1=-1.D30
         T2=-1.D30
@@ -620,9 +727,13 @@ C  TO THE BOUNDARY OF THE PRESENT CELL
         LCT3 = LCT3 .AND. PT3.GE.0.D0
         LCT4 = LCT4 .AND. PT4.GE.0.D0
 #ifdef TRACE
-        IF (NLTRC) WRITE (iunout,*) ' LCT1,LCT2,LCT3,LCT4 ',
+        IF (NLTRC) THEN
+!$OMP CRITICAL
+          WRITE (iunout,*) ' LCT1,LCT2,LCT3,LCT4 ',
      .                           LCT1,LCT2,LCT3,LCT4
-        IF (NLTRC) WRITE (iunout,*) ' PT1,PT2,PT3,PT4 ',PT1,PT2,PT3,PT4
+          WRITE (iunout,*) ' PT1,PT2,PT3,PT4 ',PT1,PT2,PT3,PT4
+!$OMP END CRITICAL
+        ENDIF
 #endif
 
         ICTS=COUNT(LCTS)
@@ -644,7 +755,11 @@ C  THIS MAY BE A RESULT OF NUMERICAL ROUNDING ERRORS,
 C  SO SOME FURTHER ATTEMPTS WILL BE MADE BELOW.....
         END IF
 #ifdef TRACE
-        IF (NLTRC) WRITE (iunout,*) ' T = ',T
+        IF (NLTRC) THEN
+!$OMP CRITICAL
+          WRITE (iunout,*) ' T = ',T
+!$OMP END CRITICAL
+        ENDIF
 #endif
 
 C  IF INTERSECTION WITH POLOIDAL BOUNDARY CONTINUE WITH NEIGHBORING CELL
@@ -711,14 +826,21 @@ C  NO INTERSECTION FOUND
           IF (NLSRFX.AND.NJUMP.EQ.0) THEN
 C  PLAY SAVE: TRY ONCE AGAIN, IF PARTICLE ON RAD. SURFACE
 #ifdef TRACE
-            IF (NLTRC)
-     .        WRITE (iunout,*)
+            IF (NLTRC) THEN
+!$OMP CRITICAL
+              WRITE (iunout,*)
      .        ' NO INTERSECTION IN TIMER. TRY ONCE AGAIN '
+!$OMP END CRITICAL
+            ENDIF
 #endif
             MMSURF=MSURF
             IF (MSURF.GT.NLIM) MMSURF=-MSURF+NLIM
 #ifdef TRACE
-            IF (NLTRC) WRITE (iunout,*) 'NPANU, MSURF ',NPANU,MMSURF
+            IF (NLTRC) THEN
+!$OMP CRITICAL
+              WRITE (iunout,*) 'NPANU, MSURF ',NPANU,MMSURF
+!$OMP END CRITICAL
+            ENDIF
 #endif
             IF (.NOT.LNGB1) THEN
               ICELLR=IR-1
@@ -742,14 +864,21 @@ C  PLAY SAVE: TRY ONCE AGAIN, IF PARTICLE ON RAD. SURFACE
           ELSEIF (NLSRFY.AND.NJUMP.EQ.0) THEN
 C  PLAY SAVE: TRY ONCE AGAIN, IF PARTICLE ON POL. SURFACE
 #ifdef TRACE
-            IF (NLTRC)
-     .        WRITE (iunout,*)
+            IF (NLTRC) THEN
+!$OMP CRITICAL
+              WRITE (iunout,*)
      .        ' NO INTERSECTION IN TIMER. TRY ONCE AGAIN '
+!$OMP END CRITICAL
+            ENDIF
 #endif
             MMSURF=MSURF
             IF (MSURF.GT.NLIM) MMSURF=-MSURF+NLIM
 #ifdef TRACE
-            IF (NLTRC) WRITE (iunout,*) 'NPANU, MSURF ',NPANU,MMSURF
+            IF (NLTRC) THEN
+!$OMP CRITICAL
+              WRITE (iunout,*) 'NPANU, MSURF ',NPANU,MMSURF
+!$OMP END CRITICAL
+            ENDIF
 #endif
             IF (.NOT.LNGB4) THEN
               IP=NGHPLS(4,IR,MPSURF)
@@ -776,12 +905,14 @@ C  PLAY SAVE: TRY ONCE AGAIN, IF PARTICLE ON POL. SURFACE
         NJUMP=1
 #ifdef TRACE
         IF (NLTRC) THEN
+!$OMP CRITICAL
           WRITE (iunout,*) ' PT,MRSURF,NINCX,IPOLGN ',
      .                       PT,MRSURF,NINCX,IPOLGN
           WRITE (iunout,*) 'NCOUP ',NCOUP
           DO ICOUP=1,NCOUP
             WRITE (iunout,*) 'ICOUP,ALPD(ICOUP) ',ICOUP,ALPD(ICOUP)
           ENDDO
+!$OMP END CRITICAL
         ENDIF
 #endif
         RETURN
@@ -1095,9 +1226,12 @@ C PARTICLE OUTSIDE STANDARD MESH IN CELL NACELL, NRCELL=0
             T=(AY+V*RICHTY)/VELY
           ENDIF
 #ifdef TRACE
-          IF (NLTRC)
-     .      WRITE (IUNOUT,*) ' INTERSECTION WITH TRIANGLE ',IZELL,
+          IF (NLTRC) THEN
+!$OMP CRITICAL
+            WRITE (IUNOUT,*) ' INTERSECTION WITH TRIANGLE ',IZELL,
      .                       ' SIDE ',J,' FOUND, PT,T = ',PT,T
+!$OMP END CRITICAL
+          ENDIF
 #endif
           IF ((T .GT. 0.) .AND. ( T < PT)) THEN
             PT = T
@@ -1114,10 +1248,13 @@ C PARTICLE OUTSIDE STANDARD MESH IN CELL NACELL, NRCELL=0
         IPOLGN = ISIDNO(ISTS_CELL)
         NINCX = ITRINO(ISTS_CELL)
 #ifdef TRACE
-        IF (NLTRC)
-     .   WRITE (iunout,'(A,I6,1X,I6,1X,1P,1E14.7,1X,I6,1X,I4)')
+        IF (NLTRC) THEN
+!$OMP CRITICAL
+         WRITE (iunout,'(A,I6,1X,I6,1X,1P,1E14.7,1X,I6,1X,I4)')
      .    ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
      .      NRCELL,MRSURF,PT,NINCX,IPOLGN
+!$OMP END CRITICAL
+        ENDIF
 #endif
       END IF
 
@@ -1142,9 +1279,11 @@ C       ELSEIF (NJUMP.EQ.1) THEN
         ENDIF
 #ifdef TRACE
         IF (NLTRC) THEN
+!$OMP CRITICAL
           WRITE (iunout,*) ' IZELL,IPOLGO ',IZELL,IPOLGO
           WRITE (iunout,*) ' X0,Y0,Z0 ',X0,Y0,Z0
           WRITE (iunout,*) ' VELX,VELY,VELZ ',VELX,VELY,VELZ
+!$OMP END CRITICAL
         ENDIF
 #endif
 
@@ -1218,6 +1357,7 @@ C
                   ZZ = ZZ + T * VELZ
 #ifdef TRACE
                   if (nltrc) then
+!$OMP CRITICAL
                      write(iunout,*) ' i1, i2 ',i1,i2
                      write(iunout,'(1x,a,3es14.7)') ' velxyz ',
      .                     velx,vely,velz
@@ -1230,7 +1370,8 @@ C
                      write(iunout,'(1x,a,3es14.7)') ' b1, b2, b3 ',b(:)
                      write (iunout,'(1x,a,3es14.7)') ' det, xmu ',
      .                     det,xmu
-                  end IF
+!$OMP END CRITICAL
+                  end if
 #endif
                   TM = TM + T
                   TIMTET = TM
@@ -1238,8 +1379,10 @@ C  NUMMER DER GESCHNITTENEN SEITE DES ALTEN DREIECKS
                   NTIMT = J
 #ifdef TRACE
                   IF (NLTRC) THEN
+!$OMP CRITICAL
                     WRITE (iunout,*) 'IZELL,XX,YY,ZZ,J ',
      .                                IZELL,XX,YY,ZZ,J
+!$OMP END CRITICAL
                   ENDIF
 #endif
 C  ZELLENNUMMER DES NEUEN DREIECKS
@@ -1251,8 +1394,10 @@ C  SEITENNUMMER DES NEUEN DREIECKS
                   IPOLGO = NTSEITE(J,IZELLO)
 #ifdef TRACE
                   IF (NLTRC) THEN
+!$OMP CRITICAL
                     WRITE(iunout,*) 'GEHE IN ZELLE ',IZELL,' TM= ',TM
                     WRITE(iunout,*) 'DORT AUF SEITE IPOLGO ',IPOLGO
+!$OMP END CRITICAL
                   ENDIF
 #endif
                   GOTO 11050
@@ -1263,8 +1408,11 @@ C  SEITENNUMMER DES NEUEN DREIECKS
         END DO
 C
 #ifdef TRACE
-        IF (NLTRC)
-     .    WRITE (iunout,*) ' NO INTERSECTION FOUND IN TETRAHEDRON '
+        IF (NLTRC) THEN
+!$OMP CRITICAL
+          WRITE (iunout,*) ' NO INTERSECTION FOUND IN TETRAHEDRON '
+!$OMP END CRITICAL
+        ENDIF
 #endif
         PT=1.D30
         NINCX=0
@@ -1307,10 +1455,13 @@ C  ON NON-DEFAULT SURFACE (ADD. OR STD.) ISTS=INMTI(IPOLGN,NRCELL)
           GOTO 9999
         ENDIF
 #ifdef TRACE
-        IF (NLTRC)
-     .   WRITE (iunout,'(A,I6,1X,I6,1X,1P,1E14.7,1X,I6,1X,I4)')
+        IF (NLTRC) THEN
+!$OMP CRITICAL
+         WRITE (iunout,'(A,I6,1X,I6,1X,1P,1E14.7,1X,I6,1X,I4)')
      .    ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
      .      NRCELL,MRSURF,PT,NINCX,IPOLGN
+!$OMP END CRITICAL
+        ENDIF
 #endif
 
         RETURN
@@ -1447,8 +1598,10 @@ C  SEITENNUMMER DES NEUEN DREIECKS
           IPOLGO = NTMS
 #ifdef TRACE
           IF (NLTRC) THEN
+!$OMP CRITICAL
             WRITE(iunout,*) 'OUTSIDE; GEHE IN ZELLE ',NTMZ,' TM= ',TM
             WRITE(iunout,*) 'DORT AUF SEITE IPOLGO ',IPOLGO
+!$OMP END CRITICAL
           ENDIF
 #endif
         END IF
@@ -1459,10 +1612,13 @@ C  SEITENNUMMER DES NEUEN DREIECKS
         IPOLGN=NTMS
         NINCX=NTMZ-NRCELL
 #ifdef TRACE
-        IF (NLTRC)
-     .   WRITE (iunout,'(A,I6,1X,I6,1X,1P,1E14.7,1X,I6,1X,I4)')
+        IF (NLTRC) THEN
+!$OMP CRITICAL
+         WRITE (iunout,'(A,I6,1X,I6,1X,1P,1E14.7,1X,I6,1X,I4)')
      .    ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
      .      NRCELL,MRSURF,PT,NINCX,IPOLGN
+!$OMP END CRITICAL
+        ENDIF
 #endif
       END IF
 
@@ -1502,8 +1658,10 @@ C  NJUMP=3:  INTERNAL GRID SURFACE, STOP AND GO.
 
 #ifdef TRACE
       IF (NLTRC) THEN
+!$OMP CRITICAL
         WRITE (iunout,*) 'TIMER, LEVGEO=10, IN: NJUMP,TIM,ZT'
         WRITE (iunout,*)                        NJUMP,TIM,ZT
+!$OMP END CRITICAL
       ENDIF
 #endif
 
@@ -1550,3 +1708,5 @@ C
       WRITE (iunout,*) 'NPANU ', NPANU
       CALL EIRENE_EXIT_OWN(1)
       END
+      
+      END MODULE EIRMOD_TIMER

@@ -26,7 +26,10 @@ C
       USE EIRMOD_COUTAU
       USE EIRMOD_CLGIN
       USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
-
+CYM FOLLOWING PGI COMPILATION
+      USE EIRMOD_ADDCOL
+      USE EIRMOD_STDCOL    
+  
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: VLX,VLY,VLZ
       INTEGER,  INTENT(IN) :: IC_PART ! = IC_ION OR IC_NEUT, FROM CALLING PROGRAMS FOLION, FOLNEUT, RESP.
@@ -44,10 +47,14 @@ C
 c  particle enters the static loop, NFOL$(ISPZ)=-1
 
       IF (IC_PART.EQ.1.AND.NLTRC.AND.TRCHST) THEN !FIRST ENTRY TO STATIC LOOP
+!$OMP CRITICAL
         WRITE (iunout,*) 'TRAJECTORY ENTERS STATIC LOOP, ITYP=', ITYP
         CALL EIRENE_CHCTRC(X0,Y0,Z0,0,21)
+!$OMP END CRITICAL
       ELSEIF (NLTRC.AND.TRCHST.and.ic_part.le.10) THEN
+!$OMP CRITICAL
         WRITE (iunout,*) 'neut static generation ic_part=',ic_part
+!$OMP END CRITICAL
       ENDIF
  
 C***********************************************************************

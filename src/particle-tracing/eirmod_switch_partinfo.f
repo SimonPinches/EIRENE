@@ -10,7 +10,7 @@
       USE EIRMOD_CTRCEI
       USE EIRMOD_COMSOU
       USE EIRMOD_SECOND_OWN, ONLY: eirene_second_own
-
+!$ use OMP_LIB
        
       IMPLICIT NONE
       real(dp), allocatable, save :: time_array(:,:,:)
@@ -21,6 +21,9 @@
      .                 imol_old=-1,
      .                 iion_old=-1,
      .                 ipls_old=-1
+     
+!$omp  threadprivate(istra_old,ityp_old,iphot_old,iatm_old,imol_old,
+!$omp&   iion_old,ipls_old)     
 
       PRIVATE
 

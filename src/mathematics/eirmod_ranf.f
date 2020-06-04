@@ -2,6 +2,7 @@
       USE EIRMOD_PRECISION
       USE EIRMOD_CLOGAU
       USE EIRMOD_COMPRT, ONLY: IUNOUT
+      use eirmod_h1rnm
       IMPLICIT NONE
       PRIVATE
 
@@ -10,6 +11,12 @@
      .          ranget_eirene 
 
       integer, save :: ifirst_ranf=0, ifirst_ranset=0
+cccccccccccccccccccccccccc
+cym common /cmem/ replaced
+cccccccccccccccccccccccccc
+      integer :: iseed
+
+!$omp threadprivate(ifirst_ranf,ifirst_ranset,iseed)
  
       CONTAINS
 
@@ -56,9 +63,9 @@ cdr  if nloldran = T:  H1RN generator is used
 C
       USE EIRMOD_PRECISION
       implicit none
-      integer :: iseed
-      common /cmem/ iseed
-      real(dp) :: ra, ranf_eirene, h1rn
+cym      integer :: iseed
+cym      common /cmem/ iseed
+      real(dp) :: ra, dummy, ranf_eirene !, h1rn
 
 cdr  parameters for SURAND  (IBM, 1968)
       INTEGER D2P32M
@@ -72,7 +79,7 @@ cdr April 2017:  h1rn is a variant of RANMAR. It has period 2**144, if properly 
 cdr              initialization is by a 32 bit integer
 cdr here: initialization enforced with seeds 0<= iseed<=900.000.000 in subr. ranset.
 cdr       for each such seed a different sequence of average length 10**30 is produced.
-         ranf_eirene=h1rn()
+         ranf_eirene=h1rn(dummy)
 
       ELSE
 
@@ -101,16 +108,6 @@ c  save the seed for next random number.
 c  done
       end function ranf_eirene
 
-C     The following ENTRY is for reinitialization of EIRENE
-
-      FUNCTION ranf_eirene_reinit()
-      real(dp) :: ranf_eirene_reinit
-cdr   indicate that random number generator is not initialized.
-      ifirst_ranf = 0
-      ranf_eirene_reinit = 0.D0
-      return
-      end FUNCTION ranf_eirene_reinit
-
 cdr   initialize random number generator, set the random number seed "iseed",
 cdr   store that in Common CMEM, and initialize random generator.
 c
@@ -130,9 +127,9 @@ c  if that happens in a later call:  error exit.
       implicit none
       integer, intent(in) :: ise
 cdr   integer :: iseed1, iseed2, ! older version of h1rn with two seeds
-      integer :: iseed
+cym      integer :: iseed
 cdr  status of RANMAR (H1RN) generator is stored in Common RASET (after call to H1RNIN)
-      common /cmem/ iseed
+cym      common /cmem/ iseed
 
       IF (NLOLDRAN) THEN
 cdr there are various variants of initializer RMARIN, taking either
@@ -188,15 +185,6 @@ cdr  number returned from ranf() will be based. This seed is also saved in Commo
 
       end function ranset_eirene
 
-C     The following ENTRY is for reinitialization of EIRENE
-
-      FUNCTION ranset_eirene_reinit()
-      implicit none
-      integer :: ranset_eirene_reinit
-      ifirst_ranset = 0
-      ranset_eirene_reinit = 0
-      return
-      end FUNCTION ranset_eirene_reinit
 
 cdr   Routine ranget is used to provide a new seed derived
 cdr   in a deterministic (reproducible) way from a current random number generatur status
@@ -227,8 +215,11 @@ c
 
       implicit none
       integer, intent(in) :: ise
-      integer :: iseed,idumran
-      common /cmem/ iseed
+      integer :: idumran
+cym cccccccccccccccccccccccccccccccccc
+cym      integer :: iseed,idumran
+cym      common /cmem/ iseed
+cym cccccccccccccccccccccccccccccccccc
       real(dp) :: ran
 
       IF (NLOLDRAN) THEN
@@ -267,5 +258,26 @@ c        write (iunout,*) 'ranget  ',ranget_eirene,ISEED,ISE
 
       return
       end function ranget_eirene
+
+C     The following ENTRY is for reinitialization of EIRENE
+
+      FUNCTION ranset_eirene_reinit()
+      implicit none
+      integer :: ranset_eirene_reinit
+      ifirst_ranset = 0
+      ranset_eirene_reinit = 0
+      return
+      end FUNCTION ranset_eirene_reinit
+
+C     The following ENTRY is for reinitialization of EIRENE
+
+      FUNCTION ranf_eirene_reinit()
+      real(dp) :: ranf_eirene_reinit
+cdr   indicate that random number generator is not initialized.
+      ifirst_ranf = 0
+      ranf_eirene_reinit = 0.D0
+      return
+      end FUNCTION ranf_eirene_reinit
+
       
       END MODULE EIRMOD_RANF

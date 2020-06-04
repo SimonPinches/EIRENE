@@ -30,8 +30,14 @@ C
 C  DATA FOR PHYSICAL SPUTTERING: IDENTIFY TARGET-PROJECTILE
 C  target index 1-11: data read from file: SPUTER, fort.33
 C  target index 0   : data evaluated "on the fly"
-      REAL(DP), SAVE :: ETH(28,0:11),Q(28,0:11),M2M1(28,0:11),ES(28)
-      REAL(DP), SAVE :: ETF(28,0:11)
+cym -> public because copyin needed
+      REAL(DP), dimension(28,0:11),PUBLIC, SAVE :: ETH,Q,
+     .                         M2M1,ETF
+      REAL(DP), dimension(28), PUBLIC, SAVE :: ES
+
+
+cym these will need to be copyin (initialized in sputr0)
+!$OMP THREADPRIVATE(ETH,Q,M2M1,ES,ETF)
 
       REAL(DP), SAVE :: RTAMU(28),ZTAR(28)
       REAL(DP), SAVE :: BT1 = 7.0, BT2 = -0.54, BT3 = 0.15, BT4 = 1.12
@@ -65,6 +71,10 @@ C  NTARG:  TARGET IDENTIFIER
 
       REAL(DP), SAVE :: RM1,RM2,Z1,Z2,Z123,Z223,ES23,
      .                  FM2M1,GM2M1,GZ1Z213,GZ1Z212,XETF
+
+!$OMP THREADPRIVATE(RM1,RM2,Z1,Z2,Z123,Z223,ES23,
+!$OMP&               FM2M1,GM2M1,GZ1Z213,GZ1Z212,XETF)
+
       REAL(DP), SAVE :: TWOTHIRD,ONETHIRD,ONESIXTH,FIVESIXTH
 
 C  CHEMICAL EROSION DATA
@@ -76,7 +86,7 @@ C  CHEMICAL EROSION DATA
      .                              ISPZSP_DEF(:)
       INTEGER, SAVE :: ICOUNT
 
-
+!$OMP THREADPRIVATE(ICOUNT)
 
 
       CONTAINS

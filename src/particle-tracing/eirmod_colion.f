@@ -69,26 +69,9 @@ cdr          comments for further unification of colatm,colmol,colion routines
 cdr          P2NDS --> P2NEI
 
 
+      MODULE EIRMOD_COLION
 
 
-      SUBROUTINE EIRENE_COLION(CFLAG,COLTYP)
-C
-C  SAMPLE FROM COLLISION KERNEL C
-C
-C  INPUT:  COMPRT, COMMON BLOCK, CONTAINING ACTUAL PARTICLE PARAMETERS
-C          CFLAG,  FLAG FOR POST-COLLISION KINETICS
-C  OUTPUT: COMPRT, MODIFIED TO POST-COLLISION PARTICLE PARAMETERS
-C          COLTYP, FLAG: =1 CONTINUE IN CALLING ROUTINE
-C                           (FOLNEUT OR FOLION)
-C                        =2 EXIT FROM CALLING ROUTINE
-C                           EITHER ABSORPTION, OR
-C                           TRANSITION NEUTRAL-->ION (IF CALLED
-C                           BY FOLNEUT), OR
-C                           TRANSITION ION-->NEUTRAL (IF CALLED
-C                           BY FOLION)
-C  LGPART: TRUE,  TRAJECTORY CONTINUES, AT LEAST FOR POST-COLL. SCORING.
-C  LGPART: FALSE, TRAJECTORY STOPS, NO FURTHER SCORING
-C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -115,8 +98,10 @@ C
 
       IMPLICIT NONE
 
-      REAL(DP), INTENT(IN) :: CFLAG(7,MSTOR0)
-      REAL(DP), INTENT(OUT) :: COLTYP
+      PRIVATE
+      
+      PUBLIC :: EIRENE_COLION
+
       REAL(DP) :: DUMT(3), DUMV(3)
       REAL(DP) :: ZEP1, SIGSUM, WGHTO, FRSTP, PTOT, E0O, VELXO,
      .          VELYO, VELZO, BX, BY, BZ, V0_PARBO, VELO, SCNDP,
@@ -133,7 +118,7 @@ c    .
      .           IRCX, IREI, IRPI, IREL,
      .           IBGK, IP, NFLAG,
      .           IATMN, IPLSN, NCLLO, IPLSV,  I, J, IPL
-      INTEGER :: NEII_RED,LGEI_RED(0:NREI)
+
 
 Cdr  additional arrays for ANALOG CASCADE and SPLITTING AT COLLISIONS.
 Cdr (should be set in initialization phase, not here)
@@ -141,6 +126,16 @@ CDR  check: are the corresponding arrays PATEI,PMLEI, PIOEI real
 CDR         or integer (1/2 particle possible?)
       INTEGER, ALLOCATABLE :: NAMIEI(:),NAMIPI(:)
 
+cym FP, FLTEST,RMMIO IRPH removed during merge 
+!$OMP THREADPRIVATE (dumt,dumv,
+!$OMP& ZEP1, SIGSUM, WGHTO, FRSTP, PTOT, E0O, VELXO,
+!$OMP& VELYO, VELZO, BX, BY, BZ, V0_PARBO, VELO, SCNDP,
+!$OMP& EDEL, VDEL, SIG, V0_PARB, ZEP3, VELQ, VX,
+!$OMP& VY, VZ, VPLASP, RMAIO, RMIIO, BF, ZEP,
+!$OMP& SIG_ELIM, SIG_TOT_N, SIG_TOT_O, SIG_TEST,
+!$OMP& IICX, IIEI, IIPI, IIEL,IOLD, NOLD,IRCX, IREI, IRPI, IREL,
+!$OMP& IBGK, IP, NFLAG, IATMN, IPLSN, NCLLO, IPLSV,  I, J, IPL,
+!$OMP& NAMIEI,NAMIPI)
 
 csw add n 2lines
 cdr   INTEGER :: kk,updf,t1
@@ -150,6 +145,33 @@ ctk      real(dp), external :: ranf_eirene
 
       SAVE
 
+      contains
+
+      SUBROUTINE EIRENE_COLION(CFLAG,COLTYP)
+        
+      REAL(DP), INTENT(IN) :: CFLAG(7,MSTOR0)
+      REAL(DP), INTENT(OUT) :: COLTYP
+      INTEGER :: NEII_RED,LGEI_RED(0:NREI)
+       
+C       
+C  SAMPLE FROM COLLISION KERNEL C
+C
+C  INPUT:  COMPRT, COMMON BLOCK, CONTAINING ACTUAL PARTICLE PARAMETERS
+C          CFLAG,  FLAG FOR POST-COLLISION KINETICS
+C  OUTPUT: COMPRT, MODIFIED TO POST-COLLISION PARTICLE PARAMETERS
+C          COLTYP, FLAG: =1 CONTINUE IN CALLING ROUTINE
+C                           (FOLNEUT OR FOLION)
+C                        =2 EXIT FROM CALLING ROUTINE
+C                           EITHER ABSORPTION, OR
+C                           TRANSITION NEUTRAL-->ION (IF CALLED
+C                           BY FOLNEUT), OR
+C                           TRANSITION ION-->NEUTRAL (IF CALLED
+C                           BY FOLION)
+C  LGPART: TRUE,  TRAJECTORY CONTINUES, AT LEAST FOR POST-COLL. SCORING.
+C  LGPART: FALSE, TRAJECTORY STOPS, NO FURTHER SCORING
+C
+
+             
 C  INCIDENT SPECIES: IOLD
       VELXO=VELX
       VELYO=VELY
@@ -249,7 +271,11 @@ C                 POINTED TO EI-PROCESSES
 C
 C  ELECTRON IMPACT COLLISION:
 C
-        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,2)
+        IF (NLTRC) THEN
+!$OMP CRITICAL              
+          CALL EIRENE_CHCTRC(X0,Y0,Z0,16,2)
+!$OMP END CRITICAL
+        ENDIF
 C
 C  FIND TYPE OF ELECTR. IMPACT COLLISION PROCESS: IREI
         DO 440 IIEI=1,NEII_RED-1
@@ -274,7 +300,10 @@ C  PRE-COLLISION ESTIMATOR FOR EIIO,
 C  PRE- AND POST-COLLISION ESTIMATOR FOR EIPL AND EIEL
         IF (IESTEI(IREI,3).NE.0) THEN
 C  score loss of incoming test particle energy
-          IF (LEIIO) EIIO(NCELL)=EIIO(NCELL)-WEIGHT*E0
+          IF (LEIIO) THEN
+!$OMP ATOMIC
+             EIIO(NCELL)=EIIO(NCELL)-WEIGHT*E0
+          ENDIF
 
 cdr EIPL, EIEL       :  SCORE NET CHANGES HERE.
 cdr EIAT, EIML, EIIO :  SCORE EXACT GAINS LATER.
@@ -285,12 +314,17 @@ cdr: this is incorrect. esigei must be split into ipl secondaries
 cdr  it only happens to be correct if the post-collision bulk species are all the same (=ipl),
 cdr  because then esigei is the total for this species.
               IPL=IPPLEI(IREI,IP)
+!$OMP ATOMIC WRITE
               LOGPLS(IPL,ISTRA)=.TRUE.
+!$OMP ATOMIC
               EIPL(IPL,NCELL)=EIPL(IPL,NCELL)+WEIGHT*ESIGEI(IREI,4)
               LMETSP(NSPAMI+IPL)=.TRUE.
             END DO
           END IF
-          IF (LEIEL) EIEL(NCELL)=EIEL(NCELL)+WEIGHT*ESIGEI(IREI,5)
+          IF (LEIEL) THEN
+!$OMP ATOMIC
+            EIEL(NCELL)=EIEL(NCELL)+WEIGHT*ESIGEI(IREI,5)
+          ENDIF
         ENDIF
 C
 C  ABSORPTION (INTO BULK SPECIES) IS SUPPRESSED
@@ -402,17 +436,26 @@ C  UPDATE POST-COLLISION ESTIMATORS CONTRIBUTION TO EIAT;EIML;EIIO
 C         ACCOUNT FOR POST-COLLISION CONTRIBUTIONS
         IF (ITYP.EQ.1) THEN
           IF (IESTEI(IREI,3).NE.0) THEN
-            IF (LEIAT) EIAT(NCELL)=EIAT(NCELL)+WEIGHT*E0
+            IF (LEIAT) THEN
+!$OMP ATOMIC
+              EIAT(NCELL)=EIAT(NCELL)+WEIGHT*E0
+            ENDIF
           ENDIF
           COLTYP=2
         ELSEIF (ITYP.EQ.2) THEN
           IF (IESTEI(IREI,3).NE.0) THEN
-            IF (LEIML) EIML(NCELL)=EIML(NCELL)+WEIGHT*E0
+            IF (LEIML) THEN
+!$OMP ATOMIC
+              EIML(NCELL)=EIML(NCELL)+WEIGHT*E0
+            ENDIF
           ENDIF
           COLTYP=2
         ELSEIF (ITYP.EQ.3) THEN
           IF (IESTEI(IREI,3).NE.0) THEN
-            IF (LEIIO) EIIO(NCELL)=EIIO(NCELL)+WEIGHT*E0
+            IF (LEIIO) THEN
+!$OMP ATOMIC
+              EIIO(NCELL)=EIIO(NCELL)+WEIGHT*E0
+            ENDIF
           ENDIF
           COLTYP=1
         ENDIF
@@ -423,7 +466,11 @@ C
 C
 C  CHARGE-EXCHANGE:
 C
-        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,6)
+        IF (NLTRC) THEN
+!$OMP CRITICAL              
+          CALL EIRENE_CHCTRC(X0,Y0,Z0,16,6)
+!$OMP END CRITICAL
+        ENDIF
 C
 C   FIND PROCESS IRCX AND SPECIES INDEX IPLS OF INCIDENT BULK ION
         SIGSUM=SIGEIT
@@ -557,41 +604,59 @@ C
 C  IATMN: ATOM SPECIES AFTER CX
               IATMN=IATM
               IF (LPIIO) THEN
+!$OMP ATOMIC
                 PIIO(IOLD,NCELL) =PIIO(IOLD,NCELL)-WGHTO
                 LMETSP(NSPAM+IOLD)=.TRUE.
               END IF
               IF (LPIAT) THEN
+!$OMP ATOMIC
                 PIAT(IATMN,NCELL)=PIAT(IATMN,NCELL)+WEIGHT
                 LMETSP(NSPH+IATMN)=.TRUE.
               END IF
               IF (LPIPL) THEN
+!$OMP ATOMIC
                 PIPL(IPLS,NCELL) =PIPL(IPLS,NCELL)-WEIGHT
                 LMETSP(NSPAMI+IPLS)=.TRUE.
               END IF
-              IF (LPIEL) PIEL(NCELL)      =PIEL(NCELL)-WEIGHT
+              IF (LPIEL) THEN
+!$OMP ATOMIC
+                PIEL(NCELL)      =PIEL(NCELL)-WEIGHT
+              ENDIF
               IF (N2NDX(IRCX,1).EQ.4) THEN
 C  IPLSN: ION SPECIES AFTER CX
                 IPLSN=N2NDX(IRCX,2)
                 IF (LPIPL) THEN
+!$OMP ATOMIC
                   PIPL(IPLSN,NCELL)=PIPL(IPLSN,NCELL)+WGHTO
                   LMETSP(NSPAMI+IPLSN)=.TRUE.
                 END IF
-                IF (LPIEL) PIEL(NCELL)      =PIEL(NCELL)+WGHTO
+                IF (LPIEL) THEN
+!$OMP ATOMIC
+                  PIEL(NCELL)      =PIEL(NCELL)+WGHTO
+                ENDIF
               ELSEIF (N2NDX(IRCX,1).NE.4) THEN
                 GOTO 999
               ENDIF
             ENDIF
 c  UPDATE collision estimator for CX energy exchange tallies
             IF (IESTCX(IRCX,3).NE.0) THEN
-              IF (LEIIO) EIIO(NCELL)=EIIO(NCELL)-E0O*WGHTO
-              IF (LEIAT) EIAT(NCELL)=EIAT(NCELL)+E0*WEIGHT
+              IF (LEIIO) THEN
+!$OMP ATOMIC
+                EIIO(NCELL)=EIIO(NCELL)-E0O*WGHTO
+              ENDIF
+              IF (LEIAT) THEN
+!$OMP ATOMIC
+                EIAT(NCELL)=EIAT(NCELL)+E0*WEIGHT
+              ENDIF
               IF (LEIPL) THEN
+!$OMP ATOMIC
                 EIPL(IPLS,NCELL)=EIPL(IPLS,NCELL)-E0*WEIGHT
                 LMETSP(NSPAMI+IPLS)=.TRUE.
               END IF
               IF (N2NDX(IRCX,1).EQ.4) THEN
                 IF (LEIPL) THEN
                   IPLSN=N2NDX(IRCX,2)
+!$OMP ATOMIC
                   EIPL(IPLSN,NCELL)=EIPL(IPLSN,NCELL)+E0O*WGHTO
                   LMETSP(NSPAMI+IPLSN)=.TRUE.
                 END IF
@@ -615,6 +680,7 @@ C  SET THE POST-COLLISION TEST PARTICLE PARALLEL VELOCITY = OLD PRE-COLLISION BU
                   IF (LBVIN) SIG =SIGN(1._DP,BVIN(IPLSV,NCLLO))
                 ENDIF
 C ASSUME: OLD (INCIDENT) ION MOMENTUM IS EQUAL TO NEW ATOM MOMENTUM
+!$OMP ATOMIC
                 MIPL(IPLS,NCELL)=MIPL(IPLS,NCELL)-WEIGHT*V0_PARB*SIG
                 LMETSP(NSPAMI+IPLS)=.TRUE.
               END IF
@@ -624,6 +690,7 @@ C ASSUME: OLD (INCIDENT) ION MOMENTUM IS EQUAL TO NEW ATOM MOMENTUM
 C  IPLSN: BULK ION SPECIES AFTER CX
                   IPLSN=N2NDX(IRCX,2)
 C  ASSUME: NEW ION MOMENTUM IS EQUAL TO INCIDENT TEST ION MOMENTUM
+!$OMP ATOMIC
                   MIPL(IPLSN,NCELL)=MIPL(IPLSN,NCELL)+
      .                              WGHTO*V0_PARBO*SIG
                   LMETSP(NSPAMI+IPLSN)=.TRUE.
@@ -662,18 +729,27 @@ C
             ENDIF
             IF (XGENER.GE.NGENI(IION)) THEN
 C  UPDATE GENERATION LIMIT TALLIES
-                IF (LPGENI) PGENI(IION,NCELL)=PGENI(IION,NCELL)-WEIGHT
-                IF (LEGENI)
-     .            EGENI(IION,NCELL)=EGENI(IION,NCELL)-WEIGHT*E0
+                IF (LPGENI) THEN
+                  PGENI(IION,NCELL)=PGENI(IION,NCELL)-WEIGHT
+                ENDIF
+                IF (LEGENI) THEN
+!$OMP ATOMIC
+                  EGENI(IION,NCELL)=EGENI(IION,NCELL)-WEIGHT*E0
+                ENDIF
                 IF (LVGENI) THEN
                   V0_PARB=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
                   V0_PARB=V0_PARB*AMUA*RMASSM(IMOL)
+!$OMP ATOMIC
                   VGENI(IION,NCELL)=VGENI(IION,NCELL)-WEIGHT*V0_PARB
                 END IF
                 IF (LPGENI.OR.LEGENI.OR.LVGENI)
      .            LMETSP(NSPAM+IION)=.TRUE.
                 LGPART=.FALSE.
-                IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,16)
+                IF (NLTRC) THEN
+!$OMP CRITICAL
+                  CALL EIRENE_CHCTRC(X0,Y0,Z0,16,16)
+!$OMP END CRITICAL
+                ENDIF
                 ITYP=4
                 COLTYP=2
                 NCELL = NCLLO
@@ -751,8 +827,12 @@ cdr:  at this place to be done: elastic collisions of test ions
 cdr   in particular: Fokker-Planck (velocity space diffusion--> TAU approximation?)
 cdr:  currently still somewhere in folion. To be moved here,
 cdr   build on analogy with other elastic collisions
-C
-        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,5)
+C 
+        IF (NLTRC) THEN
+!$OMP CRITICAL
+          CALL EIRENE_CHCTRC(X0,Y0,Z0,16,5)
+!$OMP END CRITICAL
+        ENDIF
 C   FIND IREL, AND SPECIES INDEX IPLS OF BULK (ION) COLLISION PARTNER
         SIGSUM=SIGEIT+SIGCXT
         DO 281 IIEL=1,NIELIM(IION)
@@ -789,7 +869,9 @@ C  UPDATE COLLISION ESTIMATOR CONTRIBUTION
 C  ASSUME, AS BEFORE, NO CHANGE IN SPECIES/TYP
         IF (IESTEL(IREL,1).NE.0) THEN
           IF (LPIIO) THEN
+!$OMP ATOMIC
             PIIO(IOLD,NCELL) =PIIO(IOLD,NCELL)-WGHTO
+!$OMP ATOMIC
             PIIO(IION,NCELL) =PIIO(IION,NCELL)+WEIGHT
             LMETSP(NSPAMI+IOLD)=.TRUE.
             LMETSP(NSPAMI+IION)=.TRUE.
@@ -798,8 +880,12 @@ C  ASSUME, AS BEFORE, NO CHANGE IN SPECIES/TYP
 c  UPDATE collision estimator for EL energy exchange tallies
         IF (IESTEL(IREL,3).NE.0) THEN
           EDEL=E0O*WGHTO-E0*WEIGHT
-          IF (LEIIO) EIIO(NCELL)      =EIIO(NCELL)-EDEL
+          IF (LEIIO) THEN
+!$OMP ATOMIC
+             EIIO(NCELL)      =EIIO(NCELL)-EDEL
+          ENDIF
           IF (LEIPL) THEN
+!$OMP ATOMIC  
             EIPL(IPLS,NCELL) =EIPL(IPLS,NCELL)+EDEL
             LMETSP(NSPAMI+IPLS)=.TRUE.
           END IF
@@ -821,6 +907,7 @@ C
               SIG=1._DP
               IF (LBVIN) SIG=SIGN(1._DP,BVIN(IPLSV,NCLLO))
             ENDIF
+!$OMP ATOMIC
             MIPL(IPLS,NCELL)=MIPL(IPLS,NCELL)+VDEL*SIG
             LMETSP(NSPAMI+IPLS)=.TRUE.
           END IF
@@ -834,8 +921,11 @@ C  GENERAL ION IMPACT COLLISION: PI-PROCESSES. NOT READY
 C
       ELSEIF (ZEP1.LE.SIGEIT+SIGCXT+SIGELT+SIGPIT) THEN
 C
-
-        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,3)
+        IF (NLTRC) THEN
+!$OMP CRITICAL
+          CALL EIRENE_CHCTRC(X0,Y0,Z0,16,3)
+!$OMP END CRITICAL
+        ENDIF
         SIGSUM=SIGEIT+SIGCXT+SIGELT
         DO 561 IIPI=1,NIPIIM(IION)
 C   FIND INDEX OF THAT ION IMPACT COLLISION
@@ -861,7 +951,10 @@ C  PRE- COLLISION ESTIMATOR FOR EIIO,
 C  PRE- AND POST-COLLISION ESTIMATOR FOR EIPL AND EIEL
         IF (IESTPI(IRPI,3).NE.0) THEN
 C  score loss of incoming test particle energy
-          IF (LEIIO) EIIO(NCELL)=EIIO(NCELL)-WEIGHT*E0
+          IF (LEIIO) THEN
+!$OMP ATOMIC
+            EIIO(NCELL)=EIIO(NCELL)-WEIGHT*E0
+          ENDIF
 
 cdr EIPL, EIEL       :  SCORE NET CHANGES HERE.
 cdr EIAT, EIML, EIIO :  SCORE EXACT GAINS LATER.
@@ -869,12 +962,17 @@ cdr EIAT, EIML, EIIO :  SCORE EXACT GAINS LATER.
             DO IP=1,IPPLPI(IRPI,0)
 cdr:  this is incorrect. esigpi must be split into ipl secondaries
               IPL=IPPLPI(IRPI,IP)
+!$OMP ATOMIC WRITE
               LOGPLS(IPL,ISTRA)=.TRUE.
+!$OMP ATOMIC
               EIPL(IPL,NCELL)=EIPL(IPL,NCELL)+WEIGHT*ESIGPI(IRPI,4)
               LMETSP(NSPAMI+IPL)=.TRUE.
             END DO
           END IF
-          IF (LEIEL) EIEL(NCELL)=EIEL(NCELL)+WEIGHT*ESIGPI(IRPI,5)
+          IF (LEIEL) THEN
+!$OMP ATOMIC
+            EIEL(NCELL)=EIEL(NCELL)+WEIGHT*ESIGPI(IRPI,5)
+          ENDIF
         ENDIF
 C
 C  ABSORPTION (INTO BULK SPECIES) IS SUPPRESSED
@@ -950,17 +1048,26 @@ C
 C  UPDATE COLLISION ESTIMATORS CONTRIBUTION TO EIAT;EIML;EIIO
         IF (ITYP.EQ.1) THEN
           IF (IESTPI(IRPI,3).NE.0) THEN
-            IF (LEIAT) EIAT(NCELL)=EIAT(NCELL)+WEIGHT*E0
+            IF (LEIAT) THEN
+!$OMP ATOMIC
+              EIAT(NCELL)=EIAT(NCELL)+WEIGHT*E0
+            ENDIF
           ENDIF
           COLTYP=1
         ELSEIF (ITYP.EQ.2) THEN
           IF (IESTPI(IRPI,3).NE.0) THEN
-            IF (LEIML) EIML(NCELL)=EIML(NCELL)+WEIGHT*E0
+            IF (LEIML) THEN
+!$OMP ATOMIC
+               EIML(NCELL)=EIML(NCELL)+WEIGHT*E0
+            ENDIF
           ENDIF
           COLTYP=1
         ELSEIF (ITYP.EQ.3) THEN
           IF (IESTPI(IRPI,3).NE.0) THEN
-            IF (LEIIO) EIIO(NCELL)=EIIO(NCELL)+WEIGHT*E0
+            IF (LEIIO) THEN
+!$OMP ATOMIC
+              EIIO(NCELL)=EIIO(NCELL)+WEIGHT*E0
+            ENDIF
           ENDIF
           COLTYP=2
         ENDIF
@@ -992,3 +1099,5 @@ C
       WRITE (iunout,*) 'ITYP ',ITYP,IPHOT,IATM,IMOL,IION,IPLS
       CALL EIRENE_EXIT_OWN(1)
       END
+      
+      END MODULE EIRMOD_COLION

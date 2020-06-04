@@ -1,4 +1,17 @@
+      module eirmod_sheath
+cym 04/2020 turned into module beacuse of save 
+      use eirmod_precision
+      implicit none
+      private
+
+      public :: eirene_sheath
+
+cym make sure this works fine
+      integer,save :: icount=0
+
+!$OMP THREADPRIVATE(icount)
 C
+      contains
 C
       FUNCTION EIRENE_SHEATH(TE,DPP,VP,NZP,GAMMA,CUR,NP,MS)
 
@@ -34,10 +47,13 @@ C
       REAL(DP), INTENT(IN) :: DPP(*),VP(*), TE, GAMMA, CUR
       INTEGER, INTENT(IN) :: NZP(*), NP, MS
       REAL(DP) :: SUM, DE, CE, EIRENE_SHEATH
-      INTEGER :: J, MSS, ICOUNT
+      INTEGER :: J, MSS
 
-      SAVE ICOUNT
-      DATA ICOUNT/0/
+cccccccccccccccccccccccccccccccccccc
+cym      INTEGER :: J, MSS, ICOUNT
+cym      SAVE ICOUNT
+cym      DATA ICOUNT/0/
+cccccccccccccccccccccccccccccccccccc
 C
       EIRENE_SHEATH=0.
       DE=0.
@@ -62,7 +78,6 @@ C  UNITS OF SUM: VELOCITY (CM/SEC)
 
         WRITE (iunout,*) 'SHEATH RETURNED FOR SURFACE ', MSS,': 2.8*TE'
         WRITE (iunout,*) 'NUMBER OF ION SPECIES FLOWS INTO SHEATH: ',NP
-
         WRITE (iunout,*) 'NUMBER, CHARGE,    ION DENS.,     ION VEL. '
         DO J=1,NP
           WRITE (iunout,60) J,NZP(J),DPP(J),VP(J)
@@ -76,4 +91,6 @@ C  UNITS OF SUM: VELOCITY (CM/SEC)
 
    60 FORMAT (1X,I6,2X,I6,3X,2(1PE12.4,3X))
       RETURN
-      END
+      END function eirene_sheath
+
+      end module eirmod_sheath

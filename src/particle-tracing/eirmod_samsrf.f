@@ -29,6 +29,7 @@ c  eirene_samsf2:  deallocate temporary arrays
       USE EIRMOD_LEARC1, ONLY: EIRENE_LEARC1
       USE EIRMOD_RANF, ONLY: RANF_EIRENE
       USE EIRMOD_SAMUSR, ONLY: EIRENE_SAMUSR_INIT, EIRENE_SAMUSR
+      use eirmod_sheath, only: EIRENE_SHEATH
 
       IMPLICIT NONE
       PRIVATE
@@ -41,6 +42,8 @@ c  eirene_samsf2:  deallocate temporary arrays
       INTEGER, ALLOCATABLE, SAVE :: INDTEC(:,:)
       INTEGER, SAVE :: ISTEP_SPEZ, ISTEP, IS1, ITET, IPLSTI, IPLSV, ITRI
 
+!$OMP THREADPRIVATE(FF,VX,VY,VZ,XC,YC,ZC,
+!$OMP& ISTEP_SPEZ,ISTEP,IS1,ITET,IPLSTI,IPLSV,ITRI)
 
       CONTAINS
 
@@ -74,9 +77,12 @@ C
 C  INITIALIZE DATA FOR SURFACE SAMPLING FOR STRATUM NO. ISTRAI
 C
       IMPLICIT NONE
-      REAL(DP):: FF, TORL(NSTEP,NGITT), FL, EIRENE_STEP, GAMMA, CUR, 
-     .           VX,VY,VZ,XC,YC,ZC, RANDIF,
-     .           DELR, TESH, CTETHA, CS, EIRENE_STEP0
+
+cym variable defined in the module removed from the lis
+      REAL(DP) :: TORL(NSTEP,NGITT), FL, EIRENE_STEP, GAMMA, CUR,
+     .            RANDIF,
+     .            DELR, TESH, CTETHA, CS, EIRENE_STEP0
+cym end
       REAL(DP):: FLX(NPLS),EKFLX(NPLS),ESHFLX(NPLS),
      .           DISH(NPLS),VPSH(NPLS)
       INTEGER :: ISTRAI, IERROR, ISRFS, ISOR, ISORFL, INDSRF, ISTR, ISR, 
@@ -85,7 +91,7 @@ C
      .           ISGRD1, IS2, ISGRD2,
      .           ISGRD3, INS
       INTEGER, EXTERNAL :: EIRENE_IDEZ
-      REAL(DP), EXTERNAL :: EIRENE_SHEATH
+cym      REAL(DP), EXTERNAL :: EIRENE_SHEATH
 
       DO ISTRAI=1,NSTRAI
 
