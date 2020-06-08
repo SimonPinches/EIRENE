@@ -113,6 +113,14 @@ if (MPI)
   include_directories(${MPI_Fortran_INCLUDE_PATH})
 endif()
 
+# Add option to control OpenMP will be used
+option(OPENMP "Build with OpenMP" ON)
+if (OPENMP)
+  message("-- Adding openMP ")
+  find_package(OpenMP REQUIRED)
+  include_directories(${OpenMP_Fortran_INCLUDE_PATH})
+endif()
+
 # Finds all fortran files (*.[fF]/*.[fF]90) in the source directory and extract the 
 # relative path. Relative path is stored in variable 'fortran_dirs'.
 message(STATUS "Detecting fortran files (*.[fF]/*.[fF]90) in subdirectories of " 
@@ -174,9 +182,9 @@ add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno}
 # Adds eirene executable to the project and links it to the MPI library.
 add_executable(eirene main-routines/eirene_main.f)
 if (MPI)
-  target_link_libraries(eirene EIRENE ${MPI_Fortran_LIBRARIES})
+  target_link_libraries(eirene EIRENE ${MPI_Fortran_LIBRARIES} ${OpenMP_Fortran_LIBRARIES})
 else()
-  target_link_libraries(eirene EIRENE)
+  target_link_libraries(eirene EIRENE ${OpenMP_Fortran_LIBRARIES})
 endif()
 
 if(LibGKS AND LibGRS AND LibX11 AND Libz AND LibXt)
