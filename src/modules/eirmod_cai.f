@@ -12,7 +12,8 @@ C> quantities saved from a previous run.
 
       PRIVATE
 
-      PUBLIC :: EIRENE_ALLOC_CAI, EIRENE_DEALLOC_CAI, EIRENE_INIT_CAI
+      PUBLIC :: EIRENE_ALLOC_CAI, EIRENE_DEALLOC_CAI, EIRENE_INIT_CAI,
+     .          EIRENE_BROADCAST_CAI
 
 C> Ratio between used and recommended no. of particles.
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE :: RATIO(:)
@@ -64,5 +65,19 @@ C> Recommended number of test particles for next MC cycle.
 
       RETURN
       END SUBROUTINE EIRENE_INIT_CAI
+
+
+      SUBROUTINE EIRENE_BROADCAST_CAI(ME)
+      USE EIRMOD_PARMMOD, ONLY: NSTRA
+      USE EIRMOD_MPI
+      INTEGER, INTENT(IN) :: ME
+      INTEGER :: IER
+
+      IF (ME /= 0) CALL EIRENE_ALLOC_CAI
+      
+      CALL MPI_BCAST (RATIO,NSTRA,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NRECOM,NSTRA,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      
+      END SUBROUTINE EIRENE_BROADCAST_CAI
 
       END MODULE EIRMOD_CAI
