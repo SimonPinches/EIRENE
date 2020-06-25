@@ -841,7 +841,8 @@ C     READ IN THE NUMBER OF TRIANGLES AND ATTRIBUTES OF THE TRIANGLES
       IF(IO.NE.0) NTRII=0
       WRITE(iunout,*) 'NTRII = ',NTRII
 
-      READ (35,*,IOSTAT=IO,ERR=1985) IDUMMY
+!pb      READ (35,*,IOSTAT=IO,ERR=1985) IDUMMY
+      READ (35,*,IOSTAT=IO) IDUMMY
       IF(IO.NE.0) IDUMMY=0
       IF (IDUMMY /= NTRII) THEN
         WRITE (IUNOUT,*) ' NUMBER OF TRIANGLES DO NOT MATCH '
@@ -1343,11 +1344,11 @@ C  CARRY OUT SOME CONSISTENCY CHECKS ON NEW TRIAGULAR GRID
             if (ixtri(itri) == 0) then
               write (iunout,*)
      .               'triangle outside original structured grid'
-              call eirene_masj1('itri  ',itri)
+              call eirene_masj1('itri    ',itri)
             else
               write (iunout,*)
      .               'triangle inside original structured grid'
-              call eirene_masj2('nr,np          ',
+              call eirene_masj2('nr,np           ',
      .                           iytri(itri),ixtri(itri))
             endif
 
@@ -4441,7 +4442,8 @@ C  BALANCE CONTRIB. FROM Y-GRID RECYCLING SOURCE
             DO 10135 IX=NTIN(I,IPRT),NTEN(I,IPRT)-1
               IF (LLCUT(IX)) GOTO 10135
               DO 10136 IFL=NSPZI(I,IPRT),NSPZE(I,IPRT)
-                IF (NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL).GT.0._DP) THEN
+                IF (NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL).GT.0._DP)
+     .            THEN
                   SFNIT(I,IFL)=SFNIT(I,IFL)-
      .                   NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)
 

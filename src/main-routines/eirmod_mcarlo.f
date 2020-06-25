@@ -1154,7 +1154,7 @@ csw 18jul2011
 csw 08mar2013 added check nprs < nstrai
 cdr npesta is the master processor for stratum no ISTRA
             if(nprs==1.or.I_am_leader(istra).or.
-     .        ((nprll == 1) .and. (nprs < nstrai))) then  ! not for embarassingly parallel
+     .        ((nprll == 1) .and. (nprs < nstrai))) then  ! not for embarrassingly parallel
               CALL EIRENE_WRSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
      .              ESTIMV,ESTIMS,ESTIML,
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
