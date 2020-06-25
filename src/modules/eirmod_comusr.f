@@ -1707,12 +1707,12 @@ c  Cemetery for inactive input tallies (no storage)
       END SUBROUTINE EIRENE_COMUSR_REINIT
 
 
-      SUBROUTINE EIRENE_BROADCAST_COMUSR
-      USE EIRMOD_CPES, ONLY : MY_PE
+      SUBROUTINE EIRENE_BROADCAST_COMUSR(ME)
       USE EIRMOD_MPI
+      INTEGER, INTENT(IN) :: ME
       INTEGER :: IER
 
-      IF (MY_PE /= 0) THEN
+      IF (ME /= 0) THEN
         CALL EIRENE_ALLOC_COMUSR(0)
         CALL EIRENE_ALLOC_COMUSR(1)
         CALL EIRENE_ALLOC_COMUSR(2)
@@ -1721,7 +1721,7 @@ c  Cemetery for inactive input tallies (no storage)
 
 ! LSMOPRO needs to be broadcasted before corner arrays are allocated      
       CALL MPI_BCAST (LSMOPRO,NTALG,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)     
-      IF (MY_PE /= 0) CALL EIRENE_ALLOC_CORNERS
+      IF (ME /= 0) CALL EIRENE_ALLOC_CORNERS
 
 c  active and inactive tallies:
 c  INPUT:
@@ -1729,6 +1729,7 @@ c  INPUT:
 cdr   intlopts is only needed on processor 0
 
       CALL MPI_BCAST (NADDP,NTALI,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NFSTPI,NTALI,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL EIRENE_ASSOCIATE_COMUSR
       CALL MPI_BCAST (PLSTLS,NINPTL*NRAD,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 

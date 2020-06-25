@@ -221,12 +221,12 @@ C
       END SUBROUTINE EIRENE_CONTRIB_TO_CONTRIB
 
 
-      SUBROUTINE EIRENE_BROADCAST_COMSIG
-      USE EIRMOD_CPES, ONLY : MY_PE
+      SUBROUTINE EIRENE_BROADCAST_COMSIG(ME)
       USE EIRMOD_MPI
+      INTEGER, INTENT(IN) :: ME
       INTEGER :: IER
 
-      IF ((MY_PE /= 0) .AND. (NCHOR > 0)) CALL EIRENE_ALLOC_COMSIG
+      IF ((ME /= 0) .AND. (NCHOR > 0)) CALL EIRENE_ALLOC_COMSIG
 
       IF (ALLOCATED(RCMSIG)) THEN
         CALL MPI_BCAST (RCMSIG,NCMSIG,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -244,25 +244,23 @@ cdr  additional output tallies added by code itself (rather than via input block
       CALL MPI_BCAST (MOD_ADDV,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
       IF (NUM_LINES > 0) THEN
-        CALL EIRENE_BROAD_EMIS_LINES
+        CALL EIRENE_BROAD_EMIS_LINES(ME)
       END IF
       
       END SUBROUTINE EIRENE_BROADCAST_COMSIG
 
 
-      SUBROUTINE EIRENE_BROAD_EMIS_LINES
-      USE EIRMOD_CPES, ONLY :: MY_PE
+      SUBROUTINE EIRENE_BROAD_EMIS_LINES(ME)
       USE EIRMOD_MPI
-      INTEGER :: I, J, K, NUM_COMPO, NUM_CONTRIB
+      INTEGER, INTENT(IN) :: ME
+      INTEGER :: I, J, K, NUM_COMPO, NUM_CONTRIB, IER
       TYPE(TCONTRIB) :: CNT
 
-!     IF (MY_PE /= 0) THEN
-        IF (.NOT.ALLOCATED(EMIS_LINES)) THEN
-          ALLOCATE (EMIS_LINES(NUM_LINES))
-          EMIS_LINES%LINE_NAME = REPEAT(' ',80)
-          EMIS_LINES%NUM_COMPO = 0
-        END IF
-!     END IF
+      IF (.NOT.ALLOCATED(EMIS_LINES)) THEN
+        ALLOCATE (EMIS_LINES(NUM_LINES))
+        EMIS_LINES%LINE_NAME = REPEAT(' ',80)
+        EMIS_LINES%NUM_COMPO = 0
+      END IF
 
       DO I = 1, NUM_LINES
 
@@ -283,7 +281,7 @@ cdr  additional output tallies added by code itself (rather than via input block
 
         NUM_COMPO = EMIS_LINES(I)%NUM_COMPO
 
-        IF (MY_PE /= 0) THEN
+        IF (ME /= 0) THEN
           ALLOCATE (EMIS_LINES(I)%COMPO(NUM_COMPO))
         END IF
 
@@ -297,13 +295,13 @@ cdr  additional output tallies added by code itself (rather than via input block
 
           NUM_CONTRIB = EMIS_LINES(I)%COMPO(J)%NUM_CONTRIB
 
-          IF (MY_PE /= 0) THEN
+          IF (ME /= 0) THEN
             ALLOCATE (EMIS_LINES(I)%COMPO(J)%CONTRIB(NUM_CONTRIB))
           END IF
 
           DO K = 1, NUM_CONTRIB
 
-            IF (MY_PE == 0) CNT = EMIS_LINES(I)%COMPO(J)%CONTRIB(K)
+            IF (ME == 0) CNT = EMIS_LINES(I)%COMPO(J)%CONTRIB(K)
 
             CALL MPI_BCAST (CNT%ISP,3,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
             CALL MPI_BCAST (CNT%ITP,3,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -337,7 +335,7 @@ cdr  additional output tallies added by code itself (rather than via input block
             CALL MPI_BCAST (CNT%RAT_CR,2*3,MPI_CHARACTER,
      .                      0,MPI_COMM_WORLD,ier)
 
-            IF (MY_PE /= 0) EMIS_LINES(I)%COMPO(J)%CONTRIB(K) = CNT
+            IF (ME /= 0) EMIS_LINES(I)%COMPO(J)%CONTRIB(K) = CNT
 
           END DO
         END DO

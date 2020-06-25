@@ -4,7 +4,7 @@ cdr July 18  remove nsteff, redundant
       MODULE EIRMOD_CPES
 
       USE EIRMOD_PARMMOD, ONLY: IUNMEM, NSTRA
-      USE EIRMOD_MPI, ONLY: MPI_COMM_NULL
+      USE EIRMOD_MPI, ONLY: MPI_COMM_NULL, MPI_SET_OWN_IO_UNIT
       USE EIRMOD_COMPRT, ONLY: IUNOUT
 
       IMPLICIT NONE
@@ -226,13 +226,14 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
 
 
       SUBROUTINE EIRENE_INIT_CPES
-
+      
       NPESTR = 0
       NPESTA = 0
 
 c  correspondence table: Strata vs. PEs
       PROCFORSTRA=.TRUE. !  Trivial parallelisation: All PEs work on all strata
 
+      CALL MPI_SET_OWN_IO_UNIT(IUNOUT)
       RETURN
       END SUBROUTINE EIRENE_INIT_CPES
 

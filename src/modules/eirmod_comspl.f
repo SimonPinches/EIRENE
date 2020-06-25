@@ -52,7 +52,7 @@ cdr  NLPRCS should also become POINTER, belongs to NLPRCA; ..., cond exp. est.
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE ::
      L NLPRCS(:)  ! indicate additional surfaces as attractors for cond. exp. est.
 
-      INTEGER, SAVE ::
+      INTEGER, PRIVATE, SAVE ::
      I NCMSPL, MCMSPL, KCMSPL
 
 
@@ -148,12 +148,12 @@ cdr  NLSPLT(ISURF): surface isurf is a "splitting-rr" surface
       END SUBROUTINE EIRENE_INIT_COMSPL
 
 
-      SUBROUTINE EIRENE_BROADCAST_COMSPL
-      USE EIRMOD_CPES, ONLY : MY_PE
+      SUBROUTINE EIRENE_BROADCAST_COMSPL(ME)
       USE EIRMOD_MPI
+      INTEGER, INTENT(IN) :: ME
       INTEGER :: IER
 
-      IF (MY_PE /= 0) CALL EIRENE_ALLOC_COMSPL
+      IF (ME /= 0) CALL EIRENE_ALLOC_COMSPL
 
       CALL MPI_BCAST (RCMSPL,NCMSPL,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (RSPLST,MAXLEVEL*NPARTC,MPI_REAL8,0,

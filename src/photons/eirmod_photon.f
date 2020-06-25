@@ -3997,7 +3997,7 @@ c    .                           res
       SUBROUTINE EIRENE_BROADCAST_PHOTON
       USE EIRMOD_CPES, ONLY : MY_PE
       USE EIRMOD_MPI
-      INTEGER :: IER, NNROT
+      INTEGER :: IER, NNROT, NRC, KK, IATM, IPHOT
 
 
       IF (NPHOTI > 0) THEN

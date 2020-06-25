@@ -174,12 +174,12 @@ c  lmetspw(i1): ditto, for surface-averaged tallies
       END SUBROUTINE EIRENE_INIT_CSDVI
 
 
-      SUBROUTINE EIRENE_BROADCAST_CSDVI
-      USE EIRMOD_CPES, ONLY : MY_PE
+      SUBROUTINE EIRENE_BROADCAST_CSDVI(ME)
       USE EIRMOD_MPI
+      INTEGER, INTENT(IN) :: ME
       INTEGER :: IER
 
-      IF (MY_PE /= 0) THEN
+      IF (ME /= 0) THEN
         CALL EIRENE_ALLOC_CSDVI(1)
         CALL EIRENE_ALLOC_CSDVI(2)
       END IF

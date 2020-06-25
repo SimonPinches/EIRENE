@@ -2131,12 +2131,12 @@ c
       END SUBROUTINE EIRENE_ALLOC_FIT_FORM
 
 
-      SUBROUTINE EIRENE_BROADCAST_COMXS
-      USE EIRMOD_CPES, ONLY : MYPE
+      SUBROUTINE EIRENE_BROADCAST_COMXS(ME)
       USE EIRMOD_MPI
+      INTEGER, INTENT(IN) :: ME
       INTEGER :: IER, IR
 
-      IF (MY_PE /= 0) THEN
+      IF (ME /= 0) THEN
         CALL EIRENE_ALLOC_COMXS(1)
         CALL EIRENE_ALLOC_COMXS(2)
       END IF
@@ -2404,66 +2404,66 @@ c  collision energy, at which rtmax is taken, eV
 
 c  data for interaction potential
         IF (REACDAT(IR)%LPOT) THEN
-          IF (MY_PE .NE. 0) THEN
+          IF (ME .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%POT)) THEN
               CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%POT)
             END IF
           END IF
-          CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%POT)
+          CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%POT,ME)
         END IF
 c  data for cross-sections, cm**2
         IF (REACDAT(IR)%LCRS) THEN
-          IF (MY_PE .NE. 0) THEN
+          IF (ME .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%CRS)) THEN
               CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%CRS)
             END IF
           END IF
-          CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%CRS)
+          CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%CRS,ME)
         END IF
         IF (REACDAT(IR)%LRTC) THEN
 c  data for rate coefficients, cm**3/s
-          IF (MY_PE .NE. 0) THEN
+          IF (ME .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%RTC)) THEN
               CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%RTC)
             END IF
           END IF
-          CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTC)
+          CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTC,ME)
         END IF
 c  data for momentum-weighted rate coefficients  g cm/s cm**3/s
         IF (REACDAT(IR)%LRTCMW) THEN
-          IF (MY_PE .NE. 0) THEN
+          IF (ME .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%RTCMW)) THEN
               CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%RTCMW)
             END IF
           END IF
-          CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTCMW)
+          CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTCMW,ME)
         END IF
 c  data for energy-weighted rate coefficients,  eV cm**3-s
         IF (REACDAT(IR)%LRTCEW) THEN
-          IF (MY_PE .NE. 0) THEN
+          IF (ME .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%RTCEW)) THEN
               CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%RTCEW)
             END IF
           END IF
-          CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTCEW)
+          CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTCEW,ME)
         END IF
 c  other data, such as CR population coefficients
         IF (REACDAT(IR)%LOTH) THEN
-          IF (MY_PE .NE. 0) THEN
+          IF (ME .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%OTH)) THEN
               CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%OTH)
             END IF
           END IF
-          CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%OTH)
+          CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%OTH,ME)
         END IF
 c  data for photon line transport
         IF (REACDAT(IR)%LPHR) THEN
-          IF (MY_PE .NE. 0) THEN
+          IF (ME .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%PHR)) THEN
               CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%PHR)
             END IF
           END IF
-          CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%PHR)
+          CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%PHR,ME)
         END IF
       END DO
 
@@ -2615,10 +2615,12 @@ cdr something for the internal CRM options, of blocks 4,12 here: H_Colrad.
 !++++++ where dynamical data structures are proceeded with care
 !++++++ IYS 27.02.2015
 
-      SUBROUTINE EIRENE_BROAD_FIT_FORM (RP)
-
+      SUBROUTINE EIRENE_BROAD_FIT_FORM (RP, ME)
+      USE EIRMOD_MPI
+      USE EIRMOD_COMPRT, ONLY : IUNOUT
       IMPLICIT NONE
       TYPE(FIT_FORMS), POINTER :: RP
+      INTEGER, INTENT(IN) :: ME
       INTEGER :: IER, ND1, ND2
 
 C.....................................................................
@@ -2653,7 +2655,7 @@ cdr broadcast A&M data, general for a process, independent of data structure RP%
 C.....................................................................
       IF (RP%IFIT < 0) THEN
 C DATA FOR PHOTONIC LINE SHAPE AND LINE TRANSPORT
-        IF (MY_PE .NE. 0) THEN
+        IF (ME .NE. 0) THEN
           IF (.NOT.ASSOCIATED(RP%LINE)) ALLOCATE (RP%LINE)  ! IYS
         ENDIF
 
@@ -2704,7 +2706,7 @@ C.....................................................................
       ELSE IF (1<= RP%IFIT.AND.RP%IFIT <= 2) THEN
 C  POLYNOMIAL FIT, either 1D  (RP%IFIT=1),
 C                  or     2D  (RP%IFIT=2)
-        IF (MY_PE == 0) THEN
+        IF (ME == 0) THEN
           ND1 = UBOUND(RP%POLY%DBLPOL,1)
           ND2 = UBOUND(RP%POLY%DBLPOL,2)
         END IF
@@ -2712,7 +2714,7 @@ C                  or     2D  (RP%IFIT=2)
         CALL MPI_BCAST (ND1,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (ND2,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
-        IF (MY_PE .NE. 0) THEN
+        IF (ME .NE. 0) THEN
           IF (associated(RP%POLY)) THEN ! IYS 27.02.2015
             IF (associated(RP%POLY%DBLPOL)) THEN
               IF (ND1.ne.UBOUND(RP%POLY%DBLPOL,1) .or.
@@ -2736,7 +2738,7 @@ C                  or     2D  (RP%IFIT=2)
 C.....................................................................
       ELSE IF (RP%IFIT == 3) THEN
 ! 2D TABLES, E.G. ADAS DATA
-        IF (MY_PE .NE. 0) THEN
+        IF (ME .NE. 0) THEN
 !pb          IF(.NOT. ASSOCIATED(RP%ADAS)) ALLOCATE (RP%ADAS)  ! IYS
 !pb  NULLIFY NOT YET ALLOCATED POINTER ARRAYS
           IF(.NOT. ASSOCIATED(RP%ADAS)) THEN
@@ -2754,7 +2756,7 @@ C.....................................................................
         CALL MPI_BCAST (RP%ADAS%NTEMP,1,MPI_INTEGER,
      .                  0,MPI_COMM_WORLD,ier)
 
-        IF (MY_PE .NE. 0) THEN
+        IF (ME .NE. 0) THEN
           IF (ASSOCIATED(RP%ADAS%DENS)) THEN
             IF (RP%ADAS%NDENS.ne.UBOUND(RP%ADAS%DENS,1)) THEN
                DEALLOCATE (RP%ADAS%DENS)
@@ -2821,7 +2823,7 @@ C     ELSE IF (RP%IFIT == 4) THEN
 C.....................................................................
       ELSE IF (RP%IFIT == 5 ) THEN
 cdr  internal CR Model
-        IF (MY_PE .NE. 0) THEN
+        IF (ME .NE. 0) THEN
           IF (.NOT.ASSOCIATED(RP%CRM)) THEN
             ALLOCATE (RP%CRM)
           END IF

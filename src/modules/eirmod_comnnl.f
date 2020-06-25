@@ -110,18 +110,18 @@ C> with proportional allocation. Especially, in the embarrassingly
 C> parallel mode, each process should keep its own census. (Attention:
 C> write out of the census of each process for the restart of a run is
 C> not (yet) implemented and may be part of the plasma code interface.)
-      SUBROUTINE EIRENE_BROADCAST_COMNNL
+      SUBROUTINE EIRENE_BROADCAST_COMNNL(ME)
 
       USE EIRMOD_PARMMOD, ONLY: MPARTT, NPARTT, NPRNL, NSTRA
       USE EIRMOD_COMUSR, ONLY: NPRLL
-      USE EIRMOD_CPES, ONLY: MY_PE 
       USE EIRMOD_MPI
 
       IMPLICIT NONE
 
+      INTEGER, INTENT(IN) :: ME
       INTEGER :: IER
 
-      IF (MY_PE /= 0) CALL EIRENE_ALLOC_COMNNL
+      IF (ME /= 0) CALL EIRENE_ALLOC_COMNNL
       
       CALL MPI_BCAST (DTIMV,1,MPI_REAL8,0,MPI_COMM_WORLD,IER)
       CALL MPI_BCAST (DTIMVI,1,MPI_REAL8,0,MPI_COMM_WORLD,IER)

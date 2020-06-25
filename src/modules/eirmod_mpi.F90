@@ -3,6 +3,8 @@ module eirmod_mpi
 #ifdef USE_MPI
   implicit none
   include 'mpif.h'
+  integer, private, save :: iounit
+  public :: mpi_set_own_io_unit
 
 #if MPI_VERSION < 3
 ! MPI libraries with MPI version 3 are available on all platforms.
@@ -28,6 +30,10 @@ module eirmod_mpi
 
   ! Dummy MPI module for serial compilation
   implicit none
+    
+  integer, private, save :: iounit
+  public :: mpi_set_own_io_unit
+  
   integer, parameter :: mpi_success = 0
   integer, parameter :: mpi_failure = 1
   integer, parameter :: mpi_comm_world = 0
@@ -142,12 +148,12 @@ module eirmod_mpi
   contains
 
   subroutine mpi_abort(comm, errorcode, ierr)
-    use eirmod_comprt
+!   use eirmod_comprt, only : iunout
     implicit none
     integer, intent(in) :: comm, errorcode
     integer, intent(out) :: ierr
     ierr = MPI_SUCCESS
-    write (iunout,*) 'MPI ABORT: Shut down with error code: ', errorcode
+    write (iounit,*) 'MPI ABORT: Shut down with error code: ', errorcode
     stop
   end subroutine
 
@@ -374,7 +380,7 @@ module eirmod_mpi
   subroutine mpi_ireduce_i0_r1 (data1, data2, n, datatype, operation, receiver, &
     comm, request, ierror )
     ! first argument is MPI_IN_PLACE flag
-    use eirmod_comprt
+!   use eirmod_comprt, only : iunout
     implicit none
     integer, intent(in) :: n, comm
     integer, intent(in) :: data1
@@ -382,14 +388,14 @@ module eirmod_mpi
     integer, intent(in) :: datatype, operation, receiver
     integer, intent(out) :: request, ierror
     request = 0
-    write(iunout,*) 'Error MPI_IREDUCE called, but it is not implemented'
+    write(iounit,*) 'Error MPI_IREDUCE called, but it is not implemented'
     call mpi_abort(MPI_COMM_WORLD, -1, ierror)
   end subroutine
 
   subroutine mpi_ireduce_i0_l1 (data1, data2, n, datatype, operation, receiver, &
     comm, request, ierror )
     ! first argument is MPI_IN_PLACE flag
-    use eirmod_comprt
+!   use eirmod_comprt, only : iunout
     implicit none
     integer, intent(in) :: n, comm
     integer, intent(in) :: data1
@@ -397,14 +403,14 @@ module eirmod_mpi
     integer, intent(in) :: datatype, operation, receiver
     integer, intent(out) :: request, ierror
     request = 0
-    write(iunout,*) 'Error MPI_IREDUCE called, but it is not implemented'
+    write(iounit,*) 'Error MPI_IREDUCE called, but it is not implemented'
     call mpi_abort(MPI_COMM_WORLD, -1, ierror)
   end subroutine
 
   subroutine mpi_ireduce_r1_r1 (data1, data2, n, datatype, operation, receiver, &
     comm, request, ierror )
     ! first argument is MPI_IN_PLACE flag
-    use eirmod_comprt
+!   use eirmod_comprt, only : iunout
     implicit none
     integer, intent(in) :: n, comm
     double precision, dimension(:), intent(in) :: data1
@@ -412,14 +418,14 @@ module eirmod_mpi
     integer, intent(in) :: datatype, operation, receiver
     integer, intent(out) :: request, ierror
     request = 0
-    write(iunout,*) 'Error MPI_IREDUCE called, but it is not implemented'
+    write(iounit,*) 'Error MPI_IREDUCE called, but it is not implemented'
     call mpi_abort(MPI_COMM_WORLD, -1, ierror)
   end subroutine
 
   subroutine mpi_ireduce_l1_l1 (data1, data2, n, datatype, operation, receiver, &
     comm, request, ierror )
     ! first argument is MPI_IN_PLACE flag
-    use eirmod_comprt
+!   use eirmod_comprt, only : iunout
     implicit none
     integer, intent(in) :: n, comm
     logical, dimension(:), intent(in) :: data1
@@ -427,7 +433,7 @@ module eirmod_mpi
     integer, intent(in) :: datatype, operation, receiver
     integer, intent(out) :: request, ierror
     request = 0
-    write(iunout,*) 'Error MPI_IREDUCE called, but it is not implemented'
+    write(iounit,*) 'Error MPI_IREDUCE called, but it is not implemented'
     call mpi_abort(MPI_COMM_WORLD, -1, ierror)
   end subroutine
 #endif
@@ -954,7 +960,7 @@ module eirmod_mpi
 
   subroutine mpi_scatter_i0_i0(sendbuf, sendcount, sendtype,  &
              recvbuf, recvcount, recvtype, root, comm, ierr)
-    use eirmod_comprt
+!   use eirmod_comprt, only : iunout
     implicit none
     integer, intent(in) :: sendcount, recvcount
     integer, intent(in) :: sendbuf
@@ -965,7 +971,7 @@ module eirmod_mpi
       ierr = MPI_SUCCESS
       recvbuf = sendbuf
     else
-      write (iunout,*) 'MPI SCATTER: buffer size missmatch: ', &
+      write (iounit,*) 'MPI SCATTER: buffer size missmatch: ', &
        sendcount, recvcount
       call eirene_exit_own(1)
     endif
@@ -973,7 +979,7 @@ module eirmod_mpi
 
   subroutine mpi_scatter_i1_i0(sendbuf, sendcount, sendtype,  &
              recvbuf, recvcount, recvtype, root, comm, ierr)
-    use eirmod_comprt
+!   use eirmod_comprt, only : iunout
     implicit none
     integer, intent(in) :: sendcount, recvcount
     integer, intent(in) :: sendbuf(sendcount)
@@ -984,7 +990,7 @@ module eirmod_mpi
       ierr = MPI_SUCCESS
       recvbuf = sendbuf(1)
     else
-      write (iunout,*) 'MPI SCATTER: buffer size missmatch: ', &
+      write (iounit,*) 'MPI SCATTER: buffer size missmatch: ', &
        sendcount, recvcount
       call eirene_exit_own(1)
     endif
@@ -992,7 +998,7 @@ module eirmod_mpi
 
   subroutine mpi_scatter_i1_i1(sendbuf, sendcount, sendtype,  &
              recvbuf, recvcount, recvtype, root, comm, ierr)
-    use eirmod_comprt
+!   use eirmod_comprt, only : iunout
     implicit none
     integer, intent(in) :: sendcount, recvcount
     integer, intent(in) :: sendbuf(sendcount)
@@ -1003,7 +1009,7 @@ module eirmod_mpi
       ierr = MPI_SUCCESS
       recvbuf(1:sendcount) = sendbuf(1:sendcount)
     else
-      write (iunout,*) 'MPI SCATTER: buffer size missmatch: ', &
+      write (iounit,*) 'MPI SCATTER: buffer size missmatch: ', &
        sendcount, recvcount
       call eirene_exit_own(1)
     endif
@@ -1012,7 +1018,7 @@ module eirmod_mpi
   subroutine mpi_gatherv_r2_r2 (sendbuf, sendcount, sendtype,  &
              recvbuf, recvcount, recvdistrib, recvtype, root, comm, ierr)
     use eirmod_precision
-    use eirmod_comprt
+!   use eirmod_comprt, only : iunout
     implicit none
     integer, intent(in) :: sendcount, recvcount(*)
     real(dp), intent(in) :: sendbuf(:,:)
@@ -1029,7 +1035,7 @@ module eirmod_mpi
 
   subroutine mpi_gatherv_i2_i2 (sendbuf, sendcount, sendtype,  &
              recvbuf, recvcount, recvdistrib, recvtype, root, comm, ierr)
-    use eirmod_comprt
+!   use eirmod_comprt, only : iunout
     implicit none
     integer, intent(in) :: sendcount, recvcount(*)
     integer, intent(in) :: sendbuf(:,:)
@@ -1047,7 +1053,7 @@ module eirmod_mpi
   subroutine mpi_scatterv (sendbuf, sendcount, senddistrib, sendtype,  &
              recvbuf, recvcount, recvtype, root, comm, ierr)
     use eirmod_precision
-    use eirmod_comprt
+!   use eirmod_comprt, only : iunout
     implicit none
     integer, intent(in) :: sendcount(*), recvcount
     real(dp), intent(in) :: sendbuf(*)
@@ -1064,202 +1070,202 @@ module eirmod_mpi
 
   subroutine mpi_send_dum_a0 (buffer,cnt,datatype,dest,tag,comm,ier)
     use eirmod_precision
-    use eirmod_comprt
+!   use eirmod_comprt, only : iunout
     implicit none
     integer, intent(out) :: ier
     real(dp) :: buffer
     integer, intent(in) :: cnt,datatype,dest,tag,comm
     ier=MPI_SUCCESS
-    write(iunout,*) &
+    write(iounit,*) &
      'Warning: MPI send called in a serial code. No data is sent.'
-    write(iunout,*) &
+    write(iounit,*) &
      '         Results are only correct if send and recv buffers are the same'
   end subroutine
 
   subroutine mpi_send_dum_a1 (buffer,cnt,datatype,dest,tag,comm,ier)
     use eirmod_precision
-    use eirmod_comprt
+!   use eirmod_comprt, only : iunout
     implicit none
     integer, intent(out) :: ier
     real(dp) :: buffer(:)
     integer, intent(in) :: cnt,datatype,dest,tag,comm
     ier=MPI_SUCCESS
-    write(iunout,*) &
+    write(iounit,*) &
      'Warning: MPI send called in a serial code. No data is sent.'
-    write(iunout,*) &
+    write(iounit,*) &
      '         Results are only correct if send and recv buffers are the same'
   end subroutine
 
   subroutine mpi_send_dum_a2(buffer,cnt,datatype,dest,tag,comm,ier)
     use eirmod_precision
-    use eirmod_comprt
+!   use eirmod_comprt, only : iunout
     implicit none
     integer, intent(out) :: ier
     real(dp) :: buffer(:,:)
     integer, intent(in) :: cnt,datatype,dest,tag,comm
     ier=MPI_SUCCESS
-    write(iunout,*) &
+    write(iounit,*) &
      'Warning: MPI send called in a serial code. No data is sent.'
-    write(iunout,*) &
+    write(iounit,*) &
      '         Results are only correct if send and recv buffers are the same'
   end subroutine
 
   subroutine mpi_send_dum_a3(buffer,cnt,datatype,dest,tag,comm,ier)
     use eirmod_precision
-    use eirmod_comprt
+!   use eirmod_comprt, only : iunout
     implicit none
     integer, intent(out) :: ier
     real(dp) :: buffer(:,:,:)
     integer, intent(in) :: cnt,datatype,dest,tag,comm
     ier=MPI_SUCCESS
-    write(iunout,*) &
+    write(iounit,*) &
      'Warning: MPI send called in a serial code. No data is sent.'
-    write(iunout,*) &
+    write(iounit,*) &
      '         Results are only correct if send and recv buffers are the same'
   end subroutine
 
   subroutine mpi_send_dum_i0 (buffer,cnt,datatype,dest,tag,comm,ier)
     use eirmod_precision
-    use eirmod_comprt
+!   use eirmod_comprt, only : iunout
     implicit none
     integer, intent(out) :: ier
     integer :: buffer
     integer, intent(in) :: cnt,datatype,dest,tag,comm
     ier=MPI_SUCCESS
-    write(iunout,*) &
+    write(iounit,*) &
      'Warning: MPI send called in a serial code. No data is sent.'
-    write(iunout,*) &
+    write(iounit,*) &
      '         Results are only correct if send and recv buffers are the same'
   end subroutine
 
   subroutine mpi_send_dum_i1 (buffer,cnt,datatype,dest,tag,comm,ier)
     use eirmod_precision
-    use eirmod_comprt
+!   use eirmod_comprt, only : iunout
     implicit none
     integer, intent(out) :: ier
     integer :: buffer(:)
     integer, intent(in) :: cnt,datatype,dest,tag,comm
     ier=MPI_SUCCESS
-    write(iunout,*) &
+    write(iounit,*) &
      'Warning: MPI send called in a serial code. No data is sent.'
-    write(iunout,*) &
+    write(iounit,*) &
      '         Results are only correct if send and recv buffers are the same'
   end subroutine
 
   subroutine mpi_send_dum_i2 (buffer,cnt,datatype,dest,tag,comm,ier)
     use eirmod_precision
-    use eirmod_comprt
+!   use eirmod_comprt, only : iunout
     implicit none
     integer, intent(out) :: ier
     integer :: buffer(:,:)
     integer, intent(in) :: cnt,datatype,dest,tag,comm
     ier=MPI_SUCCESS
-    write(iunout,*) &
+    write(iounit,*) &
      'Warning: MPI send called in a serial code. No data is sent.'
-    write(iunout,*) &
+    write(iounit,*) &
      '         Results are only correct if send and recv buffers are the same'
   end subroutine
 
   subroutine mpi_recv_dum_a0(buffer,cnt,datatype,source,tag,comm,st,ier)
     use eirmod_precision
-    use eirmod_comprt
+!   use eirmod_comprt, only : iunout
     integer, intent(out) :: ier
     real(dp) :: buffer
     integer, intent(in) :: cnt,datatype,source,tag,comm
     integer :: st
     ier=MPI_SUCCESS
-    write(iunout,*) &
+    write(iounit,*) &
      'Warning: MPI recv called in a serial code. No data is received.'
-    write(iunout,*) &
+    write(iounit,*) &
      '         Results are only correct if send and recv buffers are the same'
   end subroutine
 
   subroutine mpi_recv_dum_a1(buffer,cnt,datatype,source,tag,comm,st,ier)
     use eirmod_precision
-    use eirmod_comprt
+!   use eirmod_comprt, only : iunout
     implicit none
     integer, intent(out) :: ier
     real(dp) :: buffer(:)
     integer, intent(in) :: cnt,datatype,source,tag,comm
     integer :: st
     ier=MPI_SUCCESS
-    write(iunout,*) &
+    write(iounit,*) &
      'Warning: MPI recv called in a serial code. No data is received.'
-    write(iunout,*) &
+    write(iounit,*) &
      '         Results are only correct if send and recv buffers are the same'
   end subroutine
 
   subroutine mpi_recv_dum_a2(buffer,cnt,datatype,source,tag,comm,st,ier)
     use eirmod_precision
-    use eirmod_comprt
+!   use eirmod_comprt, only : iunout
     implicit none
     integer, intent(out) :: ier
     real(dp) :: buffer(:,:)
     integer, intent(in) :: cnt,datatype,source,tag,comm
     integer :: st
     ier=MPI_SUCCESS
-    write(iunout,*) &
+    write(iounit,*) &
      'Warning: MPI recv called in a serial code. No data is received.'
-    write(iunout,*) &
+    write(iounit,*) &
      '         Results are only correct if send and recv buffers are the same'
   end subroutine
 
   subroutine mpi_recv_dum_a3(buffer,cnt,datatype,source,tag,comm,st,ier)
     use eirmod_precision
-    use eirmod_comprt
+!   use eirmod_comprt, only : iunout
     implicit none
     integer, intent(out) :: ier
     real(dp) :: buffer(:,:,:)
     integer, intent(in) :: cnt,datatype,source,tag,comm
     integer :: st
     ier=MPI_SUCCESS
-    write(iunout,*) &
+    write(iounit,*) &
      'Warning: MPI recv called in a serial code. No data is received.'
-    write(iunout,*) &
+    write(iounit,*) &
      '         Results are only correct if send and recv buffers are the same'
   end subroutine
 
   subroutine mpi_recv_dum_i0(buffer,cnt,datatype,source,tag,comm,st,ier)
     use eirmod_precision
-    use eirmod_comprt
+!   use eirmod_comprt, only : iunout
     integer, intent(out) :: ier
     integer :: buffer
     integer, intent(in) :: cnt,datatype,source,tag,comm
     integer :: st
     ier=MPI_SUCCESS
-    write(iunout,*) &
+    write(iounit,*) &
      'Warning: MPI recv called in a serial code. No data is received.'
-    write(iunout,*) &
+    write(iounit,*) &
      '         Results are only correct if send and recv buffers are the same'
   end subroutine
 
   subroutine mpi_recv_dum_i1(buffer,cnt,datatype,source,tag,comm,st,ier)
     use eirmod_precision
-    use eirmod_comprt
+!   use eirmod_comprt, only : iunout
     implicit none
     integer, intent(out) :: ier
     integer :: buffer(:)
     integer, intent(in) :: cnt,datatype,source,tag,comm
     integer :: st
     ier=MPI_SUCCESS
-    write(iunout,*) &
+    write(iounit,*) &
      'Warning: MPI recv called in a serial code. No data is received.'
-    write(iunout,*) &
+    write(iounit,*) &
      '         Results are only correct if send and recv buffers are the same'
   end subroutine
 
   subroutine mpi_recv_dum_i2(buffer,cnt,datatype,source,tag,comm,st,ier)
     use eirmod_precision
-    use eirmod_comprt
+!   use eirmod_comprt, only : iunout
     implicit none
     integer, intent(out) :: ier
     integer :: buffer(:,:)
     integer, intent(in) :: cnt,datatype,source,tag,comm
     integer :: st
     ier=MPI_SUCCESS
-    write(iunout,*) &
+    write(iounit,*) &
      'Warning: MPI recv called in a serial code. No data is received.'
-    write(iunout,*) &
+    write(iounit,*) &
      '         Results are only correct if send and recv buffers are the same'
   end subroutine
 
@@ -1317,6 +1323,12 @@ module eirmod_mpi
     ierr = MPI_SUCCESS
   end subroutine
 #endif
+
+  subroutine mpi_set_own_io_unit(iun)
+    integer, intent(in) :: iun
+    iounit = iun
+  end subroutine
+    
 end module
 
 !!!Local Variables:

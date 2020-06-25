@@ -18,7 +18,7 @@ CDR FOR DIRECT TRANSFER OF INFO FROM FIND_PARAM.F INTO INPUT.F
      .          EIRENE_INIT_CINIT, EIRENE_BROADCAST_CINIT,
      .          TDENMODEL, TDENMODAR
 
-      INTEGER, SAVE ::
+      INTEGER, PRIVATE, SAVE ::
      I         NCINIT, MCINIT, LCINIT
 
       REAL(DP),  PUBLIC, TARGET, ALLOCATABLE, SAVE :: RCINIT(:)
@@ -294,15 +294,15 @@ C  DEFAULT FOR DATABASE NAMES, CAN BE OVERWRITTEN BY CFILE CARDS
       END SUBROUTINE EIRENE_INIT_CINIT
 
 
-      SUBROUTINE EIRENE_BROADCAST_CINIT
-      USE EIRMOD_CPES, ONLY : MY_PE
+      SUBROUTINE EIRENE_BROADCAST_CINIT(ME)
       USE EIRMOD_MPI
+      INTEGER, INTENT(IN) :: ME
       INTEGER :: IER, IPLS, NREF, IRF, IAN
       REAL(DP) :: RHELP(3)
       INTEGER, ALLOCATABLE :: IHELP(:)
       CHARACTER, ALLOCATABLE :: CHELP(:)
 
-      IF (MY_PE /= 0) CALL EIRENE_ALLOC_CINIT
+      IF (ME /= 0) CALL EIRENE_ALLOC_CINIT
 
       CALL MPI_BCAST (RCINIT,NCINIT,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (ICINIT,MCINIT,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -317,14 +317,14 @@ cdr  e.g. corona, colrad, const, saha,.....
 
         IF (VERIFY(CDENMODEL(IPLS),' ') == 0) CYCLE
 
-        IF (MY_PE == 0) NREF = TDMPAR(IPLS)%TDM%NRE
+        IF (ME == 0) NREF = TDMPAR(IPLS)%TDM%NRE
         CALL MPI_BCAST(NREF,1,MPI_INTEGER,0,
      .                 MPI_COMM_WORLD,ier)
 
         ALLOCATE (IHELP(3*NREF))
         ALLOCATE (CHELP(1:24*NREF))
 
-        IF (MY_PE == 0) THEN
+        IF (ME == 0) THEN
           RHELP(1) = TDMPAR(IPLS)%TDM%G_BOLTZ
           RHELP(2) = TDMPAR(IPLS)%TDM%DELTAE
           RHELP(3) = TDMPAR(IPLS)%TDM%A_CORONA
@@ -352,7 +352,7 @@ cdr  e.g. corona, colrad, const, saha,.....
         CALL MPI_BCAST(CHELP,24*NREF,MPI_CHARACTER,0,
      .                MPI_COMM_WORLD,ier)
 
-        IF (MY_PE > 0) THEN
+        IF (ME > 0) THEN
 csw
 !pb       if(.not.allocated(tdmpar)) then
           if(.not.associated(tdmpar(ipls)%tdm)) then

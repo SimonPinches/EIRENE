@@ -1814,12 +1814,12 @@ C
       END SUBROUTINE EIRENE_INIT_CESTIM
 
 
-      SUBROUTINE EIRENE_BROADCAST_CESTIM
-      USE EIRMOD_CPES, ONLY : MY_PE
+      SUBROUTINE EIRENE_BROADCAST_CESTIM(ME)
       USE EIRMOD_MPI
+      INTEGER, INTENT(IN) :: ME
       INTEGER :: IER, I, NSPS
 
-      IF (MY_PE /= 0) THEN
+      IF (ME /= 0) THEN
         CALL EIRENE_ALLOC_CESTIM(1)
       END IF
 
@@ -1841,13 +1841,13 @@ C  OUTPUT:
       CALL MPI_BCAST (LEIO,1,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LEPH,1,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
 
-      IF (MY_PE .NE. 0) THEN
+      IF (ME .NE. 0) THEN
         CALL EIRENE_ALLOC_CESTIM(2)
         CALL EIRENE_ASSOCIATE_CESTIM
       END IF
 
       IF (NADSPC > 0) THEN
-         IF (MY_PE .NE. 0) THEN
+         IF (ME .NE. 0) THEN
             IF (.NOT.ALLOCATED(ESTIML)) THEN
               ALLOCATE(ESTIML(NADSPC))
               ALLOCATE(SMESTL(NADSPC))
@@ -1900,7 +1900,7 @@ C  OUTPUT:
            CALL MPI_BCAST (ESTIML(I)%LOG,1,MPI_LOGICAL,0,
      .                     MPI_COMM_WORLD,ier)
 
-           IF (MY_PE .NE. 0) THEN
+           IF (ME .NE. 0) THEN
              NSPS = ESTIML(I)%NSPC
 
              IF (.NOT.ASSOCIATED(ESTIML(I)%SPC)) THEN
@@ -1921,7 +1921,7 @@ C  variances for sum over strata
            END IF
          END DO
       ELSE
-        IF (MY_PE .NE. 0) THEN
+        IF (ME .NE. 0) THEN
           IF (.NOT.ALLOCATED(ESTIML)) THEN
             ALLOCATE(ESTIML(1))
           END IF
