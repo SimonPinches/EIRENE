@@ -16,7 +16,7 @@ C
       REAL(DP) :: XT, SRAD, RAD, B, AH, YT,
      .          DX1, DY2, DZ3, XNORM, AT, A3, A4, A2, XR, XL, A5,
      .          A1, A0, YR, YL, XP1,
-     .          XP2, XP3, XP4, YP1, YP2, YP3, YP4
+     .          XP2, XP3, XP4, YP1, YP2, YP3, YP4, DS1, DS2
       INTEGER :: IEQ(2), ILFT, ILFTS
       INTEGER :: IMIN1, IMIN2, K, IS, JUM, IPNT1, IPNT2, I, IE, J
       LOGICAL :: LINFX,LINFY,LINFZ, TWOPOINT
@@ -145,11 +145,21 @@ C
   100     CONTINUE
 C
 C
-C  IS SURFACE IE GIVEN BY TWO-POINT OPTION ?
-        TWOPOINT=.FALSE.
-        IF (P3(1,IE).GE.1.D50.OR.P3(2,IE).GE.1.D50.OR.
-     .      P3(3,IE).GE.1.D50) TWOPOINT=.TRUE.
+C     IS SURFACE IE GIVEN BY TWO-POINT OPTION ?
+!pb 25/08/2020
+!pb this test is inconclusive. Originally P3(?,i) indicated that a
+!pb two point surface with an ignorable coordinate
+!pb Unfortunately since some time algebraic surfaces with an
+!pb ignorable coordinate get P3(?,i) = 1.D55 as well
+          TWOPOINT=.FALSE.
+          IF (P3(1,IE).GE.1.D50.OR.P3(2,IE).GE.1.D50.OR.
+     .        P3(3,IE).GE.1.D50) TWOPOINT=.TRUE.
 
+          DS1 = ABS(XP1-XP2) + ABS(YP1-YP2)
+          DS2 = ABS(XP3-XP4) + ABS(YP3-YP4)
+          IF (DS1 < EPS12) GOTO 994
+          TWOPOINT = DS2 > EPS12
+          
           IF ((RLB(IE).EQ.1..OR.RLB(IE).EQ.1.5).AND..NOT.TWOPOINT) THEN
 C  TRY TO CONNECT SURFACE I TO POINTS ON BOUNDARY BOX OF SURFACE IE
           IS=0
@@ -451,6 +461,10 @@ C
       WRITE (iunout,*) 'ERROR IN SUBR. SETFIT'
       WRITE (iunout,*) 'STRAIGHT LINE NO I= ',I,' COLLAPSED TO A POINT'
       WRITE (iunout,*)
-     .  'SURFACE NO. I IS REDUNDANT. USE EIRMOD_CH0 I/I OPTION'
+     .  'SURFACE NO. I IS REDUNDANT. USE CH0 I/I OPTION'
+      CALL EIRENE_EXIT_OWN(1)
+  994 CONTINUE
+      WRITE (iunout,*) 'ERROR IN SUBR. SETFIT'
+      WRITE (iunout,*) 'SURFACE NO I= ',I,' IS NOT A TWOPOINT SURFACE '
       CALL EIRENE_EXIT_OWN(1)
       END
