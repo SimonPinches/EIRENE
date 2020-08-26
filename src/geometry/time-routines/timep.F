@@ -82,7 +82,7 @@ C
       REAL(DP), INTENT(INOUT) :: ZRAD
       REAL(DP) :: HELP, GS, GC, F, XNEN, DUM, SUM, BB, DY, X0TEST,
      .          Y0TEST, V1, V2, T1, ZRADS, ZRD, WIN1, X000, Z0T,
-     .          TWIN1, XT, Y000, TSS, X0T, Y0T
+     .          TWIN1, XT, Y000, TSS, X0T, Y0T, DYZR
       INTEGER :: EIRENE_ILLZ, IANP, I, IENP, JHELP, ISW, JJC, J1,
      .           NRCLLP, LHELP, J2, INCY, JN, ICOU, NYSAVE, NHELP,
      .           I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS,
@@ -874,7 +874,9 @@ C  TIME FROM Y00 TO PSURF
         DY=(PSURF(J2)-Y00)
 !pb reduce zrad if the trajectory comes too close to the next standard surface
 !pb without hitting it
-        IF (ABS(ABS(DY/ZRAD)-1._DP) <= EPS10) THEN
+        DYZR = ABS(ABS(DY/ZRAD)-1._DP)
+!pb     IF (DYZR <= EPS10) THEN
+        IF ((DYZR > 0._DP) .AND. (DYZR <= EPS10)) THEN
           ZRAD=(1._DP-EPS6)*ZRAD
           ZRADS=ZRAD
         END IF
