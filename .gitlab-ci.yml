@@ -13,6 +13,7 @@ stages:
     - preparation
     - build:executable
     - run
+    - run_mpi
     - test
     - coverage
     - tag
@@ -35,6 +36,39 @@ stages:
         paths:
             - EIRENE-sample-cases/${PATH_CASE}
 
+# Create individual stage for mpi-jobs due to recource limits (memory?)
+# of gitlab runner at juelich gitlab
+# this forces to mpi jobs to be run sequencially
+run_mpi_cases:
+    stage: run_mpi
+    except: 
+        - schedules
+    before_script:
+        # Bypass mpirun abort due to execution as root
+        - export MPIRUN_FLAGS='--allow-run-as-root'
+    script:
+        # job: run_EMC3-EIRENE_H_multiStrataMpi
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi
+        - make output
+        - cd ../../../../
+        # job: run_EMC3-EIRENE_H_multiStrataMpi2
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi2
+        - make output
+        - cd ../../../../
+        # job: run_EMC3-EIRENE_H_multiStrataMpi3
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi3
+        - make output
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi/output
+            - EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi2/output
+            - EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi3/output
+        when: always
+    dependencies:
+        - build_library
+        - build_EMC3-EIRENE
+  
 .run: &run
     stage: run
     except: 
@@ -298,16 +332,17 @@ test_EMC3-EIRENE_H_multiStrata:
     dependencies:
         - build_EMC3-EIRENE
         - run_EMC3-EIRENE_H_multiStrata
-    
-run_EMC3-EIRENE_H_multiStrataMpi:
-    <<: *run
-    before_script:
-        # Bypass mpirun abort due to execution as root
-        - export MPIRUN_FLAGS='--allow-run-as-root'
-    variables:
-        PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi"
-    dependencies:
-        - build_EMC3-EIRENE
+
+# moved this job to run_mpi_cases due to failures of gitlab runner        
+#run_EMC3-EIRENE_H_multiStrataMpi:
+#    <<: *run
+#    before_script:
+#        # Bypass mpirun abort due to execution as root
+#        - export MPIRUN_FLAGS='--allow-run-as-root'
+#    variables:
+#        PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi"
+#    dependencies:
+#        - build_EMC3-EIRENE
 
 test_EMC3-EIRENE_H_multiStrataMpi:
     <<: *test
@@ -315,17 +350,19 @@ test_EMC3-EIRENE_H_multiStrataMpi:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi"
     dependencies:
         - build_EMC3-EIRENE
-        - run_EMC3-EIRENE_H_multiStrataMpi
+        - run_mpi_cases
+#        - run_EMC3-EIRENE_H_multiStrataMpi
     
-run_EMC3-EIRENE_H_multiStrataMpi2:
-    <<: *run
-    before_script:
-        # Bypass mpirun abort due to execution as root
-        - export MPIRUN_FLAGS='--allow-run-as-root'
-    variables:
-        PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi2"
-    dependencies:
-        - build_EMC3-EIRENE
+# moved this job to run_mpi_cases due to failures of gitlab runner        
+#run_EMC3-EIRENE_H_multiStrataMpi2:
+#    <<: *run
+#    before_script:
+#        # Bypass mpirun abort due to execution as root
+#        - export MPIRUN_FLAGS='--allow-run-as-root'
+#    variables:
+#        PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi2"
+#    dependencies:
+#        - build_EMC3-EIRENE
 
 test_EMC3-EIRENE_H_multiStrataMpi2:
     <<: *test
@@ -333,17 +370,19 @@ test_EMC3-EIRENE_H_multiStrataMpi2:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi2"
     dependencies:
         - build_EMC3-EIRENE
-        - run_EMC3-EIRENE_H_multiStrataMpi2
+        - run_mpi_cases
+#        - run_EMC3-EIRENE_H_multiStrataMpi2
     
-run_EMC3-EIRENE_H_multiStrataMpi3:
-    <<: *run
-    before_script:
-        # Bypass mpirun abort due to execution as root
-        - export MPIRUN_FLAGS='--allow-run-as-root'
-    variables:
-        PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi3"
-    dependencies:
-        - build_EMC3-EIRENE
+# moved this job to run_mpi_cases due to failures of gitlab runner        
+#run_EMC3-EIRENE_H_multiStrataMpi3:
+#    <<: *run
+#    before_script:
+#        # Bypass mpirun abort due to execution as root
+#        - export MPIRUN_FLAGS='--allow-run-as-root'
+#    variables:
+#        PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi3"
+#    dependencies:
+#        - build_EMC3-EIRENE
 
 test_EMC3-EIRENE_H_multiStrataMpi3:
     <<: *test
@@ -351,7 +390,8 @@ test_EMC3-EIRENE_H_multiStrataMpi3:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi3"
     dependencies:
         - build_EMC3-EIRENE
-        - run_EMC3-EIRENE_H_multiStrataMpi3
+        - run_mpi_cases
+#        - run_EMC3-EIRENE_H_multiStrataMpi3
 
 run_EMC3-EIRENE_H_profile:
     <<: *run
