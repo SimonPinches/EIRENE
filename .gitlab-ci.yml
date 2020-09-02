@@ -47,6 +47,8 @@ stages:
         paths:
             - EIRENE-sample-cases/${PATH_CASE}/output
         when: always
+    dependencies:
+        - build_library
 
 .test: &test
     stage: test
