@@ -34,6 +34,8 @@ stages:
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
+            - buildRelease/
+            - libRelease/
             - EIRENE-sample-cases/${PATH_CASE}
 
 # Create individual stage for mpi-jobs due to recource limits (memory?)
@@ -61,12 +63,11 @@ run_mpi_cases:
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
-            - EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi/output
-            - EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi2/output
-            - EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi3/output
+            - buildRelease/
+            - libRelease/
+            - EIRENE-sample-cases/EMC3
         when: always
     dependencies:
-        - build_library
         - build_EMC3-EIRENE
   
 .run: &run
@@ -79,7 +80,9 @@ run_mpi_cases:
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
-            - EIRENE-sample-cases/${PATH_CASE}/output
+            - buildRelease/
+            - libRelease/
+            - EIRENE-sample-cases/${PATH_CASE}
         when: always
 
 .test: &test
@@ -129,7 +132,6 @@ run_standalone_1D-H_slab:
     variables:
         PATH_CASE: "1D-H_slab"
     dependencies:
-        - build_library
         - build_standalone_1D_slab
 
 test_standalone_1D-H_slab:
@@ -137,8 +139,6 @@ test_standalone_1D-H_slab:
     variables:
         PATH_CASE: "1D-H_slab"
     dependencies:
-        - build_library
-        - build_standalone_1D_slab
         - run_standalone_1D-H_slab
 
 build_standalone_1D_slab_with_farming:
@@ -155,7 +155,6 @@ run_standalone_1D-H_slab_with_farming:
     only:
         - PB/feature/farming
     dependencies:
-        - build_library
         - build_standalone_1D_slab_with_farming
 
 test_standalone_1D-H_slab_with_farming:
@@ -165,8 +164,6 @@ test_standalone_1D-H_slab_with_farming:
     only:
         - PB/feature/farming
     dependencies:
-        - build_library
-        - build_standalone_1D_slab_with_farming
         - run_standalone_1D-H_slab_with_farming
 
 build_standalone_2D_slab:
@@ -179,7 +176,6 @@ run_standalone_2D-D_slab:
     variables:
         PATH_CASE: "2D-D_slab"
     dependencies:
-        - build_library
         - build_standalone_2D_slab
 
 test_standalone_2D-D_slab:
@@ -187,8 +183,6 @@ test_standalone_2D-D_slab:
     variables:
         PATH_CASE: "2D-D_slab"
     dependencies:
-        - build_library
-        - build_standalone_2D_slab
         - run_standalone_2D-D_slab
 
 build_standalone_1D_cylindric:
@@ -202,7 +196,6 @@ run_standalone_1D_cylindric:
     variables:
         PATH_CASE: "1D_cylindric"
     dependencies:
-        - build_library
         - build_standalone_1D_cylindric
 
 test_standalone_1D_cylindric:
@@ -210,26 +203,18 @@ test_standalone_1D_cylindric:
     variables:
         PATH_CASE: "1D_cylindric"
     dependencies:
-        - build_library
-        - build_standalone_1D_cylindric
         - run_standalone_1D_cylindric
 
 build_standalone_ITER_1573:
     <<: *build_executable
     variables:
         PATH_CASE: "ITER_1573"
-    artifacts:
-        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
-        paths:
-            - binRelease/
-            - EIRENE-sample-cases/${PATH_CASE}
 
 run_standalone_ITER_1573:
     <<: *run
     variables:
         PATH_CASE: "ITER_1573"
     dependencies:
-        - build_library
         - build_standalone_ITER_1573
 
 test_standalone_ITER_1573:
@@ -237,26 +222,18 @@ test_standalone_ITER_1573:
     variables:
         PATH_CASE: "ITER_1573"
     dependencies:
-        - build_library
-        - build_standalone_ITER_1573
         - run_standalone_ITER_1573
 
 build_standalone_2D_polygon:
     <<: *build_executable
     variables:
         PATH_CASE: "2D-D_polygon"
-    artifacts:
-        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
-        paths:
-            - libRelease/
-            - EIRENE-sample-cases/${PATH_CASE}
 
 run_standalone_2D-D_polygon:
     <<: *run
     variables:
         PATH_CASE: "2D-D_polygon"
     dependencies:
-        - build_library
         - build_standalone_2D_polygon
 
 test_standalone_2D-D_polygon:
@@ -264,8 +241,6 @@ test_standalone_2D-D_polygon:
     variables:
         PATH_CASE: "2D-D_polygon"
     dependencies:
-        - build_library
-        - build_standalone_2D_polygon
         - run_standalone_2D-D_polygon
 
 build_standalone_cylinder:
@@ -278,7 +253,6 @@ run_standalone_cylinder:
     variables:
         PATH_CASE: "cylinder"
     dependencies:
-        - build_library
         - build_standalone_cylinder
 
 test_standalone_cylinder:
@@ -286,35 +260,31 @@ test_standalone_cylinder:
     variables:
         PATH_CASE: "cylinder"
     dependencies:
-        - build_library
-        - build_standalone_cylinder
         - run_standalone_cylinder
 
 build_EMC3-EIRENE:
     <<: *build_executable
     variables:
         PATH_CASE: "EMC3"
-    artifacts:
-        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
-        paths:
-            - EIRENE-sample-cases/EMC3/emc3/binRelease/
-            - EIRENE-sample-cases/EMC3/W7X_Limiter/
 
 run_EMC3-EIRENE_H:
     <<: *run
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H"
     dependencies:
-        - build_library
         - build_EMC3-EIRENE
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease/
+            - libRelease/
+            - EIRENE-sample-cases/EMC3
 
 test_EMC3-EIRENE_H:
     <<: *test
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H"
     dependencies:
-        - build_library
-        - build_EMC3-EIRENE
         - run_EMC3-EIRENE_H
 
 run_EMC3-EIRENE_He:
@@ -322,16 +292,19 @@ run_EMC3-EIRENE_He:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/He"
     dependencies:
-        - build_library
         - build_EMC3-EIRENE
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease/
+            - libRelease/
+            - EIRENE-sample-cases/EMC3
 
 test_EMC3-EIRENE_He:
     <<: *test
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/He"
     dependencies:
-        - build_library
-        - build_EMC3-EIRENE
         - run_EMC3-EIRENE_He
     
 run_EMC3-EIRENE_H_multiStrata:
@@ -339,16 +312,19 @@ run_EMC3-EIRENE_H_multiStrata:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrata"
     dependencies:
-        - build_library
         - build_EMC3-EIRENE
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease/
+            - libRelease/
+            - EIRENE-sample-cases/EMC3
 
 test_EMC3-EIRENE_H_multiStrata:
     <<: *test
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrata"
     dependencies:
-        - build_library
-        - build_EMC3-EIRENE
         - run_EMC3-EIRENE_H_multiStrata
 
 # moved this job to run_mpi_cases due to failures of gitlab runner        
@@ -360,7 +336,6 @@ test_EMC3-EIRENE_H_multiStrata:
 #    variables:
 #        PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi"
 #    dependencies:
-#        - build_library
 #        - build_EMC3-EIRENE
 
 test_EMC3-EIRENE_H_multiStrataMpi:
@@ -368,8 +343,6 @@ test_EMC3-EIRENE_H_multiStrataMpi:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi"
     dependencies:
-        - build_library
-        - build_EMC3-EIRENE
         - run_mpi_cases
 #        - run_EMC3-EIRENE_H_multiStrataMpi
     
@@ -382,7 +355,6 @@ test_EMC3-EIRENE_H_multiStrataMpi:
 #    variables:
 #        PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi2"
 #    dependencies:
-#        - build_library
 #        - build_EMC3-EIRENE
 
 test_EMC3-EIRENE_H_multiStrataMpi2:
@@ -390,8 +362,6 @@ test_EMC3-EIRENE_H_multiStrataMpi2:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi2"
     dependencies:
-        - build_library
-        - build_EMC3-EIRENE
         - run_mpi_cases
 #        - run_EMC3-EIRENE_H_multiStrataMpi2
     
@@ -404,7 +374,6 @@ test_EMC3-EIRENE_H_multiStrataMpi2:
 #    variables:
 #        PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi3"
 #    dependencies:
-#        - build_library
 #        - build_EMC3-EIRENE
 
 test_EMC3-EIRENE_H_multiStrataMpi3:
@@ -412,8 +381,6 @@ test_EMC3-EIRENE_H_multiStrataMpi3:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi3"
     dependencies:
-        - build_library
-        - build_EMC3-EIRENE
         - run_mpi_cases
 #        - run_EMC3-EIRENE_H_multiStrataMpi3
 
@@ -422,16 +389,19 @@ run_EMC3-EIRENE_H_profile:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_profile"
     dependencies:
-        - build_library
         - build_EMC3-EIRENE
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease/
+            - libRelease/
+            - EIRENE-sample-cases/EMC3
 
 test_EMC3-EIRENE_H_profile:
     <<: *test
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_profile"
     dependencies:
-        - build_library
-        - build_EMC3-EIRENE
         - run_EMC3-EIRENE_H_profile
 
 coverage_report:
