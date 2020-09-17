@@ -10,9 +10,10 @@ variables:
     SAMPLE_CASE_VERSION: 272ddfac67030b518e7047b3066b8d036e8039a6
 
 stages:
-    - build:library
+    - preparation
     - build:executable
     - run
+    - run_mpi
     - test
     - coverage
     - tag
@@ -24,10 +25,10 @@ stages:
     except: 
         - schedules
     script:
-        - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
-        - cd EIRENE-sample-cases
-        - git checkout ${SAMPLE_CASE_VERSION}
-        - cd ${PATH_CASE}
+#        - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
+#        - cd EIRENE-sample-cases
+#        - git checkout ${SAMPLE_CASE_VERSION}
+        - cd EIRENE-sample-cases/${PATH_CASE}
         - make
     retry: 2
     artifacts:
@@ -35,6 +36,39 @@ stages:
         paths:
             - EIRENE-sample-cases/${PATH_CASE}
 
+# Create individual stage for mpi-jobs due to recource limits (memory?)
+# of gitlab runner at juelich gitlab
+# this forces to mpi jobs to be run sequencially
+run_mpi_cases:
+    stage: run_mpi
+    except: 
+        - schedules
+    before_script:
+        # Bypass mpirun abort due to execution as root
+        - export MPIRUN_FLAGS='--allow-run-as-root'
+    script:
+        # job: run_EMC3-EIRENE_H_multiStrataMpi
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi
+        - make output
+        - cd ../../../../
+        # job: run_EMC3-EIRENE_H_multiStrataMpi2
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi2
+        - make output
+        - cd ../../../../
+        # job: run_EMC3-EIRENE_H_multiStrataMpi3
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi3
+        - make output
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi/output
+            - EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi2/output
+            - EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi3/output
+        when: always
+    dependencies:
+        - build_library
+        - build_EMC3-EIRENE
+  
 .run: &run
     stage: run
     except: 
@@ -56,8 +90,22 @@ stages:
         - cd EIRENE-sample-cases/${PATH_CASE}
         - make test
 
+prepare_testcases:
+    stage: preparation
+    except: 
+        - schedules
+    script:
+        - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
+        - cd EIRENE-sample-cases
+        - git checkout ${SAMPLE_CASE_VERSION}
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - EIRENE-sample-cases
+      
+ 
 build_library:
-    stage: build:library
+    stage: preparation
     except: 
         - schedules
     script:
@@ -81,6 +129,7 @@ run_standalone_1D-H_slab:
     variables:
         PATH_CASE: "1D-H_slab"
     dependencies:
+        - build_library
         - build_standalone_1D_slab
 
 test_standalone_1D-H_slab:
@@ -88,6 +137,7 @@ test_standalone_1D-H_slab:
     variables:
         PATH_CASE: "1D-H_slab"
     dependencies:
+        - build_library
         - build_standalone_1D_slab
         - run_standalone_1D-H_slab
 
@@ -105,6 +155,7 @@ run_standalone_1D-H_slab_with_farming:
     only:
         - PB/feature/farming
     dependencies:
+        - build_library
         - build_standalone_1D_slab_with_farming
 
 test_standalone_1D-H_slab_with_farming:
@@ -114,6 +165,7 @@ test_standalone_1D-H_slab_with_farming:
     only:
         - PB/feature/farming
     dependencies:
+        - build_library
         - build_standalone_1D_slab_with_farming
         - run_standalone_1D-H_slab_with_farming
 
@@ -127,6 +179,7 @@ run_standalone_2D-D_slab:
     variables:
         PATH_CASE: "2D-D_slab"
     dependencies:
+        - build_library
         - build_standalone_2D_slab
 
 test_standalone_2D-D_slab:
@@ -134,6 +187,7 @@ test_standalone_2D-D_slab:
     variables:
         PATH_CASE: "2D-D_slab"
     dependencies:
+        - build_library
         - build_standalone_2D_slab
         - run_standalone_2D-D_slab
 
@@ -148,6 +202,7 @@ run_standalone_1D_cylindric:
     variables:
         PATH_CASE: "1D_cylindric"
     dependencies:
+        - build_library
         - build_standalone_1D_cylindric
 
 test_standalone_1D_cylindric:
@@ -155,6 +210,7 @@ test_standalone_1D_cylindric:
     variables:
         PATH_CASE: "1D_cylindric"
     dependencies:
+        - build_library
         - build_standalone_1D_cylindric
         - run_standalone_1D_cylindric
 
@@ -173,6 +229,7 @@ run_standalone_ITER_1573:
     variables:
         PATH_CASE: "ITER_1573"
     dependencies:
+        - build_library
         - build_standalone_ITER_1573
 
 test_standalone_ITER_1573:
@@ -180,6 +237,7 @@ test_standalone_ITER_1573:
     variables:
         PATH_CASE: "ITER_1573"
     dependencies:
+        - build_library
         - build_standalone_ITER_1573
         - run_standalone_ITER_1573
 
@@ -198,6 +256,7 @@ run_standalone_2D-D_polygon:
     variables:
         PATH_CASE: "2D-D_polygon"
     dependencies:
+        - build_library
         - build_standalone_2D_polygon
 
 test_standalone_2D-D_polygon:
@@ -205,6 +264,7 @@ test_standalone_2D-D_polygon:
     variables:
         PATH_CASE: "2D-D_polygon"
     dependencies:
+        - build_library
         - build_standalone_2D_polygon
         - run_standalone_2D-D_polygon
 
@@ -218,6 +278,7 @@ run_standalone_cylinder:
     variables:
         PATH_CASE: "cylinder"
     dependencies:
+        - build_library
         - build_standalone_cylinder
 
 test_standalone_cylinder:
@@ -225,6 +286,7 @@ test_standalone_cylinder:
     variables:
         PATH_CASE: "cylinder"
     dependencies:
+        - build_library
         - build_standalone_cylinder
         - run_standalone_cylinder
 
@@ -243,6 +305,7 @@ run_EMC3-EIRENE_H:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H"
     dependencies:
+        - build_library
         - build_EMC3-EIRENE
 
 test_EMC3-EIRENE_H:
@@ -250,6 +313,7 @@ test_EMC3-EIRENE_H:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H"
     dependencies:
+        - build_library
         - build_EMC3-EIRENE
         - run_EMC3-EIRENE_H
 
@@ -258,6 +322,7 @@ run_EMC3-EIRENE_He:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/He"
     dependencies:
+        - build_library
         - build_EMC3-EIRENE
 
 test_EMC3-EIRENE_He:
@@ -265,6 +330,7 @@ test_EMC3-EIRENE_He:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/He"
     dependencies:
+        - build_library
         - build_EMC3-EIRENE
         - run_EMC3-EIRENE_He
     
@@ -273,6 +339,7 @@ run_EMC3-EIRENE_H_multiStrata:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrata"
     dependencies:
+        - build_library
         - build_EMC3-EIRENE
 
 test_EMC3-EIRENE_H_multiStrata:
@@ -280,68 +347,82 @@ test_EMC3-EIRENE_H_multiStrata:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrata"
     dependencies:
+        - build_library
         - build_EMC3-EIRENE
         - run_EMC3-EIRENE_H_multiStrata
-    
-run_EMC3-EIRENE_H_multiStrataMpi:
-    <<: *run
-    before_script:
-        # Bypass mpirun abort due to execution as root
-        - export MPIRUN_FLAGS='--allow-run-as-root'
-    variables:
-        PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi"
-    dependencies:
-        - build_EMC3-EIRENE
+
+# moved this job to run_mpi_cases due to failures of gitlab runner        
+#run_EMC3-EIRENE_H_multiStrataMpi:
+#    <<: *run
+#    before_script:
+#        # Bypass mpirun abort due to execution as root
+#        - export MPIRUN_FLAGS='--allow-run-as-root'
+#    variables:
+#        PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi"
+#    dependencies:
+#        - build_library
+#        - build_EMC3-EIRENE
 
 test_EMC3-EIRENE_H_multiStrataMpi:
     <<: *test
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi"
     dependencies:
+        - build_library
         - build_EMC3-EIRENE
-        - run_EMC3-EIRENE_H_multiStrataMpi
+        - run_mpi_cases
+#        - run_EMC3-EIRENE_H_multiStrataMpi
     
-run_EMC3-EIRENE_H_multiStrataMpi2:
-    <<: *run
-    before_script:
-        # Bypass mpirun abort due to execution as root
-        - export MPIRUN_FLAGS='--allow-run-as-root'
-    variables:
-        PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi2"
-    dependencies:
-        - build_EMC3-EIRENE
+# moved this job to run_mpi_cases due to failures of gitlab runner        
+#run_EMC3-EIRENE_H_multiStrataMpi2:
+#    <<: *run
+#    before_script:
+#        # Bypass mpirun abort due to execution as root
+#        - export MPIRUN_FLAGS='--allow-run-as-root'
+#    variables:
+#        PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi2"
+#    dependencies:
+#        - build_library
+#        - build_EMC3-EIRENE
 
 test_EMC3-EIRENE_H_multiStrataMpi2:
     <<: *test
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi2"
     dependencies:
+        - build_library
         - build_EMC3-EIRENE
-        - run_EMC3-EIRENE_H_multiStrataMpi2
+        - run_mpi_cases
+#        - run_EMC3-EIRENE_H_multiStrataMpi2
     
-run_EMC3-EIRENE_H_multiStrataMpi3:
-    <<: *run
-    before_script:
-        # Bypass mpirun abort due to execution as root
-        - export MPIRUN_FLAGS='--allow-run-as-root'
-    variables:
-        PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi3"
-    dependencies:
-        - build_EMC3-EIRENE
+# moved this job to run_mpi_cases due to failures of gitlab runner        
+#run_EMC3-EIRENE_H_multiStrataMpi3:
+#    <<: *run
+#    before_script:
+#        # Bypass mpirun abort due to execution as root
+#        - export MPIRUN_FLAGS='--allow-run-as-root'
+#    variables:
+#        PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi3"
+#    dependencies:
+#        - build_library
+#        - build_EMC3-EIRENE
 
 test_EMC3-EIRENE_H_multiStrataMpi3:
     <<: *test
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi3"
     dependencies:
+        - build_library
         - build_EMC3-EIRENE
-        - run_EMC3-EIRENE_H_multiStrataMpi3
+        - run_mpi_cases
+#        - run_EMC3-EIRENE_H_multiStrataMpi3
 
 run_EMC3-EIRENE_H_profile:
     <<: *run
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_profile"
     dependencies:
+        - build_library
         - build_EMC3-EIRENE
 
 test_EMC3-EIRENE_H_profile:
@@ -349,6 +430,7 @@ test_EMC3-EIRENE_H_profile:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_profile"
     dependencies:
+        - build_library
         - build_EMC3-EIRENE
         - run_EMC3-EIRENE_H_profile
 
