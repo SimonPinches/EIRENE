@@ -12,3 +12,6 @@ lib*
 .project
 .metadata
 .settings
+
+# Ignore EIRENE test cases
+EIRENE-sample-cases
