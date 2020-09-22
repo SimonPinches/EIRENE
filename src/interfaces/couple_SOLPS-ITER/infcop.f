@@ -182,6 +182,7 @@ C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
       USE EIRMOD_BRASCL
       USE EIRMOD_CSPEZ
       use eirmod_cpes
+      use eirmod_sheath
 csw
 csw 26jan2011 extra B25
       use eirmod_extrab25
@@ -301,7 +302,7 @@ C
 
       INTEGER, INTENT(IN) :: ISTRAA, ISTRAE, NEW_ITER, IFRST, ITRG
       REAL(DP) :: EIRENE_STEP, EIRENE_FTABRC1, EIRENE_FEELRC1,
-     .            EIRENE_SHEATH, EIRENE_EMAXW
+     .            EIRENE_EMAXW
       INTEGER, EXTERNAL :: EIRENE_IDEZ
 C
       LOGICAL, INTENT(INOUT) :: LSTP
