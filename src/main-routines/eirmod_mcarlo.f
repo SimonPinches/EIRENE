@@ -159,6 +159,7 @@ cym copyin does not work for allocatable pointer arrrays
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
+
 C@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 C
       TIMI=EIRENE_SECOND_OWN()
@@ -423,26 +424,28 @@ C
 c nlident: jeder proc. von einer quelle istra bekommt gleichen seed gem. ninitl(istra).
 c         erzeugt bei zwei gleichen quellen (istra) identische ergebnisse.
 c not nlident: ninitl wird auf dem processor geaendert, add my_pe*10000
-        IF (.NOT.NLIDENT) THEN
-          DO ISTRA=1,NSTRAI
-            IF (NINITL(ISTRA) > 0)
-     .        NINITL(ISTRA)=NINITL(ISTRA)+MY_PE*10000
-          ENDDO
-        ELSE
-          CALL EIRENE_LEER(1)
-          WRITE (IUNOUT,*) '......................................... '
-          WRITE (IUNOUT,*) 'NLIDENT: '
-          WRITE (IUNOUT,*) 'DEBUG MODE FOR PARALLELIZATION IS ACTIVE'
-          WRITE (IUNOUT,*) 'IF MULTIPLE CORES PER STRATUM, THEN ALL'
-          WRITE (IUNOUT,*) 'ASSIGNED CORES KEEP IDENTICAL RANDOM SEED.'
-          WRITE (IUNOUT,*) 'FOR ANY GIVEN STRATUM ISTRA, ALL NCIS CORES'
-          WRITE (IUNOUT,*) 'ASSIGNED TO ISTRA MUST PRODUCE IDENTICAL'
-          WRITE (IUNOUT,*) 'OUTPUT. ALSO VARIANCES PER STRATUM MUST'
-          WRITE (IUNOUT,*) 'SCALE EXACTLY WITH 1/NCIS(ISTRA),'
-          WRITE (IUNOUT,*) 'NOT ONLY ON STATISTICAL AVERAGE'
-          WRITE (IUNOUT,*) '......................................... '
-          CALL EIRENE_LEER(1)
-        endif
+
+cym moved later on and Ãmodified
+cym        IF (.NOT.NLIDENT) THEN
+cym          DO ISTRA=1,NSTRAI
+cym            IF (NINITL(ISTRA) > 0)
+cym     .        NINITL(ISTRA)=NINITL(ISTRA)+MY_PE*10000
+cym          ENDDO
+cym        ELSE
+cym          CALL EIRENE_LEER(1)
+cym          WRITE (IUNOUT,*) '......................................... '
+cym          WRITE (IUNOUT,*) 'NLIDENT: '
+cym          WRITE (IUNOUT,*) 'DEBUG MODE FOR PARALLELIZATION IS ACTIVE'
+cym          WRITE (IUNOUT,*) 'IF MULTIPLE CORES PER STRATUM, THEN ALL'
+cym          WRITE (IUNOUT,*) 'ASSIGNED CORES KEEP IDENTICAL RANDOM SEED.'
+cym          WRITE (IUNOUT,*) 'FOR ANY GIVEN STRATUM ISTRA, ALL NCIS CORES'
+cym         WRITE (IUNOUT,*) 'ASSIGNED TO ISTRA MUST PRODUCE IDENTICAL'
+cym          WRITE (IUNOUT,*) 'OUTPUT. ALSO VARIANCES PER STRATUM MUST'
+cym          WRITE (IUNOUT,*) 'SCALE EXACTLY WITH 1/NCIS(ISTRA),'
+cym          WRITE (IUNOUT,*) 'NOT ONLY ON STATISTICAL AVERAGE'
+cym          WRITE (IUNOUT,*) '......................................... '
+cym          CALL EIRENE_LEER(1)
+cym        endif
         NPRNLS=NPRNLI
       ENDIF
 C
@@ -548,7 +551,9 @@ cym as for mpi_reduce: logical .or.
 
        IF (ITHREAD>0) THEN
 cym     this will not work correctly combined with mpi !
-         IUNOUT=200+ITHREAD
+cym     temporary output to check histories for different strata
+cy         IUNOUT=200+ITHREAD
+         IUNOUT=200+ITHREAD+100*(ISTRA-1)
 cym      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
          CALL ALLOCATE_AND_ASSOCIATE_FOR_WORKER_THREADS()
 cym      !!! broadcast for pointers not allowed in copyin !!!!
@@ -560,8 +565,16 @@ cym      !!! broadcast for pointers not allowed in copyin !!!!
          LCMSOU=BLCMSOU
          XSTOR=BXSTOR
          XSTORV=BXSTORV
-         RCGRID=BRCGRID    
+         RCGRID=BRCGRID
+
       ENDIF
+
+cym test for multiple strata / restores the status after call to REFLC0
+cym ideally would need initializing values on the master thread ...
+
+         EREDUC=0._dp
+         FREDUC=0._dp
+         IREDUC=0
     
 C***********************************************************************
 cpg   for testing
@@ -577,10 +590,10 @@ C  INITIALIZE RANDOM NUMBER GENERATOR FOR STRATUM ISTRA
 C  find random number generator seed, from input flag NINITL(ISTRA)
           IF (NINITL(istra).GT.0) THEN
             IF (.NOT.NLIDENT) THEN
-              MY_ID= ITHREAD + (MY_PE-1)*NTHREADS
+              MY_ID= ITHREAD + MY_PE*NTHREADS
               ninist=NINITL(ISTRA)+MY_ID*10000 !one seed per thread to generate independent numbers
 cym uncommented
-              write(30+ithread,*) ninist
+              write(30+ithread,*) ninist,NINITL(ISTRA),MY_ID
 cpg              write(30+ithread,*) 'iptsi->',iseed_iptsi,'  ',iptsi,
 cpg     .         ' istra->',iseed_istra,
 cpg     .         ' RN1->',RN1
@@ -624,7 +637,7 @@ cdr  format of CDATE: hhmmss.xxx
           NINITL(ISTRA) = NINITL(ISTRA) + ICO_CALL
             
          IF (.NOT.NLIDENT) then
-            MY_ID= ITHREAD + (MY_PE-1)*NTHREADS
+            MY_ID= ITHREAD + MY_PE*NTHREADS
             NINIST=NINITL(ISTRA)+MY_ID*10000
             ISEED_ISTRA=RANSET_EIRENE(NINIST)
          ENDIF
@@ -897,7 +910,7 @@ c  nptsdel(istra)*iproc(istra) trajectories for stratum ISTRA
 c  initialize random number generator with a "legal" seed,
                 idumran=ranset_eirene(ninist)
 cym
-                write(999,*) NINIST
+                write(999,*) NINIST,NINITL(ISTRA),IPTSI
                 INIV1=0
                 INIV2=0
                 INIV3=0
@@ -1628,7 +1641,7 @@ C
       ALLOCATE (XSTOR(MSTOR1,MSTOR2))       
       ALLOCATE (XSTORV(NSTORV))
 
-cym arrays from eirmod_clast
+cym arrays from eirmod_clast - these are not pointers
       ALLOCATE (XCMEAN(NRCX))
       ALLOCATE (SGCVMX(NRCX))
       ALLOCATE (XEMEAN(NREL))
@@ -1642,6 +1655,9 @@ cym arrays from eirmod_clast
       ALLOCATE (IFLREL(NREL))
       ALLOCATE (NPMEAN(NRPI))
       ALLOCATE (IFLRPI(NRPI))
+
+cym make sure the clast variables do not take exotic values      
+      call eirene_init_clast
 
       ALLOCATE (FNUIAR(NPLS))
       FNUIAR=0._dp
@@ -1810,6 +1826,8 @@ cpg      ISTRA  => IPSTD( 8)
       DEALLOCATE (IFLRPI)
 
       DEALLOCATE (FNUIAR)
+
+      DEALLOCATE (RMASSPH)
  
       END SUBROUTINE DEALLOCATE_FOR_WORKER_THREADS
 
