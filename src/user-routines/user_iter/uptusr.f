@@ -39,6 +39,9 @@ CDR
       INTEGER, SAVE :: IFIRST, IA0, IA1, IA2, IA3, IA4
       integer :: icou
       real(dp) :: wtr,vr,vp,dist
+
+!$OMP THREADPRIVATE(VPX,VPY,VRX,VRY,IFIRST,IA0,IA1,IA2,IA3,IA4)
+
       DATA IFIRST/0/
 
       IF (IFIRST.EQ.0) THEN

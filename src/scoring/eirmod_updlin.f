@@ -9,6 +9,8 @@
 
       REAL(DP), ALLOCATABLE, SAVE :: UAH(:,:),EKIN(:,:)
      
+!$OMP THREADPRIVATE(IFIRST,UAH,EKIN)
+
       CONTAINS
 
 cdr  Nov. 2015

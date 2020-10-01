@@ -6,6 +6,8 @@
 
       INTEGER, SAVE :: IFIRST=0
 
+!$OMP THREADPRIVATE(IFIRST)
+
       CONTAINS
 
 cdr Aug. 2015: revisited:  comments,...
@@ -67,6 +69,11 @@ C
       INTEGER :: I, NMTSP, IUPD2, IUPD3, IRD, NSBGK, IBGK_SP,
      .           IML, IIO, IUPD1, ITP, ISP, IAT, IRDO
       CHARACTER(8) :: TXT
+
+!$OMP THREADPRIVATE(DIST,WTRV,WTRVX,WTRVY,WTRVZ, 
+!$OMP&              I, NMTSP, IUPD2, IUPD3, IRD, NSBGK, IBGK_SP,
+!$OMP&              IML,IIO,IUPD1,ITP,ISP,IAT,IRDO,TXT)      
+
       SAVE
 C
       IF (IFIRST.EQ.0) THEN

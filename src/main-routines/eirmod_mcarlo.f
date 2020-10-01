@@ -713,7 +713,9 @@ cym ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 C
 C  INITIALIZE SUBR. LOCATE
 C
+!$OMP END MASTER
           CALL EIRENE_LOCAT0
+!$OMP MASTER
 C
 C  LOCATE AND FOLLOW MC-PARTICLES
 C
@@ -1601,7 +1603,8 @@ C
       ALLOCATE (ISDVI(MSDVI))     
       ALLOCATE (LMETSP(NSPZTOT))
       ALLOCATE (LMETSPW(NSPZTOTW))
-      ALLOCATE (ISPEZI(NSPZ,-1:4))
+cym test
+cym      ALLOCATE (ISPEZI(NSPZ,-1:4))
         
       ALLOCATE (LCMSOU(14,NSTRA))
       ALLOCATE (TIMINT(NRADS))
@@ -1655,6 +1658,13 @@ cym arrays from eirmod_clast - these are not pointers
       ALLOCATE (IFLREL(NREL))
       ALLOCATE (NPMEAN(NRPI))
       ALLOCATE (IFLRPI(NRPI))
+
+cym test iter
+      ALLOCATE (RSPLST(NPARTC,MAXLEVEL))
+      ALLOCATE (ISPLST(MPARTC,MAXLEVEL))
+
+      RSPLST=0._dp
+      ISPLST=0
 
 cym make sure the clast variables do not take exotic values      
       call eirene_init_clast
@@ -1772,7 +1782,8 @@ cpg      ISTRA  => IPSTD( 8)
       DEALLOCATE(ISDVI)
       DEALLOCATE(LMETSP)
       DEALLOCATE(LMETSPW)
-      DEALLOCATE(ISPEZI)
+ccc cym test
+c      DEALLOCATE(ISPEZI)
         
       DEALLOCATE(TIMINT)
       DEALLOCATE(TIMPOL)
@@ -1828,6 +1839,9 @@ cpg      ISTRA  => IPSTD( 8)
       DEALLOCATE (FNUIAR)
 
       DEALLOCATE (RMASSPH)
+
+      DEALLOCATE (RSPLST)
+      DEALLOCATE (ISPLST)
  
       END SUBROUTINE DEALLOCATE_FOR_WORKER_THREADS
 

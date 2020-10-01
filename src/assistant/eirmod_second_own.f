@@ -3,7 +3,7 @@ cdr  used for internal run time monitoring
 
       USE EIRMOD_PRECISION
 cym
-!$    use omp_lib
+      use omp_lib
 cym
       IMPLICIT NONE
       PRIVATE

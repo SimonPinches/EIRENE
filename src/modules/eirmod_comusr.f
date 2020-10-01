@@ -166,7 +166,8 @@ C  MUSR, INTEGER
       INTEGER, ALLOCATABLE, PUBLIC, SAVE ::
      I         ISPZ_BACK(:,:)
 
-!$OMP  THREADPRIVATE(ISPEZI)
+cym test      
+cccccccccc !$OMP  THREADPRIVATE(ISPEZI)
 
 
 

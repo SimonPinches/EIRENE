@@ -40,6 +40,12 @@ C
      .           IRCX, ICOU, IACX, IRDD, IPLSTI
       INTEGER :: NMTSP
 
+!$OMP THREADPRIVATE(WTRSIG,EION,DIST,WTR,
+!$OMP&              IRD,IFIRST,
+!$OMP&              IRCX,ICOU,IACX,IRDD,IPLSTI,
+!$OMP&              NMTSP)
+
+
 CDR
 !     INTEGER :: I, IP, IR
 !     REAL(DP), ALLOCATABLE, SAVE ::

@@ -128,6 +128,9 @@ cym adding externals
 !$OMP& xleft, xright, A, ZV,
 !$OMP& VXWL, VYWL, VZWL, VPWL,
 !$OMP& TIWL, DIWL, EFWL, SHWL, TEWL,
+cym - ITER case
+!$OMP& WEISPZ, 
+cym
 !$OMP& CUMDIS,
 !$OMP& ISSPTP, ISSPTC, ISTS, IP, ISPZS, IRC, IIRC, IRRC,
 !$OMP& ISOUR, ISRFS, I, ISTEP,
@@ -261,6 +264,7 @@ C
 C
 C  PREPARE DATA FOR SAMPLING SUBSTRATA FOR STRATUM ISTRA: 1--10
 C
+!$OMP MASTER
       IF (.NOT.ALLOCATED(WMM)) THEN
         ALLOCATE (WMM(NSRFS))
         ALLOCATE (WEISPZ(NSPZ))
@@ -269,10 +273,17 @@ C
         ALLOCATE (IUPSOR(NSRFS))
         ALLOCATE (IFPSOR(NSRFS))
       END IF
+!$OMP END MASTER
 
-      DO 1 JSPZ=1,NSPZ
-        WEISPZ(JSPZ)=-1.
+cym - do this on all threads, this is a private variable
+      IF (.NOT.ALLOCATED(WEISPZ)) THEN
+        ALLOCATE (WEISPZ(NSPZ))      
+        DO 1 JSPZ=1,NSPZ
+          WEISPZ(JSPZ)=-1.
     1 CONTINUE
+      ENDIF
+
+!$OMP MASTER        
 C
       SUMM = SUM(SORWGT(1:NSRFSI(ISTRA),ISTRA))
 c  at this point: SUMM .gt.0 already verified in calling routine (NLSRON)
@@ -351,6 +362,8 @@ C
         X2LINE = 0._DP
       END IF
 
+!$OMP END MASTER
+      
       RETURN
       END SUBROUTINE EIRENE_LOCAT0
 C

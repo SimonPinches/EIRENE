@@ -16,12 +16,13 @@ endif()
 
 # Adds compiler flags to all build types.
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
-  set(CMAKE_Fortran_FLAGS_RELEASE "-fp-model source")
-  set(CMAKE_Fortran_FLAGS_DEBUG "-g -warn all,nointerfaces -check all -traceback")
+	set(CMAKE_Fortran_FLAGS_RELEASE "-O2 -traceback -fp-model source -fpp -xHost -qoverride-limits -qopenmp")
+#  set(CMAKE_Fortran_FLAGS_DEBUG "-g -warn all,nointerfaces -check all -traceback -cpp -DTRACE")
+        set(CMAKE_Fortran_FLAGS_DEBUG "-g -warn all,nointerfaces -check all -traceback -fpp -qopenmp") # -qno-openmp")
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
-  set(CMAKE_Fortran_FLAGS_RELEASE "-O3 -fopenmp")
-  set(CMAKE_Fortran_FLAGS_DEBUG "-g -Wall -fcheck=all -fopenmp")
-  set(CMAKE_Fortran_FLAGS_COVERAGE "-g -fprofile-arcs -ftest-coverage -fopenmp")
+  set(CMAKE_Fortran_FLAGS_RELEASE "-O2 -fbacktrace -fopenmp -cpp")
+  set(CMAKE_Fortran_FLAGS_DEBUG "-g -Wall -fcheck=all -fopenmp -fbacktrace -cpp") #-ffpe-trap=denorm")
+  set(CMAKE_Fortran_FLAGS_COVERAGE "-g -fprofile-arcs -ftest-coverage")
 endif()
 
 # Output names and postfix.
@@ -113,14 +114,6 @@ if (MPI)
   include_directories(${MPI_Fortran_INCLUDE_PATH})
 endif()
 
-# Add option to control OpenMP will be used
-option(OPENMP "Build with OpenMP" ON)
-if (OPENMP)
-  message("-- Adding openMP ")
-  find_package(OpenMP REQUIRED)
-  include_directories(${OpenMP_Fortran_INCLUDE_PATH})
-endif()
-
 # Finds all fortran files (*.[fF]/*.[fF]90) in the source directory and extract the 
 # relative path. Relative path is stored in variable 'fortran_dirs'.
 message(STATUS "Detecting fortran files (*.[fF]/*.[fF]90) in subdirectories of " 
@@ -153,9 +146,9 @@ set(plotpath "")
 if( LibGRS AND LibGKS AND LibX11 AND Libz AND LibXt )
   list(APPEND plotpath ${src_plotting})
 else()
-#  list(APPEND plotpath ${src_plot_dummy})
-  list(APPEND plotpath ${src_plotting})
-  list(APPEND plotpath ${src_grsoft-dummy})
+  list(APPEND plotpath ${src_plot_dummy})
+#  list(APPEND plotpath ${src_plotting})
+#  list(APPEND plotpath ${src_grsoft-dummy})
 endif()
 
 # Specify interface and user-routines to use.
@@ -182,9 +175,9 @@ add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno}
 # Adds eirene executable to the project and links it to the MPI library.
 add_executable(eirene main-routines/eirene_main.f)
 if (MPI)
-  target_link_libraries(eirene EIRENE ${MPI_Fortran_LIBRARIES} ${OpenMP_Fortran_LIBRARIES})
+  target_link_libraries(eirene EIRENE ${MPI_Fortran_LIBRARIES})
 else()
-  target_link_libraries(eirene EIRENE ${OpenMP_Fortran_LIBRARIES})
+  target_link_libraries(eirene EIRENE)
 endif()
 
 if(LibGKS AND LibGRS AND LibX11 AND Libz AND LibXt)
