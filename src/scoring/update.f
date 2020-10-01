@@ -227,7 +227,6 @@ C  DEFAULT TRACKLENGTH ESTIMATOR
           IPLS=LGXCX(IXSPZ,IXCX,1)
 
           IF (LGVAC(IRDO,IPLS)) CYCLE
-!$OMP ATOMIC WRITE
           LOGPLS(IPLS,ISTRA)=.TRUE.
 C
           WTRSIG=WTR*SIGVCX(IRCX)
@@ -255,7 +254,6 @@ C  POST-COLLISION RATES, ALL SECONDARIES (TEST AND BULK PARTICLES)
 C  FIRST SECONDARY: PREVIOUS BULK ION IPL
             IF (N1STX(IRCX,1).EQ.1) THEN
               IAT1=N1STX(IRCX,2)
-!$OMP ATOMIC WRITE
               LOGATM(IAT1,ISTRA)=.TRUE.
               IF (LPXAT) THEN
 !$OMP ATOMIC
@@ -264,7 +262,6 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
               END IF
             ELSEIF (N1STX(IRCX,1).EQ.2) THEN
               IML1=N1STX(IRCX,2)
-!$OMP ATOMIC WRITE
               LOGMOL(IML1,ISTRA)=.TRUE.
               IF (LPXML) THEN
 !$OMP ATOMIC
@@ -273,7 +270,6 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
               END IF
             ELSEIF (N1STX(IRCX,1).EQ.3) THEN
               IIO1=N1STX(IRCX,2)
-!$OMP ATOMIC WRITE
               LOGION(IIO1,ISTRA)=.TRUE.
               IF (LPXIO) THEN
 !$OMP ATOMIC
@@ -282,7 +278,6 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
               END IF
             ELSEIF (N1STX(IRCX,1).EQ.4) THEN
               IPL1=N1STX(IRCX,2)
-!$OMP ATOMIC WRITE
               LOGPLS(IPL1,ISTRA)=.TRUE.
               IF (LPXPL) THEN
 !$OMP ATOMIC
@@ -293,7 +288,6 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
 C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
             IF (N2NDX(IRCX,1).EQ.1) THEN
               IAT2=N2NDX(IRCX,2)
-!$OMP ATOMIC WRITE
               LOGATM(IAT2,ISTRA)=.TRUE.
               IF (LPXAT) THEN
 !$OMP ATOMIC
@@ -302,7 +296,6 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
               END IF
             ELSEIF (N2NDX(IRCX,1).EQ.2) THEN
               IML2=N2NDX(IRCX,2)
-!$OMP ATOMIC WRITE
               LOGMOL(IML2,ISTRA)=.TRUE.
               IF (LPXML) THEN
 !$OMP ATOMIC
@@ -311,7 +304,6 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
               END IF
             ELSEIF (N2NDX(IRCX,1).EQ.3) THEN
               IIO2=N2NDX(IRCX,2)
-!$OMP ATOMIC WRITE
               LOGION(IIO2,ISTRA)=.TRUE.
               IF (LPXIO) THEN
 !$OMP ATOMIC
@@ -320,7 +312,6 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
               END IF
             ELSEIF (N2NDX(IRCX,1).EQ.4) THEN
               IPL2=N2NDX(IRCX,2)
-!$OMP ATOMIC WRITE
               LOGPLS(IPL2,ISTRA)=.TRUE.
               IF (LPXPL) THEN
 !$OMP ATOMIC
@@ -353,7 +344,6 @@ C  POST-COLLISION RATES, ALL SECONDARIES (TEST AND BULK PARTICLES)
 C  FIRST SECONDARY: PREVIOUS BULK ION IPL
               IF (N1STX(IRCX,1).EQ.1) THEN
                 IAT1=N1STX(IRCX,2)
-!$OMP ATOMIC WRITE
                 LOGATM(IAT1,ISTRA)=.TRUE.
                 IF (LEXAT) THEN
 !$OMP ATOMIC
@@ -361,7 +351,6 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
                 ENDIF
               ELSEIF (N1STX(IRCX,1).EQ.2) THEN
                 IML1=N1STX(IRCX,2)
-!$OMP ATOMIC WRITE
                 LOGMOL(IML1,ISTRA)=.TRUE.
                 IF (LEXML) THEN
 !$OMP ATOMIC
@@ -369,7 +358,6 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
                 ENDIF
               ELSEIF (N1STX(IRCX,1).EQ.3) THEN
                 IIO1=N1STX(IRCX,2)
-!$OMP ATOMIC WRITE
                 LOGION(IIO1,ISTRA)=.TRUE.
                 IF (LEXIO) THEN
 !$OMP ATOMIC
@@ -377,7 +365,6 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
                 ENDIF
               ELSEIF (N1STX(IRCX,1).EQ.4) THEN
                 IPL1=N1STX(IRCX,2)
-!$OMP ATOMIC WRITE
                 LOGPLS(IPL1,ISTRA)=.TRUE.
                 IF (LEXPL) THEN
 !$OMP ATOMIC
@@ -388,7 +375,6 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
 C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
               IF (N2NDX(IRCX,1).EQ.1) THEN
                 IAT2=N2NDX(IRCX,2)
-!$OMP ATOMIC WRITE
                 LOGATM(IAT2,ISTRA)=.TRUE.
                 IF (LEXAT) THEN
 !$OMP ATOMIC
@@ -396,7 +382,6 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
                 ENDIF
               ELSEIF (N2NDX(IRCX,1).EQ.2) THEN
                 IML2=N2NDX(IRCX,2)
-!$OMP ATOMIC WRITE
                 LOGMOL(IML2,ISTRA)=.TRUE.
                 IF (LEXML) THEN
 !$OMP ATOMIC
@@ -404,7 +389,6 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
                 ENDIF
               ELSEIF (N2NDX(IRCX,1).EQ.3) THEN
                 IIO2=N2NDX(IRCX,2)
-!$OMP ATOMIC WRITE
                 LOGION(IIO2,ISTRA)=.TRUE.
                 IF (LEXIO) THEN
 !$OMP ATOMIC
@@ -412,7 +396,6 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
                 ENDIF
               ELSEIF (N2NDX(IRCX,1).EQ.4) THEN
                 IPL2=N2NDX(IRCX,2)
-!$OMP ATOMIC WRITE
                 LOGPLS(IPL2,ISTRA)=.TRUE.
                 IF (LEXPL) THEN
 !$OMP ATOMIC
@@ -443,7 +426,6 @@ C  EXX AND EXPL SHOULD NOT BE UPDATED HERE, BECAUSE THEY ARE SUMMED OVER SPECIES
 
           IF (LGVAC(IRDO,IPLS)) CYCLE
 
-!$OMP ATOMIC WRITE
           LOGPLS(IPLS,ISTRA)=.TRUE.
 C
           WTRSIG=WTR*SIGVEL(IREL)
@@ -547,7 +529,6 @@ C
 C  POST-COLLISION CONTRIBUTIONS
             DO IA=1,IPATEI(IREI,0)
               IAT=IPATEI(IREI,IA)
-!$OMP ATOMIC WRITE
               LOGATM(IAT,ISTRA)=.TRUE.
               IF (LPXAT) THEN
 !$OMP ATOMIC
@@ -558,7 +539,6 @@ C  POST-COLLISION CONTRIBUTIONS
 
             DO IM=1,IPMLEI(IREI,0)
               IML=IPMLEI(IREI,IM)
-!$OMP ATOMIC WRITE
               LOGMOL(IML,ISTRA)=.TRUE.
               IF (LPXML) THEN
 !$OMP ATOMIC
@@ -569,7 +549,6 @@ C  POST-COLLISION CONTRIBUTIONS
 
             DO II=1,IPIOEI(IREI,0)
               IIO=IPIOEI(IREI,II)
-!$OMP ATOMIC WRITE
               LOGION(IIO,ISTRA)=.TRUE.
               IF (LPXIO) THEN
 !$OMP ATOMIC
@@ -580,7 +559,6 @@ C  POST-COLLISION CONTRIBUTIONS
 
             DO IP=1,IPPLEI(IREI,0)
               IPL=IPPLEI(IREI,IP)
-!$OMP ATOMIC WRITE
               LOGPLS(IPL,ISTRA)=.TRUE.
               IF (LPXPL) THEN
 !$OMP ATOMIC
@@ -633,7 +611,6 @@ C
               IF (LEXPL) THEN
                 DO IP=1,IPPLEI(IREI,0)
                   IPL=IPPLEI(IREI,IP)
-!$OMP ATOMIC WRITE
                   LOGPLS(IPL,ISTRA)=.TRUE.
 cdr  this is incorrect. esigei is sum over ipl species.
 cdr  it only happens to be correct if the post-collision bulk species are the same (ipl),
@@ -662,7 +639,6 @@ C
           IPLS=LGXPI(IXSPZ,IXPI,1)
           IF (LGVAC(IRDO,IPLS)) CYCLE
 
-!$OMP ATOMIC WRITE
           LOGPLS(IPLS,ISTRA)=.TRUE.
 
           WTRSIG=WTR*SIGVPI(IRPI)
@@ -697,7 +673,6 @@ C
 C
             DO IA=1,IPATPI(IRPI,0)
               IAT=IPATPI(IRPI,IA)
-!$OMP ATOMIC WRITE
               LOGATM(IAT,ISTRA)=.TRUE.
               IF (LPXAT) THEN
 !$OMP ATOMIC
@@ -708,7 +683,6 @@ C
 C
             DO IM=1,IPMLPI(IRPI,0)
               IML=IPMLPI(IRPI,IM)
-!$OMP ATOMIC WRITE
               LOGMOL(IML,ISTRA)=.TRUE.
               IF (LPXML) THEN
 !$OMP ATOMIC
@@ -719,7 +693,6 @@ C
 C
             DO II=1,IPIOPI(IRPI,0)
               IIO=IPIOPI(IRPI,II)
-!$OMP ATOMIC WRITE
               LOGION(IIO,ISTRA)=.TRUE.
               IF (LPXIO) THEN
 !$OMP ATOMIC
@@ -730,7 +703,6 @@ C
 
             DO IP=1,IPPLPI(IRPI,0)
               IPL=IPPLPI(IRPI,IP)
-!$OMP ATOMIC WRITE
               LOGPLS(IPL,ISTRA)=.TRUE.
               IF (LPXPL) THEN
 !$OMP ATOMIC
@@ -780,7 +752,6 @@ C
               IF (LEXPL) THEN
                 DO IP=1,IPPLPI(IRPI,0)
                   IPL=IPPLPI(IRPI,IP)
-!$OMP ATOMIC WRITE
                   LOGPLS(IPL,ISTRA)=.TRUE.
 cdr  this is incorrect. esigpi is sum over ipl species.
 cdr  it only happens to be correct if the post-collision bulk species are all the same (ipl),

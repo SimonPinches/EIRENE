@@ -520,7 +520,6 @@ C Volume source
             WTOTA(IATM,ISTRA)=WTOTA(IATM,ISTRA)+WEIGHT
 !$OMP ATOMIC
             ETOTA(ISTRA)=ETOTA(ISTRA)+E0*WEIGHT
-!$OMP ATOMIC WRITE
             LOGATM(IATM,ISTRA)=.TRUE.
           CASE( 2 )
 C Volume source
@@ -528,7 +527,6 @@ C Volume source
             WTOTM(IMOL,ISTRA)=WTOTM(IMOL,ISTRA)+WEIGHT
 !$OMP ATOMIC
             ETOTM(ISTRA)=ETOTM(ISTRA)+E0*WEIGHT
-!$OMP ATOMIC WRITE
             LOGMOL(IMOL,ISTRA)=.TRUE.
           CASE( 3 )
 C Volume source
@@ -536,7 +534,6 @@ C Volume source
             WTOTI(IION,ISTRA)=WTOTI(IION,ISTRA)+WEIGHT
 !$OMP ATOMIC
             ETOTI(ISTRA)=ETOTI(ISTRA)+E0*WEIGHT
-!$OMP ATOMIC WRITE
             LOGION(IION,ISTRA)=.TRUE.
           CASE( 4 )
 C Surface source parameter set below
@@ -548,7 +545,6 @@ C Volume source
             WTOTPH(IPHOT,ISTRA)=WTOTPH(IPHOT,ISTRA)+WEIGHT
 !$OMP ATOMIC
             ETOTPH(ISTRA)=ETOTPH(ISTRA)+E0*WEIGHT
-!$OMP ATOMIC WRITE
             LOGPHOT(IPHOT,ISTRA)=.TRUE.
           CASE DEFAULT
             WRITE (iunout,*) 'ERROR IN LOCATE, CALL EIRENE_EXIT'
@@ -1189,7 +1185,6 @@ C
           ELSE
             GOTO 998
           ENDIF
-!$OMP ATOMIC WRITE
           LOGATM(IATM,ISTRA)=.TRUE.
           IF (EMAX.GT.0) THEN
             E0=EMAX
@@ -1276,7 +1271,6 @@ C
             GOTO 998
           ENDIF
 C
-!$OMP ATOMIC WRITE
           LOGMOL(IMOL,ISTRA)=.TRUE.
           IF (EMAX.GT.0.D0) THEN
 C  MONOENERGETIC DISTRIBUTION
@@ -1400,7 +1394,6 @@ C   NO SHEATH POTENTIAL TO BE ADDED
           ELSE
             ESHET=0.
           ENDIF
-!$OMP ATOMIC WRITE
           LOGION(IION,ISTRA)=.TRUE.
           IF (EMAX.GT.0.D0) THEN
 C  CONSTANT VELOCITY
@@ -1538,7 +1531,6 @@ C
             CRTY=-CRTY
             CRTZ=-CRTZ
 C
-!$OMP ATOMIC WRITE
             LOGPLS(IPLS,ISTRA)=.TRUE.
             IF (EMAX.GT.0.D0) THEN
 C  CONSTANT VELOCITY
@@ -1751,7 +1743,6 @@ C                                             IF THEY ARE FOLLOWED. OTHERWISE: O
 C
               SELECT CASE (ITYP)
                 CASE (1)
-!$OMP ATOMIC WRITE
                   LOGATM(IATM,ISTRA)=.TRUE.
                   IF (LPPAT) THEN
 !$OMP ATOMIC
@@ -1762,7 +1753,6 @@ C
                     EPAT(NCELLT)=EPAT(NCELLT)+E0*WEIGHT
                   ENDIF
                 CASE (2)
-!$OMP ATOMIC WRITE
                   LOGMOL(IMOL,ISTRA)=.TRUE.
                   IF (LPPML) THEN
 !$OMP ATOMIC
@@ -1773,7 +1763,6 @@ C
                     EPML(NCELLT)=EPML(NCELLT)+E0*WEIGHT
                   ENDIF
                 CASE (3)
-!$OMP ATOMIC WRITE
                   LOGION(IION,ISTRA)=.TRUE.
                   IF (LPPIO) THEN
 !$OMP ATOMIC
@@ -1847,7 +1836,6 @@ C                                             IF THEY ARE FOLLOWED. OTHERWISE: O
 C
               SELECT CASE (ITYP)
                 CASE (1)
-!$OMP ATOMIC WRITE
                   LOGATM(IATM,ISTRA)=.TRUE.
                   IF (LPPAT) THEN
 !$OMP ATOMIC
@@ -1858,7 +1846,6 @@ C
                      EPAT(NCELLT)=EPAT(NCELLT)+E0*WEIGHT
                   ENDIF
                 CASE (2)
-!$OMP ATOMIC WRITE
                   LOGMOL(IMOL,ISTRA)=.TRUE.
                   IF (LPPML) THEN
 !$OMP ATOMIC
@@ -1869,7 +1856,6 @@ C
                      EPML(NCELLT)=EPML(NCELLT)+E0*WEIGHT
                   ENDIF
                 CASE (3)
-!$OMP ATOMIC WRITE
                   LOGION(IION,ISTRA)=.TRUE.
                   IF (LPPIO) THEN
 !$OMP ATOMIC
@@ -1970,7 +1956,6 @@ c           DUMV(3)=0._DP
             CALL EIRENE_VELOCX(NCELL,VXO,VYO,VZO,VO,IO,NO,VELQ,NFLAG,
      .                         IDUM,DUMT,DUMV)
             E0=VELQ*CVRSSP(IPLS)
-!$OMP ATOMIC WRITE
             LOGPLS(IPLS,ISTRA)=.TRUE.
 !$OMP ATOMIC
             WTOTP(IPLS,ISTRA)=WTOTP(IPLS,ISTRA)-WEIGHT
@@ -2043,7 +2028,6 @@ C  IS THERE A BULK SECONDARY ?
               ITYP_B1=4
               IPLS_B1=NPLPRC(IRRC)
               IF (IPLS_B1.LE.0.OR.IPLS_B1.GT.NPLSI) GOTO 999
-!$OMP ATOMIC WRITE
               LOGPLS(IPLS_B1,ISTRA)=.TRUE.
               WEIGHT_B1=WEIGHT
               E0_B1=E0
@@ -2085,7 +2069,6 @@ C   BULK SECONDARY ?
               ITYP_B2=4
               IPLS_B2=NPLPRC_2(IRRC)
               IF (IPLS_B2.LE.0.OR.IPLS_B2.GT.NPLSI) GOTO 999
-!$OMP ATOMIC WRITE
               LOGPLS(IPLS_B2,ISTRA)=.TRUE.
               WEIGHT_B2=WEIGHT
               E0_B2=E0
@@ -2238,7 +2221,6 @@ C
 C  VOLUME TALLIES FOR TEST SECONDARIES
           SELECT CASE (ITYP)
             CASE (1)
-!$OMP ATOMIC WRITE
               LOGATM(IATM,ISTRA)=.TRUE.
               IF (LPPAT) THEN
 !$OMP ATOMIC
@@ -2250,7 +2232,6 @@ C  VOLUME TALLIES FOR TEST SECONDARIES
               ENDIF
               LAST_EVENT%ISPEZ = IATM
             CASE (2)
-!$OMP ATOMIC WRITE
               LOGMOL(IMOL,ISTRA)=.TRUE.
               IF (LPPML) THEN
 !$OMP ATOMIC
@@ -2262,7 +2243,6 @@ C  VOLUME TALLIES FOR TEST SECONDARIES
               ENDIF
               LAST_EVENT%ISPEZ = IMOL
             CASE (3)
-!$OMP ATOMIC WRITE
               LOGION(IION,ISTRA)=.TRUE.
               IF (LPPIO) THEN
 !$OMP ATOMIC
@@ -2274,7 +2254,6 @@ C  VOLUME TALLIES FOR TEST SECONDARIES
               ENDIF
               LAST_EVENT%ISPEZ = IION
             CASE (0)
-!$OMP ATOMIC WRITE
               LOGPHOT(IPHOT,ISTRA)=.TRUE.
               IF (LPPPHT) THEN
 !$OMP ATOMIC
@@ -2288,7 +2267,6 @@ C  VOLUME TALLIES FOR TEST SECONDARIES
           END SELECT
 C  TALLIES FOR BULK-SECONDARIES (IF ANY)
           IF (ITYP_B1.EQ.4) THEN
-!$OMP ATOMIC WRITE
             LOGPLS(IPLS_B1,ISTRA)=.TRUE.
             IF (LPPPL) THEN
 !$OMP ATOMIC
@@ -2301,7 +2279,6 @@ C  TALLIES FOR BULK-SECONDARIES (IF ANY)
      .                                      E0_B1*WEIGHT_B1
             ENDIF
           ELSEIF (ITYP_B2.EQ.4) THEN
-!$OMP ATOMIC WRITE
             LOGPLS(IPLS_B2,ISTRA)=.TRUE.
             IF (LPPPL)THEN
 !$OMP ATOMIC

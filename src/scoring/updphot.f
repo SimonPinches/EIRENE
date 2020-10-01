@@ -217,7 +217,6 @@ cdr       if(IRPH == 0) cycle
 cdr
           IPLS=PHV_LGPHOT(IPHOT,IAPH,1)
 cdr       UPDF=PHV_LGPHOT(IPHOT,IAPH,4)
-!$OMP ATOMIC WRITE
           LOGPLS(IPLS,ISTRA)=.TRUE.
 C
           WTRSIG=WTR*SIGVPH(IRPH)
@@ -252,7 +251,6 @@ C  FIRST SECONDARY:
               IF (PHV_N1STOTPH(iphot,IRPH,1).EQ.1) THEN
                 IAT1=PHV_N1STOTPH(iphot,IRPH,2)
                 INUM=PHV_N1STOTPH(iphot,IRPH,3)
-!$OMP ATOMIC WRITE
                 LOGATM(IAT1,ISTRA)=.TRUE.
                 IF (LPPHAT) THEN
 !$OMP ATOMIC
@@ -261,7 +259,6 @@ C  FIRST SECONDARY:
                 END IF
               ELSEIF (PHV_N1STOTPH(iphot,IRPH,1).EQ.2) THEN
                 IML1=PHV_N1STOTPH(iphot,IRPH,2)
-!$OMP ATOMIC WRITE
                 LOGMOL(IML1,ISTRA)=.TRUE.
                 IF (LPPHML) THEN
 !$OMP ATOMIC
@@ -271,7 +268,6 @@ C  FIRST SECONDARY:
               ELSEIF (PHV_N1STOTPH(iphot,IRPH,1).EQ.3) THEN
                 IIO1=PHV_N1STOTPH(iphot,IRPH,2)
                 INUM=PHV_N1STOTPH(iphot,IRPH,3)
-!$OMP ATOMIC WRITE
                 LOGION(IIO1,ISTRA)=.TRUE.
                 IF (LPPHIO) THEN
 !$OMP ATOMIC
@@ -282,7 +278,6 @@ C  FIRST SECONDARY:
                 IPL1=PHV_N1STOTPH(iphot,IRPH,2)
 C               INUM=PHV_N1STOTPH(iphot,IRPH,3)
                 INUM=1
-!$OMP ATOMIC WRITE
                 LOGPLS(IPL1,ISTRA)=.TRUE.
                 IF (LPPHPL) THEN
 !$OMP ATOMIC
@@ -301,7 +296,6 @@ csw added branch
                 inum=phv_n1stotph(iphot,IRPH,3)
 cdr  test iph1 > 0 only once, in initialisation. here: removed
                 if ((inum > 0) .and. (iph1 > 0)) then
-!$OMP ATOMIC WRITE
                   logphot(iph1,istra)=.true.
                   IF (LPPHPHT) THEN
 !$OMP ATOMIC
@@ -318,7 +312,6 @@ C  SECOND SECONDARY:
               IF (PHV_N2NDOTPH(iphot,IRPH,1).EQ.1) THEN
                 IAT2=PHV_N2NDOTPH(iphot,IRPH,2)
                 INUM=PHV_N2NDOTPH(iphot,IRPH,3)
-!$OMP ATOMIC WRITE
                 LOGATM(IAT2,ISTRA)=.TRUE.
                 IF (LPPHAT) THEN
 !$OMP ATOMIC
@@ -327,7 +320,6 @@ C  SECOND SECONDARY:
                 END IF
               ELSEIF (PHV_N2NDOTPH(iphot,IRPH,1).EQ.2) THEN
                 IML2=PHV_N2NDOTPH(iphot,IRPH,2)
-!$OMP ATOMIC WRITE
                 LOGMOL(IML2,ISTRA)=.TRUE.
                 IF (LPPHML) THEN
 !$OMP ATOMIC
@@ -337,7 +329,6 @@ C  SECOND SECONDARY:
               ELSEIF (PHV_N2NDOTPH(iphot,IRPH,1).EQ.3) THEN
                 IIO2=PHV_N2NDOTPH(iphot,IRPH,2)
                 INUM=PHV_N2NDOTPH(iphot,IRPH,3)
-!$OMP ATOMIC WRITE
                 LOGION(IIO2,ISTRA)=.TRUE.
                 IF (LPPHIO) THEN
 !$OMP ATOMIC
@@ -348,7 +339,6 @@ C  SECOND SECONDARY:
                 IPL2=PHV_N2NDOTPH(iphot,IRPH,2)
 C               INUM=PHV_N2NDOTPH(iphot,IRPH,3)
                 INUM=1
-!$OMP ATOMIC WRITE
                 LOGPLS(IPL2,ISTRA)=.TRUE.
                 IF (LPPHPL) THEN
 !$OMP ATOMIC
@@ -366,7 +356,6 @@ csw added branch
                 inum=phv_n2ndotph(iphot,IRPH,3)
 cdr test iph2 > 0 removed, to be done only once in initialisation
                 if ((inum > 0) .and. (iph2 > 0)) then
-!$OMP ATOMIC WRITE
                   logphot(iph2,istra)=.true.
                   IF (LPPHPHT) THEN
 !$OMP ATOMIC
@@ -431,7 +420,6 @@ cdr         ELSEIF (PHV_N1STOTPH(iphot,IRPH,1).EQ.0) THEN
                 IPH1=PHV_N1STOTPH(iphot,IRPH,2)
                 INUM=PHV_N1STOTPH(iphot,IRPH,2)
 cdr  if(iph1 > 0) then abfrage hier raus, nur in initialisation
-!$OMP ATOMIC WRITE
                 LOGPHOT(IPH1,ISTRA)=.TRUE.
                 IF (LEPHPHT) THEN
 !$OMP ATOMIC
@@ -471,7 +459,6 @@ cdr         ELSEIF (PHV_N2NDOTPH(iphot,IRPH,1).EQ.0) THEN
                 INUM=PHV_N2NDOTPH(iphot,IRPH,3)
 cdr if(iph2 > 0) then  ! dieser test nur in initialisation phase
                 if ((inum > 0) .and. (iph2 > 0)) then
-!$OMP ATOMIC WRITE
                   LOGPHOT(IPH2,ISTRA)=.TRUE.
                   IF (LEPHPHT) THEN
 !$OMP ATOMIC

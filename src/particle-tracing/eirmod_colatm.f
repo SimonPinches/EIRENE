@@ -314,7 +314,6 @@ cdr: this is incorrect. esigei must be split into ipl secondaries
 cdr  it only happens to be correct if the post-collision bulk species are all the same (=ipl),
 cdr  because then esigei is the total for this species.
               IPL=IPPLEI(IREI,IP)
-!$OMP ATOMIC WRITE
               LOGPLS(IPL,ISTRA)=.TRUE.
 !$OMP ATOMIC
               EAPL(IPL,NCELL)=EAPL(IPL,NCELL)+WEIGHT*ESIGEI(IREI,4)
@@ -1005,7 +1004,6 @@ cdr EAAT, EAML, EAIO :  SCORE EXACT GAINS LATER.
             DO IP=1,IPPLPI(IRPI,0)
 cdr:  this is incorrect. esigpi must be split into ipl secondaries
               IPL=IPPLPI(IRPI,IP)
-!$OMP ATOMIC WRITE
               LOGPLS(IPL,ISTRA)=.TRUE.
 !$OMP ATOMIC
               EAPL(IPL,NCELL)=EAPL(IPL,NCELL)+WEIGHT*ESIGPI(IRPI,4)
