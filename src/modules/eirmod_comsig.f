@@ -14,7 +14,8 @@ cdr  Jan. 2018  mod_addv added, as well as CNT data structure.
       PRIVATE
 
       PUBLIC :: EIRENE_ALLOC_COMSIG, EIRENE_DEALLOC_COMSIG,
-     P          EIRENE_INIT_COMSIG, TEMIS_MODEL, TCOMPO, TCONTRIB,
+     P          EIRENE_INIT_COMSIG, EIRENE_BROADCAST_COMSIG,
+     p          TEMIS_MODEL, TCOMPO, TCONTRIB,
      P          ASSIGNMENT(=)
 
 
@@ -218,5 +219,131 @@ C
 
       RETURN
       END SUBROUTINE EIRENE_CONTRIB_TO_CONTRIB
+
+
+      SUBROUTINE EIRENE_BROADCAST_COMSIG(ME)
+      USE EIRMOD_MPI
+      INTEGER, INTENT(IN) :: ME
+      INTEGER :: IER
+
+      IF ((ME /= 0) .AND. (NCHOR > 0)) CALL EIRENE_ALLOC_COMSIG
+
+      IF (ALLOCATED(RCMSIG)) THEN
+        CALL MPI_BCAST (RCMSIG,NCMSIG,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (FUFFER,NCHOR*NCHEN,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (ENERGY,NCHEN,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (ICMSIG,MCMSIG,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (NLSTCHR,NCHOR,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (CH_LINE_NAME,80*NCHOR,MPI_CHARACTER,
+     .                   0,MPI_COMM_WORLD,ier)
+      END IF
+      CALL MPI_BCAST (NCHORI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NCHENI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+cdr  additional output tallies added by code itself (rather than via input block 14).
+      CALL MPI_BCAST (MOD_ADDV,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+
+      IF (NUM_LINES > 0) THEN
+        CALL EIRENE_BROAD_EMIS_LINES(ME)
+      END IF
+      
+      END SUBROUTINE EIRENE_BROADCAST_COMSIG
+
+
+      SUBROUTINE EIRENE_BROAD_EMIS_LINES(ME)
+      USE EIRMOD_MPI
+      INTEGER, INTENT(IN) :: ME
+      INTEGER :: I, J, K, NUM_COMPO, NUM_CONTRIB, IER
+      TYPE(TCONTRIB) :: CNT
+
+      IF (.NOT.ALLOCATED(EMIS_LINES)) THEN
+        ALLOCATE (EMIS_LINES(NUM_LINES))
+        EMIS_LINES%LINE_NAME = REPEAT(' ',80)
+        EMIS_LINES%NUM_COMPO = 0
+      END IF
+
+      DO I = 1, NUM_LINES
+
+        CALL MPI_BCAST (EMIS_LINES(I)%LINE_NAME,80,MPI_CHARACTER,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (EMIS_LINES(I)%NUM_COMPO,1,MPI_INTEGER,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (EMIS_LINES(I)%IADV_TOTAL,1,MPI_INTEGER,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (EMIS_LINES(I)%EINSTEIN,1,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (EMIS_LINES(I)%TRANS_EN,1,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (EMIS_LINES(I)%ENERGY,1,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (EMIS_LINES(I)%POP_ESC,1,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
+
+        NUM_COMPO = EMIS_LINES(I)%NUM_COMPO
+
+        IF (ME /= 0) THEN
+          ALLOCATE (EMIS_LINES(I)%COMPO(NUM_COMPO))
+        END IF
+
+        DO J = 1, NUM_COMPO
+          CALL MPI_BCAST (EMIS_LINES(I)%COMPO(J)%COMPO_NAME,80,
+     .                    MPI_CHARACTER,0,MPI_COMM_WORLD,ier)
+          CALL MPI_BCAST (EMIS_LINES(I)%COMPO(J)%NUM_CONTRIB,1,
+     .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+          CALL MPI_BCAST (EMIS_LINES(I)%COMPO(J)%IADV,1,
+     .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+
+          NUM_CONTRIB = EMIS_LINES(I)%COMPO(J)%NUM_CONTRIB
+
+          IF (ME /= 0) THEN
+            ALLOCATE (EMIS_LINES(I)%COMPO(J)%CONTRIB(NUM_CONTRIB))
+          END IF
+
+          DO K = 1, NUM_CONTRIB
+
+            IF (ME == 0) CNT = EMIS_LINES(I)%COMPO(J)%CONTRIB(K)
+
+            CALL MPI_BCAST (CNT%ISP,3,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%ITP,3,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%IRATIO,1,MPI_INTEGER,
+     .                      0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%IRC,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%IRC_RAT,2,MPI_INTEGER,
+     .                      0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%IZ,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%IZ_RAT,2,MPI_INTEGER,
+     .                      0,MPI_COMM_WORLD,ier)
+
+            CALL MPI_BCAST (CNT%FNAME,8,MPI_CHARACTER,
+     .                      0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%FRATIO,2*8,MPI_CHARACTER,
+     .                      0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%H123,4,MPI_CHARACTER,
+     .                      0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%RAT_H123,2*4,MPI_CHARACTER,
+     .                      0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%ELEMENT,2,MPI_CHARACTER,
+     .                      0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%RAT_ELEMENT,2*2,MPI_CHARACTER,
+     .                      0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%REACTION,9,MPI_CHARACTER,
+     .                      0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%RAT_REACTION,2*9,MPI_CHARACTER,
+     .                      0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%CR,3,MPI_CHARACTER,
+     .                      0,MPI_COMM_WORLD,ier)
+            CALL MPI_BCAST (CNT%RAT_CR,2*3,MPI_CHARACTER,
+     .                      0,MPI_COMM_WORLD,ier)
+
+            IF (ME /= 0) EMIS_LINES(I)%COMPO(J)%CONTRIB(K) = CNT
+
+          END DO
+        END DO
+
+
+      END DO
+
+      RETURN
+      END SUBROUTINE EIRENE_BROAD_EMIS_LINES
 
       END MODULE EIRMOD_COMSIG

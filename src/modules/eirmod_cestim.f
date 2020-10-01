@@ -18,7 +18,7 @@ cpb Dec. 17: remove type SPECT_ARRAY, not needed in Fortran 2003
 
       PUBLIC :: EIRENE_ALLOC_CESTIM, EIRENE_DEALLOC_CESTIM,
      P          EIRENE_ASSOCIATE_CESTIM,
-     P          EIRENE_INIT_CESTIM
+     P          EIRENE_INIT_CESTIM, EIRENE_BROADCAST_CESTIM
 
 
       TYPE(EIRENE_SPECTRUM), PUBLIC, ALLOCATABLE, TARGET, SAVE ::
@@ -1827,5 +1827,122 @@ C
 
       RETURN
       END SUBROUTINE EIRENE_INIT_CESTIM
+
+
+      SUBROUTINE EIRENE_BROADCAST_CESTIM(ME)
+      USE EIRMOD_MPI
+      INTEGER, INTENT(IN) :: ME
+      INTEGER :: IER, I, NSPS
+
+      IF (ME /= 0) THEN
+        CALL EIRENE_ALLOC_CESTIM(1)
+      END IF
+
+      CALL MPI_BCAST (NFIRST,NTALV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NADDV,NTALV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (IRESC1,NTALV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (IRESC2,NTALV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NFRSTW,NTALS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NADDW,NTALS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+
+c  active and inactive tallies:
+C  OUTPUT:
+      CALL MPI_BCAST (LIVTALV,NTALV,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (LIVTALS,NTALS,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (LMISTALV,NTALV,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (LMISTALS,NTALS,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (LEA,1,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (LEM,1,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (LEIO,1,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (LEPH,1,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
+
+      IF (ME .NE. 0) THEN
+        CALL EIRENE_ALLOC_CESTIM(2)
+        CALL EIRENE_ASSOCIATE_CESTIM
+      END IF
+
+      IF (NADSPC > 0) THEN
+         IF (ME .NE. 0) THEN
+            IF (.NOT.ALLOCATED(ESTIML)) THEN
+              ALLOCATE(ESTIML(NADSPC))
+              ALLOCATE(SMESTL(NADSPC))
+            END IF
+         END IF
+         DO I=1,NADSPC
+           CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
+           CALL MPI_BCAST (ESTIML(I)%SPCMIN,1,MPI_REAL8,0,
+     .                     MPI_COMM_WORLD,ier)
+           CALL MPI_BCAST (ESTIML(I)%SPCMAX,1,MPI_REAL8,0,
+     .                     MPI_COMM_WORLD,ier)
+           CALL MPI_BCAST (ESTIML(I)%SPCDEL,1,MPI_REAL8,0,
+     .                     MPI_COMM_WORLD,ier)
+           CALL MPI_BCAST (ESTIML(I)%SPCDELI,1,MPI_REAL8,0,
+     .                     MPI_COMM_WORLD,ier)
+           CALL MPI_BCAST (ESTIML(I)%ESP_MIN,1,MPI_REAL8,0,
+     .                     MPI_COMM_WORLD,ier)
+           CALL MPI_BCAST (ESTIML(I)%ESP_MAX,1,MPI_REAL8,0,
+     .                     MPI_COMM_WORLD,ier)
+           CALL MPI_BCAST (ESTIML(I)%ESP_00,1,MPI_REAL8,0,
+     .                     MPI_COMM_WORLD,ier)
+           CALL MPI_BCAST (ESTIML(I)%SPC_XPLT,1,MPI_REAL8,0,
+     .                     MPI_COMM_WORLD,ier)
+           CALL MPI_BCAST (ESTIML(I)%SPC_YPLT,1,MPI_REAL8,0,
+     .                     MPI_COMM_WORLD,ier)
+           CALL MPI_BCAST (ESTIML(I)%SPC_SAME,1,MPI_REAL8,0,
+     .                     MPI_COMM_WORLD,ier)
+           CALL MPI_BCAST (ESTIML(I)%SPCVX,1,MPI_REAL8,0,
+     .                     MPI_COMM_WORLD,ier)
+           CALL MPI_BCAST (ESTIML(I)%SPCVY,1,MPI_REAL8,0,
+     .                     MPI_COMM_WORLD,ier)
+           CALL MPI_BCAST (ESTIML(I)%SPCVZ,1,MPI_REAL8,0,
+     .                     MPI_COMM_WORLD,ier)
+           CALL MPI_BCAST (ESTIML(I)%NSPC,1,MPI_INTEGER,0,
+     .                     MPI_COMM_WORLD,ier)
+           CALL MPI_BCAST (ESTIML(I)%ISPCTYP,1,MPI_INTEGER,0,
+     .                     MPI_COMM_WORLD,ier)
+           CALL MPI_BCAST (ESTIML(I)%ISPCSRF,1,MPI_INTEGER,0,
+     .                     MPI_COMM_WORLD,ier)
+           CALL MPI_BCAST (ESTIML(I)%IPRTYP,1,MPI_INTEGER,0,
+     .                     MPI_COMM_WORLD,ier)
+           CALL MPI_BCAST (ESTIML(I)%IPRSP,1,MPI_INTEGER,0,
+     .                     MPI_COMM_WORLD,ier)
+           CALL MPI_BCAST (ESTIML(I)%IMETSP,1,MPI_INTEGER,0,
+     .                     MPI_COMM_WORLD,ier)
+           CALL MPI_BCAST (ESTIML(I)%ISRFCLL,1,MPI_INTEGER,0,
+     .                     MPI_COMM_WORLD,ier)
+           CALL MPI_BCAST (ESTIML(I)%IDIREC,1,MPI_INTEGER,0,
+     .                     MPI_COMM_WORLD,ier)
+           CALL MPI_BCAST (ESTIML(I)%LOG,1,MPI_LOGICAL,0,
+     .                     MPI_COMM_WORLD,ier)
+
+           IF (ME .NE. 0) THEN
+             NSPS = ESTIML(I)%NSPC
+
+             IF (.NOT.ASSOCIATED(ESTIML(I)%SPC)) THEN
+               ALLOCATE(ESTIML(I)%SPC(0:NSPS+1))
+               ALLOCATE(ESTIML(I)%SDV(0:NSPS+1))
+               ALLOCATE(ESTIML(I)%SGM(0:NSPS+1))
+               ALLOCATE(ESTIML(I)%STV(0:NSPS+1))
+               ALLOCATE(ESTIML(I)%GG(0:NSPS+1))
+C  variances for sum over strata
+               ALLOCATE(SMESTL(I)%SPC(0:NSPS+1))
+               ALLOCATE(SMESTL(I)%SDV(0:NSPS+1))
+               ALLOCATE(SMESTL(I)%SGM(0:NSPS+1))
+               ALLOCATE(SMESTL(I)%STV(0:NSPS+1))
+               ALLOCATE(SMESTL(I)%GG(0:NSPS+1))
+             END IF
+             ESTIML(I)%SPC = 0._DP
+             SMESTL(I) = ESTIML(I)
+           END IF
+         END DO
+      ELSE
+        IF (ME .NE. 0) THEN
+          IF (.NOT.ALLOCATED(ESTIML)) THEN
+            ALLOCATE(ESTIML(1))
+          END IF
+        END IF
+      END IF
+      
+      END SUBROUTINE EIRENE_BROADCAST_CESTIM
 
       END MODULE EIRMOD_CESTIM

@@ -10,7 +10,8 @@ cdr Apr. 18:  added: RSQDVPH,...CNDYNPH, for species-wise synchronised pointers 
 
       PRIVATE
 
-      PUBLIC :: EIRENE_ALLOC_CZT1, EIRENE_DEALLOC_CZT1, EIRENE_INIT_CZT1
+      PUBLIC :: EIRENE_ALLOC_CZT1, EIRENE_DEALLOC_CZT1,
+     P          EIRENE_INIT_CZT1, EIRENE_BROADCAST_CZT1
 
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE :: RCZT1(:), RCZT2(:)
 
@@ -36,8 +37,7 @@ C  ZT2 ARRAY  RCZT2(NZT2)
      R RSQDVX, CVRSSX, ALMASX, CNDYNX
 
 !$OMP  THREADPRIVATE(RSQDVX,CVRSSX,ALMASX,CNDYNX)
-   
-
+cym turned into public   
       INTEGER, PUBLIC, SAVE :: NZT1, NZT2
 
 
@@ -159,5 +159,27 @@ C  ZT2 ARRAY  RCZT2(NZT2)
 
       RETURN
       END SUBROUTINE EIRENE_INIT_CZT1
+
+
+      SUBROUTINE EIRENE_BROADCAST_CZT1(ME)
+      USE EIRMOD_MPI
+      INTEGER, INTENT(IN) :: ME
+      INTEGER :: IER
+
+      IF (ME /= 0) THEN
+        CALL EIRENE_ALLOC_CZT1(1)
+        CALL EIRENE_ALLOC_CZT1(2)
+      END IF
+
+      CALL MPI_BCAST (RCZT1,NZT1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (RCZT2,NZT2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+cdr these next two fields ZT1 and ZRG should go into COMXS,
+cdr they belong, logically, to the pre-computed 
+cdr plasma tallies DEINL, DIINL, TEINL, TIINL used to speed up code.
+cdr They all should be removed in "storage save mode"
+      CALL MPI_BCAST (ZT1,NPLS*NRAD,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (ZRG,NPLS*NRAD,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+
+      END SUBROUTINE EIRENE_BROADCAST_CZT1
 
       END MODULE EIRMOD_CZT1

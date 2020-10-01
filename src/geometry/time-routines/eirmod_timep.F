@@ -18,7 +18,8 @@ cym 04/2020 turned into a module because of SAVE attribute
 C
       REAL(DP) :: HELP, GS, GC, F, XNEN, DUM, SUM, BB, DY, X0TEST,
      .          Y0TEST, V1, V2, T1, ZRADS, ZRD, WIN1, X000, Z0T,
-     .          TWIN1, XT, Y000, TSS, X0T, Y0T
+     .          TWIN1, XT, Y000, TSS, X0T, Y0T,
+     .          DYZR
       INTEGER :: IANP, I, IENP, JHELP, ISW, JJC, J1,
      .           NRCLLP, LHELP, J2, INCY, JN, ICOU, NYSAVE, NHELP,
      .           I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS,
@@ -33,6 +34,7 @@ cdr logicals for intersection with poloidal surfaces
 !$OMP THREADPRIVATE(HELP, GS, GC, F, XNEN, DUM, SUM, BB, DY, X0TEST,
 !$OMP&  Y0TEST, V1, V2, T1, ZRADS, ZRD, WIN1, X000, Z0T,
 !$OMP&  TWIN1, XT, Y000, TSS, X0T, Y0T,
+!$OMP&  DYZR,
 !$OMP&  IANP, I, IENP, JHELP, ISW, JJC, J1,
 !$OMP&  NRCLLP, LHELP, J2, INCY, JN, ICOU, NYSAVE, NHELP,
 !$OMP&  I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS,
@@ -124,6 +126,7 @@ cym check this is correct
 cdr logicals for intersection with poloidal surfaces
       LOGICAL :: LHITP(N2NDPLGS)
       INTEGER :: NCOUNS(N2ND+N3RD)
+
 #ifdef TRACE
       INTEGER :: JJ
 #endif
@@ -973,7 +976,9 @@ C  TIME FROM Y00 TO PSURF
         DY=(PSURF(J2)-Y00)
 !pb reduce zrad if the trajectory comes too close to the next standard surface
 !pb without hitting it
-        IF (ABS(ABS(DY/ZRAD)-1._DP) <= EPS10) THEN
+        DYZR = ABS(ABS(DY/ZRAD)-1._DP)
+!pb     IF (DYZR <= EPS10) THEN
+        IF ((DYZR > 0._DP) .AND. (DYZR <= EPS10)) THEN
           ZRAD=(1._DP-EPS6)*ZRAD
           ZRADS=ZRAD
         END IF

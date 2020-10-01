@@ -3009,49 +3009,49 @@ C
 99992 CONTINUE
 csw 14jul2011
       if(my_pe == 0)then
-      IF (.NOT.ALLOCATED(CHPS)) THEN
-        ALLOCATE (CHPS(NFL))
-        ALLOCATE (SNIS(0:NFL))
-        ALLOCATE (CHMOS(NFL))
-        ALLOCATE (SMOS(0:NFL))
-        ALLOCATE (SCALN(0:NFL))
-        ALLOCATE (SNIS0(NSTRA,0:NFL))
-        ALLOCATE (SMOS0(NSTRA,0:NFL))
+        IF (.NOT.ALLOCATED(CHPS)) THEN
+          ALLOCATE (CHPS(NFL))
+          ALLOCATE (SNIS(0:NFL))
+          ALLOCATE (CHMOS(NFL))
+          ALLOCATE (SMOS(0:NFL))
+          ALLOCATE (SCALN(0:NFL))
+          ALLOCATE (SNIS0(NSTRA,0:NFL))
+          ALLOCATE (SMOS0(NSTRA,0:NFL))
 
-        ALLOCATE (RESSNI(0:NSTRA,NFL))
-        ALLOCATE (RESSMO(0:NSTRA,NFL))
-        ALLOCATE (RESSEE(0:NSTRA))
-        ALLOCATE (RESSEI(0:NSTRA))
+          ALLOCATE (RESSNI(0:NSTRA,NFL))
+          ALLOCATE (RESSMO(0:NSTRA,NFL))
+          ALLOCATE (RESSEE(0:NSTRA))
+          ALLOCATE (RESSEI(0:NSTRA))
 
-        ALLOCATE (FLXEIR(NSTRA))
+          ALLOCATE (FLXEIR(NSTRA))
 
-        CALL EIRENE_ALLOC_BRASPOI
-        CALL EIRENE_ALLOC_EIRBRA(NDX, NDY, NFL, NSTRA)
+          CALL EIRENE_ALLOC_BRASPOI
+          CALL EIRENE_ALLOC_EIRBRA(NDX, NDY, NFL, NSTRA)
 C
-        RESSNI = 0._DP
-        RESSMO = 0._DP
-        RESSEE = 0._DP
-        RESSEI = 0._DP
-      END IF
+          RESSNI = 0._DP
+          RESSMO = 0._DP
+          RESSEE = 0._DP
+          RESSEI = 0._DP
+        END IF
 C
-      IF (NEW_ITER == 0) THEN
-        RESSNI = 0.D0
-        RESSMO = 0.D0
-        RESSEE = 0.D0
-        RESSEI = 0.D0
-      ENDIF
+        IF (NEW_ITER == 0) THEN
+          RESSNI = 0.D0
+          RESSMO = 0.D0
+          RESSEE = 0.D0
+          RESSEI = 0.D0
+        ENDIF
 C
-      IF (.NOT.LSHORT) THEN
-        RESSNI(ISTRAA:ISTRAE,:) = 0._DP
-        RESSMO(ISTRAA:ISTRAE,:) = 0._DP
-        RESSEE(ISTRAA:ISTRAE) = 0._DP
-        RESSEI(ISTRAA:ISTRAE) = 0._DP
-      ENDIF
+        IF (.NOT.LSHORT) THEN
+          RESSNI(ISTRAA:ISTRAE,:) = 0._DP
+          RESSMO(ISTRAA:ISTRAE,:) = 0._DP
+          RESSEE(ISTRAA:ISTRAE) = 0._DP
+          RESSEI(ISTRAA:ISTRAE) = 0._DP
+        ENDIF
 
-      volSUMN(ISTRAA:ISTRAE)=0.0           !dpc
-      volSUMM(ISTRAA:ISTRAE)=0.0           !dpc
-      volSUMEI(ISTRAA:ISTRAE)=0.0          !dpc
-      volSUMEE(ISTRAA:ISTRAE)=0.0          !dpc
+        volSUMN(ISTRAA:ISTRAE)=0.0 !dpc
+        volSUMM(ISTRAA:ISTRAE)=0.0 !dpc
+        volSUMEI(ISTRAA:ISTRAE)=0.0 !dpc
+        volSUMEE(ISTRAA:ISTRAE)=0.0 !dpc
 csw
       endif
 

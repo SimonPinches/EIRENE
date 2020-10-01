@@ -120,6 +120,8 @@ c           some more speed ups in lorvdwprof. still much more to be done
 !pb black body removal (core saturation)
      .    eirene_line_cutoff
 
+      PUBLIC :: EIRENE_BROADCAST_PHOTON
+
       integer, public, save  :: phv_muldens
       integer, public, save, allocatable ::
      .   PHV_LGAOT(:,:,:),PHV_LGPHOT(:,:,:),
@@ -3991,4 +3993,69 @@ c    .                           res
       return
       end function EIRENE_sam_cutoff
 
+
+      SUBROUTINE EIRENE_BROADCAST_PHOTON
+      USE EIRMOD_CPES, ONLY : MY_PE
+      USE EIRMOD_MPI
+      INTEGER :: IER, NNROT, NRC, KK, IATM, IPHOT
+
+
+      IF (NPHOTI > 0) THEN
+        nnrot=0
+        do iatm=1,natmi
+          if(nrca(iatm) > 0) then
+            do nrc=1,nrca(iatm)
+              kk=ireaca(iatm,nrc)
+              if(iswr(kk) == 7) then
+                nNROT=nNROT+1
+              endif
+            enddo
+          endif
+        enddo
+!pb  out! not needed for the time being
+!pb        IF (MY_PE .NE. 0) call PH_ALLOC_XSECTA(nnrot)
+        IF (NNROT > 0) THEN
+          CALL MPI_BCAST (PHV_LGAOT,(NATM+1)*(NNROT+1)*6,
+     .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+          CALL MPI_BCAST (PHV_NAOTI,NATM,
+     .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+          CALL MPI_BCAST (PHV_IESTOTAT,(NATM+1)*NNROT*3,
+     .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+          CALL MPI_BCAST (PHV_N1STOTAT,(NATM+1)*NNROT*3,
+     .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+          CALL MPI_BCAST (PHV_N2NDOTAT,(NATM+1)*NNROT*3,
+     .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+        END IF
+
+        nnrot=0
+        do iphot=1,nphoti
+          if(nrcph(iphot) > 0) then
+            do nrc=1,nrcph(iphot)
+              kk=ireacph(iphot,nrc)
+              if(iswr(kk) == 7) then
+                nNROT=nNROT+1
+              endif
+            enddo
+          endif
+        enddo
+        IF (MY_PE .NE. 0) call EIRENE_PH_ALLOC_XSECTPH(nnrot)
+        IF (NNROT > 0) THEN
+          CALL MPI_BCAST (PHV_LGPHOT,(NPHOT+1)*(NNROT+1)*6,
+     .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+          CALL MPI_BCAST (PHV_NPHOTI,NPHOT,
+     .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+          CALL MPI_BCAST (PHV_IESTOTPH,(NPHOT+1)*NNROT*3,
+     .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+          CALL MPI_BCAST (PHV_N1STOTPH,(NPHOT+1)*NNROT*3,
+     .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+          CALL MPI_BCAST (PHV_N2NDOTPH,(NPHOT+1)*NNROT*3,
+     .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+        END IF
+        CALL MPI_BCAST (HPCL,1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (CLIGHT,1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+
+      END IF
+      
+      END SUBROUTINE EIRENE_BROADCAST_PHOTON
+      
       END MODULE EIRMOD_PHOTON
