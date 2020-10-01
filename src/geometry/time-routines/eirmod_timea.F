@@ -25,12 +25,15 @@ c     using special octree stuff, to speed up additional surface handling
      .          EIRENE_TIMEA1, EIRENE_TIMEA0_OC,
      .          EIRENE_DEALLOC_TIMEA
 
+cym this variable seem to be shared (OMP)      
 c     the octree
       TYPE(octree), POINTER, SAVE :: TREE
 c     active surface ids of surfs not in octree saved in lookup table
       INTEGER, DIMENSION(:), ALLOCATABLE, SAVE :: NOTOCSURFS
 c     how many surfaces are not in the octree (NSURFNOT)
       INTEGER, SAVE :: NSURFNOT = 0
+
+
 
       CONTAINS
 
@@ -63,6 +66,7 @@ C
       IMPLICIT NONE
 
 C
+
       REAL(DP) :: XB(3), XC(3), XD(3), XE(3), XF(3), XG(3)
       REAL(DP) :: DZ3, XS, DZ, TEST4, TEST5, DY, DL, DX1, DX,
      .          B, XK5, V445, XN5, V335, XK4,
@@ -597,6 +601,14 @@ c     some vars for checking on intersection/where we are
       REAL(DP) :: runlength, norm
       LOGICAL :: status
 
+!$OMP THREADPRIVATE(TMIN, TL,
+!$OMP&        XX, YY, ZZ, TMT, VXX, VYY, VZZ, VV, X_S, Y_S, Z_S,
+!$OMP&        SG_S, XR, YR, ZR, SG,
+!$OMP&        MSURF, NNTCL, NTCELL, IPERID, MASURF, NCELL, 
+!$OMP&        NLI, NLE, MASURF_S,
+!$OMP&        LCNDEXP,    
+!$OMP&        NLTRC, LCNDEXP_S,
+!$OMP&        block,ip, start, direction,runlength, norm,status)
 
       SAVE 
 

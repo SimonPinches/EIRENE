@@ -34,6 +34,8 @@
       INTEGER, SAVE :: ISTROLD=-1
       LOGICAL, ALLOCATABLE, SAVE :: LPLSSR(:)
 
+!$OMP THREADPRIVATE(ISTROLD)
+
       CONTAINS
 
 cdr Nov.  19 : Nested do 6 loop: erroneous exit from loop
