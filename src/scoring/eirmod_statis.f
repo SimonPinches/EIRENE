@@ -37,7 +37,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
      .           NSYM, IGI, ITL, ISCO, NSYH, J1, J2, IP, IG, IT
       INTEGER, SAVE :: NSB, NRW
 
-      !$OMP THREADPRIVATE (vector,vectrc,iadd,igff,iaddw,igffw,
+!$OMP THREADPRIVATE (vector,vectrc,iadd,igff,iaddw,igffw,
 !$OMP& iaddc,igffc,ind,IIND,indss,SD,SDC,
 !$OMP& D1, DS1, D2S, DS2, DSA, DD22, DD11, D2, DD12,
 !$OMP& ZFLUXQ, DS, SD2S, SD2, SG2, SG, DA, D, DD,
