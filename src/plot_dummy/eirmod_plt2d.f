@@ -31,8 +31,8 @@ cdr  to still be able to provide printed trajectory output.
 c------------------------------------------------------------------------
       SUBROUTINE EIRENE_CHCTRC(XPLO,YPLO,ZPLO,IFLAG,ISYM)
       IMPLICIT NONE
-C
-      INTEGER,PARAMETER :: NTXHST=19
+Cym   19-> 21
+      INTEGER,PARAMETER :: NTXHST=21
 
       REAL(DP), INTENT(IN) :: XPLO, YPLO, ZPLO
       INTEGER, INTENT(IN) :: IFLAG, ISYM
@@ -60,7 +60,10 @@ C
      .            'FLUID LIMIT(17)     ',
      .            'ERROR DETECTED      ',
 c  next symbols/text: only for printout, not on plot.
-     .            'INT. GRID SURFACE(8)'/
+     .            'INT. GRID SURFACE(8)',
+cym
+     .            'DIFFUSION STEP(20)  ',
+     .            'STATIC LOOP(21)     '/
 C
 C  WRITE TRACK DATA
 C

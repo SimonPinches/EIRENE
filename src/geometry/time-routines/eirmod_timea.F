@@ -587,30 +587,32 @@ C
      .  VXX,VYY,VZZ,VV,MASURF,XR,YR,ZR,SG,TL,NLTRC,LCNDEXP)
       IMPLICIT NONE
 
-      REAL(DP) :: TMIN, TL
-      REAL(DP) :: XX, YY, ZZ, TMT, VXX, VYY, VZZ, VV, X_S, Y_S, Z_S,
-     .          SG_S, XR, YR, ZR, SG
-     .          
-      INTEGER MSURF, NNTCL, NTCELL, IPERID, MASURF, NCELL, 
-     .        NLI, NLE, MASURF_S
-      LOGICAL, INTENT(OUT) :: LCNDEXP
-      LOGICAL :: NLTRC, LCNDEXP_S
-c     some vars for checking on intersection/where we are
-      TYPE(ocnode), POINTER :: block
-      REAL(DP), DIMENSION(3) :: ip, start, direction
-      REAL(DP) :: runlength, norm
-      LOGICAL :: status
+cym seperate arguments of subroutine from other local variables
+cym in order to handle the save properly
 
-!$OMP THREADPRIVATE(TMIN, TL,
-!$OMP&        XX, YY, ZZ, TMT, VXX, VYY, VZZ, VV, X_S, Y_S, Z_S,
-!$OMP&        SG_S, XR, YR, ZR, SG,
-!$OMP&        MSURF, NNTCL, NTCELL, IPERID, MASURF, NCELL, 
-!$OMP&        NLI, NLE, MASURF_S,
-!$OMP&        LCNDEXP,    
-!$OMP&        NLTRC, LCNDEXP_S,
+      REAL(DP) :: XX, YY, ZZ, TMT, VXX, VYY, VZZ, VV
+      REAL(DP) :: XR, YR, ZR, SG, TL           
+      INTEGER :: MSURF, NCELL ,NLI, NLE, NTCELL, IPERID, MASURF
+      LOGICAL, INTENT(OUT) :: LCNDEXP
+      LOGICAL :: NLTRC
+
+cym local variables with save attribute      
+      REAL(DP),save :: TMIN, X_S, Y_S, Z_S, SG_S
+      INTEGER,save :: NNTCL,MASURF_S
+      LOGICAL,save :: LCNDEXP_S
+c     some vars for checking on intersection/where we are
+      TYPE(ocnode), POINTER,save :: block
+      
+      REAL(DP), DIMENSION(3),save :: ip, start, direction
+      REAL(DP),save :: runlength, norm
+      LOGICAL,save :: status
+      
+
+!$OMP THREADPRIVATE(TMIN,X_S, Y_S, Z_S, SG_S,
+!$OMP&        NNTCL, MASURF_S, LCNDEXP_S,
 !$OMP&        block,ip, start, direction,runlength, norm,status)
 
-      SAVE 
+cym      SAVE 
 
       INTERFACE
         SUBROUTINE EIRENE_TIMEA_CheckInter(
