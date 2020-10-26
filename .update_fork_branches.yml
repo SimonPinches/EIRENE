@@ -62,19 +62,20 @@ update_fork_branches_JET:
         SSH_KEY: ${SSH_KEY_JET}
         REPO_DOMAIN: "git.ccfe.ac.uk"
         REPO_URL: "git@git.ccfe.ac.uk:jintrac/EIRENE.git"
-        REPO_NEW_URL: "git@git.ccfe.ac.uk:jintrac/EIRENE_JUEL.git"
+        # git@git.ccfe.ac.uk:jintrac/EIRENE_JUEL.git does not exist anymore
+        #REPO_NEW_URL: "git@git.ccfe.ac.uk:jintrac/EIRENE_JUEL.git"
     script:
         # Add JET repositories as additional remotes
         - git remote add -t master -t develop jet $REPO_URL || git remote set-url jet $REPO_URL
-        - git remote add -t JET_master -t v170517_NewJuel jet_new $REPO_NEW_URL || git remote set-url jet_new $REPO_NEW_URL
+        #- git remote add -t JET_master -t v170517_NewJuel jet_new $REPO_NEW_URL || git remote set-url jet_new $REPO_NEW_URL
         - git remote set-url --push jet no_push
-        - git remote set-url --push jet_new no_push
+        #- git remote set-url --push jet_new no_push
         # Fetch available branches from JET
         - git fetch jet
-        - git fetch jet_new
+        #- git fetch jet_new
         # Push branches to EIRENE repository
         - git push -f -u origin jet/master:refs/heads/forks/jet/master
         - git push -f -u origin jet/develop:refs/heads/forks/jet/develop
-        - git push -f -u origin jet_new/JET_master:refs/heads/forks/jet_new/JET_master
-        - git push -f -u origin jet_new/v170517_NewJuel:refs/heads/forks/jet_new/v170517_NewJuel
+        #- git push -f -u origin jet_new/JET_master:refs/heads/forks/jet_new/JET_master
+        #- git push -f -u origin jet_new/v170517_NewJuel:refs/heads/forks/jet_new/v170517_NewJuel
 
