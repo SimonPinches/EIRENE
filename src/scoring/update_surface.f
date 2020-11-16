@@ -365,6 +365,7 @@ c... from an incident bulk ion
             PRFPML(IMOL,MSURF)=PRFPML(IMOL,MSURF)+WGHTSG
           ENDIF
           IF (LERFPML) THEN
+!$OMP ATOMIC
             ERFPML(IMOL,MSURF)=ERFPML(IMOL,MSURF)+EWGHTSG
           ENDIF
           IF (MSURFG.GT.0) THEN
