@@ -103,14 +103,18 @@ CDR
 C  particle current, radial component  (CM/SEC)
           VR=(VELX*VPX(IRD)+VELY*VPY(IRD))*VEL
           if(ia0+iatm.gt.nadv) goto 20
+!$OMP ATOMIC
           ADDV(IA0+IATM,IRD)=ADDV(IA0+IATM,IRD)+WTR*VR
           if(ia1+iatm.gt.nadv) goto 20
+!$OMP ATOMIC
           ADDV(IA1+IATM,IRD)=ADDV(IA1+IATM,IRD)+WTR*VR*E0
 C  particle current, poloidal component (CM/SEC)
           VP=(VELX*VRX(IRD)+VELY*VRY(IRD))*VEL
           if(ia2+iatm.gt.nadv) goto 20
+!$OMP ATOMIC
           ADDV(IA2+IATM,IRD)=ADDV(IA2+IATM,IRD)+WTR*VP
           if(ia3+iatm.gt.nadv) goto 20
+!$OMP ATOMIC
           ADDV(IA3+IATM,IRD)=ADDV(IA3+IATM,IRD)+WTR*VP*E0
 
 c  particle current: toroidal component (cm/sec)
@@ -119,6 +123,7 @@ c    note   particle current, cartesian, vden_xyz is now a default tally.
 
 C  particle flux, integrated over all directions
           if(ia4+iatm.gt.nadv) goto 20
+!$OMP ATOMIC
           ADDV(IA4+IATM,IRD)=ADDV(IA4+IATM,IRD)+WTR*VEL
 CDR
    20   CONTINUE
@@ -135,14 +140,18 @@ C
 C  particle current, radial component  (CM/SEC)
           VR=(VELX*VPX(IRD)+VELY*VPY(IRD))*VEL
           if(ia0+natmi+imol.gt.nadv) goto 200
+!$OMP ATOMIC
           ADDV(NATMI+IMOL,IRD)=ADDV(NATMI+IMOL,IRD)+WTR*VR
           if(ia1+natmi+imol.gt.nadv) goto 200
+!$OMP ATOMIC
           ADDV(IA1+NATMI+IMOL,IRD)=ADDV(IA1+NATMI+IMOL,IRD)+WTR*VR*E0
 C  particle current, poloidal component (CM/SEC)
           VP=(VELX*VRX(IRD)+VELY*VRY(IRD))*VEL
           if(ia2+natmi+imol.gt.nadv) goto 200
+!$OMP ATOMIC
           ADDV(IA2+NATMI+IMOL,IRD)=ADDV(IA2+NATMI+IMOL,IRD)+WTR*VP
           if(ia3+natmi+imol.gt.nadv) goto 200
+!$OMP ATOMIC
           ADDV(IA3+NATMI+IMOL,IRD)=ADDV(IA3+NATMI+IMOL,IRD)+WTR*VP*E0
 
 c  particle current: toroidal component (cm/sec)
@@ -153,6 +162,7 @@ c::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 C  particle flux, integrated over all directions
 
           if(ia4+NATMI+IMOL.gt.nadv) goto 200
+!$OMP ATOMIC
           ADDV(IA4+NATMI+IMOL,IRD)=ADDV(IA4+NATMI+IMOL,IRD)+WTR*VEL
 C
   200   CONTINUE

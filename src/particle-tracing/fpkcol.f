@@ -146,7 +146,10 @@ cdr currently: arbitrary 1.5*Tiin(1,...)
         VNEW=RSQDVI(IOLD)*SQRT(E0NEW)
 C
 C  UPDATE ESTIMATORS EIIO,EIPL
+
+!$OMP ATOMIC
         EIIO(NCELLT)=EIIO(NCELLT)+WEIGHT*(E0NEW-E0OLD)
+
 cdr  for the time being: distribute bulk ion energy loss proportional to collision frequency
 cdr  strictly bulk ipls1 and ipls2 can have different gains/losses, depending on their
 cdr  temprature(ipls), even different sign.
@@ -154,6 +157,7 @@ cdr
         EWG = WEIGHT*(E0NEW-E0OLD)
         FNUI = SUM(FNUIAR(1:NPLSI))  ! CDR THIS SUM SHOULD BE KNOWN FROM CALLING ROUTINE
         DO IPL = 1, NPLSI
+!$OMP ATOMIC
           EIPL(IPL,NCELLT)=EIPL(IPL,NCELLT)-EWG*FNUIAR(IPL)/FNUI
         END DO
 C
@@ -240,9 +244,11 @@ C   DETAILED PRINTOUT ALREADY DONE FROM SUBR. CLLTST
       ENDIF 
       GOTO 999
 C
-  999 PTRASH(ISTRA)=PTRASH(ISTRA)-WEIGHT
+  999 LGPART=.FALSE. 
+!$OMP ATOMIC 
+      PTRASH(ISTRA)=PTRASH(ISTRA)-WEIGHT
+!$OMP ATOMIC
       ETRASH(ISTRA)=ETRASH(ISTRA)-WEIGHT*E0
-      LGPART=.FALSE.
       WEIGHT=0.
       CALL EIRENE_LEER(1)
       IRET = 3

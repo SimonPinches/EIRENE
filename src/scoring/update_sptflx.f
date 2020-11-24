@@ -55,22 +55,43 @@ c
 C  THIS IS NEEDED IN CASE THE SPUTTERED (emitted) SPECIES IS NOT AN EIRENE TEST SPECIES IN THIS RUN
 C  ONLY THE SPUTTERED FLUX IS SCORED
 
-      IF (LSPTTOT) SPTTOT(MSURF) = SPTTOT(MSURF) + WGH
+      IF (LSPTTOT) THEN
+!$OMP ATOMIC
+        SPTTOT(MSURF) = SPTTOT(MSURF) + WGH
+      ENDIF
       IF (MSURFG.GT.0) THEN
-         IF (LSPTTOT) SPTTOT(MSURFG) = SPTTOT(MSURFG) + WGH
+         IF (LSPTTOT) THEN
+!$OMP ATOMIC
+           SPTTOT(MSURFG) = SPTTOT(MSURFG) + WGH
+         ENDIF
       ENDIF
 C  AT THIS PLACE: NEW ITYP AND NEW SPECIES INDEX NOT NECESSARILY KNOWN
       SELECT CASE (ITOLD)
       CASE (0)
-        if (lsptphtot)  sptphtot(msurf) = sptphtot(msurf) + wgh
+        if (lsptphtot)  then
+!$OMP ATOMIC
+          sptphtot(msurf) = sptphtot(msurf) + wgh
+        endif
       CASE (1)
-        if (lsptatot)   sptatot(msurf)  = sptatot(msurf)  + wgh
+        if (lsptatot) then
+!$OMP ATOMIC
+           sptatot(msurf)  = sptatot(msurf)  + wgh
+        endif
       CASE (2)
-        if (lsptmtot)   sptmtot(msurf)  = sptmtot(msurf)  + wgh
+        if (lsptmtot) then
+!$OMP ATOMIC
+           sptmtot(msurf)  = sptmtot(msurf)  + wgh
+        endif
       CASE (3)
-        if (lsptitot)   sptitot(msurf)  = sptitot(msurf)  + wgh
+        if (lsptitot) then
+!$OMP ATOMIC
+           sptitot(msurf)  = sptitot(msurf)  + wgh
+        endif
       CASE (4)
-         if (lsptpltot) sptpltot(msurf) = sptpltot(msurf) + wgh
+         if (lsptpltot) then
+!$OMP ATOMIC
+            sptpltot(msurf) = sptpltot(msurf) + wgh
+         endif
       END SELECT
 
       IF (IND.EQ.1) RETURN

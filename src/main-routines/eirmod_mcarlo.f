@@ -157,6 +157,9 @@ cym copyin does not work for allocatable pointer arrrays
      . BXSTOR(MSTOR1,MSTOR2),BXSTORV(NSTORV),BRCGRID(NCGRD)
       LOGICAL,TARGET :: BLCMSOU(14,NSTRA)
 
+cym
+      integer :: iunout_save     
+
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
@@ -551,11 +554,18 @@ cym added by analogy - have to do with statistical estimation
       ITHREAD=OMP_GET_THREAD_NUM()
       NTHREADS=OMP_GET_NUM_THREADS()
 
+cym set output files for each thread and strata
+cym simplifies comparison when NLIDENT is activated      
+!$OMP MASTER
+      IUNOUT_SAVE=IUNOUT
+!$OMP END MASTER
+      IUNOUT=200+ITHREAD+100*(ISTRA-1)
+
        IF (ITHREAD>0) THEN
 cym     this will not work correctly combined with mpi !
 cym     temporary output to check histories for different strata
 cy         IUNOUT=200+ITHREAD
-         IUNOUT=200+ITHREAD+100*(ISTRA-1)
+cym         IUNOUT=200+ITHREAD+100*(ISTRA-1)
 cym      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
          CALL ALLOCATE_AND_ASSOCIATE_FOR_WORKER_THREADS()
 cym      !!! broadcast for pointers not allowed in copyin !!!!
@@ -926,6 +936,8 @@ C  NEXT MONTE CARLO HISTORY
 c
 c   LAUNCH A NEW PARTICLE NOW
 c...................................................................
+
+!$OMP ATOMIC
             XMCP(ISTRA)=XMCP(ISTRA)+1.
             NPANU=NPANU+1
             IPANU=IPANU+1
@@ -1062,10 +1074,13 @@ C         GOTO 101
           IF (ITHREAD>0) THEN
             CALL DEALLOCATE_FOR_WORKER_THREADS()
           ENDIF
-  
+
 !$OMP END PARALLEL
 C
 C
+cym - redirect output to initial unit
+          IUNOUT=IUNOUT_SAVE
+          
           XMCT(istra)=timused
 csw
           SECND=EIRENE_SECOND_OWN()
