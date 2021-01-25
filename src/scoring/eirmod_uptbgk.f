@@ -122,6 +122,9 @@ C  BGK SPECIES NO. IBGK_SP
           IUPD1=(IBGK_SP-1)*3+1
           IUPD2=(IBGK_SP-1)*3+2
           IUPD3=(IBGK_SP-1)*3+3
+cym these are all shared variables updated with private TXT & ITP
+cym atomic  not usable with strings ?
+!$OMP CRITICAL
           TXTTAL(IUPD1,NTALB)='BGK TALLY: FLUX DENSITY IN X DIRECTION '
           TXTTAL(IUPD2,NTALB)='BGK TALLY: FLUX DENSITY IN Y DIRECTION '
           TXTTAL(IUPD3,NTALB)='BGK TALLY: FLUX DENSITY IN Z DIRECTION '
@@ -131,11 +134,18 @@ C  BGK SPECIES NO. IBGK_SP
           TXTSPC(IUPD1,NTALB)=TXT
           TXTSPC(IUPD2,NTALB)=TXT
           TXTSPC(IUPD3,NTALB)=TXT
+!$OMP END CRITICAL
+!$OMP ATOMIC WRITE
           IBGVE(IUPD1)=1
+!$OMP ATOMIC WRITE
           IBGVE(IUPD2)=1
+!$OMP ATOMIC WRITE
           IBGVE(IUPD3)=1
+!$OMP ATOMIC WRITE
           IBGRC(IUPD1)=ITP
+!$OMP ATOMIC WRITE
           IBGRC(IUPD2)=ITP
+!$OMP ATOMIC WRITE          
           IBGRC(IUPD3)=ITP
         ENDDO
 cdr: this species index increment should be set in input.f,
