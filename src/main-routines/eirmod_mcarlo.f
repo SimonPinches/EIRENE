@@ -605,7 +605,7 @@ C  find random number generator seed, from input flag NINITL(ISTRA)
               MY_ID= ITHREAD + MY_PE*NTHREADS
               ninist=NINITL(ISTRA)+MY_ID*10000 !one seed per thread to generate independent numbers
 cym uncommented
-              write(30+ithread,*) ninist,NINITL(ISTRA),MY_ID
+cym              write(30+ithread,*) ninist,NINITL(ISTRA),MY_ID
 cpg              write(30+ithread,*) 'iptsi->',iseed_iptsi,'  ',iptsi,
 cpg     .         ' istra->',iseed_istra,
 cpg     .         ' RN1->',RN1
