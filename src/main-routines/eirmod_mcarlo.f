@@ -473,13 +473,54 @@ cdr  between the present and the previous cycle.
 
       CALL EIRENE_INIT_OPENMP()          
       
-C
+
+cym initialize buffers used for broadcasting of private variables       
+      BISDVI=ISDVI             
+      BIPSTD=IPSTD
+      BRPST=RPST
+      BRCMSPL=RCMSPL
+      BICMSPL=ICMSPL
+      BLCMSOU=LCMSOU
+      BXSTOR=XSTOR
+      BXSTORV=XSTORV
+      BRCGRID=RCGRID
+
+cym     this will not work correctly combined with mpi !
+cym     temporary output to check histories for different strata
+cy         IUNOUT=200+ITHREAD
+cym         IUNOUT=200+ITHREAD+100*(ISTRA-1)
+cym      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+         CALL EIRENE_ALLOCATE_OPENMP()
+cym      !!! broadcast for pointers not allowed in copyin !!!!
+      IF (ITHREAD>0) THEN
+         ISDVI=BISDVI             
+         IPSTD=BIPSTD
+         RPST=BRPST
+         RCMSPL=BRCMSPL
+         ICMSPL=BICMSPL
+         LCMSOU=BLCMSOU
+         XSTOR=BXSTOR
+         XSTORV=BXSTORV
+         RCGRID=BRCGRID
+
+      ENDIF
+      
+C      
 C**** STRATA LOOP ****************************************************
 C
       NPANU=0
       OVER_ACC=0.D0
       NEW_ITER=0
-      DO ISTR=1,NSTRAI   ! main loop over strata
+!$OMP  PARALLEL  DEFAULT(SHARED)
+!$OMP& PRIVATE(I,J,IPTSI,IN,ISPC,IPANU,INODES,LGSTOP,
+!$OMP& SECND1,SECND2,SECDEL,MY_ID,NINIST,CDATE,CTIME,
+!$OMP& NOM_FIC,NUMERO,NOM_BASE,ISEED_ISTRA,ISEED_IPTSI,
+!$OMP& IDUMRAN)
+!$OMP& FIRSTPRIVATE(ISTRA)
+!$OMP& COPYIN(ETH,Q,M2M1,ES,ETF,ISDVI,IPSTD,RPST,
+!$OMP& RCMSPL,ICMSPL,LCMSOU,XSTOR,XSTORV,RCGRID)
+
+      DO ISTR=1,NSTRAI          ! main loop over strata
 
         timan=EIRENE_second_own()
 
@@ -524,38 +565,31 @@ c    if not nlmovie: census stratum istra=nstrai comes last.
 
         IF (CALC_STRATUM(ISTRA)) THEN
 
-          CALL EIRENE_LEER(2)
+!$OMP MASTER
+           CALL EIRENE_LEER(2)
           WRITE (iunout,*) 'BEGIN TO WORK ON STRATUM NO. ',ISTRA
           CALL EIRENE_LEER(2)
+!$OMP END MASTER
+
           XMCP(ISTRA)=0.
 c??
           XMCT(ISTRA)=0.
           IPANU=0
 C
-cym initialize buffers used for broadcasting of private variables       
-          BISDVI=ISDVI             
-          BIPSTD=IPSTD
-          BRPST=RPST
-          BRCMSPL=RCMSPL
-          BICMSPL=ICMSPL
-          BLCMSOU=LCMSOU
-          BXSTOR=XSTOR
-          BXSTORV=XSTORV
-          BRCGRID=RCGRID
 
 C  INITIALIZE RANDOM NUMBER GENERATOR FOR STRATUM ISTRA
 
 
           
-!$OMP  PARALLEL  DEFAULT(SHARED)
-!$OMP& FIRSTPRIVATE(IPTSI,I,IN,ISPC,LGSTOP,
-!$OMP& SECND1,IPANU,INODES,SECND2,SECDEL,MY_ID,NINIST,
-!$OMP& CDATE,CTIME,NOM_FIC,NUMERO,NOM_BASE,ISEED_ISTRA,ISEED_IPTSI,J)
-cym as for mpi_reduce: logical .or.
-!$OMP& REDUCTION(.OR.:LOGATM,LOGMOL,LOGION,LOGPLS,LOGPHOT,
-cym added by analogy - have to do with statistical estimation
-!$OMP&           LMETSPW,LMETSP)
-!$OMP& COPYIN(ETH,Q,M2M1,ES,ETF)
+!!$OMP  PARALLEL  DEFAULT(SHARED)
+!!$OMP& FIRSTPRIVATE(IPTSI,I,IN,ISPC,LGSTOP,
+!!$OMP& SECND1,IPANU,INODES,SECND2,SECDEL,MY_ID,NINIST,
+!!$OMP& CDATE,CTIME,NOM_FIC,NUMERO,NOM_BASE,ISEED_ISTRA,ISEED_IPTSI,J)
+!cym as for mpi_reduce: logical .or.
+!!$OMP& REDUCTION(.OR.:LOGATM,LOGMOL,LOGION,LOGPLS,LOGPHOT,
+!cym added by analogy - have to do with statistical estimation
+!!$OMP&           LMETSPW,LMETSP)
+!!$OMP& COPYIN(ETH,Q,M2M1,ES,ETF)
            
 cym set output files for each thread and strata
 cym simplifies comparison when NLIDENT is activated      
@@ -565,25 +599,6 @@ cym simplifies comparison when NLIDENT is activated
       IUNOUT=200+ITHREAD+100*(ISTRA-1)
 
 
-cym     this will not work correctly combined with mpi !
-cym     temporary output to check histories for different strata
-cy         IUNOUT=200+ITHREAD
-cym         IUNOUT=200+ITHREAD+100*(ISTRA-1)
-cym      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-         CALL EIRENE_ALLOCATE_OPENMP()
-cym      !!! broadcast for pointers not allowed in copyin !!!!
-      IF (ITHREAD>0) THEN
-         ISDVI=BISDVI             
-         IPSTD=BIPSTD
-         RPST=BRPST
-         RCMSPL=BRCMSPL
-         ICMSPL=BICMSPL
-         LCMSOU=BLCMSOU
-         XSTOR=BXSTOR
-         XSTORV=BXSTORV
-         RCGRID=BRCGRID
-
-      ENDIF
 
 cym test for multiple strata / restores the status after call to REFLC0
 cym ideally would need initializing values on the master thread ...
@@ -630,7 +645,7 @@ cpg     .         ' RN1->',RN1
          WRITE (IUNOUT,*) 'NOT ONLY ON STATISTICAL AVERAGE'
          WRITE (IUNOUT,*) '......................................... '
              
-             CALL EIRENE_LEER(1)
+         CALL EIRENE_LEER(1)
 !$OMP END SINGLE 
 cym same seed for everybody (all threads of all processes -> debug)
              NINIST=NINITL(ISTRA)
@@ -771,7 +786,10 @@ csw
 
 C  PARTICLE LOOP WITHIN STRATUM ISTRA
 
-!$OMP DO 
+!$OMP  DO REDUCTION(.OR.:LOGATM,LOGMOL,LOGION,LOGPLS,
+!$OMP&                   LOGPHOT,LMETSPW,LMETSP)
+!$OMP& REDUCTION(+:WTOTA,WTOTM,WTOTI,WTOTPH,WTOTP,
+!$OMP&             ETOTA,ETOTM,ETOTI,ETOTPH,XMCP)
         DO 100 IPTSI=1,NPTS(istra)
 
 C  SOME PREPARATORY WORK, ONCE FOR EACH NEW PARTICLE HISTORIE
@@ -941,7 +959,7 @@ c
 c   LAUNCH A NEW PARTICLE NOW
 c...................................................................
 
-!$OMP ATOMIC
+!!$OMP ATOMIC
             XMCP(ISTRA)=XMCP(ISTRA)+1.
             NPANU=NPANU+1
             IPANU=IPANU+1
@@ -1073,13 +1091,13 @@ C         GOTO 101
 
   101     CONTINUE
 
-!$OMP END MASTER
+!!$OMP END MASTER
 
 !          IF (ITHREAD>0) THEN
-            CALL EIRENE_DEALLOCATE_OPENMP()
+!            CALL EIRENE_DEALLOCATE_OPENMP()
 !          ENDIF
 
-!$OMP END PARALLEL
+!!$OMP END PARALLEL
 C
 C
 cym - redirect output to initial unit
@@ -1399,8 +1417,13 @@ C
      .           'CUMULATED CPU TIME USED UNTIL END OF STRATUM ISTRA'
           WRITE(iunout,*) 'ISTRA, CPU(S) ',ISTRA,EIRENE_SECOND_OWN()
           CALL EIRENE_LEER(2)
-       END IF ! CALC_STRATUM(ISTRA)
-      END DO ! ISTR
+!$OMP END MASTER
+
+!$OMP BARRIER          
+
+       END IF                   ! CALC_STRATUM(ISTRA)
+      END DO                    ! ISTR
+!$OMP END PARALLEL      
 C
 C*** STRATA LOOP FINISHED *******************************************
 C
