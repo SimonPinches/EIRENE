@@ -47,6 +47,7 @@ cym variables that need to be allocated/associated for workler threads
 cym will disappear when parallel zone will encompass the whole code
      .                         IREDUC,FREDUC,EREDUC
       USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
+      USE EIRMOD_OPENMP
 
       IMPLICIT NONE
       PRIVATE
@@ -143,8 +144,9 @@ C  OVERHEAD FOR POST PROCESSING (SECONDS)
 C      DATA N2/2/
 C
 cpg     
-      INTEGER  :: OMP_GET_NUM_PROCS, OMP_GET_NUM_THREADS,
-     .            OMP_GET_THREAD_NUM,ITHREAD,NTHREADS,MY_ID   
+!      INTEGER  :: OMP_GET_NUM_PROCS, OMP_GET_NUM_THREADS,
+!     .            OMP_GET_THREAD_NUM,ITHREAD,NTHREADS
+      INTEGER :: MY_ID
 
       CHARACTER(LEN=15) :: NOM_FIC, NUMERO, NOM_BASE
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc    
@@ -468,7 +470,9 @@ cdr  between the present and the previous cycle.
       FMSCL(0)=1.
       FISCL(0)=1.
       FPHSCL(0)=1.
-C
+
+      CALL EIRENE_INIT_OPENMP()          
+      
 C
 C**** STRATA LOOP ****************************************************
 C
@@ -541,9 +545,11 @@ cym initialize buffers used for broadcasting of private variables
 
 C  INITIALIZE RANDOM NUMBER GENERATOR FOR STRATUM ISTRA
 
+
+          
 !$OMP  PARALLEL  DEFAULT(SHARED)
 !$OMP& FIRSTPRIVATE(IPTSI,I,IN,ISPC,LGSTOP,
-!$OMP& SECND1,IPANU,INODES,SECND2,SECDEL,ITHREAD,NTHREADS,MY_ID,NINIST,
+!$OMP& SECND1,IPANU,INODES,SECND2,SECDEL,MY_ID,NINIST,
 !$OMP& CDATE,CTIME,NOM_FIC,NUMERO,NOM_BASE,ISEED_ISTRA,ISEED_IPTSI,J)
 cym as for mpi_reduce: logical .or.
 !$OMP& REDUCTION(.OR.:LOGATM,LOGMOL,LOGION,LOGPLS,LOGPHOT,
@@ -551,9 +557,6 @@ cym added by analogy - have to do with statistical estimation
 !$OMP&           LMETSPW,LMETSP)
 !$OMP& COPYIN(ETH,Q,M2M1,ES,ETF)
            
-      ITHREAD=OMP_GET_THREAD_NUM()
-      NTHREADS=OMP_GET_NUM_THREADS()
-
 cym set output files for each thread and strata
 cym simplifies comparison when NLIDENT is activated      
 !$OMP MASTER
@@ -561,14 +564,15 @@ cym simplifies comparison when NLIDENT is activated
 !$OMP END MASTER
       IUNOUT=200+ITHREAD+100*(ISTRA-1)
 
-       IF (ITHREAD>0) THEN
+
 cym     this will not work correctly combined with mpi !
 cym     temporary output to check histories for different strata
 cy         IUNOUT=200+ITHREAD
 cym         IUNOUT=200+ITHREAD+100*(ISTRA-1)
 cym      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-         CALL ALLOCATE_AND_ASSOCIATE_FOR_WORKER_THREADS()
+         CALL EIRENE_ALLOCATE_OPENMP()
 cym      !!! broadcast for pointers not allowed in copyin !!!!
+      IF (ITHREAD>0) THEN
          ISDVI=BISDVI             
          IPSTD=BIPSTD
          RPST=BRPST
@@ -1071,9 +1075,9 @@ C         GOTO 101
 
 !$OMP END MASTER
 
-          IF (ITHREAD>0) THEN
-            CALL DEALLOCATE_FOR_WORKER_THREADS()
-          ENDIF
+!          IF (ITHREAD>0) THEN
+            CALL EIRENE_DEALLOCATE_OPENMP()
+!          ENDIF
 
 !$OMP END PARALLEL
 C
@@ -1609,250 +1613,5 @@ C
 
       RETURN
       END
-
-      SUBROUTINE ALLOCATE_AND_ASSOCIATE_FOR_WORKER_THREADS()
-      USE EIRMOD_COMXS
-      USE EIRMOD_REFLEC
-      USE EIRMOD_STATIS
-      USE EIRMOD_CLAST
-      USE EIRMOD_CFPLK, ONLY: FNUIAR  
-      IMPLICIT NONE
-
-      ALLOCATE (ISDVI(MSDVI))     
-cym      ALLOCATE (LMETSP(NSPZTOT))
-cym      ALLOCATE (LMETSPW(NSPZTOTW))
-cym test
-cym      ALLOCATE (ISPEZI(NSPZ,-1:4))
-        
-      ALLOCATE (LCMSOU(14,NSTRA))
-      ALLOCATE (TIMINT(NRADS))
-      ALLOCATE (TIMPOL(N1STS,N2NDPLGS))
-      ALLOCATE (NTIM(NRADS))
-      ALLOCATE (IIMPOL(N1STS,N2NDPLGS))
-      ALLOCATE (IIMINT(NRADS))
-        
-      ALLOCATE (RPST(NPARTC))
-      ALLOCATE (IPSTD(MPARTC+1))
-      ALLOCATE (RCMSPL(NCMSPL))
-      ALLOCATE (ICMSPL(MCMSPL))
-
-      ALLOCATE (ALPD(N2ND))
-      ALLOCATE (BLPD(N3RD))
-      ALLOCATE (CLPD(N2ND+N3RD))
-
-      ALLOCATE (JUPC(N2ND))
-      ALLOCATE (KUPC(N3RD))
-      ALLOCATE (NUPC(N2ND+N3RD))
-      ALLOCATE (NCOUNP(N2ND+N3RD))
-      ALLOCATE (NCOUNT(N2ND+N3RD))
-      ALLOCATE (LUPC(N2ND))
-      ALLOCATE (MUPC(N2ND))
-        
-      ALLOCATE (RCGRID(NCGRD))
-        
-      ALLOCATE(EREDUC(NSPZ,0:NLIMPS))
-      ALLOCATE(FREDUC(NSPZ,0:NLIMPS))
-      ALLOCATE(IREDUC(NSPZ,0:NLIMPS))
-       
-      AllOCATE (IIND(NRTAL))
-      ALLOCATE (XSTOR(MSTOR1,MSTOR2))       
-      ALLOCATE (XSTORV(NSTORV))
-
-cym arrays from eirmod_clast - these are not pointers
-      ALLOCATE (XCMEAN(NRCX))
-      ALLOCATE (SGCVMX(NRCX))
-      ALLOCATE (XEMEAN(NREL))
-      ALLOCATE (SGEVMX(NREL))
-      ALLOCATE (XPMEAN(NRPI))
-      ALLOCATE (SGPVMX(NRPI))
-
-      ALLOCATE (NCMEAN(NRCX))
-      ALLOCATE (IFLRCX(NRCX))
-      ALLOCATE (NEMEAN(NREL))
-      ALLOCATE (IFLREL(NREL))
-      ALLOCATE (NPMEAN(NRPI))
-      ALLOCATE (IFLRPI(NRPI))
-
-cym test iter
-      ALLOCATE (RSPLST(NPARTC,MAXLEVEL))
-      ALLOCATE (ISPLST(MPARTC,MAXLEVEL))
-
-      RSPLST=0._dp
-      ISPLST=0
-
-cym make sure the clast variables do not take exotic values      
-      call eirene_init_clast
-
-      ALLOCATE (FNUIAR(NPLS))
-      FNUIAR=0._dp
-                   
-      NCLMT     => ISDVI(8)
-      NCLMTS    => ISDVI(9)
-      NWLMT     => ISDVI(10)         
-      NWLMTS    => ISDVI(11)
-      ICLMT     => ISDVI(12+2*NSD+2*NSDW+NCV+NRTAL :
-     .                     11+2*NSD+2*NSDW+NCV+2*NRTAL)
-      IMETCL    => ISDVI(12+2*NSD+2*NSDW+NCV :
-     .                     11+2*NSD+2*NSDW+NCV+NRTAL)
-      IMETWL    => ISDVI(12+2*NSD+2*NSDW+NCV+2*NRTAL :
-     .                11+2*NSD+2*NSDW+NCV+2*NRTAL+NLIMPS)
-      IWLMT    => ISDVI(12+2*NSD+2*NSDW+NCV+2*NRTAL+NLIMPS : MSDVI)
-         
-      ISPZ   => IPSTD( 9)
-      NT3RD  => ICGRID( 8)
-      MRSURF => IPSTD(10)
-      MPSURF => IPSTD(11)
-      MTSURF => IPSTD(12)
-      MASURF => IPSTD(13)
-      MSURF  => IPSTD(14)
-      NLRAY  => LCMSOU(14,:)
-            
-      RPSTT => RPST
-
-      X0     => RPST( 1)
-      Y0     => RPST( 2)
-      Z0     => RPST( 3)
-      VEL    => RPST( 4)
-      VELX   => RPST( 5)
-      VELY   => RPST( 6)
-      VELZ   => RPST( 7)
-      E0     => RPST( 8)
-      WEIGHT => RPST( 9)
-      TIME   => RPST(10)
-      PHI    => RPST(11)
-
-      XGENER => RPST(12)
-
-      IPST  => IPSTD(2:MPARTC+1)
-      IPSTT => IPSTD(1:MPARTT)
-
-      NPANU  => IPSTD(1)
-      IPOLG  => IPSTD(2)
-      IPERID => IPSTD(3)
-      NCELL  => IPSTD(4)
-      ITIME  => IPSTD(5)
-      IFPATH => IPSTD(6)
-      IUPDTE => IPSTD(7)
-cpg      ISTRA  => IPSTD( 8)
-      ISPZ   => IPSTD(9)
-    
-      MSURFG => IPSTD(15)
-      WMINV  => RCMSPL(1)
-      WMINS  => RCMSPL(2)
-      WMINC  => RCMSPL(3)
-      WMINL  => RCMSPL(4)
-      SPLPAR => RCMSPL(5)
-      RNUMB  => RCMSPL(6:5+ N1ST+N2ND+N3RD+NLIM)
-      PRMSPL => RCMSPL(6+   N1ST+N2ND+N3RD+NLIM : NCMSPL)
-
-      MAXLEV => ICMSPL(1)
-      NLEVEL => ICMSPL(2)
-      MAXRAD => ICMSPL(3)
-      MAXPOL => ICMSPL(4)
-      MAXTOR => ICMSPL(5)
-      MAXADD => ICMSPL(6)
-
-      NODES  => ICMSPL(7:6+ MAXLEVEL)
-      NSSPL  => ICMSPL(7  + MAXLEVEL:MCMSPL)
-       
-      SIGVCX => XSTOR(:,1)
-      SIGVPI => XSTOR(:,2)
-      SIGVEI => XSTOR(:,3)
-      SIGVEL => XSTOR(:,4)
-      SIGVPH => XSTOR(:,22)
-
-      ESIGCX => XSTOR(:,5:6)
-      ESIGPI => XSTOR(:,7:11)
-      ESIGEI => XSTOR(:,12:16)
-      ESIGEL => XSTOR(:,17:18)
-      ESIGPH => XSTOR(:,23:24)
-
-      VSIGCX => XSTOR(:,19)
-      VSIGPI => XSTOR(:,20)
-      VSIGEL => XSTOR(:,21)
-        
-      SIGCXT  => XSTORV(1)
-      SIGPIT  => XSTORV(2)
-      SIGEIT  => XSTORV(3)
-      SIGELT  => XSTORV(4)
-      SIGPHT  => XSTORV(5)
-      SIGTOT  => XSTORV(6)
-      SIGBGK  => XSTORV(7)
-      ZMFPI   => XSTORV(8)
-     
-      EP1    => RCGRID(1+1*N1ST : 2*N1ST)
-
-      END SUBROUTINE ALLOCATE_AND_ASSOCIATE_FOR_WORKER_THREADS
-
-
-      SUBROUTINE DEALLOCATE_FOR_WORKER_THREADS
-      USE EIRMOD_COMXS
-      USE EIRMOD_REFLEC
-      USE EIRMOD_STATIS
-      USE EIRMOD_CLAST
-      USE EIRMOD_CFPLK, ONLY: FNUIAR  
-      IMPLICIT NONE
-      
-      DEALLOCATE(ISDVI)
-cym      DEALLOCATE(LMETSP)
-cym      DEALLOCATE(LMETSPW)
-ccc cym test
-c      DEALLOCATE(ISPEZI)
-        
-      DEALLOCATE(TIMINT)
-      DEALLOCATE(TIMPOL)
-      DEALLOCATE(NTIM)
-      DEALLOCATE(IIMPOL)
-      DEALLOCATE(IIMINT)
-        
-      DEALLOCATE(RPST)
-      DEALLOCATE(IPSTD)
-      DEALLOCATE(RCMSPL)
-      DEALLOCATE(ICMSPL)
-
-      DEALLOCATE(ALPD)
-      DEALLOCATE(BLPD)
-      DEALLOCATE(CLPD)
-     
-      DEALLOCATE (JUPC)
-      DEALLOCATE (KUPC)
-      DEALLOCATE (LUPC)
-      DEALLOCATE (MUPC)
-      DEALLOCATE(NUPC)
-      DEALLOCATE(NCOUNP)
-      DEALLOCATE(NCOUNT)
-         
-      DEALLOCATE(EREDUC)
-      DEALLOCATE(FREDUC)
-      DEALLOCATE(IREDUC)
-             
-      DEALLOCATE(XSTOR)
-      DEALLOCATE(XSTORV)
-      DEALLOCATE(LCMSOU)
-       
-      DEALLOCATE(IIND)
-      DEALLOCATE(RCGRID)
-             
-      DEALLOCATE (XCMEAN)
-      DEALLOCATE (SGCVMX)
-      DEALLOCATE (XEMEAN)
-      DEALLOCATE (SGEVMX)
-      DEALLOCATE (XPMEAN)
-      DEALLOCATE (SGPVMX)
-
-      DEALLOCATE (NCMEAN)
-      DEALLOCATE (IFLRCX)
-      DEALLOCATE (NEMEAN)
-      DEALLOCATE (IFLREL)
-      DEALLOCATE (NPMEAN)
-      DEALLOCATE (IFLRPI)
-
-      DEALLOCATE (FNUIAR)
-
-      DEALLOCATE (RSPLST)
-      DEALLOCATE (ISPLST)
- 
-      END SUBROUTINE DEALLOCATE_FOR_WORKER_THREADS
-
 
       END MODULE EIRMOD_MCARLO
