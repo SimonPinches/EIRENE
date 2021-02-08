@@ -43,9 +43,12 @@
       USE EIRMOD_CUPD
       USE EIRMOD_PARMMOD
       USE EIRMOD_PRECISION
-     
+
+!$OMP PARALLEL DEFAULT(SHARED)
+      write(6,*) ITHREAD,"About to allocate FIRSTPRIVATES"
       IF(ITHREAD > 0) THEN
-         
+         write(6,*) ITHREAD,"Allocating FIRSTPRIVATES"
+
          ALLOCATE (ISDVI(MSDVI))     
          
          ALLOCATE (LCMSOU(14,NSTRA))
@@ -73,7 +76,8 @@
          ALLOCATE (MUPC(N2ND))
          
          ALLOCATE (RCGRID(NCGRD))
-         
+         write(6,*) ITHREAD,"Allocating EREDUC"
+
          ALLOCATE(EREDUC(NSPZ,0:NLIMPS))
          ALLOCATE(FREDUC(NSPZ,0:NLIMPS))
          ALLOCATE(IREDUC(NSPZ,0:NLIMPS))
@@ -206,7 +210,13 @@ cpg      ISTRA  => IPSTD( 8)
          
          EP1    => RCGRID(1+1*N1ST : 2*N1ST)
 
+!         XPOL => RCGM2(:,1:N2NDPLGS)
+!         YPOL => RCGM2(:,1+N2NDPLGS:2*N2NDPLGS)
+         
       END IF
+!$OMP END PARALLEL
+
+!      CALL EIRENE_COPY_ARRAYS_OPENMP()
          
       END SUBROUTINE EIRENE_ALLOCATE_OPENMP
 
@@ -284,5 +294,46 @@ cpg      ISTRA  => IPSTD( 8)
       END IF
 
       END SUBROUTINE EIRENE_DEALLOCATE_OPENMP
+
+      SUBROUTINE EIRENE_COPY_ARRAYS_OPENMP
+      
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc    
+cym shared variables used as buffer to initialize private pointer variables
+cym copyin does not work for allocatable pointer arrrays      
+
+c$$$      INTEGER,TARGET :: BISDVI(MSDVI)
+c$$$      INTEGER,TARGET :: BIPSTD(MPARTC+1),BICMSPL(MCMSPL)
+c$$$      REAL(DP),TARGET :: BRPST(NPARTC),BRCMSPL(NCMSPL),
+c$$$     . BXSTOR(MSTOR1,MSTOR2),BXSTORV(NSTORV),BRCGRID(NCGRD)
+c$$$      LOGICAL,TARGET :: BLCMSOU(14,NSTRA)
+
+c$$$      BISDVI=ISDVI             
+c$$$      BIPSTD=IPSTD
+c$$$      BRPST=RPST
+c$$$      BRCMSPL=RCMSPL
+c$$$      BICMSPL=ICMSPL
+c$$$      BLCMSOU=LCMSOU
+c$$$      BXSTOR=XSTOR
+c$$$      BXSTORV=XSTORV
+c$$$      BRCGRID=RCGRID
+c$$$
+c$$$!$OMP PARALLEL
+c$$$      IF (ITHREAD>0) THEN
+c$$$         ISDVI=BISDVI             
+c$$$         IPSTD=BIPSTD
+c$$$         RPST=BRPST
+c$$$         RCMSPL=BRCMSPL
+c$$$         ICMSPL=BICMSPL
+c$$$         LCMSOU=BLCMSOU
+c$$$         XSTOR=BXSTOR
+c$$$         XSTORV=BXSTORV
+c$$$         RCGRID=BRCGRID
+c$$$      ENDIF
+c$$$!$OMP END PARALLEL
+
+
+      END SUBROUTINE EIRENE_COPY_ARRAYS_OPENMP
+      
+      
       
       END MODULE EIRMOD_OPENMP

@@ -475,35 +475,24 @@ cdr  between the present and the previous cycle.
       
 
 cym initialize buffers used for broadcasting of private variables       
-      BISDVI=ISDVI             
-      BIPSTD=IPSTD
-      BRPST=RPST
-      BRCMSPL=RCMSPL
-      BICMSPL=ICMSPL
-      BLCMSOU=LCMSOU
-      BXSTOR=XSTOR
-      BXSTORV=XSTORV
-      BRCGRID=RCGRID
+!      BISDVI=ISDVI             
+!      BIPSTD=IPSTD
+!      BRPST=RPST
+!      BRCMSPL=RCMSPL
+!      BICMSPL=ICMSPL
+!      BLCMSOU=LCMSOU
+!      BXSTOR=XSTOR
+!      BXSTORV=XSTORV
+!      BRCGRID=RCGRID
 
 cym     this will not work correctly combined with mpi !
 cym     temporary output to check histories for different strata
 cy         IUNOUT=200+ITHREAD
 cym         IUNOUT=200+ITHREAD+100*(ISTRA-1)
 cym      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-         CALL EIRENE_ALLOCATE_OPENMP()
 cym      !!! broadcast for pointers not allowed in copyin !!!!
-      IF (ITHREAD>0) THEN
-         ISDVI=BISDVI             
-         IPSTD=BIPSTD
-         RPST=BRPST
-         RCMSPL=BRCMSPL
-         ICMSPL=BICMSPL
-         LCMSOU=BLCMSOU
-         XSTOR=BXSTOR
-         XSTORV=BXSTORV
-         RCGRID=BRCGRID
+      CALL EIRENE_ALLOCATE_OPENMP()
 
-      ENDIF
       
 C      
 C**** STRATA LOOP ****************************************************
@@ -520,6 +509,18 @@ C
 !$OMP& COPYIN(ETH,Q,M2M1,ES,ETF,ISDVI,IPSTD,RPST,
 !$OMP& RCMSPL,ICMSPL,LCMSOU,XSTOR,XSTORV,RCGRID)
 
+!      IF (ITHREAD>0) THEN
+!         ISDVI=BISDVI             
+!         IPSTD=BIPSTD
+!         RPST=BRPST
+!         RCMSPL=BRCMSPL
+!         ICMSPL=BICMSPL
+!         LCMSOU=BLCMSOU
+!         XSTOR=BXSTOR
+!         XSTORV=BXSTORV
+!         RCGRID=BRCGRID
+!      ENDIF
+      
       DO ISTR=1,NSTRAI          ! main loop over strata
 
         timan=EIRENE_second_own()
@@ -578,18 +579,6 @@ c??
 C
 
 C  INITIALIZE RANDOM NUMBER GENERATOR FOR STRATUM ISTRA
-
-
-          
-!!$OMP  PARALLEL  DEFAULT(SHARED)
-!!$OMP& FIRSTPRIVATE(IPTSI,I,IN,ISPC,LGSTOP,
-!!$OMP& SECND1,IPANU,INODES,SECND2,SECDEL,MY_ID,NINIST,
-!!$OMP& CDATE,CTIME,NOM_FIC,NUMERO,NOM_BASE,ISEED_ISTRA,ISEED_IPTSI,J)
-!cym as for mpi_reduce: logical .or.
-!!$OMP& REDUCTION(.OR.:LOGATM,LOGMOL,LOGION,LOGPLS,LOGPHOT,
-!cym added by analogy - have to do with statistical estimation
-!!$OMP&           LMETSPW,LMETSP)
-!!$OMP& COPYIN(ETH,Q,M2M1,ES,ETF)
            
 cym set output files for each thread and strata
 cym simplifies comparison when NLIDENT is activated      
@@ -603,10 +592,9 @@ cym simplifies comparison when NLIDENT is activated
 cym test for multiple strata / restores the status after call to REFLC0
 cym ideally would need initializing values on the master thread ...
 
-         EREDUC=0._dp
-         FREDUC=0._dp
-         IREDUC=0
-    
+      EREDUC=0._dp
+      FREDUC=0._dp
+      IREDUC=0
 C***********************************************************************
 cpg   for testing
 cpg        NOM_BASE='TESTSEED'
@@ -959,7 +947,6 @@ c
 c   LAUNCH A NEW PARTICLE NOW
 c...................................................................
 
-!!$OMP ATOMIC
             XMCP(ISTRA)=XMCP(ISTRA)+1.
             NPANU=NPANU+1
             IPANU=IPANU+1
@@ -1090,14 +1077,6 @@ C
 C         GOTO 101
 
   101     CONTINUE
-
-!!$OMP END MASTER
-
-!          IF (ITHREAD>0) THEN
-!            CALL EIRENE_DEALLOCATE_OPENMP()
-!          ENDIF
-
-!!$OMP END PARALLEL
 C
 C
 cym - redirect output to initial unit

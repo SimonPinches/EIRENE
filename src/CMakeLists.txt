@@ -21,7 +21,7 @@ if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
         set(CMAKE_Fortran_FLAGS_DEBUG "-g -warn all,nointerfaces -check all -traceback -fpp -qopenmp") # -qno-openmp")
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(CMAKE_Fortran_FLAGS_RELEASE "-O2 -fbacktrace -fopenmp -cpp -fallow-argument-mismatch")
-  set(CMAKE_Fortran_FLAGS_DEBUG "-g -Wall -fcheck=all -fopenmp -fbacktrace -cpp") #-ffpe-trap=denorm")
+  set(CMAKE_Fortran_FLAGS_DEBUG "-g -Wall -fcheck=all -fopenmp -fbacktrace -cpp -fallow-argument-mismatch") #-ffpe-trap=denorm")
   set(CMAKE_Fortran_FLAGS_COVERAGE "-g -fprofile-arcs -ftest-coverage")
 endif()
 
