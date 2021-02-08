@@ -144,21 +144,9 @@ C  OVERHEAD FOR POST PROCESSING (SECONDS)
 C      DATA N2/2/
 C
 cpg     
-!      INTEGER  :: OMP_GET_NUM_PROCS, OMP_GET_NUM_THREADS,
-!     .            OMP_GET_THREAD_NUM,ITHREAD,NTHREADS
       INTEGER :: MY_ID
 
       CHARACTER(LEN=15) :: NOM_FIC, NUMERO, NOM_BASE
-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc    
-cym shared variables used as buffer to initialize private pointer variables
-cym copyin does not work for allocatable pointer arrrays      
-
-      INTEGER,TARGET :: BISDVI(MSDVI)
-      INTEGER,TARGET :: BIPSTD(MPARTC+1),BICMSPL(MCMSPL)
-      REAL(DP),TARGET :: BRPST(NPARTC),BRCMSPL(NCMSPL),
-     . BXSTOR(MSTOR1,MSTOR2),BXSTORV(NSTORV),BRCGRID(NCGRD)
-      LOGICAL,TARGET :: BLCMSOU(14,NSTRA)
-
 cym
       integer :: iunout_save     
 
@@ -471,29 +459,9 @@ cdr  between the present and the previous cycle.
       FISCL(0)=1.
       FPHSCL(0)=1.
 
-      CALL EIRENE_INIT_OPENMP()          
-      
+! Initialise openMP including allocating THREADPROVATE arrays      
+      CALL EIRENE_INIT_OPENMP()                
 
-cym initialize buffers used for broadcasting of private variables       
-!      BISDVI=ISDVI             
-!      BIPSTD=IPSTD
-!      BRPST=RPST
-!      BRCMSPL=RCMSPL
-!      BICMSPL=ICMSPL
-!      BLCMSOU=LCMSOU
-!      BXSTOR=XSTOR
-!      BXSTORV=XSTORV
-!      BRCGRID=RCGRID
-
-cym     this will not work correctly combined with mpi !
-cym     temporary output to check histories for different strata
-cy         IUNOUT=200+ITHREAD
-cym         IUNOUT=200+ITHREAD+100*(ISTRA-1)
-cym      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-cym      !!! broadcast for pointers not allowed in copyin !!!!
-      CALL EIRENE_ALLOCATE_OPENMP()
-
-      
 C      
 C**** STRATA LOOP ****************************************************
 C
@@ -509,18 +477,6 @@ C
 !$OMP& COPYIN(ETH,Q,M2M1,ES,ETF,ISDVI,IPSTD,RPST,
 !$OMP& RCMSPL,ICMSPL,LCMSOU,XSTOR,XSTORV,RCGRID)
 
-!      IF (ITHREAD>0) THEN
-!         ISDVI=BISDVI             
-!         IPSTD=BIPSTD
-!         RPST=BRPST
-!         RCMSPL=BRCMSPL
-!         ICMSPL=BICMSPL
-!         LCMSOU=BLCMSOU
-!         XSTOR=BXSTOR
-!         XSTORV=BXSTORV
-!         RCGRID=BRCGRID
-!      ENDIF
-      
       DO ISTR=1,NSTRAI          ! main loop over strata
 
         timan=EIRENE_second_own()
