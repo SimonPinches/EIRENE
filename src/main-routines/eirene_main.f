@@ -57,7 +57,9 @@ c  iteration number for iterations with external code
 c  initialize MPI routines
       MPI_INIT=.TRUE.
 
+!$OMP PARALLEL DEFAULT(SHARED)      
       CALL EIRENE_EIRENE(DT,NLM,NLL,ITNR,MPI_INIT)
+!$OMP END PARALLEL      
 C
       CALL EIRENE_PLEND
 C
