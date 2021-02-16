@@ -56,6 +56,19 @@ cym will disappear when parallel zone will encompass the whole code
       REAL(DP), ALLOCATABLE, SAVE :: DUMMY(:),
      .                               ZVOLIN(:),ZVOLIW(:),SCLTAL(:,:)
 
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc    
+cym shared variables used as buffer to initialize private pointer variables
+cym copyin does not work for allocatable pointer arrrays      
+
+!      INTEGER :: BISTRA
+!      INTEGER,TARGET :: BISDVI(MSDVI)      
+!      INTEGER,TARGET :: BIPSTD(MPARTC+1),BICMSPL(MCMSPL)
+!      REAL(DP),TARGET :: BRPST(NPARTC),BRCMSPL(NCMSPL),
+!     .     BXSTOR(MSTOR1,MSTOR2),BXSTORV(NSTORV),BRCGRID(NCGRD)
+!      LOGICAL,TARGET :: BLCMSOU(14,NSTRA)
+!      REAL(DP), DIMENSION(28,0:11) :: BETH,BQ,BM2M1,BETF
+!      REAL(DP), DIMENSION(28) :: BES
+
       CONTAINS
 
 c  nov.16th 2005: npts_save = npts always, not only for nlmovie option
@@ -99,36 +112,39 @@ c
 C
 C  MONTE CARLO CALCULATION
 C
-cym      
-      USE EIRMOD_COMXS, ONLY: XSTOR,XSTORV,MSTOR1,MSTOR2,NSTORV
-cym
       IMPLICIT NONE
 C
       CHARACTER(6) :: CIS
-      CHARACTER(10) :: CDATE, CTIME
+      CHARACTER(10), SAVE :: CDATE, CTIME
 
       REAL(DP), ALLOCATABLE :: OUTAU(:)
 
-      REAL(DP) :: XTIM(0:NSTRA)
+!HJL HACK      REAL(DP) :: XTIM(0:NSTRA)
+      REAL(DP), ALLOCATABLE :: XTIM(:)
 
       REAL(DP) :: XFL1,
      .          XPRNLS, XFACT, OVER_ACC, XPRNLI,
      .          TIMI, XPT, XX1, XPT1, XFL, SECND, XX,
      .          ZW, ZWW, ZVOLWT, ZVOLNT, FSIG, ZFLUX,
-     .          SECND2, OVER, SECND1, WTT, SECDEL, timan, timen,
+     .          OVER, WTT, timan, timen,
      .          tim1, tim2,
      .          rn1
+      REAL(DP), SAVE :: SECND1,SECND2,SECDEL
 
 cym IC ?
-      INTEGER :: NPTS_SAVE(NSTRA), NINITL_SAVE(NSTRA)
-      INTEGER :: ISDV, IALS, ISTRAA, ISTRAE, ICELL,
+      INTEGER :: NPTS_SAVE(NSTRA), NINITL_SAVE(NSTRA), IPTSI
+      INTEGER, SAVE :: ISDV, IALS, ISTRAA, ISTRAE, ICELL,
      .           IGFFT, IALV, IDV, I, IER, IRC, NMX,
      .           NINIST, IPANU, ISEED_ISTRA, ISEED_IPTSI, IDUMRAN,
-     .           ISTR, NPTTOT, NREC11, IB,
+     .           ISTR, NPTTOT, NREC11,
      .           IGFF, IADD, INDX, ICLV, IADV,
-     .           INODES, J, IPTSI, IT, IMCP,
+     .           INODES, J, IT, IMCP,
      .           ISUM, NPX, IS, NEW_ITER, ISPC, IN,
-     .           JATM, JMOL, JION, JPHOT, JPLS
+     .     JATM, JMOL, JION, JPHOT, JPLS
+!$OMP THREADPRIVATE(I,J,IN,ISPC,IPANU,INODES,LGSTOP,
+!$OMP& SECND1,SECND2,SECDEL,MY_ID,NINIST,CDATE,CTIME,
+!$OMP& ISEED_ISTRA,ISEED_IPTSI,
+!$OMP& IDUMRAN,ISTR)
 C      INTEGER :: N2
 !pb 28012016
       INTEGER, SAVE :: ICO_CALL=0
@@ -138,15 +154,29 @@ csw
       real(dp) :: timused
       integer :: itimstart, itimend, itimrate
 C
-      LOGICAL :: LGSTOP, NLPOLS, NLTORS
+      LOGICAL, SAVE :: LGSTOP, NLPOLS, NLTORS
       LOGICAL :: LOGHELP(NSTRA)
+!HJL UNHACK      LOGICAL :: LOGHELP(1)
 C  OVERHEAD FOR POST PROCESSING (SECONDS)
 C      DATA N2/2/
 C
 cpg     
-      INTEGER :: MY_ID
+      INTEGER, SAVE :: MY_ID
 
-      CHARACTER(LEN=15) :: NOM_FIC, NUMERO, NOM_BASE
+!      CHARACTER(LEN=15), SAVE :: NOM_FIC
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc    
+cym shared variables used as buffer to initialize private pointer variables
+cym copyin does not work for allocatable pointer arrrays      
+
+!      INTEGER :: BISTRA
+!      INTEGER,TARGET :: BISDVI(MSDVI)      
+!      INTEGER,TARGET :: BIPSTD(MPARTC+1),BICMSPL(MCMSPL)
+!      REAL(DP),TARGET :: BRPST(NPARTC),BRCMSPL(NCMSPL),
+!     . BXSTOR(MSTOR1,MSTOR2),BXSTORV(NSTORV),BRCGRID(NCGRD)
+!      LOGICAL,TARGET :: BLCMSOU(14,NSTRA)
+!      REAL(DP), DIMENSION(28,0:11) :: BETH,BQ,BM2M1,BETF
+!      REAL(DP), DIMENSION(28) :: BES
+
 cym
       integer :: iunout_save     
 
@@ -155,7 +185,9 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 C@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 C
-      
+
+!$OMP BARRIER
+      ALLOCATE(XTIM(0:NSTRA))
 !$OMP MASTER
       
       TIMI=EIRENE_SECOND_OWN()
@@ -283,6 +315,8 @@ CVKMPI      XTIM(0)=EIRENE_SECOND_OWN()
 CVKMPI      SECND=XTIM(0)
       SECND=EIRENE_SECOND_OWN()
 
+!HJL UNHACK      NPTS_SAVE=NPTS
+!HJL UNHACK      NINITL_SAVE = NINITL
       NPTS_SAVE=NPTS
       NINITL_SAVE = NINITL
 !pb 28012016
@@ -464,9 +498,48 @@ cdr  between the present and the previous cycle.
       FISCL(0)=1.
       FPHSCL(0)=1.
 
-! Initialise openMP including allocating THREADPRIVATE arrays      
-      CALL EIRENE_INIT_OPENMP()                
 
+! Initialise openMP including allocating THREADPRIVATE arrays      
+!      BISDVI=ISDVI             
+!      BIPSTD=IPSTD
+!      BRPST=RPST
+!      BRCMSPL=RCMSPL
+!      BICMSPL=ICMSPL
+!      BLCMSOU=LCMSOU
+!      BXSTOR=XSTOR
+!      BXSTORV=XSTORV
+!      BRCGRID=RCGRID
+      ! New for complete threading
+!      BISTRA=ISTRA
+!      BETH=ETH
+!      BQ=Q
+!      BM2M1=M2M1
+!      BETF=ETF
+!      BES=ES
+!$OMP END MASTER    
+
+!!!$OMP BARRIER
+      
+      CALL EIRENE_INIT_OPENMP()
+
+!      IF (ITHREAD > 0) THEN
+!         ISDVI=BISDVI             
+!         IPSTD=BIPSTD
+!         RPST=BRPST
+!         RCMSPL=BRCMSPL
+!         ICMSPL=BICMSPL
+!         LCMSOU=BLCMSOU
+!         XSTOR=BXSTOR
+!         XSTORV=BXSTORV
+!         RCGRID=BRCGRID
+! New for complete threading
+!         ISTRA=BISTRA
+!         ETH=BETH
+!         Q=BQ
+!         M2M1=BM2M1
+!         ETF=BETF
+!         ES=BES
+!      ENDIF
 C      
 C**** STRATA LOOP ****************************************************
 C
@@ -474,8 +547,6 @@ C
       OVER_ACC=0.D0
       NEW_ITER=0
 
-!$OMP END MASTER
-      
 !!!$OMP  PARALLEL  DEFAULT(SHARED)
 !!!$OMP& PRIVATE(I,J,IPTSI,IN,ISPC,IPANU,INODES,LGSTOP,
 !!!$OMP& SECND1,SECND2,SECDEL,MY_ID,NINIST,CDATE,CTIME,
@@ -1040,7 +1111,7 @@ C
           IF (TRCLST) CALL EIRENE_OUTLST
 C         GOTO 101
 
-  101     CONTINUE
+!HJL  101     CONTINUE
 C
 C
 cym - redirect output to initial unit
@@ -1366,11 +1437,15 @@ C
 
        END IF                   ! CALC_STRATUM(ISTRA)
       END DO                    ! ISTR
-!!!$OMP END PARALLEL
+!!!   $OMP END PARALLEL
+      write(6,*) ITHREAD,"Finished strata"
+      
 !$OMP MASTER   
 C
 C*** STRATA LOOP FINISHED *******************************************
 C
+!HJL UNHACK      NPTS=NPTS_SAVE
+!HJL UNHACK      NINITL = NINITL_SAVE
       NPTS=NPTS_SAVE
       NINITL = NINITL_SAVE
 C
