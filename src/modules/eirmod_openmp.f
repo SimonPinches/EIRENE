@@ -25,9 +25,9 @@
 
       PUBLIC  :: EIRENE_INIT_OPENMP, EIRENE_DEALLOCATE_OPENMP
       
-      INTEGER, PUBLIC, SAVE :: ITHREAD, NTHREADS
+      INTEGER, PUBLIC, SAVE :: EIRENE_ITHREAD, EIRENE_NTHREADS
 
-!$OMP THREADPRIVATE(ITHREAD,NTHREADS)
+!$OMP THREADPRIVATE(EIRENE_ITHREAD,EIRENE_NTHREADS)
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c     ym shared variables used as buffer to initialize private pointer variables
@@ -44,43 +44,36 @@ c     ym copyin does not work for allocatable pointer arrrays
 
       CONTAINS
 
-!     Initialisation routine that also allocates THREADPRIVATE arrays
+!     Initialisation routine that calls allocate and array copy routines
       SUBROUTINE EIRENE_INIT_OPENMP            
       
-!!!   $OMP PARALLEL
-      ITHREAD  = OMP_GET_THREAD_NUM()
-      NTHREADS = OMP_GET_NUM_THREADS()
+      EIRENE_ITHREAD  = OMP_GET_THREAD_NUM()
+      EIRENE_NTHREADS = OMP_GET_NUM_THREADS()
 
-      write(6,*) ITHREAD,"Entered init_openmp"
-      
 !$OMP BARRIER
       
-      write(6,*) ITHREAD,"passed barrier"
-      IF(ITHREAD==0) THEN
-         write(6,*) ITHREAD,"Calling INIT_BUFFERS"
+      IF(EIRENE_ITHREAD==0) THEN
          CALL EIRENE_INIT_BUFFERS_OPENMP()
       ELSE
-         write(6,*) ITHREAD,"Calling ALLOCATE_OPENMP"
          CALL EIRENE_ALLOCATE_OPENMP()
       ENDIF
       
 !$OMP BARRIER
 
-      IF(ITHREAD>0) THEN
+      IF(EIRENE_ITHREAD>0) THEN
          CALL EIRENE_COPY_BUFFERS_OPENMP()
       ENDIF
       
 !$OMP BARRIER
 
-      IF(ITHREAD==0) THEN
+      IF(EIRENE_ITHREAD==0) THEN
          CALL EIRENE_DEALLOCATE_BUFFERS_OPENMP()
       ENDIF
-!!!   $OMP END PARALLEL
       
       END SUBROUTINE EIRENE_INIT_OPENMP
 
-!!! Allocate THREAD_PRIVATE arrays for non master threads 
       
+!!! Allocate THREAD_PRIVATE arrays for non master threads      
       SUBROUTINE EIRENE_ALLOCATE_OPENMP
 
 
@@ -246,10 +239,12 @@ c     ym make sure the clast variables do not take exotic values
 
       END SUBROUTINE EIRENE_ALLOCATE_OPENMP
 
+
+!!! Deallocate THREADPRIVATE arrays
       SUBROUTINE EIRENE_DEALLOCATE_OPENMP
       
 
-      IF(ITHREAD > 0 ) THEN
+      IF(EIRENE_ITHREAD > 0 ) THEN
          
          DEALLOCATE(ISDVI)
          DEALLOCATE(TIMINT)
@@ -308,6 +303,7 @@ c     ym make sure the clast variables do not take exotic values
 
       END SUBROUTINE EIRENE_DEALLOCATE_OPENMP
 
+      
 !!! Allocate shared arrays and copy in the data from master
       SUBROUTINE EIRENE_INIT_BUFFERS_OPENMP
 
@@ -362,7 +358,7 @@ c     ym make sure the clast variables do not take exotic values
       
       END SUBROUTINE EIRENE_COPY_BUFFERS_OPENMP
 
-       
+      
  !!! Allocate shared arrays and copy in the data from master
       SUBROUTINE EIRENE_DEALLOCATE_BUFFERS_OPENMP
 
@@ -376,8 +372,7 @@ c     ym make sure the clast variables do not take exotic values
       DEALLOCATE(BXSTORV)
       DEALLOCATE(BRCGRID)
 
-      END SUBROUTINE EIRENE_DEALLOCATE_BUFFERS_OPENMP
-    
+      END SUBROUTINE EIRENE_DEALLOCATE_BUFFERS_OPENMP    
       
       
       END MODULE EIRMOD_OPENMP

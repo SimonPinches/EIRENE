@@ -551,7 +551,7 @@ cym simplifies comparison when NLIDENT is activated
 !$OMP MASTER
       IUNOUT_SAVE=IUNOUT
 !$OMP END MASTER
-      IUNOUT=200+ITHREAD+100*(ISTRA-1)
+      IUNOUT=200+EIRENE_ITHREAD+100*(ISTRA-1)
 
 
 
@@ -575,7 +575,7 @@ C  INITIALIZE RANDOM NUMBER GENERATOR FOR STRATUM ISTRA
 C  find random number generator seed, from input flag NINITL(ISTRA)
           IF (NINITL(istra).GT.0) THEN
             IF (.NOT.NLIDENT) THEN
-              MY_ID= ITHREAD + MY_PE*NTHREADS
+              MY_ID= EIRENE_ITHREAD + MY_PE*EIRENE_NTHREADS
               ninist=NINITL(ISTRA)+MY_ID*10000 !one seed per thread to generate independent numbers
 cym uncommented
 cym              write(30+ithread,*) ninist,NINITL(ISTRA),MY_ID
@@ -622,7 +622,7 @@ cdr  format of CDATE: hhmmss.xxx
           NINITL(ISTRA) = NINITL(ISTRA) + ICO_CALL
             
          IF (.NOT.NLIDENT) then
-            MY_ID= ITHREAD + MY_PE*NTHREADS
+            MY_ID= EIRENE_ITHREAD + MY_PE*EIRENE_NTHREADS
             NINIST=NINITL(ISTRA)+MY_ID*10000
             ISEED_ISTRA=RANSET_EIRENE(NINIST)
          ENDIF
@@ -637,7 +637,7 @@ C  INTERNAL DEFAULT FIRST SEED IS TAKEN FOR FIRST STRATUM. FROM THEN ON: NO FURT
           IF (TRCRNF) THEN
 !$OMP CRITICAL
             WRITE (iunout,*) 'INITIALIZE RANDOM NUMBERS FOR STRATUM ',
-     .                       'ISTRA= ',ISTRA, 'thread# = ',ithread
+     .                       'ISTRA= ',ISTRA,'thread# = ',EIRENE_ITHREAD
             WRITE (iunout,*) 'NINITL(ISTRA) SET TO ',NINITL(ISTRA)
             WRITE (iunout,*) 'ISEED_ISTRA (LEGAL SEED, AS USED) ',
      .                        ISEED_ISTRA
@@ -1368,15 +1368,11 @@ C
 
        END IF                   ! CALC_STRATUM(ISTRA)
       END DO                    ! ISTR
-!!!   $OMP END PARALLEL
-      write(6,*) ITHREAD,"Finished strata"
       
 !$OMP MASTER   
 C
 C*** STRATA LOOP FINISHED *******************************************
 C
-!HJL UNHACK      NPTS=NPTS_SAVE
-!HJL UNHACK      NINITL = NINITL_SAVE
       NPTS=NPTS_SAVE
       NINITL = NINITL_SAVE
 C
