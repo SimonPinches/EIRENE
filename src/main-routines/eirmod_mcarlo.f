@@ -56,19 +56,6 @@ cym will disappear when parallel zone will encompass the whole code
       REAL(DP), ALLOCATABLE, SAVE :: DUMMY(:),
      .                               ZVOLIN(:),ZVOLIW(:),SCLTAL(:,:)
 
-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc    
-cym shared variables used as buffer to initialize private pointer variables
-cym copyin does not work for allocatable pointer arrrays      
-
-!      INTEGER :: BISTRA
-!      INTEGER,TARGET :: BISDVI(MSDVI)      
-!      INTEGER,TARGET :: BIPSTD(MPARTC+1),BICMSPL(MCMSPL)
-!      REAL(DP),TARGET :: BRPST(NPARTC),BRCMSPL(NCMSPL),
-!     .     BXSTOR(MSTOR1,MSTOR2),BXSTORV(NSTORV),BRCGRID(NCGRD)
-!      LOGICAL,TARGET :: BLCMSOU(14,NSTRA)
-!      REAL(DP), DIMENSION(28,0:11) :: BETH,BQ,BM2M1,BETF
-!      REAL(DP), DIMENSION(28) :: BES
-
       CONTAINS
 
 c  nov.16th 2005: npts_save = npts always, not only for nlmovie option
@@ -162,21 +149,6 @@ C      DATA N2/2/
 C
 cpg     
       INTEGER, SAVE :: MY_ID
-
-!      CHARACTER(LEN=15), SAVE :: NOM_FIC
-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc    
-cym shared variables used as buffer to initialize private pointer variables
-cym copyin does not work for allocatable pointer arrrays      
-
-!      INTEGER :: BISTRA
-!      INTEGER,TARGET :: BISDVI(MSDVI)      
-!      INTEGER,TARGET :: BIPSTD(MPARTC+1),BICMSPL(MCMSPL)
-!      REAL(DP),TARGET :: BRPST(NPARTC),BRCMSPL(NCMSPL),
-!     . BXSTOR(MSTOR1,MSTOR2),BXSTORV(NSTORV),BRCGRID(NCGRD)
-!      LOGICAL,TARGET :: BLCMSOU(14,NSTRA)
-!      REAL(DP), DIMENSION(28,0:11) :: BETH,BQ,BM2M1,BETF
-!      REAL(DP), DIMENSION(28) :: BES
-
 cym
       integer :: iunout_save     
 
@@ -499,62 +471,19 @@ cdr  between the present and the previous cycle.
       FPHSCL(0)=1.
 
 
-! Initialise openMP including allocating THREADPRIVATE arrays      
-!      BISDVI=ISDVI             
-!      BIPSTD=IPSTD
-!      BRPST=RPST
-!      BRCMSPL=RCMSPL
-!      BICMSPL=ICMSPL
-!      BLCMSOU=LCMSOU
-!      BXSTOR=XSTOR
-!      BXSTORV=XSTORV
-!      BRCGRID=RCGRID
-      ! New for complete threading
-!      BISTRA=ISTRA
-!      BETH=ETH
-!      BQ=Q
-!      BM2M1=M2M1
-!      BETF=ETF
-!      BES=ES
+
 !$OMP END MASTER    
 
-!!!$OMP BARRIER
-      
+! Initialise openMP including allocating THREADPRIVATE arrays
+! The parallel region is initiated in eirene main so that codes
+! coupled to eirene can contain eirene in their own parallel region
       CALL EIRENE_INIT_OPENMP()
-
-!      IF (ITHREAD > 0) THEN
-!         ISDVI=BISDVI             
-!         IPSTD=BIPSTD
-!         RPST=BRPST
-!         RCMSPL=BRCMSPL
-!         ICMSPL=BICMSPL
-!         LCMSOU=BLCMSOU
-!         XSTOR=BXSTOR
-!         XSTORV=BXSTORV
-!         RCGRID=BRCGRID
-! New for complete threading
-!         ISTRA=BISTRA
-!         ETH=BETH
-!         Q=BQ
-!         M2M1=BM2M1
-!         ETF=BETF
-!         ES=BES
-!      ENDIF
 C      
 C**** STRATA LOOP ****************************************************
 C
       NPANU=0
       OVER_ACC=0.D0
       NEW_ITER=0
-
-!!!$OMP  PARALLEL  DEFAULT(SHARED)
-!!!$OMP& PRIVATE(I,J,IPTSI,IN,ISPC,IPANU,INODES,LGSTOP,
-!!!$OMP& SECND1,SECND2,SECDEL,MY_ID,NINIST,CDATE,CTIME,
-!!!$OMP& NOM_FIC,NUMERO,NOM_BASE,ISEED_ISTRA,ISEED_IPTSI,
-!!!$OMP& IDUMRAN)
-!!!$OMP& FIRSTPRIVATE(ISTRA)
-!!!$OMP& COPYIN(ETH,Q,M2M1,ES,ETF,ISDVI,IPSTD,RPST,
-!!!$OMP& RCMSPL,ICMSPL,LCMSOU,XSTOR,XSTORV,RCGRID)
 
       DO ISTR=1,NSTRAI          ! main loop over strata
 
