@@ -52,7 +52,7 @@ cdr  for linear combination of tallies
       INTEGER :: ICP, ICP2, ICP3, ICP4, ICP5,
      .           ICO, IR, IPL, IPLV, NMTSP, IRD
 
-!$OMP SINGLE      
+!$OMP MASTER      
       IF (IFIRST == 0) THEN
          ALLOCATE (UAH(NPLS,NRTAL))
          ALLOCATE (EKIN(NPLS,NRTAL))
@@ -72,7 +72,7 @@ cdr  ird is coarse grid for scoring
          END DO
          IFIRST = 1
       END IF
-!$OMP END SINGLE
+!$OMP END MASTER
 
       ICP = NPLSI     ! ...+1:  summed ipls part. source, a+m+i+ph
       ICP2 = 2*NPLSI  ! ...+1:  summed ipls parallel mom. source, a+m+i+ph
