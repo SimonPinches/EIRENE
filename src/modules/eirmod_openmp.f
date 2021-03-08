@@ -45,19 +45,25 @@ c     ym copyin does not work for allocatable pointer arrrays
       CONTAINS
 
 !     Initialisation routine that calls allocate and array copy routines
-      SUBROUTINE EIRENE_INIT_OPENMP            
+      SUBROUTINE EIRENE_INIT_OPENMP
+#ifndef USE_EXTOMP      
+!$OMP PARALLEL DEFAULT(SHARED)
+#endif
       
       EIRENE_ITHREAD  = OMP_GET_THREAD_NUM()
       EIRENE_NTHREADS = OMP_GET_NUM_THREADS()
 
 !$OMP BARRIER
-      
+
+#ifdef USE_EXTOMP      
       IF(EIRENE_ITHREAD==0) THEN
          CALL EIRENE_INIT_BUFFERS_OPENMP()
       ELSE
+#endif
          CALL EIRENE_ALLOCATE_OPENMP()
+#ifdef USE_EXTOMP
       ENDIF
-      
+
 !$OMP BARRIER
 
       IF(EIRENE_ITHREAD>0) THEN
@@ -69,14 +75,18 @@ c     ym copyin does not work for allocatable pointer arrrays
       IF(EIRENE_ITHREAD==0) THEN
          CALL EIRENE_DEALLOCATE_BUFFERS_OPENMP()
       ENDIF
-      
+#else
+!$OMP END PARALLEL
+#endif
+
       END SUBROUTINE EIRENE_INIT_OPENMP
 
       
 !!! Allocate THREAD_PRIVATE arrays for non master threads      
       SUBROUTINE EIRENE_ALLOCATE_OPENMP
 
-
+      IF(EIRENE_ITHREAD==0) RETURN
+      
       ALLOCATE (ISDVI(MSDVI))              
       ALLOCATE (LCMSOU(14,NSTRA))
       ALLOCATE (TIMINT(NRADS))
@@ -235,8 +245,6 @@ c     ym make sure the clast variables do not take exotic values
       SIGBGK  => XSTORV(7)
       ZMFPI   => XSTORV(8)
       
-!      EP1    => RCGRID(1+1*N1ST : 2*N1ST)
-
       END SUBROUTINE EIRENE_ALLOCATE_OPENMP
 
 
@@ -244,62 +252,60 @@ c     ym make sure the clast variables do not take exotic values
       SUBROUTINE EIRENE_DEALLOCATE_OPENMP
       
 
-      IF(EIRENE_ITHREAD > 0 ) THEN
-         
-         DEALLOCATE(ISDVI)
-         DEALLOCATE(TIMINT)
-         DEALLOCATE(TIMPOL)
-         DEALLOCATE(NTIM)
-         DEALLOCATE(IIMPOL)
-         DEALLOCATE(IIMINT)
-         
-         DEALLOCATE(RPST)
-         DEALLOCATE(IPSTD)
-         DEALLOCATE(RCMSPL)
-         DEALLOCATE(ICMSPL)
-         
-         DEALLOCATE(ALPD)
-         DEALLOCATE(BLPD)
-         DEALLOCATE(CLPD)
-         
-         DEALLOCATE (JUPC)
-         DEALLOCATE (KUPC)
-         DEALLOCATE (LUPC)
-         DEALLOCATE (MUPC)
-         DEALLOCATE(NUPC)
-         DEALLOCATE(NCOUNP)
-         DEALLOCATE(NCOUNT)
-         
-         DEALLOCATE(EREDUC)
-         DEALLOCATE(FREDUC)
-         DEALLOCATE(IREDUC)
-         
-         DEALLOCATE(XSTOR)
-         DEALLOCATE(XSTORV)
-         DEALLOCATE(LCMSOU)
-         
-         DEALLOCATE(IIND)
-!!         DEALLOCATE(RCGRID)
-         
-         DEALLOCATE (XCMEAN)
-         DEALLOCATE (SGCVMX)
-         DEALLOCATE (XEMEAN)
-         DEALLOCATE (SGEVMX)
-         DEALLOCATE (XPMEAN)
-         DEALLOCATE (SGPVMX)
-
-         DEALLOCATE (NCMEAN)
-         DEALLOCATE (IFLRCX)
-         DEALLOCATE (NEMEAN)
-         DEALLOCATE (IFLREL)
-         DEALLOCATE (NPMEAN)
-         DEALLOCATE (IFLRPI)
-         
-         DEALLOCATE (FNUIAR)
-         
-         DEALLOCATE (RSPLST)
-         DEALLOCATE (ISPLST)
-      END IF
+      IF(EIRENE_ITHREAD == 0 ) RETURN
+      
+      DEALLOCATE(ISDVI)
+      DEALLOCATE(TIMINT)
+      DEALLOCATE(TIMPOL)
+      DEALLOCATE(NTIM)
+      DEALLOCATE(IIMPOL)
+      DEALLOCATE(IIMINT)
+      
+      DEALLOCATE(RPST)
+      DEALLOCATE(IPSTD)
+      DEALLOCATE(RCMSPL)
+      DEALLOCATE(ICMSPL)
+      
+      DEALLOCATE(ALPD)
+      DEALLOCATE(BLPD)
+      DEALLOCATE(CLPD)
+      
+      DEALLOCATE (JUPC)
+      DEALLOCATE (KUPC)
+      DEALLOCATE (LUPC)
+      DEALLOCATE (MUPC)
+      DEALLOCATE(NUPC)
+      DEALLOCATE(NCOUNP)
+      DEALLOCATE(NCOUNT)
+      
+      DEALLOCATE(EREDUC)
+      DEALLOCATE(FREDUC)
+      DEALLOCATE(IREDUC)
+      
+      DEALLOCATE(XSTOR)
+      DEALLOCATE(XSTORV)
+      DEALLOCATE(LCMSOU)
+      
+      DEALLOCATE(IIND)
+      
+      DEALLOCATE (XCMEAN)
+      DEALLOCATE (SGCVMX)
+      DEALLOCATE (XEMEAN)
+      DEALLOCATE (SGEVMX)
+      DEALLOCATE (XPMEAN)
+      DEALLOCATE (SGPVMX)
+      
+      DEALLOCATE (NCMEAN)
+      DEALLOCATE (IFLRCX)
+      DEALLOCATE (NEMEAN)
+      DEALLOCATE (IFLREL)
+      DEALLOCATE (NPMEAN)
+      DEALLOCATE (IFLRPI)
+      
+      DEALLOCATE (FNUIAR)
+      
+      DEALLOCATE (RSPLST)
+      DEALLOCATE (ISPLST)
 
       END SUBROUTINE EIRENE_DEALLOCATE_OPENMP
 
@@ -323,8 +329,6 @@ c     ym make sure the clast variables do not take exotic values
       BXSTOR=XSTOR
       ALLOCATE (BXSTORV(NSTORV))
       BXSTORV=XSTORV
-!      ALLOCATE (BRCGRID(NCGRD))
-!      BRCGRID=RCGRID
       ! New for complete threading
       BISTRA=ISTRA
       BETH=ETH
@@ -370,7 +374,6 @@ c     ym make sure the clast variables do not take exotic values
       DEALLOCATE(BLCMSOU)
       DEALLOCATE(BXSTOR)       
       DEALLOCATE(BXSTORV)
-!      DEALLOCATE(BRCGRID)
 
       END SUBROUTINE EIRENE_DEALLOCATE_BUFFERS_OPENMP    
       

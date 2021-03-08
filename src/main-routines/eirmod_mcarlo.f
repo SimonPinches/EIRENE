@@ -20,6 +20,7 @@
       USE EIRMOD_COMSOU
       USE EIRMOD_COMSPL
       USE EIRMOD_COMSIG
+      USE EIRMOD_COMXS
       USE EIRMOD_CLGIN
       USE EIRMOD_COUTAU
       USE EIRMOD_CSPEI
@@ -159,11 +160,13 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 C@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 C
-
+#ifdef USE_EXTOMP
 !$OMP BARRIER
+!$OMP MASTER      
+#endif
+      write(6,*) "Allocating XTIM",NSTRA
       ALLOCATE(XTIM(0:NSTRA))
-!$OMP MASTER
-      
+
       TIMI=EIRENE_SECOND_OWN()
       timan=timi
       tim1 = timi
@@ -262,9 +265,13 @@ cdr   write (iunout,*) 'cpu time for samsf0 ', tim2-tim1
 C
 C
       IESTR=-1
+#ifdef USE_EXTOMP
 !$OMP END MASTER
+#endif     
       IF (NFILEN.EQ.2.OR.NFILEN.EQ.7) GOTO 2000
-!$OMP MASTER      
+#ifdef USE_EXTOMP
+!$OMP MASTER
+#endif
 C
 C**** CLEAR WORK AREA FOR SUM OVER STRATA ****************************
 C
@@ -473,25 +480,36 @@ cdr  between the present and the previous cycle.
       FPHSCL(0)=1.
 
 
-
-!$OMP END MASTER    
-
-! Initialise openMP including allocating THREADPRIVATE arrays
-! The parallel region is initiated in eirene main so that codes
-! coupled to eirene can contain eirene in their own parallel region
-      CALL EIRENE_INIT_OPENMP()
+      
 C      
 C**** STRATA LOOP ****************************************************
 C
-      NPANU=0
-      OVER_ACC=0.D0
+!      OVER_ACC=0.D0
       NEW_ITER=0
+#ifdef USE_EXTOMP
+!$OMP END MASTER
+!$OMP BARRIER
+#endif
+      CALL EIRENE_INIT_OPENMP()
+      NPANU=0
+#ifndef USE_EXTOMP
+      write(6,*) "Entering internal parallel region"
+!$OMP  PARALLEL DEFAULT(SHARED)
+!$OMP& COPYIN(ETH,Q,M2M1,ES,ETF,ISDVI,IPSTD,RPST,
+!$OMP& RCMSPL,ICMSPL,LCMSOU,XSTOR,XSTORV)
+      write(6,*) EIRENE_ITHREAD,"Using internal parallel region"
+#endif
+      write(6,*) EIRENE_ITHREAD,"running parallel region"
+! Initialise openMP including allocating THREADPRIVATE arrays
 
       DO ISTR=1,NSTRAI          ! main loop over strata
 
+!$OMP MASTER         
         timan=EIRENE_second_own()
 
         ISTRA=ISTR
+!$OMP END MASTER
+!$OMP BARRIER        
 
 C  SPECIAL TREATMENT FOR MOVIE OPTION, OR FOR ONE-BY ONE RELAUNCH FROM CENSUS ARRAY
 C  IN TIME DEP. MODE
@@ -1368,8 +1386,11 @@ C
 
        END IF                   ! CALC_STRATUM(ISTRA)
       END DO                    ! ISTR
-      
-!$OMP MASTER   
+#ifdef USE_EXTOMP
+!$OMP MASTER
+#else
+!$OMP END PARALLEL
+#endif
 C
 C*** STRATA LOOP FINISHED *******************************************
 C
@@ -1417,8 +1438,9 @@ csw
       IF (NPRS > 1) THEN
         CALL EIRENE_COLLECT_DATA_USR
       END IF
-
+#ifdef USE_EXTOMP
 !$OMP END MASTER
+#endif
       IF ((MY_PE .EQ. 0) .AND. (NSTRAI.EQ.1)) THEN
 C
 C  WRITE RESULTS FOR SUM OVER STRATA ON TEMP. FILE
@@ -1427,7 +1449,9 @@ C  A USELESS SUMMATION
 C
 C  INDICATE: DATA FOR ISTRA=1 ARE ON CESTIM, BUT WRITE AS SUM OVER
 C  STRATA
+#ifdef USE_EXTOMP      
 !$OMP MASTER
+#endif         
         IESTR=1
         IF (NFILEN.EQ.1.OR.NFILEN.EQ.6) THEN
           CALL EIRENE_WRSTRT(0,NSTRAI,NESTM1,NESTM2,NADSPC,
@@ -1435,12 +1459,16 @@ C  STRATA
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
      .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .              NSIGI_SPC,TRCFLE)
-        ENDIF 
-!$OMP END MASTER       
+        ENDIF
+#ifdef USE_EXTOMP
+!$OMP END MASTER
+#endif
         GOTO 2000
       ENDIF
       IF (XMCP(0).LE.1) GOTO 2000
+#ifdef USE_EXTOMP
 !$OMP MASTER
+#endif
 C SEQUENTIAL REGION
 
       IF(MY_PE .EQ. 0) THEN
@@ -1523,9 +1551,13 @@ cdr spectrum tally variances are already in ESTIML
 C
       ENDIF ! MY_PE .EQ. 0
 C
-!$OMP END MASTER      
+#ifdef USE_EXTOMP
+!$OMP END MASTER
+#endif
  2000 CONTINUE
+#ifdef USE_EXTOMP      
 !$OMP MASTER
+#endif
       CALL EIRENE_BROAD_IESTR(IESTR)
 
       IF(MY_PE .EQ. 0) THEN
@@ -1574,9 +1606,9 @@ cdr  see above. Routine UPDLIN.f contains linear combination of tallies
 
 
       CALL MPI_BARRIER (MPI_COMM_WORLD,IER)
-
+#ifdef USE_EXTOMP
 !$OMP END MASTER     
-      
+#endif
 C
       END
 

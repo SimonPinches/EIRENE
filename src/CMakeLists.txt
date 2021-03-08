@@ -114,6 +114,13 @@ if (MPI)
   include_directories(${MPI_Fortran_INCLUDE_PATH})
 endif()
 
+# Add option to enable OpenMP with the parallel region defined in the calling program.
+option(EXTOMP "Build for use with external parallel region" OFF)
+if (EXTOMP)
+  message("-- Adding USE_EXTOMP flag...")
+  add_definitions(-DUSE_EXTOMP)
+endif()
+
 # Finds all fortran files (*.[fF]/*.[fF]90) in the source directory and extract the 
 # relative path. Relative path is stored in variable 'fortran_dirs'.
 message(STATUS "Detecting fortran files (*.[fF]/*.[fF]90) in subdirectories of " 
