@@ -37,7 +37,7 @@ c     ym copyin does not work for allocatable pointer arrrays
       INTEGER,TARGET,ALLOCATABLE :: BISDVI(:)      
       INTEGER,TARGET,ALLOCATABLE :: BIPSTD(:),BICMSPL(:)
       REAL(DP),TARGET,ALLOCATABLE :: BRPST(:),BRCMSPL(:),
-     .     BXSTOR(:,:),BXSTORV(:),BRCGRID(:)
+     .     BXSTOR(:,:),BXSTORV(:)
       LOGICAL,TARGET,ALLOCATABLE :: BLCMSOU(:,:)
       REAL(DP), DIMENSION(28,0:11) :: BETH,BQ,BM2M1,BETF
       REAL(DP), DIMENSION(28) :: BES
@@ -102,7 +102,7 @@ c     ym copyin does not work for allocatable pointer arrrays
       ALLOCATE (LUPC(N2ND))
       ALLOCATE (MUPC(N2ND))
       
-      ALLOCATE (RCGRID(NCGRD))
+!!      ALLOCATE (RCGRID(NCGRD))
 
       ALLOCATE(EREDUC(NSPZ,0:NLIMPS))
       ALLOCATE(FREDUC(NSPZ,0:NLIMPS))
@@ -235,7 +235,7 @@ c     ym make sure the clast variables do not take exotic values
       SIGBGK  => XSTORV(7)
       ZMFPI   => XSTORV(8)
       
-      EP1    => RCGRID(1+1*N1ST : 2*N1ST)
+!      EP1    => RCGRID(1+1*N1ST : 2*N1ST)
 
       END SUBROUTINE EIRENE_ALLOCATE_OPENMP
 
@@ -279,7 +279,7 @@ c     ym make sure the clast variables do not take exotic values
          DEALLOCATE(LCMSOU)
          
          DEALLOCATE(IIND)
-         DEALLOCATE(RCGRID)
+!!         DEALLOCATE(RCGRID)
          
          DEALLOCATE (XCMEAN)
          DEALLOCATE (SGCVMX)
@@ -323,8 +323,8 @@ c     ym make sure the clast variables do not take exotic values
       BXSTOR=XSTOR
       ALLOCATE (BXSTORV(NSTORV))
       BXSTORV=XSTORV
-      ALLOCATE (BRCGRID(NCGRD))
-      BRCGRID=RCGRID
+!      ALLOCATE (BRCGRID(NCGRD))
+!      BRCGRID=RCGRID
       ! New for complete threading
       BISTRA=ISTRA
       BETH=ETH
@@ -347,7 +347,7 @@ c     ym make sure the clast variables do not take exotic values
       LCMSOU=BLCMSOU
       XSTOR=BXSTOR
       XSTORV=BXSTORV
-      RCGRID=BRCGRID
+!      RCGRID=BRCGRID
 !     New for complete threading
       ISTRA=BISTRA
       ETH=BETH
@@ -370,7 +370,7 @@ c     ym make sure the clast variables do not take exotic values
       DEALLOCATE(BLCMSOU)
       DEALLOCATE(BXSTOR)       
       DEALLOCATE(BXSTORV)
-      DEALLOCATE(BRCGRID)
+!      DEALLOCATE(BRCGRID)
 
       END SUBROUTINE EIRENE_DEALLOCATE_BUFFERS_OPENMP    
       

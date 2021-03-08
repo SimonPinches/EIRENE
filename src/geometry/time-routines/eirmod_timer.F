@@ -26,6 +26,7 @@ C
       USE EIRMOD_COMPRT
       USE EIRMOD_CLGIN
       USE EIRMOD_CTRIG
+      USE EIRMOD_OPENMP
 
 !$ use OMP_LIB
 
@@ -35,8 +36,8 @@ C
       
       PUBLIC :: EIRENE_TIMER
            
-      REAL(DP) :: A(3,3), B(3), AB(3,3),PTS(4) 
-      REAL(DP) :: SIG1, SIG2, DET, XMU, XETA, AX, AY, V,
+      REAL(DP),SAVE :: A(3,3), B(3), AB(3,3),PTS(4) 
+      REAL(DP),SAVE :: SIG1, SIG2, DET, XMU, XETA, AX, AY, V,
      .          TIMTET,
      .          ZZ, RICHTY, HELP, TM, RICHTX, YY, XX, S3, TIMT, TIM,
      .          S2, A1, A2, A3, B1, B2, B3, S1, V2, V3, ZR, ZEP1,
@@ -44,25 +45,26 @@ C
      .          ZC1, DXA, TST, XA, ZB2, ZAB, ZAB2, ZB, Z0TEST,
      .          Y0TEST, ZA, T, PT1, PT2, PT3, PT4, V1, ESURF,
      .          XTEST, YTEST, X0SURF, DSRF, Y0Q, T1, T2, T3, T4, PNORMI
-      INTEGER :: IRICH(2,4), ITSIDE(3,4)
-      INTEGER :: IZELLO, NTIMT, IOB, I1, I2, ISW, KAN, KEN,
+      INTEGER,SAVE :: IRICH(2,4), ITSIDE(3,4)
+      INTEGER,SAVE :: IZELLO, NTIMT, IOB, I1, I2, ISW, KAN, KEN,
      .           EIRENE_ILLZ, IHELP, IZELL, NTMS, MXSF, NTMZ, NRMSRF,
      .           ICOS, IERR, IRS, NEWCEL, ITET, IT, IL, IS, NRI, MS, IR,
-     .           ICALL, ITFRST, ISTS, MMSURF, J, K, I, JPOL,
+     .           ISTS, MMSURF, J, K, I, JPOL,
      .           MPOL, IPOLGO, IP, ICELLR, MSAVE, ITRI,
-     .           ISTS_CELL, ISD, nclpb, icts
+     .     ISTS_CELL, ISD, nclpb, icts
+      INTEGER, SAVE :: ITFRST = 0, ICALL = 0
 !pb      INTEGER, ALLOCATABLE, SAVE :: ITRINO(:), ISIDNO(:)
 !pb      INTEGER, SAVE :: NSTS_CELL
 #ifdef TRACE
-      INTEGER :: ICOUP
+      INTEGER, SAVE :: ICOUP
 !$OMP THREADPRIVATE (icoup)           
 #endif
-      INTEGER, ALLOCATABLE :: ITRINO(:), ISIDNO(:)
-      INTEGER :: NSTS_CELL
+      INTEGER, ALLOCATABLE, SAVE :: ITRINO(:), ISIDNO(:)
+      INTEGER, SAVE :: NSTS_CELL
 
 cpg      LOGICAL :: LHITP(N2NDPLGS) ! for finding re-entry into levgeo=3 grid
-      LOGICAL :: LCTS(4)
-      LOGICAL :: LNGB1, LNGB2, LNGB3, LNGB4,
+      LOGICAL, SAVE :: LCTS(4)
+      LOGICAL, SAVE :: LNGB1, LNGB2, LNGB3, LNGB4,
      .           LCT1, LCT2, LCT3, LCT4 
 
 cpg - not OpenMP compatible
@@ -100,8 +102,8 @@ cpg     .            (PTS(3),PT3),   (PTS(4),PT4)
      .             4,  1,
      .             5,  2,
      .             6,  3 /
-      DATA ICALL /0/
-      DATA ITFRST /0/
+!      DATA ICALL /0/
+!      DATA ITFRST /0/
 
 cpg      SAVE
       
@@ -1069,7 +1071,7 @@ C     ELSEIF (NJUMP.EQ.1) THEN
 C
  8020   CONTINUE
         DO 8010,J=1,3
-          IF (J.NE.IPOLGO) THEN
+         IF (J.NE.IPOLGO) THEN
             RICHTX = VTRIX(J,IZELL)
             RICHTY = VTRIY(J,IZELL)
             AX = XTRIAN(NECKE(J,IZELL))-XX
