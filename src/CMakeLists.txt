@@ -114,11 +114,18 @@ if (MPI)
   include_directories(${MPI_Fortran_INCLUDE_PATH})
 endif()
 
+# Add option to enable OpenMP with the parallel region defined in eirmod_mcarlom.
+option(OPENMP "Build for use with external parallel region" OFF)
+if (OPENMP)
+  message("-- Adding USE_OPENMP flag...")
+  add_definitions(-DUSE_OPENMP)
+endif()
+
 # Add option to enable OpenMP with the parallel region defined in the calling program.
-option(EXTOMP "Build for use with external parallel region" OFF)
-if (EXTOMP)
-  message("-- Adding USE_EXTOMP flag...")
-  add_definitions(-DUSE_EXTOMP)
+option(EXT_OPENMP "Build for use with external parallel region" OFF)
+if (EXT_OPENMP)
+  message("-- Adding USE_EXTERN_OPENMP flag...")
+  add_definitions(-DUSE_EXTERN_OPENMP)
 endif()
 
 # Finds all fortran files (*.[fF]/*.[fF]90) in the source directory and extract the 
