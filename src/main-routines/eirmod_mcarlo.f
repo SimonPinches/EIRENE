@@ -162,11 +162,11 @@ C@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 C
 #ifdef USE_EXTOMP
 !$OMP BARRIER
+#endif
+      ALLOCATE(XTIM(0:NSTRA))
+#ifdef USE_EXTOMP
 !$OMP MASTER      
 #endif
-      write(6,*) "Allocating XTIM",NSTRA
-      ALLOCATE(XTIM(0:NSTRA))
-
       TIMI=EIRENE_SECOND_OWN()
       timan=timi
       tim1 = timi
@@ -493,23 +493,17 @@ C
       CALL EIRENE_INIT_OPENMP()
       NPANU=0
 #ifndef USE_EXTOMP
-      write(6,*) "Entering internal parallel region"
 !$OMP  PARALLEL DEFAULT(SHARED)
 !$OMP& COPYIN(ETH,Q,M2M1,ES,ETF,ISDVI,IPSTD,RPST,
 !$OMP& RCMSPL,ICMSPL,LCMSOU,XSTOR,XSTORV)
-      write(6,*) EIRENE_ITHREAD,"Using internal parallel region"
 #endif
-      write(6,*) EIRENE_ITHREAD,"running parallel region"
 ! Initialise openMP including allocating THREADPRIVATE arrays
 
       DO ISTR=1,NSTRAI          ! main loop over strata
 
-!$OMP MASTER         
         timan=EIRENE_second_own()
 
         ISTRA=ISTR
-!$OMP END MASTER
-!$OMP BARRIER        
 
 C  SPECIAL TREATMENT FOR MOVIE OPTION, OR FOR ONE-BY ONE RELAUNCH FROM CENSUS ARRAY
 C  IN TIME DEP. MODE
@@ -540,7 +534,7 @@ C  MOVIE OPTION (NLMOVIE):  DONE,
 C    if     nlmovie: sequence of strata is reversed, census stratum istra=nstrai comes first!
 C                    one by one re-launch of ALL particles from census
 c    if not nlmovie: census stratum istra=nstrai comes last.
-
+!$OMP BARRIER
         IF (.NOT.NLSRON(ISTRA)) THEN
           CALL EIRENE_LEER(2)
           WRITE (iunout,*) 'STRATUM NO. ',ISTRA,' ABANDONED'

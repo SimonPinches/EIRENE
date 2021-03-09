@@ -163,7 +163,7 @@ c     ym make sure the clast variables do not take exotic values
       IWLMT    => ISDVI(12+2*NSD+2*NSDW+NCV+2*NRTAL+NLIMPS : MSDVI)
       
       ISPZ   => IPSTD( 9)
-      NT3RD  => ICGRID( 8)
+!HJL      NT3RD  => ICGRID( 8)
       MRSURF => IPSTD(10)
       MPSURF => IPSTD(11)
       MTSURF => IPSTD(12)
