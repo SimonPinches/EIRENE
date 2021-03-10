@@ -17,7 +17,10 @@
       USE EIRMOD_PARMMOD
       USE EIRMOD_PRECISION
       USE EIRMOD_SPUTER, ONLY: ETH,Q,M2M1,ES,ETF
+      
+#ifdef USE_OPENMP     
       USE OMP_LIB
+#endif
       
       IMPLICIT NONE
 
@@ -45,23 +48,40 @@ c     ym copyin does not work for allocatable pointer arrrays
       CONTAINS
 
 !     Initialisation routine that calls allocate and array copy routines
+!     The preprocessor directives differentiate between the parallel region
+!     being created in eirmod_mcarlo and being created by an external coupled code.
+!      
+!     There is also a parallel region in eirene_main that allows for compilation
+!     of the standalone code while using the EXT_OPENMP flag, this is not seen
+!     by a coupled code as it is before the coupling ENTRY point
+      
       SUBROUTINE EIRENE_INIT_OPENMP
-#ifndef USE_EXTOMP      
+#ifndef USE_EXT_OPENMP      
 !$OMP PARALLEL DEFAULT(SHARED)
 #endif
-      
+
+#ifdef USE_OPENMP     
       EIRENE_ITHREAD  = OMP_GET_THREAD_NUM()
       EIRENE_NTHREADS = OMP_GET_NUM_THREADS()
-
+!$OMP MASTER
+      write(iunout,*)"Compiled with OpenMP - NTHREADS =",EIRENE_NTHREADS
+!$OMP END MASTER
+#else
+      EIRENE_ITHREAD  = 0
+      EIRENE_NTHREADS = 1
+#endif
+      
 !$OMP BARRIER
 
-#ifdef USE_EXTOMP      
+#ifdef USE_EXT_OPENMP      
       IF(EIRENE_ITHREAD==0) THEN
          CALL EIRENE_INIT_BUFFERS_OPENMP()
       ELSE
 #endif
+#ifdef USE_OPENMP
          CALL EIRENE_ALLOCATE_OPENMP()
-#ifdef USE_EXTOMP
+#endif
+#ifdef USE_EXT_OPENMP
       ENDIF
 
 !$OMP BARRIER

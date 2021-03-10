@@ -160,11 +160,11 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 C@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 C
-#ifdef USE_EXTOMP
+#ifdef USE_EXT_OPENMP
 !$OMP BARRIER
 #endif
       ALLOCATE(XTIM(0:NSTRA))
-#ifdef USE_EXTOMP
+#ifdef USE_EXT_OPENMP
 !$OMP MASTER      
 #endif
       TIMI=EIRENE_SECOND_OWN()
@@ -265,11 +265,11 @@ cdr   write (iunout,*) 'cpu time for samsf0 ', tim2-tim1
 C
 C
       IESTR=-1
-#ifdef USE_EXTOMP
+#ifdef USE_EXT_OPENMP
 !$OMP END MASTER
 #endif     
       IF (NFILEN.EQ.2.OR.NFILEN.EQ.7) GOTO 2000
-#ifdef USE_EXTOMP
+#ifdef USE_EXT_OPENMP
 !$OMP MASTER
 #endif
 C
@@ -486,19 +486,20 @@ C**** STRATA LOOP ****************************************************
 C
 !      OVER_ACC=0.D0
       NEW_ITER=0
-#ifdef USE_EXTOMP
+#ifdef USE_EXT_OPENMP
 !$OMP END MASTER
 !$OMP BARRIER
 #endif
       CALL EIRENE_INIT_OPENMP()
       NPANU=0
-#ifndef USE_EXTOMP
+#ifndef USE_EXT_OPENMP
+      write(6,*) EIRENE_ITHREAD,"Entering OpenMP region"
 !$OMP  PARALLEL DEFAULT(SHARED)
 !$OMP& COPYIN(ETH,Q,M2M1,ES,ETF,ISDVI,IPSTD,RPST,
 !$OMP& RCMSPL,ICMSPL,LCMSOU,XSTOR,XSTORV)
 #endif
 ! Initialise openMP including allocating THREADPRIVATE arrays
-
+      write(6,*) EIRENE_ITHREAD,"Entered Strata loop"
       DO ISTR=1,NSTRAI          ! main loop over strata
 
         timan=EIRENE_second_own()
@@ -1380,7 +1381,7 @@ C
 
        END IF                   ! CALC_STRATUM(ISTRA)
       END DO                    ! ISTR
-#ifdef USE_EXTOMP
+#ifdef USE_EXT_OPENMP
 !$OMP MASTER
 #else
 !$OMP END PARALLEL
@@ -1432,7 +1433,7 @@ csw
       IF (NPRS > 1) THEN
         CALL EIRENE_COLLECT_DATA_USR
       END IF
-#ifdef USE_EXTOMP
+#ifdef USE_EXT_OPENMP
 !$OMP END MASTER
 #endif
       IF ((MY_PE .EQ. 0) .AND. (NSTRAI.EQ.1)) THEN
@@ -1443,7 +1444,7 @@ C  A USELESS SUMMATION
 C
 C  INDICATE: DATA FOR ISTRA=1 ARE ON CESTIM, BUT WRITE AS SUM OVER
 C  STRATA
-#ifdef USE_EXTOMP      
+#ifdef USE_EXT_OPENMP      
 !$OMP MASTER
 #endif         
         IESTR=1
@@ -1454,13 +1455,13 @@ C  STRATA
      .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .              NSIGI_SPC,TRCFLE)
         ENDIF
-#ifdef USE_EXTOMP
+#ifdef USE_EXT_OPENMP
 !$OMP END MASTER
 #endif
         GOTO 2000
       ENDIF
       IF (XMCP(0).LE.1) GOTO 2000
-#ifdef USE_EXTOMP
+#ifdef USE_EXT_OPENMP
 !$OMP MASTER
 #endif
 C SEQUENTIAL REGION
@@ -1545,11 +1546,11 @@ cdr spectrum tally variances are already in ESTIML
 C
       ENDIF ! MY_PE .EQ. 0
 C
-#ifdef USE_EXTOMP
+#ifdef USE_EXT_OPENMP
 !$OMP END MASTER
 #endif
  2000 CONTINUE
-#ifdef USE_EXTOMP      
+#ifdef USE_EXT_OPENMP      
 !$OMP MASTER
 #endif
       CALL EIRENE_BROAD_IESTR(IESTR)
@@ -1600,7 +1601,7 @@ cdr  see above. Routine UPDLIN.f contains linear combination of tallies
 
 
       CALL MPI_BARRIER (MPI_COMM_WORLD,IER)
-#ifdef USE_EXTOMP
+#ifdef USE_EXT_OPENMP
 !$OMP END MASTER     
 #endif
 C

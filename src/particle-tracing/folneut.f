@@ -105,7 +105,7 @@ C
       use eirmod_colatm  
       use eirmod_colmol
 
-      use OMP_LIB
+      use EIRMOD_OPENMP
 
       IMPLICIT NONE
 
@@ -1146,7 +1146,7 @@ cym
       CALL EIRENE_MASAGE('PARTICLE IS KILLED')
      
       write(iunout,*) 'ERROR for NPANU,thread =',NPANU,
-     .                omp_get_thread_num()
+     .                EIRENE_ITHREAD
       WRITE (iunout,*) 'ERROR NPANU,NCELL,ZDT1,ZTST,TL,TS '
       WRITE (iunout,'(I8,1X,I6,1P,4(1X,1E14.7))')
      .                  NPANU,NCELL,ZDT1,ZTST,TL,TS

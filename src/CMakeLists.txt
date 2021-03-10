@@ -1,6 +1,7 @@
 # CMake project file for EIRENE
 
-cmake_minimum_required(VERSION 2.8)
+#cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.9 FATAL_ERROR)
 project(EIRENE Fortran)
 
 # Set a default build type if none was specified.
@@ -16,13 +17,12 @@ endif()
 
 # Adds compiler flags to all build types.
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
-	set(CMAKE_Fortran_FLAGS_RELEASE "-O2 -traceback -fp-model source -fpp -xHost -qoverride-limits -qopenmp")
-#  set(CMAKE_Fortran_FLAGS_DEBUG "-g -warn all,nointerfaces -check all -traceback -cpp -DTRACE")
-        set(CMAKE_Fortran_FLAGS_DEBUG "-g -warn all,nointerfaces -check all -traceback -fpp -qopenmp") # -qno-openmp")
+  set(CMAKE_Fortran_FLAGS_RELEASE "-O2 -traceback -fp-model source -fpp -xHost -qoverride-limits")
+  set(CMAKE_Fortran_FLAGS_DEBUG "-g -warn all,nointerfaces -check all -traceback -fpp")
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
-  set(CMAKE_Fortran_FLAGS_RELEASE "-O2 -fbacktrace -fopenmp -cpp -fallow-argument-mismatch")
-  set(CMAKE_Fortran_FLAGS_DEBUG "-g -Wall -fcheck=all -fopenmp -fbacktrace -cpp -fallow-argument-mismatch") #-ffpe-trap=denorm")
-  set(CMAKE_Fortran_FLAGS_COVERAGE "-g -fprofile-arcs -ftest-coverage")
+  set(CMAKE_Fortran_FLAGS_RELEASE "-O2 -fbacktrace -cpp -fallow-argument-mismatch")
+  set(CMAKE_Fortran_FLAGS_DEBUG "-g -Wall -fcheck=all -fbacktrace -cpp -fallow-argument-mismatch") #-ffpe-trap=denorm")
+  set(CMAKE_Fortran_FLAGS_COVERAGE "-g -fprofile-arcs -ftest-coverage -cpp")
 endif()
 
 # Output names and postfix.
@@ -114,18 +114,21 @@ if (MPI)
   include_directories(${MPI_Fortran_INCLUDE_PATH})
 endif()
 
-# Add option to enable OpenMP with the parallel region defined in eirmod_mcarlom.
-option(OPENMP "Build for use with external parallel region" OFF)
+# Add option to enable OpenMP with the parallel region defined in eirmod_mcarlo.
+option(OPENMP "Build for use with internal parallel region" OFF)
 if (OPENMP)
   message("-- Adding USE_OPENMP flag...")
   add_definitions(-DUSE_OPENMP)
+  find_package(OpenMP REQUIRED)
 endif()
 
 # Add option to enable OpenMP with the parallel region defined in the calling program.
 option(EXT_OPENMP "Build for use with external parallel region" OFF)
 if (EXT_OPENMP)
   message("-- Adding USE_EXTERN_OPENMP flag...")
-  add_definitions(-DUSE_EXTERN_OPENMP)
+  add_definitions(-DUSE_OPENMP)
+  add_definitions(-DUSE_EXT_OPENMP)
+  find_package(OpenMP REQUIRED)
 endif()
 
 # Finds all fortran files (*.[fF]/*.[fF]90) in the source directory and extract the 
@@ -196,6 +199,12 @@ endif()
 
 if(LibGKS AND LibGRS AND LibX11 AND Libz AND LibXt)
   target_link_libraries(eirene EIRENE ${LibGRS} ${LibGKS} ${LibX11} ${LibXt})
+endif()
+
+if(OPENMP OR EXT_OPENMP)
+  target_compile_options(EIRENE PRIVATE ${OpenMP_Fortran_FLAGS})
+  target_compile_options(eirene PRIVATE ${OpenMP_Fortran_FLAGS})
+  target_link_libraries(eirene EIRENE ${OpenMP_Fortran_LIBRARIES})
 endif()
 
 # Sets output directory of the library and executbale and output name 

@@ -3,7 +3,10 @@ cdr  used for internal run time monitoring
 
       USE EIRMOD_PRECISION
 cym
+#ifdef USE_OPENMP 
       use omp_lib
+#endif
+      use mpi
 cym
       IMPLICIT NONE
       PRIVATE
@@ -22,8 +25,12 @@ cym      real(sp) :: time
 cym   will need a dummy version for this
 cym      call cpu_time(time)
       real(dp) :: time
-      
+#ifdef USE_OPENMP 
       time=omp_get_wtime()
+#else
+      time=mpi_wtime()
+#endif
+      
       EIRENE_second_own=time-start
       END
 C
@@ -32,7 +39,11 @@ C
       real(dp) :: EIRENE_reset_second
 cym   will need a dummy version for this
 cym      call cpu_time(start)
+#ifdef USE_OPENMP 
       start=omp_get_wtime()
+#else
+      start=mpi_wtime()
+#endif
       EIRENE_reset_second=start
       return
       END
