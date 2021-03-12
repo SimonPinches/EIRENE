@@ -57,16 +57,17 @@ c  iteration number for iterations with external code
       ITNR=1
 c  initialize MPI routines
       MPI_INIT=.TRUE.
-      write(6,*) "EIRENE_MAIN: starting"
-#ifdef USE_EXT_OPENMP
-      write(6,*) "Entering paralell region replicating external region"
-!$OMP PARALLEL DEFAULT(SHARED)
-      write(6,*) "Entered paralell region replicating external region"
-#endif
+!!! debug / commented until -ccp option added
+!!!      write(6,*) "EIRENE_MAIN: starting"
+!!!#ifdef USE_EXT_OPENMP
+!!!      write(6,*) "Entering paralell region replicating external region"
+!!!$OMP PARALLEL DEFAULT(SHARED)
+!!!      write(6,*) "Entered paralell region replicating external region"
+!!!#endif
       CALL EIRENE_EIRENE(DT,NLM,NLL,ITNR,MPI_INIT)
-#ifdef USE_EXT_OPENMP
-!$OMP END PARALLEL      
-#endif
+!!!#ifdef USE_EXT_OPENMP
+!!!!$OMP END PARALLEL      
+!!!#endif
 C     
       CALL EIRENE_PLEND
 C
