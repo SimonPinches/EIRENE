@@ -1,7 +1,7 @@
 # CMake project file for EIRENE
 
-#cmake_minimum_required(VERSION 2.8)
-cmake_minimum_required(VERSION 3.9 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8)
+
 project(EIRENE Fortran)
 
 # Set a default build type if none was specified.
@@ -106,7 +106,7 @@ if (TRACE)
 endif()
 
 # Add option to control whether MPI will be use.
-option(MPI "Build with MPI" ON)
+option(MPI "Build with MPI" OFF)
 if (MPI)
   message("-- Adding USE_MPI flag...")
   add_definitions(-DUSE_MPI)
@@ -115,8 +115,9 @@ if (MPI)
 endif()
 
 # Add option to enable OpenMP with the parallel region defined in eirmod_mcarlo.
-option(OPENMP "Build for use with internal parallel region" OFF)
+option(OPENMP "Build for use with internal parallel region" ON)
 if (OPENMP)
+  cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
   message("-- Adding USE_OPENMP flag...")
   add_definitions(-DUSE_OPENMP)
   find_package(OpenMP REQUIRED)
@@ -125,10 +126,17 @@ endif()
 # Add option to enable OpenMP with the parallel region defined in the calling program.
 option(EXT_OPENMP "Build for use with external parallel region" OFF)
 if (EXT_OPENMP)
+  cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
   message("-- Adding USE_EXTERN_OPENMP flag...")
   add_definitions(-DUSE_OPENMP)
   add_definitions(-DUSE_EXT_OPENMP)
   find_package(OpenMP REQUIRED)
+endif()
+
+# Adds openMP using the old style CMake approach to ensure backwards compatibility
+# This should be changed at some point to use the newer OpenMP Fortran capabilities
+if (OPENMP_FOUND)
+  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${OpenMP_Fortran_FLAGS}")
 endif()
 
 # Finds all fortran files (*.[fF]/*.[fF]90) in the source directory and extract the 
@@ -201,11 +209,12 @@ if(LibGKS AND LibGRS AND LibX11 AND Libz AND LibXt)
   target_link_libraries(eirene EIRENE ${LibGRS} ${LibGKS} ${LibX11} ${LibXt})
 endif()
 
-if(OPENMP OR EXT_OPENMP)
-  target_compile_options(EIRENE PRIVATE ${OpenMP_Fortran_FLAGS})
-  target_compile_options(eirene PRIVATE ${OpenMP_Fortran_FLAGS})
-  target_link_libraries(eirene EIRENE ${OpenMP_Fortran_LIBRARIES})
-endif()
+# This is the newer approach for adding OpenMP - ver >= 3.9
+#if(OPENMP OR EXT_OPENMP)
+#  target_compile_options(EIRENE PRIVATE ${OpenMP_Fortran_FLAGS})
+#  target_compile_options(eirene PRIVATE ${OpenMP_Fortran_FLAGS})
+#  target_link_libraries(eirene EIRENE ${OpenMP_Fortran_LIBRARIES})
+#endif()
 
 # Sets output directory of the library and executbale and output name 
 # of the executable.
