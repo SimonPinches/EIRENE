@@ -106,7 +106,7 @@ if (TRACE)
 endif()
 
 # Add option to control whether MPI will be use.
-option(MPI "Build with MPI" OFF)
+option(MPI "Build with MPI" ON)
 if (MPI)
   message("-- Adding USE_MPI flag...")
   add_definitions(-DUSE_MPI)
@@ -115,7 +115,7 @@ if (MPI)
 endif()
 
 # Add option to enable OpenMP with the parallel region defined in eirmod_mcarlo.
-option(OPENMP "Build for use with internal parallel region" ON)
+option(OPENMP "Build for use with internal parallel region" OFF)
 if (OPENMP)
   cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
   message("-- Adding USE_OPENMP flag...")
