@@ -182,13 +182,9 @@ c     ym make sure the clast variables do not take exotic values
      .     11+2*NSD+2*NSDW+NCV+2*NRTAL+NLIMPS)
       IWLMT    => ISDVI(12+2*NSD+2*NSDW+NCV+2*NRTAL+NLIMPS : MSDVI)
       
-      ISPZ   => IPSTD( 9)
+!cym      ISPZ   => IPSTD( 9)
 !HJL      NT3RD  => ICGRID( 8)
-      MRSURF => IPSTD(10)
-      MPSURF => IPSTD(11)
-      MTSURF => IPSTD(12)
-      MASURF => IPSTD(13)
-      MSURF  => IPSTD(14)
+      
       NLRAY  => LCMSOU(14,:)
       
       RPSTT => RPST
@@ -203,8 +199,7 @@ c     ym make sure the clast variables do not take exotic values
       E0     => RPST( 8)
       WEIGHT => RPST( 9)
       TIME   => RPST(10)
-      PHI    => RPST(11)
-      
+      PHI    => RPST(11)   
       XGENER => RPST(12)
       
       IPST  => IPSTD(2:MPARTC+1)
@@ -218,8 +213,13 @@ c     ym make sure the clast variables do not take exotic values
       IFPATH => IPSTD(6)
       IUPDTE => IPSTD(7)
       !HJL Put this back
-      ISTRA  => IPSTD( 8)
+      ISTRA  => IPSTD(8)
       ISPZ   => IPSTD(9)
+      MRSURF => IPSTD(10)
+      MPSURF => IPSTD(11)
+      MTSURF => IPSTD(12)
+      MASURF => IPSTD(13)
+      MSURF  => IPSTD(14)
       
       MSURFG => IPSTD(15)
       WMINV  => RCMSPL(1)

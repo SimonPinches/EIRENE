@@ -492,14 +492,16 @@ C
 #endif
       CALL EIRENE_INIT_OPENMP()
       NPANU=0
+#ifdef USE_OPENMP      
 #ifndef USE_EXT_OPENMP
       write(6,*) EIRENE_ITHREAD,"Entering OpenMP region"
 !$OMP  PARALLEL DEFAULT(SHARED)
 !$OMP& COPYIN(ETH,Q,M2M1,ES,ETF,ISDVI,IPSTD,RPST,
 !$OMP& RCMSPL,ICMSPL,LCMSOU,XSTOR,XSTORV)
-#endif
+#endif      
 ! Initialise openMP including allocating THREADPRIVATE arrays
       write(6,*) EIRENE_ITHREAD,"Entered Strata loop"
+#endif      
       DO ISTR=1,NSTRAI          ! main loop over strata
 
         timan=EIRENE_second_own()
@@ -560,12 +562,13 @@ C
 C  INITIALIZE RANDOM NUMBER GENERATOR FOR STRATUM ISTRA
            
 cym set output files for each thread and strata
-cym simplifies comparison when NLIDENT is activated      
+cym simplifies comparison when NLIDENT is activated
+#ifdef USE_OPENMP           
 !$OMP MASTER
       IUNOUT_SAVE=IUNOUT
 !$OMP END MASTER
       IUNOUT=200+EIRENE_ITHREAD+100*(ISTRA-1)
-
+#endif      
 
 
 cym test for multiple strata / restores the status after call to REFLC0
@@ -590,12 +593,6 @@ C  find random number generator seed, from input flag NINITL(ISTRA)
             IF (.NOT.NLIDENT) THEN
               MY_ID= EIRENE_ITHREAD + MY_PE*EIRENE_NTHREADS
               ninist=NINITL(ISTRA)+MY_ID*10000 !one seed per thread to generate independent numbers
-cym uncommented
-cym              write(30+ithread,*) ninist,NINITL(ISTRA),MY_ID
-cpg              write(30+ithread,*) 'iptsi->',iseed_iptsi,'  ',iptsi,
-cpg     .         ' istra->',iseed_istra,
-cpg     .         ' RN1->',RN1
-            
            ELSE
 
              CALL EIRENE_LEER(1)
@@ -616,7 +613,6 @@ cpg     .         ' RN1->',RN1
 !$OMP END SINGLE 
 cym same seed for everybody (all threads of all processes -> debug)
              NINIST=NINITL(ISTRA)
-cpg              write(30+ithread,*) ninist
            ENDIF          
 
 c  initialize random number generator with chosen input seed NINIST
@@ -816,8 +812,12 @@ cdr           CALL EIRENE_MASJ2 ('ISTRA,IPANU=    ',ISTRA,IPANU)
               ENDIF
               IF (TRCLST) CALL EIRENE_OUTLST
 cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cym             GOTO 101
-cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cym exit from the loop not allowed with OpenMP
+cym currently time limit not enforced
+cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccc              
+#ifndef USE_OPENMP 
+              GOTO 101
+#endif
             ELSEIF (LGLAST.AND..NOT.LGSTOP) THEN
               CALL EIRENE_LEER(1)
               WRITE (iunout,*) 'CENSUS ARRAYS FILLED FOR THIS STRATUM'
@@ -832,8 +832,11 @@ cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccc
               CALL EIRENE_MASJ1 ('IPRNLS= ',IPRNLS)
               IF (TRCLST) CALL EIRENE_OUTLST
 cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cym             GOTO 101
-cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cym see comment above
+cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccc              
+#ifndef USE_OPENMP
+              GOTO 101
+#endif
             ENDIF
 
 C  WALL CLOCK TIME AT START OF NEXT MONTE CARLO HISTORY
@@ -1054,13 +1057,18 @@ C
           ENDIF
           IF (TRCLST) CALL EIRENE_OUTLST
 C         GOTO 101
-
-!HJL  101     CONTINUE
+cym ccccccccccccccccccccccccccccccccccccccccccccc
+cym see comment above
+cym ccccccccccccccccccccccccccccccccccccccccccccc          
+#ifndef USE_OPENMP
+  101     CONTINUE
+#endif          
 C
 C
 cym - redirect output to initial unit
+#ifdef USE_OPENMP
           IUNOUT=IUNOUT_SAVE
-          
+#endif          
           XMCT(istra)=timused
 csw
           SECND=EIRENE_SECOND_OWN()

@@ -10,7 +10,6 @@
       USE EIRMOD_CTRCEI
       USE EIRMOD_COMSOU
       USE EIRMOD_SECOND_OWN, ONLY: eirene_second_own
-!$ use OMP_LIB
        
       IMPLICIT NONE
       real(dp), allocatable, save :: time_array(:,:,:)

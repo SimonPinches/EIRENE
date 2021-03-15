@@ -40,7 +40,6 @@ c  eirene_locat2:  deallocate temporary arrays
       use eirmod_reflec
       use eirmod_sheath, only: eirene_sheath 
       use eirmod_sputer, only: eirene_sputr1
-!$    use omp_lib
 
       IMPLICIT NONE
       PRIVATE
