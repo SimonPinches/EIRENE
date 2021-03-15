@@ -171,9 +171,9 @@ set(plotpath "")
 if( LibGRS AND LibGKS AND LibX11 AND Libz AND LibXt )
   list(APPEND plotpath ${src_plotting})
 else()
-  list(APPEND plotpath ${src_plot_dummy})
-#  list(APPEND plotpath ${src_plotting})
-#  list(APPEND plotpath ${src_grsoft-dummy})
+#  list(APPEND plotpath ${src_plot_dummy})
+  list(APPEND plotpath ${src_plotting})
+  list(APPEND plotpath ${src_grsoft-dummy})
 endif()
 
 # Specify interface and user-routines to use.
