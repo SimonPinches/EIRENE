@@ -193,7 +193,7 @@ build_standalone_1D_elliptic:
     # in fact it is a build_standalone but stored in ...1D_cylindric
     <<: *build_executable
     variables:
-        PATH_CASE: "1D_cylindric"
+        PATH_CASE: "1D_elliptic"
 
 run_standalone_1D_elliptic:
     <<: *run
