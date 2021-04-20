@@ -490,17 +490,15 @@ C
 !$OMP END MASTER
 !$OMP BARRIER
 #endif
+! Initialise openMP including allocating THREADPRIVATE arrays
       CALL EIRENE_INIT_OPENMP()
       NPANU=0
 #ifdef USE_OPENMP      
 #ifndef USE_EXT_OPENMP
-      write(6,*) EIRENE_ITHREAD,"Entering OpenMP region"
 !$OMP  PARALLEL DEFAULT(SHARED)
 !$OMP& COPYIN(ETH,Q,M2M1,ES,ETF,ISDVI,IPSTD,RPST,
 !$OMP& RCMSPL,ICMSPL,LCMSOU,XSTOR,XSTORV)
 #endif      
-! Initialise openMP including allocating THREADPRIVATE arrays
-      write(6,*) EIRENE_ITHREAD,"Entered Strata loop"
 #endif      
       DO ISTR=1,NSTRAI          ! main loop over strata
 
