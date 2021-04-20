@@ -114,6 +114,7 @@ C
       logical :: nlplas_save
       character(20) :: outname
       character(6) :: outpos
+      INTEGER :: PROVIDED
 C
 C               1.         INITIALIZE PACKAGE
 C
@@ -121,7 +122,13 @@ C
 !$OMP MASTER      
 #endif      
       TIMI=EIRENE_SECOND_OWN()
-      IF (MPI_INITIALIZE) CALL MPI_INIT(IER)
+      IF (MPI_INITIALIZE) THEN
+#ifdef USE_OPENMP
+         CALL MPI_INIT_THREAD(MPI_THREAD_FUNNELED,PROVIDED,IER)
+#else
+         CALL MPI_INIT(IER)
+#endif
+      ENDIF
       CALL MPI_COMM_SIZE (MPI_COMM_WORLD,NPRS,IER)
       CALL MPI_COMM_RANK (MPI_COMM_WORLD,MY_PE,IER)
 
