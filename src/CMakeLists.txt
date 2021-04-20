@@ -23,7 +23,14 @@ elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(CMAKE_Fortran_FLAGS_RELEASE "-O2 -fbacktrace -cpp")
   set(CMAKE_Fortran_FLAGS_DEBUG "-g -Wall -fcheck=all -fbacktrace -cpp") #-ffpe-trap=denorm")
   set(CMAKE_Fortran_FLAGS_COVERAGE "-g -fprofile-arcs -ftest-coverage -cpp")
+  message(STATUS "GNU version - " ${CMAKE_Fortran_COMPILER_VERSION})
+  if(${CMAKE_Fortran_COMPILER_VERSION} VERSION_GREATER 10)
+    message(STATUS "GNU version > 10 - Adding -fallow-argument-mismatch")
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fallow-argument-mismatch")
+  endif()
 endif()
+
+
 
 # Output names and postfix.
 set(EIRENE_LIBRARY_NAME "EIRENE" CACHE STRING "EIRENE library name")
