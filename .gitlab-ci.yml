@@ -9,7 +9,7 @@ variables:
 #   SAMPLE_CASE_VERSION: 99708cb2086dba10f970584a820b20f5b30e8814
 #    SAMPLE_CASE_VERSION: 2009bb57025877d09bfb4e8f298924b364ddc07f
 #    SAMPLE_CASE_VERSION: 3149cae2f1063d7cc10cccfb50f6afc950ff00c8
-    SAMPLE_CASE_VERSION: d38db08fa4553e4fddeed89761e0433f853b85ac
+    SAMPLE_CASE_VERSION: 1c175c2c0eee4c7e37aa45755e42988667a0281d
     
 
 stages:
@@ -94,7 +94,7 @@ run_mpi_cases:
         - schedules
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
-        - make test
+        - make ci_test
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
