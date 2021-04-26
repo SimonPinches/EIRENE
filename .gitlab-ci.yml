@@ -440,7 +440,7 @@ build_openmp_library:
     script:
         - cd buildRelease
         - FC=gfortran cmake ../src -DOPENMP=ON
-	- make clean	
+        - make clean
         - make EIRENE
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
