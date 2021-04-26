@@ -512,7 +512,7 @@ run_openmp_1D-H_slab:
     variables:
         PATH_CASE: "1D-H_slab"
     dependencies:
-        - build_openmp_1D_slab
+        - build_openmp_1D-H_slab
 
 test_openmp_1D-H_slab:
     <<: *test_openmp
