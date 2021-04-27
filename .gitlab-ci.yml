@@ -6,10 +6,9 @@ include:
 
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
-#    SAMPLE_CASE_VERSION: a0a015c4a06e060d84f718bed021b633cb151e83
-#    SAMPLE_CASE_VERSION: 272ddfac67030b518e7047b3066b8d036e8039a6
-    SAMPLE_CASE_VERSION: 99708cb2086dba10f970584a820b20f5b30e8814
-
+#    SAMPLE_CASE_VERSION: 99708cb2086dba10f970584a820b20f5b30e8814
+    SAMPLE_CASE_VERSION: 82ca36f12ae1b877dfc8e922fc0e7d41eb6ceb27
+    
 stages:
     - preparation
     - build:executable
@@ -30,9 +29,6 @@ stages:
     except: 
         - schedules
     script:
-#        - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
-#        - cd EIRENE-sample-cases
-#        - git checkout ${SAMPLE_CASE_VERSION}
         - cd EIRENE-sample-cases/${PATH_CASE}
         - make
     retry: 2
@@ -501,7 +497,7 @@ prepare_openmp_testcases:
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
         - export OMP_NUM_THREADS=1
-        - make test
+        - make test_openmp
 
 build_openmp_1D-H_slab:
     <<: *build_openmp_executable
