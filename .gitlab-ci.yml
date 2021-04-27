@@ -6,9 +6,8 @@ include:
 
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
-#    SAMPLE_CASE_VERSION: 99708cb2086dba10f970584a820b20f5b30e8814
-    SAMPLE_CASE_VERSION: 82ca36f12ae1b877dfc8e922fc0e7d41eb6ceb27
-    
+#    SAMPLE_CASE_VERSION: 99708cb2086dba10f970584a820b20f5b30e8814  (master)
+    SAMPLE_CASE_VERSION: 380f2804ea4daf62ef6cbcaa6bc0dd7e5281c83e   
 stages:
     - preparation
     - build:executable
@@ -499,21 +498,21 @@ prepare_openmp_testcases:
         - export OMP_NUM_THREADS=1
         - make test_openmp
 
-build_openmp_1D-H_slab:
+build_1D-H_slab_openmp:
     <<: *build_openmp_executable
     variables:
-        PATH_CASE: "1D-H_slab"
+        PATH_CASE: "1D-H_slab_openmp"
 
-run_openmp_1D-H_slab:
+run_1D-H_slab_openmp:
     <<: *run_openmp
     variables:
-        PATH_CASE: "1D-H_slab"
+        PATH_CASE: "1D-H_slab_openmp"
     dependencies:
-        - build_openmp_1D-H_slab
+        - build_1D-H_slab_openmp
 
-test_openmp_1D-H_slab:
+test_1D-H_slab_openmp:
     <<: *test_openmp
     variables:
-        PATH_CASE: "1D-H_slab"
+        PATH_CASE: "1D-H_slab_openmp"
     dependencies:
-        - run_openmp_1D-H_slab
+        - run_1D-H_slab_openmp
