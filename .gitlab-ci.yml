@@ -494,6 +494,7 @@ prepare_openmp_testcases:
     except: 
         - schedules
     script:
+        - python --version
         - cd EIRENE-sample-cases/${PATH_CASE}
         - export OMP_NUM_THREADS=1
         - make test_openmp
