@@ -7,7 +7,7 @@ include:
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
 #    SAMPLE_CASE_VERSION: 99708cb2086dba10f970584a820b20f5b30e8814  (master)
-    SAMPLE_CASE_VERSION: 210910aa65a602e86e0f07afc5d13d8c9860c256
+    SAMPLE_CASE_VERSION: 6b2908b548693d6cc472bf953744f5ac2af1c784
 
 stages:
     - preparation
