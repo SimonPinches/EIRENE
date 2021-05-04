@@ -478,7 +478,7 @@ prepare_openmp_testcases:
         - schedules
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
-        - export OMP_NUM_THREADS=1
+        - export OMP_NUM_THREADS=4
         - make clean
         - make output
     artifacts:
@@ -496,7 +496,7 @@ prepare_openmp_testcases:
     script:
         - python --version
         - cd EIRENE-sample-cases/${PATH_CASE}
-        - export OMP_NUM_THREADS=1
+        - export OMP_NUM_THREADS=4
         - make test_openmp
 
 build_1D-H_slab_openmp:
