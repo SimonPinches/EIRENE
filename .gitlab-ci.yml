@@ -7,7 +7,8 @@ include:
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
 #    SAMPLE_CASE_VERSION: 99708cb2086dba10f970584a820b20f5b30e8814  (master)
-    SAMPLE_CASE_VERSION: 77136704626644c491b7a57201ffbda058e62061
+    SAMPLE_CASE_VERSION: 210910aa65a602e86e0f07afc5d13d8c9860c256
+
 stages:
     - preparation
     - build:executable
@@ -555,3 +556,79 @@ test_1D_elliptic_openmp:
         PATH_CASE: "1D_elliptic_openmp"
     dependencies:
         - run_1D_elliptic_openmp
+
+build_2D-D_polygon_openmp:
+    <<: *build_openmp_executable
+    variables:
+        PATH_CASE: "2D-D_polygon_openmp"
+
+run_2D-D_polygon_openmp:
+    <<: *run_openmp
+    variables:
+        PATH_CASE: "2D-D_polygon_openmp"
+    dependencies:
+        - build_2D-D_polygon_openmp
+
+test_2D-D_polygon_openmp:
+    <<: *test_openmp
+    variables:
+        PATH_CASE: "2D-D_polygon_openmp"
+    dependencies:
+        - run_2D-D_polygon_openmp
+
+build_2D-D_slab_openmp:
+    <<: *build_openmp_executable
+    variables:
+        PATH_CASE: "2D-D_slab_openmp"
+
+run_2D-D_slab_openmp:
+    <<: *run_openmp
+    variables:
+        PATH_CASE: "2D-D_slab_openmp"
+    dependencies:
+        - build_2D-D_slab_openmp
+
+test_2D-D_slab_openmp:
+    <<: *test_openmp
+    variables:
+        PATH_CASE: "2D-D_slab_openmp"
+    dependencies:
+        - run_2D-D_slab_openmp
+
+build_ITER_1573_openmp:
+    <<: *build_openmp_executable
+    variables:
+        PATH_CASE: "ITER_1573_openmp"
+
+run_ITER_1573_openmp:
+    <<: *run_openmp
+    variables:
+        PATH_CASE: "ITER_1573_openmp"
+    dependencies:
+        - build_ITER_1573_openmp
+
+test_ITER_1573_openmp:
+    <<: *test_openmp
+    variables:
+        PATH_CASE: "ITER_1573_openmp"
+    dependencies:
+        - run_ITER_1573_openmp
+
+build_cylinder_openmp:
+    <<: *build_openmp_executable
+    variables:
+        PATH_CASE: "cylinder_openmp"
+
+run_cylinder_openmp:
+    <<: *run_openmp
+    variables:
+        PATH_CASE: "cylinder_openmp"
+    dependencies:
+        - build_cylinder_openmp
+
+test_cylinder_openmp:
+    <<: *test_openmp
+    variables:
+        PATH_CASE: "cylinder_openmp"
+    dependencies:
+        - run_cylinder_openmp
