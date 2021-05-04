@@ -7,8 +7,7 @@ include:
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
 #    SAMPLE_CASE_VERSION: 99708cb2086dba10f970584a820b20f5b30e8814  (master)
-    SAMPLE_CASE_VERSION: 3e128a5db773f03de842d98023ecd4d0da87eeb7
-
+    SAMPLE_CASE_VERSION: 77136704626644c491b7a57201ffbda058e62061
 stages:
     - preparation
     - build:executable
@@ -519,24 +518,24 @@ test_1D-H_slab_openmp:
     dependencies:
         - run_1D-H_slab_openmp
 
-build_1D_cyclindric_openmp:
+build_1D_cylindric_openmp:
     <<: *build_openmp_executable
     variables:
-        PATH_CASE: "1D_cyclindric_openmp"
+        PATH_CASE: "1D_cylindric_openmp"
 
-run_1D_cyclindric_openmp:
+run_1D_cylindric_openmp:
     <<: *run_openmp
     variables:
-        PATH_CASE: "1D_cyclindric_openmp"
+        PATH_CASE: "1D_cylindric_openmp"
     dependencies:
         - build_1D_cylindric_openmp
 
-test_1D_cyclindric_openmp:
+test_1D_cylindric_openmp:
     <<: *test_openmp
     variables:
-        PATH_CASE: "1D_cyclindric_openmp"
+        PATH_CASE: "1D_cylindric_openmp"
     dependencies:
-        - run_1D_cyclindric_openmp
+        - run_1D_cylindric_openmp
 
 build_1D_elliptic_openmp:
     <<: *build_openmp_executable
