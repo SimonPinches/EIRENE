@@ -140,6 +140,7 @@ test_standalone_1D-H_slab:
     variables:
         PATH_CASE: "1D-H_slab"
     dependencies:
+        - build_standalone_1D_slab
         - run_standalone_1D-H_slab
 
 build_standalone_1D_slab_with_farming:
@@ -165,6 +166,7 @@ test_standalone_1D-H_slab_with_farming:
     only:
         - PB/feature/farming
     dependencies:
+        - build_standalone_1D_slab_with_farming
         - run_standalone_1D-H_slab_with_farming
 
 build_standalone_2D_slab:
@@ -184,6 +186,7 @@ test_standalone_2D-D_slab:
     variables:
         PATH_CASE: "2D-D_slab"
     dependencies:
+        - build_standalone_2D_slab
         - run_standalone_2D-D_slab
 
 build_standalone_1D_cylindric:
@@ -204,6 +207,7 @@ test_standalone_1D_cylindric:
     variables:
         PATH_CASE: "1D_cylindric"
     dependencies:
+        - build_standalone_1D_cylindric
         - run_standalone_1D_cylindric
 
 build_standalone_ITER_1573:
@@ -223,6 +227,7 @@ test_standalone_ITER_1573:
     variables:
         PATH_CASE: "ITER_1573"
     dependencies:
+        - build_standalone_ITER_1573
         - run_standalone_ITER_1573
 
 build_standalone_2D_polygon:
@@ -242,6 +247,7 @@ test_standalone_2D-D_polygon:
     variables:
         PATH_CASE: "2D-D_polygon"
     dependencies:
+        - build_standalone_2D_polygon
         - run_standalone_2D-D_polygon
 
 build_standalone_cylinder:
@@ -261,6 +267,7 @@ test_standalone_cylinder:
     variables:
         PATH_CASE: "cylinder"
     dependencies:
+        - build_standalone_cylinder
         - run_standalone_cylinder
 
 build_EMC3-EIRENE:
@@ -517,6 +524,7 @@ test_1D-H_slab_openmp:
     variables:
         PATH_CASE: "1D-H_slab_openmp"
     dependencies:
+        - build_1D-H_slab_openmp
         - run_1D-H_slab_openmp
 
 build_1D_cylindric_openmp:
@@ -536,6 +544,7 @@ test_1D_cylindric_openmp:
     variables:
         PATH_CASE: "1D_cylindric_openmp"
     dependencies:
+        - build_1D_cylindric_openmp
         - run_1D_cylindric_openmp
 
 build_1D_elliptic_openmp:
@@ -555,6 +564,7 @@ test_1D_elliptic_openmp:
     variables:
         PATH_CASE: "1D_elliptic_openmp"
     dependencies:
+        - build_1D_elliptic_openmp
         - run_1D_elliptic_openmp
 
 build_2D-D_polygon_openmp:
@@ -574,6 +584,7 @@ test_2D-D_polygon_openmp:
     variables:
         PATH_CASE: "2D-D_polygon_openmp"
     dependencies:
+        - build_2D-D_polygon_openmp
         - run_2D-D_polygon_openmp
 
 build_2D-D_slab_openmp:
@@ -593,6 +604,7 @@ test_2D-D_slab_openmp:
     variables:
         PATH_CASE: "2D-D_slab_openmp"
     dependencies:
+        - build_2D-D_slab_openmp
         - run_2D-D_slab_openmp
 
 build_ITER_1573_openmp:
@@ -612,6 +624,7 @@ test_ITER_1573_openmp:
     variables:
         PATH_CASE: "ITER_1573_openmp"
     dependencies:
+        - build_ITER_1573_openmp
         - run_ITER_1573_openmp
 
 build_cylinder_openmp:
@@ -631,4 +644,5 @@ test_cylinder_openmp:
     variables:
         PATH_CASE: "cylinder_openmp"
     dependencies:
+        - build_cylinder_openmp
         - run_cylinder_openmp
