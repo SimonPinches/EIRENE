@@ -82,7 +82,6 @@ run_mpi_cases:
     stage: run
     only:
         - $INCLUDE_SERIAL == 'true'
-
     except: 
         - schedules
     script:
@@ -109,8 +108,8 @@ run_mpi_cases:
 
 prepare_testcases:
     stage: preparation
-    only:
-        - $INCLUDE_SERIAL == 'true'
+#    only:
+#        - $INCLUDE_SERIAL == 'true'
     except: 
         - schedules
     script:
