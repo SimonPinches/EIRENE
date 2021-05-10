@@ -10,11 +10,11 @@ variables:
     SAMPLE_CASE_VERSION: 96dff81fa6a5f05f6aa81864ecdc8af90112fffc
 
 stages:
-    - preparation
-    - build:executable
-    - run
-    - run_mpi
-    - test
+#    - preparation
+#    - build:executable
+#    - run
+#    - run_mpi
+#    - test
     - preparation:openmp
     - build:openmp_executable
     - run_openmp
