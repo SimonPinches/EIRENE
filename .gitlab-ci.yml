@@ -8,13 +8,16 @@ variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
 #    SAMPLE_CASE_VERSION: 99708cb2086dba10f970584a820b20f5b30e8814  (master)
     SAMPLE_CASE_VERSION: 96dff81fa6a5f05f6aa81864ecdc8af90112fffc
+    INCLUDE_SERIAL: 'false'
+    INCLUDE_MPI:    'false'
+    INCLUDE_OPENMP: 'true'
 
 stages:
-#    - preparation
-#    - build:executable
-#    - run
-#    - run_mpi
-#    - test
+    - preparation
+    - build:executable
+    - run
+    - run_mpi
+    - test
     - preparation:openmp
     - build:openmp_executable
     - run_openmp
@@ -26,6 +29,8 @@ stages:
 
 .build_executable: &build_executable
     stage: build:executable
+    only:
+        - $INCLUDE_SERIAL == 'true'
     except: 
         - schedules
     script:
@@ -44,6 +49,8 @@ stages:
 # this forces to mpi jobs to be run sequencially
 run_mpi_cases:
     stage: run_mpi
+    only:
+        - $INCLUDE_MPI == 'true'
     except: 
         - schedules
     before_script:
@@ -73,6 +80,9 @@ run_mpi_cases:
   
 .run: &run
     stage: run
+    only:
+        - $INCLUDE_SERIAL == 'true'
+
     except: 
         - schedules
     script:
@@ -88,6 +98,9 @@ run_mpi_cases:
 
 .test: &test
     stage: test
+    only:
+        - $INCLUDE_SERIAL == 'true'
+
     except: 
         - schedules
     script:
@@ -96,6 +109,8 @@ run_mpi_cases:
 
 prepare_testcases:
     stage: preparation
+    only:
+        - $INCLUDE_SERIAL == 'true'
     except: 
         - schedules
     script:
@@ -110,6 +125,8 @@ prepare_testcases:
  
 build_library:
     stage: preparation
+    only:
+        - $INCLUDE_SERIAL == 'true'
     except: 
         - schedules
     script:
@@ -441,6 +458,8 @@ coverage_report:
 
 build_openmp_library:
     stage: preparation:openmp
+    only:
+        - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
     script:
@@ -456,6 +475,8 @@ build_openmp_library:
 
 prepare_openmp_testcases:
     stage: preparation:openmp
+    only:
+        - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
     script:
@@ -467,6 +488,8 @@ prepare_openmp_testcases:
 
 .build_openmp_executable: &build_openmp_executable
     stage: build:openmp_executable
+    only:
+        - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
     script:
@@ -483,6 +506,8 @@ prepare_openmp_testcases:
 
 .run_openmp: &run_openmp
     stage: run_openmp
+    only:
+        - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
     script:
@@ -499,6 +524,8 @@ prepare_openmp_testcases:
 
 .test_openmp: &test_openmp
     stage: test_openmp
+    only:
+        - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
     script:
