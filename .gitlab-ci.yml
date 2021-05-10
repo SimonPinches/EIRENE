@@ -458,8 +458,8 @@ coverage_report:
 
 build_openmp_library:
     stage: preparation:openmp
-    only:
-        - $INCLUDE_OPENMP == 'true'
+#    only:
+#        - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
     script:
@@ -475,8 +475,8 @@ build_openmp_library:
 
 prepare_openmp_testcases:
     stage: preparation:openmp
-    only:
-        - $INCLUDE_OPENMP == 'true'
+#    only:
+#        - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
     script:
@@ -488,8 +488,8 @@ prepare_openmp_testcases:
 
 .build_openmp_executable: &build_openmp_executable
     stage: build:openmp_executable
-    only:
-        - $INCLUDE_OPENMP == 'true'
+#    only:
+#        - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
     script:
@@ -506,8 +506,8 @@ prepare_openmp_testcases:
 
 .run_openmp: &run_openmp
     stage: run_openmp
-    only:
-        - $INCLUDE_OPENMP == 'true'
+#    only:
+#        - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
     script:
@@ -524,8 +524,8 @@ prepare_openmp_testcases:
 
 .test_openmp: &test_openmp
     stage: test_openmp
-    only:
-        - $INCLUDE_OPENMP == 'true'
+#    only:
+#        - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
     script:
