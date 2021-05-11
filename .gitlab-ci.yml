@@ -466,7 +466,7 @@ build_openmp_library:
     except: 
         - schedules
     script:
-        - mkdir buildRelease
+        - mkdir -p buildRelease
         - cd buildRelease
         - FC=gfortran cmake ../src -DOPENMP=ON
         - make clean
