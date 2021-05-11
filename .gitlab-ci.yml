@@ -29,13 +29,12 @@ stages:
 
 .build_executable: &build_executable
     stage: build:executable
-    rules:
-        - if: '$INCLUDE_SERIAL == "true"'
-        when: always
+    only:
+        - '$INCLUDE_SERIAL == "true"'
     except: 
         - schedules
     script:
-	- echo INCLUDE_SERIAL: '$INCLUDE_SERIAL'
+        - echo INCLUDE_SERIAL '$INCLUDE_SERIAL'
         - cd EIRENE-sample-cases/${PATH_CASE}
         - make
     retry: 2
