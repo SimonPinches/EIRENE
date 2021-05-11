@@ -8,8 +8,8 @@ variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
 #    SAMPLE_CASE_VERSION: 99708cb2086dba10f970584a820b20f5b30e8814  (master)
     SAMPLE_CASE_VERSION: 0b558df4d97761856fb4fa6011c2e536f9fe4af4
-    INCLUDE_SERIAL: 'true'
-    INCLUDE_MPI:    'true'
+    INCLUDE_SERIAL: 'false'
+    INCLUDE_MPI:    'false'
     INCLUDE_OPENMP: 'true'
 
 stages:
@@ -112,8 +112,6 @@ run_mpi_cases:
 prepare_testcases:
     stage: preparation
     only:
-        variables:
-            - $INCLUDE_SERIAL == 'true'
     except: 
         - schedules
     script:
