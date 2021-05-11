@@ -30,11 +30,12 @@ stages:
 .build_executable: &build_executable
     stage: build:executable
     only:
-        - ${INCLUDE_SERIAL} == "true"
+        variables:
+            - $INCLUDE_SERIAL == "true"
     except: 
         - schedules
     script:
-        - echo INCLUDE_SERIAL '$INCLUDE_SERIAL'
+        - echo Include serial '$INCLUDE_SERIAL'
         - cd EIRENE-sample-cases/${PATH_CASE}
         - make
     retry: 2
@@ -58,7 +59,7 @@ run_mpi_cases:
         # Bypass mpirun abort due to execution as root
         - export MPIRUN_FLAGS='--allow-run-as-root'
     script:
-        - echo INCLUDE_MPI '$INCLUDE_MPI'
+        - echo Include mpi '$INCLUDE_MPI'
         # job: run_EMC3-EIRENE_H_multiStrataMpi
         - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi
         - make output
@@ -115,9 +116,9 @@ prepare_testcases:
     except: 
         - schedules
     script:
-        - echo USE_SERIAL ${USE_SERIAL}
-        - echo USE_MPI "$USE_MPI"
-        - echo USE_OPENMP ${USE_OPENMP}
+        - echo Use serial ${INCLUDE_SERIAL}
+        - echo Use mpi  "$INCLUDE_MPI"
+        - echo Use openmp ${INCLUDE_OPENMP}
         - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
         - cd EIRENE-sample-cases
         - git checkout ${SAMPLE_CASE_VERSION}
