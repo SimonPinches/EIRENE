@@ -115,6 +115,9 @@ prepare_testcases:
     except: 
         - schedules
     script:
+        - echo USE_SERIAL "$USE_SERIAL"
+        - echo USE_MPI "$USE_MPI"
+        - echo USE_OPENMP "$USE_OPENMP"
         - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
         - cd EIRENE-sample-cases
         - git checkout ${SAMPLE_CASE_VERSION}
