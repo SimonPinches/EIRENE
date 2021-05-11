@@ -31,7 +31,7 @@ stages:
     stage: build:executable
     rules:
         - if: '$INCLUDE_SERIAL == "true"'
-	when: always
+        when: always
     except: 
         - schedules
     script:
