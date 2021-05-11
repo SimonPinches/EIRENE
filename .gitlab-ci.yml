@@ -9,8 +9,8 @@ variables:
 #    SAMPLE_CASE_VERSION: 99708cb2086dba10f970584a820b20f5b30e8814  (master)
     SAMPLE_CASE_VERSION: 0b558df4d97761856fb4fa6011c2e536f9fe4af4
     INCLUDE_SERIAL: 'true'
-    INCLUDE_MPI: 'true'
-    INCLUDE_OPENMP: "true"
+    INCLUDE_MPI:    'true'
+    INCLUDE_OPENMP: 'true'
 
 stages:
     - preparation
@@ -31,11 +31,10 @@ stages:
     stage: build:executable
     only:
         variables:
-            - $INCLUDE_SERIAL == "true"
+            - $INCLUDE_SERIAL == 'true'
     except: 
         - schedules
     script:
-        - echo Include serial '$INCLUDE_SERIAL'
         - cd EIRENE-sample-cases/${PATH_CASE}
         - make
     retry: 2
@@ -53,14 +52,13 @@ run_mpi_cases:
     stage: run_mpi
     only:
         variables:
-            - $INCLUDE_MPI == "true"
+            - $INCLUDE_MPI == 'true'
     except: 
         - schedules
     before_script:
         # Bypass mpirun abort due to execution as root
         - export MPIRUN_FLAGS='--allow-run-as-root'
     script:
-        - echo Include mpi '$INCLUDE_MPI'
         # job: run_EMC3-EIRENE_H_multiStrataMpi
         - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi
         - make output
