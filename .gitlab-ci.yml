@@ -52,7 +52,8 @@ stages:
 run_mpi_cases:
     stage: run_mpi
     only:
-        - $INCLUDE_MPI == "true"
+        variables:
+            - $INCLUDE_MPI == "true"
     except: 
         - schedules
     before_script:
@@ -84,7 +85,8 @@ run_mpi_cases:
 .run: &run
     stage: run
     only:
-        - $INCLUDE_SERIAL == 'true'
+        variables:
+            - $INCLUDE_SERIAL == 'true'
     except: 
         - schedules
     script:
@@ -101,8 +103,8 @@ run_mpi_cases:
 .test: &test
     stage: test
     only:
-        - $INCLUDE_SERIAL == 'true'
-
+        variables:
+            - $INCLUDE_SERIAL == 'true'
     except: 
         - schedules
     script:
@@ -111,14 +113,12 @@ run_mpi_cases:
 
 prepare_testcases:
     stage: preparation
-#    only:
-#        - $INCLUDE_SERIAL == 'true'
+    only:
+        variables:
+            - $INCLUDE_SERIAL == 'true'
     except: 
         - schedules
     script:
-        - echo Use serial ${INCLUDE_SERIAL}
-        - echo Use mpi  "$INCLUDE_MPI"
-        - echo Use openmp ${INCLUDE_OPENMP}
         - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
         - cd EIRENE-sample-cases
         - git checkout ${SAMPLE_CASE_VERSION}
@@ -131,7 +131,8 @@ prepare_testcases:
 build_library:
     stage: preparation
     only:
-        - $INCLUDE_SERIAL == 'true'
+        variables:
+            - $INCLUDE_SERIAL == 'true'
     except: 
         - schedules
     script:
@@ -463,8 +464,9 @@ coverage_report:
 
 build_openmp_library:
     stage: preparation:openmp
-#    only:
-#        - $INCLUDE_OPENMP == 'true'
+    only:
+        variables:
+            - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
     script:
@@ -481,8 +483,9 @@ build_openmp_library:
 
 prepare_openmp_testcases:
     stage: preparation:openmp
-#    only:
-#        - $INCLUDE_OPENMP == 'true'
+    only:
+        variables:
+            - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
     script:
@@ -494,8 +497,9 @@ prepare_openmp_testcases:
 
 .build_openmp_executable: &build_openmp_executable
     stage: build:openmp_executable
-#    only:
-#        - $INCLUDE_OPENMP == 'true'
+    only:
+        variables:
+            - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
     script:
@@ -512,8 +516,9 @@ prepare_openmp_testcases:
 
 .run_openmp: &run_openmp
     stage: run_openmp
-#    only:
-#        - $INCLUDE_OPENMP == 'true'
+    only:
+        variables:
+            - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
     script:
@@ -530,8 +535,9 @@ prepare_openmp_testcases:
 
 .test_openmp: &test_openmp
     stage: test_openmp
-#    only:
-#        - $INCLUDE_OPENMP == 'true'
+    only:
+        variables:
+            - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
     script:
