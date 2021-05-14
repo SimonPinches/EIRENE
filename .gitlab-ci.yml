@@ -9,7 +9,7 @@ variables:
 #    SAMPLE_CASE_VERSION: 99708cb2086dba10f970584a820b20f5b30e8814  (master)
     SAMPLE_CASE_VERSION: 0b558df4d97761856fb4fa6011c2e536f9fe4af4
     INCLUDE_SERIAL: 'true'
-    INCLUDE_MPI:    'true'
+    INCLUDE_MPI:    'false'
     INCLUDE_OPENMP: 'true'
 
 stages:
@@ -30,6 +30,8 @@ stages:
 .build_executable: &build_executable
     stage: build:executable
     only:
+        develop
+	master
         variables:
             - $INCLUDE_SERIAL == 'true'
     except: 
@@ -51,6 +53,8 @@ stages:
 run_mpi_cases:
     stage: run_mpi
     only:
+        develop
+	master
         variables:
             - $INCLUDE_MPI == 'true'
     except: 
@@ -83,6 +87,8 @@ run_mpi_cases:
 .run: &run
     stage: run
     only:
+        develop
+	master
         variables:
             - $INCLUDE_SERIAL == 'true'
     except: 
@@ -101,6 +107,8 @@ run_mpi_cases:
 .test: &test
     stage: test
     only:
+        develop
+	master
         variables:
             - $INCLUDE_SERIAL == 'true'
     except: 
@@ -111,7 +119,6 @@ run_mpi_cases:
 
 prepare_testcases:
     stage: preparation
-    only:
     except: 
         - schedules
     script:
@@ -127,6 +134,8 @@ prepare_testcases:
 build_library:
     stage: preparation
     only:
+        develop
+	master
         variables:
             - $INCLUDE_SERIAL == 'true'
     except: 
@@ -461,6 +470,8 @@ coverage_report:
 build_openmp_library:
     stage: preparation:openmp
     only:
+        develop
+	master
         variables:
             - $INCLUDE_OPENMP == 'true'
     except: 
@@ -480,6 +491,8 @@ build_openmp_library:
 prepare_openmp_testcases:
     stage: preparation:openmp
     only:
+        develop
+	master
         variables:
             - $INCLUDE_OPENMP == 'true'
     except: 
@@ -494,6 +507,8 @@ prepare_openmp_testcases:
 .build_openmp_executable: &build_openmp_executable
     stage: build:openmp_executable
     only:
+        develop
+	master
         variables:
             - $INCLUDE_OPENMP == 'true'
     except: 
@@ -513,6 +528,8 @@ prepare_openmp_testcases:
 .run_openmp: &run_openmp
     stage: run_openmp
     only:
+        develop
+	master
         variables:
             - $INCLUDE_OPENMP == 'true'
     except: 
@@ -532,6 +549,8 @@ prepare_openmp_testcases:
 .test_openmp: &test_openmp
     stage: test_openmp
     only:
+        develop
+	master
         variables:
             - $INCLUDE_OPENMP == 'true'
     except: 
