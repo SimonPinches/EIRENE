@@ -30,10 +30,9 @@ stages:
 .build_executable: &build_executable
     stage: build:executable
     only:
-        develop
-	master
-        variables:
-            - $INCLUDE_SERIAL == 'true'
+        - develop
+        - master
+        - $INCLUDE_SERIAL == 'true'
     except: 
         - schedules
     script:
@@ -53,10 +52,9 @@ stages:
 run_mpi_cases:
     stage: run_mpi
     only:
-        develop
-	master
-        variables:
-            - $INCLUDE_MPI == 'true'
+        - develop
+        - master
+        - $INCLUDE_MPI == 'true'
     except: 
         - schedules
     before_script:
@@ -87,10 +85,9 @@ run_mpi_cases:
 .run: &run
     stage: run
     only:
-        develop
-	master
-        variables:
-            - $INCLUDE_SERIAL == 'true'
+        - develop
+        - master
+        - $INCLUDE_SERIAL == 'true'
     except: 
         - schedules
     script:
@@ -107,10 +104,9 @@ run_mpi_cases:
 .test: &test
     stage: test
     only:
-        develop
-	master
-        variables:
-            - $INCLUDE_SERIAL == 'true'
+        - develop
+        - master
+        - $INCLUDE_SERIAL == 'true'
     except: 
         - schedules
     script:
@@ -134,10 +130,9 @@ prepare_testcases:
 build_library:
     stage: preparation
     only:
-        develop
-	master
-        variables:
-            - $INCLUDE_SERIAL == 'true'
+        - develop
+        - master
+        - $INCLUDE_SERIAL == 'true'
     except: 
         - schedules
     script:
@@ -470,10 +465,9 @@ coverage_report:
 build_openmp_library:
     stage: preparation:openmp
     only:
-        develop
-	master
-        variables:
-            - $INCLUDE_OPENMP == 'true'
+        - develop
+        - master
+        - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
     script:
@@ -491,10 +485,9 @@ build_openmp_library:
 prepare_openmp_testcases:
     stage: preparation:openmp
     only:
-        develop
-	master
-        variables:
-            - $INCLUDE_OPENMP == 'true'
+        - develop
+        - master
+        - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
     script:
@@ -507,10 +500,9 @@ prepare_openmp_testcases:
 .build_openmp_executable: &build_openmp_executable
     stage: build:openmp_executable
     only:
-        develop
-	master
-        variables:
-            - $INCLUDE_OPENMP == 'true'
+        - develop
+        - master
+        - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
     script:
@@ -528,10 +520,9 @@ prepare_openmp_testcases:
 .run_openmp: &run_openmp
     stage: run_openmp
     only:
-        develop
-	master
-        variables:
-            - $INCLUDE_OPENMP == 'true'
+        - develop
+        - master
+        - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
     script:
@@ -549,10 +540,9 @@ prepare_openmp_testcases:
 .test_openmp: &test_openmp
     stage: test_openmp
     only:
-        develop
-	master
-        variables:
-            - $INCLUDE_OPENMP == 'true'
+        - develop
+        - master
+        - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
     script:
