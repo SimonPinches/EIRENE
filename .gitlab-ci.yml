@@ -378,6 +378,11 @@ test_EMC3-EIRENE_H_multiStrataMpi:
     <<: *test
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi"
+    only:
+        variables:
+            - $CI_COMMIT_REF_NAME == 'develop'
+            - $CI_COMMIT_REF_NAME == 'master'
+            - $INCLUDE_MPI == 'true'
     dependencies:
         - run_mpi_cases
 #        - run_EMC3-EIRENE_H_multiStrataMpi
@@ -397,6 +402,11 @@ test_EMC3-EIRENE_H_multiStrataMpi2:
     <<: *test
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi2"
+    only:
+        variables:
+            - $CI_COMMIT_REF_NAME == 'develop'
+            - $CI_COMMIT_REF_NAME == 'master'
+            - $INCLUDE_MPI == 'true'
     dependencies:
         - run_mpi_cases
 #        - run_EMC3-EIRENE_H_multiStrataMpi2
@@ -416,6 +426,11 @@ test_EMC3-EIRENE_H_multiStrataMpi3:
     <<: *test
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi3"
+    only:
+        variables:
+            - $CI_COMMIT_REF_NAME == 'develop'
+            - $CI_COMMIT_REF_NAME == 'master'
+            - $INCLUDE_MPI == 'true'
     dependencies:
         - run_mpi_cases
 #        - run_EMC3-EIRENE_H_multiStrataMpi3
