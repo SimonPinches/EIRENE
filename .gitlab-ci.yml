@@ -30,9 +30,10 @@ stages:
 .build_executable: &build_executable
     stage: build:executable
     only:
-        - develop
-        - master
-        - $INCLUDE_SERIAL == 'true'
+        variables:
+            - $CI_COMMIT_REF_NAME == 'develop'
+            - $CI_COMMIT_REF_NAME == 'master'
+            - $INCLUDE_SERIAL == 'true'
     except: 
         - schedules
     script:
