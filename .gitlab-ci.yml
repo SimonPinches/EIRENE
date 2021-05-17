@@ -53,9 +53,10 @@ stages:
 run_mpi_cases:
     stage: run_mpi
     only:
-        - develop
-        - master
-        - $INCLUDE_MPI == 'true'
+        variables:
+            - $CI_COMMIT_REF_NAME == 'develop'
+            - $CI_COMMIT_REF_NAME == 'master'
+            - $INCLUDE_MPI == 'true'
     except: 
         - schedules
     before_script:
@@ -86,6 +87,10 @@ run_mpi_cases:
 .run: &run
     stage: run
     only:
+        variables:
+            - $CI_COMMIT_REF_NAME == 'develop'
+            - $CI_COMMIT_REF_NAME == 'master'
+            - $INCLUDE_SERIAL == 'true'
         - develop
         - master
         - $INCLUDE_SERIAL == 'true'
@@ -105,6 +110,10 @@ run_mpi_cases:
 .test: &test
     stage: test
     only:
+        variables:
+            - $CI_COMMIT_REF_NAME == 'develop'
+            - $CI_COMMIT_REF_NAME == 'master'
+            - $INCLUDE_SERIAL == 'true'
         - develop
         - master
         - $INCLUDE_SERIAL == 'true'
@@ -131,6 +140,10 @@ prepare_testcases:
 build_library:
     stage: preparation
     only:
+        variables:
+            - $CI_COMMIT_REF_NAME == 'develop'
+            - $CI_COMMIT_REF_NAME == 'master'
+            - $INCLUDE_SERIAL == 'true'
         - develop
         - master
         - $INCLUDE_SERIAL == 'true'
@@ -466,9 +479,10 @@ coverage_report:
 build_openmp_library:
     stage: preparation:openmp
     only:
-        - develop
-        - master
-        - $INCLUDE_OPENMP == 'true'
+        variables:
+            - $CI_COMMIT_REF_NAME == 'develop'
+            - $CI_COMMIT_REF_NAME == 'master'
+            - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
     script:
@@ -486,9 +500,10 @@ build_openmp_library:
 prepare_openmp_testcases:
     stage: preparation:openmp
     only:
-        - develop
-        - master
-        - $INCLUDE_OPENMP == 'true'
+        variables:
+            - $CI_COMMIT_REF_NAME == 'develop'
+            - $CI_COMMIT_REF_NAME == 'master'
+            - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
     script:
@@ -501,9 +516,10 @@ prepare_openmp_testcases:
 .build_openmp_executable: &build_openmp_executable
     stage: build:openmp_executable
     only:
-        - develop
-        - master
-        - $INCLUDE_OPENMP == 'true'
+        variables:
+            - $CI_COMMIT_REF_NAME == 'develop'
+            - $CI_COMMIT_REF_NAME == 'master'
+            - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
     script:
@@ -521,9 +537,10 @@ prepare_openmp_testcases:
 .run_openmp: &run_openmp
     stage: run_openmp
     only:
-        - develop
-        - master
-        - $INCLUDE_OPENMP == 'true'
+        variables:
+            - $CI_COMMIT_REF_NAME == 'develop'
+            - $CI_COMMIT_REF_NAME == 'master'
+            - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
     script:
@@ -541,9 +558,10 @@ prepare_openmp_testcases:
 .test_openmp: &test_openmp
     stage: test_openmp
     only:
-        - develop
-        - master
-        - $INCLUDE_OPENMP == 'true'
+        variables:
+            - $CI_COMMIT_REF_NAME == 'develop'
+            - $CI_COMMIT_REF_NAME == 'master'
+            - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
     script:
