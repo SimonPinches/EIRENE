@@ -91,9 +91,6 @@ run_mpi_cases:
             - $CI_COMMIT_REF_NAME == 'develop'
             - $CI_COMMIT_REF_NAME == 'master'
             - $INCLUDE_SERIAL == 'true'
-        - develop
-        - master
-        - $INCLUDE_SERIAL == 'true'
     except: 
         - schedules
     script:
@@ -114,9 +111,6 @@ run_mpi_cases:
             - $CI_COMMIT_REF_NAME == 'develop'
             - $CI_COMMIT_REF_NAME == 'master'
             - $INCLUDE_SERIAL == 'true'
-        - develop
-        - master
-        - $INCLUDE_SERIAL == 'true'
     except: 
         - schedules
     script:
@@ -144,9 +138,6 @@ build_library:
             - $CI_COMMIT_REF_NAME == 'develop'
             - $CI_COMMIT_REF_NAME == 'master'
             - $INCLUDE_SERIAL == 'true'
-        - develop
-        - master
-        - $INCLUDE_SERIAL == 'true'
     except: 
         - schedules
     script:
