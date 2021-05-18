@@ -122,6 +122,7 @@ prepare_testcases:
     except: 
         - schedules
     script:
+        - echo $CI_COMMIT_REF_NAME
         - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
         - cd EIRENE-sample-cases
         - git checkout ${SAMPLE_CASE_VERSION}
