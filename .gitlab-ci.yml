@@ -531,6 +531,7 @@ prepare_openmp_testcases:
     except: 
         - schedules
     script:
+        - rm -rf buildRelease/*
         - cd EIRENE-sample-cases/${PATH_CASE}
         - make clean
         - make
