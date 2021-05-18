@@ -8,7 +8,7 @@ variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
 #    SAMPLE_CASE_VERSION: 99708cb2086dba10f970584a820b20f5b30e8814  (master)
     SAMPLE_CASE_VERSION: 0b558df4d97761856fb4fa6011c2e536f9fe4af4
-    INCLUDE_SERIAL: 'true'
+    INCLUDE_SERIAL: 'false'
     INCLUDE_MPI:    'false'
     INCLUDE_OPENMP: 'true'
 
@@ -122,7 +122,7 @@ prepare_testcases:
     except: 
         - schedules
     script:
-        - echo $CI_COMMIT_REF_NAME
+        - echo '$CI_COMMIT_REF_NAME'
         - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
         - cd EIRENE-sample-cases
         - git checkout ${SAMPLE_CASE_VERSION}
@@ -138,6 +138,7 @@ build_library:
         variables:
             - $CI_COMMIT_REF_NAME == 'develop'
             - $CI_COMMIT_REF_NAME == 'master'
+            - $CI_COMMIT_REF_NAME == 'develop_openmp'
             - $INCLUDE_SERIAL == 'true'
     except: 
         - schedules
@@ -493,7 +494,8 @@ build_openmp_library:
     except: 
         - schedules
     script:
-        - mkdir -p buildRelease
+        - rm -rf buildRelease
+        - mkdir buildRelease
         - cd buildRelease
         - FC=gfortran cmake ../src -DOPENMP=ON
         - make clean
