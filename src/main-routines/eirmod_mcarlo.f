@@ -38,10 +38,7 @@
 cym these variables need copyin
      .                        ETH,Q,M2M1,ES,ETF
       USE EIRMOD_STATIS, ONLY: EIRENE_STATS0, EIRENE_STATS1, 
-     .                         EIRENE_STATS2,
-cym variables that need to be allocated/associated for workler threads
-cym will disappear when parallel zone will encompass the whole code
-     .                         IIND
+     .                         EIRENE_STATS2
       USE EIRMOD_UPDLIN
       USE EIRMOD_REFLEC, ONLY: EIRENE_REFLC0,
 cym variables that need to be allocated/associated for workler threads
@@ -106,8 +103,7 @@ C
       CHARACTER(10), SAVE :: CDATE, CTIME
 
       REAL(DP), ALLOCATABLE :: OUTAU(:)
-
-!HJL HACK      REAL(DP) :: XTIM(0:NSTRA)
+      
       REAL(DP), ALLOCATABLE :: XTIM(:)
 
       REAL(DP) :: XFL1,
@@ -152,12 +148,6 @@ C      DATA N2/2/
 C
 cpg     
       INTEGER, SAVE :: MY_ID
-cym
-      integer :: iunout_save     
-
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-
-
 C@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 C
 #ifdef USE_EXT_OPENMP
@@ -296,8 +286,6 @@ CVKMPI      XTIM(0)=EIRENE_SECOND_OWN()
 CVKMPI      SECND=XTIM(0)
       SECND=EIRENE_SECOND_OWN()
 
-!HJL UNHACK      NPTS_SAVE=NPTS
-!HJL UNHACK      NINITL_SAVE = NINITL
       NPTS_SAVE=NPTS
       NINITL_SAVE = NINITL
 !pb 28012016
@@ -438,28 +426,9 @@ c nlident: jeder proc. von einer quelle istra bekommt gleichen seed gem. ninitl(
 c         erzeugt bei zwei gleichen quellen (istra) identische ergebnisse.
 c not nlident: ninitl wird auf dem processor geaendert, add my_pe*10000
 
-cym moved later on and Ãmodified
-cym        IF (.NOT.NLIDENT) THEN
-cym          DO ISTRA=1,NSTRAI
-cym            IF (NINITL(ISTRA) > 0)
-cym     .        NINITL(ISTRA)=NINITL(ISTRA)+MY_PE*10000
-cym          ENDDO
-cym        ELSE
-cym          CALL EIRENE_LEER(1)
-cym          WRITE (IUNOUT,*) '......................................... '
-cym          WRITE (IUNOUT,*) 'NLIDENT: '
-cym          WRITE (IUNOUT,*) 'DEBUG MODE FOR PARALLELIZATION IS ACTIVE'
-cym          WRITE (IUNOUT,*) 'IF MULTIPLE CORES PER STRATUM, THEN ALL'
-cym          WRITE (IUNOUT,*) 'ASSIGNED CORES KEEP IDENTICAL RANDOM SEED.'
-cym          WRITE (IUNOUT,*) 'FOR ANY GIVEN STRATUM ISTRA, ALL NCIS CORES'
-cym         WRITE (IUNOUT,*) 'ASSIGNED TO ISTRA MUST PRODUCE IDENTICAL'
-cym          WRITE (IUNOUT,*) 'OUTPUT. ALSO VARIANCES PER STRATUM MUST'
-cym          WRITE (IUNOUT,*) 'SCALE EXACTLY WITH 1/NCIS(ISTRA),'
-cym          WRITE (IUNOUT,*) 'NOT ONLY ON STATISTICAL AVERAGE'
-cym          WRITE (IUNOUT,*) '......................................... '
-cym          CALL EIRENE_LEER(1)
-cym        endif
-        NPRNLS=NPRNLI
+
+CHJL/YM NLIDENT code was moved from here to within the threaded region
+       NPRNLS=NPRNLI
       ENDIF
 C
 C**** INITIALIZE COMMONS COUTAU AND CSPEZ
@@ -477,13 +446,11 @@ cdr  between the present and the previous cycle.
       FASCL(0)=1.
       FMSCL(0)=1.
       FISCL(0)=1.
-      FPHSCL(0)=1.
-
-
-      
-C      
+      FPHSCL(0)=1.     
+C
 C**** STRATA LOOP ****************************************************
 C
+CHJL Need to check this removal of over_acc
 !      OVER_ACC=0.D0
       NEW_ITER=0
 #ifdef USE_EXT_OPENMP
@@ -544,9 +511,8 @@ c    if not nlmovie: census stratum istra=nstrai comes last.
         ENDIF
 
         IF (CALC_STRATUM(ISTRA)) THEN
-
 !$OMP MASTER
-           CALL EIRENE_LEER(2)
+          CALL EIRENE_LEER(2)
           WRITE (iunout,*) 'BEGIN TO WORK ON STRATUM NO. ',ISTRA
           CALL EIRENE_LEER(2)
 !$OMP END MASTER
@@ -556,35 +522,12 @@ c??
           XMCT(ISTRA)=0.
           IPANU=0
 C
-
 C  INITIALIZE RANDOM NUMBER GENERATOR FOR STRATUM ISTRA
-           
-cym set output files for each thread and strata
-cym simplifies comparison when NLIDENT is activated
-#ifdef USE_OPENMP           
-!$OMP MASTER
-      IUNOUT_SAVE=IUNOUT
-!$OMP END MASTER
-      IUNOUT=200+EIRENE_ITHREAD+100*(ISTRA-1)
-#endif      
-
-
 cym test for multiple strata / restores the status after call to REFLC0
 cym ideally would need initializing values on the master thread ...
-
       EREDUC=0._dp
       FREDUC=0._dp
       IREDUC=0
-C***********************************************************************
-cpg   for testing
-cpg        NOM_BASE='TESTSEED'
-cpg        WRITE( NUMERO, * ) ITHREAD
-cpg        NUMERO = ADJUSTL( NUMERO )
-cpg        NOM_FIC = TRIM(NOM_BASE)//TRIM(NUMERO)//'.TXT'
-cpg        OPEN(UNIT=30+ITHREAD, FILE=NOM_FIC, STATUS='REPLACE')
-        
-C***********************************************************************
-C  INITIALIZE RANDOM NUMBER GENERATOR FOR STRATUM ISTRA
            
 C  find random number generator seed, from input flag NINITL(ISTRA)
           IF (NINITL(istra).GT.0) THEN
@@ -595,17 +538,17 @@ C  find random number generator seed, from input flag NINITL(ISTRA)
 
              CALL EIRENE_LEER(1)
 !$OMP SINGLE
-         WRITE (IUNOUT,*) '......................................... '
-         WRITE (IUNOUT,*) 'NLIDENT: '
-         WRITE (IUNOUT,*) 'DEBUG MODE FOR PARALLELIZATION IS ACTIVE'
-         WRITE (IUNOUT,*) 'IF MULTIPLE CORES PER STRATUM, THEN ALL'
-         WRITE (IUNOUT,*) 'ASSIGNED CORES KEEP IDENTICAL RANDOM SEED.'
-         WRITE (IUNOUT,*) 'FOR ANY GIVEN STRATUM ISTRA,ALL NCIS CORES'
-         WRITE (IUNOUT,*) 'ASSIGNED TO ISTRA MUST PRODUCE IDENTICAL'
-         WRITE (IUNOUT,*) 'OUTPUT. ALSO VARIANCES PER STRATUM MUST'
-         WRITE (IUNOUT,*) 'SCALE EXACTLY WITH 1/NCIS(ISTRA),'
-         WRITE (IUNOUT,*) 'NOT ONLY ON STATISTICAL AVERAGE'
-         WRITE (IUNOUT,*) '......................................... '
+             WRITE(IUNOUT,*)'......................................... '
+             WRITE(IUNOUT,*)'NLIDENT: '
+             WRITE(IUNOUT,*)'DEBUG MODE FOR PARALLELIZATION IS ACTIVE'
+             WRITE(IUNOUT,*)'IF MULTIPLE CORES PER STRATUM, THEN ALL'
+             WRITE(IUNOUT,*)'ASSIGNED CORES KEEP IDENTICAL RANDOM SEED.'
+             WRITE(IUNOUT,*)'FOR ANY GIVEN STRATUM ISTRA,ALL NCIS CORES'
+             WRITE(IUNOUT,*)'ASSIGNED TO ISTRA MUST PRODUCE IDENTICAL'
+             WRITE(IUNOUT,*)'OUTPUT. ALSO VARIANCES PER STRATUM MUST'
+             WRITE(IUNOUT,*)'SCALE EXACTLY WITH 1/NCIS(ISTRA),'
+             WRITE(IUNOUT,*)'NOT ONLY ON STATISTICAL AVERAGE'
+             WRITE(IUNOUT,*)'.........................................'
              
          CALL EIRENE_LEER(1)
 !$OMP END SINGLE 
@@ -737,16 +680,13 @@ C
 C
 csw 19feb2013
 !pb 03122013        timstart=mpi_wtime()
-cym see whether that's ok - omp_wtime ?
 !$OMP MASTER
           call system_clock (itimstart, itimrate)
 !$OMP END MASTER
 csw
 
 !$OMP BARRIER
-
 C  PARTICLE LOOP WITHIN STRATUM ISTRA
-
 !$OMP  DO REDUCTION(.OR.:LOGATM,LOGMOL,LOGION,LOGPLS,
 !$OMP&                   LOGPHOT,LMETSPW,LMETSP)
 !$OMP& REDUCTION(+:WTOTA,WTOTM,WTOTI,WTOTPH,WTOTP,
@@ -913,8 +853,7 @@ c  nptsdel(istra)*iproc(istra) trajectories for stratum ISTRA
                 NINIST=NINITL(ISTRA)+IPTSI/NPTSDEL(ISTRA)*10000
 c  initialize random number generator with a "legal" seed,
                 idumran=ranset_eirene(ninist)
-cym
-                write(999,*) NINIST,NINITL(ISTRA),IPTSI
+
                 INIV1=0
                 INIV2=0
                 INIV3=0
@@ -1063,10 +1002,6 @@ cym ccccccccccccccccccccccccccccccccccccccccccccc
 #endif          
 C
 C
-cym - redirect output to initial unit
-#ifdef USE_OPENMP
-          IUNOUT=IUNOUT_SAVE
-#endif          
           XMCT(istra)=timused
 csw
           SECND=EIRENE_SECOND_OWN()
