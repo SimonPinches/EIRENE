@@ -496,7 +496,7 @@ build_openmp_library:
         - rm -rf buildRelease
         - mkdir buildRelease
         - cd buildRelease
-        - FC=gfortran cmake ../src -DOPENMP=ON
+        - FC=mpif90 cmake ../src -DOPENMP=ON
         - make clean
         - make EIRENE
     artifacts:
@@ -531,7 +531,6 @@ prepare_openmp_testcases:
     except: 
         - schedules
     script:
-        - rm -rf buildRelease/*
         - cd EIRENE-sample-cases/${PATH_CASE}
         - make clean
         - make
