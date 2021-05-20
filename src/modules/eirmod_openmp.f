@@ -62,7 +62,8 @@ c     ym copyin does not work for allocatable pointer arrrays
 
 #ifdef USE_OPENMP     
       EIRENE_ITHREAD  = OMP_GET_THREAD_NUM()
-      EIRENE_NTHREADS = OMP_GET_NUM_THREADS()
+      EIRENE_NTHREADS = OMP_GET_NUM_THREADS()      
+      CALL EIRENE_CHECK_STDEV()      
 !$OMP MASTER
       write(iunout,*)"Compiled with OpenMP - NTHREADS =",EIRENE_NTHREADS
 !$OMP END MASTER
@@ -396,6 +397,31 @@ c     ym make sure the clast variables do not take exotic values
       DEALLOCATE(BXSTORV)
 
       END SUBROUTINE EIRENE_DEALLOCATE_BUFFERS_OPENMP    
+
+      SUBROUTINE EIRENE_CHECK_STDEV
+
+CHJL At present the standard deviation calculations are incorrect when using
+CHJL OpenMP threads and anyway resul in the code crashing, this routine turns
+CHJL off standard deviation calculations
       
+      IF(EIRENE_NTHREADS>1) THEN
+         write(iunout,*)"STDDEV:",NSIGI,NSIGVI,NSIGSI,NSIGCI 
+         IF(NSIGI>0) THEN
+            write(iunout,*)"***************WARNING*******************"
+            write(iunout,*)"The standard deviation calculations have"
+            write(iunout,*)"not been implemented for OpenMP threads."
+            write(iunout,*)"Standard deviation calculations have been"
+            write(iunout,*)"turned off."
+            write(iunout,*)"***************WARNING*******************"
+            NSIGVI=0
+            NSIGSI=0
+            NSIGCI=0
+            NSIGI_SPC=0
+            NSIGI=0            
+         ENDIF         
+      ENDIF      
+      
+      END SUBROUTINE EIRENE_CHECK_STDEV
+
       
       END MODULE EIRMOD_OPENMP
