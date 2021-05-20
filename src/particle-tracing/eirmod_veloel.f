@@ -185,26 +185,8 @@ cym this is because of SAVE attribute
       INTEGER, INTENT(IN) :: K, IOLD, NOLD, NFLAG, IREL
       REAL(DP) :: EIRENE_CROSS
 
-cym      REAL(DP) :: TEST, VRELX,
-cym     .          VXN, VYN, VZN, VXI, VYI, VZI, VRELQ, VN, VREL,
-cym     .          RLMS, RMSI, RMN, RMI, VRELY, EPS, CPH, CHI,
-cym     .          EIRENE_RSTERN, RESULT, SPH, VRSX, VRSY, VRSZ, CEPS,
-cym     .          SEPS, RS,
-cym     .          VSX, VSY, VRYZ, VRELZ, VRQYZ, VSZ, PH, CCHI,
-cym     .          BMAX, ER, ELMIN, ELMAX, B,
-cym     .          VXDR, VYDR, VZDR,
-cym     .          ZARGX, ZARGY, ZARGZ,
-cym     .          VX, VY, VZ, ELAB,
-cym     .          VR, CEL, EIRENE_CROSS, VRQ
-cym      REAL(DP) :: EIRENE_RSTERN
-ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
+CYM/HJL Variables moved to module scope
 
-      
- 
-
-
-cym      REAL(DP) :: P(9)
-cym      INTEGER :: IFLAG, IRL, IREAC, JM, J, ICOUNT
 !  PARAMETERS P_A_B FOR INTERACTION POTENTIALS for A on B collisions
 !  ARE NOW READ FROM FILE AMJUEL,
 !  NOT HARD-WIRED IN THIS ROUTINE OR (EVEN OLDER VERSIONS)
@@ -872,8 +854,7 @@ C  AND TO SPEED UP
       REAL(DP), INTENT(IN) :: X1, X2, XACC, ER, B, P(*)
       INTEGER, INTENT(IN) :: IFLAGI
       INTEGER, PARAMETER :: MAXIT=100
-cym      REAL(DP) :: DF, XDIST, F, EIRENE_FI, TEMP, DX, DXOLD, XH,
-cym     .            EIRENE_RTSAF, XL, POI
+CYM/HJL Variables moved to module scope
       REAL(DP) :: DF, XDIST, F, TEMP, DX, DXOLD, XH,
      .            XL, POI
       INTEGER :: J

@@ -97,8 +97,6 @@ ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
      .           INDR1P, INDR1, ISPZO, INDW, IDUMMY, IRET
 
  
-ctk      INTEGER, EXTERNAL :: RANGET_EIRENE, RANSET_EIRENE
-cym      INTEGER, EXTERNAL :: RANGET_EIRENE
       LOGICAL :: NLDATA, NLBEHR
     
       integer , save :: ifile
@@ -209,11 +207,7 @@ C
       SUBROUTINE EIRENE_REFLC0
       IMPLICIT NONE
       INTEGER :: EIRENE_LEARCA
-cym      REAL(DP) :: DX, XCFE, XCH, XMFE, XMH, EPSHFE
-cym      INTEGER :: I, J, INDR3, NRE, NRI, NREP, EIRENE_LEARCA, ILIM, JP, 
-cym     .           ISP, ISTS
-cym      LOGICAL :: NLDATA, NLBEHR
-
+CYM/HJL Moved variables to module scope      
 cym is that still useful ?
       SAVE
 C
@@ -462,30 +456,7 @@ c      LOGICAL :: NLDATA, NLBEHR
       INTEGER :: NPRIN, IGASF, IGAST
       
 c DATA FOR REDUCED ENERGY SCALING
-cym      REAL(DP)       :: ERDUC, EFCT
-cym      REAL(DP) :: VX, VY, VZ, ED, ZCTHET, ZSTHET, RO4, ZCPHI,
-cym     .          ZSPHI, RO5, PRBRF, WATOM, RPROBA, ZE0,
-cym     .          ZA, A, VXR, VYR, VZR, VWL, WGHTVS,
-cym     .          ZTHET, ZE, ESUM, EFAC, ZDELTA, COSI2, WABS, WLOSS, TW,
-cym     .          FLPRT, WMOLEC, RPROBM, FR2, PRTEST, RPROBL, DUMMY,
-cym     .          E0TERM, XCW, EBIND, PRFCT,
-cym     .          PRFCF, XMW, XMP, WMIN,
-cym     .          XCP, RO1, EQSAVE, ZEP1, RO3,
-cym     .          EMINR, EMAXR, RPROB, APROB, COSIN,
-cym     .          EXPP, EXPI, EXPE, RINTG, AINTG, EINTG,
-cym     .          EQTO, ETEST, EQT, F1, WFAC, F2,
-cym     .          FR1, RO2
-cym      REAL(DP) :: RF, RF1, RF2, RF3, RF4, RF5, RF6, RF7, RF8, RF9, RF10,
-cym     .          RF11, RF12, RF13, RF14, RF15, RF16,
-cym     .          RFF1, RFF2, RFF3, RFF4, RFF5, RFF6, RFF7, RFF8,
-cym     .          RFFF1, RFFF2, RFFF3, RFFF4,
-cym     .          RFFFF1, RFFFF2
-cym      INTEGER :: IRANGE, IRM, INDR2, INDR3P, MSS, I, J,
-cym     .           IBOX, MODREF, IGAST, INDR3,
-cym     .           IGASF, NPRIN, 
-cym     .           ISAVE, INDEP, INDWP, INDE, INDR2P,
-cym     .           INDR1P, INDR1, ISPZO, IFILE, INDW, IDUMMY, IRET
-
+CYM/HJL Moved variables to module scope      
 cym is that useful ??
       SAVE
 

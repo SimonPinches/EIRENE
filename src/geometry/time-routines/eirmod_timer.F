@@ -201,52 +201,7 @@ C
 C    TO BE WRITTEN
 C
 
-
-cym      REAL(DP), INTENT(OUT) :: PT
-cym      REAL(DP) :: A(3,3), B(3), AB(3,3), PTS(4)
-cym      REAL(DP) :: SIG1, SIG2, DET, XMU, XETA, EIRENE_SARRUS, AX, AY, V,
-cym     .          TIMTET,
-cym     .          ZZ, RICHTY, HELP, TM, RICHTX, YY, XX, S3, TIMT, TIM,
-cym     .          S2, A1, A2, A3, B1, B2, B3, S1, V2, V3, ZR, ZEP1,
-cym     .          ZSQRT, PS, VELYQ, XX0, VVELX, VELXQ, ZT1, ZT2, YVY,
-cym     .          ZC1, DXA, TST, XA, ZB2, ZAB, ZAB2, ZB, Z0TEST,
-cym     .          Y0TEST, ZA, T, PT1, PT2, PT3, PT4, V1, ESURF,
-cym     .          XTEST, YTEST, X0SURF, DSRF, Y0Q, T1, T2, T3, T4, PNORMI
-cym      INTEGER :: IRICH(2,4), ITSIDE(3,4)
-cym      INTEGER :: IZELLO, NTIMT, IOB, I1, I2, ISW, 
-cym     .           IHELP, IZELL, NTMS, MXSF, NTMZ, NRMSRF,
-cym     .           ICOS, IERR, IRS, NEWCEL, ITET, IT, IL, IS, NRI, MS, IR,
-cym     .           ICALL, ITFRST, ISTS, MMSURF, J, K, I, JPOL,
-cym     .           MPOL, IPOLGO, EIRENE_LEARC2, IP, ICELLR, MSAVE, ITRI,
-cym     .           ISTS_CELL, ISD, nclpb, icts
-!pb      INTEGER, ALLOCATABLE, SAVE :: ITRINO(:), ISIDNO(:)
-!pb      INTEGER, SAVE :: NSTS_CELL
-cym #ifdef TRACE
-cym      INTEGER :: ICOUP
-cym #endif
-cym      INTEGER, ALLOCATABLE :: ITRINO(:), ISIDNO(:)
-cym      INTEGER :: NSTS_CELL
-cym
-cym      LOGICAL :: LHITP(N2NDPLGS) ! for finding re-entry into levgeo=3 grid
-cym      LOGICAL :: LCTS(4)
-cym      LOGICAL :: LNGB1, LNGB2, LNGB3, LNGB4,
-cym     .           LCT1, LCT2, LCT3, LCT4, EIRENE_BITGET
-cym
-cym      EQUIVALENCE (LCTS(1),LCT1), (LCTS(2),LCT2),
-cym     .            (LCTS(3),LCT3), (LCTS(4),LCT4)
-cym      EQUIVALENCE (PTS(1),PT1),   (PTS(2),PT2),
-cym     .            (PTS(3),PT3),   (PTS(4),PT4)
-cym
-cym      DATA ITSIDE /1,2,3,
-cym     .             1,4,2,
-cym     .             2,4,3,
-cym     .             3,4,1/
-cym      DATA IRICH / 1, -3,
-cym     .             4,  1,
-cym     .             5,  2,
-cym     .             6,  3 /
-cym      DATA ICALL /0/
-cym      DATA ITFRST /0/
+CYM/HJL Moved variables to module scope
 
 cym is this one really necessary ?
       SAVE
