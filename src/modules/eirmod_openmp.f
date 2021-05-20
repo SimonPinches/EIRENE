@@ -405,19 +405,25 @@ CHJL OpenMP threads and anyway resul in the code crashing, this routine turns
 CHJL off standard deviation calculations
       
       IF(EIRENE_NTHREADS>1) THEN
-         write(iunout,*)"STDDEV:",NSIGI,NSIGVI,NSIGSI,NSIGCI 
          IF(NSIGI>0) THEN
+!$OMP MASTER            
             write(iunout,*)"***************WARNING*******************"
             write(iunout,*)"The standard deviation calculations have"
             write(iunout,*)"not been implemented for OpenMP threads."
             write(iunout,*)"Standard deviation calculations have been"
             write(iunout,*)"turned off."
-            write(iunout,*)"***************WARNING*******************"
+            write(iunout,*)"INPUT FILE:",NSIGI,NSIGVI,NSIGSI,NSIGCI
+!$OMP END MASTER
+!$OMP BARRIER            
             NSIGVI=0
             NSIGSI=0
             NSIGCI=0
             NSIGI_SPC=0
             NSIGI=0            
+!$OMP MASTER
+            write(iunout,*)"NOW:",NSIGI,NSIGVI,NSIGSI,NSIGCI 
+            write(iunout,*)"***************WARNING*******************"
+!$OMP END MASTER
          ENDIF         
       ENDIF      
       

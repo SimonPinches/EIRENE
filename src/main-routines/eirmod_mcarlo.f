@@ -504,9 +504,11 @@ C                    one by one re-launch of ALL particles from census
 c    if not nlmovie: census stratum istra=nstrai comes last.
 !$OMP BARRIER
         IF (.NOT.NLSRON(ISTRA)) THEN
+!$OMP MASTER
           CALL EIRENE_LEER(2)
           WRITE (iunout,*) 'STRATUM NO. ',ISTRA,' ABANDONED'
           CALL EIRENE_LEER(2)
+!$OMP END MASTER
           CYCLE
         ENDIF
 

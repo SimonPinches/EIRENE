@@ -148,22 +148,28 @@ c
           endif
         enddo
 
-!$OMP CRITICAL
+!$OMP MASTER        
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) 'FIRST CALL TO VELOCX FOR IRCX= ',IRCX
         WRITE (iunout,*) 'PREPARE REJECTION TECHNIQUE '
         WRITE (iunout,*) 'FIND MAX. "SGCVMX" OF SIGMA(VEL) * VEL '
         CALL EIRENE_MASJ1R('JJ, SGCVMX      ',JJ, SGCVMX(IRCX))
+!$OMP END MASTER
         IF (JJ.NE.1.AND.JJ.NE.1000) THEN
           elab=elmin+(JJ-1)/999.*(elmax-elmin)
           ELAB=EXP(ELAB)
+!$OMP MASTER        
           WRITE (iunout,*) 'TRUE MAXIMUM FOUND AT ELAB(EV) = ',ELAB
+!$OMP END MASTER
           IFLRCX(IRCX)=1
         ELSE
+!$OMP MASTER        
           WRITE (iunout,*) 'NO TRUE MAXIMUM FOUND, USE WEIGHTING '
+!$OMP END MASTER
         ENDIF
+!$OMP MASTER        
         CALL EIRENE_LEER(1)
-!$OMP END CRITICAL
+!$OMP END MASTER
 
       ENDIF
     1 CONTINUE

@@ -2,7 +2,7 @@
       USE EIRMOD_PRECISION
       USE EIRMOD_CLOGAU
       USE EIRMOD_COMPRT, ONLY: IUNOUT
-      use eirmod_h1rnm
+      USE EIRMOD_H1RNM
       IMPLICIT NONE
       PRIVATE
 
@@ -85,12 +85,14 @@ cdr       for each such seed a different sequence of average length 10**30 is pr
 
 cdr  IBM, 1968 generator, kept here for historic reasons and backward compatibility.
          if (ifirst_ranf == 0) then
+!$OMP MASTER
             call eirene_leer(2)
             call eirene_headng
      .      ('ANCIENT (1968) RANDOM NUMBER GENERATOR ACTIVATED',48)
             call eirene_headng
      .      ('IS THAT INTENTIONAL? Check flag NLOLDRAN in RANF.f',50)
             call eirene_leer(2)
+!$OMP END MASTER            
             ifirst_ranf=1
          end if
 
