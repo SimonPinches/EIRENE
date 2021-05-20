@@ -466,7 +466,7 @@ CHJL Need to check this removal of over_acc
 !$OMP& COPYIN(ETH,Q,M2M1,ES,ETF,ISDVI,IPSTD,RPST,
 !$OMP& RCMSPL,ICMSPL,LCMSOU,XSTOR,XSTORV)
 #endif      
-#endif      
+#endif
       DO ISTR=1,NSTRAI          ! main loop over strata
 
         timan=EIRENE_second_own()
