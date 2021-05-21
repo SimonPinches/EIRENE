@@ -62,8 +62,7 @@ c     ym copyin does not work for allocatable pointer arrrays
 
 #ifdef USE_OPENMP     
       EIRENE_ITHREAD  = OMP_GET_THREAD_NUM()
-      EIRENE_NTHREADS = OMP_GET_NUM_THREADS()      
-      CALL EIRENE_CHECK_STDEV()      
+      EIRENE_NTHREADS = OMP_GET_NUM_THREADS()
 !$OMP MASTER
       write(iunout,*)"Compiled with OpenMP - NTHREADS =",EIRENE_NTHREADS
 !$OMP END MASTER
@@ -429,5 +428,6 @@ CHJL off standard deviation calculations
       
       END SUBROUTINE EIRENE_CHECK_STDEV
 
+      
       
       END MODULE EIRMOD_OPENMP
