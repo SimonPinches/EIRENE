@@ -101,6 +101,8 @@ C
       USE EIRMOD_PLT2D, ONLY: EIRENE_PLT2D
       USE EIRMOD_PLTEIR, ONLY: EIRENE_PLTEIR
       USE EIRMOD_TIMEA, ONLY: EIRENE_DEALLOC_TIMEA
+      USE EIRMOD_OPENMP, ONLY: EIRENE_INIT_OPENMP,
+     .                         EIRENE_ITHREAD, EIRENE_NTHREADS
 
       IMPLICIT NONE
 
@@ -112,9 +114,11 @@ C
       REAL(DP) :: DUMMY, TIMI
       integer, save :: inentry=1, init_log=0
       logical :: nlplas_save
-      character(20) :: outname
-      character(6) :: outpos
+      character(20), save :: outname
+      character(6), save :: outpos
       INTEGER :: PROVIDED
+
+!$OMP THREADPRIVATE(OUTNAME,OUTPOS)
 C
 C               1.         INITIALIZE PACKAGE
 C
@@ -129,8 +133,10 @@ C
          CALL MPI_INIT(IER)
 #endif
       ENDIF
+      
       CALL MPI_COMM_SIZE (MPI_COMM_WORLD,NPRS,IER)
       CALL MPI_COMM_RANK (MPI_COMM_WORLD,MY_PE,IER)
+      CALL EIRENE_INIT_OPENMP()
 
       CALL EIRENE_DEFAULTS_USR
 
@@ -144,16 +150,25 @@ c     IUNIN = 1
 
 CDR  OUTPUT STREAM IS: IUNOUT. THIS IS ALSO THE STREAM FOR MASTER PROCESSOR MY_PE =0
 cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
-      IF (NPRS > 1) THEN
+      
+      IF (NPRS > 1 .OR. EIRENE_NTHREADS > 1) THEN
+#ifndef USE_EXT_OPENMP      
+!$OMP PARALLEL
+#endif        
         OUTNAME='output.'
-        WRITE (OUTNAME(8:),'(I4.4)') MY_PE
+        WRITE (OUTNAME(8:),'(I4.4)')
+     .       (MY_PE*EIRENE_NTHREADS)+EIRENE_ITHREAD
         IF ( LOUTAPP ) THEN
           OUTPOS='APPEND'
         ELSE
           OUTPOS='ASIS'
         END IF
+        IF (EIRENE_NTHREADS > 1) IUNOUT = 200 + IFOFF + EIRENE_ITHREAD
         OPEN (UNIT=IUNOUT,FILE=OUTNAME, ACCESS='SEQUENTIAL',
      .        FORM='FORMATTED', POSITION=OUTPOS)
+#ifndef USE_EXT_OPENMP      
+!$OMP END PARALLEL
+#endif        
       END IF
 
       IF (MY_PE == 0) THEN

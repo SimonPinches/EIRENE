@@ -21,7 +21,8 @@ c  mpartc, npartc and mpartt, npartt are set in eirmod_parmmod
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
-
+      USE EIRMOD_OPENMP, ONLY: EIRENE_NTHREADS
+      
       IMPLICIT NONE
 
       PRIVATE
@@ -139,7 +140,7 @@ c  unrelated to particle trajectories:  IO streams
       INTEGER, PUBLIC, SAVE ::
      I IUNIN,  IUNOUT, IVTKOUT
 cym
-!!!$OMP THREADPRIVATE(IUNOUT)
+!$OMP THREADPRIVATE(IUNOUT)
 
       DATA IUNIN / 1 /  ! must be known already during compile time.
 c                       ! better: move iunin, iunout, etc.. to parmmod ??
@@ -315,6 +316,8 @@ c  io files
 cdr same code as in subr. EIRENE
       IUNOUT = 6 + IFOFF
       IF (NPRS > 1) IUNOUT = 7 + IFOFF
+! Not sure why this is repeated here      
+      IF (EIRENE_NTHREADS > 1) IUNOUT = 200 + IFOFF
 
       IVTKOUT= 28
 

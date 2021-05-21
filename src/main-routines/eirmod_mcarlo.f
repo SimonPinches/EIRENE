@@ -458,7 +458,7 @@ CHJL Need to check this removal of over_acc
 !$OMP BARRIER
 #endif
 ! Initialise openMP including allocating THREADPRIVATE arrays
-      CALL EIRENE_INIT_OPENMP()
+      CALL EIRENE_PREPARE_OPENMP()
       NPANU=0
 #ifdef USE_OPENMP      
 #ifndef USE_EXT_OPENMP
@@ -1324,6 +1324,7 @@ C
 
        END IF                   ! CALC_STRATUM(ISTRA)
       END DO                    ! ISTR
+
 #ifdef USE_EXT_OPENMP
 !$OMP MASTER
 #else

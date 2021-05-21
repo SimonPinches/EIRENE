@@ -26,7 +26,8 @@
 
       PRIVATE
 
-      PUBLIC  :: EIRENE_INIT_OPENMP, EIRENE_DEALLOCATE_OPENMP
+      PUBLIC  :: EIRENE_INIT_OPENMP, EIRENE_PREPARE_OPENMP,
+     .           EIRENE_DEALLOCATE_OPENMP
       
       INTEGER, PUBLIC, SAVE :: EIRENE_ITHREAD, EIRENE_NTHREADS
 
@@ -56,6 +57,7 @@ c     ym copyin does not work for allocatable pointer arrrays
 !     by a coupled code as it is before the coupling ENTRY point
       
       SUBROUTINE EIRENE_INIT_OPENMP
+      
 #ifndef USE_EXT_OPENMP      
 !$OMP PARALLEL DEFAULT(SHARED)
 #endif
@@ -63,16 +65,32 @@ c     ym copyin does not work for allocatable pointer arrrays
 #ifdef USE_OPENMP     
       EIRENE_ITHREAD  = OMP_GET_THREAD_NUM()
       EIRENE_NTHREADS = OMP_GET_NUM_THREADS()
-!$OMP MASTER
-      write(iunout,*)"Compiled with OpenMP - NTHREADS =",EIRENE_NTHREADS
-!$OMP END MASTER
 #else
       EIRENE_ITHREAD  = 0
       EIRENE_NTHREADS = 1
 #endif
+
+#ifndef USE_EXT_OPENMP      
+!$OMP END PARALLEL
+#endif
+
+      END SUBROUTINE EIRENE_INIT_OPENMP
+
+      SUBROUTINE EIRENE_PREPARE_OPENMP  
       
 !$OMP BARRIER
 
+#ifdef USE_OPENMP
+!$OMP MASTER
+      write(iunout,*)"Compiled with OpenMP - NTHREADS =",EIRENE_NTHREADS
+!$OMP END MASTER
+#endif
+
+      
+#ifndef USE_EXT_OPENMP      
+!$OMP PARALLEL DEFAULT(SHARED)
+#endif
+    
 #ifdef USE_EXT_OPENMP      
       IF(EIRENE_ITHREAD==0) THEN
          CALL EIRENE_INIT_BUFFERS_OPENMP()
@@ -99,7 +117,7 @@ c     ym copyin does not work for allocatable pointer arrrays
 !$OMP END PARALLEL
 #endif
 
-      END SUBROUTINE EIRENE_INIT_OPENMP
+      END SUBROUTINE EIRENE_PREPARE_OPENMP
 
       
 !!! Allocate THREAD_PRIVATE arrays for non master threads      
