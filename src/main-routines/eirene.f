@@ -621,8 +621,15 @@ c  probably these next three lines must go out?
 cdr april 2015
 
 !pb   IF (MY_PE > 0) THEN
-      IF (NPRS > 1) THEN
+      IF (NPRS > 1 .OR. EIRENE_NTHREADS > 1) THEN
+#ifndef USE_EXT_OPENMP      
+!$OMP PARALLEL
+#endif        
          CLOSE (UNIT=IUNOUT)
+#ifndef USE_EXT_OPENMP      
+!$OMP END PARALLEL
+#endif        
+
       END IF
 #ifdef USE_EXT_OPENMP
 !$OMP END MASTER

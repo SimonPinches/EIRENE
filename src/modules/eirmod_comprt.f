@@ -21,7 +21,6 @@ c  mpartc, npartc and mpartt, npartt are set in eirmod_parmmod
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
-      USE EIRMOD_OPENMP, ONLY: EIRENE_NTHREADS
       
       IMPLICIT NONE
 
@@ -121,6 +120,9 @@ C  SOME FURTHER INTEGER VARIABLES USED ALONG PARTICLE TRAJECTORY
      L NLSRFX, NLSRFY, NLSRFZ, NLSRFA,
      L NLTRC,  NLTRJ
 
+! Needed to avoid circular dependancy when testing for output values      
+      INTEGER, PUBLIC :: NTHREAD
+      
 !$OMP  THREADPRIVATE(RPSTT,X0,Y0,Z0,VEL,VELX,VELY,VELZ,E0,WEIGHT,
 !$OMP& IPSTD,RPST,
 !$OMP& TIME,PHI,XGENER,TIMINT,TIMPOL,TL,TT,TS,TF,ZT,ZDT1,CRTX,CRTY,
@@ -317,7 +319,7 @@ cdr same code as in subr. EIRENE
       IUNOUT = 6 + IFOFF
       IF (NPRS > 1) IUNOUT = 7 + IFOFF
 ! Not sure why this is repeated here      
-      IF (EIRENE_NTHREADS > 1) IUNOUT = 200 + IFOFF
+      IF (NTHREAD > 1) IUNOUT = 200 + IFOFF
 
       IVTKOUT= 28
 
