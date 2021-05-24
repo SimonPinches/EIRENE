@@ -127,6 +127,7 @@ cym IC ?
      .     JATM, JMOL, JION, JPHOT, JPLS
 
       LOGICAL, SAVE :: LGSTOP, NLPOLS, NLTORS
+      LOGICAL :: LGABORT
       
 !$OMP THREADPRIVATE(I,J,IN,ISPC,IPANU,INODES,LGSTOP,
 !$OMP& SECND1,SECND2,SECDEL,MY_ID,NINIST,CDATE,CTIME,
@@ -669,11 +670,12 @@ CVKMPI        XTIM(ISTRA)=XTIM(ISTRA)+OVER_ACC
           TIMI=EIRENE_SECOND_OWN()            !VKMPI
           XTIM(ISTRA)=XTIM(ISTRA)+TIMI !VKMPI
 C
-
+          LGABORT=.FALSE.
+          
 !$OMP END MASTER
 
 cdr  LGLAST = T: LAST TRAJECTORY OF PRESENT STRATUM ISTRA
-        LGLAST=.FALSE.
+          LGLAST=.FALSE.
 cdr  LGSTOP = T: same as lglast, but only due to npts or cpu-time criterion
 cdr  LGLAST      may also have been set during particle tracking, for other reasons.
 cdr              presently: e.g. if census array is full, set in TIMCOL
@@ -695,6 +697,11 @@ C  PARTICLE LOOP WITHIN STRATUM ISTRA
 !$OMP&             ETOTA,ETOTM,ETOTI,ETOTPH,XMCP)
         DO 100 IPTSI=1,NPTS(istra)
 
+! Check that another thread hasn't aborted the particle loop
+#ifdef USE_OPENMP           
+            IF(LGABORT) cycle
+#endif           
+           
 C  SOME PREPARATORY WORK, ONCE FOR EACH NEW PARTICLE HISTORIE
 C
 C  RE-INITIALIZE INDEX ARRAYS: VISITED CELLS, VISITED WALL SEGMENTS
@@ -755,7 +762,10 @@ cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cym exit from the loop not allowed with OpenMP
 cym currently time limit not enforced
 cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccc              
-#ifndef USE_OPENMP 
+#ifdef USE_OPENMP               
+!$OMP ATOMIC WRITE
+              LGABORT = .TRUE.   ! Abort this stratum,
+#else 
               GOTO 101
 #endif
             ELSEIF (LGLAST.AND..NOT.LGSTOP) THEN
@@ -774,7 +784,10 @@ cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cym see comment above
 cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccc              
-#ifndef USE_OPENMP
+#ifdef USE_OPENMP               
+!$OMP ATOMIC WRITE
+              LGABORT = .TRUE.   ! Abort this stratum,
+#else
               GOTO 101
 #endif
             ENDIF
