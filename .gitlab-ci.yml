@@ -515,21 +515,23 @@ build_openmp_library:
             - buildRelease/
             - libRelease/
 
-prepare_openmp_testcases:
-    stage: preparation:openmp
-    only:
-        variables:
-            - $CI_COMMIT_REF_NAME == 'develop'
-            - $CI_COMMIT_REF_NAME == 'master'
-            - $INCLUDE_OPENMP == 'true'
-    except: 
-        - schedules
-    script:
-        - cd EIRENE-sample-cases
-    artifacts:
-        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
-        paths:
-            - EIRENE-sample-cases
+#prepare_openmp_testcases:
+#    stage: preparation:openmp
+#    only:
+#        variables:
+#            - $CI_COMMIT_REF_NAME == 'develop'
+#            - $CI_COMMIT_REF_NAME == 'master'
+#            - $INCLUDE_OPENMP == 'true'
+#    except: 
+#        - schedules
+#    script:
+#        - cd EIRENE-sample-cases
+#    artifacts:
+#        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+#        paths:
+#            - EIRENE-sample-cases
+#    dependencies:
+#        - prepare_testcases
 
 .build_openmp_executable: &build_openmp_executable
     stage: build:openmp_executable
@@ -563,7 +565,7 @@ prepare_openmp_testcases:
         - schedules
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
-        - export OMP_NUM_THREADS=4
+        - export OMP_NUM_THREADS=1
         - make output
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
@@ -587,7 +589,7 @@ prepare_openmp_testcases:
     script:
         - python --version
         - cd EIRENE-sample-cases/${PATH_CASE}
-        - export OMP_NUM_THREADS=4
+        - export OMP_NUM_THREADS=1
         - make test_openmp
 
 build_1D-H_slab_openmp:
@@ -600,7 +602,7 @@ run_1D-H_slab_openmp:
     variables:
         PATH_CASE: "1D-H_slab_openmp"
     needs:
-#        - build_openmp_library    
+        - build_openmp_library    
         - build_1D-H_slab_openmp
 
 test_1D-H_slab_openmp:
@@ -621,7 +623,7 @@ run_1D_cylindric_openmp:
     variables:
         PATH_CASE: "1D_cylindric_openmp"
     needs:
-#        - build_openmp_library    
+        - build_openmp_library    
         - build_1D_cylindric_openmp
 
 test_1D_cylindric_openmp:
@@ -642,7 +644,7 @@ run_1D_elliptic_openmp:
     variables:
         PATH_CASE: "1D_elliptic_openmp"
     needs:
-#        - build_openmp_library    
+        - build_openmp_library    
         - build_1D_elliptic_openmp
 
 test_1D_elliptic_openmp:
@@ -663,7 +665,7 @@ run_2D-D_polygon_openmp:
     variables:
         PATH_CASE: "2D-D_polygon_openmp"
     needs:
-#        - build_openmp_library    
+        - build_openmp_library    
         - build_2D-D_polygon_openmp
 
 test_2D-D_polygon_openmp:
@@ -684,7 +686,7 @@ run_2D-D_slab_openmp:
     variables:
         PATH_CASE: "2D-D_slab_openmp"
     needs:
-#        - build_openmp_library    
+        - build_openmp_library    
         - build_2D-D_slab_openmp
 
 test_2D-D_slab_openmp:
@@ -705,7 +707,7 @@ run_ITER_1573_openmp:
     variables:
         PATH_CASE: "ITER_1573_openmp"
     needs:
-#        - build_openmp_library    
+        - build_openmp_library    
         - build_ITER_1573_openmp
 
 test_ITER_1573_openmp:
@@ -726,7 +728,7 @@ run_cylinder_openmp:
     variables:
         PATH_CASE: "cylinder_openmp"
     needs:
-#        - build_openmp_library    
+        - build_openmp_library    
         - build_cylinder_openmp
 
 test_cylinder_openmp:
