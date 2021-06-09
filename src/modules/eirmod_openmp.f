@@ -86,6 +86,8 @@ c     ym copyin does not work for allocatable pointer arrrays
 !$OMP MASTER
       write(iunout,*)"Compiled with OpenMP - NTHREADS =",EIRENE_NTHREADS
 !$OMP END MASTER
+#else
+      write(iunout,*)"Compiled without OpenMP support"
 #endif
 
       
