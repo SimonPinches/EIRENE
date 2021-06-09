@@ -572,6 +572,8 @@ prepare_openmp_testcases:
             - libRelease/
             - EIRENE-sample-cases/${PATH_CASE}
         when: always
+    needs:
+        - build_openmp_library
 
 .test_openmp: &test_openmp
     stage: test_openmp
@@ -597,15 +599,15 @@ run_1D-H_slab_openmp:
     <<: *run_openmp
     variables:
         PATH_CASE: "1D-H_slab_openmp"
-    dependencies:
-        - build_openmp_library    
+    needs:
+#        - build_openmp_library    
         - build_1D-H_slab_openmp
 
 test_1D-H_slab_openmp:
     <<: *test_openmp
     variables:
         PATH_CASE: "1D-H_slab_openmp"
-    dependencies:
+    needs:
         - build_1D-H_slab_openmp
         - run_1D-H_slab_openmp
 
@@ -618,15 +620,15 @@ run_1D_cylindric_openmp:
     <<: *run_openmp
     variables:
         PATH_CASE: "1D_cylindric_openmp"
-    dependencies:
-        - build_openmp_library    
+    needs:
+#        - build_openmp_library    
         - build_1D_cylindric_openmp
 
 test_1D_cylindric_openmp:
     <<: *test_openmp
     variables:
         PATH_CASE: "1D_cylindric_openmp"
-    dependencies:
+    needs:
         - build_1D_cylindric_openmp
         - run_1D_cylindric_openmp
 
@@ -639,15 +641,15 @@ run_1D_elliptic_openmp:
     <<: *run_openmp
     variables:
         PATH_CASE: "1D_elliptic_openmp"
-    dependencies:
-        - build_openmp_library    
+    needs:
+#        - build_openmp_library    
         - build_1D_elliptic_openmp
 
 test_1D_elliptic_openmp:
     <<: *test_openmp
     variables:
         PATH_CASE: "1D_elliptic_openmp"
-    dependencies:
+    needs:
         - build_1D_elliptic_openmp
         - run_1D_elliptic_openmp
 
@@ -660,15 +662,15 @@ run_2D-D_polygon_openmp:
     <<: *run_openmp
     variables:
         PATH_CASE: "2D-D_polygon_openmp"
-    dependencies:
-        - build_openmp_library    
+    needs:
+#        - build_openmp_library    
         - build_2D-D_polygon_openmp
 
 test_2D-D_polygon_openmp:
     <<: *test_openmp
     variables:
         PATH_CASE: "2D-D_polygon_openmp"
-    dependencies:
+    needs:
         - build_2D-D_polygon_openmp
         - run_2D-D_polygon_openmp
 
@@ -681,15 +683,15 @@ run_2D-D_slab_openmp:
     <<: *run_openmp
     variables:
         PATH_CASE: "2D-D_slab_openmp"
-    dependencies:
-        - build_openmp_library    
+    needs:
+#        - build_openmp_library    
         - build_2D-D_slab_openmp
 
 test_2D-D_slab_openmp:
     <<: *test_openmp
     variables:
         PATH_CASE: "2D-D_slab_openmp"
-    dependencies:
+    needs:
         - build_2D-D_slab_openmp
         - run_2D-D_slab_openmp
 
@@ -702,15 +704,15 @@ run_ITER_1573_openmp:
     <<: *run_openmp
     variables:
         PATH_CASE: "ITER_1573_openmp"
-    dependencies:
-        - build_openmp_library    
+    needs:
+#        - build_openmp_library    
         - build_ITER_1573_openmp
 
 test_ITER_1573_openmp:
     <<: *test_openmp
     variables:
         PATH_CASE: "ITER_1573_openmp"
-    dependencies:
+    needs:
         - build_ITER_1573_openmp
         - run_ITER_1573_openmp
 
@@ -723,14 +725,14 @@ run_cylinder_openmp:
     <<: *run_openmp
     variables:
         PATH_CASE: "cylinder_openmp"
-    dependencies:
-        - build_openmp_library    
+    needs:
+#        - build_openmp_library    
         - build_cylinder_openmp
 
 test_cylinder_openmp:
     <<: *test_openmp
     variables:
         PATH_CASE: "cylinder_openmp"
-    dependencies:
+    needs:
         - build_cylinder_openmp
         - run_cylinder_openmp
