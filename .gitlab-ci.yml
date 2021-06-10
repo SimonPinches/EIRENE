@@ -564,7 +564,7 @@ build_openmp_library:
         - schedules
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
-        - export OMP_NUM_THREADS=1
+        - export OMP_NUM_THREADS=4
         - make output
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
@@ -588,7 +588,7 @@ build_openmp_library:
     script:
         - python --version
         - cd EIRENE-sample-cases/${PATH_CASE}
-        - export OMP_NUM_THREADS=1
+        - export OMP_NUM_THREADS=4
         - make test_openmp
 
 build_1D-H_slab_openmp:
