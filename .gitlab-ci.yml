@@ -6,7 +6,7 @@ include:
 
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
-    SAMPLE_CASE_VERSION: bbbc036feba78c46610e0a59161f76c90ee1c83f
+    SAMPLE_CASE_VERSION: 2a8fd1d8886f5aa21e1c9b9a644ab4cf9cb281f9
     INCLUDE_SERIAL: 'false'
     INCLUDE_MPI:    'false'
     INCLUDE_OPENMP: 'true'
@@ -564,7 +564,7 @@ build_openmp_library:
         - schedules
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
-        - export OMP_NUM_THREADS=1
+        - export OMP_NUM_THREADS=4
         - make output
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
@@ -588,7 +588,7 @@ build_openmp_library:
     script:
         - python --version
         - cd EIRENE-sample-cases/${PATH_CASE}
-        - export OMP_NUM_THREADS=1
+        - export OMP_NUM_THREADS=4
         - make test_openmp
 
 build_1D-H_slab_openmp:
