@@ -6,7 +6,7 @@ include:
 
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
-    SAMPLE_CASE_VERSION: dde4d37adef0ddbd832a3ef188107848677f37f4
+    SAMPLE_CASE_VERSION: eb58b7bab72e5ca34831f452c7c8cfa6a0b77ff2
     INCLUDE_SERIAL: 'false'
     INCLUDE_MPI:    'false'
     INCLUDE_OPENMP: 'true'
