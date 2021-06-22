@@ -90,6 +90,8 @@ c     ym copyin does not work for allocatable pointer arrrays
       write(iunout,*)"Compiled without OpenMP support"
 #endif
 
+      CALL EIRENE_CHECK_STDEV()
+
       
 #ifndef USE_EXT_OPENMP      
 !$OMP PARALLEL DEFAULT(SHARED)
