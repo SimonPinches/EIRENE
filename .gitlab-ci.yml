@@ -300,6 +300,7 @@ run_EMC3-EIRENE_He:
             - buildRelease/
             - libRelease/
             - EIRENE-sample-cases/EMC3
+        when: always
 
 test_EMC3-EIRENE_He:
     <<: *test
