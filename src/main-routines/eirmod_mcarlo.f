@@ -158,7 +158,6 @@ C
 #ifdef USE_EXT_OPENMP
 !$OMP MASTER      
 #endif
-      write(6,*) EIRENE_ITHREAD,"1 NINITL = ",NINITL,nlident
       TIMI=EIRENE_SECOND_OWN()
       timan=timi
       tim1 = timi
@@ -472,7 +471,7 @@ CHJL Need to check this removal of over_acc
       DO ISTR=1,NSTRAI          ! main loop over strata
 
         timan=EIRENE_second_own()
-        write(6,*) EIRENE_ITHREAD,"2 NINITL,mov= ",NINITL(ISTR),nlmovie
+
         ISTRA=ISTR
 
 C  SPECIAL TREATMENT FOR MOVIE OPTION, OR FOR ONE-BY ONE RELAUNCH FROM CENSUS ARRAY
@@ -532,17 +531,16 @@ cym ideally would need initializing values on the master thread ...
       EREDUC=0._dp
       FREDUC=0._dp
       IREDUC=0
-      write(6,*) EIRENE_ITHREAD,"NINITL = ",NINITL(ISTRA),nlident
+           
 C  find random number generator seed, from input flag NINITL(ISTRA)
-      IF (NINITL(istra).GT.0) THEN
-         write(6,*) EIRENE_ITHREAD,"SETTING NINITL"
-         IF (.NOT.NLIDENT) THEN
-            MY_ID= EIRENE_ITHREAD + MY_PE*EIRENE_NTHREADS
-            ninist=NINITL(ISTRA)+MY_ID*10000 !one seed per thread to generate independent numbers
-         ELSE
+          IF (NINITL(istra).GT.0) THEN
+            IF (.NOT.NLIDENT) THEN
+              MY_ID= EIRENE_ITHREAD + MY_PE*EIRENE_NTHREADS
+              ninist=NINITL(ISTRA)+MY_ID*10000 !one seed per thread to generate independent numbers
+           ELSE
 
              CALL EIRENE_LEER(1)
-!$OMP MASTER
+!$OMP SINGLE
              WRITE(IUNOUT,*)'......................................... '
              WRITE(IUNOUT,*)'NLIDENT: '
              WRITE(IUNOUT,*)'DEBUG MODE FOR PARALLELIZATION IS ACTIVE'
@@ -556,7 +554,7 @@ C  find random number generator seed, from input flag NINITL(ISTRA)
              WRITE(IUNOUT,*)'.........................................'
              
          CALL EIRENE_LEER(1)
-!$OMP END MASTER
+!$OMP END SINGLE 
 cym same seed for everybody (all threads of all processes -> debug)
              NINIST=NINITL(ISTRA)
            ENDIF          
@@ -806,8 +804,6 @@ CDR         LGLAST = LGLAST.OR.(CENSUS FILLED ?)  CURRENTLY DONE IN TIMCOL
 
             LGSTOP = LGLAST
 
-            write(iunout,*)'nptsdel,ninitl,nlcrr',
-     .           nptsdel(istra),ninitl(istra),nlcrr
 C.......................................................................
 C  CORRELATED SAMPLING: CREATE A RANDOM NUMBER GENERATOR SEED FOR NEXT PARTICLE
 C  FROM THE SEED USED FOR THE CURRENT PARTICLE
@@ -872,9 +868,6 @@ c  nptsdel(istra)*iproc(istra) trajectories for stratum ISTRA
                 NINIST=NINITL(ISTRA)+IPTSI/NPTSDEL(ISTRA)*10000
 c  initialize random number generator with a "legal" seed,
                 idumran=ranset_eirene(ninist)
-                write (iunout,*) 'new particle ',iptsi
-                write (iunout,*) 'iseed,iseed_next,rn',
-     .                            iseed_iptsi, iseed_istra,idumran
 
                 INIV1=0
                 INIV2=0
