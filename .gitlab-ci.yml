@@ -7,8 +7,8 @@ include:
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
     SAMPLE_CASE_VERSION: 1a73521e57714337ab576a3961cd64c13a8594b0
-    INCLUDE_SERIAL: 'false'
-    INCLUDE_MPI:    'false'
+    INCLUDE_SERIAL: 'true'
+    INCLUDE_MPI:    'true'
     INCLUDE_OPENMP: 'true'
 
 stages:
@@ -717,23 +717,23 @@ test_ITER_1573_openmp:
         - build_ITER_1573_openmp
         - run_ITER_1573_openmp
 
-build_cylinder_openmp:
-    <<: *build_openmp_executable
-    variables:
-        PATH_CASE: "cylinder_openmp"
+#build_cylinder_openmp:
+#    <<: *build_openmp_executable
+#    variables:
+#        PATH_CASE: "cylinder_openmp"
 
-run_cylinder_openmp:
-    <<: *run_openmp
-    variables:
-        PATH_CASE: "cylinder_openmp"
-    needs:
-        - build_openmp_library    
-        - build_cylinder_openmp
+#run_cylinder_openmp:
+#    <<: *run_openmp
+#    variables:
+#        PATH_CASE: "cylinder_openmp"
+#    needs:
+#        - build_openmp_library    
+#        - build_cylinder_openmp
 
-test_cylinder_openmp:
-    <<: *test_openmp
-    variables:
-        PATH_CASE: "cylinder_openmp"
-    needs:
-        - build_cylinder_openmp
-        - run_cylinder_openmp
+#test_cylinder_openmp:
+#    <<: *test_openmp
+#    variables:
+#        PATH_CASE: "cylinder_openmp"
+#    needs:
+#        - build_cylinder_openmp
+#        - run_cylinder_openmp
