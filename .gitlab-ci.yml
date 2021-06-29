@@ -6,7 +6,7 @@ include:
 
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
-    SAMPLE_CASE_VERSION: dc723787c4e18e09c834b1638e5076ed5b230ec7
+    SAMPLE_CASE_VERSION: 8ac380266264fe5f683ff8eb5dd42ef97ecc08cf
     INCLUDE_SERIAL: 'true'
     INCLUDE_MPI:    'true'
     INCLUDE_OPENMP: 'true'
@@ -564,7 +564,7 @@ build_openmp_library:
         - schedules
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
-        - export OMP_NUM_THREADS=4
+        - export OMP_NUM_THREADS=1
         - make output
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
@@ -588,7 +588,7 @@ build_openmp_library:
     script:
         - python --version
         - cd EIRENE-sample-cases/${PATH_CASE}
-        - export OMP_NUM_THREADS=4
+        - export OMP_NUM_THREADS=1
         - make test_openmp
 
 build_1D-H_slab_openmp:
@@ -717,23 +717,23 @@ test_ITER_1573_openmp:
         - build_ITER_1573_openmp
         - run_ITER_1573_openmp
 
-#build_cylinder_openmp:
-#    <<: *build_openmp_executable
-#    variables:
-#        PATH_CASE: "cylinder_openmp"
+build_cylinder_openmp:
+    <<: *build_openmp_executable
+    variables:
+        PATH_CASE: "cylinder_openmp"
 
-#run_cylinder_openmp:
-#    <<: *run_openmp
-#    variables:
-#        PATH_CASE: "cylinder_openmp"
-#    needs:
-#        - build_openmp_library    
-#        - build_cylinder_openmp
+run_cylinder_openmp:
+    <<: *run_openmp
+    variables:
+        PATH_CASE: "cylinder_openmp"
+    needs:
+        - build_openmp_library    
+        - build_cylinder_openmp
 
-#test_cylinder_openmp:
-#    <<: *test_openmp
-#    variables:
-#        PATH_CASE: "cylinder_openmp"
-#    needs:
-#        - build_cylinder_openmp
-#        - run_cylinder_openmp
+test_cylinder_openmp:
+    <<: *test_openmp
+    variables:
+        PATH_CASE: "cylinder_openmp"
+    needs:
+        - build_cylinder_openmp
+        - run_cylinder_openmp
