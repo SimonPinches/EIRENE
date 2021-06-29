@@ -391,18 +391,6 @@ test_EMC3-EIRENE_H_multiStrataMpi:
             - $INCLUDE_MPI == 'true'
     dependencies:
         - run_mpi_cases
-#        - run_EMC3-EIRENE_H_multiStrataMpi
-    
-# moved this job to run_mpi_cases due to failures of gitlab runner        
-#run_EMC3-EIRENE_H_multiStrataMpi2:
-#    <<: *run
-#    before_script:
-#        # Bypass mpirun abort due to execution as root
-#        - export MPIRUN_FLAGS='--allow-run-as-root'
-#    variables:
-#        PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi2"
-#    dependencies:
-#        - build_EMC3-EIRENE
 
 test_EMC3-EIRENE_H_multiStrataMpi2:
     <<: *test
@@ -415,18 +403,6 @@ test_EMC3-EIRENE_H_multiStrataMpi2:
             - $INCLUDE_MPI == 'true'
     dependencies:
         - run_mpi_cases
-#        - run_EMC3-EIRENE_H_multiStrataMpi2
-    
-# moved this job to run_mpi_cases due to failures of gitlab runner        
-#run_EMC3-EIRENE_H_multiStrataMpi3:
-#    <<: *run
-#    before_script:
-#        # Bypass mpirun abort due to execution as root
-#        - export MPIRUN_FLAGS='--allow-run-as-root'
-#    variables:
-#        PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi3"
-#    dependencies:
-#        - build_EMC3-EIRENE
 
 test_EMC3-EIRENE_H_multiStrataMpi3:
     <<: *test
@@ -439,7 +415,6 @@ test_EMC3-EIRENE_H_multiStrataMpi3:
             - $INCLUDE_MPI == 'true'
     dependencies:
         - run_mpi_cases
-#        - run_EMC3-EIRENE_H_multiStrataMpi3
 
 run_EMC3-EIRENE_H_profile:
     <<: *run
@@ -514,24 +489,6 @@ build_openmp_library:
             - buildRelease/
             - libRelease/
 
-#prepare_openmp_testcases:
-#    stage: preparation:openmp
-#    only:
-#        variables:
-#            - $CI_COMMIT_REF_NAME == 'develop'
-#            - $CI_COMMIT_REF_NAME == 'master'
-#            - $INCLUDE_OPENMP == 'true'
-#    except: 
-#        - schedules
-#    script:
-#        - cd EIRENE-sample-cases
-#    artifacts:
-#        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
-#        paths:
-#            - EIRENE-sample-cases
-#    dependencies:
-#        - prepare_testcases
-
 .build_openmp_executable: &build_openmp_executable
     stage: build:openmp_executable
     only:
@@ -564,7 +521,7 @@ build_openmp_library:
         - schedules
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
-        - export OMP_NUM_THREADS=1
+        - export OMP_NUM_THREADS=4
         - make output
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
@@ -588,7 +545,7 @@ build_openmp_library:
     script:
         - python --version
         - cd EIRENE-sample-cases/${PATH_CASE}
-        - export OMP_NUM_THREADS=1
+        - export OMP_NUM_THREADS=4
         - make test_openmp
 
 build_1D-H_slab_openmp:
