@@ -1386,18 +1386,18 @@ For the default model choice K=0 the following model is activated:
 
 With respect to the distribution of ions going into a CX collision 
 $f_{in \ CX}(\vec v_i)$ the background ion velocity distribution 
-$f_i^{CX}(\vv_i)$ is assumed to be a \emph{drifting, isotropic in the plasma 
+$f_i^{CX}(\vvv_i)$ is assumed to be a \emph{drifting, isotropic in the plasma 
 frame, and mono-energetic distribution}, with the root mean square speed 
 $\overline{v_i} = \sqrt{3 ~ kT_i/m_i}$ taken as representative speed of the 
 ions, in the ion (plasma) frame.
-I.e., this isotropic plasma frame distribution is shifted by $\vv_{Drift,ipls}$
+I.e., this isotropic plasma frame distribution is shifted by $\vvv_{Drift,ipls}$
 in the laboratory frame:
 \begin{equation}
   \label{iso-mono}
   f_i^{CX}
-  (\vv_i-\vv_{Drift,i})d^3v_i =
+  (\vvv_i-\vvv_{Drift,i})d^3v_i =
   \frac{1}{4\pi}\frac{1}{(v_i)^2}\delta(v_i-\overline{v_i})d^3v_i \quad  v_i =
-  |\vv_i|
+  |\vvv_i|
 \end{equation}
 
 The $f_i^{CX}$ weighted reaction rate coefficient itself is approximated,
@@ -1410,11 +1410,11 @@ namely it is evaluated as
 with an effective relative velocity 
 
 \begin{displaymath}
-  v_{eff} = \sqrt{3 kT_i/m_i + (\vv_0 - \vv_{Drift,i})^2}
+  v_{eff} = \sqrt{3 kT_i/m_i + (\vvv_0 - \vvv_{Drift,i})^2}
 \end{displaymath}
 This approximation to the rate coefficient, for this
 particular model choice of $f_i^{CX}$, is almost exact.
-It is assuming that the effect of the scalar product $-\vv_i\cdot \vv_0$ in the
+It is assuming that the effect of the scalar product $-\vvv_i\cdot \vvv_0$ in the
 relative velocity between ion- and neutral velocity becomes negligible after
 integrating $\sigma(v_{rel}) \cdot v_{rel}$ over solid angle, which would
 vanish indeed exactly if $\sigma \propto 1/v_{rel}$  (notation: ``Maxwellian
@@ -1422,10 +1422,10 @@ Molecule collision kinetics", or ``Langevin cross section" resulting from
 interaction potentials $V(r)$ which scale as $V(r) \propto 1/r^4$).
 
 It is furthermore assumed in this default model that the ions undergoing CX
-carry a mean momentum of $m_i \vv_{Drift,i}$.
+carry a mean momentum of $m_i \vvv_{Drift,i}$.
 The mean energy of ions undergoing charge-exchange in this approximation is
 $1.5 \cdot T_i$  plus the kinetic energy in their drift motion $m_i/2
-  (\vv_{Drift,i})^2$.
+  (\vvv_{Drift,i})^2$.
 These two averages are used for the corresponding contribution in the CX
 momentum- and energy exchange rate coefficients, respectively.
 The resulting energy and momentum exchange rates would, again, be fully correct
@@ -1435,16 +1435,16 @@ The velocity of the impacting ion is sampled without this ``Maxwellian
 Molecule" approximation being made.
 I.e., consequently, sampling is from the a drifting, isotropic and
 mono-energetic distribution $f_i^{CX}$ \cref{iso-mono} \textbf{weighted} by
-$\sigma(v_{rel}) \cdot |\vv_{rel}|$, with $v_{rel}$ the relative velocity
+$\sigma(v_{rel}) \cdot |\vvv_{rel}|$, with $v_{rel}$ the relative velocity
 between the two collision partners.
-The sampling distribution $f_{in \ CX}$ for the velocity $\vv_i^{CX}$ of ions
+The sampling distribution $f_{in \ CX}$ for the velocity $\vvv_i^{CX}$ of ions
 going into a CX event depends on the pre-collision test particle velocity
-$\vv_0$ as well and is (as also in general cases) given by:
+$\vvv_0$ as well and is (as also in general cases) given by:
 
 \begin{equation}
   f_{in \ CX}
-  (\vv_i^{CX},\vv_0)= \left[\sigma(v_{rel}) \cdot v_{rel} \cdot
-  f_i^{CX}(\vv_i)\right] /k_{CX}
+  (\vvv_i^{CX},\vvv_0)= \left[\sigma(v_{rel}) \cdot v_{rel} \cdot
+  f_i^{CX}(\vvv_i)\right] /k_{CX}
 \end{equation}
 where the normalisation constant
 (rate coefficient) $k_{CX}$ is the rate coefficient obtained by averaging over

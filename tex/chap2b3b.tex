@@ -217,7 +217,8 @@ C (end of ILIMI loop)
 \begin{description}
   \item[CH0 n1/m1 n2/m2 \dots] 
 
-        surfaces from the range n1 to m1, n2 to m2, \dots, are ignored by EIRENE.
+        surfaces from the range n1 to m1, n2 to m2, \dots, are ignored by EIRENE. \\
+        CH0 is indicated as ``CH0-LINES'' in JSON input. \\        
         Specifying a surface in such a CH0-card is identical to taking it out from the
         input file.
         It may be more convenient in some cases, however, to use the CH0 option,
@@ -233,11 +234,13 @@ C (end of ILIMI loop)
         surfaces from the range n1 to m1, n2 to m2, \dots, are considered invisible for
         a particle located on this current surface ILIMI.
         Intersection of trajectories starting from surface ILIMI with those
-        ``invisible" surfaces is not checked.
-  \item[CH2(ILIMI) n1/m1 n2/m2 \dots] 
+        ``invisible" surfaces is not checked. \\        
+         CH1 is indicated as ``CH1-LINES'' in JSON input
+ \item[CH2(ILIMI) n1/m1 n2/m2 \dots] 
 
         Only for second order surfaces ILIMI, n1-m1, \dots The first of the two
-        possible intersections is ignored for particles located on surface no.\ ILIMI.
+        possible intersections is ignored for particles located on surface no.\ ILIMI. \\        
+        CH2 is indicated as ``CH2-LINES'' in JSON input
 \end{description}
 
 \textsl{General Data for Surfaces}

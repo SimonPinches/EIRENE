@@ -399,7 +399,8 @@ for pathways to external databases.
 Their presence is identified by the starting character string CFILE of these
 cards.
 \begin{description}
-  \item[DBHANDLE] Name of the database which is specified in this ``CFILE" card.
+  \item[DBHANDLE] Name of the database which is specified in this ``CFILE" card.\\
+  	  DBHANDLE is called ``FILE'' in JSON input. \\
         The format of a data file is identified in EIRENE by its name.
         Possible database names currently recognized are:
 
@@ -412,13 +413,30 @@ cards.
         with volumetric collision databases in the first block, and surface interaction
         databases in the second.
   \item[DBFNAME] Absolute or relative path and name of file to be used for this
-        database.
+        database. \\
+        DBFNAME is specified as ``PATH'' in JSON input
 \end{description}
-Example:
+Example for formatted input:
 
 \lstinline|CFILE AMJUEL /home/path/AMdata/amjuel.tex|
 
-\lstinline|CFILE TRIM /home/path/Surfacedata/TRIM/trim.dat|
+\lstinline|CFILE TRIM /home/path/Surfacedata/TRIM/trim.dat| 
+
+\medskip
+
+Example for JSON input:
+\begin{lstlisting}
+    "CFILE": [
+      {
+        "FILE": "AMJUEL",
+        "PATH": "/home/path/AMdata/amjuel.tex"
+      },
+      {
+        "FILE": "TRIM",
+        "PATH": "/home/path/Surfacedata/TRIM/trim.dat"
+      }
+    ]
+\end{lstlisting}
 
 Default:
 If the specification of an external database name and path, which is later

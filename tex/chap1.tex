@@ -94,20 +94,20 @@ The term \textsl{$\mu$-space} in this report refers to the phase space of a
 single particle.
 The quantity of interest is then the \textsl{one particle distribution function}  \textit{f}
 \begin{displaymath}
-  f(\vr, \vv, i, t)  \quad \mbox{or}
+  f(\vr, \vvv, i, t)  \quad \mbox{or}
   \quad \tilde f(\vr, E, \vOmega, i, t) \quad \mbox{or} \quad f(x),
 \end{displaymath}
 where the state $x$ of the $\mu$-space is characterized by a
-position vector $\vr$, a velocity vector $\vv$, a species index $i$ ($i$ stands
+position vector $\vr$, a velocity vector $\vvv$, a species index $i$ ($i$ stands
 for, e.g., H, D, T, D$_2$, DT, He, CH$_n$, \dots) and the time $t$.
 
 The number density $n_i(\vr)$ for species $i$ then reads:
 \begin{displaymath}
-  n_i(\vr,t) = \int d^3{v} \ f(\vr,\vv,i,t)
+  n_i(\vr,t) = \int d^3{v} \ f(\vr,\vvv,i,t)
 \end{displaymath}
 
-Instead of $\vv$ we sometimes utilize the kinetic energy $E$, $E=m/2 \cdot
-  v^2$, and the unit (speed) vector $\vOmega = \vv/|\vv|$ in the direction of
+Instead of $\vvv$ we sometimes utilize the kinetic energy $E$, $E=m/2 \cdot
+  v^2$, and the unit (speed) vector $\vOmega = \vvv/|\vvv|$ in the direction of
 particle motion.
 Hence:
 \begin{equation}
@@ -117,7 +117,7 @@ Hence:
 \end{equation}
 and
 \begin{displaymath}
-  f(\vr, \vv, i,t) = \left(\frac{m}{v}\right)
+  f(\vr, \vvv, i,t) = \left(\frac{m}{v}\right)
   \tilde{f}
   (\vr, E, \vOmega, i, t)
 \end{displaymath}
@@ -148,7 +148,7 @@ further species, here labeled $b$.
 Generally $b=i_0$ is also possible, but anticipating that later, when
 discussing \textbf{linear} Boltzmann models, these species $b$ will be referred
 to as background species, plasma species, etc., with an externally given
-(fixed) distribution $f_b(\vx,\vv,t)$.
+(fixed) distribution $f_b(\vx,\vvv,t)$.
 Restriction, for the time being, to elastic collisions means that exactly one
 particle of each of these two species $i_0, b$ will also be present after the
 collision event (i.e., chemical reactions, inelastic collisions with change of
@@ -160,17 +160,17 @@ The familiar Boltzmann equation for the distribution function $f=f_{i_0}$ for a
 particular species (a particular component of a gas mixture) $i_0$ reads
 
 \begin{align}
-  \label{eq1a} \lbrack\frac\partial{\partial t} + \vv \cdot
-  \nabla_{\vr} + \frac{\vF(\vr,\vv,t)}{m} \cdot \nabla_{\vv}\rbrack \
-  f(\vr,\vv,t) & = \int\!\int\!\int \sigma(\vv',\vV';\vv,\vV) |\vv'-\vV'| f(\vv')
-  f_b(\vV') \nonumber                                                             \\
+  \label{eq1a} \lbrack\frac\partial{\partial t} + \vvv \cdot
+  \nabla_{\vr} + \frac{\vF(\vr,\vvv,t)}{m} \cdot \nabla_{\vvv}\rbrack \
+  f(\vr,\vvv,t) & = \int\!\int\!\int \sigma(\vvv',\vvv';\vvv,\vvv) |\vvv'-\vvv'| f(\vvv')
+  f_b(\vvv') \nonumber                                                             \\
                & -
   \int\!\int\!\int
-  \sigma(\vv,\vV;\vv',\vV')
-  |\vv-\vV| f(\vv) f_b(\vV)
+  \sigma(\vvv,\vvv;\vvv',\vvv')
+  |\vvv-\vvv| f(\vvv) f_b(\vvv)
   \nonumber
   \\
-               & + Q(\vr,\vv,t)
+               & + Q(\vr,\vvv,t)
   \tag{1.a}
 \end{align}
 
@@ -183,32 +183,32 @@ $Q \ (= Q_{i_0})$ is any external source (particles of species $i_0$ injected
 per unit volume  in phase space and per unit time).
 
 Integration in the first term on the right hand side (``gain term") of this
-equation is over the (pre-collision) velocities $\vv', \vV'$  as well as over
-one of the two post-collision velocities: $\vV$, the velocity of species $b$.
-We write more suggestively  $\sigma(\vv',\vV'; \vv,\vV) = \sigma(\vv',\vV'
-  \rightarrow \vv,\vV)$ for the (multi-) differential cross section for a binary
+equation is over the (pre-collision) velocities $\vvv', \vvv'$  as well as over
+one of the two post-collision velocities: $\vvv$, the velocity of species $b$.
+We write more suggestively  $\sigma(\vvv',\vvv'; \vvv,\vvv) = \sigma(\vvv',\vvv'
+  \rightarrow \vvv,\vvv)$ for the (multi-) differential cross section for a binary
 particle collision process.
 The product of this $\sigma$ with the relative pre-collision velocity
-$|\vv'-\vV'|$ is the transitional (collision) probability leading from
-velocities prior to the collision $(\vv',\vV')$ to the pair $(\vv,\vV)$ of
+$|\vvv'-\vvv'|$ is the transitional (collision) probability leading from
+velocities prior to the collision $(\vvv',\vvv')$ to the pair $(\vvv,\vvv)$ of
 velocities after the collision.
 
 In a multi-component gas mixture the first two arguments in $\sigma$, namely
-the velocities $\vv',\vV'$ in the first integral, correspond to the species
+the velocities $\vvv',\vvv'$ in the first integral, correspond to the species
 $i_0$ and $b$, respectively.
 Via elastic collisions these are turned into the post-collision velocities
-$\vv, \vV$, again for the same species $i_0$ and $b$, respectively.
+$\vvv, \vvv$, again for the same species $i_0$ and $b$, respectively.
 The first integral, therefore, describes the total rate of collisional
-transitions into the velocity space interval $[\vv,\vv+d\vv]$ for species $i_0$
+transitions into the velocity space interval $[\vvv,\vvv+d\vvv]$ for species $i_0$
 
 In the second integral on the right hand side (``loss term") the role of pre-
 and post-collision velocities is exchanged, but the integration remains over
-the same three velocities $\vv',\vV'$ and $\vV$, i.e.\ integration is now over
-all post-collision velocities and over all incident velocities $\vV$ of
+the same three velocities $\vvv',\vvv'$ and $\vvv$, i.e.\ integration is now over
+all post-collision velocities and over all incident velocities $\vvv$ of
 collision partner $b$.
 Hence this integral describes the total collisional rate of loss for species
-$i_0$ from that phase space interval $[\vv,\vv+d\vv]$.
-Furthermore, $m = m_{i_0}$ is the particle mass and $\vF(\vr,\vv,t)$ is a
+$i_0$ from that phase space interval $[\vvv,\vvv+d\vvv]$.
+Furthermore, $m = m_{i_0}$ is the particle mass and $\vF(\vr,\vvv,t)$ is a
 volume force field.
 The fact that the cross section $\sigma$ remains the same in the forward (gain)
 and reverse (loss) integral after exchanging the pre-collision with the
@@ -221,7 +221,7 @@ the conservation laws for total energy and
 momentum in a collision event must be fulfilled.
 \begin{align}
   \label{massenergy}
-  m_{i_0} \vv' + m_b\vV'             & = m_{i_0}\vv + m_b \vV \nonumber
+  m_{i_0} \vvv' + m_b\vvv'             & = m_{i_0}\vvv + m_b \vvv \nonumber
   \\
   \frac12 m_{i_0}v'^2+\frac12m_bV'^2 & =\frac12 m_{i_0}v^2 + m_b V^2 +\Delta_E
 \end{align}
@@ -233,16 +233,16 @@ factors such that the three integrations over velocity spaces reduce to
 integrations over lower dimensional manifolds on which these conservation laws
 are fulfilled.
 The modulus of the relative velocity $g$ is unchanged in elastic collisions,
-$g_{i_0,b} = |\vv-\vV| = |\vv'-\vV'| = g_{i_0,b}'$, and hence the collision is
+$g_{i_0,b} = |\vvv-\vvv| = |\vvv'-\vvv'| = g_{i_0,b}'$, and hence the collision is
 just a rotation of this relative velocity, by an angle $\vec\Omega$.
-6-fold integration over full velocity spaces $\vv', \vV'$ in $\Re^6$ reduce to
+6-fold integration over full velocity spaces $\vvv', \vvv'$ in $\Re^6$ reduce to
 just the 2 fold integration over $\Omega:  d\Omega=\sin\chi d\chi d\epsilon$
 with $\chi$ being the deflection angle and $\epsilon$ the scattering angle.
 
 Writing
 \begin{equation}
-  \nonumber D_t^{i_0} = \frac\partial{\partial t} + \vv
-  \cdot \nabla_{\vr} + \frac{\vF_{i_0}(\vr,\vv,t)}{m_{i_0}} \cdot \nabla_{\vv}
+  \nonumber D_t^{i_0} = \frac\partial{\partial t} + \vvv
+  \cdot \nabla_{\vr} + \frac{\vF_{i_0}(\vr,\vvv,t)}{m_{i_0}} \cdot \nabla_{\vvv}
 \end{equation}
 for the left hand side (convective part) of \cref{eq1a}, leads
 to the Boltzmann equation in more commonly used text book form:
@@ -250,14 +250,14 @@ to the Boltzmann equation in more commonly used text book form:
 \begin{align}
   \label{eq1a1}\nonumber
   D_t^{i_0} \ f_{i_0}
-  (\vr,\vv,t) & = \int_{\Re^3,\Omega}  d\vV'd\Omega \ \ \sigma(\vv,\vV;\vv',\vV')
-  |\vv-\vV| \left[f_{i_0}(\vv') f_b(\vV')- f_{i_0}(\vv) f_b(\vV)\right] \nonumber
+  (\vr,\vvv,t) & = \int_{\Re^3,\Omega}  d\vvv'd\Omega \ \ \sigma(\vvv,\vvv;\vvv',\vvv')
+  |\vvv-\vvv| \left[f_{i_0}(\vvv') f_b(\vvv')- f_{i_0}(\vvv) f_b(\vvv)\right] \nonumber
   \\
               & + Q_{i_0}
-  (\vr,\vv,t) \tag{1.a1}
+  (\vr,\vvv,t) \tag{1.a1}
 \end{align}
 
-and the velocities $\vv',\vV $ are uniquely determined by $\vv, \vV'$ and
+and the velocities $\vvv',\vvv $ are uniquely determined by $\vvv, \vvv'$ and
 scattering angles $\Omega$ via mass and energy conservation \cref{massenergy}.
 
 The integral in this equation, or, equivalently, the first two terms on the
@@ -277,17 +277,17 @@ collisions)
 All these collision operators are bi-linear in the distribution functions
 $f_{i_0}, f_b$.
 The first term on the right hand side is due to scattering into the element
-$d\vv$ of velocity space and we shall abbreviate it by defining the collision
+$d\vvv$ of velocity space and we shall abbreviate it by defining the collision
 kernel (``redistribution function") $C_{i_0}$ for $i_0$ particles alone, i.e.\
 with an operator acting on (pre-collision) $f_{i_0}$ alone, already containing
-the proper integrations over pre- and post-collision velocities $\vV', \vV$ of
+the proper integrations over pre- and post-collision velocities $\vvv', \vvv$ of
 species $b$ collision partners:
 \begin{equation}
   \label{colkern}
   \frac{\delta f_{i_0}
-    (\vv)}{\delta t}|_{_{gain}} = \int d^3{v}'	C_{i_0}(\vv' \rightarrow \vv)
-  |\vv'| f_{i_0}(\vv') = \int d^3{v}' \sum_b \ C_{i_0,b}(\vv' \rightarrow \vv)
-  |\vv'| f_{i_0}(\vv')
+    (\vvv)}{\delta t}|_{_{gain}} = \int d^3{v}'	C_{i_0}(\vvv' \rightarrow \vvv)
+  |\vvv'| f_{i_0}(\vvv') = \int d^3{v}' \sum_b \ C_{i_0,b}(\vvv' \rightarrow \vvv)
+  |\vvv'| f_{i_0}(\vvv')
 \end{equation}
 In more general situations (including
 chemical reactions) in addition to being an integral over particle $``b"$
@@ -303,12 +303,12 @@ is not normalized to one, generally.
 
 The second term on the right hand side of the Boltzmann equation $\frac{\delta
     f}{\delta t}|_{_{loss}}$ is, formally, much simpler, because the function
-$f_{i_0}(\vv)$ can be taken out of the integrals.
-It is often convenient to even take the product $|\vv| \cdot f_{i_0}$ before
+$f_{i_0}(\vvv)$ can be taken out of the integrals.
+It is often convenient to even take the product $|\vvv| \cdot f_{i_0}$ before
 the integral.
 The remaining integral is then just the total ``macroscopic cross section"
 $\Sigma_t$ (dimension: 1/length), i.e., the inverse local mean free path.
-Apart from dependence on individual velocity $\vv$  of particle $i_0$ it is
+Apart from dependence on individual velocity $\vvv$  of particle $i_0$ it is
 solely defined by total cross sections averaged over velocity distributions of
 particles ``$b$", i.e.\ by ``reaction rates", and is independent of particle
 multiplication factors, since we only consider binary collisions (exactly two
@@ -322,25 +322,25 @@ with a positive sign, in the form:
   \frac{\delta f_{i_0}}{\delta t}|_{_{loss}}
   =
   \Sigma_{t,i_0}
-  (\vr,\vv) |\vv| f_{i_0}(\vv)
+  (\vr,\vvv) |\vvv| f_{i_0}(\vvv)
 \end{equation}
 
 Note, however, that in case of ``self collisions" within the community of
 particles $i_0$, the macroscopic cross section $\Sigma_t$ itself is a
 (nonlinear) function of the dependent variable $f_{i_0}:
   \Sigma_{t,i_0}
-  (\vr,\vv,f_{i_0})$, since it then contains also an integration (over velocities
-$\vV$ of the collision partners) of $\sigma(\dots, \vV \rightarrow \dots)
-  \times f_{i_0}(\vV)$.
+  (\vr,\vvv,f_{i_0})$, since it then contains also an integration (over velocities
+$\vvv$ of the collision partners) of $\sigma(\dots, \vvv \rightarrow \dots)
+  \times f_{i_0}(\vvv)$.
 
 \minisec{The linear form of Boltzmann transport equation}
 
 \vspace{1em}
 
-If all distributions $f_b(\vV)$ of  the collision partners $b$ of species $i_0$
+If all distributions $f_b(\vvv)$ of  the collision partners $b$ of species $i_0$
 are assumed to be given, then the kernel $C = C_{i_0}$ defined in
 \cref{colkern} is linear and the expression given there defines  a linear
-integral (``collision") operator acting on the distribution $f_{i_0}(\vv)$.
+integral (``collision") operator acting on the distribution $f_{i_0}(\vvv)$.
 For the linear case, i.e.\ for $f_b$ given for all collision partners other
 than $i_0$, and for self collisions ($i_0 + i_0 \rightarrow \dots$) being
 excluded, also the ``extinction coefficient" $\Sigma_t = \Sigma_{t,i_0}$
@@ -350,28 +350,28 @@ flux of $i_0$ particles due to any kind of interaction of them with any species
 $b$ from the background ``host" medium.
 
 With these formal substitutions the Boltzmann equation for distribution
-function $f(\vv) = f_{i_0}(\vv)$ takes a form which is often more convenient,
+function $f(\vvv) = f_{i_0}(\vvv)$ takes a form which is often more convenient,
 in particular in linear transport theory (from now on omitting subscript $i_0$
 on all terms):
 
 \begin{align}
   \label{eq1b}
-  \lbrack\frac\partial{\partial t} + \vv \cdot
+  \lbrack\frac\partial{\partial t} + \vvv \cdot
   \nabla_{\vr} +
-  \frac{\vF(\vr,\vv,t)}{m} \cdot
-  \nabla_{\vv}\rbrack \ f(\vr,\vv,t) +
-  \Sigma_t(\vr,\vv) |\vv|
-  f(\vv)
+  \frac{\vF(\vr,\vvv,t)}{m} \cdot
+  \nabla_{\vvv}\rbrack \ f(\vr,\vvv,t) +
+  \Sigma_t(\vr,\vvv) |\vvv|
+  f(\vvv)
    & =
-  \int d^3{v}' \ C(\vv' \rightarrow \vv)
-  |\vv'|
-  f(\vv') \nonumber           \\
-   & + Q(\vr,\vv,t) \tag{1.b}
+  \int d^3{v}' \ C(\vvv' \rightarrow \vvv)
+  |\vvv'|
+  f(\vvv') \nonumber           \\
+   & + Q(\vr,\vvv,t) \tag{1.b}
 \end{align}
 which, in the linear case (no self collisions, $f_b$ given externally) is a
 linear equation for the distribution
 function $f = f_{i_0}
-  (\vx,\vv,t)$ for species $i_0$.
+  (\vx,\vvv,t)$ for species $i_0$.
 
 Clearly a computationally crucial simplification is provided in this linear
 case, which means neglect of all interactions within the community of species
@@ -408,13 +408,13 @@ For stationary (time-independent) problems the (scalar) transport flux
 (``angular flux") $\Phi$, where
 \begin{subequations}
   \begin{equation}
-    \label{trans-flux} \Phi (x) := | \vv |	\cdot f( \vr, \vv, i),
+    \label{trans-flux} \Phi (x) := | \vvv |	\cdot f( \vr, \vvv, i),
   \end{equation}
-  with, again, $| \vv| \Omega = \vv$, is sometimes used as dependent variable, in
+  with, again, $| \vvv| \Omega = \vvv$, is sometimes used as dependent variable, in
   preference to the distribution $f(x)$.
   For example the \emph{total particle flux} is obtained from this ``angular
   flux'' by integrating it over all velocity space angles $\Omega$, i.e.\ as the
-  zeroth $\Omega$ - moment of $\Phi(\vr,\vv,i)$.
+  zeroth $\Omega$ - moment of $\Phi(\vr,\vvv,i)$.
 
   In particular for stationary ($\partial/\partial t = 0$)  and force free ($\vF
     = 0$) problems, as e.g.\ often encountered in linear transport theory such as
@@ -423,12 +423,12 @@ For stationary (time-independent) problems the (scalar) transport flux
   \begin{equation}
     \label{eq1c}
     \nabla_{\vr}
-    \Phi(\vr,\vv,t) +
-    \Sigma_t(\vr,\vv)
-    \Phi(\vr,\vv)
-    = Q(\vr,\vv,t) +
-    \int d^3{v}' \ C(\vr;\vv' \rightarrow \vv)
-    \Phi(\vr,\vv') \tag{1.c}
+    \Phi(\vr,\vvv,t) +
+    \Sigma_t(\vr,\vvv)
+    \Phi(\vr,\vvv)
+    = Q(\vr,\vvv,t) +
+    \int d^3{v}' \ C(\vr;\vvv' \rightarrow \vvv)
+    \Phi(\vr,\vvv') \tag{1.c}
   \end{equation}
 
   Alternatively, in computational domains with non-vanishing collisionality
@@ -437,7 +437,7 @@ For stationary (time-independent) problems the (scalar) transport flux
   \begin{equation}
     \label{defPsi} \Psi (x) = \Sigma_{t} (x)  \cdot
     \Phi (x) =\nu_t(x) \cdot f(x), \hspace{1cm} \Sigma_t =
-    \Sigma_t(\vr,E,\vOmega,i)= \nu_t(\vr,E,\vOmega,i)/|\vv|
+    \Sigma_t(\vr,E,\vOmega,i)= \nu_t(\vr,E,\vOmega,i)/|\vvv|
   \end{equation}
 \end{subequations}
 where, again, the ``macroscopic cross section" $\Sigma_t$ is
@@ -491,35 +491,35 @@ Even more generally:
 in case there are more than two post-collision particles, i.e.\ more than two
 particles in the exit channel of the collision, integration (velocities) and
 summation (generalized species indices) in the \ac{WCU} collision integral is
-over all involved particles, except over $\{i_0l_0; \vv\}
-$, the parameters of the dependent variable $f_{i_0}(l_0,\vv)$.
+over all involved particles, except over $\{i_0l_0; \vvv\}
+$, the parameters of the dependent variable $f_{i_0}(l_0,\vvv)$.
 Employing the notations as in \cref{eq1a1} the full \ac{WCU} prototypical
 system of kinetic transport equations then reads (written here for two
 post-collision particles only) 
 
 \begin{align}
-  \label{WCU} D_t^{i_0l_0} \ f_{i_0l_0}(\vr,\vv,t) & =
-  \sum_{i',l',b,l_1,b',l_1'}\int_{\Re^3,\Omega}  d\vV'd\Omega \ \
-  B_{i_0l_0,bl_1}^{i'l',b'l_1'}(\vv,\vV) \ \times                       \\
+  \label{WCU} D_t^{i_0l_0} \ f_{i_0l_0}(\vr,\vvv,t) & =
+  \sum_{i',l',b,l_1,b',l_1'}\int_{\Re^3,\Omega}  d\vvv'd\Omega \ \
+  B_{i_0l_0,bl_1}^{i'l',b'l_1'}(\vvv,\vvv) \ \times                       \\
                                                    & \phantom{=} \times
   \left[f_{i'l'}
-    (\vv') f_{b'l_1'}(\vV')- f_{i_0l_0}(\vv) f_{b,l_1}(\vV)\right] \nonumber
+    (\vvv') f_{b'l_1'}(\vvv')- f_{i_0l_0}(\vvv) f_{b,l_1}(\vvv)\right] \nonumber
   \\
                                                    & + Q_{i_0l_0}
-  (\vr,\vv,t) \nonumber
+  (\vr,\vvv,t) \nonumber
 \end{align}
 with
 \begin{equation}
-  B_{il,bl_1}^{i'l',b'l_1'}(\vv,\vV) =
-  \sigma_{il,bl_1}^{i'l',b'l_1'}(\vv,\vV;\vv',\vV') \ |\vv-\vV|
+  B_{il,bl_1}^{i'l',b'l_1'}(\vvv,\vvv) =
+  \sigma_{il,bl_1}^{i'l',b'l_1'}(\vvv,\vvv;\vvv',\vvv') \ |\vvv-\vvv|
 \end{equation}
 
 The cross sections in the corresponding collision integrals
-$\sigma_{il,bl_1}^{i'l',b'l_1'}(\vv',\vV',\vv,\vV)$ are multiple differential
+$\sigma_{il,bl_1}^{i'l',b'l_1'}(\vvv',\vvv',\vvv,\vvv)$ are multiple differential
 for scattering at a certain solid angle and post collision energies with
 simultaneous transition from $(il, bl_1)$ to $(i'l',b'l_1')$.
 Again, as already in the Boltzmann equation restricted to elastic collisions,
-the pre- and post-collision velocities $\vv',\vV'$ and $\vv,\vV$, respectively,
+the pre- and post-collision velocities $\vvv',\vvv'$ and $\vvv,\vvv$, respectively,
 are not independent, but constrained by momentum and energy conservation, and
 the corresponding constrains are contained in the multi-differential cross
 sections, e.g.\ in form of delta functions.
@@ -533,7 +533,7 @@ The extra discrete label $l$ introduced here compared to the Boltzmann equation
 may either be regarded as species index:
 $i_0 \rightarrow i_0l_0$ or as other additional discrete independent variable
 (e.g.\ polarization, in case of radiation transport):
-$f_{il}(\vv) \rightarrow f_{i}(l,\vv)$, whichever is more convenient.
+$f_{il}(\vvv) \rightarrow f_{i}(l,\vvv)$, whichever is more convenient.
 
 As noted above, further generalizations to include particle splitting,
 absorption or fragmentation into more than two post collision products are
@@ -591,17 +591,17 @@ velocity space and a summation over all species indices.
 The transition kernel $K$ is usually decomposed, in our context, into a
 collision- and a transport kernel, i.e., $C$ and $T$, where
 \begin{equation}
-  \label{eq1.2} K(\vr  ', \vv  ', i ' \rightarrow \vr, \vv, i) = C( \vr ' ; \vv
-  ', i '	      \rightarrow   \vv, i)  \cdot T( \vv, i; \vr ' \rightarrow \vr )
+  \label{eq1.2} K(\vr  ', \vvv  ', i ' \rightarrow \vr, \vvv, i) = C( \vr ' ; \vvv
+  ', i '	      \rightarrow   \vvv, i)  \cdot T( \vvv, i; \vr ' \rightarrow \vr )
   .
 \end{equation}
 The kernel $C$ is (excluding normalization) the conditional distribution for
-new co-ordinates ($\vv $,i) given that a particle of species $i'$ and with
-velocity $\vv'$ has undergone a collision at position $\vr ' $.
+new co-ordinates ($\vvv $,i) given that a particle of species $i'$ and with
+velocity $\vvv'$ has undergone a collision at position $\vr ' $.
 This kernel can further be decomposed into:
 \begin{equation}
   \label{eq1.3}
-  C( \vr ', \vv ', i '	 \rightarrow \vv, i) = \sum_{k} {p_k  \ C_k ( \vr ' ; \vv ', i '   \rightarrow \vv, i)} \ , \ p_k = \frac{\Sigma_k}{\Sigma_t}
+  C( \vr ', \vvv ', i '	 \rightarrow \vvv, i) = \sum_{k} {p_k  \ C_k ( \vr ' ; \vvv ', i '   \rightarrow \vvv, i)} \ , \ p_k = \frac{\Sigma_k}{\Sigma_t}
 \end{equation}
 with summation over the index $k$ for the different types of
 collision processes under consideration and $p_k$ defined as the (conditional)
@@ -609,7 +609,7 @@ probability for a collision to be of type $k$.
 The normalizing factor
 \begin{equation}
   \label{eq1.4} c_k (x ') = \sum_{i}
-  \int d^3v \  C_k ( \vr ', \vv ', i ' \rightarrow \vv, i ) \ , \  {\cal{C}}_k =
+  \int d^3v \  C_k ( \vr ', \vvv ', i ' \rightarrow \vvv, i ) \ , \  {\cal{C}}_k =
   \frac{1}{c_k} C_k
 \end{equation}
 gives the mean number of secondaries for this
@@ -633,19 +633,19 @@ further, or dealt with by a \ac{CFD} code outside the Monte Carlo procedure).
 The kernel $T$ describes the motion of the test particles between the collision
 events.
 Let, again,  $ \vOmega'$ denote the unit vector in the direction of particle
-flight $\vv'/|\vv'|$, and let $ \vOmega_2'$ and $ \vOmega_3'$ be two further
+flight $\vvv'/|\vvv'|$, and let $ \vOmega_2'$ and $ \vOmega_3'$ be two further
 unit vectors such that these three vectors  form an orthonormal basis at the
 point $\vr  '$.
 Neither velocity nor species change along the transition described by $T$,
-i.e.\ $\vv'=\vv$ and $i'-i$.
+i.e.\ $\vvv'=\vvv$ and $i'-i$.
 Omitting the corresponding delta functions in velocity space and the Kronecker
 delta $\delta_{i'i}$ the transport kernel $T$ then reads as follows:
 \begin{subequations}
   \begin{align}
     \label{eq1.5}
-    (T(l)=)\ \ T ( \vv', i'; \vr ' \rightarrow	\vr ) & = \Sigma_t ( \vr,\vv',
+    (T(l)=)\ \ T ( \vvv', i'; \vr ' \rightarrow	\vr ) & = \Sigma_t ( \vr,\vvv',
     i') \cdot \exp \left [	  - \int_{0}^{l=\vOmega' ( \vr - \vr ' )} ds \Sigma_t (
-      \vr '  +  s \vOmega', \vv', i' )  \right ] \nonumber                   \\
+      \vr '  +  s \vOmega', \vvv', i' )  \right ] \nonumber                   \\
                                                     & \phantom{=} \cdot
     \delta (\vOmega_2' ( \vr  -
     \vr ' ))	\cdot \delta ( \vOmega_3'   (
@@ -653,25 +653,25 @@ delta $\delta_{i'i}$ the transport kernel $T$ then reads as follows:
     \cdot   H (\vOmega'
     ( \vr  - \vr  ' ))
     \\
-                                                    & = \Sigma_t ( \vr,\vv',
-    i') \cdot F( \vv', i'; \vr ' \rightarrow  \vr
+                                                    & = \Sigma_t ( \vr,\vvv',
+    i') \cdot F( \vvv', i'; \vr ' \rightarrow  \vr
     ) \quad 0\le l \le \infty \label{2.8b}
   \end{align}
 \end{subequations}
 with $H(x) = 0 $ if $ x < 0 $, and $H(x) = 1 $ if $ x \ge 0$, the
 Heaviside step function (the unit step function).
 The two remaining delta functions restrict the motion to a path in the
-direction of the initial velocity $\vv'$.
+direction of the initial velocity $\vvv'$.
 
 Thus, although strictly being a conditional (on $x'$) distribution in phase
 space, for an infinite medium $T$ can be interpreted as the distribution
 density for the distance $l$ for a free flight starting from $\vr '$ to the
 next point of collision $\vr = \vr ' + l \cdot \vOmega'$.
-We shall frequently omit the arguments $\vv',i'$ to simplify notation, because
+We shall frequently omit the arguments $\vvv',i'$ to simplify notation, because
 neither initial velocity nor species change during a free flight.
 
 For a finite medium this distribution can be generalized to (writing shorter
-$l$ for $(\vr'+l\vOmega',\vv',i')$:
+$l$ for $(\vr'+l\vOmega',\vvv',i')$:
 \begin{equation}
   \label{eq1.5b}
   T(l) = \left\{
@@ -806,10 +806,10 @@ properly rescaled in case of time-dependent applications.
 
 \subsection{The Green's function concept}\label{sec_green}
 
-We return to Equation \cref{2.8b}, where the function $F(\vv,i;\vr'\rightarrow
+We return to Equation \cref{2.8b}, where the function $F(\vvv,i;\vr'\rightarrow
   \vr))$ was defined.
 For a finite domain, see \cref{eq1.5b}, and introducing again the shortcut $l$
-for $(\vr'+l\vOmega,\vv,i)$ this becomes:
+for $(\vr'+l\vOmega,\vvv,i)$ this becomes:
 \begin{equation}
   F(l) = \left\{
   \begin{array}{lr} \exp \left [	- \int_{0}^{l} ds \Sigma_t ( s
@@ -948,8 +948,8 @@ time).
 Because the inhomogeneous part of the transport equation \cref{eq1d} $\cal{S}$
 was assumed to be normalized to one (for source sampling),
 \begin{equation}
-  \label{scale} {\cal{S}} (\vr,\vv,t)=\frac{1}{s} \ S(\vr,\vv,t), \quad  s =\int
-  d^3rd^3vdt\ S(\vr,\vv,t)
+  \label{scale} {\cal{S}} (\vr,\vvv,t)=\frac{1}{s} \ S(\vr,\vvv,t), \quad  s =\int
+  d^3rd^3vdt\ S(\vr,\vvv,t)
 \end{equation}
 this normalization factor $s$ has to be
 multiplied to estimators \cref{eq1.8} to turn responses $R_g$ \cref{eq1.7} into
@@ -1295,7 +1295,7 @@ parallel'' feature of linear Monte Carlo transport codes is lost, and
 parallelization in combination with stratified source sampling requires some
 attention.
 
-Stratified sampling means that the primary source distribution $Q(\vr,\vv,t)$,
+Stratified sampling means that the primary source distribution $Q(\vr,\vvv,t)$,
 see Equation \cref{eq1a}, or more generally, for $S(x)$ in \cref{eq1d}, can be
 decomposed into a sum of $M$ independent sources (this applies for both: the
 source distribution $S$ itself and the corresponding source strength $s$):
@@ -1508,16 +1508,16 @@ applied.
 In LOCATE.F the following sequence is used (stratum no.\ $istra=k$ is set in
 calling program):
 \begin{equation}
-  S = S_1(\vx) \times S_2(i|\vx) \times S_3(\vv|\vx,i)
+  S = S_1(\vx) \times S_2(i|\vx) \times S_3(\vvv|\vx,i)
 \end{equation}
 with
-$S_1(\vx)= \sum_i\int d^3v S(\vx,i,\vv)$ being the cumulative distribution of
+$S_1(\vx)= \sum_i\int d^3v S(\vx,i,\vvv)$ being the cumulative distribution of
 the spatial coordinate $\vx$ of the ``birth point" of the trajectory, obtained
 by integrating the source term	$S$ over all velocities and summing over all
 species.
 $S_2(i)$ is the distribution of birth species index, obtained by integrating
 over all velocities and conditional on the already sampled spatial birth point.
-$S_3(\vv)$ finally is the velocity distribution at the birth-point of the
+$S_3(\vvv)$ finally is the velocity distribution at the birth-point of the
 trajectory, conditional on the already sampled species index $i$ and birth
 point location $\vx$.
 
@@ -1529,7 +1529,7 @@ If the sampled species $i$ belongs to the background species ($i=i_b$) rather
 than to the test particle species community, then, after completion of sampling
 from $S$ an appropriate ``collision" is carried out (e.g.\ with a wall surface
 in case of surface sources), until a test particle species $i_t$ results.
-I.e., formally a sampling from	kernel $C(\vx,\vv,i_b \rightarrow i_t, \dots)$
+I.e., formally a sampling from	kernel $C(\vx,\vvv,i_b \rightarrow i_t, \dots)$
 is carried out at the place of birth $\vx$ to produce initial test particle
 coordinates.
 
@@ -1558,7 +1558,7 @@ simulations.
 
 The conditional sampling distribution $T(\vr'\rightarrow \vr)$ for the next
 point of collision (event), given a test flight is at position $\vr'$,
-traveling with velocity $\vv'$, is given by \cref{eq1.5}.
+traveling with velocity $\vvv'$, is given by \cref{eq1.5}.
 
 A more intuitive argument for this distribution of free flight path lengths
 follows from the simple attenuation law of a mono-energetic beam incident on a
@@ -1594,7 +1594,7 @@ the argument lists to keep the notation simple, but we note that certainly the
 mean free path $\lambda$ (or macroscopic cross section $\Sigma_t$) usually
 depend explicitly on the test particle energy and species.
 Let us introduce the distance of the flight $l$ in direction
-$\vOmega=\vv/|\vv|$, hence $\vr=\vr'+l\vOmega$, then the sampling distribution
+$\vOmega=\vvv/|\vvv|$, hence $\vr=\vr'+l\vOmega$, then the sampling distribution
 for $l$ is simply
 \begin{equation}
   T(l)=\Sigma_t(\vr'+l\vOmega)\exp\left[-\int_0^l ds
@@ -1614,31 +1614,31 @@ $\xi$ provides (by inversion) a random sample of the free flight distance $l$
 with the proper distribution.
 
 Sampling the distance $l$ of a free flight, for test particle species ``$i$"
-with velocity $\vv$, from the transport kernel $T$ requires knowledge of the
-(``monochromatic") mean free path $\lambda = \lambda(\vr,|\vv|)$ along the
+with velocity $\vvv$, from the transport kernel $T$ requires knowledge of the
+(``monochromatic") mean free path $\lambda = \lambda(\vr,|\vvv|)$ along the
 trajectory, and, hence, of the ``macroscopic cross section" $\Sigma =
-  \Sigma(\vr,|\vv|)$, which also may vary along the trajectory.
+  \Sigma(\vr,|\vvv|)$, which also may vary along the trajectory.
 
 The ``macroscopic cross sections" $\Sigma$ (by abuse of language, dimension:
 1/length) with or without subscript $k$ (the label for the type of the
 collision process) or subscript $t$ (for ``total", the sum over $k$), are
 defined as:
 \begin{equation}
-  \Sigma = \frac{1}{\lambda} = \frac{\nu}{|\vv|}, \qquad
-  \lambda = \frac{|\vv|}{\nu}
+  \Sigma = \frac{1}{\lambda} = \frac{\nu}{|\vvv|}, \qquad
+  \lambda = \frac{|\vvv|}{\nu}
 \end{equation}
 with the mean free path $\lambda$ and the collision frequency
 $\nu$:
 \begin{equation}
-  \nu(\vr,\vv,i) = n_b \langle\sigma \cdot
-  v_{rel}\rangle_b, \qquad v_{rel}= |\vv-\vv_b|
+  \nu(\vr,\vvv,i) = n_b \langle\sigma \cdot
+  v_{rel}\rangle_b, \qquad v_{rel}= |\vvv-\vvv_b|
 \end{equation}
-Here $n_b$ and $\vv_b$ are the target particle density and velocity,
+Here $n_b$ and $\vvv_b$ are the target particle density and velocity,
 respectively, and the brackets $\langle\dots\rangle_b$ denote averaging with
-the velocity distribution $f_b(\vr,\vv_b)$ of the background medium species
+the velocity distribution $f_b(\vr,\vvv_b)$ of the background medium species
 $b$.
 
-$\sigma$ is the total scattering cross section, $\sigma = \sigma(|\vv_{rel}|)$.
+$\sigma$ is the total scattering cross section, $\sigma = \sigma(|\vvv_{rel}|)$.
 
 Hence, e.g., for all isotropic target distributions $f_b$ one has:
 \begin{displaymath}
@@ -1647,15 +1647,15 @@ Hence, e.g., for all isotropic target distributions $f_b$ one has:
 \end{displaymath}
 
 Furthermore, let $f_b$ be a drifting Maxwellian, with temperature $T_b$ and
-drift $\vV_b$: $f_b = f_b(T_b,\vV_b)$.
+drift $\vvv_b$: $f_b = f_b(T_b,\vvv_b)$.
 
 Then:
 
-$\nu = \nu(T_b,|\vv-\vV_b|,i)$ 
+$\nu = \nu(T_b,|\vvv-\vvv_b|,i)$ 
 
 Finally, if the thermal speed $v_b^{therm}$ in this Maxwellian:
 $v_b^{therm} = \sqrt{T_b/m_b}$ is very large compared to typical values of
-$|\vv-\vV_b|$ (i.e.: nearly incompressible flow conditions), then:
+$|\vvv-\vvv_b|$ (i.e.: nearly incompressible flow conditions), then:
 
 $\nu \approx \nu(T_b,0,i) = n_b \langle\sigma \cdot v\rangle_b$
 
@@ -1666,7 +1666,7 @@ background particles (species $b$) and at zero velocity of the test particles
 For example, in case of neutral atom or molecule collisions with electrons this
 approximation is usually valid.
 From the point of view of electrons or ions, colliding with a cold background
-of neutrals or ions ($T_b\approx 0$, we have the opposite case: $|\vv|\gg
+of neutrals or ions ($T_b\approx 0$, we have the opposite case: $|\vvv|\gg
   v_b^{therm}$ and then the rate coefficient reduced to the simple product
 $\sigma(v) v$ with $v$ being the test particle velocity.
 
@@ -1680,13 +1680,13 @@ The algorithm to determine the next point of collision then is different:
 
 After a free flight  time  $\Delta t$ the probability of at least one collision
 during this period is the function $G_T(l_0)$ defined above, with $|\Delta \vx|
-  = l_0 = \int_0^{\Delta t} \vv(t) dt \approx v \Delta t$ the fixed path length
+  = l_0 = \int_0^{\Delta t} \vvv(t) dt \approx v \Delta t$ the fixed path length
 for this step.
 This follows from the definition of $G_T$ as cumulative distribution for the
 free flight length \cref{cummul}.
 Clearly $0\le G_T(l) \le 1$ for all positive $l$, by definition.
-Lets now assume constant mean free path $\lambda$, and constant velocity $\vv$
-during time step $\Delta t$, and $l_0=|\vv| \Delta t$, to simplify notation.
+Lets now assume constant mean free path $\lambda$, and constant velocity $\vvv$
+during time step $\Delta t$, and $l_0=|\vvv| \Delta t$, to simplify notation.
 
 The procedure to find the free flight length (or time) is now as follows:
 
@@ -1708,7 +1708,7 @@ However, various approximations are now usually made, to simplify coding.
 \begin{itemize}
   \item Ignore the fact that more than one collisions could have happened during
         $\Delta t$.
-  \item replace $G_T(l_0)$ by $l_0/\lambda ~ (= \Delta t v \Sigma_t(\vv)$, see
+  \item replace $G_T(l_0)$ by $l_0/\lambda ~ (= \Delta t v \Sigma_t(\vvv)$, see
         above) when comparing with uniform random number $\xi$
 \end{itemize}
 The second
@@ -1751,9 +1751,9 @@ The general rules for sampling from multivariate distributions outlined in
 In the EIRENE code sampling from the collision kernel is carried out in subr.\
 COLLIDE, which is called when a collision is known to have occurred at a
 pre-collision particle state vector [position, velocity, species (and,
-    optional: time)] $( \vr ', \vv ', i ')$ by a sequence of random decisions
+    optional: time)] $( \vr ', \vvv ', i ')$ by a sequence of random decisions
 regarding the type of collision process $k$, the species index of the
-post-collision test particle $i$, and the new post-collision velocity $\vv$.
+post-collision test particle $i$, and the new post-collision velocity $\vvv$.
 Collisions are instantaneous in time.
 Branching and/or absorption is accounted for by statistical weights.
 
@@ -1763,22 +1763,22 @@ various collision processes taken into account.
 
 The collision kernel $C$ was written as (see \cref{eq1.3})
 \begin{displaymath}
-  C( \vr ', \vv ', i '	  \rightarrow \vv, i) = \sum_{k} {p_k  C_k ( \vr ' ; \vv ', i '   \rightarrow \vv, i)} \ , \ p_k = \frac{\Sigma_k}{\Sigma_t}
+  C( \vr ', \vvv ', i '	  \rightarrow \vvv, i) = \sum_{k} {p_k  C_k ( \vr ' ; \vvv ', i '   \rightarrow \vvv, i)} \ , \ p_k = \frac{\Sigma_k}{\Sigma_t}
 \end{displaymath}
 with summation over the index $k$ for the different types of
 collision processes under consideration and $p_k$ defined as the probability
 for a collision to be of type $k$.
 The normalizing factor
 \begin{displaymath}
-  c_k (x ') = \sum_{i}  \int d \vv \
-  C_k ( \vr ', \vv ', i ' \rightarrow \vv, i ) \ , \  {\cal{C}}_k = \frac{1}{c_k}
+  c_k (x ') = \sum_{i}  \int d \vvv \
+  C_k ( \vr ', \vvv ', i ' \rightarrow \vvv, i ) \ , \  {\cal{C}}_k = \frac{1}{c_k}
   C_k
 \end{displaymath}
 was the mean number of secondaries for this collision
 process $k$.
 The normalized function $ {\cal{C}}_k$ then is a conditional probability
-density for post-collision state $(\vv,i)$, given the pre-collision coordinates
-$(\vr',\vv',i')$.
+density for post-collision state $(\vvv,i)$, given the pre-collision coordinates
+$(\vr',\vvv',i')$.
 
 Sampling from $\cal{C}$ (given that a collision of some kind has occurred)
 proceeds most conveniently by firstly sampling the type $k$ of the process from
@@ -1795,18 +1795,18 @@ The decomposition of $C$ into sub-kernels $C_k$ is somewhat arbitrary, and the
 criteria may also be computational aspects rather than the different physical
 nature of the various processes taken into consideration.
 
-Sampling $(\vv,i)$ from ${\cal{C}}_k$ can be done along the same idea: first
+Sampling $(\vvv,i)$ from ${\cal{C}}_k$ can be done along the same idea: first
 factoring out the discrete distribution for the species index $i$, and then by
-sampling $\vv$ from ${\cal{C}}_{k,i}$, the conditional distribution for $\vv$
+sampling $\vvv$ from ${\cal{C}}_{k,i}$, the conditional distribution for $\vvv$
 given the type of the process is $k$ and the species of the post-collision
 trajectory is $i$.
 Let $(n_{k,i}, i = 1, \dots, I_k)$ be the number of post-collision particles of
 species $i$ from process $k$, and $n_k = \sum_{i} n_{k,i}$.
-I.e., omitting pre-collision state parameters $(\vr ', \vv ', i ')$:
+I.e., omitting pre-collision state parameters $(\vr ', \vvv ', i ')$:
 \begin{displaymath}
-  n_{k,i} = \int d \vv \ C_k (
-  \vr ', \vv ', i ' \rightarrow
-  \vv, i )
+  n_{k,i} = \int d \vvv \ C_k (
+  \vr ', \vvv ', i ' \rightarrow
+  \vvv, i )
 \end{displaymath}
 Then, normalizing,
 \begin{displaymath}
@@ -1819,13 +1819,13 @@ process of type $k$.
 
 Finally, writing
 \begin{displaymath}
-  C_{k} = \sum_i n_{k,i} w_{k,i}(\vv)
+  C_{k} = \sum_i n_{k,i} w_{k,i}(\vvv)
 \end{displaymath}
 defines the post-collision velocity distribution $w_{k,i}$,
-given: a collision has occurred at pre-collision state $(\vr ', \vv ', i ')$,
+given: a collision has occurred at pre-collision state $(\vr ', \vvv ', i ')$,
 then a type of process $k$ has been sampled, then a post-collision species $i$
 has been identified.
-Sampling $(\vv)$ from $w_{k,i}(\vv)$ is carried out in routines VELOCX, VELOEL,
+Sampling $(\vvv)$ from $w_{k,i}(\vvv)$ is carried out in routines VELOCX, VELOEL,
 VELOEI, VELOPI, depending on the type $k$ of process identified.
 In all cases first a transformation into the rest frame of the interacting
 background species $i_b'$ is carried out.
@@ -1834,15 +1834,15 @@ background species $i_b'$ is carried out.
 
 In elastic collisions (EL) colliding particles retain their identity: ($i' = i,
   i_b = i_{b'}$).
-A binary collision is simulated by first identifying the velocity $\vv_{b'}$ of
+A binary collision is simulated by first identifying the velocity $\vvv_{b'}$ of
 the pre-collision partner from the background medium.
-As in all heavy particle collisions the distribution for finding $\vv_{b'}$ is:
+As in all heavy particle collisions the distribution for finding $\vvv_{b'}$ is:
 \begin{displaymath}
   w_{k,i_{b'}}
-  (\vv_{b'}) \sim \sigma_{el}(|\vv'-\vv_{b'}|) |\vv'-\vv_{b'}|
-  f_{i_{b'}}(\vv_{b'})
+  (\vvv_{b'}) \sim \sigma_{el}(|\vvv'-\vvv_{b'}|) |\vvv'-\vvv_{b'}|
+  f_{i_{b'}}(\vvv_{b'})
 \end{displaymath}
-with $f_{i_{b'}}(\vv_{b'})$ the velocity
+with $f_{i_{b'}}(\vvv_{b'})$ the velocity
 distribution of background medium $b$.
 EIRENE typically assumes here either a drifting Maxwellian in the laboratory
 frame, or a mono-energetic isotropic distribution in the rest frame of
@@ -1850,7 +1850,7 @@ background medium $b$.
 Next the scattering angle $\theta$ is found in the center of mass frame, either
 from the total cross section and the interaction potential, for from
 differential cross sections, for other, more approximate assumptions.
-Finally the post-collision velocity $\vv$ is obtained by transforming back into
+Finally the post-collision velocity $\vvv$ is obtained by transforming back into
 the laboratory frame.
 
 \subsection{charge-exchange, VELOCX}
@@ -1860,14 +1860,14 @@ which corresponds to a scattering angle $\theta = \pi$ in the center of mass
 system.
 In this special case sampling is most convenient in the in the rest frame of
 background medium $b$, rather than in the center of mass frame.
-This means again first sampling $\vv_{b'}$ from
+This means again first sampling $\vvv_{b'}$ from
 \begin{displaymath}
-  w_{k,i_{b'}}(\vv_{b'}) \sim \sigma_{cx}(|\vv'-\vv_{b'}|) |\vv'-\vv_{b'}|
-  f_{i_{b'}}(\vv_{b'})
+  w_{k,i_{b'}}(\vvv_{b'}) \sim \sigma_{cx}(|\vvv'-\vvv_{b'}|) |\vvv'-\vvv_{b'}|
+  f_{i_{b'}}(\vvv_{b'})
 \end{displaymath}
 and then, after transformation from the
-rest frame of species $b$ back into the laboratory frame, simply setting $\vv =
-  \vv_{b'}$ 
+rest frame of species $b$ back into the laboratory frame, simply setting $\vvv =
+  \vvv_{b'}$ 
 
 \subsection{electron-impact collisions, VELOEI} 
 
@@ -1926,7 +1926,7 @@ surface.
 
 One has  for the particle reflection coefficient:
 \begin{equation}
-  C_P = \sum_{i}	 \int d \vv \	C_{wf} ( \vr ; \vv ', i ' \rightarrow	\vv ,i)
+  C_P = \sum_{i}	 \int d \vvv \	C_{wf} ( \vr ; \vvv ', i ' \rightarrow	\vvv ,i)
   \label{eq1.16}
 \end{equation}
 Note that $ C_P = p_f = c_{wf}$ in the
@@ -1934,8 +1934,8 @@ terminology of \cref{eq1.4}.
 
 The energy reflection coefficient is defined as:
 \begin{equation}
-  C_E = \frac{1}{E '}	 \cdot \sum_{i}   \int d \vv \	 E    \cdot C_{wf} (\vr
-  ; \vv ', i ' \rightarrow   \vv,i) = \frac{1}{E '}     \cdot   {\tilde{C}}_E
+  C_E = \frac{1}{E '}	 \cdot \sum_{i}   \int d \vvv \	 E    \cdot C_{wf} (\vr
+  ; \vvv ', i ' \rightarrow   \vvv,i) = \frac{1}{E '}     \cdot   {\tilde{C}}_E
   \label{eq1.17}
 \end{equation}
 Here $E = m v^2 / 2$ is the energy of the
@@ -2045,7 +2045,7 @@ Complementary to the surface model described above, EIRENE is coupled to
 computer generated reflection databases, produced with the TRIM code (see
 references \cite{kn:Eckstein} and \cite{kn:Bateman}).
 At present a discretized form of the reflection kernel $C_{wf}$, including all
-correlations between the five vector components of $ \vv '$ and $\vv $, is
+correlations between the five vector components of $ \vvv '$ and $\vvv $, is
 available for the target-projectile combinations listed in \cref{tabref}.
 The first 12 of these combinations comprised an old default ``TRIM data file"
 of such combinations in an EIRENE run.
@@ -2154,12 +2154,12 @@ Here we describe one particular EIRENE surface source option in detail.
 The way the source is modelled by EIRENE allows  consistency with kinetic
 boundary conditions for plasma fluid equations at plasma facing surfaces.
 To describe this, we first write the volumetric source $Q$ (particles per unit
-time and per unit $(\vr,\vv)$-phase space volume) in terms of a  surface flux
+time and per unit $(\vr,\vvv)$-phase space volume) in terms of a  surface flux
 $\Gamma_w$ and a surface delta-function.
 The surface (wall) flux $\Gamma_w$ thus has dimension: particles per unit time,
 per velocity space unit, and per unit area:
 \begin{equation}
-  Q_w( \vr, \vv, i ) = \Gamma_w ( \vr, \vv, i )	 \cdot	 \delta_w ( \pi ),
+  Q_w( \vr, \vvv, i ) = \Gamma_w ( \vr, \vvv, i )	 \cdot	 \delta_w ( \pi ),
   \label{eq1.22}
 \end{equation}
 where $\pi$ is a coordinate normal to the surface
@@ -2174,19 +2174,19 @@ $\Gamma_w$ is a kinetic (microscopic) surface source (flux-) density
 distribution, backward directed (into the computational volume, i.e., it is
 non-zero only for $v_\pi < 0$).
 
-To convert from a forward directed ion flux distribution $\Gamma_{Sh,ion}(\vv)$
+To convert from a forward directed ion flux distribution $\Gamma_{Sh,ion}(\vvv)$
 at the plasma-sheath interface $S_{Sh}$ to a neutral flux distribution back
 from the wall surface $S_w$, we fold $\Gamma_{Sh,ion}$ with a (magnetic plus
 electrostatic) sheath transmission kernel $T_{Sh}$ and with the surface
 reflection (incl.\ sputtering) kernel $C_w$, equation \cref{eq1.14}:
 \begin{align}
-  \Gamma_w ( \vr, \vv, i ) & = \sum_{i '}
+  \Gamma_w ( \vr, \vvv, i ) & = \sum_{i '}
   \int\! \int\! \int d^3 r' d^3 v'  d^3
   v'' \Gamma_{Sh,ion}
-  ( \vr ', \vv '', i ' ) \nonumber                    \\
+  ( \vr ', \vvv '', i ' ) \nonumber                    \\
                            & \phantom{=} \cdot T_{Sh}
-  (i ' ; \vr ', \vv '' \rightarrow \vr, \vv  ' ) \cdot	C_w ( \vr ; \vv ', i '
-  \rightarrow \vv, i ) \label{eq1.24}
+  (i ' ; \vr ', \vvv '' \rightarrow \vr, \vvv  ' ) \cdot	C_w ( \vr ; \vvv ', i '
+  \rightarrow \vvv, i ) \label{eq1.24}
 \end{align}
 The summation over $i '$ is
 performed over all ion species entering the sheath region.
@@ -2208,14 +2208,14 @@ A commonly adopted simplification is made in plasma fluid descriptions by
 ignoring the typically small spatial volume between the plasma sheath interface
 and the wall surface.
 Hence: $T_{Sh}$ factorizes into a 3D delta function $\delta^3(\vr-\vr')$ and a
-deterministic transition kernel for the velocities $\vv'' \rightarrow \vv'$.
+deterministic transition kernel for the velocities $\vvv'' \rightarrow \vvv'$.
 
 Random numbers from $\Gamma_w$ are generated conveniently by sampling, firstly,
-$(\vr ', \vv  '', i ' ) $ from $\Gamma_{Sh,ion}$, next generating $(\vr, \vv '
+$(\vr ', \vvv  '', i ' ) $ from $\Gamma_{Sh,ion}$, next generating $(\vr, \vvv '
   ) $ from $T_{Sh}$ and then, finally, sampling the weights, velocities and
-species indices of re-emitted (neutral) particles $(\vv, i)$ from the
+species indices of re-emitted (neutral) particles $(\vvv, i)$ from the
 conditional distribution $C_w $, which is conditional on one ion (species $i'$)
-having hit the target at position $\vr' = \vr$ and with velocity $\vv '$.
+having hit the target at position $\vr' = \vr$ and with velocity $\vvv '$.
 
 A frequently employed assumption for $\Gamma_{Sh,ion}$ is a one sided (only
 positive velocity components into the sheath) forward drifting Maxwellian ion
@@ -2228,7 +2228,7 @@ ion flow, and the action of operator $T_{Sh}$ is solely the acceleration in the
 electrostatic sheath.
 
 Alternatively, and in cases when the magnetic field is tilted with respect to
-the wall surface, one may define $\Gamma_{Sh,ion}(\vv)$ to be the kinetic
+the wall surface, one may define $\Gamma_{Sh,ion}(\vvv)$ to be the kinetic
 transport flux distribution entering the magnetic pre-sheath, i.e.\ with a
 drift velocity of at least ion sound speed in the direction parallel to the
 magnetic field $\vB$ (rather than normal to the wall).
@@ -2236,8 +2236,8 @@ In this case the action of the magnetic pre-sheath must be accommodated in the
 sheath kernel $T_{Sh}$, which we might even consider to split into a magnetic
 pre-sheath (MP) kernel and an electrostatic sheath (Sh) kernel:
 \begin{equation}
-  T_{Sh} = T_{mpSh}(\vr_{mpSh}, \vv_{mpSh} \rightarrow \vr_{eSh}, \vv_{eSh})
-  \cdot  T_{eSh}(\vr_{eSh},\vv_{eSh} \rightarrow \mbox{wall})
+  T_{Sh} = T_{mpSh}(\vr_{mpSh}, \vvv_{mpSh} \rightarrow \vr_{eSh}, \vvv_{eSh})
+  \cdot  T_{eSh}(\vr_{eSh},\vvv_{eSh} \rightarrow \mbox{wall})
 \end{equation}
 with
 the subscripts $mpSh$ and $eSh$ labelling the plasma side magnetic pre-sheath
@@ -2265,25 +2265,25 @@ The kinetic plasma ion flux distribution entering the electrostatic sheath is
 given as
 \begin{equation}
   \Gamma^0_{Sh,ion} = \frac{1}{\alpha^2}   \cdot
-  v_{\pi}   \cdot \exp \left ( - \frac{1}{v_{T_i}^2} (\vv - \vV_d )^2    \right
+  v_{\pi}   \cdot \exp \left ( - \frac{1}{v_{T_i}^2} (\vvv - \vvv_d )^2    \right
   ), \quad v_{\pi} > 0 \label{eq1.23}
 \end{equation}
 with $v_{T_i} = \sqrt{2 kT_i/m_i}$, the thermal ion velocity, normalizing 
-constant $\alpha^2$ and with the drift velocity $\vV_d$.
+constant $\alpha^2$ and with the drift velocity $\vvv_d$.
 See \cref{sec2.7} for a description of related EIRENE input flags.
 The superscript 0 indicates normalization of the flux to one particle per unit
 time and unit area:
 \begin{equation}
   \int_{v_\pi>0} d^{\ 3}v~ \Gamma^0_{Sh,ion}
-  (\vv) = 1
+  (\vvv) = 1
 \end{equation}
 
 Consider now the three orthogonal velocity components $v_1,v_2,v_3$ chosen such
 that $v_3 = v_\pi$, i.e.\ the $v_3$ velocity component is normal to the surface
 (target), and hence also normal to the plasma-sheath interface.
-$\Gamma^0_{Sh,ion}(\vv)$ factorizes into the three uni-variate distributions
+$\Gamma^0_{Sh,ion}(\vvv)$ factorizes into the three uni-variate distributions
 \begin{equation}
-  \Gamma^0_{Sh,ion}(\vv)=\Gamma^0_{Sh,ion,1}(v_1)\cdot
+  \Gamma^0_{Sh,ion}(\vvv)=\Gamma^0_{Sh,ion,1}(v_1)\cdot
   \Gamma^0_{Sh,ion,2}(v_2) \cdot \Gamma^0_{Sh,ion,\pi}(v_\pi)
 \end{equation}
 The
@@ -2318,7 +2318,7 @@ with $M = V/c_s$ and the
 $c_s=\sqrt{(Z_i~T_e+T_i)/m_i}$ $Z_i$ is the ion charge state.
 Hence ${\cal V} = M$ only if $Z_i~T_e=T_i$.
 
-It is clear that random sampling the $\pi$-component $v_{\pi}$ of $\vv $ from
+It is clear that random sampling the $\pi$-component $v_{\pi}$ of $\vvv $ from
 $\Gamma^0_{Sh,ion,\pi}$ is not trivial even for this seemingly simplest sheath
 entrance ion velocity distribution,  because the cumulative distribution
 function $F$ of a 1D forward drifting Maxwellian (with cut-off at $v_{\pi}=0$):
@@ -2403,30 +2403,30 @@ distribution $\Gamma^0$ is  already normalized to flux one):
   \overline{E}
   ({\cal V}_{\pi},{\cal V}_{\sigma}) & = \frac{m_i}{2}	  \cdot
   \int^\infty_{-\infty} \! \int^\infty_{-\infty} \! \int^\infty_{0} \! d^3v' \
-  {v'}^2	    \cdot \Gamma^0_{Sh,ion} (\vv ' ) =                \\
+  {v'}^2	    \cdot \Gamma^0_{Sh,ion} (\vvv ' ) =                \\
                                      & = \frac{m_i}{2}	  \cdot
   \int^\infty_{-\infty} \!dv_1
   \int^\infty_{-\infty} \!dv_2 \int^\infty_{0} \!
   dv_\pi \
   (v_1^2+v_2^2+v_\pi^2)    \cdot
   \Gamma^0_{Sh,ion}
-  (\vv ' ) \label{eq1.30}
+  (\vvv ' ) \label{eq1.30}
   \\
   \nonumber
                                      & = T_i	\cdot	\gamma_E,
 \end{align}
 with the half sided integration for the $\pi$-component of
-$\vv$, and:
+$\vvv$, and:
 \begin{equation}
   \gamma_E = 2 + {\cal V}_\sigma^2    + \left[{\cal V}_\pi^2	+   0.5
     \cdot \frac{g({\cal V}_{\pi} )  - 1}{g({\cal V}_{\pi} )}\right],
   \label{eq1.31}
 \end{equation}
-Here we have decomposed the drift velocity $\vV_d$ into a normal (to the
-surface) $\pi$-component $\vV_{d,\pi}$ and a $\sigma$-component
-$\vV_{d,\sigma}$ parallel to the wall surface.
-\begin{equation}{\cal V}_{\sigma} = \frac{| \vV_d   -	\vV_{d, \pi} |}
-  {v_{T_i}} = \frac{| \vV_{d,\sigma} |} {v_{T_i}}. \label{eq1.32}
+Here we have decomposed the drift velocity $\vvv_d$ into a normal (to the
+surface) $\pi$-component $\vvv_{d,\pi}$ and a $\sigma$-component
+$\vvv_{d,\sigma}$ parallel to the wall surface.
+\begin{equation}{\cal V}_{\sigma} = \frac{| \vvv_d   -	\vvv_{d, \pi} |}
+  {v_{T_i}} = \frac{| \vvv_{d,\sigma} |} {v_{T_i}}. \label{eq1.32}
 \end{equation}
 Note that for ${\cal V}_{\pi}$ = 0 \cref{eq1.31} reduces to the expected
 formula $\gamma_E = 2  + {{\cal V}_{\sigma}}^2$  for a half sided Maxwellian
@@ -2443,7 +2443,7 @@ $\gamma_E = 2.449 + {{\cal V}_{\pi}}^2 \simeq \frac {5}{2} + {{\cal
 We conclude that the above scheme is both an accurate and efficient random
 number generator for truncated shifted Maxwellian flux distributions of
 particles incident onto or emitted from surfaces.
-Of course, after having generated $ \tilde{\vv}  $ with the weight $ w
+Of course, after having generated $ \tilde{\vvv}  $ with the weight $ w
   ({\tilde{v}}_{\pi} )$ and before reflecting the particle via the kernel $C_w $,
 the acceleration of an ion in a sheath potential  in direction $\pi$ (normal to
 the target surface), as formalized in the sheath transmission kernel $T_{Sh}$
@@ -2596,18 +2596,18 @@ $\approx -2.98$.
 \subsection{The magnetic pre-sheath} \label{sec1.4.2}
 
 In most situations when EIRENE is applied to plasma surface interaction studies
-the ion-plasma flow velocity $\vV_i$ is predominantly parallel to a $\vB$
-field: $V_{\parallel,i} \approx |\vV_i|$, and it is this parallel ion flow
+the ion-plasma flow velocity $\vvv_i$ is predominantly parallel to a $\vB$
+field: $V_{\parallel,i} \approx |\vvv_i|$, and it is this parallel ion flow
 velocity, which is usually available from \ac{CFD} plasma simulations, via
 boundary conditions specified for the (parallel component of the) momentum
 balance equation at the entrance of the magnetic pre-sheath ($mpSh$) rather
 than at the entrance of the electrostatic sheath $eSh$.
 
 The sheath model of EIRENE then is to be supplemented by a model
-\textbf{PRE-SHEATH} for the transition of known currents and $\vV_{i,mpSh}$  to
-$\vV_{i,eSh}$, i.e. in particular to derive the currents $j_{\pi,eSh}$ and flow
+\textbf{PRE-SHEATH} for the transition of known currents and $\vvv_{i,mpSh}$  to
+$\vvv_{i,eSh}$, i.e. in particular to derive the currents $j_{\pi,eSh}$ and flow
 components $V_{\pi,i,eSh}$ entering the electrostatic sheath from $\vj_{mpSh}$
-and $\vV_{i,mpSh}$ 
+and $\vvv_{i,mpSh}$ 
 
 to be written\dots 
 
@@ -3332,15 +3332,15 @@ to be continued \dots
 Consider first the elastic self collisions amongst particle species $A$.
 The \ac{BGK} approximation to the Boltzmann collision integral reads:
 \begin{equation}
-  \frac{\partial f_A(\vv)}{\partial t}_{BGK}=-\nu (f_A(\vv)-f^0(\vv))
+  \frac{\partial f_A(\vvv)}{\partial t}_{BGK}=-\nu (f_A(\vvv)-f^0(\vvv))
 \end{equation}
 where
 \begin{equation}
-  f^0(\vv)=\frac{n}{(2\pi mT)^{3/2}} \exp\left[-\frac{m(\vv-\vV)^2}{2T}\right]
+  f^0(\vvv)=\frac{n}{(2\pi mT)^{3/2}} \exp\left[-\frac{m(\vvv-\vvv)^2}{2T}\right]
 \end{equation}
 is a drifting Maxwellian distribution.
 
-The parameters $n, \vV, T$ in $f^0$ are uniquely determined by conservation of
+The parameters $n, \vvv, T$ in $f^0$ are uniquely determined by conservation of
 particles, momentum and energy in these elastic collisions.
 
 When the collision rate $\nu$ is independent of velocity $v$, as it is the case
@@ -3348,35 +3348,35 @@ in the default model described above, then the parameters are simply given by
 the first velocity moments of $f_A$.
 
 A key feature for these velocity independent collision frequencies is the
-simple closed form solution for $f_A(\vv,t)$ in a homogeneous medium, which
+simple closed form solution for $f_A(\vvv,t)$ in a homogeneous medium, which
 translates into a particular simple realisation of this type of collisions in a
 Monte Carlo procedure.
-Let $g(\vv)=f_A(\vv,t=0)$, then
+Let $g(\vvv)=f_A(\vvv,t=0)$, then
 \begin{equation}
-  f_A(\vv,t)=g(\vv)e^{-\nu t}
-  +\left(1-e^{-\nu t}\right) f^0(\vv)
+  f_A(\vvv,t)=g(\vvv)e^{-\nu t}
+  +\left(1-e^{-\nu t}\right) f^0(\vvv)
 \end{equation}
 where the parameters $(n,
-  \vv, T)$ in $f^0$ can be calculated directly as moments of $g(\vv)$ (i.e.\ from
+  \vvv, T)$ in $f^0$ can be calculated directly as moments of $g(\vvv)$ (i.e.\ from
 the EIRENE default tallies PDEN, VDEN, EDEN.)
 
 When a velocity dependent collision frequency is used, e.g.\ to capture more
 than just one continuum limit transport coefficient correctly (or adjust to
 another Prantl number), then the solution of the initial value problem for the
 distribution function $f_A$ is not as simple any more, and the parameters $(n,
-  \vv, T)$ in $f^0$ become fictitious local parameters related to the five
-moments of $f_A(\vv)$ weighted with $\nu(\vv)$:
+  \vvv, T)$ in $f^0$ become fictitious local parameters related to the five
+moments of $f_A(\vvv)$ weighted with $\nu(\vvv)$:
 \begin{equation}
-  \int \nu(\vv) M_i(\vv) f^0(\vv) d^3(v) = \int \nu(\vv) M_i(\vv) f_A(\vv)
+  \int \nu(\vvv) M_i(\vvv) f^0(\vvv) d^3(v) = \int \nu(\vvv) M_i(\vvv) f_A(\vvv)
   d^3(v) \ \ \ i=1, \dots, 5
 \end{equation}
-Here $M_i(\vv)$ are the five collisional invariants: $M_1 = 1$ (particle
+Here $M_i(\vvv)$ are the five collisional invariants: $M_1 = 1$ (particle
 conservation), $M_{2,3,4} = (v_x,v_y,v_z)$ (momentum conservation), and $M_5 =
   m/2 v^2$ (energy conservation).
 Storage for the rates on the right hand side of these relations is foreseen on
 the EIRENE ``BGK'' default tallies, and the Maxwellian integrals on the left
 hand side have to evaluated on a case by case basis, depending on the choice of
-the velocity dependence in $\nu(\vv)$ made.
+the velocity dependence in $\nu(\vvv)$ made.
 
 \subsubsection{B: Cross collisions}
 
@@ -3656,7 +3656,7 @@ Default is $\textbf{b}=(0.,0.,1.)$ in each cell.
 The velocity vector of each test-ion followed by EIRENE is projected onto
 $\textbf{b}$ in each grid cell along the trajectory.
 The velocity used for pushing the particle along its trajectory is only the
-parallel component $\vv_\|=(\vv \cdot \vb) \vb$.
+parallel component $\vvv_\|=(\vvv \cdot \vb) \vb$.
 \minisec{B: \textbf{E} $\times$ \textbf{B} drift only} 
 Only the \textbf{E} $\times$ \textbf{B} drift is included.
 This is still zeroth order in $\delta$.
