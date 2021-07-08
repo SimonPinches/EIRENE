@@ -291,7 +291,7 @@ stellarator applications).
 \section{The ``Additional Tally" routines UPTUSR, UPCUSR, UPSUSR and UPNUSR}
 \label{sec3.2}
 
-Let $	f(\vr, \vv,j_S)$ be the distribution function in the 6 dimensional
+Let $	f(\vr, \vvv,j_S)$ be the distribution function in the 6 dimensional
 $\mu$ -space for particle species $j_S$, S = PH:
 Photons, S = A: Atoms, S = M: Molecules, S = I: Test Ions, S = P:
 Bulk Ions 
@@ -310,7 +310,7 @@ The ``volume averaged tallies" estimated by EIRENE (see \cref{tab2}) are
 profiles of ``responses"
 \begin{displaymath}
   R_g = <	f | g	> = \sum_{j}
-  \int d^3 \vv \int_{volume} d^3 \vr \ g(\vr, \vv , j)	 \cdot	   f(\vr, \vv,
+  \int d^3 \vvv \int_{volume} d^3 \vr \ g(\vr, \vvv , j)	 \cdot	   f(\vr, \vvv,
   j)\label{est}
 \end{displaymath}
 for several preprogrammed and an arbitrary
@@ -322,18 +322,18 @@ The default EIRENE estimators are not based upon moments of distribution
 function $f$ but upon moments of the flux
 \begin{displaymath}
   \Phi ( j_S, \vr,
-  \vv ) = | \vv |  f(j_S, \vr, \vv),
+  \vvv ) = | \vvv |  f(j_S, \vr, \vvv),
 \end{displaymath}
 hence on detector
-functions $g^{*} = g / | \vv | $.
+functions $g^{*} = g / | \vvv | $.
 
 Occasionally also moments of the pre-collision density
 \begin{displaymath}
   \Psi
-  ( j_S, \vr, \vv ) = \Phi ( j_S, \vr, \vv ) \cdot     \Sigma ( j_S, \vr, \vv )
+  ( j_S, \vr, \vvv ) = \Phi ( j_S, \vr, \vvv ) \cdot     \Sigma ( j_S, \vr, \vvv )
 \end{displaymath}
 are utilized, then with detector functions $ \hat{g} = g / (|
-  \vv | \ \Sigma)  $.
+  \vvv | \ \Sigma)  $.
 Here $\Sigma$ (dimension: 1/length) is the local total macroscopic cross
 section, i.e., the inverse of the local mean free path length.
 The estimators may, in general, be composed of a ``track-length estimate"
@@ -374,7 +374,7 @@ The track-length estimators $R_t$ for detector function $g$ are updated in
 subroutine UPDATE (defaults) and UPTUSR (\dots, WV, \dots) (additional user
 supplied tallies), with
 \begin{displaymath}
-  WV = {^k{w_{i}^{*}}} /   | \vv |
+  WV = {^k{w_{i}^{*}}} /   | \vvv |
   \quad .
 \end{displaymath}
 In EIRENE variables:
@@ -406,7 +406,7 @@ Non default collision tallies are updated in UPCUSR(\dots, WS, IND) (additional
 user supplied tallies, called from COLLIDE).
 Here we have
 \begin{displaymath}
-  WS = {^k{\hat{w_i}}} /   ( | \vv |  \Sigma )
+  WS = {^k{\hat{w_i}}} /   ( | \vvv |  \Sigma )
   \quad .
 \end{displaymath}
 In EIRENE variables:
@@ -484,7 +484,7 @@ This is intuitively clear, but also mathematically correct since these snapshot
 estimators are formally derived as special cases of track-length- collision or
 surface flux estimators (interpreting the time-horizon sub-manifold as
 ``time-surface", by abuse of language) by including in $g$ a delta function in
-time : $g(t,\vr,\vv)=\delta(t^*)\tilde g(\vr,\vv)$.
+time : $g(t,\vr,\vvv)=\delta(t^*)\tilde g(\vr,\vvv)$.
 
 Subroutine UPNUSR must at least include module COMPRT (for the particle weight
 WEIGHT).
@@ -545,7 +545,7 @@ terminologies.
 Then a ``surface response function" $ g_S $ defined as 
 
 \begin{displaymath}
-  g_S (j, \vr, \vv ) = \delta(\rho)  \cdot  g(j, \vr, \vv )
+  g_S (j, \vr, \vvv ) = \delta(\rho)  \cdot  g(j, \vr, \vvv )
 \end{displaymath}
 
 is the detector function for the same response $ R_g $ as previously detector
@@ -592,7 +592,7 @@ here $IS$ is the index of the surface which is being crossed, $ITALS$ is the
 labelling number of the surface tally.
 Furthermore,
 \begin{displaymath}
-  WC= {^k{\omega^{*}_i}}  /  [ |\vv | \cdot
+  WC= {^k{\omega^{*}_i}}  /  [ |\vvv | \cdot
   \cos( \vOmega, \ve_{\rho} ) ],
 \end{displaymath}
 the detector function $g$ is
