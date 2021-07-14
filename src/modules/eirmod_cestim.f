@@ -298,8 +298,6 @@ C
       LOGICAL, PUBLIC, POINTER, SAVE :: LEX
 C
 
-
-
 C
 
       CONTAINS

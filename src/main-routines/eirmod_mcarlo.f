@@ -1162,7 +1162,7 @@ cdr npesta is the master processor for stratum no ISTRA
             endif
           ENDIF
 C
-C  UPDATE TALLIES FOR  "SUM OVER STRATA"
+C  UPDATE TALLIES FOR "SUM OVER STRATA"
 C
           IF (NSTRAI.EQ.1) GOTO 1111
 C

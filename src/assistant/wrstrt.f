@@ -11,7 +11,7 @@ cdr    (volume-averaged, surface-averaged, spectra, and their standard deviation
 cdr  SUBROUTINE RSTRT:
 cdr  read MC estimated tallies, per stratum, onto fort.10
 cdr    (volume-averaged, surface-averaged, spectra, and their standard deviations)
-cdr     e.g. for printout, plotting etc.. of results from specified strata
+cdr     e.g. for printout, plotting, etc.. of results from specified strata
 
 cdr  on input:  IG     :  number of stratum ISTRA
 cdr             IG=0   :  sum over strata
@@ -67,7 +67,7 @@ C  SPECTRUM BINS RANGE FROM 0 TO NSPC+1
       ISTRA=IG
       IRC=ISTRA*IMAX+1
       IF (TRCFLE.AND.IG.NE.0) WRITE (iunout,*) 'WRITE STRATUM NO. ',IG
-      IF (TRCFLE.AND.IG.EQ.0) WRITE (iunout,*) 'WRITE SUM OVER STRATA '
+      IF (TRCFLE.AND.IG.EQ.0) WRITE (iunout,*) 'WRITE SUM OVER STRATA'
 C
       OPEN (UNIT=10+ifoff,ACCESS='DIRECT',FORM='UNFORMATTED',
 !pb     .      RECL=8*NRECL,STATUS='UNKNOWN',FILE=fort_lc//'10')
@@ -268,7 +268,7 @@ C  SPECTRUM BINS RANGE FROM 0 TO NSPC+1
       ISTRA=IG
       IRC=ISTRA*IMAX+1
       IF (TRCFLE.AND.IG.NE.0) WRITE (iunout,*) 'READ STRATUM NO. ',IG
-      IF (TRCFLE.AND.IG.EQ.0) WRITE (iunout,*) 'READ SUM OVER STRATA '
+      IF (TRCFLE.AND.IG.EQ.0) WRITE (iunout,*) 'READ SUM OVER STRATA'
 
       OPEN (UNIT=10+ifoff,ACCESS='DIRECT',FORM='UNFORMATTED',
      .      RECL=8*NRECL,STATUS='OLD')

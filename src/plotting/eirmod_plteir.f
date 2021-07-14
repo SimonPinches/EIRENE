@@ -356,7 +356,7 @@ cdr  tbd:  summing with proper weighting, as in outtal.f
                 CASE DEFAULT
                   WRITE (iunout,*) ' WRONG TALLY NUMBER IN PLTEIR',
      .                        ' JTAL = ',JTAL
-                  WRITE (iunout,*) ' NO PLOT PERFORMED '
+                  WRITE (iunout,*) ' NO PLOT PERFORMED'
                   CALL EIRENE_LEER(1)
                   GOTO 10000
                 END SELECT
@@ -422,18 +422,18 @@ cdr  individual species indices
                 CASE DEFAULT
                   WRITE (iunout,*) ' WRONG TALLY NUMBER IN PLTEIR',
      .                        ' JTAL = ',JTAL
-                  WRITE (iunout,*) ' NO PLOT PERFORMED '
+                  WRITE (iunout,*) ' NO PLOT PERFORMED'
                   CALL EIRENE_LEER(1)
                   CYCLE
                 END SELECT
 
               ELSE
                 IF (TRCPLT) THEN
-                  WRITE (iunout,*) 'SPECIES INDEX OUT OF RANGE '
+                  WRITE (iunout,*) 'SPECIES INDEX OUT OF RANGE'
                   WRITE (iunout,*) 'ICURV,ISPTAL(IBLD,ICURV) ',
      .                              ICURV,ISPZ
                   WRITE (iunout,*)
-     .              'ALL PLOTS FOR THIS TALLY TURNED OFF '
+     .              'ALL PLOTS FOR THIS TALLY TURNED OFF'
                 ENDIF
                 PLTL2D(IBLD)=.FALSE.
                 PLTL3D(IBLD)=.FALSE.
@@ -448,8 +448,8 @@ cdr  plot output tallies
               
               IF (.NOT.LIVTALV(JTAL)) THEN
                 WRITE (iunout,*) TXTTAL(1,JTAL)
-                WRITE (iunout,*) 'TALLY SWITCHED OFF '
-                WRITE (iunout,*) 'ALL PLOTS FOR THIS TALLY TURNED OFF '
+                WRITE (iunout,*) 'TALLY SWITCHED OFF'
+                WRITE (iunout,*) 'ALL PLOTS FOR THIS TALLY TURNED OFF'
                 CYCLE
               END IF
 
@@ -468,11 +468,11 @@ c  sum over species
   125           CONTINUE
               ELSE
                 IF (TRCPLT) THEN
-                  WRITE (iunout,*) 'SPECIES INDEX OUT OF RANGE '
+                  WRITE (iunout,*) 'SPECIES INDEX OUT OF RANGE'
                   WRITE (iunout,*) 'ICURV,ISPTAL(IBLD,ICURV) ',
      .                              ICURV,ISPZ
                   WRITE (iunout,*)
-     .              'ALL PLOTS FOR THIS TALLY TURNED OFF '
+     .              'ALL PLOTS FOR THIS TALLY TURNED OFF'
                 ENDIF
                 PLTL2D(IBLD)=.FALSE.
                 PLTL3D(IBLD)=.FALSE.
@@ -625,7 +625,7 @@ C
                     WRITE (iunout,*) 'TALLY NO. ',JTAL,
      .                               ' CURVE NO. ',ICURV
                     WRITE (iunout,*) 'NOT PLOTTED BECAUSE'
-                    WRITE (iunout,*) 'ZERO INTEGRAL (OUTAU(INDX)=0.) '
+                    WRITE (iunout,*) 'ZERO INTEGRAL (OUTAU(INDX)=0.)'
                     WRITE (iunout,*) 'INDX,NADDI(JTAL),NFRSTI(JTAL),I0'
                     WRITE (iunout,*)  INDX,NADDI(ITL),NFRSTI(ITL),I0
                   ENDIF

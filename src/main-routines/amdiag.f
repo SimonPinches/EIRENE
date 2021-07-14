@@ -126,7 +126,7 @@ c  electron impact rate coefficient no. irei
           irei=ns
           mm=modcol(1,2,irei)
           kk=NREAEI(irei)
-c find collision partners corresponding to process irei: IPL AND ISP
+c find collision partners corresponding to process irei: IPL and ISP
           IPL=0  ! ELECTRONS
 
 c  first: try atoms

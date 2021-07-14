@@ -905,7 +905,7 @@ C  NOTHING TO BE DONE
         ELSE
           WRITE (iunout,*)
      .      'ERROR IN PLASMA_DERIV: DATA FOR STRATUM ISTRA= ',ISTRA
-          WRITE (iunout,*) 'ARE NOT AVAILABLE. '
+          WRITE (iunout,*) 'ARE NOT AVAILABLE.'
           RETURN
         ENDIF
       END IF   ! ICALL > 0
