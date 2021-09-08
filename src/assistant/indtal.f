@@ -132,4 +132,4 @@ C
 
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_INDTAL

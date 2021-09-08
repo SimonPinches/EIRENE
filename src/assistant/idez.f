@@ -30,4 +30,4 @@ C                           J=4: ERROR ,J GT IZIF
     1 CONTINUE
       EIRENE_IDEZ=IQ
       RETURN
-      END
+      END FUNCTION EIRENE_IDEZ

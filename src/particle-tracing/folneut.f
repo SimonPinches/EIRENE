@@ -63,7 +63,7 @@ C           ITYP=4  NO NEXT GENERATION TEST PARTICLE IS GENERATED
 C                   (PARTICLE ABSORBED IN BULK ION SPECIES)
 c
 c  at 100 :   start a new neutral particle, velocity is given as full cartesian vector, lcart=true
-c  at 1004:   reduced (guiding centre) velocities and B-field are now set for particle. lcart=false.
+c  at 1004:   reduced (guiding centre) velocities and B field are now set for particle. lcart=false.
 C  at 1001:   particle enters static loop
 C  at 1002:   particle leaves static loop
 c  at 101 :   full new trajectory starts here.

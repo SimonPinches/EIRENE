@@ -3,6 +3,9 @@ cdr  re-activated: Jan 2018
       subroutine EIRENE_read_photdbk (ir, reac, isw)
 c   read parameters relevant "reaction no IR" for line transport (photon gas transport)
 c   from photonic database, into EIRENE data structure REACDAT(IR).
+c   A photon (IPHOT) "line" is a sharp or broadened emission source.
+c   A continuum emission from a given spectral source distribution is also
+c   a "line" (=photon species), by abuse of language.
 c
 
 

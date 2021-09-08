@@ -25,4 +25,4 @@
      .                  a(1,3)*d13 - a(1,4)*d14
 
       return
-      end
+      end function EIRENE_deter4x4

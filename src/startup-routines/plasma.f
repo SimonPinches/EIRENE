@@ -1,21 +1,21 @@
 C
 C
-!  6.12.05  bugfix: avoid calculation of B-field in dead cells
+!  6.12.05  bugfix: avoid calculation of B field in dead cells
 !                   because geometrical parameters may not be known there.
-!  6.8. 06  bugfix of bugfix: avoid calculation of B-field in dead cells, but
-!                             still make sure to set B-field in 1D cases.
+!  6.8. 06  bugfix of bugfix: avoid calculation of B field in dead cells, but
+!                             still make sure to set B field in 1D cases.
 !  15.12.06 bug fix: index error corrected in call to prousr when called for ADIN
 !  10.06.08 new:  default BFIN=1 T, rather than 0 T
 !  10.06.08 new option: profile type 3 (profs): set BFIN using B2 and B3 parameters
 !  22.09.14 bug fix re. this ind=3 option in case of type (=ind) = 1,2 .
-!                       help2 was undefined --> zero b-field
+!                       help2 was undefined --> zero B field
 !
 cdr try to re-unify treatment of 1st dimension (species index) in parameters
 cdr n,T,V for background (bulk) velocity distribution: not finished.
 !  sept. 16 change variable names ipls --> iplsti, (for TI)
 !                                 ipls --> iplsv,  (for VX,VY,VZ)
 !  oct. 16  comments, one minor bug fix (VZIN(IPLSV) in one (unused) option)
-!  nov. 16  nlpitch option added, for orientation of B-field in 1D and 2D runs
+!  nov. 16  nlpitch option added, for orientation of B field in 1D and 2D runs
 cdr jan 19: SELECT CASE(IND)
 cdr feb 19: parameter NDIM: check 1st dimension of input tallies. 
 cdr         Still unclear treatment in case of Ti (ion temperature). 
@@ -29,8 +29,8 @@ cdr: why is that not needed for V and n profiles?
 C  SET DENSITY, TEMPERATURE AND MACH NUMBER PROFILES, B AND E FIELDS,
 C  ON:
 C  INDPRO=1,2,3    1D MESH "RHOZNE(J)", 1,NR1STM, CELL-CENTERED
-C                  B-FIELD (INDPRO(5)) SET ON 1:NSURF
-C  INDPRO=4        READ FROM EXTERNAL FILE ISTREAM, EVERYWHERE, 1,NSBOX,
+C                  B FIELD (INDPRO(5)) SET ON 1:NSURF
+C  INDPRO=4        READ FROM EXTERNAL FILE JSTREAM, EVERYWHERE, 1,NSBOX,
 C  INDPRO=5        PROUSR: ONLY IN STANDARD GRID, 1:NSURF
 C  INDPRO=6        PROFR : ONLY IN STANDARD GRID, 1:NSURF
 C  INDPRO=7        PROFR : EVERYWHERE, 1,NSBOX
@@ -56,7 +56,7 @@ C
 
       REAL(DP), ALLOCATABLE :: HELP(:), HELP2(:)
       REAL(DP) :: PUX, PUY, EL, EP, PN, BD, B, BVAC, FACT
-      INTEGER :: IB, IAIN, K, JJ, ITALI, ICELL, IND, ISTREAM,
+      INTEGER :: IB, IAIN, K, JJ, ITALI, ICELL, IND, JSTREAM,
      .           IP, IT, IA, J, IR, IPLSTI, IPLSV, JPLS, NDIM
 C
 C  INDPRO=9 MEANS: THESE ARRAYS ARE ALREADY SET IN COUPLE_... (SUBR. INFCOP)
@@ -109,12 +109,12 @@ C  ELECTRON TEMPERATURE
         CALL EIRENE_PROFS (TEIN,TE0,TE1,TE5,TVAC)
       CASE (4)
 c  INDPRO=4:  read tally from stream TEO
-        ISTREAM=INT(TE0)
+        JSTREAM=INT(TE0)
         ITALI=1
         CALL EIRENE_READTL(TXTPLS(1,ITALI),TXTPSP(1,ITALI),
      .              TXTPUN(1,ITALI),
      .              TEIN,NR1ST,NP2ND,NT3RD,NBMLT,NSBOX,
-     .              3,ISTREAM)
+     .              3,JSTREAM)
       CASE (5)
 c  INDPRO=5:  tally from PROUSR, indx=0
         CALL EIRENE_PROUSR (TEIN,0,TE0,TE1,TE2,TE3,TE4,TE5,TVAC,NSURF)
@@ -150,12 +150,12 @@ cdr one profile iplsti set at a time
           TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
         case (4)
 c  INDPRO=4:  read tally from stream TIO(IPLSTI)
-          ISTREAM=INT(TI0(IPLSTI))
+          JSTREAM=INT(TI0(IPLSTI))
           ITALI=2
           CALL EIRENE_READTL(TXTPLS(IPLSTI,ITALI),TXTPSP(IPLSTI,ITALI),
      .              TXTPUN(IPLSTI,ITALI),
      .              HELP,NR1ST,NP2ND,NT3RD,NBMLT,NSBOX,
-     .              3,ISTREAM)
+     .              3,JSTREAM)
           TIIN(IPLSTI,1:NSBOX)=HELP(1:NSBOX)
         case (5)
 c  INDPRO=5:  tally from PROUSR, indx=1, but NPLSTI calls, one for each IPLSTI
@@ -202,12 +202,12 @@ cdr one profile ipls set at a time
           DIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
         case (4)
 c  INDPRO=4:  read tally from stream DIO(IPLS)
-          ISTREAM=INT(DI0(IPLS))
+          JSTREAM=INT(DI0(IPLS))
           ITALI=4
           CALL EIRENE_READTL(TXTPLS(IPLS,ITALI),TXTPSP(IPLS,ITALI),
      .              TXTPUN(IPLS,ITALI),
      .              HELP,NR1ST,NP2ND,NT3RD,NBMLT,NSBOX,
-     .              3,ISTREAM)
+     .              3,JSTREAM)
           DIIN(IPLS,1:NSBOX)=HELP(1:NSBOX)
         case (5)
 c  INDPRO=5:  tally from PROUSR, indx=1+1*NPLS, but NPLSI calls, one for each IPLS
@@ -338,9 +338,9 @@ C  MAGNETIC FIELD UNIT VECTOR
 C
       IF (.NOT.(LBXIN.AND.LBYIN.AND.LBZIN.AND.LBFIN)) GOTO 154
 
-C  FOR IND=4,5,6,7 OR 9: ALSO THE ABSOLUTE B-FIELD STRENGTH BF CAN BE SET
+C  FOR IND=4,5,6,7 OR 9: ALSO THE ABSOLUTE B FIELD STRENGTH BF CAN BE SET
       IND=INDPRO(5)
-C  DEFAULT: 1 TESLA BFIELD IN Z-DIRECTION, IE., PITCH=0
+C  DEFAULT: 1 TESLA FIELD IN Z-DIRECTION, IE., PITCH=0
       IF (IND /= 9) THEN
         BXIN=0.
         BYIN=0.
@@ -388,7 +388,7 @@ c                 include also additional cells
         CALL EIRENE_PROFR (BFIN,4+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
       end select
 
-C  CONVERT PITCH ANGLE INTO B-FIELD UNIT VECTOR
+C  CONVERT PITCH ANGLE INTO B FIELD UNIT VECTOR
         IF (IND <= 3) then
 C  AT THIS POINT: INDPRO= 1,2, OR =3. 
 C                 HELP2 IS KNOWN ONLY IN CASE INDPRO=3
@@ -399,10 +399,10 @@ C                 HELP2 IS KNOWN ONLY IN CASE INDPRO=3
             IF (IR.GE.NR1ST) GOTO 1401
             IF ((NP2ND.GT.1).AND.(IP.GE.NP2ND)) GOTO 1401
 C
-            IF (.NOT.NLPITCH) THEN ! OLD DEFAULT: B-FIELD IS parallel TO Y,Z
+            IF (.NOT.NLPITCH) THEN ! OLD DEFAULT: B FIELD IS parallel TO Y,Z
               BXIN(J)=0.0
               BYIN(J)=HELP(IR)
-            ELSEIF (NLPITCH) THEN  ! NEW OPTION : B-FIELD IS parallel TO X,Z
+            ELSEIF (NLPITCH) THEN  ! NEW OPTION : B FIELD IS parallel TO X,Z
               BXIN(J)=HELP(IR)
               BYIN(J)=0.0
             ENDIF
@@ -469,13 +469,13 @@ C  CHECK FOR ZERO MAGNETIC FIELD IN ANY CELL (INCL. ADD. CELL REGION)
       DO 153 JJ=1,NSBOX
         IF (BXIN(JJ)**2+BYIN(JJ)**2+BZIN(JJ)**2.LE.EPS30) THEN
           WRITE (iunout,*)
-     .       'ZERO B-FIELD UNIT VECTOR IN STANDARD CELL JJ= ',JJ
+     .       'ZERO B FIELD UNIT VECTOR IN STANDARD CELL JJ= ',JJ
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
         B=SQRT(BXIN(JJ)**2+BYIN(JJ)**2+BZIN(JJ)**2)
         IF (ABS(B-1.D0).GT.EPS12) THEN
           WRITE (iunout,*)
-     .       'B-FIELD UNIT VECTOR IN STANDARD CELL JJ= ',JJ,B
+     .       'B FIELD UNIT VECTOR IN STANDARD CELL JJ= ',JJ,B
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
         IF (ABS(BFIN(JJ)).LT.EPS12) THEN
@@ -484,7 +484,7 @@ C  CHECK FOR ZERO MAGNETIC FIELD IN ANY CELL (INCL. ADD. CELL REGION)
         ENDIF
   153 CONTINUE
 
-  154 CONTINUE  !  BFIELD SPECIFIED AT ALL ??
+  154 CONTINUE  !  B FIELD SPECIFIED AT ALL ??
 C
 C  ADDITIONAL INPUT TALLIES
 
@@ -553,7 +553,7 @@ C
 CDR
 C   SET VACUUM DATA IN ADDITIONAL REGIONS OUTSIDE THE
 C   THE STANDARD MESH.
-C   EXCLUDE: INDPRO=4: ADDITIONAL CELL REGION FROM FILE ISTREAM
+C   EXCLUDE: INDPRO=4: ADDITIONAL CELL REGION FROM FILE JSTREAM
 C   EXCLUDE: INDPRO=7: ADDITIONAL CELL REGION DATA FROM EXTERNAL CODE (PROFR)
 C   EXCLUDE: INDPRO=8: ??
 

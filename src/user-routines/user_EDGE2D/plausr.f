@@ -822,7 +822,7 @@ c     cleanup
         by = by / bf
         bz = bz / bf
         if (ixtri(icell)+iytri(icell) == 0) then
-! outside plasma region: set b-field
+! outside plasma region: set B field
           bxin(icell) = bx
           byin(icell) = by
           bzin(icell) = bz

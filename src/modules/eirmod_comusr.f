@@ -58,7 +58,7 @@ c  derived from primary input profils, in subr. PLASMA_DERIV
 c  (strictly: tally no. -3: DEIN, is also a derived tally) :
      R        BXPERP(:),      BYPERP(:),
      R        BVIN(:,:),      PARMOM(:,:),    EDRIFT(:,:),
-c  B-field fluxfunction PSI, corresponds to POT for electric field
+c  B field fluxfunction PSI, corresponds to POT for electric field
      R        PSI(:),
      R        FREE26(:),      FREE27(:),
      R        FREE28(:),      FREE29(:),      FREE30(:),
@@ -194,7 +194,7 @@ C
       LOGICAL, PUBLIC, SAVE ::
      L         LDSMO, LVSMO,  LBSMO,  LESMO
 
-c  pointer to LIVTALI: active or inactive input tallies
+c  pointer to LIVTALI: active or in-active input tallies
       LOGICAL, PUBLIC, POINTER, SAVE ::
 c  background, drifting maxwellian parameters
      L         LTEIN,      LTIIN,      LDEIN,     LDIIN,
@@ -1717,7 +1717,7 @@ cdr oct 18: initialization of input volumetric tallies moved to ICAL==2
       ELSE IF (ICAL == 2) THEN
 c  Active volumetric input tallies
         PLSTLS = 0._DP
-c  Cemetery for inactive input tallies (no storage)
+c  Cemetery for in-active input tallies (no storage)
         CEMETERYP = 0._DP
 
         TEINL  = 0._DP
@@ -1771,7 +1771,7 @@ c  Cemetery for inactive input tallies (no storage)
       CALL MPI_BCAST (LSMOPRO,NTALG,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)     
       IF (ME /= 0) CALL EIRENE_ALLOC_CORNERS
 
-c  active and inactive tallies:
+c  active and in-active tallies:
 c  INPUT:
       CALL MPI_BCAST (LIVTALI,NTALI,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
 cdr   intlopts is only needed on processor 0

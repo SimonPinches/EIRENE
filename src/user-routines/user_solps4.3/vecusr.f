@@ -4,7 +4,7 @@
 c  L=.true. : This call is at known position x,y,z, in cell IC.
 c  L=.false.: This call is in cell ic. Return value at center of gravity of this cell
 
-c  I=1:  return local B-field vector as vec_x,vec_y,vec_z
+c  I=1:  return local B field vector as vec_x,vec_y,vec_z
 c  I=2:  return local plasma drift velocity vector of eirene background species "ipls"
 c               as vec_x,vec_y,vec_z
 c  note: ipls is the true background species,

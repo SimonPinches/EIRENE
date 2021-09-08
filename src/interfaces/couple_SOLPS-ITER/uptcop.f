@@ -35,7 +35,7 @@ C
       REAL(DP), INTENT(IN) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
      .                        XSTORV2(NSTORV,N2ND+N3RD), WV
 
-      REAL(DP) :: WTRSIG, EION, DIST, WTR
+      REAL(DP) :: WTRSIG, EKIN, DIST, WTR
       INTEGER :: IRD, IFIRST,
      .           IRCX, ICOU, IACX, IRDD, IPLSTI
       INTEGER :: NMTSP
@@ -112,10 +112,10 @@ C
               IPLS=LGACX(IATM,IACX,1)
               IF (LGVAC(IRD,IPLS)) GOTO 52
               IPLSTI= MPLSTI(IPLS)
-              EION=1.5*TIIN(IPLSTI,IRD)
-              IF (LEDRIFT) EION=EION+EDRIFT(IPLS,IRD)
+              EKIN=1.5*TIIN(IPLSTI,IRD)
+              IF (LEDRIFT) EKIN=EKIN+EDRIFT(IPLS,IRD)
               WTRSIG=WTR*SIGVCX(IRCX)/DIIN(IPLS,IRD)
-              COPV(IPLS,IRDD)=COPV(IPLS,IRDD)+WTRSIG*(E0/EION-1.)
+              COPV(IPLS,IRDD)=COPV(IPLS,IRDD)+WTRSIG*(E0/EKIN-1.)
               LMETSP(NMTSP+IPLS)=.TRUE.
    52       CONTINUE
           END IF
@@ -136,4 +136,4 @@ C
       ENDIF
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_UPTCOP

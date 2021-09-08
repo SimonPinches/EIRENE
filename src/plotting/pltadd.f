@@ -220,121 +220,114 @@ C
 C   PLOT P1, P2
             IF (L1.AND.L2) THEN
               IF (LZR) THEN
-                CALL GRJMP (REAL(P1(1,ISURF),KIND(1.E0)),
-     .                      REAL(P1(2,ISURF),KIND(1.E0)))
-                CALL GRDRW (REAL(P2(1,ISURF),KIND(1.E0)),
-     .                      REAL(P2(2,ISURF),KIND(1.E0)))
+                CALL GRJMP (REAL(P1(1,ISURF),SP), REAL(P1(2,ISURF),SP))
+                CALL GRDRW (REAL(P2(1,ISURF),SP), REAL(P2(2,ISURF),SP))
               ENDIF
               IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS) THEN
                 CALL EIRENE_STCOOR (P1(1,ISURF),P1(2,ISURF),0)
                 CALL EIRENE_STCOOR (P2(1,ISURF),P2(2,ISURF),1)
               ENDIF
             ELSE
-              CALL EIRENE_PSIDE
-     .  (G,R,P1(1,ISURF),P1(2,ISURF),P2(1,ISURF),
-     .                    P2(2,ISURF),L1,L2,EPS10)
+              CALL EIRENE_PSIDE (G,R,
+     .                           P1(1,ISURF),P1(2,ISURF),
+     .                           P2(1,ISURF),P2(2,ISURF),
+     .                           L1,L2,EPS10)
             ENDIF
 C   PLOT P1, P3
             IF (L1.AND.L3) THEN
               IF (LZR) THEN
-                CALL GRJMP (REAL(P1(1,ISURF),KIND(1.E0)),
-     .                      REAL(P1(2,ISURF),KIND(1.E0)))
-                CALL GRDRW (REAL(P3(1,ISURF),KIND(1.E0)),
-     .                      REAL(P3(2,ISURF),KIND(1.E0)))
+                CALL GRJMP (REAL(P1(1,ISURF),SP), REAL(P1(2,ISURF),SP))
+                CALL GRDRW (REAL(P3(1,ISURF),SP), REAL(P3(2,ISURF),SP))
               ENDIF
               IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS) THEN
                 CALL EIRENE_STCOOR (P1(1,ISURF),P1(2,ISURF),0)
                 CALL EIRENE_STCOOR (P3(1,ISURF),P3(2,ISURF),1)
               ENDIF
             ELSE
-              CALL EIRENE_PSIDE
-     .  (G,R,P1(1,ISURF),P1(2,ISURF),P3(1,ISURF),
-     .                    P3(2,ISURF),L1,L3,EPS10)
+              CALL EIRENE_PSIDE (G,R,
+     .                           P1(1,ISURF),P1(2,ISURF),
+     .                           P3(1,ISURF),P3(2,ISURF),
+     .                           L1,L3,EPS10)
             ENDIF
 C   PLOT P2, P3
             IF (L2.AND.L3.AND..NOT.L4) THEN
               IF (LZR) THEN
-                CALL GRJMP (REAL(P2(1,ISURF),KIND(1.E0)),
-     .                      REAL(P2(2,ISURF),KIND(1.E0)))
-                CALL GRDRW (REAL(P3(1,ISURF),KIND(1.E0)),
-     .                      REAL(P3(2,ISURF),KIND(1.E0)))
+                CALL GRJMP (REAL(P2(1,ISURF),SP), REAL(P2(2,ISURF),SP))
+                CALL GRDRW (REAL(P3(1,ISURF),SP), REAL(P3(2,ISURF),SP))
               ENDIF
               IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS) THEN
                 CALL EIRENE_STCOOR (P2(1,ISURF),P2(2,ISURF),0)
                 CALL EIRENE_STCOOR (P3(1,ISURF),P3(2,ISURF),1)
               ENDIF
             ELSE
-              CALL EIRENE_PSIDE
-     .  (G,R,P2(1,ISURF),P2(2,ISURF),P3(1,ISURF),
-     .                    P3(2,ISURF),L2,L3,EPS10)
+              CALL EIRENE_PSIDE (G,R,
+     .                           P2(1,ISURF),P2(2,ISURF),
+     .                           P3(1,ISURF),P3(2,ISURF),
+     .                           L2,L3,EPS10)
             ENDIF
 C   PLOT P4, P2
             IF (L4.AND.L2) THEN
               IF (LZR) THEN
-                CALL GRJMP (REAL(P4(1,ISURF),KIND(1.E0)),
-     .                      REAL(P4(2,ISURF),KIND(1.E0)))
-                CALL GRDRW (REAL(P2(1,ISURF),KIND(1.E0)),
-     .                      REAL(P2(2,ISURF),KIND(1.E0)))
+                CALL GRJMP (REAL(P4(1,ISURF),SP), REAL(P4(2,ISURF),SP))
+                CALL GRDRW (REAL(P2(1,ISURF),SP), REAL(P2(2,ISURF),SP))
               ENDIF
               IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS) THEN
                 CALL EIRENE_STCOOR (P4(1,ISURF),P4(2,ISURF),0)
                 CALL EIRENE_STCOOR (P2(1,ISURF),P2(2,ISURF),1)
               ENDIF
             ELSE
-              CALL EIRENE_PSIDE
-     .  (G,R,P4(1,ISURF),P4(2,ISURF),P2(1,ISURF),
-     .                    P2(2,ISURF),L4,L2,EPS10)
+              CALL EIRENE_PSIDE (G,R,
+     .                           P4(1,ISURF),P4(2,ISURF),
+     .                           P2(1,ISURF),P2(2,ISURF),
+     .                           L4,L2,EPS10)
             ENDIF
 C   PLOT P4, P3
             IF (L4.AND.L3.AND..NOT.L5) THEN
               IF (LZR) THEN
-                CALL GRJMP (REAL(P4(1,ISURF),KIND(1.E0)),
-     .                      REAL(P4(2,ISURF),KIND(1.E0)))
-                CALL GRDRW (REAL(P3(1,ISURF),KIND(1.E0)),
-     .                      REAL(P3(2,ISURF),KIND(1.E0)))
+                CALL GRJMP (REAL(P4(1,ISURF),SP), REAL(P4(2,ISURF),SP))
+                CALL GRDRW (REAL(P3(1,ISURF),SP), REAL(P3(2,ISURF),SP))
               ENDIF
               IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS) THEN
                 CALL EIRENE_STCOOR (P4(1,ISURF),P4(2,ISURF),0)
                 CALL EIRENE_STCOOR (P3(1,ISURF),P3(2,ISURF),1)
               ENDIF
             ELSE
-              CALL EIRENE_PSIDE
-     .  (G,R,P4(1,ISURF),P4(2,ISURF),P3(1,ISURF),
-     .                    P3(2,ISURF),L4,L3,EPS10)
+              CALL EIRENE_PSIDE (G,R,
+     .                           P4(1,ISURF),P4(2,ISURF),
+     .                           P3(1,ISURF),P3(2,ISURF),
+     .                           L4,L3,EPS10)
             ENDIF
 C   PLOT P4, P5
             IF (L4.AND.L5) THEN
               IF (LZR) THEN
-                CALL GRJMP (REAL(P4(1,ISURF),KIND(1.E0)),
-     .                      REAL(P4(2,ISURF),KIND(1.E0)))
-                CALL GRDRW (REAL(P5(1,ISURF),KIND(1.E0)),
-     .                      REAL(P5(2,ISURF),KIND(1.E0)))
+                CALL GRJMP (REAL(P4(1,ISURF),SP), REAL(P4(2,ISURF),SP))
+                CALL GRDRW (REAL(P5(1,ISURF),SP), REAL(P5(2,ISURF),SP))
               ENDIF
               IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS) THEN
                 CALL EIRENE_STCOOR (P4(1,ISURF),P4(2,ISURF),0)
                 CALL EIRENE_STCOOR (P5(1,ISURF),P5(2,ISURF),1)
               ENDIF
             ELSE
-              CALL EIRENE_PSIDE
-     .  (G,R,P4(1,ISURF),P4(2,ISURF),P5(1,ISURF),
-     .                    P5(2,ISURF),L4,L5,EPS10)
+              CALL EIRENE_PSIDE (G,R,
+     .                           P4(1,ISURF),P4(2,ISURF),
+     .                           P5(1,ISURF),P5(2,ISURF),
+     .                           L4,L5,EPS10)
             ENDIF
 C   PLOT P5, P3
             IF (L5.AND.L3) THEN
               IF (LZR) THEN
-                CALL GRJMP (REAL(P5(1,ISURF),KIND(1.E0)),
-     .                      REAL(P5(2,ISURF),KIND(1.E0)))
-                CALL GRDRW (REAL(P3(1,ISURF),KIND(1.E0)),
-     .                      REAL(P3(2,ISURF),KIND(1.E0)))
+                CALL GRJMP (REAL(P5(1,ISURF),SP), REAL(P5(2,ISURF),SP))
+                CALL GRDRW (REAL(P3(1,ISURF),SP), REAL(P3(2,ISURF),SP))
               ENDIF
               IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS) THEN
                 CALL EIRENE_STCOOR (P5(1,ISURF),P5(2,ISURF),0)
                 CALL EIRENE_STCOOR (P3(1,ISURF),P3(2,ISURF),1)
               ENDIF
             ELSE
-              CALL EIRENE_PSIDE
-     .  (G,R,P5(1,ISURF),P5(2,ISURF),P3(1,ISURF),
-     .                    P3(2,ISURF),L5,L3,EPS10)
+              CALL EIRENE_PSIDE (G,R,
+     .                           P5(1,ISURF),P5(2,ISURF),
+     .                           P3(1,ISURF),P3(2,ISURF),
+     .                           L5,L3,EPS10)
             ENDIF
 C   BERECHNE SCHNITTGERADE
           ELSE
@@ -450,14 +443,12 @@ C
      .              YP1.LE.YCHR) THEN
               IF (LZR) THEN
                 CALL GRSPTS (30)
-                CALL GRJMP
-     .  (REAL(XP1,KIND(1.E0)),REAL(YP1,KIND(1.E0)))
-                CALL GRDRW
-     .  (REAL(XP1,KIND(1.E0)),REAL(YP1,KIND(1.E0)))
+                CALL GRJMP (REAL(XP1,SP),REAL(YP1,SP))
+                CALL GRDRW (REAL(XP1,SP),REAL(YP1,SP))
                 CALL GRSPTS(16)
               ENDIF
-              IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS) CALL EIRENE_STCOOR
-     .  (XP1,YP1,0)
+              IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS)
+     .          CALL EIRENE_STCOOR (XP1,YP1,0)
             ENDIF
             GOTO 200
 C
@@ -468,10 +459,8 @@ C
      .         YP2.GE.YCHL.AND.YP2.LE.YCHR
             IF (L1.AND.L2) THEN
               IF (LZR) THEN
-                CALL GRJMP
-     .  (REAL(XP1,KIND(1.E0)),REAL(YP1,KIND(1.E0)))
-                CALL GRDRW
-     .  (REAL(XP2,KIND(1.E0)),REAL(YP2,KIND(1.E0)))
+                CALL GRJMP (REAL(XP1,SP),REAL(YP1,SP))
+                CALL GRDRW (REAL(XP2,SP),REAL(YP2,SP))
               ENDIF
               IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS) THEN
                 CALL EIRENE_STCOOR (XP1,YP1,0)
@@ -727,7 +716,7 @@ C
         ENDIF
         IF (LZR) THEN
           CALL GRCHRC (0.1,0.0,16)
-          CALL GRJMPS (REAL(XP,KIND(1.E0)),REAL(YP,KIND(1.E0)),3)
+          CALL GRJMPS (REAL(XP,SP),REAL(YP,SP),3)
           CALL GRCHRC (0.3,0.0,16)
         ENDIF
         IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS) CALL EIRENE_STCOOR (XP,YP,0)
@@ -922,8 +911,8 @@ c           ylst=
 c           alen=
 c           awid=
 c           icode=
-c           call grarrw(REAL(XINI,KIND(1.E0)),REAL(YINI,KIND(1.E0)),xlst,ylst,
-c    .                  REAL(alen,KIND(1.E0)),REAL(awid,KIND(1.E0)),icode)
+c           call grarrw(REAL(XINI,SP),REAL(YINI,SP),xlst,ylst,
+c    .                  REAL(alen,SP),REAL(awid,SP),icode)
 c
           ENDIF
 C  PLOT SURFACE NUMBERS
@@ -936,21 +925,15 @@ csw
             ELSEIF (ABS(CUR%NUMSUR).LT.10) THEN
 c two digits
               WRITE (CH1,'(I2)') CUR%NUMSUR
-              CALL GRTXT
-     .  (REAL(XINI,KIND(1.E0)),REAL(YINI,KIND(1.E0)),
-     .                    2,CH1)
+              CALL GRTXT (REAL(XINI,SP),REAL(YINI,SP),2,CH1)
             ELSEIF (ABS(CUR%NUMSUR).LT.100) THEN
 c three digits
               WRITE (CH2,'(I3)') CUR%NUMSUR
-              CALL GRTXT
-     .  (REAL(XINI,KIND(1.E0)),REAL(YINI,KIND(1.E0)),
-     .                    3,CH2)
+              CALL GRTXT (REAL(XINI,SP),REAL(YINI,SP),3,CH2)
             ELSEIF (ABS(CUR%NUMSUR).LT.1000) THEN
 c four digits
               WRITE (CH3,'(I4)') CUR%NUMSUR
-              CALL GRTXT
-     .  (REAL(XINI,KIND(1.E0)),REAL(YINI,KIND(1.E0)),
-     .                    4,CH3)
+              CALL GRTXT (REAL(XINI,SP),REAL(YINI,SP),4,CH3)
             ENDIF
           ENDIF
           CUR => SURFEN%NXTPNT

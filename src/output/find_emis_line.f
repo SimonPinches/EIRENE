@@ -18,7 +18,7 @@ cdr SIGLINE is called only for chords ICHORI, for which NCHTAL(ichori)=2.
 cdr Calls are whenever either a change in stratum number ISTR, 
 cdr                    or                 transition energy ENER,
 cdr                    or                 a new internal iteration 
-cdr  (time stepping, non-linear BGK iterations)
+cdr  (time stepping, nonlinear BGK iterations)
 
 cdr In storage saving mode (mod_addv = 0) from here we call EIRENE_EMISSIVITY.F
 cdr   for the present stratum and present line, 

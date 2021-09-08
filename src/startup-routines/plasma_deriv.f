@@ -752,7 +752,7 @@ C
       END IF
 
       IF (LBSMO) THEN
-C  SMOOTH B-FIELD
+C  SMOOTH B FIELD
         if (lbxsmo) call eirene_cell_to_corner(BXIN,BXINCORNER)
         if (lbysmo) call eirene_cell_to_corner(BYIN,BYINCORNER)
         if (lbzsmo) call eirene_cell_to_corner(BZIN,BZINCORNER)
@@ -760,7 +760,7 @@ C  SMOOTH B-FIELD
       END IF
 
       IF (LESMO) THEN
-C  SMOOTH E-FIELD
+C  SMOOTH E FIELD
         if (lexsmo)  call eirene_cell_to_corner(EXIN,EXCORNER)
         if (leysmo)  call eirene_cell_to_corner(EYIN,EYCORNER)
         if (lezsmo)  call eirene_cell_to_corner(EZIN,EZCORNER)

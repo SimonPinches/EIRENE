@@ -14,4 +14,4 @@ CPB      IF (.NOT.V(J)) GOTO 18
          J=J+IV
       END DO
    18 EIRENE_ILLZ=EIRENE_ILLZ-1
-      END
+      END FUNCTION EIRENE_ILLZ

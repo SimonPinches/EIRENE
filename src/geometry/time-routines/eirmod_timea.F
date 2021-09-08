@@ -54,9 +54,9 @@ C   ADDITIONAL SURFACES, DEFINED BY 1.ST OR 2.ND ORDER EQUATIONS IN INPUT BLOCK 
 C   IT IS ALSO CHECKED, WHETHER THIS INTERSECTION TAKES PLACE INSIDE THE
 C   SPECIFIED BOUNDARIES OF THOSE SURFACES
 C
-C  ENTRY TIMEA0: INITIALIZATION, PRE-COMPUTING SOME EXPRESSIONS, CONSISTENCY CHECKS, ETC..
+C  TIMEA0: INITIALIZATION, PRE-COMPUTING SOME EXPRESSIONS, CONSISTENCY CHECKS, ETC..
 C                IN CASE: NLOCTREE: SET UP OCTREE, FOR SPEED UP OF GEOMETRICAL CALCULATIONS
-C  ENTRY TIMEA1: FIND CLOSEST LEGAL INTERSECTION POINT. MORE COMMENTS: SEE AT ENTRY TIMEA1.
+C  TIMEA1: FIND CLOSEST LEGAL INTERSECTION POINT. MORE COMMENTS: SEE IN SUBR. TIMEA1.
 C
 C
 
@@ -540,7 +540,7 @@ c  create HNF coefficients (normalized vector and distance)
 c.....................................................
 
 !pb 04122019
-!pb   clean up in case NLIMI changed from a prior iteration      
+!pb   clean up in case NLIMI is changed compared to an earlier iteration      
       call eirene_dealloc_timea
       IF (NLOCTREE) then
 c  calling an internal subroutine for preparing octree procedure:
@@ -553,30 +553,16 @@ c
 
       ELSE  !   NOT NLOCTREE
 c  old default: ALL surfaces are outside the octree procedure,
-c               i.e. OCTREE optimization in in-active
+c               i.e. OCTREE optimization is in-active
         if (.not.allocated(NOTOCSURFS)) ALLOCATE(NOTOCSURFS(NLIMI))
         DO J=1,NLIMI
           NOTOCSURFS(J) = J
         END DO
         NSURFNOT = NLIMI
       ENDIF
-
+      RETURN
 
       END SUBROUTINE EIRENE_TIMEA0
-
-c  write the octree to vtk tool output
-      SUBROUTINE EIRENE_TIMEA3_VTKOUT
-      IMPLICIT NONE
-        if (associated(tree) .and. NLOCTREE) then
-c  call octree function to plot the tree recursive
-          call OCTREE_PrintVTK(tree, IVTKOUT)
-
-          open(200,file='graphviz.out')
-          call OCTREE_PrintGraphviz(tree, 200)
-          close(200)
-        end if
-      END SUBROUTINE EIRENE_TIMEA3_VTKOUT
-
 C
       SUBROUTINE EIRENE_TIMEA1
      . (MSURF,NCELL,NLI,NLE,NTCELL,IPERID,XX,YY,ZZ,TMT,
@@ -586,7 +572,7 @@ C
       REAL(DP) :: TMIN, TL
       REAL(DP) :: XX, YY, ZZ, TMT, VXX, VYY, VZZ, VV, X_S, Y_S, Z_S,
      .          SG_S, XR, YR, ZR, SG
-     .          
+
       INTEGER MSURF, NNTCL, NTCELL, IPERID, MASURF, NCELL, 
      .        NLI, NLE, MASURF_S
       LOGICAL, INTENT(OUT) :: LCNDEXP
@@ -634,8 +620,10 @@ C  FIND LOCAL COORDINATE SYSTEM IN CASE OF NLTRA
 #ifdef TRACE
       IF (NLTRC) THEN
         CALL EIRENE_LEER(1)
-        WRITE (iunout,*) 'TIMEA ,X,Y,Z,T ',XX,YY,ZZ,TMT
-        WRITE (iunout,*) '      VX,VY,VZ,V ',VXX,VYY,VZZ,VV
+        CALL EIRENE_MASR4('TIMEA: X,Y,Z,T                  ',
+     .                            XX,YY,ZZ,TMT)
+        CALL EIRENE_MASR4('      VX,VY,VZ,V                ',
+     .                            VXX,VYY,VZZ,VV)
         IF (NLTRA) WRITE (iunout,*) 'MSURF,NNTCL ',MSURF,NNTCL
         IF (.NOT.NLTRA) WRITE (iunout,*) 'MSURF ',MSURF
       ENDIF
@@ -654,7 +642,7 @@ C  FIND LOCAL COORDINATE SYSTEM IN CASE OF NLTRA
         WRITE(iunout,*) "PROCESSING ADDITIONAL SURFACES WITH RLB < 3"
       endif
 
-c   call timea2 for all those SURFACES which ARE no plane triangle
+c   call timea2 for all those SURFACES which ARE not plane triangles
 c   -> we will get a time minimum out of this, if any of these
 c   surfaces are hit.
       CALL EIRENE_TIMEA_CheckInter(MSURF,NCELL,NLI,NLE,NNTCL,
@@ -853,16 +841,32 @@ c  that are no tri/quad/quintangles
            NOTOCSURFS(NSURFNOT) = J
         END IF
       END DO
-
+      RETURN
 
       END SUBROUTINE EIRENE_TIMEA0_BUILDOC
 
       
       SUBROUTINE EIRENE_DEALLOC_TIMEA
+      IMPLICIT NONE
 
       if (ALLOCATED(NOTOCSURFS)) DEALLOCATE (NOTOCSURFS)
       if (ASSOCIATED(tree)) call OCTREE_DeleteTree(tree)
+      RETURN
       
       END SUBROUTINE EIRENE_DEALLOC_TIMEA
+
+
+c  write the octree to vtk tool output
+      SUBROUTINE EIRENE_TIMEA3_VTKOUT
+      IMPLICIT NONE
+        if (associated(tree) .and. NLOCTREE) then
+c  call octree function to plot the tree recursive
+          call OCTREE_PrintVTK(tree, IVTKOUT)
+
+          open(200,file='graphviz.out')
+          call OCTREE_PrintGraphviz(tree, 200)
+          close(200)
+        end if
+      END SUBROUTINE EIRENE_TIMEA3_VTKOUT
       
       END MODULE EIRMOD_TIMEA

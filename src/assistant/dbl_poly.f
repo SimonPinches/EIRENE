@@ -9,6 +9,10 @@ cdr: aprl 18: extrapolation wrt. 2nd parameter added.
 cdr           ifex=0:  constant extrapolation
 cdr           ifex<0:  find extrapolation parameters here, and call extrap.f
 cdr           ifex>0:  find parameters boundary, and call extrap.f
+cdr  aug. 20: code safeties from ITER branch: activate transfer of fp1, fp2
+cdr           to routine extrap.f
+cdr           Still missing: what if both al1 AND al2 are out of range?
+cdr           Still missing: Arrhenius factors (if specified)
 
 c  called from: rate_coeff.f
 c               energy_rate_coeff.f
@@ -83,6 +87,7 @@ C  DEFAULT: TAKE THE FIT AT AL1=RC1MIN
           p1=rc1min
           if (trc) write (iunout,*) 'extrap option 0 dbl_pol',al1,rc1min
           GOTO 100
+          
         ELSEIF (IFEX1MN.LT.0) THEN
 C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR AL1 - LINEAR EXTRAP. IN LN(FIT) AT FIXED AL2
 C  EVALUATED AT AL2, WHICH MUST BE INSIDE VALID RANGE
@@ -127,6 +132,9 @@ c  evaluate double parameter fit at s01,al2
           IFEX=IFEX1MN
           AL1MIN=RC1MIN
           COU1MIN=EXP(EXPO1)
+          FPAR1=FP1(1)
+          FPAR2=FP1(2)
+          FPAR3=FP1(3)
         ENDIF
 
         COU=EIRENE_EXTRAP(AL1,AL1MIN,COU1MIN,IFEX,FPAR1,FPAR2,FPAR3)
@@ -141,6 +149,7 @@ C  DEFAULT: TAKE THE FIT AT AL1=RC1MAX
           p1=rc1max
           if (trc) write (iunout,*) 'extrap option 0 dbl_pol',al1,rc1max
           GOTO 100
+          
         ELSEIF (IFEX1MX.LT.0) THEN
 C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR AL1 - LINEAR EXTRAP. IN LN(FIT) AT FIXED AL2
 C  EVALUATED AT AL2, WHICH MUST BE INSIDE VALID RANGE
@@ -185,6 +194,9 @@ c  evaluate double parameter fit at s01,al2
           IFEX=IFEX1MX
           AL1MAX=RC1MAX        !  HERE: AL1MAX=AL1MAX(AL2)
           COU1MAX=EXP(EXPO1)   !  HERE: COU1MAX=COUMAX(AL2)
+          FPAR1=FP1(4)
+          FPAR2=FP1(5)
+          FPAR3=FP1(6)
         ENDIF
 
         COU=EIRENE_EXTRAP(AL1,AL1MAX,COU1MAX,IFEX,FPAR1,FPAR2,FPAR3)
@@ -243,7 +255,10 @@ c  evaluate double parameter fit at s01,al1
           IFEX=IFEX2MN
           AL2MIN=RC2MIN       !  HERE: AL2MIN=AL2MIN(AL1)
           COU2MIN=EXP(EXPO1)  !  HERE: COU2MIN=COU2MIN(AL1)
-        ENDIF
+          FPAR1=FP2(1)
+          FPAR2=FP2(2)
+          FPAR3=FP2(3)
+         ENDIF
 
 
         COU=EIRENE_EXTRAP(AL2,AL2MIN,COU2MIN,IFEX,FPAR1,FPAR2,FPAR3)
@@ -302,6 +317,9 @@ c  evaluate double parameter fit at s01,al1
           IFEX=IFEX2MX
           AL2MAX=RC2MAX        !  HERE: AL2MAX=AL1MAX(AL1)
           COU2MAX=EXP(EXPO1)   !  HERE: COU2MAX=COUMAX(AL1)
+          FPAR1=FP2(4)
+          FPAR2=FP2(5)
+          FPAR3=FP2(6)
         ENDIF
 
         COU=EIRENE_EXTRAP(AL2,AL2MAX,COU2MAX,IFEX,FPAR1,FPAR2,FPAR3)
@@ -336,8 +354,8 @@ cdr  is obtained by summing over the 9 terms
         end do
       end do
 
-cdr  this second evaluation may not be needed, if only a collapsed fit is wanted.
-cdr  or if al2=0.0  (as in H.4, H.10, AMJUEL fits, for automatic corona limit.
+cdr  this second evaluation may not be needed, if only a collapsed fit is wanted,
+cdr  or if al2=0.0 (as in H.4, H.10, AMJUEL fits), for automatic corona limit.
 
 cdr  H.4, H.10, H.12 fits from AMJUEL: corona at p2 <= log(ne/10**8) = rc2min = 0.0
 cdr   if p2.le.0.0, just return cou=dum(0) = fit2(AL1,AL2)

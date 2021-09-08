@@ -8,7 +8,7 @@ cdr             3) RTIS% pointer to sploda,.....
 cdr             4) rates SEIODA, SEINWA added (was missing, used for ipls total ion energy density)
 cdr                now: SEIOD(.., NPLS), SEINW(...,NPLS) added
 
-C  MAIN INTERFACING ROUTINE FOR COUPLED CFD-PLASMA - EIRENE APPLICATIONS
+C  MAIN INTERFACING ROUTINE FOR COUPLED CFD PLASMA - EIRENE APPLICATIONS
 
 C  This routine is called from CFD PLASMA CODE and provides the entry point into EIRENE.
 
@@ -171,7 +171,7 @@ C
           CALL EIRENE_PLSTRT
 C
 C  READ FORMATTED INPUT FILE IUNIN
-C  AND RUN EIRENE FOR ONE TIME-CYCLE: ITIMV=1
+C  AND RUN EIRENE FOR ONE TIME CYCLE: ITIMV=1
 C  WITH OR WITHOUT INITIAL DISTRIBUTION ON FILE FT15 (NFILE-J FLAG)
 C  AS FINAL STRATUM
 C  EXPECT PLASMA DATA ON FORT.31 (NLPLAS=.FALSE.)
@@ -255,7 +255,7 @@ C  THEN CALL INTERFACING ROUTINE AT ENTRY IF3COP (FROM EIRENE MAIN)
 C
           IITER=1
           IPRNLI=0
-          NLSRON=.TRUE.
+          NLSRON(1:NSTRAI)=.TRUE.
           ITNR=1
           CALL EIRENE_EIRENE_COUPLE (LSTOP,ITNR,.TRUE.)
           IF (LSTOP) THEN
@@ -291,7 +291,7 @@ csw
           CALL EIRENE_PLSTRT
 C
 C  READ FORMATTED INPUT FILE IUNIN
-C  AND RUN EIRENE FOR ONE TIME-CYCLE: ITIMV=1
+C  AND RUN EIRENE FOR ONE TIME CYCLE: ITIMV=1
 C  WITH OR WITHOUT INITIAL DISTRIBUTION ON FILE FT15 (NFILE-J FLAG)
 C  AS FINAL STRATUM
 C  EXPECT PLASMA DATA ON FORT.31 (NLPLAS=.FALSE.)
@@ -394,11 +394,11 @@ CDR why alloc short cycle data, even if no short cycle is done ??
           IST_RATE = ISTNEW
         END IF
 
-        WHERE (NLSRON)
-          ITS = IST_RATE
+        WHERE (NLSRON(1:NSTRAI))
+          ITS(1:NSTRAI) = IST_RATE
         END WHERE
 
-        ITS_COUNT(IST_RATE) = COUNT(NLSRON)
+        ITS_COUNT(IST_RATE) = COUNT(NLSRON(1:NSTRAI))
 C
         CALL EIRENE_ALLOC_RATE_ARRAY(IST_RATE)
         CALL EIRENE_INIT_RATE_ARRAY(IST_RATE)
@@ -433,11 +433,11 @@ C  NEXT: ATOMS, EI RATES: SPLODA, SEEODA, SEIODA
 C
 cdr  correct energy exchange with bulk ions: e0* eplei(irei,ipls,1)+ eheavy* eplei(irei,ipls,2)
 cdr  sum over ipls:                          e0* eplei(irei,0,1)   + eheavy *eplei(irei,0,2)
-cdr  e0 is taken as center of mass (COM)energy (as appropriate in ei processes, but not in pi processes)
+cdr  e0 is taken as center of mass (COM)energy (as appropriate in EI processes, but not in PI processes)
 cdr  and eheavy is the kinetic energy release (KER) in reaction irei
 cdr  the present short cycle correction only accounts for the KER (=0 for atoms), not for the COM part
 C
-C  CURRENT RUN: PARTICLE RATE: ATOMS, EI-PROCESSES, FROM IATM TO IPLS,
+C  CURRENT RUN: PARTICLE RATE: ATOMS, EI PROCESSES, FROM IATM TO IPLS,
 C                                     SUM OVER ALL EI PROCESSES
 C
         DO JATM=1,NATMI
@@ -459,7 +459,7 @@ C
         ENDDO
 C
 C
-C  CURRENT RUN: ELECTRON COOLING RATE: ATOMS, EI-PROCESSES, FROM IATM,
+C  CURRENT RUN: ELECTRON COOLING RATE: ATOMS, EI PROCESSES, FROM IATM,
 C                                      SUM OVER ALL EI PROCESSES
 C
         DO JATM=1,NATMI
@@ -481,7 +481,7 @@ C
 C
 C
 C
-C  CURRENT RUN: ION ENERGY EXCHANGE RATE: ATOMS, EI-PROCESSES, FROM IATM
+C  CURRENT RUN: ION ENERGY EXCHANGE RATE: ATOMS, EI PROCESSES, FROM IATM
 C                                         SUM OVER ALL EI PROCESSES
 C                                         SUM OVER ALL IPLS
 C
@@ -491,7 +491,7 @@ C
            IREI=LGAEI(JATM,IAEI)
 !pb 09022016            ESIG=EPLEI(IREI,2)  this was incorrect,
 cdr                     because it was already summed over ipls
-           ESIG=EPLEI(IREI,JPLS,2)  ! only KER -part is corrected in short cycle
+           ESIG=EPLEI(IREI,JPLS,2)  ! only KER part is corrected in short cycle
            DO IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
                 RTIS%SEIODA(IN,JATM)=RTIS%SEIODA(IN,JATM)+
@@ -509,7 +509,7 @@ C
 C  NEXT: TEST IONS, EI RATES: SPLODI, SEEODI, SEIODI
 
 C
-C  CURRENT RUN: PARTICLE RATE: TEST IONS, EI-PROCESSES, FROM IION TO IPLS,
+C  CURRENT RUN: PARTICLE RATE: TEST IONS, EI PROCESSES, FROM IION TO IPLS,
 C                                     SUM OVER ALL EI PROCESSES
 C
         DO JION=1,NIONI
@@ -531,7 +531,7 @@ c
          END DO
         END DO
 C
-C  CURRENT RUN: ELECTRON COOLING RATE: TEST IONS, EI-PROCESSES, FROM IION,
+C  CURRENT RUN: ELECTRON COOLING RATE: TEST IONS, EI PROCESSES, FROM IION,
 C                                      SUM OVER ALL EI PROCESSES
         DO JION=1,NIONI
           DO IIEI=1,NIEII(JION)
@@ -550,7 +550,7 @@ C                                      SUM OVER ALL EI PROCESSES
           ENDDO
         ENDDO
 C
-C  CURRENT RUN: ION ENERGY EXCHANGE RATE: TEST IONS, EI-PROCESSES, FROM IION
+C  CURRENT RUN: ION ENERGY EXCHANGE RATE: TEST IONS, EI PROCESSES, FROM IION
 C                                         SUM OVER ALL EI PROCESSES
 C                                         SUM OVER ALL IPLS
 C
@@ -560,7 +560,7 @@ C
            IREI=LGIEI(JION,IIEI)
 !pb 09022016            ESIG=EPLEI(IREI,2)  this was incorrect,
 cdr                     because it was already summed over ipls
-           ESIG=EPLEI(IREI,JPLS,2)  ! only KER -part is corrected in short cycle
+           ESIG=EPLEI(IREI,JPLS,2)  ! only KER part is corrected in short cycle
            DO IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
               RTIS%SEIODI(IN,JION)=RTIS%SEIODI(IN,JION)+
@@ -596,7 +596,7 @@ C
         END DO
 C
 C
-C  CURRENT RUN: ELECTRON COOLING RATE: MOLECULES, EI-PROCESSES, FROM IMOL,
+C  CURRENT RUN: ELECTRON COOLING RATE: MOLECULES, EI PROCESSES, FROM IMOL,
 C                                      SUM OVER ALL EI PROCESSES
 C
         DO JMOL=1,NMOLI
@@ -616,7 +616,7 @@ C
          END DO
         END DO
 C
-C  CURRENT RUN: ION ENERGY EXCHANGE RATE: MOLECULES, EI-PROCESSES, FROM IMOL
+C  CURRENT RUN: ION ENERGY EXCHANGE RATE: MOLECULES, EI PROCESSES, FROM IMOL
 C                                         SUM OVER ALL EI PROCESSES
 C                                         SUM OVER ALL IPLS
         DO JMOL=1,NMOLI
@@ -625,7 +625,7 @@ C                                         SUM OVER ALL IPLS
            IREI=LGMEI(JMOL,IMEI)
 !pb 09022106         ESIG=EPLEI(IREI,2)  this was incorrect,
 cdr                     because it was already summed over ipls
-           ESIG=EPLEI(IREI,JPLS,2) ! only KER -part is corrected in short cycle
+           ESIG=EPLEI(IREI,JPLS,2) ! only KER part is corrected in short cycle
            DO IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
               RTIS%SEIODM(IN,JMOL)=RTIS%SEIODM(IN,JMOL)+
@@ -743,9 +743,9 @@ C  NEXT: ATOMS, EI RATES: SPLNWA, SEENWA, SEINWA
 C
 cdr  correct energy exchange with bulk ions: e0* eplei(IREI,ipls,1)+ eplei(IREI,ipls,2)
 cdr  sum over ipls:                          e0* eplei(IREI,0,1)   + eplei(IREI,0,2)
-cdr  the present short cycle correction only accounts for the KER (=0 for atoms)
+cdr  The present short cycle correction only accounts for the KER (=0 for atoms)
 C
-C  NEXT RUN: PARTICLE RATE: ATOMS, EI-PROCESSES, FROM IATM TO IPLS,
+C  NEXT RUN: PARTICLE RATE: ATOMS, EI PROCESSES, FROM IATM TO IPLS,
 C                                     SUM OVER ALL EI PROCESSES
         DO JATM=1,NATMI
          DO 101 JPLS=1,NPLSI
@@ -780,7 +780,7 @@ C
           END DO
         END DO
 
-cdr  no seinwa, because only KER part is in short cycle correction for EI processes
+cdr  There is no seinwa, because only KER part is in short cycle correction for EI processes
 cdr             and for atoms this is identically 0.0
 C
 C  NEW: TEST IONS, EI PROCESSES
@@ -935,9 +935,17 @@ CDR     ENDIF   !(IFIRST=1, IFIRST.GE.1 BRANCHING)
 C
       ENDIF  !(LTIME)
 
-      return
+      RETURN
+      END SUBROUTINE EIRENE_EIRSRT
 
-      entry eirene_eirsrt_broad
+      SUBROUTINE EIRENE_EIRSRT_BROAD
+      use eirmod_parmmod
+      use eirmod_comsou
+      use eirmod_eirbra
+      use eirmod_mpi
+      implicit none
+      integer :: ierr_mpi
+      LOGICAL :: LOGHELP(NSTRA)
 !pb copy NLSRON to LOGHELP to avoid warnings from Intel compiler
       LOGHELP(1:NSTRAI) = NLSRON(1:NSTRAI)
       call mpi_bcast(loghelp,nstrai,MPI_LOGICAL,
@@ -946,4 +954,4 @@ C
       call eirene_broadcast_eirbra
       return
 
-      END
+      END SUBROUTINE EIRENE_EIRSRT_BROAD

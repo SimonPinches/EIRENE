@@ -11,12 +11,11 @@
 
       CONTAINS
      
-!pb  100107 SUBROUTINE SIGHA_REINIT added
 CDR  parameter PEN introduced, to identify hydrogen line by central energy
 Cdr Aug.16:  The identification of particular lines
 cdr          by upper and lower energy level (input flags EMIN1,EMAX1 in block 12)
-cdr          is not functional in this version, distinct from the manual description
-cdr          currently lines can only be identified by their central energy PEN (EMIN1)
+cdr          is not functional in this version, distinct from the manual description.
+cdr          Currently lines can only be identified by their central energy PEN (EMIN1)
 cdr          and input parameter EMAX1 is not used at all.
 cpb Feb 17:  refresh ADDV tallies (volumetric line emissivities)
 c            not only for new stratum, but also when
@@ -37,7 +36,7 @@ cdr    the lines, components and contributions are specified in input block 12.
 cdr    the corresponding emissivity profiles are specified as 
 cdr    reaction decks in block 4.
 
-cdr old version (up to May 2018):
+cdr old version (up to May 2018), Hydrogen only:
 c    Currently there are up to 6 contributions to each particular pre-programmed
 c    transition (depending on population coefficient data stored
 c    in file AMJUEL, section H.11 and H.12)
@@ -144,14 +143,17 @@ c  sum over components of line LNO
         IF (LARGST) ARGST(0,JJJ) = ADDV(IADV,NCELC)
       END IF
 C
-      END
+      RETURN
+      END SUBROUTINE EIRENE_SIGLINE
 
 C     Following lines added for reinitialisation of eirene (DMH)
 
       SUBROUTINE EIRENE_SIGLINE_REINIT
+      IMPLICIT NONE
       ISTOLD = -1
       ITROLD = -1
       PENOLD = -1._DP
+      RETURN
       END
 
       END MODULE EIRMOD_SIGLINE

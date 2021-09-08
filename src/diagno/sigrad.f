@@ -1,4 +1,4 @@
-C  28.6.05:  Zexp2=1. for ARGST, in transparent cells with infinit mfp.
+C  28.6.05:  Zexp2=1. for ARGST, in transparent cells with infinite mfp.
 c  10.4.06:  use ipht rather than iphot, in order not to spoil ISPZ for
 c            chctrc output.
 C
@@ -160,4 +160,4 @@ C
         DEALLOCATE (ZARG3)
       ENDIF
       RETURN
-      END
+      END SUBROUTINE EIRENE_SIGRAD

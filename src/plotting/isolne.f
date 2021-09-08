@@ -203,10 +203,10 @@ C
 C  PLOT FRAME
 C
       CALL EIRENE_PLNXTB (1,'ISOLNE.F')
-      CALL GRSCLC (10.,4.,REAL(10.+DX*FAK,KIND(1.E0)),
-     .                    REAL(4.+DY*FAK,KIND(1.E0)))
-      CALL GRSCLV (REAL(XMIN,KIND(1.E0)),REAL(YMIN,KIND(1.E0)),
-     .             REAL(XMAX,KIND(1.E0)),REAL(YMAX,KIND(1.E0)))
+      CALL GRSCLC (10.,4.,REAL(10.+DX*FAK,SP),
+     .                    REAL(4.+DY*FAK,SP))
+      CALL GRSCLV (REAL(XMIN,SP),REAL(YMIN,SP),
+     .             REAL(XMAX,SP),REAL(YMAX,SP))
       CALL GRAXS (7,'X=3,Y=3',6,'R (CM)',6,'Z (CM)')
 C
 C  SCALE FACTORS: USER COORDINATES TO CM:
@@ -218,74 +218,72 @@ C
 C  PLOT BOUNDARY OF MESH
 C
       IF (LEVGEO.EQ.1) THEN
-        CALL GRJMP(real(XMIN,KIND(1.E0)),real(YMIN,KIND(1.E0)))
-        CALL GRDRW(real(XMIN,KIND(1.E0)),real(YMAX,KIND(1.E0)))
-        CALL GRDRW(real(XMAX,KIND(1.E0)),real(YMAX,KIND(1.E0)))
-        CALL GRDRW(real(XMAX,KIND(1.E0)),real(YMIN,KIND(1.E0)))
-        CALL GRDRW(real(XMIN,KIND(1.E0)),real(YMIN,KIND(1.E0)))
+        CALL GRJMP(real(XMIN,SP),real(YMIN,SP))
+        CALL GRDRW(real(XMIN,SP),real(YMAX,SP))
+        CALL GRDRW(real(XMAX,SP),real(YMAX,SP))
+        CALL GRDRW(real(XMAX,SP),real(YMIN,SP))
+        CALL GRDRW(real(XMIN,SP),real(YMIN,SP))
       ELSEIF (LEVGEO.EQ.2.AND.LPPOL3(IBLD)) THEN
-        CALL GRJMP(real(XMIN,KIND(1.E0)),real(YMIN,KIND(1.E0)))
-        CALL GRDRW(real(XMIN,KIND(1.E0)),real(YMAX,KIND(1.E0)))
-        CALL GRDRW(real(XMAX,KIND(1.E0)),real(YMAX,KIND(1.E0)))
-        CALL GRDRW(real(XMAX,KIND(1.E0)),real(YMIN,KIND(1.E0)))
-        CALL GRDRW(real(XMIN,KIND(1.E0)),real(YMIN,KIND(1.E0)))
+        CALL GRJMP(real(XMIN,SP),real(YMIN,SP))
+        CALL GRDRW(real(XMIN,SP),real(YMAX,SP))
+        CALL GRDRW(real(XMAX,SP),real(YMAX,SP))
+        CALL GRDRW(real(XMAX,SP),real(YMIN,SP))
+        CALL GRDRW(real(XMIN,SP),real(YMIN,SP))
       ELSEIF (LEVGEO.EQ.2.AND.LPTOR3(IBLD)) THEN
         DO 7 IR=1,NR1ST,NR1STM
-          CALL GRJMP(real(XPOL(IR,1),KIND(1.E0)),
-     .               real(YPOL(IR,1),KIND(1.E0)))
+          CALL GRJMP(real(XPOL(IR,1),SP),real(YPOL(IR,1),SP))
           DO 9 IP = 2,NP2ND
-            CALL GRDRW(real(XPOL(IR,IP),KIND(1.E0)),
-     .                 real(YPOL(IR,IP),KIND(1.E0)))
+            CALL GRDRW(real(XPOL(IR,IP),SP), real(YPOL(IR,IP),SP))
     9     CONTINUE
     7   CONTINUE
       ELSEIF (LEVGEO.EQ.3.AND.LPTOR3(IBLD)) THEN
-        CALL GRJMP(real(XPOL(1,NPOINT(1,1)),KIND(1.E0)),
-     .             real(YPOL(1,NPOINT(1,1)),KIND(1.E0)))
+        CALL GRJMP(real(XPOL(1,NPOINT(1,1)),SP),
+     .             real(YPOL(1,NPOINT(1,1)),SP))
           DO 10 IR=2,NR1ST
-            CALL GRDRW (real(XPOL(IR,NPOINT(1,1)),KIND(1.E0)),
-     .                  real(YPOL(IR,NPOINT(1,1)),KIND(1.E0)))
+            CALL GRDRW (real(XPOL(IR,NPOINT(1,1)),SP),
+     .                  real(YPOL(IR,NPOINT(1,1)),SP))
    10     CONTINUE
 C
-        CALL GRJMP (real(XPOL(1,NPOINT(2,NPPLG)),KIND(1.E0)),
-     .              real(YPOL(1,NPOINT(2,NPPLG)),KIND(1.E0)))
+        CALL GRJMP (real(XPOL(1,NPOINT(2,NPPLG)),SP),
+     .              real(YPOL(1,NPOINT(2,NPPLG)),SP))
         DO 11 IR=2,NR1ST
           NP=NPOINT(2,NPPLG)
-          CALL GRDRW (real(XPOL(IR,NP),KIND(1.E0)),
-     .                real(YPOL(IR,NP),KIND(1.E0)))
+          CALL GRDRW (real(XPOL(IR,NP),SP),
+     .                real(YPOL(IR,NP),SP))
    11   CONTINUE
         DO 15 I=1,NPPLG
-          CALL GRJMP (real(XPOL(1,NPOINT(1,I)),KIND(1.E0)),
-     .                real(YPOL(1,NPOINT(1,I)),KIND(1.E0)))
+          CALL GRJMP (real(XPOL(1,NPOINT(1,I)),SP),
+     .                real(YPOL(1,NPOINT(1,I)),SP))
           DO 12 IP=NPOINT(1,I),NPOINT(2,I)
-            CALL GRDRW (real(XPOL(1,IP),KIND(1.E0)),
-     .                  real(YPOL(1,IP),KIND(1.E0)))
+            CALL GRDRW (real(XPOL(1,IP),SP),
+     .                  real(YPOL(1,IP),SP))
    12     CONTINUE
-          CALL GRJMP (real(XPOL(NR1ST,NPOINT(1,I)),KIND(1.E0)),
-     .                real(YPOL(NR1ST,NPOINT(1,I)),KIND(1.E0)))
+          CALL GRJMP (real(XPOL(NR1ST,NPOINT(1,I)),SP),
+     .                real(YPOL(NR1ST,NPOINT(1,I)),SP))
           DO 13 IP=NPOINT(1,I),NPOINT(2,I)
-            CALL GRDRW (real(XPOL(NR1ST,IP),KIND(1.E0)),
-     .                  real(YPOL(NR1ST,IP),KIND(1.E0)))
+            CALL GRDRW (real(XPOL(NR1ST,IP),SP),
+     .                  real(YPOL(NR1ST,IP),SP))
    13     CONTINUE
    15   CONTINUE
       ELSEIF (LEVGEO.EQ.4.AND.LPTOR3(IBLD)) THEN
         DO ITR=1,NTRII
           IF (NCHBAR(1,ITR) .EQ. 0) THEN
-            CALL GRJMP(REAL(XTRIAN(NECKE(1,ITR)),KIND(1.E0)),
-     .                 REAL(YTRIAN(NECKE(1,ITR)),KIND(1.E0)))
-            CALL GRDRW(REAL(XTRIAN(NECKE(2,ITR)),KIND(1.E0)),
-     .                 REAL(YTRIAN(NECKE(2,ITR)),KIND(1.E0)))
+            CALL GRJMP(REAL(XTRIAN(NECKE(1,ITR)),SP),
+     .                 REAL(YTRIAN(NECKE(1,ITR)),SP))
+            CALL GRDRW(REAL(XTRIAN(NECKE(2,ITR)),SP),
+     .                 REAL(YTRIAN(NECKE(2,ITR)),SP))
           ENDIF
           IF (NCHBAR(2,ITR) .EQ. 0) THEN
-            CALL GRJMP(REAL(XTRIAN(NECKE(3,ITR)),KIND(1.E0)),
-     .                 REAL(YTRIAN(NECKE(3,ITR)),KIND(1.E0)))
-            CALL GRDRW(REAL(XTRIAN(NECKE(2,ITR)),KIND(1.E0)),
-     .                 REAL(YTRIAN(NECKE(2,ITR)),KIND(1.E0)))
+            CALL GRJMP(REAL(XTRIAN(NECKE(3,ITR)),SP),
+     .                 REAL(YTRIAN(NECKE(3,ITR)),SP))
+            CALL GRDRW(REAL(XTRIAN(NECKE(2,ITR)),SP),
+     .                 REAL(YTRIAN(NECKE(2,ITR)),SP))
           ENDIF
           IF (NCHBAR(3,ITR) .EQ. 0) THEN
-            CALL GRJMP(REAL(XTRIAN(NECKE(1,ITR)),KIND(1.E0)),
-     .                 REAL(YTRIAN(NECKE(1,ITR)),KIND(1.E0)))
-            CALL GRDRW(REAL(XTRIAN(NECKE(3,ITR)),KIND(1.E0)),
-     .                 REAL(YTRIAN(NECKE(3,ITR)),KIND(1.E0)))
+            CALL GRJMP(REAL(XTRIAN(NECKE(1,ITR)),SP),
+     .                 REAL(YTRIAN(NECKE(1,ITR)),SP))
+            CALL GRDRW(REAL(XTRIAN(NECKE(3,ITR)),SP),
+     .                 REAL(YTRIAN(NECKE(3,ITR)),SP))
           ENDIF
         ENDDO
       ELSE
@@ -517,24 +515,24 @@ C
       CALL GRSCLC (0.,0.,39.,28.)
       CALL GRSCLV (0.,0.,39.,28.)
       YH=27.5
-      CALL GRTXT (1.,REAL(YH,KIND(1.E0)),72,RUNID)
+      CALL GRTXT (1.,REAL(YH,SP),72,RUNID)
       YH=26.75
-      CALL GRTXT (1.,REAL(YH,KIND(1.E0)),72,HEAD)
+      CALL GRTXT (1.,REAL(YH,SP),72,HEAD)
       YH=26.00
-      CALL GRTXT (1.,REAL(YH,KIND(1.E0)),72,TXHEAD)
+      CALL GRTXT (1.,REAL(YH,SP),72,TXHEAD)
       YH=25.25
-      CALL GRTXT (1.,REAL(YH,KIND(1.E0)),10,'TALLY :  ')
+      CALL GRTXT (1.,REAL(YH,SP),10,'TALLY :  ')
       CALL GRTXTC (72,TEXT1)
-      CALL GRTXT (1.,REAL(YH-0.5,KIND(1.E0)),10,'SPECIES :')
+      CALL GRTXT (1.,REAL(YH-0.5,SP),10,'SPECIES :')
       CALL GRTXTC (24,TEXT2)
-      CALL GRTXT (1.,REAL(YH-1.,KIND(1.E0)),10,'UNITS :   ')
+      CALL GRTXT (1.,REAL(YH-1.,SP),10,'UNITS :   ')
       CALL GRTXTC (24,TEXT3)
-      CALL GRTXT (1.,REAL(YH-2.,KIND(1.E0)),10,'MAX. VALUE')
+      CALL GRTXT (1.,REAL(YH-2.,SP),10,'MAX. VALUE')
       WRITE (CH,'(1P,E10.3)') RMA
-      CALL GRTXT (1.,REAL(YH-2.5,KIND(1.E0)),10,CH)
-      CALL GRTXT (1.,REAL(YH-3.,KIND(1.E0)),10,'MIN. VALUE')
+      CALL GRTXT (1.,REAL(YH-2.5,SP),10,CH)
+      CALL GRTXT (1.,REAL(YH-3.,SP),10,'MIN. VALUE')
       WRITE (CH,'(1P,E10.3)') RMI
-      CALL GRTXT (1.,REAL(YH-3.5,KIND(1.E0)),10,CH)
+      CALL GRTXT (1.,REAL(YH-3.5,SP),10,CH)
 C
       ICOLOR=1
       YH=YH-4.
@@ -544,11 +542,11 @@ C
         IF (MOD(IS,IISO).EQ.1) ICOLOR=ICOLOR+1
         CALL GRNWPN(ICOLOR)
         YH=YH-0.5
-        CALL GRJMP (1.,REAL(YH+0.25,KIND(1.E0)))
-        CALL GRDRW (2.5,REAL(YH+0.25,KIND(1.E0)))
+        CALL GRJMP (1.,REAL(YH+0.25,SP))
+        CALL GRDRW (2.5,REAL(YH+0.25,SP))
         CALL GRNWPN (1)
         WRITE (CH,'(1P,E10.3)') ACONT
-        CALL GRTXT (3.,REAL(YH,KIND(1.E0)),10,CH)
+        CALL GRTXT (3.,REAL(YH,SP),10,CH)
   200 CONTINUE
 C
       IF (ALLOCATED(A)) DEALLOCATE (A)

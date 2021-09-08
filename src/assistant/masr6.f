@@ -9,4 +9,5 @@ C*DK MASR6
       WRITE (iunout,60) A,B,C,D,E,F,G
    60 FORMAT (1X,A48/1X,6(1PE12.4,3X))
       RETURN
-      END
+      END SUBROUTINE EIRENE_MASR6
+ 

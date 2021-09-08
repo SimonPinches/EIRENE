@@ -1,12 +1,12 @@
 cdr  aug. 2015:  logical flag L added. position x,y,z known (L=true) or else use COM of cell icell)
 cdr  sept 2014:  comments added
 c    provide cartesian local magnetic field unit vector bx,by,bz,
-c    as well as b-field strength bf (Tesla)
+c    as well as B field strength bf (Tesla)
 c    at point x,y,z, in cell icell
 
 c  current options:
-c  default    :  use input background tallies. B-field is constant per cell
-c  indpro(5)=8:  user provided B-field
+c  default    :  use input background tallies. B field is constant per cell
+c  indpro(5)=8:  user provided B field
 c  LBSMO (?)  :  apparently: only in case of levgeo=4,5 interpolation in triangles, tetrahedra
 cpb              switch used for interpolation of magnetic field input tally
 cdr              from cell vertices to a local x,y,z point inside a cell.
@@ -49,7 +49,7 @@ cdr    use logical input flag L:  return either value at COM or local value at x
 
       ELSE
 cdr if no BFIELD input tallies: 
-cdr use default B-field: 1 [T] in z-direction
+cdr use default B field: 1 [T] in z-direction
          BX = 0._DP
          BY = 0._DP
          BZ = 1._DP

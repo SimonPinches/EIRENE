@@ -12,6 +12,7 @@ cdr  used for internal run time monitoring
       CONTAINS
 c
       FUNCTION EIRENE_SECOND_OWN()
+cdr returns wall clock time (in seconds) since the last call to function eirene_reset_second.
       implicit none
 
       real(dp) :: EIRENE_second_own
@@ -19,15 +20,17 @@ c
 
       call cpu_time(time)
       EIRENE_second_own=time-start
-      END
+      return
+      END FUNCTION EIRENE_SECOND_OWN
 C
       FUNCTION EIRENE_RESET_SECOND()
+cdr returns wall clock time (in seconds)
       implicit none
       real(dp) :: EIRENE_reset_second
 
       call cpu_time(start)
       EIRENE_reset_second=start
       return
-      END
+      END FUNCTION EIRENE_RESET_SECOND
 
       END MODULE EIRMOD_SECOND_OWN

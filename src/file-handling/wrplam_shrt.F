@@ -21,10 +21,10 @@ cdr It writes and reads (RPLAM_SHRT) background data onto/from fort.13
 cdr Distinct from WRPLAM_long here only the background tallies are written/read,
 cdr (tallies T, n, V for ipls=1,nplsi), but not the atomic data,
 cdr nor the primary source sampling information.
-cdr for BGK type non-linear iterations, with velocity-independent rates,
+cdr for BGK type nonlinear iterations, with velocity-independent rates,
 cdr this may be sufficient.
 cdr Better: add here also the rates and other atomic data needed to streamline
-cdr         non-linear iterations.
+cdr         nonlinear iterations.
 
 
 
@@ -55,7 +55,7 @@ cdr         non-linear iterations.
       END IF
 cdr  only write plasma background data for species, which are not already
 cdr  transfered via common BRAEIR, i.e. only:  nfla+1,....nplsi
-cdr  I.e. the virtual background species for non-linear iterations
+cdr  I.e. the virtual background species for nonlinear iterations
 cdr  have to come last in the list of all background species.
       IF(NFLA.LT.NPLSI) THEN
         NFLBGK = NPLSI - NFLA
@@ -131,7 +131,7 @@ C ........................................................................
       IF(NFLA.LT.NPLSI) THEN
 cdr  only read plasma background data for species, which are not already
 cdr  transfered via Common BRAEIR, i.e. only: nfla+1,....nplsi
-cdr  I.e. the virtual background species for non-linear iterations
+cdr  I.e. the virtual background species for nonlinear iterations
 cdr  have to come last in the list of all background species.  
         REWIND 13+ifoff
         READ (13+ifoff,IOSTAT=IO)

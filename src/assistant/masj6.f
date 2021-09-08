@@ -9,4 +9,4 @@ C*DK MASJ6
       WRITE (iunout,60) A,I,J,K,L,M,N
    60 FORMAT (1X,A48/1X,6(I6,3X))
       RETURN
-      END
+      END SUBROUTINE EIRENE_MASJ6

@@ -170,12 +170,10 @@ C
       CALL EIRENE_PLNXTB(1,'PLT3D.F')
 
 cdr  use FZJ proprietary GR plot software
-      CALL GRSCLC(REAL(XNULL,KIND(1.E0)),REAL(YNULL,KIND(1.E0)),
-     .            REAL(XN+XNULL,KIND(1.E0)),
-     .            REAL(YN+YNULL,KIND(1.E0)))
-      CALL
-     .  GRSCLV(REAL(ABSMIN,KIND(1.E0)),REAL(ORDMIN,KIND(1.E0)),
-     .            REAL(ABSMAX,KIND(1.E0)),REAL(ORDMAX,KIND(1.E0)))
+      CALL GRSCLC(REAL(XNULL,SP),REAL(YNULL,SP),
+     .            REAL(XN+XNULL,SP),REAL(YN+YNULL,SP))
+      CALL GRSCLV(REAL(ABSMIN,SP),REAL(ORDMIN,SP),
+     .            REAL(ABSMAX,SP),REAL(ORDMAX,SP))
       FAKX=XN/(ABSMAX-ABSMIN)
       FAKY=YN/(ORDMAX-ORDMIN)
 C
@@ -852,12 +850,10 @@ C              OR 10 POINTS, IF CURVED LINE
                     Z=PHI
                   ENDIF
                   CALL EIRENE_PL3D(X,Y,Z,XP(NA),YP(NA))
-                  IF (CUR%NPL2D.EQ.0) CALL GRJMP (
-     .               REAL(XP(NA),KIND(1.E0)),
-     .               REAL(YP(NA),KIND(1.E0)))
-                  IF (CUR%NPL2D.EQ.1) CALL GRDRW (
-     .               REAL(XP(NA),KIND(1.E0)),
-     .               REAL(YP(NA),KIND(1.E0)))
+                  IF (CUR%NPL2D.EQ.0)
+     .              CALL GRJMP (REAL(XP(NA),SP),REAL(YP(NA),SP))
+                  IF (CUR%NPL2D.EQ.1)
+     .              CALL GRDRW ( REAL(XP(NA),SP),REAL(YP(NA),SP))
 C
                   IS=IS+1
                   XSAVE(IS,IZ)=XP(NA)
@@ -882,11 +878,9 @@ C
         CALL GRNWPN(2)
         DO 2000 J=1,IS
           IF (J.GT.ISSTD) CALL GRNWPN(1)
-          CALL GRJMP (REAL(XSAVE(J,1),KIND(1.E0)),
-     .                REAL(YSAVE(J,1),KIND(1.E0)))
+          CALL GRJMP (REAL(XSAVE(J,1),SP),REAL(YSAVE(J,1),SP))
           DO IZ=2,NJZ
-            CALL GRDRW(REAL(XSAVE(J,IZ),KIND(1.E0)),
-     .                 REAL(YSAVE(J,IZ),KIND(1.E0)))
+            CALL GRDRW(REAL(XSAVE(J,IZ),SP),REAL(YSAVE(J,IZ),SP))
           END DO
  2000   CONTINUE
         CALL GRDSH(1.,0.,1.)
@@ -988,15 +982,13 @@ C  BESCHRIFTUNG
 C
       XH=(ABSMIN+ABSMAX)/2.
       YH=ORDMAX+2./FAKY
-      CALL GRTXT (REAL(XH,KIND(1.E0)),REAL(YH,KIND(1.E0)),27,
+      CALL GRTXT (REAL(XH,SP),REAL(YH,SP),27,
      .            'CHECK OF GEOMETRICAL INPUT:')
       YH=YH-0.5/FAKY
-      CALL GRTXT
-     .  (REAL(XH,KIND(1.E0)),REAL(YH,KIND(1.E0)),72,TXTRUN)
+      CALL GRTXT (REAL(XH,SP),REAL(YH,SP),72,TXTRUN)
       YH=YH-0.75/FAKY
       DO 11000 J=1,5
-        IF (PL3A(J)) CALL
-     .  GRTXT(REAL(XH,KIND(1.E0)),REAL(YH,KIND(1.E0)),
+        IF (PL3A(J)) CALL GRTXT(REAL(XH,SP),REAL(YH,SP),
      .                          16,TEXTLA(J))
         IF (PL3A(J)) YH=YH-0.5/FAKY
 11000 CONTINUE

@@ -12,7 +12,7 @@ cdr            but convergence monitoring was entirely wrong since.
 cdr            New further convergence diagnostics added, and code cleanup,
 cdr            documentation.
 cdr Sept 19:   problems with NIDC, reuse of plasma_bckgrnd structure
-cdr            only diin, Tiin, V_xyzIN of bgk virt. species should be
+cdr            only Diin, Tiin, V_xyzIN of bgk virt. species should be
 cdr            modified.
 cdr            Storage on plasma_bckgrnd ?
 cdr            In EMC3 case MODBGK is not used at all, instead the
@@ -26,7 +26,7 @@ C       ??     INDIRECT SPECIES INDEXING IPLSV, IPLSTI INCLUDED, FOR TIIN and VX
 CDR            This is risky, because bgk collisions
 cdr            may then overwrite temperatures/velocities for non-bgk background
 CDR            depending on setting of MPLSTI(ipls) and MPLSV(ipls) arrays.
-cdr            in case of bgk: always use fully multiple temperatures and multiple flow velocities.
+cdr            In case of bgk: always use fully multiple temperatures and multiple flow velocities.
 
 cdr  implemented corresponding check.
 
@@ -46,7 +46,7 @@ c               EFFECTIVE COLLISION RATE IS EVALUATED
 c               WITH THIS EFFECTIVE TEMPERATURE.
 c               This appears to be another option for the 5th (free)
 c               bgk model parameter, to match certain transport coefficients.
-c               (the other 4 are fixed by conservation laws.
+c               (the other 4 are fixed by other criteria)
 c
 cdr  june 2017: revisited:
 c  multigrid option (NCLTAL):
@@ -122,7 +122,7 @@ C
       CALL EIRENE_LEER(3)
 C
 cdr  FOR STOCH. APPROX. UNDER-RELAXATION.  NOT IN USE
-      A_ROBIN=1.D0/REAL(IITER,KIND(1.D0))
+      A_ROBIN=1.D0/REAL(IITER,DP)
 
 c  iterate on tallies from "sum over strata".
       ISTRA=0
@@ -172,7 +172,7 @@ C
 cdr  PLS:  ELECTRON DENSITY PARAMETER in CR MODELS
 cdr       (NOT TO BE CONFUSED WITH THE DENSITY FACTOR BETWEEN RATES AND RATE COEFF.)
 cdr: set hard-wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3
-cdr: at this lower limit density the fits are produced such
+cdr: At this lower limit density the fits are produced such
 cdr: that they collapse to the corona limit values.
       ALLOCATE (PLS(NSTORDR))
       DEIMIN=LOG(1.D8)
@@ -195,7 +195,7 @@ C    "CROSS-COLLISION TEMPERATURE" CORRECTION
       ICROSS=0 !VK COUNTER
 CVK END
 
-cdr  set bgk volume-averaged tallies BGKV, which MAY HAVE been scored on coarser grid only,
+cdr  Set bgk volume-averaged tallies BGKV, which MAY HAVE been scored on coarser grid only,
 CDR  now also on fine grid, because input tallies may be needed on finer grid.
 cdr  Assume: constant "extensive" fine grid values IN ALL I_fine cells
 cdr  within one coarse grid cell IRD
@@ -218,7 +218,7 @@ c  DEPENDING ON... (EXTENSIVE, INTENSIVE QUANTITIES) SEE OUTPLA.
 
 c
 C  LOOP OVER THOSE BACKGROUND ION SPECIES, WHICH ARE ARTIFICIAL
-C  SPECIES FOR (NON-LINEAR) ITERATIONS
+C  SPECIES FOR (NONLINEAR) ITERATIONS
 C .........................................................................
       DO 1000 IPLS=1,NPLSI
 C .........................................................................
@@ -352,13 +352,14 @@ C  FIND INDEX IREL
 C  AT THIS POINT: COLLISION PARTNER AMONGST TEST PARTICLES
 C  interacting with virtual background IPLS
 C  HAS BEEN IDENTIFIED: (ITYP1, JATM, JMOL, JION)
-C  AS WELL AS THE LABEL NUMBER OF COLLISION PROCESS IREL1
+C  AS WELL AS THE LABEL NUMBER OF COLLISION PROCESS IREL1.
 C  DENSITY AND ENERGY DENSITY TALLIES OF COLLISION PARTNER "PDEN,EDEN"
 C  HAVE NOW BEEN SET ON FINE GRID
-C
-C  SELF-COLLISION OR CROSS-COLLISION
+C  THE RELEVANT FURTHER BGK TALLIES ARE: IUP1, IUP2, IUP3.
 C
    50   CONTINUE
+C
+C  SELF-COLLISION OR CROSS-COLLISION
 C
         IF (NPBGKP(IPLS,2).EQ.0) THEN
 
@@ -430,7 +431,7 @@ cdr  parameters of second involved species.
 C
         ENDIF  ! Cross-collision, two different test species
 c
-cdr:  Parameters of virtual background species are set,
+cdr   Parameters of virtual background species are set,
 cdr   their densities, energy densities.
 cdr   are on 1D arrays: pden,eden, pden2, eden2.
 cdr   momentum densities are still on 2d array GBGKV(ibgk, icell).
@@ -628,19 +629,21 @@ C
 C   IF IPLS IS AN ARTIFICIAL BACKGROUND SPECIES FOR A SELF-COLLISION  :  DONE !
 C
 C   NEXT, IF IPLS IS AN ARTIFICIAL BACKGROUND SPECIES FOR A CROSS-COLLISION BETWEEN TWO DISTINCT
-C        SPECIES OF TEST PARTICLES
-        ELSE
+C        SPECIES OF TEST PARTICLES "1" AND "2".
+C
+      ELSE
 C
           IF (TRCMOD) THEN
             WRITE (iunout,*) 'MODBGK: CROSS-COLLISION, IPLS ',IPLS
             WRITE (iunout,*) 'ITYP1,ISPZ1,IBGK1,IREL1 ',
-     .                        ITYP1(IPLS),ISPZ1(IPLS),
-     .                        IBGK1,IREL1(IPLS)
+     .                        ITYP1(IPLS),ISPZ1(IPLS),IBGK1,IREL1(IPLS)
             WRITE (iunout,*) 'ITYP2,ISPZ2,IBGK2       ',
      .                        ITYP2(IPLS),ISPZ2(IPLS),IBGK2
           ENDIF
 
-CVK FOR "CROSS-COLLISION TEMPERATURE"
+Cdr MASS FACTOR FOR "CROSS-COLLISION TEMPERATURE",
+cdr i.e. for the effective temperature entering IJ and JI cross-collision terms.
+cdr  1-2 symmetric.
           ICROSS=ICROSS+1
           CROSSINDEX(IPLS)=ICROSS
           RM1=RMAS1/(RMAS1+RMAS2)
@@ -841,6 +844,7 @@ C
       PLASMA_BCKGRND(1:NRWK1,:) = 0.D0
 
 cdr
+cdr There should be no need to fiddle around with B field here at all.
 cdr initialize BXIN=0
       PLASMA_BCKGRND(1+1*NPLS+NPLSTI+3*NPLSV+1,:)= 0._DP  
 cdr initialize BYIN=0
@@ -850,6 +854,9 @@ cdr initialize BYIN=0
 !pb initialize BFIN=1
       PLASMA_BCKGRND(4+1*NPLS+NPLSTI+3*NPLSV+1,:)= 1._DP
 
+
+cdr  set new (virtual) background data species data onto plasma_bckgrnd,
+cdr  for next iteration
       DO IR=1,NXM
         DO IP=1,NYM
           DO IT=1,NZM
@@ -937,11 +944,10 @@ C  NOW: NEW COLLISION RATES MUST BE SET FOR THE NEXT ITERATION
 C .........................................................................
 C
 C  IN CASE OF CROSS-COLLISION, SOME MODIFICATIONS OF THE
-C  BACKGROUND PARAMETERS ARE REQUIRED TEMPORARILY TO ENFORCE
-C  A SPECIFIC RELATION BETWEEN TAU_1,2 AND TAU_2,1
+C  BACKGROUND PARAMETERS ARE REQUIRED TEMPORARILY, TO ENFORCE
+C  A SPECIFIC RELATION BETWEEN TAU_1,2 AND TAU_2,1, LGVAC, etc...
 C
 C  COMPUTE SOME 'DERIVED' PLASMA DATA PROFILES FROM THE PROFILES
-C  E.G.: EDRIFT, NEEDED FOR EPLEL3
 C
 C
       TRCSAV=TRCAMD

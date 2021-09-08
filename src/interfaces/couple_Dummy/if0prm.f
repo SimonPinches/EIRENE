@@ -15,7 +15,6 @@ C   NTRII :
 C   NCPVI :  no. of special couple tallies
 
       SUBROUTINE EIRENE_IF0PRM(IUNIN)
-
       USE EIRMOD_PARMMOD
       IMPLICIT NONE
 

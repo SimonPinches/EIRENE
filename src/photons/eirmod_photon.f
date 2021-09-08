@@ -18,7 +18,7 @@ cdr    The original version was developed in 2000 -- 2003 within a project (BMBF
 cdr    in collaboration with Philips research Lab. Aachen, for applications to
 cdr    to high pressure gas discharge lamps.
 cdr    It was largely re-written later, re-structured, several times,
-cdr    for use in (non-linear) stand alone eirene
+cdr    for use in (nonlinear) stand alone eirene
 cdr    (applications to high density divertor plasmas with hydrogen resonance line re-absorption)
 cdr    Further re-writing (2006-2007): V.Kotov, to support iterations for self-consistently
 cdr    coupled 2D B2-EIRENE plasma solutions.
@@ -2452,7 +2452,7 @@ C              THE VALUES OF THIS VARIABLE HAVE THE FOLLOWING
 C              MEANING :
 C              FLAG=.FALSE. : NO ERROR CONDITION
 C              FLAG=.TRUE.  : OVERFLOW WILL OCCUR, THE ROUTINE
-C                             BECOMES INACTIVE
+C                             BECOMES IN-ACTIVE
 C  XI, YI      ARE THE INPUT-PARAMETERS
 C  U, V, FLAG  ARE THE OUTPUT-PARAMETERS
 C

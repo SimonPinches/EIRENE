@@ -622,7 +622,8 @@ C  TO THE BOUNDARY OF THE PRESENT CELL
 #ifdef TRACE
         IF (NLTRC) WRITE (iunout,*) ' LCT1,LCT2,LCT3,LCT4 ',
      .                           LCT1,LCT2,LCT3,LCT4
-        IF (NLTRC) WRITE (iunout,*) ' PT1,PT2,PT3,PT4 ',PT1,PT2,PT3,PT4
+        IF (NLTRC) WRITE (iunout,*) ' PT1,PT2,PT3,PT4 ',
+     .                                PT1,PT2,PT3,PT4
 #endif
 
         ICTS=COUNT(LCTS)
@@ -709,7 +710,7 @@ C  INTERSECTION WITH RADIAL CELL BOUNDARY FOUND
 C..................................................................................
 C  NO INTERSECTION FOUND
           IF (NLSRFX.AND.NJUMP.EQ.0) THEN
-C  PLAY SAVE: TRY ONCE AGAIN, IF PARTICLE ON RAD. SURFACE
+C  PLAY SAFE: TRY ONCE AGAIN, IF PARTICLE ON RAD. SURFACE
 #ifdef TRACE
             IF (NLTRC)
      .        WRITE (iunout,*)
@@ -740,7 +741,7 @@ C  PLAY SAVE: TRY ONCE AGAIN, IF PARTICLE ON RAD. SURFACE
             GOTO 6001
 
           ELSEIF (NLSRFY.AND.NJUMP.EQ.0) THEN
-C  PLAY SAVE: TRY ONCE AGAIN, IF PARTICLE ON POL. SURFACE
+C  PLAY SAFE: TRY ONCE AGAIN, IF PARTICLE ON POL. SURFACE
 #ifdef TRACE
             IF (NLTRC)
      .        WRITE (iunout,*)
@@ -934,9 +935,9 @@ C     ELSEIF (NJUMP.EQ.1) THEN
         XX = X0
         YY = Y0
         TM=0.
-        IF (IZELL.EQ.0) GOTO 9999
 C
  8020   CONTINUE
+        IF (IZELL.EQ.0) GOTO 9999
         DO 8010,J=1,3
           IF (J.NE.IPOLGO) THEN
             RICHTX = VTRIX(J,IZELL)
@@ -961,7 +962,7 @@ C  NUMMER DER GESCHNITTENEN SEITE DES ALTEN DREIECKS
                 NTIM(IZELL) = J
 #ifdef TRACE
                 IF (NLTRC) THEN
-                  WRITE (iunout,'(A,I6,1P,2(1X,1E14.7),1X,I1)')
+                  WRITE (iunout,'(1X,A,I6,1P,2(1X,1E14.7),1X,I1)')
      .             'IZELL,XX,YY,J ',IZELL,XX,YY,J
                 ENDIF
 #endif
@@ -1144,7 +1145,7 @@ C       ELSEIF (NJUMP.EQ.1) THEN
         IF (NLTRC) THEN
           WRITE (iunout,*) ' IZELL,IPOLGO ',IZELL,IPOLGO
           WRITE (iunout,*) ' X0,Y0,Z0 ',X0,Y0,Z0
-          WRITE (iunout,*) ' VELX,VELY,VELZ ',VELX,VELY,VELZ
+          WRITE (iunout,*) ' VELX,VELY,VELZ,VEL ',VELX,VELY,VELZ,VEL
         ENDIF
 #endif
 
@@ -1219,8 +1220,8 @@ C
 #ifdef TRACE
                   if (nltrc) then
                      write(iunout,*) ' i1, i2 ',i1,i2
-                     write(iunout,'(1x,a,3es14.7)') ' velxyz ',
-     .                     velx,vely,velz
+                     write(iunout,'(1x,a,4es14.7)') ' velxyz ',
+     .                     velx,vely,velz,vel
                      write(iunout,'(1x,a,3es14.7)') ' a11, a12, a13 ',
      .                     a(1,1),a(1,2),a(1,3)
                      write(iunout,'(1x,a,3es14.7)') ' a21, a22, a23 ',
@@ -1239,8 +1240,8 @@ C  NUMMER DER GESCHNITTENEN SEITE DES ALTEN DREIECKS
                   NTIMT = J
 #ifdef TRACE
                   IF (NLTRC) THEN
-                    WRITE (iunout,*) 'IZELL,XX,YY,ZZ,J ',
-     .                                IZELL,XX,YY,ZZ,J
+                    WRITE (iunout,'(1X,A,I6,1P,2(1X,1E14.7),1X,I1)')
+     .               'IZELL,XX,YY,J ',IZELL,XX,YY,J
                   ENDIF
 #endif
 C  ZELLENNUMMER DES NEUEN DREIECKS
@@ -1322,7 +1323,7 @@ C  PARTICLE IS OUTSIDE STANDARD MESH, IN ADDITIONAL CELL NACELL
 C  NRCELL=0
 C
         IF (ITFRST == 0) THEN
-CDR  PREPARE SOME GRID DATA FOR FINDING RE-ENTRY INTO GRID OF TETRAHEDA
+CDR  PREPARE SOME GRID DATA FOR FINDING RE-ENTRY INTO GRID OF TETRAHEDRA
 CDR  ONLY ONCE FOR ALL FUTURE TRAJECTORIES.
 
 C    SET THE FOLLOWING VARIABLES: .....  (COMMENTING TO BE DONE).
@@ -1548,6 +1549,12 @@ cdr
 C
  9999 CONTINUE
       WRITE (iunout,*) 'ERROR IN TIMER, EXIT CALLED AT 9999'
+      WRITE (iunout,*) 'PARTICLE TRAJECTORY STOPPED'
       WRITE (iunout,*) 'NPANU ', NPANU
-      CALL EIRENE_EXIT_OWN(1)
-      END
+      WRITE (iunout,*) 'XX,YY,J ',XX,YY,J
+      WRITE (iunout,'(A,I6,1X,I6,1X,1P,1E14.7,1X,I6,1X,I4)')
+     .  ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
+     .    NRCELL,MRSURF,PT,NINCX,IPOLGN
+      LGPART = .FALSE.
+      RETURN
+      END SUBROUTINE EIRENE_TIMER

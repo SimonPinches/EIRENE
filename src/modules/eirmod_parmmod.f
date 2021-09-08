@@ -54,6 +54,9 @@ C> Unit number for RAPS vector field output file
       integer, public, save :: IFOFF = 0
 C> Indicates whether output files 'output.*' should be appended or overwritten
       LOGICAL, PUBLIC, SAVE :: LOUTAPP = .FALSE.
+C  BLOCK A FEW RESERVED OUTPUT STREAMS.
+      INTEGER, PUBLIC, PARAMETER :: NSTREAM = 16
+      INTEGER, PUBLIC, SAVE :: ISTREAM(NSTREAM)
 
       INTEGER, PUBLIC, SAVE ::
      I N1ST,   N2ND,   N3RD,   NADD,   NTOR,
@@ -314,6 +317,23 @@ C  NSTORAM=9     : --> NHSTOR=1 --> NSTORDT=NSTORAM, NSTORDR=NRAD
 
 ! NUMBER OF TRAJECTORIES THAT CAN BE STORED
         NTRJ = 1
+
+        ISTREAM( 1) =  6
+        ISTREAM( 2) = 50
+        ISTREAM( 3) = 21
+        ISTREAM( 4) = 22
+        ISTREAM( 5) = 29
+        ISTREAM( 6) = 30
+        ISTREAM( 7) = 31
+        ISTREAM( 8) = 33
+        ISTREAM( 9) = 34
+        ISTREAM(10) = 35
+        ISTREAM(11) = 10
+        ISTREAM(12) = 11
+        ISTREAM(13) = 12
+        ISTREAM(14) = 13
+        ISTREAM(15) = 14
+        ISTREAM(16) = 15
 
 C
       ELSE IF (ICAL == 2) THEN

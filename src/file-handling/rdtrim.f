@@ -134,4 +134,4 @@ cdr  for INR=5: should produce the same RAAR as above.
       END DO
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_RDTRIM

@@ -57,7 +57,7 @@ c                    lcut in common, and broadcast.
 
 cdr  NFL dependence:  SFNIT(0:NSTEP,NFL) in global particle balance, already implemented
 
-c                    includes 2014 attempt to invert B-field by block 14 input
+c                    includes 2014 attempt to invert B field by block 14 input
 c                    ncpvi tallies different, probably redundant anyway
 c                    double grid structure (tria and polyg.) options not cleaned up
 cdr Feb 17:  remove duplicated code re call to geousr.
@@ -94,7 +94,7 @@ c  eliminate cut cells from balances (lcut(..))
 c  removed: ncopib, ncopeb
 
 C   UPDATES:
-C   OPTION TO EVALUATE B-FIELD VECTORS FROM GRIDADAP FILE FT29
+C   OPTION TO EVALUATE B FIELD VECTORS FROM GRIDADAP FILE FT29
 C   FOR NON-ORTHOGONAL GRIDS
 C
 C   THIS CODE SEGMENT CONTAINS VARIOUS SUBROUTINES NEEDED FOR
@@ -651,7 +651,7 @@ C
      .               NCUTL,NPOINT,NPLP)
  1020   CONTINUE
 C
-!  ALPHXB, ALPHYB GIVE THE DIRECTION OF THE B-FIELD IN THE
+!  ALPHXB, ALPHYB GIVE THE DIRECTION OF THE B FIELD IN THE
 !  CARTESIAN PLANE
         write (iunout,*) 'testoutput from '//fort_lc//'29 in infcop'
         write (iunout,*) 'irad,ipol, angles.....'
@@ -1586,15 +1586,15 @@ C       and in the direction of increasing poloidal B2 cell index
 c    b) toroidal field is in eirene positive z-direction (periodic cylinder, nltrz-option)
 c                                (or positive 3rd coodinate "phi", in case nltra-option)
 c    modulus of the ratio poloidal to poloidal field is given by the B2-array pitch RRB
-C    magnitude of B-field is given by B2-array BFELDB
+C    magnitude of B field is given by B2-array BFELDB
 
 C  polodial field
           BX=PUX(IN)*RRB(IX,IY)   ! +PVX(IN)*0., but radial field is zero
           BY=PUY(IN)*RRB(IX,IY)   ! +PVY(IN)*0.
 c  toroidal field
           BZ=SQRT(1.-RRB(IX,IY)**2)
-c  normalize B-field vector to length 1 (one)
-c  and apply input flags for b-field orientation
+c  normalize B field vector to length 1 (one)
+c  and apply input flags for B field orientation
           BN=SQRT(BX**2 + BY**2 + BZ**2)
           BXINTF(ITRI)=BX/BN*bpol
           BYINTF(ITRI)=BY/BN*bpol
@@ -1605,7 +1605,7 @@ c
         ELSE
 c  outside the original b2.5 grid:
 C    set default vacuum temperatures TVAC
-C    set default b-field: (0,0,1)
+C    set default B field: (0,0,1)
           TEINTF(ITRI)=TVAC
           TIINTF(1,ITRI)=TVAC
           BXINTF(ITRI)=0.
@@ -4918,6 +4918,8 @@ csw mpi 07apr2010
      .                 0,MPI_COMM_WORLD,ier)
         call mpi_bcast(pvyn,nrad,MPI_DOUBLE_PRECISION,
      .                 0,MPI_COMM_WORLD,ier)
+
+        call mpi_barrier(MPI_COMM_WORLD,ier)
       return
 csw
 csw mpi 09jun2010

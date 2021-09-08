@@ -45,10 +45,10 @@ c  EIRENE_PLMESH: plots these contours, using GR plot software.
       LOGICAL, ALLOCATABLE :: FOUND(:,:)
 
 C INITIALISIERUNG DER PLOTDATEN
-      xmin = REAL(CH2X0-CH2MX,KIND(1._SP))
-      ymin = REAL(CH2Y0-CH2MY,KIND(1._SP))
-      xmax = REAL(CH2X0+CH2MX,KIND(1._SP))
-      ymax = REAL(CH2Y0+CH2MY,KIND(1._SP))
+      xmin = REAL(CH2X0-CH2MX,SP)
+      ymin = REAL(CH2Y0-CH2MY,SP)
+      xmax = REAL(CH2X0+CH2MX,SP)
+      ymax = REAL(CH2Y0+CH2MY,SP)
       deltax = abs(xmax-xmin)
       deltay = abs(ymax-ymin)
       delta = max(deltax,deltay)
@@ -300,22 +300,22 @@ c  PLOT CONTOUR ICONT
 
         call grnwpn(icont)
 c   first point on contour
-        XP = REAL(PARTCONT(1,1,1),KIND(1._SP))
-        YP = REAL(PARTCONT(1,1,2),KIND(1._SP))
+        XP = REAL(PARTCONT(1,1,1),SP)
+        YP = REAL(PARTCONT(1,1,2),SP)
         call grjmp(XP,YP)
         DO I=2,IPOIN
-          XP = REAL(PARTCONT(I,1,1),KIND(1._SP))
-          YP = REAL(PARTCONT(I,1,2),KIND(1._SP))
+          XP = REAL(PARTCONT(I,1,1),SP)
+          YP = REAL(PARTCONT(I,1,2),SP)
           call grdrw(XP,YP)
         ENDDO
 c  last point on contour
         IF (LCLOSED) THEN
-          XP = REAL(PARTCONT(1,1,1),KIND(1._SP))
-          YP = REAL(PARTCONT(1,1,2),KIND(1._SP))
+          XP = REAL(PARTCONT(1,1,1),SP)
+          YP = REAL(PARTCONT(1,1,2),SP)
           call grdrw(XP,YP)
         ELSE
-          XP = REAL(PARTCONT(IPOIN,2,1),KIND(1._SP))
-          YP = REAL(PARTCONT(IPOIN,2,2),KIND(1._SP))
+          XP = REAL(PARTCONT(IPOIN,2,1),SP)
+          YP = REAL(PARTCONT(IPOIN,2,2),SP)
           call grdrw(XP,YP)
         END IF
 

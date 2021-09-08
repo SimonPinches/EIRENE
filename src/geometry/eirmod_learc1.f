@@ -935,7 +935,7 @@ C
       return
       end function dist_point_line
 C
-      END
+      END FUNCTION EIRENE_LEARC1
 
 
       FUNCTION EIRENE_LEARC1_RESET()
@@ -973,8 +973,8 @@ C
           deallocate(heads4)
         ENDIF
 
-
       case (4)
+
         IFIRST=0
         if(allocated(obsc)) deallocate(obsc)
         if(allocated(heads)) then
@@ -992,9 +992,9 @@ C
           deallocate(heads)
         endif
 
-        return
       end select
 
-      END
+      return
+      END FUNCTION EIRENE_LEARC1_RESET
 
       END MODULE EIRMOD_LEARC1

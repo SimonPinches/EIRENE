@@ -27,11 +27,11 @@ C
       YTRAN(XI,ETA)=XI*SINA+ETA*COSA
       IF (TRCPLT) WRITE (iunout,*) 'PLTKU'
       IF (LBOX) THEN
-        CALL GRJMP(REAL(XL1,KIND(1.E0)),REAL(YL1,KIND(1.E0)))
-        CALL GRDRW(REAL(XL2,KIND(1.E0)),REAL(YL1,KIND(1.E0)))
-        CALL GRDRW(REAL(XL2,KIND(1.E0)),REAL(YL2,KIND(1.E0)))
-        CALL GRDRW(REAL(XL1,KIND(1.E0)),REAL(YL2,KIND(1.E0)))
-        CALL GRDRW(REAL(XL1,KIND(1.E0)),REAL(YL1,KIND(1.E0)))
+        CALL GRJMP(REAL(XL1,SP),REAL(YL1,SP))
+        CALL GRDRW(REAL(XL2,SP),REAL(YL1,SP))
+        CALL GRDRW(REAL(XL2,SP),REAL(YL2,SP))
+        CALL GRDRW(REAL(XL1,SP),REAL(YL2,SP))
+        CALL GRDRW(REAL(XL1,SP),REAL(YL1,SP))
       ENDIF
 C
       INC=100
@@ -69,10 +69,9 @@ C
          IF (I.EQ.1) THEN
 C*****FIRST POINT OF LINE
             IF (LIN.AND.LPLA) THEN
-               IF (LZR) CALL GRJMP (REAL(XX,KIND(1.E0)),
-     .                              REAL(YY,KIND(1.E0)))
-               IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS) CALL EIRENE_STCOOR
-     .  (XX,YY,0)
+               IF (LZR) CALL GRJMP (REAL(XX,SP),REAL(YY,SP))
+               IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS)
+     .           CALL EIRENE_STCOOR(XX,YY,0)
                INN=24
                IFLAG=24
             ENDIF
@@ -84,10 +83,9 @@ C*****POINT OUT OF CONFIGURATION
             IF (.NOT.LIN.AND..NOT.LINO) GOTO 16
 C*****POINT INSIDE PLOTAREA AND INSIDE THE CONFIGURATION
             IF (LIN.AND.LINO.AND.LPLA.AND.LPLAO) THEN
-               IF (LZR) CALL GRDRW (REAL(XX,KIND(1.E0)),
-     .                              REAL(YY,KIND(1.E0)))
-               IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS) CALL EIRENE_STCOOR
-     .  (XX,YY,1)
+               IF (LZR) CALL GRDRW (REAL(XX,SP),REAL(YY,SP))
+               IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS)
+     .           CALL EIRENE_STCOOR (XX,YY,1)
             ELSE
 C*****LINE CROSSES BOUNDARY
 C***** ... OF CONFIGURATION
@@ -147,10 +145,8 @@ C
 C*****INTERPOLATED POINT INSIDE PLOT AREA, CAN BE PLOTTED
                      IF (LIN) THEN
                         IF (LZR) THEN
-                           CALL GRJMP (REAL(XP,KIND(1.E0)),
-     .                                 REAL(YP,KIND(1.E0)))
-                           CALL GRDRW (REAL(XX,KIND(1.E0)),
-     .                                 REAL(YY,KIND(1.E0)))
+                           CALL GRJMP (REAL(XP,SP),REAL(YP,SP))
+                           CALL GRDRW (REAL(XX,SP),REAL(YY,SP))
                         ENDIF
                         IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS) THEN
                            CALL EIRENE_STCOOR (XP,YP,0)
@@ -159,8 +155,7 @@ C*****INTERPOLATED POINT INSIDE PLOT AREA, CAN BE PLOTTED
                         INN=24
                         IFLAG=24
                      ELSE
-                        IF (LZR) CALL GRDRW (REAL(XP,KIND(1.E0)),
-     .                                       REAL(YP,KIND(1.E0)))
+                        IF (LZR) CALL GRDRW (REAL(XP,SP),REAL(YP,SP))
                         IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS) THEN
                            CALL EIRENE_STCOOR (XP,YP,1)
                         ENDIF
@@ -196,10 +191,8 @@ C*****INTERPOLATE POINT ON BOUNDARY OF PLOTAREA
                   IF (L3.OR.L4) XP=XOK-(YOK-YP)*(XOK-XOUT)/(YOK-YOUT)
                   IF (IFLAG.EQ.0) THEN
                      IF (LZR) THEN
-                        CALL GRJMP (REAL(XP,KIND(1.E0)),
-     .                              REAL(YP,KIND(1.E0)))
-                        CALL GRDRW (REAL(XX,KIND(1.E0)),
-     .                              REAL(YY,KIND(1.E0)))
+                        CALL GRJMP (REAL(XP,SP),REAL(YP,SP))
+                        CALL GRDRW (REAL(XX,SP),REAL(YY,SP))
                      ENDIF
                      IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS) THEN
                         CALL EIRENE_STCOOR (XP,YP,0)
@@ -208,8 +201,7 @@ C*****INTERPOLATE POINT ON BOUNDARY OF PLOTAREA
                      INN=24
                      IFLAG=24
                   ELSE
-                     IF (LZR) CALL GRDRW (REAL(XP,KIND(1.E0)),
-     .                                    REAL(YP,KIND(1.E0)))
+                     IF (LZR) CALL GRDRW (REAL(XP,SP),REAL(YP,SP))
                      IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS) THEN
                        CALL EIRENE_STCOOR (XP,YP,1)
                      ENDIF

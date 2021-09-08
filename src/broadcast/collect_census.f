@@ -5,9 +5,9 @@ cdr                      The census flux is regarded as "discrete distribution" 
 cdr                      and the weight stored on census during particle tracing is the probability mass of index "i"
 cdr
 cdr  addph,adda,addm,addi: type-resolved census fluxes added for diagnostics.
-cdr:  Aug. 2015 comments added
+cdr Aug. 2015  comments added
 cdr March 18:  cleanup M.R., use RPRTT and IPRTT pointer more consistently.
-cdr            But now: rpartt must be transfered back to rpart or rpartc census arrays.
+cdr            But now: rpartt must be transferred back to rpart or rpartc census arrays.
 c
 
       subroutine EIRENE_collect_census

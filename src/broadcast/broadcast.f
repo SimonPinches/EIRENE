@@ -35,9 +35,9 @@ cdr  Jan  17:  only comments
 cdr  July 17:  bug fix: dimensioning of LCUT(0:N2NDPLGS) corrected
 cdr            remove NCHORD (is: NCHOR)
 c    Aug. 17:  NMODE, LSMOPRO: exception wrt. MPI.  Why necessary?
-c              broadcasting of CHRTLS was done twice.  removed once.
+c              broadcasting of CHRTLS was done twice. Removed once.
 cpb  Dec. 17:  remove type SPECT_ARRAY, not needed in Fortran 2003
-cpb  jan 2018:  remove unused arrays TEDTEDX, TEDTEDY, TEDTEDZ
+cpb  Jan 2018:  remove unused arrays TEDTEDX, TEDTEDY, TEDTEDZ
 c    Jan. 18:  new submodule alloc_fit_form used to allocate, and initialize REACDAT(IR)
 cdr  May 18 :  broadcast new variables for internal CR code (currently H_COLRAD):
 cdr            nhcol_store
@@ -45,12 +45,13 @@ cdr            m_hcol(nreac)
 cdr  Sept 18:  redundant arrays: JEREARC, JEREAEI  removed
 cdr            NHVREI  (formerly: NREAHV)
 cdr            NHVRPI  (formerly: NRHVPI)
-cdr  Oct. 18:  input tallies on PLSTLS(NINPTL). includes 18 old input tallies but
+cdr  Oct. 18:  input tallies on PLSTLS(NINPTL). Includes 18 old input tallies but
 cdr            now also derived tallies: EDRIFT, BVIN, PARMOM
 cdr  tbd:      broadcast: livtali etc. move to correct position
 cdr  Jan. 19:  separate routine for broadcast of CCOUPL
 cdr  ???       apparently also COMNNL removed here from broadcasting
-cdr  Nov. 19:  bugfix re %poly% dimensioning. ND --> ND1 
+cdr  Nov. 19:  bugfix re %poly% dimensioning. ND --> ND1. Now: separate dimensioning
+cdr            of poly% and tab1d% data. 
 
       SUBROUTINE EIRENE_BROADCAST
 cdr
@@ -121,7 +122,7 @@ cdr
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
 !pb  in order to avoid cyclic dependencies in compilation
-!pb  hand over processor number via argumet list
+!pb  hand over processor number via argument list
       
       CALL EIRENE_BROADCAST_PARMMOD(MY_PE)
 
@@ -175,4 +176,4 @@ c     on the "root" node, where this is already done via timea0 after input
 
       RETURN
 
-      END
+      END SUBROUTINE EIRENE_BROADCAST

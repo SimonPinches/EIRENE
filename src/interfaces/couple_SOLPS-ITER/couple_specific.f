@@ -54,7 +54,7 @@ C
 
       RETURN
 *//END GEOMD//
-      END
+      END SUBROUTINE EIRENE_GEOMD
 
 C
 *//GEOMD//
@@ -237,7 +237,7 @@ C     enddo
 C
       RETURN
 *//END GEOMD_CARRE//
-      END
+      END SUBROUTINE EIRENE_GEOMD_CARRE
 
 *//GEOMD//
 C=======================================================================
@@ -519,7 +519,7 @@ C
      w                "SKIP READING THE B2 GEOMETRY" !VK
 
 *//END GEOMD_LINDA//
-      END
+      END SUBROUTINE EIRENE_GEOMD_LINDA
 
 
 C
@@ -702,7 +702,7 @@ C     enddo
 C
       RETURN
 *//END GEOMD_SONNET//
-      END
+      END SUBROUTINE EIRENE_GEOMD_SONNET
 
 
 C
@@ -763,7 +763,7 @@ C
 C
     1 CONTINUE
       RETURN
-      END
+      END SUBROUTINE EIRENE_MSHPROJ
 
 
 C
@@ -853,7 +853,7 @@ C
       WRITE (iunout,*) 'NCUTL = ',NCUTL, ' IENDD-IINID+1 = ',
      .                  IENDD-IINID+1
       CALL EIRENE_EXIT_OWN(1)
-      END
+      END SUBROUTINE EIRENE_INDMAP
 
 
 C
@@ -935,7 +935,7 @@ C
       WRITE (iunout,*) 'NCUTL = ',NCUTL, ' IENDD-IINID+1 = ',
      .                  IENDD-IINID+1
       CALL EIRENE_EXIT_OWN(1)
-      END
+      END SUBROUTINE EIRENE_INDMPI
 
 
 C
@@ -982,7 +982,7 @@ c     write (iunout,*) 'plasm: detected format ', form
       END DO
   500 RETURN
 *//END PLASM//
-      END
+      END SUBROUTINE EIRENE_PLASM
 
 
 C
@@ -1016,7 +1016,7 @@ C
       RETURN
   910 FORMAT(5(ES16.7E3))
 *//END NEUTR//
-      END
+      END SUBROUTINE EIRENE_NEUTR
 
 
 
@@ -1295,7 +1295,7 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
       ENDDO
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_SAVE_TALLIES
 
 C
 C

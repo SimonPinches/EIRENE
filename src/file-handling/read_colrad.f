@@ -19,8 +19,8 @@ c                  =8-10  data for energy-weighted rate coefficient      (only =
 c                  =11,12 other data, such as red. pop. coefficients     (not in use)
 c           iz1:   not in use
 c
-cdr:  currently used only H.4, 2.1.5 and H.10, 2.1.5, EI,  ionisation
-cdr                       H.4. 2.1.8 and H.10, 2.1.8, RC   recombination
+cdr   currently used only H.4, 2.1.5 and H.10, 2.1.5, EI,  ionisation
+cdr                       H.4. 2.1.8 and H.10, 2.1.8, RC,  recombination
 cdr                       and  H.11, H.12: selected population coefficients
 c
 c  to be done: units, log-lin, scaling, asymptotics

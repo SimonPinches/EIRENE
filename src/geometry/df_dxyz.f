@@ -1,5 +1,6 @@
 cdr: nov 2013: comments added
 cdr: nov 2015:  further comments
+c  : summer 2019: bug fix re x coordinates for levgeo=1 case
 c
 c  AFEM:  course "Advanced Finite Element Methods",
 c         Department of Aerospace Engineering Sciences,
@@ -21,7 +22,7 @@ c  input:  fecken: values of function f on cell vertices
 c          function fecken must be defined already, e.g. from an earlier call to 'cell-to-corner.f'
 c
 c  for speed-up, and overhead reduction:
-c  fill array 'visited' to indicate, which cells have been visitied in earlier calls
+c  fill array 'visited' to indicate, which cells have been visited in earlier calls
 c  currently: array 'visited' is only set for levgeo=4,
 C  to be done for levgeo=5
 C  TO BE DONE: deallocate 'visited(icell)' at the end of a run.
@@ -82,18 +83,16 @@ c  find 2D grid indices ir, ip, from 1d cell number icell
      .              nbmlt,nlrad,nlpol,nltor)
 
         if (levgeo == 1) then
+cdr  changed in summer 2019
 !          x1=rsurf(ir)
 !          x2=rsurf(ir+1)
 !          x3=rsurf(ir+1)
 !          x4=rsurf(ir)
-!          y1=psurf(ip)
-!          y2=psurf(ip)
-!          y3=psurf(ip+1)
-!          y4=psurf(ip+1)
           x1=rsurf(ir+1)
           x2=rsurf(ir)
           x3=rsurf(ir)
           x4=rsurf(ir+1)
+cdr
           y1=psurf(ip)
           y2=psurf(ip)
           y3=psurf(ip+1)
