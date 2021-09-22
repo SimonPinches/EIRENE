@@ -243,7 +243,8 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
      .           NB, NS, NA, ISTR, IOPT,
      .           NRC, IADV, NUM_COMPO, NUM_CONTRIB, IDMDL, IND,
-     .           ILINE, JCOMP, KCONTR, IROW_ESC, ICOL_ESC, IRET, ITAL
+     .           ILINE, JCOMP, KCONTR, IROW_ESC, ICOL_ESC, IRET, ITAL,
+     .           IPNT
       INTEGER, SAVE :: NZADD, NITER0
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       INTEGER, DIMENSION(1) :: ISTR_A
@@ -4139,12 +4140,23 @@ C
 c    reset clock of source particles from old census to time0
 cdr  must be done also for time0=0.0, for otherwise flight time =0 is possible
 cdr  for census source particles and resulting error exits
-C Would gain performance by turning RPSTT into a pointer
-            DO I=1,IPRNL
-              RPSTT(1:NPARTT)=RPARTC(1:NPARTT,I)
+C    Would gain performance by turning RPSTT into a pointer
+cpb  changed due to optimizer problem            
+cpb  try to determine the index of the element of RPSTT which TIME points to
+            RPSTT(1:NPARTT)=RPARTC(1:NPARTT,1)
+            TIME=HUGE(1._DP)
+            IPNT = MAXLOC(RPSTT,1)
+cpb  reset time stamp
+            IF (RPSTT(IPNT) > EPS30) THEN
+              RPARTC(IPNT,1:IPRNL) = TIME0
               TIME=TIME0
-              RPARTC(1:NPARTT,I)=RPSTT(1:NPARTT)
-            ENDDO
+            ELSE
+              DO I=1,IPRNL
+                RPSTT(1:NPARTT)=RPARTC(1:NPARTT,I)
+                TIME=TIME0
+                RPARTC(1:NPARTT,I)=RPSTT(1:NPARTT)
+              ENDDO
+            END IF
             WRITE (iunout,*) 'PARTICLE CLOCK RESET'
             WRITE (iunout,*) 'FIRST TIMESTEP RUNS FROM TIM1 TO TIM2:'
             CALL EIRENE_MASR2('TIM1, TIM2      ',TIME0,TIME0+DTIMV)

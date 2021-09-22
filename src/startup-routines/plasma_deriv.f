@@ -763,9 +763,12 @@ C  FACTOR FOR ROOT MEAN SQUARE SPEED
      .      BVIN(IPLSV,J)=BX*VXIN(IPLSV,J)+
      .                    BY*VYIN(IPLSV,J)+
      .                    BZ*VZIN(IPLSV,J)
+!PB  changed due to problem with gfortran 9 compiler
+!     IF (LPARMOM.AND.LBVIN)
+!     .      PARMOM(IPLS,J)=BVIN(IPLSV,J)*SIGN(1._DP,BVIN(IPLSV,J))*
+!     .                     AMUA*RMASSP(IPLS)
           IF (LPARMOM.AND.LBVIN)
-     .      PARMOM(IPLS,J)=BVIN(IPLSV,J)*SIGN(1._DP,BVIN(IPLSV,J))*
-     .                     AMUA*RMASSP(IPLS)
+     .      PARMOM(IPLS,J)=ABS(BVIN(IPLSV,J))*AMUA*RMASSP(IPLS)
 
 C
 C  ZT1: FOR "EFFECTIVE" PLASMA PARTICLE VELOCITY IN CROSS-SECTIONS
