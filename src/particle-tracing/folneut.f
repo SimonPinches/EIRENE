@@ -718,12 +718,12 @@ C  ESCAPE AT GRID SURFACE BUILT FROM TRIANGLE SIDES IN X-Y PLANE: MRSURF
           MSURFG=INSPAT(IPOLGN,MRSURF)
           IF (ILIIN(ISTS) .NE. 0) THEN
              CALL EIRENE_STDCOL (ISTS,1,SG,IRET)
-             if (IRET .EQ. 1) GOTO 104
-             if (IRET .EQ. 2) GOTO 381
+             IF (IRET .EQ. 1) GOTO 104
+             IF (IRET .EQ. 2) THEN
+               SG=INMTINSS(IPOLGN,MRSURF) !VK
+               GOTO 380         !VK
+             END IF
           ENDIF
-  381     CONTINUE
-          SG=INMTINSS(IPOLGN,MRSURF)                            !VK
-          GOTO 380                                              !VK
         ENDIF
 
 C  ESCAPE AT 3RD (Z OR TOROIDAL) GRID SURFACE FOR TRIANGULAR X-Y GRID OPTION: MTSURF
