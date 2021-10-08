@@ -2670,7 +2670,6 @@ cdr  Possible conflicts, inconsistencies.
 !         call json%get(pAMD,'MeshType',AMDOutPars%MeshType,found)
          call json%get(pAMD,'MeshType',MeshTypeCK,found)
          AMDOutPars%MeshType=MeshTypeCK
-!cym/cpg end
          nullify (pAMD)
       endif
       
