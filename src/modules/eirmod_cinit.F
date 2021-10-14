@@ -3,6 +3,9 @@
 !  sep-05: specifications for databases added, ndbnames, dbhandle, dbfname
 !  jul-06: database handle added for ADAS
 !  20.06.07: deallocate tdmpar
+cdr oct 18 : "density models" TDMPAR are now fully characterized 
+cdr          by reaction identifyer IRC and donor state
+cdr          isp,itp,istr, rather than requiring a full reaction deck
 cdr dec 18 : remove obsolete photon-reflection data files graphite_ext and mo_ext
 cdr aug 19 : add legal filename: AMMONX (ifile=12)
       USE EIRMOD_PRECISION
@@ -46,6 +49,9 @@ CDR FOR DIRECT TRANSFER OF INFO FROM FIND_PARAM.F INTO INPUT.F
       INTEGER, PUBLIC, POINTER, SAVE ::
      I INDPRO(:),INDGRD(:),INDSRC(:)
 
+!pb   for NBMLT option, default .true.
+      LOGICAL, PUBLIC, SAVE :: LCPYPRO(12)
+      
       LOGICAL, PUBLIC, POINTER, SAVE ::
      L NLMACH,NLMLTI,NLMLV,NLPITCH
 
@@ -57,11 +63,7 @@ CDR FOR DIRECT TRANSFER OF INFO FROM FIND_PARAM.F INTO INPUT.F
      R              VXVAL, VYVAl, VZVAL, DFACTOR, TFACTOR,
      R              VFACTOR
         INTEGER :: NRE
-        INTEGER, POINTER :: ISP(:), ITP(:), ISTR(:)
-        CHARACTER(8), POINTER :: FNAME(:)
-        CHARACTER(4), POINTER :: H123(:)
-        CHARACTER(9), POINTER :: REACTION(:)
-        CHARACTER(3), POINTER :: CR(:)
+        INTEGER, POINTER :: ISP(:), ITP(:), ISTR(:), IRC(:)
       END TYPE
 
       TYPE TDENMODAR
@@ -75,7 +77,8 @@ CDR FOR DIRECT TRANSFER OF INFO FROM FIND_PARAM.F INTO INPUT.F
 
       CHARACTER(400), PUBLIC, SAVE :: DBFNAME(NDBNAMES)
       CHARACTER(6), PUBLIC, SAVE :: DBHANDLE(NDBNAMES)
-
+      LOGICAL, PUBLIC, SAVE :: LDBREAD(NDBNAMES)
+      
 C> Default output file prefix
 #ifndef HPUX
       CHARACTER(*), PUBLIC, PARAMETER :: FORT    = 'FORT.'
@@ -93,7 +96,8 @@ C> Default output file prefix
 
       NCINIT=42+30*NPLS
       MCINIT=12+3+NSTRA
-      LCINIT=3
+!pb   LCINIT=3
+      LCINIT=4
 
       ALLOCATE (RCINIT(NCINIT))
       ALLOCATE (ICINIT(MCINIT))
@@ -208,10 +212,7 @@ cdr units used for inut of backround profiles: V, B, Ti
           DEALLOCATE (TDMPAR(I)%TDM%ISP)
           DEALLOCATE (TDMPAR(I)%TDM%ITP)
           DEALLOCATE (TDMPAR(I)%TDM%ISTR)
-          DEALLOCATE (TDMPAR(I)%TDM%FNAME)
-          DEALLOCATE (TDMPAR(I)%TDM%H123)
-          DEALLOCATE (TDMPAR(I)%TDM%REACTION)
-          DEALLOCATE (TDMPAR(I)%TDM%CR)
+          DEALLOCATE (TDMPAR(I)%TDM%IRC)
           DEALLOCATE (TDMPAR(I)%TDM)
         END IF
       END DO
@@ -228,6 +229,7 @@ cdr units used for inut of backround profiles: V, B, Ti
       RCINIT = 0._DP
       ICINIT = 0
       LCNIT  = .FALSE.
+      LCPYPRO = .TRUE.
       CDENMODEL = REPEAT(' ',LEN(CDENMODEL))
       CASENAME = REPEAT(' ',LEN(CASENAME))
 
@@ -290,6 +292,8 @@ C  DEFAULT FOR DATABASE NAMES, CAN BE OVERWRITTEN BY CFILE CARDS
       DBFNAME(16) = ' '
       DBFNAME(17) = ' '
 
+      LDBREAD = .FALSE.
+
       RETURN
       END SUBROUTINE EIRENE_INIT_CINIT
 
@@ -300,13 +304,13 @@ C  DEFAULT FOR DATABASE NAMES, CAN BE OVERWRITTEN BY CFILE CARDS
       INTEGER :: IER, IPLS, NREF, IRF, IAN
       REAL(DP) :: RHELP(3)
       INTEGER, ALLOCATABLE :: IHELP(:)
-      CHARACTER, ALLOCATABLE :: CHELP(:)
 
       IF (ME /= 0) CALL EIRENE_ALLOC_CINIT
 
       CALL MPI_BCAST (RCINIT,NCINIT,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (ICINIT,MCINIT,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LCNIT,LCINIT,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (LCPYPRO,12,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
 
 cdr  "density models", to set derived plasma background species IPLS
 cdr  e.g. corona, colrad, const, saha,.....
@@ -321,8 +325,7 @@ cdr  e.g. corona, colrad, const, saha,.....
         CALL MPI_BCAST(NREF,1,MPI_INTEGER,0,
      .                 MPI_COMM_WORLD,ier)
 
-        ALLOCATE (IHELP(3*NREF))
-        ALLOCATE (CHELP(1:24*NREF))
+        ALLOCATE (IHELP(4*NREF))
 
         IF (ME == 0) THEN
           RHELP(1) = TDMPAR(IPLS)%TDM%G_BOLTZ
@@ -331,25 +334,12 @@ cdr  e.g. corona, colrad, const, saha,.....
           IHELP(1:NREF) = TDMPAR(IPLS)%TDM%ISP(1:NREF)
           IHELP(1+NREF:2*NREF) = TDMPAR(IPLS)%TDM%ITP(1:NREF)
           IHELP(1+2*NREF:3*NREF) = TDMPAR(IPLS)%TDM%ISTR(1:NREF)
-          IAN = 0
-          DO IRF=1,NREF
-            CHELP(IAN+1:IAN+8) = TRANSFER(TDMPAR(IPLS)%TDM%FNAME(IRF),
-     .                                    CHELP)
-            CHELP(IAN+9:IAN+12) = TRANSFER(TDMPAR(IPLS)%TDM%H123(IRF),
-     .                                    CHELP)
-            CHELP(IAN+13:IAN+21) = TRANSFER(
-     .                        TDMPAR(IPLS)%TDM%REACTION(IRF),CHELP)
-            CHELP(IAN+22:IAN+24) = TRANSFER(TDMPAR(IPLS)%TDM%CR(IRF),
-     .                                    CHELP)
-            IAN = IAN + 24
-          END DO
+          IHELP(1+3*NREF:4*NREF) = TDMPAR(IPLS)%TDM%IRC(1:NREF)
         END IF
 
         CALL MPI_BCAST(RHELP,3,MPI_REAL8,0,
      .                MPI_COMM_WORLD,ier)
         CALL MPI_BCAST(IHELP,3*NREF,MPI_INTEGER,0,
-     .                MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST(CHELP,24*NREF,MPI_CHARACTER,0,
      .                MPI_COMM_WORLD,ier)
 
         IF (ME > 0) THEN
@@ -361,10 +351,7 @@ csw
             ALLOCATE (TDMPAR(IPLS)%TDM%ISP(NREF))
             ALLOCATE (TDMPAR(IPLS)%TDM%ITP(NREF))
             ALLOCATE (TDMPAR(IPLS)%TDM%ISTR(NREF))
-            ALLOCATE (TDMPAR(IPLS)%TDM%FNAME(NREF))
-            ALLOCATE (TDMPAR(IPLS)%TDM%H123(NREF))
-            ALLOCATE (TDMPAR(IPLS)%TDM%REACTION(NREF))
-            ALLOCATE (TDMPAR(IPLS)%TDM%CR(NREF))
+            ALLOCATE (TDMPAR(IPLS)%TDM%IRC(NREF))
 csw
           endif
 csw
@@ -375,23 +362,10 @@ csw
           TDMPAR(IPLS)%TDM%ISP(1:NREF) = IHELP(1:NREF)
           TDMPAR(IPLS)%TDM%ITP(1:NREF) = IHELP(1+NREF:2*NREF)
           TDMPAR(IPLS)%TDM%ISTR(1:NREF) = IHELP(1+2*NREF:3*NREF)
-          IAN = 0
-          DO IRF=1,NREF
-            TDMPAR(IPLS)%TDM%FNAME(IRF) = TRANSFER(CHELP(IAN+1:IAN+8),
-     .            TDMPAR(IPLS)%TDM%FNAME(IRF))
-            TDMPAR(IPLS)%TDM%H123(IRF) = TRANSFER(CHELP(IAN+9:IAN+12),
-     .            TDMPAR(IPLS)%TDM%H123(IRF))
-            TDMPAR(IPLS)%TDM%REACTION(IRF) =
-     .            TRANSFER(CHELP(IAN+13:IAN+21),
-     .            TDMPAR(IPLS)%TDM%REACTION(IRF))
-            TDMPAR(IPLS)%TDM%CR(IRF) = TRANSFER(CHELP(IAN+22:IAN+24),
-     .            TDMPAR(IPLS)%TDM%CR(IRF))
-            IAN = IAN + 24
-          END DO
+          TDMPAR(IPLS)%TDM%IRC(1:NREF) = IHELP(1+3*NREF:4*NREF)
         END IF
 
         DEALLOCATE (IHELP)
-        DEALLOCATE (CHELP)
 
       END DO
 

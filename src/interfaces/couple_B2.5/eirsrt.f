@@ -66,7 +66,7 @@ C     B2VP :  VOLUMETRIC ENERGY EXCHANGE (ELECTRONS-IONS) DUE TO WORK DONE BY EL
       USE EIRMOD_CSPEI
       USE EIRMOD_BRASCL
       USE EIRMOD_SECOND_OWN, ONLY: EIRENE_SECOND_OWN, 
-                                   EIRENE_RESET_SECOND
+     .                             EIRENE_RESET_SECOND
 
       IMPLICIT NONE
 C
@@ -76,7 +76,7 @@ C
 
       REAL(DP) :: FLUXS(NSTRA)
       REAL(DP) :: EIRENE_FTABEI1, EIRENE_FEELEI1, ESIG,
-     .            DUMMY, DTIMVO
+     .            DUMMY, DTIMVO, EN
       INTEGER :: IN, IAEI, IMEI, IIEI, IREI, IFIRST, K, JC, NDXY,
      .           J, IRC, NREC10, NREC11, ITNR, IPLSTI, IST_RATE, IST,
      .           JATM, JMOL, JION, JPLS,

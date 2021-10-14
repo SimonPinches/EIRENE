@@ -37,11 +37,16 @@ cdr         non-linear iterations.
 
       IMPLICIT NONE
 
-      INTEGER IO
-
+      INTEGER IO, NFLBGK
+      REAL(DP), ALLOCATABLE :: TIIN_LOC(:,:), DIIN_LOC(:,:),
+     R  VXIN_LOC(:,:), VYIN_LOC(:,:), VZIN_LOC(:,:)
 
       OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 13+ifoff
+#ifdef CHECKBIN
+      OPEN (UNIT=113,ACCESS='SEQUENTIAL',FORM='FORMATTED')
+      REWIND 113
+#endif
       IF(.NOT.ASSOCIATED(NFLA)) THEN
         WRITE(iunout,'(4a)')
      w         "ERROR IN WRPLAM_SHRT: NFLA WAS NOT ASSOCIATED. ",
@@ -53,13 +58,40 @@ cdr  transfered via common BRAEIR, i.e. only:  nfla+1,....nplsi
 cdr  I.e. the virtual background species for non-linear iterations
 cdr  have to come last in the list of all background species.
       IF(NFLA.LT.NPLSI) THEN
+        NFLBGK = NPLSI - NFLA
+        ALLOCATE (TIIN_LOC(NFLBGK,NRAD))
+        ALLOCATE (DIIN_LOC(NFLBGK,NRAD))
+        ALLOCATE (VXIN_LOC(NFLBGK,NRAD))
+        ALLOCATE (VYIN_LOC(NFLBGK,NRAD))
+        ALLOCATE (VZIN_LOC(NFLBGK,NRAD))
+        TIIN_LOC = TIIN(NFLA+1:NPLSI,1:NRAD)
+        DIIN_LOC = DIIN(NFLA+1:NPLSI,1:NRAD)
+        VXIN_LOC = VXIN(NFLA+1:NPLSI,1:NRAD)
+        VYIN_LOC = VYIN(NFLA+1:NPLSI,1:NRAD)
+        VZIN_LOC = VZIN(NFLA+1:NPLSI,1:NRAD)
+!       WRITE (13+ifoff,IOSTAT=IO)
+!    w           TIIN(NFLA+1:NPLSI,1:NRAD),DIIN(NFLA+1:NPLSI,1:NRAD),
+!    w           VXIN(NFLA+1:NPLSI,1:NRAD),VYIN(NFLA+1:NPLSI,1:NRAD),
+!    w           VZIN(NFLA+1:NPLSI,1:NRAD)
         WRITE (13+ifoff,IOSTAT=IO)
-     w           TIIN(NFLA+1:NPLSI,1:NRAD),DIIN(NFLA+1:NPLSI,1:NRAD),
-     w           VXIN(NFLA+1:NPLSI,1:NRAD),VYIN(NFLA+1:NPLSI,1:NRAD),
-     w           VZIN(NFLA+1:NPLSI,1:NRAD)
+     w       TIIN_LOC, DIIN_LOC,
+     W       VXIN_LOC, VYIN_LOC, VZIN_LOC
+#ifdef CHECKBIN
+        WRITE (113,*)
+     w       TIIN_LOC, DIIN_LOC,
+     W       VXIN_LOC, VYIN_LOC, VZIN_LOC
+#endif
+        DEALLOCATE (TIIN_LOC)
+        DEALLOCATE (DIIN_LOC)
+        DEALLOCATE (VXIN_LOC)
+        DEALLOCATE (VYIN_LOC)
+        DEALLOCATE (VZIN_LOC)
       END IF
 
       CLOSE (UNIT=13+ifoff)
+#ifdef CHECKBIN
+      CLOSE (UNIT=113)
+#endif
 
       END SUBROUTINE EIRENE_WRPLAM_SHRT
 C .......................................................................

@@ -6,11 +6,13 @@ include:
 
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
+#    SAMPLE_CASE_VERSION: a0a015c4a06e060d84f718bed021b633cb151e83
+#    SAMPLE_CASE_VERSION: 272ddfac67030b518e7047b3066b8d036e8039a6
 #   SAMPLE_CASE_VERSION: 99708cb2086dba10f970584a820b20f5b30e8814
 #    SAMPLE_CASE_VERSION: 2009bb57025877d09bfb4e8f298924b364ddc07f
-#    SAMPLE_CASE_VERSION: 3149cae2f1063d7cc10cccfb50f6afc950ff00c8
-    SAMPLE_CASE_VERSION: 98d8fe1584d41d65feeb1c741cafdeeeedd7b8f1
-    
+#    SAMPLE_CASE_VERSION: fc8845a38bf98d38881339d38d9138574c548923
+#   SAMPLE_CASE_VERSION: 07cab8ccac4484344c0af4d166500262120feee9 
+    SAMPLE_CASE_VERSION: e31ce4260d9d5c2ef32e2729396fa464fe44d0d3
 
 stages:
     - preparation
@@ -94,7 +96,8 @@ run_mpi_cases:
         - schedules
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
-        - make ci_test
+        - make test
+        # - make ci_test
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
@@ -233,6 +236,44 @@ test_standalone_ITER_1573:
     dependencies:
         - run_standalone_ITER_1573
 
+build_standalone_ITER_1573_def_lines:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "ITER_1573_def_lines"
+
+run_standalone_ITER_1573_def_lines:
+    <<: *run
+    variables:
+        PATH_CASE: "ITER_1573_def_lines"
+    dependencies:
+        - build_standalone_ITER_1573_def_lines
+
+test_standalone_ITER_1573_def_lines:
+    <<: *test
+    variables:
+        PATH_CASE: "ITER_1573_def_lines"
+    dependencies:
+        - run_standalone_ITER_1573_def_lines
+
+build_standalone_ITER_1573_dens_model:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "ITER_1573_dens_model"
+
+run_standalone_ITER_1573_dens_model:
+    <<: *run
+    variables:
+        PATH_CASE: "ITER_1573_dens_model"
+    dependencies:
+        - build_standalone_ITER_1573_dens_model
+
+test_standalone_ITER_1573_dens_model:
+    <<: *test
+    variables:
+        PATH_CASE: "ITER_1573_dens_model"
+    dependencies:
+        - run_standalone_ITER_1573_dens_model
+
 build_standalone_2D_slab:
     <<: *build_executable
     variables:
@@ -365,6 +406,44 @@ test_standalone_3D-D_tetra:
         PATH_CASE: "3D-D_tetra"
     dependencies:
         - run_standalone_3D-D_tetra
+
+build_standalone_ALT2S:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "ALT2S"
+
+run_standalone_ALT2S:
+    <<: *run
+    variables:
+        PATH_CASE: "ALT2S"
+    dependencies:
+        - build_standalone_ALT2S
+
+test_standalone_ALT2S:
+    <<: *test
+    variables:
+        PATH_CASE: "ALT2S"
+    dependencies:
+        - run_standalone_ALT2S
+
+build_standalone_ALT2S_bits:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "ALT2S_bits"
+
+run_standalone_ALT2S_bits:
+    <<: *run
+    variables:
+        PATH_CASE: "ALT2S_bits"
+    dependencies:
+        - build_standalone_ALT2S_bits
+
+test_standalone_ALT2S_bits:
+    <<: *test
+    variables:
+        PATH_CASE: "ALT2S_bits"
+    dependencies:
+        - run_standalone_ALT2S_bits
 
 build_standalone_cylinder:
     <<: *build_executable

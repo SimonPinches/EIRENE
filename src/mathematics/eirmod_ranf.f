@@ -60,7 +60,9 @@ C
       common /cmem/ iseed
       real(dp) :: ra, ranf_eirene, h1rn
 
-cdr  parameters for SURAND  (IBM, 1968)
+cdr  parameters for SURAND  (IBM, 1968), aka: "GGL generator". 
+cdr  generally quoted as: "should not be used anymore"
+cdr  since 19-eighties
       INTEGER D2P32M
       DOUBLE PRECISION Z,D2P31M,D2PN31
       DATA  D2PN31/4.656612873077393D-10/,  !    = 1 / 2**31   = 1/m

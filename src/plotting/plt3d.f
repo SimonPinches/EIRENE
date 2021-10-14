@@ -291,7 +291,7 @@ C**ZYLINDER: FINDE ACHSE
                 ENDIF
 C  ZYLINDER: GGFLS MEHRERE TEILSTUECKE
                 CALL EIRENE_CTQUA
-     .  (A0LM(J),A1LM(J),A2LM(J),A3LM(J),A4LM(J),
+     .                     (A0LM(J),A1LM(J),A2LM(J),A3LM(J),A4LM(J),
      .                      A5LM(J),A6LM(J),A7LM(J),A8LM(J),A9LM(J),
      .                      XLIMS1(1,J),XLIMS2(1,J),YLIMS1(1,J),
      .                      YLIMS2(1,J),ZLIMS1(1,J),ZLIMS2(1,J),
@@ -370,7 +370,7 @@ C**PAAR VON EBENEN (ODER EINE DOPPELEBENE)
 C**EINE EBENE
             ELSEIF (JUMLIM(J).NE.0) THEN
               CALL EIRENE_PLANE
-     .  (A0LM(J),A1LM(J),A2LM(J),A3LM(J),RLB(J),9,
+     .             (A0LM(J),A1LM(J),A2LM(J),A3LM(J),RLB(J),9,
      .              EPS10,ALIMS,XLIMS,YLIMS,ZLIMS,
      .                    ALIMS0,XLIMS1,YLIMS1,ZLIMS1,
      .                           XLIMS2,YLIMS2,ZLIMS2,
@@ -429,103 +429,106 @@ C**PAAR VON EBENEN ODER DOPPELEBENE ?
 C**ZYLINDER ?
               ELSEIF (MERK.EQ.4) THEN
 C**ZYLINDER BEGRENZT DURCH MAXIMAL 9 EBENEN
-               IF (ISCN(J).EQ.0) THEN
-                 CALL EIRENE_ZYLPLN
-     .  (ZX0,ZY0,ZZ0,CX,CY,CZ,RZYL,J,NZAD,NINNE,
-     .                        NIN)
+                IF (ISCN(J).EQ.0) THEN
+                  CALL EIRENE_ZYLPLN
+     .                (ZX0,ZY0,ZZ0,CX,CY,CZ,RZYL,J,NZAD,NINNE, NIN)
 C**ZYLINDER BEGRENZT DURCH MAXIMAL EINE FLAECHE ZWEITER ORDNUNG
-               ELSEIF (ILIN(J).EQ.0.AND.ISCN(J).EQ.1) THEN
-                 IB=1
-                 CALL EIRENE_FL2O
-     .  (ALIMS0(IB,J),XLIMS1(IB,J),YLIMS1(IB,J),
+                ELSEIF (ILIN(J).EQ.0.AND.ISCN(J).EQ.1) THEN
+                  IB=1
+                  CALL EIRENE_FL2O
+     .                     (ALIMS0(IB,J),XLIMS1(IB,J),YLIMS1(IB,J),
      .                      ZLIMS1(IB,J),XLIMS2(IB,J),YLIMS2(IB,J),
      .                      ZLIMS2(IB,J),XLIMS3(IB,J),YLIMS3(IB,J),
      .                      ZLIMS3(IB,J),MERK2,ZX0B,ZY0B,ZZ0B,CXB,CYB,
      .                      CZB,RZYLB,B0B,B1B,B2B,B3B,F0B,F1B,F2B,F3B,
      .                      EPS10)
-                 IF (TRCPLT) THEN
-                   WRITE (iunout,*) 'FL2O CALLED'
-                   WRITE (iunout,*) 'MERK2= ',MERK2
-                 ENDIF
+                  IF (TRCPLT) THEN
+                    WRITE (iunout,*) 'FL2O CALLED'
+                    WRITE (iunout,*) 'MERK2= ',MERK2
+                  ENDIF
 C**ZYLINDER BEGRENZT VON 2 EBENEN
-                 IF (MERK2.LE.3) THEN
-                   AL(1)=B0B
-                   AL(2)=B1B
-                   AL(3)=B2B
-                   AL(4)=B3B
-                   AR(1)=F0B
-                   AR(2)=F1B
-                   AR(3)=F2B
-                   AR(4)=F3B
-                   CALL EIRENE_SECQUA
-     .  (ZX0,ZY0,ZZ0,CX,CY,CZ,AL,4,TA,TD,LERR1)
-                   CALL EIRENE_SECQUA
-     .  (ZX0,ZY0,ZZ0,CX,CY,CZ,AR,4,TB,TD,LERR2)
-                   IF (LERR1.OR.LERR2) THEN
-                     IF (TRCPLT) WRITE (iunout,*)
-     .                  ' FEHLER IN BERANDUNG VON FLAECHE ',J
-                     PLABLE(J)=.TRUE.
-!pb300919            GOTO 10
-                     CYCLE
-                   ENDIF
-                   IF (TA.LT.TB) THEN
-                     T1=TA-2.*RZYL
-                     T2=TB+2.*RZYL
-                   ELSE
-                     T1=TB-2.*RZYL
-                     T2=TA+2.*RZYL
-                     DO 15 II=1,4
-                       TD=AL(II)
-                       AL(II)=AR(II)
-                       AR(II)=TD
-   15                CONTINUE
-                   ENDIF
-                   CALL EIRENE_ZYLIND (ZX0,ZY0,ZZ0,CX,CY,CZ,T1,T2,
+                  IF (MERK2.LE.3) THEN
+                    AL(1)=B0B
+                    AL(2)=B1B
+                    AL(3)=B2B
+                    AL(4)=B3B
+                    AR(1)=F0B
+                    AR(2)=F1B
+                    AR(3)=F2B
+                    AR(4)=F3B
+                    CALL EIRENE_SECQUA
+     .                 (ZX0,ZY0,ZZ0,CX,CY,CZ,AL,4,TA,TD,LERR1)
+                    CALL EIRENE_SECQUA
+     .                 (ZX0,ZY0,ZZ0,CX,CY,CZ,AR,4,TB,TD,LERR2)
+                    IF (LERR1.OR.LERR2) THEN
+                      IF (TRCPLT) WRITE (iunout,*)
+     .                     ' FEHLER IN BERANDUNG VON FLAECHE ',J
+                      PLABLE(J)=.TRUE.
+!pb300919             GOTO 10
+                      CYCLE
+                    ENDIF
+                    IF (TA.LT.TB) THEN
+                      T1=TA-2.*RZYL
+                      T2=TB+2.*RZYL
+                    ELSE
+                      T1=TB-2.*RZYL
+                      T2=TA+2.*RZYL
+                      DO 15 II=1,4
+                        TD=AL(II)
+                        AL(II)=AR(II)
+                        AR(II)=TD
+ 15                   CONTINUE
+                    ENDIF
+                    CALL EIRENE_ZYLIND (ZX0,ZY0,ZZ0,CX,CY,CZ,T1,T2,
      .                          RZYL,NZAD,NINNE,NIN,
      .                          ILCOL(J),IGFIL(J).NE.0,J,4,AL,4,AR,
      .                          0._DP,360._DP)
 C**ZYLINDER BEGRENZT VON ECHT GEKRUEMMTEN FLAECHE 2TER ORDNUNG
-                ELSEIF (MERK2.GE.4) THEN
-                  IB=1
-                  AL(1)=ALIMS0(IB,J)
-                  AL(2)=XLIMS1(IB,J)
-                  AL(3)=YLIMS1(IB,J)
-                  AL(4)=ZLIMS1(IB,J)
-                  AL(5)=XLIMS2(IB,J)
-                  AL(6)=YLIMS2(IB,J)
-                  AL(7)=ZLIMS2(IB,J)
-                  AL(8)=XLIMS3(IB,J)
-                  AL(9)=YLIMS3(IB,J)
-                  AL(10)=ZLIMS3(IB,J)
-                  CALL EIRENE_SECQUA
-     .  (ZX0,ZY0,ZZ0,CX,CY,CZ,AL,10,TA,TB,LERR1)
-                  IF (LERR1) THEN
-                    WRITE (iunout,*)
-     .                ' FEHLER IN DER BERANDUNG VON FLAECHE',J
+                  ELSEIF (MERK2.GE.4) THEN
+                    IB=1
+                    AL(1)=ALIMS0(IB,J)
+                    AL(2)=XLIMS1(IB,J)
+                    AL(3)=YLIMS1(IB,J)
+                    AL(4)=ZLIMS1(IB,J)
+                    AL(5)=XLIMS2(IB,J)
+                    AL(6)=YLIMS2(IB,J)
+                    AL(7)=ZLIMS2(IB,J)
+                    AL(8)=XLIMS3(IB,J)
+                    AL(9)=YLIMS3(IB,J)
+                    AL(10)=ZLIMS3(IB,J)
+                    CALL EIRENE_SECQUA
+     .                (ZX0,ZY0,ZZ0,CX,CY,CZ,AL,10,TA,TB,LERR1)
+                    IF (LERR1) THEN
+                      WRITE (iunout,*)
+     .                     ' FEHLER IN DER BERANDUNG VON FLAECHE',J
+                      PLABLE(J)=.TRUE.
+!pb300919             GOTO 10
+                      CYCLE
+                    ENDIF
+                    IF (TA.LT.TB) THEN
+                      T1=TA-2.*RZYL
+                      T2=TB+2.*RZYL
+                    ELSE
+                      T1=TB-2.*RZYL
+                      T2=TA+2.*RZYL
+                    ENDIF
+                    DO 18 K=1,10
+                      AR(K)=AL(K)
+ 18                 CONTINUE
+                    CALL EIRENE_ZYLIND (ZX0,ZY0,ZZ0,CX,CY,CZ,T1,T2,
+     .                      RZYL,NZAD,NINNE,NIN,
+     .                      ILCOL(J),IGFIL(J).NE.0,
+     .                      J,10,AL,10,AR,0._DP,360._DP)
+                  ELSE
                     PLABLE(J)=.TRUE.
 !pb300919           GOTO 10
                     CYCLE
                   ENDIF
-                  IF (TA.LT.TB) THEN
-                    T1=TA-2.*RZYL
-                    T2=TB+2.*RZYL
-                  ELSE
-                    T1=TB-2.*RZYL
-                    T2=TA+2.*RZYL
-                  ENDIF
-                  DO 18 K=1,10
-                    AR(K)=AL(K)
-   18             CONTINUE
-                  CALL EIRENE_ZYLIND (ZX0,ZY0,ZZ0,CX,CY,CZ,T1,T2,
-     .                      RZYL,NZAD,NINNE,NIN,
-     .                      ILCOL(J),IGFIL(J).NE.0,
-     .                      J,10,AL,10,AR,0._DP,360._DP)
-                ELSE
+                ELSE  ! ISCN > 0 AND ILIN > 0
                   PLABLE(J)=.TRUE.
-!pb300919         GOTO 10
+!pb300919           GOTO 10
                   CYCLE
                 ENDIF
-               ENDIF
 C**KUGEL, ELLIPSOID
               ELSEIF (MERK == 13) THEN
                 CALL EIRENE_ELLIPSOID (ZX0,ZY0,ZZ0,CX,CY,CZ,XLIMS1(1,J),
@@ -544,7 +547,7 @@ C
 C**EBENE BEGRENZT DURCH ANDERE EBENEN
               IF (ISCN(J).EQ.0) THEN
                 CALL EIRENE_PLANE
-     .  (A0LM(J),A1LM(J),A2LM(J),A3LM(J),RLB(J),
+     .              (A0LM(J),A1LM(J),A2LM(J),A3LM(J),RLB(J),
      .                      9,EPS10,ALIMS,XLIMS,YLIMS,ZLIMS,
      .                      ALIMS0,XLIMS1,YLIMS1,ZLIMS1,
      .                             XLIMS2,YLIMS2,ZLIMS2,
@@ -555,7 +558,7 @@ C**EBENE BEGRENZT DURCH EINEN ODER MEHRERE ZYLINDER?
                 IB=0
    20           IB=IB+1
                 CALL EIRENE_FL2O
-     .  (ALIMS0(IB,J),XLIMS1(IB,J),YLIMS1(IB,J),
+     .              (ALIMS0(IB,J),XLIMS1(IB,J),YLIMS1(IB,J),
      .                     ZLIMS1(IB,J),XLIMS2(IB,J),YLIMS2(IB,J),
      .                     ZLIMS2(IB,J),XLIMS3(IB,J),YLIMS3(IB,J),
      .                     ZLIMS3(IB,J),MERK2,ZX0,ZY0,ZZ0,CX,CY,CZ,
@@ -570,7 +573,7 @@ C**EBENE BEGRENZT DURCH EINEN ODER MEHRERE ZYLINDER?
                   AL(3)=A2LM(J)
                   AL(4)=A3LM(J)
                   CALL EIRENE_SECQUA
-     .  (ZX0,ZY0,ZZ0,CX,CY,CZ,AL,4,TA,TD,LERR1)
+     .                (ZX0,ZY0,ZZ0,CX,CY,CZ,AL,4,TA,TD,LERR1)
                   IF (LERR1) THEN
                     WRITE (iunout,*)
      .                ' FEHLER IN DER BERANDUNG VON FLAECHE',J

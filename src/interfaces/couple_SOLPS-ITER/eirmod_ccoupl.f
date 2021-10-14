@@ -42,6 +42,11 @@
      L LBALAN, LSYMET, LPRSOU,
      L LNLPLG, LNLDRF, LTRCFL, LNLVOL(:)
 
+!  store variables in module for writing of JSON file
+      LOGICAL, PUBLIC, SAVE :: LCOARSE
+      INTEGER, PUBLIC, SAVE :: mshfrm, ntrfrm
+      REAL(DP), PUBLIC, SAVE :: brad, bpol, btor 
+
       INTEGER, PUBLIC, SAVE ::
      I NCOUPL, MCOUPL1, MCOUPL2, LCOUPL
 

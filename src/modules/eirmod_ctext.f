@@ -9,7 +9,8 @@ cdr  sept 18: typo in CTEXT(2)  (size of array) corrected
       PRIVATE
 
       PUBLIC :: EIRENE_ALLOC_CTEXT, EIRENE_DEALLOC_CTEXT,
-     P          EIRENE_INIT_CTEXT, EIRENE_BROADCAST_CTEXT
+     P          EIRENE_INIT_CTEXT, EIRENE_BROADCAST_CTEXT,
+     p          EIRENE_DEALLOC_CTEXT3 
 
       CHARACTER(72), PUBLIC, ALLOCATABLE, SAVE ::
      C TXTSFL(:),   TXTTAL(:,:), TXTPLS(:,:),
@@ -24,6 +25,12 @@ cdr  sept 18: typo in CTEXT(2)  (size of array) corrected
      C TXTPUN(:,:), TXTPSP(:,:),
      C TXTUNW(:,:), TXTSPW(:,:),
      C TEXTLA(:),   TEXTLS(:)
+
+      CHARACTER(72), PUBLIC, ALLOCATABLE, SAVE ::
+     .               TXTTLA(:), TXTTLC(:), TXTTLR(:), TXTTLT(:)
+      CHARACTER(24), PUBLIC, ALLOCATABLE, SAVE ::
+     .               TXTSCA(:), TXTSCC(:), TXTSCR(:), TXTSCT(:),
+     .               TXTUTA(:), TXTUTC(:), TXTUTR(:), TXTUTT(:)
 
 
       CONTAINS
@@ -69,6 +76,29 @@ cdr input tallies
      .        ' CTEXT(2) ',  N1MX*(NTALV+NTALI)*72 +
      .                     2*N1MX*(NTALV+NTALI)*24
 
+
+      ELSE IF (ICAL == 3) THEN
+
+        IF (ALLOCATED(TXTTLA)) RETURN
+
+        ALLOCATE (TXTTLA(NADV))
+        ALLOCATE (TXTSCA(NADV))
+        ALLOCATE (TXTUTA(NADV))
+        
+        ALLOCATE (TXTTLC(NCLV))
+        ALLOCATE (TXTSCC(NCLV))
+        ALLOCATE (TXTUTC(NCLV))
+
+        ALLOCATE (TXTTLR(NALV))
+        ALLOCATE (TXTSCR(NALV))
+        ALLOCATE (TXTUTR(NALV))
+
+        ALLOCATE (TXTTLT(NSNV))
+        ALLOCATE (TXTSCT(NSNV))
+        ALLOCATE (TXTUTT(NSNV))
+
+        WRITE (IUNMEM,'(A,T25,I15)')
+     .       ' CTEXT(3) ', (NADV+NCLV+NALV+NSNV)*(72 + 2*24)
       END IF
 
       CALL EIRENE_INIT_CTEXT (ICAL)
@@ -79,27 +109,56 @@ cdr input tallies
 
       SUBROUTINE EIRENE_DEALLOC_CTEXT
 
-      IF (.NOT.ALLOCATED(TXTSFL)) RETURN
+      IF (ALLOCATED(TXTSFL)) THEN
+        DEALLOCATE (TXTSFL)
+        DEALLOCATE (TXTSOU)
+        DEALLOCATE (TXTSIG)
+        DEALLOCATE (TXTTLW)
+        DEALLOCATE (CHRTAL)
+        DEALLOCATE (CHRTLS)
+        DEALLOCATE (TXTUNW)
+        DEALLOCATE (TXTSPW)
+        DEALLOCATE (TEXTLA)
+        DEALLOCATE (TEXTLS)
+      END IF
+      
+      IF (ALLOCATED(TXTTAL)) THEN
+        DEALLOCATE (TXTTAL)
+        DEALLOCATE (TXTSPC)
+        DEALLOCATE (TXTUNT)
+        DEALLOCATE (TXTPLS)
+        DEALLOCATE (TXTPSP)
+        DEALLOCATE (TXTPUN)
+      END IF
 
-      DEALLOCATE (TXTSFL)
-      DEALLOCATE (TXTTAL)
-      DEALLOCATE (TXTPLS)
-      DEALLOCATE (TXTSOU)
-      DEALLOCATE (TXTSIG)
-      DEALLOCATE (TXTTLW)
-      DEALLOCATE (CHRTAL)
-      DEALLOCATE (CHRTLS)
-      DEALLOCATE (TXTSPC)
-      DEALLOCATE (TXTUNT)
-      DEALLOCATE (TXTPSP)
-      DEALLOCATE (TXTPUN)
-      DEALLOCATE (TXTUNW)
-      DEALLOCATE (TXTSPW)
-      DEALLOCATE (TEXTLA)
-      DEALLOCATE (TEXTLS)
-
+      CALL EIRENE_DEALLOC_CTEXT3
+      
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_CTEXT
+
+
+      SUBROUTINE EIRENE_DEALLOC_CTEXT3
+      
+      IF (ALLOCATED(TXTTLA)) THEN
+        DEALLOCATE (TXTTLA)
+        DEALLOCATE (TXTSCA)
+        DEALLOCATE (TXTUTA)
+        
+        DEALLOCATE (TXTTLC)
+        DEALLOCATE (TXTSCC)
+        DEALLOCATE (TXTUTC)
+
+        DEALLOCATE (TXTTLR)
+        DEALLOCATE (TXTSCR)
+        DEALLOCATE (TXTUTR)
+
+        DEALLOCATE (TXTTLT)
+        DEALLOCATE (TXTSCT)
+        DEALLOCATE (TXTUTT)
+      ENDIF
+      
+      RETURN
+      END SUBROUTINE EIRENE_DEALLOC_CTEXT3
 
 
       SUBROUTINE EIRENE_INIT_CTEXT (ICAL)
@@ -128,6 +187,24 @@ cdr input tallies
         TXTPLS = ' '
         TXTPSP = ' '
         TXTPUN = ' '
+
+      ELSE IF (ICAL == 3) THEN
+
+        TXTTLA = ' '
+        TXTSCA = ' '
+        TXTUTA = ' '
+
+        TXTTLC = ' '
+        TXTSCC = ' '
+        TXTUTC = ' '
+
+        TXTTLR = ' '
+        TXTSCR = ' '
+        TXTUTR = ' '
+
+        TXTTLT = ' '
+        TXTSCT = ' '
+        TXTUTT = ' '
 
       END IF
 

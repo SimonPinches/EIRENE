@@ -1162,7 +1162,7 @@ C  FIND NEW B-FIELD, NEW REDUCED (GC) VELOCITY
 C STORE NEW FULL VELOCITY
         VELS = VEL
         CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,1)
-cdr Warnung: this call is probably incorrect in case of levgeo=10.
+cdr Warning: this call is probably incorrect in case of levgeo=10.
 !   Jump to external (e.g. emc3) routine)
 !   but there the cell number may be set only later.
 !   In fpkcol a new B field may already have been set.

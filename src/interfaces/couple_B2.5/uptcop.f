@@ -114,7 +114,7 @@ C
               IF (LGVAC(IRD,IPLS)) GOTO 52
               IPLSTI= MPLSTI(IPLS)
               EION=1.5*TIIN(IPLSTI,IRD)
-              IF (LEDRIFT) EN = EN + EDRIFT(IPLS,IRD)
+              IF (LEDRIFT) EION = EION + EDRIFT(IPLS,IRD)
               WTRSIG=WTR*SIGVCX(IRCX)/DIIN(IPLS,IRD)
               COPV(IPLS,IRDD)=COPV(IPLS,IRDD)+WTRSIG*(E0/EION-1.)
               LMETSP(NMTSP+IPLS)=.TRUE.

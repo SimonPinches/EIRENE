@@ -42,6 +42,10 @@
      L LBALAN, LSYMET, LPRSOU,
      L LNLPLG, LNLDRF, LTRCFL, LNLVOL(:)
 
+!  store these variables in module for writing into JSON file
+      LOGICAL, PUBLIC, SAVE :: LCOARSE
+      INTEGER, PUBLIC, SAVE :: mshfrm
+
       INTEGER, PUBLIC, SAVE ::
      I NCOUPL, MCOUPL1, MCOUPL2, LCOUPL
 
