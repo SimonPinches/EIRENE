@@ -94,6 +94,10 @@ C> Indicates whether output files 'output.*' should be appended or overwritten
 
 
       INTEGER, PUBLIC, SAVE ::
+     I NREAC_LINES
+
+ 
+      INTEGER, PUBLIC, SAVE ::
      I NGEOM_USR, NCOUP_INPUT, NSMSTRA, NSTORAM, NGSTAL
 
       INTEGER, PUBLIC, SAVE ::
@@ -175,7 +179,8 @@ C.......................................................................
 C
 C  GEOMETRY
 C
-        NRAD=MAX(N1ST*N2ND*N3RD,NTRI*N3RD,NTETRA)+NADD+1
+!pb 18.04.2017 take care of multiply blocks
+        NRAD=MAX(N1ST*N2ND*N3RD*NBMAX,NTRI*N3RD,NTETRA)+NADD+1
         IF (NRTAL==0) NRTAL=NRAD
         IF (NOPTIM < 0) NOPTIM = NRAD
 
@@ -206,10 +211,12 @@ C
 C TALLIES
 C
         NLIMPS=NLIM+NSTS
+! NBMAX is number of multiplicative grid blocks 
+! set in find_param
+!        NBMAX=10
 C
 C  GENERATION LIMIT TALLIES
 C
-        NBMAX=10
         NPTAL=30
 
 C  PRIMARY SOURCE
@@ -532,8 +539,7 @@ C     INT_PARM(114) = NTALW   !    OUT, WAS SAME AS NTALS
       INT_PARM(137) = NPLSV
       INT_PARM(138) = NTRJ
       INT_PARM(139) = NBACK_SPEC
-
-cdr   INT_PARM(140) = not in use
+      INT_PARM(140) = NREAC_LINES
 
       INT_PARM(141) = NCORNER
       INT_PARM(142) = NVLPR
@@ -656,7 +662,7 @@ C     NCPV        = INT_PARM( 81)  !dr  out, NCOP eliminted, only NCPV retained.
       NBGV        = INT_PARM( 82)
       NBMAX       = INT_PARM( 83)
       NPTAL       = INT_PARM( 84)
-c     NCPV_STAT   = free          !dr  out, NCPC_stat eliminted.
+c     NCPV_STAT   = free          !dr  out, NCPV_stat eliminted.
 c     NSCOP       = free
 
       NSTRAP      = INT_PARM( 87)
@@ -724,7 +730,7 @@ c     NTALW       = INT_PARM(114)  !dr out, was same as ntals
       NPLSV       = INT_PARM(137)
       NTRJ        = INT_PARM(138)
       NBACK_SPEC  = INT_PARM(139)
-cdr   not in use  = INT_PARM(140)
+      NREAC_LINES = INT_PARM(140)
 
       NCORNER     = INT_PARM(141)
       NVLPR       = INT_PARM(142)

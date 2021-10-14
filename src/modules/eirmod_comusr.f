@@ -26,7 +26,9 @@ cdr             input tally no. 25 added: PSI, poloidal magn. flux. Units?
      P          EIRENE_INIT_COMUSR, EIRENE_BROADCAST_COMUSR,
      P          EIRENE_ALLOC_CORNERS,
      P          EIRENE_ASSOCIATE_COMUSR,
-     P          EIRENE_COMUSR_REINIT
+     P          EIRENE_COMUSR_REINIT,
+     P          TEMPERATURE, DENSITY, VELOCITY, VOLUMEP,
+     P          AMDOutParsTYPE
 
       INTEGER, SAVE :: IFIRST=0
       INTEGER, SAVE ::
@@ -268,7 +270,53 @@ C  gradients of derived tallies
       TYPE(EIRENE_SPECTRUM), PUBLIC, ALLOCATABLE, SAVE :: BACK_SPEC(:)
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE :: LSPCCLL(:)
 
+! TYPE DEFINITIONS MOVED HERE FOR WRITING OF JSON FILE 
+      TYPE TEMPERATURE
+        DOUBLE PRECISION          :: TE, TI
+        INTEGER                   :: IN, IDION
+        TYPE(TEMPERATURE),POINTER :: NEXT
+      END TYPE TEMPERATURE
+C
+      TYPE DENSITY
+        DOUBLE PRECISION      :: DI
+        INTEGER               :: IN, IDION
+        TYPE(DENSITY),POINTER :: NEXT
+      END TYPE DENSITY
+C
+      TYPE VELOCITY
+        DOUBLE PRECISION       :: VX, VY, VZ
+        INTEGER                :: IZ, IN, IDION
+        TYPE(VELOCITY),POINTER :: NEXT
+      END TYPE VELOCITY
+C
+      TYPE VOLUMEP
+        DOUBLE PRECISION     :: VOL
+        INTEGER              :: IN
+        TYPE(VOLUMEP),POINTER :: NEXT
+      END TYPE VOLUMEP
+C
+      TYPE(TEMPERATURE),POINTER, PUBLIC, SAVE :: TEMPLIST
+      TYPE(DENSITY),POINTER, PUBLIC, SAVE :: DENLIST
+      TYPE(VELOCITY),POINTER, PUBLIC, SAVE :: VELLIST
+      TYPE(VOLUMEP),POINTER, PUBLIC, SAVE :: VOLLIST
 
+      INTEGER, PUBLIC, SAVE :: NZADD
+      INTEGER, ALLOCATABLE, PUBLIC, SAVE :: INI_ZONE(:),INE_ZONE(:)
+
+cDB   AMD output
+
+      TYPE AMDOutParsTYPE
+        character(LEN=:), allocatable :: AMDoutput
+        REAL(DP) :: NEmin
+        REAL(DP) :: NEmax
+        REAL(DP) :: TEmin
+        REAL(DP) :: TEmax
+        INTEGER  :: NNE
+        INTEGER  :: NTE
+        character(LEN=:), allocatable :: MeshType
+      ENDTYPE AMDOutParsTYPE
+      TYPE (AMDOutParsTYPE), public, save :: AMDOutpars  
+      
       CONTAINS
 
       SUBROUTINE EIRENE_ALLOC_COMUSR (ICAL)

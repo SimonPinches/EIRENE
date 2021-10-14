@@ -187,7 +187,8 @@ c old
           END IF  ! MODC=1,2
         ELSE ! NOT SUFFICIENT STORAGE ON TABEL3
 C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
-          GOTO 995
+!pb       GOTO 995
+          write (iunout,*) ' reaction kk = ',kk, ' modc =',modc
 
         ENDIF
       ELSEIF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.3) THEN

@@ -32,7 +32,10 @@ C
 CDR  this routine evaluates ("side on") emissivities of certain transition lines,
 cdr  integrated along a line of sight (PSIG) and also the integrand resolved along
 cdr  line of sight (ARGST).
-cdr new version:  the lines, components and contributions are specified in input block 12.
+cdr  new version:  
+cdr    the lines, components and contributions are specified in input block 12.
+cdr    the corresponding emissivity profiles are specified as 
+cdr    reaction decks in block 4.
 
 cdr old version (up to May 2018):
 c    Currently there are up to 6 contributions to each particular pre-programmed
@@ -101,7 +104,7 @@ c    .                  INIT,PEN,ISTRA,ISTOLD,IITER,ITROLD
         PSIG=0.
         IF (LARGST) ARGST=0.
 
-C  INITIALISE ATOMIC H-LINE ARRAYS FOR CURRENT STRATUM ?
+C  INITIALISE VOLUMETRIC EMISSIVITY PROFILES FOR CURRENT STRATUM ?
         IF ((ISTRA .NE. ISTOLD) .OR. (IITER .NE. ITROLD) .OR.
      .      (PEN .NE. PENOLD) ) then
 c  new, unified routine for line emissivities, replacing: Ly_alpha, Ba_alpha, Ba_beta, etc.

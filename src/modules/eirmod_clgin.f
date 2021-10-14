@@ -9,7 +9,7 @@
 
       PUBLIC :: EIRENE_ALLOC_CLGIN, EIRENE_DEALLOC_CLGIN,
      P          EIRENE_INIT_CLGIN, EIRENE_BROADCAST_CLGIN,
-     P          EIRENE_SET_DEF_SURF_DATA
+     P          EIRENE_SET_DEF_SURF_DATA, TSURFACE
 
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
 cdr  rlwmn, rlwmx: weight window for surface. Currently unused
@@ -39,10 +39,19 @@ cdr  rlwmn, rlwmx: weight window for surface. Currently unused
      I IGFIL(:),
      I IGJUM0(:),     IGJUM1(:,:),   IGJUM2(:,:),   IGJUM3(:,:)
 
+      CHARACTER(70), PUBLIC, ALLOCATABLE, SAVE ::
+     C SMOD_NAME(:)
       INTEGER, PUBLIC, SAVE ::
      I NSTSI,
      I NLIMPB
 
+      TYPE TSURFACE
+        CHARACTER(70)         :: MODNAME
+        INTEGER               :: NOSURF
+        TYPE(TSURFACE),POINTER :: NEXT
+      END TYPE TSURFACE
+
+      TYPE(TSURFACE), PUBLIC, POINTER , SAVE :: SURFLIST
 
       CONTAINS
 
@@ -110,12 +119,15 @@ cdr  rlwmn, rlwmx: weight window for surface. Currently unused
       ALLOCATE (IGJUM2(0:NLIMPS,NLIMPB))
       ALLOCATE (IGJUM3(0:NOPTIM,NLIMPB))
 
+      ALLOCATE (SMOD_NAME(0:NLIMPS))
+
       WRITE (IUNMEM,'(A,T25,I15)')
      .       ' CLGIN ',(NLIMPS+1)*(13*NSPZ+7)*8 +
      .                 (2*NOPTIM+(NLIMPS+1)*(14+9+4*NSPZ)+9*NSTS+
      .                  (N1ST+1)*(N2ND+1)*(N3RD+1)*3)*4 +
      .                 ((NLIMPS+1)*(2+2*NLIMPB)+
-     .                  NLIMPB*(NOPTIM+1))*4
+     .                  NLIMPB*(NOPTIM+1))*4+
+     .                  (NLIMPS+1)*70
 
       CALL EIRENE_INIT_CLGIN
 
@@ -177,6 +189,8 @@ cdr  rlwmn, rlwmx: weight window for surface. Currently unused
       DEALLOCATE (INMP1I)
       DEALLOCATE (INMP2I)
       DEALLOCATE (INMP3I)
+
+      DEALLOCATE (SMOD_NAME)
 
       DEALLOCATE (IGFIL)
       DEALLOCATE (IGJUM0)
@@ -247,6 +261,8 @@ c
       IGJUM1 = 0
       IGJUM2 = 0
       IGJUM3 = 0
+
+      SMOD_NAME=''
 
       RETURN
       END SUBROUTINE EIRENE_INIT_CLGIN

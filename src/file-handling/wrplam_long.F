@@ -40,13 +40,29 @@ C
       IFLG = IFLGIN 
       OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 13+ifoff
-
+#ifdef CHECKBIN
+      OPEN (UNIT=113,ACCESS='SEQUENTIAL',FORM='FORMATTED')
+      REWIND 113
+#endif
+      
 C  write those input tallies which are active in the present run
       WRITE (13+ifoff) LIVTALI
+#ifdef CHECKBIN
+      WRITE (113,*) 'LIVTALI '
+      WRITE (113,*) LIVTALI
+#endif
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: LIVTALI '
       WRITE (13+ifoff) NFRSTP, NADDP
+#ifdef CHECKBIN
+      WRITE (113,*) 'NFRSTP, NADDP '
+      WRITE (113,*) NFRSTP, NADDP
+#endif
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: NFRSTP, NADDP '
       WRITE (13+ifoff) PLSTLS
+#ifdef CHECKBIN
+      WRITE (113,*) 'PLSTLS '
+      WRITE (113,*) PLSTLS
+#endif
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: input tallies PLSTLS '
 C
       WRITE (13+ifoff)
@@ -69,6 +85,29 @@ C  MUSR, INTEGER
      I           NPRT,ISPEZ,ISPEZI,MPLSTI,MPLSV,
 C  LUSR, LOGICAL
      L           LGVAC,LSMOPRO
+#ifdef CHECKBIN
+      write (113,*) 'FLXOUT, SAREA ...', nlimps, nlmpgs
+      WRITE (113,*)
+C  REAL
+     R           FLXOUT,SAREA,
+     R           TEINL,TIINL,DEINL,DIINL,
+     R           RMASSI,RMASSA,RMASSM,RMASSP,
+     R           DIOD,DATD,DMLD,DPLD,DPHD,
+     R           DION,DATM,DMOL,DPLS,DPHOT,
+     R           TVAC,DVAC,VVAC,ALLOC,
+     R           CORNER_PROFILES,
+     T           TEXTS,
+C  MUSR, INTEGER
+     I           NSPH  ,NPHOTI,NPHOTIM,NFOLPH,NGENPH,
+     I           NSPA  ,NATMI,NATMIM,NMASSA,NCHARA,NFOLA,NGENA,
+     I           NSPAM ,NMOLI,NMOLIM,NMASSM,NCHARM,NFOLM,NGENM,
+     I           NSPAMI,NIONI,NIONIM,NMASSI,NCHARI,NCHRGI,NFOLI,NGENI,
+     I           NSPTOT,NPLSI,NPLSIM,NMASSP,NCHARP,NCHRGP,NBITS,
+     I           NSNVI,NCPVI,NADVI,NBGVI,NALVI,NCLVI,NADSI,NALSI,NAINI,
+     I           NPRT,ISPEZ,ISPEZI,MPLSTI,MPLSV,
+C  LUSR, LOGICAL
+     L           LGVAC,LSMOPRO
+#endif
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: module EIRMOD_COMUSR.f '
       CALL EIRENE_WRITE_CMDTA
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: RCMDTA,ICMDTA'
@@ -81,6 +120,12 @@ c  write primary source parameters
       WRITE (13+ifoff) RCMSOU,SREC,EIO,EEL,
      .           ICMSOU,INGRDA,INGRDE,NSTRAI,
      .           LCMSOU,NLSYMP,NLSYMT
+#ifdef CHECKBIN
+      WRITE (113,*) 'COMSOU'
+      WRITE (113,*) RCMSOU,SREC,EIO,EEL,
+     .           ICMSOU,INGRDA,INGRDE,NSTRAI,
+     .           LCMSOU,NLSYMP,NLSYMT
+#endif
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: RCMSOU,ICMSOU,LCMSOU'
       IF (ALLOCATED(FLSTEP))
      .  WRITE (13+ifoff) FLSTEP,ELSTEP,FLTOT,ELTOT,VF,VE,
@@ -89,8 +134,22 @@ c  write primary source parameters
      .             FESTEP,FISTEP,SHSTEP,VPSTEP,MCSTEP,
      .             IRSTEP,IPSTEP,ITSTEP,IASTEP,IBSTEP,IGSTEP,
      .             ISTUF,NSMAX,NSPSTI,NSPSTE
+#ifdef CHECKBIN
+      IF (ALLOCATED(FLSTEP)) THEN
+        write (113,*) 'CSTEP NGITT ', NGITT
+        WRITE (113,*) FLSTEP,ELSTEP,FLTOT,ELTOT,VF,VE,
+     .             QUOT,ADD,QUOTI,ADDIV,
+     .             TESTEP,TISTEP,RRSTEP,VXSTEP,VYSTEP,VZSTEP,DISTEP,
+     .             FESTEP,FISTEP,SHSTEP,VPSTEP,MCSTEP,
+     .             IRSTEP,IPSTEP,ITSTEP,IASTEP,IBSTEP,IGSTEP,
+     .             ISTUF,NSMAX,NSPSTI,NSPSTE
+      END IF
+#endif
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: module EIRMOD_CSTEP.f'
       CLOSE (UNIT=13+ifoff)
+#ifdef CHECKBIN
+      CLOSE (UNIT=113)
+#endif
       END
 C
 c...............................................................

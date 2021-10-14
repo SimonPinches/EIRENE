@@ -334,7 +334,6 @@ C
 
       CALL EIRENE_LEER(2)
       CALL EIRENE_MASAGE('LOOP OVER STRATA STARTS AT CPU TIME (SEC) :')
-CVKMPI       CALL EIRENE_MASR1 ('STARTTIM',XTIM(0))
       CALL EIRENE_MASR1 ('STARTTIM',SECND) !VKMPI
       CALL EIRENE_MASAGE('CPU TIME ASSIGNED TO STRATA (SEC) :')
       IF (ALLOC.EQ.0.D0) THEN
@@ -1116,7 +1115,7 @@ C
 C  CALCULATE VOLUMETRIC LINE EMISSIVITIES FOR SELECTED SPECIES AND LINES
 C
           IF (NLEMIS) THEN
-            CALL EIRENE_EMISSIVITY (ISTRA,1,NUM_LINES)
+            CALL EIRENE_EMISSIVITY (ISTRA,1,NUM_LINES,0)
           END IF
 C
 C  SCALE STANDARD DEVIATIONS, WHICH ARE NOT GIVEN IN % REL.ERROR
@@ -1230,7 +1229,7 @@ csw 13mar2013 do it here iff in parallel mode
 C   AND MORE PROCESSES THAN STRATA
       IF (NMODE.GT.0) THEN
         IF (NPRS > 1) THEN
-C This is very case-specific and my be different for each plasma code.
+C This is very case-specific and may be different for each plasma code.
 C Introducing another interfacing subroutine within the strata-loop
 C solves this issue much more flexible.
 C This if block needs to go into the if3cop, if relevant for the
@@ -1340,7 +1339,7 @@ C
 C  CALCULATE VOLUMETRIC LINE EMISSIVITIES, SUM OVER STRATA
 C
         IF (NLEMIS) THEN
-          CALL EIRENE_EMISSIVITY (0,1,NUM_LINES)
+          CALL EIRENE_EMISSIVITY (0,1,NUM_LINES,0)
         ENDIF
 C
 C  WRITE RESULTS FOR SUM OVER STRATA ON TEMP. FILE

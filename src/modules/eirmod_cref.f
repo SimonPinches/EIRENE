@@ -13,7 +13,9 @@ cdr           rather than using parameters NHD1,...NHD5 ?
       PRIVATE
 
       PUBLIC :: EIRENE_ALLOC_CREF, EIRENE_DEALLOC_CREF,
-     .          EIRENE_INIT_CREF, EIRENE_BROADCAST_CREF
+     .          EIRENE_INIT_CREF, EIRENE_BROADCAST_CREF,
+     .          EIRENE_DEALLOC_REFLIST, 
+     .          REFMODEL, SPEC_REF
 
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE :: RCREF(:)
 
@@ -53,9 +55,33 @@ c
 
       CHARACTER(500), PUBLIC, ALLOCATABLE, SAVE :: REFFIL(:)
 
+! TYPE REFMODEL MOVED HERE BECAUSE OF WRITING OF JSON-FILE
+      TYPE SPEC_REF
+        CHARACTER(8) :: VARNAME
+        CHARACTER(8) :: SPCNAME
+        INTEGER :: IVAL
+        REAL(DP) :: RVAL
+        TYPE(SPEC_REF), POINTER :: NEXT
+      END TYPE SPEC_REF
 
-      CONTAINS
+      TYPE REFMODEL
+        CHARACTER(70) :: REFNAME
+        INTEGER       :: JLREF,JLSPT
+        INTEGER, DIMENSION(:), POINTER :: JSRS,JSRC
+        REAL(DP)      :: ZNMLR,EWALLR,EWBINR,FSHEATR
+        REAL(DP), DIMENSION(:,:), POINTER :: TRANSPR
+        REAL(DP), DIMENSION(:), POINTER ::
+     .                                   RCYCFR,RCYCTR,RCPRMR,
+     .                                   EXPPLR,EXPELR,EXPILR,
+     .                                   RCYCSR,RCYCCR,STPRMR,
+     .                                   ESPTSR,ESPTCR
+        TYPE(SPEC_REF), POINTER :: SPEC_LINES
+        TYPE(REFMODEL),POINTER :: NEXT
+      END TYPE REFMODEL
 
+      TYPE(REFMODEL), POINTER, PUBLIC, SAVE :: REFLIST      
+
+      CONTAINS 
 
       SUBROUTINE EIRENE_ALLOC_CREF
 
@@ -189,5 +215,45 @@ cdr Why can we not use NHDx directly?
 
       RETURN
       END SUBROUTINE EIRENE_BROADCAST_CREF
+
+
+      SUBROUTINE EIRENE_DEALLOC_REFLIST
+
+! REMOVE LIST OF REFLECTION MODELS
+! MOVED HERE AS TO BE AVAILABLE FOR WRITING ON JSON-FILE
+      
+      TYPE(REFMODEL), POINTER :: REFCUR
+      TYPE(SPEC_REF), POINTER :: SPR
+
+      REFCUR => REFLIST
+      DO WHILE (ASSOCIATED(REFCUR))
+        REFLIST => REFLIST%NEXT
+        DEALLOCATE (REFCUR%JSRS)
+        DEALLOCATE (REFCUR%JSRC)
+        DEALLOCATE (REFCUR%TRANSPR)
+        DEALLOCATE (REFCUR%RCYCFR)
+        DEALLOCATE (REFCUR%RCYCTR)
+        DEALLOCATE (REFCUR%RCPRMR)
+        DEALLOCATE (REFCUR%EXPPLR)
+        DEALLOCATE (REFCUR%EXPELR)
+        DEALLOCATE (REFCUR%EXPILR)
+        DEALLOCATE (REFCUR%RCYCSR)
+        DEALLOCATE (REFCUR%RCYCCR)
+        DEALLOCATE (REFCUR%STPRMR)
+        DEALLOCATE (REFCUR%ESPTSR)
+        DEALLOCATE (REFCUR%ESPTCR)
+        SPR => refcur%spec_lines
+        do while (associated(spr))
+           refcur%spec_lines => spr%next
+           deallocate (spr)
+           spr => refcur%spec_lines
+        end do
+        DEALLOCATE (REFCUR)
+        REFCUR => REFLIST
+      END DO
+
+      NULLIFY(REFLIST)
+      
+      END SUBROUTINE EIRENE_DEALLOC_REFLIST
       
       END MODULE EIRMOD_CREF

@@ -45,6 +45,15 @@ cdr:           postprocessing Balmer lines, etc:  to be confirmed that this now
 cdr:           still works properly
 cdr: jan 2017: generalized asymptotics options for A&M data structures included
 cdr:           cleanup. logical FOUND seems to be redundant
+cdr  oct 18  : NREAC+1 --> IRC  (A&M data for density models)
+cdr            Calls to slreac from block 5 and 12 removed, 
+cdr            this is now already done in block 4 (plus call to slreac). After that, 
+cdr            A&M data are already on data structure REACDAT(IRC......)
+cdr            i.e. A&M data for density models, such as corona or colrad 
+cdr            excitation rates, or population levels....
+cdr            These must now already be specified in block 4, 
+cdr            with the new, unified, parser for
+cdr            reaction decks. 
 cdr  may 2019: spectra here ? probaby wrong place. (corona, colrad ?).
 cdr            unused? remove ?
 
@@ -109,18 +118,22 @@ c   LGVAC(...,0)     : background vacuum flag
       INTEGER, INTENT(IN) :: ICALL
       REAL(DP) :: ZTII, ZTNI, FCT2, FCRG, FCT1, EIRENE_VDION, ZTEI,
      .            ZTNE,EMPLS, FCT0, TEPLS, DEPLS, DIPLS, AM1, TEF, DEF,
-     .            TEI, DEJ, BOLTZFAC, RCORONA, RCOLRAD,
-     .            TEIDEJ, EIRENE_RATE_COEFF, RC1MIN, RC1MAX,
-     .            RC2MIN, RC2MAX, BXP, BYP, BNORM
-      REAL(DP) :: COEF1D(0:8), COEF2D(0:8,0:8), FP1(6), FP2(6)
-      REAL(DP) :: bx,by,bz
+     .            BOLTZFAC, RCORONA, RCOLRAD,          
+! rates and popul. coefs. for density models 
+     .            EIRENE_RATE_COEFF, EIRENE_OTHER_RATE_COEFF,
+! asymptotics thereof 
+     .            RC1MIN, RC1MAX, RC2MIN, RC2MAX,
+     .            FP1(6), FP2(6),
+     .            BXP, BYP, BNORM, TE, DE,
+     .            BX, BY, BZ 
+      REAL(DP) :: COEF1D(0:8), COEF2D(0:8,0:8)
       REAL(DP), ALLOCATABLE :: DEINTF(:), SUMNI(:), SUMMNI(:),
      .                         BASE_DENSITY(:), BASE_TEMP(:),
      .                         TALLY(:)
       INTEGER :: IR, IN, IP, IPM, IPLS, IOLD, ISW, IRE, I1,
      .           I, J, JEND, IAIN, ISPZ,
      .           IO, IPLSTI, IPLSV, IOLDTI, IOLDV, IBS,
-     .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
+     .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX, IRC,
      .           ITAL, K, KK, NFTI, NFTE, JPLS
  
       TYPE(EIRENE_SPECTRUM) :: SPEC
@@ -383,21 +396,14 @@ cdr  and a radiative decay A_CORONA of that "isotope" IPLS.
             VZIN(IPLSV,:)=VZIN(IOLDV,:)
           END IF
 
-          REACDAT(NREACI+1)%LRTC = .FALSE.
-          CALL EIRENE_SLREAC (NREACI+1,TDMPAR(IPLS)%TDM%FNAME(1),
-     .                 TDMPAR(IPLS)%TDM%H123(1),
-     .                 TDMPAR(IPLS)%TDM%REACTION(1),
-     .                 TDMPAR(IPLS)%TDM%CR(1),
-     .                 RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
-     .                 RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,'  ',0)
           AM1=1._DP/TDMPAR(IPLS)%TDM%A_CORONA
-c  data for corona model found and stored on REACDAT(NREACI+1)
-          FOUND = .TRUE.
+          IRC = TDMPAR(IPLS)%TDM%IRC(1)
 
           DO IR=1,NSURF
             RCORONA=0.0
             IF (.NOT.LGVAC(IR,NPLS+1)) THEN
-            RCORONA = EIRENE_RATE_COEFF(NREACI+1,IR,TEF,0._DP,.TRUE.,0)
+              TEF=TEINL(IR)
+              RCORONA = EIRENE_RATE_COEFF(IRC,IR,TEF,0._DP,.TRUE.,0)
             END IF
 c  now RCORONA contains the excitation rate coefficient (cm**3/s),
 c  and AMI is the inverse of the radiative decay rate (s).
@@ -448,7 +454,6 @@ C  ARE THERE MULTIPLE ION DRIFT VELOCITIES?
             VZIN(IPLSV,:)=0._DP
           endif
 
-          FOUND = .TRUE.
           DO IRE=1,TDMPAR(IPLS)%TDM%NRE
 c  sum up contributions coupled to one or more (NRE) base-densities
             IOLD=TDMPAR(IPLS)%TDM%ISP(IRE)
@@ -456,108 +461,20 @@ c  sum up contributions coupled to one or more (NRE) base-densities
             IOLDV=MPLSV(IOLD)
             CALL EIRENE_GET_BASE_DENSITY(IRE)
 
-            REACDAT(NREACI+1)%LOTH = .FALSE.
-            CALL EIRENE_SLREAC (NREACI+1,TDMPAR(IPLS)%TDM%FNAME(IRE),
-     .                   TDMPAR(IPLS)%TDM%H123(IRE),
-     .                   TDMPAR(IPLS)%TDM%REACTION(IRE),
-     .                   TDMPAR(IPLS)%TDM%CR(IRE),
-     .                   RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
-     .                   RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,'  ',0)
-            I1=INDEX(TDMPAR(IPLS)%TDM%H123(IRE),'.')
-            READ (TDMPAR(IPLS)%TDM%H123(IRE)(I1+1:),*) ISW
-
-            SELECT CASE (ISW)
-
-            CASE (11)  !  H.11 format, reduced population coefficient from AMJUEL
-c  only temperature dependence in reduced population coefficient
-              COEF1D(0:8)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(1:9,1)
-              DO IR=1,NSURF
-                IF (LGVAC(IR,NPLS+1)) CYCLE
-                TEF=TEINL(IR)
-                RCOLRAD=0._DP
-                DO I=0,8
-                  TEI=TEF**I
-                  RCOLRAD=RCOLRAD+COEF1D(I)*TEI
-                END DO
-                RCOLRAD=EXP(RCOLRAD)
-                DIIN(IPLS,IR)=DIIN(IPLS,IR)+BASE_DENSITY(IR)*RCOLRAD
-                if (nlmlti) then
-                  TIIN(IPLSTI,IR)=TIIN(IPLSTI,IR)+
-     .                            BASE_DENSITY(IR)*BASE_TEMP(IR)
-                endif
-                if (nlmlv) then
-                  VXIN(IPLSV,IR)=VXIN(IPLSV,IR)+
-     .                 NMASSP(IOLD)*BASE_DENSITY(IR)*VXIN(IOLDV,IR)
-                  VYIN(IPLSV,IR)=VYIN(IPLSV,IR)+
-     .                 NMASSP(IOLD)*BASE_DENSITY(IR)*VYIN(IOLDV,IR)
-                  VZIN(IPLSV,IR)=VZIN(IPLSV,IR)+
-     .                 NMASSP(IOLD)*BASE_DENSITY(IR)*VZIN(IOLDV,IR)
-                endif
-                SUMNI(IR) = SUMNI(IR) + BASE_DENSITY(IR)
-                SUMMNI(IR) = SUMMNI(IR) + NMASSP(IOLD)*BASE_DENSITY(IR)
-
-cdr  unclear code. perhaps redundant
-cdr  spectra related to colrad ?? I can imagine spectra in case of fort.10 density model
-cdr  perhaps: if base-density is a test particle density, for which spectra are available?
-cdr  perhaps wrong place
-cdr  all this: perhaps move to diagno part? and only of background spectra are needed at all
-                IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
-                  IF (LSPCCLL(IR)) THEN
-                    CALL EIRENE_GET_SPECTRUM (IR,IRE,SPEC,FOUND)
-                    IF (FOUND) THEN
-                      IF (IRE == 1) THEN
-                        IBS = IBS + 1
-                        SPEC%IPRTYP = 4
-                        SPEC%IPRSP = IPLS
-                        SPEC%SPC = SPEC%SPC * RCOLRAD
-                        BACK_SPEC(IBS) = SPEC
-                      ELSE
-                        IF (  (BACK_SPEC(IBS)%NSPC == SPEC%NSPC)
-     .                   .AND.(BACK_SPEC(IBS)%SPCMIN==SPEC%SPCMIN)
-     .                   .AND.(BACK_SPEC(IBS)%SPCMAX==SPEC%SPCMAX))
-     .                  THEN
-                          SPEC%SPC = SPEC%SPC * RCOLRAD
-                          BACK_SPEC(IBS)%SPC =
-     .                         BACK_SPEC(IBS)%SPC + SPEC%SPC
-                        ELSE
-                          WRITE (IUNOUT,*) ' ERROR IN PLASMA_DERIV,',
-     .                       ' DENSITY MODEL COLRAD '
-                          WRITE (IUNOUT,*) ' TWO SPECTRA CONTRIBUTING ',
-     .                       ' TO THE SAME BACKGROUND SPECTRUM DO NOT',
-     .                       ' MATCH '
-                          WRITE (IUNOUT,*) ' IPLS, IRE ',IPLS, IRE
-                          CALL EIRENE_EXIT_OWN(1)
-                        END IF
-                      END IF
-                    END IF
-                  END IF
-                END IF
-
-              END DO
-
-            CASE (12)!  H.12 format, reduced population coefficient from AMJUEL
 c  temperature and density dependence in reduced population coefficient
-c  works only with AMJUEL formatted data, not any other population coefficient
-              COEF2D(0:8,0:8)=REACDAT(NREACI+1)%OTH%POLY%DBLPOL(1:9,1:9)
-              DO IR=1,NSURF
-                IF (LGVAC(IR,NPLS+1)) CYCLE
-                TEF=TEINL(IR)
-                DEF=LOG(DEIN(IR)*1.E-8_DP)
-                RCOLRAD=0._DP
-c  collapse CR 2-parameter fit to a single parameter fit (first block) for corona limit
-                JEND=8
-                IF (DEF.LE.0.0) JEND=0
+cdr  Jan 2019: generalized from AMJUEL H.11, H.12 to IRC reaction 
+cdr           (e.g. population coefficients from internal CR codes)
+            IRC = TDMPAR(IPLS)%TDM%IRC(IRE) 
+            DO IR=1,NSURF
 
-                DEJ=1._DP
-                DO J=0,JEND
-                  TEIDEJ=DEJ
-                  DO I=0,8
-                    RCOLRAD=RCOLRAD+COEF2D(I,J)*TEIDEJ
-                    TEIDEJ=TEIDEJ*TEF
-                  END DO
-                  DEJ=DEJ*DEF
-                END DO
-                RCOLRAD=EXP(RCOLRAD)
+                IF (LGVAC(IR,NPLS+1)) CYCLE
+
+                TE=TEIN(IR)
+                DE=DEIN(IR)             
+                DEF=LOG(DE)
+                TEF=max(-2.30,LOG(TE)) ! cut off at 0.1 eV
+
+                RCOLRAD=EIRENE_OTHER_RATE_COEFF(IRC,IR,TEF,DEF,.TRUE.,1)
 
                 DIIN(IPLS,IR)=DIIN(IPLS,IR)+BASE_DENSITY(IR)*RCOLRAD
                 if (nlmlti) then
@@ -614,10 +531,6 @@ cdr identical code as above for H.11 ?
                 END IF
 
               END DO  ! IR
-            CASE DEFAULT
-              WRITE (iunout,*) ' H.',ISW,
-     .             ' NOT FORESEEN IN COLRAD DENSITY MODEL '
-            END SELECT  !ISW
           END DO   ! IRE
 
 c  scale merged contributions from all contributing densities

@@ -1,0 +1,74 @@
+
+      SUBROUTINE EIRENE_SETUP_SPEC_IND_DISTRIB
+C
+C  SPECIES INDEX DISTRIBUTION OF PRIMARY SOURCE PARTICLES
+C  OR FOR THERMAL PARTICLE REFLECTION MODEL
+C  datm is the cumulative of datd,
+C  dmol is the cumulative of dmld,
+C  and so on
+C
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_COMUSR
+
+      IMPLICIT NONE
+
+      INTEGER :: J, JATM, JMOL, JION, JPHOT, JPLS
+      REAL(DP) :: SA, SI, SM, SPP, SPH
+      
+      NATMIM=NATMI-1
+      NMOLIM=NMOLI-1
+      NIONIM=NIONI-1
+      NPLSIM=NPLSI-1
+      NPHOTIM=NPHOTI-1
+      
+      SA=0.
+      SI=0.
+      SM=0.
+      SPP=0.
+      SPH=0.
+      DO J=1,NIONI
+        SI=SI+DIOD(J)
+        DION(J)=SI
+      END DO
+      DO J=1,NMOLI
+        SM=SM+DMLD(J)
+        DMOL(J)=SM
+      END DO
+      DO J=1,NATMI
+        SA=SA+DATD(J)
+        DATM(J)=SA
+      END DO
+      DO J=1,NPLSI
+        SPP=SPP+DPLD(J)
+        DPLS(J)=SPP
+      END DO
+      DO J=1,NPHOTI
+        SPH=SPH+DPHD(J)
+        DPHOT(J)=SPH
+      END DO
+C
+C  NORMALISE DISTRIBUTION AND CUMULATIVE DISTRIBUTION
+      DO JION=1,NIONI
+        DIOD(JION)=DIOD(JION)/(SI+1.D-60)
+        DION(JION)=DION(JION)/(SI+1.D-60)
+      END DO
+      DO JMOL=1,NMOLI
+        DMLD(JMOL)=DMLD(JMOL)/(SM+1.D-60)
+        DMOL(JMOL)=DMOL(JMOL)/(SM+1.D-60)
+      END DO
+      DO JATM=1,NATMI
+        DATD(JATM)=DATD(JATM)/(SA+1.D-60)
+        DATM(JATM)=DATM(JATM)/(SA+1.D-60)
+      END DO
+      DO JPLS=1,NPLSI
+        DPLD(JPLS)=DPLD(JPLS)/(SPP+1.D-60)
+        DPLS(JPLS)=DPLS(JPLS)/(SPP+1.D-60)
+      END DO
+      DO JPHOT=1,NPHOTI
+        DPHD(JPHOT)=DPHD(JPHOT)/(SPH+1.D-60)
+        DPHOT(JPHOT)=DPHOT(JPHOT)/(SPH+1.D-60)
+      END DO
+
+      RETURN
+      END SUBROUTINE EIRENE_SETUP_SPEC_IND_DISTRIB

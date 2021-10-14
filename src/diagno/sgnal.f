@@ -32,6 +32,9 @@ C  STEP 2:  PREPARE DIRECT CONTRIBUTION FROM PRIMARY SOURCE (IF ANY)
 C           (PROBABLY NOT READY)
 C  STEP 3:  INTEGRATE ALONG LINE OF SIGHT, CALL LININT, AND LOOP OVER ENERGY/WAVELENGTH
 C  STEP 4:  PROCESS LINE INTEGRALS: CURVE FITTING, SCALING, ETC..
+
+C  isp:  species index, 
+c        or component index (nchtal=2)
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -86,12 +89,14 @@ C
         SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
      .             RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .             RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .             ELNAME, IZ1,
-     .             IROW_ESC, ICOL_ESC, POP_ESC)
+     .             ELNAME, IZ1, IROW_ESC, ICOL_ESC, POP_ESC,
+     .             IFTFL, NCOEF, COEF)
         USE EIRMOD_PRECISION
         INTEGER,      INTENT(IN) :: IR, IZ1
-        INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC
+        INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC, 
+     .                                        IFTFL, NCOEF
         REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC
+        REAL(DP),     INTENT(IN), OPTIONAL :: COEF(9)      
         CHARACTER(8), INTENT(IN) :: FILNAM
         CHARACTER(4), INTENT(IN) :: H123
         CHARACTER(LEN=*), INTENT(IN) :: REAC
@@ -195,7 +200,7 @@ cdr : then to turn that into a Doppler-broadened line shape of the Ba-alpha line
 
 C
 C  RADIATIVE TRANSITION RATES (1/S)
-C  BALMER ALPHA
+C  BALMER ALPHA, only coupling to ground state atoms.
         FAC32=4.410E7
 
         FILNAM='AMJUEL  '
@@ -217,7 +222,7 @@ C
 
 
 C
-C  H(n=3)/H(n=1)
+C  H(n=3)/H(n=1) component  (currently no further components available)
         REAC='2.1.5a   '
         REACDAT(NREACI+1)%LOTH = .FALSE.
         CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
@@ -307,7 +312,18 @@ C 100   CONTINUE
         write (iunout,*) 'sgnal, cx: ichord,istra,sum ',
      .                      ichori,istra
         write (iunout,*) 'volumetric emission to be written'
-C     ENDIF
+
+C.................................................................
+      ELSEIF ((NCHTAL(ICHORI).EQ.2).OR.(NCHTAL(ICHORI).EQ.5)) THEN
+C.................................................................
+        write (iunout,*) 'sgnal, emis: ichord,istra ',
+     .                            ichori,istra
+        write (iunout,*) 'volumetric line emission '
+        if (isp > 0) then
+          write (iunout,*) 'component no. isp ',isp        
+        else
+          write (iunout,*) 'sum over components'
+        endif
 C.................................................................
 C  FOR RADIANCE OF LINE ISP=IPHOT, IN STRATUM ISTR
       ELSEIF (NCHTAL(ICHORI).EQ.3) THEN
@@ -411,17 +427,7 @@ c  nlvl is not true:
           DEALLOCATE(INTADD)
           return
         ENDIF
-C.................................................................
-      ELSEIF ((NCHTAL(ICHORI).EQ.2).OR.(NCHTAL(ICHORI).EQ.5)) THEN
-C.................................................................
-        write (iunout,*) 'sgnal, emis: ichord,istra ',
-     .                            ichori,istra
-        write (iunout,*) 'volumetric line emission '
-        if (isp > 0) then
-          write (iunout,*) 'contribution no. isp ',isp
-        else
-          write (iunout,*) 'sum over contributions'
-        endif
+
       ENDIF
 
 C   STEP 2 DONE

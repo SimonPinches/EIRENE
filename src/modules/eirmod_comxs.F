@@ -135,8 +135,9 @@ c
 
       TYPE REACTION_INPUT_LINE
         INTEGER :: NO, MT, MP, IZ, JFEX1MN, JFEX1MX, NCONST,
-     .             JFEX2MN, JFEX2MX, IROW_ESC, ICOL_ESC
-        REAL(DP) :: R1MN, R1MX, DPP, FP1(6), CONST(9),
+     .             JFEX2MN, JFEX2MX, IROW_ESC, ICOL_ESC,
+     .             IFTFLG, NCOEF
+        REAL(DP) :: R1MN, R1MX, DPP, FP1(6), COEF(9),
      .              R2MN, R2MX, FP2(6), POP_ESC
         CHARACTER(8) :: FILE
         CHARACTER(50) :: REAC_STRING
@@ -146,9 +147,12 @@ c
       END TYPE REACTION_INPUT_LINE
 
       TYPE(LINE_DATA), POINTER, PUBLIC, SAVE :: REACTION
-      INTEGER, PUBLIC, SAVE :: IDREAC
+      INTEGER, PUBLIC, SAVE :: IDREAC, IRLINES
 
       TYPE(REACTION_DATA), ALLOCATABLE, PUBLIC, SAVE :: REACDAT(:)
+ 
+      TYPE(REACTION_INPUT_LINE), ALLOCATABLE, PUBLIC, SAVE ::
+     .                           REACLINES(:)
 cdr....................................................................
 
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
@@ -501,6 +505,7 @@ cdr
 cdr  -11 ... -1   : internal default atomic-molecular data
 cdr    1 ... NREAC: atomic/molecular data read from external data files, input block 4
         ALLOCATE (REACDAT(-11:NREAC))
+        ALLOCATE (REACLINES(NREAC_LINES))
 
         ALLOCATE (M_HCOL(NREAC))
 
@@ -511,7 +516,6 @@ cdr    1 ... NREAC: atomic/molecular data read from external data files, input b
 
         WRITE (IUNMEM,'(A,T25,I15)')
      .        ' COMXS(1) ', MEM
-
 
       ELSE IF (ICAL == 2) THEN
 
@@ -730,7 +734,7 @@ c
 
         WRITE (IUNMEM,'(A,T25,I15)')
      .        ' COMXS(2) ', MEM
-
+        
       END IF
 
       CALL EIRENE_INIT_CMDTA (ICAL)
@@ -1360,6 +1364,26 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . EATPI  ,EMLPI  ,EIOPI  ,EPLPI  ,
      . EATEI  ,EMLEI  ,EIOEI  ,EPLEI
 
+#ifdef CHECKBIN
+      write (113,*) 'CMDTA TABEI1 ...'
+      WRITE (113,*)
+     . TABEI1 ,TABRC1 ,TABPI3 ,TABCX3 ,TABEL3 ,
+     . FDLMPI ,FDLMCX ,FDLMEL ,
+     . ADDPI  ,ADDCX  ,ADDEL  ,
+     . FACRRC ,FACRPI ,FACREL ,FACREI ,FACRCX ,
+
+     . PELEI  ,PATEI  ,PMLEI  ,PIOEI  ,PPLEI  ,
+     . PELPI  ,PATPI  ,PMLPI  ,PIOPI  ,PPLPI  ,
+     . P2ND   ,P2NP   ,P2NEI  ,P2NPI  ,
+
+     . EELEI1 ,EELRC1 ,EELPI3 ,
+     . EHVEI1 ,EHVPI3 ,
+     . EPLPI3 ,EPLCX3 ,EPLEL3 ,EPLPH3 ,
+
+     . EATPI  ,EMLPI  ,EIOPI  ,EPLPI  ,
+     . EATEI  ,EMLEI  ,EIOEI  ,EPLEI
+#endif
+      
       WRITE (13+IFOFF)
      . MODCOL ,IESTCX ,IESTEL ,IESTPI ,IESTEI ,
      . NAEII  ,NMEII  ,NIEII  ,NACXI  ,NMCXI  ,NICXI  ,
@@ -1380,6 +1404,29 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . IPATEI ,IPMLEI ,IPIOEI ,IPPLEI ,IPATPI ,IPMLPI ,IPIOPI ,IPPLPI ,
      . LGACX  ,LGMCX  ,LGICX  ,LGAEI  ,LGMEI  ,LGIEI  ,
      . LGAEL  ,LGMEL  ,LGIEL  ,LGPRC  ,LGAPI  ,LGMPI  ,LGIPI
+#ifdef CHECKBIN
+      write (113,*) 'CMDTA MODCOL ...'
+      WRITE (113,*)
+     . MODCOL ,IESTCX ,IESTEL ,IESTPI ,IESTEI ,
+     . NAEII  ,NMEII  ,NIEII  ,NACXI  ,NMCXI  ,NICXI  ,
+     . NAELI  ,NMELI  ,NIELI  ,NAPII  ,NMPII  ,NIPII  ,NPRCI  ,
+     . NAEIIM ,NMEIIM ,NIEIIM ,NACXIM ,NMCXIM ,NICXIM ,
+     . NAELIM ,NMELIM ,NIELIM ,NAPIIM ,NMPIIM ,NIPIIM ,NPRCIM ,
+     . NPBGKA ,NPBGKM ,NPBGKI ,NPBGKP ,
+     . NATPRC ,NMLPRC ,NIOPRC ,NPLPRC ,NPHPRC ,
+     . NATPRC_2 ,NMLPRC_2 ,NIOPRC_2 ,NPLPRC_2 ,NPHPRC_2 ,
+     . N1STX  ,N2NDX  ,
+
+     . NRPII  ,NREII  ,NRCXI  ,NRELI  ,NRRCI  ,NRBGI  ,
+
+     . NSEACX ,NSEMCX ,NSEICX ,NSEAEL ,NSEMEL ,NSEIEL ,NSEPRC ,
+     . NREACX ,NREAPI ,NREAEL ,NREAEI ,NREARC ,
+     . NELREI ,JELREI ,NHVREI ,NELREL ,NELRRC ,JELRRC ,NELRPI ,JELRPI ,
+     . NELRCX ,NELRPH ,NREAPH ,NREACT ,NHVRPI ,
+     . IPATEI ,IPMLEI ,IPIOEI ,IPPLEI ,IPATPI ,IPMLPI ,IPIOPI ,IPPLPI ,
+     . LGACX  ,LGMCX  ,LGICX  ,LGAEI  ,LGMEI  ,LGIEI  ,
+     . LGAEL  ,LGMEL  ,LGIEL  ,LGPRC  ,LGAPI  ,LGMPI  ,LGIPI
+#endif
 
       RETURN
       END SUBROUTINE EIRENE_WRITE_CMDTA
@@ -1455,6 +1502,29 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . ISCDEA, ISCDEM, ISCDEI, ISCDEP, ISCDEPH,
      . IESTMA, IESTMM, IESTMI, IESTMPH, IBGKA , IBGKM , IBGKI, IBGKPH
 
+#ifdef CHECKBIN
+      WRITE (113,*) 'WRITE_CMAMF DELPOT ...'
+      WRITE (113,*)
+     . DELPOT, FACREA,
+     . FREACA, FREACM, FREACI, FREACP, FREACPH,
+     . EDPOTA, EDPOTM, EDPOTI, EDPOTP, EDPOTPH,
+     . EELECA, EELECM, EELECI, EELECP, EELECPH,
+     . EBULKA, EBULKM, EBULKI, EBULKP, EBULKPH,
+     . ESCD1A, ESCD1M, ESCD1I, ESCD1P, ESCD1PH,
+
+     . NREACI, ISWR,   MODCLF, MASSP,  MASST,  IFTFLG,
+     . NRCP,   NRCA,   NRCM,   NRCI, NRCPH,
+     . IREACA, IREACM, IREACI, IREACP, IREACPH,
+     . IBULKA, IBULKM, IBULKI, IBULKP, IBULKPH,
+     . ISCD1A, ISCD1M, ISCD1I, ISCD1P, ISCD1PH,
+     . ISCD2A, ISCD2M, ISCD2I, ISCD2P, ISCD2PH,
+     . ISCD3A, ISCD3M, ISCD3I, ISCD3P, ISCD3PH,
+     . ISCD4A, ISCD4M, ISCD4I, ISCD4P, ISCD4PH,
+     . ISCDEA, ISCDEM, ISCDEI, ISCDEP, ISCDEPH,
+     . IESTMA, IESTMM, IESTMI, IESTMPH, IBGKA , IBGKM , IBGKI, IBGKPH
+
+      WRITE (113,*) 'WRITE_CMAMF REACDAT ...'
+#endif
       DO IR=1,NREACI
         WRITE (13+IFOFF)
      .             REACDAT(IR)%LPOT,
@@ -1469,6 +1539,22 @@ c
      .             REACDAT(IR)%RTMAX,
      .             REACDAT(IR)%ERTMAX,
      .             REACDAT(IR)%NOSEC
+#ifdef CHECKBIN
+        WRITE (113,*) 'IR =',IR
+        WRITE (113,*)
+     .             REACDAT(IR)%LPOT,
+     .             REACDAT(IR)%LCRS,
+     .             REACDAT(IR)%LRTC,
+     .             REACDAT(IR)%LRTCMW,
+     .             REACDAT(IR)%LRTCEW,
+c
+     .             REACDAT(IR)%LOTH,REACDAT(IR)%LPHR,
+c
+     .             REACDAT(IR)%ETH,
+     .             REACDAT(IR)%RTMAX,
+     .             REACDAT(IR)%ERTMAX,
+     .             REACDAT(IR)%NOSEC
+#endif
 c
         IF (REACDAT(IR)%LPOT)
      .    CALL EIRENE_WRITE_FIT_FORM(REACDAT(IR)%POT)
@@ -1506,29 +1592,66 @@ c
      .               RP%LINE%IFREMD, RP%LINE%NRJPRT, RP%LINE%IPLSC6,
      .               RP%LINE%IMESS
           WRITE (13+IFOFF) RP%LINE%REACNAME, RP%LINE%KENN
+#ifdef CHECKBIN
+          WRITE (113,*) 'PHOTON LINE'
+          WRITE (113,*) RP%LINE%E0, RP%LINE%E1, RP%LINE%AIK,
+     .               RP%LINE%G1, RP%LINE%G2, RP%LINE%C2,
+     .               RP%LINE%C3, RP%LINE%C4, RP%LINE%C6,
+     .               RP%LINE%B12, RP%LINE%B21, RP%LINE%C6A
+          WRITE (113,*) RP%LINE%IGND, RP%LINE%IRCART,
+     .               RP%LINE%IPROFILETYPE,
+     .               RP%LINE%IFREMD, RP%LINE%NRJPRT, RP%LINE%IPLSC6,
+     .               RP%LINE%IMESS
+          WRITE (113,*) RP%LINE%REACNAME, RP%LINE%KENN
+#endif
 
         ELSE IF (1<=RP%IFIT .AND. RP%IFIT <= 2) THEN
-! DATA FOR FIT EXPRESSIONS (e.g. POLYNOMIAL, IN CASE OF HYDHEL DATABASE)
+! DATA FOR FIT EXPRESSIONS  (E.G. POLYNOMIAL, IN CASE OF HYDHEL DATABASE)
           WRITE (13+IFOFF) UBOUND(RP%POLY%DBLPOL)
           WRITE (13+IFOFF)        RP%POLY%DBLPOL
+#ifdef CHECKBIN
+          WRITE (113,*) 'POLY DATA'
+          WRITE (113,*) UBOUND(RP%POLY%DBLPOL)
+          WRITE (113,*)        RP%POLY%DBLPOL
+#endif
 
         ELSE IF (RP%IFIT == 3) THEN
 ! DATA FOR 2D TABULATED A&M ENTRIES (2-parameter tables, e.g. ADAS)
           WRITE (13+IFOFF) RP%ADAS%NDENS,RP%ADAS%NTEMP
           WRITE (13+IFOFF) RP%ADAS%DENS,RP%ADAS%TEMP,RP%ADAS%TAB2D,
      .                     RP%ADAS%DDE,RP%ADAS%DTE
+#ifdef CHECKBIN
+          WRITE (113,*) 'ADAS DATA'
+          WRITE (113,*) RP%ADAS%NDENS,RP%ADAS%NTEMP
+          WRITE (113,*) RP%ADAS%DENS,RP%ADAS%TEMP,RP%ADAS%TAB2D,
+     .                     RP%ADAS%DDE,RP%ADAS%DTE
+#endif
         ELSE IF (RP%IFIT == 4) THEN
 ! DATA FOR 1D TABULATED A&M ENTRIES (single parameter tables, e.g. HYDKIN)
           WRITE (13+IFOFF) RP%HYD%NTEMPS
           WRITE (13+IFOFF) RP%HYD%TEMPS,RP%HYD%RATES,RP%HYD%RATIO,
      .                     RP%HYD%REAC_STRING,RP%HYD%REACNAME,
      .                     RP%HYD%RPRT
+#ifdef CHECKBIN
+          WRITE (113,*) '1D TAB DATA'
+          WRITE (113,*) RP%HYD%NTEMPS
+          WRITE (113,*) RP%HYD%TEMPS,RP%HYD%RATES,RP%HYD%RATIO,
+     .                     RP%HYD%REAC_STRING,RP%HYD%REACNAME,
+     .                     RP%HYD%RPRT
+#endif
         ELSE IF (RP%IFIT == 5) THEN
 ! DATA FOR COLLISIONAL-RADIATIVE MODEL A&M ENTRIES
           WRITE (13+IFOFF) RP%CRM%IFLAV,
      .                     RP%CRM%IVARST,
      .                     RP%CRM%IROW_ESC,  RP%CRM%ICOL_ESC
           WRITE (13+IFOFF) RP%CRM%POP_ESC
+#ifdef CHECKBIN
+          WRITE (113,*) 'COLRAD DATA'
+          WRITE (113,*) RP%CRM%IFLAV,
+     .                     RP%CRM%IVARST,
+     .                     RP%CRM%IROW_ESC,  RP%CRM%ICOL_ESC
+          WRITE (113,*) RP%CRM%POP_ESC
+#endif
         ELSE
 
         END IF
@@ -1537,6 +1660,12 @@ cdr options for extrapolation from data tables or from validity range of fits.
         WRITE (13+IFOFF) RP%RC1MIN, RP%RC1MAX, RP%RC2MIN, RP%RC2MAX,
      .                   RP%FP1L(3), RP%FP1R(3), RP%FP2B(3), RP%FP2T(3),
      .                   RP%JFEX1MN, RP%JFEX1MX, RP%JFEX2MN, RP%JFEX2MX
+#ifdef CHECKBIN
+        WRITE (113,*) 'RANGES'
+        WRITE (113,*) RP%RC1MIN, RP%RC1MAX, RP%RC2MIN, RP%RC2MAX,
+     .                   RP%FP1L(3), RP%FP1R(3), RP%FP2B(3), RP%FP2T(3),
+     .                   RP%JFEX1MN, RP%JFEX1MX, RP%JFEX2MN, RP%JFEX2MX
+#endif
 
         END SUBROUTINE EIRENE_WRITE_FIT_FORM
 
@@ -1618,7 +1747,7 @@ cdr  high pressure gas discharge lamps, around 2002.. should not be here!
           READ (13+IFOFF) RP%LINE%REACNAME, RP%LINE%KENN
 
         ELSE IF (1<= RP%IFIT .AND. RP%IFIT <= 2) THEN
-! DATA FOR FIT EXPRESSIONS (POLYNOMIAL, e.g. IN CASE OF HYDHEL DATABASE)
+! DATA FOR FIT EXPRESSIONS (POLYNOMIAL, E.G. IN CASE OF HYDHEL DATABASE)
           IF (.NOT.ASSOCIATED(RP%POLY)) ALLOCATE (RP%POLY)
           IF (ASSOCIATED(RP%POLY%DBLPOL)) DEALLOCATE (RP%POLY%DBLPOL)
 
@@ -1627,7 +1756,7 @@ cdr  high pressure gas discharge lamps, around 2002.. should not be here!
           READ (13+IFOFF) RP%POLY%DBLPOL
 
         ELSE IF (RP%IFIT == 3) THEN
-! DATA FOR 2D TABULATED A&M ENTRIES (2-parameter tables, e.g. ADAS)
+! DATA FOR 2D TABULATED A&M ENTRIES (2-parameter tables, E.G. ADAS)
           READ (13+IFOFF) RP%ADAS%NDENS,RP%ADAS%NTEMP
           ND = RP%ADAS%NDENS
           NT = RP%ADAS%NTEMP
