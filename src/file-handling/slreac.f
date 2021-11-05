@@ -24,6 +24,9 @@ c     Sept.16: two new internal subroutines,
 c              a) READ_RANGE:  to read validity range information,
 c              b) READ_COEFFS: three parameters for each validity boundary, for extrapolation options
 c    June  17: read_colrad (for old H-COL option (now CRM)) moved to separate routine.
+cdr  OCT   18: rationalization of option FILNAM=CONST: new optional parameters,
+cdr            IFTFL, NCOEF, COEF, rather than reading from unit IUNIN
+C
 cdr  Jan   19:  filnam=CRM --> CR... to prepare merge with branch ...emis....,
 cdr             H, He internal CR codes, formulation I, II (MS resolved or not)
 cdr  Feb   19:  remove obsolete (and unfinished) option HYDRTC 
@@ -33,7 +36,8 @@ C
      .                          RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .                          RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
      .                          ELNAME, IZ1,
-     .                          IROW_ESC, ICOL_ESC, POP_ESC)
+     .                          IROW_ESC, ICOL_ESC, POP_ESC,
+     .                          IFTFL, NCOEF, COEF)
 c
 c  open data stream 29 and read atomic dataset no. IR
 c          (note: general input-stream/output-stream no. offset ifoff
@@ -186,12 +190,15 @@ C
       IMPLICIT NONE
 
       INTEGER,      INTENT(IN) :: IR, IZ1
-      INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC
+      INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC, 
+     .                                      IFTFL, NCOEF
       REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC
+      REAL(DP),     INTENT(IN), OPTIONAL :: COEF(9)      
 
       CHARACTER(8), INTENT(IN) :: FILNAM
       CHARACTER(4), INTENT(IN) :: H123
-      CHARACTER(LEN=*), INTENT(IN) :: REAC, ELNAME
+      CHARACTER(LEN=*), INTENT(IN) :: REAC
+      CHARACTER(2), INTENT(IN) :: ELNAME
       CHARACTER(3), INTENT(IN) :: CRC
 cdr  asymptotics parameters already read from input block 4?
 cdr  if not: try to read from external A&M data file
@@ -236,6 +243,12 @@ cdr  for reading asymptotics parameters from data files
       CHARACTER(7) :: C1L, C1R, C2L, C2R, CMR, CEMR
       LOGICAL :: LGC1MIN,LGC1MAX,LGC2MIN,LGC2MAX,
      .           LGR1MIN,LGR1MAX,LGR2MIN,LGR2MAX
+
+      WRITE (IUNOUT,*) 'SLREAC CALLED'
+      WRITE (IUNOUT,*) 'IR ',IR
+      WRITE (IUNOUT,*) 'FILNAM ',FILNAM
+      WRITE (IUNOUT,*) 'H123 ',H123
+      WRITE (IUNOUT,*) 'REAC ',REAC
 C
 ! defining backslash character
       BACK=ACHAR(92)
@@ -346,8 +359,10 @@ C  THE A&M DATA FILE FILNAM IS NOW OPENDED, ON STREAM 29 (+ifoff)
       ENDIF
 C
       IF (H123(4:4).EQ.' ') THEN
+c  this must be an integer !
         READ (H123(3:3),'(I1)') ISW
       ELSE
+c  this must be an integer !
         READ (H123(3:4),'(I2)') ISW
       ENDIF
 
@@ -546,6 +561,7 @@ C  H.11
         CH1R='kr0'
         I0=1
         IFLG=5
+C  OTHER COEFFICIENTS (RATIOS, POPULATION COEFFICIENTS, ETC)
         IFTFLG(IR,IFLG)=0
         C1L = 'P1MIN'
         C1R = 'P1MAX'
@@ -558,6 +574,7 @@ C  H.12
         CH2R='lt0'
         I0=1
         IFLG=5
+C   OTHER COEFFICIENTS (RATIOS, POPULATION COEFFICIENTS, ETC)
         IFTFLG(IR,IFLG)=0
         C1L = 'P1MIN'
         C1R = 'P1MAX'
@@ -581,33 +598,30 @@ c  close unit=29+ifoff:   done in READ_TAB2D.f
       END IF
 
       IF (INDEX(FILNAM,'CONST').NE.0) THEN
-        IND=INDEX(REACSTR,'FT')
-        IF (IND /= 0) THEN
-c  read parameter for type of fitting expression from data file
-          READ (REACSTR(IND+2:),*) IFTFLG(IR,IFLG)
-        END IF
-
-        IF (MOD(IFTFLG(IR,IFLG),100) == 10) THEN
-C
-C  SET A REACTION CONSTANT
-C  READ ONLY ONE FIT COEFFICIENT FROM INPUT FILE 'iunin'
-          READ (IUNIN,6664) CREACD(1,1)
-        ELSE
-C
-C  READ 9 FIT COEFFICIENTS (2 CARDS) FROM INPUT FILE 'iunin'
-          READ (IUNIN,6664) (CREACD(IC,1),IC=1,9)
-
-        END IF
+cdr  'CONST' is an A&M data model in which fit constants are directly
+cdr  read from input file block 4, rather than via read from external data file
+cdr  Oct. 18: rationalization: as with other data, (FILNAM options)
+cdr  we now transfer the parameters IFTFL, COEF(NCOEF) as optional
+cdr  parameters via the parameter list, rather than reading from input file IUNIN
+cdr  here, as it was the case before
+        IF (PRESENT(IFTFL).AND.PRESENT(NCOEF).AND.PRESENT(COEF)) THEN 
+          IFTFLG(IR,IFLG) = IFTFL
+          CREACD(1:NCOEF,1) = COEF(1:NCOEF)
         CALL EIRENE_SET_REACTION_DATA    ! this routine sets only "POLY" data
      .          (IR,ISW,IFTFLG(IR,IFLG),CREACD,IUNOUT,.FALSE.)
 c  no optional extrapolation flags here
         RETURN
+        ELSE
+          WRITE (iunout,*) 'CONSTANT REACTION REACTION REQUESTED '
+          WRITE (iunout,*) 'BUT NO DATA AVAILABLE FOR IR ', IR
+          CALL EIRENE_EXIT_OWN(1)         
+        ENDIF
       ENDIF
 C
 C  READ FROM DATA FILE, stream 29
 C
 C  already ruled out here (done at this point):
-C  FILNAM= "CR...", "CONST", "ADAS",  "PHOTON"
+C  FILNAM= "CR", "CONST", "ADAS", "TAB2D",  "PHOTON"
 C  in all these cases: already returned to calling program
 C
 C......................................................................
@@ -868,8 +882,8 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
         IF (LGR1MIN .AND. .NOT. LGC1MIN.and.if1mn.ge.3.) THEN
           WRITE (IUNOUT,*) ' WARNING FROM SLREAC'
           WRITE (IUNOUT,*) ' REACTION ',IR, 'TYPE ',H123
-          WRITE (IUNOUT,*) ' LOWER RANGE FOR 1ST PARAMETER OF FIT',
-     .          ' SPECIFIED BUT',
+          WRITE (IUNOUT,'(A)') ' LOWER RANGE FOR 1ST PARAMETER OF FIT'//
+     .          ' SPECIFIED BUT'//
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED'
           CALL EIRENE_MASJ1R('IF1MN,R1MN      ',if1mn,r1mn)
           IF (IF1MN.EQ.4)
@@ -897,8 +911,8 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
         IF (LGR1MAX .AND. .NOT. LGC1MAX.and.if1mx.ge.3.) THEN
           WRITE (IUNOUT,*) ' WARNING FROM SLREAC'
           WRITE (IUNOUT,*) ' REACTION ',IR, ' TYPE ',H123
-          WRITE (IUNOUT,*) ' UPPER RANGE FOR 1ST PARAMETER OF FIT',
-     .          ' SPECIFIED BUT',
+          WRITE (IUNOUT,'(A)') ' UPPER RANGE FOR 1ST PARAMETER OF FIT'//
+     .          ' SPECIFIED BUT'//
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED'
           CALL EIRENE_MASJ1R('IF1MX,R1MX      ',if1mx,r1mx)
           IF (IF1MX.EQ.4)
@@ -926,8 +940,8 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
         IF (LGR2MIN .AND. .NOT. LGC2MIN.and.if2mn.ge.3.) THEN
           WRITE (IUNOUT,*) ' WARNING FROM SLREAC'
           WRITE (IUNOUT,*) ' REACTION ',IR, ' TYPE ',H123
-          WRITE (IUNOUT,*) ' LOWER RANGE FOR 2ND PARAMETER OF FIT',
-     .          ' SPECIFIED BUT',
+          WRITE (IUNOUT,'(A)') ' LOWER RANGE FOR 2ND PARAMETER OF FIT'//
+     .          ' SPECIFIED BUT'//
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED'
           CALL EIRENE_MASJ1R('IF2MN,R2MN      ',if2mn,r2mn)
           IF (IF2MN.EQ.4)
@@ -954,8 +968,8 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
         IF (LGR2MAX .AND. .NOT. LGC2MAX.and.if2mx.ge.3.) THEN
           WRITE (IUNOUT,*) ' WARNING FROM SLREAC'
           WRITE (IUNOUT,*) ' REACTION ',IR, ' TYPE ',H123
-          WRITE (IUNOUT,*) ' UPPER RANGE FOR 2ND PARAMETER OF FIT',
-     .          ' SPECIFIED BUT',
+          WRITE (IUNOUT,'(A)') ' UPPER RANGE FOR 2ND PARAMETER OF FIT'//
+     .          ' SPECIFIED BUT'//
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED'
           CALL EIRENE_MASJ1R('IF2MX,R2MX      ',if2mx,r2mx)
           IF (IF2MX.EQ.4)

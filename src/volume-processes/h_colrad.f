@@ -1725,7 +1725,7 @@ C
                         A(I,N)=A(IZ,N)
                         A(IZ,N)=H
     4                CONTINUE
-                     HB=B(1:NBI,I)
+                     HB(1:NBI)=B(1:NBI,I)
                      B(1:NBI,I)=B(1:NBI,IZ)
                      B(1:NBI,IZ)=HB(1:NBI)
                      ENDIF

@@ -436,10 +436,10 @@ c                 ELSE  ! ??
                   END IF
 C
                 ENDIF   ! DELPOT
-              ENDIF  !  NSERCS
             ELSE
               GOTO 997
-            ENDIF  !  iswr(kk)
+               ENDIF  !  NSERC5 
+            ENDIF  !  ISWR
 C
    82     CONTINUE
           NPRCI(IPLS)=IDSC

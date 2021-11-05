@@ -17,17 +17,12 @@ endif()
 
 # Adds compiler flags to all build types.
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
-  set(CMAKE_Fortran_FLAGS_RELEASE "-O2 -traceback -fp-model source -fpp -xHost -qoverride-limits")
-  set(CMAKE_Fortran_FLAGS_DEBUG "-g -warn all,nointerfaces -check all -traceback -fpp")
+  set(CMAKE_Fortran_FLAGS_RELEASE "-fp-model source")
+  set(CMAKE_Fortran_FLAGS_DEBUG "-g -gen-interfaces -warn all,interfaces -check all -traceback")
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
-  set(CMAKE_Fortran_FLAGS_RELEASE "-O2 -fbacktrace -cpp")
-  set(CMAKE_Fortran_FLAGS_DEBUG "-g -Wall -fcheck=all -fbacktrace -cpp") #-ffpe-trap=denorm")
-  set(CMAKE_Fortran_FLAGS_COVERAGE "-g -fprofile-arcs -ftest-coverage -cpp")
-  message(STATUS "GNU version - " ${CMAKE_Fortran_COMPILER_VERSION})
-  if(${CMAKE_Fortran_COMPILER_VERSION} VERSION_GREATER 10)
-    message(STATUS "GNU version > 10 - Adding -fallow-argument-mismatch")
-    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fallow-argument-mismatch")
-  endif()
+  set(CMAKE_Fortran_FLAGS_RELEASE "-O3")
+  set(CMAKE_Fortran_FLAGS_DEBUG "-g -O0 -Wall -fcheck=all -Wdo-subscript -Wtarget-lifetime")
+  set(CMAKE_Fortran_FLAGS_COVERAGE "-g -fprofile-arcs -ftest-coverage")
 endif()
 
 
@@ -37,9 +32,39 @@ set(EIRENE_LIBRARY_NAME "EIRENE" CACHE STRING "EIRENE library name")
 set(EIRENE_EXECUTABLE_NAME "eirene" CACHE STRING "EIRENE executable name")
 set(EIRENE_POSTFIX "" CACHE STRING "EIRENE output names postfix")
 
+# Check for modules and library for JSON
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+if (NOT JSON_MODULES)
+  message(STATUS "Setting default directory for JSON_MODULES.")
+  set(JSON_MODULES "/var/lib")
+endif()
+if(JSON_MODULES)
+  get_filename_component(JSON_MODULES ${JSON_MODULES} ABSOLUTE)
+  include_directories(${JSON_MODULES})
+  message(STATUS "  JSON_MODULES:   " ${JSON_MODULES})
+else()
+#  message(FATAL_ERROR "Directory of JSON module files not set. "
+#                      "Use cmake -DJSON_MODULES=\"<directory>\" to set it.")
+  message(STATUS "Directory of JSON module files not set. "
+                      "Use cmake -DJSON_MODULES=\"<directory>\" to set it.")
+endif()
+if (NOT LibJSON)
+  message(STATUS "Setting default directory for LibJSON.")
+  set(LibJSON "/var/lib")
+endif()
+
+if(LibJSON)
+  get_filename_component(LibJSON ${LibJSON} ABSOLUTE)
+  message(STATUS "  Lib json_fortran:   " ${LibJSON})
+else()
+  message(STATUS  "Path to LibJSON unset")
+  message(STATUS  "You may want to try -DLibJSON=$PATH_TO_JSON_LIB/libjsonfortran.so")
+endif()
+
 # Libraries used for plotting
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 message(STATUS    " --  Setting libraries for internal plotting:  --  --")
+
 if(LibGKS)
   get_filename_component(LibGKS ${LibGKS} ABSOLUTE)
 else()
@@ -112,13 +137,20 @@ if (TRACE)
   add_definitions(-DTRACE)
 endif()
 
+# Add option to control whether binary files are also written in ASCII.
+option(CHECKBIN "Check binary files" OFF)
+if (CHECKBIN)
+  message("-- Adding CHECKBIN flag...")
+  add_definitions(-DCHECKBIN)
+endif()
+
 # Add option to control whether MPI will be use.
 option(MPI "Build with MPI" ON)
 if (MPI)
   message("-- Adding USE_MPI flag...")
   add_definitions(-DUSE_MPI)
   find_package(MPI REQUIRED)
-  include_directories(${MPI_Fortran_INCLUDE_PATH})
+  include_directories(${JSON_MODULES} ${MPI_Fortran_INCLUDE_PATH})
 endif()
 
 # Add option to enable OpenMP with the parallel region defined in eirmod_mcarlo.
@@ -207,13 +239,13 @@ add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno}
 # Adds eirene executable to the project and links it to the MPI library.
 add_executable(eirene main-routines/eirene_main.f)
 if (MPI)
-  target_link_libraries(eirene EIRENE ${MPI_Fortran_LIBRARIES})
+  target_link_libraries(eirene EIRENE ${LibJSON} ${MPI_Fortran_LIBRARIES})
 else()
-  target_link_libraries(eirene EIRENE)
+  target_link_libraries(eirene EIRENE ${LibJSON})
 endif()
 
-if(LibGKS AND LibGRS AND LibX11 AND Libz AND LibXt)
-  target_link_libraries(eirene EIRENE ${LibGRS} ${LibGKS} ${LibX11} ${LibXt})
+if(LibGKS AND LibGRS AND LibX11 AND Libz AND LibXt AND LibJSON)
+  target_link_libraries(eirene EIRENE ${LibGRS} ${LibGKS} ${LibX11} ${LibXt} ${LibJSON})
 endif()
 
 # This is the newer approach for adding OpenMP - ver >= 3.9

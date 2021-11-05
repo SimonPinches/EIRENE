@@ -42,6 +42,10 @@
      L LBALAN, LSYMET, LPRSOU,
      L LNLPLG, LNLDRF, LTRCFL, LNLVOL(:)
 
+!  store variables in module for writing of JSON file
+      LOGICAL, PUBLIC, SAVE :: LCOARSE
+      INTEGER, PUBLIC, SAVE :: mshfrm, ntrfrm
+
       INTEGER, PUBLIC, SAVE ::
      I NCOUPL, MCOUPL1, MCOUPL2, LCOUPL
 
@@ -173,7 +177,7 @@
 
 
       SUBROUTINE EIRENE_BROADCAST_CCOUPL(ME)
-
+      USE EIRMOD_COMUSR, ONLY : NMODE
       INTEGER, INTENT(IN) :: ME
       INTEGER :: IER
 

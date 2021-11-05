@@ -3,7 +3,6 @@ C
 
       MODULE EIRMOD_TSTCHM
       USE EIRMOD_PRECISION
-      USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
       PRIVATE
 
@@ -41,7 +40,9 @@ C     IINDEX= 5:  BOTH POINTS OUTSIDE, BUT PART OF TRACK INSIDE.  PLOT
 C     XT,YT: INTERSETION POINT ON BOUNDARY  (IF ANY)
 C     XT2,YT2: SECOND INTERSECTION POINT ON BOUNDARY (IF ANY)
 C
-      
+
+      USE EIRMOD_COMPRT, ONLY : IUNOUT
+      USE EIRMOD_CCONA, ONLY: EPS12
 
       IMPLICIT NONE
 
@@ -77,12 +78,21 @@ C
 C
       TBDXN=0.
       TBDYN=0.
-      IF (XTN.LT.XMI) TBDXN=-1.
-      IF (XTN.GT.XMA) TBDXN=1.
-      IF (YTN.LT.YMI) TBDYN=-1.
-      IF (YTN.GT.YMA) TBDYN=1.
+!     IF (XTN.LT.XMI) TBDXN=-1.
+!     IF (XTN.GT.XMA) TBDXN=1.
+!     IF (YTN.LT.YMI) TBDYN=-1.
+!     IF (YTN.GT.YMA) TBDYN=1.
+      IF (XTN.LT.XMI-eps12) TBDXN=-1.
+      IF (XTN.GT.XMA+eps12) TBDXN=1.
+      IF (YTN.LT.YMI-eps12) TBDYN=-1.
+      IF (YTN.GT.YMA+eps12) TBDYN=1.
       TESTN=ABS(TBDXN)+ABS(TBDYN)
       TEST=TESTN+TESTO
+!     write (*,'(a,3es24.13)') 'xmi, ymi ', xmi, ymi
+!     write (*,'(a,3es24.13)') 'xma, yma ', xma, yma
+!     write (*,'(a,3es24.13)') 'xtn, ytn ', xtn, ytn
+!     write (*,'(a,3es24.13)') 'TESTO, TESTN, TEST ',
+!    .                          testo, testn, test 
       IF (TEST.EQ.0.) THEN
         IINDEX=1
       ELSEIF (TESTO.EQ.0..AND.TESTN.NE.0.) THEN

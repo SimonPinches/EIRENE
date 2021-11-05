@@ -1,0 +1,29 @@
+      SUBROUTINE EIRENE_SET_CELL_DIAMETER
+
+      USE EIRMOD_PRECISION
+      USE EIRMOD_CGRID
+      USE EIRMOD_CGEOM
+      USE EIRMOD_CCONA
+      USE EIRMOD_COMUSR
+      IMPLICIT NONE
+C
+C  SET CELL DIAMETER
+C
+        IF (LEVGEO == 5) THEN
+!  Tetrahedra
+          WHERE (VOL > EPS10)
+            CELDIA = VOL**(1._DP/3._DP)
+          ELSEWHERE
+            CELDIA = 0._DP
+          END WHERE
+        ELSE
+!  CYLINDRICAL OR TOROIDAL MESH
+          WHERE (AREA > EPS10)
+            CELDIA = SQRT(AREA/PIA)
+          ELSEWHERE
+            CELDIA = 0.D0
+          END WHERE
+        END IF
+
+      RETURN
+      END SUBROUTINE EIRENE_SET_CELL_DIAMETER

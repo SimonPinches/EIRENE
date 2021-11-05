@@ -1,21 +1,33 @@
-      subroutine eirene_find_emis_line (istr, ichori, ener, lno)
+      subroutine eirene_find_emis_line (istr, ichori, ener_ch, lno)
 
-cdr documentation ? comments ?
+cdr documentation ? comments ?  ongoing....
+cdr
 c  input:   istr  :  stratum number
 c           ichori:  chord number of line of sight
-c           ener  :  energy parameter for identifying a particular emission profile
+c           ener_ch  :  energy parameter for identifying a particular 
+C                                  emission profile by "trans_en"
+c           ch_line_name(ichori)): optional: identify a particular
+c                                  emission profile by "name of line" 
+c
 c  output:  lno   :  "line number", i.e. the volumetric emission profile.
 
-cdr  so far: guessing:
-cdr currently called from SIGLINE (former Balmer and Lyman line of sight routines)
+cdr 
+cdr currently called from SIGLINE in diagno block. 
+cdr    
 cdr SIGLINE is called only for chords ICHORI, for which NCHTAL(ichori)=2.
-cdr Calls are whenever a change in stratum number ISTR, transition energy ENER,
-cdr       or a new internal iteration (time stepping, non-linear BGK iterations)
+cdr Calls are whenever either a change in stratum number ISTR, 
+cdr                    or                 transition energy ENER,
+cdr                    or                 a new internal iteration 
+cdr  (time stepping, non-linear BGK iterations)
 
-cdr from here we call EMISSIVITY.F  (similar to former Ba_alpha.f,...etc.)
-cdr to fill ADDV tallies, and to write them onto fort.11, for stratum ISTR.
-
-cdr may 18:  try to identify the line LNO,
+cdr In storage saving mode (mod_addv = 0) from here we call EIRENE_EMISSIVITY.F
+cdr   for the present stratum and present line, 
+cdr   to fill the proper tallies ADDV with emissivities.
+cdr    (similar to former Ba_alpha.f,...etc.)
+cdr In full storage mode (mod_addv > 0) the relevant ADDV tallies have already
+cdr   been set in calls to EIRENE_EMISSIVITY from the stratum-loop in MCARLO.f
+cdr 
+cdr May 18:  try to identify the line LNO,
 cdr          or (old options) as specified by input flags
 cdr                                       ICHORI  (line of sight number)
 cdr                                       ENER    (flag for selecting a particular line)
@@ -50,7 +62,7 @@ cdr          by calling  EIRENE_EMISSIVITY(...)
       implicit none
 
       integer, intent(in) :: istr, ichori
-      real(dp), intent(in) :: ener
+      real(dp), intent(in) :: ener_ch
       integer, intent(out) :: lno
       real(dp) :: ener_il
       integer :: iline
@@ -94,12 +106,13 @@ CDR
       endif   !  ichori.gt.0
 
       if (.not.found) then
-! check energies, for backward compatibility with old input block 12.
+! check transition energies, for backward compatibility with old input block 12.
         do iline = 1, num_lines
-          ener_il = emis_lines(iline)%energy
-          if (abs((ener-ener_il)/(ener_il+eps10)) <= eps5) then
+          ener_il = emis_lines(iline)%trans_en
+          if (abs((ener_ch-ener_il)/(ener_il+eps10)) <= eps5) then
             found = .true.
             lno = iline
+            ctest1 = adjustl(trim(emis_lines(iline)%line_name))
             exit
           end if
         end do
@@ -107,10 +120,11 @@ CDR
         IF  (FOUND) THEN
           WRITE (IUNOUT,*) 'EMISSION LINE identified by ENERGY,',
      .                     ' iline=',LNO
-          WRITE (IUNOUT,*) 'ENERGY: ',ener_il
+          CALL EIRENE_MASR1('ENERGY: ',ener_il)
+          WRITE (IUNOUT,*) 'name: ',trim(ctest1)   ! =cname_ch
         ELSE
           WRITE (IUNOUT,*) 'NO EMISSION LINE identified by ENERGY'
-          WRITE (IUNOUT,*) 'ENERGY: ',ENER
+          CALL EIRENE_MASR1('ENERGY: ',ENER_CH)
         endif
 
       end if
@@ -145,9 +159,10 @@ C  NOTHING TO BE DONE
       ENDIF
 C
       if (mod_addv == 0) then
+c storage saving mode: 
 c ADDV is overwritten when a new line comes, within a run.
-c Thus recalculate the new emissivity profile on ADDV
-         call eirene_emissivity(istr, lno, lno)
+c Thus re-calculate the new emissivity profile on ADDV now
+         call eirene_emissivity(istr, lno, lno, 1)
 c     else
 c Sufficiently large storage on ADDV additional tally array,
 c for all lines and components. No need to reset ADDV tallies.

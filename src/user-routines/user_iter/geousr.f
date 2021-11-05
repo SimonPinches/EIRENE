@@ -13,6 +13,7 @@ C
       USE EIRMOD_PARMMOD
 
       USE EIRMOD_COMPRT
+      USE EIRMOD_CVARUSR
 
       IMPLICIT NONE
 
@@ -63,10 +64,11 @@ C
       USE EIRMOD_CLGIN
       USE EIRMOD_CINIT
       USE EIRMOD_CPOLYG
+      USE EIRMOD_CVARUSR
       IMPLICIT NONE
 !      CHARACTER(80) :: ZEILE
       REAL(DP) :: XCOOR, YCOOR, ZCOOR
-      INTEGER :: NADMOD, NASMOD, NORMOD, NRS, IPUNKT, I,NSSIR, NSSIP,
+      INTEGER :: NRS, IPUNKT, I,NSSIR, NSSIP,
      .           IDIR, IR, IP, NAS
 C
 C MODIFY GEOMETRY
@@ -204,6 +206,7 @@ c======================================================================
       use EIRMOD_CINIT
       use EIRMOD_COMPRT
       use EIRMOD_CLOGAU
+      USE EIRMOD_CVARUSR
 
       IMPLICIT NONE
 
@@ -215,7 +218,7 @@ c======================================================================
       INTEGER :: I, J, K, NBITS, M, N, L
       REAL(DP) :: HLP_P1, HLP_P2
 csw 03sep2013
-      INTEGER :: NADMOD,NASMOD, NRS,IPUNKT !VK
+      INTEGER :: NRS,IPUNKT !VK
       REAL(DP) :: XCOOR,YCOOR,ZCOOR !VK
       real(dp) ::  XN, YN
       integer ixn,iyn

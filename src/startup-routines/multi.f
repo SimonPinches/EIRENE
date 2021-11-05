@@ -66,26 +66,26 @@ C  IS THIS A SPACE FOR AVERAGING: THEN DO NOT COPY
         IF (NT3RD.GT.1.AND.NP2ND.LE.1.AND.MOD(J,NT3RD).EQ.0) GOTO 210
         IF (NT3RD.GT.1.AND.NP2ND.GT.1.AND.J.GT.NP2ND*(NT3RD-1)) GOTO 210
 
-        IF (INDPRO(1).LT.4) THEN
+        IF ((INDPRO(1).LT.4) .AND. LCPYPRO(1)) THEN
           DO 201 I=1,NR1ST
             TEIN(I+(J-1)*NR1ST)=TEIN(I)
   201     CONTINUE
         ENDIF
-        IF (INDPRO(2).LT.4) THEN
+        IF ((INDPRO(2).LT.4) .AND. LCPYPRO(2)) THEN
           DO 202 K=1,NPLSTI
             DO I=1,NR1ST
               TIIN(K,I+(J-1)*NR1ST)=TIIN(K,I)
             END DO
   202     CONTINUE
         ENDIF
-        IF (INDPRO(3).LT.4) THEN
+        IF ((INDPRO(3).LT.4) .AND. LCPYPRO(3)) THEN
           DO 204 K=1,NPLSI
             DO I=1,NR1ST
               DIIN(K,I+(J-1)*NR1ST)=DIIN(K,I)
             END DO
   204     CONTINUE
         ENDIF
-        IF (INDPRO(4).LT.4) THEN
+        IF ((INDPRO(4).LT.4) .AND. LCPYPRO(4)) THEN
           DO 205 K=1,NPLSV
             DO I=1,NR1ST
               VXIN(K,I+(J-1)*NR1ST)=VXIN(K,I)
@@ -94,7 +94,7 @@ C  IS THIS A SPACE FOR AVERAGING: THEN DO NOT COPY
             END DO
   205     CONTINUE
         ENDIF
-        IF (INDPRO(5).LT.4) THEN
+        IF ((INDPRO(5).LT.4) .AND. LCPYPRO(5))  THEN
 C  BFIELD DATA, INDPRO(5), ARE ALREADY SET ON 1:NSURF, SET IN PLASMA.F
         ENDIF
         IF (LADIN.AND.(INDPRO(6).LT.4)) THEN
@@ -108,26 +108,26 @@ C  BFIELD DATA, INDPRO(5), ARE ALREADY SET ON 1:NSURF, SET IN PLASMA.F
 C
 C  INDPRO.GT.4: ONLY NSTRD=NR1ST*NP2ND*NT3RD PLASMA DATA GIVEN
       DO 310 J=2,NBMLT
-        IF (INDPRO(1).GT.4) THEN
+        IF ((INDPRO(1).GT.4) .AND. LCPYPRO(1)) THEN
           DO 301 I=1,NSTRD
             TEIN(I+(J-1)*NSTRD)=TEIN(I)
   301     CONTINUE
         ENDIF
-        IF (INDPRO(2).GT.4) THEN
+        IF ((INDPRO(2).GT.4) .AND. LCPYPRO(2)) THEN
           DO 302 K=1,NPLSTI
             DO I=1,NSTRD
               TIIN(K,I+(J-1)*NSTRD)=TIIN(K,I)
             END DO
   302     CONTINUE
         ENDIF
-        IF (INDPRO(3).GT.4) THEN
+        IF ((INDPRO(3).GT.4) .AND. LCPYPRO(3)) THEN
           DO 304 K=1,NPLSI
             DO I=1,NSTRD
               DIIN(K,I+(J-1)*NSTRD)=DIIN(K,I)
             END DO
   304     CONTINUE
         ENDIF
-        IF (INDPRO(4).GT.4) THEN
+        IF ((INDPRO(4).GT.4) .AND. LCPYPRO(4)) THEN
           DO 305 K=1,NPLSV
             DO I=1,NSTRD
               VXIN(K,I+(J-1)*NSTRD)=VXIN(K,I)
@@ -137,7 +137,7 @@ C  INDPRO.GT.4: ONLY NSTRD=NR1ST*NP2ND*NT3RD PLASMA DATA GIVEN
   305     CONTINUE
         ENDIF
         IF (LBXIN .AND. LBYIN .AND. LBZIN .AND. LBFIN) THEN
-          IF (INDPRO(5).GT.4) THEN
+          IF ((INDPRO(5).GT.4) .AND. LCPYPRO(5)) THEN
             DO 306 I=1,NSTRD
               BXIN(I+(J-1)*NSTRD)=BXIN(I)
               BYIN(I+(J-1)*NSTRD)=BYIN(I)
@@ -146,7 +146,7 @@ C  INDPRO.GT.4: ONLY NSTRD=NR1ST*NP2ND*NT3RD PLASMA DATA GIVEN
   306       CONTINUE
           ENDIF
         ENDIF
-        IF (LADIN.AND.(INDPRO(6).GT.4)) THEN
+        IF (LADIN.AND.(INDPRO(6).GT.4) .AND. LCPYPRO(6)) THEN
           DO 307 K=1,NAINI
             DO I=1,NSTRD
               ADIN(K,I+(J-1)*NSTRD)=ADIN(K,I)

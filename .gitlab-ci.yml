@@ -115,6 +115,12 @@ run_mpi_cases:
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
         - make test
+        # - make ci_test
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - EIRENE-sample-cases/${PATH_CASE}
+        when: always
 
 prepare_testcases:
     stage: preparation
@@ -198,27 +204,6 @@ test_standalone_1D-H_slab_with_farming:
         - build_standalone_1D_slab_with_farming
         - run_standalone_1D-H_slab_with_farming
 
-build_standalone_2D_slab:
-    <<: *build_executable
-    variables:
-        PATH_CASE: "2D-D_slab"
-
-run_standalone_2D-D_slab:
-    <<: *run
-    variables:
-        PATH_CASE: "2D-D_slab"
-    dependencies:
-        - build_library    
-        - build_standalone_2D_slab
-
-test_standalone_2D-D_slab:
-    <<: *test
-    variables:
-        PATH_CASE: "2D-D_slab"
-    dependencies:
-        - build_standalone_2D_slab
-        - run_standalone_2D-D_slab
-
 build_standalone_1D_cylindric:
     # in fact it is a build_standalone but stored in ...1D_cylindric
     <<: *build_executable
@@ -230,16 +215,54 @@ run_standalone_1D_cylindric:
     variables:
         PATH_CASE: "1D_cylindric"
     dependencies:
+<<<<<<< HEAD
         - build_library    
+        - build_standalone_2D_slab
+=======
         - build_standalone_1D_cylindric
+>>>>>>> develop
 
 test_standalone_1D_cylindric:
     <<: *test
     variables:
         PATH_CASE: "1D_cylindric"
     dependencies:
+<<<<<<< HEAD
+        - build_standalone_2D_slab
+        - run_standalone_2D-D_slab
+=======
+        - run_standalone_1D_cylindric
+>>>>>>> develop
+
+build_standalone_1D_elliptic:
+    # in fact it is a build_standalone but stored in ...1D_cylindric
+    <<: *build_executable
+    variables:
+        PATH_CASE: "1D_elliptic"
+
+run_standalone_1D_elliptic:
+    <<: *run
+    variables:
+        PATH_CASE: "1D_elliptic"
+    dependencies:
+<<<<<<< HEAD
+        - build_library    
+        - build_standalone_1D_cylindric
+=======
+        - build_standalone_1D_elliptic
+>>>>>>> develop
+
+test_standalone_1D_elliptic:
+    <<: *test
+    variables:
+        PATH_CASE: "1D_elliptic"
+    dependencies:
+<<<<<<< HEAD
         - build_standalone_1D_cylindric
         - run_standalone_1D_cylindric
+=======
+        - run_standalone_1D_elliptic
+>>>>>>> develop
 
 build_standalone_ITER_1573:
     <<: *build_executable
@@ -262,6 +285,82 @@ test_standalone_ITER_1573:
         - build_standalone_ITER_1573
         - run_standalone_ITER_1573
 
+build_standalone_ITER_1573_def_lines:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "ITER_1573_def_lines"
+
+run_standalone_ITER_1573_def_lines:
+    <<: *run
+    variables:
+        PATH_CASE: "ITER_1573_def_lines"
+    dependencies:
+        - build_standalone_ITER_1573_def_lines
+
+test_standalone_ITER_1573_def_lines:
+    <<: *test
+    variables:
+        PATH_CASE: "ITER_1573_def_lines"
+    dependencies:
+        - run_standalone_ITER_1573_def_lines
+
+build_standalone_ITER_1573_dens_model:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "ITER_1573_dens_model"
+
+run_standalone_ITER_1573_dens_model:
+    <<: *run
+    variables:
+        PATH_CASE: "ITER_1573_dens_model"
+    dependencies:
+        - build_standalone_ITER_1573_dens_model
+
+test_standalone_ITER_1573_dens_model:
+    <<: *test
+    variables:
+        PATH_CASE: "ITER_1573_dens_model"
+    dependencies:
+        - run_standalone_ITER_1573_dens_model
+
+build_standalone_2D_slab:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "2D-D_slab"
+
+run_standalone_2D-D_slab:
+    <<: *run
+    variables:
+        PATH_CASE: "2D-D_slab"
+    dependencies:
+        - build_standalone_2D_slab
+
+test_standalone_2D-D_slab:
+    <<: *test
+    variables:
+        PATH_CASE: "2D-D_slab"
+    dependencies:
+        - run_standalone_2D-D_slab
+
+build_standalone_2D_slab_finite_cylinder_11x11:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "2D-D_slab_finite_cylinder_11x11"
+
+run_standalone_2D-D_slab_finite_cylinder_11x11:
+    <<: *run
+    variables:
+        PATH_CASE: "2D-D_slab_finite_cylinder_11x11"
+    dependencies:
+        - build_standalone_2D_slab_finite_cylinder_11x11
+
+test_standalone_2D-D_slab_finite_cylinder_11x11:
+    <<: *test
+    variables:
+        PATH_CASE: "2D-D_slab_finite_cylinder_11x11"
+    dependencies:
+        - run_standalone_2D-D_slab_finite_cylinder_11x11
+
 build_standalone_2D_polygon:
     <<: *build_executable
     variables:
@@ -283,6 +382,120 @@ test_standalone_2D-D_polygon:
         - build_standalone_2D_polygon
         - run_standalone_2D-D_polygon
 
+build_standalone_2D_polygon_NLPLG:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "2D-D_polygon_NLPLG"
+
+run_standalone_2D-D_polygon_NLPLG:
+    <<: *run
+    variables:
+        PATH_CASE: "2D-D_polygon_NLPLG"
+    dependencies:
+        - build_standalone_2D_polygon_NLPLG
+
+test_standalone_2D-D_polygon_NLPLG:
+    <<: *test
+    variables:
+        PATH_CASE: "2D-D_polygon_NLPLG"
+    dependencies:
+        - run_standalone_2D-D_polygon_NLPLG
+
+build_standalone_2D_triang:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "2D-D_triang"
+
+run_standalone_2D-D_triang:
+    <<: *run
+    variables:
+        PATH_CASE: "2D-D_triang"
+    dependencies:
+        - build_standalone_2D_triang
+
+test_standalone_2D-D_triang:
+    <<: *test
+    variables:
+        PATH_CASE: "2D-D_triang"
+    dependencies:
+        - run_standalone_2D-D_triang
+
+build_standalone_3D_slab_11x11x11:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "3D-D_slab_11x11x11"
+
+run_standalone_3D-D_slab_11x11x11:
+    <<: *run
+    variables:
+        PATH_CASE: "3D-D_slab_11x11x11"
+    dependencies:
+        - build_standalone_3D_slab_11x11x11
+
+test_standalone_3D-D_slab_11x11x11:
+    <<: *test
+    variables:
+        PATH_CASE: "3D-D_slab_11x11x11"
+    dependencies:
+        - run_standalone_3D-D_slab_11x11x11
+
+build_standalone_3D_tetra:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "3D-D_tetra"
+
+run_standalone_3D-D_tetra:
+    <<: *run
+    variables:
+        PATH_CASE: "3D-D_tetra"
+    dependencies:
+        - build_standalone_3D_tetra
+
+test_standalone_3D-D_tetra:
+    <<: *test
+    variables:
+        PATH_CASE: "3D-D_tetra"
+    dependencies:
+        - run_standalone_3D-D_tetra
+
+build_standalone_ALT2S:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "ALT2S"
+
+run_standalone_ALT2S:
+    <<: *run
+    variables:
+        PATH_CASE: "ALT2S"
+    dependencies:
+        - build_standalone_ALT2S
+
+test_standalone_ALT2S:
+    <<: *test
+    variables:
+        PATH_CASE: "ALT2S"
+    dependencies:
+        - run_standalone_ALT2S
+
+build_standalone_ALT2S_bits:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "ALT2S_bits"
+
+run_standalone_ALT2S_bits:
+    <<: *run
+    variables:
+        PATH_CASE: "ALT2S_bits"
+    dependencies:
+        - build_standalone_ALT2S_bits
+
+test_standalone_ALT2S_bits:
+    <<: *test
+    variables:
+        PATH_CASE: "ALT2S_bits"
+    dependencies:
+        - run_standalone_ALT2S_bits
+
 build_standalone_cylinder:
     <<: *build_executable
     variables:
@@ -303,6 +516,44 @@ test_standalone_cylinder:
     dependencies:
         - build_standalone_cylinder
         - run_standalone_cylinder
+
+build_standalone_cylinder_triang_no_octree:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "cylinder_triang_no_octree"
+
+run_standalone_cylinder_triang_no_octree:
+    <<: *run
+    variables:
+        PATH_CASE: "cylinder_triang_no_octree"
+    dependencies:
+        - build_standalone_cylinder_triang_no_octree
+
+test_standalone_cylinder_triang_no_octree:
+    <<: *test
+    variables:
+        PATH_CASE: "cylinder_triang_no_octree"
+    dependencies:
+        - run_standalone_cylinder_triang_no_octree
+
+build_standalone_cylinder_triang_octree:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "cylinder_triang_octree"
+
+run_standalone_cylinder_triang_octree:
+    <<: *run
+    variables:
+        PATH_CASE: "cylinder_triang_octree"
+    dependencies:
+        - build_standalone_cylinder_triang_octree
+
+test_standalone_cylinder_triang_octree:
+    <<: *test
+    variables:
+        PATH_CASE: "cylinder_triang_octree"
+    dependencies:
+        - run_standalone_cylinder_triang_octree
 
 build_EMC3-EIRENE:
     <<: *build_executable
@@ -341,6 +592,7 @@ run_EMC3-EIRENE_He:
             - buildRelease/
             - libRelease/
             - EIRENE-sample-cases/EMC3
+        when: always
 
 test_EMC3-EIRENE_He:
     <<: *test

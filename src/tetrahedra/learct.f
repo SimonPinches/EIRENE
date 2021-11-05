@@ -201,8 +201,10 @@ C  CELL I ALREADY TESTED BEFORE ?
               V3 = EIRENE_CAL_VOL (PC1,PC3,PC4,P)
               V4 = EIRENE_CAL_VOL (PC1,PC4,PC2,P)
 
+!              IF ((ABS(V1+V2+V3+V4-VOL(ITET)) < 1.D-3*VOL(ITET)) .AND.
+!     .            (MIN(V1,V2,V3,V4) >= -EPS5*VOL(ITET))) THEN
               IF ((ABS(V1+V2+V3+V4-VOL(ITET)) < 1.D-3*VOL(ITET)) .AND.
-     .            (MIN(V1,V2,V3,V4) >= -EPS5*VOL(ITET))) THEN
+     .            (MIN(V1,V2,V3,V4) >= -EPS10*VOL(ITET))) THEN
                 EIRENE_LEARCT=ITET
                 RETURN
               END IF

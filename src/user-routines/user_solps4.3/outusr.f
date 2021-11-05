@@ -32,13 +32,13 @@ C
       ADDV(6,1:NSBOX_TAL) = ADDV(NADVI+6,1:NSBOX_TAL)
       ADDV(7,1:NSBOX_TAL) = ADDV(NADVI+7,1:NSBOX_TAL)
 
-      DO 455 IADV=1,NADVI
+      DO IADV=1,NADVI
         DUMMY(1:NSBOX_TAL) = ADDV(IADV,1:NSBOX_TAL)
         CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
      .                      ADDVI(IADV,0),
      .                      nr1tal, np2tal, nt3tal,nbmlt)
         ADDV(IADV,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
-  455 end do
+      end do
 
       iraps = 0
       nraps = 60

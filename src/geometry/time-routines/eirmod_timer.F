@@ -1334,12 +1334,13 @@ C
                      write(iunout,'(1x,a,3es14.7)') ' velxyz ',
      .                     velx,vely,velz
                      write(iunout,'(1x,a,3es14.7)') ' a11, a12, a13 ',
-     .                     a(1,:)
+     .                     a(1,1),a(1,2),a(1,3)
                      write(iunout,'(1x,a,3es14.7)') ' a21, a22, a23 ',
-     .                     a(2,:)
+     .                     a(2,1),a(2,2),a(2,3)
                      write(iunout,'(1x,a,3es14.7)') ' a31, a32, a33 ',
-     .                     a(3,:)
-                     write(iunout,'(1x,a,3es14.7)') ' b1, b2, b3 ',b(:)
+     .                     a(3,1),a(3,2),a(3,3)
+                     write(iunout,'(1x,a,3es14.7)') ' b1, b2, b3 ',
+     .                     b(1),b(2),b(3)
                      write (iunout,'(1x,a,3es14.7)') ' det, xmu ',
      .                     det,xmu
 !$OMP END CRITICAL
@@ -1394,7 +1395,7 @@ C  DURCHSUCHE NACHBARDREIECK
           IPOLGO=NTSEITE(IPOLG,NRCELL)
           NRCELL=IZELL
           NLSRFX=.FALSE.
-          GOTO 11020
+          IF (IZELL > 0) GOTO 11020
         ENDIF
 C  KEIN SCHNITTPUNKT GEFUNDEN UND NLSRFX=.FALSE.
         write (iunout,*) ' NO INTERSECTION FOUND IN TETRAHEDRON '

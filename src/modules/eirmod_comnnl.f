@@ -38,6 +38,8 @@ cdr            (in subr. LOCATE.f)
      I  NPRNLI, IPRNLI, IPRNLS, IPRNL,
      I  NPTST,  NTMSTP, ITMSTP
 
+      INTEGER, PUBLIC, SAVE ::
+     I  NPRNLI_IN, NINITL_READ, NPRMUL
 
       CONTAINS
 

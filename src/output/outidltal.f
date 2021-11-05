@@ -142,7 +142,7 @@ C
   119     CONTINUE
 C
           FNAME = 'outtal_   '
-          WRITE (FNAME(8:9),'(i0)') ITAL
+          WRITE (FNAME(8:10),'(i0)') ITAL
 
           IF (LFIRST) THEN
             OPEN (UNIT=IOUT,FILE=FNAME,FORM='FORMATTED',

@@ -63,7 +63,7 @@ C+---------------------------------------------------------------+
 csw ratecoeff.dat
       integer :: iaei, iacx, imei, imcx, iiei, iicx, iirc
       integer :: irei, ircx, irrc
-      real(dp) :: de,di
+      real(dp) :: de,di,ti
       integer :: idsc,ipl,kk,nrc,ireac,k,np,nr,msg
 csw 25oct07
       real(dp) :: x1,x2,y1,y2,ar,xc
@@ -127,8 +127,10 @@ C     fill replicated sputtered flux arrays
       sptml(1,1:nlimps) = sptmtot(1:nlimps)
       sptio(:,:) = 0.d0
       sptio(1,1:nlimps) = sptitot(1:nlimps)
-      sptpht(:,:) = 0.d0
-      sptpht(1,1:nlimps) = sptphtot(1:nlimps)
+      if (nphot > 0) then
+        sptpht(:,:) = 0.d0
+        sptpht(1,1:nlimps) = sptphtot(1:nlimps)
+      end if
 
 csw 25oct07
       allocate(sumpotpl(npls))
@@ -184,6 +186,8 @@ csw
       write(fp,'(3(1x,i6))') nlimps,nlim,nsts
 
 c---------------------------------------
+      ti = 0._dp
+      if (ipls == 1) ti=tiin(ipls,ir)
       write(fp,'(a,i6)') '* BULK SPECIES NPLS = ',npls
       do ipls=1,npls
          ityp=4
@@ -222,7 +226,7 @@ c not used anymore... (changed background profiles in extra file?)
      .           vyin(ipls,ir),
      .           vzin(ipls,ir),
      .           bvin(ipls,ir),
-     .           tiin(ipls,ir),
+     .           ti,
      .           edrift(ipls,ir),
 
 c     .           eapl(ipls,ir),empl(ipls,ir),eipl(ipls,ir),ephpl(ir),

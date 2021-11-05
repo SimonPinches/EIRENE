@@ -138,6 +138,7 @@ C
 
 C
 C
+          IA = 0
           IF (LGACX(IATM,0,0).EQ.0) GOTO 590
             DO 560 IACX=1,NACXI(IATM)
               IA=0   !  increment for addv tally 1st index:  cx energy, atoms

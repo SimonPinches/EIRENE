@@ -122,6 +122,10 @@ C  PLASMA DATA: NI,TE,TI,VV,UU,PR,UP,RR,FNIX,FNIY.. (BRAAMS ---> EIRENE)
 C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
       USE EIRMOD_EIRBRA
       USE EIRMOD_BRASCL
+      USE EIRMOD_JSON
+      
+      use json_module
+     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
       IMPLICIT NONE
 C
@@ -202,8 +206,9 @@ C
      .           ISTRAI, IRRC, K, IR, IIRC, ICPV, I34,
      .           NREC11, NEM, ISTR,
      .           IXI, IXE, IPLSTI, IPLSV, IPLV, ISP,
-     .           mshfrm, imf, ixm1,iym1,
-     .           MINSPEZ, MAXSPEZ
+     .           imf, ixm1,iym1,
+     .           MINSPEZ, MAXSPEZ,
+     .           js, iunin_save, iusrout
 
       INTEGER, INTENT(IN) :: ISTRAA, ISTRAE, NEW_ITER, IFRST, ITRG
       REAL(DP) :: EIRENE_STEP, EIRENE_FTABRC1, EIRENE_FEELRC1,
@@ -213,7 +218,6 @@ C
       LOGICAL, INTENT(INOUT) :: LSTP
       LOGICAL, SAVE :: LSHORT, LSTOP, LTEST, LSTP3,
      .                 LNONREC_SY,LNONREC_NY,LNONREC_WX,LNONREC_EX
-     .                ,LCOARSE
 
       LOGICAL, ALLOCATABLE, SAVE :: LLCUT(:)
 
@@ -239,12 +243,14 @@ C
       CHARACTER(1) :: NSEW
 
       TYPE(RATE_STORE), POINTER :: RTIS
+
+      LOGICAL, INTENT(IN) :: LFIXED
 C
       DATA LTARG/0/
 C
 C
 C
-      ENTRY EIRENE_IF0COP
+      ENTRY EIRENE_IF0COP(LFIXED)
 C
       LSHORT=.FALSE.
 C
@@ -265,6 +271,8 @@ C
       call eirene_leer(2)
 C
       IERROR=0
+      IUSROUT = 0
+      IUNIN_SAVE = IUNIN
 C
       IMODE=IABS(NMODE)
 C
@@ -291,148 +299,12 @@ cdr
       NLSHRT13 = .TRUE.  !  only short version of fort13 is used: calls WRPLAM_SHRT, RPLAM_SHRT
 C
       IF (.NOT.LSHORT.AND.ITIMV.LE.1) THEN
-        WRITE (iunout,*) '        SUBROUTINE INFCOP IS CALLED  '
-C  READ INPUT DATA OF BLOCK 14
-C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
-        CALL EIRENE_LEER(1)
-        CALL EIRENE_ALLOC_CCOUPL(1)
-        READ (IUNIN,'(5L1)') LSYMET,LBALAN,LCOARSE
-        IF (TRCINT)
-     .  WRITE (iunout,*) ' LSYMET,LBALAN,LCOARSE = ',
-     .                     LSYMET,LBALAN,LCOARSE
-
-        READ (IUNIN,'(5I6)') NFLA,NCUTB,NCUTL,IMF
-cdr  imf  flag for different formats of geometry file: linda, sonnet, carree. What is What?
-        IF (IMF /= 0) MSHFRM=IMF
-        NCUTB_SAVE=NCUTB
-        IF (TRCINT) THEN
-          WRITE (iunout,*) ' NFLA,NCUTB,NCUTL,IMF = ',
-     .                       NFLA,NCUTB,NCUTL,IMF
-          WRITE (iunout,*) ' IPLS,IFLB(IPLS),FCTE(IPLS),BMASS(IPLS)'
+        IF (LFIXED) THEN
+          CALL EIRENE_READ14_FIXED
+        ELSE
+          js = itree_num(14)
+          CALL EIRENE_READ14_JSON(jtrees(js),blks(14)%p)
         ENDIF
-        DO 20 IPL=1,NPLSI
-          READ (IUNIN,'(2I6,2E12.4)') I,IFLB(IPL),FCTE(IPL),BMASS(IPL)
-          IF (TRCINT)
-     .    WRITE (iunout,*)          IPL,IFLB(IPL),FCTE(IPL),BMASS(IPL)
-   20   CONTINUE
-        READ (IUNIN,'(2I6)') NDXA,NDYA
-        IF (TRCINT) WRITE (iunout,*) 'NDXA,NDYA= ',NDXA,NDYA
-C  NUMBER OF TARGET SOURCES ON B2 SURFACES: NTARGI
-        READ (IUNIN,'(I6)') NTARGI
-        IF (TRCINT) WRITE (iunout,*) 'NTARGI=    ',NTARGI
-        CALL EIRENE_LEER(1)
-        IF (NTARGI.GT.NSTEP) THEN
-          CALL EIRENE_MASPRM ('NSTEP',5,NSTEP,'NTARGI',6,NTARGI,IERROR)
-          WRITE (iunout,*) 'EXIT CALLED FROM SUBR. INFCOP '
-          CALL EIRENE_EXIT_OWN(1)
-        ENDIF
-C  NUMBER OF PARTS PER TARGET SOURCE
-        IF (NTARGI.GT.0) READ (IUNIN,'(12I6)') (NTGPRT(IT),IT=1,NTARGI)
-        DO 22 IT=1,NTARGI
-          IF (NTGPRT(IT).GT.NGITT) THEN
-            NTGPRI=NTGPRT(IT)
-            CALL EIRENE_MASPRM('NGITT',5,NGITT,'NTGPRT',6,NTGPRI,IERROR)
-            WRITE (iunout,*) 'EXIT CALLED FROM SUBR. INFCOP '
-            CALL EIRENE_EXIT_OWN(1)
-          ENDIF
-   22   CONTINUE
-        IREAD=0
-C  ALL INDICES: AFTER INDEX MAPPING
-C  NDT: INDEX OF X-CELL (EAST OR NORTH SURFACE OF BRAAMS CELL) OF TARGET
-C  NINCT: DIRECTION OF OUTER TARGET NORMAL WITH RESPECT TO POSITIVE DIR.
-C  NIXY: SOURCE ON Y SURFACE: NIXY=1; SOURCE ON X SURFACE: NIXY=2
-C  NTIN,NTEN: SOURCE RANGE FROM GRIDPOINT NTIN TO GRIDPOINT NTEN
-        IF (TRCINT)
-     .  WRITE (iunout,*) '    IT,  NDT,NINCT, NIXY, NTIN, NTEN',
-     .              ',NIFLG, NPTC, NPTCM,NSPZI,NSPZE,NEMOD'
-        DO 30 IT=1,NTARGI
-          DO 33 IPRT=1,NTGPRT(IT)
-            CALL EIRENE_SKIP_READ_COMMENT(IREAD,IUNIN,ZEILE)
-            READ (ZEILE,'(12I6)') I,NDT(IT,IPRT),NINCT(IT,IPRT),
-     .                              NIXY(IT,IPRT),NTIN(IT,IPRT),
-     .                              NTEN(IT,IPRT),NIFLG(IT,IPRT),
-     .                              NPTC(IT,IPRT),NPTCM(IT,IPRT),
-     .                              NSPZI(IT,IPRT),NSPZE(IT,IPRT),
-     .                              NEMOD(IT,IPRT)
-            IREAD=0
-            NSPZI(IT,IPRT)=MAX0(1,NSPZI(IT,IPRT))
-            NSPZE(IT,IPRT)=MIN0(NFLA,NSPZE(IT,IPRT))
-            IF (NSPZE(IT,IPRT).LT.NSPZI(IT,IPRT)) THEN
-              WRITE (iunout,*) 'WARNING FROM INFCOP: '
-              WRITE (iunout,*) 'ITARG,IPRT : ',IT,IPRT
-              WRITE (iunout,*) 'NSPZI,NSPZE MODIFIED TO 1,NFLA, RESP.'
-              NSPZI(IT,IPRT)=1
-              NSPZE(IT,IPRT)=NFLA
-            ENDIF
-            IF (TRCINT)
-     .      WRITE (iunout,'(1X,7I6,2I7,3I6)')
-     .                               IT,NDT(IT,IPRT),NINCT(IT,IPRT),
-     .                               NIXY(IT,IPRT),NTIN(IT,IPRT),
-     .                               NTEN(IT,IPRT),NIFLG(IT,IPRT),
-     .                               NPTC(IT,IPRT),NPTCM(IT,IPRT),
-     .                               NSPZI(IT,IPRT),NSPZE(IT,IPRT),
-     .                               NEMOD(IT,IPRT)
-            IF (NIXY(IT,IPRT).EQ.1) THEN
-              IF (NTIN(IT,IPRT).LE.0.OR.NTIN(IT,IPRT).GE.NR1ST.OR.
-     .            NTEN(IT,IPRT).GT.NR1ST) THEN
-                WRITE (iunout,*) 'ERROR IN INPUT BLOCK 14, NTIN, NTEN '
-                CALL EIRENE_EXIT_OWN(1)
-              ENDIF
-            ELSEIF (NIXY(IT,IPRT).EQ.2) THEN
-              IF (NTIN(IT,IPRT).LE.0.OR.NTIN(IT,IPRT).GE.NP2ND.OR.
-     .            NTEN(IT,IPRT).GT.NP2ND) THEN
-                WRITE (iunout,*) 'ERROR IN INPUT BLOCK 14, NTIN, NTEN '
-                CALL EIRENE_EXIT_OWN(1)
-              ENDIF
-            ENDIF
-   33     CONTINUE
-          IF (TRCINT) CALL EIRENE_LEER(1)
-   30   CONTINUE
-        READ (IUNIN,'(6E12.4)')  CHGP,CHGEE,CHGEI,CHGMOM
-        IF (TRCINT) CALL EIRENE_MASR4
-     .                         ('CHGP,CHGEE,CHGEI,CHGMOM         ',
-     .                           CHGP,CHGEE,CHGEI,CHGMOM)
-C  READ ADDITIONAL DATA TO BE TRANSFERRED FROM B2.5 INTO EIRENE
-C  HERE: B2.5 VOLUME TALLIES
-        READ (IUNIN,'(I6)') NAINB
-C  ADDITIONAL INPUT TALLY ADIN:  ITAL=12
-        NAIN = MAX(NAIN,NAINB)
-        CALL EIRENE_ALLOC_CCOUPL(2)
-        WRITE (iunout,*) '        NAINI = ',NAINB
-        IF (NAINB.GT.NAIN) THEN
-          CALL EIRENE_MASPRM ('NAIN',4,NAIN,'NAINB',5,NAINB,IERROR)
-          WRITE (iunout,*) 'EXIT CALLED FROM SUBR. INFCOP '
-          CALL EIRENE_EXIT_OWN(1)
-        ENDIF
-        IF (TRCINT.AND.NAINB.GT.0)
-     .      WRITE (iunout,*) 'I,NAINS(IAIN),NAINT(IAIN)'
-        DO 40 IAIN=1,NAINB
-          READ (IUNIN,'(6I6)') I,NAINS(IAIN),NAINT(IAIN)
-          READ (IUNIN,'(A72)') TXTPLS(IAIN,12)
-          READ (IUNIN,'(2A24)') TXTPSP(IAIN,12),TXTPUN(IAIN,12)
-          IF (TRCINT) THEN
-            WRITE (iunout,'(6I6)') I,NAINS(IAIN),NAINT(IAIN)
-            WRITE (iunout,'(1X,A72)') TXTPLS(IAIN,12)
-            WRITE (iunout,'(1X,2A24)') TXTPSP(IAIN,12),TXTPUN(IAIN,12)
-          ENDIF
-   40   CONTINUE
-C  READ ADDITIONAL DATA TO BE TRANSFERRED FROM EIRENE INTO B2
-C  HERE: EIRENE SURFACE TALLIES
-        READ (IUNIN,'(I6)') NAOTB
-        WRITE (iunout,*) '        NAOTI = ',NAOTB
-        IF (NAOTB.GT.NLIMPS) THEN
-          CALL EIRENE_MASPRM ('NLIMPS',6,NLIMPS,'NAOTB',5,NAOTB,IERROR)
-          WRITE (iunout,*) 'EXIT CALLED FROM SUBR. INFCOP '
-          CALL EIRENE_EXIT_OWN(1)
-        ENDIF
-        IF (TRCINT.AND.NAOTB.GT.0)
-     .      WRITE (iunout,*) 'I,NAOTS(IAOT),NAOTT(IAOT)'
-        DO 50 IAOT=1,NAOTB
-          READ (IUNIN,'(6I6)') I,NAOTS(IAOT),NAOTT(IAOT)
-          IF (TRCINT) THEN
-            WRITE (iunout,'(6I6)') I,NAOTS(IAOT),NAOTT(IAOT)
-          ENDIF
-   50   CONTINUE
       ENDIF
 C
 C READING BLOCK 14 FROM FORMATTED INPUT FILE (IUNIN) FINISHED
@@ -482,8 +354,11 @@ C
 C
 C  TRANSFER GEOMETRY
 C
-      IF (.NOT.(INDGRD(1).EQ.6.OR.INDGRD(2).EQ.6.OR.INDGRD(3).EQ.6))
-     .RETURN
+      IF (.NOT.(INDGRD(1).EQ.6.OR.INDGRD(2).EQ.6.OR.INDGRD(3).EQ.6))THEN
+        IUNIN = IUNIN_SAVE
+        IF (IUSROUT /= 0) CLOSE(IUSROUT)
+        RETURN
+      END IF
 C
       OPEN (UNIT=29,ACCESS='SEQUENTIAL',FORM='FORMATTED')
       REWIND 29
@@ -702,6 +577,9 @@ C
 C  TRANSFER FLAGS
 C
       NAINI=NAINB
+
+      IUNIN = IUNIN_SAVE
+      IF (IUSROUT /= 0) CLOSE(IUSROUT)
 C
       RETURN
 C
@@ -2947,7 +2825,443 @@ C
       RETURN
 C
  8888 FORMAT (3E14.6)
-      END
+
+      CONTAINS
+
+      SUBROUTINE EIRENE_READ14_FIXED
+      IMPLICIT NONE
+      INTEGER :: JL
+
+      WRITE (iunout,*) '        SUBROUTINE INFCOP IS CALLED  '
+C  READ INPUT DATA OF BLOCK 14
+C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
+      CALL EIRENE_LEER(1)
+      CALL EIRENE_ALLOC_CCOUPL(1)
+      READ (IUNIN,'(5L1)') LSYMET,LBALAN,LCOARSE
+      IF (TRCINT)
+     .  WRITE (iunout,*) ' LSYMET,LBALAN,LCOARSE = ',
+     .                     LSYMET,LBALAN,LCOARSE
+
+      READ (IUNIN,'(5I6)') NFLA,NCUTB,NCUTL,IMF
+cdr  imf  flag for different formats of geometry file: linda, sonnet, carree. What is What?
+      IF (IMF /= 0) MSHFRM=IMF
+      NCUTB_SAVE=NCUTB
+      IF (TRCINT) THEN
+        WRITE (iunout,*) ' NFLA,NCUTB,NCUTL,IMF = ',
+     .                     NFLA,NCUTB,NCUTL,IMF
+        WRITE (iunout,*) ' IPLS,IFLB(IPLS),FCTE(IPLS),BMASS(IPLS)'
+      ENDIF
+      DO 20 IPL=1,NPLSI
+        READ (IUNIN,'(2I6,2E12.4)') I,IFLB(IPL),FCTE(IPL),BMASS(IPL)
+        IF (TRCINT)
+     .    WRITE (iunout,*)          IPL,IFLB(IPL),FCTE(IPL),BMASS(IPL)
+ 20   CONTINUE
+      READ (IUNIN,'(2I6)') NDXA,NDYA
+      IF (TRCINT) WRITE (iunout,*) 'NDXA,NDYA= ',NDXA,NDYA
+C  NUMBER OF TARGET SOURCES ON B2 SURFACES: NTARGI
+      READ (IUNIN,'(I6)') NTARGI
+      IF (TRCINT) WRITE (iunout,*) 'NTARGI=    ',NTARGI
+      CALL EIRENE_LEER(1)
+      IF (NTARGI.GT.NSTEP) THEN
+        CALL EIRENE_MASPRM ('NSTEP',5,NSTEP,'NTARGI',6,NTARGI,IERROR)
+        WRITE (iunout,*) 'EXIT CALLED FROM SUBR. INFCOP '
+        CALL EIRENE_EXIT_OWN(1)
+      ENDIF
+C  NUMBER OF PARTS PER TARGET SOURCE
+      IF (NTARGI.GT.0) READ (IUNIN,'(12I6)') (NTGPRT(IT),IT=1,NTARGI)
+      DO 22 IT=1,NTARGI
+        IF (NTGPRT(IT).GT.NGITT) THEN
+          NTGPRI=NTGPRT(IT)
+          CALL EIRENE_MASPRM('NGITT',5,NGITT,'NTGPRT',6,NTGPRI,IERROR)
+          WRITE (iunout,*) 'EXIT CALLED FROM SUBR. INFCOP '
+          CALL EIRENE_EXIT_OWN(1)
+        ENDIF
+ 22   CONTINUE
+      IREAD=0
+C  ALL INDICES: AFTER INDEX MAPPING
+C  NDT: INDEX OF X-CELL (EAST OR NORTH SURFACE OF BRAAMS CELL) OF TARGET
+C  NINCT: DIRECTION OF OUTER TARGET NORMAL WITH RESPECT TO POSITIVE DIR.
+C  NIXY: SOURCE ON Y SURFACE: NIXY=1; SOURCE ON X SURFACE: NIXY=2
+C  NTIN,NTEN: SOURCE RANGE FROM GRIDPOINT NTIN TO GRIDPOINT NTEN
+      IF (TRCINT)
+     .  WRITE (iunout,*) '    IT,  NDT,NINCT, NIXY, NTIN, NTEN',
+     .              ',NIFLG, NPTC, NPTCM,NSPZI,NSPZE,NEMOD'
+      DO 30 IT=1,NTARGI
+        DO 33 IPRT=1,NTGPRT(IT)
+          CALL EIRENE_SKIP_READ_COMMENT(IREAD,IUNIN,ZEILE)
+          READ (ZEILE,'(12I6)') I,NDT(IT,IPRT),NINCT(IT,IPRT),
+     .                            NIXY(IT,IPRT),NTIN(IT,IPRT),
+     .                            NTEN(IT,IPRT),NIFLG(IT,IPRT),
+     .                            NPTC(IT,IPRT),NPTCM(IT,IPRT),
+     .                            NSPZI(IT,IPRT),NSPZE(IT,IPRT),
+     .                            NEMOD(IT,IPRT)
+          IREAD=0
+          NSPZI(IT,IPRT)=MAX0(1,NSPZI(IT,IPRT))
+          NSPZE(IT,IPRT)=MIN0(NFLA,NSPZE(IT,IPRT))
+          IF (NSPZE(IT,IPRT).LT.NSPZI(IT,IPRT)) THEN
+            WRITE (iunout,*) 'WARNING FROM INFCOP: '
+            WRITE (iunout,*) 'ITARG,IPRT : ',IT,IPRT
+            WRITE (iunout,*) 'NSPZI,NSPZE MODIFIED TO 1,NFLA, RESP.'
+            NSPZI(IT,IPRT)=1
+            NSPZE(IT,IPRT)=NFLA
+          ENDIF
+          IF (TRCINT)
+     .      WRITE (iunout,'(1X,7I6,2I7,3I6)')
+     .                            IT,NDT(IT,IPRT),NINCT(IT,IPRT),
+     .                               NIXY(IT,IPRT),NTIN(IT,IPRT),
+     .                               NTEN(IT,IPRT),NIFLG(IT,IPRT),
+     .                               NPTC(IT,IPRT),NPTCM(IT,IPRT),
+     .                               NSPZI(IT,IPRT),NSPZE(IT,IPRT),
+     .                               NEMOD(IT,IPRT)
+          IF (NIXY(IT,IPRT).EQ.1) THEN
+            IF (NTIN(IT,IPRT).LE.0.OR.NTIN(IT,IPRT).GE.NR1ST.OR.
+     .          NTEN(IT,IPRT).GT.NR1ST) THEN
+              WRITE (iunout,*) 'ERROR IN INPUT BLOCK 14, NTIN, NTEN '
+              CALL EIRENE_EXIT_OWN(1)
+            ENDIF
+          ELSEIF (NIXY(IT,IPRT).EQ.2) THEN
+            IF (NTIN(IT,IPRT).LE.0.OR.NTIN(IT,IPRT).GE.NP2ND.OR.
+     .          NTEN(IT,IPRT).GT.NP2ND) THEN
+              WRITE (iunout,*) 'ERROR IN INPUT BLOCK 14, NTIN, NTEN '
+              CALL EIRENE_EXIT_OWN(1)
+            ENDIF
+          ENDIF
+ 33     CONTINUE
+        IF (TRCINT) CALL EIRENE_LEER(1)
+ 30   CONTINUE
+      READ (IUNIN,'(6E12.4)')  CHGP,CHGEE,CHGEI,CHGMOM
+      IF (TRCINT) CALL EIRENE_MASR4
+     .                        ('CHGP,CHGEE,CHGEI,CHGMOM         ',
+     .                          CHGP,CHGEE,CHGEI,CHGMOM)
+C  READ ADDITIONAL DATA TO BE TRANSFERRED FROM B2.5 INTO EIRENE
+C  HERE: B2.5 VOLUME TALLIES
+      READ (IUNIN,'(I6)') NAINB
+C  ADDITIONAL INPUT TALLY ADIN:  ITAL=12
+      NAIN = MAX(NAIN,NAINB)
+      CALL EIRENE_ALLOC_CCOUPL(2)
+      WRITE (iunout,*) '        NAINI = ',NAINB
+      IF (NAINB.GT.NAIN) THEN
+        CALL EIRENE_MASPRM ('NAIN',4,NAIN,'NAINB',5,NAINB,IERROR)
+        WRITE (iunout,*) 'EXIT CALLED FROM SUBR. INFCOP '
+        CALL EIRENE_EXIT_OWN(1)
+      ENDIF
+      IF (TRCINT.AND.NAINB.GT.0)
+     .      WRITE (iunout,*) 'I,NAINS(IAIN),NAINT(IAIN)'
+      DO 40 IAIN=1,NAINB
+        READ (IUNIN,'(6I6)') I,NAINS(IAIN),NAINT(IAIN)
+        READ (IUNIN,'(A72)') TXTPLS(IAIN,12)
+        READ (IUNIN,'(2A24)') TXTPSP(IAIN,12),TXTPUN(IAIN,12)
+        IF (TRCINT) THEN
+          WRITE (iunout,'(6I6)') I,NAINS(IAIN),NAINT(IAIN)
+          WRITE (iunout,'(1X,A72)') TXTPLS(IAIN,12)
+          WRITE (iunout,'(1X,2A24)') TXTPSP(IAIN,12),TXTPUN(IAIN,12)
+        ENDIF
+ 40   CONTINUE
+C  READ ADDITIONAL DATA TO BE TRANSFERRED FROM EIRENE INTO B2
+C  HERE: EIRENE SURFACE TALLIES
+      READ (IUNIN,'(I6)') NAOTB
+      WRITE (iunout,*) '        NAOTI = ',NAOTB
+      IF (NAOTB.GT.NLIMPS) THEN
+        CALL EIRENE_MASPRM ('NLIMPS',6,NLIMPS,'NAOTB',5,NAOTB,IERROR)
+        WRITE (iunout,*) 'EXIT CALLED FROM SUBR. INFCOP '
+        CALL EIRENE_EXIT_OWN(1)
+      ENDIF
+      IF (TRCINT.AND.NAOTB.GT.0)
+     .      WRITE (iunout,*) 'I,NAOTS(IAOT),NAOTT(IAOT)'
+      DO 50 IAOT=1,NAOTB
+        READ (IUNIN,'(6I6)') I,NAOTS(IAOT),NAOTT(IAOT)
+        IF (TRCINT) THEN
+          WRITE (iunout,'(6I6)') I,NAOTS(IAOT),NAOTT(IAOT)
+        ENDIF
+ 50   CONTINUE
+
+C  COPY USER SPECIFIC DATA TO FILE user_data.input
+      JL = 0
+      IO = 0
+      IUNIN_SAVE = IUNIN
+      DO WHILE (IO == 0)
+        READ (IUNIN,'(A72)',IOSTAT=IO) ZEILE
+        IF (IO == 0) THEN
+          JL = JL + 1
+          IF (JL == 1) OPEN(NEWUNIT=IUSROUT,FILE='user_data.input')
+          WRITE (IUSROUT,'(A)') TRIM(ZEILE)
+        END IF
+      END DO
+      IF (JL > 0) THEN
+        REWIND IUSROUT
+        IUNIN = IUSROUT
+      ELSE
+        IUSROUT = 0
+      END IF
+      
+      RETURN
+      END SUBROUTINE EIRENE_READ14_FIXED
+
+
+
+      SUBROUTINE EIRENE_READ14_JSON(json,me)
+      USE EIRMOD_JSON     
+      use json_module
+     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
+
+      IMPLICIT NONE
+
+      class(json_core),intent(inout) :: json
+      type(json_value), pointer, intent(in) :: me
+      type(json_value), pointer :: pflds, pfld, ptrgs, ptrg,
+     .                             prts, prt, padds, padd
+      character(kind=CK,len=:),allocatable :: txt                       
+      integer :: j, npl, ntrg
+      integer, allocatable :: ihelp(:)
+      logical :: found, foundi, foundo
+      
+      WRITE (iunout,*) '        SUBROUTINE INFCOP IS CALLED  '
+C  READ INPUT DATA OF BLOCK 14
+C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
+      CALL EIRENE_LEER(1)
+      CALL EIRENE_ALLOC_CCOUPL(1)
+
+      call json%get(me,'LSYMET',lsymet,found)
+      call json%get(me,'LBALAN',lbalan,found)
+      call json%get(me,'LCOARSE',lcoarse,found)
+      IF (TRCINT)
+     .  WRITE (iunout,*) ' LSYMET,LBALAN,LCOARSE = ',
+     .                     LSYMET,LBALAN,LCOARSE
+
+      call json%get(me,'NFLA',nfla,found)
+      call json%get(me,'NCUTB',ncutb,found)
+      call json%get(me,'NCUTL',ncutl,found)
+      call json%get(me,'NCUTL',ncutl,found)
+      call json%get(me,'IMF',imf,found)
+cdr  imf  flag for different formats of geometry file: linda, sonnet, carre. What is What?
+      if (imf /= 0) mshfrm = imf
+      NCUTB_SAVE=NCUTB
+      
+      IF (TRCINT) THEN
+        WRITE (iunout,*) ' NFLA,NCUTB,NCUTL,IMF = ',
+     .                     NFLA,NCUTB,NCUTL,IMF
+        WRITE (iunout,*) ' IPLS,IFLB(IPLS),FCTE(IPLS),BMASS(IPLS)'
+      ENDIF
+      
+      call json%get_child(me,'B2FLUIDS',pflds)
+      call json%info(pflds,n_children=npl)
+      if (npl /= NPLSI) then
+        write (iunout,*) ' NUMBER OF BULK IONS DOES',
+     .          ' NOT MATCH NUMBER OF FLUIDS FOUND IN FILE '
+        write (iunout,*) 'NPLSI = ',nplsi
+        write (iunout,*) 'NPL =   ',npl
+        call eirene_exit_own(1)
+      end if
+        
+      DO IPL=1,NPLSI
+        call json%get_child(pflds,ipl,pfld)
+
+        call json%get(pfld,'IPL',i,found)
+        call json%get(pfld,'IFLB',iflb(ipl),found)
+        call json%get(pfld,'FCTE',fcte(ipl),found)
+        call json%get(pfld,'BMASS',bmass(ipl),found)
+        nullify(pfld)
+        IF (TRCINT)
+     .    WRITE (iunout,*)          IPL,IFLB(IPL),FCTE(IPL),BMASS(IPL)
+      END DO
+      nullify(pflds)
+      
+      call json%get(me,'NDXA',ndxa,found)
+      call json%get(me,'NDYA',ndya,found)
+      IF (TRCINT) WRITE (iunout,*) 'NDXA,NDYA= ',NDXA,NDYA
+
+C     NUMBER OF TARGET SOURCES ON B2 SURFACES: NTARGI
+      call json%get(me,'NTARGI',ntargi,found)
+      IF (TRCINT) WRITE (iunout,*) 'NTARGI=    ',NTARGI
+      CALL EIRENE_LEER(1)
+      IF (NTARGI.GT.NSTEP) THEN
+        CALL EIRENE_MASPRM ('NSTEP',5,NSTEP,'NTARGI',6,NTARGI,IERROR)
+        WRITE (iunout,*) 'EXIT CALLED FROM SUBR. INFCOP '
+        CALL EIRENE_EXIT_OWN(1)
+      ENDIF
+
+C     NUMBER OF PARTS PER TARGET SOURCE
+      IF (NTARGI.GT.0) THEN
+        call json%get(me,'NTGPRT',ihelp,found)
+        NTGPRT(1:NTARGI) = ihelp(1:NTARGI)
+        deallocate(ihelp)
+
+        DO IT=1,NTARGI
+          IF (NTGPRT(IT).GT.NGITT) THEN
+            NTGPRI=NTGPRT(IT)
+            CALL EIRENE_MASPRM('NGITT',5,NGITT,'NTGPRT',6,NTGPRI,IERROR)
+            WRITE (iunout,*) 'EXIT CALLED FROM SUBR. INFCOP '
+            CALL EIRENE_EXIT_OWN(1)
+          ENDIF
+        END DO
+C  ALL INDICES: AFTER INDEX MAPPING
+C  NDT: INDEX OF X-CELL (EAST OR NORTH SURFACE OF BRAAMS CELL) OF TARGET
+C  NINCT: DIRECTION OF OUTER TARGET NORMAL WITH RESPECT TO POSITIVE DIR.
+C  NIXY: SOURCE ON Y SURFACE: NIXY=1; SOURCE ON X SURFACE: NIXY=2
+C  NTIN,NTEN: SOURCE RANGE FROM GRIDPOINT NTIN TO GRIDPOINT NTEN
+        IF (TRCINT)
+     .  WRITE (iunout,*) '    IT,  NDT,NINCT, NIXY, NTIN, NTEN',
+     .              ',NIFLG, NPTC, NPTCM,NSPZI,NSPZE,NEMOD'
+
+        call json%get_child(me,'TARGETS',ptrgs,found)
+        call json%info(ptrgs,n_children=ntrg)
+        if (ntrg /= NTARGI) then
+          write (iunout,*) ' NUMBER OF TARGETS DOES',
+     .          ' NOT MATCH NUMBER OF TARGETS FOUND IN FILE '
+          write (iunout,*) 'NTARGI = ',ntargi
+          write (iunout,*) 'NTRG =   ',ntrg
+          call eirene_exit_own(1)
+        end if
+        DO IT=1,NTARGI
+          call json%get_child(ptrgs,it,ptrg,found)
+          call json%get_child(ptrg,'PARTS',prts,found)
+          DO IPRT=1,NTGPRT(IT)
+            call json%get_child(prts,iprt,prt)
+            call json%get(prt,'NDT',ndt(it,iprt),found)
+            call json%get(prt,'NINCT',ninct(it,iprt),found)
+            call json%get(prt,'NIXY',nixy(it,iprt),found)
+            call json%get(prt,'NTIN',ntin(it,iprt),found)
+            call json%get(prt,'NTEN',nten(it,iprt),found)
+            call json%get(prt,'NIFLG',niflg(it,iprt),found)
+            call json%get(prt,'NPTC',nptc(it,iprt),found)
+            call json%get(prt,'NPTCM',nptcm(it,iprt),found)
+            call json%get(prt,'NSPZI',nspzi(it,iprt),found)
+            call json%get(prt,'NSPZE',nspze(it,iprt),found)
+            call json%get(prt,'NEMOD',nemod(it,iprt),found)
+            nullify(prt)
+            NSPZI(IT,IPRT)=MAX0(1,NSPZI(IT,IPRT))
+            NSPZE(IT,IPRT)=MIN0(NFLA,NSPZE(IT,IPRT))
+            IF (NSPZE(IT,IPRT).LT.NSPZI(IT,IPRT)) THEN
+              WRITE (iunout,*) 'WARNING FROM INFCOP: '
+              WRITE (iunout,*) 'ITARG,IPRT : ',IT,IPRT
+              WRITE (iunout,*) 'NSPZI,NSPZE MODIFIED TO 1,NFLA, RESP.'
+              NSPZI(IT,IPRT)=1
+              NSPZE(IT,IPRT)=NFLA
+            ENDIF
+            IF (TRCINT)
+     .        WRITE (iunout,'(1X,7I6,2I7,3I6)')
+     .                               IT,NDT(IT,IPRT),NINCT(IT,IPRT),
+     .                               NIXY(IT,IPRT),NTIN(IT,IPRT),
+     .                               NTEN(IT,IPRT),NIFLG(IT,IPRT),
+     .                               NPTC(IT,IPRT),NPTCM(IT,IPRT),
+     .                               NSPZI(IT,IPRT),NSPZE(IT,IPRT),
+     .                               NEMOD(IT,IPRT)
+            IF (NIXY(IT,IPRT).EQ.1) THEN
+              IF (NTIN(IT,IPRT).LE.0.OR.NTIN(IT,IPRT).GE.NR1ST.OR.
+     .            NTEN(IT,IPRT).GT.NR1ST) THEN
+                WRITE (iunout,*) 'ERROR IN INPUT BLOCK 14, NTIN, NTEN '
+                CALL EIRENE_EXIT_OWN(1)
+              ENDIF
+            ELSEIF (NIXY(IT,IPRT).EQ.2) THEN
+              IF (NTIN(IT,IPRT).LE.0.OR.NTIN(IT,IPRT).GE.NP2ND.OR.
+     .            NTEN(IT,IPRT).GT.NP2ND) THEN
+                WRITE (iunout,*) 'ERROR IN INPUT BLOCK 14, NTIN, NTEN '
+                CALL EIRENE_EXIT_OWN(1)
+              ENDIF
+            ENDIF
+          END DO
+          nullify(prts)
+          nullify(ptrg)
+          IF (TRCINT) CALL EIRENE_LEER(1)
+        END DO
+        nullify(ptrgs)
+      END IF
+
+      call json%get(me,'CHGP',chgp,found)
+      call json%get(me,'CHGEE',chgee,found)
+      call json%get(me,'CHGEI',chgei,found)
+      call json%get(me,'CHGMOM',chgmom,found)
+      IF (TRCINT) CALL EIRENE_MASR4
+     .                         ('CHGP,CHGEE,CHGEI,CHGMOM         ',
+     .                           CHGP,CHGEE,CHGEI,CHGMOM)
+
+C  READ ADDITIONAL DATA TO BE TRANSFERRED FROM B2 INTO EIRENE
+C  HERE: B2 VOLUME TALLIES
+      call json%get(me,'NAINB',nainb,found)   
+C  ADDITIONAL INPUT TALLY ADIN:  ITAL=12
+      NAIN = MAX(NAIN,NAINB)
+      CALL EIRENE_ALLOC_CCOUPL(2)
+      WRITE (iunout,*) '        NAINI = ',NAINB
+      IF (NAINB.GT.NAIN) THEN
+        CALL EIRENE_MASPRM ('NAIN',4,NAIN,'NAINB',5,NAINB,IERROR)
+        WRITE (iunout,*) 'EXIT CALLED FROM SUBR. INFCOP '
+        CALL EIRENE_EXIT_OWN(1)
+      ENDIF
+      IF (NAINB > 0) THEN
+        IF (TRCINT)
+     .      WRITE (iunout,*) 'I,NAINS(IAIN),NAINT(IAIN)'
+        call json%get(me,'ADD_IN_TAL',padds,foundi)
+        IF (FOUNDI) THEN
+          DO IAIN=1,NAINB
+            call json%get_child(padds,iain,padd,found)
+            call json%get(padd,'NAINS',nains(iain),found)
+            call json%get(padd,'NAINT',naint(iain),found)
+            call json%get(padd,'TXTPLS',txt,found)
+            txtpls(iain,12) = txt
+            deallocate(txt)
+            call json%get(padd,'TXTPSP',txt,found)
+            txtpsp(iain,12) = txt
+            deallocate(txt)
+            call json%get(padd,'TXTPUN',txt,found)
+            txtpun(iain,12) = txt
+            deallocate(txt)
+            nullify(padd)
+            IF (TRCINT) THEN
+              WRITE (iunout,'(6I6)') IAIN,NAINS(IAIN),NAINT(IAIN)
+              WRITE (iunout,'(1X,A72)') TXTPLS(IAIN,12)
+              WRITE (iunout,'(1X,2A24)') TXTPSP(IAIN,12),TXTPUN(IAIN,12)
+            ENDIF
+          END DO
+          nullify(padds)
+        END IF
+      END IF
+      
+C  READ ADDITIONAL DATA TO BE TRANSFERRED FROM EIRENE INTO B2
+C  HERE: EIRENE SURFACE TALLIES
+      call json%get(me,'NAOTB',naotb,found)   
+      WRITE (iunout,*) '        NAOTI = ',NAOTB
+      IF (NAOTB.GT.NLIMPS) THEN
+        CALL EIRENE_MASPRM ('NLIMPS',6,NLIMPS,'NAOTB',5,NAOTB,IERROR)
+        WRITE (iunout,*) 'EXIT CALLED FROM SUBR. INFCOP '
+        CALL EIRENE_EXIT_OWN(1)
+      ENDIF
+      IF (NAOTB > 0) THEN
+        IF (TRCINT)
+     .      WRITE (iunout,*) 'I,NAOTS(IAOT),NAOTT(IAOT)'
+        call json%get(me,'ADD_OUT_TAL',padds,foundo)
+        IF (FOUNDO) THEN
+          DO IAOT=1,NAOTB
+            call json%get_child(padds,iaot,padd,found)
+            call json%get(padd,'NAOTS',naots(iaot),found)
+            call json%get(padd,'NAOTT',naott(iaot),found)
+            nullify(padd)
+            IF (TRCINT) THEN
+              WRITE (iunout,'(6I6)') I,NAOTS(IAOT),NAOTT(IAOT)
+            ENDIF
+          END DO
+          nullify(padds)
+        END IF
+      END IF
+C
+C  INPUT BLOCK 14 DONE
+C
+      OPEN(NEWUNIT=IUSROUT,FILE='user_data.input',STATUS='OLD',
+     .     IOSTAT=IO)
+      IUNIN_SAVE = IUNIN
+      IF (IO == 0) THEN
+        IUNIN = IUSROUT
+        CALL EIRENE_LEER(1)
+        WRITE (IUNOUT,*) 'USER SPECIFIC INPUT READ FROM ',
+     .       'user_data.input'
+      ELSE
+        CALL EIRENE_LEER(1)
+        WRITE (IUNOUT,*) 'NO FILE FOR USR SPECIFIC INPUT FOUND'
+      END IF
+        
+      RETURN
+      END SUBROUTINE EIRENE_READ14_JSON
+C
+      END SUBROUTINE EIRENE_INFCOP
 
 C> \brief Any property requiring hand-over in parallel part.
 C>
@@ -2974,3 +3288,5 @@ C> transfer to the external code
       integer, intent(in) :: istra
       RETURN
       END SUBROUTINE EIRENE_INFCOP_POST_STRATUM
+
+      

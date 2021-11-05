@@ -1,6 +1,6 @@
-!pb  181206  output is done by processor 0
-!pb  181206  setting up of census source is done by processor 0
-!pb  100107  call to reinitialisation routine
+!PB  181206  output is done by processor 0
+!PB  181206  setting up of census source is done by processor 0
+!PB  100107  call to reinitialisation routine
 cdr  140416  allow for NSTRAI .le. NSTRA  (e.g. if time stratum has been turned off)
 cdr          currently turning off time stratum may not be detected
 cdr          when setting dynamic allocatable storage parameters in "find_param.f"
@@ -295,7 +295,6 @@ C
         CALL EIRENE_ALLOC_CSPEI
         CALL EIRENE_ALLOC_CSDVI(2)
         CALL EIRENE_ALLOC_CLAST
-        CLOSE(IUNMEM)
 
         CALL EIRENE_STTXT1
 C
@@ -561,6 +560,7 @@ C  PRINT OUTPUT FOR IDL BASED EXTERNAL GRAPHICS AND POSTPROCESSING
         call eirene_outidltal
       END IF
 
+      CLOSE(IUNMEM)
       call EIRENE_REINITIALIZATION_OF_EIRENE
 
       IF (NLLAST) THEN

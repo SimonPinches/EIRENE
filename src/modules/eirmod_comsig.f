@@ -3,6 +3,8 @@ cdr           Separate printout for energy (spectrally) resolved
 cdr           from printout for spatially (along LOS) resolved data.
 cdr           This was, so far, all mixed with TRCSIG (for debugging printout)
 cdr  Jan. 2018  mod_addv added, as well as CNT data structure.
+cdr  Oct 18   : rationalization of line emission specification,
+cdr             now via reacdat(irc.....), block 4, exclusively.
 
       MODULE EIRMOD_COMSIG
 
@@ -59,25 +61,19 @@ cdr six components per line: H, H+, H-, H2, H2+, H3+.
       CHARACTER(80), PUBLIC, ALLOCATABLE, SAVE :: CH_LINE_NAME(:)
 
       TYPE TCONTRIB
-        INTEGER :: ISP(3), ITP(3), IRATIO, IRC, IRC_RAT(2),
-     .             IZ, IZ_RAT(2)
-        CHARACTER(8) :: FNAME, FRATIO(2)
-        CHARACTER(4) :: H123, RAT_H123(2)
-        CHARACTER(2) :: ELEMENT, RAT_ELEMENT(2)
-        CHARACTER(9) :: REACTION, RAT_REACTION(2)
-        CHARACTER(3) :: CR, RAT_CR(2)
+        INTEGER :: ISP, ITP, IRATIO, IRC_RAT(2), ISP_RAT(2), ITP_RAT(2) 
       END TYPE TCONTRIB
 
       TYPE TCOMPO
         CHARACTER(80) :: COMPO_NAME
-        INTEGER :: NUM_CONTRIB, IADV
+        INTEGER :: NUM_CONTRIB, IADV, IRC
         TYPE(TCONTRIB), ALLOCATABLE :: CONTRIB(:)
       END TYPE TCOMPO
 
       TYPE TEMIS_MODEL
         CHARACTER(80) :: LINE_NAME
-        INTEGER :: NUM_COMPO, IADV_TOTAL, IROW_ESC, ICOL_ESC
-        REAL(DP) :: EINSTEIN, TRANS_EN, ENERGY, POP_ESC
+        INTEGER :: NUM_COMPO, IADV_TOTAL
+        REAL(DP) :: EINSTEIN, TRANS_EN, ENERGY
         TYPE(TCOMPO), ALLOCATABLE :: COMPO(:)
       END TYPE TEMIS_MODEL
 
@@ -202,20 +198,9 @@ C
       CONA%ISP          = CONB%ISP
       CONA%ITP          = CONB%ITP
       CONA%IRATIO       = CONB%IRATIO
-      CONA%IRC          = CONB%IRC
       CONA%IRC_RAT      = CONB%IRC_RAT
-      CONA%IZ           = CONB%IZ
-      CONA%IZ_RAT       = CONB%IZ_RAT
-      CONA%FNAME        = CONB%FNAME
-      CONA%FRATIO       = CONB%FRATIO
-      CONA%H123         = CONB%H123
-      CONA%RAT_H123     = CONB%RAT_H123
-      CONA%REACTION     = CONB%REACTION
-      CONA%RAT_REACTION = CONB%RAT_REACTION
-      CONA%CR           = CONB%CR
-      CONA%RAT_CR       = CONB%RAT_CR
-      CONA%ELEMENT      = CONB%ELEMENT
-      CONA%RAT_ELEMENT  = CONB%RAT_ELEMENT
+      CONA%ISP_RAT = CONB%ISP_RAT
+      CONA%ITP_RAT = CONB%ITP_RAT
 
       RETURN
       END SUBROUTINE EIRENE_CONTRIB_TO_CONTRIB
@@ -274,10 +259,6 @@ cdr  additional output tallies added by code itself (rather than via input block
      .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (EMIS_LINES(I)%TRANS_EN,1,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST (EMIS_LINES(I)%ENERGY,1,MPI_REAL8,
-     .                  0,MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST (EMIS_LINES(I)%POP_ESC,1,MPI_REAL8,
-     .                  0,MPI_COMM_WORLD,ier)
 
         NUM_COMPO = EMIS_LINES(I)%NUM_COMPO
 
@@ -291,6 +272,8 @@ cdr  additional output tallies added by code itself (rather than via input block
           CALL MPI_BCAST (EMIS_LINES(I)%COMPO(J)%NUM_CONTRIB,1,
      .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
           CALL MPI_BCAST (EMIS_LINES(I)%COMPO(J)%IADV,1,
+     .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+          CALL MPI_BCAST (EMIS_LINES(I)%COMPO(J)%IRC,1,
      .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
           NUM_CONTRIB = EMIS_LINES(I)%COMPO(J)%NUM_CONTRIB
@@ -307,32 +290,17 @@ cdr  additional output tallies added by code itself (rather than via input block
             CALL MPI_BCAST (CNT%ITP,3,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
             CALL MPI_BCAST (CNT%IRATIO,1,MPI_INTEGER,
      .                      0,MPI_COMM_WORLD,ier)
-            CALL MPI_BCAST (CNT%IRC,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-            CALL MPI_BCAST (CNT%IRC_RAT,2,MPI_INTEGER,
-     .                      0,MPI_COMM_WORLD,ier)
-            CALL MPI_BCAST (CNT%IZ,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-            CALL MPI_BCAST (CNT%IZ_RAT,2,MPI_INTEGER,
-     .                      0,MPI_COMM_WORLD,ier)
+cdr donor state densities may be converted to other species/isotopes densities,
+cdr by multiplication with a density "ratio": e.g. nH2+ = nH2 * ratio, 
+cdr with ratio = CR equilibrium ratio:(nH2+/nH2) 
 
-            CALL MPI_BCAST (CNT%FNAME,8,MPI_CHARACTER,
+c  density ratio factor, for this donor state 
+c  plus,(for ratio2) two further density factors
+            CALL MPI_BCAST (CNT%ISP_RAT,2,MPI_INTEGER,
      .                      0,MPI_COMM_WORLD,ier)
-            CALL MPI_BCAST (CNT%FRATIO,2*8,MPI_CHARACTER,
+            CALL MPI_BCAST (CNT%ITP_RAT,2,MPI_INTEGER,
      .                      0,MPI_COMM_WORLD,ier)
-            CALL MPI_BCAST (CNT%H123,4,MPI_CHARACTER,
-     .                      0,MPI_COMM_WORLD,ier)
-            CALL MPI_BCAST (CNT%RAT_H123,2*4,MPI_CHARACTER,
-     .                      0,MPI_COMM_WORLD,ier)
-            CALL MPI_BCAST (CNT%ELEMENT,2,MPI_CHARACTER,
-     .                      0,MPI_COMM_WORLD,ier)
-            CALL MPI_BCAST (CNT%RAT_ELEMENT,2*2,MPI_CHARACTER,
-     .                      0,MPI_COMM_WORLD,ier)
-            CALL MPI_BCAST (CNT%REACTION,9,MPI_CHARACTER,
-     .                      0,MPI_COMM_WORLD,ier)
-            CALL MPI_BCAST (CNT%RAT_REACTION,2*9,MPI_CHARACTER,
-     .                      0,MPI_COMM_WORLD,ier)
-            CALL MPI_BCAST (CNT%CR,3,MPI_CHARACTER,
-     .                      0,MPI_COMM_WORLD,ier)
-            CALL MPI_BCAST (CNT%RAT_CR,2*3,MPI_CHARACTER,
+            CALL MPI_BCAST (CNT%IRC_RAT,2,MPI_INTEGER,
      .                      0,MPI_COMM_WORLD,ier)
 
             IF (ME /= 0) EMIS_LINES(I)%COMPO(J)%CONTRIB(K) = CNT
