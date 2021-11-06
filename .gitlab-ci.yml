@@ -215,24 +215,16 @@ run_standalone_1D_cylindric:
     variables:
         PATH_CASE: "1D_cylindric"
     dependencies:
-<<<<<<< HEAD
         - build_library    
         - build_standalone_2D_slab
-=======
-        - build_standalone_1D_cylindric
->>>>>>> develop
 
 test_standalone_1D_cylindric:
     <<: *test
     variables:
         PATH_CASE: "1D_cylindric"
     dependencies:
-<<<<<<< HEAD
         - build_standalone_2D_slab
         - run_standalone_2D-D_slab
-=======
-        - run_standalone_1D_cylindric
->>>>>>> develop
 
 build_standalone_1D_elliptic:
     # in fact it is a build_standalone but stored in ...1D_cylindric
@@ -245,24 +237,16 @@ run_standalone_1D_elliptic:
     variables:
         PATH_CASE: "1D_elliptic"
     dependencies:
-<<<<<<< HEAD
         - build_library    
         - build_standalone_1D_cylindric
-=======
-        - build_standalone_1D_elliptic
->>>>>>> develop
 
 test_standalone_1D_elliptic:
     <<: *test
     variables:
         PATH_CASE: "1D_elliptic"
     dependencies:
-<<<<<<< HEAD
         - build_standalone_1D_cylindric
         - run_standalone_1D_cylindric
-=======
-        - run_standalone_1D_elliptic
->>>>>>> develop
 
 build_standalone_ITER_1573:
     <<: *build_executable
