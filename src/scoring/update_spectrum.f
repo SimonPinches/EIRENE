@@ -121,10 +121,13 @@ c  find the bin I  (energy units)
             END IF
 
 cdr  score SPC(I), ESP_MIN and ESP_MAX
+!$OMP ATOMIC
             ESTIML(ISPC)%SPC(I) = ESTIML(ISPC)%SPC(I) + ADD
+!$OMP ATOMIC
             ESTIML(ISPC)%ESP_MIN= MIN(ESTIML(ISPC)%ESP_MIN,EB)
+!$OMP ATOMIC
             ESTIML(ISPC)%ESP_MAX= MAX(ESTIML(ISPC)%ESP_MAX,EB)
-            ESTIML(ISPC)%IMETSP = 1
+            ESTIML(ISPC)%IMETSP = 1    
           END IF
         END DO
 
@@ -189,8 +192,11 @@ c  find the bin I  (energy units)
               END IF
 
 cdr  score SPC(I), ESP_MIN and ESP_MAX
+!$OMP ATOMIC
               ESTIML(ISPC)%SPC(I) = ESTIML(ISPC)%SPC(I) + ADD
+!$OMP ATOMIC
               ESTIML(ISPC)%ESP_MIN= MIN(ESTIML(ISPC)%ESP_MIN,EB)
+!$OMP ATOMIC
               ESTIML(ISPC)%ESP_MAX= MAX(ESTIML(ISPC)%ESP_MAX,EB)
               ESTIML(ISPC)%IMETSP = 1
             END IF

@@ -62,6 +62,8 @@ module eirmod_mpi
   integer, parameter :: MPI_VERSION = 2
   integer, parameter :: MPI_SUBVERSION = 2
 
+  integer, parameter :: MPI_THREAD_FUNNELED = 0
+
 
   interface mpi_allgather
     module procedure mpi_allgather_i0, mpi_allgather_i1
@@ -941,6 +943,13 @@ module eirmod_mpi
 
   subroutine mpi_init(ierr)
     implicit none
+    integer, intent(out) :: ierr
+    ierr = mpi_success
+  end subroutine
+
+  subroutine mpi_init_thread(required, provided, ierr)
+    implicit none
+    integer, intent(in) :: required, provided
     integer, intent(out) :: ierr
     ierr = mpi_success
   end subroutine

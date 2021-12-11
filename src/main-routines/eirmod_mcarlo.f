@@ -552,7 +552,7 @@ C  find random number generator seed, from input flag NINITL(ISTRA)
              WRITE(IUNOUT,*)'NOT ONLY ON STATISTICAL AVERAGE'
              WRITE(IUNOUT,*)'.........................................'
              
-         CALL EIRENE_LEER(1)
+             CALL EIRENE_LEER(1)
 !$OMP END SINGLE 
 cym same seed for everybody (all threads of all processes -> debug)
              NINIST=NINITL(ISTRA)
@@ -765,7 +765,8 @@ cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 !$OMP ATOMIC WRITE
               LGABORT = .TRUE.   ! Abort this stratum,
 #else 
-              GOTO 101
+!pb17.11.2021              GOTO 101
+              LGABORT = .TRUE.   ! Abort this stratum,
 #endif
             ELSEIF (LGLAST.AND..NOT.LGSTOP) THEN
               CALL EIRENE_LEER(1)
@@ -787,7 +788,8 @@ cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 !$OMP ATOMIC WRITE
               LGABORT = .TRUE.   ! Abort this stratum,
 #else
-              GOTO 101
+!pb17.11.2021              GOTO 101
+              LGABORT = .TRUE.   ! Abort this stratum,
 #endif
             ENDIF
 
@@ -1340,7 +1342,10 @@ C
 #ifdef USE_EXT_OPENMP
 !$OMP MASTER
 #else
+!pb 17.11.2021
+#ifdef USE_OPENMP      
 !$OMP END PARALLEL
+#endif
 #endif
 C
 C*** STRATA LOOP FINISHED *******************************************
