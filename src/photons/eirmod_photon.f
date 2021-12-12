@@ -4056,6 +4056,9 @@ c    .                           res
 
       END IF
       
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
+
+      RETURN
       END SUBROUTINE EIRENE_BROADCAST_PHOTON
       
       END MODULE EIRMOD_PHOTON

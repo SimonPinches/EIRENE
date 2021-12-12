@@ -151,6 +151,7 @@ C> not (yet) implemented and may be part of the plasma code interface.)
         CALL MPI_BCAST (NPRNLS,NSTRA,MPI_INTEGER,0,MPI_COMM_WORLD,IER)
       END IF
 
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
       RETURN
 
       END SUBROUTINE EIRENE_BROADCAST_COMNNL

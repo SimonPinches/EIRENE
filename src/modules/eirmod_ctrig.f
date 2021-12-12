@@ -198,7 +198,12 @@ CVK TO HAVE CORRECT SIGNS FOR PARTICLES CROSSING TRANSPARENT NDS
       CALL MPI_BCAST (INMTI3,NTRIS*N3RD,MPI_INTEGER,0,
      .                MPI_COMM_WORLD,ier)
 
-!+++++++++++ In this block dynamical structures are proceeded with care
+      CALL MPI_BCAST (IXTRI, NTRIS, MPI_INTEGER, 0,
+     &                MPI_COMM_WORLD, ier)
+      CALL MPI_BCAST (IYTRI, NTRIS, MPI_INTEGER, 0,
+     &                MPI_COMM_WORLD, ier)
+
+!+++++++++++ In this block dynamical structures are processed with care
 !+++++++++++ IYS 27.02.2015
 
       DO I = 1, NLIMPS
@@ -244,7 +249,9 @@ CVK TO HAVE CORRECT SIGNS FOR PARTICLES CROSSING TRANSPARENT NDS
         END IF
       END DO
 !+++++++++++ IYS 27.02.2015
-!+++++++++++ In this block dynamical structures are proceeded with care
+!+++++++++++ In this block dynamical structures are processed with care
+
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
       
       END SUBROUTINE EIRENE_BROADCAST_CTRIG
 

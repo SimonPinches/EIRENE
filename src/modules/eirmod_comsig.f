@@ -232,6 +232,8 @@ cdr  additional output tallies added by code itself (rather than via input block
         CALL EIRENE_BROAD_EMIS_LINES(ME)
       END IF
       
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
+
       END SUBROUTINE EIRENE_BROADCAST_COMSIG
 
 
