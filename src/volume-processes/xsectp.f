@@ -440,7 +440,6 @@ c                 ELSE  ! ??
                   END IF
 C
                 ENDIF   ! DELPOT
-              ENDIF  ! NSERC5
             ELSE
               GOTO 997
                ENDIF  !  NSERC5 

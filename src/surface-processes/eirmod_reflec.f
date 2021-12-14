@@ -56,7 +56,7 @@ cdr  aug. 20: code safeties from ITER branch
       IMPLICIT NONE
       PRIVATE
 
-      PUBLIC :: EIRENE_REFLEC, EIRENE_REFLC0, EIRENE_REFLC1, 
+      PUBLIC :: EIRENE_REFLC0, EIRENE_REFLC1, 
      .          EIRENE_REFLEC_REINIT,
 cym will be removed once the parallel zone encompasses the code
      .          IREDUC,FREDUC,EREDUC      

@@ -1286,11 +1286,11 @@ module eirmod_mpi
      '         Results are only correct if send and recv buffers are the same'
   end subroutine mpi_recv_dum_i2
 
-  subroutine mpi_waitall(n, requests, status, ierr)
+  subroutine mpi_waitall_i0(n, requests, status, ierr)
   ! status must be MPI_STATUSES_IGNORE in this case
     implicit none
     integer, intent(in) :: n
-    integer, intent(inout) :: requests(n)
+    integer, intent(inout) :: requests
     integer, intent(in) :: status(MPI_STATUS_SIZE,1)
     integer, intent(out) :: ierr
     requests = MPI_REQUEST_NULL
@@ -1299,13 +1299,23 @@ module eirmod_mpi
     else
       ierr = MPI_FAILURE
     endif
-  end subroutine mpi_waitall
+  end subroutine mpi_waitall_i0
 
-  subroutine mpi_testall(n, requests, flag, status, ierr)
-  ! status must be MPI_STATUSES_IGNORE in this case
+  subroutine mpi_waitall_i1(n, requests, statuses, ierr)
     implicit none
     integer, intent(in) :: n
     integer, intent(inout) :: requests(n)
+    integer, dimension(MPI_STATUS_SIZE, n) :: statuses
+    integer, intent(out) :: ierr
+    requests = MPI_REQUEST_NULL
+    ierr = MPI_SUCCESS
+  end subroutine mpi_waitall_i1
+
+  subroutine mpi_testall_i0(n, requests, flag, status, ierr)
+  ! status must be MPI_STATUSES_IGNORE in this case
+    implicit none
+    integer, intent(in) :: n
+    integer, intent(inout) :: requests
     logical, intent(out) :: flag
     integer, intent(in) :: status(MPI_STATUS_SIZE,1)
     integer, intent(out) :: ierr
@@ -1316,8 +1326,19 @@ module eirmod_mpi
     else
       ierr = MPI_FAILURE
     endif
-  end subroutine mpi_testall
+  end subroutine mpi_testall_i0
 
+  subroutine mpi_testall_i1(n, requests, flag, statuses, ierr)
+    implicit none
+    integer, intent(in) :: n
+    integer, intent(inout) :: requests(n)
+    logical, intent(out) ::  flag
+    integer, dimension(MPI_STATUS_SIZE, n) :: statuses
+    integer, intent(out) :: ierr
+    flag = .true.
+    requests = MPI_REQUEST_NULL
+    ierr = MPI_SUCCESS
+  end subroutine mpi_testall_i1
 #endif
 
   subroutine mpi_set_own_io_unit(iun)
