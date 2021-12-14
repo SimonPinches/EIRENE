@@ -2301,6 +2301,7 @@ c
       CALL MPI_BCAST (FACREL,NREL*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (FACREI,NREI*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (FACRCX,NRCX*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
 c  EI post-collision species distribution
       CALL MPI_BCAST (PELEI,NREI,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -2311,6 +2312,7 @@ c  EI post-collision species distribution
 
       CALL MPI_BCAST (P2ND,NREI*NSPZP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (P2NEI,NREI,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
 c  PI post-collision species distribution
       CALL MPI_BCAST (PELPI,NRPI,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -2321,6 +2323,7 @@ c  PI post-collision species distribution
 
       CALL MPI_BCAST (P2NP,NRPI*NSPZP,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (P2NPI,NRPI,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
 c  EI post-collision energetics
       CALL MPI_BCAST (EELEI1,NREI*NSTORDR,MPI_REAL8,
@@ -2343,6 +2346,7 @@ c  CX post-collision energetics
 c  EL post-collision energetics
       CALL MPI_BCAST (EPLEL3,NREL*NSTORDR*NSTORDT,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       CALL MPI_BCAST (EATEI,NREI*NATMP*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EMLEI,NREI*NMOLP*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -2424,6 +2428,7 @@ c  EL post-collision energetics
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NSEPRC,5*NREC,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       CALL MPI_BCAST (NREACX,NRCX,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NELRCX,NRCX,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -2447,6 +2452,7 @@ cdr  FLAGS FOR EI TYPE REACTIONS:
 cdr  FLAGS FOR OT TYPE REACTIONS:
       CALL MPI_BCAST (NELRPH,NRPH,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NREAPH,NRPH,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       CALL MPI_BCAST (IPATEI,NREI*NATMP,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
@@ -2491,9 +2497,9 @@ c
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LGIPI,NIONP*(NRPI+1)*2,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
 cdr   old data structure CREAC has been replaced by more general data structure REACDAT
-
 
       DO IR=-11, NREAC
 c interaction potential, differential cross-sections, etc.
@@ -2530,7 +2536,10 @@ c  max of sigma * v  cm**3/s
 c  collision energy, at which rtmax is taken, eV
         CALL MPI_BCAST (REACDAT(IR)%ERTMAX,1,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
+      END DO
 
+      DO IR = -11, NREAC
 c  data for interaction potential
         IF (REACDAT(IR)%LPOT) THEN
           IF (ME .NE. 0) THEN
@@ -2549,8 +2558,8 @@ c  data for cross-sections, cm**2
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%CRS,ME)
         END IF
-        IF (REACDAT(IR)%LRTC) THEN
 c  data for rate coefficients, cm**3/s
+        IF (REACDAT(IR)%LRTC) THEN
           IF (ME .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%RTC)) THEN
               CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%RTC)
@@ -2558,7 +2567,7 @@ c  data for rate coefficients, cm**3/s
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTC,ME)
         END IF
-c  data for momentum-weighted rate coefficients  g cm/s cm**3/s
+c  data for momentum-weighted rate coefficients, g cm/s cm**3/s
         IF (REACDAT(IR)%LRTCMW) THEN
           IF (ME .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%RTCMW)) THEN
@@ -2567,7 +2576,7 @@ c  data for momentum-weighted rate coefficients  g cm/s cm**3/s
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%RTCMW,ME)
         END IF
-c  data for energy-weighted rate coefficients,  eV cm**3-s
+c  data for energy-weighted rate coefficients, eV cm**3/s
         IF (REACDAT(IR)%LRTCEW) THEN
           IF (ME .NE. 0) THEN
             IF (.NOT.ASSOCIATED(REACDAT(IR)%RTCEW)) THEN
@@ -2595,6 +2604,7 @@ c  data for photon line transport
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%PHR,ME)
         END IF
       END DO
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       CALL MPI_BCAST (FACREA,(NREAC+12)*2,MPI_REAL8,0,
      .                MPI_COMM_WORLD,ier)
@@ -2629,6 +2639,7 @@ c  data for photon line transport
       CALL MPI_BCAST (ESCD1P,NPLS*NREAC,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (ESCD1PH,NPHOT*NREAC,MPI_REAL8,0,
      .                MPI_COMM_WORLD,ier)
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       CALL MPI_BCAST (ISWR,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (MODCLF,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -2732,16 +2743,19 @@ c  data for photon line transport
       CALL MPI_BCAST (NREACI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
       CALL MPI_BCAST (MAXSPC,5,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
 cdr something for the internal CRM options, of blocks 4,12 here: H_Colrad.
       CALL MPI_BCAST (NHCOL_STORE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (M_HCOL,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
+
       END SUBROUTINE EIRENE_BROADCAST_COMXS
 
 
 !++++++ This is a new version of SUBROUTINE EIRENE_BROAD_FIT_FORM,
-!++++++ where dynamical data structures are proceeded with care
+!++++++ where dynamical data structures are processed with care
 !++++++ IYS 27.02.2015
 
       SUBROUTINE EIRENE_BROAD_FIT_FORM (RP, ME)
@@ -2755,6 +2769,7 @@ cdr something for the internal CRM options, of blocks 4,12 here: H_Colrad.
 C.....................................................................
 cdr broadcast A&M data, general for a process, independent of data structure RP%IFIT
       CALL MPI_BCAST (RP%IFIT,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       CALL MPI_BCAST (RP%JFEX1MN,1,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
@@ -2975,10 +2990,12 @@ C.....................................................................
 cdr     INVALID RP%IFIT
 
         WRITE (iunout,*) 'ERROR IN BROADCAST:' 
-        WRITE (iunout,*) 'IFIT DATA FORMAT NO AVAILABLE'
+        WRITE (iunout,*) 'IFIT DATA FORMAT NOT AVAILABLE'
         WRITE (iunout,*) 'IFIT ',RP%IFIT
         CALL EIRENE_EXIT_OWN(1) 
       END IF
+
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       RETURN
       END SUBROUTINE EIRENE_BROAD_FIT_FORM

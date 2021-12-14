@@ -136,7 +136,7 @@ c... from an incident photon
           goto 999
         ENDIF
 
-c  an atom is reemitted...
+c  an atom IATM is reemitted...
       ELSEIF (ITYP.EQ.1) THEN
         LOGATM(IATM,ISTRA)=.TRUE.
         IF (ITOLD.EQ.1) THEN

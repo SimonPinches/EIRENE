@@ -19,4 +19,4 @@ c
       ILAST=0
       IRET = 0
       return
-      end
+      end subroutine eirene_talusr

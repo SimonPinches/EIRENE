@@ -18,7 +18,7 @@ C
 C   SPECIAL TREATMENT OF FIRST CALL TO EIRENE IN THIS (COUPLED) RUN:
 C
 C    IFIRST=0  (A RESTART)
-
+C
 C      CALL EIRENE(..)     (main-routines)
 C
 C   LATER CALLS:
@@ -34,7 +34,8 @@ C   INPUT:
 C     LSTOP:
 C     LTIME: TIME-DEPENDENT MODE. PREPARE TIME-DEPENDENT OPTIONS,
 C            AND THEN CALL EIRENE
-C     DELTAT: TIME STEP  (IRRELEVANT IN CASE LTIME=.FALSE.)
+C     DELTAT: TIME STEP [S] (IRRELEVANT IN CASE LTIME=.FALSE.)
+C     FLUXES:
 C
 C   ONLY FOR EIRENE ENERGY BALANCE DIAGNOSTICS:
 C     B2BRM:  TOTAL BREMSSTAHLUNG LOSS IN PREVIOUS B2 STEP
@@ -260,11 +261,11 @@ C
 C.....................................................................................
 
 cdr
-cdr  now start to store rates from present cycle, for future short cycle corrections
+cdr  Now start to store rates from present cycle, for future short cycle corrections
 cdr
 cdr  to be done
-cdr  all these "short cycle data" should only be computed
-cdr  if "short cycle" option is turned on at all
+cdr  All these "short cycle data" should only be computed
+cdr  if "short cycle" option is turned on at all.
 
 C
 C  CURRENT RUN: STORE ION ENERGY DENSITY: FOR ALL IPLS, BUT TIIN(IPLS) MAY BE THE SAME FOR
@@ -533,6 +534,8 @@ C
         CALL EIRENE_PLASMA_DERIV(0)
 C
         CALL EIRENE_SETAMD(2)
+
+cdr  aug 20:
 C
 C  IN PLASMA_DERIV THE BACKGROUND PLASMA STATE HAS BEEN
 C  WRITTEN TO FORT.13
@@ -541,6 +544,7 @@ C  ==> PLASMA AND REACTION DATA ARE READ IN SUBR. INPUT
 C  NOW SAVE REACTION DATA AS WELL IN ORDER TO HAVE A
 C  CONSISTENT PLASMA STATE ON FORT.13
 C
+cdr  oct 20: writing fort.13 from plasma_deriv removed.
         IF ( ANY(XMCP_OLD(1:NSTRAI) <= 2._DP)) THEN
            IFIRST=0
            LPLASM=.TRUE.
@@ -615,7 +619,7 @@ C
           END DO
         END DO
 
-cdr  Therr is no seinwa, because only KER part is in short cycle correction for EI processes
+cdr  There is no seinwa, because only KER part is in short cycle correction for EI processes
 cdr             and for atoms this is identically 0.0
 C
 C  NEW: TEST IONS, EI PROCESSES

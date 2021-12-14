@@ -22,17 +22,17 @@ C  CURRENTLY:  3 TALLIES ARE SCORED PER BGK COLLISION SPECIES,IBGK_SP, IBGK_SP=1
 c              On input: npbgk= npbgka(iatm), or npbgkm(imol), or npbgki(iion)
 c              ibgk_sp=npbgk, and update three tallies for bgk species no. ibgk_sp.
 c
-c  do not confuse: ibgk is the bgk reaction number, the bgk reactions form a
-c                  subset of the elastic reactions, IREL=1,NREL.
+c  do not confuse: ibgk is the bgk reaction number, the bgk reactions
+c                  form a subset of the elastic reactions, IREL=1,NREL.
 c
-c                  ibgk_sp is the counter for the number of those test-particle species
+c                  ibgk_sp is the counter for the number of those test particle species
 c                  which have at least one BGK collision.
-c                  For each test-particle species ibgk_sp there are currently
+c                  For each test particle species ibgk_sp there are currently
 c                  three so-called additional "bgk tallies" scored
 c                  (by default: the transport flux vector components).
 
 c  Note:  for velocity-dependent BGK collision rates probably 5 tallies per bgk collision (ibgk)
-c         need to be scored, rather than the three per bgk species (ibgk_sp),
+c        need to be scored, rather than the three tallies per bgk species (ibgk_sp),
 c         to enforce the 5 collision invariants by iteration.
 c  Note:  for ES-BGK models (correct Prandtl number models) more than 3 bgk tallies
 c         are needed per BGK species ibgk_sp (non-diagonal pressure tensor elements)
@@ -75,6 +75,7 @@ C  FIND TEST PARTICLE SPECIES FLAG (TYPE ITP, TEXT 'TXT') FOR BGK SPECIES NO. IB
         IFIRST=1
 C  NUMBER OF (ADDITIONAL) BGK TALLIES: NRBGI
 C  NUMBER OF BGK SPECIES: NSBGK
+
         NSBGK=NRBGI/3
         DO IBGK_SP=1,NSBGK
           ITP=0
@@ -112,15 +113,21 @@ C  PHOTONIC BGK COLLISIONS:  TO BE DONE ??
     1     CONTINUE
 C
 C  BGK SPECIES NO. IBGK_SP
+cdr  tbd. find corresponding bgk reaction irbg, which
+cdr       has a vel. dep. reaction rate.
+cdr  not ready:  this next code is partially
+cdr              from obsolete old (vel. indep.) procedure still.
           IUPD1=(IBGK_SP-1)*3+1
           IUPD2=(IBGK_SP-1)*3+2
           IUPD3=(IBGK_SP-1)*3+3
           TXTTAL(IUPD1,NTALB)='BGK TALLY: FLUX DENSITY IN X DIRECTION '
           TXTTAL(IUPD2,NTALB)='BGK TALLY: FLUX DENSITY IN Y DIRECTION '
           TXTTAL(IUPD3,NTALB)='BGK TALLY: FLUX DENSITY IN Z DIRECTION '
+
           TXTUNT(IUPD1,NTALB)='#/CM**3*CM/S            '
           TXTUNT(IUPD2,NTALB)='#/CM**3*CM/S            '
           TXTUNT(IUPD3,NTALB)='#/CM**3*CM/S            '
+
           TXTSPC(IUPD1,NTALB)=TXT
           TXTSPC(IUPD2,NTALB)=TXT
           TXTSPC(IUPD3,NTALB)=TXT
@@ -131,15 +138,19 @@ C  BGK SPECIES NO. IBGK_SP
           IBGRC(IUPD2)=ITP
           IBGRC(IUPD3)=ITP
         ENDDO
-cdr: this species index increment should be set in input.f,
-cdr  like all the others
-cdr  sequence:  test species, bulk species, add tallies, alg. tallies, collest tallies,
+
+cdr  Species index increment for bgk tallies, used for LMETSP arrays.
+cdr: This species index increment should be set in input.f,
+cdr  like all the others.
+cdr  Sequence: test species, bulk species, add tallies, alg. tallies, collest tallies,
 cdr             cop tallies, bgk tallies.
         NMTSP=NPHOTI+NATMI+NMOLI+NIONI+NPLSI+NADVI+NALVI+NCLVI+NCPVI
 C
 C  END OF IFIRST BLOCK
       ENDIF
 C
+c  BGK tallies scoring starts here
+
 C  UPDATE BGK TALLIES FOR THE NPBGK "BGK SPECIES"
 C  PRESENTLY: UPDATE TRANSPORT FLUX VECTOR ON BGKV TALLY,
 C  THREE TALLIES PER BGK SPECIES CONTRIBUTING IN BGK PROCESSES.

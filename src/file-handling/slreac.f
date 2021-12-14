@@ -1,5 +1,5 @@
 !  03.08.06: data structure for reaction data redefined
-!  25.04.07: reading of rate coefficients from HYDKIN database added
+
 c  changed in 2011:  new atomic/molecular data structure introduced,
 c                    REACDAT(IR)% ..., replaces array CREAC(...)
 C
@@ -26,9 +26,6 @@ c     Sept.16: two new internal subroutines,
 c              a) READ_RANGE:  to read validity range information,
 c              b) READ_COEFFS: three parameters for each validity boundary, for extrapolation options
 c    June  17: read_colrad (for old H-COL option (now CRM)) moved to separate routine.
-cdr  OCT   18: rationalization of option FILNAM=CONST: new optional parameters,
-cdr            IFTFL, NCOEF, COEF, rather than reading from unit IUNIN
-C
 cdr  Jan   19:  filnam=CRM --> CR... to prepare merge with branch ...emis....,
 cdr             H, He internal CR codes, formulation I, II (MS resolved or not)
 cdr  Feb   19:  remove obsolete (and unfinished) option HYDRTC 
@@ -79,7 +76,7 @@ C            in case FILNAM = TAB2D, ADAS: the file name DSN = REAC_ELNAME.dat i
 C                                          (stream 29+ifoff)
 C                                  and then subroutine read_tab2d.f is called.
 
-c    CRC   : type of process, e.g. EI, CX, EL, PI, RC, PH, etc.
+c    CRC   : type of process, e.g. EI, CX, EL, PI, RC, OT, PH, etc.
 c
 c  parameters for extrapolation beyond specified range [RiMN,RiMX, i=1,2] of data (asymptotics),
 c  these asymptotics parameters may already have been read from input file, block 4., subroutine input.f
@@ -116,8 +113,8 @@ c    CREAC :          (old version) eirene storage array for a&m data CREAC(9,-1
 c    REACDAT(IR)%.... (new version) eirene atomic data structure.
 
 c    MODCLF: see below: further information on input a&m data structure
-c    DELPOT: ionisation potential (for H.10 data),
-c            currently handled in input.f. not nice! also missing still for: H.8, H.9
+c    DELPOT: ionisation potential difference (for H.10 data),
+c            currently handled in input.f. Not nice! also missing still for: H.8, H.9
 c
 C    IFTFLG=IFTFLG(IR,IH): flag for type of fitting expression ("fit-flag=...")
 C    IH  internally derived from ISW, for different types of data:
@@ -676,6 +673,7 @@ C
 c  input line found which either contains fit-flag, or the reaction identifier a0,b0,...k0
         IF (INDFF > 0) THEN  ! OTHERWISE: use DEFAULT FOR FIT-FLAG: iftflg = 0
 c  read parameter for type of fitting expression from data file
+c  OTHERWISE: use DEFAULT FOR FIT-FLAG: iftflg = 0
           READ (ZEILE((INDFF+8):80),*) IFTFLG(IR,IFLG)
           GOTO 3
         ENDIF
@@ -700,7 +698,7 @@ C
 C  SINGLE PARAMETER POLYNOMIAL FITS: DONE
 
 C   AT THIS POINT WE HAVE STORED FOR REACTION ir, DATA TYPE iflg: 0,...,5
-C   IFTFLG(IR,iflg) (DEFAUT = 0)
+C   IFTFLG(IR,iflg) (DEFAULT = 0)
 C   UP TO 9 FIT COEFFICIENTS ON INTERMEDIATE ARRAY CREACD(1...9,1)
 C   AND POSSIBLY (SOME OF) THE EXTRAPOLATION PARAMETERS RCMIN,RCMAX, FP(1:6)
 C
@@ -711,6 +709,10 @@ C
 C  TWO PARAM. FIT, ISW=3,4,6,7,9,10,12
       ELSEIF (ISW.EQ.3.OR.ISW.EQ.4.OR.ISW.EQ.6.OR.ISW.EQ.7.OR.
      .        ISW.EQ.9.OR.ISW.EQ.10.OR.ISW.EQ.12) THEN
+cdr  this coding is overly complicated. We need not search for
+cdr  for header parts (FITFLAG, ARRHENIUS FACTORS) for each block of
+cdr  9 lines. tbd: sync with single parameter fit reading above.
+
 C READ 3 BLOCKS "J" OF DATA. each block contains 9 LINES, 3 numbers per line, i.e. 3 sub blocks
         DO 11 J=0,2
    16     READ (29+ifoff,'(A80)',END=990) ZEILE
@@ -722,6 +724,7 @@ c  read parameter for type of fitting expression from data file
             READ (ZEILE((INDFF+8):80),*) IFTFLG(IR,IFLG)
             GOTO 16
           ENDIF
+
           READ (29+ifoff,'(1X)')
           IF (MOD(IFTFLG(IR,IFLG),100) == 10) THEN
 C  IFTFLG = 10, 110,  210,....ETC:  READ ONLY ONE CONSTANT PARAMETER
@@ -1093,4 +1096,4 @@ c  key2:  'EXT-FLG'= ,read IFX (unformatted, integer)
 
       END SUBROUTINE EIRENE_READ_RANGE
 
-      END
+      END SUBROUTINE EIRENE_SLREAC

@@ -1,11 +1,12 @@
 !pb  22.11.06: flag for shift of first parameter to rate_coeff introduced
+cdr  4.5.2020:  notation: syncr. pls --> tii
 
 
       FUNCTION EIRENE_FEPLCX3 (IRCX,K)
 c  RETURN mean energy (EV) of impacting (heavy) bulk particle IPLS,
-c  cx reaction no. IRCX,
+c  CX reaction no. IRCX,
 c  cell no. K
-c  ipls:  via common
+c  IPLS: via common
 
 CDR  SEPT 15:  OPTION KK > 0  CORRECT ???
 CDR  KK IS A FLAG, SET IN XSTCX (FOR NON-DEFAULT) OR IN XSECTA (FOR DEFAULT) CX MODELS
@@ -20,7 +21,7 @@ CDR  KK IS A FLAG, SET IN XSTCX (FOR NON-DEFAULT) OR IN XSECTA (FOR DEFAULT) CX 
       IMPLICIT NONE
 
       INTEGER, INTENT(IN) :: IRCX, K
-      REAL(DP) :: PLS, ADD, EPCX, EIRENE_FEPLCX3,
+      REAL(DP) :: TII, ADD, EPCX, EIRENE_FEPLCX3,
      .            EIRENE_RATE_COEFF
       INTEGER :: KK, IPLSTI
 
@@ -46,8 +47,8 @@ C  MEAN ENERGY FROM DRIFTING MAXWELLIAN
 C  MEAN ENERGY FROM SINGLE PARAMETER FIT KK
 CDR   ???????
 
-        PLS=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)
-        EPCX = EIRENE_RATE_COEFF(KK,K,PLS,0._DP,.FALSE.,0)
+        TII=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)
+        EPCX = EIRENE_RATE_COEFF(KK,K,TII,0._DP,.FALSE.,0)
         ADD=EPLCX3(IRCX,1,1)
         EIRENE_FEPLCX3=EPCX*DIIN(IPLS,K)*ADD
       END IF

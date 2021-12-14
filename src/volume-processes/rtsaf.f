@@ -1,4 +1,4 @@
-C
+C  May 2019 POI added, rather than using RTSAF in argument list
 C
       FUNCTION EIRENE_RTSAF(X1,X2,XACC,ER,B,IFLAG,P)
 
@@ -29,7 +29,6 @@ C
       EIRENE_RTSAF=XH-DX
       POI = EIRENE_RTSAF
 C
-!pb      F=EIRENE_FI(EIRENE_RTSAF,ER,B,IFLAG,P,DF)
       F=EIRENE_FI(POI,ER,B,IFLAG,P,DF)
 
       IF(F.LT.0.D0) THEN
@@ -55,7 +54,6 @@ C
 C
         IF(ABS(DX).LT.XACC) RETURN
 C
-!pb        F=EIRENE_FI(EIRENE_RTSAF,ER,B,IFLAG,P,DF)
         F=EIRENE_FI(POI,ER,B,IFLAG,P,DF)
         IF(F.LT.0.D0) THEN
           XL=EIRENE_RTSAF

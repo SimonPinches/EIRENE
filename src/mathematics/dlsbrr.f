@@ -28,4 +28,5 @@
       DEALLOCATE (R)
       DEALLOCATE (S)
 
-      END
+      RETURN
+      END SUBROUTINE EIRENE_DLSBRR

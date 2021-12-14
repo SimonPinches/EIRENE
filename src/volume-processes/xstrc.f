@@ -2,6 +2,7 @@
 !pb  12.10.06: modcol revised
 cdr  Jan. 2014:  minor bug in printout corrected
 cdr  currently this routine is not called for RC processes, only for PH processes
+cdr  Notation often just the other way round?
 
       SUBROUTINE EIRENE_XSTRC(ipls,nrc,idsc,irrc)
 cdr

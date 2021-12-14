@@ -40,7 +40,7 @@ c  no card: "geometry comment" found in input block 14.
       END IF
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_GEOUSR
 
 
 C

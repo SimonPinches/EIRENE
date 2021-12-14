@@ -1,8 +1,6 @@
-C nov. 05:  add mcstep, fistep, festep, shstep, vpstep
-c                              ve and eltot
-c requires also:  2005, patch 1 of cstep.f
 c
 Cdr  sept 17: call learca  --> learca2  (search along 1 coordinate in 2D array)
+cdr  aug. 20: code safeties from ITER branch
 
       FUNCTION EIRENE_STEP(NSPZI,NSPZE,NS,ISTEP)
 C
@@ -332,7 +330,7 @@ C
       ENDIF
       RETURN
   990 CONTINUE
-      WRITE (iunout,*) 'ERROR IN FUNCTION EIRENE_STEP, ISTEP= ',ISTEP
+      WRITE (iunout,*) 'ERROR IN FUNCTION EIRENE_STEP0, ISTEP= ',ISTEP
       CALL EIRENE_EXIT_OWN(1)
       END FUNCTION EIRENE_STEP0
 C
@@ -381,6 +379,6 @@ C
       RETURN
 C
   990 CONTINUE
-      WRITE (iunout,*) 'ERROR IN FUNCTION EIRENE_STEP, ISTEP= ',ISTEP
+      WRITE (iunout,*) 'ERROR IN FUNCTION EIRENE_STEP1, ISTEP= ',ISTEP
       CALL EIRENE_EXIT_OWN(1)
       END FUNCTION EIRENE_STEP1

@@ -39,7 +39,6 @@ CDR 25.02.04: return, return1 for reflected flux tallies moved after call
 CDR 25.02.04:                 to upsusr, update_spectrum (from eirene_02)
 
 C
-!PB   SUBROUTINE EIRENE_ESCAPE(PR,SG,*,*,*)
       SUBROUTINE EIRENE_ESCAPE(PR,SG,IRET)
 C
 C  PROCESS ESCAPING PARTICLES
@@ -199,7 +198,6 @@ C   HERE: EITHER: ILIIN .GE.0,    NOT TRANSPARENT, SCORE OUTGOING FLUX (WPR >=0 
 c             OR: ILIIN.EQ.-3,    TRANSPARENT,     SCORE NET FLUX (WPR contains sign)
 C             OR: SG .GT.0        SCORE ONE-SIDED POSITIVE CURRENT EVEN FOR TRANSPARENT SURF.
 
-
       IF (ITYP.EQ.0) THEN
 C  INCIDENT PHOTONS
         FMASS=0._dp
@@ -316,14 +314,18 @@ C  CASE B2:  REFLECTION AT SHEATH, NO CHANGE IN ENERGY
               VELZ=VZ/V
 C             E0=E0
 C             VEL=SQRT(E0)*RSQDVI(IION)
-              NLTRJ = .FALSE.
-              TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
+
+cdr unfinished option: store trajectories
+cdr           NLTRJ = .FALSE.
+cdr           TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
+
               IF (NLTRC) THEN
                 WRITE (IUNOUT,*) 'REFLECT FROM SHEATH AT MSURF= ',MSURF
                 WRITE (IUNOUT,*) 'NEW SPEED UNIT VECTOR: VELX,VELY,VELZ'
                 WRITE (IUNOUT,*)  VELX,VELY,VELZ
                 EVCQ=VCQ/(RSQDVI(IION)*RSQDVI(IION))
-                WRITE (IUNOUT,*)  'ESHEAT,EVCQ,E0 ',ESHET,EVCQ,E0
+                WRITE (IUNOUT,*)  'VEL,ESHEAT,EVCQ,E0 ',
+     .                             VEL,ESHET ,EVCQ,E0
               ENDIF
               IRET = 1
               RETURN
@@ -752,8 +754,9 @@ C  NOT IN USE
 C
         ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
 
-!  PARTICLE TYPE AND SPECIES HAVE CHANGED
-!  PREPARE POINTER FOR UNIFIED SUBROUTINES
+!  PARTICLE TYPE AND SPECIES MAY HAVE CHANGED
+!  IF SO, THEN PREPARE POINTERS FOR UNIFIED SUBROUTINES
+cdr only if ispz ne. ispz_old:
         CALL EIRENE_SWITCH_PARTINFO
 C
         E0TERM=EWALL(MSURF)
@@ -812,7 +815,6 @@ C
 C  PHYSICAL SPUTTERING, RESTORE PHYSICALLY SPUTTERED PARTICLE PARAMETERS
 C  SCORE ALL RELEVANT TALLIES
 C
-
           SPLFLG=SPLFLG+1.
           ISPZ=ISSPTP
           ITYP=ISPEZI(ISPZ,-1)
@@ -937,6 +939,8 @@ C
           LGPART=.FALSE.
         ENDIF
 C
+cdr  surface model for "atomic" particles of type 1,3,4
+cdr  tbd.: rename to : reflc1_atomic
         CALL EIRENE_REFLC1 (WMINS,FMASS,FCHAR,NPRT(ISPZ),
      .               ISRF(ISPZ,MSURF),ISRT(ISPZ,MSURF))
 
@@ -947,7 +951,6 @@ C
         IF (LGPART) THEN
            CALL EIRENE_SWITCH_PARTINFO
         ELSE
-!PB     IF (.NOT.LGPART) THEN
           WEIGHT=0.
         ENDIF
 C
@@ -958,6 +961,7 @@ C  ............................................
 C
       ELSEIF (ITYP.EQ.0) THEN
 
+cdr  surface model for particles type 0 ("photons")
         CALL EIRENE_REFLC1_PHOTON (WMINS,FMASS,FCHAR,NPRT(ISPZ),
      .               ISRF(ISPZ,MSURF),ISRT(ISPZ,MSURF))
         ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
@@ -997,4 +1001,4 @@ C
       WRITE (iunout,*) 'SPECIES INDEX OUT OF RANGE IN ESCAPE '
       WRITE (iunout,*) 'IMOL, MSURF ',IMOL,MSURF
       CALL EIRENE_EXIT_OWN(1)
-      END
+      END SUBROUTINE EIRENE_ESCAPE

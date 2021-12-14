@@ -702,7 +702,7 @@ C
   394     CONTINUE
 C
           WRITE (iunout,*) ' DERIVATIVES ARE NOT FORESEEN FOR',
-     .                     ' ALOGBRAIC SURFACE TALLIES '
+     .                     ' ALGEBRAIC SURFACE TALLIES'
           WRITE (iunout,*) ' NO CALCULATION IS DONE FOR TALLY NO. ',IALS
           WRITE (iunout,*) CHRTLS(IALS)
           WRITE (iunout,'(1X,A,4I4)')
@@ -970,6 +970,8 @@ c
         CALL EIRENE_LEER(1)
         IER = 1
       END SELECT
+      RETURN
 
       END SUBROUTINE EIRENE_GET_INTAL
-      END
+
+      END SUBROUTINE EIRENE_ALGTAL

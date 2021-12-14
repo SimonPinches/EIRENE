@@ -128,6 +128,7 @@ C...................................................................
       IF (EIRENE_IDEZ(MODCLF(KK),2,5).EQ.1) THEN
         MODCOL(5,1,IREL)=KK
 C  TENTATIVLEY ASSUME: SIGMA * V_EFF MODEL FOR RATE COEFFICIENT
+c  v0 velocity-dependent rate coefficient
         MODCOL(5,2,IREL)=3
       ENDIF
 
@@ -144,11 +145,13 @@ C  2.B)
         IF (MODC.EQ.1) NEND=1       ! rate coeff for (FIXED E0, e.g. E0=0.0, TI)
 C  2.C)
         IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E0, TI) NEND=9 HERE
+
 C   STORAGE SAVING MODE ?
         IF (NSTORDR >= NRAD) THEN
 C   NO, NSTORDT=9 HERE
 
-C  2.B) RATE COEFFICIENT(TI, FIXED E0, E.G. E0=0)
+C  2.B) RATE COEFFICIENT(TI, FIXED E0, E.G. E0=0),
+cdr     V0 velocity-independent rate coefficient
           IF (MODC.EQ.1) THEN
 C           NEND=1
             DO 245 J=1,NSBOX
@@ -157,10 +160,11 @@ C           NEND=1
               COU = EIRENE_RATE_COEFF(KK,J,TII,0._DP,.TRUE.,0)
               TABEL3(IREL,J,1)=COU*DIIN(IPL,J)*FACTKK
   245       CONTINUE
+
+C  2.C) RATE COEFFICIENT(TI,EBEAM),
+cdr     V0 velocity-dependent rate coefficient
           ELSEIF (MODC.EQ.2) THEN
 C           NEND=9
-C  2.C) RATE COEFFICIENT(TI,EBEAM)
-C       NEND=9
           FCTKKL=LOG(FACTKK)
           rt => reacdat(kk)%rtc
           fp1(1:3) = rt%fp1l
@@ -186,9 +190,8 @@ c old
             END DO
           END IF  ! MODC=1,2
         ELSE ! NOT SUFFICIENT STORAGE ON TABEL3
-C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
-!pb       GOTO 995
-          write (iunout,*) ' reaction kk = ',kk, ' modc =',modc
+C  STORAGE SAVE MODE NOT READY FOR THIS OPTION MODC=1 OR MODC=2 ??
+          GOTO 995
 
         ENDIF
       ELSEIF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.3) THEN
@@ -393,7 +396,7 @@ C
 
       IF (IESTEL(IREL,2).EQ.0.AND.NPBGKP(IPL,1).EQ.0) THEN
         WRITE (iunout,*)
-     .    'WARNING: TR.L.EST NOT AVAILABLE FOR MOM. BALANCE'
+     .    'WARNING XSTEL: TR.L.EST NOT AVAILABLE FOR MOM. BALANCE'
         WRITE (iunout,*) 'IREL = ',IREL
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO COLLISION ESTIMATOR'
         CALL EIRENE_LEER(1)
@@ -401,7 +404,7 @@ C
       ENDIF
       IF (IESTEL(IREL,3).EQ.0.AND.NPBGKP(IPL,1).EQ.0) THEN
         WRITE (iunout,*)
-     .    'WARNING: TR.L.EST NOT AVAILABLE FOR EN. BALANCE'
+     .    'WARNING XSTEL: TR.L.EST NOT AVAILABLE FOR EN. BALANCE'
         WRITE (iunout,*) 'IREL = ',IREL
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO COLLISION ESTIMATOR'
         CALL EIRENE_LEER(1)
@@ -419,7 +422,7 @@ C
      .  'STORAGE SAVING MODE NOT READY; KK, IREL'
       WRITE (iunout,*) 'KK, IREL ',KK,IREL
       CALL EIRENE_EXIT_OWN(1)
-      END
+      END SUBROUTINE EIRENE_XSTEL
 C
 C-----------------------------------------------------------------------
 C
@@ -485,4 +488,4 @@ C
       WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',
      .                  FACREL(IREL,1)
       CALL EIRENE_LEER(1)
-      END
+      END SUBROUTINE EIRENE_XSTEL_2

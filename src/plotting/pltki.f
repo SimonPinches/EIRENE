@@ -56,7 +56,7 @@ C
          IF (YY.LE.YL1+EPS10) ISIDE=4
          IF (YY.GE.YL2-EPS10) ISIDE=1
          IF (ISIDE.NE.0) THEN
-             IF (IFLAG.EQ.0) GOTO 431
+             IF (IFLAG.EQ.0) CYCLE
              IJUMP=ISIDE
              IF (IFLAG.NE.0) GOTO 432
          ENDIF
@@ -109,4 +109,4 @@ C
 C
   431 CONTINUE
       RETURN
-      END
+      END SUBROUTINE EIRENE_PLTKI

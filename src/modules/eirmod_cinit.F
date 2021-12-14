@@ -3,9 +3,6 @@
 !  sep-05: specifications for databases added, ndbnames, dbhandle, dbfname
 !  jul-06: database handle added for ADAS
 !  20.06.07: deallocate tdmpar
-cdr oct 18 : "density models" TDMPAR are now fully characterized 
-cdr          by reaction identifyer IRC and donor state
-cdr          isp,itp,istr, rather than requiring a full reaction deck
 cdr dec 18 : remove obsolete photon-reflection data files graphite_ext and mo_ext
 cdr aug 19 : add legal filename: AMMONX (ifile=12)
       USE EIRMOD_PRECISION
@@ -313,7 +310,7 @@ C  DEFAULT FOR DATABASE NAMES, CAN BE OVERWRITTEN BY CFILE CARDS
       CALL MPI_BCAST (LCPYPRO,12,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
 
 cdr  "density models", to set derived plasma background species IPLS
-cdr  e.g. corona, colrad, const, saha,.....
+cdr  e.g. corona, colrad, const, saha, planck, .....
       CALL MPI_BCAST (CDENMODEL,10*NPLS,MPI_CHARACTER,0,
      .                MPI_COMM_WORLD,ier)
 
@@ -371,6 +368,8 @@ csw
 
       CALL MPI_BCAST(DBFNAME,100*NDBNAMES,MPI_CHARACTER,0,
      .               MPI_COMM_WORLD,ier)
+
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       END SUBROUTINE EIRENE_BROADCAST_CINIT
 

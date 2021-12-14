@@ -33,7 +33,7 @@ C
       WRITE (15+ifoff) ((IPARTC(J,I),J=1,MPARTT),I=1,IPRNL)
       CLOSE (UNIT=15+ifoff)
 C
-      END
+      END SUBROUTINE EIRENE_WRSNAP
 C
       SUBROUTINE EIRENE_RSNAP( ISTR )
       USE EIRMOD_PARMMOD, ONLY: IFOFF, MPARTT, NPARTT, NPRNL
@@ -55,7 +55,7 @@ C
 
 cdr  tbd:
 cdr  fort.15 (census) was written in a previous run.
-cdr  in the present run allocation of storage for census arrays rpartc,ipartc,rpartw
+cdr  In the present run allocation of storage for census arrays rpartc,ipartc,rpartw
 cdr  is determined by input: --> nprnl
 cdr  make sure that iprnl in previous run was not larger than in present run.
       IF (NPRNL.LT.IPRNL) THEN

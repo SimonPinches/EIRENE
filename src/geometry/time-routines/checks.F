@@ -93,7 +93,7 @@ c       make sure we are looking at a tria/quadr/quintangle
         IF (RLB(SID).ge.3) THEN
 c         for every triangle we may get (triangle = 1, quadrangle = 2, quintangle = 3)
 c         make a test run! (wow... that is much work to do...)
-          DO T=1,int((RLB(SID)-2.))
+          DO T=1,int(RLB(SID)-2.)
 c           get us these points of the triangle we look at
             SELECT CASE(T)
               CASE(1)
@@ -193,8 +193,8 @@ cdr  It is now called: EIRENE_TIMEA_CheckInter
 cdr  For comparison with older versions: then compare with eirene_timea1.
 cdr  this part is always used, not only in case nloctree
 
-
 c     --- CHECK FOR INTERSECTIONS ON SURFACES (FORMER EIRENE_TIMEA1) ---
+c
 C         THE RAY STARTS AT "XX,YY,ZZ", IN DIRECTION "VXX,VYY,VZZ"
 C                 STARTING POINT IS IN CELL "NCELL", AND TOROIDAL PERIODICITY
 C                 SEGMENT "IPERID, NTCELL".
@@ -316,7 +316,7 @@ C
       MASURF=0
 C
 C  LOOP OVER SURFACE NUMBER, DO 100
-C  --> loop only over the surfaces we have in our lookup table, respect
+C  --> loop only over the surfaces we have in our lookup table,
 C      respect offset, if given
       DO 100 K=1,NACTSURFS
 

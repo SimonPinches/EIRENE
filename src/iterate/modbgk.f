@@ -171,7 +171,7 @@ C
 
 cdr  PLS:  ELECTRON DENSITY PARAMETER in CR MODELS
 cdr       (NOT TO BE CONFUSED WITH THE DENSITY FACTOR BETWEEN RATES AND RATE COEFF.)
-cdr: set hard-wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3
+cdr: set hard-wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3.
 cdr: At this lower limit density the fits are produced such
 cdr: that they collapse to the corona limit values.
       ALLOCATE (PLS(NSTORDR))
@@ -822,10 +822,15 @@ C  SAVE OVERHEAD, IF GEOMETRY DATA ALREADY AVAILABLE ON FILE
 C
       IF (NFILEM.EQ.1) NFILEM=2
 C
-C  SET INDPRO=7, AND
-C  WRITE PLASMA DATA ONTO PLASMA_BCKGRND FOR CALL TO SUBR. PLASMA BELOW
-C  TI,NI AND (VX,VY,VZ) FOR IPLS=1,NPLSI
-C  PLAY SAVE: WRITE WHOLE PLASMA_BCKGRND ARRAY.
+cdr
+C    SET INDPRO(2:6)=7, AND
+C    WRITE PLASMA DATA ONTO PLASMA_BCKGRND FOR CALL TO SUBR. PLASMA BELOW
+C    TI (IPLS=1,NPLSTI) ,
+C    NI(IPLS=1,NPLS) AND
+C   (VX,VY,VZ) (IPLS=1,NPLSV)
+cdr try to leave everything else untouched
+C   PLAY SAFE: WRITE ENTIRE PLASMA_BCKGRND ARRAY.
+cdr: not sure, hidden links possible
 C
 
       DO 500 I=1,6

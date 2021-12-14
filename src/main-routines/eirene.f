@@ -1,6 +1,6 @@
-!PB  181206  output is done by processor 0
-!PB  181206  setting up of census source is done by processor 0
-!PB  100107  call to reinitialisation routine
+!pb  181206  output is done by processor 0
+!pb  181206  setting up of census source is done by processor 0
+!pb  100107  call to reinitialisation routine
 cdr  140416  allow for NSTRAI .le. NSTRA  (e.g. if time stratum has been turned off)
 cdr          currently turning off time stratum may not be detected
 cdr          when setting dynamic allocatable storage parameters in "find_param.f"
@@ -162,7 +162,7 @@ cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
         CALL EIRENE_ALLOC_COMPRT(NPRS)
 cdr
 c  indicate: first entry to eirene has now been done.
-c  calls to find_param, set_parmod(1),... have already been done above
+c  Calls to find_param, set_parmod(1),... have already been done above
         inentry = 0
 
         NRAPS=60
@@ -175,7 +175,7 @@ c  calls to find_param, set_parmod(1),... have already been done above
         NLPLAS=NLMODE
 
         TIME=EIRENE_SECOND_OWN()
-        write (iunout,*) ' CPU TIME for startup of Eirene ',time-timi
+        write (iunout,*) ' CPU time for startup of Eirene ',time-timi
 
       END IF  ! MY_PE == 0
 
@@ -263,7 +263,7 @@ C
         CALL EIRENE_STTXT1
 C
         TIME=EIRENE_SECOND_OWN()
-        WRITE (iunout,*) 'CPU-TIME CONSUMED IN INPUT: ',
+        WRITE (iunout,*) 'CPU TIME CONSUMED IN INPUT: ',
      .                    TIME-TIMI,' SEC'
         CALL EIRENE_LEER(1)
 C
@@ -354,7 +354,7 @@ C
 C
         TIME=EIRENE_SECOND_OWN()
 C       WRITE (iunout,*)
-C    .        'CPU-TIME CONSUMED IN XSECT: ',TIME-TIMI,' SEC'
+C    .        'CPU TIME CONSUMED IN XSECT: ',TIME-TIMI,' SEC'
         CALL EIRENE_LEER(1)
 C
 C               2.         PLOT GEOMETRY
@@ -364,7 +364,7 @@ C
 C       TIMI=EIRENE_SECOND_OWN()
         CALL EIRENE_PLT2D
 C       TIME=EIRENE_SECOND_OWN()
-C       WRITE (iunout,*) 'CPU-TIME CONSUMED IN PLT2D: ',TIME-TIMI,' SEC'
+C       WRITE (iunout,*) 'CPU TIME CONSUMED IN PLT2D: ',TIME-TIMI,' SEC'
 C
 C               3.         MONTE CARLO CALCULATION
 C
@@ -477,8 +477,8 @@ C  MODIFY BACKGROUND (TIME DEP. MODE)
         IF (MY_PE == 0) CALL EIRENE_MOD_TMSTEP
         ITIMV=ITIMV+1
         IF (ITIMV.LE.NTIME) THEN
-C  DO ONE MORE COMPLETE TIME-CYCLE IN THIS EIRENE RUN
-c  A SINGLE TIME-CYCLE MAY INVOLVE MANY NON-LIN. ITERATIONS.
+C  DO ONE MORE COMPLETE TIME CYCLE IN THIS EIRENE RUN
+c  A SINGLE TIME CYCLE MAY INVOLVE MANY NONLINEAR ITERATIONS.
 C  HENCE: RESET IITER TO 1
           DUMMY=EIRENE_RESET_SECOND()
           IITER=1
@@ -546,15 +546,14 @@ C
       END IF
 
 
-
 cdr april 2015
 c  nprs: total number of processors used in this run
 c  my_pe is the current processor
 c
 c  in case of multi-timesteps, t-dep coupling, (or internal iterations?),
 c  output is reduced by the next three lines.
-c  this leads to confusing (missing) output then.
-c  probably these next three lines must go out?
+c  This leads to confusing (missing) output then.
+c  Probably these next three lines must go out?
 cdr april 2015
 
 !pb   IF (MY_PE > 0) THEN
@@ -569,4 +568,4 @@ C     the following entry is for reinitialization of EIRENE (DMH)
       ENTRY EIRENE_EIRENE_REINIT
       inentry = 1
       return
-      END
+      END SUBROUTINE EIRENE_EIRENE

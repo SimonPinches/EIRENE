@@ -88,7 +88,6 @@ cdr            nomenclature: eppl_cops --> eppls  ???
       ALLOCATE (MIPLS(NSTRA))
       ALLOCATE (MPHPLS(NSTRA))
 
-
       DO ISTRAI=1,NSTRA
 
       NULLIFY(PAPLS(ISTRAI)%PMUL)
@@ -253,7 +252,7 @@ C  FREE EPELS
       INTEGER, INTENT(IN) :: ISTRAI
       TYPE(CELLMUL), POINTER :: P
 
-C  FREE PAELS
+C  FREE PAPLS
       P => PAPLS(ISTRAI)%PMUL
       IF (ASSOCIATED(P)) THEN
         DO WHILE (ASSOCIATED(P%NXTMUL))

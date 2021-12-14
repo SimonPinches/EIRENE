@@ -9,4 +9,4 @@ C
 
       IMPLICIT NONE
       RETURN
-      END
+      END SUBROUTINE EIRENE_OUTUSR

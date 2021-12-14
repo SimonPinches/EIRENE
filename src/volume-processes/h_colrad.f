@@ -210,7 +210,7 @@ C
       AJ=J
       X=1.-(AI/AJ)**2
 
-cdr: johnson gaunt factor approx.
+cdr: Johnson Gaunt factor approx.
 cdr  gaunt=g(i,x)=G(I,J)
       IF(I.GE.3) THEN
 
@@ -1009,7 +1009,6 @@ C
 C   integrate functions gaunt3(x), for S and gaunt4, for ES, from 0 to 20
 C
       USE EIRMOD_PRECISION
-C      USE EIRMOD_COMPRT, ONLY: IUNOUT
 
       IMPLICIT REAL(DP) (A-H,O-Z)
       REAL(DP) EIRENE_GAUNT3,EIRENE_GAUNT4,PP,XPP,A,B,EPSR
@@ -1028,6 +1027,7 @@ cdr   EPSR=1.0D-5  slowed down code by factor of 100 !!
       NMIN=15
       NMAX=511
 
+c  integrate functions GAUNT from x=0 to 20:
       CALL EIRENE_AQC8(A,B,EIRENE_GAUNT3,EPSR,NMIN,NMAX, S)
       CALL EIRENE_AQC8(A,B,EIRENE_GAUNT4,EPSR,NMIN,NMAX,ES)
 C
@@ -1124,11 +1124,11 @@ cdr bevoelkerung durch: stoesse von oben, spontan von oben
   203   CONTINUE
 
   201 CONTINUE
-cdr k loop finished, k=2, lup-1 (d.h. ohne letzte Zeile)
+cdr k loop finished, k=2, lup-1 (i.e. without last state lup)
 
 
-c  special treatment letzter zustand lup: 2-->lup, 3-->lup,..., gibt es nur bei excitation, nicht
-c                                  bei de-exit, auch nicht bei rad rec.
+c  special treatment of last state lup: 2-->lup, 3-->lup,..., only for excitation to it,
+c                                  but not for de-exit to it, also not for rad rec to it.
       DO 211 L=2,LUP-1
         W(LUP,L)=C(L,LUP)*DENSEL
   211 CONTINUE
@@ -1138,7 +1138,7 @@ c  beitrag des letzten zustandes lup zu diagonal
         SUMF=SUMF+F(LUP,I)
   311 CONTINUE
       SUMC=0.0
-      DO 313 I=LUP+1,LIM   !Boltzmann LTE contribution fuer LIM gt. LUP
+      DO 313 I=LUP+1,LIM   !Boltzmann LTE contribution for LIM gt. LUP
         SUMC=SUMC+C(LUP,I)
   313 CONTINUE
       SUMA=0.
@@ -1650,7 +1650,7 @@ C    B(NB,NG): ELEMENTE DER RECHTEN SEITE DES GLEICHUNGS-SYSTEMS
 C    NB      : DIMENSION ANZAHL DER RECHTEN SEITEN (NB >= 1)
 C    NBI     : ANZAHL DER RECHTEN SEITEN (NB >= 1)
 c    B WIRD MODIFIZIERT UND ENTHAELT BEIM OUTPUT DIE NBI LOESUNGSVEKTOREN
-C    IW(NG)  : INTEGER-HILFS-ARRAY FUER EINE MOEGLICHE PROGRAMM-
+C    IW(NG)  : INTEGER HILFS-ARRAY FUER EINE MOEGLICHE PROGRAMM-
 C              INTERNE UMNUMERIERUNG DER GLEICHUNGEN
 C    IER     : ERROR-INDEX (IER = 1: MATRIX SINGULAER)
 C***********************************************************************
@@ -1817,9 +1817,9 @@ c
       subroutine EIRENE_aqc8(a,b,f,epsr,nmin,nmax,S)
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
-c  S=integral von a bis b, der function f(x) (external).
+c  S=integral from a to b, of the function f(x) (external).
 c  epsr : relative errors, input
-c   nmin,nmax  min u max anzahl der functionsaufrufe
+c   nmin,nmax:  min and max number of function calls
 c   (nmax<511, nmin>15)
 c
 c output
@@ -1831,6 +1831,7 @@ c icon: error code
       real(dp) f
       external f
       external EIRENE_midpnt
+cdr  perhaps Romberg integration?
       call EIRENE_qromo(f,a,b,s,EIRENE_midpnt,epsr)
       return
       end subroutine EIRENE_aqc8

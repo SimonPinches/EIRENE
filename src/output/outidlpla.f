@@ -1,8 +1,11 @@
+cdr  nov. 19:
 cdr  tally 22 (electric potential) added, and a few comments, started...
 C
       SUBROUTINE EIRENE_OUTIDLPLA
 C
-C  This routine prints background tallies for plotting in IDL tool.
+Cdr  This routine prints background tallies ("field particles") for plotting in IDL tool.
+cdr  Probably code mostly adopted from subr. outpla.f, but no
+cdr  coarse graining onto scoring grid done here, yet.
 C
 C  PRINT INPUT TALLIES ONTO OUTPUT FILE IUNOUT
 C
@@ -111,7 +114,7 @@ C
         NFTI=1
         NFTE=NFSTPI(ITAL)
 
-c  K  leading dimension of input tally ITAL
+c  K: leading dimension of input tally ITAL
         DO 119 K=NFTI,NFTE
 
           SELECT CASE (ITAL)
@@ -402,4 +405,4 @@ C
       DEALLOCATE (TALAV)
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_OUTIDLPLA

@@ -1,4 +1,5 @@
-
+cdr  return SARRUS = determinant of 3x3 matrix A
+cdr  Applies the Sarrus rule
 
       FUNCTION EIRENE_SARRUS (A)
       USE EIRMOD_PRECISION

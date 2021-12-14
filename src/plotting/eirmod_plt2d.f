@@ -1,5 +1,5 @@
 cdr  28.4.04:  nhsts(ispz) option connected (to select species
-cdr            for trajectory plot. see modification to input.f, 28.4.04
+cdr            for trajectory plot). see modification to input.f, 28.4.04
 cdr  24.8.06:  plot symbols corrected to more recent GR  software standards
 !pb  5.10.06:  plot for triangle geometry in x-z plane added
 !pb  11.04.08: remove restriction NTTRA<100
@@ -180,9 +180,9 @@ C
 C
 C  SCALE FACTORS: USER COORDINATES TO CM:
 C  X-DIRECTION:
-      SCLFCX=ABSMAX/(XMA2d-XMI2d)
+      SCLFCX=ABSMAX/(XMA2D-XMI2D)
 C  Y-DIRECTION:
-      SCLFCY=ORDMAX/(YMA2d-YMI2d)
+      SCLFCY=ORDMAX/(YMA2D-YMI2D)
 C
 C  PLOT X OR R-GRID
 C
@@ -359,7 +359,6 @@ C  Y-Z PLANE
           DEALLOCATE (IFARB)
           DEALLOCATE (IDASH)
         END IF
-
 
         CALL GRDSH(1.,0.,1.)
 C
@@ -664,8 +663,8 @@ c  segment): all cells j with nstgrd(j)=1
           call grclp(1)
           do j=1,nsurf
             if (nstgrd(j).eq.1) then
-              call
-     .         EIRENE_ncelln(j,ir,ip,it,ia,ib,nr1st,np2nd,nt3rd,nbmlt,
+              call EIRENE_ncelln
+     .         (j,ir,ip,it,ia,ib,nr1st,np2nd,nt3rd,nbmlt,
      .                                        nlrad,nlpol,nltor)
               XPS(1)=XPOL(IR,IP)
               YPS(1)=YPOL(IR,IP)
@@ -683,7 +682,7 @@ c  segment): all cells j with nstgrd(j)=1
           enddo
           call grclp(0)
 
-
+C
 C  PLOT ARROWS TO INDICATE SURFACE NORMAL
 C
 
@@ -701,8 +700,8 @@ C
                   CALL EIRENE_TSTCHM(1,XTN,YTN,XTip,YTip,IN,TESTN,
      .                      XMI2D,XMA2D,YMI2D,YMA2D,XT2,YT2)
                   if (testn .ne. 2)
-     .            call grarrw (REAL(xtn,SP),REAL(ytn,SP)
-     .                        ,REAL(xtip,SP),REAL(ytip,SP),0.4,0.4,0)
+     .            call grarrw (REAL(xtn,SP),REAL(ytn,SP),
+     .                         REAL(xtip,SP),REAL(ytip,SP),0.4,0.4,0)
                 endif
               enddo
             enddo
@@ -811,7 +810,7 @@ C             SEITE J GEHOERT ZUM RAND
               ISTS=ABS(INMTI(J,I))
               IF (ISTS .GT. 0 .AND.
      .            ISTS .LE. NLIM+NSTSI) THEN
-C   SIDE J HAS A SPECIAL PROPERTY (NON-DEFAULT STD.FLAECHE)
+C   SIDE J HAS A SPECIAL PROPERTY (NON-DEFAULT STD. SURFACE)
                 IF (ILCOL(ISTS) == 666) CYCLE
                 CALL GRDSH (1.,0.,1.)
                 CALL GRNWPN (ILCOL(ISTS))
@@ -1812,8 +1811,8 @@ C  PLOT ONLY SYMBOLS FROM THE INPUT LIST ISYPLT, OR SYMBOL NO. ISYM_ERR
 C  CONTINUE PRINTOUT AFTER TRAJECTORY PLOT
 
       IF (NLTRC.AND.TRCHST.AND.LWR) THEN
-        WRITE (iunout,'(A,5i6)') 'ICOLOR,IN,ISYM,IFLAG,NHSTS ',
-     .                    ICOLOR,IN,ISYM,IFLAG,NHSTS(ISPZ)
+        CALL EIRENE_MASJ5('ICOLOR,IN,ISYM,IFLAG,NHSTS              ',
+     .                     ICOLOR,IN,ISYM,IFLAG,NHSTS(ISPZ))
         CALL EIRENE_LEER(1)
       ENDIF
 C

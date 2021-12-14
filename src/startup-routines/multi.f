@@ -1,18 +1,12 @@
 CDR   June 17:  comments, and fix re option indpro=4 (unused so far)
 C     May  05:  "no multip on averaging cells" corrected for 3D grids
 C
-      SUBROUTINE EIRENE_MULTI
 cdr  subroutine multig:  copy grid data NBMLT times
 cdr  subroutine multip:  indpro<=3: copy 1D profiles NP2ND*NT3RD*NBMLT times
 cdr                 indpro>=4: copy    profiles            *NBMLT times
 cdr                 indpro =4: check this option: tbd.
 cdr                 Currently available for indpro(I), I=1,2,3,4,5,6
 cdr                 indpro(7) (electr. field): still missing here 
-
-      IMPLICIT NONE
-
-      CALL EIRENE_MULTIG
-      END SUBROUTINE EIRENE_MULTI
 C
 C  GEOMETRY DATA
 C

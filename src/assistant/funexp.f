@@ -6,7 +6,7 @@ C
 C  STANDARD MONTE CARLO "SPANIER-ESTIMATOR" FUNCTION
 
 C  FUNEXP = (1-EXP(-X))/X  =  (EXP(-X)-1)/(-X) = (EXP(Y)-1)/Y
-C  WITH X >=0., OR, EQUIVALIENTLY: -X = Y <=0.
+C  WITH X >=0., OR, EQUIVALENTLY: -X = Y <=0.
 
 c  return s=funexp, as well as intermediate result ex=exp(-x)
 c                   or find ex by separate evaluation in intrinsic exp -function ?

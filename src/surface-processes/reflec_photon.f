@@ -117,7 +117,7 @@ C   MODREF=0: "PERFECTLY ABSORBING SURFACE", DEFAULT
 C   MODREF=1: "DATABASE REFLECTION MODEL"  (out)
 C
 !PB  to be revised
-!    RPROB: propability of the photon to be reflected
+!    RPROB: probability of the photon to be reflected
       RPROB = 0._dp
 
       IF (MODREF.EQ.1) THEN
@@ -167,7 +167,7 @@ C   COSINE OF ANGLE OF INCIDENCE against outer normal
 
 c  SPECULAR LOBE, BDRF MODEL.
         GOTO 600
-      ELSE
+      ELSE   ! modref gt 2
 C  ABSORB THIS PHOTON
         ISPZO = ISPZ      
         GOTO 700
@@ -204,7 +204,7 @@ C  SPECIES OF REFLECTED PARTICLE
       ISPZ=IPHOT
       ITYP=0
 C
-C  ENERGIE (WAVELENGTH):  NOT MODIFIED
+C  ENERGY (WAVELENGTH): NOT MODIFIED
 C
   600 CONTINUE
 C

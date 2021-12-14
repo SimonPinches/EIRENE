@@ -59,7 +59,7 @@ C
       RETURN
       END SUBROUTINE EIRENE_STCOOR
 
-C     the following ENTRY is for reinitialization of EIRENE
+C     the following SUBROUTINE is for reinitialization of EIRENE
 
       SUBROUTINE EIRENE_STCOOR_REINIT
       IMPLICIT NONE

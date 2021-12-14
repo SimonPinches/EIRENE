@@ -22,4 +22,4 @@ c   return default vector: (0.,0.,1.)
       VEC_Y=0.0
       VEC_Z=1.0
       RETURN
-      END
+      END SUBROUTINE EIRENE_VECUSR

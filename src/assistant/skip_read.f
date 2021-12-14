@@ -1,5 +1,4 @@
       subroutine eirene_skip_read_comment(IREAD,IUNIN,ZEILE)
-
       IMPLICIT NONE
 
 c  skip optional comment lines, starting with *,

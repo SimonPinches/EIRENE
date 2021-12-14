@@ -18,8 +18,8 @@ C
 
       IS=0
       DO 100 I=1,4
-        CALL EIRENE_GSP (G(I,1),G(I,2),R(I,1),R(I,2),
-     .                   P11,P12,P21-P11,P22-P12,
+      CALL EIRENE_GSP
+     .  (G(I,1),G(I,2),R(I,1),R(I,2),P11,P12,P21-P11,P22-P12,
      .                   XLA,XMU,EPS)
         IF (XLA.GE.0..AND.XLA.LE.1..AND.XMU.GE.0..AND.XMU.LE.1.) THEN
           XP=G(I,1)+XMU*R(I,1)
@@ -60,5 +60,4 @@ C
         ENDIF
  100  CONTINUE
       RETURN
-      END
-      
+      END SUBROUTINE EIRENE_PSIDE

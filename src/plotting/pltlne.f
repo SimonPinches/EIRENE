@@ -54,5 +54,5 @@ C
         END SELECT
 C
   148 CONTINUE
-      return
-      end
+      RETURN
+      END SUBROUTINE EIRENE_PLTLNE

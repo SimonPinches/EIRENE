@@ -488,4 +488,5 @@ C        X = (ev1,ev2,ev3) * x + m
       ENDIF
   999 CONTINUE
 C
-      END
+      RETURN
+      END SUBROUTINE EIRENE_FL2O

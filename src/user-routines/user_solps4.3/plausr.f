@@ -8,4 +8,4 @@
 
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_PLAUSR

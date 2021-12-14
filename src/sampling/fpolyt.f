@@ -1,4 +1,4 @@
-C
+C  code segment contains: fpolyt_3  and fpolyt_4
 C
 C
 C   CONVEX POLYTOP SAMPLING

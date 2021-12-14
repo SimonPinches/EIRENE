@@ -10,14 +10,25 @@ cdr Jan 2016 : comments,  and: stop scoring census not only after total number
 cdr            of allowed census scores is reached,
 cdr            but instead do so also for each stratum, and for the scores per stratum limit.
 
-!pb   SUBROUTINE EIRENE_TIMCOL (PR,*,*)
+cdr  Time cycles (each: ntmstp*dtimv) and time steps (each: dtimv):
+cdr
+cdr  itmstp:  Each history starts with itmstp=0.
+cdr           itmstp is incremented by one (1) after each time step DTIMV.
+cdr           One complete time cycle consists of ntmstp such small steps,
+cdr           After a complete time cycle, the trajectory is stopped in this routine
+cdr           (absorbing time horizon).
+
+cdr           If ntmstp < 0, then a trajectory is never stopped in this routine.
+cdr           The scores on census then correspond to a steady state.
+cdr
+
       SUBROUTINE EIRENE_TIMCOL (PR,IRET)
 C
 C  COLLISION WITH "TIME SURFACE", FIND NEW COORDINATES
 C  UPDATE (TIME-) SURFACE TALLIES
 C  UPDATE USER-SUPPLIED SNAPSHOT-ESTIMATED TALLIES (CALL UPNUSR)
 C  PUT PARTICLE ONTO CENSUS ARRAYS
-C  AND EITHER STOP HISTORY OR CONTINUE
+C  AND EITHER STOP HISTORY (ITMSTP<NTMSTP) OR CONTINUE
 
 C  RETURN: IRET = 1, CONTINUE FLIGHT
 C  RETURN: IRET = 2, STOP FLIGHT
@@ -88,14 +99,14 @@ C  UPDATE SNAPSHOT ESTIMATORS
       IF (NSNVI.GT.0) CALL EIRENE_UPNUSR
 C
 cdpc
-CDR:  this must be generalized, towards a more general horizon
+CDR   this must be generalized, towards a more general horizon
 CDR   rather than fixed horizon at 100 meters in x-y plane
       dist=sqrt(x0**2+y0**2)
       if(dist.gt.1e4) then
         write(iunout,*) 'timcol: ERROR!  dist = ',dist,
      1   ' (particle more than 100 m from the origin)'
-        write(iunout,*) 'npanu,x0,y0,z0,velx,vely,velz ',
-     1   npanu,x0,y0,z0,velx,vely,velz
+        write(iunout,*) 'npanu,x0,y0,z0,velx,vely,velz,vel ',
+     1                   npanu,x0,y0,z0,velx,vely,velz,vel
         weight=0.
         goto 112
       endif
@@ -116,7 +127,6 @@ C   STOP SCORING ON CENSUS AFTER NPRNL SCORES TOTAL
 
 CDR STOP ALSO AFTER NPRNLS SCORES FOR STRATUM ISTRA ??
       if (iprnli <= nprnl.and.iprnls <= nprnls(istra)) then
-cdr   if (iprnli <= nprnl) then
 
         RPART(1:NPARTT,IPRNLI)=RPSTT(1:NPARTT)
         IPART(1:MPARTT,IPRNLI)=IPSTT(1:MPARTT)
@@ -177,4 +187,4 @@ C  OTHERWISE: RESTORE WEIGHT = WEIGHT/PR, TIME, AND CONTINUE ANOTHER TIME STEP
       ENDIF
       IRET = 0
       RETURN
-      END
+      END SUBROUTINE EIRENE_TIMCOL

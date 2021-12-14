@@ -13,4 +13,4 @@
      .          B2B, B3B, F0B, F1B, F2B, F3B, X0, Y0, B0, B1, B2, Z1, Z2
       INTEGER :: IN
       RETURN
-      END
+      END SUBROUTINE EIRENE_PLTUSR

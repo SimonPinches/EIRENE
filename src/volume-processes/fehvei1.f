@@ -41,7 +41,7 @@ C            KK> 0  KREAD: COLLISION PROCESSES STORED ON REACDAT FROM EXTERNAL D
       IF (KK < 0) THEN
 cdr in this case (default reactions) we have: nhvrei = nreaei
         SELECT CASE (KK)
-        CASE (-4)   ! DEFAULT PROCESS KK=-4:  H+ E --> H+ +E, no net energy transfer to H+
+        CASE (-4)   ! DEFAULT PROCESS KK=-4: H + E --> H+ + 2E, no net energy transfer to H+
            EIRENE_FEHVEI1 =0.0
 cdr  now the 6 default reactions for H2, H2+
         CASE (-5)  ! DEFAULT PROCESS KK=-5:  H2+E --> H+H +E,
@@ -80,9 +80,8 @@ c  else: jhvrei=9:   density-dependent KER, to be written
 
       RETURN
 
-
   999 CONTINUE
       WRITE (IUNOUT,*) 'FEHVEI1: INVALID PARAMETER NHVREI '
       WRITE (IUNOUT,*) 'IREI, NHVREI ',IREI,NHVREI
       CALL EIRENE_EXIT_OWN(1)
-      END
+      END  FUNCTION EIRENE_FEHVEI1

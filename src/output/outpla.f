@@ -18,7 +18,7 @@ cdr             inttal and intvol are largely identical, remove one ?
 cdr             prttal and prtvol are largely identical, remove one ?
 cdr oct 18    : all input tallies selectable, also derived tallies.
 cdr             also: gradient tallies of input tallies: currently no. 31--120
-cdr may 19:     remove NF=NFRSTP(ITAL)  (unused, Meaning ??), comments...
+cdr may 19    : remove NF=NFRSTP(ITAL) (unused, meaning ?), comments...
 
 C
       SUBROUTINE EIRENE_OUTPLA(ICAL)
@@ -602,4 +602,4 @@ C   PRINT ONLY THE HEADER FOR TALLY, BECAUSE TALLY IDENTICALLY ZERO
       DEALLOCATE (X1D)
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_OUTPLA

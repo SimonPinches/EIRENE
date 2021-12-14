@@ -1,4 +1,9 @@
-cdr  aug. 2015:  logical flag L added. position x,y,z known (L=true) or else use COM of cell icell)
+cdr  jan. 2020:  internal consistency enforced for vector components,
+cdr              and their smoothing/interpolation.
+cdr              New: LBIN  flag:  all B field tallies exist.
+cdr              NEW  LBSMO flag:  all B field tallies smoothed (interpolated)
+cdr  aug. 2015:  logical flag L added. position x,y,z known (L=true)
+cdr                           or else: use COM of cell ICELL
 cdr  sept 2014:  comments added
 c    provide cartesian local magnetic field unit vector bx,by,bz,
 c    as well as B field strength bf (Tesla)
@@ -6,7 +11,7 @@ c    at point x,y,z, in cell icell
 
 c  current options:
 c  default    :  use input background tallies. B field is constant per cell
-c  indpro(5)=8:  user provided B field
+c  indpro(5)=8:  user-provided B field
 c  LBSMO (?)  :  apparently: only in case of levgeo=4,5 interpolation in triangles, tetrahedra
 cpb              switch used for interpolation of magnetic field input tally
 cdr              from cell vertices to a local x,y,z point inside a cell.
@@ -29,9 +34,12 @@ cdr              Not fully available for all levgeo=1,2,3 optins. Check FEMINT.f
       real(dp) :: eirene_femint, bni
 
       IF (INDPRO(5) == 8) THEN
-
-cdr  tentatively assume: x,y,z are known here, i.e. call vecusr with L=true
-
+cdr  user defined B field. Units of Bx, By, Bz?
+cdr  BF=1. ?  BF should be in Tesla.
+cdr  L=true : spatial coordinates x,y,z are known here, 
+cdr           i.e. call vecusr with L=true
+cdr  or else:  x,y,z are unknown here.
+cdr           Then VECUSR returns B field at COM (center of mass)
          CALL EIRENE_VECUSR (1,ICELL,X,Y,Z,BX,BY,BZ,1,L)
          bf = 1.
 
@@ -61,5 +69,5 @@ cdr use default B field: 1 [T] in z-direction
 
       END IF
 
-      return
-      end subroutine eirene_bfield
+      RETURN
+      END SUBROUTINE EIRENE_BFIELD

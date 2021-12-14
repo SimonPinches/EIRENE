@@ -5,6 +5,12 @@ cdr            include also the fluxes onto census.
 cdr  hence: in t-dep mode and nlscl=T, total particle balances should be exact
 cdr  to be done: apply that scaling also to flux and weights in census for re-sampling
 cdr  in subr. tmstep (to be done)
+cdr  Aug. 2020: if a type of particle (e.g., test ions), is very unlikely to be sampled,
+cdr             but still has a finite (non-zero) source rate from tracklength estimator,
+cdr             then the particle balance matrix may become singular (source, but no sinks).
+cdr             A safety has been added now in one place.
+cdr             Perhaps still needed in
+cdr             more cases (icol,irow) in this routine?
 C
       SUBROUTINE EIRENE_GETSCL4 (ISTRA,FA,FM,FI,FPH)
 C
@@ -13,7 +19,7 @@ c  BECAUSE OF NON-CONSERVATIVE PROPERTY OF TRACKLENGTH ESTIMATORS
 C  SIMPLE VERSION: NOT SPLIT BY SPECIES, ONLY BY TYPE.
 C  THE OUTPUT SCALING FACTORS FC=(FA,FM,FI,FPH) ARE "PER STRATUM"
 c
-c  build a 4 x 4 matrix P of 4 global balance equations,
+c  build a 4 x 4 matrix P of 4 global particle balance equations,
 c  one for atoms, molecules, test ions and photons each.
 c
 c  solve for the 4 factors FC(1)...FC(4), such that
@@ -25,15 +31,15 @@ c  per stratum, B = B(1),....,B(4).
 c
 c  The factor FC(1) is then to be applied to all tallies (volumetric or surface fluxes)
 c  which scale linearly with the external source B(1) for particles of type 1 (i.e. for "atoms").
-c  Similarly for the other typs, FC(2),... etc...
+c  Similarly for the other types, FC(2),... etc...
 
 c  most of the programming below deals with possible zeroes in rows and columns,
-c  i.e. with cases that some type of particle (e.g. photons) may no be present.
+c  i.e. with cases that some type of particle (e.g. photons) may not be present.
 c
 c
 c
 C  MODIFIED JAN/95: INCLUDE SURFACE TALLIES IN MATRIX, NOT IN
-C  INHOMOGENITY
+C  INHOMOGENEITY
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -64,28 +70,37 @@ C P(..,2)*FC(2)
 C P(..,3)*FC(3)
 C P(..,4)*FC(4)
 C
+cdr  atomic sinks (1,1) and sources from other types
+cdr  surface tallies: net sink: potati+prfaai
       P(1,1)=PAATI(0,ISTRA)+POTATI(0,ISTRA)+PRFAAI(0,ISTRA)+
      .       PGENAI(0,ISTRA)
       P(1,2)=PMATI(0,ISTRA)+PRFMAI(0,ISTRA)
       P(1,3)=PIATI(0,ISTRA)+PRFIAI(0,ISTRA)
       P(1,4)=0._DP
+cdr  molecular sinks (2,2) and sources from other types
       P(2,1)=PAMLI(0,ISTRA)+PRFAMI(0,ISTRA)
+cdr  surface tallies: net sink: potmli+prfmmi
       P(2,2)=PMMLI(0,ISTRA)+POTMLI(0,ISTRA)+PRFMMI(0,ISTRA)+
      .       PGENMI(0,ISTRA)
       P(2,3)=PIMLI(0,ISTRA)+PRFIMI(0,ISTRA)
       P(2,4)=0._DP
+cdr  test-ion  sinks(3,3) and sources from other types
       P(3,1)=PAIOI(0,ISTRA)+PRFAII(0,ISTRA)
       P(3,2)=PMIOI(0,ISTRA)+PRFMII(0,ISTRA)
+cdr  surface tallies: net sink: potioi+prfiii
       P(3,3)=PIIOI(0,ISTRA)+POTIOI(0,ISTRA)+PRFIII(0,ISTRA)+
      .       PGENII(0,ISTRA)
       P(3,4)=0._DP
 Cdr PHOTONIC TALLIES ARE CURRENTLY NOT INCLUDED IN RESCALING. TO BE DONE
 CDR FC(4) SHOULD ALWAYS TURN OUT TO BE EXACTLY 1.0
+cdr  photon  sinks(4,4) and sources from other types
       P(4,1)=0._DP
       P(4,2)=0._DP
       P(4,3)=0._DP
+cdr  surface tallies: net sink: potphti+prfphphti
       P(4,4)=1._DP
 C
+cdr  (direct) primary sources, and secondaries from primary bulk particles
       B(1)=-(PPATI(0,ISTRA)+WTOTA(0,ISTRA))
       B(2)=-(PPMLI(0,ISTRA)+WTOTM(0,ISTRA))
       B(3)=-(PPIOI(0,ISTRA)+WTOTI(0,ISTRA))
@@ -101,12 +116,13 @@ C
     1 CONTINUE
 C
       IF (IROW.EQ.0) THEN
-C  NO ROW IS NONZERO, I.E. NO PARTICLES FOLLOWED
+C  NO ROW IS NONZERO, I.E. NO TEST PARTICLES (OF ANY TYPE) FOLLOWED
         GOTO 1000
 C
       ELSEIF (IROW.EQ.1) THEN
 C  ONLY ONE ROW (NO. I) IS NONZERO, I.E., ONLY ATOMS, ONLY MOLECULES
-C                                    OR  ONLY TEST IONS ARE FOLLOWED
+C                          ONLY TEST IONS OR ONLY PHOTONS ARE FOLLOWED
+C                          FOR THE PRESENT STRATUM.
          DO 10 I=1,4
            IF (LROW(I)) THEN
              IF (LCOLM(1)) THEN
@@ -159,7 +175,7 @@ C  DETERMINE THE INDICES FOR THE FIRST TWO NONZERO COLUMNS
             ENDIF
    40     CONTINUE
 C
-! nur spalten rechts von spalte i2 koennen noch werte enthalten
+! only columns to the right of column i2 can have non-zero entries
           DO I=I2+1,4
             B(J1)=B(J1)-P(J1,I)
             B(J2)=B(J2)-P(J2,I)
@@ -252,6 +268,8 @@ C  AT LEAST THREE COLUMNS ARE NONZERO
             END DO
           END DO
 
+cdr  We are in IROW=3 case, so we need to solve a 3x3 linear eq. system
+cdr  We use the explicit Cramer's Rule.
           P11=PP(1,1)
           P21=PP(2,1)
           P31=PP(3,1)
@@ -267,6 +285,9 @@ C  AT LEAST THREE COLUMNS ARE NONZERO
           dta=EIRENE_deter(p11,p21,p31,
      .              p12,p22,p32,
      .              p13,p23,p33)
+cdr  tbd:  check if determinant=0
+cdr        see below, same as for IROW=4/ICOL=3 case
+
           dtb1=EIRENE_deter(b1,b2,b3,
      .               p12,p22,p32,
      .               p13,p23,p33)
@@ -370,7 +391,10 @@ C
           END DO
 
         ELSE
-C  THE WHOLE MATRIX IS TO BE USED
+C  THE ENTIRE 4 x 4 MATRIX IS TO BE USED
+cdr unfinished, we should check for det (=dta) = 0. relative to
+cdr a proper L1 norm of the matrix, and in that case reduce to the
+cdr 3x3 matrix case, same as done above for the 3x3 matrix.
           pp(1:4,1:4) = p(1:4,1:4)
           dta=EIRENE_deter4x4(pp)
 
@@ -402,9 +426,10 @@ C
 !  FOR THE TIME BEING
 
       CALL EIRENE_LEER(1)
-      WRITE (iunout,'(1X,2A)')
-     .  'EIRENE RECOMMENDED RESCALING OF VOLUME-AVERAGED ',
-     .  'TALLIES DUE TO STATISTICAL ERRORS IN BALANCE'
+      WRITE (iunout,'(1X,A)')
+     .  'EIRENE RECOMMENDED RESCALING OF VOLUME-AVERAGED TALLIES'
+      WRITE (iunout,'(1X,A)')
+     .  'DUE TO STATISTICAL ERRORS IN BALANCE'
       CALL EIRENE_MASR4 ('FATM,FMOL,FION,FPHOT            ',
      .             FC(1),FC(2),FC(3),FC(4))
       CALL EIRENE_LEER(2)
@@ -417,4 +442,4 @@ C
 
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_GETSCL4

@@ -8,7 +8,7 @@ cdr  calls of ftabcx3 in fpath..: not ready, only for modcol=1 option
 
       FUNCTION EIRENE_FTABCX3 (IRCX,K)
 c  evaluate charge exchange rate (1/s),
-c  for cx process no. IRCX,
+c  for CX process no. IRCX,
 c         in cell no. K
 c  input via common:
 c         bulk collision partner: IPLS
@@ -44,7 +44,7 @@ cdr  hard-wired: cut-off (density) parameter for fits: 1e8. TO BE CHECKED WITH X
       IPLSTI=MPLSTI(IPLS)
       TII=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)
 
-cdr  :  check these next lines are only for modcol=1 !
+cdr check these next lines are only for modcol=1 !
 
 c  input parameters for rate_coeff: ln(Ti), ln(ne)
 c

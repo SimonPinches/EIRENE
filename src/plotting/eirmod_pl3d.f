@@ -122,7 +122,7 @@ C
 
       END SUBROUTINE EIRENE_PL3D
 
-C     the following SUBROUTINE is for reintialization of EIRE (DMH)
+C     the following SUBROUTINE is for reinitialization of EIRENE (DMH)
 
       SUBROUTINE EIRENE_PL3D_REINIT
       IMPLICIT NONE

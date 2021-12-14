@@ -14,4 +14,4 @@
       ilast=1
       iret = 1
       return
-      end
+      end subroutine eirene_talusr

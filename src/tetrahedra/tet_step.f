@@ -1,6 +1,8 @@
 
 
       SUBROUTINE EIRENE_TET_STEP (IS,ITET,ISIDE,NRS)
+cdr add geometrical tetrahedron side area on cumulated RRSTEP variable.
+cdr No projection to plasma flux tube is done.
 
       USE EIRMOD_PRECISION
       USE EIRMOD_COMUSR
@@ -25,6 +27,7 @@
       I1=NTECK(ITSIDE(1,ISIDE),ITET)
       I2=NTECK(ITSIDE(2,ISIDE),ITET)
       I3=NTECK(ITSIDE(3,ISIDE),ITET)
+cdr cumulated independent variable for sampling (dimension: area)
       RRSTEP(IS,NRS+1)=RRSTEP(IS,NRS) +
      .                 EIRENE_ARTRI3(XTETRA(I1),YTETRA(I1),ZTETRA(I1),
      .                               XTETRA(I2),YTETRA(I2),ZTETRA(I2),
@@ -36,4 +39,4 @@
       IBSTEP(IS,NRS)=1
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_TET_STEP

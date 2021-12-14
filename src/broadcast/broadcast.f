@@ -37,7 +37,7 @@ cdr            remove NCHORD (is: NCHOR)
 c    Aug. 17:  NMODE, LSMOPRO: exception wrt. MPI.  Why necessary?
 c              broadcasting of CHRTLS was done twice. Removed once.
 cpb  Dec. 17:  remove type SPECT_ARRAY, not needed in Fortran 2003
-cpb  Jan 2018:  remove unused arrays TEDTEDX, TEDTEDY, TEDTEDZ
+cpb  Jan. 18:  remove unused arrays TEDTEDX, TEDTEDY, TEDTEDZ
 c    Jan. 18:  new submodule alloc_fit_form used to allocate, and initialize REACDAT(IR)
 cdr  May 18 :  broadcast new variables for internal CR code (currently H_COLRAD):
 cdr            nhcol_store

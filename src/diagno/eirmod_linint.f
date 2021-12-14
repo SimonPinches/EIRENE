@@ -1166,7 +1166,6 @@ c  these arrays have been allocated for PRSPEC option.
       RETURN
       END SUBROUTINE EIRENE_LININT2
 
-
       SUBROUTINE EIRENE_LININT_REINIT
 c  clarify role of ifirst<0 first.
       RETURN

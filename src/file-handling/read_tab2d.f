@@ -138,7 +138,7 @@ cdr           Is REAC(..) only use here?
       end do
 
 cdr part 1 done. Next:
-cdr transfer this stuff to data structure REACDAT
+cdr transfer this stuff to data structure REACDAT(IR)
 c
       select case (isw)
 

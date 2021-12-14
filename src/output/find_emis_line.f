@@ -15,10 +15,8 @@ cdr
 cdr currently called from SIGLINE in diagno block. 
 cdr    
 cdr SIGLINE is called only for chords ICHORI, for which NCHTAL(ichori)=2.
-cdr Calls are whenever either a change in stratum number ISTR, 
-cdr                    or                 transition energy ENER,
-cdr                    or                 a new internal iteration 
-cdr  (time stepping, nonlinear BGK iterations)
+cdr Calls are whenever a change in stratum number ISTR, transition energy ENER,
+cdr       or a new internal iteration (time stepping, nonlinear BGK iterations)
 
 cdr In storage saving mode (mod_addv = 0) from here we call EIRENE_EMISSIVITY.F
 cdr   for the present stratum and present line, 

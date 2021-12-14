@@ -150,4 +150,4 @@ c        if(allocated(cndynp)) deallocate(cndynp)
         if(allocated(vry)) deallocate(vry)
       endif
       return
-      END
+      END SUBROUTINE EIRENE_UPTUSR

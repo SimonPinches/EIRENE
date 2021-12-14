@@ -27,7 +27,7 @@ cdr           ifit=4 option was missing (1D tables). added, but not checked.
 !  ifit=3:   interpolation in 2-parameter table (e.g. ADAS)
 !  ifit=4:   interpolation in single parameter table (e.g. open ADAS,...)
 !  ifit=5:   use internal eirene collision radiative code. To be generalized
-!            (currently here also other rates, orate  for this particular option.
+!            (currently here also other rates, orate, for this particular option).
 !            More logical if the latter are moved
 !            to routine "eirene_energy_rate_coeff"
 

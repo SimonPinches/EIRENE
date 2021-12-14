@@ -1,4 +1,29 @@
       MODULE EIRMOD_PLTEIR
+
+cdr  30.4.04:  call plttly for spectra corrected.
+cdr            first bin (no. 0) and last bin (no. nsts+1) contain
+cdr            the fluxes outside the range of spectra.
+cpb  30.7.04:  deal with switched off tallies
+cdr  10.6.05:  further modifications of plot for spectra (text,
+c              total, plot vs. wavelength, plot 2 spectra into same frame)
+!pb  18.12.06: general checking of XMCP removed to allow plots of
+!              input tallies even if no Monte Carlo particle has been followed
+!    10.01.07: SUBROUTINE PLTEIR_REINIT added for reinitialization of EIRENE
+!    30.01.09: TEXT CORRECTED FOR PLOTS OF SPECTRA (INPUT BLOCK 10F)
+!    30.01.09: additional wavelength unit plots only for photon spectra.
+C              Turned off for all other particle types
+cdr  Oct.14  : bug fix re. 'l_same', make sure that first spectra plot is on own frame,
+cdr            even if other (volumetric) output tallies have already been plotted
+cdr            from same stratum in same call to plteir.
+cdr  Aug.15  : scaling of spectrum tallies: hard-wired options. To be done !
+cdr  Mai 19  : Plotting of spectra incomplete. Tbd: use velocity scale too,
+cdr            Allow also plotting for volumetric spectra.
+cdr            Careful: log energy scale option, and combination with negative energies?
+cdr            Directional spectra
+cdr            Sum over species of intensive input tallies is certainly nonsense !
+cdr            proper weighting is missing here.
+C
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -28,23 +53,6 @@
 
       CONTAINS
 
-cdr  30.4.04:  call plttly for spectra corrected.
-cdr            first bin (no.0) and last bin (no. nsts+1) contain
-cdr            the fluxes outside the range of spectra.
-cpb  30.7.04:  deal with switched off tallies
-cdr  10.6.05:  further modifications of plot for spectra (text,
-c              total, plot vs. wavelength, plot 2 spectra into same frame
-!pb  18.12.06: general checking of XMCP removed to allow plots of
-!              input tallies even is no Monte Carlo particle has been followed
-!    10.01.07: ENTRY PLTEIR_REINIT added for reinitialization of EIRENE
-!    30.01.09: TEXT CORRECTED FOR PLOTS OF SPECTRA (INPUT BLOCK 10F)
-!    30.01.09: additional wavelength unit plots only for photon spectra.
-C              Turned off for all other particle types
-cdr  Oct.14  : bug fix re. 'l_same',  make sure that first spectra plot is on own frame,
-cdr            even if other (volumetric) output tallies have already been plotted
-cdr            from same stratum in same call to plteir.
-cdr  Aug.15  : scaling of spectrum tallies: hard-wired options. To be done !
-C
 C
       SUBROUTINE EIRENE_PLTEIR (ISTRA)
 C
@@ -65,12 +73,12 @@ C
       REAL(DP) :: XMI, XMA, TMIN, TMAX, XI, XE, DEL, OUTAUI,
      .            SPCAN, SPC00,WL00,DE, DW
       INTEGER :: IR1(NPLT), IR2(NPLT), IRS(NPLT)
-      INTEGER :: IXXE, IXXI, IYYE, IYYI, K, IINDEX, ISPC, NSPS, INULL,
+      INTEGER :: IXXE, IXXI, IYYE, IYYI, K, ISPC, NSPS, INULL,
      .           NF, NFT, I, IA, N, IXSET2, ISPZ, IALG, N1SDVI, ISAVE,
      .           IALV, ITL, JTAL, IBLD, ICURV, IE, IXSET3, IS,
      .           IERR, ICINC, IYSET3, IX, I2M, J, IRAD, I0, I1, I2, IT,
      .           INDX, ITT, ITP, KK
-      LOGICAL :: LPLOT2(NPLT), LSDVI(NPLT), LPLTT2, LINLOG, L_SAME
+      LOGICAL :: LPLOT2(NPLT), LSDVI(NPLT), LINLOG, L_SAME
       CHARACTER(24) :: TXUNIT(NPLT), TXSPEC(NPLT)
       CHARACTER(24) :: TXUNT1, TXSPC1
       CHARACTER(72) :: TXTALL(NPLT)
@@ -265,7 +273,6 @@ c
               WRITE (iunout,*) 'PLOT REQUESTED FOR TALLY NO. ',JTAL
             ENDIF
 C
-            LPLTT2=.FALSE.
 C
 C .............................................
 C
@@ -293,7 +300,8 @@ cdr  ITL = IABS(JTAL)
               END IF  
 
               IF (ISPZ.EQ.0) THEN
-cdr  sum over species:  this is nonsense in case of intensive quantities, such as Ti,V_in
+cdr  sum over species: this is nonsense in case of intensive quantities,
+cdr                    such as Ti,V_in,
 cdr                     and also in case of derivatives.
 cdr  tbd:  summing with proper weighting, as in outtal.f
                 SELECT CASE (ITL)
@@ -637,7 +645,6 @@ C
                 ENDIF
               ENDIF
               LPLOT2(ICURV)=.TRUE.
-              LPLTT2=.TRUE.
               I1=IR1(ICURV)
               I2=IR2(ICURV)
               I2M=I2-1
@@ -1217,7 +1224,7 @@ cdr  itt=2 was still missing....  units probably: (TO BE CHECKED)
       RETURN
       END SUBROUTINE EIRENE_PLTEIR
 
-C     the following ENTRY is for reinitialization of EIRENE (DMH)
+C     the following SUBROUTINE is for reinitialization of EIRENE (DMH)
 
       SUBROUTINE EIRENE_PLTEIR_REINIT
       IMPLICIT NONE

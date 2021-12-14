@@ -551,4 +551,5 @@ c           find corresponding triangle
       enddo                     !iatm
       close(fp)
 
-      end
+      return
+      end subroutine eirene_outusr

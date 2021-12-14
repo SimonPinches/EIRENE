@@ -1,16 +1,17 @@
-c  new in 2004:
-c  density models to contruct background data from other given data :
+c  Set derived plasma data, such as electron density, vacuum flags, etc.
+c  also:
+c  "density models" to contruct background data from other given data :
 c      Saha, Boltzmann, Planck, 
-c      corona, colrad, file (fort.13, or fort.10)
+c      corona, col-rad, file (fort.13 or fort.10)
 c
-c  presently:  "File" and "Boltzmann": may affect electron density.
+c  presently:  Options "File" and "Boltzmann": may affect electron density.
 c              hence: done prior to electron density, etc...
 c              "Corona", "Colrad", "Saha", "Planck": need electron density as
 c                            input, or, at least, do not affect n_e
 c                            hence: done after electron density, etc...
 C  may05
 c  1) additional density model only for neutrals?  removed
-c  2) boltzmann factor only if Ti gt tvac
+c  2) Boltzmann factor only if Ti gt Tvac
 c     to be checked: correct low T limit: everything in lower level?
 c  3) new ti only if nlmlti
 c  4) new vi only if nlmlv (nlmlv is new, in cinit.f, and set in input.f)
@@ -20,15 +21,17 @@ c          vold<0 possible. replaced by vnew=vold
 c
 c  march 06
 c     new option: icall > 0, and call base_density
-c       allows to use output tallies and special "density model" to
-c       construct new input tallies (densities, temperatures, drift velocities)
+c       allows to use output (test partcile) tallies and special "density model" to
+c       construct new input (field particle) tallies (densities, temperatures, drift velocities)
 c       e.g. for postprocessing (diagno), or for iterations (bgk).
 c
 !pb  22.11.06: flag for shift of first parameter to rate_coeff introduced
 !pb  06.03.07: new density models 'CONSTANT' and 'MULTIPLY' introduced
-!pb            'CONSTANT' sets constant plasma profiles
-!pb            'MULTIPLY' creates a new bulkdensity by multiplying an
-!pb            existing plasma density with a factor specified in input block 5
+!pb            'CONSTANT' sets constant plasma profiles,
+cdr             to a value specified in input block 5
+!pb            'MULTIPLY' creates a new field particle density by multiplying an
+!pb            existing plasma density
+cdr            with a factor specified in input block 5
 
 !pb  11.01.10: interpolation of plasma profiles to cell vertices added
 
@@ -56,6 +59,9 @@ cdr            with the new, unified, parser for
 cdr            reaction decks. 
 cdr  may 2019: spectra here ? probaby wrong place. (corona, colrad ?).
 cdr            unused? remove ?
+cdr  Nov. 19:  add planckian (photon gas) density model (unfinished)
+cdr  Oct. 20:  remove call to wrplam, i.e. decouple plasma background
+cdr            preparation from data file handling, reduce complexity
 
 c
       SUBROUTINE EIRENE_PLASMA_DERIV (ICALL)
@@ -66,26 +72,28 @@ c                           set new Ti for ipls
 c    nlmlv  (via cinit.f):  all bulk ions have own velocity, Vx,Vy,Vz, on V*(iplsv)
 c                           set new flow velocity for ipls
 
-c    icall:               :
+c    icall:
 
 c    icall=0
-c      called PRIOR to Monte Carlo loop (from subr. input)
-c      in this call all density models referring to output tallies
+c      pre-processing:
+c      called PRIOR to Monte Carlo loop (from subr. input).
+c      In this call all "density models" referring to output tallies
 c      are ignored (e.g. 'fort.10').
 c    icall=1
-c      called AFTER Monte Carlo loop and sum over strata
-c        this allows to put output tallies from a run onto the
-c        background for a next iteration or postprocessing.
-c        In this call all density models referring to input tallies are
-c        ignored, because they are already done in a previous call
+c      post-processing:
+c      called AFTER Monte Carlo loop and sum over strata.
+c        This allows to put output tallies (from fort.10) from a run onto the
+c        background (input tallies) for a next iteration or for postprocessing.
+c        In this call all "density models" referring to input tallies are
+c        ignored, because they are already done in the previous call with ICALL=0
 
 c  for appropriate values of nfilel:  = 1,3,4,6,8,9
 c      write fort.13 (CALL WRPLAM) after all density models are done.
 
 c   carry out specific "background models",
 c   for bulk species IPLS
-c      'fort.13':  take background data from fort.13, species: iold
-c      'fort.10':  take test particle data from fort.10, species: iold
+c      'fort.13': take background data from fort.13, species: IOLD
+c      'fort.10': take test particle data from fort.10, species: IOLD
 
 c  set derived plasma parameters:
 c   DEIN             : electron density (from quasineutrality)
@@ -192,6 +200,7 @@ cdr
         IPLSV=MPLSV(IPLS)
 
         SELECT CASE (CDENMODEL(IPLS))
+
           CASE ('FORT.13','FTN13')
 
             IF (IO.EQ.0) THEN
@@ -210,7 +219,7 @@ c             ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
 
           CASE ('FORT.10','FTN10')
 
-c   itold = ??
+c   itold = ?, type of particle on fort.10?
 c   check: itold ge 0 and itold le 3
             IOLD=TDMPAR(IPLS)%TDM%ISP(1)
             IOLDTI=MPLSTI(IOLD)
@@ -346,6 +355,12 @@ C  SET 'LOG OF TEMPERATURE AND DENSITY' ARRAYS
         TEINL(J)=LOG(ZTEI)
         ZTNE=MAX(DVAC,MIN(DEIN(J),1.E20_DP))
         DEINL(J)=LOG(ZTNE)
+
+cdr  set "vacuum flags": lgvac(j,ipls) turns off all reactions with
+cdr  background species ipls, in cell j
+cdr  ipls=npls+1:  electrons
+cdr  ipls=0     :  all species, i.e.: all reactions are turned off in this cell.
+cdr  ipls       :  set below, after special "density models" are done.
         TEPLS=TEIN(J)
         DEPLS=DEIN(J)
         LGVAC(J,NPLS+1)=TEPLS.LE.TVAC.OR.DEPLS.LE.DVAC
@@ -381,8 +396,9 @@ c...............................................................saha: done
         CASE ('CORONA    ')
 cdr  density of a background "isotope" IPLS is derived from balance between
 cdr  a single step excitation or ionisation 
-cdr  from a donor state IOLD=TDMPAR(IPLS)%TDM%ISP(1), 
-cdr  and a radiative decay A_CORONA of that "isotope" IPLS. 
+cdr  from a donor state IOLD=TDMPAR(IPLS)%TDM%ISP(1) ("gain"= RCORONA)
+cdr  followed by a radiative decay A_CORONA of that "isotope" IPLS ("loss" = ACORONA).
+cdr  The balance: n_iold * gain  = n_ipls * loss  provides density n_ipls
           IOLD=TDMPAR(IPLS)%TDM%ISP(1)
           IOLDTI=MPLSTI(IOLD)
           IOLDV=MPLSV(IOLD)
@@ -435,6 +451,8 @@ c...............................................................corona: done
 cdr  density of a background "isotope" IPLS is derived from collision radiative
 cdr  models, as an CR equilibrium population of excited states. 
 cdr  From one or several donor states (components/contributions)
+cdr  TEIN and DEIN (electron parameters) are given already.
+
 cdr  IOLD=TDMPAR(IPLS)%TDM%ISP(IRE) 
           IF (.NOT.ALLOCATED(SUMNI)) THEN
             ALLOCATE (SUMNI(NRAD))
@@ -446,12 +464,16 @@ cdr  IOLD=TDMPAR(IPLS)%TDM%ISP(IRE)
 C  ARE THERE MULTIPLE ION TEMPERATURES?
           if (nlmlti) then
             TIIN(IPLSTI,:)=0._DP
+cdr       else ??
+cdr  one common temperature for all IPLS. Nothing to be done here.
           endif
 C  ARE THERE MULTIPLE ION DRIFT VELOCITIES?
           if (nlmlv) then
             VXIN(IPLSV,:)=0._DP
             VYIN(IPLSV,:)=0._DP
             VZIN(IPLSV,:)=0._DP
+cdr       else ??
+cdr  one common flow velocity field for all IPLS. Nothing to be done here.
           endif
 
           DO IRE=1,TDMPAR(IPLS)%TDM%NRE
@@ -638,6 +660,7 @@ C                        BUT PERHAPS FOR NEUTRAL BACKGROUND
  5103 CONTINUE
 
       IF (LEVGEO.EQ.3) THEN
+cdr set vacuum flags in polygonal grid cut cells (if any)
         DO 5161 I=1,NPPLG-1
           DO 5162 IP=NPOINT(2,I),NPOINT(1,I+1)-1
             IPM=IP-1
@@ -658,6 +681,7 @@ C  FACTOR FOR MEAN SPEED
         FCT1=1./RMASSP(IPLS)*8./PIA*CVEL2A*CVEL2A
 C  FACTOR FOR ROOT MEAN SQUARE SPEED
         FCT2=1./RMASSP(IPLS)*3.*CVEL2A*CVEL2A
+
         FCRG=CVEL2A/SQRT(RMASSP(IPLS))
         IPLSTI=MPLSTI(IPLS)
         IPLSV=MPLSV(IPLS)
@@ -847,23 +871,28 @@ C  KK   : INDEX OF GRADIENT TALLY
 C
 C  SAVE PLASMA DATA AND ATOMIC DATA ON FORT.13
 C
-
       IF ((NFILEL ==1) .OR. (NFILEL ==3) .OR. (NFILEL ==4)) THEN
 cdr      NFILEL=3  probably wrong,  jan. 2016
          CALL EIRENE_WRPLAM(TRCFLE,0)
       END IF
 
-
-
-
       RETURN
 
       CONTAINS
 
+cdr Set arrays Density, Temperature, from previous run (fort.10) or
+cdr at the end of the present run, for background no. IPLS
+cdr So far: temperature is defined as ratio-tally from energy density
+cdr         and particle density, ignoring flow velocities.
+
       SUBROUTINE EIRENE_GET_BASE_DENSITY(IRE)
-c  input: ire, number of density that contributes to the
+c  input: ire: number of density that contributes to the
 c              evaluation of the expression for the selected species
 c              ipls with special density/temperature option
+c         ipls:
+c         icall:
+c  output: base_density, base_temp (missing: base_drift?)
+c
       INTEGER, INTENT(IN) :: IRE
       INTEGER :: IG, IT, ISTRA, ITYP
 
@@ -912,6 +941,7 @@ C  NOTHING TO BE DONE
 
       SELECT CASE (TDMPAR(IPLS)%TDM%ITP(IRE))
       CASE(0)
+cdr photons
         IF (ASSOCIATED(PDENPH)) THEN
           DO IG=1,NRAD
             IT = NCLTAL(IG)
@@ -923,6 +953,7 @@ C  NOTHING TO BE DONE
           END DO
         END IF
       CASE(1)
+cdr atoms
         IF (ASSOCIATED(PDENA)) THEN
           DO IG=1,NRAD
             IT = NCLTAL(IG)
@@ -934,6 +965,7 @@ C  NOTHING TO BE DONE
           END DO
         END IF
       CASE(2)
+cdr molecules
         IF (ASSOCIATED(PDENM)) THEN
           DO IG=1,NRAD
             IT = NCLTAL(IG)
@@ -945,6 +977,7 @@ C  NOTHING TO BE DONE
           END DO
         END IF
       CASE(3)
+cdr test ions
         IF (ASSOCIATED(PDENI)) THEN
           DO IG=1,NRAD
             IT = NCLTAL(IG)
@@ -956,6 +989,7 @@ C  NOTHING TO BE DONE
           END DO
         END IF
       CASE(4)
+cdr  bulk particles
         BASE_DENSITY(1:NRAD) = DIIN(IOLD,1:NRAD)
         BASE_TEMP(1:NRAD) = TIIN(IOLDTI,1:NRAD)
       CASE DEFAULT
@@ -971,6 +1005,9 @@ C  NOTHING TO BE DONE
 
 
       SUBROUTINE EIRENE_GET_SPECTRUM (ICELL,IRE,SPEC,FOUND)
+cdr return an (energy-resolved) spectrum SPEC in cell no. ICELL
+cdr IRE: TDMPAR...(IRE)
+
 
       INTEGER, INTENT(IN) :: ICELL, IRE
       TYPE(EIRENE_SPECTRUM), INTENT(OUT) :: SPEC
@@ -996,8 +1033,7 @@ C  NOTHING TO BE DONE
           FOUND = .TRUE.
         END IF
       END DO
-
+      RETURN
       END SUBROUTINE EIRENE_GET_SPECTRUM
-
 
       END SUBROUTINE EIRENE_PLASMA_DERIV

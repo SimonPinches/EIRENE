@@ -88,6 +88,7 @@ cdr  changed in summer 2019
 !          x2=rsurf(ir+1)
 !          x3=rsurf(ir+1)
 !          x4=rsurf(ir)
+
           x1=rsurf(ir+1)
           x2=rsurf(ir)
           x3=rsurf(ir)

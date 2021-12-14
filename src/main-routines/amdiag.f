@@ -126,7 +126,7 @@ c  electron impact rate coefficient no. irei
           irei=ns
           mm=modcol(1,2,irei)
           kk=NREAEI(irei)
-c find collision partners corresponding to process irei: IPL and ISP
+c find collision partners corresponding to process irei: ISP
           IPL=0  ! ELECTRONS
 
 c  first: try atoms
@@ -195,6 +195,7 @@ c  no interacting particle species found
           endif
 
         ELSEIF (NA.EQ.21) THEN
+C  ELECTRON IMPACT ENERGY LOSS RATE COEFFICIENT NO. IREI
           mm=modcol(1,4,irei)
           kk=nelrei(irei)
 c  electron impact energy loss rate coefficient no. irei
@@ -220,11 +221,11 @@ c
 
 c.............................................................................
 
+C  CHARGE EXCHANGE RATE COEFFICIENT NO. IRCX
         ELSEIF (NA.EQ.22.OR.NA.EQ.23) THEN
-c  charge exchange rate coefficient no. ircx
           ircx=ns
           mm=modcol(3,2,ircx)
-c find collision partners corresponding to process ircx
+c find collision partners corresponding to process ircx: IPL and ISP
           IPL=0
 c  first: try atoms
           LATCX: do iat=1,natmi
@@ -294,6 +295,7 @@ c  no interacting particle species found
  1722       CONTINUE
 
             GOTO 5000 !done
+
           ELSEIF (MM.EQ.2) THEN
 C  USE EB (ENERGY OF TEST PARTICLE) = 1.5 TI
             IPLTI = MPLSTI(IPL)
@@ -305,7 +307,7 @@ c      MASST(KK)=  TARGET MASS FOR CROSS-SECTION, BEAM MASS FOR BEAM MAXWELLIAN 
             EBFAC= MASST(KK)*PMASSA/RMASSS
             DO ICELL=1,NSBOX
               if (lgvac(icell,ipl)) cycle
-c  in fpatha,m,i, we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFCX(IRCX))
+c  in fpath we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFCX(IRCX))
               ELB=log(max(0.1003_DP,1.5_DP*TIIN(iplti,icell)*EBFAC))
               TBCX3(1:NSTORDT) = TABCX3(IRCX,ICELL,1:NSTORDT)
               EXPO = EIRENE_SNGL_POLY(TBCX3,ELB,RCMIN,RCMAX,FP,0,0,
@@ -314,10 +316,10 @@ c  in fpatha,m,i, we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFCX(IRCX))
      .        exp(expo)/(diin(ipl,icell)+eps30)/AU
             enddo
             goto 5000  !done
-          ELSE ! MM=MODCOL.gt.2:  NOT READY
+
+          ELSE ! mm=modcol(3,2,ircx).gt.2: NOT READY
             GOTO 3000
           ENDIF
-
 
         ELSEIF (NA.EQ.23) THEN
           mm=modcol(3,4,ircx)
@@ -331,12 +333,12 @@ c  not ready
 
 c........................................................................
 
+C  ELASTIC COLLISION RATE COEFFICIENT NO. IREL
         ELSEIF (NA.EQ.24.or.NA.EQ.25) THEN
-c  elastic collision rate coefficient no. irel
           irel=ns
           mm=modcol(5,2,irel)
           kk=NREAEL(irel)
-c find collision partners corresponding to process irel
+c find collision partners corresponding to process irel: IPL and ISP
           IPL=0
 c  first: try atoms
           LATEL: do iat=1,natmi
@@ -397,6 +399,7 @@ c  no interacting particle species found
      .      //' KK='//CN1
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)// ' on '// TEXTS(NSPAMI+IPL)
           TXTPUN(IAIN,NTALN) = 'A.U. (0.612E-8 cm3/s)   '
+
           if (mm.eq.1) then
             DO 1724 ICELL=1,NSBOX
               if (lgvac(icell,ipl)) cycle
@@ -404,7 +407,8 @@ c  no interacting particle species found
      .        TABEL3(IREL,ICELL,1)/(diin(ipl,icell)+eps30)/AU
  1724       CONTINUE
             GOTO 5000  !done
-          ELSEIF (MM.EQ.2) THEN
+
+          ELSEIF (mm.EQ.2) THEN
 C  USE EB (ENERGY OF TEST PARTICLE) = 1.5 TI
             IPLTI = MPLSTI(IPL)
             FP = 0._DP
@@ -415,7 +419,7 @@ c      MASST(KK)=  TARGET MASS FOR CROSS-SECTION, BEAM MASS FOR BEAM MAXWELLIAN 
             EBFAC= MASST(KK)*PMASSA/RMASSS
             DO ICELL=1,NSBOX
               if (lgvac(icell,ipl)) cycle
-c  in fpatha,m,i we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFEL(IREL))
+c  in fpath we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFEL(IREL))
               ELB=log(max(0.1003_DP,1.5_DP*TIIN(iplti,icell)*EBFAC))
               TBEL3(1:NSTORDT) = TABEL3(IREL,ICELL,1:NSTORDT)
               EXPO = EIRENE_SNGL_POLY(TBEL3,ELB,RCMIN,RCMAX,FP,0,0,
@@ -439,14 +443,14 @@ c  not ready
 
           GOTO 3000
 
-c......................................................................
-        ELSEIF (NA.EQ.26.OR.NA.EQ.27) THEN
+c.............................................................................
 
-c  general ion impact collision rate coefficient no. irpi
+C  GENERAL ION IMPACT COLLISION RATE COEFFICIENT NO. IRPI
+        ELSEIF (NA.EQ.26.OR.NA.EQ.27) THEN
           IRPI=NS
           mm=modcol(4,2,irpi)
           kk=nreapi(irpi)
-c find collision partners corresponding to process irpi
+c find collision partners corresponding to process irpi: IPL and ISP
           IPL=0
 c  first: try atoms
           LATPI: do iat=1,natmi
@@ -527,7 +531,7 @@ c      MASST(KK)=  TARGET MASS FOR CROSS-SECTION, BEAM MASS FOR BEAM MAXWELLIAN 
             EBFAC= MASST(KK)*PMASSA/RMASSS
             DO ICELL=1,NSBOX
               if (lgvac(icell,ipl)) cycle
-c  in fpatha,m,i we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
+c  in fpath we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
               ELB=log(max(0.1003_DP,1.5_DP*TIIN(iplti,icell)*EBFAC))
               TBPI3(1:NSTORDT) = TABPI3(IRPI,ICELL,1:NSTORDT)
               EXPO = EIRENE_SNGL_POLY(TBPI3,ELB,RCMIN,RCMAX,FP,0,0,
@@ -541,6 +545,7 @@ c  in fpatha,m,i we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
           ENDIF
 
         ELSEIF (NA.EQ.27) THEN
+C  BULK ION IMPACT ENERGY LOSS RATE COEFFICIENT NO. IRCX
           mm=modcol(4,4,irpi)
           kk=NELRPI(irpi)
           irpi=ns
@@ -551,8 +556,8 @@ c  in fpatha,m,i we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
 
 c.................................................................
 
+C  RECOMBINATION RATE COEFFICIENT NO. IRRC
         ELSEIF (NA.EQ.28.OR.NA.EQ.29) THEN
-c  recombination rate coefficient no. irrc
           irrc=ns
           mm=modcol(6,2,irrc)
           kk=NREARC(irrc)
@@ -569,7 +574,6 @@ c  here: only try bulk ions:
           enddo
           enddo LPLRC
 c  irrc is a process for bulk ion ipl, colliding with electron
-
 c
 c  no interacting particle species found
           TXTPLS(IAIN,NTALN) =
@@ -659,8 +663,7 @@ cdr  distinct from eelei1:  here eelrc1 already contains tabrc1 as factor
       WRITE (iunout,*) 'IAIN, NS,NA      ', IAIN, NS,NA
       WRITE (iunout,*) 'PROCESS NO. KK, MODCOL(.,.,.)   ', KK,MM
 
-
   190 CONTINUE
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_AMDIAG

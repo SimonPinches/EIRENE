@@ -1,9 +1,16 @@
-
-
+cdr  docu started, still more needed. What are the rules applied
+cdr  to switch input tallies off?
 C
 C      SUBROUTINE SETPRM_INTAL
 C
       SUBROUTINE EIRENE_SETPRM_INTAL
+cdr  dwell on livtal, lsmopro, intlopts and the pointers LTIIN,LTEIN,....
+cdr  ...probably...:
+cdr  set defaults for livtali, and then
+cdr  use optional input tally flags INTLOPTS
+cdr  found from block 5 of input file, to set: LIVTALI, LSMOPRO.
+cdr  after this: INTLOPTS should not be needed any more?
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -20,7 +27,7 @@ C
 C  LIVTALI: SWITCH OFF SOME INPUT TALLIES AUTOMATICALLY;
 C           Finally set in COMUSR.f
 c  Structure similar to LIVTALV(..) FOR OUTPUT (SCORED) VOLUME TALLIES
-c            (which is finally set in CESTIM.f
+c          (which is finally set in CESTIM.f)
 
 c default setting:
       LIVTALI = .FALSE.
@@ -32,15 +39,21 @@ c  plasma background
       LIVTALI(4)   = .TRUE.       ! DIIN
 
 C  background flow velocities
+cdr should be related to nldrft, rather than nplsv?
       LIVTALI(5)   = NPLSV>0      ! VXIN
       LIVTALI(6)   = NPLSV>0      ! VYIN 
       LIVTALI(7)   = NPLSV>0      ! VZIN 
 
 c  magnetic field
+cdr should be related to whether B field is needed or not.
+cdr rather than always being "true"
       LIVTALI(8)   = .TRUE.       ! BXIN, else: =0.0
       LIVTALI(9)   = .TRUE.       ! BYIN, else: =0.0
       LIVTALI(10)  = .TRUE.       ! BZIN, else: =1.0
       LIVTALI(11)  = .TRUE.       ! BFIN, else: =1.0
+
+c  electric field
+cdr to be written
 
       LIVTALI(12)  = NAIN>0       ! ADIN
 
@@ -53,18 +66,20 @@ c  magnetic field
 C  CURRENTLY THE LAST USED INPUT TALLY IS TALLY NO. 25 (NTALG=30)
 
 C  INTLOPT < 0  : SWITCH OFF TALLY
-C          = 0  : KEEP DEFAULT
-C          = 1  : EXPLICITELY SWITCH ON TALLY
-C          = 2  : PREPARE FOR SMOOTHING, INTERPOLATE TO CORNERPOINTS
-C          = 3  : SWITCH ON GRADIENTS
+C          = 0  : KEEP DEFAULT: on or off
+C          = 1  : EXPLICITLY SWITCH ON TALLY
+C          = 2  : PREPARE FOR INTERPOLATING IN CELL, INTERPOLATE TO CORNER POINTS
+cdr               not ready for all LEVGEO geometry options
+C          = 3  : SWITCH ON GRADIENTS (IMPLIES 2)
 
       DO ITAL = 1, NTALI
         IF (INTLOPTS(ITAL) < 0) THEN
 C  SWITCH OFF TALLY
           LIVTALI(ITAL) = .FALSE.
         ELSE IF (INTLOPTS(ITAL) > 0) THEN
-C  EXPLICITELY SWITCH ON TALLY
+C  EXPLICITLY SWITCH ON TALLY
           LIVTALI(ITAL) = .TRUE.
+
           IF (ITAL <= NTALG) THEN
 C  SWITCH ON INTERPOLATION TO CELL VERTICES  
             IF (INTLOPTS(ITAL) >= 2) LSMOPRO(ITAL) = .TRUE.
@@ -73,14 +88,17 @@ C  SWITCH ON GRADIENT TALLIES d(TL)/dX, d(TL)/dY,  d(TL)/dZ
               INDGRAD = NTALG + (ITAL-1)*3
               LIVTALI(INDGRAD+1 : INDGRAD+3) = .TRUE.
             END IF
+
           ELSE   ! ITAL > NTALG
 C  TALLY ITAL IS A GRADIENT TALLY; 
 C  ENSURE THAT INTERPOLATION TO CELL VERTICES IS SWITCHED ON FOR
-C  CORRESPONDING INPUT TALLY
+C  CORRESPONDING INPUT TALLY INDTL
             INDTL = (ITAL - NTALG) / 3 
             IF (MOD(ITAL-NTALG,3) > 0) INDTL = INDTL + 1
+c    now: 1 <= indtl <= ntalg=30
 C  SWITCH ON INTERPOLATION TO CELL VERTICES  
             LSMOPRO(INDTL) = .TRUE.
+cdr careful: lsmopro(indtl) may be true, but livtali(indtl)=false?
           END IF
         END IF
       END DO 
@@ -117,6 +135,7 @@ C  ARE SWITCHED ON
       END IF
 
       IF (.NOT.(LVXIN .AND. LVYIN .AND. LVZIN)) THEN
+cdr ?? for a stationary background (NLDRFT=FALSE) we should not need any LV.IN
         WRITE (IUNOUT,*) ' SWITCHING OFF OF PLASMA DRIFT VELOCITY' //
      .                   ' IS PROHIBITED'
         WRITE (IUNOUT,*) ' TALLIES ARE SWITCHED ON AGAIN '
@@ -267,9 +286,9 @@ c  from here on: derivatives (gradients) of input tallies
       NFRSTP(97)=NPLSV  ! BVIN
       NFRSTP(98)=NPLSV  ! BVIN
       NFRSTP(99)=NPLSV  ! BVIN
-      NFRSTP(100)=NPLS   ! PARMON
-      NFRSTP(101)=NPLS   ! PARMON
-      NFRSTP(102)=NPLS   ! PARMON
+      NFRSTP(100)=NPLS  ! PARMOM
+      NFRSTP(101)=NPLS  ! PARMOM
+      NFRSTP(102)=NPLS  ! PARMOM
       NFRSTP(103)=0      ! PSI
       NFRSTP(104)=0      ! PSI
       NFRSTP(105)=0      ! PSI
@@ -294,7 +313,7 @@ C  NTALI=96?  number of input tallies  (19 PRIMARY + 5 DERIVED + 24 GRADIENTS)
 cdr Since primary and derived input tallies got mixed up anyway, 
 cdr add magnetic flux (vector potential). 
 cdr Be careful:
-cdr in some places in the code currently the numbering  of input tallies is hard coded.
+cdr In some places in the code currently the numbering of input tallies is hard-coded.
 cdr (ALGTAL, OUTPLA,....) 
 C
       DO 5 J=1,NTALI
@@ -328,7 +347,7 @@ c  allocate and initialize plstls
 c  set pointers:  input tallies tein, tiin,....parmom,.....on plttls
       CALL EIRENE_ASSOCIATE_COMUSR
 
-cdr  hard coded test, in case parmom is the last active input tally
+cdr  hard-coded test, in case parmom is the last active input tally
 cdr   tsave=parmom(npls,nrad)
 cdr   parmom(npls,nrad)=1.2345678
 cdr   if (abs(plstls(ninptl,nrad)-1.2345678).gt.eps10) then
@@ -383,8 +402,4 @@ c.............................................................................
       END IF
 C
       RETURN
-      END
- 
- 
- 
- 
+      END SUBROUTINE EIRENE_SETPRM_INTAL

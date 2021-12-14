@@ -3,7 +3,8 @@ C
 C*DK DETER
       FUNCTION EIRENE_DETER(A11,A21,A31,A12,A22,A32,A13,A23,A33)
 C
-C  DETERMINANT OF (3,3) MATRIX A
+C  DETERMINANT OF (3x3) MATRIX A, Laplace expansion, first row a11,a12,a13.
+cdr   better find row or column with zeros first, and expand from there...
 C
       USE EIRMOD_PRECISION
       IMPLICIT NONE

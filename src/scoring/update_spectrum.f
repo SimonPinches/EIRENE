@@ -4,9 +4,9 @@ cdr             All current calls are with either isc=0 or isc=1.
 cdr             isc=2: is apparently unused but ready?
 cdr  16.05.19:  log spectra disabled for directional spectra (with negative signs of EB possible)
 cdr             IDIREC=1 option is not available here for surface spectra (forgotten?).
-cdr             but already programed in OUTSPEC. "Fail-safe" added for now.
+cdr             but already programmed in OUTSPEC. "Fail-safe" added for now.
 cdr             Lots of identical code twice in ISC=0 and ISC > 0. Can be reduced.
-cdr  29.05.19:  Bug fix: binning for directional volumetrix spectra
+cdr  29.05.19:  Bug fix: binning for directional volumetric spectra
 cdr             use E0_par times sign(vel,chord), 
 cdr             to bin in (parallel) energy units with sign.
 cdr             More convenient units: parallel velocity (parallel to chord)
@@ -28,7 +28,7 @@ c       isc =1:  score in coarse (scoring) grid
 c       isc =2:  score in fine (geometry)  grid
 c       ind:  not in use  (often: ind = iflag in calling programs,
 c                          IFLAG is a flag used for special (non-standard)
-c                          options for volume averged tally estimators)
+c                         options for volume-averaged tally estimators)
 c  ityp:  type of particle
 
       USE EIRMOD_PRECISION

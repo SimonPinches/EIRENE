@@ -198,10 +198,8 @@ C  PLOT LINES
             YMY=MINY
           ENDIF
           CALL GRJMP(REAL(X(I1),SP),REAL(YMY,SP))
-          CALL
-     .  GRDRW(REAL(X(I1),SP),REAL(Y(I1,I),SP))
-          CALL
-     .  GRDRW(REAL(X(I1+IS),SP),REAL(Y(I1,I),SP))
+          CALL GRDRW (REAL(X(I1),SP),REAL(Y(I1,I),SP))
+          CALL GRDRW (REAL(X(I1+IS),SP),REAL(Y(I1,I),SP))
           DO J=I1+IS,I2,IS
             CALL GRDRW (REAL(X(J),SP),REAL(Y(J,I),SP))
             CALL GRDRW (REAL(X(J+IS),SP), REAL(Y(J,I),SP))
@@ -265,4 +263,4 @@ C  PLOT ERROR BARS
       CALL GRCHRC (0.3,0.,16)
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_PLTTLY

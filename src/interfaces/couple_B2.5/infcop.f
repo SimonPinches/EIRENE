@@ -3288,5 +3288,3 @@ C> transfer to the external code
       integer, intent(in) :: istra
       RETURN
       END SUBROUTINE EIRENE_INFCOP_POST_STRATUM
-
-      

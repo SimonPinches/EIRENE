@@ -15,7 +15,7 @@ c  Set default texts  (volume tallies: name, species, units),
 C    ditto: surface and input tallies.
 C  Main call: SETTXT
 C  Set first (leading) dimension of tally arrays: nfstvi, nfstwi.
-C  Entry    : STTXT1
+C  Subroutine: STTXT1
 C  Set 1st index range per tally: nspan(itl), nspen(itl), for vol and surf. tallies,
 c                                 for pointers to large tally arrays
 c
@@ -159,7 +159,7 @@ C  TALLY NTALB=61 (SEE PARMMOD.F)
 C        ADDITIONAL TALLIES FOR ITERATIVE MODE (BGK ITERATION)
       TXTTAL(1,NTALB)=
      . 'ADDITIONAL TALLIES FOR ITERATIVE MODE, SUBR. UPTBGK.F       '
-C  TALLY NTALB=62 (SEE PARMMOD.F)
+C  TALLY NTALR=62 (SEE PARMMOD.F)
 C        ADDITIONAL TALLIES, ALGEBRAIC EXPRESSION IN EXISTING TALLIES
 C        TXTTAL IS OVERWRITTEN BY INPUT BLOCK 10C
       TXTTAL(1,NTALR)=
@@ -313,9 +313,10 @@ C
 C  ADDITIONAL TALLIES
       TXTUNT(1,NTALA)='TO BE READ              '
       TXTUNT(1,NTALC)='TO BE READ              '
+      TXTUNT(1,NTALT)='TO BE READ              '
       TXTUNT(1,NTALM)='TO BE DEFINED IN INFCOP '
-      TXTUNT(1,NTALR)='TO BE READ              '
       TXTUNT(1,NTALB)='TO BE DEFINED IN BGK    '
+      TXTUNT(1,NTALR)='TO BE READ              '
 C  GENERATION LIMIT TALLIES
       TXTUNT(1,63)='AMP*CM**-3              '
       TXTUNT(1,64)='AMP*CM**-3              '
@@ -807,6 +808,7 @@ C  INITIALISE SPECIES ARRAYS FOR VOLUME TALLIES
       N3=N2+NMOLI
       N4=N3+NIONI
       N5=N4+NPLSI
+c  additional tallies
       N6=N5+NADVI
       IF (NLEMIS) N6 = N5+NADVI+NADV_ADD
       N7=N6+NALVI
@@ -881,6 +883,7 @@ c  additional snapshot estimators
       NSPAN(NTALT)=N10+1
 c  additional couple tallies
       NSPAN(NTALM)=N8+1
+c  additional bgk tallies
       NSPAN(NTALB)=N9+1
 c  additional algebraic tallies
       NSPAN(NTALR)=N6+1

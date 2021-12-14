@@ -186,4 +186,4 @@ c
 
       iret = 1
       return
-      end
+      end subroutine eirene_talusr

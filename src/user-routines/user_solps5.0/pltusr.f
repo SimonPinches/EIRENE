@@ -11,4 +11,4 @@ C
       INTEGER, INTENT(IN) :: J
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_PLTUSR

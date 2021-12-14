@@ -11,7 +11,14 @@ cdr             tbd:  BXPERP, BYPERP:  move into LBSMO condition
 cdr             missing:  dealloc_corners  ??
 cdr             remove redundant tally LGDFT (also from LUSR)
 cdr  jan 19  :  nains, naint moved here, formerly: ccoupl
-cdr             input tally no. 25 added: PSI, poloidal magn. flux. Units?
+cdr             input tally no. 25 added: PSI, poloidal magn. flux.
+cdr  jan 20  :  fix smoothing options for some interrelated input tallies
+cdr             in particular for vector components of the same physical quantity.
+cdr             Comments...
+cdr  may 20  :  remove unused variables: natmi_in, nmoli_in,...
+cdr             add npls_fix:  number of background species kept fixed
+cdr             in eirene. Only npls_fix+1,...,npls are stored stream fort.13shrt,
+cdr             for iterations (BGK, Photons,...)
 
       MODULE EIRMOD_COMUSR
 
@@ -38,6 +45,7 @@ cdr             input tally no. 25 added: PSI, poloidal magn. flux. Units?
 c
       INTEGER, SAVE ::
      P MUSR,   LUSR             ! also only local in this module, apparently
+
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R         PLSTLS(:,:)
 
@@ -50,7 +58,11 @@ C  THE FIRST NPLPR1 DATA ARE PRIMARY INPUT PROFILES, SET IN SUBROUTINE PLASMA
      R        TEIN(:),        TIIN(:,:),      DEIN(:),     DIIN(:,:),
      R        VXIN(:,:),      VYIN(:,:),      VZIN(:,:),
      R        BXIN(:),        BYIN(:),        BZIN(:),     BFIN(:),
-     R        ADIN(:,:),  ! up to this point: also storage on PLASMA_BCKGRND (for data transfer)
+     R        ADIN(:,:),
+cdr Up to this point: also storage is on PLASMA_BCKGRND
+cdr    (for background data transfer, iteration), except the derived tally DEIN.
+cdr So temporarily this storage is allocated twice.
+cdr Next: Derived and assistant input tallies:
      R        VOL(:),         WGHT(:,:),
      R        EXIN(:),        EYIN(:),        EZIN(:),     EFIN(:),
      R        POT(:),
@@ -65,7 +77,7 @@ c  B field fluxfunction PSI, corresponds to POT for electric field
 
 c  Tallies 31 --120: optional: gradients of all scalar input tallies.
 c  For the vectorial input tallies (V_IN, B_IN, E_IN) these gradients
-c  then provide the full dyadic (all nine components).
+c  then provide the full dyad (all nine components).
 
      R        DTEDX(:),       DTEDY(:),       DTEDZ(:),
      R        DTIDX(:,:),     DTIDY(:,:),     DTIDZ(:,:),
@@ -125,8 +137,8 @@ C     PLASMA PROFILES ON CELL VERTICES
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R        CORNER_PROFILES(:,:)
 
-c  storage for setting tallies at cell vertices, rather than cell centres,
-c  for interpolations
+c  storage for additionally setting input tallies at cell vertices,
+c  for FEM-routines (interpolations, gradients,...)
       REAL(DP), POINTER, PUBLIC, SAVE ::
      .        TEINCORNER(:),   TIINCORNER(:,:), DEINCORNER(:),
      .        DIINCORNER(:,:),
@@ -192,6 +204,11 @@ C
      L         LFREE28SMO, LFREE29SMO, LFREE30SMO
 
       LOGICAL, PUBLIC, SAVE ::
+cdr Jan. 2020
+cdr try to enforce physical consistency in new option: smoothed input tallies.
+cdr smoothed density, flow-field, B-field, E-field  fields.
+cdr In case of vector fieLds, all components (and their modulus) must be
+cdr in the same "smoothing category"
      L         LDSMO, LVSMO,  LBSMO,  LESMO
 
 c  pointer to LIVTALI: active or in-active input tallies
@@ -434,7 +451,7 @@ cdr BVIN: add nplsv to nplpr2 and remove npls from nplprm. tbd:  check correct d
 
         ALLOCATE (PLSTLS(NINPTL,NRAD))
  
-        ALLOCATE (CEMETERYP(0:0,NRAD))  ! storage for in-active input tallies
+        ALLOCATE (CEMETERYP(0:0,NRAD))  ! storage for inactive input tallies
 
 
         ALLOCATE (TEINL(NRAD))
@@ -1300,7 +1317,8 @@ cdr these next two B field tallies should go into LBSMO
         ELSE
           NULLIFY(POTCORNER)
         END IF
-      ELSE
+
+      ELSE  !dr no smoothed E field
         NULLIFY(EXCORNER)
         NULLIFY(EYCORNER)
         NULLIFY(EZCORNER)
@@ -1412,6 +1430,7 @@ c
       DEALLOCATE (NPRT)
       DEALLOCATE (ISPEZ)
       DEALLOCATE (ISPEZI)
+
       DEALLOCATE (MPLSTI)
       DEALLOCATE (MPLSV)
       DEALLOCATE (ISPZ_BACK)
@@ -1446,6 +1465,7 @@ c
       DEALLOCATE (NSPEN)
       DEALLOCATE (NSPANW)
       DEALLOCATE (NSPENW)
+
       DEALLOCATE (INTLOPTS)
       DEALLOCATE (NAINS)
       DEALLOCATE (NAINT)
@@ -1593,6 +1613,7 @@ cdr oct 18: initialization of input volumetric tallies moved to ICAL==2
         
         LTEIN      => LIVTALI(1)
         LTIIN      => LIVTALI(2)
+
         LDEIN      => LIVTALI(3)
         LDIIN      => LIVTALI(4)
         LVXIN      => LIVTALI(5)
@@ -1608,6 +1629,7 @@ cdr oct 18: initialization of input volumetric tallies moved to ICAL==2
         LWGHT      => LIVTALI(15)
         LBXPERP    => LIVTALI(16)
         LBYPERP    => LIVTALI(17)
+
         LEXIN      => LIVTALI(18)
         LEYIN      => LIVTALI(19)
         LEZIN      => LIVTALI(20)
@@ -1717,7 +1739,7 @@ cdr oct 18: initialization of input volumetric tallies moved to ICAL==2
       ELSE IF (ICAL == 2) THEN
 c  Active volumetric input tallies
         PLSTLS = 0._DP
-c  Cemetery for in-active input tallies (no storage)
+c  Cemetery for inactive input tallies (no storage)
         CEMETERYP = 0._DP
 
         TEINL  = 0._DP
@@ -1771,7 +1793,7 @@ c  Cemetery for in-active input tallies (no storage)
       CALL MPI_BCAST (LSMOPRO,NTALG,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)     
       IF (ME /= 0) CALL EIRENE_ALLOC_CORNERS
 
-c  active and in-active tallies:
+c  active and inactive tallies:
 c  INPUT:
       CALL MPI_BCAST (LIVTALI,NTALI,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
 cdr   intlopts is only needed on processor 0
@@ -1780,7 +1802,6 @@ cdr   intlopts is only needed on processor 0
       CALL MPI_BCAST (NFSTPI,NTALI,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL EIRENE_ASSOCIATE_COMUSR
       CALL MPI_BCAST (PLSTLS,NINPTL*NRAD,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-
 
       CALL MPI_BCAST (TEINL,NRAD,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (TIINL,NPLSTI*NRAD,MPI_REAL8,0,MPI_COMM_WORLD,ier)

@@ -1,5 +1,5 @@
 cdr Nov. 17   unification of update, fpath.
-cdr           tbd: photon routines, static loop, logatm,mol.ion in static loop.
+cdr           tbd: photon routines, static loop, logatm, mol, ion in static loop.
 cdr Oct. 17   minor sync with folion
 cdr           started: implementation of QSS branch: folstat_neut.f  not ready
 
@@ -229,8 +229,8 @@ C  PREPARE CELL NUMBERS FOR FIRST FLIGHT
           IPOLGN=IPOLG
           IF (NLSRFA) THEN
             CALL EIRENE_ADDCOL (X0,Y0,Z0,SCOS,IRET)
-            if (IRET .EQ. 1) GOTO 101
-            if (IRET .EQ. 2) GOTO 380
+            IF (IRET .EQ. 1) GOTO 101
+            IF (IRET .EQ. 2) GOTO 380
           ELSEIF (NLSRFX) THEN
             select case (LEVGEO)
             case (:3)
@@ -238,32 +238,32 @@ C  PREPARE CELL NUMBERS FOR FIRST FLIGHT
               MSURFG=NPCELL+(NTCELL-1)*NP2T3
               IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
                  CALL EIRENE_STDCOL (ISTS,1,SCOS,IRET)
-                 if (IRET .EQ. 1) GOTO 101
-                 if (IRET .EQ. 2) GOTO 380
+                 IF (IRET .EQ. 1) GOTO 101
+                 IF (IRET .EQ. 2) GOTO 380
               ENDIF
             case (4)
               ISTS=ABS(INMTI(IPOLGN,MRSURF))  !dr NLIM already added in ISTS ?
               MSURFG=INSPAT(IPOLGN,MRSURF)
               IF (ILIIN(ISTS) .NE. 0) THEN
                  CALL EIRENE_STDCOL (ISTS,1,SCOS,IRET)
-                 if (IRET .EQ. 1) GOTO 101
-                 if (IRET .EQ. 2) GOTO 380
+                 IF (IRET .EQ. 1) GOTO 101
+                 IF (IRET .EQ. 2) GOTO 380
               ENDIF
             case (5)
               ISTS=ABS(INMTIT(IPOLGN,MRSURF)) !dr NLIM already added in ISTS ?
 C             MSURFG= ??
               IF (ILIIN(ISTS) .NE. 0) THEN
                  CALL EIRENE_STDCOL (ISTS,1,SCOS,IRET)
-                 if (IRET .EQ. 1) GOTO 101
-                 if (IRET .EQ. 2) GOTO 380
+                 IF (IRET .EQ. 1) GOTO 101
+                 IF (IRET .EQ. 2) GOTO 380
               ENDIF
             case (10)
               ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
 C             MSURFG= ??
               IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
                  CALL EIRENE_STDCOL (ISTS,1,SCOS,IRET)
-                 if (IRET .EQ. 1) GOTO 101
-                 if (IRET .EQ. 2) GOTO 380
+                 IF (IRET .EQ. 1) GOTO 101
+                 IF (IRET .EQ. 2) GOTO 380
               ENDIF
             end select
           ELSEIF (NLSRFY) THEN
@@ -271,16 +271,16 @@ C             MSURFG= ??
             MSURFG=NRCELL+(NTCELL-1)*NR1P2
             IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
                CALL EIRENE_STDCOL (ISTS,2,SCOS,IRET)
-               if (IRET .EQ. 1) GOTO 101
-               if (IRET .EQ. 2) GOTO 380
+               IF (IRET .EQ. 1) GOTO 101
+               IF (IRET .EQ. 2) GOTO 380
             ENDIF
           ELSEIF (NLSRFZ) THEN
             ISTS=INMP3I(IRCELL,IPCELL,MTSURF)
             MSURFG=NRCELL+(NPCELL-1)*NR1P2
             IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
                CALL EIRENE_STDCOL (ISTS,3,SG,IRET)
-               if (IRET .EQ. 1) GOTO 101
-               if (IRET .EQ. 2) GOTO 380
+               IF (IRET .EQ. 1) GOTO 101
+               IF (IRET .EQ. 2) GOTO 380
             ENDIF
           ENDIF
 C         WRITE (IUNOUT,*) 'FOLNEUT: I SHOULD NOT BE HERE'
@@ -523,8 +523,8 @@ C  USE VACUUM VALUES FOR REACTION RATES, MFP, ETC..
           IF (LDAMCEL(NCELL)) GOTO 9912
           ZMFP=EIRENE_FPATH(NCELL,CFLAG,J,NCOU)
 
-c  so far for photons only: local (WMINL) criterion for cond. exp.est.
-c  if mfp smaller than geometrical step size times WMINL, turn off
+c  So far for photons only: local (WMINL) criterion for cond. exp.est.
+c  If mfp smaller than geometrical step size times WMINL, turn off
 c  cond. exp. est.
           IF ((ITYP.EQ.0).AND.(ZMFP < WMINL*CLPD(J))) WMINC_LOCAL=1._DP
 
@@ -559,7 +559,7 @@ c   STILL UNCOLLIDED FLUX
               ENDIF
             ENDIF
 c
-c  conditional expexctation estimator for flight segment J
+c  conditional expectation estimator for flight segment J
             AX(1)=AX(2)
             EX=CLPD(J)*ZMFPI
 c
@@ -676,8 +676,8 @@ C  ESCAPE AT 1ST GRID SURFACE (X OR RADIAL) MRSURF
           MSURFG=NPCELL+(NTCELL-1)*NP2T3
           IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
              CALL EIRENE_STDCOL (ISTS,1,SG,IRET)
-             if (IRET .EQ. 1) GOTO 104
-             if (IRET .EQ. 2) GOTO 380
+             IF (IRET .EQ. 1) GOTO 104
+             IF (IRET .EQ. 2) GOTO 380
           ENDIF
         ENDIF
 
@@ -689,8 +689,8 @@ C  ESCAPE AT 2ND GRID SURFACE (Y OR POLOIDAL) NO. MPSURF
           MSURFG=NRCELL+(NTCELL-1)*NR1P2
           IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
              CALL EIRENE_STDCOL (ISTS,2,SG,IRET)
-             if (IRET .EQ. 1) GOTO 104
-             if (IRET .EQ. 2) GOTO 380
+             IF (IRET .EQ. 1) GOTO 104
+             IF (IRET .EQ. 2) GOTO 380
           ENDIF
         ENDIF
 
@@ -702,8 +702,8 @@ C  ESCAPE AT 3RD GRID SURFACE (Z OR TOROIDAL) MTSURF
           MSURFG=NRCELL+(NPCELL-1)*NR1P2
           IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
              CALL EIRENE_STDCOL (ISTS,3,SG,IRET)
-             if (IRET .EQ. 1) GOTO 104
-             if (IRET .EQ. 2) GOTO 380
+             IF (IRET .EQ. 1) GOTO 104
+             IF (IRET .EQ. 2) GOTO 380
           ENDIF
         ENDIF
 C
@@ -735,8 +735,8 @@ C  ESCAPE AT 3RD (Z OR TOROIDAL) GRID SURFACE FOR TRIANGULAR X-Y GRID OPTION: MT
             MSURFG=NRCELL+(NPCELL-1)*NR1P2
             IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
                CALL EIRENE_STDCOL(ISTS,3,SG,IRET)
-             if (IRET .EQ. 1) GOTO 104
-             if (IRET .EQ. 2) GOTO 380
+             IF (IRET .EQ. 1) GOTO 104
+             IF (IRET .EQ. 2) GOTO 380
             ENDIF
           ENDIF
         END IF
@@ -752,8 +752,8 @@ C  ESCAPE AT GRID SURFACE BUILD FROM TETRAHEDRA SIDES: MRSURF
 C         MSURFG= ??
           IF (ILIIN(ISTS) .NE. 0) THEN
              CALL EIRENE_STDCOL (ISTS,1,SG,IRET)
-             if (IRET .EQ. 1) GOTO 104
-             if (IRET .EQ. 2) GOTO 380
+             IF (IRET .EQ. 1) GOTO 104
+             IF (IRET .EQ. 2) GOTO 380
           ENDIF
        ENDIF
 
@@ -765,8 +765,8 @@ C  ESCAPE TO GRID SURFACE ON USER-DEFINED GEOMETRY BLOCK: MRSURF
           NLSRFX=.TRUE.
           IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
              CALL EIRENE_STDCOL (ISTS,1,SG,IRET)
-             if (IRET .EQ. 1) GOTO 104
-             if (IRET .EQ. 2) GOTO 380
+             IF (IRET .EQ. 1) GOTO 104
+             IF (IRET .EQ. 2) GOTO 380
           ENDIF
         ENDIF
       end select
@@ -803,9 +803,11 @@ C  ADVANCE IN SAME CELL, AND CONTINUE TRACK
 C
 C  CHECK IF WE HAVE ENCOUNTERED A SPLITTING ZONE
 C  SPLITTING AND RR NOT READY FOR LEVGEO.GE.4
+cdr  also: additional surfaces not yet allowed as splitting-rr surfaces,
+cdr        neither is the time horizon surface
+cdr  for this: also NLSRFA, MASURF... needs to be stored in statistical cellar.
       IF (LEVGEO.LE.3) THEN
         IF (NLSPLT(MRSURF).AND.NLEVEL.LT.MAXLEV.AND.ICOL.EQ.0) THEN
-!PB       CALL EIRENE_SPLTRR(1,MRSURF,NINCX,*210,*700)
           CALL EIRENE_SPLTRR(1,MRSURF,NINCX,IRET)
           IF (IRET == 1) GOTO 210
           IF (IRET == 2) GOTO 700
@@ -1165,8 +1167,8 @@ C
         CALL EIRENE_CHCTRC(X0ERR,Y0ERR,Z0ERR,16,18)
       ELSE
         WRITE (iunout,'(A,1P,4(1X,1E14.7))') 'X0,Y0,Z0,ZT ',X0,Y0,Z0,ZT
-        WRITE (iunout,'(A,1P,3(1X,1E14.7))') 'VELX,VELY,VELZ ',
-     .                                        VELX,VELY,VELZ
+        WRITE (iunout,'(A,1P,4(1X,1E14.7))') 'VELX,VELY,VELZ,VEL ',
+     .                                        VELX,VELY,VELZ,VEL
         WRITE (iunout,'(A,1P,3(1X,1E14.7))') 'X0ERR,Y0ERR,Z0ERR ',
      .                                        X0ERR,Y0ERR,Z0ERR
       ENDIF
@@ -1189,4 +1191,4 @@ C
       LGPART=.FALSE.
       CALL EIRENE_LEER(1)
       RETURN
-      END
+      END SUBROUTINE EIRENE_FOLNEUT

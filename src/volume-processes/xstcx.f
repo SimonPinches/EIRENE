@@ -1,5 +1,5 @@
-cdr modc=3 fuer cx rate coeff angefangen: um multi-step cx auch vs. t und n zu kriegen,
-cdr aber dann die Frage:  te=Ti,  ne=ni ? Und E0 immer sehr klein? Korrektes te,ti,ne,ni
+cdr modc=3 fuer CX rate coeff angefangen: um multi-step CX auch vs. T und n zu kriegen,
+cdr aber dann die Frage: Te=Ti, ne=ni ? Und E0 immer sehr klein? Korrektes te,ti,ne,ni
 cdr koennen zellweise kommen, z.b. aus CRM modell.
 cdr dann bleibt es bei einem 9-parameter fit (fuer E0 abhaengigkeit)  pro Zelle.
 
@@ -12,7 +12,7 @@ C 08.08.06: error exit 991 introduced: charge conservation violation
 ! 08.01.07: pls = 0.dp, twice, preset.
 ! 01.02.07: do not evaluate rates in vacuum region for IPL (use lgvac(..IPL)
 ! 21.09.09: dr: a few more comments
-! 20.01.14:  H.4 option for cx rate coefficients (e.g. CR rates: p + H-minus)
+! 20.01.14:  H.4 option for CX rate coefficients (e.g. CR rates: p + H-minus)
 c            additional argument PLS, also in calling routines xsecta,xsectm,xsecti
 C            remove plsti(nstordt), now: TII
 c 25.03.15:  rename nelrcx  to nplrcx, in order to enable
@@ -30,7 +30,7 @@ C
      .                        EBULK, CHRDF0,ISCDE,IESTM,
      .                        KK,FACTKK,PLS)
 
-c  set NON-DEFAULT cx collision cross-sections and rates
+c  set NON-DEFAULT CX collision cross-sections and rates
 c  IPL{n+} + ISP -->  IPL1{(n-m)+} + ISP2{m+}
 c  defaults for CX type processes:  exchange of identity
 
@@ -51,9 +51,14 @@ C  RETURNS:
 C    MODCOL(3,...)
 C    TABCX3(IRCX,NCELL,...)  1/s per incident test particle
 C    EPLCX3(IRCX,NCELL,...) eV/s per incident test particle
-C    DEFCX(IRCX)
-C    EEFCX(IRCX)
+C    DEFCX(IRCX)  eV/(cm**2/s**), log of conversion of v_rel**2 to eV scale wrt. MASSP (cross section projectile)
+C    EEFCX(IRCX)  eV/(cm**2/s**), log of conversion of v_beam**2 to eV scale wrt. MASST (cross section target)
+C    ADDCX(IRCX,IPL)  log of conversion from TIIN(IPL) to MASSP (projectile in cross section, background field in rate coeff).
 C    IESTCX(IRCX,...)
+C
+C  USED INTERNALLY FOR ISOTOPIC MASS SCALING:
+C    ADDT
+C    ADDTL = ADDCX(IRCX,IPL)
 C
 
       USE EIRMOD_PRECISION
@@ -94,6 +99,8 @@ C  SET NON-DEFAULT CHARGE EXCHANGE COLLISION PROCESS NO. IRCX
 C
       IF (IPL.LE.0.OR.IPL.GT.NPLSI) GOTO 990
       IF (MASSP(KK).LE.0.OR.MASST(KK).LE.0) GOTO 992
+
+cdr field particle
       RMBULK=RMASSP(IPL)
       NCBULK=NCHARP(IPL)
       NCGBLK=NCHRGP(IPL)
@@ -192,9 +199,9 @@ C..................................................................
       MODC=EIRENE_IDEZ(MODCLF(KK),3,5)
 
 C  2.B)
-      IF (MODC.EQ.1) NEND=1   ! rate coeff for (FIXED e0, e.g. E=0, TI)
+      IF (MODC.EQ.1) NEND=1   ! rate coeff vs. fixed E0, e.g.: E0=0, TI
 C  2.C)
-      IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E, TI)
+      IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E0, TI)
 
 C  2.B) RATE COEFFICIENT(TI, FIXED E0, E.G. E0=0)
       IF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.1) THEN
@@ -505,21 +512,16 @@ C
       WRITE (iunout,*) 'EITHER PROVIDE CROSS-SECTION OR USE DIFFERENT'
       WRITE (iunout,*) 'POST-COLLISION SAMPLING FLAG ISCDEA'
       CALL EIRENE_EXIT_OWN(1)
-      END
+      END SUBROUTINE EIRENE_XSTCX
 C
 C-----------------------------------------------------------------------
 C
 
       SUBROUTINE EIRENE_XSTCX_2(IRCX,IPL)
-CTK      USE EIRMOD_PRECISION
-CTK      USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
       USE EIRMOD_COMPRT, ONLY: IUNOUT
-CTK      USE EIRMOD_CCONA
-CTK      USE EIRMOD_CGRID
-CTK      USE EIRMOD_CZT1
       USE EIRMOD_COMXS
-CTK      use EIRMOD_ctrcei, only: trcamd
+
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: IRCX, IPL
       INTEGER :: ITYP1, ITYP2, ISPZ1, ISPZ2
@@ -566,4 +568,5 @@ C
      .                  FACRCX(IRCX,1)
       CALL EIRENE_LEER(1)
 
-      END
+      RETURN
+      END SUBROUTINE EIRENE_XSTCX_2

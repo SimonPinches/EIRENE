@@ -1,4 +1,12 @@
       MODULE EIRMOD_UPDLIN
+
+
+cdr  Nov. 2015
+
+cdr  internal energy: make also ipls species-dependent
+cdr  check for storage (copy) and return, if not enough storage
+cdr  updlin should be made a default eirene option
+cdr  for linear combination of tallies
       USE EIRMOD_PRECISION
       IMPLICIT NONE
       PRIVATE
@@ -13,10 +21,10 @@
 
 cdr  Nov. 2015
 
-cdr  internal energy:  make also ipls species-dependent
-cdr  check for storage (copy) and return, if not enough storage
-cdr  updlin should be made a default eirene option
-cdr  for linear combination of tallies
+cdr  internal energy sources:  make EAPL, EMPL, EIPL, EPPL also IPLS species-dependent
+cdr  check for storage (COPV) and return, if not enough storage.
+cdr  UPDLIN should be made a default eirene option
+cdr  for linear combination of tallies (with their stat. variances)
 
       SUBROUTINE EIRENE_UPDLIN
 
@@ -29,8 +37,8 @@ cdr  for linear combination of tallies
 !  current version:
 !    1)   total particle source             (sni=papl+pmpl+pipl      , ICP+1  ,ICP2)
 !    2)   total parallel momentum source    (smo=mapl+mmpl+mipl      , ICP2+1 ,ICP3)
-!    3)   total ion energy source           (sei=eapl+empl+eipl      , ICP3+1 ,ICP4)
-!    4)   internal energy source            (sei_int=sei-u*smo+ek*sni, ICP4+1 ,ICP5)
+!    3) total ion energy source        (sei_tot=eapl+empl+eipl  , ICP3+1 ,ICP4)
+!    4) internal ion energy source     (sei_int=sei-u*smo+ek*sni, ICP4+1 ,ICP5)
 !    5)   total electr. energy source       (see=eael+emel+eiel      , ICP5+1)
 
       USE EIRMOD_PARMMOD

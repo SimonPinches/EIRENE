@@ -54,7 +54,7 @@ cdr             now via reacdat(irc.....), block 4, exclusively.
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE :: NLSTCHR(:)
 
 cdr data structures below are for line emission options,
-cdr and generalize the older Ba_alpha, Ba_beta, ..., Ly_beta hard coded
+cdr and generalize the older Ba_alpha, Ba_beta, ..., Ly_beta hard-coded
 cdr six hydrogenic line emission routines (6 lines), and, by coincidence, also
 cdr six components per line: H, H+, H-, H2, H2+, H3+.
 

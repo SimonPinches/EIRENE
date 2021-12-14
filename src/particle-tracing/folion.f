@@ -53,17 +53,8 @@ C  Sept 05: also vel=velpar before call  to ...col  routines.
 !DR  eps12 --> eps6 for testing cosine of angle of incidence.
 !DR  levgeo=4:  if nlsrfx: correction of nrcell for SG gt.0 SG lt.eps6
 
-
-
-
-
-
-
 C  .......................................................................................
 C  DIFFERENCES FROM SUBR. FOLNEUT:
-
-
-
 C    0) INTRODUCE PARAMETERS VELPAR, VELPER:
 C       VELOCITY PARALLEL AND PERP TO B FIELD, RESP.
 C    1) REDUCED EQ. OF MOTION: A) MOTION ALONG B FIELD: VEL= VELPAR
@@ -75,7 +66,6 @@ C                              B) TRUBNIKOV REFINED, SEMI-ANALYTICAL
 C                              C) BINARY: TAKIZUKA  (BENJAMIN)
 C                              D) HYBRID: PARTICLE-FLUID-FOKKER-PLANCK (JOSEF)
 C  .......................................................................................
-
 
 C
       SUBROUTINE EIRENE_FOLION
@@ -187,7 +177,6 @@ c  with a new full (cartesian) velocity vector.
 c
       IF (.NOT.LCART) GOTO 9921
 
-
       XGENER=0.D0
 
 C  CHECK FOR VALID SPECIES INDEX
@@ -208,10 +197,9 @@ C
       IF (LDAMCEL(NCELL)) GOTO 9912
       IF (NCELL.GT.NSBOX.OR.NCELL.LT.1) GOTO 991
 
-
 c  find direction parallel and perpendicular to B field, and velocity components
 c  i.e. convert cartesian velocity unit vector VELX,VELY,VELX into
-c  parallel and perpendicular unit velocity componentes VELPAR
+c  parallel and perpendicular unit velocity components VELPAR
 c  find B field in cell NCELL
       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,0)
 
@@ -285,8 +273,6 @@ c  Else: continue at 1002
         call eirene_exit_own(1)
       ENDIF
       GOTO 1002
-
-
 
 c***********************************************************************
 c  CORRECTIONS FOR PARTICLES SITTING EXACTLY ON SURFACES DONE.
@@ -520,8 +506,6 @@ C
 C FNUI: collision frequency with background ions.
 
       FNUI   = 1.D-30
-
-
       IF (NRC.GE.0) THEN
         DO IPL=1,NPLSI
           IPLTI=MPLSTI(IPL)
@@ -592,7 +576,6 @@ c  switch to gc velocity
           VELYS=VELY
           VELZS=VELZ
           VELS =VEL
-
           VELX=VLXPAR
           VELY=VLYPAR
           VELZ=VLZPAR
@@ -1166,7 +1149,7 @@ cdr Warning: this call is probably incorrect in case of levgeo=10.
 !   Jump to external (e.g. emc3) routine)
 !   but there the cell number may be set only later.
 !   In fpkcol a new B field may already have been set.
-!   Futhermore: a new vel vector from fpkcol may get curruped here.
+!   Futhermore: a new vel vector from fpkcol may get corrupted here.
 
         ICO = 0
         GOTO 1004
@@ -1379,8 +1362,8 @@ C
         CALL EIRENE_CHCTRC(X0ERR,Y0ERR,Z0ERR,16,18)
       ELSE
         WRITE (iunout,'(A,1P,4(1X,1E14.7))') 'X0,Y0,Z0,ZT ',X0,Y0,Z0,ZT
-        WRITE (iunout,'(A,1P,3(1X,1E14.7))') 'VELX,VELY,VELZ ',
-     .                                        VELX,VELY,VELZ
+        WRITE (iunout,'(A,1P,4(1X,1E14.7))') 'VELX,VELY,VELZ,VEL ',
+     .                                        VELX,VELY,VELZ,VEL
         WRITE (iunout,'(A,1P,3(1X,1E14.7))') 'X0ERR,Y0ERR,Z0ERR ',
      .                                        X0ERR,Y0ERR,Z0ERR
       ENDIF
@@ -1388,8 +1371,7 @@ C
   996 CALL EIRENE_MASAGE
      .  ('ERROR IN FOLION, COND. EXP. ESTIM. NOT IN USE')
       GOTO 999
-  997 CALL EIRENE_MASAGE
-     .  ('ERROR IN FOLION, DETECTED IN SUBR. CLLTST')
+  997 CALL EIRENE_MASAGE('ERROR IN FOLION, DETECTED IN SUBR. CLLTST')
       CALL EIRENE_MASAGE('PARTICLE IS KILLED')
 C   DETAILED PRINTOUT ALREADY DONE FROM SUBR. CLLTST
       IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
@@ -1483,8 +1465,7 @@ C  INVOLVING THE CHANDRASEKHAR FUNCTIONS
       RETURN
       END FUNCTION DPSI_CHAND
 
-
-      END
+      END SUBROUTINE EIRENE_FOLION
 
       SUBROUTINE EIRENE_NEWFIELD(X,Y,Z,VELS,IND)
 C  FIND NEW MAGNETIC FIELD AT NEW POINT X,Y,Z IN CELL NCELL
@@ -1510,7 +1491,6 @@ C
       USE EIRMOD_CINIT
       USE EIRMOD_RANF, ONLY: RANF_EIRENE
       IMPLICIT NONE
-ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
       REAL(DP), INTENT(IN) :: X,Y,Z,VELS
       REAL(DP) :: BVEC_1(3), VVEC(3), GYRO, BBF
       INTEGER :: IND
@@ -1545,4 +1525,4 @@ C  BACK TO CARTESIAN COORDINATES
       VEL  = VELS
       LCART=.TRUE.
       RETURN
-      END
+      END SUBROUTINE EIRENE_NEWFIELD

@@ -235,4 +235,4 @@ C
       CALL EIRENE_LEER(1)
       IRET = 3
       RETURN
-      END
+      END SUBROUTINE EIRENE_FPKCOL

@@ -155,16 +155,21 @@ c  either active tally (if true) or deactivated tally, no storage (if false)
      L LEMEL,  LEMAT,  LEMML,  LEMIO,   LEMPHT,  LEMPL,
      L LEIEL,  LEIAT,  LEIML,  LEIIO,   LEIPHT,  LEIPL,
      L LEPHEL, LEPHAT, LEPHML, LEPHIO,  LEPHPHT, LEPHPL,
+c  additional tallies
      L LADDV,  LCOLV,  LSNAPV,
      L LCOPV,  LBGKV,  LALGV,
+c  generation (fluid) limit tallies
      L LPGENA, LPGENM, LPGENI, LPGENPH,
      L LEGENA, LEGENM, LEGENI, LEGENPH,
      L LVGENA, LVGENM, LVGENI, LVGENPH,
+c  volumetric primary source (field particle) tallies
      L LPPAT,  LPPML,  LPPIO,  LPPPHT,  LPPPL,
      L LEPAT,  LEPML,  LEPIO,  LEPPHT,  LEPPL,
+c  test particle flow velocity densities
      L LVXDENA, LVXDENM, LVXDENI, LVXDENPH,
      L LVYDENA, LVYDENM, LVYDENI, LVYDENPH,
      L LVZDENA, LVZDENM, LVZDENI, LVZDENPH,
+c  parallel (to B field) momentum source tallies
      L LMAPL,  LMMPL,  LMIPL,  LMPHPL
 
 c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
@@ -888,7 +893,6 @@ C     if tally is deactivated in this run: Pointer to CEMETERYS
       ELSE
         POTAT => CEMETERYS(0:0,:)
       END IF
-
       IF (LPRFAAT) THEN
         PRFAAT => ESTIMS(NADDW(2)+1:NADDW(3),:)
       ELSE
@@ -920,7 +924,6 @@ C
       ELSE
         POTML => CEMETERYS(0:0,:)
       END IF
-
       IF (LPRFAML) THEN
         PRFAML => ESTIMS(NADDW(8)+1:NADDW(9),:)
       ELSE
@@ -952,7 +955,6 @@ C
       ELSE
         POTIO => CEMETERYS(0:0,:)
       END IF
-
       IF (LPRFAIO) THEN
         PRFAIO => ESTIMS(NADDW(14)+1:NADDW(15),:)
       ELSE
@@ -984,7 +986,6 @@ C
       ELSE
         POTPHT => CEMETERYS(0:0,:)
       END IF
-
       IF (LPRFAPHT) THEN
         PRFAPHT => ESTIMS(NADDW(20)+1:NADDW(21),:)
       ELSE
@@ -1022,7 +1023,6 @@ C
       ELSE
         EOTAT => CEMETERYS(0:0,:)
       END IF
-
       IF (LERFAAT) THEN
         ERFAAT => ESTIMS(NADDW(27)+1:NADDW(28),:)
       ELSE
@@ -1828,7 +1828,7 @@ C
       CALL MPI_BCAST (NFRSTW,NTALS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NADDW,NTALS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
-c  active and in-active tallies:
+c  active and inactive tallies:
 C  OUTPUT:
       CALL MPI_BCAST (LIVTALV,NTALV,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LIVTALS,NTALS,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)

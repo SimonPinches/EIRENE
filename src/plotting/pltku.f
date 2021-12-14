@@ -201,7 +201,8 @@ C*****INTERPOLATE POINT ON BOUNDARY OF PLOTAREA
                      INN=24
                      IFLAG=24
                   ELSE
-                     IF (LZR) CALL GRDRW (REAL(XP,SP),REAL(YP,SP))
+                     IF (LZR) CALL GRDRW (REAL(XP,SP),
+     .                                    REAL(YP,SP))
                      IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS) THEN
                        CALL EIRENE_STCOOR (XP,YP,1)
                      ENDIF
@@ -218,4 +219,4 @@ C*****INTERPOLATE POINT ON BOUNDARY OF PLOTAREA
       IF (INN.GT.0.OR.INC.GE.400) RETURN
       INC=INC*2
       GOTO 100
-      END
+      END SUBROUTINE EIRENE_PLTKU

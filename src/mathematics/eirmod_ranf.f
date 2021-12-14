@@ -13,11 +13,11 @@
  
       CONTAINS
 
-cdr  april 2016:  looked at current default random number generator.
+cdr April 2016:  looked at current default random number generator.
 cdr               it seems to be a rather trivial congruential generator,
 cdr               even without additive constant  (c=0.0)
 cdr               very likely that this generator must be removed urgently !
-cdr               maybe the original generator (nloldran) H1rn is superior by far
+cdr              maybe the CERN generator (nlranmar) H1rn is superior by far
 
 cdr April 2017:  references found, see F. James,
 c       ref.: review paper  F. James, CPC, 60 (1990) 329,  for both generators
@@ -101,9 +101,10 @@ c  save the seed for next random number.
       END IF
 
 c  done
+      return
       end function ranf_eirene
 
-C     The following ENTRY is for reinitialization of EIRENE
+C     The following FUNCTION is for reinitialization of EIRENE
 
       FUNCTION ranf_eirene_reinit()
       real(dp) :: ranf_eirene_reinit
@@ -116,7 +117,7 @@ cdr   indicate that random number generator is not initialized.
 cdr   initialize random number generator, set the random number seed "iseed",
 cdr   store that in Common CMEM, and initialize random generator.
 c
-      integer function ranset_eirene(ise)
+      INTEGER FUNCTION RANSET_EIRENE(ISE)
 cdr   input:
 c       nloldran:  (CLOGAU)
 c         T: use random number generator  H1RN, H1RNIN,...., recommended.
@@ -141,8 +142,8 @@ cdr there are various variants of initializer RMARIN, taking either
 cdr one, two or 4 input seeds.
 cdr currently we take one seed, 0<=ise<=900.000.000,
 cdr then produce two smaller integer seeds iseed1,iseed2 from that,
-cdr in SUBR. H1RNIN, and initialize the status of H1RN with the content of
-cdr Common RASET1 (full 102 words)
+cdr in SUBR. H1RNIN, and initialize the status of H1RN with the contents of
+cdr common RASET1 (full 102 words)
 
          if (ise <= 0) then
            if (ifirst_ranset == 0) then
@@ -185,12 +186,13 @@ c          write (iunout,*) 'ranset: seed set to ',iseed
 
       ifirst_ranset = 1
 cdr  just return iseed, the current legal seed used, on which the next random
-cdr  number returned from ranf() will be based. This seed is also saved in Common CMEM
+cdr  number returned from ranf() will be based. This seed is also saved in common CMEM
       ranset_eirene=iseed
 
+      return
       end function ranset_eirene
 
-C     The following ENTRY is for reinitialization of EIRENE
+C     The following FUNCTION is for reinitialization of EIRENE
 
       FUNCTION ranset_eirene_reinit()
       implicit none
@@ -201,27 +203,31 @@ C     The following ENTRY is for reinitialization of EIRENE
       end FUNCTION ranset_eirene_reinit
 
 cdr   Routine ranget is used to provide a new seed derived
-cdr   in a deterministic (reproducible) way from a current random number generatur status
-cdr   The current seed (status) is iseed on Commen CMEM, a new seed is returned as integer ranget
+cdr   in a deterministic (reproducible) way from a current random number generator status
+cdr   The current seed (status) is
+cdr   ISEED in Common CMEM for the SURAND generator,
+cdr   and is coded in Commons RASET1, RASET2 for the RANMAR (= H1RN) generator
+cdr   as array of length 100.
+cdr   A new seed is returned as integer RANGET_EIRENE
 c
 
 cdr   April 17:
-cdr   Used only in case of correlated sampling, (and of MPI ?)
-cdr   two random generators:
+cdr   Used only in case of correlated sampling, (and for MPI, OPENMP parallelization)
+cdr   Two random generators:
 cdr   1) Random number generator H1RN
 cdr   see reference of F. James 1990 review paper: F. James, CPC, 60 (1990) 329, sec 3.3
-cdr   2) old IBM congruential generator (1968) (loc.cit.)
+cdr   2) pre-historic IBM congruential generator SURAND (1968) (loc.cit.)
 
 
-      integer function ranget_eirene(ISE)
+      INTEGER FUNCTION RANGET_EIRENE(ISE)
 cdr  return a legal next seed for random number generator.
-cdr  output:  ise (=ranget_eirene),  return integer seed
+cdr  output:  ISE (=ranget_eirene),  return a legal integer seed
 
 cdr  input:  NLOLDRAN:
 cdr      T :  use H1RN, which is RANMAR, F. James, CPC, 60 (1990) 329, sec 3.3
-c             A legal seed must be 0<=ise<=900.000.000
-cdr      F :  use old IBM (1968) generator
-c             A legal seed must be 1<=ise<=2147483647 (=2**31-1)
+c           A legal seed must be 0<=ISE<=900.000.000
+cdr     F : use pre-historic IBM (1968) generator
+c           A legal seed must be 1<=ISE<=2147483647 (=2**31-1)
 C            ISE:   old reference seed,
 C                   from which the current status of random generator is set
 C                   and from which new seed should result in a deterministic way
@@ -256,7 +262,7 @@ c  no legal seed available
            call eirene_exit_own(1)
          endif
 c
-c  set a new seed iseed
+c  set a new seed ISEED
 c  Return a "derived seed" for a fresh sequence for random number starting from there
 c  call ranf with seed ISEED=ISE
          ran=ranf_eirene()   !  switch to a next seed, by wasting a call to ranf().

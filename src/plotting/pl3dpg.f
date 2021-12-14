@@ -28,12 +28,9 @@ C
 
       REAL(DP) :: REMIN, REMAX, XMT, DX, YMI, YMA, RMI, RMA, AAR, XMINN,
      .          XMAXN, YMINN, YMAXN, YMT, XMI, XMA
-!pb      REAL(SP) :: AR(LAR), EXT(3,3), VALU(3,2)
-!pb      REAL(SP) :: XYZ(3,128,128)
-!pb      real(sp) :: yh
-      REAL :: AR(LAR), EXT(3,3), VALU(3,2)
-      REAL :: XYZ(3,128,128)
-      real :: yh
+      REAL(SP) :: AR(LAR), EXT(3,3), VALU(3,2)
+      REAL(SP) :: XYZ(3,128,128)
+      real(sp) :: yh
       INTEGER :: IR, IPX, IPY, IER, IPAN, IPEN, K, I, J
       CHARACTER(17) :: CH
       CHARACTER(20) :: CHAXS(3)
@@ -237,4 +234,4 @@ C
       WRITE (iunout,*) 'REDUCE PLOT AREA '
       WRITE (iunout,*) 'PLOT ABANDONED'
       RETURN
-      END
+      END SUBROUTINE EIRENE_PL3DPG

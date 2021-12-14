@@ -2,4 +2,4 @@ c
 c
       subroutine EIRENE_upnusr
       return
-      end
+      end subroutine eirene_upnusr

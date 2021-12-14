@@ -5,6 +5,7 @@ C  16.01.06   Functions SET_PTE_ELEMENT and FIND_PTE_ELEMENT
 C             identify a chemical element in the PTE
 C             and returns the element number, resp.
 !  20.06.07   constant NCONA = number of constants in module introduced
+C             and made private (Aug.20)
 
       MODULE EIRMOD_CCONA
       USE EIRMOD_PRECISION
@@ -16,6 +17,7 @@ C             and returns the element number, resp.
       PUBLIC :: EIRENE_ALLOC_CCONA, PTE_TYPE, EIRENE_SET_PTE_ELEMENT,
      P          EIRENE_FIND_ELEMENT, EIRENE_BROADCAST_CCONA
 
+cd  Periodic Table Element (PTE):
       TYPE PTE_TYPE
         CHARACTER(13) :: NAME
         CHARACTER(2) :: ABBR
@@ -37,7 +39,7 @@ C             and returns the element number, resp.
      R AU_TO_CM2, HPLNK_BAR,
      R EPSILON0,AMUAKG,FAKVTH,FAKLAM,COULOMBLOG,MY0,FAKTAUT !JS
 
-cdr elements of periodic table 1:111, plus two heavier hydrogen isotops
+cdr elements of periodic table 1:111, plus two heavier hydrogen isotopes
       TYPE (PTE_TYPE), PUBLIC, SAVE :: PTE(113)
 
       CONTAINS
@@ -101,11 +103,13 @@ cdr elements of periodic table 1:111, plus two heavier hydrogen isotops
 
       SUBROUTINE EIRENE_SET_PTE_ELEMENT (IEL,NAME,AB,EM,CH)
 
-cdr  Called from SETCON.
+cdr  Called from SETCON.f
 cdr  Set elements of periodic table, 1:111, identify them by
 cdr  name (NAME), short name in periodic table (ABBR),
 cdr  nuclear mass (EL_MASS), nuclear charge (EL_CHARGE)
-cdr  112:113: heavier isotops of hydrogen
+cdr  112:113: heavier isotopes of hydrogen D and T.
+c
+cdr  Data type PTE_TYPE is unused so far (Jan. 2020)
 
       INTEGER, INTENT(IN) :: IEL
       CHARACTER(*), INTENT(IN) :: NAME, AB

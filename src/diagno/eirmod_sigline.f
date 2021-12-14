@@ -1,3 +1,5 @@
+cdr  Formerly: SIGHA (atomic hydrogen lines), now generalized to SIGLINE
+
       MODULE EIRMOD_SIGLINE
       USE EIRMOD_PRECISION
       
@@ -24,6 +26,8 @@ c            i.e. a new line is requested for same stratum flag.
 cdr Jan 18:  parameter ICHORI added
 c   june 18: renamed from sigha (hydrogen only) to sigline (generalized,
 c            any transition line)
+cdr Aug  19: calls FIND_EMISS_LINE to bring the chosen line emissivity onto ADDV arrays
+cdr          Comments misleading, still corresponds to the old (hydrogen only) version
 c
 C
       SUBROUTINE EIRENE_SIGLINE(INIT,JJJ,ZDS,PEN,PSIG,
@@ -154,6 +158,6 @@ C     Following lines added for reinitialisation of eirene (DMH)
       ITROLD = -1
       PENOLD = -1._DP
       RETURN
-      END
+      END SUBROUTINE EIRENE_SIGLINE_REINIT
 
       END MODULE EIRMOD_SIGLINE

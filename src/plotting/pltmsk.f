@@ -22,8 +22,7 @@ C
       REAL(DP) :: XMIN, XMAX, YMIN, YMAX
       INTEGER :: IAX
       CALL GRSCLC(REAL(X0PL,SP),REAL(Y0PL,SP),
-     .            REAL(X0PL+LENX,SP),
-     .            REAL(Y0PL+LENY,SP))
+     .            REAL(X0PL+LENX,SP),REAL(Y0PL+LENY,SP))
 C  PLOT X AXIS
       IAX=1
       CALL EIRENE_PLTAXI(IERR,IAX)
@@ -52,4 +51,4 @@ C
      .            REAL(XMAX,SP),REAL(YMAX,SP))
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_PLTMSK

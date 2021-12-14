@@ -9,7 +9,7 @@
       CONTAINS
 
 c         061205:   au_to_cm2 --> ccona
-!         100107:   ENTRY VELOEL_REINIT added for reinitialization of EIRENE
+!         100107: SUBROUTINE VELOEL_REINIT added for reinitialization of EIRENE
 CDR  Aug. 2015  : PROGRAMMING AND NOTATION SYNCHRONIZED WITH VELOCX.F
 !DR
 !DR
@@ -110,7 +110,6 @@ C
      .          ZARGX, ZARGY, ZARGZ,
      .          VX, VY, VZ, ELAB,
      .          VR, CEL, EIRENE_CROSS, VRQ
-ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
 
       REAL(DP) :: P(9)
       INTEGER :: IFLAG, IRL, IREAC, JM, J, ICOUNT
@@ -503,7 +502,7 @@ C  the following SUBROUTINE is for reinitialization of EIRENE
       SUBROUTINE EIRENE_VELOEL_REINIT
       IMPLICIT NONE
       IFIRST = 0
-      return
+      RETURN
       END SUBROUTINE EIRENE_VELOEL_REINIT
 
       END MODULE EIRMOD_VELOEL

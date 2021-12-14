@@ -8,13 +8,12 @@ cdr  aug. 2016:  NLSCL corrections are also not on partw, i.e. not
 cdr              accounted for during bootstrapping (re-sampling) from census
 cdr  jul. 2020:  statement 300 continue moved up a bit.
 cdr              This ensures that fort.15 (census array) is written
-cdr              even in case of zero flux to census. To
+cdr              even in case of zero flux to census (empty censius then). To
 cdr              facilitate continuation in time-dep runs even
 cdr              if "zeroth time step" (census initialization) was too large.
 
 CDR  APRIL 2006: IPHOT ADDED TO LOOP: DO 140
-!pb  31.10.06:  definition of census arrays RPART, RPARTC, IPART, IPARTC changed
-!               first and 2nd dimension of array interchanged
+
 C
       SUBROUTINE EIRENE_MOD_TMSTEP
 C
@@ -65,7 +64,7 @@ C  REDUCE REDUNDANT PRINTOUT IN NEXT TIME STEP
         PLTSRC(NSTRAI)=PLTSRC(NSTRAI).OR.PLTSRC(ISTRAI)
   120 CONTINUE
 C
-C  SPEED UP GEOMETRY
+C  SPEED UP GEOMETRY. USE INFO FROM PREVIOUS TIME-STEP
 C  tbd.    
 C
 C  STEP 2
@@ -88,8 +87,11 @@ C
 C  STEP 3
 C
 C  SET SOURCE DUE TO INITIAL CONDITION FOR NEXT TIME CYCLE
+C  THERE HAVE BEEN IPRNL SCORES ON THE CENSUS IN THIS PRESENT RUN.
 C
 C  SOURCE STRENGTH OF INITIAL DISTRIBUTION IN NEW TIME CYCLE
+
+C  A: set NPTS for time stratum NSTRAI IN NEXT TIME STEP
       IPRNL=IPRNLI
       IPRNLI=0
       IF (NPTST.EQ.0) THEN
@@ -119,6 +121,7 @@ C  OLD CENSUS CONTAINS IPRNL ENTRIES.
   130 CONTINUE
       SGMREL=0.0
 C
+cdr  empty census?
       IF (IPRNL.EQ.0) GOTO 300
 
       RPSTT(1:NPARTT)=RPART(1:NPARTT,1)
@@ -138,7 +141,7 @@ C  SET "ATOMIC" FLUXES ONTO CENSUS ARRAY
 C  IF NLSCL, APPLY PART. BALANCE CORRECTION SCALING, FOR THE TOTAL CENSUS FLUX
 
 C  THIS IS ALREADY DONE ON "TIME SURFACE" TALLY ELSEWHERE, AS IT IS ON ANY OTHER SURFACE
-C  BUT DONE HERE ADDITIONALLY ON THE PARTICULAR "CENSUS ARRAYS" RPARTW (RESAMPLING), RPART(9,..),
+C  BUT IS DONE HERE ADDITIONALLY ON THE PARTICULAR "CENSUS ARRAYS" RPARTW (RESAMPLING), RPART(9,..),
 C  AND THE SPECIES TYPE-RESOLVED FLUXES ADDPH, ADDA, ADDM, ADDI
 
       DO 140  I=1,IPRNL
@@ -178,7 +181,7 @@ cdr     ISPZ=IPART(9,I)  ! species index of score I on census   = ISPZ
         ENDIF
 
 C  SET DISCRETE CUMULATIVE CENSUS FLUX DISTRIBUTION FOR RESAMPLING OF SCORE-INDEX "I"
-C  DO NOT INCLUDE NPRT FACTORS, BECAUSE THIS WILL BE CARRIED BY RELAUNCHED PARTICLE
+C  DO NOT INCLUDE NPRT FACTORS, BECAUSE THIS WEIGHT-FACTOŔ WILL ALREADY BE CARRIED BY RELAUNCHED PARTICLE
 C  ALSO THE BALANCE CORRECTION FACTORS FATM,... ARE NOT INCLUDED HERE
 C       RPARTW(I)=RPARTW(I-1)+ADDP  ! same as next line
 
@@ -204,7 +207,7 @@ C   PUT WEIGHT OF CURRENT CENSUS SCORE NPANU ONTO ADDS
           ADDS=ADD
         ENDIF
 
-C   WEIGHT may have been altered, so: redefine entire RPART (play safe)
+C   WEIGHT may have been altered. So: redefine entire this component of state vector.
         RPART(1:NPARTT,I)=RPSTT(1:NPARTT)
   140 CONTINUE
 

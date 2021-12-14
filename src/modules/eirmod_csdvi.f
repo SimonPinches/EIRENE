@@ -33,14 +33,25 @@ cdr nov. 17:  nspztotw introduced, in analogy with nspztot
      I NSIGI,     NSIGVI,   NSIGSI, NSIGCI, 
      I NSIGI_SPC,
 C SPEED UP OF SUBROUTINE STATIS
+
+cdr This list stores information along history.
+cdr It is refreshed in MCARLO.f after each completed history.
+cdr Currently stored per history:
+c    cell visited:    ICELL=ICLMT(IC),   IC=1,...,NCLMTS
+c    surface visited: ISURF=IWLMT(ICW), ICW=1,...,NWLMTS
+c    species scoring in volume:  ISPZ=LMETSP (...)
+c    species scoring at surface: ISPZ=LMETSPW(...)
+
      I IMETCL(:), ICLMT(:), NCLMT, NCLMTS,
      I IMETWL(:), IWLMT(:), NWLMT, NWLMTS
 
-      INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
-     I IIHC(:,:), IGHC(:,:)
-
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE ::
      L LMETSP(:), LMETSPW(:)
+
+cdr end threadprivate here
+
+      INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
+     I IIHC(:,:), IGHC(:,:)
 
       INTEGER, PUBLIC, SAVE ::
      I NSDVI1, NSDVI2, NSDVC1, NSDVC2, NSDVI, MSDVI

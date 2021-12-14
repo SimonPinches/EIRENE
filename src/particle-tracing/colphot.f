@@ -1,8 +1,4 @@
-C 27.6.05 : colphot: iadd removed
-C 27.6.05 : colatm : mode, il removed (lgaot(..2),lgaot(..5)
-C 27.6.05 : colphot: mode, il removed (lgphot(..2),lgphot(..5)
-C 15.12.05: irds --> irei, iids --> iiei
-C 16.12.05: wminv re-connected to "ei"-processes. suppress
+C 16.12.05: wminv re-connected to EI processes. suppress
 C           reactions with zero test particle secondaries
 C           now connected for: colatm, colmol, colion
 C           still to be done: include other processes, and colphot
@@ -20,7 +16,7 @@ c             otherwise: avoid calls to bfield.f
 c
 cdr  5. 8.15: ARGUMENTS ADDED TO VECUSR
 cdr 20.10.15: arguments in chctrc: type of collision process: corrected for PI and OT
-cdr 24.11.15:  bug fix re coll est for pi processes, in colion: eiml --> eiio
+cdr 24.11.15:  bug fix re coll est for PI processes, in colion: eiml --> eiio
 cdr Dec.15  :  bug fix pi reaction and cascading was wrong:
 cdr            irei, rather than irpi, and p2nd
 cdr            rather than p2np, were used also for PI reactions. now corrected
@@ -49,7 +45,7 @@ cdr        synchronize and re-activate option, not ready !!
 c   this version: prepare cascading at collisions,
 c   e.g. for antithetic variate sampling to reduce stochastic cancellation
 c   start to clean up splitting, for analogue game and for anticorrelated momentum estimators
-c   started for colatm, and ei processes.
+c   started for colatm, and EI processes.
 c   not sure if ispz is known, NOW
 cdr tbd:
 c   cascading with EI: nlevel =nlevel+ptot-1 (because one particle continues)
@@ -61,13 +57,10 @@ cdr            (was already corrected much earlier in SOLPS_4.3 by VK,
 cdr             then correction somehow lost in more recent EIRENE branches)
 cdr Jan. 17:    started to separate more clearly the (unfinished) NLCASCAD option from active code
 C               Done for COLATM and EI processes.
-C               wminv activated in colmol for ei processes (analog to colatm)
+C            wminv activated in colmol for EI processes (analog to colatm)
 cdr May 17: some spelling error corrections in comments adopted from ITER branch
 c            AE: analog, --> BE: analogue, etc..
-cdr Nov.18:  notational cleanup: separate OT from PH processes. E.g.: IROT --> IRPH
-
-
-
+cdr Nov.18:  notational cleanup: separate OT from PH processes, e.g.: IROT --> IRPH
 
       SUBROUTINE EIRENE_COLPHOT(CFLAG,COLTYP)
 C
@@ -175,7 +168,7 @@ C
         goto 999
       ELSEIF (ZEP1.LE.SIGEIT+SIGCXT+SIGELT+SIGPHT) THEN
 C
-C  PHOTON (OT) COLLISION (analog to cx in colatm)
+C  PHOTON (OT) COLLISION (analog to CX in colatm)
 C
         IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,4)
 C
@@ -250,7 +243,6 @@ csw check ipl
             end select
          endif
 
-
 C
 C  NEW SPECIES TYPE, INDEX AND ENERGY
 
@@ -265,7 +257,7 @@ csw no  coll.estim.
             IF (PHV_IESTOTph(iphot,IRPH,3).NE.0) goto 999
             ITYP=PHV_N1STOTph(iphot,IRPH,1)
             write (iunout,*)
-     .        'ot not ready for photons. exit from collide '
+     .        'OT not ready for photons. exit from collide'
             call EIRENE_exit_own(1)
 c           call PH_POST_ENERGY(ncllo,kk,mode,il,
 c    .           iold,0,velxo,velyo,velzo,velo,e0o,ityp)
@@ -404,4 +396,4 @@ C
   999 WRITE (iunout,*) 'ERROR IN COLLIDE '
       WRITE (iunout,*) 'ITYP ',ITYP,IPHOT,IATM,IMOL,IION,IPLS
       CALL EIRENE_EXIT_OWN(1)
-      END
+      END SUBROUTINE EIRENE_COLPHOT

@@ -121,4 +121,4 @@ C
       END IF
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_UPTUSR

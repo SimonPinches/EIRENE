@@ -498,5 +498,5 @@ cdr
         DEALLOCATE (YCONTOUR)
       endif
 
-      return
-      END
+      RETURN
+      END SUBROUTINE EIRENE_WRMESH

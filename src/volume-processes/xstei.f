@@ -515,13 +515,8 @@ C-----------------------------------------------------------------------
 C
       SUBROUTINE EIRENE_XSTEI_1(IREI)
       USE EIRMOD_PRECISION
-CTK      USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
-CTK      USE EIRMOD_COMPRT, ONLY: IUNOUT
-CTK      USE EIRMOD_CCONA
-CTK      USE EIRMOD_CGRID
       USE EIRMOD_COMXS
-CTK      use EIRMOD_ctrcei, only: trcamd
 
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: IREI
@@ -578,7 +573,7 @@ C          NORMALIZATION DOES NOT EXTEND OVER SECONDARY BULK PARTICLES
   550 CONTINUE
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_XSTEI_1
 C
 C-----------------------------------------------------------------------
 C
@@ -757,6 +752,5 @@ C
      .                  FACREI(IREI,1)
       CALL EIRENE_LEER(1)
 
-
       RETURN
-      END
+      END SUBROUTINE EIRENE_XSTEI_2
