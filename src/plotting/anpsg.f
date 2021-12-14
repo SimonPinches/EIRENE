@@ -73,4 +73,4 @@ C
       ENDIF
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_ANPSG

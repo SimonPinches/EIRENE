@@ -54,7 +54,7 @@ cdr             now via reacdat(irc.....), block 4, exclusively.
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE :: NLSTCHR(:)
 
 cdr data structures below are for line emission options,
-cdr and generalize the older Ba_alpha, Ba_beta, ..., Ly_beta hard coded
+cdr and generalize the older Ba_alpha, Ba_beta, ..., Ly_beta hard-coded
 cdr six hydrogenic line emission routines (6 lines), and, by coincidence, also
 cdr six components per line: H, H+, H-, H2, H2+, H3+.
 
@@ -232,6 +232,8 @@ cdr  additional output tallies added by code itself (rather than via input block
         CALL EIRENE_BROAD_EMIS_LINES(ME)
       END IF
       
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
+
       END SUBROUTINE EIRENE_BROADCAST_COMSIG
 
 

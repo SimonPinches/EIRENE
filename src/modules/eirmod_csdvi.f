@@ -33,12 +33,20 @@ cdr nov. 17:  nspztotw introduced, in analogy with nspztot
      I NSIGI,     NSIGVI,   NSIGSI, NSIGCI, 
      I NSIGI_SPC,
 C SPEED UP OF SUBROUTINE STATIS
+
+cdr This list stores information along history.
+cdr It is refreshed in MCARLO.f after each completed history.
+cdr Currently stored per history:
+c    cell visited:    ICELL=ICLMT(IC),   IC=1,...,NCLMTS
+c    surface visited: ISURF=IWLMT(ICW), ICW=1,...,NWLMTS
+c    species scoring in volume:  ISPZ=LMETSP (...)
+c    species scoring at surface: ISPZ=LMETSPW(...)
+
      I IMETCL(:), ICLMT(:), NCLMT, NCLMTS,
      I IMETWL(:), IWLMT(:), NWLMT, NWLMTS
 
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE ::
      L LMETSP(:), LMETSPW(:)
-
 
 !$OMP  THREADPRIVATE(ISDVI,IMETCL,ICLMT,NCLMT,NCLMTS,IMETWL,IWLMT,
 !$OMP& NWLMT,NWLMTS)
@@ -46,7 +54,10 @@ C SPEED UP OF SUBROUTINE STATIS
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I IIHC(:,:), IGHC(:,:)
 
-  
+cdr end threadprivate here
+
+      INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
+     I IIHC(:,:), IGHC(:,:)
 
       INTEGER, PUBLIC, SAVE ::
      I NSDVI1, NSDVI2, NSDVC1, NSDVC2, NSDVI, MSDVI
@@ -193,6 +204,8 @@ c  lmetspw(i1): ditto, for surface-averaged tallies
       CALL MPI_BCAST (ISDVI,MSDVI,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (IIHC,2*NCV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (IGHC,2*NCV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       END SUBROUTINE EIRENE_BROADCAST_CSDVI
 

@@ -25,7 +25,7 @@ csw
          endif
       enddo
 cdr
-c  this call is still necessary because not all PH-process data
+c  this call is still necessary because not all PH process data
 c  have already been moved to module COMXS.
 C  Still some clean-up work to be done
 cdr

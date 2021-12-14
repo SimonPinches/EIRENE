@@ -17,7 +17,7 @@ c  ne, electron density,  #/cm^3
       REAL(DP) :: EIRENE_NGFFMH_B, brems, RES
 
 
-c  bremsstrahlung in W, per ion, based on free-free gaunt factors
+c  bremsstrahlung in W, per ion, based on free-free Gaunt factors
 c  formula from ADAS, see function ngffmh_b
       BREMS = 1.54E-32_DP * TE**0.5 * ZI**2 *
      .        eirene_ngffmh_B(ZI**2 * 13.6_DP/TE) *ne
@@ -28,11 +28,10 @@ c  formula from ADAS, see function ngffmh_b
       end function eirene_brems
 
 
-c  free free gaunt factor routine, obtained from Martin O'Mullane in 2007
+c  free-free Gaunt factor routine, obtained from Martin O'Mullane in 2007
 c  slightly adapted to use eirene precision convention (eirmod_precision)
 
        FUNCTION EIRENE_NGFFMH_B(GAM2)
-!pb    IMPLICIT REAL*8(A-H,O-Z)
        USE EIRMOD_PRECISION
        IMPLICIT NONE
 C-----------------------------------------------------------------------
@@ -44,7 +43,7 @@ C
 C  PURPOSE:
 C
 C  EVALUATES ELECTRON TEMPERATURE- AND FREQUENCY-AVERAGED HYDROGENIC
-C  FREE FREE GAUNT FACTOR.
+C  FREE-FREE GAUNT FACTOR.
 C  OBTAINED FROM INTERPOLATION OF KARZAS & LATTER (1959) FIG.6
 C  FOR -3<LOG10(Z0*Z0*IH/KTE)<1. OUTSIDE THIS RANGE A VERY APPROXIMATE
 C  EXTRAPOLATION IS PERFORMED WITH GFFMH=1 IN THE INFINITE LIMITS.

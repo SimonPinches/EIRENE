@@ -1,4 +1,4 @@
-C  may 2006:  default helium resonant cx added
+C  may 2006:  default helium resonant CX added
 C  april 07:  setting of NRPI adapted (ion impact collisions)
 C  MAY 16  :  nrds -> nrei
 C
@@ -155,8 +155,8 @@ C
           DO 230 NRC=1,NRCA(IATM)
             KK=IREACA(IATM,NRC)
             IF (ISWR(KK).NE.5) GOTO 230
-            NREL=NREL+1
 C
+            NREL=NREL+1
 C  SPECIAL TREATMENT: BGK COLLISIONS AMONGST TEST PARTICLES
             IF (IBGKA(IATM,NRC).NE.0) THEN
               IF (NPBGKA(IATM).EQ.0) THEN
@@ -165,14 +165,13 @@ C  SPECIAL TREATMENT: BGK COLLISIONS AMONGST TEST PARTICLES
             ENDIF
 C
   230     CONTINUE
-
+C
         ENDIF
 C
   300 CONTINUE
 C
 C   ION IMPACT COLLISIONS
 C
-
       DO 1000 IATM=1,NATMI
 C
 C  NO DEFAULT MODEL
@@ -197,4 +196,4 @@ C
 C
       RETURN
 C
-      END
+      END SUBROUTINE EIRENE_XSECTA_PARAM

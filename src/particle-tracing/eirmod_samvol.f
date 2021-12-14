@@ -23,7 +23,7 @@
       IMPLICIT NONE
       PRIVATE
 
-      PUBLIC :: EIRENE_SAMVOL, EIRENE_SAMVL0, EIRENE_SAMVL1, 
+      PUBLIC :: EIRENE_SAMVL0, EIRENE_SAMVL1,
      .          EIRENE_SAMVOL_REINIT
 
       REAL(DP), ALLOCATABLE, SAVE :: FREC(:,:,:), VSOURC(:,:), VSMXI(:)
@@ -55,7 +55,7 @@ cdr             even if npts=0 for the vol-rec stratum
 cdr  1111.07: "istep out of range" error message removed once again.
 !pb  2203.07: LEVGEO=6 --> LEVGEO=10
 !pb  2710.06: use flux set by user-defined sampling routine
-!pb  1001.06: ENTRY SAMVOL_REINIT added for reinitialsation of Eirene
+!pb  1001.06: SUBROUTINE SAMVOL_REINIT added for reinitialsation of Eirene
 !pb  1812.06: calculate bremsstrahlung
 !pb  2408.06: set output values for DIWL and SHWL
 cdr  2008.06: tiwl(*), ... instead of tiwl(npls),... to unify code.
@@ -63,7 +63,7 @@ cdr  0604.06: check "istep out of range" moved to correct place
 c    0311.05: iplsti moved after check of validity of ipls, to produce legal exit
 c             rather than code crash
 C  JET 2005, PATCH 1: NEW ARGUMENTS EFWL AND SHWL IN PARAMETER LIST
-c                     AT ENTRY SMVOL1 AND SMUSR1
+c                     FOR SUBROUTINES SMVOL1 AND SMUSR1
 C
       SUBROUTINE EIRENE_SAMVOL
 
@@ -232,7 +232,7 @@ C  SPECTRAL CUT-OFF, CURRENTLY ONLY FOR PHOTONS
                 EIO(IPLS,0)   =EIO(IPLS,0   )-ADD
 
 CDR  position x0,y0,z0 is not yet known here
-cdr  take center of gravity in cell, if needed (last parameter (logical) in bfield.f
+cdr  take center of gravity in cell, if needed (last parameter (logical) in bfield.f)
                 xc=0.
                 yc=0.
                 zc=0.
@@ -320,7 +320,7 @@ C  only: atomic ions. Exclude here for the time being: molecular ions
         END DO
 C
         CALL EIRENE_LEER(1)
-        WRITE (iunout,*) 'DIAGNOSTICS FROM SUBR. SAMVOL: '
+        WRITE (iunout,*) 'DIAGNOSTICS FROM SUBR. SAMVL0: '
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) 'VOLUME RECOMBINATION RATES INTEGRATED OVER'
         WRITE (iunout,*) 'ENTIRE COMPUTATIONAL GRID '
@@ -760,7 +760,7 @@ c
 
 cdr non-analog sampling.
 cdr Here use uniform distribution of cell indices and weighting
-cdr tbd: correlation sampling: use previous (reference) distribution and weighting
+cdr tbd: correlated sampling: use previous (reference) distribution and weighting
 cdr      rather than uniform sampling.
         IC1=0
         IC2=ICMX(NVLM)
@@ -916,8 +916,8 @@ C.................................................................
         X4=XTETRA(NTECK(4,NCELL))
         Y4=YTETRA(NTECK(4,NCELL))
         Z4=ZTETRA(NTECK(4,NCELL))
-        CALL
-     .  EIRENE_FPOLYT_4(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,X4,Y4,Z4,X0,Y0,Z0)
+        CALL EIRENE_FPOLYT_4(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,X4,Y4,Z4,
+     .                       X0,Y0,Z0)
 C....................................................................
       case (10)
 chf added Nov. 2018
@@ -997,7 +997,7 @@ C
 
       END SUBROUTINE EIRENE_SAMVL1
 
-C     the following ENTRY is for reinitialization of EIRENE (DMH)
+C     the following SUBROUTINE is for reinitialization of EIRENE (DMH)
 
       SUBROUTINE EIRENE_SAMVOL_REINIT
       IMPLICIT NONE

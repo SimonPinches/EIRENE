@@ -56,7 +56,7 @@ C> - tallies
       real(dp), allocatable :: helpest(:), helpv(:), dummyv(:)
       real(dp) :: helpa(0:natm), helpm(0:nmol), helpi(0:nion),
      .            helpp(0:npls), helpph(0:nphot),
-     .            helps(nlmpgs+1), helpc
+     .            helps(nlmpgs+1), helpc(1)
       real(dp) :: dummys(nlmpgs+1)
       real(dp), allocatable :: dummyw(:), helpw(:)
       integer :: calstr_comm
@@ -104,41 +104,41 @@ cdr missing: wtotph ??
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) WTOTP(0:nplsi,istra) = helpp(0:nplsi)
 
-        call mpi_reduce(WTOTE(istra),helpc,1,
+        call mpi_reduce(WTOTE(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) WTOTE(istra) = helpc
+        if (my_pe_gr==0) WTOTE(istra) = helpc(1)
 
-        call mpi_reduce(XMCP(istra),helpc,1,
+        call mpi_reduce(XMCP(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) XMCP(istra) = helpc
+        if (my_pe_gr==0) XMCP(istra) = helpc(1)
 
-        call mpi_reduce(XMCT(istra),helpc,1,
+        call mpi_reduce(XMCT(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) XMCT(istra) = helpc
+        if (my_pe_gr==0) XMCT(istra) = helpc(1)
 
-        call mpi_reduce(PTRASH(istra),helpc,1,
+        call mpi_reduce(PTRASH(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) PTRASH(istra) = helpc
+        if (my_pe_gr==0) PTRASH(istra) = helpc(1)
 
-        call mpi_reduce(ETRASH(istra),helpc,1,
+        call mpi_reduce(ETRASH(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) ETRASH(istra) = helpc
+        if (my_pe_gr==0) ETRASH(istra) = helpc(1)
 
-        call mpi_reduce(ETOTA(istra),helpc,1,
+        call mpi_reduce(ETOTA(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) ETOTA(istra) = helpc
+        if (my_pe_gr==0) ETOTA(istra) = helpc(1)
 
-        call mpi_reduce(ETOTM(istra),helpc,1,
+        call mpi_reduce(ETOTM(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) ETOTM(istra) = helpc
+        if (my_pe_gr==0) ETOTM(istra) = helpc(1)
 
-        call mpi_reduce(ETOTI(istra),helpc,1,
+        call mpi_reduce(ETOTI(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) ETOTI(istra) = helpc
+        if (my_pe_gr==0) ETOTI(istra) = helpc(1)
 
-        call mpi_reduce(ETOTP(istra),helpc,1,
+        call mpi_reduce(ETOTP(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) ETOTP(istra) = helpc
+        if (my_pe_gr==0) ETOTP(istra) = helpc(1)
 
         call mpi_reduce(EELFI(0:nioni,istra),helpi,nioni+1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
@@ -168,21 +168,21 @@ c  particle balance tallies:  from bulk (ipls) to species a,m,i,ph,pl
         if (my_pe_gr==0) PPPLI(0:nplsi,istra) = helpp(0:nplsi)
 
 c  energy balance tallies:  from bulk (ipls) to species a,m,i,ph,pl
-        call mpi_reduce(EPATI(istra),helpc,1,
+        call mpi_reduce(EPATI(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) EPATI(istra) = helpc
+        if (my_pe_gr==0) EPATI(istra) = helpc(1)
 
-        call mpi_reduce(EPMLI(istra),helpc,1,
+        call mpi_reduce(EPMLI(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) EPMLI(istra) = helpc
+        if (my_pe_gr==0) EPMLI(istra) = helpc(1)
 
-        call mpi_reduce(EPIOI(istra),helpc,1,
+        call mpi_reduce(EPIOI(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) EPIOI(istra) = helpc
+        if (my_pe_gr==0) EPIOI(istra) = helpc(1)
 
-        call mpi_reduce(EPPHTI(istra),helpc,1,
+        call mpi_reduce(EPPHTI(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) EPPHTI(istra) = helpc
+        if (my_pe_gr==0) EPPHTI(istra) = helpc(1)
 
         call mpi_reduce(EPPLI(0:nplsi,istra),helpp,nplsi+1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
@@ -232,9 +232,9 @@ c  standard deviation of energy-resolved "spectra": estiml%sdv,...?
             if (my_pe_gr==0)
      .        estiml(ispc)%sgm(0:ns+1) = helpest(1:ns+2)
 
-            call mpi_reduce(estiml(ispc)%sgms,helpc,1,
+            call mpi_reduce(estiml(ispc)%sgms,helpc(1),1,
      .           mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-            if (my_pe_gr==0) estiml(ispc)%sgms = helpc
+            if (my_pe_gr==0) estiml(ispc)%sgms = helpc(1)
           end if
 
           deallocate (helpest)
@@ -304,7 +304,6 @@ cdr in case of nrtal < ncv: crash ?
      .       mpi_logical,mpi_LOR,0,calstr_comm,ier1)
         if (my_pe_gr==0) LOGION(0:nioni,ISTRA) = lhelpi(0:nioni)
 
-cdr why do we need if(...) here, and not above ?
         if (nphoti > 0) then
           call mpi_reduce(LOGPHOT(0:nphoti,ISTRA),lhelpph,NPHOTI+1,
      .         mpi_logical,mpi_LOR,0,calstr_comm,ier1)
@@ -328,4 +327,4 @@ c  Strictly there should also be an analogue call to eirene_calstr_cop.f
       if (allocated(helpv)) deallocate (helpv)
       if (allocated(dummyv)) deallocate (dummyv)
       RETURN
-      END
+      END SUBROUTINE EIRENE_CALSTR

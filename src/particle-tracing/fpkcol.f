@@ -172,7 +172,7 @@ C in this particlar case: retain old pitch: velpar/velper. No pitch angle scatte
         GOTO 998
       ENDIF
 C  FP COLLISION DONE, LCART=F STILL, I.E. VEL = V_GC
-c  gets new B-field
+c  gets new B field
 
 !pb VELS is not used in NEWFIELD with option 1
       VELS = VEL
@@ -184,7 +184,7 @@ C  SKIP TRANSFORM TO FULL VELOCITY AND RETURN WITH LCART=F  ?
 
 C  RETURN WITH FULL CARTESIAN VELOCITY VECTOR V = V_FULL
 
-C  NEW B-FIELD
+C  NEW B FIELD
 
 !pb VELS is not used in NEWFIELD with option 0
       VELS = VEL
@@ -253,4 +253,4 @@ C
       CALL EIRENE_LEER(1)
       IRET = 3
       RETURN
-      END
+      END SUBROUTINE EIRENE_FPKCOL

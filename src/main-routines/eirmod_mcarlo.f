@@ -1,4 +1,13 @@
       MODULE EIRMOD_MCARLO
+
+cdr  Called from:...
+
+cdr  Perform a (linear) Monte Carlo simulation, loop over strata,
+cdr  for one single iteration or time step.
+cdr  Scale and save tallies, including additional post processed tallies.
+cdr  Non-linearities may be accounted for in calling program,
+cdr  via iterative loops or stepping.
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CAI, ONLY: XMCT
@@ -136,9 +145,7 @@ cym IC ?
 C      INTEGER :: N2
 !pb 28012016
       INTEGER, SAVE :: ICO_CALL=0
-csw
-!pb 03122013      real(dp) :: timstart,timend,timused
-!pb 03122013      real(dp), external :: mpi_wtime
+
       real(dp) :: timused
       integer :: itimstart, itimend, itimrate
 C
@@ -179,7 +186,8 @@ C@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 C
 C-------------------------------------------------------------------
 C
-C** INITIALIZE SOME DATA AND SUBROUTINES (ONCE FOR ALL STRATA) *****
+C** INITIALIZE SOME DATA AND SUBROUTINES (ONCE FOR ALL STRATA);
+c   NEEDED FOR TRACING, STATISTICS AND SCALING. ONCE PER ITERATION OR STEP
 C
 C  SCLTAL: FLAG FOR SCALING OF VOLUME-AVERAGED TALLY
 C  SCLTAL =0  1.
@@ -293,12 +301,12 @@ CVKMPI      SECND=XTIM(0)
 !   count number of times MCARLO has been called
       ICO_CALL = ICO_CALL + 1
 
-      timan=secnd
+      timan=secnd   ! wall clock time, after initial overhead
 C
 C  REMAINING CPU TIME, SUBTRACT N2 SECONDS FOR PRINTOUT AND PLOTS
 !pb   XX1=XX-N2
 
-C  CHANGED:  use XX=NTCPU seconds of cpu-time for calculation of trajectories
+C  CHANGED: use XX=NTCPU seconds of cpu time for calculation of trajectories
       XX1 = XX
 
       XPT=0.
@@ -675,7 +683,7 @@ C
 
 cdr  LGLAST = T: LAST TRAJECTORY OF PRESENT STRATUM ISTRA
           LGLAST=.FALSE.
-cdr  LGSTOP = T: same as lglast, but only due to npts or cpu-time criterion
+cdr  LGSTOP = T: same as lglast, but only due to npts or cpu time criterion
 cdr  LGLAST      may also have been set during particle tracking, for other reasons.
 cdr              presently: e.g. if census array is full, set in TIMCOL
           LGSTOP=.FALSE.
@@ -694,14 +702,14 @@ C  PARTICLE LOOP WITHIN STRATUM ISTRA
 !$OMP&                   LOGPHOT,LMETSPW,LMETSP)
 !$OMP& REDUCTION(+:WTOTA,WTOTM,WTOTI,WTOTPH,WTOTP,
 !$OMP&             ETOTA,ETOTM,ETOTI,ETOTPH,XMCP)
-        DO 100 IPTSI=1,NPTS(istra)
+        DO 100 IPTSI=1,NPTS(ISTRA)
 
 ! Check that another thread hasn't aborted the particle loop
 #ifdef USE_OPENMP           
             IF(LGABORT) cycle
 #endif           
            
-C  SOME PREPARATORY WORK, ONCE FOR EACH NEW PARTICLE HISTORIE
+C  SOME PREPARATORY WORK, ONCE FOR EACH NEW PARTICLE HISTORY
 C
 C  RE-INITIALIZE INDEX ARRAYS: VISITED CELLS, VISITED WALL SEGMENTS
             NCLMT = 0
@@ -1288,7 +1296,7 @@ cdr npesta is the master processor for stratum no ISTRA
             endif
           ENDIF
 C
-C  UPDATE TALLIES FOR  "SUM OVER STRATA"
+C  UPDATE TALLIES FOR "SUM OVER STRATA"
 C
           IF (NSTRAI.EQ.1) GOTO 1111
 C
@@ -1566,15 +1574,17 @@ cdr  see above. Routine UPDLIN.f contains linear combination of tallies
 !$OMP END MASTER     
 #endif
 C
-      END
+      RETURN
+      END SUBROUTINE EIRENE_MCARLO
 
       SUBROUTINE EIRENE_MCARLO2
+      IMPLICIT NONE
 
       IF (ALLOCATED(DUMMY)) THEN
          DEALLOCATE (DUMMY,ZVOLIN,ZVOLIW,SCLTAL)
       END IF
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_MCARLO2
 
       END MODULE EIRMOD_MCARLO

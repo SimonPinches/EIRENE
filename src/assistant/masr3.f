@@ -9,4 +9,4 @@ C*DK MASR3
       WRITE (iunout,60) A,B,C,D
    60 FORMAT (1X,A24,1X,3(1PE12.4,3X))
       RETURN
-      END
+      END SUBROUTINE EIRENE_MASR3

@@ -34,7 +34,8 @@ c  eirene_samsf2:  deallocate temporary arrays
       IMPLICIT NONE
       PRIVATE
 
-      PUBLIC :: EIRENE_SAMSF0, EIRENE_SAMSF1, EIRENE_SAMSF2
+      PUBLIC :: EIRENE_SAMSF0, EIRENE_SAMSF1,
+     .          EIRENE_SAMSF2
 
       REAL(DP), ALLOCATABLE, SAVE ::
      .        ALEFT(:,:,:), BRGHT(:,:,:), XI(:,:,:), XE(:,:,:)
@@ -71,6 +72,8 @@ C  NOV. 15: INDSRF: SURFACE NUMBER FOR SHEATH MODEL, ONLY IN CASE OF STEP FUNCTI
 CDR         now: default is ALWAYS set. INDSRF is e.g. argument in call to fct. SHEATH(...)
 cdr nov.16: istra --> istrai, ispz -->jspz, and a bit more info on diagnostic printout
 cdr dec.17: cleanup, comments
+cdr may 20: Default step function: projection to flux tube in levgeo=4 (non-orthodonal
+cdr         grids) was turned off at some point in time. This must be unphysical.
 C
       SUBROUTINE EIRENE_SAMSF0
 
@@ -173,7 +176,7 @@ C  YES. CHECK INPUT DATA AND STORAGE
 C
 C  ISTEP      IS 1ST DIGIT "A" OF REAL FLAG SORIND (="CBA.0")
 C  ISTEP_SPEZ IS 3RD DIGIT "C" OF REAL FLAG SORIND
-        ISTEP=MOD(INT(REAL(SORIND(ISRFS,ISTRAI),KIND(1.D0))),100)
+        ISTEP=MOD(INT(REAL(SORIND(ISRFS,ISTRAI),DP)),100)
         ISTEP_SPEZ=INT(SORIND(ISRFS,ISTRAI)/100)
 C
         IF (ISTEP.EQ.0) THEN
@@ -199,12 +202,13 @@ C  STEP FUNCTIONS FOR SAMPLING 1ST COORDINATE (X) FROM "RADIAL" DISTRIBUTIONS ON
 C       source surfaces must hence be either x-y or x-z surface
 c       IN CASE OF UNSTRUCTURED GRIDS: LEVGEO 4 AND LEVGEO 5,
 C       ALL NON-DEFAULT SURFACES ARE REGARDED as x-s surface, t=const
+C STEP FUNCTIONS IN ALL OTHER CASES MUST BE SET ELSEWHERE (E.G. IN USER OR INTERFACE ROUTINES)
 C
           IF (INDTEC(NL1J,ISTRAI).EQ.4) THEN
 C
-C  USE X-OR RADIAL DISTRIBUTION OF ION FLUX 0.5*NI(R,Y0,Z0)*CS(R,Y0,Z0)*(DELTA-Z
-C  WITH: CS = COMMON ION ACOUSTIC SPEED
-C  TAKE RADIAL (X) PROFILE OF PLASMA DATA ON A POLOIDAL (Y) OR TOROIDAL (Z) SURFACE:
+C  USE X-OR RADIAL DISTRIBUTION OF ION FLUX 0.5*NI(R,Y0,Z0)*CS(R,Y0,Z0)*(DELTA-Z)
+C  WITH: CS = COMMON ION ACOUSTIC SPEED, PARALLEL TO B FIELD.
+C  TAKE RADIAL (X) PROFILE OF PLASMA DATA ON A POLOIDAL (Y = CONST) SURFACE:
 C  AT SOME GIVEN POLOIDAL (Y) POSITION IP
 C  AT SOME GIVEN TOROIDAL (Z) POSITION IT
 C  SCALE FLUX DENSITY WITH A TOROIDAL LENGTH, I.E.
@@ -300,7 +304,7 @@ C  TRIANGULAR GRID. RRSURF IS INTEGRATED ALONG A SET OF TRIANGLE SIDES.
                     ITSTEP(ISTEP,K)=IT
                     IASTEP(ISTEP,K)=0
                     IBSTEP(ISTEP,K)=1
-!pb  projection to b-field switched off!!!
+!pb  projection to B field switched off!!!
 !pb  to allow for step functions on surfaces perpendicular to magnetic field
 !pb                    BABS=SQRT(BXIN(ITRI)**2+BYIN(ITRI)**2+BZIN(ITRI)**2)
 !pb                    CTETHA=ABS((PTRIX(IS,ITRI)*BXIN(ITRI) +
@@ -326,6 +330,7 @@ C  TRIANGULAR GRID. RRSURF IS INTEGRATED ALONG A SET OF TRIANGLE SIDES.
             case (5)
 C  GRID OF TETRAHEDRA. RRSTEP IS A CUMULATED SURFACE AREA, INTEGRATING
 C                       OVER A SET OF TETRAHEDRON SIDES (=TRIANGLES)
+cdr  i.e. no DELTA_Z factors here.
               K=0
               RRSTEP(ISTEP,1) = 0._DP
               INDSRF=INSOR(ISRFS,ISTRAI)
@@ -333,6 +338,8 @@ C                       OVER A SET OF TETRAHEDRON SIDES (=TRIANGLES)
               DO ITET=1,NTET
                 DO IS=1,4
                   IF (INMTIT(IS,ITET) == INDSRF) THEN
+cdr set irstep, ipstep and cumulated variable RRSTEP, purely geometrical.
+cdr no projection to flux tube cross section is done.
                     CALL EIRENE_TET_STEP (ISTEP,ITET,IS,K)
                   END IF
                 END DO
@@ -351,7 +358,8 @@ C  toroidal length: already included in RRSTEP, which is a surface area
               CALL EIRENE_EXIT_OWN(1)
             end select
 C
-C  NOW SET THE FLUX DISTRIBUTION FLSTEP, AS WELL AS SURFACE TE, TI, V-PLASMA, NI
+C  NOW SET THE FLUX DISTRIBUTION FLSTEP, AS WELL AS TE, TI, V-PLASMA, NI, at surface.
+cdr also set sheath potential SHSTEP, and energy flux ELSTEP.
 C
 
             DO K=KAN,KEN
@@ -522,7 +530,7 @@ C
 C  DEFINE LEFT AND RIGHT BOUNDARY OF SAMPLING INTERVALS FOR STRATUM ISTRAI.
 C
 C  FLAG ISTEP INDICATES: IS STEP FUNCTION TO BE USED FOR THIS ?
-        ISTEP=MOD(INT(REAL(SORIND(ISRFS,ISTRAI),KIND(1.D0))),100)
+        ISTEP=MOD(INT(REAL(SORIND(ISRFS,ISTRAI),DP)),100)
         ISTEP_SPEZ=INT(SORIND(ISRFS,ISTRAI)/100)
 C
         IF (INDIM(ISRFS,ISTRAI).EQ.1) THEN
@@ -837,7 +845,7 @@ C   METHOD: COVEYOU-TRICK  (SPANIER-GELBARD, ADDISON WESLEY,  P 35)
 C   STEP FUNCTION NO. ISTEP, FOR ONE COORDINATE ONLY
 C   PARAMETER: SORIND
    40   CONTINUE
-          ISTEP=MOD(INT(REAL(SORIND(NLSF,ISTRA),KIND(1.D0))),100)
+          ISTEP=MOD(INT(REAL(SORIND(NLSF,ISTRA),DP)),100)
           ISTEP_SPEZ = INT(SORIND(NLSF,ISTRA)/100)
           ISPZ=NSPEZ(ISTRA)
           IF (ISTEP_SPEZ.GT.0) ISPZ=ISTEP_SPEZ
@@ -1655,8 +1663,8 @@ C
       WRITE (iunout,*) 'INITIAL CELL NUMBER INVALID OR DET NEGATIVE'
       CALL EIRENE_MASR4('X0, Y0, Z0, DET                 ',X0,Y0,Z0,DET)
       WRITE (iunout,*) 'ISTEP ',ISTEP
-      WRITE (iunout,*) 'NBLOCK,NACELL,NRCELL ',NBLOCK,NACELL,NRCELL
-      WRITE (iunout,*) 'NPCELL,NTCELL,IPOLG ',NPCELL,NTCELL,IPOLG
+      CALL EIRENE_MASJ3('NBLOCK,NACELL,NRCELL    ',NBLOCK,NACELL,NRCELL)
+      CALL EIRENE_MASJ3('NPCELL,NTCELL,IPOLG     ',NPCELL,NTCELL,IPOLG)
       CALL EIRENE_EXIT_OWN(1)
       END SUBROUTINE EIRENE_SAMSF1
 
@@ -1673,4 +1681,5 @@ C
 
       RETURN
       END SUBROUTINE EIRENE_SAMSF2
+
       END MODULE EIRMOD_SAMSRF

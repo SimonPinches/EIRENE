@@ -264,7 +264,7 @@ C
           CALL EIRENE_LEER(2)
         ENDIF
 C
-      case (3)
+      CASE (3)
 C
 C  GRID DATA GENERATION FOR LEVGEO.EQ.3
 C
@@ -495,7 +495,7 @@ C
           WRITE (iunout,*)
      .      ' WRONG INDEX OF REFLECTION MODEL SPECIFIED '
           WRITE (iunout,*) ' CHECK DEFINITION OF TRIANGLES ',
-     .                     ' AND THEIR MODEL-FLAGS FOR SIDES '
+     .                     ' AND THEIR MODEL FLAGS FOR SIDES'
           CALL EIRENE_EXIT_OWN(1)
         END IF
 
@@ -769,7 +769,6 @@ C  SIDE 3-1-4
             PTETZ(J,ITET)=PTETZ(J,ITET)/PLEN
           END DO
         END DO
-
 
         CALL EIRENE_SUCHE_NACHBARN
 
@@ -1253,8 +1252,9 @@ C
           DO 219 I=1,NRPLG
             WRITE (iunout,*) ' PERP. POLYGON NO. I = ',I
             WRITE (iunout,*) ' JA = ',1,' JE = ',NR1ST
-            WRITE (iunout,'(/1X,1P,6E12.4)') (XPOL(K,I),YPOL(K,I),
+            WRITE (iunout,'(1X,1P,6E12.4)') (XPOL(K,I),YPOL(K,I),
      .             K=1,NR1ST)
+            CALL EIRENE_LEER(1)
   219     CONTINUE
         ENDIF
 C
@@ -1278,7 +1278,7 @@ C
      .      'ARCLENGTH BGLP(I,K) OF POLOIDAL SURFACES AT Z=0.'
           DO 223 K=1,NRPLG
             WRITE (iunout,*) 'K = ',K
-            WRITE (iunout,'(/1X,1P,6E12.4)') (BGLP(I,K),I=1,NR1ST)
+            WRITE (iunout,'(1X,1P,6E12.4)') (BGLP(I,K),I=1,NR1ST)
             CALL EIRENE_LEER(1)
   223     CONTINUE
         ENDIF
@@ -1494,12 +1494,12 @@ C
         IF (NLTRZ)
      .   WRITE (iunout,*) 'GRIDPOINTS IN Z DIRECTION'
         IF (NLTRA)
-     .   WRITE (iunout,*) 'GRIDPOINTS IN TOROIDAL DIRECTION, IN RADIANS'
+     .   WRITE (iunout,*)
+     .    'GRID POINTS IN TOROIDAL DIRECTION, IN RADIANS'
         CALL EIRENE_LEER(1)
         CALL EIRENE_MASRR1 (' N,  ZSURF ',ZSURF,NT3RD,3)
         CALL EIRENE_LEER(2)
       ENDIF
-
 
 !  SET NSTGRD FOR CELLS IT=NT3RD CONTAINING 2-DIMENSIONAL AVERAGES
 
@@ -1537,4 +1537,4 @@ C
       WRITE (iunout,*) 'GRID DATA INCONSISTENCY: 2ND GRID.  YAA > YIA ?'
       WRITE (iunout,*) 'YIA,YAA = ',YIA,YAA
       CALL EIRENE_EXIT_OWN(1)
-      END
+      END SUBROUTINE EIRENE_GRID

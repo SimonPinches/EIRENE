@@ -26,4 +26,4 @@ C
       AI(3,3) = (A(1,1) * A(2,2) - A(1,2) * A(2,1)) / DET
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_INVERT

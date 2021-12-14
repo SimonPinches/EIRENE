@@ -28,12 +28,9 @@ C
 
       REAL(DP) :: REMIN, REMAX, XMT, DX, YMI, YMA, RMI, RMA, AAR, XMINN,
      .          XMAXN, YMINN, YMAXN, YMT, XMI, XMA
-!pb      REAL(SP) :: AR(LAR), EXT(3,3), VALU(3,2)
-!pb      REAL(SP) :: XYZ(3,128,128)
-!pb      real(sp) :: yh
-      REAL :: AR(LAR), EXT(3,3), VALU(3,2)
-      REAL :: XYZ(3,128,128)
-      real :: yh
+      REAL(SP) :: AR(LAR), EXT(3,3), VALU(3,2)
+      REAL(SP) :: XYZ(3,128,128)
+      real(sp) :: yh
       INTEGER :: IR, IPX, IPY, IER, IPAN, IPEN, K, I, J
       CHARACTER(17) :: CH
       CHARACTER(20) :: CHAXS(3)
@@ -203,8 +200,8 @@ C
       CHAXS(2) = ' '
       CHAXS(3) = ' '
       CALL GR3AXS(AR,IER,EXT,VALU,CHAXS,.FALSE.,4,1)
-      CALL GR3ROT(AR,IER,'Z',REAL(W1,KIND(1.E0)),
-     .            'X',REAL(W2,KIND(1.E0)),'Y',0.0)
+      CALL GR3ROT(AR,IER,'Z',REAL(W1,SP),
+     .            'X',REAL(W2,SP),'Y',0.0)
       CALL GR3PLO(AR,IER,'HID')
 C
 C     WRITE TEXT AND MEAN VALUE ONTO THE PLOT
@@ -212,24 +209,24 @@ C
       CALL GRSCLC (0.,0.,39.,28.)
       CALL GRSCLV (0.,0.,39.,28.)
       YH=27.5
-      CALL GRTXT (1.,REAL(YH,KIND(1.E0)),72,RUNID)
+      CALL GRTXT (1.,REAL(YH,SP),72,RUNID)
       YH=26.75
-      CALL GRTXT (1.,REAL(YH,KIND(1.E0)),72,HEAD)
+      CALL GRTXT (1.,REAL(YH,SP),72,HEAD)
       YH=26.00
-      CALL GRTXT (1.,REAL(YH,KIND(1.E0)),72,TXHEAD)
+      CALL GRTXT (1.,REAL(YH,SP),72,TXHEAD)
       YH=25.25
-      CALL GRTXT (1.,REAL(YH,KIND(1.E0)),10,'TALLY :  ')
+      CALL GRTXT (1.,REAL(YH,SP),10,'TALLY :  ')
       CALL GRTXTC (72,TEXT1)
-      CALL GRTXT (1.,REAL(YH-0.5,KIND(1.E0)),10,'SPECIES :')
+      CALL GRTXT (1.,REAL(YH-0.5,SP),10,'SPECIES :')
       CALL GRTXTC (24,TEXT2)
-      CALL GRTXT (1.,REAL(YH-1.,KIND(1.E0)),10,'UNITS :   ')
+      CALL GRTXT (1.,REAL(YH-1.,SP),10,'UNITS :   ')
       CALL GRTXTC (24,TEXT3)
-      CALL GRTXT (1.,REAL(YH-2.,KIND(1.E0)),10,'MAX. VALUE')
+      CALL GRTXT (1.,REAL(YH-2.,SP),10,'MAX. VALUE')
       WRITE (CH,'(1P,E10.3)') RMA
-      CALL GRTXT (1.,REAL(YH-2.5,KIND(1.E0)),10,CH)
-      CALL GRTXT (1.,REAL(YH-3.,KIND(1.E0)),10,'MIN. VALUE')
+      CALL GRTXT (1.,REAL(YH-2.5,SP),10,CH)
+      CALL GRTXT (1.,REAL(YH-3.,SP),10,'MIN. VALUE')
       WRITE (CH,'(1P,E10.3)') RMI
-      CALL GRTXT (1.,REAL(YH-3.5,KIND(1.E0)),10,CH)
+      CALL GRTXT (1.,REAL(YH-3.5,SP),10,CH)
 C
       RETURN
   999 CONTINUE
@@ -237,4 +234,4 @@ C
       WRITE (iunout,*) 'REDUCE PLOT AREA '
       WRITE (iunout,*) 'PLOT ABANDONED'
       RETURN
-      END
+      END SUBROUTINE EIRENE_PL3DPG

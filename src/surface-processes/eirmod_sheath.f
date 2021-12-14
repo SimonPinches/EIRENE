@@ -91,6 +91,6 @@ C  UNITS OF SUM: VELOCITY (CM/SEC)
 
    60 FORMAT (1X,I6,2X,I6,3X,2(1PE12.4,3X))
       RETURN
-      END function eirene_sheath
+      END FUNCTION EIRENE_SHEATH
 
       end module eirmod_sheath

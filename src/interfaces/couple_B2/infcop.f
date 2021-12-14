@@ -30,7 +30,7 @@ c  eliminate cut cells from balances (lcut(..))
 c  removed: ncopib, ncopeb
 
 C   UPDATES:
-C   OPTION TO EVALUATE B-FIELD VECTORS FROM GRIDADAP FILE FT29
+C   OPTION TO EVALUATE B FIELD VECTORS FROM GRIDADAP FILE FT29
 C   FOR NON-ORTHOGONAL GRIDS
 C
 C   THIS CODE SEGMENT CONTAINS VARIOUS SUBROUTINES NEEDED FOR
@@ -519,7 +519,7 @@ C
      .               NCUTL,NPOINT,NPLP)
  1020   CONTINUE
 C
-!  ALPHXB, ALPHYB GIVE THE DIRECTION OF THE B-FIELD IN THE
+!  ALPHXB, ALPHYB GIVE THE DIRECTION OF THE B FIELD IN THE
 !  CARTESIAN PLANE
         write (iunout,*) 'testoutput from fort.29 in infcop'
         write (iunout,*) 'irad,ipol, angles.....'
@@ -852,7 +852,7 @@ C
           BX=PUX(IN)*RRB(IX,IY)+PVX(IN)*0.
           BY=PUY(IN)*RRB(IX,IY)+PVY(IN)*0.
           BZ=SQRT(1.-RRB(IX,IY)**2)
-c  normalize B-field vector to length 1 (one)
+c  normalize B field vector to length 1 (one)
 c
           BN=SQRT(BX*BX+BY*BY+BZ*BZ)
           BXINTF(IN)=BX/BN
@@ -2450,7 +2450,7 @@ cdr  add pppl contribution to internal energy sources rate
 
             IF (.NOT.LSHORT) THEN
 
-cdr:  try to find stat. variance for particle balance sources
+cdr   try to find stat. variance for particle balance sources
 cdr   ntalm is a copv tally.
               istat_cop = 0
               do i = 1, nsigvi
@@ -2526,7 +2526,7 @@ cdr  tbd:  check storage on copv tallies, ncpv ??
 
             IF (.NOT.LSHORT) THEN
 
-cdr:  try to find stat. variance for momentum balance sources
+cdr   try to find stat. variance for momentum balance sources
 cdr   ntalm is a copv tally.
               istat_cop = 0
               do i = 1, nsigvi
@@ -2653,7 +2653,7 @@ cdr  this is now identical to sei above ?
 
         IF (.NOT.LSHORT) THEN
 
-cdr:  try to find stat. variance for electron energy balance sources
+cdr   try to find stat. variance for electron energy balance sources
 cdr   ntalm is a copv tally.
           istat_cop = 0
           do i = 1, nsigvi
@@ -2677,7 +2677,7 @@ cdr   ntalm is a copv tally.
             END DO
           end if
 
-cdr:  try to find stat. variance for ion energy balance sources
+cdr   try to find stat. variance for ion energy balance sources
 cdr   ntalm is a copv tally.
           istat_cop = 0
           do i = 1, nsigvi

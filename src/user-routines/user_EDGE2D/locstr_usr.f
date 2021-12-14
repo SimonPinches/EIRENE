@@ -22,4 +22,4 @@ csw
             return
          endif
       enddo
-      end
+      end subroutine eirene_locstr_usr

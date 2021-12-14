@@ -28,13 +28,6 @@ cdr nov.15: tracklength estimators for eapl,empl,eipl: species ipl resolved.
 cdr apr. 16: bug fix J.Lore re index in lgiel. This part of code is still unused,
 cdr          so no effect on any result.  Few further comments corrected
 
-!pb APR 16: ipplds -> ipplei, pplds -> pplei
-!pb APR 16: ipatds -> ipatei, patds -> patei
-!pb APR 16: ipmlds -> ipmlei, pmlds -> pmlei
-!pb APR 16: ipiods -> ipioei, piods -> pioei
-!pb APR 16: pelds -> pelei
-
-
 C
       SUBROUTINE EIRENE_UPDPHOT (XSTOR2,XSTORV2,IFLAG)
 C
@@ -176,10 +169,13 @@ C  PRE-COLLISION RATES, ASSUME: TEST PARTICLES (AND THEIR ENERGY) ARE LOST
 C
         IF ((LAST_EVENT%IFLAG == 1) .AND.
      .      (LAST_EVENT%NCELL == IRD)) THEN
+cdr  particle was born, is now on first flight
+cdr  particle track is still in same cell
 
-! collision estimator for first cell ("brick") along the track
-! in case of a collision sample 1 (the whole weight)
-! in case of no collision sample 0
+! use collision estimator for first cell ("brick") along the track.
+! in case UPDATE is called at a collision point: sample 1 (score the whole weight)
+cdr This perfectly cancels the source rate.
+! in case UPDATE is called at any other instance (no collision in cell IRD): sample 0 (do not score)
           IF ((IFLAG == 4).OR.(IFLAG == 5)) THEN
             IF (LPPHPHT) THEN
 !$OMP ATOMIC
@@ -474,4 +470,4 @@ C
   131  CONTINUE
       RETURN
 
-      END
+      END SUBROUTINE EIRENE_UPDPHOT

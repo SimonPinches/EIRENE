@@ -1,10 +1,11 @@
       MODULE EIRMOD_CSPEI
 cdr Handle storage for:
 c   cspei: Standard deviations, co.-variances, etc.
-c   plasma-bckgrnd: For interfacing with external plasma code)
+c   plasma_bckgrnd: For interfacing with external plasma code
+c                   also used for internal non-lin. iterations within eirene
 c
 c   Size of plasma_bckgrnd:  currently NIINTF (formerly: NIDC)
-c   to be checked: consistent with usage of plasma_bckgrnd 
+c   to be checked: is this consistent with usage of plasma_bckgrnd?
 c   also in modbgk? 
 
       USE EIRMOD_PRECISION
@@ -69,7 +70,7 @@ cdr
         NIDV=1
         NIDS=1
       END IF
-C  storage for for sum over strata....
+CDR  storage for for sum over strata, surface and volume tallies.
       ALLOCATE (SMESTV(NIDV,NRTAL))
       ALLOCATE (SMESTS(NIDS,NLMPGS))
 CDR   same for spectra, but:
@@ -92,7 +93,9 @@ cdr  these next arrays are intermediate storage array to perform variance per hi
       ALLOCATE (SDVIAC(2,NCV,NRTAL))
 
 CDR  same again: intermediate storage for spectra, data type prevents this from having it here?
-CDR BEGIN:  TO BE MOVED HERE FROM INPUT.F, NOT POSSIBLE, BECAUSE DIFFERENT DATA TYPE FOR SSPEC
+CDR BEGIN:
+CDR TO BE MOVED HERE FROM INPUT.F, NOT EASILY POSSIBLE,
+CDR BECAUSE, SADLY, DIFFERENT DATA TYPE FOR SSPEC
 c     ALLOCATE(SSPEC)
 c     ALLOCATE(SSPEC%SPC(0:NSPS+1))
 c  standard deviation of spectra tallies, sum over strata intermediate storage
@@ -170,10 +173,14 @@ C  TOTAL ALLOCATED STORAGE IN THIS ROUTINE
 
 
       SUBROUTINE EIRENE_ALLOC_BCKGRND
+cdr  Sept 19:  NIDC renamed to NIINTF
+cdr  some time in past: typo in NIDC fixed: NIDC=...+3*NPLSV
+cdr                            rather than: NIDC=...+4*NPLSV
+cdr  Jan 20: further comments.
 
-cdr  if any indpro(1..12)=6, then alloc background is called: provide storage for
-c    transfer of background (plasma) tallies into eirene
-c    currently: no efield information ?
+cdr  Allocate storage for handling background medium,
+cdr  originally only for transfer of plasma data from external code
+cdr  and PROFR  profile options INDPRO=6 or INDPRO=7
 
 
 !pb   NIDC=1*NPLS+NAIN+6+NPLSTI+4*NPLSV

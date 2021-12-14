@@ -1,5 +1,5 @@
 cdr  28.4.04:  nhsts(ispz) option connected (to select species
-cdr            for trajectory plot. see modification to input.f, 28.4.04
+cdr            for trajectory plot). see modification to input.f, 28.4.04
 cdr  24.8.06:  plot symbols corrected to more recent GR  software standards
 !pb  5.10.06:  plot for triangle geometry in x-z plane added
 !pb  11.04.08: remove restriction NTTRA<100
@@ -172,8 +172,7 @@ C
 C
       CALL GRSPTS (16)
       CALL GRCHRC (0.3,0.,16)
-      CALL GRSCLV (0.,0.,REAL(ABSMAX,KIND(1.E0)),
-     .                   REAL(ORDMAX,KIND(1.E0)))
+      CALL GRSCLV (0.,0.,REAL(ABSMAX,SP),REAL(ORDMAX,SP))
 C
       CALL GRTXT (-8.,24.,72,TXTRUN)
       CALL GRTXT (-8.,22.,15,'SCALING FACTORS')
@@ -193,14 +192,14 @@ C
       XMA2D=CH2X0+CH2MX
       YMI2D=CH2Y0-CH2MY
       YMA2D=CH2Y0+CH2MY
-      CALL GRSCLV(REAL(XMI2D,KIND(1.E0)),REAL(YMI2D,KIND(1.E0)),
-     .            REAL(XMA2D,KIND(1.E0)),REAL(YMA2D,KIND(1.E0)))
+      CALL GRSCLV(REAL(XMI2D,SP),REAL(YMI2D,SP),
+     .            REAL(XMA2D,SP),REAL(YMA2D,SP))
 C
 C  SCALE FACTORS: USER COORDINATES TO CM:
 C  X-DIRECTION:
-      SCLFCX=ABSMAX/(XMA2d-XMI2d)
+      SCLFCX=ABSMAX/(XMA2D-XMI2D)
 C  Y-DIRECTION:
-      SCLFCY=ORDMAX/(YMA2d-YMI2d)
+      SCLFCY=ORDMAX/(YMA2D-YMI2D)
 C
 C  PLOT X OR R-GRID
 C
@@ -377,7 +376,6 @@ C  Y-Z PLANE
           DEALLOCATE (IFARB)
           DEALLOCATE (IDASH)
         END IF
-
 
         CALL GRDSH(1.,0.,1.)
 C
@@ -630,36 +628,28 @@ C
                 IF (IN.EQ.0) IN=4
                 SELECT CASE (IN)
                   CASE (1)
-                    CALL GRDRW (REAL(XTN,KIND(1.E0)),
-     .                          REAL(YTN,KIND(1.E0)))
+                    CALL GRDRW (REAL(XTN,SP),REAL(YTN,SP))
                     IF (LSTORE) CALL EIRENE_STCOOR(XTN,YTN,1)
                   CASE (2)
-                    CALL GRDRW(REAL(XT,KIND(1.E0)),
-     .                         REAL(YT,KIND(1.E0)))
-                    CALL GRJMP(REAL(XTN,KIND(1.E0)),
-     .                         REAL(YTN,KIND(1.E0)))
+                    CALL GRDRW(REAL(XT,SP),REAL(YT,SP))
+                    CALL GRJMP(REAL(XTN,SP),REAL(YTN,SP))
                     IF (LSTORE) THEN
                       CALL EIRENE_STCOOR (XT,YT,0)
                       CALL EIRENE_STCOOR (XTN,YTN,1)
                     END IF
                   CASE (3)
-                    CALL GRJMP(REAL(XT,KIND(1.E0)),
-     .                         REAL(YT,KIND(1.E0)))
-                    CALL GRDRW(REAL(XTN,KIND(1.E0)),
-     .                         REAL(YTN,KIND(1.E0)))
+                    CALL GRJMP(REAL(XT,SP),REAL(YT,SP))
+                    CALL GRDRW(REAL(XTN,SP),REAL(YTN,SP))
                     IF (LSTORE) THEN
                       CALL EIRENE_STCOOR (XT,YT,0)
                       CALL EIRENE_STCOOR (XTN,YTN,1)
                     END IF
                   CASE (4)
-                    CALL GRJMP(REAL(XTN,KIND(1.E0)),
-     .                         REAL(YTN,KIND(1.E0)))
+                    CALL GRJMP(REAL(XTN,SP),REAL(YTN,SP))
                     IF (LSTORE) CALL EIRENE_STCOOR(XTN,YTN,0)
                   CASE (5)
-                    CALL GRJMP(REAL(XT,KIND(1.E0)),
-     .                         REAL(YT,KIND(1.E0)))
-                    CALL GRDRW(REAL(XT2,KIND(1.E0)),
-     .                         REAL(YT2,KIND(1.E0)))
+                    CALL GRJMP(REAL(XT,SP),REAL(YT,SP))
+                    CALL GRDRW(REAL(XT2,SP),REAL(YT2,SP))
                     IF (LSTORE) THEN
                       CALL EIRENE_STCOOR (XT,YT,0)
                       CALL EIRENE_STCOOR (XT2,YT2,1)
@@ -672,7 +662,7 @@ C
                   IF (IDSH(ISW).EQ.1) CALL GRDSH (0.2,0.5,0.2)
                   INOSF = -INON(ISW)
                   ISW=ISW+1
-                  CALL GRJMP (REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
+                  CALL GRJMP (REAL(XTN,SP),REAL(YTN,SP))
                   LSTORE = PLSTOR
                   INOSF=0
                   IF (LSTORE) CALL EIRENE_STCOOR (XTN,YTN,0)
@@ -690,8 +680,8 @@ c  segment): all cells j with nstgrd(j)=1
           call grclp(1)
           do j=1,nsurf
             if (nstgrd(j).eq.1) then
-              call
-     .         EIRENE_ncelln(j,ir,ip,it,ia,ib,nr1st,np2nd,nt3rd,nbmlt,
+              call EIRENE_ncelln
+     .         (j,ir,ip,it,ia,ib,nr1st,np2nd,nt3rd,nbmlt,
      .                                        nlrad,nlpol,nltor)
               XPS(1)=XPOL(IR,IP)
               YPS(1)=YPOL(IR,IP)
@@ -709,7 +699,7 @@ c  segment): all cells j with nstgrd(j)=1
           enddo
           call grclp(0)
 
-
+C
 C  PLOT ARROWS TO INDICATE SURFACE NORMAL
 C
 
@@ -727,9 +717,8 @@ C
                   CALL EIRENE_TSTCHM(1,XTN,YTN,XTip,YTip,IN,TESTN,
      .                      XMI2D,XMA2D,YMI2D,YMA2D,XT2,YT2)
                   if (testn .ne. 2)
-     .            call grarrw (REAL(xtn,KIND(1.E0)),REAL(ytn,KIND(1.E0))
-     .                        ,REAL(xtip,KIND(1.E0)),
-     .                         REAL(ytip,KIND(1.E0)),0.4,0.4,0)
+     .            call grarrw (REAL(xtn,SP),REAL(ytn,SP),
+     .                         REAL(xtip,SP),REAL(ytip,SP),0.4,0.4,0)
                 endif
               enddo
             enddo
@@ -793,8 +782,8 @@ C  NOW PLOT THAT RADIAL SURFACE
               XW1=XPOL(NU,IP)
               IF (NLTRZ) THEN
                 IF (XW1.GE.XMI2D.AND.XW1.LE.XMA2D) THEN
-                  CALL GRJMP (REAL(XW1,KIND(1.E0)),REAL(YW1,KIND(1.E0)))
-                  CALL GRDRW (REAL(XW1,KIND(1.E0)),REAL(YW2,KIND(1.E0)))
+                  CALL GRJMP (REAL(XW1,SP),REAL(YW1,SP))
+                  CALL GRDRW (REAL(XW1,SP),REAL(YW2,SP))
                   IF (LSTORE) THEN
                     CALL EIRENE_STCOOR (XW1,YW1,0)
                     CALL EIRENE_STCOOR (XW1,YW2,1)
@@ -838,7 +827,7 @@ C             SEITE J GEHOERT ZUM RAND
               ISTS=ABS(INMTI(J,I))
               IF (ISTS .GT. 0 .AND.
      .            ISTS .LE. NLIM+NSTSI) THEN
-C   SIDE J HAS A SPECIAL PROPERTY (NON-DEFAULT STD.FLAECHE)
+C   SIDE J HAS A SPECIAL PROPERTY (NON-DEFAULT STD. SURFACE)
                 IF (ILCOL(ISTS) == 666) CYCLE
                 CALL GRDSH (1.,0.,1.)
                 CALL GRNWPN (ILCOL(ISTS))
@@ -879,9 +868,8 @@ c  r: radius des inkreises des dreiecks
               if (x.lt.xmi2d.or.x.gt.xma2d.or.y.lt.ymi2d.or.y.gt.yma2d)
      .           goto 1010
               slt=slt*sclfcx
-              call grchrc(REAL(slt,KIND(1.E0)),0.,idummy)
-              CALL GRTXT
-     .             (REAL(X,KIND(1.E0)),REAL(Y,KIND(1.E0)),6,CH)
+              call grchrc(REAL(slt,SP),0.,idummy)
+              CALL GRTXT(REAL(X,SP),REAL(Y,SP),6,CH)
               call grchrc(0.3,0.,idummy)
             ENDIF
  1010     CONTINUE
@@ -959,10 +947,8 @@ C   SIDE J HAS A SPECIAL PROPERTY (NON-DEFAULT STD. SURFACE)
 C  NOW PLOT THAT RADIAL SURFACE
                 IF (NLTRZ) THEN
                   IF (XW1.GE.XMI2D.AND.XW1.LE.XMA2D) THEN
-                    CALL GRJMP (REAL(XW1,KIND(1.E0)),
-     .                          REAL(YW1,KIND(1.E0)))
-                    CALL GRDRW (REAL(XW1,KIND(1.E0)),
-     .                          REAL(YW2,KIND(1.E0)))
+                    CALL GRJMP (REAL(XW1,SP),REAL(YW1,SP))
+                    CALL GRDRW (REAL(XW1,SP),REAL(YW2,SP))
                     IF (LSTORE) THEN
                       CALL EIRENE_STCOOR (XW1,YW1,0)
                       CALL EIRENE_STCOOR (XW1,YW2,1)
@@ -1030,14 +1016,14 @@ C
      .                    ZTETRA(NTECK(4,NU)) /)
           CALL EIRENE_TETRA_SCHNITT (EBENE, TET, NCTPNT, CTPNTS)
           IF (NCTPNT > 0) THEN
-            CALL GRJMP (REAL(CTPNTS(1,IC1),KIND(1.E0)),
-     .                  REAL(CTPNTS(1,IC2),KIND(1.E0)))
+            CALL GRJMP (REAL(CTPNTS(1,IC1),SP),
+     .                  REAL(CTPNTS(1,IC2),SP))
             DO ICT = 2, NCTPNT
-              CALL GRDRW (REAL(CTPNTS(ICT,IC1),KIND(1.E0)),
-     .                    REAL(CTPNTS(ICT,IC2),KIND(1.E0)))
+              CALL GRDRW (REAL(CTPNTS(ICT,IC1),SP),
+     .                    REAL(CTPNTS(ICT,IC2),SP))
             END DO
-            CALL GRDRW (REAL(CTPNTS(1,IC1),KIND(1.E0)),
-     .                  REAL(CTPNTS(1,IC2),KIND(1.E0)))
+            CALL GRDRW (REAL(CTPNTS(1,IC1),SP),
+     .                  REAL(CTPNTS(1,IC2),SP))
           END IF
           CALL GRNWPN(1)
         ENDDO NU_LOOP
@@ -1280,28 +1266,28 @@ C
             IF (IN.EQ.0) IN=4
             SELECT CASE (IN)
               CASE (1)
-                CALL GRDRW(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
+                CALL GRDRW(REAL(XTN,SP),REAL(YTN,SP))
                 IF (LSTORE) CALL EIRENE_STCOOR(XTN,YTN,1)
               CASE (2)
-                CALL GRDRW(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
-                CALL GRJMP(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
+                CALL GRDRW(REAL(XT,SP),REAL(YT,SP))
+                CALL GRJMP(REAL(XTN,SP),REAL(YTN,SP))
                 IF (LSTORE) THEN
                   CALL EIRENE_STCOOR (XT,YT,0)
                   CALL EIRENE_STCOOR (XTN,YTN,1)
                 END IF
               CASE (3)
-                CALL GRJMP(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
-                CALL GRDRW(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
+                CALL GRJMP(REAL(XT,SP),REAL(YT,SP))
+                CALL GRDRW(REAL(XTN,SP),REAL(YTN,SP))
                 IF (LSTORE) THEN
                   CALL EIRENE_STCOOR (XT,YT,0)
                   CALL EIRENE_STCOOR (XTN,YTN,1)
                 END IF
               CASE (4)
-                CALL GRJMP(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
+                CALL GRJMP(REAL(XTN,SP),REAL(YTN,SP))
                 IF (LSTORE) CALL EIRENE_STCOOR(XTN,YTN,0)
               CASE (5)
-                CALL GRJMP(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
-                CALL GRDRW(REAL(XT2,KIND(1.E0)),REAL(YT2,KIND(1.E0)))
+                CALL GRJMP(REAL(XT,SP),REAL(YT,SP))
+                CALL GRDRW(REAL(XT2,SP),REAL(YT2,SP))
                 IF (LSTORE) THEN
                   CALL EIRENE_STCOOR (XT,YT,0)
                   CALL EIRENE_STCOOR (XT2,YT2,1)
@@ -1316,7 +1302,7 @@ C
               ISW=ISW+1
               LSTORE = PLSTOR
               INOSF=0
-              CALL GRJMP(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
+              CALL GRJMP(REAL(XTN,SP),REAL(YTN,SP))
               IF (LSTORE) CALL EIRENE_STCOOR(XTN,YTN,0)
             ENDIF
 C
@@ -1344,10 +1330,8 @@ C
                 CALL EIRENE_TSTCHM(1,XTN,YTN,XTip,YTip,IN,TESTN,
      .                      XMI2D,XMA2D,YMI2D,YMA2D,XT2,YT2)
                 if (testn .ne. 2)
-     .          call grarrw
-     .  (REAL(xtn,KIND(1.E0)),REAL(ytn,KIND(1.E0)),
-     .                       REAL(xtip,KIND(1.E0)),
-     .                       REAL(ytip,KIND(1.E0)),
+     .          call grarrw (REAL(xtn,SP),REAL(ytn,SP),
+     .                       REAL(xtip,SP),REAL(ytip,SP),
      .                       0.4,0.4,0)
               endif
             enddo
@@ -1551,9 +1535,8 @@ C
       FY=FY2D
       IF (IWRIT.EQ.0.AND.PLHST) THEN
         IWRIT=1
-        IF (.NOT.NLPL3D) CALL GRSCLV (
-     .                         0.,0.,REAL(ABSMAX,KIND(1.E0)),
-     .                               REAL(ORDMAX,KIND(1.E0)))
+        IF (.NOT.NLPL3D)
+     .    CALL GRSCLV (0.,0.,REAL(ABSMAX,SP),REAL(ORDMAX,SP))
         XNP05=XN+0.5/FX
         CALL GRNWPN(1)
         IAA=0
@@ -1563,10 +1546,8 @@ C
 C  SYMBOL IA (OR ISYM_ERR) ACTIVATED ON PLOT.
             IAA=IAA+1
             YYIA=YN-(0.75*(IAA-1))/FY
-            CALL GRJMPS (REAL(XN,KIND(1.E0)),REAL(YYIA+0.15,KIND(1.E0)),
-     .                   ISPL(IA))
-            CALL GRTXT (REAL(XNP05,KIND(1.E0)),REAL(YYIA,KIND(1.E0)),20,
-     .                  TXTHST(IA))
+            CALL GRJMPS (REAL(XN,SP),REAL(YYIA+0.15,SP),ISPL(IA))
+            CALL GRTXT (REAL(XNP05,SP),REAL(YYIA,SP),20,TXTHST(IA))
             EXIT
           ENDDO
         ENDDO
@@ -1589,7 +1570,7 @@ C  FX=FY=1.
         CALL GRNWPN(1)
         CALL GRSPTS (22)
         CALL GRFONT(-2)
-        CALL GRTXT (REAL(XN0,KIND(1.E0)),REAL(YNP,KIND(1.E0)),21,
+        CALL GRTXT (REAL(XN0,SP),REAL(YNP,SP),21,
      .              'EIRENE TEST PARTICLES')
 
         IC=1
@@ -1604,11 +1585,9 @@ C  FX=FY=1.
           YNP=YNP-0.75/FY
           ICPSPZ(ISP)=ICP
           CALL GRNWPN (ICP)
-          CALL GRJMP (REAL(XN1,KIND(1.E0)),REAL(YNP,KIND(1.E0)))
-          CALL GRDRW (REAL(XN2,KIND(1.E0)),REAL(YNP,KIND(1.E0)))
-          CALL GRTXT
-     .  (REAL(XN2,KIND(1.E0)),REAL(YNP-0.15,KIND(1.E0)),8,
-     .                TEXTS(ISP))
+          CALL GRJMP (REAL(XN1,SP),REAL(YNP,SP))
+          CALL GRDRW (REAL(XN2,SP),REAL(YNP,SP))
+          CALL GRTXT (REAL(XN2,SP),REAL(YNP-0.15,SP),8,TEXTS(ISP))
   505   CONTINUE
         DO 510 I=1,NATMI
           ISP=NSPH+I
@@ -1619,11 +1598,9 @@ C  FX=FY=1.
           YNP=YNP-0.75/FY
           ICPSPZ(ISP)=ICP
           CALL GRNWPN (ICP)
-          CALL GRJMP (REAL(XN1,KIND(1.E0)),REAL(YNP,KIND(1.E0)))
-          CALL GRDRW (REAL(XN2,KIND(1.E0)),REAL(YNP,KIND(1.E0)))
-          CALL GRTXT
-     .  (REAL(XN2,KIND(1.E0)),REAL(YNP-0.15,KIND(1.E0)),8,
-     .                TEXTS(ISP))
+          CALL GRJMP (REAL(XN1,SP),REAL(YNP,SP))
+          CALL GRDRW (REAL(XN2,SP),REAL(YNP,SP))
+          CALL GRTXT (REAL(XN2,SP),REAL(YNP-0.15,SP),8,TEXTS(ISP))
   510   CONTINUE
         DO 511 I=1,NMOLI
           ISP=NSPA+I
@@ -1634,11 +1611,9 @@ C  FX=FY=1.
           YNP=YNP-0.75/FY
           ICPSPZ(ISP)=ICP
           CALL GRNWPN (ICP)
-          CALL GRJMP (REAL(XN1,KIND(1.E0)),REAL(YNP,KIND(1.E0)))
-          CALL GRDRW (REAL(XN2,KIND(1.E0)),REAL(YNP,KIND(1.E0)))
-          CALL GRTXT
-     .  (REAL(XN2,KIND(1.E0)),REAL(YNP-0.15,KIND(1.E0)),8,
-     .                TEXTS(ISP))
+          CALL GRJMP (REAL(XN1,SP),REAL(YNP,SP))
+          CALL GRDRW (REAL(XN2,SP),REAL(YNP,SP))
+          CALL GRTXT (REAL(XN2,SP),REAL(YNP-0.15,SP),8,TEXTS(ISP))
   511   CONTINUE
         DO 512 I=1,NIONI
           ISP=NSPAM+I
@@ -1649,20 +1624,17 @@ C  FX=FY=1.
           YNP=YNP-0.75/FY
           ICPSPZ(ISP)=ICP
           CALL GRNWPN (ICP)
-          CALL GRJMP (REAL(XN1,KIND(1.E0)),REAL(YNP,KIND(1.E0)))
-          CALL GRDRW (REAL(XN2,KIND(1.E0)),REAL(YNP,KIND(1.E0)))
-          CALL GRTXT
-     .  (REAL(XN2,KIND(1.E0)),REAL(YNP-0.15,KIND(1.E0)),8,
-     .                TEXTS(ISP))
+          CALL GRJMP (REAL(XN1,SP),REAL(YNP,SP))
+          CALL GRDRW (REAL(XN2,SP),REAL(YNP,SP))
+          CALL GRTXT (REAL(XN2,SP),REAL(YNP-0.15,SP),8,TEXTS(ISP))
   512   CONTINUE
 
         YNP=YNP-0.75/FY
         CALL GRNWPN(1)
-        CALL GRJMP (REAL(XN0,KIND(1.E0)),REAL(YNP,KIND(1.E0)))
-        CALL GRDRW
-     .  (REAL(XN0+7./FX,KIND(1.E0)),REAL(YNP,KIND(1.E0)))
+        CALL GRJMP (REAL(XN0,SP),REAL(YNP,SP))
+        CALL GRDRW (REAL(XN0+7./FX,SP),REAL(YNP,SP))
         YNP=YNP-0.75/FY
-        CALL GRTXT (REAL(XN0,KIND(1.E0)),REAL(YNP,KIND(1.E0)),24,
+        CALL GRTXT (REAL(XN0,SP),REAL(YNP,SP),24,
      .              'HOST MEDIUM (BACKGROUND)')
 
         DO 513 I=1,NPLSI
@@ -1674,9 +1646,9 @@ C  FX=FY=1.
           YNP=YNP-0.75/FY
           ICPSPZ(ISP)=ICP
           CALL GRNWPN (ICP)
-          CALL GRJMP (REAL(XN1,KIND(1.E0)),REAL(YNP,KIND(1.E0)))
-          CALL GRDRW (REAL(XN2,KIND(1.E0)),REAL(YNP,KIND(1.E0)))
-          CALL GRTXT (REAL(XN2,KIND(1.E0)),REAL(YNP-0.15,KIND(1.E0)),8,
+          CALL GRJMP (REAL(XN1,SP),REAL(YNP,SP))
+          CALL GRDRW (REAL(XN2,SP),REAL(YNP,SP))
+          CALL GRTXT (REAL(XN2,SP),REAL(YNP-0.15,SP),8,
      .                TEXTS(ISP))
   513   CONTINUE
 
@@ -1688,8 +1660,8 @@ C  FX=FY=1.
         CALL GRFONT(-1)
 
         IF (.NOT.NLPL3D)
-     .     CALL GRSCLV(REAL(XMI2D,KIND(1.E0)),REAL(YMI2D,KIND(1.E0)),
-     .                 REAL(XMA2D,KIND(1.E0)),REAL(YMA2D,KIND(1.E0)))
+     .     CALL GRSCLV(REAL(XMI2D,SP),REAL(YMI2D,SP),
+     .                 REAL(XMA2D,SP),REAL(YMA2D,SP))
       ENDIF
 C
 C  WRITE TRACK DATA
@@ -1831,22 +1803,22 @@ C
      .            YMI2D,YMA2D,XT2,YT2)
       IF (IN.EQ.0) IN=4
       IF (IN.LE.2)
-     .   CALL GRJMP (REAL(XWO,KIND(1.E0)),REAL(YWO,KIND(1.E0)))
+     .   CALL GRJMP (REAL(XWO,SP),REAL(YWO,SP))
       IF (ILINIE.EQ.0.OR.NHSTS(ISPZ).EQ.-1) IN=4
       SELECT CASE (IN)
       CASE (1)
-        CALL GRDRW (REAL(XWN,KIND(1.E0)),REAL(YWN,KIND(1.E0)))
+        CALL GRDRW (REAL(XWN,SP),REAL(YWN,SP))
       CASE (2)
-        CALL GRDRW (REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
-        CALL GRJMP (REAL(XWN,KIND(1.E0)),REAL(YWN,KIND(1.E0)))
+        CALL GRDRW (REAL(XT,SP),REAL(YT,SP))
+        CALL GRJMP (REAL(XWN,SP),REAL(YWN,SP))
       CASE (3)
-        CALL GRJMP (REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
-        CALL GRDRW (REAL(XWN,KIND(1.E0)),REAL(YWN,KIND(1.E0)))
+        CALL GRJMP (REAL(XT,SP),REAL(YT,SP))
+        CALL GRDRW (REAL(XWN,SP),REAL(YWN,SP))
       CASE (4)
-        CALL GRJMP (REAL(XWN,KIND(1.E0)),REAL(YWN,KIND(1.E0)))
+        CALL GRJMP (REAL(XWN,SP),REAL(YWN,SP))
       CASE (5)
-        CALL GRJMP (REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
-        CALL GRDRW (REAL(XT2,KIND(1.E0)),REAL(YT2,KIND(1.E0)))
+        CALL GRJMP (REAL(XT,SP),REAL(YT,SP))
+        CALL GRDRW (REAL(XT2,SP),REAL(YT2,SP))
       END SELECT
 C
 C  PLOT SYMBOL
@@ -1855,9 +1827,7 @@ C
 C  PLOT ONLY SYMBOLS FROM THE INPUT LIST ISYPLT, OR SYMBOL NO. ISYM_ERR
         DO 408 J=1,8
           IF (ISYM.EQ.ABS(ISYPLT(J)).OR.ISYM.EQ.ISYM_ERR) THEN
-            CALL GRJMPS (REAL(XWN,KIND(1.E0)),
-     .                   REAL(YWN,KIND(1.E0)),
-     .                   ISPL(ISYM))
+            CALL GRJMPS (REAL(XWN,SP),REAL(YWN,SP),ISPL(ISYM))
             GOTO 409
           ENDIF
   408   CONTINUE
@@ -1867,8 +1837,8 @@ C  PLOT ONLY SYMBOLS FROM THE INPUT LIST ISYPLT, OR SYMBOL NO. ISYM_ERR
 C  CONTINUE PRINTOUT AFTER TRAJECTORY PLOT
 
       IF (NLTRC.AND.TRCHST.AND.LWR) THEN
-        WRITE (iunout,'(A,5i6)') 'ICOLOR,IN,ISYM,IFLAG,NHSTS ',
-     .                    ICOLOR,IN,ISYM,IFLAG,NHSTS(ISPZ)
+        CALL EIRENE_MASJ5('ICOLOR,IN,ISYM,IFLAG,NHSTS              ',
+     .                     ICOLOR,IN,ISYM,IFLAG,NHSTS(ISPZ))
         CALL EIRENE_LEER(1)
       ENDIF
 C

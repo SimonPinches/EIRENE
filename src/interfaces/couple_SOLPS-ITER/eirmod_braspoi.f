@@ -5,7 +5,6 @@ cdr            not concluded yet: e.g. eplpls,  photon tallies
 cdr            nomenclature: eppl_cops --> eppls  ???
 
       MODULE EIRMOD_BRASPOI
-cdr  purpose ....?
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -88,7 +87,6 @@ cdr  purpose ....?
       ALLOCATE (MMPLS(NSTRA))
       ALLOCATE (MIPLS(NSTRA))
       ALLOCATE (MPHPLS(NSTRA))
-
 
       DO ISTRAI=1,NSTRA
 
@@ -254,7 +252,7 @@ C  FREE EPELS
       INTEGER, INTENT(IN) :: ISTRAI
       TYPE(CELLMUL), POINTER :: P
 
-C  FREE PAELS
+C  FREE PAPLS
       P => PAPLS(ISTRAI)%PMUL
       IF (ASSOCIATED(P)) THEN
         DO WHILE (ASSOCIATED(P%NXTMUL))

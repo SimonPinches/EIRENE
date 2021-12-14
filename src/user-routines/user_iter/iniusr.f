@@ -1,5 +1,5 @@
 
-      SUBROUTINE EIRENE_iniUSR
+      SUBROUTINE EIRENE_INIUSR
 csw 22jul2011 modifications of input from b2.neutrals.parameters
 csw already read in into extrab25 module
       use eirmod_precision
@@ -56,4 +56,4 @@ csw already read in into extrab25 module
       end do
 csw
       RETURN
-      END
+      END SUBROUTINE EIRENE_INIUSR

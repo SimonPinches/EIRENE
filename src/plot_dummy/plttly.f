@@ -23,4 +23,4 @@
       IERR = 0
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_PLTTLY

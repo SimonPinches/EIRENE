@@ -5,7 +5,7 @@ c                       to be described
 c               part 2: transfer the information onto
 c                       eirene data structure REACDAT(ir)
 cdr
-!pb  21.11.06: index error corrected in defintion of ap%dte
+!pb  21.11.06: index error corrected in definition of ap%dte
 
       subroutine EIRENE_read_tab2d (ir,reac,isw,iz1)
 
@@ -80,7 +80,7 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
 
       read (29+ifoff,*)
 
-cdr probably: distuingish between "MS resolved" and "MS unresolved"?
+cdr probably: distinguish between "MS resolved" and "MS unresolved"?
 cdr           by using a certain file name convention? 
 cdr           Is REAC(..) only use here?
       lc = len_trim(reac)
@@ -138,7 +138,7 @@ cdr           Is REAC(..) only use here?
       end do
 
 cdr part 1 done. Next:
-cdr transfer this stuff to data structure REACDAT
+cdr transfer this stuff to data structure REACDAT(IR)
 c
       select case (isw)
 

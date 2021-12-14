@@ -38,7 +38,6 @@ C
    30   CONTINUE
       ENDIF
 
-
       IF (LT) THEN
         NSYM=NT3RD
         NSYH=(NSYM-1)/2
@@ -57,4 +56,4 @@ C
   130   CONTINUE
       ENDIF
       RETURN
-      END
+      END SUBROUTINE EIRENE_SYMET

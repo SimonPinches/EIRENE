@@ -527,7 +527,7 @@ C  SCALE: FROM SCORING TALLY UNITS # PER ENERGY BIN --> TALLY UNITS # PER EV
      .      ESTIML(ISPC)%SPC(I)*ZFAC*DELI
 C  INTEGRATE--> TALLY UNITS
 cdr  Test tbd: in case of total (not directional) spectrum, i.e. for IDIREC=0, this
-cdr            integral must coindide with the particle density PDEN.. or the energy density EDEN..,
+cdr            integral must coincide with the particle density PDEN.. or the energy density EDEN..,
 cdr            in the selected cell, depending on ISPTYP=1, 
 cdr            or ISPTYP=2, respectively.
 cdr  See text in scale_surf_tallies: this test should

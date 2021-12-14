@@ -1,5 +1,4 @@
 C  3D GEOMETRY (AND TRAJECTORY) PLOT
-C              IF (NLCRC.OR.NLELL.OR.NLTRI) THEN
 
       SUBROUTINE EIRENE_PLT3D
      .  (XR,YR,FAKX,FAKY,ITH,ABSMIN,ABSMAX,ORDMIN,ORDMAX)
@@ -170,12 +169,10 @@ C
       CALL EIRENE_PLNXTB(1,'PLT3D.F')
 
 cdr  use FZJ proprietary GR plot software
-      CALL GRSCLC(REAL(XNULL,KIND(1.E0)),REAL(YNULL,KIND(1.E0)),
-     .            REAL(XN+XNULL,KIND(1.E0)),
-     .            REAL(YN+YNULL,KIND(1.E0)))
-      CALL
-     .  GRSCLV(REAL(ABSMIN,KIND(1.E0)),REAL(ORDMIN,KIND(1.E0)),
-     .            REAL(ABSMAX,KIND(1.E0)),REAL(ORDMAX,KIND(1.E0)))
+      CALL GRSCLC(REAL(XNULL,SP),REAL(YNULL,SP),
+     .            REAL(XN+XNULL,SP),REAL(YN+YNULL,SP))
+      CALL GRSCLV(REAL(ABSMIN,SP),REAL(ORDMIN,SP),
+     .            REAL(ABSMAX,SP),REAL(ORDMAX,SP))
       FAKX=XN/(ABSMAX-ABSMIN)
       FAKY=YN/(ORDMAX-ORDMIN)
 C
@@ -189,13 +186,11 @@ C
         IF (.NOT.PL3A(I)) GOTO 100
         DO 10 IP=1,IPLTA(I)
          DO J=IPLAA(I,IP),IPLEA(I,IP)
-!pb300919 IF (J.GT.NLIMI) GOTO 10
           IF (J.GT.NLIMI) CYCLE
           IF (IGJUM0(J).NE.0) THEN
             IF (TRCPLT) THEN
               WRITE (iunout,*) 'SURFACE NO. ',J,' OUT'
             ENDIF
-!pb300919   GOTO 10
             CYCLE
           ELSE
             IF (NLTRA.AND.ILTOR(J).LE.0) THEN
@@ -209,7 +204,6 @@ C                       SURFACE
      .              ' TOROIDALLY SYMMETRIC'
                   WRITE (iunout,*) 'PLOT LATER INTO STANDARD MESH '
                 ENDIF
-!pb300919       GOTO 10
                 CYCLE
               ELSE
                 LPERID(J)=.TRUE.
@@ -286,7 +280,6 @@ C**ZYLINDER: FINDE ACHSE
                   T2=(ZLIMS2(1,J)-ZZ0)/CZ
                 ELSE
                   PLABLE(J)=.TRUE.
-!pb300919         GOTO 10
                   CYCLE
                 ENDIF
 C  ZYLINDER: GGFLS MEHRERE TEILSTUECKE
@@ -328,7 +321,6 @@ C**KEGEL: BISLANG NUR EIN STUECK MOEGLICH. FINDE ACHSE
                   T2=(ZLIMS2(1,J)-ZZ0)/CZ
                 ELSE
                   PLABLE(J)=.TRUE.
-!pb300919         GOTO 10
                   CYCLE
                 ENDIF
                 CALL EIRENE_CONE (ZX0,ZY0,ZZ0,CX,CY,CZ,T1,T2,
@@ -364,7 +356,6 @@ C**PAAR VON EBENEN (ODER EINE DOPPELEBENE)
                 ENDIF
               ELSE
                 PLABLE(J)=.TRUE.
-!pb300919       GOTO 10
                 CYCLE  
               ENDIF
 C**EINE EBENE
@@ -423,7 +414,6 @@ C**PAAR VON EBENEN ODER DOPPELEBENE ?
      .                        ILCOL(J),IGFIL(J).NE.0,J)
                 ELSE
                   PLABLE(J)=.TRUE.
-!pb300919         GOTO 10
                   CYCLE
                 ENDIF
 C**ZYLINDER ?
@@ -431,7 +421,8 @@ C**ZYLINDER ?
 C**ZYLINDER BEGRENZT DURCH MAXIMAL 9 EBENEN
                 IF (ISCN(J).EQ.0) THEN
                   CALL EIRENE_ZYLPLN
-     .                (ZX0,ZY0,ZZ0,CX,CY,CZ,RZYL,J,NZAD,NINNE, NIN)
+     .            (ZX0,ZY0,ZZ0,CX,CY,CZ,RZYL,J,NZAD,NINNE,
+     .                        NIN)
 C**ZYLINDER BEGRENZT DURCH MAXIMAL EINE FLAECHE ZWEITER ORDNUNG
                 ELSEIF (ILIN(J).EQ.0.AND.ISCN(J).EQ.1) THEN
                   IB=1
@@ -464,7 +455,6 @@ C**ZYLINDER BEGRENZT VON 2 EBENEN
                       IF (TRCPLT) WRITE (iunout,*)
      .                     ' FEHLER IN BERANDUNG VON FLAECHE ',J
                       PLABLE(J)=.TRUE.
-!pb300919             GOTO 10
                       CYCLE
                     ENDIF
                     IF (TA.LT.TB) THEN
@@ -502,7 +492,6 @@ C**ZYLINDER BEGRENZT VON ECHT GEKRUEMMTEN FLAECHE 2TER ORDNUNG
                       WRITE (iunout,*)
      .                     ' FEHLER IN DER BERANDUNG VON FLAECHE',J
                       PLABLE(J)=.TRUE.
-!pb300919             GOTO 10
                       CYCLE
                     ENDIF
                     IF (TA.LT.TB) THEN
@@ -521,12 +510,10 @@ C**ZYLINDER BEGRENZT VON ECHT GEKRUEMMTEN FLAECHE 2TER ORDNUNG
      .                      J,10,AL,10,AR,0._DP,360._DP)
                   ELSE
                     PLABLE(J)=.TRUE.
-!pb300919           GOTO 10
                     CYCLE
                   ENDIF
                 ELSE  ! ISCN > 0 AND ILIN > 0
                   PLABLE(J)=.TRUE.
-!pb300919           GOTO 10
                   CYCLE
                 ENDIF
 C**KUGEL, ELLIPSOID
@@ -536,7 +523,6 @@ C**KUGEL, ELLIPSOID
      .               ZLIMS2(1,J),RLB(J),ILCOL(J),5,5,5)
               ELSE
                 PLABLE(J)=.TRUE.
-!pb300919       GOTO 10
                 CYCLE
               ENDIF
 C
@@ -578,7 +564,6 @@ C**EBENE BEGRENZT DURCH EINEN ODER MEHRERE ZYLINDER?
                     WRITE (iunout,*)
      .                ' FEHLER IN DER BERANDUNG VON FLAECHE',J
                     PLABLE(J)=.TRUE.
-!pb300919           GOTO 10
                     CYCLE
                   ENDIF
                   T1=TA-2.*RZYL
@@ -590,14 +575,12 @@ C**EBENE BEGRENZT DURCH EINEN ODER MEHRERE ZYLINDER?
      .                         0._DP,360._DP)
                 ELSE
                   PLABLE(J)=.TRUE.
-!pb300919         GOTO 10
                   CYCLE
                 ENDIF
                 IF (IB.LT.ISCN(J)) GOTO 20
 C**EBENE BEGRENZT DURCH ALLE ANDERE OPTIONEN
               ELSE
                 PLABLE(J)=.TRUE.
-!pb300919       GOTO 10
                 CYCLE
               ENDIF
 C
@@ -633,7 +616,7 @@ C
 C
 C  PLOT SURFACES OF STANDARD MESH
 C
-  500 IF (.NOT.(PL3S(1).OR.PL3S(2).OR.PL3S(3))) GOTO 10000
+      IF (.NOT.(PL3S(1).OR.PL3S(2).OR.PL3S(3))) GOTO 10000
 C
 C  TOROIDAL GRID
 C
@@ -710,8 +693,8 @@ C
                 EP=EP1(IR)
                 EL=ELL(IR)
                 TR=TRI(IR)
-                CALL
-     .  EIRENE_PLGELR(RS,EP,EL,TR,DM,100,XX,YY,NR,PSURF,NP2ND)
+                CALL EIRENE_PLGELR
+     .           (RS,EP,EL,TR,DM,100,XX,YY,NR,PSURF,NP2ND)
 C
                 DO 1120 J=1,NR
                   Y=YY(J)
@@ -852,12 +835,10 @@ C              OR 10 POINTS, IF CURVED LINE
                     Z=PHI
                   ENDIF
                   CALL EIRENE_PL3D(X,Y,Z,XP(NA),YP(NA))
-                  IF (CUR%NPL2D.EQ.0) CALL GRJMP (
-     .               REAL(XP(NA),KIND(1.E0)),
-     .               REAL(YP(NA),KIND(1.E0)))
-                  IF (CUR%NPL2D.EQ.1) CALL GRDRW (
-     .               REAL(XP(NA),KIND(1.E0)),
-     .               REAL(YP(NA),KIND(1.E0)))
+                  IF (CUR%NPL2D.EQ.0)
+     .              CALL GRJMP (REAL(XP(NA),SP),REAL(YP(NA),SP))
+                  IF (CUR%NPL2D.EQ.1)
+     .              CALL GRDRW ( REAL(XP(NA),SP),REAL(YP(NA),SP))
 C
                   IS=IS+1
                   XSAVE(IS,IZ)=XP(NA)
@@ -882,11 +863,9 @@ C
         CALL GRNWPN(2)
         DO 2000 J=1,IS
           IF (J.GT.ISSTD) CALL GRNWPN(1)
-          CALL GRJMP (REAL(XSAVE(J,1),KIND(1.E0)),
-     .                REAL(YSAVE(J,1),KIND(1.E0)))
+          CALL GRJMP (REAL(XSAVE(J,1),SP),REAL(YSAVE(J,1),SP))
           DO IZ=2,NJZ
-            CALL GRDRW(REAL(XSAVE(J,IZ),KIND(1.E0)),
-     .                 REAL(YSAVE(J,IZ),KIND(1.E0)))
+            CALL GRDRW(REAL(XSAVE(J,IZ),SP),REAL(YSAVE(J,IZ),SP))
           END DO
  2000   CONTINUE
         CALL GRDSH(1.,0.,1.)
@@ -988,16 +967,14 @@ C  BESCHRIFTUNG
 C
       XH=(ABSMIN+ABSMAX)/2.
       YH=ORDMAX+2./FAKY
-      CALL GRTXT (REAL(XH,KIND(1.E0)),REAL(YH,KIND(1.E0)),27,
+      CALL GRTXT (REAL(XH,SP),REAL(YH,SP),27,
      .            'CHECK OF GEOMETRICAL INPUT:')
       YH=YH-0.5/FAKY
-      CALL GRTXT
-     .  (REAL(XH,KIND(1.E0)),REAL(YH,KIND(1.E0)),72,TXTRUN)
+      CALL GRTXT (REAL(XH,SP),REAL(YH,SP),72,TXTRUN)
       YH=YH-0.75/FAKY
       DO 11000 J=1,5
-        IF (PL3A(J)) CALL
-     .  GRTXT(REAL(XH,KIND(1.E0)),REAL(YH,KIND(1.E0)),
-     .                          16,TEXTLA(J))
+        IF (PL3A(J))
+     .   CALL GRTXT(REAL(XH,SP),REAL(YH,SP),16,TEXTLA(J))
         IF (PL3A(J)) YH=YH-0.5/FAKY
 11000 CONTINUE
 C
@@ -1005,4 +982,4 @@ C  RETURN COORDINATES FOR PLOTS OF PARTICLE TRACKS
       XR=ABSMIN-6./FAKX
       YR=ORDMAX-0./FAKY
       RETURN
-      END
+      END SUBROUTINE EIRENE_PLT3D

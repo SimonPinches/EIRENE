@@ -27,4 +27,4 @@ C
         P(3)=Z+T*ZR
       ENDIF
       RETURN
-      END
+      END SUBROUTINE EIRENE_SPOINT

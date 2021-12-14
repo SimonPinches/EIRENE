@@ -225,4 +225,4 @@ C**********************************************************************
       IRET = 3
       RETURN 
 
-      END
+      END SUBROUTINE EIRENE_FOLSTAT_NEUT

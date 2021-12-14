@@ -2,11 +2,11 @@ cdr  "photon-module" of eirene code:
 cdr
 cdr  [1] D.Reiter, et al. PPCF 44 (2002) p1723, and JNM 313-316 (2003) p 845
 cdr
-cdr  [2] S.Wiesen, Phd Thesis, 2005 (Ruhr Univ. Bochum), unpublished
+cdr  [2] S.Wiesen, PhD Thesis, 2005 (Ruhr Univ. Bochum), unpublished
 cdr
 cdr  [3] V.Kotov, D.Reiter, A.K.Kukushkin et al, Contrib. Plasma Phys.,
 cdr      46, No.7-9,(2006)
-cdr      V.Kotov, D.Reiter, A.K.Kukushkin, Phd Thesis (Ruhr Univ. Bochum),
+cdr      V.Kotov, D.Reiter, A.K.Kukushkin, PhD Thesis (Ruhr Univ. Bochum),
 cdr      Report JUEL-4257 (Nov 2007) and
 cdr      V.Kotov, D.Reiter, Plasma Phys. Control. Fusion 54(2012) 082003
 cdr
@@ -18,7 +18,7 @@ cdr    The original version was developed in 2000 -- 2003 within a project (BMBF
 cdr    in collaboration with Philips research Lab. Aachen, for applications to
 cdr    to high pressure gas discharge lamps.
 cdr    It was largely re-written later, re-structured, several times,
-cdr    for use in (non-linear) stand alone eirene
+cdr    for use in (nonlinear) stand alone eirene
 cdr    (applications to high density divertor plasmas with hydrogen resonance line re-absorption)
 cdr    Further re-writing (2006-2007): V.Kotov, to support iterations for self-consistently
 cdr    coupled 2D B2-EIRENE plasma solutions.
@@ -31,7 +31,8 @@ cdr
 cdr jan 18:  note: ph_xsectp is still there.
 cdr          But corresponds to what would be called XSTPH?,
 cdr         (what is XSTRC?)
-cdr nov 18: notational cleanup: nrot -> nrph. but what is nnrot?
+cdr nov 18: notational cleanup: nrot -> nrph. nnrot  is now obsolete.
+cdr now 20: remove alloc_xsectph, all variables now in comxs
 cdr
 !................................................................................
 
@@ -586,15 +587,12 @@ c     omega_max: estimated upper bound of interval (eV)
 
 !Physical and mathematical constants
       real(dp),parameter::e=1.6022e-19
-      real(dp),parameter::m_D=3.3445e-27  !DEUTERONS
       real(dp),parameter::hbar=1.0546e-34
       real(dp),parameter::me=9.1094e-31
-      real(dp),parameter::epsilon0=8.8542e-12
       real(dp),parameter::alpha=7.2974e-3
       real(dp),parameter::EI=13.606
       real(dp),parameter::c=2.9979e8
       real(dp),parameter::A=6.265e+08  ! Natural broadening added in v2
-      real(dp),parameter::pi=3.1416
 
       real(dp),intent(in)::N,Te,Ti,T_g,B,ctheta2,v
 c     real(dp),intent(inout)::omega_min,omega_max
@@ -673,7 +671,7 @@ c     end do   ! npt
      .               result(res)
 c    .               npt,omega_min,omega_max
 
-cdr:  npt: option to evaluate function at many energies omega
+cdr   npt: option to evaluate function at many energies omega
 cdr        in the range omega_min,....,omega_max: removed
 
 !********** DEUTERIUM LYMAN ALPHA LINE SHAPE CALCULATION **********
@@ -715,15 +713,11 @@ c     omega_max: estimated upper bound of interval (eV)
 
 !Physical and mathematical constants
       real(dp),parameter::e=1.6022e-19
-      real(dp),parameter::m_D=3.3445e-27  !DEUTERONS
       real(dp),parameter::hbar=1.0546e-34
       real(dp),parameter::me=9.1094e-31
-      real(dp),parameter::epsilon0=8.8542e-12
       real(dp),parameter::alpha=7.2974e-3
       real(dp),parameter::EI=13.606
-      real(dp),parameter::c=2.9979e8
       real(dp),parameter::A=6.265e+08  ! Natural broadening added in v2
-      real(dp),parameter::pi=3.1416
 
       real(dp),intent(in)::N,Te,Ti,T_g,B,ctheta2
       real(dp),intent(in)::dnd,drft
@@ -830,10 +824,6 @@ c     end do
       real(dp),parameter::hbar=1.0546e-34
       real(dp),parameter::me=9.1094e-31
       real(dp),parameter::epsilon0=8.8542e-12
-      real(dp),parameter::alpha=7.2974e-3
-      real(dp),parameter::EI=13.606
-      real(dp),parameter::c=2.9979e8
-      real(dp),parameter::A=6.265e+08  ! Natural broadening added in v2
       real(dp),parameter::pi=3.1416
 
       real(dp)::EIRENE_coll,N,Te,Ti,epsilon,v0,ve,rhoWi,rhoWe,
@@ -1163,7 +1153,7 @@ c
 
 
 c  this next routine ph_post_energy is currently not in use. It is currently
-c  developped for photon re-emission (scattering) during photon tracing.
+c  developed for photon re-emission (scattering) during photon tracing.
 
 c POST-COLLISION
       SUBROUTINE EIRENE_PH_POST_ENERGY(icell,kk,iflg,il,
@@ -1840,7 +1830,7 @@ c  a) evaluate planck function B_nu(T) for radiation intensity at freq. nu
 c  b) evaluate planck function B_E (T) for radiation intensity at energ. E
 c
 c  i.e.: use energy scale instead of frequency scale
-c  B_E = 1/h_planck B_nu, with E = h_planck * nu
+c  B_E = 1/h_planck B_nu(T), with E = h_planck * nu
 c  input : E and T in eV
 c  output: B_E(T) in 1/cm**3/eV/sterad * cm/s * eV
 c          i.e.   in 1/cm**2/s/sterad
@@ -2117,12 +2107,10 @@ c     e_max: estimated upper bound of interval (eV)
       real(dp),parameter::m_D=3.3445e-27  !DEUTERONS
       real(dp),parameter::hbar=1.0546e-34
       real(dp),parameter::me=9.1094e-31
-      real(dp),parameter::epsilon0=8.8542e-12
       real(dp),parameter::alpha=7.2974e-3
       real(dp),parameter::EI=13.606
       real(dp),parameter::c=2.9979e8
       real(dp),parameter::A=6.265e+08  ! Natural broadening added in v2
-      real(dp),parameter::pi=3.1416
 
       real(dp),intent(in)::N,Te,Ti,T_g,B,ctheta2,v
       real(dp),intent(inout)::E00
@@ -2270,15 +2258,12 @@ c   res:  random number sampled from zeemann-stark-profile
 
 !Physical and mathematical constants
       real(dp),parameter::e=1.6022e-19
-      real(dp),parameter::m_D=3.3445e-27  !DEUTERONS
       real(dp),parameter::hbar=1.0546e-34
       real(dp),parameter::me=9.1094e-31
-      real(dp),parameter::epsilon0=8.8542e-12
       real(dp),parameter::alpha=7.2974e-3
       real(dp),parameter::EI=13.606
       real(dp),parameter::c=2.9979e8
       real(dp),parameter::A=6.265e+08  ! Natural broadening added in v2
-      real(dp),parameter::pi=3.1416
 
       real(dp),intent(in)::N,Te,Ti,T_g,B,ctheta2,v
       real(dp),intent(inout)::E00
@@ -4056,6 +4041,9 @@ c    .                           res
 
       END IF
       
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
+
+      RETURN
       END SUBROUTINE EIRENE_BROADCAST_PHOTON
       
       END MODULE EIRMOD_PHOTON

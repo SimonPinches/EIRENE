@@ -7,7 +7,6 @@ cdr           H+  (type=4)
 cdr           H   (type=1)
 cdr   to be checked: contributions? multiple isotopes ?
 
-
       subroutine eirene_setup_default_emissivity
 
 cdr originally programmed by PB 2017
@@ -19,7 +18,7 @@ cdr            replacing the former 6 routines:
 cdr            ba_alpha.f, ba_beta.f, ba_gamma.f, ba_delta.f,
 cdr            ly_alpha.f, ly_beta.f
 
-cdr  This present routine (pb, 2017):
+cdr  This present routine:
 cdr  Try to reproduce the content of the old versions of these 6 routines,
 cdr  by filling (and later using)
 cdr  the new structures EMIS_LINES%....
@@ -33,10 +32,10 @@ cdr                            on ADDV tallies),
 cdr  hard-coded here: use pop. coeffs from amjuel H.12, and
 cdr                   use ratios for short living radicals (H2+, H3+, H-)
 cdr                   from amjuel H.11 and H.12
-cdr  hard coded: 
-cdr              H2+, H- and H3+ QSS states, because of hard coded density ratios.
+cdr  hard-coded:
+cdr              H2+, H- and H3+ QSS states, because of hard-coded density ratios.
 cdr              H2+ must be produced from both EI and IC processes, because
-cdr              hard coded ratio H.12 2.0c is used here.
+cdr              hard-coded ratio H.12 2.0c is used here.
 cdr
 cdr  tbd:  make consistent notation "component vs. contribution":  DONE !
 cdr  
@@ -517,7 +516,7 @@ C  H(n=4)/H(n=1)
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H+ ION DENSITY
+C  COMPONENT 2: LINEAR IN H+ ION DENSITY
 C  H(n=4)/H+
 
       EMIS_LINES(2)%COMPO(2)%COMPO_NAME = 'ATOMIC HYDR. ION'
@@ -556,7 +555,7 @@ C  H(n=4)/H+
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H2 MOLEC. DENSITY
+C  COMPONENT 3: LINEAR IN H2 MOLEC. DENSITY
 C  H(n=4)/H2(g)
 
       EMIS_LINES(2)%COMPO(3)%COMPO_NAME = 'DIATOMIC NEUTRAL HYDR. MOL'
@@ -595,7 +594,7 @@ C  H(n=4)/H2(g)
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H2+ MOLEC. ION DENSITY
+C  COMPONENT 4: LINEAR IN H2+ MOLEC. ION DENSITY
 C  H(n=4)/H2+(g)
 
       EMIS_LINES(2)%COMPO(4)%COMPO_NAME =
@@ -636,7 +635,7 @@ C  H(n=4)/H2+(g)
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H- NEG. ION DENSITY
+C  COMPONENT 5: LINEAR IN H- NEG. ION DENSITY
 C  H(n=4)/H-
 
       EMIS_LINES(2)%COMPO(5)%COMPO_NAME =
@@ -677,7 +676,7 @@ C  H(n=4)/H-
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H3+ MOL. ION DENSITY
+C  COMPONENT 6: LINEAR IN H3+ MOL. ION DENSITY
 C  H(n=4)/H3+
 
       EMIS_LINES(2)%COMPO(6)%COMPO_NAME =
@@ -1760,5 +1759,6 @@ cdr These must be the isotopomeres of H2.
         END IF
       END DO
 
+      RETURN
 
       end subroutine eirene_setup_default_emissivity

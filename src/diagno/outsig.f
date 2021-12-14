@@ -181,8 +181,7 @@ c   printing:  conditional on prspec
             END IF
             CALL EIRENE_MASR1('INP. TEM.',TINP(ICHORI))
             CALL EIRENE_MASR1('DT. TMP.',DUMTIL)
-            CALL EIRENE_MASAGE
-     .         ('FITTING RANGE:  TIMIN,TIMAX=                 ')
+            CALL EIRENE_MASAGE('FITTING RANGE:  TIMIN,TIMAX=')
             TIMI=NSPINI(ICHORI)*TINP(ICHORI)
             TIMA=NSPEND(ICHORI)*TINP(ICHORI)
             CALL EIRENE_MASR2 ('TIMIN,TIMAX=    ',TIMI,TIMA)
@@ -377,4 +376,4 @@ C
       CALL EIRENE_LEER(2)
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_OUTSIG

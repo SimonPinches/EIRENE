@@ -1,4 +1,38 @@
+C  nov.05:  cleanup: ispz=nspa+imol, instead ispz=nsph+natmi+imol
+C  jan.06:  user reflection model: modref=3 --> modref=9
+C  feb06:   check for valid MODREF added
+C  apr06:   spelling error corrected: rprop --> rprob (2 times)
+C  aug06:   printout of reflection properties of surfaces only for
+C           nontransparent surfaces
+C  jan2010  ireduc and freduc introduced, to store reduced energy
+C           scaling factors vs. ispz and msurf. This reduces overhead in
+C           subr reflec. Previously: freduc was re-calculated at each entry.
+C  jan2010  bug fix: dimension of arrays for behrisch matrix spline 12-->13
+C           This can be needed if ERCUT is between Zengy(1) and Zengy(2)
+C  jan2010  in case of reduced energy scaled database reflection model:
+C           use also scaled eminr and emaxr, in order to stay within
+C           correct limits after scaling E_ref back to real system
+C           Was a problem only in case of very large/small (compared to one)
+C           reduced energy scaling factors.
+C  Oct2009  Behrisch reflection Matrix saved, to avoid restart problems
+C           with reduced energy scaling.
+C  Nov2010  bug fix: use variables for the input of a drift vector to subroutine
+C           VELOCS as these arguments are of INTENT(INOUT) in VELOCS
+C  Oct 14:  arguments of velocs changed. "weight" now in argument list
+C  MAR 15:  remove Thompson distribution for thermal atom model:
+c           TWALL=0 now leads to error exit
+cdr Jan 16: added: eintg and aintg lt. 0: elastic and specular for fast particle refl.
+cdr Nov.17: lmetspw arguments corrected
+cdr Apr.18: cleaned up the use of RINTG,EINTG,AINTG  (for unit tests, reduced refl. models)
+cdr         vs. use of EXPP,EXPE,EXPI (for ilref=2 model, incident angle dependence).
+cdr         Maxwell boundary conditions added via EINTG, AINTG flags.
+cdr         tbd:  the Maxwellian evaporation flux part is repeated 4 times now.
+cdr         Maybe more of this in escape.f
+cdr         It should become an own subroutine.
+cdr  aug. 20: code safeties from ITER branch
+
       MODULE EIRMOD_REFLEC
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -138,39 +172,6 @@ ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
 
       CONTAINS
 
-C  nov.05:  cleanup: ispz=nspa+imol, instead ispz=nsph+natmi+imol
-C  jan.06:  user reflection model: modref=3 --> modref=9
-C  feb06:   check for valid MODREF added
-C  apr06:   spelling error corrected: rprop --> rprob (2 times)
-C  aug06:   printout of reflection properties of surfaces only for
-C           nontransparent surfaces
-C  jan2010  ireduc and freduc introduced, to store reduced energy
-C           scaling factors vs. ispz and msurf. This reduces overhead in
-C           subr reflec. Previously: freduc was re-calculated at each entry.
-C  jan2010  bug fix: dimension of arrays for behrisch matrix spline 12-->13
-C           This can be needed if ERCUT is between Zengy(1) and Zengy(2)
-C  jan2010  in case of reduced energy scaled database reflection model:
-C           use also scaled eminr and emaxr, in order to stay within
-C           correct limits after scaling E_ref back to real system
-C           Was a problem only in case of very large/small (compared to one)
-C           reduced energy scaling factors.
-C  Oct2009  Behrisch reflection Matrix saved, to avoid restart problems
-C           with reduced energy scaling.
-C  Nov2010  bug fix: use variables for the input of a drift vector to subroutine
-C           VELOCS as these arguments are of INTENT(INOUT) in VELOCS
-C  Oct 14:  arguments of velocs changed. "weight" now in argument list
-C  MAR 15:  remove Thompson distribution for thermal atom model:
-c           TWALL=0 now leads to error exit
-cdr Jan 16: added: eintg and aintg lt. 0: elastic and specular for fast particle refl.
-cdr Nov.17: lmetspw arguments corrected
-cdr Apr.18: cleaned up the use of RINTG,EINTG,AINTG  (for unit tests, reduced refl. models)
-cdr         vs. use of EXPP,EXPE,EXPI (for ilref=2 model, incident angle dependence).
-cdr         Maxwell's boundary conditions added via EINTG, AINTG flags.
-cdr         tbd:  the Maxwellian evaporation flux part is repeated 4 times now.
-cdr         Maybe more of this in escape.f
-cdr         It should become an own subroutine.
-C
-      SUBROUTINE EIRENE_REFLEC
 C
 C  REFLECT ESCAPING ATOMS OR IONS
 C  INPUT:
@@ -192,15 +193,6 @@ C       ITYP = 3  TEST ION  IION IS RETURNED TO CALLING PROGRAM
 C     LGPART= FALSE  NO PARTICLE IS RETURNED (ABSORPTION)
 C       ITYP = -1
 C
-
-      IMPLICIT NONE
-C
-C---------------------------------------------------------------------
-C
-
-      CALL EIRENE_REFLC0
-      END SUBROUTINE EIRENE_REFLEC
-
 C
 C  INITIALIZE SURFACE REFLECTION MODELS
 C
@@ -257,7 +249,6 @@ C  NEWER VERSION:  READ SOME SELECTED (IN INPUT FILE) TRIM A_ON_B FILES
           ENDIF
         endif
 
-!pb        if (nprs > 1) call EIRENE_broadref
         if (nprs > 1) call EIRENE_BROADCAST_CREF(MY_PE)
 C
 C  SET FACTORS FOR REDUCED ENERGY SCALING FOR ALL TARGET/PROJECTILE
@@ -291,7 +282,6 @@ C
         INW=1
         INR=1
         NHD6=1
-!pb        if (nprs > 1) call EIRENE_broadref
         if (nprs > 1) call EIRENE_BROADCAST_CREF(MY_PE)
       ENDIF
 C
@@ -390,8 +380,8 @@ C
           WRITE (iunout,*)
      .      'IMP. ENERGY (RED), REF. PROB, MEAN REFL. ENERGY'
           DO 19 J=0,12
-            CALL
-     .        EIRENE_MASR3('                        ',ZRANGE(J),ZR(J),
+            CALL EIRENE_MASR3
+     .                    ('                        ',ZRANGE(J),ZR(J),
      .                                                E0AV(J))
    19     CONTINUE
           CALL EIRENE_LEER(2)
@@ -445,10 +435,6 @@ c  done with initialisation
 C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       END SUBROUTINE EIRENE_REFLC0
 
-c      REAL(DP) :: DX, XCFE, XCH, XMFE, XMH, EPSHFE
-c      INTEGER :: NRE, NRI, NREP, EIRENE_LEARCA, ILIM, JP, 
-c     .           ISP, ISTS
-c      LOGICAL :: NLDATA, NLBEHR
 
       SUBROUTINE EIRENE_REFLC1 (WMIN,XMP,XCP,NPRIN,IGASF,IGAST)
       IMPLICIT NONE
@@ -548,8 +534,6 @@ C
       ELSEIF (MODREF.EQ.2) THEN
         GOTO 200
       ELSEIF (MODREF.GE.9) THEN
-!pb     CALL EIRENE_REFUSR (XMW,XCW,XMP,XCP,IGASF,IGAST,F1,F2,EXPI,
-!pb  .               RPROB,E0TERM,*400,*500,*600,*700)
         CALL EIRENE_REFUSR (XMW,XCW,XMP,XCP,IGASF,IGAST,F1,F2,EXPI,
      .               RPROB,E0TERM,IRET)
         IF (IRET == 1) GOTO 400
@@ -748,7 +732,6 @@ c  cut-off, to avoid spurious extrapolation
 
 C   REDUCED ENERGY SCALING, IF NEEDED
       E0=E0/EFCT
-
       VEL=RSQDVA(IATM)*SQRT(E0)
 
 C........................................................................
@@ -781,6 +764,7 @@ C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
             RETURN
 
           ELSEIF (E0TERM.GT.0.0) THEN
+C  SAMPLE FROM LAMBERTIAN, I.E. COSINE DISTRIBUTION
             F1=1.0
             F2=0.0
             EXPI=0.0
@@ -789,7 +773,7 @@ C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
             GOTO 991
           ENDIF
         ELSE
-C  specular fraction
+C  specular fraction MIN(1.0_DP,AINTG)
           EXPI=200.
           GOTO 400
         ENDIF
@@ -799,7 +783,8 @@ C  PERFECT (SPECULAR) REFLECTION: COS_IN = COS_OUT
         GOTO 400
       ENDIF
 
-C  AINTG=0.0: find polar and azimuthal angle of reflection from tabulated distribution
+C  AINTG=0.0: find polar and azimuthal angle of reflection
+C             from tabulated TRIM code distribution
       ZEP1=RANF_EIRENE( )
       DO 107 I=2,INRM
         INDR2P=I
@@ -997,6 +982,7 @@ C
       IF (EINTG.GT.0.D0) THEN
         E0=E0*EINTG
 C     ELSEIF (EINTG.LT.0.D0) THEN
+cdr  tbd: use eintg as thermal energy parameter for reflected atomic (fast particle) model
 C       E0=E0
 C  OR:  (? TO BE DONE ?)
 C
@@ -1377,7 +1363,7 @@ C
       END SUBROUTINE EIRENE_REFLC1
 C
 
-C     The following ENTRY is for reinitialization of EIRENE (DMH)
+C     The following SUBROUTINE is for reinitialization of EIRENE (DMH)
 
       SUBROUTINE EIRENE_REFLEC_REINIT
       IMPLICIT NONE

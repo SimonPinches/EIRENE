@@ -103,7 +103,7 @@ C  NOTHING TO BE DONE
      .                     ISTRA
           WRITE (iunout,*) 'ARE NOT AVAILABLE. PRINTOUT ABANDONED'
           CYCLE
-         ENDIF
+        ENDIF
 C
 C
 C  PRINT VOLUME-AVERAGED TALLIES
@@ -196,4 +196,4 @@ C
       DEALLOCATE (TALAV)
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_OUTIDLTAL

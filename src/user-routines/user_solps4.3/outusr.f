@@ -49,4 +49,4 @@ C
       END IF
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_OUTUSR

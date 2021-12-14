@@ -1,4 +1,3 @@
-C 27.6.05:  PHV_NROTA, PHV_NROTPH REMOVED
 cdr  nov. 15:  comments,  irds --> irei
 cdr  april 16:  added: fail-safe (exit) step in case of more than one (distinct) bulk
 cdr             secondaries.
@@ -6,13 +5,7 @@ cdr             This is temporarily necessary, as a consequence of making the
 cdr             (bulk) ion energy sources eapl, empl, eipl species-dependent
 cdr             We are not aware of any application of eirene, in which this new error exit
 cdr             would be activated.
-!pb  APR  16:  ipplds -> ipplei, pplds -> pplei
-!pb  APR  16:  ipatds -> ipatei, patds -> patei
-!pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei
-!pb  APR  16:  ipiods -> ipioei, piods -> pioei
-!pb  MAY  16:  nrds   -> nrei
-cdr  Nov. 18:  nrot   -> nrph
-C
+
       SUBROUTINE EIRENE_SETAMD(ICAL)
 C
 C  SET ATOMIC AND MOLECULAR DATA: DRIVER
@@ -78,6 +71,7 @@ C
       NREII=0
       NRRCI=0
       NRBGI=0
+
 csw 27jul2011
       NPBGKP=0 !VK
       NPBGKA=0 !VK
@@ -95,12 +89,10 @@ csw
 
       CALL EIRENE_XSECTPH
 
-
       CALL EIRENE_CONDENSE
-
 c
-cdr  set some further assistant arrays, for ei and pi processes:
-cdr  accumulated information from A, M, I ,P and PH for particle processes 'ei' and 'pi'.
+cdr  set some further assistant arrays, for EI and PI processes:
+cdr  Accumulated information from A, M, I, P and PH for particle processes 'EI' and 'PI'.
 cdr  These array are stored in comxs and are used for scoring
 cdr  tallies in update.f (tracklength) and collide.f (coll. estim) exclusively
 cdr  They are for indirect indexing, in loops over secondary species.
@@ -123,43 +115,54 @@ cdr   IPPHDS = 0   ARRAY IPPHDS IS STILL MISSING, NO PHOTON SECONDARIES IN EI RE
       DO IREI=1,NREI
         ipatei(IREI,0)=COUNT(PATEI(IREI,1:) > 0)  ! amongst all natm species there are ipatei(...,0) (<= natm)
 cdr                                                 distinct atomic species which appear as secondaries,
-cdr                                                 with one or more per atomic species iatm
+cdr                                                 with one or more fragments per atomic species iatm
         IF (ipatei(IREI,0).GT.0) THEN
              IPATEI(IREI,1:ipatei(IREI,0))=PACK( (/ (i,i=1,natm) /),
      .                                     PATEI(IREI,1:) > 0)
-cdr  IPATEI(IREI,...)=iatm means:  one or more secondaries of species iatm
+cdr  IPATEI(IREI,...)=IATM means: one or more secondaries of species IATM
 c
 cdr  the arrays patei,...,pplei, and p2nd, contain the further information:
-cdr  "how many" of this secondary species iatm arise after process irei.
+cdr  "how many" of secondary species IATM arise after process IREI.
         END IF
+
+cdr  next: same for molecular secondaries
         ipmlei(IREI,0)=COUNT(PMLEI(IREI,1:) > 0)
         IF (ipmlei(IREI,0).GT.0) THEN
              IPMLEI(IREI,1:ipmlei(IREI,0))=PACK( (/ (i,i=1,nmol) /),
      .                                     PMLEI(IREI,1:) > 0)
         END IF
+
+cdr  next: same for test ion secondaries
         ipioei(IREI,0)=COUNT(PIOEI(IREI,1:) > 0)
         IF (ipioei(IREI,0).GT.0) THEN
              IPIOEI(IREI,1:ipioei(IREI,0))=PACK( (/ (i,i=1,nion) /),
      .                                     PIOEI(IREI,1:) > 0)
         END IF
+
+cdr  next: same for field particle (bulk) secondaries
         ipplei(IREI,0)=COUNT(PPLEI(IREI,1:) > 0)
         IF (ipplei(IREI,0).GT.0) THEN
              IPPLEI(IREI,1:ipplei(IREI,0))=PACK( (/ (i,i=1,npls) /),
      .                                     PPLEI(IREI,1:) > 0)
         END IF
         if (ipplei(IREI,0) > 1) then
+cdr
+cdr  This unnecessary constraint arose with extension to species dependent tallies EAPL, EMPL, etc.
+cdr  as needed for some EMC3 bgk iterations, around 2016.
+cdr  The coding of these species resolved energy source tallies is still incomplete.
           IERROR = IERROR + 1
           write (iunout,*) 'MORE THAN ONE BULK ION SPECIES SPECIFIED ',
      .          'AS SECONDARY PARTICLE OF EI REACTION IREI = ',IREI
         end if
       END DO
 
-cdr:  same as above, for PI processes
+cdr   same as above, for PI processes
       IPATPI = 0
       IPMLPI = 0
       IPIOPI = 0
 cdr   IPPHPI = 0   ARRAY IPPHPI IS STILL MISSING, NO PHOTON SECONDARIES IN PI REACTIONS.
       IPPLPI = 0
+
       DO IRPI=1,NRPI
         ipatpi(IRPI,0)=COUNT(PATPI(IRPI,1:) > 0)
         IF (ipatpi(IRPI,0).GT.0) then
@@ -196,4 +199,4 @@ cdr   IPPHPI = 0   ARRAY IPPHPI IS STILL MISSING, NO PHOTON SECONDARIES IN PI RE
       end if
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_SETAMD

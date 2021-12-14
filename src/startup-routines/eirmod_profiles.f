@@ -89,7 +89,7 @@ C  2ND EXPONENTIAL
    20 CONTINUE
       PRO(NR1ST)=0.
       RETURN
-      END
+      END SUBROUTINE EIRENE_PROFE
       
 *****************************************************************
       
@@ -165,7 +165,7 @@ C
    20 CONTINUE
       PRO(NR1ST)=0.
       RETURN
-      END
+      END SUBROUTINE EIRENE_PROFN
 
 ********************************************************************
       
@@ -200,7 +200,7 @@ C
 
       PRO(1:NDAT) = PLASMA_BCKGRND(IINDEX+1,1:NDAT)
       RETURN
-      END
+      END SUBROUTINE EIRENE_PROFR_1D
 
 C
 C
@@ -208,6 +208,7 @@ C
 C
 C  READ ENTIRE PROFILE FROM TARGET DATA STRUCTURE PLASMA_BCKGRND  
 C      (EIRMOD_CSPEI)
+cdr  same as PROFR_1D, but PRO is a 2D array, 
 C  NSPZ1: first dimension of PRO array as in calling program
 C  NSPZI: fill the first NSPZI fields 1:NZPZI. NZPZI LE NSPZ1 necessarily.
 C  NSPZ1,IINDEX:  = 1,     0        for TEIN
@@ -233,7 +234,7 @@ C
 
       PRO(1:NSPZI,1:NDAT) = PLASMA_BCKGRND(IINDEX+1:IINDEX+NSPZI,1:NDAT)
       RETURN
-      END
+      END SUBROUTINE EIRENE_PROFR_2D
 
 **************************************************************************
       
@@ -294,6 +295,6 @@ C
    20 CONTINUE
       PRO(NR1ST)=0.
       RETURN
-      END
+      END SUBROUTINE EIRENE_PROFS
       
       end module  eirmod_profiles

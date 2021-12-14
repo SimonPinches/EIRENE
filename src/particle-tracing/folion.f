@@ -53,20 +53,11 @@ C  Sept 05: also vel=velpar before call  to ...col  routines.
 !DR  eps12 --> eps6 for testing cosine of angle of incidence.
 !DR  levgeo=4:  if nlsrfx: correction of nrcell for SG gt.0 SG lt.eps6
 
-
-
-
-
-
-
 C  .......................................................................................
 C  DIFFERENCES FROM SUBR. FOLNEUT:
-
-
-
 C    0) INTRODUCE PARAMETERS VELPAR, VELPER:
 C       VELOCITY PARALLEL AND PERP TO B FIELD, RESP.
-C    1) REDUCED EQ. OF MOTION: A) MOTION ALONG B-FIELD: VEL= VELPAR
+C    1) REDUCED EQ. OF MOTION: A) MOTION ALONG B FIELD: VEL= VELPAR
 C                              B) GUIDING CENTRE, INCL DRIFTS (EXPL. EULER: JOSEF)
 C                              C) FULL GYRO MOTION (CORRECTIONS) NEAR TARGETS (TO BE DONE)
 C    2) ADDITIONALLY: "FOKKER-PLANCK COLLISIONS", ISRFCL=4
@@ -75,7 +66,6 @@ C                              B) TRUBNIKOV REFINED, SEMI-ANALYTICAL
 C                              C) BINARY: TAKIZUKA  (BENJAMIN)
 C                              D) HYBRID: PARTICLE-FLUID-FOKKER-PLANCK (JOSEF)
 C  .......................................................................................
-
 
 C
       SUBROUTINE EIRENE_FOLION
@@ -104,7 +94,7 @@ C           ITYP=4  NO NEXT GENERATION TEST PARTICLE IS GENERATED
 C                   (PARTICLE ABSORBED IN BULK ION SPECIES)
 c
 c  at 100 :   start a new trace ion, velocity is given as full cartesian vector, lcart=true
-c  at 1004:   reduced (guiding centre) velocities and B-field are now set for particle. lcart=false.
+c  at 1004:   reduced (guiding centre) velocities and B field are now set for particle. lcart=false.
 C  at 1001:   particle enters static loop
 C  at 1002:   particle leaves static loop
 c  at 101 :   full new trajectory starts here.
@@ -190,7 +180,6 @@ c  with a new full (cartesian) velocity vector.
 c
       IF (.NOT.LCART) GOTO 9921
 
-
       XGENER=0.D0
 
 C  CHECK FOR VALID SPECIES INDEX
@@ -211,11 +200,10 @@ C
       IF (LDAMCEL(NCELL)) GOTO 9912
       IF (NCELL.GT.NSBOX.OR.NCELL.LT.1) GOTO 991
 
-
-c  find direction parallel and perpendicular to B-field, and velocity components
+c  find direction parallel and perpendicular to B field, and velocity components
 c  i.e. convert cartesian velocity unit vector VELX,VELY,VELX into
-c  parallel and perpendicular unit velocity componentes VELPAR
-c  find B-field in cell NCELL
+c  parallel and perpendicular unit velocity components VELPAR
+c  find B field in cell NCELL
       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,0)
 
       VELXS=VELX
@@ -224,14 +212,14 @@ c  find B-field in cell NCELL
       VELS=VEL
 
 C  SIGPAR: SIGN OF PARALLEL VELOCITY WITH RESPECT TO B
-c  calculating the angle between full velocity and B-field
+c  calculating the angle between full velocity and B field
 c  BBX, BBY, BBZ are normalized!
       VCOS = VELX*BBX + VELY*BBY + VELZ*BBZ
       IF (ABS(VCOS).LT.EPS30) GOTO 992
       SIGPAR=SIGN(1._DP,VCOS)
       VELPAR=ABS(VEL*VCOS)
       VELPER=SQRT(MAX(0._DP,VEL**2 - VELPAR**2))
-c  VELOCITY WITH RESPECT TO B-FIELD IS NOW DEFINED:
+c  VELOCITY WITH RESPECT TO B FIELD IS NOW DEFINED:
 c  VELPAR: full parallel velocity, absolute value
 c  VELPER: full perpendicular velocity, always non-negative
 c  SIGPAR: sign of parallel velocity with respect to B
@@ -239,7 +227,7 @@ c  SIGPAR: sign of parallel velocity with respect to B
 C  NOW REDUCED VELOCITY: GUIDING CENTRE APPROXIMATION
 
 c  APPROXIMATION A)
-c  use B-field line as trajectory
+c  use B field line as trajectory
 c  VLXPAR,VLYPAR,VLZPAR gives the direction of the full parallel velocity
 c  in Cartesian coordinates - absolute value is not correct!!!
       VLXPAR=SIGPAR*BBX
@@ -269,7 +257,7 @@ C
 C  the particle may be sitting exactly on a surface (nlsrf...=.true.).
 C
 C  this part is special for ions: due to projection of velocity
-C  onto Guiding Center Motion (or even onto B-field) the correct
+C  onto Guiding Center Motion (or even onto B field) the correct
 C  angle relative to surface may be lost (e.g. cosin lt 0 may result).
 c  Also NINC may be different, depending on whether computed with full
 c  or with reduced (guiding centre) velocity
@@ -288,8 +276,6 @@ c  Else: continue at 1002
         call eirene_exit_own(1)
       ENDIF
       GOTO 1002
-
-
 
 c***********************************************************************
 c  CORRECTIONS FOR PARTICLES SITTING EXACTLY ON SURFACES DONE.
@@ -523,8 +509,6 @@ C
 C FNUI: collision frequency with background ions.
 
       FNUI   = 1.D-30
-
-
       IF (NRC.GE.0) THEN
         DO IPL=1,NPLSI
           IPLTI=MPLSTI(IPL)
@@ -595,7 +579,6 @@ c  switch to gc velocity
           VELYS=VELY
           VELZS=VELZ
           VELS =VEL
-
           VELX=VLXPAR
           VELY=VLYPAR
           VELZ=VLZPAR
@@ -736,7 +719,7 @@ C  COLLISION IN SECTION J OF CURRENT TRACK
 CCC         ENDIF
 C  THESE NEXT TWO LINES CAN NEVER BE REACHED, BECAUSE ONLY ONE
 C  CELL FOR EACH TRACK OF IONS (DISTINCT FROM FOLNEUT).
-C  THEN (AT THE LATEST): ROTATION OF VELOCITY DUE TO NEW B-FIELD
+C  THEN (AT THE LATEST): ROTATION OF VELOCITY DUE TO NEW B FIELD
 C           ZINT2=ZINT1
 C           ZT=ZT+CLPD(J)
 C         ELSEIF (JCOL.EQ.0) THEN
@@ -1164,7 +1147,7 @@ C  DELTA COLLISION AT SURFACE DONE, NEW CELL FOUND (except in case levgeo 10 ?)
         IF (IRET == 2) GOTO 229
         IF (IRET == 3) GOTO 9991
 
-C  FIND NEW B-FIELD, NEW REDUCED (GC) VELOCITY
+C  FIND NEW B FIELD, NEW REDUCED (GC) VELOCITY
   229   CONTINUE
 C STORE NEW FULL VELOCITY
         VELS = VEL
@@ -1173,7 +1156,7 @@ cdr Warning: this call is probably incorrect in case of levgeo=10.
 !   Jump to external (e.g. emc3) routine)
 !   but there the cell number may be set only later.
 !   In fpkcol a new B field may already have been set.
-!   Futhermore: a new vel vector from fpkcol may get curruped here.
+!   Futhermore: a new vel vector from fpkcol may get corrupted here.
 
         ICO = 0
         GOTO 1004
@@ -1366,7 +1349,7 @@ C
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE('ERROR IN FOLION, PROJECTION TO V_PAR, V_PERP')
       CALL EIRENE_MASAGE
-     .  ('PROBABLY ILL-DEFINED B-FIELD WRT. PARTICLE SPEED')
+     .  ('PROBABLY ILL-DEFINED B FIELD WRT. PARTICLE SPEED')
       WRITE (iunout,*) 'BBX,BBY,BBZ ',BBX,BBY,BBZ
       ZT=0.
       GOTO 9951
@@ -1398,8 +1381,8 @@ C
       ELSE
 !$OMP CRITICAL
         WRITE (iunout,'(A,1P,4(1X,1E14.7))') 'X0,Y0,Z0,ZT ',X0,Y0,Z0,ZT
-        WRITE (iunout,'(A,1P,3(1X,1E14.7))') 'VELX,VELY,VELZ ',
-     .                                        VELX,VELY,VELZ
+        WRITE (iunout,'(A,1P,4(1X,1E14.7))') 'VELX,VELY,VELZ,VEL ',
+     .                                        VELX,VELY,VELZ,VEL
         WRITE (iunout,'(A,1P,3(1X,1E14.7))') 'X0ERR,Y0ERR,Z0ERR ',
      .                                        X0ERR,Y0ERR,Z0ERR
 !$OMP END CRITICAL
@@ -1408,8 +1391,7 @@ C
   996 CALL EIRENE_MASAGE
      .  ('ERROR IN FOLION, COND. EXP. ESTIM. NOT IN USE')
       GOTO 999
-  997 CALL EIRENE_MASAGE
-     .  ('ERROR IN FOLION, DETECTED IN SUBR. CLLTST')
+  997 CALL EIRENE_MASAGE('ERROR IN FOLION, DETECTED IN SUBR. CLLTST')
       CALL EIRENE_MASAGE('PARTICLE IS KILLED')
 C   DETAILED PRINTOUT ALREADY DONE FROM SUBR. CLLTST
 
@@ -1510,12 +1492,11 @@ C  INVOLVING THE CHANDRASEKHAR FUNCTIONS
       RETURN
       END FUNCTION DPSI_CHAND
 
-
-      END
+      END SUBROUTINE EIRENE_FOLION
 
       SUBROUTINE EIRENE_NEWFIELD(X,Y,Z,VELS,IND)
 C  FIND NEW MAGNETIC FIELD AT NEW POINT X,Y,Z IN CELL NCELL
-C  IF (IND.EQ.0) RETURN WITH NEW LOCAL B-FIELD BVEC
+C  IF (IND.EQ.0) RETURN WITH NEW LOCAL B FIELD BVEC
 C
 C  IF (IND.GE.1) ADDITIONALLY ALSO PROVIDE REDUCED (GC) VELOCITY VECTOR (SPEED UNIT VECTOR)
 C    BUT RETAIN PREVIOUS MODULI: V_PARALLEL, V_PERP.
@@ -1537,7 +1518,6 @@ C
       USE EIRMOD_CINIT
       USE EIRMOD_RANF, ONLY: RANF_EIRENE
       IMPLICIT NONE
-ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
       REAL(DP), INTENT(IN) :: X,Y,Z,VELS
       REAL(DP) :: BVEC_1(3), VVEC(3), GYRO, BBF
       INTEGER :: IND
@@ -1572,4 +1552,4 @@ C  BACK TO CARTESIAN COORDINATES
       VEL  = VELS
       LCART=.TRUE.
       RETURN
-      END
+      END SUBROUTINE EIRENE_NEWFIELD

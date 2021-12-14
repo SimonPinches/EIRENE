@@ -36,7 +36,7 @@ C   THIS VERSION: $COUPLE_B2.5  JAN. 2018
 c                 proprietary version of FZJ, for local B2.5 code versions
 C
 C   UPDATES:
-C   OPTION TO EVALUATE B-FIELD VECTORS FROM GRIDADAP FILE FT29
+C   OPTION TO EVALUATE B FIELD VECTORS FROM GRIDADAP FILE FT29
 C   FOR NON-ORTHOGONAL GRIDS
 C
 C   THIS CODE SEGMENT CONTAINS VARIOUS SUBROUTINES NEEDED FOR
@@ -517,7 +517,7 @@ C
      .               NCUTL,NPOINT,NPLP)
  1020   CONTINUE
 C
-!  ALPHXB, ALPHYB GIVE THE DIRECTION OF THE B-FIELD IN THE
+!  ALPHXB, ALPHYB GIVE THE DIRECTION OF THE B FIELD IN THE
 !  CARTESIAN PLANE
         write (iunout,*) 'testoutput from fort.29 in infcop'
         write (iunout,*) 'irad,ipol, angles.....'
@@ -768,7 +768,7 @@ C  poloidal field
           BY=PUY(IN)*RRB(IX,IY)   ! +PVY(IN)*0.
 c  toroidal field
           BZ=SQRT(1.-RRB(IX,IY)**2)
-c  normalize B-field vector to length 1 (one)
+c  normalize B field vector to length 1 (one)
 c
           BN=SQRT(BX*BX+BY*BY+BZ*BZ)
           BXINTF(IN)=BX/BN
@@ -3288,5 +3288,3 @@ C> transfer to the external code
       integer, intent(in) :: istra
       RETURN
       END SUBROUTINE EIRENE_INFCOP_POST_STRATUM
-
-      

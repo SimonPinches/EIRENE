@@ -31,4 +31,4 @@ C
       PRO(1:N)=0.0
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_PROUSR

@@ -1,4 +1,4 @@
-c april05:  *sqrt(ze) moved from here (for cx spectra) into sigcx
+c april05:  *sqrt(ze) moved from here (for CX spectra) into sigcx
 c april06:  restriction to iphot.eq.isp in case of los-radiances
 c
 cdr aug.16:  to be done: psig: allocatable, psig(0,nspi), NSPI depends on NCHTAL option
@@ -32,9 +32,6 @@ C  STEP 2:  PREPARE DIRECT CONTRIBUTION FROM PRIMARY SOURCE (IF ANY)
 C           (PROBABLY NOT READY)
 C  STEP 3:  INTEGRATE ALONG LINE OF SIGHT, CALL LININT, AND LOOP OVER ENERGY/WAVELENGTH
 C  STEP 4:  PROCESS LINE INTEGRALS: CURVE FITTING, SCALING, ETC..
-
-C  isp:  species index, 
-c        or component index (nchtal=2)
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -618,4 +615,4 @@ C
         DEALLOCATE(INTADD)
       ENDIF
       RETURN
-      END
+      END SUBROUTINE EIRENE_SGNAL

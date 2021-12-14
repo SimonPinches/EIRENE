@@ -38,7 +38,7 @@ ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
 
       CONTAINS
 
-!pb  100107: ENTRY VELOCX_REINIT added for reinitialization of EIRENE
+!pb  100107: SUBROUTINE VELOCX_REINIT added for reinitialization of EIRENE
 !pb  110311: avoid relative velocity VREL=0
 !pb  110311: ensure ELMIN <= ELAB <= ELMAX
 !DR  250311: ensure ELMIN <= ELAB <= ELMAX disabled again: would lead

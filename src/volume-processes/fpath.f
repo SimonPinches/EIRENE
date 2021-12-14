@@ -1,6 +1,6 @@
 c  25.11.05: option modcol(3,4...)=3 added
 c            (first implemented in fpatha)
-c            cx rate option 4 added (adopted from fpatha)
+c            CX rate option 4 added (adopted from fpatha)
 C               added: jcou,ncou
 !pb  30.08.06:  data structure for reaction data redefined
 !pb  12.10.06:  modcol revised
@@ -13,7 +13,7 @@ cdr  oct.14  :  synchronized with fpathm, fpathi
 
 cdr 31.10.14 :  speedup of final cut-off evaluations
 
-cdr note:       sgnl_poly evaluations are just the 8th-order polynomial,
+cdr note:       sngl_poly evaluations are just the 8th-order polynomial,
 cdr             plus rcmin,rcmax consideration.
 cdr             unless rcmin,rcmax are set (as it is the case currently here),
 cdr             there is no need to call  --> move to in-line
@@ -34,8 +34,8 @@ cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option
 cdr sept 16:    nadsi  -> naeii
 
 cdr aug. 16:    bug fix re EXPO in PI branch
-cdr sept.16:    pi process: use v0/vth >> 1. to switch to beam-rate coeff
-cdr             ei process: started to check for H.3, H.1 options for EI processes
+cdr sept.16:    PI process: use v0/vth >> 1. to switch to beam-rate coeff
+cdr             EI process: started to check for H.3, H.1 options for EI processes
 cdr                         according to v0/vth >> 1. criteria
 cdr Nov. 16:    cflag(7,mstor0) rather than cflag(6,3), see comments
 
@@ -101,7 +101,7 @@ C
       REAL(DP) :: PVELQ(NPLSV)
       REAL(DP) :: TBCX3(9), TBEL3(9), TBPI3(9), FP(6)
       REAL(DP) :: EPCX3(9), EPEL3(9)  !EPPI3: TO BE DONE
-      REAL(DP) :: EIRENE_FPATH,
+      REAL(DP) :: EIRENE_FPATH, EIRENE_FPATHPH,
      .          EIRENE_CROSS,
      .          EIRENE_RATE_COEFF, EIRENE_SNGL_POLY,
      .          EIRENE_ENERGY_RATE_COEFF,
@@ -112,15 +112,12 @@ C
      .          VRELQ, VREL, XC,YC,ZC,
      .          CII, ELB,TII,V0_REL,
      .          EXPO, 
-cdr  functions for 'on the fly' evaluation of a&m data
+cdr  functions for 'on the fly' evaluation of A&M data
      .          EIRENE_FEELEI1, EIRENE_FEELPI3,
      .          EIRENE_FEHVEI1, EIRENE_FEHVPI3,
      .          EIRENE_FEPLCX3, EIRENE_FEPLEL3,
      .          EIRENE_FTABCX3, EIRENE_FTABPI3,
      .          EIRENE_FTABEI1,
-!pb
-     .          EIRENE_FPATHPH,
-
      .          RCMIN, RCMAX
       INTEGER :: IBGK, IXEL, IREL, IXEI, IREI, IXPI, IRPI,
      .                 IXCX, IRCX, 
@@ -433,6 +430,8 @@ C  ION SAMPLING FROM MAXWELLIAN
               ESIGCX(IRCX,1)=EIRENE_FEPLCX3(IRCX,K)
             END IF
           END IF  ! this was for tracklength estimator only
+
+cdr  set NFLAG for VELOCX: post-collision velocity sampling
           CFLAG(3,IRCX)=2
         ELSEIF (MODCOL(3,4,IRCX).EQ.2) THEN
 C  MODEL 2:
@@ -457,6 +456,7 @@ cdr         endif
      .                                TRCAMD,.TRUE.)
             ELSE
 ! CALCULATE ENERGY-WEIGHTED RATE COEFFICIENT ON THE FLY
+CDR  THIS SHOULD BE DONE IN ...  NOT READY
               KK=NELRCX(IRCX)
               TII=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)
               EXPO = EIRENE_ENERGY_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
@@ -465,6 +465,8 @@ cdr         endif
             ESIGCX(IRCX,1)=EXP(EXPO)/SIGVCX(IRCX)
             IF (LEDRIFT) ESIGCX(IRCX,1)=ESIGCX(IRCX,1)+EDRIFT(IPLS,K)
           ENDIF  ! this was for tracklength estimator only
+
+cdr  set NFLAG for VELOCX: post-collision velocity sampling
           CFLAG(3,IRCX)=3
         ELSEIF (MODCOL(3,4,IRCX).EQ.3) THEN
 C  MODEL 3:
@@ -478,6 +480,8 @@ C  ION SAMPLING FROM WEIGHTED DRIFTING ISOTROPIC ONE SPEED DISTRIBUTION
               ESIGCX(IRCX,1)=EIRENE_FEPLCX3(IRCX,K)
             END IF
           ENDIF  ! this was for tracklength estimator only
+
+cdr  set NFLAG for VELOCX: post-collision velocity sampling
           CFLAG(3,IRCX)=1
         ELSE
           GOTO 992
@@ -513,6 +517,7 @@ cdr  here should be call to ftabel3,  to be done
             SIGVEL(IREL)=TBEL
           END IF
         ELSEIF (MODCOL(5,2,IREL).EQ.2) THEN
+C  MODEL 2:
 C  BEAM - MAXWELL
           IF (TIIN(IPLSTI,K).LT.TVAC) THEN
 C  TEMPERATURE TOO LOW, USE: BEAM_ATOM - BEAM_DRIFT RATE COEFF.
@@ -546,17 +551,18 @@ cdr  here should be call to ftabel3,  to be done
             SIGVEL(IREL)=EXP(EXPO)
           ENDIF
         ELSEIF (MODCOL(5,2,IREL).EQ.3) THEN
+C  MODEL 3:
 C  BEAM - BEAM RATE, BUT WITH EFFECTIVE INTERACTION ENERGY
           VEFFQ=ZTI(IPLS)+PVELQ(IPLSV)
           VEFF=SQRT(VEFFQ)
           ELAB=LOG(VEFFQ)+DEFEL(IREL)
           IREAC=MODCOL(5,1,IREL)
-C  FIND SIGMA FROM AMJUEL DATA TABLES (BACHMANN ET AL.)
+C  FIND SIGMA FROM AMJUEL DATA TABLES (e.g. BACHMANN ET AL.)
             CEL=EIRENE_CROSS(ELAB,IREAC,IREL,FACREL(IREL,1),
      .                       'FPATH EL2')
           SIGVEL(IREL)=CEL*VEFF*DENIO(IPLS)
         ELSEIF (MODCOL(5,2,IREL).EQ.4) THEN
-C  MODEL 4
+C  MODEL 4:
 C  BEAM - BEAM RATE, IGNORE THERMAL ION ENERGY
           VRELQ=PVELQ(IPLSV)
           VREL=SQRT(VRELQ)
@@ -583,8 +589,11 @@ C  ION SAMPLING FROM MAXWELLIAN
           IF (NSTORDR >= NRAD) THEN
             ESIGEL(IREL,1)=EPLEL3(IREL,K,1)
           ELSE
+! CALCULATE ENERGY LOSS RATE COEFFICIENT ON THE FLY
             ESIGEL(IREL,1)=EIRENE_FEPLEL3(IREL,K)
           END IF
+
+cdr  set NFLAG for VELOEL: post-collision velocity sampling
           CFLAG(5,IREL)=2
         ELSEIF (MODCOL(5,4,IREL).EQ.2) THEN
 C  MODEL 2:
@@ -613,6 +622,8 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
             ESIGEL(IREL,1)=EXP(EXPO)/SIGVEL(IREL)
             IF (LEDRIFT) ESIGEL(IREL,1)=ESIGEL(IREL,1)+EDRIFT(IPLS,K)
           ENDIF  ! this was for tracklength estimator only
+
+cdr  set NFLAG for VELOEL: post-collision velocity sampling
           CFLAG(5,IREL)=3
         ELSEIF (MODCOL(5,4,IREL).EQ.3) THEN
 C  MODEL 3:
@@ -624,6 +635,8 @@ C  ION SAMPLING FROM WEIGHTED DRIFTING ISOTROPIC ONE SPEED DISTRIBUTION
           ELSE
             ESIGEL(IREL,1)=EIRENE_FEPLEL3(IREL,K)
           END IF
+
+cdr  set NFLAG for VELOEL: post-collision velocity sampling
           CFLAG(5,IREL)=1
         ELSE
           GOTO 995
@@ -709,4 +722,4 @@ C
       WRITE (iunout,*) 'ITYP,IXSPZ,IREL,MODCOL(5,J,IREL),J=1,4 '
       WRITE (iunout,*) ITYP,IXSPZ,IREL,(MODCOL(5,J,IREL),J=1,4)
       CALL EIRENE_EXIT_OWN(1)
-      END
+      END FUNCTION EIRENE_FPATH

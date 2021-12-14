@@ -37,4 +37,4 @@ C
       WRITE (iunout,'(//1X)')
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_MASBOX

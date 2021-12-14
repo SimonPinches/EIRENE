@@ -13,4 +13,4 @@ C*DK MARPRM
       WRITE (iunout,*) A(1:NA),' = ',MA
       WRITE (iunout,*) B(1:NB),' = ',MB
       RETURN
-      END
+      END SUBROUTINE EIRENE_MASPRM

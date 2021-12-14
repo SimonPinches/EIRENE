@@ -33,8 +33,7 @@ cdr  for velocity space distributions.
      R SORAD1(:,:), SORAD2(:,:), SORAD3(:,:),
      R SORAD4(:,:), SORAD5(:,:), SORAD6(:,:)
 
-      REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R SREC(:,:),   EIO(:,:),    EEL(:,:),   MOM(:,:)
+c.....................................................................
 
       INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      I         ICMSOU(:,:)
@@ -49,11 +48,7 @@ cdr  for velocity space distributions.
      I NAMODS(:),  NSRFSI(:),  NPTSDEL(:), NRAYEN(:),
      I NMINPTS(:)!VK
 
-      INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
-     I INGRDA(:,:,:), INGRDE(:,:,:)
-
-      INTEGER, PUBLIC, SAVE ::
-     I NSTRAI, NOMSOU, MOMSOU, LOMSOU
+c.....................................................................
 
       LOGICAL, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      L         LCMSOU(:,:)
@@ -65,8 +60,25 @@ cdr  for velocity space distributions.
 
 !$OMP  THREADPRIVATE(NLRAY,LCMSOU)
 
+c.....................................................................
+
+c  Total background source rates:
+c  plasma particles, ion energy, electron energy, plasma momentum
+c  Only applicable in case: NLPLS(ISTRA)
+c
+      REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
+     R SREC(:,:),   EIO(:,:),    EEL(:,:),   MOM(:,:)
+
+cdr  should go into LCMSOU
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE ::
      L NLSYMP(:), NLSYMT(:)
+
+      INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
+     I INGRDA(:,:,:), INGRDE(:,:,:)
+
+      INTEGER, PUBLIC, SAVE ::
+     I NSTRAI,
+     I NOMSOU, MOMSOU, LOMSOU
 
       REAL(DP),PUBLIC,SAVE :: MPTS_COMSOU !VK
 
@@ -272,6 +284,8 @@ c  some array A(0:NSTRA)) that include sum over strata
       CALL MPI_BCAST (NLSYMP,NSTRAP,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NLSYMT,NSTRAP,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
+
       END SUBROUTINE EIRENE_BROADCAST_COMSOU
 
       END MODULE EIRMOD_COMSOU

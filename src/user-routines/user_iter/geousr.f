@@ -42,7 +42,7 @@ c  no card: "geometry comment" found in input block 14.
       END IF
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_GEOUSR
 
 
 C
@@ -182,7 +182,7 @@ C       enddo
 C     enddo
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_GEOUSR_GENERAL
 
 
 C
@@ -239,7 +239,7 @@ c
             limpos(i)=0
           end do
           IF (NASMOD.EQ.N) THEN
-C INNER LEFT TARGET
+C LEFT TARGET (INNER FOR LSN, OUTER FOR USN, LOWER INNER FOR DN)
           xpolpos(1)=1
           ypolpos(1)=npoint(1,1)
           xpolpos(2)=nr1st
@@ -250,7 +250,7 @@ C INNER LEFT TARGET
             xpolpos(2)=nr1st
             ypolpos(2)=npoint(2,1)
           end if
-C OUTER RIGHT TARGET
+C RIGHT TARGET (OUTER FOR LSN, INNER FOR USN, UPPER INNER FOR DN)
           if(npplg.le.3) then
             xpolpos(3)=1
             ypolpos(3)=npoint(2,npplg)
@@ -267,12 +267,12 @@ C OUTER RIGHT TARGET
           end if
 
           if(npplg.eq.6) then
-C OUTER LEFT TARGET
+C TOP OUTER (LEFT) TARGET
             xpolpos(5)=1
             ypolpos(5)=npoint(1,4)+1
             xpolpos(6)=nr1st
             ypolpos(6)=npoint(1,4)+1
-C INNER RIGHT TARGET
+C BOTTOM OUTER (RIGHT) TARGET
             xpolpos(7)=1
             ypolpos(7)=npoint(2,6)
             xpolpos(8)=nr1st
@@ -664,12 +664,12 @@ c
             onetwo(i)=0
             limpos(i)=0
           end do
-C INNER LEFT TARGET
+C LEFT TARGET (INNER FOR LSN, OUTER FOR USN, LOWER INNER FOR DN)
           xpolpos(1)=1
           ypolpos(1)=npoint(1,1)
           xpolpos(2)=nr1st
           ypolpos(2)=npoint(1,1)
-C OUTER RIGHT TARGET
+C RIGHT TARGET (OUTER FOR LSN, INNER FOR USN, UPPER INNER FOR DN)
           if(npplg.le.3) then
             xpolpos(3)=1
             ypolpos(3)=npoint(2,npplg)
@@ -686,12 +686,12 @@ C OUTER RIGHT TARGET
           end if
 
           if(npplg.eq.6) then
-C OUTER LEFT TARGET
+C TOP OUTER (LEFT) TARGET
             xpolpos(5)=1
             ypolpos(5)=npoint(1,4)+1
             xpolpos(6)=nr1st
             ypolpos(6)=npoint(1,4)+1
-C INNER RIGHT TARGET
+C BOTTOM OUTER (RIGHT) TARGET
             xpolpos(7)=1
             ypolpos(7)=npoint(2,6)
             xpolpos(8)=nr1st
@@ -886,4 +886,4 @@ C  MODIFY REFLECTION MODEL AT TARGET PLATES
 C
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_GEOUSR_BIASED_GARCHING

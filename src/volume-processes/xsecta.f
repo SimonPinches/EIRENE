@@ -1,7 +1,7 @@
 c 24.11.05: chrdf0 in parameterlist for call to xstcx
 c          (was ok already for call to xstei)
-C  6.12.05: comments changed: default cx only for H on p. No He default cx
-C  2.5.06:  default resonant cx added for He on He+ and He on He++
+C  6.12.05: comments changed: default CX only for H on p. No He default CX
+C  2.05.06: default resonant CX added for He on He+ and He on He++
 C           also modified: cross.f, xsecta_param.f
 ! 30.08.06: array PLS and COUN changed to allocatable arrays
 ! 30.08.06: data structure for reaction data redefined
@@ -21,15 +21,16 @@ cdr  oct.14:  eelei1 set in storage save mode, for default models (was missing)
 cdr  oct.14:  further synchronization with xsectm,xsecti
 cdr           remaining relevant differences in default models only.
 cdr  aug.15:  ibgk_sp:  no of bgk species. to be distinguished from ibgk: no of bgk reaction.
-cdr  oct.15:  default he ionisation kk=-1 --> kk=-11,
-cdr           to avoid conflict with default cx reaction kk=-1
+cdr  oct.15:  default He ionisation kk=-1 --> kk=-11,
+cdr           to avoid conflict with default CX reaction kk=-1
 !pb  APR 16:  pplds -> pplei
 !pb  APR 16:  pelds -> pelei, eelds -> eelei
 !pb  MAY 16:  tabds1 -> tabei1
 cdr  May 17:  A few more consistency checks implemented.
-cdr  May 18:  The fluid limit (critical cx Knudsen number) is now set from NGENA(iatm) flag,
+cdr  May 18:  The fluid limit (critical CX Knudsen number) is now set from NGENA(iatm) flag,
 cdr           rather than from the former fldlma(iatm,kk) flag (which is removed now).
-cdr           default: FDLMCX=0.0 (from initialisation phase) means: no fluid limit cut-off at CX collisions.
+cdr           default: FDLMCX=0.0 (from initialisation phase) means:
+cdr           no fluid limit cut-off at CX collisions.
 C
       SUBROUTINE EIRENE_XSECTA
 C
@@ -53,7 +54,6 @@ C
       REAL(DP) :: FACTKK, CHRDF0, EELEC, RMASS, DEIMIN, EHEAVY,
      .            EBULK, COU, EIRENE_RATE_COEFF,
      .            TMASS, PMASS   ! FOR DEFAULT CX MODEL
-
       INTEGER :: NTE, ISTORE, ISCND, ISCDE, IFRST,
      .           IAT, IREI, IATM, IDSC1, J, IPLS1, IPLS, NRC,
      .           KK, ISPZB, IAEL, ITYPB, IREL, IBGK_SP,
@@ -102,7 +102,7 @@ C  CHECK IF THIS REALLY IS AN ATOM: USE NPRT(ISPZ).EQ.1?
         ENDIF
 
 C  YES, "IATM" IS AN ATOM !
-
+C
         IF (NRCA(IATM).EQ.0.AND.NCHARA(IATM).LE.2) THEN
 C
 C  DEFAULT H,D,T OR HE ELEC. IMP. IONIZATION MODEL
@@ -111,6 +111,7 @@ C  FIND SPECIES INDEX OF ION AFTER IONIZATION EVENT FOR THE DEFAULT
 C  ELECTRON IMPACT IONIZATION MODELS FROM INPUT MASS AND
 C  AND CHARGE NUMBER
 C
+          IION1=0  ! not needed here. Stay sync with xsectm, xsecti
           IPLS1=0
           DO 52 IPLS=1,NPLSI
             IF (NCHARP(IPLS).EQ.NCHARA(IATM).AND.
@@ -365,7 +366,7 @@ C
               EPLCX3(IRCX,1:NSBOX,1)=1.5*TIIN(IPLSTI,1:NSBOX)
               IF (LEDRIFT) EPLCX3(IRCX,1:NSBOX,1)=
      .                     EPLCX3(IRCX,1:NSBOX,1)+EDRIFT(IPLS,1:NSBOX)
-              NELRCX(IRCX) = -1  
+              NELRCX(IRCX) = -1      ! FLAG FOR FEPLCX3:  default incident bulk ion energy
               NREACX(IRCX) = ISTORE  ! FLAG FOR FTABCX3, FOR DEFAULT REACTION ISTORE -1,-2,-3
             ELSE
               NELRCX(IRCX) = -1
@@ -375,7 +376,7 @@ C
             MODCOL(3,2,IRCX)=3
             MODCOL(3,4,IRCX)=3
 C
-  155     CONTINUE   ! end of nplsi loop, bulk collision partners for default cx models
+  155     CONTINUE   ! end of nplsi loop, bulk collision partners for default CX models
 C
           NACXI(IATM)=IDSC
 C
@@ -408,7 +409,7 @@ C  BULK PARTICLE INDEX
             LGACX(IATM,IDSC,1)=IPLS
 c
             if (ngena(iatm).lt.0) then  !  in range -1,...-infinity
-c  set cx fluid limit FDLM (critical Knudsen number Kn_c = mfp_cx/delta
+c  set CX fluid limit FDLM (critical Knudsen number Kn_c = mfp_cx/delta
 c  delta: typical length (could be cell size, or gradient length...)
 c  use the integer input flag ngena (generation limit).
               MFL=-(ngena(iatm)+1)  !  now MFL in range 0 to +infinity
@@ -485,6 +486,7 @@ C  BULK PARTICLE INDEX
             LGAEL(IATM,IDSC,1)=IPLS
 C
 C  SPECIAL TREATMENT: BGK COLLISIONS AMONGST TEST PARTICLES
+C  FOR THIS REACTION KK
             IF (IBGKA(IATM,NRC).NE.0) THEN
               IF (NPBGKA(IATM).EQ.0) THEN
 C  IATM HAS NOT YET BEEN LABELLED AS BGK SPECIES.
@@ -495,6 +497,7 @@ C  DO THIS HERE: IATM IS BGK SPECIES NO. IBGK_SP, AND HAS 3 ADDITIONAL BGK TALLI
               ENDIF
               IF (NPBGKP(IPLS,1).EQ.0) THEN
                 NPBGKP(IPLS,1)=NPBGKA(IATM)
+cdr this is too restrictive?
               ELSE
                 GOTO 999
               ENDIF
@@ -502,7 +505,8 @@ C  SELF- OR CROSS-COLLISION?
               ITYPB=EIRENE_IDEZ(IBGKA(IATM,NRC),1,3)
               ISPZB=EIRENE_IDEZ(IBGKA(IATM,NRC),3,3)
               IF (ITYPB.NE.1.OR.ISPZB.NE.IATM) THEN
-C  CROSS-COLLISION !
+C  CROSS-COLLISION ! SET THE SECOND TEST PARTICLE SPECIES
+C                    INVOLVED IN THIS PROCESS
                 IF (NPBGKP(IPLS,2).EQ.0) THEN
                   NPBGKP(IPLS,2)=IBGKA(IATM,NRC)
                 ELSE
@@ -718,4 +722,4 @@ C
       CALL EIRENE_EXIT_OWN(1)
       RETURN
 C
-      END
+      END SUBROUTINE EIRENE_XSECTA

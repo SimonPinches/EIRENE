@@ -11,22 +11,6 @@ c and similarly for the intermediate storage structure SMESTL
 c  e.g.  SMESTL(ISPC)%GG   <--> ee, ff
 c  etc.
 C
-      SUBROUTINE EIRENE_STATIS_SPC
-      USE EIRMOD_PRECISION
-      USE EIRMOD_PARMMOD
-      USE EIRMOD_COMUSR
-      USE EIRMOD_CESTIM
-      USE EIRMOD_CCONA
-      USE EIRMOD_CGRID
-      USE EIRMOD_CSDVI
-      USE EIRMOD_COUTAU
-      USE EIRMOD_COMSOU
-
-      IMPLICIT NONE
-
-      CALL EIRENE_STATS0_SPC
-      END SUBROUTINE EIRENE_STATIS_SPC
-
 C
       SUBROUTINE EIRENE_STATS0_SPC
       USE EIRMOD_PRECISION
@@ -40,7 +24,6 @@ C
       USE EIRMOD_COMSOU
       IMPLICIT NONE
 
-      REAL(DP), ALLOCATABLE :: SD(:)
       INTEGER :: ISPC
 
       SAVE
@@ -118,7 +101,7 @@ C
       END SUBROUTINE EIRENE_STATS1_SPC
 
 
-C  next entry:
+C  next subroutine:
 c  scale statistical variance. called after all flights from a given stratum istra
       SUBROUTINE EIRENE_STATS2_SPC(XN,FSIG,ZFLUX)
       USE EIRMOD_PRECISION

@@ -13,7 +13,7 @@ C     THE He EMISSIVITY PROFILE (PHOTONS/S/CM**3) IS COMPUTED
 C     AND WRITTEN ONTO TALLIES ADDV(IAD1,IAD2),... FOR STRATUM NO. IST
 C     IAD1: CONTRIBUTION LINEAR IN He   -ATOM      DENSITY
 C     IAD2: CONTRIBUTION LINEAR IN He+  -ION       DENSITY
-C     IADS: SUM OVER ALL CONTRINUTIONS
+C     IADS: SUM OVER ALL CONTRIBUTIONS
 c
 c     distinct from Ba_alpha etc, routines:
 !WZ:  The emissivity can be computed for 5 different wavelengths,

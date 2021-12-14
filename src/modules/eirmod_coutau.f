@@ -276,7 +276,6 @@ cdr  surface rates, for particle balance photons
       ALLOCATE (PRFPHPHTI(0:NPHOT,0:NSTRA))
       ALLOCATE (PRFPPHTI(0:NPHOT,0:NSTRA))
 
-
       ALLOCATE (EOTATI(0:NATM,0:NSTRA))
       ALLOCATE (ERFAAI(0:NATM,0:NSTRA))
       ALLOCATE (ERFMAI(0:NATM,0:NSTRA))
@@ -352,7 +351,6 @@ cdr  surface incident fluxes of bulk ions (no fluxes emitted for bulk ions from 
       ALLOCATE (WTOTP(0:NPLS,0:NSTRA))
 
       ALLOCATE (WTOTE(0:NSTRA))
-
 
 cdr  etote still missing ??
       ALLOCATE (ETOTA(0:NSTRA))
@@ -504,7 +502,7 @@ c tallies obtained by integration from volumetric tallies
       DEALLOCATE (MIPLI)
       DEALLOCATE (MPHPLI)
 
-c  integrated surface averaged tallies
+c  integrated surface-averaged tallies
       DEALLOCATE (POTATI)
       DEALLOCATE (PRFAAI)
       DEALLOCATE (PRFMAI)
@@ -605,7 +603,7 @@ c  global fluxes from primary source
       DEALLOCATE (ETOTP)
       DEALLOCATE (ETOTPH)
 
-c scored "on the flight"
+c scored "on the fly"
       DEALLOCATE (XMCP)
       DEALLOCATE (FLUXT)
       DEALLOCATE (FLXFAC)
@@ -716,6 +714,7 @@ cdr volumetric tallies for energy balance, sources from atoms for el, a,m,i,ph,p
         COPVI(:,ISTRA)   = 0._DP
         BGKVI(:,ISTRA)   = 0._DP
         ALGVI(:,ISTRA)   = 0._DP
+
         PGENAI(:,ISTRA)  = 0._DP
         PGENMI(:,ISTRA)  = 0._DP
         PGENII(:,ISTRA)  = 0._DP
@@ -876,7 +875,7 @@ cdr  energy sources from pl, for electrons:  tally epeli missing ??
       RETURN
       END SUBROUTINE EIRENE_INIT_COUTAU
 
-C     The following ENTRY is for reinitialization of EIRENE
+C     The following SUBROUTINE is for reinitialization of EIRENE
 
       SUBROUTINE EIRENE_INIT_COUTAU_REINIT
       IMPLICIT NONE
@@ -2814,6 +2813,8 @@ C     The following ENTRY is for reinitialization of EIRENE
       CALL MPI_BCAST (NDDWI,NTALS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NFRTWI,NTALS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NFSTWI,NTALS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       END SUBROUTINE EIRENE_BROADCAST_COUTAU
 

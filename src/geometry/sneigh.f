@@ -54,7 +54,6 @@ c  ncorner: number of cell vertices in case of 2d cartesian grid: levgeo=1
 
 C.........................................................................
 
-
       case (2:3)
 cdr  warning: here we use polygon grid structure also in case of LEVGEO=2
 
@@ -234,7 +233,8 @@ C  LOOK FOR EQUALITY WITH OTHER POLOIDAL POLYGONS
 ! IR+1, IP+1
               IC=NNODES+1
               inserted=.false.
-              call EIRENE_insert (baum, xpol(ir+1,ip+1),ypol(ir+1,ip+1),
+              call EIRENE_insert (baum,
+     .                            xpol(ir+1,ip+1), ypol(ir+1,ip+1),
      .                            0._DP, 1._DP, ic, inserted)
               IF (INSERTED) THEN
                 NNODES=NNODES+1
@@ -281,4 +281,4 @@ C       ENDDO
 
       end select
 
-      END
+      END SUBROUTINE EIRENE_SNEIGH

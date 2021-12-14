@@ -3,7 +3,7 @@ cdr  Data for triangular meshes: LEVGEO=4
 
 !pb 07.12.06: use POINTER rather than ALLOCATABLE in datatype definition
 !pb           at this place ALLOCATABLE is allowed only in FORTRAN 2000
-!pb 23.09.11: array INMTINSS introduced based on V.Kotovs changes
+!pb 23.09.11: array INMTINSS introduced based on changes from V.Kotov
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -179,7 +179,6 @@ CVK TO HAVE CORRECT SIGNS FOR PARTICLES CROSSING TRANSPARENT NDS
         CALL EIRENE_ALLOC_CTRIG
       END IF
 
-
       CALL MPI_BCAST (XTRIAN,NKNOTS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (YTRIAN,NKNOTS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (VTRIX,3*NTRIS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -198,7 +197,12 @@ CVK TO HAVE CORRECT SIGNS FOR PARTICLES CROSSING TRANSPARENT NDS
       CALL MPI_BCAST (INMTI3,NTRIS*N3RD,MPI_INTEGER,0,
      .                MPI_COMM_WORLD,ier)
 
-!+++++++++++ In this block dynamical structures are proceeded with care
+      CALL MPI_BCAST (IXTRI, NTRIS, MPI_INTEGER, 0,
+     &                MPI_COMM_WORLD, ier)
+      CALL MPI_BCAST (IYTRI, NTRIS, MPI_INTEGER, 0,
+     &                MPI_COMM_WORLD, ier)
+
+!+++++++++++ In this block dynamical structures are processed with care
 !+++++++++++ IYS 27.02.2015
 
       DO I = 1, NLIMPS
@@ -244,7 +248,9 @@ CVK TO HAVE CORRECT SIGNS FOR PARTICLES CROSSING TRANSPARENT NDS
         END IF
       END DO
 !+++++++++++ IYS 27.02.2015
-!+++++++++++ In this block dynamical structures are proceeded with care
+!+++++++++++ In this block dynamical structures are processed with care
+
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
       
       END SUBROUTINE EIRENE_BROADCAST_CTRIG
 

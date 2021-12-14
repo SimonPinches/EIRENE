@@ -380,7 +380,7 @@ C  BERECHNUNG VON DELTA ALS MITTLERE LAENGE DER TEILSTUECKE
 C  DELTA IST MASS FUER DIE GROESSE DER DREIECKE
 
         IF (ICONT .EQ. 1) THEN
-          maxlen = maxlen / REAL(IPOIN,KIND(1.D0))
+          maxlen = maxlen / REAL(IPOIN,DP)
           WRITE(78+ifoff,*) maxlen
           WRITE(78+ifoff,*)
         endif
@@ -498,5 +498,5 @@ cdr
         DEALLOCATE (YCONTOUR)
       endif
 
-      return
-      END
+      RETURN
+      END SUBROUTINE EIRENE_WRMESH

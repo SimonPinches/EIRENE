@@ -257,7 +257,7 @@ C
 
 
 C
-C  INITIALIZE SPUTER OPTION MODPYS=2
+C  INITIALIZE SPUTTER OPTION MODPYS=2
 C
       ICOUNT=0
 
@@ -743,6 +743,8 @@ C  AT THIS POINT: ESPTP < 0.0, THERMAL (TWALL) DISTRIBUTION OF SPUTTERED PARTICL
 C
 C   PHYSICAL SPUTTERING DONE
 C
+C.....................................................................
+C
 C   CHEMICAL SPUTTERING, REEMITTED PARTICLES ARE COSINE DISTRIBUTED AND
 C   THERMAL
 C
@@ -763,6 +765,8 @@ C  IS INCIDENT PARTICLE "HYDROGENIC" AND "ATOMIC"?
 C  IS TARGET SURFACE CARBON?
 C
         IF (IPR.GT.0.AND.IPR.LE.3.AND.ITA.EQ.4) THEN
+cdr  For H,D,T particles incident onto C target
+cdr  Distinction can be made between H,D,T projectiles (ISPZ dependence).
           YIELD2=RECYCC(ISPZ,MSURF)
         ELSE
 C  NO CHEM. SPUTTERING DATA FOR THIS TARGET-PROJECTILE COMBINATION
@@ -774,6 +778,9 @@ C
 C   ROTH/PACHER MODEL: PSI 1998, SAN DIEGO (J.NUCL.MAT)
 C
         IF (IPR.GT.0.AND.IPR.LE.3.AND.ITA.EQ.4) THEN
+cdr  For H,D,T particles incident onto C target
+cdr  Isotopic dependence is in parameters EDAM(IPR), EDES(IPR),...
+C
 C  CEILING OF FLX: 1E19 #/S/M**2. FOR LOWER FLX AND AT HIGH TWALL
 C                                 THE FORMULA BECOMES UNPHYSICAL (PROTO 1/FLX)
           FLX=MAX(1.E19_DP,FLX)
@@ -876,10 +883,14 @@ C  NO CHEM. SPUTTERING DATA FOR THIS TARGET-PROJECTILE COMBINATION
 C
       CASE(6)
 C  Haasz-Davis formula, 1998
+cdr  no projectile isotopic dependence (on IPR=IPROJ(ISPZ)=1,2,3)
+cdr  except via scaling RECYCC(ISPZ...)
          PRFCC = RECYCC(ISPZ,MSURF)
          yield2=EIRENE_yhaasz97m(e0,twall)*PRFCC
       CASE(7)
 C  Haasz-Davis formula, 1998, with flx. dep from Roth, Nucl.Fus 2004
+cdr  no projectile isotopic dependence (on IPR=IPROJ(ISPZ)=1,2,3)
+cdr  except via scaling RECYCC(ISPZ...)
          PRFCC = RECYCC(ISPZ,MSURF)
          C=1._DP/(1._DP+(1.67E-22_DP*FLX)**0.54)
          yield2=C * EIRENE_yhaasz97m(e0,twall)*PRFCC
@@ -1212,5 +1223,4 @@ c convert to K
       RETURN
       END FUNCTION EIRENE_YHAASZ97M
  
-
       END MODULE EIRMOD_SPUTER

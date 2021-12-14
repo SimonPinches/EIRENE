@@ -54,6 +54,9 @@ C> Unit number for RAPS vector field output file
       integer, public, save :: IFOFF = 0
 C> Indicates whether output files 'output.*' should be appended or overwritten
       LOGICAL, PUBLIC, SAVE :: LOUTAPP = .FALSE.
+C  BLOCK A FEW RESERVED OUTPUT STREAMS.
+      INTEGER, PUBLIC, PARAMETER :: NSTREAM = 16
+      INTEGER, PUBLIC, SAVE :: ISTREAM(NSTREAM)
 
       INTEGER, PUBLIC, SAVE ::
      I N1ST,   N2ND,   N3RD,   NADD,   NTOR,
@@ -75,7 +78,8 @@ C> Indicates whether output files 'output.*' should be appended or overwritten
      I NSD,    NSDW,   NCV
 
       INTEGER, PUBLIC, SAVE ::
-     I NREAC,  NREC,   NREI,   NRCX,   NREL,   NRPI,   NRPH
+     I NREAC,
+     I NREC,   NREI,   NRCX,   NREL,   NRPI,   NRPH
 
       INTEGER, PUBLIC, SAVE ::
      I NHD1,   NHD2,   NHD3,   NHD4,   NHD5,   NHD6
@@ -114,10 +118,12 @@ C> Indicates whether output files 'output.*' should be appended or overwritten
      I NSTRAP
 
       INTEGER, PUBLIC, SAVE ::
+cdr  "species size" of arrays plus 1: for dimensioning (0:nxxx), sum over species
      I NIONP,  NATMP,  NMOLP,
      I NPLSP,  NPHOTP, NADVP,  NADSP,
      I NCLVP,  NALVP,  NALSP,
      I NSNVP,  NCPVP,  NBGVP,
+cdr  additional tallies
      I NTALI,  NTALG,  NTALN,  NTALO,  NTALV,
      I NTALA,  NTALC,  NTALT,
      I NTALM,  NTALB,  NTALR,
@@ -315,8 +321,27 @@ C  NSTORAM=9     : --> NHSTOR=1 --> NSTORDT=NSTORAM, NSTORDR=NRAD
 ! NUMBER OF TRAJECTORIES THAT CAN BE STORED
         NTRJ = 1
 
+        ISTREAM( 1) =  6
+        ISTREAM( 2) = 50
+        ISTREAM( 3) = 21
+        ISTREAM( 4) = 22
+        ISTREAM( 5) = 29
+        ISTREAM( 6) = 30
+        ISTREAM( 7) = 31
+        ISTREAM( 8) = 33
+        ISTREAM( 9) = 34
+        ISTREAM(10) = 35
+        ISTREAM(11) = 10
+        ISTREAM(12) = 11
+        ISTREAM(13) = 12
+        ISTREAM(14) = 13
+        ISTREAM(15) = 14
+        ISTREAM(16) = 15
 C
       ELSE IF (ICAL == 2) THEN
+C.......................................................................
+C  CALLED AFTER INPUT.F
+C.......................................................................
 
 c  set some derived storage parameters
         NBGV=NBGK*3
@@ -427,7 +452,7 @@ c  lines of sight integrals (post-processing)
       INT_PARM( 49) = NCHOR
       INT_PARM( 50) = NCHEN
 
-c  parameters for 2d cfd- code coupling, 2d polygonal grid, no. of fluids, target sources
+c  parameters for 2D CFD code coupling, 2D polygonal grid, no. of fluids, target sources
       INT_PARM( 51) = NDX
       INT_PARM( 52) = NDY
       INT_PARM( 53) = NFL
@@ -589,6 +614,7 @@ c  species indices (1st dimension) of output tallies
       NION        = INT_PARM( 22)
       NPLS        = INT_PARM( 23)
       NPHOT       = INT_PARM( 24)
+c  additional tallies
       NADV        = INT_PARM( 25)
       NADS        = INT_PARM( 26)
       NCLV        = INT_PARM( 27)
@@ -662,8 +688,8 @@ C     NCPV        = INT_PARM( 81)  !dr  out, NCOP eliminted, only NCPV retained.
       NBGV        = INT_PARM( 82)
       NBMAX       = INT_PARM( 83)
       NPTAL       = INT_PARM( 84)
-c     NCPV_STAT   = free          !dr  out, NCPV_stat eliminted.
-c     NSCOP       = free
+c     NCPV_STAT   = free    ( 85)  !dr  out, NCPC_stat eliminted.
+c     NSCOP       = free    ( 86)
 
       NSTRAP      = INT_PARM( 87)
 
@@ -812,8 +838,8 @@ c     NTALW       = INT_PARM(114)  !dr out, was same as ntals
         SPECA%STV     = SPECB%STV
         SPECA%GG      = SPECB%GG
       END IF
+      RETURN
       END SUBROUTINE EIRENE_SPEC_TO_SPEC
-
 
       SUBROUTINE EIRENE_BROADCAST_PARMMOD(ME)
       USE EIRMOD_MPI
@@ -826,7 +852,8 @@ c     NTALW       = INT_PARM(114)  !dr out, was same as ntals
      .                MPI_COMM_WORLD,ier)
 
       IF (ME .NE. 0) CALL EIRENE_DISTRIB_PARM
-
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
+      RETURN
       END SUBROUTINE EIRENE_BROADCAST_PARMMOD
 
       END MODULE EIRMOD_PARMMOD

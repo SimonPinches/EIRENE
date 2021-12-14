@@ -38,4 +38,4 @@ c  binary search
       endif
 
       return
-      end
+      end subroutine EIRENE_searchbin

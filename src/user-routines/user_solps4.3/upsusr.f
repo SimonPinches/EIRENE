@@ -9,4 +9,4 @@ C
       REAL(DP), INTENT(IN) :: WT
       INTEGER, INTENT(IN) :: IND
       RETURN
-      END
+      END SUBROUTINE EIRENE_UPSUSR

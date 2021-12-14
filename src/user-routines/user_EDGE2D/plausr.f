@@ -879,4 +879,4 @@ c     cleanup
       end if
 
    99 RETURN
-      END
+      END SUBROUTINE EIRENE_PLAUSR

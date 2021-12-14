@@ -202,6 +202,7 @@ c  up to here: for splitting, npartc
       IUPDTE => IPSTD( 7)
       ISTRA  => IPSTD( 8)
       ISPZ   => IPSTD( 9)
+cdr  why is mrsurf on census?
       MRSURF => IPSTD(10)
 c  up to here: for census, mpartt
       MPSURF => IPSTD(11)
@@ -209,6 +210,7 @@ c  up to here: for census, mpartt
       MASURF => IPSTD(13)
       MSURF  => IPSTD(14)
 c  up to here: for splitting, mpartc
+cdr  why is msurfg on state vector?
       MSURFG => IPSTD(15)
 
       CALL EIRENE_INIT_COMPRT (NPRS)

@@ -1,13 +1,15 @@
 !  03.08.06: data structure for reaction data redefined
-!  25.04.07: reading of rate coefficients from HYDKIN database added
+
 c  changed in 2011:  new atomic/molecular data structure introduced,
 c                    REACDAT(IR)% ..., replaces array CREAC(...)
 C
-c    at the end of this routine, for each reaction card, call: SET_REACTION_DATA(IR,..)
+c    at the end of this routine, for each reaction card, call:
+cdr  SET_REACTION_DATA(IR,..)
 cdr  jan.14: started to comment, cleanup
 cdr  april 2015: further commenting, cleanup, nov. 15: continued
 cdr  jan 16: started to document options for asymptotics
-!pb  apr 16: extensions to allow more precise comments in AMJUEL, HYDHEL, METHAN and H2VIBR
+!pb  apr 16: extensions to allow more precise comments in AMJUEL, HYDHEL, METHAN,
+cdr                                                       H2VIBR
 c            data files,
 cdr          such as character strings H.xxx
 cdr          taken over from ITER-IO branch
@@ -24,9 +26,6 @@ c     Sept.16: two new internal subroutines,
 c              a) READ_RANGE:  to read validity range information,
 c              b) READ_COEFFS: three parameters for each validity boundary, for extrapolation options
 c    June  17: read_colrad (for old H-COL option (now CRM)) moved to separate routine.
-cdr  OCT   18: rationalization of option FILNAM=CONST: new optional parameters,
-cdr            IFTFL, NCOEF, COEF, rather than reading from unit IUNIN
-C
 cdr  Jan   19:  filnam=CRM --> CR... to prepare merge with branch ...emis....,
 cdr             H, He internal CR codes, formulation I, II (MS resolved or not)
 cdr  Feb   19:  remove obsolete (and unfinished) option HYDRTC 
@@ -59,7 +58,7 @@ CC           FILNAM=TAB2D, ADAS: special treatment, see below.
 C            FILNAM=CR...: nothing to be done here, use internal CR code xx_colrad.f
 c                          currently available: h_colrad.f
 C
-c    H123  : identifier for data type in filnam, e.g. H.1, H.2, H.3, ...
+c    H123  : identifier for data type in FILNAM, e.g. H.1, H.2, H.3, ...
 
 
 c    REAC  : in case FILNAM = AMJUEL, HYDHEL, METHAN, H2VIBR:
@@ -77,7 +76,7 @@ C            in case FILNAM = TAB2D, ADAS: the file name DSN = REAC_ELNAME.dat i
 C                                          (stream 29+ifoff)
 C                                  and then subroutine read_tab2d.f is called.
 
-c    CRC   : type of process, e.g. EI, CX, EL, PI, RC, OT, etc.
+c    CRC   : type of process, e.g. EI, CX, EL, PI, RC, OT, PH, etc.
 c
 c  parameters for extrapolation beyond specified range [RiMN,RiMX, i=1,2] of data (asymptotics),
 c  these asymptotics parameters may already have been read from input file, block 4., subroutine input.f
@@ -114,8 +113,8 @@ c    CREAC :          (old version) eirene storage array for a&m data CREAC(9,-1
 c    REACDAT(IR)%.... (new version) eirene atomic data structure.
 
 c    MODCLF: see below: further information on input a&m data structure
-c    DELPOT: ionisation potential (for H.10 data),
-c            currently handled in input.f. not nice! also missing still for: H.8, H.9
+c    DELPOT: ionisation potential difference (for H.10 data),
+c            currently handled in input.f. Not nice! also missing still for: H.8, H.9
 c
 C    IFTFLG=IFTFLG(IR,IH): flag for type of fitting expression ("fit-flag=...")
 C    IH  internally derived from ISW, for different types of data:
@@ -146,7 +145,7 @@ C  READ A&M DATA FROM THE FILES INTO EIRENE ARRAY CREAC
 C
 C
 C  OUTPUT (IN COMMON COMXS):
-C    READ DATA FROM "FILNAM" INTO ARRAY "CREAC"
+C    READ DATA FROM "FILNAM"
 C    DEFINE PARAMETER MODCLF(IR) (5 DIGITS NMLKJ)
 C    FIRST DECIMAL  J           =1  POTENTIAL AVAILABLE
 C                                   (ON CREAC(..,-1,IR))
@@ -185,24 +184,31 @@ C
       USE EIRMOD_COMPRT
       USE EIRMOD_COMXS
       USE EIRMOD_CINIT
-!pb   USE EIRMOD_PHOTON  ! not needed
+c     USE EIRMOD_PHOTON  ! currently not needed
 
       IMPLICIT NONE
 
-      INTEGER,      INTENT(IN) :: IR, IZ1
-      INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC, 
-     .                                      IFTFL, NCOEF
-      REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC
-      REAL(DP),     INTENT(IN), OPTIONAL :: COEF(9)      
-
+      INTEGER,      INTENT(IN) :: IR
+      CHARACTER(3), INTENT(IN) :: CRC
       CHARACTER(8), INTENT(IN) :: FILNAM
       CHARACTER(4), INTENT(IN) :: H123
       CHARACTER(LEN=*), INTENT(IN) :: REAC
+
+cdr  optional, only needed for CR (COLRAD) format
+      INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC, 
+     .                                      IFTFL, NCOEF
+      REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC
+
+cdr  optional, only needed for TAB2D (ADAS) format
+      INTEGER,      INTENT(IN) :: IZ1
       CHARACTER(2), INTENT(IN) :: ELNAME
-      CHARACTER(3), INTENT(IN) :: CRC
+
+      REAL(DP),     INTENT(IN), OPTIONAL :: COEF(9)      
+
 cdr  asymptotics parameters already read from input block 4?
 cdr  if not: try to read from external A&M data file
-cdr  in either case: store these on data structure REACDAT, in call to: set_reaction_data(IR,...)
+cdr  in either case: store these on data structure REACDAT,
+cdr  in call to: set_reaction_data(IR,...)
       INTEGER,  INTENT(IN OUT) :: JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
       REAL(DP), INTENT(IN OUT) :: RC1MIN, RC1MAX, FP1(6),
      .                            RC2MIN, RC2MAX, FP2(6)
@@ -262,10 +268,14 @@ C
       CHR=' l0 '
 
       I0=0
+cdr the fit coefficients
       CREACD = 0._DP
+
+cdr header of dataset (optional)
       FITFLAG ='fit-flag '
 
-c  some additional  (optional) reaction data:  threshold energy,
+cdr end of dataset (optional)
+c  some additional reaction data: threshold energy,
 c                                              max rate coeff sigma*v_rel,
 c                                              at E_rel=ERTMAX
       CMR  = 'MAXRATE'
@@ -296,11 +306,14 @@ c  type (class) of reaction process
       IF (INDEX(CRC,'RC').NE.0) ISWR(IR)=6
       IF (INDEX(CRC,'OT').NE.0) ISWR(IR)=7
 C
+      LCONST=.FALSE.
       IF (INDEX(FILNAM,'CONST').NE.0) THEN
+cdr  fit data are directly read from input file, not from database
+cdr  Read IFTFLG and CREACD(...,1) from IUNIN, further below.
         LCONST=.TRUE.
 !  nothing to be done
       ELSEIF (INDEX(FILNAM,'CR').NE.0) THEN
-        LCONST=.FALSE.
+cdr     internal CR-code, H_colrad.f, He_colrad.f, ....
 !  nothing to be done
       ELSE   ! in all other cases: open data file, stream 29+ifoff
 !  open data file, stream 29+ifoff.
@@ -336,7 +349,7 @@ C  proper filnam found
             OPEN (UNIT=29+ifoff,FILE=DSN)
           END IF
 
-C  THE A&M DATA FILE FILNAM IS NOW OPENDED, ON STREAM 29 (+ifoff)
+C  THE A&M DATA FILE FILNAM IS NOW OPENED, ON STREAM 29 (+ifoff)
 
         ELSE
           WRITE (iunout,*)
@@ -634,9 +647,6 @@ CC  now identify proper dataset within file FILNAM
 
       LAST_TEX=REPEAT(' ',80)
     1 READ (29+ifoff,'(A80)',END=990) ZEILE
-!ITER IF (INDEX(ZEILE,H123).EQ.0) GOTO 1
-!PB      IF (INDEX(ZEILE,H123).EQ.0 .or.
-!PB  .      INDEX(ZEILE,'section').EQ.0) GOTO 1   !  infinite loop possible !
       IF (INDEX(ZEILE,H123).EQ.0) THEN
         IF (INDEX(ZEILE,BACK).NE.0) LAST_TEX=ZEILE
         GOTO 1
@@ -646,7 +656,6 @@ CC  now identify proper dataset within file FILNAM
       END IF
 C
     2 READ (29+ifoff,'(A80)',END=990) ZEILE
-!ITER IF (INDEX(ZEILE,'H.').NE.0) GOTO 990
       IF (INDEX(ZEILE,'H.').NE.0 .and.
      .    INDEX(ZEILE,'section').NE.0) GOTO 990
       IF (INDEX(ZEILE,'Reaction ').EQ.0.or.
@@ -664,6 +673,7 @@ C
 c  input line found which either contains fit-flag, or the reaction identifier a0,b0,...k0
         IF (INDFF > 0) THEN  ! OTHERWISE: use DEFAULT FOR FIT-FLAG: iftflg = 0
 c  read parameter for type of fitting expression from data file
+c  OTHERWISE: use DEFAULT FOR FIT-FLAG: iftflg = 0
           READ (ZEILE((INDFF+8):80),*) IFTFLG(IR,IFLG)
           GOTO 3
         ENDIF
@@ -688,8 +698,8 @@ C
 C  SINGLE PARAMETER POLYNOMIAL FITS: DONE
 
 C   AT THIS POINT WE HAVE STORED FOR REACTION ir, DATA TYPE iflg: 0,...,5
-C   IFTFLG(IR,iflg)   (DEFAUT:   =0)
-C   9 FIT COEFFICIENTS ON INTERMEDIATE ARRAY CREACD(1...9,1)
+C   IFTFLG(IR,iflg) (DEFAULT = 0)
+C   UP TO 9 FIT COEFFICIENTS ON INTERMEDIATE ARRAY CREACD(1...9,1)
 C   AND POSSIBLY (SOME OF) THE EXTRAPOLATION PARAMETERS RCMIN,RCMAX, FP(1:6)
 C
 
@@ -699,6 +709,10 @@ C
 C  TWO PARAM. FIT, ISW=3,4,6,7,9,10,12
       ELSEIF (ISW.EQ.3.OR.ISW.EQ.4.OR.ISW.EQ.6.OR.ISW.EQ.7.OR.
      .        ISW.EQ.9.OR.ISW.EQ.10.OR.ISW.EQ.12) THEN
+cdr  this coding is overly complicated. We need not search for
+cdr  for header parts (FITFLAG, ARRHENIUS FACTORS) for each block of
+cdr  9 lines. tbd: sync with single parameter fit reading above.
+
 C READ 3 BLOCKS "J" OF DATA. each block contains 9 LINES, 3 numbers per line, i.e. 3 sub blocks
         DO 11 J=0,2
    16     READ (29+ifoff,'(A80)',END=990) ZEILE
@@ -710,6 +724,7 @@ c  read parameter for type of fitting expression from data file
             READ (ZEILE((INDFF+8):80),*) IFTFLG(IR,IFLG)
             GOTO 16
           ENDIF
+
           READ (29+ifoff,'(1X)')
           IF (MOD(IFTFLG(IR,IFLG),100) == 10) THEN
 C  IFTFLG = 10, 110,  210,....ETC:  READ ONLY ONE CONSTANT PARAMETER
@@ -726,8 +741,8 @@ c  d.h. erster sub block entspricht ln(ne/1e8))=0, oder ne=1e8, corona rate vs. 
           END IF
    11   CONTINUE
         READ (29+ifoff,'(A80)',END=990) ZEILE
-C   AT THIS POINT WE HAVE STORED FOR REACTION ir: , DATA TYPE iflg: 0,...,5
-C   IFTFLG(IR,iflg)   (DEFAUT:   =0)
+C   At this point we have stored for reaction IR: DATA TYPE (iflg: 0,...,5)
+C   IFTFLG(IR,iflg) (DEFAULT = 0)
 C   81 FIT COEFFICIENTS ON INTERMEDIATE ARRAY CREACD(1...9,1...9)
 
 C
@@ -1081,4 +1096,4 @@ c  key2:  'EXT-FLG'= ,read IFX (unformatted, integer)
 
       END SUBROUTINE EIRENE_READ_RANGE
 
-      END
+      END SUBROUTINE EIRENE_SLREAC

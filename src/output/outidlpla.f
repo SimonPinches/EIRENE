@@ -1,8 +1,11 @@
+cdr  nov. 19:
 cdr  tally 22 (electric potential) added, and a few comments, started...
 C
       SUBROUTINE EIRENE_OUTIDLPLA
 C
-C  This routine prints background tallies for plotting in IDL tool.
+Cdr  This routine prints background tallies ("field particles") for plotting in IDL tool.
+cdr  Probably code mostly adopted from subr. outpla.f, but no
+cdr  coarse graining onto scoring grid done here, yet.
 C
 C  PRINT INPUT TALLIES ONTO OUTPUT FILE IUNOUT
 C
@@ -111,7 +114,7 @@ C
         NFTI=1
         NFTE=NFSTPI(ITAL)
 
-c  K  leading dimension of input tally ITAL
+c  K: leading dimension of input tally ITAL
         DO 119 K=NFTI,NFTE
 
           SELECT CASE (ITAL)
@@ -209,11 +212,11 @@ C  ION DRIFT VELOCITY: NI(K)*VOLUME-WEIGHTED AVERAGES
 C  FLOW VELOCITY PARALLEL B
               HELPW(I,K)=DIIN(K,I)*VOL(I)
             CASE (8:11)
-C  B-FIELD UNIT VECTOR, B-FIELD STRENGTH "1 - WEIGHTED" AVERAGES
+C  B FIELD UNIT VECTOR, B FIELD STRENGTH "1 - WEIGHTED" AVERAGES
               HELPW(I,K)=1.D0
               IF (NSTGRD(I).GT.0) HELPW(I,K)=0.D0
             CASE (16:17)
-C  B_PERP-FIELD: "1 - WEIGHTED" AVERAGES
+C  B_PERP FIELD: "1 - WEIGHTED" AVERAGES
               HELPW(I,K)=1.D0
               IF (NSTGRD(I).GT.0) HELPW(I,K)=0.D0
             CASE (12,14:15)
@@ -224,7 +227,7 @@ C  ADDITIONAL TALLY, CELL VOLUME, WEIGHT FUNCTION "1 - WEIGHTED" AVERAGES
 C  ION DRIFT ENERGY
               HELPW(I,K)=DIIN(K,I)*VOL(I)
             CASE (18:21)
-C  E-FIELD UNIT VECTOR, E-FIELD STRENGTH
+C  E FIELD UNIT VECTOR, E FIELD STRENGTH
               HELPW(I,K)=1.D0
             CASE (22)
 C  ELECTRIC POTENTIAL
@@ -278,11 +281,11 @@ C  ION DRIFT VELOCITY: NI(K)*VOLUME-WEIGHTED AVERAGES
 C  FLOW VELOCITY PARALLEL B
               HELPW(I,K)=DIIN(K,I)*VOL(I)
             CASE (8:11)
-C  B-FIELD UNIT VECTOR, B-FIELD STRENGTH "1 - WEIGHTED" AVERAGES
+C  B FIELD UNIT VECTOR, B FIELD STRENGTH "1 - WEIGHTED" AVERAGES
               HELPW(I,K)=1.D0
               IF (NSTGRD(I).GT.0) HELPW(I,K)=0.D0
             CASE (16:17)
-C  B_PERP-FIELD: "1 - WEIGHTED" AVERAGES
+C  B_PERP FIELD: "1 - WEIGHTED" AVERAGES
               HELPW(I,K)=1.D0
               IF (NSTGRD(I).GT.0) HELPW(I,K)=0.D0
             CASE (12,14:15)
@@ -293,7 +296,7 @@ C  ADDITIONAL TALLY, CELL VOLUME, WEIGHT FUNCTION " 1 - WEIGHTED" AVERAGES
 C  ION DRIFT ENERGY: NI(K)*VOLUME-WEIGHTED AVERAGES
               HELPW(I,K)=DIIN(K,I)*VOL(I)
             CASE (18:21)
-C  E-FIELD UNIT VECTOR, E-FIELD STRENGTH
+C  E FIELD UNIT VECTOR, E FIELD STRENGTH
               HELPW(I,K)=1.D0
             CASE (22)
 C  ELECTRIC POTENTIAL
@@ -402,4 +405,4 @@ C
       DEALLOCATE (TALAV)
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_OUTIDLPLA

@@ -427,7 +427,7 @@ C  the following SUBROUTINE is for reinitialization of EIRENE
       SUBROUTINE EIRENE_VELOPI_REINIT
       IMPLICIT NONE
       IFIRST = 0
-      return
+      RETURN
       END SUBROUTINE EIRENE_VELOPI_REINIT
 
       END MODULE EIRMOD_VELOPI

@@ -97,8 +97,8 @@ C
           WRITE (iunout,*) 'TIMET FROM INSIDE, NPANU ', NPANU
           WRITE (iunout,*) 'ZRAD,NRCELL,NTCELL,MTSURF '
           WRITE (iunout,*)  ZRAD,NRCELL,NTCELL,MTSURF
-          WRITE (iunout,*) 'INITIAL: X01,Z01,PHI ',
-     .                               X01,Z01,PHI/DEGRAD
+          CALL EIRENE_MASR3('INITIAL: X01,Z01,PHI    ',
+     .                                X01,Z01,PHI/DEGRAD)
         ELSE
           WRITE (iunout,*) 'TIMET FROM OUTSIDE, NPANU ', NPANU
           WRITE (iunout,*) 'MRSURF,MTSURF,ZRAD '
@@ -234,8 +234,8 @@ c  still: nltrz
 C
       Z001=Z01+VELZ*ZRAD
 #ifdef TRACE
-        IF (NLTRC) WRITE (iunout,*)
-     .             'Z001,Z01,ZRAD ',Z001,Z00,ZRAD
+        IF (NLTRC) CALL EIRENE_MASR3('Z001, Z01, ZRAD         ',
+     .                                Z001, Z00, ZRAD)
 #endif
 C
       DUM=0.
@@ -372,9 +372,10 @@ C
       X001=X01+ZRAD*VELX
       IF (ZRAD.LT.1.D30.AND.X01*X001.GT.EPS10) THEN
 
-        ITT=INT(REAL(Z001/(X001*TANAL),KIND(1.D0)))
+        ITT=INT(REAL(Z001/(X001*TANAL),DP))
 #ifdef TRACE
-        IF (NLTRC) WRITE (iunout,*) 'TIMET 1 ',X01,Z01,X001,Z001,ITT
+        IF (NLTRC) WRITE (iunout,'(1X,A,1X,4(1PE12.4,3X),I6)')
+     .              'TIMET 1 ',X01,Z01,X001,Z001,ITT
 #endif
       ELSE
         IF (1._DP-ABS(VELY) > EPS10) THEN
@@ -405,7 +406,8 @@ C
 #endif
       ENDIF
 C
-      IF (ITT) 1100,1200,1300
+      IF (ITT.LT.0) GOTO 1100
+      IF (ITT.GT.0) GOTO 1300
 C
 C  NO INTERSECTION WITH TOROIDAL SURFACE, particle stays within tor. cell.
 C
@@ -420,8 +422,8 @@ C                      FOR A POLOIDAL SURFACE (OTHERWISE: ERROR EXIT)
       PHI=PHI0+ATAN2(Z01,X01)
       BLPD(1)=ZRAD
 #ifdef TRACE
-      IF (NLTRC) WRITE (iunout,*) 'FINAL 1: X01,Z01,PHI ',
-     .                                      X01,Z01,PHI/DEGRAD
+      IF (NLTRC) CALL EIRENE_MASR3('FINAL 1: X01,Z01,PHI    ',
+     .                                       X01,Z01,PHI/DEGRAD)
 #endif
       GOTO 5000
 C
@@ -593,8 +595,9 @@ C
         ENDIF
 #ifdef TRACE
         IF (NLTRC) THEN
-          WRITE (iunout,*) 'TIMET: J,BLPD(J),NUPC(J),NCOUNT(J) ',
-     .                             J,BLPD(J),NUPC(J),NCOUNT(J)
+          WRITE (iunout,'(1X,A,1X,I6,1PE12.4,3X,2I6)')
+     .     'TIMET: J,BLPD(J),NUPC(J),NCOUNT(J) ',
+     .             J,BLPD(J),NUPC(J),NCOUNT(J)
         ENDIF
 #endif
  5100 CONTINUE
@@ -637,4 +640,4 @@ C
       WRITE (iunout,*) 'ERROR DETECTED IN TIMET. RETURN ZRAD=1.D30'
       WRITE (iunout,*) 'NPANU,AA,BB ',NPANU,AA,BB
       RETURN
-      END
+      END SUBROUTINE EIRENE_TIMET

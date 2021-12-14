@@ -1,8 +1,4 @@
-C 27.6.05 : colphot: iadd removed
-C 27.6.05 : colatm : mode, il removed (lgaot(..2),lgaot(..5)
-C 27.6.05 : colphot: mode, il removed (lgphot(..2),lgphot(..5)
-C 15.12.05: irds --> irei, iids --> iiei
-C 16.12.05: wminv re-connected to "ei"-processes. suppress
+C 16.12.05: wminv re-connected to EI processes. suppress
 C           reactions with zero test particle secondaries
 C           now connected for: colatm, colmol, colion
 C           still to be done: include other processes, and colphot
@@ -20,7 +16,7 @@ c             otherwise: avoid calls to bfield.f
 c
 cdr  5. 8.15: ARGUMENTS ADDED TO VECUSR
 cdr 20.10.15: arguments in chctrc: type of collision process: corrected for PI and PH
-cdr 24.11.15:  bug fix re coll est for pi processes, in colion: eiml --> eiio
+cdr 24.11.15: bug fix re coll est for PI processes, in colion: eiml --> eiio
 cdr Dec.15  :  bug fix pi reaction and cascading was wrong:
 cdr            irei, rather than irpi, and p2nd
 cdr            rather than p2np, were used also for PI reactions. now corrected
@@ -49,7 +45,7 @@ cdr        synchronize and re-activate option, not ready !!
 c   this version: prepare cascading at collisions,
 c   e.g. for antithetic variate sampling to reduce stochastic cancellation
 c   start to clean up splitting, for analogue game and for anticorrelated momentum estimators
-c   started for colatm, and ei processes.
+c   started for colatm, and EI processes.
 c   not sure if ispz is known, NOW
 cdr tbd:
 c   cascading with EI: nlevel =nlevel+ptot-1 (because one particle continues)
@@ -61,7 +57,7 @@ cdr            (was already corrected much earlier in SOLPS_4.3 by VK,
 cdr             then correction somehow lost in more recent EIRENE branches)
 cdr Jan. 17:    started to separate more clearly the (unfinished) NLCASCAD option from active code
 C               Done for COLATM and EI processes.
-C               wminv activated in colmol for ei processes (analog to colatm)
+C            wminv activated in colmol for EI processes (analog to colatm)
 cdr May 17: some spelling error corrections in comments adopted from ITER branch
 c            AE: analog, --> BE: analogue, etc..
 cdr Nov. 17: remove call to subr.store  (flag NLSTOR: out)
@@ -148,10 +144,6 @@ ctk      real(dp), external :: ranf_eirene
       contains
 
       SUBROUTINE EIRENE_COLION(CFLAG,COLTYP)
-        
-      REAL(DP), INTENT(IN) :: CFLAG(7,MSTOR0)
-      REAL(DP), INTENT(OUT) :: COLTYP
-      INTEGER :: NEII_RED,LGEI_RED(0:NREI)
        
 C       
 C  SAMPLE FROM COLLISION KERNEL C
@@ -170,7 +162,10 @@ C                           BY FOLION)
 C  LGPART: TRUE,  TRAJECTORY CONTINUES, AT LEAST FOR POST-COLL. SCORING.
 C  LGPART: FALSE, TRAJECTORY STOPS, NO FURTHER SCORING
 C
-
+        
+      REAL(DP), INTENT(IN) :: CFLAG(7,MSTOR0)
+      REAL(DP), INTENT(OUT) :: COLTYP
+      INTEGER :: NEII_RED,LGEI_RED(0:NREI)
              
 C  INCIDENT SPECIES: IOLD
       VELXO=VELX
@@ -267,7 +262,7 @@ C
       IF (ZEP1.LE.SIGEIT) THEN
 C
 C  AT THIS POINT: NEII_RED.GE.1, FOR OTHERWISE ZEP1 COULD NOT HAVE
-C                 POINTED TO EI-PROCESSES
+C                 POINTED TO EI PROCESSES
 C
 C  ELECTRON IMPACT COLLISION:
 C
@@ -508,7 +503,7 @@ C  E.G. FOR CX RECOMBINATION
 ! JUST OPPOSITE TO EI CASE:
 CDR IN EI CASE: LAST TEST SECONDARY WAS FOLLOWED, ALL OTHERS STORED ON SPLITTING ARRAY.
 CDR IN CX CASE: OPPOSITE.   TRY TO UNIFY !!
-C NORMALLY THERE IS ONLY ONE SECONDARY, AND WE FOLLOW (THIS ONLY) TEST SECONDAY
+C NORMALLY THERE IS ONLY ONE SECONDARY, AND WE FOLLOW (THIS ONLY) TEST SECONDARY
 C HERE FIRST AND LAST HAVE A SPECIAL MEANING (EXCHANGE OF IDENTITY, VELOCITIES, ETC..)
 
 
@@ -865,7 +860,7 @@ C  DO NOT UPDATE BGK TALLIES HERE
         IF (IBGK.NE.0) GOTO 300
 
 C  UPDATE COLLISION ESTIMATOR CONTRIBUTION
-C  ASSUME, AS BEFORE, NO CHANGE IN SPECIES/TYP
+C  ASSUME, AS BEFORE, NO CHANGE IN SPECIES/TYPE
         IF (IESTEL(IREL,1).NE.0) THEN
           IF (LPIIO) THEN
 !$OMP ATOMIC
@@ -916,7 +911,7 @@ C
         NCELL = NCLLO
         RETURN
 C
-C  GENERAL ION IMPACT COLLISION: PI-PROCESSES. NOT READY
+C  GENERAL ION IMPACT COLLISION: PI PROCESSES. NOT READY
 C
       ELSEIF (ZEP1.LE.SIGEIT+SIGCXT+SIGELT+SIGPIT) THEN
 C
@@ -1096,6 +1091,6 @@ C
   999 WRITE (iunout,*) 'ERROR IN COLLIDE '
       WRITE (iunout,*) 'ITYP ',ITYP,IPHOT,IATM,IMOL,IION,IPLS
       CALL EIRENE_EXIT_OWN(1)
-      END
+      END SUBROUTINE EIRENE_COLION
       
       END MODULE EIRMOD_COLION

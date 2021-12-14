@@ -840,7 +840,6 @@ C
 C
 
       IF (IFIRST < 0) THEN
-CDR WAS PASSIERT HIER ???
         TRAJ(ICHORI)%TRJ%NCOU_CELL = TRAJ(ICHORI)%TRJ%NCOU_CELL + NCOU
         DO J=1,NCOU
           NCELL=NRCELL+NUPC(J)*NR1P2+NBLCKA
@@ -902,7 +901,7 @@ C
 C     IF (ISRFCL.EQ.2) THEN
 C       CALL TIMCOL (...,IRET)
 C       IF (IRET .EQ. 1) GOTO 104
-C       IF (IRET .eq. 2) GOTO 800
+C       IF (IRET .EQ. 2) GOTO 800
 C      ENDIF
         
 c     IF (ISRFCL.EQ.3) CALL EIRENE_TORCOL (               *104)
@@ -1168,7 +1167,7 @@ C
       CALL EIRENE_MASAGE
      .  ('AA AND VPLOT. EXIT CALLED                      ')
       CALL EIRENE_EXIT_OWN(1)
-      END
+      END SUBROUTINE EIRENE_LININT
 
       SUBROUTINE EIRENE_LININT2
 
@@ -1181,12 +1180,11 @@ c  these arrays have been allocated for PRSPEC option.
       END IF
 
       RETURN
-      END
-
+      END SUBROUTINE EIRENE_LININT2
 
       SUBROUTINE EIRENE_LININT_REINIT
 c  clarify role of ifirst<0 first.
       RETURN
-      END
+      END SUBROUTINE EIRENE_LININT_REINIT
 
       END MODULE EIRMOD_LININT

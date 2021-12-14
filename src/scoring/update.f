@@ -28,12 +28,6 @@ cdr nov.15: tracklength estimators for eapl,empl,eipl: species ipl resolved.
 cdr apr.16: bug fix J.Lore re index in lgiel. This part of code is still unused,
 cdr          so no effect on any result.  Few further comments corrected
 
-!pb APR  16: ipplds -> ipplei, pplds -> pplei
-!pb APR  16: ipatds -> ipatei, patds -> patei
-!pb APR  16: ipmlds -> ipmlei, pmlds -> pmlei
-!pb APR  16: ipiods -> ipioei, piods -> pioei
-!pb APR  16: pelds -> pelei
-cdr sept 16: nmdsi -> nmeii, nidsi -> nieii
 cdr dec. 16: some more comments re sign convention for momentum sources
 cdr Nov. 17: merging of entries for atoms, molecules, test ions, from
 cdr          branch "code-combine" (p.b.), plus some naming conventions re-enforced
@@ -53,7 +47,9 @@ C     I:  INDIVIDUAL TRACK, I=1,NCOU
 C  IRDO:  TRACK IS IN (FINE) GEOMETRY CELL IRDO (=NRCELL+NUPC(I)*NR1P2+NBLCKA)
 C  IRD:   ESTIMATORS ARE UPDATED IN (COARSE) SCORING CELL IRD (=NCLTAL(IRDO))
 C
-C  IFLAG:  CURRENTLY ONLY USED FOR PHOTON TALLIES, TO AVOID CANCELLATION OF TERMS
+C  IFLAG:    Info on the previous event prior to this track/score.
+C            To enable noise free (exact) cancellation of terms
+C            CURRENTLY ONLY USED FOR PHOTON TALLIES
 
 C  IFLAG=1:
 C  IFLAG=2:
@@ -66,8 +62,11 @@ C
 C  A) NPBGK..(ITEST) : IF GT 0, THE CORRESPONDING PARTICLE (IATM, IMOL OR IION) IS A SO-CALLED "BGK" SPECIES
 C                             IF, ADDITIONALLY, LBGKV = T, THEN ADDITIONAL BGK TALLIES ARE SCORED VIA A CALL TO UPTBGK
 C  B) SIGBGK         : TOTAL RATE OF BGK TYPE COLLISIONS. INCIDENT TEST PARTICLE AND ITS ENERGY IS NOT LOST
-C  C) NPBGKP (IPLS,1): IREL ELASTIC COLLISION CONTRIBUTIONS WITH BULK COLLISION PARTNERS WITH NPBGKP(IPLS,1)>0
-C          ARE NOT INCLUDED IN SOURCE/SINK TALLIES.
+C  C) NPBGKP (IPLS,1): =IREL, ELASTIC COLLISION CONTRIBUTIONS WITH
+C                      VIRTUAL FIELD COLLISION PARTNERS IPLS: NPLS_FIX+1,NPLS.
+C                      I.E., THOSE REACTIONS IREL
+C                       ARE NOT INCLUDED IN SOURCE/SINK TALLIES
+C                       FOR "REAL" BACKGROUND FIELD PARTICLES 1:NPLS_FIX.
 
 C          IN CASE OF EAPL THIS IS IMPORTANT, IN ORDER NOT TO MIX ENERGY SOURCES FOR REAL BACKGROUND
 C          IONS WITH ENERGY SOURCES FOR VIRTUAL BACKGROUND "IONS" (MISSING SPECIES INDEX)
@@ -612,10 +611,14 @@ C
                 DO IP=1,IPPLEI(IREI,0)
                   IPL=IPPLEI(IREI,IP)
                   LOGPLS(IPL,ISTRA)=.TRUE.
-cdr  this is incorrect. esigei is sum over ipl species.
-cdr  it only happens to be correct if the post-collision bulk species are the same (ipl),
+cdr  This part appeared in code probably during some emc3 related extensions (2016?)
+cdr  This is incorrect. esigei is sum over post collision bulk ipl species.
+cdr  It only happens to be correct if all post-collision bulk species are the same (ipl),
 cdr  because then esigei is the total for this species.
-cdr  Must be fragmented into individual ipl contributions
+cdr  Tbd.: Must be fragmented into individual ipl contributions
+cdr  Therefore: EI processes with more than one (different) post-collision bulk: disabled.
+cdr             same for PI processes.
+cdr  Example: dissociative ionisation of DT+ molecular ion cannot be handled any more.
 !$OMP ATOMIC
                   EXPL(IPL,IRD)=EXPL(IPL,IRD)+WTRSIG*ESIGEI(IREI,4)
                   LMETSP(NSPAMI+IPL)=.TRUE.
@@ -753,7 +756,8 @@ C
                 DO IP=1,IPPLPI(IRPI,0)
                   IPL=IPPLPI(IRPI,IP)
                   LOGPLS(IPL,ISTRA)=.TRUE.
-cdr  this is incorrect. esigpi is sum over ipl species.
+cdr  Same issue as above for EI processes.
+cdr  This is incorrect. esigpi is sum over ipl species.
 cdr  it only happens to be correct if the post-collision bulk species are all the same (ipl),
 cdr  because then esigpi is the total for this species.
 cdr  Must be fragmented into individual ipl contributions
@@ -855,7 +859,10 @@ C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
             IF (IESTCX(IRCX,2).NE.0) GOTO 156
 C
 C  PRESENTLY: PARALLEL COMPONENT OF VSIGCX(IRCX) IS NOT AVAILABLE
-C             FROM FUNCTION FPATHA
+C             FROM FUNCTION FPATH
+C  DEFAULT TRACKLENGTH ESTIMATOR ("PERFECT IDENTITY EXCHANGE" APPROXIMATION,
+C                                  AS FOR EL, and neglecting vel. dep. in rate)
+
 C
             WTRSIG=WTR*SIGVCX(IRCX)
 C  PREVIOUS BULK ION IPLS, NOW LOST.  REMOVE MODULUS OF PARALLEL MOMENTUM
@@ -908,7 +915,12 @@ C
 C  ELASTIC CONTRIBUTION FROM SPECIES IXSPZ
 C
           IF (LGXEL(IXSPZ,0,0).EQ.0) GOTO 180
-C  DEFAULT TRACKLENGTH ESTIMATOR ("PERFECT IDENTITY EXCHANGE" APPROXIMATION)
+
+C  PRESENTLY: PARALLEL COMPONENT OF VSIGEL(IREL) IS NOT AVAILABLE
+C             FROM FUNCTION FPATH
+C  DEFAULT TRACKLENGTH ESTIMATOR ("PERFECT IDENTITY EXCHANGE" APPROXIMATION,
+C                                  AS FOR CX, and neglecting vel. dep. in rate)
+cdr By default we switch to collision estimator. May be too restrictive?
           DO 181 IXEL=1,NXELI
             IREL=LGXEL(IXSPZ,IXEL,0)
             IPLS=LGXEL(IXSPZ,IXEL,1)
@@ -918,6 +930,9 @@ C
 C  THIS SPECIES IS A BGK VIRTUAL BACKGROUND SPECIES.
 C  MAPL NEEDS NOT BE UPDATED HERE, ALTHOUGH IT WOULD NOT CAUSE PROBLEMS, BECAUSE
 C       DISTINCT FROM EAPL THIS TALLY DOES HAVE A BULK SPECIES INDEX.
+cdr  Has changed a couple of years ago: now eapl also has a species index.
+cdr  On the other hand: for velocity indep. bgk reactions we can
+cdr  find MXPL a posteriori, from vdenx tallies and bgk rate (is done in modbgk.f).
 C
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
             IF (IESTEL(IREL,2).NE.0) GOTO 181
@@ -940,9 +955,8 @@ C
       RETURN
       END SUBROUTINE EIRENE_UPDATE
 
-      SUBROUTINE EIRENE_update_reinit
+      SUBROUTINE EIRENE_UPDATE_REINIT
       IMPLICIT NONE
 
-      return
-
-      END SUBROUTINE EIRENE_update_reinit
+      RETURN
+      END SUBROUTINE EIRENE_UPDATE_REINIT

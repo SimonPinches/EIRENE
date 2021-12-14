@@ -160,4 +160,4 @@ cswx
         endif
       endif
       return
-      END
+      END SUBROUTINE EIRENE_UPCUSR

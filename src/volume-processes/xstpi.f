@@ -524,7 +524,7 @@ C  4.A1) ENERGY LOSS RATE OF IMP. ELECTRON = CONST.*RATE COEFF.
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
 C
-C  4.3. HEAVY PARTICLE ENERGY GAIN RATE
+C  4.3. HEAVY SECONDARY PARTICLE ENERGY GAIN RATE
 C
       EFLAG=EIRENE_IDEZ(ISCDE,3,5)
       IF (EFLAG.EQ.0) THEN
@@ -633,7 +633,7 @@ C
       WRITE (iunout,*) IRPI
       CALL EIRENE_EXIT_OWN(1)
 
-      END
+      END SUBROUTINE EIRENE_XSTPI
 
 C
 C-----------------------------------------------------------------------
@@ -705,7 +705,8 @@ CDR  no photon secondaries here, otherwise loop would start with ispz1=1
      .  P2NP(IRPI,ISPZ1)=P2NP(IRPI,ISPZ1)/P2N
   550 CONTINUE
 C
-      END
+      RETURN
+      END SUBROUTINE EIRENE_XSTPI_1
 C
 C-----------------------------------------------------------------------
 C
@@ -717,9 +718,7 @@ C
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_CCONA
       USE EIRMOD_CGRID
-ctk      USE EIRMOD_CZT1
       USE EIRMOD_COMXS
-ctk      use EIRMOD_ctrcei, only: trcamd
 
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: IRPI, IPL
@@ -763,8 +762,8 @@ C  ARE SECONDARY ELECTRONS INVOLVED?
           WRITE (iunout,'(1X,A8,3(1PE12.4))') 'EL      ',
      .                   PELPI(IRPI),EI,EA
         ENDIF
+cdr     write (iunout,*) ' imin = ', imin, ' imax = ',imax
       ENDIF
-c     write (iunout,*) ' imin = ', imin, ' imax = ',imax
 C
       EI=1.D30
       EA=-1.D30
@@ -897,5 +896,6 @@ C
       WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',
      .                  FACRPI(IRPI,1)
       CALL EIRENE_LEER(1)
+      RETURN
 
-      END
+      END SUBROUTINE EIRENE_XSTPI_2

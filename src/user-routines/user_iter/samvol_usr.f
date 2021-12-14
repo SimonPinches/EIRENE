@@ -15,4 +15,4 @@ cdr
       y=0._DP
       z=0._DP
       RETURN
-      END
+      END SUBROUTINE EIRENE_SAMVOL_USR

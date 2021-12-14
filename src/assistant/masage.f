@@ -8,4 +8,4 @@ C*DK MASAGE
       WRITE (iunout,60) A
    60 FORMAT (1X,A)
       RETURN
-      END
+      END SUBROUTINE EIRENE_MASAGE

@@ -104,7 +104,7 @@ cym      SAVE
       CONTAINS
 
 c         061205:   au_to_cm2 --> ccona
-!         100107:   ENTRY VELOEL_REINIT added for reinitialization of EIRENE
+!         100107: SUBROUTINE VELOEL_REINIT added for reinitialization of EIRENE
 CDR  Aug. 2015  : PROGRAMMING AND NOTATION SYNCHRONIZED WITH VELOCX.F
 !DR
 !DR
@@ -869,7 +869,6 @@ C
       EIRENE_RTSAF=XH-DX
       POI = EIRENE_RTSAF
 C
-!pb      F=EIRENE_FI(EIRENE_RTSAF,ER,B,IFLAGI,P,DF)
       F=EIRENE_FI(POI,ER,B,IFLAGI,P,DF)
 
       IF(F.LT.0.D0) THEN
@@ -895,7 +894,6 @@ C
 C
         IF(ABS(DX).LT.XACC) RETURN
 C
-!pb        F=EIRENE_FI(EIRENE_RTSAF,ER,B,IFLAGI,P,DF)
         F=EIRENE_FI(POI,ER,B,IFLAGI,P,DF)
         IF(F.LT.0.D0) THEN
           XL=EIRENE_RTSAF
@@ -1116,7 +1114,7 @@ C  the following SUBROUTINE is for reinitialization of EIRENE
       SUBROUTINE EIRENE_VELOEL_REINIT
       IMPLICIT NONE
       IFIRST = 0
-      return
+      RETURN
       END SUBROUTINE EIRENE_VELOEL_REINIT
 
       END MODULE EIRMOD_VELOEL

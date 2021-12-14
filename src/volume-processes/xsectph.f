@@ -3,7 +3,7 @@ cdr  And: call xstph for non-default photonic reaction options.
 cdr  Unfinished code, for photons.
 c
 Cdr  in xsectp, there only call to xstrc.f.
-cdr  At present: is seems to be just the other way round.
+cdr  At present: it seems to be just the other way round.
 C
       SUBROUTINE EIRENE_XSECTPH
 C

@@ -2,7 +2,14 @@ cdr order of points 3 and 4 in quadrangles (xpol,ypol) got changed in 2015. IFEM
 cdr See IFEM documents
 cdr june 17:  comments
 cdr nov. 17: comments.  Some unfinished options re levgeo= 1 and levgeo = 2
-
+cdr jan. 20: Note: interpolation is for a scalar field "fecken".
+cdr                For vector fields or dyadic fields, the interpolation may
+cdr                be incorrect. So far transformations are done for each
+cdr                scalar component independently.
+cdr                In particular B fields, E fields, flow fields may become incorrect,
+cdr                e.g. with respect to orthogonality, etc.
+cdr                Special attention (tbd.): NLTRA option.
+cdr                Toroidal curvature effects are lost by the present procedure.
 
 
 c

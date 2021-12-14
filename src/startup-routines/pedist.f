@@ -194,8 +194,8 @@ C>   processes to one stratum.
           WRITE (iunout,*) ' NPRS_FREE ',NPRS_FREE
 
 ! distribute free processors to strata by their optimal number of processors
-          FACP=MIN(1.0_DP,REAL(NPRS_FREE,KIND(1.0_DP))/
-     .                   (REAL(NPRS_OPT,KIND(1.0_DP))+eps30))
+          FACP=MIN(1.0_DP,REAL(NPRS_FREE,DP)/
+     .                   (REAL(NPRS_OPT,DP)+eps30))
           write (iunout,*) ' facp ',facp
           DO ISTRA=1,NSTRA
             NPESTR(ISTRA)=NPESTR(ISTRA)+int(TIMPE(ISTRA)*FACP)

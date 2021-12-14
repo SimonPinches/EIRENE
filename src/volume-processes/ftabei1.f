@@ -8,7 +8,7 @@ C  this is the "on the fly" storage saving version to eliminate
 C  pre-computed array TABEI1(irei,k) from this run
 c
 c  evaluate electron impact rate (1/s),  include density factor
-c  for ei process no. IREI,
+c  for EI process no. IREI,
 c         in cell no. K
 
 c  call to fct. RATE_COEFF,
@@ -58,4 +58,4 @@ cdr  safety cut-off at Te= 0.1 eV. (note: TVAC=0.02)
       EIRENE_FTABEI1 = TBEI
 
       RETURN
-      END
+      END FUNCTION EIRENE_FTABEI1

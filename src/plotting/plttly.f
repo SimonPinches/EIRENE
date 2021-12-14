@@ -106,21 +106,21 @@ cdr  use FZJ proprietary GR plot software
         IPEN1=IPEN1+1
         CALL GRNWPN(IPEN1)
         ISY=IPEN1+1
-        CALL GRJMPS (0.5,REAL(YA,KIND(1.E0)),ISY)
+        CALL GRJMPS (0.5,REAL(YA,SP),ISY)
         IT=LEN(TXTTAL(I))
-        CALL GRTXT (1.5,REAL(YA,KIND(1.E0)),IT,TXTTAL(I))
+        CALL GRTXT (1.5,REAL(YA,SP),IT,TXTTAL(I))
         YA=YA-0.5
         IT=LEN(TXTSPC(I))
-        CALL GRTXT (1.5,REAL(YA,KIND(1.E0)),IT,TXTSPC(I))
+        CALL GRTXT (1.5,REAL(YA,SP),IT,TXTSPC(I))
         YA=YA-0.5
         IT=LEN(TXTUNT(I))
-        CALL GRTXT (1.5,REAL(YA,KIND(1.E0)),IT,TXTUNT(I))
+        CALL GRTXT (1.5,REAL(YA,SP),IT,TXTUNT(I))
         YA=YA-0.5
-        CALL GRTXT (1.5,REAL(YA,KIND(1.E0)),11,'MAX. VALUE =')
+        CALL GRTXT (1.5,REAL(YA,SP),11,'MAX. VALUE =')
         WRITE (CHR,'(1P,E10.3)') YMXLG(I)
         CALL GRTXTC (10,CHR)
         YA=YA-0.5
-        CALL GRTXT (1.5,REAL(YA,KIND(1.E0)),11,'MIN. VALUE =')
+        CALL GRTXT (1.5,REAL(YA,SP),11,'MIN. VALUE =')
         WRITE (CHR,'(1P,E10.3)') YMNLG(I)
         CALL GRTXTC (10,CHR)
         YA=YA-1.0
@@ -139,16 +139,16 @@ C
       IF (.NOT.L_SAME) THEN
         CALL EIRENE_PLTMSK(IERR)
         IF (LOGX) THEN
-          XMIN=REAL(MINLX,KIND(1.E0))
-          XMAX=REAL(MAXLX,KIND(1.E0))
+          XMIN=REAL(MINLX,SP)
+          XMAX=REAL(MAXLX,SP)
         ELSE
           XMIN=MINX
           XMAX=MAXX
         ENDIF
 C
         IF (LOGY) THEN
-          YMIN=REAL(MINLY,KIND(1.E0))
-          YMAX=REAL(MAXLY,KIND(1.E0))
+          YMIN=REAL(MINLY,SP)
+          YMAX=REAL(MAXLY,SP)
         ELSE
           YMIN=MINY
           YMAX=MAXY
@@ -197,44 +197,35 @@ C  PLOT LINES
           ELSE
             YMY=MINY
           ENDIF
-          CALL GRJMP(REAL(X(I1),KIND(1.E0)),REAL(YMY,KIND(1.E0)))
-          CALL
-     .  GRDRW(REAL(X(I1),KIND(1.E0)),REAL(Y(I1,I),KIND(1.E0)))
-          CALL
-     .  GRDRW(REAL(X(I1+IS),KIND(1.E0)),REAL(Y(I1,I),KIND(1.E0)))
+          CALL GRJMP(REAL(X(I1),SP),REAL(YMY,SP))
+          CALL GRDRW (REAL(X(I1),SP),REAL(Y(I1,I),SP))
+          CALL GRDRW (REAL(X(I1+IS),SP),REAL(Y(I1,I),SP))
           DO J=I1+IS,I2,IS
-            CALL GRDRW
-     .  (REAL(X(J),KIND(1.E0)),REAL(Y(J,I),KIND(1.E0)))
-            CALL GRDRW (REAL(X(J+IS),KIND(1.E0)),
-     .                  REAL(Y(J,I),KIND(1.E0)))
+            CALL GRDRW (REAL(X(J),SP),REAL(Y(J,I),SP))
+            CALL GRDRW (REAL(X(J+IS),SP), REAL(Y(J,I),SP))
           END DO
-          CALL
-     .  GRDRW(REAL(X(I2+IS),KIND(1.E0)),REAL(YMY,KIND(1.E0)))
+          CALL GRDRW(REAL(X(I2+IS),SP),REAL(YMY,SP))
 C  PLOT SYMBOLS
           ISY=IPEN2+1
           NP=(I2-I1+1)/IS
           NPS=MAX0(NP/7,1)
           DO J=I1,I2,IS*NPS
-            CALL GRJMPS (REAL(0.5*(X(J)+X(J+IS)),KIND(1.E0)),
-     .                   REAL(Y(J,I),KIND(1.E0)),ISY)
+            CALL GRJMPS (REAL(0.5*(X(J)+X(J+IS)),SP),
+     .                   REAL(Y(J,I),SP),ISY)
           END DO
 C
         ELSEIF (.NOT.LHIST) THEN
 C  PLOT LINES
-          CALL
-     .  GRJMP(REAL(X(I1),KIND(1.E0)),REAL(Y(I1,I),KIND(1.E0)))
+          CALL GRJMP(REAL(X(I1),SP),REAL(Y(I1,I),SP))
           DO 33 J=I1+IS,I2,IS
-            CALL GRDRW
-     .       (REAL(X(J),KIND(1.E0)),REAL(Y(J,I),KIND(1.E0)))
+            CALL GRDRW (REAL(X(J),SP),REAL(Y(J,I),SP))
    33     CONTINUE
 C  PLOT SYMBOLS
           ISY=IPEN2+1
           NP=(I2-I1+1)/IS
           NPS=MAX0(NP/7,1)
           DO J=I1,I2,IS*NPS
-            CALL GRJMPS
-     .  (REAL(X(J),KIND(1.E0)),REAL(Y(J,I),KIND(1.E0)),
-     .                   ISY)
+            CALL GRJMPS (REAL(X(J),SP),REAL(Y(J,I),SP),ISY)
           END DO
         ENDIF
 C
@@ -256,15 +247,13 @@ C  PLOT ERROR BARS
                 ST2=MAX(REAL(MINY,DP),MIN(REAL(MAXY,DP),ST2))
               ENDIF
             IF (LHIST) THEN
-              CALL GRJMP (REAL(0.5*(X(J)+X(J+IS)),KIND(1.E0)),
-     .                    REAL(ST1,KIND(1.E0)))
-              CALL GRDRW (REAL(0.5*(X(J)+X(J+IS)),KIND(1.E0)),
-     .                    REAL(ST2,KIND(1.E0)))
+              CALL GRJMP (REAL(0.5*(X(J)+X(J+IS)),SP),
+     .                    REAL(ST1,SP))
+              CALL GRDRW (REAL(0.5*(X(J)+X(J+IS)),SP),
+     .                    REAL(ST2,SP))
             ELSE
-              CALL GRJMP
-     .  (REAL(X(J),KIND(1.E0)),REAL(ST1,KIND(1.E0)))
-              CALL GRDRW
-     .  (REAL(X(J),KIND(1.E0)),REAL(ST2,KIND(1.E0)))
+              CALL GRJMP (REAL(X(J),SP),REAL(ST1,SP))
+              CALL GRDRW (REAL(X(J),SP),REAL(ST2,SP))
             ENDIF
    40     CONTINUE
         ENDIF
@@ -274,4 +263,4 @@ C  PLOT ERROR BARS
       CALL GRCHRC (0.3,0.,16)
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_PLTTLY

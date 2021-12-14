@@ -5,7 +5,7 @@
 cdr  oct 19:
 cdr             MAXLEVEL is the "depth" of splitting cascades.
 cdr             Formerly: MAXLEVEL=15
-cdr             now (2013) hard coded: MAXLEVEL =300, why? 
+cdr             now (2013) hard-coded: MAXLEVEL=300, why?
 cdr             Is this intended indeed?
 
       MODULE EIRMOD_COMSPL
@@ -110,7 +110,7 @@ cdr  .      +NLIMPS                 ! for NLPRCS, tbd.
       MAXTOR => ICMSPL(5)
       MAXADD => ICMSPL(6)
 
-cdr formerly: maxlevel=15 was hard coded, now: maxlevel=300 ?
+cdr formerly: maxlevel=15 was hard-coded, now: maxlevel=300 ?
       NODES  => ICMSPL(7:6+MAXLEVEL)
       NSSPL  => ICMSPL(7+MAXLEVEL:MCMSPL)
 
@@ -176,6 +176,8 @@ cdr  NLSPLT(ISURF): surface isurf is a "splitting-rr" surface
      .                MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LCMSPL,KCMSPL,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NLPRCS,NLIMPS+1,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
+
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       END SUBROUTINE EIRENE_BROADCAST_COMSPL
 

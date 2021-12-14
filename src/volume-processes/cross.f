@@ -1,10 +1,10 @@
-C 0406: default resonant cx for He in He+/He++ plasma added:
+C 0406: default resonant CX for He in He+/He++ plasma added:
 C       Janev (HYDHEL) ,1987, reactions 5.3.1 and 6.3.1
 C
 C 0710: provide value of cross-section for reaction K
 C       K=0 means no cross-section available for this reaction
 c       k=-1,-2,-3:  default (hard-wired) CX cross-sections
-c 0315: increase kk>=-10 to kk>=-11 for He ei process, to fully reserve k=-1
+c 0315: increase kk>=-10 to kk>=-11 for He EI process, to fully reserve k=-1
 c       for H+p CX as default process
 
       FUNCTION EIRENE_CROSS(AL,K,IR,FACT,TEXT)
@@ -15,17 +15,17 @@ C    RETURN CROSS-SECTION IN CM**2
 C
 C  K>0 :  DATA FROM ARRAY REACDAT, I.E. FROM EXTERNAL DATABASE
 C
-C  K<0 :  DEFAULT MODEL DEFINED IN SETUP_DEFAULT_REACTIONS, BUT NOW ALSO ON REACDAT
+C  K<0 : DEFAULT MODEL DEFINED IN SETUP_MINIMAL_REACTIONS, BUT NOW ALSO ON REACDAT
 C
-C  K=-1:  H + H+ --> H+ + H   CROSS-SECTION, JANEV, 3.1.8
+C  K=-1: H + H+ --> H+ + H   CX CROSS-SECTION, JANEV, 3.1.8
 C         LINEAR EXTRAPOLATION ON LOG-LOG SCALE AT LOW ENERGY END FOR LN(SIGMA)
 C         IDENTICAL TO hydhel.tex, H.1, 3.1.8
 C
-C  K=-2:  He + He+ --> He+ + He   CROSS-SECTION, JANEV, 5.3.1
+C  K=-2: He + He+ --> He+ + He  CX CROSS-SECTION, JANEV, 5.3.1
 C         LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
 C         IDENTICAL TO hydhel.tex, H.1, 5.3.1
 C
-C  K=-3:  He + He++ --> He++ + He   CROSS-SECTION, JANEV, 6.3.1
+C  K=-3: He + He++ --> He++ + He  CX CROSS-SECTION, JANEV, 6.3.1
 C         LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
 C         IDENTICAL TO hydhel.tex, H.1, 6.3.1
 
@@ -58,7 +58,7 @@ C
         IF (K == 0) THEN
 
           EIRENE_CROSS = 0._DP
-          WRITE (IUNOUT,*) 'ERROR IN CROSS '
+          WRITE (IUNOUT,*) 'ERROR IN CROSS: K=0'
           WRITE (iunout,*) 'CALLED FROM ',TEXT
           WRITE (iunout,*) 'REACTION NO. ',IR
           WRITE (IUNOUT,*) 'NO CROSS-SECTION DATA AVAILABLE FOR ',
@@ -87,9 +87,11 @@ C  FILL CROSS-SECTION DATA, SINGLE PARAMETER POLYNOMIAL IN AL=LN(E)
         ELSE IF (IFTFLG(K,1) == 3) THEN
 
 C  default extrapolation ifexmn=-1 not yet available
-C  ELAB BELOW MINIMUM ENERGY FOR FIT:
+
           ALMIN=REACDAT(K)%CRS%RC1MIN
           ALMAX=REACDAT(K)%CRS%RC1MAX
+
+C  ELAB BELOW MINIMUM ENERGY FOR FIT:
           IF (AL.LT.ALMIN) THEN
 C  USE ASYMPTOTIC EXPRESSION NO. IFEXMN(K)
 
@@ -160,4 +162,4 @@ C  EVALUATE FIT EXPRESSION IFTFLG=3:
       ENDIF
 
       RETURN
-      END
+      END FUNCTION EIRENE_CROSS

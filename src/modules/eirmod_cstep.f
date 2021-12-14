@@ -16,7 +16,7 @@ c                               with Mach=1 (or: ion thermal veloc=1 ?).
 c    shstep: sheath multiplier:  sheath potential is shstep*testep
 c            e.g.: shstep= 2.5 (hydrogen, M=1, Te=Ti, single fluid)
 c            e.g.: shstep= 2.8 (deuteron, M=1, Te=Ti, single fluid)
-c    vpstep: parallel to B-field drift velocity (cm/s) at s.e.
+c    vpstep: parallel to B field drift velocity (cm/s) at s.e.
 c    mcstep: mach number of parallel flow at s.e.
 c
 c   there is now a certain redundancy of information on plasma
@@ -240,6 +240,8 @@ c  next 5 tallies added sept. 05     !dr
       CALL MPI_BCAST (NSMAX,NSTEP,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NSPSTI,NSTEP,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NSPSTE,NSTEP,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       END SUBROUTINE EIRENE_BROADCAST_CSTEP
 

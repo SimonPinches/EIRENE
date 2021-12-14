@@ -18,7 +18,7 @@ cdr             inttal and intvol are largely identical, remove one ?
 cdr             prttal and prtvol are largely identical, remove one ?
 cdr oct 18    : all input tallies selectable, also derived tallies.
 cdr             also: gradient tallies of input tallies: currently no. 31--120
-cdr may 19:     remove NF=NFRSTP(ITAL)  (unused, Meaning ??), comments...
+cdr may 19    : remove NF=NFRSTP(ITAL) (unused, meaning ?), comments...
 
 C
       SUBROUTINE EIRENE_OUTPLA(ICAL)
@@ -328,12 +328,12 @@ C  23: FLOW VELOCITY PARALLEL B
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
               CASE (8:11)
-C  8,9,10,11: B-FIELD UNIT VECTOR, B-FIELD STRENGTH "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
+C  8,9,10,11: B FIELD UNIT VECTOR, B FIELD STRENGTH "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (16:17)
-C  16,17: B_PERP-FIELD: "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
+C  16,17: B_PERP FIELD: "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
@@ -354,7 +354,7 @@ C  13: ION DRIFT ENERGY: NI(K)*VOLUME-WEIGHTED AVERAGES
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
               CASE (18:21)
-C  18,19,20,21: E-FIELD UNIT VECTOR, E-FIELD STRENGTH
+C  18,19,20,21: E FIELD UNIT VECTOR, E FIELD STRENGTH
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
@@ -438,12 +438,12 @@ C  FLOW VELOCITY PARALLEL TO B FIELD
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
               CASE (8:11)
-C  B-FIELD UNIT VECTOR, B-FIELD STRENGTH "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
+C  B FIELD UNIT VECTOR, B FIELD STRENGTH "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (16:17)
-C  B_PERP-FIELD: "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
+C  B_PERP FIELD: "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
@@ -464,7 +464,7 @@ C  ION DRIFT ENERGY: NI(K)*VOLUME-WEIGHTED AVERAGES
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
               CASE (18:21)
-C  E-FIELD UNIT VECTOR, E-FIELD STRENGTH
+C  E FIELD UNIT VECTOR, E FIELD STRENGTH
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
@@ -602,4 +602,4 @@ C   PRINT ONLY THE HEADER FOR TALLY, BECAUSE TALLY IDENTICALLY ZERO
       DEALLOCATE (X1D)
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_OUTPLA

@@ -7,9 +7,9 @@ cdr  This same data structure is (or was) probably also used
 cdr  for an unfinished correlated sampling option.
 cdr  In either case it may not be complete any more.
 
-cdr: tbd:  Try to document status and purpose
+cdr: tbd: Try to document status and purpose.  started....
 
-
+cdr  called from: ... if ...
 
 
       subroutine EIRENE_setup_chord_spectra
@@ -69,13 +69,15 @@ C
      .  (IFIRST,ICHORI,C1,C2,ICHRD,IPVOT,NBC2,NAC2,ZE,
      .               PSIG,TIMAX,1,1,1,IABS(NCHENI))
 
+cdr probably: this call to linint provides ncou_cell,
+cdr           the total number of cells visited by chord no. ICHORI
         ntot_cell = ntot_cell + traj(ichori)%trj%ncou_cell
 
       end do
 
       IF (NTOT_CELL == 0) RETURN
 
-!  there are 'NTOT_CELL' FURTHER CELL-BASED SPECTRA TO BE ADDED TO SPECTRUM TALLIES
+!dr  there are 'NTOT_CELL' directional CELL-BASED SPECTRA TO BE ADDED TO SPECTRUM TALLIES
 
 !  SAVE SPECTRA SPECIFIED VIA INPUT
 
@@ -117,7 +119,9 @@ C  SAVE ESTIML, SMESTL,...
 
       END IF
 
-!  set up additional arrays for cell-based spectra
+cdr  set up (allocate) additional tally arrays for directional cell-based spectra
+cdr  SMESTL
+
 
       NTOTSP = NADSPC + NTOT_CELL
 
@@ -140,6 +144,9 @@ C  SAVE ESTIML, SMESTL,...
 
         IF ((NCHTAL(ICHORI) /= 1) .AND. (NCHTAL(ICHORI) /= 3) .AND.
      .      (NCHTAL(ICHORI) /= 4) ) CYCLE
+
+cdr spectrally resolved lines of sight tallies for options 1,3 and 4 ??
+
 
          if (.not.associated(traj(ichori)%trj%cells)) cycle
          first => traj(ichori)%trj%cells

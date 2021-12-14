@@ -8,4 +8,4 @@ C*DK MASJ3
       WRITE (iunout,60) A,I,J,K
    60 FORMAT (1X,A24,3X,3(I9,3X))
       RETURN
-      END
+      END SUBROUTINE EIRENE_MASJ3

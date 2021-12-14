@@ -146,7 +146,7 @@ C  FIND Z0, NT,  FROM X0,PHI
         ENDIF
       ENDIF
 
-c  set 2rd grid (poloidal) grid point
+c  set 2nd grid (poloidal) grid point
       NPCELL=1
       IF (NLPOL.AND.NACELL.EQ.0) THEN
         IF (NPSOR(NLPT,ISTRA).GT.0) THEN
@@ -230,4 +230,4 @@ C
   992 CONTINUE
       WRITE (iunout,*) 'ERROR IN SAMPNT, NSPEZ OUT OF RANGE           '
       CALL EIRENE_EXIT_OWN(1)
-      END
+      END SUBROUTINE EIRENE_SAMPNT

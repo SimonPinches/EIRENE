@@ -1,5 +1,4 @@
       subroutine eirene_skip_read_comment(IREAD,IUNIN,ZEILE)
-
       IMPLICIT NONE
 
 c  skip optional comment lines, starting with *,
@@ -35,4 +34,4 @@ c  now on exit:  iread=1:
 c  next read must come from ZEILE:  READ(ZEILE, FORMAT) ....
 c
        return
-       end
+       end subroutine eirene_skip_read_comment

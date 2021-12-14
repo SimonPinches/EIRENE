@@ -8,7 +8,7 @@ C  aug. 05: corrected electron energy loss rate for default rec. rate
 ! 2013    : DENSITY LIMIT 1E8 SET FOR POLYNOMIAL FITS (ARRAY PLS).
 cdr  oct.14:  pls made allocatable, plus minor synchronisation with other xsect... routines
 cdr  Nov.14:  reaction scaling factor removed from Bremsstrahlung.
-CDR           bremsstrahlung: new function eirene_brems, replaces gaunt factor function
+CDR           bremsstrahlung: new function eirene_brems, replaces Gaunt factor function
 cdr  June 15:  added: default He+ --> He(1S) + rad  model. same analytic form of rate as for H+ default model.
 cdr  April 16:  typo re TABRC1 for default He recombination corrected. Correction by SOLPS-ITER group
 cdr             should not have had any effect, on any run, so far,
@@ -108,6 +108,8 @@ c  corsum approx +1.0 for Te --> infinity
                     corsum=(-0.5_dp*zx+0.59)/(zx+0.59)
                     EELRC1(IRRC,J)=-(1.5+CORSUM)*TEIN(J)*TABRC1(IRRC,J)
    51             CONTINUE
+cdr  this setting kk=-1 is confusing. It may work, but
+cdr  kk=-1 is already reserved for "minimal" default H+p charge exchange process
                   NREARC(IRRC) = -1
                   NELRRC(IRRC) = -1
                 ELSE          !  storage saving mode: tabrc1, eelrc1 to be found "on the fly"
@@ -159,6 +161,8 @@ c  corsum approx +1.0 for Te --> infinity
                     corsum=(-0.5_dp*zx+0.35)/(zx+0.35)
                     EELRC1(IRRC,J)=-(1.5+CORSUM)*TEIN(J)*TABRC1(IRRC,J)
    53             CONTINUE
+cdr  this setting kk=-2 is confusing. It may work, but
+cdr  kk=-2 is already reserved for other "minimal" default processes
                   NREARC(IRRC) = -2
                   NELRRC(IRRC) = -2
                 ELSE          !  storage saving mode: tabrc1, eelrc1 to be found "on the fly"
@@ -295,7 +299,7 @@ C  DO NOT STORE DATA, BUT COMPUTE THEM WHEN NEEDED
                   NREARC(IRRC) = KK
                 END IF
                 MODCOL(6,2,IRRC)=1
-              ENDIF  ! NSERC3
+              ENDIF  ! (MODCLF(KK),3,5) options
 
               FACRRC(IRRC,1) = FACTKK
               FACRRC(IRRC,2) = LOG(FACTKK)
@@ -436,6 +440,7 @@ c                 ELSE  ! ??
                   END IF
 C
                 ENDIF   ! DELPOT
+              ENDIF  ! NSERC5
             ELSE
               GOTO 997
                ENDIF  !  NSERC5 
@@ -559,7 +564,7 @@ C
       CALL EIRENE_EXIT_OWN(1)
   997 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTP: ISCDE FLAG'
-      WRITE (iunout,*) 'IRRC, EFLAG ',IRRC,NSERC5
+      WRITE (iunout,*) 'IRRC, EFLAG, KK, ISWR ',IRRC,NSERC5,KK,ISWR(KK)
       CALL EIRENE_EXIT_OWN(1)
 C
-      END
+      END SUBROUTINE EIRENE_XSECTP

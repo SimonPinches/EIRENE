@@ -114,7 +114,7 @@ c  new input: ncopib, ncopeb
 C             fniprt
 
 C   UPDATES:
-C   OPTION TO EVALUATE B-FIELD VECTORS FROM GRIDADAP FILE FT29
+C   OPTION TO EVALUATE B FIELD VECTORS FROM GRIDADAP FILE FT29
 C   FOR NON-ORTHOGONAL GRIDS
 C
 C   THIS CODE SEGMENT CONTAINS VARIOUS SUBROUTINES NEEDED FOR
@@ -638,7 +638,7 @@ C
      .               NCUTL,NPOINT,NPLP)
  1020   CONTINUE
 C
-!  ALPHXB, ALPHYB GIVE THE DIRECTION OF THE B-FIELD IN THE
+!  ALPHXB, ALPHYB GIVE THE DIRECTION OF THE B FIELD IN THE
 !  CARTESIAN PLANE
         write (iunout,*) 'testoutput from '//fort_lc//'29 in infcop'
         write (iunout,*) 'irad,ipol, angles.....'
@@ -773,7 +773,7 @@ C
 
       DO I=1,NTRII
 cdr  june 17:
-cdr: careful: I ne J possible. Unless triangles are sorted as J= 1,2,3... on fort.35
+cdr  careful: I ne J possible. Unless triangles are sorted as J= 1,2,3... on fort.35
 cdr           This is implicitly assumed here ??
           READ(35,*) J,NCHBAR(1,I),NSEITE(1,I),IDUMMY,
      >                 NCHBAR(2,I),NSEITE(2,I),IDUMMY,
@@ -1561,7 +1561,7 @@ C  poloidal field
           BY=PUY(IN)*RRB(IX,IY)   ! +PVY(IN)*0.
 c  toroidal field
           BZ=SQRT(1.-RRB(IX,IY)**2)
-c  normalize B-field vector to length 1 (one)
+c  normalize B field vector to length 1 (one)
 c
           BN=SQRT(BX*BX+BY*BY+BZ*BZ)
           BXINTF(ITRI)=BX/BN
@@ -1573,7 +1573,7 @@ c
         ELSE
 c  outside the original b2 grid:
 C    set default vacuum temperatures TVAC
-C    set default b-field: (0,0,1)
+C    set default B field: (0,0,1)
           TEINTF(ITRI)=TVAC
           TIINTF(1,ITRI)=TVAC
           BXINTF(ITRI)=0.
@@ -3423,7 +3423,7 @@ cdr  add pppl_cop contribution to internal energy sources rate
 
             IF (.NOT.LSHORT) THEN
 
-cdr:  try to find stat. variance for particle balance sources
+cdr   try to find stat. variance for particle balance sources
 cdr   ntalm is a copv tally.
               istat_cop = 0
               do i = 1, nsigvi
@@ -3529,7 +3529,7 @@ c  skip working on internal lin. comb. of tallies, unless sufficient storage
 
             IF (.NOT.LSHORT) THEN
 
-cdr:  try to find stat. variance for momentum balance sources
+cdr   try to find stat. variance for momentum balance sources
 cdr   ntalm is a copv tally.
               istat_cop = 0
               do i = 1, nsigvi
@@ -3628,7 +3628,7 @@ cdr  this is now identical to see above ?
 
         IF (.NOT.LSHORT) THEN
 
-cdr:  try to find stat. variance for electron energy balance sources
+cdr   try to find stat. variance for electron energy balance sources
 cdr   ntalm is a copv tally.
           istat_cop = 0
           do i = 1, nsigvi
@@ -3734,7 +3734,7 @@ c  skip working on internal lin. comb. of tallies, unless sufficient storage
 
       IF (.NOT.LSHORT) THEN
 
-cdr:  try to find stat. variance for ion energy balance sources
+cdr   try to find stat. variance for ion energy balance sources
 cdr   ntalm is a copv tally.
           istat_cop = 0
           do i = 1, nsigvi

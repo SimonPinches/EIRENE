@@ -133,7 +133,6 @@ cdr  otherwise: identical code as above
      .          ESTIML(ISPC)%IPRSP)
         END IF
 
-
         IF (ESTIML(ISPC)%LOG) THEN
           WRITE (IOUT,'(A15,5X,ES12.4)') ' MINIMAL ENERGY ',
      .           10._DP**ESTIML(ISPC)%SPCMIN

@@ -31,4 +31,4 @@ c  only nonzero entries are printed.
       WRITE (iunout,61) (KK(K),B(KKK(K),I2),K=1,KE)
    61 FORMAT (3(1X,1A8,1PE12.4,2X))
       RETURN
-      END
+      END SUBROUTINE EIRENE_MASYR1

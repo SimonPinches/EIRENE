@@ -1,12 +1,13 @@
 Cdr  june 17:  gr-cleanup: call grstrt, grend --> call eirene_plstrt, eirene_plend
 cdr  comments
+cd   oct 20: modified to obtain total cpu time, sum over all iterations.
 C
 C     EIRENE VERSION SVN ....  (Jan.2014)... MOVED TO GIT REPOSITORY
 C
 C
       PROGRAM EIRENE_MAIN
 
-cdr  Main program, to run eirene as stand alone code.
+cdr  Main program, to run EIRENE as standalone code.
 c
 c     a)  initialize graphics routines
 c     b)  set default global run parameters NLM, DT, NLL, ITNR, MPI_INIT
@@ -49,7 +50,7 @@ C
 C
 C  call eirene, to carry out a "standalone eirene run"
       NLM=.FALSE.
-C  time step set internally from input file
+C  time step set later internally from input file
       DT=0._DP
 c  last call, deallocate arrays at the end of run
       NLL=.TRUE.

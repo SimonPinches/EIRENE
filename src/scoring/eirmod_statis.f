@@ -1,4 +1,10 @@
       MODULE EIRMOD_STATIS
+
+
+C  may 06: bug fix: SDC initialized to zero
+C  march 12: optimize calculations for surface tallies
+cdr jan  18: comments
+C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -14,7 +20,7 @@
       IMPLICIT NONE
       PRIVATE
 
-      PUBLIC :: EIRENE_STATIS, EIRENE_STATS0, EIRENE_STATS1, 
+      PUBLIC :: EIRENE_STATS0, EIRENE_STATS1, 
      .          EIRENE_STATS2, EIRENE_STATS3,
 cym will be removed once the parallel zone encompasses the whole code
      .          IIND           
@@ -48,16 +54,6 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       CONTAINS
 
-C  may 06:  bug fix: SDC initialized to zero
-C  march 12: optimize calculations for surface tallies
-cdr jan  18: comments
-C
-      SUBROUTINE EIRENE_STATIS
-      IMPLICIT NONE
-C
-      CALL EIRENE_STATS0
-      END SUBROUTINE EIRENE_STATIS
-C
 C
 C
       SUBROUTINE EIRENE_STATS0
@@ -701,19 +697,19 @@ C
       IMPLICIT NONE
 
       IF (ALLOCATED(IADD)) THEN
-         DEAllOCATE (IADD)
-         DEAllOCATE (IGFF)
-         DEAllOCATE (IADDW)
-         DEAllOCATE (IGFFW)
-         DEAllOCATE (IADDC)
-         DEAllOCATE (IGFFC)
-         DEAllOCATE (IND)
-         DEAllOCATE (IIND)
-         DEAllOCATE (INDSS)
-         DEAllOCATE (VECTOR)
-         DEAllOCATE (VECTRC)
-         DEAllOCATE (SD)
-         DEAllOCATE (SDC)
+         DEALLOCATE (IADD)
+         DEALLOCATE (IGFF)
+         DEALLOCATE (IADDW)
+         DEALLOCATE (IGFFW)
+         DEALLOCATE (IADDC)
+         DEALLOCATE (IGFFC)
+         DEALLOCATE (IND)
+         DEALLOCATE (IIND)
+         DEALLOCATE (INDSS)
+         DEALLOCATE (VECTOR)
+         DEALLOCATE (VECTRC)
+         DEALLOCATE (SD)
+         DEALLOCATE (SDC)
       END IF
 
       RETURN

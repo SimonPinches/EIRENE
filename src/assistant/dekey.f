@@ -33,4 +33,4 @@ C
       IF (IANF.GE.LA) RETURN
       GOTO 1
 C
-      END
+      END SUBROUTINE EIRENE_DEKEY

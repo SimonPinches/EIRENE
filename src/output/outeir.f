@@ -166,8 +166,6 @@ C
         IF (ITAL.EQ.0) THEN
 C   CALL TO TALUSR: A POSTPROCESSED USER-SUPPLIED TALLY
           ICOUNT=1
-!pb  120  CALL EIRENE_TALUSR(ICOUNT,VECTOR,TALTOT,TALAV,
-!pb  .                TXTTL,TXTSP,TXTUN,ILAST,*121)
   120     CALL EIRENE_TALUSR(ICOUNT,VECTOR,TALTOT,TALAV,
      .                       TXTTL,TXTSP,TXTUN,ILAST,IRET)
           IF (IRET == 1) GOTO 121
@@ -2750,4 +2748,4 @@ C
       if (allocated(dummy)) deallocate (dummy)
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_OUTEIR

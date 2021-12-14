@@ -1,4 +1,5 @@
 C
+cdr  aug. 20: code safeties from ITER branch
 C
       SUBROUTINE EIRENE_MASIR2 (A,NLFLD,NFIRST0,NFIRST1,N0,N1,M)
       USE EIRMOD_COMPRT, ONLY: IUNOUT
@@ -16,12 +17,12 @@ C
       DO 1 I=1,IZ
          JA=(I-1)*NCH+1
          JE=MIN(I*NCH,M)
-         WRITE (iunout,'(/6X,A1,12(1X,10I1))') 'I',(MOD(J,10),J=JA,JE)
-         WRITE (iunout,'(1X,130A1)') ('-',J=JA,JE+16)
+         WRITE (iunout,'(/7X,A1,12(1X,10I1))') 'I',(MOD(J,10),J=JA,JE)
+         WRITE (iunout,'(1X,140A1)') ('-',J=JA,JE+18)
          DO 2 K=N0,N1
-            WRITE (iunout,'(1X,I4,1X,A1,12(1X,10I1))') K,'I',
+            WRITE (iunout,'(1X,I5,1X,A1,12(1X,10I1))') K,'I',
      .            (NLFLD(K,J),J=JA,JE)
     2    CONTINUE
     1 CONTINUE
       RETURN
-      END
+      END SUBROUTINE EIRENE_MASIR2

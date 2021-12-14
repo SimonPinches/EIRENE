@@ -41,35 +41,31 @@ C
             IF (IERR.GT.0) RETURN
             CALL GRSPTS(20)
             CALL GRDSH(1.,0.,1.)
-            CALL
-     .  GRSCLV(REAL(MINX,KIND(1.E0)),0.,REAL(MAXX,KIND(1.E0)),
-     .                  REAL(LENY,KIND(1.E0)))
+            CALL GRSCLV(REAL(MINX,SP),0.,REAL(MAXX,SP),
+     .                  REAL(LENY,SP))
 C
 C  GITTERLINIEN BZW. MARKIERUNGEN AN DER X-ACHSE
 C
             DO 5 J=0,INTNRX
                T=MINX+J*STPSZX
-               CALL GRJMP(REAL(T,KIND(1.E0)),-0.1)
+               CALL GRJMP(REAL(T,SP),-0.1)
                IF (GRIDX) THEN
                   IF (J.NE.0.AND.J.NE.INTNRX) THEN
                     CALL GRSPTS(16)
                     CALL GRDSH(0.2,0.5,0.2)
                   ENDIF
-                  CALL
-     .  GRDRW(REAL(T,KIND(1.E0)),REAL(LENY,KIND(1.E0)))
+                  CALL GRDRW(REAL(T,SP),REAL(LENY,SP))
                   CALL GRSPTS(20)
                   CALL GRDSH(1.,0.,1.)
                ELSE
-                  CALL GRDRW(REAL(T,KIND(1.E0)),0.)
+                  CALL GRDRW(REAL(T,SP),0.)
                ENDIF
     5       CONTINUE
             IF (.NOT.GRIDX) THEN
-               CALL GRJMP(REAL(MINX,KIND(1.E0)),0.)
-               CALL
-     .  GRDRW(REAL(MINX,KIND(1.E0)),REAL(LENY,KIND(1.E0)))
-               CALL GRJMP(REAL(MAXX,KIND(1.E0)),0.)
-               CALL
-     .  GRDRW(REAL(MAXX,KIND(1.E0)),REAL(LENY,KIND(1.E0)))
+               CALL GRJMP(REAL(MINX,SP),0.)
+               CALL GRDRW(REAL(MINX,SP),REAL(LENY,SP))
+               CALL GRJMP(REAL(MAXX,SP),0.)
+               CALL GRDRW(REAL(MAXX,SP),REAL(LENY,SP))
             ENDIF
 C
 C  LABELS AN DER X-ACHSE
@@ -83,7 +79,7 @@ C
                PARAM=(MINX+(J-1)*STPSZX)/10.**FCTR
                PARAM1=PARAM*100000.
                IPARAM=NINT(PARAM1)
-               PARAM=REAL(IPARAM,KIND(1.E0))/100000.
+               PARAM=REAL(IPARAM,SP)/100000.
                if (Abs(param).lt.100.) then
                  WRITE(CPARAM,'(F7.3)') PARAM
                elseif (Abs(param).lt.1000.) then
@@ -93,7 +89,7 @@ C
                endif
                IL=7
                T=MINX+(J-1)*STPSZX-(MAXX-MINX)*0.8/LENX
-               CALL GRTXT(REAL(T,KIND(1.E0)),-0.5,IL,CPARAM)
+               CALL GRTXT(REAL(T,SP),-0.5,IL,CPARAM)
    10       CONTINUE
             T=MAXX-1.6*(MAXX-MINX)/LENX
             IF (ABS(FCTR).GE.10) THEN
@@ -102,9 +98,9 @@ C
               WRITE(CFCTR,'(I2)') FCTR
               CFCTR(3:3)=' '
             ENDIF
-            IF (FCTR.LT.0.) CALL GRTXT(REAL(T,KIND(1.E0)),
+            IF (FCTR.LT.0.) CALL GRTXT(REAL(T,SP),
      .                                 -1.0,8,'*10**'//CFCTR)
-            IF (FCTR.GT.0.) CALL GRTXT(REAL(T,KIND(1.E0)),-1.0,7,
+            IF (FCTR.GT.0.) CALL GRTXT(REAL(T,SP),-1.0,7,
      .                                 '*10**'//CFCTR(2:3))
 C
 C  LOGARITHMISCHE X-ACHSENEINTEILUNG
@@ -113,8 +109,8 @@ C
             IERR=0
             IF (FITX) CALL EIRENE_ANPSGL(MINX,MAXX,MINLX,MAXLX,IERR)
             IF (IERR.GT.0) RETURN
-            CALL GRSCLV(REAL(MINLX,KIND(1.E0)),0.,
-     .                  REAL(MAXLX,KIND(1.E0)),REAL(LENY,KIND(1.E0)))
+            CALL GRSCLV(REAL(MINLX,SP),0.,
+     .                  REAL(MAXLX,SP),REAL(LENY,SP))
 C
 C  GITTERLINIEN BZW. MARKIERUNGEN AN DER X-ACHSE
 C
@@ -129,116 +125,107 @@ C
                      ELSE
                         CALL GRSPTS(16)
                      ENDIF
-                     CALL GRJMP(REAL(T,KIND(1.E0)),-0.1)
+                     CALL GRJMP(REAL(T,SP),-0.1)
                      IF (GRIDX) THEN
                         IF (RI.NE.MINLX.OR.RJ.NE.1) THEN
                           CALL GRDSH(0.2,0.5,0.2)
                           CALL GRSPTS(16)
                         ENDIF
-                        CALL GRDRW(REAL(T,KIND(1.E0)),
-     .                             REAL(LENY,KIND(1.E0)))
+                        CALL GRDRW(REAL(T,SP), REAL(LENY,SP))
                         CALL GRDSH(1.,0.,1.)
                      ELSE
-                        CALL GRDRW(REAL(T,KIND(1.E0)),0.)
+                        CALL GRDRW(REAL(T,SP),0.)
                      ENDIF
                   END DO
    15          CONTINUE
             ELSE IF(EXPR.GE.4) THEN
                DO 20 RI=MINLX,MAXLX-1
                   CALL GRSPTS(20)
-                  CALL GRJMP(REAL(RI,KIND(1.E0)),-0.1)
+                  CALL GRJMP(REAL(RI,SP),-0.1)
                   IF (GRIDX) THEN
                      IF (RI.NE.MINLX) THEN
                        CALL GRSPTS(16)
                        CALL GRDSH(0.2,0.5,0.2)
                      ENDIF
-                     CALL GRDRW(REAL(RI,KIND(1.E0)),
-     .                          REAL(LENY,KIND(1.E0)))
+                     CALL GRDRW(REAL(RI,SP), REAL(LENY,SP))
                      CALL GRDSH(1.,0.,1.)
                      CALL GRSPTS(20)
                   ELSE
-                     CALL GRDRW(REAL(RI,KIND(1.E0)),0.)
+                     CALL GRDRW(REAL(RI,SP),0.)
                   ENDIF
                   DO RJ=2,8,2
                      CALL GRSPTS(16)
                      ARG=RJ*10.**RI
                      T=LOG10(ARG)
-                     CALL GRJMP(REAL(T,KIND(1.E0)),-0.1)
+                     CALL GRJMP(REAL(T,SP),-0.1)
                      IF (GRIDX) THEN
                         CALL GRDSH(0.2,0.5,0.2)
-                        CALL GRDRW(REAL(T,KIND(1.E0)),
-     .                             REAL(LENY,KIND(1.E0)))
+                        CALL GRDRW(REAL(T,SP), REAL(LENY,SP))
                         CALL GRDSH(1.,0.,1.)
                      ELSE
-                        CALL GRDRW(REAL(T,KIND(1.E0)),0.)
+                        CALL GRDRW(REAL(T,SP),0.)
                      ENDIF
                   END DO
    20          CONTINUE
             ELSE IF (EXPR.GE.1) THEN
                DO 25 RI=MINLX,MAXLX-1
                   CALL GRSPTS(20)
-                  CALL GRJMP(REAL(RI,KIND(1.E0)),-0.1)
+                  CALL GRJMP(REAL(RI,SP),-0.1)
                   IF (GRIDX) THEN
                      IF (RI.NE.MINLX) THEN
                        CALL GRSPTS(16)
                        CALL GRDSH(0.2,0.5,0.2)
                      ENDIF
-                     CALL GRDRW(REAL(RI,KIND(1.E0)),
-     .                          REAL(LENY,KIND(1.E0)))
+                     CALL GRDRW(REAL(RI,SP), REAL(LENY,SP))
                      CALL GRDSH(1.,0.,1.)
                      CALL GRSPTS(20)
                   ELSE
-                     CALL GRDRW(REAL(RI,KIND(1.E0)),0.)
+                     CALL GRDRW(REAL(RI,SP),0.)
                   ENDIF
                   DO RJ=2,5,3
                      CALL GRSPTS(16)
                      ARG=RJ*10.**RI
                      T=LOG10(ARG)
-                     CALL GRJMP(REAL(T,KIND(1.E0)),-0.1)
+                     CALL GRJMP(REAL(T,SP),-0.1)
                      IF (GRIDX) THEN
                         CALL GRDSH(0.2,0.5,0.2)
-                        CALL GRDRW(REAL(T,KIND(1.E0)),
-     .                             REAL(LENY,KIND(1.E0)))
+                        CALL GRDRW(REAL(T,SP), REAL(LENY,SP))
                         CALL GRDSH(1.,0.,1.)
                      ELSE
-                        CALL GRDRW(REAL(T,KIND(1.E0)),0.)
+                        CALL GRDRW(REAL(T,SP),0.)
                      ENDIF
                   END DO
    25          CONTINUE
             ELSE IF (EXPR.GE.0) THEN
                DO 30 RI=MINLX,MAXLX-1
                   CALL GRSPTS(20)
-                  CALL GRJMP(REAL(RI,KIND(1.E0)),-0.1)
+                  CALL GRJMP(REAL(RI,SP),-0.1)
                   IF (GRIDX) THEN
                      IF (RI.NE.MINLX) THEN
                        CALL GRSPTS(16)
                        CALL GRDSH(0.2,0.5,0.2)
                      ENDIF
-                     CALL GRDRW(REAL(RI,KIND(1.E0)),
-     .                          REAL(LENY,KIND(1.E0)))
+                     CALL GRDRW(REAL(RI,SP), REAL(LENY,SP))
                      CALL GRDSH(1.,0.,1.)
                      CALL GRSPTS(20)
                   ELSE
-                       CALL GRDRW(REAL(RI,KIND(1.E0)),0.)
+                       CALL GRDRW(REAL(RI,SP),0.)
                   ENDIF
    30          CONTINUE
             ENDIF
-            CALL GRJMP(REAL(MAXLX,KIND(1.E0)),-0.1)
+            CALL GRJMP(REAL(MAXLX,SP),-0.1)
 C
             IF (GRIDX) THEN
-               CALL
-     .  GRDRW(REAL(MAXLX,KIND(1.E0)),REAL(LENY,KIND(1.E0)))
+               CALL GRDRW(REAL(MAXLX,SP),REAL(LENY,SP))
             ELSE
-               CALL GRDRW(REAL(MAXLX,KIND(1.E0)),0.)
+               CALL GRDRW(REAL(MAXLX,SP),0.)
             ENDIF
 C
             IF (.NOT.GRIDX) THEN
-               CALL GRJMP(REAL(MINLX,KIND(1.E0)),0.)
-               CALL
-     .  GRDRW(REAL(MINLX,KIND(1.E0)),REAL(LENY,KIND(1.E0)))
-               CALL GRJMP(REAL(MAXLX,KIND(1.E0)),0.)
-               CALL
-     .  GRDRW(REAL(MAXLX,KIND(1.E0)),REAL(LENY,KIND(1.E0)))
+               CALL GRJMP(REAL(MINLX,SP),0.)
+               CALL GRDRW(REAL(MINLX,SP),REAL(LENY,SP))
+               CALL GRJMP(REAL(MAXLX,SP),0.)
+               CALL GRDRW(REAL(MAXLX,SP),REAL(LENY,SP))
             ENDIF
 C
 C  10-ER LABELS AN DER X-ACHSE
@@ -246,16 +233,15 @@ C
             CALL GRCHRC(0.3,0.,20)
             DO 35 I=MINLX+1,MAXLX
                T=I-0.3*(MAXLX-MINLX)/LENX
-               CALL GRTXT(REAL(T,KIND(1.E0)),-0.90,2,'10')
+               CALL GRTXT(REAL(T,SP),-0.90,2,'10')
    35       CONTINUE
 C
             DO 40 I=MINLX+1,MAXLX
                WRITE(CZHNLB,'(I3)') I
                IF (ABS(I).LT.10) THEN
-                  CALL
-     .  GRTXT(REAL(I,KIND(1.E0)),-0.6,2,CZHNLB(2:3))
+                  CALL GRTXT(REAL(I,SP),-0.6,2,CZHNLB(2:3))
                ELSE
-                  CALL GRTXT(REAL(I,KIND(1.E0)),-0.60,3,CZHNLB)
+                  CALL GRTXT(REAL(I,SP),-0.60,3,CZHNLB)
                ENDIF
    40       CONTINUE
 C
@@ -267,27 +253,27 @@ C
                DO 45 RI=MINLX,MAXLX-1
                   DO J=2,9
                      WRITE(CEINLB,'(I1)') J
-                     ARG=REAL(J,KIND(1.E0))*10.**RI
+                     ARG=REAL(J,SP)*10.**RI
                      T=LOG10(ARG)-0.05*(MAXLX-MINLX)/LENX
-                     CALL GRTXT(REAL(T,KIND(1.E0)),-0.5,1,CEINLB)
+                     CALL GRTXT(REAL(T,SP),-0.5,1,CEINLB)
                   END DO
    45          CONTINUE
             ELSE IF (EXPR.GE.4) THEN
                DO 50 RI=MINLX,MAXLX-1
                   DO J=2,8,2
                      WRITE(CEINLB,'(I1)') J
-                     ARG=REAL(J,KIND(1.E0))*10.**RI
+                     ARG=REAL(J,SP)*10.**RI
                      T=LOG10(ARG)-0.05*(MAXLX-MINLX)/LENX
-                     CALL GRTXT(REAL(T,KIND(1.E0)),-0.5,1,CEINLB)
+                     CALL GRTXT(REAL(T,SP),-0.5,1,CEINLB)
                   END DO
    50          CONTINUE
             ELSE IF (EXPR.GE.2) THEN
                DO 55 RI=MINLX,MAXLX-1
                   DO J=2,5,3
                      WRITE(CEINLB,'(I1)') J
-                     ARG=REAL(J,KIND(1.E0))*10.**RI
+                     ARG=REAL(J,SP)*10.**RI
                      T=LOG10(ARG)-0.05*(MAXLX-MINLX)/LENX
-                     CALL GRTXT(REAL(T,KIND(1.E0)),-0.5,1,CEINLB)
+                     CALL GRTXT(REAL(T,SP),-0.5,1,CEINLB)
                   END DO
    55          CONTINUE
             ENDIF
@@ -314,35 +300,31 @@ C
             IF (IERR.GT.0) RETURN
             CALL GRSPTS(20)
             CALL GRDSH(1.,0.,1.)
-            CALL
-     .  GRSCLV(0.,REAL(MINY,KIND(1.E0)),REAL(LENX,KIND(1.E0)),
-     .                  REAL(MAXY,KIND(1.E0)))
+            CALL GRSCLV(0.,REAL(MINY,SP),REAL(LENX,SP),
+     .                     REAL(MAXY,SP))
 C
 C   GITTERLINIEN BZW. MARKIERUNGEN AN DER Y-ACHSE
 C
             DO 110 J=0,INTNRY
                T=MINY+J*STPSZY
-               CALL GRJMP(-0.1,REAL(T,KIND(1.E0)))
+               CALL GRJMP(-0.1,REAL(T,SP))
                IF (GRIDY) THEN
                   IF (J.NE.0.AND.J.NE.INTNRY) THEN
                     CALL GRSPTS(16)
                     CALL GRDSH(0.2,0.5,0.2)
                   ENDIF
-                  CALL
-     .  GRDRW(REAL(LENX,KIND(1.E0)),REAL(T,KIND(1.E0)))
+                  CALL GRDRW(REAL(LENX,SP),REAL(T,SP))
                   CALL GRSPTS(20)
                   CALL GRDSH(1.,0.,1.)
                ELSE
-                  CALL GRDRW(0.,REAL(T,KIND(1.E0)))
+                  CALL GRDRW(0.,REAL(T,SP))
                ENDIF
   110       CONTINUE
             IF (.NOT.GRIDY) THEN
-               CALL GRJMP(0.,REAL(MINY,KIND(1.E0)))
-               CALL
-     .  GRDRW(REAL(LENX,KIND(1.E0)),REAL(MINY,KIND(1.E0)))
-               CALL GRJMP(0.,REAL(MAXY,KIND(1.E0)))
-               CALL
-     .  GRDRW(REAL(LENX,KIND(1.E0)),REAL(MAXY,KIND(1.E0)))
+               CALL GRJMP(0.,REAL(MINY,SP))
+               CALL GRDRW(REAL(LENX,SP),REAL(MINY,SP))
+               CALL GRJMP(0.,REAL(MAXY,SP))
+               CALL GRDRW(REAL(LENX,SP),REAL(MAXY,SP))
             ENDIF
 C
 C  LABELS AN DER Y-ACHSE
@@ -353,11 +335,11 @@ C
                PARAM=(MINY+(J-1)*STPSZY)/10.**FCTR
                PARAM1=PARAM*100000.
                IPARAM=NINT(PARAM1)
-               PARAM=REAL(IPARAM,KIND(1.E0))/100000.
+               PARAM=REAL(IPARAM,SP)/100000.
                WRITE(CPARAM,'(F7.3)') PARAM
                IL=7
                T=MINY+(J-1)*STPSZY-(MAXY-MINY)*0.8/LENY
-               CALL GRTXT(-0.45,REAL(T,KIND(1.E0)),IL,CPARAM)
+               CALL GRTXT(-0.45,REAL(T,SP),IL,CPARAM)
   115      CONTINUE
            T=MAXY-1.6*(MAXY-MINY)/LENY
            IF (ABS(FCTR).GE.10) THEN
@@ -366,9 +348,9 @@ C
              WRITE(CFCTR,'(I2)') FCTR
              CFCTR(3:3)=' '
            ENDIF
-           IF (FCTR.LT.0.) CALL GRTXT(-0.85,REAL(T,KIND(1.E0)),8,
+           IF (FCTR.LT.0.) CALL GRTXT(-0.85,REAL(T,SP),8,
      .                                '*10**'//CFCTR)
-           IF (FCTR.GT.0.) CALL GRTXT(-0.85,REAL(T,KIND(1.E0)),7,
+           IF (FCTR.GT.0.) CALL GRTXT(-0.85,REAL(T,SP),7,
      .                                '*10**'//CFCTR(2:3))
 C
 C  LOGARITHMISCHE Y-ACHSENEINTEILUNG
@@ -377,9 +359,8 @@ C
            IERR=0
            IF (FITY) CALL EIRENE_ANPSGL(MINY,MAXY,MINLY,MAXLY,IERR)
            IF (IERR.GT.0) RETURN
-           CALL
-     .  GRSCLV(0.,REAL(MINLY,KIND(1.E0)),REAL(LENX,KIND(1.E0)),
-     .                 REAL(MAXLY,KIND(1.E0)))
+           CALL GRSCLV(0.,REAL(MINLY,SP),REAL(LENX,SP),
+     .                    REAL(MAXLY,SP))
 C
 C  GITTERLINIEN BZW. MARKIERUNGEN AN DER Y-ACHSE
 C
@@ -394,115 +375,106 @@ C
                     ELSE
                        CALL GRSPTS(16)
                     ENDIF
-                    CALL GRJMP(-0.1,REAL(T,KIND(1.E0)))
+                    CALL GRJMP(-0.1,REAL(T,SP))
                     IF (GRIDY) THEN
                        IF (RI.NE.MINLY.OR.RJ.NE.1) THEN
                          CALL GRDSH(0.2,0.5,0.2)
                          CALL GRSPTS(16)
                        ENDIF
-                       CALL GRDRW(REAL(LENX,KIND(1.E0)),
-     .                            REAL(T,KIND(1.E0)))
+                       CALL GRDRW(REAL(LENX,SP),REAL(T,SP))
                        CALL GRDSH(1.,0.,1.)
                     ELSE
-                       CALL GRDRW(0.,REAL(T,KIND(1.E0)))
+                       CALL GRDRW(0.,REAL(T,SP))
                     ENDIF
                  END DO
   120         CONTINUE
            ELSE IF (EXPR.GE.4) THEN
               DO 125 RI=MINLY,MAXLY-1
                  CALL GRSPTS(20)
-                 CALL GRJMP(-0.1,REAL(RI,KIND(1.E0)))
+                 CALL GRJMP(-0.1,REAL(RI,SP))
                  IF (GRIDY) THEN
                      IF (RI.NE.MINLY) THEN
                        CALL GRSPTS(16)
                        CALL GRDSH(0.2,0.5,0.2)
                      ENDIF
-                    CALL GRDRW(REAL(LENX,KIND(1.E0)),
-     .                         REAL(RI,KIND(1.E0)))
+                    CALL GRDRW(REAL(LENX,SP),REAL(RI,SP))
                     CALL GRSPTS(20)
                     CALL GRDSH(1.,0.,1.)
                  ELSE
-                    CALL GRDRW(0.,REAL(RI,KIND(1.E0)))
+                    CALL GRDRW(0.,REAL(RI,SP))
                  ENDIF
                  DO RJ=2,8,2
                     CALL GRSPTS(16)
                     ARG=RJ*10.**RI
                     T=LOG10(ARG)
-                    CALL GRJMP(-0.1,REAL(T,KIND(1.E0)))
+                    CALL GRJMP(-0.1,REAL(T,SP))
                     IF (GRIDY) THEN
                        CALL GRDSH(0.2,0.5,0.2)
-                       CALL GRDRW(REAL(LENX,KIND(1.E0)),
-     .                            REAL(T,KIND(1.E0)))
+                       CALL GRDRW(REAL(LENX,SP),REAL(T,SP))
                        CALL GRDSH(1.,0.,1.)
                     ELSE
-                       CALL GRDRW(0.,REAL(T,KIND(1.E0)))
+                       CALL GRDRW(0.,REAL(T,SP))
                     ENDIF
                  END DO
   125         CONTINUE
            ELSE IF (EXPR.GE.1) THEN
               DO 130 RI=MINLY,MAXLY-1
                  CALL GRSPTS(20)
-                 CALL GRJMP(-0.1,REAL(RI,KIND(1.E0)))
+                 CALL GRJMP(-0.1,REAL(RI,SP))
                  IF (GRIDY) THEN
                      IF (RI.NE.MINLY) THEN
                        CALL GRSPTS(16)
                        CALL GRDSH(0.2,0.5,0.2)
                      ENDIF
-                    CALL GRDRW(REAL(LENX,KIND(1.E0)),
-     .                         REAL(RI,KIND(1.E0)))
+                    CALL GRDRW(REAL(LENX,SP),REAL(RI,SP))
                     CALL GRSPTS(20)
                     CALL GRDSH(1.,0.,1.)
                  ELSE
-                    CALL GRDRW(0.,REAL(RI,KIND(1.E0)))
+                    CALL GRDRW(0.,REAL(RI,SP))
                  ENDIF
                  DO RJ=2,5,3
                     CALL GRSPTS(18)
                     ARG=RJ*10.**RI
                     T=LOG10(ARG)
-                    CALL GRJMP(-0.1,REAL(T,KIND(1.E0)))
+                    CALL GRJMP(-0.1,REAL(T,SP))
                     IF (GRIDY) THEN
                        CALL GRDSH(0.2,0.5,0.2)
-                       CALL GRDRW(REAL(LENX,KIND(1.E0)),
-     .                            REAL(T,KIND(1.E0)))
+                       CALL GRDRW(REAL(LENX,SP),REAL(T,SP))
                        CALL GRDSH(1.,0.,1.)
                     ELSE
-                       CALL GRDRW(0.,REAL(T,KIND(1.E0)))
+                       CALL GRDRW(0.,REAL(T,SP))
                     ENDIF
                  END DO
   130         CONTINUE
            ELSE IF (EXPR.GE.0) THEN
               DO 135 RI=MINLY,MAXLY-1
                  CALL GRSPTS(20)
-                 CALL GRJMP(-0.1,REAL(RI,KIND(1.E0)))
+                 CALL GRJMP(-0.1,REAL(RI,SP))
                  IF (GRIDY) THEN
                     IF (RI.NE.MINLY) THEN
                       CALL GRSPTS(16)
                       CALL GRDSH(0.2,0.5,0.2)
                     ENDIF
-                    CALL GRDRW(REAL(LENX,KIND(1.E0)),
-     .                         REAL(RI,KIND(1.E0)))
+                    CALL GRDRW(REAL(LENX,SP),REAL(RI,SP))
                     CALL GRSPTS(20)
                     CALL GRDSH(1.,0.,1.)
                  ELSE
-                    CALL GRDRW(0.,REAL(RI,KIND(1.E0)))
+                    CALL GRDRW(0.,REAL(RI,SP))
                  ENDIF
   135         CONTINUE
            ENDIF
 C
-           CALL GRJMP(-0.1,REAL(MAXLY,KIND(1.E0)))
+           CALL GRJMP(-0.1,REAL(MAXLY,SP))
            IF (GRIDY) THEN
-              CALL
-     .  GRDRW(REAL(LENX,KIND(1.E0)),REAL(MAXLY,KIND(1.E0)))
+              CALL GRDRW(REAL(LENX,SP),REAL(MAXLY,SP))
            ELSE
-              CALL GRDRW(0.,REAL(MAXLY,KIND(1.E0)))
+              CALL GRDRW(0.,REAL(MAXLY,SP))
            ENDIF
            IF (.NOT.GRIDY) THEN
-              CALL GRJMP(0.,REAL(MINLY,KIND(1.E0)))
-              CALL
-     .  GRDRW(REAL(LENX,KIND(1.E0)),REAL(MINLY,KIND(1.E0)))
-              CALL GRJMP(0.,REAL(MAXLY,KIND(1.E0)))
-              CALL
-     .  GRDRW(REAL(LENX,KIND(1.E0)),REAL(MAXLY,KIND(1.E0)))
+              CALL GRJMP(0.,REAL(MINLY,SP))
+              CALL GRDRW(REAL(LENX,SP),REAL(MINLY,SP))
+              CALL GRJMP(0.,REAL(MAXLY,SP))
+              CALL GRDRW(REAL(LENX,SP),REAL(MAXLY,SP))
            ENDIF
 C
 C  10-ER LABELS AN DER Y-ACHSE
@@ -510,17 +482,15 @@ C
            CALL GRCHRC(0.3,0.,20)
            DO 140 I=MINLY+1,MAXLY
               T=I-0.1*(MAXLY-MINLY)/LENY
-              CALL GRTXT(-1.20,REAL(T,KIND(1.E0)),2,'10')
+              CALL GRTXT(-1.20,REAL(T,SP),2,'10')
   140      CONTINUE
 C
            DO 145 I=MINLY+1,MAXLY
               WRITE(CZHNLB,'(I3)') I
               IF (ABS(I).LT.10) THEN
-                 CALL
-     .  GRTXT(-0.85,REAL(I,KIND(1.E0))+0.05,2,CZHNLB(2:3))
+                 CALL GRTXT(-0.85,REAL(I,SP)+0.05,2,CZHNLB(2:3))
               ELSE
-                 CALL
-     .  GRTXT(-0.85,REAL(I,KIND(1.E0))+0.05,3,CZHNLB)
+                 CALL GRTXT(-0.85,REAL(I,SP)+0.05,3,CZHNLB)
               ENDIF
   145      CONTINUE
 C
@@ -532,27 +502,27 @@ C
               DO 150 RI=MINLY,MAXLY-1
                  DO J=2,9
                     WRITE(CEINLB,'(I1)') J
-                    ARG=REAL(J,KIND(1.E0))*10.**RI
+                    ARG=REAL(J,SP)*10.**RI
                     T=LOG10(ARG)-0.1*(MAXLY-MINLY)/LENY
-                    CALL GRTXT(-0.4,REAL(T,KIND(1.E0)),1,CEINLB)
+                    CALL GRTXT(-0.4,REAL(T,SP),1,CEINLB)
                  END DO
   150         CONTINUE
            ELSE IF (EXPR.GE.4) THEN
               DO 155 RI=MINLY,MAXLY-1
                  DO J=2,8,2
                     WRITE(CEINLB,'(I1)') J
-                    ARG=REAL(J,KIND(1.E0))*10.**RI
+                    ARG=REAL(J,SP)*10.**RI
                     T=LOG10(ARG)-0.1*(MAXLY-MINLY)/LENY
-                    CALL GRTXT(-0.4,REAL(T,KIND(1.E0)),1,CEINLB)
+                    CALL GRTXT(-0.4,REAL(T,SP),1,CEINLB)
                  END DO
   155         CONTINUE
            ELSE IF (EXPR.GE.2) THEN
               DO 160 RI=MINLY,MAXLY-1
                  DO J=2,5,3
                     WRITE(CEINLB,'(I1)') J
-                    ARG=REAL(J,KIND(1.E0))*10.**RI
+                    ARG=REAL(J,SP)*10.**RI
                     T=LOG10(ARG)-0.1*(MAXLY-MINLY)/LENY
-                    CALL GRTXT(-0.4,REAL(T,KIND(1.E0)),1,CEINLB)
+                    CALL GRTXT(-0.4,REAL(T,SP),1,CEINLB)
                  END DO
   160         CONTINUE
            ENDIF
@@ -564,4 +534,4 @@ C
       ENDIF
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_PLTAXI

@@ -191,4 +191,4 @@ C  ***PREPARE OUTPUT
       Q(M1,N1)=SUM
 C     WRITE (iunout,*) ' A ',(A(I),I=1,M)
       RETURN
-      END
+      END SUBROUTINE EIRENE_MA20A

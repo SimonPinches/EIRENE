@@ -116,7 +116,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
       INTEGER :: JP, KT, IM, II, IP, IA, NFLGS, NSPZS1, NSPZS2, IPH,
      .           NTLVF, NSRF, NTLS, I1000, NSP, NTL, ICHORI, IRAD,
      .           ILIMPS, ISS, ILA, IB, INC, NSOPT, IIN, IEN, NSMSTRA1,
-     .           EIRENE_ILLZ, IZ, ISTREAM, ITALI, IBEND,
+     .           EIRENE_ILLZ, IZ, ITALI, IBEND,
      .           JATM, JMOL, JION, JPHOT, JPLS, JTRJ, JSPZ,
      .           NO, IGO, IRPTA3, IRPTE2, IRPTE3, IH, IDIMP,
      .           JDUMMY, IRPTA1, IRPTA2, IRPTE1, NLJ, I1, I2, I3,
@@ -2083,9 +2083,9 @@ C  READ NPLSI SETS OF INPUT PARAMETERS, ONE FOR EACH SPECIES IPLS
         END IF
       ENDIF
 
-c  pitch or B-field profile
-c                              !  default:                B-FIELD WITH BX=0
-      NLPITCH=INDPRO(5).LT.0   !  for 1D parallel B runs: B-FIELD WITH BY=0
+c  pitch or B field profile
+c                              !  default:                B FIELD WITH BX=0
+      NLPITCH=INDPRO(5).LT.0   !  for 1D parallel B runs: B FIELD WITH BY=0
 
       INDPRO(5)=IABS(INDPRO(5))
       IF (INDPRO(5).LE.5)

@@ -5,7 +5,7 @@ cdr Nov   16    finalizing notational synchronisation (..DS.. (legacy) --> ..EI.
 cdr Nov.  17:   1) sync with couple_B2 from git repository. done
 cdr             2) ESIG array: additional argument IPLS: done.
 cdr             3) RTIS% pointer to sploda,.....
-cdr             4) rates SEIODA, SEINWA added (was missing, used for ipls total ion energy density)
+cdr             4) rates SEIODA, SEINWA added (were missing, used for ipls total ion energy density)
 cdr                now: SEIOD(.., NPLS), SEINW(...,NPLS) added
 cdr Oct.  18:   connect ledrift  (availability of EDRIFT tally)
 
@@ -36,6 +36,10 @@ C     LSTOP:
 C     LTIME: TIME-DEPENDENT MODE. PREPARE TIME-DEPENDENT OPTIONS,
 C            AND THEN CALL EIRENE
 C     DELTAT: TIME STEP  (IRRELEVANT IN CASE LTIME=.FALSE.)
+C     FLUXES(1:NSTRA): Scaling factors for source strength in external code,
+cdr                    not to be confused with: FLUX(1: NSTRA), the source strength
+cdr                    used in eirene run.
+C     STEP_CPU:  apparently unused
 C
 C   ONLY FOR EIRENE ENERGY BALANCE DIAGNOSTICS:
 C     B2BRM:  TOTAL BREMSSTAHLUNG LOSS IN PREVIOUS B2 STEP
@@ -103,6 +107,7 @@ C
         B2RAD=B2RD
         B2QIE=B2Q
         B2VDP=B2VP
+
         DUMMY=EIRENE_RESET_SECOND()
 
         IF(IFIRST.EQ.0) THEN
@@ -110,9 +115,9 @@ C
           CALL EIRENE_PLSTRT
 C
 C  READ FORMATTED INPUT FILE IUNIN
-C  AND RUN EIRENE FOR ONE TIME-CYCLE: ITIMV=1
-C  WITH OR WITHOUT INITIAL DISTRIBUTION ON FILE FT15 (NFILE-J FLAG)
-C  AS FINAL STRATUM
+C  AND RUN EIRENE FOR ONE TIME CYCLE: ITIMV=1
+C  WITH OR WITHOUT INITIAL DISTRIBUTION (CENSUS) ON FILE FT15 (NFILE-J FLAG)
+C  AS FINAL STRATUM.
 C  EXPECT PLASMA DATA ON FORT.31 (NLPLAS=.FALSE.)
           LPLASM=.FALSE.
           LLST=.FALSE.
@@ -135,7 +140,7 @@ C
 
 
         ELSE  !(IFIRST.GE.1)
-C  THIS IS NOT THE FIRST CALL TO EIRENE
+C  THIS IS NOT THE FIRST CALL TO EIRENE, and we are in time dep. mode.
 C
 C  NOW: NLPLAS=.TRUE., I.E., PLASMA DATA EXPECTED ON BRAEIR
 C  NOW: ITIMV=ITIMV+1
@@ -223,7 +228,7 @@ C             STORE SOME A&M RATES FROM PRESENT STEP, FOR NEXT STEP
         CALL EIRENE_PLSTRT
 C
 C  READ FORMATTED INPUT FILE IUNIN
-C  AND RUN EIRENE FOR ONE TIME-CYCLE: ITIMV=1
+C  AND RUN EIRENE FOR ONE TIME CYCLE: ITIMV=1
 C  WITH OR WITHOUT INITIAL DISTRIBUTION ON FILE FT15 (NFILE-J FLAG)
 C  AS FINAL STRATUM
 C  EXPECT PLASMA DATA ON FORT.31 (NLPLAS=.FALSE.)
@@ -255,15 +260,18 @@ C
 C  IN THIS CALL TO EIRENE ALREADY IF3COP IS CALLED FOR EACH STRATUM
 C  THOSE WITH NLSRON(ISTRA) = TRUE  HAVE BEEN RECOMPUTED BY EIRENE
 C  THOSE WITH NLSRON(ISTRA) = FALSE HAVE BEEN SHORT-CYCLED
-C  AT IFIRST   =0: ALL NLSRON=TRUE
-C  AT IFIRST.GE.1: FIRST A SHORT CYCLE TEST IS DONE, AND NLSRON IS FOUND
+C  AT IFIRST.EQ.0: ALL NLSRON=TRUE
+C  AT IFIRST.GE.1: FIRST A SHORT CYCLE TEST IS DONE (by call inter3), AND NLSRON IS FOUND FOR EACH STRATUM
 C
         IF (.NOT.LLST) THEN
+cdr  prepare some stuff for next iteration step within this same run,
+cdr  such as the ..OD.. parameters for short cycling
 
           IF (IFIRST.GE.1) NLSRON = NLSRON_SAVE
 
           NDXY=(NDXA-1)*NR1ST+NDYA
-
+C
+CDR why alloc short cycle data, even if no short cycle is done ??
           CALL EIRENE_ALLOC_BRASCL
 
 ! find new calculated stratum with smallest number
@@ -671,7 +679,7 @@ C
           END DO
         END DO
 
-cdr  no seinwa, because only KER part is in short cycle correction for EI processes
+cdr  There is no seinwa, because currently only KER part is in short cycle correction for EI processes
 cdr             and for atoms this is identically 0.0
 C
 C  NEW: TEST IONS, EI PROCESSES

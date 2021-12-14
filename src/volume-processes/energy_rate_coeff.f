@@ -152,7 +152,8 @@ c  extrapolation data: for 1d polynomial fits
      .                           p1,rc1min,rc1max,fp1,jfex1mn,jfex1mx,
      .                           trcamd,lexp)
 
-! RES is ln(energy rate), with energy rate >0.
+! lexp=false: erate is ln(energy rate), with energy rate >0.
+! lexp=true : erate is the energy rate
 ! If it is loss, rather than a gain, sign change to be done in calling routine,
 ! as well as shift (if any) by potential energy loss rate
 
@@ -250,9 +251,9 @@ c..............................................................
       else if (reacdat(ir)%rtcew%ifit == 4) then
 
 !  proprietary option: not ready
-        goto 990
-! SINGLE PARAMETER 1D TABLE (E.G. HYDKIN)
-cdr  extrapolation data: for 1d tabulated data:  option not ready (only CxHy data ?)
+        if (.true.) goto 990
+! SINGLE PARAMETER 1D TABLE
+cdr  extrapolation data: for 1D tabulated data: option not ready (only CxHy data ?)
 cdr  to be added here
 
 ! currently hard-wired: input parameters q1 and table coefficients are neither ln nor log10

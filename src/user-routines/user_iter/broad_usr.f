@@ -25,6 +25,7 @@
       CALL MPI_BCAST (plnytri,ntrii,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (pplnxtri,ntrii,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (pplnytri,ntrii,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       RETURN

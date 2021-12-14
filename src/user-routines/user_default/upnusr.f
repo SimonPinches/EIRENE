@@ -28,4 +28,4 @@ C  TALLY 1: PARTICLE DENSITY, ATOMIC SPECIES IATM (FOR TESTING/VERIFICAITON)
       SNAPV(IATM,NCELL)=SNAPV(IATM,NCELL)+WEIGHT
 C
       return
-      end
+      end subroutine eirene_upnusr

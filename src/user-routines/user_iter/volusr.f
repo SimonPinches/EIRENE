@@ -5,4 +5,4 @@
       REAL(DP), INTENT(INOUT) :: A(*)
       INTEGER, INTENT(IN) :: N
       RETURN
-      END
+      END SUBROUTINE EIRENE_VOLUSR

@@ -14,14 +14,14 @@ cdr  contains redundant coding: cell_info, type traject,....
       PUBLIC :: EIRENE_ALLOC_CUPD, EIRENE_DEALLOC_CUPD, EIRENE_INIT_CUPD
       PUBLIC :: CELL_INFO, TRAJECT, TRAJECT_ARRAY, EIRENE_CELL_INSERT,
      .          EIRENE_CELL_DELETE, EIRENE_CLEAR_TRAJECTORY
-
+cdr  probably out
       TYPE CELL_INFO
         REAL(DP) :: FLIGHT
         INTEGER :: NO_CELL, NO_SPECT
         TYPE(CELL_INFO), POINTER :: NEXTC, PREVC
       END TYPE CELL_INFO
 
-
+cdr  probably out
       TYPE TRAJECT
         REAL(DP) :: VX, VY, VZ, WGHT
         REAL(DP) :: P1(3), P2(3)

@@ -24,11 +24,15 @@
       return
       END subroutine EIRENE_plt2d
 
-cdr  this routine is identical to the entry chctrc(...) inside eirene routine plt2d.
-cdr  it is kept as separate routine here, in case no further eirene default plotting routines are used,
+cdr  this routine is identical to the subroutine chctrc(...) inside eirene routine plt2d.
+cdr  It is kept as separate routine here, in case no further eirene default plotting routines are used,
 cdr  to still be able to provide printed trajectory output.
 
-c------------------------------------------------------------------------
+c--------------------------------------------------------------
+
+C
+C  PLOT PARTICLE HISTORIES IN GEOMETRY-PLOT
+C
       SUBROUTINE EIRENE_CHCTRC(XPLO,YPLO,ZPLO,IFLAG,ISYM)
       IMPLICIT NONE
 Cym   19-> 21
@@ -84,6 +88,7 @@ C
         CALL EIRENE_MASJ4 ('ITIME,IFPATH,IUPDTE,ICOL        ',
      .               ITIME,IFPATH,IUPDTE,ICOL)
         CALL EIRENE_MASR3 ('X0,Y0,Z0                ',XPLO,YPLO,ZPLO)
+C  FOR TRACE IONS: VELOCITY IS EITHER CARTESIAN (LCART) OR THE REDUCED (GC) VELOCITY
         IF (ITYP.EQ.3) THEN
           IF (LCART) THEN
             CALL EIRENE_MASR5
@@ -95,6 +100,7 @@ C
      .             VLXPAR,VLYPAR,VLZPAR,VELPAR,E0PAR,E0)
           ENDIF
         ELSE
+C  FOR NEUTRALS OR PHOTONS: VELOCITY IS ALWAYS GIVEN BY THE CARTESIAN COMPONENTS
           CALL EIRENE_MASR5
      .         ('VELX,VELY,VELZ,VEL,E0                   ',
      .           VELX,VELY,VELZ,VEL,E0)
@@ -143,9 +149,10 @@ C    .                 MRSURF,MPSURF,MTSURF,MASURF)
       RETURN
       END SUBROUTINE EIRENE_CHCTRC
 
-      SUBROUTINE eirene_plt2d_reinit
+C     following SUBROUTINE is for reinitialization of EIRENE (DMH)
+      SUBROUTINE EIRENE_PLT2D_REINIT
       IMPLICIT NONE
-      return
-      end SUBROUTINE eirene_plt2d_reinit
+      RETURN
+      END SUBROUTINE EIRENE_PLT2D_REINIT
 
       END MODULE EIRMOD_PLT2D

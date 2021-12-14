@@ -108,7 +108,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
       INTEGER :: JP, KT, IM, II, IP, IA, NFLGS, NSPZS1, NSPZS2, IPH,
      .           NTLVF, NSRF, NTLS, I1000, NSP, NTL, ICHORI, IRAD,
      .           ILIMPS, ISS, ILA, IB, INC, NSOPT, IIN, IEN, 
-     .           EIRENE_ILLZ, IZ, ISTREAM, ITALI, IBEND,
+     .           EIRENE_ILLZ, IZ, ITALI, IBEND,
      .           JATM, JMOL, JION, JPHOT, JPLS, JTRJ, JSPZ,
      .           NO, IGO,  
      .           JDUMMY, NLJ, I1, I2, I3,
@@ -2326,9 +2326,9 @@ cdr              |indpro| > 10:  only one common flow field
       END IF
       nullify (pvel)
 
-c  pitch - or B-field profile
-c                              !  default:                B-FIELD WITH BX=0
-      NLPITCH=INDPRO(5).LT.0   !  for 1D parallel B runs: B-FIELD WITH BY=0
+c  pitch - or B field profile
+c                              !  default:                B FIELD WITH BX=0
+      NLPITCH=INDPRO(5).LT.0   !  for 1D parallel B runs: B FIELD WITH BY=0
 
       INDPRO(5)=IABS(INDPRO(5))
       IF (INDPRO(5).LE.5) THEN

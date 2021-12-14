@@ -1,9 +1,9 @@
-cdr  oct 16:  levgeo=1, error exit due to round off errors removed,
+cdr  oct 16:  levgeo=1, error exit due to round-off errors removed,
 cdr                     now: "save landing of lost particle".
 cdr           prevents random error exits in very long (parallel) runs.
 C
-Cdr:  at some point in time: included LDAMCEL
-cdr   (indicator for "damaged cells" in 2D (x-y) plane.
+cdr   at some point in time: included LDAMCEL
+cdr   (indicator for "damaged cells" in 2D (x-y) plane)
 cdr   LDAMCEL is set in initialization phase
 
 cdr  sept 17: sync with timet
@@ -149,7 +149,8 @@ C
         IF (NRCELL.GT.0) THEN
           WRITE (iunout,*) 'TIMEP FROM INSIDE, NPANU ', NPANU
           WRITE (iunout,*) 'ZRAD,NRCELL,NPCELL,MPSURF,NTCELL,MTSURF '
-          WRITE (iunout,*)  ZRAD,NRCELL,NPCELL,MPSURF,NTCELL,MTSURF
+          WRITE (iunout,'(1PE12.4,3X,5I6)')
+     .                      ZRAD,NRCELL,NPCELL,MPSURF,NTCELL,MTSURF
         ELSE
           WRITE (iunout,*) 'TIMEP FROM OUTSIDE, NPANU ', NPANU
           WRITE (iunout,*) 'MRSURF,MPSURF,MTSURF,ZRAD '
@@ -188,7 +189,7 @@ C
 10000 CONTINUE
 C
 CDR NOV.99: ADDED BECAUSE OF FOLION OPTION,
-C           WITH DEFAULT B-FIELD (IN Z DIRECTION)
+C           WITH DEFAULT B FIELD (IN Z DIRECTION)
 C
       IF (ABS(VELZ).EQ.1.D0) THEN
         NCOUP=1
@@ -1071,7 +1072,8 @@ C
         IF (NLTRC) THEN
 !$OMP CRITICAL
           JJ=J+IADD
-          WRITE (iunout,*) 'TIMEP: JJ,CLPD(JJ),NUPC(JJ),NCOUNP(JJ) ',
+          WRITE (iunout,'(1X,A,3X,I6,3X,1PE12.4,3X,I6,3X,I6)')
+     .                     'TIMEP: JJ,CLPD(JJ),NUPC(JJ),NCOUNP(JJ) ',
      .                             JJ,CLPD(JJ),NUPC(JJ),NCOUNP(JJ)
 !$OMP END CRITICAL
         ENDIF
@@ -1130,6 +1132,6 @@ C
       WRITE (iunout,*)
      .  'REENTRANCE FROM VACUUM REGION UNFINISHED IN TIMEP'
       CALL EIRENE_EXIT_OWN(1)
-      END subroutine eirene_timep
+      END subroutine EIRENE_TIMEP
 
       end module eirmod_timep

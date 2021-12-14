@@ -1,4 +1,6 @@
       function EIRENE_deter4x4 (a)
+cdr  Determinant of (4,4) matrix A, Laplace expansion from first row A(1,1:4)
+cdr  (better: find a row or column with as many as possible zeros and expand from there)
       use EIRMOD_precision
       implicit none
 
@@ -25,4 +27,4 @@
      .                  a(1,3)*d13 - a(1,4)*d14
 
       return
-      end
+      end function EIRENE_deter4x4

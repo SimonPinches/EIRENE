@@ -1,8 +1,4 @@
-C 27.6.05 : colphot: iadd removed
-C 27.6.05 : colatm : mode, il removed (lgaot(..2),lgaot(..5)
-C 27.6.05 : colphot: mode, il removed (lgphot(..2),lgphot(..5)
-C 15.12.05: irds --> irei, iids --> iiei
-C 16.12.05: wminv re-connected to "ei"-processes. suppress
+C 16.12.05: wminv re-connected to EI processes. suppress
 C           reactions with zero test particle secondaries
 C           now connected for: colatm, colmol, colion
 C           still to be done: include other processes, and colphot
@@ -21,7 +17,7 @@ c
 cdr  5. 8.15: ARGUMENTS ADDED TO VECUSR
 cdr 20.10.15: arguments in chctrc: type of collision process: corrected for PI and PH
 cdr 24.11.15:  bug fix re coll est for pi processes, in colion: eiml --> eiio
-cdr Dec.15  :  bug fix pi reaction and cascading was wrong:
+cdr Dec.15  :  bug fix PI reaction and cascading was wrong:
 cdr            irei, rather than irpi, and p2nd
 cdr            rather than p2np, were used also for PI reactions. now corrected
 
@@ -49,7 +45,7 @@ cdr        synchronize and re-activate option, not ready !!
 c   this version: prepare cascading at collisions,
 c   e.g. for antithetic variate sampling to reduce stochastic cancellation
 c   start to clean up splitting, for analogue game and for anticorrelated momentum estimators
-c   started for colatm, and ei processes.
+c   started for colatm, and EI processes.
 c   not sure if ispz is known, NOW
 cdr tbd:
 c   cascading with EI: nlevel =nlevel+ptot-1 (because one particle continues)
@@ -61,7 +57,7 @@ cdr            (was already corrected much earlier in SOLPS_4.3 by VK,
 cdr             then correction somehow lost in more recent EIRENE branches)
 cdr Jan. 17:    started to separate more clearly the (unfinished) NLCASCAD option from active code
 C               Done for COLATM and EI processes.
-C               wminv activated in colmol for ei processes (analog to colatm)
+C            wminv activated in colmol for EI processes (analog to colatm)
 cdr May 17: some spelling error corrections in comments adopted from ITER branch
 c            AE: analog, --> BE: analogue, etc..
 cdr Nov. 17: remove call to subr.store  (flag NLSTOR: out)
@@ -69,7 +65,6 @@ cdr          comments for further unification of colatm,colmol,colion routines
 cdr          P2NDS --> P2NEI
 
       MODULE EIRMOD_COLATM
-
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -148,6 +143,7 @@ cym IAPH, RMMIO, RMIIO and IRPH removed during merge
       contains
 
       SUBROUTINE EIRENE_COLATM(CFLAG,COLTYP,DIST)
+C
 C  SAMPLE FROM COLLISION KERNEL C
 C
 C  INPUT:  COMPRT, COMMON BLOCK, CONTAINING ACTUAL PARTICLE PARAMETERS
@@ -267,7 +263,7 @@ C
       IF (ZEP1.LE.SIGEIT) THEN
 C
 C  AT THIS POINT: NEII_RED.GE.1, FOR OTHERWISE ZEP1 COULD NOT HAVE
-C                 POINTED TO EI-PROCESSES
+C                 POINTED TO EI PROCESSES
 C
 C  ELECTRON IMPACT COLLISION:
 C
@@ -507,9 +503,8 @@ C  E.G. FOR CX RECOMBINATION
 ! JUST OPPOSITE TO EI CASE:
 CDR IN EI CASE: LAST TEST SECONDARY WAS FOLLOWED, ALL OTHERS STORED ON SPLITTING ARRAY.
 CDR IN CX CASE: OPPOSITE.   TRY TO UNIFY !!
-C NORMALLY THERE IS ONLY ONE SECONDARY, AND WE FOLLOW (THIS ONLY) TEST SECONDAY
+C NORMALLY THERE IS ONLY ONE SECONDARY, AND WE FOLLOW (THIS ONLY) TEST SECONDARY
 C HERE FIRST AND LAST HAVE A SPECIAL MEANING (EXCHANGE OF IDENTITY, VELOCITIES, ETC..)
-
 
 C  STORE 2ND SECONDARY, SPEED OF PREVIOUS TEST PARTICLE,
 c  (i.e. scattering angle = PI), energy may have changed.
@@ -905,7 +900,7 @@ C  DO NOT UPDATE BGK TALLIES HERE
         IF (IBGK.NE.0) GOTO 300
 
 C  UPDATE COLLISION ESTIMATOR CONTRIBUTION
-C  ASSUME, AS BEFORE, NO CHANGE IN SPECIES/TYP
+C  ASSUME, AS BEFORE, NO CHANGE IN SPECIES/TYPE
         IF (IESTEL(IREL,1).NE.0) THEN
           IF (LPAAT) THEN
 !$OMP ATOMIC
@@ -956,7 +951,7 @@ C
         NCELL = NCLLO
         RETURN
 C
-C  GENERAL ION IMPACT COLLISION: PI-PROCESSES. NOT READY
+C  GENERAL ION IMPACT COLLISION: PI PROCESSES. NOT READY
 C
       ELSEIF (ZEP1.LE.SIGEIT+SIGCXT+SIGELT+SIGPIT) THEN
 C
@@ -1139,6 +1134,6 @@ C
   999 WRITE (iunout,*) 'ERROR IN COLLIDE '
       WRITE (iunout,*) 'ITYP ',ITYP,IPHOT,IATM,IMOL,IION,IPLS
       CALL EIRENE_EXIT_OWN(1)
-      END
-      
+      END SUBROUTINE EIRENE_COLATM
+
       END MODULE EIRMOD_COLATM

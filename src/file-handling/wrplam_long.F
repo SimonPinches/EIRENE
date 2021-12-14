@@ -1,3 +1,4 @@
+cdr jan. 2020: remove argument IRET. Unused.
 c  jan. 2019:  lgdft removed.  read (....,IOSTAT=IO)
 c  oct. 2018:  iflg=0 read primary source data (incl. stepfunctions)
 c              else   no reading of primary source data 

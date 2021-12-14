@@ -54,4 +54,5 @@ C     DATA              EPS  / 5.D-10 /
 *        Kreisfoermiger Zylinder
          R = SQRT(- NUE/LAMBDA(1))
       ENDIF
-      END
+      RETURN
+      END SUBROUTINE EIRENE_ELLZYL

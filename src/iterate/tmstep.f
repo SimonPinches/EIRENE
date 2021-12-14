@@ -1,19 +1,23 @@
-cdr  sept.2015:  nlscl scaling option for rpartc (weights of census scores),
+cdr  sept.2015:  NLSCL scaling option for rpartc (weights of census scores),
 cdr              but not for census flux FLUX(NSTRAI) ???  to be done ??
 cdr              added census fluxes resolved wrt. species and stratum
 cdr              currently only for diagnostic printout, but should be used
 cdr              also for stratifying re-sampling to preserve species specific
 cdr              fluxes exactly
-cdr  aug. 2016:  nlscl corrections are also not on partw, i.e. not
+cdr  aug. 2016:  NLSCL corrections are also not on partw, i.e. not
 cdr              accounted for during bootstrapping (re-sampling) from census
+cdr  jul. 2020:  statement 300 continue moved up a bit.
+cdr              This ensures that fort.15 (census array) is written
+cdr              even in case of zero flux to census (empty censius then). To
+cdr              facilitate continuation in time-dep runs even
+cdr              if "zeroth time step" (census initialization) was too large.
 
 CDR  APRIL 2006: IPHOT ADDED TO LOOP: DO 140
-!pb  31.10.06:  definition of census arrays RPART, RPARTC, IPART, IPARTC changed
-!               first and 2nd dimension of array interchanged
+
 C
       SUBROUTINE EIRENE_MOD_TMSTEP
 C
-C  THIS SUBROUTINE IS CALLED AFTER EACH TIME-CYCLE. IT ALLOWS TO
+C  THIS SUBROUTINE IS CALLED AFTER EACH TIME CYCLE. IT ALLOWS TO
 C  MODIFY SOME PLASMA BACKGROUND AND PRIMARY SOURCE DATA (I.E., STRATA
 C  ISTRA=1,NSTRAI-1) ACCORDING TO INPUT SPECIFICATIONS IN BLOCK 13.
 C
@@ -21,7 +25,7 @@ C  IT THEN DEFINES THE ADDITIONAL "CENSUS-STRATUM" ISTRA=NSTRAI, I.E., THE SOURC
 C  THE INITIAL CONDITION AT THE BEGINNING OF THE NEXT TIMESTEP.
 C  FLUX(NSTRAI)    : ATOMIC FLUX
 C  RPARTW(1:IPNRL) : CUMULATIVE DISTRIBUTION FOR SAMPLING INDEX I ON CENSUS
-C                    NOT NORMALIZED, AND WITHOUT NPRT FLUX FACTOR
+C                    NOT NORMALIZED, AND WITHOUT NPRT FLUX FACTORS
 C
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: MPARTT, NATM, NION, NMOL, NPHOT, NPARTT,
@@ -52,7 +56,7 @@ C
 C
 C  STEP 1
 C
-C  REDUCE REDUNDANT PRINTOUT
+C  REDUCE REDUNDANT PRINTOUT IN NEXT TIME STEP
       TRCPLT=.FALSE.
       TRCGRD=.FALSE.
       PLTSRC(NSTRAI)=.FALSE.
@@ -60,7 +64,8 @@ C  REDUCE REDUNDANT PRINTOUT
         PLTSRC(NSTRAI)=PLTSRC(NSTRAI).OR.PLTSRC(ISTRAI)
   120 CONTINUE
 C
-C  SPEED UP GEOMETRY
+C  SPEED UP GEOMETRY. USE INFO FROM PREVIOUS TIME-STEP
+C  tbd.    
 C
 C  STEP 2
 C
@@ -81,9 +86,12 @@ C  NCUTL.NE.NCUTB
 C
 C  STEP 3
 C
-C  SET SOURCE DUE TO INITIAL CONDITION FOR NEXT TIME-CYCLE
+C  SET SOURCE DUE TO INITIAL CONDITION FOR NEXT TIME CYCLE
+C  THERE HAVE BEEN IPRNL SCORES ON THE CENSUS IN THIS PRESENT RUN.
 C
-C  SOURCE STRENGTH OF INITIAL DISTRIBUTION IN NEW TIME-CYCLE
+C  SOURCE STRENGTH OF INITIAL DISTRIBUTION IN NEW TIME CYCLE
+
+C  A: set NPTS for time stratum NSTRAI IN NEXT TIME STEP
       IPRNL=IPRNLI
       IPRNLI=0
       IF (NPTST.EQ.0) THEN
@@ -113,6 +121,7 @@ C  OLD CENSUS CONTAINS IPRNL ENTRIES.
   130 CONTINUE
       SGMREL=0.0
 C
+cdr  empty census?
       IF (IPRNL.EQ.0) GOTO 300
 
       RPSTT(1:NPARTT)=RPART(1:NPARTT,1)
@@ -129,19 +138,19 @@ C
       ADDI =0.
 C
 C  SET "ATOMIC" FLUXES ONTO CENSUS ARRAY
-C  APPLY PART. BALANCE CORRECTION SCALING, IF NLSCL, FOR THE TOTAL CENSUS FLUX
+C  IF NLSCL, APPLY PART. BALANCE CORRECTION SCALING, FOR THE TOTAL CENSUS FLUX
 
 C  THIS IS ALREADY DONE ON "TIME SURFACE" TALLY ELSEWHERE, AS IT IS ON ANY OTHER SURFACE
-C  BUT DONE HERE ADDITIONALLY ON THE PARTICULAR "CENSUS ARRAYS" RPARTW (RESAMPLING), RPART(9,..),
+C  BUT IS DONE HERE ADDITIONALLY ON THE PARTICULAR "CENSUS ARRAYS" RPARTW (RESAMPLING), RPART(9,..),
 C  AND THE SPECIES TYPE-RESOLVED FLUXES ADDPH, ADDA, ADDM, ADDI
 
       DO 140  I=1,IPRNL
         RPSTT(1:NPARTT)=RPART(1:NPARTT,I)
         IPSTT(1:MPARTT)=IPART(1:MPARTT,I)
 
-cdr     IPAN=IPART(1,I)  ! particle number of score I on census
+cdr     IPAN=IPART(1,I)  ! particle number of score I on census = NPANU
 cdr     ISTR=IPART(8,I)  ! stratum  number of score I on census = ISTRA
-cdr     ITYP=ISPEZI(IPART(9,I),-1)
+cdr     ISPZ=IPART(9,I)  ! species index of score I on census   = ISPZ
 
         ITYP=ISPEZI(ISPZ,-1) !  ispz is now known (pointer to ipstt(9))
         WEIGHT0=WEIGHT
@@ -172,8 +181,10 @@ cdr     ITYP=ISPEZI(IPART(9,I),-1)
         ENDIF
 
 C  SET DISCRETE CUMULATIVE CENSUS FLUX DISTRIBUTION FOR RESAMPLING OF SCORE-INDEX "I"
-C  DO NOT INCLUDE NPRT FACTOR, BECAUSE THIS WILL BE CARRIED BY RELAUNCHED PARTICLE
+C  DO NOT INCLUDE NPRT FACTORS, BECAUSE THIS WEIGHT-FACTOŔ WILL ALREADY BE CARRIED BY RELAUNCHED PARTICLE
 C  ALSO THE BALANCE CORRECTION FACTORS FATM,... ARE NOT INCLUDED HERE
+C       RPARTW(I)=RPARTW(I-1)+ADDP  ! same as next line
+
         RPARTW(I)=RPARTW(I-1)+WEIGHT0*FLXFAC(ISTRA)
 C
 C  ACCUMULATE CONTRIBUTION FROM TEST FLIGHT NO. NPANUO
@@ -196,6 +207,7 @@ C   PUT WEIGHT OF CURRENT CENSUS SCORE NPANU ONTO ADDS
           ADDS=ADD
         ENDIF
 
+C   WEIGHT may have been altered. So: redefine entire this component of state vector.
         RPART(1:NPARTT,I)=RPSTT(1:NPARTT)
   140 CONTINUE
 
@@ -417,4 +429,4 @@ C   PRINT ADDPH(IPHOT) FOR ISTRAI=0
       WRITE (IUNOUT,*) '...............................................'
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_MOD_TMSTEP

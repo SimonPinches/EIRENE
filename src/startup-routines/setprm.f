@@ -8,6 +8,7 @@ cdr dec 15:  energy balance tallies for bulk ions: now have a species index (ipl
 cdr          tallies 38,44,50,56,84
 cdr june 17: comments
 cdr oct 18 : nfrstp (leading dimension of input tallies) now set in setprm_intal.f
+cdr mar 21 : commments, cleanup
 
 C
 C  *************************
@@ -131,8 +132,8 @@ c         generation limit activated
       LEXTALV(NTALA) = NADV>0  ! additional tracklength estimator tally (update.f)
       LEXTALV(NTALC) = NCLV>0  ! additional collision estimator tally   (collide.f)
       LEXTALV(NTALT) = NSNV>0  ! additional snapshot tally
-      LEXTALV(NTALM) = NCPV>0
-      LEXTALV(NTALB) = NBGV>0
+      LEXTALV(NTALM) = NCPV>0  ! additional tallies for interfacing to external codes
+      LEXTALV(NTALB) = NBGV>0  ! additional tallies for BGK iterations
       LEXTALV(NTALR) = NALV>0  ! additional tally, algebraic expression, postprocessing
 C  GENERATION LIMIT TALLIES
 C  some of these tallies may be
@@ -177,13 +178,13 @@ C  MOMENTUM DENSITY, Z DIRECTION
       LEXTALV(94) = NMOL>0
       LEXTALV(95) = NION>0
       LEXTALV(96) = NPHOT>0
-C  PARALLEL (TO B-FIELD) MOMENTUM SOURCE RATES
+C  PARALLEL (TO B FIELD) MOMENTUM SOURCE RATES
       LEXTALV(97) = (NPLS>0) .AND. (NATM>0)
       LEXTALV(98) = (NPLS>0) .AND. (NMOL>0)
       LEXTALV(99) = (NPLS>0) .AND. (NION>0)
       LEXTALV(100) = (NPLS>0) .AND. (NPHOT>0)
 
-C  CURRENTLY THE LAST DEFAULT TALLY IS TALLY NO. 100
+C  CURRENTLY THE LAST DEFAULT TALLY IS TALLY NO. 103
 
 C  LMISTALV(ITAL) = FALSE: TALLY HAS BEEN DEACTIVATED BY INPUT FLAGS SET IN INPUT BLOCK 11
 C  DEFAULT: LMISTALV=.FALSE. FOR ALL TALLIES, I.E. "ALL TALLIES ARE LIVING"
@@ -307,7 +308,7 @@ C  MOMENTUM DENSITY, Z DIRECTION
       NFIRST(94)=NMOL
       NFIRST(95)=NION
       NFIRST(96)=NPHOT
-C  PARALLEL (TO B-FIELD) MOMENTUM SOURCE RATES
+C  PARALLEL (TO B FIELD) MOMENTUM SOURCE RATES
       NFIRST(97)=NPLS
       NFIRST(98)=NPLS
       NFIRST(99)=NPLS
@@ -782,4 +783,4 @@ c.............................................................................
       END IF
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_SETPRM

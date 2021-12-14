@@ -3,11 +3,11 @@ cdr  re-activated: Jan 2018
       subroutine EIRENE_read_photdbk (ir, reac, isw)
 c   read parameters relevant "reaction no IR" for line transport (photon gas transport)
 c   from photonic database, into EIRENE data structure REACDAT(IR).
+c   A photon (IPHOT) "line" is a sharp or broadened emission source.
+c   A continuum emission from a given spectral source distribution is also
+c   a "line" (=photon species), by abuse of language.
 c
 
-
-!  16.2.05:  write statement taken out
-!  2.11.05:  database handling introduced for file POLARI
       use EIRMOD_precision
       use EIRMOD_parmmod
       USE EIRMOD_COMXS
@@ -343,13 +343,14 @@ c  i.e. a single reaction IR can consist of OT and of RC processes.
 c
 
       modclf(ir) = 100
+c  constant rate (1/s)
       iftflg(ir,2) = 110
 
       rdata = 0._dp
       rdata(1,1) = aik
 
 cdr
-c  So far photonic cross-sections, rate coeff. and rates are const.
+c  So far photonic cross-sections, rate coeff. and rates are constant.
 c  i.e. special (trivial, 0th-order) cases of polygonial fits.
 c  Use REACDAT type "poly" also for photonic data
       call EIRENE_set_reaction_data

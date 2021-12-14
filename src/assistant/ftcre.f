@@ -8,4 +8,4 @@ C  write a real number F in format E10.3 onto character string C(10)
       CHARACTER(10), INTENT(OUT) :: C
       WRITE(C,'(1P,E10.3)') F
       RETURN
-      END
+      END SUBROUTINE EIRENE_FTCRE

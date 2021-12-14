@@ -1,7 +1,7 @@
 C
-C   ****************************
-C   *  NONANALOG METHODS, A.I. *
-C   ****************************
+C   *****************************
+C   *  NON-ANALOG METHODS, A.I. *
+C   *****************************
 C
 C      SUBROUTINE NANALG
 C
@@ -131,8 +131,6 @@ C
       CALL EIRENE_LEER(1)
       IF (NR1ST.GT.1) THEN
         WRITE (iunout,*) 'RADIAL SURFACES: '
-!       CALL EIRENE_MASAL1
-!    .  ('NLSPLT',NLSPLT(1),MIN(NR1ST,N1ST+N2ND+N3RD+NLIM))
         NA = 1
         NANZ = MIN(NR1ST,N1ST+N2ND+N3RD+NLIM)
         NE = NANZ
@@ -141,7 +139,6 @@ C
       ENDIF
       IF (NP2ND.GT.1) THEN
         WRITE (iunout,*) 'POLOIDAL SURFACES: '
-!       CALL EIRENE_MASAL1 ('NLSPLT',NLSPLT(N1ST+1),NP2ND)
         NA = N1ST + 1 
         NANZ = NP2ND
         NE = N1ST + NANZ
@@ -150,7 +147,6 @@ C
       ENDIF
       IF (NT3RD.GT.1) THEN
         WRITE (iunout,*) 'TOROIDAL SURFACES: '
-!       CALL EIRENE_MASAL1 ('NLSPLT',NLSPLT(N1ST+N2ND+1),NT3RD)
         NA = N1ST+N2ND+1 
         NANZ = NT3RD
         NE = N1ST+N2ND+NT3RD
@@ -159,7 +155,6 @@ C
       ENDIF
       IF (NLIMI.GE.1) THEN
         WRITE (iunout,*) 'ADDITIONAL SURFACES: '
-!       CALL EIRENE_MASAL1 ('NLSPLT',NLSPLT(N1ST+N2ND+N3RD+1),NLIMI)
         NA = N1ST+N2ND+NT3RD+1 
         NANZ = NLIMI
         NE = N1ST+N2ND+NT3RD+NLIMI
@@ -167,4 +162,4 @@ C
         CALL EIRENE_LEER(1)
       ENDIF
       RETURN
-      END
+      END SUBROUTINE EIRENE_NANALG

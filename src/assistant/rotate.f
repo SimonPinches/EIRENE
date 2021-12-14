@@ -54,7 +54,7 @@ C                        /C1 C2 C3/
       VLABX=CX*VLOCX+A2*VLOCY+A3*VLOCZ
       VLABY=CY*VLOCX+B2*VLOCY+B3*VLOCZ
       VLABZ=CZ*VLOCX+C2*VLOCY+C3*VLOCZ
-      END
+      END SUBROUTINE EIRENE_ROTATE
 C
       SUBROUTINE EIRENE_ROTATF(VLABX,VLABY,VLABZ,VLOCX,VLOCY,VLOCZ,
      .             CX,CY,CZ)
@@ -111,7 +111,7 @@ C                       /C1 C2 C3/
       VLABX=                     VLOCZ
       VLABY=        -CZ*VLOCY
       VLABZ=CZ*VLOCX
-      END
+      END SUBROUTINE EIRENE_ROTATF
 C
       SUBROUTINE EIRENE_ROTATI(VLABXI,VLABYI,VLABZI,
      .                         VLOCXI,VLOCYI,VLOCZI,
@@ -172,4 +172,4 @@ C                       /C1 C2 C3/
       VLOCYI=         -CZ*VLABYI
       VLOCZI=   VLABXI
       RETURN
-      END
+      END SUBROUTINE EIRENE_ROTATI

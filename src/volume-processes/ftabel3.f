@@ -8,12 +8,12 @@ c  calls of ftabel3 in fpath..: not ready
 
       FUNCTION EIRENE_FTABEL3 (IREL,K)
 c  evaluate elastic collision rate (1/s),
-c  for el process no. IREL,
+c  for EL process no. IREL,
 c         in cell no. K
 c  input via common:
 c         bulk collision partner: IPLS
 c
-c  ftabel3 is currently not called.
+c  FTABEL3 is currently not called.
 
 c  soon (first stage):
 c  FTABEL3 is currently only called in case MODCOL(3,2,IREL)=1, i.e. rate depends only
