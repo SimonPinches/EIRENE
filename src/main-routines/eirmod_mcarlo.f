@@ -261,6 +261,11 @@ C  INITIALIZE SUBR. SAMSRF
       TIM2=EIRENE_SECOND_OWN()
 cdr   write (iunout,*) 'cpu time for samsf0 ', tim2-tim1
       tim1 = tim2
+C  INITIALIZE SUBR. UPDLIN
+      CALL EIRENE_PREPARE_UPDLIN
+      TIM2=EIRENE_SECOND_OWN()
+cdr   write (iunout,*) 'cpu time for prepare_updlin ', tim2-tim1
+      tim1 = tim2
 C
 C
       IESTR=-1
@@ -1534,11 +1539,18 @@ C
         IF (TRCFLE) WRITE (iunout,*) 'WRITE DATA FOR RECALL OPTION '
         IRC=1
         WRITE (11+ifoff,REC=IRC) LOGATM,LOGION,LOGMOL,LOGPLS,LOGPHOT
+#ifdef CHECKBIN
+        WRITE (111,*) 'LOGATM,LOGION,LOGMOL,LOGPLS,LOGPHOT ',
+     .                 LOGATM,LOGION,LOGMOL,LOGPLS,LOGPHOT
+#endif
         IF (TRCFLE)   WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
         IRC=2
         ALLOCATE (OUTAU(NOUTAU))
         CALL EIRENE_WRITE_COUTAU (OUTAU, IUNOUT)
         WRITE (11+ifoff,REC=IRC) OUTAU
+#ifdef CHECKBIN
+        WRITE (111,*) 'OUTAU ', OUTAU
+#endif
         DEALLOCATE (OUTAU)
         IF (TRCFLE)   WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
 

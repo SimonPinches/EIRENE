@@ -2905,6 +2905,10 @@ C  WRITE RCCPL
       WRITE (11,REC=IRC) RCCPL
       IF (TRCINT.OR.TRCFLE)
      .    WRITE (iunout,*) 'WRITE 11  RCCPL,   IRC= ',IRC
+#ifdef CHECKBIN
+      write (111,*) ' RCCPL '
+      write (111,*) RCCPL
+#endif
 C     IRC=3   STILL
 C  WRITE ICCPL1
       ALLOCATE (IHELP(NOUTAU))
@@ -2916,6 +2920,10 @@ C  WRITE ICCPL1
           IF (JC == NOUTAU) THEN
             IRC=IRC+1
             WRITE (11,REC=IRC) IHELP
+#ifdef CHECKBIN
+      write (111,*) ' ICCPL1 '
+      write (111,*) IHELP
+#endif
             IF (TRCINT.OR.TRCFLE)
      .          WRITE (iunout,*) 'WRITE 11  ICCPL1,  IRC= ',IRC
             JC=0
@@ -2927,6 +2935,9 @@ c  write last (incomplete) record of ICCPL1
         IHELP(JC+1:NOUTAU) = 0   ! fill up last record, up to full length NOUTAU
         IRC=IRC+1
         WRITE (11,REC=IRC) IHELP
+#ifdef CHECKBIN
+      write (111,*) IHELP
+#endif
         IF (TRCINT.OR.TRCFLE)
      .      WRITE (iunout,*) 'WRITE 11  ICCPL1,  IRC= ',IRC
       END IF
@@ -2934,10 +2945,18 @@ c  write last (incomplete) record of ICCPL1
 C  WRITE ICCPL2
       IRC=IRC+1
       WRITE (11,REC=IRC) ICCPL2
+#ifdef CHECKBIN
+      write (111,*) ' ICCPL2 '
+      write (111,*) ICCPL2
+#endif
       IF (TRCINT.OR.TRCFLE)
      .    WRITE (iunout,*) 'WRITE 11  ICCPL2,  IRC= ',IRC
       IRC=IRC+1
       WRITE (11,REC=IRC) LCCPL
+#ifdef CHECKBIN
+      write (111,*) ' LCCPL '
+      write (111,*) LCCPL
+#endif
       IF (TRCINT.OR.TRCFLE)
      .    WRITE (iunout,*) 'WRITE 11  LCCPL,   IRC= ',IRC
 C
