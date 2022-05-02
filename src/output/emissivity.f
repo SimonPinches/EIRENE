@@ -284,7 +284,7 @@ cdr  now sum over components: on tally ADDV(IADS)
 
         TXTTAL(IADS,NTALA) =REPEAT(' ',72)
         TXTTAL(IADS,NTALA) ='SUM OVER COMPONENTS  '
-        TXTSPC(IADS,NTALA) ='  '
+        TXTSPC(IADS,NTALA) ='ALL COMPONENTS'
         TXTUNT(IADS,NTALA) ='PHOTONS/S/CM**3         '
         IF (TRCSIG)
      .    WRITE (iunout,*) ' TALLY ADDV(IADV) prepared. IADV=',IADS
