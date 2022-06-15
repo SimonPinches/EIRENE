@@ -28,7 +28,7 @@ c       isc =1:  score in coarse (scoring) grid
 c       isc =2:  score in fine (geometry)  grid
 c       ind:  not in use  (often: ind = iflag in calling programs,
 c                          IFLAG is a flag used for special (non-standard)
-c                         options for volume-averaged tally estimators)
+c                          options for volume-averaged tally estimators)
 c  ityp:  type of particle
 
       USE EIRMOD_PRECISION
@@ -136,7 +136,7 @@ cdr  score SPC(I), ESP_MIN and ESP_MAX
 ! CELL-BASED SPECTRA
 
 cdr  meaning of isc = 1,2  see subr. input, flag ISRFCLL
-cdr  meaning of ind:   not in use for cell-based spectra    ??  iflag in calling program ??
+cdr  meaning of ind: not in use for cell-based spectra    ??  iflag in calling program ??
 
         WV=WEIGHT/VEL
         DO IC=1,NCOU

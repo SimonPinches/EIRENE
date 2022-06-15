@@ -93,7 +93,7 @@ c       make sure we are looking at a tria/quadr/quintangle
         IF (RLB(SID).ge.3) THEN
 c         for every triangle we may get (triangle = 1, quadrangle = 2, quintangle = 3)
 c         make a test run! (wow... that is much work to do...)
-          DO T=1,int(RLB(SID)-2.)
+          DO T=1,nint(RLB(SID)-2.)
 c           get us these points of the triangle we look at
             SELECT CASE(T)
               CASE(1)

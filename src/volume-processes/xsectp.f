@@ -129,7 +129,9 @@ C
 C
             NPRCI(IPLS)=IDSC
 
-          ELSEIF (NCHARP(IPLS).EQ.2.AND.NCHRGP(IPLS).EQ.1) THEN  ! this is now He+
+cdr Sept. 19 added: nprt=1, to avoid confusing D2+ and He+ virtual background here
+          ELSEIF (NCHARP(IPLS).EQ.2.AND.NCHRGP(IPLS).EQ.1
+     .      .AND. NPRT(ISPZ).EQ.1) THEN  ! this is now He+
 C
 C  DEFAULT HELIUM + RADIATIVE RECOMBINATION MODEL
 C  HELIUM ION (HE+) RECOMBINATION RATE COEFFICIENT (1/S/CCM) E + HE+ --> HE(1S) + RAD.
@@ -341,7 +343,7 @@ C  4.B)  ENERGY LOSS RATE OF IMP. ELECTRON = -1.5*TE*RATE COEFF.
 C
               ELSEIF (NSERC5.EQ.3) THEN
 
-                KREAD=INT(EELECP(IPLS,NRC))
+                KREAD=NINT(EELECP(IPLS,NRC))
                 IF ((KREAD < 1) .OR. (KREAD > NREACI)) GOTO 996
                 MODC=EIRENE_IDEZ(MODCLF(KREAD),5,5)
 c  special treatment in case bremsstrahlung is contained in energy loss rate
@@ -440,9 +442,9 @@ c                 ELSE  ! ??
                   END IF
 C
                 ENDIF   ! DELPOT
+              ENDIF  !  NSERC5 
             ELSE
               GOTO 997
-               ENDIF  !  NSERC5 
             ENDIF  !  ISWR
 C
    82     CONTINUE

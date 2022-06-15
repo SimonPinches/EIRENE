@@ -25,6 +25,7 @@ cdr  comments re: cell_elem, cell_list needed
      R XPOINT(:), YPOINT(:)
 
 cdr  only for polygons ?
+cpb  also used for elliptical grids and poloidal resolution
       REAL(DP), PUBLIC, POINTER, SAVE ::
      R XPOL(:,:), YPOL(:,:)
 
@@ -42,6 +43,7 @@ cdr  damaged cell ?
      L LDAMCEL(:)
 
 cdr  comments ??
+cpb  data types for a simple linked list 
       TYPE :: CELL_ELEM
         INTEGER :: NOCELL
         TYPE(CELL_ELEM), POINTER :: NEXT_CELL
@@ -51,6 +53,8 @@ cdr  comments ??
         TYPE(CELL_ELEM), POINTER :: PCELL
       END TYPE CELL_LIST
 
+cpb  array of linked lists providing the numbers of all cells surrounding
+cpb  a vertex point   
       TYPE(CELL_LIST), ALLOCATABLE, SAVE, PUBLIC :: COORCELL(:)
 
 

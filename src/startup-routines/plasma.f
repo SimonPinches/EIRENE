@@ -28,15 +28,15 @@ cdr: why is that not needed for V and n profiles?
       SUBROUTINE EIRENE_PLASMA
 C  SET DENSITY, TEMPERATURE AND MACH NUMBER PROFILES, B AND E FIELDS,
 C  ON:
-C  INDPRO=1,2,3    1D MESH "RHOZNE(J)", 1,NR1STM, CELL-CENTERED
-C                  B FIELD (INDPRO(5)) SET ON 1:NSURF
-C  INDPRO=4        READ FROM EXTERNAL FILE JSTREAM, EVERYWHERE, 1,NSBOX,
-C  INDPRO=5        PROUSR: ONLY IN STANDARD GRID, 1:NSURF
-C  INDPRO=6        PROFR : ONLY IN STANDARD GRID, 1:NSURF
-C  INDPRO=7        PROFR : EVERYWHERE, 1,NSBOX
+C  INDPRO=1,2,3 1D MESH "RHOZNE(J)", 1,NR1STM, CELL-CENTERED
+C               B FIELD (INDPRO(5)) SET ON 1:NSURF
+C  INDPRO=4     READ FROM EXTERNAL FILE JSTREAM, EVERYWHERE, 1,NSBOX,
+C  INDPRO=5     PROUSR: ONLY IN STANDARD GRID, 1:NSURF
+C  INDPRO=6     PROFR : ONLY IN STANDARD GRID, 1:NSURF
+C  INDPRO=7     PROFR : EVERYWHERE, 1,NSBOX
 C  INDPRO=8     INPUT TALLY IS FOUND "ON THE FLY" DURING PART. TRACING
 C               CURRENTLY: B field (BFIELD.F), flow field (VDION.F)
-C  INDPRO=9        INPUT TALLIES ARE ALREADY SET ELSEWHERE, 1:NSURF ??
+C  INDPRO=9     INPUT TALLIES ARE ALREADY SET ELSEWHERE, 1:NSURF ??
 C
 
       USE EIRMOD_PRECISION
@@ -55,7 +55,7 @@ C
 
       IMPLICIT NONE
 
-      REAL(DP), ALLOCATABLE :: HELP(:), HELP2(:)
+      REAL(DP), ALLOCATABLE :: HELP(:), HELP2(:), RDUMMY(:,:)
       REAL(DP) :: PUX, PUY, EL, EP, PN, BD, B, BVAC, FACT
       INTEGER :: IB, IAIN, K, JJ, ITALI, ICELL, IND, JSTREAM,
      .           IP, IT, IA, J, IR, IPLSTI, IPLSV, JPLS, NDIM
@@ -121,10 +121,16 @@ c  INDPRO=5:  tally from PROUSR, indx=0
         CALL EIRENE_PROUSR (TEIN,0,TE0,TE1,TE2,TE3,TE4,TE5,TVAC,NSURF)
       CASE (6)
 c  INDPRO=6:  tally from PROFR,  1:NSURF
-        CALL EIRENE_PROFR (TEIN,0,1,1,NSURF)
+        ALLOCATE(RDUMMY(1,1:NSURF))
+        CALL EIRENE_PROFR (RDUMMY,0,1,1,NSURF)
+        TEIN(1:NSURF) = RDUMMY(1,1:NSURF)
+        DEALLOCATE(RDUMMY)
       CASE (7)
 c  INDPRO=7:  tally from PROFR,  1:NSBOX=NSURF+NRADD
-        CALL EIRENE_PROFR (TEIN,0,1,1,NSBOX)
+        ALLOCATE(RDUMMY(1,1:NSBOX))
+        CALL EIRENE_PROFR (RDUMMY,0,1,1,NSBOX)
+        TEIN(1:NSBOX) = RDUMMY(1,1:NSBOX)
+        DEALLOCATE(RDUMMY)
       END SELECT
 
 C  ION TEMPERATURE
@@ -168,12 +174,18 @@ c  INDPRO=5:  tally from PROUSR, indx=1, but NPLSTI calls, one for each IPLSTI
 cdr distinct from indpro=1,...5:  now one single call for all IPLS=1,NPLSTI
         case(6)
 c  INDPRO=6:  tally from PROFR, indx=1, all TIIN fields in one single call
-          CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NDIM,NSURF)
+          ALLOCATE(RDUMMY(NDIM,NSURF))
+          CALL EIRENE_PROFR (RDUMMY,1+0*NPLS,NPLSTI,NDIM,NSURF)
+          TIIN(1:NPLSTI,1:NSURF) = RDUMMY(1:NPLSTI,1:NSURF)
+          DEALLOCATE(RDUMMY)
 !pb all species fields have been filled in this call thus exit loop
           EXIT
         case (7)
 c  INDPRO=7:  tally from PROFR, indx=1, all TIIN fields in one single call
-          CALL EIRENE_PROFR (TIIN,1+0*NPLS,NPLSTI,NDIM,NSBOX)
+          ALLOCATE(RDUMMY(NDIM,NSBOX))
+          CALL EIRENE_PROFR (RDUMMY,1+0*NPLS,NPLSTI,NDIM,NSBOX)
+          TIIN(1:NPLSTI,1:NSBOX) = RDUMMY(1:NPLSTI,1:NSBOX)
+          DEALLOCATE(RDUMMY)
 !pb all species fields have been filled in this call thus exit loop
           EXIT
         end select
@@ -221,13 +233,19 @@ cdr distinct from indpro=1,...5:  now one single call for all IPLS=1,NPLSI
         case (6)
 c  INDPRO=6:
 cdr first dimension of arrays:  always NPLS
-          CALL EIRENE_PROFR (DIIN,1+0*NPLS+NPLSTI,NPLSI,NPLS,NSURF)
+          ALLOCATE(RDUMMY(NPLS,NSURF))
+          CALL EIRENE_PROFR (RDUMMY,1+0*NPLS+NPLSTI,NPLSI,NPLS,NSURF)
+          DIIN(1:NPLSI,1:NSURF) = RDUMMY(1:NPLSI,1:NSURF)
+          DEALLOCATE(RDUMMY)
 !pb all species fields have been filled in this call thus exit loop
           EXIT
         case (7)
 c  INDPRO=7:
 cdr first dimension of arrays:  always NPLS
-          CALL EIRENE_PROFR (DIIN,1+0*NPLS+NPLSTI,NPLSI,NPLS,NSBOX)
+          ALLOCATE(RDUMMY(NPLS,NSBOX))
+          CALL EIRENE_PROFR (RDUMMY,1+0*NPLS+NPLSTI,NPLSI,NPLS,NSBOX)
+          DIIN(1:NPLSI,1:NSBOX) = RDUMMY(1:NPLSI,1:NSBOX)
+          DEALLOCATE(RDUMMY)
 !pb all species fields have been filled in this call thus exit loop
           EXIT
         end select
@@ -294,24 +312,34 @@ cdr distinct from indpro=1,...5:  now one single call for all IPLS=1,NPLSV
         case (6)
 c  read tally from external data structure, all V.IN fields in one single call
 cdr first dimension of arrays:  always NPLSV
-          CALL EIRENE_PROFR (VXIN,1+1*NPLS+NPLSTI+0*NPLSV,
+          ALLOCATE(RDUMMY(NDIM,NSURF))
+          CALL EIRENE_PROFR (RDUMMY,1+1*NPLS+NPLSTI+0*NPLSV,
      .                       NPLSV,NDIM,NSURF)
-          CALL EIRENE_PROFR (VYIN,1+1*NPLS+NPLSTI+1*NPLSV,
+          VXIN(1:NPLSV,1:NSURF) = RDUMMY(1:NPLSV,1:NSURF)
+          CALL EIRENE_PROFR (RDUMMY,1+1*NPLS+NPLSTI+1*NPLSV,
      .                       NPLSV,NDIM,NSURF)
-          CALL EIRENE_PROFR (VZIN,1+1*NPLS+NPLSTI+2*NPLSV,
+          VYIN(1:NPLSV,1:NSURF) = RDUMMY(1:NPLSV,1:NSURF)
+          CALL EIRENE_PROFR (RDUMMY,1+1*NPLS+NPLSTI+2*NPLSV,
      .                       NPLSV,NDIM,NSURF)
+          VZIN(1:NPLSV,1:NSURF) = RDUMMY(1:NPLSV,1:NSURF)
+          DEALLOCATE(RDUMMY)
 !pb all species fields have been filled in this call thus exit loop
           EXIT
         case (7)
 cdr all nplsv vector component profiles set in a single call
 c  read tally from external data structure, all V.IN fields in one single call
 cdr first dimension of arrays:  always NPLSV
-          CALL EIRENE_PROFR (VXIN,1+1*NPLS+NPLSTI+0*NPLSV,
+          ALLOCATE(RDUMMY(NDIM,NSBOX))
+          CALL EIRENE_PROFR (RDUMMY,1+1*NPLS+NPLSTI+0*NPLSV,
      .                       NPLSV,NDIM,NSBOX)
-          CALL EIRENE_PROFR (VYIN,1+1*NPLS+NPLSTI+1*NPLSV,
+          VXIN(1:NPLSV,1:NSBOX) = RDUMMY(1:NPLSV,1:NSBOX)
+          CALL EIRENE_PROFR (RDUMMY,1+1*NPLS+NPLSTI+1*NPLSV,
      .                       NPLSV,NDIM,NSBOX)
-          CALL EIRENE_PROFR (VZIN,1+1*NPLS+NPLSTI+2*NPLSV,
+          VYIN(1:NPLSV,1:NSBOX) = RDUMMY(1:NPLSV,1:NSBOX)
+          CALL EIRENE_PROFR (RDUMMY,1+1*NPLS+NPLSTI+2*NPLSV,
      .                       NPLSV,NDIM,NSBOX)
+          VZIN(1:NPLSV,1:NSBOX) = RDUMMY(1:NPLSV,1:NSBOX)
+          DEALLOCATE(RDUMMY)
 !pb all species fields have been filled in this call thus exit loop
           EXIT
         end select
@@ -376,17 +404,29 @@ c  INDPRO(5)=5:  call prousr
       case (6)
 c  INDPRO(5) =6:  call profr (information comes from interfacing code)
 c                 default (vacuum) parameters in additional cells
-        CALL EIRENE_PROFR (BXIN,1+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
-        CALL EIRENE_PROFR (BYIN,2+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
-        CALL EIRENE_PROFR (BZIN,3+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
-        CALL EIRENE_PROFR (BFIN,4+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
+        ALLOCATE(RDUMMY(1,1:NSURF))
+        CALL EIRENE_PROFR (RDUMMY,1+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
+        BXIN(1:NSURF) = RDUMMY(1,1:NSURF)
+        CALL EIRENE_PROFR (RDUMMY,2+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
+        BYIN(1:NSURF) = RDUMMY(1,1:NSURF)
+        CALL EIRENE_PROFR (RDUMMY,3+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
+        BZIN(1:NSURF) = RDUMMY(1,1:NSURF)
+        CALL EIRENE_PROFR (RDUMMY,4+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
+        BFIN(1:NSURF) = RDUMMY(1,1:NSURF)
+        DEALLOCATE(RDUMMY)
       case (7)
 c  INDPRO(5) =7:  call profr (information comes from interfacing code)
 c                 include also additional cells
-        CALL EIRENE_PROFR (BXIN,1+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
-        CALL EIRENE_PROFR (BYIN,2+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
-        CALL EIRENE_PROFR (BZIN,3+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
-        CALL EIRENE_PROFR (BFIN,4+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
+        ALLOCATE(RDUMMY(1,1:NSBOX))
+        CALL EIRENE_PROFR (RDUMMY,1+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
+        BXIN(1:NSBOX) = RDUMMY(1,1:NSBOX)
+        CALL EIRENE_PROFR (RDUMMY,2+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
+        BYIN(1:NSBOX) = RDUMMY(1,1:NSBOX)
+        CALL EIRENE_PROFR (RDUMMY,3+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
+        BZIN(1:NSBOX) = RDUMMY(1,1:NSBOX)
+        CALL EIRENE_PROFR (RDUMMY,4+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
+        BFIN(1:NSBOX) = RDUMMY(1,1:NSBOX)
+        DEALLOCATE(RDUMMY)
       end select
 
 C  CONVERT PITCH ANGLE INTO B FIELD UNIT VECTOR
@@ -509,13 +549,19 @@ c          (transfer from problem-specific codes or external data structures)
 
 cdr distinct from indpro=1,...5:  now one single call for all K=1,NAINI
         case (6)
-          CALL EIRENE_PROFR (ADIN,6+1*NPLS+NPLSTI+3*NPLSV,
+          ALLOCATE(RDUMMY(NDIM,NSURF))
+          CALL EIRENE_PROFR (RDUMMY,6+1*NPLS+NPLSTI+3*NPLSV,
      .                       NAINI,NDIM,NSURF)
+          ADIN(1:NAINI,1:NSURF) = RDUMMY(1:NAINI,1:NSURF)
+          DEALLOCATE(RDUMMY)
 !pb all species fields have been filled in this call thus exit loop
           EXIT
         case (7)
-          CALL EIRENE_PROFR (ADIN,6+1*NPLS+NPLSTI+3*NPLSV,
+          ALLOCATE(RDUMMY(NDIM,NSBOX))
+          CALL EIRENE_PROFR (RDUMMY,6+1*NPLS+NPLSTI+3*NPLSV,
      .                       NAINI,NDIM,NSBOX)
+          ADIN(1:NAINI,1:NSBOX) = RDUMMY(1:NAINI,1:NSBOX)
+          DEALLOCATE(RDUMMY)
 !pb all species fields have been filled in this call thus exit loop
           EXIT
         end select
@@ -539,15 +585,27 @@ c          (transfer from problem-specific codes or external data structures)
      .                      EF0,EF1,EF2,EF3,EF4,EF5,0._DP,NSURF)
 
       case (6)
-        CALL EIRENE_PROFR (EXIN,7+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
-        CALL EIRENE_PROFR (EYIN,8+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
-        CALL EIRENE_PROFR (EZIN,9+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
-        CALL EIRENE_PROFR (EFIN,10+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
+        ALLOCATE(RDUMMY(1,1:NSURF))
+        CALL EIRENE_PROFR (RDUMMY, 7+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
+        EXIN(1:NSURF) = RDUMMY(1,1:NSURF)
+        CALL EIRENE_PROFR (RDUMMY, 8+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
+        EYIN(1:NSURF) = RDUMMY(1,1:NSURF)
+        CALL EIRENE_PROFR (RDUMMY, 9+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
+        EZIN(1:NSURF) = RDUMMY(1,1:NSURF)
+        CALL EIRENE_PROFR (RDUMMY,10+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
+        EFIN(1:NSURF) = RDUMMY(1,1:NSURF)
+        DEALLOCATE(RDUMMY)
       case (7)
-        CALL EIRENE_PROFR (EXIN,7+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
-        CALL EIRENE_PROFR (EYIN,8+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
-        CALL EIRENE_PROFR (EZIN,9+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
-        CALL EIRENE_PROFR (EFIN,10+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
+        ALLOCATE(RDUMMY(1,1:NSBOX))
+        CALL EIRENE_PROFR (RDUMMY, 7+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
+        EXIN(1:NSBOX) = RDUMMY(1,1:NSBOX)
+        CALL EIRENE_PROFR (RDUMMY, 8+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
+        EYIN(1:NSBOX) = RDUMMY(1,1:NSBOX)
+        CALL EIRENE_PROFR (RDUMMY, 9+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
+        EZIN(1:NSBOX) = RDUMMY(1,1:NSBOX)
+        CALL EIRENE_PROFR (RDUMMY,10+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
+        EFIN(1:NSBOX) = RDUMMY(1,1:NSBOX)
+        DEALLOCATE(RDUMMY)
       end select
       END IF
 C

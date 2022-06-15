@@ -7,6 +7,9 @@ cdr             MAXLEVEL is the "depth" of splitting cascades.
 cdr             Formerly: MAXLEVEL=15
 cdr             now (2013) hard-coded: MAXLEVEL=300, why?
 cdr             Is this intended indeed?
+cpb             MAXLEVEL was increased for NLCASCAD option. If all secondary
+cpb             particles of a reaction are to be traced the storage for
+cpb             storing not yet followed secondaries needs to be somewhat larger.
 
       MODULE EIRMOD_COMSPL
 

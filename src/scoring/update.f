@@ -95,7 +95,7 @@ C
       REAL(DP), INTENT(IN OUT) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
      .                            XSTORV2(NSTORV,N2ND+N3RD)
       INTEGER, INTENT(IN) :: IFLAG
-      REAL(DP) :: WTRSIG, DIST, WTR, WTRE0, WV, VELQ, WTRV,
+      REAL(DP) :: WTRSIG, DIST, WTR, WTRE0, WV, WTRV,
      .            V0_PARB, PARMOM_0, P, BX, BY, BZ, BF, VION
       REAL(DP) :: VSIG_PARB(NPLS), VAL_PARB(NPLS), VX(NPLS), VY(NPLS),
      .            VZ(NPLS),XC,YC,ZC
@@ -139,8 +139,6 @@ C
 
       IF (IUPDTE == 2) RETURN
 
-C
-      VELQ=VEL*VEL
 C
       DO 51 I=1,NCOU
         DIST=CLPD(I)

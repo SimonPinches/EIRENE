@@ -297,25 +297,25 @@ C  gradients of derived tallies
 ! TYPE DEFINITIONS MOVED HERE FOR WRITING OF JSON FILE 
       TYPE TEMPERATURE
         DOUBLE PRECISION          :: TE, TI
-        INTEGER                   :: IN, IDION
+        INTEGER                   :: II, IDION
         TYPE(TEMPERATURE),POINTER :: NEXT
       END TYPE TEMPERATURE
 C
       TYPE DENSITY
         DOUBLE PRECISION      :: DI
-        INTEGER               :: IN, IDION
+        INTEGER               :: II, IDION
         TYPE(DENSITY),POINTER :: NEXT
       END TYPE DENSITY
 C
       TYPE VELOCITY
         DOUBLE PRECISION       :: VX, VY, VZ
-        INTEGER                :: IZ, IN, IDION
+        INTEGER                :: IZ, II, IDION
         TYPE(VELOCITY),POINTER :: NEXT
       END TYPE VELOCITY
 C
       TYPE VOLUMEP
         DOUBLE PRECISION     :: VOL
-        INTEGER              :: IN
+        INTEGER              :: II
         TYPE(VOLUMEP),POINTER :: NEXT
       END TYPE VOLUMEP
 C
@@ -1131,7 +1131,7 @@ cdr  are there any FEM interpolated background tallies in this run?
 !  interpolation to vertices can only be done if input tally is available (active)
       LSMOPRO(1:NTALG) = LSMOPRO(1:NTALG) .AND. LIVTALI(1:NTALG)
 
-c  NTOT2: total number of smoothed talles, counting also with species index 
+c  NTOT2: total number of smoothed tallies, counting also with species index 
       NTOT2 = 0
       DO I= 1, NTALG
         IF (LSMOPRO(I)) THEN
@@ -1139,7 +1139,7 @@ c  NTOT2: total number of smoothed talles, counting also with species index
         END IF
       END DO     
 
-c  NADDCOR: cummulated index of position of smoothed tally J within all smoothed tallies
+c  NADDCOR: cumulated index of position of smoothed tally J within all smoothed tallies
 C  NLSTLL : highest tally index J amongst all smoothed tallies
       NADDCOR(1)=0
       DO 6 J=2,NTALG
@@ -1153,7 +1153,7 @@ C  NLSTLL : highest tally index J amongst all smoothed tallies
 
       IF (LSMOPRO(NTALG)) NLSTTL = NTALG
 C
-c  NTOT: total number of smoothed talles, counting also with species index 
+c  NTOT: total number of smoothed tallies, counting also with species index 
       NTOT = 0
       IF (ANY(LSMOPRO)) THEN
         NTOT = NADDCOR(NTALG)
@@ -1298,7 +1298,7 @@ cdr these next two B field tallies should go into LBSMO
         NULLIFY(BYPERPCORNER)
       END IF
 
-      IF (LESMO) THEN
+      IF (LESMO) THEN  !dr  some smoothed E field components at least?
         IF (LEXSMO) THEN
           EXCORNER => CORNER_PROFILES(:,NADDCOR(18)+1)
         ELSE
@@ -1384,105 +1384,117 @@ cdr these next two B field tallies should go into LBSMO
 
       SUBROUTINE EIRENE_DEALLOC_COMUSR
 C
-      IF (.NOT.ALLOCATED(PLSTLS)) RETURN
+      IF (ALLOCATED(PLSTLS)) THEN
 
-      DEALLOCATE (PLSTLS)
-      DEALLOCATE (CEMETERYP)
+        DEALLOCATE (PLSTLS)
+        DEALLOCATE (CEMETERYP)
 c
-      DEALLOCATE (TEINL)
-      DEALLOCATE (TIINL)
-      DEALLOCATE (DEINL)
-      DEALLOCATE (DIINL)
+        DEALLOCATE (TEINL)
+        DEALLOCATE (TIINL)
+        DEALLOCATE (DEINL)
+        DEALLOCATE (DIINL)
 
-      DEALLOCATE (FLXOUT)
-      DEALLOCATE (SAREA)
+        DEALLOCATE (NAINS)
+        DEALLOCATE (NAINT)
 
+        DEALLOCATE (ICPVE)
+        DEALLOCATE (ICPVS)
+        DEALLOCATE (ICPVT)
+        DEALLOCATE (ICPRC)
+        DEALLOCATE (IBGVE)
+        DEALLOCATE (IBGVS)
+        DEALLOCATE (IBGVT)
+        DEALLOCATE (IBGRC)
 
-      DEALLOCATE (RMASSA)
-      DEALLOCATE (RMASSM)
-      DEALLOCATE (RMASSI)
-      DEALLOCATE (RMASSPH)
-      DEALLOCATE (RMASSP)
+      END IF
 
-      DEALLOCATE (DIOD)
-      DEALLOCATE (DATD)
-      DEALLOCATE (DMLD)
-      DEALLOCATE (DPLD)
-      DEALLOCATE (DPHD)
-      DEALLOCATE (DION)
-      DEALLOCATE (DATM)
-      DEALLOCATE (DMOL)
-      DEALLOCATE (DPLS)
-      DEALLOCATE (DPHOT)
+      IF (ALLOCATED(RMASSI)) THEN
 
-      DEALLOCATE (TEXTS)
-      DEALLOCATE (NMASSA)
-      DEALLOCATE (NCHARA)
-      DEALLOCATE (NFOLA)
-      DEALLOCATE (NGENA)
-      DEALLOCATE (NMASSM)
-      DEALLOCATE (NCHARM)
-      DEALLOCATE (NFOLM)
-      DEALLOCATE (NGENM)
-      DEALLOCATE (NMASSP)
-      DEALLOCATE (NCHARP)
-      DEALLOCATE (NCHRGP)
-      DEALLOCATE (NMASSI)
-      DEALLOCATE (NCHARI)
-      DEALLOCATE (NCHRGI)
-      DEALLOCATE (NFOLI)
-      DEALLOCATE (NGENI)
-      DEALLOCATE (NFOLPH)
-      DEALLOCATE (NGENPH)
-      DEALLOCATE (NPRT)
-      DEALLOCATE (ISPEZ)
-      DEALLOCATE (ISPEZI)
+        DEALLOCATE (RMASSA)
+        DEALLOCATE (RMASSM)
+        DEALLOCATE (RMASSI)
+        DEALLOCATE (RMASSPH)
+        DEALLOCATE (RMASSP)
 
-      DEALLOCATE (MPLSTI)
-      DEALLOCATE (MPLSV)
-      DEALLOCATE (ISPZ_BACK)
-      DEALLOCATE (IADVE)
-      DEALLOCATE (IADVS)
-      DEALLOCATE (IADVT)
-      DEALLOCATE (IADRC)
-      DEALLOCATE (ICLVE)
-      DEALLOCATE (ICLVS)
-      DEALLOCATE (ICLVT)
-      DEALLOCATE (ICLRC)
-      DEALLOCATE (ISNVE)
-      DEALLOCATE (ISNVS)
-      DEALLOCATE (ISNVT)
-      DEALLOCATE (ISNRC)
-      DEALLOCATE (ICPVE)
-      DEALLOCATE (ICPVS)
-      DEALLOCATE (ICPVT)
-      DEALLOCATE (ICPRC)
-      DEALLOCATE (IBGVE)
-      DEALLOCATE (IBGVS)
-      DEALLOCATE (IBGVT)
-      DEALLOCATE (IBGRC)
-      DEALLOCATE (IADSE)
-      DEALLOCATE (IADSS)
-      DEALLOCATE (IADST)
-      DEALLOCATE (IADSC)
-      DEALLOCATE (NFRSTP)
-      DEALLOCATE (NFSTPI)
-      DEALLOCATE (NADDP)
-      DEALLOCATE (NSPAN)
-      DEALLOCATE (NSPEN)
-      DEALLOCATE (NSPANW)
-      DEALLOCATE (NSPENW)
+        DEALLOCATE (DIOD)
+        DEALLOCATE (DATD)
+        DEALLOCATE (DMLD)
+        DEALLOCATE (DPLD)
+        DEALLOCATE (DPHD)
+        DEALLOCATE (DION)
+        DEALLOCATE (DATM)
+        DEALLOCATE (DMOL)
+        DEALLOCATE (DPLS)
+        DEALLOCATE (DPHOT)
 
-      DEALLOCATE (INTLOPTS)
-      DEALLOCATE (NAINS)
-      DEALLOCATE (NAINT)
+        DEALLOCATE (TEXTS)
+
+        DEALLOCATE (NMASSA)
+        DEALLOCATE (NCHARA)
+        DEALLOCATE (NFOLA)
+        DEALLOCATE (NGENA)
+        DEALLOCATE (NMASSM)
+        DEALLOCATE (NCHARM)
+        DEALLOCATE (NFOLM)
+        DEALLOCATE (NGENM)
+        DEALLOCATE (NMASSP)
+        DEALLOCATE (NCHARP)
+        DEALLOCATE (NCHRGP)
+        DEALLOCATE (NMASSI)
+        DEALLOCATE (NCHARI)
+        DEALLOCATE (NCHRGI)
+        DEALLOCATE (NFOLI)
+        DEALLOCATE (NGENI)
+        DEALLOCATE (NFOLPH)
+        DEALLOCATE (NGENPH)
+        DEALLOCATE (NPRT)
+        DEALLOCATE (ISPEZ)
+        DEALLOCATE (ISPEZI)
+
+        DEALLOCATE (MPLSTI)
+        DEALLOCATE (MPLSV)
+        DEALLOCATE (ISPZ_BACK)
+        DEALLOCATE (IADVE)
+        DEALLOCATE (IADVS)
+        DEALLOCATE (IADVT)
+        DEALLOCATE (IADRC)
+        DEALLOCATE (ICLVE)
+        DEALLOCATE (ICLVS)
+        DEALLOCATE (ICLVT)
+        DEALLOCATE (ICLRC)
+        DEALLOCATE (ISNVE)
+        DEALLOCATE (ISNVS)
+        DEALLOCATE (ISNVT)
+        DEALLOCATE (ISNRC)
+        DEALLOCATE (IADSE)
+        DEALLOCATE (IADSS)
+        DEALLOCATE (IADST)
+        DEALLOCATE (IADSC)
+        DEALLOCATE (NFRSTP)
+        DEALLOCATE (NFSTPI)
+        DEALLOCATE (NADDP)
+        DEALLOCATE (NSPAN)
+        DEALLOCATE (NSPEN)
+        DEALLOCATE (NSPANW)
+        DEALLOCATE (NSPENW)
+
+        DEALLOCATE (INTLOPTS)
 C
-      DEALLOCATE (LGVAC)
-      DEALLOCATE (LSPCCLL)
-      DEALLOCATE (LSMOPRO)
-      DEALLOCATE (LIVTALI)
+        DEALLOCATE (LGVAC)
+        DEALLOCATE (LSPCCLL)
+        DEALLOCATE (LIVTALI)
 
-!pb      IF (NBACK_SPEC > 0) DEALLOCATE (BACK_SPEC)
+      END IF
+
+      IF (ALLOCATED(FLXOUT)) THEN
+
+        DEALLOCATE (FLXOUT)
+        DEALLOCATE (SAREA)
+
+      END IF
+
+      IF (ALLOCATED(LSMOPRO)) DEALLOCATE (LSMOPRO)
+
       IF (ALLOCATED(BACK_SPEC)) DEALLOCATE (BACK_SPEC)
 
       IF (ALLOCATED(CORNER_PROFILES)) DEALLOCATE (CORNER_PROFILES)

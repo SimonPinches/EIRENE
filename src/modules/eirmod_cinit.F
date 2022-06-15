@@ -23,7 +23,7 @@ CDR FOR DIRECT TRANSFER OF INFO FROM FIND_PARAM.F INTO INPUT.F
 
       REAL(DP),  PUBLIC, TARGET, ALLOCATABLE, SAVE :: RCINIT(:)
       INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE :: ICINIT(:)
-      LOGICAL, PUBLIC, TARGET, SAVE :: LCNIT(4)
+      LOGICAL, PUBLIC, TARGET, SAVE :: LCNIT(5)
 
       REAL(DP), PUBLIC, POINTER, SAVE ::
      R EP1IN,  EP1CH,  EP1OT,  EXEP1,
@@ -50,15 +50,16 @@ CDR FOR DIRECT TRANSFER OF INFO FROM FIND_PARAM.F INTO INPUT.F
       LOGICAL, PUBLIC, SAVE :: LCPYPRO(12)
       
       LOGICAL, PUBLIC, POINTER, SAVE ::
-     L NLMACH,NLMLTI,NLMLV,NLPITCH
+     L NLMACH, NLPITCH, NLKELV, NLMLTI, NLMLV
 
       CHARACTER(66), PUBLIC, SAVE :: CASENAME
       CHARACTER(10), PUBLIC, ALLOCATABLE, SAVE :: CDENMODEL(:)
 
       TYPE TDENMODEL
-        REAL(DP) :: G_BOLTZ, DELTAE, A_CORONA, DVAL, TVAL,
-     R              VXVAL, VYVAl, VZVAL, DFACTOR, TFACTOR,
-     R              VFACTOR
+        REAL(DP) :: G_BOLTZ, DELTAE, A_CORONA, G_PLANCK,
+     R              DVAL, TVAL,
+     R              VXVAL, VYVAl, VZVAL,
+     R              DFACTOR, TFACTOR, VFACTOR
         INTEGER :: NRE
         INTEGER, POINTER :: ISP(:), ITP(:), ISTR(:), IRC(:)
       END TYPE
@@ -69,20 +70,18 @@ CDR FOR DIRECT TRANSFER OF INFO FROM FIND_PARAM.F INTO INPUT.F
 
       TYPE(TDENMODAR), PUBLIC, ALLOCATABLE, SAVE :: TDMPAR(:)
 
-      INTEGER, PUBLIC, PARAMETER ::
-     I NDBNAMES=17
-
+      INTEGER, PUBLIC, PARAMETER :: NDBNAMES=17
       CHARACTER(400), PUBLIC, SAVE :: DBFNAME(NDBNAMES)
       CHARACTER(6), PUBLIC, SAVE :: DBHANDLE(NDBNAMES)
       LOGICAL, PUBLIC, SAVE :: LDBREAD(NDBNAMES)
       
 C> Default output file prefix
 #ifndef HPUX
-      CHARACTER(*), PUBLIC, PARAMETER :: FORT    = 'FORT.'
-      CHARACTER(*), PUBLIC, PARAMETER :: FORT_LC = 'fort.'
+      CHARACTER(5), PUBLIC, PARAMETER :: FORT    = 'FORT.'
+      CHARACTER(5), PUBLIC, PARAMETER :: FORT_LC = 'fort.'
 #else
-      CHARACTER(*), PUBLIC, PARAMETER :: FORT = 'FTN'
-      CHARACTER(*), PUBLIC, PARAMETER :: FORT_LC = 'ftn'
+      CHARACTER(3), PUBLIC, PARAMETER :: FORT = 'FTN'
+      CHARACTER(3), PUBLIC, PARAMETER :: FORT_LC = 'ftn'
 #endif
 
       CONTAINS
@@ -93,8 +92,7 @@ C> Default output file prefix
 
       NCINIT=42+30*NPLS
       MCINIT=12+3+NSTRA
-!pb   LCINIT=3
-      LCINIT=4
+      LCINIT=5   !dr: unused, so far.
 
       ALLOCATE (RCINIT(NCINIT))
       ALLOCATE (ICINIT(MCINIT))
@@ -103,7 +101,7 @@ C> Default output file prefix
 
       WRITE (IUNMEM,'(A,T25,I15)')
      .      ' CINIT ',NCINIT*8 + MCINIT*4 +
-     .                NPLS*LEN(CDENMODEL(1))
+     .                NPLS*LEN(CDENMODEL(1))  !dr  here should be added also LCINIT*.
 
       EP1IN  => RCINIT(1)
       EP1CH  => RCINIT(2)
@@ -187,6 +185,7 @@ cdr units used for inut of backround profiles: V, B, Ti
       NLMLTI => LCNIT(2)
       NLMLV  => LCNIT(3)
       NLPITCH=> LCNIT(4)
+      NLKELV => LCNIT(5)
 
       CALL EIRENE_INIT_CINIT
 
@@ -220,28 +219,39 @@ cdr units used for inut of backround profiles: V, B, Ti
 
 
       SUBROUTINE EIRENE_INIT_CINIT
+cdr called from ALLOC_CINIT,
+cdr also called (EARLIER) from FIND_PARAM.
+cdr In that case
+cdr make sure then to not deal with unallocated variables
+cdr i.e. not with RCINIT, ICINIT, CDENMODEL,
+cdr but only with LCNIT, DBHANDLE, DBFNAME
 
       INTEGER :: I
 
-      RCINIT = 0._DP
-      ICINIT = 0
+      IF (ALLOCATED(RCINIT)) RCINIT = 0._DP
+      IF (ALLOCATED(ICINIT)) ICINIT = 0
       LCNIT  = .FALSE.
       LCPYPRO = .TRUE.
-      CDENMODEL = REPEAT(' ',LEN(CDENMODEL))
+      IF (ALLOCATED(CDENMODEL)) CDENMODEL = REPEAT(' ',LEN(CDENMODEL))
+
       CASENAME = REPEAT(' ',LEN(CASENAME))
 
-      DO I = 1, NPLS
-         NULLIFY(TDMPAR(I)%TDM)
-      END DO
+      IF (ALLOCATED(TDMPAR)) THEN
+        DO I = 1, NPLS
+          NULLIFY(TDMPAR(I)%TDM)
+        END DO
+      END IF
 C
 C  INITIALIZE GEOMETRY DATA
 C
-      ELLIN=1._DP
-      ELLOT=1._DP
-      ELLCH=1._DP
-      TRIIN=1._DP
-      TRIOT=1._DP
-      TRICH=1._DP
+      IF (ALLOCATED(RCINIT)) THEN
+        ELLIN=1._DP
+        ELLOT=1._DP
+        ELLCH=1._DP
+        TRIIN=1._DP
+        TRIOT=1._DP
+        TRICH=1._DP
+      END IF
 
 C
 C  INITIALIZE DATABASE NAMES, KEY WORDS FOR PERMITTED NAMES
@@ -257,11 +267,11 @@ C
       DBHANDLE(9) = 'TRIM  '
       DBHANDLE(10) = 'POLARI'
       DBHANDLE(11) = 'free'
-      DBHANDLE(12) = 'free'
+      DBHANDLE(12) = 'AMMONX'
       DBHANDLE(13) = 'ADAS  '
       DBHANDLE(14) = 'free'
       DBHANDLE(15) = 'free'
-      DBHANDLE(16) = 'HYDREA'
+      DBHANDLE(16) = 'free'
       DBHANDLE(17) = 'TAB2D '
 
 C  FOR READING CFILE CARDS,
@@ -275,6 +285,14 @@ C  DEFAULT FOR DATABASE NAMES, CAN BE OVERWRITTEN BY CFILE CARDS
       DBFNAME(6) = 'PHOTON'
       DBFNAME(7) = 'PHTNEW'
       DBFNAME(8) = 'SPUTER'
+#ifndef HPUX
+      I = 5
+#else
+      I = 3
+#endif
+      DBFNAME(9)(1:I) = FORT_LC
+CDR  TRIM USUALLY IS INCLUDED AS fort.21.
+cdr  FOR SOME COMPILERS THIS IS ILLEGAL.
       if (21+ifoff >= 100) then
         write (DBFNAME(9),'(A,I3)') FORT_LC, 21+ifoff
       else
@@ -282,12 +300,12 @@ C  DEFAULT FOR DATABASE NAMES, CAN BE OVERWRITTEN BY CFILE CARDS
       endif
       DBFNAME(10) = 'POLARI'
       DBFNAME(11) = 'free'
-      DBFNAME(12) = 'free'
-      DBFNAME(13) = ' '
+      DBFNAME(12) = 'AMMONX'
+      DBFNAME(13) = 'ADAS'
       DBFNAME(14) = 'free'
       DBFNAME(15) = 'free'
-      DBFNAME(16) = ' '
-      DBFNAME(17) = ' '
+      DBFNAME(16) = 'free'
+      DBFNAME(17) = 'TAB2D'
 
       LDBREAD = .FALSE.
 
@@ -299,7 +317,7 @@ C  DEFAULT FOR DATABASE NAMES, CAN BE OVERWRITTEN BY CFILE CARDS
       USE EIRMOD_MPI
       INTEGER, INTENT(IN) :: ME
       INTEGER :: IER, IPLS, NREF, IRF, IAN
-      REAL(DP) :: RHELP(3)
+      REAL(DP) :: RHELP(4)
       INTEGER, ALLOCATABLE :: IHELP(:)
 
       IF (ME /= 0) CALL EIRENE_ALLOC_CINIT
@@ -328,13 +346,15 @@ cdr  e.g. corona, colrad, const, saha, planck, .....
           RHELP(1) = TDMPAR(IPLS)%TDM%G_BOLTZ
           RHELP(2) = TDMPAR(IPLS)%TDM%DELTAE
           RHELP(3) = TDMPAR(IPLS)%TDM%A_CORONA
+          RHELP(4) = TDMPAR(IPLS)%TDM%G_PLANCK
+
           IHELP(1:NREF) = TDMPAR(IPLS)%TDM%ISP(1:NREF)
           IHELP(1+NREF:2*NREF) = TDMPAR(IPLS)%TDM%ITP(1:NREF)
           IHELP(1+2*NREF:3*NREF) = TDMPAR(IPLS)%TDM%ISTR(1:NREF)
           IHELP(1+3*NREF:4*NREF) = TDMPAR(IPLS)%TDM%IRC(1:NREF)
         END IF
 
-        CALL MPI_BCAST(RHELP,3,MPI_REAL8,0,
+        CALL MPI_BCAST(RHELP,4,MPI_REAL8,0,
      .                MPI_COMM_WORLD,ier)
         CALL MPI_BCAST(IHELP,3*NREF,MPI_INTEGER,0,
      .                MPI_COMM_WORLD,ier)
@@ -356,6 +376,7 @@ csw
           TDMPAR(IPLS)%TDM%G_BOLTZ = RHELP(1)
           TDMPAR(IPLS)%TDM%DELTAE = RHELP(2)
           TDMPAR(IPLS)%TDM%A_CORONA = RHELP(3)
+          TDMPAR(IPLS)%TDM%G_PLANCK = RHELP(4)
           TDMPAR(IPLS)%TDM%ISP(1:NREF) = IHELP(1:NREF)
           TDMPAR(IPLS)%TDM%ITP(1:NREF) = IHELP(1+NREF:2*NREF)
           TDMPAR(IPLS)%TDM%ISTR(1:NREF) = IHELP(1+2*NREF:3*NREF)

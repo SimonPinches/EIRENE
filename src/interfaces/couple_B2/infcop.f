@@ -173,7 +173,7 @@ C
      .          SFEISY, SFEESY, RECADD, RECTOT,
      .          EEADD, PIADD, SIGNUM, SMOCL, CHEES, EIADD, SNICL,
      .          SSE, BALANI, BALANE, SSEE, SSI, RE, RI, RNT, TOT,
-     .          TOTI, TOTE, BALAN, RRBC,
+     .          TOTI, TOTE, BALAN,
      .          SSEI, SFEIEX, SFEEEX, SFEENY, SFEIWX, VVBC,
      .          UUBC, UPBC, RBC, UDBC, VL, V, T, BX, BY, BZ, BN,
 c    .          DELTE_PARA, DELTI_PARA, DELTE_PERP, DELTI_PERP, TES,TIS,
@@ -2010,7 +2010,7 @@ C  ION ENERGY: SPLIT FOR MULTIPLE IPLS SPECIES
             IPLS=ICPV
             IN=CPMUL%ICM
             CHI=CPMUL%VALUEM*
-     .          (SEINWA(IN,IPLS)-RTIS%SEIODA(IN,IPLS))*ELCHA
+     .          (SEINW(IN,IPLS)-RTIS%SEIODA(IN,IPLS))*ELCHA
             EAPL(IPLS,IN)=EAPL(IPLS,IN)+CHI
             CHEIM(IN)=CHEIM(IN)+CHI
           ENDIF
@@ -3338,32 +3338,32 @@ C
         WRITE (iunout,*) ' NON-RECYCLING FLUXES AT SOUTH EDGE '
         CALL EIRENE_MASR2(' SFEISY,SFEESY  ',SFEISY,SFEESY)
           DO IFL=1,NFLA
-          WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNISY(IFL=',IFL,') ',
+            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNISY(IFL=',IFL,') ',
      .                                       SFNISY(IFL)
         ENDDO
         WRITE (iunout,*) ' NON-RECYCLING FLUXES AT NORTH EDGE'
         CALL EIRENE_MASR2(' SFEINY,SFEENY  ',SFEINY,SFEENY)
           DO IFL=1,NFLA
-          WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNINY(IFL=',IFL,') ',
+            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNINY(IFL=',IFL,') ',
      .                                       SFNINY(IFL)
         ENDDO
         WRITE (iunout,*) ' NON-RECYCLING FLUXES AT WEST EDGE '
         CALL EIRENE_MASR2(' SFEIWX,SFEEWX  ',SFEIWX,SFEEWX)
           DO IFL=1,NFLA
-          WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNIWX(IFL=',IFL,') ',
+            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNIWX(IFL=',IFL,') ',
      .                                       SFNIWX(IFL)
         ENDDO
         WRITE (iunout,*) ' NON-RECYCLING FLUXES AT EAST EDGE '
         CALL EIRENE_MASR2(' SFEIEX,SFEEEX  ',SFEIEX,SFEEEX)
           DO IFL=1,NFLA
-          WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNIEX(IFL=',IFL,') ',
+            WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNIEX(IFL=',IFL,') ',
      .                                       SFNIEX(IFL)
         ENDDO
         CALL EIRENE_MASRR1 (' TARGETS,EI',SFEIT(1),NTARGI,5)
         CALL EIRENE_MASRR1 (' TARGETS,EE',SFEET(1),NTARGI,5)
         DO ITARG=1,NTARGI
           DO IFL=1,NFLA
-             WRITE(iunout,'(A,I0,A,ES12.4)') 
+            WRITE(iunout,'(A,I0,A,ES12.4)') 
      .            'TARGETS, NI(IFL =',IFL,') ',
      .             SFNIT(ITARG,IFL)
           ENDDO

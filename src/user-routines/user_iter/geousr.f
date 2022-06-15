@@ -240,10 +240,10 @@ c
           end do
           IF (NASMOD.EQ.N) THEN
 C LEFT TARGET (INNER FOR LSN, OUTER FOR USN, LOWER INNER FOR DN)
-          xpolpos(1)=1
-          ypolpos(1)=npoint(1,1)
-          xpolpos(2)=nr1st
-          ypolpos(2)=npoint(1,1)
+            xpolpos(1)=1
+            ypolpos(1)=npoint(1,1)
+            xpolpos(2)=nr1st
+            ypolpos(2)=npoint(1,1)
           elseif (NASMOD.EQ.2 .and. NPPLG.EQ.1) THEN
             xpolpos(1)=nr1st
             ypolpos(1)=npoint(1,1)
@@ -286,34 +286,34 @@ csw 03sep2013
 
             SELECT CASE (IPUNKT)
             CASE (1)
-            P1(1,NRS)=XCOOR
-            P1(2,NRS)=YCOOR
-            P1(3,NRS)=ZCOOR
+              P1(1,NRS)=XCOOR
+              P1(2,NRS)=YCOOR
+              P1(3,NRS)=ZCOOR
 
             CASE (2)
-            P2(1,NRS)=XCOOR
-            P2(2,NRS)=YCOOR
-            P2(3,NRS)=ZCOOR
+              P2(1,NRS)=XCOOR
+              P2(2,NRS)=YCOOR
+              P2(3,NRS)=ZCOOR
 
             CASE (3)
-            P3(1,NRS)=XCOOR
-            P3(2,NRS)=YCOOR
+              P3(1,NRS)=XCOOR
+              P3(2,NRS)=YCOOR
             P3(3,NRS)=ZCOOR
 
             CASE (4)
-            P4(1,NRS)=XCOOR
-            P4(2,NRS)=YCOOR
-            P4(3,NRS)=ZCOOR
+              P4(1,NRS)=XCOOR
+              P4(2,NRS)=YCOOR
+              P4(3,NRS)=ZCOOR
 
             CASE (5)
-            P5(1,NRS)=XCOOR
-            P5(2,NRS)=YCOOR
-            P5(3,NRS)=ZCOOR
+              P5(1,NRS)=XCOOR
+              P5(2,NRS)=YCOOR
+              P5(3,NRS)=ZCOOR
 
             CASE (6)
-            P6(1,NRS)=XCOOR
-            P6(2,NRS)=YCOOR
-            P6(3,NRS)=ZCOOR
+              P6(1,NRS)=XCOOR
+              P6(2,NRS)=YCOOR
+              P6(3,NRS)=ZCOOR
 
             CASE DEFAULT
               WRITE (iunout,*) 'WRONG POINT NUMBER IN INFCOP '
@@ -353,11 +353,11 @@ csw 03sep2013
               write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
      1         ''' LINKED TO RIGHT TARGET'')') onetwo(2),limpos(2)
             ELSE
-            WRITE(iunout,*) "WARNING: NASMOD.NE.NPPLG", NASMOD,npplg
-            DO I=1,NASMOD
-              WRITE(iunout,'(''P'',I3,'' FOR SEG '',I3)')
+              WRITE(iunout,*) "WARNING: NASMOD.NE.NPPLG", NASMOD,npplg
+              DO I=1,NASMOD
+                WRITE(iunout,'(''P'',I3,'' FOR SEG '',I3)')
      w                   ONETWO(I),LIMPOS(I)
-            END DO
+              END DO
             END IF
 csw
 

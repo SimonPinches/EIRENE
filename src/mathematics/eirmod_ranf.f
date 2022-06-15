@@ -234,12 +234,12 @@ cdr  output:  ISE (=ranget_eirene),  return a legal integer seed
 
 cdr  input:  NLOLDRAN:
 cdr      T :  use H1RN, which is RANMAR, F. James, CPC, 60 (1990) 329, sec 3.3
-c           A legal seed must be 0<=ISE<=900.000.000
-cdr     F : use pre-historic IBM (1968) generator
-c           A legal seed must be 1<=ISE<=2147483647 (=2**31-1)
-C            ISE:   old reference seed,
-C                   from which the current status of random generator is set
-C                   and from which new seed should result in a deterministic way
+c             A legal seed must be 0<=ISE<=900.000.000
+cdr      F :  use pre-historic IBM (1968) generator
+c             A legal seed must be 1<=ISE<=2147483647 (=2**31-1)
+C             ISE:   old reference seed,
+C                    from which the current status of random generator is set
+C                    and from which new seed should result in a deterministic way
 c
 
       implicit none

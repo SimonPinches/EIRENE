@@ -62,7 +62,7 @@ Cym   19-> 21
      .            'TIME LIMIT(15)      ',
      .            'GENERATION LIMIT(16)',
      .            'FLUID LIMIT(17)     ',
-     .            'ERROR DETECTED      ',
+     .            'ERROR DETECTED      ',     ! SYMBOL FOR PARTICLE TRACING ERROR.
 c  next symbols/text: only for printout, not on plot.
      .            'INT. GRID SURFACE(8)',
 cym
@@ -129,7 +129,8 @@ C  CALLED FROM DIAGNO, WITH ISTRA=0?
         ELSE
           ISTR=ISTRA
         ENDIF
-        IF ((ISYM.GE.6.AND.ISYM.LE.10).OR.
+C  SURFACE EVENT
+        IF ((ISYM.GE.8.AND.ISYM.LE.11.OR.ISYM.EQ.19).OR.
      .      (ISYM.EQ.1.AND.NLSRF(ISTR))) THEN
           IF (NLSRFX) THEN
             CALL EIRENE_MASJ1 ('MRSURF  ',MRSURF)

@@ -1,7 +1,7 @@
 c  score sputtered fluxes
 c  modified in spring 2014: old version: resolved wrt. incident type
 cdr:  Sept. 2014: input flag 'IND' added,
-cdr   Jan 18    : ind=0 --> ind=1,  and ind=1 --> ind=2, to synchronize with
+cdr   Jan 18    : ind=0 --> ind=1, and ind=1 --> ind=2, to synchronize with
 cdr               other surface scoring (e.g. update_surface)
 c
 cdr       ind=1: FOR TOTAL TALLIES (due to sputtering by "incident" particles)

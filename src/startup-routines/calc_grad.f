@@ -109,7 +109,7 @@ c  3d cartesian x-y-z grid
 
 c  3d semi-toroidal grid: x-y-phi, phi approximated by polygon
       elseif ((levgeo == 1) 
-     .    .and. nlrad .and.nlpol.and.nltor) then 
+     .    .and. nlrad.and.nlpol.and.nltor.and.nltra) then
 c   TO BE DONE: 3d   x,y,phi grid
          ierr=3
          goto 999

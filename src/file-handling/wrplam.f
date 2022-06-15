@@ -39,7 +39,7 @@ cdr  NLSHRT13  :  SET TRUE IN INFCOP, COUPLE_SOLPS_ITER. REDUCED SIZE FORT 13.
       LOGICAL, INTENT(IN) :: TRCFLE
 
       IF (NLSHRT13) THEN
-        CALL EIRENE_WRPLAM_SHRT
+        CALL EIRENE_WRPLAM_SHRT (TRCFLE)
       ELSE
         CALL EIRENE_WRPLAM_LONG (TRCFLE,IFLG)
       ENDIF
@@ -69,23 +69,39 @@ cdr                          all ipls: 1,npls, not just ipls=nfla+1,npls
       USE EIRMOD_CLOGAU
       USE EIRMOD_COMUSR
       USE EIRMOD_CSPEI
+      USE EIRMOD_CINIT
 
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: IFLG
       INTEGER, INTENT(INOUT) :: IRET
       LOGICAL, INTENT(IN) :: TRCFLE
+      INTEGER :: J
 c.............................................
 
       IRET = 0
       IF (NLSHRT13) THEN
         CALL EIRENE_RPLAM_SHRT (TRCFLE)
         CALL EIRENE_ALLOC_BCKGRND
-        TEINTF = TEIN
-        TIINTF = TIIN
-        DIINTF = DIIN
-        VXINTF = VXIN
-        VYINTF = VYIN
-        VZINTF = VZIN
+        TEINTF(1:NRAD) = TEIN(1:NRAD)
+        IF (NLMLTI) THEN
+          DO J = 1, NPLSI
+            TIINTF(MPLSTI(J),1:NRAD) = TIIN(J,1:NRAD)
+          ENDDO
+        ELSE
+          TIINTF(1,1:NRAD) = TIIN(1,1:NRAD)
+        ENDIF
+        DIINTF(1:NPLSI,1:NRAD) = DIIN(1:NPLSI,1:NRAD)
+        IF (NLMLV) THEN
+          DO J = 1, NPLSI
+            VXINTF(MPLSV(J),1:NRAD) = VXIN(J,1:NRAD)
+            VYINTF(MPLSV(J),1:NRAD) = VYIN(J,1:NRAD)
+            VZINTF(MPLSV(J),1:NRAD) = VZIN(J,1:NRAD)
+          ENDDO
+        ELSE
+          VXINTF(1,1:NRAD) = VXIN(1,1:NRAD)
+          VYINTF(1,1:NRAD) = VYIN(1,1:NRAD)
+          VZINTF(1,1:NRAD) = VZIN(1,1:NRAD)
+        ENDIF
       ELSE
         CALL EIRENE_RPLAM_LONG (TRCFLE,IFLG,IRET)
       ENDIF

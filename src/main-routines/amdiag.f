@@ -73,7 +73,7 @@ c
 
       REAL(DP) :: AU, ELB, EXPO, FP(6), RCMIN, RCMAX,
      .            TBCX3(9),TBPI3(9),TBEL3(9),
-     .            EIRENE_SNGL_POLY,
+     .            EIRENE_SNGL_POLY, EARRH,
      .            RMASSS,EBFAC,RATE
       INTEGER :: NS,NA,IAIN,MM,KK,
      .           irei,ircx,irpi,irel,irrc,
@@ -311,7 +311,7 @@ c  in fpath we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFCX(IRCX))
               ELB=log(max(0.1003_DP,1.5_DP*TIIN(iplti,icell)*EBFAC))
               TBCX3(1:NSTORDT) = TABCX3(IRCX,ICELL,1:NSTORDT)
               EXPO = EIRENE_SNGL_POLY(TBCX3,ELB,RCMIN,RCMAX,FP,0,0,
-     .                                TRCAMD, .TRUE. )
+     .                                EARRH,TRCAMD)
               ADIN(IAIN,ICELL)=
      .        exp(expo)/(diin(ipl,icell)+eps30)/AU
             enddo
@@ -414,6 +414,7 @@ C  USE EB (ENERGY OF TEST PARTICLE) = 1.5 TI
             FP = 0._DP
             RCMIN = -HUGE(1._DP)
             RCMAX = HUGE(1._DP)
+            EARRH = 0._DP
 c   TEST PARTICLE VELOCITY NOT KNOWN HERE, TAKE Tn = Ti, and apply mass scaling
 c      MASST(KK)=  TARGET MASS FOR CROSS-SECTION, BEAM MASS FOR BEAM MAXWELLIAN RATE COEFF.
             EBFAC= MASST(KK)*PMASSA/RMASSS
@@ -423,7 +424,7 @@ c  in fpath we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFEL(IREL))
               ELB=log(max(0.1003_DP,1.5_DP*TIIN(iplti,icell)*EBFAC))
               TBEL3(1:NSTORDT) = TABEL3(IREL,ICELL,1:NSTORDT)
               EXPO = EIRENE_SNGL_POLY(TBEL3,ELB,RCMIN,RCMAX,FP,0,0,
-     .                                TRCAMD, .TRUE.)
+     .                                EARRH,TRCAMD)
               ADIN(IAIN,ICELL)=
      .        exp(expo)/(diin(ipl,icell)+eps30)/AU
             enddo
@@ -526,6 +527,7 @@ C  USE EB (ENERGY OF TEST PARTICLE) = 1.5 TI
             FP = 0._DP
             RCMIN = -HUGE(1._DP)
             RCMAX = HUGE(1._DP)
+            EARRH = 0._DP
 c   TEST PARTICLE VELOCITY NOT KNOWN HERE, TAKE T_TEST = T-IPLS, and apply mass scaling
 c      MASST(KK)=  TARGET MASS FOR CROSS-SECTION, BEAM MASS FOR BEAM MAXWELLIAN RATE COEFF.
             EBFAC= MASST(KK)*PMASSA/RMASSS
@@ -535,7 +537,7 @@ c  in fpath we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
               ELB=log(max(0.1003_DP,1.5_DP*TIIN(iplti,icell)*EBFAC))
               TBPI3(1:NSTORDT) = TABPI3(IRPI,ICELL,1:NSTORDT)
               EXPO = EIRENE_SNGL_POLY(TBPI3,ELB,RCMIN,RCMAX,FP,0,0,
-     .                                TRCAMD, .TRUE.)
+     .                                EARRH,TRCAMD)
               ADIN(IAIN,ICELL)=
      .             exp(expo)/(diin(ipl,icell)+eps30)/AU
             enddo
@@ -639,7 +641,7 @@ cdr  distinct from eelei1:  here eelrc1 already contains tabrc1 as factor
         if (mm.ne.0) then
           call eirene_leer(1)
           WRITE (iunout,*) 'ERROR IN AMDIAG, OPTION NOT READY '
-          write (iunout,'(1X,A72)') txtpls(IAIN,NTALN)
+          write (iunout,'(1X,A72)') TXTPLS(IAIN,NTALN)
           write (iunout,'(1X,A24)') TXTPSP(IAIN,NTALN)
           WRITE (iunout,*) 'IAIN, NS,NA      ', IAIN,NS,NA
           WRITE (iunout,*) 'PROCESS NO. KK, MODCOL(.,.,.)   ', KK,MM
@@ -648,7 +650,7 @@ cdr  distinct from eelei1:  here eelrc1 already contains tabrc1 as factor
           call eirene_leer(1)
           WRITE (iunout,*) 'ERROR IN AMDIAG, ',
      .                     'PROCESS KK NOT ASSIGNED TO ANY PARTICLE '
-          write (iunout,'(1X,A72)') txtpls(IAIN,NTALN)
+          write (iunout,'(1X,A72)') TXTPLS(IAIN,NTALN)
           write (iunout,'(1X,A24)') TXTPSP(IAIN,NTALN)
           WRITE (iunout,*) 'IAIN, NS,NA      ', IAIN,NS,NA
           WRITE (iunout,*) 'PROCESS NO. KK, MODCOL(.,.,.)   ', KK,MM
@@ -658,7 +660,7 @@ cdr  distinct from eelei1:  here eelrc1 already contains tabrc1 as factor
  5000 CONTINUE
       CALL eirene_leer(1)
       WRITE (iunout,*) 'AMDIAG: ADDITIONAL INPUT TALLY ADIN(IAIN) SET'
-      write (iunout,'(1X,A72)') txtpls(IAIN,NTALN)
+      write (iunout,'(1X,A72)') TXTPLS(IAIN,NTALN)
       write (iunout,'(1X,A24)') TXTPSP(IAIN,NTALN)
       WRITE (iunout,*) 'IAIN, NS,NA      ', IAIN, NS,NA
       WRITE (iunout,*) 'PROCESS NO. KK, MODCOL(.,.,.)   ', KK,MM

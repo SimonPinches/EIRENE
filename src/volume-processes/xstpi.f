@@ -422,7 +422,7 @@ C  use i-integral expressions. to be written
       ELSEIF (NSEPI4.EQ.3) THEN
 C  4.1C)  ENERGY LOSS RATE OF IMP. ION = EN.-WEIGHTED RATE
 C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN, WITH WEIGHTING/REJECTION
-        KREAD=INT(EBULK)
+        KREAD=NINT(EBULK)
         IF (KREAD.EQ.0) THEN
 c  data for mean ion energy loss are not available
 c  use collision estimator for energy balance
@@ -544,7 +544,7 @@ C        NOT A VALID OPTION
 
       ELSEIF (EFLAG.EQ.3) THEN
 C  4.3C)  SECONDARY HEAVY ENERGY GAIN RATE = EN.-WEIGHTED RATE(TI)
-        KREAD=INT(EHEAVY)
+        KREAD=NINT(EHEAVY)
         MODC=EIRENE_IDEZ(MODCLF(KREAD),5,5)
         IF (MODC.EQ.1) THEN
           IF (NSTORDR >= NRAD) THEN

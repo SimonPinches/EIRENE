@@ -120,20 +120,21 @@ C
      .          TIMI, XPT, XX1, XPT1, XFL, SECND, XX,
      .          ZW, ZWW, ZVOLWT, ZVOLNT, FSIG, ZFLUX,
      .          OVER, WTT, timan, timen,
-     .          tim1, tim2,
-     .          rn1
+     .          tim1, tim2, timst,
+     .          rn1, ran
       REAL(DP), SAVE :: SECND1,SECND2,SECDEL
 
 cym IC ?
       INTEGER :: NPTS_SAVE(NSTRA), NINITL_SAVE(NSTRA), IPTSI
-      INTEGER, SAVE :: ISDV, IALS, ISTRAA, ISTRAE, ICELL,
+      INTEGER, SAVE :: ISDV, IALS, ISTRAA, ISTRAE, ICELL, ISTRAI,
      .           IGFFT, IALV, IDV, I, IER, IRC, NMX,
      .           NINIST, IPANU, ISEED_ISTRA, ISEED_IPTSI, IDUMRAN,
      .           ISTR, NPTTOT, NREC11,
      .           IGFF, IADD, INDX, ICLV, IADV,
      .           INODES, J, IT, IMCP,
      .           ISUM, NPX, IS, NEW_ITER, ISPC, IN,
-     .     JATM, JMOL, JION, JPHOT, JPLS
+     .           JATM, JMOL, JION, JPHOT, JPLS,
+     .           IERR
 
       LOGICAL, SAVE :: LGSTOP, NLPOLS, NLTORS
       LOGICAL :: LGABORT
@@ -168,6 +169,7 @@ C
       TIMI=EIRENE_SECOND_OWN()
       timan=timi
       tim1 = timi
+      timst = timi
 C
       IF (NFILEN.NE.0) THEN
         NREC11=NOUTAU
@@ -221,7 +223,8 @@ C  TO RANDOM SAMPLING ROUTINES
       IRNDVH=IRNDVC/2
 
       TIMen=EIRENE_SECOND_OWN()
-cdr   write (iunout,*) 'cpu time for init of mcarlo ', timen-tim1
+      IF (TRCTIM)
+     > write (iunout,*) 'CPU time for init of mcarlo ', timen-tim1
       tim1 = timen
 C
 C  INITIALIZE SUBR. STATIS
@@ -229,42 +232,44 @@ C
       CALL EIRENE_LEER(1)
       CALL EIRENE_STATS0
       TIM2=EIRENE_SECOND_OWN()
-cdr   write (iunout,*) 'cpu time for stats0 ', tim2-tim1
+      IF (TRCTIM) write (iunout,*) 'cpu time for stats0 ', tim2-tim1
       tim1 = tim2
       CALL EIRENE_STATS0_SPC
       TIM2=EIRENE_SECOND_OWN()
-cdr   write (iunout,*) 'cpu time for stats0_spc ', tim2-tim1
+      IF (TRCTIM) write (iunout,*) 'cpu time for stats0_spc ', tim2-tim1
       tim1 = tim2
 C  INITIALIZE SUBR. REFLEC AND SPUTER
       CALL EIRENE_REFLC0
       TIM2=EIRENE_SECOND_OWN()
-cdr   write (iunout,*) 'cpu time for reflec0 ', tim2-tim1
+      IF (TRCTIM) write (iunout,*) 'cpu time for reflec0 ', tim2-tim1
       tim1 = tim2
       IF (NPHOT > 0) THEN
         CALL EIRENE_REFLC0_PHOTON
         CALL EIRENE_LINE_CUTOFF
         TIM2=EIRENE_SECOND_OWN()
-cdr     write (iunout,*) 'cpu time for reflc0_photon ', tim2-tim1
+        IF (TRCTIM) 
+     >    write (iunout,*) 'cpu time for reflc0_photon ', tim2-tim1
         tim1 = tim2
       END IF
       CALL EIRENE_SPUTR0
       TIM2=EIRENE_SECOND_OWN()
-cdr   write (iunout,*) 'cpu time for sputr0 ', tim2-tim1
+      IF (TRCTIM) write (iunout,*) 'cpu time for sputr0 ', tim2-tim1
       tim1 = tim2
 C  INITIALIZE SUBR. SAMVOL
       CALL EIRENE_SAMVL0
       TIM2=EIRENE_SECOND_OWN()
-cdr   write (iunout,*) 'cpu time for samvl0 ', tim2-tim1
+      IF (TRCTIM) write (iunout,*) 'cpu time for samvl0 ', tim2-tim1
       tim1 = tim2
 C  INITIALIZE SUBR. SAMSRF
       CALL EIRENE_SAMSF0
       TIM2=EIRENE_SECOND_OWN()
-cdr   write (iunout,*) 'cpu time for samsf0 ', tim2-tim1
+      IF (TRCTIM) write (iunout,*) 'cpu time for samsf0 ', tim2-tim1
       tim1 = tim2
 C  INITIALIZE SUBR. UPDLIN
       CALL EIRENE_PREPARE_UPDLIN
       TIM2=EIRENE_SECOND_OWN()
-cdr   write (iunout,*) 'cpu time for prepare_updlin ', tim2-tim1
+      IF (TRCTIM) 
+     >  write (iunout,*) 'cpu time for prepare_updlin ', tim2-tim1
       tim1 = tim2
 C
 C
@@ -316,18 +321,20 @@ C  CHANGED: use XX=NTCPU seconds of cpu time for calculation of trajectories
 
       XPT=0.
       XFL=0.
-      DO 7 ISTRA=1,NSTRAI
+      DO 7 ISTRAI=1,NSTRAI
+        ISTRA=ISTRAI
+        NLSRON(ISTRA) = .TRUE.
         IF (NPTS(ISTRA).LE.0.AND.FLUX(ISTRA).GT.0.D0) THEN
           FLUX(ISTRA)=0.D0
           NLSRON(ISTRA) = .FALSE.
-          WRITE (iunout,*) 'STRATUM ISTRA= ',ISTRA,
+          WRITE (iunout,'(1x,a,i3,a)') 'STRATUM ISTRA= ',ISTRA,
      .                     ' TURNED OFF, BECAUSE NPTS=0'
           CALL EIRENE_LEER(1)
         ENDIF
         IF (NPTS(ISTRA).GT.0.AND.FLUX(ISTRA).LE.0.D0) THEN
           NPTS(ISTRA)=0
           NLSRON(ISTRA) = .FALSE.
-          WRITE (iunout,*) 'STRATUM ISTRA= ',ISTRA,
+          WRITE (iunout,'(1x,a,i3,a)') 'STRATUM ISTRA= ',ISTRA,
      .                     ' TURNED OFF, BECAUSE FLUX=0.0'
           CALL EIRENE_LEER(1)
         ENDIF
@@ -335,10 +342,10 @@ C  CHANGED: use XX=NTCPU seconds of cpu time for calculation of trajectories
           NPTS(ISTRA)=0
           NLSRON(ISTRA)=.FALSE.
           WRITE (iunout,*) 'STRATUM ISTRA= ',ISTRA,
-     .                     ' TURNED OFF, BECAUSE'
-          WRITE (iunout,*) 'THE SUM OF THE FLUXES'
-          WRITE (iunout,*) 'FROM THE SUBSTRATA DEFINED BY'
-          WRITE (iunout,*) 'SORWGT(SUBSTRATUM,STRATUM) IS .LE. ZERO'
+     .                     ' TURNED OFF, BECAUSE',
+     .                     'THE SUM OF THE FLUXES'
+          WRITE (iunout,*) 'FROM THE SUBSTRATA DEFINED BY',
+     .                     'SORWGT(SUBSTRATUM,STRATUM) IS .LE. ZERO'
           CALL EIRENE_LEER(1)
         ENDIF
         IF (NPTS(ISTRA).LE.0.OR.FLUX(ISTRA).LE.0.D0)
@@ -350,25 +357,25 @@ C  CHANGED: use XX=NTCPU seconds of cpu time for calculation of trajectories
       XFL1=0.
 
       xtim = 0._dp
-      DO 8 ISTRA=1,NSTRAI
-        IF (NLSRON(ISTRA)) THEN
-          XPT1=NPTS(ISTRA) !VKMPI
-          XFL1=FLUX(ISTRA) !VKMPI
-          XTIM(ISTRA)=XX1*((1.-ALLOC)*XPT1/(XPT+EPS60)+
+      DO 8 ISTRAI=1,NSTRAI
+        IF (NLSRON(ISTRAI)) THEN
+          XPT1=NPTS(ISTRAI) !VKMPI
+          XFL1=FLUX(ISTRAI) !VKMPI
+          XTIM(ISTRAI)=XX1*((1.-ALLOC)*XPT1/(XPT+EPS60)+
      +                     (   ALLOC)*XFL1/(XFL+EPS60)) !VKMPI
         ELSE
-          xtim(istra)=0.0 !VKMPI
+          xtim(istrai)=0.0 !VKMPI
         END IF
     8 CONTINUE
 
 C  REDISTRIBUTE XTIM IN CASE THAT SOURCES ARE TEMPORARILY SWITCHED OFF (SHORT CYCLE)
-CVKMPI      DO ISTRA=1,NSTRAI
-CVKMPI        DXTIM(ISTRA)=XTIM(ISTRA)-XTIM(ISTRA-1)
-CVKMPI        IF (.NOT.NLSRON(ISTRA)) DXTIM(ISTRA)=0._DP
+CVKMPI      DO ISTRAI=1,NSTRAI
+CVKMPI        DXTIM(ISTRAI)=XTIM(ISTRAI)-XTIM(ISTRAI-1)
+CVKMPI        IF (.NOT.NLSRON(ISTRAI)) DXTIM(ISTRAI)=0._DP
 CVKMPI      END DO
 
-CVKMPI      DO ISTRA=1,NSTRAI
-CVKMPI        XTIM(ISTRA)=XTIM(ISTRA-1)+DXTIM(ISTRA)
+CVKMPI      DO ISTRAI=1,NSTRAI
+CVKMPI        XTIM(ISTRAI)=XTIM(ISTRAI-1)+DXTIM(ISTRAI)
 CVKMPI      END DO
 
       XTIM(0)=SUM(XTIM(1:NSTRAI))
@@ -387,10 +394,10 @@ C
       ELSE
         CALL EIRENE_MASAGE('WEIGHTED ALLOCATION BETWEEN NPTS AND FLUX')
       ENDIF
-      DO 9 ISTRA=1,NSTRAI
-CVKMPI        DELT=XTIM(ISTRA)-XTIM(ISTRA-1)
-CVKMPI        CALL EIRENE_MASJ1R ('STRATUM, TIME   ',ISTRA,DELT)
-        CALL EIRENE_MASJ1R ('STRATUM, TIME   ',ISTRA,XTIM(ISTRA)) !VKMPI
+      DO 9 ISTRAI=1,NSTRAI
+CVKMPI        DELT=XTIM(ISTRAI)-XTIM(ISTRAI-1)
+CVKMPI        CALL EIRENE_MASJ1R ('STRATUM, TIME   ',ISTRAI,DELT)
+        CALL EIRENE_MASJ1R ('STRATUM, TIME   ',ISTRAI,XTIM(ISTRAI)) !VKMPI
     9 CONTINUE
       CALL EIRENE_LEER(2)
 C
@@ -398,23 +405,24 @@ C  ASSIGN NUMBER OF PARTICLES TO BE STORED ON CENSUS, PROPORTIONAL
 C  TO CPU TIME ASSIGNED TO EACH STRATUM
 C
       IF (NPRNLI.GT.0) THEN
-        WRITE(iunout,*) 'MAXIMUM NUMBER OF PARTICLES THAT WILL BE SAVED'
-        WRITE(iunout,*) 'ON CENSUS (TIME DEP MODE):'
-        WRITE(iunout,*) 'PROP. TO CPU-TIME ALLOCATED FOR EACH STRATUM'
-        DO  ISTRA=1,NSTRAI
-          XFACT=XTIM(ISTRA)/XX1 !VKMPI
+        WRITE(iunout,'(1x,a,a)')
+     .   'MAXIMUM NUMBER OF PARTICLES THAT WILL BE SAVED',
+     .   'ON CENSUS (TIME DEP MODE):'
+        WRITE(iunout,*) 'PROP. TO CPU TIME ALLOCATED FOR EACH STRATUM'
+        DO  ISTRAI=1,NSTRAI
+          XFACT=XTIM(ISTRAI)/XX1 !VKMPI
           XPRNLS       =NPRNLI*XFACT+0.5
-          NPRNLS(ISTRA)=INT(XPRNLS)
+          NPRNLS(ISTRAI)=INT(XPRNLS)
         ENDDO
    10   ISUM=SUM(NPRNLS(1:NSTRAI))
         IF (ISUM.NE.NPRNLI) THEN
 C  ROUND-OFF ERRORS
           NMX=0
           NPX=-1
-          DO ISTRA=1,NSTRAI
-            IF (NPRNLS(ISTRA).GT.NPX) THEN
-              NMX=ISTRA
-              NPX=NPRNLS(ISTRA)
+          DO ISTRAI=1,NSTRAI
+            IF (NPRNLS(ISTRAI).GT.NPX) THEN
+              NMX=ISTRAI
+              NPX=NPRNLS(ISTRAI)
             ENDIF
           ENDDO
           IS=ISIGN(1,ISUM-NPRNLI)
@@ -423,8 +431,8 @@ C  ROUND-OFF ERRORS
         ENDIF
         WRITE (iunout,*) 'TOTAL CENSUS NPRNLI ',NPRNLI
         CALL EIRENE_LEER(1)
-        DO  ISTRA=1,NSTRAI
-          CALL EIRENE_MASJ2 ('STRATUM, NUMBER ',ISTRA,NPRNLS(ISTRA))
+        DO  ISTRAI=1,NSTRAI
+          CALL EIRENE_MASJ2 ('STRATUM, NUMBER ',ISTRAI,NPRNLS(ISTRAI))
         ENDDO
       ENDIF
 C
@@ -575,6 +583,22 @@ c  initialize random number generator with chosen input seed NINIST
 c  ranset checks, if this is a legal seed for a particular generator,
 c  and otherwise enforces that or stops the run.
             ISEED_ISTRA=RANSET_EIRENE(NINIST)
+            iadd=0
+            call ranmar_test(iadd,ierr,ran)
+            if (ierr.eq.0) then
+              write (iunout,*) 'RANMAR test passed.'
+              if (IADD.eq.0) then
+                write (iunout,*) 'Next random number will be: ',RAN
+              else
+                write (iunout,*) 'Skip next IADD rand. numbers: ',IADD
+                write (iunout,*) 'Last random number used in test: ',RAN
+              endif
+            else
+              write (iunout,*) 'RANMAR test failed. Error code:'
+              write (iunout,'(I7)') IERR
+              write (iunout,*) 'Last random number used in test: ',RAN
+            endif
+            call eirene_leer(1)
 
 c  find random number seed from truly random procedure from wall clock time (use date and time)
           ELSEIF (NINITL(ISTRA).LT.0) THEN
@@ -589,6 +613,7 @@ cdr  format of CDATE: hhmmss.xxx
          IF (.NOT.NLIDENT) then
             MY_ID= EIRENE_ITHREAD + MY_PE*EIRENE_NTHREADS
             NINIST=NINITL(ISTRA)+MY_ID*10000
+            WRITE (iunout,*) 'NINITL(ISTRA) SET TO ',NINIST
             ISEED_ISTRA=RANSET_EIRENE(NINIST)
          ENDIF
 
@@ -757,10 +782,9 @@ cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
               CALL EIRENE_LEER(1)
               WRITE (iunout,*)
      .          'NO FURTHER COMP.TIME AVAIL. FOR THIS STRATUM'
-              WRITE (iunout,*)
-     .          'M.C. HISTORIES FOLLOWED UNTIL THAT TIME FOR'
-              WRITE (iunout,*) 'THIS STRATUM'
-cdr           CALL EIRENE_MASJ2 ('ISTRA,IPANU=    ',ISTRA,IPANU)
+              WRITE (iunout,'(1x,a,a)')
+     .          'M.C. HISTORIES FOLLOWED UNTIL THAT TIME FOR',
+     .          'THIS STRATUM'
               call system_clock (itimend, itimrate)
               timused=real(itimend-itimstart,DP)/REAL(itimrate,DP)
               CALL EIRENE_MASJ2R('ISTRA,IPANU,TIMUSED     ',
@@ -784,9 +808,9 @@ cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccc
             ELSEIF (LGLAST.AND..NOT.LGSTOP) THEN
               CALL EIRENE_LEER(1)
               WRITE (iunout,*) 'CENSUS ARRAYS FILLED FOR THIS STRATUM'
-              WRITE (iunout,*)
-     .          'M.C. HISTORIES FOLLOWED UNTIL THAT TIME FOR'
-              WRITE (iunout,*) 'THIS STRATUM'
+              WRITE (iunout,'(1x,a,a)')
+     .          'M.C. HISTORIES FOLLOWED UNTIL THAT TIME FOR',
+     .          'THIS STRATUM'
               call system_clock (itimend, itimrate)
               timused=real(itimend-itimstart,DP)/REAL(itimrate,DP)
               CALL EIRENE_MASJ2R('ISTRA,IPANU,TIMUSED     ',
@@ -1008,8 +1032,9 @@ C
           CALL EIRENE_LEER(1)
 
           WRITE (iunout,*) 'ALL REQUESTED TRAJECTORIES COMPLETED'
-          WRITE (iunout,*) 'M.C. HISTORIES FOLLOWED UNTIL THAT TIME FOR'
-          WRITE (iunout,*) 'THIS STRATUM'
+          WRITE (iunout,'(1x,a,a)') 
+     .     'M.C. HISTORIES FOLLOWED UNTIL THAT TIME FOR',
+     .     'THIS STRATUM'
 
           call system_clock (itimend, itimrate)
           timused=real(itimend-itimstart,DP)/REAL(itimrate,DP)
@@ -1343,7 +1368,8 @@ C
  1111     CONTINUE
           WRITE(iunout,*)
      .           'CUMULATED CPU TIME USED UNTIL END OF STRATUM ISTRA'
-          WRITE(iunout,*) 'ISTRA, CPU(S) ',ISTRA,EIRENE_SECOND_OWN()
+          WRITE(iunout,*) 'ISTRA, CPU(S) ',ISTRA,
+     .           EIRENE_SECOND_OWN()-TIMST
           CALL EIRENE_LEER(2)
 !$OMP END MASTER
 
@@ -1382,7 +1408,7 @@ C   AND MORE PROCESSES THAN STRATA
       IF (NMODE.GT.0) THEN
         IF (NPRS > 1) THEN
 C This is very case-specific and may be different for each plasma code.
-C Introducing another interfacing subroutine within the strata-loop
+C Introducing another interfacing subroutine within the strata loop
 C solves this issue much more flexible.
 C This if block needs to go into the if3cop, if relevant for the
 C plasma code.

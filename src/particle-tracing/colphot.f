@@ -102,7 +102,7 @@ C
       IMPLICIT NONE
 
       REAL(DP), INTENT(IN) :: CFLAG(7,MSTOR0)
-      REAL(DP), INTENT(OUT) :: COLTYP
+      INTEGER, INTENT(OUT) :: COLTYP
       REAL(DP) :: ZEP1, SIGSUM, WGHTO, FRSTP, E0O, VELXO,
      .          VELYO, VELZO, VELO, SCNDP,
      .          ZEP3
@@ -112,7 +112,8 @@ C
 Cdr  additional arrays for ANALOG CASCADE and SPLITTING AT COLLISIONS.
 Cdr (should be set in initialization phase, not here)
 CDR  check: are the corresponding arrays PATEI,PMLEI, PIOEI real or integer (1/2 particle possible?)
-C      INTEGER, ALLOCATABLE :: NAMIEI(:),NAMIPI(:)
+
+C      INTEGER, ALLOCATABLE :: NAMIEI(:),NAMIPI(:)  ! preparing code synchronisation
 
 csw add n 2lines
       INTEGER :: iaph,irph,kk,updf,t1

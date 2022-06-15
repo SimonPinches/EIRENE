@@ -11,5 +11,9 @@ C
       class(json_core),intent(inout) :: json
       type(json_value), pointer, intent(in) :: p
 
+      NCPV=0
+      NAIN=0
+      NPTRGT=1
+
       RETURN
       END

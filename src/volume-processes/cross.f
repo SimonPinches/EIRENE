@@ -6,6 +6,8 @@ C       K=0 means no cross-section available for this reaction
 c       k=-1,-2,-3:  default (hard-wired) CX cross-sections
 c 0315: increase kk>=-10 to kk>=-11 for He EI process, to fully reserve k=-1
 c       for H+p CX as default process
+C Nov.19: Arrhenius factor (not needed here,
+cdr       but for coding consistency)
 
       FUNCTION EIRENE_CROSS(AL,K,IR,FACT,TEXT)
 C
@@ -47,7 +49,7 @@ C
       REAL(DP) :: EIRENE_CROSS,
      .            ALMIN,ALMAX,COUMIN,COUMAX,
      .            EXPO, EIRENE_EXTRAP, E, XI,
-     .            EIRENE_SNGL_POLY
+     .            EIRENE_SNGL_POLY, EARRH0
       INTEGER :: I
       type(poly_data), pointer :: rpp
       type(fit_forms), pointer :: rpc
@@ -76,10 +78,12 @@ C  FILL CROSS-SECTION DATA, SINGLE PARAMETER POLYNOMIAL IN AL=LN(E)
           RPP => RPC%POLY
           FP(1:3) = RPC%FP1L
           FP(4:6) = RPC%FP1R
+CDR no Arrhenius factor in case of cross-sections:
+          EARRH0=0.0
           EXPO = EIRENE_SNGL_POLY(RPP%DBLPOL,AL,
      .                            RPC%RC1MIN,RPC%RC1MAX,FP,
      .                            RPC%JFEX1MN,RPC%JFEX1MX,
-     .                            TRCAMD,.TRUE.)
+     .                            EARRH0,TRCAMD,.TRUE.)
           EIRENE_CROSS = EXP(MAX(-100._DP,EXPO))
 
           EIRENE_CROSS = EIRENE_CROSS*FACT

@@ -60,11 +60,11 @@ c   electron energy losses per collision from the default EI processes -4 ....-1
         CASE (-5)
             EIRENE_FEELEI1=-10.5   ! DEFAULT PROCESS KK=-5:  H2 + E --> H + H + E
         CASE (-6)
-            EIRENE_FEELEI1=-25.0  ! DEFAULT PROCESS KK=-6:  H2 + E --> H + H+  +2E
+            EIRENE_FEELEI1=-25.0   ! DEFAULT PROCESS KK=-6:  H2 + E --> H + H+  +2E
         CASE (-7)
             EIRENE_FEELEI1=EELEI1(IREI,1) ! DEFAULT PROCESS KK=-7: H2 + E --> H2+  +2E
         CASE (-8)
-            EIRENE_FEELEI1=-10.5  ! DEFAULT PROCESS KK=-8: H2+ + E --> H + H+ +E  (DE)
+            EIRENE_FEELEI1=-10.5   ! DEFAULT PROCESS KK=-8: H2+ + E --> H + H+ +E  (DE)
         CASE (-9)
             EIRENE_FEELEI1=-15.5   ! DEFAULT PROCESS KK=-9: H2+ + E --> H+ + H+ + 2E (DI)
         CASE (-10)  ! DEFAULT PROCESS KK=-10: H2+ E --> H + H, DISS. RECOMBINATION (DR)

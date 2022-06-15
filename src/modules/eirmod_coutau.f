@@ -98,8 +98,12 @@ cdr  Few are directly scored: ptrash, etrash, .... xmcp
      R WTOTA(:,:),  WTOTM(:,:),  WTOTI(:,:),  WTOTP(:,:),  WTOTPH(:,:),
      R WTOTE(:),
      R ETOTA(:),    ETOTM(:),    ETOTI(:),    ETOTP(:),    ETOTPH(:),
-     R XMCP(:),     FLUXT(:),    FLXFAC(:),   EELFI(:,:),
+cdr scored along the flights
+     R XMCP(:),     EELFI(:,:),
      R PTRASH(:),   ETRASH(:),
+
+cdr for scaling
+     R FLUXT(:),    FLXFAC(:),  
      R FASCL(:),    FMSCL(:),    FISCL(:),    FPHSCL(:)
 
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
@@ -359,12 +363,14 @@ cdr  etote still missing ??
       ALLOCATE (ETOTPH(0:NSTRA))
       ALLOCATE (ETOTP(0:NSTRA))
 
+cdr  scored along the flight
       ALLOCATE (XMCP(0:NSTRA))
-      ALLOCATE (FLUXT(0:NSTRA))
-      ALLOCATE (FLXFAC(0:NSTRA))
       ALLOCATE (EELFI(0:NION,0:NSTRA))
       ALLOCATE (PTRASH(0:NSTRA))
       ALLOCATE (ETRASH(0:NSTRA))
+cdr  for scaling
+      ALLOCATE (FLUXT(0:NSTRA))
+      ALLOCATE (FLXFAC(0:NSTRA))
       ALLOCATE (FASCL(0:NSTRA))
       ALLOCATE (FMSCL(0:NSTRA))
       ALLOCATE (FISCL(0:NSTRA))
@@ -605,12 +611,16 @@ c  global fluxes from primary source
 
 c scored "on the fly"
       DEALLOCATE (XMCP)
-      DEALLOCATE (FLUXT)
-      DEALLOCATE (FLXFAC)
+cdr At surface events of test ions:
+cdr from energy gained from (sheath) electric field
       DEALLOCATE (EELFI)
 cdr trash: particles killed during tracing, "fail-safe"
       DEALLOCATE (PTRASH)
       DEALLOCATE (ETRASH)
+
+c stuff for scaling tallies
+      DEALLOCATE (FLUXT)
+      DEALLOCATE (FLXFAC)
       DEALLOCATE (FASCL)
       DEALLOCATE (FMSCL)
       DEALLOCATE (FISCL)
@@ -628,15 +638,21 @@ c size of tallies
       END SUBROUTINE EIRENE_DEALLOC_COUTAU
 
 
-      SUBROUTINE EIRENE_INIT_COUTAU(LOGARR)
+      SUBROUTINE EIRENE_INIT_COUTAU(LSTR)
+cdr input: lstr(istra)=true : this stratum ISTRA exists
+cdr                    false: stratum ISTRA turned off in this run
 
-      LOGICAL, INTENT(IN) :: LOGARR(NSTRA)
-      INTEGER :: ISTRA
+      LOGICAL, INTENT(IN) :: LSTR(NSTRA)
+      INTEGER :: JSTRA, ISTRA
 
-      DO ISTRA=0,NSTRA
+      DO JSTRA=0,NSTRA
+        ISTRA = JSTRA
 
+cdr  what is this ?
+cpb  for short cycle:
+cpb  keep results of strata which are not calculated in this timestep/iteration
         IF ((ISTRA >= 1) .AND. (IFRST > 0)) THEN
-          IF (.NOT. LOGARR(ISTRA)) CYCLE
+          IF (.NOT. LSTR(ISTRA)) CYCLE
         END IF
 
 cdr particle densities
@@ -855,19 +871,19 @@ cdr  energy sources from pl, for electrons:  tally epeli missing ??
         ETOTI(ISTRA)  = 0._DP
         ETOTP(ISTRA)  = 0._DP
         ETOTPH(ISTRA) = 0._DP
-        FLUXT(ISTRA)  = 0._DP
-        FLXFAC(ISTRA) = 0._DP
+cdr  scored along the flight
         EELFI(:,ISTRA)  = 0._DP
         PTRASH(ISTRA) = 0._DP
         ETRASH(ISTRA) = 0._DP
+        XMCP(ISTRA)   = 0._DP
+
+cdr  for scaling
+        FLUXT(ISTRA)  = 0._DP
+        FLXFAC(ISTRA) = 0._DP
         FASCL(ISTRA)  = 0._DP
         FMSCL(ISTRA)  = 0._DP
         FISCL(ISTRA)  = 0._DP
         FPHSCL(ISTRA)  = 0._DP
-
-!pb     IF (IFRST == 0) THEN
-          XMCP(ISTRA)   = 0._DP
-!pb     END IF
 
       END DO
       IFRST = 1

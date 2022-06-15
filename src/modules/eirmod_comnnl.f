@@ -13,6 +13,10 @@ cdr            (in subr. LOCATE.f)
 
       MODULE EIRMOD_COMNNL
 
+cdr  Some variables must become threadprivate: e.g. itmstp,
+cdr  and the count no. of scores on census?
+
+
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: IUNMEM, MPARTT, NPARTT, NPRNL, NSTRA
 
@@ -90,9 +94,9 @@ cdr            (in subr. LOCATE.f)
 
       IPART  = 0
       IPARTC = 0
-      NPRNLS = 0
 
       NPRNLI = 0
+      NPRNLS = 0
       IPRNLI = 0
       IPRNLS = 0
       IPRNL  = 0

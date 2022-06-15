@@ -33,6 +33,7 @@ csw already read in into extrab25 module
           end if
           if(bsps_mtri(k).gt.0.) then
             znml(l)=bsps_mtri(k)
+            xmlim(l)=znml(l)
           end if
           if(abs(bsps_tmpr(k)).le.1.d10) then
             ewall(l)=bsps_tmpr(k)

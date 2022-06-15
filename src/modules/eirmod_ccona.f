@@ -14,8 +14,10 @@ C             and made private (Aug.20)
 
       PRIVATE
 
-      PUBLIC :: EIRENE_ALLOC_CCONA, PTE_TYPE, EIRENE_SET_PTE_ELEMENT,
-     P          EIRENE_FIND_ELEMENT, EIRENE_BROADCAST_CCONA
+      PUBLIC :: EIRENE_ALLOC_CCONA, 
+     P          PTE_TYPE, 
+     P          EIRENE_SET_PTE_ELEMENT, EIRENE_FIND_PTE_ELEMENT, 
+     P          EIRENE_BROADCAST_CCONA
 
 cd  Periodic Table Element (PTE):
       TYPE PTE_TYPE
@@ -125,7 +127,7 @@ cdr  Data type PTE_TYPE is unused so far (Jan. 2020)
 
 
 
-      FUNCTION EIRENE_FIND_ELEMENT(NAME) RESULT(IELEM)
+      FUNCTION EIRENE_FIND_PTE_ELEMENT(NAME) RESULT(IELEM)
 
       CHARACTER(2),INTENT(IN) :: NAME
       INTEGER :: IELEM, I
@@ -140,7 +142,7 @@ cdr  Data type PTE_TYPE is unused so far (Jan. 2020)
       end do
 
       return
-      END FUNCTION EIRENE_FIND_ELEMENT
+      END FUNCTION EIRENE_FIND_PTE_ELEMENT
 
 
       SUBROUTINE EIRENE_BROADCAST_CCONA(ME)

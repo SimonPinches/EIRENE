@@ -712,8 +712,17 @@ c.....................................................................
 
       END IF  ! FALSE   storage tests deactivated
 
+cdr  correct for the derived tallies mixed into primary input tallies.
+cdr  Aug.18: also this storage test is now de-activated,
+cdr          due to new options to turn off input tallies
+cdr          and to remove their storage
+c     NPLPRM_TEST=NPLPRM + (2+NPLS)*NRAD
+c     IF (NTESTP.NE.NPLPRM_TEST) THEN
+c        WRITE (iunout,*) 'PARAMETER ERROR DETECTED IN SETPRM: NPLPRM'
+c        WRITE (iunout,*) 'NTESTP, NPLPRM ',NTESTP,NPLPRM_TEST
+c        CALL EIRENE_EXIT_OWN(1)
+c     ENDIF
 c............................................................................. 
- 
       IF (TRCTAL) THEN
         CALL EIRENE_LEER(2)
         WRITE(IUNOUT,*) 'VOLUME-AVERAGED TALLIES CALCULATED IN THIS RUN'

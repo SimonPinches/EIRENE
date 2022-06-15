@@ -247,8 +247,8 @@ C  TEST POLOIDAL SURFACE NO. MPTEST FOR REENTRY
                 NCOUP=1
                 LUPC(NCOUP)=MPTEST
                 IRSAVE=IR
-                MUPC(NCOUP)=INT(SIGN(1._DP,VELX*PPLNX(IR,MPTEST)+
-     .                                     VELY*PPLNY(IR,MPTEST)))
+                MUPC(NCOUP)=NINT(SIGN(1._DP,VELX*PPLNX(IR,MPTEST)+
+     .                                      VELY*PPLNY(IR,MPTEST)))
                 JUPC(NCOUP)=1
                 ZRD=T1
     2       CONTINUE
@@ -667,8 +667,8 @@ C
 #endif
             NCOUP=NCOUP+1
             LUPC(NCOUP)=I
-            MUPC(NCOUP)=INT(SIGN(1._DP,VELX*PPLNX(NRCELL,I)+
-     .                                 VELY*PPLNY(NRCELL,I)))
+            MUPC(NCOUP)=NINT(SIGN(1._DP,VELX*PPLNX(NRCELL,I)+
+     .                                  VELY*PPLNY(NRCELL,I)))
             IF (MUPC(NCOUP).EQ.-1) THEN
               JUPC(NCOUP)=I
               ALPD(NCOUP)=T1

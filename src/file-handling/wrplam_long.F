@@ -198,8 +198,11 @@ cdr, jan 2019
 c   verify: same active tallies as in previous write?
       DO I=1, NTALI
         IF ((LIVTALI(I).AND.LIVT(I)).OR.
-     .      (.NOT.LIVTALI(I).AND..NOT.LIVT(I))) CYCLE
-        GOTO 991
+     .      (.NOT.LIVTALI(I).AND..NOT.LIVT(I))) THEN
+          CYCLE
+        ELSE
+          GOTO 991
+        END IF
       END DO
       READ (13+ifoff,IOSTAT=IO) NFRS, NAD
       IF (TRCFLE) WRITE (iunout,*) 'READ 13: NFRSTP, NADDP '

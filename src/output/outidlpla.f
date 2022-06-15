@@ -5,7 +5,7 @@ C
 C
 Cdr  This routine prints background tallies ("field particles") for plotting in IDL tool.
 cdr  Probably code mostly adopted from subr. outpla.f, but no
-cdr  coarse graining onto scoring grid done here, yet.
+cdr  coarse graining onto scoring grid done here.
 C
 C  PRINT INPUT TALLIES ONTO OUTPUT FILE IUNOUT
 C

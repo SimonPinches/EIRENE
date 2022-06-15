@@ -40,7 +40,8 @@ cym these will need to be copyin (initialized in sputr0)
 !$OMP THREADPRIVATE(ETH,Q,M2M1,ES,ETF)
 
       REAL(DP), SAVE :: RTAMU(28),ZTAR(28)
-      REAL(DP), SAVE :: BT1 = 7.0, BT2 = -0.54, BT3 = 0.15, BT4 = 1.12
+      REAL(DP), SAVE :: BT1 = 7.0_DP, BT2 = -0.54_DP, 
+     .                  BT3 = 0.15_DP, BT4 = 1.12_DP
 
 C  NPROJ: PROJECTILE IDENTIFIER
 C  NPROJ(7) CORRESPONDS TO SELF-SPUTTERING.
@@ -55,15 +56,15 @@ C  NTARG:  TARGET IDENTIFIER
       INTEGER, SAVE :: NTAMU(28)
       CHARACTER(20), dimension(28), SAVE :: TTARG = (/
      .           'LITHIUM             ', 'BERYLLIUM           ',
-     .           'BOR                 ', 'GRAPHITE            ',
-     .           'ALUMINIUM           ', 'SILICIUM            ',
+     .           'BORON               ', 'GRAPHITE            ',
+     .           'ALUMINIUM           ', 'SILICON             ',
      .           'TITANIUM            ', 'VANADIUM            ',
      .           'CHROMIUM            ', 'MANGANESE           ',
      .           'IRON                ', 'COBALT              ',
      .           'NICKEL              ', 'COPPER              ',
      .           'GALLIUM             ', 'GERMANIUM           ',
      .           'ZIRCONIUM           ', 'NIOBIUM             ',
-     .           'MOLYBDENUM          ', 'PALADIUM            ',
+     .           'MOLYBDENUM          ', 'PALLADIUM           ',
      .           'SILVER              ', 'INDIUM              ',
      .           'TANTALUM            ', 'TUNGSTEN            ',
      .           'PLATINUM            ', 'GOLD                ',
@@ -78,9 +79,9 @@ C  NTARG:  TARGET IDENTIFIER
       REAL(DP), SAVE :: TWOTHIRD,ONETHIRD,ONESIXTH,FIVESIXTH
 
 C  CHEMICAL EROSION DATA
-      REAL(DP), dimension(3), SAVE :: D = (/250.,125.,83./)
-      REAL(DP), dimension(3), SAVE :: EDAM = (/15.,15.,15./)
-      REAL(DP), dimension(3), SAVE :: EDES = (/2.,2.,2./)
+      REAL(DP), dimension(3), SAVE :: D = (/250._DP,125._DP,83._DP/)
+      REAL(DP), dimension(3), SAVE :: EDAM = (/15._DP,15._DP,15._DP/)
+      REAL(DP), dimension(3), SAVE :: EDES = (/2._DP,2._DP,2._DP/)
 
       INTEGER, ALLOCATABLE, SAVE :: IPROJ(:),IPROJS(:),ITARG(:),
      .                              ISPZSP_DEF(:)
@@ -388,7 +389,7 @@ C  ANY TARGET DATA FOR SELF-SPUTTERING WITH IPL?
       ITARG=0
       ISPZSP_DEF=0
       DO ILIM=1,NLIMI
-        NT=INT(100.0*ZNML(ILIM)+ZNCL(ILIM)+1.0D-10)
+        NT=100*NINT(ZNML(ILIM))+NINT(ZNCL(ILIM))
         ITARG(ILIM)=0
         DO IT=1,28
           IF (NT.EQ.NTARG(IT)) ITARG(ILIM)=IT
@@ -399,7 +400,7 @@ C  ANY TARGET DATA FOR SELF-SPUTTERING WITH IPL?
         ENDDO
       ENDDO
       DO ILIM=NLIM+1,NLIM+NSTSI
-        NT=INT(100.*ZNML(ILIM)+ZNCL(ILIM)+1.0D-10)
+        NT=100*NINT(ZNML(ILIM))+NINT(ZNCL(ILIM))
         ITARG(ILIM)=0
         DO IT=1,28
           IF (NT.EQ.NTARG(IT)) ITARG(ILIM)=IT
@@ -427,6 +428,8 @@ C
         DO ILIM=1,NLIMI
           IF (ILIIN(ILIM).LE.0) THEN
             WRITE (iunout,*) ILIM, ' TRANSPARENT SURFACE '
+          ELSEIF (ILIIN(ILIM).EQ.2) THEN
+            WRITE (iunout,*) ILIM, ' ABSORBING SURFACE '
           ELSEIF (ILIIN(ILIM).GE.3) THEN
             WRITE (iunout,*) ILIM, ' PERIODICITY- OR MIRROR SURFACE '
           ELSEIF (IGJUM0(ILIM).EQ.1) THEN
@@ -444,6 +447,8 @@ C
             WRITE(iunout,*) -ISTSI,' TIME HORIZON, CENSUS TALLYING '
           ELSEIF (ILIIN(ISURF).LE.0) THEN
             WRITE(iunout,*) -ISTSI,' TRANSPARENT SURFACE '
+          ELSEIF (ILIIN(ISURF).EQ.2) THEN
+            WRITE (iunout,*) -ISTSI, ' ABSORBING SURFACE '
           ELSEIF (ILIIN(ISURF).GE.3) THEN
             WRITE(iunout,*) -ISTSI,' PERIODICITY- OR MIRROR SURFACE '
           ELSEIF (ITARG(ISURF).GT.0.AND.ITARG(ISURF).LE.28) THEN
@@ -489,11 +494,11 @@ C
       INTEGER, INTENT(OUT) :: ISPZC, ISPZP
 
 C  PURE CARBON
-      REAL(DP) :: EREL = 1.8
+      REAL(DP) :: EREL = 1.8_DP
 C  SI,TI,W DOPED CARBON
-c      REAL(DP) :: EREL = 1.5
+c     REAL(DP) :: EREL = 1.5_DP
 C  B DOPED CARBON
-c      REAL(DP) :: EREL = 1.2
+c     REAL(DP) :: EREL = 1.2_DP
 
 c
       INTEGER :: IATMC, MSS, IMOLC, ITYPC     
@@ -505,7 +510,7 @@ ctk      real(dp) :: EIRENE_YHAASZ97M
      .            SQE, F1, F2, F3, QQP, ANGFAC, CAOPT, F, GAMMA, 
      .            EMAX, RSQDV, CVRSS, RT, EIRENE_FTHOMP, VX, UB, 
      .            VY, VZ, FLX, PRFCC, ETHERM, ETHEKT, ERELKT, C, 
-     .            G2, G3, YTHERM, YDES,
+     .            G2, G3, YTHERM, YDES, ARG,
      .            EDESE0, EDAME0, QSE, YDAM, YSURF, 
      .            VXR, VYR, VZR, VWL, WGHTVS   ! FOR SAMPLING WITH VELOCS
       INTEGER :: ITA, IPS, IPR, MODCHM, MODPYS, MS, ITYPP, IATMP
@@ -631,7 +636,9 @@ C         AOPT=75.
 C         CAOPT=COS(AOPT*PIA/180.D0)
           CAOPT=0.26
           F=2.
-          ANGFAC=COSIN**(-F)*EXP(F*(1.-1./COSIN)*CAOPT)
+!         ANGFAC=COSIN**(-F)*EXP(F*(1.-1./COSIN)*CAOPT)
+          ARG=MAX(-500._DP,LOG(COSIN)*(-F)+F*(1.-1./COSIN)*CAOPT)
+          ANGFAC=EXP(ARG)
           YIELD1=YIELD1*ANGFAC
         ELSE
 C  NO SPUTTER DATA FOUND FOR THIS TARGET-PROJECTILE
@@ -1067,21 +1074,21 @@ C
 C
 C     Poly. fit c. /       a0,      a1,      a2,      a3
 C
-      DATA FITC300 / -0.03882, 0.07432,-0.03470, 0.00486/
-      DATA FITC350 / -0.05185, 0.10126,-0.05065, 0.00797/
-      DATA FITC400 / -0.06089, 0.12186,-0.06240, 0.01017/
-      DATA FITC450 / -0.08065, 0.16884,-0.09224, 0.01625/
-      DATA FITC500 / -0.08872, 0.19424,-0.10858, 0.01988/
-      DATA FITC550 / -0.08728, 0.20002,-0.11420, 0.02230/
-      DATA FITC600 / -0.05106, 0.13146,-0.07514, 0.01706/
-      DATA FITC650 /  0.07373,-0.13263, 0.09571,-0.01672/
-      DATA FITC700 /  0.02722,-0.03599, 0.02064, 0.00282/
-      DATA FITC750 /  0.09052,-0.18253, 0.12362,-0.02109/
-      DATA FITC800 /  0.02604,-0.05480, 0.04025,-0.00484/
-      DATA FITC850 /  0.03478,-0.08537, 0.06883,-0.01404/
-      DATA FITC900 /  0.02173,-0.06399, 0.05862,-0.01380/
-      DATA FITC950 / -0.00086,-0.01858, 0.02897,-0.00829/
-      DATA FITC1000/ -0.01551, 0.01359, 0.00600,-0.00353/
+      DATA FITC300 / -0.03882_DP, 0.07432_DP,-0.03470_DP, 0.00486_DP/
+      DATA FITC350 / -0.05185_DP, 0.10126_DP,-0.05065_DP, 0.00797_DP/
+      DATA FITC400 / -0.06089_DP, 0.12186_DP,-0.06240_DP, 0.01017_DP/
+      DATA FITC450 / -0.08065_DP, 0.16884_DP,-0.09224_DP, 0.01625_DP/
+      DATA FITC500 / -0.08872_DP, 0.19424_DP,-0.10858_DP, 0.01988_DP/
+      DATA FITC550 / -0.08728_DP, 0.20002_DP,-0.11420_DP, 0.02230_DP/
+      DATA FITC600 / -0.05106_DP, 0.13146_DP,-0.07514_DP, 0.01706_DP/
+      DATA FITC650 /  0.07373_DP,-0.13263_DP, 0.09571_DP,-0.01672_DP/
+      DATA FITC700 /  0.02722_DP,-0.03599_DP, 0.02064_DP, 0.00282_DP/
+      DATA FITC750 /  0.09052_DP,-0.18253_DP, 0.12362_DP,-0.02109_DP/
+      DATA FITC800 /  0.02604_DP,-0.05480_DP, 0.04025_DP,-0.00484_DP/
+      DATA FITC850 /  0.03478_DP,-0.08537_DP, 0.06883_DP,-0.01404_DP/
+      DATA FITC900 /  0.02173_DP,-0.06399_DP, 0.05862_DP,-0.01380_DP/
+      DATA FITC950 / -0.00086_DP,-0.01858_DP, 0.02897_DP,-0.00829_DP/
+      DATA FITC1000/ -0.01551_DP, 0.01359_DP, 0.00600_DP,-0.00353_DP/
 C
 C in calling program (eirene), temp_EV is in eV
 c convert to K
@@ -1202,7 +1209,7 @@ C
       real(dp) :: EIRENE_YHAASZ97M, YDAVIS98
       real(dp) :: m1,m2,m3,reducf,FRAC
 
-      DATA m1/602.39/, m2/202.24/, m3/43.561/, reducf/0.2/
+      DATA m1/602.39_DP/, m2/202.24_DP/, m3/43.561_DP/, reducf/0.2_DP/
 C
 C in calling program (eirene), TEMP_EV is in eV
 c convert to K

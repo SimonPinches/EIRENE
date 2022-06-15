@@ -12,13 +12,13 @@
       PUBLIC :: eirene_colrad, eirene_colrad_reinit, 
      .          eirene_dealloc_colrad
 
-cdr jan 18:  distinct from solps4.3 version: e_alpcr correct now.
+cdr jan 18: distinct from solps4.3 version: e_alpcr correct now.
 cdr         (electron cooling/heating terms associated with recombination)
-cdr feb 18:  l_ext, q_ext, lopaque, pop_esc: must not change,
-c            after first call, otherwise: reset LVIS
-c            so far: q_ext not connected (l_ext=.false.)
-cdr may 18:  add population escape factors pop_esc(40,40), for hydrogen atom.
-cdr          default: optically thin: pop_esc=1
+cdr feb 18: l_ext, q_ext, lopaque, pop_esc: must not change,
+c           after first call, otherwise: reset LVIS
+c           so far: q_ext not connected (l_ext=.false.)
+cdr may 18: add population escape factors pop_esc(40,40), for hydrogen atom.
+cdr         default: optically thin: pop_esc=1
 cdr dec.18: additional flag: iform: CR condensed vs. CR resolved. Not fully available.
 
       CONTAINS

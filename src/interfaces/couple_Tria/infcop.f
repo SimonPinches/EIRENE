@@ -2568,7 +2568,7 @@ C
       EEMAX=0.
       EESHT=0.
 C
-      NEM=NEMODS(ITARG)
+      NEM=IABS(NEMODS(ITARG))
       DO 6011 IG=1,NRWL(ITARG)-1
         OR=ORI(ITARG,IG)
 C
@@ -2701,7 +2701,7 @@ C  ADD ENERGY GAIN BY SHEATH ACCELERATION TO TOTAL
             EESHT=EESHT+ESUM*DRR
           ENDIF
 
- 6009   CONTINUE  ! IPLS loop
+ 6009   CONTINUE  ! IPLS loopr
 
  6011 CONTINUE    ! IG,  CELL ALONG TARGET
 C
@@ -3002,7 +3002,7 @@ C  ION ENERGY: SPLIT FOR MULTIPLE IPLS SPECIES
             IPLS=ICPV
             IN=CPMUL%ICM
             CHI=CPMUL%VALUEM*
-     .          (SEINWA(IN,IPLS)-RTIS%SEIODA(IN,IPLS))*ELCHA
+     .          (SEINW(IN,IPLS)-RTIS%SEIOD(IN,IPLS))*ELCHA
             EAPL(IPLS,IN)=EAPL(IPLS,IN)+CHI
             CHEIM(IN)=CHEIM(IN)+CHI
           ENDIF
@@ -3391,7 +3391,6 @@ cdr  scored in UPDLIN.
 cdr  check storage on copv tallies, ncpv ??
             if (NCPV.GE.ICP3+NPLS) THEN
 c  skip working on internal lin. comb. of tallies unless sufficient storage
-
 
             lhit = .false.
             DO ITRI=1,NTRII
@@ -4046,7 +4045,6 @@ C  ITARG, IPRT KNOWN FROM ABOVE
 10112     CONTINUE
 
           TIFLX=TIFLX/(FLX+EPS60)
-          SFNISY=SFNISY+PIFLX
           SFEISY=SFEISY+TIFLX
         ENDIF
 
@@ -4113,7 +4111,6 @@ C  ITARG, IPRT KNOWN FROM ABOVE
             ENDIF
 10117     CONTINUE
           TIFLX=TIFLX/(FLX+EPS60)
-          SFNINY=SFNINY-PIFLX
           SFEINY=SFEINY-TIFLX
         ENDIF
 
@@ -4175,7 +4172,6 @@ C  ITARG, IPRT KNOWN FROM ABOVE
             ENDIF
 10122     CONTINUE
           TIFLX=TIFLX/(FLX+EPS60)
-          SFNIWX=SFNIWX+PIFLX
           SFEIWX=SFEIWX+TIFLX
         ENDIF
 cdr end
@@ -4238,7 +4234,6 @@ C  ITARG, IPRT KNOWN FROM ABOVE
             ENDIF
 10127     CONTINUE
           TIFLX=TIFLX/(FLX+EPS60)
-          SFNIEX=SFNIEX-PIFLX
           SFEIEX=SFEIEX-TIFLX
         ENDIF
 

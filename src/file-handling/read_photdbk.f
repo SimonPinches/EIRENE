@@ -25,7 +25,7 @@ c
      .            c3_theo, c6_qs_mess, c6_ar_mess, c3_mess, c6
       real(dp) :: c6a(12), rdata(9,1)
       real(dp), save :: polari_fac(120)
-      integer :: gi, gj
+      integer :: gi, gj, inep, knep
       integer :: ianf, iend, iblnk, lr, ic, i, j, iplsc3, iprftype,
      .           imess, ifremd, ii, i1, lel, nrjprt
       integer :: ik6, ipc6(12)
@@ -216,7 +216,7 @@ cdr next: line broadening constants, e.g. for pressure broadening etc.
 
 cdr  done with pressure broadening constants
 
-        exit
+        if (.true.) exit
 
       end do
 
@@ -319,7 +319,7 @@ c  reaction no IR is a "photonic" reaction
 
       nullify (reacdat(ir)%phr%adas)
       nullify (reacdat(ir)%phr%poly)
-      nullify (reacdat(ir)%phr%hyd)
+      nullify (reacdat(ir)%phr%tab1d)
       nullify (reacdat(ir)%phr%crm)
 
       reacdat(ir)%phr%line => phline
@@ -353,8 +353,11 @@ cdr
 c  So far photonic cross-sections, rate coeff. and rates are constant.
 c  i.e. special (trivial, 0th-order) cases of polygonial fits.
 c  Use REACDAT type "poly" also for photonic data
+      inep=1
+      knep=1
       call EIRENE_set_reaction_data
-     .  (ir,isw,iftflg(ir,2),rdata,iunout,.false.)
+     .  (ir,isw,iftflg(ir,2),rdata,inep,knep,
+     .   iunout,.false.)
 
       return
 

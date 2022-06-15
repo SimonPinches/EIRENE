@@ -6,7 +6,7 @@ c
 C
 C MODIFIED BY V. KOTOV  (when ?)
 C
-      SUBROUTINE EIRENE_WRPLAM_SHRT
+      SUBROUTINE EIRENE_WRPLAM_SHRT(TRCFLE)
 
 cdr Only the input tallies of the last (virtual) plasma species: nfla+1,...nplsi
 cdr are written/read using I/O stream fort.13. The ones 1,...,nfla are directly transferred 
@@ -37,6 +37,7 @@ cdr         nonlinear iterations.
 
       IMPLICIT NONE
 
+      LOGICAL,INTENT(IN) :: TRCFLE
       INTEGER IO, NFLBGK
       REAL(DP), ALLOCATABLE :: TIIN_LOC(:,:), DIIN_LOC(:,:),
      R  VXIN_LOC(:,:), VYIN_LOC(:,:), VZIN_LOC(:,:)
@@ -54,10 +55,12 @@ cdr         nonlinear iterations.
         RETURN
       END IF
 cdr  only write plasma background data for species, which are not already
-cdr  transfered via common BRAEIR, i.e. only:  nfla+1,....nplsi
+cdr  transferred via common BRAEIR, i.e. only: nfla+1,....nplsi
 cdr  I.e. the virtual background species for nonlinear iterations
 cdr  have to come last in the list of all background species.
       IF(NFLA.LT.NPLSI) THEN
+        IF (TRCFLE) WRITE (iunout,*)
+     w             'WRPLAM: BGK BACKGROUND IS WRITTEN TO '//FORT//'13'
         NFLBGK = NPLSI - NFLA
         ALLOCATE (TIIN_LOC(NFLBGK,NRAD))
         ALLOCATE (DIIN_LOC(NFLBGK,NRAD))
@@ -130,7 +133,7 @@ C ........................................................................
 
       IF(NFLA.LT.NPLSI) THEN
 cdr  only read plasma background data for species, which are not already
-cdr  transfered via Common BRAEIR, i.e. only: nfla+1,....nplsi
+cdr  transferred via common BRAEIR, i.e. only: nfla+1,....nplsi
 cdr  I.e. the virtual background species for nonlinear iterations
 cdr  have to come last in the list of all background species.  
         REWIND 13+ifoff

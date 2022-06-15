@@ -149,7 +149,8 @@ C  NO, PARTICLE HAS ARRIVED AT PERIODICITY SURFACE MSURF
           CALL EIRENE_CHCTRC(X0,Y0,Z0,0,11)
 !$OMP END CRITICAL
         ENDIF
-        RETURN 1
+        IRET = 1
+        RETURN
       ENDIF
 C
 C  .............................

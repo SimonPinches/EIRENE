@@ -44,7 +44,7 @@ c   also in modbgk?
       INTEGER, PUBLIC, SAVE :: IESTR
 
       INTEGER, PUBLIC, SAVE ::
-     I  NIDC, NIDV, NIDS
+     I  NIINTF, NIDV, NIDS
 
 
       CONTAINS
@@ -180,16 +180,34 @@ cdr  Jan 20: further comments.
 
 cdr  Allocate storage for handling background medium,
 cdr  originally only for transfer of plasma data from external code
-cdr  and PROFR  profile options INDPRO=6 or INDPRO=7
+cdr  and PROFR  profile options indpro=6 or indpro=7
 
+cdr  called from:
+c    input.f  (if any indpro(1:12)=6) (what about =7?). Called TWICE ?
+c    eirsrt.f (coupling to various B2 code variants)
+c    wrplam.f
+c    wrplam_long.f (if IFLG=10)
+c    modbgk.f (transfer of modified virtual background for next iteration)
+cdr
 
-!pb   NIDC=1*NPLS+NAIN+6+NPLSTI+4*NPLSV
-      NIDC=1*NPLS+NAIN+6+NPLSTI+3*NPLSV
+cdr  If any indpro(1..12)=6,7, then ALLOC_BCKGRND is called:
+c      provide storage for
+c      transfer of background (plasma) tallies into eirene background tallies
+cdr  In iterative mode, e.g. BGK iterations,
+c      ALLOC_BCKGRND may also be called.
+c      Then: risk of a hidden link? And unnecessary stuff to be dealt
+cdr    within MODBGK (such as B field ?)
+c
+c    currently: no E field information ?
+
+cdr  size of interfacing plasma data storage
+      NIINTF=6+1*NPLS+NPLSTI+3*NPLSV+NAIN
 
       IF (.NOT.ALLOCATED(PLASMA_BCKGRND)) THEN
 
-        ALLOCATE(PLASMA_BCKGRND(NIDC,NRAD))
+        ALLOCATE(PLASMA_BCKGRND(NIINTF,NRAD))
 
+cdr initial : final storage for ADINTF tally corrected
         TEINTF => PLASMA_BCKGRND(1+0+0*NPLS             ,   :)
         TIINTF => PLASMA_BCKGRND(1+1+0*NPLS        :
      .                           1+0+0*NPLS+NPLSTI,         :)
@@ -206,8 +224,6 @@ cdr  and PROFR  profile options INDPRO=6 or INDPRO=7
         BZINTF => PLASMA_BCKGRND(1+3+1*NPLS+NPLSTI+3*NPLSV, :)
         BFINTF => PLASMA_BCKGRND(1+4+1*NPLS+NPLSTI+3*NPLSV, :)
         VLINTF => PLASMA_BCKGRND(1+5+1*NPLS+NPLSTI+3*NPLSV, :)
-!pb     ADINTF => PLASMA_BCKGRND(1+6+1*NPLS+NPLSTI+3*NPLSV :
-!pb  .                             6+1*NPLS+NPLSTI+4*NPLSV+NAIN, :)
         ADINTF => PLASMA_BCKGRND(1+6+1*NPLS+NPLSTI+3*NPLSV :
      .                             6+1*NPLS+NPLSTI+3*NPLSV+NAIN, :)
 
@@ -242,7 +258,7 @@ cdr  and PROFR  profile options INDPRO=6 or INDPRO=7
 
       SUBROUTINE EIRENE_INIT_BCKGRND
 
-      PLASMA_BCKGRND = 0._DP
+      IF (ALLOCATED(PLASMA_BCKGRND)) PLASMA_BCKGRND = 0._DP
 
       RETURN
       END SUBROUTINE EIRENE_INIT_BCKGRND

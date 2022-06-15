@@ -7,7 +7,10 @@ cdr  JAN 2014: add a bit more trcplt diagnostics for non-def. std. surfaces.
 cdr  jan 2014: remove old (redundant) code, in case levgeo=3, rad. pol. surfaces
 cdr  may 2018: plarr (surface normal) only for levgeo 2 and levgeo 3.
 cdr            if levgeo=2 and nlcrc: then polygon grid may not be defined.
-cdr             tbd: print warning...
+cdr            tbd: print warning...
+cdr  may 2019: added: symbol 21 for static mode:
+cdr            QSS mode entrance (= exit).
+cdr            Legend only for the selected symbols (events), not for all
 
 C   2D GEOMETRY (AND TRAJECTORY) PLOT
 
@@ -47,9 +50,9 @@ cym
       PUBLIC :: EIRENE_PLT2D, EIRENE_CHCTRC, EIRENE_PLT2D_REINIT
 
       INTEGER,PARAMETER :: NTXHST=21
-      REAL(DP), SAVE :: ABSMAX = 21., ORDMAX = 21.,
-     .                  XNULL = 9., YNULL = 4.,
-     .                  XWN = 0., YWN =0.
+      REAL(DP), SAVE :: ABSMAX = 21._DP, ORDMAX = 21._DP,
+     .                  XNULL = 9._DP, YNULL = 4._DP,
+     .                  XWN = 0._DP, YWN =0._DP
       REAL(DP), SAVE :: XMI2D, XMA2D, YMI2D, YMA2D, XT, YT, XT2, YT2, 
      .                  TESTN
       INTEGER, SAVE :: IWRIT = 0,
@@ -1548,7 +1551,7 @@ C  SYMBOL IA (OR ISYM_ERR) ACTIVATED ON PLOT.
             YYIA=YN-(0.75*(IAA-1))/FY
             CALL GRJMPS (REAL(XN,SP),REAL(YYIA+0.15,SP),ISPL(IA))
             CALL GRTXT (REAL(XNP05,SP),REAL(YYIA,SP),20,TXTHST(IA))
-            EXIT
+            IF (.TRUE.) EXIT
           ENDDO
         ENDDO
 C

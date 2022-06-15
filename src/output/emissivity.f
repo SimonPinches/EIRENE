@@ -68,8 +68,7 @@ cdr  Write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
       REAL(DP), ALLOCATABLE :: OUTAU(:)
 
       CHARACTER(6) :: CISTRA
-!pb      character(len=80) :: ctest2
-      character(len=:), allocatable :: ctest2
+      character(len=80) :: ctest2
 
       IF (TRCSIG .AND. ICALL.EQ.0) THEN
       CALL EIRENE_LEER(2)
@@ -86,13 +85,13 @@ cdr  Write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
       do i = lstart, lend
         ILINE=I
         IF (TRCSIG .AND. ICALL.EQ.0) THEN
-          ctest2 = adjustl(trim(emis_lines(iline)%line_name))
-          WRITE (iunout,'(a,i6,3a)') 'LINE no. ',ILINE,', ',CTEST2,':' 
-          deallocate(ctest2)
+          ctest2 = emis_lines(iline)%line_name
+          WRITE (iunout,'(1X,A,I2,3A)') 'LINE no. ',
+     .                                   ILINE,', ',TRIM(CTEST2),':' 
           
-        write (iunout,'(1X,A,ES12.4)') 'EINSTEIN COEFFICIENT',
+          write (iunout,'(1X,A,ES12.4)') 'EINSTEIN COEFFICIENT',
      .                               emis_lines(i)%einstein
-        write (iunout,'(1X,A,ES12.4/1x)') 'TRANSITION ENERGY   ',
+          write (iunout,'(1X,A,ES12.4/1x)') 'TRANSITION ENERGY   ',
      .                               emis_lines(i)%trans_en
 
         WRITE (iunout,*) ' FLUX (AMP) AND POWER (WATT) BY '

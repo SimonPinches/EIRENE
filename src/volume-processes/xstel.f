@@ -191,7 +191,8 @@ c old
           END IF  ! MODC=1,2
         ELSE ! NOT SUFFICIENT STORAGE ON TABEL3
 C  STORAGE SAVE MODE NOT READY FOR THIS OPTION MODC=1 OR MODC=2 ??
-          GOTO 995
+!PB       GOTO 995
+          write (iunout,*) ' reaction kk = ',kk, ' modc =',modc
 
         ENDIF
       ELSEIF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.3) THEN
@@ -301,7 +302,7 @@ C  use i-integral expressions. to be written
       ELSEIF (NSEEL4.EQ.3) THEN
 C  4.1C)  ENERGY LOSS RATE OF IMP. ION = EN.-WEIGHTED RATE
 C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN, WITH WEIGHTING/REJECTION
-        KREAD=INT(EBULK)
+        KREAD=NINT(EBULK)
         IF (KREAD.EQ.0) THEN
 c  data for mean ion energy loss are not available
 c  use collision estimator for energy balance

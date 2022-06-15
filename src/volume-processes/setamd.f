@@ -1,9 +1,9 @@
 cdr  nov. 15:  comments,  irds --> irei
-cdr  april 16:  added: fail-safe (exit) step in case of more than one (distinct) bulk
-cdr             secondaries.
-cdr             This is temporarily necessary, as a consequence of making the
-cdr             (bulk) ion energy sources eapl, empl, eipl species-dependent
-cdr             We are not aware of any application of eirene, in which this new error exit
+cdr  april 16: added: fail-safe (exit) step in case of more than one (distinct) bulk
+cdr            secondaries.
+cdr            This is temporarily necessary, as a consequence of making the
+cdr            (bulk) ion energy sources eapl, empl, eipl species-dependent
+cdr            We are not aware of any application of eirene, in which this new error exit
 cdr             would be activated.
 
       SUBROUTINE EIRENE_SETAMD(ICAL)

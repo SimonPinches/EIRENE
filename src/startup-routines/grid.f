@@ -1174,7 +1174,7 @@ C
 C
         IF (TRCGRD) THEN
           CALL EIRENE_LEER(1)
-          WRITE (iunout,*) 'GRIDPOINTS IN Y DIRECTION '
+          WRITE (iunout,*) 'GRID POINTS IN Y DIRECTION '
           CALL EIRENE_LEER(1)
           CALL EIRENE_MASRR1('  N, PSURF ',PSURF,NP2ND,3)
           CALL EIRENE_LEER(2)

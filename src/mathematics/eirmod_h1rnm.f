@@ -59,7 +59,8 @@ C  period length: 2**144
 *# ENTRIES ARE:                                                        *
 *#     FUNCTION    H1RN(DUMMY)     SINGLE RANDOM NUMBER                *
 *#     SUBROUTINE  H1RNV(VEC,LEN)  VECTOR OF RANDOM NUMBERS            *
-*#     SUBROUTINE  H1RNIN(IJ,KL)   INITIALISE WITH SEEDS               *
+*# cdr SUBROUTINE  H1RNIN(IJ,KL)   INITIALISE WITH SEEDS               *
+*#     SUBROUTINE  H1RNIN(IJKL)    INITIALISE WITH 1 SEED              *
 *#     SUBROUTINE  H1RNIV(VEC)     INITIALISE/RESTART WITH SEED ARRAY  *
 *#     SUBROUTINE  H1RNSV(VEC)     SAVE SEED ARRAY VEC(100)            *
 *#                                                                     *
@@ -69,7 +70,7 @@ C  period length: 2**144
 *#        OUTPUT IT.                                                   *
 *#                                                                     *
 *# CHANGED BY: G. GRINDHAMMER AT: 90/03/14                             *
-*# REASON :                                                            *
+*# REASON : ?                                                           *
 *# CHANGED BACK TO ORIGINAL BY D REITER AT 17/04/05                    *
 *#**********************************************************************
 *
@@ -83,7 +84,8 @@ cdr   INTEGER :: ISEED1, ISEED2
       CHARACTER(16) :: CHECK
 
 cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cdr  next 5 lines: status of generator, initialized with previous call to h1rnin
+cdr  next 5 lines: status of generator, already initialized with previous call
+cdr  either to h1rnin(ijkl) or to H1RNIV(VEC), with VEC(100)
 cym      CHARACTER(16) :: FLAG
 cym      REAL(DP) :: U, C, CD, CM
 cym      INTEGER :: I, J
@@ -100,15 +102,19 @@ cym      LOGICAL, SAVE :: FIRST1=.TRUE.
 *
       IF (FIRST1) THEN
          IF (FLAG .NE. CHECK) THEN
+
+cdr  apparently H1RN is called without initialization.
+cdr  Use default Marsaglia-Zaman seeds:
 cdr         WRITE(IUNOUT,*) ' H1RN (RANMAR): INITIALIZED WITH DEFAULT SEED'
-cdr  changed back to single default seed also used in ranset
-cdr         ISEED1      = 12345
-cdr         ISEED2      = 98765
+cdr  changed back to single default seed, also used in seed driver routine RANSET
+cdr         ISEED1      = 1802  ! = ij
+cdr         ISEED2      = 9373  ! = kl
 cdr         CALL H1RNIN(ISEED1,ISEED2)
 
 cdr this single default seed produces the 4 Marsaglia-Zaman seeds.
+c   ijkl= ij*30082+kl
 cdr Loc.cit. F.James, CPC (1990), p340
-            iseed = 54217137
+            ISEED = 54217137  ! = ijkl
             CALL H1RNIN(ISEED)
          ENDIF
          FIRST1 = .FALSE.
@@ -135,26 +141,45 @@ cym cccccccccccccccccc
       END
 
 cdr  Initializes random number generator H1RN  ( = RANMAR, F. James, see below)
-*
+c
+cdr  old code (before April 2017):
 cdr   SUBROUTINE H1RNIN(IJ,KL)
 cdr   IMPLICIT NONE
 cdr   INTEGER, INTENT(IN,OUT) :: IJ, KL
 cdr Version in eirene until April 2017: take 2 input seeds,
 cdr and produce 4 smaller input seeds from them.
+cdr NOTE: The seed variables can have values between: 0 <= IJ <= 31328
+cdr                                                   0 <= KL <= 30081
 
 cdr April 2017: back to original suggestions by F. James
-cdr Take only one seed IJKL, then first make 2 smaller (IJ, KL),
-cdr then 4 yet smaller  (I,J,K,L) from it.
-cdr IJKL must be not larger then 900.000.000, each seed then produces an
-cdr      independent random sequence of length
+cdr Take only one seed IJKL, then first make 2 smaller (IJ, KL) legal seeds,
+cdr then 4 yet smaller  (I,J,K,L) from them.
+cdr IJKL must be not larger then 900.000.000
+
 cdr
+c Default Marsaglia-Zaman-seeds:
+c Use IJ = 1802 & KL = 9373 or, equivalently,
+c IJKL=54217137, to test the random number generator. The
+c subroutine RANMAR should be used to generate 20000 random numbers.
+c Then display the next six random numbers generated multiplied by
+c 4096*4096
+c If the random number generator is working properly, the random numbers
+c should be:
+c           6533892.0  14220222.0   7275067.0
+c           6172232.0   8354498.0  10633180.0
+cdr
+
+
       SUBROUTINE H1RNIN(IJKL)
 cdr F. James, "A review of pseudorandom number generators",
 cdr           Comp. Physics Communications 60 (1990) 329 - 344
 cdr Subroutine RMARIN, p340.
-cdr legal seed range 0<= IJKL<= 900.000.000 already enforced in calling
-cdr routine
-*
+cdr Legal seed IJKL range 0<= IJKL<= 900.000.000 must be already enforced
+cdr in calling routine. (Strictly: IJKL <= 942.408.896, see below.)
+cdr Each seed then produces an
+cdr independent (non-overlapping) random sequence of
+cdr average length about 10**30.
+c
       USE EIRMOD_PRECISION
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: IJKL
@@ -172,13 +197,17 @@ cym      COMMON /RASET2/ FLAG
 cym !$omp threadprivate(/raset2/)
 cym cccccccccccccccccccccccccccccccccccccccccccccccc      
 *
+cdr  old code
+cdr  enforce legal values IJ, KL:
 cdr   IJ = IABS(IJ)
 cdr   KL = IABS(KL)
+cdr   IJ = MOD(IJ,31329)
+cdr   KL = MOD(KL,30082)
 
-cdr   IJ = MOD(IJ,31329)   I do not know where this comes from.
 cdr                        change back to original generator from
 cdr                        F. James, CPC 60 (1990) 329 - 344, page 340
-
+cdr  the max legal 4 digit seed is:      IJKL_max=(30082*31329)-1 = 942......,
+cdr  but to avoid round off errors take: IJKL_max= 30082*31328    = 942.408.896
       IJ = IJKL/30082
       KL = IJKL-30082*IJ    ! = MOD(IJKL,30082)
 c
@@ -188,7 +217,7 @@ c
       L  = MOD(KL, 169)
 *
 cdr  now we have the 4 small seeds.
-cdr  next: initialize RANMAR, data are transfered via common RASET1
+cdr  next: initialize RANMAR, data are transferred via common RASET1
 
       DO 300 II= 1, 97
          S= 0.
@@ -213,22 +242,24 @@ cym   IP = 97
       IM = 97
 cym   JP = 33
       JM = 33
-*
+c
       FLAG = 'H1RN INITIALISED'
 
-*
+c
       RETURN
       END SUBROUTINE H1RNIN
 
-*
+c
       SUBROUTINE H1RNV(RVEC,LEN)
-*
+cdr Return a vector RVEC, of length LEN, of random numbers
+cdr from H1RN (=RANMAR) generator, in a single call.
+c
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
    
       IMPLICIT NONE
-      REAL(DP), INTENT(OUT) :: RVEC(1)
       INTEGER, INTENT(IN) :: LEN
+      REAL(DP), INTENT(OUT) :: RVEC(LEN)
       REAL(DP) :: UNI
       INTEGER :: IVEC
   
@@ -285,9 +316,13 @@ cym cccccccccccccccccc
 *
 *
       SUBROUTINE H1RNIV(VEC)
+cdr  input:  vector (seed array) VEC(100), which fully describes a status of the
+cdr          RANMAR generator.
+cdr  output: Common RASET1, RASET2, such that random generator is re-initialized
+cdr          according to status vector VEC(100)
 *
       USE EIRMOD_PRECISION
-      USE EIRMOD_COMPRT, ONLY: IUNOUT
+C     USE EIRMOD_COMPRT, ONLY: IUNOUT
       
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: VEC(100)
@@ -316,18 +351,27 @@ cym IP,JP -> IM,JM
       JM = NINT(VEC(100))
 *
       FLAG = 'H1RN INITIALISED'
-      WRITE(IUNOUT,*)
-     .           ' H1RNIV: H1RN (RANMAR) INITIALISED/RESTARTED WITH',
-     >           ' SEED ARRAY VEC(100)'
+c     WRITE(IUNOUT,*)
+c    .           ' H1RNIV: H1RN (RANMAR) INITIALISED/RESTARTED WITH',
+c    >           ' SEED ARRAY VEC(100)'
 *
       RETURN
       END SUBROUTINE H1RNIV
 
-*
+
+cdr  Fetch (and return) a seed VEC(100) from current RANMAR status,
+cdr  to continue the random number sequence later at this point.
+cdr  VEC(100) is obtained from Common RASET1
+cdr
+cdr  Corresponds to RANGET (fetch a seed of random generator, for current status).
+cdr  However, for the RANMAR generator a single integer seed IJKL
+cdr  is not sufficient for all possible states of the generator.
+cdr  The full vector VEC is needed instead.
 *
       SUBROUTINE H1RNSV(VEC)
 *
       USE EIRMOD_PRECISION
+C     USE EIRMOD_COMPRT, ONLY: IUNOUT
      
       IMPLICIT NONE
       REAL(DP), INTENT(OUT) :: VEC(100)

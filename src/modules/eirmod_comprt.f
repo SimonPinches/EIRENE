@@ -110,15 +110,16 @@ C  SOME FURTHER INTEGER VARIABLES USED ALONG PARTICLE TRAJECTORY
      I ICOL,   IPOLGN, NINCX,  NINCY,  NINCZ,  NINCA,  NJUMP,
      I NIMINT, ITRJ
 
-
-!     VARIABLES FOR UNIFIED SUBROUTINES
+!   VARIABLES FOR UNIFIED SUBROUTINES FOR ATOMS, MOLECULES, TRACE IONS.
+!   SUCH AS: FPATH, UPDATE, .... TBD: COLLIDE
       INTEGER, PUBLIC, SAVE ::
      I IXSPZ, NMETOFF
 
       LOGICAL, PUBLIC, SAVE ::
      L LGPART, LGLAST, LGTIME,
      L NLSRFX, NLSRFY, NLSRFZ, NLSRFA,
-     L NLTRC,  NLTRJ
+     L NLTRC,  
+     L NLTRJ
 
 ! Needed to avoid circular dependancy when testing for output values      
       INTEGER, PUBLIC :: NTHREAD
@@ -147,7 +148,7 @@ cym
       DATA IUNIN / 1 /  ! must be known already during compile time.
 c                       ! better: move iunin, iunout, etc.. to parmmod ??
 
-
+cdr ...... declarations finished
 
 
       CONTAINS

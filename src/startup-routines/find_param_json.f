@@ -27,10 +27,25 @@ cdr             to be done: check for comment lines *... syncronized with input.
 cdr  March 17:  NPTRGT printed. May have been changed in call to if0parm, block 14.
 CDR  May 2017:  try to fix NSTRAI, NSRFSI, consistent with input.f
 cdr             same thing: NCPVI, NCPV  (and eliminate old parameters NCOP, NCOPI)
-cdr  July 17 :  lmulti, lmulvi:  automatic options for multiple ion temperatures,
-cdr                              multiple ion velocities in case of BGK non-lin. colisions
+cdr  July 17 :  lmulpl:  automatic options for multiple ion temperatures,
+cdr                      multiple ion velocities in case of BGK non-lin. colisions
 cdr  July 17 :  initialize 2D CFD code coupling parameters NDX,....
 c               move nrad=... after call to if0prm, because of emc3 coupling
+cdr  Oct. 19 : block 5 card counting to infere the setting of INDPRO(2).
+cdr            From then on: completely symmetric options for both background parameter
+cdr            sets: Ti (temperature) and V.IN (flow field) in multispecies cases.
+cdr            Only unsolved case: NPLS=2. This can mean: two different ion temperatures
+cdr            or one ion temperature plus one optional VOL (INDPRO(12) card).
+cdr            Default: 1 Ti card and 1 Vol card. If two Ti cards are to be read,
+cdr            then one VOL card (which normally is optional) must necessarily be present.
+cdr  Nov. 19 : Adopted from ITER branch: additional call eirene_init_cinit
+cdr            prior to reading optional CFILE cards (paths to external databases).
+cdr            Strictly this call should only be after find_param.f is finished, because allocation of
+cdr            storage in module CINIT is possible only after NPLS and NSTRA are known.
+cdr            But, apparently some of the information in CINIT is needed earlier, e.g. in
+cdr            call to plasma code interface-initialization done in block 14.
+cdr            Still fiddling with Ti(ipls) input card counting.
+cdr
 C
       SUBROUTINE EIRENE_FIND_PARAM_JSON
 C
@@ -49,6 +64,11 @@ C
      .                          NSRPR, NVLPR, NHD6, NPLSTI, NPLSV,
      .                          NREAC_LINES, IFOFF, NBMAX, NGITT,
      .                          NKNOTS, NTRIS
+      USE EIRMOD_CTRCEI, ONLY: TRCAMD, TRCINT, NVOLPR, NSURPR,
+     .                         EIRENE_ALLOC_CTRCEI
+      USE EIRMOD_CINIT, ONLY: CASENAME, DBFNAME, DBHANDLE, NDBNAMES,
+     .                        INDPRO2_SAVE, LDBREAD,
+     .                        EIRENE_INIT_CINIT
       USE EIRMOD_COMUSR, ONLY: NMODE, NTIME,
      .                         NATMI, NMOLI, NPLSI
       USE EIRMOD_COMSOU, ONLY: NSTRAI
@@ -58,7 +78,6 @@ C
      .                       nlpol_in, np2nd_in, nr1st_in, nt3rd_in,
      .                       noptim_in, nrtal_in, nsmstra_in,
      .                       eirene_init_input_blocks 
-      
       use json_module, ck => json_ck
 
       IMPLICIT NONE
@@ -73,16 +92,15 @@ C
       
       type(json_value),pointer :: p
 
-!pb   integer :: nreac_add
-!      integer :: nstsi, ll, ic, i, ipls, ispz, j
-      integer :: nstsi, j
-      logical :: found0, ldefstor, nlerg
+      integer :: nstsi, j, nprnli
+      INTEGER :: INDPRO(12)
+      INTEGER :: IDUMMY(2)
+      LOGICAL :: NLSCL, NLTEST, NLANA, NLDRFT, NLCRR, NLERG, NLIDENT,
+     .           NLONE, NLMOVIE, LINCL45, NLCASCAD, NLDFST,
+     .           NLOLDRAN, NLOCTREE, NLWRMSH, NEXVS
+      logical :: found0, ldefstor
 !      logical :: found0, ldefstor, lext, nlerg, lhyddef, ladapt
-      logical :: lmulti, lmulvi ! multiple ion temperatures (per species) multiple ion velocities (per species)
-!      CHARACTER(420) :: FILENAME, ULINE, ZEILE
-!      CHARACTER(12) :: CHR
-!      CHARACTER(1000) :: HLINE
-!      character(len=:), allocatable :: name
+      logical :: lmulpl ! multiple Ti and V..IN (per species) multiple ion velocities (per species)
       character(kind=CK,len=:), allocatable :: header
 
 C
@@ -92,8 +110,7 @@ C
 !pb   NREAC_ADD=0
       LDEFSTOR=.false.
       
-      lmulti = .false.
-      lmulvi = .false.
+      lmulpl = .false.
   
       CALL EIRENE_LEER(3)
 
@@ -106,7 +123,7 @@ c  start reading json file
 
       call eirene_init_input_blocks ('eirene.input.json', iunout)
 
-C  read and write header
+C  start browsing the header
 
       j = itree_num(0)        ! index of the jtree that holds the data of the input block   
       call jtrees(j)%get(blks(0)%p,'TXTRUN',header,found0)
@@ -181,12 +198,19 @@ C  read and write header
         call eirene_if0prm_json(jtrees(j),blks(14)%p)
       end if
      
+      IF (NLERG.AND.NPRNLI.LE.0) THEN
+C  NO TIME HORIZON DEFINED, DESPITE NLERG=.TRUE.
+C  THEREFORE: SET A DEFAULT TIME HORIZON HERE
+        IF (NTIME.EQ.0) NTIME=1
+        NPRNLI=100
+      ENDIF
       if ((NTIME.GE.1.AND.NPRNL > 0).OR.NLERG) THEN
         NSTSI=NSTSI+1
         NSTRAI=NSTRAI+1
       ENDIF
       NSTS = MAX(NSTS,NSTSI)
       NSTRA = MAX(NSTRA,NSTRAI)
+      NPRNL = MAX(NPRNL,NPRNLI)
       NLIMPS = NLIM + NSTS
 
 C  SWITCH OFF SUM OVER STRATA IF THERE IS ONLY ONE STRATUM TO BE CALCULATED
@@ -304,7 +328,10 @@ C
       implicit none
       class(json_core),intent(inout) :: json
       type(json_value), pointer, intent(inout) :: p
+      type(json_value), pointer :: pfile, pdb
+      integer :: i, ifile, nch
       logical :: found
+      character(kind=CK,len=:), allocatable :: cdbh, cdbf
 
       WRITE (iunout,*) '*** 1. DATA FOR OPERATING MODE'
 
@@ -332,6 +359,57 @@ C                                    OR =9  (FULL A&M STORAGE MODE, =DEFAULT)
       IF (NSTORAM < 9) NSTORAM = 0
       NOPTM1 = MAX(NOPTM1,1)
 C
+      
+      call json%get(p,'NLSCL',nlscl,found)
+      call json%get(p,'NLTEST',nltest,found)
+      call json%get(p,'NLANA',nlana,found)
+      call json%get(p,'NLDRFT',nldrft,found)
+      call json%get(p,'NLCRR',nlcrr,found)
+
+      call json%get(p,'NLERG',nlerg,found)
+      call json%get(p,'NLIDENT',nlident,found)
+      call json%get(p,'NLONE',nlone,found)
+      call json%get(p,'NLMOVIE',nlmovie,found)
+      call json%get(p,'NLDFST',nldfst,found)
+
+      call json%get(p,'NLOLDRAN',nloldran,found)
+      call json%get(p,'NLCASCAD',nlcascad,found)
+      call json%get(p,'NLOCTREE',nloctree,found)
+      call json%get(p,'NLWRMSH',nlwrmsh,found)
+      call json%get(p,'NEXVS',nexvs,found)
+
+      CALL EIRENE_INIT_CINIT
+
+cdr scan for optional CFILE lines: path to external database files
+      call json%get_child(p,'CFILE',pfile,found)
+      if (found) then
+        call json%info(pfile,n_children=nch)
+!       do ifile = 1, ndbnames 
+        do i = 1, nch 
+          call json%get_child(pfile,i,pdb,found)
+          call json%get(pdb,'FILE',cdbh,found)
+          call json%get(pdb,'PATH',cdbf,found)
+          DO IFILE = 1,NDBNAMES
+            IF (INDEX(DBHANDLE(IFILE),cdbh) /= 0) EXIT
+          END DO
+          IF (IFILE <= NDBNAMES) THEN
+            dbhandle(ifile) = trim(cdbh)
+            dbfname(ifile) = trim(cdbf)
+            ldbread(ifile) = .true.
+            WRITE (IUNOUT,'(2A)')
+     .           'PATH SET FOR FILE ',trim(dbhandle(ifile))
+            WRITE (IUNOUT,'(2A)') 'PATH = ',trim(dbfname(ifile))
+          ELSE
+            WRITE (IUNOUT,*) ' WRONG NAME FOR DATABASE ENTERED'
+            WRITE (IUNOUT,*) ' DATABASE DEFINITION FOR ',
+     .                         trim(dbhandle(ifile)),' IGNORED'
+          end if
+          deallocate(cdbh)
+          deallocate(cdbf)
+          nullify(pdb)
+        end do
+      end if
+
       return
 
       end subroutine eirene_browse_block_1
@@ -476,6 +554,8 @@ C
       WRITE (iunout,*) '*** 3A. DATA FOR NON-DEFAULT STANDARD SURFACES'
 
       call json%get(p,'NSTSI',nstsi,found)
+!PB   IF NTIME >=1 NSTSI IS INCREASED in BLOCK 12
+!PB   IF (NTIME.GE.1) NSTSI = NSTSI + 1
       NSTS = MAX(NSTS,NSTSI)
         
       end subroutine eirene_browse_block_3a
@@ -519,6 +599,9 @@ C
       s1 = 'SPECIES_SPEC'
       s2 = '.REACTIONS'
 
+      WRITE (iunout,*)
+     .  '       ATOMIC REACTION CARDS, NREACI DATA FIELDS'
+
       call json%get(p,s1//s2//'.NREACI',nreaci,found)
       NREAC = MAX(NREAC,NREACI)
       
@@ -537,7 +620,7 @@ C
       call json%get(pspc,'NATMI',natmi,found)
       NATM = MAX(NATM,NATMI)
 
-      call eirene_read_spc_block (json,pspc,'A',natmi,lmulti,lmulvi)
+      call eirene_read_spc_block (json,pspc,'A',natmi,lmulpl)
 
 !  MOLECULES
 
@@ -548,7 +631,7 @@ C
       call json%get(pspc,'NMOLI',nmoli,found)
       NMOL = MAX(NMOL,NMOLI)
 
-      call eirene_read_spc_block (json,pspc,'M',nmoli,lmulti,lmulvi)
+      call eirene_read_spc_block (json,pspc,'M',nmoli,lmulpl)
 
 !  TEST IONS
 
@@ -559,7 +642,7 @@ C
       call json%get(pspc,'NIONI',nioni,found)
       NION = MAX(NION,NIONI)
 
-      call eirene_read_spc_block (json,pspc,'I',nioni,lmulti,lmulvi)
+      call eirene_read_spc_block (json,pspc,'I',nioni,lmulpl)
 
 !  PHOTONS
 
@@ -569,7 +652,7 @@ C
       call json%get(pspc,'NPHOTI',nphoti,found)
       NPHOT = MAX(NPHOT,NPHOTI)
 
-      call eirene_read_spc_block (json,pspc,'PH',nphoti,lmulti,lmulvi)
+      call eirene_read_spc_block (json,pspc,'PH',nphoti,lmulpl)
 
       nullify(species)
       nullify(preac)
@@ -580,13 +663,13 @@ C
 
 !******************************************************************************
 
-      subroutine eirene_read_spc_block (json,p,ch,nspc,logt,logv)
+      subroutine eirene_read_spc_block (json,p,ch,nspc,logpl)
 
       class(json_core),intent(inout) :: json
       type(json_value), pointer, intent(in) :: p
       character(*), intent(in) :: ch
       integer, intent(in) :: nspc
-      logical, intent(inout) :: logt, logv
+      logical, intent(inout) :: logpl
 
       type(json_value), pointer :: pspecies, spchild, preac, pir
       integer :: nrc, ibgk, i, j
@@ -610,8 +693,7 @@ C
 cdr:  try to identify if there are so called BKG collisions, input flag IBGK::
 cdr:  to be generalized: there may be other reactions, which require multiple Ti profiles
           call json%get(pir,'IBGK'//ch,ibgk,found)
-          logt = logt .or. (ibgk /= 0)
-          logv = logv .or. (ibgk /= 0)
+          logpl = logpl .or. (ibgk /= 0)
           call json%get_next(pir,pir)
         end do 
         call json%get_next(spchild,spchild)
@@ -637,7 +719,7 @@ cdr:  to be generalized: there may be other reactions, which require multiple Ti
       type(json_value), pointer :: pback, pbulk, pspecies, 
      .                             pspc, pdm, pplas
       integer :: nreaci, natmi, nmoli, nioni, nphoti, i, ico
-      INTEGER, allocatable :: indpro(:)
+      INTEGER, allocatable :: indp(:)
       character(kind=CK,len=:), allocatable :: spname
       logical :: found
 
@@ -672,48 +754,39 @@ cdr:  to be generalized: there may be other reactions, which require multiple Ti
       WRITE (IUNOUT,*) '*** 5B. PLASMA BACKGROUND DATA'
 
       call json%get_child(pback,'PLASMA',pplas,found)
-      call json%get(pplas,'INDPRO',indpro,found)
+      call json%get(pplas,'INDPRO',indp,found)
+      if (found) indpro(1:12) = indp(1:12)
 
-
-cdr to be done: syncronisation of options for Ti and Vi.
-cdr these next 2 lines for Ti(ipls)  
-!pb   NPLSTI = 1
-!pb   IF ((INDPRO(2) < 0) .OR. (MOD(INDPRO(2),100) > 9)) NPLSTI=NPLS
+      call eirene_Ti_input(json,pplas,indpro2_save)
+      indpro(2)=indpro2_save
 
       NPLSTI = NPLS  ! now same as for VI.  good
-cdr   IF (MOD(ABS(INDPRO(2)),100) > 9) NPLSTI = 1  this should be here, to syncronize with V
-      IF (INDPRO(2)<0) NPLSTI=1  !dr  different still from VI logic.
+      IF (INDPRO(2)<0) NPLSTI=1
 
-      IF ((NPLS > 1) .AND. (NPLSTI == 1)) THEN
+      IF ((NPLS > 1) .AND. (NPLSTI == 1) .AND. LMULPL) THEN
         WRITE (IUNOUT,*) 'WARNING FROM FIND_PARAM'
         WRITE (IUNOUT,*) 'TIIN PROVIDED FOR ONE SPECIES ONLY'
-        WRITE (IUNOUT,*) 'DUE TO INDPRO(2) < 0'  !dr  or:  > 10 ???
-        IF (LMULTI) THEN
-          WRITE (IUNOUT,*) 'DIMENSION OF TIIN OVERWRITTEN'
-          WRITE (IUNOUT,*) 'BECAUSE BGK REACTIONS ARE PRESENT'
-          NPLSTI = NPLS
-        END IF
+        WRITE (IUNOUT,*) 'DUE TO INDPRO(2) > 10'
+        WRITE (IUNOUT,*) 'DIMENSION OF TIIN OVERWRITTEN'
+        WRITE (IUNOUT,*) 'BECAUSE BGK REACTIONS ARE PRESENT'
+        NPLSTI = NPLS
         WRITE (IUNOUT,*) ' NPLSTI = ',NPLSTI
       END IF
 
-
-cdr these next 2 lines for Vi(ipls)
       NPLSV = NPLS
       IF (MOD(ABS(INDPRO(4)),100) > 9) NPLSV = 1
 
-      IF ((NPLS > 1) .AND. (NPLSV == 1)) THEN
+      IF ((NPLS > 1) .AND. (NPLSV == 1) .AND. LMULPL) THEN
         WRITE (IUNOUT,*) 'WARNING FROM FIND_PARAM'
         WRITE (IUNOUT,*) 'V_IN PROVIDED FOR ONE SPECIES ONLY',
-     .                   'DUE TO INDPRO(4) > 10'  !dr above, for Ti, we say:  < 0
-        IF (LMULVI) THEN
-          WRITE (IUNOUT,*) 'DIMENSION OF V_IN ARRAYS OVERWRITTEN',
-     .                     'BECAUSE BGK REACTIONS ARE  PRESENT'
-          NPLSV = NPLS
-        END IF
+     .                   'DUE TO INDPRO(4) > 10'
+        WRITE (IUNOUT,*) 'DIMENSION OF V_IN ARRAYS OVERWRITTEN',
+     .                   'BECAUSE BGK REACTIONS ARE  PRESENT'
+        NPLSV = NPLS
         WRITE (IUNOUT,*) ' NPLSV = ',NPLSV
       END IF
       
-      deallocate(indpro)
+      deallocate(indp)
       nullify(pback)
       nullify(pbulk)
       nullify(pspecies)
@@ -723,6 +796,104 @@ cdr these next 2 lines for Vi(ipls)
 
       end subroutine eirene_browse_block_5
 
+
+      SUBROUTINE eirene_Ti_input(json,plsm,indpro2_save)
+      implicit none
+      class(json_core),intent(inout) :: json
+      type(json_value), pointer, intent(in) :: plsm
+      integer, intent(out) :: indpro2_save
+      type(json_value), pointer :: pti
+
+      integer :: icti, indpro2
+      logical :: lfti
+
+cdr Nov. 2019
+cdr Achieve synchronisation of input options for multispecies Ti and Vi.
+cdr Return a "best guess" of what INDPRO(2) should be.
+
+cdr Ti_IN(ipls) options have historically been just opposite to V_IN(ipls) options.
+cdr This has gotten amplified to a long-lasting code mess:
+cdr Increasingly inconsistent input options for Ti(ipls) and V..IN(ipls) profiles
+cdr and false code operation (in multi-fluid cases) in many instances.
+cdr Now: We try to automatically set TI flag INDPRO(2) by counting input cards
+cdr in this block.
+
+      if (NPLS.eq.1) then
+c  no ambiguity possible here...
+        indpro2_save=iabs(indpro(2))
+      endif
+
+      write (iunout,*) 'indpro2, npls ',indpro(2),npls
+
+c remove sign and second or third digits
+      indpro2=mod(iabs(indpro(2)),10)  ! now within 1 and 9
+
+      if (indpro2.eq.6) then
+c  Ti(ipls) is from external file.
+c  Try to find out what was meant:
+        if (indpro(2).lt.0) then       ! indpro2=-6, -16,...
+cdr  just trying, via CI
+          indpro2_save=6  ! maybe this was meant in solps-iter cases?
+        elseif (indpro(2).lt.10) then  ! indpro2=6
+          indpro2_save=16 ! maybe this was meant in solps-iter cases?
+        else                           ! indpro2=16,26,36,...
+        endif
+c  no card counting done.
+c       indpro2_save= ??
+      endif
+
+C  FIND
+C        START OF NEXT INPUT BLOCK: 6,
+C  OR    OF OPTIONAL INPUT LINES,
+C  or,   in case of external block 45, L45: of end of file
+cdr  and count the remaining input lines for plasma profiles in block 5.
+
+      call json%get_child(plsm,'TI',pti,lfti)
+
+      icti = 0
+      if (lfti) call json%info(pti,n_children=icti)
+
+      write (iunout,*) 'cards for Ti ',icti
+      if (npls.eq.1.or.indpro2.eq.6) return
+
+      IF (icti.lt.npls.and.icti.ge.1) then
+c  we necessarily have data for only one single Ti in the input file.
+        if (indpro(2).lt.10) then
+c         if (indpro(2).lt.0) ...  input is in K rather than eV. Not used.
+          indpro(2)=iabs(indpro(2))
+          indpro(2)=10+indpro(2)
+          write (iunout,*) 'apparently only one Ti profile is given'
+          write (iunout,*) 'indpro(2) reset to: ',indpro(2)
+        endif
+      elseif (icti.eq.npls) then
+c  we necessarily have npls lines for the npls TI profiles
+        if (indpro(2).lt.0.or.indpro(2).gt.10) then
+c         if (indpro(2).lt.0) ...  input is in K rather than eV. Not used.
+          indpro(2)=iabs(indpro(2))
+          indpro(2)=mod(indpro(2),10)
+          write (iunout,*) 'apparently npls Ti profiles are given'
+          write (iunout,*) 'indpro(2) reset to: ',indpro(2)
+        endif
+      else
+c  No unique decision possible. Can only happen in case NPLS=2.
+c  Due to the volume tally input card (indpro(12)) being optional.
+        if (npls.ne.2) then
+          write (iunout,*) 'code confused wrt. multispec. Ti, Vi input'
+          call eirene_exit_own(1)
+        endif
+        write (iunout,*) 'Unclear setting of INDPRO(2). NPLS: ',NPLS
+        write (iunout,*) 'This should only occur in case NPLS=2'
+        write (iunout,*) 'No. of input lines for Ti ',icti
+        write (iunout,*) 'Choose INDPRO(2) > 10 (NPLSTI=1)'
+        write (iunout,*) 'and assume that a VOL card is present.'
+        indpro(2) = mod(indpro(2),10) + 10
+        write (iunout,*) 'IF NPLSTI=2 was intended, add the VOL-card'
+        write (iunout,*) 'i.e. add a card, e.g. containing just 0.0'
+      endif
+      indpro2_save=indpro(2)
+
+      nullify (pti)
+      end subroutine eirene_Ti_input
 
 !******************************************************************************
 
@@ -766,7 +937,7 @@ cdr these next 2 lines for Vi(ipls)
       type(json_value), pointer, intent(in) :: p
 
       type(json_value), pointer :: psrc, pstra, pst, psub, psubs
-      integer :: j, noc, nsrfsi, isor, ist, i
+      integer :: j, noc, nsrfsi, isor, ist, i,indim
       real(dp) :: sorlim, sorind
       integer, allocatable :: indsrc(:)
       logical :: found, fsub
@@ -775,8 +946,13 @@ cdr these next 2 lines for Vi(ipls)
       WRITE (iunout,*) '*** 7. DATA FOR PRIMARY SOURCES, NSTRAI STRATA'
 
       call json%get(p,'NSTRAI',nstrai,found)
+      IF (NTIME.GE.1) NSTRAI = NSTRAI + 1
       NSTRA = MAX(NSTRA,NSTRAI)
       
+CDR  TRY TO SET NSTEP, THE NUMBER OF STEP FUNCTIONS FOR SOURCE SAMPLING
+cdr  set nstep = highest stratum number, which receives primary source data from external code.
+cdr  this must be highly case specfic. To be reconsidered !!
+      NSTEP = 1
       call json%get(p,'INDSRC',indsrc,found)
       IF (ANY(INDSRC == 6)) THEN
         DO J=NSTRAI,1,-1
@@ -809,13 +985,16 @@ cdr these next 2 lines for Vi(ipls)
              do i = 1, nsrfsi
                 if (associated(psub)) then
 !  find maximum step function index
+                  call json%get(psub,'INDIM',indim,found)
                   call json%get(psub,'SORLIM',sorlim,fsub)
                   call json%get(psub,'SORIND',sorind,fsub)
-                  isor = int(sorlim)
+                  IF (INDIM == 4) NSTEP = MAX(NSTEP,NINT(SORIND))
+                  isor = nint(sorlim)
                   do while (isor > 0)
                     ist =  mod(isor,10)
+cdr  here NSTEP is set to the largest step function number specified on SORIND
                     if ((ist == 4).OR.(ist==5)) 
-     .                nstep = max(nstep,int(sorind))
+     .                nstep = max(nstep,nint(sorind))
                     isor = isor / 10
                   end do
                   call json%get_next(psub,psub)          
@@ -847,7 +1026,7 @@ cdr these next 2 lines for Vi(ipls)
       integer :: nsigvi, nsigsi, nsigci
       logical :: found
 
-      WRITE (iunout,*) '*** 9. DATA FOR STATISTIC AND NONANALOG MODEL'
+      WRITE (iunout,*) '*** 9. DATA FOR STATISTIC AND NON-ANALOG MODEL'
 
       WRITE (iunout,*) '       CARDS FOR STANDARD DEVIATION'
       
@@ -935,6 +1114,13 @@ cdr these next 2 lines for Vi(ipls)
       call json%get(p,'NSURPR',nsurpr,found)
 
       NVLPR=NVOLPR
+      NSRPR=NSURPR
+
+      CALL EIRENE_ALLOC_CTRCEI
+
+      call json%get(p,'TRCAMD',trcamd,found)
+      call json%get(p,'TRCINT',trcint,found)
+
 C  ERGODIC OPTION NEEDS PRINTOUT OF VOLUME, AND ONE, TWO OR THREE FURTHER TALLIES AT LEAST
       IF (NLERG) NVLPR=MAX(4,NVLPR)
 
@@ -1087,7 +1273,7 @@ C  ERGODIC OPTION NEEDS PRINTOUT AT LEAST FROM TIME-HORIZON
       class(json_core),intent(inout) :: json
       type(json_value), pointer, intent(in) :: p
 
-      integer :: nprnli, nprmul, nsnvi
+      integer :: nprmul, nsnvi
       logical :: found
 
       WRITE (iunout,*)

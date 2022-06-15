@@ -889,6 +889,8 @@ c  ntalr =62
 !pb   array ESTIMV automatically but ifort version 12.0.4 does not
 !pb 20.06.2012        MPHPL => ESTIMV(NADDV(100)+1: ,:)
         MPHPL => ESTIMV(NADDV(100)+1:NVOLTL ,:)
+cdr     MPHPL => ESTIMV(NADDV(100)+1:NADDV(101),:)  ! Clearer.
+cdr Instead check: nvoltl=naddv(101) for consistency?
       ELSE
         MPHPL => CEMETERYV(0:0,:)
       END IF

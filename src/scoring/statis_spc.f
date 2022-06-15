@@ -26,7 +26,6 @@ C
 
       INTEGER :: ISPC
 
-      SAVE
       IF (NADSPC > 0) THEN
         DO ISPC=1,NADSPC
           ESTIML(ISPC)%IMETSP = 0
@@ -121,7 +120,6 @@ c  scale statistical variance. called after all flights from a given stratum ist
       REAL(DP) :: XNM, DS, ZFLUXQ, D2S, SG, SG2, DSA, D, DA, DD
       INTEGER I, ISPC, NSPECI, NSPECE
 
-      SAVE
 C
 C  1. FALL  ALLE BEITRAEGE GLEICHES VORZEICHEN: SIG ZWISCHEN 0 UND 1
 C           (=1, FALLS NUR EIN BEITRAG UNGLEICH 0, ODER (KUENSTLICH

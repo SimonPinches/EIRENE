@@ -71,30 +71,42 @@ C  ENERGY RANGE FOR ENERGY DISTRIBUTION, LAST CELL IS: ZENGY
 C  I.E. ABSCISSA FOR ENERGY DISTRIBUTION FUNCTIONS, H INCIDENT ON FE
 C  SIZE OF "BEHRISCH TABLES"
       INTEGER :: IDIM=12
-      REAL(DP) :: ZRANGES(0:12)=(/0.,6.81,14.7,31.63,68.1,146.8,316.3,
-     .                            681.9,1468.0,3162.0,6813.0,14678.0,
-     .                            31630./)
+      REAL(DP) :: ZRANGES(0:12)=(/0.0_DP,    6.81_DP,    14.7_DP,
+     .                          31.63_DP,    68.1_DP,   146.8_DP, 
+     .                          316.3_DP,   681.9_DP,  1468.0_DP,
+     .                         3162.0_DP,  6813.0_DP, 14678.0_DP,
+     .                        31630.0_DP/)
 C  ENERGY, ABSCISSA FOR REFLECTION PROBABILITY, H INCIDENT ON FE
-      REAL(DP) :: ZENGYS(0:12)=(/0.,4.64,10.0,21.5,46.4,100.0,215.4,
-     .                           464.1,1000.0,2154.3,4641.3,10000.0,
-     .                           21543.0/)
+      REAL(DP) :: ZENGYS(0:12)=(/0.0_DP,    4.64_DP,    10.0_DP, 
+     .                          21.5_DP,    46.4_DP,   100.0_DP,
+     .                         215.4_DP,   464.1_DP,  1000.0_DP,
+     .                        2154.3_DP,  4641.3_DP, 10000.0_DP,
+     .                       21543.0_DP/)
 C  REFLECTION PROBABILITY RPROB(ENERGY)= ZR(ZENGY)
-      REAL(DP) :: ZRS(0:12)=(/1.,0.9,0.8,0.7,0.62,0.543,0.46,0.37,0.29,
-     .                        0.21,0.14,0.095,0.04/)
+      REAL(DP) :: ZRS(0:12)=(/1.0_DP,  0.9_DP,  0.8_DP,
+     .                        0.7_DP,  0.62_DP, 0.543_DP,
+     .                        0.46_DP, 0.37_DP, 0.29_DP,
+     .                        0.21_DP, 0.14_DP, 0.095_DP,
+     .                        0.04_DP/)
 C  DISTRIBUTION FUNCTIONS ZIDE(ZRANGE) , ONE FOR EACH ZENGY
       REAL(DP) :: ZIDES(12,12)
-      DATA ZIDES /1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,
-     .  0.2,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,
-     .  0.1,0.2,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,
-     .  0.025,0.05,0.35,1.,1.,1.,1.,1.,1.,1.,1.,1.,
-     .  0.012,0.025,0.1,0.45,1.,1.,1.,1.,1.,1.,1.,1.,
-     .  0.01,0.02,0.05,0.15,0.55,1.,1.,1.,1.,1.,1.,1.,
-     .  0.002,0.005,0.02,0.055,0.175,0.625,1.,1.,1.,1.,1.,1.,
-     .  0.001,0.003,0.011,0.029,0.079,0.224,0.699,1.,1.,1.,1.,1.,
-     .  0.001,0.003,0.007,0.016,0.04,0.105,0.301,0.771,1.,1.,1.,1.,
-     .  0.,0.001,0.003,0.007,0.018,0.050,0.14,0.40,0.83,1.,1.,1.,
-     .  0.,0.001,0.003,0.006,0.011,0.025,0.073,0.215,0.505,0.865,1.,1.,
-     .  0.,0.001,0.003,0.005,0.009,0.015,0.035,0.105,0.305,0.6,0.9,1./
+      DATA ZIDES /12*1._DP,
+     .  0.2_DP,11*1._DP,
+     .  0.1_DP,0.2_DP,10*1._DP,
+     .  0.025_DP,0.05_DP,0.35_DP,9*1._DP,
+     .  0.012_DP,0.025_DP,0.1_DP,0.45_DP,8*1._DP,
+     .  0.01_DP,0.02_DP,0.05_DP,0.15_DP,0.55_DP,7*1._DP,
+     .  0.002_DP,0.005_DP,0.02_DP,0.055_DP,0.175_DP,0.625_DP,6*1._DP,
+     .  0.001_DP,0.003_DP,0.011_DP,0.029_DP,0.079_DP,0.224_DP,0.699_DP,
+     .    5*1._DP,
+     .  0.001_DP,0.003_DP,0.007_DP,0.016_DP,0.04_DP,0.105_DP,0.301_DP,
+     .    0.771_DP,4*1._DP,
+     .  0._DP,0.001_DP,0.003_DP,0.007_DP,0.018_DP,0.050_DP,0.14_DP,
+     .    0.40_DP,0.83_DP,3*1._DP,
+     .  0._DP,0.001_DP,0.003_DP,0.006_DP,0.011_DP,0.025_DP,0.073_DP,
+     .    0.215_DP,0.505_DP,0.865_DP,2*1._DP,
+     .  0._DP,0.001_DP,0.003_DP,0.005_DP,0.009_DP,0.015_DP,0.035_DP,
+     .    0.105_DP,0.305_DP,0.6_DP,0.9,1._DP/
 C---------------------------------------------------------------------
 
       REAL(DP), SAVE ::
@@ -647,7 +659,7 @@ C  CONSTANT PARTICLE REFLECTION COEFFICIENT RINTG, limited only by specified abs
         RPROB=MIN(PRFCT,RINTG)
       ELSEIF (RINTG.LT.0) THEN
 C  PERFECT REFLECTION. P_REF=1-P_ABS, limited only by specified absorption
-        RPROB=MIN(PRFCT,1.0)
+        RPROB=MIN(PRFCT,1.0_DP)
       ELSE
 C  P_REF FROM DATA TABLE VS. INCIDENT ANGLE AND ENERGY
 
@@ -659,14 +671,14 @@ C     LINEAR EXTRAPOLATION IF INCIDENT ENERGY AND ANGLE ARE OUT OF RANGE
         RF2=RF2+RO1*(HFTR0(INDEP,INDWP,IFILE)-RF2)
 C
         RPROB=RF1+RO2*(RF2-RF1)
-        RPROB=MAX(0.D0,MIN(1.D0,RPROB))   ! avoid spurious extrapolations
+        RPROB=MAX(0.D0,MIN(1._DP,RPROB))   ! avoid spurious extrapolations
 
 C  APPLY SCALING (PRFCF= RECYCF) AND CUT-OFF (PRCFT= RECYCT)
         RPROB=MIN(RPROB*PRFCF,PRFCT)
       ENDIF
 C
-C   DECIDE IF PARTICLE IS TO BE REFLECTED OR IF THE "THERMAL
-C   PARTICLE-MODEL" IS CALLED
+C   DECIDE IF PARTICLE IS TO BE REFLECTED OR IF THE
+C   "THERMAL PARTICLE MODEL" IS CALLED
 C
       WFAC=1.
       FR1=RANF_EIRENE( )
@@ -739,12 +751,12 @@ C
 C  NEXT: SIMPLE ANGULAR DISTRIBUTION (AINTG)
 C        OR CONTINUE WITH ORIGINAL ANGULAR DISTRIBUTION FROM TRIM DATABASE SAMPLING
 C
-      IF (AINTG.GT.0.0) THEN
+      IF (AINTG.GT.0.0_DP) THEN
 C  CONSTANT MOMENTUM REFLECTION COEFFICIENT (ACCOMMODATION COEFFICIENT)
 C  FRACTION  AINTG:       specular
 C  FRACTION (1.0-AINTG):  cosine (Lambertian)
         ZEP1=RANF_EIRENE( )
-        APROB=MIN(1.0,AINTG)
+        APROB=MIN(1.0_DP,AINTG)
         IF (ZEP1.GT.APROB) THEN
 C  evaporated fraction
 C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
@@ -824,7 +836,7 @@ C
 C  LIMIT COSINE OF POLAR ANGLE TO 85. DEGREES
 C  (I.E., 5 DEGREES AGAINST SURFACE TANGENTIAL PLANE)
       ZCPHI=MIN(0.999999_DP,MAX(0.08716_DP,ZCPHI))
-      ZSPHI=SQRT(1.-ZCPHI*ZCPHI)
+      ZSPHI=SQRT(1._DP-ZCPHI*ZCPHI)
 C
 C  AZIMUTHAL ANGLE OF REFLECTION
 C
@@ -902,13 +914,13 @@ C
 C
       ZCTHET=RFFFF1+RO5*(RFFFF2-RFFFF1)
       ZCTHET=MAX(-.999999_DP,MIN(0.999999_DP,ZCTHET))
-      ZSTHET=SQRT(1.-ZCTHET*ZCTHET)
+      ZSTHET=SQRT(1._DP-ZCTHET*ZCTHET)
       ZSTHET=ZSTHET*SIGN(1._DP,(RANF_EIRENE( )-0.5_DP))
 C
       VX=-ZCPHI
       VY=ZSPHI*ZSTHET
       VZ=ZSPHI*ZCTHET
-      IF (COSIN.GT.0.9999) THEN
+      IF (COSIN.GT.0.9999_DP) THEN
 C (ALMOST) NORMAL INCIDENCE, NO SPECULAR CONTRIBUTION POSSIBLE
         CALL EIRENE_ROTATF (VELX,VELY,VELZ,VX,VY,VZ,CRTX,CRTY,CRTZ)
       ELSE
@@ -1033,7 +1045,7 @@ C  CONSTANT MOMENTUM REFLECTION (ACCOMMODATION) COEFFICIENT
 C  FRACTION  AINTG:     specular
 C  FRACTION (1_AINTG):  cosine (Lambertian)
         ZEP1=RANF_EIRENE( )
-        APROB=MIN(1.0,AINTG)
+        APROB=MIN(1.0_DP,AINTG)
         IF (ZEP1.GT.APROB) THEN
 C  evaporated fraction
 C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
@@ -1380,7 +1392,7 @@ C     The following SUBROUTINE is for reinitialization of EIRENE (DMH)
       IMPLICIT NONE
       REAL(DP) :: EREDC
       REAL(DP), INTENT(IN) :: XMTT,XCTT,XMPP,XCPP
-      REAL(DP) :: CON=0.4685, ZWDR=0.666667, EOQ=14.39
+      REAL(DP) :: CON=0.4685_DP, ZWDR=0.666667_DP, EOQ=14.39_DP
 
 cdr:  statement function: reduced energy for target (tt) - projectile (pp) system.
       EREDC=CON/EOQ*XMTT/((XMPP+XMTT)*XCPP*XCTT*

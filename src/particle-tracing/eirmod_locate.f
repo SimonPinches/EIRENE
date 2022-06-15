@@ -191,8 +191,8 @@ cdr           also: scoring sputter tallies revised, igasp,igasc=0 option:
 cdr           means: score (if sputtered particle species found), but do not follow.
 cdr           to be done: epel volume tally (electron energy loss associated with vol.rec,
 cdr                       or with sheath, etc)
-cdr july  15: correction for levgeo=10: do not modify nrcell, even if nlsrfx
-cdr nov. 15:  species index eppl added.
+cdr july 15:  correction for levgeo=10: do not modify nrcell, even if nlsrfx
+cdr nov 15 :  species index eppl added.
 cdr oct 17 :  code unification/reduction: set species pointer, near 5000
 cdr           Could be done earlier, and also simplify code here in locate already
 cdr nov.17 :  remove dead option: nlstor
@@ -303,7 +303,7 @@ C
 C
       DO 5 ISRFS=1,NSRFSI(ISTRA)
         IF (SORIFL(ISRFS,ISTRA).NE.0) THEN
-          IDUMM=INT(SORIFL(ISRFS,ISTRA))
+          IDUMM=NINT(SORIFL(ISRFS,ISTRA))
           ITISOR(ISRFS)=EIRENE_IDEZ(IDUMM,1,4)
           IF (ITISOR(ISRFS).EQ.2) ITISOR(ISRFS)=-1
           IFPSOR(ISRFS)=EIRENE_IDEZ(IDUMM,2,4)
@@ -811,7 +811,7 @@ C
       IF (.NOT.LGTIME) THEN
         TIME=0.
       ELSEIF (LGTIME) THEN
-        ISOR=INT(ABS(SORLIM(ISECT,ISTRA)))
+        ISOR=NINT(ABS(SORLIM(ISECT,ISTRA)))
         INDTEC=EIRENE_IDEZ(ISOR,4,4)
         IF (INDTEC.EQ.0) INDTEC=2  !  default: sample uniformly in time interval
         IF (INDTEC.LE.1) TIME=TIME0
@@ -1987,7 +1987,7 @@ C
 C  SORLIM GT.0, HENCE: VOLUME RECOMBINATION SOURCE RATES ON TABRC1
 C  RECOMBINING BULK ION (IPLS,E0,WEIGHT,...) IS NOW IDENTIFIED
 C  FIND TYPE AND SPECIES OF NEW TEST PARTICLE FROM RECOMB. PROCESS: IRRC
-            ISTEP=INT(SORIND(IVOLM,ISTRA))
+            ISTEP=NINT(SORIND(IVOLM,ISTRA))
             IF (ISTEP.EQ.0) THEN
               IF (SORLIM(IVOLM,ISTRA).LE.0._DP) THEN
                 WRITE (iunout,*) 'SPECIES DISTRIBUTION AFTER SAMUSR ?'

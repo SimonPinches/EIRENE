@@ -136,6 +136,14 @@ C               Y,Z-KOORDINATEN
               maxlen = maxlen +
      >               sqrt((partcont(ipoin,1,1)-partcont(ipoin,2,1))**2
      >                   +(partcont(ipoin,1,2)-partcont(ipoin,2,2))**2)
+              IF (TRCGRD)
+     >          WRITE(iunout,
+     >            '(a,g14.7,a,g14.7,a,g14.7,a,g14.7,a,i4)')
+     >            'Grabbed segment (',
+     >            PARTCONT(IPOIN,1,1),',',PARTCONT(IPOIN,1,2),
+     >            ') to (',
+     >            PARTCONT(IPOIN,2,1),',',PARTCONT(IPOIN,2,2),
+     >            ') from wall ',I
             ELSE
 C  ERROR
               WRITE(iunout,'(a,f11.4,2i4)')
@@ -274,6 +282,7 @@ C STUECKE DER AKTUELLEN KONTOUR WERDEN SORTIERT
      .           (PARTCONT(I,2,2)-PARTCONT(I,1,2))**2
           IFOUND=0
           DO J=I+1,IPOIN
+            IF (IFOUND.EQ.1) CYCLE
             DISTQJ1=(XPE-PARTCONT(J,1,1))**2+
      .              (YPE-PARTCONT(J,1,2))**2
             DISTQJ2=(XPE-PARTCONT(J,2,1))**2+

@@ -237,6 +237,7 @@ C STUECKE DER AKTUELLEN KONTOUR WERDEN SORTIERT
      .           (PARTCONT(I,2,2)-PARTCONT(I,1,2))**2
           IFOUND=0
           DO J=I+1,IPOIN
+            IF (IFOUND.EQ.1) CYCLE
             DISTQJ1=(XPE-PARTCONT(J,1,1))**2+
      .              (YPE-PARTCONT(J,1,2))**2
             DISTQJ2=(XPE-PARTCONT(J,2,1))**2+

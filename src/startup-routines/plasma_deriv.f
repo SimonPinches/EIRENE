@@ -120,13 +120,16 @@ c   LGVAC(...,0)     : background vacuum flag
       use EIRMOD_csdvi
       use EIRMOD_comsou
       use EIRMOD_cspei
+      USE EIRMOD_SECOND_OWN
 
       IMPLICIT NONE
 
       INTEGER, INTENT(IN) :: ICALL
       REAL(DP) :: ZTII, ZTNI, FCT2, FCRG, FCT1, EIRENE_VDION, ZTEI,
      .            ZTNE,EMPLS, FCT0, TEPLS, DEPLS, DIPLS, AM1, TEF, DEF,
-     .            BOLTZFAC, RCORONA, RCOLRAD,          
+     .            TEI, DEJ, TEIDEJ,
+     .            BOLTZFAC, RCORONA, RCOLRAD, DELTAE,         
+     .            G_BOLTZ, G_PLANCK,
 ! rates and popul. coefs. for density models 
      .            EIRENE_RATE_COEFF, EIRENE_OTHER_RATE_COEFF,
 ! asymptotics thereof 
@@ -134,6 +137,7 @@ c   LGVAC(...,0)     : background vacuum flag
      .            FP1(6), FP2(6),
      .            BXP, BYP, BNORM, TE, DE,
      .            BX, BY, BZ 
+      REAL(DP) :: tpb1, tpb2
       REAL(DP) :: COEF1D(0:8), COEF2D(0:8,0:8)
       REAL(DP), ALLOCATABLE :: DEINTF(:), SUMNI(:), SUMMNI(:),
      .                         BASE_DENSITY(:), BASE_TEMP(:),
@@ -191,7 +195,7 @@ c   LGVAC(...,0)     : background vacuum flag
       JFEX2MX = 0
 
 cdr
-
+      tpb1 = EIRENE_second_own()
       IBS = 0
       IF (ANY(CDENMODEL == FORT//'13')) CALL EIRENE_RPLAM(TRCFLE,10,IO)
       DO JPLS=1,NPLSI
@@ -201,6 +205,8 @@ cdr
 
         SELECT CASE (CDENMODEL(IPLS))
 
+cdr  Read all plasma background data (all IPLS), each time.
+cdr  Better: move outside IPLS loop.
           CASE ('FORT.13','FTN13')
 
             IF (IO.EQ.0) THEN
@@ -221,8 +227,9 @@ c             ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
 
 c   itold = ?, type of particle on fort.10?
 c   check: itold ge 0 and itold le 3
-            IOLD=TDMPAR(IPLS)%TDM%ISP(1)
-            IOLDTI=MPLSTI(IOLD)
+            IOLD=TDMPAR(IPLS)%TDM%ISP(1)    ! species
+cdr         itold=?                         ! type
+            IOLDTI=MPLSTI(IOLD)             ! ?
             IOLDV=MPLSV(IOLD)
 
             ALLOCATE (BASE_DENSITY(NRAD))
@@ -310,11 +317,12 @@ c           ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
             END IF
 
             FOUND = .TRUE.
+            G_BOLTZ=TDMPAR(IPLS)%TDM%G_BOLTZ
+            DELTAE=TDMPAR(IPLS)%TDM%DELTAE
             DO IR=1,NSBOX
               BOLTZFAC=0._DP
               IF (TIIN(IOLDTI,IR).GT.TVAC)
-     .          BOLTZFAC=TDMPAR(IPLS)%TDM%G_BOLTZ*
-     .                   EXP(-TDMPAR(IPLS)%TDM%DELTAE/BASE_TEMP(IR))
+     .          BOLTZFAC=G_BOLTZ*EXP(-DELTAE/BASE_TEMP(IR))
               DIIN(IPLS,IR)=MAX(DVAC,BASE_DENSITY(IR))*BOLTZFAC
 
               IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
@@ -332,6 +340,21 @@ c           ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
 
             ENDDO
             DEALLOCATE (BASE_DENSITY)
+            DEALLOCATE (BASE_TEMP)
+
+        CASE ('PLANCK')
+cdr  use planck function, grey body: const. emissivity factor
+cdr  and set photon density here
+            IOLD=TDMPAR(IPLS)%TDM%ISP(1)
+            IOLDTI=MPLSTI(IOLD)
+            ALLOCATE (BASE_TEMP(NRAD))
+            IF (NLMLTI) TIIN(IPLSTI,:)=BASE_TEMP(:)
+
+            FOUND = .TRUE.
+            G_PLANCK=TDMPAR(IPLS)%TDM%G_PLANCK
+            DO IR=1,NSBOX
+            ENDDO
+
             DEALLOCATE (BASE_TEMP)
         END SELECT
       END DO
@@ -367,6 +390,9 @@ cdr  ipls       :  set below, after special "density models" are done.
         LGVAC(J,0)     =LGVAC(J,0).AND.LGVAC(J,NPLS+1)
       END DO
 
+      tpb2 = EIRENE_second_own()
+      IF (TRCTIM) write (iunout,*) ' CPU time for log values ',tpb2-tpb1
+      tpb1 = tpb2
 c.....................................................................
 C
 C   FURTHER SPECIAL DENSITY MODELS, AFTER ELECTRON DENSITY DEIN IS SET:
@@ -446,6 +472,11 @@ cdr  if so, why in corona part?
 
           END DO
 c...............................................................corona: done
+
+          tpb2 = EIRENE_second_own()
+          IF (TRCTIM)
+     .     write (iunout,*) ' CPU time for corona ',ipls,tpb2-tpb1
+          tpb1 = tpb2
 
         CASE ('COLRAD    ')
 cdr  density of a background "isotope" IPLS is derived from collision radiative
@@ -571,6 +602,10 @@ c .................................................................colrad done
 !  NOTHING TO BE DONE HERE, ALREADY COMPLETED
         END SELECT ! density model
 
+        tpb2 = EIRENE_second_own()
+        IF (TRCTIM)
+     .   write (iunout,*) ' CPU time for colrad ',ipls,tpb2-tpb1
+        tpb1 = tpb2
 
       END DO   ! ipls
 
@@ -582,6 +617,11 @@ c .................................................................colrad done
       DEALLOCATE (BASE_TEMP)
 
       NBACK_SPEC = IBS
+
+      tpb2 = EIRENE_second_own()
+      IF (TRCTIM)
+     . write (iunout,*) ' CPU time for density models ',tpb2-tpb1
+      tpb1 = tpb2
 
 C
 C  SPECIAL PLASMA BACKGROUND MODELS DONE
@@ -898,13 +938,13 @@ c
 
       BASE_DENSITY = 0._DP
       BASE_TEMP = 0._DP
+      ITYP  = TDMPAR(IPLS)%TDM%ITP(IRE)
 
       IF (ICALL > 0) THEN
 
 C FOR CALLS AFTER PARTICLE TRACING
 
         ISTRA = TDMPAR(IPLS)%TDM%ISTR(IRE)
-        ITYP  = TDMPAR(IPLS)%TDM%ITP(IRE)
         IF (ISTRA.EQ.IESTR.OR.ITYP.EQ.4) THEN
 C  NOTHING TO BE DONE
         ELSEIF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
@@ -939,7 +979,7 @@ C  NOTHING TO BE DONE
         ENDIF
       END IF   ! ICALL > 0
 
-      SELECT CASE (TDMPAR(IPLS)%TDM%ITP(IRE))
+      SELECT CASE (ITYP)
       CASE(0)
 cdr photons
         IF (ASSOCIATED(PDENPH)) THEN

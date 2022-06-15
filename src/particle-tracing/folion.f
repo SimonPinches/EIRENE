@@ -144,8 +144,8 @@ c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
       REAL(DP) :: AX(2)
       REAL(DP) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
      .            XSTORV2(NSTORV,N2ND+N3RD)
-      REAL(DP) :: COSIN, XLI, YLI, ZLI, DIST,
-     .          PR, WS, COLTYP, X0ERR, Y0ERR, Z0ERR,
+      REAL(DP) :: COSIN, XLI, YLI, ZLI,
+     .          PR, WS, X0ERR, Y0ERR, Z0ERR,
      .          FNUI,
      .          VELXS, VELYS, VELZS, VELS,
      .          SG,
@@ -153,11 +153,11 @@ c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
      .          ZLOG, ZINT1, ZEP1, ZTST, ZINT2,
      .          ZMFP, EIRENE_FPATH, ZTC,
      .          DELFAC, TIFAC,
-     .          SCOS_NEW, XOLD, YOLD, EPSLIM
+     .          SCOS_NEW, EPSLIM
       INTEGER :: ISTS, NCOUS, ICOU, J, JJ, IPL,
      .           ICO, NLI, NLE, JCOL, NRC, 
      .           NRCOLD, IPLTI, I, IM, ICOUN,
-     .           EIRENE_LEARC2, 
+     .           EIRENE_LEARC2, COLTYP,
      .           indf, NJUMP_EMC3 = 0, IRET, IRT_STAT
       LOGICAL :: LCNDEXP
 
@@ -1202,7 +1202,7 @@ C
         IF (NADSPC_CD >= 1) CALL EIRENE_UPDATE_SPECTRUM (WS,2,1)
       ENDIF
 C
-      IF (COLTYP.EQ.2.) GOTO 700
+      IF (COLTYP.EQ.2) GOTO 700
 C
       GOTO 100
 C

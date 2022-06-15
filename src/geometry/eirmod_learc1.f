@@ -317,8 +317,7 @@ C  CELL I ALREADY TESTED BEFORE ?
           WRITE (iunout,*) 'LEARC1 CALLED FROM SUBR. ',TEXT
           WRITE (iunout,*) 'NPANU,IM= ',NP,IM
         ELSEIF (INUM.GT.1) THEN
-          CALL EIRENE_MASAGE
-     .                ('WARNING FROM LEARC1, INUM.GT.1               ')
+          CALL EIRENE_MASAGE('WARNING FROM LEARC1, INUM.GT.1')
           CALL EIRENE_MASR2('X,Y             ',X,Y)
           WRITE (iunout,*) 'LEARC1 CALLED FROM SUBR. ',TEXT
           WRITE (iunout,*) 'NPANU,INUM,IM= ',NP,INUM,IM

@@ -451,6 +451,7 @@
          call json%add(srf,'ILSPT',ilspt(nlj))
          call json%add(srf,'ISRS',isrs(1,nlj))
          call json%add(srf,'ISRC',isrc(1,nlj))
+         call json%add(srf,'LCHSPNWL',lchspnwl(1,nlj))
          call json%add(srf,'ZNML',znmlc)
          call json%add(srf,'EWALL',ewall(nlj))
          call json%add(srf,'EWBIN',ewbin(nlj))
@@ -1225,6 +1226,7 @@
         call json%add(sm,'ILSPT',REFCUR%JLSPT)
         call json%add(sm,'ISRS',REFCUR%JSRS(1))
         call json%add(sm,'ISRC',REFCUR%JSRC(1))
+        call json%add(sm,'LCHSPNWL',REFCUR%JLCHSPNWL(1))
         call json%add(sm,'ZNML',REFCUR%ZNMLR)
         call json%add(sm,'EWALL',REFCUR%EWALLR)
         call json%add(sm,'EWBIN',REFCUR%EWBINR)
@@ -1443,7 +1445,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
         
         tempcur => templist
         do while (associated(tempcur))
-          if (tempcur%in == ini_zone(i)) then
+          if (tempcur%ii == ini_zone(i)) then
             call json%create_object(temp,'T')
             call json%add(temp,'IDION',tempcur%idion)
             call json%add(temp,'TE',tempcur%te)
@@ -1456,7 +1458,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
         
         dencur => denlist
         do while (associated(dencur))
-          if (dencur%in == ini_zone(i)) then
+          if (dencur%ii == ini_zone(i)) then
             call json%create_object(dens,'D')
             call json%add(dens,'IDION',dencur%idion)
             call json%add(dens,'DI',dencur%di)
@@ -1468,7 +1470,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
         
         velcur => vellist
         do while (associated(velcur))
-          if (velcur%in == ini_zone(i)) then
+          if (velcur%ii == ini_zone(i)) then
             if (velcur%iz == 1) then
               call json%create_object(vels,'M')
             else
@@ -1486,7 +1488,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
         
         volcur => vollist
         do while (associated(volcur))
-          if (volcur%in == ini_zone(i)) then
+          if (volcur%ii == ini_zone(i)) then
             call json%create_object(vols,'VL')
             call json%add(vols,'VOL',volcur%vol)
             call json%add(zone,vols)

@@ -1,4 +1,4 @@
-       subroutine EIRENE_read_colrad (ir,reac,isw,iz1,
+       subroutine EIRENE_read_colrad (ir,reac,isw,
      .                                ir_esc,ic_esc,p_esc)
 
 cdr  purpose:  prepare usage of A&M data from an internal, built-in,
@@ -17,10 +17,9 @@ c                  =2-4   data for reaction rate coefficient             (only =
 c                  =5-7   data for momentum-weighted rate coefficient    (not in use)
 c                  =8-10  data for energy-weighted rate coefficient      (only = 10 in use)
 c                  =11,12 other data, such as red. pop. coefficients     (not in use)
-c           iz1:   not in use
 c
-cdr   currently used only H.4, 2.1.5 and H.10, 2.1.5, EI,  ionisation
-cdr                       H.4. 2.1.8 and H.10, 2.1.8, RC,  recombination
+cdr   currently used only H.4, 2.1.5 and H.10, 2.1.5, EI, ionisation
+cdr                       H.4. 2.1.8 and H.10, 2.1.8, RC, recombination
 cdr                       and  H.11, H.12: selected population coefficients
 c
 c  to be done: units, log-lin, scaling, asymptotics
@@ -32,7 +31,7 @@ c  to be done: units, log-lin, scaling, asymptotics
 
       implicit none
 
-      integer, intent(in) :: ir, isw, iz1
+      integer, intent(in) :: ir, isw
       integer, intent(in), optional :: ir_esc, ic_esc
       real(dp) , intent(in), optional :: p_esc
       character(len=*), intent(in) :: reac

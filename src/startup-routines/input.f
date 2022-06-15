@@ -1,3 +1,17 @@
+cdr Nov. 19 :   Clearer messages re BGK iterations
+cdr             Started to bring back surface-chemistry model
+cdr             (unfinished)
+cdr             started to add a Planckian densitymodel
+cdr             as further option, similar to SAHA,
+cdr             Boltzmann,... this one only for background
+cdr             radiation field. (unfinished)
+cdr Oct.  19:   In block 5 finally: Ti and V-flow multispecies (NPLS) input options completed and corrected
+cdr             The treatment is now fully identical for both parameters.
+cdr             Backward compatibility is achieved
+cdr             by not reading indpro(2), but instead by infering it from the
+cdr             number of input cards read. This card counting is done in find_param.
+cdr sept. 19:   call alloc bckgrnd: indpro=6 and/or indpro =7 ?,
+c               remove one redundant call
 cdr  oct 18 :   unify reading of A&M data (reaction decks) from external file:
 cdr             Formerly from block 4, block 5 ("density models") 
 cdr             and block 12 (line emissivities).
@@ -111,25 +125,27 @@ C
       USE EIRMOD_CUPD
       USE EIRMOD_PHOTON
       USE EIRMOD_TIMEA, ONLY: EIRENE_TIMEA0
+      USE EIRMOD_SECOND_OWN, ONLY: EIRENE_SECOND_OWN
       USE EIRMOD_PROFILES
       USE EIRMOD_JSON
 
       IMPLICIT NONE
-
 C
       TYPE(VOLUMEP),POINTER :: VOLCUR
 CC
       REAL(DP) :: VOLTOT_TAL
 
 C  RUN TIME STATISTICS IN INITIALIZATION PHASE, WITHIN INPUT.F
-cdr   REAL(DP) :: tpb1, tpb2, EIRENE_SECOND_OWN, timea
-c
+      REAL(DP) :: tpb1, tpb2
+cdr   REAL(DP) :: timea
+
       REAL(DP), ALLOCATABLE :: SAREA_SAVE(:)
+      REAL(DP), ALLOCATABLE :: RDUMMY(:,:)
       INTEGER :: IADTYP(0:4)
       INTEGER :: IERROR, IUNIN_SAVE, JSTREAM, NSOPT, ILIMPS, 
      .           I, J, I1, I2, I3, JL, IO, IUSR, IFLG,
-     .           ITALI, IRAD, IS, ISS, IN, INC, IRET,
-     .           JPLS, IRE, JSPZ, JTRJ
+     .           ITALI, IRAD, IS, ISS, II, INC, IRET,
+     .           JPLS, IRE, JSPZ, JTRJ, ISTRAI, NLJ
 
       INTEGER, SAVE :: NITER0, IUSROUT=0
       LOGICAL :: NLSRON_SAVE(NSTRA)
@@ -146,18 +162,15 @@ C  INITIALISE SOME DATA AND SET DEFAULTS
 C
       IERROR=0
 
-C  UNIT NUMBER FOR INPUT FILE: MUST BE DIFFERENT FROM: 5,8,10,11,12
-C  13,14, AND 15
 !pb IUNIN set in COMPRT
-!pb   IUNIN=1+ifoff
       IUNIN_SAVE = IUNIN
       IUSROUT = 0
 C
 C  UNIT NUMBER FOR OUTPUT FILE: MUST BE DIFFERENT FROM: 5,8,10,11,12
 C  13,14, AND 15 AND IUNIN
-!pb IUNOUT has already been set in subroutine EIRENE
-!pb   IUNOUT=6+ifoff
+cdr IUNOUT has already been set in subroutine EIRENE
 C
+      TPB1=EIRENE_SECOND_OWN()
       IF (IITER.GT.1) THEN
         CALL EIRENE_MASBOX
      .   ('NEXT ITERATION STARTS, SKIP READING INPUT FILE')
@@ -232,6 +245,9 @@ C
 C
 C  READ TEXT DESCRIBING THE RUN, 100--199
 C
+      TPB2=EIRENE_SECOND_OWN()
+      IF (TRCTIM) write (iunout,*) ' CPU time before reading ',tpb2-tpb1
+      tpb1 = tpb2
 
       CALL DATE_AND_TIME(CDATE,CTIME)
       READ(CDATE(1:4),*) I1
@@ -244,11 +260,11 @@ C
       WRITE (iunout,'(1X,A6,1X,3(I2,1X))') 'TIME: ',I1,I2,I3
       CALL EIRENE_LEER(2)
 
-      REWIND IUNIN
+      IF (IUNIN.NE.5) REWIND IUNIN !VK
 
       READ (IUNIN,'(A80)') ZEILE
       
-      REWIND IUNIN
+      IF (IUNIN.NE.5) REWIND IUNIN !VK
       LRDJSON = .FALSE.
       IF (ZEILE(1:1) == '{') THEN
 	LRDJSON = .TRUE.
@@ -279,6 +295,11 @@ C
       ENDIF
 C
       CALL EIRENE_PAGE
+
+      TPB2=EIRENE_SECOND_OWN()
+      IF (TRCTIM) write (iunout,*) ' CPU time after reading ',tpb2-tpb1
+      tpb1 = tpb2
+
 C
 C   MODIFICATION OF INPUT DUE TO EITHER INCONSISTENCIES OR DUE
 C   TO COUPLED NEUTRAL-PLASMA (OR NEUTRAL-NEUTRAL) CALCULATIONS
@@ -330,11 +351,16 @@ C
 C  READ DATA IN INTERFACING SUBROUTINE INFCOP  1400 -- 1499
 C
 
+      TPB2=EIRENE_SECOND_OWN()
+      IF (TRCTIM)
+     > write (iunout,*) ' CPU time before block 14 ',tpb2-tpb1
+      tpb1 = tpb2
 
 ! CALL TO ALLOC_BCKGRND MOVED HERE TO ALLOW SPECIFICATION OF VOL
 ! IN IF0COP
 
-      IF (ANY(INDPRO(1:12) == 6)) CALL EIRENE_ALLOC_BCKGRND
+      IF ((ANY(INDPRO(1:12) == 6)).OR.(ANY(INDPRO(1:12) == 7)))
+     .    CALL EIRENE_ALLOC_BCKGRND
 
       IF (LRDJSON) THEN
 
@@ -382,6 +408,10 @@ C  COPY USER SPECIFIC DATA TO FILE user_data.input
         END IF
 
       END IF
+
+      TPB2=EIRENE_SECOND_OWN()
+      IF (TRCTIM) write (iunout,*) ' CPU time after if0cop ',tpb2-tpb1
+      tpb1 = tpb2
      
 C
 C  INPUT BLOCK 14 DONE
@@ -427,6 +457,9 @@ C  WRITE JSON FILE
 
       CALL EIRENE_PAGE
 
+      TPB2=EIRENE_SECOND_OWN()
+      IF (TRCTIM) write (iunout,*) ' CPU time before grid ',tpb2-tpb1
+      tpb1 = tpb2
 
 C
       IF (NFILEM.LE.1) THEN
@@ -483,7 +516,7 @@ C   INCLUDE INFORMATION PROVIDED BY INPUT BLOCK 8: ADDITIONAL
 C   DATA FOR SPECIFIC ZONES
 C
         DO WHILE (ASSOCIATED(VOLLIST))
-          VOL(VOLLIST%IN) = VOLLIST%VOL
+          VOL(VOLLIST%II) = VOLLIST%VOL
           VOLCUR => VOLLIST
           VOLLIST => VOLLIST%NEXT
           DEALLOCATE(VOLCUR)
@@ -500,7 +533,7 @@ C  SET SOME DATA FOR ADDITIONAL SURFACES: INITIALISE SUBR. TIMEA
 C
 cdr     timea = EIRENE_SECOND_OWN()
         CALL EIRENE_TIMEA0
-cdr     WRITE(iunout,*)'cpu time for timea0 ',EIRENE_SECOND_OWN()-timea
+cdr     WRITE(iunout,*)'CPU time for timea0 ',EIRENE_SECOND_OWN()-timea
 cdr     WRITE(iunout,*)
 C
 C   MODIFY THE BOUNDARIES OF SOME SURFACES TO AVOID ROUND-OFF
@@ -527,8 +560,12 @@ C
         ENDIF
 C
 C
-        CALL EIRENE_INTVOL (VOL,1,1,NSBOX,VOLTOT,
+        ALLOCATE(RDUMMY(1,NSBOX))
+        RDUMMY(1,1:NSBOX) = VOL(1:NSBOX)
+        CALL EIRENE_INTVOL (RDUMMY,1,1,NSBOX,VOLTOT,
      .               NR1ST,NP2ND,NT3RD,NBMLT)
+        VOL(1:NSBOX) = RDUMMY(1,1:NSBOX)
+        DEALLOCATE(RDUMMY)
         WRITE (iunout,*) 'TOTAL VOLUME, SUM VOL(:)  ',VOLTOT
 C
 C  SET 'VISIBLE ADDITIONAL SURFACES' RANGES nlimii(j),nlimie(j), for each grid cell j
@@ -565,6 +602,10 @@ C
         ENDDO
 C
 C
+      ELSE
+C
+        WRITE(IUNOUT,*) 'UNRECOGNIZED NFILEM OPTION. NFILEM = ', NFILEM
+        CALL EIRENE_EXIT_OWN(1)
       ENDIF
 C
       DO 8011 IS=1,NLIMPS
@@ -588,22 +629,75 @@ C
  8011 CONTINUE
 
 C
+      IF(TRCREF) THEN
+       WRITE(IUNOUT,*) "PROPERTIES OF ALL SURFACES"
+       WRITE(IUNOUT,*)
+       DO I=1,NLIM+NSTS
+        IF(I.GT.NLIMI) THEN
+         NLJ=NLIMI-I
+        ELSE
+         NLJ=I
+        END IF
+        WRITE(IUNOUT,*) "SURFACE ", NLJ
+        WRITE(IUNOUT,*) " ILIIN, ILSPT, ISPUT ",
+     w                    ILIIN(I),ILSPT(I),ISPUT(:,I)
+        WRITE(IUNOUT,'(A12,10I6/(12x,10I6))') " ISRS ", ISRS(:,I)
+        WRITE(IUNOUT,'(A12,10I6/(12x,10I6))') " ISRC ", ISRC(:,I)
+        WRITE(IUNOUT,'(A12,10I6/(12x,10I6))')
+     w                                    " LCHSPNWL ", LCHSPNWL(:,I)
+        WRITE(IUNOUT,'(A12,1P,5E12.4/(12x,5E12.4))')
+     w                                     " TRANSP1 ", TRANSP(:,1,I)
+        WRITE(IUNOUT,'(A12,1P,5E12.4/(12x,5E12.4))')
+     w                                     " TRANSP2 ", TRANSP(:,2,I)
+        WRITE(IUNOUT,'(A12,1P,5E12.4/(12x,5E12.4))')
+     w                                      " RECYCF ", RECYCF(:,I)
+        WRITE(IUNOUT,'(A12,1P,5E12.4/(12x,5E12.4))')
+     w                                      " RECYCT ", RECYCT(:,I)
+        WRITE(IUNOUT,'(A12,1P,5E12.4/(12x,5E12.4))')
+     w                                      " RECPRM ", RECPRM(:,I)
+        WRITE(IUNOUT,'(A12,1P,5E12.4/(12x,5E12.4))')
+     w                                       " EXPPL ", EXPPL(:,I)
+        WRITE(IUNOUT,'(A12,1P,5E12.4/(12x,5E12.4))')
+     w                                       " EXPEL ", EXPEL(:,I)
+        WRITE(IUNOUT,'(A12,1P,5E12.4/(12x,5E12.4))')
+     w                                       " EXPIL ", EXPIL(:,I)
+        WRITE(IUNOUT,'(A12,1P,5E12.4/(12x,5E12.4))')
+     w                                      " RECYCS ", RECYCS(:,I)
+        WRITE(IUNOUT,'(A12,1P,5E12.4/(12x,5E12.4))')
+     w                                      " RECYCC ", RECYCC(:,I)
+        WRITE(IUNOUT,'(A12,1P,5E12.4/(12x,5E12.4))')
+     w                                      " SPTPRM ", SPTPRM(:,I)
+        WRITE(IUNOUT,'(A12,1P,5E12.4/(12x,5E12.4))')
+     w                                      " ESPUTS ", ESPUTS(:,I)
+        WRITE(IUNOUT,'(A12,1P,5E12.4/(12x,5E12.4))')
+     w                                      " ESPUTC ", ESPUTC(:,I)
+        CALL EIRENE_LEER(1)
+       END DO
+      END IF
+CVK END
+
+      TPB2=EIRENE_SECOND_OWN()
+      IF (TRCTIM)
+     . write (iunout,*) ' CPU time before plasma definition ',tpb2-tpb1
+      tpb1 = tpb2
+C
  4000 CONTINUE
 C
 
 !  NOTHING IS DONE IF ARRAYS FOR BACKGROUND ARE ALREADY ALLOCATED
       IF (ANY(INDPRO(1:12) == 6)) CALL EIRENE_ALLOC_BCKGRND
 
-
       IF ((NMODE.NE.0.AND.IITER.LE.MAX(1,NITER0)) .OR.
      .    (ABS(NMODE).EQ.2)) THEN
 C  READ PLASMA BACKGROUND
 c  EITHER:  FROM EXTERNAL DATABASE (FT31) (NOT NLPLAS)
 C  OR    :  FROM COMMON BRAEIR (NLPLAS)
-        IF (ANY(INDPRO(1:12) == 6)) CALL EIRENE_ALLOC_BCKGRND
         CALL EIRENE_IF1COP
       ENDIF
 
+      TPB2=EIRENE_SECOND_OWN()
+      IF (TRCTIM) write (iunout,*) ' CPU time for if1cop ',tpb2-tpb1
+      tpb1 = tpb2
 C
       IF (NSTEP > 0) CALL EIRENE_ALLOC_CSTEP
 C
@@ -611,15 +705,13 @@ cdr  VOL are cell volumes on the fine grid
 cdr  coarser grid FOR SCORING may have been set, find cell volumes
 cdr  VOLTAL on coarser grid
       VOLTAL = EPS60
-      DO IN=1,NSBOX
-        INC = NCLTAL(IN)
-        IF (INC > 0) VOLTAL(INC) = VOLTAL(INC) + VOL(IN)
+      DO II=1,NSBOX
+        INC = NCLTAL(II)
+        IF (INC > 0) VOLTAL(INC) = VOLTAL(INC) + VOL(II)
       END DO
       CALL EIRENE_INTVOL (VOLTAL,1,1,NSBOX_TAL,VOLTOT_TAL,
      .             NR1TAL,NP2TAL,NT3TAL,NBMLT)
       WRITE (iunout,*) 'TOTAL VOLUME, SUM VOLTAL(:) ',VOLTOT_TAL
-
-
 C
 cpb add nlshrt13
       IF ((NFILEL.LE.1) .OR. NLSHRT13) THEN
@@ -627,8 +719,6 @@ C
 C  SET PLASMA PARAMETERS AND SOURCE PARAMETERS
 C
         CALL EIRENE_PLASMA
-
-
 C
 C  MULTIPLY PLASMA PARAMETERS, IF NBLCKS.GT.1
 C
@@ -644,6 +734,9 @@ C  MODIFY SOME PLASMA DATA, USER-SUPPLIED ROUTINE
 C
         CALL EIRENE_PLAUSR
 
+        TPB2=EIRENE_SECOND_OWN()
+        IF (TRCTIM) write (iunout,*) ' CPU time for plausr ',tpb2-tpb1
+        tpb1 = tpb2
 
 C  THIS POINT IS ONLY REACHED WITH NFILEL=3 IF NLSHRT13=.T.
 c  (SHORT VERSION OF FORT.13 ONLY).
@@ -657,16 +750,26 @@ C  COMPUTE SOME 'DERIVED' PLASMA DATA PROFILES FROM THE INPUT PROFILES
 C
         CALL EIRENE_PLASMA_DERIV(0)
 
+        TPB2=EIRENE_SECOND_OWN()
+        IF (TRCTIM)
+     >   write (iunout,*) ' CPU time for plasma_deriv ',tpb2-tpb1
+        tpb1 = tpb2
 
 C
 C  SET ATOMIC DATA TABLES
 C
         CALL EIRENE_SETAMD(1)
 
+        TPB2=EIRENE_SECOND_OWN()
+        IF (TRCTIM) write (iunout,*) ' CPU time for setamd ',tpb2-tpb1
+        tpb1 = tpb2
 
 C
         IF (NFILEL.EQ.1) CALL EIRENE_WRPLAM(TRCFLE,0)
 
+        TPB2=EIRENE_SECOND_OWN()
+        IF (TRCTIM) write (iunout,*) ' CPU time for wrplam ',tpb2-tpb1
+        tpb1 = tpb2
 
 C
       ELSEIF (NFILEL.GE.2.AND.NFILEL.LE.4) THEN
@@ -693,7 +796,10 @@ cdr  from now on: iflg=nfilel
 C
       ENDIF
 
-
+      TPB2=EIRENE_SECOND_OWN()
+      IF (TRCTIM)
+     > write (iunout,*) ' CPU time after plasma definition ',tpb2-tpb1
+      tpb1 = tpb2
 
 C
 C  SET UP TABLE OF CONTRIBUTIONS OF MONTE CARLO PARTICLES TO BACKGROUND SPECIES
@@ -727,8 +833,8 @@ C  COMPUTE SOURCE DATA (OVERRULE SOME OF INPUT BLOCK 7)
 !pb 22.10.2009
 !pb   IF ((NMODE.NE.0.AND.IITER.LE.1) .OR. (IITER > NITER))  THEN
       IF (NMODE.NE.0.AND.((IITER.LE.1) .OR. (IITER > NITER)))  THEN
-        DO ISTRA=1,NSTRAI
-          IF (INDSRC(ISTRA).GE.0) CALL EIRENE_IF2COP(ISTRA)
+        DO ISTRAI=1,NSTRAI
+          IF (INDSRC(ISTRAI).GE.0) CALL EIRENE_IF2COP(ISTRAI)
         ENDDO
       ENDIF
 C
@@ -755,6 +861,29 @@ C
      .                  'ISWICH(5),ISWICH(6)'
             WRITE (iunout,*)  ISWICH(1,J),ISWICH(2,J),ISWICH(3,J),
      .                   ISWICH(4,J),ISWICH(5,J),ISWICH(6,J)
+            IF (RLB(J).GT.0) THEN
+                WRITE (iunout,*) 'XLIMS1,YLIMS1,ZLIMS1 ',
+     .           XLIMS1(1,J),YLIMS1(1,J),ZLIMS1(1,J)
+                WRITE (iunout,*) 'XLIMS2,YLIMS2,ZLIMS2 ',
+     .           XLIMS2(1,J),YLIMS2(1,J),ZLIMS2(1,J)
+            ELSEIF (RLB(J).LT.0) THEN
+              DO I=1,ILIN(J)
+                WRITE (iunout,*)
+     .           'I,ALIMS,XLIMS,YLIMS,ZLIMS'
+                WRITE (iunout,*)
+     .            I,ALIMS(I,J),XLIMS(I,J),YLIMS(I,J),ZLIMS(I,J)
+              ENDDO
+              DO I=1,ISCN(J)
+                WRITE (iunout,*) 'I,ALIMS0             ',
+     .                            I,ALIMS0(I,J)
+                WRITE (iunout,*) 'XLIMS1,YLIMS1,ZLIMS1 ',
+     .           XLIMS1(I,J),YLIMS1(I,J),ZLIMS1(I,J)
+                WRITE (iunout,*) 'XLIMS2,YLIMS2,ZLIMS2 ',
+     .           XLIMS2(I,J),YLIMS2(I,J),ZLIMS2(I,J)
+                WRITE (iunout,*) 'XLIMS3,YLIMS3,ZLIMS3 ',
+     .           XLIMS3(I,J),YLIMS3(I,J),ZLIMS3(I,J)
+              ENDDO
+            ENDIF
           ENDIF
  7701   CONTINUE
         CALL EIRENE_LEER(2)
@@ -763,8 +892,8 @@ C
         IF (NLIMPB >= NLIMPS) THEN
           CALL EIRENE_MASIR2('IGJUM1 ',IGJUM1,0,NLIMPS,1,NLIMPS,NLIMPS)
         ELSE
-          CALL
-     .  EIRENE_MASBR2('IGJUM1 ',IGJUM1,0,NLIMPS,1,NLIMPS,NLIMPS,NBITS)
+          CALL EIRENE_MASBR2
+     .      ('IGJUM1 ',IGJUM1,0,NLIMPS,1,NLIMPS,NLIMPS,NBITS)
         END IF
         CALL EIRENE_LEER(1)
         IF (NLIMPB >= NLIMPS) THEN
@@ -814,6 +943,11 @@ C
 
       IF (.NOT.ALLOCATED(BACK_SPEC) .AND. (NBACK_SPEC > 0))
      .   ALLOCATE(BACK_SPEC(NBACK_SPEC))
+
+      TPB2=EIRENE_SECOND_OWN()
+      if (TRCTIM)
+     > write (iunout,*) ' CPU time at end of input ',tpb2-tpb1
+      tpb1 = tpb2
 
       IUNIN = IUNIN_SAVE
       IF (IUSROUT /= 0) CLOSE(IUSROUT)

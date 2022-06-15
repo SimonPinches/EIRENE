@@ -36,6 +36,7 @@
       public :: eirene_extrab25_wneusave, eirene_extrab25_wneuclean
       public :: eirene_extrab25_alloc_mods
       public :: eirene_extrab25_iniusr_init
+      public :: b2_cell
 
       ! eirdiag.h/eirdiag.f
       !c*** Volume data:
@@ -86,7 +87,7 @@
       real(DP), save :: RHMH2(0:8),RH2PH2(0:8,0:8)
       CHARACTER, save :: FILNAM*8,H123*4,REAC*9,CRC*3
       logical, save :: hlp_pr
-      integer, save :: ia1,ia2,ia3,iindex,ifirst_wneutral=0
+      integer, save :: ia0,ia1,ia2,ia3,ifirst_wneutral=0
       real(DP), save :: hlp_cnv
 
       ! B2.5 neutrals parameters modifications
@@ -199,7 +200,7 @@
      .                6.113/ !Ca
 
 
-      integer :: ix,iy,ir,ierror,i,j,in
+      integer :: ix,iy,ir,iistra,icell,ierror,i,j,in,jatm,jmol,jion
       integer :: l,k,nred
       real(DP) :: de,te,hlp,sigadd1,sigadd2,sigadd3,sigadd4,sigadd5
       real(DP) :: dej,tei,tef,def,
@@ -210,6 +211,7 @@
       real(DP) :: rc1min,rc1max,fp1(6),rc2min,rc2max,fp2(6),vl
       integer :: jfex1mn,jfex1mx,jfex2mn,jfex2mx
       real(DP) :: value
+      character*36 hlp_frm
       external eirene_indmpi,eirene_neutr
 
 !     !c======================================================================
@@ -260,9 +262,10 @@
       call eirene_extraB25_wneuclean
 
       hlp_cnv=1./elcha
-      ia1=natmi+nmoli
-      ia2=2*ia1
-      ia3=3*ia1
+      ia0=0
+      ia1=ia0+natmi+nmoli
+      ia2=ia1+natmi+nmoli
+      ia3=ia2+natmi+nmoli
 
       !c
       !c*** Initialise the data for H-alpha radiation
@@ -400,7 +403,6 @@
           !write(iunout,*) 'NREI,NMEII,NIEII ',NREI,nmeii,nieii
           !write(iunout,*) 'NREC,NIRCI,NPRCI ',NREC,nirci,nprci
       end if
-      iindex=0
       !c======================================================================
       !c*** fill arrays
       !c
@@ -421,22 +423,22 @@
       !csw
       value=0.0
       eneutrad(:,:,1,istra) = 0.d0
-      do ncell=1,ntrii
-        ix=ixtri(ncell)
-        iy=iytri(ncell)
-        if(ix.gt.0) then
+      do icell=1,ntrii
+        ix=ixtri(icell)
+        iy=iytri(icell)
+        if(b2_cell(ix,iy)) then
           if (leael) eneutrad(ix,iy,1,istra)=eneutrad(ix,iy,1,istra)
-     .                      +eael(ncell)*vol(ncell)
-          if (leael) value=value+eael(ncell)*vol(ncell)
-          do iatm=1,natmi
-            if(nchara(iatm).le.npot) then
-              pot=pot_data(nchara(iatm))
+     .                      +eael(icell)*vol(icell)
+          if (leael) value=value+eael(icell)*vol(icell)
+          do jatm=1,natmi
+            if(nchara(jatm).le.npot) then
+              pot=pot_data(nchara(jatm))
             else
               pot=0.0_dp
             endif
             if (lpaat) eneutrad(ix,iy,1,istra)=eneutrad(ix,iy,1,istra)
-     .                        -paat(iatm,ncell)*pot*vol(ncell)
-            if (lpaat) value=value-paat(iatm,ncell)*pot*vol(ncell)
+     .                        -paat(jatm,icell)*pot*vol(icell)
+            if (lpaat) value=value-paat(jatm,icell)*pot*vol(icell)
           enddo
         endif
       enddo
@@ -451,13 +453,14 @@
       !csw
 
       !c
-      !C map 1d-EIRENE neutral densities and temperatures on 2d-arrays
+      !C map 1d EIRENE neutral densities and temperatures on 2d arrays
       !c and change the units to SI for plotting in B2
       !c
-cdr   write(iunout,*) 'istra ',istra
-cdr   write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
+      !write(iunout,*) 'istra ',istra
+      !write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
+      !write(iunout,*) 'ndxp, ndyp ',ndxp,ndyp
       !crfs     IF (WTOTP(0,ISTRA).EQ.0.) GOTO 60
-      do iatm=1,natmi
+      do jatm=1,natmi
         volcel = 0.d0
         do in=1,ntrii
           ix=ixtri(in)
@@ -469,73 +472,73 @@ cdr   write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
         do in=1,ntrii
           ix=ixtri(in)
           iy=iytri(in)
-          if(ix.gt.0) then
+          if(b2_cell(ix,iy)) then
             vl = vol(in)/volcel(ix,iy)
-            if (lpdena) dab2(ix,iy,iatm,1)=dab2(ix,iy,iatm,1)+
-     .                          pdena(iatm,in)*1e6*vl
+            if (lpdena) dab2(ix,iy,jatm,1)=dab2(ix,iy,jatm,1)+
+     .                          pdena(jatm,in)*1e6*vl
             if (laddv) then
-             if(iindex+iatm.le.nadv)
-     .         rfluxa(ix,iy,iatm,1)=rfluxa(ix,iy,iatm,1)+
-     .                                   addv(iindex+iatm,in)*1.0e4
-             if(iindex+ia2+iatm.le.nadv)
-     .         pfluxa(ix,iy,iatm,1)=pfluxa(ix,iy,iatm,1)+
-     .                                   addv(iindex+ia2+iatm,in)*1.0e4
-             if(iindex+ia1+iatm.le.nadv)
-     .         refluxa(ix,iy,iatm,1)=refluxa(ix,iy,iatm,1)+
-     .                             addv(iindex+ia1+iatm,in)*1.0e4*elcha
-             if(iindex+ia3+iatm.le.nadv)
-     .         pefluxa(ix,iy,iatm,1)=pefluxa(ix,iy,iatm,1)+
-     .                             addv(iindex+ia3+iatm,in)*1.0e4*elcha
+             if(ia0+jatm.le.nadv)
+     .         rfluxa(ix,iy,jatm,1)=rfluxa(ix,iy,jatm,1)+
+     .                                   addv(ia0+jatm,in)*1.0e4
+             if(ia2+jatm.le.nadv)
+     .         pfluxa(ix,iy,jatm,1)=pfluxa(ix,iy,jatm,1)+
+     .                                   addv(ia2+jatm,in)*1.0e4
+             if(ia1+jatm.le.nadv)
+     .         refluxa(ix,iy,jatm,1)=refluxa(ix,iy,jatm,1)+
+     .                             addv(ia1+jatm,in)*1.0e4*elcha
+             if(ia3+jatm.le.nadv)
+     .         pefluxa(ix,iy,jatm,1)=pefluxa(ix,iy,jatm,1)+
+     .                             addv(ia3+jatm,in)*1.0e4*elcha
              end if
-            if (ledena) tab2(ix,iy,iatm,1)=tab2(ix,iy,iatm,1)+
-     .                             edena(iatm,in)*vl
+            if (ledena) tab2(ix,iy,jatm,1)=tab2(ix,iy,jatm,1)+
+     .                             edena(jatm,in)*vl
           endif
         end do
       end do
-      do imol=1,nmoli
-        edissml(:,:,imol,istra) = 0.d0
+      do jmol=1,nmoli
+        edissml(:,:,jmol,istra) = 0.d0
         do in=1,ntrii
           ix=ixtri(in)
           iy=iytri(in)
-          if(ix.gt.0) then
+          if(b2_cell(ix,iy)) then
             vl = vol(in)/volcel(ix,iy)
-            dmb2(ix,iy,imol,1)=dmb2(ix,iy,imol,1)+
-     .                          pdenm(imol,in)*1e6*vl
-            if(iindex+natmi+imol.le.nadv)
-     .         rfluxm(ix,iy,imol,1)=rfluxm(ix,iy,imol,1)+
-     .                                 addv(iindex+natmi+imol,in)*1.0e4
-            if(iindex+ia2+natmi+imol.le.nadv)
-     .         pfluxm(ix,iy,imol,1)=pfluxm(ix,iy,imol,1)+
-     .                             addv(iindex+ia2+natmi+imol,in)*1.0e4
+            if (lpdenm) dmb2(ix,iy,jmol,1)=dmb2(ix,iy,jmol,1)+
+     .                          pdenm(jmol,in)*1e6*vl
+            if(ia0+natmi+jmol.le.nadv)
+     .         rfluxm(ix,iy,jmol,1)=rfluxm(ix,iy,jmol,1)+
+     .                                 addv(ia0+natmi+jmol,in)*1.0e4
+            if(ia2+natmi+jmol.le.nadv)
+     .         pfluxm(ix,iy,jmol,1)=pfluxm(ix,iy,jmol,1)+
+     .                             addv(ia2+natmi+jmol,in)*1.0e4
 
-            if(iindex+ia1+natmi+imol.le.nadv .and. laddv)
-     .         refluxm(ix,iy,imol,1)=refluxm(ix,iy,imol,1)+
-     .                       addv(iindex+ia1+natmi+imol,in)*1.0e4*elcha
-            if(iindex+ia3+natmi+imol.le.nadv .and. laddv)
-     .         pefluxm(ix,iy,imol,1)=pefluxm(ix,iy,imol,1)+
-     .                       addv(iindex+ia3+natmi+imol,in)*1.0e4*elcha
-            if (ledenm) tmb2(ix,iy,imol,1)=tmb2(ix,iy,imol,1)+
-     .                      edenm(imol,in)*vl
-            if (lpmml) srcml(ix,iy,imol,1)=srcml(ix,iy,imol,1)+
-     .                                     pmml(imol,in)*vl
+            if(ia1+natmi+jmol.le.nadv .and. laddv)
+     .         refluxm(ix,iy,jmol,1)=refluxm(ix,iy,jmol,1)+
+     .                       addv(ia1+natmi+jmol,in)*1.0e4*elcha
+            if(ia3+natmi+jmol.le.nadv .and. laddv)
+     .         pefluxm(ix,iy,jmol,1)=pefluxm(ix,iy,jmol,1)+
+     .                       addv(ia3+natmi+jmol,in)*1.0e4*elcha
+            if (ledenm) tmb2(ix,iy,jmol,1)=tmb2(ix,iy,jmol,1)+
+     .                      edenm(jmol,in)*vl
+            if (lpmml) srcml(ix,iy,jmol,1)=srcml(ix,iy,jmol,1)+
+     .                                     pmml(jmol,in)*vl
             !c*** Potential energy source related to hydrogen molecules
             !c*** for determining the radiation (W per cell)
-            if (ncharm(imol).eq.2 .and. lpmml)
-     .         edissml(ix,iy,imol,istra)=edissml(ix,iy,imol,istra)+
-     .            pmml(imol,in)*vl*diss_pot_H2
+            if (ncharm(jmol).eq.2 .and. lpmml)
+     .         edissml(ix,iy,jmol,istra)=edissml(ix,iy,jmol,istra)+
+     .            pmml(jmol,in)*vl*diss_pot_H2
           endif
         end do
       end do
-      do iion=1,nioni
+      do jion=1,nioni
         do in=1,ntrii
           ix=ixtri(in)
           iy=iytri(in)
-          if(ix.gt.0) then
+          if(b2_cell(ix,iy)) then
             vl = vol(in)/volcel(ix,iy)
-            if (lpdeni) dib2(ix,iy,iion,1)=dib2(ix,iy,iion,1)+
-     .                          pdeni(iion,in)*1e6*vl
-            if (ledeni) tib2(ix,iy,iion,1)=tib2(ix,iy,iion,1)+
-     .                          edeni(iion,in)*vl
+            if (lpdeni) dib2(ix,iy,jion,1)=dib2(ix,iy,jion,1)+
+     .                          pdeni(jion,in)*1e6*vl
+            if (ledeni) tib2(ix,iy,jion,1)=tib2(ix,iy,jion,1)+
+     .                          edeni(jion,in)*vl
           endif
         end do
       end do
@@ -552,37 +555,57 @@ cdr   write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
         do j=1,natmi
           if (leotat)  wldnek(i,istra)=wldnek(i,istra)+eotat(j,i)
           if (lerfpat) wldpeb(i,istra)=wldpeb(i,istra)+erfpat(j,i)
-          hlp=hlp+erfaat(j,i)+erfmat(j,i)+erfiat(j,i)
-          if(potat(j,i).gt.0.) then
-            ewlda(i,j,istra)=eotat(j,i)/potat(j,i)
+          if (lerfaat) hlp=hlp+erfaat(j,i)
+          if (lerfmat) hlp=hlp+erfmat(j,i)
+          if (lerfiat) hlp=hlp+erfiat(j,i)
+          if (lpotat.and.leotat) then
+            if(potat(j,i).gt.0.) then
+              ewlda(i,j,istra)=eotat(j,i)/potat(j,i)
+            else
+              ewlda(i,j,istra)=0.
+            end if
           else
             ewlda(i,j,istra)=0.
           end if
           if (lpotat) wldna(i,j,istra)=hlp_cnv*potat(j,i)
-          wldra(i,j,istra)=hlp_cnv*(prfaat(j,i)+prfmat(j,i)+
-     .                                                    prfiat(j,i))
-          wldpa(i,j,istra)=hlp_cnv*prfpat(j,i)
+          wldra(i,j,istra)=0.
+          if (lprfaat) wldra(i,j,istra)=wldra(i,j,istra)+prfaat(j,i)
+          if (lprfmat) wldra(i,j,istra)=wldra(i,j,istra)+prfmat(j,i)
+          if (lprfiat) wldra(i,j,istra)=wldra(i,j,istra)+prfiat(j,i)
+          wldra(i,j,istra)=hlp_cnv*wldra(i,j,istra)
+          if (lprfpat) wldpa(i,j,istra)=hlp_cnv*prfpat(j,i)
         end do
         do j=1,nmoli
-          wldnek(i,istra)=wldnek(i,istra)+eotml(j,i)
-          wldpeb(i,istra)=wldpeb(i,istra)+erfpml(j,i)
-          hlp=hlp+erfaml(j,i)+erfmml(j,i)+erfiml(j,i)
-          if(potml(j,i).gt.0.) then
-            ewldm(i,j,istra)=eotml(j,i)/potml(j,i)
+          if (leotml)  wldnek(i,istra)=wldnek(i,istra)+eotml(j,i)
+          if (lerfpml) wldpeb(i,istra)=wldpeb(i,istra)+erfpml(j,i)
+          if (lerfaml) hlp=hlp+erfaml(j,i)
+          if (lerfmml) hlp=hlp+erfmml(j,i)
+          if (lerfiml) hlp=hlp+erfiml(j,i)
+          if (lpotml.and.leotml) then
+            if(potml(j,i).gt.0.) then
+              ewldm(i,j,istra)=eotml(j,i)/potml(j,i)
+            else
+              ewldm(i,j,istra)=0.
+            end if
           else
             ewldm(i,j,istra)=0.
           end if
-          wldnm(i,j,istra)=hlp_cnv*potml(j,i)
-          wldrm(i,j,istra)=hlp_cnv*(prfaml(j,i)+prfmml(j,i)+
-     .                                                    prfiml(j,i))
-          wldpm(i,j,istra)=hlp_cnv*prfpml(j,i)
+          if (lpotml) wldnm(i,j,istra)=hlp_cnv*potml(j,i)
+          wldrm(i,j,istra)=0.
+          if (lprfaml) wldrm(i,j,istra)=wldrm(i,j,istra)+prfaml(j,i)
+          if (lprfmml) wldrm(i,j,istra)=wldrm(i,j,istra)+prfmml(j,i)
+          if (lprfiml) wldrm(i,j,istra)=wldrm(i,j,istra)+prfiml(j,i)
+          wldrm(i,j,istra)=hlp_cnv*wldrm(i,j,istra)
+          if (lprfpml) wldpm(i,j,istra)=hlp_cnv*prfpml(j,i)
         end do
         do j=1,nioni
           if (leotio)  wldnek(i,istra)=wldnek(i,istra)+eotio(j,i)
           if (lerfpio) wldpeb(i,istra)=wldpeb(i,istra)+erfpio(j,i)
-          hlp=hlp+erfaio(j,i)+erfmio(j,i)+erfiio(j,i)
+          if (lerfaio) hlp=hlp+erfaio(j,i)
+          if (lerfmio) hlp=hlp+erfmio(j,i)
+          if (lerfiio) hlp=hlp+erfiio(j,i)
         end do
-        do j=1,nplsi
+        do j=1,nfla
           if (lpotpl) wldpp(i,j,istra)=hlp_cnv*potpl(j,i)
         end do
         !c*** recombination energy of hydrogen molecules
@@ -627,7 +650,7 @@ cdr   write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
           wldrm(i,j,0)=0.0_DP
           wldpm(i,j,0)=0.0_DP
         end do
-        do j=1,nplsi
+        do j=1,nfla
           wldpp(i,j,0)=0.0_DP
         end do
         !c
@@ -648,7 +671,7 @@ cdr   write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
             wldpm(i,j,0)=wldpm(i,j,0)+wldpm(i,j,k)
             ewldm(i,j,0)=ewldm(i,j,0)+ewldm(i,j,k)*wldnm(i,j,k)
           end do
-          do j=1,nplsi
+          do j=1,nfla
             wldpp(i,j,0)=wldpp(i,j,0)+wldpp(i,j,k)
           end do
         end do
@@ -673,8 +696,8 @@ cdr   write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
       do ix = 1, ndxa
         do iy = 1, ndya
           eneutrad(ix,iy,1,0) = sum(eneutrad(ix,iy,1,1:nstrai))
-          do imol=1,nmoli
-            edissml(ix,iy,imol,0) = sum(edissml(ix,iy,imol,1:nstrai))
+          do jmol=1,nmoli
+            edissml(ix,iy,jmol,0) = sum(edissml(ix,iy,jmol,1:nstrai))
           end do
         end do
       end do
@@ -691,28 +714,28 @@ cdr   write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
       !c
       do ix=1,ndxa
         do iy=1,ndya
-          do iatm=1,natmi
-            if (dab2(ix,iy,iatm,1).gt.0.) then
-              tab2(ix,iy,iatm,1)=tab2(ix,iy,iatm,1)/dab2(ix,iy,iatm,1)*
+          do jatm=1,natmi
+            if (dab2(ix,iy,jatm,1).gt.0.) then
+              tab2(ix,iy,jatm,1)=tab2(ix,iy,jatm,1)/dab2(ix,iy,jatm,1)*
      .                                                  elcha*2./3.*1.e6
             else
-              tab2(ix,iy,iatm,1)=1.e-6*elcha
+              tab2(ix,iy,jatm,1)=1.e-6*elcha
             end if
           end do
-          do imol=1,nmoli
-            if (dmb2(ix,iy,imol,1).gt.0.) then
-              tmb2(ix,iy,imol,1)=tmb2(ix,iy,imol,1)/dmb2(ix,iy,imol,1)*
+          do jmol=1,nmoli
+            if (dmb2(ix,iy,jmol,1).gt.0.) then
+              tmb2(ix,iy,jmol,1)=tmb2(ix,iy,jmol,1)/dmb2(ix,iy,jmol,1)*
      .                                                  elcha*2./3.*1.e6
             else
-              tmb2(ix,iy,imol,1)=1.e-6*elcha
+              tmb2(ix,iy,jmol,1)=1.e-6*elcha
             end if
           end do
-          do iion=1,nioni
-            if (dib2(ix,iy,iion,1).gt.0.) then
-              tib2(ix,iy,iion,1)=tib2(ix,iy,iion,1)/dib2(ix,iy,iion,1)*
+          do jion=1,nioni
+            if (dib2(ix,iy,jion,1).gt.0.) then
+              tib2(ix,iy,jion,1)=tib2(ix,iy,jion,1)/dib2(ix,iy,jion,1)*
      .                                                  elcha*2./3.*1.e6
             else
-              tib2(ix,iy,iion,1)=1.e-6*elcha
+              tib2(ix,iy,jion,1)=1.e-6*elcha
             end if
           end do
         end do
@@ -732,21 +755,21 @@ cdr   write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
         POWALF3=0.
         POWALF4=0.
         POWALF5=0.
-        do ncell=1,ntrii
-          ix=ixtri(ncell)
-          iy=iytri(ncell)
+        do icell=1,ntrii
+          ix=ixtri(icell)
+          iy=iytri(icell)
           if(ix.gt.0) then
             !C
             !C  LOCAL PLASMA DATA
             !C
-            TE=TEIN(NCELL)
-            DE=DEIN(NCELL)
+            TE=TEIN(ICELL)
+            DE=DEIN(ICELL)
             SIGADD1=0.
             SIGADD2=0.
             SIGADD3=0.
             SIGADD4=0.
             SIGADD5=0.
-            IF (.not. LGVAC(NCELL,0)) then
+            IF (.not. LGVAC(ICELL,0)) then
               DEF=LOG(DE*1.D-8)
               TEF=LOG(TE)
               DATM3=0.
@@ -848,7 +871,7 @@ cdr   write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
               do  IATM=1,NATMI
                 !C  HYDROGENIC SPECIES?
                 IF (NCHARA(IATM).eq.1) then
-                  !c IF (LPDENA) DA=DATM3*PDENA(IATM,NCELL)
+                  !c IF (LPDENA) DA=DATM3*PDENA(IATM,ICELL)
                   da=datm3*dab2(ix,iy,iatm,1)
                   SIGADD1=SIGADD1+DA*FAC32
                 end if
@@ -860,7 +883,7 @@ cdr   write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
               !C
               do  IPLS=1,NPLSI
                 IF (NCHARP(IPLS).eq.1) then
-                  DPP=DPLS3*DIIN(IPLS,NCELL)
+                  DPP=DPLS3*DIIN(IPLS,ICELL)
                   SIGADD2=SIGADD2+DPP*FAC32
                 end if
               end do
@@ -872,7 +895,7 @@ cdr   write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
               !C
               do  IMOL=1,NMOLI
                 IF (NCHARM(IMOL).eq.2) then
-                  !c IF (LPDENM) DM=DMOL3*PDENM(IMOL,NCELL)
+                  !c IF (LPDENM) DM=DMOL3*PDENM(IMOL,ICELL)
                   dm=dmol3*dmb2(ix,iy,imol,1)
                   SIGADD3=SIGADD3+DM*FAC32
                 end if
@@ -886,12 +909,12 @@ cdr   write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
               !C
               !C      DO 215 IION=1,NIONI
               !C        IF (NCHARI(IION).NE.2) GOTO 215
-              !C        DI=DION3*PDENI(IION,NCELL)
+              !C        DI=DION3*PDENI(IION,ICELL)
               !C        SIGADD4=SIGADD4+DI*FAC32
               !C215    CONTINUE
               do IMOL=1,NMOLI
                 IF (NCHARM(IMOL).eq.2) then
-                  !c IF (LPDENM) DI=DION3*PDENM(IMOL,NCELL)*RATIO2
+                  !c IF (LPDENM) DI=DION3*PDENM(IMOL,ICELL)*RATIO2
                   di=dion3*dmb2(ix,iy,imol,1)*ratio2
                   SIGADD4=SIGADD4+DI*FAC32
                 end if
@@ -903,7 +926,7 @@ cdr   write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
               !C
               do IMOL=1,NMOLI
                 IF (NCHARM(IMOL).eq.2) then
-                  !c IF (LPDENM) DN=DNML3*PDENM(IMOL,NCELL)*RATIO7
+                  !c IF (LPDENM) DN=DNML3*PDENM(IMOL,ICELL)*RATIO7
                   dn=dnml3*dmb2(ix,iy,imol,1)*ratio7
                   SIGADD5=SIGADD5+DN*FAC32
                 end if
@@ -918,12 +941,12 @@ cdr   write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
               EMISSMOL(ix,iy,1,1)=EMISSMOL(ix,iy,1,1)+SIGADD3
             end if
             SIGADD=SIGADD1+SIGADD2+SIGADD3+SIGADD4+SIGADD5
-            powalf=powalf+sigadd*3.028e-25*vol(ncell)
-            powalf1=powalf1+sigadd1*3.028e-25*vol(ncell)
-            powalf2=powalf2+sigadd2*3.028e-25*vol(ncell)
-            powalf3=powalf3+sigadd3*3.028e-25*vol(ncell)
-            powalf4=powalf4+sigadd4*3.028e-25*vol(ncell)
-            powalf5=powalf5+sigadd5*3.028e-25*vol(ncell)
+            powalf=powalf+sigadd*3.028e-25*vol(icell)
+            powalf1=powalf1+sigadd1*3.028e-25*vol(icell)
+            powalf2=powalf2+sigadd2*3.028e-25*vol(icell)
+            powalf3=powalf3+sigadd3*3.028e-25*vol(icell)
+            powalf4=powalf4+sigadd4*3.028e-25*vol(icell)
+            powalf5=powalf5+sigadd5*3.028e-25*vol(icell)
           endif
         end do
         WRITE (IUNOUT,*) ' RADIATED POWER BY HALPHA:',POWALF
@@ -936,14 +959,16 @@ cdr   write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
 
       !c*** print some neutral fluxes across the "non-default" surfaces
 
-      write(iunout,'(/17x,2(2x,a8),100(3x,a6,i2))') '  area','  power',
+      write(hlp_frm,'(a,i3,a)')
+     . '(/16x,2(2x,a8,1x),',3*(natmi+nmoli)+nfla,'(3x,a6,i2))'
+      write(iunout,hlp_frm) '  area','  power',
      .             ('atflx',i,i=1,natmi),('mlflx',i,i=1,nmoli),
      .             ('atflxr',i,i=1,natmi),('mlflxr',i,i=1,nmoli),
      .             ('atflxp',i,i=1,natmi),('mlflxp',i,i=1,nmoli),
-     .             ('plsflx',i,i=1,nplsi)
+     .             ('plsflx',i,i=1,nfla)
       do i=1,nstsi
         j=nlim+i
-        do k=1,nplsi
+        do k=1,nfla
           wldpp(j,k,0)=0.
           do l=1,nstrai
             wldpp(j,k,0)=wldpp(j,k,0)+wldpp(j,k,l)
@@ -962,18 +987,31 @@ cdr   write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
           end do
         end do
 
-        if(wldnek(j,0).ne.0. .or.
-     .      wldna(j,1,0).ne.0 .or. wldnm(j,1,0).ne.0 .or.
-     .      wldra(j,1,0).ne.0 .or. wldrm(j,1,0).ne.0 .or.
-     .      wldpa(j,1,0).ne.0 .or. wldpm(j,1,0).ne.0 .or.
-     .      wldpp(j,1,0).ne.0)
-     .         write(iunout,'(a,i4,1p,100e11.3)')
+        write(hlp_frm,'(a,i3,a)')
+     .   '(a,i4,1p,',2+3*(natmi+nmoli)+nfla,'e11.3)'
+        if (nmoli.gt.0) then
+          if(wldnek(j,0).ne.0. .or.
+     .       wldna(j,1,0).ne.0 .or. wldnm(j,1,0).ne.0 .or.
+     .       wldra(j,1,0).ne.0 .or. wldrm(j,1,0).ne.0 .or.
+     .       wldpa(j,1,0).ne.0 .or. wldpm(j,1,0).ne.0 .or.
+     .       wldpp(j,1,0).ne.0)
+     .         write(iunout,hlp_frm)
      .           'non-def-surf ',i, 1.e-4*sarea(j), 1.e-6*wldnek(j,0),
      .               (wldna(j,k,0),k=1,natmi),(wldnm(j,k,0),k=1,nmoli),
      .               (wldra(j,k,0),k=1,natmi),(wldrm(j,k,0),k=1,nmoli),
      .               (wldpa(j,k,0),k=1,natmi),(wldpm(j,k,0),k=1,nmoli),
-     .               (wldpp(j,k,0),k=1,nplsi)
+     .               (wldpp(j,k,0),k=1,nfla)
+        else
+          if(wldnek(j,0).ne.0. .or.
+     .       wldna(j,1,0).ne.0 .or. wldra(j,1,0).ne.0 .or.
+     .       wldpa(j,1,0).ne.0 .or. wldpp(j,1,0).ne.0)
+     .         write(iunout,hlp_frm)
+     .           'non-def-surf ',i, 1.e-4*sarea(j), 1.e-6*wldnek(j,0),
+     .               (wldna(j,k,0),k=1,natmi),(wldra(j,k,0),k=1,natmi),
+     .               (wldpa(j,k,0),k=1,natmi),(wldpp(j,k,0),k=1,nfla)
+        end if
       end do
+      call eirene_leer(1)
 !cc%%%
 !c      write (iunout,*) '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
 !c      write (iunout,'(/6x,20(a8,2x))')
@@ -981,18 +1019,18 @@ cdr   write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
 !c     ,         'wldna He','ewlda He','wldna Ne','ewlda Ne','wldra H',
 !c     ,         'wldra He','wldra Ne','wldrm','prfaat'
 !c      do i=1,nlimi
-!c      print '(1p,i6,20e10.2)',i,wldnek(i),wldnep(i),
+!c      write (iunout,'(1p,i6,20e10.2)') i,wldnek(i),wldnep(i),
 !c     ,       wldna(i,1),ewlda(i,1),wldnm(i,1),ewldm(i,1),
 !c     ,       wldna(i,2),ewlda(i,2),wldna(i,3),ewlda(i,3),
 !c     ,       wldra(i,1),wldra(i,2),wldra(i,3),wldrm(i,1),
 !c     ,       prfaat(1,i)
 !c      end do
-!c      print '(/6x,20(a8,2x))',
+!c      write (iunout,'(/6x,20(a8,2x))')
 !c     ,         'wldnek','wldnep','wldna','ewlda','wldnm','ewldm',
 !c     ,         'wldna He','ewlda He','wldna Ne','ewlda Ne','wldra H',
 !c     ,         'wldra He','wldra Ne','wldrm','prfaat'
 !c      do i=nlim+1,nlim+nstsi
-!c      print '(1p,i6,20e10.2)',i-nlim,wldnek(i),wldnep(i),
+!c      write (iunout,'(1p,i6,20e10.2)') i-nlim,wldnek(i),wldnep(i),
 !c     ,       wldna(i,1),ewlda(i,1),wldnm(i,1),ewldm(i,1),
 !c     ,       wldna(i,2),ewlda(i,2),wldna(i,3),ewlda(i,3),
 !c     ,       wldra(i,1),wldra(i,2),wldra(i,3),wldrm(i,1),
@@ -1001,8 +1039,8 @@ cdr   write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
 !c      write (iunout,*) '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
 !cc%%%
       write(iunout,*) 'ncutl,ncutb ',ncutl,ncutb
-      write(iunout,'(a,7i6)') 'ndx,ndy,natm,ndxa,ndya,nfla,n1st',
-     .                         ndx,ndy,natm,ndxa,ndya,nfla,n1st
+      write(iunout,'(1x,a,7i6)') 'ndx,ndy,natm,ndxa,ndya,nfla,n1st',
+     .                            ndx,ndy,natm,ndxa,ndya,nfla,n1st
       !c
       !c*** backmapping of 2d arrays for b2
       !c
@@ -1042,12 +1080,12 @@ cdr   write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
         call eirene_indmpi(srcml,dummy,ndx,ndy,nmol,ndxa,ndya,nmoli,
      .                                    ncutb,ncutl,npoint,npplg,1,1)
 !csw 04mar2013
-        do istra = 0, nstrai
+        do iistra = 0, nstrai
         call eirene_indmpi(eneutrad,
      .                     dummy,ndx,ndy,natm,ndxa,ndya,natmi,
-     .                     ncutb,ncutl,npoint,npplg,nstra+1,istra+1)
+     .                     ncutb,ncutl,npoint,npplg,nstra+1,iistra+1)
         call eirene_indmpi(edissml,dummy,ndx,ndy,nmol,ndxa,ndya,nmoli,
-     .                     ncutb,ncutl,npoint,npplg,nstra+1,istra+1)
+     .                     ncutb,ncutl,npoint,npplg,nstra+1,iistra+1)
         end do
       end if
       !c
@@ -1065,14 +1103,14 @@ cdr   write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
       nnplsi=nplsi
       nns=nnplsi
       !cank
-      do iatm=1,natmi
-        write(44,*) texts(iatm+nsph)
+      do jatm=1,natmi
+        write(44,*) texts(jatm+nsph)
       end do
-      do imol=1,nmoli
-        write(44,*) texts(imol+nspa)
+      do jmol=1,nmoli
+        write(44,*) texts(jmol+nspa)
       end do
-      do iion=1,nioni
-        write(44,*) texts(iion+nspam)
+      do jion=1,nioni
+        write(44,*) texts(jion+nspam)
       end do
       call eirene_neutr(44,ndxa-nred,ndya,natmi,dab2,ndx,ndy,natm,1,1)
       call eirene_neutr(44,ndxa-nred,ndya,natmi,tab2,ndx,ndy,natm,1,1)
@@ -1118,46 +1156,49 @@ cdr   write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
       call neutrs(44,wldrm,nmoli)
       !c*** from 960727 on:
       if(nstrai.gt.1) then
-        do istra=1,nstrai
-          call neutrs(44,wldnek(1,istra),1)
-          call neutrs(44,wldnep(1,istra),1)
-          call neutrs(44,wldna(1,1,istra),natmi)
-          call neutrs(44,ewlda(1,1,istra),natmi)
-          call neutrs(44,wldnm(1,1,istra),nmoli)
-          call neutrs(44,ewldm(1,1,istra),nmoli)
-          call neutrs(44,wldra(1,1,istra),natmi)
-          call neutrs(44,wldrm(1,1,istra),nmoli)
+        do iistra=1,nstrai
+          call neutrs(44,wldnek(1,iistra),1)
+          call neutrs(44,wldnep(1,iistra),1)
+          call neutrs(44,wldna(1,1,iistra),natmi)
+          call neutrs(44,ewlda(1,1,iistra),natmi)
+          if (nmoli.gt.0) call neutrs(44,wldnm(1,1,iistra),nmoli)
+          if (nmoli.gt.0) call neutrs(44,ewldm(1,1,iistra),nmoli)
+          call neutrs(44,wldra(1,1,iistra),natmi)
+          if (nmoli.gt.0) call neutrs(44,wldrm(1,1,iistra),nmoli)
         end do
       end if
       !c*** from 961228 on:
-      call neutrs(44,wldpp,nplsi)
+      call neutrs(44,wldpp,nfla)
       call neutrs(44,wldpa,natmi)
       call neutrs(44,wldpm,nmoli)
       call neutrs(44,wldpeb,1)
       call neutrs(44,wldspt,1)
       if(nstrai.gt.1) then
-        do istra=1,nstrai
-          call neutrs(44,wldpp(1,1,istra),nplsi)
-          call neutrs(44,wldpa(1,1,istra),natmi)
-          call neutrs(44,wldpm(1,1,istra),nmoli)
-          call neutrs(44,wldpeb(1,istra),1)
-          call neutrs(44,wldspt(1,istra),1)
+        do iistra=1,nstrai
+          call neutrs(44,wldpp(1,1,iistra),nfla)
+          call neutrs(44,wldpa(1,1,iistra),natmi)
+          if (nmoli.gt.0) call neutrs(44,wldpm(1,1,iistra),nmoli)
+          call neutrs(44,wldpeb(1,iistra),1)
+          call neutrs(44,wldspt(1,iistra),1)
         end do
       end if
       !c*** from 20000727 on:
       write(44,'(18i4)') (isrftype(i),i=1,nnlimi)
       write(44,'(18i4)') (isrftype(nlim+i),i=1,nnstsi)
-      !cank
       rewind (44)
 !cc<<<
-!c      print *
-!c      print *,'%%% Eirene data in Eirene %%%',nlmpgs
-!c      print *,'nnatmi,nnmoli,nnstsi,nnlimi = ',
+!c      write (iunout,'()')
+!c      write (iunout,*) '%%% Eirene data in Eirene %%%',nlmpgs
+!c      write (iunout,*) 'nnatmi,nnmoli,nnstsi,nnlimi = ',
 !c     ,        nnatmi,nnmoli,nnstsi,nnlimi
 !c      do k=0,nstrai !{
-!c       print *
-!c       print *,'wldna, wldnm, wldra, wldrm:',k
-!c       print '(1x,20(6x,a2,i3.2))',
+!c       write (iunout,'()')
+!c       if (nmoli.gt.0) then
+!c         write (iunout,*) 'wldna, wldnm, wldra, wldrm:',k
+!c       else
+!c         write (iunout,*) 'wldna, wldra:',k
+!c       end if
+!c       write (iunout,'(1x,20(6x,a2,i3.2))')
 !c     ,        ('na',i,i=1,natmi),('nm',i,i=1,nmoli),
 !c     ,        ('ra',i,i=1,natmi),('rm',i,i=1,nmoli)
 !c       do j=1,nlim+nstsi !{
@@ -1172,7 +1213,7 @@ cdr   write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
 !c     .                                         .or. wldrm(j,i,k).ne.0.
 !c           end do !}
 !c           if(hlp_pr) then !{
-!c             print '(1p,i4,20e11.4)',j,
+!c             write (iunout,'(1p,i4,20e11.4)') j,
 !c     ,              (wldna(j,i,k),i=1,natmi),(wldnm(j,i,k),i=1,nmoli),
 !c     ,              (wldra(j,i,k),i=1,natmi),(wldrm(j,i,k),i=1,nmoli)
 !c           end if !}
@@ -1182,12 +1223,16 @@ cdr   write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
 !c       write (iunout,'()')
 !c       write (iunout,*) 'wldpp:',k
 !c       do j=nlim+1,nlim+nstsi !{
-!c         write (iunout,'(1p,i4,20e9.2)') j,(wldpp(j,i,k),i=1,nplsi)
+!c         write (iunout,'(1p,i4,20e9.2)') j,(wldpp(j,i,k),i=1,nfla)
 !c       end do !}
 !c       write (iunout,'()')
-!c       write (iunout,*) 'wldpeb, wldpa, wldpm:',k
+!c       if (nmoli.gt.0) then
+!c         write (iunout,*) 'wldpeb, wldpa, wldpm:',k
+!c       else
+!c         write (iunout,*) 'wldpeb, wldpa:',k
+!c       end if
 !c       do j=nlim+1,nlim+nstsi !{
-!c         print '(1p,i4,20e9.2)',j,wldpeb(j,k),
+!c         write (iunout,'(1p,i4,20e9.2)') j,wldpeb(j,k),
 !c     ,               (wldpa(j,i,k),i=1,natmi),(wldpm(j,i,k),i=1,nmoli)
 !c       end do !}
 !c      end do !}
@@ -1211,6 +1256,24 @@ cdr   write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
         enddo
         end subroutine
       end subroutine
+
+      !
+      ! DETERMINING IF CELL (IX,IY) BELONGS TO B2 GRID
+      !
+      FUNCTION B2_CELL(IX,IY)
+
+      IMPLICIT NONE
+
+      LOGICAL :: B2_CELL
+      INTEGER,INTENT(IN) :: IX,IY
+
+      IF(IX.GE.0.AND.IX.LE.NDXP.AND.IY.GE.0.AND.IY.LE.NDYP) THEN
+        B2_CELL=.TRUE.
+      ELSE
+        B2_CELL=.FALSE.
+      END IF
+
+      END FUNCTION B2_CELL
 
       subroutine eirene_extrab25_wneuclean
       implicit none

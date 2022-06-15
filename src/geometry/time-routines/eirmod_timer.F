@@ -989,8 +989,8 @@ C  FIND NINCX
       NINCX=0
       IF (MRSURF.NE.0) THEN
         NTIM(MRSURF)=NTIM(MRSURF)-1
-        NINCX=INT(SIGN(1._DP,VELX*PLNX(MRSURF,IPOLGN)+
-     .                       VELY*PLNY(MRSURF,IPOLGN)))
+        NINCX=NINT(SIGN(1._DP,VELX*PLNX(MRSURF,IPOLGN)+
+     .                        VELY*PLNY(MRSURF,IPOLGN)))
       ENDIF
 C
       NJUMP=1

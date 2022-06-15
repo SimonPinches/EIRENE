@@ -21,7 +21,8 @@ cdr  rlwmn, rlwmx: weight window for surface. Currently unused
      R RECPRM(:,:),
      R EXPPL(:,:),  EXPEL(:,:),  EXPIL(:,:),
      R RECYCS(:,:),
-     R RECYCC(:,:), SPTPRM(:,:), ESPUTS(:,:), ESPUTC(:,:)
+     R RECYCC(:,:), SPTPRM(:,:), ESPUTS(:,:), ESPUTC(:,:),
+     R XMLIM(:),    XCLIM(:)
 
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I ILSWCH(:),     ILEQUI(:),     ILTOR(:),
@@ -37,7 +38,8 @@ cdr  rlwmn, rlwmx: weight window for surface. Currently unused
      I ISRC(:,:),
      I INMP1I(:,:,:), INMP2I(:,:,:), INMP3I(:,:,:),
      I IGFIL(:),
-     I IGJUM0(:),     IGJUM1(:,:),   IGJUM2(:,:),   IGJUM3(:,:)
+     I IGJUM0(:),     IGJUM1(:,:),   IGJUM2(:,:),   IGJUM3(:,:),
+     I LCHSPNWL(:,:)
 
       CHARACTER(70), PUBLIC, ALLOCATABLE, SAVE ::
      C SMOD_NAME(:)
@@ -81,6 +83,8 @@ cdr  rlwmn, rlwmx: weight window for surface. Currently unused
       ALLOCATE (SPTPRM(NSPZ,0:NLIMPS))
       ALLOCATE (ESPUTS(NSPZ,0:NLIMPS))
       ALLOCATE (ESPUTC(NSPZ,0:NLIMPS))
+      ALLOCATE (XMLIM(0:NLIMPS))
+      ALLOCATE (XCLIM(0:NLIMPS))
 
       ALLOCATE (ILSWCH(0:NLIMPS))
       ALLOCATE (ILEQUI(0:NLIMPS))
@@ -112,6 +116,7 @@ cdr  rlwmn, rlwmx: weight window for surface. Currently unused
       ALLOCATE (INMP1I(0:N1ST,0:N2ND,0:N3RD))
       ALLOCATE (INMP2I(0:N1ST,0:N2ND,0:N3RD))
       ALLOCATE (INMP3I(0:N1ST,0:N2ND,0:N3RD))
+      ALLOCATE (LCHSPNWL(NSPZ,0:NLIMPS))
 
       ALLOCATE (IGFIL(0:NLIMPS))
       ALLOCATE (IGJUM0(0:NLIMPS))
@@ -122,8 +127,8 @@ cdr  rlwmn, rlwmx: weight window for surface. Currently unused
       ALLOCATE (SMOD_NAME(0:NLIMPS))
 
       WRITE (IUNMEM,'(A,T25,I15)')
-     .       ' CLGIN ',(NLIMPS+1)*(13*NSPZ+7)*8 +
-     .                 (2*NOPTIM+(NLIMPS+1)*(14+9+4*NSPZ)+9*NSTS+
+     .       ' CLGIN ',(NLIMPS+1)*(13*NSPZ+9)*8 +
+     .                 (2*NOPTIM+(NLIMPS+1)*(14+9+5*NSPZ)+9*NSTS+
      .                  (N1ST+1)*(N2ND+1)*(N3RD+1)*3)*4 +
      .                 ((NLIMPS+1)*(2+2*NLIMPB)+
      .                  NLIMPB*(NOPTIM+1))*4+
@@ -158,6 +163,8 @@ cdr  rlwmn, rlwmx: weight window for surface. Currently unused
       DEALLOCATE (SPTPRM)
       DEALLOCATE (ESPUTS)
       DEALLOCATE (ESPUTC)
+      DEALLOCATE (XMLIM)
+      DEALLOCATE (XCLIM)
 
       DEALLOCATE (ILSWCH)
       DEALLOCATE (ILEQUI)
@@ -172,6 +179,7 @@ cdr  rlwmn, rlwmx: weight window for surface. Currently unused
       DEALLOCATE (ILBOX)
       DEALLOCATE (ILPLG)
       DEALLOCATE (ISPUT)
+      DEALLOCATE (LCHSPNWL)
 
       DEALLOCATE (NLIMII)
       DEALLOCATE (NLIMIE)
@@ -224,6 +232,8 @@ c
       SPTPRM = 0._DP
       ESPUTS = 0._DP
       ESPUTC = 0._DP
+      XMLIM  = 0._DP
+      XCLIM  = 0._DP
 
       ILSWCH = 0
       ILEQUI = 0
@@ -238,6 +248,7 @@ c
       ILBOX  = 0
       ILPLG  = 0
       ISPUT  = 0
+      LCHSPNWL=0
 
       NLIMII = 0
       NLIMIE = 0

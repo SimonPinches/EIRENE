@@ -242,8 +242,10 @@ cdr  additional output tallies added by code itself (rather than via input block
       INTEGER, INTENT(IN) :: ME
       INTEGER :: I, J, K, NUM_COMPO, NUM_CONTRIB, IER
       TYPE(TCONTRIB) :: CNT
+      LOGICAL :: LINES_ALLOCATED
 
-      IF (.NOT.ALLOCATED(EMIS_LINES)) THEN
+      LINES_ALLOCATED = ALLOCATED(EMIS_LINES)
+      IF (.NOT.LINES_ALLOCATED) THEN
         ALLOCATE (EMIS_LINES(NUM_LINES))
         EMIS_LINES%LINE_NAME = REPEAT(' ',80)
         EMIS_LINES%NUM_COMPO = 0
@@ -265,7 +267,9 @@ cdr  additional output tallies added by code itself (rather than via input block
         NUM_COMPO = EMIS_LINES(I)%NUM_COMPO
 
         IF (ME /= 0) THEN
-          ALLOCATE (EMIS_LINES(I)%COMPO(NUM_COMPO))
+          IF (.NOT.LINES_ALLOCATED) THEN
+            ALLOCATE (EMIS_LINES(I)%COMPO(NUM_COMPO))
+          END IF
         END IF
 
         DO J = 1, NUM_COMPO
@@ -281,7 +285,9 @@ cdr  additional output tallies added by code itself (rather than via input block
           NUM_CONTRIB = EMIS_LINES(I)%COMPO(J)%NUM_CONTRIB
 
           IF (ME /= 0) THEN
-            ALLOCATE (EMIS_LINES(I)%COMPO(J)%CONTRIB(NUM_CONTRIB))
+            IF (.NOT.LINES_ALLOCATED) THEN
+              ALLOCATE (EMIS_LINES(I)%COMPO(J)%CONTRIB(NUM_CONTRIB))
+            END IF
           END IF
 
           DO K = 1, NUM_CONTRIB

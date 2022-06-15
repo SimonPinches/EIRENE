@@ -26,9 +26,9 @@ cdr  the numbering is "a bit" illogical, due to historic reasons.
 c    primary and derived tallies are mixed here. 
 C
       TXTPLS(1,1)='PLASMA TEMPERATURE (ELECTRONS)                   '
-      TXTPLS(1,2)='PLASMA TEMPERATURE (BULK PARTICLES)              '
+      TXTPLS(1,2)='PLASMA TEMPERATURE (BULK IONS)                   '
       TXTPLS(1,3)='PLASMA DENSITY (ELECTRONS)                       '
-      TXTPLS(1,4)='PLASMA DENSITY (BULK PARTICLES)                  '
+      TXTPLS(1,4)='PLASMA DENSITY (BULK IONS)                       '
       TXTPLS(1,5)='DRIFT VELOCITY IN X-DIRECTION (BULK IONS)        '
       TXTPLS(1,6)='DRIFT VELOCITY IN Y-DIRECTION (BULK IONS)        '
       TXTPLS(1,7)='DRIFT VELOCITY IN Z-DIRECTION (BULK IONS)        '
@@ -37,6 +37,7 @@ C
       TXTPLS(1,10)='MAGN. FIELD UNIT VECTOR, Z DIRECTION             '
       TXTPLS(1,11)='MAGN. FIELD STRENGTH                             '
 cdr to be added here  TXTPLS(1,xx)='Magn. POTENTIAL, e.g. PSI fct.   '
+cdr 2019: now added as tally 25 below.
       TXTPLS(1,12)='ADDITIONAL INPUT TALLIES, OPTIONAL' 
       TXTPLS(1,13)='BULK ION KINETIC DRIFT ENERGY                    '
       TXTPLS(1,14)='ZONE VOLUMES                                     '
@@ -105,7 +106,6 @@ c 8
       TXTPLS(1,63)='dBF/dZ                                           '
 c 12
       TXTPLS(1,64)='dADIN/dX                                         '
-cdr  psi funct. gradient to be added here ?
       TXTPLS(1,65)='dADIN/dY                                         '
       TXTPLS(1,66)='dADIN/dZ                                         '
 
@@ -170,9 +170,9 @@ c 25 psi-function
       TXTPLS(1,119)='dFREE30/dY                                        '
       TXTPLS(1,120)='dFREE30/dZ                                        '
 C
-c  currently: ntali=4*24=96
+c  currently: ntali=4*30=120
       DO J=1,NTALI
-        IF (J.NE.12) THEN
+        IF (J.NE.12) THEN  ! retain individual tally names for adin tally no. 12
           DO I=2,N1MX
             TEXT72=TXTPLS(1,J)
             TXTPLS(I,J)=TEXT72
@@ -192,6 +192,7 @@ C
       TXTPUN(1,10)=' ---                    '
       TXTPUN(1,11)='TESLA                   '
 cdr  here might come: magn. potential (at least: tor. component?): PSI fct. TESLA*CM
+CDR  JUNE 2019: SEE BELOW, TALLY 25
       TXTPUN(1,12)='ADDITIONAL TALLY UNITS  '
       TXTPUN(1,13)='EV                      '  ! EDRIFT  --> DERIVED QUANTITY
       TXTPUN(1,14)='CM**3                   '  ! VOL
@@ -205,7 +206,7 @@ cdr  here might come: magn. potential (at least: tor. component?): PSI fct. TESL
       TXTPUN(1,22)='V                       '  ! POT
       TXTPUN(1,23)='CM/S                    '  ! BVIN
       TXTPUN(1,24)='G*CM/S                  '  ! PARMOM
-      TXTPUN(1,25)=' ---                    '  ! PSI
+      TXTPUN(1,25)='TESLA*CM                '  ! PSI
 
       TXTPUN(1,26)=' ---                    '  ! FREE26
       TXTPUN(1,27)=' ---                    '  ! FREE27
@@ -213,7 +214,7 @@ cdr  here might come: magn. potential (at least: tor. component?): PSI fct. TESL
       TXTPUN(1,29)=' ---                    '  ! FREE29
       TXTPUN(1,30)=' ---                    '  ! FREE30
 
-cdr derivaties in cart. coordinates  (gradient vector)  
+cdr derivatives in cart. coordinates (gradient vector)  
       TXTPUN(1,31)='EV/CM                   '  ! grad(Te) 
       TXTPUN(1,32)='EV/CM                   '
       TXTPUN(1,33)='EV/CM                   '
@@ -286,9 +287,11 @@ C     TXTPUN(1,66)='TO BE READ, ADIN        '
       TXTPUN(1,100)='G*CM/S/CM               '  ! PARMOM
       TXTPUN(1,101)='G*CM/S/CM               '  ! PARMOM
       TXTPUN(1,102)='G*CM/S/CM               '  ! PARMOM
-      TXTPUN(1,103)=' ---                    '  ! PSI
-      TXTPUN(1,104)=' ---                    '  ! PSI
-      TXTPUN(1,105)=' ---                    '  ! PSI
+
+      TXTPUN(1,103)='TESLA                   '  ! PSI
+      TXTPUN(1,104)='TESLA                   '  ! PSI
+      TXTPUN(1,105)='TESLA                   '  ! PSI
+
       TXTPUN(1,106)=' ---                    '  ! FREE26
       TXTPUN(1,107)=' ---                    '  ! FREE26
       TXTPUN(1,108)=' ---                    '  ! FREE26
@@ -462,7 +465,7 @@ C
       TXTPSP(1,28)=' ---                    '
       TXTPSP(1,29)=' ---                    '
       TXTPSP(1,30)=' ---                    '
-c   grad Te
+c  grad Te
       TXTPSP(1,31)='ELECTRONS               '
       TXTPSP(1,32)='ELECTRONS               '
       TXTPSP(1,33)='ELECTRONS               '

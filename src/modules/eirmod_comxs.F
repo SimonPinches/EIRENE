@@ -1,3 +1,8 @@
+cdr Aug  19: remove redundant data typ: HYDKIN, tbd: TAB1D, started
+cdr Oct  18: tbd: separate quantities that vary along trajectories  (i.e. per thread)
+cdr               from those that remain fixed after initialization (i.e. per node)
+cdr          private per thread: sigv..., i.e.: xstor and xstorv
+cdr          public per node: all the rest ?
 cdr Sept.18:  remove XDR format for stream fort.13
 cdr May  18:  FLDLM arrays (old fluid limit flags) now replaced by EDPOT arrays,
 cdr           for potential energy difference in reactions.
@@ -64,7 +69,7 @@ cdr            remove redundant flags: JEREAEI  (UNUSED)
      .          EIRENE_GET_REACTION, EIRENE_SET_REACTION_DATA,
      .          EIRENE_FREE_REACDAT,
 cdr
-     .          LINE_DATA, POLY_DATA, ADAS_DATA, HYDKIN_DATA,
+     .          LINE_DATA, POLY_DATA, ADAS_DATA, TAB1D_DATA,
      .          COLRAD_DATA,
      .          REACTION_DATA,
      .          FIT_FORMS,
@@ -85,25 +90,26 @@ c
         CHARACTER(50) :: REACNAME
       END TYPE LINE_DATA
 
-      TYPE ADAS_DATA
+      TYPE ADAS_DATA  !dr: currently only H.4, H.10, vs. Temp, Dens
         INTEGER :: NDENS, NTEMP
         REAL(DP), POINTER :: DENS(:), TEMP(:), TAB2D(:,:)
         REAL(DP), POINTER :: DDE(:), DTE(:)
       END TYPE ADAS_DATA
 
 !pb  IFEXMN, IFEXMX, RCMN, RCMX, FPARM removed from POLY_DATA
-cdr  The extrapolation options are now made available generally, for all typs of A&M data input
+cdr  The extrapolation options are now made available generally, 
+cdr  for all types of A&M data input
 
       TYPE POLY_DATA
         REAL(DP), POINTER :: DBLPOL(:,:)
       END TYPE POLY_DATA
 
-      TYPE HYDKIN_DATA
+      TYPE TAB1D_DATA  !dr: currently: only H.2, vs. Temp
         INTEGER :: NTEMPS
-        REAL(DP), POINTER :: TEMPS(:), RATES(:), RATIO(:)
+        REAL(DP), POINTER :: TEMPS(:), TAB1D(:), DIFFQUOT(:)
         CHARACTER(50) :: REAC_STRING, REACNAME
         CHARACTER(100) :: RPRT
-      END TYPE HYDKIN_DATA
+      END TYPE TAB1D_DATA
 
       TYPE COLRAD_DATA
         INTEGER :: IFLAV, IVARST, IROW_ESC, ICOL_ESC
@@ -115,7 +121,7 @@ cdr  The extrapolation options are now made available generally, for all typs of
         TYPE(POLY_DATA),   POINTER :: POLY
         TYPE(ADAS_DATA),   POINTER :: ADAS
         TYPE(LINE_DATA),   POINTER :: LINE
-        TYPE(HYDKIN_DATA), POINTER :: HYD
+        TYPE(TAB1D_DATA),  POINTER :: TAB1D
         TYPE(COLRAD_DATA), POINTER :: CRM
 c
         REAL(DP) :: RC1MIN, RC1MAX, RC2MIN, RC2MAX
@@ -128,8 +134,8 @@ c
      T                              OTH, PHR
 
         LOGICAL :: LPOT, LCRS, LRTC, LRTCMW, LRTCEW, LOTH, LPHR
-        REAL(DP) :: ETH
-        REAL(DP) :: RTMAX, ERTMAX
+        REAL(DP) :: ETH, KER, DELP
+        REAL(DP) :: RTMAX, ERTMAX, EARRH0, EARRH1
         INTEGER :: NOSEC
       END TYPE REACTION_DATA
 
@@ -533,9 +539,9 @@ cdr    1 ... NREAC: atomic/molecular data read from external data files, input b
 
         IF (ALLOCATED(XSTOR)) RETURN
 C  DIMENSION OF FULL REACTION-SPECIFIC ARRAYS: CFLAG, MODCOL,....
-        MSTOR0 = MAX(NRPI, NREI, NRCX, NREL, NREC, NRPH)
+        MSTOR0 = MAX(NRPI, NREI, NRCX, NREL, NRPH, NREC)
 C  FIRST DIMENSION OF XSTOR ARRAY
-        MSTOR1 = MAX(NRCX, NRPI, NREI, NREL, NRPH)
+        MSTOR1 = MAX(NRPI, NREI, NRCX, NREL, NRPH)
 C  SECOND DIMENSION OF XSTOR ARRAY
         MSTOR2 = 24
 
@@ -576,9 +582,6 @@ C  LG... ARRAYS
      P          (                  NPLSP)*(NREC+1)+
      P        2*(NATMP+NMOLP+NIONP      )*(NRPI+1)
 
-
-
-
         ALLOCATE (XSTOR(MSTOR1,MSTOR2))
 
         SIGVCX => XSTOR(:,1)
@@ -598,7 +601,6 @@ C  LG... ARRAYS
         VSIGEL => XSTOR(:,21)
 cdr     vsigei  : still missing
 cdr     vsigph  : still missing
-
 
         ALLOCATE (TABEI1(NREI,NSTORDR))
         ALLOCATE (TABRC1(NREC,NSTORDR))
@@ -643,7 +645,6 @@ c  secondaries, PI processes
         ALLOCATE (EELEI1(NREI,NSTORDR))
         ALLOCATE (EHVEI1(NREI,NSTORDR))
 
-
         ALLOCATE (EELRC1(NREC,NSTORDR))
 
         ALLOCATE (EELPI3(NRPI,NSTORDR,NSTORDT))
@@ -652,7 +653,6 @@ c  secondaries, PI processes
 
         ALLOCATE (EPLCX3(NRCX,NSTORDR,NSTORDT))
         ALLOCATE (EPLEL3(NREL,NSTORDR,NSTORDT))
-
 
         ALLOCATE (EPLPH3(NRPH,NSTORDR,NSTORDT))
 
@@ -761,7 +761,6 @@ c
 
       DEALLOCATE (XSTOR)
       DEALLOCATE (XSTORV)
-
 
       DEALLOCATE (TABEI1)
       DEALLOCATE (TABRC1)
@@ -1039,7 +1038,6 @@ c
 
       CALL EIRENE_FREE_REACDAT
 
-
       DEALLOCATE (M_HCOL)
 
       RETURN
@@ -1208,6 +1206,14 @@ c  kinetic collision energy at which this maximum is attained.
           REACDAT(IREAC)%ERTMAX = -HUGE(1._DP)
 c  reaction threshold (if any)
           REACDAT(IREAC)%ETH    = 0._DP
+c  total kinetic energy release (if any)
+          REACDAT(IREAC)%KER    = 0._DP
+c  potential energy difference reactants -- products
+          REACDAT(IREAC)%DELP   = 0._DP
+c  Arrhenius prefactor exp(-EARRH/T) separated from rest of fit
+          REACDAT(IREAC)%EARRH0 = 0._DP
+c  ditto, for upper limit value of 2nd parameter in 2-parameter fits or tables
+          REACDAT(IREAC)%EARRH1 = 0._DP
 
           NULLIFY(REACDAT(IREAC)%POT)
           NULLIFY(REACDAT(IREAC)%CRS)
@@ -1217,7 +1223,6 @@ c  reaction threshold (if any)
           NULLIFY(REACDAT(IREAC)%OTH)
           NULLIFY(REACDAT(IREAC)%PHR)
         END DO
-
 
         NHCOL_STORE = 0
         M_HCOL = 0
@@ -1357,7 +1362,7 @@ c  reaction threshold (if any)
 
 
       SUBROUTINE EIRENE_WRITE_CMDTA
-cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input block 1)
+cdr  read and write A&M data onto fort.13, controlled by NFILEL option (input block 1)
 
       WRITE (13+IFOFF)
      . TABEI1 ,TABRC1 ,TABPI3 ,TABCX3 ,TABEL3 ,
@@ -1488,9 +1493,6 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
       END SUBROUTINE EIRENE_READ_CMDTA
 
 
-
-
-
       SUBROUTINE EIRENE_WRITE_CMAMF
 
       INTEGER :: IR
@@ -1512,7 +1514,8 @@ cdr  read and write A&M data onto fort 13., controlled by NFILEL option (input b
      . ISCD3A, ISCD3M, ISCD3I, ISCD3P, ISCD3PH,
      . ISCD4A, ISCD4M, ISCD4I, ISCD4P, ISCD4PH,
      . ISCDEA, ISCDEM, ISCDEI, ISCDEP, ISCDEPH,
-     . IESTMA, IESTMM, IESTMI, IESTMPH, IBGKA , IBGKM , IBGKI, IBGKPH
+     . IESTMA, IESTMM, IESTMI, IESTMPH,
+     . IBGKA,  IBGKM,  IBGKI,  IBGKPH
 
 #ifdef CHECKBIN
       WRITE (113,*) 'WRITE_CMAMF DELPOT ...'
@@ -1548,8 +1551,12 @@ c
      .             REACDAT(IR)%LOTH,REACDAT(IR)%LPHR,
 c
      .             REACDAT(IR)%ETH,
+     .             REACDAT(IR)%KER,
+     .             REACDAT(IR)%DELP,
      .             REACDAT(IR)%RTMAX,
      .             REACDAT(IR)%ERTMAX,
+     .             REACDAT(IR)%EARRH0,
+     .             REACDAT(IR)%EARRH1,
      .             REACDAT(IR)%NOSEC
 #ifdef CHECKBIN
         WRITE (113,*) 'IR =',IR
@@ -1563,8 +1570,12 @@ c
      .             REACDAT(IR)%LOTH,REACDAT(IR)%LPHR,
 c
      .             REACDAT(IR)%ETH,
+     .             REACDAT(IR)%KER,
+     .             REACDAT(IR)%DELP,
      .             REACDAT(IR)%RTMAX,
      .             REACDAT(IR)%ERTMAX,
+     .             REACDAT(IR)%EARRH0,
+     .             REACDAT(IR)%EARRH1,
      .             REACDAT(IR)%NOSEC
 #endif
 c
@@ -1639,17 +1650,24 @@ c
      .                     RP%ADAS%DDE,RP%ADAS%DTE
 #endif
         ELSE IF (RP%IFIT == 4) THEN
-! DATA FOR 1D TABULATED A&M ENTRIES (single parameter tables, e.g. HYDKIN)
-          WRITE (13+IFOFF) RP%HYD%NTEMPS
-          WRITE (13+IFOFF) RP%HYD%TEMPS,RP%HYD%RATES,RP%HYD%RATIO,
-     .                     RP%HYD%REAC_STRING,RP%HYD%REACNAME,
-     .                     RP%HYD%RPRT
+cdr former "HYDKIN" interface data type.
+cdr HYDKIN is offline since early 2018.
+cdr Transform this structure into a more general
+cdr 1D tabular data format.
+cdr Currently anticipated: only reaction rates vs. Te, Ti (H.2).
+          WRITE (13+IFOFF) RP%TAB1D%NTEMPS
+          WRITE (13+IFOFF) RP%TAB1D%TEMPS,RP%TAB1D%TAB1D,
+cdr precomputed difference-quotient, for interpolation
+     .                     RP%TAB1D%DIFFQUOT,
+     .                     RP%TAB1D%REAC_STRING,RP%TAB1D%REACNAME,
+     .                     RP%TAB1D%RPRT
 #ifdef CHECKBIN
           WRITE (113,*) '1D TAB DATA'
-          WRITE (113,*) RP%HYD%NTEMPS
-          WRITE (113,*) RP%HYD%TEMPS,RP%HYD%RATES,RP%HYD%RATIO,
-     .                     RP%HYD%REAC_STRING,RP%HYD%REACNAME,
-     .                     RP%HYD%RPRT
+          WRITE (113,*) RP%TAB1D%NTEMPS
+          WRITE (113,*) RP%TAB1D%TEMPS,RP%TAB1D%TAB1D,
+     .                     RP%TAB1D%DIFFQUOT,
+     .                     RP%TAB1D%REAC_STRING,RP%TAB1D%REACNAME,
+     .                     RP%TAB1D%RPRT
 #endif
         ELSE IF (RP%IFIT == 5) THEN
 ! DATA FOR COLLISIONAL-RADIATIVE MODEL A&M ENTRIES
@@ -1705,7 +1723,8 @@ cdr options for extrapolation from data tables or from validity range of fits.
      . ISCD3A, ISCD3M, ISCD3I, ISCD3P, ISCD3PH,
      . ISCD4A, ISCD4M, ISCD4I, ISCD4P, ISCD4PH,
      . ISCDEA, ISCDEM, ISCDEI, ISCDEP, ISCDEPH,
-     . IESTMA, IESTMM, IESTMI, IESTMPH, IBGKA , IBGKM , IBGKI, IBGKPH
+     . IESTMA, IESTMM, IESTMI, IESTMPH,
+     . IBGKA,  IBGKM,  IBGKI,  IBGKPH
 
       DO IR=1,NREACI
         READ (13+IFOFF)
@@ -1718,8 +1737,12 @@ cdr options for extrapolation from data tables or from validity range of fits.
      .            REACDAT(IR)%LPHR,
 
      .            REACDAT(IR)%ETH,
+     .            REACDAT(IR)%KER,
+     .            REACDAT(IR)%DELP,
      .            REACDAT(IR)%RTMAX,
      .            REACDAT(IR)%ERTMAX,
+     .            REACDAT(IR)%EARRH0,
+     .            REACDAT(IR)%EARRH1,
      .            REACDAT(IR)%NOSEC
 
         IF (REACDAT(IR)%LPOT) CALL EIRENE_READ_FIT_FORM(REACDAT(IR)%POT)
@@ -1733,13 +1756,14 @@ cdr options for extrapolation from data tables or from validity range of fits.
         IF (REACDAT(IR)%LPHR) CALL EIRENE_READ_FIT_FORM(REACDAT(IR)%PHR)
       END DO
 
-
       RETURN
+
       CONTAINS
 
         SUBROUTINE EIRENE_READ_FIT_FORM (RP)
         TYPE(FIT_FORMS),POINTER :: RP
-        INTEGER :: ND, ND2, NT
+        INTEGER :: ND1, ND2,  ! table range for POLY
+     .             ND, NT     ! table range for TAB1D, TAB2D
 
         READ (13+IFOFF) RP%IFIT
 
@@ -1759,12 +1783,12 @@ cdr  high pressure gas discharge lamps, around 2002.. should not be here!
           READ (13+IFOFF) RP%LINE%REACNAME, RP%LINE%KENN
 
         ELSE IF (1<= RP%IFIT .AND. RP%IFIT <= 2) THEN
-! DATA FOR FIT EXPRESSIONS (POLYNOMIAL, E.G. IN CASE OF HYDHEL DATABASE)
+! DATA FOR FIT EXPRESSIONS (POLYNOMIAL, E.G. IN CASE OF HYDHEL, AMJUEL DATABASE)
           IF (.NOT.ASSOCIATED(RP%POLY)) ALLOCATE (RP%POLY)
           IF (ASSOCIATED(RP%POLY%DBLPOL)) DEALLOCATE (RP%POLY%DBLPOL)
 
-          READ (13+IFOFF) ND,ND2
-          ALLOCATE (RP%POLY%DBLPOL(ND,ND2))
+          READ (13+IFOFF) ND1,ND2
+          ALLOCATE (RP%POLY%DBLPOL(ND1,ND2))
           READ (13+IFOFF) RP%POLY%DBLPOL
 
         ELSE IF (RP%IFIT == 3) THEN
@@ -1781,15 +1805,19 @@ cdr  high pressure gas discharge lamps, around 2002.. should not be here!
      .                    RP%ADAS%DDE, RP%ADAS%DTE
 
         ELSE IF (RP%IFIT == 4) THEN
-! DATA FOR 1D TABULATED a&m ENTRIES (single parameter table, e.g. HYDKIN)
-          READ (13+IFOFF) RP%HYD%NTEMPS
-          NT = RP%HYD%NTEMPS
-          ALLOCATE (RP%HYD%TEMPS(NT))
-          ALLOCATE (RP%HYD%RATES(NT))
-          ALLOCATE (RP%HYD%RATIO(NT))
-          READ (13+IFOFF) RP%HYD%TEMPS,RP%HYD%RATES,RP%HYD%RATIO,
-     .               RP%HYD%REAC_STRING,RP%HYD%REACNAME,
-     .               RP%HYD%RPRT
+! DATA FOR 1D TABULATED a&m ENTRIES (single parameter table)
+cdr unfinished and untested.
+          READ (13+IFOFF) RP%TAB1D%NTEMPS
+          NT = RP%TAB1D%NTEMPS
+          ALLOCATE (RP%TAB1D%TEMPS(NT))
+          ALLOCATE (RP%TAB1D%TAB1D(NT))
+          ALLOCATE (RP%TAB1D%DIFFQUOT(NT))
+          READ (13+IFOFF) RP%TAB1D%TEMPS,RP%TAB1D%TAB1D,
+     .               RP%TAB1D%DIFFQUOT,
+     .               RP%TAB1D%REAC_STRING,RP%TAB1D%REACNAME,
+     .               RP%TAB1D%RPRT
+cdr: tbd: set difference quotient in table: tab1d vs. temps
+
         ELSE IF (RP%IFIT == 5) THEN
 ! DATA FOR COLLISIONAL-RADIATIVE MODEL A&M ENTRIES
           IF (.NOT.ASSOCIATED(RP%CRM)) ALLOCATE (RP%CRM)
@@ -1824,55 +1852,59 @@ cdr ?  still needed? only for "line"?
 
 
       SUBROUTINE EIRENE_SET_REACTION_DATA
-     .           (IR,ISW,IFTFL,RDATA,IUNOUT,LTEST,
+     .           (IR,ISW,IFTFL,RDATA,INEP,KNEP,
+     .            IUNOUT,LTEST,
 c  from here on: optional input parameters
      .            RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .            RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .            RTMAX, ERTMAX, ETH)
+     .            RTMAX, ERTMAX, ETH, KER, DELP, EARRH0, EARRH1)
 
 c  set reaction data structure REACDAT, for reaction no. IR.
 c  here only:  1D or 2D polygonial fits for reaction data.
 c               RDATA --> REA, and then: REACDAT(IR)%...%POLY => REA
 c  and:                          NULLIFY REACDAT(IR)%...%ADAS
 c  and:                          NULLIFY REACDAT(IR)%...%LINE
-c  and:                          NULLIFY REACDAT(IR)%...%HYD
+c  and:                          NULLIFY REACDAT(IR)%...%TAB1D
 c
 c  1) called from READ_PHTDBK
 c  2) called from SLREAC, option "CONST"
-c  3) called from SLREAC, option AMJUEL, HYDHEL, H2VIBR, METHAN
+c  3) called from SLREAC, option AMJUEL, HYDHEL, H2VIBR, METHAN, AMMONX
 
       IMPLICIT NONE
-      INTEGER, INTENT(IN) :: IR, ISW, IFTFL, IUNOUT
+      INTEGER, INTENT(IN) :: IR, ISW, IFTFL, INEP, KNEP, IUNOUT
       INTEGER, OPTIONAL, INTENT(IN) :: JFEX1MN, JFEX1MX,JFEX2MN, JFEX2MX
       REAL(DP), INTENT(IN) :: RDATA(9,*)
       REAL(DP), OPTIONAL, INTENT(IN) :: RC1MIN, RC1MAX, FP1(6),
      .                                  RC2MIN, RC2MAX, FP2(6),
-     .                                  RTMAX, ERTMAX, ETH
+     .                                  RTMAX,  ERTMAX, ETH, KER, DELP,
+     .                                  EARRH0, EARRH1
       LOGICAL, INTENT(IN) :: LTEST
-      INTEGER :: NDIM, NDIM2, IFIT
+      INTEGER :: NDIM1, NDIM2, IFIT
       REAL(DP) :: CTEST
+      LOGICAL :: DATA_FOUND
       TYPE(POLY_DATA), POINTER :: REA
       INTEGER, SAVE :: ISW2D(7) = (/ 3, 4, 6, 7, 9, 10, 12 /)
 
-      NDIM = 9
-      IF (MOD(IFTFL,100) == 10) NDIM = 1
+cdr   NDIM1 = INEP
+      NDIM1 = 9
+      IF (MOD(IFTFL,100) == 10) NDIM1 = 1
 
       NDIM2 = 1
       IF (COUNT(ISW2D == ISW) > 0) NDIM2=9
 
       IF (LTEST) THEN
-!pb        DO J = 1, NDIM2
-!pb          CTEST = SUM(ABS(RDATA(1:NDIM,J)))
-!pb          IF (CTEST.LE.1.E-30_DP) THEN
-!pb            WRITE (iunout,*)
-!pb     .            'ERROR IN SUBROUTINE EIRENE_SET_REACTION_DATA:',
-!pb     .            ' ZERO FIT COEFFICIENTS'
-!pb            WRITE (iunout,*) 'J,IR = ',J,IR,'  EXIT CALLED!'
-!pb            CALL EIRENE_EXIT_OWN(1)
-!pb          END IF
-!pb        END DO
-        CTEST = SUM(ABS(RDATA(1:NDIM,1:NDIM2)))
-        IF (CTEST.LE.1.E-30_DP) THEN
+        CTEST = SUM(ABS(RDATA(1:NDIM1,1:NDIM2)))
+        DATA_FOUND = CTEST.GT.1.E-30_DP
+        DATA_FOUND = DATA_FOUND .OR.
+     .   (PRESENT(RC1MIN) .and. PRESENT(RC1MAX) .and.
+     .    RC1MIN.EQ.RC1MAX .and. RC1MIN.ne.0._DP .and. RC1MAX.ne.0._DP)
+        DATA_FOUND = DATA_FOUND .OR.
+     .   (PRESENT(RC1MAX) .and. RC1MAX.eq.0._DP .and.
+     .    PRESENT(JFEX1MX) .and. PRESENT(FP1) .and.
+     .  ((JFEX1MX.eq.2 .and. FP1(5).gt.0_DP) .or.
+     .   (JFEX1MX.eq.3 .and.(FP1(4).gt.0_DP .or. FP1(5).gt.0_DP)) .or.
+     .   (JFEX1MX.eq.5 .and. SUM(ABS(FP1(4:6))).GT.1.E-30_DP)))
+        IF (.not.DATA_FOUND) THEN
            WRITE (iunout,*)
      .            'ERROR IN SUBROUTINE EIRENE_SET_REACTION_DATA:',
      .            ' ZERO FIT COEFFICIENTS'
@@ -1881,17 +1913,33 @@ c  3) called from SLREAC, option AMJUEL, HYDHEL, H2VIBR, METHAN
         END IF
       END IF
 
+cdr the reaction parameters ETH, KER,....,ERTMAX
+cdr are specific for a given reaction process.
+cdr but then, within this physical process,
+cdr must be one and the same for all data (pot, crs, rtc, ertc....)
+
+CDR  warning: until now IR can. but need not necessarily be
       IF (PRESENT(ETH) .AND. (REACDAT(IR)%ETH == 0._DP))
      .    REACDAT(IR)%ETH = ETH
+      IF (PRESENT(KER) .AND. (REACDAT(IR)%KER == 0._DP))
+     .    REACDAT(IR)%KER = KER
+      IF (PRESENT(DELP) .AND. (REACDAT(IR)%DELP == 0._DP))
+     .    REACDAT(IR)%DELP = DELP
+      IF (PRESENT(EARRH0) .AND. (REACDAT(IR)%EARRH0 == 0._DP))
+     .    REACDAT(IR)%EARRH0 = EARRH0
+      IF (PRESENT(EARRH1) .AND. (REACDAT(IR)%EARRH1 == 0._DP))
+     .    REACDAT(IR)%EARRH1 = EARRH1
+c  parameters for rejection sampling of bulk collision partner
+c  The product sigma(vel) *vel takes ist max. value RTMAX at E=ERTMAX
       IF (PRESENT(RTMAX) .AND. (REACDAT(IR)%RTMAX == 0._DP))
      .    REACDAT(IR)%RTMAX = RTMAX
       IF (PRESENT(ERTMAX) .AND. (REACDAT(IR)%ERTMAX == -HUGE(1._DP)))
-     .    REACDAT(IR)%ERTMAX = -HUGE(1._DP)
+     .    REACDAT(IR)%ERTMAX = ERTMAX
 
       ALLOCATE (REA)
-      ALLOCATE (REA%DBLPOL(1:NDIM,1:NDIM2))
+      ALLOCATE (REA%DBLPOL(1:NDIM1,1:NDIM2))
 
-      REA%DBLPOL(1:NDIM,1:NDIM2) = RDATA(1:NDIM,1:NDIM2)
+      REA%DBLPOL(1:NDIM1,1:NDIM2) = RDATA(1:NDIM1,1:NDIM2)
       IFIT = 1
       IF (NDIM2 == 9) IFIT = 2
 
@@ -1907,12 +1955,17 @@ c  3) called from SLREAC, option AMJUEL, HYDHEL, H2VIBR, METHAN
           CALL EIRENE_EXIT_OWN(1)
         END IF
 
-cdr  allocate, initialize, default asymptotics
+cdr  allocate, initialize, default asymptotics for interaction potentials,
+cdr                                            or differential scattering info.
         CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%POT)
 
-        REACDAT(IR)%POT%POLY => REA
         REACDAT(IR)%LPOT = .TRUE.
+        REACDAT(IR)%POT%POLY => REA
         REACDAT(IR)%POT%IFIT = IFIT
+
+cdr  set asymptotics for POT, if specified
+cdr        rea => REACDAT(IR)%POT
+cdr        call eirene_asympt_fit_form (rea)
 
         IF (PRESENT(RC1MIN)) REACDAT(IR)%POT%RC1MIN = RC1MIN
         IF (PRESENT(RC1MAX)) REACDAT(IR)%POT%RC1MAX = RC1MAX
@@ -1937,13 +1990,18 @@ c
           WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
           CALL EIRENE_EXIT_OWN(1)
         END IF
-cdr  allocate, initialize, default asymptotics
+
+cdr  allocate, initialize, default asymptotics for (total) cross-sections
         CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%CRS)
 
-        REACDAT(IR)%CRS%POLY => REA
         REACDAT(IR)%LCRS = .TRUE.
+        REACDAT(IR)%CRS%POLY => REA
         REACDAT(IR)%CRS%IFIT = IFIT
+
 c  extrapolation options
+cdr  set asymptotics for CRS, if specified
+cdr        rea => REACDAT(IR)%CRS
+cdr        call eirene_asympt_fit_form (rea)
 c
 
         IF (PRESENT(RC1MIN)) REACDAT(IR)%CRS%RC1MIN = RC1MIN
@@ -1969,12 +2027,14 @@ c
           WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
           CALL EIRENE_EXIT_OWN(1)
         END IF
-cdr  allocate, initialize, default asymptotics
+
+cdr  allocate, initialize, default asymptotics for reaction rate coefficients
         CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%RTC)
 
-        REACDAT(IR)%RTC%POLY => REA
         REACDAT(IR)%LRTC = .TRUE.
+        REACDAT(IR)%RTC%POLY => REA
         REACDAT(IR)%RTC%IFIT = IFIT
+
 c  extrapolation options
 c
 
@@ -2000,12 +2060,14 @@ c
           WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
           CALL EIRENE_EXIT_OWN(1)
         END IF
-cdr  allocate, initialize, default asymptotics
+
+cdr  allocate, initialize, default asymptotics for momentum-weighted rate coefficients
         CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%RTCMW)
 
-        REACDAT(IR)%RTCMW%POLY => REA
         REACDAT(IR)%LRTCMW = .TRUE.
+        REACDAT(IR)%RTCMW%POLY => REA
         REACDAT(IR)%RTCMW%IFIT = IFIT
+
 c  extrapolation options
 c
 
@@ -2031,12 +2093,14 @@ c
           WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
           CALL EIRENE_EXIT_OWN(1)
         END IF
-cdr  allocate, initialize, default asymptotics
+
+cdr  allocate, initialize, default asymptotics for energy-weighted rate coefficients
         CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%RTCEW)
 
-        REACDAT(IR)%RTCEW%POLY => REA
         REACDAT(IR)%LRTCEW = .TRUE.
+        REACDAT(IR)%RTCEW%POLY => REA
         REACDAT(IR)%RTCEW%IFIT = IFIT
+
 c  extrapolation options
 c
 
@@ -2063,12 +2127,15 @@ c
           WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
           CALL EIRENE_EXIT_OWN(1)
         END IF
-cdr  allocate, initialize, default asymptotics
+
+cdr  allocate, initialize, default asymptotics for other data (population coefficients,
+cdr                        density ratios, etc...)
         CALL EIRENE_ALLOC_FIT_FORM (REACDAT(IR)%OTH)
 
-        REACDAT(IR)%OTH%POLY => REA
         REACDAT(IR)%LOTH = .TRUE.
+        REACDAT(IR)%OTH%POLY => REA
         REACDAT(IR)%OTH%IFIT = IFIT
+
 c  extrapolation options
 
         IF (PRESENT(RC1MIN)) REACDAT(IR)%OTH%RC1MIN = RC1MIN
@@ -2221,12 +2288,12 @@ c  photonic reaction
          NULLIFY(RP%LINE)
       END IF
 
-      IF (ASSOCIATED(RP%HYD)) THEN
-         DEALLOCATE (RP%HYD%TEMPS)
-         DEALLOCATE (RP%HYD%RATES)
-         DEALLOCATE (RP%HYD%RATIO)
-         DEALLOCATE (RP%HYD)
-         NULLIFY(RP%HYD)
+      IF (ASSOCIATED(RP%TAB1D)) THEN
+         DEALLOCATE (RP%TAB1D%TEMPS)
+         DEALLOCATE (RP%TAB1D%TAB1D)
+         DEALLOCATE (RP%TAB1D%DIFFQUOT)
+         DEALLOCATE (RP%TAB1D)
+         NULLIFY(RP%TAB1D)
       END IF
 
       IF (ASSOCIATED(RP%CRM)) THEN
@@ -2235,7 +2302,6 @@ c  photonic reaction
       END IF
 
       END SUBROUTINE EIRENE_FREE_FIT_FORM
-
 
 
       SUBROUTINE EIRENE_ALLOC_FIT_FORM (RP)
@@ -2250,7 +2316,7 @@ c  set default asymptotics, for reacdat(ir)%???%.....
         NULLIFY (RP%POLY)
         NULLIFY (RP%ADAS)
         NULLIFY (RP%LINE)
-        NULLIFY (RP%HYD)
+        NULLIFY (RP%TAB1D)
         NULLIFY (RP%CRM)
 
 c  default asymptotics
@@ -2370,7 +2436,7 @@ c  EL post-collision energetics
       CALL MPI_BCAST (EIOPI,NRPI*NIONP*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (EPLPI,NRPI*NPLSP*2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
-      CALL MPI_BCAST (MODCOL,35*MSTOR0,MPI_INTEGER,
+      CALL MPI_BCAST (MODCOL,7*5*MSTOR0,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
 
       CALL MPI_BCAST (IESTCX,3*NRCX,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -2542,11 +2608,19 @@ c ??
 c  reaction threshold, eV
         CALL MPI_BCAST (REACDAT(IR)%ETH,1,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (REACDAT(IR)%KER,1,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (REACDAT(IR)%DELP,1,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
 c  max of sigma * v  cm**3/s
         CALL MPI_BCAST (REACDAT(IR)%RTMAX,1,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
 c  collision energy, at which rtmax is taken, eV
         CALL MPI_BCAST (REACDAT(IR)%ERTMAX,1,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (REACDAT(IR)%EARRH0,1,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (REACDAT(IR)%EARRH1,1,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
       END DO
@@ -2874,7 +2948,7 @@ C                  or     2D  (RP%IFIT=2)
           IF (associated(RP%POLY)) THEN ! IYS 27.02.2015
             IF (associated(RP%POLY%DBLPOL)) THEN
               IF (ND1.ne.UBOUND(RP%POLY%DBLPOL,1) .or.
-     &             ND2.ne.UBOUND(RP%POLY%DBLPOL,2)) THEN
+     &            ND2.ne.UBOUND(RP%POLY%DBLPOL,2)) THEN
                 DEALLOCATE(RP%POLY%DBLPOL)
                 NULLIFY(RP%POLY%DBLPOL)
                 ALLOCATE (RP%POLY%DBLPOL(ND1,ND2))

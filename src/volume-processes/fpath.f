@@ -43,7 +43,12 @@ cdr nov. 17:    unified version of fpatha, fpathm and fpathi,
 cdr             manually adapted from original branch "code-combine", aug. 16, (p.b.)
 cdr dec  17:    bug fix: pvelq(iplsv), rather than pvelq(ipls)
 cdr             probably no effect so far, because iplsv = ipls ?always?
-cdr
+cdr Nov. 19:    EARRH Arrhenius factor added
+cdr             cflag(4,irpi) changed from 1 to 2.
+cdr             Removed need for cross-sections, when
+cdr             we have only (H.2) Maxwellian rates anyway.
+cdr             Simpler (in velopi.f) and also more consistent.
+cdr             tbd: full modcol(4,4,..) options for PI processes
 
 C
       FUNCTION EIRENE_FPATH (K,CFLAG,JCOU,NCOU)
@@ -118,11 +123,12 @@ cdr  functions for 'on the fly' evaluation of A&M data
      .          EIRENE_FEPLCX3, EIRENE_FEPLEL3,
      .          EIRENE_FTABCX3, EIRENE_FTABPI3,
      .          EIRENE_FTABEI1,
-     .          RCMIN, RCMAX
+     .          RCMIN, RCMAX, EARRH
       INTEGER :: IBGK, IXEL, IREL, IXEI, IREI, IXPI, IRPI,
      .                 IXCX, IRCX, 
      .           J, KK, IPLSTI,
-     .           IPLSV, IREAC
+     .           JPLS, IPLSV, IREAC
+      REAL(DP),PARAMETER :: EMINL=-2.3_DP
 
 !  FOR PHOTONS CALL EIRENE_FPATHPH
       IF (ITYP == 0) THEN
@@ -145,23 +151,23 @@ C   LOCAL PLASMA PARAMETERS
 C
       DENEL=DEIN(K)
 
-      DO 2 IPLS=1,NPLSI
-        ZTI(IPLS)=ZT1(IPLS,K)
-        DENIO(IPLS)=DIIN(IPLS,K)
-    2 CONTINUE
+      DO JPLS=1,NPLSI
+        ZTI(JPLS)=ZT1(JPLS,K)
+        DENIO(JPLS)=DIIN(JPLS,K)
+      END DO
 C
 C  TRANSFORM TEST PARTICLE VELOCITY TO FRAME MOVING WITH BULK SPECIES IPLS
 C            PVELQ(IPLSV) IS THE VELOCITY IN THESE REFERENCE FRAMES, SQUARED 
 C
       PVELQ0=VEL*VEL
-      DO 3 IPLS=1,NPLS
-        IPLSV=MPLSV(IPLS)
+      DO JPLS=1,NPLS
+        IPLSV=MPLSV(JPLS)
         IF (NLDRFT) THEN
           IF (INDPRO(4) == 8) THEN
             XC=0.
             YC=0.
             ZC=0.
-            CALL EIRENE_VECUSR (2,K,XC,YC,ZC,VX,VY,VZ,IPLS,.FALSE.)
+            CALL EIRENE_VECUSR (2,K,XC,YC,ZC,VX,VY,VZ,JPLS,.FALSE.)
           ELSE
             VX=VXIN(IPLSV,K)
             VY=VYIN(IPLSV,K)
@@ -173,7 +179,7 @@ C
         ELSE
           PVELQ(IPLSV)=PVELQ0
         ENDIF
-    3 CONTINUE
+      END DO
 C
 C
 C  ELECTRON IMPACT COLLISION - RATE - COEFFICIENT
@@ -257,7 +263,7 @@ C           HENCE: USE BEAM-BEAM RATE INSTEAD.
             SIGVPI(IRPI)=CII*VREL*DENIO(IPLS)
           ELSE
 C  Set hard-wired MINIMUM PROJECTILE ENERGY: 0.1 EV
-            ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
+            ELB=MAX(EMINL,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
             V0_REL=SQRT(PVELQ(IPLSV))
 ! scale log temperature to target temperature for proper isotope, for rate coefficient, i.e. use charged particle mass
             TII=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
@@ -266,8 +272,10 @@ C  Set hard-wired MINIMUM PROJECTILE ENERGY: 0.1 EV
               FP = 0._DP
               RCMIN = -HUGE(1._DP)
               RCMAX = HUGE(1._DP)
+c  energy dependence (for 2nd fit parameter). No Arrhenius factor
+              EARRH = 0.0
               EXPO = EIRENE_SNGL_POLY(TBPI3,ELB,RCMIN,RCMAX,FP,0,0,
-     .                                TRCAMD,.TRUE.)
+     .                                EARRH,TRCAMD,.TRUE.)
             ELSE
 ! CALCULATE RATE COEFFICIENT "ON THE FLY"
               KK=NREAPI(IRPI)
@@ -321,7 +329,11 @@ cdr     END IF
 cdr     CFLAG(4,1)=2
 c  cflag (4,...) should become cflag4(irpi,...).
 c  tentatively:
-        CFLAG(4,IRPI)=1
+cdr  set NFLAG for VELOPI: post collision velocity sampling
+cdr     if (modcol(4,4,...)  ...) ...
+        CFLAG(4,IRPI)=2  !dr, changed from 1 to 2.
+cdr                           We may not have cross-sections,
+cdr                           only velocity independent rates.
 c
    36 CONTINUE
 C
@@ -365,12 +377,12 @@ C   PMASS FOR CROSS-SECTION RELATIVE VELOCITY
             SIGVCX(IRCX)=CXS*VREL*DENIO(IPLS)
           ELSE
 C  MINIMUM PROJECTILE ENERGY: 0.1 EV
-cdr         if (LOG(PVELQ(IPLSV))+EEFCX(IRCX).le.-2.3) then
+cdr         if (LOG(PVELQ(IPLSV))+EEFCX(IRCX).le.EMINL) then
 cdr           elb=LOG(PVELQ(IPLSV))+EEFCX(IRCX)
 cdr           write (iunout,*) 'elb in fpath-1 ',elb, exp(elb)
 cdr         endif
 C   TMASS FOR RATE COEFF. BEAM VELOCITY
-            ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFCX(IRCX))
+            ELB=MAX(EMINL,LOG(PVELQ(IPLSV))+EEFCX(IRCX))
             IF (NSTORDR >= NRAD) THEN
 ! DOUBLE POLYNOMIAL FIT REDUCED TO SINGLE POLYNOMIAL FIT BY
 ! PRE-CALCULATING TEMPERATURE DEPENDENCIES
@@ -378,8 +390,9 @@ C   TMASS FOR RATE COEFF. BEAM VELOCITY
               FP = 0._DP
               RCMIN = -HUGE(1._DP)
               RCMAX = HUGE(1._DP)
+              EARRH = 0.0
               EXPO = EIRENE_SNGL_POLY(TBCX3,ELB,RCMIN,RCMAX,FP,0,0,
-     .                                TRCAMD,.TRUE.)
+     .                                EARRH,TRCAMD,.TRUE.)
             ELSE
 ! CALCULATE RATE COEFFICIENT ON THE FLY
 CDR  THIS SHOULD BE DONE IN FTABCX3.  NOT READY
@@ -440,11 +453,11 @@ C  (ONLY NEEDED FOR TRACKLENGTH ESTIMATOR)
 C  ION SAMPLING FROM WEIGHTED DRIFTING MAXWELLIAN (E.G., BY REJECTION)
           IF (LEX.AND.(IESTCX(IRCX,3).EQ.0)) THEN  ! for tracklength estimator only
 C  MINIMUM PROJECTILE ENERGY: 0.1 EV
-cdr         if (LOG(PVELQ(IPLSV))+EEFCX(IRCX).le.-2.3) then
+cdr         if (LOG(PVELQ(IPLSV))+EEFCX(IRCX).le.EMINL) then
 cdr           elb=LOG(PVELQ(IPLSV))+EEFCX(IRCX)
 cdr           write (iunout,*) 'elb in fpath-2 ',elb, exp(elb)
 cdr         endif
-            ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFCX(IRCX))
+            ELB=MAX(EMINL,LOG(PVELQ(IPLSV))+EEFCX(IRCX))
             IF (NSTORDR >= NRAD) THEN
 ! DOUBLE POLYNOMIAL FIT REDUCED TO SINGLE POLYNOMIAL FIT BY
 ! PRE-CALCULATING TEMPERATURE DEPENDENCIES
@@ -452,8 +465,9 @@ cdr         endif
               FP = 0._DP
               RCMIN = -HUGE(1._DP)
               RCMAX = HUGE(1._DP)
+              EARRH = 0.0
               EXPO = EIRENE_SNGL_POLY(EPCX3,ELB,RCMIN,RCMAX,FP,0,0,
-     .                                TRCAMD,.TRUE.)
+     .                                EARRH,TRCAMD,.TRUE.)
             ELSE
 ! CALCULATE ENERGY-WEIGHTED RATE COEFFICIENT ON THE FLY
 CDR  THIS SHOULD BE DONE IN ...  NOT READY
@@ -530,7 +544,7 @@ C  TEMPERATURE TOO LOW, USE: BEAM_ATOM - BEAM_DRIFT RATE COEFF.
             SIGVEL(IREL)=CEL*VREL*DENIO(IPLS)
           ELSE
 C  MINIMUM PROJECTILE ENERGY: 0.1 EV
-            ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFEL(IREL))
+            ELB=MAX(EMINL,LOG(PVELQ(IPLSV))+EEFEL(IREL))
             IF (NSTORDR >= NRAD) THEN
 ! DOUBLE POLYNOMIAL FIT IS REDUCED TO SINGLE POLYNOMIAL FIT BY
 ! PRE-CALCULATING TEMPERATURE DEPENDENCIES ALREADY IN INITIALIZATION PHASE
@@ -538,8 +552,9 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
               FP = 0._DP
               RCMIN = -HUGE(1._DP)
               RCMAX = HUGE(1._DP)
+              EARRH = 0.0
               EXPO = EIRENE_SNGL_POLY(TBEL3,ELB,RCMIN,RCMAX,FP,0,0,
-     .                                TRCAMD,.TRUE.)
+     .                                EARRH,TRCAMD,.TRUE.)
             ELSE
 cdr  here should be call to ftabel3,  to be done
 ! CALCULATE RATE COEFFICIENT ON THE FLY
@@ -602,7 +617,7 @@ C  (ONLY NEEDED FOR TRACKLENGTH ESTIMATOR)
 C  ION SAMPLING FROM WEIGHTED DRIFTING MAXWELLIAN (E.G., BY REJECTION)
           IF (IESTEL(IREL,3).EQ.0) THEN  ! for tracklength estimator only
 C  MINIMUM PROJECTILE ENERGY: 0.1 EV
-            ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFEL(IREL))
+            ELB=MAX(EMINL,LOG(PVELQ(IPLSV))+EEFEL(IREL))
             IF (NSTORDR >= NRAD) THEN
 ! DOUBLE POLYNOMIAL FIT REDUCED TO SINGLE POLYNOMIAL FIT BY
 ! PRE-CALCULATING TEMPERATURE DEPENDENCIES
@@ -610,8 +625,9 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
               FP = 0._DP
               RCMIN = -HUGE(1._DP)
               RCMAX = HUGE(1._DP)
+              EARRH = 0.0
               EXPO = EIRENE_SNGL_POLY(EPEL3,ELB,RCMIN,RCMAX,FP,0,0,
-     .                                TRCAMD,.TRUE.)
+     .                                EARRH,TRCAMD,.TRUE.)
             ELSE
 ! CALCULATE ENERGY-WEIGHTED RATE COEFFICIENT ON THE FLY
               KK=NELREL(IREL)

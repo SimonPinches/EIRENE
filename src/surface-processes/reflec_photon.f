@@ -1,7 +1,7 @@
 CDR  NOV 17 : lemtspw arguments corrected
 cdr  jan 18 : start to implement bi-directional reflectance functions
-cdr  dec.18: remove unfinished "hollmann databse model"
-cpb  oct.19: set ISPZO=ISPZ for default reflection model      
+cdr  dec.18 : remove unfinished "hollmann databse model"
+cpb  oct.19 : set ISPZO=ISPZ for default reflection model      
 C
 C
       SUBROUTINE EIRENE_REFLEC_photon

@@ -41,10 +41,10 @@ c  eirene_samsf2:  deallocate temporary arrays
      .        ALEFT(:,:,:), BRGHT(:,:,:), XI(:,:,:), XE(:,:,:)
       REAL(DP), SAVE :: FF, VX,VY,VZ,XC,YC,ZC
       INTEGER, ALLOCATABLE, SAVE :: INDTEC(:,:)
-      INTEGER, SAVE :: ISTEP_SPEZ, ISTEP, IS1, ITET, IPLSTI, IPLSV, ITRI
+      INTEGER, SAVE :: ISTEP_SPEZ, ISTEP, IS1, IPLSTI, IPLSV, ITRI
 
 !$OMP THREADPRIVATE(FF,VX,VY,VZ,XC,YC,ZC,
-!$OMP& ISTEP_SPEZ,ISTEP,IS1,ITET,IPLSTI,IPLSV,ITRI)
+!$OMP& ISTEP_SPEZ,ISTEP,IS1,IPLSTI,IPLSV,ITRI)
 
       CONTAINS
 
@@ -89,9 +89,9 @@ cym end
       REAL(DP):: FLX(NPLS),EKFLX(NPLS),ESHFLX(NPLS),
      .           DISH(NPLS),VPSH(NPLS)
       INTEGER :: ISTRAI, IERROR, ISRFS, ISOR, ISORFL, INDSRF, ISTR, ISR, 
-     .           NL3J, NL2J, NL1J, IP, ISTS, IT, KAN, 
+     .           NL3J, NL2J, NL1J, IP, ISTS, IT, KAN, JPLS,
      .           KEN, K, NBIN, NSMX, IPL, NANZ, IPLSD(NPLS), IS, 
-     .           ISGRD1, IS2, ISGRD2,
+     .           ISGRD1, IS2, ISGRD2, ITRI, ITET,
      .           ISGRD3, INS
       INTEGER, EXTERNAL :: EIRENE_IDEZ
 cym      REAL(DP), EXTERNAL :: EIRENE_SHEATH
@@ -116,9 +116,9 @@ C
 C
 c  sampling distribution, for all three coordinates (and time):
 c                         4 digits: TZYX
-        ISOR=INT(SORLIM(ISRFS,ISTRAI))
+        ISOR=NINT(SORLIM(ISRFS,ISTRAI))
 c  initial birth point flags (ifpath,....) for particle tracing
-        ISORFL=EIRENE_IDEZ(INT(SORIFL(ISRFS,ISTRAI)),4,4)
+        ISORFL=EIRENE_IDEZ(NINT(SORIFL(ISRFS,ISTRAI)),4,4)
 c  number of surface for current surface source segment
         INDSRF=INSOR(ISRFS,ISTRAI)
         IF (INDSRF < 0) INDSRF=NLIM+ABS(INDSRF)
@@ -176,7 +176,7 @@ C  YES. CHECK INPUT DATA AND STORAGE
 C
 C  ISTEP      IS 1ST DIGIT "A" OF REAL FLAG SORIND (="CBA.0")
 C  ISTEP_SPEZ IS 3RD DIGIT "C" OF REAL FLAG SORIND
-        ISTEP=MOD(INT(REAL(SORIND(ISRFS,ISTRAI),DP)),100)
+        ISTEP=MOD(NINT(REAL(SORIND(ISRFS,ISTRAI),DP)),100)
         ISTEP_SPEZ=INT(SORIND(ISRFS,ISTRAI)/100)
 C
         IF (ISTEP.EQ.0) THEN
@@ -375,7 +375,8 @@ C
      .             NR1P2+NBLCKA
               end select
               TESTEP(ISTEP,K)=TEIN(NCELL)
-              DO 2 IPLS=1,NPLSI
+              DO 2 JPLS=1,NPLSI
+                IPLS=JPLS
                 IPLSTI = MPLSTI(IPLS)
                 IPLSV = MPLSV(IPLS)
                 TISTEP(IPLSTI,ISTEP,K)=TIIN(IPLSTI,NCELL)
@@ -461,8 +462,9 @@ C  IDENTIFY THOSE BULK SPECIES WITH NONZERO FLUX
           FLX=0.
           EKFLX=0.
           ESHFLX=0.
-          DO  IPLS=1,NPLSI
-            DO  K=1,NSMX-1
+          DO JPLS=1,NPLSI
+            IPLS=JPLS
+            DO K=1,NSMX-1
               DELR=RRSTEP(ISTEP,K+1)-RRSTEP(ISTEP,K)
               FF=FLSTEP(IPLS,ISTEP,K)*DELR
               FLX(IPLS)=FLX(IPLS)+FF
@@ -498,13 +500,27 @@ CDR
 C
           WRITE (iunout,*) 'FUNCTION STEP NO. ',ISTEP,': '
           WRITE (IUNOUT,*) 'FLUXES IN AMP/CM**2 '
-          WRITE (iunout,'(1X,A4,A12,5(2X,A7,I2,A1))')
-     .    '   K','  RRSTEP    ',('FLSTEP(',IPLSD(IPL),')',
-     .                            IPL=1,NANZ)
+          IF (NANZ.LE.5) THEN
+            WRITE (iunout,
+     .       '(1X,A4,A12,5(2X,A7,I2,A1))')
+     .       '   K','  RRSTEP    ',('FLSTEP(',IPLSD(IPL),')',
+     .                              IPL=1,NANZ)
+          ELSE
+            WRITE (iunout,
+     .       '(1X,A4,A12,5(2X,A7,I2,A1)/(17x,5(2X,A7,I2,A1)))')
+     .       '   K','  RRSTEP    ',('FLSTEP(',IPLSD(IPL),')',
+     .                               IPL=1,NANZ)
+          END IF
           DO 4 K=1,NSMX-1
-            WRITE (iunout,'(1X,I4,1P,6E12.4/(5x,1P,6E12.4))')
+            IF (NANZ.LE.5) THEN
+              WRITE (iunout,'(1X,I4,1P,6E12.4/(5x,1P,6E12.4))')
      .               K,RRSTEP(ISTEP,K),
      .               (FLSTEP(IPLSD(IPL),ISTEP,K),IPL=1,NANZ)
+            ELSE
+              WRITE (iunout,'(1X,I4,1P,6E12.4/(17x,1P,5E12.4))')
+     .               K,RRSTEP(ISTEP,K),
+     .               (FLSTEP(IPLSD(IPL),ISTEP,K),IPL=1,NANZ)
+            END IF
     4     CONTINUE
 
           WRITE (iunout,'(1X,I4,1P,2E12.4)') NSMX,RRSTEP(ISTEP,NSMX)
@@ -530,7 +546,7 @@ C
 C  DEFINE LEFT AND RIGHT BOUNDARY OF SAMPLING INTERVALS FOR STRATUM ISTRAI.
 C
 C  FLAG ISTEP INDICATES: IS STEP FUNCTION TO BE USED FOR THIS ?
-        ISTEP=MOD(INT(REAL(SORIND(ISRFS,ISTRAI),DP)),100)
+        ISTEP=MOD(NINT(REAL(SORIND(ISRFS,ISTRAI),DP)),100)
         ISTEP_SPEZ=INT(SORIND(ISRFS,ISTRAI)/100)
 C
         IF (INDIM(ISRFS,ISTRAI).EQ.1) THEN
@@ -775,9 +791,9 @@ C
       INTEGER :: ISID, IDUM, NDUM, EIRENE_LEARC2, NT,
      .           IEN, IAN,
      .           EIRENE_LEARCA, 
-     .           ICOUNT, IPLG, I, ILTR, IAUSR,
+     .           ICOUNT, IPLG, I, ILTR, IAUSR, ITRI, ITET,
      .           IBUSR, IRUSR, IPUSR, ITUSR, IK, J, JCALC, IINDEX,
-     .           ICHWGHT, JSPZ
+     .           JPLS, JSPZ
       LOGICAL :: LOGTST
       INTEGER :: ITSIDE(3,4)
       DATA ITSIDE /1,2,3,
@@ -794,7 +810,6 @@ C   NLSF=SURFACE INDEX IN (NSRFS) SOURCE ARRAYS
 C
       JCALC=0
       ISTEP=0
-      ICHWGHT = 0
 C
       WEISPZ(1:NSPZ)=-1.
 C
@@ -816,36 +831,29 @@ C
       ENDIF
 C
       ZZ = 0._DP
-      DO 1000 J=1,3
+      DO J=1,3
         IK=NLSF+(J-1)*NSRFS
-        GOTO (10,20,30,40),INDTEC(IK,ISTRA)
-C   ZZ(JCALC) IS TO BE CALCULATED FROM SURFACE EQUATION
-          IF (JCALC.NE.0) GOTO 997
-          JCALC=J
-          GOTO 1000
+        select case (INDTEC(IK,ISTRA))
+        case (1)
 C   DELTA DISTRIBUTION AT CENTER OF INTERVAL
-   10   CONTINUE
           ZZ(J)=(ALEFT(J,NLSF,ISTRA)+BRGHT(J,NLSF,ISTRA))*0.5
-          GOTO 1000
+        case (2)
 C   UNIFORM DISTRIBUTION IN THIS COORDINATE
- 20     CONTINUE
           ZZ(J)=RANF_EIRENE( )*(BRGHT(J,NLSF,ISTRA)-
      .          ALEFT(J,NLSF,ISTRA))+ALEFT(J,NLSF,ISTRA)
-          GOTO 1000
+        case (3)
 C   TRUNCATED EXPONENTIAL DECAY WITH LENGTH XLAMDA, FOR ONE COORDINATE ONLY
 C   PARAMETER: SOREXP
 C   METHOD: COVEYOU-TRICK  (SPANIER-GELBARD, ADDISON WESLEY,  P 35)
-   30   CONTINUE
           DELTA=BRGHT(J,NLSF,ISTRA)-ALEFT(J,NLSF,ISTRA)
           XLAMDA=SOREXP(NLSF,ISTRA)
           ZM=DELTA/XLAMDA
           ZH=MOD(-LOG(RANF_EIRENE( )),ZM)
           ZZ(J)=XLAMDA*ZH+ALEFT(J,NLSF,ISTRA)
-          GOTO 1000
+        case (4)
 C   STEP FUNCTION NO. ISTEP, FOR ONE COORDINATE ONLY
 C   PARAMETER: SORIND
-   40   CONTINUE
-          ISTEP=MOD(INT(REAL(SORIND(NLSF,ISTRA),DP)),100)
+          ISTEP=MOD(NINT(REAL(SORIND(NLSF,ISTRA),DP)),100)
           ISTEP_SPEZ = INT(SORIND(NLSF,ISTRA)/100)
           ISPZ=NSPEZ(ISTRA)
           IF (ISTEP_SPEZ.GT.0) ISPZ=ISTEP_SPEZ
@@ -853,8 +861,12 @@ c  RNF: uniform in spatial sampling interval
           RNF=XI(J,NLSF,ISTRA)+RANF_EIRENE( )*
      .        (XE(J,NLSF,ISTRA)-XI(J,NLSF,ISTRA))
           ZZ(J)=EIRENE_STEP1(IINDEX,ISTEP,RNF,ISPZ)
-          GOTO 1000
- 1000 CONTINUE
+        case default
+C   ZZ(JCALC) IS TO BE CALCULATED FROM SURFACE EQUATION
+          IF (JCALC.NE.0) GOTO 997
+          JCALC=J
+        end select
+      END DO
 C
       IPOLG=1
 C
@@ -898,8 +910,13 @@ C
 C  FIND X COORDINATE X0 FROM Y=Y0 AND Z=Z0 ON SURFACE NO. MASURF
           Y0=ZZ(2)
           IF (NLTRA.AND.ILTR.EQ.0) THEN
-            WRITE (iunout,*) 'Z0 IN SAMSRF FOR JCALC=1 ?? '
-            CALL EIRENE_EXIT_OWN(1)
+            IF(.NOT.(A3LM(MASURF).EQ.0.0_DP .AND.
+     &               A6LM(MASURF).EQ.0.0_DP .AND.
+     &               A8LM(MASURF).EQ.0.0_DP .AND.
+     &               A9LM(MASURF).EQ.0.0_DP)) THEN
+              WRITE (iunout,*) 'Z0 IN SAMSRF FOR JCALC=1 ?? '
+              CALL EIRENE_EXIT_OWN(1)
+            ENDIF
           ENDIF
           IF (JUMLIM(MASURF).NE.0) THEN
             IF (ABS(A1LM(MASURF)).LE.EPS12) GOTO 9931
@@ -1553,22 +1570,23 @@ C
 C  TAKE BACKGROUND MEDIUM DATA AT PLACE OF BIRTH FROM STEP FUNCTION ISTEP
         TEWL=TESTEP(ISTEP,IINDEX)
         SHWL=SHSTEP(ISTEP,IINDEX)
-        DO 3010 IPLS=1,NPLSI
-          IPLSTI=MPLSTI(IPLS)
-          TIWL(IPLS)=TISTEP(IPLSTI,ISTEP,IINDEX)
-          VXWL(IPLS)=VXSTEP(IPLS,ISTEP,IINDEX)
-          VYWL(IPLS)=VYSTEP(IPLS,ISTEP,IINDEX)
-          VZWL(IPLS)=VZSTEP(IPLS,ISTEP,IINDEX)
-          DIWL(IPLS)=DISTEP(IPLS,ISTEP,IINDEX)
-                  FF=FLSTEP(IPLS,ISTEP,IINDEX)
-          EFWL(IPLS)=ELSTEP(IPLS,ISTEP,IINDEX)/(FF+EPS30)
+        DO 3010 JPLS=1,NPLSI
+          IPLSTI=MPLSTI(JPLS)
+          TIWL(JPLS)=TISTEP(IPLSTI,ISTEP,IINDEX)
+          VXWL(JPLS)=VXSTEP(JPLS,ISTEP,IINDEX)
+          VYWL(JPLS)=VYSTEP(JPLS,ISTEP,IINDEX)
+          VZWL(JPLS)=VZSTEP(JPLS,ISTEP,IINDEX)
+          DIWL(JPLS)=DISTEP(JPLS,ISTEP,IINDEX)
+                  FF=FLSTEP(JPLS,ISTEP,IINDEX)
+          EFWL(JPLS)=ELSTEP(JPLS,ISTEP,IINDEX)/(FF+EPS30)
  3010   CONTINUE
       ELSEIF (ISTEP.EQ.0) THEN
 C  TAKE BACKGROUND MEDIUM DATA AT PLACE OF BIRTH FROM LOCAL BULK PLASMA DATA
 C                              IN SAMPLED CELL NCELL
         TEWL=TEIN(NCELL)
         SHWL=0.
-        DO 3020 IPLS=1,NPLSI
+        DO 3020 JPLS=1,NPLSI
+          IPLS=JPLS
           IPLSTI = MPLSTI(IPLS)
           IPLSV = MPLSV(IPLS)
           TIWL(IPLS)=TIIN(IPLSTI,NCELL)

@@ -33,7 +33,7 @@ C
       USE EIRMOD_PARMMOD, ONLY: EIRENE_SET_PARMMOD, IFOFF, LOUTAPP,
      >                          NBGK, NRCX, NREC, NREI, NREL, NRPI,
      >                          NSMSTRA, NTALB,
-     >                          IUNMEM
+     >                          IUNMEM, IUNRAPSVEC
       USE EIRMOD_COMUSR, ONLY: EIRENE_ALLOC_COMUSR,
      >                         EIRENE_DEALLOC_COMUSR, IITER, ITIMV,
      >                         NBGVI, NFILEK, NITER, NMODE, NTIME,
@@ -58,7 +58,8 @@ C
       USE EIRMOD_CSPEZ, ONLY: EIRENE_ALLOC_CSPEZ, EIRENE_DEALLOC_CSPEZ
       USE EIRMOD_CZT1, ONLY: EIRENE_ALLOC_CZT1, EIRENE_DEALLOC_CZT1
       USE EIRMOD_CTRCEI, ONLY: EIRENE_ALLOC_CTRCEI,
-     >                         EIRENE_DEALLOC_CTRCEI, TRCAMD, TRCSRC
+     >                         EIRENE_DEALLOC_CTRCEI, 
+     >                         TRCAMD, TRCSRC
       USE EIRMOD_CCOUPL, ONLY: EIRENE_DEALLOC_CCOUPL
       USE EIRMOD_CGEOM, ONLY: EIRENE_ALLOC_CGEOM, EIRENE_DEALLOC_CGEOM
       USE EIRMOD_CSDVI, ONLY: EIRENE_ALLOC_CSDVI, EIRENE_DEALLOC_CSDVI
@@ -190,7 +191,7 @@ c  indicate: first entry to eirene has now been done.
 c  Calls to find_param, set_parmod(1),... have already been done above
         inentry = 0
 
-        NRAPS=60
+        NRAPS=IUNRAPSVEC
         IRAPS=0
         IITER=ITNR
         ITIMV=1
@@ -200,7 +201,7 @@ c  Calls to find_param, set_parmod(1),... have already been done above
         NLPLAS=NLMODE
 
         TIME=EIRENE_SECOND_OWN()
-        write (iunout,*) ' CPU time for startup of Eirene ',time-timi
+        write (iunout,*) ' CPU TIME for startup of Eirene ',time-timi
 
       END IF  ! MY_PE == 0
 
@@ -295,6 +296,7 @@ C
         CALL EIRENE_ALLOC_CSPEI
         CALL EIRENE_ALLOC_CSDVI(2)
         CALL EIRENE_ALLOC_CLAST
+        CLOSE(IUNMEM)
 
         CALL EIRENE_STTXT1
 C
@@ -445,7 +447,7 @@ C  WRITE FILES FOR RAPS GRAPHICS
 C
       IF (IRAPS.GT.0) THEN
         CALL EIRENE_RPSOUT
-        NRAPS=60
+        NRAPS=IUNRAPSVEC
         IRAPS=0
       ENDIF
 C

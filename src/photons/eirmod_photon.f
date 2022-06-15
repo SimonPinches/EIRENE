@@ -540,7 +540,7 @@ c               all taken out.
      .                          result(res)
 c    .                          npt,omega_min,omega_max)
 
-cdr:  npt: option to evaluate function at many energies omega
+cdr   npt: option to evaluate function at many energies omega
 cdr        in the range omega_min,....,omega_max: removed
 
 !********** DEUTERIUM LYMAN ALPHA LINE SHAPE CALCULATION **********
@@ -1173,7 +1173,7 @@ c        2: stim.em
       IMPLICIT NONE
       integer, intent(in) :: icell,kk,iflg,iold,il,itypold,itypnew
       real(dp),intent(in) :: vxo,vyo,vzo,vlo,e0o
-      integer :: nrc,ipln,itypn,ir,
+      integer :: nrc,ipln,itypn,
      .    ityp0,ityp1,ityp2,ipl0,ipl1,ipl2,
      .    ipl0v
       real(dp) :: vx,vy,vz,vxn,vyn,vzn,cvrss1,velq,e1,e2,e00,l00,gam,
@@ -1182,7 +1182,6 @@ c        2: stim.em
      .    velx_b, vely_b, velz_b, velparm, vel_b
 
       if (idreac /= kk) call EIRENE_get_reaction(kk)
-      ir=kk
 
       select case(itypold)
       case(0)
