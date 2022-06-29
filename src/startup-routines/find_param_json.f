@@ -76,7 +76,7 @@ C
       USE EIRMOD_JSON, ONLY: jtrees, blks, itree_num,
      .                       ldef_time_horizon,nlfem_in, nlplg_in,
      .                       nlpol_in, np2nd_in, nr1st_in, nt3rd_in,
-     .                       noptim_in, nrtal_in, nsmstra_in,
+     .                       noptim_in, nrtal_in, nsmstra_in, nstrai_in,
      .                       eirene_init_input_blocks 
       use json_module, ck => json_ck
 
@@ -197,6 +197,20 @@ C  start browsing the header
         j = itree_num(14)
         call eirene_if0prm_json(jtrees(j),blks(14)%p)
       end if
+
+!PB if NTIME >= 1 NSTRAI has been increased already
+!PB therefore if NPRNLI <=0 reduce NSTRAI and NSTRA
+      if (NTIME.GE.1.AND.NPRNLI <= 0) THEN
+        NSTRAI=NSTRAI-1
+        NSTRA=NSTRA-1
+      ENDIF
+      if ((NTIME.GE.1.AND.NPRNL > 0).OR.NLERG) THEN
+        NSTSI=NSTSI+1
+        if (NLERG .AND.(NTIME .LT. 1)) NSTRAI=NSTRAI+1
+      ENDIF
+      NSTS = MAX(NSTS,NSTSI)
+      NSTRA = MAX(NSTRA,NSTRAI)
+      NLIMPS = NLIM + NSTS
      
       IF (NLERG.AND.NPRNLI.LE.0) THEN
 C  NO TIME HORIZON DEFINED, DESPITE NLERG=.TRUE.
@@ -204,14 +218,7 @@ C  THEREFORE: SET A DEFAULT TIME HORIZON HERE
         IF (NTIME.EQ.0) NTIME=1
         NPRNLI=100
       ENDIF
-      if ((NTIME.GE.1.AND.NPRNL > 0).OR.NLERG) THEN
-        NSTSI=NSTSI+1
-        NSTRAI=NSTRAI+1
-      ENDIF
-      NSTS = MAX(NSTS,NSTSI)
-      NSTRA = MAX(NSTRA,NSTRAI)
       NPRNL = MAX(NPRNL,NPRNLI)
-      NLIMPS = NLIM + NSTS
 
 C  SWITCH OFF SUM OVER STRATA IF THERE IS ONLY ONE STRATUM TO BE CALCULATED
 !pb      IF (NSTRAI == 1) NSMSTRA = 0
@@ -946,6 +953,7 @@ c  Due to the volume tally input card (indpro(12)) being optional.
       WRITE (iunout,*) '*** 7. DATA FOR PRIMARY SOURCES, NSTRAI STRATA'
 
       call json%get(p,'NSTRAI',nstrai,found)
+      NSTRAI_IN = NSTRAI
       IF (NTIME.GE.1) NSTRAI = NSTRAI + 1
       NSTRA = MAX(NSTRA,NSTRAI)
       
@@ -1114,7 +1122,11 @@ cdr  here NSTEP is set to the largest step function number specified on SORIND
       call json%get(p,'NSURPR',nsurpr,found)
 
       NVLPR=NVOLPR
+C  ERGODIC OPTION NEEDS PRINTOUT OF VOLUME, AND ONE, TWO OR THREE FURTHER TALLIES AT LEAST
+      IF (NLERG) NVLPR=MAX(4,NVLPR)
       NSRPR=NSURPR
+C  ERGODIC OPTION NEEDS PRINTOUT AT LEAST FROM TIME HORIZON
+      IF (NLERG) NSRPR=MAX(1,NSRPR)
 
       CALL EIRENE_ALLOC_CTRCEI
 

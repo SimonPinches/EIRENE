@@ -285,6 +285,7 @@ cdr     CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
       call json%get(p,'NITER',niter,found)
       call json%get(p,'NTIME0',ntime0,found)
       call json%get(p,'NTIME',ntime,found)
+      NTIME_IN = NTIME
 
       CALL EIRENE_LEER(1)
       IITER=MAX0(1,NITER0)
@@ -2922,6 +2923,7 @@ C
 
       call json%get(p,'NSTRAI',nstrai,found)
       WRITE (iunout,*) '       NSTRAI= ',NSTRAI
+      NSTRAI_IN = NSTRAI
       CALL EIRENE_LEER(1)
 
       call json%get(p,'INDSRC',ihelp,found)

@@ -64,8 +64,8 @@ C
       USE EIRMOD_CINIT, ONLY: CASENAME, DBFNAME, DBHANDLE, NDBNAMES,
      .                        INDPRO2_SAVE,
      .                        EIRENE_INIT_CINIT
-      USE EIRMOD_JSON, ONLY : NOPTIM_IN, NRTAL_IN, NSMSTRA_IN, INDPRO_IN
-
+      USE EIRMOD_JSON, ONLY : NOPTIM_IN, NRTAL_IN, NSMSTRA_IN, 
+     .                        INDPRO_IN, NSTRAI_IN, NTIME_IN
       IMPLICIT NONE
 
       INTEGER :: INDGRD(3), INDPRO(12), IDUM(12)
@@ -167,6 +167,7 @@ c start browsing block 1
 
       READ (ZEILE,6666) NPRLL,NMODE,NTCPU,NFILE,NITER0,NITER,
      .                  NTIME0,NTIME
+      NTIME_IN = NTIME
 
       READ (IUNIN,'(A72)') ZEILE
       LDEFSTOR = .FALSE.   ! INDICATES: NO STORAGE OPTIMIZATION INPUT CARD
@@ -778,6 +779,7 @@ C
         READ (IUNIN,'(A72)') ZEILE
       END DO
       READ (ZEILE,6666) NSTRAI
+      NSTRAI_IN = NSTRAI
 
 CDR  TRY TO SET NSTEP, THE NUMBER OF STEP FUNCTIONS FOR SOURCE SAMPLING
 cdr  set nstep = highest stratum number, which receives primary source data from external code.
@@ -1175,9 +1177,15 @@ C
       IF (NPRMUL > 1) NPRNLI = NPRNLI * NPRMUL
       NPRNL = MAX(NPRNL,NPRNLI)
 
+!PB if NTIME >= 1 NSTRAI has been increased already
+!PB therefore if NPRNLI <=0 reduce NSTRAI and NSTRA
+      if (NTIME.GE.1.AND.NPRNLI <= 0) THEN
+        NSTRAI=NSTRAI-1
+        NSTRA=NSTRA-1
+      ENDIF
       if ((NTIME.GE.1.AND.NPRNLI > 0).OR.NLERG) THEN
         NSTSI=NSTSI+1
-        NSTRAI=NSTRAI+1
+        if (NLERG .AND.(NTIME .LT. 1)) NSTRAI=NSTRAI+1
       ENDIF
       NSTS = MAX(NSTS,NSTSI)
       NSTRA = MAX(NSTRA,NSTRAI)

@@ -3,6 +3,7 @@ cdr when eirene is in "coupled mode": i.e. IF(NMODE.NE.0)
 C
       SUBROUTINE EIRENE_IF0PRM_JSON(json,p)
 
+      use eirmod_parmmod, only: ncpv, nain, nptrgt
       use json_module
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 

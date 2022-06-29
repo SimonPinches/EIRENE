@@ -154,7 +154,7 @@
       call json%add(me,'NITER0',iiter)
       call json%add(me,'NITER',niter)
       call json%add(me,'NTIME0',itimv)
-      call json%add(me,'NTIME',ntime)
+      call json%add(me,'NTIME',ntime_in)
 
       call json%add(me,'NOPTIM',noptim_in)
       call json%add(me,'NOPTM1',noptm1)
@@ -451,7 +451,7 @@
          call json%add(srf,'ILSPT',ilspt(nlj))
          call json%add(srf,'ISRS',isrs(1,nlj))
          call json%add(srf,'ISRC',isrc(1,nlj))
-         call json%add(srf,'LCHSPNWL',lchspnwl(1,nlj))
+         call json%add(srf,'LCHSPNWL',lchspnwl_in(1,nlj))
          call json%add(srf,'ZNML',znmlc)
          call json%add(srf,'EWALL',ewall(nlj))
          call json%add(srf,'EWBIN',ewbin(nlj))
@@ -1281,8 +1281,7 @@
       call json%add(me,'MANUAL',
      .     "http://www.eirene.de/eirene.pdf#section.2.7")
 
-      nst = nstrai
-      if (((ntime >= 1) .and. (nprnli > 0)) .or. nlerg) nst = nst - 1
+      nst = nstrai_in
 
       ampts = mpts_comsou
       

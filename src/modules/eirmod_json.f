@@ -71,7 +71,8 @@
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R ALIMS0_IN(:,:), XLIMS3_IN(:,:), YLIMS3_IN(:,:), ZLIMS3_IN(:,:)
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE :: RLB_IN(:)
-      INTEGER, PUBLIC, ALLOCATABLE, SAVE :: ILCOL_IN(:)
+      INTEGER, PUBLIC, ALLOCATABLE, SAVE :: 
+     I ILCOL_IN(:), LCHSPNWL_IN(:,:)
        
       REAl(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R DATD_IN(:), DMLD_IN(:), DIOD_IN(:), DPLD_IN(:), DPHD_IN(:) 
@@ -85,7 +86,8 @@
       INTEGER, PUBLIC, SAVE :: NVTLOUT, NSTLOUT
 
       INTEGER, PUBLIC, SAVE :: NR1ST_IN, NP2ND_IN, NT3RD_IN, NRTAL_IN,
-     .                         NOPTIM_IN, NSMSTRA_IN
+     .                         NOPTIM_IN, NSMSTRA_IN, NSTRAI_IN, 
+     .                         NTIME_IN
       LOGICAL, PUBLIC, SAVE :: NLPOL_IN, NLPLG_IN, NLFEM_IN
 
       LOGICAL, PUBLIC, SAVE :: LDEF_LINES, LDEF_TIME_HORIZON
@@ -255,6 +257,7 @@
       ALLOCATE(ZLIMS3_IN(9,NLIM))
 
       ALLOCATE(ILCOL_IN(NLIMPS))
+      ALLOCATE(LCHSPNWL_IN(NSPZ,0:NLIMPS))
 
       ALLOCATE(DATD_IN(NATM))
       ALLOCATE(DMLD_IN(NMOL))
@@ -315,7 +318,8 @@
       DEALLOCATE(ZLIMS3_IN)
       
       DEALLOCATE(ILCOL_IN)
-
+      DEALLOCATE(LCHSPNWL_IN)
+      
       DEALLOCATE(DATD_IN)
       DEALLOCATE(DMLD_IN)
       DEALLOCATE(DIOD_IN)
@@ -400,6 +404,7 @@
       ZLIMS3_IN = 0._DP
 
       ILCOL_IN = 0
+      LCHSPNWL_IN = 0
 
       DATD_IN = 0._DP
       DMLD_IN = 0._DP
@@ -487,6 +492,7 @@
       ZLIMS3_IN(:,I) = ZLIMS3(:,I)
 
       ILCOL_IN(I) = ILCOL(I)
+      LCHSPNWL(:,I) = LCHSPNWL(:,I)
       
       end subroutine eirene_copy_addsrf
 !******************************************************************************
