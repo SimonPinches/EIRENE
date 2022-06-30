@@ -167,6 +167,7 @@ c     for the trace ion module
 !pb   CALL EIRENE_BROAD_TIM_PARMS
 c     ------------------------------------------------------------     c
 c
+      CALL EIRENE_CHECK_EXIT
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
 cOS   now call the octree-builder to build an octree on every node except
