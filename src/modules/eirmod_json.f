@@ -3,7 +3,8 @@
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD, ONLY: NLIM, NLIMPS,
-     .                          NATM, NMOL, NION, NPHOT, NPLS, NSTRA
+     .                          NATM, NMOL, NION, NPHOT, NPLS, NSPZ, 
+     .                          NSTRA
 !pb      USE EIRMOD_COMPRT, ONLY: IUNOUT
 
       use json_module

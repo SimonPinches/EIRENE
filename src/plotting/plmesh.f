@@ -81,107 +81,107 @@ C AKTUELLE KONTOUR BESTIMMEN, STUECKE MIT ILPLG=ICONT GEHOEREN ZUR
 C AKTUELLEN KONTOUR, ANFANGS UND ENDPUNKT DIESES STUECKES WERDEN AUF
 C PARTCONT GESPEICHERT
 
-c  ADDITIONAL SURFACES
-        DO I=1,NLIMI
-          IF (ABS(ILPLG(I)) .EQ. ICONT) THEN
-C 0 < RLB(I) < 2
-C 2-PUNKT OPTION WIRD IM TIMEA0 AUF RLB=1 ZURUECKGEFUEHRT
-            IF ((RLB(I) .GT. 0.) .AND. (RLB(I) .LT. 2.) .AND.
-     >          (P3(1,I) .EQ. 1.D55 .OR. P3(2,I) .EQ. 1.D55
-     >          .OR. P3(3,I) .EQ. 1.D55)) THEN
-              IPOIN = IPOIN + 1
-              IF (IPOIN.GT.MAXPOIN) THEN
-                WRITE(IUNOUT,*)
-     .           'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
-     .            ICONT
-                WRITE(IUNOUT,*)
-     .           'INCREASE VALUE OF MAXPOIN IN plmesh.F'
-                WRITE(IUNOUT,*)
-     .           'CURRENTLY MAXPOIN = ', MAXPOIN
-                CALL EIRENE_EXIT_OWN(1)
-              ENDIF
-              IF (A3LM(I) .EQ. 0.) THEN
-C               X,Y-KOORDINATEN
-                PARTCONT(IPOIN,1,1) = P1(1,I)
-                PARTCONT(IPOIN,1,2) = P1(2,I)
-                PARTCONT(IPOIN,2,1) = P2(1,I)
-                PARTCONT(IPOIN,2,2) = P2(2,I)
-              ELSEIF (A2LM(I) .EQ. 0.) THEN
-C               X,Z-KOORDINATEN
-                PARTCONT(IPOIN,1,1) = P1(1,I)
-                PARTCONT(IPOIN,1,2) = P1(3,I)
-                PARTCONT(IPOIN,2,1) = P2(1,I)
-                PARTCONT(IPOIN,2,2) = P2(3,I)
-              ELSEIF (A1LM(I) .EQ. 0.) THEN
-C               Y,Z-KOORDINATEN
-                PARTCONT(IPOIN,1,1) = P1(2,I)
-                PARTCONT(IPOIN,1,2) = P1(3,I)
-                PARTCONT(IPOIN,2,1) = P2(2,I)
-                PARTCONT(IPOIN,2,2) = P2(3,I)
-              ENDIF
-            ELSE
-C  ERROR
-              WRITE(iunout,'(a,f11.4,2i4)')
-     >         'FALSCHE ANGABE FUER RLB, RLB = ',RLB(I),ILPLG(I),I
-            ENDIF
-          ENDIF
-        ENDDO
-
         select case (LEVGEO)
         case (3)
-        DO I=1,NSTSI
-          IF (ABS(ILPLG(NLIM+I)) .EQ. ICONT) THEN
-            IF (INUMP(I,2) .NE. 0) THEN
-C  POLOIDAL SURFACES
-              DO J=IRPTA(I,1),IRPTE(I,1)-1
-                IF ((XPOL(J,INUMP(I,2)) .NE. XPOL(J+1,INUMP(I,2))) .OR.
-     >              (YPOL(J,INUMP(I,2)) .NE. YPOL(J+1,INUMP(I,2)))) THEN
-                  IPOIN = IPOIN + 1
-                  IF (IPOIN.GT.MAXPOIN) THEN
-                    WRITE(IUNOUT,*)
-     .               'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
-     .                ICONT
-                    WRITE(IUNOUT,*)
-     .               'INCREASE VALUE OF MAXPOIN IN plmesh.F'
-                    WRITE(IUNOUT,*)
-     .               'CURRENTLY MAXPOIN = ', MAXPOIN
-                    CALL EIRENE_EXIT_OWN(1)
-                  ENDIF
-                  PARTCONT(IPOIN,1,1) = XPOL(J,INUMP(I,2))
-                  PARTCONT(IPOIN,1,2) = YPOL(J,INUMP(I,2))
-                  PARTCONT(IPOIN,2,1) = XPOL(J+1,INUMP(I,2))
-                  PARTCONT(IPOIN,2,2) = YPOL(J+1,INUMP(I,2))
+c  ADDITIONAL SURFACES
+          DO I=1,NLIMI
+            IF (ABS(ILPLG(I)) .EQ. ICONT) THEN
+C 0 < RLB(I) < 2
+C 2-PUNKT OPTION WIRD IM TIMEA0 AUF RLB=1 ZURUECKGEFUEHRT
+              IF ((RLB(I) .GT. 0.) .AND. (RLB(I) .LT. 2.) .AND.
+     >            (P3(1,I) .EQ. 1.D55 .OR. P3(2,I) .EQ. 1.D55
+     >            .OR. P3(3,I) .EQ. 1.D55)) THEN
+                IPOIN = IPOIN + 1
+                IF (IPOIN.GT.MAXPOIN) THEN
+                  WRITE(IUNOUT,*)
+     .             'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
+     .              ICONT
+                  WRITE(IUNOUT,*)
+     .             'INCREASE VALUE OF MAXPOIN IN plmesh.F'
+                  WRITE(IUNOUT,*)
+     .             'CURRENTLY MAXPOIN = ', MAXPOIN
+                  CALL EIRENE_EXIT_OWN(1)
                 ENDIF
-              ENDDO
-            ELSEIF (INUMP(I,1) .NE. 0) THEN
-C  RADIAL SURFACES
-              DO J=IRPTA(I,2),IRPTE(I,2)-1
-                IF ((XPOL(INUMP(I,1),J) .NE. XPOL(INUMP(I,1),J+1)) .OR.
-     >              (YPOL(INUMP(I,1),J) .NE. YPOL(INUMP(I,1),J+1))) THEN
-                  IPOIN = IPOIN + 1
-                  IF (IPOIN.GT.MAXPOIN) THEN
-                    WRITE(IUNOUT,*)
-     .               'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
-     .                ICONT
-                    WRITE(IUNOUT,*)
-     .               'INCREASE VALUE OF MAXPOIN IN plmesh.F'
-                    WRITE(IUNOUT,*)
-     .               'CURRENTLY MAXPOIN = ', MAXPOIN
-                    CALL EIRENE_EXIT_OWN(1)
-                  ENDIF
-                  PARTCONT(IPOIN,1,1) = XPOL(INUMP(I,1),J)
-                  PARTCONT(IPOIN,1,2) = YPOL(INUMP(I,1),J)
-                  PARTCONT(IPOIN,2,1) = XPOL(INUMP(I,1),J+1)
-                  PARTCONT(IPOIN,2,2) = YPOL(INUMP(I,1),J+1)
+                IF (A3LM(I) .EQ. 0.) THEN
+C               X,Y-KOORDINATEN
+                  PARTCONT(IPOIN,1,1) = P1(1,I)
+                  PARTCONT(IPOIN,1,2) = P1(2,I)
+                  PARTCONT(IPOIN,2,1) = P2(1,I)
+                  PARTCONT(IPOIN,2,2) = P2(2,I)
+                ELSEIF (A2LM(I) .EQ. 0.) THEN
+C               X,Z-KOORDINATEN
+                  PARTCONT(IPOIN,1,1) = P1(1,I)
+                  PARTCONT(IPOIN,1,2) = P1(3,I)
+                  PARTCONT(IPOIN,2,1) = P2(1,I)
+                  PARTCONT(IPOIN,2,2) = P2(3,I)
+                ELSEIF (A1LM(I) .EQ. 0.) THEN
+C               Y,Z-KOORDINATEN
+                  PARTCONT(IPOIN,1,1) = P1(2,I)
+                  PARTCONT(IPOIN,1,2) = P1(3,I)
+                  PARTCONT(IPOIN,2,1) = P2(2,I)
+                  PARTCONT(IPOIN,2,2) = P2(3,I)
                 ENDIF
-              ENDDO
-            ELSE
+              ELSE
 C  ERROR
-              WRITE(iunout,*) 'CASE NOT FORESEEN: INUMP: ',
-     >                     (INUMP(I,J),J=1,3)
+                WRITE(iunout,'(a,f11.4,2i4)')
+     >           'FALSCHE ANGABE FUER RLB, RLB = ',RLB(I),ILPLG(I),I
+              ENDIF
             ENDIF
-          ENDIF
-        ENDDO
+          ENDDO
+
+          DO I=1,NSTSI
+            IF (ABS(ILPLG(NLIM+I)) .EQ. ICONT) THEN
+              IF (INUMP(I,2) .NE. 0) THEN
+C  POLOIDAL SURFACES
+                DO J=IRPTA(I,1),IRPTE(I,1)-1
+                  IF ((XPOL(J,INUMP(I,2)).NE.XPOL(J+1,INUMP(I,2))) .OR.
+     >                (YPOL(J,INUMP(I,2)).NE.YPOL(J+1,INUMP(I,2)))) THEN
+                    IPOIN = IPOIN + 1
+                    IF (IPOIN.GT.MAXPOIN) THEN
+                      WRITE(IUNOUT,*)
+     .                 'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
+     .                  ICONT
+                      WRITE(IUNOUT,*)
+     .                 'INCREASE VALUE OF MAXPOIN IN plmesh.F'
+                      WRITE(IUNOUT,*)
+     .                 'CURRENTLY MAXPOIN = ', MAXPOIN
+                      CALL EIRENE_EXIT_OWN(1)
+                    ENDIF
+                    PARTCONT(IPOIN,1,1) = XPOL(J,INUMP(I,2))
+                    PARTCONT(IPOIN,1,2) = YPOL(J,INUMP(I,2))
+                    PARTCONT(IPOIN,2,1) = XPOL(J+1,INUMP(I,2))
+                    PARTCONT(IPOIN,2,2) = YPOL(J+1,INUMP(I,2))
+                  ENDIF
+                ENDDO
+              ELSEIF (INUMP(I,1) .NE. 0) THEN
+C  RADIAL SURFACES
+                DO J=IRPTA(I,2),IRPTE(I,2)-1
+                  IF ((XPOL(INUMP(I,1),J).NE.XPOL(INUMP(I,1),J+1)) .OR.
+     >                (YPOL(INUMP(I,1),J).NE.YPOL(INUMP(I,1),J+1))) THEN
+                    IPOIN = IPOIN + 1
+                    IF (IPOIN.GT.MAXPOIN) THEN
+                      WRITE(IUNOUT,*)
+     .                 'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
+     .                  ICONT
+                      WRITE(IUNOUT,*)
+     .                 'INCREASE VALUE OF MAXPOIN IN plmesh.F'
+                      WRITE(IUNOUT,*)
+     .                 'CURRENTLY MAXPOIN = ', MAXPOIN
+                      CALL EIRENE_EXIT_OWN(1)
+                    ENDIF
+                    PARTCONT(IPOIN,1,1) = XPOL(INUMP(I,1),J)
+                    PARTCONT(IPOIN,1,2) = YPOL(INUMP(I,1),J)
+                    PARTCONT(IPOIN,2,1) = XPOL(INUMP(I,1),J+1)
+                    PARTCONT(IPOIN,2,2) = YPOL(INUMP(I,1),J+1)
+                  ENDIF
+                ENDDO
+              ELSE
+C  ERROR
+                WRITE(iunout,*) 'CASE NOT FORESEEN: INUMP: ',
+     >                       (INUMP(I,J),J=1,3)
+              ENDIF
+            ENDIF
+          ENDDO
 
         case (4)
 C  TRIANGLE SIDES

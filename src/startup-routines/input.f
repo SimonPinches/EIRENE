@@ -184,6 +184,7 @@ C
         CALL EIRENE_MASJ1('ITIMV   ',ITIMV)
         GOTO 4000
       ENDIF
+      TPB1=EIRENE_SECOND_OWN()
 C
       NAINI=0
       NCPVI=0

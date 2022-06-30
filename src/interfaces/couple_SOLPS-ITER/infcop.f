@@ -302,8 +302,8 @@ C
      .           IYM1,
      .           ISTAT_COP,
      .           ibrad,ibpol,ibtor,
-     .           nr1tal_save,np2tal_save,nt3tal_save,nsbox_tal_save,
-     .           nsurf_tal_save,nradd_tal_save, 
+     .           nr1tal_save, np2tal_save, nt3tal_save,
+     .           nsbox_tal_save, nsurf_tal_save, nradd_tal_save, 
      .           js, iunin_save, iusrout
 
       INTEGER, INTENT(IN) :: ISTRAA, ISTRAE, NEW_ITER, IFRST, ITRG
@@ -731,7 +731,6 @@ C
       READ(33,*) NRKNOT
       WRITE(iunout,*) 'NRKNOT = ',NRKNOT
 
-
 C
 C     READ IN THE NUMBER OF TRIANGLES AND ATTRIBUTES OF THE TRIANGLES
       READ(34,*) NTRII
@@ -807,25 +806,7 @@ C THE SPECIAL SURFACE PROPERTY (IF ANY) IS ON INMTI ARRAY, AND TRANSFERRED INTO
 C EIRENE VIA COMMON.
       ENDDO
 
-C  FOR ALL QUADRANGLES BUILD LIST OF TRIANGLES BELONGING
-C  TO THE QUADRANGLE
-      ALLOCATE (HEADS(N1ST,N2ND))
-      DO IR=1,NR1ST
-        DO IP=1,NP2ND
-          NULLIFY(HEADS(IR,IP)%P)
-        ENDDO
-      ENDDO
-
-      DO ITRI=1,NTRII
-        IF (IXTRI(ITRI).GT.0) THEN
-          IR=IYTRI(ITRI)
-          IP=IXTRI(ITRI)
-          ALLOCATE(CURPOI)
-          CURPOI%TRIANGLE = ITRI
-          CURPOI%NEXT => HEADS(IR,IP)%P
-          HEADS(IR,IP)%P => CURPOI
-        ENDIF
-      ENDDO
+      CALL BUILD_HEADS_ARRAY
 
 C  BUILD NSTGRD ARRAY OF "BLOCKED" TRIANGLES FROM XAISO ARRAY FROM FORT.29
       IF (IO29.EQ.0) THEN
@@ -4936,6 +4917,10 @@ csw mpi 07apr2010
      .                 0,MPI_COMM_WORLD,ier)
 
         call mpi_barrier(MPI_COMM_WORLD,ier)
+
+        if (.not. allocated(heads)) then
+          call build_heads_array
+        endif
       return
 csw
 csw mpi 09jun2010
@@ -5606,82 +5591,111 @@ C
 C DEFINE NORMAL DIRECTION FOR SURFACE-AVERAGED TALLIES (SEE FOLNEUT.F)
        SUBROUTINE CORRECTNSS
 
-         IF(ITRI.GT.NTRIS.OR.NBAR.GT.NTRIS.OR.
-     .     NUMSI.GT.3.OR.NBARSI.GT.3)
-     .     WRITE(iunout,*) "ERROR IN CORRECTNSS",
-     .                  "ITRI,NTRIS,NBAR,NTRIS,NUMSI,NBARSI",
+       IF(ITRI.GT.NTRIS.OR.NBAR.GT.NTRIS.OR.
+     .   NUMSI.GT.3.OR.NBARSI.GT.3)
+     .   WRITE(iunout,*) "ERROR IN CORRECTNSS",
+     .                   "ITRI,NTRIS,NBAR,NTRIS,NUMSI,NBARSI",
      .                   ITRI,NTRIS,NBAR,NTRIS,NUMSI,NBARSI
 
-         INMTINSS(NUMSI,ITRI)=1
-         INMTINSS(NBARSI,NBAR)=1
+       INMTINSS(NUMSI,ITRI)=1
+       INMTINSS(NBARSI,NBAR)=1
 
-         IF ((IXTRI(ITRI) > 0) .AND. (IYTRI(ITRI) > 0) .AND.
-     .       (IXTRI(NBAR) > 0) .AND. (IYTRI(NBAR) > 0)) THEN
+       IF ((IXTRI(ITRI) > 0) .AND. (IYTRI(ITRI) > 0) .AND.
+     .     (IXTRI(NBAR) > 0) .AND. (IYTRI(NBAR) > 0)) THEN
 !  both triangles inside mesh
-            IF (IXTRI(ITRI) == IXTRI(NBAR)) THEN
-              IF (IYTRI(ITRI) > IYTRI(NBAR)) THEN
-                INMTINSS(NUMSI,ITRI) = -1
-              ELSE
-                INMTINSS(NBARSI,NBAR) = -1
-              END IF
+         IF (IXTRI(ITRI) == IXTRI(NBAR)) THEN
+           IF (IYTRI(ITRI) > IYTRI(NBAR)) THEN
+             INMTINSS(NUMSI,ITRI) = -1
+           ELSE
+             INMTINSS(NBARSI,NBAR) = -1
+           END IF
 
-            ELSE IF (IYTRI(ITRI) == IYTRI(NBAR)) THEN
-              IF (IXTRI(ITRI) > IXTRI(NBAR)) THEN
-                INMTINSS(NUMSI,ITRI) = -1
-              ELSE
-                INMTINSS(NBARSI,NBAR) = -1
-              END IF
-            END IF
+         ELSE IF (IYTRI(ITRI) == IYTRI(NBAR)) THEN
+           IF (IXTRI(ITRI) > IXTRI(NBAR)) THEN
+             INMTINSS(NUMSI,ITRI) = -1
+           ELSE
+             INMTINSS(NBARSI,NBAR) = -1
+           END IF
+         END IF
 
 !  triangle IT inside mesh, triangle NBAR outside mesh
-          ELSE IF ((IXTRI(ITRI) > 0) .AND. (IYTRI(ITRI) > 0)) THEN
+       ELSE IF ((IXTRI(ITRI) > 0) .AND. (IYTRI(ITRI) > 0)) THEN
 
 !  poloidal surface
-            IF (LXSRF) THEN
-              IF (IXTRI(ITRI).EQ.1) THEN        ! 'W SURFACE'
-                INMTINSS(NUMSI,ITRI ) = -1
-              ELSE                            ! 'E SURFACE'
-                INMTINSS(NBARSI,NBAR) = -1
-              END IF
+         IF (LXSRF) THEN
+           IF (IXTRI(ITRI).EQ.1) THEN ! 'W SURFACE'
+             INMTINSS(NUMSI,ITRI ) = -1
+           ELSE                 ! 'E SURFACE'
+             INMTINSS(NBARSI,NBAR) = -1
+           END IF
 
 !  radial surface
-            ELSE
-              IF (IYTRI(ITRI).EQ.1) THEN        ! 'S SURFACE'
-                INMTINSS(NUMSI,ITRI ) = -1
-              ELSE                            ! 'N SURFACE'
-                INMTINSS(NBARSI,NBAR) = -1
-              END IF
-
-            END IF
+         ELSE
+           IF (IYTRI(ITRI).EQ.1) THEN ! 'S SURFACE'
+             INMTINSS(NUMSI,ITRI ) = -1
+           ELSE                 ! 'N SURFACE'
+             INMTINSS(NBARSI,NBAR) = -1
+           END IF
+           
+         END IF
 
 !  triangle NBAR inside mesh, triangle IT outside mesh
-          ELSEIF((IXTRI(NBAR) > 0) .AND. (IYTRI(NBAR) > 0)) THEN
-
+       ELSEIF((IXTRI(NBAR) > 0) .AND. (IYTRI(NBAR) > 0)) THEN
+         
 !  poloidal surface
-            IF (LXSRF) THEN
-              IF (IXTRI(NBAR).EQ.1) THEN      ! 'W SURFACE'
-                INMTINSS(NBARSI,NBAR ) = -1
-              ELSE                            ! 'E SURFACE'
-                INMTINSS(NUMSI,ITRI) = -1
-              END IF
-
+         IF (LXSRF) THEN
+           IF (IXTRI(NBAR).EQ.1) THEN ! 'W SURFACE'
+             INMTINSS(NBARSI,NBAR ) = -1
+           ELSE                 ! 'E SURFACE'
+             INMTINSS(NUMSI,ITRI) = -1
+           END IF
+           
 !  radial surface
-            ELSE
-              IF (IYTRI(NBAR).EQ.1) THEN      ! 'S SURFACE'
-                INMTINSS(NBARSI,NBAR ) = -1
-              ELSE                            ! 'N SURFACE'
-                INMTINSS(NUMSI,ITRI) = -1
-              END IF
-
-            END IF
+         ELSE
+           IF (IYTRI(NBAR).EQ.1) THEN ! 'S SURFACE'
+             INMTINSS(NBARSI,NBAR ) = -1
+           ELSE                 ! 'N SURFACE'
+             INMTINSS(NUMSI,ITRI) = -1
+           END IF
+           
+         END IF
 
 !  both triangles outside mesh --> do not know - do nothing
-          END IF
+       END IF
 
        END  SUBROUTINE CORRECTNSS
 CVK END
 
-      END
+      subroutine build_heads_array
+C  FOR ALL QUADRANGLES BUILD LIST OF TRIANGLES BELONGING
+C  TO THE QUADRANGLE
+      use eirmod_ctrig
+     &   , only: ixtri, iytri, ntrii
+      use eirmod_parmmod
+     &   , only: N1ST, N2ND
+      integer :: IR, IP, ITRI
+      TYPE (CELL),POINTER :: CURPOI
+
+      IF(.NOT.ALLOCATED(HEADS)) ALLOCATE (HEADS(N1ST,N2ND))
+      DO IR=1,N1ST
+        DO IP=1,N2ND
+          NULLIFY(HEADS(IR,IP)%P)
+        ENDDO
+      ENDDO
+
+      DO ITRI=1,NTRII
+        IF (IXTRI(ITRI).GT.0) THEN
+          IR=IYTRI(ITRI)
+          IP=IXTRI(ITRI)
+          ALLOCATE(CURPOI)
+          CURPOI%TRIANGLE = ITRI
+          CURPOI%NEXT => HEADS(IR,IP)%P
+          HEADS(IR,IP)%P => CURPOI
+        ENDIF
+      ENDDO
+      end subroutine build_heads_array
+
+      END SUBROUTINE EIRENE_INFCOP
 
 C> \brief Any property requiring hand-over in parallel part.
 C>

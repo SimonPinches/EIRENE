@@ -422,7 +422,7 @@
       !csw 04mar2013 shifted from wneusave to here (wneufill)
       !csw
       value=0.0
-      eneutrad(:,:,1,istra) = 0.d0
+      eneutrad(:,:,1,istra) = 0.0_dp
       do icell=1,ntrii
         ix=ixtri(icell)
         iy=iytri(icell)
@@ -460,15 +460,14 @@
       !write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
       !write(iunout,*) 'ndxp, ndyp ',ndxp,ndyp
       !crfs     IF (WTOTP(0,ISTRA).EQ.0.) GOTO 60
+
+      volcel = 0.d0
+      do in=1,ntrii
+        ix=ixtri(in)
+        iy=iytri(in)
+        if(b2_cell(ix,iy)) volcel(ix,iy) = volcel(ix,iy) + vol(in)
+      end do
       do jatm=1,natmi
-        volcel = 0.d0
-        do in=1,ntrii
-          ix=ixtri(in)
-          iy=iytri(in)
-          if(ix.gt.0) then
-            volcel(ix,iy) = volcel(ix,iy) + vol(in)
-          end if
-        end do
         do in=1,ntrii
           ix=ixtri(in)
           iy=iytri(in)

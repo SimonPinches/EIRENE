@@ -110,7 +110,7 @@ C  ELECTRON TEMPERATURE
         CALL EIRENE_PROFS (TEIN,TE0,TE1,TE5,TVAC)
       CASE (4)
 c  INDPRO=4:  read tally from stream TEO
-        JSTREAM=INT(TE0)
+        JSTREAM=NINT(TE0)
         ITALI=1
         CALL EIRENE_READTL(TXTPLS(1,ITALI),TXTPSP(1,ITALI),
      .              TXTPUN(1,ITALI),
@@ -157,7 +157,7 @@ cdr one profile iplsti set at a time
           TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
         case (4)
 c  INDPRO=4:  read tally from stream TIO(IPLSTI)
-          JSTREAM=INT(TI0(IPLSTI))
+          JSTREAM=NINT(TI0(IPLSTI))
           ITALI=2
           CALL EIRENE_READTL(TXTPLS(IPLSTI,ITALI),TXTPSP(IPLSTI,ITALI),
      .              TXTPUN(IPLSTI,ITALI),
@@ -215,7 +215,7 @@ cdr one profile ipls set at a time
           DIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
         case (4)
 c  INDPRO=4:  read tally from stream DIO(IPLS)
-          JSTREAM=INT(DI0(IPLS))
+          JSTREAM=NINT(DI0(IPLS))
           ITALI=4
           CALL EIRENE_READTL(TXTPLS(IPLS,ITALI),TXTPSP(IPLS,ITALI),
      .              TXTPUN(IPLS,ITALI),

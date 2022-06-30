@@ -130,7 +130,7 @@ cym IC ?
      .           IGFFT, IALV, IDV, I, IER, IRC, NMX,
      .           NINIST, IPANU, ISEED_ISTRA, ISEED_IPTSI, IDUMRAN,
      .           ISTR, NPTTOT, NREC11,
-     .           IGFF, IADD, INDX, ICLV, IADV,
+     .           IADD, INDX, ICLV, IADV,
      .           INODES, J, IT, IMCP,
      .           ISUM, NPX, IS, NEW_ITER, ISPC, IN,
      .           JATM, JMOL, JION, JPHOT, JPLS,
@@ -1187,11 +1187,9 @@ C
               IT=ICLVT(ICLV)
               IF (IT.LE.0.OR.IT.GE.NTALA) GOTO 285
               IGFFT=NFSTVI(IT)
-              IGFF=NFIRST(IT)
               IF (IS.LE.0.OR.IS.GT.IGFFT) GOTO 285
               IADD=NADDV(IT)
               DO 286 J=1,NSBOX_TAL
-                INDX=IADD+(J-1)*IGFF+IS
                 ESTIMV(IADD+IS,J)=COLV(ICLV,J)
   286         CONTINUE
   285       CONTINUE
@@ -1208,11 +1206,9 @@ C
               IT=IADVT(IADV)
               IF (IT.LE.0.OR.IT.GE.NTALA) GOTO 290
               IGFFT=NFSTVI(IT)
-              IGFF=NFIRST(IT)
               IF (IS.LE.0.OR.IS.GT.IGFFT) GOTO 290
               IADD=NADDV(IT)
               DO 295 J=1,NSBOX_TAL
-                INDX=IADD+(J-1)*IGFF+IS
                 ESTIMV(IADD+IS,J)=ADDV(IADV,J)
   295         CONTINUE
   290       CONTINUE
