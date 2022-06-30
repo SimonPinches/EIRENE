@@ -192,6 +192,7 @@ cdr Why can we not use NHDx directly?
       INTEGER, INTENT(IN) :: ME
       INTEGER :: IER
 
+      CALL EIRENE_CHECK_EXIT
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       IF (ME /= 0) CALL EIRENE_ALLOC_CREF
@@ -212,6 +213,7 @@ cdr Why can we not use NHDx directly?
       CALL MPI_BCAST (HFTR3,NHD1*NHD2*NHD3*NHD4*NHD5*NHD6,
      .                MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
+      CALL EIRENE_CHECK_EXIT
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       RETURN

@@ -50,7 +50,7 @@ cym these variables need copyin
      .                         EIRENE_STATS2
       USE EIRMOD_UPDLIN
       USE EIRMOD_REFLEC, ONLY: EIRENE_REFLC0,
-cym variables that need to be allocated/associated for workler threads
+cym variables that need to be allocated/associated for worker threads
 cym will disappear when parallel zone will encompass the whole code
      .                         IREDUC,FREDUC,EREDUC
       USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
@@ -1603,6 +1603,7 @@ cdr  see above. Routine UPDLIN.f contains linear combination of tallies
       if (nmode.gt.0) call eirene_reset_updlin
 
 
+      CALL EIRENE_CHECK_EXIT
       CALL MPI_BARRIER (MPI_COMM_WORLD,IER)
 #ifdef USE_EXT_OPENMP
 !$OMP END MASTER     

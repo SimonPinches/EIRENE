@@ -88,7 +88,7 @@ c  ADDITIONAL SURFACES
             IF (ABS(ILPLG(I)) .EQ. ICONT) THEN
 C 0 < RLB(I) < 2
 C 2-PUNKT OPTION WIRD IM TIMEA0 AUF RLB=1 ZURUECKGEFUEHRT
-              IF ((RLB(I) .GT. 0.) .AND. (RLB(I) .LT. 2.) .AND.
+              IF ((RLB(I) .GT. 0._DP) .AND. (RLB(I) .LT. 2._DP) .AND.
      >            (P3(1,I) .EQ. 1.D55 .OR. P3(2,I) .EQ. 1.D55
      >            .OR. P3(3,I) .EQ. 1.D55)) THEN
                 IPOIN = IPOIN + 1
@@ -102,19 +102,19 @@ C 2-PUNKT OPTION WIRD IM TIMEA0 AUF RLB=1 ZURUECKGEFUEHRT
      .             'CURRENTLY MAXPOIN = ', MAXPOIN
                   CALL EIRENE_EXIT_OWN(1)
                 ENDIF
-                IF (A3LM(I) .EQ. 0.) THEN
+                IF (A3LM(I) .EQ. 0._DP) THEN
 C               X,Y-KOORDINATEN
                   PARTCONT(IPOIN,1,1) = P1(1,I)
                   PARTCONT(IPOIN,1,2) = P1(2,I)
                   PARTCONT(IPOIN,2,1) = P2(1,I)
                   PARTCONT(IPOIN,2,2) = P2(2,I)
-                ELSEIF (A2LM(I) .EQ. 0.) THEN
+                ELSEIF (A2LM(I) .EQ. 0._DP) THEN
 C               X,Z-KOORDINATEN
                   PARTCONT(IPOIN,1,1) = P1(1,I)
                   PARTCONT(IPOIN,1,2) = P1(3,I)
                   PARTCONT(IPOIN,2,1) = P2(1,I)
                   PARTCONT(IPOIN,2,2) = P2(3,I)
-                ELSEIF (A1LM(I) .EQ. 0.) THEN
+                ELSEIF (A1LM(I) .EQ. 0._DP) THEN
 C               Y,Z-KOORDINATEN
                   PARTCONT(IPOIN,1,1) = P1(2,I)
                   PARTCONT(IPOIN,1,2) = P1(3,I)

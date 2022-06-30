@@ -51,6 +51,7 @@ ctk      real(dp), external :: ranf_eirene
      .           ityp, iphot, iatm, imol, iion
       integer :: icopro(0:nprs), idistrib(0:nprs), icosend(0:nprs)
 
+      CALL EIRENE_CHECK_EXIT
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (FLXFAC,NSTRAI+1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
@@ -112,6 +113,7 @@ c     pefluxp(my_pe)=peflux
 
 ! transfer maximum possible rpartw to processor 0
 
+      CALL EIRENE_CHECK_EXIT
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       call mpi_allreduce(iprnli,itotal,1,MPI_INTEGER,
@@ -212,6 +214,7 @@ cdr where currently these numbers are hard-coded.
           rpselect(0) = RPARTW(iprnli)
         end if
 
+        CALL EIRENE_CHECK_EXIT
         CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 ! fetch the total flux from all the individual processors
 ! damit wird obiges rpselect(0) nochmal ueberschrieben
@@ -328,6 +331,7 @@ c
 
        	if (.not.allocated(rdistrib)) allocate(rdistrib(nprnl))
 
+        CALL EIRENE_CHECK_EXIT
         CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
         call mpi_scatter(icopro ,1,MPI_INTEGER,
      .                   ncoreal,1,MPI_INTEGER,0,

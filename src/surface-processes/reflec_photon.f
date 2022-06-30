@@ -4,7 +4,6 @@ cdr  dec.18 : remove unfinished "hollmann databse model"
 cpb  oct.19 : set ISPZO=ISPZ for default reflection model      
 C
 C
-      SUBROUTINE EIRENE_REFLEC_photon
 C
 C  REFLECT ESCAPING PHOTONS
 C  INPUT:
@@ -19,16 +18,6 @@ C       ITYP = 0  PHOTON IPHOT IS RETURNED TO CALLING PROGRAM
 C     LGPART= FALSE  NO PARTICLE IS RETURNED (ABSORPTION)
 C       ITYP = -1
 C
-
-      IMPLICIT NONE
-
-C
-C---------------------------------------------------------------------
-C
-
-      CALL EIRENE_REFLC0_PHOTON
-      END SUBROUTINE EIRENE_REFLEC_photon
-
 C
 C  INITIALIZE SURFACE REFLECTION MODELS FOR PHOTONS
 C

@@ -140,6 +140,7 @@ C
       CALL EIRENE_INIT_OPENMP()
 
       CALL EIRENE_DEFAULTS_USR
+      CALL EIRENE_ALLOC_CPES(2)
 
 cdr  this is currently done in COMPRT. Should be moved to PARMMOD, or somewhere else early enough
 c     IUNIN = 1
@@ -246,7 +247,7 @@ cdr  should we not set inentry=0 now ??  meaning of init_log, inentry, nlpls_sav
         CALL EIRENE_ALLOC_CGEOM(1)
         CALL EIRENE_ALLOC_CSDVI(1)
         CALL EIRENE_ALLOC_CTETRA
-        CALL EIRENE_ALLOC_CPES
+        CALL EIRENE_ALLOC_CPES(1)
         IF (ITNR == 1) CALL EIRENE_ALLOC_COMSOU(1)
         CALL EIRENE_ALLOC_COMSPL
         CALL EIRENE_ALLOC_CTEXT(1)

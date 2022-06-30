@@ -15,6 +15,7 @@ cdr             evaluated "on the fly" instead (subr. sputer.f)
      .                            ETH(N1,0:N2), Q(N1,0:N2)
       INTEGER :: IER
 
+      CALL EIRENE_CHECK_EXIT
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       CALL MPI_BCAST (ES,N1,MPI_REAL8,0,MPI_COMM_WORLD,ier)

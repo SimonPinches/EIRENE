@@ -36,10 +36,10 @@ c  eirene_locat2:  deallocate temporary arrays
       USE EIRMOD_SWITCH_PARTINFO, ONLY: EIRENE_SWITCH_PARTINFO
       USE EIRMOD_SAMSRF, ONLY: EIRENE_SAMSF1
       USE EIRMOD_STDCOL, ONLY: EIRENE_STDNOR
+      USE EIRMOD_SPUTER, ONLY: EIRENE_SPUTR1
+      USE EIRMOD_REFLEC, ONLY: EIRENE_REFLC1
       USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
-      use eirmod_reflec
       use eirmod_sheath, only: eirene_sheath 
-      use eirmod_sputer, only: eirene_sputr1
 
       IMPLICIT NONE
       PRIVATE
