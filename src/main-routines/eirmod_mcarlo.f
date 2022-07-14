@@ -232,44 +232,44 @@ C
       CALL EIRENE_LEER(1)
       CALL EIRENE_STATS0
       TIM2=EIRENE_SECOND_OWN()
-      IF (TRCTIM) write (iunout,*) 'cpu time for stats0 ', tim2-tim1
+      IF (TRCTIM) write (iunout,*) 'CPU time for stats0 ', tim2-tim1
       tim1 = tim2
       CALL EIRENE_STATS0_SPC
       TIM2=EIRENE_SECOND_OWN()
-      IF (TRCTIM) write (iunout,*) 'cpu time for stats0_spc ', tim2-tim1
+      IF (TRCTIM) write (iunout,*) 'CPU time for stats0_spc ', tim2-tim1
       tim1 = tim2
 C  INITIALIZE SUBR. REFLEC AND SPUTER
       CALL EIRENE_REFLC0
       TIM2=EIRENE_SECOND_OWN()
-      IF (TRCTIM) write (iunout,*) 'cpu time for reflec0 ', tim2-tim1
+      IF (TRCTIM) write (iunout,*) 'CPU time for reflec0 ', tim2-tim1
       tim1 = tim2
       IF (NPHOT > 0) THEN
         CALL EIRENE_REFLC0_PHOTON
         CALL EIRENE_LINE_CUTOFF
         TIM2=EIRENE_SECOND_OWN()
         IF (TRCTIM) 
-     >    write (iunout,*) 'cpu time for reflc0_photon ', tim2-tim1
+     >    write (iunout,*) 'CPU time for reflc0_photon ', tim2-tim1
         tim1 = tim2
       END IF
       CALL EIRENE_SPUTR0
       TIM2=EIRENE_SECOND_OWN()
-      IF (TRCTIM) write (iunout,*) 'cpu time for sputr0 ', tim2-tim1
+      IF (TRCTIM) write (iunout,*) 'CPU time for sputr0 ', tim2-tim1
       tim1 = tim2
 C  INITIALIZE SUBR. SAMVOL
       CALL EIRENE_SAMVL0
       TIM2=EIRENE_SECOND_OWN()
-      IF (TRCTIM) write (iunout,*) 'cpu time for samvl0 ', tim2-tim1
+      IF (TRCTIM) write (iunout,*) 'CPU time for samvl0 ', tim2-tim1
       tim1 = tim2
 C  INITIALIZE SUBR. SAMSRF
       CALL EIRENE_SAMSF0
       TIM2=EIRENE_SECOND_OWN()
-      IF (TRCTIM) write (iunout,*) 'cpu time for samsf0 ', tim2-tim1
+      IF (TRCTIM) write (iunout,*) 'CPU time for samsf0 ', tim2-tim1
       tim1 = tim2
 C  INITIALIZE SUBR. UPDLIN
       CALL EIRENE_PREPARE_UPDLIN
       TIM2=EIRENE_SECOND_OWN()
       IF (TRCTIM) 
-     >  write (iunout,*) 'cpu time for prepare_updlin ', tim2-tim1
+     >  write (iunout,*) 'CPU time for prepare_updlin ', tim2-tim1
       tim1 = tim2
 C
 C
@@ -735,9 +735,9 @@ C  PARTICLE LOOP WITHIN STRATUM ISTRA
         DO 100 IPTSI=1,NPTS(ISTRA)
 
 ! Check that another thread hasn't aborted the particle loop
-#ifdef USE_OPENMP           
+!pb#ifdef USE_OPENMP           
             IF(LGABORT) cycle
-#endif           
+!pb#endif           
            
 C  SOME PREPARATORY WORK, ONCE FOR EACH NEW PARTICLE HISTORY
 C
@@ -798,13 +798,13 @@ cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cym exit from the loop not allowed with OpenMP
 cym currently time limit not enforced
 cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccc              
-#ifdef USE_OPENMP               
+!pb#ifdef USE_OPENMP               
 !$OMP ATOMIC WRITE
               LGABORT = .TRUE.   ! Abort this stratum,
-#else 
-!pb17.11.2021              GOTO 101
-              LGABORT = .TRUE.   ! Abort this stratum,
-#endif
+!pb#else 
+!pb!pb17.11.2021              GOTO 101
+!pb              LGABORT = .TRUE.   ! Abort this stratum,
+!pb#endif
             ELSEIF (LGLAST.AND..NOT.LGSTOP) THEN
               CALL EIRENE_LEER(1)
               WRITE (iunout,*) 'CENSUS ARRAYS FILLED FOR THIS STRATUM'
@@ -821,13 +821,13 @@ cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cym see comment above
 cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccc              
-#ifdef USE_OPENMP               
+!pb#ifdef USE_OPENMP               
 !$OMP ATOMIC WRITE
               LGABORT = .TRUE.   ! Abort this stratum,
-#else
-!pb17.11.2021              GOTO 101
-              LGABORT = .TRUE.   ! Abort this stratum,
-#endif
+!pb#else
+!pb!pb17.11.2021              GOTO 101
+!pb              LGABORT = .TRUE.   ! Abort this stratum,
+!pb#endif
             ENDIF
 
 C  WALL CLOCK TIME AT START OF NEXT MONTE CARLO HISTORY
@@ -1029,25 +1029,27 @@ C
  
 !$OMP MASTER
                   
-          CALL EIRENE_LEER(1)
+          IF (.NOT.LGABORT) THEN
+            CALL EIRENE_LEER(1)
 
-          WRITE (iunout,*) 'ALL REQUESTED TRAJECTORIES COMPLETED'
-          WRITE (iunout,'(1x,a,a)') 
-     .     'M.C. HISTORIES FOLLOWED UNTIL THAT TIME FOR',
-     .     'THIS STRATUM'
+            WRITE (iunout,*) 'ALL REQUESTED TRAJECTORIES COMPLETED'
+            WRITE (iunout,'(1x,a,a)') 
+     .       'M.C. HISTORIES FOLLOWED UNTIL THAT TIME FOR',
+     .       'THIS STRATUM'
 
-          call system_clock (itimend, itimrate)
-          timused=real(itimend-itimstart,DP)/REAL(itimrate,DP)
-          CALL EIRENE_MASJ2R('ISTRA,IPANU,TIMUSED     ',
-     .                        ISTRA,IPANU,TIMUSED)
+            call system_clock (itimend, itimrate)
+            timused=real(itimend-itimstart,DP)/REAL(itimrate,DP)
+            CALL EIRENE_MASJ2R('ISTRA,IPANU,TIMUSED     ',
+     .                          ISTRA,IPANU,TIMUSED)
 
 
-          IF (NPRNLI.GT.0) THEN
-            WRITE (iunout,*) 'M.C. HISTORIES THAT SCORED AT CENSUS'
-            CALL EIRENE_MASJ1 ('IPRNLS= ',IPRNLS)
-          ENDIF
-          IF (TRCLST) CALL EIRENE_OUTLST
-C         GOTO 101
+            IF (NPRNLI.GT.0) THEN
+              WRITE (iunout,*) 'M.C. HISTORIES THAT SCORED AT CENSUS'
+              CALL EIRENE_MASJ1 ('IPRNLS= ',IPRNLS)
+            ENDIF
+            IF (TRCLST) CALL EIRENE_OUTLST
+C           GOTO 101
+          END IF
 cym ccccccccccccccccccccccccccccccccccccccccccccc
 cym see comment above
 cym ccccccccccccccccccccccccccccccccccccccccccccc          

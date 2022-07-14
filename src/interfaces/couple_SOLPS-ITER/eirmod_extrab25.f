@@ -36,13 +36,16 @@
       public :: eirene_extrab25_wneusave, eirene_extrab25_wneuclean
       public :: eirene_extrab25_alloc_mods
       public :: eirene_extrab25_iniusr_init
+      public :: eirene_extrab25_emissivity
       public :: b2_cell
 
       ! eirdiag.h/eirdiag.f
       !c*** Volume data:
       !c***    srcml   :   power loss due to molecules, including
       !c***    edissml :   power loss due to molecule dissociation
-      !c***    eneutrad:   power radiated due to neutrals (only atoms at the moment)
+      !c***    eneutrad:   power radiated due to neutral atoms
+      !c***    emolrad :   power radiated due to molecules
+      !c***    eionrad :   power radiated due to molecular ions
       !c*** Surface data:
       !c***    wldnek  :   heat transferred with neutrals
       !c***    wldnep  :   potential energy released by neutrals
@@ -71,7 +74,7 @@
       real(DP), save, allocatable, dimension (:,:),public ::
      .  wldpeb,wldspt
       real(DP), save, allocatable, dimension (:,:,:,:), public ::
-     .  eneutrad
+     .  eneutrad, emolrad, eionrad
 
       integer, save, public :: nnlimi,nnstsi,nnatmi,nnmoli,nnioni
       integer, save, public :: nnplsi,nns
@@ -79,14 +82,7 @@
       logical, save, public :: lhalpha=.false.,lvib=.false.
 
       ! wneutral globals
-      real(DP), save :: DA31(0:8,0:8)
-      real(DP), save :: DP31(0:8,0:8)
-      real(DP), save :: DM31(0:8,0:8)
-      real(DP), save :: DI31(0:8,0:8)
-      real(DP), save :: DN31(0:8,0:8)
-      real(DP), save :: RHMH2(0:8),RH2PH2(0:8,0:8)
-      CHARACTER, save :: FILNAM*8,H123*4,REAC*9,CRC*3
-      logical, save :: hlp_pr
+!c      logical, save :: hlp_pr
       integer, save :: ia0,ia1,ia2,ia3,ifirst_wneutral=0
       real(DP), save :: hlp_cnv
 
@@ -122,6 +118,10 @@
 ! flag indicating if subroutine iniusr is called from B2.5
       integer, public, save :: ini_iniusr=0
 
+      !C*** ionization potentials
+      integer, save :: npot=20
+      real(dp), allocatable, save :: pot_data(:)
+
       contains
 
       subroutine eirene_extrab25_alloc_mods(nnx,nny)
@@ -136,7 +136,92 @@
       call eirene_alloc_eirbra(nnx,nny,nfl,nstra)
       allocate (flux_save(nstra))
       flux_save=0.d0
-      end subroutine
+      end subroutine eirene_extrab25_alloc_mods
+
+      !c
+      !c*** Obtain ionization potentials for consistency with B2.5
+      !c
+      subroutine eirene_extrab25_init_eion
+      use eirmod_mpi
+!pb
+      use eirmod_cinit , only : MASTER_PATH
+!pb
+      implicit none
+      integer iss, jatm
+      character*256 filename
+      logical found
+      logical, save :: eion_set
+
+!pb   character*256 :: get_solpstop
+!pb   external get_solpstop
+      data eion_set /.false./
+
+      if (eion_set) return
+      filename='ionization_potentials'
+      inquire(file=filename,exist=found)
+      if(.not.found) then
+        filename='../'//filename
+        inquire(file=filename,exist=found)
+      endif
+      if (found) then
+        open(UNIT=99,FILE=trim(filename))
+      else
+!pb     inquire (FILE=trim(get_solpstop())//
+!pb  .   '/data.local/ionization_potentials',exist=found)
+        inquire (FILE=trim(MASTER_PATH)//
+     .   '/data.local/ionization_potentials',exist=found)
+!pb     if (found) then
+!pb       open(UNIT=99,FILE=trim(get_solpstop())//
+!pb  .     '/data.local/ionization_potentials')
+        if (found) then
+          open(UNIT=99,FILE=trim(MASTER_PATH)//
+     .     '/data.local/ionization_potentials')
+        else
+!pb       inquire (FILE=trim(get_solpstop())//
+!pb  .     '/modules/B2.5/Database/ionization_potentials',exist=found)
+!pb       if (found) open(UNIT=99,FILE=trim(get_solpstop())//
+!pb  .     '/modules/B2.5/Database/ionization_potentials')
+          inquire (FILE=trim(MASTER_PATH)//
+     .     '/modules/B2.5/Database/ionization_potentials',exist=found)
+          if (found) open(UNIT=99,FILE=trim(MASTER_PATH)//
+     .     '/modules/B2.5/Database/ionization_potentials')
+        endif
+      endif
+      if (found) then
+        do jatm=1,natmi
+          rewind(99)
+          do iss=1,nchara(jatm)-1
+            read(99,*)
+          enddo
+          read(99,*) Eion(jatm)
+          if(nchara(jatm).eq.1 .and. nmassa(jatm).ne.1)
+     .     Eion(jatm)=Eion(jatm)*
+     .      (nmassa(jatm)*(pmassa+pmasse))/(pmasse+nmassa(jatm)*pmassa)
+        enddo
+        close(99)
+      else
+        write (iunout,*) 'in EXTRAB25, no ionization file '
+        write (iunout,'(a6,a12)') '  JATM','        Eion'
+        do jatm = 1, natm
+          if(nchara(jatm).eq.1) then
+             Eion(jatm)=EionH
+             if (nmassa(jatm).ne.1) Eion(jatm)=Eion(jatm)*
+     .         (nmassa(jatm)*(pmassa+pmasse))/
+     .         (pmasse+nmassa(jatm)*pmassa)
+          elseif (nchara(jatm).eq.2) then
+            Eion(jatm)=EionHe
+          elseif (nchara(jatm).le.npot) then
+            Eion(jatm)=pot_data(nchara(jatm))
+          else
+            Eion(jatm)=0.0_dp
+          endif
+          write (iunout,'(i6,es12.4)') jatm, eion(jatm)
+        enddo
+      endif
+      eion_set=.true.
+      return
+
+      end subroutine eirene_extrab25_init_eion
 
       subroutine eirene_extrab25_wneutrals
       ! old version : 27.07.2000 23:07
@@ -146,70 +231,20 @@
       !c     (summed up for all strata)
       implicit none
 
-      INTERFACE
-        SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
-     .             RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
-     .             RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .             ELNAME, IZ1, IROW_ESC, ICOL_ESC, POP_ESC,
-     .             IFTFL, NCOEF, COEF)
-        USE EIRMOD_PRECISION
-        INTEGER,      INTENT(IN) :: IR, IZ1
-        INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC,
-     .                                        IFTFL, NCOEF
-        REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC
-        REAL(DP),     INTENT(IN), OPTIONAL :: COEF(9)      
-        CHARACTER(8), INTENT(IN) :: FILNAM
-        CHARACTER(4), INTENT(IN) :: H123
-        CHARACTER(LEN=*), INTENT(IN) :: REAC, ELNAME
-        CHARACTER(3), INTENT(IN) :: CRC
-        INTEGER,  INTENT(IN OUT) :: JFEX1MN, JFEX1MX,JFEX2MN, JFEX2MX
-        REAL(DP), INTENT(IN OUT) :: RC1MIN, RC1MAX, FP1(6),
-     .                              RC2MIN, RC2MAX, FP2(6)
-        END SUBROUTINE EIRENE_SLREAC
-      END INTERFACE
-
       real(DP) :: dummy(0:ndxp,0:ndyp)
       !c*** label for fort.44 file
       integer, parameter  :: jvft44=20000727
       !c*** and dissociation energy of the hydrogen molecule
       real(DP), parameter  :: diss_pot_H2=4.48
-      !c*** radiative transition prob. level 3-->2 (1/sec) for H-alpha calc.
-      real(DP), parameter :: fac32=4.410e7
-      !C*** ionization potentials
-      integer,parameter :: npot=20
-      real(DP),save :: pot_data(npot),pot
-      data pot_data /13.598, !H
-     .               24.587, !He
-     .                5.392, !Li
-     .                9.322, !Be
-     .                8.298, !B
-     .               11.260, !C
-     .               14.534, !N
-     .               13.618, !O
-     .               17.422, !F
-     .               21.564, !Ne
-     .                5.139, !Na
-     .                7.646, !Mg
-     .                5.986, !Al
-     .                8.151, !Si
-     .               10.486, !P
-     .               10.360, !S
-     .               12.967, !Cl
-     .               15.759, !Ar
-     .                4.341, !K
-     .                6.113/ !Ca
-
 
       integer :: ix,iy,ir,iistra,icell,ierror,i,j,in,jatm,jmol,jion
       integer :: l,k,nred
-      real(DP) :: de,te,hlp,sigadd1,sigadd2,sigadd3,sigadd4,sigadd5
-      real(DP) :: dej,tei,tef,def,
-     .            powalf1,powalf2,powalf3,powalf4,powalf5
+      real(DP) :: de,te,hlp
+      real(DP) :: dej,tei,tef,def
       real(DP) :: powalf,datm3,dpls3,dmol3,dion3,dnml3,sigadd
       real(DP) :: da,dpp,dm,di,dn,ratio2,ratio7
       integer :: istra_in,istra_save
-      real(DP) :: rc1min,rc1max,fp1(6),rc2min,rc2max,fp2(6),vl
-      integer :: jfex1mn,jfex1mx,jfex2mn,jfex2mx
+      real(DP) :: vl
       real(DP) :: value
       character*36 hlp_frm
       external eirene_indmpi,eirene_neutr
@@ -255,9 +290,47 @@
       allocate(wldpeb(nlmpgs,0:nstra+1))
       allocate(wldspt(nlmpgs,0:nstra+1))
       allocate(eneutrad(0:ndxp,0:ndyp,natm,0:nstra+1))
+      allocate(emolrad(0:ndxp,0:ndyp,nmol,0:nstra+1))
+      allocate(eionrad(0:ndxp,0:ndyp,nion,0:nstra+1))
       allocate(isrftype(nlmpgs))
 
       allocate(volcel(0:ndxp,0:ndyp))
+      allocate(pot_data(npot))
+      pot_data = (/13.598_DP, !H
+     .             24.587_DP, !He
+     .              5.392_DP, !Li
+     .              9.322_DP, !Be
+     .              8.298_DP, !B
+     .             11.260_DP, !C
+     .             14.534_DP, !N
+     .             13.618_DP, !O
+     .             17.422_DP, !F
+     .             21.564_DP, !Ne
+     .              5.139_DP, !Na
+     .              7.646_DP, !Mg
+     .              5.986_DP, !Al
+     .              8.151_DP, !Si
+     .             10.486_DP, !P
+     .             10.360_DP, !S
+     .             12.967_DP, !Cl
+     .             15.759_DP, !Ar
+     .              4.341_DP, !K
+     .              6.113_DP/) !Ca
+
+      !tamas zero init
+      wldnep = 0
+      wldna  = 0
+      ewlda  = 0
+      wldnm  = 0
+      ewldm  = 0
+      wldra  = 0
+      wldrm  = 0
+      wldpp  = 0
+      wldpa  = 0
+      wldpm  = 0
+!pb   wlarea = 0
+!pb   wldspta = 0
+!pb   wldsptm = 0
 
       call eirene_extraB25_wneuclean
 
@@ -267,142 +340,6 @@
       ia2=ia1+natmi+nmoli
       ia3=ia2+natmi+nmoli
 
-      !c
-      !c*** Initialise the data for H-alpha radiation
-      !c
-      if(lhalpha) then
-          write(iunout,*) 'Using new SIGHA (941017)'
-          IERROR=0
-          rc1min=-huge(1.d0)
-          rc1max= huge(1.d0)
-          jfex1mn=0
-          jfex1mx=0
-          fp1=0.d0
-          rc2min=-huge(1.d0)
-          rc2max= huge(1.d0)
-          jfex2mn=0
-          jfex2mx=0
-          fp2=0.d0
-          !C
-          !C  READ REDUCED POPULATION COEFFICIENT FOR HYDR. ATOMS FROM FILE AMJUEL
-          !C  AND PUT THEM FROM CREAC(..,..,IR) ONTO DA,DPP,DM,DI, AND DN ARRAY
-          !C
-          IR=NREACI
-          IF (IR+7.GT.NREAC) then
-            WRITE (IUNOUT,*) 'FROM SUBROUTINE HALFA: '
-            CALL EIRENE_MASPRM('NREAC',5,NREAC,'IR',2,IR+7,IERROR)
-            CALL EIRENE_EXIT_OWN(1)
-          end if
-          !C
-          FILNAM='AMJUEL  '
-          H123='H.12'
-          CRC='OT '
-          !C
-          !C  H(n=3)/H(n=1)
-          REAC='2.1.5a   '
-          IR=IR+1
-          CALL eirene_slreac(IR,FILNAM,H123,REAC,CRC,
-     .                    rc1min,rc1max,fp1,jfex1mn,jfex1mx,
-     .                    rc2min,rc2max,fp2,jfex2mn,jfex2mx,'  ',0)
-          do J=1,9
-            do I=1,9
-              !DA31(J-1,I-1)=CREAC(J,I,NREACI+1)
-              DA31(J-1,I-1)=REACDAT(IR)%OTH%POLY%DBLPOL(J,I)
-            end do
-          end do
-          !C  H(n=3)/H+
-          REAC='2.1.8a   '
-          IR=IR+1
-          CALL eirene_slreac(IR,FILNAM,H123,REAC,CRC,
-     .                    rc1min,rc1max,fp1,jfex1mn,jfex1mx,
-     .                    rc2min,rc2max,fp2,jfex2mn,jfex2mx,'  ',0)
-          do J=1,9
-            do I=1,9
-              !DP31(J-1,I-1)=CREAC(J,I,NREACI+1)
-              DP31(J-1,I-1)=REACDAT(IR)%OTH%POLY%DBLPOL(J,I)
-            end do
-          end do
-          !C  H(n=3)/H2(g)
-          REAC='2.2.5a   '
-          IR=IR+1
-          CALL eirene_slreac(IR,FILNAM,H123,REAC,CRC,
-     .                    rc1min,rc1max,fp1,jfex1mn,jfex1mx,
-     .                    rc2min,rc2max,fp2,jfex2mn,jfex2mx,'  ',0)
-          do J=1,9
-            do I=1,9
-              !DM31(J-1,I-1)=CREAC(J,I,NREACI+1)
-              DM31(J-1,I-1)=REACDAT(IR)%OTH%POLY%DBLPOL(J,I)
-            end do
-          end do
-          !C  H(n=3)/H2+(g)
-          REAC='2.2.14a  '
-          IR=IR+1
-          CALL eirene_slreac(IR,FILNAM,H123,REAC,CRC,
-     .                    rc1min,rc1max,fp1,jfex1mn,jfex1mx,
-     .                    rc2min,rc2max,fp2,jfex2mn,jfex2mx,'  ',0)
-          do J=1,9
-            do I=1,9
-              !DI31(J-1,I-1)=CREAC(J,I,NREACI+1)
-              DI31(J-1,I-1)=REACDAT(IR)%OTH%POLY%DBLPOL(J,I)
-            end do
-          end do
-          !C  H(n=3)/H-
-          REAC='7.2a     '
-          IR=IR+1
-          CALL eirene_slreac(IR,FILNAM,H123,REAC,CRC,
-     .                    rc1min,rc1max,fp1,jfex1mn,jfex1mx,
-     .                    rc2min,rc2max,fp2,jfex2mn,jfex2mx,'  ',0)
-          do J=1,9
-            do I=1,9
-              !DN31(J-1,I-1)=CREAC(J,I,NREACI+1)
-              DN31(J-1,I-1)=REACDAT(IR)%OTH%POLY%DBLPOL(J,I)
-            end do
-          end do
-          !C
-          !C  NOW READ RATIO OF DENSITIES:
-          !C
-          !C  FIRST: H-/H2
-          FILNAM='AMJUEL  '
-          H123='H.11'
-          !csw 28jan2011 changed from 7.0 to 7.0b, CHECK
-          REAC='7.0b    '
-          CRC='OT '
-          IR=IR+1
-          CALL eirene_slreac(IR,FILNAM,H123,REAC,CRC,
-     .                    rc1min,rc1max,fp1,jfex1mn,jfex1mx,
-     .                    rc2min,rc2max,fp2,jfex2mn,jfex2mx,'  ',0)
-          do I=1,9
-            !RHMH2(I-1)=CREAC(I,1,NREACI+1)
-            RHMH2(I-1)=REACDAT(IR)%OTH%POLY%DBLPOL(I,1)
-          end do
-
-          !C  NEXT : H2+/H2
-          FILNAM='AMJUEL  '
-          H123='H.12'
-          REAC='2.0c    '
-          CRC='OT '
-          IR=IR+1
-          !C  2.0C INCLUDES ION CONVERSION (CX) ON H2(V)
-          !C  OLD VERSION (WITHOUT THIS CX) SHOULD BE RECOVERED BY
-          !C  READING 2.0B INSTEAD, AND OMITTING THE H- CHANNEL 5.
-          CALL eirene_slreac(IR,FILNAM,H123,REAC,CRC,
-     .                    rc1min,rc1max,fp1,jfex1mn,jfex1mx,
-     .                    rc2min,rc2max,fp2,jfex2mn,jfex2mx,'  ',0)
-           do I=1,9
-            do J=1,9
-              !RH2PH2(I-1,J-1)=CREAC(I,J,NREACI+1)
-              RH2PH2(I-1,J-1)=REACDAT(IR)%OTH%POLY%DBLPOL(I,J)
-            end do
-          end do
-          !C
-          write(iunout,*) 'NREAC,NREACI,IR     ',NREAC,NREACI,IR
-          !write(iunout,*) 'NRCX,IRCX        ',NRCX,IRCX
-          !write(iunout,*) 'NREL,IREL        ',NREL,IREL
-          !write(iunout,*) 'NRII,IRII        ',NRII,IRII
-          !write(iunout,*) 'NELI,NAELI       ',NELI,naeli
-          !write(iunout,*) 'NREI,NMEII,NIEII ',NREI,nmeii,nieii
-          !write(iunout,*) 'NREC,NIRCI,NPRCI ',NREC,nirci,nprci
-      end if
       !c======================================================================
       !c*** fill arrays
       !c
@@ -422,44 +359,27 @@
       !csw 04mar2013 shifted from wneusave to here (wneufill)
       !csw
       value=0.0
-      eneutrad(:,:,1,istra) = 0.0_dp
+      eneutrad(:,:,:,istra) = 0.0_dp
+      emolrad(:,:,:,istra) = 0.0_dp
+      eionrad(:,:,:,istra) = 0.0_dp
       do icell=1,ntrii
         ix=ixtri(icell)
         iy=iytri(icell)
         if(b2_cell(ix,iy)) then
-          if (leael) eneutrad(ix,iy,1,istra)=eneutrad(ix,iy,1,istra)
-     .                      +eael(icell)*vol(icell)
-          if (leael) value=value+eael(icell)*vol(icell)
           do jatm=1,natmi
-            if(nchara(jatm).le.npot) then
-              pot=pot_data(nchara(jatm))
-            else
-              pot=0.0_dp
-            endif
-            if (lpaat) eneutrad(ix,iy,1,istra)=eneutrad(ix,iy,1,istra)
-     .                        -paat(jatm,icell)*pot*vol(icell)
-            if (lpaat) value=value-paat(jatm,icell)*pot*vol(icell)
+            if (lrael) eneutrad(ix,iy,jatm,istra)=
+     .        eneutrad(ix,iy,jatm,istra)+rael(jatm,icell)*vol(icell)
+          enddo
+          do jmol=1,nmoli
+            if (lrmel) emolrad(ix,iy,jmol,istra)=
+     .        emolrad(ix,iy,jmol,istra)+rmel(jmol,icell)*vol(icell)
+          enddo
+          do jion=1,nioni
+            if (lriel) eionrad(ix,iy,jion,istra)=
+     .        eionrad(ix,iy,jion,istra)+riel(jion,icell)*vol(icell)
           enddo
         endif
       enddo
-      !open(555,file='eneutrad.dat',form='formatted')
-      !do ix=1,76
-      !  do iy=1,28
-      !    write(555,'(i6,i6,1x,1p,e13.6)') ix,iy,eneutrad(ix,iy,1,istra)
-      !  enddo
-      !enddo
-      !close(555)
-      !write(iunout,'(a,i6,1x,1p,e13.6)') 'DBG: ISTRA, ENEUTRAD',istra,value
-      !csw
-
-      !c
-      !C map 1d EIRENE neutral densities and temperatures on 2d arrays
-      !c and change the units to SI for plotting in B2
-      !c
-      !write(iunout,*) 'istra ',istra
-      !write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
-      !write(iunout,*) 'ndxp, ndyp ',ndxp,ndyp
-      !crfs     IF (WTOTP(0,ISTRA).EQ.0.) GOTO 60
 
       volcel = 0.d0
       do in=1,ntrii
@@ -467,6 +387,14 @@
         iy=iytri(in)
         if(b2_cell(ix,iy)) volcel(ix,iy) = volcel(ix,iy) + vol(in)
       end do
+
+      !c
+      !C map 1d EIRENE neutral densities and temperatures on 2d arrays
+      !c and change the units to SI for plotting in B2
+      !c
+      !write(iunout,*) 'istra ',istra
+      !write(iunout,*) 'natmi, nmoli, nioni ',natmi,nmoli,nioni
+      !crfs     IF (WTOTP(0,ISTRA).EQ.0.) GOTO 60
       do jatm=1,natmi
         do in=1,ntrii
           ix=ixtri(in)
@@ -691,12 +619,20 @@
       end do
 !pb
       eneutrad(:,:,:,0) = 0.0_DP
+      emolrad(:,:,:,0) = 0.0_DP
+      eionrad(:,:,:,0) = 0.0_DP
       edissml(:,:,:,0) = 0.0_DP
       do ix = 1, ndxa
         do iy = 1, ndya
-          eneutrad(ix,iy,1,0) = sum(eneutrad(ix,iy,1,1:nstrai))
+          do jatm=1,natmi
+            eneutrad(ix,iy,jatm,0) = sum(eneutrad(ix,iy,jatm,1:nstrai))
+          end do
           do jmol=1,nmoli
             edissml(ix,iy,jmol,0) = sum(edissml(ix,iy,jmol,1:nstrai))
+            emolrad(ix,iy,jmol,0) = sum(emolrad(ix,iy,jmol,1:nstrai))
+          end do
+          do jion=1,nioni
+            eionrad(ix,iy,jion,0) = sum(eionrad(ix,iy,jion,1:nstrai))
           end do
         end do
       end do
@@ -739,222 +675,6 @@
           end do
         end do
       end do
-      !c
-      !c*** Calculate H-alpha emissivity
-      !c
-      !C SEPT. 96: REVISE  CH. NO 4 (COUPLING TO H2+): INCLUDE ION CONVERSION ON
-      !C SEPT. 96: INCLUDE CH. NO 5 (COUPLING TO H-)
-      !
-      !CSW 28jan2011: we are not using the official EIRENE routine ba_halpha CHECK !
-      !
-      if(lhalpha) then
-        POWALF=0.
-        POWALF1=0.
-        POWALF2=0.
-        POWALF3=0.
-        POWALF4=0.
-        POWALF5=0.
-        do icell=1,ntrii
-          ix=ixtri(icell)
-          iy=iytri(icell)
-          if(ix.gt.0) then
-            !C
-            !C  LOCAL PLASMA DATA
-            !C
-            TE=TEIN(ICELL)
-            DE=DEIN(ICELL)
-            SIGADD1=0.
-            SIGADD2=0.
-            SIGADD3=0.
-            SIGADD4=0.
-            SIGADD5=0.
-            IF (.not. LGVAC(ICELL,0)) then
-              DEF=LOG(DE*1.D-8)
-              TEF=LOG(TE)
-              DATM3=0.
-              DPLS3=0.
-              DMOL3=0.
-              DION3=0.
-              DNML3=0.
-              do J=0,8
-                DEJ=DEF**J
-                do I=0,8
-                  TEI=TEF**I
-                  DATM3=DATM3+DA31(I,J)*TEI*DEJ
-                  DPLS3=DPLS3+DP31(I,J)*TEI*DEJ
-                  DMOL3=DMOL3+DM31(I,J)*TEI*DEJ
-                  DION3=DION3+DI31(I,J)*TEI*DEJ
-                  DNML3=DNML3+DN31(I,J)*TEI*DEJ
-                end do
-              end do
-              if(datm3.lt.500.) then
-                DATM3=EXP(DATM3)
-              else
-                write(iunout,*)
-     .            '[DPC] Problem in wneusave: ln(datm3) = ',
-     .             datm3, ' --- exponential will overflow'
-                write(iunout,*) '[DPC] TE, DE = ', TE, DE
-                datm3=1.0d30
-              endif
-              if(dpls3.lt.500.) then
-                DPLS3=EXP(DPLS3)
-              else
-                write(iunout,*)
-     .           '[DPC] Problem in wneusave: ln(dpls3) = ',
-     .            dpls3, ' --- exponential will overflow'
-                write(iunout,*) '[DPC] TE, DE = ', TE, DE
-                dpls3=1.0d30
-              endif
-              if(dmol3.lt.500.) then
-                DMOL3=EXP(DMOL3)
-              else
-                write(iunout,*)
-     .           '[DPC] Problem in wneusave: ln(dmol3) = ',
-     .            dmol3, ' --- exponential will overflow'
-                write(iunout,*) '[DPC] TE, DE = ', TE, DE
-                dmol3=1.0d30
-              endif
-              if(dion3.lt.500.) then
-                DION3=EXP(DION3)
-              else
-                write(iunout,*)
-     .           '[DPC] Problem in wneusave: ln(dion3) = ',
-     .            dion3, ' --- exponential will overflow'
-                write(iunout,*) '[DPC] TE, DE = ', TE, DE
-                dion3=1.0d30
-              endif
-              if(dnml3.lt.500.) then
-                DNML3=EXP(DNML3)
-              else
-                write(iunout,*)
-     .           '[DPC] Problem in wneusave: ln(dnml3) = ',
-     .            dnml3, ' --- exponential will overflow'
-                write(iunout,*) '[DPC] TE, DE = ', TE, DE
-                dnml3=1.0d30
-              endif
-
-              !C  RATIO OF DENSITIES: H- TO H2, COLL. EQUIL. IN VIBRATION
-              !C  (ONLY TE-DEPENDENT)
-
-              RATIO7=0
-              do I=0,8
-                TEI=TEF**I
-                RATIO7=RATIO7+RHMH2(I)*TEI
-              end do
-              RATIO7=EXP(RATIO7)
-
-              !C  RATIO OF DENSITIES: H2+ TO H2, INCL. ION CONVERSION
-
-              RATIO2=0.
-              do J=0,8
-                DEJ=DEF**J
-                do I=0,8
-                  TEI=TEF**I
-                  RATIO2=RATIO2+RH2PH2(I,J)*TEI*DEJ
-                end do
-              end do
-              if(RATIO2.lt.500.) then
-                RATIO2=EXP(RATIO2)
-              else
-                write(iunout,*)
-     .           '[DPC] Problem in wneusave: ln(ratio2) = ',
-     .            RATIO2,' --- exponential will overflow'
-                RATIO2=1.0d30
-              endif
-
-              !C
-              !C  CHANNEL 1
-              !C  H ALPHA SOURCE RATE:  PHOTONS/SEC/M**3
-              !c  linear in atomic density (ionisation)
-              !C
-              do  IATM=1,NATMI
-                !C  HYDROGENIC SPECIES?
-                IF (NCHARA(IATM).eq.1) then
-                  !c IF (LPDENA) DA=DATM3*PDENA(IATM,ICELL)
-                  da=datm3*dab2(ix,iy,iatm,1)
-                  SIGADD1=SIGADD1+DA*FAC32
-                end if
-              end do
-              !C
-              !C  CHANNEL 2
-              !C  H ALPHA SOURCE RATE:  PHOTONS/SEC/M**3
-              !c  linear in ion density (recombination)
-              !C
-              do  IPLS=1,NPLSI
-                IF (NCHARP(IPLS).eq.1) then
-                  DPP=DPLS3*DIIN(IPLS,ICELL)
-                  SIGADD2=SIGADD2+DPP*FAC32
-                end if
-              end do
-              sigadd2=1.e6*sigadd2
-              !C
-              !C  CHANNEL 3
-              !C  H ALPHA SOURCE RATE:  PHOTONS/SEC/M**3
-              !c  linear in molecular density (dissociation of H2)
-              !C
-              do  IMOL=1,NMOLI
-                IF (NCHARM(IMOL).eq.2) then
-                  !c IF (LPDENM) DM=DMOL3*PDENM(IMOL,ICELL)
-                  dm=dmol3*dmb2(ix,iy,imol,1)
-                  SIGADD3=SIGADD3+DM*FAC32
-                end if
-              end do
-              !C
-              !C  CHANNEL 4
-              !C  H ALPHA SOURCE RATE:  PHOTONS/SEC/M**3
-              !C  LINEAR IN PDENI: (DISSOCIATION OF H2+)
-              !C
-              !C  REVISED: USE (PDENM * DENSITY RATIO H2+/H2) NOW, INSTEAD OF PDENI
-              !C
-              !C      DO 215 IION=1,NIONI
-              !C        IF (NCHARI(IION).NE.2) GOTO 215
-              !C        DI=DION3*PDENI(IION,ICELL)
-              !C        SIGADD4=SIGADD4+DI*FAC32
-              !C215    CONTINUE
-              do IMOL=1,NMOLI
-                IF (NCHARM(IMOL).eq.2) then
-                  !c IF (LPDENM) DI=DION3*PDENM(IMOL,ICELL)*RATIO2
-                  di=dion3*dmb2(ix,iy,imol,1)*ratio2
-                  SIGADD4=SIGADD4+DI*FAC32
-                end if
-              end do
-              !C
-              !C  CHANNEL 5
-              !C  H ALPHA SOURCE RATE:  PHOTONS/SEC/M**3
-              !C  LINEAR IN H- DENSITY (CHARGE EXCHANGE RECOMBINATION)
-              !C
-              do IMOL=1,NMOLI
-                IF (NCHARM(IMOL).eq.2) then
-                  !c IF (LPDENM) DN=DNML3*PDENM(IMOL,ICELL)*RATIO7
-                  dn=dnml3*dmb2(ix,iy,imol,1)*ratio7
-                  SIGADD5=SIGADD5+DN*FAC32
-                end if
-              end do
-            end if
-            !C
-            EMISS(ix,iy,1,1)=EMISS(ix,iy,1,1)+(SIGADD1+SIGADD2)
-            if(lvib) then
-              EMISSMOL(ix,iy,1,1)=EMISSMOL(ix,iy,1,1)+
-     .                                         (SIGADD3+SIGADD4+SIGADD5)
-            else
-              EMISSMOL(ix,iy,1,1)=EMISSMOL(ix,iy,1,1)+SIGADD3
-            end if
-            SIGADD=SIGADD1+SIGADD2+SIGADD3+SIGADD4+SIGADD5
-            powalf=powalf+sigadd*3.028e-25*vol(icell)
-            powalf1=powalf1+sigadd1*3.028e-25*vol(icell)
-            powalf2=powalf2+sigadd2*3.028e-25*vol(icell)
-            powalf3=powalf3+sigadd3*3.028e-25*vol(icell)
-            powalf4=powalf4+sigadd4*3.028e-25*vol(icell)
-            powalf5=powalf5+sigadd5*3.028e-25*vol(icell)
-          endif
-        end do
-        WRITE (IUNOUT,*) ' RADIATED POWER BY HALPHA:',POWALF
-        WRITE (IUNOUT,*) ' COUPL. TO GROUNDSTATE   :',POWALF1
-        WRITE (IUNOUT,*) ' COUPLING TO CONTINUUM   :',POWALF2
-        WRITE (IUNOUT,*) ' COUPLING TO MOLECULES   :',POWALF3
-        WRITE (IUNOUT,*) ' COUPLING TO MOL.IONS    :',POWALF4
-        WRITE (IUNOUT,*) ' COUPLING TO NEG.IONS    :',POWALF5
-      end if
 
       !c*** print some neutral fluxes across the "non-default" surfaces
 
@@ -1083,6 +803,12 @@
         call eirene_indmpi(eneutrad,
      .                     dummy,ndx,ndy,natm,ndxa,ndya,natmi,
      .                     ncutb,ncutl,npoint,npplg,nstra+1,iistra+1)
+        call eirene_indmpi(emolrad,
+     .                     dummy,ndx,ndy,nmol,ndxa,ndya,nmoli,
+     .                     ncutb,ncutl,npoint,npplg,nstra+1,iistra+1)
+        call eirene_indmpi(eionrad,
+     .                     dummy,ndx,ndy,nion,ndxa,ndya,nioni,
+     .                     ncutb,ncutl,npoint,npplg,nstra+1,iistra+1)
         call eirene_indmpi(edissml,dummy,ndx,ndy,nmol,ndxa,ndya,nmoli,
      .                     ncutb,ncutl,npoint,npplg,nstra+1,iistra+1)
         end do
@@ -1184,6 +910,7 @@
       !c*** from 20000727 on:
       write(44,'(18i4)') (isrftype(i),i=1,nnlimi)
       write(44,'(18i4)') (isrftype(nlim+i),i=1,nnstsi)
+      !cank
       rewind (44)
 !cc<<<
 !c      write (iunout,'()')
@@ -1253,8 +980,8 @@
           if(nstsi.gt.0) write(kard,'(5(e16.8))')
      .                   (dummy(is+nlim,iif),is=1,nstsi)
         enddo
-        end subroutine
-      end subroutine
+        end subroutine neutrs
+      end subroutine eirene_extrab25_wneutrals
 
       !
       ! DETERMINING IF CELL (IX,IY) BELONGS TO B2 GRID
@@ -1311,9 +1038,11 @@
         wldspt=0._DP
 
         eneutrad=0._DP
+        emolrad=0._DP
+        eionrad=0._DP
       endif
       return
-      end subroutine
+      end subroutine eirene_extrab25_wneuclean
 
 
       subroutine eirene_extrab25_iniusr_init(n_spcsrf,l_spcsrf,
@@ -1360,7 +1089,7 @@
 !pb 27012016
 ! flag indicating if subroutine iniusr is called from B2.5
       ini_iniusr = 1
-      end subroutine
+      end subroutine eirene_extrab25_iniusr_init
 
       subroutine eirene_extrab25_cleanup
       implicit none
@@ -1415,6 +1144,8 @@
         deallocate(wldspt)
         deallocate(isrftype)
         deallocate(eneutrad)
+        deallocate(emolrad)
+        deallocate(eionrad)
       endif
       ifirst_wneutral=0
 
@@ -1425,6 +1156,88 @@
       if(allocated(plnxtri)) then
         deallocate(plnxtri, plnytri, pplnxtri, pplnytri)
       endif
-      end subroutine
 
-      end module
+      if(allocated(Eion)) then
+        deallocate(Eion)
+      endif
+
+      end subroutine eirene_extrab25_cleanup
+
+
+      subroutine eirene_extrab25_emissivity
+      implicit none
+      integer :: istr, i, j, iadv, icell, ncelc, ix, iy
+
+      istr = 0
+
+      IF (IESTR.EQ.ISTR) THEN
+C  NOTHING TO BE DONE
+      ELSEIF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
+        IESTR=ISTR
+        CALL EIRENE_RSTRT(ISTR,NSTRAI,NESTM1,NESTM2,NADSPC,
+     .             ESTIMV,ESTIMS,ESTIML,
+     .             NSDVI1,SDVI1,NSDVI2,SDVI2,
+     .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
+     .             NSIGI_SPC,TRCFLE)
+      ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.ISTR.EQ.0) THEN
+        IESTR=ISTR
+        CALL EIRENE_RSTRT(ISTR,NSTRAI,NESTM1,NESTM2,NADSPC,
+     .             ESTIMV,ESTIMS,ESTIML,
+     .             NSDVI1,SDVI1,NSDVI2,SDVI2,
+     .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
+     .             NSIGI_SPC,TRCFLE)
+      ELSE
+        WRITE (IUNOUT,*) 'ERROR IN EXTRAB25_EMISSIVITY: ' //
+     .                   'DATA FOR STRATUM ISTRA= ', ISTR
+        WRITE (IUNOUT,*) 
+     .    'ARE NOT AVAILABLE. EXTRAB25_EMISSIVITY ABANDONED'
+        RETURN
+      ENDIF
+
+      emiss(:,:,1,1) = 0._dp
+      emissmol(:,:,1,1) = 0._dp
+      do i = 1, num_lines
+        write (iunout,*) 'in EXTRAB25_EMISSIVITY, line no. = ',i
+        if (mod_addv == 0) then
+c storage saving mode: 
+c ADDV is overwritten when a new line comes, within a run.
+c Thus re-calculate the new emissivity profile on ADDV now
+          call eirene_emissivity(istr, i, i, 0)
+c       else
+c Sufficiently large storage on ADDV additional tally array,
+c for all lines and components. No need to reset ADDV tallies.
+        end if
+
+cdr run over components
+        do j = 1, emis_lines(i)%num_compo
+cdr  iadv: tally number on ADDV
+          iadv = emis_lines(i)%compo(j)%iadv
+          write (iunout,*) 'IADV, MODADDV = ',iadv, mod_addv
+
+!pb  This is dangerous! It is implicitely assumed that the default 
+!pb  emissivity model is used.
+!pb  In case of a user specific model specified in the Eirene input 
+!pb  this might produce rubbish.
+          if (i.eq.1.and.istr.eq.0) then ! Ba-alpha emissivity for fort.44
+            do icell = 1, nsbox
+              ncelc=ncltal(icell)
+              if (ncelc.gt.ntrii.or.ncelc.eq.0) cycle
+              ix=ixtri(ncelc)
+              iy=iytri(ncelc)
+              if(b2_cell(ix,iy)) then
+                if (j.ge.1 .and. j.le.2) then ! Atomic components
+                  emiss(ix,iy,1,1)=emiss(ix,iy,1,1)+
+     .                             addv(iadv,ncelc)*1.0d6
+                else if (j.ge.3 .and. j.le.6) then ! Molecular components
+                  emissmol(ix,iy,1,1)=emissmol(ix,iy,1,1)+
+     ,                             addv(iadv,ncelc)*1.0d6
+                end if
+              end if
+            end do
+          end if
+        end do
+      end do
+
+      end subroutine eirene_extrab25_emissivity
+
+      end module eirmod_extrab25

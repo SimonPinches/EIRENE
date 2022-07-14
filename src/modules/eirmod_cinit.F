@@ -74,6 +74,9 @@ CDR FOR DIRECT TRANSFER OF INFO FROM FIND_PARAM.F INTO INPUT.F
       CHARACTER(400), PUBLIC, SAVE :: DBFNAME(NDBNAMES)
       CHARACTER(6), PUBLIC, SAVE :: DBHANDLE(NDBNAMES)
       LOGICAL, PUBLIC, SAVE :: LDBREAD(NDBNAMES)
+cpg
+      character(400), public, save :: MASTER_PATH
+cpg 
       
 C> Default output file prefix
 #ifndef HPUX
@@ -180,7 +183,7 @@ C> Default output file prefix
       INDGRD => ICINIT(13 : 15)
       INDSRC => ICINIT(16 : 15+NSTRA)
 
-cdr units used for inut of backround profiles: V, B, Ti
+cdr units used for input of background profiles: V, B, Ti
       NLMACH => LCNIT(1)
       NLMLTI => LCNIT(2)
       NLMLV  => LCNIT(3)

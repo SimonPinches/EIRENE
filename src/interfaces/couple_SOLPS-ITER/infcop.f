@@ -4848,6 +4848,7 @@ C
 !pb      IF (.not.LSHORT) call EIRENE_wneutrals        ! DPC-ADD
 csw 07feb2011 extra B2.5
         if(my_pe == 0) then
+          if (nlemis) call eirene_extrab25_emissivity
           call eirene_extrab25_wneusave
         endif
 csw

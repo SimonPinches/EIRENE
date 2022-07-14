@@ -21,8 +21,8 @@ c     using special octree stuff, to speed up additional surface handling
       IMPLICIT NONE
       PRIVATE
 
-      PUBLIC :: EIRENE_TIMEA0, EIRENE_TIMEA3_VTKOUT,
-     .          EIRENE_TIMEA1, EIRENE_TIMEA0_OC,
+      PUBLIC :: EIRENE_TIMEA0, EIRENE_TIMEA1,
+     .          EIRENE_TIMEA0_OC,
      .          EIRENE_DEALLOC_TIMEA
 
 cym this variable seem to be shared (OMP)      
@@ -557,7 +557,7 @@ c
 
       ELSE  !   NOT NLOCTREE
 c  old default: ALL surfaces are outside the octree procedure,
-c               i.e. OCTREE optimization is inactive
+c               i.e. OCTREE optimization is in-active
         if (.not.allocated(NOTOCSURFS)) ALLOCATE(NOTOCSURFS(NLIMI))
         DO J=1,NLIMI
           NOTOCSURFS(J) = J
@@ -869,18 +869,4 @@ c  that are no tri/quad/quintangles
       
       END SUBROUTINE EIRENE_DEALLOC_TIMEA
 
-
-c  write the octree to vtk tool output
-      SUBROUTINE EIRENE_TIMEA3_VTKOUT
-      IMPLICIT NONE
-        if (associated(tree) .and. NLOCTREE) then
-c  call octree function to plot the tree recursive
-          call OCTREE_PrintVTK(tree, IVTKOUT)
-
-          open(200,file='graphviz.out')
-          call OCTREE_PrintGraphviz(tree, 200)
-          close(200)
-        end if
-      END SUBROUTINE EIRENE_TIMEA3_VTKOUT
-      
       END MODULE EIRMOD_TIMEA

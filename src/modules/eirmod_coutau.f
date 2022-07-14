@@ -42,6 +42,7 @@ cdr  Few are directly scored: ptrash, etrash, .... xmcp
      R EIPLI(:,:),
      R EPHELI(:),   EPHATI(:),   EPHMLI(:), EPHIOI(:), EPHPHTI(:),
      R EPHPLI(:,:),
+     R RAELI(:,:),  RMELI(:,:),  RIELI(:,:),
      R ADDVI(:,:),
      R COLVI(:,:),  SNAPVI(:,:), COPVI(:,:),  BGKVI(:,:), ALGVI(:,:),
      R PGENAI(:,:), PGENMI(:,:), PGENII(:,:), PGENPHI(:,:),
@@ -192,6 +193,10 @@ cdr  volumetric particles source tallies, from incident photons, sources for e,a
       ALLOCATE (EPHIOI(0:NSTRA))
       ALLOCATE (EPHPHTI(0:NSTRA))
       ALLOCATE (EPHPLI(0:NPLS,0:NSTRA))
+
+      ALLOCATE (RAELI(0:NATM,0:NSTRA))
+      ALLOCATE (RMELI(0:NMOL,0:NSTRA))
+      ALLOCATE (RIELI(0:NION,0:NSTRA))
 
       ALLOCATE (ADDVI(0:NADV,0:NSTRA))
       ALLOCATE (COLVI(0:NCLV,0:NSTRA))
@@ -463,6 +468,9 @@ c tallies obtained by integration from volumetric tallies
       DEALLOCATE (EPHPHTI)
       DEALLOCATE (EPHIOI)
       DEALLOCATE (EPHPLI)
+      DEALLOCATE (RAELI)
+      DEALLOCATE (RMELI)
+      DEALLOCATE (RIELI)
       DEALLOCATE (ADDVI)
       DEALLOCATE (COLVI)
       DEALLOCATE (SNAPVI)
@@ -723,6 +731,10 @@ cdr volumetric tallies for energy balance, sources from atoms for el, a,m,i,ph,p
         EPHIOI(ISTRA)  = 0._DP
         EPHPHTI(ISTRA) = 0._DP
         EPHPLI(:,ISTRA)  = 0._DP
+
+        RAELI(:,ISTRA) = 0._DP
+        RMELI(:,ISTRA) = 0._DP
+        RIELI(:,ISTRA) = 0._DP
 
         ADDVI(:,ISTRA)   = 0._DP
         COLVI(:,ISTRA)   = 0._DP
@@ -1654,7 +1666,17 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IE = IA - 1 + SIZE(SPUMPI)
       OUTAU(IA:IE) = PACK(SPUMPI,.TRUE.)
 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(RAELI)
+      OUTAU(IA:IE) = PACK(RAELI,.TRUE.)
 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(RMELI)
+      OUTAU(IA:IE) = PACK(RMELI,.TRUE.)
+
+      IA = IE + 1
+      IE = IA - 1 + SIZE(RIELI)
+      OUTAU(IA:IE) = PACK(RIELI,.TRUE.)
 
 
       IA = IE + 1
@@ -2504,7 +2526,17 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IE = IA - 1 + SIZE(SPUMPI)
       SPUMPI = RESHAPE(OUTAU(IA:IE),SHAPE(SPUMPI))
 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(RAELI)
+      RAELI  = RESHAPE(OUTAU(IA:IE),SHAPE(RAELI ))
 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(RMELI)
+      RMELI  = RESHAPE(OUTAU(IA:IE),SHAPE(RMELI ))
+
+      IA = IE + 1
+      IE = IA - 1 + SIZE(RIELI)
+      RIELI  = RESHAPE(OUTAU(IA:IE),SHAPE(RIELI ))
 
 
       IA = IE + 1
@@ -2806,6 +2838,12 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
         OUTAU = MIPLI(ISP,ISTRA)
       CASE (100)
         OUTAU = MPHPLI(ISP,ISTRA)
+      CASE (101)
+        OUTAU = RAELI(ISP,ISTRA)
+      CASE (102)
+        OUTAU = RMELI(ISP,ISTRA)
+      CASE (103)
+        OUTAU = RIELI(ISP,ISTRA)
       CASE DEFAULT
         WRITE (iunout,*) ' WRONG TALLY NUMBER IN FETCH_OUTAU '
         WRITE (iunout,*) ' 0 RETURNED '

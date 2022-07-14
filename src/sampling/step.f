@@ -32,7 +32,7 @@ C
       INTEGER, ALLOCATABLE :: IP0(:),IP1(:),IP2(:),IP3(:),IP4(:)
       REAL(DP) ::  DELR, EIRENE_STEP
       INTEGER :: ISPZ, I, J, IS, NSM,
-     .           ISPZTI, ISPZV
+     .           ISPZTI, ISPZV, IBGK
       LOGICAL :: NLINV
       SAVE
 C
@@ -221,7 +221,9 @@ C  save totals before normalization
         FLTOT(ISPZ,ISTEP)=VF(ISPZ,ISTEP,NS)
         ELTOT(ISPZ,ISTEP)=VE(ISPZ,ISTEP,NS)
 
-        IF (FLTOT(ISPZ,ISTEP).LE.0.D0) THEN
+        IBGK=0
+        IF (ISPZ.GT.0) IBGK = NPBGKP(ISPZ,1)
+        IF (FLTOT(ISPZ,ISTEP).LE.0.D0.AND.IBGK.EQ.0) THEN
           WRITE (iunout,*) 'WARNING FROM FUNCTION "STEP"'
           WRITE (iunout,*)
      .      'DENSITY FUNCTION FLSTEP(ISPZ,ISTEP) VANISHES '

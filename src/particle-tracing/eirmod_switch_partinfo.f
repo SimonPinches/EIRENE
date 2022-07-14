@@ -119,6 +119,7 @@ C  save stratum, old type, species
       NULLIFY (VYDENX)
       NULLIFY (VZDENX)
       NULLIFY (MXPL)
+      NULLIFY (RXEL)
       NULLIFY (PXX)
       NULLIFY (EXX)
 
@@ -143,6 +144,7 @@ C  save stratum, old type, species
        LVYDENX => LVYDENPH
        LVZDENX => LVZDENPH
        LMXPL   => LMPHPL
+       LRXEL   => LRPHEL
        LPXX    => LPPHPHT
        LEXX    => LEPHPHT
 
@@ -162,6 +164,7 @@ C  save stratum, old type, species
        IF (LVYDENX) VYDENX => VYDENPH(IPHOT,:)
        IF (LVZDENX) VZDENX => VZDENPH(IPHOT,:)
        IF (LMXPL)   MXPL   => MPHPL(1:NPLSI,:)
+       IF (LRXEL)   RXEL   => RPHEL(1:NPHOTI,:)
        IF (LPXX)    PXX    => PPHPHT(1:NPHOTI,:)
        IF (LEXX)    EXX    => EPHPHT(:)
 
@@ -206,6 +209,7 @@ C  save stratum, old type, species
        LVYDENX => LVYDENA
        LVZDENX => LVZDENA
        LMXPL   => LMAPL
+       LRXEL   => LRAEL
        LPXX    => LPAAT
        LEXX    => LEAAT
 
@@ -225,6 +229,7 @@ C  save stratum, old type, species
        IF (LVYDENX) VYDENX => VYDENA(IATM,:)
        IF (LVZDENX) VZDENX => VZDENA(IATM,:)
        IF (LMXPL)   MXPL   => MAPL(1:NPLSI,:)
+       IF (LRXEL)   RXEL   => RAEL(1:NATMI,:)
        IF (LPXX)    PXX    => PAAT(1:NATMI,:)
        IF (LEXX)    EXX    => EAAT(:)
 
@@ -270,6 +275,7 @@ C  save stratum, old type, species
        LVYDENX => LVYDENM
        LVZDENX => LVZDENM
        LMXPL   => LMMPL
+       LRXEL   => LRMEL
        LPXX    => LPMML
        LEXX    => LEMML
 
@@ -289,6 +295,7 @@ C  save stratum, old type, species
        IF (LVYDENX) VYDENX => VYDENM(IMOL,:)
        IF (LVZDENX) VZDENX => VZDENM(IMOL,:)
        IF (LMXPL)   MXPL   => MMPL(1:NPLSI,:)
+       IF (LRXEL)   RXEL   => RMEL(1:NMOLI,:)
        IF (LPXX)    PXX    => PMML(1:NMOLI,:)
        IF (LEXX)    EXX    => EMML(:)
 
@@ -334,6 +341,7 @@ C  save stratum, old type, species
        LVYDENX => LVYDENI
        LVZDENX => LVZDENI
        LMXPL   => LMIPL
+       LRXEL   => LRIEL
        LPXX    => LPIIO
        LEXX    => LEIIO
 
@@ -353,6 +361,7 @@ C  save stratum, old type, species
        IF (LVYDENX) VYDENX => VYDENI(IION,:)
        IF (LVZDENX) VZDENX => VZDENI(IION,:)
        IF (LMXPL)   MXPL   => MIPL(1:NPLSI,:)
+       IF (LRXEL)   RXEL   => RIEL(1:NIONI,:)
        IF (LPXX)    PXX    => PIIO(1:NIONI,:)
        IF (LEXX)    EXX    => EIIO(:)
 

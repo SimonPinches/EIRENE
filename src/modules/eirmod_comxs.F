@@ -29,8 +29,7 @@ cdr MODULE FOR ALL ATOMIC/MOLECULAR/PHOTONIC DATA STRUCTURES.
 !  02.03.07: fourth secondary group specifier introduced
 !
 !  02.03.07: IMESS added in photon line reaction data in order to allow for
-!            a complete printout of input data in case of HYDKIN default
-!            database option
+!            a complete printout of input data
 !
 cdr sometime between 2004 and 2007 the atomic data structure was revised.
 cdr
@@ -2260,7 +2259,6 @@ c  photonic reaction
       deallocate (reacdat)
 
       END SUBROUTINE EIRENE_FREE_REACDAT
-
 
 
       SUBROUTINE EIRENE_FREE_FIT_FORM(RP)

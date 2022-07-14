@@ -15,12 +15,10 @@ module eirmod_mpi
     ! older MPI library is used. If we still call MPI_IREDUCE, then it is an
     ! error. These dummy implementations write the error message and abort
     ! execution.
-#ifndef GFORTRAN
     module procedure mpi_ireduce_i0_r1
     module procedure mpi_ireduce_r1_r1
     module procedure mpi_ireduce_i0_l1
     module procedure mpi_ireduce_l1_l1
-#endif
   end interface
 
   contains
@@ -380,7 +378,6 @@ module eirmod_mpi
 #endif
 
 #if MPI_VERSION < 3 || !defined(USE_MPI)
-#ifndef GFORTRAN 
   subroutine mpi_ireduce_i0_r1 (data1, data2, n, datatype, operation, receiver, &
     comm, request, ierror )
     ! first argument is MPI_IN_PLACE flag
@@ -440,7 +437,6 @@ module eirmod_mpi
     write(iounit,*) 'Error MPI_IREDUCE called, but it is not implemented'
     call mpi_abort(MPI_COMM_WORLD, -1, ierror)
   end subroutine mpi_ireduce_l1_l1
-#endif
 #endif
 
 #ifndef USE_MPI

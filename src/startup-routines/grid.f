@@ -1492,7 +1492,7 @@ C
       IF (TRCGRD) THEN
         CALL EIRENE_LEER(1)
         IF (NLTRZ)
-     .   WRITE (iunout,*) 'GRIDPOINTS IN Z DIRECTION'
+     .   WRITE (iunout,*) 'GRID POINTS IN Z DIRECTION'
         IF (NLTRA)
      .   WRITE (iunout,*)
      .    'GRID POINTS IN TOROIDAL DIRECTION, IN RADIANS'

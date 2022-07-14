@@ -20,7 +20,6 @@ C
       USE EIRMOD_CTEXT
       USE EIRMOD_CLGIN
       USE EIRMOD_COMPRT, ONLY: IUNOUT
-      USE EIRMOD_TIMEA, ONLY: EIRENE_TIMEA3_VTKOUT
       USE EIRMOD_STCOOR, ONLY: EIRENE_STCOOR
 
       IMPLICIT NONE
@@ -957,7 +956,7 @@ C
       if (plvtk) then
          call eirene_vtkout_head
          call eirene_vtkout_surfaces
-         call eirene_timea3_vtkout
+!pb         call eirene_timea3_vtkout
          call eirene_vtkout_tail
       end if
 

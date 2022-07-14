@@ -1,11 +1,15 @@
-cdr  nov. 19:
 cdr  tally 22 (electric potential) added, and a few comments, started...
+cdr  Possible pitfall: coarse graining onto scoring grid is not done here.
+cdr  Perhaps now some input tallies are on different grids?
+cpb Input tallies are ALWAYS defined on the fine grid.
+
 C
       SUBROUTINE EIRENE_OUTIDLPLA
 C
 Cdr  This routine prints background tallies ("field particles") for plotting in IDL tool.
 cdr  Probably code mostly adopted from subr. outpla.f, but no
 cdr  coarse graining onto scoring grid done here.
+cpb  All tallies printed by OUTIDL... routines are provided on the fine grid.
 C
 C  PRINT INPUT TALLIES ONTO OUTPUT FILE IUNOUT
 C

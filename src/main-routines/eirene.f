@@ -202,7 +202,7 @@ c  Calls to find_param, set_parmod(1),... have already been done above
         NLPLAS=NLMODE
 
         TIME=EIRENE_SECOND_OWN()
-        write (iunout,*) ' CPU TIME for startup of Eirene ',time-timi
+        write (iunout,*) ' CPU time for startup of Eirene ',time-timi
 
       END IF  ! MY_PE == 0
 
@@ -258,7 +258,7 @@ cdr  should we not set inentry=0 now ??  meaning of init_log, inentry, nlpls_sav
         CALL EIRENE_ALLOC_CFPLK
 
         TIME=EIRENE_SECOND_OWN()
-        write (iunout,*) ' CPU TIME for memory allocation ',time-timi
+        write (iunout,*) ' CPU time for memory allocation ',time-timi
 
 cdr make sure that nstrai is properly set in find_param.f
         IF (ITNR == 1) NLSRON(1:NSTRAI) = .TRUE.
@@ -286,6 +286,9 @@ CIITER=... , ITIME=...
         TIMI=EIRENE_SECOND_OWN()
 C
         CALL EIRENE_INPUT
+
+        CALL EIRENE_ALLOC_COMUSR(4)
+        CALL EIRENE_INIT_EION
 
         CALL EIRENE_ALLOC_COUTAU
 C

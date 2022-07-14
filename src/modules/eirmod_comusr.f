@@ -294,6 +294,8 @@ C  gradients of derived tallies
       TYPE(EIRENE_SPECTRUM), PUBLIC, ALLOCATABLE, SAVE :: BACK_SPEC(:)
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE :: LSPCCLL(:)
 
+      REAL(DP), ALLOCATABLE, PUBLIC, SAVE :: EION(:)
+
 ! TYPE DEFINITIONS MOVED HERE FOR WRITING OF JSON FILE 
       TYPE TEMPERATURE
         DOUBLE PRECISION          :: TE, TI
@@ -495,6 +497,15 @@ c  NCPV, NBGV are now set
 
         WRITE (IUNMEM,'(A,T25,I15)')
      .         ' COMUSR(3) ',NSFPRM*8
+
+      ELSE IF (ICAL == 4) THEN
+
+        IF (ALLOCATED(EION)) RETURN
+
+        ALLOCATE (EION(MAX(1,NATM)))
+
+        WRITE (IUNMEM,'(A,T25,I15)')
+     .         ' COMUSR(4) ',NATM*8
 
       END IF
 
@@ -1408,7 +1419,7 @@ c
 
       END IF
 
-      IF (ALLOCATED(RMASSI)) THEN
+      IF (ALLOCATED(RMASSA)) THEN
 
         DEALLOCATE (RMASSA)
         DEALLOCATE (RMASSM)
@@ -1492,6 +1503,8 @@ C
         DEALLOCATE (SAREA)
 
       END IF
+
+      IF (ALLOCATED(EION)) DEALLOCATE (EION)
 
       IF (ALLOCATED(LSMOPRO)) DEALLOCATE (LSMOPRO)
 
@@ -1783,6 +1796,10 @@ c  Cemetery for inactive input tallies (no storage)
         FLXOUT = 0._DP
         SAREA  = 666._DP
 
+      ELSE IF (ICAL == 4) THEN
+
+        EION   = 0._DP
+
       END IF
 
       RETURN
@@ -1806,6 +1823,7 @@ c  Cemetery for inactive input tallies (no storage)
         CALL EIRENE_ALLOC_COMUSR(1)
         CALL EIRENE_ALLOC_COMUSR(2)
         CALL EIRENE_ALLOC_COMUSR(3)
+        CALL EIRENE_ALLOC_COMUSR(4)
       END IF
 
 ! LSMOPRO needs to be broadcasted before corner arrays are allocated      
@@ -1829,6 +1847,8 @@ cdr   intlopts is only needed on processor 0
 
       CALL MPI_BCAST (FLXOUT,NLMPGS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (SAREA,NLMPGS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      
+      CALL MPI_BCAST (EION,NATM,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
       CALL MPI_BCAST (RMASSI,NION,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (RMASSA,NATM,MPI_REAL8,0,MPI_COMM_WORLD,ier)

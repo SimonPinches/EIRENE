@@ -95,13 +95,15 @@ C
       REAL(DP), INTENT(IN OUT) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
      .                            XSTORV2(NSTORV,N2ND+N3RD)
       INTEGER, INTENT(IN) :: IFLAG
-      REAL(DP) :: WTRSIG, DIST, WTR, WTRE0, WV, WTRV,
-     .            V0_PARB, PARMOM_0, P, BX, BY, BZ, BF, VION
+      REAL(DP) :: WTRSIG, DIST, WTR, WTRE0, WV, WTRV, DELE, PRAD,
+     .            V0_PARB, PARMOM_0, P, BX, BY, BZ, BF, VION,
+     .            ELEI, EHEAVY
+      REAL(DP) :: EIRENE_FEELEI1, EIRENE_FEHVEI1
       REAL(DP) :: VSIG_PARB(NPLS), VAL_PARB(NPLS), VX(NPLS), VY(NPLS),
      .            VZ(NPLS),XC,YC,ZC
       INTEGER :: IRD,  I, IRDO,
      .           IPL, IAT, IA,
-     .           IM,  IIO, IP, IML, II, NPBGK,
+     .           IM,  IIO, IP, IML, II, KK, NPBGK,
      .           IBGK, IPLV
 C SECONDARY SPECIES IDENTIFIERS
       INTEGER ::  IAT1,IAT2,IML1,IML2,IIO1,IIO2,IPL1,IPL2
@@ -575,6 +577,27 @@ C
 !$OMP ATOMIC
               EXEL(IRD)=EXEL(IRD)+WTRSIG*ESIGEI(IREI,5)
             ENDIF
+            IF (LRXEL) THEN
+              KK=NELREI(IREI)
+              IF (KK.GT.0) THEN
+                DELE=DELPOT(KK)
+              ELSE
+                DELE=0.0_DP
+              ENDIF
+              IF (DELE.EQ.0.0_DP) THEN
+                IF (ITYP.EQ.1) DELE=-EION(IXSPZ)
+              END IF
+              IF (NSTORDR >= NRAD) THEN
+                ELEI = EELEI1(IREI,IRD)
+                EHEAVY = EHVEI1(IREI,IRD)
+              ELSE
+                ELEI = EIRENE_FEELEI1(IREI,IRD)
+                EHEAVY = EIRENE_FEHVEI1(IREI,IRD)
+              END IF  
+              PRAD=ELEI+EHEAVY-DELE
+!$OMP ATOMIC
+              RXEL(IXSPZ,IRD)=RXEL(IXSPZ,IRD)+WTRSIG*PRAD
+            ENDIF
           ENDIF
 
           IF (LEX) THEN
@@ -723,6 +746,27 @@ C
 !$OMP ATOMIC
               EXEL(IRD)=EXEL(IRD)+WTRSIG*ESIGPI(IRPI,5)
             ENDIF
+            IF (LRXEL) THEN
+              KK=NELRPI(IRPI)
+              IF(KK.GT.0) THEN
+                DELE=DELPOT(KK)
+              ELSE
+                DELE=0.0_DP
+              ENDIF
+              IF (DELE.EQ.0.0_DP) THEN
+                IF (ITYP.EQ.1) DELE=-EION(IXSPZ)
+              END IF
+              IF (NSTORDR >= NRAD) THEN
+                ELEI = EELEI1(IREI,IRD)
+                EHEAVY = EHVEI1(IREI,IRD)
+              ELSE
+                ELEI = EIRENE_FEELEI1(IREI,IRD)
+                EHEAVY = EIRENE_FEHVEI1(IREI,IRD)
+              END IF  
+              PRAD=ELEI+EHEAVY-DELE
+!$OMP ATOMIC
+              RXEL(IXSPZ,IRD)=RXEL(IXSPZ,IRD)+WTRSIG*PRAD
+            END IF
           ENDIF
 
           IF (LEX) THEN

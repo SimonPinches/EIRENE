@@ -41,7 +41,7 @@ ctk stdcol and stdcol_absorb
       REAL(DP) :: X0SA, Y0SA, Z0SA
       INTEGER :: NACLLS, ICOS, IWEI, MSURFS, IRET_OUT
 
-ctk 150 und 200
+ctk 150 and 200
       REAL(DP) :: COSROT, SINROT, VELX_OLD
 
 ctk stdcol and stdcol_x_rad
@@ -744,6 +744,7 @@ C  PERIODICITY SURFACE IN Z-DIRECTION
         CRTX=-SIN(ALPHA)
         CRTY=0.
         CRTZ=SCOS*COS(ALPHA)
+
 C  PERIODICITY SURFACE IN TOROIDAL-DIRECTION
         IF (ILIIN(MSURF).GT.3) THEN
           MTSURF=EIRENE_IDEZ(ILIIN(MSURF),2,2)

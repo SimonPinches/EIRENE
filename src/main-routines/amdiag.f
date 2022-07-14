@@ -72,15 +72,25 @@ c
       IMPLICIT NONE
 
       REAL(DP) :: AU, ELB, EXPO, FP(6), RCMIN, RCMAX,
-     .            TBCX3(9),TBPI3(9),TBEL3(9),
+     .            TBCX3(9), TBPI3(9), TBEL3(9),
      .            EIRENE_SNGL_POLY, EARRH,
-     .            RMASSS,EBFAC,RATE
+     .            RMASSS,EBFAC,RATE,
+     .            TII, TBCX, TBEI, TBPI, TBEL, TBRC, 
+     .            ELEI, EPPI, EPCX, EPEL, ELRC, 
+cdr  functions for 'on the fly' evaluation of A&M data
+     .          EIRENE_FEELEI1, EIRENE_FEELPI3,
+     .          EIRENE_FEELRC1,
+     .          EIRENE_FEPLCX3, EIRENE_FEPLEL3,
+     .          EIRENE_FTABCX3, EIRENE_FTABPI3,
+     .          EIRENE_FTABEI1, EIRENE_FTABRC1,
+     .          EIRENE_RATE_COEFF
       INTEGER :: NS,NA,IAIN,MM,KK,
      .           irei,ircx,irpi,irel,irrc,
      .           iat,iml,iio,ipl,isp,iplti,
      .           icell,iapi,impi,iipi,iacx,imcx,iicx,
      .           iael,imel,iiel,iaei,imei,iiei,iprc
       CHARACTER(4) :: CNO, CN1
+      LOGICAL :: LEXP
 
 
 
@@ -186,7 +196,12 @@ c  no interacting particle species found
           if (mm.eq.1) then
             DO 1720 ICELL=1,NSBOX
               if (lgvac(icell,npls+1)) cycle
-              ADIN(IAIN,ICELL)=TABEI1(irei,ICELL)/(DEIN(ICELL)+EPS30)/AU
+              IF (NSTORDR >= NRAD) THEN
+                TBEI=TABEI1(irei,ICELL)
+              ELSE
+                TBEI=EIRENE_FTABEI1(IREI,ICELL)
+              END IF
+              ADIN(IAIN,ICELL)=TBEI/(DEIN(ICELL)+EPS30)/AU
  1720       CONTINUE
 
             goto 5000
@@ -210,8 +225,15 @@ c
           irei=ns
           if (mm.eq.1) then
             DO 1721 ICELL=1,NSBOX
-              RATE=TABEI1(irei,ICELL)/(DEIN(ICELL)+EPS30)/AU
-              ADIN(IAIN,ICELL)=EELEI1(irei,ICELL)*RATE
+              IF (NSTORDR >= NRAD) THEN
+                TBEI=TABEI1(irei,ICELL)
+                ELEI=EELEI1(irei,ICELL)
+              ELSE
+                TBEI=EIRENE_FTABEI1(IREI,ICELL)
+                ELEI=EIRENE_FEELEI1(IREI,ICELL)
+              END IF
+              RATE=TBEI/(DEIN(ICELL)+EPS30)/AU
+              ADIN(IAIN,ICELL)=ELEI*RATE
  1721       CONTINUE
 
             goto 5000
@@ -290,8 +312,12 @@ c  no interacting particle species found
           if (mm.eq.1) then
             DO 1722 ICELL=1,NSBOX
               if (lgvac(icell,ipl)) cycle
-              ADIN(IAIN,ICELL)=
-     .        TABCX3(IRCX,ICELL,1)/(diin(ipl,icell)+eps30)/AU
+              IF (NSTORDR >= NRAD) THEN
+                TBCX=TABCX3(IRCX,ICELL,1)
+              ELSE
+                TBCX=EIRENE_FTABCX3(IRCX,ICELL)
+              END IF
+              ADIN(IAIN,ICELL)=TBCX/(diin(ipl,icell)+eps30)/AU
  1722       CONTINUE
 
             GOTO 5000 !done
@@ -309,11 +335,20 @@ c      MASST(KK)=  TARGET MASS FOR CROSS-SECTION, BEAM MASS FOR BEAM MAXWELLIAN 
               if (lgvac(icell,ipl)) cycle
 c  in fpath we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFCX(IRCX))
               ELB=log(max(0.1003_DP,1.5_DP*TIIN(iplti,icell)*EBFAC))
-              TBCX3(1:NSTORDT) = TABCX3(IRCX,ICELL,1:NSTORDT)
-              EXPO = EIRENE_SNGL_POLY(TBCX3,ELB,RCMIN,RCMAX,FP,0,0,
-     .                                EARRH,TRCAMD)
-              ADIN(IAIN,ICELL)=
-     .        exp(expo)/(diin(ipl,icell)+eps30)/AU
+              IF (NSTORDR >= NRAD) THEN
+                TBCX3(1:NSTORDT) = TABCX3(IRCX,ICELL,1:NSTORDT)
+                LEXP = .TRUE.
+                EXPO = EIRENE_SNGL_POLY(TBCX3,ELB,RCMIN,RCMAX,FP,0,0,
+     .                                  EARRH,TRCAMD,LEXP)
+              ELSE
+! CALCULATE RATE COEFFICIENT ON THE FLY
+CDR  THIS SHOULD BE DONE IN FTABCX3.  NOT READY
+                KK=NREACX(IRCX)
+                TII=TIINL(IPLTI,ICELL)+ADDCX(IRCX,IPL)
+                EXPO = EIRENE_RATE_COEFF(KK,ICELL,TII,ELB,.FALSE.,0)
+     .                 + DIINL(IPL,ICELL) + FACRCX(IRCX,2)
+              ENDIF
+              ADIN(IAIN,ICELL)=expo/(diin(ipl,icell)+eps30)/AU
             enddo
             goto 5000  !done
 
@@ -326,7 +361,12 @@ c  in fpath we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFCX(IRCX))
           kk=NELRCX(IRCX)
 c  not ready
           DO 1723 ICELL=1,NSBOX
-            ADIN(IAIN,ICELL)=EPLCX3(IRCX,ICELL,1)
+            IF (NSTORDR >= NRAD) THEN
+              EPCX=EPLCX3(IRCX,ICELL,1)
+            ELSE
+              EPCX=EIRENE_FEPLCX3(IRCX,ICELL)
+            END IF
+            ADIN(IAIN,ICELL)=EPCX
  1723     CONTINUE
 
           GOTO 3000
@@ -401,10 +441,19 @@ c  no interacting particle species found
           TXTPUN(IAIN,NTALN) = 'A.U. (0.612E-8 cm3/s)   '
 
           if (mm.eq.1) then
+            IPLTI = MPLSTI(IPL)
             DO 1724 ICELL=1,NSBOX
               if (lgvac(icell,ipl)) cycle
-              ADIN(IAIN,ICELL)=
-     .        TABEL3(IREL,ICELL,1)/(diin(ipl,icell)+eps30)/AU
+              IF (NSTORDR >= NRAD) THEN
+                TBEL=TABEL3(IREL,ICELL,1)
+              ELSE
+cdr  here should be call to ftabel3,  to be done
+                KK=NREAEL(IREL)
+                TII=TIINL(IPLTI,ICELL)+ADDEL(IREL,IPL)
+                TBEL = EIRENE_RATE_COEFF(KK,ICELL,TII,0._DP,.TRUE.,0)*
+     .                 DIIN(IPL,ICELL)
+              END IF
+              ADIN(IAIN,ICELL)=TBEL/(diin(ipl,icell)+eps30)/AU
  1724       CONTINUE
             GOTO 5000  !done
 
@@ -422,11 +471,20 @@ c      MASST(KK)=  TARGET MASS FOR CROSS-SECTION, BEAM MASS FOR BEAM MAXWELLIAN 
               if (lgvac(icell,ipl)) cycle
 c  in fpath we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFEL(IREL))
               ELB=log(max(0.1003_DP,1.5_DP*TIIN(iplti,icell)*EBFAC))
-              TBEL3(1:NSTORDT) = TABEL3(IREL,ICELL,1:NSTORDT)
-              EXPO = EIRENE_SNGL_POLY(TBEL3,ELB,RCMIN,RCMAX,FP,0,0,
-     .                                EARRH,TRCAMD)
-              ADIN(IAIN,ICELL)=
-     .        exp(expo)/(diin(ipl,icell)+eps30)/AU
+              IF (NSTORDR >= NRAD) THEN
+                TBEL3(1:NSTORDT) = TABEL3(IREL,ICELL,1:NSTORDT)
+                LEXP = .TRUE.
+                EXPO = EIRENE_SNGL_POLY(TBEL3,ELB,RCMIN,RCMAX,FP,0,0,
+     .                                  EARRH,TRCAMD,LEXP)
+              ELSE
+cdr  here should be call to ftabel3,  to be done
+! CALCULATE RATE COEFFICIENT ON THE FLY
+                KK=NREAEL(IREL)
+                TII=TIINL(IPLTI,ICELL)+ADDEL(IREL,IPL)
+                EXPO = EIRENE_RATE_COEFF(KK,ICELL,TII,ELB,.FALSE.,0)
+     .                 + DIINL(IPL,ICELL) + FACREL(IREL,2)
+              END IF
+              ADIN(IAIN,ICELL)=expo/(diin(ipl,icell)+eps30)/AU
             enddo
             goto 5000  !done
           ELSE ! MM=MODCOL.gt.2:  NOT READY
@@ -439,7 +497,12 @@ c  in fpath we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFEL(IREL))
 c  not ready
           irel=ns
           DO 1725 ICELL=1,NSBOX
-            ADIN(IAIN,ICELL)=EPLEL3(NS,ICELL,1)
+            IF (NSTORDR >= NRAD) THEN
+              EPEL=EPLEL3(IREL,ICELL,1)
+            ELSE
+              EPEL=EIRENE_FEPLEL3(IREL,ICELL)
+            ENDIF
+            ADIN(IAIN,ICELL)=EPEL
  1725     CONTINUE
 
           GOTO 3000
@@ -516,8 +579,12 @@ c  no interacting particle species found
           if (mm.eq.1) then
             DO 1726 ICELL=1,NSBOX
               if (lgvac(icell,ipl)) cycle
-              ADIN(IAIN,ICELL)=
-     .        TABPI3(NS,ICELL,1)/(diin(ipl,icell)+eps30)/AU
+              IF (NSTORDR >= NRAD) THEN
+                TBPI=TABPI3(NS,ICELL,1)
+              ELSE
+                TBPI=EIRENE_FTABPI3(NS,ICELL)
+              ENDIF  
+              ADIN(IAIN,ICELL)=TBPI/(diin(ipl,icell)+eps30)/AU
  1726       CONTINUE
             GOTO 5000  !DONE !
 
@@ -535,11 +602,19 @@ c      MASST(KK)=  TARGET MASS FOR CROSS-SECTION, BEAM MASS FOR BEAM MAXWELLIAN 
               if (lgvac(icell,ipl)) cycle
 c  in fpath we use: ELB=MAX(-2.3_DP,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
               ELB=log(max(0.1003_DP,1.5_DP*TIIN(iplti,icell)*EBFAC))
-              TBPI3(1:NSTORDT) = TABPI3(IRPI,ICELL,1:NSTORDT)
-              EXPO = EIRENE_SNGL_POLY(TBPI3,ELB,RCMIN,RCMAX,FP,0,0,
-     .                                EARRH,TRCAMD)
-              ADIN(IAIN,ICELL)=
-     .             exp(expo)/(diin(ipl,icell)+eps30)/AU
+              IF (NSTORDR >= NRAD) THEN
+                TBPI3(1:NSTORDT) = TABPI3(IRPI,ICELL,1:NSTORDT)
+                LEXP = .TRUE.
+                EXPO = EIRENE_SNGL_POLY(TBPI3,ELB,RCMIN,RCMAX,FP,0,0,
+     .                                  EARRH,TRCAMD,LEXP)
+              ELSE
+                TII=TIINL(IPLTI,ICELL)+ADDPI(IRPI,IPL)
+! CALCULATE RATE COEFFICIENT "ON THE FLY"
+                KK=NREAPI(IRPI)
+                EXPO = EIRENE_RATE_COEFF(KK,ICELL,TII,ELB,.FALSE.,0)
+     .               + DIINL(IPL,ICELL) + FACRPI(IRPI,2)
+              END IF
+              ADIN(IAIN,ICELL)=expo/(diin(ipl,icell)+eps30)/AU
             enddo
             goto 5000  !done
           ELSE ! MM= MODCOL.gt.2:  NOT READY
@@ -551,9 +626,15 @@ C  BULK ION IMPACT ENERGY LOSS RATE COEFFICIENT NO. IRCX
           mm=modcol(4,4,irpi)
           kk=NELRPI(irpi)
           irpi=ns
-          DO 1727 ICELL=1,NSBOX
-            ADIN(IAIN,ICELL)=EPLPI3(irpi,ICELL,1)
- 1727     CONTINUE
+          IF (NSTORDR >= NRAD) THEN
+            DO 1727 ICELL=1,NSBOX
+              ADIN(IAIN,ICELL)=EPLPI3(irpi,ICELL,1)
+ 1727       CONTINUE
+          ELSE
+            WRITE (IUNOUT,*) 'BULK ION IMPACT LOSS RATE NOT READY'
+            WRITE (IUNOUT,*) 'FOR CALCULATION ON THE FLY'
+            ADIN(IAIN,1:NSBOX)=0._DP
+          END IF 
           GOTO 3000
 
 c.................................................................
@@ -601,7 +682,12 @@ c  no interacting particle species found
           if (mm.eq.1) then
             DO 1728 ICELL=1,NSBOX
               if (lgvac(icell,npls+1)) cycle
-              ADIN(IAIN,ICELL)=TABRC1(irrc,ICELL)/(DEIN(ICELL)+EPS30)/AU
+              IF (NSTORDR >= NRAD) THEN
+                TBRC=TABRC1(irrc,ICELL)
+              ELSE
+                TBRC=EIRENE_FTABRC1(irrc,ICELL)
+              END IF
+              ADIN(IAIN,ICELL)=TBRC/(DEIN(ICELL)+EPS30)/AU
  1728       CONTINUE
 
             goto 5000
@@ -627,7 +713,12 @@ c
 c             RATE=TABRC1(irrc,ICELL)/(DEIN(ICELL)+EPS30)/AU
 cdr  distinct from eelei1:  here eelrc1 already contains tabrc1 as factor
               RATE=1.0/(DEIN(ICELL)+EPS30)/AU
-              ADIN(IAIN,ICELL)=EELRC1(irrc,ICELL)*RATE
+              IF (NSTORDR >= NRAD) THEN
+                ELRC=EELRC1(irrc,ICELL)
+              ELSE
+                ELRC=EIRENE_FEELRC1(irrc,ICELL)
+              END IF
+              ADIN(IAIN,ICELL)=ELRC*RATE
  1729       CONTINUE
             goto 5000
           else  !  mm= MODCOL(6,4,irrc)=2, not ready

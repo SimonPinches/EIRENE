@@ -276,7 +276,7 @@ c  additional volume-averaged INPUT tallies at fixed storage locations:
         NTALN=12  ! (ADIN: ADDITIONAL INPUT TALLIES)
         NTALO=14  ! (CELL VOLUME)
 
-        NTALV=100  ! total number of VOLUME-AVERAGED OUTPUT TALLIES
+        NTALV=103  ! total number of VOLUME-AVERAGED OUTPUT TALLIES
 c  additional volume-averaged output tallies at fixed storage locations
         NTALA=57
         NTALC=58
@@ -371,7 +371,8 @@ C  SET IN SETPRM ACCORDING TO LIVING TALLIES SPECIFIED IN LIVTALV
      P         4*NPLSP+28+3*(NATMP+NMOLP+NIONP+NPHOTP)+
 C
      P         NATMP+NMOLP+NIONP+NPHOTP+NPLSP+5*NPLSP+
-     P         3*(NATMP+NMOLP+NIONP+NPHOTP)+4*NPLSP
+     P         3*(NATMP+NMOLP+NIONP+NPHOTP)+4*NPLSP+
+     P         NATMP+NMOLP+NIONP
 
 
 

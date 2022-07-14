@@ -321,6 +321,14 @@ C
             VZDENA(IATM,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
           END IF
 
+          IF (LRAEL) THEN
+            DUMMY(1:NSBOX_TAL) = RAEL(IATM,1:NSBOX_TAL)
+            CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                  RAELI(IATM,ISTRA),
+     .                  NR1TAL,NP2TAL,NT3TAL,NBMLT)
+            RAEL(IATM,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+          END IF
+
   450 CONTINUE
       DO 451 IMOL=1,NMOLI
         IF (.NOT.LOGMOL(IMOL,ISTRA)) CYCLE
@@ -428,6 +436,14 @@ C
             VZDENM(IMOL,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
           END IF
 
+          IF (LRMEL) THEN
+            DUMMY(1:NSBOX_TAL) = RMEL(IMOL,1:NSBOX_TAL)
+            CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                  RMELI(IMOL,ISTRA),
+     .                  NR1TAL,NP2TAL,NT3TAL,NBMLT)
+            RMEL(IMOL,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+          END IF
+
   451 CONTINUE
       DO 452 IION=1,NIONI
         IF (.NOT.LOGION(IION,ISTRA)) CYCLE
@@ -533,6 +549,14 @@ C
      .                   VZDENII(IION,ISTRA),
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
             VZDENI(IION,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+          END IF
+          
+          IF (LRIEL) THEN
+            DUMMY(1:NSBOX_TAL) = RIEL(IION,1:NSBOX_TAL)
+            CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                  RIELI(IION,ISTRA),
+     .                  NR1TAL,NP2TAL,NT3TAL,NBMLT)
+            RIEL(IION,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
           END IF
 
   452 CONTINUE

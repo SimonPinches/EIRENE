@@ -2,7 +2,7 @@ cdr  oct 16:  levgeo=1, error exit due to round-off errors removed,
 cdr                     now: "save landing of lost particle".
 cdr           prevents random error exits in very long (parallel) runs.
 C
-cdr   at some point in time: included LDAMCEL
+Cdr   at some point in time: included LDAMCEL
 cdr   (indicator for "damaged cells" in 2D (x-y) plane)
 cdr   LDAMCEL is set in initialization phase
 

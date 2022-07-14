@@ -47,6 +47,7 @@ C  NESTM1, REAL, VOLUME-AVERAGED TALLIES
      R PIPL(:,:),
      R PPHEL(:),   PPHAT(:,:), PPHML(:,:), PPHIO(:,:), PPHPHT(:,:),
      R PPHPL(:,:),
+     R RAEL(:,:),  RMEL(:,:),  RIEL(:,:),  RPHEL(:,:),
      R EAEL(:),  EAAT(:),  EAML(:),  EAIO(:),  EAPHT(:),  EAPL(:,:),
      R EMEL(:),  EMAT(:),  EMML(:),  EMIO(:),  EMPHT(:),  EMPL(:,:),
      R EIEL(:),  EIAT(:),  EIML(:),  EIIO(:),  EIPHT(:),  EIPL(:,:),
@@ -71,10 +72,10 @@ c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
      R PXEL(:),   PXAT(:,:),  PXML(:,:),  PXIO(:,:), PXPL(:,:),
      R EXEL(:),   EXAT(:),    EXML(:),    EXIO(:),   EXPL(:,:),
      R VXDENX(:), VYDENX(:),  VZDENX(:),
-     R MXPL(:,:), PXX(:,:),   EXX(:)
+     R MXPL(:,:), RXEL(:,:),  PXX(:,:),   EXX(:)
 
 !$OMP  THREADPRIVATE(PDENX,EDENX,PXEL,PXAT,PXML,PXIO,PXPL,EXEL,EXAT, 
-!$OMP& EXML,EXIO,EXPL,VXDENX,VYDENX,VZDENX,MXPL,PXX,EXX)
+!$OMP& EXML,EXIO,EXPL,VXDENX,VYDENX,VZDENX,MXPL,RXEL,PXX,EXX)
 
 C  NESTM2, REAL, SURFACE-AVERAGED TALLIES
       REAL(DP), PUBLIC, POINTER, SAVE ::
@@ -173,7 +174,9 @@ c  test particle flow velocity densities
      L LVYDENA, LVYDENM, LVYDENI, LVYDENPH,
      L LVZDENA, LVZDENM, LVZDENI, LVZDENPH,
 c  parallel (to B field) momentum source tallies
-     L LMAPL,  LMMPL,  LMIPL,  LMPHPL
+     L LMAPL,  LMMPL,  LMIPL,  LMPHPL,
+     L LRAEL,  LRMEL,  LRIEL
+      LOGICAL, PUBLIC, TARGET, SAVE :: LRPHEL
 
 c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
       LOGICAL, PUBLIC, POINTER, SAVE ::
@@ -181,7 +184,7 @@ c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
      L LPXEL,   LPXAT,   LPXML,   LPXIO, LPXPL,
      L LEXEL,   LEXAT,   LEXML,   LEXIO, LEXPL,
      L LVXDENX, LVYDENX, LVZDENX,
-     L LMXPL,   LPXX,    LEXX
+     L LMXPL,   LRXEL,   LPXX,    LEXX
 
 !$OMP  THREADPRIVATE(LPDENX,LEDENX,LPXEL,LPXAT,LPXML,LPXIO,LPXPL,LEXEL,
 !$OMP& LEXAT,LEXML,LEXIO,LEXPL,LVXDENX,LVYDENX,LVZDENX,LMXPL,LPXX,LEXX)
@@ -209,7 +212,8 @@ c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
      L LMSVXDENA, LMSVXDENM, LMSVXDENI, LMSVXDENPH,
      L LMSVYDENA, LMSVYDENM, LMSVYDENI, LMSVYDENPH,
      L LMSVZDENA, LMSVZDENM, LMSVZDENI, LMSVZDENPH,
-     L LMSMAPL,  LMSMMPL,  LMSMIPL,  LMSMPHPL
+     L LMSMAPL,  LMSMMPL,  LMSMIPL,  LMSMPHPL,
+     L LMSRAEL,  LMSRMEL,  LMSRIEL
 
 c  logical, for each surface-averaged tally, particle flux.
 c  either active tally (if true) or deactivated tally, no storage (if false)
@@ -885,15 +889,31 @@ c  ntalr =62
         MIPL => CEMETERYV(0:0,:)
       END IF
       IF (LMPHPL) THEN
-!pb   I would have expected the compiler to find the length of
-!pb   array ESTIMV automatically but ifort version 12.0.4 does not
-!pb 20.06.2012        MPHPL => ESTIMV(NADDV(100)+1: ,:)
-        MPHPL => ESTIMV(NADDV(100)+1:NVOLTL ,:)
-cdr     MPHPL => ESTIMV(NADDV(100)+1:NADDV(101),:)  ! Clearer.
-cdr Instead check: nvoltl=naddv(101) for consistency?
+        MPHPL => ESTIMV(NADDV(100)+1:NADDV(101),:)
       ELSE
         MPHPL => CEMETERYV(0:0,:)
       END IF
+      IF (LRAEL) THEN
+        RAEL => ESTIMV(NADDV(101)+1:NADDV(102),:)
+      ELSE
+        RAEL => CEMETERYV(0:0,:)
+      END IF
+      IF (LRMEL) THEN
+        RMEL => ESTIMV(NADDV(102)+1:NADDV(103),:)
+      ELSE
+        RMEL => CEMETERYV(0:0,:)
+      END IF
+      IF (LRIEL) THEN
+!pb   I would have expected the compiler to find the length of
+!pb   array ESTIMV automatically but ifort version 12.0.4 does not
+!       RIEL => ESTIMV(NADDV(103)+1: ,:)
+        RIEL => ESTIMV(NADDV(103)+1:NVOLTL ,:)
+cdr     RIEL => ESTIMV(NADDV(103)+1:NADDV(104),:)  ! Clearer.
+cdr Instead check: nvoltl=naddv(104) for consistency?
+      ELSE
+        RIEL => CEMETERYV(0:0,:)
+      END IF
+      RPHEL => CEMETERYV(0:0,:)
 
 C  SURFACE-AVERAGED TALLIES:
 C     if tally is active in this run     : Pointer to allocatable array ESTIMS
@@ -1522,6 +1542,10 @@ C
         LMMPL    => LIVTALV(98)
         LMIPL    => LIVTALV(99)
         LMPHPL   => LIVTALV(100)
+        LRAEL    => LIVTALV(101)
+        LRMEL    => LIVTALV(102)
+        LRIEL    => LIVTALV(103)
+        LRPHEL   = .FALSE.
 
         LMSPDENA   => LMISTALV(1)
         LMSPDENM   => LMISTALV(2)
@@ -1623,6 +1647,10 @@ C
         LMSMMPL    => LMISTALV(98)
         LMSMIPL    => LMISTALV(99)
         LMSMPHPL   => LMISTALV(100)
+
+        LMSRAEL    => LMISTALV(101)
+        LMSRMEL    => LMISTALV(102)
+        LMSRIEL    => LMISTALV(103)
 
 ! surface-averaged tallies
 
