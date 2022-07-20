@@ -196,7 +196,7 @@ c      transfer of background (plasma) tallies into eirene background tallies
 cdr  In iterative mode, e.g. BGK iterations,
 c      ALLOC_BCKGRND may also be called.
 c      Then: risk of a hidden link? And unnecessary stuff to be dealt
-cdr    with in MODBGK (such as B field ?)
+cdr    within MODBGK (such as B field ?)
 c
 c    currently: no E field information ?
 

@@ -59,6 +59,7 @@ C
       USE EIRMOD_COMUSR
       USE EIRMOD_COMSOU, ONLY: NSTRAI
       USE EIRMOD_COMPRT, ONLY: IUNIN, IUNOUT
+      USE EIRMOD_CLOGAU, ONLY: EIRENE_ALLOC_CLOGAU
       USE EIRMOD_CTRCEI, ONLY: TRCAMD, TRCINT, NVOLPR, NSURPR,
      .                         EIRENE_ALLOC_CTRCEI
       USE EIRMOD_CINIT, ONLY: CASENAME, DBFNAME, DBHANDLE, NDBNAMES,
@@ -90,7 +91,7 @@ C
      .           MOD_ADDV, NUM_COMPO,
      .           NUM_CONTRIB, ISP, ITP, IRATIO,
      .           I, J, K,
-     .           I2, I3, I4, IANF, IFILE,
+     .           I2, I3, I4, IH, IANF, IFILE,
      .           ILINE, JCOMP, KCONTR, IREAC_ADD           
       REAL(DP) :: SORIND, SORLIM, DUMM1, ROA, ZAA, ZZA, ZGA, YAA, YYA,
      .            ZIA, YP, XP, YIA, YGA
@@ -105,7 +106,7 @@ C
       LOGICAL :: LDEFSTOR
       LOGICAL :: UEX, NLEMIS
       LOGICAL :: LMULPL   ! multiple Ti and V..IN (per species) due to virt. background iterations
-      LOGICAL :: ldum(34)
+      LOGICAL :: ldum(35)
       CHARACTER(420) :: FILENAME, ULINE
       CHARACTER(420) :: ZEILE, FILE45
       CHARACTER(12) :: CHR, CADAPT
@@ -208,8 +209,9 @@ cdr  I think this outer loop is unnecessary. Identical code in input.f, without 
         DO WHILE (I1 /= 0)
           I2 = VERIFY(ZEILE(I1+5:),' ') + I1 + 4
           I3 = SCAN(ZEILE(I2+1:),' ')
+          IH = MIN(I3,6)
           HANDLE=REPEAT(' ',6)
-          HANDLE(1:I3) = ZEILE(I2:I2+I3-1)
+          HANDLE(1:IH) = ZEILE(I2:I2+IH-1)
 c   cfile card found. Is this one of the permitted external files?
           DO IFILE = 1,NDBNAMES
             IF (INDEX(DBHANDLE(IFILE),HANDLE) /= 0) EXIT
@@ -723,6 +725,8 @@ cdr ..................................................................
         WRITE (IUNOUT,*) ' NPLSV = ',NPLSV
       END IF
 
+C  FIND START OF NEXT INPUT BLOCK: 6
+
       IF (LINCL45) THEN
         CLOSE (IUNIN)
         IUNIN = IUNIN_SAVE
@@ -934,8 +938,8 @@ C
       DO WHILE (ZEILE(1:1) .EQ. '*')
         READ (IUNIN,'(A72)') ZEILE
       END DO
-      call fix_logical_input(zeile,34)
-      READ (ZEILE,6665) ldum(1:34) ! in case we need the output switches early
+      call fix_logical_input(zeile,35)
+      READ (ZEILE,6665) ldum(1:35) ! in case we need the output switches early
 C
 C   READ TRCSRC (60 LOGICALS PER LINE)
       do j=0, NSTRAI, 60
@@ -958,7 +962,7 @@ C  ERGODIC OPTION NEEDS PRINTOUT AT LEAST FROM TIME HORIZON
         READ (IUNIN,*)
       END DO
 
-      CALL EIRENE_ALLOC_CTRCEI
+      CALL EIRENE_ALLOC_CTRCEI(1)
       NVOLPR = IDUMMY(1)
       NSURPR = IDUMMY(2)
       TRCAMD = ldum(10)
@@ -1218,6 +1222,7 @@ C  THEREFORE: SET A DEFAULT TIME HORIZON HERE
       NSTRA = MAX(NSTRA,NSTRAI)
       NPRNL = MAX(NPRNL,NPRNLI)
       NLIMPS = NLIM+NSTS
+      CALL EIRENE_ALLOC_CTRCEI(2)
 
 cdr        NPRNL is only valid for writing census arrays onto fort.15
 cdr  tbd:  when reading fort 15 (census), the size is determined by the

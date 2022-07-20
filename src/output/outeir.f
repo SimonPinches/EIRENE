@@ -47,7 +47,7 @@ C
      .            EGAINP, ELOSSP, PGAINE, PLOSSE, SMEAN, OUTAUI, TALAV,
      .            TALTOT, DIF, SMSPT, ERADE
       INTEGER :: IALS, IALV, J, JJ, IS, NFTI, NFTE, I0, K, NF, N, IALG,
-     .           ITAL, IPRV, KMAX, KK, ILAST, ICOUNT, I, IINDEX, ISPC,
+     .           ITAL, IPRV, ILAST, ICOUNT, I, IINDEX, ISPC,
      .           IT, JATM, JMOL, JION, JPHOT, IRET
       INTEGER :: IADTYP(0:4)
       LOGICAL :: LCOVN(NCV)

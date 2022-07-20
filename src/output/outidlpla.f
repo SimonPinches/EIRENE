@@ -1,7 +1,7 @@
 cdr  tally 22 (electric potential) added, and a few comments, started...
 cdr  Possible pitfall: coarse graining onto scoring grid is not done here.
 cdr  Perhaps now some input tallies are on different grids?
-cpb Input tallies are ALWAYS defined on the fine grid.
+cpb  Input tallies are ALWAYS defined on the fine grid.
 
 C
       SUBROUTINE EIRENE_OUTIDLPLA

@@ -104,6 +104,7 @@ C
       USE EIRMOD_TIMEA, ONLY: EIRENE_DEALLOC_TIMEA
       USE EIRMOD_OPENMP, ONLY: EIRENE_INIT_OPENMP,
      .                         EIRENE_ITHREAD, EIRENE_NTHREADS
+      USE EIRMOD_REFUSR, ONLY: EIRENE_DEALLOC_REFUSR
 
       IMPLICIT NONE
 
@@ -111,9 +112,9 @@ C
       LOGICAL, INTENT(IN) :: NLMODE, NLLAST, MPI_INITIALIZE
       INTEGER, INTENT(IN) :: ITNR
 
-      INTEGER :: IERROR, IER, ISTRAI
+      INTEGER :: IER, ISTRAI
       REAL(DP) :: DUMMY, TIMI
-      integer, save :: inentry=1, init_log=0
+      integer, save :: inentry=1, init_log=0, init_open=0
       logical :: nlplas_save
       character(20), save :: outname
       character(6), save :: outpos
@@ -157,17 +158,23 @@ cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
 #ifndef USE_EXT_OPENMP      
 !$OMP PARALLEL
 #endif        
-        OUTNAME='output.'
-        WRITE (OUTNAME(8:),'(I4.4)')
+!pb_open
+        if (init_open == 0) then
+          OUTNAME='output.'
+          WRITE (OUTNAME(8:),'(I4.4)')
      .       (MY_PE*EIRENE_NTHREADS)+EIRENE_ITHREAD
-        IF ( LOUTAPP ) THEN
-          OUTPOS='APPEND'
-        ELSE
-          OUTPOS='ASIS'
-        END IF
-        IF (EIRENE_NTHREADS > 1) IUNOUT = 200 + IFOFF + EIRENE_ITHREAD
-        OPEN (UNIT=IUNOUT,FILE=OUTNAME, ACCESS='SEQUENTIAL',
-     .        FORM='FORMATTED', POSITION=OUTPOS)
+          IF ( LOUTAPP ) THEN
+            OUTPOS='APPEND'
+          ELSE
+            OUTPOS='ASIS'
+          END IF
+          IF (EIRENE_NTHREADS > 1) IUNOUT = 200 + IFOFF + EIRENE_ITHREAD
+          OPEN (UNIT=IUNOUT,FILE=OUTNAME, ACCESS='SEQUENTIAL',
+     .         FORM='FORMATTED', POSITION=OUTPOS)
+          init_open=1
+        else
+          if (my_pe.ne.0) rewind (iunout)
+        end if
 #ifndef USE_EXT_OPENMP      
 !$OMP END PARALLEL
 #endif        
@@ -176,16 +183,16 @@ cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
       IF (MY_PE == 0) THEN
 
         IF (ITNR == 1) THEN
-          CALL EIRENE_VERSION
+          CALL EIRENE_ALLOC_CLOGAU
           CALL EIRENE_FIND_PARAM
           CALL EIRENE_SET_PARMMOD(1)
         ELSE
           DUMMY=EIRENE_RESET_SECOND()
         END IF
 
+        CALL EIRENE_VERSION
         write (iunout,*) ' Number of PEs ',nprs
 
-        IF (ITNR == 1) CALL EIRENE_ALLOC_CLOGAU
         CALL EIRENE_ALLOC_COMPRT(NPRS)
 cdr
 c  indicate: first entry to eirene has now been done.
@@ -243,7 +250,8 @@ cdr  should we not set inentry=0 now ??  meaning of init_log, inentry, nlpls_sav
         CALL EIRENE_ALLOC_CGRID
         CALL EIRENE_ALLOC_CSPEZ
         CALL EIRENE_ALLOC_CZT1(1)
-        CALL EIRENE_ALLOC_CTRCEI
+        CALL EIRENE_ALLOC_CTRCEI(1)
+        CALL EIRENE_ALLOC_CTRCEI(2)
         CALL EIRENE_ALLOC_CGEOM(1)
         CALL EIRENE_ALLOC_CSDVI(1)
         CALL EIRENE_ALLOC_CTETRA
@@ -300,7 +308,6 @@ C
         CALL EIRENE_ALLOC_CSPEI
         CALL EIRENE_ALLOC_CSDVI(2)
         CALL EIRENE_ALLOC_CLAST
-        CLOSE(IUNMEM)
 
         CALL EIRENE_STTXT1
 C
@@ -610,7 +617,9 @@ C  PRINT OUTPUT FOR IDL BASED EXTERNAL GRAPHICS AND POSTPROCESSING
          CALL EIRENE_DEALLOC_COLRAD    ! pb, august 15, deallocate local arrays used for CRM
          CALL EIRENE_MCARLO2
          CALL EIRENE_DEALLOC_TIMEA  
+         CALL EIRENE_DEALLOC_REFUSR
 C
+         CLOSE(IUNMEM)
          IF (MPI_INITIALIZE) CALL MPI_FINALIZE(IER)
       END IF
 

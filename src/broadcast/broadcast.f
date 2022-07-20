@@ -160,7 +160,7 @@ cdr  broadcast arrays for interfacing with B2/B2.5 codes family
 
       CALL EIRENE_BROADCAST_COMNNL(MY_PE)
 
-      CALL EIRENE_BROAD_USR
+      CALL EIRENE_BROADCAST_USR(MY_PE)
 
 c     ------------------------------------------------------------     c
 c     for the trace ion module

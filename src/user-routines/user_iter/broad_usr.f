@@ -1,18 +1,17 @@
 
 
-      SUBROUTINE EIRENE_BROAD_USR
+      SUBROUTINE EIRENE_BROADCAST_USR(ME)
 
       USE EIRMOD_PARMMOD
       USE EIRMOD_CTRIG
-      USE EIRMOD_CPES
       use eirmod_extrab25
       use eirmod_mpi
 
       IMPLICIT NONE
-
+      INTEGER, INTENT(IN) :: ME
       integer :: ier
 
-      if (my_pe > 0) then
+      if (me > 0) then
          if (.not.allocated(plnxtri)) then
            allocate(plnxtri(ntrii))
            allocate(plnytri(ntrii))

@@ -84,10 +84,10 @@ c  find 2D grid indices ir, ip, from 1d cell number icell
 
         if (levgeo == 1) then
 cdr  changed in summer 2019
-!          x1=rsurf(ir)
-!          x2=rsurf(ir+1)
-!          x3=rsurf(ir+1)
-!          x4=rsurf(ir)
+!         x1=rsurf(ir)
+!         x2=rsurf(ir+1)
+!         x3=rsurf(ir+1)
+!         x4=rsurf(ir)
 
           x1=rsurf(ir+1)
           x2=rsurf(ir)

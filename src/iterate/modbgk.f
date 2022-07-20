@@ -157,7 +157,7 @@ C  NOTHING TO BE DONE, DATA ARE ALREADY FOR "SUM OVER STRATA"
 C
       if (NBMLT.gt.1) then
         write (iunout,*) 'NBMLT-option not ready in MODBGK '
-c       call EIRENE_exit_own(1)
+        call EIRENE_exit_own(1)
       endif
       if (any(MPLSTI(1:npls) /= (/(i,i=1,npls)/))) then
         write (iunout,*) 'MPLSTI-option not ready in MODBGK '
@@ -701,11 +701,6 @@ C
       TRCSAV=TRCAMD
       TRCAMD=.FALSE.
 C
-c     write (iunout,*) 'before diin '
-c     do ipls=1,npls
-c       write (iunout,*) ipls,diin(ipls,1)
-c     enddo
-
       CALL EIRENE_LEER(1)
       DO JPLS=1,NPLSI
         LMARK(JPLS)=.FALSE.

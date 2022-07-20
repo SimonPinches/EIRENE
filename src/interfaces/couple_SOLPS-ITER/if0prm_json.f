@@ -93,6 +93,7 @@ C
 C
 C  READ DATA FOR TRIANGULAR MESH
 C
+C
       nr1st = n1st
       call eirene_find_triang_dim(nr1st,ntri,ntrii,nknot,ngitt,' ',0)
       

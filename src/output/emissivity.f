@@ -117,6 +117,7 @@ c
           addv(iadv,:) = 0._dp
           sigadd = 0._dp
           powalf = 0._dp
+
 cdr run over contributions:  density models, isotopes, QSS states            
           do k = 1, emis_lines(i)%compo(j)%num_contrib
             isp(1) = emis_lines(i)%compo(j)%contrib(k)%isp

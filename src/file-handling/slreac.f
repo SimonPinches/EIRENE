@@ -689,7 +689,7 @@ C
 C  READ FROM DATA FILE, stream 29
 C
 C  already ruled out here (done at this point):
-C  FILNAM= "CR", "CONST", "ADAS", "TAB2D", "PHOTON"
+C  FILNAM= "CR...", "CONST", "ADAS", "TAB2D", "PHOTON"
 C  in all these cases: already returned to calling program
 C
 C......................................................................

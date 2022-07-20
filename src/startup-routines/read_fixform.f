@@ -271,8 +271,9 @@ cdr  begin
       DO WHILE (I1 /= 0)
         I2 = VERIFY(ZEILE(I1+5:),' ') + I1 + 4
         I3 = SCAN(ZEILE(I2+1:),' ')
+        IH = MIN(I3,6)
         HANDLE=REPEAT(' ',6)
-        HANDLE(1:I3) = ZEILE(I2:I2+I3-1)
+        HANDLE(1:IH) = ZEILE(I2:I2+IH-1)
 c   cfile card found. Is this one of the permitted external files?
         DO IFILE = 1,NDBNAMES
           IF (INDEX(DBHANDLE(IFILE),HANDLE) /= 0) EXIT
@@ -537,10 +538,10 @@ C         Reserved for default, see below
       CALL EIRENE_LEER(1)
       IF (NTIME.GE.1) THEN
         WRITE (iunout,*) '       EIRENE RUN IN TIME DEP. MODE.'
-        WRITE (iunout,*) '       TIME-CYCLES: ',ITIMV,' TO ',NTIME
+        WRITE (iunout,*) '       TIME CYCLES: ',ITIMV,' TO ',NTIME
         WRITE (iunout,*)
      .    '       SUBROUTINE "TMSUSR" IS CALLED AFTER EACH'
-        WRITE (iunout,*) '       TIME-CYCLE'
+        WRITE (iunout,*) '       TIME CYCLE'
       ELSE
         WRITE (iunout,*) '       EIRENE RUN IN STATIONARY MODE'
       ENDIF

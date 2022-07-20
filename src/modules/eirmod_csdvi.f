@@ -1,6 +1,5 @@
 cdr july 17:  nsnv already contained in nspztot, due to previous fix.
 cdr nov. 17:  nspztotw introduced, in analogy with nspztot
-cdr oct. 19: Redundant NSIGI_COP and NSIGI_BGK removed from entire code.
 
       MODULE EIRMOD_CSDVI
 

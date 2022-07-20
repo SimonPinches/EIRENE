@@ -705,8 +705,6 @@ C
         DO I=1,NP
           XPOL(J,I)=XPOL(J,I)*100.
           YPOL(J,I)=YPOL(J,I)*100.
-          IF (ABS(XPOL(J,I)).LT.5.D-5) XPOL(J,I)=0.
-          IF (ABS(YPOL(J,I)).LT.5.D-5) YPOL(J,I)=0.
         END DO
  1020 CONTINUE
       RETURN

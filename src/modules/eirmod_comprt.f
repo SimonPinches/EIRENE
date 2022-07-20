@@ -138,9 +138,6 @@ C  SOME FURTHER INTEGER VARIABLES USED ALONG PARTICLE TRAJECTORY
 !$OMP& IPOLGN,NINCX,NINCY,NINCZ,NINCA,NJUMP,NIMINT,ITRJ,IXSPZ,NMETOFF,
 !$OMP& LGPART,LGLAST,LGTIME,NLSRFX,NLSRFY,NLSRFZ,NLSRFA,NLTRC,NLTRJ)
 
-
-    
-
 c  unrelated to particle trajectories:  IO streams
       INTEGER, PUBLIC, SAVE ::
      I IUNIN,  IUNOUT, IVTKOUT
@@ -325,7 +322,6 @@ cdr same code as in subr. EIRENE
       IF (NPRS > 1) IUNOUT = 7 + IFOFF
 ! Not sure why this is repeated here      
       IF (NTHREAD > 1) IUNOUT = 200 + IFOFF
-
       IVTKOUT= 28
 
 

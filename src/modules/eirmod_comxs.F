@@ -183,9 +183,6 @@ c  inverse mean free path
 !$OMP& ESIGCX,ESIGPI,ESIGEI,ESIGEL,ESIGPH,VSIGCX,VSIGPI,VSIGEL,SIGCXT,
 !$OMP& SIGPIT,SIGEIT,SIGELT,SIGPHT,SIGTOT,SIGBGK,ZMFPI,ZMFPTHI,TDGTEMX)
 
-
-
-
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R TABEI1(:,:),   TABRC1(:,:),
      R TABPI3(:,:,:), TABCX3(:,:,:), TABEL3(:,:,:),  ! missing: tabph3
@@ -375,7 +372,6 @@ C
         ALLOCATE (NPHPII(NPHOT))
 c  for background particle we allow only RC type reactions
         ALLOCATE (NPRCI(NPLS))
-
 
 cdr apparently missing: ...M arrays for photon test particles
         ALLOCATE (NAEIIM(NATM))
@@ -2163,7 +2159,7 @@ c
 
 CDR  NEXT THREE ROUTINES: PROBABALY NOT NEEDED ?
       FUNCTION EIRENE_IS_RTC_TAB2D (IREAC) RESULT(RES)
-c  something special about adas ?  unused !
+cdr   something special about adas ?  unused !
 
       INTEGER, INTENT(IN) :: IREAC
       LOGICAL :: RES

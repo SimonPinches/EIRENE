@@ -263,38 +263,38 @@ C
      .          DELTE_PARA, DELTE_PERP, DELTI_PERP, DELTI_PARA, DELY,
      .          TES, TIS,
      .          ALX, ALE, ALW, ALS, ALN, AL, ETOT,
-     .          FLX, ESUM, DR, VR, VTEST, VTEST2, EADD,
-     .          EMAXW, ESHEATH, SI,
+     .          FLX, ESUM, VR, VTEST, VTEST2, EADD,
+     .          EMAXW, ESHEATH,
      .          PARWI, PERWI, SUMM, SUMN, SUMEI, SUMEE, FLXI,
      .          CHI, CHP, CHE, CS, THMAX, EESHT, EEMAX,
      .          RP1, DELX, PNORM, PVYS, PVXS, PUPV, RRBS, PUYS, PUXS,
-     .          VPX, VPY, VT, PARW, PERW, PN1, OR, VPZ, GAMMA, CUR, TE,
+     .          VPX, VPY, VT, PARW, PERW, PN1, VPZ, GAMMA, CUR, TE,
      .          PM1, DRR, VDBC,
-     .          XCOOR,YCOOR,ZCOOR,VSX,VSY,VS,VTX,
+     .          VSX,VSY,VS,VTX,
      .          BVAC,TX,TY,VPRO,VTY,XMUE,PX,PY,
-     .          XANF,YANF,PIPV,
+     .          XANF,YANF,
      .          FLX_EIR,
      .          SUMN_OLD,
-     .          SNIRES, SMORES, SEERES, SEIRES, UU, PITB,
+     .          SNIRES, SMORES, SEERES, SEIRES, UU,
      .          DXPOL,DYPOL,PAR,
      .          dx,dy, eamisum
 
-       INTEGER, SAVE :: J, IRC, JC, INC, IADD, JATM, JMOL, JION,
+       INTEGER, SAVE :: J, IRC, JC, INC, JATM, JMOL, JION,
      .           IP, ITARG, IO, IFL, NPES,
      .           IIPLS, IG, IGITT, IEPLS, NPEC, NPBC, NPBS, NTGPRI,
-     .           IT, I, IPRT, IAOT, IAIN, IREAD, IPL, INN,
-     .           IMODE, IERROR, LTARG, IN, IX, IY, IXNI,
+     .           IT, I, IPRT, IAOT, IAIN, IREAD, IPL,
+     .           IMODE, IERROR, LTARG, IN, IX, IY,
      .           NPLP, NDX2, NRED, IO29, NDXY, IFIRST,
      .           ISTRAI, IRRC, K, IR, IIRC, I34,
      .           NREC11, NEM, MINSPEZ, MAXSPEZ,
      .           ISP, IPLSTI, IPLSV,
      .           IPLV, L, ISTR, JUN, JPLS,
-     .           NAS,IPUNKT,NSSIR,NUMSI,NBAR,ISNR,ISC,IS,NASMOD,
-     .           NRS,NADMOD,NBARSI,IP1,IS1,IR1,
-     .           NEND,NINI,NSSIP,MTRI,
+     .           NUMSI, NBAR, ISC, IS,
+     .           NBARSI, IP1, IS1, IR1,
+     .           MTRI,
      .           IDUMMY,ISTS,ITRI,IACT,IANF,
      .           ISC1,ISC2,ISCS,ICOU,
-     .           IXI, IXE, NCOPIB, NCOPEB,
+     .           IXI, IXE,
      .           IST_RATE, IMF, IXM1,
 !  ADDITIONAL STORAGE FOR LIN. COMB. OF TALLIES (E.G. INTERNAL ENERGY SOURCES)
      .           ICPV, icp1, icp2, icp3,
@@ -355,8 +355,6 @@ cdr  sputter fluxes
       real(dp), allocatable :: helpw(:)
 
       logical :: lhit(nrad)
-
-      REAL(DP) :: OUTHELP(NFL)
 
       INTEGER, ALLOCATABLE, SAVE :: IHELP(:)
 C
@@ -727,15 +725,28 @@ C
       OPEN (UNIT=33,ACCESS='SEQUENTIAL',FORM='FORMATTED')
       OPEN (UNIT=34,ACCESS='SEQUENTIAL',FORM='FORMATTED')
       OPEN (UNIT=35,ACCESS='SEQUENTIAL',FORM='FORMATTED')
+      REWIND 33
+      REWIND 34
+      REWIND 35
 C
-      READ(33,*) NRKNOT
-      WRITE(iunout,*) 'NRKNOT = ',NRKNOT
+      READ(33,*,IOSTAT=IO) NRKNOT
+      IF(IO.NE.0) NRKNOT=0
+      WRITE(iunout,'(a14,i8)') 'NRKNOT      = ',NRKNOT
 
 C
 C     READ IN THE NUMBER OF TRIANGLES AND ATTRIBUTES OF THE TRIANGLES
-      READ(34,*) NTRII
-      WRITE(iunout,'(a,i8)') 'NTRII = ',NTRII
+      READ(34,*,IOSTAT=IO) NTRII
+      IF(IO.NE.0) NTRII=0
+      WRITE(iunout,'(a14,i8)') 'NTRII       = ',NTRII
 
+      READ (35,*,IOSTAT=IO) IDUMMY
+      IF(IO.NE.0) IDUMMY=0
+      IF (IDUMMY /= NTRII) THEN
+        WRITE (IUNOUT,*) ' NUMBERS OF TRIANGLES DO NOT MATCH'
+        WRITE (IUNOUT,*) ' IN FILES ...ELEMENTE AND ...NEIGHBORS'
+        WRITE (IUNOUT,*) ' CHECK THE GEOMETRY, EXIT CALLED'
+        CALL EIRENE_EXIT_OWN(1)
+      END IF
 C
 C  EACH ELEMENT (TRIANGLE) IS GIVEN BY 3 POINTS
 C
@@ -781,18 +792,11 @@ C
         READ(34,*) J,NECKE(1,I),NECKE(2,I),NECKE(3,I)
       ENDDO
 
-      READ (35,*) IDUMMY
-      IF (IDUMMY /= NTRII) THEN
-        WRITE (IUNOUT,*) ' NUMBERS OF TRIANGLES DO NOT MATCH '
-        WRITE (IUNOUT,*) ' IN FILES ...ELEMENTE AND ...NEIGHBORS'
-        WRITE (IUNOUT,*) ' CHECK THE GEOMETRY, EXIT CALLED '
-        CALL EIRENE_EXIT_OWN(1)
-      END IF
-
       DO I=1,NTRII
 cdr  june 17:
 cdr: careful: I ne J possible. Unless triangles are sorted as J= 1,2,3... on fort.35
 cdr           This is implicitly assumed here ?
+cpb           J is of no consequence here. It could have been called IDUM as well.
         READ(35,*) J,NCHBAR(1,I),NSEITE(1,I),IDUMMY,
      >               NCHBAR(2,I),NSEITE(2,I),IDUMMY,
      >               NCHBAR(3,I),NSEITE(3,I),IDUMMY,
@@ -805,6 +809,11 @@ C    >                   NCHBAR(2,I),NSEITE(2,I),NCHBAR(3,I),NSEITE(3,I)
 C THE SPECIAL SURFACE PROPERTY (IF ANY) IS ON INMTI ARRAY, AND TRANSFERRED INTO
 C EIRENE VIA COMMON.
       ENDDO
+
+      CLOSE (UNIT=33)
+      CLOSE (UNIT=34)
+      CLOSE (UNIT=35)
+      CALL EIRENE_LEER(1)
 
       CALL BUILD_HEADS_ARRAY
 
@@ -835,7 +844,6 @@ C  FIRST: RADIAL SURFACES
           IF (IR.EQ.INUMP(ISTS,1)) THEN
             IR1=IR+1
             IF (IR1.GT.NR1ST) IR1=IR-1
-            IXNI=IR !VK
             DO IP=IRPTA(ISTS,2),IRPTE(ISTS,2)-1
               IF (IR.LT.NR1ST) THEN
                 CURPOI => HEADS(IR,IP)%P
@@ -850,8 +858,8 @@ CVKG TO FIX A BUG WITH GEOMETRY
                 DO IS=1,3
                   IF(EIRENE_POINT_ON_INTERVAL(XTRIAN(NECKE(IS,ITRI)),
      f                      YTRIAN(NECKE(IS,ITRI)),
-     f                      XPOL(IXNI,IP),YPOL(IXNI,IP),
-     f                      XPOL(IXNI,IP+1),YPOL(IXNI,IP+1))) THEN
+     f                      XPOL(IR,IP),YPOL(IR,IP),
+     f                      XPOL(IR,IP+1),YPOL(IR,IP+1))) THEN
                   IF(ISC1.GT.0) THEN
                     ISC2=IS
                   ELSE
@@ -895,7 +903,6 @@ C  NEXT: POLOIDAL SURFACES
             ELSEIF (NPPLG.EQ.6) THEN
               IF (IP.EQ.NPOINT(2,3)-1) IP1=IP-1
             ENDIF
-            IXNI=IP !VK
             DO IR=IRPTA(ISTS,1),IRPTE(ISTS,1)-1
               IF (IP1.EQ.IP-1) THEN
                 CURPOI => HEADS(IR,IP1)%P
@@ -910,8 +917,8 @@ CVKG TO FIX GEOMETRY BUG
                 DO IS=1,3
                   IF(EIRENE_POINT_ON_INTERVAL(XTRIAN(NECKE(IS,ITRI)),
      f                      YTRIAN(NECKE(IS,ITRI)),
-     f                      XPOL(IR,IXNI),YPOL(IR,IXNI),
-     f                      XPOL(IR+1,IXNI),YPOL(IR+1,IXNI))) THEN
+     f                      XPOL(IR,IP),YPOL(IR,IP),
+     f                      XPOL(IR+1,IP),YPOL(IR+1,IP))) THEN
                   IF(ISC1.GT.0) THEN
                     ISC2=IS
                   ELSE
@@ -1562,9 +1569,10 @@ C       and in the direction of increasing poloidal B2 cell index
 c    b) toroidal field is in eirene positive z-direction (periodic cylinder, nltrz-option)
 c                                (or positive 3rd coodinate "phi", in case nltra-option)
 c    modulus of the ratio poloidal to poloidal field is given by the B2-array pitch RRB
-C    magnitude of B field is given by B2-array BFELDB
+C         BFELDB: magnitude of the field
+C
 
-C  polodial field
+C  poloidal field
           BX=PUX(IN)*RRB(IX,IY)   ! +PVX(IN)*0., but radial field is zero
           BY=PUY(IN)*RRB(IX,IY)   ! +PVY(IN)*0.
 c  toroidal field
@@ -3887,6 +3895,8 @@ C  or     (    lcoarse) already scored on B2.5 grid cell INC=IY+(IX-1)*NR1TAL_SA
      .                EMPL(JPLS,INC)*VOLTAL(INC)*ELCHA
                   IF (LEIPL) SEI(IX,IY,ISTRAI)=SEI(IX,IY,ISTRAI)+
      .                EIPL(JPLS,INC)*VOLTAL(INC)*ELCHA
+                  SEI(IX,IY,ISTRAI)=SEI(IX,IY,ISTRAI)+
+     .                EPPL_COP(JPLS,INC)*VOLTAL(INC)*ELCHA
                   CHEIS=CHEIS+CHEIM(INC)*VOLTAL(INC)
                   IF (LEAPL) SEIS=SEIS+EAPL(JPLS,INC)*VOLTAL(INC)
                   IF (LEMPL) SEIS=SEIS+EMPL(JPLS,INC)*VOLTAL(INC)

@@ -257,7 +257,7 @@ C  IS TABEI1 A RATE COEFFICIENT OR ALREADY A RATE ?
 C  2.C) RATE COEFFICIENT(TE,EBEAM)
 C       NEND=9
 C  TO BE WRITTEN
-        goto 996
+        if (.true.) goto 996
 
         IF (NSTORDR >= NRAD) THEN
           FCTKKL=LOG(FACTKK)

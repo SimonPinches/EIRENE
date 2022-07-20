@@ -118,10 +118,6 @@
 ! flag indicating if subroutine iniusr is called from B2.5
       integer, public, save :: ini_iniusr=0
 
-      !C*** ionization potentials
-      integer, save :: npot=20
-      real(dp), allocatable, save :: pot_data(:)
-
       contains
 
       subroutine eirene_extrab25_alloc_mods(nnx,nny)
@@ -137,91 +133,6 @@
       allocate (flux_save(nstra))
       flux_save=0.d0
       end subroutine eirene_extrab25_alloc_mods
-
-      !c
-      !c*** Obtain ionization potentials for consistency with B2.5
-      !c
-      subroutine eirene_extrab25_init_eion
-      use eirmod_mpi
-!pb
-      use eirmod_cinit , only : MASTER_PATH
-!pb
-      implicit none
-      integer iss, jatm
-      character*256 filename
-      logical found
-      logical, save :: eion_set
-
-!pb   character*256 :: get_solpstop
-!pb   external get_solpstop
-      data eion_set /.false./
-
-      if (eion_set) return
-      filename='ionization_potentials'
-      inquire(file=filename,exist=found)
-      if(.not.found) then
-        filename='../'//filename
-        inquire(file=filename,exist=found)
-      endif
-      if (found) then
-        open(UNIT=99,FILE=trim(filename))
-      else
-!pb     inquire (FILE=trim(get_solpstop())//
-!pb  .   '/data.local/ionization_potentials',exist=found)
-        inquire (FILE=trim(MASTER_PATH)//
-     .   '/data.local/ionization_potentials',exist=found)
-!pb     if (found) then
-!pb       open(UNIT=99,FILE=trim(get_solpstop())//
-!pb  .     '/data.local/ionization_potentials')
-        if (found) then
-          open(UNIT=99,FILE=trim(MASTER_PATH)//
-     .     '/data.local/ionization_potentials')
-        else
-!pb       inquire (FILE=trim(get_solpstop())//
-!pb  .     '/modules/B2.5/Database/ionization_potentials',exist=found)
-!pb       if (found) open(UNIT=99,FILE=trim(get_solpstop())//
-!pb  .     '/modules/B2.5/Database/ionization_potentials')
-          inquire (FILE=trim(MASTER_PATH)//
-     .     '/modules/B2.5/Database/ionization_potentials',exist=found)
-          if (found) open(UNIT=99,FILE=trim(MASTER_PATH)//
-     .     '/modules/B2.5/Database/ionization_potentials')
-        endif
-      endif
-      if (found) then
-        do jatm=1,natmi
-          rewind(99)
-          do iss=1,nchara(jatm)-1
-            read(99,*)
-          enddo
-          read(99,*) Eion(jatm)
-          if(nchara(jatm).eq.1 .and. nmassa(jatm).ne.1)
-     .     Eion(jatm)=Eion(jatm)*
-     .      (nmassa(jatm)*(pmassa+pmasse))/(pmasse+nmassa(jatm)*pmassa)
-        enddo
-        close(99)
-      else
-        write (iunout,*) 'in EXTRAB25, no ionization file '
-        write (iunout,'(a6,a12)') '  JATM','        Eion'
-        do jatm = 1, natm
-          if(nchara(jatm).eq.1) then
-             Eion(jatm)=EionH
-             if (nmassa(jatm).ne.1) Eion(jatm)=Eion(jatm)*
-     .         (nmassa(jatm)*(pmassa+pmasse))/
-     .         (pmasse+nmassa(jatm)*pmassa)
-          elseif (nchara(jatm).eq.2) then
-            Eion(jatm)=EionHe
-          elseif (nchara(jatm).le.npot) then
-            Eion(jatm)=pot_data(nchara(jatm))
-          else
-            Eion(jatm)=0.0_dp
-          endif
-          write (iunout,'(i6,es12.4)') jatm, eion(jatm)
-        enddo
-      endif
-      eion_set=.true.
-      return
-
-      end subroutine eirene_extrab25_init_eion
 
       subroutine eirene_extrab25_wneutrals
       ! old version : 27.07.2000 23:07
@@ -295,27 +206,6 @@
       allocate(isrftype(nlmpgs))
 
       allocate(volcel(0:ndxp,0:ndyp))
-      allocate(pot_data(npot))
-      pot_data = (/13.598_DP, !H
-     .             24.587_DP, !He
-     .              5.392_DP, !Li
-     .              9.322_DP, !Be
-     .              8.298_DP, !B
-     .             11.260_DP, !C
-     .             14.534_DP, !N
-     .             13.618_DP, !O
-     .             17.422_DP, !F
-     .             21.564_DP, !Ne
-     .              5.139_DP, !Na
-     .              7.646_DP, !Mg
-     .              5.986_DP, !Al
-     .              8.151_DP, !Si
-     .             10.486_DP, !P
-     .             10.360_DP, !S
-     .             12.967_DP, !Cl
-     .             15.759_DP, !Ar
-     .              4.341_DP, !K
-     .              6.113_DP/) !Ca
 
       !tamas zero init
       wldnep = 0
@@ -839,29 +729,46 @@
       end do
       call eirene_neutr(44,ndxa-nred,ndya,natmi,dab2,ndx,ndy,natm,1,1)
       call eirene_neutr(44,ndxa-nred,ndya,natmi,tab2,ndx,ndy,natm,1,1)
-      call eirene_neutr(44,ndxa-nred,ndya,nmoli,dmb2,ndx,ndy,nmol,1,1)
-      call eirene_neutr(44,ndxa-nred,ndya,nmoli,tmb2,ndx,ndy,nmol,1,1)
-      call eirene_neutr(44,ndxa-nred,ndya,nioni,dib2,ndx,ndy,nion,1,1)
-      call eirene_neutr(44,ndxa-nred,ndya,nioni,tib2,ndx,ndy,nion,1,1)
+      if (nmoli.gt.0) then
+        call eirene_neutr(44,ndxa-nred,ndya,nmoli,dmb2,ndx,ndy,nmol,1,1)
+        call eirene_neutr(44,ndxa-nred,ndya,nmoli,tmb2,ndx,ndy,nmol,1,1)
+      end if
+      if (nioni.gt.0) then
+        call eirene_neutr(44,ndxa-nred,ndya,nioni,dib2,ndx,ndy,nion,1,1)
+        call eirene_neutr(44,ndxa-nred,ndya,nioni,tib2,ndx,ndy,nion,1,1)
+      end if
       call eirene_neutr(44,ndxa-nred,ndya,natmi,rfluxa,ndx,ndy,natm,1,1)
-      call eirene_neutr(44,ndxa-nred,ndya,nmoli,rfluxm,ndx,ndy,nmol,1,1)
+      if (nmoli.gt.0) then
+        call eirene_neutr(44,ndxa-nred,ndya,nmoli,
+     .                       rfluxm,ndx,ndy,nmol,1,1)
+      end if
       call eirene_neutr(44,ndxa-nred,ndya,natmi,pfluxa,ndx,ndy,natm,1,1)
-      call eirene_neutr(44,ndxa-nred,ndya,nmoli,pfluxm,ndx,ndy,nmol,1,1)
+      if (nmoli.gt.0) then
+        call eirene_neutr(44,ndxa-nred,ndya,nmoli,
+     .                       pfluxm,ndx,ndy,nmol,1,1)
+      end if
       call eirene_neutr(44,ndxa-nred,ndya,natmi,
      .                     refluxa,ndx,ndy,natm,1,1)
-      call eirene_neutr(44,ndxa-nred,ndya,nmoli,
-     .                     refluxm,ndx,ndy,nmol,1,1)
+      if (nmoli.gt.0) then
+        call eirene_neutr(44,ndxa-nred,ndya,nmoli,
+     .                       refluxm,ndx,ndy,nmol,1,1)
+      end if
       call eirene_neutr(44,ndxa-nred,ndya,natmi,
      .                     pefluxa,ndx,ndy,natm,1,1)
-      call eirene_neutr(44,ndxa-nred,ndya,nmoli,
-     .                     pefluxm,ndx,ndy,nmol,1,1)
+      if (nmoli.gt.0) then
+        call eirene_neutr(44,ndxa-nred,ndya,nmoli,
+     .                       pefluxm,ndx,ndy,nmol,1,1)
+      end if  
       call eirene_neutr(44,ndxa-nred,ndya,1,emiss,ndx,ndy,1,1,1)
       call eirene_neutr(44,ndxa-nred,ndya,1,emissmol,ndx,ndy,1,1,1)
       !cank 960511
       !c*** save the molecule-related sources...
-      call eirene_neutr(44,ndxa-nred,ndya,nmoli,srcml,ndx,ndy,nmol,1,1)
-      call eirene_neutr(44,ndxa-nred,ndya,nmoli,
-     .                     edissml,ndx,ndy,nmol,1,1)
+      if (nmoli.gt.0) then
+        call eirene_neutr(44,ndxa-nred,ndya,nmoli,
+     .                       srcml,ndx,ndy,nmol,1,1)
+        call eirene_neutr(44,ndxa-nred,ndya,nmoli,
+     .                       edissml,ndx,ndy,nmol,1,1)
+      end if  
       !c*** and the data on wall loading
       !cank 960513
       nnlimi=nlimi
@@ -921,12 +828,14 @@
 !c       write (iunout,'()')
 !c       if (nmoli.gt.0) then
 !c         write (iunout,*) 'wldna, wldnm, wldra, wldrm:',k
+!c         write (iunout,'(1x,20(6x,a2,i3.2))')
+!c     ,         ('na',i,i=1,natmi),('nm',i,i=1,nmoli),
+!c     ,         ('ra',i,i=1,natmi),('rm',i,i=1,nmoli)
 !c       else
 !c         write (iunout,*) 'wldna, wldra:',k
+!c         write (iunout,'(1x,20(6x,a2,i3.2))')
+!c     ,         ('na',i,i=1,natmi),('ra',i,i=1,natmi)
 !c       end if
-!c       write (iunout,'(1x,20(6x,a2,i3.2))')
-!c     ,        ('na',i,i=1,natmi),('nm',i,i=1,nmoli),
-!c     ,        ('ra',i,i=1,natmi),('rm',i,i=1,nmoli)
 !c       do j=1,nlim+nstsi !{
 !c         if(j.le.nlimi .or. j.gt.nlim) then !{
 !c           hlp_pr=.false.
@@ -1155,10 +1064,6 @@
 
       if(allocated(plnxtri)) then
         deallocate(plnxtri, plnytri, pplnxtri, pplnytri)
-      endif
-
-      if(allocated(Eion)) then
-        deallocate(Eion)
       endif
 
       end subroutine eirene_extrab25_cleanup

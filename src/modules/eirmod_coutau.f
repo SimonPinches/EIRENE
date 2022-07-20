@@ -119,6 +119,7 @@ cdr for scaling
 
 
       SUBROUTINE EIRENE_ALLOC_COUTAU
+      LOGICAL :: LOGHELP(NSTRA)
 
       IF (ALLOCATED(PDENAI)) RETURN
 
@@ -401,6 +402,8 @@ cdr this should go to another place?
 
 csw 19mar2013
       xmcp=0  !dr  this is done in init_coutau. So can go out here?
+      LOGHELP = .TRUE.
+      CALL EIRENE_INIT_COUTAU(LOGHELP)
 
       RETURN
       END SUBROUTINE EIRENE_ALLOC_COUTAU

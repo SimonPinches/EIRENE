@@ -123,11 +123,7 @@ cdr   real(dp):: sump
 csw external
 ctk      real(dp), external :: ranf_eirene
 
-
-
-
       save   
-
 
 cym IAPH, RMMIO, RMIIO and IRPH removed during merge
 !$OMP THREADPRIVATE (dumt,dumv,
