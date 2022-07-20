@@ -67,7 +67,7 @@ cdr  optional arguments for FILNAM=CONST options
         SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
      .             RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .             RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .             ELNAME, IZ1, 
+     .             ELNAME, IZ1, BUNDLING,
      .             IROW_ESC, ICOL_ESC, POP_ESC,  ! for internal CR models, line emission etc..
      .             IFTFL, NCOEF, COEF)  ! for filnam=const
         USE EIRMOD_PRECISION
@@ -76,6 +76,7 @@ cdr  optional arguments for FILNAM=CONST options
      .                                        IFTFL, NCOEF
         REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC
         REAL(DP),     INTENT(IN), OPTIONAL :: COEF(9)      
+        CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: BUNDLING
         CHARACTER(8), INTENT(IN) :: FILNAM
         CHARACTER(4), INTENT(IN) :: H123
         CHARACTER(LEN=*), INTENT(IN) :: REAC
@@ -1489,6 +1490,7 @@ C
       character(kind=CK,len=50) :: reac
       character(kind=CK,len=2) :: elname
       character(kind=CK,len=50) :: crc
+      character(kind=CK,len=60) :: bundling
       integer :: i, ndum1(1), ndum2(1), ndum3(1), ndum4(1), nti, nv
       real(dp) :: dum(1)
       character(kind=CK,len=420),dimension(:),allocatable :: 
@@ -1538,6 +1540,7 @@ C
           filnam = repeat(' ',8)
           h123 = repeat(' ',4)
           reac = repeat(' ',50)
+          bundling = repeat(' ',60)
           crc = '   '
           elname = '  '
           iz = 0
@@ -1642,9 +1645,13 @@ c  2nd parameter in 2 parametric data
             elname = chr(1:2)
             deallocate(chr)         
             call json%get(prea,'IZ',iz,found)
+            call json%get(prea,'FILNAM',chr,found)
+            bundling = chr(1:60)
+            deallocate(chr)
           else
             elname = '  '
             iz = 0
+            bundling = repeat(' ',60)
           end if
 
           if (index(filnam,'CR') /= 0) then
@@ -1701,7 +1708,7 @@ C  PROCESSING (MASS SCALING, POTENTIAL ENERGY INCREMENT) IN XSTCX,XSTEI,...
           CALL EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
      .                  RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX, ! additional input card: asymptotics P1
      .                  RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX, ! additional input card: asymptotics P2
-     .                  ELNAME,IZ,                 ! additional input card read for TAB2D/ADAS format
+     .                  ELNAME,IZ,BUNDLING,                ! additional input card read for TAB2D/ADAS format
      .                  IROW_ESC,ICOL_ESC,POP_ESC, ! (optional) additional input card read CR  internal models
      .                  IFTFL, NCOEF, COEF)        ! (optional) for "CONST models"
 

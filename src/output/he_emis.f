@@ -78,7 +78,7 @@ C
          SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
      .                          RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .                          RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .                          ELNAME, IZ1,
+     .                          ELNAME, IZ1, BUNDLING,
      .                          IROW_ESC, ICOL_ESC, POP_ESC,  ! for internal CR models, line emission etc..
      .             IFTFL, NCOEF, COEF)  ! for filnam=const
          USE EIRMOD_PRECISION
@@ -89,6 +89,7 @@ C
      .                                         IFTFL, NCOEF
          REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC
          REAL(DP),     INTENT(IN), OPTIONAL :: COEF(9)      
+         CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: BUNDLING
          CHARACTER(8), INTENT(IN) :: FILNAM
          CHARACTER(4), INTENT(IN) :: H123
          CHARACTER(LEN=*), INTENT(IN) :: REAC

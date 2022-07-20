@@ -41,7 +41,7 @@ C
       SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
      .                          RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .                          RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .                          ELNAME, IZ1,
+     .                          ELNAME, IZ1, BUNDLING,
      .                          IROW_ESC, ICOL_ESC, POP_ESC,
      .                          IFTFL, NCOEF, COEF)
 c
@@ -106,8 +106,9 @@ c            else: extrapolation is set explicitly in input file, block 4a
 c                  skip reading extrapolation data from data file, even if they are available
 
 c  specific input, only available in case FILNAM=ADAS
-c    ELNAME:  only in case FILNAM=ADAS: the new file name REAC_ELNAME is construced
-C    IZ1   :  only in case FILNAM=ADAS: ionization stage number within ADAS file
+c    ELNAME  :  only in case FILNAM=ADAS: the new file name REAC_ELNAME is construced
+C    IZ1     :  only in case FILNAM=ADAS: ionization stage number within ADAS file
+C    BUNDLING: only in case FILNAM=ADAS: bundling scheme name (optional)
 
 C  internal
 C    ISW   <-- H123:   H.0: ISW=0, H.1: ISW=1, H.2: ISW=2, ...,H.12: ISW=12
@@ -210,6 +211,7 @@ cdr  optional, only needed for CR (COLRAD) format
 cdr  optional, only needed for TAB2D (ADAS) format
       INTEGER,      INTENT(IN) :: IZ1
       CHARACTER(2), INTENT(IN) :: ELNAME
+      CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: BUNDLING
 
       REAL(DP),     INTENT(IN), OPTIONAL :: COEF(9)      
 
@@ -359,7 +361,7 @@ cdr       write (iunout,*) ifile, dbfname(ifile)
      .            INDEX(FILNAM,'ADAS') .NE.0) THEN
 ! FILNAM=TAB2D or FILNAM=ADAS: open data file
 ! FIRST: FIND NAME OF SPECIFIC TAB2D or ADAS FILE TO BE READ, DSN=abc.dat
-! construct 'DSN' from: reac, elname
+! construct 'DSN' from: reac, elname, bundling
             DIR = ' '
             IL = 0
             IF (VERIFY(DBFNAME(IFILE),' ') .NE. 0) THEN
@@ -369,11 +371,22 @@ cdr       write (iunout,*) ifile, dbfname(ifile)
      .            ADJUSTL(TRIM(REAC)) // CUT
               IL = INDEX(DIR,CUT,.TRUE.)
             END IF
-            IF (IL == 0) THEN
-              DSN = ADJUSTL(TRIM(REAC)) // '_' // TRIM(ELNAME) // '.dat'
+            IF (PRESENT(BUNDLING) .AND. VERIFY(BUNDLING,' ').NE.0) THEN
+              IF (IL == 0) THEN
+                DSN = ADJUSTL(TRIM(REAC)) // '_' //
+     .                TRIM(ELNAME) // '_' // TRIM(BUNDLING) // '.dat'
+              ELSE
+                DSN = DIR(1:IL) // ADJUSTL(TRIM(REAC)) // '_' //
+     .                TRIM(ELNAME) // '_' // TRIM(BUNDLING) // '.dat'
+              END IF
             ELSE
-              DSN = DIR(1:IL) // ADJUSTL(TRIM(REAC)) // '_' //
-     .              TRIM(ELNAME) // '.dat'
+              IF (IL == 0) THEN
+                DSN = ADJUSTL(TRIM(REAC)) // '_' //
+     .                TRIM(ELNAME) // '.dat'
+              ELSE
+                DSN = DIR(1:IL) // ADJUSTL(TRIM(REAC)) // '_' //
+     .                TRIM(ELNAME) // '.dat'
+              END IF
             END IF
             write (iunout,'(2a)') 'TAB1D OR TAB2D OR ADAS: ',trim(DSN)
             OPEN (UNIT=29+ifoff,FILE=DSN)

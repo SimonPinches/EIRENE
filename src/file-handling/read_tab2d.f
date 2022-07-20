@@ -89,6 +89,16 @@ cdr           Is REAC(..) only use here?
         read (29+ifoff,*)
       end if
 
+      read (29+ifoff,'(A132)') zeile
+      if (index(zeile,'p').ne.0) then ! partition listing for bundles
+        do
+          read (29+ifoff,'(A132)') zeile
+          if (zeile(2:5) == '----') exit
+        end do
+      else
+        backspace(29+ifoff)
+      end if
+
 ! read densities
       read (29+ifoff,*) (ap%dens(ide),ide=1,nde)
 
@@ -103,6 +113,7 @@ cdr           Is REAC(..) only use here?
         read (29+ifoff,'(A132)') zeile
         if (zeile(2:5) == '----') then
           ind = index(zeile,'Z1')
+          if (ind == 0) ind = index(zeile,'S1')
           if (ind == 0) cycle
           ian = ind + scan(zeile(ind+1:),'=') + 1
           ien = ian + scan(zeile(ian+1:),'/') - 1

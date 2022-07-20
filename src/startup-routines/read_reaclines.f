@@ -2,7 +2,8 @@
      .           ir, filnam, h123, reac, crc, mp, mt, dpp,
      .           rc1min, rc1max, jfex1mn, jfex1mx, fp1,
      .           rc2min, rc2max, jfex2mn, jfex2mx, fp2,
-     .           iz, elname, irow_esc, icol_esc, pop_esc, 
+     .           iz, elname, bundling,
+     .           irow_esc, icol_esc, pop_esc, 
      .           iftflg, ncoef, coef)
 
 c  input: ZEILE:  character(72) (made upper case already)
@@ -69,6 +70,7 @@ C
       character(50), intent(out) :: reac
       character(3), intent(out) :: crc
       character(2), intent(out) :: elname
+      character(60), intent(out) :: bundling
       character(:), allocatable :: cline
 
       integer :: iend, itok, isw, i1, i, il, ier
@@ -298,13 +300,18 @@ C  READ FLAGS MP, MT, DPP, R1MN, R1MX, R2MN, R2MX FROM CHR
       IF (INDEX(ZEILE,'ADAS') .NE. 0 .OR.
      .    INDEX(ZEILE,'TAB2D') .NE. 0 ) THEN
 !  CHECK FOR ELEMENT NAME AND CHARGE STATE IN TABLE
-        READ (IUNIN,'(4X,A2,1X,I3)') ELNAME,IZ
+        READ (IUNIN,'(4X,A2,1X,I3,2X,A60)') ELNAME,IZ,BUNDLING
 !  STORE REACTION LINES FOR OUTPUTING TO JSON FILE 
         ALLOCATE (CHARACTER(LEN=72) :: CLINE)        
-        WRITE (CLINE,'(4X,A2,1X,I3)') ELNAME,IZ
+        WRITE (CLINE,'(4X,A2,1X,I3,2X,A60)') ELNAME,IZ,BUNDLING
         call eirene_push_string_stack(crs_stack,trim(cline))
         DEALLOCATE(CLINE)
         CALL EIRENE_LOWERCASE(ELNAME)
+        CALL EIRENE_LOWERCASE(BUNDLING)
+      ELSE
+        BUNDLING = REPEAT(' ',60)
+        ELNAME = '  '
+        IZ = 0
       END IF
 
       IF (INDEX(ZEILE,'CR') .NE. 0) THEN

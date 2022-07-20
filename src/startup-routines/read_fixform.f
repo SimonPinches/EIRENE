@@ -71,7 +71,7 @@ cdr  optional arguments for FILNAM=CONST options
         SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
      .             RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .             RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .             ELNAME, IZ1, 
+     .             ELNAME, IZ1, BUNDLING,
      .             IROW_ESC, ICOL_ESC, POP_ESC,  ! for internal CR models, line emission etc..
      .             IFTFL, NCOEF, COEF)  ! for filnam=const
         USE EIRMOD_PRECISION
@@ -80,6 +80,7 @@ cdr  optional arguments for FILNAM=CONST options
      .                                        IFTFL, NCOEF
         REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC
         REAL(DP),     INTENT(IN), OPTIONAL :: COEF(9)      
+        CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: BUNDLING
         CHARACTER(8), INTENT(IN) :: FILNAM
         CHARACTER(4), INTENT(IN) :: H123
         CHARACTER(LEN=*), INTENT(IN) :: REAC
@@ -158,6 +159,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
       CHARACTER(400) :: PATH, RFILNM
       CHARACTER(6) :: HANDLE
       CHARACTER(2) :: ELNAME
+      CHARACTER(60) :: BUNDLING
 cdr  intermediate data for those already set in find_param.f
       integer :: noptim_save
 
@@ -1380,7 +1382,8 @@ C
      .       IR, FILNAM, H123, REAC, CRC, MP, MT, DPP,
      .       RC1MIN, RC1MAX, JFEX1MN, JFEX1MX, FP1,
      .       RC2MIN, RC2MAX, JFEX2MN, JFEX2MX, FP2,
-     .       IZ, ELNAME, IROW_ESC, ICOL_ESC, POP_ESC, 
+     .       IZ, ELNAME, BUNDLING,
+     .       IROW_ESC, ICOL_ESC, POP_ESC, 
      .       IFTFL, NCOEF, COEF)
 
 C  SAVE SOME OF THE INPUT FLAGS FOR LATER
@@ -1393,7 +1396,7 @@ C
         CALL EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX, ! additional input card: asymptotics P1
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX, ! additional input card: asymptotics P2
-     .               ELNAME,IZ,                 ! additional input card read for TAB2D/ADAS format
+     .               ELNAME,IZ,BUNDLING,        ! additional input card read for TAB2D/ADAS format
      .               IROW_ESC,ICOL_ESC,POP_ESC, ! (optional) additional input card read CR  internal models
      .               IFTFL, NCOEF, COEF)        ! (optional) for "CONST models"
         GOTO 411
