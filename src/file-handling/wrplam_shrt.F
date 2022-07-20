@@ -102,7 +102,7 @@ C .......................................................................
       SUBROUTINE EIRENE_RPLAM_SHRT(TRCFLE)
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: IFOFF, NRAD
-      USE EIRMOD_CINIT, ONLY: FORT
+      USE EIRMOD_CINIT, ONLY: FORT, FORT_LC
       USE EIRMOD_COMUSR, ONLY: NPLSI, TIIN, DIIN, VXIN, VYIN, VZIN
       USE EIRMOD_CCOUPL, ONLY: NFLA
       USE EIRMOD_COMPRT, ONLY: IUNOUT
@@ -110,17 +110,26 @@ C .......................................................................
       IMPLICIT NONE
 
       LOGICAL,INTENT(IN) :: TRCFLE
+      CHARACTER*8 FILENAME
+      CHARACTER*3 FILENUMBER
       INTEGER IO
+      LOGICAL EX
 
 C ........................................................................
 
-
-      OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED',
-     o      STATUS='OLD',IOSTAT=IO)
-      IF(IO.NE.0) THEN
-        WRITE(iunout,*)
-     w   'ERROR IN RPLAM_SHRT: CANNOT READ ', FORT, '13'
-        RETURN
+      WRITE(FILENUMBER,'(I3)') 13+ifoff
+      FILENAME = FORT_LC//adjustl(trim(FILENUMBER))
+      INQUIRE(file=trim(FILENAME),exist=EX)
+      IF (EX) THEN
+        OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED',
+     o        STATUS='OLD',IOSTAT=IO)
+        IF(IO.NE.0) THEN
+          WRITE(iunout,*)
+     w     'ERROR IN RPLAM_SHRT: CANNOT READ ', FORT, '13'
+          RETURN
+        END IF
+      ELSE
+        GOTO 200
       END IF
 
       REWIND 13+ifoff
@@ -158,7 +167,7 @@ cdr  have to come last in the list of all background species.
       VXIN(NFLA+1:NPLSI,1:NRAD)=0._DP
       VYIN(NFLA+1:NPLSI,1:NRAD)=0._DP
       VZIN(NFLA+1:NPLSI,1:NRAD)=0._DP
-
+      IF (EX) CLOSE (UNIT=13+ifoff)
       RETURN
 
       END SUBROUTINE EIRENE_RPLAM_SHRT

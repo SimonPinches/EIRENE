@@ -283,12 +283,16 @@ C
 C  CALL WRSNAP TO WRITE SNAPSHOT POPULATION
 C  FOR NEXT RUN ON FT 15
 C
+  300 CONTINUE
       IF ((NFILEJ.EQ.1.OR.NFILEJ.EQ.3).AND.ITIMV.GE.NTIME) THEN
+cdr  Even in case iprnl=0 (no flux on census):
+cdr  Open and write fort 15, at least the first line.
         CALL EIRENE_WRSNAP(NSTRAI)
         WRITE (iunout,*) 'CENSUS ARRAY, FLUX AND TOTAL TIMESTEP STORED'
       ENDIF
 C
-  300 CONTINUE
+cdr   300 CONTINUE  ! moved up to ensure fort.15 is written.
+
       CALL EIRENE_LEER(2)
       WRITE (iunout,*) 'TIME CYCLE COMPLETED, NEXT TIME CYCLE PREPARED'
       WRITE (iunout,*) 'NEXT TIME CYCLE RUNS FROM TIM1 TO TIM2:'
