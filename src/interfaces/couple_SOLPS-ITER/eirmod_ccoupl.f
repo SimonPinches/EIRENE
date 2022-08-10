@@ -43,7 +43,7 @@
      L LNLPLG, LNLDRF, LTRCFL, LNLVOL(:)
 
 !  store variables in module for writing of JSON file
-      LOGICAL, PUBLIC, SAVE :: LCOARSE
+      LOGICAL, PUBLIC, SAVE :: LCOARSE, LOLD31
       INTEGER, PUBLIC, SAVE :: mshfrm, ntrfrm
       REAL(DP), PUBLIC, SAVE :: brad, bpol, btor 
 

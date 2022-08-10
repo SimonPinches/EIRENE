@@ -313,7 +313,7 @@ C
       LOGICAL, INTENT(INOUT) :: LSTP
       LOGICAL, SAVE :: LSHORT, LSTOP, LTEST, LSTP3,
      .                 LNONREC_SY, LNONREC_NY, LNONREC_WX, LNONREC_EX,
-     .                 IFBOUND, LCHKQUD, LOLD31
+     .                 IFBOUND, LCHKQUD
 
 csw 14apr2011, LCUT now in EIRMOD_CPOLYG (broadcasted)
 csw      LOGICAL, ALLOCATABLE, SAVE :: LCUT(:)
