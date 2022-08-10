@@ -15,6 +15,7 @@ C  PLASMA DATA: NI,TE,TI,VV,UU,PR,UP,RR,FNIX,FNIY.. (BRAAMS ---> EIRENE)
      R  UUB(:,:,:),     PRB(:,:),       UPB(:,:,:), RRB(:,:),
      R  FNIXB(:,:,:),   FNIYB(:,:,:),   FEIXB(:,:), FEIYB(:,:),
      R  FEEXB(:,:),     FEEYB(:,:),     VOLB(:,:),  BFELDB(:,:),
+     R  BPOLB(:,:),     BRADB(:,:),     BTORB(:,:),
      R  VPARXB(:,:,:),  VPARYB(:,:,:),  VRADXB(:,:,:), VRADYB(:,:,:),
      R  DELTAE_PARXB(:,:), DELTAE_PARYB(:,:),
      R  DELTAE_RADXB(:,:), DELTAE_RADYB(:,:),
@@ -23,7 +24,7 @@ C  PLASMA DATA: NI,TE,TI,VV,UU,PR,UP,RR,FNIX,FNIY.. (BRAAMS ---> EIRENE)
      R  DELTA_SHEATHXB(:,:), DELTA_SHEATHYB(:,:),
      R  AISOB(:,:),
      R  UUDIAB(:,:,:),  VVDIAB(:,:,:),
-     R  POB(:,:)
+     R  POB(:,:), WWB(:,:,:)
 
       INTEGER, SAVE :: NDXP, NDYP, NFL
 
@@ -47,6 +48,7 @@ C  PLASMA DATA: NI,TE,TI,VV,UU,PR,UP,RR,FNIX,FNIY.. (BRAAMS ---> EIRENE)
       ALLOCATE (TEB(0:NDXP,0:NDYP))
       ALLOCATE (TIB(0:NDXP,0:NDYP))
       ALLOCATE (VVB(0:NDXP,0:NDYP,NFL))
+      ALLOCATE (WWB(0:NDXP,0:NDYP,NFL))
       ALLOCATE (UUB(0:NDXP,0:NDYP,NFL))
       ALLOCATE (PRB(0:NDXP,0:NDYP))
       ALLOCATE (UPB(0:NDXP,0:NDYP,NFL))
@@ -59,6 +61,9 @@ C  PLASMA DATA: NI,TE,TI,VV,UU,PR,UP,RR,FNIX,FNIY.. (BRAAMS ---> EIRENE)
       ALLOCATE (FEEYB(0:NDXP,0:NDYP))
       ALLOCATE (VOLB(0:NDXP,0:NDYP))
       ALLOCATE (BFELDB(0:NDXP,0:NDYP))
+      ALLOCATE (BPOLB(0:NDXP,0:NDYP))
+      ALLOCATE (BRADB(0:NDXP,0:NDYP))
+      ALLOCATE (BTORB(0:NDXP,0:NDYP))
 
       ALLOCATE (VPARXB(0:NDXP,0:NDYP,NFL))
       ALLOCATE (VPARYB(0:NDXP,0:NDYP,NFL))
@@ -96,6 +101,7 @@ C  PLASMA DATA: NI,TE,TI,VV,UU,PR,UP,RR,FNIX,FNIY.. (BRAAMS ---> EIRENE)
       DEALLOCATE (TEB)
       DEALLOCATE (TIB)
       DEALLOCATE (VVB)
+      DEALLOCATE (WWB)
       DEALLOCATE (UUB)
       DEALLOCATE (PRB)
       DEALLOCATE (UPB)
@@ -108,6 +114,9 @@ C  PLASMA DATA: NI,TE,TI,VV,UU,PR,UP,RR,FNIX,FNIY.. (BRAAMS ---> EIRENE)
       DEALLOCATE (FEEYB)
       DEALLOCATE (VOLB)
       DEALLOCATE (BFELDB)
+      DEALLOCATE (BPOLB)
+      DEALLOCATE (BRADB)
+      DEALLOCATE (BTORB)
 
       DEALLOCATE (VPARXB)
       DEALLOCATE (VPARYB)
@@ -138,6 +147,7 @@ C  PLASMA DATA: NI,TE,TI,VV,UU,PR,UP,RR,FNIX,FNIY.. (BRAAMS ---> EIRENE)
       TEB     = 0.D0
       TIB     = 0.D0
       VVB     = 0.D0
+      WWB     = 0.D0
       UUB     = 0.D0
       PRB     = 0.D0
       UPB     = 0.D0
@@ -150,6 +160,9 @@ C  PLASMA DATA: NI,TE,TI,VV,UU,PR,UP,RR,FNIX,FNIY.. (BRAAMS ---> EIRENE)
       FEEYB   = 0.D0
       VOLB    = 0.D0
       BFELDB  = 0.D0
+      BPOLB  = 0.D0
+      BRADB  = 0.D0
+      BTORB  = 0.D0
 
       VPARXB  = 0.D0
       VPARYB  = 0.D0

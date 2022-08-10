@@ -313,7 +313,7 @@ C
       LOGICAL, INTENT(INOUT) :: LSTP
       LOGICAL, SAVE :: LSHORT, LSTOP, LTEST, LSTP3,
      .                 LNONREC_SY, LNONREC_NY, LNONREC_WX, LNONREC_EX,
-     .                 IFBOUND, LCHKQUD
+     .                 IFBOUND, LCHKQUD, LOLD31
 
 csw 14apr2011, LCUT now in EIRMOD_CPOLYG (broadcasted)
 csw      LOGICAL, ALLOCATABLE, SAVE :: LCUT(:)
@@ -1224,7 +1224,7 @@ C  CARRY OUT SOME CONSISTENCY CHECKS ON NEW TRIANGULAR GRID
             else
               write (iunout,*)
      .               'triangle inside original structured grid'
-              call eirene_masj2('nr,np          ',
+              call eirene_masj2('nr,np           ',
      .                           iytri(itri),ixtri(itri))
             endif
 
@@ -1381,6 +1381,8 @@ C  B2-BRAAMS CODE SPECIFIC BEGIN
       CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,DNIB)
       CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,UUB)
       CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,VVB)
+      IF (.NOT.LOLD31)
+     .  CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,WWB)
       CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,TEB)
       CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,TIB)
       CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,PRB)
@@ -1405,6 +1407,11 @@ C  CELL VOLUMES AS USED IN B2
       CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,VOLB)
 C  MAGNETIC FIELD STRENGTH (TESLA)
       CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,BFELDB)
+      IF (.NOT.LOLD31) THEN
+        CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,BPOLB)
+        CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,BRADB)
+        CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,BTORB)
+      END IF
 
 !pb 15.09.2015
       where (bfeldb == 0._dp)
@@ -1478,6 +1485,9 @@ C  DISTINCT FROM B2: CELL-CENTERED VELOCITIES UUB, VVB, UPB
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (VVB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .             NCUTB,NCUTL,NPOINT,NPLP)
+      IF (LOLD31)
+     .  CALL EIRENE_INDMAP (WWB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
+     .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (UPB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .             NCUTB,NCUTL,NPOINT,NPLP)
 C  same in B2 and in B2.5: these ENERGY fluxes are surface-centered
@@ -1503,6 +1513,14 @@ C  UNUSED INPUT TALLIES
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (BFELDB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,
      .             NCUTB,NCUTL,NPOINT,NPLP)
+      IF (LOLD31) THEN
+        CALL EIRENE_INDMAP (BPOLB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,
+     .             NCUTB,NCUTL,NPOINT,NPLP)
+        CALL EIRENE_INDMAP (BRADB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,
+     .             NCUTB,NCUTL,NPOINT,NPLP)
+        CALL EIRENE_INDMAP (BTORB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,
+     .             NCUTB,NCUTL,NPOINT,NPLP)
+      END IF
 
 C  ADDITIONAL INPUT TALLIES FOR BOUNDARY CONDITIONS
       CALL EIRENE_INDMAP (VPARXB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
@@ -1586,20 +1604,49 @@ C       and in the direction of increasing poloidal B2 cell index
 c    b) toroidal field is in eirene positive z-direction (periodic cylinder, nltrz-option)
 c                                (or positive 3rd coodinate "phi", in case nltra-option)
 c    modulus of the ratio poloidal to poloidal field is given by the B2-array pitch RRB
+
+          IF (LOLD31) THEN
 C    magnitude of B-field is given by B2-array BFELDB
 
 C  polodial field
-          BX=PUX(IN)*RRB(IX,IY)   ! +PVX(IN)*0., but radial field is zero
-          BY=PUY(IN)*RRB(IX,IY)   ! +PVY(IN)*0.
+            BX=PUX(IN)*RRB(IX,IY) ! +PVX(IN)*0., but radial field is zero
+            BY=PUY(IN)*RRB(IX,IY) ! +PVY(IN)*0.
 c  toroidal field
-          BZ=SQRT(1.-RRB(IX,IY)**2)
+            BZ=SQRT(1.-RRB(IX,IY)**2)
 c  normalize B-field vector to length 1 (one)
 c  and apply input flags for b-field orientation
-          BN=SQRT(BX**2 + BY**2 + BZ**2)
-          BXINTF(ITRI)=BX/BN*bpol
-          BYINTF(ITRI)=BY/BN*bpol
-          BZINTF(ITRI)=BZ/BN*btor
-          BFINTF(ITRI)=BFELDB(IX,IY)
+            BN=SQRT(BX**2 + BY**2 + BZ**2)
+            BXINTF(ITRI)=BX/BN*bpol
+            BYINTF(ITRI)=BY/BN*bpol
+            BZINTF(ITRI)=BZ/BN*btor
+            BFINTF(ITRI)=BFELDB(IX,IY)
+          
+          ELSE
+
+C    c) components of the B field passed through EIRMOD_BRAEIR:
+C         BPOLB:  poloidal field (including sign)
+C         BRADB:  radial field (0)
+C         BTORB:  toroidal field (including sign)
+C         BFELDB: magnitude of the field
+C
+
+C  poloidal field
+            BX=PUX(IN)*BPOLB(IX,IY) ! + PVX(IN)*BRADB(IX,IY), but radial field is zero
+            BY=PUY(IN)*BPOLB(IX,IY) ! + PVY(IN)*BRADB(IX,IY)
+c  toroidal field
+            BZ=BTORB(IX,IY)
+c  normalize B field vector to length 1 (one)
+            BN=SQRT(BX**2 + BY**2 + BZ**2)
+            IF (BN <= EPS30) THEN
+              BZ = 1._DP
+              BN = 1._DP
+            END IF
+            BXINTF(ITRI)=BX/BN
+            BYINTF(ITRI)=BY/BN
+            BZINTF(ITRI)=BZ/BN
+            BFINTF(ITRI)=BN
+
+          END IF
 c
           VLINTF(ITRI)=VOLB(IX,IY)*VL
         ELSE
@@ -5086,7 +5133,7 @@ C  READ INPUT DATA OF BLOCK 14
 C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
        CALL EIRENE_LEER(1)
        CALL EIRENE_ALLOC_CCOUPL(1)
-       READ (IUNIN,'(5L1)') LSYMET,LBALAN,LCOARSE
+       READ (IUNIN,'(5L1)') LSYMET,LBALAN,LCOARSE,LOLD31
        IF (TRCINT)
      .  WRITE (iunout,*) ' LSYMET,LBALAN,LCOARSE = ',
      .                     LSYMET,LBALAN,LCOARSE
@@ -5288,6 +5335,7 @@ C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
        call json%get(me,'LSYMET',lsymet,found)
        call json%get(me,'LBALAN',lbalan,found)
        call json%get(me,'LCOARSE',lcoarse,found)
+       call json%get(me,'LOLD31',lold31,found)
        IF (TRCINT)
      .  WRITE (iunout,*) ' LSYMET,LBALAN,LCOARSE = ',
      .                     LSYMET,LBALAN,LCOARSE
@@ -5573,6 +5621,16 @@ C
         WRITE(iunout,*) "THE LENGTH OF THE INTERVAL IS TOO SMALL"
         WRITE(iunout,'(1x,a,1p,5(1e14.7,1x))') "L,X1,Y1,X2,Y2 ",
      .                                          L,X1,Y1,X2,Y2
+        if ((abs(x1-x)/(x1+eps60) <= eps10) .and.
+     .      (abs(y1-y)/(y1+eps60) <= eps10)) then 
+          write (iunout,*) 'vertex 1 met'
+          EIRENE_POINT_ON_INTERVAL=.TRUE.
+        endif
+        if ((abs(x2-x)/(x2+eps60) <= eps10) .and.
+     .      (abs(y2-y)/(y2+eps60) <= eps10)) then 
+          write (iunout,*) 'vertex 2 met'
+          EIRENE_POINT_ON_INTERVAL=.TRUE.
+        endif
         RETURN
        END IF
        IF(D.LT.1.D-8*L) EIRENE_POINT_ON_INTERVAL=.TRUE.
