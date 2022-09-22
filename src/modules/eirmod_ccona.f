@@ -128,6 +128,7 @@ cdr  Data type PTE_TYPE is unused so far (Jan. 2020)
 
 
       FUNCTION EIRENE_FIND_PTE_ELEMENT(NAME) RESULT(IELEM)
+cdr unused (Jan. 2020)
 
       CHARACTER(2),INTENT(IN) :: NAME
       INTEGER :: IELEM, I
@@ -143,7 +144,6 @@ cdr  Data type PTE_TYPE is unused so far (Jan. 2020)
 
       return
       END FUNCTION EIRENE_FIND_PTE_ELEMENT
-
 
       SUBROUTINE EIRENE_BROADCAST_CCONA(ME)
       USE EIRMOD_MPI

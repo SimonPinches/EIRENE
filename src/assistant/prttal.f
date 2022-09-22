@@ -63,13 +63,13 @@ C  WRITE ONTO STREAM "IFILE"
           IF (IFILE.EQ.ISTREAM(IST)) GOTO 11111
         ENDDO
         OPEN (UNIT=IFILE,POSITION='APPEND')
-        WRITE (IFILE,*) TL
-        WRITE (IFILE,*) TL
+        WRITE (IFILE,'(72A1)') TL
+        WRITE (IFILE,'(72A1)') TL
         WRITE (IFILE,*) T1
         WRITE (IFILE,*) T2
         WRITE (IFILE,*) T3
-        WRITE (IFILE,*) TL
-        WRITE (IFILE,*) TL
+        WRITE (IFILE,'(72A1)') TL
+        WRITE (IFILE,'(72A1)') TL
         WRITE (IFILE,*) NR,NP,NT,NB,NTT
 
         IF (NP.GT.1.OR.NT.GT.1.OR.NB.GT.1) THEN
@@ -86,18 +86,18 @@ C  TO BE DONE: ALSO REQUIRED: LEVGEO.LE.3, OTHERWISE: TRIANGLES, TETRAHEDRA, HER
             WRITE (IFILE,5) IRAD,X(IRAD),PROF(IRAD)
           ENDDO
 C   NR: AVERAGED VALUE
-          WRITE (IFILE,*) TL
+          WRITE (IFILE,'(72A1)') TL
           WRITE (IFILE,55) PROF(NR)
           IF (NTT.GT.NR) THEN
 C  ADDITIONAL CELL REGION
-            WRITE (IFILE,*) TL
+            WRITE (IFILE,'(72A1)') TL
             WRITE (IFILE,56)
             DO IRAD=NR+1,NTT
               WRITE (IFILE,57) IRAD-NR, PROF(IRAD)
             ENDDO
           ENDIF
         ENDIF
-        WRITE (IFILE,*) TL
+        WRITE (IFILE,'(72A1)') TL
         CLOSE (UNIT=IFILE)
       ENDIF
 C
@@ -134,9 +134,9 @@ C
 C
 C  3 D PROFILES
 C
-      WRITE (iunout,*) TL
+      WRITE (iunout,'(72A1)') TL
       WRITE (iunout,81)
-      WRITE (iunout,*) TL
+      WRITE (iunout,'(72A1)') TL
       CALL EIRENE_LEER(1)
       DO 1 JT=1,NTM
         WRITE (iunout,77) JT

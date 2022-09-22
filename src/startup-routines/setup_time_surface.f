@@ -15,10 +15,12 @@
       INTEGER, INTENT(INOUT) :: IERROR
       INTEGER :: I, ISTR_A(1), ISTR, IPNT
       REAL(DP) :: DTIMVO
-      
+
 C
       IF (NTIME.GE.1) THEN
-C  DEFINE ONE MORE SURFACE
+cdr prepare time-dependent mode: A: horizon, B: initial distribution
+
+C  A) DEFINE ONE MORE "SURFACE": TIME HORIZON
         NSTSI=NSTSI+1
 C  CHECK STORAGE
         CALL EIRENE_LEER(1)
@@ -32,14 +34,8 @@ C
         TXTSFL(NLIM+NSTSI)='"TIME HORIZON"                           '
         ILIIN(NLIM+NSTSI)=2
 C
-C
-cdr     IF (NFILEJ.EQ.2.OR.NFILEJ.EQ.3) THEN
-cdr functioniert noch nicht, falls mehrere timesteps, davon nur
-cdr der erste: initialisierung, die anderen: fortsetzung.
-cdr denn dann wird bei der fortsetzung das stratum nicht gemacht.
-cdr wg. goto 4000. angefangen: "mkcens" (make stratum for census array)
-C
-C  DEFINE ONE MORE STRATUM
+C  B) DEFINE ONE MORE STRATUM, even if no old census may be available yet       
+
         NSTRAI=NSTRAI+1
 C  CHECK STORAGE
         IF (NSTRAI.GT.NSTRA) THEN
@@ -65,8 +61,18 @@ C
         NLSYMP(NSTRAI)=.FALSE.
         NLSYMT(NSTRAI)=.FALSE.
         NPTS(NSTRAI)=0
-        NINITL(NSTRAI)=2000*NINITL(NSTRAI-1)+1
-        IF (NINITL_READ /= 0) NINITL(NSTRAI)=NINITL_READ
+
+cdr jan 2020
+cdr These next lines are a rather arbitrary initialization.
+cdr Even very risky (wrong?) in case of correlated sampling or multi-processor runs.
+cdr     NINITL(NSTRAI)=2000*NINITL(NSTRAI-1)+1
+cdr     IF (NINITL_READ /= 0) NINITL(NSTRAI)=NINITL_READ
+
+cdr
+cdr  ninitl_read=0 would have been a perfectly legal seed
+cdr  (leads to the original "Marsaglia sequence" for RANMAR (=H1RN) generator).
+        NINITL(NSTRAI)=NINITL_READ
+cdr
         NEMODS(NSTRAI)=1
         NAMODS(NSTRAI)=1
         FLUX(NSTRAI)=0.
@@ -96,14 +102,22 @@ C       ELSE
 C         DTIMVN=DTIMVN
         ENDIF
 C
-C  OLD TIMESTEP
+C  OLD TIMESTEP DTIMVO found from fort.15 below, or default:
+        DTIMVO=DTIMV
 C
 C  READ INITIAL POPULATION FROM FILE, FORT.15, OVERWRITE DEFAULTS
 C
         IPRNL=0
-        IF (NFILEJ.EQ.2.OR.NFILEJ.EQ.3) THEN
+        FLXCEN=0.D0
+        NLSRON(NSTRAI)=.FALSE.
+        IF (NFILEJ.LE.1) THEN
+cdr  no initial census population to be used in this run.
+cdr  Use default empty census
+
+        ELSEIF (NFILEJ.EQ.2.OR.NFILEJ.EQ.3) THEN
           CALL EIRENE_RSNAP(NSTRAI)
           DTIMVO=DTIMV
+          FLUX(NSTRAI)=FLXCEN
 C
           WRITE (iunout,*) 'INITIAL POPULATION FOR FIRST TIMESTEP'
           WRITE (iunout,*) 'READ FROM FILE ', FORT, '15'
@@ -115,16 +129,17 @@ C
           IF (DTIMVN.NE.DTIMVO) THEN
             FLUX(NSTRAI)=FLUX(NSTRAI)*DTIMVO/DTIMVN
 C
-            WRITE (iunout,*) 'FLUX IS RESCALED BY DTIMV_OLD/DTIMV_NEW'
+            WRITE (iunout,*)
+     .        'CENSUS FLUX IS RESCALED BY DTIMV_OLD/DTIMV_NEW'
             CALL EIRENE_MASR1('FLUX    ',FLUX(NSTRAI))
             CALL EIRENE_LEER(1)
           ENDIF
 C
           CALL EIRENE_LEER(2)
           IF (TIME0.GE.0.) THEN
-c    reset clock of source particles from old census to time0
-cdr  must be done also for time0=0.0, for otherwise flight time =0 is possible
-cdr  for census source particles and resulting error exits
+c    reset clock of source particles from old census to time0.
+cdr  Must be done also for time0=0.0, for otherwise flight time =0 is possible
+cdr  for census source particles. This may result in error exits
 C Would gain performance by turning RPSTT into a pointer
 cpb  changed due to optimizer problem            
 cpb  try to determine the index of the element of RPSTT which TIME points to
@@ -157,14 +172,14 @@ C  SET NUMBER OF PARTICLES FOR RELAUNCH FROM CENSUS EQUAL TO THE NUMBER OF PREVI
 C  (BUT STILL: SAMPLING WITH REPLACEMENT, BOOTSTRAPPING)
 C  N.B.: WE HAVE ALREADY MADE SURE ABOVE, THAT IN CASE NLMOVIE: NPTST = -1
           NPTS(NSTRAI)=IPRNL
-          NMINPTS(NSTRAI)=IPRNL   ! NMINPTS is currently not used anywhere
+          NMINPTS(NSTRAI)=IPRNL
         ELSEIF (NPTST.GT.0) THEN
           NPTS(NSTRAI)=NPTST
         ELSEIF (NPTST.LT.0) THEN
 C  ONE BY ONE RELAUNCH FROM OLD CENSUS
 C  OLD CENSUS CONTAINS IPRNL ENTRIES.
           NPTS(NSTRAI)=IPRNL
-          NMINPTS(NSTRAI)=IPRNL   ! NMINPTS is currently not used anywhere
+          NMINPTS(NSTRAI)=IPRNL
         ENDIF
 
         CALL EIRENE_MASJ1('NPTS=    ',NPTS(NSTRAI))
@@ -172,9 +187,17 @@ C
         IF (NPTS(NSTRAI).GT.0.AND.FLUX(NSTRAI).GT.0) THEN
           NSRFSI(NSTRAI)=1
           SORWGT(1,NSTRAI)=1.D0
+          NLSRON(NSTRAI)=.TRUE.
         ENDIF
 C
-      ELSEIF (NFILEJ.EQ.2.OR.NFILEJ.EQ.3) THEN
+      ELSE
+cdr  at this point: NTIME LT 0
+cdr  New option (M.R.: 2017):
+CDR  Read an external census array from fort.15, and launch one by one.
+
+       IF (NFILEJ.EQ.2.OR.NFILEJ.EQ.3) THEN
+
+
 !pb        IF ( SIZE( PACK((/ (i, i = 1, NSTRA) /),NLCNS) ) == 1 ) THEN
         IF ( COUNT(NLCNS(1:NSTRA)) == 1 ) THEN
 C Only read census from file if exactly one stratum is a census stratum
@@ -185,6 +208,7 @@ C
           WRITE (iunout,*) 'INITIAL POPULATION READ FROM FILE ', FORT, 
      .                     '15'
           CALL EIRENE_MASJ1('IPRNL   ',IPRNL)
+          FLUX(ISTR)=FLXCEN
           CALL EIRENE_MASR1('FLUX    ',FLUX(ISTR))
 C
 C  ONE BY ONE RELAUNCH FROM OLD CENSUS
@@ -196,8 +220,11 @@ C  OLD CENSUS CONTAINS IPRNL ENTRIES.
           IF (NPTS(ISTR).GT.0.AND.FLUX(ISTR).GT.0) THEN
             NSRFSI(ISTR)=1
             SORWGT(1,ISTR)=1.D0
+            NLSRON(ISTR)=.TRUE.
           ENDIF
         ENDIF
+       ENDIF
+
       ENDIF
 
       RETURN

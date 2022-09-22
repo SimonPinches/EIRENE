@@ -483,10 +483,9 @@ C                           TETRAHEDRAL AND GENERAL (usr) GRIDS
       REAL(DP) :: TANPHI, PHINM, VCOS, VELS
       INTEGER :: IP, IST
 C
-C
       select case (LEVGEO)
-c  cartesian x coordinate
       case (1)
+c  cartesian x coordinate
         CRTX=SCOS
         CRTY=0.
         CRTZ=0.
@@ -656,7 +655,6 @@ C  PERIODICITY SURFACE IN Y DIRECTION
           MPSURF=EIRENE_IDEZ(ILIIN(MSURF),2,2)
           Y0=PSURF(MPSURF)
 C  NEW CELL NUMBERS, NEW SURFACE NUMBER
-          MPSURF=M
           IF (SCOS.GT.0) NPCELL=MPSURF
           IF (SCOS.LT.0) NPCELL=MPSURF-1
           CALL EIRENE_STDCOL_ASS
@@ -763,7 +761,6 @@ C  PERIODICITY IS CONTAINED IN ROTATED LOCAL COORDINATE SYSTEMS.
           Z01=-Z01
           Z0=Z01
 C  NEW CELL NUMBERS
-          MTSURF=M
           IF (SCOS.GT.0) NTCELL=MTSURF
           IF (SCOS.LT.0) NTCELL=MTSURF-1
           IPERID=NTCELL

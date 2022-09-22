@@ -153,9 +153,7 @@ cdr ...... declarations finished
       CONTAINS
 
 
-      SUBROUTINE EIRENE_ALLOC_COMPRT(NPRS)
-
-      INTEGER, INTENT(IN) :: NPRS
+      SUBROUTINE EIRENE_ALLOC_COMPRT
 
       IF (ALLOCATED(RPST)) RETURN
 
@@ -213,7 +211,7 @@ c  up to here: for splitting, mpartc
 cdr  why is msurfg on state vector?
       MSURFG => IPSTD(15)
 
-      CALL EIRENE_INIT_COMPRT (NPRS)
+      CALL EIRENE_INIT_COMPRT
 
       RETURN
       END SUBROUTINE EIRENE_ALLOC_COMPRT
@@ -236,13 +234,7 @@ cdr  why is msurfg on state vector?
       END SUBROUTINE EIRENE_DEALLOC_COMPRT
 
 
-      SUBROUTINE EIRENE_INIT_COMPRT (NPRS)
-cdr:  called from ??
-cdr   purpose ??
-C NPRS: NUMBER OF COMPUTE THREADS IN MPI PARALLEL MODE
-C     needed for IUNOUT
-
-      INTEGER, INTENT(IN) :: NPRS
+      SUBROUTINE EIRENE_INIT_COMPRT 
 
       RPST   = 0._DP
       IPSTD  = 0
@@ -317,11 +309,6 @@ C     needed for IUNOUT
       DE0_RAYR = 0._DP
 
 c  io files
-cdr same code as in subr. EIRENE
-      IUNOUT = 6 + IFOFF
-      IF (NPRS > 1) IUNOUT = 7 + IFOFF
-! Not sure why this is repeated here      
-      IF (NTHREAD > 1) IUNOUT = 200 + IFOFF
       IVTKOUT= 28
 
 

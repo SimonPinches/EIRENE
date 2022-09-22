@@ -504,13 +504,14 @@ C
  1015 CONTINUE
 C
       NP=NPOINT(2,NPLP)
-      DO 1020 J=1,NDYA+1
-        DO 1020 I=1,NP
+      DO J=1,NDYA+1
+        DO I=1,NP
           XPOL(J,I)=XPOL(J,I)*100.
           YPOL(J,I)=YPOL(J,I)*100.
           IF (ABS(XPOL(J,I)).LT.5.D-5) XPOL(J,I)=0.
           IF (ABS(YPOL(J,I)).LT.5.D-5) YPOL(J,I)=0.
- 1020 CONTINUE
+        END DO
+      END DO
       RETURN
 
   100 WRITE(IUNOUT,*) "COULD NOT OPEN FORT.30. ",
@@ -795,9 +796,11 @@ C
 C
 C  INITIALIZE DUMMY
 C
-        DO 10 IY=0,NDY+1
-          DO 10 IX=0,NDX+1
-   10       DUMMY(IX,IY)=FIELD(IX,IY,IF)
+        DO IY=0,NDY+1
+          DO IX=0,NDX+1
+            DUMMY(IX,IY)=FIELD(IX,IY,IF)
+          END DO
+        END DO
 C
 C
 C      NDX DIRECTION: IX=0: NOT MODIFIED
@@ -830,10 +833,11 @@ C  "CUT REGION" AND LAST X ZONE IX = NDXA+1
             IF (IENDD.NE.IINID) DUMMY(IENDD,IY) = FIELD(INB+NCUTB,IY,IF)
   212     CONTINUE
   211   CONTINUE
-        DO 220 IY=0,NDYA+1
-          DO 220 IX=0,NDXA+1
+        DO IY=0,NDYA+1
+          DO IX=0,NDXA+1
             FIELD(IX,IY,IF)=DUMMY(IX,IY)
-  220   CONTINUE
+          END DO
+        END DO
 C
   500 CONTINUE
       RETURN
@@ -875,9 +879,7 @@ C
 C
 C  INITIALIZE DUMMY
 C
-        DO 10 IY=0,NDY+1
-          DO 10 IX=0,NDX+1
-   10       DUMMY(IX,IY)=0.
+        DUMMY(0:NDX+1,0:NDY+1)=0.
 C
 C
 C      NDX DIRECTION
@@ -909,10 +911,8 @@ C  "CUT REGION" AND LAST X ZONE IX = NDXA+1
      .          DUMMY(INB+NCUTB,IY)=FIELD(IENDD,IY,IF,ISTR)
   212     CONTINUE
   211   CONTINUE
-        DO 220 IY=0,NDYA+1
-          DO 220 IX=0,NDXA+1
-            FIELD(IX,IY,IF,ISTR)=DUMMY(IX,IY)
-  220   CONTINUE
+
+        FIELD(0:NDXA+1,0:NDYA+1,IF,ISTR)=DUMMY(IX,IY)
 C
   500 CONTINUE
       RETURN
@@ -962,13 +962,15 @@ c     write (iunout,*) 'plasm: detected format ', form
       ND1 = NDIMX + 2
       LIM = (ND1/5)*5 - 4
       DUMMY(0:N+1,0:M+1,NF)=0._DP
-      DO    110  IF = 1,NDIMF
+      DO    120  IF = 1,NDIMF
       DO    110  IY = 0,NDIMY+1
       DO    100  IX = 1,LIM,5
-  100   READ(KARD,FORM,END=500) (DUMMY(-1+IX-1+III,IY,IF),III = 1,5)
-        IF( (LIM+4).EQ.ND1 )     GOTO 110
-        READ(KARD,FORM,END=500) (DUMMY(-1+IX,IY,IF),IX = LIM+5,ND1)
+        READ(KARD,FORM,END=500) (DUMMY(-1+IX-1+III,IY,IF),III = 1,5)
+  100 CONTINUE
+      IF( (LIM+4).EQ.ND1 )     GOTO 110
+      READ(KARD,FORM,END=500) (DUMMY(-1+IX,IY,IF),IX = LIM+5,ND1)
   110 CONTINUE
+  120 CONTINUE
   500 RETURN
 *//END PLASM//
       END
@@ -996,7 +998,8 @@ C
       DO  500  IF = 1,NDIMF
         DO  110  IY = 1,NDIMY
           DO  100  IX = 1,LIM,5
-  100     WRITE(KARD,910) (DUMMY(IX-1+III,IY,IF,IS),III = 1,5)
+            WRITE(KARD,910) (DUMMY(IX-1+III,IY,IF,IS),III = 1,5)
+  100     CONTINUE
           IF( (LIM+4).EQ.ND1 )   GOTO 110
           WRITE(KARD,910) (DUMMY(IX,IY,IF,IS),IX = LIM+5,ND1)
   110   CONTINUE

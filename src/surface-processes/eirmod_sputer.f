@@ -14,7 +14,7 @@
       USE EIRMOD_COMPRT, only: IUNOUT, NPANU, ISPZ, MSURF,
      .                         E0,VELX,VELY,VELZ,CRTX,CRTY,CRTZ
       USE EIRMOD_CLGIN, only:  ZNML,ZNCL,EWALL,RECYCS,RECYCC,ESPUTC,
-     .                         IGJUM0, ISPUT, ILIIN, NSTSI
+     .                         IGJUM0, ISPUT, ILIIN, NSTSI,LCHSPNWL
       USE EIRMOD_CINIT, only: NDBNAMES, DBHANDLE, DBFNAME
       USE EIRMOD_CPES, only: MY_PE, NPRS
       USE EIRMOD_RANF, ONLY: RANF_EIRENE
@@ -484,7 +484,8 @@ C
      .             ISPZP,ESPTP,VSPTP,VXSPTP,VYSPTP,VZSPTP,
      .             IGASC,
      .             YIELD2,
-     .             ISPZC,ESPTC,VSPTC,VXSPTC,VYSPTC,VZSPTC)
+     .             ISPZC,ESPTC,VSPTC,VXSPTC,VYSPTC,VZSPTC,
+     .             YSPTWL)
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: WMIN, FMASS, FCHAR, FLXSP
       REAL(DP), INTENT(OUT) :: YIELD1, YIELD2, ESPTC, VSPTC, ESPTP,
@@ -492,13 +493,14 @@ C
      .                         VXSPTC, VYSPTC, VZSPTC
       INTEGER, INTENT(IN) :: IGASC, IGASP
       INTEGER, INTENT(OUT) :: ISPZC, ISPZP
+      REAL(DP),INTENT(OUT) :: YSPTWL !VK NUMBER OF WALL ATOMS IN SPUTTERED PARTICLE
 
 C  PURE CARBON
       REAL(DP) :: EREL = 1.8_DP
 C  SI,TI,W DOPED CARBON
-c     REAL(DP) :: EREL = 1.5_DP
+C     REAL(DP) :: EREL = 1.5_DP
 C  B DOPED CARBON
-c     REAL(DP) :: EREL = 1.2_DP
+C     REAL(DP) :: EREL = 1.2_DP
 
 c
       INTEGER :: IATMC, MSS, IMOLC, ITYPC     
@@ -510,8 +512,8 @@ ctk      real(dp) :: EIRENE_YHAASZ97M
      .            SQE, F1, F2, F3, QQP, ANGFAC, CAOPT, F, GAMMA, 
      .            EMAX, RSQDV, CVRSS, RT, EIRENE_FTHOMP, VX, UB, 
      .            VY, VZ, FLX, PRFCC, ETHERM, ETHEKT, ERELKT, C, 
-     .            G2, G3, YTHERM, YDES, ARG,
-     .            EDESE0, EDAME0, QSE, YDAM, YSURF, 
+     .            G2, G3, YTHERM, YDES,
+     .            EDESE0, EDAME0, QSE, YDAM, YSURF, ARG,
      .            VXR, VYR, VZR, VWL, WGHTVS   ! FOR SAMPLING WITH VELOCS
       INTEGER :: ITA, IPS, IPR, MODCHM, MODPYS, MS, ITYPP, IATMP
 
@@ -908,6 +910,12 @@ C  USER-SUPPLIED SPUTTER MODEL
         write (iunout,*) 'error in sputer.f. modchm ?? ',modchm
         call EIRENE_exit_own(1)
       END SELECT
+CVK FOR SPTTOT TALLY
+      IF (LCHSPNWL(ISPZ,MSURF).NE.0._DP) THEN
+        YSPTWL=LCHSPNWL(ISPZ,MSURF)
+      ELSE
+        YSPTWL=1.0_DP
+      ENDIF
 C
 C  FIND TYPE AND SPECIES OF CHEM. SPUTTERED MOLECULE
 C  ATOMS OR MOLECULES

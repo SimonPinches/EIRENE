@@ -80,6 +80,7 @@ C
      .           III, INUM, ITYP, ISPE, ICOUNT, IAT,
      .           IMM, IIO, IAA, IML
       INTEGER, EXTERNAL :: EIRENE_IDEZ
+      REAL(DP), PARAMETER :: TMINL=-2.3_DP
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt
 
@@ -240,7 +241,7 @@ C  RATE COEFFICIENT: (CM^3/S) * DENSITY (CM^3)
             IF (LGVAC(J,NPLS+1)) CYCLE
             TEE=TEINL(J)
 cdr  safety cut-off at TE= 0.1 eV. (TVAC=0.02)
-            TEE = max(-2.3_dp,TEE)
+            TEE = max(tminl,TEE)
             COU = EIRENE_RATE_COEFF(KK,J,TEE,0._DP,.TRUE.,0)
             TABEI1(IREI,J)=COU*FACTKK
 C  IS TABEI1 A RATE COEFFICIENT OR ALREADY A RATE ?
@@ -270,7 +271,7 @@ C  TO BE WRITTEN
             IF (LGVAC(J,NPLS+1)) CYCLE
               TEE=TEINL(J)
 cdr  safety cut-off at TE= 0.1 eV. (note: TVAC=0.02)
-              TEE = max(-2.3_dp,TEE)
+              TEE = max(tminl,TEE)
 c  evaluate 2 parametric fit,
 c  collapse this to a one parameter fit CF for EB dependence, evaluated at TEE.
               rp => reacdat(KK)%rtc%poly
@@ -297,7 +298,7 @@ C  2.D) RATE COEFFICIENT(TE,NE)
             IF (LGVAC(J,NPLS+1)) CYCLE
             TEE=TEINL(J)
 cdr  safety cut-off at Te= 0.1 eV. (note: TVAC=0.02)
-            TEE = max(-2.3_dp,TEE)
+            TEE = max(tminl,TEE)
 cdr  safety cut-off at ne= 1e8 cm**-3 already in PLS(..) from calling program. DVAC=1.0e2)
             COU = EIRENE_RATE_COEFF(KK,J,TEE,PLS(J),.FALSE.,1)
             TB = COU + FCTKKL
@@ -508,7 +509,7 @@ C
       WRITE (iunout,*) 'ERROR IN XSTEI: INVALID KREAD'
       WRITE (iunout,*) IREI,KREAD
       CALL EIRENE_EXIT_OWN(1)
-      END
+      END SUBROUTINE EIRENE_XSTEI
 C
 C
 C-----------------------------------------------------------------------

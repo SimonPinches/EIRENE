@@ -127,8 +127,8 @@ C PLOTTE DIE KREISSTUECKE, NK STUECK
         ENDIF
         IF (IO.GE.2) CALL GRNWPN(IO)
         do 7 jj=1,na+1
-          xps(jj)=xp(jj)
-          yps(jj)=yp(jj)
+          xps(jj)=real(xp(jj),sp)
+          yps(jj)=real(yp(jj),sp)
     7   continue
         CALL GRLN (XPS,YPS,NA+1)
 C  FAERBE DIE ENDEN DES ZYLINDERS EIN
@@ -173,8 +173,8 @@ C
      .  (P,PXS,PYS,PZS,VX,VY,VZ,AR,IRIGHT,XP,YP,J,J,NK)
         ENDIF
         do 9 jj=1,nk
-          xps(jj)=xp(jj)
-          yps(jj)=yp(jj)
+          xps(jj)=real(xp(jj),sp)
+          yps(jj)=real(yp(jj),sp)
     9   continue
         CALL GRLN (XPS,YPS,NK)
     5 CONTINUE

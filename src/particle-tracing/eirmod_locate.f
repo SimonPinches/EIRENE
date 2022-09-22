@@ -79,13 +79,13 @@ c      real(dp) :: cflag(7,MSTOR0)
       real(dp), allocatable :: cflag(:,:)
 
       real(dp) :: weight_b1,weight_b2,e0_b1,e0_b2
-      REAL(DP) :: xleft, xright, A, ZV
+      REAL(DP) :: xleft, xright, A, ZV, YSPTWL
 cym have to be changed to allocatable
 c      REAL(DP) :: VXWL(NPLS), VYWL(NPLS), VZWL(NPLS), VPWL(NPLS),
 c     .            TIWL(NPLS), DIWL(NPLS), EFWL(NPLS), SHWL, TEWL,
 c     .            CUMDIS(0:NREC)
       REAL(DP), allocatable :: VXWL(:), VYWL(:), VZWL(:), VPWL(:),
-     .             TIWL(:), DIWL(:), EFWL(:), CUMDIS(:)
+     .             TIWL(:), DIWL(:), EFWL(:), CUMDIS(:), ZIWL(:)
       REAL(DP) :: SHWL, TEWL       
 cym end change
 
@@ -127,7 +127,7 @@ cym adding externals
 !$OMP& weight_b1,weight_b2,e0_b1,e0_b2,
 !$OMP& xleft, xright, A, ZV,
 !$OMP& VXWL, VYWL, VZWL, VPWL,
-!$OMP& TIWL, DIWL, EFWL, SHWL, TEWL,
+!$OMP& TIWL, DIWL, EFWL, SHWL, TEWL, ZIWL,
 cym - ITER case
 !$OMP& WEISPZ, 
 cym
@@ -236,7 +236,7 @@ C  CALLED PROGRAMS: SAMPNT (POINT SOURCE)
 C                   SAMLNE (LINE SOURCE) (NOT READY)
 C                   SAMSRF (SURFACE SOURCE)
 C                   SAMVOL (VOLUME SOURCE)
-C  LOCAL VARIABLES: TEWL,TIWL(IPLS),DIWL(IPLS),
+C  LOCAL VARIABLES: TEWL,TIWL(IPLS),DIWL(IPLS),ZIWL(IPLS),
 C                   VXWL(IPLS),VYWL(IPLS),VZWL(IPLS),EFWL(IPLS),SHWL
 C
 C                   THESE ARE BACKGROUND PARAMETERS USED FOR SAMPLING
@@ -375,7 +375,7 @@ cym      INTEGER :: NPANUO, NCELLT, IPOINT,
 cym     .           ityp_b1,ityp_b2,ipls_b1,ipls_b2,ISECT, I1, I2, IM, IMP,
 cym     .           ILINE, ISURF, ITRSF, ICOS, IVOLM, ISOR, INDTEC,
 cym     .           JATM, JMOL, JION, JPLS, JPHOT
-      
+
       save
 
 
@@ -388,6 +388,7 @@ cym allocate newly allocatable arrays
         allocate(TIWL(NPLS))
         allocate(DIWL(NPLS))
         allocate(EFWL(NPLS))
+        allocate(ZIWL(NPLS))
         allocate(CUMDIS(0:NREC))
         allocate(cflag(7,MSTOR0))
       endif
@@ -430,6 +431,8 @@ C
       ICOL=0
       XLEFT = HUGE(1._DP)
       XRIGHT = 0._DP
+cnh   28.10.2019
+      ZIWL=0._DP
 C
 C  DETAILED PRINTOUT OF TRAJECTORY FOR THIS PARTICLE?
 C
@@ -600,7 +603,8 @@ C   ION SPECIES IPLS=1,NPLSI
 C
 C   NLPT=POINT INDEX IN (NSRFS) SOURCE ARRAYS
         CALL EIRENE_SAMPNT (IPOINT,
-     .               TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ)
+     .               TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,ZIWL,
+     .               WEISPZ)
         IF (.NOT.LGPART) RETURN
 C
         IF (ITISOR(IPOINT).NE.0) THEN
@@ -647,7 +651,8 @@ C   Also return INDIM(isurf,istra) with values: 1,2,3 or 4.
 C
         IF (.NOT.NLCNS(ISTRA)) THEN
           CALL EIRENE_SAMSF1 (ISURF,
-     .                 TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ)
+     .                 TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,ZIWL,
+     .                 WEISPZ)
           IF (.NOT.LGPART) RETURN
         ELSE
           SELECT CASE( INDIM(ISURF,ISTRA) )
@@ -664,6 +669,11 @@ C
           VXWL(:)=VXIN(:,NCELL)
           VYWL(:)=VYIN(:,NCELL)
           VZWL(:)=VZIN(:,NCELL)
+          IF(maxval(ZIIN(:,NCELL)).GT.ZVAC) THEN
+            ZIWL(:)=ZIIN(:,NCELL)
+          ELSE
+            ZIWL(:)=DBLE(NCHRGP(:))
+          END IF
 C Does an input array exist for the following?
           EFWL=0
           SHWL=0
@@ -793,7 +803,8 @@ C  SUBSTRATA OF VOLUME SOURCE: IVOLM
         ENDIF
         ISECT=IVOLM
         CALL EIRENE_SAMVL1(IVOLM,
-     .              TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ)
+     .              TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,ZIWL,
+     .              WEISPZ)
         IF (.NOT.LGPART) RETURN
         MSURF=0
       ENDIF
@@ -1186,6 +1197,7 @@ C
           ELSE
             GOTO 998
           ENDIF
+
           LOGATM(IATM,ISTRA)=.TRUE.
           IF (EMAX.GT.0) THEN
             E0=EMAX
@@ -1386,8 +1398,9 @@ C  SHEATH POTENTIAL NOT YET SET IN SAMSRF. TRY TO FIND IT NOW
                   VPWL(IP)=SQRT(VXWL(IP)**2+VYWL(IP)**2+VZWL(IP)**2)
 C                 DIWL(IP)=DIWL(IP)
                 ENDDO
+cnh 02.11.2019 NCHRGP->ZIWL
                 ESHET=NCHRGI(IION)*EIRENE_SHEATH(TEWL,DIWL,VPWL,
-     .                                    NCHRGP,GAMMA,CUR,NPLSI,MSURF)
+     .                                    ZIWL,GAMMA,CUR,NPLSI,MSURF)
               ELSE
                 ESHET=NCHRGI(IION)*FSHEAT(MSURF)*TEWL
               ENDIF
@@ -1397,6 +1410,7 @@ C   NO SHEATH POTENTIAL TO BE ADDED
           ELSE
             ESHET=0.
           ENDIF
+
           LOGION(IION,ISTRA)=.TRUE.
           IF (EMAX.GT.0.D0) THEN
 C  CONSTANT VELOCITY
@@ -1508,7 +1522,7 @@ C
      .          NEMOD1.EQ.7.OR.NEMOD1.EQ.9)   THEN
 C  SET ELECTROSTATIC SHEATH ACCELERATION ENERGY "ESHET", eV
               IF (SHWL.GT.0.) THEN
-                ESHET=NCHRGP(IPLS)*SHWL*TEWL
+                ESHET=ZIWL(IPLS)*SHWL*TEWL
               ELSE
 C  SHEATH POTENTIAL NOT YET SET IN SAMSRF. TRY TO FIND IT NOW
                 IF (FSHEAT(MSURF).LE.0.D0) THEN
@@ -1518,10 +1532,11 @@ C  SHEATH POTENTIAL NOT YET SET IN SAMSRF. TRY TO FIND IT NOW
                     VPWL(IP)=SQRT(VXWL(IP)**2+VYWL(IP)**2+VZWL(IP)**2)
 C                   DIWL(IP)=DIWL(IP)
   550             CONTINUE
-                  ESHET=NCHRGP(IPLS)*EIRENE_SHEATH(TEWL,DIWL,VPWL,
-     .                                    NCHRGP,GAMMA,CUR,NPLSI,MSURF)
+cnh 02.11.2019 NCHRGP -> ZIWL
+                  ESHET=ZIWL(IPLS)*EIRENE_SHEATH(TEWL,DIWL,VPWL,
+     .                                    ZIWL,GAMMA,CUR,NPLSI,MSURF)
                 ELSE
-                  ESHET=NCHRGP(IPLS)*FSHEAT(MSURF)*TEWL
+                  ESHET=ZIWL(IPLS)*FSHEAT(MSURF)*TEWL
                 ENDIF
 C
               ENDIF
@@ -1599,9 +1614,11 @@ C             CHEMICAL SPUTTERING LFUX DEPENDENCE
               FLX=0
             ENDIF
 
-C  WTOTP, ETOTP: INTEGRAL FLUXES FOR SCALING
+C  WTOTP, WTOTE, ETOTP: INTEGRAL FLUXES FOR SCALING
 !$OMP ATOMIC
             WTOTP(IPLS,ISTRA)=WTOTP(IPLS,ISTRA)-WEIGHT
+!$OMP ATOMIC
+            WTOTE(ISTRA)=WTOTE(ISTRA)-ZIWL(IPLS)*WEIGHT
 !$OMP ATOMIC
             ETOTP(ISTRA)=ETOTP(ISTRA)-E0*WEIGHT
 C  NEW (2004) VOLUME-AVERAGED TALLIES
@@ -1672,10 +1689,19 @@ C
      .                    ISSPTP,ESPTP,VSPTP,VXSPTP,VYSPTP,VZSPTP,
      .                    ISRC(ISPZ,MSURF),
      .                    YIELD2,
-     .                    ISSPTC,ESPTC,VSPTC,VXSPTC,VYSPTC,VZSPTC)
+     .                    ISSPTC,ESPTC,VSPTC,VXSPTC,VYSPTC,VZSPTC,
+     .                    YSPTWL)
               NLSPUT=YIELD1.GT.0..OR.YIELD2.GT.0.
-              WGHTSP=WEIGHT*YIELD1
-              WGHTSC=WEIGHT*YIELD2
+              IF (YIELD1.gt.0.) THEN
+                WGHTSP=WEIGHT*YIELD1
+              ELSE IF (YIELD1.ne.0.) THEN
+                WRITE(IUNOUT,*) 'Strange sputtering yield ',YIELD1
+              ENDIF
+              IF(YIELD2.gt.0.) THEN
+                WGHTSC=WEIGHT*YIELD2
+              ELSE IF (YIELD2.ne.0.) THEN
+                WRITE(IUNOUT,*) 'Strange sputtering yield ',YIELD2
+              ENDIF
 C
 C  UPDATE SPUTTER SURFACE TALLIES. SAME AS IN SUBR. ESCAPE, BUT HERE
 C                                  FOR INCICENT BULK IONS
@@ -1693,7 +1719,7 @@ C   (e.g. if target material is not an eirene test particle in this run)
                 IF (WGHTSP.GT.0.AND.ISSPTP.EQ.0)
      .            CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD, WGHTSP,1)
                 IF (WGHTSC.GT.0..AND.ISSPTC.EQ.0)
-     .            CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD, WGHTSC,1)
+     .            CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD, WGHTSC*YSPTWL,1)
 C
               ENDIF
             ENDIF
@@ -1829,9 +1855,10 @@ C
 cdr  species index of physically sputtered particle is known.
 cdr  update total and sputtered species-resolved sputtered fluxes
 
-              CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD, WGHTSC,2)
-              IF (NADSI.GE.1) CALL EIRENE_UPSUSR(WGHTSC,2)
-              IF (NADSPC_S.GE.1) CALL EIRENE_UPDATE_SPECTRUM(WGHTSC,2,0)
+              CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD, WGHTSC*YSPTWL,2)
+              IF (NADSI.GE.1) CALL EIRENE_UPSUSR(WGHTSC*YSPTWL,2)
+              IF (NADSPC_S.GE.1) 
+     .          CALL EIRENE_UPDATE_SPECTRUM(WGHTSC*YSPTWL,2,0)
 
               IF (IGASC_OLD.EQ.0) GOTO 4712 ! SCORE SPUTTERED PARTICLES ON SURFACE/VOLUME TALLIES ONLY
 C                                             IF THEY ARE FOLLOWED. OTHERWISE: ONLY ON SPUTTER TALLIES
@@ -1933,7 +1960,8 @@ C  (VOLUME TALLIES PPAT,PPML,... WILL BE DONE BELOW,
 C                   ONCE FOR NLPNT,NLLNE,NLSRF,NLVOL)
 C
 C
-            IF (LGPART) CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,WEIGHT,2)
+            IF (LGPART) 
+     .        CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,WEIGHT,2)
             IF (NADSI.GE.1) CALL EIRENE_UPSUSR(WEIGHT,2)
             IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM(WEIGHT,2,0)
 C
@@ -1962,6 +1990,8 @@ c           DUMV(3)=0._DP
             LOGPLS(IPLS,ISTRA)=.TRUE.
 !$OMP ATOMIC
             WTOTP(IPLS,ISTRA)=WTOTP(IPLS,ISTRA)-WEIGHT
+!$OMP ATOMIC
+            WTOTE(ISTRA)=WTOTE(ISTRA)-ZIWL(IPLS)*WEIGHT
 !$OMP ATOMIC
             ETOTP(ISTRA)=ETOTP(ISTRA)-E0*WEIGHT
             IF (LPPPL) THEN

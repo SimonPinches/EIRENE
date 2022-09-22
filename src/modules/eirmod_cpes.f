@@ -35,6 +35,9 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
       integer, dimension(:), allocatable, public :: stratum_comm 
       integer, public :: leader_comm = MPI_COMM_NULL
 
+      !> Whether we have new member of stratum leaders
+      logical, public :: new_leader = .true. 
+
       CONTAINS
 
       !> creates communicators for PEs working on same stratum and a 

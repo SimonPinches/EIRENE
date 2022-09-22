@@ -24,13 +24,14 @@ C
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_CREF
       USE EIRMOD_CSPEI
+      USE EIRMOD_CINIT, ONLY: MASTER_PATH
 
       IMPLICIT NONE
 
       REAL(DP) :: PID180
 C     REAL(DP) :: DUMMY, ESBPARM  ! ESBPARM SHOULD BE ARRAY(IFILE)
       INTEGER :: I1, I2, I3, I4, I5, IUN, IFILE, I,
-     .           IWWW, ITTT, INR2, IFLR
+     .           IWWW, ITTT, INR2, IFLR, IERR
 C
 C
       IFLR=NHD6
@@ -51,7 +52,19 @@ C
 
         IUN=20+ifoff
         OPEN (UNIT=IUN,FILE=REFFIL(IFILE),ACCESS='SEQUENTIAL',
-     .        FORM='FORMATTED')
+     .        FORM='FORMATTED',STATUS='OLD',IOSTAT=ierr)
+        if ( ierr /= 0 ) then
+!         If open fails, try again interpreting the path as relative
+!         to MASTER_PATH
+          OPEN (UNIT=IUN,FILE=trim(MASTER_PATH)//'/'//REFFIL(IFILE),
+     .          ACCESS='SEQUENTIAL',
+     .          FORM='FORMATTED',STATUS='OLD',IOSTAT=ierr)
+          if ( ierr /= 0 ) then
+            WRITE (iunout,'(a,a)')
+     .       'RDTRIM.F: UNABLE TO FIND TRIM FILE '//TRIM(REFFIL(IFILE))
+            CALL EIRENE_EXIT_OWN(1)
+          endif
+        endif
 C
         READ (IUN,*)  !  READ 1 LINE: name (HEADER) of trim file: here
         READ (IUN,*)  !  comment on file

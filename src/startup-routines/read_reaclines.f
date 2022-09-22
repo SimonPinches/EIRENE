@@ -407,7 +407,8 @@ C  PARAMETERS ARE E,T,N: ALWAYS POSITIVE
           call eirene_push_string_stack(crs_stack,trim(cline))
           DEALLOCATE(CLINE)
         ENDIF
-        
+        IF (MAX(R1MN,R1MX,R2MN,R2MX).GT.0.D0) CALL EIRENE_LEER(1)   
+     
       else
 ! identifier "P" found in H123. Data for photon processes! No assymptotics available
 ! defaults already set at beginning of subroutine
@@ -432,6 +433,7 @@ C       ONLY NEEDED FOR AUTOMATED INTERFACE TO HYDKIN DATABASE.
       REACLINES(IL)%R2MN = R2MN
       REACLINES(IL)%R2MX = R2MX
       REACLINES(IL)%ELEMENT = ELNAME
+      REACLINES(IL)%BUNDLING = BUNDLING
       REACLINES(IL)%IZ = IZ
       REACLINES(IL)%JFEX1MN = 0
       REACLINES(IL)%JFEX1MX = 0

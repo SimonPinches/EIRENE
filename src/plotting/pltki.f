@@ -74,25 +74,27 @@ C        ISIDE=0
      .     CALL EIRENE_STCOOR(XX,YY,1)
          ENDIF
          INN=MAX0(INN,IFLAG)
-         GOTO 431
-  432    GOTO (451,452,453,454),IJUMP
-         GOTO 439
-  451    XP=GERAX(YL2)
-         YP=YL2
-         GOTO 429
-  452    XP=XL2
-CPB      YP=YTRAN(XP,FCN(XP-XM)+YM)
-         YP=GERAY(XL2)
-         GOTO 429
-  453    XP=XL1
-CPB      YP=YTRAN(XP,FCN(XP-XM)+YM)
-         YP=GERAY(XL1)
-         GOTO 429
-  454    XP=GERAX(YL1)
-         YP=YL1
-         GOTO 429
+         CYCLE
+  432    CONTINUE
+         SELECT CASE(IJUMP)
+         CASE (1)
+           XP=GERAX(YL2)
+           YP=YL2
+         CASE (2)
+           XP=XL2
+CPB        YP=YTRAN(XP,FCN(XP-XM)+YM)
+           YP=GERAY(XL2)
+         CASE (3)
+           XP=XL1
+CPB        YP=YTRAN(XP,FCN(XP-XM)+YM)
+           YP=GERAY(XL1)
+         CASE (4)
+           XP=GERAX(YL1)
+           YP=YL1
+         CASE DEFAULT
+           GOTO 439
+         END SELECT
 C
-  429    CONTINUE
          IF (IFLAG.EQ.0) THEN
             IF (LZR) CALL GRJMP (REAL(XP,SP), REAL(YP,SP))
             IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS) 

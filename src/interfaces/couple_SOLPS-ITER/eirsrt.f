@@ -102,8 +102,8 @@ C
      .            DUMMY, DTIMVO, EN
       INTEGER :: IN, IAEI, IMEI, IIEI, IREI, IFIRST, NDXY,
      .           ITNR, IPLSTI, IST_RATE, IST,
-     .           JATM, JMOL, JION, JPLS,
-     .           IFRSTR, ISTH, ISTNEW, ISTIN, ISTRAI
+     .           JATM, JMOL, JION, JPLS, IENTRY,
+     .           IFRSTR, ISTH, ISTNEW, ISTIN, ISTRAI, ifrst_save, iflg
       LOGICAL :: LSTP, LLST, LPLASM
       LOGICAL :: NLSRON_SAVE(NSTRA), LOGHELP(NSTRA)
 C
@@ -112,7 +112,7 @@ cdr pointer :: rtis, FOR "OD" RATES (SHORT CYCLE) PER STRATUM
 C
 C
       SAVE
-      DATA IFIRST/0/
+      DATA IFIRST/0/, ifrst_save/0/
 csw 28feb2011 mpi
       call mpi_comm_rank(MPI_COMM_WORLD,rank_mpi,ierr_mpi)
       call mpi_comm_size(MPI_COMM_WORLD,size_mpi,ierr_mpi)
@@ -204,7 +204,20 @@ C  REACTIVATE INDEX MAPPING, EVEN WITHOUT READING INPUT BLOCK 14 AGAIN
           NCUTB_SAVE=NCUTB
 C
           DTIMVO=DTIMV
-          DTIMVN=DELTAT
+          IF (DTIMVN.NE.DELTAT) THEN
+            DTIMVN=DELTAT
+            WRITE (iunout,'(a,1pe12.5,a,a)')
+     .       ' EIRENE TIMESTEP CHANGED TO ',DTIMVN,
+     .       ' PLASMA SECONDS BY EIRENE_STEP_DT FROM ',
+     .       'b2.neutrals.parameters'
+          END IF
+          IF (STEP_CPU.GT.0.0_DP) THEN
+            NTCPU = nint(STEP_CPU)
+            WRITE (iunout,'(a,i6,a,a)')
+     .       ' EIRENE RUN TIME CHANGED TO ',NTCPU,
+     .       ' CPU SECONDS BY EIRENE_STEP_CPU FROM ',
+     .       'b2.neutrals.parameters'
+          END IF
 C
 C-----------------------------------------------------------------------
 C
@@ -332,6 +345,17 @@ csw 24oct2011
 !pb     CALL EIRENE_EIRENE(DELTAT,LPLASM,LLST,ITNR,.TRUE.)
 
         CALL EIRENE_EIRENE(DELTAT,LPLASM,LLST,ITNR,.FALSE.)
+        if (ifrst_save == 0) then
+          if (count(nlsron(1:nstrai-1)) > count(nlvol(1:nstrai-1))) then
+            ifrst_save = 1
+          else
+            if (nprnli == 0) then
+              nlsron(1:nstrai) = .true.
+            else
+            nlsron(1:nstrai-1) = .true.
+            end if
+          end if
+        end if
 C
 C  IN THIS CALL TO EIRENE ALREADY IF3COP IS CALLED FOR EACH STRATUM
 C  THOSE WITH NLSRON(ISTRA) = TRUE  HAVE BEEN RECOMPUTED BY EIRENE
@@ -657,6 +681,10 @@ csw
           CALL EIRENE_PLEND
         END IF
 
+        CALL EIRENE_LEER(2)
+        WRITE(iunout,*)
+     .   'EIRENE USED ',EIRENE_SECOND_OWN(),' CPU SECONDS'
+        CALL EIRENE_LEER(2)
         RETURN
 C
 C  NOT THE FIRST CALL IN THIS CYCLE: CHECK: SHORT LOOP CORRECTION
@@ -670,22 +698,43 @@ C
         if(rank_mpi .eq. 0) then
 
         CALL EIRENE_HEADNG ('NEXT EIRENE RUN STARTS HERE',27)
-csw
 
-csw 23dec2011
-csw        if(nfilel .le. 1) then
         LSTP = LSTOP
         NCUTB_SAVE=NCUTB
+        IF (DTIMVN.NE.DELTAT) THEN
+          DTIMVN=DELTAT
+          WRITE (iunout,'(a,1pe12.5,a,a)')
+     .     ' EIRENE TIMESTEP CHANGED TO ', DTIMVN,
+     .     ' PLASMA SECONDS BY EIRENE_STEP_DT FROM',
+     .     ' b2.neutrals.parameters'
+          CALL EIRENE_LEER(1)
+        END IF
+        IF (STEP_CPU.GT.0.0_DP) THEN
+          NTCPU = nint(STEP_CPU)
+          WRITE (iunout,'(a,i6,a,a)')
+     .     ' EIRENE RUN TIME CHANGED TO ', NTCPU,
+     .     ' CPU SECONDS BY EIRENE_STEP_CPU FROM',
+     .     ' b2.neutrals.parameters'
+          CALL EIRENE_LEER(1)
+        END IF
 
         CALL EIRENE_ALLOC_BCKGRND
 
-        CALL EIRENE_INTER1
+        IF ((NBGK > 0) .AND. (NFILEL.EQ.3)) then
+          IFLG=0
+          CALL EIRENE_RPLAM(TRCFLE,IFLG,'EIRSRT')
+        END IF
+
+        IENTRY=1
+        CALL EIRENE_IF1COP(IENTRY)
 C
         CALL EIRENE_PLASMA
 C
         CALL EIRENE_PLASMA_DERIV(0)
 C
         CALL EIRENE_SETAMD(2)
+
+        if (nbgk > 0) call eirene_replace_stored
 C
 C  IN PLASMA_DERIV THE BACKGROUND PLASMA STATE HAS BEEN
 C  WRITTEN TO FORT.13
@@ -696,7 +745,7 @@ C  CONSISTENT PLASMA STATE ON FORT.13
 C
         IF ((NFILEL >=1) .AND. (NFILEL <=5)) THEN
           NFILEL=3
-          CALL EIRENE_WRPLAM(TRCFLE,0)
+          CALL EIRENE_WRPLAM(TRCFLE,'EIRSRT')
         END IF
 
 csw force no short cycle
@@ -892,7 +941,8 @@ C
         B2RAD=B2RD
         B2QIE=B2Q
         B2VDP=B2VP
-        CALL EIRENE_INTER3(LSTP,IFIRST,1,NSTRAI,0)
+        IENTRY=1
+        CALL EIRENE_IF3COP(IENTRY,LSTP,IFIRST,1,NSTRAI,0)
 
         NLSRON_SAVE = NLSRON
 
@@ -923,6 +973,10 @@ C
 
           CALL EIRENE_PLEND
         END IF
+        CALL EIRENE_LEER(2)
+        WRITE(iunout,*)
+     .   'EIRENE USED ',EIRENE_SECOND_OWN(),' CPU SECONDS'
+        CALL EIRENE_LEER(2)
 
         RETURN
 
@@ -948,5 +1002,4 @@ C
       NLSRON(1:NSTRAI) = LOGHELP(1:NSTRAI)
       call eirene_broadcast_eirbra
       return
-
       END SUBROUTINE EIRENE_EIRSRT_BROAD

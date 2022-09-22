@@ -1,7 +1,7 @@
-cdr  Nov. 2019: add functionality for arrhenius factors
+cdr  Nov. 2019: add functionality for Arrhenius factors EXP(-DE/T)
 cdr             excluded from rest of fit.
 cdr             Should replace the need for
-cdr             low temp asymptotics in H.2, H.5 H.8 data.
+cdr             low temp asymptotics in H.2, H.5, and H.8 polynomial data.
 cdr  Aug. 2016:  generalized (ifexmx<0 enabled), two new parameters in list for fct. extrap
 
 cdr  This function evaluates the standard single parameter 8th-order polynomial
@@ -19,23 +19,21 @@ cdr  databases AMJUEL, H2VIBR.
      .                   result(cou)
 c  input:
 c  cf      : fit coefficients for fit POLY=f(parm=)=sum_1^9 (cf(i) log(parm)^(i-1))
-c  al    : argument of fit, al=log(parm)
-c  rcmin : left boundary of valid range of PARM
-c  rcmax : right boundary of valid range of PARM
-c  fpp   : parameters for extrapolation from valid range
+c  al      : argument of fit, al=log(parm)
+c  rcmin   : left boundary of valid range of PARM
+c  rcmax   : right boundary of valid range of PARM
+c  fpp(1:6): parameters for extrapolation from valid range
 c            1:3  left (low PARM values) extrapolation.
 c            4:6  right (high PARM values) extrapolation
 c  ifexmn: flag for choice of left (low end) extrapolation expression
 c  ifexmx: flag for choice of right (high end) extrapolation expression
 c  earrh0: Arrhenius factor exp(-earrh0/T) separated from fit
-cdr             ifex=0:  constant extrapolation
-cdr             ifex<0:  determine extrapolation parameters here
-cdr                      (linear extrapolation),
-cdr                      and call extrap.f with model IFEX=3
-cdr             ifex>0:  evaluate fit at corresponding boundary,
-cdr                      and call extrap.f with model IFEX
-
-c  earrh0  : Arrhenius factor exp(-earrh0/T) separated from fit
+cdr           ifex=0:  constant extrapolation
+cdr           ifex<0:  determine extrapolation parameters here
+cdr                    (linear extrapolation),
+cdr                    and call extrap.f with model IFEX=3
+cdr           ifex>0:  evaluate fit at corresponding boundary,
+cdr                    and call extrap.f with model IFEX
 c  trc     : flag for diagnostic print output
 c  lexp    : return exp(POLY), i.e. the fit polynomial POLY is the
 c                                   Logarithm of the requested result
@@ -182,7 +180,9 @@ C  PARAMETER "P1=AL" IS WITHIN VALID RANGE OF FIT:
       do ii = 8, 1, -1
         cou = cou * p1 + cf(ii)
       end do
-c  arrhenius factor exp(-earrh0/T), here: add log thereof.
+
+c  Arrhenius factor exp(-earrh0/T), here: add log thereof to the fit POLY.
+c  ie. add -earrh0/parm
       if (earrh0.gt.0.0) then
         ep1=exp(p1)
         cou=cou-earrh0/ep1
@@ -190,7 +190,7 @@ c  arrhenius factor exp(-earrh0/T), here: add log thereof.
 
  1000 continue
 cdr  return cou=POLY, or cou=exp(POLY):
-      if (lexp) cou = max(-100._dp, cou)
+      if (lexp) cou = exp(max(-100._dp, cou))
       
       return
       end function EIRENE_sngl_poly

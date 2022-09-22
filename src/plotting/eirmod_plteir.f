@@ -355,7 +355,9 @@ cdr  tbd:  summing with proper weighting, as in outtal.f
                   VECTOR(1:NSBOX,ICURV) = SUM(PARMOM(1:NF,1:NSBOX),1)
                 CASE (25)
                   VECTOR(1:NSBOX,ICURV) = PSI(1:NSBOX)
-! INPUT TALLIES 26 -- 30:  CURRENTLY UNUSED (FREE)
+                CASE (26)
+                  VECTOR(1:NSBOX,ICURV) = SUM(ZIIN(1:NF,1:NSBOX),1)
+! INPUT TALLIES 27 -- 30:  CURRENTLY UNUSED (FREE)
 ! GRADIENTS OF INPUT TALLIES
                 CASE (31:120)     ! ntali=120, constant required here
                   KK = NADDP(ITL)
@@ -422,7 +424,9 @@ cdr  individual species indices
                   VECTOR(1:NSBOX,ICURV) = PARMOM(ISPZ,1:NSBOX)
                 CASE (25)
                   VECTOR(1:NSBOX,ICURV) = PSI(1:NSBOX)
-! INPUT TALLIES 26 -- 30:  CURRENTLY UNUSED (FREE)
+                CASE (26)
+                  VECTOR(1:NSBOX,ICURV) = ZIIN(ISPZ,1:NSBOX)
+! INPUT TALLIES 27 -- 30:  CURRENTLY UNUSED (FREE)
 ! GRADIENTS
                 CASE (31:120)     ! ntali=120, constant required here
                   KK = NADDP(ITL)+ISPZ
@@ -1087,6 +1091,7 @@ CDR
         IF (ITT.EQ.1.AND.IT == 1) TXUNIT='#/CM**3/BIN(EV)         '
         IF (ITT.EQ.1.AND.IT == 2) TXUNIT='EV/CM**3/BIN(EV)        '
 cdr  itt=2 was still missing....  units probably: (TO BE CHECKED)
+cdr  June20: probably IDIREC controls directional vs. nondirectional spectrum
         IF (ITT.EQ.2.AND.IT == 1) TXUNIT='#/CM**3/BIN(EV)/STERAD  '
         IF (ITT.EQ.2.AND.IT == 2) TXUNIT='EV/CM**3/BIN(EV)/STERAD '
         TXHEAD=REPEAT(' ',72)

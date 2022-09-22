@@ -50,8 +50,8 @@ C
       USE EIRMOD_CGEOM
       USE EIRMOD_CTEXT
       USE EIRMOD_COMPRT
-      USE EIRMOD_PROFILES, ONLY : EIRENE_PROFR, EIRENE_PROFS,
-     .                            EIRENE_PROFE, EIRENE_PROFN
+      USE EIRMOD_PROFILES, ONLY : EIRENE_PROFR, EIRENE_PROFE,
+     .                            EIRENE_PROFN, EIRENE_PROFS
 
       IMPLICIT NONE
 
@@ -68,6 +68,7 @@ C  INDPRO=9 MEANS: THESE ARRAYS ARE ALREADY SET IN COUPLE_... (SUBR. INFCOP)
       IF (INDPRO(4) /= 9) VXIN = 0.D0
       IF (INDPRO(4) /= 9) VYIN = 0.D0
       IF (INDPRO(4) /= 9) VZIN = 0.D0
+      IF (INDPRO(11)/= 9) ZIIN = 0.D0
 c  magnetic field
       IF (LBXIN .AND. (INDPRO(5) /= 9)) BXIN = 0.D0
       IF (LBYIN .AND. (INDPRO(5) /= 9)) BYIN = 0.D0
@@ -97,6 +98,7 @@ C  AND ALL REACTION RATES WRT: TO THIS BULK PARTICLE ARE SET EQUAL TO ZERO (1/S)
       DVAC=1.E2_dp
       VVAC=0._dp
       BVAC=1._dp  ! dr:  B field must not be "vacuum". check use of BVAC
+      ZVAC=0._dp  ! nh
 C
 C
 C  ELECTRON TEMPERATURE
@@ -125,13 +127,13 @@ c  INDPRO=5:  tally from PROUSR, indx=0
         CALL EIRENE_PROUSR (HELP,0,TE0,TE1,TE2,TE3,TE4,TE5,TVAC,NSURF)
         TEIN(1:NSURF)=HELP(1:NSURF)
       CASE (6)
-c  INDPRO=6:  tally from PROFR,  1:NSURF
+c  INDPRO=6:  tally from PROFR, pointer TEINTF(1:NSURF,.)
         ALLOCATE(RDUMMY(1,1:NSURF))
         CALL EIRENE_PROFR (RDUMMY,0,1,1,NSURF)
         TEIN(1:NSURF) = RDUMMY(1,1:NSURF)
         DEALLOCATE(RDUMMY)
       CASE (7)
-c  INDPRO=7:  tally from PROFR,  1:NSBOX=NSURF+NRADD
+c  INDPRO=7:  tally from PROFR, pointer TEINTF(1:NSBOX=NSURF+NRADD,.)
         ALLOCATE(RDUMMY(1,1:NSBOX))
         CALL EIRENE_PROFR (RDUMMY,0,1,1,NSBOX)
         TEIN(1:NSBOX) = RDUMMY(1,1:NSBOX)
@@ -178,7 +180,7 @@ c  INDPRO=5:  tally from PROUSR, indx=1, but NPLSTI calls, one for each IPLSTI
 
 cdr distinct from indpro=1,...5:  now one single call for all IPLS=1,NPLSTI
         case(6)
-c  INDPRO=6:  tally from PROFR, indx=1, all TIIN fields in one single call
+c  INDPRO=6:  tally from PROFR, indx=1, all TIINTF pointer fields in one single call
           ALLOCATE(RDUMMY(NDIM,NSURF))
           CALL EIRENE_PROFR (RDUMMY,1+0*NPLS,NPLSTI,NDIM,NSURF)
           TIIN(1:NPLSTI,1:NSURF) = RDUMMY(1:NPLSTI,1:NSURF)
@@ -186,7 +188,7 @@ c  INDPRO=6:  tally from PROFR, indx=1, all TIIN fields in one single call
 !pb all species fields have been filled in this call thus exit loop
           EXIT
         case (7)
-c  INDPRO=7:  tally from PROFR, indx=1, all TIIN fields in one single call
+c  INDPRO=7:  tally from PROFR, indx=1, all TIINTF pointer fields in one single call
           ALLOCATE(RDUMMY(NDIM,NSBOX))
           CALL EIRENE_PROFR (RDUMMY,1+0*NPLS,NPLSTI,NDIM,NSBOX)
           TIIN(1:NPLSTI,1:NSBOX) = RDUMMY(1:NPLSTI,1:NSBOX)
@@ -237,7 +239,7 @@ c  INDPRO=5:  tally from PROUSR, indx=1+1*NPLS, but NPLSI calls, one for each IP
 cdr distinct from indpro=1,...5:  now one single call for all IPLS=1,NPLSI
         case (6)
 c  INDPRO=6:
-cdr first dimension of arrays:  always NPLS
+cdr first dimension of arrays: pointer DIINTF(1:NPLS,.), always NPLS
           ALLOCATE(RDUMMY(NPLS,NSURF))
           CALL EIRENE_PROFR (RDUMMY,1+0*NPLS+NPLSTI,NPLSI,NPLS,NSURF)
           DIIN(1:NPLSI,1:NSURF) = RDUMMY(1:NPLSI,1:NSURF)
@@ -246,7 +248,7 @@ cdr first dimension of arrays:  always NPLS
           EXIT
         case (7)
 c  INDPRO=7:
-cdr first dimension of arrays:  always NPLS
+cdr first dimension of arrays: pointer DIINTF(1:NPLS,.), always NPLS
           ALLOCATE(RDUMMY(NPLS,NSBOX))
           CALL EIRENE_PROFR (RDUMMY,1+0*NPLS+NPLSTI,NPLSI,NPLS,NSBOX)
           DIIN(1:NPLSI,1:NSBOX) = RDUMMY(1:NPLSI,1:NSBOX)
@@ -370,7 +372,7 @@ C
 C
 C  MAGNETIC FIELD UNIT VECTOR
 C
-      IF (.NOT.(LBXIN.AND.LBYIN.AND.LBZIN.AND.LBFIN)) GOTO 154
+      IF (.NOT.LBIN) GOTO 154
 
 C  FOR IND=4,5,6,7 OR 9: ALSO THE ABSOLUTE B FIELD STRENGTH BF CAN BE SET
       IND=INDPRO(5)
@@ -613,6 +615,82 @@ c          (transfer from problem-specific codes or external data structures)
         DEALLOCATE(RDUMMY)
       end select
       END IF
+
+cnh 28.10.2019
+C
+C     ION CHARGE
+      IND=INDPRO(11)
+cdr first dimension of arrays: NDIM .ne. NPLSI possible ?
+      NDIM = SIZE(ZIIN,DIM=1)
+      IF (NDIM.LT.NPLSI) GOTO 995
+
+      DO JPLS=1,NPLSI
+        IPLS=JPLS
+        SELECT CASE (IND)
+!pb default if no input was given
+        CASE(0)
+          ZIIN(IPLS,:) = DBLE(NCHRGP(IPLS))
+        CASE(1)
+          CALL EIRENE_PROFN (HELP,ZI0(IPLS),ZI1(IPLS),ZI2(IPLS),
+     .                       ZI3(IPLS),ZI4(IPLS),ZI5(IPLS),ZVAC)
+          ZIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
+        CASE(2)
+          CALL EIRENE_PROFE (HELP,ZI0(IPLS),ZI1(IPLS),ZI2(IPLS),
+     .                       ZI4(IPLS),ZI5(IPLS),ZVAC)
+          ZIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
+        CASE(3)
+          CALL EIRENE_PROFS (HELP,ZI0(IPLS),ZI1(IPLS),ZI5(IPLS),ZVAC)
+          ZIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
+        CASE(4)
+c     INDPRO=4: read from stream ZIO(IPLS)
+          write(*,*) 'EIRENE: ZIIN, indpro(11)=4 not in use'
+          CALL EIRENE_EXIT_OWN(1)
+          JSTREAM=NINT(ZI0(IPLS))
+          ITALI=26
+          CALL EIRENE_READTL(TXTPLS(IPLS,ITALI),TXTPSP(IPLS,ITALI),
+     .                       TXTPUN(IPLS,ITALI),
+     .                       HELP,NR1ST,NP2ND,NT3RD,NBMLT,NSBOX,
+     .                       3,JSTREAM)
+          ZIIN(IPLS,1:NSBOX)=HELP(1:NSBOX)
+
+        CASE(5)
+c  INDPRO=5: tally from PROUSR, indx=12+1*NPLS+NPLSTI+3*NPLSV, but NPLSI calls, one for each IPLS
+          CALL EIRENE_PROUSR (HELP,12+1*NPLS+NPLSTI+3*NPLSV,ZI0(IPLS),
+     .                        ZI1(IPLS),ZI2(IPLS),
+     .                        ZI3(IPLS),ZI4(IPLS),ZI5(IPLS),ZVAC,NSURF)
+          ZIIN(IPLS,1:NSURF)=HELP(1:NSURF)
+cdr distinct from indpro=1,...5: now one single call for all IPLS=1,NPLSI
+        CASE(6)
+c  INDPRO=6:
+cdr first dimension of arrays: always NPLS
+          write(*,*)
+     .     'EIRENE: ZIIN, indpro(11)=6 not in use, assigning defaults'
+          ZIIN(IPLS,1:NSURF)=DBLE(NCHRGP(IPLS))
+c          ALLOCATE(RDUMMY(NPLS,NSURF))
+c          CALL EIRENE_PROFR (RDUMMY,12+1*NPLS+NPLSTI+3*NPLSV,
+c     .                       NPLSI,NPLS,NSURF)
+c          ZIIN(1:NPLSI,1:NSURF) = RDUMMY(1:NPLSI,1:NSURF)
+c          DEALLOCATE(RDUMMY)
+!pb all species fields have been filled in this call thus exit loop
+c          EXIT
+        CASE(7)
+          write(*,*)
+     .     'EIRENE: ZIIN, indpro(11)=7 not in use, assigning defaults'
+          ZIIN(IPLS,1:NSBOX)=DBLE(NCHRGP(IPLS))
+c          CALL EIRENE_EXIT_OWN(1)
+c          ALLOCATE(RDUMMY(NPLS,NSBOX))
+c          CALL EIRENE_PROFR (RDUMMY,12+1*NPLS+NPLSTI+3*NPLSV,
+c     .                       NPLSI,NPLS,NSBOX)
+c          ZIIN(1:NPLSI,1:NSBOX) = RDUMMY(1:NPLSI,1:NSBOX)
+c          DEALLOCATE(RDUMMY)
+!pb all species fields have been filled in this call thus exit loop
+c          EXIT
+        CASE DEFAULT
+          write (iunout,*) 'ziin case default, zvac ', zvac
+          ZIIN(IPLS,:) = ZVAC
+        END SELECT
+      ENDDO
+
 C
 CDR
 C   SET VACUUM DATA IN ADDITIONAL REGIONS OUTSIDE THE
@@ -643,17 +721,19 @@ C
    18     CONTINUE
         ENDDO
       ENDIF
-      IF (INDPRO(4).LE.6 .OR. INDPRO(4).EQ.9) THEN
-        DO J=NSURF+1,NSURF+NRADD
-          DO 19 JPLS=1,NPLSI
-            IPLSV=MPLSV(JPLS)
-            VXIN(IPLSV,J)=VVAC
-            VYIN(IPLSV,J)=VVAC
-            VZIN(IPLSV,J)=VVAC
-   19     CONTINUE
-        ENDDO
+      IF (LVIN) THEN
+        IF (INDPRO(4).LE.6 .OR. INDPRO(4).EQ.9) THEN
+          DO J=NSURF+1,NSURF+NRADD
+            DO 19 JPLS=1,NPLSI
+              IPLSV=MPLSV(JPLS)
+              VXIN(IPLSV,J)=VVAC
+              VYIN(IPLSV,J)=VVAC
+              VZIN(IPLSV,J)=VVAC
+   19       CONTINUE
+          ENDDO
+        ENDIF
       ENDIF
-      IF (LBXIN.AND.LBYIN.AND.LBZIN.AND.LBFIN) THEN
+      IF (LBIN) THEN
         IF (INDPRO(5).LE.6 .OR. INDPRO(5).EQ.9) THEN
           DO J=NSURF+1,NSURF+NRADD
             BXIN(J)=0.
@@ -670,7 +750,7 @@ C
    20     CONTINUE
         ENDDO
       ENDIF
-      IF (LEXIN.AND.LEYIN.AND.LEZIN.AND.LEFIN) THEN
+      IF (LEIN) THEN
         IF (INDPRO(7) == 5 .OR. INDPRO(5).EQ.6
      .                     .OR. INDPRO(5).EQ.9) THEN
           DO J=NSURF+1,NSURF+NRADD
@@ -681,25 +761,38 @@ C
           ENDDO
         ENDIF
       ENDIF
+      IF (LZIIN) THEN
+        IF (INDPRO(11).LE.6 .OR. INDPRO(11).EQ.9) THEN
+          DO J=NSURF+1,NSURF+NRADD
+            DO JPLS=1,NPLSI
+              ZIIN(JPLS,J)=ZVAC
+            ENDDO
+          ENDDO
+        ENDIF
+      ENDIF
 
       DEALLOCATE(HELP)
       DEALLOCATE(HELP2)
 C
       RETURN
 
-996   CONTINUE
+  995 CONTINUE
+      WRITE (iunout,*) 'ERROR IN PLASMA: 1ST DIMENSION OF ZIIN TALLY'
+      WRITE (iunout,*) 'NDIM,NPLSTI ',NDIM,NPLSI
+      CALL EIRENE_EXIT_OWN(1)
+  996 CONTINUE
       WRITE (iunout,*) 'ERROR IN PLASMA: 1ST DIMENSION OF TIIN TALLY'
       WRITE (iunout,*) 'NDIM,NPLSTI ',NDIM,NPLSTI
       CALL EIRENE_EXIT_OWN(1)
-997   CONTINUE
+  997 CONTINUE
       WRITE (iunout,*) 'ERROR IN PLASMA: 1ST DIMENSION OF DIIN TALLY'
       WRITE (iunout,*) 'NDIM,NPLSI ',NDIM,NPLSI
       CALL EIRENE_EXIT_OWN(1)
-998   CONTINUE
+  998 CONTINUE
       WRITE (iunout,*) 'ERROR IN PLASMA: 1ST DIMENSION OF V..IN TALLIES'
       WRITE (iunout,*) 'NDIM,NPLSV ',NDIM,NPLSV
       CALL EIRENE_EXIT_OWN(1)
-999   CONTINUE
+  999 CONTINUE
       WRITE (iunout,*) 'ERROR IN PLASMA: 1ST DIMENSION OF ADIN TALLY'
       WRITE (iunout,*) 'NDIM,NAINI ',NDIM,NAINI
       CALL EIRENE_EXIT_OWN(1)

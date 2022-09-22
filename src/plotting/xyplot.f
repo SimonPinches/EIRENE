@@ -8,7 +8,7 @@ C
 C
       REAL(SP), INTENT(INOUT) :: XY(*)
       INTEGER, INTENT(IN) :: NC
-      REAL(DP) :: DXY, HILF
+      REAL(SP) :: DXY, HILF
       INTEGER :: I, IANF, NBEG, J
 C
       NBEG=1

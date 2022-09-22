@@ -937,8 +937,8 @@ c  psi
         OP(1:NSBOX) = PSI(1:NSBOX)
         WEI(1:NSBOX) = 1._DP
       CASE (26)
-c  free26
-        OP(1:NSBOX) = FREE26(1:NSBOX)
+c  zi
+        OP(1:NSBOX) = ZIIN(K,1:NSBOX)
         WEI(1:NSBOX) = 1._DP
       CASE (27)
 c  free27

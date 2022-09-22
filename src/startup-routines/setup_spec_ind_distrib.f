@@ -15,7 +15,11 @@ C
 
       INTEGER :: J, JATM, JMOL, JION, JPHOT, JPLS
       REAL(DP) :: SA, SI, SM, SPP, SPH
-      
+
+C  datm is the cumulative of datd,
+C  dmol is the cumulative of dmld,
+C  and so on
+C
       NATMIM=NATMI-1
       NMOLIM=NMOLI-1
       NIONIM=NIONI-1

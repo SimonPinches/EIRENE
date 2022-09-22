@@ -180,23 +180,29 @@ cdr  Jan 20: further comments.
 
 cdr  Allocate storage for handling background medium,
 cdr  originally only for transfer of plasma data from external code
-cdr  and PROFR  profile options indpro=6 or indpro=7
+cdr  and PROFR  profile options INDPRO=6 or INDPRO=7
 
 cdr  called from:
-c    input.f  (if any indpro(1:12)=6) (what about =7?). Called TWICE ?
+c    input.f  (if any indpro(1:12)=6 or =7). Called TWICE
+c              once after reading block 13 and before reading block 14,
+c              once again after statement 4000.
 c    eirsrt.f (coupling to various B2 code variants)
-c    wrplam.f
-c    wrplam_long.f (if IFLG=10)
+c    rplam.f:
+c       rplam_shrt.f
+c       rplam_long.f (if IFLG=10)
 c    modbgk.f (transfer of modified virtual background for next iteration)
 cdr
 
 cdr  If any indpro(1..12)=6,7, then ALLOC_BCKGRND is called:
 c      provide storage for
-c      transfer of background (plasma) tallies into eirene background tallies
+c      transfer of background (plasma) tallies
+c      from an external code into eirene background tallies
+c
 cdr  In iterative mode, e.g. BGK iterations,
 c      ALLOC_BCKGRND may also be called.
 c      Then: risk of a hidden link? And unnecessary stuff to be dealt
 cdr    within MODBGK (such as B field ?)
+cdr    And other stuff from MODBGK may be missing:  tabel3, lgvac,....
 c
 c    currently: no E field information ?
 

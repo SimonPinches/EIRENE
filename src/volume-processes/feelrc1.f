@@ -9,8 +9,8 @@ cdr           or as iftflg(..4) option.
 cdr sept 18:  try to revive storage save mode.
 cdr           Rationalization with options in feelei1.f:
 cdr           as for EI processes: KK < 0: default, minimal (here: -1,-2)
-cdr                                 KK > 0: kk=kread, read from datadase
-cdr                                 KK = 0: else, simple models (via jelrrc)
+cdr                                KK > 0: kk=kread, read from datadase
+cdr                                KK = 0: else, simple models (via jelrrc)
 
       FUNCTION EIRENE_FEELRC1 (IRRC,K)
 
@@ -72,7 +72,12 @@ c  to avoid double-counting.
 c
         LADAS = EIRENE_IS_RTCEW_TAB2D(KK)  ! ifit=3 <--> ladas.
         IF (LADAS.AND.(NCHRGP(IPLS) /= 0)) THEN
-          Z = NCHRGP(IPLS)
+cnh       28.10.2019
+          if(ZIIN(IPLS,K) .ne. ZVAC) then
+            Z = ZIIN(IPLS,K)
+          else
+            Z = DBLE(NCHRGP(IPLS))
+          endif
           BREMS = EIRENE_BREMS(TEIN(K),DEIN(K),Z)/ELCHA   ! W per ion --> eV/s  per ion
           EIRENE_FEELRC1=EIRENE_FEELRC1 + BREMS
         END IF

@@ -51,10 +51,10 @@ C
     1 CONTINUE
       IF (IKURV.EQ.0) RETURN
 C
-      MINX=XMI
-      MAXX=XMA
-      MINY=1.D30
-      MAXY=-1.D30
+      MINX=REAL(XMI,SP)
+      MAXX=REAL(XMA,SP)
+      MINY=1.E30
+      MAXY=-1.E30
       DO 3 I=1,NKURV
         IF (.NOT.LPLOT(I)) GOTO 3
         MINY=MIN(MINY,REAL(YMN(I),SP))
@@ -65,9 +65,9 @@ C
         DMAXY=MAXY
         DMINY=MINY
         DMAXY=MAX(1.E-36_DP,DMAXY)
-        MAXY=DMAXY
+        MAXY=REAL(DMAXY,SP)
         DMINY=MAX(DMINY,DMAXY/1.E12_DP)
-        MINY=DMINY
+        MINY=REAL(DMINY,SP)
       ENDIF
 C
       IF (MINY.GE.MAXY) THEN
@@ -157,14 +157,14 @@ C
           YMIN = YMIN - 1.
           YMAX = YMAX + 1.
         END IF
-        PRMSAVE(1) = X0PL
-        PRMSAVE(2) = Y0PL
-        PRMSAVE(3) = X0PL+LENX
-        PRMSAVE(4) = Y0PL+LENY
-        PRMSAVE(5) = XMIN
-        PRMSAVE(6) = YMIN
-        PRMSAVE(7) = XMAX
-        PRMSAVE(8) = YMAX
+        PRMSAVE(1) = REAL(X0PL,SP)
+        PRMSAVE(2) = REAL(Y0PL,SP)
+        PRMSAVE(3) = REAL(X0PL+LENX,SP)
+        PRMSAVE(4) = REAL(Y0PL+LENY,SP)
+        PRMSAVE(5) = REAL(XMIN,SP)
+        PRMSAVE(6) = REAL(YMIN,SP)
+        PRMSAVE(7) = REAL(XMAX,SP)
+        PRMSAVE(8) = REAL(YMAX,SP)
         IF (IERR.GT.0) RETURN
       ENDIF
 C

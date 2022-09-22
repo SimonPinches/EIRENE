@@ -19,16 +19,18 @@ C
       USE EIRMOD_COMSOU
       USE EIRMOD_COMUSR
       USE EIRMOD_COMPRT, ONLY : IUNOUT
+      USE EIRMOD_CGRID, ONLY : NSBOX
       USE EIRMOD_CZT1
       USE EIRMOD_PHOTON
 
       IMPLICIT NONE
 
       INTEGER, INTENT(IN) :: ICAL
-      INTEGER :: I, IRPI, IREI, IERROR
+      INTEGER :: I, J, IRPI, IREI, IERROR
 
 
       IF (ICAL == 0) THEN
+        write (iunout,*) 'setamd(0) called '
         NRCX=0
         NREL=0
         NRPI=0
@@ -61,7 +63,29 @@ C
 
       ELSE  ! (ical.ne.0)
 
+cdr Now we have ICAL /=0
+        write (iunout,*) 'setamd(ical) ',ical
+
         CALL EIRENE_INIT_CMDTA(2)
+
+CVK TABLES CHECKING (FOR ELASTIC COLLISIONS)
+        DO I=1,NREL
+         DO J=1,NSBOX
+          IF(TABEL3(I,J,1).GT.23) THEN
+           WRITE(iunout,*) "SETAMD WARNING: REACTION RATE IS TOO BIG ",
+     .                 "IREL,ICELL,TABEL3",I,J,TABEL3(I,J,1)
+          END IF
+         END DO
+        END DO
+CVK TABLES CHECKING (FOR CHARGE EXCHANGE)
+        DO I=1,NRCX
+         DO J=1,NSBOX
+          IF(TABCX3(I,J,1).GT.23) THEN
+           WRITE(iunout,*) "SETAMD WARNING: REACTION RATE IS TOO BIG ",
+     .                 "IRCX,ICELL,TABCX",I,J,TABCX3(I,J,1)
+          END IF
+         END DO
+        END DO
 
       END IF
 
@@ -110,7 +134,7 @@ cdr
       IPATEI = 0
       IPMLEI = 0
       IPIOEI = 0
-cdr   IPPHDS = 0   ARRAY IPPHDS IS STILL MISSING, NO PHOTON SECONDARIES IN EI REACTIONS.
+cdr   IPPHEI = 0   ARRAY IPPHEI IS STILL MISSING, NO PHOTON SECONDARIES IN EI REACTIONS.
       IPPLEI = 0
       DO IREI=1,NREI
         ipatei(IREI,0)=COUNT(PATEI(IREI,1:) > 0)  ! amongst all natm species there are ipatei(...,0) (<= natm)

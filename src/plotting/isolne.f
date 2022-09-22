@@ -31,17 +31,22 @@ C
       CHARACTER(72), INTENT(IN) :: TEXT1, HEAD, RUNID, TXHEAD
       CHARACTER(24), INTENT(IN) :: TEXT2, TEXT3
 
-      REAL(DP) :: ZINT, SCLFCX, SCLFCY, RAMIN, RAMAX, FAK, CM, DX, DY,
+      REAL(DP) :: SCLFCX, SCLFCY, RAMIN, RAMAX, FAK, CM, DX, DY,
      .          A1, A2, A3, A4, ACMIN, ACMAX, DA, ACONT, RMI, XMIN,
-     .          XMAX, YMIN, YMAX, RMA, X1, X2, AA1, AA2
+     .          XMAX, YMIN, YMAX, RMA, X1, X2, AA1, AA2, DAXIS
       REAL(DP), ALLOCATABLE :: A(:,:),AA(:,:)
+      REAL(SP) :: ZINT
       REAL(SP) :: XY(8000)
       REAL(SP) :: YH
       INTEGER :: NP, ITR, NP1, NP2, ICOLOR, IS, IC, IISO, NISO, IERR,
      .           IPART, IT, IR, IP, I
       CHARACTER(17) :: CH
+C PARAMETER FROM GR LIBRARY
+      REAL(SP) :: CSPACE, CHSZVX
+      PARAMETER (CSPACE = 1.-1./1.7320508076, CHSZVX = 0.3)
 C
-      ZINT(X1,X2,AA1,AA2,A1)=X1+(A1-AA1)/(AA2-AA1+1.D-30)*(X2-X1)
+      ZINT(X1,X2,AA1,AA2,A1)=
+     .  REAL(X1+(A1-AA1)/(AA2-AA1+1.E-30)*(X2-X1),SP)
 C
 C     PLOT 18 CONTOURS, WITH 6 DIFFERENT COLOURS
       NISO=18
@@ -196,6 +201,7 @@ C  SEARCH ON WHOLE MESH
 C
 C
       CM=20.
+      DAXIS=CHSZVX*(2.-CSPACE)
       DX=(XMAX-XMIN)*FCABS1(IBLD)
       DY=(YMAX-YMIN)*FCABS2(IBLD)
       FAK=CM/MAX(DX,DY)
@@ -203,17 +209,17 @@ C
 C  PLOT FRAME
 C
       CALL EIRENE_PLNXTB (1,'ISOLNE.F')
-      CALL GRSCLC (10.,4.,REAL(10.+DX*FAK,SP),
-     .                    REAL(4.+DY*FAK,SP))
+      CALL GRSCLC (10.,4.,REAL(10.+MAX(DAXIS,DX*FAK),SP),
+     .                    REAL( 4.+MAX(DAXIS,DY*FAK),SP))
       CALL GRSCLV (REAL(XMIN,SP),REAL(YMIN,SP),
      .             REAL(XMAX,SP),REAL(YMAX,SP))
       CALL GRAXS (7,'X=3,Y=3',6,'R (CM)',6,'Z (CM)')
 C
 C  SCALE FACTORS: USER COORDINATES TO CM:
 C  X-DIRECTION:
-      SCLFCX=((10.+DX*FAK)-10.)/(XMAX-XMIN)
+      SCLFCX=((10.+MAX(DAXIS,DX*FAK))-10.)/(XMAX-XMIN)
 C  Y-DIRECTION:
-      SCLFCY=((4.+DY*FAK)-4.)/(YMAX-YMIN)
+      SCLFCY=(( 4.+MAX(DAXIS,DY*FAK))- 4.)/(YMAX-YMIN)
 C
 C  PLOT BOUNDARY OF MESH
 C
@@ -338,13 +344,13 @@ C
               IF (ACONT.GE.MIN(A1,A2).AND.
      .            ACONT.LE.MAX(A1,A2)) THEN
                 XY(IC+1)=ZINT(XX(IR),XX(IR+1),A1,A2,ACONT)
-                XY(IC+2)=YY(IP)
+                XY(IC+2)=REAL(YY(IP),SP)
                 IT=IT+1
                 IC=IC+2
               ENDIF
               IF (ACONT.GE.MIN(A2,A3).AND.
      .            ACONT.LE.MAX(A2,A3)) THEN
-                XY(IC+1)=XX(IR+1)
+                XY(IC+1)=REAL(XX(IR+1),SP)
                 XY(IC+2)=ZINT(YY(IP),YY(IP+1),A2,A3,ACONT)
                 IT=IT+1
                 IC=IC+2
@@ -352,13 +358,13 @@ C
               IF (ACONT.GE.MIN(A3,A4).AND.
      .            ACONT.LE.MAX(A3,A4)) THEN
                 XY(IC+1)=ZINT(XX(IR+1),XX(IR),A3,A4,ACONT)
-                XY(IC+2)=YY(IP+1)
+                XY(IC+2)=REAL(YY(IP+1),SP)
                 IT=IT+1
                 IC=IC+2
               ENDIF
               IF (ACONT.GE.MIN(A4,A1).AND.
      .            ACONT.LE.MAX(A4,A1)) THEN
-                XY(IC+1)=XX(IR)
+                XY(IC+1)=REAL(XX(IR),SP)
                 XY(IC+2)=ZINT(YY(IP+1),YY(IP),A4,A1,ACONT)
                 IT=IT+1
                 IC=IC+2

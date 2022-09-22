@@ -36,15 +36,19 @@ cdr  set from the external code, or in EIRSRT, and are problem-specific.
 
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
-      USE EIRMOD_SECOND_OWN, ONLY: EIRENE_SECOND_OWN
+      USE EIRMOD_SECOND_OWN, ONLY: EIRENE_SECOND_OWN,
+     .                             EIRENE_RESET_SECOND
 
       IMPLICIT NONE
       REAL(DP) :: DT
       REAL(DP) :: TIMI, TIMEND
+      REAL(DP), SAVE :: TIMI0
       INTEGER :: ITNR
       LOGICAL :: NLM,NLL,MPI_INIT
 C
       TIMI=EIRENE_SECOND_OWN()
+      TIMI0=TIMI
+c     write (iunout,*) 'timi ',timi0
 C
       CALL EIRENE_PLSTRT
 C
@@ -72,8 +76,9 @@ c  initialize MPI routines
 C     
       CALL EIRENE_PLEND
 C
-      TIMEND=EIRENE_SECOND_OWN()
-      WRITE (IUNOUT,*) 'TOTAL CPU_TIME OF THIS RUN: ',TIMEND-TIMI
+      TIMEND=EIRENE_RESET_SECOND()
+      WRITE (IUNOUT,*) 'TOTAL CPU_TIME (SEC) OF THIS RUN: ',
+     .                  TIMEND-TIMI0
 C
       STOP
       END

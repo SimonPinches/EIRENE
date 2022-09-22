@@ -587,6 +587,7 @@ c     omega_max: estimated upper bound of interval (eV)
 
 !Physical and mathematical constants
       real(dp),parameter::e=1.6022e-19
+c      real(dp),parameter::m_D=3.3445e-27  !DEUTERONS
       real(dp),parameter::hbar=1.0546e-34
       real(dp),parameter::me=9.1094e-31
       real(dp),parameter::alpha=7.2974e-3
@@ -3978,9 +3979,10 @@ c    .                           res
       end function EIRENE_sam_cutoff
 
 
-      SUBROUTINE EIRENE_BROADCAST_PHOTON
-      USE EIRMOD_CPES, ONLY : MY_PE
+      SUBROUTINE EIRENE_BROADCAST_PHOTON(ME)
       USE EIRMOD_MPI
+      IMPLICIT NONE
+      INTEGER, INTENT(IN) :: ME
       INTEGER :: IER, NNROT, NRC, KK, IATM, IPHOT
 
 
@@ -3991,13 +3993,13 @@ c    .                           res
             do nrc=1,nrca(iatm)
               kk=ireaca(iatm,nrc)
               if(iswr(kk) == 7) then
-                nNROT=nNROT+1
+                NNROT=NNROT+1
               endif
             enddo
           endif
         enddo
 !pb  out! not needed for the time being
-!pb        IF (MY_PE .NE. 0) call PH_ALLOC_XSECTA(nnrot)
+!pb        IF (ME .NE. 0) call PH_ALLOC_XSECTA(nnrot)
         IF (NNROT > 0) THEN
           CALL MPI_BCAST (PHV_LGAOT,(NATM+1)*(NNROT+1)*6,
      .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -4017,12 +4019,12 @@ c    .                           res
             do nrc=1,nrcph(iphot)
               kk=ireacph(iphot,nrc)
               if(iswr(kk) == 7) then
-                nNROT=nNROT+1
+                NNROT=NNROT+1
               endif
             enddo
           endif
         enddo
-        IF (MY_PE .NE. 0) call EIRENE_PH_ALLOC_XSECTPH(nnrot)
+        IF (ME .NE. 0) call EIRENE_PH_ALLOC_XSECTPH(nnrot)
         IF (NNROT > 0) THEN
           CALL MPI_BCAST (PHV_LGPHOT,(NPHOT+1)*(NNROT+1)*6,
      .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)

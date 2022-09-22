@@ -55,9 +55,11 @@ C
       REAL(DP) :: DTB1, DTB2, DTA, EIRENE_DETER, DTB3, FNEN, DTB4,
      .            EIRENE_DETER4X4
       REAL(DP) :: P11, P12, P13, P21, P22, P23, P31, P32, P33,
-     .            B1, B2, B3
-      INTEGER :: ICOL, IROW, I, J, I1, I2, J1, J2, IC, JOUT, IOUT
-      LOGICAL :: LCOLM(4), LROW(4)
+     .            B1, B2, B3,
+     .            ap3ma, ap3mi, ap3m, ap3n3, ap3n2
+      INTEGER :: ICOL, IROW, I, J, I1, I2, J1, J2, IC, JOUT, IOUT,
+     .           ICOL2, IROW2, I3
+      LOGICAL :: LCOLM(4), LROW(4), lcol2(3), lrow2(3)
 C
 C
       FC(1)=1.
@@ -369,6 +371,16 @@ C
           dta=EIRENE_deter(p11,p21,p31,
      .              p12,p22,p32,
      .              p13,p23,p33)
+
+cdr build a certain norm of the 3x3 matrix, to compare with determinant
+          ap3ma=maxval(pp(1:3,1:3))
+          ap3mi=minval(pp(1:3,1:3))
+cdr largest absolute value of an element in matrix
+          ap3m=max(abs(ap3ma),abs(ap3mi))
+cdr 3x3 matrix, hence: **3, to compare with determinant
+          ap3n3=ap3m**3
+cdr check determinant=0, relative to norm
+          if (abs(dta)/ap3n3 > eps10) then
           dtb1=EIRENE_deter(b1,b2,b3,
      .               p12,p22,p32,
      .               p13,p23,p33)
@@ -381,6 +393,72 @@ C
           Ffc(1)=dtb1/(dta+1.d-30)
           Ffc(2)=dtb2/(dta+1.d-30)
           Ffc(3)=dtb3/(dta+1.d-30)
+          else
+            write (iunout,*) 'SINGULAR MATRIX ENCOUNTERED IN GETSCL4'
+            write (iunout,*) 'for ISTRA = ',ISTRA
+            write (iunout,*) 'Possible reason: one type of particles'
+            write (iunout,*) 'is created analytically (tracklength)'
+            write (iunout,*) 'but not by random sampling'
+cdr  proper norm for comparison with row or column norm squared
+            ap3n2=ap3m**2
+            ICOL2=0
+            IROW2=0
+            DO I=1,3
+              LROW2(I)=
+     .          ((PP(I,1)**2+PP(I,2)**2+PP(I,3)**2)/ap3n2.GT.EPS30)
+              LCOL2(I)=
+     .          ((PP(1,I)**2+PP(2,I)**2+PP(3,I)**2)/ap3n2.GT.EPS30)
+              IF (LROW(I)) IROW=IROW+1
+              IF (LCOL2(I)) ICOL=ICOL+1
+            END DO
+C  DETERMINE THE INDICES FOR THE FIRST TWO NONZERO COLUMNS,
+C  and use a 2x2 matrix instead.
+            I1=0
+            I2=0
+            DO I=1,3
+              IF (LCOL2(I)) THEN
+                IF (I1.EQ.0) THEN
+                  I1=I
+                ELSE
+                  I2=I
+                  EXIT
+                ENDIF
+              ENDIF
+            END DO
+            J1=0
+            J2=0
+            DO I=1,3
+              IF (LROW2(I)) THEN
+                IF (J1.EQ.0) THEN
+                  J1=I
+                  B1=B(I)
+                ELSE
+                  J2=I
+                  B2=B(I)
+                  EXIT
+                ENDIF
+              ENDIF
+            END DO
+
+            I3 = 6 - I1 - I2
+            FFC(I3) = 1._DP
+
+            DTA=PP(J1,I1)*PP(J2,I2)-PP(J2,I1)*PP(J1,I2)
+cdr now we should check det=0 for the 2x2 determinant
+cdr DTA should be compared, again, with a proper norm rather than with EPS12.
+cdr build: ap2mi, ap2ma,...etc.
+cdr tbd.
+            IF (ABS(DTA).GT.EPS12) THEN
+              FFC(I1)=(B1*PP(J2,I2)-B2*PP(J1,I2))/DTA
+              IF (ABS(PP(J1,I2)).GT.EPS12) THEN
+                FFC(I2)=(B1-PP(J1,I1)*FFC(I1))/PP(J1,I2)
+              ELSEIF (ABS(PP(J2,I2)).GT.EPS12) THEN
+                FFC(I2)=(B2-PP(J2,I1)*FFC(I1))/PP(J2,I2)
+              ENDIF
+cdr         else
+cdr  ?
+            ENDIF
+          ENDIF
 
           IC = 0
           DO I=1,4
@@ -438,8 +516,6 @@ C
       FM=FC(2)
       FI=FC(3)
       FPH=FC(4)
-
-
 C
       RETURN
       END SUBROUTINE EIRENE_GETSCL4

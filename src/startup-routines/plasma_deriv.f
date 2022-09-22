@@ -133,7 +133,7 @@ c   LGVAC(...,0)     : background vacuum flag
 ! rates and popul. coefs. for density models 
      .            EIRENE_RATE_COEFF, EIRENE_OTHER_RATE_COEFF,
 ! asymptotics thereof 
-     .            RC1MIN, RC1MAX, RC2MIN, RC2MAX,
+     .            RC1MIN, RC1MAX, RC2MIN, RC2MAX, DE_CORONA,
      .            FP1(6), FP2(6),
      .            BXP, BYP, BNORM, TE, DE,
      .            BX, BY, BZ 
@@ -144,7 +144,7 @@ c   LGVAC(...,0)     : background vacuum flag
      .                         TALLY(:)
       INTEGER :: IR, IN, IP, IPM, IPLS, IOLD, ISW, IRE, I1,
      .           I, J, JEND, IAIN, ISPZ,
-     .           IO, IPLSTI, IPLSV, IOLDTI, IOLDV, IBS,
+     .           IO, IPLSTI, IPLSV, IOLDTI, IOLDV, IBS, IFLG,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX, IRC,
      .           ITAL, K, KK, NFTI, NFTE, JPLS
  
@@ -197,9 +197,17 @@ c   LGVAC(...,0)     : background vacuum flag
       JFEX2MX = 0
 
 cdr
+      write (iunout,*) 'plasma deriv called ', icall
       tpb1 = EIRENE_second_own()
       IBS = 0
-      IF (ANY(CDENMODEL == FORT//'13')) CALL EIRENE_RPLAM(TRCFLE,10,IO)
+cdr  hidden link: this seems to be assuming that nlshrt13=f.
+cdr  But nlshrt13 is set true e.g. in couple_solps_iter
+cdr  In that case only the virtual species IPLS=NPLS_FIX+1,NPLS are read.
+cdr  IFLG=10:  set pointers DIINTF,... in RPLAM
+      IFLG=10
+      IF (ANY(CDENMODEL == FORT//'13'))
+     .     CALL EIRENE_RPLAM(TRCFLE,IFLG,'PLASMA_DERIV')
+
       DO JPLS=1,NPLSI
         IPLS = JPLS
         IPLSTI=MPLSTI(IPLS)
@@ -207,22 +215,48 @@ cdr
 
         SELECT CASE (CDENMODEL(IPLS))
 
-cdr  Read all plasma background data (all IPLS), each time.
-cdr  Better: move outside IPLS loop.
           CASE ('FORT.13','FTN13')
 
-            IF (IO.EQ.0) THEN
-              IOLD=TDMPAR(IPLS)%TDM%ISP(1)
-c             ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
-              IOLDTI=MPLSTI(IOLD)
-              IOLDV=MPLSV(IOLD)
-              IF (NLMLTI) TIIN(IPLSTI,:)=TIINTF(IOLDTI,:)
-              DIIN(IPLS,:)=DIINTF(IOLD,:)
+cdr fort.13 has been read, but do we have the long or short version?
+
+            IOLD=TDMPAR(IPLS)%TDM%ISP(1)
+c           ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
+            IOLDTI=MPLSTI(IOLD)
+            IOLDV=MPLSV(IOLD)
+
+cdr Feb 2020:
+cdr hidden link: This next coding assumes that pointers diintf, tiinft,...
+cdr              for IOLD are set. This is not necessarily the case, e.g
+cdr              in stand alone cases, and if NLSHRT13=.false.
+cdr              Or in case NLSHRT13 and IOLD < NPLS_FIX+1.
+cdr Check if pointer DIINTF(IOLD,..) is set at all.
+cdr Taken to be representative for species IOLD.
+
+cdr to be checked first: allocated: plasma_bckgrnd, and: associated: diintf
+
+            IF (any(diintf(iold,:).ne. 0._DP))  then
+
+              IF (NLMLTI) THEN
+                TIIN(IPLSTI,:)=TIINTF(IOLDTI,:)
+CDR           ELSE
+CDR   in single TI cases: all TIIN(IPLS,:) are the same, and == TIIN(1,:)
+              ENDIF
+              DIIN(IPLS,:)=MAX(DVAC,DIINTF(IOLD,:))
+
               IF (NLMLV) THEN
                 VXIN(IPLSV,:)=VXINTF(IOLDV,:)
                 VYIN(IPLSV,:)=VYINTF(IOLDV,:)
                 VZIN(IPLSV,:)=VZINTF(IOLDV,:)
+CDR           ELSE
+CDR  in single V.IN cases: all V.IN(IPLS,:) are the same, and == V.IN(1,:)
               END IF
+
+            else
+              write (iunout,*) 'Warning from PLASMA_DERIV'
+              write (iunout,*) '"Density-model FORT.13"'
+              write (iunout,*) 'Species IPLS= ',iold, ' is either == 0,'
+              write (iunout,*) 'or could not be read from fort.13'
+              write (iunout,*) 'Species IPLS left unchanged'
             ENDIF
 
           CASE ('FORT.10','FTN10')
@@ -238,16 +272,20 @@ cdr         itold=?                         ! type
             ALLOCATE (BASE_TEMP(NRAD))
             CALL EIRENE_GET_BASE_DENSITY(1)
 
-            IF (NLMLTI) TIIN(IPLSTI,:)=BASE_TEMP(:)
+            DIIN(IPLS,1:NSBOX)=MAX(DVAC,BASE_DENSITY(1:NSBOX))
+
+            IF (NLMLTI) THEN
+              TIIN(IPLSTI,:)=BASE_TEMP(:)
+cdr ???     ELSE
+            ENDIF
             IF (NLMLV) THEN
               VXIN(IPLSV,:)=VXIN(IOLDV,:)
               VYIN(IPLSV,:)=VYIN(IOLDV,:)
               VZIN(IPLSV,:)=VZIN(IOLDV,:)
+cdr ???     ELSE
+
             END IF
 
-            DO IR=1,NSBOX
-              DIIN(IPLS,IR)=MAX(DVAC,BASE_DENSITY(IR))
-            ENDDO
             DEALLOCATE (BASE_DENSITY)
             DEALLOCATE (BASE_TEMP)
 
@@ -325,7 +363,7 @@ c           ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
               BOLTZFAC=0._DP
               IF (TIIN(IOLDTI,IR).GT.TVAC)
      .          BOLTZFAC=G_BOLTZ*EXP(-DELTAE/BASE_TEMP(IR))
-              DIIN(IPLS,IR)=MAX(DVAC,BASE_DENSITY(IR))*BOLTZFAC
+              DIIN(IPLS,IR)=MAX(DVAC,BASE_DENSITY(IR)*BOLTZFAC)
 
               IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
                 IF (LSPCCLL(IR)) THEN
@@ -346,7 +384,7 @@ c           ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
 
         CASE ('PLANCK')
 cdr  use planck function, grey body: const. emissivity factor
-cdr  and set photon density here
+cdr  and set "grey" photon density here
             IOLD=TDMPAR(IPLS)%TDM%ISP(1)
             IOLDTI=MPLSTI(IOLD)
             ALLOCATE (BASE_TEMP(NRAD))
@@ -359,7 +397,7 @@ cdr  and set photon density here
 
             DEALLOCATE (BASE_TEMP)
         END SELECT
-      END DO
+      END DO  ! NPLSI
 
       IF (ALLOCATED(DEINTF)) DEALLOCATE(DEINTF)
 
@@ -370,10 +408,16 @@ C  COMPUTE SOME 'DERIVED' PLASMA DATA PROFILES FROM THE INPUT PROFILES
 C
 C  SET ELECTRON DENSITY FROM QUASI-NEUTRALITY, FURTHER: TEINL, DEINL, LGVAC(..,0:NPLS+1)
       LGVAC=.TRUE.
+      DEIN=0._DP
+
       DO J=1,NSBOX
-        DEIN(J)=0.
         DO IPLS=1,NPLSI
-          DEIN(J)=DEIN(J)+DBLE(NCHRGP(IPLS))*DIIN(IPLS,J)
+cnh       28.10.2019
+          IF(ZIIN(IPLS,J).NE.ZVAC) THEN
+            DEIN(J)=DEIN(J)+ZIIN(IPLS,J)*DIIN(IPLS,J)
+          ELSE
+            DEIN(J)=DEIN(J)+DBLE(NCHRGP(IPLS))*DIIN(IPLS,J)
+          ENDIF
         END DO
 C  SET 'LOG OF TEMPERATURE AND DENSITY' ARRAYS
         ZTEI=MAX(TVAC,MIN(TEIN(J),1.E10_DP))
@@ -440,10 +484,13 @@ cdr  The balance: n_iold * gain  = n_ipls * loss  provides density n_ipls
             VZIN(IPLSV,:)=VZIN(IOLDV,:)
           END IF
 
+cdr inverse of A_CORONA
+cdr tbd:  exclude division by zero here
           AM1=1._DP/TDMPAR(IPLS)%TDM%A_CORONA
           IRC = TDMPAR(IPLS)%TDM%IRC(1)
 
-          DO IR=1,NSURF
+          DO IR=1,NSBOX
+cdr nsbox rather than nsurf? Otherwise this will not work in additional cells
             RCORONA=0.0
             IF (.NOT.LGVAC(IR,NPLS+1)) THEN
               TEF=TEINL(IR)
@@ -509,6 +556,7 @@ cdr       else ??
 cdr  one common flow velocity field for all IPLS. Nothing to be done here.
           endif
 
+          FOUND = .TRUE.
           DO IRE=1,TDMPAR(IPLS)%TDM%NRE
 c  sum up contributions coupled to one or more (NRE) base-densities
             IOLD=TDMPAR(IPLS)%TDM%ISP(IRE)
@@ -520,32 +568,35 @@ c  temperature and density dependence in reduced population coefficient
 cdr  Jan 2019: generalized from AMJUEL H.11, H.12 to IRC reaction 
 cdr           (e.g. population coefficients from internal CR codes)
             IRC = TDMPAR(IPLS)%TDM%IRC(IRE) 
-            DO IR=1,NSURF
+            DE_CORONA=1.E8_DP
+            DO IR=1,NSBOX
+cdr nsbox rather than nsurf? Otherwise this will not work in additional cells
 
-                IF (LGVAC(IR,NPLS+1)) CYCLE
+              IF (LGVAC(IR,NPLS+1)) CYCLE
 
-                TE=TEIN(IR)
-                DE=DEIN(IR)             
-                DEF=LOG(DE)
-                TEF=max(-2.30,LOG(TE)) ! cut off at 0.1 eV
+              TE=TEIN(IR)
+              DE=DEIN(IR)             
+              TEF=max(-2.30,LOG(TE)) ! cut off at 0.1 eV
+!pbtest       DEF=LOG(DE/DE_CORONA)
+              DEF=LOG(DE)
 
-                RCOLRAD=EIRENE_OTHER_RATE_COEFF(IRC,IR,TEF,DEF,.TRUE.,1)
+              RCOLRAD=EIRENE_OTHER_RATE_COEFF(IRC,IR,TEF,DEF,.TRUE.,1)
 
-                DIIN(IPLS,IR)=DIIN(IPLS,IR)+BASE_DENSITY(IR)*RCOLRAD
-                if (nlmlti) then
-                  TIIN(IPLSTI,IR)=TIIN(IPLSTI,IR)+
-     .                            BASE_DENSITY(IR)*BASE_TEMP(IR)
-                endif
-                if (nlmlv) then
-                  VXIN(IPLSV,IR)=VXIN(IPLSV,IR)+
-     .                 NMASSP(IOLD)*BASE_DENSITY(IR)*VXIN(IOLDV,IR)
-                  VYIN(IPLSV,IR)=VYIN(IPLSV,IR)+
-     .                 NMASSP(IOLD)*BASE_DENSITY(IR)*VYIN(IOLDV,IR)
-                  VZIN(IPLSV,IR)=VZIN(IPLSV,IR)+
-     .                 NMASSP(IOLD)*BASE_DENSITY(IR)*VZIN(IOLDV,IR)
-                endif
-                SUMNI(IR) = SUMNI(IR) + BASE_DENSITY(IR)
-                SUMMNI(IR) = SUMMNI(IR) + NMASSP(IOLD)*BASE_DENSITY(IR)
+              DIIN(IPLS,IR)=DIIN(IPLS,IR)+BASE_DENSITY(IR)*RCOLRAD
+              if (nlmlti) then
+                TIIN(IPLSTI,IR)=TIIN(IPLSTI,IR)+
+     .                          BASE_DENSITY(IR)*BASE_TEMP(IR)
+              endif
+              if (nlmlv) then
+                VXIN(IPLSV,IR)=VXIN(IPLSV,IR)+
+     .               NMASSP(IOLD)*BASE_DENSITY(IR)*VXIN(IOLDV,IR)
+                VYIN(IPLSV,IR)=VYIN(IPLSV,IR)+
+     .               NMASSP(IOLD)*BASE_DENSITY(IR)*VYIN(IOLDV,IR)
+                VZIN(IPLSV,IR)=VZIN(IPLSV,IR)+
+     .               NMASSP(IOLD)*BASE_DENSITY(IR)*VZIN(IOLDV,IR)
+              endif
+              SUMNI(IR) = SUMNI(IR) + BASE_DENSITY(IR)
+              SUMMNI(IR) = SUMMNI(IR) + NMASSP(IOLD)*BASE_DENSITY(IR)
 
 cdr  oct 18: this must be wrong. What have spectra to do with CR models ?
 cdr          Perhaps a left over from the obsolete corresponding option
@@ -553,42 +604,42 @@ cdr          in diagno, i.e. attempts to prepare line of sight scored
 cdr          spectrally resolved densities, e.g. for photonic options ?  
 
 cdr identical code as above for H.11 ?
-                IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
-                  IF (LSPCCLL(IR)) THEN
-                    CALL EIRENE_GET_SPECTRUM (IR,IRE,SPEC,FOUND)
-                    IF (FOUND) THEN
-                      IF (IRE == 1) THEN
-                        IBS = IBS + 1
-                        SPEC%IPRTYP = 4
-                        SPEC%IPRSP = IPLS
+              IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
+                IF (LSPCCLL(IR)) THEN
+                  CALL EIRENE_GET_SPECTRUM (IR,IRE,SPEC,FOUND)
+                  IF (FOUND) THEN
+                    IF (IRE == 1) THEN
+                      IBS = IBS + 1
+                      SPEC%IPRTYP = 4
+                      SPEC%IPRSP = IPLS
+                      SPEC%SPC = SPEC%SPC * RCOLRAD
+                      BACK_SPEC(IBS) = SPEC
+                    ELSE
+                      IF ( (BACK_SPEC(IBS)%NSPC == SPEC%NSPC)
+     .                     .AND.(BACK_SPEC(IBS)%SPCMIN==SPEC%SPCMIN)
+     .                     .AND.(BACK_SPEC(IBS)%SPCMAX==SPEC%SPCMAX))
+     .                     THEN
                         SPEC%SPC = SPEC%SPC * RCOLRAD
-                        BACK_SPEC(IBS) = SPEC
+                        BACK_SPEC(IBS)%SPC =
+     .                       BACK_SPEC(IBS)%SPC + SPEC%SPC
                       ELSE
-                        IF (  (BACK_SPEC(IBS)%NSPC == SPEC%NSPC)
-     .                   .AND.(BACK_SPEC(IBS)%SPCMIN==SPEC%SPCMIN)
-     .                   .AND.(BACK_SPEC(IBS)%SPCMAX==SPEC%SPCMAX))
-     .                  THEN
-                          SPEC%SPC = SPEC%SPC * RCOLRAD
-                          BACK_SPEC(IBS)%SPC =
-     .                         BACK_SPEC(IBS)%SPC + SPEC%SPC
-                        ELSE
-                          WRITE (IUNOUT,*) ' ERROR IN PLASMA_DERIV,',
+                        WRITE (IUNOUT,*) ' ERROR IN PLASMA_DERIV,',
      .                       ' DENSITY MODEL COLRAD '
-                          WRITE (IUNOUT,*) ' TWO SPECTRA CONTRIBUTING ',
+                        WRITE (IUNOUT,*) ' TWO SPECTRA CONTRIBUTING ',
      .                       ' TO THE SAME BACKGROUND SPECTRUM DO NOT',
      .                       ' MATCH '
-                          WRITE (IUNOUT,*) ' IPLS, IRE ',IPLS, IRE
-                          CALL EIRENE_EXIT_OWN(1)
-                        END IF
+                        WRITE (IUNOUT,*) ' IPLS, IRE ',IPLS, IRE
+                        CALL EIRENE_EXIT_OWN(1)
                       END IF
                     END IF
                   END IF
                 END IF
+              END IF
+              
+            END DO  ! IR
+          END DO  ! IRE
 
-              END DO  ! IR
-          END DO   ! IRE
-
-c  scale merged contributions from all contributing densities
+c  scale merged contributions from all contributing base densities
           DIIN(IPLS,:)=MAX(DVAC,DIIN(IPLS,:))
           if (nlmlti) then
             TIIN(IPLSTI,:)=MAX(TVAC,TIIN(IPLSTI,:)/(SUMNI(:)+eps60))
@@ -624,35 +675,36 @@ c .................................................................colrad done
       IF (TRCTIM)
      . write (iunout,*) ' CPU time for density models ',tpb2-tpb1
       tpb1 = tpb2
-
 C
 C  SPECIAL PLASMA BACKGROUND MODELS DONE
 C
 C  NEXT: SET SOME "DERIVED" FIELDS:  EDRIFT, BPERP, BVIN, PARMOM, LGVAC, TIINL, DIINL,ZT1, ZRG
 
 C  SET DRIFT ENERGY (EV)
-      IF (LEDRIFT) THEN
-      DO J=1,NSBOX
-        DO IPLS=1,NPLSI
-          IPLSV=MPLSV(IPLS)
-          IF (NLDRFT) THEN
+      IF (LEDRIFT .AND. NLDRFT) THEN
+        DO J=1,NSBOX
+          DO IPLS=1,NPLSI
+            IPLSV=MPLSV(IPLS)
+            IF (NLDRFT) THEN
 C
-            IF (INDPRO(4) == 8) THEN
-              IF(IPLS.EQ.1) THEN
-                EDRIFT(IPLS,J)=CVRSSP(IPLS)*EIRENE_VDION(J)**2
+              IF (INDPRO(4) == 8) THEN
+                IF(IPLS.EQ.1) THEN
+                  EDRIFT(IPLS,J)=CVRSSP(IPLS)*EIRENE_VDION(J)**2
+                ELSE
+C                 WRITE(iunout,*)'WARNING PLASMA_DERIV: IPLS>1 NO DRIFT!'
+                  EDRIFT(IPLS,J)=0.D0
+                END IF
               ELSE
-C               WRITE(iunout,*)'WARNING PLASMA_DERIV: IPLS>1 NO DRIFT!'
-                EDRIFT(IPLS,J)=0.D0
+                EDRIFT(IPLS,J)=CVRSSP(IPLS)*
+     .              (VXIN(IPLSV,J)**2+VYIN(IPLSV,J)**2+VZIN(IPLSV,J)**2)
               END IF
             ELSE
-              EDRIFT(IPLS,J)=CVRSSP(IPLS)*
-     .              (VXIN(IPLSV,J)**2+VYIN(IPLSV,J)**2+VZIN(IPLSV,J)**2)
-            END IF
-          ELSE
-            EDRIFT(IPLS,J)=0.D0
-          ENDIF
+              EDRIFT(IPLS,J)=0.D0
+            ENDIF
+          END DO
         END DO
-      END DO
+      ELSEIF (LEDRIFT .AND. .NOT. NLDRFT) THEN
+        EDRIFT(1:NPLSI,1:NSBOX)=0.D0
       END IF
 C
 C  SET B_PERP UNIT VECTOR in POL PLANE (X,Y) FOR 2D cases,
@@ -866,8 +918,10 @@ C  SMOOTH E FIELD
         call eirene_cell_to_corner(PSI,PSICORNER)
       END IF
 
-      IF (LFREE26SMO) THEN
-        call eirene_cell_to_corner(FREE26,FREE26CORNER)
+      IF (LZISMO) THEN
+        do ipls = 1, npls
+          call eirene_cell_to_corner(ZIIN(ipls,:),ZIINCORNER(:,ipls))
+        ENDDO
       END IF
 
       IF (LFREE27SMO) THEN
@@ -887,15 +941,17 @@ C  SMOOTH E FIELD
       END IF
 C
 C  GRADIENTS
-      IF (ANY(LIVTALI(NTALG:NTALI))) THEN
+cdr       1:NTALG regular input tallies
+cdr NTALG+1:NTALI gradients of these regular input tallies
+      IF (ANY(LIVTALI(NTALG+1:NTALI))) THEN
         ALLOCATE (TALLY(NCORNER))
         DO ITAL = 1, NTALG
 C  ITAL : NO. OF TALLY OF WHICH GRADIENT IS TO BE CALCULATED
-C  KK   : INDEX OF GRADIENT TALLY
+C  KK   : INDEX OF GRADIENT TALLY: KK+1, KK+2, KK+3
           KK = NTALG + (ITAL-1)*3 
           IF (ANY(LIVTALI(KK+1:KK+3))) THEN
             NFTI = 1
-            NFTE=NFSTPI(KK+1)
+            NFTE=NFSTPI(KK+1)  ! same as for KK+2, KK+3
             DO K=NFTI, NFTE
               TALLY(:)=CORNER_PROFILES(:,NADDCOR(ITAL)+K)
               CALL EIRENE_CALC_GRAD(TALLY,
@@ -914,8 +970,8 @@ C
 C  SAVE PLASMA DATA AND ATOMIC DATA ON FORT.13
 C
       IF ((NFILEL ==1) .OR. (NFILEL ==3) .OR. (NFILEL ==4)) THEN
-cdr      NFILEL=3  probably wrong,  jan. 2016
-         CALL EIRENE_WRPLAM(TRCFLE,0)
+cdr   calls either wrplam_long or wrplam_shrt, see flag: NLSHRT13
+cdr     CALL EIRENE_WRPLAM(TRCFLE,'PLASMA_DERIV')
       END IF
 
       RETURN
@@ -949,19 +1005,8 @@ C FOR CALLS AFTER PARTICLE TRACING
         ISTRA = TDMPAR(IPLS)%TDM%ISTR(IRE)
         IF (ISTRA.EQ.IESTR.OR.ITYP.EQ.4) THEN
 C  NOTHING TO BE DONE
-        ELSEIF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
-          IESTR=ISTRA
-          IF (TRCFLE) WRITE (IUNOUT,*) 'FROM PLASMA_DERIV: '
-          CALL EIRENE_RSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
-     .               ESTIMV,ESTIMS,ESTIML,
-     .               NSDVI1,SDVI1,NSDVI2,SDVI2,
-     .               NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .               NSIGI_SPC,TRCFLE)
-          IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
-            CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRTAL,NR1TAL,NP2TAL,NT3TAL,
-     .                 NLSYMP(ISTRA),NLSYMT(ISTRA))
-          ENDIF
-        ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.ISTRA.EQ.0) THEN
+        ELSEIF ((NFILEN.EQ.1.OR.NFILEN.EQ.2).OR.
+     .        ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.ISTRA.EQ.0)) THEN
           IESTR=ISTRA
           IF (TRCFLE) WRITE (IUNOUT,*) 'FROM PLASMA_DERIV: '
           CALL EIRENE_RSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,

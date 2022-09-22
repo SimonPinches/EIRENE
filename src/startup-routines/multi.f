@@ -98,6 +98,13 @@ C  B FIELD DATA, INDPRO(5), ARE ALREADY SET ON 1:NSURF, SET IN PLASMA.F
             END DO
   207     CONTINUE
         ENDIF
+        IF (INDPRO(11).LT.4) THEN
+          DO 211 K=1,NPLSI
+            DO I=1,NR1ST
+              ZIIN(K,I+(J-1)*NR1ST)=ZIIN(K,I)
+            END DO
+  211     CONTINUE
+        ENDIF
   210 CONTINUE
 C
 C  INDPRO.GT.4: ONLY NSTRD=NR1ST*NP2ND*NT3RD PLASMA DATA GIVEN
@@ -121,16 +128,18 @@ C  INDPRO.GT.4: ONLY NSTRD=NR1ST*NP2ND*NT3RD PLASMA DATA GIVEN
             END DO
   304     CONTINUE
         ENDIF
-        IF ((INDPRO(4).GT.4) .AND. LCPYPRO(4)) THEN
-          DO 305 K=1,NPLSV
-            DO I=1,NSTRD
-              VXIN(K,I+(J-1)*NSTRD)=VXIN(K,I)
-              VYIN(K,I+(J-1)*NSTRD)=VYIN(K,I)
-              VZIN(K,I+(J-1)*NSTRD)=VZIN(K,I)
-            END DO
-  305     CONTINUE
+        IF (LVIN) THEN
+          IF ((INDPRO(4).GT.4) .AND. LCPYPRO(4)) THEN
+            DO 305 K=1,NPLSV
+              DO I=1,NSTRD
+                VXIN(K,I+(J-1)*NSTRD)=VXIN(K,I)
+                VYIN(K,I+(J-1)*NSTRD)=VYIN(K,I)
+                VZIN(K,I+(J-1)*NSTRD)=VZIN(K,I)
+              END DO
+ 305        CONTINUE
+          ENDIF
         ENDIF
-        IF (LBXIN .AND. LBYIN .AND. LBZIN .AND. LBFIN) THEN
+        IF (LBIN) THEN
           IF ((INDPRO(5).GT.4) .AND. LCPYPRO(5)) THEN
             DO 306 I=1,NSTRD
               BXIN(I+(J-1)*NSTRD)=BXIN(I)
@@ -146,6 +155,13 @@ C  INDPRO.GT.4: ONLY NSTRD=NR1ST*NP2ND*NT3RD PLASMA DATA GIVEN
               ADIN(K,I+(J-1)*NSTRD)=ADIN(K,I)
             END DO
   307     CONTINUE
+        ENDIF
+        IF (INDPRO(11).GT.4) THEN
+          DO 311 K=1,NPLSI
+            DO I=1,NSTRD
+              ZIIN(K,I+(J-1)*NSTRD)=ZIIN(K,I)
+            END DO
+  311     CONTINUE
         ENDIF
   310 CONTINUE
 C

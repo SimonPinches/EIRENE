@@ -10,6 +10,7 @@ C
       USE EIRMOD_CTRIG
       IMPLICIT NONE
       LOGICAL TRCFLE
+      integer :: i, j
 C
       OPEN (UNIT=12+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 12+ifoff
@@ -18,19 +19,37 @@ C
       OPEN (UNIT=112,ACCESS='SEQUENTIAL',FORM='FORMATTED')
       REWIND 112
       WRITE (112,*) 'CGEOM'
-      WRITE (112,*) RCGM1,RCGM2,NPOINT,NSTGRD,NGHPLS,NGHPOL,NCLTAL
+      WRITE (112,*) 'RCGM1 '
+      do i = 1, ncgm1, 10
+        WRITE (112,*) i,(RCGM1(j),j=i,min(i+9,ncgm1))
+      end do
+      WRITE (112,*) 'RCGM2 ',RCGM2
+      WRITE (112,*) 'NPOINT ',NPOINT
+      WRITE (112,*) 'NSTGRD ',NSTGRD
+      WRITE (112,*) 'NGHPLS ',NGHPLS
+      WRITE (112,*) 'NGHPOL ',NGHPOL
+      WRITE (112,*) 'NCLTAL ',NCLTAL
 #endif      
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 12: RCGM,ICGM '
       WRITE (12+ifoff) RCGRID,ICGRID
 #ifdef CHECKBIN
       WRITE (112,*) 'CGRID'
-      WRITE (112,*) RCGRID,ICGRID
+      WRITE (112,*) 'RCGRID '
+      do i = 1, ncgrd, 10
+        WRITE (112,*) i,(RCGRID(j),j=i,min(i+9,ncgrd))
+      end do
+      WRITE (112,*) 'ICGRID ',ICGRID
 #endif      
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 12: RCGRID,ICGRID'
       WRITE (12+ifoff) RCPLYG,RCPLY2,ICPLYG
 #ifdef CHECKBIN
       WRITE (112,*) 'CPOLYG'
-      WRITE (112,*) RCPLYG,RCPLY2,ICPLYG
+      WRITE (112,*) 'RCPLYG '
+      do i = 1, size(rcplyg,1)
+        WRITE (112,*) i,(RCPLYG(i,j),j=1,size(rcplyg,2))
+      end do
+      WRITE (112,*) 'RCPLY2 ',RCPLY2
+      WRITE (112,*) 'ICPLYG ',ICPLYG
 #endif      
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 12: RCPLYG,ICPLYG'
       IF (NRKNOT > 0) THEN
@@ -86,7 +105,8 @@ C
       CLOSE (UNIT=12+ifoff)
 #ifdef CHECKBIN
       WRITE (112,*) 'CADGEO'
-      WRITE (112,*) RADGEO,IADGEO,NLIMI
+      WRITE (112,*) 'RADGEO ',RADGEO
+      WRITE (112,*) 'IADGEO ',IADGEO,NLIMI
       CLOSE (UNIT=112)
 #endif      
       END SUBROUTINE EIRENE_WRGEOM

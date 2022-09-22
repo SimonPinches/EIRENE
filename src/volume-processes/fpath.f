@@ -110,12 +110,12 @@ C
      .          EIRENE_CROSS,
      .          EIRENE_RATE_COEFF, EIRENE_SNGL_POLY,
      .          EIRENE_ENERGY_RATE_COEFF,
-     .          CEL,CXS, VEFFQ,VEFF,
+     .          CEL, CXS, CII, VEFFQ, VEFF,
      .          TBEL,
      .          SIGMAX,  EHEAVY,
      .          DENEL, VX, VY, VZ, PVELQ0, ELAB,
      .          VRELQ, VREL, XC,YC,ZC,
-     .          CII, ELB,TII,V0_REL,
+     .          ELB,TII,V0_REL,
      .          EXPO, 
 cdr  functions for 'on the fly' evaluation of A&M data
      .          EIRENE_FEELEI1, EIRENE_FEELPI3,
@@ -128,7 +128,7 @@ cdr  functions for 'on the fly' evaluation of A&M data
      .                 IXCX, IRCX, 
      .           J, KK, IPLSTI,
      .           JPLS, IPLSV, IREAC
-      REAL(DP),PARAMETER :: EMINL=-2.3_DP
+      REAL(DP),PARAMETER :: EMINL=-2.3_DP ! hard-coded cut-off for EBEAM parameter in H.3 fits
 
 !  FOR PHOTONS CALL EIRENE_FPATHPH
       IF (ITYP == 0) THEN
@@ -269,6 +269,9 @@ C  Set hard-wired MINIMUM PROJECTILE ENERGY: 0.1 EV
             TII=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
             IF (NSTORDR >= NRAD) THEN
               TBPI3(1:NSTORDT) = TABPI3(IRPI,K,1:NSTORDT)
+cdr  energy dependence (for 2nd fit parameter).
+cdr  No Arrhenius factor
+cdr  No asymptotics (tbd)
               FP = 0._DP
               RCMIN = -HUGE(1._DP)
               RCMAX = HUGE(1._DP)
@@ -276,13 +279,15 @@ c  energy dependence (for 2nd fit parameter). No Arrhenius factor
               EARRH = 0.0
               EXPO = EIRENE_SNGL_POLY(TBPI3,ELB,RCMIN,RCMAX,FP,0,0,
      .                                EARRH,TRCAMD,.TRUE.)
+              SIGVPI(IRPI)=EXPO
             ELSE
 ! CALCULATE RATE COEFFICIENT "ON THE FLY"
+CDR  THIS SHOULD BE DONE IN FTABPI3.  NOT READY
               KK=NREAPI(IRPI)
               EXPO = EIRENE_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .             + DIINL(IPLS,K) + FACRPI(IRPI,2)
+              SIGVPI(IRPI)=EXP(EXPO)
             ENDIF
-            SIGVPI(IRPI)=EXP(EXPO)
           END IF
 
 C  MODEL 3:
@@ -393,6 +398,7 @@ C   TMASS FOR RATE COEFF. BEAM VELOCITY
               EARRH = 0.0
               EXPO = EIRENE_SNGL_POLY(TBCX3,ELB,RCMIN,RCMAX,FP,0,0,
      .                                EARRH,TRCAMD,.TRUE.)
+              SIGVCX(IRCX)=EXPO
             ELSE
 ! CALCULATE RATE COEFFICIENT ON THE FLY
 CDR  THIS SHOULD BE DONE IN FTABCX3.  NOT READY
@@ -400,8 +406,8 @@ CDR  THIS SHOULD BE DONE IN FTABCX3.  NOT READY
               TII=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)
               EXPO = EIRENE_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .               + DIINL(IPLS,K) + FACRCX(IRCX,2)
+              SIGVCX(IRCX)=EXP(EXPO)
             END IF
-            SIGVCX(IRCX)=EXP(EXPO)
           ENDIF
 
         ELSEIF (MODCOL(3,2,IRCX).EQ.3) THEN
@@ -468,6 +474,7 @@ cdr         endif
               EARRH = 0.0
               EXPO = EIRENE_SNGL_POLY(EPCX3,ELB,RCMIN,RCMAX,FP,0,0,
      .                                EARRH,TRCAMD,.TRUE.)
+              ESIGCX(IRCX,1)=EXPO/SIGVCX(IRCX)
             ELSE
 ! CALCULATE ENERGY-WEIGHTED RATE COEFFICIENT ON THE FLY
 CDR  THIS SHOULD BE DONE IN ...  NOT READY
@@ -475,8 +482,9 @@ CDR  THIS SHOULD BE DONE IN ...  NOT READY
               TII=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)
               EXPO = EIRENE_ENERGY_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .               + DIINL(IPLS,K) + FACRCX(IRCX,2)
+              ESIGCX(IRCX,1)=EXP(EXPO)/SIGVCX(IRCX)
             END IF
-            ESIGCX(IRCX,1)=EXP(EXPO)/SIGVCX(IRCX)
+
             IF (LEDRIFT) ESIGCX(IRCX,1)=ESIGCX(IRCX,1)+EDRIFT(IPLS,K)
           ENDIF  ! this was for tracklength estimator only
 
@@ -555,16 +563,18 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
               EARRH = 0.0
               EXPO = EIRENE_SNGL_POLY(TBEL3,ELB,RCMIN,RCMAX,FP,0,0,
      .                                EARRH,TRCAMD,.TRUE.)
-            ELSE
-cdr  here should be call to ftabel3,  to be done
+              SIGVEL(IREL)=EXPO
+             ELSE
 ! CALCULATE RATE COEFFICIENT ON THE FLY
+CDR  THIS SHOULD BE DONE IN FTABEL3.  NOT READY
               KK=NREAEL(IREL)
               TII=TIINL(IPLSTI,K)+ADDEL(IREL,IPLS)
               EXPO = EIRENE_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .               + DIINL(IPLS,K) + FACREL(IREL,2)
+              SIGVEL(IREL)=EXP(EXPO)
             END IF
-            SIGVEL(IREL)=EXP(EXPO)
           ENDIF
+
         ELSEIF (MODCOL(5,2,IREL).EQ.3) THEN
 C  MODEL 3:
 C  BEAM - BEAM RATE, BUT WITH EFFECTIVE INTERACTION ENERGY
@@ -628,14 +638,15 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
               EARRH = 0.0
               EXPO = EIRENE_SNGL_POLY(EPEL3,ELB,RCMIN,RCMAX,FP,0,0,
      .                                EARRH,TRCAMD,.TRUE.)
+              ESIGEL(IREL,1)=EXPO/SIGVEL(IREL)
             ELSE
 ! CALCULATE ENERGY-WEIGHTED RATE COEFFICIENT ON THE FLY
               KK=NELREL(IREL)
               TII=TIINL(IPLSTI,K)+ADDEL(IREL,IPLS)
               EXPO = EIRENE_ENERGY_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .               + DIINL(IPLS,K) + FACREL(IREL,2)
+              ESIGEL(IREL,1)=EXP(EXPO)/SIGVEL(IREL)
             END IF
-            ESIGEL(IREL,1)=EXP(EXPO)/SIGVEL(IREL)
             IF (LEDRIFT) ESIGEL(IREL,1)=ESIGEL(IREL,1)+EDRIFT(IPLS,K)
           ENDIF  ! this was for tracklength estimator only
 

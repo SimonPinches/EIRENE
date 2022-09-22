@@ -6,14 +6,21 @@ cdr:  2015
 !               IPART (MPARTT,NPRNL) (now) <-- IPART (NPRNL,MPARTT) (formerly)
 !               IPARTC(MPARTT,NPRNL) (now) <-- IPARTC(NPRNL,MPARTT) (formerly)
 C
+cdr  2020
+cdr: FLUX(istr), for istr=NSTRAI (scaling for stratum ISTR) is also on fort.13.
+cdr: This may be a hidden link. Decouple flux(nstrai) written on fort.13 from
+cdr  that written on fort.15: FLXCEN, to reduce code complexity.
+
 C
       SUBROUTINE EIRENE_WRSNAP( ISTR )
 C
+C  SAVE SNAPSHOT PARAMETERS IPRNL,FLXCEN,DTIMV, AT END OF TIMESTEP, ON FORT.15
 C  SAVE SNAPSHOT POPULATION RPARTC,IPARTC, AT END OF TIMESTEP, ON FORT.15
 C
       USE EIRMOD_PARMMOD, ONLY: IFOFF, MPARTT, NPARTT
       USE EIRMOD_CTRCEI, ONLY: TRCFLE
-      USE EIRMOD_COMNNL, ONLY: DTIMV, IPARTC, IPRNL, RPARTC, RPARTW
+      USE EIRMOD_COMNNL, ONLY: FLXCEN, DTIMV, IPRNL,
+     .                         IPARTC, RPARTC, RPARTW
       USE EIRMOD_COMSOU, ONLY: FLUX
       USE EIRMOD_COMPRT, ONLY: IUNOUT
 
@@ -22,12 +29,14 @@ C
 
       INTEGER, INTENT(IN) :: ISTR
       INTEGER :: I, J
+c  (atomic) census flux
+      FLXCEN=FLUX(ISTR)
 C
       OPEN (UNIT=15+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 15+ifoff
 C
-      IF (TRCFLE) WRITE (iunout,*) 'WRITE 15: IPRNL,FLUX,DTIMV'
-      WRITE (15+ifoff) IPRNL,FLUX(ISTR),DTIMV
+      IF (TRCFLE) WRITE (iunout,*) 'WRITE 15: IPRNL,FLXCEN,DTIMV'
+      WRITE (15+ifoff) IPRNL,FLXCEN,DTIMV
       WRITE (15+ifoff) ((RPARTC(J,I),J=1,NPARTT),I=1,IPRNL)
       WRITE (15+ifoff)  (RPARTW(  I)            ,I=0,IPRNL)
       WRITE (15+ifoff) ((IPARTC(J,I),J=1,MPARTT),I=1,IPRNL)
@@ -36,10 +45,16 @@ C
       END SUBROUTINE EIRENE_WRSNAP
 C
       SUBROUTINE EIRENE_RSNAP( ISTR )
+C
+C  READ SNAPSHOT PARAMETERS IPRNL,FLXCEN,DTIMV, FROM FORT.15
+C  READ SNAPSHOT POPULATION RPARTC,IPARTC, FROM FORT.15
+C  If fort.15 is absent, define an empty census (zero flux and
+C  zero scores).
+C
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: IFOFF, MPARTT, NPARTT, NPRNL
       USE EIRMOD_CTRCEI, ONLY: TRCFLE
-      USE EIRMOD_COMNNL, ONLY: DTIMV, DTIMVN,
+      USE EIRMOD_COMNNL, ONLY: FLXCEN, DTIMV, IPRNL, DTIMVN,
      ,                         IPARTC, IPRNL, RPARTC, RPARTW
       USE EIRMOD_COMSOU, ONLY: FLUX
       USE EIRMOD_COMPRT, ONLY: IUNOUT
@@ -52,8 +67,8 @@ C
 C
       OPEN (UNIT=15+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 15+ifoff
-      IF (TRCFLE) WRITE (iunout,*) 'READ 15: IPRNL,FLUX,DTIMV'
-      READ (15+ifoff,END=915) IPRNL,FLUX(ISTR),DTIMV
+      IF (TRCFLE) WRITE (iunout,*) 'READ 15: IPRNL,FLXCEN,DTIMV'
+      READ (15+ifoff,END=915) IPRNL,FLXCEN,DTIMV
 
       IF (TRCFLE) WRITE (iunout,*) 'READ 15: IPRNL,FLUX,DTIMV'
 
@@ -75,6 +90,8 @@ cdr  make sure that iprnl in previous run was not larger than in present run.
       READ (15+ifoff)  (RPARTW(  I)            ,I=0,IPRNL)
       READ (15+ifoff) ((IPARTC(J,I),J=1,MPARTT),I=1,IPRNL)
       CLOSE (UNIT=15+ifoff)
+
+      FLUX(ISTR)=FLXCEN
 C
       RETURN
 C
@@ -82,11 +99,13 @@ CXPB  SAFETY ADDED FOR CASE WHEN FORT 15 IS ABSENT
   915 CONTINUE
       CLOSE (UNIT=15+ifoff)
       IPRNL=0
-      FLUX(ISTR)=0.0_DP
+      FLXCEN=0.0_DP
       DTIMV=DTIMVN
       RPARTW(0)=0.0_DP
+
+      FLUX(ISTR)=FLXCEN
       WRITE (IUNOUT,*) 'FILE '//FORT//'15 WAS FOUND EMPTY'
       WRITE (IUNOUT,*) 'CREATING AN EMPTY TIME CENSUS ARRAY'
       CALL EIRENE_LEER(1)
       RETURN
-      END
+      END SUBROUTINE EIRENE_RSNAP

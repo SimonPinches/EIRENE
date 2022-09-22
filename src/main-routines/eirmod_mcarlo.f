@@ -38,7 +38,7 @@ cdr  via iterative loops or stepping.
       USE EIRMOD_MPI
       USE EIRMOD_SECOND_OWN, ONLY: EIRENE_SECOND_OWN
       USE EIRMOD_SAMVOL, ONLY: EIRENE_SAMVL0
-      USE EIRMOD_RANF, ONLY: RANF_EIRENE, RANSET_EIRENE, RANGET_EIRENE
+      USE EIRMOD_RANF, ONLY: RANF_EIRENE, RANSET_EIRENE
       USE EIRMOD_SWITCH_PARTINFO, ONLY: EIRENE_SWITCH_PARTINFO,
      .                                  EIRENE_OUTPUT_PARTINFO
       USE EIRMOD_LOCATE, ONLY: EIRENE_LOCAT0, EIRENE_LOCAT1
@@ -121,23 +121,26 @@ C
      .          ZW, ZWW, ZVOLWT, ZVOLNT, FSIG, ZFLUX,
      .          OVER, WTT, timan, timen,
      .          tim1, tim2, timst,
-     .          rn1, ran
+     .          rn1, ran, xmax
       REAL(DP), SAVE :: SECND1,SECND2,SECDEL
 
 cym IC ?
       INTEGER :: NPTS_SAVE(NSTRA), NINITL_SAVE(NSTRA), IPTSI
-      INTEGER, SAVE :: ISDV, IALS, ISTRAA, ISTRAE, ICELL, ISTRAI,
-     .           IGFFT, IALV, IDV, I, IER, IRC, NMX,
+      INTEGER, SAVE :: ISDV, IALS, ISTRAA, ISTRAE, ICELL, ISTRAI, 
+     .           IENTRY, IGFFT, IALV, IDV, I, IER, IRC, NMX,
      .           NINIST, IPANU, ISEED_ISTRA, ISEED_IPTSI, IDUMRAN,
+     .           NDIGITS, NINIMAX, NAVAIL,
      .           ISTR, NPTTOT, NREC11,
      .           IADD, INDX, ICLV, IADV,
      .           INODES, J, IT, IMCP,
      .           ISUM, NPX, IS, NEW_ITER, ISPC, IN,
      .           JATM, JMOL, JION, JPHOT, JPLS,
-     .           IERR
+     .           IERR, IFIRST, IPB, JPB
 
       LOGICAL, SAVE :: LGSTOP, NLPOLS, NLTORS
       LOGICAL :: LGABORT
+cpg     
+      INTEGER, SAVE :: MY_ID
       
 !$OMP THREADPRIVATE(I,J,IN,ISPC,IPANU,INODES,LGSTOP,
 !$OMP& SECND1,SECND2,SECDEL,MY_ID,NINIST,CDATE,CTIME,
@@ -152,11 +155,10 @@ C      INTEGER :: N2
 C
       LOGICAL :: LOGHELP(NSTRA)
 !HJL UNHACK      LOGICAL :: LOGHELP(1)
+      LOGICAL :: LSTP
 C  OVERHEAD FOR POST PROCESSING (SECONDS)
 C      DATA N2/2/
 C
-cpg     
-      INTEGER, SAVE :: MY_ID
 C@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 C
 #ifdef USE_EXT_OPENMP
@@ -406,7 +408,7 @@ C  TO CPU TIME ASSIGNED TO EACH STRATUM
 C
       IF (NPRNLI.GT.0) THEN
         WRITE(iunout,'(1x,a,a)')
-     .   'MAXIMUM NUMBER OF PARTICLES THAT WILL BE SAVED',
+     .   'MAXIMUM NUMBER OF PARTICLES THAT WILL BE SAVED ',
      .   'ON CENSUS (TIME DEP MODE):'
         WRITE(iunout,*) 'PROP. TO CPU TIME ALLOCATED FOR EACH STRATUM'
         DO  ISTRAI=1,NSTRAI
@@ -435,10 +437,38 @@ C  ROUND-OFF ERRORS
           CALL EIRENE_MASJ2 ('STRATUM, NUMBER ',ISTRAI,NPRNLS(ISTRAI))
         ENDDO
       ENDIF
+
+      IF (NPTST.LT.0.OR.NLMOVIE) THEN
+!tf If the number of particles has to change, then we should do it here,
+!tf before the parallel initialization
+c
+C  revert sequence of strata, so that census stratum is dealt with first
+c  to ensure: ALL particles from census are re-launched, one by one (not: by sampling)
+!tf  We are outside the stata loop, so we do not need the following if condition
+!tf          ISTRA=NSTRAI-ISTR+1
+!tf          IF (ISTRA.EQ.NSTRAI-1) THEN
+C  TOTAL STORAGE STILL AVAILABLE ON NEW CENSUS
+C  AFTER ONE TO ONE RESTART FROM OLD CENSUS IS COMPLETED
+        NPTTOT=NPRNLI-IPRNLI
+C  REDEFINE NPTS ACCORDING TO XTIM(ISTRA)
+        CALL EIRENE_LEER(2)
+        WRITE (iunout,*)
+     .   'REDEFINE NPTS FOR ONE-BY-ONE RELAUNCH FROM CENSUS'
+        ISUM=0
+        DO IS=1,NSTRAI-1
+          XFACT=XTIM(IS)/XTIM(0)  !PB  XTIM(IS): CPU TIME ASSIGNED TO STRATUM IS
+          XPRNLI=NPTTOT*XFACT+0.5
+          NPTS(IS)=INT(XPRNLI)
+          ISUM=ISUM+NPTS(IS)
+          WRITE(iunout,*) 'ISTRA, NPTS = ',IS,NPTS(IS)
+        ENDDO
+!tf          ENDIF
+      ENDIF
 C
 C  ASSIGN PEs TO STRATA
 C
       if (my_pe == 0) CALL EIRENE_PEDIST(XTIM,XX1)
+      if (nmode > 0) call eirene_infcop_pre_strata
       if (nprs > 1) then
         call EIRENE_broad_pedist(xtim)
         call create_all_communicators
@@ -464,10 +494,12 @@ cdr  between the present and the previous cycle.
 
       LOGHELP(1:NSTRA) = NLSRON(1:NSTRA)
       CALL EIRENE_INIT_COUTAU(LOGHELP)
+      XMCT(0)=0.
       FASCL(0)=1.
       FMSCL(0)=1.
       FISCL(0)=1.
       FPHSCL(0)=1.     
+C
 C
 C**** STRATA LOOP ****************************************************
 C
@@ -488,6 +520,28 @@ CHJL Need to check this removal of over_acc
 !$OMP& RCMSPL,ICMSPL,LCMSOU,XSTOR,XSTORV)
 #endif      
 #endif
+
+cdr feb 2020
+      if (any(ninitl(1:nstrai) .lt. 0)) then
+        write (iunout,*) 'negative random seeds found'
+        if (nlcrr)
+     .    write (iunout,*) 'correlated sampling turned off'
+        nlcrr=.false.
+      else
+        ninimax=maxval(ninitl(1:nstrai))
+        write (iunout,*) 'largest preselected random seed ',ninimax
+        xmax=ninimax-1.0
+        ndigits=int(log10(xmax))
+cdr  Do not touch the last NDIGITS digits for seeding
+cdr  produced by code.
+cdr  With RANMAR, we can use seeds up to 1e9 (precisely: 950.000.000) seeds
+cdr  We block the last NDIGITS digits of the seed,
+cdr  so for each NINITL, we have NAVAIL further save seeds,
+cdr  e.g. for correlated sampling or for multi-processor runs.
+        NAVAIL=950000000/10**ndigits  ! available seeds per NINITL,
+cdr  for seeding multiple processors per NINITL, or correlated sampling
+      endif
+cdr
       DO ISTR=1,NSTRAI          ! main loop over strata
 
         timan=EIRENE_second_own()
@@ -497,10 +551,14 @@ CHJL Need to check this removal of over_acc
 C  SPECIAL TREATMENT FOR MOVIE OPTION, OR FOR ONE-BY ONE RELAUNCH FROM CENSUS ARRAY
 C  IN TIME DEP. MODE
         IF (NPTST.LT.0.OR.NLMOVIE) THEN
+ctf Changing the number of particles moved before the parallel initialization
+c
 C  revert sequence of strata, so that census stratum is dealt with first
 c  to ensure: ALL particles from census are re-launched, one by one (not: by sampling)
           ISTRA=NSTRAI-ISTR+1
+cdr  now istra=1 is the stratum from old census
           IF (ISTRA.EQ.NSTRAI-1) THEN
+cdr  something wrong here: this was originally stratum ISTR=2.
 C  TOTAL STORAGE STILL AVAILABLE ON NEW CENSUS
 C  AFTER ONE TO ONE RESTART FROM OLD CENSUS IS COMPLETED
             NPTTOT=NPRNLI-IPRNLI
@@ -583,27 +641,35 @@ c  initialize random number generator with chosen input seed NINIST
 c  ranset checks, if this is a legal seed for a particular generator,
 c  and otherwise enforces that or stops the run.
             ISEED_ISTRA=RANSET_EIRENE(NINIST)
-            iadd=0
-            call ranmar_test(iadd,ierr,ran)
-            if (ierr.eq.0) then
-              write (iunout,*) 'RANMAR test passed.'
-              if (IADD.eq.0) then
-                write (iunout,*) 'Next random number will be: ',RAN
+cdr
+cdr  ranmar is a fully portable generator.
+cdr  Here we test if that is the case indeed in this run, on this machine.
+            if (nloldran) then
+              iadd=0
+              call ranmar_test(iadd,ierr,ran)
+              if (ierr.eq.0) then
+                write (iunout,*) 'RANMAR test passed.'
+                if (IADD.eq.0) then
+                  write (iunout,*) 'Next random number will be: ',RAN
+                else
+                  write (iunout,*) 'Skip next IADD rand. numbers: ',IADD
+                  write (iunout,*) 'Last random number used in test: ',
+     .                              RAN
+                endif
               else
-                write (iunout,*) 'Skip next IADD rand. numbers: ',IADD
+                write (iunout,*) 'RANMAR test failed. Error code:'
+                write (iunout,'(I7)') IERR
                 write (iunout,*) 'Last random number used in test: ',RAN
               endif
-            else
-              write (iunout,*) 'RANMAR test failed. Error code:'
-              write (iunout,'(I7)') IERR
-              write (iunout,*) 'Last random number used in test: ',RAN
+              call eirene_leer(1)
             endif
-            call eirene_leer(1)
 
 c  find random number seed from truly random procedure from wall clock time (use date and time)
+cdr  This is quite arbitrary. And probably even wrong:
+cdr  High chances of unintended correlations (the "birthday paradox"...)
           ELSEIF (NINITL(ISTRA).LT.0) THEN
 cdr  format of CDATE: hhmmss.xxx
-            CALL DATE_AND_TIME(CDATE,CTIME)  ! a number between 0 and 235959 
+            CALL DATE_AND_TIME(CDATE,CTIME)  ! we only use: hhmmss: i.e. a number between 0 and 235959 
             READ(CTIME(1:6),*) NINITL(ISTRA)
 !pb 28012016
 !  add number of calls to MCARLO in order to avoid same random seeds in very short
@@ -699,7 +765,8 @@ C
      .    ('LAUNCH PARTICLES FOR STRATUM NUMBER ISTRA='//CIS)
           OVER=EIRENE_SECOND_OWN()-SECND
 C  ACCUMULATED OVERHEAD BETWEEN STRATA
-          OVER_ACC=OVER_ACC+OVER
+CHJL Need to check this removal of over_acc
+!          OVER_ACC=OVER_ACC+OVER
 CVKMPI        CALL EIRENE_MASR1 ('OVERHEAD',OVER)
 CVKMPI        XTIM(ISTRA)=XTIM(ISTRA)+OVER_ACC
           WRITE (iunout,*) 'XTIM(ISTRA)= ',XTIM(ISTRA)
@@ -834,8 +901,8 @@ C  WALL CLOCK TIME AT START OF NEXT MONTE CARLO HISTORY
             SECND1=EIRENE_SECOND_OWN()
 C
 C  LAST HISTORY FOR PRESENT STRATUM ?
-            LGLAST = IPTSI.EQ.NPTS(ISTRA)
-            LGLAST = LGLAST.OR.(SECND1.GT.XTIM(ISTRA).AND.
+            LGLAST = IPTSI.EQ.NPTS(ISTRA)                      ! all requested particles done
+            LGLAST = LGLAST.OR.(SECND1.GT.XTIM(ISTRA).AND.     ! cpu limit reached and minimum no. of part. done
      .                          IPTSI.GE.NMINPTS(ISTRA).AND.
      .                          .NOT.NLMOVIE)
 CDR         LGLAST = LGLAST.OR.(CENSUS FILLED ?)  CURRENTLY DONE IN TIMCOL
@@ -849,16 +916,15 @@ C  FROM THE SEED USED FOR THE CURRENT PARTICLE
 C
 C  RE-INITIALIZE RANDOM NUMBERS FOR PARTICLE IPTSI, TO GENERATE CORRELATION
 C
-c  current seed within current stratum is iseed_istra
-c  NLCRR: get new tentative seed, and save this for next particle.
-c  then re-initialize with original seed
-              ISEED_IPTSI=ISEED_ISTRA
-! we need this well defined status of random generator below in ranget.
+c  current seed within current stratum is iseed_istra.
+
+c  NLCRR: get new tentative seed. Build a fixed sequence
+c         of seeds starting from NINITL,
+c         then re-initialize each particle seed from that sequence.
+cdr  Compose a seed  iseed=AAABBB, where BBB is fixed seed NINITL per stratum
+cdr  and AAA a fixed sequence for all the particles in this stratum.
+              iseed_iptsi=iseed_istra+ (10**ndigits+iptsi)
               IDUMRAN=RANSET_EIRENE(ISEED_IPTSI)
-! save a derived new seed for next particle.
-! after returning a new seed, the status of the random number generator is
-! in ranget.f already reset back to iseed_iptsi
-              ISEED_ISTRA=RANGET_EIRENE(ISEED_IPTSI)
 ! now we have the seed iseed_iptsi to start the history.
 
 C  FOR TEST ONLY: PRINT FIRST RANDOM NUMBER PER TRAJECTORY
@@ -871,7 +937,7 @@ C  FOR TEST ONLY: PRINT FIRST RANDOM NUMBER PER TRAJECTORY
               ENDIF
 
 c  derive one more seed, for reflec.f. cdr: unfinished....
-              ISEEDR=INT(ISEED_ISTRA*0.3D0)
+cdr           ISEEDR=INT(ISEED_ISTRA*0.3D0)
 
               INIV1=0
               INIV2=0
@@ -1022,6 +1088,8 @@ C
               SECND2=EIRENE_SECOND_OWN( )
               SECDEL=SECND2-SECND1
               CALL EIRENE_MASJ1R('PART., CPU TIME ',NPANU,SECDEL)
+              if (secdel.gt.0.1)
+     .          write (iunout,*) 'LONG HISTORY ',npanu,secdel
             ENDIF
   100     CONTINUE    !  nprt(istra)
 
@@ -1401,7 +1469,7 @@ C
 C  CALL INTERFACE TO OTHER CODES TO RETURN DATA. STRATUM ISTRA
 C
 csw 08mar2013 shifted behind STRATA LOOP, do all strata in one go
-csw 13mar2013 do it here iff in parallel mode
+csw 13mar2013 do it here if in parallel mode
 C   AND MORE PROCESSES THAN STRATA
       IF (NMODE.GT.0) THEN
         IF (NPRS > 1) THEN
@@ -1573,7 +1641,10 @@ C
         CALL EIRENE_WRITE_COUTAU (OUTAU, IUNOUT)
         WRITE (11+ifoff,REC=IRC) OUTAU
 #ifdef CHECKBIN
-        WRITE (111,*) 'OUTAU ', OUTAU
+        WRITE (111,*) 'OUTAU '
+        do ipb=1,noutau,5
+          WRITE (111,*) ipb,(OUTAU(jpb),jpb=ipb,min(ipb+4,noutau))
+        end do
 #endif
         DEALLOCATE (OUTAU)
         IF (TRCFLE)   WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
@@ -1603,7 +1674,6 @@ C END SEQUENTIAL REGION
 cdr  dec. 15
 cdr  see above. Routine UPDLIN.f contains linear combination of tallies
       if (nmode.gt.0) call eirene_reset_updlin
-
 
       CALL EIRENE_CHECK_EXIT
       CALL MPI_BARRIER (MPI_COMM_WORLD,IER)

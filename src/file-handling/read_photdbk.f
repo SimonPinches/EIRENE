@@ -268,8 +268,6 @@ cdr  done with pressure broadening constants
 
       c2=0._dp
 
-      reac_name(ir)(1:len_trim(reac)) = reac(1:len_trim(reac))
-
       allocate (phline)
 
       phline%aik = aik
@@ -333,7 +331,7 @@ c  reaction no IR is a "photonic" reaction
       phline%b12 = b12
       phline%nrjprt = nrjprt
 
-      phline%reacname = reac_name(ir)
+      phline%reacname = reac(1:len_trim(reac))
 
 cdr
 c  rest of data: use reacdat(ir)%phr%poly, e.g. for Aik, and volumetric

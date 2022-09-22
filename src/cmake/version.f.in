@@ -16,3 +16,12 @@ C> usual output unit.
      . '@git_branch@'
 
       END SUBROUTINE EIRENE_VERSION
+
+      function get_Eir_hash()
+      implicit none
+      character*31 get_Eir_hash
+
+      get_Eir_hash = '@git_hash@'
+
+      return
+      end function get_Eir_hash

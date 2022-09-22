@@ -54,8 +54,6 @@ c    species scoring at surface: ISPZ=LMETSPW(...)
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I IIHC(:,:), IGHC(:,:)
 
-cdr end threadprivate here
-
       INTEGER, PUBLIC, SAVE ::
      I NSDVI1, NSDVI2, NSDVC1, NSDVC2, NSDVI, MSDVI
 

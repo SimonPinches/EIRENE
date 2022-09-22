@@ -55,7 +55,7 @@ C
      .            EBULK, COU, EIRENE_RATE_COEFF,
      .            TMASS, PMASS   ! FOR DEFAULT CX MODEL
       INTEGER :: NTE, ISTORE, ISCND, ISCDE, IFRST,
-     .           IAT, IREI, IATM, IDSC1, J, IPLS1, IPLS, NRC,
+     .           IAT, IREI, IATM, IDSC1, J, IPLS1, IPLS, IION1, NRC,
      .           KK, ISPZB, IAEL, ITYPB, IREL, IBGK_SP,
      .           IAPI, IRPI, IACX, IDSC, IPL, IAEI, IESTM, IRCX, IPLSTI,
      .           ITHRD, IFRTH,
@@ -111,6 +111,7 @@ C  FIND SPECIES INDEX OF ION AFTER IONIZATION EVENT FOR THE DEFAULT
 C  ELECTRON IMPACT IONIZATION MODELS FROM INPUT MASS AND
 C  AND CHARGE NUMBER
 C
+          IION1=0  ! not needed here. Stay sync with xsectm, xsecti
           IPLS1=0
           DO 52 IPLS=1,NPLSI
             IF (NCHARP(IPLS).EQ.NCHARA(IATM).AND.

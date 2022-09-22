@@ -19,13 +19,20 @@ C                           (WITH TI (EV), RMASS (AMU) CVEL2A=9.8226 E5)
 
       REAL(DP), INTENT(IN) :: TI, XMPER, YMPAR
       REAL(DP) :: XMM, XMM2, YMM2, ER1, ER2, FACTOR, EIRENE_EMAXW
+#ifdef PGF90
+      REAL(DP) :: DERF
+#endif
 
       IF (XMPER.NE.0.D0) THEN
         XMM=XMPER
         XMM2=XMPER*XMPER
         YMM2=YMPAR*YMPAR
         ER1=EXP(-XMM2)/SQRT(PIA)
+#ifdef PGF90
+        ER2=(1.+DERF(XMM))*XMM
+#else
         ER2=(1.+ERF(XMM))*XMM
+#endif
         FACTOR=((XMM2+2.+YMM2)*ER1+(XMM2+2.5+YMM2)*ER2)/(ER1+ER2)
       ELSE
         YMM2=YMPAR*YMPAR

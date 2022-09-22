@@ -26,9 +26,9 @@ cdr  the numbering is "a bit" illogical, due to historic reasons.
 c    primary and derived tallies are mixed here. 
 C
       TXTPLS(1,1)='PLASMA TEMPERATURE (ELECTRONS)                   '
-      TXTPLS(1,2)='PLASMA TEMPERATURE (BULK IONS)                   '
+      TXTPLS(1,2)='PLASMA TEMPERATURE (BULK PARTICLES)              '
       TXTPLS(1,3)='PLASMA DENSITY (ELECTRONS)                       '
-      TXTPLS(1,4)='PLASMA DENSITY (BULK IONS)                       '
+      TXTPLS(1,4)='PLASMA DENSITY (BULK PARTICLES)                  '
       TXTPLS(1,5)='DRIFT VELOCITY IN X-DIRECTION (BULK IONS)        '
       TXTPLS(1,6)='DRIFT VELOCITY IN Y-DIRECTION (BULK IONS)        '
       TXTPLS(1,7)='DRIFT VELOCITY IN Z-DIRECTION (BULK IONS)        '
@@ -54,8 +54,8 @@ cdr 2019: now added as tally 25 below.
       TXTPLS(1,23)='FLOW VELOCITY PARALLEL TO BFIELD                 '
       TXTPLS(1,24)='PARALLEL TO B MOMENTUM FLOW                      '
       TXTPLS(1,25)='PSI                                              '
+      TXTPLS(1,26)='ZI                                               '
 
-      TXTPLS(1,26)='FREE26                                           '
       TXTPLS(1,27)='FREE27                                           '
       TXTPLS(1,28)='FREE28                                           '
       TXTPLS(1,29)='FREE29                                           '
@@ -124,6 +124,7 @@ c 12
       TXTPLS(1,76)='dBXPERP/dX                                       '
       TXTPLS(1,77)='dBXPERP/dY                                       '
       TXTPLS(1,78)='dBXPERP/dZ                                       '
+
       TXTPLS(1,79)='dBYPERP/dX                                       '
       TXTPLS(1,80)='dBYPERP/dY                                       '
       TXTPLS(1,81)='dBYPERP/dZ                                       '
@@ -154,9 +155,11 @@ c 25 psi-function
       TXTPLS(1,103)='dPSI/dX                                           '
       TXTPLS(1,104)='dPSI/dY                                           '
       TXTPLS(1,105)='dPSI/dZ                                           '
-      TXTPLS(1,106)='dFREE26/dX                                        '
-      TXTPLS(1,107)='dFREE26/dY                                        '
-      TXTPLS(1,108)='dFREE26/dZ                                        '
+cnh 19.08.2020 Average charge
+      TXTPLS(1,106)='dZI/dX                                            '
+      TXTPLS(1,107)='dZI/dY                                            '
+      TXTPLS(1,108)='dZI/dZ                                            '
+
       TXTPLS(1,109)='dFREE27/dX                                        '
       TXTPLS(1,110)='dFREE27/dY                                        '
       TXTPLS(1,111)='dFREE27/dZ                                        '
@@ -206,9 +209,9 @@ CDR  JUNE 2019: SEE BELOW, TALLY 25
       TXTPUN(1,22)='V                       '  ! POT
       TXTPUN(1,23)='CM/S                    '  ! BVIN
       TXTPUN(1,24)='G*CM/S                  '  ! PARMOM
-      TXTPUN(1,25)='TESLA*CM                '  ! PSI
+      TXTPUN(1,25)='TESLA*CM                '  ! PSI   ! CHECK FOR FACTOR 2Pi
+      TXTPUN(1,26)=' ---                    '  ! ZI
 
-      TXTPUN(1,26)=' ---                    '  ! FREE26
       TXTPUN(1,27)=' ---                    '  ! FREE27
       TXTPUN(1,28)=' ---                    '  ! FREE28
       TXTPUN(1,29)=' ---                    '  ! FREE29
@@ -292,9 +295,10 @@ C     TXTPUN(1,66)='TO BE READ, ADIN        '
       TXTPUN(1,104)='TESLA                   '  ! PSI
       TXTPUN(1,105)='TESLA                   '  ! PSI
 
-      TXTPUN(1,106)=' ---                    '  ! FREE26
-      TXTPUN(1,107)=' ---                    '  ! FREE26
-      TXTPUN(1,108)=' ---                    '  ! FREE26
+      TXTPUN(1,106)='/CM                     '  ! ZI
+      TXTPUN(1,107)='/CM                     '  ! ZI
+      TXTPUN(1,108)='/CM                     '  ! ZI
+
       TXTPUN(1,109)=' ---                    '  ! FREE27
       TXTPUN(1,110)=' ---                    '  ! FREE27
       TXTPUN(1,111)=' ---                    '  ! FREE27

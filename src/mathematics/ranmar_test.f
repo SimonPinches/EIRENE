@@ -45,7 +45,6 @@ cdr  next 5 lines: status of generator, initialized with previous call to H1RNIN
       rmarsag(5)= 8354498.0
       rmarsag(6)=10633180.0
 
-
 c  save the current status on VEC(100)
       CALL H1RNSV(VEC)
 
@@ -110,4 +109,4 @@ cdr one step is already done, now the further IADD-1 steps
       endif
 
       return
-      end
+      end subroutine ranmar_test

@@ -224,6 +224,8 @@ C
 C
   130     CONTINUE
 C
+C  NO CX MODEL DEFINED
+        ELSE
         ENDIF
 C
   200 CONTINUE

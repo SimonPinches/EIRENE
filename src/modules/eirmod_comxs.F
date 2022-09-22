@@ -1,3 +1,6 @@
+cdr Feb  20:  tbd: remove redundant nstor, nstor1 (unused),
+cdr           removed: reac_name (unused)
+cdr           except read_photdbk, but not needed there either.
 cdr Aug  19: remove redundant data typ: HYDKIN, tbd: TAB1D, started
 cdr Oct  18: tbd: separate quantities that vary along trajectories  (i.e. per thread)
 cdr               from those that remain fixed after initialization (i.e. per node)
@@ -28,8 +31,7 @@ cdr MODULE FOR ALL ATOMIC/MOLECULAR/PHOTONIC DATA STRUCTURES.
 !  02.03.07: remove ESCD2* arrays
 !  02.03.07: fourth secondary group specifier introduced
 !
-!  02.03.07: IMESS added in photon line reaction data in order to allow for
-!            a complete printout of input data
+!  02.03.07: IMESS added in photon "line" reaction data type
 !
 cdr sometime between 2004 and 2007 the atomic data structure was revised.
 cdr
@@ -149,6 +151,7 @@ c
         CHARACTER(4) :: H_SELECT
         CHARACTER(3) :: REACTYP
         CHARACTER(2) :: ELEMENT
+        CHARACTER(60) :: BUNDLING
       END TYPE REACTION_INPUT_LINE
 
       TYPE(LINE_DATA), POINTER, PUBLIC, SAVE :: REACTION
@@ -203,9 +206,9 @@ c  post-collision energies: to EL (electrons), PI (background) or HV (heavy test
      R EELEI1(:,:), EHVEI1(:,:), 
      R EELRC1(:,:),       
      R EPLPI3(:,:,:), EELPI3(:,:,:), EHVPI3(:,:,:),
-     R EPLCX3(:,:,:), !  cx processes have no secondary electrons 
-     R EPLEL3(:,:,:), !  el processes have no secondary electrons
-     R EPLPH3(:,:,:)  !  missing: eelph...,  ph processes energetics unfinished
+     R EPLCX3(:,:,:), !  CX processes have no secondary electrons 
+     R EPLEL3(:,:,:), !  EL processes have no secondary electrons
+     R EPLPH3(:,:,:)  !  missing: eelph...,  PH processes energetics unfinished
 
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R EATEI(:,:,:), EMLEI(:,:,:), EIOEI(:,:,:), EPLEI(:,:,:),
@@ -311,8 +314,6 @@ cym p2nei removed from threadprivate list
       INTEGER, PUBLIC, SAVE :: MAXSPC(0:4)
 
       INTEGER, ALLOCATABLE, PUBLIC, SAVE :: M_HCOL(:)
-
-      CHARACTER(50), PUBLIC, ALLOCATABLE, SAVE :: REAC_NAME(:)
 
       CONTAINS
 
@@ -425,6 +426,13 @@ cdr       allows to derive radiation loss from
 cdr                electron energy loss      PELEC (=eelec)
 cdr                                            KER (=escd1)
 cdr                                            POT (=edpot)
+cdr   Warning: strictly PRAD and PELEC refer to a species,
+cdr            not to a reaction. In case of multiple excit
+cdr            channels (e.g. H2, or MS resolved atoms)
+cdr            great care is needed not to double count
+cdr            or miss out parts of the electron cooling or radiation.
+cdr
+cdr
 cdr      PRAD= PELEC-KER-POT
 cdr
         ALLOCATE (EDPOTA(NATM,NREAC))
@@ -514,7 +522,6 @@ cdr
         ALLOCATE (IBGKI (NION,NREAC))
         ALLOCATE (IBGKPH(NPHOT,NREAC))
 
-        ALLOCATE (REAC_NAME(NREAC))
 cdr  -11 ... -1   : internal default atomic-molecular data
 cdr    1 ... NREAC: atomic/molecular data read from external data files, input block 4
         ALLOCATE (REACDAT(-11:NREAC))
@@ -525,7 +532,7 @@ cdr    1 ... NREAC: atomic/molecular data read from external data files, input b
         MEM = (NSTORV+NAMF)*8_IL + (MAMF+
      .                      9_IL*(NATM+NMOL+NION)+4_IL*NPLS+
      .                      10_IL*NPLS*(NATM+NMOL+NION))*4_IL +
-     .                      NREAC*LEN(REAC_NAME(1)) + NREAC*4_IL
+     .                      NREAC*4_IL
 
         WRITE (IUNMEM,'(A,T25,I15)')
      .        ' COMXS(1) ', MEM
@@ -540,17 +547,23 @@ C  FIRST DIMENSION OF XSTOR ARRAY
 C  SECOND DIMENSION OF XSTOR ARRAY
         MSTOR2 = 24
 
+cdr  ... to be removed
+cdr nstor1 and nstor: unused, 12.02.2020 !
         NSTOR1 = NREL+NRCX+NRPI+NREI
         NSTOR  = NSTOR1+
      .           2*(NREL+NRCX+NRPI)+5*NREI+
      .           NREL+NRCX+NRPI
+cdr  ...
 C
-c  tab..1/3 arrays
+c  collision rates for MFP, free flight sampling
+cdr     also: for particle loss/gain rates for tracklength estimators
+c  tab..1/3 arrays  (photon processes missing ?)
         NTAB=NSTORDR*(NREI+NREC)+
      P       NSTORDR*NSTORDT*(NRCX+NREL+NRPI)+
      P       (NPLS+1)*(NRPI+NRCX+NREL)+
      P       2*(NREC+NRPI+NREL+NREI+NRCX)
 C
+cdr rates for energy loss/gain rates for tracklength estimators
 c  exx..1/3 arrays  xx=(el,pl,hv),  
         NDAT=NSTORDR*(2*NREI+NREC)+
      P       NSTORDR*NSTORDT*(NRCX+NREL+3*NRPI+NRPH)+
@@ -1029,8 +1042,6 @@ c
       DEALLOCATE (IBGKI )
       DEALLOCATE (IBGKPH)
 
-      DEALLOCATE (REAC_NAME)
-
       CALL EIRENE_FREE_REACDAT
 
       DEALLOCATE (M_HCOL)
@@ -1074,6 +1085,7 @@ cdr  ical=2:  ??
         NMPIIM  = 0
         NIPIIM  = 0
         NPRCIM  = 0
+
         NPBGKA  = 0
         NPBGKM  = 0
         NPBGKI  = 0
@@ -1175,8 +1187,6 @@ cdr  ical=2:  ??
         IBGKM   = 0
         IBGKI   = 0
         IBGKPH  = 0
-
-        REAC_NAME = REPEAT(' ',LEN(REAC_NAME(1)))
 
         idreac  = 0
 
@@ -1301,13 +1311,16 @@ c  ditto, for upper limit value of 2nd parameter in 2-parameter fits or tables
         NPHPRC_2= 0
         N1STX   = 0
         N2NDX   = 0
-
+cdr  number of reaction of type PI,EI,CX,EL,RC,...
+cdr  These will be counted in setamd.f and subprograms
         NRPII   = 0
         NREII   = 0
         NRCXI   = 0
         NRELI   = 0
         NRRCI   = 0
+cdr  number of bgk reactions (nonlinear mode), counted in setamd.f and subprograms
         NRBGI   = 0
+
         NSEPRC  = 0
 
         NREACX  = 0
@@ -1650,6 +1663,7 @@ cdr HYDKIN is offline since early 2018.
 cdr Transform this structure into a more general
 cdr 1D tabular data format.
 cdr Currently anticipated: only reaction rates vs. Te, Ti (H.2).
+! DATA FOR 1D TABULATED A&M ENTRIES (single parameter tables)
           WRITE (13+IFOFF) RP%TAB1D%NTEMPS
           WRITE (13+IFOFF) RP%TAB1D%TEMPS,RP%TAB1D%TAB1D,
 cdr precomputed difference-quotient, for interpolation
@@ -1861,7 +1875,7 @@ c  and:                          NULLIFY REACDAT(IR)%...%ADAS
 c  and:                          NULLIFY REACDAT(IR)%...%LINE
 c  and:                          NULLIFY REACDAT(IR)%...%TAB1D
 c
-c  1) called from READ_PHTDBK
+c  1) called from READ_PHOTDBK
 c  2) called from SLREAC, option "CONST"
 c  3) called from SLREAC, option AMJUEL, HYDHEL, H2VIBR, METHAN, AMMONX
 
@@ -2157,9 +2171,9 @@ c
       RETURN
       END SUBROUTINE EIRENE_SET_REACTION_DATA
 
-CDR  NEXT THREE ROUTINES: PROBABALY NOT NEEDED ?
+CDR  NEXT THREE ROUTINES: PROBABLY NOT NEEDED ?
       FUNCTION EIRENE_IS_RTC_TAB2D (IREAC) RESULT(RES)
-cdr   something special about adas ?  unused !
+cdr  something special about ADAS ?  unused !
 
       INTEGER, INTENT(IN) :: IREAC
       LOGICAL :: RES
@@ -2173,7 +2187,7 @@ cdr   something special about adas ?  unused !
 
 
       FUNCTION EIRENE_IS_RTCEW_TAB2D (IREAC) RESULT(RES)
-cdr   only used for adding/subtracting bremsstrahlung
+cdr only used for adding/subtracting bremsstrahlung ? unused ?
 
       INTEGER, INTENT(IN) :: IREAC
       LOGICAL :: RES
@@ -2341,7 +2355,6 @@ c
         CALL EIRENE_ALLOC_COMXS(1)
         CALL EIRENE_ALLOC_COMXS(2)
       END IF
-
 
       CALL MPI_BCAST (XSTOR,MSTOR1*MSTOR2,MPI_REAL8,
      .                0,MPI_COMM_WORLD,ier)
@@ -2606,7 +2619,7 @@ c  reaction threshold, eV
      .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (REACDAT(IR)%DELP,1,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
-c  max of sigma * v  cm**3/s
+c  max of sigma * v, cm**3/s
         CALL MPI_BCAST (REACDAT(IR)%RTMAX,1,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
 c  collision energy, at which rtmax is taken, eV
@@ -3075,6 +3088,7 @@ cdr     INVALID RP%IFIT
         CALL EIRENE_EXIT_OWN(1) 
       END IF
 
+      CALL EIRENE_CHECK_EXIT
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       RETURN

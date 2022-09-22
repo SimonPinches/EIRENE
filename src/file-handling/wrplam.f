@@ -19,35 +19,32 @@ c  if NLSHRT13=false: wrplam_long and rplam_long are called from
 c                     WRPLAM, RPLAM, resp.
 c
 C
-C  trcfle:  confirm writing on printout on unit IUNOUT
+      SUBROUTINE EIRENE_WRPLAM(TRCFLE,CALLEDFROM)
+cdr called from subr. 'calledfrom'
+C  trcfle:  confirm writing on printout unit IUNOUT
 
-C  iflg:  only for .._LONG version, and there only for RPLAM
-C  IFLG = 0  :  do NOT read COMSOU in call RPLAM_LONG
-c  IFLG > 0  :
-
-cdr  NLSHRT13  :  VIA COMMON CLOGAU. MEANING: write "long vs. short" version of fort.13
+cdr  NLSHRT13 : VIA COMMON CLOGAU. MEANING: write "long" or "short" version of fort.13
 C                 DEFAULT: FALSE,
-cdr  EXCEPT:
-cdr  NLSHRT13  :  SET TRUE IN INFCOP, COUPLE_SOLPS_ITER. REDUCED SIZE FORT 13.
-
-      SUBROUTINE EIRENE_WRPLAM(TRCFLE,IFLG)
+cdr  but, e.g.:
+cdr  NLSHRT13 : SET TRUE IN INFCOP, COUPLE_SOLPS_ITER. REDUCED SIZE FORT 13.
       USE EIRMOD_PARMMOD
-      USE EIRMOD_CLOGAU
+      USE EIRMOD_CLOGAU, ONLY: NLSHRT13
 
       IMPLICIT NONE
-      INTEGER, INTENT(IN) :: IFLG
       LOGICAL, INTENT(IN) :: TRCFLE
+      CHARACTER(*), INTENT(IN) :: CALLEDFROM
 
       IF (NLSHRT13) THEN
-        CALL EIRENE_WRPLAM_SHRT (TRCFLE)
+        CALL EIRENE_WRPLAM_SHRT (TRCFLE,CALLEDFROM)
       ELSE
-        CALL EIRENE_WRPLAM_LONG (TRCFLE,IFLG)
+        CALL EIRENE_WRPLAM_LONG (TRCFLE,CALLEDFROM)
       ENDIF
       END SUBROUTINE EIRENE_WRPLAM
 C
 c.............................................
 
-      SUBROUTINE EIRENE_RPLAM(TRCFLE,IFLG,IRET)
+      SUBROUTINE EIRENE_RPLAM(TRCFLE,IFLG,CALLEDFROM)
+cdr called from subr. 'calledfrom'
 C  TRCFLE:    confirm writing on printout on unit IUNOUT
 C  NLSHRT13: =T: reading only for virt. background species NPLS_FIX+1,NPLS:
 C                call rplam_shrt, allocate plasma_bckgrnd,
@@ -66,21 +63,23 @@ cdr                          This option is similar to the NLSHRT13 mode, but it
 cdr                          all ipls: 1,npls, not just ipls=nfla+1,npls
 
       USE EIRMOD_PARMMOD
-      USE EIRMOD_CLOGAU
+      USE EIRMOD_CLOGAU, ONLY: NLSHRT13
       USE EIRMOD_COMUSR
       USE EIRMOD_CSPEI
       USE EIRMOD_CINIT
 
       IMPLICIT NONE
-      INTEGER, INTENT(IN) :: IFLG
-      INTEGER, INTENT(INOUT) :: IRET
+      INTEGER, INTENT(INOUT) :: IFLG
       LOGICAL, INTENT(IN) :: TRCFLE
+      CHARACTER(*), INTENT(IN) :: CALLEDFROM
       INTEGER :: J
 c.............................................
 
-      IRET = 0
-      IF (NLSHRT13) THEN
-        CALL EIRENE_RPLAM_SHRT (TRCFLE)
+      IF (NLSHRT13) THEN  !dr  similar to RPLAM_LONG(IFLG=10), but for
+cdr                            field species  NLFA+1:NPLS only.
+        CALL EIRENE_RPLAM_SHRT (TRCFLE,CALLEDFROM)
+
+cdr  only species NPLS_FIX+1:NPLS should be affected from RPLAM_SHRT.
         CALL EIRENE_ALLOC_BCKGRND
         TEINTF(1:NRAD) = TEIN(1:NRAD)
         IF (NLMLTI) THEN
@@ -103,7 +102,8 @@ c.............................................
           VZINTF(1,1:NRAD) = VZIN(1,1:NRAD)
         ENDIF
       ELSE
-        CALL EIRENE_RPLAM_LONG (TRCFLE,IFLG,IRET)
+cdr  set pointers teintf,.... only in case iflg=10  (same as nlshrt13?)
+        CALL EIRENE_RPLAM_LONG (TRCFLE,IFLG,CALLEDFROM)
       ENDIF
       RETURN
 

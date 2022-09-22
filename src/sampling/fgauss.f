@@ -13,7 +13,6 @@ C
 
       IMPLICIT NONE
 
-!PB   REAL(DP) :: PI2, ZCOS, ZSIN, ZT, AR, ZZ
       REAL(DP) :: ZCOS, ZSIN, ZT, AR, ZZ
 ctk   REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: JJ

@@ -83,8 +83,8 @@
       
 ! arrays for storing numbers of tallies explicitly switched on or off
 ! allocated in subroutine input      
-      INTEGER, PUBLIC, ALLOCATABLE, SAVE :: IVTLOUT(:), ISTLOUT(:)
-      INTEGER, PUBLIC, SAVE :: NVTLOUT, NSTLOUT
+      INTEGER, PUBLIC, ALLOCATABLE, SAVE :: ITLVOUT(:), ITLSOUT(:)
+      INTEGER, PUBLIC, SAVE :: NTLVOUT, NTLSOUT
 
       INTEGER, PUBLIC, SAVE :: NR1ST_IN, NP2ND_IN, NT3RD_IN, NRTAL_IN,
      .                         NOPTIM_IN, NSMSTRA_IN, NSTRAI_IN, 
@@ -132,6 +132,8 @@
       implicit none
       character(*), intent(in) :: fname
       integer, intent(in) :: iblk, iunout
+      logical :: status_ok
+      character(kind=CK,len=:),allocatable :: error_msg
 
       njs = njs + 1
 
@@ -141,9 +143,12 @@
      .          case_sensitive_keys=.false.,compress_vectors=.false.)
 
       call jtrees(njs)%parse(file=fname, p=ptree(njs)%p)
-      if (jtrees(njs)%failed()) then
+      call jtrees(njs)%check_for_errors(status_ok,error_msg)
+!      if (jtrees(njs)%failed()) then
+      if (.not. status_ok) then
          write (iunout,*) ' EIRENE INPUT FILE ',fname,
      .                    ' COULD NOT BE READ '
+         write(*,*) 'Error: '//error_msg
          call eirene_exit_own(1)
       end if
 

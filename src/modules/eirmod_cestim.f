@@ -175,6 +175,7 @@ c  test particle flow velocity densities
      L LVZDENA, LVZDENM, LVZDENI, LVZDENPH,
 c  parallel (to B field) momentum source tallies
      L LMAPL,  LMMPL,  LMIPL,  LMPHPL,
+c  radiation tallies
      L LRAEL,  LRMEL,  LRIEL
       LOGICAL, PUBLIC, TARGET, SAVE :: LRPHEL
 

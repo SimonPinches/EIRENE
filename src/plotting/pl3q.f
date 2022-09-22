@@ -25,8 +25,8 @@ C
 C
       IF (IO.GE.2) CALL GRNWPN(IO)
       do 200 jj=1,n+1
-        xps(jj)=xp(jj)
-        yps(jj)=yp(jj)
+        xps(jj)=real(xp(jj),sp)
+        yps(jj)=real(yp(jj),sp)
   200 continue
       CALL GRLN (XPS,YPS,N+1)
 C  AUSFUELLEN DES KURVENZUGES MIT FARBE NO. IO

@@ -39,7 +39,8 @@ C
       USE EIRMOD_CTRCEI, ONLY: TRCPLT, TRCGRD, TRCCEN
       USE EIRMOD_COMPRT, ONLY: IATM, IION, IMOL, IPHOT, ISPZ, ISTRA,
      >                         IPSTT, ITYP, IUNOUT, NPANU, RPSTT, WEIGHT
-      USE EIRMOD_COMNNL, ONLY: DTIMV, IPART, IPARTC, IPRNL, IPRNLI,
+      USE EIRMOD_COMNNL, ONLY: FLXCEN, DTIMV, 
+     >                         IPART, IPARTC, IPRNL, IPRNLI,
      >                         NPTST, RPART, RPARTC, RPARTW, TIME0
       USE EIRMOD_COMSOU, ONLY: FLUX, NLSRON, NMINPTS, NPTS, NSTRAI,
      >                         NSRFSI, SORWGT
@@ -114,6 +115,7 @@ C  OLD CENSUS CONTAINS IPRNL ENTRIES.
       ENDIF
 
       FLUX(NSTRAI)=0.
+      FLXCEN=0.
       RPARTW(0)=0.0
       DO 130 ISTRAI=1,NSTRAI
         SGMTOT(ISTRAI)=0.0
@@ -124,6 +126,7 @@ C
 cdr  empty census?
       IF (IPRNL.EQ.0) GOTO 300
 
+C  FIRST SCORE ON CENSUS
       RPSTT(1:NPARTT)=RPART(1:NPARTT,1)
       IPSTT(1:MPARTT)=IPART(1:MPARTT,1)
 
@@ -207,7 +210,7 @@ C   PUT WEIGHT OF CURRENT CENSUS SCORE NPANU ONTO ADDS
           ADDS=ADD
         ENDIF
 
-C   WEIGHT may have been altered. So: redefine entire this component of state vector.
+C   WEIGHT may have been altered, so: redefine entire RPART (play safe)
         RPART(1:NPARTT,I)=RPSTT(1:NPARTT)
   140 CONTINUE
 
@@ -260,7 +263,8 @@ C
         SGMREL=MAX(0._DP,SGMREL-EPS10)*100.
       ENDIF
 C
-      IF (FLUX(NSTRAI).GT.0) THEN
+      IF (FLUX(NSTRAI).GT.0.D0) THEN
+        FLXCEN=FLUX(NSTRAI)
         NSRFSI(NSTRAI)=1
         SORWGT(1,NSTRAI)=1.D0
       ENDIF
@@ -299,7 +303,7 @@ cdr   300 CONTINUE  ! moved up to ensure fort.15 is written.
       CALL EIRENE_MASR2('TIM1, TIM2      ',TIME0,TIME0+DTIMV)
       CALL EIRENE_MASJ1('IPRNL   ',IPRNL)
       WRITE (IUNOUT,*) '"ATOMIC" FLUX AT CENSUS (AMP):'
-      CALL EIRENE_MASR1('FLUX    ',FLUX(NSTRAI))
+      CALL EIRENE_MASR1('FLUX    ',FLXCEN)
       CALL EIRENE_MASR1('+-%     ',SGMREL)
 
       CALL EIRENE_LEER(2)

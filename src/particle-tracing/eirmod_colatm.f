@@ -116,7 +116,6 @@ CDR  check: are the corresponding arrays PATEI,PMLEI, PIOEI real
 CDR         or integer (1/2 particle possible?)
       INTEGER, ALLOCATABLE :: NAMIEI(:),NAMIPI(:)
 
-
 csw add n 2lines
 cdr   INTEGER :: kk,updf,t1
 cdr   real(dp):: sump

@@ -68,9 +68,10 @@ C
      .            EIRENE_ENERGY_RATE_COEFF,
      .            TB, TII,
      .            FP1(6),FP2(6)
+      REAL(DP) :: DENSLIMLOG
       INTEGER :: NSEEL4, NEND, J, KREAD, MODC,  IPLTI
       INTEGER, EXTERNAL :: EIRENE_IDEZ
-      REAL(DP), PARAMETER :: EMINL=-2.3_DP
+      REAL(DP), PARAMETER :: TMINL=-2.3_DP
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt
 
@@ -137,7 +138,7 @@ C 2. RATE COEFFICIENT  (CM**3/S) * TARGET DENSITY (CM**-3)
 C..................................................................
 
       MODC=EIRENE_IDEZ(MODCLF(KK),3,5)
-
+      
       IF (MODC.GE.1.AND.MODC.LE.2) THEN
 
         MODCOL(5,2,IREL)=MODC
@@ -157,8 +158,10 @@ C           NEND=1
             DO 245 J=1,NSBOX
               IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
+! this is another cut-off, at TIIN <=0.1 eV rather than at TVAC = 0.02 eV
+              tii = max(tminl,tii)
               COU = EIRENE_RATE_COEFF(KK,J,TII,0._DP,.TRUE.,0)
-              TABEL3(IREL,J,1)=COU*DIIN(IPL,J)*FACTKK
+              TABEL3(IREL,J,1)=COU*MIN(DENSLIM(IPL),DIIN(IPL,J))*FACTKK
   245       CONTINUE
 
 C  2.C) RATE COEFFICIENT(TI,EBEAM),
@@ -171,14 +174,14 @@ C           NEND=9
           fp1(4:6) = rt%fp1r
           fp2(1:3) = rt%fp2b
           fp2(4:6) = rt%fp2t
+          DENSLIMLOG=LOG(DENSLIM(IPL))
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
-! this is another cut-off, at TIIN <=0.1 eV rather than at TVAC = 0.02 ev
-              tii = max(eminl,tii)
-c old
-c old         CALL EIRENE_PREP_RTCS (KK,3,TII,CF)
-c old
+! this is another cut-off, at TIIN <=0.1 eV rather than at TVAC = 0.02 eV
+cdr  when FP1L asymptotics are properly set, we should not need a cut-off here.
+              tii = max(tminl,tii)
+
               rp => reacdat(KK)%rtc%poly
               call EIRENE_dbl_poly (rp%dblpol,tii,0._dp,cou,cf,
      .               rt%rc1min, rt%rc1max, fp1, rt%jfex1mn, rt%jfex1mx,
@@ -186,18 +189,22 @@ c old
      .               trcamd)
 
               TABEL3(IREL,J,1:9) = CF(1:9)
-              TABEL3(IREL,J,1)=TABEL3(IREL,J,1)+DIINL(IPL,J)+FCTKKL
-            END DO
+              TABEL3(IREL,J,1)=TABEL3(IREL,J,1)+
+     .                    MIN(DENSLIMLOG,DIINL(IPL,J))+FCTKKL
+             END DO
           END IF  ! MODC=1,2
         ELSE ! NOT SUFFICIENT STORAGE ON TABEL3
 C  STORAGE SAVE MODE NOT READY FOR THIS OPTION MODC=1 OR MODC=2 ??
 !PB       GOTO 995
-          write (iunout,*) ' reaction kk = ',kk, ' modc =',modc
 
         ENDIF
-      ELSEIF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.3) THEN
+
 C  2.D) RATE COEFFICIENT(TI=TE, NE=NI ?, E0 FIXED, E.G. E0=0.)
 C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
+cdr     V0 velocity-independent rate coefficient
+      ELSEIF (MODC.EQ.3) THEN
+cdr unfinished option....extrapolation not done.
+C       NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
 
         MODCOL(5,2,IREL)=1 !  indicate: rate coefficient as fct. of local plasma conditions only
         FCTKKL=LOG(FACTKK)
@@ -205,7 +212,10 @@ C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
 
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
-            COU = EIRENE_RATE_COEFF(KK,J,TEINL(J),PLS(J),.FALSE.,1)
+            TII=TIINL(IPLTI,J)+ADDTL
+! this is another cut-off, at TIIN <=0.1 eV rather than at TVAC = 0.02 eV
+            tii = max(tminl,tii)
+            COU = EIRENE_RATE_COEFF(KK,J,TII,PLS(J),.FALSE.,1)
             TB = COU + FCTKKL
             IF (IFTFLG(KK,2) < 100) TB = TB + DIINL(IPL,J)
             TB=MAX(-100._DP,TB)
@@ -350,7 +360,7 @@ C  ENERGY RATE COEFFICIENT(TI,EBEAM)
               DO 257 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
-                tii = max(eminl,tii)
+                tii = max(tminl,tii)
 c old
 c old           CALL EIRENE_PREP_RTCS (KREAD,5,TII,CF)
 c old

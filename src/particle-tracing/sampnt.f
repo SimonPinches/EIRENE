@@ -15,7 +15,7 @@ C     SUBROUTINE SAMSRF
 C     SUBROUTINE SAMVOL
 C
       SUBROUTINE EIRENE_SAMPNT (NLPT,TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,
-     .                        EFWL,SHWL,WEISPZ)
+     .                        EFWL,SHWL,ZIWL,WEISPZ)
 
 cdr  point source. identify the starting point coordinates (from IPOINT)
 c  input:
@@ -38,7 +38,8 @@ c    ISTRA         (no. of stratum), via Common
       IMPLICIT NONE
 
       REAL(DP), INTENT(OUT) :: TEWL, SHWL, TIWL(*), DIWL(*), EFWL(*),
-     .                         VXWL(*), VYWL(*), VZWL(*), WEISPZ(*)
+     .                         VXWL(*), VYWL(*), VZWL(*), ZIWL(*), 
+     .                         WEISPZ(*)
       INTEGER, INTENT(IN) :: NLPT
       REAL(DP) :: X01, CNORM, WINK
       INTEGER :: NT, EIRENE_LEARCA, EIRENE_LEARC2,
@@ -52,7 +53,8 @@ C
      .              SORAD3(NLPT,ISTRA),SORAD4(NLPT,ISTRA),
      .              SORAD5(NLPT,ISTRA),SORAD6(NLPT,ISTRA),
      .              IRUSR,IPUSR,ITUSR,IAUSR,IBUSR,
-     .              TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ)
+     .              TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,ZIWL,
+     .              WEISPZ)
       ELSE
         X0=SORAD1(IPOINT,ISTRA)
         Y0=SORAD2(IPOINT,ISTRA)
@@ -87,7 +89,7 @@ C  find nrcell, ipolg automatically.
         case (5)
           NRCELL=EIRENE_LEARCT(X0,Y0,Z0)
         case (10)
-          nrcell=EIRENE_leausr(x0,y0,z0)
+          NRCELL=EIRENE_LEAUSR(x0,y0,z0)
         end select
         IF (NRCELL.GT.0.AND.NRCELL.LT.NR1ST) then
           NACELL=0
@@ -200,6 +202,11 @@ c
           VZWL(JPLS)=VZIN(IPLSV,NCELL)
         END IF
         DIWL(JPLS)=DIIN(JPLS,NCELL)
+        IF (ZIIN(JPLS,NCELL).NE.ZVAC) THEN
+          ZIWL(JPLS)=ZIIN(JPLS,NCELL)
+        ELSE
+          ZIWL(JPLS)=DBLE(NCHRGP(JPLS))
+        END IF
    13 CONTINUE
 C
       DO 20 JSPZ=1,NSPZ

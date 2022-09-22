@@ -113,8 +113,10 @@ cdr
      >    , ONLY : EIRENE_BROADCAST_COMNNL
       USE EIRMOD_PHOTON
      >    , ONLY : EIRENE_BROADCAST_PHOTON
+      USE EIRMOD_CREF
+     >    , ONLY : EIRENE_BROADCAST_CREF
       USE EIRMOD_TIMEA, ONLY : EIRENE_TIMEA0_OC
-      USE EIRMOD_CPES, ONLY : MY_PE
+      USE EIRMOD_CPES, ONLY : MY_PE, NLIDENT
       USE EIRMOD_MPI
       IMPLICIT NONE
       INTEGER :: IER
@@ -155,12 +157,17 @@ cdr
       CALL EIRENE_BROADCAST_CTEXT(MY_PE)
       CALL EIRENE_BROADCAST_CTRCEI(MY_PE)
 
+      CALL MPI_BCAST (NLIDENT,1,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
+
 cdr  broadcast arrays for interfacing with B2/B2.5 codes family
       CALL EIRENE_BROADCAST_CCOUPL(MY_PE)
 
       CALL EIRENE_BROADCAST_COMNNL(MY_PE)
 
       CALL EIRENE_BROADCAST_USR(MY_PE)
+
+      CALL EIRENE_BROADCAST_PHOTON(MY_PE)
+      CALL EIRENE_BROADCAST_CREF(MY_PE)
 
 c     ------------------------------------------------------------     c
 c     for the trace ion module

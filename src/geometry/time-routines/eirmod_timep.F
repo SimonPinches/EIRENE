@@ -174,8 +174,8 @@ C       NCOUT=NCOUT
         NTCELL=NCOUNT(1)
         IF (NCOUT.GT.1) IPOLGN=0
 #ifdef TRACE
-        IF (NLTRC)
 !$OMP CRITICAL
+        IF (NLTRC)
      .    WRITE (iunout,*) 'because NLTOR/NLTRA: ZRAD,NTCELL ',
      .                                           ZRAD,NTCELL
 !$OMP END CRITICAL

@@ -51,7 +51,7 @@ csw
 
 c read in plasma data from fort.31 ?
       if (.not.allocated(plas)) then
-        allocate(plas(11,nrad,0:npls))
+        allocate(plas(12,nrad,0:npls))
         plas=0.
 
         ll=len_trim(casename)
@@ -227,11 +227,11 @@ c      EFIN: indx=10+1*NPLS+NPLSTI+3*NPLSV
 ! psi
          pro(1:n) = plas(6,1:n,0)
 
-c      ZI for charge boundling not yet implemented
-c      elseif (indx == 12+1*NPLS+NPLSTI+3*NPLSV) then
+c      ZI for charge bundling
+      elseif (indx == 12+1*NPLS+NPLSTI+3*NPLSV) then
 c! zi
-c         pro(1:n) = plas(11,1:n,ipls)
-c
+         pro(1:n) = plas(11,1:n,ipls)
+
       else
          write (iunout,*) ' prousr: no data provided for index ',indx
          pro(1:n) = 0._dp

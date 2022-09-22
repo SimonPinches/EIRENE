@@ -55,10 +55,13 @@ cdr  NLPRCS should also become POINTER, belongs to NLPRCA; ..., cond exp. est.
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE ::
      L NLPRCS(:)  ! indicate additional surfaces as attractors for cond. exp. est.
 
-cym PRIVATE-> PUBLIV      
+cym PRIVATE-> PUBLIC      
       INTEGER, PUBLIC, SAVE ::
      I NCMSPL, MCMSPL, KCMSPL
 
+!csw 20.01.11: SOLPS5.2 legacy code, SOURCE CORRECTION DATA
+      LOGICAL, PUBLIC, ALLOCATABLE, SAVE ::
+     L NLPBLS(:,:)
 !$OMP  THREADPRIVATE(WMINV,WMINS,WMINC,WMINL,SPLPAR,RNUMB,PRMSPL,
 !$OMP& RSPLST,MAXLEV,NLEVEL,MAXRAD,MAXPOL,MAXTOR,MAXADD,NODES,NSSPL,
 !$OMP& ISPLST,

@@ -147,6 +147,7 @@ C
 C     Following lines added for reinitialisation of eirene (DMH)
 
       SUBROUTINE EIRENE_SIGHE_REINIT
+      IMPLICIT NONE
       ISTOLD = -1
       ITROLD = -1
       PENOLD = -1._DP

@@ -66,7 +66,8 @@ C
       REAL(DP), INTENT(IN) :: WV
       INTEGER, INTENT(IN) :: NPBGK
       REAL(DP) :: DIST, WTRV, WTRVX, WTRVY, WTRVZ
-      INTEGER :: I, NMTSP, IUPD2, IUPD3, IRD, NSBGK, IBGK_SP,
+      INTEGER :: I, NMTSP, IUPD2, IUPD3, 
+     .           IRD, NSBGK, IBGK_SP,
      .           IML, IIO, IUPD1, ITP, ISP, IAT, IRDO
       CHARACTER(8) :: TXT
 

@@ -132,8 +132,8 @@ C  INNERHALB DES BEREICHES T1----T2, FUER SHNITT-OPTION
           ENDIF
           IF (IO.GE.2) CALL GRNWPN(IO)
           do 7 jj=1,na+1
-            xps(jj)=xp(jj)
-            yps(jj)=yp(jj)
+            xps(jj)=real(xp(jj),sp)
+            yps(jj)=real(yp(jj),sp)
     7     continue
           CALL GRLN (XPS,YPS,NA+1)
 C  FAERBE DIE ENDEN DES ZYLINDERS EIN
@@ -199,8 +199,8 @@ C
    14   CONTINUE
         IF (JP.GT.1) THEN
           do 9 jj=1,jp
-            xps(jj)=xp(jj)
-            yps(jj)=yp(jj)
+            xps(jj)=real(xp(jj),sp)
+            yps(jj)=real(yp(jj),sp)
     9     continue
           CALL GRLN (XPS,YPS,JP)
         endif

@@ -15,15 +15,11 @@ C  on unit 13.
 C
 c  at subroutine RPLAM:
 C  read plasma (background) data, source distribution and atomic data
-C  from unit 13.
+C  from unit 13. And: allocate target: plasma_bckgrnd
 C
 C  trcfle:  confirm writing on printout on unit IUNOUT
-C  IFLGIN  :  only for  RPLAM:
-C           /= 0   do not read primary source data COMSOU
-C            = 0   do also read data from COMSOU
-C            = 10  read only plasma background
 
-      SUBROUTINE EIRENE_WRPLAM_LONG(TRCFLE,IFLGIN)
+      SUBROUTINE EIRENE_WRPLAM_LONG(TRCFLE,CALLEDFROM)
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -33,14 +29,13 @@ C            = 10  read only plasma background
       USE EIRMOD_CSTEP
       USE EIRMOD_COMXS
       IMPLICIT NONE
-      INTEGER, INTENT(IN) :: IFLGIN
+
       LOGICAL TRCFLE
-cdr  for testing: are identical input tallies active in write and read ?
-      INTEGER :: IFLG
+      CHARACTER(*) CALLEDFROM
 C
-      IFLG = IFLGIN 
       OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 13+ifoff
+      write (iunout,*) 'WRPLAM_LONG called from ',calledfrom
 #ifdef CHECKBIN
       OPEN (UNIT=113,ACCESS='SEQUENTIAL',FORM='FORMATTED')
       REWIND 113
@@ -110,14 +105,18 @@ C  LUSR, LOGICAL
      L           LGVAC,LSMOPRO
 #endif
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: module EIRMOD_COMUSR.f '
+
+cdr  Write A&M data. The routines WRITE_CMDTA, WRITE_CMAMF are contained
+cdr  in module COMXS
       CALL EIRENE_WRITE_CMDTA
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: RCMDTA,ICMDTA'
       CALL EIRENE_WRITE_CMAMF
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: RCMAMF,ICMAMF'
+
       WRITE (13+ifoff) RCZT1,RCZT2,ZT1,ZRG
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: RCZT1,RCZT2,ZT1,ZRG'
 
-c  write primary source parameters
+c  write primary source parameters, step functions, etc.
       WRITE (13+ifoff) RCMSOU,SREC,EIO,EEL,
      .           ICMSOU,INGRDA,INGRDE,NSTRAI,
      .           LCMSOU,NLSYMP,NLSYMT
@@ -151,11 +150,36 @@ c  write primary source parameters
 #ifdef CHECKBIN
       CLOSE (UNIT=113)
 #endif
-      END
+      RETURN
+      END SUBROUTINE EIRENE_WRPLAM_LONG
 C
 c...............................................................
 C
-      SUBROUTINE EIRENE_RPLAM_LONG(TRCFLE,IFLGIN,IRET)
+      SUBROUTINE EIRENE_RPLAM_LONG(TRCFLE,IFLG,CALLEDFROM)
+cdr  feb 20: commented, and: removed: argument IRET ==  IO
+cdr
+C  IFLG  :  only for  RPLAM:
+C            = 0   read background data and profiles (COMUSR)
+C                  and read A&M data (COMXS)
+C                  and primary soure data (COMSOU)
+C            > 0   same, but do not read primary source data COMSOU
+C            < 0   ...
+cdr iflag=10:  something special, called from
+cdr
+cdr
+cdr
+C            = 10  read only plasma background (PLSTLS part of COMUSR)
+C                  do not read atomic rates COMXS,
+C                  do not read primary source data COMSOU
+C                  do not set PLSTLS target,
+C                  but
+C                  set pointers DIINTF,.... for PLASMA_BCKGRND data structure.
+
+cdr  Reading COMXS, step fct. COMSOU and setting pointers DIINTF excludes each other ! WHY?
+cdr  only iflg=10 or iflg/=10 is used. In former case: no reading of COMSOU, COMXS,
+cdr                                    although we are in ..._long.f
+cdr  also strange: intlopts(2):  what is special about that? livtali instead?
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CINIT, ONLY: FORT, FORT_LC
@@ -167,45 +191,44 @@ C
       USE EIRMOD_COMXS
       USE EIRMOD_CSPEI
       IMPLICIT NONE
-      INTEGER, INTENT(IN) :: IFLGIN
-      INTEGER, INTENT(INOUT) :: IRET
+
+      INTEGER, INTENT(INOUT) :: IFLG
       LOGICAL TRCFLE
+      CHARACTER(*) CALLEDFROM
+
 cdr, jan 2019
-      INTEGER :: NFRS(NTALI), NAD(NTALI), IO, I, IFLG
+      INTEGER :: NFRS(NTALI), NAD(NTALI), IO, I
       LOGICAL :: LIVT(NTALI)
       REAL(DP), ALLOCATABLE :: PTL(:,:)
       CHARACTER*8 FILENAME
       CHARACTER*3 FILENUMBER
       LOGICAL EX
 
-      IFLG = IFLGIN
-      IRET = 0
       IF (.NOT.ALLOCATED(PTL))
      .  ALLOCATE(PTL(size(PLSTLS,1),size(PLSTLS,2)))
+      if (13+ifoff.ge.100) then
       WRITE(FILENUMBER,'(I3)') 13+ifoff
-      FILENAME = FORT_LC//adjustl(trim(FILENUMBER))
+      else
+        WRITE(FILENUMBER,'(I2)') 13+ifoff
+      end if
+      FILENAME = FORT_LC//trim(FILENUMBER)
       INQUIRE(file=trim(FILENAME),exist=EX)
       IF (IFLG == 10 .or. .not.EX) CALL EIRENE_ALLOC_BCKGRND
       IF (.not.EX) THEN
         DEALLOCATE(PTL)
-        IRET = -1
         RETURN
       END IF
 
       OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 13+ifoff
 
+      write (iunout,*) 'RPLAM_LONG called from ',calledfrom
+
       READ (13+ifoff,IOSTAT=IO) LIVT
-      IF (TRCFLE) WRITE (iunout,*) 'READ 13: LIVTALI '
       IF (IO /= 0) THEN
-        DEALLOCATE (PTL)
-        IF (IFLG == 10) THEN  ! plasma_bckground = 0 in EIRENE_ALLOC_BCKGRND
-          IRET = IO
-          RETURN
-        ELSE 
-          GOTO 990
-        END IF
+        GOTO 990
       END IF
+      IF (TRCFLE) WRITE (iunout,*) 'READ 13: LIVTALI '
 c   verify: same active tallies as in previous write?
       DO I=1, NTALI
         IF ((LIVTALI(I).AND.LIVT(I)).OR.
@@ -215,30 +238,54 @@ c   verify: same active tallies as in previous write?
           GOTO 991
         END IF
       END DO
+
       READ (13+ifoff,IOSTAT=IO) NFRS, NAD
       IF (TRCFLE) WRITE (iunout,*) 'READ 13: NFRSTP, NADDP '
       IF (IO /= 0) GOTO 990
       IF (ANY(NFRSTP(1:NTALI) /= NFRS(1:NTALI))) GOTO 992
       IF (ANY(NADDP(1:NTALI) /= NAD(1:NTALI))) GOTO 993
 
-!PB      READ (13+ifoff,IOSTAT=IO) PLSTLS
+cdr next: read background input "plasma" tallies PLSTLS
+      IF (.NOT.ALLOCATED(PTL))
+     . ALLOCATE(PTL(size(PLSTLS,1),size(PLSTLS,2)))
       READ (13+ifoff,IOSTAT=IO) PTL
       IF (TRCFLE) WRITE (iunout,*) 'READ 13: input tallies PLSTLS '
-      IF (IO /= 0) GOTO 990
+      IF (IO /= 0) THEN
+        DEALLOCATE (PTL)
+        GOTO 990
+      ENDIF
       IF (IFLG == 10) THEN
+cdr set pointers (only for tallies of nlshrt13 but in rplm_long?)
+        CALL EIRENE_ALLOC_BCKGRND
         TEINTF(1:NRAD) = PTL(NADDP(1)+1,1:NRAD)
+cdr to be checked. intlopts should not be used after input.
+cdr only livtali and lsmopro.
+cdr further: intlopts(2)< 0 is prohibited anyway?
         IF (INTLOPTS(2) >= 0) 
      .    TIINTF(1:NPLSTI,1:NRAD) = PTL(NADDP(2)+1:NADDP(3),1:NRAD)       
+cdr     DEINTF...
         DIINTF(1:NPLS,1:NRAD) = PTL(NADDP(4)+1:NADDP(5),1:NRAD)
         VXINTF(1:NPLSV,1:NRAD) = PTL(NADDP(5)+1:NADDP(6),1:NRAD)
         VYINTF(1:NPLSV,1:NRAD) = PTL(NADDP(6)+1:NADDP(7),1:NRAD)
         VZINTF(1:NPLSV,1:NRAD) = PTL(NADDP(7)+1:NADDP(8),1:NRAD)
         DEALLOCATE (PTL)
         RETURN
+        if (trcfle) then
+          write (iunout,*) 'set pointers to plasma_backgrnd fields'
+          write (iunout,*) 'called rplam_long. But iflg=10'
+          write (iunout,*) 'Rest of comusr, as well as comxs, comsou:'
+          write (iunout,*) 'is not read.'
+        endif
+        RETURN  ! this seems to be acting a bit like rplam_shrt. No A&M data,
+cdr               and no primary source data are read.
+cdr               But we are in rplam_long
+cdr               So this is for field particles 1:npls, not only for npls_fix+1:npls
       ELSE
+cdr set full plasma background data structure PLSTLS;
+cdr     but no pointers DIINTF... to target PLASMA_BCKGRND
         PLSTLS = PTL
-        DEALLOCATE (PTL)
       END IF
+      DEALLOCATE (PTL)
 
       READ (13+ifoff,IOSTAT=IO)
 C  REAL
@@ -262,6 +309,9 @@ C  LUSR, LOGICAL
      L           LGVAC,LSMOPRO
       IF (TRCFLE) WRITE (iunout,*) 'READ 13: module EIRMOD_COMUSR.f '
       IF (IO /= 0) GOTO 990
+
+cdr  Read A&M data. The routines READ_CMDTA, READ_CMAMF are contained
+cdr  in module COMXS
       CALL EIRENE_READ_CMDTA
       IF (TRCFLE) WRITE (iunout,*) 'READ 13: RCMDTA,ICMDTA'
       CALL EIRENE_READ_CMAMF
@@ -272,7 +322,7 @@ C  LUSR, LOGICAL
       IF (IO /= 0) GOTO 990
 
       IF (IFLG == 0) THEN
-c  read primary source parameters
+c  read primary source parameters as well, step functions, etc.
         READ (13+ifoff,IOSTAT=IO) RCMSOU,SREC,EIO,EEL,
      .            ICMSOU,INGRDA,INGRDE,NSTRAI,
      .            LCMSOU,NLSYMP,NLSYMT
@@ -292,13 +342,17 @@ c  read primary source parameters
      .   WRITE (iunout,*) 'SOURCE DATA NOT READ FROM ', FORT, '13'
       END IF
 
-      IRET = IO
       CLOSE (UNIT=13+ifoff)
       RETURN
 
  990  CONTINUE
-      WRITE (IUNOUT,*) ' ERROR READING FILE '//FORT//'13 '
-      CALL EIRENE_EXIT_OWN(1)
+      WRITE (IUNOUT,*) ' RPLAM_LONG: ERROR READING FILE '//FORT//'13'
+c     CALL EIRENE_EXIT_OWN(1)
+      IFLG=-1  ! Try to indicate to calling routine: fort.13 not found.
+c                Then there we may choose to write a "default" fort.13
+c                for an initial iteration step.
+      CLOSE (UNIT=13+ifoff)
+      return
  991  CONTINUE
       WRITE (IUNOUT,*) ' AVAILABLE INPUT TALLIES ARE DIFFERENT FROM',
      .                 ' PRIOR JOB WHICH WROTE '//FORT//'13 '
@@ -314,4 +368,4 @@ c  read primary source parameters
      .                 ' PRIOR JOB WHICH WROTE '//FORT//'13 '
       CALL EIRENE_EXIT_OWN(1)
 
-      END
+      END SUBROUTINE EIRENE_RPLAM_LONG

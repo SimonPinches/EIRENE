@@ -71,7 +71,7 @@ C
           ENDIF
    10   CONTINUE
       ELSEIF (RL.GT.-10.) THEN
-        ILN=-RL
+        ILN=-INT(RL)
         DO 20 I=1,ILN
           IP=I+1
           DO 21 J=IP,ILN

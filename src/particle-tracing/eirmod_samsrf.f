@@ -41,10 +41,10 @@ c  eirene_samsf2:  deallocate temporary arrays
      .        ALEFT(:,:,:), BRGHT(:,:,:), XI(:,:,:), XE(:,:,:)
       REAL(DP), SAVE :: FF, VX,VY,VZ,XC,YC,ZC
       INTEGER, ALLOCATABLE, SAVE :: INDTEC(:,:)
-      INTEGER, SAVE :: ISTEP_SPEZ, ISTEP, IS1, IPLSTI, IPLSV, ITRI
+      INTEGER, SAVE :: ISTEP_SPEZ, ISTEP, IS1, IPLSTI, IPLSV
 
 !$OMP THREADPRIVATE(FF,VX,VY,VZ,XC,YC,ZC,
-!$OMP& ISTEP_SPEZ,ISTEP,IS1,IPLSTI,IPLSV,ITRI)
+!$OMP& ISTEP_SPEZ,ISTEP,IS1,IPLSTI,IPLSV)
 
       CONTAINS
 
@@ -81,17 +81,17 @@ C  INITIALIZE DATA FOR SURFACE SAMPLING FOR STRATUM NO. ISTRAI
 C
       IMPLICIT NONE
 
-cym variable defined in the module removed from the lis
+cym variable defined in the module removed from the list
       REAL(DP) :: TORL(NSTEP,NGITT), FL, EIRENE_STEP, GAMMA, CUR,
      .            RANDIF,
-     .            DELR, TESH, CTETHA, CS, EIRENE_STEP0
+     .            DELR, TESH, CTHETA, DELRR, CS, EIRENE_STEP0
 cym end
       REAL(DP):: FLX(NPLS),EKFLX(NPLS),ESHFLX(NPLS),
-     .           DISH(NPLS),VPSH(NPLS)
+     .           DISH(NPLS),VPSH(NPLS),ZISH(NPLS)
       INTEGER :: ISTRAI, IERROR, ISRFS, ISOR, ISORFL, INDSRF, ISTR, ISR, 
-     .           NL3J, NL2J, NL1J, IP, ISTS, IT, KAN, JPLS,
-     .           KEN, K, NBIN, NSMX, IPL, NANZ, IPLSD(NPLS), IS, 
-     .           ISGRD1, IS2, ISGRD2, ITRI, ITET,
+     .           NL3J, NL2J, NL1J, IP, ISTS, IT, KAN, JPLS, ITET,
+     .           KEN, K, NBIN, NSMX, IPL, NANZ, IPLSD(NPLS), IS, ITRI, 
+     .           ISGRD1, IS2, ISGRD2,
      .           ISGRD3, INS
       INTEGER, EXTERNAL :: EIRENE_IDEZ
 cym      REAL(DP), EXTERNAL :: EIRENE_SHEATH
@@ -103,11 +103,24 @@ cym      REAL(DP), EXTERNAL :: EIRENE_SHEATH
       IERROR=0
 
       IF (.NOT.ALLOCATED(INDTEC)) THEN
+#ifdef F2003
         ALLOCATE (INDTEC(3*NSRFS,NSTRA), SOURCE = 0)
         ALLOCATE (ALEFT(3,NSRFS,NSTRA), SOURCE = 0._DP)
         ALLOCATE (BRGHT(3,NSRFS,NSTRA), SOURCE = 0._DP)
         ALLOCATE (XI(3,NSRFS,NSTRA), SOURCE = 0._DP)
         ALLOCATE (XE(3,NSRFS,NSTRA), SOURCE = 0._DP)
+#else
+        ALLOCATE (INDTEC(3*NSRFS,NSTRA))
+        ALLOCATE (ALEFT(3,NSRFS,NSTRA))
+        ALLOCATE (BRGHT(3,NSRFS,NSTRA))
+        ALLOCATE (XI(3,NSRFS,NSTRA))
+        ALLOCATE (XE(3,NSRFS,NSTRA))
+        INDTEC = 0
+        ALEFT = 0._DP
+        BRGHT = 0._DP
+        XI = 0._DP
+        XE = 0._DP
+#endif
       END IF
 C
 C  LOOP OVER SOURCE SURFACES: ISRFS
@@ -269,6 +282,14 @@ C
               ENDDO
               NBIN=NR1ST
             case (2:3)
+cdr May 2020 to be done:
+cdr Possible conflict here:  levgeo=2, nlcrc, then: XPOL,YPOL and BGLP may not exist.
+cdr The y-surface is: pol. angle=const.
+cdr Furthermore: we assume here that the "radial surface" is normal to the
+cdr plasma flow direction, i.e. plasma flows in y-z-plane only.
+cdr Therefore here no projection of target surface to flux tube is done.
+cdr For inclinded targets (e.g. levgeo=4) this can be different.
+cdr Generally: what about pitch ? Also needed?
               KAN=1
               KEN=NR1STM
               DO K=1,NR1STM
@@ -278,11 +299,21 @@ C
                 IPSTEP(ISTEP,K)=IP
                 IF (ISORFL == 1) IPSTEP(ISTEP,K)=IP-1
                 ITSTEP(ISTEP,K)=IT
-                RRSTEP(ISTEP,K)=BGLP(K,IP)
+cdr may 2020
+                if (levgeo.eq.2 .and. nlcrc) then
+                  RRSTEP(ISTEP,K)=RSURF(K)
+                else
+                  RRSTEP(ISTEP,K)=BGLP(K,IP)
+                endif
                 IF (NLTRZ) THEN
                   TORL(ISTEP,K)=ZDF
                 ELSEIF (NLTRA.OR.NLTRT) THEN
-                  TORL(ISTEP,K)=(XPOL(K+1,IP)+XPOL(K,IP))/2._DP
+cdr may 2020
+                  IF (levgeo.eq.2 .and. NLCRC) THEN
+                    TORL(ISTEP,K)=(RSURF(K+1)+RSURF(K))/2._DP
+                  ELSE
+                    TORL(ISTEP,K)=(XPOL(K+1,IP)+XPOL(K,IP))/2._DP
+                  ENDIF
                   TORL(ISTEP,K)=TORL(ISTEP,K)*2._DP*PIA
                 ENDIF
               ENDDO
@@ -306,13 +337,21 @@ C  TRIANGULAR GRID. RRSURF IS INTEGRATED ALONG A SET OF TRIANGLE SIDES.
                     IBSTEP(ISTEP,K)=1
 !pb  projection to B field switched off!!!
 !pb  to allow for step functions on surfaces perpendicular to magnetic field
-!pb                    BABS=SQRT(BXIN(ITRI)**2+BYIN(ITRI)**2+BZIN(ITRI)**2)
-!pb                    CTETHA=ABS((PTRIX(IS,ITRI)*BXIN(ITRI) +
+cdr  ??
+!pb                 BABS=SQRT(BXIN(ITRI)**2+BYIN(ITRI)**2+BZIN(ITRI)**2)
+!pb                 CTHETA=ABS((PTRIX(IS,ITRI)*BXIN(ITRI) +
 !pb     .                          PTRIY(IS,ITRI)*BYIN(ITRI))/BABS)
-                    CTETHA = 1._DP
-                    RRSTEP(ISTEP,K+1)=RRSTEP(ISTEP,K) + CTETHA*SQRT(
+                    CTHETA = 1._DP
+cdr  May 2020:  I do not think that is is correct.
+cdr  theta is the angle between parallel (to B) plasma flux and the surface normal.
+cdr  in levgeo=4 this angle can be nonzero, i.e. cos(theta) ne.1., even
+cdr  ctheta=0 (on surfaces parallel to B) is possible.
+
+                    DELRR=SQRT(
      .              (XTRIAN(NECKE(IS,ITRI))-XTRIAN(NECKE(IS1,ITRI)))**2+
      .              (YTRIAN(NECKE(IS,ITRI))-YTRIAN(NECKE(IS1,ITRI)))**2)
+
+                    RRSTEP(ISTEP,K+1)=RRSTEP(ISTEP,K) + CTHETA*DELRR
                     IF (NLTRZ) THEN
                       TORL(ISTEP,K)=ZDF
                     ELSEIF (NLTRA.OR.NLTRT) THEN
@@ -398,6 +437,11 @@ c    set drift velocities at cell center
                   VZSTEP(IPLSV,ISTEP,K)=VZIN(IPLSV,NCELL)
                 END IF
                 DISTEP(IPLS,ISTEP,K)=DIIN(IPLS,NCELL)
+                IF (ZIIN(IPLS,NCELL).NE.ZVAC) THEN
+                  ZISTEP(IPLS,ISTEP,K)=ZIIN(IPLS,NCELL)
+                ELSE
+                  ZISTEP(IPLS,ISTEP,K)=DBLE(NCHRGP(IPLS))
+                END IF
                 CS=CVEL2A*SQRT((TIIN(IPLSTI,NCELL)+TEIN(NCELL))/
      .             RMASSP(IPLS))
                 FF=ELCHA*CS
@@ -472,7 +516,8 @@ C  IDENTIFY THOSE BULK SPECIES WITH NONZERO FLUX
 c  sheath factor given on step function shstep along target?
               IF (SHSTEP(ISTEP,K) > 0) THEN
                 ESHFLX(IPLS)=ESHFLX(IPLS)+
-     .               FF*SHSTEP(ISTEP,K)*TESTEP(ISTEP,K)*NCHRGP(IPLS)
+     .               FF*SHSTEP(ISTEP,K)*TESTEP(ISTEP,K)*
+     .               ZISTEP(IPLS,ISTEP,K)
               ELSE
 c  employ default eirene sheath model.
 c    to be done. plasma flow velocity v..step should first be projected
@@ -487,11 +532,12 @@ CDR  THIS NEXT LOOP CAN GO OUT: IT IS NEEDED ONLY ONCE, NOT FOR EACH IPLS.
      .                         +VYSTEP(IPLSV,ISTEP,K)**2
      .                         +VZSTEP(IPLSV,ISTEP,K)**2)
                   DISH(IP) = DISTEP(IP,ISTEP,K)
+                  ZISH(IP) = ZISTEP(IP,ISTEP,K)
                 END DO
 CDR
                 ESHFLX(IPLS)=ESHFLX(IPLS)+
-     .             FF*NCHRGP(IPLS)*EIRENE_SHEATH(TESH,DISH,VPSH,
-     .                              NCHRGP,GAMMA,CUR,NPLSI,INDSRF)
+     .             FF*ZISH(IPLS)*EIRENE_SHEATH(TESH,DISH,VPSH,
+     .                              ZISH,GAMMA,CUR,NPLSI,INDSRF)
               END IF
             ENDDO  ! IPLS
           ENDDO
@@ -776,10 +822,11 @@ C
       END SUBROUTINE EIRENE_SAMSF0
 C
       SUBROUTINE EIRENE_SAMSF1
-     .      (NLSF,TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ)
+     .      (NLSF,TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,ZIWL,WEISPZ)
       IMPLICIT NONE
       REAL(DP), INTENT(OUT) :: TEWL, SHWL, VXWL(*), VYWL(*), VZWL(*),
-     .                         TIWL(*), DIWL(*), EFWL(*), WEISPZ(*)
+     .                         TIWL(*), DIWL(*), EFWL(*), WEISPZ(*),
+     .                         ZIWL(*)
       INTEGER, INTENT(IN) :: NLSF
       REAL(DP) :: ZZ(3)
       REAL(DP) :: X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3, ELLZZ1, EP1ZZ1,
@@ -789,9 +836,9 @@ C
      .          RNF, ZH, DELTA, ZM, XLAMDA,
      .          EIRENE_STEP1
       INTEGER :: ISID, IDUM, NDUM, EIRENE_LEARC2, NT,
-     .           IEN, IAN,
+     .           IEN, IAN, ITRI, ITET,
      .           EIRENE_LEARCA, 
-     .           ICOUNT, IPLG, I, ILTR, IAUSR, ITRI, ITET,
+     .           ICOUNT, IPLG, I, ILTR, IAUSR,
      .           IBUSR, IRUSR, IPUSR, ITUSR, IK, J, JCALC, IINDEX,
      .           JPLS, JSPZ
       LOGICAL :: LOGTST
@@ -822,7 +869,8 @@ C
      .              SORAD3(NLSF,ISTRA),SORAD4(NLSF,ISTRA),
      .              SORAD5(NLSF,ISTRA),SORAD6(NLSF,ISTRA),
      .              IRUSR,IPUSR,ITUSR,IAUSR,IBUSR,
-     .              TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ)
+     .              TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,ZIWL,
+     .              WEISPZ)
         ISTEP=-1
         ZZ(1)=X0
         ZZ(2)=Y0
@@ -946,7 +994,7 @@ C  SECOND ORDER IN X
                   WRITE (IUNOUT,*) 'PROBABLY ILL-DEFINED SURFACE '
                   WRITE (IUNOUT,*) 'SAMPLING, MASURF = ',MASURF
                   LGPART=.FALSE.
-                  RETURN
+                  GOTO 998
                 ENDIF
               ENDIF
             ELSEIF (ABS(P).GT.EPS12) THEN
@@ -966,7 +1014,7 @@ C  CARRY OUT RANGE TEST FOR X0?
             WRITE (iunout,*)
      .        'WARNING FROM SAMSRF FROM X0TEST, ICOUNT=1000 '
             LGPART=.FALSE.
-            RETURN
+            GOTO 998
           ENDIF
 
         ELSEIF (JCALC.EQ.2) THEN
@@ -1013,7 +1061,7 @@ C  SECOND ORDER IN Y
                   WRITE (IUNOUT,*) 'PROBABLY ILL-DEFINED SURFACE '
                   WRITE (IUNOUT,*) 'SAMPLING, MASURF = ',MASURF
                   LGPART=.FALSE.
-                  RETURN
+                  GOTO 998
                 ENDIF
               ENDIF
             ELSEIF (ABS(P).GT.EPS12) THEN
@@ -1033,7 +1081,7 @@ C  CARRY OUT RANGE TEST FOR Y0?
             WRITE (iunout,*)
      .        'WARNING FROM SAMSRF FROM Y0TEST, ICOUNT=1000 '
             LGPART=.FALSE.
-            RETURN
+            GOTO 998
           ENDIF
 
         ELSEIF (JCALC.EQ.3) THEN
@@ -1069,7 +1117,7 @@ C  SECOND ORDER IN Z
                   WRITE (IUNOUT,*) 'PROBABLY ILL-DEFINED SURFACE '
                   WRITE (IUNOUT,*) 'SAMPLING, MASURF = ',MASURF
                   LGPART=.FALSE.
-                  RETURN
+                  GOTO 998
                 ENDIF
               ENDIF
             ELSEIF (ABS(P).GT.EPS12) THEN
@@ -1088,7 +1136,7 @@ C  CARRY OUT RANGE TEST FOR Z0?
             IF (ICOUNT.LT.1000) GOTO 100
             WRITE (iunout,*) 'WARNING FROM SAMSRF, Z0TEST, ICOUNT=1000 '
             LGPART=.FALSE.
-            RETURN
+            GOTO 998
           ENDIF
 C
         ELSE
@@ -1613,6 +1661,14 @@ c    set drift velocities at cell center
 C  TEWL, TIWL, .... SHWL ALREADY DEFINED IN SAMUSR
 C  NOTHING MORE TO BE DONE HERE
       ENDIF
+cnh   28.11.2019
+      DO JPLS=1,NPLSI
+        IF (ZIIN(JPLS,NCELL).NE.ZVAC) THEN
+          ZIWL(JPLS) = ZIIN(JPLS,NCELL)
+        ELSE
+          ZIWL(JPLS) = DBLE(NCHRGP(JPLS))
+        ENDIF
+      ENDDO
 C
 C  SET ANALOG SPECIES INDEX DISTRIBUTION WEISPZ
 C

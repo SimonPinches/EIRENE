@@ -128,23 +128,23 @@ C
           DO 20 J=NPOINT(1,K),NPOINT(2,K)-1
             IF (IPX+2.GT.128) GOTO 999
             IF (IPY+2.GT.128) GOTO 999
-            XYZ(1,IPX+1,IPY+1)=XPOL(I,J)
-            XYZ(1,IPX+1,IPY+2)=XPOL(I,J+1)
-            XYZ(1,IPX+2,IPY+1)=XPOL(I+1,J)
-            XYZ(1,IPX+2,IPY+2)=XPOL(I+1,J+1)
+            XYZ(1,IPX+1,IPY+1)=REAL(XPOL(I,J),SP)
+            XYZ(1,IPX+1,IPY+2)=REAL(XPOL(I,J+1),SP)
+            XYZ(1,IPX+2,IPY+1)=REAL(XPOL(I+1,J),SP)
+            XYZ(1,IPX+2,IPY+2)=REAL(XPOL(I+1,J+1),SP)
 C
-            XYZ(2,IPX+1,IPY+1)=YPOL(I,J)
-            XYZ(2,IPX+1,IPY+2)=YPOL(I,J+1)
-            XYZ(2,IPX+2,IPY+1)=YPOL(I+1,J)
-            XYZ(2,IPX+2,IPY+2)=YPOL(I+1,J+1)
+            XYZ(2,IPX+1,IPY+1)=REAL(YPOL(I,J),SP)
+            XYZ(2,IPX+1,IPY+2)=REAL(YPOL(I,J+1),SP)
+            XYZ(2,IPX+2,IPY+1)=REAL(YPOL(I+1,J),SP)
+            XYZ(2,IPX+2,IPY+2)=REAL(YPOL(I+1,J+1),SP)
 C
             IR=I+(J-1)*NR1ST
             AAR=ARR(IR)
             AAR=MAX(MIN(REMAX,AAR),REMIN)
-            XYZ(3,IPX+1,IPY+1)=AAR
-            XYZ(3,IPX+1,IPY+2)=AAR
-            XYZ(3,IPX+2,IPY+1)=AAR
-            XYZ(3,IPX+2,IPY+2)=AAR
+            XYZ(3,IPX+1,IPY+1)=REAL(AAR,SP)
+            XYZ(3,IPX+1,IPY+2)=REAL(AAR,SP)
+            XYZ(3,IPX+2,IPY+1)=REAL(AAR,SP)
+            XYZ(3,IPX+2,IPY+2)=REAL(AAR,SP)
             IPY=IPY+2
    20     CONTINUE
           IPX=IPX+2
@@ -155,47 +155,47 @@ C
         DO 26 I=2,IPY
           XYZ(1,1,I)=XYZ(1,2,I)
           XYZ(2,1,I)=XYZ(2,2,I)
-          XYZ(3,1,I)=REMIN
+          XYZ(3,1,I)=REAL(REMIN,SP)
           XYZ(1,IPX+1,I)=XYZ(1,IPX,I)
           XYZ(2,IPX+1,I)=XYZ(2,IPX,I)
-          XYZ(3,IPX+1,I)=REMIN
+          XYZ(3,IPX+1,I)=REAL(REMIN,SP)
    26   CONTINUE
         DO 27 I=2,IPX
           XYZ(1,I,1)=XYZ(1,I,2)
           XYZ(2,I,1)=XYZ(2,I,2)
-          XYZ(3,I,1)=REMIN
+          XYZ(3,I,1)=REAL(REMIN,SP)
           XYZ(1,I,IPY+1)=XYZ(1,I,IPY)
           XYZ(2,I,IPY+1)=XYZ(2,I,IPY)
-          XYZ(3,I,IPY+1)=REMIN
+          XYZ(3,I,IPY+1)=REAL(REMIN,SP)
    27   CONTINUE
         XYZ(1,1,1)=XYZ(1,2,2)
         XYZ(2,1,1)=XYZ(2,2,2)
-        XYZ(3,1,1)=REMIN
+        XYZ(3,1,1)=REAL(REMIN,SP)
         XYZ(1,IPX+1,1)=XYZ(1,IPX,2)
         XYZ(2,IPX+1,1)=XYZ(2,IPX,2)
-        XYZ(3,IPX+1,1)=REMIN
+        XYZ(3,IPX+1,1)=REAL(REMIN,SP)
         XYZ(1,IPX+1,IPY+1)=XYZ(1,IPX,IPY)
         XYZ(2,IPX+1,IPY+1)=XYZ(2,IPX,IPY)
-        XYZ(3,IPX+1,IPY+1)=REMIN
+        XYZ(3,IPX+1,IPY+1)=REAL(REMIN,SP)
         XYZ(1,1,IPY+1)=XYZ(1,2,IPY)
         XYZ(2,1,IPY+1)=XYZ(2,2,IPY)
-        XYZ(3,1,IPY+1)=REMIN
+        XYZ(3,1,IPY+1)=REAL(REMIN,SP)
         DO I=1,IPX+1
           DO J=1,IPY+1
-            XYZ(1,I,J)=(XYZ(1,I,J)-XMINN)/(XMAXN-XMINN)
-            XYZ(2,I,J)=(XYZ(2,I,J)-YMINN)/(YMAXN-YMINN)
-            XYZ(3,I,J)=(XYZ(3,I,J)-REMIN)/(REMAX-REMIN)
+            XYZ(1,I,J)=REAL((XYZ(1,I,J)-XMINN)/(XMAXN-XMINN),SP)
+            XYZ(2,I,J)=REAL((XYZ(2,I,J)-YMINN)/(YMAXN-YMINN),SP)
+            XYZ(3,I,J)=REAL((XYZ(3,I,J)-REMIN)/(REMAX-REMIN),SP)
           ENDDO
         ENDDO
         CALL GR3NET(AR,IER,128,XYZ,IPX+1,1,IPY+1,1,1,2)
    30 CONTINUE
       CALL GR3EXT(AR,IER,EXT)
-      VALU(1,1)=XMI
-      VALU(1,2)=XMA
-      VALU(2,1)=YMI
-      VALU(2,2)=YMA
-      VALU(3,1)=REMIN
-      VALU(3,2)=REMAX
+      VALU(1,1)=REAL(XMI,SP)
+      VALU(1,2)=REAL(XMA,SP)
+      VALU(2,1)=REAL(YMI,SP)
+      VALU(2,2)=REAL(YMA,SP)
+      VALU(3,1)=REAL(REMIN,SP)
+      VALU(3,2)=REAL(REMAX,SP)
       CHAXS(1) = ' '
       CHAXS(2) = ' '
       CHAXS(3) = ' '

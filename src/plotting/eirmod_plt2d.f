@@ -50,9 +50,9 @@ cym
       PUBLIC :: EIRENE_PLT2D, EIRENE_CHCTRC, EIRENE_PLT2D_REINIT
 
       INTEGER,PARAMETER :: NTXHST=21
-      REAL(DP), SAVE :: ABSMAX = 21._DP, ORDMAX = 21._DP,
-     .                  XNULL = 9._DP, YNULL = 4._DP,
-     .                  XWN = 0._DP, YWN =0._DP
+      REAL(SP), SAVE :: ABSMAX = 21._SP, ORDMAX = 21._SP,
+     .                  XNULL = 9._SP, YNULL = 4._SP
+      REAL(DP), SAVE :: XWN = 0._DP, YWN = 0._DP
       REAL(DP), SAVE :: XMI2D, XMA2D, YMI2D, YMA2D, XT, YT, XT2, YT2, 
      .                  TESTN
       INTEGER, SAVE :: IWRIT = 0,
@@ -101,8 +101,8 @@ C
       REAL(SP) :: XPS(5), YPS(5)
       INTEGER :: ICLR(2*NSTS+1),IDSH(2*NSTS+1),
      .           ISWC(2*NSTS+1), INON(2*NSTS+1)
-      REAL(DP) :: SCLFCY, SCLFCX, XW1, X, Z, 
-     .            RR, Y, YW1, YW2, XW2, DM, TR, RS, EP, EL, XTN, 
+      REAL(DP) :: SCLFCY, SCLFCX, XW1, XW2, X, Y, Z,
+     .            RR, YW1, YW2, DM, TR, RS, EP, EL, XTN,
      .            YTN, R, SLT, DXX, DYY, A, B, XTIP, P, 
      .            YTIP, ZW1, ZW2
       INTEGER :: IERR, J, NU, IPA, IPE, ITA, ITE, IR, IP, IT, 
@@ -115,6 +115,7 @@ C
 
       SAVE
 C
+      IWRIT=0
 C  SYMBOL FOR PARTICLE TRACING ERROR, CURRENTLY NO. 18
       ISYM_ERR=18   !  SYMBOL NO. 18 IS CURRENTLY HARD-WIRED FOR TRACING ERRORS, SUBR., FOLNEUT, FOLION, ETC...
       IF (.NOT.ALLOCATED(ICPSPZ)) ALLOCATE (ICPSPZ(0:NSPZ))
@@ -183,7 +184,7 @@ C
       CALL GRTXT (-8.,20.,7,'FACT-Y=')
       CALL GRTXT (-5.3,21.,10,CX)
       CALL GRTXT (-5.3,20.,10,CY)
-      CALL GRTXT (-8.,18.,15,'ORIGIN         ')
+      CALL GRTXT (-8.,18.,6,'ORIGIN         ')
       CALL GRTXT (-8.,17.,7,'CH2X0= ')
       CALL GRTXT (-8.,16.,7,'CH2Y0= ')
       CALL GRTXT (-5.3,17.,10,CX0)
@@ -347,30 +348,30 @@ C  Y-Z PLANE
             IF (IR >= NR1ST) CYCLE
             IF (PLCUT(3)) THEN
               IF (IP >= NP2ND) CYCLE
-              XPS(1)=RSURF(IR)
-              YPS(1)=PSURF(IP)
-              XPS(2)=RSURF(IR)
-              YPS(2)=PSURF(IP+1)
-              XPS(3)=RSURF(IR+1)
-              YPS(3)=PSURF(IP+1)
-              XPS(4)=RSURF(IR+1)
-              YPS(4)=PSURF(IP)
-              XPS(5)=RSURF(IR)
-              YPS(5)=PSURF(IP)
+              XPS(1)=REAL(RSURF(IR),SP)
+              YPS(1)=REAL(PSURF(IP),SP)
+              XPS(2)=REAL(RSURF(IR),SP)
+              YPS(2)=REAL(PSURF(IP+1),SP)
+              XPS(3)=REAL(RSURF(IR+1),SP)
+              YPS(3)=REAL(PSURF(IP+1),SP)
+              XPS(4)=REAL(RSURF(IR+1),SP)
+              YPS(4)=REAL(PSURF(IP),SP)
+              XPS(5)=REAL(RSURF(IR),SP)
+              YPS(5)=REAL(PSURF(IP),SP)
             ELSE IF (PLCUT(2)) THEN
               IF (IT >= NT3RD) CYCLE
-              XPS(1)=RSURF(IR)
-              YPS(1)=ZSURF(IT)
-              XPS(2)=RSURF(IR)
-              YPS(2)=ZSURF(IT+1)
-              XPS(3)=RSURF(IR+1)
-              YPS(3)=ZSURF(IT+1)
-              XPS(4)=RSURF(IR+1)
-              YPS(4)=ZSURF(IT)
-              XPS(5)=RSURF(IR)
-              YPS(5)=ZSURF(IT)
+              XPS(1)=REAL(RSURF(IR),SP)
+              YPS(1)=REAL(ZSURF(IT),SP)
+              XPS(2)=REAL(RSURF(IR),SP)
+              YPS(2)=REAL(ZSURF(IT+1),SP)
+              XPS(3)=REAL(RSURF(IR+1),SP)
+              YPS(3)=REAL(ZSURF(IT+1),SP)
+              XPS(4)=REAL(RSURF(IR+1),SP)
+              YPS(4)=REAL(ZSURF(IT),SP)
+              XPS(5)=REAL(RSURF(IR),SP)
+              YPS(5)=REAL(ZSURF(IT),SP)
             END IF
-            IF (NLTRA) XPS(1:5)=XPS(1:5)+RMTOR
+            IF (NLTRA) XPS(1:5)=XPS(1:5)+REAL(RMTOR,SP)
             CALL GRFILL(5,XPS,YPS,1,1)
           ENDIF
         enddo
@@ -686,17 +687,17 @@ c  segment): all cells j with nstgrd(j)=1
               call EIRENE_ncelln
      .         (j,ir,ip,it,ia,ib,nr1st,np2nd,nt3rd,nbmlt,
      .                                        nlrad,nlpol,nltor)
-              XPS(1)=XPOL(IR,IP)
-              YPS(1)=YPOL(IR,IP)
-              XPS(2)=XPOL(IR,IP+1)
-              YPS(2)=YPOL(IR,IP+1)
-              XPS(3)=XPOL(IR+1,IP+1)
-              YPS(3)=YPOL(IR+1,IP+1)
-              XPS(4)=XPOL(IR+1,IP)
-              YPS(4)=YPOL(IR+1,IP)
-              XPS(5)=XPOL(IR,IP)
-              YPS(5)=YPOL(IR,IP)
-              IF (NLTRA) XPS(1:5)=XPS(1:5)+RMTOR
+              XPS(1)=REAL(XPOL(IR,IP),SP)
+              YPS(1)=REAL(YPOL(IR,IP),SP)
+              XPS(2)=REAL(XPOL(IR,IP+1),SP)
+              YPS(2)=REAL(YPOL(IR,IP+1),SP)
+              XPS(3)=REAL(XPOL(IR+1,IP+1),SP)
+              YPS(3)=REAL(YPOL(IR+1,IP+1),SP)
+              XPS(4)=REAL(XPOL(IR+1,IP),SP)
+              YPS(4)=REAL(YPOL(IR+1,IP),SP)
+              XPS(5)=REAL(XPOL(IR,IP),SP)
+              YPS(5)=REAL(YPOL(IR,IP),SP)
+              IF (NLTRA) XPS(1:5)=XPS(1:5)+REAL(RMTOR,SP)
               CALL GRFILL(5,XPS,YPS,1,1)
             ENDIF
           enddo
@@ -1314,7 +1315,6 @@ C
 C  POLOIDAL SURFACE NO. NU IS NOW PLOTTED
   176   CONTINUE
 
-
         CALL GRDSH(1.,0.,1.)
 
 C  PLOT ARROWS TO INDICATE SURFACE NORMAL
@@ -1353,7 +1353,7 @@ C  PLOT 3RD GRID (Z OR TOROIDAL)
 C
   200 IF (.NOT.PL3RD.OR..NOT.NLTOR.OR.PLCUT(3)) GOTO 220
 C
-      IF (NLTRZ.AND.LEVGEO.EQ.1) THEN
+      IF (NLTRZ.AND.(LEVGEO.EQ.1.OR.LEVGEO.EQ.2)) THEN
 C Y-Z-PLANE
         IF (PLCUT(1)) THEN
           XW1=YIA
@@ -1367,8 +1367,8 @@ C X-Z-PLANE
           XW1=RIA
           XW2=RAA
           IF (NLRAD) THEN
-            XW1=RSURF(NPLINR)
-            XW2=RSURF(NPLOTR)
+            XW1=RSURF(NPLINR)+EP1(NPLINR)
+            XW2=RSURF(NPLOTR)+EP1(NPLOTR)
           ENDIF
         ENDIF
         DO 204 NU=NPLINT,NPLOTT,NPLDLT
@@ -1394,11 +1394,21 @@ C X-Z-PLANE
             YY(1)=XW1
             YY(2)=XW2
             CALL EIRENE_PLTLNE(2,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
+            YY(1)=-XW1
+            YY(2)=-XW2
+            CALL EIRENE_PLTLNE(2,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
           ELSEIF (PLCUT(2)) THEN
             XX(1)=XW1
             XX(2)=XW2
             YY(1)=ZW1
             YY(2)=ZW1
+            CALL EIRENE_PLTLNE(2,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
+            XX(1)=-XW1
+            XX(2)=-XW2
+            IF (NLRAD) THEN
+              XX(1)=-RSURF(NPLINR)+EP1(NPLINR)
+              XX(2)=-RSURF(NPLOTR)+EP1(NPLOTR)
+            ENDIF
             CALL EIRENE_PLTLNE(2,XX,YY,XMI2D,XMA2D,YMI2D,YMA2D,LSTORE)
           ENDIF
           CALL GRNWPN(1)
@@ -1529,7 +1539,7 @@ C  IFLAG.EQ.0 ONLY SYMBOL AT XPLO,YPLO,ZPLO
 C  IFLAG.NE.0 TRACK FROM LAST POSITION (PREVIOUS CALL) TO XPLO,YPLO,ZPLO
 C  ISYM       NUMBER OF SYMBOL FOR THE CURRENT EVENT
 C
-C  TEXT FOR PARTICLE HISTORIES PLOT, ONLY AT FIRST CALL TO THIS ENTRY
+C  TEXT FOR PARTICLE HISTORIES PLOT, ONLY AT FIRST CALL TO THIS ROUTINE
 C  LEGEND ONLY FOR THOSE SYMBOLS WHICH ARE SELECTED (ISYPLT(1:8) FLAG)
 C
       XN=XN2D
@@ -1651,8 +1661,7 @@ C  FX=FY=1.
           CALL GRNWPN (ICP)
           CALL GRJMP (REAL(XN1,SP),REAL(YNP,SP))
           CALL GRDRW (REAL(XN2,SP),REAL(YNP,SP))
-          CALL GRTXT (REAL(XN2,SP),REAL(YNP-0.15,SP),8,
-     .                TEXTS(ISP))
+          CALL GRTXT (REAL(XN2,SP),REAL(YNP-0.15,SP),8,TEXTS(ISP))
   513   CONTINUE
 
         IC=IC+1

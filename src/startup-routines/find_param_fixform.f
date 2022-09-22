@@ -29,7 +29,7 @@ cdr  March 17:  NPTRGT printed. May have been changed in call to if0parm, block 
 CDR  May 2017:  try to fix NSTRAI, NSRFSI, consistent with input.f
 cdr             same thing: NCPVI, NCPV  (and eliminate old parameters NCOP, NCOPI)
 cdr  July 17 :  lmulpl:  automatic options for multiple ion temperatures,
-cdr                      multiple ion velocities in case of BGK non-lin. collisions
+cdr                      multiple ion velocities in case of BGK nonlinear collisions
 cdr  July 17 :  initialize 2D CFD code coupling parameters NDX,....
 c               move NRAD=... after call to if0prm, because of 3D CFD (emc3) coupling
 cdr  Jun 18  : various corrections, comments in new (generalized) block 12 options.
@@ -48,7 +48,8 @@ cdr            storage in module CINIT is possible only after NPLS and NSTRA are
 cdr            But, apparently some of the information in CINIT is needed earlier, e.g. in
 cdr            call to plasma code interface-initialization done in block 14.
 cdr            Still fiddling with Ti(ipls) input card counting.
-cdr
+cdr            tbd: call eirene_skip_read_comments: not yet implemented here.
+cdr  Aug. 20 : remove PART_NAME, BULK_NAME,... fix NSTRA, NSRFS,..
 C
       SUBROUTINE EIRENE_FIND_PARAM_FIXFORM
 C
@@ -59,29 +60,29 @@ C
       USE EIRMOD_COMUSR
       USE EIRMOD_COMSOU, ONLY: NSTRAI
       USE EIRMOD_COMPRT, ONLY: IUNIN, IUNOUT
-      USE EIRMOD_CLOGAU, ONLY: EIRENE_ALLOC_CLOGAU
+      USE EIRMOD_CLOGAU, ONLY: NLWRMSH, EIRENE_ALLOC_CLOGAU
       USE EIRMOD_CTRCEI, ONLY: TRCAMD, TRCINT, NVOLPR, NSURPR,
      .                         EIRENE_ALLOC_CTRCEI
       USE EIRMOD_CINIT, ONLY: CASENAME, DBFNAME, DBHANDLE, NDBNAMES,
      .                        INDPRO2_SAVE,
-     .                        EIRENE_INIT_CINIT
+     .                        EIRENE_INIT_CINIT, MASTER_PATH
       USE EIRMOD_JSON, ONLY : NOPTIM_IN, NRTAL_IN, NSMSTRA_IN, 
      .                        INDPRO_IN, NSTRAI_IN, NTIME_IN
       IMPLICIT NONE
 
       INTEGER :: INDGRD(3), INDPRO(12), IDUM(12)
-      INTEGER :: IDUMMY(2)
+      INTEGER :: IDUMMY(2), NDUMM1, NDUMM2
       INTEGER, ALLOCATABLE :: INDSRC(:)
       INTEGER :: NFR, ISOR, NSRFSI, NRADD,
      .           NREACI,
      .           NSTSI, NLIMI, NVOLPL, NSP, ICO,
      .           NPRNLI, NCHORI,
      .           NCHENI, NSIGSI, ID, INDIM, NSIGVI,
-     .           NR1ST, NRSEP, NTIME0,
+     .           NR1ST, NRSEP,
      .           NP1, NP2, NRKNOT, NRPLG, NPPLG,
-     .           NITER0, NTPER, NTTRA, NCOOR, NTET, NBMLT,
+     .           NTPER, NTTRA, NCOOR, NTET, NBMLT,
      .           NT3RD, NTSEP, NTRII, NP2ND, NPPER, NPSEP, NPPLA,
-     .           NSIGCI, IREAD, NCOPII, NCOPIE, 
+     .           NSIGCI, IREAD, NCOPIE, 
      .           NRC, NRE, NLINES, LL, NB1, NB2, NB3, NS1,
      .           NS2, NS3, INM1, INM2, INM3, INMDL, IEND, ITOK, IER,
      .           NB4, NS4, INM4, IUNIN_SAVE, I1, NPRMUL,
@@ -97,22 +98,24 @@ C
      .            ZIA, YP, XP, YIA, YGA
       LOGICAL :: NLSCL, NLTEST, NLANA, NLDRFT, NLCRR, NLERG, NLIDENT,
      .           NLONE, NLMOVIE, LINCL45, NLCASCAD, NLDFST,
-     .           NLOLDRAN, NLOCTREE, NLWRMSH
+     .           NLOLDRAN, NLOCTREE
       LOGICAL :: NLSLB, NLCRC,  NLELL, NLTRI,  NLPLG, NLFEM, NLTET,
      .           NLGEN
       LOGICAL :: NLRAD, NLPOL,  NLTOR, NLADD,  NLMLT, NLTRIM
       LOGICAL :: NLTRA, NLTRT, NLTRZ
       LOGICAL :: PLTL2D, PLTL3D, LRPSCUT
       LOGICAL :: LDEFSTOR
-      LOGICAL :: UEX, NLEMIS
+      LOGICAL :: EX, UEX, NLEMIS
       LOGICAL :: LMULPL   ! multiple Ti and V..IN (per species) due to virt. background iterations
       LOGICAL :: ldum(35)
       CHARACTER(420) :: FILENAME, ULINE
+      CHARACTER(400) :: TREEPATH
       CHARACTER(420) :: ZEILE, FILE45
-      CHARACTER(12) :: CHR, CADAPT
       CHARACTER(4) :: CLAB
       CHARACTER(6) :: HANDLE
-      CHARACTER(1000) :: HLINE
+cym      
+      character*8, allocatable :: textal(:)
+cym      
 C
 C  SET DEFAULT VALUES FOR STORAGE PARAMETERS
 C
@@ -166,9 +169,10 @@ c  skip further comments in header
 c start browsing block 1
       WRITE (iunout,*) '*** 1. DATA FOR OPERATING MODE'
 
-      READ (ZEILE,6666) NPRLL,NMODE,NTCPU,NFILE,NITER0,NITER,
-     .                  NTIME0,NTIME
-      NTIME_IN = NTIME
+
+      READ (ZEILE,6666) NPRLL,NMODE,NTCPU,NFILE,NDUMM1,NITER,
+     .                  NDUMM2,NTIME
+      NTIME_IN=NTIME
 
       READ (IUNIN,'(A72)') ZEILE
       LDEFSTOR = .FALSE.   ! INDICATES: NO STORAGE OPTIMIZATION INPUT CARD
@@ -221,7 +225,10 @@ c   yes, file type no 'ifile' as stored on dbhandle, in eirmod_cinit.
 c   currently: 16 types of files are recognized
             IANF = I2+I3+VERIFY(ZEILE(I2+I3:),' ')-1
             IEND = IANF+SCAN(ZEILE(IANF+1:),' ')-1
+
             DBFNAME(IFILE)(1:IEND-IANF+1) = ZEILE(IANF:IEND)
+            CALL EIRENE_FILEPATH_USR(ZEILE,DBFNAME(IFILE),IANF,IEND)
+
             WRITE (IUNOUT,*) 'PATH SET FOR FILE ',TRIM(HANDLE)
             WRITE (IUNOUT,*) 'PATH = ',ZEILE(IANF:IEND)
           ELSE
@@ -491,7 +498,9 @@ C
   402 CALL EIRENE_UPPERCASE(ZEILE)
 
       READ (ZEILE,*) NREACI
-      NREAC = MAX(NREAC,NREACI)
+!PB   increase number of reactions by 1 as there are still 
+!PB   calls to SLREAC which use reaction number NREACI+1 (SGNAL and HE_EMISS)
+      NREAC = MAX(NREAC,NREACI+1)
 C
 cdr  count the number of reaction cards read here.
       NREAC_LINES=0
@@ -501,18 +510,38 @@ cdr  count the number of reaction cards read here.
         READ (IUNIN,'(A72)') ZEILE
       END DO
 
-
 cdr  start reading species specification block 4a,4b,4c,4d
       WRITE (iunout,*)
      .  '*** 4A. NEUTRAL ATOMS SPECIES CARDS, NATMI SPECIES'
       READ (IUNIN,*) NATMI
       NATM = MAX(NATM,NATMI)
+cxpb New code: we are doing this for the converter that needs to know early the
+cxpb  correspondence between the species in the old and new runs
+cym moved as above // introduce a local variable to pass as argument to couple_param_...
+cym      if(.not.allocated(TEXTA)) allocate(TEXTA(NATM))
+      if(.not.allocated(TEXTAL)) allocate(TEXTAL(NATM)) 
+cym to be evaluated - see calling order / find_param
+      if(.not.allocated(NMASSA)) then
+        allocate(NMASSA(NATM))
+        NMASSA = 0
+        COMUSR_FIRST_PASS(1) = .FALSE.
+      end if
+      if(.not.allocated(NCHARA)) then
+        allocate(NCHARA(NATM))
+        NCHARA = 0
+        COMUSR_FIRST_PASS(2) = .FALSE.
+      end if
+cym to be evaluated
 
       ISPZ = 0
       DO IATM=1,NATMI
         READ (IUNIN,'(A72)') ZEILE
         ISPZ = ISPZ + 1
-cdr     READ (ZEILE(12:17),'(2I3)') NMASSA(IATM),NCHARA(IATM)
+cym
+cym     TEXTA(IATM) = ZEILE(4:11)
+        TEXTAL(IATM) = ZEILE(4:11)
+cym
+        READ (ZEILE(12:17),'(2I3)') NMASSA(IATM),NCHARA(IATM)
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
 cdr  read 2 cards per reaction assigned to IATM, i.e.:  NRC*NATMI*2 cards
@@ -542,11 +571,16 @@ C
       END DO
       READ (ZEILE,*) NMOLI
       NMOL = MAX(NMOL,NMOLI)
+      if(.not.allocated(NMASSM)) then
+        allocate(NMASSM(NMOL))
+        NMASSM = 0
+        COMUSR_FIRST_PASS(3) = .FALSE.
+      end if
 
       DO IMOL=1,NMOLI
         READ (IUNIN,'(A72)') ZEILE
         ISPZ = ISPZ + 1
-cdr     READ (ZEILE(12:14),'(I3)') NMASSM(IMOL)
+        READ (ZEILE(12:14),'(I3)') NMASSM(IMOL)
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
         DO K=1,NRC
 cpb......................................
@@ -575,12 +609,26 @@ C
       END DO
       READ (ZEILE,*) NIONI
       NION = MAX(NION,NIONI)
+      if(.not.allocated(NMASSI)) then
+        allocate(NMASSI(NION))
+        NMASSI = 0
+        allocate(NCHARI(NION))
+        NCHARI = 0
+        allocate(NCHRGI(NION))
+        NCHRGI = 0
+        allocate(LKINDI(NION))
+        LKINDI = 0
+        COMUSR_FIRST_PASS(4) = .FALSE.
+      end if
 
       DO IION=1,NIONI
         READ (IUNIN,'(A72)') ZEILE
         ISPZ = ISPZ + 1
-cdr     READ (ZEILE(12:14),'(I3)') NMASSI(IION)
+        READ (ZEILE(12:14),'(I3)') NMASSI(IION)
+        READ (ZEILE(15:17),'(I3)') NCHARI(IION)
+        READ (ZEILE(21:23),'(I3)') NCHRGI(IION)
         READ (ZEILE(30:35),'(2I3)') NUMSEC,NRC
+        READ (ZEILE(45:47),'(I3)') LKINDI(IION)
         DO K=1,NRC
 cpb......................................
 cdr:  try to identify if there are so-called BGK collisions, input flag IBGK::
@@ -684,8 +732,6 @@ cdr  ico > 0 indicates: at least one bulk species has a special
 cdr  background data model,  fort.., saha, corona, ...etc...
       IF (ICO > 0) NREAC=NREAC+1
 
-cdr ..................................................................
-
       READ (IUNIN,'(A72)') ZEILE
       WRITE (IUNOUT,*) '*** 5B. PLASMA BACKGROUND DATA'
       DO WHILE (ZEILE(1:1) == '*')
@@ -712,6 +758,7 @@ cdr ..................................................................
         WRITE (IUNOUT,*) ' NPLSTI = ',NPLSTI
       END IF
 
+cdr these next 2 lines for V_IN(ipls)
       NPLSV = NPLS
       IF (MOD(ABS(INDPRO(4)),100) > 9) NPLSV = 1
 
@@ -725,13 +772,13 @@ cdr ..................................................................
         WRITE (IUNOUT,*) ' NPLSV = ',NPLSV
       END IF
 
-C  FIND START OF NEXT INPUT BLOCK: 6
-
       IF (LINCL45) THEN
         CLOSE (IUNIN)
         IUNIN = IUNIN_SAVE
         LINCL45 =.FALSE.
       END IF
+
+C  FIND START OF NEXT INPUT BLOCK: 6
 
       DO
         IF (ZEILE(1:5) == '*** 6') EXIT
@@ -788,6 +835,11 @@ C
 CDR  TRY TO SET NSTEP, THE NUMBER OF STEP FUNCTIONS FOR SOURCE SAMPLING
 cdr  set nstep = highest stratum number, which receives primary source data from external code.
 cdr  this must be highly case specfic. To be reconsidered !!
+cpb  Step functions are only used in conjunction withsource sampling.
+cpb  If we find the highest stratum J that uses a step function we can be sure that there are
+cpb  less than J step functions involved. 
+cpb  For this reason start the loop at NSTRAI and count downwards.
+cpb  We imply implicitely that the numbering of step functions is in ascending order starting with 1
       NSTEP = 1
       ALLOCATE (INDSRC(NSTRAI))
       READ (IUNIN,6666) (INDSRC(J),J=1,NSTRAI)
@@ -1019,7 +1071,12 @@ C   READ PLTSRC (60 LOGICALS PER LINE) ! backward compatible with Eirene_96
           DO WHILE (ZEILE(1:1) .EQ. '*')
             READ (IUNIN,'(A72)') ZEILE
           END DO
-          READ (ZEILE,6666) NSP
+          READ (ZEILE,6666) IDUMMY(1:2)  ! For compatibility with Eirene_96
+          IF (IDUMMY(2).NE.0) THEN
+            NSP = IDUMMY(2)
+          ELSE
+            NSP = IDUMMY(1)
+          ENDIF
           NPLT = MAX(NPLT, NSP)
           READ (IUNIN,'(A72)') ZEILE
           call fix_logical_input(zeile,2)
@@ -1033,7 +1090,7 @@ C   READ PLTSRC (60 LOGICALS PER LINE) ! backward compatible with Eirene_96
           ENDIF
           IF (PLTL3D) THEN
             READ (IUNIN,*)
-            READ (IUNIN,*)
+            IF (IDUMMY(2).EQ.0) READ (IUNIN,*)
             DO I=1,NSP
               READ (IUNIN,*)
             END DO
@@ -1241,7 +1298,9 @@ C  READ DATA IN INTERFACING SUBROUTINE INFCOP  1400 -- 1499
 C
       WRITE (iunout,*) '*** 14. DATA FOR INTERFACING ROUTINE "INFCOP"'
       IF (NMODE.EQ.0) THEN
-        READ (IUNIN,6666) NAINI,NCOPII,NCOPIE
+!pb     NCOPII is completely redundant
+!pb     READ (IUNIN,6666) NAINI,NCOPII,NCOPIE
+        READ (IUNIN,6666) NAINI,NDUMM1,NCOPIE
         NCPVI=NCOPIE
       ELSE
         NAINI=0
@@ -1295,15 +1354,19 @@ cdr species
       WRITE (iunout,'(a14,i8)') 'NPLS        = ',NPLS
 
       CALL EIRENE_LEER(1)
+c  additional volumetric tallies
       WRITE (iunout,'(a14,i8)') 'NADV        = ',NADV
       WRITE (iunout,'(a14,i8)') 'NCLV        = ',NCLV
       WRITE (iunout,'(a14,i8)') 'NSNV        = ',NSNV
       WRITE (iunout,'(a14,i8)') 'NALV        = ',NALV
-
+c  additional surface-averaged tallies
       WRITE (iunout,'(a14,i8)') 'NADS        = ',NADS
       WRITE (iunout,'(a14,i8)') 'NALS        = ',NALS
-
+c  additional input tallies
       WRITE (iunout,'(a14,i8)') 'NAIN        = ',NAIN
+
+      CALL EIRENE_LEER(1)
+c  statistical variances, covariances
       WRITE (iunout,'(a14,i8)') 'NCPV        = ',NCPV
       WRITE (iunout,'(a14,i8)') 'NBGK        = ',NBGK
       WRITE (iunout,'(a14,i8)') 'NSD         = ',NSD
@@ -1352,6 +1415,10 @@ cdr  time-dependent options: census array size
       WRITE (iunout,'(a14,i8)') 'NPRNL       = ',NPRNL
 C
       CALL EIRENE_LEER(2)
+cpg
+      call eirene_couple_param_consistency(nlimi,nstsi,textal,
+     .                                     size(textal))
+cpg
 C
       RETURN
 C
@@ -1366,6 +1433,7 @@ C
  7999 WRITE (IUNOUT,*) 'Could not open input file!'
       CALL EIRENE_EXIT_OWN(1)
       RETURN
+
       CONTAINS
 
       SUBROUTINE eirene_Ti_input(indpro2_save,l45)
@@ -1380,33 +1448,42 @@ cdr Return a "best guess" of what INDPRO(2) should be.
 
 cdr Ti_IN(ipls) options have historically been just opposite to V_IN(ipls) options.
 cdr This has gotten amplified to a long-lasting code mess:
-cdr Increasingly inconsistent input options for Ti(ipls) and V..IN(ipls) profiles
+cdr Increasingly inconsistent input options for TIIN(ipls)
+cdr and vector V..IN(ipls) profiles
 cdr and false code operation (in multi-fluid cases) in many instances.
-cdr Now: We try to automatically set TI flag INDPRO(2) by counting input cards
-cdr in this block.
+cdr Now: We try to automatically set the TIIN flag INDPRO(2) by counting
+cdr input cards in this input block 5.
 
       if (NPLS.eq.1) then
 c  no ambiguity possible here...
         indpro2_save=iabs(indpro(2))
       endif
-
+      write (iunout,*)
+     .    'FIND_PARAM: try to infer INDPRO(2) for Ti profiles'
       write (iunout,*) 'indpro2, npls ',indpro(2),npls
 
 c remove sign and second or third digits
       indpro2=mod(iabs(indpro(2)),10)  ! now within 1 and 9
 
       if (indpro2.eq.6) then
-c  Ti(ipls) is from external file.
+c  Ti(ipls) is from external file/code.
 c  Try to find out what was meant:
-        if (indpro(2).lt.0) then       ! indpro2=-6, -16,...
+        if (indpro(2).lt.0) then       ! indpro(2)=-6, -16,...
 cdr  just trying, via CI
           indpro2_save=6  ! maybe this was meant in solps-iter cases?
-        elseif (indpro(2).lt.10) then  ! indpro2=6
+        elseif (indpro(2).lt.10) then  ! indpro(2)=6
           indpro2_save=16 ! maybe this was meant in solps-iter cases?
-        else                           ! indpro2=16,26,36,...
+        else                           ! indpro(2)=16,26,36,...106,...
+cdr probably never used?
+          write (iunout,*) 'unknown option for indpro(2)'
+          write (iunout,*) 'use indpro(2)=6  for multi-spec. Ti'
+          write (iunout,*) 'use indpro(2)=16 for single Ti for all'
+          call eirene_exit_own(1)
         endif
 c  no card counting done.
-c       indpro2_save= ??
+        indpro(2)=indpro2_save
+        write (iunout,*) 'indpro(2) reset to: ',indpro(2)
+        goto 200
       endif
 
 C  FIND
@@ -1441,11 +1518,17 @@ cdr only a single common flow velocity is specified.
       if (iabs(indpro(4)).ne.6) icount=icount-3*nv
 c  B
       if (iabs(indpro(5)).ne.6) icount=icount-1
+c  zi
+      if (indpro(11).ne.0.and.indpro(11).ne.6) icount=icount-npls
 c  Vol?
 cdr optional, we do not know if such a card has been included
 
-      write (iunout,*) 'cards for Ti (+Vol?) ',icount
+
+  200 continue
       if (npls.eq.1.or.indpro2.eq.6) return
+
+      write (iunout,*) 'cards for Ti (+Vol?) ',icount
+
 
       IF (icount+1.lt.npls.and.icount.ge.1) then
 c  we necessarily have data for only one single Ti in the input file.
@@ -1483,7 +1566,7 @@ c  Due to the volume tally input card (indpro(12)) being optional.
         write (iunout,*) 'i.e. add a card, e.g. containing just 0.0'
       endif
       indpro2_save=indpro(2)
-
+      return
       end subroutine eirene_Ti_input
 
-      END Subroutine eirene_find_param_FIXFORM
+      END SUBROUTINE EIRENE_FIND_PARAM_FIXFORM

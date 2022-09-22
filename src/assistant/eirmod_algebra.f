@@ -1224,31 +1224,58 @@ C
       CHARACTER(*), INTENT(IN) :: REP, WITH
       INTEGER, INTENT(INOUT) :: LENGTH
       INTEGER :: LREP, LWITH, POS
+#ifdef F2003
       CHARACTER(:), ALLOCATABLE :: CREP, CWITH, HILFE
+#else
+      INTEGER :: N
+      INTEGER, PARAMETER :: STRMAX = 512
+      CHARACTER(LEN=STRMAX) :: CREP, CWITH, HILFE
+#endif
 
+#ifndef F2003
+      N = LEN(ADJUSTL(TRIM(REP)))
+      IF (N.GT.STRMAX) THEN
+        WRITE(IPROUT,*)
+     .   'INCREASE SIZE OF STRMAX IN SUBTIT.EIRENE_REPLACE'
+        CALL EIRENE_EXIT_OWN(1)
+      ENDIF
+      N = LEN(ADJUSTL(TRIM(WITH)))
+      IF (N.GT.STRMAX) THEN
+        WRITE(IPROUT,*)
+     .   'INCREASE SIZE OF STRMAX IN SUBTIT.EIRENE_REPLACE'
+        CALL EIRENE_EXIT_OWN(1)
+      ENDIF
+#endif
       CREP = ADJUSTL(TRIM(REP))
       CWITH = ADJUSTL(TRIM(WITH))
-      LREP = LEN(CREP)
-      LWITH = LEN(CWITH)
+      LREP = LEN_TRIM(CREP)
+      LWITH = LEN_TRIM(CWITH)
       
-      POS=INDEX(STR,CREP)
+      POS=INDEX(STR,CREP(1:LREP))
 
       DO WHILE ( POS .GE. 1 .AND. POS .LT. LENGTH-1) 
 
+#ifndef F2003
+         N = LWITH+LENGTH-LREP+1
+         IF (N.GT.STRMAX) THEN
+           WRITE(IPROUT,*)
+     .      'INCREASE SIZE OF STRMAX IN SUBTIT.EIRENE_REPLACE'
+           CALL EIRENE_EXIT_OWN(1)
+         ENDIF
+#endif
          IF (POS == 1) THEN
-           HILFE = CWITH // STR(POS+LREP:LENGTH)
+           HILFE = CWITH(1:LWITH) // STR(POS+LREP:LENGTH)
          ELSE
-           HILFE=STR(1:POS-1) // CWITH // STR(POS+LREP:LENGTH)
+           HILFE=STR(1:POS-1) // CWITH(1:LWITH) // STR(POS+LREP:LENGTH)
          END IF
          STR=HILFE
          LENGTH=LENGTH - (LREP - LWITH)
-         POS=INDEX(STR,CREP)
+         POS=INDEX(STR,CREP(1:LREP))
       END DO  
       
       END SUBROUTINE EIRENE_REPLACE
 
       END SUBROUTINE EIRENE_SUBTIT
-
 
 *************************************************************************
       

@@ -82,12 +82,13 @@ C
      .            ADDT, ADDTL, TMASS, PMASS, COU,
      .            EIRENE_RATE_COEFF,
      .            EIRENE_ENERGY_RATE_COEFF, TB, TII,
+     .            DENSLIMLOG,
      .            FP1(6),FP2(6)
       INTEGER :: ITYP1, ITYP2, KREAD,
      .           J, NEND, MODC, NSECX4, IPL2, IIO2, IPLTI,
      .           NCBULK, NCGBLK
       INTEGER, EXTERNAL :: EIRENE_IDEZ
-      REAL(DP), PARAMETER :: EMINL=-2.3_DP
+      REAL(DP), PARAMETER :: TMINL=-2.3_DP
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt
 
@@ -232,7 +233,7 @@ C       NEND=9
             IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
 cdr  safety cut-off at TI= 0.1 eV. (TVAC=0.02)
-              tii = max(eminl,tii)
+              tii = max(tminl,tii)
 c  evaluate 2 parametric fit,
 c  collapse this to a one parameter fit CF for EB dependence, evaluated at TII.
               rp => reacdat(KK)%rtc%poly
@@ -241,7 +242,9 @@ c  collapse this to a one parameter fit CF for EB dependence, evaluated at TII.
      .               rt%rc2min, rt%rc2max, fp2, rt%jfex2mn, rt%jfex2mx,
      .               trcamd)
               TABCX3(IRCX,J,1:9) = CF(1:9)
-              TABCX3(IRCX,J,1)=TABCX3(IRCX,J,1)+DIINL(IPL,J)+FCTKKL
+              DENSLIMLOG=LOG(DENSLIM(IPL))        !VK
+              TABCX3(IRCX,J,1)=TABCX3(IRCX,J,1)
+     .                  +MIN(DENSLIMLOG,DIINL(IPL,J))+FCTKKL
           END DO
         ELSE ! NOT SUFFICIENT STORAGE ON TABCX3
 C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
@@ -409,7 +412,7 @@ C  ENERGY RATE COEFFICIENT(TI,EBEAM)
               DO 257 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
-                tii = max(eminl,tii)
+                tii = max(tminl,tii)
 c old
 c old           CALL EIRENE_PREP_RTCS (KREAD,5,TII,CF)
 c old

@@ -35,6 +35,7 @@
       USE EIRMOD_CUPD
       USE EIRMOD_PHOTON
       USE EIRMOD_JSON
+      USE EIRMOD_IOUSR, ONLY: eirene_write_block_11_usr
       
       use json_module
 
@@ -693,7 +694,7 @@
       type(json_value),pointer :: blk4a, blk4b, blk4c, blk4d
       type(json_value),pointer :: bulks, blk5a, blk5b, blk
       type(json_value),pointer :: te, tis, ti, dis, di, vls, vl, bf, v,
-     .                            op, ops
+     .                            op, ops, zi, zis
       integer :: i, ndum1(1), ndum2(1), ndum3(1), ndum4(1), nti, nv
       real(dp) :: dum(1)
 
@@ -808,7 +809,7 @@
      .     texts, 'IMOL', 'M', nmassm, ncharm, nprt, ndum2, isrf, isrt, 
      .     nrcm, nfolm, ngenm, nhsts, ireacm, ibulkm,
      .     iscd1m, iscd2m, iscd3m, iscd4m, iscdem, iestmm, ibgkm,
-     .     eelecm, ebulkm, escd1m, freacm, edpotm)
+     .     eelecm, ebulkm, escd1m, freacm, edpotm, LKIND=lkindm)
       call json%add(mols,blk4b)
       call json%add(blk4,mols)
 
@@ -821,7 +822,7 @@
      .     texts, 'IION', 'I', nmassi, nchari, nprt, nchrgi, isrf, isrt, 
      .     nrci, nfoli, ngeni, nhsts, ireaci, ibulki,
      .     iscd1i, iscd2i, iscd3i, iscd4i, iscdei, iestmi, ibgki,
-     .     eeleci, ebulki, escd1i, freaci, edpoti)
+     .     eeleci, ebulki, escd1i, freaci, edpoti, LKIND=lkindi)
       call json%add(ions,blk4c)
       call json%add(blk4,ions)
 
@@ -848,7 +849,8 @@
      .     texts, 'IPLS', 'P', nmassp, ncharp, nprt, nchrgp, isrf, isrt,  
      .     nrcp, ndum1, ndum2, nhsts, ireacp, ibulkp,
      .     iscd1p, iscd2p, iscd3p, iscd4p, iscdep, ndum3, ndum4,
-     .     eelecp, ebulkp, escd1p, freacp, edpotp, cdenmodel)
+     .     eelecp, ebulkp, escd1p, freacp, edpotp, 
+     .     DENSLIM=denslim, CDENMODEL=cdenmodel)
       call json%add(bulks,blk5a)
 
       call json%add(blk5,bulks)
@@ -878,16 +880,16 @@
         if (mod(iabs(indpro(2)),100) > 9) nti=nplsI
 
         do i = 1, nti
-        call json%create_object(ti,'')
+          call json%create_object(ti,'')
 
-        call json%add(ti,'TI0',ti0(i))
-        call json%add(ti,'TI1',ti1(i))
-        call json%add(ti,'TI2',ti2(i))
-        call json%add(ti,'TI3',ti3(i))
-        call json%add(ti,'TI4',ti4(i))
-        call json%add(ti,'TI5',ti5(i))
+          call json%add(ti,'TI0',ti0(i))
+          call json%add(ti,'TI1',ti1(i))
+          call json%add(ti,'TI2',ti2(i))
+          call json%add(ti,'TI3',ti3(i))
+          call json%add(ti,'TI4',ti4(i))
+          call json%add(ti,'TI5',ti5(i))
         
-        call json%add(tis,ti)
+          call json%add(tis,ti)
         end do
         call json%add(blk5b,tis)
       end if
@@ -896,16 +898,16 @@
         call json%create_array(dis,'DI') !an array
 
         do i = 1, nplsi
-        call json%create_object(di,'')
+          call json%create_object(di,'')
 
-        call json%add(di,'DI0',di0(i))
-        call json%add(di,'DI1',di1(i))
-        call json%add(di,'DI2',di2(i))
-        call json%add(di,'DI3',di3(i))
-        call json%add(di,'DI4',di4(i))
-        call json%add(di,'DI5',di5(i))
-        
-        call json%add(dis,di)
+          call json%add(di,'DI0',di0(i))
+          call json%add(di,'DI1',di1(i))
+          call json%add(di,'DI2',di2(i))
+          call json%add(di,'DI3',di3(i))
+          call json%add(di,'DI4',di4(i))
+          call json%add(di,'DI5',di5(i))
+
+          call json%add(dis,di)
         end do
         call json%add(blk5b,dis)
       end if
@@ -918,30 +920,30 @@
         if (nlmlv) nv=nplsI
 
         do i = 1, nv
-        call json%create_object(vl,'')
+          call json%create_object(vl,'')
 
-        call json%add(vl,'VX0',vx0(i))
-        call json%add(vl,'VX1',vx1(i))
-        call json%add(vl,'VX2',vx2(i))
-        call json%add(vl,'VX3',vx3(i))
-        call json%add(vl,'VX4',vx4(i))
-        call json%add(vl,'VX5',vx5(i))
+          call json%add(vl,'VX0',vx0(i))
+          call json%add(vl,'VX1',vx1(i))
+          call json%add(vl,'VX2',vx2(i))
+          call json%add(vl,'VX3',vx3(i))
+          call json%add(vl,'VX4',vx4(i))
+          call json%add(vl,'VX5',vx5(i))
 
-        call json%add(vl,'VY0',vy0(i))
-        call json%add(vl,'VY1',vy1(i))
-        call json%add(vl,'VY2',vy2(i))
-        call json%add(vl,'VY3',vy3(i))
-        call json%add(vl,'VY4',vy4(i))
-        call json%add(vl,'VY5',vy5(i))
+          call json%add(vl,'VY0',vy0(i))
+          call json%add(vl,'VY1',vy1(i))
+          call json%add(vl,'VY2',vy2(i))
+          call json%add(vl,'VY3',vy3(i))
+          call json%add(vl,'VY4',vy4(i))
+          call json%add(vl,'VY5',vy5(i))
 
-        call json%add(vl,'VZ0',vz0(i))
-        call json%add(vl,'VZ1',vz1(i))
-        call json%add(vl,'VZ2',vz2(i))
-        call json%add(vl,'VZ3',vz3(i))
-        call json%add(vl,'VZ4',vz4(i))
-        call json%add(vl,'VZ5',vz5(i))
-        
-        call json%add(vls,vl)
+          call json%add(vl,'VZ0',vz0(i))
+          call json%add(vl,'VZ1',vz1(i))
+          call json%add(vl,'VZ2',vz2(i))
+          call json%add(vl,'VZ3',vz3(i))
+          call json%add(vl,'VZ4',vz4(i))
+          call json%add(vl,'VZ5',vz5(i))
+
+          call json%add(vls,vl)
         end do
         call json%add(blk5b,vls)
       end if
@@ -956,6 +958,26 @@
         call json%add(bf,'B4',b4)
         call json%add(bf,'B5',b5)
         call json%add(blk5b,bf)
+      end if
+
+! Zi
+      if ((indpro(11) > 0) .and. (indpro(11) <= 5)) then
+        call json%create_array(zis,'ZI') !an array
+
+        do i = 1, nplsi
+          call json%create_object(zi,'')
+
+          call json%add(zi,'ZI0',zi0(i))
+          call json%add(zi,'ZI1',zi1(i))
+          call json%add(zi,'ZI2',zi2(i))
+          call json%add(zi,'ZI3',zi3(i))
+          call json%add(zi,'ZI4',zi4(i))
+          call json%add(zi,'ZI5',zi5(i))
+
+          call json%add(zis,zi)
+        end do
+
+        call json%add(blk5b,zis)
       end if
 
 ! VOL
@@ -999,7 +1021,7 @@
      .     texts, cndx, cext, nmass, nchar, nprt, nchrg, isrf, isrt, 
      .     nrc, nfol, ngen, nhsts, ireac, ibulk,
      .     iscd1, iscd2, iscd3, iscd4, iscde, iestm, ibgk,
-     .     eelec, ebulk, escd1, freac, edpot, cdenmodel)
+     .     eelec, ebulk, escd1, freac, edpot, lkind, denslim, cdenmodel)
 
       type(json_value),pointer :: me
       type(json_value),pointer :: elem, reas, re, model
@@ -1010,11 +1032,13 @@
      .         ireac(ndim,*), ibulk(ndim,*), iscd1(ndim,*), 
      .         iscd2(ndim,*), iscd3(ndim,*), iscd4(ndim,*), 
      .         iscde(ndim,*), iestm(ndim,*), ibgk(ndim,*)
+      integer, optional :: lkind(ndim)
+      real(dp), optional :: denslim(ndim)
       real(dp), intent(in) :: eelec(ndim,*), ebulk(ndim,*), 
      .         escd1(ndim,*), freac(ndim,*), edpot(ndim,*)
       character(*) :: texts(*), cndx, cext    
       character(*), optional :: cdenmodel(ndim)
-      integer :: i, ispz, numsec, k, j, nre
+      integer :: i, ispz, numsec, k, j, nre, jdens
       logical :: lden
 
       lden = present(cdenmodel)
@@ -1052,6 +1076,19 @@
           call json%add(elem,'NGEN'//cext,ngen(i))
         end if
         call json%add(elem,'NHSTS',nhsts(ispz))
+
+        if (present(lkind)) then
+          call json%add(elem,'LKIND'//cext,lkind(i))
+        end if
+
+        if (present(denslim)) then
+          if (denslim(i) > 9.e29) then
+            jdens = 0
+          else
+            jdens = nint(log10(denslim(i))/log10(2._dp))
+          end if
+          call json%add(elem,'DENSLIM',jdens)
+        end if
 
         call json%create_array(reas,'REACTIONS') !an array
 
@@ -1808,18 +1845,17 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
       call json%add(me,srfs)
 
 ! switch off tallies
-      if (allocated(ivtlout)) then
-        call json%add(me,'NVTLOUT',nvtlout)
-        call json%add(me,'NUMTAL_V',ivtlout(1:nvtlout))
-        deallocate(ivtlout)
+      if (allocated(itlvout)) then
+        call json%add(me,'NTLVOUT',ntlvout)
+        call json%add(me,'NUMTAL_V',itlvout(1:ntlvout))
+        deallocate(itlvout)
       end if
 
-      if (allocated(istlout)) then
-        call json%add(me,'NSTLOUT',nstlout)
-        call json%add(me,'NUMTAL_S',istlout(1:nstlout))
-        deallocate(istlout)
+      if (allocated(itlsout)) then
+        call json%add(me,'NTLSOUT',ntlsout)
+        call json%add(me,'NUMTAL_S',itlsout(1:ntlsout))
+        deallocate(itlsout)
       end if
-
 
 ! block 11 b, geometrie plot
 
@@ -1848,7 +1884,9 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
       call json%add(me,'NPLDLP',npldlp) 
       call json%add(me,'NPLINT',nplint) 
       call json%add(me,'NPLOTT',nplott) 
-      call json%add(me,'NPLDLT',npldlt) 
+      call json%add(me,'NPLDLT',npldlt)
+
+      call eirene_write_block_11_usr(json,me)
 
       call json%create_array(plads,'3D_ADD_SRF')
       do j = 1, 5

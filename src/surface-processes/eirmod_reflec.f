@@ -106,7 +106,7 @@ C  DISTRIBUTION FUNCTIONS ZIDE(ZRANGE) , ONE FOR EACH ZENGY
      .  0._DP,0.001_DP,0.003_DP,0.006_DP,0.011_DP,0.025_DP,0.073_DP,
      .    0.215_DP,0.505_DP,0.865_DP,2*1._DP,
      .  0._DP,0.001_DP,0.003_DP,0.005_DP,0.009_DP,0.015_DP,0.035_DP,
-     .    0.105_DP,0.305_DP,0.6_DP,0.9,1._DP/
+     .    0.105_DP,0.305_DP,0.6_DP,0.9_DP,1._DP/
 C---------------------------------------------------------------------
 
       REAL(DP), SAVE ::
@@ -527,7 +527,15 @@ C              OR FOR MAXWELLIAN FLUX AT WALL TEMPERATURE TW
         F2=0.
         FR1=RANF_EIRENE( )
 C       IF (FR1.GE.RPROB) THEN
-          IF (IGAST) 500,700,600
+         IF (MODREF.LT.9) THEN
+          IF (IGAST.LT.0) THEN
+            GOTO 500
+          ELSE IF (IGAST.GT.0) THEN
+            GOTO 600
+          ELSE
+            GOTO 700
+          ENDIF
+         ENDIF
 C       ENDIF
       ENDIF
 C
@@ -537,9 +545,9 @@ C   FACTOR FOR CONVERSION TO REDUCED ENERGY
       ERDUC=EREDUC(ISPZ,MSURF)
 C
 C
-C   MODREF=1: "DATABASE REFLECTION MODEL" (TRIM)
-C   MODREF=2: "BEHRISCH-MATRIX"
-C   MODREF=3: "USER-SUPPLIED REFLECTION MODEL"
+C   MODREF  =1: "DATABASE REFLECTION MODEL" (TRIM)
+C   MODREF  =2: "BEHRISCH-MATRIX"
+C   MODREF >=9: "USER-SUPPLIED REFLECTION MODEL"
 C
       IF (MODREF.EQ.1) THEN
         GOTO 100
@@ -547,11 +555,12 @@ C
         GOTO 200
       ELSEIF (MODREF.GE.9) THEN
         CALL EIRENE_REFUSR (XMW,XCW,XMP,XCP,IGASF,IGAST,F1,F2,EXPI,
-     .               RPROB,E0TERM,IRET)
+     .               RPROB,E0TERM,ITYP,MSURF,ISPZO,IRET)
         IF (IRET == 1) GOTO 400
         IF (IRET == 2) GOTO 500
         IF (IRET == 3) GOTO 600
         IF (IRET == 4) GOTO 700
+        IF (IRET == 5) GOTO 100
         RETURN
       ELSE
         WRITE (IUNOUT,*)  'INVALID REFLECTION MODEL PARAMETER '
@@ -684,7 +693,13 @@ C
       FR1=RANF_EIRENE( )
 C  THERMAL PARTICLE MODEL OR ABSORPTION
       IF (FR1.GE.RPROB) THEN
-        IF (IGAST) 500,700,600
+        IF (IGAST.LT.0) THEN
+          GOTO 500
+        ELSE IF (IGAST.GT.0) THEN
+          GOTO 600
+        ELSE
+          GOTO 700
+        ENDIF
       ENDIF
 C
 C  SPECIES OF REFLECTED PARTICLE
@@ -759,9 +774,10 @@ C  FRACTION (1.0-AINTG):  cosine (Lambertian)
         ZEP1=RANF_EIRENE( )
         APROB=MIN(1.0_DP,AINTG)
         IF (ZEP1.GT.APROB) THEN
-C  evaporated fraction
-C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
+cdr   evaporated fraction
+cdr  decide: Maxwellian flux or monoenergetic Lambertian:
           IF (E0TERM.LT.0.0) THEN
+C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
             TW=-E0TERM
 ! these variables are INTENT(IN) (not altered in velocs)
             VXR = 0._DP
@@ -976,7 +992,13 @@ C
 C
 C  THERMAL PARTICLE MODEL
       IF (FR1.GE.RPROB) THEN
-        IF (IGAST) 500,700,600
+        IF (IGAST.LT.0) THEN
+          GOTO 500
+        ELSE IF (IGAST.GT.0) THEN
+          GOTO 600
+        ELSE
+          GOTO 700
+        ENDIF
       ENDIF
 C
 C  FAST PARTICLE REFLECTION MODEL

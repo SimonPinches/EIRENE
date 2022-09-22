@@ -53,6 +53,9 @@ C     USE EIRMOD_COMPRT
 ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
       DATA PISQ/1.772454_DP/  ! sqrt(pi)
       DATA SQ2I/0.707107_DP/  ! 1/sqrt(2)
+#ifdef PGF90
+      REAL(DP) :: DERF
+#endif
 C
 C---------------------------------------------------------------------
 C
@@ -125,7 +128,11 @@ CDR
 C
         VMXSQ=-VMX*VMX
         FNOM=EXP(VLX*(VMX+VMX-CCM*VLX))*RCCM
+#ifdef PGF90
+        FACTOR=FNOM/(1.+VMX*PISQ*(1.+DERF(VMX))/EXP(VMXSQ))
+#else
         FACTOR=FNOM/(1.+VMX*PISQ*(1.+ERF(VMX))/EXP(VMXSQ))
+#endif
         WGHTVS=WGHTVS*FACTOR
       ENDIF
 

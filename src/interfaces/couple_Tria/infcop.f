@@ -170,9 +170,9 @@ C     THE ENTRIES "IF3COP, IF4COP" RETURN  RESULTS TO AN EXTERNAL CODE
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
+      USE EIRMOD_CESTIM
       USE EIRMOD_BRASPOI
       USE EIRMOD_COMUSR
-      USE EIRMOD_CESTIM
       USE EIRMOD_CADGEO
       USE EIRMOD_CCONA
       USE EIRMOD_CLOGAU
@@ -206,6 +206,8 @@ C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
       IMPLICIT NONE
+
+      INTEGER, INTENT(IN) :: IENTRY
 C
 C
 C  GEOMETRICAL DATA FROM GRIDADAP
@@ -290,7 +292,7 @@ C
      .           NUMSI, NBAR, ISNR, ISC, IS, NASMOD, NRS, NADMOD,
      .           NBARSI, IP1, IFL, IS1, IR1, IAIN, IAOT, IREAD,
      .           NTGPRI, IPRT, IO29, NEND, NINI, NSSIP,
-     .           LTARG, I, IPL, IERROR, IMODE, NPLP,
+     .           LTARG, I, IPL, IERROR, NPLP,
      .           NRED, IDUMMY,  ISTS, ITRI, ISTR,
      .           NREC11, NEM, MINSPEZ, MAXSPEZ,
      .           IR, IP, IT, IA, IB, JUN,
@@ -299,7 +301,7 @@ C
      .           NPBC, IACT, IANF, IO, IIPLS, IEPLS, IG, ITARG, IGITT,
      .           I34, IRRC, ISC1, ISC2, ISCS, ICOU, ISP,
      .           IXI, IXE, NCOPIB, NCOPEB, IPLSTI, IPLSV, IPLV,
-     .           IST_RATE, IMF, ITCO,
+     .           IST_RATE, nfilel_save, MSHFRM, IMF, ITCO,
 !  ADDITIONAL STORAGE FOR LIN. COMB. OF TALLIES (E.G. INTERNAL ENERGY SOURCES)
      .           ICPV, icp1, icp2, icp3,
      .           icoadd, icoscr, icog,
@@ -365,7 +367,7 @@ C
 
       TYPE(RATE_STORE), POINTER :: RTIS
 
-      LOGICAL, INTENT(IN) :: LFIXED
+      LOGICAL, INTENT(IN) :: LFIXED,LSHRT
 C
       DATA LTARG/0/
 C
@@ -375,7 +377,7 @@ C
 CTRIG E
 C
 C
-      ENTRY EIRENE_IF0COP(LFIXED)
+      ENTRY EIRENE_IF0COP(LFIXED,LSHRT)
 C
       LSHORT=.FALSE.
 C
@@ -398,8 +400,6 @@ C
       IERROR=0
       IUSROUT = 0
       IUNIN_SAVE = IUNIN
-C
-      IMODE=IABS(NMODE)
 C
       IF (.NOT.ALLOCATED(CHPM)) THEN
         ALLOCATE (CHPM(NPLS,NRAD))
@@ -454,6 +454,9 @@ C SAVE SOME MORE INPUT DATA FOR SHORT CYCLE ON COMMON CCOUPL
    60 CONTINUE
       NMODEI=NMODE
       NFILNN=NFILEN
+
+!pb for the time being ...
+      nfilel_save = nfilel
 C
 C  DEFINE ADDITIONAL TALLIES FOR COUPLING (UPDATED IN SUBR. UPTCOP
 C                                              AND IN SUBR. COLLIDE)
@@ -481,10 +484,10 @@ C
         RETURN
       END IF
 C
-      OPEN (UNIT=29,ACCESS='SEQUENTIAL',FORM='FORMATTED')
+      OPEN (UNIT=29,ACCESS='SEQUENTIAL',FORM='FORMATTED',ERR=1981)
       REWIND 29
 C
-      OPEN (UNIT=30,ACCESS='SEQUENTIAL',FORM='FORMATTED')
+      OPEN (UNIT=30,ACCESS='SEQUENTIAL',FORM='FORMATTED',ERR=1982)
       REWIND 30
 C
 C  READ IN DATA TO SET UP GEOMETRY FOR NEUTRAL GAS TRANSPORT CODE
@@ -701,33 +704,37 @@ C  TRANSFER FLAGS
 C
       NAINI=NAINB
 C
+      nrknot=0
+      ntrii=0
+      if(.not.nltrimesh) then !{
 CTRIG A
 C  READ DATA FOR TRIANGULAR MESH
 C
-      OPEN (UNIT=33,ACCESS='SEQUENTIAL',FORM='FORMATTED')
-      OPEN (UNIT=34,ACCESS='SEQUENTIAL',FORM='FORMATTED')
-      OPEN (UNIT=35,ACCESS='SEQUENTIAL',FORM='FORMATTED')
-      REWIND 33
-      REWIND 34
-      REWIND 35
+CVK I ADDED A FORMAT STRING FOR READING FROM FORT.33-35 THE SAME LIKE IN TRIAGEOM
+        OPEN (UNIT=33,ACCESS='SEQUENTIAL',FORM='FORMATTED',ERR=1983)
+        OPEN (UNIT=34,ACCESS='SEQUENTIAL',FORM='FORMATTED',ERR=1984)
+        OPEN (UNIT=35,ACCESS='SEQUENTIAL',FORM='FORMATTED',ERR=1985)
+        REWIND 33
+        REWIND 34
+        REWIND 35
 C
-      READ(33,*,IOSTAT=IO) NRKNOT
-      IF(IO.NE.0) NRKNOT=0
-      WRITE(iunout,*) 'NRKNOT = ',NRKNOT
+        READ(33,*,IOSTAT=IO,ERR=1983) NRKNOT
+        IF(IO.NE.0) NRKNOT=0
+        WRITE(iunout,*) 'NRKNOT = ',NRKNOT
 C
 C     READ IN THE NUMBER OF TRIANGLES AND ATTRIBUTES OF THE TRIANGLES
-      READ(34,*,IOSTAT=IO) NTRII
-      IF(IO.NE.0) NTRII=0
-      WRITE(iunout,*) 'NTRII = ',NTRII
+        READ(34,*,IOSTAT=IO,ERR=1984) NTRII
+        IF(IO.NE.0) NTRII=0
+        WRITE(iunout,*) 'NTRII = ',NTRII
 
-      READ (35,*,IOSTAT=IO) IDUMMY
-      IF(IO.NE.0) IDUMMY=0
-      IF (IDUMMY /= NTRII) THEN
-        WRITE (IUNOUT,*) ' NUMBERS OF TRIANGLES DO NOT MATCH '
-        WRITE (IUNOUT,*) ' IN ELEMENTE AND NEIGHBOR FILES'
-        WRITE (IUNOUT,*) ' CHECK THE GRID FILES '
-        CALL EIRENE_EXIT_OWN(1)
-      END IF
+        READ (35,*,IOSTAT=IO) IDUMMY
+        IF(IO.NE.0) IDUMMY=0
+        IF (IDUMMY /= NTRII) THEN
+          WRITE (IUNOUT,*) ' NUMBERS OF TRIANGLES DO NOT MATCH '
+          WRITE (IUNOUT,*) ' IN ELEMENTE AND NEIGHBOR FILES'
+          WRITE (IUNOUT,*) ' CHECK THE GRID FILES '
+          CALL EIRENE_EXIT_OWN(1)
+        END IF
 
 C
 C  EACH ELEMENT (TRIANGLE) IS GIVEN BY 3 POINTS
@@ -741,40 +748,40 @@ C          1.................2
 C                  1
 C
 C
-      IF (NTRFRM == 0) THEN
-        READ(33,*) (XTRIAN(I),I=1,NRKNOT)
-        READ(33,*) (YTRIAN(I),I=1,NRKNOT)
-
-         if (plidl) then
+        IF (NTRFRM == 0) THEN
+          READ(33,*) (XTRIAN(I),I=1,NRKNOT)
+          READ(33,*) (YTRIAN(I),I=1,NRKNOT)
+          
+          if (plidl) then
 c write file 'triang_new.npco_char' for triang-grid, for idl tool, in appropriate format.
 c first: fetch a free file unit number
-           open(newunit=jun,file='triang_new.npco_char',
-     .          access='SEQUENTIAL',form='FORMATTED')
+            open(newunit=jun,file='triang_new.npco_char',
+     .           access='SEQUENTIAL',form='FORMATTED')
 c next: write file 'triang_new.npco_char'
-           write (jun,'(i9)') NRKNOT
-           DO I=1,NRKNOT
-             WRITE(jun,'(i9,2es24.16)') I,XTRIAN(I),YTRIAN(I)
-           ENDDO
-           close (unit=jun)
-         end if
-      ELSE
-        DO I=1,NRKNOT
-          READ(33,*) J,XTRIAN(I),YTRIAN(I)
-        ENDDO
-      END IF
+            write (jun,'(i9)') NRKNOT
+            DO I=1,NRKNOT
+              WRITE(jun,'(i9,2es24.16)') I,XTRIAN(I),YTRIAN(I)
+            ENDDO
+            close (unit=jun)
+          end if
+        ELSE
+          DO I=1,NRKNOT
+            READ(33,*) J,XTRIAN(I),YTRIAN(I)
+          ENDDO
+        END IF
 C
-      IF (NTRII.GT.NRAD.OR.NTRII.GT.NTRI) THEN
-        WRITE (iunout,*) ' PARAMETER ERROR DETECTED IN INFUSR '
-        WRITE (iunout,*) ' NTRII MUST BE < NRAD AND <= NTRI'
-        WRITE (iunout,*) ' NTRII,NRAD,NTRI = ',NTRII,NRAD,NTRI
-        CALL EIRENE_EXIT_OWN(1)
-      ENDIF
+        IF (NTRII.GT.NRAD.OR.NTRII.GT.NTRI) THEN
+          WRITE (iunout,*) ' PARAMETER ERROR DETECTED IN INFUSR '
+          WRITE (iunout,*) ' NTRII MUST BE < NRAD AND <= NTRI'
+          WRITE (iunout,*) ' NTRII,NRAD,NTRI = ',NTRII,NRAD,NTRI
+          CALL EIRENE_EXIT_OWN(1)
+        ENDIF
 
-      DO I=1,NTRII
-        READ(34,*) J,NECKE(1,I),NECKE(2,I),NECKE(3,I)
-      ENDDO
+        DO I=1,NTRII
+          READ(34,*) J,NECKE(1,I),NECKE(2,I),NECKE(3,I)
+        ENDDO
 
-      DO I=1,NTRII
+        DO I=1,NTRII
 cdr  june 17:
 cdr  careful: I ne J possible. Unless triangles are sorted as J= 1,2,3... on fort.35
 cdr           This is implicitly assumed here ??
@@ -783,17 +790,18 @@ cdr           This is implicitly assumed here ??
      >                 NCHBAR(3,I),NSEITE(3,I),IDUMMY,
      >                 IXTRI(I),IYTRI(I)
 
-C       WRITE (iunout,*) J,NECKE(1,J),NECKE(2,J),NECKE(3,J),
+C     WRITE (iunout,*) J,NECKE(1,J),NECKE(2,J),NECKE(3,J),
 C    >                   NCHBAR(1,J),NSEITE(1,J),
 C    >                   NCHBAR(2,J),NSEITE(2,J),NCHBAR(3,J),NSEITE(3,J)
 
 C THE SPECIAL SURFACE PROPERTY (IF ANY) IS ON INMTI ARRAY, AND TRANSFERED INTO
 C EIRENE VIA COMMON.
-      ENDDO
+        ENDDO
 
-      CLOSE (UNIT=33)
-      CLOSE (UNIT=34)
-      CLOSE (UNIT=35)
+        CLOSE (UNIT=33)
+        CLOSE (UNIT=34)
+        CLOSE (UNIT=35)
+      end if !}
 
 C  FOR ALL QUADRANGLES BUILD LIST OF TRIANGLES BELONGING
 C  TO THE QUADRANGLE
@@ -855,22 +863,22 @@ CVKG TO FIX A BUG WITH GEOMETRY
                 ISC2=0
                 DO IS=1,3
                   IF(EIRENE_POINT_ON_INTERVAL(XTRIAN(NECKE(IS,ITRI)),
-     f                             YTRIAN(NECKE(IS,ITRI)),
-     f                             XPOL(IR,IP),YPOL(IR,IP),
-     f                             XPOL(IR,IP+1),YPOL(IR,IP+1))) THEN
-                  IF(ISC1.GT.0) THEN
-                    ISC2=IS
-                  ELSE
-                    ISC1=IS
+     f                               YTRIAN(NECKE(IS,ITRI)),
+     f                               XPOL(IR,IP),YPOL(IR,IP),
+     f                               XPOL(IR,IP+1),YPOL(IR,IP+1))) THEN
+                    IF(ISC1.GT.0) THEN
+                      ISC2=IS
+                    ELSE
+                      ISC1=IS
+                    END IF
                   END IF
-                END IF
-              ENDDO
+                ENDDO
 
 C  NODES ISC1 AND ISC2 OF TRIANGLE ITRI ARE LOCATED ON RADIAL SURFACE IR
 C  THAT MEANS  SIDE "NUMSI" OF TRIANGLE "ITRI" BELONGS TO NDS
-              IF (ISC1.GT.0.AND.ISC2.GT.0) THEN
-                NUMSI=MIN(ISC1,ISC2)
-                IF (NUMSI.EQ.1.AND.MAX(ISC1,ISC2).EQ.3) NUMSI=3
+                IF (ISC1.GT.0.AND.ISC2.GT.0) THEN
+                  NUMSI=MIN(ISC1,ISC2)
+                  IF (NUMSI.EQ.1.AND.MAX(ISC1,ISC2).EQ.3) NUMSI=3
 C
                   ICOG=ICOG+1
                   INSPAT(NUMSI,ITRI)=ICOG
@@ -910,23 +918,23 @@ CVKG TO FIX GEOMETRY BUG
                 ISC2=0
                 DO IS=1,3
                   IF(EIRENE_POINT_ON_INTERVAL(XTRIAN(NECKE(IS,ITRI)),
-     f                             YTRIAN(NECKE(IS,ITRI)),
-     f                             XPOL(IR,IP),YPOL(IR,IP),
-     f                             XPOL(IR+1,IP),YPOL(IR+1,IP))) THEN
-                  IF(ISC1.GT.0) THEN
-                    ISC2=IS
-                  ELSE
-                    ISC1=IS
+     f                               YTRIAN(NECKE(IS,ITRI)),
+     f                               XPOL(IR,IP),YPOL(IR,IP),
+     f                               XPOL(IR+1,IP),YPOL(IR+1,IP))) THEN
+                    IF(ISC1.GT.0) THEN
+                      ISC2=IS
+                    ELSE
+                      ISC1=IS
+                    END IF
                   END IF
-                END IF
-              ENDDO
+                ENDDO
 
 C  NODES ISC1 AND ISC2 OF TRIANGLE ITRI ARE LOCATED ON POLOIDAL SURFACE IP
 C  THAT MEANS  SIDE "NUMSI" OF TRIANGLE "ITRI" BELONGS TO NDS
-              IF (ISC1.GT.0.AND.ISC2.GT.0) THEN
+                IF (ISC1.GT.0.AND.ISC2.GT.0) THEN
                   NUMSI=MIN(ISC1,ISC2)
                   IF (NUMSI.EQ.1.AND.MAX(ISC1,ISC2).EQ.3) NUMSI=3
-C
+C     
                   ICOG=ICOG+1
                   INSPAT(NUMSI,ITRI)=ICOG
                   INMTI(NUMSI,ITRI)=NLIM+ISTS
@@ -945,7 +953,7 @@ C
             ENDDO
           ENDIF
         ENDDO
-
+          
 C  NEXT TOROIDAL SURFACES
 
 C  ADDED HERE ONLY FOR OTHER INFCOP, IN CASE OF 3D GRID RESOLUTION. IRRELEVANT FOR B2_TRIA
@@ -964,7 +972,7 @@ C  ADDED HERE ONLY FOR OTHER INFCOP, IN CASE OF 3D GRID RESOLUTION. IRRELEVANT F
             END DO
           END IF
         END DO
-
+        
       ENDDO
 C
 C  NOW THE ADJUSTMENTS, WHICH ARE AUTOMATICALLY DONE IN GEOUSR
@@ -976,7 +984,7 @@ C
 C
 C  DETERMINE THE ARRAY INMTI FOR ALL ADDITIONAL SURFACES
 C  ISTS=INMTI(ISIDE,NRCELL), ISIDE=1, 2, OR 3
-C
+C     
       DO I=1,NLIMI
         IF (IGJUM0(I)==0) THEN
 C  SURFACE I IS ACTIVE
@@ -1008,7 +1016,7 @@ C
                   ISC2=1
                 ENDIF
                 VT=SQRT(VTX**2+VTY**2)+EPS60
-C
+C     
                 VPRO=(VSX*VTY-VTX*VSY)/(VT*VS)
                 IF (ABS(VPRO).LT.1.E-2) THEN
 C  SURFACES ARE PARALLEL,
@@ -1034,94 +1042,104 @@ C  THE SURFACE
                       INSPAT(ISCS,ITRI)=ICOG
                       INMTI(ISCS,ITRI)=I
                       IF (LCHKQUD)
-     .                IREVERS(ISCS,ITRI)=
+     .                  IREVERS(ISCS,ITRI)=
      .                        INT(SIGN(1._DP,PX*VTRIX(ISCS,ITRI)+
      .                                       PY*VTRIY(ISCS,ITRI)))
                     endif
                   else
 
-                  IF (ABS(VSX).GT.ABS(VSY)) THEN
-                    XMUE=(TX-PX)/VSX
-                    IF (XMUE.GE.-1.D-5 .AND. XMUE.LE.1.+1.D-5) THEN
-                      TEST=(TY-PY-XMUE*VSY)/VS
+                    IF (ABS(VSX).GT.ABS(VSY)) THEN
+                      XMUE=(TX-PX)/VSX
+                      IF (XMUE.GE.-1.D-5 .AND. XMUE.LE.1.+1.D-5) THEN
+                        TEST=(TY-PY-XMUE*VSY)/VS
 !pb                      IF (ABS(TEST).LT.1.D-5) THEN
-                      IF (ABS(TEST).LT.1.D-4) THEN
-                        IF (ICOU.EQ.2) THEN
+                        IF (ABS(TEST).LT.1.D-4) THEN
+                          IF (ICOU.EQ.2) THEN
 C  TAKE CORRESPONDING ADDITIONAL SURFACE "I" OUT
 C  AND REPLACE IT BY NON-DEFAULT STD. SURFACE
-                          IGJUM0(I)=1
-                          ICOG=ICOG+1
-                          INSPAT(ISCS,ITRI)=ICOG
-                          INMTI(ISCS,ITRI)=I
-                          IF (LCHKQUD)
-     .                    IREVERS(ISCS,ITRI)=
-     .                        INT(SIGN(1._DP,PX*VTRIX(ISCS,ITRI)+
-     .                                       PY*VTRIY(ISCS,ITRI)))
-                          GOTO 1111
-                        ELSE
-                          ICOU=2
-                          ISC=ISC2
-                          GOTO 1112
+                            IGJUM0(I)=1
+                            ICOG=ICOG+1
+                            INSPAT(ISCS,ITRI)=ICOG
+                            INMTI(ISCS,ITRI)=I
+                            IF (LCHKQUD)
+     .                        IREVERS(ISCS,ITRI)=
+     .                             INT(SIGN(1._DP,PX*VTRIX(ISCS,ITRI)+
+     .                                            PY*VTRIY(ISCS,ITRI)))
+                            GOTO 1111
+                          ELSE
+                            ICOU=2
+                            ISC=ISC2
+                            GOTO 1112
+                          ENDIF
+                        ENDIF
+                      ENDIF
+                    ELSE
+                      XMUE=(TY-PY)/VSY
+                      IF (XMUE.GE.-1.D-5 .AND. XMUE.LE.1.+1.D-5) THEN
+                        TEST=(TX-PX-XMUE*VSX)/VS
+!pb                      IF (ABS(TEST).LT.1.D-5) THEN
+                        IF (ABS(TEST).LT.1.D-4) THEN
+                          IF (ICOU.EQ.2) THEN
+C  TAKE CORRESPONDING ADDITIONAL SURFACE "I" OUT
+C  AND REPLACE IT BY NON-DEFAULT STD. SURFACE
+                            IGJUM0(I)=1
+                            ICOG=ICOG+1
+                            INSPAT(ISCS,ITRI)=ICOG
+                            INMTI(ISCS,ITRI)=I
+                            IF (LCHKQUD)
+     .                        IREVERS(ISCS,ITRI)=
+     .                            INT(SIGN(1._DP,PX*VTRIX(ISCS,ITRI)+
+     .                                           PY*VTRIY(ISCS,ITRI)))
+                            GOTO 1111
+                          ELSE
+                            ICOU=2
+                            ISC=ISC2
+                            GOTO 1112
+                          ENDIF
                         ENDIF
                       ENDIF
                     ENDIF
-                  ELSE
-                    XMUE=(TY-PY)/VSY
-                    IF (XMUE.GE.-1.D-5 .AND. XMUE.LE.1.+1.D-5) THEN
-                      TEST=(TX-PX-XMUE*VSX)/VS
-!pb                      IF (ABS(TEST).LT.1.D-5) THEN
-                      IF (ABS(TEST).LT.1.D-4) THEN
-                        IF (ICOU.EQ.2) THEN
-C  TAKE CORRESPONDING ADDITIONAL SURFACE "I" OUT
-C  AND REPLACE IT BY NON-DEFAULT STD. SURFACE
-                          IGJUM0(I)=1
-                          ICOG=ICOG+1
-                          INSPAT(ISCS,ITRI)=ICOG
-                          INMTI(ISCS,ITRI)=I
-                          IF (LCHKQUD)
-     .                    IREVERS(ISCS,ITRI)=
-     .                        INT(SIGN(1._DP,PX*VTRIX(ISCS,ITRI)+
-     .                                       PY*VTRIY(ISCS,ITRI)))
-                          GOTO 1111
-                        ELSE
-                          ICOU=2
-                          ISC=ISC2
-                          GOTO 1112
-                        ENDIF
-                      ENDIF
-                    ENDIF
-                  ENDIF
-
+                    
                   endif
-
+                  
                 ENDIF
               ENDDO
- 1111       CONTINUE  ! END OF ITRI LOOP
+ 1111       CONTINUE            ! END OF ITRI LOOP
           ENDIF
         ENDIF
       ENDDO
 
 C
-      NLPLG=.FALSE.
-      NLPOL=.FALSE.
-      NLFEM=.TRUE.
-      LEVGEO=4
+      IF (NTRII.GT.0) THEN
+        NLPLG=.FALSE.
+        NLPOL=.FALSE.
+        NLFEM=.TRUE.
+        LEVGEO=4
 
 C  SAVE OLD, STRUCTURED, 2D GRID INFO FOR TALLY OUTPUT, ETC...
-      NR1TAL=NR1ST
-      NP2TAL=NP2ND
-      NT3TAL=NT3RD
-      NSURF_TAL=NR1TAL*NP2TAL*NT3TAL*NBMLT
+        NR1TAL=NR1ST
+        NP2TAL=NP2ND
+        NT3TAL=NT3RD
+        NSURF_TAL=NR1TAL*NP2TAL*NT3TAL*NBMLT
 
 C     NSBOX_TAL, NRADD_TAL: SEE BELOW
 
 C  SET NEW, FINER GRID STRUCTURE
-      NR1ST=NTRII+1  !  add one cell, for volume average in TRIA region
-      NP2ND=1
-      NT3RD=1
-      NSURF=NR1ST*NP2ND*NT3RD*NBMLT
-      NSBOX=NSURF+NRADD
+        NR1ST=NTRII+1  !  add one cell, for volume average in TRIA region
+        NP2ND=1
+        NT3RD=1
+        NSURF=NR1ST*NP2ND*NT3RD*NBMLT
+        NSBOX=NSURF+NRADD
 
+      ELSE IF (.NOT.NLTRIMESH) THEN
+        CALL EIRENE_LEER(2)
+        WRITE (iunout,*) 'CASE STOPPED !'
+        WRITE (iunout,*) 'NO TRIANGULAR MESH INFORMATION FOUND'
+        WRITE (iunout,*) 'BUT CODE COMPILED WITH -DTRIANG OPTION'
+        WRITE (iunout,*) 'PLEASE PROVIDE '//FORT//'3[3-5] FILES'
+        WRITE (iunout,*) 'OR RECOMPILE WITHOUT -DTRIANG'
+        CALL EIRENE_EXIT_OWN(1)
+      ENDIF
 
 C  counter for additional cells outside original COARSE standard grid
       icoadd = NSURF_TAL
@@ -1318,7 +1336,7 @@ CTRIG E
 C
 C   GEOMETRY DEFINITION PART FINISHED
 C
-      ENTRY EIRENE_IF1COP
+      ENTRY EIRENE_IF1COP(IENTRY)
 C
 C   NOW READ THE PLASMA STATE GIVEN BY BRAAMS
 C   AT PRESENT THE DATA COME FROM THE FILE FT31
@@ -1356,7 +1374,7 @@ C
      .          INDPRO(4).EQ.6)) RETURN
 C
 C
-      OPEN (UNIT=31,ACCESS='SEQUENTIAL',FORM='FORMATTED')
+      OPEN (UNIT=31,ACCESS='SEQUENTIAL',FORM='FORMATTED',ERR=1986)
       REWIND 31
 C
       IF (NFLA.GT.NFL) THEN
@@ -1520,6 +1538,9 @@ C
 C
 C  INDICATE, THAT NOW BRAEIR CONTAINS DATA AFTER INDEX-MAPPING
       NCUTB_SAVE=NCUTL
+
+!pb for the time being
+      nfilel = nfilel_save
 C
 C  RESET 2D ARRAYS ONTO 1D EIRENE ARRAYS, RESCALE TO EIRENE UNITS
 C  AND CONVERT BRAAMS VECTORS INTO CARTESIAN EIRENE VECTORS
@@ -2704,7 +2725,7 @@ C  ADD ENERGY GAIN BY SHEATH ACCELERATION TO TOTAL
             EESHT=EESHT+ESUM*DRR
           ENDIF
 
- 6009   CONTINUE  ! IPLS loopr
+ 6009   CONTINUE  ! IPLS loop
 
  6011 CONTINUE    ! IG,  CELL ALONG TARGET
 C
@@ -3928,7 +3949,8 @@ C
       ENTRY EIRENE_IF4COP
 C
       NREC11=NOUTAU
-      OPEN (UNIT=11,ACCESS='DIRECT',FORM='UNFORMATTED',RECL=8*NREC11)
+      OPEN (UNIT=11,ACCESS='DIRECT',FORM='UNFORMATTED',RECL=8*NREC11,
+     .      ERR=1987)
       IRC=3
 C  WRITE RCCPL
       WRITE (11,REC=IRC) RCCPL
@@ -4600,6 +4622,39 @@ C
       RETURN
 C
  8888 FORMAT (3E14.6)
+ 1981 WRITE(IUNOUT,*)
+     w     "ERROR IN INFCOP: CANNOT OPEN "//FORT//"29"
+      CALL EIRENE_EXIT_OWN (1)
+ 1982 WRITE(IUNOUT,*)
+     w     "ERROR IN INFCOP: CANNOT OPEN "//FORT//"30 ",
+    w      "(PLASMA GRID)"
+      CALL EIRENE_EXIT_OWN (1)
+ 1983 WRITE(IUNOUT,*)
+     w     "ERROR IN INFCOP: CANNOT OPEN "//FORT//"33 ",
+     .     "(NODES OF TRIANGULAR GRID)"
+      WRITE(IUNOUT,*)
+     w     "DID YOU MEAN TO COMPILE WITH -DTRIANG?"
+      CALL EIRENE_EXIT_OWN (1)
+ 1984 WRITE(IUNOUT,*)
+     w     "ERROR IN INFCOP: CANNOT OPEN "//FORT//"34 ",
+     .     "(TABLE OF CELLS OF TRIANGULAR GRID)"
+      WRITE(IUNOUT,*)
+     w     "DID YOU MEAN TO COMPILE WITH -DTRIANG?"
+      CALL EIRENE_EXIT_OWN (1)
+ 1985 WRITE(IUNOUT,*)
+     w     "ERROR IN INFCOP: CANNOT OPEN "//FORT//"35 ",
+     .     "(TABLE OF NEIGHBORS OF TRIANGULAR GRID)"
+      WRITE(IUNOUT,*)
+     w     "DID YOU MEAN TO COMPILE WITH -DTRIANG?"
+      CALL EIRENE_EXIT_OWN (1)
+ 1986 WRITE(IUNOUT,*)
+     w     "ERROR IN INFCOP: CANNOT OPEN "//FORT//"31 ",
+     w     "(PLASMA BACKGROUND)"
+      CALL EIRENE_EXIT_OWN (1)
+ 1987 WRITE(IUNOUT,*)
+     w     "ERROR IN INFCOP: CANNOT OPEN "//FORT//"11 ",
+     w     "(EIRENE's OUTPUT)"
+      CALL EIRENE_EXIT_OWN (1)
 C
 C
       CONTAINS
@@ -4622,6 +4677,7 @@ C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
        READ (IUNIN,'(9I6)') NFLA,NCUTB,NCUTL,IMF,
 cdr  imf  flag for different formats of geometry file: linda, sonnet, carre. What is what?
      .                      ntrfrm
+       NPLS_FIX = NFLA
        IF (IMF /= 0) MSHFRM=IMF
        NCUTB_SAVE=NCUTB
        IF (TRCINT) THEN

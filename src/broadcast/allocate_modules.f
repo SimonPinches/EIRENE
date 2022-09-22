@@ -22,7 +22,7 @@ c     memory allocation for additional processors
       IMPLICIT NONE
       INTEGER JTRJ
 
-      CALL EIRENE_ALLOC_COMPRT(NPRS)
+      CALL EIRENE_ALLOC_COMPRT
       CALL EIRENE_ALLOC_CPES(1)
       CALL EIRENE_ALLOC_CLAST
       CALL EIRENE_ALLOC_CPLOT

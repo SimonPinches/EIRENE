@@ -256,10 +256,11 @@ C  FIRST SECONDARY:
                 END IF
               ELSEIF (PHV_N1STOTPH(iphot,IRPH,1).EQ.2) THEN
                 IML1=PHV_N1STOTPH(iphot,IRPH,2)
+                INUM=PHV_N1STOTPH(iphot,IRPH,3)
                 LOGMOL(IML1,ISTRA)=.TRUE.
                 IF (LPPHML) THEN
 !$OMP ATOMIC
-                  PPHML(IML1,IRD)= PPHML(IML1,IRD)+WTRSIG
+                  PPHML(IML1,IRD)= PPHML(IML1,IRD)+WTRSIG*INUM
                   LMETSP(NSPA+IML1)=.TRUE.
                 END IF
               ELSEIF (PHV_N1STOTPH(iphot,IRPH,1).EQ.3) THEN
@@ -317,10 +318,11 @@ C  SECOND SECONDARY:
                 END IF
               ELSEIF (PHV_N2NDOTPH(iphot,IRPH,1).EQ.2) THEN
                 IML2=PHV_N2NDOTPH(iphot,IRPH,2)
+                INUM=PHV_N2NDOTPH(iphot,IRPH,3)
                 LOGMOL(IML2,ISTRA)=.TRUE.
                 IF (LPPHML) THEN
 !$OMP ATOMIC
-                  PPHML(IML2,IRD)= PPHML(IML2,IRD)+WTRSIG
+                  PPHML(IML2,IRD)= PPHML(IML2,IRD)+WTRSIG*INUM
                   LMETSP(NSPA+IML2)=.TRUE.
                 END IF
               ELSEIF (PHV_N2NDOTPH(iphot,IRPH,1).EQ.3) THEN

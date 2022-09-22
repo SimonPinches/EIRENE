@@ -1170,6 +1170,7 @@ C
       END SUBROUTINE EIRENE_LININT
 
       SUBROUTINE EIRENE_LININT2
+      IMPLICIT NONE
 
       IF (ALLOCATED(ARGST)) THEN
 c  these arrays have been allocated for PRSPEC option.

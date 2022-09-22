@@ -305,6 +305,7 @@
 
       type(TAVLNode), pointer :: node, retnode
 
+      retnode => node
       IF (node%balance < LESS) THEN
          IF (node%left%balance > EQUAL) THEN
             node%left => EIRENE_RotLeft(node%left)
@@ -539,8 +540,10 @@
       integer :: relation, oldbalance
       type (TAVLNode), pointer :: garbage, newroot
 
+      NULLIFY(retnode)
+
       IF (.NOT.ASSOCIATED(node)) THEN
-         NULLIFY(retnode)
+c        NULLIFY(retnode)
          RETURN
       END IF
 

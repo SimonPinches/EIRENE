@@ -123,6 +123,8 @@ C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
       IMPLICIT NONE
+
+      INTEGER, INTENT(IN) :: IENTRY
 C
 C
 C  GEOMETRICAL DATA FROM GRIDADAP
@@ -145,7 +147,7 @@ C
       REAL(DP), ALLOCATABLE, SAVE ::
      .            CHPM(:,:), CHEEM(:), CHEIM(:),
      .            CHMOM(:,:)
-      REAL(DP) :: DI(NPLS), VP(NPLS)
+      REAL(DP) :: DI(NPLS), VP(NPLS), ZI(NPLS)
 
 cdr for species-dependent global particle balance
       REAL(DP) :: SFNISY(NFL),SFNINY(NFL),SFNIWX(NFL),SFNIEX(NFL)
@@ -193,7 +195,7 @@ c    .          DELTE_PARA, DELTI_PARA, DELTE_PERP, DELTI_PERP, TES,TIS,
      .           IADD, IP, ITARG, IO, IFL, NPES,
      .           IIPLS, IG, IGITT, IEPLS, NPEC, NPBC, NPBS, NTGPRI,
      .           IT, I, IPRT, IAOT, IAIN, IREAD, IPL, INN,
-     .           IMODE, IERROR, LTARG, IN, IX, IY,
+     .           IERROR, LTARG, IN, IX, IY,
      .           NPLP, NDX2, NRED, IO29, NDXY, IFIRST,
      .           ISTRAI, IRRC, K, IR, IIRC, ICPV, IF, I34,
      .           NREC11, NEM, MINSPEZ, MAXSPEZ,
@@ -243,13 +245,13 @@ C
 
       TYPE(RATE_STORE), POINTER :: RTIS
 
-      LOGICAL, INTENT(IN) :: LFIXED
+      LOGICAL, INTENT(IN) :: LFIXED,LSHRT
 C
       DATA LTARG/0/
 C
 C
 C
-      ENTRY EIRENE_IF0COP(LFIXED)
+      ENTRY EIRENE_IF0COP(LFIXED,LSHRT)
 C
       LSHORT=.FALSE.
 C
@@ -272,8 +274,6 @@ C
       IERROR=0
       IUSROUT = 0
       IUNIN_SAVE = IUNIN
-C
-      IMODE=IABS(NMODE)
 C
       IF (.NOT.ALLOCATED(CHPM)) THEN
         ALLOCATE (CHPM(NPLS,NRAD))
@@ -596,7 +596,7 @@ C
 C
 C   GEOMETRY DEFINITION PART FINISHED
 C
-      ENTRY EIRENE_IF1COP
+      ENTRY EIRENE_IF1COP(IENTRY)
 C
 C   NOW READ THE PLASMA STATE GIVEN BY BRAAMS
 C   AT PRESENT THE DATA COME FROM THE FILE FT31
@@ -865,12 +865,14 @@ c
 C
 C  SET SAME ION TEMPERATURE FOR ALL EIRENE BACKGROUND SPECIES
 C
-      DO 2150 IPLS=1,NPLSTI
-      DO 2150 IY=1,NDYA
-        DO 2150 IX =1,NDXA
-          IN=IY+(IX-1)*NR1ST
-          TIINTF(IPLS,IN)=TIINTF(1,IN)
- 2150 CONTINUE
+      DO IPLS=1,NPLSTI
+        DO IY=1,NDYA
+          DO IX =1,NDXA
+            IN=IY+(IX-1)*NR1ST
+            TIINTF(IPLS,IN)=TIINTF(1,IN)
+          END DO
+        END DO
+      END DO
 C
 CDR  set density from B2 array DNIB, for each fluid
 CDR  set plasma flow velocity field from B2 arrays UPB (parallel velocity)
@@ -971,100 +973,114 @@ c  density, species index as in B2 code, cell-centered
         IF (NAINT(IAIN).EQ.1.AND.NAINS(IAIN).GT.0.AND.
      .      NAINS(IAIN).LE.NFLA) THEN
           DO 2321 IY=1,NDYA
-          DO 2321 IX=1,NDXA
-            IN=IY+(IX-1)*NR1ST
-            ADINTF(IAIN,IN)=DNIB(IX,IY,NAINS(IAIN))
+            DO IX=1,NDXA
+              IN=IY+(IX-1)*NR1ST
+              ADINTF(IAIN,IN)=DNIB(IX,IY,NAINS(IAIN))
+            END DO
  2321     CONTINUE
 c  poloidal (projection) flow velocity, species index as in B2 code, north surface-centered
         ELSEIF (NAINT(IAIN).EQ.2.AND.NAINS(IAIN).GT.0.AND.
      .      NAINS(IAIN).LE.NFLA) THEN
           DO 2322 IY=1,NDYA
-          DO 2322 IX=1,NDXA
-            IN=IY+(IX-1)*NR1ST
-            ADINTF(IAIN,IN)=UUB(IX,IY,NAINS(IAIN))
+            DO IX=1,NDXA
+              IN=IY+(IX-1)*NR1ST
+              ADINTF(IAIN,IN)=UUB(IX,IY,NAINS(IAIN))
+            END DO
  2322     CONTINUE
 c  radial drift velocity, species index as in B2 code, east surface-centered
         ELSEIF (NAINT(IAIN).EQ.3.AND.NAINS(IAIN).GT.0.AND.
      .      NAINS(IAIN).LE.NFLA) THEN
           DO 2323 IY=1,NDYA
-          DO 2323 IX=1,NDXA
-            IN=IY+(IX-1)*NR1ST
-            ADINTF(IAIN,IN)=VVB(IX,IY,NAINS(IAIN))
+            DO IX=1,NDXA
+              IN=IY+(IX-1)*NR1ST
+              ADINTF(IAIN,IN)=VVB(IX,IY,NAINS(IAIN))
+            END DO
  2323     CONTINUE
 c  plasma pressure, cell-centered, no species index
         ELSEIF (NAINT(IAIN).EQ.6) THEN
           DO 2326 IY=1,NDYA
-          DO 2326 IX=1,NDXA
-            IN=IY+(IX-1)*NR1ST
-            ADINTF(IAIN,IN)=PRB(IX,IY)
+            DO IX=1,NDXA
+              IN=IY+(IX-1)*NR1ST
+              ADINTF(IAIN,IN)=PRB(IX,IY)
+            END DO
  2326     CONTINUE
 c  parallel velocity, species index as in B2 code, north surface-centered
         ELSEIF (NAINT(IAIN).EQ.7.AND.NAINS(IAIN).GT.0.AND.
      .      NAINS(IAIN).LE.NFLA) THEN
           DO 2327 IY=1,NDYA
-          DO 2327 IX=1,NDXA
-            IN=IY+(IX-1)*NR1ST
-            ADINTF(IAIN,IN)=UPB(IX,IY,NAINS(IAIN))
+            DO IX=1,NDXA
+              IN=IY+(IX-1)*NR1ST
+              ADINTF(IAIN,IN)=UPB(IX,IY,NAINS(IAIN))
+            END DO
  2327     CONTINUE
 c  pitch angle, no species index
         ELSEIF (NAINT(IAIN).EQ.8) THEN
           DO 2328 IY=1,NDYA
-          DO 2328 IX=1,NDXA
-            IN=IY+(IX-1)*NR1ST
-            ADINTF(IAIN,IN)=RRB(IX,IY)
+            DO IX=1,NDXA
+              IN=IY+(IX-1)*NR1ST
+              ADINTF(IAIN,IN)=RRB(IX,IY)
+            END DO
  2328     CONTINUE
         ELSEIF (NAINT(IAIN).EQ.9.AND.NAINS(IAIN).GT.0.AND.
      .      NAINS(IAIN).LE.NFLA) THEN
           DO 2329 IY=1,NDYA
-          DO 2329 IX=1,NDXA
-            IN=IY+(IX-1)*NR1ST
-            ADINTF(IAIN,IN)=FNIXB(IX,IY,NAINS(IAIN))
+            DO IX=1,NDXA
+              IN=IY+(IX-1)*NR1ST
+              ADINTF(IAIN,IN)=FNIXB(IX,IY,NAINS(IAIN))
+            END DO
  2329     CONTINUE
         ELSEIF (NAINT(IAIN).EQ.10.AND.NAINS(IAIN).GT.0.AND.
      .      NAINS(IAIN).LE.NFLA) THEN
           DO 2330 IY=1,NDYA
-          DO 2330 IX=1,NDXA
-            IN=IY+(IX-1)*NR1ST
-            ADINTF(IAIN,IN)=FNIYB(IX,IY,NAINS(IAIN))
+            DO IX=1,NDXA
+              IN=IY+(IX-1)*NR1ST
+              ADINTF(IAIN,IN)=FNIYB(IX,IY,NAINS(IAIN))
+            END DO
  2330     CONTINUE
         ELSEIF (NAINT(IAIN).EQ.11) THEN
           DO 2331 IY=1,NDYA
-          DO 2331 IX=1,NDXA
-            IN=IY+(IX-1)*NR1ST
-            ADINTF(IAIN,IN)=FEIXB(IX,IY)
+            DO IX=1,NDXA
+              IN=IY+(IX-1)*NR1ST
+              ADINTF(IAIN,IN)=FEIXB(IX,IY)
+             END DO
  2331     CONTINUE
         ELSEIF (NAINT(IAIN).EQ.12) THEN
           DO 2332 IY=1,NDYA
-          DO 2332 IX=1,NDXA
-            IN=IY+(IX-1)*NR1ST
-            ADINTF(IAIN,IN)=FEIYB(IX,IY)
+            DO IX=1,NDXA
+              IN=IY+(IX-1)*NR1ST
+              ADINTF(IAIN,IN)=FEIYB(IX,IY)
+            END DO
  2332     CONTINUE
         ELSEIF (NAINT(IAIN).EQ.13) THEN
           DO 2333 IY=1,NDYA
-          DO 2333 IX=1,NDXA
-            IN=IY+(IX-1)*NR1ST
-            ADINTF(IAIN,IN)=FEEXB(IX,IY)
+            DO IX=1,NDXA
+              IN=IY+(IX-1)*NR1ST
+              ADINTF(IAIN,IN)=FEEXB(IX,IY)
+            END DO
  2333     CONTINUE
         ELSEIF (NAINT(IAIN).EQ.14) THEN
           DO 2334 IY=1,NDYA
-          DO 2334 IX=1,NDXA
-            IN=IY+(IX-1)*NR1ST
-            ADINTF(IAIN,IN)=FEEYB(IX,IY)
+            DO IX=1,NDXA
+              IN=IY+(IX-1)*NR1ST
+              ADINTF(IAIN,IN)=FEEYB(IX,IY)
+            END DO
  2334     CONTINUE
 C   NAINT=15,16:  USED ONLY IN B2.5 COUPLING: UUDIAG, VVDIAG
 c   cell volume as in b2 code, no species index (cell-centered)
         ELSEIF (NAINT(IAIN).EQ.17) THEN
           DO 2335 IY=1,NDYA
-          DO 2335 IX=1,NDXA
-            IN=IY+(IX-1)*NR1ST
-            ADINTF(IAIN,IN)=VOLB(IX,IY)
+            DO IX=1,NDXA
+              IN=IY+(IX-1)*NR1ST
+              ADINTF(IAIN,IN)=VOLB(IX,IY)
+            END DO
  2335     CONTINUE
 cdr  magnetic field strength, Tesla
         ELSEIF (NAINT(IAIN).EQ.18) THEN
           DO 2336 IY=1,NDYA
-          DO 2336 IX=1,NDXA
-            IN=IY+(IX-1)*NR1ST
-            ADINTF(IAIN,IN)=BFELDB(IX,IY)
+            DO IX=1,NDXA
+              IN=IY+(IX-1)*NR1ST
+              ADINTF(IAIN,IN)=BFELDB(IX,IY)
+            END DO
  2336     CONTINUE
 
 
@@ -1112,8 +1128,9 @@ C
       ENDIF
 C
       DO 3005 IPLS=1,NPLSI
-      DO 3005 IGITT=1,NGITT
-        FLSTEP(IPLS,ITARG,IGITT)=0.
+        DO IGITT=1,NGITT
+          FLSTEP(IPLS,ITARG,IGITT)=0.
+        END DO
  3005 CONTINUE
 C
       ALLOCATE (TORL(NSTRA,NGITT))
@@ -1554,11 +1571,12 @@ C
               VPZ=VZSTEP(IPL,ITARG,IG)
               VP(IPL)=SQRT(VPX**2+VPY**2+VPZ**2)
               DI(IPL)=DISTEP(IPL,ITARG,IG)
+              ZI(IPL)=ZISTEP(IPL,ITARG,IG)
  6005       CONTINUE
             TE=TESTEP(ITARG,IG)
             CUR=0.
             GAMMA=0.
-            ESHT(ITARG,IG)=EIRENE_SHEATH(TE,DI,VP,NCHRGP,GAMMA,CUR,
+            ESHT(ITARG,IG)=EIRENE_SHEATH(TE,DI,VP,ZI,GAMMA,CUR,
      .                         NPLSI,-ITARG)
           ELSE IF (NEM == 9) THEN
             TE=TESTEP(ITARG,IG)
@@ -1578,11 +1596,12 @@ C  in order to find sheath potential, we need ALL plasma particle flux component
               VPZ=VZSTEP(IPL,ITARG,IG)
               VP(IPL)=SQRT(VPX**2+VPY**2+VPZ**2)
               DI(IPL)=DISTEP(IPL,ITARG,IG)
+              ZI(IPL)=ZISTEP(IPL,ITARG,IG)             
  6006       CONTINUE
             TE=TESTEP(ITARG,IG)
             CUR=0.
             GAMMA=0.
-            ESHT(ITARG,IG)=EIRENE_SHEATH(TE,DI,VP,NCHRGP,GAMMA,CUR,
+            ESHT(ITARG,IG)=EIRENE_SHEATH(TE,DI,VP,ZI,GAMMA,CUR,
      .                           NPLSI,-ITARG)
           ELSE IF (NEM == 9) THEN
             TE=TESTEP(ITARG,IG)
@@ -2010,7 +2029,7 @@ C  ION ENERGY: SPLIT FOR MULTIPLE IPLS SPECIES
             IPLS=ICPV
             IN=CPMUL%ICM
             CHI=CPMUL%VALUEM*
-     .          (SEINW(IN,IPLS)-RTIS%SEIODA(IN,IPLS))*ELCHA
+     .          (SEINW(IN,IPLS)-RTIS%SEIOD(IN,IPLS))*ELCHA
             EAPL(IPLS,IN)=EAPL(IPLS,IN)+CHI
             CHEIM(IN)=CHEIM(IN)+CHI
           ENDIF
@@ -2245,8 +2264,8 @@ C
                 IR2 = MIN(NR1ST,INGRDE(ISR,ISTRAI,1))
 !pb                DO 7471 IR=1,NR1ST-1
                 DO 7471 IR = IR1, IR2-1
-                DO 7471 K=1,NPPLG
-                DO 7471 IP=NPOINT(1,K),NPOINT(2,K)-1
+                DO K=1,NPPLG
+                DO IP=NPOINT(1,K),NPOINT(2,K)-1
                   IF ((IP < INGRDA(ISR,ISTRAI,2)) .OR.
      .                (IP >= INGRDE(ISR,ISTRAI,2))) CYCLE
                   IN=(IP-1)*NR1ST+IR
@@ -2274,6 +2293,8 @@ C  EXCLUDE IPLS-VACUUM CELLS
                     EPEL_COP(INC)=EPEL_COP(INC)+EEADD
                     SUMEE=SUMEE+EEADD*VOL(IN)
                   END IF
+                END DO
+                END DO
  7471           CONTINUE
                 RECTOT = RECTOT + SUMN
                 WRITE (iunout,*) 'IPLS,IRRC ',IPLS,IRRC
@@ -2401,8 +2422,8 @@ cdr  test particle sources papl,pmpl,pipl,pppl (...,ipls)
           CHMOS(IFL)=0.
           SMOS(IFL)=0.
 
-          DO 7510 IPLS=1,NPLSI
-            IF (IFLB(IPLS).NE.IFL) GOTO 7510
+          DO 7515 IPLS=1,NPLSI
+            IF (IFLB(IPLS).NE.IFL) GOTO 7515
             IPLSV=MPLSV(IPLS)
 c  ipls contributes to plasma code species ifl
             DO 7520 IX=1,NDXA
@@ -2555,6 +2576,7 @@ cdr   ntalm is a copv tally.
 
             END IF
 !pb 7539        CONTINUE
+ 7515   CONTINUE
  7510   CONTINUE
 
 C
@@ -3264,14 +3286,15 @@ C
         SSN=0.
         SSI=0.
         SSE=0.
-        DO 10140 IX=1,NDXA
+        DO 10142 IX=1,NDXA
            DO 10140 IY=1,NDYA
              DO 10141 IFL=1,NFLA
                SSN(IFL)=SSN(IFL)+SNI(IX,IY,IFL,ISTRA)
 10141        CONTINUE
              SSI=SSI+SEI(IX,IY,ISTRA)
              SSE=SSE+SEE(IX,IY,ISTRA)
-10140   CONTINUE
+10140     CONTINUE
+10142   CONTINUE
 C
       WRITE (37,*) 'RECYCLING SOURCE RATES, POTENTIAL+RAD. EN. ',ISTRA
       WRITE (37,8888) SSN*FLX,SSI*FLX/ELCHA,SSE*FLX/ELCHA
@@ -3482,6 +3505,7 @@ C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
       IF (TRCINT)
      .  WRITE (iunout,*) ' LSYMET,LBALAN = ',LSYMET,LBALAN
       READ (IUNIN,'(5I6)') NFLA,NCUTB,NCUTL,IMF,nfull
+      NPLS_FIX = NFLA
 cdr  imf  flag for different formats of geometry file: linda, sonnet, carre. What is What?
       if (imf /= 0) mshfrm = imf
       NCUTB_SAVE=NCUTB
@@ -3676,6 +3700,7 @@ C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
 !     call json%get(me,'IBRAD',ibrad,found)
 !     call json%get(me,'IBPOL',ibpol,found)
 !     call json%get(me,'IBTOR',ibtor,found)
+      NPLS_FIX = NFLA
 cdr  imf  flag for different formats of geometry file: linda, sonnet, carre. What is What?
       if (imf /= 0) mshfrm = imf
       NCUTB_SAVE=NCUTB

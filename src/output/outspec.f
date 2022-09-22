@@ -81,8 +81,9 @@ cdr  this option apparently does not exist yet, in update_spectrum
      .                'INCIDENT ENERGY FLUX IN WATT/BIN(EV)    '
             UNITOUT=UNITINT(2)
           END IF
-cdr  "cell-based spectra", scoring cell (coarse grid)
+
         ELSE IF (ESTIML(ISPC)%ISRFCLL == 1)  THEN
+cdr  "cell-based spectra", scoring cell (coarse grid)
           WRITE (IOUT,'(A,A,I6)') ' SPECTRUM CALCULATED FOR',
      .                   ' SCORING CELL ',I
           IF (ESTIML(ISPC)%IDIREC > 0) THEN
@@ -100,9 +101,10 @@ cdr  "cell-based spectra", scoring cell (coarse grid)
             WRITE (iunout,'(A20,A)') ' TYPE OF SPECTRUM : ',
      .        'SPECTRAL MOMENTUM DENSITY IN (G*CM/S)/CM**3/BIN(EV)    '
           END IF
+
+        ELSE IF (ESTIML(ISPC)%ISRFCLL == 2)  THEN
 cdr  "cell-based spectra", geometry cell (fine grid)
 cdr  otherwise: identical code as above
-        ELSE IF (ESTIML(ISPC)%ISRFCLL == 2)  THEN
           WRITE (IOUT,'(A,A,I6)') ' SPECTRUM CALCULATED FOR',
      .                   ' GEOMETRICAL CELL ',I
           IF (ESTIML(ISPC)%IDIREC > 0) THEN

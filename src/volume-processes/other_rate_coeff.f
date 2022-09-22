@@ -132,13 +132,12 @@ c  extrapolation data:  for 1d polynomial fits
         jfex1mn = reacdat(ir)%oth%jfex1mn
         jfex1mx = reacdat(ir)%oth%jfex1mx
         earrh0  = reacdat(ir)%earrh0
+cdr  careful: Arrhenius factor for orate?
+        earrh0=0._DP
 
         orate = eirene_sngl_poly(reacdat(ir)%oth%poly%dblpol(1:9,1),
      .                   p1, rc1min, rc1max, fp1, jfex1mn, jfex1mx,
      .                   earrh0, trcamd, lexp)
-
-C       if (.not. lexp)  orate=orate
-        if (lexp)        orate = exp(max(-100._dp,orate))
 
 c..............................................................
 

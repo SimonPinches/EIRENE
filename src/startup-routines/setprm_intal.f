@@ -21,7 +21,8 @@ cdr  after this: INTLOPTS should not be needed any more?
  
       IMPLICIT NONE
  
-      INTEGER :: J, ITAL, NLSTTL, INDGRAD, INDTL
+      INTEGER :: J, ITAL, NLSTTL, INDGRAD, INDTL,
+     .              NTAL              !dr  NTAL = NTALG or = NTALI
 C
  
 C  LIVTALI: SWITCH OFF SOME INPUT TALLIES AUTOMATICALLY;
@@ -63,7 +64,10 @@ cdr to be written
       LIVTALI(23)  = NPLSV>0      ! BVIN, else: sign(1.,bvin)=1.0   
       LIVTALI(24)  = NPLS>0       ! PARMOM, else: = 0.0
 
-C  CURRENTLY THE LAST INPUT TALLY IN USE IS TALLY NO. 25 (NTALG=30)
+cnh   02.12.2019
+      LIVTALI(26)  = .TRUE.       ! ZIIN
+
+C  CURRENTLY THE LAST INPUT TALLY IN USE IS TALLY NO. 26 (NTALG=30)
 
 C  INTLOPT < 0  : SWITCH OFF TALLY
 C          = 0  : KEEP DEFAULT: on or off
@@ -72,7 +76,7 @@ C          = 2  : PREPARE FOR INTERPOLATING IN CELL, INTERPOLATE TO CORNER POINT
 cdr               not ready for all LEVGEO geometry options
 C          = 3  : SWITCH ON GRADIENTS (IMPLIES 2)
 
-      DO ITAL = 1, NTALI
+      DO ITAL = 1, NTALI  !=120
         IF (INTLOPTS(ITAL) < 0) THEN
 C  SWITCH OFF TALLY
           LIVTALI(ITAL) = .FALSE.
@@ -155,14 +159,18 @@ cdr ?? for a stationary background (NLDRFT=FALSE) we should not need any LV.IN
         INTLOPTS(14) = 0
       END IF
 
-C  ENSURE THAT CONNECTED TALLIES HAVE THE SAME SETTING
-
-      IF (.NOT.(LBXPERP .AND. LBYPERP)) THEN
-        LBXPERP = .FALSE.
-        LBYPERP = .FALSE.
+CNH SWITCHING OFF OF CHARGE IS PROHIBITED AT THE MOMENT
+      IF (.NOT.LZIIN) THEN
+        WRITE (IUNOUT,*) ' SWITCHING OFF OF CHARGE' //
+     .                   ' IS PROHIBITED'
+        WRITE (IUNOUT,*) ' TALLY IS SWITCHED ON AGAIN '
+        LZIIN = .TRUE.
+        INTLOPTS(26) = 0
       END IF
 
-      IF (.NOT.(LBXIN .AND. LBYIN .AND. LBZIN .AND. LBFIN)) THEN
+C  ENSURE THAT CONNECTED TALLIES HAVE THE SAME SETTING
+
+      IF (.NOT.LBIN) THEN
         LBXIN = .FALSE.
         LBYIN = .FALSE.
         LBZIN = .FALSE.
@@ -171,26 +179,29 @@ C  ENSURE THAT CONNECTED TALLIES HAVE THE SAME SETTING
         LBYPERP = .FALSE.
       END IF
 
-      IF (.NOT.(LEXIN .AND. LEYIN .AND. LEZIN .AND. LEFIN)) THEN
+      IF (.NOT.LEIN) THEN
         LEXIN = .FALSE.
         LEYIN = .FALSE.
         LEZIN = .FALSE.
         LEFIN = .FALSE.
+#ifndef B25_EIRENE
         LPOT  = .FALSE.
+#endif
       END IF
 
       
-C  18 primary input tallies plus 6 derived background tallies, (# ...)
+C  19 primary input tallies plus 7 derived background tallies, (# ...)
 c     unfortunately mixed 
-C  --> 24 rather than 18 background tallies
-C  --> 30 include 6 free slots
+C  --> 26 rather than 19 background tallies
+C  --> NTALG: 30, includes 4 free slots
+
       NFRSTP(1)=0
       NFRSTP(2)=NPLSTI
       NFRSTP(3)=0       ! # DEIN,  DERIVED QUANTITY
       NFRSTP(4)=NPLS    ! DIIN
-      NFRSTP(5)=NPLSV   
-      NFRSTP(6)=NPLSV
-      NFRSTP(7)=NPLSV
+      NFRSTP(5)=NPLSV   ! VXIN
+      NFRSTP(6)=NPLSV   ! VYIN
+      NFRSTP(7)=NPLSV   ! VZIN
       NFRSTP(8)=0       ! BX
       NFRSTP(9)=0       ! BY
       NFRSTP(10)=0      ! BZ
@@ -206,11 +217,11 @@ C  --> 30 include 6 free slots
       NFRSTP(20)=0      ! EZ
       NFRSTP(21)=0      ! EF
       NFRSTP(22)=0      ! POT
-      NFRSTP(23)=NPLSV  ! # BVIN
-      NFRSTP(24)=NPLS   ! # PARMON
-      NFRSTP(25)=0      ! # PSI
+      NFRSTP(23)=NPLSV  ! # BVIN,    DERIVED QUANTITY
+      NFRSTP(24)=NPLS   ! # PARMOM,  DERIVED QUANTITY
+      NFRSTP(25)=0      ! # PSI  (belongs to; BX,BY,BZ,BF, but added to code only later)
+      NFRSTP(26)=NPLS   ! # ZIIN
 
-      NFRSTP(26)=0      ! # FREE26
       NFRSTP(27)=0      ! # FREE27
       NFRSTP(28)=0      ! # FREE28
       NFRSTP(29)=0      ! # FREE29
@@ -292,9 +303,9 @@ c  from here on: derivatives (gradients) of input tallies
       NFRSTP(103)=0      ! PSI
       NFRSTP(104)=0      ! PSI
       NFRSTP(105)=0      ! PSI
-      NFRSTP(106)=0      ! FREE26
-      NFRSTP(107)=0      ! FREE26
-      NFRSTP(108)=0      ! FREE26
+      NFRSTP(106)=NPLS   ! ZIIN
+      NFRSTP(107)=NPLS   ! ZIIN
+      NFRSTP(108)=NPLS   ! ZIIN
       NFRSTP(109)=0      ! FREE27
       NFRSTP(110)=0      ! FREE27
       NFRSTP(111)=0      ! FREE27
@@ -308,7 +319,7 @@ c  from here on: derivatives (gradients) of input tallies
       NFRSTP(119)=0      ! FREE30
       NFRSTP(120)=0      ! FREE30
 C
-C  NTALI=96?  number of input tallies  (19 PRIMARY + 5 DERIVED + 24 GRADIENTS)
+C  NTALI=120?  number of input tallies  (19 PRIMARY + 7 DERIVED + 4 FREE + 30 GRADIENT VECTORS)
  
 cdr Since primary and derived input tallies got mixed up anyway, 
 cdr add magnetic flux (vector potential). 
@@ -369,8 +380,18 @@ c.............................................................................
         CALL EIRENE_LEER(1)
         WRITE(IUNOUT,'(A6,1X,A)') 'NO.','DESCRIPTION'
         DO ITAL=1,NTALI
-          IF (LIVTALI(ITAL))
-     .      WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTPLS(1,ITAL)
+          IF (LIVTALI(ITAL)) THEN
+            IF (ITAL <= NTALG) THEN
+              IF (LSMOPRO(ITAL)) THEN
+                WRITE (IUNOUT,'(I6,1X,A,1X,A8)')
+     .            ITAL,trim(TXTPLS(1,ITAL)),', SMOOTHED'
+              ELSE
+                WRITE (IUNOUT,'(I6,1X,A)') ITAL,trim(TXTPLS(1,ITAL))
+              ENDIF
+            ELSE
+              WRITE (IUNOUT,'(I6,1X,A)') ITAL,trim(TXTPLS(1,ITAL))
+            ENDIF
+          ENDIF
         END DO
  
         IF (.NOT.ALL(LIVTALI)) THEN
@@ -379,12 +400,20 @@ c.............................................................................
      .                    'IN THIS RUN'
           CALL EIRENE_LEER(1)
           WRITE(IUNOUT,'(A6,1X,A)') 'NO.','DESCRIPTION'
-          DO ITAL=1,NTALI
+cdr 2020:  reduce obsolete printout
+cdr typically we will have no gradient input tallies
+          ntal=ntalg
+          IF (any(livtali(ntalg+1:ntali))) ntal=ntali
+
+          DO ITAL=1,NTAL
             IF (.NOT.LIVTALI(ITAL))
-     .        WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTPLS(1,ITAL)
+     .        WRITE (IUNOUT,'(I6,1X,A)') ITAL,trim(TXTPLS(1,ITAL))
           END DO
         END IF
- 
+        if (ntal.lt.ntali) then
+          call eirene_leer(1)
+          write (iunout,*) '   NO DERIVATIVES OF INPUT TALLIES SELECTED'
+        endif
         IF (ANY(INTLOPTS < 0)) THEN
           CALL EIRENE_LEER(2)
           WRITE(IUNOUT,*) 'INPUT TALLIES EXPLICITLY ',
@@ -393,7 +422,7 @@ c.............................................................................
           WRITE(IUNOUT,'(A6,1X,A)') 'NO.','DESCRIPTION'
           DO ITAL=1,NTALI
             IF (INTLOPTS(ITAL) < 0)
-     .        WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTPLS(1,ITAL)
+     .        WRITE (IUNOUT,'(I6,1X,A)') ITAL,trim(TXTPLS(1,ITAL))
           END DO
         END IF
   

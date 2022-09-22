@@ -13,7 +13,6 @@ C
       USE EIRMOD_PARMMOD
 
       USE EIRMOD_COMPRT
-      USE EIRMOD_CVARUSR
 
       IMPLICIT NONE
 
@@ -618,7 +617,7 @@ C  ERROR
      w                          "CANNOT FIND A NEAREST POINT"
       END SUBROUTINE  FIND_NEAREST_NDS
 
-      END subroutine eirene_geousr_biased
+      END SUBROUTINE EIRENE_GEOUSR_BIASED
 
 
 C

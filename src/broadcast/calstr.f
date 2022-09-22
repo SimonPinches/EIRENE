@@ -61,7 +61,7 @@ C> - tallies
       real(dp), allocatable :: dummyw(:), helpw(:)
       integer :: calstr_comm
       integer :: ier1, ier, ir, i, ispc, my_pe_gr,
-     .           mxdim, ns, j
+     .           mxdim, ns, j, istr
       logical, allocatable :: lhelp(:)
       logical :: lhelpa(0:natm), lhelpm(0:nmol), lhelpi(0:nion),
      .           lhelpp(0:npls), lhelpph(0:nphot)
@@ -71,7 +71,10 @@ C Could not check whether need_calstr(istra) can be moved outside of this subrou
       if( need_calstr(istra) .and. calc_stratum(istra)) then
 CDR  more than one single processor was active on this stratum ISTRA,
 CDR  and my_pe is one of them
-        calstr_comm = get_stratum_comm(istra)
+
+!pb     istra is a pointer, type check failure with Intel compiler under Windows
+        istr = istra
+        calstr_comm = get_stratum_comm(istr)
 
 c  my_pe_gr=0 indicates: my_pe is the master processor for istra
 C Would it make more sense to turn my_pe_gr into a logical?

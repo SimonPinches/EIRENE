@@ -217,11 +217,14 @@ C
 C TALLIES
 C
         NLIMPS=NLIM+NSTS
+        NGTSFT=NGSTAL*NGITT
+        NLMPGS=NLIM+NSTS+NGTSFT*NSTS
+
 ! NBMAX is number of multiplicative grid blocks 
 ! set in find_param
 !        NBMAX=10
 C
-C  GENERATION LIMIT TALLIES
+C  GENERATION LIMIT TALLIES (must match uinpcom.inc)
 C
         NPTAL=30
 
@@ -373,7 +376,6 @@ C
      P         NATMP+NMOLP+NIONP+NPHOTP+NPLSP+5*NPLSP+
      P         3*(NATMP+NMOLP+NIONP+NPHOTP)+4*NPLSP+
      P         NATMP+NMOLP+NIONP
-
 
 
       ELSE IF (ICAL == 3) THEN
@@ -530,7 +532,7 @@ c     INT_PARM( 86) = free
       INT_PARM(111) = NTALS
       INT_PARM(112) = NTLSA
       INT_PARM(113) = NTLSR
-C     INT_PARM(114) = NTALW   !    OUT, WAS SAME AS NTALS
+C     INT_PARM(114) =         !    OUT, WAS SAME AS NTALS
       INT_PARM(114) = NSPZTOTW
 
       INT_PARM(115) = N1MX

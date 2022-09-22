@@ -64,7 +64,7 @@ C
 
       REAL(DP), INTENT(IN) :: PR
       INTEGER, INTENT(OUT) :: IRET
-      INTEGER  :: IND
+      INTEGER  :: IND, IPRNLI_OLD
       REAL(DP) :: DIST, WGHTSG
 C
       IRET = 0
@@ -116,7 +116,8 @@ CDR   rather than fixed horizon at 100 meters in x-y plane
       endif
 cdpc
 C
-C  TOTAL NO. OF SCORES ON CENSUS
+C  TOTAL (ACCUMULATED, ALL STRATA) NO. OF SCORES ON CENSUS
+      IPRNLI_OLD=IPRNLI
       IPRNLI=IPRNLI+1
 C  NO. OF SCORES ON CENSUS FOR PRESENT STRATUM ISTRA
       IPRNLS=IPRNLS+1
@@ -137,8 +138,14 @@ CDR STOP ALSO AFTER NPRNLS SCORES FOR STRATUM ISTRA ??
       end if
 
 C  DO NOT SCORE ON CENSUS ANYMORE FOR THIS STRATUM
-      if (iprnls > nprnls(istra)) iprnls = nprnls(istra)
-      if (iprnli > nprnl)         iprnli = nprnl
+cdr  iprnli and iprnls have tentatively been increased above.
+cdr  Do we need to the revert this now, to avoid storage overflows?
+
+      if (iprnls > nprnls(istra)) then
+         iprnls = nprnls(istra)
+         iprnli = iprnli_old
+      end if
+      if (iprnli > nprnl) iprnli = nprnl
 
 C
   112 continue

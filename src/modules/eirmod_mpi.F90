@@ -21,8 +21,8 @@ module eirmod_mpi
     module procedure mpi_ireduce_l1_l1
   end interface
 
-  contains
 #endif
+  contains
 
 #else
 
@@ -49,7 +49,7 @@ module eirmod_mpi
                  MPI_REAL8 = 3,            &
                  MPI_LOGICAL = 4,          &
                  MPI_CHARACTER = 5,        &
-                 MPI_STATUS_SIZE = 5,      &
+                 MPI_STATUS_SIZE = 3,      &
                  MPI_SUM = 1,              &
                  MPI_LOR = 2,              &
                  MPI_IN_PLACE = 0
@@ -521,7 +521,7 @@ module eirmod_mpi
     end if
     request = 0
     data2 = data1
-  end subroutine
+  end subroutine mpi_ireduce_i0_r1
 
   subroutine mpi_ireduce_i0_l1 (data1, data2, n, datatype, operation, receiver, &
     comm, request, ierror )
@@ -545,7 +545,7 @@ module eirmod_mpi
     else
       ierror = MPI_FAILURE
     end if
-  end subroutine
+  end subroutine mpi_ireduce_i0_l1
   
   subroutine mpi_ireduce_r1_r1 (data1, data2, n, datatype, operation, receiver, &
     comm, request, ierror )
@@ -563,8 +563,8 @@ module eirmod_mpi
     end if
     request = 0
     data2 = data1
-  end subroutine
-  
+  end subroutine mpi_ireduce_r1_r1
+   
   subroutine mpi_ireduce_l1_l1 (data1, data2, n, datatype, operation, receiver, &
     comm, request, ierror )
     ! first argument is MPI_IN_PLACE flag
@@ -581,7 +581,7 @@ module eirmod_mpi
     end if
     request = 0
     data2 = data1
-  end subroutine
+  end subroutine mpi_ireduce_l1_l1
 #endif
 
   subroutine mpi_reduce_inplace_r0 (data1, data2, n, datatype, operation, receiver, &
@@ -1107,7 +1107,7 @@ module eirmod_mpi
      'Warning: MPI send called in a serial code. No data is sent.'
     write(iounit,*) &
      '         Results are only correct if send and recv buffers are the same'
-  end subroutine
+  end subroutine mpi_send_dum_a1
 
   subroutine mpi_send_dum_a2(buffer,cnt,datatype,dest,tag,comm,ier)
     use eirmod_precision
@@ -1121,7 +1121,7 @@ module eirmod_mpi
      'Warning: MPI send called in a serial code. No data is sent.'
     write(iounit,*) &
      '         Results are only correct if send and recv buffers are the same'
-  end subroutine
+  end subroutine mpi_send_dum_a2
 
   subroutine mpi_send_dum_a3(buffer,cnt,datatype,dest,tag,comm,ier)
     use eirmod_precision

@@ -44,7 +44,7 @@ cdr            rename q1,q2 to pp1,pp2: modified input parameters p1, p2.
       use EIRMOD_parmmod
       use EIRMOD_comxs
       use EIRMOD_ctrcei, only: trcamd
-      use EIRMOD_comprt, only: iunout
+      use EIRMOD_comprt, only: iunout, nltrc
       use EIRMOD_COLRAD, ONLY: EIRENE_COLRAD
 
       implicit none
@@ -120,13 +120,17 @@ c  extrapolation data:  for 1d polynomial fits
         jfex1mn = reacdat(ir)%rtc%jfex1mn
         jfex1mx = reacdat(ir)%rtc%jfex1mx
         earrh0  = reacdat(ir)%earrh0
+        if (nltrc.and.(ir==15)) then
+          write (iunout,*) 'rc1 ',rc1min, rc1max
+	  write (iunout,*) 'fp1 ',fp1
+	  write (iunout,*) 'jfex ',jfex1mn, jfex1mx
+	  write (iunout,*) 'earrh0 ',earrh0
+	end if
 
         rate = eirene_sngl_poly(reacdat(ir)%rtc%poly%dblpol(1:9,1),
      .                   p1, rc1min, rc1max, fp1, jfex1mn, jfex1mx,
      .                   earrh0,trcamd, lexp)
-
-C       if (.not. lexp)  rate=rate
-        if (lexp)        rate = exp(max(-100._dp,rate))
+        if (nltrc.and.(ir==15)) write (iunout,*) 'rate ',rate
 
 c..............................................................
 

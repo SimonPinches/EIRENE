@@ -92,8 +92,8 @@ C                 TALTYP=4: UNKNOWN        (?)
       TALTYP(23)=0  ! bvin   units ??
       TALTYP(24)=0  ! parmom units ??
       TALTYP(25)=0  ! psi units ??
+      TALTYP(26)=3  ! zi
 
-      TALTYP(26)=0  ! free26 units ??
       TALTYP(27)=0  ! free27 units ??
       TALTYP(28)=0  ! free28 units ??
       TALTYP(29)=0  ! free29 units ??
@@ -239,7 +239,7 @@ cdr  missing here: verify cdenmodel(k) ?
             CASE (25)
               HELPP(1:NSBOX) = PSI(1:NSBOX)
             CASE (26)
-              HELPP(1:NSBOX) = FREE26(1:NSBOX)
+              HELPP(1:NSBOX) = ZIIN(K,1:NSBOX)
             CASE (27)
               HELPP(1:NSBOX) = FREE27(1:NSBOX)
             CASE (28)
@@ -374,7 +374,7 @@ C  25) PSI
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (26)
-C  26) FREE26
+C  26) ZI
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
@@ -400,7 +400,7 @@ C  30) FREE30
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
 
               CASE (31:120)  ! ntali=120, constant required here
-C  (25 .. NTALI) GRADIENTS
+C  (31 .. NTALI) GRADIENTS
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
@@ -478,12 +478,13 @@ C  PARALLEL TO B FLOW MOMENTUM
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-C  25) PSI
+              CASE (25)
+C  PSI
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (26)
-C  26) FREE26
+C  ZI
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0

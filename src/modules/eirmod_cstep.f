@@ -41,7 +41,7 @@ c
      R QUOTI(:,:,:),  ADDIV(:,:,:),
      R TESTEP(:,:),   TISTEP(:,:,:), RRSTEP(:,:),
      R VXSTEP(:,:,:), VYSTEP(:,:,:), VZSTEP(:,:,:),
-     R DISTEP(:,:,:), FESTEP(:,:),   FISTEP(:,:,:),
+     R DISTEP(:,:,:), FESTEP(:,:),   FISTEP(:,:,:), ZISTEP(:,:,:),
      R SHSTEP(:,:),   VPSTEP(:,:,:), MCSTEP(:,:,:)
 
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
@@ -83,6 +83,7 @@ c   next 2 tallies added nov. 05      !dr
       ALLOCATE (VYSTEP(NPLSV,NSTEP,NGITT))
       ALLOCATE (VZSTEP(NPLSV,NSTEP,NGITT))
       ALLOCATE (DISTEP(NPLS,NSTEP,NGITT))
+      ALLOCATE (ZISTEP(NPLS,NSTEP,NGITT))
 c  next 5 tallies added sept. 05     !dr
       ALLOCATE (FESTEP(NSTEP,NGITT))
       ALLOCATE (SHSTEP(NSTEP,NGITT))
@@ -102,7 +103,7 @@ c  next 5 tallies added sept. 05     !dr
       ALLOCATE (NSPSTE(NSTEP))
 
       WRITE (IUNMEM,'(A,T25,I15)')
-     .       ' CSTEP ',(8*NSTPP1+2*NSTPP4+4*NSTPP2+3*NSTPP3 +
+     .       ' CSTEP ',(8*NSTPP1+2*NSTPP4+4*NSTPP2+4*NSTPP3 +
      .                  (NPLSTI+4*NPLSV)*NSTPP2)*8 +
      .                 (6*NSTPP2+4*NSTEP)*4
 
@@ -133,6 +134,7 @@ c  next 5 tallies added sept. 05     !dr
       DEALLOCATE (VYSTEP)
       DEALLOCATE (VZSTEP)
       DEALLOCATE (DISTEP)
+      DEALLOCATE (ZISTEP)
       DEALLOCATE (FESTEP)
       DEALLOCATE (SHSTEP)
       DEALLOCATE (FISTEP)
@@ -173,6 +175,7 @@ c  next 5 tallies added sept. 05     !dr
       VYSTEP = 0._DP
       VZSTEP = 0._DP
       DISTEP = 0._DP
+      ZISTEP = 0._DP
       FESTEP = 0._DP
       FISTEP = 0._DP
       SHSTEP = 0._DP
@@ -224,6 +227,7 @@ c  next 5 tallies added sept. 05     !dr
       CALL MPI_BCAST (VZSTEP,NPLSV*NSTEP*NGITT,MPI_REAL8,0,
      .                MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (DISTEP,NSTPP3,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (ZISTEP,NSTPP3,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (FESTEP,NSTPP2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (SHSTEP,NSTPP2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (FISTEP,NSTPP3,MPI_REAL8,0,MPI_COMM_WORLD,ier)

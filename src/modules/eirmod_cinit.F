@@ -41,7 +41,8 @@ CDR FOR DIRECT TRANSFER OF INFO FROM FIND_PARAM.F INTO INPUT.F
      R VX0(:),VX1(:),VX2(:),VX3(:),VX4(:),VX5(:),
      R VY0(:),VY1(:),VY2(:),VY3(:),VY4(:),VY5(:),
      R VZ0(:),VZ1(:),VZ2(:),VZ3(:),VZ4(:),VZ5(:),
-     R DI0(:),DI1(:),DI2(:),DI3(:),DI4(:),DI5(:)
+     R DI0(:),DI1(:),DI2(:),DI3(:),DI4(:),DI5(:),
+     R ZI0(:),ZI1(:),ZI2(:),ZI3(:),ZI4(:),ZI5(:)
 
       INTEGER, PUBLIC, POINTER, SAVE ::
      I INDPRO(:),INDGRD(:),INDSRC(:)
@@ -58,7 +59,7 @@ CDR FOR DIRECT TRANSFER OF INFO FROM FIND_PARAM.F INTO INPUT.F
       TYPE TDENMODEL
         REAL(DP) :: G_BOLTZ, DELTAE, A_CORONA, G_PLANCK,
      R              DVAL, TVAL,
-     R              VXVAL, VYVAl, VZVAL,
+     R              VXVAL, VYVAL, VZVAL,
      R              DFACTOR, TFACTOR, VFACTOR
         INTEGER :: NRE
         INTEGER, POINTER :: ISP(:), ITP(:), ISTR(:), IRC(:)
@@ -90,10 +91,11 @@ C> Default output file prefix
       CONTAINS
 
       SUBROUTINE EIRENE_ALLOC_CINIT
+      INTEGER :: I
 
       IF (ALLOCATED(RCINIT)) RETURN
 
-      NCINIT=42+30*NPLS
+      NCINIT=42+36*NPLS
       MCINIT=12+3+NSTRA
       LCINIT=5   !dr: unused, so far.
 
@@ -101,6 +103,9 @@ C> Default output file prefix
       ALLOCATE (ICINIT(MCINIT))
       ALLOCATE (CDENMODEL(NPLS))
       ALLOCATE (TDMPAR(NPLS))
+      DO I=1,NPLS
+         NULLIFY(TDMPAR(I)%TDM)
+      ENDDO
 
       WRITE (IUNMEM,'(A,T25,I15)')
      .      ' CINIT ',NCINIT*8 + MCINIT*4 +
@@ -178,6 +183,12 @@ C> Default output file prefix
       DI3    => RCINIT(43+27*npls : 42+28*NPLS)
       DI4    => RCINIT(43+28*npls : 42+29*NPLS)
       DI5    => RCINIT(43+29*npls : 42+30*NPLS)
+      ZI0    => RCINIT(43+30*npls : 42+31*NPLS)
+      ZI1    => RCINIT(43+31*npls : 42+32*NPLS)
+      ZI2    => RCINIT(43+32*npls : 42+33*NPLS)
+      ZI3    => RCINIT(43+33*npls : 42+34*NPLS)
+      ZI4    => RCINIT(43+34*npls : 42+35*NPLS)
+      ZI5    => RCINIT(43+35*npls : 42+36*NPLS)
 
       INDPRO => ICINIT( 1 : 12)
       INDGRD => ICINIT(13 : 15)
@@ -188,7 +199,7 @@ cdr units used for input of background profiles: V, B, Ti
       NLMLTI => LCNIT(2)
       NLMLV  => LCNIT(3)
       NLPITCH=> LCNIT(4)
-      NLKELV => LCNIT(5)
+      NLKELV => LCNIT(5)  ! not in use yet
 
       CALL EIRENE_INIT_CINIT
 
@@ -343,7 +354,13 @@ cdr  e.g. corona, colrad, const, saha, planck, .....
         CALL MPI_BCAST(NREF,1,MPI_INTEGER,0,
      .                 MPI_COMM_WORLD,ier)
 
-        ALLOCATE (IHELP(4*NREF))
+csw 15apr2011
+        if(.not.allocated(ihelp)) then
+csw
+      	  ALLOCATE (IHELP(4*NREF))
+csw
+        endif
+csw
 
         IF (ME == 0) THEN
           RHELP(1) = TDMPAR(IPLS)%TDM%G_BOLTZ
@@ -380,6 +397,7 @@ csw
           TDMPAR(IPLS)%TDM%DELTAE = RHELP(2)
           TDMPAR(IPLS)%TDM%A_CORONA = RHELP(3)
           TDMPAR(IPLS)%TDM%G_PLANCK = RHELP(4)
+
           TDMPAR(IPLS)%TDM%ISP(1:NREF) = IHELP(1:NREF)
           TDMPAR(IPLS)%TDM%ITP(1:NREF) = IHELP(1+NREF:2*NREF)
           TDMPAR(IPLS)%TDM%ISTR(1:NREF) = IHELP(1+2*NREF:3*NREF)

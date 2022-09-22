@@ -84,25 +84,25 @@ C
       USE EIRMOD_SWITCH_PARTINFO, ONLY: EIRENE_SWITCH_PARTINFO
       USE EIRMOD_SPUTER, ONLY: EIRENE_SPUTR1
       USE EIRMOD_REFLEC, ONLY: EIRENE_REFLC1
+      USE EIRMOD_REFUSR, ONLY: EIRENE_RF2USR
       USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
       use eirmod_sheath, only: eirene_sheath
-
 
       IMPLICIT NONE
 
       REAL(DP), INTENT(IN) :: PR, SG
       INTEGER, INTENT(OUT) :: IRET
-      REAL(DP) :: DIWL(NPLS), VPWL(NPLS)
+      REAL(DP) :: DIWL(NPLS), VPWL(NPLS), ZIWL(NPLS)
       REAL(DP) :: VXSPTC, VYSPTC, VZSPTC, VSPTC, ESPTC, VXSPTP,
      .          VYSPTP, VZSPTP, ESPTP, VELXS, VELYS, VELZS, VSPTP, TW,
      .          E0TERM, FR2, COSI2, ZVZ, WABS,
      .          CUR, GAMMA, TEWL, VX, VY, VZ, FCHAR, WPR, FMASS,
      .          FLX, YIELD1, YIELD2, VELS, WEIGHS, E0S, ESHET,EVCQ,
      .          VSHETQ, V, VELSH, VC, VCQ, VC2, SPLFLG,
-     .          VXR, VYR, VZR, VWL, WGHTVS, RATR
+     .          VXR, VYR, VZR, VWL, WGHTVS, RATR, YSPTWL
 ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: ISG, ISPZS, I, J, IDIM, MS, IC, IP, ISTS,
-     .           ISSPTP, ISSPTC, IPV,
+     .           ISSPTP, ISSPTC, IPV, MODREF, MOL_DEFAULT,
      .           ITYP_OLD,IGASP_OLD,IGASC_OLD
       LOGICAL :: NLSPUT, LTRANS
 C
@@ -247,9 +247,16 @@ C  ACCOUNT FOR ELECTROSTATIC SHEATH AT SURFACE FOR TEST IONS
                 ENDIF
                 VPWL(IP)=SQRT(VX**2+VY**2+VZ**2)
                 DIWL(IP)=DIIN(IP,IC)
+cnh      28.10.2019
+                IF (ZIIN(IP,IC).NE.ZVAC) THEN
+                  ZIWL(IP) = ZIIN(IP,IC)
+                ELSE
+                  ZIWL(IP) = DBLE(NCHRGP(IP))
+                ENDIF
    30         CONTINUE
+cnh      02.11.2019   NCHRGP --> ZIWL
               ESHET=NCHRGI(IION)*EIRENE_SHEATH(TEWL,DIWL,VPWL,
-     .                                  NCHRGP,GAMMA,CUR,NPLSI,MSURF)
+     .                                  ZIWL,GAMMA,CUR,NPLSI,MSURF)
             ENDIF
           ELSE
             IC=NRCELL+((NPCELL-1)+(NTCELL-1)*NP2T3)*NR1P2+NBLCKA
@@ -404,7 +411,8 @@ C  SAVE PARAMETERS OF INCIDENT PARTICLE
      .              ISSPTP,ESPTP,VSPTP,VXSPTP,VYSPTP,VZSPTP,
      .              ISRC(ISPZ,MSURF),
      .              YIELD2,
-     .              ISSPTC,ESPTC,VSPTC,VXSPTC,VYSPTC,VZSPTC)
+     .              ISSPTC,ESPTC,VSPTC,VXSPTC,VYSPTC,VZSPTC,
+     .              YSPTWL)
         NLSPUT=YIELD1.GT.0..OR.YIELD2.GT.0.
         WGHTSP=WPR*YIELD1
         WGHTSC=WPR*YIELD2
@@ -490,8 +498,9 @@ C
           LMETSPW(ISPZ) = .TRUE.
         ENDIF
 
-        NLTRJ = .FALSE.
-        TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
+cdr unfinished option: store trajectories
+cdr     NLTRJ = .FALSE.
+cdr     TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
 
 !pb     IF (ICOL.EQ.1) RETURN 3 ! conditional expectation estimator. Continue.
         IF (ICOL.EQ.1) THEN
@@ -831,6 +840,9 @@ C  NEW SPECIES: AGAIN MOLECULE
 C
 C       ITYP=2
         IMOL=ISRT(ISPZ,MSURF)
+        MOL_DEFAULT = IMOL
+        MODREF=ILREF(MSURF)
+        IF (MODREF.GE.9) CALL EIRENE_RF2USR (IMOL,MOL_DEFAULT)
         IF (IMOL.GT.NMOLI) THEN
           FR2=RANF_EIRENE( )
           DO 621 I=1,NMOLI

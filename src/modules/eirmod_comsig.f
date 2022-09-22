@@ -17,7 +17,7 @@ cdr             now via reacdat(irc.....), block 4, exclusively.
 
       PUBLIC :: EIRENE_ALLOC_COMSIG, EIRENE_DEALLOC_COMSIG,
      P          EIRENE_INIT_COMSIG, EIRENE_BROADCAST_COMSIG,
-     p          TEMIS_MODEL, TCOMPO, TCONTRIB,
+     P          TEMIS_MODEL, TCOMPO, TCONTRIB,
      P          ASSIGNMENT(=)
 
 
@@ -262,6 +262,8 @@ cdr  additional output tallies added by code itself (rather than via input block
         CALL MPI_BCAST (EMIS_LINES(I)%EINSTEIN,1,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (EMIS_LINES(I)%TRANS_EN,1,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (EMIS_LINES(I)%ENERGY,1,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
 
         NUM_COMPO = EMIS_LINES(I)%NUM_COMPO

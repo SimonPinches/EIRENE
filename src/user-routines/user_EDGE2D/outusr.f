@@ -58,7 +58,7 @@ C+---------------------------------------------------------------+
 
       real(dp) :: pa,pi,pm,pph,vvol,val,sumvol,sumval,vdenpara,bb
       integer :: j,i
-      real(dp) :: c1,c2,c3,c4
+      real(dp) :: c1,c2,c3,c4,precom,erecom
 
 csw ratecoeff.dat
       integer :: iaei, iacx, imei, imcx, iiei, iicx, iirc
@@ -69,7 +69,7 @@ csw 25oct07
       real(dp) :: x1,x2,y1,y2,ar,xc
       real(dp),allocatable :: sumpotpl(:)
 csw
-      logical :: lcxsigma
+      logical :: lcxsigma, lexists
 
       integer, external :: EIRENE_idez
 
@@ -77,7 +77,7 @@ csw
 
       integer, save :: eirene_nbirth,eirene_njetto
       character(len=256), save :: eirene_fbirth,eirene_ftransfer,
-     &     eirene_fstoreneutflux
+     &     eirene_fstoreneutflux, eirene_felemente
       real(dp) :: eirene_phi_offsets(9)
       integer :: eirene_wallFluxModel ! calculation of wall fluxes for chemical sputtering
 c                = 0: no wall fluxes are used (old edge2d model)
@@ -87,7 +87,26 @@ c                = 3: ion and neutral fluxes are used, and EIRENE is iterated to
 c                     converged neutral fluxes.
       logical :: eirene_use_elstepdat_bug
       logical  :: lfound
-      real(dp) :: neutralFluxFileVersion
+      real(dp) :: neutralFluxFileVersion, neutralTransferFileVersion
+      integer  :: ll
+
+Ccks The variable to hold the name of the eirene.surface_transfer file (="eirene.surface_transfer")
+      character(len=64), save :: eirene_surface_transfer_filename
+
+Ccks The value for the outer and inner target surfaces in block 3a - NEEDS TO BE FIXED SO THAT 2 & 3
+ccks  ARE NOT HARD-WIRED
+      integer, save :: outer_target_surface_number,
+     &     inner_target_surface_number
+Ccks loop index and eirene.elemente number of triangles
+      integer :: IATMsurf, ELEM_TRI_TOTAL
+Ccks  dummy variables for reading eirene.elemente
+      integer :: dummy1, dummy2, dummy3, dummy4, dummy5, dummy6
+      integer :: dummy7, dummy8, dummy9
+Ccks  counter for reporting the total number of eirene.sutface_transfer cells
+      integer :: counter
+Ccks  arrays holding the surface, ii, jj indices from eirene.elemente
+      integer, allocatable :: SURF_INDX(:), II_INDX(:), JJ_INDX(:)
+
 c     replicate old sputtered flux arrays sptpl, sptat, sptml, sptio, sptpht
 c     for the moment these are filled with values from sptpltot, sptatot,sptmtot,sptitot,sptphtot
 c     in the future it is better to pass particle-resolved sputtered fluxes
@@ -104,9 +123,11 @@ c     from sptXY X=PH,I,A,M,P Y=PHT,IO,AT,ML,PL
      .                      eirene_wallFluxModel,
      .                      eirene_use_elstepdat_bug
 
-      NeutralFluxFileVersion = 1.0
+      NeutralFluxFileVersion = 1.2
+      NeutralTransferFileVersion = 1.1
       ldebug=.false.
 csw
+      ll=len_trim(casename)
       eirene_ftransfer = 'eirene.transfer'
       eirene_njetto=0
 cdmh
@@ -117,6 +138,180 @@ cdmh
       read(9998,eirene_user)
       close(9998)
 csw
+
+!cks  ------------------------------------------------------------------------
+!cks  --------------------eirene.surface_transfer creation--------------------
+
+!cks  Creation of file eirene.surface_transfer to output the reflected power from the
+!cks  target at higher resolution than just a total (cell-level resolution)
+
+      eirene_surface_transfer_filename = casename(1:ll)
+     &     // '.surface_transfer'
+      outer_target_surface_number = NLIM + 2
+      inner_target_surface_number = NLIM + 3
+
+!cks  Obtain the II,JJ EDGE2D to surface index correspondence from eirene.elemente
+      eirene_felemente = casename(1:ll)
+     &     // '.elemente'
+      ! check if this is and EDGE2D case
+      IF (casename(1:ll) .eq. 'eirene') THEN
+         inquire(file=trim(eirene_felemente),exist=lexists)
+         IF (.NOT.LEXISTS) THEN
+            write(*,*) "OUTUSR: File: '"//trim(eirene_felemente)
+     &           //"' does not exist"
+            write(*,*) "STOPPING...."
+            call EIRENE_exit_own(1)
+         ENDIF
+        open(9988,file=trim(eirene_felemente))
+        read(9988, '(I30)')  ELEM_TRI_TOTAL
+        allocate(SURF_INDX(ELEM_TRI_TOTAL))
+        allocate(II_INDX(ELEM_TRI_TOTAL))
+        allocate(JJ_INDX(ELEM_TRI_TOTAL))
+        do k=1,ELEM_TRI_TOTAL
+!         read(9988,'(12I10)') SURF_INDX(k),
+          read(9988,'(1I10,3I6,1I10,2I6,1I10,2I6,2I10)') SURF_INDX(k),
+     &                      dummy1, dummy2, dummy3,
+     &                      dummy4, dummy5, dummy6,
+     &                      dummy7, dummy8, dummy9,
+     &                      II_INDX(k), JJ_INDX(k)
+        ENDDO
+        close(9988)
+!cks  Write the headings for the file (so that it is human-readable)
+        counter = 0
+        open(unit=9997,file=eirene_surface_transfer_filename)
+        write(9997,'(a)',advance='no')
+     &'     ISURF     ISIDE     ITRIA        II        JJ SURF_INDX'
+!cks  Corresponds to EOTAT
+        DO IATMsurf=1,NATM
+          write(9997,'(a,1I7)',advance='no') '   Inc.Power Atom ',
+     &                                       IATMsurf
+        ENDDO
+!cks  Corresponds to EOTML
+        DO IATMsurf=1,NMOL
+          write(9997,'(a,1I7)',advance='no') '    Inc.Power Mol.',
+     &                                       IATMsurf
+        ENDDO
+!cks  Corresponds to ERFPAT
+        DO IATMsurf=1,NATM
+          write(9997,'(a,1I7)',advance='no') '  Refl.Power BI->A',
+     &                                       IATMsurf
+        ENDDO
+!cks  Corresponds to ERFPML
+        DO IATMsurf=1,NMOL
+          write(9997,'(a,1I7)',advance='no') '  Refl.Power BI->M',
+     &                                       IATMsurf
+        ENDDO
+!cks  Corresponds to ERFPPHT
+        DO IATMsurf=1,NPHOT
+          write(9997,'(a,1I7)',advance='no') ' Refl.Power BI->Ph',
+     &                                       IATMsurf
+        ENDDO
+!cks  Corresponds to ERFPIO
+        DO IATMsurf=1,NION
+          write(9997,'(a,1I7)',advance='no') ' Refl.Power BI->TI',
+     &                                       IATMsurf
+        ENDDO
+!cks  Corresponds to ERFAAT
+        DO IATMsurf=1,NATM
+          write(9997,'(a,1I7)',advance='no') '   Refl.Power A->A',
+     &                                       IATMsurf
+        ENDDO
+!cks  Corresponds to ERFAML
+        DO IATMsurf=1,NMOL
+          write(9997,'(a,1I7)',advance='no') '   Refl.Power A->M',
+     &                                       IATMsurf
+        ENDDO
+!cks  Corresponds to ERFMAT
+        DO IATMsurf=1,NATM
+          write(9997,'(a,1I7)',advance='no') '   Refl.Power M->A',
+     &                                       IATMsurf
+        ENDDO
+!cks  Corresponds to ERFMML
+        DO IATMsurf=1,NMOL
+          write(9997,'(a,1I7)',advance='no') '   Refl.Power M->M',
+     &                                       IATMsurf
+        ENDDO
+
+        write(9997,'(a)') " ENDOFLINE"
+!cks  Headings are now written.
+!cks  Order is EOTAT(NATM), EOTML(NMOL), ERFPAT(NATM), ERFPML(NMOL),
+!cks  ERFPPHT(NPHOT), ERFPIO(NION), ERFAAT(NATM), ERFAML(NMOL), ERFMAT(NATM), ERFMML(NMOL)
+!cks  (read in EDGE2D: pf2ds/linkeirene.f in "read eirene.surface_transfer")
+
+!cks  loop over the two surfaces we are interested
+!cks  (this is hard-coded at the moment!)
+        DO k=outer_target_surface_number,inner_target_surface_number
+!cks  loop over all triangle edges
+          DO np=1,3
+!cks  loop over all triangles
+            DO nr=1,NTRII
+!cks  if the surface index matches the surface for the triangle-edge
+!cks  combination in the inmti array, then we have the right triangle
+!cks  edge indices
+              IF (k .eq. INMTI(np,nr)) THEN
+                 write(9997,'(6I10)',advance='no')  INMTI(np,nr),
+     &              np,nr,
+     &              II_INDX(nr),
+     &              JJ_INDX(nr),
+     &              NLIM+NSTS+INSPAT(np,nr)
+!cks     .              ESTIMS(NADDW(31)+1,NLIM+NSTS+INSPAT(np,nr))
+                 DO IATMsurf=1,NATM
+                    write(9997,'(D25.16)',advance='no')
+     &                  EOTAT(IATMsurf,NLIM+NSTS+INSPAT(np,nr))
+                 ENDDO
+                 DO IATMsurf=1,NMOL
+                    write(9997,'(D25.16)',advance='no')
+     &                  EOTML(IATMsurf,NLIM+NSTS+INSPAT(np,nr))
+                 ENDDO
+                 DO IATMsurf=1,NATM
+                    write(9997,'(D25.16)',advance='no')
+     &                  ERFPAT(IATMsurf,NLIM+NSTS+INSPAT(np,nr))
+                 ENDDO
+                 DO IATMsurf=1,NMOL
+                    write(9997,'(D25.16)',advance='no')
+     &                  ERFPML(IATMsurf,NLIM+NSTS+INSPAT(np,nr))
+                 ENDDO
+                 DO IATMsurf=1,NPHOT
+                    write(9997,'(D25.16)',advance='no')
+     &                  ERFPPHT(IATMsurf,NLIM+NSTS+INSPAT(np,nr))
+                 ENDDO
+                 DO IATMsurf=1,NION
+                    write(9997,'(D25.16)',advance='no')
+     &                  ERFPIO(IATMsurf,NLIM+NSTS+INSPAT(np,nr))
+                 ENDDO
+                 DO IATMsurf=1,NATM
+                    write(9997,'(D25.16)',advance='no')
+     &                  ERFAAT(IATMsurf,NLIM+NSTS+INSPAT(np,nr))
+                 ENDDO
+                 DO IATMsurf=1,NMOL
+                    write(9997,'(D25.16)',advance='no')
+     &                  ERFAML(IATMsurf,NLIM+NSTS+INSPAT(np,nr))
+                 ENDDO
+                 DO IATMsurf=1,NATM
+                    write(9997,'(D25.16)',advance='no')
+     &                  ERFMAT(IATMsurf,NLIM+NSTS+INSPAT(np,nr))
+                 ENDDO
+                 DO IATMsurf=1,NMOL
+                    write(9997,'(D25.16)',advance='no')
+     &                  ERFMML(IATMsurf,NLIM+NSTS+INSPAT(np,nr))
+                 ENDDO
+                 write(9997,'(a)') " ENDOFLINE"
+                 counter = counter + 1
+               ENDIF
+             ENDDO
+          ENDDO
+        ENDDO
+        write(9997,'(a)') "Total data rows and columns: "
+        write(9997,'(2I10)') counter, 6+4*NATM+4*NMOL+NPHOT
+        deallocate(JJ_INDX)
+        deallocate(II_INDX)
+        deallocate(SURF_INDX)
+        close(9997)
+      ENDIF
+
+!cks  --------------------eirene.surface_transfer creation--------------------
+!cks  ------------------------------------------------------------------------
+
 
 C     fill replicated sputtered flux arrays
       sptpl(:,:) = 0.d0
@@ -170,6 +365,9 @@ csw
       open(unit=fp,file=trim(eirene_ftransfer),access='sequential',
      .     status='replace')
 
+      write(fp,'(a32,f14.6)') "* Neutral transfer file version:",
+     &     NeutralTransferFileVersion
+
       write(fp,'(a)') '* ntrii,nrad  :'
       write(fp,'(3(1x,i6))') ntrii,nrad
 
@@ -182,8 +380,8 @@ csw
       write(fp,'(a)') '* npls:'
       write(fp,'(3(1x,i6))') npls
 
-      write(fp,'(a)') '* nlimps,nlim,nsts:'
-      write(fp,'(3(1x,i6))') nlimps,nlim,nsts
+      write(fp,'(a)') '* nlimps,nlim,nsts,nlmpgs:'
+      write(fp,'(4(1x,i6))') nlimps,nlim,nsts,nlmpgs
 
 c---------------------------------------
       ti = 0._dp
@@ -199,7 +397,16 @@ c---------------------------------------
             c3 = mipl(ipls,ir)
 c            c4 = mphpl(ipls,ir)
             c4 = 0.
-            write(fp,'(i6,30(1x,e14.6))') ir,
+C           Recombination contribution
+            precom = 0.d0
+            erecom = 0.d0
+            DO IIRC=1,NPRCI(IPLS)
+               IRRC=LGPRC(IPLS,IIRC)
+               precom = precom - TABRC1(IRRC,IR)*DIIN(IPLS,IR)*ELCHA
+               erecom = erecom + EELRC1(IRRC,IR)*DIIN(IPLS,IR)*ELCHA
+            ENDDO
+
+            write(fp,'(i6,32(1x,e14.6))') ir,
      .           papl(ipls,ir),
      .           pmpl(ipls,ir),
      .           pipl(ipls,ir),
@@ -239,10 +446,15 @@ c     .           eael(ir),emel(ir),eiel(ir),ephel(ir),
      .           eael(ir),emel(ir),eiel(ir),0.,
 c esel:
 c     .           eael(ir)+emel(ir)+eiel(ir)+ephel(ir)
-     .           eael(ir)+emel(ir)+eiel(ir)+0.
+     .           eael(ir)+emel(ir)+eiel(ir)+0.,
+c particle recombination:
+     .           precom,
+c electron energy recombination:
+     .           erecom
+
          enddo
          write(fp,'(a,i6)') ' SRF.AV. IPLS = ',ipls
-         do is=1,nlimps
+         do is=1,nlmpgs
             write(fp,'(i6,20(1x,e14.6))') is,
      .           potpl(ipls,is),
      .           eotpl(ipls,is),
@@ -281,7 +493,7 @@ c---------------------------------------
      .           0.
          enddo
          write(fp,'(a,i6)') ' SRF.AV. IATM = ',iatm
-         do is=1,nlimps
+         do is=1,nlmpgs
             write(fp,'(i6,20(1x,e14.6))') is,
      .           potat(iatm,is),
      .           prfaat(iatm,is),
@@ -330,7 +542,7 @@ c---------------------------------------
      .           0.
          enddo
          write(fp,'(a,i6)') ' SRF.AV. IMOL = ',imol
-         do is=1,nlimps
+         do is=1,nlmpgs
             write(fp,'(i6,20(1x,e14.6))') is,
      .           potml(imol,is),
      .           prfaml(imol,is),
@@ -379,7 +591,7 @@ c---------------------------------------
      .           0.
          enddo
          write(fp,'(a,i6)') ' SRF.AV. IION = ',iion
-         do is=1,nlimps
+         do is=1,nlmpgs
             write(fp,'(i6,20(1x,e14.6))') is,
      .           potio(iion,is),
      .           prfaio(iion,is),
@@ -428,7 +640,7 @@ c---------------------------------------
      .           0.
          enddo
          write(fp,'(a,i6)') ' SRF.AV. IPHOT = ',iphot
-         do is=1,nlimps
+         do is=1,nlmpgs
             write(fp,'(i6,20(1x,e14.6))') is,
      .           potpht(iphot,is),
      .           prfapht(iphot,is),
@@ -515,11 +727,13 @@ c     store neutral particle fluxes [A] on wall
       write(fp,'(a28,f14.6)') "* Neutral flux file version:",
      &     NeutralFluxFileVersion
       write(fp,'(a,a)') '*  NLIM,   NSTS,  NGITT, NGSTAL,',
-     &     '   NATM, NLMPGS,  NTRII'
-      write(fp,'(7i8)') NLIM, NSTS, NGITT, NGSTAL, NATM, NLMPGS, NTRII
+     &     '   NATM,  NMOL, NLMPGS,  NTRII'
+      write(fp,'(8i8)') NLIM, NSTS, NGITT, NGSTAL, NATM,  NMOL, NLMPGS,
+     &     NTRII
       do iatm=1,NATM
          write(fp,'(a,i0)') '* neutral fluxes from atom species ',iatm
-         write(fp,'(a)') "*  idx,  neutral_flux, ITRIA, ISIDE, ISURF"
+         write(fp,'(a,a)') "*  idx,  neutral_flux, ",
+     &        "SAREA, ITRIA, ISIDE, ISURF"
          do is=1,NLMPGS
 c           find corresponding triangle
             lfound = .false.
@@ -541,14 +755,50 @@ c           find corresponding triangle
                enddo
             enddo
             if ((nr.le.0).or.(np.le.0)) then
-               write(fp,'(i6,1x,e14.6,1x,i6,1x,i6,1x,i6)')
-     &              is,POTAT(iatm,is),nr,np,0
+               write(fp,'(i6,1x,2(e14.6,1x),i6,1x,i6,1x,i6)')
+     &              is,POTAT(iatm,is),SAREA(is),nr,np,0
             else
-               write(fp,'(i6,1x,e14.6,1x,i6,1x,i6,1x,i6)')
-     &              is,POTAT(iatm,is),nr,np,INMTI(np,nr)
+               write(fp,'(i6,1x,2(e14.6,1x),i6,1x,i6,1x,i6)')
+     &              is,POTAT(iatm,is),SAREA(is),nr,np,INMTI(np,nr)
             endif
          enddo                  !is
       enddo                     !iatm
+
+      do imol=1,NMOL
+         write(fp,'(a,i0)') '* neutral fluxes from molecular species ',
+     &        imol
+         write(fp,'(a,a)') "*  idx,  neutral_flux, ",
+     &        "SAREA, ITRIA, ISIDE, ISURF"
+         do is=1,NLMPGS
+c           find corresponding triangle
+            lfound = .false.
+            nr = 0
+            np = 0
+            do i=1,ntrii
+               do j=1,3
+                  if ((INSPAT(j,i).eq. is -(NLIM+NSTS))
+     &                 .and.(INSPAT(j,i).ne.0) ) then
+                     if (lfound) then
+                        write(iunout,*)"* EIRENE_OUTUSR:"
+                        write(iunout,*)"* Edge twice found"
+                        call EIRENE_exit_own(1)
+                     endif
+                     lfound=.true.
+                     nr = i
+                     np = j
+                  endif
+               enddo
+            enddo
+            if ((nr.le.0).or.(np.le.0)) then
+               write(fp,'(i6,1x,2(e14.6,1x),i6,1x,i6,1x,i6)')
+     &              is,POTML(imol,is),SAREA(is),nr,np,0
+            else
+               write(fp,'(i6,1x,2(e14.6,1x),i6,1x,i6,1x,i6)')
+     &              is,POTML(imol,is),SAREA(is),nr,np,INMTI(np,nr)
+            endif
+         enddo                  !is
+      enddo                     !imol
+
       close(fp)
 
       return

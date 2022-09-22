@@ -128,6 +128,8 @@ C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
       IMPLICIT NONE
+
+      INTEGER, INTENT(IN) :: IENTRY
 C
 C
 C  GEOMETRICAL DATA FROM GRIDADAP
@@ -201,7 +203,7 @@ C
      .           IP, ITARG, IO, IFL, NPES,
      .           IIPLS, IG, IGITT, IEPLS, NPEC, NPBC, NPBS, NTGPRI,
      .           IT, I, IPRT, IAOT, IAIN, IREAD, IPL, INN,
-     .           IMODE, IERROR, LTARG, IN, IX, IY,
+     .           IERROR, LTARG, IN, IX, IY,
      .           NPLP, NDX2, NRED, IO29, NDXY, IFIRST,
      .           ISTRAI, IRRC, K, IR, IIRC, ICPV, I34,
      .           NREC11, NEM, ISTR,
@@ -218,6 +220,7 @@ C
       LOGICAL, INTENT(INOUT) :: LSTP
       LOGICAL, SAVE :: LSHORT, LSTOP, LTEST, LSTP3,
      .                 LNONREC_SY,LNONREC_NY,LNONREC_WX,LNONREC_EX
+     .                ,LCOARSE
 
       LOGICAL, ALLOCATABLE, SAVE :: LLCUT(:)
 
@@ -244,13 +247,13 @@ C
 
       TYPE(RATE_STORE), POINTER :: RTIS
 
-      LOGICAL, INTENT(IN) :: LFIXED
+      LOGICAL, INTENT(IN) :: LFIXED, LSHRT
 C
       DATA LTARG/0/
 C
 C
 C
-      ENTRY EIRENE_IF0COP(LFIXED)
+      ENTRY EIRENE_IF0COP(LFIXED,LSHRT)
 C
       LSHORT=.FALSE.
 C
@@ -273,8 +276,6 @@ C
       IERROR=0
       IUSROUT = 0
       IUNIN_SAVE = IUNIN
-C
-      IMODE=IABS(NMODE)
 C
       IF (.NOT.ALLOCATED(CHPM)) THEN
         ALLOCATE (CHPM(NPLS,NRAD))
@@ -585,7 +586,7 @@ C
 C
 C   GEOMETRY DEFINITION PART FINISHED
 C
-      ENTRY EIRENE_IF1COP
+      ENTRY EIRENE_IF1COP(IENTRY)
 C
 C   NOW READ THE PLASMA STATE GIVEN BY BRAAMS
 C   AT PRESENT THE DATA COME FROM THE FILE FT31
@@ -1814,7 +1815,7 @@ C  ION ENERGY: SPLIT FOR MULTIPLE IPLS SPECIES
             IPLS=ICPV
             IN=CPMUL%ICM
             CHI=CPMUL%VALUEM*
-     .          (SEINW(IN,IPLS)-RTIS%SEIODA(IN,IPLS))*ELCHA
+     .          (SEINW(IN,IPLS)-RTIS%SEIOD(IN,IPLS))*ELCHA
             EAPL(IPLS,IN)=EAPL(IPLS,IN)+CHI
             CHEIM(IN)=CHEIM(IN)+CHI
           ENDIF
@@ -2843,6 +2844,7 @@ C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
      .                     LSYMET,LBALAN,LCOARSE
 
       READ (IUNIN,'(5I6)') NFLA,NCUTB,NCUTL,IMF
+      NPLS_FIX = NFLA
 cdr  imf  flag for different formats of geometry file: linda, sonnet, carree. What is What?
       IF (IMF /= 0) MSHFRM=IMF
       NCUTB_SAVE=NCUTB
@@ -2919,7 +2921,7 @@ C  NTIN,NTEN: SOURCE RANGE FROM GRIDPOINT NTIN TO GRIDPOINT NTEN
               WRITE (iunout,*) 'ERROR IN INPUT BLOCK 14, NTIN, NTEN '
               CALL EIRENE_EXIT_OWN(1)
             ENDIF
-          ELSEIF (NIXY(IT,IPRT).EQ.2) THEN
+          ELSEIF (NIXY(IT/private2/test_unified/MPI_barrier/eirene/src/interfaces,IPRT).EQ.2) THEN
             IF (NTIN(IT,IPRT).LE.0.OR.NTIN(IT,IPRT).GE.NP2ND.OR.
      .          NTEN(IT,IPRT).GT.NP2ND) THEN
               WRITE (iunout,*) 'ERROR IN INPUT BLOCK 14, NTIN, NTEN '
@@ -3027,12 +3029,13 @@ C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
       IF (TRCINT)
      .  WRITE (iunout,*) ' LSYMET,LBALAN,LCOARSE = ',
      .                     LSYMET,LBALAN,LCOARSE
-
+      
       call json%get(me,'NFLA',nfla,found)
       call json%get(me,'NCUTB',ncutb,found)
       call json%get(me,'NCUTL',ncutl,found)
       call json%get(me,'NCUTL',ncutl,found)
       call json%get(me,'IMF',imf,found)
+      NPLS_FIX = NFLA
 cdr  imf  flag for different formats of geometry file: linda, sonnet, carre. What is What?
       if (imf /= 0) mshfrm = imf
       NCUTB_SAVE=NCUTB

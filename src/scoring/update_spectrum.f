@@ -94,7 +94,7 @@ cdr  IDIREC=1 option not written. See ISC > 0 for required coding.
             CASE (2)
               ADD = WT*E0 ! energy-weighted flux (power flux) per bin
             CASE (3)
-              ADD = WTR*VEL*CDYN
+              ADD = WT*VEL*CDYN
             CASE DEFAULT
               ADD = 0._DP ! no scoring
             END SELECT

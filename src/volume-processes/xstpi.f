@@ -74,7 +74,7 @@ C
      .           IML, MODC, IIO, IPLTI, IP, IAT,
      .           ICOUNT, IAA, IMM, III, IPP, KREAD
       INTEGER, EXTERNAL :: EIRENE_IDEZ
-      REAL(DP),PARAMETER :: EMINL=-2.3_DP
+      REAL(DP),PARAMETER :: TMINL=-2.3_DP
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt
 
@@ -297,7 +297,7 @@ C           NEND=9
             DO J=1,NSBOX
               IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
-              tii = max(eminl,tii) ! this is another cut-off, at TIIN <=0.1 eV rather than at TVAC = 0.02 ev
+              tii = max(tminl,tii) ! this is another cut-off, at TIIN <=0.1 eV rather than at TVAC = 0.02 ev
 c old
 c old         CALL EIRENE_PREP_RTCS (KK,3,TII,CF)
 c old
@@ -470,7 +470,7 @@ C  ENERGY RATE COEFFICIENT(TI,EBEAM)
               DO 257 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
-                tii = max(eminl,tii)
+                tii = max(tminl,tii)
 c old
 c old           CALL EIRENE_PREP_RTCS (KREAD,5,TII,CF)
 c old

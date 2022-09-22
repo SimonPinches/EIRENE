@@ -63,7 +63,7 @@ C
       ENDIF
 C
       IF (NLTRA) THEN
-        ITH=ANGLE3
+        ITH=INT(ANGLE3)
         IF (ITH.LE.0.OR.ITH.GE.NTTRA) ITH=1
         WIN=ZZONE(ITH)
         RMT=RMTOR
@@ -682,8 +682,8 @@ C
                   CALL EIRENE_PL3D(X,Y,Z,XP(NR),YP(NR))
                 END DO
                 do jj=1,nr
-                  xps(jj)=xp(jj)
-                  yps(jj)=yp(jj)
+                  xps(jj)=real(xp(jj),sp)
+                  yps(jj)=real(yp(jj),sp)
                 end do
                 CALL GRLN (XPS,YPS,NR)
 
@@ -712,8 +712,8 @@ C
                   CALL EIRENE_PL3D(X,Y,Z,XP(J),YP(J))
  1120           CONTINUE
                 do 1130 jj=1,nr
-                  xps(jj)=xp(jj)
-                  yps(jj)=yp(jj)
+                  xps(jj)=real(xp(jj),sp)
+                  yps(jj)=real(yp(jj),sp)
  1130           continue
                 CALL GRLN(XPS,YPS,NR)
 C
@@ -745,8 +745,8 @@ C
                     CALL EIRENE_PL3D(X,Y,Z,XP(NR),YP(NR))
  1165             CONTINUE
                   do 1162 jj=1,nr
-                    xps(jj)=xp(jj)
-                    yps(jj)=yp(jj)
+                    xps(jj)=real(xp(jj),sp)
+                    yps(jj)=real(yp(jj),sp)
  1162             continue
                   CALL GRLN (XPS,YPS,NR)
  1160           CONTINUE
@@ -902,8 +902,8 @@ C
                   CALL EIRENE_PL3D(X,Y,Z,XP(NR),YP(NR))
                 END DO
                 do jj=1,nr
-                  xps(jj)=xp(jj)
-                  yps(jj)=yp(jj)
+                  xps(jj)=real(xp(jj),sp)
+                  yps(jj)=real(yp(jj),sp)
                 end do
                 CALL GRLN (XPS,YPS,NR)
               end do
@@ -946,8 +946,8 @@ C
                   CALL EIRENE_PL3D(X,Y,Z,XP(NR),YP(NR))
                 END DO
                 do jj=1,nr
-                  xps(jj)=xp(jj)
-                  yps(jj)=yp(jj)
+                  xps(jj)=real(xp(jj),sp)
+                  yps(jj)=real(yp(jj),sp)
                 end do
                 CALL GRLN (XPS,YPS,NR)
               end do

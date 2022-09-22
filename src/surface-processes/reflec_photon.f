@@ -169,7 +169,7 @@ C  ABSORB THIS PHOTON
 C
 C  UNFINISHED DATABASE MODEL REMOVED HERE. OLD STATEMENT LABELS: 100 TO 130.
 C
-cdr  currently this code part from here to label 600 cannot be reached
+cdr  currently this code part from here to statement label 600 cannot be reached.
 !    RPROB: probability of the photon to be reflected
       RPROB = 0._dp
 

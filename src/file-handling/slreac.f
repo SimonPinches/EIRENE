@@ -223,17 +223,6 @@ cdr  in call to: set_reaction_data(IR,...)
       REAL(DP), INTENT(IN OUT) :: RC1MIN, RC1MAX, FP1(6),
      .                            RC2MIN, RC2MAX, FP2(6)
 
-      INTERFACE
-        subroutine EIRENE_read_colrad (ir,reac,isw,
-     .                                 ir_esc,ic_esc,p_esc)
-        use EIRMOD_precision
-        integer, intent(in) :: ir, isw
-        integer, intent(in), optional :: ir_esc, ic_esc
-        real(dp) , intent(in), optional :: p_esc
-        character(len=*), intent(in) :: reac
-        end subroutine EIRENE_read_colrad
-      END INTERFACE
-
 cdr
       REAL(DP) :: EARRH0, EARRH1, RTMAX, ERTMAX, ETH, KER, DELP
       CHARACTER(50) :: REACSTR
@@ -247,21 +236,33 @@ cdr  for reading asymptotics parameters from data files
       REAL(DP) :: R1MN, R1MX, R2MN, R2MX
 
       INTEGER :: I, IND, J, K, IH, I0, IC, IREAC, ISW, INDFF,
-     .           IFLG, IANF, IFILE, IL, INDG, INDADD,
+     .           IFLG, IANF, IFILE, IL, INDG, INDADD, IERR,
      .           INI, INE, KNI, KNE,
      .           INIP, INEP, KNIP, KNEP      ! range of non-zero fit parameters
 
       CHARACTER(80) :: ZEILE, LAST_TEX, ULINE
       CHARACTER(4) :: CHR, CHRA, CETH, CKER, CDEL, BEND
       CHARACTER(3) :: CH1L, CH1R, CH2L, CH2R
-      CHARACTER(200) :: DSN, DIR
+      CHARACTER(400) :: DSN, DIR
       CHARACTER(1) :: CUT, BACK
       CHARACTER(8) :: SECTION
       CHARACTER(9) :: FITFLAG
       CHARACTER(7) :: C1L, C1R, C2L, C2R, CMR, CEMR
       LOGICAL :: LGC1MIN,LGC1MAX,LGC2MIN,LGC2MAX,
      .           LGR1MIN,LGR1MAX,LGR2MIN,LGR2MAX
+      LOGICAL :: FOUND
 
+      INTERFACE
+        SUBROUTINE EIRENE_READ_COLRAD (IR, REAC, ISW,
+     .                                 IROW_ESC, ICOL_ESC, POP_ESC)
+        USE EIRMOD_PRECISION
+        INTEGER, INTENT(IN) :: IR, ISW
+        INTEGER, INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC
+        REAL(DP), INTENT(IN), OPTIONAL :: POP_ESC
+        CHARACTER(LEN=*), INTENT(IN) :: REAC
+        END SUBROUTINE EIRENE_READ_COLRAD
+      END INTERFACE
+C
       IF(TRCAMD) WRITE(IUNOUT,'(A,1X,I3,1X,A8,1X,A4,1X,A,1X,A2)')
      w                 "IR,FILNAM,H123,REAC,CRC",IR,FILNAM,H123,
      w                  REAC(1:LEN_TRIM(REAC)),CRC !VK
@@ -355,7 +356,8 @@ cdr       write (iunout,*) ifile, dbfname(ifile)
           IF (INDEX(FILNAM,'TAB2D') == 0 .AND.
      .        INDEX(FILNAM,'ADAS')  == 0) THEN
 ! FILNAM=AMJUEL, HYDHEL, METHAN, AMMONX, H2VIBR, PHOTON....: open data file
-            OPEN (UNIT=29+ifoff,FILE=DBFNAME(IFILE))
+            DSN=DBFNAME(IFILE)
+            inquire (FILE=TRIM(DSN),exist=found)
 
           ELSEIF (INDEX(FILNAM,'TAB2D').NE.0 .OR.
      .            INDEX(FILNAM,'ADAS') .NE.0) THEN
@@ -366,7 +368,12 @@ cdr       write (iunout,*) ifile, dbfname(ifile)
             IL = 0
             IF (VERIFY(DBFNAME(IFILE),' ') .NE. 0) THEN
               IC = SCAN(DBFNAME(IFILE),'/\\')
-              CUT = DBFNAME(IFILE)(IC:IC)
+              IF (IC /= 0) THEN
+                CUT = DBFNAME(IFILE)(IC:IC)
+                IF ((CUT == '').OR.(CUT == ' ')) CUT = '/'
+              ELSE
+                CUT = '/'
+              END IF
               DIR=TRIM(DBFNAME(IFILE)) // CUT //
      .            ADJUSTL(TRIM(REAC)) // CUT
               IL = INDEX(DIR,CUT,.TRUE.)
@@ -388,9 +395,24 @@ cdr       write (iunout,*) ifile, dbfname(ifile)
      .                TRIM(ELNAME) // '.dat'
               END IF
             END IF
-            write (iunout,'(2a)') 'TAB1D OR TAB2D OR ADAS: ',trim(DSN)
-            OPEN (UNIT=29+ifoff,FILE=DSN)
+            inquire (FILE=TRIM(DSN),exist=found)
+            if (found)
+     >       write (iunout,'(2a)') 'TAB1D OR TAB2D OR ADAS: ',trim(DSN)
           END IF
+          if (found) then
+            OPEN (UNIT=29+ifoff,FILE=TRIM(DSN),IOSTAT=IERR)
+          else
+            IERR = 1
+          endif
+!PB 21.07.2022
+!   Here the standard SOLPS tree was searched. The code has been moved into
+!   user routine EIRENE_LOOKUP_ADASDIR_USR
+          if ( ierr /= 0 .or. .not.found)
+     .      call eirene_lookup_adasdir_usr(dsn,found,
+     .                                     reac,elname,bundling)
+
+          if(found.and.(INDEX(FILNAM,'TAB2D').NE.0 .OR.
+     .                  INDEX(FILNAM,'ADAS') .NE.0)) CALL EIRENE_LEER(1)
 
 C  THE A&M DATA FILE FILNAM IS NOW OPENED, ON STREAM 29 (+ifoff)
 
@@ -443,7 +465,6 @@ C  ADD ONE MORE BLANK, IF POSSIBLE
         END IF
       END IF
 
-      REAC_NAME(IR) = REACSTR(2:)
 C
 C Set character string identifiers CHR to search coefficients in data files.
 C  H.0

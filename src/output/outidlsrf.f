@@ -11,7 +11,8 @@ c
 
       integer :: iout, j, iad_cell, icos, ists
 
-      OPEN (NEWUNIT=IOUT,FILE='srf_properties',FORM='FORMATTED',
+      IOUT = 3 + IFOFF
+      OPEN (UNIT=IOUT,FILE='srf_properties',FORM='FORMATTED',
      .      ACCESS='SEQUENTIAL')
 
       do ists = 1, nstsi

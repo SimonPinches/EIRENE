@@ -41,7 +41,7 @@ cdr            LEXP=.true.
 !  ifit=3:   interpolation in 2 parameter table (e.g. ADAS)
 !  ifit=4:   interpolation in single parameter table (e.g. open ADAS, ...)
 !  ifit=5:   use internal eirene collision radiative code. To be generalized
-!            (currently here also energy rates, erate for this particular option.
+!            (currently here also energy rates, erate, for this particular option).
 !            More logical if the latter are moved
 !            to routine "eirene_energy_rate_coeff"
 
@@ -148,9 +148,11 @@ c  extrapolation data: for 1d polynomial fits
         fp1(4:6)= reacdat(ir)%rtcew%fp1r
         jfex1mn = reacdat(ir)%rtcew%jfex1mn
         jfex1mx = reacdat(ir)%rtcew%jfex1mx
+cdr  careful:  arrhenius factor for energy rate?
         earrh0  = reacdat(ir)%earrh0
+        earrh0  = 0._DP
 
-        res = eirene_sngl_poly(reacdat(ir)%rtcew%poly%dblpol(1:9,1),
+        erate = eirene_sngl_poly(reacdat(ir)%rtcew%poly%dblpol(1:9,1),
      .                           p1,rc1min,rc1max,fp1,jfex1mn,jfex1mx,
      .                           earrh0,trcamd,lexp)
 
@@ -158,12 +160,6 @@ c  extrapolation data: for 1d polynomial fits
 ! lexp=true : erate is the energy rate
 ! If it is loss, rather than a gain, sign change to be done in calling routine,
 ! as well as shift (if any) by potential energy loss rate
-
-        if (lexp) then
-          erate = exp(max(-100._dp,res))
-        else
-          erate=res
-        endif
 
 c..............................................................
 

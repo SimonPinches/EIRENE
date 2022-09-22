@@ -874,6 +874,7 @@ C
       DIST=CLPD(NCOU)
       CLPD(NCOU)=(ZLOG-ZINT2)*ZMFP
       ZTC=ZT+CLPD(NCOU)
+      if (nltrc) write (iunout,*) 'dist, zmfp, ztc ',dist, zmfp, ztc
       IFLAG=4
       IF (IUPDTE.GE.1) THEN
         CALL EIRENE_UPDATE(XSTOR2,XSTORV2,IFLAG)

@@ -186,6 +186,7 @@ C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
 csw
 csw 26jan2011 extra B25
       use eirmod_extrab25
+      use eirmod_wneutrals
 csw
       use eirmod_mpi
       USE EIRMOD_JSON
@@ -194,6 +195,8 @@ csw
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
       IMPLICIT NONE
+
+      INTEGER, INTENT(IN) :: IENTRY
 c
       integer :: ier,istrx,irank,istrr, irnk
       real(dp), allocatable :: dumvec(:)
@@ -205,12 +208,6 @@ C  GEOMETRICAL DATA FROM GRIDADAP
       REAL(DP), ALLOCATABLE, SAVE ::
      R  ALPHXB(:,:), ALPHYB(:,:), XAISO(:,:)
 
-      REAL(DP), ALLOCATABLE, SAVE ::
-     R  PUX(:),      PUY(:),      PVX(:),      PVY(:),
-     R  PUXE(:), PUYE(:), PUXN(:), PUYN(:),
-c  the 4 pv... arrays. Needed?
-     R  PVXE(:), PVYE(:), PVXN(:), PVYN(:)
-
       INTEGER, ALLOCATABLE, SAVE ::
      I  IAISO(:,:)
 C
@@ -221,7 +218,7 @@ C
       REAL(DP), ALLOCATABLE, SAVE ::
      .            CHPM(:,:), CHEEM(:), CHEIM(:),
      .            CHMOM(:,:)
-      REAL(DP) :: DI(NPLS), VP(NPLS)
+      REAL(DP) :: DI(NPLS), VP(NPLS), ZI(NPLS)
 
 cdr for species-dependent global particle balance
       REAL(DP) :: SFNISY(NFL),SFNINY(NFL),SFNIWX(NFL),SFNIEX(NFL)
@@ -302,8 +299,6 @@ C
      .           IYM1,
      .           ISTAT_COP,
      .           ibrad,ibpol,ibtor,
-     .           nr1tal_save, np2tal_save, nt3tal_save,
-     .           nsbox_tal_save, nsurf_tal_save, nradd_tal_save, 
      .           js, iunin_save, iusrout
 
       INTEGER, INTENT(IN) :: ISTRAA, ISTRAE, NEW_ITER, IFRST, ITRG
@@ -366,7 +361,7 @@ C
 
       TYPE(RATE_STORE), POINTER :: RTIS
 
-      LOGICAL, INTENT(IN) :: LFIXED
+      LOGICAL, INTENT(IN) :: LFIXED,LSHRT
 C
       DATA LTARG/0/
 C
@@ -381,7 +376,7 @@ csw 11apr2011
 csw 21feb2012
       integer :: iat
 csw
-      ENTRY EIRENE_IF0COP(LFIXED)
+      ENTRY EIRENE_IF0COP(LFIXED,LSHRT)
 C
       LSHORT=.FALSE.
 C
@@ -581,7 +576,7 @@ c  only for inclined target option:
         PVYN = 0._DP
       END IF
 C
-      CALL EIRENE_GEOMD (NDXA,NDYA,NPLP,NR1ST,
+      CALL EIRENE_GEOMD (NDXA,NDYA,NPLP,NR1ST,NP2ND,
      .                   PUX,PUY,PVX,PVY,MSHFRM)
 C
       IF (NDXA+1.NE.NRPLG) THEN
@@ -1309,7 +1304,7 @@ csw
 C
 C   GEOMETRY DEFINITION PART FINISHED
 C
-      ENTRY EIRENE_IF1COP
+      ENTRY EIRENE_IF1COP(IENTRY)
 C
 C   NOW READ THE PLASMA STATE GIVEN BY BRAAMS
 C   AT PRESENT THE DATA COME FROM THE FILE FT31
@@ -1410,6 +1405,9 @@ C  MAGNETIC FIELD STRENGTH (TESLA)
       CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,DELTAI_RADYB)
       CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,DELTA_SHEATHXB)
       CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,DELTA_SHEATHYB)
+      CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,ZIB)
+      if (ANY(ZIB(:,:,:) /= 0._DP)) INDPRO(11)=9 ! To avoid overwriting by
+                                                 ! eirene_plasma calls
 
 
 C
@@ -1451,6 +1449,8 @@ C  FIRST THE ZONE-CENTERED DATA
      .             NPOINT,NPLP)
       CALL EIRENE_INDMAP (PRB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,NCUTB,NCUTL,
      .             NPOINT,NPLP)
+      CALL EIRENE_INDMAP (ZIB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
+     .             NCUTB,NCUTL,NPOINT,NPLP)
 C  NOW THE SURFACE-CENTERED PARTICLE FLUXES
       CALL EIRENE_INDMAP (FNIXB,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .             NCUTB,NCUTL,NPOINT,NPLP)
@@ -1656,6 +1656,7 @@ c
 C  SET PLASMA DENSITY AND PLASMA VELOCITIES
                 IN=IY+(IXM1)*NR1TAL_SAVE
                 DIINTF(JPLS,ITRI)=DNIB(IX,IY,IFL)*D(JPLS)
+                ZIIN(JPLS,ITRI)=ZIB(IX,IY,IFL)
 cdr  parallel velocity, already cell centered in B2.5
                 UPBC=UPB(IX,IY,IFL)
 cdr  diamagnetic velocity, i.e. in (B x grad-PSI) direction.
@@ -1683,6 +1684,7 @@ c  region outside  B2.5 grid, but inside triangular grid
                 VXINTF(IPLSV,ITRI)=VVAC
                 VYINTF(IPLSV,ITRI)=VVAC
                 VZINTF(IPLSV,ITRI)=VVAC
+                ZIIN(JPLS,ITRI)=ZVAC
               ENDIF
             ENDDO  !itri loop
 c  further additional cells from input block 2e ?
@@ -1691,6 +1693,7 @@ c  further additional cells from input block 2e ?
               VXINTF(IPLSV,ITRI)=VVAC
               VYINTF(IPLSV,ITRI)=VVAC
               VZINTF(IPLSV,ITRI)=VVAC
+              ZIIN(JPLS,ITRI)=ZVAC
             ENDDO
 
 C  EIRENE BACKGROUND SPECIES "JPLS" IS NOW FILLED WITH B2.5 DATA "IFL"
@@ -2193,6 +2196,11 @@ C  DISTEP: ZONE-CENTERED DENSITY IN BOUNDARY ZONE
             IFL=IFLB(JPLS)
             IF (IFL.LE.0.OR.IFL.GT.NFLA) GOTO 3013
             DISTEP(JPLS,ITARG,IG)=DNIB(NPBC,IY,IFL)*D(JPLS)
+            IF (ZIB(NPBC,IY,IFL).NE.ZVAC) THEN
+              ZISTEP(JPLS,ITARG,IG)=ZIB(NPBC,IY,IFL)
+            ELSE
+              ZISTEP(JPLS,ITARG,IG)=DBLE(NCHRGP(JPLS))
+            END IF
 C  FLSTEP: SURFACE-CENTERED FLUX (AMP/CM ALONG TARGET)
             IF (NSPZI(ITARG,IPRT).LE.IFL.AND.
      .                               IFL.LE.NSPZE(ITARG,IPRT)) THEN
@@ -2432,6 +2440,11 @@ C  DISTEP: ZONE-CENTERED DENSITY IN BOUNDARY ZONE (EV)
             IFL=IFLB(JPLS)
             IF (IFL.LE.0.OR.IFL.GT.NFLA) GOTO 3023
             DISTEP(JPLS,ITARG,IG)=DNIB(IX,NPBC,IFL)*D(JPLS)
+            IF (ZIB(IX,NPBC,IFL).NE.ZVAC) THEN
+              ZISTEP(JPLS,ITARG,IG)=ZIB(IX,NPBC,IFL)
+            ELSE
+              ZISTEP(JPLS,ITARG,IG)=DBLE(NCHRGP(JPLS))
+            END IF
 C  FLSTEP: SURFACE-CENTERED FLUX (AMP/CM ALONG TARGET)
             IF (NSPZI(ITARG,IPRT).LE.IFL.AND.
      .                               IFL.LE.NSPZE(ITARG,IPRT)) THEN
@@ -2677,11 +2690,12 @@ C
             VPZ=VZSTEP(IPLV,ITARG,IG)
             VP(IPL)=SQRT(VPX**2+VPY**2+VPZ**2)
             DI(IPL)=DISTEP(IPL,ITARG,IG)
+            ZI(IPL)=ZISTEP(IPL,ITARG,IG)
  6005     CONTINUE
           TE=TESTEP(ITARG,IG)
           CUR=0.
           GAMMA=0.
-          ESHT(ITARG,IG)=EIRENE_SHEATH(TE,DI,VP,NCHRGP,GAMMA,CUR,
+          ESHT(ITARG,IG)=EIRENE_SHEATH(TE,DI,VP,ZI,GAMMA,CUR,
      .                         NPLSI,-ITARG)
         ELSE IF (NEM == 9) THEN
           IF (IGSTEP(ITARG,IG).GT.200000) THEN
@@ -2898,7 +2912,7 @@ csw 14jul2011
           ALLOCATE (FLXEIR(NSTRA))
 
           CALL EIRENE_ALLOC_BRASPOI
-          CALL EIRENE_ALLOC_EIRBRA(NDX, NDY, NFL, NSTRA)
+          CALL EIRENE_ALLOC_EIRBRA(NDX,NDY,NFL,NATM,NMOL,NION,NSTRA)
 C
           RESSNI = 0._DP
           RESSMO = 0._DP
@@ -2930,18 +2944,18 @@ csw
 
 csw 08mar2013, make sure that all strata have written out onto fort.10, ie.
 csw            all cpus have come to this point
-      if(nprs > 1 .and. nprs < nstrai .and. .not.lshort) then
-        call mpi_barrier(MPI_COMM_WORLD,ier)
-      endif
+!pbtest      if(nprs > 1 .and. nprs < nstrai .and. .not.lshort) then
+!pbtest        call mpi_barrier(MPI_COMM_WORLD,ier)
+!pbtest      endif
 csw
 csw 26jan2011 extra B25
-      if(my_pe == 0) then
-        call eirene_extraB25_wneuinit
+!pbtest      if(my_pe == 0) then
+!pbtest        call eirene_extraB25_wneuinit
 csw 20jun2013 bugfix, check for nprs>1
-        if(nprs > 1) then
-          call eirene_extraB25_wneuclean
-        endif
-      endif
+!pbtest        if(nprs > 1) then
+!pbtest          call eirene_extraB25_wneuclean
+!pbtest        endif
+!pbtest      endif
 csw
       DO 10000 ISTRAI=ISTRAA,ISTRAE
 C
@@ -3579,8 +3593,11 @@ C
 C
 csw 26jan2011 extra B25
 csw 08mar2013 moved to here, i.e. after correction from volume recombination
-        if(my_pe == 0 .and..not. lshort) then
-          call eirene_extrab25_wneufill(istrai)
+!pbtest        if(my_pe == 0 .and..not. lshort) then
+!pbtest          call eirene_extrab25_wneufill(istrai)
+!pbtest        endif
+        if(.not. lshort) then
+          call eirene_wneutrals_fill(istrai)
         endif
 csw
         IF (.NOT.LSYMET) GOTO 7500
@@ -4859,7 +4876,9 @@ C
 csw 07feb2011 extra B2.5
         if(my_pe == 0) then
           if (nlemis) call eirene_extrab25_emissivity
-          call eirene_extrab25_wneusave
+!pbtest          call eirene_extrab25_wneusave
+          call eirene_wneutrals_save
+          call write_f44('    ')
         endif
 csw
       RETURN
@@ -5109,6 +5128,7 @@ C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
 
        READ (IUNIN,'(9I6)') NFLA,NCUTB,NCUTL,IMF,
      .                      ntrfrm, nfull,ibrad,ibpol,ibtor
+      NPLS_FIX = NFLA
 cdr  imf  flag for different formats of geometry file: linda, sonnet, carre. What is what?
        IF (IMF /= 0) MSHFRM=IMF
 
@@ -5282,7 +5302,7 @@ C  COPY USER SPECIFIC DATA TO FILE user_data.input
        SUBROUTINE EIRENE_READ14_JSON(json,me)
        USE EIRMOD_JSON     
        use json_module
-     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
+!pgf     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
        IMPLICIT NONE
 
@@ -5290,7 +5310,8 @@ C  COPY USER SPECIFIC DATA TO FILE user_data.input
        type(json_value), pointer, intent(in) :: me
        type(json_value), pointer :: pflds, pfld, ptrgs, ptrg,
      .                             prts, prt, padds, padd
-       character(kind=CK,len=:),allocatable :: txt                       
+!pgf       character(kind=CK,len=:),allocatable :: txt                       
+       character(kind=json_CK,len=:),allocatable :: txt                       
        integer :: j, npl, ntrg
        integer, allocatable :: ihelp(:)
        logical :: found, foundi, foundo
@@ -5318,6 +5339,7 @@ C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
        call json%get(me,'IBRAD',ibrad,found)
        call json%get(me,'IBPOL',ibpol,found)
        call json%get(me,'IBTOR',ibtor,found)
+       NPLS_FIX = NFLA
 cdr  imf  flag for different formats of geometry file: linda, sonnet, carre. What is What?
        if (imf /= 0) mshfrm = imf
 
@@ -5713,6 +5735,15 @@ C>
 C> This interfacing routine is called in the parallel part of EIRENE
 C> after the broadcast of any other quantity and before MCARLO.
       SUBROUTINE EIRENE_INFCOP_PRE_MCARLO
+      USE EIRMOD_WNEUTRALS
+      USE EIRMOD_EXTRAB25
+
+csw 28jan2011 extra B25, produce the files for surface properties visualisation if required
+      call eirene_extrab25_srfprvsl
+csw
+cxpb zero out the output arrays to B2.5
+      call eirene_wneutrals_clean(.false.)
+cxpb
       RETURN
       END SUBROUTINE EIRENE_INFCOP_PRE_MCARLO
 
@@ -5733,3 +5764,20 @@ C> transfer to the external code
       integer, intent(in) :: istra
       RETURN
       END SUBROUTINE EIRENE_INFCOP_POST_STRATUM
+
+C> \brief Prepare some data prior to calculation of strata but after
+C> the distribution of processors has been updated 
+C>
+      SUBROUTINE EIRENE_INFCOP_PRE_STRATA
+      USE EIRMOD_WNEUTRALS
+      USE EIRMOD_CPES
+
+      if (I_am_leader()) then
+         ! The stratum leaders will use extrab25 when they call if3cop.
+         ! We need the stratum leader communicator, therefore we can
+         ! only call wneutrals_init after pedist.
+         call eirene_wneutrals_init(broadcast=.true.)
+      endif
+
+      RETURN
+      END SUBROUTINE EIRENE_INFCOP_PRE_STRATA

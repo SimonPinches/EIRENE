@@ -26,7 +26,7 @@ C
 C=======================================================================
 C          S U B R O U T I N E   G E O M D
 C=======================================================================
-      SUBROUTINE EIRENE_GEOMD(NDXA,NDYA,NPLP,NR1ST,
+      SUBROUTINE EIRENE_GEOMD(NDXA,NDYA,NPLP,NR1ST,NP2ND,
      .                 PUX,PUY,PVX,PVY,itype)
 C
       USE EIRMOD_PRECISION
@@ -36,7 +36,7 @@ C
       IMPLICIT NONE
 C
       REAL(DP), INTENT(OUT) :: PUX(*),PUY(*),PVX(*),PVY(*)
-      INTEGER, INTENT(INOUT) :: NDXA,NDYA,NPLP,NR1ST
+      INTEGER, INTENT(INOUT) :: NDXA,NDYA,NPLP,NR1ST,NP2ND
       INTEGER, INTENT(IN) :: ITYPE
 
       IF (ITYPE == 1) THEN
@@ -48,7 +48,7 @@ C
      .                 PUX,PUY,PVX,PVY)
 
       ELSE
-        CALL EIRENE_GEOMD_LINDA(NDXA,NDYA,NPLP,NR1ST,
+        CALL EIRENE_GEOMD_LINDA(NDXA,NDYA,NPLP,NR1ST,NP2ND,
      .                 PUX,PUY,PVX,PVY)
       END IF
 
@@ -243,7 +243,7 @@ C
 C=======================================================================
 C          S U B R O U T I N E   G E O M D _ L I N D A
 C=======================================================================
-      SUBROUTINE EIRENE_GEOMD_LINDA(NDXA,NDYA,NPLP,NR1ST,
+      SUBROUTINE EIRENE_GEOMD_LINDA(NDXA,NDYA,NPLP,NR1ST,NP2ND,
      .                        PUX,PUY,PVX,PVY)
 C
       USE EIRMOD_PRECISION
@@ -255,7 +255,7 @@ C
       USE EIRMOD_COMPRT,ONLY:IUNOUT
       IMPLICIT NONE
 C
-      INTEGER, INTENT(IN) :: NDXA, NDYA, NR1ST
+      INTEGER, INTENT(IN) :: NDXA, NDYA, NR1ST, NP2ND
       INTEGER, INTENT(OUT) :: NPLP
       REAL(DP), INTENT(OUT) :: PUX(*),PUY(*),PVX(*),PVY(*)
 C
@@ -292,7 +292,6 @@ C        PARAMETER DIMXH,DIMYH                        RFS 14.5.1991
       filename = fort_lc//'30'
       OPEN (UNIT=30,ACCESS='SEQUENTIAL',FORM='FORMATTED',ERR=100) !VK
       REWIND 30
- 3366 FORMAT(/)
       read(30,*)
       do
         read (30,'(A80)') LINE
@@ -649,8 +648,6 @@ C    READING OF POLYGON DATA
         ENDIF
    10 CONTINUE
 
- 3333 FORMAT(4E16.8)
-
 C   ANFANGSPUNKT DES ERSTEN TEILSTUECKS DES I-TEN POLYGONS
       NPOINT(1,1)=1
 C   ENDPUNKT DES ERSTEN TEILSTUECKS DES I-TEN POLYGONS
@@ -681,6 +678,40 @@ C   ANFANGSPUNKT DES SECHSTEN TEILSTUECKS DES I-TEN POLYGONS
 C   ENDPUNKT DES SECHSTEN TEILSTUECKS DES I-TEN POLYGONS
           NPOINT(2,6)=dimxh+6-NWISO
         ENDIF
+      ENDIF
+C
+C   CHECK THAT ARRAY SIZES DEDUCED FROM fort.30 MATCH THOSE FROM INPUT FILE
+C
+      IF (NPPLG.NE.NPLP) THEN
+        WRITE(IUNOUT,*)
+     .   'MISMATCH BETWEEN INPUT FILE AND '//trim(filename)
+        WRITE(IUNOUT,*) 'FOR THE NUMBER OF SEGMENTS : '
+        WRITE(IUNOUT,*) 'INPUT    : NPPLG = ', NPPLG
+        WRITE(IUNOUT,*) filename//'  : NNCUT = ', NNCUT
+        WRITE(IUNOUT,*) 'WE MUST HAVE NPPLG = MAX((NNCUT/2)*3,1)'
+        CALL EIRENE_EXIT_OWN(1)
+      ENDIF
+      IF (NR1ST.NE.dimyh+1) THEN
+        WRITE(IUNOUT,*)
+     .   'MISMATCH BETWEEN INPUT FILE AND '//trim(filename)
+        WRITE(IUNOUT,*) 'FOR THE NUMBER OF RADIAL CELLS : '
+        WRITE(IUNOUT,*) 'INPUT    : NR1ST = ', NR1ST
+        WRITE(IUNOUT,*) filename//'  : NY    = ', dimyh
+        WRITE(IUNOUT,*) 'WE MUST HAVE NR1ST = NY+1'
+        CALL EIRENE_EXIT_OWN(1)
+      ENDIF
+      IF (NP2ND.NE.NPOINT(2,NPLP)) THEN
+        WRITE(IUNOUT,*)
+     .   'MISMATCH BETWEEN INPUT FILE AND '//trim(filename)
+        WRITE(IUNOUT,*) 'FOR THE NUMBER OF POLOIDAL CELLS : '
+        WRITE(IUNOUT,*) 'INPUT    : NP2ND = ', NP2ND
+        WRITE(IUNOUT,*) filename//'  : NX    = ', dimxh
+        WRITE(IUNOUT,*) filename//'  : NNCUT = ', NNCUT
+        WRITE(IUNOUT,*) filename//'  : NNISO = ', NNISO
+        WRITE(IUNOUT,*) filename//'  : NWISO = ', NWISO
+        WRITE(IUNOUT,*) 
+     .   'WE MUST HAVE NP2ND = NX+MAX(3*(NNCUT/2),1)+NNISO*NWISO'
+        CALL EIRENE_EXIT_OWN(1)
       ENDIF
 C
       DO 1015 IY=1,NDYA

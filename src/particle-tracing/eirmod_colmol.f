@@ -89,14 +89,14 @@ cdr          P2NDS --> P2NEI
       USE EIRMOD_VELOEL, ONLY: EIRENE_VELOEL
       USE EIRMOD_VELOCX, ONLY: EIRENE_VELOCX
       USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
+      
+!$    use OMP_LIB
 
       IMPLICIT NONE
       
       private
       
       PUBLIC :: EIRENE_COLMOL
-      
-!$ use OMP_LIB
 
       REAL(DP) :: DUMT(3), DUMV(3)
       REAL(DP) :: SIGSUM, WGHTO, FRSTP, PTOT, E0O, VELXO,

@@ -79,7 +79,7 @@ CVK END
         ALLOCATE (NSPEZS(NSRPR,2))
 
         WRITE (IUNMEM,'(A,T25,I15)')
-     .       ' CTRCEI(1) ',(MCTRC+2*(NVLPR+NSRPR))*4
+     .       ' CTRCEI(1) ',(LCTRC+MCTRC+2*(NVLPR+NSRPR))*4
 
         TRCPLT => LTRCEI( 1)
         TRCHST => LTRCEI( 2)

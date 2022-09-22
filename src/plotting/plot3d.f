@@ -37,14 +37,15 @@ C
       CHARACTER(24), INTENT(IN) :: TEXT2, TEXT3
       CHARACTER(72), INTENT(IN) :: HEAD, RUNID, TXHEAD
 
-      REAL(DP) :: XMINN, XMAXN, DXXX, YMINN, YMAXN
+      REAL(SP) :: XMINN, XMAXN, DXXX, YMINN, YMAXN
 
-      REAL :: FALT(N1STS,N2NDPLGS),
-     .        X(N1STS,N2NDPLGS), Y(N1STS,N2NDPLGS), Z2(N1STS,N2NDPLGS)
-      REAL :: EXT(3,3), VALU(3,2), DCM, YH
-      REAL :: YHLF, XHLF, FMIN, FMAX, REMIN, REMAX,
-     .        XMIN, XMAX, YMIN, YMAX
-      REAL, ALLOCATABLE :: AR(:)
+      REAL(SP) :: FALT(N1STS,N2NDPLGS),
+     .            X(N1STS,N2NDPLGS), Y(N1STS,N2NDPLGS), 
+     .            Z2(N1STS,N2NDPLGS)
+      REAL(SP) :: EXT(3,3), VALU(3,2), DCM, YH
+      REAL(SP) :: YHLF, XHLF, FMIN, FMAX, REMIN, REMAX,
+     .            XMIN, XMAX, YMIN, YMAX
+      REAL(SP), ALLOCATABLE :: AR(:)
       INTEGER :: I, J, IXM, IYM, IZ, IER, LAR, IX, IY
       CHARACTER(17) :: CH
       CHARACTER(20) :: CHAXS(3)
@@ -75,10 +76,10 @@ C  SET ONTO 2D ARRAY FOR PLOTTING
 C
         DO 20 I=1,NX
           DO J=1,IYM
-            DXXX=ARR(I+(J-1)*NR1ST)
+            DXXX=REAL(ARR(I+(J-1)*NR1ST),SP)
             FALT(I,J)=DXXX
-            X(I,J)=XPOL(I,J)
-            Y(I,J)=YPOL(I,J)
+            X(I,J)=REAL(XPOL(I,J),SP)
+            Y(I,J)=REAL(YPOL(I,J),SP)
           END DO
    20   CONTINUE
 C
@@ -104,11 +105,11 @@ C
          END DO
    25   CONTINUE
 C
-        REMIN=ZMI
-        REMAX=ZMA
+        REMIN=REAL(ZMI,SP)
+        REMAX=REAL(ZMA,SP)
         IF (LOGL) THEN
-          REMIN=LOG10(MAX(1.E-48_DP,ZMI))
-          REMAX=LOG10(MAX(1.E-48_DP,ZMA))
+          REMIN=REAL(LOG10(MAX(1.E-48_DP,ZMI)),SP)
+          REMAX=REAL(LOG10(MAX(1.E-48_DP,ZMA)),SP)
         ENDIF
         IF (ZMI.EQ.666.) REMIN=FMIN
         IF (ZMA.EQ.666.) REMAX=FMAX

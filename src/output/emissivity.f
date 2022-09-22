@@ -196,7 +196,7 @@ c  population coefficient, relative to density(1)
 c  density ratio, if true parent density is not available (or in QSS mode)
 c  then: ratio1 converts from density(1) to density
 c  density is the "true" parent density for this component.
-c  density(1) is taken as "intermediate" parent density. Fetch from IRC_RAT(1)
+c  density(1) is taken as "intermediate" parent density. Fetch reduced population coefficent
 c  and density ratio  ratio1="density"/"density(1)" will be applied,
 c  to turn density(1) into "density"
 c  e.g. density    = H2+
