@@ -81,6 +81,7 @@ csw 12apr2011
       use eirmod_ctrig
 csw
       use eirmod_extrab25
+      use eirmod_infcop
       use eirmod_mpi
       USE EIRMOD_SECOND_OWN
 
@@ -339,6 +340,7 @@ csw 24oct2011
           DO ISTRAI=1,NSTRA
             FLUX_save(ISTRAI)=FLUXES(ISTRAI)
           ENDDO
+          flux_saved=.true.
         endif
 
 

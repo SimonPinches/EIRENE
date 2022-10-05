@@ -55,6 +55,8 @@ cym will disappear when parallel zone will encompass the whole code
      .                         IREDUC,FREDUC,EREDUC
       USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
       USE EIRMOD_OPENMP
+      USE EIRMOD_INFCOP, ONLY: EIRENE_IF3COP, EIRENE_INFCOP_PRE_STRATA,
+     .                         EIRENE_INFCOP_POST_STRATUM
 
       IMPLICIT NONE
       PRIVATE
@@ -135,7 +137,7 @@ cym IC ?
      .           INODES, J, IT, IMCP,
      .           ISUM, NPX, IS, NEW_ITER, ISPC, IN,
      .           JATM, JMOL, JION, JPHOT, JPLS,
-     .           IERR, IFIRST, IPB, JPB
+     .           IERR, IFIRST, ipb, jpb
 
       LOGICAL, SAVE :: LGSTOP, NLPOLS, NLTORS
       LOGICAL :: LGABORT
@@ -1368,9 +1370,12 @@ C
           IF (NMODE.GT.0) THEN
             CALL EIRENE_INFCOP_POST_STRATUM(ISTRA)
             IF (NPRS == 1) THEN
+              IESTR=ISTRA
               ISTRAA=ISTRA
               ISTRAE=ISTRA
-              CALL EIRENE_IF3COP(ISTRAA,ISTRAE,NEW_ITER)
+              IENTRY=0
+              CALL EIRENE_IF3COP(IENTRY,LSTP,
+     .                           IFIRST,ISTRAA,ISTRAE,NEW_ITER)
               NEW_ITER=1
             ENDIF
           ENDIF
@@ -1491,7 +1496,8 @@ C         END IF
 !pb          IESTR=ISTRA
           ISTRAA=1
           ISTRAE=NSTRAI
-          CALL EIRENE_IF3COP(ISTRAA,ISTRAE,NEW_ITER)
+          CALL EIRENE_IF3COP(IENTRY,LSTP,
+     .                       IFIRST,ISTRAA,ISTRAE,NEW_ITER)
           NEW_ITER=1
         ENDIF  ! nprs  > 1
       ENDIF    ! nmode > 0

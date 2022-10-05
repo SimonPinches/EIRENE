@@ -38,6 +38,10 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
       !> Whether we have new member of stratum leaders
       logical, public :: new_leader = .true. 
 
+!pbtest for the time being 
+      !> stratum_leader(i) is the rank of the leader for stratum(i)
+      integer, dimension(:), allocatable, public :: stratum_leader
+
       CONTAINS
 
       !> creates communicators for PEs working on same stratum and a 

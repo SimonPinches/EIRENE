@@ -80,6 +80,7 @@
 
       !flux_save
       real(DP), save, public, allocatable :: flux_save(:)
+      logical, save, public :: flux_saved=.false.
 
 !pb 27012016
 ! flag indicating if subroutine iniusr is called from B2.5
@@ -708,12 +709,12 @@
       use eirmod_COUTAU
       use eirmod_COMUSR
       use eirmod_EIRBRA
+      use eirmod_CCOUPL
       use eirmod_COMPRT
       use eirmod_COMSPL
       implicit none
       integer :: k,istr,l,i,j
       real(dp) :: w,hlp_flb2, hlp_fleir
-      logical :: lflg
 
       !write (iunout,*) '%% eirpbls: istr= ',istr
       !write (iunout,*) 'nlpbls(istr)= ',(nlpbls(i,istr),i=1,natmi)
@@ -726,9 +727,7 @@
       do k=1,natmi
         !write (iunout,*) '%% k= ',k
         srccrfc(k,istr)=1.
-        lflg = nlpbls(k,istr)
-!pbtest if (nlpbls(k,istr)) then
-        if (lflg) then
+        if (nlpbls(k,istr)) then
           !c
           !c*** Calculate the correction factor
           !c
@@ -1989,7 +1988,6 @@
         do j = 1, emis_lines(i)%num_compo
 !dr  iadv: tally number on ADDV
           iadv = emis_lines(i)%compo(j)%iadv
-          write (iunout,*) 'IADV, MODADDV = ',iadv, mod_addv
 
 !pb  This is dangerous! It is implicitely assumed that the default 
 !pb  emissivity model is used.

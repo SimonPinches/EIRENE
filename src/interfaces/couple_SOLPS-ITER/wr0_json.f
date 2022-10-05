@@ -4,6 +4,7 @@
       USE EIRMOD_PARMMOD
       USE EIRMOD_CCOUPL
       USE EIRMOD_COMUSR
+      USE EIRMOD_CLOGAU
       USE EIRMOD_CTEXT
       use json_module
 
@@ -18,6 +19,8 @@
       call json%add(this,'LSYMET',lsymet)
       call json%add(this,'LBALAN',lbalan)
       call json%add(this,'LCOARSE',lcoarse)
+      call json%add(this,'NLTRIMESH',nltrimesh)
+      call json%add(this,'LOLD31',lold31)
 
       call json%add(this,'NFLA',nfla)
       call json%add(this,'NCUTB',ncutb)
@@ -25,9 +28,9 @@
       call json%add(this,'IMF',mshfrm)
       call json%add(this,'NTRFRM',ntrfrm)
       call json%add(this,'NFULL',nfull)
-      call json%add(this,'IBRAD',int(brad))
-      call json%add(this,'IBPOL',int(bpol))
-      call json%add(this,'IBTOR',int(btor))
+      call json%add(this,'IBRAD',ibrad)
+      call json%add(this,'IBPOL',ibpol)
+      call json%add(this,'IBTOR',ibtor)
 
       call json%create_array(flds,'B2FLUIDS')
       do i = 1, nplsi

@@ -5,6 +5,7 @@
       USE EIRMOD_PARMMOD
       USE EIRMOD_CTRIG
       use eirmod_extrab25
+      use eirmod_infcop, only: eirene_broadcast_infcop
 !pbtest      USE EIRMOD_CPES
 !pb     >    , ONLY : input_distribution_strategy
       use eirmod_mpi
@@ -38,4 +39,4 @@ csw
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_BROADCAST_USR

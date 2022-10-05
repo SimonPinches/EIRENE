@@ -1,4 +1,10 @@
 *DK INFCOP
+      MODULE EIRMOD_INFCOP
+
+      PUBLIC
+
+      CONTAINS
+      
       SUBROUTINE EIRENE_INFCOP
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: I1, I2, I3, IENTRY
@@ -35,3 +41,13 @@ C> transfer to the external code
       INTEGER, INTENT(IN) :: ISTRA
       RETURN
       END SUBROUTINE EIRENE_INFCOP_POST_STRATUM
+
+C> \brief Prepare some data prior to calculation of strata but after
+C> the distribution of processors has been updated 
+C>
+      SUBROUTINE EIRENE_INFCOP_PRE_STRATA
+
+      RETURN
+      END SUBROUTINE EIRENE_INFCOP_PRE_STRATA
+
+      END MODULE EIRMOD_INFCOP

@@ -71,21 +71,23 @@ cpg end
         integer :: ISTRAI
 csw 24oct2011      
         if(my_pe==0) then
-         if (nmode /= 0) then
-          DO ISTRAI=NTARGI+1,NSTRAI
-            ISTRA = ISTRAI
-            if(.not.nlvol(istra) .and. .not. nlcns(istra)) then
-              if (allocated(flux_save)) then !wd avoid issue with non-allocated flux_save in standalone runs
-                IF (FLUX_SAVE(ISTRA).NE.0._DP ) THEN
-                  FLUX(ISTRA)=FLUX_SAVE(ISTRA)*ELCHA
-                else
+          if (nmode /= 0) then
+            DO ISTRAI=NTARGI+1,NSTRAI
+              ISTRA = ISTRAI
+              if(.not.nlvol(istra) .and. .not. nlcns(istra)) then
+                if (allocated(flux_save)) then !wd avoid issue with non-allocated flux_save in standalone runs
+                  IF (FLUX_SAVE(ISTRA).NE.0._DP ) THEN
+                    FLUX(ISTRA)=FLUX_SAVE(ISTRA)*ELCHA
+                  else
+                    FLUX(ISTRA)=1._DP
+                  end if
+                ELSE
                   FLUX(ISTRA)=1._DP
-                end if
-              ELSE
-                FLUX(ISTRA)=1._DP
-              ENDIF
-            endif
-          ENDDO
-         endif
+                ENDIF
+              endif
+            ENDDO
+          endif
         endif
+
+        return
       end subroutine eirene_couple_post_input

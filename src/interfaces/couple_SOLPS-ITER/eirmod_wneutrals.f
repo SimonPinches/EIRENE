@@ -319,7 +319,9 @@ C
         eirdiag_nds_end=0
 
         hlp_cnv=1./elcha
-        ia0=mod_addv
+!pb  MOD_ADDV is a flag not a counter or index
+!pb     ia0=mod_addv
+        ia0=0
         ia1=ia0+natmi+nmoli
         ia2=ia1+natmi+nmoli
         ia3=ia2+natmi+nmoli

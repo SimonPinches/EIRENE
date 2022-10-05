@@ -498,7 +498,7 @@
       ZLIMS3_IN(:,I) = ZLIMS3(:,I)
 
       ILCOL_IN(I) = ILCOL(I)
-      LCHSPNWL(:,I) = LCHSPNWL(:,I)
+      LCHSPNWL_IN(:,I) = LCHSPNWL(:,I)
       
       end subroutine eirene_copy_addsrf
 !******************************************************************************

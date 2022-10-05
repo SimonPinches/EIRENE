@@ -45,6 +45,7 @@ C
       USE EIRMOD_PROFILES
       USE EIRMOD_JSON
       USE EIRMOD_IOUSR, ONLY: EIRENE_READ_BLOCK_11_USR
+      USE EIRMOD_INFCOP, ONLY: EIRENE_IF0COP
       
       use json_module
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
@@ -3808,7 +3809,6 @@ C
         end if
 
         do j = 1, nadspc
-          write (iunout,*) 'j =',j
           call json%get_child(pspeci,j,psp,found)
           call json%get(psp,'ISRFCLL',isrfcll,found)
           call json%get(psp,'ISPSRF',ispsrf,found)
@@ -4948,6 +4948,7 @@ C  TURN OFF TIME DEP MODE IF EITHER NTIME=0 OR NPRNLI=0
       USE EIRMOD_COMUSR
       USE EIRMOD_CTEXT
       USE EIRMOD_JSON
+      USE EIRMOD_INFCOP, ONLY: EIRENE_IF0COP
       
       use json_module
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck

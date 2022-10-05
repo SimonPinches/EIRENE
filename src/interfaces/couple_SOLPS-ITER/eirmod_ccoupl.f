@@ -59,9 +59,10 @@ CVK VARIABLES WHICH ARE USED TO MAP EIRENE SURFACE ELEMENTS ON B2 SURFACES
      L NLPBLS(:,:)
 
 !  store variables in module for writing of JSON file
-      LOGICAL, PUBLIC, SAVE :: LCOARSE
+      LOGICAL, PUBLIC, SAVE :: LCOARSE, LOLD31
       INTEGER, PUBLIC, SAVE :: mshfrm, ntrfrm
-      REAL(DP), PUBLIC, SAVE :: brad, bpol, btor 
+!pb      REAL(DP), PUBLIC, SAVE :: brad, bpol, btor 
+      INTEGER, PUBLIC, SAVE :: ibrad, ibpol, ibtor 
 
       INTEGER, PUBLIC, SAVE ::
      I NCOUPL, MCOUPL1, MCOUPL2, LCOUPL

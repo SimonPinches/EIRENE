@@ -1,6 +1,6 @@
 cdr modc=3 fuer CX rate coeff angefangen: um multi-step CX auch vs. T und n zu kriegen,
 cdr aber dann die Frage: Te=Ti, ne=ni ? Und E0 immer sehr klein? Korrektes te,ti,ne,ni
-cdr koennen zellweise kommen, z.b. aus CRM modell.
+cdr Abhaengigkeiten koennen zellweise kommen, z.b. aus CRM modell.
 cdr dann bleibt es bei einem 9-parameter fit (fuer E0 abhaengigkeit)  pro Zelle.
 
 
@@ -23,11 +23,16 @@ cdr            such that first secondary always corresponds to incident bulk par
 cdr            just with charge state changed by an increment one (+1 or -1).
 cdr   may 18 : this jan 17 fix was too narrow, e.g. He + He++ CX, charge state
 cdr            increment=2.  Now fixed.
+cdr  sept 22:  modc=3 option (condensed "H.4" CX rates vs. ne and ti)
+cdr            here use tii. formerly: it was te. Strictly: both are needed.
+cdr            FTABCX3 (storage save mode) option added for modc=3
+cdr            Plus: notational sync with ITER branch.
 C
 
       SUBROUTINE EIRENE_XSTCX(RMASS,IRCX,ISP,IPL,
      .                        ISCD1,ISCD2,
-     .                        EBULK, CHRDF0,ISCDE,IESTM,
+     .                        EBULK, CHRDF0,
+     .                        ISCDE,IESTM,
      .                        KK,FACTKK,PLS)
 
 c  set NON-DEFAULT CX collision cross-sections and rates
@@ -84,10 +89,11 @@ C
      .            EIRENE_ENERGY_RATE_COEFF, TB, TII,
      .            DENSLIMLOG,
      .            FP1(6),FP2(6)
-      INTEGER :: ITYP1, ITYP2, KREAD,
+      INTEGER :: ITYP1, ITYP2, KREAD, IFLG,
      .           J, NEND, MODC, NSECX4, IPL2, IIO2, IPLTI,
      .           NCBULK, NCGBLK
       INTEGER, EXTERNAL :: EIRENE_IDEZ
+      CHARACTER(8) :: TEXTS1, TEXTS2
       REAL(DP), PARAMETER :: TMINL=-2.3_DP
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt
@@ -105,14 +111,17 @@ cdr field particle
       RMBULK=RMASSP(IPL)
       NCBULK=NCHARP(IPL)
       NCGBLK=NCHRGP(IPL)
-      RMTEST=RMASS
       IPLTI=MPLSTI(IPL)
+cdr test particle
+      RMTEST=RMASS
 C
 C  1ST SECONDARY INDEX, PREVIOUS BULK MASS
+
       N1STX(IRCX,1)=EIRENE_IDEZ(ISCD1,1,3)    !TYPE
       N1STX(IRCX,2)=EIRENE_IDEZ(ISCD1,3,3)    !SPECIES WITHIN TYPE CLASS
+
       N1STX(IRCX,3)=0
-      IF (N1STX(IRCX,1).LT.4) N1STX(IRCX,3)=1 !DEFAULT: 1 "FIRST" TEST SECONDARY, IF ANY
+      IF (N1STX(IRCX,1).LT.4) N1STX(IRCX,3)=1 !DEFAULT: ONE "FIRST" TEST SECONDARY, IF ANY
 
       IF ((N1STX(IRCX,2) < 1) .OR.
      .    (N1STX(IRCX,2) > MAXSPC(N1STX(IRCX,1)))) GOTO 994
@@ -137,10 +146,12 @@ cdr     IF (ABS(NCGBLK-NCHRGP(N1STX(IRCX,2))).ne.1) GOTO 992
       ENDIF
 C
 C  2ND SECONDARY INDEX, PREVIOUS TEST PARTICLE MASS
+
       N2NDX(IRCX,1)=EIRENE_IDEZ(ISCD2,1,3)    !TYPE
       N2NDX(IRCX,2)=EIRENE_IDEZ(ISCD2,3,3)    !SPECIES WITHIN TYPE CLASS
-      N2NDX(IRCX,3)=N1STX(IRCX,3)             !CUMULATED NO. OF SECONDARIES
-      IF (N2NDX(IRCX,1).LT.4) N2NDX(IRCX,3)=N2NDX(IRCX,3)+1 !DEFAULT: 1 "SECOND" TEST SECONDARY, IF ANY
+
+      N2NDX(IRCX,3)=N1STX(IRCX,3)             !CUMULATED NO. OF TEST PARTICLE SECONDARIES
+      IF (N2NDX(IRCX,1).LT.4) N2NDX(IRCX,3)=N2NDX(IRCX,3)+1 !DEFAULT: ONE "SECOND" TEST SECONDARY, IF ANY
 C
       IF ((N2NDX(IRCX,2) < 1) .OR.
      .    (N2NDX(IRCX,2) > MAXSPC(N2NDX(IRCX,1)))) GOTO 994
@@ -179,7 +190,7 @@ C  TARGET MASS IN <SIGMA*V> FORMULA: MAXW. BULK PARTICLE
 C  (= PROJECTILE MASS IN CROSS-SECTION MEASUREMENT: TARGET AT REST)
       PMASS=MASSP(KK)*PMASSA
 C  PROJECTILE MASS IN <SIGMA*V> FORMULA: MONOENERG. TEST PARTICLE
-C  (= TARGET PARTICLE IN CROSS-SECTION MEASUREMENT; TARGET AT REST)
+C  (= TARGET PARTICLE IN CROSS-SECTION MEASUREMENT; BUT: TARGET AT REST)
       TMASS=MASST(KK)*PMASSA
 C
       ADDT=PMASS/RMASSP(IPL)
@@ -200,9 +211,14 @@ C..................................................................
       MODC=EIRENE_IDEZ(MODCLF(KK),3,5)
 
 C  2.B)
-      IF (MODC.EQ.1) NEND=1   ! rate coeff vs. fixed E0, e.g.: E0=0, TI
+      IF (MODC.EQ.1) NEND=1   ! rate coeff vs. (fixed E0, e.g. E0=0, or E0=3/2 TI)
 C  2.C)
       IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E0, TI)
+C  2.D)
+      IF (MODC.EQ.3) NEND=NSTORDT ! rate coeff vs. (ne, TI)
+
+cdr NEND has apparently become entirely obsolete. Maybe for ftabcx3?
+
 
 C  2.B) RATE COEFFICIENT(TI, FIXED E0, E.G. E0=0)
       IF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.1) THEN
@@ -211,16 +227,22 @@ C       NEND=1
           DO 245 J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
             TII=TIINL(IPLTI,J)+ADDTL
-            COU = EIRENE_RATE_COEFF(KK,J,TII,0._DP,.TRUE.,0)
+cdr  indicate: no density dependence in polynomial fit.
+            IFLG=0
+            COU = EIRENE_RATE_COEFF(KK,J,TII,0._DP,.TRUE.,IFLG)
             TABCX3(IRCX,J,1)=COU*DIIN(IPL,J)*FACTKK
   245     CONTINUE
         ELSE ! NOT SUFFICIENT STORAGE ON TABCX3
-C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
+C  STORAGE SAVE MODE 
+c  use ftabcx3, with modc=1, at Tii.          
         ENDIF
         MODCOL(3,2,IRCX)=1
 
       ELSEIF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.2) THEN
-C  2.C) RATE COEFFICIENT(TI,EBEAM)
+C  2.C) RATE COEFFICIENT(TI,E0)
+cdr  strictly this should be possible with call to eirene_rate_coef as well.
+cdr  and iflg=0 then. Second parameter p2: ln(E0)
+cdr  but we also want the new fit vs. E0, at given Tii
 C       NEND=9
         IF (NSTORDR >= NRAD) THEN
           FCTKKL=LOG(FACTKK)
@@ -235,7 +257,7 @@ C       NEND=9
 cdr  safety cut-off at TI= 0.1 eV. (TVAC=0.02)
               tii = max(tminl,tii)
 c  evaluate 2 parametric fit,
-c  collapse this to a one parameter fit CF for EB dependence, evaluated at TII.
+c  collapse this to a new single parameter fit CF for E0 dependence, evaluated at TII.
               rp => reacdat(KK)%rtc%poly
               call EIRENE_dbl_poly (rp%dblpol,tii,0._dp,cou,cf,
      .               rt%rc1min, rt%rc1max, fp1, rt%jfex1mn, rt%jfex1mx,
@@ -248,18 +270,29 @@ c  collapse this to a one parameter fit CF for EB dependence, evaluated at TII.
           END DO
         ELSE ! NOT SUFFICIENT STORAGE ON TABCX3
 C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
-
+          write (iunout,*) 'Warning:'
+          write (iunout,*) 'storage save mode not available yet for CX'
+          write (iunout,*) 'in case modclf=2  (E,T-dependence).'
+          write (iunout,*) 'It may work, unless ftabcx3.f is used'
+c         call eirene_exit_own(1)
         ENDIF
         MODCOL(3,2,IRCX)=2
 
       ELSEIF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.3) THEN
-C  2.D) RATE COEFFICIENT(TI=TE, NE=NI ?, E0 FIXED, E.G. E0=0.)
+C  2.D) RATE COEFFICIENT(TI=TE, NE, E0 FIXED, E.G. E0=0.)
 C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
         FCTKKL=LOG(FACTKK)
         IF (NSTORDR >= NRAD) THEN
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
-            COU = EIRENE_RATE_COEFF(KK,J,TEINL(J),PLS(J),.FALSE.,1)
+            TII=TIINL(IPLTI,J)+ADDTL
+cdr  safety cut-off at TI= 0.1 eV. (TVAC=0.02)
+            tii = max(tminl,tii)
+cdr  indicate: electron density dependence on PLS(J)= log_e(ne)
+            iflg=1
+cdr  assumption: temperature dependence with Te = Ti.
+cdr  current implementation: use Ti with isotope scaling
+            COU = EIRENE_RATE_COEFF(KK,J,TII,PLS(J),.FALSE.,IFLG)
             TB = COU + FCTKKL
             IF (IFTFLG(KK,2) < 100) TB = TB + DIINL(IPL,J)
             TB=MAX(-100._DP,TB)
@@ -267,6 +300,8 @@ C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
           END DO
         ELSE  ! ??
 C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
+cdr  modc = 3 option added to ftabcx3, Sept.22. Tests ongoing
+cdr  ftabcx3 now uses isotopically shifted TII, not Te
           write (iunout,*) 'storage save mode not available yet for CX'
           write (iunout,*) 'in case modc=3  (n,T-dependence).'
           write (iunout,*) 'exit called'
@@ -274,15 +309,17 @@ C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
         ENDIF
         MODCOL(3,2,IRCX)=1 !  indicate: rate coefficient as fct. of local plasma conditions only
       ELSE
-C  NO RATE COEFFICIENT. IS THERE A CROSS-SECTION AT LEAST?
+C  NO RATE COEFFICIENT PROVIDED. 
+C  IS THERE A CROSS-SECTION AT LEAST?
         IF (MODCOL(3,2,IRCX).NE.3) GOTO 996
+C  YES. AN APPROXIMATE RATE COEFFICIENT SIGMA(VEFF)*VEFF IS BUILD IN SUBR. FPATH
       ENDIF
 
       FACRCX(IRCX,1) = FACTKK
       FACRCX(IRCX,2) = LOG(FACTKK)
 
-      DEFCX(IRCX)=LOG(CVELI2*PMASS)
-      EEFCX(IRCX)=LOG(CVELI2*TMASS)
+      DEFCX(IRCX)=LOG(CVELI2*PMASS)  ! vq_rel  --> elab (for cross section, H.1)
+      EEFCX(IRCX)=LOG(CVELI2*TMASS)  ! vq_beam --> ebeam, only needed for H.3, H.6 or H.9 rates
 C
 C  3. BULK PARTICLE MOMENTUM LOSS RATE
 C
@@ -338,7 +375,7 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
             NELRCX(IRCX) = -3
           END IF
 
-        ELSEIF (EBULK.GT.0.D0) THEN ! EBULK GT.0  ! EBULK GT.0
+        ELSEIF (EBULK.GT.0.D0) THEN ! EBULK GT.0
 
           WRITE (iunout,*) 'WARNING FROM SUBR. XSTCX: IRCX ', IRCX
           WRITE (iunout,*) 'MODIFIED TREATMENT OF CHARGE EXCHANGE '
@@ -355,8 +392,9 @@ C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
             NELRCX(IRCX) = -2
             EPLCX3(IRCX,1,1)=EBULK
           END IF
-C       ELSE
+        ELSE
 CDR   ERROR: EBULK < 0 IS NOT FORESEEN
+          GOTO 993
         ENDIF
         MODCOL(3,4,IRCX)=1
 C     ELSEIF (NSECX4.EQ.2) THEN
@@ -501,6 +539,13 @@ C
       WRITE (iunout,*) 'KK ',KK
       WRITE (iunout,*) 'IRCX, TEST-SPECIES, BULK SPECIES ',IRCX,
      .                  TEXTS(ISP),TEXTS(NSPAMI+IPL)
+      CALL EIRENE_EXIT_OWN(1)
+  993 CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED'
+      WRITE (iunout,*)
+     .  'EBULK_ION .LE.0, BUT MONOENERGETIC DISTRIBUTION?'
+      WRITE (iunout,*) 'CHECK ENERGY FLAG ISCDEA'
+      WRITE (iunout,*) 'KK,ISCDEA ',KK,ISCDEA
       CALL EIRENE_EXIT_OWN(1)
   994 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTCX: EXIT CALLED'

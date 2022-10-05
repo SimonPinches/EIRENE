@@ -48,7 +48,7 @@ C
      .            TALTOT, DIF, SMSPT, ERADE
       INTEGER :: IALS, IALV, J, JJ, IS, NFTI, NFTE, I0, K, NF, N, IALG,
      .           ITAL, IPRV, ILAST, ICOUNT, I, IINDEX, ISPC,
-     .           IT, JATM, JMOL, JION, JPHOT, IRET, ipb
+     .           IT, JATM, JMOL, JION, JPHOT, IRET
       INTEGER :: IADTYP(0:4)
       LOGICAL :: LCOVN(NCV)
 C
@@ -2786,12 +2786,6 @@ C   DETAILED OUTPUT OF FLUXES ONTO AND FROM SURFACES
         WRITE (iunout,*) ' CHECK SUBROUTINE EIRENE_UPDATE FOR BUGS!'
         CALL EIRENE_LEER(2)
       END IF
-
-      call eirene_leer(2)
-      write (iunout,*) 'potat, istra =',istra
-      do ipb=1,nlmpgs
-        write (iunout,*) ipb,potat(:,ipb)
-      end do
 C
       CALL EIRENE_PAGE
 C

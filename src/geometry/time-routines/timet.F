@@ -99,7 +99,6 @@ C
           WRITE (iunout,*)  ZRAD,NRCELL,NTCELL,MTSURF
           CALL EIRENE_MASR3('INITIAL: X01,Z01,PHI    ',
      .                                X01,Z01,PHI/DEGRAD)
-          WRITE (iunout,*)  X01,Z01,PHI/DEGRAD
         ELSE
           WRITE (iunout,*) 'TIMET FROM OUTSIDE, NPANU ', NPANU
           WRITE (iunout,*) 'MRSURF,MTSURF,ZRAD '
@@ -377,8 +376,6 @@ C
 #ifdef TRACE
         IF (NLTRC) WRITE (iunout,'(1X,A,1X,4(1PE12.4,3X),I6)')
      .              'TIMET 1 ',X01,Z01,X001,Z001,ITT
-        IF (NLTRC) WRITE (iunout,*)
-     .              'TIMET 1 ',X01,Z01,X001,Z001,ITT
 #endif
       ELSE
         IF (1._DP-ABS(VELY) > EPS10) THEN
@@ -427,7 +424,6 @@ C                      FOR A POLOIDAL SURFACE (OTHERWISE: ERROR EXIT)
 #ifdef TRACE
       IF (NLTRC) CALL EIRENE_MASR3('FINAL 1: X01,Z01,PHI    ',
      .                                       X01,Z01,PHI/DEGRAD)
-      IF (NLTRC) write(iunout,*) X01,Z01,PHI/DEGRAD
 #endif
       GOTO 5000
 C

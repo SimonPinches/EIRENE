@@ -71,6 +71,12 @@ C   3): AEA TECHNOLOGY, FUSION, CULHAM, UKAEA FUSION ASSOCIATION
 C
 *DK COUPLE
 C
+      MODULE EIRMOD_INFCOP
+
+      PUBLIC
+
+      CONTAINS
+      
       SUBROUTINE EIRENE_INFCOP
 C
 C     THIS SUBROUTINE DEFINES THE PLASMA MODEL IN CASE OF A COUPLED
@@ -3291,3 +3297,13 @@ C> transfer to the external code
       integer, intent(in) :: istra
       RETURN
       END SUBROUTINE EIRENE_INFCOP_POST_STRATUM
+
+C> \brief Prepare some data prior to calculation of strata but after
+C> the distribution of processors has been updated 
+C>
+      SUBROUTINE EIRENE_INFCOP_PRE_STRATA
+
+      RETURN
+      END SUBROUTINE EIRENE_INFCOP_PRE_STRATA
+
+      END MODULE EIRMOD_INFCOP

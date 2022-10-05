@@ -98,6 +98,7 @@ C
       USE EIRMOD_TIMEA, ONLY: EIRENE_TIMEA0
       USE EIRMOD_JSON
       USE EIRMOD_IOUSR, ONLY: EIRENE_READ_BLOCK_11_USR
+      USE EIRMOD_INFCOP, ONLY: EIRENE_IF0COP
 
       IMPLICIT NONE
 
@@ -3857,7 +3858,6 @@ C  NO TIME HORIZON DEFINED, DESPITE NLERG=.TRUE.
 C  THEREFORE: SET A DEFAULT TIME HORIZON HERE
         NPRNLI=100
         IF (NTIME.EQ.0) NTIME=1
-      write (iunout,*) 'NLERG read ntime = ',ntime
         WRITE (iunout,*) '        NPRNLI= ',NPRNLI,
      .                   ' (MODIFIED DUE TO NLERG)'
       ELSE
@@ -3883,7 +3883,6 @@ cym - was removed, present in the julich git // crash without this goto
 cdr  from here: time dep mode is ON.
       LDEF_TIME_HORIZON = .FALSE.
       READ (IUNIN,'(A72)') ZEILE
-      write (iunout,*) zeile
       IREAD=1
       IF (ZEILE(1:1).EQ.'*') THEN
 cdr no time-horizon found in block 13.
@@ -4001,6 +4000,7 @@ C
       USE EIRMOD_COMPRT
       USE EIRMOD_CTEXT
       USE EIRMOD_CSPEI
+      USE EIRMOD_INFCOP, ONLY: EIRENE_IF0COP
       IMPLICIT NONE
       INTEGER, INTENT(INOUT) :: IERROR 
       CHARACTER(420) :: ZEILE, ULINE

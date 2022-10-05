@@ -31,6 +31,7 @@ cdr  May 18:  The fluid limit (critical CX Knudsen number) is now set from NGENA
 cdr           rather than from the former fldlma(iatm,kk) flag (which is removed now).
 cdr           default: FDLMCX=0.0 (from initialisation phase) means:
 cdr           no fluid limit cut-off at CX collisions.
+cdr  Oct.20:  nbgk_sp: no. of bgk species. To be distinguished from nrbgi: no. of bgk reactions.
 C
       SUBROUTINE EIRENE_XSECTA
 C
@@ -181,9 +182,8 @@ C  PROBABLY NOT NEEDED, ONLY IN STORAGE SAVING MODE
 C
 C  TRACKLENGTH ESTIMATOR IS DEFAULT FOR ALL DEFAULT COLLISION RATE CONTRIBUTIONS
 C
-          IESTEI(IREI,1)=0
-          IESTEI(IREI,2)=0
-          IESTEI(IREI,3)=0
+          IESTEI(IREI,1:3)=0
+cdr       ISPCLEI(IREI,1:4)=0
 C
           NAEII(IATM)=IDSC1
 C
@@ -244,6 +244,8 @@ C
 C   DEFAULT MODEL 100 --- 129: RESONANT CX FOR H  + P,
 C                 130 --- 139: RESONANT CX FOR HE + HE+,
 C                 140 --- 149: RESONANT CX FOR HE + HE++,
+cdr modcol(3,..)=3 for all minimal models, i.e. use cross section only.
+cdr modc=eirene_idez(modcfl(kk),3,5)=0, i.e. no storage save mode option FTABCX3 
 C
         IF (NRCA(IATM).EQ.0) THEN
           DO 155 IPLS=1,NPLSI
@@ -355,9 +357,8 @@ C
 C
 C  TRACKLENGTH ESTIMATOR FOR ALL COLLISION RATE CONTRIBUTIONS
 C
-            IESTCX(IRCX,1)=0
-            IESTCX(IRCX,2)=0
-            IESTCX(IRCX,3)=0
+            IESTCX(IRCX,1:3)=0
+C           ISPCLCX(IRCX,1:2)=0
 C
 C  DEFAULT BULK ION ENERGY LOSS RATE = 1.5*TI+EDRIFT PER COLLISION
 C
@@ -411,7 +412,7 @@ c
             if (ngena(iatm).lt.0) then  !  in range -1,...-infinity
 c  set CX fluid limit FDLM (critical Knudsen number Kn_c = mfp_cx/delta
 c  delta: typical length (could be cell size, or gradient length...)
-c  use the integer input flag ngena (generation limit).
+c  use the integer input flag (format I3) NGENA (generation limit).
               MFL=-(ngena(iatm)+1)  !  now MFL in range 0 to +infinity
 c  ngena=-10001 produces Kn_c=1.0. Larger abs(ngena) --> smaller Kn_c
               FDLMCX(IRCX)=1.0E4/(MFL+eps30)
@@ -596,7 +597,8 @@ C  BULK PARTICLE INDEX
             EELEC=EELECA(IATM,NRC)
             CALL EIRENE_XSTPI (RMASS,IRPI,IAT,IPL,
      .                  IFRST,ISCND,ITHRD,IFRTH,
-     .                  EBULK,EHEAVY,EELEC,CHRDF0,ISCDE,IESTM,
+     .                  EBULK,EHEAVY,EELEC,CHRDF0,
+     .                  ISCDE,IESTM,
      .                  KK,FACTKK,PLS)
           END DO
 C
