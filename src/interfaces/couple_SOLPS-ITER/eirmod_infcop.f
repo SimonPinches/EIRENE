@@ -726,7 +726,8 @@ C TO READ THE FILE PRODUCED BY DOS
          if (plidl) then
 c write file 'triang_new.npco_char' for triang-grid, for idl tool, in appropriate format.
 c first: fetch a free file unit number
-           open(newunit=jun,file='triang_new.npco_char',
+            jun=newunit()
+            open(unit=jun,file='triang_new.npco_char',
      .          access='SEQUENTIAL',form='FORMATTED')
 c next: write file 'triang_new.npco_char'
            write (jun,'(i9)') NRKNOT
@@ -3700,33 +3701,41 @@ C
       END IF
 
 csw 14jul2011
-      if(my_pe == 0)then
-        IF (.NOT.ALLOCATED(CHPS)) THEN
-          ALLOCATE (CHPS(NFL))
-          ALLOCATE (SNIS(0:NFL))
-          ALLOCATE (CHMOS(NFL))
-          ALLOCATE (SMOS(0:NFL))
-          ALLOCATE (SCALN(0:NFL))
-  	  ALLOCATE (SEES0(NSTRA))
-          ALLOCATE (SEIS0(NSTRA))
-          ALLOCATE (SNIS0(NSTRA,0:NFL))
-          ALLOCATE (SMOS0(NSTRA,0:NFL))
+      IF (ISTRAA.ne.ISTRAE.and..not.LSHORT) THEN
+          WRITE (IUNOUT,*) 'Error, this version of INFCOP '//
+     &                     'should process one stratum at a time'
+          CALL MPI_ABORT(MPI_COMM_WORLD, -1, IER)
+         ! note that calling exit_own would lead to a deadlock
+         ! because that has collective mpi calls
+      ENDIF
+      if (.not. I_am_leader(istraa)) return
 
-          ALLOCATE (RESSNI(0:NSTRA,NFL))
-          ALLOCATE (RESSMO(0:NSTRA,NFL))
-          ALLOCATE (RESSEE(0:NSTRA))
-          ALLOCATE (RESSEI(0:NSTRA))
+      IF (.NOT.ALLOCATED(CHPS)) THEN
+        ALLOCATE (CHPS(NFL))
+        ALLOCATE (SNIS(0:NFL))
+        ALLOCATE (CHMOS(NFL))
+        ALLOCATE (SMOS(0:NFL))
+        ALLOCATE (SCALN(0:NFL))
+        ALLOCATE (SEES0(NSTRA))
+        ALLOCATE (SEIS0(NSTRA))
+        ALLOCATE (SNIS0(NSTRA,0:NFL))
+        ALLOCATE (SMOS0(NSTRA,0:NFL))
 
-          ALLOCATE (FLXEIR(NSTRA))
+        ALLOCATE (RESSNI(0:NSTRA,NFL))
+        ALLOCATE (RESSMO(0:NSTRA,NFL))
+        ALLOCATE (RESSEE(0:NSTRA))
+        ALLOCATE (RESSEI(0:NSTRA))
 
-          CALL EIRENE_ALLOC_BRASPOI
-          CALL EIRENE_ALLOC_EIRBRA(NDX,NDY,NFL,NATM,NMOL,NION,NSTRA)
+        ALLOCATE (FLXEIR(NSTRA))
+
+        CALL EIRENE_ALLOC_BRASPOI
+        CALL EIRENE_ALLOC_EIRBRA(NDX,NDY,NFL,NATM,NMOL,NION,NSTRA)
 C
-          RESSNI = 0._DP
-          RESSMO = 0._DP
-          RESSEE = 0._DP
-          RESSEI = 0._DP
-        END IF
+        RESSNI = 0._DP
+        RESSMO = 0._DP
+        RESSEE = 0._DP
+        RESSEI = 0._DP
+      END IF
       if (.not.allocated(chpm)) then
         ALLOCATE (CHPM(NPLS,NRAD))
         ALLOCATE (CHEEM(NRAD))
@@ -3747,26 +3756,24 @@ C
          allocate (eipl0(nrad))
       end if
 C
-        IF (NEW_ITER == 0) THEN
-          RESSNI = 0.D0
-          RESSMO = 0.D0
-          RESSEE = 0.D0
-          RESSEI = 0.D0
-        ENDIF
+      IF (NEW_ITER == 0) THEN
+        RESSNI = 0.D0
+        RESSMO = 0.D0
+        RESSEE = 0.D0
+        RESSEI = 0.D0
+      ENDIF
 C
-        IF (.NOT.LSHORT) THEN
-          RESSNI(ISTRAA:ISTRAE,:) = 0._DP
-          RESSMO(ISTRAA:ISTRAE,:) = 0._DP
-          RESSEE(ISTRAA:ISTRAE) = 0._DP
-          RESSEI(ISTRAA:ISTRAE) = 0._DP
-        ENDIF
+      IF (.NOT.LSHORT) THEN
+        RESSNI(ISTRAA:ISTRAE,:) = 0._DP
+        RESSMO(ISTRAA:ISTRAE,:) = 0._DP
+        RESSEE(ISTRAA:ISTRAE) = 0._DP
+        RESSEI(ISTRAA:ISTRAE) = 0._DP
+      ENDIF
 
-        volSUMN(ISTRAA:ISTRAE)=0.0 !dpc
-        volSUMM(ISTRAA:ISTRAE)=0.0 !dpc
-        volSUMEI(ISTRAA:ISTRAE)=0.0 !dpc
-        volSUMEE(ISTRAA:ISTRAE)=0.0 !dpc
-csw
-      endif
+      volSUMN(ISTRAA:ISTRAE)=0.0 !dpc
+      volSUMM(ISTRAA:ISTRAE)=0.0 !dpc
+      volSUMEI(ISTRAA:ISTRAE)=0.0 !dpc
+      volSUMEE(ISTRAA:ISTRAE)=0.0 !dpc
 
       DO 10000 ISTRAI=ISTRAA,ISTRAE
 C
@@ -5337,7 +5344,7 @@ C
         ENDIF
 csw 26jan2011 extra B25, correct particle sources for recycling strata if necessary
         if(my_pe == 0) then
-!pb          call eirene_extrab25_eirpbls(istrai)
+          call eirene_extrab25_eirpbls(istrai)
           srcstrn(istrai)=flux(istrai)
         endif
 csw
@@ -6155,7 +6162,6 @@ C
 csw 07feb2011 extra B2.5
         if(my_pe == 0) then
           if (nlemis) call eirene_extrab25_emissivity
-!pbtest          call eirene_extrab25_wneusave
           call eirene_wneutrals_save
           call write_f44('    ')
         endif
@@ -6260,7 +6266,7 @@ csw mpi 09jun2010
         endif
 
         do istrx=1,nstrai
-          if(calc_stratum(istrx) .and. my_pe /= 0) then
+          if(procforstra(istrx,my_pe) .and. my_pe /= 0) then
             SNIS0(istrx,0) = sum(snis0(istrx,1:nfl))
             SMOS0(istrx,0) = sum(smos0(istrx,1:nfl))
             DO IFL=1,NFL

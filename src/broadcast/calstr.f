@@ -46,9 +46,13 @@ C> - tallies
       USE EIRMOD_CESTIM, ONLY: ESTIML, ESTIMS, ESTIMV
       USE EIRMOD_CSPEZ, ONLY: LOGATM, LOGION, LOGMOL, LOGPHOT, LOGPLS
       USE EIRMOD_COMPRT, ONLY: ISTRA
-      USE EIRMOD_CPES, ONLY: NEED_CALSTR, CALC_STRATUM, GET_STRATUM_COMM
+      USE EIRMOD_CPES, ONLY: NEED_CALSTR, CALC_STRATUM,
+     .                       GET_STRATUM_COMM, I_AM_LEADER,
+     ,                       STRATEGY_BALANCED,
+     ,                       WORK_DISTRIBUTION_STRATEGY
       USE EIRMOD_CSDVI, ONLY: NSIGI_SPC, SDVI1, SDVI2, SIGMAC, SGMCS
       USE EIRMOD_COUTAU
+      USE EIRMOD_CALSTR_BUFFERED
       USE EIRMOD_MPI
 
       IMPLICIT NONE
@@ -84,6 +88,17 @@ C Need to clarify what eirene_calstr_usr does with my_pe_gr.
           call eirene_masage
      .     ('ERROR IN SUBROUTINE EIRENE_CALSTR at mpi_comm_rank.')
           call eirene_exit_own(1)
+        end if
+
+        if (work_distribution_strategy == STRATEGY_BALANCED) then
+          call eirene_calstr_buffered(calstr_comm, my_pe_gr,
+     &                                I_am_leader(istra))
+          ! Note that if eirene_calstr_usr has any variables to reduce,
+          ! then they must be added to eirmod_buffered_calstr. Otherwise
+          ! we lose the advantage of non-blocking calls, and we probably
+          ! run into a deadlock.
+          ! call eirene_calstr_usr (my_pe_gr, calstr_comm)
+          return
         end if
 
         mxdim = max(nvoltl,nsrftl,nsd,nsdw,

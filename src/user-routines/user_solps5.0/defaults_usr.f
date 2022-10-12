@@ -4,5 +4,8 @@
 
       implicit none
 
+      loutapp = .false.
+      lif3cop_from_loop = .false.
+
       return
       end subroutine eirene_defaults_usr

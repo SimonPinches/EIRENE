@@ -109,6 +109,14 @@ C
 
       IMPLICIT NONE
 
+#ifdef WINDOWS
+      interface
+        subroutine ioflush
+!DIR$attributes c, alias: 'ioflush_' :: ioflush
+        end subroutine
+      end interface
+#endif
+
       REAL(DP), INTENT(IN) :: DT
       LOGICAL, INTENT(IN) :: NLMODE, NLLAST, MPI_INITIALIZE
       INTEGER, INTENT(IN) :: ITNR

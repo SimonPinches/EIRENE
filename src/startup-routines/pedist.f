@@ -28,11 +28,27 @@ C> - NPESTA(ISTRA): master process for stratum ISTRA
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_COMUSR, ONLY: NPRLL
       USE EIRMOD_PARMMOD, ONLY: NSTRA
+      USE EIRMOD_COMSOU, ONLY: NLSRON, NPTS
+      USE EIRMOD_CPES, ONLY: NPESTA, NPESTR, NPRS, PROCFORSTRA,
+     .                       NPARTS_LOC, STRATUM_LEADER
 
       IMPLICIT NONE
 
       REAL(DP), INTENT(INOUT) :: XTIM(0:NSTRA) !< time allocated for stratum
       REAL(DP), INTENT(IN) :: XX1 !< remaining CPU time
+
+      IF (NPRS == 1) THEN
+
+! 1 PROCESSOR: ALL STRATA ARE DONE BY PROCESSOR 0
+!              XTIM REMAINS UNCHANGED
+
+        PROCFORSTRA(1:NSTRA,0) = NLSRON(1:NSTRA)
+        NPESTA(1:nstra) = 0
+        NPESTR(1:nstra) = 1
+        nparts_loc(1:nstra) = npts(1:nstra)
+        stratum_leader = 0
+	return
+      end if
 
       SELECT CASE( NPRLL )
         CASE( -1 )
@@ -50,8 +66,9 @@ C>
 C> Here, all strata are calculated by all processes. XTIM remains
 C> unchanged.
       SUBROUTINE EIRENE_PEDIST_EMBPARALL
-      USE EIRMOD_COMSOU, ONLY: NLSRON
-      USE EIRMOD_CPES, ONLY: NPESTA, NPESTR, NPRS, PROCFORSTRA
+      USE EIRMOD_COMSOU, ONLY: NLSRON, NPTS
+      USE EIRMOD_CPES, ONLY: NPESTA, NPESTR, NPRS, PROCFORSTRA,
+     .                       NPARTS_LOC, STRATUM_LEADER
 
       IMPLICIT NONE
 
@@ -60,10 +77,12 @@ C> unchanged.
       PROCFORSTRA = .FALSE.
 
       DO IPE = 0, NPRS-1
-        PROCFORSTRA(:,IPE) = NLSRON
+        PROCFORSTRA(1:NSTRA,IPE) = NLSRON(1:NSTRA)
       END DO
-      NPESTA = 0
-      NPESTR = NPRS
+      NPESTA(1:NSTRA) = 0
+      NPESTR(1:NSTRA) = NPRS
+      nparts_loc(1:nstra) = npts(1:nstra)
+      stratum_leader = 0
 
       RETURN
       END SUBROUTINE EIRENE_PEDIST_EMBPARALL
@@ -87,7 +106,9 @@ C>   processes to one stratum.
       USE EIRMOD_PARMMOD, ONLY: NSTRA
       USE EIRMOD_CAI, ONLY: XMCT
       USE EIRMOD_CCONA, ONLY: EPS30
-      USE EIRMOD_CPES, ONLY: NPESTA, NPESTR, NPRS, PROCFORSTRA
+      USE EIRMOD_CPES, ONLY: NPESTA, NPESTR, NPRS, PROCFORSTRA,
+     .                       NPARTS_LOC, MY_PE, 
+     .                       STRATUM_LEADER, I_AM_LEADER
       USE EIRMOD_COMSOU, ONLY: NLSRON, NPTS
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_COUTAU, ONLY: XMCP
@@ -100,6 +121,7 @@ C>   processes to one stratum.
       REAL(DP) :: FACP, DELT, SUMTIM, TMEAN, TPE
       INTEGER :: IPE, K, I, ISTRA, NPRS_FREE, NPRS_OPT, N
       INTEGER, DIMENSION(1) :: NSTRPE(0:NPRS-1)
+      INTEGER :: IHELP(1:NSTRA)
 
       PROCFORSTRA = .FALSE.
 
@@ -108,18 +130,21 @@ C>   processes to one stratum.
 ! 1 PROCESSOR: ALL STRATA ARE DONE BY PROCESSOR 0
 !              XTIM REMAINS UNCHANGED
 
-        PROCFORSTRA(:,0) = NLSRON
-        NPESTA = 0
-        NPESTR = 1
+        PROCFORSTRA(1:NSTRA,0) = NLSRON(1:NSTRA)
+        NPESTA(1:nstra) = 0
+        NPESTR(1:nstra) = 1
+        nparts_loc(1:nstra) = npts(1:nstra)
+        stratum_leader = 0
 
-      ELSE IF (NPRS <= COUNT(NLSRON)) THEN
+      ELSE IF (NPRS <= COUNT(NLSRON(1:NSTRA))) THEN
 
 ! FEWER PROCESSORS THAN STRATA
 ! ROUND ROBIN DISTRIBUTION OF PROCESSORS
 ! EACH PROCESSOR CAN CALCULATE SEVERAL STRATA
 ! BUT EACH STRATUM IS CALCULATED BY EXACTLY ONE PROCESSOR
 ! ADJUST XTIM TO OPTIMIZE USE OF AVAILABLE CPU TIME
-        NPESTR = 1
+        nparts_loc = 0
+        NPESTR (1:nstra)= 1
         TSTRPE = 0._DP
         IPE = -1
         DO ISTRA = 1, NSTRA
@@ -127,21 +152,29 @@ C>   processes to one stratum.
             IPE = IPE + 1
             IF (IPE >= NPRS) IPE = 0
             PROCFORSTRA(ISTRA,IPE) = .TRUE.
+            if (my_pe==ipe) then
+              nparts_loc(istra) = npts(istra)
+            endif
+            stratum_leader(istra) = ipe
             NPESTA(ISTRA) = IPE
             TSTRPE(ISTRA,IPE) = XTIM(ISTRA)
+          ELSE
+            PROCFORSTRA(ISTRA,0) = .TRUE.
+            stratum_leader(istra) = 0
+            NPESTA(ISTRA) = 0
           END IF
         END DO
 
         sumtim=xtim(0)
         DO IPE = 0, NPRS-1
-          TPE = SUM(TSTRPE(:,IPE))
+          TPE = SUM(TSTRPE(1:NSTRA,IPE))
           FACP = SUMTIM / TPE
-          TSTRPE(:,IPE) = TSTRPE(:,IPE) * FACP
+          TSTRPE(1:NSTRA,IPE) = TSTRPE(1:NSTRA,IPE) * FACP
         END DO
 
         IPE = -1
         DO ISTRA = 1, NSTRA
-          IF (NLSRON(ISTRA)) THEN
+          IF (NLSRON(ISTRA).AND.NPTS(ISTRA).GT.0) THEN
             IPE = IPE + 1
             IF (IPE >= NPRS) IPE = 0
             XTIM(ISTRA) = TSTRPE(ISTRA,IPE)
@@ -154,7 +187,8 @@ C>   processes to one stratum.
         CALL EIRENE_MASAGE
      .    ('REDEFINED CPU TIME ASSIGNED TO STRATA (SEC) :')
         DO ISTRA=1,NSTRA
-          CALL EIRENE_MASJ1R ('STRATUM, TIME   ',ISTRA,XTIM(ISTRA))
+          CALL EIRENE_MASJ2R ('STRATUM, NPTS, TIME     ',
+     .                         ISTRA,NPTS(ISTRA),XTIM(ISTRA))
         END DO
         CALL EIRENE_LEER(1)
 
@@ -197,6 +231,7 @@ C>   processes to one stratum.
           FACP=MIN(1.0_DP,REAL(NPRS_FREE,DP)/
      .                   (REAL(NPRS_OPT,DP)+eps30))
           write (iunout,*) ' facp ',facp
+          NPESTR(0)=NPRS
           DO ISTRA=1,NSTRA
             NPESTR(ISTRA)=NPESTR(ISTRA)+int(TIMPE(ISTRA)*FACP)
             NPRS_FREE=NPRS_FREE-int(TIMPE(ISTRA)*FACP)
@@ -208,6 +243,7 @@ C>   processes to one stratum.
         else
 
 csw attempting better work load balancing
+          npestr(0)=nprs
           tmean=xtim(0)/dble(nprs)
           do istra=1,nstra
             timpe(istra) = max(xtim(istra)-tmean,0.0_DP)/tmean
@@ -230,7 +266,7 @@ csw attempting better work load balancing
 csw 14jul2011
         do while (nprs_free < 0)
           WRITE (iunout,*) ' NPRS_FREE ',NPRS_FREE
-          i=maxloc(npestr,dim=1)
+          i=maxloc(npestr(1:nstra),dim=1)
           npestr(i)=npestr(i)-1
           nprs_free=nprs_free+1
         enddo
@@ -253,7 +289,7 @@ csw
         WRITE (iunout,*) ' NPRS_FREE ',NPRS_FREE
 
 csw 14jul2011
-        if(sum(npestr) /= nprs ) then
+        if(sum(npestr(1:nstra)) /= npestr(0) ) then
           write(iunout,*) 'pedist: wrong number of processors in npestr'
           call eirene_exit_own(1)
         endif
@@ -261,10 +297,16 @@ csw
 
 ! assign each processor the numbers ISTRA of the strata it shall work on
         IPE=0
+        nparts_loc = 0
         DO ISTRA=1,NSTRA
           DO K=1,NPESTR(ISTRA)
             NSTRPE(IPE)=ISTRA
             PROCFORSTRA(ISTRA,IPE) = .TRUE.
+C Rescaling of particles per stratum, to keep total particle number
+C independent of parallelisation (strong scaling approach):
+            if(my_pe==ipe) then
+              nparts_loc(istra) = npts(istra) / npestr(istra)
+            endif
             IPE=IPE+1
           ENDDO
         ENDDO
@@ -284,7 +326,28 @@ csw
         ENDDO
         WRITE (iunout,*) ' MASTER PROCESSOR FOR STRATUM'
         WRITE (iunout,*) ' ISTRA, NPESTA'
-        WRITE (iunout,'(12I6)') (I,NPESTA(I),I=1,NSTRA)
+        WRITE (iunout,*) ' NLSRON : ', (NLSRON(ISTRA),ISTRA=1,NSTRA)
+        IPE = 0
+        DO ISTRA=1,NSTRA
+          IF (NLSRON(ISTRA)) THEN
+            IPE = IPE + 1
+            IHELP(IPE) = NPESTA(ISTRA)
+          END IF
+        END DO
+        WRITE (iunout,'(12I6)') (I,IHELP(I),I=1,IPE)
+
+        stratum_leader(1:NSTRA) = NPESTA(1:NSTRA)
+
+! correct for remaining particles
+        do istra=1,nstra
+          if (npestr(istra)>0) then
+            n = mod(npts(istra),npestr(istra))
+            if ((n.ne.0) .and. I_am_leader(istra)) then
+              ! the stratum leader will follow the remaining particles
+              nparts_loc(istra) = nparts_loc(istra) + n
+            end if
+          end if
+        end do
 
         XTIM(1:NSTRA) = XX1
         CALL EIRENE_LEER(1)
@@ -296,9 +359,10 @@ csw
 
 C Rescaling of particles per stratum, to keep total particle number
 C independent of parallelisation (strong scaling approach):
-        WHERE ( NPESTR > 1 )
-          NPTS = NPTS / NPESTR
-        END WHERE
+C already done with nparts_loc
+C       WHERE ( NPESTR > 1 )
+C         NPTS = NPTS / NPESTR
+C       END WHERE
 
       END IF
 

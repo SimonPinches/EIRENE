@@ -45,7 +45,8 @@
       type(json_value),pointer :: p, block_1, block_2, block_3a, 
      .                            block_3b, block_45, block_6, block_7,
      .                            block_8, block_9, block_10, block_11,
-     .                            block_12, block_13, block_14, block_0
+     .                            block_12, block_13, block_14, block_0,
+     .                            block_15
       type(json_value),pointer :: cmlines, crs_lines
       type(s_stack), pointer :: cur
       character(*) :: filename
@@ -76,6 +77,7 @@
       call json%create_object(block_12,'DIAGNOSTICS')
       call json%create_object(block_13,'TIMEDEPENDENT_MODE')
       call json%create_object(block_14,'INTERFACING')
+      call json%create_object(block_15,'MPI_INFORMATION')
 
       call json%add(p, block_0)     !add it to the root
       call json%add(p, block_1)     !add it to the root
@@ -92,6 +94,7 @@
       call json%add(p, block_12)    !add it to the root
       call json%add(p, block_13)    !add it to the root
       call json%add(p, block_14)    !add it to the root
+      call json%add(p, block_15)    !add it to the root
 
       call json%add(block_0,'TXTRUN',txtrun)
 ! COMMENT lines
@@ -119,6 +122,7 @@
       call eirene_write_block_12(block_12)
       call eirene_write_block_13(block_13)
       call eirene_write_block_14(block_14)
+      call eirene_write_block_15(block_15)
 
 ! write the file:
       call json%print(p,trim(filename))
@@ -2246,6 +2250,35 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
 !      call eirene_wrjson_usr(me)
 
       end subroutine eirene_write_block_14
+ 
+!******************************************************************************
+
+      subroutine eirene_write_block_15(me)
+      type(json_value),pointer :: me
+      integer :: i
+      character(80) :: strategy
+
+      call json%add(me,'MANUAL',
+     .     "http://www.eirene.de/eirene.pdf#section.2.15")
+
+      select case(NPRLL)
+      case (-1)
+        strategy = 'USER_DEFINED'
+      case (0)
+        strategy = 'EMBARRASS'
+      case (1)
+        strategy = 'ORIGINAL'
+      case (2)
+        strategy = 'APCAS'
+      case (3)
+        strategy = 'BALANCED'
+      case default
+        strategy = 'AUTOMATIC'
+      end select
+      
+      call json%add(me,'STRATEGY',strategy)
+ 
+      end subroutine eirene_write_block_15
  
 !******************************************************************************
 

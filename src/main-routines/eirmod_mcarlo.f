@@ -56,7 +56,10 @@ cym will disappear when parallel zone will encompass the whole code
       USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
       USE EIRMOD_OPENMP
       USE EIRMOD_INFCOP, ONLY: EIRENE_IF3COP, EIRENE_INFCOP_PRE_STRATA,
-     .                         EIRENE_INFCOP_POST_STRATUM
+     .                         EIRENE_INFCOP_POST_STRATUM,
+     .                         EIRENE_IF3COP_SUM
+      USE EIRMOD_CALSTR_BUFFERED
+      USE EIRMOD_BALANCED_STRATEGY
 
       IMPLICIT NONE
       PRIVATE
@@ -275,6 +278,13 @@ C  INITIALIZE SUBR. UPDLIN
       IF (TRCTIM) 
      >  write (iunout,*) 'CPU time for prepare_updlin ', tim2-tim1
       tim1 = tim2
+!pb moved EIRENE_INFCOP_PRE_MCARLO called from EIRENE_EIRENE
+csw 28jan2011 extra B25, produce the files for surface properties visualisation if required
+!pb   call eirene_extrab25_srfprvsl
+csw
+cxpb zero out the output arrays to B2.5
+!pb   call eirene_wneutrals_clean(.false.)
+cxpb
 C
 C
       IESTR=-1
@@ -469,16 +479,13 @@ C  REDEFINE NPTS ACCORDING TO XTIM(ISTRA)
 C
 C  ASSIGN PEs TO STRATA
 C
-      if (my_pe == 0) CALL EIRENE_PEDIST(XTIM,XX1)
+      call init_work_distribution(xtim,xx1,input_distribution_strategy)
       if (nmode > 0) call eirene_infcop_pre_strata
-      if (nprs > 1) then
-        call EIRENE_broad_pedist(xtim)
-        call create_all_communicators
 
+      if (nprs > 1) then
 c nlident: jeder proc. von einer quelle istra bekommt gleichen seed gem. ninitl(istra).
 c         erzeugt bei zwei gleichen quellen (istra) identische ergebnisse.
 c not nlident: ninitl wird auf dem processor geaendert, add my_pe*10000
-
 
 CHJL/YM NLIDENT code was moved from here to within the threaded region
        NPRNLS=NPRNLI
@@ -608,36 +615,36 @@ C
 C  INITIALIZE RANDOM NUMBER GENERATOR FOR STRATUM ISTRA
 cym test for multiple strata / restores the status after call to REFLC0
 cym ideally would need initializing values on the master thread ...
-      EREDUC=0._dp
-      FREDUC=0._dp
-      IREDUC=0
+          EREDUC=0._dp
+          FREDUC=0._dp
+          IREDUC=0
            
 C  find random number generator seed, from input flag NINITL(ISTRA)
           IF (NINITL(istra).GT.0) THEN
             IF (.NOT.NLIDENT) THEN
               MY_ID= EIRENE_ITHREAD + MY_PE*EIRENE_NTHREADS
               ninist=NINITL(ISTRA)+MY_ID*10000 !one seed per thread to generate independent numbers
-           ELSE
+            ELSE
 
-             CALL EIRENE_LEER(1)
+              CALL EIRENE_LEER(1)
 !$OMP SINGLE
-             WRITE(IUNOUT,*)'......................................... '
-             WRITE(IUNOUT,*)'NLIDENT: '
-             WRITE(IUNOUT,*)'DEBUG MODE FOR PARALLELIZATION IS ACTIVE'
-             WRITE(IUNOUT,*)'IF MULTIPLE CORES PER STRATUM, THEN ALL'
-             WRITE(IUNOUT,*)'ASSIGNED CORES KEEP IDENTICAL RANDOM SEED.'
-             WRITE(IUNOUT,*)'FOR ANY GIVEN STRATUM ISTRA,ALL NCIS CORES'
-             WRITE(IUNOUT,*)'ASSIGNED TO ISTRA MUST PRODUCE IDENTICAL'
-             WRITE(IUNOUT,*)'OUTPUT. ALSO VARIANCES PER STRATUM MUST'
-             WRITE(IUNOUT,*)'SCALE EXACTLY WITH 1/NCIS(ISTRA),'
-             WRITE(IUNOUT,*)'NOT ONLY ON STATISTICAL AVERAGE'
-             WRITE(IUNOUT,*)'.........................................'
+            WRITE(IUNOUT,*)'......................................... '
+            WRITE(IUNOUT,*)'NLIDENT: '
+            WRITE(IUNOUT,*)'DEBUG MODE FOR PARALLELIZATION IS ACTIVE'
+            WRITE(IUNOUT,*)'IF MULTIPLE CORES PER STRATUM, THEN ALL'
+            WRITE(IUNOUT,*)'ASSIGNED CORES KEEP IDENTICAL RANDOM SEED.'
+            WRITE(IUNOUT,*)'FOR ANY GIVEN STRATUM ISTRA,ALL NCIS CORES'
+            WRITE(IUNOUT,*)'ASSIGNED TO ISTRA MUST PRODUCE IDENTICAL'
+            WRITE(IUNOUT,*)'OUTPUT. ALSO VARIANCES PER STRATUM MUST'
+            WRITE(IUNOUT,*)'SCALE EXACTLY WITH 1/NCIS(ISTRA),'
+            WRITE(IUNOUT,*)'NOT ONLY ON STATISTICAL AVERAGE'
+            WRITE(IUNOUT,*)'.........................................'
              
-             CALL EIRENE_LEER(1)
+              CALL EIRENE_LEER(1)
 !$OMP END SINGLE 
 cym same seed for everybody (all threads of all processes -> debug)
-             NINIST=NINITL(ISTRA)
-           ENDIF          
+              NINIST=NINITL(ISTRA)
+            ENDIF          
 
 c  initialize random number generator with chosen input seed NINIST
 c  ranset checks, if this is a legal seed for a particular generator,
@@ -676,14 +683,14 @@ cdr  format of CDATE: hhmmss.xxx
 !pb 28012016
 !  add number of calls to MCARLO in order to avoid same random seeds in very short
 !  cycles with an external code
-          NINITL(ISTRA) = NINITL(ISTRA) + ICO_CALL
+            NINITL(ISTRA) = NINITL(ISTRA) + ICO_CALL
             
-         IF (.NOT.NLIDENT) then
-            MY_ID= EIRENE_ITHREAD + MY_PE*EIRENE_NTHREADS
-            NINIST=NINITL(ISTRA)+MY_ID*10000
-            WRITE (iunout,*) 'NINITL(ISTRA) SET TO ',NINIST
-            ISEED_ISTRA=RANSET_EIRENE(NINIST)
-         ENDIF
+            IF (.NOT.NLIDENT) then
+              MY_ID= EIRENE_ITHREAD + MY_PE*EIRENE_NTHREADS
+              NINIST=NINITL(ISTRA)+MY_ID*10000
+              WRITE (iunout,*) 'NINITL(ISTRA) SET TO ',NINIST
+              ISEED_ISTRA=RANSET_EIRENE(NINIST)
+            ENDIF
 
           ELSEIF (NINITL(ISTRA).EQ.0) THEN
 C  DO NOT RE-INITIALIZE RANDOM GENERATOR FOR THIS STRATUM, NOTHING TO BE DONE HERE
@@ -801,13 +808,14 @@ C  PARTICLE LOOP WITHIN STRATUM ISTRA
 !$OMP&                   LOGPHOT,LMETSPW,LMETSP)
 !$OMP& REDUCTION(+:WTOTA,WTOTM,WTOTI,WTOTPH,WTOTP,
 !$OMP&             ETOTA,ETOTM,ETOTI,ETOTPH,XMCP)
-        DO 100 IPTSI=1,NPTS(ISTRA)
+          DO 100 IPTSI=1,NPARTS_LOC(ISTRA)
 
 ! Check that another thread hasn't aborted the particle loop
 !pb#ifdef USE_OPENMP           
             IF(LGABORT) cycle
 !pb#endif           
            
+            call calstr_progress_message(iptsi, istra, nparts_loc)
 C  SOME PREPARATORY WORK, ONCE FOR EACH NEW PARTICLE HISTORY
 C
 C  RE-INITIALIZE INDEX ARRAYS: VISITED CELLS, VISITED WALL SEGMENTS
@@ -820,7 +828,7 @@ c  LMETSP: array for 1st ("species") index of volume-averaged tallies,
 c  which is scored along a trajectory
             LMETSP=.FALSE.
             NCLMTS = 0
-
+            
             DO I=1,NWLMT
               IN=IWLMT(I)
               IMETWL(IN) = 0
@@ -1093,7 +1101,7 @@ C
               if (secdel.gt.0.1)
      .          write (iunout,*) 'LONG HISTORY ',npanu,secdel
             ENDIF
-  100     CONTINUE    !  nprt(istra)
+  100     CONTINUE    !  nparts_loc(istra)
 
 !$OMP END DO
  
@@ -1129,6 +1137,7 @@ cym ccccccccccccccccccccccccccccccccccccccccccccc
 C
 C
           XMCT(istra)=timused
+          call time_particles(istra, timused, ipanu)
 csw
           SECND=EIRENE_SECOND_OWN()
 C
@@ -1138,172 +1147,180 @@ c
 c    collect data for one stratum ISTRA from all PEs performing calculations
 c    for this stratum
 c
-C Can possibly be replaced by NPESTR(ISTRA) > 1 as soon as unnecessary
-C MPI_BARRIER calls have been removed.
-         IF ( ANY( NPESTR > 1 ) ) CALL EIRENE_CALSTR
-C
-C Should not the following be done only for process rank zero as it
-C got collected from all other ranks already?
+          if (need_calstr(istra)) then
+            call system_clock (itimstart)
+            call EIRENE_calstr
+            call system_clock(itimend, itimrate)
+            call time_calstr(istra, real(itimend-itimstart,DP)
+     &                     /REAL(itimrate,DP))
+          else
+            call time_calstr(istra, 0.0_dp)
+          endif
+
+          if (I_AM_LEADER(istra)) then
 C
 C  UPDATE AND CHECK LOGICALS FOR TALLIES
 C
-          DO 120  JMOL=1,NMOLI
-            LOGMOL(0,ISTRA)=LOGMOL(0,ISTRA).OR.LOGMOL(JMOL,ISTRA)
-            LOGMOL(JMOL,0) =LOGMOL(JMOL,0) .OR.LOGMOL(JMOL,ISTRA)
-  120     CONTINUE
-          DO 130  JATM=1,NATMI
-            LOGATM(JATM,0) =LOGATM(JATM,0) .OR.LOGATM(JATM,ISTRA)
-            LOGATM(0,ISTRA)=LOGATM(0,ISTRA).OR.LOGATM(JATM,ISTRA)
-  130     CONTINUE
-          DO 133  JION=1,NIONI
-            LOGION(JION,0) =LOGION(JION,0) .OR.LOGION(JION,ISTRA)
-            LOGION(0,ISTRA)=LOGION(0,ISTRA).OR.LOGION(JION,ISTRA)
-  133     CONTINUE
-          DO 135  JPLS=1,NPLSI
-            LOGPLS(JPLS,0) =LOGPLS(JPLS,0) .OR.LOGPLS(JPLS,ISTRA)
-            LOGPLS(0,ISTRA)=LOGPLS(0,ISTRA).OR.LOGPLS(JPLS,ISTRA)
-  135     CONTINUE
-          DO JPHOT=1,NPHOTI
-            LOGPHOT(JPHOT,0)=LOGPHOT(JPHOT,0).OR.LOGPHOT(JPHOT,ISTRA)
-            LOGPHOT(0,ISTRA)=LOGPHOT(0,ISTRA).OR.LOGPHOT(JPHOT,ISTRA)
-          END DO
-          LOGMOL(0,0)=LOGMOL(0,0).OR.LOGMOL(0,ISTRA)
-          LOGION(0,0)=LOGION(0,0).OR.LOGION(0,ISTRA)
-          LOGATM(0,0)=LOGATM(0,0).OR.LOGATM(0,ISTRA)
-          LOGPLS(0,0)=LOGPLS(0,0).OR.LOGPLS(0,ISTRA)
-          LOGPHOT(0,0)=LOGPHOT(0,0).OR.LOGPHOT(0,ISTRA)
+            call system_clock (itimstart)
+            DO 120  JMOL=1,NMOLI
+              LOGMOL(0,ISTRA)=LOGMOL(0,ISTRA).OR.LOGMOL(JMOL,ISTRA)
+              LOGMOL(JMOL,0) =LOGMOL(JMOL,0) .OR.LOGMOL(JMOL,ISTRA)
+ 120        CONTINUE
+            DO 130  JATM=1,NATMI
+              LOGATM(JATM,0) =LOGATM(JATM,0) .OR.LOGATM(JATM,ISTRA)
+              LOGATM(0,ISTRA)=LOGATM(0,ISTRA).OR.LOGATM(JATM,ISTRA)
+ 130        CONTINUE
+            DO 133  JION=1,NIONI
+              LOGION(JION,0) =LOGION(JION,0) .OR.LOGION(JION,ISTRA)
+              LOGION(0,ISTRA)=LOGION(0,ISTRA).OR.LOGION(JION,ISTRA)
+ 133        CONTINUE
+            DO 135  JPLS=1,NPLSI
+              LOGPLS(JPLS,0) =LOGPLS(JPLS,0) .OR.LOGPLS(JPLS,ISTRA)
+              LOGPLS(0,ISTRA)=LOGPLS(0,ISTRA).OR.LOGPLS(JPLS,ISTRA)
+ 135        CONTINUE
+            DO JPHOT=1,NPHOTI
+              LOGPHOT(JPHOT,0)=LOGPHOT(JPHOT,0).OR.LOGPHOT(JPHOT,ISTRA)
+              LOGPHOT(0,ISTRA)=LOGPHOT(0,ISTRA).OR.LOGPHOT(JPHOT,ISTRA)
+            END DO
+            LOGMOL(0,0)=LOGMOL(0,0).OR.LOGMOL(0,ISTRA)
+            LOGION(0,0)=LOGION(0,0).OR.LOGION(0,ISTRA)
+            LOGATM(0,0)=LOGATM(0,0).OR.LOGATM(0,ISTRA)
+            LOGPLS(0,0)=LOGPLS(0,0).OR.LOGPLS(0,ISTRA)
+            LOGPHOT(0,0)=LOGPHOT(0,0).OR.LOGPHOT(0,ISTRA)
 C
 C  NUMBER OF LOCATED M.C. HISTORIES FOR THIS STRATUM: XMCP(ISTRA)
 C
-          IF(XMCP(ISTRA).LT.1.) GOTO 1111
+            IF(XMCP(ISTRA).LT.1.) GOTO 1111
 C
-          WTT=0._DP
-          DO JPHOT=1,NPHOTI
-            WTOTPH(0,ISTRA)=WTOTPH(0,ISTRA)+WTOTPH(JPHOT,ISTRA)
-            WTT=WTT+WTOTPH(JPHOT,ISTRA)*NPRT(JPHOT)
-          END DO
-          DO 200 JATM=1,NATMI
-            WTOTA(0,ISTRA)=WTOTA(0,ISTRA)+WTOTA(JATM,ISTRA)
-            WTT=WTT+WTOTA(JATM,ISTRA)*NPRT(NSPH+JATM)
-  200     CONTINUE
-          DO 201 JMOL=1,NMOLI
-            WTOTM(0,ISTRA)=WTOTM(0,ISTRA)+WTOTM(JMOL,ISTRA)
-            WTT=WTT+WTOTM(JMOL,ISTRA)*NPRT(NSPA+JMOL)
-  201     CONTINUE
-          DO 202 JION=1,NIONI
-            WTOTI(0,ISTRA)=WTOTI(0,ISTRA)+WTOTI(JION,ISTRA)
-            WTT=WTT+WTOTI(JION,ISTRA)*NPRT(NSPAM+JION)
-  202     CONTINUE
-          WTOTE(ISTRA)=0._DP
-          DO 203 JPLS=1,NPLSI
-            WTOTP(0,ISTRA)=WTOTP(0,ISTRA)+WTOTP(JPLS,ISTRA)
-            WTOTE(ISTRA)=WTOTE(ISTRA)+WTOTP(JPLS,ISTRA)*NCHRGP(JPLS)
-            WTT=WTT-WTOTP(JPLS,ISTRA)*NPRT(NSPAMI+JPLS)
-  203     CONTINUE
-          CALL EIRENE_LEER(2)
-          WRITE (iunout,*) 'TOTAL WEIGHT OF PRIMARY SOURCE PARTICLES'
-          WRITE (iunout,*) 'BULK IONS, ATOMS, MOLECULES, TEST IONS'
-          CALL EIRENE_MASR5 ('WTPLS,WTATM,WTMOL,WTION,WTPHOT          ',
-     .     WTOTP(0,ISTRA),WTOTA(0,ISTRA),WTOTM(0,ISTRA),WTOTI(0,ISTRA),
-     .     WTOTPH(0,ISTRA))
-          WRITE (iunout,*) 'TOTAL NUMBER OF MONTE CARLO HISTORIES'
-          IMCP=INT(XMCP(ISTRA))
-          CALL EIRENE_MASJ1 ('NPART   ',IMCP)
+            WTT=0._DP
+            DO JPHOT=1,NPHOTI
+              WTOTPH(0,ISTRA)=WTOTPH(0,ISTRA)+WTOTPH(JPHOT,ISTRA)
+              WTT=WTT+WTOTPH(JPHOT,ISTRA)*NPRT(JPHOT)
+            END DO
+            DO 200 JATM=1,NATMI
+              WTOTA(0,ISTRA)=WTOTA(0,ISTRA)+WTOTA(JATM,ISTRA)
+              WTT=WTT+WTOTA(JATM,ISTRA)*NPRT(NSPH+JATM)
+ 200        CONTINUE
+            DO 201 JMOL=1,NMOLI
+              WTOTM(0,ISTRA)=WTOTM(0,ISTRA)+WTOTM(JMOL,ISTRA)
+              WTT=WTT+WTOTM(JMOL,ISTRA)*NPRT(NSPA+JMOL)
+ 201        CONTINUE
+            DO 202 JION=1,NIONI
+              WTOTI(0,ISTRA)=WTOTI(0,ISTRA)+WTOTI(JION,ISTRA)
+              WTT=WTT+WTOTI(JION,ISTRA)*NPRT(NSPAM+JION)
+ 202        CONTINUE
+            WTOTE(ISTRA)=0._DP
+            DO 203 JPLS=1,NPLSI
+              WTOTP(0,ISTRA)=WTOTP(0,ISTRA)+WTOTP(JPLS,ISTRA)
+              WTOTE(ISTRA)=WTOTE(ISTRA)+WTOTP(JPLS,ISTRA)*NCHRGP(JPLS)
+              WTT=WTT-WTOTP(JPLS,ISTRA)*NPRT(NSPAMI+JPLS)
+ 203        CONTINUE
+            CALL EIRENE_LEER(2)
+            WRITE (iunout,*) 'TOTAL WEIGHT OF PRIMARY SOURCE PARTICLES'
+            WRITE (iunout,*) 'BULK IONS, ATOMS, MOLECULES, TEST IONS'
+            CALL EIRENE_MASR5 
+     .         ('WTPLS,WTATM,WTMOL,WTION,WTPHOT          ',
+     .           WTOTP(0,ISTRA),WTOTA(0,ISTRA),WTOTM(0,ISTRA),
+     .           WTOTI(0,ISTRA),WTOTPH(0,ISTRA))
+            WRITE (iunout,*) 'TOTAL NUMBER OF MONTE CARLO HISTORIES'
+            IMCP=INT(XMCP(ISTRA))
+            CALL EIRENE_MASJ1 ('NPART   ',IMCP)
 C
 C
 C  SET SOME SCALING CONSTANTS
 C
-          CALL EIRENE_SET_SCAL_CONST (ISTRA, WTT,
-     .     ZWW, ZW, ZVOLNT, ZVOLWT, ZVOLIN, ZVOLIW, SCLTAL, N1MX)
+            CALL EIRENE_SET_SCAL_CONST (ISTRA, WTT,
+     .        ZWW, ZW, ZVOLNT, ZVOLWT, ZVOLIN, ZVOLIW, SCLTAL, N1MX)
 C
 C   STATISTICS, IF REQUESTED
 C
-          IF (XMCP(ISTRA).LE.1.) GOTO 219
+            IF (XMCP(ISTRA).LE.1.) GOTO 219
 C
 C  FACTORS FOR STANDARD DEVIATION
-          ZFLUX=FLXFAC(ISTRA)*XMCP(ISTRA)
-          FSIG=SQRT(XMCP(ISTRA)/(XMCP(ISTRA)-1.))
+            ZFLUX=FLXFAC(ISTRA)*XMCP(ISTRA)
+            FSIG=SQRT(XMCP(ISTRA)/(XMCP(ISTRA)-1.))
 C
-          IF (NSIGI.GT.0) THEN
-            CALL EIRENE_STATS2(XMCP(ISTRA),FSIG,ZFLUX)
+            IF (NSIGI.GT.0) THEN
+              CALL EIRENE_STATS2(XMCP(ISTRA),FSIG,ZFLUX)
 C  CONVERT TO %
-            SDVI1=MAX(0._DP,SDVI1-EPS6)*100.D0
-            SDVI2=MAX(0._DP,SDVI2-EPS6)*100.D0
-          ENDIF
-          IF (NSIGI_SPC.GT.0) THEN
-            CALL EIRENE_STATS2_SPC(XMCP(ISTRA),FSIG,ZFLUX)
+              SDVI1=MAX(0._DP,SDVI1-EPS6)*100.D0
+              SDVI2=MAX(0._DP,SDVI2-EPS6)*100.D0
+            ENDIF
+            IF (NSIGI_SPC.GT.0) THEN
+              CALL EIRENE_STATS2_SPC(XMCP(ISTRA),FSIG,ZFLUX)
 C  CONVERT TO %
-            DO ISPC=1,NADSPC
-              ESTIML(ISPC)%SGMS=
-     .         MAX(0._DP,ESTIML(ISPC)%SGMS-EPS6)*100.D0
-              DO J=0,ESTIML(ISPC)%NSPC+1
-                ESTIML(ISPC)%SGM(J)=
-     .           MAX(0._DP,ESTIML(ISPC)%SGM(J)-EPS6)*100.D0
+              DO ISPC=1,NADSPC
+                ESTIML(ISPC)%SGMS=
+     .               MAX(0._DP,ESTIML(ISPC)%SGMS-EPS6)*100.D0
+                DO J=0,ESTIML(ISPC)%NSPC+1
+                  ESTIML(ISPC)%SGM(J)=
+     .                 MAX(0._DP,ESTIML(ISPC)%SGM(J)-EPS6)*100.D0
+                END DO
               END DO
-            END DO
-          ENDIF
+            ENDIF
 C
-  219     CONTINUE
+ 219        CONTINUE
 
-          CALL EIRENE_SCAL_VOLAV_TALLIES (ISTRA, ZWW, ZW,
-     .                         ZVOLIN, ZVOLIW, SCLTAL, N1MX)
+            CALL EIRENE_SCAL_VOLAV_TALLIES (ISTRA, ZWW, ZW,
+     .           ZVOLIN, ZVOLIW, SCLTAL, N1MX)
 C
 C   REPLACE DEFAULT TALLIES BY USER-SUPPLIED
 C   COLLISION-ESTIMATED TALLIES
 C   THIS IS DONE BEFORE VOLUME INTEGRATION THUS THERE IS THE RISK TO
 C   DESTROY TERMS NEEDED FOR GLOBAL BALANCES
 C
-          IF (LCOLV) THEN
-            DO 285 ICLV=1,NCLVI
-              IS=ICLVS(ICLV)
-              IT=ICLVT(ICLV)
-              IF (IT.LE.0.OR.IT.GE.NTALA) GOTO 285
-              IGFFT=NFSTVI(IT)
-              IF (IS.LE.0.OR.IS.GT.IGFFT) GOTO 285
-              IADD=NADDV(IT)
-              DO 286 J=1,NSBOX_TAL
-                ESTIMV(IADD+IS,J)=COLV(ICLV,J)
-  286         CONTINUE
-  285       CONTINUE
-          END IF
+            IF (LCOLV) THEN
+              DO 285 ICLV=1,NCLVI
+                IS=ICLVS(ICLV)
+                IT=ICLVT(ICLV)
+                IF (IT.LE.0.OR.IT.GE.NTALA) GOTO 285
+                IGFFT=NFSTVI(IT)
+                IF (IS.LE.0.OR.IS.GT.IGFFT) GOTO 285
+                IADD=NADDV(IT)
+                DO 286 J=1,NSBOX_TAL
+                  ESTIMV(IADD+IS,J)=COLV(ICLV,J)
+ 286            CONTINUE
+ 285          CONTINUE
+            END IF
 C
 C   REPLACE DEFAULT TALLIES BY USER-SUPPLIED
 C   TRACKLENGTH-ESTIMATED TALLIES
 C   THIS IS DONE BEFORE VOLUME INTEGRATION THUS THERE IS THE RISK TO
 C   DESTROY TERMS NEEDED FOR GLOBAL BALANCES
 C
-          IF (LADDV) THEN
-            DO 290 IADV=1,NADVI
-              IS=IADVS(IADV)
-              IT=IADVT(IADV)
-              IF (IT.LE.0.OR.IT.GE.NTALA) GOTO 290
-              IGFFT=NFSTVI(IT)
-              IF (IS.LE.0.OR.IS.GT.IGFFT) GOTO 290
-              IADD=NADDV(IT)
-              DO 295 J=1,NSBOX_TAL
-                ESTIMV(IADD+IS,J)=ADDV(IADV,J)
-  295         CONTINUE
-  290       CONTINUE
-          END IF
+            IF (LADDV) THEN
+              DO 290 IADV=1,NADVI
+                IS=IADVS(IADV)
+                IT=IADVT(IADV)
+                IF (IT.LE.0.OR.IT.GE.NTALA) GOTO 290
+                IGFFT=NFSTVI(IT)
+                IF (IS.LE.0.OR.IS.GT.IGFFT) GOTO 290
+                IADD=NADDV(IT)
+                DO 295 J=1,NSBOX_TAL
+                  ESTIMV(IADD+IS,J)=ADDV(IADV,J)
+ 295            CONTINUE
+ 290          CONTINUE
+            END IF
 C
 C
 C   INTEGRATE VOLUME-AVERAGED PROFILES   450 --- 459
 C
-          CALL EIRENE_INTEGRATE_TALLIES (ISTRA)
+            CALL EIRENE_INTEGRATE_TALLIES (ISTRA)
 C
 C   SYMMETRISE VOLUME-AVERAGED TALLIES?
-          IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
+            IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
 !pb        CALL EIRENE_SYMET(ESTIMV,NTALV,NRTAL,NR1TAL,NP2TAL,NT3TAL,
 !pb     .             NLSYMP(ISTRA),NLSYMT(ISTRA))
-            CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRTAL,NR1TAL,NP2TAL,NT3TAL,
+              CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRTAL,
+     .             NR1TAL,NP2TAL,NT3TAL,
      .             NLSYMP(ISTRA),NLSYMT(ISTRA))
-          ENDIF
+            ENDIF
 C
 C  WORK WITH VOLUME-AVERAGED TALLIES FOR THIS STRATUM FINISHED
 C
 C  SCALE SURFACE-AVERAGED ESTIMATORS AND OTHER FLUXES 600 - 630
 C
-          CALL EIRENE_SCAL_SURF_TALLIES (ISTRA)
+            CALL EIRENE_SCAL_SURF_TALLIES (ISTRA)
 C
 C
 C   SUM OVER SURFACE INDEX
@@ -1313,140 +1330,155 @@ C
 C  SUM OVER SPECIES INDEX FOR INTEGRATED VOLUME-AVERAGED TALLIES
 C                         AND INTEGRATED SURFACE-AVERAGED TALLIES
 C
-          CALL EIRENE_SUM_AVERAGE (ISTRA)
+            CALL EIRENE_SUM_AVERAGE (ISTRA)
 C
-          CALL EIRENE_SCALE_TALLIES (ISTRA)
+            CALL EIRENE_SCALE_TALLIES (ISTRA)
 C
 C   ALGEBRAIC EXPRESSION IN TALLIES 801--900
 C
-          IF (NALVI.GT.0.OR.NALSI.GT.0) THEN
+            IF (NALVI.GT.0.OR.NALSI.GT.0) THEN
 C
-            CALL EIRENE_ALGTAL
+              CALL EIRENE_ALGTAL
 C
-            IF (LALGV) THEN
-              DO 830 IALV=1,NALVI
-                DUMMY(1:NSBOX_TAL) = ALGV(IALV,1:NSBOX_TAL)
-                CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,
-     .                   NSBOX_TAL,ALGVI(IALV,ISTRA),
-     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
-                ALGV(IALV,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
-  830         CONTINUE
-            END IF
+              IF (LALGV) THEN
+                DO 830 IALV=1,NALVI
+                  DUMMY(1:NSBOX_TAL) = ALGV(IALV,1:NSBOX_TAL)
+                  CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,
+     .                 NSBOX_TAL,ALGVI(IALV,ISTRA),
+     .                 NR1TAL,NP2TAL,NT3TAL,NBMLT)
+                  ALGV(IALV,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+ 830            CONTINUE
+              END IF
 C
-            IF (LALGS) THEN
-              DO 832 IALS=1,NALSI
-                ALGSI(IALS,ISTRA)=0.
-                DO 831 J=1,NLIMPS
-                  ALGSI(IALS,ISTRA)=ALGSI(IALS,ISTRA)+ALGS(IALS,J)
-  831           CONTINUE
-  832         CONTINUE
-            END IF
-C
-          ENDIF
-C
+              IF (LALGS) THEN
+                DO 832 IALS=1,NALSI
+                  ALGSI(IALS,ISTRA)=0.
+                  DO 831 J=1,NLIMPS
+                    ALGSI(IALS,ISTRA)=ALGSI(IALS,ISTRA)+ALGS(IALS,J)
+ 831              CONTINUE
+ 832            CONTINUE
+              END IF
+C     
+            ENDIF
+C     
 C  CALCULATE VOLUMETRIC LINE EMISSIVITIES FOR SELECTED SPECIES AND LINES
 C
-          IF (NLEMIS) THEN
-            CALL EIRENE_EMISSIVITY (ISTRA,1,NUM_LINES,0)
-          END IF
+            IF (NLEMIS) THEN
+              CALL EIRENE_EMISSIVITY (ISTRA,1,NUM_LINES,0)
+            END IF
 C
 C  SCALE STANDARD DEVIATIONS, WHICH ARE NOT GIVEN IN % REL.ERROR
 C  1/XMCP IS INCLUDED IN ZVOLIN,ZW,ZWW,... FOR TALLY AVERAGING
 C  THEREFORE IT MUST BE MULTIPLIED HERE BECAUSE ONLY FLUX SCALING
 C
-          IF (XMCP(ISTRA).LE.1.D0) GOTO 950
+            IF (XMCP(ISTRA).LE.1.D0) GOTO 950
 C
-          CALL EIRENE_SCALE_DEVIATION(ISTRA, ZWW, ZW, ZVOLNT, ZVOLWT,
-     .                                ZVOLIN, ZVOLIW, SCLTAL, N1MX)
+            CALL EIRENE_SCALE_DEVIATION(ISTRA, ZWW, ZW, ZVOLNT, ZVOLWT,
+     .                                  ZVOLIN, ZVOLIW, SCLTAL, N1MX)
 C
-  950     CONTINUE
+ 950        CONTINUE
 
-          IESTR=ISTRA
+            IESTR=ISTRA
 C
 C  CALL INTERFACE TO OTHER CODES TO RETURN DATA. STRATUM ISTRA
 csw 13mar2013 ONLY WHEN RUN IN NON-PARALLEL MODE
 C  OR WHEN RUN WITH EQUAL NUMBER OR MORE STRATA THAN PROCESSES
 C
-          IF (NMODE.GT.0) THEN
-            CALL EIRENE_INFCOP_POST_STRATUM(ISTRA)
-            IF (NPRS == 1) THEN
-              IESTR=ISTRA
-              ISTRAA=ISTRA
-              ISTRAE=ISTRA
-              IENTRY=0
-              CALL EIRENE_IF3COP(IENTRY,LSTP,
-     .                           IFIRST,ISTRAA,ISTRAE,NEW_ITER)
-              NEW_ITER=1
+            IF (NMODE.GT.0) THEN
+              CALL EIRENE_INFCOP_POST_STRATUM(ISTRA)
+!tf Every stratum leader calls if3cop and the results are summed up
+!tf by calling if3cop_sum after the strata loop. The SOLPS-ITER coupling
+!tf is implemented this way. Coupling with other codes should either be
+!tf modified accordingly, or the coupling routine should have some flag
+!tf which tells whether to call if3cop from here (within strata loop),
+!tf or after it.
+!pb Therefore logical LIF3COP_FROM_LOOP has been added. It is set in 
+!pb EIRENE_DEFAULTS_USR. For the SOLPS-ITER coupling LIF3COP_FROM_LOOP=.T.
+              IF (LIF3COP_FROM_LOOP) THEN
+                IESTR=ISTRA
+                ISTRAA=ISTRA
+                ISTRAE=ISTRA
+                IENTRY=0
+                CALL EIRENE_IF3COP(IENTRY,LSTP,
+     .                             IFIRST,ISTRAA,ISTRAE,NEW_ITER)
+                NEW_ITER=1
+              ENDIF
             ENDIF
-          ENDIF
 C
 C  WRITE RESULTS FOR THIS STRATUM ON TEMP. FILE
 C
 
-          IF (NFILEN.EQ.1) THEN
+            IF (NFILEN.EQ.1) THEN
 csw 18jul2011
 csw 08mar2013 added check nprs < nstrai
 cdr npesta is the master processor for stratum no ISTRA
-            if(nprs==1.or.I_am_leader(istra).or.
-     .        ((nprll == 1) .and. (nprs < nstrai))) then  ! not for embarrassingly parallel
-              CALL EIRENE_WRSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
-     .              ESTIMV,ESTIMS,ESTIML,
-     .              NSDVI1,SDVI1,NSDVI2,SDVI2,
-     .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .              NSIGI_SPC,TRCFLE)
-            endif
-          ENDIF
+              if (nprs==1.or.I_am_leader(istra).or.
+     .          ((nprll == 1) .and. (nprs < nstrai))) then  ! not for embarrassingly parallel
+                CALL EIRENE_WRSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
+     .               ESTIMV,ESTIMS,ESTIML,
+     .               NSDVI1,SDVI1,NSDVI2,SDVI2,
+     .               NSDVC1,SIGMAC,NSDVC2,SGMCS,
+     .               NSIGI_SPC,TRCFLE)
+              endif
+            ENDIF
 C
 C  UPDATE TALLIES FOR "SUM OVER STRATA"
 C
-          IF (NSTRAI.EQ.1) GOTO 1111
+            IF (NSTRAI.EQ.1) GOTO 1111
 C
-          CALL EIRENE_SUMOSTRA (ISTRA)  ! Integrals only
+            CALL EIRENE_SUMOSTRA (ISTRA) ! Integrals only
 C
 C
-          IF (NSMSTRA == 1) THEN
+            IF (NSMSTRA == 1) THEN
 C  VOLUME TALLIES
-            do idv=1,nidv
-              smestv(idv,1:nrtal) = smestv(idv,1:nrtal) +
-     .                              estimv(idv,1:nrtal)
-            end do
+              do idv=1,nidv
+                smestv(idv,1:nrtal) = smestv(idv,1:nrtal) +
+     .                                estimv(idv,1:nrtal)
+              end do
 C  SURFACE TALLIES
-            SMESTS = SMESTS + ESTIMS
+              SMESTS = SMESTS + ESTIMS
 C  SPECTRA
-            DO ISPC=1,NADSPC
-              SMESTL(ISPC)%SPC = SMESTL(ISPC)%SPC +
-     .                           ESTIML(ISPC)%SPC
-              SMESTL(ISPC)%SPCS = SMESTL(ISPC)%SPCS +
-     .                            ESTIML(ISPC)%SPCS
-            END DO
-          END IF
+              DO ISPC=1,NADSPC
+                SMESTL(ISPC)%SPC = SMESTL(ISPC)%SPC +
+     .                             ESTIML(ISPC)%SPC
+                SMESTL(ISPC)%SPCS = SMESTL(ISPC)%SPCS +
+     .                              ESTIML(ISPC)%SPCS
+              END DO
+            END IF
 
 C  covariances
-          DO 1170 ISDV=1,NSIGCI
-            DO 1172 ICELL=1,NSBOX_TAL
-              STVC(0,ISDV,ICELL)=
-     .         STVC(0,ISDV,ICELL)+SIGMAC(0,ISDV,ICELL)
-              STVC(1,ISDV,ICELL)=
-     .         STVC(1,ISDV,ICELL)+SIGMAC(1,ISDV,ICELL)**2
-              STVC(2,ISDV,ICELL)=
-     .         STVC(2,ISDV,ICELL)+SIGMAC(2,ISDV,ICELL)**2
- 1172       CONTINUE
-            STVCS(0,ISDV)=STVCS(0,ISDV)+SGMCS(0,ISDV)
-            STVCS(1,ISDV)=STVCS(1,ISDV)+SGMCS(1,ISDV)**2
-            STVCS(2,ISDV)=STVCS(2,ISDV)+SGMCS(2,ISDV)**2
- 1170     CONTINUE
+            DO 1170 ISDV=1,NSIGCI
+              DO 1172 ICELL=1,NSBOX_TAL
+                STVC(0,ISDV,ICELL)=
+     .               STVC(0,ISDV,ICELL)+SIGMAC(0,ISDV,ICELL)
+                STVC(1,ISDV,ICELL)=
+     .               STVC(1,ISDV,ICELL)+SIGMAC(1,ISDV,ICELL)**2
+                STVC(2,ISDV,ICELL)=
+     .               STVC(2,ISDV,ICELL)+SIGMAC(2,ISDV,ICELL)**2
+ 1172         CONTINUE
+              STVCS(0,ISDV)=STVCS(0,ISDV)+SGMCS(0,ISDV)
+              STVCS(1,ISDV)=STVCS(1,ISDV)+SGMCS(1,ISDV)**2
+              STVCS(2,ISDV)=STVCS(2,ISDV)+SGMCS(2,ISDV)**2
+ 1170       CONTINUE
 C
- 1111     CONTINUE
-          WRITE(iunout,*)
+ 1111       CONTINUE
+            WRITE(iunout,*)
      .           'CUMULATED CPU TIME USED UNTIL END OF STRATUM ISTRA'
-          WRITE(iunout,*) 'ISTRA, CPU(S) ',ISTRA,
+            WRITE(iunout,*) 'ISTRA, CPU(S) ',ISTRA,
      .           EIRENE_SECOND_OWN()-TIMST
-          CALL EIRENE_LEER(2)
+            CALL EIRENE_LEER(2)
+            call system_clock(itimend, itimrate)
+            call time_postproc(istra, real(itimend-itimstart,DP)/
+     &                         REAL(itimrate,DP))
+          endif  ! I_AM_LEADER(ISTRA)
 !$OMP END MASTER
+        ELSE
+         ! We update calstr timings even if we skipped the stratum
+          call time_calstr(istra, 0.0_dp)
+        END IF                  ! CALC_STRATUM(ISTRA)
 
 !$OMP BARRIER          
 
-       END IF                   ! CALC_STRATUM(ISTRA)
       END DO                    ! ISTR
 
 #ifdef USE_EXT_OPENMP
@@ -1460,11 +1492,15 @@ C
 C
 C*** STRATA LOOP FINISHED *******************************************
 C
+      call calstr_buffered_finish
       NPTS=NPTS_SAVE
       NINITL = NINITL_SAVE
 C
       IF (NPRS > 1) THEN
-        IF (ANY(NPESTA /= 0 .AND. NLSRON)) CALL EIRENE_COLLECT_COUTAU
+cxpb  The (NPESTA/=0 .AND. NLSRON) mask breaks the output
+cxpb        IF (ANY(NPESTA(1:NSTRAI) /= 0 .AND. NLSRON(1:NSTRAI)))
+cxpb     &   CALL EIRENE_COLLECT_COUTAU
+        CALL EIRENE_COLLECT_COUTAU
         IF (NPRNLI > 0) CALL EIRENE_COLLECT_CENSUS
       END IF
 
@@ -1477,29 +1513,24 @@ csw 08mar2013 shifted behind STRATA LOOP, do all strata in one go
 csw 13mar2013 do it here if in parallel mode
 C   AND MORE PROCESSES THAN STRATA
       IF (NMODE.GT.0) THEN
-        IF (NPRS > 1) THEN
+	IF (LIF3COP_FROM_LOOP) THEN
+!tf For SOLPS-ITER IF3COP is already called in the strata loop.
+!tf we only need to sum up the results
+       	  CALL EIRENE_IF3COP_SUM
+	ELSE
+          IF (NPRS > 1) THEN
 C This is very case-specific and may be different for each plasma code.
 C Introducing another interfacing subroutine within the strata loop
 C solves this issue much more flexible.
 C This if block needs to go into the if3cop, if relevant for the
 C plasma code.
-C         IF ((NPRS < NSTEFF) .AND. (NFILEN == 0)) THEN
-C           WRITE (IUNOUT,*) 'MORE THAN 1 STRATUM CALCULATED PER ',
-C    .                 'PROCESSOR BUT RESULTS NOT STORED ON FORT.10'
-C           WRITE (IUNOUT,*) 'SOURCE TERMS FOR PLASMA CODE CAN NOT',
-C    .                 'BE CALCULATED'
-C           CALL EIRENE_EXIT_OWN(1)
-C         END IF
-!pb ISTRA=NSTRAI FROM STRATA LOOP ABOVE
-!PB IESTR IS ALREADY SET IN STRATA LOOP
-!PB EACH PROCESSOR HAS SET ITS OWN STRATUM NO.
-!pb          IESTR=ISTRA
-          ISTRAA=1
-          ISTRAE=NSTRAI
-          CALL EIRENE_IF3COP(IENTRY,LSTP,
-     .                       IFIRST,ISTRAA,ISTRAE,NEW_ITER)
-          NEW_ITER=1
-        ENDIF  ! nprs  > 1
+            ISTRAA=1
+            ISTRAE=NSTRAI
+            CALL EIRENE_IF3COP(IENTRY,LSTP,
+     .                         IFIRST,ISTRAA,ISTRAE,NEW_ITER)
+            NEW_ITER=1
+          ENDIF  ! nprs  > 1
+        END IF
       ENDIF    ! nmode > 0
 csw
       IF (NPRS > 1) THEN

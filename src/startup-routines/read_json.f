@@ -25,7 +25,7 @@ C
       USE EIRMOD_CGEOM
       USE EIRMOD_CSDVI
       USE EIRMOD_COMPRT
-      USE EIRMOD_CPES, ONLY: NPRS,NLIDENT
+      USE EIRMOD_CPES, ONLY: NPRS, NLIDENT
       USE EIRMOD_COMNNL
       USE EIRMOD_COMSOU
       USE EIRMOD_CSTEP
@@ -5044,3 +5044,91 @@ C  also set NAINI, NCOPII, NCOPIE there
       END IF
       
       END SUBROUTINE EIRENE_READ_BLK14_JSON
+
+!*****************************************************************
+
+      subroutine eirene_read_mpi_strategy_json
+      USE EIRMOD_CPES, ONLY: NPRS, NLIDENT, 
+     >    STRATEGY_UNDEFINED, STRATEGY_EMBARRASS,
+     >    STRATEGY_ORIGINAL, STRATEGY_APCAS, STRATEGY_BALANCED,
+     >    INPUT_DISTRIBUTION_STRATEGY
+      USE EIRMOD_JSON
+      use json_module
+     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
+
+      type(json_core) :: json
+      type(json_value), pointer :: p
+      character(80) :: strategy
+      character(kind=CK,len=:),allocatable :: txt
+      logical :: found
+      integer :: js
+      
+      js = itree_num(15)
+      json = jtrees(js)
+      p => blks(15)%p
+
+      strategy = repeat(' ',80)
+
+      if (associated(p)) then
+        call json%get(p,'STRATEGY',txt,found)
+        if (found) strategy(1:len_trim(txt)) = trim(txt)
+        deallocate(txt)
+      end if
+
+      select case (strategy)
+      case ('ORIGINAL')
+        NPRLL = 1
+        input_distribution_strategy = STRATEGY_ORIGINAL
+        CALL EIRENE_MASAGE
+     .           ('APPLYING "ORIGINAL" PARALLELIZATION STRATEGY')
+      case ('APCAS')
+        NPRLL = 2
+        input_distribution_strategy = STRATEGY_APCAS
+        CALL EIRENE_MASAGE
+     .           ('APPLYING "APCAS" PARALLELIZATION STRATEGY')
+      case ('BALANCED')  
+        NPRLL = 3
+        input_distribution_strategy = STRATEGY_BALANCED
+        CALL EIRENE_MASAGE
+     .           ('APPLYING "BALANCED" PARALLELIZATION STRATEGY')
+      case ('EMBARRASS')
+        NPRLL = 0
+        input_distribution_strategy = STRATEGY_EMBARRASS
+        CALL EIRENE_MASAGE
+     .           ('APPLYING "EMBARRASSINGLY PARALLEL" STRATEGY')
+      case ('AUTOMATIC')
+        CALL EIRENE_MASAGE
+     .           ('APPLYING AUTOMATIC PARALLELIZATION STRATEGY')
+#if MPI_VERSION < 3
+        NPRLL = 1
+        input_distribution_strategy = STRATEGY_ORIGINAL
+        CALL EIRENE_MASAGE
+     .           ('CURRENT AUTOMATIC ASSIGNMENT IS "ORIGINAL"')
+#else
+        NPRLL = 3
+        input_distribution_strategy = STRATEGY_BALANCED
+        CALL EIRENE_MASAGE
+     .           ('CURRENT AUTOMATIC ASSIGNMENT IS "BALANCED"')
+#endif
+      case default
+        IF (NPRS > 1 .and.
+     &     input_distribution_strategy.eq.STRATEGY_UNDEFINED) THEN
+          CALL EIRENE_MASAGE
+     .       ('NO MPI PARALLELIZATION STRATEGY PROVIDED')
+#if MPI_VERSION < 3
+          NPRLL = 1
+          input_distribution_strategy = STRATEGY_ORIGINAL
+          CALL EIRENE_MASAGE
+     .       ('APPLYING DEFAULT "ORIGINAL" STRATEGY')
+#else
+          NPRLL = 3
+          input_distribution_strategy = STRATEGY_BALANCED
+          CALL EIRENE_MASAGE
+     .       ('APPLYING DEFAULT "BALANCED" STRATEGY')
+#endif
+          CALL EIRENE_LEER(1)
+        END IF
+      end select
+        
+      return
+      end subroutine eirene_read_mpi_strategy_json

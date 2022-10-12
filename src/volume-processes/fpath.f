@@ -709,10 +709,6 @@ C
       END IF
 C
       IF (SIGELT.GT.0._DP) THEN
-      if (nltrc) then
-        write (iunout,*) 'sigmax',sigmax
-        write (iunout,*) 'sigvel before',sigvel
-      end if
         DO IXEL=1,NXELI
           IREL=LGXEL(IXSPZ,IXEL,0)
           IF (SIGVEL(IREL) .LE. SIGMAX*1.D-10) THEN
@@ -723,11 +719,6 @@ C
       END IF
 C
       SIGTOT=SIGEIT+SIGPIT+SIGCXT+SIGELT
-      if (nltrc) then
-        write (iunout,*) 'SIGEIT,SIGPIT,SIGCXT,SIGELT,sigtot',
-     .                    SIGEIT,SIGPIT,SIGCXT,SIGELT,sigtot
-        write (iunout,*) 'sigvel',sigvel
-      end if
       IF (SIGTOT.GT.1.D-20) THEN
         EIRENE_FPATH=VEL/SIGTOT
         ZMFPI=1./EIRENE_FPATH

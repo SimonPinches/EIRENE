@@ -54,6 +54,8 @@ C> Unit number for RAPS vector field output file
       integer, public, save :: IFOFF = 0
 C> Indicates whether output files 'output.*' should be appended or overwritten
       LOGICAL, PUBLIC, SAVE :: LOUTAPP = .FALSE.
+C> Indicates whether routine EIRENE_IF3COP is called from with strata loop
+      LOGICAL, PUBLIC, SAVE :: LIF3COP_FROM_LOOP = .FALSE.
 C  BLOCK A FEW RESERVED OUTPUT STREAMS.
       INTEGER, PUBLIC, PARAMETER :: NSTREAM = 16
       INTEGER, PUBLIC, SAVE :: ISTREAM(NSTREAM)
@@ -852,6 +854,9 @@ c     NTALW       = INT_PARM(114)  !dr out, was same as ntals
       IF (ME == 0) CALL EIRENE_COLLECT_PARM
 
       CALL MPI_BCAST (INT_PARM,NUM_PARM,MPI_INTEGER,0,
+     .                MPI_COMM_WORLD,ier)
+
+      CALL MPI_BCAST (LIF3COP_FROM_LOOP,1,MPI_LOGICAL,0,
      .                MPI_COMM_WORLD,ier)
 
       IF (ME .NE. 0) CALL EIRENE_DISTRIB_PARM

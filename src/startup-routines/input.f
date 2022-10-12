@@ -148,6 +148,7 @@ cdr   REAL(DP) :: timea
       LOGICAL :: NLSRON_SAVE(NSTRA)
       LOGICAL :: LRDJSON, LTEST
       CHARACTER(10) :: CDATE, CTIME
+      CHARACTER(80) :: MPI_LINE
       CHARACTER(420) :: ZEILE
 C
 C  DO NOT READ ANY INPUT, IF THIS IS NOT THE VERY FIRST ITERATION
@@ -397,6 +398,8 @@ cdr  from external codes. E.g.: bgk iterations ? spectra?
       IF (LRDJSON) THEN
 
         CALL EIRENE_READ_BLK14_JSON(IERROR)
+        
+        CALL EIRENE_READ_MPI_STRATEGY_JSON
 
 C  CHECK FOR USER SPECIFIC INPUT
         OPEN(NEWUNIT=IUSR,FILE='user_data.input',STATUS='OLD',
@@ -421,17 +424,26 @@ C  COPY USER SPECIFIC DATA TO FILE user_data.input
         JL = 0
         IO = 0
         IUNIN_SAVE = IUNIN
+        MPI_LINE=REPEAT(' ',80)
         DO WHILE (IO == 0)
           READ (IUNIN,'(A72)',IOSTAT=IO) ZEILE
-          IF (IO == 0) THEN
-            JL = JL + 1
-            IF (JL == 1) THEN
-              OPEN(NEWUNIT=IUSR,FILE='user_data.input')
-              IUSROUT = IUSR
+          IF (INDEX(ZEILE,'INFORMATION_FOR_MPI') /= 0) THEN
+            MPI_LINE = ZEILE
+            EXIT
+          ELSE
+            IF (IO == 0) THEN
+              JL = JL + 1
+              IF (JL == 1) THEN
+                OPEN(NEWUNIT=IUSR,FILE='user_data.input')
+                IUSROUT = IUSR
+              END IF
+              WRITE (IUSROUT,'(A)') TRIM(ZEILE)
             END IF
-            WRITE (IUSROUT,'(A)') TRIM(ZEILE)
           END IF
         END DO
+      
+        CALL EIRENE_READ_MPI_STRATEGY_fixed(MPI_LINE)
+
         IF (JL > 0) THEN
           REWIND IUSROUT
          IUNIN = IUSROUT

@@ -20,7 +20,7 @@
      .          eirene_push_string_stack, eirene_copy_addsrf,
      p          TRANSFORM, TRANSFORM_QUEUE
 
-      integer, public, parameter :: nblks=14
+      integer, public, parameter :: nblks=15
       character(20), public, parameter :: blknam(0:nblks)=
      .            (/ "HEADER              ",
      1               "GENERAL_DATA        ",
@@ -36,11 +36,13 @@
      1               "OUTPUT              ",
      2               "DIAGNOSTICS         ",
      3               "TIMEDEPENDENT_MODE  ",
-     4               "INTERFACING         " /)
+     4               "INTERFACING         ",
+     5               "MPI_INFORMATION     " /)
       logical, public, parameter :: blk_required(0:nblks)=
      >     (/.true.,  .true.,  .true.,  .true.,  .true.,
      >       .true.,  .true.,  .true.,  .false., .false., 
-     >       .false., .true.,  .false., .false., .true. /)
+     >       .false., .true.,  .false., .false., .true.,
+     >       .false. /)
       
       type jval_array
         type(json_value), pointer :: p

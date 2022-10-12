@@ -89,7 +89,6 @@ C
 C  WV=WEIGHT/VEL
 C
 C  ATOMS
-
       IF (ITYP.EQ.1) THEN
         DO 20 ICOU=1,NCOU
 

@@ -207,29 +207,8 @@ C  start browsing the header
         call eirene_if0prm_json(jtrees(j),blks(14)%p)
       end if
 
-!PB if NTIME >= 1 NSTRAI has been increased already
-!PB therefore if NPRNLI <=0 reduce NSTRAI and NSTRA
-      if (NTIME.GE.1.AND.NPRNLI <= 0) THEN
-        NSTRAI=NSTRAI-1
-        NSTRA=NSTRA-1
-      ENDIF
-      if ((NTIME.GE.1.AND.NPRNL > 0).OR.NLERG) THEN
-        NSTSI=NSTSI+1
-        if (NLERG .AND.(NTIME .LT. 1)) NSTRAI=NSTRAI+1
-      ENDIF
-      NSTS = MAX(NSTS,NSTSI)
-      NSTRA = MAX(NSTRA,NSTRAI)
-      NLIMPS = NLIM + NSTS
       CALL EIRENE_ALLOC_CTRCEI(2)
      
-      IF (NLERG.AND.NPRNLI.LE.0) THEN
-C  NO TIME HORIZON DEFINED, DESPITE NLERG=.TRUE.
-C  THEREFORE: SET A DEFAULT TIME HORIZON HERE
-        IF (NTIME.EQ.0) NTIME=1
-        NPRNLI=100
-      ENDIF
-      NPRNL = MAX(NPRNL,NPRNLI)
-
 C  SWITCH OFF SUM OVER STRATA IF THERE IS ONLY ONE STRATUM TO BE CALCULATED
 !pb      IF (NSTRAI == 1) NSMSTRA = 0
  

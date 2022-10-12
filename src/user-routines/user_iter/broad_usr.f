@@ -6,8 +6,8 @@
       USE EIRMOD_CTRIG
       use eirmod_extrab25
       use eirmod_infcop, only: eirene_broadcast_infcop
-!pbtest      USE EIRMOD_CPES
-!pb     >    , ONLY : input_distribution_strategy
+      USE EIRMOD_CPES
+     >    , ONLY : input_distribution_strategy
       use eirmod_mpi
 
       IMPLICIT NONE
@@ -28,8 +28,8 @@
       CALL MPI_BCAST (pplnxtri,ntrii,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (pplnytri,ntrii,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
-!pbtest      CALL MPI_BCAST (input_distribution_strategy,1,MPI_INTEGER,0,
-!pb     .                MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (input_distribution_strategy,1,MPI_INTEGER,0,
+     .                MPI_COMM_WORLD,ier)
 c
 csw 07apr2010
       call eirene_broadcast_infcop
