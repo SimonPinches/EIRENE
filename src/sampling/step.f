@@ -21,7 +21,7 @@ C
       USE EIRMOD_CCONA
       USE EIRMOD_CTRCEI
       USE EIRMOD_CSTEP
-      USE EIRMOD_COMXS
+      USE EIRMOD_COMXS, ONLY: NPBGKP
 
       IMPLICIT NONE
 
@@ -221,6 +221,8 @@ C  save totals before normalization
         FLTOT(ISPZ,ISTEP)=VF(ISPZ,ISTEP,NS)
         ELTOT(ISPZ,ISTEP)=VE(ISPZ,ISTEP,NS)
 
+cdr IBGK: Try to remove virtual background species (those used for BGK iterations)
+cdr from the surface flux step functions
         IBGK=0
         IF (ISPZ.GT.0) IBGK = NPBGKP(ISPZ,1)
         IF (FLTOT(ISPZ,ISTEP).LE.0.D0.AND.IBGK.EQ.0) THEN

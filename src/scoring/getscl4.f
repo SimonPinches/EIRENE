@@ -86,7 +86,7 @@ cdr  surface tallies: net sink: potmli+prfmmi
      .       PGENMI(0,ISTRA)
       P(2,3)=PIMLI(0,ISTRA)+PRFIMI(0,ISTRA)
       P(2,4)=0._DP
-cdr  test-ion  sinks(3,3) and sources from other types
+cdr  test-ion sinks(3,3) and sources from other types
       P(3,1)=PAIOI(0,ISTRA)+PRFAII(0,ISTRA)
       P(3,2)=PMIOI(0,ISTRA)+PRFMII(0,ISTRA)
 cdr  surface tallies: net sink: potioi+prfiii
@@ -95,7 +95,7 @@ cdr  surface tallies: net sink: potioi+prfiii
       P(3,4)=0._DP
 Cdr PHOTONIC TALLIES ARE CURRENTLY NOT INCLUDED IN RESCALING. TO BE DONE
 CDR FC(4) SHOULD ALWAYS TURN OUT TO BE EXACTLY 1.0
-cdr  photon  sinks(4,4) and sources from other types
+cdr  photon sinks(4,4) and sources from other types
       P(4,1)=0._DP
       P(4,2)=0._DP
       P(4,3)=0._DP
@@ -372,14 +372,14 @@ C
      .              p12,p22,p32,
      .              p13,p23,p33)
 
-cdr build a certain norm of the 3x3 matrix, to compare with determinant
+cdr build a certain norm (L1) of the 3x3 matrix, to compare with determinant
           ap3ma=maxval(pp(1:3,1:3))
           ap3mi=minval(pp(1:3,1:3))
 cdr largest absolute value of an element in matrix
           ap3m=max(abs(ap3ma),abs(ap3mi))
 cdr 3x3 matrix, hence: **3, to compare with determinant
           ap3n3=ap3m**3
-cdr check determinant=0, relative to norm
+cdr check determinant=0, relative to L1 norm
           if (abs(dta)/ap3n3 > eps10) then
           dtb1=EIRENE_deter(b1,b2,b3,
      .               p12,p22,p32,

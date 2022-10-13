@@ -122,11 +122,9 @@ CDR         or integer (1/2 particle possible?)
       INTEGER, ALLOCATABLE :: NAMIEI(:),NAMIPI(:)
 
 
-csw add n 2lines
-cdr   INTEGER :: kk,updf,t1
+cdr  unclear, out.
+cdr   INTEGER :: kk,t1
 cdr   real(dp):: sump
-csw external
-ctk      real(dp), external :: ranf_eirene
 
       SAVE  
 cym FP, FLTEST, RMAIO, RMIIO, IRPH removed during merge 

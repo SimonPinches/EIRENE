@@ -11,6 +11,8 @@ cdr              This ensures that fort.15 (census array) is written
 cdr              even in case of zero flux to census (empty censius then). To
 cdr              facilitate continuation in time-dep runs even
 cdr              if "zeroth time step" (census initialization) was too large.
+cdr  oct. 2021:  Remove target-pointer structures RPSTT, IPSTT. Only use
+cdr              the really necessary components of state vectors.
 
 CDR  APRIL 2006: IPHOT ADDED TO LOOP: DO 140
 
@@ -37,11 +39,17 @@ C
       USE EIRMOD_CLOGAU, ONLY: NLMOVIE, NLPLAS
       USE EIRMOD_CPLOT, ONLY: PLTSRC
       USE EIRMOD_CTRCEI, ONLY: TRCPLT, TRCGRD, TRCCEN
-      USE EIRMOD_COMPRT, ONLY: IATM, IION, IMOL, IPHOT, ISPZ, ISTRA,
-     >                         IPSTT, ITYP, IUNOUT, NPANU, RPSTT, WEIGHT
-      USE EIRMOD_COMNNL, ONLY: FLXCEN, DTIMV, 
-     >                         IPART, IPARTC, IPRNL, IPRNLI,
-     >                         NPTST, RPART, RPARTC, RPARTW, TIME0
+      USE EIRMOD_COMPRT, ONLY: IATM, IION, IMOL, IPHOT, 
+     >                         ITYP, IUNOUT, WEIGHT
+cdr   state vector: real(dp) and integer parts.
+cdr  >                         IPSTT, RPSTT   !dr  targets for full set of particle "coordinates"
+cdr   Oct.21:  removed. The required state vector coordinates are now made explicit: 
+cdr            NPANUS, ISTRAS, ISPZS, WEIGHTS
+      USE EIRMOD_COMNNL, ONLY: FLXCEN, DTIMV, TIME0,
+     >                         IPRNL, IPRNLI,
+     >                         NPTST, RPARTW,
+     >                         IPART, RPART,   !dr  census from this present run.
+     >                         IPARTC, RPARTC  !dr  initial condition next timestep
       USE EIRMOD_COMSOU, ONLY: FLUX, NLSRON, NMINPTS, NPTS, NSTRAI,
      >                         NSRFSI, SORWGT
       USE EIRMOD_COUTAU, ONLY: FASCL, FISCL, FMSCL, FLXFAC, FPHSCL, XMCP
@@ -52,8 +60,13 @@ C
      .            ADDA(0:NATM,0:NSTRA),ADDM(0:NMOL,0:NSTRA),
      .            ADDI(0:NION,0:NSTRA),ADDPH(0:NPHOT,0:NSTRA)
       REAL(DP) :: FLXQ, FCT, SGMREL, SGMTQN, ADDS, ADD, ADDP, SGMTQ1,
-     .            SUMM, WEIGHT0
-      INTEGER :: ISTRAO, NPANUO, ISTRAI, JATM, JMOL, JION, JPHOT, I
+     .            SUMM
+cdr some state vector components from census score no. I
+      REAL(DP) :: WEIGHTS
+      INTEGER :: NPANUS, ISTRAS, ISPZS
+c
+      INTEGER :: ISTRAO, NPANUO,   !dr  from first state vector, for initializing stand. deviations 
+     .           ISTRAI, JATM, JMOL, JION, JPHOT, I
 C
 C  STEP 1
 C
@@ -110,10 +123,13 @@ C  A: set NPTS for time stratum NSTRAI IN NEXT TIME STEP
       ELSEIF (NPTST.LT.0.OR.NLMOVIE) THEN
 C  ONE BY ONE RELAUNCH FROM OLD CENSUS
 C  OLD CENSUS CONTAINS IPRNL ENTRIES.
+cdr oct.21: I am not sure if that option still works properly
         NPTS(NSTRAI)=IPRNL
         NMINPTS(NSTRAI)=IPRNL  !ENFORCE: FULL RE-LOCATION OF ALL PARTICLES FROM OLD CENSUS
       ENDIF
 
+
+C  B: set FLUX for time stratum NSTRAI IN NEXT TIME STEP
       FLUX(NSTRAI)=0.
       FLXCEN=0.
       RPARTW(0)=0.0
@@ -127,11 +143,14 @@ cdr  empty census?
       IF (IPRNL.EQ.0) GOTO 300
 
 C  FIRST SCORE ON CENSUS
-      RPSTT(1:NPARTT)=RPART(1:NPARTT,1)
-      IPSTT(1:MPARTT)=IPART(1:MPARTT,1)
+cdr what if iprnl=0? are these next arrays properly allocated?
 
-      NPANUO=NPANU
-      ISTRAO=ISTRA
+cdr     IPART(1,I)  ! particle number of score no. I on census = NPANU
+cdr     IPART(8,I)  ! stratum  number of score no. I on census = ISTRA
+
+cdr  needed for initializing the std. deviation estimates. First score to census.
+      NPANUO=IPART(1,1)
+      ISTRAO=IPART(8,1)
 
       ADDS=0.
 
@@ -148,39 +167,46 @@ C  BUT IS DONE HERE ADDITIONALLY ON THE PARTICULAR "CENSUS ARRAYS" RPARTW (RESAM
 C  AND THE SPECIES TYPE-RESOLVED FLUXES ADDPH, ADDA, ADDM, ADDI
 
       DO 140  I=1,IPRNL
-        RPSTT(1:NPARTT)=RPART(1:NPARTT,I)
-        IPSTT(1:MPARTT)=IPART(1:MPARTT,I)
 
-cdr     IPAN=IPART(1,I)  ! particle number of score I on census = NPANU
-cdr     ISTR=IPART(8,I)  ! stratum  number of score I on census = ISTRA
-cdr     ISPZ=IPART(9,I)  ! species index of score I on census   = ISPZ
+cdr  Oct. 21: remove reference to full state vector here. We only need
+cdr           npanu, ispz, istra and weight
 
-        ITYP=ISPEZI(ISPZ,-1) !  ispz is now known (pointer to ipstt(9))
-        WEIGHT0=WEIGHT
+cdr     IPART(1,I)  ! particle number of score no. I on census = NPANU
+cdr     IPART(8,I)  ! stratum  number of score no. I on census = ISTRA
+cdr     IPART(9,I)  ! species index of score no. I on census   = ISPZ
+cdr     RPART(9,I)  ! particle weight at score to census       = WEIGHT
+
+        WEIGHTS = RPART(9,I)
+        NPANUS  = IPART(1,I)
+        ISPZS   = IPART(9,I)
+        ISTRAS  = IPART(8,I)  
+
+        ITYP=ISPEZI(ISPZS,-1)
+
         IF (ITYP.EQ.0) THEN
-          IPHOT=ISPEZI(ISPZ,0)
-          WEIGHT=WEIGHT0*FPHSCL(ISTRA)
-          ADDP=WEIGHT0*FLXFAC(ISTRA)
+          IPHOT=ISPEZI(ISPZS,0)
+          WEIGHT=WEIGHTS*FPHSCL(ISTRAS)
+          ADDP=WEIGHTS*FLXFAC(ISTRAS)
           ADD=ADDP*NPRT(IPHOT)
-          ADDPH(IPHOT,ISTRA)=ADDPH(IPHOT,ISTRA)+ADDP
+          ADDPH(IPHOT,ISTRAS)=ADDPH(IPHOT,ISTRAS)+ADDP
         ELSEIF (ITYP.EQ.1) THEN
-          IATM=ISPEZI(ISPZ,1)
-          WEIGHT=WEIGHT0*FASCL(ISTRA)
-          ADDP=WEIGHT0*FLXFAC(ISTRA)
+          IATM=ISPEZI(ISPZS,1)
+          WEIGHT=WEIGHTS*FASCL(ISTRAS)
+          ADDP=WEIGHTS*FLXFAC(ISTRAS)
           ADD=ADDP*NPRT(NSPH+IATM)
-          ADDA(IATM,ISTRA)=ADDA(IATM,ISTRA)+ADDP
+          ADDA(IATM,ISTRAS)=ADDA(IATM,ISTRAS)+ADDP
         ELSEIF (ITYP.EQ.2) THEN
-          IMOL=ISPEZI(ISPZ,2)
-          WEIGHT=WEIGHT0*FMSCL(ISTRA)
-          ADDP=WEIGHT0*FLXFAC(ISTRA)
+          IMOL=ISPEZI(ISPZS,2)
+          WEIGHT=WEIGHTS*FMSCL(ISTRAS)
+          ADDP=WEIGHTS*FLXFAC(ISTRAS)
           ADD=ADDP*NPRT(NSPA+IMOL)
-          ADDM(IMOL,ISTRA)=ADDM(IMOL,ISTRA)+ADDP
+          ADDM(IMOL,ISTRAS)=ADDM(IMOL,ISTRAS)+ADDP
         ELSEIF (ITYP.EQ.3) THEN
-          IION=ISPEZI(ISPZ,3)
-          WEIGHT=WEIGHT0*FISCL(ISTRA)
-          ADDP=WEIGHT0*FLXFAC(ISTRA)
+          IION=ISPEZI(ISPZS,3)
+          WEIGHT=WEIGHTS*FISCL(ISTRAS)
+          ADDP=WEIGHTS*FLXFAC(ISTRAS)
           ADD=ADDP*NPRT(NSPAM+IION)
-          ADDI(IION,ISTRA)=ADDI(IION,ISTRA)+ADDP
+          ADDI(IION,ISTRAS)=ADDI(IION,ISTRAS)+ADDP
         ENDIF
 
 C  SET DISCRETE CUMULATIVE CENSUS FLUX DISTRIBUTION FOR RESAMPLING OF SCORE-INDEX "I"
@@ -188,30 +214,30 @@ C  DO NOT INCLUDE NPRT FACTORS, BECAUSE THIS WEIGHT-FACTOŔ WILL ALREADY BE CARR
 C  ALSO THE BALANCE CORRECTION FACTORS FATM,... ARE NOT INCLUDED HERE
 C       RPARTW(I)=RPARTW(I-1)+ADDP  ! same as next line
 
-        RPARTW(I)=RPARTW(I-1)+WEIGHT0*FLXFAC(ISTRA)
+        RPARTW(I)=RPARTW(I-1)+WEIGHTS*FLXFAC(ISTRAS)
 C
 C  ACCUMULATE CONTRIBUTION FROM TEST FLIGHT NO. NPANUO
 C  FOR ESTIMATION OF STATISTICAL VARIANCE OF CENSUS FLUX
 C  NPANUO MAY HAVE SCORED AT CENSUS SEVERAL TIMES
-        IF (NPANU.EQ.NPANUO) THEN
+        IF (NPANUS.EQ.NPANUO) THEN
           ADDS=ADDS+ADD
         ENDIF
 
 C  NPANU IS A NEW PARTICLE ?
-        IF (NPANU.NE.NPANUO) THEN
+        IF (NPANUS.NE.NPANUO) THEN
 C  ADD PREVIOUS CENSUS SCORE NPANUO TO FLUX, SGMTOT,...
 C  FLUX IS TOTAL "ATOMIC FLUX" ON CENSUS
           FLUX(NSTRAI)=FLUX(NSTRAI)+ADDS
           FLX(ISTRAO)=FLX(ISTRAO)+ADDS
           SGMTOT(ISTRAO)=SGMTOT(ISTRAO)+ADDS*ADDS
-          NPANUO=NPANU
-          ISTRAO=ISTRA
+          NPANUO=NPANUS
+          ISTRAO=ISTRAS
 C   PUT WEIGHT OF CURRENT CENSUS SCORE NPANU ONTO ADDS
           ADDS=ADD
         ENDIF
 
-C   WEIGHT may have been altered, so: redefine entire RPART (play safe)
-        RPART(1:NPARTT,I)=RPSTT(1:NPARTT)
+C   WEIGHT may have been altered. So: redefine entire this component of state vector.
+        RPART(9,I)=WEIGHT 
   140 CONTINUE
 
 C  CONTRIBUTION FROM LAST CENSUS SCORE NO. IPRNL
@@ -276,13 +302,10 @@ C  WEIGHT IS ALREADY ACCOUNTED FOR IN RE-SAMPLING DISTRIBUTION RPARTW
       RPARTC(1:NPARTT,1:IPRNL)=RPART(1:NPARTT,1:IPRNL)
       IPARTC(1:MPARTT,1:IPRNL)=IPART(1:MPARTT,1:IPRNL)
 C
-C Such loops can be optimised by changing IPSTT to a pointer on IPARTC,
-C similar situation in collect_census.f
-      DO I=1,IPRNL
-        IPSTT(1:MPARTT)=IPARTC(1:MPARTT,I)
-        ISTRA=NSTRAI
-        IPARTC(1:MPARTT,I)=IPSTT(1:MPARTT)
-      ENDDO
+cdr probably better not to be done here. tbd: move to locate.f, or input.f.
+      ISTRAS=NSTRAI
+      IPARTC(8,1:IPRNL)=ISTRAS
+
 C
 C  CALL WRSNAP TO WRITE SNAPSHOT POPULATION
 C  FOR NEXT RUN ON FT 15

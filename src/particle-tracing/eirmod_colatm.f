@@ -116,11 +116,9 @@ CDR  check: are the corresponding arrays PATEI,PMLEI, PIOEI real
 CDR         or integer (1/2 particle possible?)
       INTEGER, ALLOCATABLE :: NAMIEI(:),NAMIPI(:)
 
-csw add n 2lines
+cdr unclear, out.
 cdr   INTEGER :: kk,updf,t1
 cdr   real(dp):: sump
-csw external
-ctk      real(dp), external :: ranf_eirene
 
       save   
 

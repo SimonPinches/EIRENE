@@ -100,10 +100,9 @@ C
      .          FLX, YIELD1, YIELD2, VELS, WEIGHS, E0S, ESHET,EVCQ,
      .          VSHETQ, V, VELSH, VC, VCQ, VC2, SPLFLG,
      .          VXR, VYR, VZR, VWL, WGHTVS, RATR, YSPTWL
-ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: ISG, ISPZS, I, J, IDIM, MS, IC, IP, ISTS,
      .           ISSPTP, ISSPTC, IPV, MODREF, MOL_DEFAULT,
-     .           ITYP_OLD,IGASP_OLD,IGASC_OLD
+     .           ITYP_OLD,IGASP_OLD,IGASC_OLD, IOLD
       LOGICAL :: NLSPUT, LTRANS
 C
       IRET = 0
@@ -160,6 +159,20 @@ C  .............................
 C
       ITYP_OLD=ITYP
       WPR=WEIGHT*PR
+      select case (ITYP_OLD)
+      case (0)
+        IOLD = IPHOT
+      case (1)
+        IOLD = IATM
+      case (2)
+        IOLD = IMOL
+      case (3)
+        IOLD = IION
+      case (4)
+        IOLD = IPLS
+      case default
+        IOLD = 0
+      end select
 C
 C  UPDATE PARTICLE OUTGOING FLUX ONTO SURFACE MSURF
 C  UPDATE ENERGY OUTGOING FLUX ONTO SURFACE MSURF
@@ -637,7 +650,6 @@ C
         IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM (WPR,2,0)
 C       NLTRJ = .FALSE.
 C       TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
-!pb     IF (ICOL.EQ.1) RETURN 3
         IF (ICOL.EQ.1) THEN
           IRET = 3
           RETURN
@@ -1085,7 +1097,9 @@ cdr  surface model for particles type 0 ("photons")
         CALL EIRENE_REFLC1_PHOTON (WMINS,FMASS,FCHAR,NPRT(ISPZ),
      .               ISRF(ISPZ,MSURF),ISRT(ISPZ,MSURF))
         ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
-        IF (.NOT.LGPART) THEN
+        IF (LGPART) THEN
+cdr  switch part info ?  tbd      
+        ELSE
           WEIGHT=0.
         ENDIF
       ENDIF

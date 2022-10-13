@@ -115,11 +115,9 @@ CDR  check: are the corresponding arrays PATEI,PMLEI, PIOEI real or integer (1/2
 
 C      INTEGER, ALLOCATABLE :: NAMIEI(:),NAMIPI(:)  ! preparing code synchronisation
 
-csw add n 2lines
+cdr unclear. Needed still?
       INTEGER :: iaph,irph,kk,updf,t1
       real(dp):: sump
-csw external
-ctk      real(dp), external :: ranf_eirene
 
       SAVE
 

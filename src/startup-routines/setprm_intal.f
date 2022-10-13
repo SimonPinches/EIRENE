@@ -195,8 +195,8 @@ c     unfortunately mixed
 C  --> 26 rather than 19 background tallies
 C  --> NTALG: 30, includes 4 free slots
 
-      NFRSTP(1)=0
-      NFRSTP(2)=NPLSTI
+      NFRSTP(1)=0       ! TEIN
+      NFRSTP(2)=NPLSTI  ! TIIN
       NFRSTP(3)=0       ! # DEIN,  DERIVED QUANTITY
       NFRSTP(4)=NPLS    ! DIIN
       NFRSTP(5)=NPLSV   ! VXIN
@@ -319,7 +319,7 @@ c  from here on: derivatives (gradients) of input tallies
       NFRSTP(119)=0      ! FREE30
       NFRSTP(120)=0      ! FREE30
 C
-C  NTALI=120?  number of input tallies  (19 PRIMARY + 7 DERIVED + 4 FREE + 30 GRADIENT VECTORS)
+C  NTALI=120?  Number of input tallies  (19 PRIMARY + 7 DERIVED + 4 FREE + 30 GRADIENT VECTORS)
  
 cdr Since primary and derived input tallies got mixed up anyway, 
 cdr add magnetic flux (vector potential). 

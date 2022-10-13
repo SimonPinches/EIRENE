@@ -676,14 +676,17 @@
       use eirmod_cadgeo
       use eirmod_clgin
       implicit none
-      integer :: kard,ldmf,is,iif
-      real(DP) :: dummy(nlimps,*)
+      integer, intent(in) :: kard,ldmf
+      integer :: is,iif
+      real(DP), intent(in) :: dummy(nlimps,*)
+
       do iif=1,ldmf
-        if(nlimi.gt.0) write(kard,'(5(e16.8))') &
+        if(nlimi.gt.0) write(kard,'(5(1x,e15.8))') &
                        (dummy(is,iif),is=1,nlimi)
-        if(nstsi.gt.0) write(kard,'(5(e16.8))') &
+        if(nstsi.gt.0) write(kard,'(5(1x,e15.8))') &
                        (dummy(is+nlim,iif),is=1,nstsi)
       enddo
+      return
       end subroutine neutrs
 
       subroutine eirene_extrab25_eirpbls(istr)

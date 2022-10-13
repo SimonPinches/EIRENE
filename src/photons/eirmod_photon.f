@@ -587,7 +587,6 @@ c     omega_max: estimated upper bound of interval (eV)
 
 !Physical and mathematical constants
       real(dp),parameter::e=1.6022e-19
-c      real(dp),parameter::m_D=3.3445e-27  !DEUTERONS
       real(dp),parameter::hbar=1.0546e-34
       real(dp),parameter::me=9.1094e-31
       real(dp),parameter::alpha=7.2974e-3

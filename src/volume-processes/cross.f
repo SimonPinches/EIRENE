@@ -18,7 +18,7 @@ C    RETURN CROSS-SECTION IN CM**2
 C
 C  K>0 :  DATA FROM ARRAY REACDAT, I.E. FROM EXTERNAL DATABASE
 C
-C  K<0 : DEFAULT MODEL DEFINED IN SETUP_DEFAULT_REACTIONS, BUT NOW ALSO ON REACDAT
+C  K<0 : DEFAULT MODEL DEFINED IN SETUP_MINIMAL_REACTIONS, BUT NOW ALSO ON REACDAT
 C
 C  K=-1: H + H+ --> H+ + H   CX CROSS-SECTION, JANEV, 3.1.8
 C         LINEAR EXTRAPOLATION ON LOG-LOG SCALE AT LOW ENERGY END FOR LN(SIGMA)
@@ -92,6 +92,7 @@ cdr  Notation: rpp%dblpol is a single parameter polynomial?
           EIRENE_CROSS = RES*FACT
 
         ELSE IF (IFTFLG(K,1) == 3) THEN
+cdr Near threshold and high energy Born-Bethe asymptotically correct cross section fit
 
 cdr  XI: threshold. ie. E>XI necessarily for this fit.
           E = EXP(AL)
@@ -104,10 +105,11 @@ cdr  careful: E and XI must relate to same mass.
           endif
 
 C  default extrapolation ifexmn=-1 not yet available
-C  ELAB BELOW MINIMUM ENERGY FOR FIT:
 
           ALMIN=REACDAT(K)%CRS%RC1MIN
           ALMAX=REACDAT(K)%CRS%RC1MAX
+
+C  ELAB BELOW MINIMUM ENERGY FOR FIT:
           IF (AL.LT.ALMIN) THEN
 C  USE ASYMPTOTIC EXPRESSION NO. IFEXMN(K)
 

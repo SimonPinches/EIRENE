@@ -610,6 +610,7 @@ C
         VOL(1:NSBOX) = RDUMMY(1,1:NSBOX)
         DEALLOCATE(RDUMMY)
         WRITE (iunout,*) 'TOTAL VOLUME, SUM VOL(:)  ',VOLTOT
+        CALL EIRENE_LEER(1)
 C
 C  SET 'VISIBLE ADDITIONAL SURFACES' RANGES nlimii(j),nlimie(j), for each grid cell j
 C  FROM INFORMATION ON IGJUM3

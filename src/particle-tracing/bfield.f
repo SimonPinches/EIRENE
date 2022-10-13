@@ -38,7 +38,7 @@ cdr  user defined B field. Units of Bx, By, Bz?
 cdr  BF=1. ?  BF should be in Tesla.
 cdr  L=true : spatial coordinates x,y,z are known here, 
 cdr           i.e. call vecusr with L=true
-cdr  or else:  x,y,z are unknown here.
+cdr  or else: x,y,z are unknown here.
 cdr           Then VECUSR returns B field at COM (center of mass)
          CALL EIRENE_VECUSR (1,ICELL,X,Y,Z,BX,BY,BZ,1,L)
 cdr  unfinished coding here? BF in Tesla?

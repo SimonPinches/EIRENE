@@ -11,6 +11,7 @@ cdr             use E0_par times sign(vel,chord),
 cdr             to bin in (parallel) energy units with sign.
 cdr             More convenient units: parallel velocity (parallel to chord)
 cdr             with sign (tbd)
+cdr  March 21:  typo fixed in one place: WTR --> WT
 
       SUBROUTINE EIRENE_UPDATE_SPECTRUM (WT,IND,ISC)
 C  update contributions to surface- or volume/line-averaged energy spectra

@@ -132,11 +132,9 @@ cym FP, FLTEST,RMMIO IRPH removed during merge
 !$OMP& IBGK, IP, NFLAG, IATMN, IPLSN, NCLLO, IPLSV,  I, J, IPL,
 !$OMP& NAMIEI,NAMIPI)
 
-csw add n 2lines
-cdr   INTEGER :: kk,updf,t1
+cdr  unclear, out.
+cdr   INTEGER :: kk,t1
 cdr   real(dp):: sump
-csw external
-ctk      real(dp), external :: ranf_eirene
 
       SAVE
 

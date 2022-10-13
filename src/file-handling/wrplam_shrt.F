@@ -48,7 +48,6 @@ cdr         nonlinear iterations.
       USE EIRMOD_CINIT, ONLY: FORT
       USE EIRMOD_COMUSR, ONLY: NPLSI, TIIN, DIIN, VXIN, VYIN, VZIN,
      .                         NPLS_FIX
-!pb   USE EIRMOD_CCOUPL, ONLY: NFLA
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_COMUSR, ONLY: LGVAC
       USE EIRMOD_COMNNL, ONLY: NFLA_VIRT, NREA_VIRT,
@@ -390,7 +389,7 @@ cdr  case 6,7: to be done
   200 CONTINUE
 
       WRITE(iunout,'(4a)')
-     w 'ERROR IN RPLAM_SHRT: CANNOT READ ', FORT, '13: ',
+     w 'RPLAM_SHRT: CANNOT READ ', FORT, '13: ',
      w 'ZERO VIRTUAL BACKGROUND IS ASSIGNED'
       WRITE (iunout,*) 'SPECIES NPLS_FIX+1, NPLSI ',NPLS_FIX+1,NPLSI
       CALL EIRENE_LEER(1)

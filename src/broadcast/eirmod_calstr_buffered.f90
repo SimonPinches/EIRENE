@@ -42,7 +42,7 @@ module eirmod_calstr_buffered
   public :: calstr_progress_message
   public :: eirene_calstr_buffered
 
-  !> nubmer of buffers (1 double and 1 logical)
+  !> number of buffers (1 double and 1 logical)
   integer, parameter :: N_BUFFERS = 2
   !> Identifies the communication operations, one request object for each buffer
   integer, save, dimension(N_BUFFERS) :: calstr_request =  MPI_REQUEST_NULL
@@ -115,7 +115,7 @@ module eirmod_calstr_buffered
   ! are reduced using MPI_IREDUCE. The stratum leader waits for the operation
   ! to finish, the others are free to continue with the next stratum.
   !
-  ! If you need to add any other reduction operatons, then please do so in
+  ! If you need to add any other reduction operations, then please do so in
   ! allocate_calstr_buffer, calstr_pack_all, calstr_unpack_all.
     use eirmod_mpi
     integer, intent(in) :: comm !< calstr_communicator for the stratum
@@ -539,7 +539,7 @@ module eirmod_calstr_buffered
       call calstr_unpack_l(size(LOGPHOT(0:nphoti,ISTRA)), LOGPHOT(0:nphoti,ISTRA))
     end if
     call calstr_unpack_l(size(LOGPLS(0:nplsi,ISTRA)), LOGPLS(0:nplsi,ISTRA))
-    ! variables from eirene_calstr_usr should be also unpacekd
+    ! variables from eirene_calstr_usr should be also unpacked
   end subroutine calstr_unpack_all
 
 

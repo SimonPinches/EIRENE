@@ -112,7 +112,7 @@ C EL PROCESSES
 C CX PROCESSES
       INTEGER ::      IXCX,IRCX
 C PH PROCESSES
-      INTEGER ::      IAPH,IRPH  ! for later use, photons
+      INTEGER ::      IXPH,IRPH  ! for later use, photons
 C PI PROCESSES
       INTEGER ::      IXPI,IRPI
 C EI PROCESSES
@@ -616,8 +616,10 @@ C
 !$OMP ATOMIC
                 EXX(IRD)=EXX(IRD)+WTRSIG*E0
               ENDIF
+cdr  Now: exx, exat,exml,exio and expl to be done in subr. COLLIDE
 C
             ELSE
+C  TRACKLENGH ESTIMATOR: HEAVY (AND BULK) PARTICLE ENERGY LOSS/GAIN RATES
 C
 
               IF (LEXAT) THEN

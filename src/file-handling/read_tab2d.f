@@ -3,7 +3,7 @@ c               part 1: parsing of data files for
 c                       2d tables. Format of files:
 c                       to be described
 c               part 2: transfer the information onto
-c                       eirene data structure REACDAT(ir)
+c                       eirene data structure REACDAT(IR)
 cdr
 !pb  21.11.06: index error corrected in definition of ap%dte
 

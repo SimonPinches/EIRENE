@@ -211,7 +211,7 @@ C..................................................................
       MODC=EIRENE_IDEZ(MODCLF(KK),3,5)
 
 C  2.B)
-      IF (MODC.EQ.1) NEND=1   ! rate coeff vs. (fixed E0, e.g. E0=0, or E0=3/2 TI)
+      IF (MODC.EQ.1) NEND=1   ! rate coeff vs. fixed E0, e.g. E0=0, or E0=3/2 TI
 C  2.C)
       IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E0, TI)
 C  2.D)

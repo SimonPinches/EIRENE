@@ -417,6 +417,7 @@ cDB   AMD output
 
 c  integer species and background tally data
 
+cym to be evaluated - see calling order
         if (.not.allocated(NMASSA)) THEN
           ALLOCATE (NMASSA(MAX(1,NATM)))
           COMUSR_FIRST_PASS(1) = .TRUE.
@@ -425,24 +426,29 @@ c  integer species and background tally data
           ALLOCATE (NCHARA(MAX(1,NATM)))
           COMUSR_FIRST_PASS(2) = .TRUE.
         end if
+cym to be evaluated
         ALLOCATE (NFOLA(MAX(1,NATM)))
         ALLOCATE (NGENA(MAX(1,NATM)))
+cym to be evaluated - see calling order        
         if (.not.allocated(NMASSM)) THEN
           ALLOCATE (NMASSM(MAX(1,NMOL)))
           COMUSR_FIRST_PASS(3) = .TRUE.
         end if
+cym to be evaluated
         ALLOCATE (NCHARM(MAX(1,NMOL)))
         ALLOCATE (NFOLM(MAX(1,NMOL)))
         ALLOCATE (NGENM(MAX(1,NMOL)))
         ALLOCATE (NMASSP(MAX(1,NPLS)))
         ALLOCATE (NCHARP(MAX(1,NPLS)))
         ALLOCATE (NCHRGP(MAX(1,NPLS)))
+cym to be evaluated - see calling order / find_param
         if (.not.allocated(NMASSI)) THEN
           ALLOCATE (NMASSI(MAX(1,NION)))
           ALLOCATE (NCHARI(MAX(1,NION)))
           ALLOCATE (NCHRGI(MAX(1,NION)))
           COMUSR_FIRST_PASS(4) = .TRUE.
         end if
+cym to be evaluated
         ALLOCATE (NFOLI(MAX(1,NION)))
         ALLOCATE (NGENI(MAX(1,NION)))
         ALLOCATE (NFOLPH(MAX(1,NPHOT)))

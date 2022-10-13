@@ -191,6 +191,7 @@ cdr This perfectly cancels the source rate.
           END IF
 
         ELSE
+! use tracklength estimator
           WTRSIG=WTR*(SIGTOT-SIGBGK)
           IF (LPPHPHT) THEN
 !$OMP ATOMIC

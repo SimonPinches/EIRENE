@@ -911,8 +911,8 @@ C  WALL CLOCK TIME AT START OF NEXT MONTE CARLO HISTORY
             SECND1=EIRENE_SECOND_OWN()
 C
 C  LAST HISTORY FOR PRESENT STRATUM ?
-            LGLAST = IPTSI.EQ.NPTS(ISTRA)                      ! all requested particles done
-            LGLAST = LGLAST.OR.(SECND1.GT.XTIM(ISTRA).AND.     ! cpu limit reached and minimum no. of part. done
+            LGLAST = IPTSI.EQ.NPTS(ISTRA)
+            LGLAST = LGLAST.OR.(SECND1.GT.XTIM(ISTRA).AND.
      .                          IPTSI.GE.NMINPTS(ISTRA).AND.
      .                          .NOT.NLMOVIE)
 CDR         LGLAST = LGLAST.OR.(CENSUS FILLED ?)  CURRENTLY DONE IN TIMCOL

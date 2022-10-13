@@ -14,6 +14,7 @@ cdr                  naint=21 and =29: done
 cdr  Feb       2020: sync code for EI, PI, CX, and EL processes. add energy weighted rates
 cdr                  for modcol=1, na = 23, 25, 27
 cdr                  e.g. also now for EL processes (because of bgk balances)
+cdr  Feb       2021  ND2 for sngl_poly. Not used yet. ND2=9 so far.
 
 CDR:  A&M Data diagnostics routine, added in Jan. 2014
 C  PUT SELECTED EIRENE ATOMIC DATA FIELDS ONTO ADIN ARRAY FOR OUTPUT.
@@ -90,7 +91,7 @@ cdr  functions for 'on the fly' evaluation of A&M data
      .          EIRENE_RATE_COEFF
       REAL(DP),PARAMETER :: EMIN = 0.1003_DP  ! hard coded cut-off for EBEAM parameter in H.3 fits
       REAL(DP),PARAMETER :: EMINL=-2.3000_DP  ! hard coded cut-off for EBEAM parameter in H.3 fits
-      INTEGER :: NS,NA,IAIN,MM,KK,
+      INTEGER :: NS,NA,IAIN,MM,KK,ND2,
      .           irei,ircx,irpi,irel,irrc,
      .           iat,iml,iio,ipl,isp,iplti,
      .           icell,iapi,impi,iipi,iacx,imcx,iicx,
@@ -255,7 +256,7 @@ C  CHARGE EXCHANGE RATE COEFFICIENT NO. IRCX
         ELSEIF (NA.EQ.22.OR.NA.EQ.23) THEN
           ircx=ns
           kk=NREACX(ircx)
-c find collision partners corresponding to process ircx: IPL AND ISP
+c find collision partners corresponding to process ircx: IPL and ISP
           IPL=0
 c  first: try atoms
           LATCX: do iat=1,natmi
@@ -337,6 +338,7 @@ C  USE EB (ENERGY OF TEST PARTICLE) = 1.5 TI
             RCMIN = -HUGE(1._DP)
             RCMAX = HUGE(1._DP)
             EARRH = 0._DP
+            ND2   = 9
 c   TEST PARTICLE VELOCITY NOT KNOWN HERE, TAKE Tn = Ti, and apply mass scaling
 c      MASST(KK)=  TARGET MASS FOR CROSS-SECTION, BEAM MASS FOR BEAM MAXWELLIAN RATE COEFF.
             EBFAC= MASST(KK)*PMASSA/RMASSS
@@ -487,6 +489,7 @@ C  USE EB (ENERGY OF TEST PARTICLE) = 1.5 TI
             RCMIN = -HUGE(1._DP)
             RCMAX = HUGE(1._DP)
             EARRH = 0._DP
+            ND2   = 9
 c   TEST PARTICLE VELOCITY NOT KNOWN HERE, TAKE Tn = Ti, and apply mass scaling
 c      MASST(KK)=  TARGET MASS FOR CROSS-SECTION, BEAM MASS FOR BEAM MAXWELLIAN RATE COEFF.
             EBFAC= MASST(KK)*PMASSA/RMASSS
@@ -634,6 +637,7 @@ C  USE EB (ENERGY OF TEST PARTICLE) = 1.5 TI
           RCMIN = -HUGE(1._DP)
           RCMAX = HUGE(1._DP)
           EARRH = 0._DP
+          ND2   = 9
 c   TEST PARTICLE VELOCITY NOT KNOWN HERE, TAKE T_TEST = T-IPLS, and apply mass scaling
 c      MASST(KK)=  TARGET MASS FOR CROSS-SECTION, BEAM MASS FOR BEAM MAXWELLIAN RATE COEFF.
           EBFAC= MASST(KK)*PMASSA/RMASSS

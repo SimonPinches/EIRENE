@@ -82,7 +82,7 @@ cdr  ird is coarse grid for scoring
 !    2)   total parallel momentum source    (smo=mapl+mmpl+mipl      , ICP2+1 ,ICP3)
 !    3) total ion energy source        (sei_tot=eapl+empl+eipl  , ICP3+1 ,ICP4)
 !    4) internal ion energy source     (sei_int=sei-u*smo+ek*sni, ICP4+1 ,ICP5)
-!    5)   total electr. energy source       (see=eael+emel+eiel      , ICP5+1)
+!    5) total electr. energy source    (see=eael+emel+eiel      , ICP5+1)
 
       USE EIRMOD_PARMMOD
       USE EIRMOD_CESTIM

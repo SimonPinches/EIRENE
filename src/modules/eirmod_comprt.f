@@ -188,7 +188,8 @@ c  up to here: for census, npartt
 c  up to here: for splitting, npartc
 
       IPST  => IPSTD(2:MPARTC+1)  !  full (2:mpartc+1) particle information, integer
-
+cdr  why remove npanu from state vector for splitting?
+cdr  why do we need two different pointers here, and not for real(dp) state vectors?
       IPSTT => IPSTD(1:MPARTT)    !  reduced (1:mpartt), for census
 
       NPANU  => IPSTD( 1)

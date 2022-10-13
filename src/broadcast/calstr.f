@@ -61,6 +61,7 @@ C> - tallies
       real(dp) :: helpa(0:natm), helpm(0:nmol), helpi(0:nion),
      .            helpp(0:npls), helpph(0:nphot),
      .            helps(nlmpgs+1), helpc(1)
+
       real(dp) :: dummys(nlmpgs+1)
       real(dp), allocatable :: dummyw(:), helpw(:)
       integer :: calstr_comm

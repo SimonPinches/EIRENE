@@ -1340,13 +1340,6 @@ csw
       CALL EIRENE_LEER(2)
 CTRIG E
 
-csw 08mar2013, switch over to save out tallies per stratum on file-system
-csw necessary when collecting data from MPI nodes in if3cop in case of nprs < nstrai
-csw
-      if(nprs > 1 .and. nprs < nstrai) then
-        nfilen=1
-      endif
-
       IUNIN = IUNIN_SAVE
       IF (IUSROUT /= 0) CLOSE(IUSROUT)
 csw
@@ -3620,6 +3613,7 @@ C
      .                                 RRSTEP(ITARG,NRWL(ITARG))
       CALL EIRENE_MASR1 ('EEMAX   ',EEMAX)
       CALL EIRENE_MASR1 ('EESHT   ',EESHT)
+      flush(iunout)
 C
 !pb   ETOT=EEMAX+EESHT
       EFLX(ITARG)=EEMAX+EESHT

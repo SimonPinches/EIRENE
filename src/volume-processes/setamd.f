@@ -123,9 +123,9 @@ cdr  They are for indirect indexing, in loops over secondary species.
 cdr  e.g. rather than
 cdr                   do iat=1,natmi
 cdr         now:
-cdr                   do i   =1,ipatds(irei,0)   (<=natmi,  possibly much shorter loop)
-cdr                      iat = ipatds(irei,i)    (now we know: iat is a secondary indeed)
-cdr                      inum= patds(irei,iat)   (there are inum secondaries of species iat)
+cdr                   do i   =1,ipatei(irei,0)   (<=natmi,  possibly much shorter loop)
+cdr                      iat = ipatei(irei,i)    (now we know: iat is a secondary indeed)
+cdr                      inum= patei(irei,iat)   (there are inum secondaries of species iat)
 cdr                      ...
 cdr                   enddo
 cdr

@@ -91,7 +91,7 @@
      ,  ewldea_res(:,:),   !emitted energy flux of atoms
      ,  ewldem_res(:,:),   !net incident energy flux due of molecules
      ,  ewldrp_res(:),     !kinetic energy of reflected neutrals originated from ions
-     ,  ewldmr_res(:,:),   !energy due to recombination of atoms into molecules
+     ,  ewldmr_res(:,:),   !energy due to recombination of atoms and atomic ions into molecules
      ,  wldspt_res(:),     !flux of sputtered wall material
      ,  wldspta_res(:,:),  !sputtered flux for each type of emitted atom
      ,  wldsptm_res(:,:),  !sputtered flux for each type of emitted molecule
@@ -601,8 +601,12 @@ C
         end do
         !c*** recombination energy of hydrogen molecules
         do j=1,nmoli
-          if(ncharm(j).eq.2 .and. lprfaml)
-     >     wldnep(i,istra)=wldnep(i,istra)+ diss_pot_H2*prfaml(j,i)
+          if(ncharm(j).eq.2) then
+            if(lprfaml) wldnep(i,istra)=
+     .                  wldnep(i,istra)+diss_pot_H2*prfaml(j,i)
+            if(lprfpml) wldnep(i,istra)=
+     .                  wldnep(i,istra)+diss_pot_H2*prfpml(j,i)
+          end if
         end do
         !c*** subtract the outcoming power
         wldnek(i,istra)=wldnek(i,istra)-hlp
@@ -1944,6 +1948,11 @@ C
      .               ewldmr_res(I,IND)+PRFAML(I,ISS)
         IF (LPRFPML) ewldmr_res(I,IND)=
      .               ewldmr_res(I,IND)+PRFPML(I,ISS)
+        IF (LPRFPML) THEN
+          ewldmr_res(I,IND)=ewldmr_res(I,IND)+PRFPML(I,ISS)
+          IF (NCHARM(I).EQ.2)
+     .     ewldt_res(IND)=ewldt_res(IND)+DISS_POT_H2*PRFPML(I,ISS)
+        END IF
         wldsptm_res(I,IND)= 0._DP
         IF (LSPTAML) wldsptm_res(I,IND)=
      .               wldsptm_res(I,IND)+SPTAML(I,ISS)
@@ -2382,8 +2391,11 @@ C INCIDENT ENERGY MINUS REFLECTED ENERGY
           IF (NCHARM(I).EQ.2)
      .     ewldt_res(IR)=ewldt_res(IR)+DISS_POT_H2*PRFAML(I,MS)
         END IF
-        IF (LPRFPML) ewldmr_res(I,IR)=
-     .               ewldmr_res(I,IR)+PRFPML(I,MS)
+        IF (LPRFPML) THEN
+          ewldmr_res(I,IR)=ewldmr_res(I,IR)+PRFPML(I,MS)
+          IF (NCHARM(I).EQ.2)
+     .     ewldt_res(IR)=ewldt_res(IR)+DISS_POT_H2*PRFPML(I,MS)
+        END IF
         IF (LSPTAML) wldsptm_res(I,IR)=
      .               wldsptm_res(I,IR)+SPTAML(I,MS)
         IF (LSPTMML) wldsptm_res(I,IR)=

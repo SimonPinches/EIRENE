@@ -106,6 +106,9 @@ C> Default output file prefix
       DO I=1,NPLS
          NULLIFY(TDMPAR(I)%TDM)
       ENDDO
+cpg    
+      MASTER_PATH= ''
+cpg
 
       WRITE (IUNMEM,'(A,T25,I15)')
      .      ' CINIT ',NCINIT*8 + MCINIT*4 +

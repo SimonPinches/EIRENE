@@ -23,7 +23,8 @@ c
 
       real(dp) :: wl, aik, ei, ej, c2, c3, c4, c6_theo, b12, b21,
      .            c3_theo, c6_qs_mess, c6_ar_mess, c3_mess, c6
-      real(dp) :: c6a(12), rdata(9,1)
+      real(dp) :: c6a(12)
+      real(dp) :: rdata(9,1)
       real(dp), save :: polari_fac(120)
       integer :: gi, gj, inep, knep
       integer :: ianf, iend, iblnk, lr, ic, i, j, iplsc3, iprftype,

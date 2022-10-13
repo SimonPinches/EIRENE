@@ -24,7 +24,7 @@ cdr April 2016:  looked at current default random number generator.
 cdr               it seems to be a rather trivial congruential generator,
 cdr               even without additive constant  (c=0.0)
 cdr               very likely that this generator must be removed urgently !
-cdr              maybe the CERN generator (nlranmar) H1rn is superior by far
+cdr               maybe the CERN generator (nlranmar) H1rn is superior by far
 
 cdr April 2017:  references found, see F. James,
 c       ref.: review paper  F. James, CPC, 60 (1990) 329,  for both generators
@@ -254,7 +254,8 @@ cym cccccccccccccccccccccccccccccccccc
       IF (NLOLDRAN) THEN
 c  1st generator: H1RN  (RANMAR)
 
-         if (iseed.le.0.or.iseed.gt.900000000) then
+cdr  iseed=0 is a perfectly legal seed for this generator
+         if (iseed.lt.0.or.iseed.gt.900000000) then
 c  no legal seed available
            write (iunout,*) 'error in fct. ranget of random generator'
            write (iunout,*) 'exit called from subr. ranget'

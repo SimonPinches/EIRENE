@@ -616,6 +616,8 @@ C
         NCHARI = 0
         allocate(NCHRGI(NION))
         NCHRGI = 0
+cym this variable has to be moved from extraB25 to EIRENE as an extra optionnal paramater (comusr)
+!pb variables LKIND? have been removed from extraB25 and put into EIRMOD_COMUSR
         allocate(LKINDI(NION))
         LKINDI = 0
         COMUSR_FIRST_PASS(4) = .FALSE.
@@ -1155,6 +1157,7 @@ c
           DO JCOMP=1, NUM_COMPO
             READ (IUNIN,*)
             READ (IUNIN,*) NUM_CONTRIB     ! contributions to component JCOMP for line ILINE
+c           write (iunout,*) 'num_contrib', num_contrib
             IREAC_ADD = IREAC_ADD + NUM_CONTRIB
 cdr  specify all required contributions explicitly.
 cdr  In the old default this was automatically detected
@@ -1512,7 +1515,7 @@ c  ni
       if (indpro(3).ne.6) icount=icount-npls
 c  vx,vy,vz
 cdr We trust the indpro(4) input, unchanged since 1985.
-cdr only a single common flow velocity is specified.
+cdr Only a single common flow velocity is specified.
       nv=npls
       if (indpro(4).gt.10) nv=1
       if (iabs(indpro(4)).ne.6) icount=icount-3*nv
