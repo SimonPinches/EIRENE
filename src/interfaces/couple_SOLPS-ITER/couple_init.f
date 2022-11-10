@@ -53,7 +53,7 @@ cpg end
         use eirmod_parmmod, only : nmol,nion,npls
         use eirmod_extrab25
       
-!pb        CALL EIRENE_EXTRAB25_INIT_EION
+!pb     CALL EIRENE_EXTRAB25_INIT_EION
         call eirene_extrab25_alloc_mods
         call eirene_extrab25_eirpbls_init(nmol,nion,npls)
       
@@ -65,6 +65,7 @@ cpg end
         use eirmod_cpes, only : my_pe
         use eirmod_comsou, only : FLUX,nlvol,nlcns,NSTRAI
         use eirmod_comprt, only : ISTRA
+        use eirmod_comusr, only : NMODE
         use eirmod_ccoupl, only : NTARGI
         use eirmod_extrab25, only : FLUX_SAVE
         

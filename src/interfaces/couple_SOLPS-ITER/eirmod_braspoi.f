@@ -30,6 +30,9 @@ cdr            nomenclature: eppl_cops --> eppls  ???
 
       TYPE :: CELLMUL
         REAL(DP) :: VALUEM
+        REAL(DP), ALLOCATABLE :: VALUAM(:)
+        REAL(DP), ALLOCATABLE :: VALUMM(:)
+        REAL(DP), ALLOCATABLE :: VALUIM(:)
         INTEGER :: IART,ICM
         TYPE(CELLMUL), POINTER :: NXTMUL
       END TYPE CELLMUL
@@ -124,7 +127,7 @@ cdr            nomenclature: eppl_cops --> eppls  ???
       NULLIFY(COLLECT_MULARR)
 
       WRITE (IUNMEM,'(A,T25,I15)')
-     .      ' BRASPOI ',18*NSTRA*8
+     .      ' BRASPOI ',(18+4)*NSTRA*8
 
       RETURN
       END SUBROUTINE EIRENE_ALLOC_BRASPOI
@@ -132,7 +135,15 @@ cdr            nomenclature: eppl_cops --> eppls  ???
 
       SUBROUTINE EIRENE_DEALLOC_BRASPOI
 
+      INTEGER :: ISTRAI
+
       IF (.NOT.ALLOCATED(EAELS)) RETURN
+
+      DO ISTRAI = 1, NSTRA
+        DEALLOCATE(PAPLS(ISTRAI)%PMUL%VALUAM)
+        DEALLOCATE(PMPLS(ISTRAI)%PMUL%VALUMM)
+        DEALLOCATE(PIPLS(ISTRAI)%PMUL%VALUIM)
+      END DO
 
       DEALLOCATE (EAELS)
       DEALLOCATE (EMELS)
@@ -186,6 +197,9 @@ cdr            nomenclature: eppl_cops --> eppls  ???
         COLLECT_MULARR => COLLECT_MULARR%NXTMUL
       ELSE
         ALLOCATE (NODE)
+        ALLOCATE (NODE%VALUAM(NATM))
+        ALLOCATE (NODE%VALUMM(NMOL))
+        ALLOCATE (NODE%VALUIM(NION))
         NULLIFY (NODE%NXTMUL)
       END IF
 

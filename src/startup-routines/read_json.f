@@ -314,6 +314,8 @@ cdr     CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
       call json%get(p,'NLOCTREE',nloctree,found)
       call json%get(p,'NLWRMSH',nlwrmsh,found)
       call json%get(p,'NEXVS',nexvs,found)
+      call json%get(p,'NLTRIMESH',nltrimesh,found)
+      call json%get(p,'NLSPCSCL',nlspcscl,found)
 
       call json%get_child(p,'CFILE',pfile,found)
       if (found) then

@@ -504,10 +504,10 @@ cdr  between the present and the previous cycle.
       LOGHELP(1:NSTRA) = NLSRON(1:NSTRA)
       CALL EIRENE_INIT_COUTAU(LOGHELP)
       XMCT(0)=0.
-      FASCL(0)=1.
-      FMSCL(0)=1.
-      FISCL(0)=1.
-      FPHSCL(0)=1.     
+      FASCL(:,0)=1.
+      FMSCL(:,0)=1.
+      FISCL(:,0)=1.
+      FPHSCL(:,0)=1.     
 C
 C
 C**** STRATA LOOP ****************************************************
@@ -539,7 +539,7 @@ cdr feb 2020
       else
         ninimax=maxval(ninitl(1:nstrai))
         write (iunout,*) 'largest preselected random seed ',ninimax
-        xmax=ninimax-1.0
+        xmax=max(ninimax-1.0_dp,1._dp)
         ndigits=int(log10(xmax))
 cdr  Do not touch the last NDIGITS digits for seeding
 cdr  produced by code.
@@ -719,10 +719,10 @@ c  remove remaining old generated random number vectors from earlier strata
 
 C  ISEED_ISTRA IS SET NOW
 C
-          FASCL(ISTRA)=1.
-          FMSCL(ISTRA)=1.
-          FISCL(ISTRA)=1.
-          FPHSCL(ISTRA)=1.
+          FASCL(:,ISTRA)=1.
+          FMSCL(:,ISTRA)=1.
+          FISCL(:,ISTRA)=1.
+          FPHSCL(:,ISTRA)=1.
 
           LOGATM(:,ISTRA)=.FALSE.
           LOGION(:,ISTRA)=.FALSE.

@@ -261,6 +261,15 @@ cdr  for reading asymptotics parameters from data files
         REAL(DP), INTENT(IN), OPTIONAL :: POP_ESC
         CHARACTER(LEN=*), INTENT(IN) :: REAC
         END SUBROUTINE EIRENE_READ_COLRAD
+
+        subroutine eirene_lookup_adasdir_usr(DSN, FOUND, 
+     .                                       REAC_IN, ELNAME, BUNDLING)
+        character(*),intent(inout) :: DSN
+        character(LEN=*), intent(in) :: REAC_IN
+        logical, intent(inout) :: found
+        character(LEN=*), intent(in), optional :: ELNAME, BUNDLING
+        end subroutine eirene_lookup_adasdir_usr
+        
       END INTERFACE
 C
       IF(TRCAMD) WRITE(IUNOUT,'(A,1X,I3,1X,A8,1X,A4,1X,A,1X,A2)')

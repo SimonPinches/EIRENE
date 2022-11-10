@@ -186,6 +186,8 @@
       call json%add(me,'NLOCTREE',nloctree)
       call json%add(me,'NLWRMSH',nlwrmsh)
       call json%add(me,'NEXVS',nexvs)
+      call json%add(me,'NLTRIMESH',nltrimesh)
+      call json%add(me,'NLSPCSCL',nlspcscl)
 
       call json%create_array(cfile,'CFILE') !an array
       do ifile=1, ndbnames

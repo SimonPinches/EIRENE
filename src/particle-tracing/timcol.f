@@ -64,7 +64,7 @@ C
 
       REAL(DP), INTENT(IN) :: PR
       INTEGER, INTENT(OUT) :: IRET
-      INTEGER  :: IND, IPRNLI_OLD
+      INTEGER  :: IND, IOLD, IPRNLI_OLD
       REAL(DP) :: DIST, WGHTSG
 C
       IRET = 0
@@ -162,10 +162,24 @@ C
 cdr  to replace cdr out ini -- cdr out end code below with call to update_surface.
 cdr  Still to be tested first...
 cdr     ITYP_OLD=ITYP
+cxpb    select case (ITYP_OLD)
+cxpb    case (0)
+cxpb      IOLD = IPHOT
+cxpb    case (1)
+cxpb      IOLD = IATM
+cxpb    case (2)
+cxpb      IOLD = IMOL
+cxpb    case (3)
+cxpb      IOLD = IION
+cxpb    case (4)
+cxpb      IOLD = IPLS
+cxpb    case default
+cxpb      IOLD = 0
+cxpb    end select
         MSURFG=0
         WGHTSG=WEIGHT
         IND=1
-cdr     CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,WGHTSG,IND)
+cdr     CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,IOLD,WGHTSG,IND)
 cdr out ini
         IF (ITYP.EQ.0) THEN
           IF (LEOTPHT) THEN

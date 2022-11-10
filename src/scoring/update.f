@@ -104,7 +104,7 @@ C
       INTEGER :: IRD,  I, IRDO,
      .           IPL, IAT, IA,
      .           IM,  IIO, IP, IML, II, KK, NPBGK,
-     .           IBGK, IPLV
+     .           IBGK, IPLV, IAD, EIRENE_INDIRECT_ADDRESS
 C SECONDARY SPECIES IDENTIFIERS
       INTEGER ::  IAT1,IAT2,IML1,IML2,IIO1,IIO2,IPL1,IPL2
 C EL PROCESSES
@@ -210,6 +210,12 @@ C
         IF (LPXX) THEN
 !$OMP ATOMIC
           PXX(IXSPZ,IRD)=PXX(IXSPZ,IRD)-WTRSIG
+          IF (LSCX) THEN
+            IAD = EIRENE_INDIRECT_ADDRESS(IXSPZ,IXSPZ,NDXX)
+!$OMP ATOMIC
+            PXX(IAD,IRD)=PXX(IAD,IRD)-WTRSIG
+          END IF
+
         ENDIF
 
         IF (LEXX) THEN
@@ -240,6 +246,11 @@ C
             IF (LPXX) THEN
 !$OMP ATOMIC
               PXX(IXSPZ,IRD)=PXX(IXSPZ,IRD)+WTRSIG
+              IF (LSCX) THEN
+                IAD = EIRENE_INDIRECT_ADDRESS(IXSPZ,IXSPZ,NDXX)
+!$OMP ATOMIC
+                PXX(IAD,IRD)=PXX(IAD,IRD)+WTRSIG
+              END IF
             ENDIF
           ELSE
 C
@@ -248,6 +259,11 @@ C
             IF (LPXPL) THEN
 !$OMP ATOMIC
               PXPL(IPLS,IRD)=PXPL(IPLS,IRD)-WTRSIG
+              IF (LSCX) THEN
+                IAD = EIRENE_INDIRECT_ADDRESS(IPLS,IXSPZ,NPLS)
+!$OMP ATOMIC
+                PXPL(IAD,IRD)=PXPL(IAD,IRD)-WTRSIG
+              END IF
               LMETSP(NSPAMI+IPLS)=.TRUE.
             END IF
 C
@@ -259,6 +275,11 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
               IF (LPXAT) THEN
 !$OMP ATOMIC
                 PXAT(IAT1,IRD)= PXAT(IAT1,IRD)+WTRSIG
+                IF (LSCX) THEN
+                  IAD = EIRENE_INDIRECT_ADDRESS(IAT1,IXSPZ,NATM)
+!$OMP ATOMIC
+                  PXAT(IAD,IRD)=PXAT(IAD,IRD)+WTRSIG
+                END IF
                 LMETSP(NSPH+IAT1)=.TRUE.
               END IF
             ELSEIF (N1STX(IRCX,1).EQ.2) THEN
@@ -267,6 +288,11 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
               IF (LPXML) THEN
 !$OMP ATOMIC
                 PXML(IML1,IRD)= PXML(IML1,IRD)+WTRSIG
+                IF (LSCX) THEN
+                  IAD = EIRENE_INDIRECT_ADDRESS(IML1,IXSPZ,NMOL)
+!$OMP ATOMIC
+                  PXML(IAD,IRD)=PXML(IAD,IRD)+WTRSIG
+                END IF
                 LMETSP(NSPA+IML1)=.TRUE.
               END IF
             ELSEIF (N1STX(IRCX,1).EQ.3) THEN
@@ -275,6 +301,11 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
               IF (LPXIO) THEN
 !$OMP ATOMIC
                 PXIO(IIO1,IRD)= PXIO(IIO1,IRD)+WTRSIG
+                IF (LSCX) THEN
+                  IAD = EIRENE_INDIRECT_ADDRESS(IIO1,IXSPZ,NION)
+!$OMP ATOMIC
+                  PXIO(IAD,IRD)=PXIO(IAD,IRD)+WTRSIG
+                END IF
                 LMETSP(NSPAM+IIO1)=.TRUE.
               END IF
             ELSEIF (N1STX(IRCX,1).EQ.4) THEN
@@ -283,6 +314,11 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
               IF (LPXPL) THEN
 !$OMP ATOMIC
                 PXPL(IPL1,IRD)= PXPL(IPL1,IRD)+WTRSIG
+                IF (LSCX) THEN
+                  IAD = EIRENE_INDIRECT_ADDRESS(IPL1,IXSPZ,NPLS)
+!$OMP ATOMIC
+                  PXPL(IAD,IRD)=PXPL(IAD,IRD)+WTRSIG
+                END IF
                 LMETSP(NSPAMI+IPL1)=.TRUE.
               END IF
             ENDIF
@@ -293,6 +329,11 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
               IF (LPXAT) THEN
 !$OMP ATOMIC
                 PXAT(IAT2,IRD)= PXAT(IAT2,IRD)+WTRSIG
+                IF (LSCX) THEN
+                  IAD = EIRENE_INDIRECT_ADDRESS(IAT2,IXSPZ,NATM)
+!$OMP ATOMIC
+                  PXAT(IAD,IRD)=PXAT(IAD,IRD)+WTRSIG
+                END IF
                 LMETSP(NSPH+IAT2)=.TRUE.
               END IF
             ELSEIF (N2NDX(IRCX,1).EQ.2) THEN
@@ -301,6 +342,11 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
               IF (LPXML) THEN
 !$OMP ATOMIC
                 PXML(IML2,IRD)= PXML(IML2,IRD)+WTRSIG
+                IF (LSCX) THEN
+                  IAD = EIRENE_INDIRECT_ADDRESS(IML2,IXSPZ,NMOL)
+!$OMP ATOMIC
+                  PXML(IAD,IRD)=PXML(IAD,IRD)+WTRSIG
+                END IF
                 LMETSP(NSPA+IML2)=.TRUE.
               END IF
             ELSEIF (N2NDX(IRCX,1).EQ.3) THEN
@@ -309,6 +355,11 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
               IF (LPXIO) THEN
 !$OMP ATOMIC
                 PXIO(IIO2,IRD)= PXIO(IIO2,IRD)+WTRSIG
+                IF (LSCX) THEN
+                  IAD = EIRENE_INDIRECT_ADDRESS(IIO2,IXSPZ,NION)
+!$OMP ATOMIC
+                  PXIO(IAD,IRD)=PXIO(IAD,IRD)+WTRSIG
+                END IF
                 LMETSP(NSPAM+IIO2)=.TRUE.
               END IF
             ELSEIF (N2NDX(IRCX,1).EQ.4) THEN
@@ -317,6 +368,11 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
               IF (LPXPL) THEN
 !$OMP ATOMIC
                 PXPL(IPL2,IRD)= PXPL(IPL2,IRD)+WTRSIG
+                IF (LSCX) THEN
+                  IAD = EIRENE_INDIRECT_ADDRESS(IPL2,IXSPZ,NPLS)
+!$OMP ATOMIC
+                  PXPL(IAD,IRD)=PXPL(IAD,IRD)+WTRSIG
+                END IF
                 LMETSP(NSPAMI+IPL2)=.TRUE.
               END IF
             ENDIF
@@ -438,17 +494,32 @@ C
             IF (LPXX) THEN
 !$OMP ATOMIC
               PXX(IXSPZ,IRD)=PXX(IXSPZ,IRD)+WTRSIG
+              IF (LSCX) THEN
+                IAD = EIRENE_INDIRECT_ADDRESS(IXSPZ,IXSPZ,NDXX)
+!$OMP ATOMIC
+                PXX(IAD,IRD)=PXX(IAD,IRD)+WTRSIG
+              END IF
             ENDIF
           ELSE
 C  UPDATE TRACKLENGTH ESTIMATOR
 C           IF (LPXPL) THEN
 C             PXPL(IPLS,IRD)=PXPL(IPLS,IRD)-WTRSIG
 C             PXPL(IPLS,IRD)=PXPL(IPLS,IRD)+WTRSIG
+C             IF (LSCX) THEN
+C               IAD = EIRENE_INDIRECT_ADDRESS(IPLS,IXSPZ,NPLS)
+C               PXPL(IAD,IRD)=PXPL(IAD,IRD)-WTRSIG
+C               PXPL(IAD,IRD)=PXPL(IAD,IRD)+WTRSIG
+C             END IF
 C             LMETSP(NSPAMI+IPLS)=.TRUE.
 C           END IF
             IF (LPXX) THEN
 !$OMP ATOMIC
               PXX(IXSPZ,IRD)=PXX(IXSPZ,IRD)+WTRSIG
+              IF (LSCX) THEN
+                IAD = EIRENE_INDIRECT_ADDRESS(IXSPZ,IXSPZ,NDXX)
+!$OMP ATOMIC
+                PXX(IAD,IRD)=PXX(IAD,IRD)+WTRSIG
+              END IF
               LMETSP(NMETOFF+IXSPZ)=.TRUE.
             END IF
           ENDIF
@@ -519,7 +590,14 @@ C
             IF (LPXX) THEN
 !$OMP ATOMIC
               PXX(IXSPZ,IRD)=PXX(IXSPZ,IRD)+WTRSIG
+              IF (LSCX) THEN
+                IAD = EIRENE_INDIRECT_ADDRESS(IXSPZ,IXSPZ,NDXX)
+!$OMP ATOMIC
+                PXX(IAD,IRD)=PXX(IAD,IRD)+WTRSIG
+              END IF
             ENDIF
+cdr  Now: pxx, pxat,pxml,pxio and pxpl to be done in subr. COLLIDE
+
           ELSE
 C
 C  TRACKLENGTH ESTIMATOR FOR PARTICLE BALANCE
@@ -538,6 +616,11 @@ C  POST-COLLISION CONTRIBUTIONS
               IF (LPXAT) THEN
 !$OMP ATOMIC
                 PXAT(IAT,IRD)=PXAT(IAT,IRD)+PATEI(IREI,IAT)*WTRSIG
+                IF (LSCX) THEN
+                  IAD = EIRENE_INDIRECT_ADDRESS(IAT,IXSPZ,NATM)
+!$OMP ATOMIC
+                  PXAT(IAD,IRD)=PXAT(IAD,IRD)+PATEI(IREI,IAT)*WTRSIG
+                END IF
                 LMETSP(NSPH+IAT)=.TRUE.
               END IF
             END DO
@@ -548,6 +631,11 @@ C  POST-COLLISION CONTRIBUTIONS
               IF (LPXML) THEN
 !$OMP ATOMIC
                 PXML(IML,IRD)=PXML(IML,IRD)+PMLEI(IREI,IML)*WTRSIG
+                IF (LSCX) THEN
+                  IAD = EIRENE_INDIRECT_ADDRESS(IML,IXSPZ,NMOL)
+!$OMP ATOMIC
+                  PXML(IAD,IRD)=PXML(IAD,IRD)+PMLEI(IREI,IML)*WTRSIG
+                END IF
                 LMETSP(NSPA+IML)=.TRUE.
               END IF
             END DO
@@ -558,6 +646,11 @@ C  POST-COLLISION CONTRIBUTIONS
               IF (LPXIO) THEN
 !$OMP ATOMIC
                 PXIO(IIO,IRD)=PXIO(IIO,IRD)+PIOEI(IREI,IIO)*WTRSIG
+                IF (LSCX) THEN
+                  IAD = EIRENE_INDIRECT_ADDRESS(IIO,IXSPZ,NMOL)
+!$OMP ATOMIC
+                  PXIO(IAD,IRD)=PXIO(IAD,IRD)+PIOEI(IREI,IIO)*WTRSIG
+                END IF
                 LMETSP(NSPAM+IIO)=.TRUE.
               END IF
             END DO
@@ -568,6 +661,11 @@ C  POST-COLLISION CONTRIBUTIONS
               IF (LPXPL) THEN
 !$OMP ATOMIC
                 PXPL(IPL,IRD)=PXPL(IPL,IRD)+PPLEI(IREI,IPL)*WTRSIG
+                IF (LSCX) THEN
+                  IAD = EIRENE_INDIRECT_ADDRESS(IPL,IXSPZ,NPLS)
+!$OMP ATOMIC
+                  PXPL(IAD,IRD)=PXPL(IAD,IRD)+PPLEI(IREI,IPL)*WTRSIG
+                END IF
                 LMETSP(NSPAMI+IPL)=.TRUE.
               END IF
             END DO
@@ -682,6 +780,11 @@ C
             IF (LPXX) THEN
 !$OMP ATOMIC
               PXX(IXSPZ,IRD)=PXX(IXSPZ,IRD)+WTRSIG
+              IF (LSCX) THEN
+                IAD = EIRENE_INDIRECT_ADDRESS(IXSPZ,IXSPZ,NDXX)
+!$OMP ATOMIC
+                PXX(IAD,IRD)=PXX(IAD,IRD)+WTRSIG
+              ENDIF
             ENDIF
           ELSE
 C
@@ -693,6 +796,11 @@ C
             IF (LPXPL) THEN
 !$OMP ATOMIC
               PXPL(IPLS,IRD)=PXPL(IPLS,IRD)-WTRSIG
+              IF (LSCX) THEN
+                IAD = EIRENE_INDIRECT_ADDRESS(IPLS,IXSPZ,NPLS)
+!$OMP ATOMIC
+                PXPL(IAD,IRD)=PXPL(IAD,IRD)-WTRSIG
+              ENDIF
               LMETSP(NSPAMI+IPLS)=.TRUE.
             END IF
 C
@@ -709,6 +817,11 @@ C
               IF (LPXAT) THEN
 !$OMP ATOMIC
                 PXAT(IAT,IRD)= PXAT(IAT,IRD)+WTRSIG*PATPI(IRPI,IAT)
+                IF (LSCX) THEN
+                  IAD = EIRENE_INDIRECT_ADDRESS(IAT,IXSPZ,NATM)
+!$OMP ATOMIC
+                  PXAT(IAD,IRD)=PXAT(IAD,IRD)+WTRSIG*PATPI(IRPI,IAT)
+                ENDIF
                 LMETSP(NSPH+IAT)=.TRUE.
               END IF
             ENDDO
@@ -719,6 +832,11 @@ C
               IF (LPXML) THEN
 !$OMP ATOMIC
                 PXML(IML,IRD)= PXML(IML,IRD)+WTRSIG*PMLPI(IRPI,IML)
+                IF (LSCX) THEN
+                  IAD = EIRENE_INDIRECT_ADDRESS(IML,IXSPZ,NMOL)
+!$OMP ATOMIC
+                  PXML(IAD,IRD)=PXML(IAD,IRD)+WTRSIG*PMLPI(IRPI,IML)
+                ENDIF
                 LMETSP(NSPA+IML)=.TRUE.
               END IF
             ENDDO
@@ -729,6 +847,11 @@ C
               IF (LPXIO) THEN
 !$OMP ATOMIC
                 PXIO(IIO,IRD)= PXIO(IIO,IRD)+WTRSIG*PIOPI(IRPI,IIO)
+                IF (LSCX) THEN
+                  IAD = EIRENE_INDIRECT_ADDRESS(IIO,IXSPZ,NION)
+!$OMP ATOMIC
+                  PXIO(IAD,IRD)=PXIO(IAD,IRD)+WTRSIG*PIOPI(IRPI,IIO)
+                ENDIF
                 LMETSP(NSPAM+IIO)=.TRUE.
               END IF
             ENDDO
@@ -739,6 +862,11 @@ C
               IF (LPXPL) THEN
 !$OMP ATOMIC
                 PXPL(IPL,IRD)= PXPL(IPL,IRD)+WTRSIG*PPLPI(IRPI,IPL)
+                IF (LSCX) THEN
+                  IAD = EIRENE_INDIRECT_ADDRESS(IPL,IXSPZ,NPLS)
+!$OMP ATOMIC
+                  PXPL(IAD,IRD)=PXPL(IAD,IRD)+WTRSIG*PPLPI(IRPI,IPL)
+                ENDIF
                 LMETSP(NSPAMI+IPL)=.TRUE.
               END IF
             ENDDO

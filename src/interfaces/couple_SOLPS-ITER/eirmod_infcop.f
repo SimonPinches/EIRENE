@@ -352,6 +352,10 @@ C
    60 CONTINUE
       NMODEI=NMODE
       NFILNN=NFILEN
+
+C  TRANSFER FLAG LSPRCL WHICH IS KNOWN ONLY IN THIS INTERFACE TO
+C  GLOBALLY KNOWN VARIABLE NLSPCSCL
+      NLSPCSCL = NLSPCSCL .OR. LSPRCL
 C
 C  DEFINE ADDITIONAL TALLIES FOR COUPLING (UPDATED IN SUBR. UPTCOP
 C                                              AND IN SUBR. COLLIDE)
@@ -1380,12 +1384,15 @@ C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
        CALL EIRENE_LEER(1)
        CALL EIRENE_ALLOC_CCOUPL(1)
        READ (IUNIN,'(A72)') ZEILE
-       call fix_logical_input(zeile,5)
-       READ (ZEILE,'(5L1)') LSYMET,LBALAN,LCOARSE,LDUMMY,LOLD31
+       call fix_logical_input(zeile,6)
+       READ (ZEILE,'(2(5L1,1X))') LSYMET,LBALAN,LCOARSE,LDUMMY,LSPRCL,
+     .                            LOLD31
        IF (.NOT.NLTRIMESH) NLTRIMESH=LDUMMY
        IF (TRCINT)
-     .  WRITE (iunout,*) ' LSYMET,LBALAN,LCOARSE,NLTRIMESH,LOLD31 = ',
-     .                     LSYMET,LBALAN,LCOARSE,NLTRIMESH,LOLD31
+     .  WRITE (iunout,*) ' LSYMET,LBALAN,LCOARSE,NLTRIMESH,LSPRCL = ',
+     .                     LSYMET,LBALAN,LCOARSE,NLTRIMESH,LSPRCL
+        WRITE (iunout,*) ' LOLD31 = ',
+     .                     LOLD31
 
        READ (IUNIN,'(9I6)') NFLA,NCUTB,NCUTL,IMF,
      .                      ntrfrm, nfull,ibrad,ibpol,ibtor
@@ -1617,6 +1624,7 @@ C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
        call json%get(me,'LCOARSE',lcoarse,found)
        call json%get(me,'NLTRIMESH',ldummy,found)
        IF (FOUND.AND..NOT.NLTRIMESH) NLTRIMESH=LDUMMY
+       call json%get(me,'LSPRCL',lsprcl,found)
        call json%get(me,'LOLD31',lold31,found)
        IF (TRCINT)
      .  WRITE (iunout,*) ' LSYMET,LBALAN,LCOARSE,NLTRIMESH,LOLD31 = ',
@@ -3659,7 +3667,7 @@ C
       logical :: lhit(nrad)
       INTEGER :: I, IAT, JATM, JMOL, JION, JPLS, IPLSV, IPLSTI, ISTRAI,
      .           IN, IT, IX, IY, IFL, INC, IIRC, IRRC, IST_RATE, IER,
-     .           ISTAT_COP, ICPV
+     .           ISTAT_COP, ICPV, IAD, EIRENE_INDIRECT_ADDRESS
       INTEGER, SAVE :: IFIRST
       REAL(DP) :: DUMMY(0:NDXP,0:NDYP)
 
@@ -3977,6 +3985,12 @@ C  PARTICLE SOURCE: SPLIT FOR MULTIPLE IPLS SPECIES
             IPLS=CPMUL%IART
             IN=CPMUL%ICM
             PAPL(IPLS,IN)=CPMUL%VALUEM
+            IF (NLSPCSCL_ATM) THEN
+              DO IATM=1,NATMI
+                IAD=EIRENE_INDIRECT_ADDRESS(IPLS,IATM,NPLS)
+                PAPL(IAD,IN)=CPMUL%VALUAM(IATM)
+              END DO
+            END IF
             CPMUL => CPMUL%NXTMUL
           ENDDO
         END IF
@@ -4014,7 +4028,15 @@ cdr for particle source, from atoms
           DO JPLS=1,NPLSI
             CHP=CPMUL%VALUEM*
      .          (SPLNWA(IN,IATM,JPLS)-RTIS%SPLODA(IN,IATM,JPLS))*ELCHA
-            IF (LPAPL) PAPL(JPLS,IN)=PAPL(JPLS,IN)+CHP
+            IF (LPAPL) THEN
+              PAPL(JPLS,IN)=PAPL(JPLS,IN)+CHP
+              IF (NLSPCSCL_ATM) THEN
+                DO JATM=1,NATMI
+                  IAD = EIRENE_INDIRECT_ADDRESS(JPLS,JATM,NPLS)
+                  PAPL(IAD,IN)=PAPL(IAD,IN)+CHP
+                END DO
+              END IF
+            END IF
             CHPM(JPLS,IN)=CHPM(JPLS,IN)+CHP
           ENDDO
 cdr for electron energy source, from atoms
@@ -4056,6 +4078,12 @@ cdr for particle source, from test ions
             IPLS=CPMUL%IART
             IN=CPMUL%ICM
             PIPL(IPLS,IN)=CPMUL%VALUEM
+            IF (NLSPCSCL_ION) THEN
+              DO IION=1,NIONI
+                IAD = EIRENE_INDIRECT_ADDRESS(IPLS,IION,NPLS)
+                PIPL(IAD,IN)=CPMUL%VALUIM(IION)
+              END DO
+            END IF
             CPMUL => CPMUL%NXTMUL
           ENDDO
         END IF
@@ -4093,7 +4121,15 @@ cdr for particle source, from test ions
           DO JPLS=1,NPLSI
             CHP=CPMUL%VALUEM *
      .          (SPLNWI(IN,IION,JPLS)-RTIS%SPLODI(IN,IION,JPLS))*ELCHA
-            IF (LPIPL) PIPL(JPLS,IN)=PIPL(JPLS,IN)+CHP
+            IF (LPIPL) THEN
+              PIPL(JPLS,IN)=PIPL(JPLS,IN)+CHP
+              IF (NLSPCSCL_ION) THEN
+                DO JION=1,NIONI
+                  IAD = EIRENE_INDIRECT_ADDRESS(JPLS,JION,NPLS)
+                  PIPL(IAD,IN)=PIPL(IAD,IN)+CHP
+                END DO
+              END IF
+            END IF
             CHPM(JPLS,IN)=CHPM(JPLS,IN)+CHP
 cdr for ion energy source, from test ions
             CHI=CPMUL%VALUEM *
@@ -4126,6 +4162,12 @@ C
             IPLS=CPMUL%IART
             IN=CPMUL%ICM
             PMPL(IPLS,IN)=CPMUL%VALUEM
+            IF (NLSPCSCL_MOL) THEN
+              DO IMOL=1,NMOLI
+                IAD = EIRENE_INDIRECT_ADDRESS(IPLS,IMOL,NPLS)
+                PMPL(IAD,IN)=CPMUL%VALUMM(IMOL)
+              END DO
+            END IF
             CPMUL => CPMUL%NXTMUL
           ENDDO
         END IF
@@ -4161,7 +4203,13 @@ cdr for particle source, from molecules
           DO JPLS=1,NPLSI
             CHP=CPMUL%VALUEM*
      .          (SPLNWM(IN,IMOL,JPLS)-RTIS%SPLODM(IN,IMOL,JPLS))*ELCHA
-            IF (LPMPL) PMPL(JPLS,IN)=PMPL(JPLS,IN)+CHP
+            IF (LPMPL) THEN
+              PMPL(JPLS,IN)=PMPL(JPLS,IN)+CHP
+              DO JMOL=1,NMOLI
+                IAD = EIRENE_INDIRECT_ADDRESS(JPLS,JMOL,NPLS)
+                PMPL(IAD,IN)=PMPL(IAD,IN)+CHP
+              END DO
+            END IF
             CHPM(JPLS,IN)=CHPM(JPLS,IN)+CHP
           END DO
 cdr for ion energy source, from molecules
@@ -4297,7 +4345,11 @@ c.......
 csw 21feb2012, taken from SOLPS4.3
 C CORRECT PAAT FOR CALCULATING RADIATION  FOR ATOMS IN WNEUTRALS
                 IAT=NATPRC(IRRC)
-                IF(IAT.GT.0) PAAT(IAT,INC)=PAAT(IAT,INC)-RECADD
+                IF(IAT.GT.0) THEN
+                  PAAT(IAT,INC)=PAAT(IAT,INC)-RECADD
+                  IAD = EIRENE_INDIRECT_ADDRESS(IAT,IAT,NATM)
+                  PAAT(IAD,INC)=PAAT(IAD,INC)-RECADD
+                END IF
 csw
 cdr..........................
 

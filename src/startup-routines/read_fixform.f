@@ -304,11 +304,11 @@ C...........................................................................
 c   done with this optional "storage save mode card"
 C
 * For gfortran: it does not accept empty field for logicals
-      call fix_logical_input(zeile,16)
+      call fix_logical_input(zeile,17)
       READ (ZEILE,6665) NLSCL,NLTEST,NLANA,NLDRFT,NLCRR,
      .                  NLERG,NLIDENT,NLONE,NLMOVIE,NLDFST,
      .                  NLOLDRAN,NLCASCAD,NLOCTREE,NLWRMSH,NEXVS,
-     .                  NLTRIMESH
+     .                  NLTRIMESH,NLSPCSCL
 
 C  OPTIONAL INPUT CARDS, FOR PATHWAYS AND NAME DEFINITIONS
 C                        FOR EXTERNAL DATABASES: AMJUEL, HYDHEL,.....

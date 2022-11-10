@@ -13,7 +13,7 @@ cdr global control switches, all set in input.f
 
       PUBLIC :: EIRENE_ALLOC_CLOGAU, EIRENE_BROADCAST_CLOGAU
 
-      INTEGER, PUBLIC, PARAMETER :: NLOGAU=40
+      INTEGER, PUBLIC, PARAMETER :: NLOGAU=45
 
       LOGICAL, PUBLIC, TARGET, SAVE :: LLOGAU(NLOGAU)
 
@@ -26,7 +26,9 @@ cdr global control switches, all set in input.f
      L NLMLT,  NLADD,
      L NLTRIM, NLONE,  NLDFST, NLOLDRAN,
      L NLCASCAD, NLOCTREE, NLSHRT13, NLWRMSH,
-     L NEXVS,  NLEMIS, NLTRIMESH
+     L NEXVS,  NLEMIS, NLTRIMESH, 
+     L NLSPCSCL, NLSPCSCL_ATM, NLSPCSCL_MOL, NLSPCSCL_ION,
+     L NLSPCSCL_PHOT
 C    L NLFREE0, NLFREE1
 
       CONTAINS
@@ -63,11 +65,12 @@ C
       NLMLT   => LLOGAU(26)
       NLADD   => LLOGAU(27)
 C
-      NLTRIM  => LLOGAU(28)
-C     NLFREE1 => LLOGAU(29) ! NOT IN USE
-      NLONE   => LLOGAU(30)
-C     NLFREE0 => LLOGAU(31) ! NOT IN USE
-      NLDFST  => LLOGAU(32)
+      NLTRIM   => LLOGAU(28)
+C     NLFREE1  => LLOGAU(29) ! NOT IN USE
+      NLONE    => LLOGAU(30)
+C     NLFREE0  => LLOGAU(31) ! NOT IN USE
+      NLSPCSCL => LLOGAU(31)  
+      NLDFST   => LLOGAU(32)
       NLOLDRAN => LLOGAU(33)
       NLCASCAD => LLOGAU(34)
       NLOCTREE => LLOGAU(35)
@@ -76,6 +79,12 @@ C     NLFREE0 => LLOGAU(31) ! NOT IN USE
       NEXVS    => LLOGAU(38)  ! added April 2017. Not in use, but perhaps needed in photon module.
       NLEMIS   => LLOGAU(39)
       NLTRIMESH=> LLOGAU(40)
+
+      NLSPCSCL => LLOGAU(41)  
+      NLSPCSCL_ATM => LLOGAU(42)  
+      NLSPCSCL_MOL => LLOGAU(43) 
+      NLSPCSCL_ION => LLOGAU(44)  
+      NLSPCSCL_PHOT => LLOGAU(45)  
 
       LLOGAU = .FALSE.
 

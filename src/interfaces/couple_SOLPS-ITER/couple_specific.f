@@ -1274,12 +1274,14 @@ C
       USE EIRMOD_COMUSR
       USE EIRMOD_CGRID
       USE EIRMOD_CESTIM
+      USE EIRMOD_CLOGAU
 
       IMPLICIT NONE
 
       INTEGER, INTENT(IN) :: ISTRAI
       REAL(DP) :: FLXI
       INTEGER :: IN, IATM, IMOL, IPLS, IION, ICPV
+      INTEGER :: IAD, EIRENE_INDIRECT_ADDRESS
 
       TYPE(CELLSIM), POINTER :: CPSIM
       TYPE(CELLMUL), POINTER :: CPMUL
@@ -1305,6 +1307,12 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
               CPMUL%VALUEM = PAPL(IPLS,IN)*FLXI
+              IF (NLSPCSCL_ATM) THEN
+                DO IATM=1,NATMI
+                  IAD=EIRENE_INDIRECT_ADDRESS(IPLS,IATM,NPLS)
+                  CPMUL%VALUAM(IATM) = PAPL(IAD,IN)*FLXI
+                END DO
+              END IF
               CPMUL%NXTMUL => PAPLS(ISTRAI)%PMUL
               PAPLS(ISTRAI)%PMUL => CPMUL
             ENDIF
@@ -1316,6 +1324,12 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
               CPMUL%VALUEM = PMPL(IPLS,IN)*FLXI
+              IF (NLSPCSCL_MOL) THEN
+                DO IMOL=1,NMOLI
+                  IAD=EIRENE_INDIRECT_ADDRESS(IPLS,IMOL,NPLS)
+                  CPMUL%VALUMM(IMOL) = PMPL(IAD,IN)*FLXI
+                END DO
+              END IF
               CPMUL%NXTMUL => PMPLS(ISTRAI)%PMUL
               PMPLS(ISTRAI)%PMUL => CPMUL
             ENDIF
@@ -1327,6 +1341,12 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
               CPMUL%VALUEM = PIPL(IPLS,IN)*FLXI
+              IF (NLSPCSCL_ION) THEN
+                DO IION=1,NIONI
+                  IAD=EIRENE_INDIRECT_ADDRESS(IPLS,IION,NPLS)
+                  CPMUL%VALUIM(IMOL) = PIPL(IAD,IN)*FLXI
+                END DO
+              END IF
               CPMUL%NXTMUL => PIPLS(ISTRAI)%PMUL
               PIPLS(ISTRAI)%PMUL => CPMUL
             ENDIF

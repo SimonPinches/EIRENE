@@ -9,6 +9,7 @@
       USE EIRMOD_CSPEZ
       USE EIRMOD_CTRCEI
       USE EIRMOD_COMSOU
+      USE EIRMOD_CLOGAU
       USE EIRMOD_SECOND_OWN, ONLY: eirene_second_own
        
       IMPLICIT NONE
@@ -123,6 +124,8 @@ C  save stratum, old type, species
       NULLIFY (PXX)
       NULLIFY (EXX)
 
+      NDXX = 0
+
       select case(ityp)
 
       case(0)
@@ -147,14 +150,22 @@ C  save stratum, old type, species
        LRXEL   => LRPHEL
        LPXX    => LPPHPHT
        LEXX    => LEPHPHT
+       LSCX    => NLSPCSCL_PHOT
 
        IF (LPDENX)  PDENX  => PDENPH(IPHOT,:)
        IF (LEDENX)  EDENX  => EDENPH(IPHOT,:)
        IF (LPXEL)   PXEL   => PPHEL(:)
-       IF (LPXAT)   PXAT   => PPHAT(1:NATMI,:)
-       IF (LPXML)   PXML   => PPHML(1:NMOLI,:)
-       IF (LPXIO)   PXIO   => PPHIO(1:NIONI,:)
-       IF (LPXPL)   PXPL   => PPHPL(1:NPLSI,:)
+       IF (LSCX) THEN
+         IF (LPXAT) PXAT   => PPHAT(1:NATM*NATMP,:)
+         IF (LPXML) PXML   => PPHML(1:NMOL*NATMP,:)
+         IF (LPXIO) PXIO   => PPHIO(1:NION*NATMP,:)
+         IF (LPXPL) PXPL   => PPHPL(1:NPLS*NATMP,:)
+       ELSE
+         IF (LPXAT) PXAT   => PPHAT(1:NATMI,:)
+         IF (LPXML) PXML   => PPHML(1:NMOLI,:)
+         IF (LPXIO) PXIO   => PPHIO(1:NIONI,:)
+         IF (LPXPL) PXPL   => PPHPL(1:NPLSI,:)
+       END IF
        IF (LEXEL)   EXEL   => EPHEL(:)
        IF (LEXAT)   EXAT   => EPHAT(:)
        IF (LEXML)   EXML   => EPHML(:)
@@ -165,7 +176,12 @@ C  save stratum, old type, species
        IF (LVZDENX) VZDENX => VZDENPH(IPHOT,:)
        IF (LMXPL)   MXPL   => MPHPL(1:NPLSI,:)
        IF (LRXEL)   RXEL   => RPHEL(1:NPHOTI,:)
-       IF (LPXX)    PXX    => PPHPHT(1:NPHOTI,:)
+       IF (LSCX) THEN
+         NDXX = NPHOT
+         IF (LPXX)  PXX    => PPHPHT(1:NPHOT*NPHOT,:)
+       ELSE
+         IF (LPXX)  PXX    => PPHPHT(1:NPHOTI,:)
+       END IF
        IF (LEXX)    EXX    => EPHPHT(:)
 
        LEX     => LEPH
@@ -212,14 +228,22 @@ C  save stratum, old type, species
        LRXEL   => LRAEL
        LPXX    => LPAAT
        LEXX    => LEAAT
+       LSCX    => NLSPCSCL_ATM
 
        IF (LPDENX)  PDENX  => PDENA(IATM,:)
        IF (LEDENX)  EDENX  => EDENA(IATM,:)
        IF (LPXEL)   PXEL   => PAEL(:)
-       IF (LPXAT)   PXAT   => PAAT(1:NATMI,:)
-       IF (LPXML)   PXML   => PAML(1:NMOLI,:)
-       IF (LPXIO)   PXIO   => PAIO(1:NIONI,:)
-       IF (LPXPL)   PXPL   => PAPL(1:NPLSI,:)
+       IF (LSCX) THEN
+         IF (LPXAT) PXAT   => PAAT(1:NATM*NATMP,:)
+         IF (LPXML) PXML   => PAML(1:NMOL*NATMP,:)
+         IF (LPXIO) PXIO   => PAIO(1:NION*NATMP,:)
+         IF (LPXPL) PXPL   => PAPL(1:NPLS*NATMP,:)
+       ELSE
+         IF (LPXAT) PXAT   => PAAT(1:NATMI,:)
+         IF (LPXML) PXML   => PAML(1:NMOLI,:)
+         IF (LPXIO) PXIO   => PAIO(1:NIONI,:)
+         IF (LPXPL) PXPL   => PAPL(1:NPLSI,:)
+       END IF
        IF (LEXEL)   EXEL   => EAEL(:)
        IF (LEXAT)   EXAT   => EAAT(:)
        IF (LEXML)   EXML   => EAML(:)
@@ -230,7 +254,12 @@ C  save stratum, old type, species
        IF (LVZDENX) VZDENX => VZDENA(IATM,:)
        IF (LMXPL)   MXPL   => MAPL(1:NPLSI,:)
        IF (LRXEL)   RXEL   => RAEL(1:NATMI,:)
-       IF (LPXX)    PXX    => PAAT(1:NATMI,:)
+       IF (LSCX) THEN
+         NDXX = NATM
+         IF (LPXX)  PXX    => PAAT(1:NATM*NATMP,:)
+       ELSE
+         IF (LPXX)  PXX    => PAAT(1:NATMI,:)
+       END IF
        IF (LEXX)    EXX    => EAAT(:)
 
        LEX     => LEA
@@ -278,14 +307,22 @@ C  save stratum, old type, species
        LRXEL   => LRMEL
        LPXX    => LPMML
        LEXX    => LEMML
+       LSCX    => NLSPCSCL_MOL
 
        IF (LPDENX)  PDENX  => PDENM(IMOL,:)
        IF (LEDENX)  EDENX  => EDENM(IMOL,:)
        IF (LPXEL)   PXEL   => PMEL(:)
-       IF (LPXAT)   PXAT   => PMAT(1:NATMI,:)
-       IF (LPXML)   PXML   => PMML(1:NMOLI,:)
-       IF (LPXIO)   PXIO   => PMIO(1:NIONI,:)
-       IF (LPXPL)   PXPL   => PMPL(1:NPLSI,:)
+       IF (LSCX) THEN
+         IF (LPXAT) PXAT   => PMAT(1:NATM*NMOLP,:)
+         IF (LPXML) PXML   => PMML(1:NMOL*NMOLP,:)
+         IF (LPXIO) PXIO   => PMIO(1:NION*NMOLP,:)
+         IF (LPXPL) PXPL   => PMPL(1:NPLS*NMOLP,:)
+       ELSE
+         IF (LPXAT) PXAT   => PMAT(1:NATMI,:)
+         IF (LPXML) PXML   => PMML(1:NMOLI,:)
+         IF (LPXIO) PXIO   => PMIO(1:NIONI,:)
+         IF (LPXPL) PXPL   => PMPL(1:NPLSI,:)
+       END IF
        IF (LEXEL)   EXEL   => EMEL(:)
        IF (LEXAT)   EXAT   => EMAT(:)
        IF (LEXML)   EXML   => EMML(:)
@@ -296,7 +333,12 @@ C  save stratum, old type, species
        IF (LVZDENX) VZDENX => VZDENM(IMOL,:)
        IF (LMXPL)   MXPL   => MMPL(1:NPLSI,:)
        IF (LRXEL)   RXEL   => RMEL(1:NMOLI,:)
-       IF (LPXX)    PXX    => PMML(1:NMOLI,:)
+       IF (LSCX) THEN
+         NDXX = NMOL
+         IF (LPXX)  PXX    => PMML(1:NMOL*NMOLP,:)
+       ELSE
+         IF (LPXX)  PXX    => PMML(1:NMOLI,:)
+       END IF
        IF (LEXX)    EXX    => EMML(:)
 
        LEX     => LEM
@@ -344,14 +386,22 @@ C  save stratum, old type, species
        LRXEL   => LRIEL
        LPXX    => LPIIO
        LEXX    => LEIIO
+       LSCX    => NLSPCSCL_ION
 
        IF (LPDENX)  PDENX  => PDENI(IION,:)
        IF (LEDENX)  EDENX  => EDENI(IION,:)
        IF (LPXEL)   PXEL   => PIEL(:)
-       IF (LPXAT)   PXAT   => PIAT(1:NATMI,:)
-       IF (LPXML)   PXML   => PIML(1:NMOLI,:)
-       IF (LPXIO)   PXIO   => PIIO(1:NIONI,:)
-       IF (LPXPL)   PXPL   => PIPL(1:NPLSI,:)
+       IF (LSCX) THEN
+         IF (LPXAT) PXAT   => PIAT(1:NATM*NIONP,:)
+         IF (LPXML) PXML   => PIML(1:NMOL*NIONP,:)
+         IF (LPXIO) PXIO   => PIIO(1:NION*NIONP,:)
+         IF (LPXPL) PXPL   => PIPL(1:NPLS*NIONP,:)
+       ELSE
+         IF (LPXAT) PXAT   => PIAT(1:NATMI,:)
+         IF (LPXML) PXML   => PIML(1:NMOLI,:)
+         IF (LPXIO) PXIO   => PIIO(1:NIONI,:)
+         IF (LPXPL) PXPL   => PIPL(1:NPLSI,:)
+       END IF
        IF (LEXEL)   EXEL   => EIEL(:)
        IF (LEXAT)   EXAT   => EIAT(:)
        IF (LEXML)   EXML   => EIML(:)
@@ -362,7 +412,12 @@ C  save stratum, old type, species
        IF (LVZDENX) VZDENX => VZDENI(IION,:)
        IF (LMXPL)   MXPL   => MIPL(1:NPLSI,:)
        IF (LRXEL)   RXEL   => RIEL(1:NIONI,:)
-       IF (LPXX)    PXX    => PIIO(1:NIONI,:)
+       IF (LSCX) THEN
+         NDXX = NION
+         IF (LPXX)  PXX    => PIIO(1:NION*NIONP,:)
+       ELSE
+         IF (LPXX)  PXX    => PIIO(1:NIONI,:)
+       END IF
        IF (LEXX)    EXX    => EIIO(:)
 
        LEX     => LEIO

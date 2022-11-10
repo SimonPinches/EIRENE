@@ -20,6 +20,7 @@
       call json%add(this,'LBALAN',lbalan)
       call json%add(this,'LCOARSE',lcoarse)
       call json%add(this,'NLTRIMESH',nltrimesh)
+      call json%add(this,'LSPRCL',lsprcl)
       call json%add(this,'LOLD31',lold31)
 
       call json%add(this,'NFLA',nfla)

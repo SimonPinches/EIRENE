@@ -76,7 +76,7 @@ C
      .                         NCHRGI, LKINDI, COMUSR_FIRST_PASS
       USE EIRMOD_COMSOU, ONLY: NSTRAI
       USE EIRMOD_COMPRT, ONLY: IUNOUT
-      USE EIRMOD_CLOGAU, ONLY: NLWRMSH, EIRENE_ALLOC_CLOGAU
+      USE EIRMOD_CLOGAU, ONLY: NLWRMSH, NLSPCSCL, EIRENE_ALLOC_CLOGAU
       USE EIRMOD_JSON, ONLY: jtrees, blks, itree_num,
      .                       ldef_time_horizon,nlfem_in, nlplg_in,
      .                       nlpol_in, np2nd_in, nr1st_in, nt3rd_in,
@@ -102,7 +102,7 @@ c
       INTEGER :: IDUMMY(2)
       LOGICAL :: NLSCL, NLTEST, NLANA, NLDRFT, NLCRR, NLERG, NLIDENT,
      .           NLONE, NLMOVIE, LINCL45, NLCASCAD, NLDFST,
-     .           NLOLDRAN, NLOCTREE, NEXVS
+     .           NLOLDRAN, NLOCTREE, NEXVS, NLTRIMESH
       logical :: found0, ldefstor
 !      logical :: found0, ldefstor, lext, nlerg, lhyddef, ladapt
       logical :: lmulpl ! multiple Ti and V..IN (per species) multiple ion velocities (per species)
@@ -382,6 +382,9 @@ C
       call json%get(p,'NLOCTREE',nloctree,found)
       call json%get(p,'NLWRMSH',nlwrmsh,found)
       call json%get(p,'NEXVS',nexvs,found)
+
+      call json%get(p,'NLTRIMESH',nltrimesh,found)
+      call json%get(p,'NLSPCSCL',nlspcscl,found)
 
       CALL EIRENE_INIT_CINIT
 

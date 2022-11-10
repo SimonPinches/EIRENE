@@ -106,7 +106,7 @@ c    .
      .           IOLD, NOLD,
      .           IRCX, IREI, IRPI, IREL, !IRPH,
      .           IBGK, IP, NFLAG,
-     .           IATMN, IPLSN, NCLLO, IPLSV, IPL
+     .           IATMN, IPLSN, NCLLO, IPLSV, IPL, IAD
 cpg     .           IATMN, IPLSN, NCLLO, IPLSV,  I, J, IPL
  
 
@@ -131,7 +131,7 @@ cym IAPH, RMMIO, RMIIO and IRPH removed during merge
 !$OMP& SIG_ELIM, SIG_TOT_N, SIG_TOT_O, SIG_TEST,
 !$OMP& IACX,IAEI,IAPI,IAEL,IOLD,NOLD,IRCX,IREI,IRPI,IREL,
 !$OMP& IBGK, IP, NFLAG, IATMN, IPLSN, NCLLO, IPLSV, IPL,
-!$OMP& NAMIEI,NAMIPI)
+!$OMP& NAMIEI,NAMIPI,IAD)
 
       contains
 
@@ -158,7 +158,7 @@ C
        INTEGER, INTENT(OUT) :: COLTYP
        INTEGER :: NEII_RED,LGEI_RED(0:NREI)   
        REAL(DP) :: ZEP1
-       INTEGER :: I,J
+       INTEGER :: I,J,EIRENE_INDIRECT_ADDRESS
 
 
 C  INCIDENT SPECIES: IOLD
@@ -672,16 +672,31 @@ C  IATMN: ATOM SPECIES AFTER CX
               IF (LPAAT) THEN
 !$OMP ATOMIC
                 PAAT(IOLD,NCELL) =PAAT(IOLD,NCELL)-WGHTO
+                IF (NLSPCSCL_ATM) THEN
+                  IAD = EIRENE_INDIRECT_ADDRESS(IOLD,IOLD,NATM)
+!$OMP ATOMIC
+                  PAAT(IAD,NCELL)=PAAT(IAD,NCELL)-WGHTO
+                END IF
                 LMETSP(NSPH+IOLD)=.TRUE.
               END IF
               IF (LPAAT) THEN
 !$OMP ATOMIC
                 PAAT(IATMN,NCELL)=PAAT(IATMN,NCELL)+WEIGHT
+                IF (NLSPCSCL_ATM) THEN
+                  IAD = EIRENE_INDIRECT_ADDRESS(IATMN,IOLD,NATM)
+!$OMP ATOMIC
+                  PAAT(IAD,NCELL)=PAAT(IAD,NCELL)+WEIGHT
+                END IF
                 LMETSP(NSPH+IATMN)=.TRUE.
               END IF
               IF (LPAPL) THEN
 !$OMP ATOMIC
                 PAPL(IPLS,NCELL) =PAPL(IPLS,NCELL)-WEIGHT
+                IF (NLSPCSCL_ATM) THEN
+                  IAD = EIRENE_INDIRECT_ADDRESS(IPLS,IOLD,NPLS)
+!$OMP ATOMIC
+                  PAPL(IAD,NCELL)=PAPL(IAD,NCELL)-WEIGHT
+                END IF
                 LMETSP(NSPAMI+IPLS)=.TRUE.
               END IF
               IF (LPAEL) THEN
@@ -694,6 +709,11 @@ C  IPLSN: ION SPECIES AFTER CX
                 IF (LPAPL) THEN
 !$OMP ATOMIC
                   PAPL(IPLSN,NCELL)=PAPL(IPLSN,NCELL)+WGHTO
+                  IF (NLSPCSCL_ATM) THEN
+                    IAD = EIRENE_INDIRECT_ADDRESS(IPLSN,IOLD,NPLS)
+!$OMP ATOMIC
+                    PAPL(IAD,NCELL)=PAPL(IAD,NCELL)+WGHTO
+                  END IF
                   LMETSP(NSPAMI+IPLSN)=.TRUE.
                 END IF
                 IF (LPAEL) THEN
@@ -900,6 +920,14 @@ C  ASSUME, AS BEFORE, NO CHANGE IN SPECIES/TYPE
             PAAT(IOLD,NCELL) =PAAT(IOLD,NCELL)-WGHTO
 !$OMP ATOMIC
             PAAT(IATM,NCELL) =PAAT(IATM,NCELL)+WEIGHT
+            IF (NLSPCSCL_ATM) THEN
+              IAD = EIRENE_INDIRECT_ADDRESS(IOLD,IOLD,NATM)
+!$OMP ATOMIC
+              PAAT(IAD,NCELL)=PAAT(IAD,NCELL)-WGHTO
+              IAD = EIRENE_INDIRECT_ADDRESS(IATM,IOLD,NATM)
+!$OMP ATOMIC
+              PAAT(IAD,NCELL)=PAAT(IAD,NCELL)+WEIGHT
+            END IF
             LMETSP(NSPH+IOLD)=.TRUE.
             LMETSP(NSPH+IATM)=.TRUE.
           END IF

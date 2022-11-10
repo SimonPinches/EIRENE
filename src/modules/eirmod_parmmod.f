@@ -31,6 +31,8 @@ c    collect_parm
 c    distrib_parm
 
       USE EIRMOD_PRECISION
+      USE EIRMOD_CLOGAU, ONLY: NLSPCSCL, NLSPCSCL_ATM, NLSPCSCL_MOL,
+     .                         NLSPCSCL_ION, NLSPCSCL_PHOT
 
       IMPLICIT NONE
 
@@ -178,6 +180,7 @@ C  ical=2:  called from inside "setamd.f",  prepare allocatable storage for comx
 C  ical=3:  called from inside "input.f", prepare allocatable storage for cgeom, comusr
 
       INTEGER, INTENT(IN) :: ICAL
+      INTEGER :: NMAX
 
 
       IF (ICAL == 1) THEN
@@ -298,6 +301,10 @@ c  additional surface-averaged output tallies
 
 C  MAX SPECIES INDEX IN SURFACE-AVERAGED OUTPUT TALLIES
         N2MX=MAX(NPHOT,NATM,NMOL,NION,NPLS,NADS,NALS)
+        IF (NLSPCSCL) THEN
+          NMAX=MAX(NATM,NMOL,NION,NPHOT)
+          N2MX=MAX(N2MX,NMAX*(NMAX+1))
+        END IF
 
         NSPZ=NPHOT+NATM+NMOL+NION+NPLS  ! TOTAL NUMBER OF MC SPECIES PLUS BULK
         NSPZP=NSPZ+1
@@ -308,6 +315,25 @@ C  TOTAL NUMBER OF SURFACE-AVERAGED TALLIES
 C  SET IN SETPRM ACCORDING TO THE LIVING TALLIES SPECIFIED IN LIVTALS
         NSFTLP=17*NATMP+17*NMOLP+17*NIONP+17*NPHOTP+7*NPLSP+6+
      P        1*NADSP+1*NALSP+1*NSPZP
+
+        IF (NLSPCSCL) THEN
+          IF (NLSPCSCL_ATM) THEN
+            NSFTLP=NSFTLP-NATMP-NMOLP-NIONP-NPHOTP
+            NSFTLP=NSFTLP+(NATMP+NMOLP+NIONP+NPHOTP)*NATMP
+          END IF
+          IF (NLSPCSCL_MOL) THEN
+            NSFTLP=NSFTLP-NATMP-NMOLP-NIONP-NPHOTP
+            NSFTLP=NSFTLP+(NATMP+NMOLP+NIONP+NPHOTP)*NMOLP
+          END IF
+          IF (NLSPCSCL_ION) THEN
+            NSFTLP=NSFTLP-NATMP-NMOLP-NIONP-NPHOTP
+            NSFTLP=NSFTLP+(NATMP+NMOLP+NIONP+NPHOTP)*NIONP
+          END IF
+          IF (NLSPCSCL_PHOT) THEN
+            NSFTLP=NSFTLP-NATMP-NMOLP-NIONP-NPHOTP
+            NSFTLP=NSFTLP+(NATMP+NMOLP+NIONP+NPHOTP)*NPHOTP
+          END IF
+        END IF
 
 C  SURFACE REFLECTION DATA
         NHD1=12
@@ -356,17 +382,31 @@ c  set some derived storage parameters
 
 C  N1MX: storage parameter for species text for output tallies, and scltal in mcarlo.f
 
-        N1MX=    NSPZ+NADV+NALV+NCLV+NCPV+NBGV+NSNV+NAIN
+!pb12Oct2022
+!pb     N1MX=    NSPZ+NADV+NALV+NCLV+NCPV+NBGV+NSNV+NAIN
 
-!pb     N1MX=MAX(NPHOT,NATM,NMOL,NION,NPLS,NADV,NALV,NCLV,NCPV,NBGV,
-!    .           NSNV,NAIN)
+!pb12Oct2022
+!pb  N1MX needs to cover the first dimensions of all tallies
+!pb  NSPZ added because of SPUMP(NSPZ)
+!pb  NSPZ could replace MAX(NPHOT,NATM,NMOL,NION,NPLS), left for clarity
+        N1MX=MAX(NPHOT,NATM,NMOL,NION,NPLS,NADV,NALV,NCLV,NCPV,NBGV,
+     .           NSNV,NAIN,NSPZ)
 cdr  same MEANING as n1mx?.  Check: why not n1mx=max(....)
+        
+        IF (NLSPCSCL) THEN
+          NMAX=MAX(NATM,NMOL,NION,NPHOT)
+          N1MX=MAX(N1MX,NMAX*(NMAX+1))
+        END IF
 
 C  NSPZTOT: storage parameter for LMETSP(NSPZTOT) array, for standard deviation estimators
         NSPZTOT = NSPZ+NADV+NALV+NCLV+NCPV+NBGV+NSNV
+        NSPZTOT = NSPZTOT + (NATM+NMOL+NION+NPHOT+NPLS)*
+     p                      (NATMP+NMOLP+NION+NPHOTP)
 
 C  NSPZTOTW: storage parameter for LMETSPW(NSPZTOTW) array, for standard deviation estimators
         NSPZTOTW= NSPZ+NADS+NALS
+        NSPZTOTW = NSPZTOTW + (NATM+NMOL+NION+NPHOT)*
+     p                        (NATMP+NMOLP+NION+NPHOTP)
 
 C  TOTAL NUMBER OF VOLUME-AVERAGED OUTPUT TALLIES
 C  SET IN SETPRM ACCORDING TO LIVING TALLIES SPECIFIED IN LIVTALV
@@ -378,6 +418,25 @@ C
      P         NATMP+NMOLP+NIONP+NPHOTP+NPLSP+5*NPLSP+
      P         3*(NATMP+NMOLP+NIONP+NPHOTP)+4*NPLSP+
      P         NATMP+NMOLP+NIONP
+
+        IF (NLSPCSCL) THEN
+          IF (NLSPCSCL_ATM) THEN
+            NSFTLP=NSFTLP-NATMP-NMOLP-NIONP-NPHOTP-NPLSP
+            NSFTLP=NSFTLP+(NATMP+NMOLP+NIONP+NPHOTP+NPLSP)*NATMP
+          END IF
+          IF (NLSPCSCL_MOL) THEN
+            NSFTLP=NSFTLP-NATMP-NMOLP-NIONP-NPHOTP-NPLSP
+            NSFTLP=NSFTLP+(NATMP+NMOLP+NIONP+NPHOTP+NPLSP)*NMOLP
+          END IF
+          IF (NLSPCSCL_ION) THEN
+            NSFTLP=NSFTLP-NATMP-NMOLP-NIONP-NPHOTP-NPLSP
+            NSFTLP=NSFTLP+(NATMP+NMOLP+NIONP+NPHOTP+NPLSP)*NIONP
+          END IF
+          IF (NLSPCSCL_PHOT) THEN
+            NSFTLP=NSFTLP-NATMP-NMOLP-NIONP-NPHOTP-NPLSP
+            NSFTLP=NSFTLP+(NATMP+NMOLP+NIONP+NPHOTP+NPLSP)*NPHOTP
+          END IF
+        END IF
 
 
       ELSE IF (ICAL == 3) THEN

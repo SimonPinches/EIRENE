@@ -431,6 +431,13 @@ C
       ICOL=0
       XLEFT = HUGE(1._DP)
       XRIGHT = 0._DP
+!pb   01.11.2022
+      mrsurf=0
+      mpsurf=0
+      mtsurf=0
+      masurf=0
+      msurf=0
+      msurfg=0
 cnh   28.10.2019
       ZIWL=0._DP
 C
@@ -1636,7 +1643,7 @@ C                            BUT INTEGRALS OF OUTGOING SURFACE FLUXES
 C                            POTPLI,... ARE TAKEN NEGATIVE).
 C  POTPL,EOTPL,....FOR PRINTOUT OF SURFACE FLUXES
             ITYP_OLD=4
-            CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,WEIGHT,1)
+            CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,IPLS,WEIGHT,1)
 
             IF (NADSI.GE.1) CALL EIRENE_UPSUSR(-WEIGHT,1)
             IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM(-WEIGHT,1,0)
@@ -1768,7 +1775,7 @@ C
 
               IF (IGASP_OLD.EQ.0) GOTO 4711 ! SCORE SPUTTERED PARTICLES ON SURFACE/VOLUME TALLIES ONLY
 C                                             IF THEY ARE FOLLOWED. OTHERWISE: ONLY ON SPUTTER TALLIES
-              CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,WGHTSP,2)
+              CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,IPLS,WGHTSP,2)
 C
               SELECT CASE (ITYP)
                 CASE (1)
@@ -1862,7 +1869,7 @@ cdr  update total and sputtered species-resolved sputtered fluxes
 
               IF (IGASC_OLD.EQ.0) GOTO 4712 ! SCORE SPUTTERED PARTICLES ON SURFACE/VOLUME TALLIES ONLY
 C                                             IF THEY ARE FOLLOWED. OTHERWISE: ONLY ON SPUTTER TALLIES
-              CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,WGHTSC,2)
+              CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,IPLS,WGHTSC,2)
 C
               SELECT CASE (ITYP)
                 CASE (1)
@@ -1961,7 +1968,7 @@ C                   ONCE FOR NLPNT,NLLNE,NLSRF,NLVOL)
 C
 C
             IF (LGPART) 
-     .        CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,WEIGHT,2)
+     .        CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,IPLS,WEIGHT,2)
             IF (NADSI.GE.1) CALL EIRENE_UPSUSR(WEIGHT,2)
             IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM(WEIGHT,2,0)
 C

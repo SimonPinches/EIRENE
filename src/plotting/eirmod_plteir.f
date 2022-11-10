@@ -22,6 +22,7 @@ cdr            Careful: log energy scale option, and combination with negative e
 cdr            Directional spectra
 cdr            Sum over species of intensive input tallies is certainly nonsense !
 cdr            proper weighting is missing here.
+cpb  Oct 22  : I0 and INDX removed
 C
 
       USE EIRMOD_PRECISION
@@ -76,8 +77,8 @@ C
       INTEGER :: IXXE, IXXI, IYYE, IYYI, K, ISPC, NSPS, INULL,
      .           NF, NFT, I, IA, N, IXSET2, ISPZ, IALG, N1SDVI, ISAVE,
      .           IALV, ITL, JTAL, IBLD, ICURV, IE, IXSET3, IS,
-     .           IERR, ICINC, IYSET3, IX, I2M, J, IRAD, I0, I1, I2, IT,
-     .           INDX, ITT, ITP, KK
+     .           IERR, ICINC, IYSET3, IX, I2M, J, IRAD, I1, I2, IT,
+     .           ITT, ITP, KK
       LOGICAL :: LPLOT2(NPLT), LSDVI(NPLT), LINLOG, L_SAME
       CHARACTER(24) :: TXUNIT(NPLT), TXSPEC(NPLT)
       CHARACTER(24) :: TXUNT1, TXSPC1
@@ -628,18 +629,13 @@ C
               YMNLG2(ICURV)=1.D60
               YMXLG2(ICURV)=-1.D60
               IF (JTAL.GT.0.) THEN
-                I0=0
-                IF (NFRSTI(ITL).GT.1) I0=1
-                INDX=NADDI(ITL)*NSTRAP+NFRSTI(ITL)*ISTRA+ISPZ+I0
                 CALL EIRENE_FETCH_OUTAU (OUTAUI,JTAL,ISPZ,ISTRA,IUNOUT)
                 IF (OUTAUI.EQ.0.) THEN
                   IF (TRCPLT) THEN
                     WRITE (iunout,*) 'TALLY NO. ',JTAL,
      .                               ' CURVE NO. ',ICURV
                     WRITE (iunout,*) 'NOT PLOTTED BECAUSE'
-                    WRITE (iunout,*) 'ZERO INTEGRAL (OUTAU(INDX)=0.)'
-                    WRITE (iunout,*) 'INDX,NADDI(JTAL),NFRSTI(JTAL),I0'
-                    WRITE (iunout,*)  INDX,NADDI(ITL),NFRSTI(ITL),I0
+                    WRITE (iunout,*) 'ZERO INTEGRAL (OUTAUI=0.)'
                   ENDIF
                   YMN2(ICURV)=0.
                   YMX2(ICURV)=0.

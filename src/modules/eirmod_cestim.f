@@ -136,6 +136,19 @@ C
      R ADDS(:,:),  ALGS(:,:),
      R SPUMP(:,:)
 
+! helper pointers for species resolved tallies
+      REAL(DP), PUBLIC, POINTER :: 
+     R PAAT2(:,:), PAML2(:,:), PAIO2(:,:), PAPHT2(:,:), PAPL2(:,:),
+     R PMAT2(:,:), PMML2(:,:), PMIO2(:,:), PMPHT2(:,:), PMPL2(:,:),
+     R PIAT2(:,:), PIML2(:,:), PIIO2(:,:), PIPHT2(:,:), PIPL2(:,:),
+     R PPHAT2(:,:), PPHML2(:,:), PPHIO2(:,:), PPHPHT2(:,:), PPHPL2(:,:)
+
+      REAL(DP), PUBLIC, POINTER :: 
+     R PRFAAT2(:,:), PRFMAT2(:,:), PRFIAT2(:,:), PRFPHAT2(:,:),
+     R PRFAML2(:,:), PRFMML2(:,:), PRFIML2(:,:), PRFPHML2(:,:),
+     R PRFAIO2(:,:), PRFMIO2(:,:), PRFIIO2(:,:), PRFPHIO2(:,::),
+     R PRFAPHT2(:,:), PRFMPHT2(:,:), PRFIPHT2(:,:), PRFPHPHT2(:,:)
+
 C  FROM HERE: NO POINTERS ?
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NFIRST(:), NADDV(:),
@@ -185,11 +198,14 @@ c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
      L LPXEL,   LPXAT,   LPXML,   LPXIO, LPXPL,
      L LEXEL,   LEXAT,   LEXML,   LEXIO, LEXPL,
      L LVXDENX, LVYDENX, LVZDENX,
-     L LMXPL,   LRXEL,   LPXX,    LEXX
+     L LMXPL,   LRXEL,   LPXX,    LEXX,  
+     L LSCX
+      
+      INTEGER, PUBLIC, SAVE :: NDXX
 
 !$OMP  THREADPRIVATE(LPDENX,LEDENX,LPXEL,LPXAT,LPXML,LPXIO,LPXPL,LEXEL,
 !$OMP& LEXAT,LEXML,LEXIO,LEXPL,LVXDENX,LVYDENX,LVZDENX,LMXPL,LRXEL,
-!$OMP& LPXX,LEXX)
+!$OMP& LPXX,LEXX,LSCX,NDXX)
 
 
 

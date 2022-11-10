@@ -6,6 +6,7 @@ c  dec.15:    species-resolved bulk ion energy balance eapl,empl,...etc..
 cdr aug.16:   X1D(1:nrad): for 1d grids: spatial coordinate, for printout
 cdr           new argument in prttal  (same: outpla, calls to prttal)
 cdr aug.19:   bugfix: PAMLI instead of PMMLI in one instance (only affects printout)
+cpb oct.22:   remove I0, unused
 C
       SUBROUTINE EIRENE_OUTEIR(INDOUT)
 
@@ -46,7 +47,7 @@ C
       REAL(DP) :: DIFR, TOTT, PGAINP, PLOSSP, DIFT, EGAINE, SPA, ELOSSE,
      .            EGAINP, ELOSSP, PGAINE, PLOSSE, SMEAN, OUTAUI, TALAV,
      .            TALTOT, DIF, SMSPT, ERADE
-      INTEGER :: IALS, IALV, J, JJ, IS, NFTI, NFTE, I0, K, NF, N, IALG,
+      INTEGER :: IALS, IALV, J, JJ, IS, NFTI, NFTE, K, NF, N, IALG,
      .           ITAL, IPRV, ILAST, ICOUNT, I, IINDEX, ISPC,
      .           IT, JATM, JMOL, JION, JPHOT, IRET
       INTEGER :: IADTYP(0:4)
@@ -186,8 +187,6 @@ C   CALL TO TALUSR: A POSTPROCESSED USER-SUPPLIED TALLY
 C  PRINT SELECTED (AND NONZERO) TALLIES OTHER THAN TALLY 0 AND TALLY NTALR
 
         ELSEIF (ITAL.GT.0.AND.ITAL.NE.NTALR) THEN
-          I0=0
-          IF (NFRSTI(ITAL).GT.1) I0=1
           NFTI=1
           NFTE=NFSTVI(ITAL)
           IF (NSPEZV(IPRV,1).GT.0) THEN
@@ -358,8 +357,6 @@ C
   132       CONTINUE
           ENDIF
 C
-          I0=0
-          IF (NFRSTI(ITAL).GT.1) I0=1
           NFTI=1
           NFTE=NFSTVI(ITAL)
           IF (NSPEZV(IPRV,1).GT.0) THEN

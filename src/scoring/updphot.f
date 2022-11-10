@@ -77,6 +77,7 @@ C          (BOTH SOURCE (DUE TO C) AND SINK (DUE TO B)
       USE EIRMOD_CCONA
       USE EIRMOD_PHOTON
       USE EIRMOD_CINIT
+      USE EIRMOD_CLOGAU
 
       IMPLICIT NONE
 C
@@ -87,7 +88,8 @@ C
       INTEGER :: IRD,  I, IRDO, INUM
 C     INTEGER :: NPBGK
 C SECONDARY SPECIES IDENTIFIERS
-      INTEGER ::  IAT1,IAT2,IML1,IML2,IIO1,IIO2,IPH1,IPH2,IPL1,IPL2
+      INTEGER :: IAT1,IAT2,IML1,IML2,IIO1,IIO2,IPH1,IPH2,IPL1,IPL2
+      INTEGER :: IAD, EIRENE_INDIRECT_ADDRESS
 C PH PROCESSES
       INTEGER ::      IAPH,IRPH
 C    .               ,UPDF        ! out, something for stim. emiss ?
@@ -181,6 +183,11 @@ cdr This perfectly cancels the source rate.
             IF (LPPHPHT) THEN
 !$OMP ATOMIC
               PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)-WEIGHT
+              IF (NLSPCSCL_PHOT) THEN
+                IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IPHOT,NPHOT)
+!$OMP ATOMIC
+                PPHPHT(IAD,IRD)=PPHPHT(IAD,IRD)-WEIGHT
+              END IF
             ENDIF
             IF (LEPHPHT) THEN
 !$OMP ATOMIC
@@ -196,6 +203,11 @@ cdr This perfectly cancels the source rate.
           IF (LPPHPHT) THEN
 !$OMP ATOMIC
             PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)-WTRSIG
+            IF (NLSPCSCL_PHOT) THEN
+              IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IPHOT,NPHOT)
+!$OMP ATOMIC
+              PPHPHT(IAD,IRD)=PPHPHT(IAD,IRD)-WTRSIG
+            END IF
           ENDIF
           IF (LEPHPHT) THEN
 !$OMP ATOMIC
@@ -226,6 +238,11 @@ C
             IF (LPPHPHT) THEN 
 !$OMP ATOMIC
               PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)+WTRSIG
+              IF (NLSPCSCL_PHOT) THEN
+                IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IPHOT,NPHOT)
+!$OMP ATOMIC
+                PPHPHT(IAD,IRD)=PPHPHT(IAD,IRD)+WTRSIG
+            END IF
             ENDIF
 cdr         if(updf==1) PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)+WTRSIG !prob. wrong
           ELSE
@@ -237,6 +254,11 @@ cdr  do this check in initialisation, only once
             IF (LPPHPL) THEN
 !$OMP ATOMIC
               PPHPL(IPLS,IRD)=PPHPL(IPLS,IRD)-WTRSIG
+              IF (NLSPCSCL_PHOT) THEN
+                IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IPHOT,NPHOT)
+!$OMP ATOMIC
+                PPHPHT(IAD,IRD)=PPHPHT(IAD,IRD)-WTRSIG
+              END IF
               LMETSP(NSPAMI+IPLS)=.TRUE.
             END IF
 C
@@ -253,6 +275,11 @@ C  FIRST SECONDARY:
                 IF (LPPHAT) THEN
 !$OMP ATOMIC
                   PPHAT(IAT1,IRD)= PPHAT(IAT1,IRD)+WTRSIG*INUM
+                  IF (NLSPCSCL_PHOT) THEN
+                    IAD = EIRENE_INDIRECT_ADDRESS(IAT1,IPHOT,NATM)
+!$OMP ATOMIC
+                    PPHAT(IAD,IRD)=PPHAT(IAD,IRD)+WTRSIG*INUM
+                  END IF
                   LMETSP(NSPH+IAT1)=.TRUE.
                 END IF
               ELSEIF (PHV_N1STOTPH(iphot,IRPH,1).EQ.2) THEN
@@ -262,6 +289,11 @@ C  FIRST SECONDARY:
                 IF (LPPHML) THEN
 !$OMP ATOMIC
                   PPHML(IML1,IRD)= PPHML(IML1,IRD)+WTRSIG*INUM
+                  IF (NLSPCSCL_PHOT) THEN
+                    IAD = EIRENE_INDIRECT_ADDRESS(IML1,IPHOT,NMOL)
+!$OMP ATOMIC
+                    PPHML(IAD,IRD)=PPHML(IAD,IRD)+WTRSIG*INUM
+                  END IF
                   LMETSP(NSPA+IML1)=.TRUE.
                 END IF
               ELSEIF (PHV_N1STOTPH(iphot,IRPH,1).EQ.3) THEN
@@ -271,6 +303,11 @@ C  FIRST SECONDARY:
                 IF (LPPHIO) THEN
 !$OMP ATOMIC
                   PPHIO(IIO1,IRD)= PPHIO(IIO1,IRD)+WTRSIG*INUM
+                  IF (NLSPCSCL_PHOT) THEN
+                    IAD = EIRENE_INDIRECT_ADDRESS(IIO1,IPHOT,NION)
+!$OMP ATOMIC
+                    PPHIO(IAD,IRD)=PPHIO(IAD,IRD)+WTRSIG*INUM
+                  END IF
                   LMETSP(NSPAM+IIO1)=.TRUE.
                 END IF
               ELSEIF (PHV_N1STOTPH(iphot,IRPH,1).EQ.4) THEN
@@ -281,6 +318,11 @@ C               INUM=PHV_N1STOTPH(iphot,IRPH,3)
                 IF (LPPHPL) THEN
 !$OMP ATOMIC
                   PPHPL(IPL1,IRD)= PPHPL(IPL1,IRD)+WTRSIG*INUM
+                  IF (NLSPCSCL_PHOT) THEN
+                    IAD = EIRENE_INDIRECT_ADDRESS(IPL1,IPHOT,NPLS)
+!$OMP ATOMIC
+                    PPHPL(IAD,IRD)=PPHPL(IAD,IRD)+WTRSIG*INUM
+                  END IF
 csw added updf check (stim.em)
 cdr: not ready
 cdr  stim emission: am besten: 2 secondaries in group 1. hier jedoch:
@@ -299,6 +341,11 @@ cdr  test iph1 > 0 only once, in initialisation. here: removed
                   IF (LPPHPHT) THEN
 !$OMP ATOMIC
                     PPHPHT(iph1,ird)=PPHPHT(iph1,ird)+wtrsig*inum
+                    IF (NLSPCSCL_PHOT) THEN
+                    IAD = EIRENE_INDIRECT_ADDRESS(IPH1,IPHOT,NPHOT)
+!$OMP ATOMIC
+                    PPHPHT(IAD,IRD)=PPHPHT(IAD,IRD)+WTRSIG*INUM
+                  END IF
                     LMETSP(IPH1)=.TRUE.
                   END IF
                 end if
@@ -315,6 +362,11 @@ C  SECOND SECONDARY:
                 IF (LPPHAT) THEN
 !$OMP ATOMIC
                   PPHAT(IAT2,IRD)= PPHAT(IAT2,IRD)+WTRSIG*INUM
+                  IF (NLSPCSCL_PHOT) THEN
+                    IAD = EIRENE_INDIRECT_ADDRESS(IAT2,IPHOT,NATM)
+!$OMP ATOMIC
+                    PPHAT(IAD,IRD)=PPHAT(IAD,IRD)+WTRSIG*INUM
+                  END IF
                   LMETSP(NSPH+IAT2)=.TRUE.
                 END IF
               ELSEIF (PHV_N2NDOTPH(iphot,IRPH,1).EQ.2) THEN
@@ -324,6 +376,11 @@ C  SECOND SECONDARY:
                 IF (LPPHML) THEN
 !$OMP ATOMIC
                   PPHML(IML2,IRD)= PPHML(IML2,IRD)+WTRSIG*INUM
+                  IF (NLSPCSCL_PHOT) THEN
+                    IAD = EIRENE_INDIRECT_ADDRESS(IML2,IPHOT,NMOL)
+!$OMP ATOMIC
+                    PPHML(IAD,IRD)=PPHML(IAD,IRD)+WTRSIG*INUM
+                  END IF
                   LMETSP(NSPA+IML2)=.TRUE.
                 END IF
               ELSEIF (PHV_N2NDOTPH(iphot,IRPH,1).EQ.3) THEN
@@ -333,6 +390,11 @@ C  SECOND SECONDARY:
                 IF (LPPHIO) THEN
 !$OMP ATOMIC
                   PPHIO(IIO2,IRD)= PPHIO(IIO2,IRD)+WTRSIG*INUM
+                  IF (NLSPCSCL_PHOT) THEN
+                    IAD = EIRENE_INDIRECT_ADDRESS(IIO2,IPHOT,NION)
+!$OMP ATOMIC
+                    PPHIO(IAD,IRD)=PPHIO(IAD,IRD)+WTRSIG*INUM
+                  END IF
                   LMETSP(NSPAM+IIO2)=.TRUE.
                 END IF
               ELSEIF (PHV_N2NDOTPH(iphot,IRPH,1).EQ.4) THEN
@@ -343,6 +405,11 @@ C               INUM=PHV_N2NDOTPH(iphot,IRPH,3)
                 IF (LPPHPL) THEN
 !$OMP ATOMIC
                   PPHPL(IPL2,IRD)= PPHPL(IPL2,IRD)+WTRSIG*INUM
+                  IF (NLSPCSCL_PHOT) THEN
+                    IAD = EIRENE_INDIRECT_ADDRESS(IPL2,IPHOT,NPLS)
+!$OMP ATOMIC
+                    PPHPL(IAD,IRD)=PPHPL(IAD,IRD)+WTRSIG*INUM
+                  END IF
 csw added updf check (stim.em)
 cdr  stim emission: am besten: 2 secondaries in group 2.
 cdr  dazu PI-process vervollstandigen.
@@ -360,6 +427,11 @@ cdr test iph2 > 0 removed, to be done only once in initialisation
                   IF (LPPHPHT) THEN
 !$OMP ATOMIC
                     PPHPHT(iph2,ird)=PPHPHT(iph2,ird)+wtrsig*inum
+                    IF (NLSPCSCL_PHOT) THEN
+                      IAD = EIRENE_INDIRECT_ADDRESS(IPH2,IPHOT,NPHOT)
+!$OMP ATOMIC
+                      PPHPHT(IAD,IRD)=PPHPHT(IAD,IRD)+WTRSIG*INUM
+                  END IF
                     LMETSP(iph2)=.true.
                   END IF
                 END IF

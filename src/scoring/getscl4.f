@@ -519,3 +519,255 @@ C
 C
       RETURN
       END SUBROUTINE EIRENE_GETSCL4
+
+
+      SUBROUTINE EIRENE_GETSCLS (ISTRA,NATMI,NMOLI,NIONI,NPHOTI,
+     .                           FATM,FMOL,FION,FPHOT)
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+     , ,ONLY : NATM, NMOL, NION, NPHOT
+      USE EIRMOD_COMSOU
+      USE EIRMOD_COUTAU
+      USE EIRMOD_CCOUPL
+      USE EIRMOD_COMPRT
+     , ,ONLY : IUNOUT
+      USE EIRMOD_CLOGAU
+     , ,ONLY : NLSPCSCL
+      IMPLICIT NONE
+      INTEGER, INTENT(IN) :: ISTRA, NATMI, NMOLI, NIONI, NPHOTI
+      REAL(DP) :: FATM(0:NATMI), FMOL(0:NMOLI), FION(0:NIONI),
+     .           FPHOT(0:NPHOTI)
+      INTEGER :: NNP, IATM, IMOL, IION, IPHOT,
+     .           JSP, JMOL, JION, JPHOT
+      INTEGER :: IAD, EIRENE_INDIRECT_ADDRESS
+      INTEGER :: IER
+      INTEGER, ALLOCATABLE :: IW(:)
+      REAL(DP), ALLOCATABLE :: PP(:,:),B(:)
+
+      IF (NATMI.LE.1.AND.NMOLI.LE.1.AND.
+     .    NIONI.LE.1.AND.NPHOTI.LE.1) THEN
+        IF (NATMI .EQ.1) FATM(1) = FATM(0)
+        IF (NMOLI .EQ.1) FMOL(1) = FMOL(0)
+        IF (NIONI .EQ.1) FION(1) = FION(0)
+        IF (NPHOTI.EQ.1) FPHOT(1)= FPHOT(0)
+      ELSE IF (.NOT.NLSPCSCL) THEN
+        IF (NATMI .GE.1) FATM (1:NATMI) = FATM(0)
+        IF (NMOLI .GE.1) FMOL (1:NMOLI) = FMOL(0)
+        IF (NIONI .GE.1) FION (1:NIONI) = FION(0)
+        IF (NPHOTI.GE.1) FPHOT(1:NPHOTI)= FPHOT(0)
+      ELSE
+        NNP = NATMI+NMOLI+NIONI+NPHOTI
+        ALLOCATE(PP(NNP,NNP),B(NNP))
+        PP = 0._DP
+        B = 0._DP
+        DO JSP = 1, NATMI+NMOLI+NIONI+NPHOTI
+          IF(JSP.LE.NATMI) THEN
+            DO IATM = 1, NATMI
+!PB           PP(IATM,JSP) = PAATI2(IATM,JSP,ISTRA)+
+!PB  .                       PRFAAI2(IATM,JSP,ISTRA)
+              IAD = EIRENE_INDIRECT_ADDRESS(IATM,JSP,NATM)
+              PP(IATM,JSP) = PAATI(IAD,ISTRA)+
+     .                       PRFAAI(IAD,ISTRA)
+            END DO
+            PP(JSP,JSP) = PP(JSP,JSP)+
+     .                    POTATI(JSP,ISTRA)+PGENAI(JSP,ISTRA)
+            DO IMOL = 1, NMOLI
+              JMOL = NATMI+IMOL
+!PB           PP(JMOL,JSP) = PAMLI2(IMOL,JSP,ISTRA)+
+!PB  .                      PRFAMI2(IMOL,JSP,ISTRA)
+              IAD = EIRENE_INDIRECT_ADDRESS(IMOL,JSP,NMOL)
+              PP(JMOL,JSP) = PAMLI(IAD,ISTRA)+
+     .                       PRFAMI(IAD,ISTRA)
+            END DO
+            DO IION = 1, NIONI
+              JION = NATMI+NMOLI+IION
+!PB           PP(JION,JSP) = PAIOI2(IION,JSP,ISTRA)+
+!PB  .                      PRFAII2(IION,JSP,ISTRA)
+              IAD = EIRENE_INDIRECT_ADDRESS(IION,JSP,NION)
+              PP(JION,JSP) = PAIOI(IAD,ISTRA)+
+     .                       PRFAII(IAD,ISTRA)
+            END DO
+            DO IPHOT = 1, NPHOTI
+              JPHOT = NATMI+NMOLI+NIONI+IPHOT
+!PB           PP(JPHOT,JSP) = PAPHTI2(IPHOT,JSP,ISTRA)+
+!PB  .                      PRFAPHTI2(IPHOT,JSP,ISTRA)
+              IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,JSP,NPHOT)
+              PP(JPHOT,JSP) = PAPHTI(IAD,ISTRA)+
+     .                        PRFAPHTI(IAD,ISTRA)
+            END DO
+          ELSE IF (JSP.GT.NATMI.AND.JSP.LE.NATMI+NMOLI) THEN
+            JMOL = JSP-NATMI
+            DO IATM = 1, NATMI
+!PB           PP(IATM,JSP) = PMATI2(IATM,JMOL,ISTRA)+
+!PB  .                      PRFMAI2(IATM,JMOL,ISTRA)
+              IAD = EIRENE_INDIRECT_ADDRESS(IATM,JMOL,NATM)
+              PP(IATM,JSP) = PMATI(IAD,ISTRA)+
+     .                       PRFMAI(IAD,ISTRA)
+            END DO
+            DO IMOL = 1, NMOLI
+              JMOL = NATMI+IMOL
+!PB           PP(JMOL,JSP) = PMMLI2(IMOL,JSP-NATMI,ISTRA)+
+!PB  .                      PRFMMI2(IMOL,JSP-NATMI,ISTRA)
+              IAD = EIRENE_INDIRECT_ADDRESS(IMOL,JSP-NATMI,NMOL)
+              PP(JMOL,JSP) = PMMLI(IAD,ISTRA)+
+     .                       PRFMMI(IAD,ISTRA)
+            END DO
+            JMOL = JSP-NATMI
+            PP(JSP,JSP) = PP(JSP,JSP)+
+     .                    POTMLI(JMOL,ISTRA)+PGENMI(JMOL,ISTRA)
+            DO IION = 1, NIONI
+              JION = NATMI+NMOLI+IION
+!PB           PP(JION,JSP) = PMIOI2(IION,JMOL,ISTRA)+
+!PB  .                      PRFMII2(IION,JMOL,ISTRA)
+              IAD = EIRENE_INDIRECT_ADDRESS(IION,JMOL,NION)
+              PP(JION,JSP) = PMIOI(IAD,ISTRA)+
+     .                       PRFMII(IAD,ISTRA)
+            END DO
+            DO IPHOT = 1, NPHOTI
+              JPHOT = NATMI+NMOLI+NIONI+IPHOT
+!PB           PP(JPHOT,JSP) = PMPHTI2(IPHOT,JMOL,ISTRA)+
+!PB  .                      PRFMPHTI2(IPHOT,JMOL,ISTRA)
+              IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,JMOL,NPHOT)
+              PP(JPHOT,JSP) = PMPHTI(IAD,ISTRA)+
+     .                        PRFMPHTI(IAD,ISTRA)
+            END DO
+          ELSE IF (JSP.GT.NATMI+NMOLI.AND.JSP.LE.NATMI+NMOLI+NIONI) THEN
+            JION = JSP-NATMI-NMOLI
+            DO IATM = 1, NATMI
+!PB           PP(IATM,JSP) = PIATI2(IATM,JION,ISTRA)+
+!PB  .                      PRFIAI2(IATM,JION,ISTRA)
+              IAD = EIRENE_INDIRECT_ADDRESS(IATM,JION,NATM)
+              PP(IATM,JSP) = PIATI(IAD,ISTRA)+
+     .                       PRFIAI(IAD,ISTRA)
+            END DO
+            DO IMOL = 1, NMOLI
+              JMOL = NATMI+IMOL
+!PB           PP(JMOL,JSP) = PIMLI2(IMOL,JION,ISTRA)+
+!PB  .                      PRFIMI2(IMOL,JION,ISTRA)
+              IAD = EIRENE_INDIRECT_ADDRESS(IMOL,JION,NMOL)
+              PP(JMOL,JSP) = PIMLI(IAD,ISTRA)+
+     .                       PRFIMI(IAD,ISTRA)
+            END DO
+            DO IION = 1, NIONI
+              JION = NATMI+NMOLI+IION
+!PB           PP(JION,JSP) = PIIOI2(IION,JSP-NATMI-NMOLI,ISTRA)+
+!PB  .                      PRFIII2(IION,JSP-NATMI-NMOLI,ISTRA)
+              IAD = EIRENE_INDIRECT_ADDRESS(IION,JSP-NATMI-NMOLI,NION)
+              PP(JION,JSP) = PIIOI(IAD,ISTRA)+
+     .                       PRFIII(IAD,ISTRA)
+            END DO
+            JION = JSP-NATMI-NMOLI
+            PP(JSP,JSP) = PP(JSP,JSP)+
+     .                    POTIOI(JION,ISTRA)+PGENII(JION,ISTRA)
+            DO IPHOT = 1, NPHOTI
+              JPHOT = NATMI+NMOLI+NIONI+IPHOT
+!PB           PP(JPHOT,JSP) = PIPHTI2(IPHOT,JION,ISTRA)+
+!PB  .                      PRFIPHTI2(IPHOT,JION,ISTRA)
+              IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,JION,NPHOT)
+              PP(JPHOT,JSP) = PIPHTI(IAD,ISTRA)+
+     .                        PRFIPHTI(IAD,ISTRA)
+            END DO
+          ELSE IF (JSP.GT.NATMI+NMOLI+NIONI.AND.
+     .             JSP.LE.NATMI+NMOLI+NIONI+NPHOTI) THEN
+            JPHOT = JSP-NATMI-NMOLI-NIONI
+            DO IATM = 1, NATMI
+!PB           PP(IATM,JSP) = PPHATI2(IATM,JPHOT,ISTRA)+
+!PB  .                      PRFPHAI2(IATM,JPHOT,ISTRA)
+              IAD = EIRENE_INDIRECT_ADDRESS(IATM,JPHOT,NATM)
+              PP(IATM,JSP) = PPHATI(IAD,ISTRA)+
+     .                       PRFPHAI(IAD,ISTRA)
+            END DO
+            DO IMOL = 1, NMOLI
+              JMOL = NATMI+IMOL
+!PB           PP(JMOL,JSP) = PPHMLI2(IMOL,JPHOT,ISTRA)+
+!PB  .                      PRFPHMI2(IMOL,JPHOT,ISTRA)
+              IAD = EIRENE_INDIRECT_ADDRESS(IMOL,JPHOT,NMOL)
+              PP(JMOL,JSP) = PPHMLI(IAD,ISTRA)+
+     .                       PRFPHMI(IAD,ISTRA)
+            END DO
+            DO IION = 1, NIONI
+              JION = NATMI+NMOLI+IION
+!PB           PP(JION,JSP) = PPHIOI2(IION,JPHOT,ISTRA)+
+!PB  .                      PRFPHII2(IION,JPHOT,ISTRA)
+              IAD = EIRENE_INDIRECT_ADDRESS(IION,JPHOT,NION)
+              PP(JION,JSP) = PPHIOI(IAD,ISTRA)+
+     .                      PRFPHII(IAD,ISTRA)
+            END DO
+            DO IPHOT = 1, NPHOTI
+              JPHOT = NATMI+NMOLI+NIONI+IPHOT
+!PB           PP(JPHOT,JSP) =
+!PB  .            PPHPHTI2(IPHOT,JSP-NATMI-NMOLI-NIONI,ISTRA)+
+!PB  .          PRFPHPHTI2(IPHOT,JSP-NATMI-NMOLI-NIONI,ISTRA)
+              IAD = EIRENE_INDIRECT_ADDRESS(
+     .                           IPHOT,JSP-NATMI-NMOLI-NIONI,NION)
+              PP(JPHOT,JSP) = PPHPHTI(IAD,ISTRA)+
+     .                        PRFPHPHTI(IAD,ISTRA)
+            END DO
+            JPHOT = JSP-NATMI-NMOLI-NIONI
+            PP(JSP,JSP) = PP(JSP,JSP)+
+     .                    POTPHTI(JPHOT,ISTRA)+PGENPHI(JPHOT,ISTRA)
+          END IF
+        END DO
+        DO IATM = 1, NATMI
+          B(IATM) =-(PPATI(IATM,ISTRA)+WTOTA(IATM,ISTRA))
+        END DO
+        DO IMOL = 1, NMOLI
+          JMOL = NATMI+IMOL
+          B(JMOL) =-(PPMLI(IMOL,ISTRA)+WTOTM(IMOL,ISTRA))
+        END DO
+        DO IION = 1, NIONI
+          JION = NATMI+NMOLI+IION
+          B(JION) =-(PPIOI(IION,ISTRA)+WTOTI(IION,ISTRA))
+        END DO
+        DO IPHOT = 1, NPHOTI
+          JPHOT = NATMI+NMOLI+NIONI+IPHOT
+          B(JPHOT) =-(PPPHTI(IPHOT,ISTRA)+WTOTPH(IPHOT,ISTRA))
+        END DO
+        DO JSP = 1, NATMI+NMOLI+NIONI+NPHOTI
+          IF (SUM(PP(1:NNP,JSP)).EQ.0._DP.AND.
+     .        SUM(PP(JSP,1:NNP)).EQ.0._DP.AND.B(JSP).EQ.0._DP) THEN
+            PP(JSP,JSP) = 1._DP
+            B(JSP) = 1._DP
+          END IF
+        END DO
+C
+        CALL EIRENE_MASRR1('MATRIX    :',PP,NNP*NNP,NNP)
+        CALL EIRENE_MASRR1('RHS VECTOR:',B,NNP,NNP)
+!PB     CALL EIRENE_MASRR1('PAATI2    :',PAATI2(:,:,ISTRA),
+!PB  .                                   NATMI*NATMI,NATMI)
+        CALL EIRENE_MASRR1('PAATI2    :',PAATI(:,ISTRA),
+     .                                   NATMI*NATMI,NATMI)
+!! Solve the matrix
+        IER=0
+        ALLOCATE(IW(NNP))
+        CALL EIRENE_GALPD_M(PP,NNP,NNP,B,1,1,IW,IER)
+        IF(IER.EQ.0) THEN
+          IF(MINVAL(B).GT.0._DP) THEN
+            IF(NATMI.GE.1) FATM(1:NATMI) = B(1:NATMI)
+            IF(NMOLI.GE.1) FMOL(1:NMOLI) = B(NATMI+1:NATMI+NMOLI)
+            IF(NIONI.GE.1) FION(1:NIONI) = B(NATMI+NMOLI+1:
+     .                                       NATMI+NMOLI+NIONI)
+            IF(NPHOTI.GE.1)FPHOT(1:NPHOTI)=B(NATMI+NMOLI+NIONI+1:
+     .                                       NATMI+NMOLI+NIONI+NPHOTI)
+          ELSE
+            CALL EIRENE_MASAGE('MATRIX SOLVE YIELDED NEGATIVE VALUES')
+            CALL EIRENE_MASAGE('REVERTING BACK TO DEFAULT BEHAVIOUR')
+            IF (NATMI .GE.1) FATM (1:NATMI) = FATM(0)
+            IF (NMOLI .GE.1) FMOL (1:NMOLI) = FMOL(0)
+            IF (NIONI .GE.1) FION (1:NIONI) = FION(0)
+            IF (NPHOTI.GE.1) FPHOT(1:NPHOTI)= FPHOT(0)
+          END IF
+        ELSE IF (IER.GE.1) THEN
+          CALL EIRENE_MASAGE('RESCALING MATRIX IS SINGULAR')
+          CALL EIRENE_MASAGE('REVERTING BACK TO DEFAULT BEHAVIOUR')
+          IF (NATMI .GE.1) FATM (1:NATMI) = FATM(0)
+          IF (NMOLI .GE.1) FMOL (1:NMOLI) = FMOL(0)
+          IF (NIONI .GE.1) FION (1:NIONI) = FION(0)
+          IF (NPHOTI.GE.1) FPHOT(1:NPHOTI)= FPHOT(0)
+        ENDIF
+        DEALLOCATE(IW)
+        DEALLOCATE(PP,B)
+      END IF
+
+      RETURN
+      END SUBROUTINE EIRENE_GETSCLS

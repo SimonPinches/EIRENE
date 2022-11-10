@@ -2,9 +2,10 @@
      .                                     REAC, ELNAME, BUNDLING)
       use eirmod_cinit
       implicit none
-      character(*), intent(inout) :: dsn, reac
+      character(*),intent(inout) :: DSN
+      character(*), intent(in) :: REAC
       logical, intent(inout) :: found
-      character(*), optional :: ELNAME, BUNDLING
+      character(*), intent(in), optional :: ELNAME, BUNDLING
 
       found = .false.
 

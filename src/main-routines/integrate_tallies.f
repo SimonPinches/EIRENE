@@ -14,13 +14,16 @@ C
       USE EIRMOD_CGRID
       USE EIRMOD_CGEOM
       USE EIRMOD_CSPEZ
+      USE EIRMOD_CLOGAU
 
       IMPLICIT NONE
 
       INTEGER, INTENT(IN) :: ISTRA
       REAL(DP) :: DUMMY(NRTAL)
       INTEGER :: IATM, IMOL, IION, IPHOT, IPLS, IADV, ICLV, ISNV,
-     .           ICPV, IBGV
+     .           ICPV, IBGV,
+     .           JATM, JMOL, JION, JPHOT
+      INTEGER :: IAD, EIRENE_INDIRECT_ADDRESS
 
 C
 C
@@ -239,6 +242,16 @@ C
      .                   PAATI(IATM,ISTRA),
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
             PAAT(IATM,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            IF (NLSPCSCL_ATM) THEN
+              DO JATM=1,NATMI
+                IAD=EIRENE_INDIRECT_ADDRESS(IATM,JATM,NATM)
+                DUMMY(1:NSBOX_TAL) = PAAT(IAD,1:NSBOX_TAL)
+                CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PAATI(IAD,ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+                PAAT(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+              END DO
+            END IF
           END IF
 
           IF (LPMAT) THEN
@@ -247,6 +260,16 @@ C
      .                   PMATI(IATM,ISTRA),
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
             PMAT(IATM,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            IF (NLSPCSCL_MOL) THEN
+              DO JMOL=1,NMOLI
+                IAD=EIRENE_INDIRECT_ADDRESS(IATM,JMOL,NATM)
+                DUMMY(1:NSBOX_TAL) = PMAT(IAD,1:NSBOX_TAL)
+                CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PMATI(IAD,ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+                PMAT(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+              END DO
+            END IF
           END IF
 
           IF (LPIAT) THEN
@@ -255,6 +278,16 @@ C
      .                   PIATI(IATM,ISTRA),
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
             PIAT(IATM,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            IF (NLSPCSCL_ION) THEN
+              DO JION=1,NIONI
+                IAD=EIRENE_INDIRECT_ADDRESS(IATM,JION,NATM)
+                DUMMY(1:NSBOX_TAL) = PIAT(IAD,1:NSBOX_TAL)
+                CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PIATI(IAD,ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+                PIAT(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+              END DO
+            END IF
           END IF
 
           IF (LPPHAT) THEN
@@ -263,6 +296,16 @@ C
      .                   PPHATI(IATM,ISTRA),
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
             PPHAT(IATM,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            IF (NLSPCSCL_PHOT) THEN
+              DO JPHOT=1,NPHOTI
+                IAD=EIRENE_INDIRECT_ADDRESS(IATM,JPHOT,NATM)
+                DUMMY(1:NSBOX_TAL) = PPHAT(IAD,1:NSBOX_TAL)
+                CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PPHATI(IAD,ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+                PPHAT(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+              END DO
+            END IF
           END IF
 
           IF (LPGENA) THEN
@@ -354,6 +397,16 @@ C
      .                   PAMLI(IMOL,ISTRA),
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
             PAML(IMOL,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            IF (NLSPCSCL_ATM) THEN
+              DO JATM=1,NATMI
+                IAD=EIRENE_INDIRECT_ADDRESS(IMOL,JATM,NMOL)
+                DUMMY(1:NSBOX_TAL) = PAML(IAD,1:NSBOX_TAL)
+                CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PAMLI(IAD,ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+                PAML(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+              END DO
+            END IF
           END IF
 
           IF (LPMML) THEN
@@ -362,6 +415,16 @@ C
      .                   PMMLI(IMOL,ISTRA),
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
             PMML(IMOL,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            IF (NLSPCSCL_MOL) THEN
+              DO JMOL=1,NMOLI
+                IAD=EIRENE_INDIRECT_ADDRESS(IMOL,JMOL,NMOL)
+                DUMMY(1:NSBOX_TAL) = PMML(IAD,1:NSBOX_TAL)
+                CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PMMLI(IAD,ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+                PMML(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+              END DO
+            END IF
           END IF
 
           IF (LPIML) THEN
@@ -370,6 +433,16 @@ C
      .                   PIMLI(IMOL,ISTRA),
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
             PIML(IMOL,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            IF (NLSPCSCL_ION) THEN
+              DO JION=1,NIONI
+                IAD=EIRENE_INDIRECT_ADDRESS(IMOL,JION,NMOL)
+                DUMMY(1:NSBOX_TAL) = PIML(IAD,1:NSBOX_TAL)
+                CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PIMLI(IAD,ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+                PIML(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+              END DO
+            END IF
           END IF
 
           IF (LPPHML) THEN
@@ -378,6 +451,16 @@ C
      .                   PPHMLI(IMOL,ISTRA),
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
             PPHML(IMOL,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            IF (NLSPCSCL_PHOT) THEN
+              DO JPHOT=1,NPHOTI
+                IAD=EIRENE_INDIRECT_ADDRESS(IMOL,JPHOT,NMOL)
+                DUMMY(1:NSBOX_TAL) = PPHML(IAD,1:NSBOX_TAL)
+                CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PPHMLI(IAD,ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+                PPHML(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+              END DO
+            END IF
           END IF
 
           IF (LPGENM) THEN
@@ -469,6 +552,16 @@ C
      .                   PAIOI(IION,ISTRA),
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
             PAIO(IION,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            IF (NLSPCSCL_ATM) THEN
+              DO JATM=1,NATMI
+                IAD=EIRENE_INDIRECT_ADDRESS(IION,JATM,NION)
+                DUMMY(1:NSBOX_TAL) = PAIO(IAD,1:NSBOX_TAL)
+                CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PAIOI(IAD,ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+                PAIO(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+              END DO
+            END IF
           END IF
 
           IF (LPMIO) THEN
@@ -477,6 +570,16 @@ C
      .                   PMIOI(IION,ISTRA),
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
             PMIO(IION,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            IF (NLSPCSCL_MOL) THEN
+              DO JMOL=1,NMOLI
+                IAD=EIRENE_INDIRECT_ADDRESS(IION,JMOL,NION)
+                DUMMY(1:NSBOX_TAL) = PMIO(IAD,1:NSBOX_TAL)
+                CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PMIOI(IAD,ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+                PMIO(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+              END DO
+            END IF
           END IF
 
           IF (LPIIO) THEN
@@ -485,6 +588,16 @@ C
      .                   PIIOI(IION,ISTRA),
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
             PIIO(IION,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            IF (NLSPCSCL_ION) THEN
+              DO JION=1,NIONI
+                IAD=EIRENE_INDIRECT_ADDRESS(IION,JION,NION)
+                DUMMY(1:NSBOX_TAL) = PIIO(IAD,1:NSBOX_TAL)
+                CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PIIOI(IAD,ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+                PIIO(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+              END DO
+            END IF
           END IF
 
           IF (LPPHIO) THEN
@@ -493,6 +606,16 @@ C
      .                   PPHIOI(IION,ISTRA),
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
             PPHIO(IION,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            IF (NLSPCSCL_PHOT) THEN
+              DO JPHOT=1,NPHOTI
+                IAD=EIRENE_INDIRECT_ADDRESS(IION,JPHOT,NION)
+                DUMMY(1:NSBOX_TAL) = PPHIO(IAD,1:NSBOX_TAL)
+                CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PPHIOI(IAD,ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+                PPHIO(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+              END DO
+            END IF
           END IF
 
           IF (LPGENI) THEN
@@ -584,7 +707,17 @@ C
      .                   PAPHTI(IPHOT,ISTRA),
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
             PAPHT(IPHOT,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
-          END IF
+            IF (NLSPCSCL_ATM) THEN
+              DO JATM=1,NATMI
+                IAD=EIRENE_INDIRECT_ADDRESS(IPHOT,JATM,NPHOT)
+                DUMMY(1:NSBOX_TAL) = PAPHT(IAD,1:NSBOX_TAL)
+                CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PAPHTI(IAD,ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+                PAPHT(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+              END DO
+            END IF
+           END IF
 
           IF (LPMPHT) THEN
             DUMMY(1:NSBOX_TAL) = PMPHT(IPHOT,1:NSBOX_TAL)
@@ -592,6 +725,16 @@ C
      .                   PMPHTI(IPHOT,ISTRA),
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
             PMPHT(IPHOT,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            IF (NLSPCSCL_MOL) THEN
+              DO JMOL=1,NMOLI
+                IAD=EIRENE_INDIRECT_ADDRESS(IPHOT,JMOL,NPHOT)
+                DUMMY(1:NSBOX_TAL) = PMPHT(IAD,1:NSBOX_TAL)
+                CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PMPHTI(IAD,ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+                PMPHT(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+              END DO
+            END IF
           END IF
 
           IF (LPIPHT) THEN
@@ -600,6 +743,16 @@ C
      .                   PIPHTI(IPHOT,ISTRA),
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
             PIPHT(IPHOT,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            IF (NLSPCSCL_ION) THEN
+              DO JION=1,NIONI
+                IAD=EIRENE_INDIRECT_ADDRESS(IPHOT,JION,NPHOT)
+                DUMMY(1:NSBOX_TAL) = PIPHT(IAD,1:NSBOX_TAL)
+                CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PIPHTI(IAD,ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+                PIPHT(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+              END DO
+            END IF
           END IF
 
           IF (LPPHPHT) THEN
@@ -608,6 +761,16 @@ C
      .                   PPHPHTI(IPHOT,ISTRA),
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
             PPHPHT(IPHOT,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            IF (NLSPCSCL_PHOT) THEN
+              DO JPHOT=1,NPHOTI
+                IAD=EIRENE_INDIRECT_ADDRESS(IPHOT,JPHOT,NPHOT)
+                DUMMY(1:NSBOX_TAL) = PPHPHT(IAD,1:NSBOX_TAL)
+                CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PPHPHTI(IAD,ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+                PPHPHT(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+              END DO
+            END IF
           END IF
 
           IF (LPGENPH) THEN
@@ -675,6 +838,16 @@ C
      .                 PAPLI(IPLS,ISTRA),
      .                 NR1TAL,NP2TAL,NT3TAL,NBMLT)
           PAPL(IPLS,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+          IF (NLSPCSCL_ATM) THEN
+            DO JATM=1,NATMI
+              IAD=EIRENE_INDIRECT_ADDRESS(IPLS,JATM,NPLS)
+              DUMMY(1:NSBOX_TAL) = PAPL(IAD,1:NSBOX_TAL)
+              CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PAPLI(IAD,ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+              PAPL(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            END DO
+          END IF
         END IF
 
         IF (LEAPL) THEN
@@ -691,6 +864,16 @@ C
      .                 PMPLI(IPLS,ISTRA),
      .                 NR1TAL,NP2TAL,NT3TAL,NBMLT)
           PMPL(IPLS,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+          IF (NLSPCSCL_MOL) THEN
+            DO JMOL=1,NMOLI
+              IAD=EIRENE_INDIRECT_ADDRESS(IPLS,JMOL,NPLS)
+              DUMMY(1:NSBOX_TAL) = PMPL(IAD,1:NSBOX_TAL)
+              CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PMPLI(IAD,ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+              PMPL(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            END DO
+          END IF
         END IF
 
         IF (LEMPL) THEN
@@ -707,7 +890,17 @@ C
      .                 PIPLI(IPLS,ISTRA),
      .                 NR1TAL,NP2TAL,NT3TAL,NBMLT)
           PIPL(IPLS,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
-        END IF
+          IF (NLSPCSCL_ION) THEN
+            DO JION=1,NIONI
+              IAD=EIRENE_INDIRECT_ADDRESS(IPLS,JION,NPLS)
+              DUMMY(1:NSBOX_TAL) = PIPL(IAD,1:NSBOX_TAL)
+              CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PIPLI(IAD,ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+              PIPL(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            END DO
+          END IF
+         END IF
 
         IF (LEIPL) THEN
           DUMMY(1:NSBOX_TAL) = EIPL(IPLS,1:NSBOX_TAL)
@@ -723,6 +916,16 @@ C
      .                 PPHPLI(IPLS,ISTRA),
      .                 NR1TAL,NP2TAL,NT3TAL,NBMLT)
           PPHPL(IPLS,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+          IF (NLSPCSCL_PHOT) THEN
+            DO JPHOT=1,NPHOTI
+              IAD=EIRENE_INDIRECT_ADDRESS(IPLS,JPHOT,NPLS)
+              DUMMY(1:NSBOX_TAL) = PPHPL(IAD,1:NSBOX_TAL)
+              CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PPHPLI(IAD,ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+              PPHPL(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            END DO
+          END IF
         END IF
 
         IF (LEPHPL) THEN

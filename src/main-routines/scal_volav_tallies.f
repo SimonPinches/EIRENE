@@ -30,6 +30,7 @@ c                or  also: cumulated (flight times/reaction time) [1] to source 
       USE EIRMOD_CGEOM
       USE EIRMOD_CSPEZ
       USE EIRMOD_COMNNL
+      USE EIRMOD_CLOGAU
 
       IMPLICIT NONE
 
@@ -42,6 +43,7 @@ c                or  also: cumulated (flight times/reaction time) [1] to source 
       REAL(DP) :: DEL, DELI, ELEFT, ERIGHT
       INTEGER :: IATM, I, J, IMOL, IION, IPHOT, IPLS, IADV, ICLV,
      .           ISNV, ICPV, IBGV, ISPC, ICL
+      INTEGER :: JATM, JMOL, JION, JPHOT, IAD, EIRENE_INDIRECT_ADDRESS
 C
 C
 C*****VOLUME-AVERAGED TALLIES  220 - 239
@@ -53,10 +55,46 @@ C
           DO 221 J=1,NSBOX_TAL
             IF (LPDENA) PDENA(IATM,J)=PDENA(IATM,J)*ZVOLIN(J)
             IF (LEDENA) EDENA(IATM,J)=EDENA(IATM,J)*ZVOLIN(J)
-            IF (LPAAT)  PAAT(IATM,J) =PAAT(IATM,J) *ZVOLIW(J)
-            IF (LPMAT)  PMAT(IATM,J) =PMAT(IATM,J) *ZVOLIW(J)
-            IF (LPIAT)  PIAT(IATM,J) =PIAT(IATM,J) *ZVOLIW(J)
-            IF (LPPHAT) PPHAT(IATM,J)=PPHAT(IATM,J)*ZVOLIW(J)
+            IF (LPAAT) THEN 
+              IF (NLSPCSCL_ATM) THEN
+                DO JATM=1,NATMI
+                  IAD=EIRENE_INDIRECT_ADDRESS(IATM,JATM,NATM)
+                  PAAT(IAD,J) = PAAT(IAD,J) *ZVOLIW(J)
+                END DO
+              ELSE
+                PAAT(IATM,J) = PAAT(IATM,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPMAT) THEN
+              IF (NLSPCSCL_MOL) THEN
+                DO JMOL=1,NMOLI
+                  IAD=EIRENE_INDIRECT_ADDRESS(IATM,JMOL,NATM)
+                  PMAT(IAD,J) = PMAT(IAD,J) *ZVOLIW(J)
+                END DO
+              ELSE 
+                PMAT(IATM,J) = PMAT(IATM,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPIAT) THEN
+              IF (NLSPCSCL_ION) THEN
+                DO JION=1,NIONI
+                  IAD=EIRENE_INDIRECT_ADDRESS(IATM,JION,NATM)
+                  PIAT(IAD,J) = PIAT(IAD,J) *ZVOLIW(J)
+                END DO
+              ELSE
+                PIAT(IATM,J) = PIAT(IATM,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPPHAT) THEN
+              IF (NLSPCSCL_PHOT) THEN
+                DO JPHOT=1,NPHOTI
+                  IAD=EIRENE_INDIRECT_ADDRESS(IATM,JPHOT,NATM)
+                  PPHAT(IAD,J) = PPHAT(IAD,J) *ZVOLIW(J)
+                END DO
+              ELSE
+               PPHAT(IATM,J) = PPHAT(IATM,J)*ZVOLIW(J)
+              END IF
+            END IF
             IF (LPGENA) PGENA(IATM,J)=PGENA(IATM,J)*ZVOLIW(J)
             IF (LEGENA) EGENA(IATM,J)=EGENA(IATM,J)*ZVOLIW(J)
             IF (LVGENA) VGENA(IATM,J)=VGENA(IATM,J)*ZVOLIW(J)
@@ -90,10 +128,46 @@ C
           DO 223 J=1,NSBOX_TAL
             IF (LPDENM) PDENM(IMOL,J)=PDENM(IMOL,J)*ZVOLIN(J)
             IF (LEDENM) EDENM(IMOL,J)=EDENM(IMOL,J)*ZVOLIN(J)
-            IF (LPAML)  PAML(IMOL,J) =PAML(IMOL,J) *ZVOLIW(J)
-            IF (LPMML)  PMML(IMOL,J) =PMML(IMOL,J) *ZVOLIW(J)
-            IF (LPIML)  PIML(IMOL,J) =PIML(IMOL,J) *ZVOLIW(J)
-            IF (LPPHML) PPHML(IMOL,J)=PPHML(IMOL,J)*ZVOLIW(J)
+            IF (LPAML) THEN
+              IF (NLSPCSCL_ATM) THEN
+                DO JATM=1,NATMI
+                  IAD=EIRENE_INDIRECT_ADDRESS(IMOL,JATM,NMOL)
+                  PAML(IAD,J) = PAML(IAD,J) *ZVOLIW(J)
+                END DO
+              ELSE
+                PAML(IMOL,J) = PAML(IMOL,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPMML) THEN
+              IF (NLSPCSCL_MOL) THEN
+                DO JMOL=1,NMOLI
+                  IAD=EIRENE_INDIRECT_ADDRESS(IMOL,JMOL,NMOL)
+                  PMML(IAD,J) = PMML(IAD,J) *ZVOLIW(J)
+                END DO
+              ELSE
+                PMML(IMOL,J) = PMML(IMOL,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPIML) THEN
+              IF (NLSPCSCL_ION) THEN
+                DO JION=1,NIONI
+                  IAD=EIRENE_INDIRECT_ADDRESS(IMOL,JION,NMOL)
+                  PIML(IAD,J) = PIML(IAD,J) *ZVOLIW(J)
+                END DO
+              ELSE
+                PIML(IMOL,J) = PIML(IMOL,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPPHML) THEN
+              IF (NLSPCSCL_PHOT) THEN
+                DO JPHOT=1,NPHOTI
+                  IAD=EIRENE_INDIRECT_ADDRESS(IMOL,JPHOT,NMOL)
+                  PPHML(IAD,J) = PPHML(IAD,J) *ZVOLIW(J)
+                END DO
+              ELSE
+                PPHML(IMOL,J)= PPHML(IMOL,J)*ZVOLIW(J)
+              END IF
+            END IF
             IF (LPGENM) PGENM(IMOL,J)=PGENM(IMOL,J)*ZVOLIW(J)
             IF (LEGENM) EGENM(IMOL,J)=EGENM(IMOL,J)*ZVOLIW(J)
             IF (LVGENM) VGENM(IMOL,J)=VGENM(IMOL,J)*ZVOLIW(J)
@@ -127,10 +201,46 @@ C
           DO 226 J=1,NSBOX_TAL
             IF (LPDENI) PDENI(IION,J)=PDENI(IION,J)*ZVOLIN(J)
             IF (LEDENI) EDENI(IION,J)=EDENI(IION,J)*ZVOLIN(J)
-            IF (LPAIO)  PAIO(IION,J) =PAIO(IION,J) *ZVOLIW(J)
-            IF (LPMIO)  PMIO(IION,J) =PMIO(IION,J) *ZVOLIW(J)
-            IF (LPIIO)  PIIO(IION,J) =PIIO(IION,J) *ZVOLIW(J)
-            IF (LPPHIO) PPHIO(IION,J)=PPHIO(IION,J)*ZVOLIW(J)
+            IF (LPAIO) THEN
+              IF (NLSPCSCL_ATM) THEN
+                DO JATM=1,NATMI
+                  IAD=EIRENE_INDIRECT_ADDRESS(IION,JATM,NION)
+                  PAIO(IAD,J) = PAIO(IAD,J) *ZVOLIW(J)
+                END DO
+              ELSE
+                PAIO(IION,J) = PAIO(IION,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPMIO) THEN
+              IF (NLSPCSCL_MOL) THEN
+                DO JMOL=1,NMOLI
+                  IAD=EIRENE_INDIRECT_ADDRESS(IION,JMOL,NION)
+                  PMIO(IAD,J) = PMIO(IAD,J) *ZVOLIW(J)
+                END DO
+              ELSE
+                PMIO(IION,J) = PMIO(IION,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPIIO) THEN
+              IF (NLSPCSCL_ION) THEN
+                DO JION=1,NIONI
+                  IAD=EIRENE_INDIRECT_ADDRESS(IION,JION,NION)
+                  PIIO(IAD,J) = PIIO(IAD,J) *ZVOLIW(J)
+                END DO
+              ELSE
+              PIIO(IION,J) =PIIO(IION,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPPHIO) THEN
+              IF (NLSPCSCL_PHOT) THEN
+                DO JPHOT=1,NPHOTI
+                  IAD=EIRENE_INDIRECT_ADDRESS(IION,JPHOT,NION)
+                  PPHIO(IAD,J) = PPHIO(IAD,J) *ZVOLIW(J)
+                END DO
+              ELSE
+              PPHIO(IION,J)=PPHIO(IION,J)*ZVOLIW(J)
+              END IF
+            END IF
             IF (LPGENI) PGENI(IION,J)=PGENI(IION,J)*ZVOLIW(J)
             IF (LEGENI) EGENI(IION,J)=EGENI(IION,J)*ZVOLIW(J)
             IF (LVGENI) VGENI(IION,J)=VGENI(IION,J)*ZVOLIW(J)
@@ -164,10 +274,46 @@ C
           DO J=1,NSBOX_TAL
             IF (LPDENPH) PDENPH(IPHOT,J)=PDENPH(IPHOT,J)*ZVOLIN(J)
             IF (LEDENPH) EDENPH(IPHOT,J)=EDENPH(IPHOT,J)*ZVOLIN(J)
-            IF (LPAPHT)  PAPHT(IPHOT,J) =PAPHT(IPHOT,J) *ZVOLIW(J)
-            IF (LPMPHT)  PMPHT(IPHOT,J) =PMPHT(IPHOT,J) *ZVOLIW(J)
-            IF (LPIPHT)  PIPHT(IPHOT,J) =PIPHT(IPHOT,J) *ZVOLIW(J)
-            IF (LPPHPHT) PPHPHT(IPHOT,J)=PPHPHT(IPHOT,J)*ZVOLIW(J)
+            IF (LPAPHT) THEN
+              IF (NLSPCSCL_ATM) THEN
+                DO JATM=1,NATMI
+                  IAD=EIRENE_INDIRECT_ADDRESS(IPHOT,JATM,NPHOT)
+                  PAPHT(IAD,J) = PAPHT(IAD,J) *ZVOLIW(J)
+                END DO
+              ELSE
+                PAPHT(IPHOT,J) = PAPHT(IPHOT,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPMPHT) THEN
+              IF (NLSPCSCL_MOL) THEN
+                DO JMOL=1,NMOLI
+                  IAD=EIRENE_INDIRECT_ADDRESS(IPHOT,JMOL,NPHOT)
+                  PMPHT(IAD,J) = PMPHT(IAD,J) *ZVOLIW(J)
+                END DO
+              ELSE
+                PMPHT(IPHOT,J) = PMPHT(IPHOT,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPIPHT) THEN
+              IF (NLSPCSCL_ION) THEN
+                DO JION=1,NIONI
+                  IAD=EIRENE_INDIRECT_ADDRESS(IPHOT,JION,NPHOT)
+                  PIPHT(IAD,J) = PIPHT(IAD,J) *ZVOLIW(J)
+                END DO
+              ELSE
+                PIPHT(IPHOT,J) = PIPHT(IPHOT,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPPHPHT) THEN
+              IF (NLSPCSCL_PHOT) THEN
+                DO JPHOT=1,NPHOTI
+                  IAD=EIRENE_INDIRECT_ADDRESS(IPHOT,JPHOT,NPHOT)
+                  PPHPHT(IAD,J) = PPHPHT(IAD,J) *ZVOLIW(J)
+                END DO
+              ELSE
+                PPHPHT(IPHOT,J) = PPHPHT(IPHOT,J)*ZVOLIW(J)
+              END IF
+            END IF
             IF (LPGENPH) PGENPH(IPHOT,J)=PGENPH(IPHOT,J)*ZVOLIW(J)
             IF (LEGENPH) EGENPH(IPHOT,J)=EGENPH(IPHOT,J)*ZVOLIW(J)
             IF (LVGENPH) VGENPH(IPHOT,J)=VGENPH(IPHOT,J)*ZVOLIW(J)
@@ -198,10 +344,46 @@ C
       DO 227 IPLS=1,NPLSI
         IF (LOGPLS(IPLS,ISTR)) THEN
           DO 228 J=1,NSBOX_TAL
-            IF (LPAPL)  PAPL(IPLS,J) =PAPL(IPLS,J) *ZVOLIW(J)
-            IF (LPMPL)  PMPL(IPLS,J) =PMPL(IPLS,J) *ZVOLIW(J)
-            IF (LPIPL)  PIPL(IPLS,J) =PIPL(IPLS,J) *ZVOLIW(J)
-            IF (LPPHPL) PPHPL(IPLS,J)=PPHPL(IPLS,J)*ZVOLIW(J)
+            IF (LPAPL) THEN
+              IF (NLSPCSCL_ATM) THEN
+                DO JATM=1,NATMI
+                  IAD=EIRENE_INDIRECT_ADDRESS(IPLS,JATM,NPLS)
+                  PAPL(IAD,J) = PAPL(IAD,J) *ZVOLIW(J)
+                END DO
+              ELSE
+                PAPL(IPLS,J) = PAPL(IPLS,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPMPL) THEN
+              IF (NLSPCSCL_MOL) THEN
+                DO JMOL=1,NMOLI
+                  IAD=EIRENE_INDIRECT_ADDRESS(IPLS,JMOL,NPLS)
+                  PMPL(IAD,J) = PMPL(IAD,J) *ZVOLIW(J)
+                END DO
+              ELSE
+                PMPL(IPLS,J) = PMPL(IPLS,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPIPL) THEN
+              IF (NLSPCSCL_ION) THEN
+                DO JION=1,NIONI
+                  IAD=EIRENE_INDIRECT_ADDRESS(IPLS,JION,NPLS)
+                  PIPL(IAD,J) = PIPL(IAD,J) *ZVOLIW(J)
+                END DO
+              ELSE
+                PIPL(IPLS,J) = PIPL(IPLS,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPPHPL) THEN
+              IF (NLSPCSCL_PHOT) THEN
+                DO JPHOT=1,NPHOTI
+                  IAD=EIRENE_INDIRECT_ADDRESS(IPLS,JPHOT,NPLS)
+                  PPHPL(IAD,J) = PPHPL(IAD,J) *ZVOLIW(J)
+                END DO
+              ELSE
+                PPHPL(IPLS,J)=PPHPL(IPLS,J)*ZVOLIW(J)
+              END IF
+            END IF
             IF (LPPPL)  PPPL(IPLS,J) =PPPL(IPLS,J) *ZVOLIW(J)
 
             IF (LEAPL)  EAPL(IPLS,J) =EAPL(IPLS,J) *ZVOLIW(J)

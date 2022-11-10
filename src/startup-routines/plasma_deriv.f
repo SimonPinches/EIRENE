@@ -577,7 +577,6 @@ cdr nsbox rather than nsurf? Otherwise this will not work in additional cells
               TE=TEIN(IR)
               DE=DEIN(IR)             
               TEF=max(-2.30,LOG(TE)) ! cut off at 0.1 eV
-!pbtest       DEF=LOG(DE/DE_CORONA)
               DEF=LOG(DE)
 
               RCOLRAD=EIRENE_OTHER_RATE_COEFF(IRC,IR,TEF,DEF,.TRUE.,1)

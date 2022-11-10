@@ -5,9 +5,10 @@
       use eirmod_comprt, only: iunout
       use eirmod_cinit, only: master_path
       implicit none
-      character(*) :: DSN, REAC
+      character(*),intent(inout) :: DSN
+      character(*), intent(in) :: REAC
       logical, intent(inout) :: found
-      character(*), optional :: ELNAME, BUNDLING
+      character(*), intent(in), optional :: ELNAME, BUNDLING
       integer :: ierr
       logical :: found0, found1, found2
 
