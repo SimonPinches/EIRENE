@@ -1,11 +1,12 @@
 eirene_repo=git@jugit.fz-juelich.de:eirene/eirene.git
 #eirene_samples_repo=git@jugit.fz-juelich.de:eirene/EIRENE-sample-cases.git
-eirene_samples_repo=$HOME/f-eirene/EIRENE-sample-cases.git
+eirene_samples_repo=$HOME/f-eirene/EIRENE-sample-cases
 
 eir_dir=eirene
 eirene_branch=develop_openmp
 
-local_samples_repo=$HOME/f-eirene/EIRENE-sample-cases
+local_samples_repo=EIRENE_SAMPLES_LOCAL
+
 sample=2D-D_slab
 
 top_dir=$PWD

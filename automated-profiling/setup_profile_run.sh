@@ -55,12 +55,14 @@ make -j EIRENE
 cd $top_dir
 
 #Clone eirene samples into a local reference repo
-if [ ! -d $local_sample_repo ]
+if [ ! -d $eirene_samples_repo ]
 then
 	echo Cloning eirene samples into $local_samples_repo
 	git clone $eirene_samples_repo $local_samples_repo
 else
-	echo Using existing eirene samples repo at $local_samples_repo
+        echo Using existing eirene samples repo at $eirene_samples_repo
+        cp -r $eirene_samples_repo $local_samples_repo
+        
 fi
 
 cd $local_samples_repo
@@ -91,8 +93,7 @@ for n_per_N in ${rank_per_node_range[*]}
 do
 for c in ${thread_per_rank_range[*]}
 do
-#	cd $top_dir/$eir_dir
-	cd $local_samples_repo
+	cd $top_dir
 	node_threads=$(($n_per_N * $c))
 	total_threads=$(($node_threads * $N))
 	[[ $node_threads -gt max_num_node_threads ]] && continue
@@ -106,13 +107,15 @@ do
 	report cases.${case_name}.n_omp_threads $c
 	#if [ ! -d $case_name ]
 	if [ ! -d $sample ]
-	then
+	then    # Temporary hack for a local repo
+	        mkdir $case_name
+	        cp -rv $local_samples_repo/$sample $case_name/$sample
 		#git clone $top_dir/$local_samples_repo $case_name
-		git clone $local_samples_repo $case_name
+	        #git clone $local_samples_repo $case_name
 	else
 		echo $case_name repo already exists...
 	fi
-	#cd $case_name
+	cd $case_name
 	cd $sample
 	echo Building $case_name/$sample
 	#A little ugly and potentially fragile, but find the FFLAGS assignment statement and:
