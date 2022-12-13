@@ -4,7 +4,6 @@
 # This script clones EIRENE and sets up the profile cases in source
 # Dependencies: jq
 
-eir_dir=$HOME/f-eirene/eirene
 auto_prof_dir=$eir_dir/automated-profiling
 
 source $auto_prof_dir/automation_script_header.sh
@@ -54,15 +53,14 @@ make -j EIRENE
 
 cd $top_dir
 
-#Clone eirene samples into a local reference repo
+# Either clone eirene samples into a local reference repo or copy from existing directory
 if [ ! -d $eirene_samples_repo ]
 then
 	echo Cloning eirene samples into $local_samples_repo
 	git clone $eirene_samples_repo $local_samples_repo
 else
-        echo Using existing eirene samples repo at $eirene_samples_repo
+        echo Copying existing eirene samples repo at $eirene_samples_repo into $local_samples_repo
         cp -r $eirene_samples_repo $local_samples_repo
-        
 fi
 
 cd $local_samples_repo
@@ -79,12 +77,13 @@ max_num_node_threads=256
 #This limit is due to the way EIRENE uses output files
 max_num_threads=9999
 
-#node_range=( 1 2 4 8 )
+#node_range=( 1 2 4 )
 #rank_per_node_range=( 1 2 4 8 16 32 )
+#thread_per_rank_range=( 1 2 4 8 16 32 )
+#testing
 node_range=( 1 )
 rank_per_node_range=( 1 )
 thread_per_rank_range=( 1 2 )
-#thread_per_rank_range=( 1 2 4 8 16 32 )
 
 report cases {}
 for N in ${node_range[*]}
@@ -105,22 +104,18 @@ do
 	report cases.${case_name}.n_nodes $N
 	report cases.${case_name}.n_mpi_ranks $n
 	report cases.${case_name}.n_omp_threads $c
-	#if [ ! -d $case_name ]
-	if [ ! -d $sample ]
+	if [ ! -d $case_name ]
 	then    # Temporary hack for a local repo
 	        mkdir $case_name
-	        cp -rv $local_samples_repo/$sample $case_name/$sample
+	        cp -r $local_samples_repo/$sample $case_name/$sample
 		#git clone $top_dir/$local_samples_repo $case_name
 	        #git clone $local_samples_repo $case_name
 	else
-		echo $case_name repo already exists...
+		echo $case_name directory already exists...
 	fi
 	cd $case_name
 	cd $sample
 	echo Building $case_name/$sample
-	#A little ugly and potentially fragile, but find the FFLAGS assignment statement and:
-	#if it doesn't end with a g, add ' -pg -g'
-#	sed -i '/^ *FFLAGS *=.*[^g]$/s/$/ -pg -g/' Makefile
 	make -j
 	cd ../..
 	echo

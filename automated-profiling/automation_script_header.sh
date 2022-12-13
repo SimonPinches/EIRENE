@@ -1,9 +1,16 @@
-eirene_repo=git@jugit.fz-juelich.de:eirene/eirene.git
-#eirene_samples_repo=git@jugit.fz-juelich.de:eirene/EIRENE-sample-cases.git
-eirene_samples_repo=$HOME/f-eirene/EIRENE-sample-cases
+# Set this to a local eirene directory or alternatively download from the juelich repository
+# eir_dir=$HOME/f-eirene/eirene
+# Juelich repo
+#eirene_repo=git@jugit.fz-juelich.de:eirene/eirene.git
+#eir_dir=eirene
+#eirene_branch=develop_openmp
 
-eir_dir=eirene
-eirene_branch=develop_openmp
+# Choose either the eirene samples juelich repository or local cases
+# Juelich
+#eirene_samples_repo=git@jugit.fz-juelich.de:eirene/EIRENE-sample-cases.git
+# Local, will save time
+eirene_samples_branch=reduced_profiling_cases
+eirene_samples_repo=$HOME/f-eirene/EIRENE-sample-cases
 
 local_samples_repo=EIRENE_SAMPLES_LOCAL
 
