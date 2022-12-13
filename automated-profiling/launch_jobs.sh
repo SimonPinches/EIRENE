@@ -4,7 +4,8 @@
 # This script launches jobs, it may have to be run many times
 # Dependencies: jq
 
-source ./automation_script_header.sh
+auto_prof_dir=$eir_dir/automated-profiling
+source $auto_prof_dir/automation_script_header.sh
 
 launch_profile() {
 	N=$1
@@ -23,7 +24,7 @@ sbatch 2>&1 << EOF
 export OMP_NUM_THREADS=$c
 ./set_links.sh
 srun ./eirene 1>eirene-2d.reference.out 2>eirene-2d.reference.err
-mv gmon.out gmon_${N}-${n}-${c}.out
+mv eirene-2d.reference.out eirene-2d.reference_${N}-${n}-${c}.out
 ./rm_links.sh
 EOF
 	return $?
@@ -37,7 +38,6 @@ for case_name in $cases
 do
 	echo
 	echo "---$case_name---"
-	cd $top_dir/$eir_dir
 	#Check if it launched
 	launch_success=$(read_report cases.${case_name}.launch_success)
 	if [ "$launch_success" == "true" ];then
@@ -60,7 +60,7 @@ do
 	n=$(read_report cases.${case_name}.n_mpi_ranks)
 	c=$(read_report cases.${case_name}.n_omp_threads)
 	printf "Attempting to launch ${case_name}/${sample}... "
-	cd $case_name/$sample
+	cd $top_dir/$case_name/$sample
 	sbatch_return=$(launch_profile $N $n $c)
 	if [[ $? -eq 0 ]];then
 		report cases.${case_name}.launch_success "true"

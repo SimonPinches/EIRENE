@@ -1,5 +1,14 @@
 #!/bin/bash
+# The location of an existing eirene installation
+eir_dir=$HOME/f-eirene/eirene
+
+export eir_dir
+
+# Remove existing profile data
 rm -rf SCALABILITY_REPORT EIRENE_SAMPLES_LOCAL Profile*
 
-export eir_dir=$HOME/f-eirene/eirene
+# Set up profile directories
 $eir_dir/automated-profiling/setup_profile_run.sh
+
+# Launch jobs
+$eir_dir/automated-profiling/launch_jobs.sh
