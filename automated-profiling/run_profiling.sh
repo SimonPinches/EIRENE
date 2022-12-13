@@ -12,3 +12,6 @@ $eir_dir/automated-profiling/setup_profile_run.sh
 
 # Launch jobs
 $eir_dir/automated-profiling/launch_jobs.sh
+
+# Collect the profile data
+$eir_dir/automated-profiling/collect_profile_data.sh
