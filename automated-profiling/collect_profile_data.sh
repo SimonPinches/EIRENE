@@ -18,7 +18,7 @@ do
 
 	profile_generated=$(read_report cases.${case_name}.profile_success)
 	if [ "$profile_copied" == "true" ];then
-		echo "Already profiled"
+		echo "Already copied"
 		continue
 	fi	
 
@@ -44,7 +44,7 @@ do
 	mkdir -p $case_report_dir
 
 	####################
-	# Generate profile #
+	# Copy output      #
 	####################
 
 	N=$(read_report cases.${case_name}.n_nodes)
