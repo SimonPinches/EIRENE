@@ -48,7 +48,7 @@ mkdir -p buildRelease
 cd buildRelease
 echo Building EIRENE in $PWD
 module load cmake
-FC=mpif90 cmake -DJSON_MODULES=$HOME/lib/json-fortran_gcc/jsonfortran-gnu-8.3.0/lib/ -DLibJSON=$HOME/lib/json-fortran_gcc/jsonfortran-gnu-8.3.0/lib/libjsonfortran.a ../src/
+FC=mpif90 cmake -DJSON_MODULES=$HOME/lib/json-fortran_gcc/jsonfortran-gnu-8.3.0/lib/ -DLibJSON=$HOME/lib/json-fortran_gcc/jsonfortran-gnu-8.3.0/lib/libjsonfortran.a -DOPENMP=on ../src/
 make -j EIRENE
 
 cd $top_dir
