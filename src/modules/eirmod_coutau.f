@@ -25,7 +25,7 @@ cdr  Few are directly scored: ptrash, etrash, .... xmcp
      .          EIRENE_BROADCAST_COUTAU 
 
 ! INTEGRALS OF VOLUME-AVERAGED TALLIES
-      REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
+      REAL(DP), PUBLIC, ALLOCATABLE, TARGET, SAVE ::
      R PDENAI(:,:), PDENMI(:,:), PDENII(:,:), PDENPHI(:,:),
      R EDENAI(:,:), EDENMI(:,:), EDENII(:,:), EDENPHI(:,:),
      R PAELI(:),    PAATI(:,:),  PAMLI(:,:),  PAIOI(:,:),  PAPHTI(:,:),
@@ -58,7 +58,7 @@ cdr  Few are directly scored: ptrash, etrash, .... xmcp
      R MAPLI(:,:),  MMPLI(:,:),  MIPLI(:,:),  MPHPLI(:,:)
 
 ! INTEGRALS OF SURFACE TALLIES: PARTICLE FLUXES
-      REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
+      REAL(DP), PUBLIC, ALLOCATABLE, TARGET, SAVE ::
      R POTATI(:,:), PRFAAI(:,:), PRFMAI(:,:), PRFIAI(:,:), PRFPHAI(:,:),
      R PRFPAI(:,:),
      R POTMLI(:,:), PRFAMI(:,:), PRFMMI(:,:), PRFIMI(:,:), PRFPHMI(:,:),
@@ -109,9 +109,25 @@ cdr for scaling
      R FLUXT(:),    FLXFAC(:),  
      R FASCL(:,:),  FMSCL(:,:),  FISCL(:,:),  FPHSCL(:,:)
 
+! helper pointers for species resolved integrals
+      REAL(DP), PUBLIC, POINTER ::
+     R PAATI2(:,:), PAMLI2(:,:), PAIOI2(:,:), PAPHTI2(:,:), PAPLI2(:,:),
+     R PMATI2(:,:), PMMLI2(:,:), PMIOI2(:,:), PMPHTI2(:,:), PMPLI2(:,:),
+     R PIATI2(:,:), PIMLI2(:,:), PIIOI2(:,:), PIPHTI2(:,:), PIPLI2(:,:),
+     R PPHATI2(:,:), PPHMLI2(:,:), PPHIOI2(:,:), PPHPHTI2(:,:),
+     R PPHPLI2(:,:)
+
+      REAL(DP), PUBLIC, POINTER ::
+     R PRFAAI2(:,:), PRFMAI2(:,:), PRFIAI2(:,:), PRFPHAI2(:,:),
+     R PRFAMI2(:,:), PRFMMI2(:,:), PRFIMI2(:,:), PRFPHMI2(:,:),
+     R PRFAII2(:,:), PRFMII2(:,:), PRFIII2(:,:), PRFPHII2(:,:),
+     R PRFAPHTI2(:,:), PRFMPHTI2(:,:), PRFIPHTI2(:,:),
+     R PRFPHPHTI2(:,:)
+
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NADDI(:),  NFRSTI(:), NDDWI(:),  NFRTWI(:),
-     I NFSTVI(:), NFSTWI(:)
+     I NFSTVI(:), NFSTWI(:),
+     I NEXTVI(:), NEXTWI(:)
 
       INTEGER, PUBLIC, SAVE ::
      I NOUTA1, NOUTA2, NOUTAS, NOUTAU, NOUTTL
@@ -129,7 +145,7 @@ cdr for scaling
       NOUTA2 = NSFTLP*NSTRAP
       NOUTAS = (2*NPHOTP+2*NATMP+2*NMOLP+1*NPLSP+3*NIONP+11)*NSTRAP
       NOUTAU = NOUTA1+NOUTA2+NOUTAS
-      NOUTTL = 3*(NTALV+NTALS)
+      NOUTTL = 4*(NTALV+NTALS)
 
       ALLOCATE (PDENAI(0:NATM,0:NSTRA))
       ALLOCATE (PDENMI(0:NMOL,0:NSTRA))
@@ -486,6 +502,8 @@ cdr  for scaling
       ALLOCATE (NFRTWI(NTALS))
       ALLOCATE (NFSTVI(NTALV))
       ALLOCATE (NFSTWI(NTALS))
+      ALLOCATE (NEXTVI(NTALV))
+      ALLOCATE (NEXTWI(NTALS))
 
       WRITE (IUNMEM,'(A,T25,I15)')
      .       ' COUTAU ',NOUTAU*8 + NOUTTL*4
@@ -497,6 +515,8 @@ cdr this should go to another place?
       NFRTWI = 0
       NFSTVI = 0
       NFSTWI = 0
+      NEXTVI = 0
+      NEXTWI = 0
 
 csw 19mar2013
       xmcp=0  !dr  this is done in init_coutau. So can go out here?
@@ -742,6 +762,8 @@ c size of tallies
       DEALLOCATE (NFRTWI)
       DEALLOCATE (NFSTVI)
       DEALLOCATE (NFSTWI)
+      DEALLOCATE (NEXTVI)
+      DEALLOCATE (NEXTWI)
 
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_COUTAU
@@ -1754,7 +1776,6 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(SPTTTI)
       OUTAU(IA:IE) = PACK(SPTTTI,.TRUE.)
-      write (iunout,*) ' spttti ',ia,ie
 
       IA = IE + 1
       IE = IA - 1 + SIZE(ADDSI)
@@ -2967,9 +2988,11 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       CALL MPI_BCAST (NADDI,NTALV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NFRSTI,NTALV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NFSTVI,NTALV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NEXTVI,NTALV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NDDWI,NTALS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NFRTWI,NTALS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NFSTWI,NTALS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NEXTWI,NTALS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 

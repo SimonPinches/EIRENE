@@ -322,6 +322,7 @@ CIITER=... , ITIMV=...
 C
         CALL EIRENE_INPUT
 
+        CALL EIRENE_ALLOC_CESTIM(0)
         CALL EIRENE_ALLOC_COMUSR(4)
         CALL EIRENE_INIT_EION
 
@@ -742,53 +743,56 @@ CVK DBG
       END DO
       SUMMM=SUMMM/(VOLSSS+EPS60)
       WRITE(iunout,*) SUMMM
-      WRITE(iunout,*) "EELEI1 (AVR)"
-      DO III=1,NREI
-        SUMMM=0
-        DO JJJ=1,NSURFM
-          SUMMM=SUMMM+EELEI1(III,JJJ)*VOL(JJJ)
-        END DO
-        SUMMM=SUMMM/(VOLSSS+EPS60)
-        WRITE(iunout,*) III,SUMMM
-      END DO
-      WRITE(iunout,*) "TABEI1 (AVR)"
-      DO III=1,NREI
-        SUMMM=0
-        DO JJJ=1,NSURFM
-          SUMMM=SUMMM+TABEI1(III,JJJ)*VOL(JJJ)
-        END DO
-        SUMMM=SUMMM/(VOLSSS+EPS60)
-        WRITE(iunout,*) III,SUMMM
-      END DO
 
-      WRITE(iunout,*) "TABRC1 (AVR)"
-      DO III=1,NREC
-        SUMMM=0
-        DO JJJ=1,NSURFM
-          SUMMM=SUMMM+TABRC1(III,JJJ)*VOL(JJJ)
+      IF (NSTORDR >= NRAD) THEN
+        WRITE(iunout,*) "EELEI1 (AVR)"
+        DO III=1,NREI
+          SUMMM=0
+          DO JJJ=1,NSURFM
+            SUMMM=SUMMM+EELEI1(III,JJJ)*VOL(JJJ)
+          END DO
+          SUMMM=SUMMM/(VOLSSS+EPS60)
+          WRITE(iunout,*) III,SUMMM
         END DO
-        SUMMM=SUMMM/(VOLSSS+EPS60)
-        WRITE(iunout,*) III,SUMMM
-      END DO
+        WRITE(iunout,*) "TABEI1 (AVR)"
+        DO III=1,NREI
+          SUMMM=0
+          DO JJJ=1,NSURFM
+            SUMMM=SUMMM+TABEI1(III,JJJ)*VOL(JJJ)
+          END DO
+          SUMMM=SUMMM/(VOLSSS+EPS60)
+          WRITE(iunout,*) III,SUMMM
+        END DO
 
-      WRITE(iunout,*) "TABEL3 (AVR)"
-      DO III=1,NREL
-        SUMMM=0
-        DO JJJ=1,NSURFM
-          SUMMM=SUMMM+SUM(TABEL3(III,JJJ,:))*VOL(JJJ)
+        WRITE(iunout,*) "TABRC1 (AVR)"
+        DO III=1,NREC
+          SUMMM=0
+          DO JJJ=1,NSURFM
+            SUMMM=SUMMM+TABRC1(III,JJJ)*VOL(JJJ)
+          END DO
+          SUMMM=SUMMM/(VOLSSS+EPS60)
+          WRITE(iunout,*) III,SUMMM
         END DO
-        SUMMM=SUMMM/(VOLSSS+EPS60)
-        WRITE(iunout,*) III,SUMMM
-      END DO
-      WRITE(iunout,*) "EPLEL3 (AVR)"
-      DO III=1,NREL
-        SUMMM=0
-        DO JJJ=1,NSURFM
-          SUMMM=SUMMM+SUM(EPLEL3(III,JJJ,:))*VOL(JJJ)
+
+        WRITE(iunout,*) "TABEL3 (AVR)"
+        DO III=1,NREL
+          SUMMM=0
+          DO JJJ=1,NSURFM
+            SUMMM=SUMMM+SUM(TABEL3(III,JJJ,:))*VOL(JJJ)
+          END DO
+          SUMMM=SUMMM/(VOLSSS+EPS60)
+          WRITE(iunout,*) III,SUMMM
         END DO
-        SUMMM=SUMMM/(VOLSSS+EPS60)
-        WRITE(iunout,*) III,SUMMM
-      END DO
+        WRITE(iunout,*) "EPLEL3 (AVR)"
+        DO III=1,NREL
+          SUMMM=0
+          DO JJJ=1,NSURFM
+            SUMMM=SUMMM+SUM(EPLEL3(III,JJJ,:))*VOL(JJJ)
+          END DO
+          SUMMM=SUMMM/(VOLSSS+EPS60)
+          WRITE(iunout,*) III,SUMMM
+        END DO
+      END IF
       WRITE(iunout,*) "DIIN (AVR)"
       DO III=1,NPLS
         SUMMM=0

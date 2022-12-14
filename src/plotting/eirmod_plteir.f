@@ -78,7 +78,7 @@ C
      .           NF, NFT, I, IA, N, IXSET2, ISPZ, IALG, N1SDVI, ISAVE,
      .           IALV, ITL, JTAL, IBLD, ICURV, IE, IXSET3, IS,
      .           IERR, ICINC, IYSET3, IX, I2M, J, IRAD, I1, I2, IT,
-     .           ITT, ITP, KK
+     .           ITT, ITP, KK, JJTAL
       LOGICAL :: LPLOT2(NPLT), LSDVI(NPLT), LINLOG, L_SAME
       CHARACTER(24) :: TXUNIT(NPLT), TXSPEC(NPLT)
       CHARACTER(24) :: TXUNT1, TXSPC1
@@ -629,7 +629,17 @@ C
               YMNLG2(ICURV)=1.D60
               YMXLG2(ICURV)=-1.D60
               IF (JTAL.GT.0.) THEN
-                CALL EIRENE_FETCH_OUTAU (OUTAUI,JTAL,ISPZ,ISTRA,IUNOUT)
+                JJTAL = JTAL
+                IF (NEXTVI(JTAL) > 0) THEN
+                  KK = 0
+                  DO K=1,JTAL
+                    KK = KK + 1
+                    IF ((K > NEXTVI(JTAL) .AND. 
+     .                  (MOD(K,NEXTVI(JTAL)) == 1))) KK = KK + 1
+                  END DO
+                  JJTAL = KK
+                END IF
+                CALL EIRENE_FETCH_OUTAU (OUTAUI,JJTAL,ISPZ,ISTRA,IUNOUT)
                 IF (OUTAUI.EQ.0.) THEN
                   IF (TRCPLT) THEN
                     WRITE (iunout,*) 'TALLY NO. ',JTAL,

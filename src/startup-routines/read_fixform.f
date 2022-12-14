@@ -3361,7 +3361,7 @@ CVK TRACING FOR DEBUGGING, V.Kotov:  not in use in present EIRENE version
 cdr  .                  TRCDBG2,TRCDBGE,TRCDBGM,TRCDBGF,TRCDBGL,
 cdr  .                  TRCDBGS,TRCDBGG,TRCDBGMPI,TRCDBGC,
 CPB  ACTIVATE SPECIES-RESOLVED CPU CONSUMPTION OPTION
-     .                  TRCHKTIM
+     .                  TRCHKTIM,TRCSCL
       do I = 0, NSTRA, 60
         READ (IUNIN,'(A72)') ZEILE
         call fix_logical_input(zeile,60)

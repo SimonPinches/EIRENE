@@ -89,7 +89,6 @@ C
 C     INTEGER :: NPBGK
 C SECONDARY SPECIES IDENTIFIERS
       INTEGER :: IAT1,IAT2,IML1,IML2,IIO1,IIO2,IPH1,IPH2,IPL1,IPL2
-      INTEGER :: IAD, EIRENE_INDIRECT_ADDRESS
 C PH PROCESSES
       INTEGER ::      IAPH,IRPH
 C    .               ,UPDF        ! out, something for stim. emiss ?
@@ -184,9 +183,12 @@ cdr This perfectly cancels the source rate.
 !$OMP ATOMIC
               PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)-WEIGHT
               IF (NLSPCSCL_PHOT) THEN
-                IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IPHOT,NPHOT)
+                PPHPHT2(1:NPHOT,0:NPHOT) => PPHPHT(:,IRD)
 !$OMP ATOMIC
-                PPHPHT(IAD,IRD)=PPHPHT(IAD,IRD)-WEIGHT
+                PPHPHT2(IPHOT,IPHOT)=PPHPHT2(IPHOT,IPHOT)-WEIGHT
+                LMETSP2(1:NPHOT,0:NPHOT) => LMETSP(NTS_IPH+1:NTS_PHPH)
+                LMETSP2(IPHOT,0)=.TRUE.
+                LMETSP2(IPHOT,IPHOT)=.TRUE.
               END IF
             ENDIF
             IF (LEPHPHT) THEN
@@ -204,9 +206,12 @@ cdr This perfectly cancels the source rate.
 !$OMP ATOMIC
             PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)-WTRSIG
             IF (NLSPCSCL_PHOT) THEN
-              IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IPHOT,NPHOT)
+              PPHPHT2(1:NPHOT,0:NPHOT) => PPHPHT(:,IRD)
 !$OMP ATOMIC
-              PPHPHT(IAD,IRD)=PPHPHT(IAD,IRD)-WTRSIG
+              PPHPHT2(IPHOT,IPHOT)=PPHPHT2(IPHOT,IPHOT)-WEIGHT
+              LMETSP2(1:NPHOT,0:NPHOT) => LMETSP(NTS_IPH+1:NTS_PHPH)
+              LMETSP2(IPHOT,0)=.TRUE.
+              LMETSP2(IPHOT,IPHOT)=.TRUE.
             END IF
           ENDIF
           IF (LEPHPHT) THEN
@@ -239,10 +244,13 @@ C
 !$OMP ATOMIC
               PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)+WTRSIG
               IF (NLSPCSCL_PHOT) THEN
-                IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IPHOT,NPHOT)
+                PPHPHT2(1:NPHOT,0:NPHOT) => PPHPHT(:,IRD)
 !$OMP ATOMIC
-                PPHPHT(IAD,IRD)=PPHPHT(IAD,IRD)+WTRSIG
-            END IF
+                PPHPHT2(IPHOT,IPHOT)=PPHPHT2(IPHOT,IPHOT)+WTRSIG
+                LMETSP2(1:NPHOT,0:NPHOT) => LMETSP(NTS_IPH+1:NTS_PHPH)
+                LMETSP2(IPHOT,0)=.TRUE.
+                LMETSP2(IPHOT,IPHOT)=.TRUE.
+              END IF
             ENDIF
 cdr         if(updf==1) PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)+WTRSIG !prob. wrong
           ELSE
@@ -255,9 +263,12 @@ cdr  do this check in initialisation, only once
 !$OMP ATOMIC
               PPHPL(IPLS,IRD)=PPHPL(IPLS,IRD)-WTRSIG
               IF (NLSPCSCL_PHOT) THEN
-                IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IPHOT,NPHOT)
+                PPHPL2(1:NPLS,0:NPHOT) => PPHPL(:,IRD)
 !$OMP ATOMIC
-                PPHPHT(IAD,IRD)=PPHPHT(IAD,IRD)-WTRSIG
+                PPHPL2(IPLS,IPHOT)=PPHPL2(IPLS,IPHOT)-WTRSIG
+                LMETSP2(1:NPLS,0:NPHOT) => LMETSP(NTS_PHPH+1:NTS_PPH)
+                LMETSP2(IPLS,0)=.TRUE.
+                LMETSP2(IPLS,IPHOT)=.TRUE.
               END IF
               LMETSP(NSPAMI+IPLS)=.TRUE.
             END IF
@@ -276,9 +287,12 @@ C  FIRST SECONDARY:
 !$OMP ATOMIC
                   PPHAT(IAT1,IRD)= PPHAT(IAT1,IRD)+WTRSIG*INUM
                   IF (NLSPCSCL_PHOT) THEN
-                    IAD = EIRENE_INDIRECT_ADDRESS(IAT1,IPHOT,NATM)
+                    PPHAT2(1:NATM,0:NPHOT) => PPHAT(:,IRD)
 !$OMP ATOMIC
-                    PPHAT(IAD,IRD)=PPHAT(IAD,IRD)+WTRSIG*INUM
+                    PPHAT2(IAT1,IPHOT)= PPHAT2(IAT1,IPHOT)+WTRSIG*INUM
+                    LMETSP2(1:NATM,0:NPHOT) => LMETSP(NTS_PI+1:NTS_APH)
+                    LMETSP2(IAT1,0)=.TRUE.
+                    LMETSP2(IAT1,IPHOT)=.TRUE.
                   END IF
                   LMETSP(NSPH+IAT1)=.TRUE.
                 END IF
@@ -290,9 +304,12 @@ C  FIRST SECONDARY:
 !$OMP ATOMIC
                   PPHML(IML1,IRD)= PPHML(IML1,IRD)+WTRSIG*INUM
                   IF (NLSPCSCL_PHOT) THEN
-                    IAD = EIRENE_INDIRECT_ADDRESS(IML1,IPHOT,NMOL)
+                    PPHML2(1:NMOL,0:NPHOT) => PPHML(:,IRD)
 !$OMP ATOMIC
-                    PPHML(IAD,IRD)=PPHML(IAD,IRD)+WTRSIG*INUM
+                    PPHML2(IML1,IPHOT)= PPHML2(IML1,IPHOT)+WTRSIG*INUM
+                    LMETSP2(1:NMOL,0:NPHOT) => LMETSP(NTS_APH+1:NTS_MPH)
+                    LMETSP2(IML1,0)=.TRUE.
+                    LMETSP2(IML1,IPHOT)=.TRUE.
                   END IF
                   LMETSP(NSPA+IML1)=.TRUE.
                 END IF
@@ -304,9 +321,12 @@ C  FIRST SECONDARY:
 !$OMP ATOMIC
                   PPHIO(IIO1,IRD)= PPHIO(IIO1,IRD)+WTRSIG*INUM
                   IF (NLSPCSCL_PHOT) THEN
-                    IAD = EIRENE_INDIRECT_ADDRESS(IIO1,IPHOT,NION)
+                    PPHIO2(1:NION,0:NPHOT) => PPHIO(:,IRD)
 !$OMP ATOMIC
-                    PPHIO(IAD,IRD)=PPHIO(IAD,IRD)+WTRSIG*INUM
+                    PPHIO2(IIO1,IPHOT)= PPHIO2(IIO1,IPHOT)+WTRSIG*INUM
+                    LMETSP2(1:NION,0:NPHOT) => LMETSP(NTS_MPH+1:NTS_IPH)
+                    LMETSP2(IIO1,0)=.TRUE.
+                    LMETSP2(IIO1,IPHOT)=.TRUE.
                   END IF
                   LMETSP(NSPAM+IIO1)=.TRUE.
                 END IF
@@ -319,9 +339,12 @@ C               INUM=PHV_N1STOTPH(iphot,IRPH,3)
 !$OMP ATOMIC
                   PPHPL(IPL1,IRD)= PPHPL(IPL1,IRD)+WTRSIG*INUM
                   IF (NLSPCSCL_PHOT) THEN
-                    IAD = EIRENE_INDIRECT_ADDRESS(IPL1,IPHOT,NPLS)
+                    PPHPL2(1:NPLS,0:NPHOT) => PPHPL(:,IRD)
 !$OMP ATOMIC
-                    PPHPL(IAD,IRD)=PPHPL(IAD,IRD)+WTRSIG*INUM
+                    PPHPL2(IPL1,IPHOT)= PPHPL2(IPL1,IPHOT)+WTRSIG*INUM
+                    LMETSP2(1:NPLS,0:NPHOT)=>LMETSP(NTS_PHPH+1:NTS_PPH)
+                    LMETSP2(IPL1,0)=.TRUE.
+                    LMETSP2(IPL1,IPHOT)=.TRUE.
                   END IF
 csw added updf check (stim.em)
 cdr: not ready
@@ -342,9 +365,12 @@ cdr  test iph1 > 0 only once, in initialisation. here: removed
 !$OMP ATOMIC
                     PPHPHT(iph1,ird)=PPHPHT(iph1,ird)+wtrsig*inum
                     IF (NLSPCSCL_PHOT) THEN
-                    IAD = EIRENE_INDIRECT_ADDRESS(IPH1,IPHOT,NPHOT)
+                    PPHPHT2(1:NPHOT,0:NPHOT) => PPHPHT(:,IRD)
 !$OMP ATOMIC
-                    PPHPHT(IAD,IRD)=PPHPHT(IAD,IRD)+WTRSIG*INUM
+                    PPHPHT2(iph1,iPHOT)=PPHPHT2(iph1,iPHOT)+wtrsig*inum
+                    LMETSP2(1:NPHOT,0:NPHOT)=>LMETSP(NTS_IPH+1:NTS_PHPH)
+                    LMETSP2(IPH1,0)=.TRUE.
+                    LMETSP2(IPH1,IPHOT)=.TRUE.
                   END IF
                     LMETSP(IPH1)=.TRUE.
                   END IF
@@ -363,9 +389,12 @@ C  SECOND SECONDARY:
 !$OMP ATOMIC
                   PPHAT(IAT2,IRD)= PPHAT(IAT2,IRD)+WTRSIG*INUM
                   IF (NLSPCSCL_PHOT) THEN
-                    IAD = EIRENE_INDIRECT_ADDRESS(IAT2,IPHOT,NATM)
+                    PPHAT2(1:NATM,0:NPHOT) => PPHAT(:,IRD)
 !$OMP ATOMIC
-                    PPHAT(IAD,IRD)=PPHAT(IAD,IRD)+WTRSIG*INUM
+                    PPHAT2(IAT2,IPHOT)= PPHAT2(IAT2,IPHOT)+WTRSIG*INUM
+                    LMETSP2(1:NATM,0:NPHOT)=>LMETSP(NTS_PI+1:NTS_APH)
+                    LMETSP2(IAT2,0)=.TRUE.
+                    LMETSP2(IAT2,IPHOT)=.TRUE.
                   END IF
                   LMETSP(NSPH+IAT2)=.TRUE.
                 END IF
@@ -377,9 +406,12 @@ C  SECOND SECONDARY:
 !$OMP ATOMIC
                   PPHML(IML2,IRD)= PPHML(IML2,IRD)+WTRSIG*INUM
                   IF (NLSPCSCL_PHOT) THEN
-                    IAD = EIRENE_INDIRECT_ADDRESS(IML2,IPHOT,NMOL)
+                    PPHML2(1:NMOL,0:NPHOT) => PPHML(:,IRD)
 !$OMP ATOMIC
-                    PPHML(IAD,IRD)=PPHML(IAD,IRD)+WTRSIG*INUM
+                    PPHML2(IML2,IPHOT)= PPHML2(IML2,IPHOT)+WTRSIG*INUM
+                    LMETSP2(1:NMOL,0:NPHOT)=>LMETSP(NTS_APH+1:NTS_MPH)
+                    LMETSP2(IML2,0)=.TRUE.
+                    LMETSP2(IML2,IPHOT)=.TRUE.
                   END IF
                   LMETSP(NSPA+IML2)=.TRUE.
                 END IF
@@ -391,9 +423,12 @@ C  SECOND SECONDARY:
 !$OMP ATOMIC
                   PPHIO(IIO2,IRD)= PPHIO(IIO2,IRD)+WTRSIG*INUM
                   IF (NLSPCSCL_PHOT) THEN
-                    IAD = EIRENE_INDIRECT_ADDRESS(IIO2,IPHOT,NION)
+                    PPHIO2(1:NION,0:NPHOT) => PPHIO(:,IRD)
 !$OMP ATOMIC
-                    PPHIO(IAD,IRD)=PPHIO(IAD,IRD)+WTRSIG*INUM
+                    PPHIO2(IIO2,IPHOT)= PPHIO2(IIO2,IPHOT)+WTRSIG*INUM
+                    LMETSP2(1:NION,0:NPHOT)=>LMETSP(NTS_MPH+1:NTS_IPH)
+                    LMETSP2(IIO2,0)=.TRUE.
+                    LMETSP2(IIO2,IPHOT)=.TRUE.
                   END IF
                   LMETSP(NSPAM+IIO2)=.TRUE.
                 END IF
@@ -406,9 +441,12 @@ C               INUM=PHV_N2NDOTPH(iphot,IRPH,3)
 !$OMP ATOMIC
                   PPHPL(IPL2,IRD)= PPHPL(IPL2,IRD)+WTRSIG*INUM
                   IF (NLSPCSCL_PHOT) THEN
-                    IAD = EIRENE_INDIRECT_ADDRESS(IPL2,IPHOT,NPLS)
+                    PPHPL2(1:NPLS,0:NPHOT) => PPHPL(:,IRD)
 !$OMP ATOMIC
-                    PPHPL(IAD,IRD)=PPHPL(IAD,IRD)+WTRSIG*INUM
+                    PPHPL2(IPL2,IPHOT)= PPHPL2(IPL2,IPHOT)+WTRSIG*INUM
+                    LMETSP2(1:NPLS,0:NPHOT)=>LMETSP(NTS_PHPH+1:NTS_PPH)
+                    LMETSP2(IPL2,0)=.TRUE.
+                    LMETSP2(IPL2,IPHOT)=.TRUE.
                   END IF
 csw added updf check (stim.em)
 cdr  stim emission: am besten: 2 secondaries in group 2.
@@ -428,10 +466,15 @@ cdr test iph2 > 0 removed, to be done only once in initialisation
 !$OMP ATOMIC
                     PPHPHT(iph2,ird)=PPHPHT(iph2,ird)+wtrsig*inum
                     IF (NLSPCSCL_PHOT) THEN
-                      IAD = EIRENE_INDIRECT_ADDRESS(IPH2,IPHOT,NPHOT)
+                      PPHPHT2(1:NPHOT,0:NPHOT) => PPHPHT(:,IRD)
 !$OMP ATOMIC
-                      PPHPHT(IAD,IRD)=PPHPHT(IAD,IRD)+WTRSIG*INUM
-                  END IF
+                      PPHPHT2(iph2,iPHOT)=PPHPHT2(iph2,iPHOT)+
+     .                                    wtrsig*inum
+                      LMETSP2(1:NPHOT,0:NPHOT)=>
+     .                       LMETSP(NTS_IPH+1:NTS_PHPH)
+                      LMETSP2(IPH2,0)=.TRUE.
+                      LMETSP2(IPH2,IPHOT)=.TRUE.
+                    END IF
                     LMETSP(iph2)=.true.
                   END IF
                 END IF

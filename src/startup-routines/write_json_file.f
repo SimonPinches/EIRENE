@@ -188,6 +188,7 @@
       call json%add(me,'NEXVS',nexvs)
       call json%add(me,'NLTRIMESH',nltrimesh)
       call json%add(me,'NLSPCSCL',nlspcscl)
+      call json%add(me,'NLSPCSCL_ON',nlspcscl_on)
 
       call json%create_array(cfile,'CFILE') !an array
       do ifile=1, ndbnames
@@ -1814,6 +1815,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
 !      call json%add(me,'TRCDBGMPI',trcdbgmpi)      
 !      call json%add(me,'TRCDBGC',trcdbgc) 
       call json%add(me,'TRCHKTIM',trchktim) 
+      call json%add(me,'TRCSCl',trcscl) 
 
       call json%add(me,'TRCSRC',trcsrc)
     

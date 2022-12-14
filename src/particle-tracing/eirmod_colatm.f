@@ -158,7 +158,7 @@ C
        INTEGER, INTENT(OUT) :: COLTYP
        INTEGER :: NEII_RED,LGEI_RED(0:NREI)   
        REAL(DP) :: ZEP1
-       INTEGER :: I,J,EIRENE_INDIRECT_ADDRESS
+       INTEGER :: I,J
 
 
 C  INCIDENT SPECIES: IOLD
@@ -672,32 +672,41 @@ C  IATMN: ATOM SPECIES AFTER CX
               IF (LPAAT) THEN
 !$OMP ATOMIC
                 PAAT(IOLD,NCELL) =PAAT(IOLD,NCELL)-WGHTO
-                IF (NLSPCSCL_ATM) THEN
-                  IAD = EIRENE_INDIRECT_ADDRESS(IOLD,IOLD,NATM)
-!$OMP ATOMIC
-                  PAAT(IAD,NCELL)=PAAT(IAD,NCELL)-WGHTO
-                END IF
                 LMETSP(NSPH+IOLD)=.TRUE.
+                IF (NLSPCSCL_ATM) THEN
+                  PAAT2(1:NATM,0:NATM) => PAAT(:,NCELL)
+!$OMP ATOMIC
+                  PAAT2(IOLD,IOLD)=PAAT2(IOLD,IOLD)-WGHTO
+                  LMETSP2(1:NATM,0:NATM) => LMETSP(NSPZTOTS+1:NTS_AA)
+                  LMETSP2(IOLD,0) = .TRUE.
+                  LMETSP2(IOLD,IOLD) = .TRUE.
+                END IF
               END IF
               IF (LPAAT) THEN
 !$OMP ATOMIC
                 PAAT(IATMN,NCELL)=PAAT(IATMN,NCELL)+WEIGHT
-                IF (NLSPCSCL_ATM) THEN
-                  IAD = EIRENE_INDIRECT_ADDRESS(IATMN,IOLD,NATM)
-!$OMP ATOMIC
-                  PAAT(IAD,NCELL)=PAAT(IAD,NCELL)+WEIGHT
-                END IF
                 LMETSP(NSPH+IATMN)=.TRUE.
+                IF (NLSPCSCL_ATM) THEN
+                  PAAT2(1:NATM,0:NATM) => PAAT(:,NCELL)
+!$OMP ATOMIC
+                  PAAT2(IATMN,IOLD)=PAAT2(IATMN,IOLD)+WEIGHT
+                  LMETSP2(1:NATM,0:NATM) => LMETSP(NSPZTOTS+1:NTS_AA)
+                  LMETSP2(IATMN,0) = .TRUE.
+                  LMETSP2(IATMN,IOLD) = .TRUE.
+                END IF
               END IF
               IF (LPAPL) THEN
 !$OMP ATOMIC
                 PAPL(IPLS,NCELL) =PAPL(IPLS,NCELL)-WEIGHT
-                IF (NLSPCSCL_ATM) THEN
-                  IAD = EIRENE_INDIRECT_ADDRESS(IPLS,IOLD,NPLS)
-!$OMP ATOMIC
-                  PAPL(IAD,NCELL)=PAPL(IAD,NCELL)-WEIGHT
-                END IF
                 LMETSP(NSPAMI+IPLS)=.TRUE.
+                IF (NLSPCSCL_ATM) THEN
+                  PAPL2(1:NPLS,0:NATM) => PAPL(:,NCELL)
+!$OMP ATOMIC
+                  PAPL2(IPLS,IOLD)=PAPL2(IPLS,IOLD)-WEIGHT
+                  LMETSP2(1:NPLS,0:NATM) => LMETSP(NTS_PHA+1:NTS_PA)
+                  LMETSP2(IPLS,0) = .TRUE.
+                  LMETSP2(IPLS,IOLD) = .TRUE.
+                END IF
               END IF
               IF (LPAEL) THEN
 !$OMP ATOMIC
@@ -709,12 +718,15 @@ C  IPLSN: ION SPECIES AFTER CX
                 IF (LPAPL) THEN
 !$OMP ATOMIC
                   PAPL(IPLSN,NCELL)=PAPL(IPLSN,NCELL)+WGHTO
-                  IF (NLSPCSCL_ATM) THEN
-                    IAD = EIRENE_INDIRECT_ADDRESS(IPLSN,IOLD,NPLS)
-!$OMP ATOMIC
-                    PAPL(IAD,NCELL)=PAPL(IAD,NCELL)+WGHTO
-                  END IF
                   LMETSP(NSPAMI+IPLSN)=.TRUE.
+                  IF (NLSPCSCL_ATM) THEN
+                    PAPL2(1:NPLS,0:NATM) => PAPL(:,NCELL)
+!$OMP ATOMIC
+                    PAPL2(IPLSN,IOLD)=PAPL2(IPLSN,IOLD)+WGHTO
+                    LMETSP2(1:NPLS,0:NATM) => LMETSP(NTS_PHA+1:NTS_PA)
+                    LMETSP2(IPLSN,0) = .TRUE.
+                    LMETSP2(IPLSN,IOLD) = .TRUE.
+                  END IF
                 END IF
                 IF (LPAEL) THEN
 !$OMP ATOMIC
@@ -920,16 +932,20 @@ C  ASSUME, AS BEFORE, NO CHANGE IN SPECIES/TYPE
             PAAT(IOLD,NCELL) =PAAT(IOLD,NCELL)-WGHTO
 !$OMP ATOMIC
             PAAT(IATM,NCELL) =PAAT(IATM,NCELL)+WEIGHT
-            IF (NLSPCSCL_ATM) THEN
-              IAD = EIRENE_INDIRECT_ADDRESS(IOLD,IOLD,NATM)
-!$OMP ATOMIC
-              PAAT(IAD,NCELL)=PAAT(IAD,NCELL)-WGHTO
-              IAD = EIRENE_INDIRECT_ADDRESS(IATM,IOLD,NATM)
-!$OMP ATOMIC
-              PAAT(IAD,NCELL)=PAAT(IAD,NCELL)+WEIGHT
-            END IF
             LMETSP(NSPH+IOLD)=.TRUE.
             LMETSP(NSPH+IATM)=.TRUE.
+            IF (NLSPCSCL_ATM) THEN
+              PAAT2(1:NATM,0:NATM) => PAAT(:,NCELL)
+!$OMP ATOMIC
+              PAAT2(IOLD,IOLD)=PAAT2(IOLD,IOLD)-WGHTO
+!$OMP ATOMIC
+              PAAT2(IATM,IOLD)=PAAT2(IATM,IOLD)+WEIGHT
+              LMETSP2(1:NATM,0:NATM) => LMETSP(NSPZTOTS+1:NTS_AA)
+              LMETSP2(IOLD,0) = .TRUE.
+              LMETSP2(IATM,0) = .TRUE.
+              LMETSP2(IOLD,IOLD) = .TRUE.
+              LMETSP2(IATM,IOLD) = .TRUE.
+            END IF
           END IF
         ENDIF
 c  UPDATE collision estimator for EL energy exchange tallies

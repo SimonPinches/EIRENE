@@ -113,7 +113,7 @@ c    .
      .           IOLD, NOLD,
      .           IRCX, IREI, IRPI, IREL,
      .           IBGK, IP, NFLAG,
-     .           IATMN, IPLSN, NCLLO, IPLSV,  I, J, IPL, IAD
+     .           IATMN, IPLSN, NCLLO, IPLSV,  I, J, IPL
 
 Cdr  additional arrays for ANALOG CASCADE and SPLITTING AT COLLISIONS.
 Cdr (should be set in initialization phase, not here)
@@ -130,7 +130,7 @@ cym FP, FLTEST,RMMIO IRPH removed during merge
 !$OMP& SIG_ELIM, SIG_TOT_N, SIG_TOT_O, SIG_TEST,
 !$OMP& IICX, IIEI, IIPI, IIEL,IOLD, NOLD,IRCX, IREI, IRPI, IREL,
 !$OMP& IBGK, IP, NFLAG, IATMN, IPLSN, NCLLO, IPLSV,  I, J, IPL,
-!$OMP& NAMIEI,NAMIPI,IAD)
+!$OMP& NAMIEI,NAMIPI)
 
 cdr  unclear, out.
 cdr   INTEGER :: kk,t1
@@ -163,7 +163,6 @@ C
       REAL(DP), INTENT(IN) :: CFLAG(7,MSTOR0)
       INTEGER, INTENT(OUT) :: COLTYP
       INTEGER :: NEII_RED,LGEI_RED(0:NREI)
-      INTEGER :: EIRENE_INDIRECT_ADDRESS
              
 C  INCIDENT SPECIES: IOLD
       VELXO=VELX
@@ -598,32 +597,41 @@ C  IATMN: ATOM SPECIES AFTER CX
               IF (LPIIO) THEN
 !$OMP ATOMIC
                 PIIO(IOLD,NCELL) =PIIO(IOLD,NCELL)-WGHTO
-                IF (NLSPCSCL_ION) THEN
-                  IAD = EIRENE_INDIRECT_ADDRESS(IOLD,IOLD,NION)
-!$OMP ATOMIC
-                  PIIO(IAD,NCELL)=PIIO(IAD,NCELL)-WGHTO
-                END IF
                 LMETSP(NSPAM+IOLD)=.TRUE.
+                IF (NLSPCSCL_ION) THEN
+                  PIIO2(1:NION,0:NION) => PIIO(:,NCELL)
+!$OMP ATOMIC
+                  PIIO2(IOLD,IOLD)=PIIO2(IOLD,IOLD)-WGHTO
+                  LMETSP2(1:NION,0:NION) => LMETSP(NTS_MI+1:NTS_II)
+                  LMETSP2(IOLD,0) = .TRUE.
+                  LMETSP2(IOLD,IOLD) = .TRUE.
+                END IF
               END IF
               IF (LPIAT) THEN
 !$OMP ATOMIC
                 PIAT(IATMN,NCELL)=PIAT(IATMN,NCELL)+WEIGHT
-                IF (NLSPCSCL_ION) THEN
-                  IAD = EIRENE_INDIRECT_ADDRESS(IATMN,IOLD,NATM)
-!$OMP ATOMIC
-                  PIAT(IAD,NCELL)=PIAT(IAD,NCELL)+WEIGHT
-                END IF
                 LMETSP(NSPH+IATMN)=.TRUE.
+                IF (NLSPCSCL_ION) THEN
+                  PIAT2(1:NATM,0:NION) => PIAT(:,NCELL)
+!$OMP ATOMIC
+                  PIAT2(IATMN,IOLD)=PIAT2(IATMN,IOLD)+WEIGHT
+                  LMETSP2(1:NATM,0:NION) => LMETSP(NTS_PM+1:NTS_AI)
+                  LMETSP2(IATMN,0) = .TRUE.
+                  LMETSP2(IATMN,IOLD) = .TRUE.
+                END IF
               END IF
               IF (LPIPL) THEN
 !$OMP ATOMIC
                 PIPL(IPLS,NCELL) =PIPL(IPLS,NCELL)-WEIGHT
-                IF (NLSPCSCL_ION) THEN
-                  IAD = EIRENE_INDIRECT_ADDRESS(IPLS,IOLD,NPLS)
-!$OMP ATOMIC
-                  PIPL(IAD,NCELL)=PIPL(IAD,NCELL)-WEIGHT
-                END IF
                 LMETSP(NSPAMI+IPLS)=.TRUE.
+                IF (NLSPCSCL_ION) THEN
+                  PIPL2(1:NPLS,0:NION) => PIPL(:,NCELL)
+!$OMP ATOMIC
+                  PIPL2(IPLS,IOLD)=PIPL2(IPLS,IOLD)-WEIGHT
+                  LMETSP2(1:NPLS,0:NION) => LMETSP(NTS_PHI+1:NTS_PI)
+                  LMETSP2(IPLS,0) = .TRUE.
+                  LMETSP2(IPLS,IOLD) = .TRUE.
+                END IF
               END IF
               IF (LPIEL) THEN
 !$OMP ATOMIC
@@ -635,12 +643,15 @@ C  IPLSN: ION SPECIES AFTER CX
                 IF (LPIPL) THEN
 !$OMP ATOMIC
                   PIPL(IPLSN,NCELL)=PIPL(IPLSN,NCELL)+WGHTO
-                  IF (NLSPCSCL_ION) THEN
-                    IAD = EIRENE_INDIRECT_ADDRESS(IPLSN,IOLD,NPLS)
-!$OMP ATOMIC
-                    PIPL(IAD,NCELL)=PIPL(IAD,NCELL)+WGHTO
-                  END IF
                   LMETSP(NSPAMI+IPLSN)=.TRUE.
+                  IF (NLSPCSCL_ION) THEN
+                    PIPL2(1:NPLS,0:NION) => PIPL(:,NCELL)
+!$OMP ATOMIC
+                    PIPL2(IPLSN,IOLD)=PIPL2(IPLSN,IOLD)+WEIGHT
+                    LMETSP2(1:NPLS,0:NION) => LMETSP(NTS_PHI+1:NTS_PI)
+                    LMETSP2(IPLSN,0) = .TRUE.
+                    LMETSP2(IPLSN,IOLD) = .TRUE.
+                  END IF
                 END IF
                 IF (LPIEL) THEN
 !$OMP ATOMIC
@@ -885,16 +896,21 @@ C  ASSUME, AS BEFORE, NO CHANGE IN SPECIES/TYPE
             PIIO(IOLD,NCELL) =PIIO(IOLD,NCELL)-WGHTO
 !$OMP ATOMIC
             PIIO(IION,NCELL) =PIIO(IION,NCELL)+WEIGHT
-            IF (NLSPCSCL_ION) THEN
-              IAD = EIRENE_INDIRECT_ADDRESS(IOLD,IOLD,NION)
-!$OMP ATOMIC
-              PIIO(IAD,NCELL)=PIIO(IAD,NCELL)-WGHTO
-              IAD = EIRENE_INDIRECT_ADDRESS(IION,IOLD,NION)
-!$OMP ATOMIC
-              PIIO(IAD,NCELL)=PIIO(IAD,NCELL)+WEIGHT
-            END IF
             LMETSP(NSPAMI+IOLD)=.TRUE.
             LMETSP(NSPAMI+IION)=.TRUE.
+            IF (NLSPCSCL_ION) THEN
+              PIIO(1:NION,0:NION) => PIIO(:,NCELL)
+!$OMP ATOMIC
+              PIIO2(IOLD,IOLD)=PIIO2(IOLD,IOLD)-WGHTO
+
+!$OMP ATOMIC
+              PIIO2(IION,IOLD)=PIIO2(IION,IOLD)+WEIGHT
+              LMETSP2(1:NION,0:NION) => LMETSP(NTS_MI+1:NTS_II)
+              LMETSP2(IOLD,0) = .TRUE.
+              LMETSP2(IION,0) = .TRUE.
+              LMETSP2(IOLD,IOLD) = .TRUE.
+              LMETSP2(IION,IOLD) = .TRUE.
+            END IF
           END IF
         ENDIF
 c  UPDATE collision estimator for EL energy exchange tallies

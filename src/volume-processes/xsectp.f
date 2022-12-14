@@ -356,12 +356,6 @@ C
 c  special treatment in case bremsstrahlung is contained in energy loss rate
 c  as e.g. the case in ADAS ADF11- PRB files
                 LADAS = EIRENE_IS_RTCEW_TAB2D(KREAD)
-cnh             28.10.2019
-                IF(ZIIN(IPLS,J).NE.ZVAC) THEN
-                  Z = ZIIN(IPLS,J)
-                ELSE
-                  Z = DBLE(NCHRGP(IPLS))
-                ENDIF
 C  4.C)  ENERGY LOSS RATE OF IMP. ELECTRON = EN.-WEIGHTED RATE(TE)
                 IF (MODC.EQ.1) THEN
                   IF (NSTORDR >= NRAD) THEN
@@ -378,6 +372,12 @@ c  (since eelrc1 is taken negative, add the bremsstrahlung)
                         IF (NCHRGP(IPLS)==0) THEN
                           BREMS = 0._DP
                         ELSE
+cnh 28.10.2019
+                          IF(ZIIN(IPLS,J).NE.ZVAC) THEN
+                            Z = ZIIN(IPLS,J)
+                          ELSE
+                            Z = DBLE(NCHRGP(IPLS))
+                          ENDIF
                           BREMS =EIRENE_BREMS(TEIN(J),DEIN(J),Z)/ELCHA  !eV/s/ion
                         END IF
                         EELRC1(IRRC,J) = EELRC1(IRRC,J) + BREMS
@@ -419,6 +419,12 @@ c  (since eelrc1 is taken negative, add the bremsstrahlung)
                         IF (NCHRGP(IPLS)==0) THEN
                           BREMS = 0._DP
                         ELSE
+cnh 28.10.2019
+                          IF(ZIIN(IPLS,J).NE.ZVAC) THEN
+                            Z = ZIIN(IPLS,J)
+                          ELSE
+                            Z = DBLE(NCHRGP(IPLS))
+                          ENDIF
                           BREMS =EIRENE_BREMS(TEIN(J),DEIN(J),Z)/ELCHA  !eV/s/ion
                         END IF
                         EELRC1(IRRC,J) = EELRC1(IRRC,J) + BREMS

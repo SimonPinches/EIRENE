@@ -1,7 +1,7 @@
 C
 C
 C*DK MASYR1
-      SUBROUTINE EIRENE_MASYR1 (A,B,NL,I2,N0,N1,M0,M1,TX)
+      SUBROUTINE EIRENE_MASYR1 (A,B,NL,I2,N0,N1,N1DIM,M0,M1,TX)
 c  print one column of a 2d array, at fixed position of 2nd index I2.
 c  the first index (1:n1) is a species index.
 c  print the name(ix) and the value of B(ix,I2)
@@ -11,8 +11,8 @@ c  only nonzero entries are printed.
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
       CHARACTER(9), INTENT(IN) :: A
-      INTEGER, INTENT(IN) :: I2, N0, N1, M0, M1
-      REAL(DP), INTENT(IN) :: B(N0:N1,M0:M1)
+      INTEGER, INTENT(IN) :: I2, N0, N1, N1DIM, M0, M1
+      REAL(DP), INTENT(IN) :: B(N0:N1DIM,M0:M1)
       LOGICAL, INTENT(IN) :: NL(N0:N1,M0:M1)
       CHARACTER(8), INTENT(IN) :: TX(*)
       CHARACTER(8) :: KK(100)

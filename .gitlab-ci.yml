@@ -6,7 +6,8 @@ include:
 
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
-    SAMPLE_CASE_VERSION: 8ac380266264fe5f683ff8eb5dd42ef97ecc08cf
+#   SAMPLE_CASE_VERSION: 8ac380266264fe5f683ff8eb5dd42ef97ecc08cf
+    SAMPLE_CASE_VERSION: 61b21a86233636db365543f8174895036f68649d
     INCLUDE_SERIAL: 'true'
     INCLUDE_MPI:    'true'
     INCLUDE_OPENMP: 'true'
@@ -268,6 +269,27 @@ test_standalone_ITER_1573:
     dependencies:
         - build_standalone_ITER_1573
         - run_standalone_ITER_1573
+
+build_standalone_ITER_1573:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "ITER_1573"
+
+run_standalone_ITER_1573_scaling:
+    <<: *run
+    variables:
+        PATH_CASE: "ITER_1573_scaling"
+    dependencies:
+        - build_library    
+        - build_standalone_ITER_1573_scaling
+
+test_standalone_ITER_1573_scaling:
+    <<: *test
+    variables:
+        PATH_CASE: "ITER_1573_scaling"
+    dependencies:
+        - build_standalone_ITER_1573_scaling
+        - run_standalone_ITER_1573_scaling
 
 build_standalone_ITER_1573_def_lines:
     <<: *build_executable

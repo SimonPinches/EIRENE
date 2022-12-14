@@ -104,7 +104,7 @@ C
       INTEGER :: IRD,  I, IRDO,
      .           IPL, IAT, IA,
      .           IM,  IIO, IP, IML, II, KK, NPBGK,
-     .           IBGK, IPLV, IAD, EIRENE_INDIRECT_ADDRESS
+     .           IBGK, IPLV
 C SECONDARY SPECIES IDENTIFIERS
       INTEGER ::  IAT1,IAT2,IML1,IML2,IIO1,IIO2,IPL1,IPL2
 C EL PROCESSES
@@ -119,6 +119,8 @@ C EI PROCESSES
       INTEGER ::      IXEI,IREI
 
       REAL(DP) :: EIRENE_VDION
+      REAL(DP), POINTER :: PXX2(:,:), PXPL2(:,:), PXAT2(:,:),
+     .                     PXML2(:,:), PXIO2(:,:)
 
 C  TAKE CARE OF SCORING OF PHOTONS
 
@@ -211,9 +213,12 @@ C
 !$OMP ATOMIC
           PXX(IXSPZ,IRD)=PXX(IXSPZ,IRD)-WTRSIG
           IF (LSCX) THEN
-            IAD = EIRENE_INDIRECT_ADDRESS(IXSPZ,IXSPZ,NDXX)
+            PXX2(1:NDXX,0:NDXX) => PXX(:,IRD)
 !$OMP ATOMIC
-            PXX(IAD,IRD)=PXX(IAD,IRD)-WTRSIG
+            PXX2(IXSPZ,IXSPZ)=PXX2(IXSPZ,IXSPZ)-WTRSIG
+            LMETSP2(1:NDXX,0:NDXX) => LMETSP(NDXXA:NDXXE)
+            LMETSP2(IXSPZ,0) = .TRUE.
+            LMETSP2(IXSPZ,IXSPZ) = .TRUE.
           END IF
 
         ENDIF
@@ -247,9 +252,12 @@ C
 !$OMP ATOMIC
               PXX(IXSPZ,IRD)=PXX(IXSPZ,IRD)+WTRSIG
               IF (LSCX) THEN
-                IAD = EIRENE_INDIRECT_ADDRESS(IXSPZ,IXSPZ,NDXX)
+                PXX2(1:NDXX,0:NDXX) => PXX(:,IRD)
 !$OMP ATOMIC
-                PXX(IAD,IRD)=PXX(IAD,IRD)+WTRSIG
+                PXX2(IXSPZ,IXSPZ)=PXX2(IXSPZ,IXSPZ)+WTRSIG
+                LMETSP2(1:NDXX,0:NDXX) => LMETSP(NDXXA:NDXXE)
+                LMETSP2(IXSPZ,0) = .TRUE.
+                LMETSP2(IXSPZ,IXSPZ) = .TRUE.
               END IF
             ENDIF
           ELSE
@@ -260,9 +268,12 @@ C
 !$OMP ATOMIC
               PXPL(IPLS,IRD)=PXPL(IPLS,IRD)-WTRSIG
               IF (LSCX) THEN
-                IAD = EIRENE_INDIRECT_ADDRESS(IPLS,IXSPZ,NPLS)
+                PXPL2(1:NPLS,0:NDXX) => PXPL(:,IRD)
 !$OMP ATOMIC
-                PXPL(IAD,IRD)=PXPL(IAD,IRD)-WTRSIG
+                PXPL2(IPLS,IXSPZ)=PXPL2(IPLS,IXSPZ)-WTRSIG
+                LMETSP2(1:NPLS,0:NDXX) => LMETSP(NTS_PXPLA:NTS_PXPLE)
+                LMETSP2(IPLS,0) = .TRUE.
+                LMETSP2(IPLS,IXSPZ) = .TRUE.
               END IF
               LMETSP(NSPAMI+IPLS)=.TRUE.
             END IF
@@ -276,9 +287,12 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
 !$OMP ATOMIC
                 PXAT(IAT1,IRD)= PXAT(IAT1,IRD)+WTRSIG
                 IF (LSCX) THEN
-                  IAD = EIRENE_INDIRECT_ADDRESS(IAT1,IXSPZ,NATM)
+                  PXAT2(1:NATM,0:NDXX) => PXAT(:,IRD)
 !$OMP ATOMIC
-                  PXAT(IAD,IRD)=PXAT(IAD,IRD)+WTRSIG
+                  PXAT2(IAT1,IXSPZ)=PXAT2(IAT1,IXSPZ)+WTRSIG
+                  LMETSP2(1:NATM,0:NDXX) => LMETSP(NTS_PXATA:NTS_PXATE)
+                  LMETSP2(IAT1,IXSPZ) = .TRUE.
+                  LMETSP2(IAT1,0) = .TRUE.
                 END IF
                 LMETSP(NSPH+IAT1)=.TRUE.
               END IF
@@ -289,9 +303,12 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
 !$OMP ATOMIC
                 PXML(IML1,IRD)= PXML(IML1,IRD)+WTRSIG
                 IF (LSCX) THEN
-                  IAD = EIRENE_INDIRECT_ADDRESS(IML1,IXSPZ,NMOL)
+                  PXML2(1:NMOL,0:NDXX) => PXML(:,IRD)
 !$OMP ATOMIC
-                  PXML(IAD,IRD)=PXML(IAD,IRD)+WTRSIG
+                  PXML2(IML1,IXSPZ)=PXML2(IML1,IXSPZ)+WTRSIG
+                  LMETSP2(1:NMOL,0:NDXX) => LMETSP(NTS_PXMLA:NTS_PXMLE)
+                  LMETSP2(IML1,0) = .TRUE.
+                  LMETSP2(IML1,IXSPZ) = .TRUE.
                 END IF
                 LMETSP(NSPA+IML1)=.TRUE.
               END IF
@@ -302,9 +319,12 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
 !$OMP ATOMIC
                 PXIO(IIO1,IRD)= PXIO(IIO1,IRD)+WTRSIG
                 IF (LSCX) THEN
-                  IAD = EIRENE_INDIRECT_ADDRESS(IIO1,IXSPZ,NION)
+                  PXIO2(1:NION,0:NDXX) => PXIO(:,IRD)
 !$OMP ATOMIC
-                  PXIO(IAD,IRD)=PXIO(IAD,IRD)+WTRSIG
+                  PXIO2(IIO1,IXSPZ)=PXIO2(IIO1,IXSPZ)+WTRSIG
+                  LMETSP2(1:NION,0:NDXX) => LMETSP(NTS_PXIOA:NTS_PXIOE)
+                  LMETSP2(IIO1,0) = .TRUE.
+                  LMETSP2(IIO1,IXSPZ) = .TRUE.
                 END IF
                 LMETSP(NSPAM+IIO1)=.TRUE.
               END IF
@@ -315,9 +335,12 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
 !$OMP ATOMIC
                 PXPL(IPL1,IRD)= PXPL(IPL1,IRD)+WTRSIG
                 IF (LSCX) THEN
-                  IAD = EIRENE_INDIRECT_ADDRESS(IPL1,IXSPZ,NPLS)
+                  PXPL2(1:NPLS,0:NDXX) => PXPL(:,IRD)
 !$OMP ATOMIC
-                  PXPL(IAD,IRD)=PXPL(IAD,IRD)+WTRSIG
+                  PXPL2(IPL1,IXSPZ)=PXPL2(IPL1,IXSPZ)+WTRSIG
+                  LMETSP2(1:NPLS,0:NDXX) => LMETSP(NTS_PXPLA:NTS_PXPLE)
+                  LMETSP2(IPL1,0) = .TRUE.
+                  LMETSP2(IPL1,IXSPZ) = .TRUE.
                 END IF
                 LMETSP(NSPAMI+IPL1)=.TRUE.
               END IF
@@ -330,9 +353,12 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
 !$OMP ATOMIC
                 PXAT(IAT2,IRD)= PXAT(IAT2,IRD)+WTRSIG
                 IF (LSCX) THEN
-                  IAD = EIRENE_INDIRECT_ADDRESS(IAT2,IXSPZ,NATM)
+                  PXAT2(1:NATM,0:NDXX) => PXAT(:,IRD)
 !$OMP ATOMIC
-                  PXAT(IAD,IRD)=PXAT(IAD,IRD)+WTRSIG
+                  PXAT2(IAT2,IXSPZ)=PXAT2(IAT2,IXSPZ)+WTRSIG
+                  LMETSP2(1:NATM,0:NDXX) => LMETSP(NTS_PXATA:NTS_PXATE)
+                  LMETSP2(IAT2,0) = .TRUE.
+                  LMETSP2(IAT2,IXSPZ) = .TRUE.
                 END IF
                 LMETSP(NSPH+IAT2)=.TRUE.
               END IF
@@ -343,9 +369,12 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
 !$OMP ATOMIC
                 PXML(IML2,IRD)= PXML(IML2,IRD)+WTRSIG
                 IF (LSCX) THEN
-                  IAD = EIRENE_INDIRECT_ADDRESS(IML2,IXSPZ,NMOL)
+                  PXML2(1:NMOL,0:NDXX) => PXML(:,IRD)
 !$OMP ATOMIC
-                  PXML(IAD,IRD)=PXML(IAD,IRD)+WTRSIG
+                  PXML2(IML2,IXSPZ)=PXML2(IML2,IXSPZ)+WTRSIG
+                  LMETSP2(1:NMOL,0:NDXX) => LMETSP(NTS_PXMLA:NTS_PXMLE)
+                  LMETSP2(IML2,0) = .TRUE.
+                  LMETSP2(IML2,IXSPZ) = .TRUE.
                 END IF
                 LMETSP(NSPA+IML2)=.TRUE.
               END IF
@@ -356,9 +385,12 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
 !$OMP ATOMIC
                 PXIO(IIO2,IRD)= PXIO(IIO2,IRD)+WTRSIG
                 IF (LSCX) THEN
-                  IAD = EIRENE_INDIRECT_ADDRESS(IIO2,IXSPZ,NION)
+                  PXIO2(1:NION,0:NDXX) => PXIO(:,IRD)
 !$OMP ATOMIC
-                  PXIO(IAD,IRD)=PXIO(IAD,IRD)+WTRSIG
+                  PXIO2(IIO2,IXSPZ)=PXIO2(IIO2,IXSPZ)+WTRSIG
+                  LMETSP2(1:NION,0:NDXX) => LMETSP(NTS_PXIOA:NTS_PXIOE)
+                  LMETSP2(IIO2,0) = .TRUE.
+                  LMETSP2(IIO2,IXSPZ) = .TRUE.
                 END IF
                 LMETSP(NSPAM+IIO2)=.TRUE.
               END IF
@@ -369,9 +401,12 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
 !$OMP ATOMIC
                 PXPL(IPL2,IRD)= PXPL(IPL2,IRD)+WTRSIG
                 IF (LSCX) THEN
-                  IAD = EIRENE_INDIRECT_ADDRESS(IPL2,IXSPZ,NPLS)
+                  PXPL2(1:NPLS,0:NDXX) => PXPL(:,IRD)
 !$OMP ATOMIC
-                  PXPL(IAD,IRD)=PXPL(IAD,IRD)+WTRSIG
+                  PXPL2(IPL2,IXSPZ)=PXPL2(IPL2,IXSPZ)+WTRSIG
+                  LMETSP2(1:NPLS,0:NDXX) => LMETSP(NTS_PXPLA:NTS_PXPLE)
+                  LMETSP2(IPL2,0) = .TRUE.
+                  LMETSP2(IPL2,IXSPZ) = .TRUE.
                 END IF
                 LMETSP(NSPAMI+IPL2)=.TRUE.
               END IF
@@ -495,9 +530,12 @@ C
 !$OMP ATOMIC
               PXX(IXSPZ,IRD)=PXX(IXSPZ,IRD)+WTRSIG
               IF (LSCX) THEN
-                IAD = EIRENE_INDIRECT_ADDRESS(IXSPZ,IXSPZ,NDXX)
+                PXX2(1:NDXX,0:NDXX) => PXX(:,IRD)
 !$OMP ATOMIC
-                PXX(IAD,IRD)=PXX(IAD,IRD)+WTRSIG
+                PXX2(IXSPZ,IXSPZ)=PXX2(IXSPZ,IXSPZ)+WTRSIG
+                LMETSP2(1:NDXX,0:NDXX) => LMETSP(NDXXA:NDXXE)
+                LMETSP2(IXSPZ,0) = .TRUE.
+                LMETSP2(IXSPZ,IXSPZ) = .TRUE.
               END IF
             ENDIF
           ELSE
@@ -516,9 +554,12 @@ C           END IF
 !$OMP ATOMIC
               PXX(IXSPZ,IRD)=PXX(IXSPZ,IRD)+WTRSIG
               IF (LSCX) THEN
-                IAD = EIRENE_INDIRECT_ADDRESS(IXSPZ,IXSPZ,NDXX)
+                PXX2(1:NDXX,0:NDXX) => PXX(:,IRD)
 !$OMP ATOMIC
-                PXX(IAD,IRD)=PXX(IAD,IRD)+WTRSIG
+                PXX2(IXSPZ,IXSPZ)=PXX2(IXSPZ,IXSPZ)+WTRSIG
+                LMETSP2(1:NDXX,0:NDXX) => LMETSP(NDXXA:NDXXE)
+                LMETSP2(IXSPZ,0) = .TRUE.
+                LMETSP2(IXSPZ,IXSPZ) = .TRUE.
               END IF
               LMETSP(NMETOFF+IXSPZ)=.TRUE.
             END IF
@@ -591,9 +632,12 @@ C
 !$OMP ATOMIC
               PXX(IXSPZ,IRD)=PXX(IXSPZ,IRD)+WTRSIG
               IF (LSCX) THEN
-                IAD = EIRENE_INDIRECT_ADDRESS(IXSPZ,IXSPZ,NDXX)
+                PXX2(1:NDXX,0:NDXX) => PXX(:,IRD)
 !$OMP ATOMIC
-                PXX(IAD,IRD)=PXX(IAD,IRD)+WTRSIG
+                PXX2(IXSPZ,IXSPZ)=PXX2(IXSPZ,IXSPZ)+WTRSIG
+                LMETSP2(1:NDXX,0:NDXX) => LMETSP(NDXXA:NDXXE)
+                LMETSP2(IXSPZ,0) = .TRUE.
+                LMETSP2(IXSPZ,IXSPZ) = .TRUE.
               END IF
             ENDIF
 cdr  Now: pxx, pxat,pxml,pxio and pxpl to be done in subr. COLLIDE
@@ -617,9 +661,13 @@ C  POST-COLLISION CONTRIBUTIONS
 !$OMP ATOMIC
                 PXAT(IAT,IRD)=PXAT(IAT,IRD)+PATEI(IREI,IAT)*WTRSIG
                 IF (LSCX) THEN
-                  IAD = EIRENE_INDIRECT_ADDRESS(IAT,IXSPZ,NATM)
+                  PXAT2(1:NATM,0:NDXX) => PXAT(:,IRD)
 !$OMP ATOMIC
-                  PXAT(IAD,IRD)=PXAT(IAD,IRD)+PATEI(IREI,IAT)*WTRSIG
+                  PXAT2(IAT,IXSPZ)=PXAT2(IAT,IXSPZ)+
+     .                             PATEI(IREI,IAT)*WTRSIG
+                  LMETSP2(1:NATM,0:NDXX) => LMETSP(NTS_PXATA:NTS_PXATE)
+                  LMETSP2(IAT,0) = .TRUE.
+                  LMETSP2(IAT,IXSPZ) = .TRUE.
                 END IF
                 LMETSP(NSPH+IAT)=.TRUE.
               END IF
@@ -632,9 +680,13 @@ C  POST-COLLISION CONTRIBUTIONS
 !$OMP ATOMIC
                 PXML(IML,IRD)=PXML(IML,IRD)+PMLEI(IREI,IML)*WTRSIG
                 IF (LSCX) THEN
-                  IAD = EIRENE_INDIRECT_ADDRESS(IML,IXSPZ,NMOL)
+                  PXML2(1:NMOL,0:NDXX) => PXML(:,IRD)
 !$OMP ATOMIC
-                  PXML(IAD,IRD)=PXML(IAD,IRD)+PMLEI(IREI,IML)*WTRSIG
+                  PXML2(IML,IXSPZ)=PXML2(IML,IXSPZ)+
+     .                             PMLEI(IREI,IML)*WTRSIG
+                  LMETSP2(1:NMOL,0:NDXX) => LMETSP(NTS_PXMLA:NTS_PXMLE)
+                  LMETSP2(IML,0) = .TRUE.
+                  LMETSP2(IML,IXSPZ) = .TRUE.
                 END IF
                 LMETSP(NSPA+IML)=.TRUE.
               END IF
@@ -647,9 +699,13 @@ C  POST-COLLISION CONTRIBUTIONS
 !$OMP ATOMIC
                 PXIO(IIO,IRD)=PXIO(IIO,IRD)+PIOEI(IREI,IIO)*WTRSIG
                 IF (LSCX) THEN
-                  IAD = EIRENE_INDIRECT_ADDRESS(IIO,IXSPZ,NMOL)
+                  PXIO2(1:NION,0:NDXX) => PXIO(:,IRD)
 !$OMP ATOMIC
-                  PXIO(IAD,IRD)=PXIO(IAD,IRD)+PIOEI(IREI,IIO)*WTRSIG
+                  PXIO2(IIO,IXSPZ)=PXIO2(IIO,IXSPZ)+
+     .                             PIOEI(IREI,IIO)*WTRSIG
+                  LMETSP2(1:NION,0:NDXX) => LMETSP(NTS_PXIOA:NTS_PXIOE)
+                  LMETSP2(IIO,0) = .TRUE.
+                  LMETSP2(IIO,IXSPZ) = .TRUE.
                 END IF
                 LMETSP(NSPAM+IIO)=.TRUE.
               END IF
@@ -662,9 +718,13 @@ C  POST-COLLISION CONTRIBUTIONS
 !$OMP ATOMIC
                 PXPL(IPL,IRD)=PXPL(IPL,IRD)+PPLEI(IREI,IPL)*WTRSIG
                 IF (LSCX) THEN
-                  IAD = EIRENE_INDIRECT_ADDRESS(IPL,IXSPZ,NPLS)
+                  PXPL2(1:NPLS,0:NDXX) => PXPL(:,IRD)
 !$OMP ATOMIC
-                  PXPL(IAD,IRD)=PXPL(IAD,IRD)+PPLEI(IREI,IPL)*WTRSIG
+                  PXPL2(IPL,IXSPZ)=PXPL2(IPL,IXSPZ)+
+     .                             PPLEI(IREI,IPL)*WTRSIG
+                  LMETSP2(1:NPLS,0:NDXX) => LMETSP(NTS_PXPLA:NTS_PXPLE)
+                  LMETSP2(IPL,0) = .TRUE.
+                  LMETSP2(IPL,IXSPZ) = .TRUE.
                 END IF
                 LMETSP(NSPAMI+IPL)=.TRUE.
               END IF
@@ -781,9 +841,12 @@ C
 !$OMP ATOMIC
               PXX(IXSPZ,IRD)=PXX(IXSPZ,IRD)+WTRSIG
               IF (LSCX) THEN
-                IAD = EIRENE_INDIRECT_ADDRESS(IXSPZ,IXSPZ,NDXX)
+                PXX2(1:NDXX,0:NDXX) => PXX(:,IRD)
 !$OMP ATOMIC
-                PXX(IAD,IRD)=PXX(IAD,IRD)+WTRSIG
+                PXX2(IXSPZ,IXSPZ)=PXX2(IXSPZ,IXSPZ)+WTRSIG
+                LMETSP2(1:NDXX,0:NDXX) => LMETSP(NDXXA:NDXXE)
+                LMETSP2(IXSPZ,0) = .TRUE.
+                LMETSP2(IXSPZ,IXSPZ) = .TRUE.
               ENDIF
             ENDIF
           ELSE
@@ -797,9 +860,12 @@ C
 !$OMP ATOMIC
               PXPL(IPLS,IRD)=PXPL(IPLS,IRD)-WTRSIG
               IF (LSCX) THEN
-                IAD = EIRENE_INDIRECT_ADDRESS(IPLS,IXSPZ,NPLS)
+                PXPL2(1:NPLS,0:NDXX) => PXPL(:,IRD)
 !$OMP ATOMIC
-                PXPL(IAD,IRD)=PXPL(IAD,IRD)-WTRSIG
+                PXPL2(IPLS,IXSPZ)=PXPL2(IPLS,IXSPZ)-WTRSIG
+                LMETSP2(1:NPLS,0:NDXX) => LMETSP(NTS_PXPLA:NTS_PXPLE)
+                LMETSP2(IPLS,0) = .TRUE.
+                LMETSP2(IPLS,IXSPZ) = .TRUE.
               ENDIF
               LMETSP(NSPAMI+IPLS)=.TRUE.
             END IF
@@ -818,9 +884,13 @@ C
 !$OMP ATOMIC
                 PXAT(IAT,IRD)= PXAT(IAT,IRD)+WTRSIG*PATPI(IRPI,IAT)
                 IF (LSCX) THEN
-                  IAD = EIRENE_INDIRECT_ADDRESS(IAT,IXSPZ,NATM)
+                  PXAT2(1:NATM,0:NDXX) => PXAT(:,IRD)
 !$OMP ATOMIC
-                  PXAT(IAD,IRD)=PXAT(IAD,IRD)+WTRSIG*PATPI(IRPI,IAT)
+                  PXAT2(IAT,IXSPZ)=PXAT2(IAT,IXSPZ)+
+     .                             WTRSIG*PATPI(IRPI,IAT)
+                  LMETSP2(1:NATM,0:NDXX) => LMETSP(NTS_PXATA:NTS_PXATE)
+                  LMETSP2(IAT,0) = .TRUE.
+                  LMETSP2(IAT,IXSPZ) = .TRUE.
                 ENDIF
                 LMETSP(NSPH+IAT)=.TRUE.
               END IF
@@ -833,9 +903,13 @@ C
 !$OMP ATOMIC
                 PXML(IML,IRD)= PXML(IML,IRD)+WTRSIG*PMLPI(IRPI,IML)
                 IF (LSCX) THEN
-                  IAD = EIRENE_INDIRECT_ADDRESS(IML,IXSPZ,NMOL)
+                  PXML2(1:NMOL,0:NDXX) => PXML(:,IRD)
 !$OMP ATOMIC
-                  PXML(IAD,IRD)=PXML(IAD,IRD)+WTRSIG*PMLPI(IRPI,IML)
+                  PXML2(IML,IXSPZ)=PXML2(IML,IXSPZ)+
+     .                             WTRSIG*PMLPI(IRPI,IML)
+                  LMETSP2(1:NMOL,0:NDXX) => LMETSP(NTS_PXMLA:NTS_PXMLE)
+                  LMETSP2(IML,0) = .TRUE.
+                  LMETSP2(IML,IXSPZ) = .TRUE.
                 ENDIF
                 LMETSP(NSPA+IML)=.TRUE.
               END IF
@@ -848,9 +922,13 @@ C
 !$OMP ATOMIC
                 PXIO(IIO,IRD)= PXIO(IIO,IRD)+WTRSIG*PIOPI(IRPI,IIO)
                 IF (LSCX) THEN
-                  IAD = EIRENE_INDIRECT_ADDRESS(IIO,IXSPZ,NION)
+                  PXIO2(1:NION,0:NDXX) => PXIO(:,IRD)
 !$OMP ATOMIC
-                  PXIO(IAD,IRD)=PXIO(IAD,IRD)+WTRSIG*PIOPI(IRPI,IIO)
+                  PXIO2(IIO,IXSPZ)=PXIO2(IIO,IXSPZ)+
+     .                             WTRSIG*PIOPI(IRPI,IIO)
+                  LMETSP2(1:NION,0:NDXX) => LMETSP(NTS_PXIOA:NTS_PXIOE)
+                  LMETSP2(IIO,0) = .TRUE.
+                  LMETSP2(IIO,IXSPZ) = .TRUE.
                 ENDIF
                 LMETSP(NSPAM+IIO)=.TRUE.
               END IF
@@ -863,9 +941,13 @@ C
 !$OMP ATOMIC
                 PXPL(IPL,IRD)= PXPL(IPL,IRD)+WTRSIG*PPLPI(IRPI,IPL)
                 IF (LSCX) THEN
-                  IAD = EIRENE_INDIRECT_ADDRESS(IPL,IXSPZ,NPLS)
+                  PXPL2(1:NPLS,0:NDXX) => PXPL(:,IRD)
 !$OMP ATOMIC
-                  PXPL(IAD,IRD)=PXPL(IAD,IRD)+WTRSIG*PPLPI(IRPI,IPL)
+                  PXPL2(IPL,IXSPZ)=PXPL2(IPL,IXSPZ)+
+     .                             WTRSIG*PPLPI(IRPI,IPL)
+                  LMETSP2(1:NPLS,0:NDXX) => LMETSP(NTS_PXPLA:NTS_PXPLE)
+                  LMETSP2(IPL,0) = .TRUE.
+                  LMETSP2(IPL,IXSPZ) = .TRUE.
                 ENDIF
                 LMETSP(NSPAMI+IPL)=.TRUE.
               END IF

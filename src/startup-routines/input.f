@@ -1187,6 +1187,17 @@ CDR NOTHING IS DONE IN CASE: nfla_virt=0 .and. nrea_virt=0
       implicit none
       integer :: ifl, irea, jpls, isw, irei, ircx, irpi, irel
 
+      if (nstordr < nrad) then
+        write (iunout,*) 
+     .    'ERROR encountered in EIRENE_REPLACE_STORED'
+        write (iunout,*) 'Reaction data have been read from fort.13'
+        write (iunout,*) 'and should be fed into TABEI,CX,EL..'
+        write (iunout,*) 'but no space is provided due to'
+        write (iunout,*) 'STORAGE SAVE MODE'
+        write (iunout,*) 'Calculation abandonned!'
+        CALL EIRENE_EXIT_OWN(1)
+      end if
+
       write (iunout,*) 'replace_stored: data for virt. species '
       call eirene_masj2('nfla_vi,nrea_vi ',nfla_virt,nrea_virt)
 

@@ -29,7 +29,7 @@ cdr correction: 3 digits rather than 2 digits for I0 in outtal file name
 C
       REAL(DP), ALLOCATABLE :: VECTOR(:,:),TALAV(:),TALTOT(:)
       REAL(DP) :: OUTAUI
-      INTEGER :: NFTI, NFTE, K, ITAL, I, ISTR, MXSPZ, IOUT, IN
+      INTEGER :: NFTI, NFTE, K, ITAL, I, ISTR, MXSPZ, IOUT, IN, KK
       LOGICAL :: LFIRST
 C
       CHARACTER(50) :: FNAME, FORMA, FORME, FORME2
@@ -119,8 +119,16 @@ C
             NFTE = SUM(VERIFY(TXTSPC(1:NADV,NTALA),' '))
           END IF
 
+          KK = 0
           DO 119 K=NFTI,NFTE
-            CALL EIRENE_FETCH_OUTAU (OUTAUI,ITAL,K,ISTRA,IUNOUT)
+            IF (NEXTVI(ITAL) > 0) THEN
+              KK = KK + 1
+              IF ((K > NEXTVI(ITAL) .AND. 
+     .             (MOD(K,NEXTVI(ITAL)) == 1))) KK = KK + 1
+            ELSE
+              KK = K
+            END IF
+            CALL EIRENE_FETCH_OUTAU (OUTAUI,ITAL,KK,ISTRA,IUNOUT)
 C
             IF (NSBOX_TAL /= NSBOX) THEN
               DO I=1,NSBOX

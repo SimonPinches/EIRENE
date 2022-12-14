@@ -6,9 +6,10 @@ C
       USE EIRMOD_PARMMOD
       USE EIRMOD_CLOGAU, ONLY: EIRENE_ALLOC_CLOGAU, NLSPCSCL,
      .                         NLSPCSCL_ATM, NLSPCSCL_MOL, NLSPCSCL_ION,
-     .                         NLSPCSCL_PHOT
+     .                         NLSPCSCL_PHOT, NLSPCSCL_ON
       USE EIRMOD_COMPRT, ONLY: IUNIN, IUNOUT
       USE EIRMOD_CPES, ONLY: NPRS
+      USE EIRMOD_CESTIM
  
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: STANDARD_INPUT
@@ -79,12 +80,25 @@ C     Add IFOFF again if IUNIN is adapted in EIRENE_DEFAULTS_USR.
 
 !PB   switch off species specific rescaling if only one species per
 !PB   particle type is used 
-      IF (MAX(NATM,NMOL,NION,NPLS,NPHOT) <= 1) NLSPCSCL=.FALSE.
+      IF (NLSPCSCL_ON) NLSPCSCL=.TRUE.
+      IF (MAX(NATM,NMOL,NION,NPLS,NPHOT) <= 1) THEN
+        NLSPCSCL=.FALSE.
+        NLSPCSCL_ON=.FALSE.
+      END IF
 
       NLSPCSCL_ATM = NLSPCSCL .AND. NATM > 1
       NLSPCSCL_MOL = NLSPCSCL .AND. NMOL > 1
       NLSPCSCL_ION = NLSPCSCL .AND. NION > 1
       NLSPCSCL_PHOT = NLSPCSCL .AND. NPHOT > 1
+
+      LB_ATM=1
+      LB_MOL=1
+      LB_ION=1
+      LB_PHOT=1
+      IF (NLSPCSCL_ATM) LB_ATM=0
+      IF (NLSPCSCL_MOL) LB_MOL=0
+      IF (NLSPCSCL_ION) LB_ION=0
+      IF (NLSPCSCL_PHOT) LB_PHOT=0
 
       WRITE (IUNOUT,*) 'FLAGS FOR SPECIES SPECIFIC RESCALING'
       CALL EIRENE_MASL5('NLSPCSCL, _ATM, _MOL, _ION, _PHOT       ',

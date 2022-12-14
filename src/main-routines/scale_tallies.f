@@ -29,7 +29,7 @@ C
 
       INTEGER, INTENT(IN) :: ISTRA
       REAL(DP), ALLOCATABLE :: FATM(:), FMOL(:), FION(:), FPHOT(:)
-      REAL(DP) :: FADD, SUMP, SUMPRF
+      REAL(DP) :: FADD, SUMP, SUMPRF, SM
       INTEGER :: IATM, IMOL, IION, IPLS, IPHOT, IADV, ICLV, IBGV, ICPV,
      .           JATM, JMOL, JION, JPHOT, J, ISPC, 
      .           IAD, EIRENE_INDIRECT_ADDRESS
@@ -40,6 +40,7 @@ C
       ALLOCATE(FPHOT(0:NPHOTI))
       CALL EIRENE_GETSCL4 (ISTRA,FATM(0),FMOL(0),FION(0),FPHOT(0))
       IF (NLSPCSCL) THEN
+        CALL EIRENE_TALLY_SANITY_CHECK(ISTRA)
         CALL EIRENE_GETSCLS (ISTRA,NATMI,NMOLI,NIONI,NPHOTI,
      .                       FATM,FMOL,FION,FPHOT)
       ELSE
@@ -68,6 +69,13 @@ C
           FISCL(:,ISTRA) = FION(0)
           FPHSCL(:,ISTRA)= FPHOT(0)
         END IF
+        call eirene_leer(1)
+        write (iunout,*) 'ISTRA = ',ISTRA
+        write (iunout,*) 'FASCL = ',FASCL(:,ISTRA)
+        write (iunout,*) 'FMSCL = ',FMSCL(:,ISTRA)
+        write (iunout,*) 'FISCL = ',FISCL(:,ISTRA)
+        write (iunout,*) 'FPHSCL = ',FPHSCL(:,ISTRA)
+        CALL EIRENE_LEER(2)
 C
 C  CARRY OUT SCALING OF VOLUME AND SURFACE TALLIES, RESP.
 C
@@ -80,45 +88,38 @@ c  volumetric atomic tallies
             IF (LPDENA) PDENA(IATM,J)=PDENA(IATM,J)*FATM(IATM)
             IF (LEDENA) EDENA(IATM,J)=EDENA(IATM,J)*FATM(IATM)
             IF (LPAAT) THEN
-              IF (NLSPCSCL_ATM) THEN
-                PAAT(IATM,J)=0._DP
-                DO JATM = 1,NATMI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IATM,JATM,NATM)
-                  PAAT(IATM,J)=PAAT(IATM,J)+PAAT(IAD,J)*FATM(JATM)
-                END DO
+              IF (NLSPCSCL) THEN
+                PAAT2(1:NATM,LB_ATM:NATM) => PAAT(:,J)
+                PAAT2(IATM,1:NATMI) = PAAT2(IATM,1:NATMI)*FATM(1:NATMI)
+                PAAT(IATM,J) = SUM(PAAT2(IATM,1:NATMI))
               ELSE  
                 PAAT(IATM,J)=PAAT(IATM,J)*FATM(0)
               END IF
             END IF
             IF (LPMAT) THEN
-              IF (NLSPCSCL_MOL) THEN
-                PMAT(IATM,J)=0._DP
-                DO JMOL = 1,NMOLI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IATM,JMOL,NATM)
-                  PMAT(IATM,J)=PMAT(IATM,J)+PMAT(IAD,J)*FMOL(JMOL)
-                END DO
+              IF (NLSPCSCL) THEN
+                PMAT2(1:NATM,LB_MOL:NMOL) => PMAT(:,J)
+                PMAT2(IATM,1:NMOLI) = PMAT2(IATM,1:NMOLI)*FMOL(1:NMOLI)
+                PMAT(IATM,J) = SUM(PMAT2(IATM,1:NMOLI))
               ELSE  
                 PMAT(IATM,J)=PMAT(IATM,J)*FMOL(0)
               END IF
             END IF
             IF (LPIAT) THEN
-              IF (NLSPCSCL_ION) THEN
-                PIAT(IATM,J)=0._DP
-                DO JION = 1,NIONI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IATM,JION,NATM)
-                  PIAT(IATM,J)=PIAT(IATM,J)+PIAT(IAD,J)*FION(JION)
-                END DO
+              IF (NLSPCSCL) THEN
+                PIAT2(1:NATM,LB_ION:NION) => PIAT(:,J)
+                PIAT2(IATM,1:NIONI) = PIAT2(IATM,1:NIONI)*FION(1:NIONI)
+                PIAT(IATM,J) = SUM(PIAT2(IATM,1:NIONI))
               ELSE  
                 PIAT(IATM,J)=PIAT(IATM,J)*FION(0)
               END IF
             END IF
             IF (LPPHAT) THEN
-              IF (NLSPCSCL_PHOT) THEN
-                PPHAT(IATM,J)=0._DP
-                DO JPHOT = 1,NPHOTI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IATM,JPHOT,NATM)
-                  PPHAT(IATM,J)=PPHAT(IATM,J)+PPHAT(IAD,J)*FPHOT(JPHOT)
-                END DO
+              IF (NLSPCSCL) THEN
+                PPHAT2(1:NATM,LB_PHOT:NPHOT) => PPHAT(:,J)
+                PPHAT2(IATM,1:NPHOTI) = PPHAT2(IATM,1:NPHOTI)*
+     .                                  FPHOT(1:NPHOTI)
+                PPHAT(IATM,J) = SUM(PPHAT2(IATM,1:NPHOTI))
               ELSE  
                 PPHAT(IATM,J)=PPHAT(IATM,J)*FPHOT(0)
               END IF
@@ -135,46 +136,41 @@ c  atomic surface tallies
           DO 310 J=1,NLMPGS
             IF (LPOTAT) POTAT(IATM,J)=POTAT(IATM,J)*FATM(IATM)
             IF (LPRFAAT) THEN
-              IF (NLSPCSCL_ATM) THEN
-                PRFAAT(IATM,J)=0._DP
-                DO JATM = 1,NATMI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IATM,JATM,NATM)
-                  PRFAAT(IATM,J)=PRFAAT(IATM,J)+PRFAAT(IAD,J)*FATM(JATM)
-                END DO
+              IF (NLSPCSCL) THEN
+                PRFAAT2(1:NATM,LB_ATM:NATM) => PRFAAT(:,J)
+                PRFAAT2(IATM,1:NATMI) = PRFAAT2(IATM,1:NATMI)*
+     .                                  FATM(1:NATMI)
+                PRFAAT(IATM,J) = SUM(PRFAAT2(IATM,1:NATMI))
               ELSE
                 PRFAAT(IATM,J)=PRFAAT(IATM,J)*FATM(0)
               END IF
             END IF
             IF (LPRFMAT) THEN
-              IF (NLSPCSCL_MOL) THEN
-                PRFMAT(IATM,J)=0._DP
-                DO JMOL = 1,NMOLI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IATM,JMOL,NATM)
-                  PRFMAT(IATM,J)=PRFMAT(IATM,J)+PRFMAT(IAD,J)*FMOL(JMOL)
-                END DO
+              IF (NLSPCSCL) THEN
+                PRFMAT2(1:NATM,LB_MOL:NMOL) => PRFMAT(:,J)
+                PRFMAT2(IATM,1:NMOLI) = PRFMAT2(IATM,1:NMOLI)*
+     .                                  FATM(1:NMOLI)
+                PRFMAT(IATM,J) = SUM(PRFMAT2(IATM,1:NMOLI))
               ELSE
-              PRFMAT(IATM,J)=PRFMAT(IATM,J)*FMOL(0)
+                PRFMAT(IATM,J)=PRFMAT(IATM,J)*FMOL(0)
               END IF
             END IF
             IF (LPRFIAT) THEN
-              IF (NLSPCSCL_ION) THEN
-                PRFIAT(IATM,J)=0._DP
-                DO JION = 1,NIONI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IATM,JION,NATM)
-                  PRFIAT(IATM,J)=PRFIAT(IATM,J)+PRFIAT(IAD,J)*FION(JION)
-                END DO
+              IF (NLSPCSCL) THEN
+                PRFIAT2(1:NATM,LB_ION:NION) => PRFIAT(:,J)
+                PRFIAT2(IATM,1:NIONI) = PRFIAT2(IATM,1:NIONI)*
+     .                                  FION(1:NIONI)
+                PRFIAT(IATM,J) = SUM(PRFIAT2(IATM,1:NIONI))
               ELSE
                 PRFIAT(IATM,J)=PRFIAT(IATM,J)*FION(0)
               END IF
             END IF
             IF (LPRFPHAT) THEN
-              IF (NLSPCSCL_PHOT) THEN
-                PRFPHAT(IATM,J)=0._DP
-                DO JPHOT = 1,NPHOT
-                  IAD = EIRENE_INDIRECT_ADDRESS(IATM,JPHOT,NATM)
-                  PRFPHAT(IATM,J)=PRFPHAT(IATM,J)+
-     .                            PRFPHAT(IAD,J)*FPHOT(JPHOT)
-                END DO
+              IF (NLSPCSCL) THEN
+                PRFPHAT2(1:NATM,LB_PHOT:NPHOT) => PRFPHAT(:,J)
+                PRFPHAT2(IATM,1:NPHOTI) = PRFPHAT2(IATM,1:NPHOTI)*
+     .                                    FPHOT(1:NPHOTI)
+                PRFPHAT(IATM,J) = SUM(PRFPHAT2(IATM,1:NPHOTI))
               ELSE
                 PRFPHAT(IATM,J)=PRFPHAT(IATM,J)*FPHOT(0)
               END IF
@@ -225,64 +221,54 @@ cdr  ?? scaling with bulk flux ??
           SPUMPI(NSPH+IATM,ISTRA)=SPUMPI(NSPH+IATM,ISTRA)*FATM(IATM)
           RAELI(IATM,ISTRA)=RAELI(IATM,ISTRA)*FATM(IATM)
 
-          IF (NLSPCSCL_ATM) THEN
-            PAATI(IATM,ISTRA)=0._DP
-            PRFAAI(IATM,ISTRA)=0._DP
-            DO JATM=1,NATMI
-              IAD = EIRENE_INDIRECT_ADDRESS(IATM,JATM,NATM)
-              PAATI(IATM,ISTRA)=PAATI(IATM,ISTRA)+
-     .                          PAATI(IAD,ISTRA)*FATM(JATM)
-              PRFAAI(IATM,ISTRA)=PRFAAI(IATM,ISTRA)+
-     .                          PRFAAI(IAD,ISTRA)*FATM(JATM)
-            END DO
+          IF (NLSPCSCL) THEN
+            PAATI2(0:NATM,LB_ATM:NATM) => PAATI(:,ISTRA)
+            PAATI2(IATM,1:NATMI) = PAATI2(IATM,1:NATMI)*FATM(1:NATMI)
+            PAATI(IATM,ISTRA) = SUM(PAATI2(IATM,1:NATMI))
+            PRFAAI2(0:NATM,0:NATM) => PRFAAI(:,ISTRA)
+            PRFAAI2(IATM,1:NATMI) = PRFAAI2(IATM,1:NATMI)*FATM(1:NATMI)
+            PRFAAI(IATM,ISTRA) = SUM(PRFAAI2(IATM,1:NATMI))
           ELSE
             PAATI(IATM,ISTRA)=PAATI(IATM,ISTRA)*FATM(0)
             PRFAAI(IATM,ISTRA)=PRFAAI(IATM,ISTRA)*FATM(0)
           END IF
 
-          IF (NLSPCSCL_MOL) THEN
-            PMATI(IATM,ISTRA)=0._DP
-            PRFMAI(IATM,ISTRA)=0._DP
-            DO JMOL=1,NMOLI
-              IAD = EIRENE_INDIRECT_ADDRESS(IATM,JMOL,NATM)
-              PMATI(IATM,ISTRA)=PMATI(IATM,ISTRA)+
-     .                          PMATI(IAD,ISTRA)*FMOL(JMOL)
-              PRFMAI(IATM,ISTRA)=PRFMAI(IATM,ISTRA)+
-     .                          PRFMAI(IAD,ISTRA)*FMOL(JMOL)
-            END DO
+          IF (NLSPCSCL) THEN
+            PMATI2(0:NATM,LB_MOL:NMOL) => PMATI(:,ISTRA)
+            PMATI2(IATM,1:NMOLI) = PMATI2(IATM,1:NMOLI)*FMOL(1:NMOLI)
+            PMATI(IATM,ISTRA) = SUM(PMATI2(IATM,1:NMOLI))
+            PRFMAI2(0:NATM,LB_MOL:NMOL) => PRFMAI(:,ISTRA)
+            PRFMAI2(IATM,1:NMOLI) = PRFMAI2(IATM,1:NMOLI)*FMOL(1:NMOLI)
+            PRFMAI(IATM,ISTRA) = SUM(PRFMAI2(IATM,1:NMOLI))
           ELSE
             PMATI(IATM,ISTRA)=PMATI(IATM,ISTRA)*FMOL(0)
             PRFMAI(IATM,ISTRA)=PRFMAI(IATM,ISTRA)*FMOL(0)
           END IF
 
-          IF (NLSPCSCL_ION) THEN
-            PIATI(IATM,ISTRA)=0._DP
-            PRFIAI(IATM,ISTRA)=0._DP
-            DO JION=1,NIONI
-              IAD = EIRENE_INDIRECT_ADDRESS(IATM,JION,NATM)
-              PIATI(IATM,ISTRA)=PIATI(IATM,ISTRA)+
-     .                          PIATI(IAD,ISTRA)*FION(JION)
-              PRFIAI(IATM,ISTRA)=PRFIAI(IATM,ISTRA)+
-     .                          PRFIAI(IAD,ISTRA)*FION(JION)
-            END DO
+          IF (NLSPCSCL) THEN
+            PIATI2(0:NATM,LB_ION:NION) => PIATI(:,ISTRA)
+            PIATI2(IATM,1:NIONI) = PIATI2(IATM,1:NIONI)*FION(1:NIONI)
+            PIATI(IATM,ISTRA) = SUM(PIATI2(IATM,1:NIONI))
+            PRFIAI2(0:NATM,LB_ION:NION) => PRFIAI(:,ISTRA)
+            PRFIAI2(IATM,1:NIONI) = PRFIAI2(IATM,1:NIONI)*FION(1:NIONI)
+            PRFIAI(IATM,ISTRA) = SUM(PRFIAI2(IATM,1:NIONI))
           ELSE
             PIATI(IATM,ISTRA)=PIATI(IATM,ISTRA)*FION(0)
             PRFIAI(IATM,ISTRA)=PRFIAI(IATM,ISTRA)*FION(0)
           END IF
 
-          IF (NLSPCSCL_PHOT) THEN
-            PPHATI(IATM,ISTRA)=0._DP
-            PRFPHAI(IATM,ISTRA)=0._DP
-            DO JPHOT=1,NPHOTI
-              IAD = EIRENE_INDIRECT_ADDRESS(IATM,JPHOT,NATM)
-              PPHATI(IATM,ISTRA)=PPHATI(IATM,ISTRA)+
-     .                          PPHATI(IAD,ISTRA)*FPHOT(JPHOT)
-              PRFPHAI(IATM,ISTRA)=PRFPHAI(IATM,ISTRA)+
-     .                          PRFPHAI(IAD,ISTRA)*FPHOT(JPHOT)
-            END DO
+          IF (NLSPCSCL) THEN
+            PPHATI2(0:NATM,LB_PHOT:NPHOT) => PPHATI(:,ISTRA)
+            PPHATI2(IATM,1:NPHOT) = PPHATI2(IATM,1:NPHOT)*
+     .                              FPHOT(1:NPHOTI)
+            PPHATI(IATM,ISTRA) = SUM(PPHATI2(IATM,1:NPHOT))
+            PRFPHAI2(0:NATM,0:NPHOT) => PRFPHAI(:,ISTRA)
+            PRFPHAI2(IATM,1:NPHOTI) = PRFPHAI2(IATM,1:NPHOTI)*
+     .                                FPHOT(1:NPHOTI)
+            PRFPHAI(IATM,ISTRA) = SUM(PRFPHAI2(IATM,1:NPHOTI))
           ELSE
-          PPHATI(IATM,ISTRA)=PPHATI(IATM,ISTRA)*FPHOT(0)
-          PRFPHAI(IATM,ISTRA)=PRFPHAI(IATM,ISTRA)*FPHOT(0)
+            PPHATI(IATM,ISTRA)=PPHATI(IATM,ISTRA)*FPHOT(0)
+            PRFPHAI(IATM,ISTRA)=PRFPHAI(IATM,ISTRA)*FPHOT(0)
           END IF
 
  2111   CONTINUE
@@ -311,80 +297,85 @@ cdr  ?? scaling with bulk flux ??
           SPTPATI(0,ISTRA)=SUM(SPTPATI(1:NATMI,ISTRA))
           RAELI(0,ISTRA)=SUM(RAELI(1:NATMI,ISTRA))
 
-          IF (NLSPCSCL_ATM) THEN
-            PAATI(0,ISTRA)=0._DP
-            PRFAAI(0,ISTRA)=0._DP
-            DO JATM = 1,NATMI
-              SUMP = 0._DP
-              SUMPRF = 0._DP
-              DO IATM = 1,NATMI
-                IAD = EIRENE_INDIRECT_ADDRESS(IATM,JATM,NATM)
-                SUMP = SUMP + PAATI(IAD,ISTRA)
-                SUMPRF = SUMPRF + PRFAAI(IAD,ISTRA)
-              END DO
-              PAATI(0,ISTRA)=PAATI(0,ISTRA)+SUMP*FATM(JATM)
-              PRFAAI(0,ISTRA)=PRFAAI(0,ISTRA)+SUMPRF*FATM(JATM)
+          IF (NLSPCSCL) THEN
+            PAATI2(0:NATM,LB_ATM:NATM) => PAATI(:,ISTRA)
+            PRFAAI2(0:NATM,LB_ATM:NATM) => PRFAAI(:,ISTRA)
+!            SUMP = 0._DP
+!            SUMPRF = 0._DP
+!            DO JATM = 1,NATMI
+!              SUMP = SUMP + SUM(PAATI2(1:NATMI,JATM))*FATM(JATM)
+!              SUMPRF = SUMPRF + SUM(PRFAAI2(1:NATMI,JATM))*FATM(JATM)
+!            END DO
+!            PAATI(0,ISTRA)= SUMP
+!            PRFAAI(0,ISTRA)= SUMPRF
+            DO JATM = LB_ATM,NATMI
+              PAATI2(0,JATM) = SUM(PAATI2(1:NATMI,JATM))
+              PRFAAI2(0,JATM) = SUM(PRFAAI2(1:NATMI,JATM))
             END DO
           ELSE
             PAATI(0,ISTRA)=SUM(PAATI(1:NATMI,ISTRA))
             PRFAAI(0,ISTRA)=SUM(PRFAAI(1:NATMI,ISTRA))
           END IF
 
-          IF (NLSPCSCL_MOL) THEN
-            PMATI(0,ISTRA)=0._DP
-            PRFMAI(0,ISTRA)=0._DP
-            DO IMOL = 1,NMOLI
-              SUMP = 0._DP
-              SUMPRF = 0._DP
-              DO IATM = 1,NATMI
-                IAD = EIRENE_INDIRECT_ADDRESS(IATM,IMOL,NATM)
-                SUMP = SUMP + PMATI(IAD,ISTRA)
-                SUMPRF = SUMPRF + PRFMAI(IAD,ISTRA)
-              END DO
-              PMATI(0,ISTRA)=PMATI(0,ISTRA)+SUMP*FMOL(IMOL)
-              PRFMAI(0,ISTRA)=PRFMAI(0,ISTRA)+SUMPRF*FMOL(IMOL)
+          IF (NLSPCSCL) THEN
+            PMATI2(0:NATM,LB_MOL:NMOL) => PMATI(:,ISTRA)
+            PRFMAI2(0:NATM,LB_MOL:NMOL) => PRFMAI(:,ISTRA)
+!           SUMP = 0._DP
+!           SUMPRF = 0._DP
+!           DO IMOL = 1,NMOLI
+!             SUMP = SUMP + SUM(PMATI2(1:NATMI,IMOL))*FMOL(IMOL)
+!             SUMPRF = SUMPRF + SUM(PRFMAI2(1:NATMI,IMOL))*FMOL(IMOL)
+!           END DO
+!           PMATI(0,ISTRA)= SUMP
+!           PRFMAI(0,ISTRA)= SUMPRF
+            DO IMOL=LB_MOL,NMOLI
+              PMATI2(0,IMOL) = SUM(PMATI2(1:NATMI,IMOL))
+              PRFMAI2(0,IMOL) = SUM(PRFMAI2(1:NATMI,IMOL))
             END DO
           ELSE
             PMATI(0,ISTRA)=SUM(PMATI(1:NATMI,ISTRA))
             PRFMAI(0,ISTRA)=SUM(PRFMAI(1:NATMI,ISTRA))
           END IF
 
-          IF (NLSPCSCL_ION) THEN
-            PIATI(0,ISTRA)=0._DP
-            PRFIAI(0,ISTRA)=0._DP
-            DO IION = 1,NIONI
-              SUMP = 0._DP
-              SUMPRF = 0._DP
-              DO IATM = 1,NATMI
-                IAD = EIRENE_INDIRECT_ADDRESS(IATM,IION,NATM)
-                SUMP = SUMP + PIATI(IAD,ISTRA)
-                SUMPRF = SUMPRF + PRFIAI(IAD,ISTRA)
-              END DO
-              PIATI(0,ISTRA)=PIATI(0,ISTRA)+SUMP*FION(IION)
-              PRFIAI(0,ISTRA)=PRFIAI(0,ISTRA)+SUMPRF*FION(IION)
+          IF (NLSPCSCL) THEN
+            PIATI2(0:NATM,LB_ION:NION) => PIATI(:,ISTRA)
+            PRFIAI2(0:NATM,LB_ION:NION) => PRFIAI(:,ISTRA)
+!           SUMP = 0._DP
+!           SUMPRF = 0._DP
+!           DO IION = 1,NIONI
+!             SUMP = SUMP + SUM(PIATI2(1:NATMI,IION))*FION(IION)
+!             SUMPRF = SUMPRF + SUM(PRFIAI2(1:NATMI,IION))*FION(IION)
+!           END DO
+!           PIATI(0,ISTRA)= SUMP
+!           PRFIAI(0,ISTRA)= SUMPRF
+            DO IION=LB_ION,NIONI
+              PIATI2(0,IION) = SUM(PIATI2(1:NATMI,IION))
+              PRFIAI2(0,IION) = SUM(PRFIAI2(1:NATMI,IION))
             END DO
           ELSE
             PIATI(0,ISTRA)=SUM(PIATI(1:NATMI,ISTRA))
             PRFIAI(0,ISTRA)=SUM(PRFIAI(1:NATMI,ISTRA))
           END IF
 
-          IF (NLSPCSCL_PHOT) THEN
-            PPHATI(0,ISTRA)=0._DP
-            PRFPHAI(0,ISTRA)=0._DP
-            DO IPHOT = 1,NPHOTI
-              SUMP = 0._DP
-              SUMPRF = 0._DP
-              DO IATM = 1,NATMI
-                IAD = EIRENE_INDIRECT_ADDRESS(IATM,IPHOT,NATM)
-                SUMP = SUMP + PPHATI(IAD,ISTRA)
-                SUMPRF = SUMPRF + PRFPHAI(IAD,ISTRA)
-              END DO
-              PPHATI(0,ISTRA)=PPHATI(0,ISTRA)+SUMP*FPHOT(IPHOT)
-              PRFPHAI(0,ISTRA)=PRFPHAI(0,ISTRA)+SUMPRF*FPHOT(IPHOT)
+          IF (NLSPCSCL) THEN
+            PPHATI2(0:NATM,LB_PHOT:NPHOT) => PPHATI(:,ISTRA)
+            PRFPHAI2(0:NATM,LB_PHOT:NPHOT) => PRFPHAI(:,ISTRA)
+!            SUMP = 0._DP
+!            SUMPRF = 0._DP
+!            DO IPHOT = 1,NPHOTI
+!              SUMP = SUMP + SUM(PPHATI2(1:NATMI,IPHOT))*FPHOT(IPHOT)
+!              SUMPRF = SUMPRF + 
+!     .                 SUM(PRFPHAI2(1:NATMI,IPHOT))*FPHOT(IPHOT)
+!            END DO
+!            PPHATI(0,ISTRA)= SUMP
+!            PRFPHAI(0,ISTRA)= SUMPRF
+            DO IPHOT=LB_PHOT,NPHOT
+              PPHATI2(0,IPHOT) = SUM(PPHATI2(1:NATMI,IPHOT))
+              PRFPHAI2(0,IPHOT) = SUM(PRFPHAI2(1:NATMI,IPHOT))
             END DO
           ELSE
-            PMATI(0,ISTRA)=SUM(PMATI(1:NATMI,ISTRA))
-            PRFMAI(0,ISTRA)=SUM(PRFMAI(1:NATMI,ISTRA))
+            PPHATI(0,ISTRA)=SUM(PPHATI(1:NATMI,ISTRA))
+            PRFPHAI(0,ISTRA)=SUM(PRFPHAI(1:NATMI,ISTRA))
           END IF
              
         END IF
@@ -410,45 +401,38 @@ C
             IF (LPDENM) PDENM(IMOL,J)=PDENM(IMOL,J)*FMOL(IMOL)
             IF (LEDENM) EDENM(IMOL,J)=EDENM(IMOL,J)*FMOL(IMOL)
             IF (LPAML) THEN
-              IF (NLSPCSCL_ATM) THEN
-                PAML(IMOL,J)=0._DP
-                DO IATM = 1,NATMI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IATM,NMOL)
-                  PAML(IMOL,J)=PAML(IMOL,J)+PAML(IAD,J)*FATM(IATM)
-                END DO
+              IF (NLSPCSCL) THEN
+                PAML2(1:NMOL,LB_ATM:NATM) => PAML(:,J)
+                PAML2(IMOL,1:NATMI) = PAML2(IMOL,1:NATMI)*FATM(1:NATMI)
+                PAML(IMOL,J) = SUM(PAML2(IMOL,1:NATMI))
               ELSE  
                 PAML(IMOL,J)=PAML(IMOL,J)*FATM(0)
               END IF
             END IF
             IF (LPMML) THEN
-              IF (NLSPCSCL_MOL) THEN
-                PMML(IMOL,J)=0._DP
-                DO JMOL = 1,NMOLI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IMOL,JMOL,NMOL)
-                  PMML(IMOL,J)=PMML(IMOL,J)+PMML(IAD,J)*FMOL(JMOL)
-                END DO
+              IF (NLSPCSCL) THEN
+                PMML2(1:NMOL,LB_MOL:NMOL) => PMML(:,J)
+                PMML2(IMOL,1:NMOLI) = PMML2(IMOL,1:NMOLI)*FMOL(1:NMOLI) 
+                PMML(IMOL,J) = SUM(PMML2(IMOL,1:NMOLI))
               ELSE  
                 PMML(IMOL,J)=PMML(IMOL,J)*FMOL(0)
               END IF
             END IF
             IF (LPIML) THEN
-              IF (NLSPCSCL_ION) THEN
-                PIML(IMOL,J)=0._DP
-                DO IION = 1,NIONI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IION,NMOL)
-                  PIML(IMOL,J)=PIML(IMOL,J)+PIML(IAD,J)*FION(IION)
-                END DO
+              IF (NLSPCSCL) THEN
+                PIML2(1:NMOL,LB_ION:NION) => PIML(:,J)
+                PIML2(IMOL,1:NIONI) = PIML2(IMOL,1:NIONI)*FION(1:NIONI)
+                PIML(IMOL,J) = SUM(PIML2(IMOL,1:NIONI))
               ELSE  
                 PIML(IMOL,J)=PIML(IMOL,J)*FION(0)
               END IF
             END IF
             IF (LPPHML) THEN 
-              IF (NLSPCSCL_PHOT) THEN
-                PPHML(IMOL,J)=0._DP
-                DO IPHOT = 1,NPHOTI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IPHOT,NMOL)
-                  PPHML(IMOL,J)=PPHML(IMOL,J)+PPHML(IAD,J)*FPHOT(IPHOT)
-                END DO
+              IF (NLSPCSCL) THEN
+                PPHML2(1:NMOL,LB_PHOT:NPHOT) => PPHML(:,J)
+                PPHML2(IMOL,1:NPHOTI) = PPHML2(IMOL,1:NPHOTI)*
+     .                                  FPHOT(1:NPHOTI)
+                PPHML(IMOL,J) = SUM(PPHML2(IMOL,1:NPHOTI))
               ELSE  
                 PPHML(IMOL,J)=PPHML(IMOL,J)*FPHOT(0)
               END IF
@@ -464,46 +448,41 @@ C
           DO 315 J=1,NLMPGS
             IF (LPOTML) POTML(IMOL,J)=POTML(IMOL,J)*FMOL(IMOL)
             IF (LPRFAML) THEN
-              IF (NLSPCSCL_ATM) THEN
-                PRFAML(IMOL,J)=0._DP
-                DO IATM = 1,NATMI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IATM,NMOL)
-                  PRFAML(IMOL,J)=PRFAML(IMOL,J)+PRFAML(IAD,J)*FATM(IATM)
-                END DO
+              IF (NLSPCSCL) THEN
+                PRFAML2(1:NMOL,LB_ATM:NATM) => PRFAML(:,J)
+                PRFAML2(IMOL,1:NATMI) = PRFAML2(IMOL,1:NATMI)*
+     .                                  FATM(1:NATMI)
+                PRFAML(IMOL,J) = SUM(PRFAML2(IMOL,1:NATMI))
               ELSE
                 PRFAML(IMOL,J)=PRFAML(IMOL,J)*FATM(0)
               END IF
             END IF
             IF (LPRFMML) THEN
-              IF (NLSPCSCL_MOL) THEN
-                PRFMML(IMOL,J)=0._DP
-                DO JMOL = 1,NMOLI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IMOL,JMOL,NMOL)
-                  PRFMML(IMOL,J)=PRFMML(IMOL,J)+PRFMML(IAD,J)*FMOL(IMOL)
-                END DO
+              IF (NLSPCSCL) THEN
+                PRFMML2(1:NMOL,LB_MOL:NMOL) => PRFMML(:,J)
+                PRFMML2(IMOL,1:NMOLI) = PRFMML2(IMOL,1:NMOLI)*
+     .                                  FMOL(1:NMOLI)
+                PRFMML(IMOL,J) = SUM(PRFMML2(IMOL,1:NMOLI))
               ELSE
                 PRFMML(IMOL,J)=PRFMML(IMOL,J)*FMOL(0)
               END IF
             END IF
             IF (LPRFIML) THEN
-              IF (NLSPCSCL_ION) THEN
-                PRFIML(IMOL,J)=0._DP
-                DO IION = 1,NIONI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IION,NMOL)
-                  PRFIML(IMOL,J)=PRFIML(IMOL,J)+PRFIML(IAD,J)*FION(IION)
-                END DO
+              IF (NLSPCSCL) THEN
+                PRFIML2(1:NMOL,LB_ION:NION) => PRFIML(:,J)
+                PRFIML2(IMOL,1:NIONI) = PRFIML2(IMOL,1:NIONI)*
+     .                                  FION(1:NIONI)
+                PRFIML(IMOL,J) = SUM(PRFIML2(IMOL,1:NIONI))
               ELSE
                 PRFIML(IMOL,J)=PRFIML(IMOL,J)*FION(0)
               END IF
             END IF
             IF (LPRFPHML) THEN
-              IF (NLSPCSCL_PHOT) THEN
-                PRFPHML(IMOL,J)=0._DP
-                DO IPHOT = 1,NPHOTI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IPHOT,NMOL)
-                  PRFPHML(IMOL,J)=PRFPHML(IMOL,J)+
-     .                            PRFPHML(IAD,J)*FPHOT(IPHOT)
-                END DO
+              IF (NLSPCSCL) THEN
+                PRFPHML2(1:NMOL,LB_PHOT:NPHOT) => PRFPHML(:,J)
+                PRFPHML2(IMOL,1:NPHOTI) = PRFPHML2(IMOL,1:NPHOTI)*
+     .                                    FPHOT(1:NPHOTI)
+                PRFPHML(IMOL,J) = SUM(PRFPHML2(IMOL,1:NPHOTI))
               ELSE
                 PRFPHML(IMOL,J)=PRFPHML(IMOL,J)*FPHOT(0)
               END IF
@@ -551,61 +530,51 @@ cdr  ?? scaling with bulk flux ??
           SPUMPI(NSPA+IMOL,ISTRA)=SPUMPI(NSPA+IMOL,ISTRA)*FMOL(IMOL)
           RMELI(IMOL,ISTRA)=RMELI(IMOL,ISTRA)*FMOL(IMOL)
 
-          IF (NLSPCSCL_ATM) THEN
-            PAMLI(IMOL,ISTRA)=0._DP
-            PRFAMI(IMOL,ISTRA)=0._DP
-            DO IATM=1,NATMI
-              IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IATM,NMOL)
-              PAMLI(IMOL,ISTRA)=PAMLI(IMOL,ISTRA)+
-     .                          PAMLI(IAD,ISTRA)*FATM(IATM)
-              PRFAMI(IMOL,ISTRA)=PRFAMI(IMOL,ISTRA)+
-     .                          PRFAMI(IAD,ISTRA)*FATM(IATM)
-            END DO
+          IF (NLSPCSCL) THEN
+            PAMLI2(0:NMOL,LB_ATM:NATM) => PAMLI(:,ISTRA)
+            PAMLI2(IMOL,1:NATMI) = PAMLI2(IMOL,1:NATMI)*FATM(1:NATMI)
+            PAMLI(IMOL,ISTRA) = SUM(PAMLI2(IMOL,1:NATMI))
+            PRFAMI2(0:NMOL,LB_ATM:NATM) => PRFAMI(:,ISTRA)
+            PRFAMI2(IMOL,1:NATMI) = PRFAMI2(IMOL,1:NATMI)*FATM(1:NATMI)
+            PRFAMI(IMOL,ISTRA) = SUM(PRFAMI2(IMOL,1:NATMI))
           ELSE
             PAMLI(IMOL,ISTRA)=PAMLI(IMOL,ISTRA)*FATM(0)
             PRFAMI(IMOL,ISTRA)=PRFAMI(IMOL,ISTRA)*FATM(0)
           END IF
 
-          IF (NLSPCSCL_MOL) THEN
-            PMMLI(IMOL,ISTRA)=0._DP
-            PRFMMI(IMOL,ISTRA)=0._DP
-            DO JMOL=1,NMOLI
-              IAD = EIRENE_INDIRECT_ADDRESS(IMOL,JMOL,NMOL)
-              PMMLI(IMOL,ISTRA)=PMMLI(IMOL,ISTRA)+
-     .                          PMMLI(IAD,ISTRA)*FMOL(IMOL)
-              PRFMMI(IMOL,ISTRA)=PRFMMI(IMOL,ISTRA)+
-     .                          PRFMMI(IAD,ISTRA)*FMOL(IMOL)
-            END DO
+          IF (NLSPCSCL) THEN
+            PMMLI2(0:NMOL,LB_MOL:NMOL) => PMMLI(:,ISTRA)
+            PMMLI2(IMOL,1:NMOLI) = PMMLI2(IMOL,1:NMOLI)*FMOL(1:NMOLI)
+            PMMLI(IMOL,ISTRA) = SUM(PMMLI2(IMOL,1:NMOLI))
+            PRFMMI2(0:NMOL,LB_MOL:NMOL) => PRFMMI(:,ISTRA)
+            PRFMMI2(IMOL,1:NMOLI) = PRFMMI2(IMOL,1:NMOLI)*FMOL(1:NMOLI)
+            PRFMMI(IMOL,ISTRA) = SUM(PRFMMI2(IMOL,1:NMOLI))
           ELSE
             PMMLI(IMOL,ISTRA)=PMMLI(IMOL,ISTRA)*FMOL(0)
             PRFMMI(IMOL,ISTRA)=PRFMMI(IMOL,ISTRA)*FMOL(0)
           END IF
 
-          IF (NLSPCSCL_ION) THEN
-            PIMLI(IMOL,ISTRA)=0._DP
-            PRFIMI(IMOL,ISTRA)=0._DP
-            DO IION=1,NIONI
-              IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IION,NMOL)
-              PIMLI(IMOL,ISTRA)=PIMLI(IMOL,ISTRA)+
-     .                          PIMLI(IAD,ISTRA)*FION(IION)
-              PRFIMI(IMOL,ISTRA)=PRFIMI(IION,ISTRA)+
-     .                          PRFIMI(IAD,ISTRA)*FION(IION)
-            END DO
+          IF (NLSPCSCL) THEN
+            PIMLI2(0:NMOL,LB_ION:NION) => PIMLI(:,ISTRA)
+            PIMLI2(IMOL,1:NIONI) = PIMLI2(IMOL,1:NIONI)*FION(1:NIONI)
+            PIMLI(IMOL,ISTRA) = SUM(PIMLI2(IMOL,1:NIONI))
+            PRFIMI2(0:NMOL,LB_ION:NION) => PRFIMI(:,ISTRA)
+            PRFIMI2(IMOL,1:NIONI) = PRFIMI2(IMOL,1:NIONI)*FION(1:NIONI)
+            PRFIMI(IMOL,ISTRA) = SUM(PRFIMI2(IMOL,1:NIONI))
           ELSE
             PIMLI(IMOL,ISTRA)=PIMLI(IMOL,ISTRA)*FION(0)
             PRFIMI(IMOL,ISTRA)=PRFIMI(IMOL,ISTRA)*FION(0)
           END IF
 
-          IF (NLSPCSCL_PHOT) THEN
-            PPHMLI(IMOL,ISTRA)=0._DP
-            PRFPHMI(IMOL,ISTRA)=0._DP
-            DO IPHOT=1,NPHOTI
-              IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IPHOT,NMOL)
-              PPHMLI(IMOL,ISTRA)=PPHMLI(IMOL,ISTRA)+
-     .                          PPHMLI(IAD,ISTRA)*FPHOT(IPHOT)
-              PRFPHMI(IMOL,ISTRA)=PRFPHMI(IION,ISTRA)+
-     .                          PRFPHMI(IAD,ISTRA)*FPHOT(IPHOT)
-            END DO
+          IF (NLSPCSCL) THEN
+            PPHMLI2(0:NMOL,LB_PHOT:NPHOT) => PPHMLI(:,ISTRA)
+            PPHMLI2(IMOL,1:NPHOTI) = PPHMLI2(IMOL,1:NPHOTI)*
+     .                               FPHOT(1:NPHOTI)
+            PPHMLI(IMOL,ISTRA) = SUM(PPHMLI2(IMOL,1:NPHOTI))
+            PRFPHMI2(0:NMOL,LB_PHOT:NPHOT) => PRFPHMI(:,ISTRA)
+            PRFPHMI2(IMOL,1:NPHOTI) = PRFPHMI2(IMOL,1:NPHOTI)*
+     .                                FPHOT(1:NPHOTI)
+            PRFPHMI(IMOL,ISTRA) = SUM(PRFPHMI2(IMOL,1:NPHOTI))
           ELSE
             PPHMLI(IMOL,ISTRA)=PPHMLI(IMOL,ISTRA)*FPHOT(0)
             PRFPHMI(IMOL,ISTRA)=PRFPHMI(IMOL,ISTRA)*FPHOT(0)
@@ -637,76 +606,81 @@ cdr  ?? scaling with bulk flux ??
           SPTPMLI(0,ISTRA)=SUM(SPTPMLI(1:NMOLI,ISTRA))
           RMELI(0,ISTRA)=SUM(RMELI(1:NMOLI,ISTRA))
 
-          IF (NLSPCSCL_ATM) THEN
-            PAMLI(0,ISTRA)=0._DP
-            PRFAMI(0,ISTRA)=0._DP
-            DO IATM = 1,NATMI
-              SUMP = 0._DP
-              SUMPRF = 0._DP
-              DO IMOL = 1,NMOLI
-                IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IATM,NMOL)
-                SUMP = SUMP + PAMLI(IAD,ISTRA)
-                SUMPRF = SUMPRF + PRFAMI(IAD,ISTRA)
-              END DO
-              PAMLI(0,ISTRA)=PAMLI(0,ISTRA)+SUMP*FATM(IATM)
-              PRFAMI(0,ISTRA)=PRFAMI(0,ISTRA)+SUMPRF*FATM(IATM)
+          IF (NLSPCSCL) THEN
+            PAMLI2(0:NMOL,LB_ATM:NATM) => PAMLI(:,ISTRA)
+            PRFAMI2(0:NMOL,LB_ATM:NATM) => PRFAMI(:,ISTRA)
+!            SUMP = 0._DP
+!            SUMPRF = 0._DP
+!            DO IATM = 1,NATMI
+!              SUMP = SUMP + SUM(PAMLI2(1:NMOLI,IATM))*FATM(IATM)
+!              SUMPRF = SUMPRF + SUM(PRFAMI2(1:NMOLI,IATM))*FATM(IATM)
+!            END DO
+!            PAMLI(0,ISTRA)= SUMP
+!            PRFAMI(0,ISTRA)= SUMPRF
+            DO IATM = LB_ATM,NATMI
+              PAMLI2(0,IATM) = SUM(PAMLI2(1:NMOLI,IATM))
+              PRFAMI2(0,IATM) = SUM(PRFAMI2(1:NMOLI,IATM))
             END DO
           ELSE
             PAMLI(0,ISTRA)=SUM(PAMLI(1:NMOLI,ISTRA))
             PRFAMI(0,ISTRA)=SUM(PRFAMI(1:NMOLI,ISTRA))
           END IF
 
-          IF (NLSPCSCL_MOL) THEN
-            PMMLI(0,ISTRA)=0._DP
-            PRFMMI(0,ISTRA)=0._DP
-            DO JMOL = 1,NMOLI
-              SUMP = 0._DP
-              SUMPRF = 0._DP
-              DO IMOL = 1,NMOLI
-                IAD = EIRENE_INDIRECT_ADDRESS(IMOL,JATM,NMOL)
-                SUMP = SUMP + PMMLI(IAD,ISTRA)
-                SUMPRF = SUMPRF + PRFMMI(IAD,ISTRA)
-              END DO
-              PMMLI(0,ISTRA)=PMMLI(0,ISTRA)+SUMP*FMOL(JMOL)
-              PRFMMI(0,ISTRA)=PRFMMI(0,ISTRA)+SUMPRF*FMOL(JMOL)
+          IF (NLSPCSCL) THEN
+            PMMLI2(0:NMOL,LB_MOL:NMOL) => PMMLI(:,ISTRA)
+            PRFMMI2(0:NMOL,LB_MOL:NMOL) => PRFMMI(:,ISTRA)
+!            SUMP = 0._DP
+!            SUMPRF = 0._DP
+!            DO IMOL = 1,NMOLI
+!              SUMP = SUMP + SUM(PMMLI2(1:NMOLI,IMOL))*FMOL(IMOL)
+!              SUMPRF = SUMPRF + SUM(PRFMMI2(1:NMOLI,IMOL))*FMOL(IMOL)
+!            END DO
+!            PMMLI(0,ISTRA)= SUMP
+!            PRFMMI(0,ISTRA)= SUMPRF
+            DO IMOL = LB_MOL,NMOLI
+              PMMLI2(0,IMOL) = SUM(PMMLI2(1:NMOLI,IMOL))
+              PRFMMI2(0,IMOL) = SUM(PRFMMI2(1:NMOLI,IMOL))
             END DO
           ELSE
             PMMLI(0,ISTRA)=SUM(PMMLI(1:NMOLI,ISTRA))
             PRFMMI(0,ISTRA)=SUM(PRFMMI(1:NMOLI,ISTRA))
           END IF
 
-          IF (NLSPCSCL_ION) THEN
-            PIMLI(0,ISTRA)=0._DP
-            PRFIMI(0,ISTRA)=0._DP
-            DO IION = 1,NIONI
-              SUMP = 0._DP
-              SUMPRF = 0._DP
-              DO IMOL = 1,NMOLI
-                IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IION,NMOL)
-                SUMP = SUMP + PIMLI(IAD,ISTRA)
-                SUMPRF = SUMPRF + PRFIMI(IAD,ISTRA)
-              END DO
-              PIMLI(0,ISTRA)=PIMLI(0,ISTRA)+SUMP*FION(IION)
-              PRFIMI(0,ISTRA)=PRFIMI(0,ISTRA)+SUMPRF*FION(IION)
+          IF (NLSPCSCL) THEN
+            PIMLI2(0:NMOL,LB_ION:NION) => PIMLI(:,ISTRA)
+            PRFIMI2(0:NMOL,LB_ION:NION) => PRFIMI(:,ISTRA)
+!            SUMP = 0._DP
+!            SUMPRF = 0._DP
+!            DO IION = 1,NIONI
+!              SUMP = SUMP + SUM(PIMLI2(1:NMOLI,IION))*FION(IION)
+!              SUMPRF = SUMPRF + SUM(PRFIMI2(1:NMOLI,IION))*FION(IION)
+!            END DO
+!            PIMLI(0,ISTRA)= SUMP
+!            PRFIMI(0,ISTRA)= SUMPRF
+            DO IION = LB_ION,NIONI
+              PIMLI2(0,IION) = SUM(PIMLI2(1:NMOLI,IION))
+              PRFIMI2(0,IION) = SUM(PRFIMI2(1:NMOLI,IION))
             END DO
           ELSE
             PIMLI(0,ISTRA)=SUM(PIMLI(1:NMOLI,ISTRA))
             PRFIMI(0,ISTRA)=SUM(PRFIMI(1:NMOLI,ISTRA))
           END IF
 
-          IF (NLSPCSCL_PHOT) THEN
-            PPHMLI(0,ISTRA)=0._DP
-            PRFPHMI(0,ISTRA)=0._DP
-            DO IPHOT = 1,NPHOTI
-              SUMP = 0._DP
-              SUMPRF = 0._DP
-              DO IMOL = 1,NMOLI
-                IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IPHOT,NMOL)
-                SUMP = SUMP + PPHMLI(IAD,ISTRA)
-                SUMPRF = SUMPRF + PRFPHMI(IAD,ISTRA)
-              END DO
-              PPHMLI(0,ISTRA)=PPHMLI(0,ISTRA)+SUMP*FPHOT(IPHOT)
-              PRFPHMI(0,ISTRA)=PRFPHMI(0,ISTRA)+SUMPRF*FPHOT(IPHOT)
+          IF (NLSPCSCL) THEN
+            PPHMLI2(0:NMOL,LB_PHOT:NPHOT) => PPHMLI(:,ISTRA)
+            PRFPHMI2(0:NMOL,LB_PHOT:NPHOT) => PRFPHMI(:,ISTRA)
+!            SUMP = 0._DP
+!            SUMPRF = 0._DP
+!            DO IPHOT = 1,NPHOTI
+!              SUMP = SUMP + SUM(PPHMLI2(1:NMOLI,IPHOT))*FPHOT(IPHOT)
+!              SUMPRF = SUMPRF + 
+!     .                 SUM(PRFPHMI2(1:NMOLI,IPHOT))*FPHOT(IPHOT)
+!            END DO
+!            PPHMLI(0,ISTRA)= SUMP
+!            PRFPHMI(0,ISTRA)= SUMPRF
+            DO IPHOT = LB_PHOT,NPHOTI
+              PPHMLI2(0,IPHOT) = SUM(PPHMLI2(1:NMOLI,IPHOT))
+              PRFPHMI2(0,IPHOT) = SUM(PRFPHMI2(1:NMOLI,IPHOT))
             END DO
           ELSE
             PPHMLI(0,ISTRA)=SUM(PPHMLI(1:NMOLI,ISTRA))
@@ -736,45 +710,38 @@ C
             IF (LPDENI) PDENI(IION,J)=PDENI(IION,J)*FION(IION)
             IF (LEDENI) EDENI(IION,J)=EDENI(IION,J)*FION(IION)
             IF (LPAIO) THEN
-              IF (NLSPCSCL_ATM) THEN
-                PAIO(IION,J)=0._DP
-                DO IATM = 1,NATMI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IION,IATM,NION)
-                  PAIO(IION,J)=PAIO(IION,J)+PAIO(IAD,J)*FATM(IATM)
-                END DO
+              IF (NLSPCSCL) THEN
+                PAIO2(1:NION,LB_ATM:NATM) => PAIO(:,J)
+                PAIO2(IION,1:NATMI) = PAIO2(IION,1:NATMI)*FATM(1:NATMI)
+                PAIO(IION,J) = SUM(PAIO2(IION,1:NATMI))
               ELSE  
                 PAIO(IION,J)=PAIO(IION,J)*FATM(0)
               END IF
             END IF
             IF (LPMIO) THEN
-              IF (NLSPCSCL_MOL) THEN
-                PMIO(IION,J)=0._DP
-                DO IMOL = 1,NMOLI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IION,IMOL,NION)
-                  PMIO(IION,J)=PMIO(IION,J)+PMIO(IAD,J)*FMOL(IMOL)
-                END DO
+              IF (NLSPCSCL) THEN
+                PMIO2(1:NION,LB_MOL:NMOL) => PMIO(:,J)
+                PMIO2(IION,1:NMOLI) = PMIO2(IION,1:NMOLI)*FMOL(1:NMOLI)
+                PMIO(IION,J) = SUM(PMIO2(IION,1:NMOLI))
               ELSE  
                 PMIO(IION,J)=PMIO(IION,J)*FMOL(0)
               END IF
             END IF
             IF (LPIIO) THEN
-              IF (NLSPCSCL_ION) THEN
-                PIIO(IION,J)=0._DP
-                DO JION = 1,NIONI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IION,JION,NION)
-                  PIIO(IION,J)=PIIO(IION,J)+PIIO(IAD,J)*FION(IION)
-                END DO
+              IF (NLSPCSCL) THEN
+                PIIO2(1:NION,LB_ION:NION) => PIIO(:,J)
+                PIIO2(IION,1:NIONI) = PIIO2(IION,1:NIONI)*FION(1:NIONI)
+                PIIO(IION,J) = SUM(PIIO2(IION,1:NIONI))
               ELSE  
                 PIIO(IION,J)=PIIO(IION,J)*FION(0)
               END IF
             END IF
             IF (LPPHIO) THEN
-              IF (NLSPCSCL_PHOT) THEN
-                PPHIO(IION,J)=0._DP
-                DO IPHOT = 1,NPHOTI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IION,IPHOT,NION)
-                  PPHIO(IION,J)=PPHIO(IION,J)+PPHIO(IAD,J)*FPHOT(IPHOT)
-                END DO
+              IF (NLSPCSCL) THEN
+                PPHIO2(1:NION,LB_PHOT:NPHOT) => PPHIO(:,J)
+                PPHIO2(IION,1:NPHOTI) = PPHIO2(IION,1:NPHOTI)*
+     .                                  FPHOT(1:NPHOTI)
+                PPHIO(IION,J) = SUM(PPHIO2(IION,1:NPHOTI))
               ELSE  
                 PPHIO(IION,J)=PPHIO(IION,J)*FPHOT(0)
               END IF
@@ -790,46 +757,41 @@ C
           DO 422 J=1,NLMPGS
             IF (LPOTIO) POTIO(IION,J)=POTIO(IION,J)*FION(IION)
             IF (LPRFAIO) THEN
-              IF (NLSPCSCL_ATM) THEN
-                PRFAIO(IION,J)=0._DP
-                DO IATM = 1,NATMI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IION,IATM,NION)
-                  PRFAIO(IION,J)=PRFAIO(IION,J)+PRFAIO(IAD,J)*FATM(IATM)
-                END DO
+              IF (NLSPCSCL) THEN
+                PRFAIO2(1:NION,LB_ATM:NATM) => PRFAIO(:,J)
+                PRFAIO2(IION,1:NATMI) = PRFAIO2(IION,1:NATMI)*
+     .                                  FATM(1:NATMI)
+                PRFAIO(IION,J) = SUM(PRFAIO2(IION,1:NATMI))
               ELSE
                 PRFAIO(IION,J)=PRFAIO(IION,J)*FATM(0)
               END IF
             END IF
             IF (LPRFMIO) THEN
-              IF (NLSPCSCL_MOL) THEN
-                PRFMIO(IION,J)=0._DP
-                DO IMOL = 1,NMOLI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IION,IMOL,NION)
-                  PRFMIO(IION,J)=PRFMIO(IION,J)+PRFMIO(IAD,J)*FMOL(IMOL)
-                END DO
+              IF (NLSPCSCL) THEN
+                PRFMIO2(1:NION,LB_MOL:NMOL) => PRFMIO(:,J)
+                PRFMIO2(IION,1:NMOLI) = PRFMIO2(IION,1:NMOLI)*
+     .                                  FMOL(1:NMOLI)
+                PRFMIO(IION,J) = SUM(PRFMIO2(IION,1:NMOLI))
               ELSE
                 PRFMIO(IION,J)=PRFMIO(IION,J)*FMOL(0)
               END IF
             END IF
             IF (LPRFIIO) THEN
-              IF (NLSPCSCL_ION) THEN
-                PRFIIO(IION,J)=0._DP
-                DO JION = 1,NIONI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IION,JION,NION)
-                  PRFIIO(IION,J)=PRFIIO(IION,J)+PRFIIO(IAD,J)*FION(IION)
-                END DO
+              IF (NLSPCSCL) THEN
+                PRFIIO2(1:NION,LB_ION:NION) => PRFIIO(:,J)
+                PRFIIO2(IION,1:NIONI) = PRFIIO2(IION,1:NIONI)*
+     .                                  FION(1:NIONI)
+                PRFIIO(IION,J) = SUM(PRFIIO2(IION,1:NIONI))
               ELSE
                 PRFIIO(IION,J)=PRFIIO(IION,J)*FION(0)
               END IF
             END IF
             IF (LPRFPHIO) THEN
-              IF (NLSPCSCL_PHOT) THEN
-                PRFPHIO(IION,J)=0._DP
-                DO IPHOT = 1,NPHOTI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IION,IPHOT,NION)
-                  PRFPHIO(IION,J)=PRFPHIO(IION,J)+
-     .                            PRFPHIO(IAD,J)*FPHOT(IPHOT)
-                END DO
+              IF (NLSPCSCL) THEN
+                PRFPHIO2(1:NION,LB_PHOT:NPHOT) => PRFPHIO(:,J)
+                PRFPHIO2(IION,1:NPHOTI) = PRFPHIO2(IION,1:NPHOTI)*
+     .                                    FPHOT(1:NPHOTI)
+                PRFPHIO(IION,J) = SUM(PRFPHIO2(IION,1:NPHOTI))
               ELSE
                 PRFPHIO(IION,J)=PRFPHIO(IION,J)*FPHOT(0)
               END IF
@@ -878,61 +840,51 @@ cdr  ?? scaling with bulk flux ??
           SPUMPI(NSPAM+IION,ISTRA)=SPUMPI(NSPAM+IION,ISTRA)*FION(IION)
           RIELI(IION,ISTRA)=RIELI(IION,ISTRA)*FION(IION)
 
-          IF (NLSPCSCL_ATM) THEN
-            PAIOI(IION,ISTRA)=0._DP
-            PRFAII(IION,ISTRA)=0._DP
-            DO IATM=1,NATMI
-              IAD = EIRENE_INDIRECT_ADDRESS(IION,IATM,NION)
-              PAIOI(IION,ISTRA)=PAIOI(IION,ISTRA)+
-     .                          PAIOI(IAD,ISTRA)*FATM(IATM)
-              PRFAII(IION,ISTRA)=PRFAII(IION,ISTRA)+
-     .                          PRFAII(IAD,ISTRA)*FATM(IATM)
-            END DO
+          IF (NLSPCSCL) THEN
+            PAIOI2(0:NION,LB_ATM:NATM) => PAIOI(:,ISTRA)
+            PAIOI2(IION,1:NATMI) = PAIOI2(IION,1:NATMI)*FATM(1:NATMI)
+            PAIOI(IION,ISTRA) = SUM(PAIOI2(IION,1:NATMI))
+            PRFAII2(0:NION,LB_ATM:NATM) => PRFAII(:,ISTRA)
+            PRFAII2(IION,1:NATMI) = PRFAII2(IION,1:NATMI)*FATM(1:NATMI)
+            PRFAII(IION,ISTRA) = SUM(PRFAII2(IION,1:NATMI))
           ELSE
             PAIOI(IION,ISTRA)=PAIOI(IION,ISTRA)*FATM(0)
             PRFAII(IION,ISTRA)=PRFAII(IION,ISTRA)*FATM(0)
           END IF
 
-          IF (NLSPCSCL_MOL) THEN
-            PMIOI(IION,ISTRA)=0._DP
-            PRFMII(IION,ISTRA)=0._DP
-            DO IMOL=1,NMOLI
-              IAD = EIRENE_INDIRECT_ADDRESS(IION,IMOL,NION)
-              PMIOI(IION,ISTRA)=PMIOI(IION,ISTRA)+
-     .                          PMIOI(IAD,ISTRA)*FMOL(IMOL)
-              PRFMII(IION,ISTRA)=PRFMII(IION,ISTRA)+
-     .                          PRFMII(IAD,ISTRA)*FMOL(IMOL)
-            END DO
+          IF (NLSPCSCL) THEN
+            PMIOI2(0:NION,LB_MOL:NMOL) => PMIOI(:,ISTRA)
+            PMIOI2(IION,1:NMOLI) = PMIOI2(IION,1:NMOLI)*FMOL(1:NMOLI)
+            PMIOI(IION,ISTRA) = SUM(PMIOI2(IION,1:NMOLI))
+            PRFMII2(0:NION,LB_MOL:NMOL) => PRFMII(:,ISTRA)
+            PRFMII2(IION,1:NMOLI) = PRFMII2(IION,1:NMOLI)*FMOL(1:NMOLI)
+            PRFMII(IION,ISTRA) = SUM(PRFMII2(IION,1:NMOLI))
           ELSE
             PMIOI(IION,ISTRA)=PMIOI(IION,ISTRA)*FMOL(0)
             PRFMII(IION,ISTRA)=PRFMII(IION,ISTRA)*FMOL(0)
           END IF
 
-          IF (NLSPCSCL_ION) THEN
-            PIIOI(IION,ISTRA)=0._DP
-            PRFIII(IION,ISTRA)=0._DP
-            DO JION=1,NIONI
-              IAD = EIRENE_INDIRECT_ADDRESS(IION,JION,NION)
-              PIIOI(IION,ISTRA)=PIIOI(IION,ISTRA)+
-     .                          PIIOI(IAD,ISTRA)*FION(IION)
-              PRFIII(IION,ISTRA)=PRFIII(IION,ISTRA)+
-     .                          PRFIII(IAD,ISTRA)*FION(IION)
-            END DO
+          IF (NLSPCSCL) THEN
+            PIIOI2(0:NION,LB_ION:NION) => PIIOI(:,ISTRA)
+            PIIOI2(IION,1:NIONI) = PIIOI2(IION,1:NIONI)*FION(1:NIONI)
+            PIIOI(IION,ISTRA) = SUM(PIIOI2(IION,1:NIONI))
+            PRFIII2(0:NION,LB_ION:NION) => PRFIII(:,ISTRA)
+            PRFIII2(IION,1:NIONI) = PRFIII2(IION,1:NIONI)*FION(1:NIONI)
+            PRFIII(IION,ISTRA) = SUM(PRFIII2(IION,1:NIONI))
           ELSE
             PIIOI(IION,ISTRA)=PIIOI(IION,ISTRA)*FION(0)
             PRFIII(IION,ISTRA)=PRFIII(IION,ISTRA)*FION(0)
           END IF
 
-          IF (NLSPCSCL_PHOT) THEN
-            PPHIOI(IION,ISTRA)=0._DP
-            PRFPHII(IION,ISTRA)=0._DP
-            DO IPHOT=1,NPHOTI
-              IAD = EIRENE_INDIRECT_ADDRESS(IION,IPHOT,NION)
-              PPHIOI(IION,ISTRA)=PPHIOI(IION,ISTRA)+
-     .                          PPHIOI(IAD,ISTRA)*FPHOT(IPHOT)
-              PRFPHII(IION,ISTRA)=PRFPHII(IION,ISTRA)+
-     .                          PRFPHII(IAD,ISTRA)*FPHOT(IPHOT)
-            END DO
+          IF (NLSPCSCL) THEN
+            PPHIOI2(0:NION,LB_PHOT:NPHOT) => PPHIOI(:,ISTRA)
+            PPHIOI2(IION,1:NPHOTI) = PPHIOI2(IION,1:NPHOTI)*
+     .                               FPHOT(1:NPHOTI)
+            PPHIOI(IION,ISTRA) = SUM(PPHIOI2(IION,1:NPHOTI))
+            PRFPHII2(0:NION,LB_PHOT:NPHOT) => PRFPHII(:,ISTRA)
+            PRFPHII2(IION,1:NPHOTI) = PRFPHII2(IION,1:NPHOTI)*
+     .                                FPHOT(1:NPHOTI)
+            PRFPHII(IION,ISTRA) = SUM(PRFPHII2(IION,1:NPHOTI))
           ELSE
             PPHIOI(IION,ISTRA)=PPHIOI(IION,ISTRA)*FPHOT(0)
             PRFPHII(IION,ISTRA)=PRFPHII(IION,ISTRA)*FPHOT(0)
@@ -964,76 +916,81 @@ cdr  ?? scaling with bulk flux ??
           SPTPIOI(0,ISTRA)=SUM(SPTPIOI(1:NIONI,ISTRA))
           RIELI(0,ISTRA)=SUM(RIELI(1:NIONI,ISTRA))
 
-          IF (NLSPCSCL_ATM) THEN
-            PAIOI(0,ISTRA)=0._DP
-            PRFAII(0,ISTRA)=0._DP
-            DO IATM = 1,NATMI
-              SUMP = 0._DP
-              SUMPRF = 0._DP
-              DO IION = 1,NIONI
-                IAD = EIRENE_INDIRECT_ADDRESS(IION,IATM,NION)
-                SUMP = SUMP + PAIOI(IAD,ISTRA)
-                SUMPRF = SUMPRF + PRFAII(IAD,ISTRA)
-              END DO
-              PAIOI(0,ISTRA)=PAIOI(0,ISTRA)+SUMP*FATM(IATM)
-              PRFAII(0,ISTRA)=PRFAII(0,ISTRA)+SUMPRF*FATM(IATM)
+          IF (NLSPCSCL) THEN
+            PAIOI2(0:NION,LB_ATM:NATM) => PAIOI(:,ISTRA)
+            PRFAII2(0:NION,LB_ATM:NATM) => PRFAII(:,ISTRA)
+!            SUMP = 0._DP
+!            SUMPRF = 0._DP
+!            DO IATM = 1,NATMI
+!              SUMP = SUMP + SUM(PAIOI2(1:NIONI,IATM))*FATM(IATM)
+!              SUMPRF = SUMPRF + SUM(PRFAII2(1:NIONI,IATM))*FATM(IATM)
+!            END DO
+!            PAIOI(0,ISTRA)= SUMP
+!            PRFAII(0,ISTRA)= SUMPRF
+            DO IATM = LB_ATM,NATMI
+              PAIOI2(0,IATM) = SUM(PAIOI2(1:NIONI,IATM))
+              PRFAII2(0,IATM) = SUM(PRFAII2(1:NIONI,IATM))
             END DO
           ELSE
             PAIOI(0,ISTRA)=SUM(PAIOI(1:NIONI,ISTRA))
             PRFAII(0,ISTRA)=SUM(PRFAII(1:NIONI,ISTRA))
           END IF
 
-          IF (NLSPCSCL_MOL) THEN
-            PMIOI(0,ISTRA)=0._DP
-            PRFMII(0,ISTRA)=0._DP
-            DO IMOL = 1,NMOLI
-              SUMP = 0._DP
-              SUMPRF = 0._DP
-              DO IION = 1,NIONI
-                IAD = EIRENE_INDIRECT_ADDRESS(IION,IMOL,NION)
-                SUMP = SUMP + PMIOI(IAD,ISTRA)
-                SUMPRF = SUMPRF + PRFMII(IAD,ISTRA)
-              END DO
-              PMIOI(0,ISTRA)=PMIOI(0,ISTRA)+SUMP*FMOL(IMOL)
-              PRFMII(0,ISTRA)=PRFMII(0,ISTRA)+SUMPRF*FMOL(IMOL)
+          IF (NLSPCSCL) THEN
+            PMIOI2(0:NION,LB_MOL:NMOL) => PMIOI(:,ISTRA)
+            PRFMII2(0:NION,LB_MOL:NMOL) => PRFMII(:,ISTRA)
+!            SUMP = 0._DP
+!            SUMPRF = 0._DP
+!            DO IMOL = 1,NMOLI
+!              SUMP = SUMP + SUM(PMIOI2(1:NIONI,IMOL))*FMOL(IMOL)
+!              SUMPRF = SUMPRF + SUM(PRFMII2(1:NIONI,IMOL))*FMOL(IMOL)
+!            END DO
+!            PMIOI(0,ISTRA)= SUMP
+!            PRFMII(0,ISTRA)= SUMPRF
+            DO IMOL = LB_MOL,NMOLI
+              PMIOI2(0,IMOL) = SUM(PMIOI2(1:NIONI,IMOL))
+              PRFMII2(0,IMOL) = SUM(PRFMII2(1:NIONI,IMOL))
             END DO
           ELSE
             PMIOI(0,ISTRA)=SUM(PMIOI(1:NIONI,ISTRA))
             PRFMII(0,ISTRA)=SUM(PRFMII(1:NIONI,ISTRA))
           END IF
 
-          IF (NLSPCSCL_ION) THEN
-            PIIOI(0,ISTRA)=0._DP
-            PRFIII(0,ISTRA)=0._DP
-            DO JION = 1,NIONI
-              SUMP = 0._DP
-              SUMPRF = 0._DP
-              DO IION = 1,NIONI
-                IAD = EIRENE_INDIRECT_ADDRESS(IION,JION,NION)
-                SUMP = SUMP + PIIOI(IAD,ISTRA)
-                SUMPRF = SUMPRF + PRFIII(IAD,ISTRA)
-              END DO
-              PIIOI(0,ISTRA)=PIIOI(0,ISTRA)+SUMP*FION(IION)
-              PRFIII(0,ISTRA)=PRFIII(0,ISTRA)+SUMPRF*FION(IION)
+          IF (NLSPCSCL) THEN
+            PIIOI2(0:NION,LB_ION:NION) => PIIOI(:,ISTRA)
+            PRFIII2(0:NION,LB_ION:NION) => PRFIII(:,ISTRA)
+!            SUMP = 0._DP
+!            SUMPRF = 0._DP
+!            DO IION = 1,NIONI
+!              SUMP = SUMP + SUM(PIIOI2(1:NIONI,IION))*FION(IION)
+!              SUMPRF = SUMPRF + SUM(PRFIII2(1:NIONI,IION))*FION(IION)
+!            END DO
+!            PIIOI(0,ISTRA)= SUMP
+!            PRFIII(0,ISTRA)= SUMPRF
+            DO IION = LB_ION,NIONI
+              PIIOI2(0,IION) = SUM(PIIOI2(1:NIONI,IION))
+              PRFIII2(0,IION) = SUM(PRFIII2(1:NIONI,IION))
             END DO
           ELSE
             PIIOI(0,ISTRA)=SUM(PIIOI(1:NIONI,ISTRA))
             PRFIII(0,ISTRA)=SUM(PRFIII(1:NIONI,ISTRA))
           END IF
 
-          IF (NLSPCSCL_PHOT) THEN
-            PPHIOI(0,ISTRA)=0._DP
-            PRFPHII(0,ISTRA)=0._DP
-            DO IPHOT = 1,NPHOTI
-              SUMP = 0._DP
-              SUMPRF = 0._DP
-              DO IION = 1,NIONI
-                IAD = EIRENE_INDIRECT_ADDRESS(IION,IPHOT,NION)
-                SUMP = SUMP + PPHIOI(IAD,ISTRA)
-                SUMPRF = SUMPRF + PRFPHII(IAD,ISTRA)
-              END DO
-              PPHIOI(0,ISTRA)=PPHIOI(0,ISTRA)+SUMP*FPHOT(IPHOT)
-              PRFPHII(0,ISTRA)=PRFPHII(0,ISTRA)+SUMPRF*FPHOT(IPHOT)
+          IF (NLSPCSCL) THEN
+            PPHIOI2(0:NION,LB_PHOT:NPHOT) => PPHIOI(:,ISTRA)
+            PRFPHII2(0:NION,LB_PHOT:NPHOT) => PRFPHII(:,ISTRA)
+!            SUMP = 0._DP
+!            SUMPRF = 0._DP
+!            DO IPHOT = 1,NPHOTI
+!              SUMP = SUMP + SUM(PPHIOI2(1:NIONI,IPHOT))*FPHOT(IPHOT)
+!              SUMPRF = SUMPRF + 
+!     .                 SUM(PRFPHII2(1:NIONI,IPHOT))*FPHOT(IPHOT)
+!            END DO
+!            PPHIOI(0,ISTRA)= SUMP
+!            PRFPHII(0,ISTRA)= SUMPRF
+            DO IPHOT = LB_PHOT,NPHOTI
+              PPHIOI2(0,IPHOT) = SUM(PPHIOI2(1:NIONI,IPHOT))
+              PRFPHII2(0,IPHOT) = SUM(PRFPHII2(1:NIONI,IPHOT))
             END DO
           ELSE
             PPHIOI(0,ISTRA)=SUM(PPHIOI(1:NIONI,ISTRA))
@@ -1063,46 +1020,41 @@ C
             IF (LPDENPH) PDENPH(IPHOT,J)=PDENPH(IPHOT,J)*FPHOT(IPHOT)
             IF (LEDENPH) EDENPH(IPHOT,J)=EDENPH(IPHOT,J)*FPHOT(IPHOT)
             IF (LPAPHT) THEN
-              IF (NLSPCSCL_ATM) THEN
-                PAPHT(IPHOT,J)=0._DP
-                DO IATM = 1,NATMI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IATM,NPHOT)
-                  PAPHT(IPHOT,J)=PAPHT(IPHOT,J)+PAPHT(IAD,J)*FATM(IATM)
-                END DO
+              IF (NLSPCSCL) THEN
+                PAPHT2(1:NPHOT,LB_ATM:NATM) => PAPHT(:,J)
+                PAPHT2(IPHOT,1:NATMI) = PAPHT2(IPHOT,1:NATMI)*
+     .                                  FATM(1:NATMI)
+                PAPHT(IPHOT,J) = SUM(PAPHT2(IPHOT,1:NATMI))
               ELSE  
-                PAPHT (IPHOT,J)=PAPHT (IPHOT,J)*FATM(0)
+                PAPHT(IPHOT,J)=PAPHT(IPHOT,J)*FATM(0)
               END IF
             END IF
             IF (LPMPHT) THEN
-              IF (NLSPCSCL_MOL) THEN
-                PMPHT(IPHOT,J)=0._DP
-                DO IMOL = 1,NMOLI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IMOL,NPHOT)
-                  PMPHT(IPHOT,J)=PMPHT(IPHOT,J)+PMPHT(IAD,J)*FMOL(IMOL)
-                END DO
+              IF (NLSPCSCL) THEN
+                PMPHT2(1:NPHOT,LB_MOL:NMOL) => PMPHT(:,J)
+                PMPHT2(IPHOT,1:NMOLI) = PMPHT2(IPHOT,1:NMOLI)*
+     .                                  FMOL(1:NMOLI)
+                PMPHT(IPHOT,J) = SUM(PMPHT2(IPHOT,1:NMOLI))
               ELSE  
-                PMPHT (IPHOT,J)=PMPHT (IPHOT,J)*FMOL(0)
+                PMPHT(IPHOT,J)=PMPHT(IPHOT,J)*FMOL(0)
               END IF
             END IF
             IF (LPIPHT) THEN
-              IF (NLSPCSCL_ION) THEN
-                PIPHT(IPHOT,J)=0._DP
-                DO IION = 1,NIONI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IION,NPHOT)
-                  PIPHT(IPHOT,J)=PIPHT(IPHOT,J)+PIPHT(IAD,J)*FION(IION)
-                END DO
+              IF (NLSPCSCL) THEN
+                PIPHT2(1:NPHOT,LB_ION:NION) => PIPHT(:,J)
+                PIPHT2(IPHOT,1:NIONI) = PIPHT2(IPHOT,1:NIONI)*
+     .                                  FION(1:NIONI) 
+                PIPHT(IPHOT,J) = SUM(PIPHT2(IPHOT,1:NIONI))
               ELSE  
-                PIPHT (IPHOT,J)=PIPHT (IPHOT,J)*FION(0)
+                PIPHT(IPHOT,J)=PIPHT(IPHOT,J)*FION(0)
               END IF
             END IF
             IF (LPPHPHT) THEN
-              IF (NLSPCSCL_PHOT) THEN
-                PPHPHT(IPHOT,J)=0._DP
-                DO JPHOT = 1,NPHOTI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,JPHOT,NPHOT)
-                  PPHPHT(IPHOT,J)=PPHPHT(IPHOT,J)+
-     .                            PPHPHT(IAD,J)*FPHOT(JPHOT)
-                END DO
+              IF (NLSPCSCL) THEN
+                PPHPHT2(1:NPHOT,LB_PHOT:NPHOT) => PPHPHT(:,J)
+                PPHPHT2(IPHOT,1:NPHOTI) = PPHPHT2(IPHOT,1:NPHOTI)*
+     .                                    FPHOT(1:NPHOTI)
+                PPHPHT(IPHOT,J) = SUM(PPHPHT2(IPHOT,1:NPHOTI))
               ELSE  
                 PPHPHT(IPHOT,J)=PPHPHT(IPHOT,J)*FPHOT(0)
               END IF
@@ -1118,50 +1070,41 @@ C  SURFACE-AVERAGED TALLIES
           DO J=1,NLMPGS
             IF (LPOTPHT)  POTPHT (IPHOT,J)=POTPHT (IPHOT,J)*FPHOT(IPHOT)
             IF (LPRFAPHT) THEN 
-              IF (NLSPCSCL_ATM) THEN
-                PRFAPHT(IPHOT,J)=0._DP
-                DO IATM = 1,NATMI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IATM,NPHOT)
-                  PRFAPHT(IPHOT,J)=PRFAPHT(IPHOT,J)+
-     .                             PRFAPHT(IAD,J)*FATM(IATM)
-                END DO
+              IF (NLSPCSCL) THEN
+                PRFAPHT2(1:NPHOT,LB_ATM:NATM) => PRFAPHT(:,J)
+                PRFAPHT2(IPHOT,1:NATMI) = PRFAPHT2(IPHOT,1:NATMI)*
+     .                                    FATM(1:NATMI)
+                PRFAPHT(IPHOT,J) = SUM(PRFAPHT2(IPHOT,1:NATMI))
               ELSE
                 PRFAPHT(IPHOT,J)=PRFAPHT(IPHOT,J)*FATM(0)
               END IF
             END IF
             IF (LPRFMPHT) THEN
-              IF (NLSPCSCL_MOL) THEN
-                PRFMPHT(IPHOT,J)=0._DP
-                DO IMOL = 1,NMOLI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IMOL,NPHOT)
-                  PRFMPHT(IPHOT,J)=PRFMPHT(IPHOT,J)+
-     .                             PRFMPHT(IAD,J)*FMOL(IMOL)
-                END DO
-              ELSE
+              IF (NLSPCSCL) THEN
+                PRFMPHT2(1:NPHOT,LB_MOL:NMOL) => PRFMPHT(:,J)
+                PRFMPHT2(IPHOT,1:NMOLI) = PRFMPHT2(IPHOT,1:NMOLI)*
+     .                                    FMOL(1:NMOLI)
+                PRFMPHT(IPHOT,J) = SUM(PRFMPHT2(IPHOT,1:NMOLI))
+               ELSE
                 PRFMPHT(IPHOT,J)=PRFMPHT(IPHOT,J)*FMOL(0)
               END IF
             END IF
             IF (LPRFIPHT) THEN
-              IF (NLSPCSCL_ION) THEN
-                PRFIPHT(IPHOT,J)=0._DP
-                DO IION = 1,NIONI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IION,NPHOT)
-                  PRFIPHT(IPHOT,J)=PRFIPHT(IPHOT,J)+
-     .                             PRFIPHT(IAD,J)*FION(IION)
-                END DO
-              ELSE
+              IF (NLSPCSCL) THEN
+                PRFIPHT2(1:NPHOT,LB_ION:NION) => PRFIPHT(:,J)
+                PRFIPHT2(IPHOT,1:NIONI) = PRFIPHT2(IPHOT,1:NIONI)*
+     .                                    FION(1:NIONI)
+                PRFIPHT(IPHOT,J) = SUM(PRFIPHT2(IPHOT,1:NIONI))
+               ELSE
                 PRFIPHT(IPHOT,J)=PRFIPHT(IPHOT,J)*FION(0)
               END IF
             END IF
             IF (LPRFPHPHT) THEN
-              IF (NLSPCSCL_PHOT) THEN
-                PRFPHPHT(IPHOT,J)=0._DP
-                DO JPHOT = 1,NPHOTI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,JPHOT,NPHOT)
-                  PRFPHPHT(IPHOT,J)=PRFPHPHT(IPHOT,J)+
-     .                              PRFPHPHT(IAD,J)*FPHOT(JPHOT)
-                END DO
-              ELSE
+              IF (NLSPCSCL) THEN
+                PRFPHPHT2(1:NPHOT,LB_PHOT:NPHOT) => PRFPHPHT(:,J)
+                PRFPHPHT2(IPHOT,1:NPHOTI) = FPHOT(1:NPHOTI)
+                PRFPHPHT(IPHOT,J) = SUM(PRFPHPHT2(IPHOT,1:NPHOTI))
+               ELSE
                 PRFPHPHT(IPHOT,J)=PRFPHPHT(IPHOT,J)*FPHOT(0)
               END IF
             END IF
@@ -1211,61 +1154,57 @@ cdr  ?? scaling with bulk flux ??
           SPTPPHTI(IPHOT,ISTRA)=SPTPPHTI(IPHOT,ISTRA)*FPHOT(IPHOT)
           SPUMPI(IPHOT,ISTRA)=SPUMPI(IPHOT,ISTRA)*FPHOT(IPHOT)
 
-          IF (NLSPCSCL_ATM) THEN
-            PAPHTI(IPHOT,ISTRA)=0._DP
-            PRFAPHTI(IPHOT,ISTRA)=0._DP
-            DO IATM=1,NATMI
-              IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IATM,NPHOT)
-              PAPHTI(IPHOT,ISTRA)=PAPHTI(IPHOT,ISTRA)+
-     .                          PAPHTI(IAD,ISTRA)*FATM(IATM)
-              PRFAPHTI(IPHOT,ISTRA)=PRFAPHTI(IPHOT,ISTRA)+
-     .                          PRFAPHTI(IAD,ISTRA)*FATM(IATM)
-            END DO
+          IF (NLSPCSCL) THEN
+            PAPHTI2(0:NPHOT,LB_ATM:NATM) => PAPHTI(:,ISTRA)
+            PAPHTI2(IPHOT,1:NATMI) = PAPHTI2(IPHOT,1:NATMI)*
+     .                               FATM(1:NATMI)
+            PAPHTI(IPHOT,ISTRA) = SUM(PAPHTI2(IPHOT,1:NATMI))
+            PRFAPHTI2(0:NPHOT,LB_ATM:NATM) => PRFAPHTI(:,ISTRA)
+            PRFAPHTI2(IPHOT,1:NATMI) = PRFAPHTI2(IPHOT,1:NATMI)*
+     .                                 FATM(1:NATMI)
+            PRFAPHTI(IPHOT,ISTRA) = SUM(PRFAPHTI2(IPHOT,1:NATMI))
           ELSE
             PAPHTI (IPHOT,ISTRA)=PAPHTI (IPHOT,ISTRA)*FATM(0)
             PRFAPHTI(IPHOT,ISTRA)=PRFAPHTI(IPHOT,ISTRA)*FATM(0)
           END IF
 
-          IF (NLSPCSCL_MOL) THEN
-            PMPHTI(IPHOT,ISTRA)=0._DP
-            PRFMPHTI(IPHOT,ISTRA)=0._DP
-            DO IMOL=1,NMOLI
-              IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IMOL,NPHOT)
-              PMPHTI(IPHOT,ISTRA)=PMPHTI(IPHOT,ISTRA)+
-     .                          PMPHTI(IAD,ISTRA)*FMOL(IMOL)
-              PRFMPHTI(IPHOT,ISTRA)=PRFMPHTI(IPHOT,ISTRA)+
-     .                          PRFMPHTI(IAD,ISTRA)*FMOL(IMOL)
-            END DO
+          IF (NLSPCSCL) THEN
+            PMPHTI2(0:NPHOT,LB_MOL:NMOL) => PMPHTI(:,ISTRA)
+            PMPHTI2(IPHOT,1:NMOLI) = PMPHTI2(IPHOT,1:NMOLI)*
+     .                               FMOL(1:NMOLI)
+            PMPHTI(IPHOT,ISTRA) = SUM(PMPHTI2(IPHOT,1:NMOLI))
+            PRFMPHTI2(0:NPHOT,LB_MOL:NATM) => PRFMPHTI(:,ISTRA)
+            PRFMPHTI2(IPHOT,1:NMOLI) = PRFMPHTI2(IPHOT,1:NMOLI)*
+     .                                 FMOL(1:NMOLI)
+            PRFMPHTI(IPHOT,ISTRA) = SUM(PRFMPHTI2(IPHOT,1:NMOLI))
           ELSE
             PMPHTI (IPHOT,ISTRA)=PMPHTI (IPHOT,ISTRA)*FMOL(0)
             PRFMPHTI(IPHOT,ISTRA)=PRFMPHTI(IPHOT,ISTRA)*FMOL(0)
           END IF
 
-          IF (NLSPCSCL_ION) THEN
-            PIPHTI(IPHOT,ISTRA)=0._DP
-            PRFIPHTI(IPHOT,ISTRA)=0._DP
-            DO IION=1,NIONI
-              IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IION,NPHOT)
-              PIPHTI(IPHOT,ISTRA)=PIPHTI(IPHOT,ISTRA)+
-     .                          PIPHTI(IAD,ISTRA)*FION(IION)
-              PRFIPHTI(IPHOT,ISTRA)=PRFIPHTI(IPHOT,ISTRA)+
-     .                          PRFIPHTI(IAD,ISTRA)*FION(IION)
-            END DO
+          IF (NLSPCSCL) THEN
+            PIPHTI2(0:NPHOT,LB_ION:NION) => PIPHTI(:,ISTRA)
+            PIPHTI2(IPHOT,1:NIONI) = PIPHTI2(IPHOT,1:NIONI)*
+     .                               FION(1:NIONI)
+            PIPHTI(IPHOT,ISTRA) = SUM(PIPHTI2(IPHOT,1:NIONI))
+            PRFIPHTI2(0:NPHOT,LB_ION:NION) => PRFIPHTI(:,ISTRA)
+            PRFIPHTI2(IPHOT,1:NIONI) = PRFIPHTI2(IPHOT,1:NIONI)*
+     .                                 FION(1:NIONI)
+            PRFIPHTI(IPHOT,ISTRA) = SUM(PRFIPHTI2(IPHOT,1:NIONI))
           ELSE
             PIPHTI (IPHOT,ISTRA)=PIPHTI (IPHOT,ISTRA)*FION(0)
             PRFIPHTI(IPHOT,ISTRA)=PRFIPHTI(IPHOT,ISTRA)*FION(0)
           END IF
 
-          IF (NLSPCSCL_PHOT) THEN
-            PPHPHTI(IPHOT,ISTRA)=0._DP
-            PRFPHPHTI(IPHOT,ISTRA)=0._DP
-            DO JPHOT=1,NPHOTI
-              IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,JPHOT,NPHOT)
-              PPHPHTI(IPHOT,ISTRA)=PPHPHTI(IPHOT,ISTRA)+
-     .                          PPHPHTI(IAD,ISTRA)*FPHOT(IPHOT)
-              PRFPHPHTI(IPHOT,ISTRA)=PRFPHPHTI(IPHOT,ISTRA)+
-     .                          PRFPHPHTI(IAD,ISTRA)*FPHOT(IPHOT)
-            END DO
+          IF (NLSPCSCL) THEN
+            PPHPHTI2(0:NPHOT,LB_PHOT:NPHOT) => PPHPHTI(:,ISTRA)
+            PPHPHTI2(IPHOT,1:NPHOTI) = PPHPHTI2(IPHOT,1:NPHOTI)*
+     .                                 FPHOT(1:NPHOTI)
+            PPHPHTI(IPHOT,ISTRA) = SUM(PPHPHTI2(IPHOT,1:NPHOTI))
+            PRFPHPHTI2(0:NPHOT,LB_PHOT:NPHOT) => PRFPHPHTI(:,ISTRA)
+            PRFPHPHTI2(IPHOT,1:NPHOTI) = PRFPHPHTI2(IPHOT,1:NPHOTI)*
+     .                                   FPHOT(1:NPHOTI)
+            PRFPHPHTI(IPHOT,ISTRA) = SUM(PRFPHPHTI2(IPHOT,1:NPHOTI))
           ELSE
             PPHPHTI(IPHOT,ISTRA)=PPHPHTI(IPHOT,ISTRA)*FPHOT(0)
             PRFPHPHTI(IPHOT,ISTRA)=PRFPHPHTI(IPHOT,ISTRA)*FPHOT(0)
@@ -1295,74 +1234,82 @@ cdr  ?? scaling with bulk flux ??
 cdr  ?? scaling with bulk flux ??
           SPTPPHTI(0,ISTRA)=SUM(SPTPPHTI(1:NPHOTI,ISTRA))
 
-          IF (NLSPCSCL_ATM) THEN
-            PAPHTI(0,ISTRA)=0._DP
-            PRFAPHTI(0,ISTRA)=0._DP
-            DO IATM = 1,NATMI
-              SUMP = 0._DP
-              SUMPRF = 0._DP
-              DO IPHOT = 1,NPHOTI
-                IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IATM,NPHOT)
-                SUMP = SUMP + PAPHTI(IAD,ISTRA)
-                SUMPRF = SUMPRF + PRFAPHTI(IAD,ISTRA)
-              END DO
-              PAPHTI(0,ISTRA)=PAPHTI(0,ISTRA)+SUMP*FATM(IATM)
-              PRFAPHTI(0,ISTRA)=PRFAPHTI(0,ISTRA)+SUMPRF*FATM(IATM)
+          IF (NLSPCSCL) THEN
+            PAPHTI2(0:NPHOT,LB_ATM:NATM) => PAPHTI(:,ISTRA)
+            PRFAPHTI2(0:NPHOT,LB_ATM:NATM) => PRFAPHTI(:,ISTRA)
+!            SUMP = 0._DP
+!            SUMPRF = 0._DP
+!            DO IATM = 1,NATMI
+!              SUMP = SUMP + SUM(PAPHTI2(1:NPHOTI,IATM))*FATM(IATM)
+!              SUMPRF = SUMPRF + 
+!     .                 SUM(PRFAPHTI2(1:NPHOTI,IATM))*FATM(IATM)
+!            END DO
+!            PAPHTI(0,ISTRA)= SUMP
+!            PRFAPHTI(0,ISTRA)= SUMPRF
+            DO IATM = LB_ATM,NATMI
+              PAPHTI2(0,IATM) = SUM(PAPHTI2(1:NPHOTI,IATM))
+              PRFAPHTI2(0,IATM) = SUM(PRFAPHTI2(1:NPHOTI,IATM))
             END DO
           ELSE
             PAPHTI(0,ISTRA)=SUM(PAPHTI(1:NPHOTI,ISTRA))
             PRFAPHTI(0,ISTRA)=SUM(PRFAPHTI(1:NPHOTI,ISTRA))
           END IF
 
-          IF (NLSPCSCL_MOL) THEN
-            PMPHTI(0,ISTRA)=0._DP
-            PRFMPHTI(0,ISTRA)=0._DP
-            DO IMOL = 1,NMOLI
-              SUMP = 0._DP
-              SUMPRF = 0._DP
-              DO IPHOT = 1,NPHOTI
-                IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IMOL,NPHOT)
-                SUMP = SUMP + PMPHTI(IAD,ISTRA)
-                SUMPRF = SUMPRF + PRFMPHTI(IAD,ISTRA)
-              END DO
-              PMPHTI(0,ISTRA)=PMPHTI(0,ISTRA)+SUMP*FMOL(IMOL)
-              PRFMPHTI(0,ISTRA)=PRFMPHTI(0,ISTRA)+SUMPRF*FMOL(IMOL)
+          IF (NLSPCSCL) THEN
+            PMPHTI2(0:NPHOT,LB_MOL:NMOL) => PMPHTI(:,ISTRA)
+            PRFMPHTI2(0:NPHOT,LB_MOL:NMOL) => PRFMPHTI(:,ISTRA)
+!            SUMP = 0._DP
+!            SUMPRF = 0._DP
+!            DO IMOL = 1,NMOLI
+!              SUMP = SUMP + SUM(PMPHTI2(1:NPHOTI,IMOL))*FMOL(IMOL)
+!              SUMPRF = SUMPRF + 
+!     .                 SUM(PRFMPHTI2(1:NPHOTI,IMOL))*FMOL(IMOL)
+!            END DO
+!            PMPHTI(0,ISTRA)= SUMP
+!            PRFMPHTI(0,ISTRA)= SUMPRF
+            DO IMOL = LB_MOL,NMOLI
+              PMPHTI2(0,IMOL) = SUM(PMPHTI2(1:NPHOTI,IMOL))
+              PRFMPHTI2(0,IMOL) = SUM(PRFMPHTI2(1:NPHOTI,IMOL))
             END DO
           ELSE
             PMPHTI(0,ISTRA)=SUM(PMPHTI(1:NPHOTI,ISTRA))
             PRFMPHTI(0,ISTRA)=SUM(PRFMPHTI(1:NPHOTI,ISTRA))
           END IF
-          IF (NLSPCSCL_ION) THEN
-            PIPHTI(0,ISTRA)=0._DP
-            PRFIPHTI(0,ISTRA)=0._DP
-            DO IION = 1,NIONI
-              SUMP = 0._DP
-              SUMPRF = 0._DP
-              DO IPHOT = 1,NPHOTI
-                IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IION,NPHOT)
-                SUMP = SUMP + PIPHTI(IAD,ISTRA)
-                SUMPRF = SUMPRF + PRFIPHTI(IAD,ISTRA)
-              END DO
-              PIPHTI(0,ISTRA)=PIPHTI(0,ISTRA)+SUMP*FION(IION)
-              PRFIPHTI(0,ISTRA)=PRFIPHTI(0,ISTRA)+SUMPRF*FION(IION)
+          IF (NLSPCSCL) THEN
+            PIPHTI2(0:NPHOT,LB_ION:NION) => PIPHTI(:,ISTRA)
+            PRFIPHTI2(0:NPHOT,LB_ION:NION) => PRFIPHTI(:,ISTRA)
+!            SUMP = 0._DP
+!            SUMPRF = 0._DP
+!            DO IION = 1,NIONI
+!              SUMP = SUMP + SUM(PIPHTI2(1:NPHOTI,IION))*FION(IION)
+!              SUMPRF = SUMPRF + 
+!     .                 SUM(PRFIPHTI2(1:NPHOTI,IION))*FION(IION)
+!            END DO
+!            PIPHTI(0,ISTRA)= SUMP
+!            PRFIPHTI(0,ISTRA)= SUMPRF
+            DO IION = LB_ION,NIONI
+              PIPHTI2(0,IION) = SUM(PIPHTI2(1:NPHOTI,IION))
+              PRFIPHTI2(0,IION) = SUM(PRFIPHTI2(1:NPHOTI,IION))
             END DO
           ELSE
             PIPHTI(0,ISTRA)=SUM(PIPHTI(1:NPHOTI,ISTRA))
             PRFIPHTI(0,ISTRA)=SUM(PRFIPHTI(1:NPHOTI,ISTRA))
           END IF
-          IF (NLSPCSCL_PHOT) THEN
-            PPHPHTI(0,ISTRA)=0._DP
-            PRFPHPHTI(0,ISTRA)=0._DP
-            DO JPHOT = 1,NPHOTI
-              SUMP = 0._DP
-              SUMPRF = 0._DP
-              DO IPHOT = 1,NPHOTI
-                IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,JPHOT,NPHOT)
-                SUMP = SUMP + PPHPHTI(IAD,ISTRA)
-                SUMPRF = SUMPRF + PRFPHPHTI(IAD,ISTRA)
-              END DO
-              PPHPHTI(0,ISTRA)=PPHPHTI(0,ISTRA)+SUMP*FPHOT(JPHOT)
-              PRFPHPHTI(0,ISTRA)=PRFPHPHTI(0,ISTRA)+SUMPRF*FPHOT(JPHOT)
+          IF (NLSPCSCL) THEN
+            PPHPHTI2(0:NPHOT,LB_PHOT:NPHOT) => PPHPHTI(:,ISTRA)
+            PRFPHPHTI2(0:NPHOT,LB_PHOT:NPHOT) => PRFPHPHTI(:,ISTRA)
+!            SUMP = 0._DP
+!            SUMPRF = 0._DP
+!            DO IPHOT = 1,NPHOTI
+!              SUMP = SUMP + SUM(PPHPHTI2(1:NPHOTI,IPHOT))*FPHOT(IPHOT)
+!              SUMPRF = SUMPRF + 
+!     .                 SUM(PRFPHPHTI2(1:NPHOTI,IPHOT))*FPHOT(IPHOT)
+!            END DO
+!            PPHPHTI(0,ISTRA)= SUMP
+!            PRFPHPHTI(0,ISTRA)= SUMPRF
+            DO IPHOT = LB_PHOT,NPHOTI
+              PPHPHTI2(0,IPHOT) = SUM(PPHPHTI2(1:NPHOTI,IPHOT))
+              PRFPHPHTI2(0,IPHOT) = SUM(PRFPHPHTI2(1:NPHOTI,IPHOT))
             END DO
           ELSE
             PPHPHTI(0,ISTRA)=SUM(PPHPHTI(1:NPHOTI,ISTRA))
@@ -1489,45 +1436,38 @@ C
           if (.not.logpls(ipls,istra)) cycle
           DO J=1,NSBOX_TAL
             IF (LPAPL) THEN
-              IF (NLSPCSCL_ATM) THEN
-                PAPL(IPLS,J)=0._DP
-                DO IATM = 1,NATMI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IPLS,IATM,NPLS)
-                  PAPL(IPLS,J)=PAPL(IPLS,J)+PAPL(IAD,J)*FATM(IATM)
-                END DO
+              IF (NLSPCSCL) THEN
+                PAPL2(1:NPLS,LB_ATM:NATM) => PAPL(:,J)
+                PAPL2(IPLS,1:NATMI) = PAPL2(IPLS,1:NATMI)*FATM(1:NATMI)
+                PAPL(IPLS,J) = SUM(PAPL2(IPLS,1:NATMI))
               ELSE  
                 PAPL(IPLS,J)=PAPL(IPLS,J)*FATM(0)
               END IF
             END IF
             IF (LPMPL) THEN
-              IF (NLSPCSCL_MOL) THEN
-                PMPL(IPLS,J)=0._DP
-                DO IMOL = 1,NMOLI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IPLS,IMOL,NPLS)
-                  PMPL(IPLS,J)=PMPL(IPLS,J)+PMPL(IAD,J)*FMOL(IMOL)
-                END DO
+              IF (NLSPCSCL) THEN
+                PMPL2(1:NPLS,LB_MOL:NMOL) => PMPL(:,J)
+                PMPL2(IPLS,1:NMOLI) = PMPL2(IPLS,1:NMOLI)*FMOL(1:NMOLI)
+                PMPL(IPLS,J) = SUM(PMPL2(IPLS,1:NMOLI))
               ELSE  
                 PMPL(IPLS,J)=PMPL(IPLS,J)*FMOL(0)
               END IF
             END IF
             IF (LPIPL) THEN
-              IF (NLSPCSCL_ION) THEN
-                PIPL(IPLS,J)=0._DP
-                DO IION = 1,NIONI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IPLS,IION,NPLS)
-                  PIPL(IPLS,J)=PIPL(IPLS,J)+PIPL(IAD,J)*FION(IION)
-                END DO
+              IF (NLSPCSCL) THEN
+                PIPL2(1:NPLS,LB_ION:NION) => PIPL(:,J)
+                PIPL2(IPLS,1:NIONI) = PIPL2(IPLS,1:NIONI)*FION(1:NIONI)
+                PIPL(IPLS,J) = SUM(PIPL2(IPLS,1:NIONI))
               ELSE  
                 PIPL(IPLS,J)=PIPL(IPLS,J)*FION(0)
               END IF
             END IF
             IF (LPPHPL) THEN
-              IF (NLSPCSCL_PHOT) THEN
-                PPHPL(IPLS,J)=0._DP
-                DO IPHOT = 1,NPHOTI
-                  IAD = EIRENE_INDIRECT_ADDRESS(IPLS,IPHOT,NPLS)
-                  PPHPL(IPLS,J)=PPHPL(IPLS,J)+PPHPL(IAD,J)*FPHOT(IPHOT)
-                END DO
+              IF (NLSPCSCL) THEN
+                PPHPL2(1:NPLS,LB_PHOT:NPHOT) => PPHPL(:,J)
+                PPHPL2(IPLS,1:NPHOTI) = PPHPL2(IPLS,1:NPHOTI)*
+     .                                  FPHOT(1:NPHOTI)
+                PPHPL(IPLS,J) = SUM(PPHPL2(IPLS,1:NPHOTI))
               ELSE  
                 PPHPL(IPLS,J)=PPHPL(IPLS,J)*FPHOT(0)
               END IF
@@ -1543,43 +1483,32 @@ C
           END DO
         END DO
         DO IPLS=1,NPLSI
-          IF (NLSPCSCL_ATM) THEN
-            PAPLI(IPLS,ISTRA)=0._DP
-            DO IATM=1,NATMI
-              IAD = EIRENE_INDIRECT_ADDRESS(IPLS,IATM,NPLS)
-              PAPLI(IPLS,ISTRA)=PAPLI(IPLS,ISTRA)+
-     .                          PAPLI(IAD,ISTRA)*FATM(IATM)
-            END DO
+          IF (NLSPCSCL) THEN
+            PAPLI2(0:NPLS,LB_ATM:NATM) => PAPLI(:,ISTRA)
+            PAPLI2(IPLS,1:NATMI) = PAPLI2(IPLS,1:NATMI)*FATM(1:NATMI)
+            PAPLI(IPLS,ISTRA) = SUM(PAPLI2(IPLS,1:NATMI))
           ELSE
             PAPLI(IPLS,ISTRA)=PAPLI(IPLS,ISTRA)*FATM(0)
           END IF
-          IF (NLSPCSCL_MOL) THEN
-            PMPLI(IPLS,ISTRA)=0._DP
-            DO IMOL=1,NMOLI
-              IAD = EIRENE_INDIRECT_ADDRESS(IPLS,IMOL,NPLS)
-              PMPLI(IPLS,ISTRA)=PMPLI(IPLS,ISTRA)+
-     .                          PMPLI(IAD,ISTRA)*FMOL(IMOL)
-            END DO
+          IF (NLSPCSCL) THEN
+            PMPLI2(0:NPLS,LB_MOL:NMOL) => PMPLI(:,ISTRA)
+            PMPLI2(IPLS,1:NMOLI) = PMPLI2(IPLS,1:NMOLI)*FMOL(1:NMOLI)
+            PMPLI(IPLS,ISTRA) = SUM(PMPLI2(IPLS,1:NMOLI))
           ELSE
             PMPLI(IPLS,ISTRA)=PMPLI(IPLS,ISTRA)*FMOL(0)
           END IF
-          IF (NLSPCSCL_ION) THEN
-            PIPLI(IPLS,ISTRA)=0._DP
-            DO IION=1,NIONI
-              IAD = EIRENE_INDIRECT_ADDRESS(IPLS,IION,NPLS)
-              PIPLI(IPLS,ISTRA)=PIPLI(IPLS,ISTRA)+
-     .                          PIPLI(IAD,ISTRA)*FION(IION)
-            END DO
+          IF (NLSPCSCL) THEN
+            PIPLI2(0:NPLS,LB_ION:NION) => PIPLI(:,ISTRA)
+            PIPLI2(IPLS,1:NIONI) = PIPLI2(IPLS,1:NIONI)*FION(1:NIONI)
+            PIPLI(IPLS,ISTRA) = SUM(PIPLI2(IPLS,1:NIONI))
           ELSE
             PIPLI(IPLS,ISTRA)=PIPLI(IPLS,ISTRA)*FION(0)
           END IF
-          IF (NLSPCSCL_PHOT) THEN
-            PPHPLI(IPLS,ISTRA)=0._DP
-            DO IPHOT=1,NPHOTI
-              IAD = EIRENE_INDIRECT_ADDRESS(IPLS,IPHOT,NPLS)
-              PPHPLI(IPLS,ISTRA)=PPHPLI(IPLS,ISTRA)+
-     .                          PPHPLI(IAD,ISTRA)*FPHOT(IPHOT)
-            END DO
+          IF (NLSPCSCL) THEN
+            PPHPLI2(0:NPLS,LB_PHOT:NPHOT) => PPHPLI(:,ISTRA)
+            PPHPLI2(IPLS,1:NPHOTI) = PPHPLI2(IPLS,1:NPHOTI)*
+     .                               FPHOT(1:NPHOTI)
+            PPHPLI(IPLS,ISTRA) = SUM(PPHPLI2(IPLS,1:NPHOTI))
           ELSE
             PPHPLI(IPLS,ISTRA)=PPHPLI(IPLS,ISTRA)*FPHOT(0)
           END IF
@@ -1593,10 +1522,41 @@ C
           MPHPLI(IPLS,ISTRA)=MPHPLI(IPLS,ISTRA)*FPHOT(0)
         END DO
 
-        PAPLI(0,ISTRA)=SUM(PAPLI(1:NPLSI,ISTRA))
-        PMPLI(0,ISTRA)=SUM(PMPLI(1:NPLSI,ISTRA))
-        PIPLI(0,ISTRA)=SUM(PIPLI(1:NPLSI,ISTRA))
-        PPHPLI(0,ISTRA)=SUM(PPHPLI(1:NPLSI,ISTRA))
+        IF (NLSPCSCL) THEN
+          PAPLI2(0:NPLS,LB_ATM:NATM) => PAPLI(:,ISTRA)
+          DO IATM = LB_ATM,NATMI
+            PAPLI2(0,IATM) = SUM(PAPLI2(1:NPLSI,IATM))
+          END DO
+        ELSE
+          PAPLI(0,ISTRA)=SUM(PAPLI(1:NPLSI,ISTRA))
+        END IF
+
+        IF (NLSPCSCL) THEN
+          PMPLI2(0:NPLS,LB_MOL:NMOL) => PMPLI(:,ISTRA)
+          DO IMOL = LB_MOL,NMOLI
+            PMPLI2(0,IMOL) = SUM(PMPLI2(1:NPLSI,IMOL))
+          END DO
+        ELSE
+          PMPLI(0,ISTRA)=SUM(PMPLI(1:NPLSI,ISTRA))
+        END IF
+
+        IF (NLSPCSCL) THEN
+          PIPLI2(0:NPLS,LB_ION:NION) => PIPLI(:,ISTRA)
+          DO IION = LB_ION,NIONI
+            PIPLI2(0,IION) = SUM(PIPLI2(1:NPLSI,IION))
+          END DO
+        ELSE
+          PIPLI(0,ISTRA)=SUM(PIPLI(1:NPLSI,ISTRA))
+        END IF
+        IF (NLSPCSCL) THEN
+          PPHPLI2(0:NPLS,LB_PHOT:NPHOT) => PPHPLI(:,ISTRA)
+          DO IPHOT = LB_PHOT,NPHOT
+            PPHPLI2(0,IPHOT) = SUM(PPHPLI2(1:NPLSI,IPHOT))
+          END DO
+        ELSE
+          PPHPLI(0,ISTRA)=SUM(PPHPLI(1:NPLSI,ISTRA))
+        END IF
+
         EAPLI(0,ISTRA)=SUM(EAPLI(1:NPLSI,ISTRA))
         EMPLI(0,ISTRA)=SUM(EMPLI(1:NPLSI,ISTRA))
         EIPLI(0,ISTRA)=SUM(EIPLI(1:NPLSI,ISTRA))

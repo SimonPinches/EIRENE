@@ -132,7 +132,8 @@ cdr  additional tallies
      I NTALA,  NTALC,  NTALT,
      I NTALM,  NTALB,  NTALR,
      I NTALS,  NTLSA,  NTLSR,  NSPZTOTW,
-     I N1MX,   N2MX,   NSPZ,   NSPZP, NSPZMC, NCOLMC, NSPZTOT
+     I N1MX,   N2MX,   NSPZ,   NSPZP, NSPZMC, NCOLMC, NSPZTOT,
+     I NSPZTOTS, NSPZTOTWS
 
       INTEGER, PUBLIC, SAVE ::
      I NVOLTL, NVLTLP,
@@ -399,13 +400,13 @@ cdr  same MEANING as n1mx?.  Check: why not n1mx=max(....)
         END IF
 
 C  NSPZTOT: storage parameter for LMETSP(NSPZTOT) array, for standard deviation estimators
-        NSPZTOT = NSPZ+NADV+NALV+NCLV+NCPV+NBGV+NSNV
-        NSPZTOT = NSPZTOT + (NATM+NMOL+NION+NPHOT+NPLS)*
-     p                      (NATMP+NMOLP+NION+NPHOTP)
+        NSPZTOTS = NSPZ+NADV+NALV+NCLV+NCPV+NBGV+NSNV
+        NSPZTOT = NSPZTOTS + (NATM+NMOL+NION+NPHOT+NPLS)*
+     p                       (NATMP+NMOLP+NION+NPHOTP)
 
 C  NSPZTOTW: storage parameter for LMETSPW(NSPZTOTW) array, for standard deviation estimators
-        NSPZTOTW= NSPZ+NADS+NALS
-        NSPZTOTW = NSPZTOTW + (NATM+NMOL+NION+NPHOT)*
+        NSPZTOTWS = NSPZ+NADS+NALS
+        NSPZTOTW = NSPZTOTWS + (NATM+NMOL+NION+NPHOT)*
      p                        (NATMP+NMOLP+NION+NPHOTP)
 
 C  TOTAL NUMBER OF VOLUME-AVERAGED OUTPUT TALLIES
@@ -560,8 +561,8 @@ C     INT_PARM( 81) =        !dr free, not in use.
       INT_PARM( 82) = NBGV   !dr either nbgk or nbgv should be made redundant
       INT_PARM( 83) = NBMAX
       INT_PARM( 84) = NPTAL
-c     INT_PARM( 85) = free
-c     INT_PARM( 86) = free
+      INT_PARM( 85) = NSPZTOTS
+      INT_PARM( 86) = NSPZTOTWS
 
       INT_PARM( 87) = NSTRAP
 
@@ -752,8 +753,8 @@ C     NCPV        = INT_PARM( 81)  !dr  out, NCOP eliminted, only NCPV retained.
       NBGV        = INT_PARM( 82)
       NBMAX       = INT_PARM( 83)
       NPTAL       = INT_PARM( 84)
-c     NCPV_STAT   = free    ( 85)  !dr  out, NCPC_stat eliminted.
-c     NSCOP       = free    ( 86)
+      NSPZTOTS    = INT_PARM( 85)
+      NSPZTOTWS   = INT_PARM( 86)
 
       NSTRAP      = INT_PARM( 87)
 

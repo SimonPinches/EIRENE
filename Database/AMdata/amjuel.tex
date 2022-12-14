@@ -65,7 +65,7 @@ EIRENE code git-repository hosted at FZ J\"ulich
 \newpage
 \addcontentsline{toc}{section}{Table of contents}
 \tableofcontents
-%ende titlepage
+%end titlepage
 \newpage
 %\renewcommand{\thesubsection}{\thesection.\Roman{subsection}}
 %\renewcommand{\thesubsubsection}{\thesection.\thesubsection.\Roman{subsubsection}}
@@ -165,7 +165,7 @@ must be retained in the line emission routines as multiplicative factor for the 
    wrong, and never used anyway
 (i.e. H.8 2.1.5G out).
  \item update   18.3/97 \\
-  H.4 2.1.5FU, H.4 2.1.8FU (fujimoto rates) (0.1-1e3 eV) \\
+  H.4 2.1.5FU, H.4 2.1.8FU (Fujimoto rates) (0.1-1e3 eV) \\
   H.2 3.2.3  (only slow molecules) \\
   H.2 2.2.17
  \item update   28.7/97 \\
@@ -1071,14 +1071,14 @@ involved rate coefficients have a density dependence in addition to the temperat
 Exceptions exist, where a hard-wired reading of data from this section is coded into EIRENE:
 these are the reduced population coefficients for hydrogenic plasmas, i.e.
 2.1.5a,....2.1.5e, 2.2.5a, 2.2.5e, etc... are currently automatically read in
-EIRENE post processing routines in code section ``output", routines: Ba$\_$alpha, Ly$\_$alpha, Ba$\_$beta, Ba$\_$gamma, Ba$\_$gamma,..
+EIRENE postprocessing routines in code section ``output", routines: Ba$\_$alpha, Ly$\_$alpha, Ba$\_$beta, Ba$\_$gamma, Ba$\_$gamma,..
 
 
 \subsection{End of preface}
 %\addcontentsline{toc}{subsection}{End of preface. EIRENE starts to read here}
 This next string is searched by EIRENE in subroutine SLREAC
 to initialize search for a particular set of fit coefficients.
-From here on, a character string \textbf{`H.n'} , n an integer, must only appear in the
+From here on, a character string \textbf{`H.n'}, with n an integer, must only appear in the
 section title,
 but not in the text. Likewise: identifiers p0, a0, b0, ....,h0, k0 are used
 in SLREAC and must not
@@ -3103,7 +3103,7 @@ Reaction 2.26B1   $e + Fe^+ \rightarrow e + Fe^{++} + e$
 \subsection{
 Reaction 3.1 $W + e \rightarrow W^+ + 2e $ }
 
-\begin{small}\begin{verbatim} \%tungsten coef. rate
+\begin{small}\begin{verbatim} %tungsten coef. rate
    b0 -23.79630000000D+00  b1  8.522300000000D+00  b2 -4.027100000000D+00
    b3  1.339000000000D+00  b4 -0.339800000000D+00  b5  0.063800000000D+00
    b6 -0.008200000000D+00  b7  0.000600000000D+00  b8  0.000000000000D+00
@@ -11940,8 +11940,6 @@ for radiative d-triplet to a-triplet transitions.
 
   Max. rel. Error:   0.145E+02 \%
   Mean rel. Error:   0.381E+01 \%
-
-
 
 \end{verbatim}\end{small}
 \begin{figure} \label{2.2.5fu}

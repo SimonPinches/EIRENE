@@ -76,7 +76,8 @@ C
      .                         NCHRGI, LKINDI, COMUSR_FIRST_PASS
       USE EIRMOD_COMSOU, ONLY: NSTRAI
       USE EIRMOD_COMPRT, ONLY: IUNOUT
-      USE EIRMOD_CLOGAU, ONLY: NLWRMSH, NLSPCSCL, EIRENE_ALLOC_CLOGAU
+      USE EIRMOD_CLOGAU, ONLY: NLWRMSH, NLSPCSCL, EIRENE_ALLOC_CLOGAU,
+     .                         NLSPCSCL_ON
       USE EIRMOD_JSON, ONLY: jtrees, blks, itree_num,
      .                       ldef_time_horizon,nlfem_in, nlplg_in,
      .                       nlpol_in, np2nd_in, nr1st_in, nt3rd_in,
@@ -385,6 +386,7 @@ C
 
       call json%get(p,'NLTRIMESH',nltrimesh,found)
       call json%get(p,'NLSPCSCL',nlspcscl,found)
+      call json%get(p,'NLSPCSCL_ON',nlspcscl_on,found)
 
       CALL EIRENE_INIT_CINIT
 

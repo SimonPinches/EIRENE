@@ -165,7 +165,7 @@ C
       INTEGER, INTENT(OUT) :: COLTYP
       INTEGER :: NEII_RED,LGEI_RED(0:NREI)     
       REAL(DP) :: ZEP1
-      INTEGER :: I,J,EIRENE_INDIRECT_ADDRESS
+      INTEGER :: I,J
 
 C  INCIDENT SPECIES: IOLD
       VELXO=VELX
@@ -597,32 +597,41 @@ C  IATMN: ATOM SPECIES AFTER CX
               IF (LPMML) THEN
 !$OMP ATOMIC
                 PMML(IOLD,NCELL) =PMML(IOLD,NCELL)-WGHTO
-                IF (NLSPCSCL_MOL) THEN
-                  IAD = EIRENE_INDIRECT_ADDRESS(IOLD,IOLD,NMOL)
-!$OMP ATOMIC
-                  PMML(IAD,NCELL)=PMML(IAD,NCELL)-WGHTO
-                END IF
                 LMETSP(NSPA+IOLD)=.TRUE.
+                IF (NLSPCSCL_MOL) THEN
+                  PMML2(1:NMOL,0:NMOL) => PMML(:,NCELL)
+!$OMP ATOMIC
+                  PMML2(IOLD,IOLD)=PMML2(IOLD,IOLD)-WGHTO
+                  LMETSP2(1:NMOL,0:NMOL) => LMETSP(NTS_AM+1:NTS_MM)
+                  LMETSP2(IOLD,0) = .TRUE.
+                  LMETSP2(IOLD,IOLD) = .TRUE.
+                END IF
               END IF
               IF (LPMAT) THEN
 !$OMP ATOMIC
                 PMAT(IATMN,NCELL)=PMAT(IATMN,NCELL)+WEIGHT
-                IF (NLSPCSCL_MOL) THEN
-                  IAD = EIRENE_INDIRECT_ADDRESS(IATMN,IOLD,NATM)
-!$OMP ATOMIC
-                  PMAT(IAD,NCELL)=PMAT(IAD,NCELL)+WEIGHT
-                END IF
                 LMETSP(NSPH+IATMN)=.TRUE.
+                IF (NLSPCSCL_MOL) THEN
+                  PMAT2(1:NATM,0:NMOL) => PMAT(:,NCELL)
+!$OMP ATOMIC
+                  PMAT2(IATMN,IOLD)=PMAT2(IATMN,IOLD)+WEIGHT
+                  LMETSP2(1:NATM,0:NMOL) => LMETSP(NTS_PA+1:NTS_AM)
+                  LMETSP2(IATMN,0) = .TRUE.
+                  LMETSP2(IATMN,IOLD) = .TRUE.
+                END IF
               END IF
               IF (LPMPL) THEN
 !$OMP ATOMIC
                 PMPL(IPLS,NCELL) =PMPL(IPLS,NCELL)-WEIGHT
-                IF (NLSPCSCL_MOL) THEN
-                  IAD = EIRENE_INDIRECT_ADDRESS(IPLS,IOLD,NPLS)
-!$OMP ATOMIC
-                  PMPL(IAD,NCELL)=PMPL(IAD,NCELL)-WEIGHT
-                END IF
                 LMETSP(NSPAMI+IPLS)=.TRUE.
+                IF (NLSPCSCL_MOL) THEN
+                  PMPL2(1:NPLS,0:NMOL) => PMPL(:,NCELL)
+!$OMP ATOMIC
+                  PMPL2(IPLS,IOLD)=PMPL2(IPLS,IOLD)-WEIGHT
+                  LMETSP2(1:NPLS,0:NMOL) => LMETSP(NTS_PHM+1:NTS_PM)
+                  LMETSP2(IPLS,0) = .TRUE.
+                  LMETSP2(IPLS,IOLD) = .TRUE.
+                END IF
               END IF
               IF (LPMEL) THEN
 !$OMP ATOMIC
@@ -634,12 +643,15 @@ C  IPLSN: ION SPECIES AFTER CX
                 IF (LPMPL) THEN
 !$OMP ATOMIC
                   PMPL(IPLSN,NCELL)=PMPL(IPLSN,NCELL)+WGHTO
-                  IF (NLSPCSCL_MOL) THEN
-                    IAD = EIRENE_INDIRECT_ADDRESS(IPLSN,IOLD,NPLS)
-!$OMP ATOMIC
-                    PMPL(IAD,NCELL)=PMPL(IAD,NCELL)+WGHTO
-                  END IF
                   LMETSP(NSPAMI+IPLSN)=.TRUE.
+                  IF (NLSPCSCL_MOL) THEN
+                    PMPL2(1:NPLS,0:NMOL) => PMPL(:,NCELL)
+!$OMP ATOMIC
+                    PMPL2(IPLSN,IOLD)=PMPL2(IPLSN,IOLD)+WGHTO
+                    LMETSP2(1:NPLS,0:NMOL) => LMETSP(NTS_PHM+1:NTS_PM)
+                    LMETSP2(IPLSN,0) = .TRUE.
+                    LMETSP2(IPLSN,IOLD) = .TRUE.
+                  END IF
                 END IF
                 IF (LPMEL) THEN
 !$OMP ATOMIC
@@ -881,16 +893,20 @@ C  ASSUME, AS BEFORE, NO CHANGE IN SPECIES/TYPE
             PMML(IOLD,NCELL) =PMML(IOLD,NCELL)-WGHTO
 !$OMP ATOMIC
             PMML(IMOL,NCELL) =PMML(IMOL,NCELL)+WEIGHT
-            IF (NLSPCSCL_MOL) THEN
-              IAD = EIRENE_INDIRECT_ADDRESS(IOLD,IOLD,NMOL)
-!$OMP ATOMIC
-              PMML(IAD,NCELL)=PMML(IAD,NCELL)-WGHTO
-              IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IOLD,NMOL)
-!$OMP ATOMIC
-              PMML(IAD,NCELL)=PMML(IAD,NCELL)+WEIGHT
-            END IF
             LMETSP(NSPA+IOLD)=.TRUE.
             LMETSP(NSPA+IMOL)=.TRUE.
+            IF (NLSPCSCL_MOL) THEN
+              PMML2(1:NMOL,0:NMOL) => PMML(:,NCELL)
+!$OMP ATOMIC
+              PMML2(IOLD,IOLD)=PMML2(IOLD,IOLD)-WGHTO
+!$OMP ATOMIC
+              PMML2(IMOL,IOLD)=PMML2(IMOL,IOLD)+WEIGHT
+              LMETSP2(1:NMOL,0:NMOL) => LMETSP(NTS_AM+1:NTS_MM)
+              LMETSP2(IOLD,0) = .TRUE.
+              LMETSP2(IMOL,0) = .TRUE.
+              LMETSP2(IOLD,IOLD) = .TRUE.
+              LMETSP2(IMOL,IOLD) = .TRUE.
+            END IF
           END IF
         ENDIF
 c  UPDATE collision estimator for EL energy exchange tallies

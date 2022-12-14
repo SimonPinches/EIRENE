@@ -68,25 +68,31 @@ cdr Now we have ICAL /=0
 
         CALL EIRENE_INIT_CMDTA(2)
 
-CVK TABLES CHECKING (FOR ELASTIC COLLISIONS)
-        DO I=1,NREL
-         DO J=1,NSBOX
-          IF(TABEL3(I,J,1).GT.23) THEN
-           WRITE(iunout,*) "SETAMD WARNING: REACTION RATE IS TOO BIG ",
-     .                 "IREL,ICELL,TABEL3",I,J,TABEL3(I,J,1)
-          END IF
-         END DO
-        END DO
-CVK TABLES CHECKING (FOR CHARGE EXCHANGE)
-        DO I=1,NRCX
-         DO J=1,NSBOX
-          IF(TABCX3(I,J,1).GT.23) THEN
-           WRITE(iunout,*) "SETAMD WARNING: REACTION RATE IS TOO BIG ",
-     .                 "IRCX,ICELL,TABCX",I,J,TABCX3(I,J,1)
-          END IF
-         END DO
-        END DO
+!PB only if storage mode is not switched on
+        IF (NSTORDR >= NRAD) THEN
 
+CVK TABLES CHECKING (FOR ELASTIC COLLISIONS)
+          DO I=1,NREL
+            DO J=1,NSBOX
+              IF(TABEL3(I,J,1).GT.23) THEN
+                WRITE(iunout,*) 
+     .             "SETAMD WARNING: REACTION RATE IS TOO BIG ",
+     .             "IREL,ICELL,TABEL3",I,J,TABEL3(I,J,1)
+              END IF
+            END DO
+          END DO
+CVK TABLES CHECKING (FOR CHARGE EXCHANGE)
+          DO I=1,NRCX
+            DO J=1,NSBOX
+              IF(TABCX3(I,J,1).GT.23) THEN
+                WRITE(iunout,*) 
+     .            "SETAMD WARNING: REACTION RATE IS TOO BIG ",
+     .            "IRCX,ICELL,TABCX",I,J,TABCX3(I,J,1)
+              END IF
+            END DO
+          END DO
+          
+        END IF
       END IF
 
       NRCXI=0

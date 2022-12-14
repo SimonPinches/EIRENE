@@ -1,4 +1,4 @@
-!pb  This subroutine has been moved from the SOLPS-ITER into the main EIRENE code
+!pb  This subroutine has been moved from the SOLPS-ITER interface into the main EIRENE code
 !pb  as EION is needed for calculation of radiation tallies 
 
       !c

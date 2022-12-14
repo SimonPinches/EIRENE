@@ -356,6 +356,7 @@ C
 C  TRANSFER FLAG LSPRCL WHICH IS KNOWN ONLY IN THIS INTERFACE TO
 C  GLOBALLY KNOWN VARIABLE NLSPCSCL
       NLSPCSCL = NLSPCSCL .OR. LSPRCL
+      NLSPCSCL_ON = NLSPCSCL_ON .OR. LSPRCL
 C
 C  DEFINE ADDITIONAL TALLIES FOR COUPLING (UPDATED IN SUBR. UPTCOP
 C                                              AND IN SUBR. COLLIDE)
@@ -3667,7 +3668,7 @@ C
       logical :: lhit(nrad)
       INTEGER :: I, IAT, JATM, JMOL, JION, JPLS, IPLSV, IPLSTI, ISTRAI,
      .           IN, IT, IX, IY, IFL, INC, IIRC, IRRC, IST_RATE, IER,
-     .           ISTAT_COP, ICPV, IAD, EIRENE_INDIRECT_ADDRESS
+     .           ISTAT_COP, ICPV
       INTEGER, SAVE :: IFIRST
       REAL(DP) :: DUMMY(0:NDXP,0:NDYP)
 
@@ -3986,10 +3987,8 @@ C  PARTICLE SOURCE: SPLIT FOR MULTIPLE IPLS SPECIES
             IN=CPMUL%ICM
             PAPL(IPLS,IN)=CPMUL%VALUEM
             IF (NLSPCSCL_ATM) THEN
-              DO IATM=1,NATMI
-                IAD=EIRENE_INDIRECT_ADDRESS(IPLS,IATM,NPLS)
-                PAPL(IAD,IN)=CPMUL%VALUAM(IATM)
-              END DO
+              PAPL2(1:NPLS,0:NATM) => PAPL(:,IN)
+              PAPL2(IPLS,1:NATMI) = CPMUL%VALUAM(1:NATMI)
             END IF
             CPMUL => CPMUL%NXTMUL
           ENDDO
@@ -4031,10 +4030,8 @@ cdr for particle source, from atoms
             IF (LPAPL) THEN
               PAPL(JPLS,IN)=PAPL(JPLS,IN)+CHP
               IF (NLSPCSCL_ATM) THEN
-                DO JATM=1,NATMI
-                  IAD = EIRENE_INDIRECT_ADDRESS(JPLS,JATM,NPLS)
-                  PAPL(IAD,IN)=PAPL(IAD,IN)+CHP
-                END DO
+              PAPL2(1:NPLS,0:NATM) => PAPL(:,IN)
+              PAPL2(JPLS,IATM)=PAPL2(JPLS,IATM)+CHP
               END IF
             END IF
             CHPM(JPLS,IN)=CHPM(JPLS,IN)+CHP
@@ -4079,10 +4076,8 @@ cdr for particle source, from test ions
             IN=CPMUL%ICM
             PIPL(IPLS,IN)=CPMUL%VALUEM
             IF (NLSPCSCL_ION) THEN
-              DO IION=1,NIONI
-                IAD = EIRENE_INDIRECT_ADDRESS(IPLS,IION,NPLS)
-                PIPL(IAD,IN)=CPMUL%VALUIM(IION)
-              END DO
+              PIPL2(1:NPLS,0:NION) => PIPL(:,IN)
+              PIPL2(IPLS,1:NIONI)=CPMUL%VALUIM(1:NIONI)              
             END IF
             CPMUL => CPMUL%NXTMUL
           ENDDO
@@ -4124,10 +4119,8 @@ cdr for particle source, from test ions
             IF (LPIPL) THEN
               PIPL(JPLS,IN)=PIPL(JPLS,IN)+CHP
               IF (NLSPCSCL_ION) THEN
-                DO JION=1,NIONI
-                  IAD = EIRENE_INDIRECT_ADDRESS(JPLS,JION,NPLS)
-                  PIPL(IAD,IN)=PIPL(IAD,IN)+CHP
-                END DO
+                PIPL2(1:NPLS,0:NION) => PIPL(:,IN)
+                PIPL2(JPLS,IION)=PIPL2(JPLS,IION)+CHP
               END IF
             END IF
             CHPM(JPLS,IN)=CHPM(JPLS,IN)+CHP
@@ -4163,10 +4156,8 @@ C
             IN=CPMUL%ICM
             PMPL(IPLS,IN)=CPMUL%VALUEM
             IF (NLSPCSCL_MOL) THEN
-              DO IMOL=1,NMOLI
-                IAD = EIRENE_INDIRECT_ADDRESS(IPLS,IMOL,NPLS)
-                PMPL(IAD,IN)=CPMUL%VALUMM(IMOL)
-              END DO
+              PMPL2(1:NPLS,0:NMOL) => PMPL(:,IN)
+              PMPL2(IPLS,1:NMOLI)=CPMUL%VALUMM(1:NMOLI)
             END IF
             CPMUL => CPMUL%NXTMUL
           ENDDO
@@ -4205,10 +4196,10 @@ cdr for particle source, from molecules
      .          (SPLNWM(IN,IMOL,JPLS)-RTIS%SPLODM(IN,IMOL,JPLS))*ELCHA
             IF (LPMPL) THEN
               PMPL(JPLS,IN)=PMPL(JPLS,IN)+CHP
-              DO JMOL=1,NMOLI
-                IAD = EIRENE_INDIRECT_ADDRESS(JPLS,JMOL,NPLS)
-                PMPL(IAD,IN)=PMPL(IAD,IN)+CHP
-              END DO
+              IF (NLSPCSCL_MOL) THEN
+                PMPL2(1:NPLS,0:NMOL) => PMPL(:,IN)
+                PMPL2(JPLS,IMOL)=PMPL2(JPLS,IMOL)+CHP
+              END IF
             END IF
             CHPM(JPLS,IN)=CHPM(JPLS,IN)+CHP
           END DO
@@ -4347,8 +4338,10 @@ C CORRECT PAAT FOR CALCULATING RADIATION  FOR ATOMS IN WNEUTRALS
                 IAT=NATPRC(IRRC)
                 IF(IAT.GT.0) THEN
                   PAAT(IAT,INC)=PAAT(IAT,INC)-RECADD
-                  IAD = EIRENE_INDIRECT_ADDRESS(IAT,IAT,NATM)
-                  PAAT(IAD,INC)=PAAT(IAD,INC)-RECADD
+                  IF (NLSPCSCL_ATM) THEN
+                    PAAT2(1:NATM,0:NATM) => PAAT(:,INC)
+                    PAAT2(IAT,IAT)=PAAT2(IAT,IAT)-RECADD
+                  END IF
                 END IF
 csw
 cdr..........................
@@ -6151,13 +6144,13 @@ C
 C
 c sputtering
 !      WRITE(iunout,*) 'Sputtering: Total'
-!      CALL EIRENE_MASYR1('ATOMS    ',SPTATI,LOGATM,0,0,NATM,0,NSTRA,
+!      CALL EIRENE_MASYR1('ATOMS    ',SPTATI,LOGATM,0,0,NATM,NATM,0,NSTRA,
 !     .   TEXTS(NSPH+1))
-!      CALL EIRENE_MASYR1('MOLECULES',SPTMLI,LOGMOL,0,0,NMOL,0,NSTRA,
+!      CALL EIRENE_MASYR1('MOLECULES',SPTMLI,LOGMOL,0,0,NMOL,NMOL,0,NSTRA,
 !     .   TEXTS(NSPA+1))
-!      CALL EIRENE_MASYR1('TEST IONS',SPTIOI,LOGION,0,0,NION,0,NSTRA,
+!      CALL EIRENE_MASYR1('TEST IONS',SPTIOI,LOGION,0,0,NION,NION,0,NSTRA,
 !     .   TEXTS(NSPAM+1))
-!      CALL EIRENE_MASYR1('BULK IONS',SPTPLI,LOGPLS,0,0,NPLS,0,NSTRA,
+!      CALL EIRENE_MASYR1('BULK IONS',SPTPLI,LOGPLS,0,0,NPLS,NPLS,0,NSTRA,
 !     .   TEXTS(NSPAMI+1))
 !      CALL EIRENE_MASR1('TOT. FLX',
 !     .   SPTATI(0,0)+SPTMLI(0,0)+SPTIOI(0,0)+SPTPLI(0,0))
@@ -6189,13 +6182,13 @@ c sputtering
 
       CALL EIRENE_LEER (1)
       WRITE(iunout,*) 'Sputtering: Total'
-      CALL EIRENE_MASYR1('ATOMS    ',SPAT,LOGATM,0,0,NATM,0,NSTRA,
+      CALL EIRENE_MASYR1('ATOMS    ',SPAT,LOGATM,0,0,NATM,NATM,0,NSTRA,
      .   TEXTS(NSPH+1))
-      CALL EIRENE_MASYR1('MOLECULES',SPML,LOGMOL,0,0,NMOL,0,NSTRA,
+      CALL EIRENE_MASYR1('MOLECULES',SPML,LOGMOL,0,0,NMOL,NMOL,0,NSTRA,
      .   TEXTS(NSPA+1))
-        CALL EIRENE_MASYR1('TEST IONS',SPIO,LOGION,0,0,NION,0,NSTRA,
+      CALL EIRENE_MASYR1('TEST IONS',SPIO,LOGION,0,0,NION,NION,0,NSTRA,
      .   TEXTS(NSPAM+1))
-        CALL EIRENE_MASYR1('BULK IONS',SPPL,LOGPLS,0,0,NPLS,0,NSTRA,
+      CALL EIRENE_MASYR1('BULK IONS',SPPL,LOGPLS,0,0,NPLS,NPLS,0,NSTRA,
      .   TEXTS(NSPAMI+1))
       CALL EIRENE_MASR1('TOT. FLX',
      .   SPAT(0,0)+SPML(0,0)+SPIO(0,0)+SPPL(0,0))

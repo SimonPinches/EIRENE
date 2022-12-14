@@ -51,7 +51,6 @@ c  lmetspw(ispz):  species ispz is emitted, emitted flux tally is scored.
       INTEGER, INTENT(IN) :: ITOLD, IOLD, IND
       REAL(dp), INTENT(IN) :: WGHTSG
       REAL(dp) ::             EWGHTSG
-      INTEGER :: IAD, EIRENE_INDIRECT_ADDRESS
 
       IF (MSURF .LE. 0) RETURN
 
@@ -187,9 +186,12 @@ c... from an incident photon
 !$OMP ATOMIC
             PRFPHPHT(IPHOT,MSURF)=PRFPHPHT(IPHOT,MSURF)+WGHTSG
             IF (NLSPCSCL_PHOT) THEN
-              IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IOLD,NPHOT)
+              PRFPHPHT2(1:NPHOT,0:NPHOT) => PRFPHPHT(:,MSURF)
 !$OMP ATOMIC
-              PRFPHPHT(IAD,MSURF)=PRFPHPHT(IAD,MSURF)+WGHTSG
+              PRFPHPHT2(IPHOT,IOLD)=PRFPHPHT2(IPHOT,IOLD)+WGHTSG
+              LMETSPW2(1:NPHOT,0:NPHOT) => LMETSPW(NTWS_PHI+1:NTWS_PHPH)
+              LMETSPW2(IPHOT,0) = .TRUE.
+              LMETSPW2(IPHOT,IOLD) = .TRUE.
             END IF
           ENDIF
           IF (LERFPHPHT) THEN
@@ -201,9 +203,12 @@ c... from an incident photon
 !$OMP ATOMIC
               PRFPHPHT(IPHOT,MSURFG)=PRFPHPHT(IPHOT,MSURFG)+WGHTSG
               IF (NLSPCSCL_PHOT) THEN
-                IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IOLD,NPHOT)
+                PRFPHPHT2(1:NPHOT,0:NPHOT) => PRFPHPHT(:,MSURFG)
 !$OMP ATOMIC
-                PRFPHPHT(IAD,MSURFG)=PRFPHPHT(IAD,MSURFG)+WGHTSG
+                PRFPHPHT(IPHOT,IOLD)=PRFPHPHT(IPHOT,IOLD)+WGHTSG
+                LMETSPW2(1:NPHOT,0:NPHOT)=>LMETSPW(NTWS_PHI+1:NTWS_PHPH)
+                LMETSPW2(IPHOT,0) = .TRUE.
+                LMETSPW2(IPHOT,IOLD) = .TRUE.
               END IF
             ENDIF
             IF (LERFPHPHT) THEN
@@ -225,9 +230,12 @@ c... from an incident atom IOLD
 !$OMP ATOMIC
             PRFAAT(IATM,MSURF)=PRFAAT(IATM,MSURF)+WGHTSG
             IF (NLSPCSCL_ATM) THEN
-              IAD = EIRENE_INDIRECT_ADDRESS(IATM,IOLD,NATM)
+              PRFAAT2(1:NATM,0:NATM) => PRFAAT(:,MSURF)
 !$OMP ATOMIC
-              PRFAAT(IAD,MSURF)=PRFAAT(IAD,MSURF)+WGHTSG
+              PRFAAT2(IATM,IOLD)=PRFAAT2(IATM,IOLD)+WGHTSG
+              LMETSPW2(1:NATM,0:NATM)=>LMETSPW(NSPZTOTWS+1:NTWS_AA)
+              LMETSPW2(IATM,0) = .TRUE.
+              LMETSPW2(IATM,IOLD) = .TRUE.
             END IF
           ENDIF
           IF (LERFAAT) THEN
@@ -239,9 +247,12 @@ c... from an incident atom IOLD
 !$OMP ATOMIC
               PRFAAT(IATM,MSURFG)=PRFAAT(IATM,MSURFG)+WGHTSG
               IF (NLSPCSCL_ATM) THEN
-                IAD = EIRENE_INDIRECT_ADDRESS(IATM,IOLD,NATM)
+                PRFAAT2(1:NATM,0:NATM) => PRFAAT(:,MSURFG)
 !$OMP ATOMIC
-                PRFAAT(IAD,MSURFG)=PRFAAT(IAD,MSURFG)+WGHTSG
+                PRFAAT2(IATM,IOLD)=PRFAAT2(IATM,IOLD)+WGHTSG
+                LMETSPW2(1:NATM,0:NATM)=>LMETSPW(NSPZTOTWS+1:NTWS_AA)
+                LMETSPW2(IATM,0) = .TRUE.
+                LMETSPW2(IATM,IOLD) = .TRUE.
               END IF
             ENDIF
             IF (LERFAAT) THEN
@@ -255,10 +266,13 @@ c... from an incident molecule IOLD
           IF (LPRFMAT) THEN
 !$OMP ATOMIC
             PRFMAT(IATM,MSURF)=PRFMAT(IATM,MSURF)+WGHTSG
-            IF (NLSPCSCL_ATM) THEN
-              IAD = EIRENE_INDIRECT_ADDRESS(IATM,IOLD,NATM)
+            IF (NLSPCSCL_MOL) THEN
+              PRFMAT2(1:NATM,0:NMOL) => PRFMAT(:,MSURF)
 !$OMP ATOMIC
-              PRFMAT(IAD,MSURF)=PRFMAT(IAD,MSURF)+WGHTSG
+              PRFMAT2(IATM,IOLD)=PRFMAT2(IATM,IOLD)+WGHTSG
+              LMETSPW2(1:NATM,0:NMOL)=>LMETSPW(NTWS_AA+1:NTWS_AM)
+              LMETSPW2(IATM,0) = .TRUE.
+              LMETSPW2(IATM,IOLD) = .TRUE.
             END IF
           ENDIF
           IF (LERFMAT) THEN
@@ -269,10 +283,13 @@ c... from an incident molecule IOLD
             IF (LPRFMAT) THEN
 !$OMP ATOMIC
               PRFMAT(IATM,MSURFG)=PRFMAT(IATM,MSURFG)+WGHTSG
-              IF (NLSPCSCL_ATM) THEN
-                IAD = EIRENE_INDIRECT_ADDRESS(IATM,IOLD,NATM)
+              IF (NLSPCSCL_MOL) THEN
+                PRFMAT2(1:NATM,0:NMOL) => PRFMAT(:,MSURFG)
 !$OMP ATOMIC
-                PRFMAT(IAD,MSURFG)=PRFMAT(IAD,MSURFG)+WGHTSG
+                PRFMAT2(IATM,IOLD)=PRFMAT2(IATM,IOLD)+WGHTSG
+                LMETSPW2(1:NATM,0:NMOL)=>LMETSPW(NTWS_AA+1:NTWS_AM)
+                LMETSPW2(IATM,0) = .TRUE.
+                LMETSPW2(IATM,IOLD) = .TRUE.
               END IF
             ENDIF
             IF (LERFMAT) THEN
@@ -286,10 +303,13 @@ c... from an incident test ion IOLD
           IF (LPRFIAT) THEN
 !$OMP ATOMIC
             PRFIAT(IATM,MSURF)=PRFIAT(IATM,MSURF)+WGHTSG
-            IF (NLSPCSCL_ATM) THEN
-              IAD = EIRENE_INDIRECT_ADDRESS(IATM,IOLD,NATM)
+            IF (NLSPCSCL_ION) THEN
+              PRFIAT2(1:NATM,0:NION) => PRFIAT(:,MSURF)
 !$OMP ATOMIC
-              PRFIAT(IAD,MSURF)=PRFIAT(IAD,MSURF)+WGHTSG
+              PRFIAT2(IATM,IOLD)=PRFIAT2(IATM,IOLD)+WGHTSG
+              LMETSPW2(1:NATM,0:NION)=>LMETSPW(NTWS_AM+1:NTWS_AI)
+              LMETSPW2(IATM,0) = .TRUE.
+              LMETSPW2(IATM,IOLD) = .TRUE.
             END IF
           ENDIF
           IF (LERFIAT) THEN
@@ -300,10 +320,13 @@ c... from an incident test ion IOLD
             IF (LPRFIAT) THEN
 !$OMP ATOMIC
               PRFIAT(IATM,MSURFG)=PRFIAT(IATM,MSURFG)+WGHTSG
-              IF (NLSPCSCL_ATM) THEN
-                IAD = EIRENE_INDIRECT_ADDRESS(IATM,IOLD,NATM)
+              IF (NLSPCSCL_ION) THEN
+                PRFIAT2(1:NATM,0:NION) => PRFIAT(:,MSURFG)
 !$OMP ATOMIC
-                PRFIAT(IAD,MSURFG)=PRFIAT(IAD,MSURFG)+WGHTSG
+                PRFIAT2(IATM,IOLD)=PRFIAT2(IATM,IOLD)+WGHTSG
+                LMETSPW2(1:NATM,0:NION)=>LMETSPW(NTWS_AM+1:NTWS_AI)
+                LMETSPW2(IATM,0) = .TRUE.
+                LMETSPW2(IATM,IOLD) = .TRUE.
               END IF
             ENDIF
             IF (LERFIAT) THEN
@@ -345,10 +368,13 @@ c... from an incident atom IOLD
           IF (LPRFAML) THEN
 !$OMP ATOMIC
             PRFAML(IMOL,MSURF)=PRFAML(IMOL,MSURF)+WGHTSG
-            IF (NLSPCSCL_MOL) THEN
-              IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IOLD,NMOL)
+            IF (NLSPCSCL_ATM) THEN
+              PRFAML2(1:NMOL,0:NATM) => PRFAML(:,MSURF)
 !$OMP ATOMIC
-              PRFAML(IAD,MSURF)=PRFAML(IAD,MSURF)+WGHTSG
+              PRFAML2(IMOL,IOLD)=PRFAML2(IMOL,IOLD)+WGHTSG
+              LMETSPW2(1:NMOL,0:NATM)=>LMETSPW(NTWS_APH+1:NTWS_MA)
+              LMETSPW2(IMOL,0) = .TRUE.
+              LMETSPW2(IMOL,IOLD) = .TRUE.
             END IF
           ENDIF
           IF (LERFAML) THEN
@@ -359,10 +385,13 @@ c... from an incident atom IOLD
             IF (LPRFAML) THEN
 !$OMP ATOMIC
               PRFAML(IMOL,MSURFG)=PRFAML(IMOL,MSURFG)+WGHTSG
-              IF (NLSPCSCL_MOL) THEN
-                IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IOLD,NMOL)
+              IF (NLSPCSCL_ATM) THEN
+                PRFAML2(1:NMOL,0:NATM) => PRFAML(:,MSURFG)
 !$OMP ATOMIC
-                PRFAML(IAD,MSURFG)=PRFAML(IAD,MSURFG)+WGHTSG
+                PRFAML2(IMOL,IOLD)=PRFAML2(IMOL,IOLD)+WGHTSG
+                LMETSPW2(1:NMOL,0:NATM)=>LMETSPW(NTWS_APH+1:NTWS_MA)
+                LMETSPW2(IMOL,0) = .TRUE.
+                LMETSPW2(IMOL,IOLD) = .TRUE.
               END IF
             ENDIF
             IF (LERFAML) THEN
@@ -377,10 +406,13 @@ c... from an incident molecule IOLD
 !$OMP ATOMIC
             PRFMML(IMOL,MSURF)=PRFMML(IMOL,MSURF)+WGHTSG
             IF (NLSPCSCL_MOL) THEN
-              IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IOLD,NMOL)
+              PRFMML2(1:NMOL,0:NMOL) => PRFMML(:,MSURF)
 !$OMP ATOMIC
-               PRFMML(IAD,MSURF)=PRFMML(IAD,MSURF)+WGHTSG
-             END IF
+              PRFMML2(IMOL,IOLD)=PRFMML2(IMOL,IOLD)+WGHTSG
+              LMETSPW2(1:NMOL,0:NMOL)=>LMETSPW(NTWS_MA+1:NTWS_MM)
+              LMETSPW2(IMOL,0) = .TRUE.
+              LMETSPW2(IMOL,IOLD) = .TRUE.
+            END IF
           ENDIF
           IF (LERFMML) THEN
 !$OMP ATOMIC
@@ -391,9 +423,12 @@ c... from an incident molecule IOLD
 !$OMP ATOMIC
               PRFMML(IMOL,MSURFG)=PRFMML(IMOL,MSURFG)+WGHTSG
               IF (NLSPCSCL_MOL) THEN
-                IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IOLD,NMOL)
+                PRFMML2(1:NMOL,0:NMOL) => PRFMML(:,MSURFG)
 !$OMP ATOMIC
-                PRFMML(IAD,MSURFG)=PRFMML(IAD,MSURFG)+WGHTSG
+                PRFMML2(IMOL,IOLD)=PRFMML2(IMOL,IOLD)+WGHTSG
+                LMETSPW2(1:NMOL,0:NMOL)=>LMETSPW(NTWS_MA+1:NTWS_MM)
+                LMETSPW2(IMOL,0) = .TRUE.
+                LMETSPW2(IMOL,IOLD) = .TRUE.
               END IF
             ENDIF
             IF (LERFMML) THEN
@@ -407,11 +442,14 @@ c... from an incident test ion IOLD
           IF (LPRFIML) THEN
 !$OMP ATOMIC
             PRFIML(IMOL,MSURF)=PRFIML(IMOL,MSURF)+WGHTSG
-            IF (NLSPCSCL_MOL) THEN
-              IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IOLD,NMOL)
+            IF (NLSPCSCL_ION) THEN
+              PRFIML2(1:NMOL,0:NION) => PRFIML(:,MSURF)
 !$OMP ATOMIC
-               PRFIML(IAD,MSURF)=PRFIML(IAD,MSURF)+WGHTSG
-             END IF
+              PRFIML2(IMOL,IOLD)=PRFIML2(IMOL,IOLD)+WGHTSG
+              LMETSPW2(1:NMOL,0:NION)=>LMETSPW(NTWS_MM+1:NTWS_MI)
+              LMETSPW2(IMOL,0) = .TRUE.
+              LMETSPW2(IMOL,IOLD) = .TRUE.
+            END IF
           ENDIF
           IF (LERFIML) THEN
 !$OMP ATOMIC
@@ -421,11 +459,14 @@ c... from an incident test ion IOLD
             IF (LPRFIML) THEN
 !$OMP ATOMIC
               PRFIML(IMOL,MSURFG)=PRFIML(IMOL,MSURFG)+WGHTSG
-              IF (NLSPCSCL_MOL) THEN
-                IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IOLD,NMOL)
+              IF (NLSPCSCL_ION) THEN
+                PRFIML2(1:NMOL,0:NION) => PRFIML(:,MSURFG)
 !$OMP ATOMIC
-                PRFIML(IAD,MSURFG)=PRFIML(IAD,MSURFG)+WGHTSG
-             END IF
+                PRFIML2(IMOL,IOLD)=PRFIML2(IMOL,IOLD)+WGHTSG
+                LMETSPW2(1:NMOL,0:NION)=>LMETSPW(NTWS_MM+1:NTWS_MI)
+                LMETSPW2(IMOL,0) = .TRUE.
+                LMETSPW2(IMOL,IOLD) = .TRUE.
+              END IF
             ENDIF
             IF (LERFIML) THEN
 !$OMP ATOMIC
@@ -465,10 +506,13 @@ c  a test ion IION is reemitted
           IF (LPRFAIO) THEN
 !$OMP ATOMIC
             PRFAIO(IION,MSURF)=PRFAIO(IION,MSURF)+WGHTSG
-            IF (NLSPCSCL_ION) THEN
-              IAD = EIRENE_INDIRECT_ADDRESS(IION,IOLD,NION)
+            IF (NLSPCSCL_ATM) THEN
+              PRFAIO2(1:NION,0:NATM) => PRFAIO(:,MSURF)
 !$OMP ATOMIC
-              PRFAIO(IAD,MSURF)=PRFAIO(IAD,MSURF)+WGHTSG
+              PRFAIO2(IION,IOLD)=PRFAIO2(IION,IOLD)+WGHTSG
+              LMETSPW2(1:NION,0:NATM)=>LMETSPW(NTWS_MPH+1:NTWS_IA)
+              LMETSPW2(IION,0) = .TRUE.
+              LMETSPW2(IION,IOLD) = .TRUE.
             END IF
           ENDIF
           IF (LERFAIO) THEN
@@ -480,9 +524,12 @@ c  a test ion IION is reemitted
 !$OMP ATOMIC
               PRFAIO(IION,MSURFG)=PRFAIO(IION,MSURFG)+WGHTSG
               IF (NLSPCSCL_ION) THEN
-                IAD = EIRENE_INDIRECT_ADDRESS(IION,IOLD,NION)
+                PRFAIO2(1:NION,0:NATM) => PRFAIO(:,MSURFG)
 !$OMP ATOMIC
-                PRFAIO(IAD,MSURFG)=PRFAIO(IAD,MSURFG)+WGHTSG
+                PRFAIO2(IION,IOLD)=PRFAIO2(IION,IOLD)+WGHTSG
+                LMETSPW2(1:NION,0:NATM)=>LMETSPW(NTWS_MPH+1:NTWS_IA)
+                LMETSPW2(IION,0) = .TRUE.
+                LMETSPW2(IION,IOLD) = .TRUE.
               END IF
             ENDIF
             IF (LERFAIO) THEN
@@ -495,10 +542,13 @@ c  a test ion IION is reemitted
           IF (LPRFMIO) THEN
 !$OMP ATOMIC
             PRFMIO(IION,MSURF)=PRFMIO(IION,MSURF)+WGHTSG
-            IF (NLSPCSCL_ION) THEN
-              IAD = EIRENE_INDIRECT_ADDRESS(IION,IOLD,NION)
+            IF (NLSPCSCL_MOL) THEN
+              PRFMIO2(1:NION,0:NMOL) => PRFMIO(:,MSURF)
 !$OMP ATOMIC
-              PRFMIO(IAD,MSURF)=PRFMIO(IAD,MSURF)+WGHTSG
+              PRFMIO2(IION,IOLD)=PRFMIO2(IION,IOLD)+WGHTSG
+              LMETSPW2(1:NION,0:NMOL)=>LMETSPW(NTWS_IA+1:NTWS_IM)
+              LMETSPW2(IION,0) = .TRUE.
+              LMETSPW2(IION,IOLD) = .TRUE.
             END IF
           ENDIF
           IF (LERFMIO) THEN
@@ -509,10 +559,13 @@ c  a test ion IION is reemitted
             IF (LPRFMIO) THEN
 !$OMP ATOMIC
               PRFMIO(IION,MSURFG)=PRFMIO(IION,MSURFG)+WGHTSG
-              IF (NLSPCSCL_ION) THEN
-                IAD = EIRENE_INDIRECT_ADDRESS(IION,IOLD,NION)
+              IF (NLSPCSCL_MOL) THEN
+                PRFMIO2(1:NION,0:NMOL) => PRFMIO(:,MSURFG)
 !$OMP ATOMIC
-                PRFMIO(IAD,MSURFG)=PRFMIO(IAD,MSURFG)+WGHTSG
+                PRFMIO2(IION,IOLD)=PRFMIO2(IION,IOLD)+WGHTSG
+                LMETSPW2(1:NION,0:NMOL)=>LMETSPW(NTWS_IA+1:NTWS_IM)
+                LMETSPW2(IION,0) = .TRUE.
+                LMETSPW2(IION,IOLD) = .TRUE.
               END IF
             ENDIF
             IF (LERFMIO) THEN
@@ -526,9 +579,12 @@ c  a test ion IION is reemitted
 !$OMP ATOMIC
             PRFIIO(IION,MSURF)=PRFIIO(IION,MSURF)+WGHTSG
             IF (NLSPCSCL_ION) THEN
-              IAD = EIRENE_INDIRECT_ADDRESS(IION,IOLD,NION)
+              PRFIIO2(1:NION,0:NION) => PRFIIO(:,MSURF)
 !$OMP ATOMIC
-              PRFIIO(IAD,MSURF)=PRFIIO(IAD,MSURF)+WGHTSG
+              PRFIIO2(IION,IOLD)=PRFIIO2(IION,IOLD)+WGHTSG
+              LMETSPW2(1:NION,0:NION)=>LMETSPW(NTWS_IM+1:NTWS_II)
+              LMETSPW2(IION,0) = .TRUE.
+              LMETSPW2(IION,IOLD) = .TRUE.
             END IF
           ENDIF
           IF (LERFIIO) THEN
@@ -540,9 +596,12 @@ c  a test ion IION is reemitted
 !$OMP ATOMIC
               PRFIIO(IION,MSURFG)=PRFIIO(IION,MSURFG)+WGHTSG
               IF (NLSPCSCL_ION) THEN
-                IAD = EIRENE_INDIRECT_ADDRESS(IION,IOLD,NION)
+                PRFIIO2(1:NION,0:NION) => PRFIIO(:,MSURFG)
 !$OMP ATOMIC
-                PRFIIO(IAD,MSURFG)=PRFIIO(IAD,MSURFG)+WGHTSG
+                PRFIIO2(IION,IOLD)=PRFIIO2(IION,IOLD)+WGHTSG
+                LMETSPW2(1:NION,0:NION)=>LMETSPW(NTWS_IM+1:NTWS_II)
+                LMETSPW2(IION,0) = .TRUE.
+                LMETSPW2(IION,IOLD) = .TRUE.
               END IF
             ENDIF
             IF (LERFIIO) THEN

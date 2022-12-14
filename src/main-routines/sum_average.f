@@ -13,6 +13,7 @@ C
       USE EIRMOD_CESTIM
       USE EIRMOD_CLGIN
       USE EIRMOD_CLOGAU
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
 
       IMPLICIT NONE
 
@@ -20,7 +21,6 @@ C
       INTEGER :: J, IATM, IMOL, IION, IPLS, IPHOT, ISPZ, IADV, ICLV,
      .           ISNV, ICPV, IBGV,
      .           JATM, JMOL, JION, JPHOT 
-      INTEGER :: IAD, EIRENE_INDIRECT_ADDRESS
 C
 C   SUM OVER SURFACE INDEX
 C   IN THE SURFACE-AVERAGED ESTIMATORS
@@ -30,39 +30,39 @@ C
         DO 633 J=1,NLIMPS
           IF (ILIIN(J).LE.0) CYCLE
           IF (LPRFAML) THEN
-            PRFAMI(IMOL,ISTRA)=PRFAMI(IMOL,ISTRA)+PRFAML(IMOL,J)
             IF (NLSPCSCL_ATM) THEN
-              DO IATM=1,NATMI
-                IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IATM,NMOL)
-                PRFAMI(IAD,ISTRA)=PRFAMI(IAD,ISTRA)+PRFAML(IAD,J)
-              END DO
+              PRFAML2(1:NMOL,0:NATM) => PRFAML(:,J)
+              PRFAMI2(0:NMOL,0:NATM) => PRFAMI(:,ISTRA)
+              PRFAMI2(IMOL,:) = PRFAMI2(IMOL,:)+PRFAML2(IMOL,:)
+            ELSE
+              PRFAMI(IMOL,ISTRA)=PRFAMI(IMOL,ISTRA)+PRFAML(IMOL,J)
             END IF
           END IF
           IF (LPRFMML) THEN
-            PRFMMI(IMOL,ISTRA)=PRFMMI(IMOL,ISTRA)+PRFMML(IMOL,J)
             IF (NLSPCSCL_MOL) THEN
-              DO JMOL=1,NMOLI
-                IAD = EIRENE_INDIRECT_ADDRESS(IMOL,JMOL,NMOL)
-                PRFMMI(IAD,ISTRA)=PRFMMI(IAD,ISTRA)+PRFMML(IAD,J)
-              END DO
+              PRFMML2(1:NMOL,0:NMOL) => PRFMML(:,J)
+              PRFMMI2(0:NMOL,0:NMOL) => PRFMMI(:,ISTRA)
+              PRFMMI2(IMOL,:) = PRFMMI2(IMOL,:)+PRFMML2(IMOL,:)
+            ELSE
+              PRFMMI(IMOL,ISTRA)=PRFMMI(IMOL,ISTRA)+PRFMML(IMOL,J)
             END IF
           END IF
           IF (LPRFIML) THEN
-            PRFIMI(IMOL,ISTRA)=PRFIMI(IMOL,ISTRA)+PRFIML(IMOL,J)
             IF (NLSPCSCL_ION) THEN
-              DO IION=1,NIONI
-                IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IION,NMOL)
-                PRFIMI(IAD,ISTRA)=PRFIMI(IAD,ISTRA)+PRFIML(IAD,J)
-              END DO
+              PRFIML2(1:NMOL,0:NION) => PRFIML(:,J)
+              PRFIMI2(0:NMOL,0:NION) => PRFIMI(:,ISTRA)
+              PRFIMI2(IMOL,:) = PRFIMI2(IMOL,:)+PRFIML2(IMOL,:)
+            ELSE
+              PRFIMI(IMOL,ISTRA)=PRFIMI(IMOL,ISTRA)+PRFIML(IMOL,J)
             END IF
           END IF
           IF (LPRFPHML) THEN
-            PRFPHMI(IMOL,ISTRA)=PRFPHMI(IMOL,ISTRA)+PRFPHML(IMOL,J)
             IF (NLSPCSCL_PHOT) THEN
-              DO IPHOT=1,NPHOTI
-                IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IPHOT,NMOL)
-                PRFPHMI(IAD,ISTRA)=PRFPHMI(IAD,ISTRA)+PRFPHML(IAD,J)
-              END DO
+              PRFPHML2(1:NMOL,0:NPHOT) => PRFPHML(:,J)
+              PRFPHMI2(0:NMOL,0:NPHOT) => PRFPMI(:,ISTRA)
+              PRFPHMI2(IMOL,:) = PRFPHMI2(IMOL,:)+PRFPHML2(IMOL,:)
+            ELSE
+              PRFPHMI(IMOL,ISTRA)=PRFPHMI(IMOL,ISTRA)+PRFPHML(IMOL,J)
             END IF
           END IF
           IF (LPRFPML)
@@ -99,39 +99,39 @@ C
         DO 636 J=1,NLIMPS
           IF (ILIIN(J).LE.0) CYCLE
           IF (LPRFAAT) THEN
-            PRFAAI(IATM,ISTRA)=PRFAAI(IATM,ISTRA)+PRFAAT(IATM,J)
             IF (NLSPCSCL_ATM) THEN
-              DO JATM=1,NATMI
-                IAD = EIRENE_INDIRECT_ADDRESS(IATM,JATM,NATM)
-                PRFAAI(IAD,ISTRA)=PRFAAI(IAD,ISTRA)+PRFAAT(IAD,J)
-              END DO
+              PRFAAT2(1:NATM,0:NATM) => PRFAAT(:,J)
+              PRFAAI2(0:NATM,0:NATM) => PRFAAI(:,ISTRA)
+              PRFAAI2(IATM,:) = PRFAAI2(IATM,:)+PRFAAT2(IATM,:)
+            ELSE
+              PRFAAI(IATM,ISTRA)=PRFAAI(IATM,ISTRA)+PRFAAT(IATM,J)
             END IF
           END IF
           IF (LPRFMAT) THEN
-            PRFMAI(IATM,ISTRA)=PRFMAI(IATM,ISTRA)+PRFMAT(IATM,J)
             IF (NLSPCSCL_MOL) THEN
-              DO IMOL=1,NMOLI
-                IAD = EIRENE_INDIRECT_ADDRESS(IATM,IMOL,NATM)
-                PRFMAI(IAD,ISTRA)=PRFMAI(IAD,ISTRA)+PRFMAT(IAD,J)
-              END DO
+              PRFMAT2(1:NATM,0:NMOL) => PRFMAT(:,J)
+              PRFMAI2(0:NATM,0:NMOL) => PRFMAI(:,ISTRA)
+              PRFMAI2(IATM,:) = PRFMAI2(IATM,:)+PRFMAT2(IATM,:)
+            ELSE
+              PRFMAI(IATM,ISTRA)=PRFMAI(IATM,ISTRA)+PRFMAT(IATM,J)
             END IF
           END IF
           IF (LPRFIAT) THEN
-            PRFIAI(IATM,ISTRA)=PRFIAI(IATM,ISTRA)+PRFIAT(IATM,J)
             IF (NLSPCSCL_ION) THEN
-              DO IION=1,NIONI
-                IAD = EIRENE_INDIRECT_ADDRESS(IATM,IION,NATM)
-                PRFIAI(IAD,ISTRA)=PRFIAI(IAD,ISTRA)+PRFIAT(IAD,J)
-              END DO
+              PRFIAT2(1:NATM,0:NION) => PRFIAT(:,J)
+              PRFIAI2(0:NATM,0:NION) => PRFIAI(:,ISTRA)
+              PRFIAI2(IATM,:) = PRFIAI2(IATM,:)+PRFIAT2(IATM,:)
+            ELSE
+              PRFIAI(IATM,ISTRA)=PRFIAI(IATM,ISTRA)+PRFIAT(IATM,J)
             END IF
           END IF
           IF (LPRFPHAT) THEN
-            PRFPHAI(IATM,ISTRA)=PRFPHAI(IATM,ISTRA)+PRFPHAT(IATM,J)
             IF (NLSPCSCL_PHOT) THEN
-              DO IPHOT=1,NPHOTI
-                IAD = EIRENE_INDIRECT_ADDRESS(IATM,IPHOT,NATM)
-                PRFPHAI(IAD,ISTRA)=PRFPHAI(IAD,ISTRA)+PRFPHAT(IAD,J)
-              END DO
+              PRFPHAT2(1:NATM,0:NPHOT) => PRFPHAT(:,J)
+              PRFPHAI2(0:NATM,0:NPHOT) => PRFPHAI(:,ISTRA)
+              PRFPHAI2(IATM,:) = PRFPHAI2(IATM,:)+PRFPHAT2(IATM,:)
+            ELSE
+              PRFPHAI(IATM,ISTRA)=PRFPHAI(IATM,ISTRA)+PRFPHAT(IATM,J)
             END IF
           END IF
           IF (LPRFPAT)
@@ -162,45 +162,46 @@ C
      .      SPTPATI(IATM,ISTRA)=SPTPATI(IATM,ISTRA)+SPTPAT(IATM,J)
   636   CONTINUE
   635 CONTINUE
+
 C
       DO 638 IION=1,NIONI
         IF (.NOT.LOGION(IION,ISTRA)) CYCLE
         DO 639 J=1,NLIMPS
           IF (ILIIN(J).LE.0) CYCLE
           IF (LPRFAIO) THEN
-            PRFAII(IION,ISTRA)=PRFAII(IION,ISTRA)+PRFAIO(IION,J)
             IF (NLSPCSCL_ATM) THEN
-              DO IATM=1,NATMI
-                IAD = EIRENE_INDIRECT_ADDRESS(IION,IATM,NION)
-                PRFAII(IAD,ISTRA)=PRFAII(IAD,ISTRA)+PRFAIO(IAD,J)
-              END DO
+              PRFAIO2(1:NION,0:NATM) => PRFAIO(:,J)
+              PRFAII2(0:NION,0:NATM) => PRFAII(:,ISTRA)
+              PRFAII2(IION,:) = PRFAII2(IION,:)+PRFAIO2(IION,:)
+            ELSE
+              PRFAII(IION,ISTRA)=PRFAII(IION,ISTRA)+PRFAIO(IION,J)
             END IF
           END IF
           IF (LPRFMIO) THEN
-            PRFMII(IION,ISTRA)=PRFMII(IION,ISTRA)+PRFMIO(IION,J)
             IF (NLSPCSCL_MOL) THEN
-              DO IMOL=1,NMOLI
-                IAD = EIRENE_INDIRECT_ADDRESS(IION,IMOL,NION)
-                PRFMII(IAD,ISTRA)=PRFMII(IAD,ISTRA)+PRFMIO(IAD,J)
-              END DO
+              PRFMIO2(1:NION,0:NMOL) => PRFMIO(:,J)
+              PRFMII2(0:NION,0:NMOL) => PRFMII(:,ISTRA)
+              PRFMII2(IION,:) = PRFMII2(IION,:)+PRFMIO2(IION,:)
+            ELSE
+              PRFMII(IION,ISTRA)=PRFMII(IION,ISTRA)+PRFMIO(IION,J)
             END IF
           END IF
           IF (LPRFIIO) THEN
-            PRFIII(IION,ISTRA)=PRFIII(IION,ISTRA)+PRFIIO(IION,J)
             IF (NLSPCSCL_ION) THEN
-              DO JION=1,NIONI
-                IAD = EIRENE_INDIRECT_ADDRESS(IION,JION,NION)
-                PRFIII(IAD,ISTRA)=PRFIII(IAD,ISTRA)+PRFIIO(IAD,J)
-              END DO
+              PRFIIO2(1:NION,0:NION) => PRFIIO(:,J)
+              PRFIII2(0:NION,0:NION) => PRFIII(:,ISTRA)
+              PRFIII2(IION,:) = PRFIII2(IION,:)+PRFIIO2(IION,:)
+            ELSE
+              PRFIII(IION,ISTRA)=PRFIII(IION,ISTRA)+PRFIIO(IION,J)
             END IF
           END IF
           IF (LPRFPHIO) THEN
-            PRFPHII(IION,ISTRA)=PRFPHII(IION,ISTRA)+PRFPHIO(IION,J)
             IF (NLSPCSCL_PHOT) THEN
-              DO IPHOT=1,NPHOTI
-                IAD = EIRENE_INDIRECT_ADDRESS(IION,IPHOT,NION)
-                PRFPHII(IAD,ISTRA)=PRFPHII(IAD,ISTRA)+PRFPHIO(IAD,J)
-              END DO
+              PRFPHIO2(1:NION,0:NPHOT) => PRFPHIO(:,J)
+              PRFPHII2(0:NION,0:NPHOT) => PRFPHII(:,ISTRA)
+              PRFPHII2(IION,:) = PRFPHII2(IION,:)+PRFPHIO2(IION,:)
+            ELSE
+              PRFPHII(IION,ISTRA)=PRFPHII(IION,ISTRA)+PRFPHIO(IION,J)
             END IF
           END IF
           IF (LPRFPIO)
@@ -237,41 +238,44 @@ C
         DO J=1,NLIMPS
           IF (ILIIN(J).LE.0) CYCLE
           IF (LPRFAPHT) THEN
-            PRFAPHTI(IPHOT,ISTRA)=PRFAPHTI(IPHOT,ISTRA)+PRFAPHT(IPHOT,J)
             IF (NLSPCSCL_ATM) THEN
-              DO IATM=1,NATMI
-                IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IATM,NPHOT)
-                PRFAPHTI(IAD,ISTRA)=PRFAPHTI(IAD,ISTRA)+PRFAPHT(IAD,J)
-              END DO
+              PRFAPHT2(1:NPHOT,0:NATM) => PRFAPHT(:,J)
+              PRFAPHTI2(0:NPHOT,0:NATM) => PRFAPHTI(:,ISTRA)
+              PRFAPHTI2(IPHOT,:) = PRFAPHTI2(IPHOT,:)+PRFAPHT2(IPHOT,:)
+            ELSE
+              PRFAPHTI(IPHOT,ISTRA)=PRFAPHTI(IPHOT,ISTRA)+
+     .                              PRFAPHT(IPHOT,J)
             END IF
           END IF
           IF (LPRFMPHT) THEN
-            PRFMPHTI(IPHOT,ISTRA)=PRFMPHTI(IPHOT,ISTRA)+PRFMPHT(IPHOT,J)
             IF (NLSPCSCL_MOL) THEN
-              DO IMOL=1,NMOLI
-                IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IMOL,NPHOT)
-                PRFMPHTI(IAD,ISTRA)=PRFMPHTI(IAD,ISTRA)+PRFMPHT(IAD,J)
-              END DO
+              PRFMPHT2(1:NPHOT,0:NMOL) => PRFMPHT(:,J)
+              PRFMPHTI2(0:NPHOT,0:NMOL) => PRFMPHTI(:,ISTRA)
+              PRFMPHTI2(IPHOT,:) = PRFMPHTI2(IPHOT,:)+PRFMPHT2(IPHOT,:)
+            ELSE
+              PRFMPHTI(IPHOT,ISTRA)=PRFMPHTI(IPHOT,ISTRA)+
+     .                              PRFMPHT(IPHOT,J)
             END IF
           END IF
           IF (LPRFIPHT) THEN
-            PRFIPHTI(IPHOT,ISTRA)=PRFIPHTI(IPHOT,ISTRA)+PRFIPHT(IPHOT,J)
             IF (NLSPCSCL_ION) THEN
-              DO IION=1,NIONI
-                IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IION,NPHOT)
-                PRFIPHTI(IAD,ISTRA)=PRFIPHTI(IAD,ISTRA)+PRFIPHT(IAD,J)
-              END DO
+              PRFIPHT2(1:NPHOT,0:NION) => PRFIPHT(:,J)
+              PRFIPHTI2(0:NPHOT,0:NION) => PRFIPHTI(:,ISTRA)
+              PRFIPHTI2(IPHOT,:) = PRFIPHTI2(IPHOT,:)+PRFIPHT2(IPHOT,:)
+            ELSE
+              PRFIPHTI(IPHOT,ISTRA)=PRFIPHTI(IPHOT,ISTRA)+
+     .                              PRFIPHT(IPHOT,J)
             END IF
           END IF
           IF (LPRFPHPHT) THEN
-            PRFPHPHTI(IPHOT,ISTRA)=PRFPHPHTI(IPHOT,ISTRA)+
-     .                             PRFPHPHT(IPHOT,J)
             IF (NLSPCSCL_PHOT) THEN
-              DO JPHOT=1,NPHOTI
-                IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,JPHOT,NPHOT)
-                PRFPHPHTI(IAD,ISTRA)=PRFPHPHTI(IAD,ISTRA)+
-     .                               PRFPHPHT(IAD,J)
-              END DO
+              PRFPHPHT2(1:NPHOT,0:NPHOT) => PRFPHPHT(:,J)
+              PRFPHPHTI2(0:NPHOT,0:NPHOT) => PRFPHPHTI(:,ISTRA)
+              PRFPHPHTI2(IPHOT,:) = PRFPHPHTI2(IPHOT,:)+
+     .                              PRFPHPHT2(IPHOT,:)
+            ELSE
+              PRFPHPHTI(IPHOT,ISTRA)=PRFPHPHTI(IPHOT,ISTRA)+
+     .                               PRFPHPHT(IPHOT,J)
             END IF
           END IF
           IF (LPRFPPHT)
@@ -475,6 +479,7 @@ C
         VZDENAI(0,ISTRA)=VZDENAI(0,ISTRA)+VZDENAI(IATM,ISTRA)
         RAELI (0,ISTRA)=RAELI (0,ISTRA)+RAELI (IATM,ISTRA)
   664 CONTINUE
+      write (iunout,*) 'prfaai(0,istra) = ',prfaai(0,istra)
       DO IPHOT=1,NPHOTI
         PDENPHI (0,ISTRA)=PDENPHI (0,ISTRA)+PDENPHI (IPHOT,ISTRA)
         EDENPHI (0,ISTRA)=EDENPHI (0,ISTRA)+EDENPHI (IPHOT,ISTRA)

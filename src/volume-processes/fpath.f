@@ -128,6 +128,7 @@ cdr  functions for 'on the fly' evaluation of A&M data
      .                 IXCX, IRCX, 
      .           J, KK, IPLSTI,
      .           JPLS, IPLSV, IREAC
+      REAL(DP), PARAMETER :: TMINL=-2.3_DP
       REAL(DP),PARAMETER :: EMINL=-2.3_DP ! hard-coded cut-off for EBEAM parameter in H.3 fits
 
 !  FOR PHOTONS CALL EIRENE_FPATHPH
@@ -534,8 +535,11 @@ C  MAXWELLIAN RATE, IGNORE ATOM VELOCITY
 cdr  here should be call to ftabel3,  to be done
             KK=NREAEL(IREL)
             TII=TIINL(IPLSTI,K)+ADDEL(IREL,IPLS)
+!pb
+! this is another cut-off, at TIIN <=0.1 eV rather than at TVAC = 0.02 eV
+            tii = max(tminl,tii)
             TBEL = EIRENE_RATE_COEFF(KK,K,TII,0._DP,.TRUE.,0)*
-     .             DIIN(IPLS,K)
+     .             MIN(DENSLIM(IPLS),DIIN(IPLS,K))*FACREL(IREL,1)
             SIGVEL(IREL)=TBEL
           END IF
         ELSEIF (MODCOL(5,2,IREL).EQ.2) THEN

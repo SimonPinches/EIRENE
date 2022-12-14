@@ -1281,7 +1281,6 @@ C
       INTEGER, INTENT(IN) :: ISTRAI
       REAL(DP) :: FLXI
       INTEGER :: IN, IATM, IMOL, IPLS, IION, ICPV
-      INTEGER :: IAD, EIRENE_INDIRECT_ADDRESS
 
       TYPE(CELLSIM), POINTER :: CPSIM
       TYPE(CELLMUL), POINTER :: CPMUL
@@ -1302,16 +1301,13 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
         DO IN=1,NSBOX_TAL
           IF (LPAPL) THEN
             IF (PAPL(IPLS,IN) .NE. 0.D0) THEN
-!pb           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
               CPMUL%VALUEM = PAPL(IPLS,IN)*FLXI
               IF (NLSPCSCL_ATM) THEN
-                DO IATM=1,NATMI
-                  IAD=EIRENE_INDIRECT_ADDRESS(IPLS,IATM,NPLS)
-                  CPMUL%VALUAM(IATM) = PAPL(IAD,IN)*FLXI
-                END DO
+                PAPL2(1:NPLS,0:NATM) => PAPL(:,IN)
+                CPMUL%VALUAM(1:NATMI) = PAPL2(IPLS,1:NATMI)*FLXI
               END IF
               CPMUL%NXTMUL => PAPLS(ISTRAI)%PMUL
               PAPLS(ISTRAI)%PMUL => CPMUL
@@ -1319,16 +1315,13 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
           ENDIF
           IF (LPMPL) THEN
             IF (PMPL(IPLS,IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
               CPMUL%VALUEM = PMPL(IPLS,IN)*FLXI
               IF (NLSPCSCL_MOL) THEN
-                DO IMOL=1,NMOLI
-                  IAD=EIRENE_INDIRECT_ADDRESS(IPLS,IMOL,NPLS)
-                  CPMUL%VALUMM(IMOL) = PMPL(IAD,IN)*FLXI
-                END DO
+                PMPL2(1:NPLS,0:NMOL) => PMPL(:,IN)
+                CPMUL%VALUMM(1:NMOL) = PMPL2(IPLS,1:NMOL)*FLXI
               END IF
               CPMUL%NXTMUL => PMPLS(ISTRAI)%PMUL
               PMPLS(ISTRAI)%PMUL => CPMUL
@@ -1336,16 +1329,13 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
           ENDIF
           IF (LPIPL) THEN
             IF (PIPL(IPLS,IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
               CPMUL%VALUEM = PIPL(IPLS,IN)*FLXI
               IF (NLSPCSCL_ION) THEN
-                DO IION=1,NIONI
-                  IAD=EIRENE_INDIRECT_ADDRESS(IPLS,IION,NPLS)
-                  CPMUL%VALUIM(IMOL) = PIPL(IAD,IN)*FLXI
-                END DO
+                PIPL2(1:NPLS,0:NION) => PIPL(:,IN)
+                CPMUL%VALUIM(1:NION) = PIPL2(IPLS,1:NION)*FLXI
               END IF
               CPMUL%NXTMUL => PIPLS(ISTRAI)%PMUL
               PIPLS(ISTRAI)%PMUL => CPMUL
@@ -1354,7 +1344,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
 
           IF (LEAPL) THEN
             IF (EAPL(IPLS,IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
@@ -1366,7 +1355,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
 
           IF (LEMPL) THEN
             IF (EMPL(IPLS,IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
@@ -1378,7 +1366,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
 
           IF (LEIPL) THEN
             IF (EIPL(IPLS,IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
@@ -1390,7 +1377,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
 
           IF (LMAPL) THEN
             IF (MAPL(IPLS,IN) .NE. 0.D0) THEN
-!pb           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
@@ -1402,7 +1388,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
 
           IF (LMMPL) THEN
             IF (MMPL(IPLS,IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
@@ -1414,7 +1399,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
 
           IF (LMIPL) THEN
             IF (MIPL(IPLS,IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
@@ -1426,7 +1410,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
 
           IF (LMPHPL) THEN
             IF (MPHPL(IPLS,IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
@@ -1442,7 +1425,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
       DO IN=1,NSBOX_TAL
         IF (LEAEL) THEN
           IF (EAEL(IN) .NE. 0.D0) THEN
-!PB         ALLOCATE(CPSIM)
             CPSIM => EIRENE_NEW_SIMARR()
             CPSIM%ICS = IN
             CPSIM%VALUES = EAEL(IN)*FLXI
@@ -1452,7 +1434,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
         ENDIF
         IF (LEMEL) THEN
           IF (EMEL(IN) .NE. 0.D0) THEN
-!PB         ALLOCATE(CPSIM)
             CPSIM => EIRENE_NEW_SIMARR()
             CPSIM%ICS = IN
             CPSIM%VALUES = EMEL(IN)*FLXI
@@ -1462,7 +1443,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
         ENDIF
         IF (LEIEL) THEN
           IF (EIEL(IN) .NE. 0.D0) THEN
-!PB         ALLOCATE(CPSIM)
             CPSIM => EIRENE_NEW_SIMARR()
             CPSIM%ICS = IN
             CPSIM%VALUES = EIEL(IN)*FLXI
@@ -1476,7 +1456,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
         DO IN=1,NSBOX_TAL
           IF (LPDENA) THEN
             IF (PDENA(IATM,IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IATM
               CPMUL%ICM = IN
@@ -1487,7 +1466,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
           ENDIF
           IF (LEDENA) THEN
             IF (EDENA(IATM,IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IATM
               CPMUL%ICM = IN
@@ -1503,7 +1481,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
         DO IN=1,NSBOX_TAL
           IF (LPDENM) THEN
             IF (PDENM(IMOL,IN) .NE. 0.D0) THEN
-!PB            ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IMOL
               CPMUL%ICM = IN
@@ -1519,7 +1496,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
         DO IN=1,NSBOX_TAL
           IF (LPDENI) THEN
             IF (PDENI(IION,IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IION
               CPMUL%ICM = IN
@@ -1535,7 +1511,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
         DO IN=1,NSBOX_TAL
           IF (LCOPV) THEN
             IF (COPV(ICPV,IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = ICPV
               CPMUL%ICM = IN

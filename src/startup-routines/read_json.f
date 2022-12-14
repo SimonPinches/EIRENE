@@ -4066,6 +4066,7 @@ cdr  .                  TRCDBG2,TRCDBGE,TRCDBGM,TRCDBGF,TRCDBGL,
 cdr  .                  TRCDBGS,TRCDBGG,TRCDBGMPI,TRCDBGC,
 CPB  ACTIVATE SPECIES-RESOLVED CPU CONSUMPTION OPTION
       call json%get(p,'TRCHKTIM',trchktim,found)
+      call json%get(p,'TRCSCL',trcscl,found)
 
       call json%get(p,'TRCSRC',lhelp,found)
       trcsrc(0:nstra) = lhelp(1:nstra+1)
@@ -5050,6 +5051,7 @@ C  also set NAINI, NCOPII, NCOPIE there
 !*****************************************************************
 
       subroutine eirene_read_mpi_strategy_json
+      USE EIRMOD_COMUSR, ONLY: NPRLL
       USE EIRMOD_CPES, ONLY: NPRS, NLIDENT, 
      >    STRATEGY_UNDEFINED, STRATEGY_EMBARRASS,
      >    STRATEGY_ORIGINAL, STRATEGY_APCAS, STRATEGY_BALANCED,
