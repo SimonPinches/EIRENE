@@ -142,7 +142,7 @@ c  unrelated to particle trajectories:  IO streams
       INTEGER, PUBLIC, SAVE ::
      I IUNIN,  IUNOUT, IVTKOUT
 cym
-!$OMP THREADPRIVATE(IUNOUT)
+!!!!$OMP THREADPRIVATE(IUNOUT)
 
       DATA IUNIN / 1 /  ! must be known already during compile time.
 c                       ! better: move iunin, iunout, etc.. to parmmod ??
