@@ -96,6 +96,9 @@ C   READ INPUT DATA AND SET DEFAULT VALUES
 c   IN CASE IITER.GT.1 OR ITIMV.GT.1 : SKIP READING NEW INPUT FROM STREAM IUNIN.
 C                                      ONLY INPUT DATA PROCESSING (STATEMENT 4000 FF)
 C
+#ifdef USE_MPI
+      USE MPI
+#endif
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -142,7 +145,7 @@ cdr   REAL(DP) :: timea
      .           I, J, I1, I2, I3, JL, IO, IUSR, IFLG,
      .           ITALI, IRAD, IS, ISS, II, INC, IRET,
      .           JPLS, IRE, JSPZ, JTRJ, ISTRAI, NLJ, IENTRY,
-     .           IO13
+     .           IO13, IER
 
       INTEGER, SAVE :: NITER0, IUSROUT=0
       LOGICAL :: NLSRON_SAVE(NSTRA)
