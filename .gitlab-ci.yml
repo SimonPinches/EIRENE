@@ -270,10 +270,10 @@ test_standalone_ITER_1573:
         - build_standalone_ITER_1573
         - run_standalone_ITER_1573
 
-build_standalone_ITER_1573:
+build_standalone_ITER_1573_scaling:
     <<: *build_executable
     variables:
-        PATH_CASE: "ITER_1573"
+        PATH_CASE: "ITER_1573_scaling"
 
 run_standalone_ITER_1573_scaling:
     <<: *run
