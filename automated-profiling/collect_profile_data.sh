@@ -36,6 +36,7 @@ do
 		job_state=$(sacct -j $job_number --format jobid,state -n |sed -n -r "/^$job_number /s/($job_number| +)//gp")
 		echo "Job ${job_number} not complete yet, job state is ${job_state} ... Waiting ..."
 		sleep 10
+		job_state=$(sacct -j $job_number --format jobid,state -n |sed -n -r "/^$job_number /s/($job_number| +)//gp")
 	done
 	report cases.${case_name}.job_state \"$job_state\"
 
@@ -62,5 +63,6 @@ do
 	cpu_time=$(grep CPU_TIME ${case_report_dir}/eirene-2d.reference_${N}-${n}-${c}.out | sed 's/[[:blank:]]*$//; s/.*[[:blank:]]//')
 	wall_time=$(echo ${cpu_time:0:8})
 	report cases.${case_name}.output_parsed "true"
-	report cases.${case_name}.timing.wall_time \"${wall_time}\"
+	echo "Adding wall time: ${wall_time}"
+	report cases.${case_name}.timing.wall_time ${wall_time}
 done

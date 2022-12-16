@@ -24,8 +24,8 @@ sbatch 2>&1 << EOF
 export OMP_NUM_THREADS=$c
 ./set_links.sh
 srun ./eirene 1>eirene-2d.reference.out 2>eirene-2d.reference.err
-mv eirene-2d.reference.out eirene-2d.reference_${N}-${n}-${c}.out
-mv fort.201 eirene-2d.reference_${N}-${n}-${c}.out
+cp eirene-2d.reference.out eirene-2d.reference_${N}-${n}-${c}.out
+cp fort.200 eirene-2d.reference_${N}-${n}-${c}.out
 ./rm_links.sh
 EOF
 	return $?

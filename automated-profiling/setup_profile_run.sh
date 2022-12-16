@@ -83,7 +83,7 @@ max_num_threads=9999
 #testing
 node_range=( 1 )
 rank_per_node_range=( 1 )
-thread_per_rank_range=( 1 2 )
+thread_per_rank_range=( 1 2 4 8 16 32 64 )
 
 report cases {}
 for N in ${node_range[*]}

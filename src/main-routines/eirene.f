@@ -158,14 +158,18 @@ c     IUNIN = 1
 
       IUNOUT = 6  ! Fortran standard output channel
       IF (NPRS > 1) IUNOUT = 7  ! in case of multiple PEs use separate output files
+!$OMP PARALLEL
       IF (EIRENE_NTHREADS > 1) IUNOUT = 200 ! for multiple threads use different file numbers
+!$OMP END PARALLEL
 
 #ifdef B25_EIRENE
 cxpb 04nov16 Going back to having the master PE write to standard output
       IF (MY_PE == 0) IUNOUT = 6
 #endif
 
+!$OMP PARALLEL
       IUNOUT = IUNOUT + IFOFF
+!$OMP END PARALLEL
 
 CDR  OUTPUT STREAM IS: IUNOUT. THIS IS ALSO THE STREAM FOR MASTER PROCESSOR MY_PE =0
 cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
@@ -176,7 +180,6 @@ cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
 #endif        
 !pb_open
         if (init_open == 0) then
-
           OUTNAME='output.'
           WRITE (OUTNAME(8:),'(I4.4)')
      .       (MY_PE*EIRENE_NTHREADS)+EIRENE_ITHREAD
