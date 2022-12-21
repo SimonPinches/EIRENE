@@ -17,4 +17,4 @@ $eir_dir/automated-profiling/launch_jobs.sh
 $eir_dir/automated-profiling/collect_profile_data.sh
 
 # Plot the profile data using python
-$eir_dir/automated-profiling/eirene_plot_profile.py -j
+$eir_dir/automated-profiling/plot_scaling.py

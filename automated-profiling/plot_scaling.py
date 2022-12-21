@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# script to read profile data from eiron stored in a flat csv file with the headings
+# script to read scaling data from either a json or csv file and produce scaling plots
 # sim,tally,nparticles,xdim,ydim,nthreads,walltime,pathstime,tallytime
 
 
@@ -24,10 +24,18 @@ class eiron_profile:
         
         if filetype=='json':
             print("Reading json data from",args.file)
-            self.pdata = self.read_json_with_pandas(args.file)
+            try:
+                self.pdata = self.read_json_with_pandas(args.file)
+            except:
+                print("ERROR: Cannot read input file")
+                exit()
         elif filetype=='csv':
-            print("Reading csv data from",args.file)                        
-            self.pdata = self.read_flat_csv_with_pandas(args.file)
+            print("Reading csv data from",args.file)
+            try:
+                self.pdata = self.read_flat_csv_with_pandas(args.file)
+            except:
+                print("ERROR: Cannot read input file")
+                exit()
         else:
             print("Error: Unknown file type",filetype)
             exit()
@@ -58,6 +66,18 @@ class eiron_profile:
         filternthreads  = (self.pdata['nthreads']==nthreads) | (nthreads == 0)
         return self.pdata[ filtersim & filtertally & filterpart & filterxdim & filterydim & filternthreads]
 
+
+    # Filter data for plotting based on a dict containing the key values
+    def filter_data(self, **filter_dict):
+        keys = filter_dict.keys()
+        filter = True        
+        for key in keys:
+            if key not in self.pdata.keys() :
+                print("ERROR: Key value does not exist! Exiting")
+                exit()
+            filter = (self.pdata[key]==filter_dict[key]) & filter
+        return self.pdata[ filter ];
+    
     ###############################################################################################
     # Plotting routines
     ###############################################################################################
@@ -91,14 +111,41 @@ class eiron_profile:
 
     # Routines for producing particular figures
 
-    # A simple figure for eirene strong scaling
+    # A simple figure for eirene strong thread scaling
     def fig_simple_strong_thread_scaling(self,nparticles):
-        print('Plotting simple strong scaling:',nparticles,' particles')
-        self.init_figure('Eirene Strong Scaling')
-        self.plot_data(self.pdata['n_omp_threads'],self.pdata['timing.wall_time'],{'label':'walltime'})
+        print('Plotting simple strong thread scaling:',nparticles,' particles')
+        self.init_figure('Eirene Strong Thread Scaling')
+        fdata = self.filter_data(n_mpi_ranks=1)
+        self.plot_data(fdata['n_omp_threads'],fdata['timing.wall_time'],{'label':'walltime'})
         self.ax.legend()
-        self.makeplot("strongScaling.png")
-    
+        self.makeplot("strongThreadScaling.png")
+
+        # A simple figure for eirene strong mpi scaling
+    def fig_simple_strong_mpi_scaling(self,nparticles,nthreads):
+        print('Plotting simple strong MPI scaling:',nparticles,' particles')
+        self.init_figure('Eirene Strong MPI Scaling')
+        fdata = self.filter_data(n_omp_threads=nthreads)
+        self.plot_data(fdata['n_mpi_ranks'],fdata['timing.wall_time'],{'label':'walltime'})
+        self.ax.legend()
+        self.makeplot("strongMPIScaling.png")
+
+    # Eirene strong mpi scaling for different thread counts
+    def fig_strong_mpi_scaling(self,nparticles):
+        print('Plotting strong MPI scaling with threads:',nparticles,' particles')
+        self.init_figure('Eirene Strong MPI Scaling')
+        fdata = self.filter_data(n_omp_threads=1)
+        self.plot_data(fdata['n_mpi_ranks'],fdata['timing.wall_time'],{'label':'1 thread'})
+        fdata = self.filter_data(n_omp_threads=2)
+        self.plot_data(fdata['n_mpi_ranks'],fdata['timing.wall_time'],{'label':'2 threads'})
+        fdata = self.filter_data(n_omp_threads=4)
+        self.plot_data(fdata['n_mpi_ranks'],fdata['timing.wall_time'],{'label':'4 threads'})
+        fdata = self.filter_data(n_omp_threads=8)
+        self.plot_data(fdata['n_mpi_ranks'],fdata['timing.wall_time'],{'label':'8 threads'})
+        self.ax.legend()
+        self.makeplot("strongMPIScalingThreads.png")
+
+        
+        
     # Add strong scaling plots for the synchronous execution types        
     def plot_one_strong_scaling(self,nparticles,xgrid,ygrid,sim,tally,data):
         fdata = self.filter_data_flat_csv( sim, tally, nparticles, xgrid, ygrid, 0)
@@ -333,7 +380,9 @@ pd.options.display.max_columns = 999
 #print(self.pdata)
 
 # Make some plots
-#prof.fig_simple_strong_thread_scaling(args.nparticles)
+prof.fig_simple_strong_thread_scaling(args.nparticles)
+prof.fig_simple_strong_mpi_scaling(args.nparticles, 1)
+prof.fig_strong_mpi_scaling(args.nparticles)
 #prof.fig_strong_scaling(args.nparticles,args.gridsize,args.gridsize)
 #prof.fig_strong_scaling_split(args.nparticles,args.gridsize,args.gridsize)
 #prof.fig_weak_scaling_particles(args.firstthread,args.gridsize,args.gridsize)

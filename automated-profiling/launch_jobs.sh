@@ -26,6 +26,7 @@ export OMP_NUM_THREADS=$c
 srun ./eirene 1>eirene-2d.reference.out 2>eirene-2d.reference.err
 cp eirene-2d.reference.out eirene-2d.reference_${N}-${n}-${c}.out
 cp fort.200 eirene-2d.reference_${N}-${n}-${c}.out
+cp fort.7 eirene-2d.reference_${N}-${n}-${c}.out
 ./rm_links.sh
 EOF
 	return $?

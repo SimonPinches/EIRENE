@@ -20,7 +20,9 @@ eir_dir=$EIRDIR
 mkdir -p $scalability_report_dir
 
 
-#Clone EIRENE and build it
+#Clone or copy EIRENE and build it
+# This is not necessary as it stands as ththis script is within the EIRENE repository.
+# However this may change so it will  be left in as it is
 if [ ! -d $eir_dir ]
 then
 	echo Cloning eirene into $eir_dir
@@ -79,11 +81,11 @@ max_num_threads=9999
 
 #node_range=( 1 2 4 )
 #rank_per_node_range=( 1 2 4 8 16 32 )
-#thread_per_rank_range=( 1 2 4 8 16 32 )
+#thread_per_rank_range=( 1 2 4 8 16 32 64)
 #testing
 node_range=( 1 )
-rank_per_node_range=( 1 )
-thread_per_rank_range=( 1 2 4 8 16 32 64 )
+rank_per_node_range=( 1 2 4 8 )
+thread_per_rank_range=( 1 2 4 8 )
 
 report cases {}
 for N in ${node_range[*]}
