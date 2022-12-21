@@ -62,7 +62,7 @@ cdr May 17: some spelling error corrections in comments adopted from ITER branch
 c            AE: analog, --> BE: analogue, etc..
 cdr Nov.18:  notational cleanup: separate OT from PH processes, e.g.: IROT --> IRPH
 
-      SUBROUTINE EIRENE_COLPHOT(CFLAG,COLTYP)
+      SUBROUTINE EIRENE_COLPHOT(CFLAG,COLTYP,KKOUT)
 C
 C  SAMPLE FROM COLLISION KERNEL C
 C
@@ -103,6 +103,7 @@ C
 
       REAL(DP), INTENT(IN) :: CFLAG(7,MSTOR0)
       INTEGER, INTENT(OUT) :: COLTYP
+      INTEGER, INTENT(INOUT) :: KKOUT
       REAL(DP) :: ZEP1, SIGSUM, WGHTO, FRSTP, E0O, VELXO,
      .          VELYO, VELZO, VELO, SCNDP,
      .          ZEP3

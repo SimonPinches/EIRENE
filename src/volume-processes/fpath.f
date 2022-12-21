@@ -104,7 +104,7 @@ C
 
       REAL(DP) :: DENIO(NPLS), ZTI(NPLS)
       REAL(DP) :: PVELQ(NPLSV)
-      REAL(DP) :: TBCX3(9), TBEL3(9), TBPI3(9), FP(6)
+      REAL(DP) :: TBCX3(9), TBEL3(9), TBPI3(9), FP(6), FP2(6)
       REAL(DP) :: EPCX3(9), EPEL3(9)  !EPPI3: TO BE DONE
       REAL(DP) :: EIRENE_FPATH, EIRENE_FPATHPH,
      .          EIRENE_CROSS,
@@ -123,11 +123,13 @@ cdr  functions for 'on the fly' evaluation of A&M data
      .          EIRENE_FEPLCX3, EIRENE_FEPLEL3,
      .          EIRENE_FTABCX3, EIRENE_FTABPI3,
      .          EIRENE_FTABEI1,
-     .          RCMIN, RCMAX, EARRH
+     .          RCMIN, RCMAX, EARRH,
+     .          RC2MIN, RC2MAX
       INTEGER :: IBGK, IXEL, IREL, IXEI, IREI, IXPI, IRPI,
      .                 IXCX, IRCX, 
      .           J, KK, IPLSTI,
-     .           JPLS, IPLSV, IREAC
+     .           JPLS, IPLSV, IREAC,
+     .           jfex2mn, jfex2mx
       REAL(DP), PARAMETER :: TMINL=-2.3_DP
       REAL(DP),PARAMETER :: EMINL=-2.3_DP ! hard-coded cut-off for EBEAM parameter in H.3 fits
 
@@ -393,12 +395,22 @@ C   TMASS FOR RATE COEFF. BEAM VELOCITY
 ! DOUBLE POLYNOMIAL FIT REDUCED TO SINGLE POLYNOMIAL FIT BY
 ! PRE-CALCULATING TEMPERATURE DEPENDENCIES
               TBCX3(1:NSTORDT) = TABCX3(IRCX,K,1:NSTORDT)
-              FP = 0._DP
-              RCMIN = -HUGE(1._DP)
-              RCMAX = HUGE(1._DP)
+! CNR: SET VALIDITY RANGE AND PARAMETERS FOR EXTRAPOLATION FOR SECOND PARAMETER (FIRST WAS REDUCED)
+              KK=NREACX(IRCX)
+              rc2min  = reacdat(KK)%rtc%rc2min
+              rc2max  = reacdat(KK)%rtc%rc2max
+              fp2(1:3)= reacdat(KK)%rtc%fp2b
+              fp2(4:6)= reacdat(KK)%rtc%fp2t
+              jfex2mn = reacdat(KK)%rtc%jfex2mn
+              jfex2mx = reacdat(KK)%rtc%jfex2mx
               EARRH = 0.0
-              EXPO = EIRENE_SNGL_POLY(TBCX3,ELB,RCMIN,RCMAX,FP,0,0,
+              EXPO = EIRENE_SNGL_POLY(TBCX3,ELB,RC2MIN,RC2MAX,
+     .                                FP2,JFEX2MN,JFEX2MX,
      .                                EARRH,TRCAMD,.TRUE.)
+              if (LOG(EXPO).GT.709._dp) then
+                write(*,*) "OVERFLOW IN FPATH SIGVCX: ",EXPO,KK,
+     .               K,TIIN(IPLSTI,K),ELB,DIIN(IPLS,K)*1.e6_dp
+              end if
               SIGVCX(IRCX)=EXPO
             ELSE
 ! CALCULATE RATE COEFFICIENT ON THE FLY
@@ -407,6 +419,10 @@ CDR  THIS SHOULD BE DONE IN FTABCX3.  NOT READY
               TII=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)
               EXPO = EIRENE_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .               + DIINL(IPLS,K) + FACRCX(IRCX,2)
+              if (EXPO.GT.709._dp) then
+                write(*,*) "OVERFLOW IN FPATH SIGVCX: ",EXPO,KK,
+     .               K,TIIN(IPLSTI,K),ELB,DIIN(IPLS,K)*1.e6_dp
+              end if
               SIGVCX(IRCX)=EXP(EXPO)
             END IF
           ENDIF
@@ -475,6 +491,10 @@ cdr         endif
               EARRH = 0.0
               EXPO = EIRENE_SNGL_POLY(EPCX3,ELB,RCMIN,RCMAX,FP,0,0,
      .                                EARRH,TRCAMD,.TRUE.)
+              if (LOG(EXPO).GT.709._dp) then
+                write(*,*) "ESIGCX: ",EXPO,KK,K,TII,ELB,
+     .               DIINL(IPLS,K),FACRCX(IRCX,2)
+              end if
               ESIGCX(IRCX,1)=EXPO/SIGVCX(IRCX)
             ELSE
 ! CALCULATE ENERGY-WEIGHTED RATE COEFFICIENT ON THE FLY
@@ -483,6 +503,10 @@ CDR  THIS SHOULD BE DONE IN ...  NOT READY
               TII=TIINL(IPLSTI,K)+ADDCX(IRCX,IPLS)
               EXPO = EIRENE_ENERGY_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .               + DIINL(IPLS,K) + FACRCX(IRCX,2)
+              if (EXPO.GT.709._dp) then
+                write(*,*) "ESIGCX: ",EXPO,KK,K,TII,ELB,
+     .               DIINL(IPLS,K),FACRCX(IRCX,2)
+              end if
               ESIGCX(IRCX,1)=EXP(EXPO)/SIGVCX(IRCX)
             END IF
 
@@ -561,12 +585,22 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
 ! DOUBLE POLYNOMIAL FIT IS REDUCED TO SINGLE POLYNOMIAL FIT BY
 ! PRE-CALCULATING TEMPERATURE DEPENDENCIES ALREADY IN INITIALIZATION PHASE
               TBEL3(1:NSTORDT) = TABEL3(IREL,K,1:NSTORDT)
-              FP = 0._DP
-              RCMIN = -HUGE(1._DP)
-              RCMAX = HUGE(1._DP)
+! CNR: SET VALIDITY RANGE AND PARAMETERS FOR EXTRAPOLATION FOR SECOND PARAMETER (FIRST WAS REDUCED)
+              KK=NREAEL(IREL)
+              rc2min  = reacdat(KK)%rtc%rc2min
+              rc2max  = reacdat(KK)%rtc%rc2max
+              fp2(1:3)= reacdat(KK)%rtc%fp2b
+              fp2(4:6)= reacdat(KK)%rtc%fp2t
+              jfex2mn = reacdat(KK)%rtc%jfex2mn
+              jfex2mx = reacdat(KK)%rtc%jfex2mx
               EARRH = 0.0
-              EXPO = EIRENE_SNGL_POLY(TBEL3,ELB,RCMIN,RCMAX,FP,0,0,
+              EXPO = EIRENE_SNGL_POLY(TBEL3,ELB,RC2MIN,RC2MAX,
+     .                                FP2,jfex2mn,jfex2mx,
      .                                EARRH,TRCAMD,.TRUE.)
+              if (LOG(EXPO).GT.709._dp) then
+                write(*,*) "OVERFLOW IN FPATH SIGVEL: ",EXPO,KK,
+     .               K,TIIN(IPLSTI,K),ELB,DIIN(IPLS,K)*1.e6_dp
+              end if
               SIGVEL(IREL)=EXPO
              ELSE
 ! CALCULATE RATE COEFFICIENT ON THE FLY
@@ -575,6 +609,10 @@ CDR  THIS SHOULD BE DONE IN FTABEL3.  NOT READY
               TII=TIINL(IPLSTI,K)+ADDEL(IREL,IPLS)
               EXPO = EIRENE_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .               + DIINL(IPLS,K) + FACREL(IREL,2)
+              if (EXPO.GT.709._dp) then
+                write(*,*) "OVERFLOW IN FPATH SIGVEL: ",EXPO,KK,
+     .               K,TIIN(IPLSTI,K),ELB,DIIN(IPLS,K)*1.e6_dp
+              end if
               SIGVEL(IREL)=EXP(EXPO)
             END IF
           ENDIF
@@ -642,6 +680,10 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
               EARRH = 0.0
               EXPO = EIRENE_SNGL_POLY(EPEL3,ELB,RCMIN,RCMAX,FP,0,0,
      .                                EARRH,TRCAMD,.TRUE.)
+              if (LOG(EXPO).GT.709._dp) then
+                write(*,*) "ESIGEL: ",EXPO,KK,K,TII,ELB,
+     .               DIINL(IPLS,K),FACREL(IREL,2)
+              end if
               ESIGEL(IREL,1)=EXPO/SIGVEL(IREL)
             ELSE
 ! CALCULATE ENERGY-WEIGHTED RATE COEFFICIENT ON THE FLY
@@ -649,6 +691,10 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
               TII=TIINL(IPLSTI,K)+ADDEL(IREL,IPLS)
               EXPO = EIRENE_ENERGY_RATE_COEFF(KK,K,TII,ELB,.FALSE.,0)
      .               + DIINL(IPLS,K) + FACREL(IREL,2)
+              if (EXPO.GT.709._dp) then
+                write(*,*) "ESIGEL: ",EXPO,KK,K,TII,ELB,
+     .               DIINL(IPLS,K),FACREL(IREL,2)
+              end if
               ESIGEL(IREL,1)=EXP(EXPO)/SIGVEL(IREL)
             END IF
             IF (LEDRIFT) ESIGEL(IREL,1)=ESIGEL(IREL,1)+EDRIFT(IPLS,K)
