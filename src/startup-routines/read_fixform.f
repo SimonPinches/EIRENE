@@ -99,6 +99,7 @@ C
       USE EIRMOD_JSON
       USE EIRMOD_IOUSR, ONLY: EIRENE_READ_BLOCK_11_USR
       USE EIRMOD_INFCOP, ONLY: EIRENE_IF0COP
+      use json_module, only  : json_ck
 
       IMPLICIT NONE
 
@@ -206,6 +207,9 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
       CHARACTER(10) :: CDATE, CTIME
       CHARACTER(12) :: CHR
       CHARACTER(420) :: ZEILE, ULINE
+!cym/cpg avoid type mismatch
+      CHARACTER(kind=json_CK,len=420) :: zeileCk
+!cym/cpg end
       CHARACTER(500) :: FILE, FILE45
       CHARACTER(8) :: FILNAM, varname, spcname
       CHARACTER(4) :: H123, CLAB
@@ -254,7 +258,11 @@ C
         IF (ZEILE(1:3).NE.'***') THEN
           WRITE (iunout,'(1X,A)') trim(ZEILE)
 !  STORE COMMENT LINES FOR OUTPUTING TO JSON FILE 
-          call eirene_push_string_stack(cm_stack,trim(zeile)) 
+!cym/cpg avoid type mismatch
+!          call eirene_push_string_stack(cm_stack,trim(zeile)) 
+          zeileCK=trim(zeile)
+          call eirene_push_string_stack(cm_stack,trim(zeileCK))
+!cym/cpg end
         END IF  
         GOTO 109
       ELSE
@@ -1104,7 +1112,11 @@ C
           IREAD=0
           
 !  STORE CH0 LINES FOR OUTPUTING TO JSON FILE 
-          call eirene_push_string_stack(ch0_stack,zeile(1:72))
+!cym/cpg avoid type mismatch
+!          call eirene_push_string_stack(ch0_stack,zeile(1:72))
+          zeileCK=zeile
+          call eirene_push_string_stack(ch0_stack,zeileCK(1:72))
+!cym/cpg end
 
           CALL EIRENE_DEKEY (ZEILE(4:72),IHELP,1,1,1,NLIMPS)
           GOTO 351
@@ -1137,7 +1149,11 @@ C   GENERAL SURFACE DATA
         IF (ZEILE(1:3).EQ.'CH1') THEN
           
 !  STORE CH1 LINES FOR OUTPUTING TO JSON FILE 
-           call eirene_push_string_stack(ch1_stack(i),zeile(1:72))
+!cym/cpg avoid type mismatch
+!           call eirene_push_string_stack(ch1_stack(i),zeile(1:72))
+           zeileCK=zeile           
+           call eirene_push_string_stack(ch1_stack(i),zeileCK(1:72))
+!cym/cpg end
 
           IF (NLIMPB >= NLIMPS) THEN
             CALL EIRENE_DEKEY (ZEILE(4:72),IGJUM1,0,NLIMPS,I,NLIMPS)
@@ -1150,7 +1166,11 @@ C   GENERAL SURFACE DATA
         ELSEIF (ZEILE(1:3).EQ.'CH2') THEN
         
 !  STORE CH2 LINES FOR OUTPUTING TO JSON FILE 
-          call eirene_push_string_stack(ch2_stack(i),zeile(1:72))
+!cym/cpg avoid type mismatch
+!          call eirene_push_string_stack(ch2_stack(i),zeile(1:72))
+          zeileCK=zeile
+          call eirene_push_string_stack(ch2_stack(i),zeileCK(1:72))
+!cym/cpg end
           IF (NLIMPB >= NLIMPS) THEN
             CALL EIRENE_DEKEY (ZEILE(4:72),IGJUM2,0,NLIMPS,I,NLIMPS)
           ELSE
@@ -1434,7 +1454,12 @@ C
       IF (ZEILE(1:1).NE.'*') THEN
 
 !  STORE REACTION LINES FOR OUTPUTING TO JSON FILE 
-        call eirene_push_string_stack(crs_stack,trim(zeile)) 
+!cym/cpg avoid type mismatch
+!        call eirene_push_string_stack(crs_stack,trim(zeile)) 
+         zeileCK=zeile
+         call eirene_push_string_stack(crs_stack,trim(zeileCK))
+!cym/cpg end
+
 C
 C  READ ONE REACTION FROM FILE "FILNAM" AT A TIME. Input card is on "ZEILE"
 C
@@ -2908,7 +2933,12 @@ C  IGJUM3 FLAG
      .                    (ZEILE(4:72),IGJUM3,0,NOPTIM,II,NLIMPB,NBITS)
             END IF
   821     CONTINUE
-          call eirene_push_string_stack(ch3_stack(i),zeile(1:72))
+  
+!cym/cpg avoid type mismatch
+!          call eirene_push_string_stack(ch3_stack(i),zeile(1:72))
+          zeileCK=zeile
+          call eirene_push_string_stack(ch3_stack(i),zeileCK(1:72))          
+!cym/cpg end
           GOTO 812
 C  TEMPERATURE
         ELSEIF (ZEILE(1:1).EQ.'T') THEN

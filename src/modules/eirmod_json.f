@@ -8,7 +8,10 @@
 !pb      USE EIRMOD_COMPRT, ONLY: IUNOUT
 
       use json_module
-     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
+!cym/cpg keep original names       
+!     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
+!cym, for reference : this would be equivalent to the initial code; works too for this file 
+!      use json_kinds, only: lk, rk, ik, ck
  
       IMPLICIT NONE
  
@@ -135,7 +138,7 @@
       character(*), intent(in) :: fname
       integer, intent(in) :: iblk, iunout
       logical :: status_ok
-      character(kind=CK,len=:),allocatable :: error_msg
+      character(kind=json_CK,len=:),allocatable :: error_msg
 
       njs = njs + 1
 
@@ -170,7 +173,11 @@
       integer, intent(in) :: iunout
       integer :: i
       character(200) :: fname
-      character(kind=CK,len=:), allocatable :: incname
+!cym/cpg ck -> json_ck
+      character(kind=json_CK,len=:), allocatable :: incname
+!cym - avoid type mismatch
+      character(kind=json_CK,len=1), parameter :: space=' '
+!cym            
       integer :: ind, j
       logical :: found
 
@@ -185,7 +192,10 @@
 
         if (found) then
 !  separate file found, get filename
-          ind = index(incname,' ')
+!cym gfortran reports type mismatch
+!cym          ind = index(incname,' ')
+          ind = index(incname,space)
+!cym
           if (ind == 0) then
             fname = incname
           else
@@ -440,7 +450,10 @@
 !******************************************************************************
 
       subroutine eirene_push_string_stack (stack, str)
-      character(*), intent(in) :: str
+!cym/cpg      
+!      character(*), intent(in) :: str
+      character(kind=json_CK,len=*), intent(in) :: str
+!cym/cpg end    
       type(string_stack), intent(inout) :: stack
       type(s_stack), pointer :: new_elem
 
