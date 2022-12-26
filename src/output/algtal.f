@@ -2,7 +2,7 @@ cdr:   evaluate algebraic expression of tallies, as specified in
 cdr:   input block 10c for volume tallies and in 10e for surface tallies
 cpb: Sept 16:  bug fix: case added for 2 constant operators next to each other
 
-c  revised, to accomodate more algebraic, analytic and differentiation operations.
+c  revised, to accommodate more algebraic, analytic and differentiation operations.
 c  1) get_intal.f :  pick input tally, return it on the fine grid, 
 c                    and also return the weighting function for averaging onto the
 C                    coarse (scoring) grid (if any)   

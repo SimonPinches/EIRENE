@@ -51,6 +51,8 @@ C
      .          FELD(1092)
       REAL(DP) :: PID180
       INTEGER :: I1, I2, I3, I4, I5, NRECL, IUN, IFILE, I, J, IFLR
+      character*256 :: filename
+      logical :: found
 C
       IFLR=NHD6
       IF (NHD6.GT.12) THEN
@@ -182,8 +184,32 @@ C
         CALL EIRENE_EXIT_OWN(1)
       END IF
 
+      inquire (FILE=trim(DBFNAME(IFILE)),exist=found)
+      if (found) then
+        filename=trim(DBFNAME(IFILE))
+      else
+        inquire (FILE=trim(master_path)//
+     .   '/modules/Eirene/Database/Surfacedata/TRIM/trim.dat',
+     .    exist=found)
+        if (found) then
+          filename=trim(master_path)//
+     .     '/modules/Eirene/Database/Surfacedata/TRIM/trim.dat'
+          WRITE (IUNOUT,*)
+     .     ' NO TRIM DATABASE FILE FOUND IN RUN DIRECTORY'
+          WRITE (IUNOUT,'(a)') ' REVERTING TO DEFAULT FILE : '//
+     .     trim(filename)
+          CALL EIRENE_LEER(1)
+        else
+          WRITE (IUNOUT,*) ' NO TRIM DATABASE FILE FOUND'
+          WRITE (IUNOUT,*) ' CALCULATION ABANDONED'
+          CALL EIRENE_EXIT_OWN(1)
+        end if
+      end if
+
       IUN=21+ifoff
-      OPEN (UNIT=IUN,FILE=DBFNAME(IFILE))
+      OPEN (UNIT=IUN,FILE=trim(filename))
+      REWIND IUN
+      READ (IUN,*,END=999)
       REWIND IUN
 C
 
@@ -234,4 +260,9 @@ C
 
 
       RETURN
+
+  999 WRITE (IUNOUT,*) ' TRIM DATABASE FILE FOUND EMPTY !'
+      WRITE (IUNOUT,*) ' CALCULATION ABANDONED'
+      CALL EIRENE_EXIT_OWN(1)
+
       END SUBROUTINE EIRENE_REFDAT

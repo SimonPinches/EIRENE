@@ -147,10 +147,12 @@ cdr   REAL(DP) :: timea
 
       INTEGER, SAVE :: NITER0, IUSROUT=0
       LOGICAL :: NLSRON_SAVE(NSTRA)
-      LOGICAL :: LRDJSON, LTEST
+      LOGICAL :: LRDJSON, LTEST, EX
       CHARACTER(10) :: CDATE, CTIME
       CHARACTER(80) :: MPI_LINE
       CHARACTER(420) :: ZEILE
+      CHARACTER(8) :: FILENAME
+      CHARACTER(3) :: FILENUMBER
 C
 C  DO NOT READ ANY INPUT, IF THIS IS NOT THE VERY FIRST ITERATION
 C  STEP IN THIS RUN. IITER IS THE ACTUAL ITERATION NUMBER
@@ -804,22 +806,33 @@ cdr despite NFILEL .ge. 2
 cdr  Do we need to fiddle with fort.13?
       if (nfilel.ne.0) then
 cdr  Yes.
-        OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
-        REWIND 13+ifoff
-        if (.not.nlshrt13) then
-          READ (13+ifoff,IOSTAT=IO13) LTEST
+        if (13+ifoff.ge.100) then
+          WRITE(FILENUMBER,'(I3)') 13+ifoff
         else
-          READ (13+ifoff,IOSTAT=IO13) RTEST
-        endif
-        if (io13.eq.0) write (iunout,*) 'INPUT.f: fort.13 found'
-        if (io13.ne.0) write (iunout,*) 'INPUT.f: fort.13 not found'
-        CLOSE (UNIT=13+ifoff)
+          WRITE(FILENUMBER,'(I2)') 13+ifoff
+        end if
+        FILENAME = FORT_LC//trim(FILENUMBER)
+        INQUIRE(file=trim(FILENAME),exist=EX)
+        IF (EX) THEN
+          OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
+          REWIND 13+ifoff
+          if (.not.nlshrt13) then
+            READ (13+ifoff,IOSTAT=IO13) LTEST
+          else
+            READ (13+ifoff,IOSTAT=IO13) RTEST
+          endif
+        END IF
+        if (io13.eq.0 .and. ex) then
+          write (iunout,*) 'INPUT.f: '//fort_lc//'13 found'
+        else
+          write (iunout,*) 'INPUT.f: '//fort_lc//'13 not found'
+        end if
+        if (ex) CLOSE (UNIT=13+ifoff)
       endif
 cdr
 
-
 cdr set plasma, plasma_deriv, and create fort.13
-      IF ((NFILEL.LE.1) .OR. NLSHRT13 .OR. IO13.NE.0) THEN
+      IF ((NFILEL.LE.1) .OR. NLSHRT13 .OR. IO13.NE.0 .or. .not.ex) THEN
 C
 C  SET PLASMA PARAMETERS AND PRIMARY SOURCE PARAMETERS
 C  FROM INPUT BLOCKS 5 AND 7, RESP.
@@ -1157,6 +1170,7 @@ c=======================================================================
       subroutine fix_logical_input(a,l)
 cxb: * For gfortran: it does not accept empty field for logicals
 c      Fill up empty spaces with 'f'
+      use eirmod_comprt
       implicit none
       character*(*) a
       integer l
@@ -1168,7 +1182,30 @@ c      Fill up empty spaces with 'f'
         if(mod(i,5).eq.0) j=j+1
       end do !}
 c      write (iunout,'(a,a)') 'zeile :',trim(a)   !###
-      end
+      return
+      end subroutine fix_logical_input
+
+c=======================================================================
+
+      subroutine fix_integer_input(a,l)
+cxb: * For pgf90: it does not accept empty field for integers
+c      Fill up empty spaces with '0'
+      use eirmod_comprt
+      implicit none
+      character*(*) a
+      integer l
+      integer i,j,cr
+      j=1
+      cr=index(a,char(13))
+      do i=1,l !{
+        if(a(j:j+5).eq.'     '.or.(cr.ge.j.and.cr.lt.j+6)) then !{
+          a(j:j+5) = '     0'
+        end if !}
+        j=j+6
+      end do !}
+c      write (iunout,'(a,a)') 'zeile :',trim(a)   !###
+      return
+      end  subroutine fix_integer_input
 
 c========================================================================
 

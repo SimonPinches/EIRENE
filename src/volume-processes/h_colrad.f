@@ -1,8 +1,3 @@
-cdr   mar   20: remove routines LAX, GALPD (linear alg. eqs. solver)
-cdr             and put them to "mathematics", for common use by all
-cdr             internal CR models.
-cdr   mar   19: change sequence in parameter list (pop_esc),
-cdr             to better sync with logic in He_Colrad.
 cdr   feb   18: sync with h_colrad, H,H2 CRM, Sawada-Fujimoto-Reiter
 cdr             cleaned up, more comments.
 cdr             added lopaque, ebeta, e_alpcr
@@ -94,7 +89,7 @@ C     USE EIRMOD_CCRM
 
 C--------- ATOMIC PARAMETER ------------------------------------------
       REAL(DP), INTENT(IN) :: TEMP, DENSEL
-      REAL(DP), INTENT(IN) :: Q_EXT(40), POP_ESC(40,40)
+      REAL(DP), INTENT(INOUT) :: Q_EXT(40), POP_ESC(40,40)
       logical lopaque,l_ext
 
       REAL(DP), INTENT(OUT) ::   ALPCR,    SCR,     SCR_EXT

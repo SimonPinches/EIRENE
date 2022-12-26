@@ -42,6 +42,7 @@ C
       WRITE (15+ifoff) ((IPARTC(J,I),J=1,MPARTT),I=1,IPRNL)
       CLOSE (UNIT=15+ifoff)
 C
+      RETURN
       END SUBROUTINE EIRENE_WRSNAP
 C
       SUBROUTINE EIRENE_RSNAP( ISTR )
@@ -95,7 +96,7 @@ cdr  make sure that iprnl in previous run was not larger than in present run.
 C
       RETURN
 C
-CXPB  SAFETY ADDED FOR CASE WHEN FORT 15 IS ABSENT
+CXPB  SAFETY ADDED FOR CASE WHEN FORT.15 IS ABSENT
   915 CONTINUE
       CLOSE (UNIT=15+ifoff)
       IPRNL=0

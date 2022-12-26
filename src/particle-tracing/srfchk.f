@@ -1,5 +1,5 @@
 C
-cdr  march 2019: bug fix: counter ICO was not transfered --> infinite loops possible
+cdr  march 2019: bug fix: counter ICO was not transferred --> infinite loops possible
 cdr  still not working properly, in case of trace ions: the discontinuity
 cdr  of the B-field at cell boundaries (and projection of velocity onto
 cdr  the B-field) may lead ambiguity wrt next cell and SG value

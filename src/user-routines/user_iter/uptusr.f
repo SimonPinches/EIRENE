@@ -49,8 +49,8 @@ CDR
 C
 CDR
 CDR  PROVIDE A RADIAL UNIT VECTOR PER CELL
-CDR  VPX,VPY NEEDED FOR PROJECTING PARTICLE VELOCITIES
-CDR  SAME FOR POLOIDAL UNIT VECTOR VRX,VRY
+CDR  VRX,VRY NEEDED FOR PROJECTING PARTICLE VELOCITIES
+CDR  SAME FOR POLOIDAL UNIT VECTOR VPX,VPY
 C
         if(allocated(vpx)) deallocate(vpx,vpy,vrx,vry)
         ALLOCATE (VPX(NRAD))
@@ -62,10 +62,10 @@ C
         VRX=0.
         VRY=0.
         DO I=1,NTRII
-          VPX(I)=PLNXTRI(i)    ! radial unit vector 
-          VPY(I)=PLNYTRI(i)    ! => bxperp, byperp
-          VRX(I)=PPLNXTRI(i)   ! poloidal unit vector
-          VRY(I)=PPLNYTRI(i)   ! => BXIN, BYIN TO BE NORMALIZED
+          VRX(I)=PLNXTRI(i)    ! radial unit vector 
+          VRY(I)=PLNYTRI(i)    ! => bxperp, byperp
+          VPX(I)=PPLNXTRI(i)   ! poloidal unit vector
+          VPY(I)=PPLNYTRI(i)   ! => BXIN, BYIN TO BE NORMALIZED
         END DO
 
 cdr  increments for tally number iadv
@@ -74,7 +74,7 @@ cdr  increments for tally number iadv
 !pb  mode ist to be used, only storing the rates for the latest used line
 !pb     IA0=MOD_ADDV        !  RADIAL CURRENT
         IA0=0               !  RADIAL CURRENT
-        IA1=IA0+NATMI+NMOLI !  RADIAL ENREGY FLUX
+        IA1=IA0+NATMI+NMOLI !  RADIAL ENERGY FLUX
         IA2=IA1+NATMI+NMOLI !  POLOIDAL CURRENT
         IA3=IA2+NATMI+NMOLI !  POLOIDAL ENERGY FLUX
         IA4=IA3+NATMI+NMOLI !  FLUX (ANGLE-AVERAGED)
@@ -105,7 +105,7 @@ cdr       IF (LGVAC(IRD,0)) GOTO 20   ! score neutral fluxes also in Vac. region
 C
 CDR
 C  particle current, radial component  (CM/SEC)
-          VR=(VELX*VPX(IRD)+VELY*VPY(IRD))*VEL
+          VR=(VELX*VRX(IRD)+VELY*VRY(IRD))*VEL
           if(ia0+iatm.gt.nadv) goto 20
 !$OMP ATOMIC
           ADDV(IA0+IATM,IRD)=ADDV(IA0+IATM,IRD)+WTR*VR
@@ -113,7 +113,7 @@ C  particle current, radial component  (CM/SEC)
 !$OMP ATOMIC
           ADDV(IA1+IATM,IRD)=ADDV(IA1+IATM,IRD)+WTR*VR*E0
 C  particle current, poloidal component (CM/SEC)
-          VP=(VELX*VRX(IRD)+VELY*VRY(IRD))*VEL
+          VP=(VELX*VPX(IRD)+VELY*VPY(IRD))*VEL
           if(ia2+iatm.gt.nadv) goto 20
 !$OMP ATOMIC
           ADDV(IA2+IATM,IRD)=ADDV(IA2+IATM,IRD)+WTR*VP
@@ -142,7 +142,7 @@ CDR
 C
           IF (LGVAC(IRD,0)) GOTO 200
 C  particle current, radial component  (CM/SEC)
-          VR=(VELX*VPX(IRD)+VELY*VPY(IRD))*VEL
+          VR=(VELX*VRX(IRD)+VELY*VRY(IRD))*VEL
           if(ia0+natmi+imol.gt.nadv) goto 200
 !$OMP ATOMIC
           ADDV(NATMI+IMOL,IRD)=ADDV(NATMI+IMOL,IRD)+WTR*VR
@@ -150,7 +150,7 @@ C  particle current, radial component  (CM/SEC)
 !$OMP ATOMIC
           ADDV(IA1+NATMI+IMOL,IRD)=ADDV(IA1+NATMI+IMOL,IRD)+WTR*VR*E0
 C  particle current, poloidal component (CM/SEC)
-          VP=(VELX*VRX(IRD)+VELY*VRY(IRD))*VEL
+          VP=(VELX*VPX(IRD)+VELY*VPY(IRD))*VEL
           if(ia2+natmi+imol.gt.nadv) goto 200
 !$OMP ATOMIC
           ADDV(IA2+NATMI+IMOL,IRD)=ADDV(IA2+NATMI+IMOL,IRD)+WTR*VP

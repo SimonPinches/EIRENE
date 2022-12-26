@@ -3,7 +3,7 @@ cdr           tbd: photon routines, static loop, logatm, mol, ion in static loop
 cdr Oct. 17   minor sync with folion
 cdr           started: implementation of QSS branch: folstat_neut.f  not ready
 
-cdr Sept.17   conditional exp. estim: external function funexp, rather than inline.
+cdr Sept.17   conditional exp. est.: external function funexp, rather than inline.
 cdr           PR = prob to reach the next cell boundary.
 cdr           In case of geometrical multi-steps within one macro step
 cdr           (NCOU.GT.1) use PR rather than AX(2)=1, when leaving the NCOU loop
@@ -119,7 +119,7 @@ C
      .          GENRC, PHIC, WEIGHC, ZLI, XLI, YLI, T, ZTS,
      .          ZMFP, ZEP1, ZLOG, ZTST, ZINT1, ZINT2, Z0S, TIMES,
      .          X0S, Y0S, PHIS, DIST, ZTC, PSAVE, TSAVE,
-     .          EX, EXPM, FF, WMINC_LOCAL, PR, PPR,   ! cond exp. est
+     .          EX, EXPM, FF, WMINC_LOCAL, PR, PPR,   ! cond. exp. est.
      .          EIRENE_FPATH,
      .          SCOS_NEW
 ctk      REAL(DP), EXTERNAL :: RANF_EIRENE, EIRENE_FUNEXP
@@ -596,7 +596,7 @@ c
 C  PROB. FOR REACHING NEXT CELL BOUNDARY
             AX(2)=AX(2)*EXPM
             PR=AX(2)
-C  COND. EXP.EST: STOP BECAUSE OF WMINC CRITERION
+C  COND. EXP. EST.: STOP BECAUSE OF WMINC CRITERION
             IF (.NOT.NLTRJ.AND.(AX(2).LE.WMINC_LOCAL)) THEN
 C    RESTORE POINT OF COLLISION ?
               IF (JCOL.NE.0) GOTO 213

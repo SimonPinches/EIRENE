@@ -80,6 +80,7 @@ C> Recommended number of test particles for next MC cycle.
       
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
+      RETURN
       END SUBROUTINE EIRENE_BROADCAST_CAI
 
       END MODULE EIRMOD_CAI

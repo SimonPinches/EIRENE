@@ -92,7 +92,7 @@ cdr  Notation: rpp%dblpol is a single parameter polynomial?
           EIRENE_CROSS = RES*FACT
 
         ELSE IF (IFTFLG(K,1) == 3) THEN
-cdr Near threshold and high energy Born-Bethe asymptotically correct cross section fit
+cdr Near threshold and high energy Born-Bethe asymptotically correct cross-section fit
 
 cdr  XI: threshold. ie. E>XI necessarily for this fit.
           E = EXP(AL)

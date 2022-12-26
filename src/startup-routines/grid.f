@@ -390,16 +390,17 @@ C
             WRITE (iunout,*) ' POLYGON NO. J = ',J
             DO 156 K=1,NPPLG
               WRITE (iunout,*) 'IA = ',NPOINT(1,K),' IE = ',NPOINT(2,K)
-              WRITE (iunout,'(/1X,1P,6E12.4)') (XPOL(J,I),YPOL(J,I),
+              WRITE (iunout,'(1X,1P,6E12.4)') (XPOL(J,I),YPOL(J,I),
      .                                   I=NPOINT(1,K),NPOINT(2,K))
+              CALL EIRENE_LEER(1)
   156       CONTINUE
+            CALL EIRENE_LEER(1)
   155     CONTINUE
-          CALL EIRENE_LEER(2)
           WRITE (iunout,*)
      .      'ARCLENGTH BGL(I,K) OF RADIAL SURFACES AT Z=0.'
           DO 153 I=1,NR1ST
             WRITE (iunout,*) 'I = ',I
-            WRITE (iunout,'(/1X,1P,6E12.4)') (BGL(I,K),K=1,NRPLG)
+            WRITE (iunout,'(1X,1P,6E12.4)') (BGL(I,K),K=1,NRPLG)
             CALL EIRENE_LEER(1)
   153     CONTINUE
         ENDIF
@@ -1004,7 +1005,9 @@ C
         IF (NLTRA) THEN
           CALL EIRENE_MASR2('ROA,RMTOR=      ',ROA,RMTOR)
           IF (.NOT.NLTOR) THEN
+            CALL EIRENE_LEER(1)
             CALL EIRENE_MASRR1 (' N,  ZSURF ',ZSURF,NTTRA,3)
+            CALL EIRENE_LEER(1)
             CALL EIRENE_MASRR1 (' N,  ZZONE ',ZZONE,NTTRAM,3)
           ENDIF
           CALL EIRENE_LEER(2)

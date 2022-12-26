@@ -40,7 +40,7 @@
       !c***    emolrad :   power radiated due to molecules
       !c***    eionrad :   power radiated due to molecular ions
       !c*** Surface data:
-      !c***    wldnek  :   heat transferred with neutrals
+      !c***    wldnek  :   net kinetic energy deposited by neutrals
       !c***    wldnep  :   potential energy released by neutrals
       !c***    wldna   :   flux of atoms impinging onto the surface
       !c***    ewlda   :   their average energy
@@ -653,6 +653,32 @@ C
       !c      write (iunout,*) '%%% wneutrals_save: istra = ',istra
       !c*** Calculate the totals (stratum 0)
       !c
+
+      ! Zero out arrays for inactive strata
+      do k=1,nstrai
+         if (.not. nlsron(k)) then
+            wldnek(:,k) = 0._DP
+            wldnep(:,k) = 0._DP
+            wldpeb(:,k) = 0._DP
+            wldspt(:,k) = 0._DP
+            ewlda(:,:,k) = 0._DP
+            wldna(:,:,k) = 0._DP
+            wldra(:,:,k) = 0._DP
+            wldpa(:,:,k) = 0._DP
+            wldspta(:,:,k) = 0._DP
+            ewldm(:,:,k) = 0._DP
+            wldnm(:,:,k) = 0._DP
+            wldrm(:,:,k) = 0._DP
+            wldpm(:,:,k) = 0._DP
+            wldsptm(:,:,k) = 0._DP
+            wldpp(:,:,k) = 0._DP
+            eneutrad(:,:,:,k) = 0.0_DP
+            emolrad(:,:,:,k) = 0.0_DP
+            eionrad(:,:,:,k) = 0.0_DP
+            edissml(:,:,:,k) = 0.0_DP
+         end if
+      end do
+
       sptsum=0.0_DP
       do i=1,nlimps
         wldnek(i,0)=0.0_DP

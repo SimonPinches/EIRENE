@@ -56,9 +56,9 @@ C  RETURNS:
 C    MODCOL(3,...)
 C    TABCX3(IRCX,NCELL,...)  1/s per incident test particle
 C    EPLCX3(IRCX,NCELL,...) eV/s per incident test particle
-C    DEFCX(IRCX)  eV/(cm**2/s**), log of conversion of v_rel**2 to eV scale wrt. MASSP (cross section projectile)
-C    EEFCX(IRCX)  eV/(cm**2/s**), log of conversion of v_beam**2 to eV scale wrt. MASST (cross section target)
-C    ADDCX(IRCX,IPL)  log of conversion from TIIN(IPL) to MASSP (projectile in cross section, background field in rate coeff).
+C    DEFCX(IRCX)  eV/(cm**2/s**), log of conversion of v_rel**2 to eV scale wrt. MASSP (cross-section projectile)
+C    EEFCX(IRCX)  eV/(cm**2/s**), log of conversion of v_beam**2 to eV scale wrt. MASST (cross-section target)
+C    ADDCX(IRCX,IPL)  log of conversion from TIIN(IPL) to MASSP (projectile in cross-section, background field in rate coeff).
 C    IESTCX(IRCX,...)
 C
 C  USED INTERNALLY FOR ISOTOPIC MASS SCALING:

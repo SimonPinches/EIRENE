@@ -147,9 +147,9 @@ c  data for virt. species ipls
 
 cdr
 c   Here we should add a safety:
-c   The rates stored below should refer to a virtual bulk species reactants
+c   The rates stored below should refer to virtual bulk species reactants
 c   ipls= npls_fix+1,...,npls
-c   In some cases, however, this virtual bulk species may be an intermediate
+c   In some cases, however, these virtual bulk species may be an intermediate
 c   reactant only, i.e.: not stored.
 c   Then only the final bulk reactant in a multi-step
 c   process is retained. Example: photon excitation driven
@@ -202,6 +202,7 @@ cdr  some diagnostics, if trcfle.....
       CLOSE (UNIT=113)
 #endif
 
+      RETURN
       END SUBROUTINE EIRENE_WRPLAM_SHRT
 C .......................................................................
 
@@ -237,8 +238,12 @@ C ........................................................................
       FILENAME = FORT_LC//trim(FILENUMBER)
       INQUIRE(file=trim(FILENAME),exist=EX)
       IF (EX) THEN
+#ifdef CRAY
+        OPEN (UNIT=13+ifoff,FORM='UNFORMATTED',IOSTAT=IO)
+#else
         OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED',
      o        STATUS='OLD',IOSTAT=IO)
+#endif
         write (iunout,*) 'RPLAM_SHRT called from ',calledfrom
         IF(IO.NE.0) THEN
           CALL EIRENE_LEER(1)
@@ -246,7 +251,7 @@ C ........................................................................
      w     'ERROR IN RPLAM_SHRT: CANNOT READ ', FORT, '13'
           CALL EIRENE_LEER(1)
           CLOSE (UNIT=13+ifoff)
-          RETURN
+          GOTO 200
         END IF
       ELSE
         GOTO 200
@@ -329,6 +334,9 @@ cdr  next: read the NFLA_VIRT collisional process data related to these virtual 
       IF (ALLOCATED(TAB_STORE) .AND. SIZE(TAB_STORE,1) < NREA_VIRT) THEN
         DEALLOCATE (TAB_STORE)
         DEALLOCATE (E_STORE)
+      END IF
+
+      IF (ALLOCATED(LG_STORE) .AND. SIZE(LG_STORE,2) < NFLA_VIRT) THEN
         DEALLOCATE(LG_STORE)
       END IF
 
@@ -336,13 +344,19 @@ cdr  next: read the NFLA_VIRT collisional process data related to these virtual 
 #ifdef F2003
         ALLOCATE (TAB_STORE(NREA_VIRT,NRAD,9), SOURCE=0._DP)
         ALLOCATE (E_STORE(NREA_VIRT,NRAD,9), SOURCE=0._DP)
-        ALLOCATE (LG_STORE(NRAD,NFLA_VIRT), SOURCE=.FALSE.)
 #else
         ALLOCATE (TAB_STORE(NREA_VIRT,NRAD,9))
         ALLOCATE (E_STORE(NREA_VIRT,NRAD,9))
-        ALLOCATE (LG_STORE(NRAD,NFLA_VIRT))
         TAB_STORE = 0._DP
         E_STORE = 0._DP
+#endif
+      END IF
+
+      IF (.NOT.ALLOCATED(LG_STORE)) THEN
+#ifdef F2003
+        ALLOCATE (LG_STORE(NRAD,NFLA_VIRT), SOURCE=.FALSE.)
+#else
+        ALLOCATE (LG_STORE(NRAD,NFLA_VIRT))
         LG_STORE = .FALSE.
 #endif
       END IF

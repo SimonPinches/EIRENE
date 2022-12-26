@@ -75,4 +75,4 @@ C of the allocated memory:
       WRITE (IUNMEM,'(A,T25,I15)') ' Nachbar-Liste ',MCLSTR*8
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_SUCHE_NACHBARN

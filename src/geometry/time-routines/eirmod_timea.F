@@ -557,7 +557,7 @@ c
 
       ELSE  !   NOT NLOCTREE
 c  old default: ALL surfaces are outside the octree procedure,
-c               i.e. OCTREE optimization is in-active
+c               i.e. OCTREE optimization is inactive
         if (.not.allocated(NOTOCSURFS)) ALLOCATE(NOTOCSURFS(NLIMI))
         DO J=1,NLIMI
           NOTOCSURFS(J) = J

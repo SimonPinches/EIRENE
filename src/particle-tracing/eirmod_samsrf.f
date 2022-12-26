@@ -154,7 +154,7 @@ C
 c  source is on radial (x-) grid surface x= const. r= const, etc...
 c  the poloidal range of source region should be on ingrd..(...,2),
 c  not on ingrd..(...,1)
-c  sample 2nd and 3rd coordinate, evalute 1st coordinate
+c  sample 2nd and 3rd coordinate, evaluate 1st coordinate
           IF (INGRDA(ISRFS,ISTRAI,1).NE.INGRDE(ISRFS,ISTRAI,1)) THEN
             WRITE (iunout,*) 'WARNING FROM SAMSF0, ISTRAI= ',ISTRAI
             WRITE (iunout,*) 'NEW INPUT FOR INGRDA,INGRDE....'
@@ -378,7 +378,7 @@ cdr  i.e. no DELTA_Z factors here.
                 DO IS=1,4
                   IF (INMTIT(IS,ITET) == INDSRF) THEN
 cdr set irstep, ipstep and cumulated variable RRSTEP, purely geometrical.
-cdr no projection to flux tube cross section is done.
+cdr no projection to flux tube cross-section is done.
                     CALL EIRENE_TET_STEP (ISTEP,ITET,IS,K)
                   END IF
                 END DO

@@ -229,7 +229,7 @@ C  NOW REDUCED VELOCITY: GUIDING CENTRE APPROXIMATION
 c  APPROXIMATION A)
 c  use B field line as trajectory
 c  VLXPAR,VLYPAR,VLZPAR gives the direction of the full parallel velocity
-c  in Cartesian coordinates - absolute value is not correct!!!
+c  in cartesian coordinates - absolute value is not correct!!!
       VLXPAR=SIGPAR*BBX
       VLYPAR=SIGPAR*BBY
       VLZPAR=SIGPAR*BBZ

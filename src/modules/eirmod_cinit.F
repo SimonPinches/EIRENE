@@ -207,7 +207,6 @@ cdr units used for input of background profiles: V, B, Ti
       CALL EIRENE_INIT_CINIT
 
       RETURN
-
       END SUBROUTINE EIRENE_ALLOC_CINIT
 
 
@@ -416,6 +415,7 @@ csw
 
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
+      RETURN
       END SUBROUTINE EIRENE_BROADCAST_CINIT
 
       END MODULE EIRMOD_CINIT

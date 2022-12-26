@@ -485,8 +485,8 @@ C
         DO IPRT=1,NTGPRT(IT)
           JTRG=JTRG+1
           RCPRT_EIR(JTRG)=NTGPRT(IT)
-          RCSPI_EIR(JTRG)=NSPZI(IT,IPRT)
-          RCSPE_EIR(JTRG)=NSPZE(IT,IPRT)
+          RCSPI_EIR(JTRG)=MAX(1,NSPZI(IT,IPRT))
+          RCSPE_EIR(JTRG)=MIN(NFLB,NSPZE(IT,IPRT))
           IF (NIXY(IT,IPRT).EQ.1) THEN
             RCPOS_EIR(JTRG)=NDT(IT,IPRT)-1+MAX(0,NINCT(IT,IPRT))
             DO IPLG = 2, NPPLG
@@ -1919,9 +1919,9 @@ C
       SUBROUTINE EIRENE_IF1COP(IENTRY)
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: IENTRY
-      INTEGER :: IN, IR, IP, IT, IX, IY, IXM1, IFL, IPLSV, IPLSTI, JPLS,
+      INTEGER :: IN, IT, IX, IY, IXM1, IFL, IPLSV, IPLSTI, JPLS,
      I           IAIN, IREAD, ISTRAI, ITRI, IYM1
-      REAL(DP) :: UUBC, VVBC, WWBC, BX, BY, BZ, BN, DX, DY, DD
+      REAL(DP) :: UUBC, VVBC, WWBC, BX, BY, BZ, BN
       REAL(DP) :: RRBC, UDBC, UPBC, VDBC
       REAL(DP) :: DUMMY(0:NDXP,0:NDYP)
 
@@ -2292,10 +2292,10 @@ C
 CDR  set density from B2 array DNIB, for each fluid
 CDR  set plasma flow velocity field from B2 arrays UPB (parallel velocity)
 c  without drifts:
-c  upb * pitch: poloidal velocity (i.e. Cartesian x,y direction).
+c  upb * pitch: poloidal velocity (i.e. cartesian x,y direction).
 c  poloidal field direction is given by that of the poloidal cell face PU..(in),
 C  i.e. along a flux surface. (PU(...) is cell-centered)
-c  and upb*(1-pitch^2): toroidal velocity  (i.e. Cartesian z direction (nltrz) or
+c  and upb*(1-pitch^2): toroidal velocity  (i.e. cartesian z direction (nltrz) or
 c                                                toroidal phi direction (nltra)
 c  sign of flowfield follows the sign of poloidal grid in B2.
 c
@@ -2573,56 +2573,6 @@ cdr                        evaluated on computational grid. See Manual.
         ENDIF
  2300 CONTINUE
 C
-
-csw 04dec2014 collecting normals for B2.5/B2 cells per triangle
-      write (iunout,*) 'IF1COP: collecting normals'
-      write (iunout,*) 'CDR   : probably redundant code now '
-      call eirene_leer(1)
-
-      if(allocated(plnxtri)) then
-        deallocate(plnxtri, plnytri, pplnxtri, pplnytri)
-      endif
-      allocate(plnxtri(ntrii))
-      allocate(plnytri(ntrii))
-      allocate(pplnxtri(ntrii))
-      allocate(pplnytri(ntrii))
-! in case of "cycle" in do-loop below values may be uninitialized. Therefore,
-      plnxtri = 0._dp
-      plnytri = 0._dp
-      pplnxtri = 0._dp
-      pplnytri = 0._dp
-      do it=1,ntrii
-        ix=ixtri(it)
-        iy=iytri(it)
-        ir = iy
-        ip = ix
-        if (ix<=0 .or. iy<=0) cycle
-
-!  set radial unit vector  e_r:
-!  set poloidal unit vector from underlying polygon grid, then take normal
-!  to that vector to be the radial unit vector
-        dx=xpol(ir,ip+1) - xpol(ir,ip)
-        dy=ypol(ir,ip+1) - ypol(ir,ip)
-        dd=sqrt(dx**2 + dy**2)+1.d-60
-c  normal to that vector dx,dy. But: orientation ???
-        plnxtri(it) = dy/dd
-        plnytri(it) =-dx/dd
-
-!  set poloidal unit vector  e_p:
-        dx=xpol(ir+1,ip) - xpol(ir,ip)
-        dy=ypol(ir+1,ip) - ypol(ir,ip)
-        dd=sqrt(dx**2 + dy**2)+1.d-60
-        if(dy .lt. 1.d-12) then
-          pplnxtri(it) = 0.d0
-          pplnytri(it) = 1.d0
-        else
-          pplnxtri(it) = 1.d0
-          pplnytri(it) =-dx/dy
-        endif
-        dd=(pplnxtri(it)**2 + pplnytri(it)**2)+1.d-60
-        pplnxtri(it)=pplnxtri(it)/dd
-        pplnytri(it)=pplnytri(it)/dd
-      enddo !it
 c
 c.......................................................................
 C
@@ -2690,34 +2640,15 @@ csw 04dec2014 collecting normals for B2.5/B2 cells per triangle
         pplnxtri= 0._dp
         pplnytri= 0._dp
         do it=1,ntrii
-           ix=ixtri(it)
-           iy=iytri(it)
-           if (ix<=0 .or. iy<=0) cycle
-
-           dx=xpol(iy,ix+1) - xpol(iy,ix)
-           dy=ypol(iy,ix+1) - ypol(iy,ix)
-           dd=sqrt(dx**2 + dy**2)+1.d-60
-!pb           plnxtri(it) = dx/dd
-!pb           plnytri(it) =-dy/dd
-c  normal to that vector dx,dy. But: orientation ???
-        plnxtri(it) = dy/dd
-        plnytri(it) =-dx/dd
-
-           dx=xpol(iy+1,ix) - xpol(iy,ix)
-           dy=ypol(iy+1,ix) - ypol(iy,ix)
-           dd=sqrt(dx**2 + dy**2)+1.d-60
-           if(dy .lt. 1.d-12) then
-              pplnxtri(it) = 0.d0
-              pplnytri(it) = 1.d0
-           else
-              pplnxtri(it) = 1.d0
-              pplnytri(it) =-dx/dy
-           endif
-           dd=(pplnxtri(it)**2 + pplnytri(it)**2)+1.d-60
-           pplnxtri(it)=pplnxtri(it)/dd
-           pplnytri(it)=pplnytri(it)/dd
+          ix=ixtri(it)
+          iy=iytri(it)
+          if (ix<=0 .or. iy<=0) cycle
+          in=iy+(ix-1)*nr1tal_save
+          plnxtri(it) =-puy(in)
+          plnytri(it) = pvy(in)
+          pplnxtri(it)= pux(in)
+          pplnytri(it)=-puy(in)
         enddo !it
-
       endif
 
       RETURN
@@ -2736,7 +2667,7 @@ C
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: ITRG
       INTEGER, ALLOCATABLE :: NUMTRI(:), NUMSID(:)
-      INTEGER :: I, ISP, IT, ITARG, IX, IY, IN, IS, IS1, IPRT, I34,
+      INTEGER :: ISP, IT, ITARG, IX, IY, IN, IS, IS1, IPRT, I34,
      .           NEM, NPBC, NPEC, JPLS, IPL, IPLV, IPLSV, MTRI, IFL,
      .           IACT, IG, IGITT, IIPLS, IEPLS, IPLSTI, ICOU, IANF,
      .           ITRI
@@ -2758,7 +2689,7 @@ C
 
       CHARACTER(6) :: CITARG
       CHARACTER(1) :: NSEW
-      LOGICAL :: L1, L2, EX
+      LOGICAL :: L1, L2
 C
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       REAL(DP), EXTERNAL :: EIRENE_STEP, EIRENE_EMAXW
@@ -2859,7 +2790,6 @@ C  TEST WHETHER TRIANGLE BELONGS TO QUADRANGULAR CELLS ALONG THE TARGET
                 par = vtrix(is,it)*dypol-vtriy(is,it)*dxpol
 cdr  scale to relative units of triangle coordinates
                 par=par/dd
-
                 if (abs(par) < 5*eps5) then
                   is1 = is + 1
                   if (is1 > 3) is1 = 1
@@ -3108,8 +3038,6 @@ c
                 par = vtrix(is,it)*dypol-vtriy(is,it)*dxpol
 cdr  scale to relative units of triangle coordinates
                 par=par/dd
-
-
                 if (abs(par) < 5.E-3_dp) then
                   is1 = is + 1
                   if (is1 > 3) is1 = 1
@@ -3401,7 +3329,11 @@ C
         SORIFL(1,ITARG)=NIFLG(ITARG,1)
         SORWGT(1,ITARG)=1.
 C  USE ENERGY FLUXES SPECIFIED HERE, IE., SORENE, SORENI ARE REDUNDANT
-        NEMODS(ITARG)=7
+        IF (NIXY(ITARG,1).EQ.1) THEN      ! THIS IS A E/W SURFACE
+          NEMODS(ITARG)=7                 ! INCLUDE SHEATH ACCELERATION
+        ELSE IF (NIXY(ITARG,1).EQ.2) THEN ! THIS IS A N/S SURFACE
+          NEMODS(ITARG)=6                 ! DO NOT INCLUDE SHEATH ACCELERATION
+        END IF
         NAMODS(ITARG)=1
 C
 C  USE POLYGON MESH, IE., SORAD1,...,SORAD4 ARE REDUNDANT.
@@ -3411,27 +3343,6 @@ C
 C  VELOCITY SPACE DISTRIBUTION
         SORCOS(ITARG)=1.
         SORMAX(ITARG)=0.
-cank-080229{
-        if(ntgprt(itarg).gt.1) then !{
-          it=nemod(itarg,1)
-          ex=.false.
-          do i=2,ntgprt(itarg) !{
-            ex=ex .or. it.ne.nemod(itarg,i)
-          end do !}
-          if(ex) then !{
-            write (iunout,*) 'infcop: different values of NEMOD ',
-     ,          'found for stratum ',itarg
-            if(it.eq.0) then !{
-              write (iunout,'(a,1p,e12.3)') ' NEMODS= ',nemods(itarg)
-            else !}{
-              write (iunout,'(a,1p,e12.3)') ' The first value is used ',
-     ,          'NEMODS= ',it
-            end if !}
-          end if !}
-          if(it.ne.0) nemods(itarg)=it
-        end if !}
-cank}
-C
 C
 C  DO 2028 LOOP FROM SUBR. INPUT
         THMAX=MAX(0._DP,MIN(PIHA,SORMAX(ITARG)*DEGRAD))

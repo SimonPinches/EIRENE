@@ -329,4 +329,4 @@ c  re-initialize gr plot software for next picture
       call grnxtf
 
       return
-      END
+      END SUBROUTINE EIRENE_PLMESH

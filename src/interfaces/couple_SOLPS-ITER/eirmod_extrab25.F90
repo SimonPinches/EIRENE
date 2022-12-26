@@ -126,7 +126,7 @@
       character*4, intent(in) :: edition
       !c*** label for fort.44 file
       integer, parameter :: jvft44=20201006, jvft46=20170930
-      character*31 :: get_Eir_hash
+      character*32 :: get_Eir_hash
       external get_Eir_hash
 
       character*12 :: filename
@@ -143,7 +143,7 @@
       write (iunout,*) 'nred ',nred
       OPEN (UNIT=44,FILE=trim(FILENAME),ACCESS='SEQUENTIAL',FORM='FORMATTED') ! added 19980603 dpc
       rewind (44)
-      WRITE(44,'(i4,2x,i4,2x,i8,2x,a31)') ndxa-nred,ndya,jvft44,get_Eir_hash()
+      WRITE(44,'(i4,2x,i4,2x,i8,2x,a32)') ndxa-nred,ndya,jvft44,get_Eir_hash()
       write(44,'(i4,2x,i4,2x,i4)') natmi,nmoli,nioni
       !cank
       do jatm=1,natmi
@@ -478,7 +478,7 @@
         OPEN (UNIT=46,FILE=trim(FILENAME),ACCESS='SEQUENTIAL',FORM='FORMATTED')
         rewind (46)
 
-        write(46,'(i6,2x,i8,2x,a31)') ntrii, jvft46, get_Eir_hash()
+        write(46,'(i6,2x,i8,2x,a32)') ntrii, jvft46, get_Eir_hash()
         write(46,'(i4,2x,i4,2x,i4)') natmi, nmoli, nioni
         do jatm=1,natmi
           write(46,*) texts(jatm+nsph)

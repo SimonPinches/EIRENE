@@ -213,7 +213,7 @@ c  integer arrays
       
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
+      RETURN
       END SUBROUTINE EIRENE_BROADCAST_CGEOM
       
-
       END MODULE EIRMOD_CGEOM

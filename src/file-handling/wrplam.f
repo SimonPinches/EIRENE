@@ -26,7 +26,7 @@ C  trcfle:  confirm writing on printout unit IUNOUT
 cdr  NLSHRT13 : VIA COMMON CLOGAU. MEANING: write "long" or "short" version of fort.13
 C                 DEFAULT: FALSE,
 cdr  but, e.g.:
-cdr  NLSHRT13 : SET TRUE IN INFCOP, COUPLE_SOLPS_ITER. REDUCED SIZE FORT 13.
+cdr  NLSHRT13 : SET TRUE IN INFCOP, COUPLE_SOLPS_ITER. REDUCED SIZE FORT.13.
       USE EIRMOD_PARMMOD
       USE EIRMOD_CLOGAU, ONLY: NLSHRT13
 

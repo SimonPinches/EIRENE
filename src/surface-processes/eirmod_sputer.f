@@ -15,7 +15,7 @@
      .                         E0,VELX,VELY,VELZ,CRTX,CRTY,CRTZ
       USE EIRMOD_CLGIN, only:  ZNML,ZNCL,EWALL,RECYCS,RECYCC,ESPUTC,
      .                         IGJUM0, ISPUT, ILIIN, NSTSI, LCHSPNWL
-      USE EIRMOD_CINIT, only: NDBNAMES, DBHANDLE, DBFNAME
+      USE EIRMOD_CINIT, only: NDBNAMES, DBHANDLE, DBFNAME, MASTER_PATH
       USE EIRMOD_CPES, only: MY_PE, NPRS
       USE EIRMOD_RANF, ONLY: RANF_EIRENE
       USE EIRMOD_REFUSR, ONLY: EIRENE_SPTUSR_INIT, EIRENE_SPTUSR
@@ -255,6 +255,8 @@ C
       INTEGER :: IETF(0:11)
       INTEGER :: IFILE, I28, I11, IT, ISP, IAT, IP, IIO, IPL, 
      .           ILIM, NT, IA, NA, ISTSI, ISURF
+      character*256 :: filename
+      logical :: found
 
 
 C
@@ -283,8 +285,30 @@ C
           CALL EIRENE_EXIT_OWN(1)
         END IF
 
+        inquire (FILE=trim(DBFNAME(IFILE)),exist=found)
+        if (found) then
         OPEN (UNIT=33,FILE=DBFNAME(IFILE))
-        READ(33,*)
+        else
+          inquire (FILE=trim(master_path)//
+     .     '/modules/Eirene/Database/Surfacedata/SPUTER',
+     .      exist=found)
+          if (found) then
+            filename=trim(master_path)//
+     .       '/modules/Eirene/Database/Surfacedata/SPUTER'
+            WRITE (IUNOUT,*)
+     .       ' NO SPUTTERING DATABASE FILE FOUND IN RUN DIRECTORY'
+            WRITE (IUNOUT,'(a)') ' REVERTING TO DEFAULT FILE : '//
+     .       trim(filename)
+            CALL EIRENE_LEER(1)
+            OPEN (UNIT=33,FILE=trim(filename))
+          else
+            WRITE (IUNOUT,*) ' NO SPUTTERING DATABASE FILE FOUND'
+            WRITE (IUNOUT,*) ' CALCULATION ABANDONED'
+            CALL EIRENE_EXIT_OWN(1)
+          end if
+        end if
+
+        READ(33,*,END=999)
         READ(33,*)
         READ(33,*)
         READ(33,*)
@@ -473,7 +497,11 @@ C       ENDDO
       ENDIF
 C
       CALL EIRENE_SPTUSR_INIT
+      RETURN
 C
+  999 WRITE (IUNOUT,*) ' SPUTTERING DATABASE FILE FOUND EMPTY !'
+      WRITE (IUNOUT,*) ' CALCULATION ABANDONED'
+      CALL EIRENE_EXIT_OWN(1)
       END SUBROUTINE EIRENE_SPUTR0
 C
 C

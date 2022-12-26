@@ -2109,6 +2109,7 @@ C  variances for sum over strata
       
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
+      RETURN
       END SUBROUTINE EIRENE_BROADCAST_CESTIM
 
       END MODULE EIRMOD_CESTIM

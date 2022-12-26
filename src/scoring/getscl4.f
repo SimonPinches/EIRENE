@@ -147,9 +147,12 @@ cdr  (direct) primary sources, and secondaries from primary bulk particles
         write (iunout,'(A,ES14.7)') 'WTOTI   ',WTOTI(0,ISTRA)
       END IF
 
-      CALL EIRENE_MASAGE('GETSCL4                             ')
-      CALL EIRENE_MASRR1('MATRIX    :',P,4*4,4)
-      CALL EIRENE_MASRR1('RHS VECTOR:',B,4,4)
+      IF (TRCSCL) THEN
+        CALL EIRENE_MASAGE('GETSCL4                             ')
+        CALL EIRENE_MASRR1('MATRIX    :',P,4*4,4)
+        CALL EIRENE_MASRR1('RHS VECTOR:',B,4,4)
+        CALL EIRENE_LEER(1)
+      END IF
 C
       ICOL=0
       IROW=0
@@ -554,6 +557,13 @@ C
       CALL EIRENE_MASR4 ('FATM,FMOL,FION,FPHOT            ',
      .             FC(1),FC(2),FC(3),FC(4))
       CALL EIRENE_LEER(2)
+
+      IF (TRCSCL) THEN
+        CALL EIRENE_MASAGE('GETSCL4                             ')
+        CALL EIRENE_MASRR1('MATRIX    :',P,4*4,4)
+        CALL EIRENE_MASRR1('RHS VECTOR:',B,4,4)
+        CALL EIRENE_LEER(1)
+      END IF
 C
 CNR IF ANY OF THESE FACTORS ARE NEGATIVE, KEEP AT 1.
 CNR CAN HAPPEN IF BALANCES ARE BADLY BROKEN BY 
@@ -872,10 +882,12 @@ C
           END IF
         END DO
 C
-        CALL EIRENE_MASRR1('MATRIX    :',PP,NNP*NNP,NNP)
-        CALL EIRENE_MASRR1('RHS VECTOR:',B,NNP,NNP)
-        CALL EIRENE_MASRR1('PAATI2    :',PAATI(:,ISTRA),
-     .                                   NATMP*NATMI,NATMI)
+        IF (TRCSCL) THEN
+          CALL EIRENE_MASRR1('MATRIX    :',PP,NNP*NNP,NNP)
+          CALL EIRENE_MASRR1('RHS VECTOR:',B,NNP,NNP)
+          CALL EIRENE_MASRR1('PAATI2    :',PAATI(:,ISTRA),
+     .                                     NATMP*NATMI,NATMI)
+        END IF
 !! Solve the matrix
         IER=0
         ALLOCATE(IW(NNP))

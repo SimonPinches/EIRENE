@@ -271,6 +271,7 @@ cwdk Make sure the corresponding side of the neighboring triangle is not found a
 
         IF (IPOIN.LE.0) THEN
           WRITE(iunout,*) 'CONTOUR ',ICONT,' NOT FOUND'
+          CALL EIRENE_LEER(1)
           GOTO 1000
         ENDIF
 

@@ -247,6 +247,7 @@ c  next 5 tallies added sept. 05     !dr
 
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
+      RETURN
       END SUBROUTINE EIRENE_BROADCAST_CSTEP
 
       END MODULE EIRMOD_CSTEP

@@ -253,9 +253,10 @@ CDR  in single V.IN cases: all V.IN(IPLS,:) are the same, and == V.IN(1,:)
 
             else
               write (iunout,*) 'Warning from PLASMA_DERIV'
-              write (iunout,*) '"Density-model FORT.13"'
+              write (iunout,*) '"Density-model '//FORT//'13"'
               write (iunout,*) 'Species IPLS= ',iold, ' is either == 0,'
-              write (iunout,*) 'or could not be read from fort.13'
+              write (iunout,*) 
+     .              'or could not be read from '//fort_lc//'13'
               write (iunout,*) 'Species IPLS left unchanged'
             ENDIF
 

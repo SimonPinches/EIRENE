@@ -550,8 +550,10 @@ cdr  read 2 cards per reaction assigned to IATM, i.e.:  NRC*NATMI*2 cards
 cpb......................................
 cdr:  try to identify if there are so-called NONLINEAR BGK collisions, input flag IBGK:
 cdr:  to be generalized: there may be other reactions, which require multiple Ti, Vi profiles
-          READ (IUNIN,'(12I6)') IDUM(1:12)
-          IF (NUMSEC < 3) THEN
+          READ (IUNIN,'(A72)') ZEILE
+          call fix_integer_input(zeile,12)
+          READ (ZEILE,'(12I6)') IDUM(1:12)
+           IF (NUMSEC < 3) THEN
             LMULPL = LMULPL .OR. (IDUM(7) /= 0)
           ELSEIF (NUMSEC == 3) THEN
             LMULPL = LMULPL .OR. (IDUM(8) /= 0)
@@ -588,7 +590,9 @@ C
 cpb......................................
 cdr:  try to identify if there are so-called BGK collisions, input flag IBGK:
 cdr:  to be generalized: there may be other reactions, which require multiple (IPLS) profiles
-          READ (IUNIN,'(12I6)') IDUM(1:12)
+          READ (IUNIN,'(A72)') ZEILE
+          call fix_integer_input(zeile,12)
+          READ (ZEILE,'(12I6)') IDUM(1:12)
           IF (NUMSEC < 3) THEN
             LMULPL = LMULPL .OR. (IDUM(7) /= 0)
           ELSEIF (NUMSEC == 3) THEN
@@ -637,7 +641,9 @@ cym this variable has to be moved from extraB25 to EIRENE as an extra optionnal 
 cpb......................................
 cdr:  try to identify if there are so-called BGK collisions, input flag IBGK::
 cdr:  to be generalized: there may be other reactions, which require multiple (IPLS) profiles
-          READ (IUNIN,'(12I6)') IDUM(1:12)
+          READ (IUNIN,'(A72)') ZEILE
+          call fix_integer_input(zeile,12)
+          READ (ZEILE,'(12I6)') IDUM(1:12)
           IF (NUMSEC < 3) THEN
             LMULPL = LMULPL .OR. (IDUM(7) /= 0)
           ELSEIF (NUMSEC == 3) THEN
@@ -667,7 +673,9 @@ cdr
 cpb......................................
 cdr:  try to identify if there are so-called BGK collisions, input flag IBGK:
 cdr:  to be generalized: there may be other reactions, which require multiple Ti profiles
-          READ (IUNIN,'(12I6)') IDUM(1:12)
+          READ (IUNIN,'(A72)') ZEILE
+          call fix_integer_input(zeile,12)
+          READ (ZEILE,'(12I6)') IDUM(1:12)
           IF (NUMSEC < 3) THEN
             LMULPL = LMULPL .OR. (IDUM(7) /= 0)
           ELSEIF (NUMSEC == 3) THEN
@@ -1239,7 +1247,9 @@ C
      .  '*** 13. DATA FOR ITERATIVE AND TIME DEP. OPTION'
 
 C
-      READ (IUNIN,6666) NPRNLI, NINITL_READ, NPRMUL
+      READ (IUNIN,'(A72)') ZEILE
+      call fix_integer_input(ZEILE,3)
+      READ (ZEILE,'(12I6)') NPRNLI, NINITL_READ, NPRMUL
       IF (NPRMUL > 1) NPRNLI = NPRNLI * NPRMUL
       NPRNL = MAX(NPRNL,NPRNLI)
 
@@ -1287,7 +1297,7 @@ C  THEREFORE: SET A DEFAULT TIME HORIZON HERE
       CALL EIRENE_ALLOC_CTRCEI(2)
 
 cdr        NPRNL is only valid for writing census arrays onto fort.15
-cdr  tbd:  when reading fort 15 (census), the size is determined by the
+cdr  tbd:  when reading fort.15 (census), the size is determined by the
 cdr        size of that file, (IPRNL) not by NPRNL
 
 C  SKIP READING REST OF THIS BLOCK
@@ -1481,7 +1491,7 @@ cdr  just trying, via CI
         else                           ! indpro(2)=16,26,36,...106,...
 cdr probably never used?
           write (iunout,*) 'unknown option for indpro(2)'
-          write (iunout,*) 'use indpro(2)=6  for multi-spec. Ti'
+          write (iunout,*) 'use indpro(2)=6  for multispec. Ti'
           write (iunout,*) 'use indpro(2)=16 for single Ti for all'
           call eirene_exit_own(1)
         endif

@@ -17,7 +17,7 @@ c
 cdr  5. 8.15: ARGUMENTS ADDED TO VECUSR
 cdr 20.10.15: arguments in chctrc: type of collision process: corrected for PI and OT
 cdr 24.11.15:  bug fix re coll est for PI processes, in colion: eiml --> eiio
-cdr Dec.15  :  bug fix pi reaction and cascading was wrong:
+cdr Dec.15  :  bug fix PI reaction and cascading was wrong:
 cdr            irei, rather than irpi, and p2nd
 cdr            rather than p2np, were used also for PI reactions. now corrected
 

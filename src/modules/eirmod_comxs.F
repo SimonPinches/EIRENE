@@ -1706,6 +1706,7 @@ cdr options for extrapolation from data tables or from validity range of fits.
      .                   RP%JFEX1MN, RP%JFEX1MX, RP%JFEX2MN, RP%JFEX2MX
 #endif
 
+        RETURN
         END SUBROUTINE EIRENE_WRITE_FIT_FORM
 
       END SUBROUTINE EIRENE_WRITE_CMAMF
@@ -1842,6 +1843,7 @@ cdr: tbd: set difference quotient in table: tab1d vs. temps
      .                  RP%FP1L(3), RP%FP1R(3), RP%FP2B(3), RP%FP2T(3),
      .                  RP%JFEX1MN, RP%JFEX1MX, RP%JFEX2MN, RP%JFEX2MX
 
+        RETURN
         END SUBROUTINE EIRENE_READ_FIT_FORM
 
       END SUBROUTINE EIRENE_READ_CMAMF
@@ -2183,6 +2185,7 @@ cdr  something special about ADAS ?  unused !
         RES = REACDAT(IREAC)%RTC%IFIT == 3
       END IF
 
+      RETURN
       END FUNCTION EIRENE_IS_RTC_TAB2D
 
 
@@ -2197,6 +2200,7 @@ cdr only used for adding/subtracting bremsstrahlung ? unused ?
         RES = REACDAT(IREAC)%RTCEW%IFIT == 3
       END IF
 
+      RETURN
       END FUNCTION EIRENE_IS_RTCEW_TAB2D
 
 
@@ -2211,6 +2215,7 @@ cdr  something special about adas ?  unused !
         RES = REACDAT(IREAC)%RTCMW%IFIT == 3
       END IF
 
+      RETURN
       END FUNCTION EIRENE_IS_RTCMW_TAB2D
 
 
@@ -2268,6 +2273,7 @@ c  photonic reaction
 
       deallocate (reacdat)
 
+      RETURN
       END SUBROUTINE EIRENE_FREE_REACDAT
 
 
@@ -2309,6 +2315,7 @@ c  photonic reaction
          NULLIFY(RP%CRM)
       END IF
 
+      RETURN
       END SUBROUTINE EIRENE_FREE_FIT_FORM
 
 
@@ -2343,6 +2350,7 @@ c  default asymptotics
 c
       END IF
 
+      RETURN
       END SUBROUTINE EIRENE_ALLOC_FIT_FORM
 
 

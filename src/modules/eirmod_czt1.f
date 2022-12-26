@@ -182,6 +182,7 @@ cdr They all should be removed in "storage save mode"
 
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
+      RETURN
       END SUBROUTINE EIRENE_BROADCAST_CZT1
 
       END MODULE EIRMOD_CZT1
