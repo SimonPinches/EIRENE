@@ -85,4 +85,4 @@ c  to be written
       endif
 
       RETURN
-      END
+      END FUNCTION EIRENE_FTABCX3

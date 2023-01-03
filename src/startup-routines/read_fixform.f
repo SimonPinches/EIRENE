@@ -100,6 +100,7 @@ C
       USE EIRMOD_IOUSR, ONLY: EIRENE_READ_BLOCK_11_USR
       USE EIRMOD_INFCOP, ONLY: EIRENE_IF0COP
       use json_module, only  : json_ck
+      USE EIRMOD_PRESSURELOOP
 
       IMPLICIT NONE
 
@@ -2590,9 +2591,11 @@ c  read surface models identified by character string 'SURFMOD_...'
 
         REFCUR%REFNAME = TRIM(ADJUSTL(ZEILE(9:)))
         IREAD=0
-        READ (IUNIN,6666) REFCUR%JLREF,REFCUR%JLSPT,
+        READ (IUNIN,'(A72)') ZEILE
+        call fix_integer_input(zeile,6)
+        READ (ZEILE,6666) REFCUR%JLREF,REFCUR%JLSPT,
      .                    REFCUR%JSRS(1),REFCUR%JSRC(1),
-     .                    REFCUR%JLCHSPNWL(1)
+     .                    REFCUR%JLCHSPNWL(1),REFCUR%REFCELL
         READ (IUNIN,6664) REFCUR%ZNMLR,REFCUR%EWALLR,REFCUR%EWBINR,
      .                    REFCUR%TRANSPR(1,1),REFCUR%TRANSPR(1,2),
      .                    REFCUR%FSHEATR
@@ -2717,12 +2720,12 @@ c  not a species card, hence: a sputter model card
 cxpb Assume 3.0.1 input format
                 READ (ZEILE,6664) REFCUR%RCYCSR(1),REFCUR%RCYCCR(1),
      .                            REFCUR%STPRMR(1),REFCUR%ESPTSR(1),
-     .                            REFCUR%ESPTCR(1)
+     .                            REFCUR%ESPTCR(1),REFCUR%REFPRESS
               ELSE
 cxpb Assume old SOLPS4.3 format
                 READ (ZEILE,6664) REFCUR%RCYCSR(1),REFCUR%RCYCCR(1),
      .                            REFCUR%ESPTCR(1),DUMMY,
-     .                            REFCUR%STPRMR(1)
+     .                            REFCUR%STPRMR(1),REFCUR%REFPRESS
               ENDIF
               DO I=2,NSPZ
                 REFCUR%RCYCSR(I) = REFCUR%RCYCSR(1)
@@ -2733,6 +2736,10 @@ cxpb Assume old SOLPS4.3 format
               ENDDO
               ideflt_sput=1
               ideflt_spez=-1
+              !Pressure feedback loop model
+              IF (REFCUR%JLREF == 4) 
+     .          WRITE (IUNOUT,*) "PFL with parameters: ",
+     .            REFCUR%REFCELL, REFCUR%REFPRESS
             end if
           end select
           if ((ideflt_spez > 0) .and. (ispz < 0)) then

@@ -439,15 +439,9 @@ C-----------------------------------------------------------------------
 C
 
       SUBROUTINE EIRENE_XSTEL_2(IREL,IPL)
-CTK      USE EIRMOD_PRECISION
-CTK      USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
       USE EIRMOD_COMPRT, ONLY: IUNOUT
-CTK      USE EIRMOD_CCONA
-CTK      USE EIRMOD_CGRID
-CTK      USE EIRMOD_CZT1
       USE EIRMOD_COMXS
-CTK      use EIRMOD_ctrcei, only: trcamd
 
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: IREL, IPL

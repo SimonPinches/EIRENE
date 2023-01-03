@@ -59,6 +59,7 @@ c  more recent tallies  63 --100
      R PGENA(:,:), PGENM(:,:), PGENI(:,:), PGENPH(:,:),
      R EGENA(:,:), EGENM(:,:), EGENI(:,:), EGENPH(:,:),
      R VGENA(:,:), VGENM(:,:), VGENI(:,:), VGENPH(:,:),
+cdr missing tallies: ppel, epel, electron terms from initial "P" bulk particle
      R PPAT(:,:),  PPML(:,:),  PPIO(:,:),  PPPHT(:,:), PPPL(:,:),
      R EPAT(:),    EPML(:),    EPIO(:),    EPPHT(:),   EPPL(:,:),
      R VXDENA(:,:), VXDENM(:,:), VXDENI(:,:), VXDENPH(:,:),

@@ -49,6 +49,9 @@ cdr         nonlinear iterations.
       USE EIRMOD_COMUSR, ONLY: NPLSI, TIIN, DIIN, VXIN, VYIN, VZIN,
      .                         NPLS_FIX
       USE EIRMOD_COMPRT, ONLY: IUNOUT
+
+cdr  For appended data for non-linear mode.
+cdr  Should only be written in modbgk, modphot, tmstep, etc.. routines
       USE EIRMOD_COMUSR, ONLY: LGVAC
       USE EIRMOD_COMNNL, ONLY: NFLA_VIRT, NREA_VIRT,
      .                         NFLA_IPLS, NFLA_ISWR, NFLA_IR
@@ -75,7 +78,7 @@ cdr  was when writing FORT.13
 #endif
 cdr  only write plasma background data for species, which are not already
 cdr  transferred via common BRAEIR, i.e. only: npls_fix+1,....nplsi
-cdr  I.e. the virtual background species for nonlinear iterations
+cdr  I.e. the virtual background species for non-linear iterations
 cdr  have to come last in the list of all background species.
       IF(NPLS_FIX.LT.NPLSI) THEN
         ND = NPLSI - NPLS_FIX
@@ -86,6 +89,9 @@ cdr  have to come last in the list of all background species.
           ALLOCATE (VYAR(ND,NRAD))
           ALLOCATE (VZAR(ND,NRAD))
         END IF
+
+cdr do these things ever get deallocated again?
+
         TIAR(1:ND,1:NRAD) = TIIN(NPLS_FIX+1:NPLSI,1:NRAD)
         DIAR(1:ND,1:NRAD) = DIIN(NPLS_FIX+1:NPLSI,1:NRAD)
         VXAR(1:ND,1:NRAD) = VXIN(NPLS_FIX+1:NPLSI,1:NRAD)

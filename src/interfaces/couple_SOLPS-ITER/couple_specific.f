@@ -4,6 +4,7 @@ cdr  09.02.2016:  done ! synchronization of eirsrt.f started, but not completed 
 c  jan 2017: synchronisation with corresponding version in other couple_...
 c            re. reading polygon data in geomd_linda from fort.30
 c            added: species index in eapl,empl,eipl tallies
+cdr july 21: added: additional test re. 2nd dimension (np2nd), from forks/iter...
 C
 C  ASSISTANT ROUTINES, SPECIFIC TO A PARTICULAR EDGE CODE INTERFACE
 C  DATA STRUCTURES (grid, plasma data, etc...)
@@ -39,6 +40,7 @@ C
       INTEGER, INTENT(INOUT) :: NDXA,NDYA,NPLP,NR1ST,NP2ND
       INTEGER, INTENT(IN) :: ITYPE
 
+      TARGINDEX = 3
       IF (ITYPE == 1) THEN
         CALL EIRENE_GEOMD_SONNET(NDXA,NDYA,NPLP,NR1ST,
      .                 PUX,PUY,PVX,PVY)
@@ -423,9 +425,52 @@ C    READING OF POLYGON DATA
  14         CONTINUE
           ENDIF
         ENDIF
+C    READING OF SECOND POLOIDAL PATCH
         IF (NNCUT.GE.2) THEN
+C    Snowflake Case
+         IF (nxcut2(1).LE.nxcut1(2)) THEN
+          IF ((IX.GE.nxcut2(NNCUT)).AND.(IX.LE.nxcut1(NNCUT)-1)) THEN
+            DO 19 IY = 1, DIMYH
+              IF (IY.LE.dimyh-1) THEN
+                READ (30,format_string(new_format)) DUMMI(1),
+     .                       DUMMI(2),DUMMI(3),XPOL(IY,IX+1)
+                READ (30,format_string(new_format)) DUMMI(1),
+     .                       DUMMI(2),DUMMI(3),YPOL(IY,IX+1)
+              ENDIF
+              IF (IY.EQ.dimyh) THEN
+                READ (30,format_string(new_format))
+     .                       DUMMI(1),DUMMI(2),
+     .                       XPOL(dimyh+1,IX+1),XPOL(IY,IX+1)
+                READ (30,format_string(new_format))
+     .                       DUMMI(1),DUMMI(2),
+     .                       YPOL(dimyh+1,IX+1),YPOL(IY,IX+1)
+              ENDIF
+   19       CONTINUE
+          ENDIF
+          IF (IX.EQ.nxcut1(NNCUT)) THEN
+            DO 20 IY = 1, DIMYH
+              IF (IY.LE.dimyh-1) THEN
+                READ (30,format_string(new_format))
+     .                       XPOL(IY,IX+2),DUMMI(1),
+     .                       DUMMI(2),XPOL(IY,IX+1)
+                READ (30,format_string(new_format))
+     .                       YPOL(IY,IX+2),DUMMI(1),
+     .                       DUMMI(2),YPOL(IY,IX+1)
+              ENDIF
+              IF (IY.EQ.dimyh) THEN
+                READ (30,format_string(new_format)) XPOL(IY,IX+2),
+     .                       XPOL(dimyh+1,IX+2),
+     .                       XPOL(dimyh+1,IX+1),XPOL(IY,IX+1)
+                READ (30,format_string(new_format)) YPOL(IY,IX+2),
+     .                       YPOL(dimyh+1,IX+2),
+     .                       YPOL(dimyh+1,IX+1),YPOL(IY,IX+1)
+              ENDIF
+   20       CONTINUE
+          ENDIF
+C   DDN/SN Case
+         ELSE
           IF ((IX.GE.nxcut2(NNCUT)).AND.(IX.LE.nxcut1(2)-1)) THEN
-            DO 16 IY = 1, DIMYH
+            DO 190 IY = 1, DIMYH
               IF (IY.LE.dimyh-1) THEN
                 READ (30,format_string(new_format)) DUMMI(1),
      .                         DUMMI(2),DUMMI(3),XPOL(IY,IX+1)
@@ -440,10 +485,10 @@ C    READING OF POLYGON DATA
      .                         DUMMI(1),DUMMI(2),
      .                         YPOL(dimyh+1,IX+1),YPOL(IY,IX+1)
               ENDIF
- 16         CONTINUE
+ 190        CONTINUE
           ENDIF
           IF (IX.EQ.nxcut1(2)) THEN
-            DO 18 IY = 1, DIMYH
+            DO 200 IY = 1, DIMYH
               IF (IY.LE.dimyh-1) THEN
                 READ (30,format_string(new_format))
      .                         XPOL(IY,IX+2),DUMMI(1),
@@ -460,11 +505,15 @@ C    READING OF POLYGON DATA
      .                         YPOL(dimyh+1,IX+2),
      .                         YPOL(dimyh+1,IX+1),YPOL(IY,IX+1)
               ENDIF
- 18         CONTINUE
+ 200        CONTINUE
           ENDIF
+         ENDIF
         ENDIF
+C    READING OF THIRD AND FOURTH POLOIDAL PATCHES
         IF (NNCUT.GE.4 .AND. NNISO.GE.1) THEN
-          IF ((IX.GE.nxcut2(3)).AND.(IX.LE.nxiso1(1)-1)) THEN
+C    Snowflake Case
+         IF (nxcut2(1).LE.nxcut1(2)) THEN
+          IF ((IX.GE.nxcut1(4)+1).AND.(IX.LE.nxcut1(2)-1)) THEN
             DO 26 IY = 1, DIMYH
               IF (IY.LE.dimyh-1) THEN
                 READ (30,format_string(new_format)) DUMMI(1),
@@ -480,7 +529,7 @@ C    READING OF POLYGON DATA
               ENDIF
    26       CONTINUE
           ENDIF
-          IF (IX.EQ.nxiso1(1)) THEN
+          IF (IX.EQ.nxcut1(2)) THEN
             DO 36 IY = 1, DIMYH
               IF (IY.LE.dimyh-1) THEN
                 READ (30,format_string(new_format))
@@ -500,7 +549,7 @@ C    READING OF POLYGON DATA
               ENDIF
    36       CONTINUE
           ENDIF
-          IF ((IX.GE.nxiso2(1)+1).AND.(IX.LE.nxcut1(3)-1)) THEN
+          IF ((IX.GE.nxcut1(2)+1).AND.(IX.LE.nxiso1(1)-1)) THEN
             DO 38 IY = 1, DIMYH
               IF (IY.LE.dimyh-1) THEN
                 READ (30,format_string(new_format)) DUMMI(1),
@@ -518,7 +567,7 @@ C    READING OF POLYGON DATA
               ENDIF
    38       CONTINUE
           ENDIF
-          IF (IX.EQ.nxcut1(3)) THEN
+          IF (IX.EQ.nxiso1(1)) THEN
             DO 28 IY = 1, DIMYH
               IF (IY.LE.dimyh-1) THEN
                 READ (30,format_string(new_format))
@@ -529,18 +578,20 @@ C    READING OF POLYGON DATA
      .                         DUMMI(2),YPOL(IY,IX+3-NWISO)
               ENDIF
               IF (IY.EQ.dimyh) THEN
-                READ (30,format_string(new_format)) XPOL(IY,IX+4-NWISO),
+                READ (30,format_string(new_format))
+     .                         XPOL(IY,IX+4-NWISO),
      .                         XPOL(dimyh+1,IX+4-NWISO),
      .                         XPOL(dimyh+1,IX+3-NWISO),
      .                         XPOL(IY,IX+3-NWISO)
-                READ (30,format_string(new_format)) YPOL(IY,IX+4-NWISO),
+                READ (30,format_string(new_format))
+     .                         YPOL(IY,IX+4-NWISO),
      .                         YPOL(dimyh+1,IX+4-NWISO),
      .                         YPOL(dimyh+1,IX+3-NWISO),
      .                         YPOL(IY,IX+3-NWISO)
               ENDIF
    28       CONTINUE
           ENDIF
-          IF ((IX.GE.nxcut2(2)).AND.(IX.LE.nxcut1(4)-1)) THEN
+          IF ((IX.GE.nxiso2(1)+1).AND.(IX.LE.nxcut1(3)-1)) THEN
             DO 32 IY = 1, DIMYH
               IF (IY.LE.dimyh-1) THEN
                 READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
@@ -560,7 +611,7 @@ C    READING OF POLYGON DATA
               ENDIF
    32       CONTINUE
           ENDIF
-          IF (IX.EQ.nxcut1(4)) THEN
+          IF (IX.EQ.nxcut1(3)) THEN
             DO 34 IY = 1, DIMYH
               IF (IY.LE.dimyh-1) THEN
                 READ (30,format_string(new_format))
@@ -571,20 +622,149 @@ C    READING OF POLYGON DATA
      .                         DUMMI(2),YPOL(IY,IX+4-NWISO)
               ENDIF
               IF (IY.EQ.dimyh) THEN
-                READ (30,format_string(new_format)) XPOL(IY,IX+5-NWISO),
+                READ (30,format_string(new_format))
+     .                         XPOL(IY,IX+5-NWISO),
      .                         XPOL(dimyh+1,IX+5-NWISO),
      .                         XPOL(dimyh+1,IX+4-NWISO),
      .                         XPOL(IY,IX+4-NWISO)
-                READ (30,format_string(new_format)) YPOL(IY,IX+5-NWISO),
+                READ (30,format_string(new_format))
+     .                         YPOL(IY,IX+5-NWISO),
      .                         YPOL(dimyh+1,IX+5-NWISO),
      .                         YPOL(dimyh+1,IX+4-NWISO),
      .                         YPOL(IY,IX+4-NWISO)
               ENDIF
    34       CONTINUE
           ENDIF
+          ELSE
+C    DDN case
+           IF ((IX.GE.nxcut2(3)).AND.(IX.LE.nxiso1(1)-1)) THEN
+             DO 260 IY = 1, DIMYH
+               IF (IY.LE.dimyh-1) THEN
+                 READ (30,format_string(new_format)) DUMMI(1),
+     .                          DUMMI(2),DUMMI(3),XPOL(IY,IX+2)
+                 READ (30,format_string(new_format)) DUMMI(1),
+     .                          DUMMI(2),DUMMI(3),YPOL(IY,IX+2)
+               ENDIF
+               IF (IY.EQ.dimyh) THEN
+                 READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                          XPOL(dimyh+1,IX+2),XPOL(IY,IX+2)
+                 READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                          YPOL(dimyh+1,IX+2),YPOL(IY,IX+2)
+               ENDIF
+  260        CONTINUE
+           ENDIF
+           IF (IX.EQ.nxiso1(1)) THEN
+             DO 360 IY = 1, DIMYH
+               IF (IY.LE.dimyh-1) THEN
+                 READ (30,format_string(new_format))
+     .                          XPOL(IY,IX+3),DUMMI(1),
+     .                          DUMMI(2),XPOL(IY,IX+2)
+                 READ (30,format_string(new_format))
+     .                          YPOL(IY,IX+3),DUMMI(1),
+     .                          DUMMI(2),YPOL(IY,IX+2)
+               ENDIF
+               IF (IY.EQ.dimyh) THEN
+                 READ (30,format_string(new_format))
+     .                          XPOL(IY,IX+3),XPOL(IY+1,IX+3),
+     .                          XPOL(IY+1,IX+2),XPOL(IY,IX+2)
+                 READ (30,format_string(new_format))
+     .                          YPOL(IY,IX+3),YPOL(IY+1,IX+3),
+     .                          YPOL(IY+1,IX+2),YPOL(IY,IX+2)
+               ENDIF
+  360        CONTINUE
+           ENDIF
+           IF ((IX.GE.nxiso2(1)+1).AND.(IX.LE.nxcut1(3)-1)) THEN
+             DO 380 IY = 1, DIMYH
+               IF (IY.LE.dimyh-1) THEN
+                 READ (30,format_string(new_format)) DUMMI(1),
+     .                          DUMMI(2),DUMMI(3),XPOL(IY,IX+3-NWISO)
+                 READ (30,format_string(new_format)) DUMMI(1),
+     .                          DUMMI(2),DUMMI(3),YPOL(IY,IX+3-NWISO)
+               ENDIF
+               IF (IY.EQ.dimyh) THEN
+                 READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                          XPOL(dimyh+1,IX+3-NWISO),
+     .                          XPOL(IY,IX+3-NWISO)
+                 READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                          YPOL(dimyh+1,IX+3-NWISO),
+     .                          YPOL(IY,IX+3-NWISO)
+               ENDIF
+  380        CONTINUE
+           ENDIF
+           IF (IX.EQ.nxcut1(3)) THEN
+             DO 280 IY = 1, DIMYH
+               IF (IY.LE.dimyh-1) THEN
+                 READ (30,format_string(new_format))
+     .                          XPOL(IY,IX+4-NWISO),DUMMI(1),
+     .                          DUMMI(2),XPOL(IY,IX+3-NWISO)
+                 READ (30,format_string(new_format))
+     .                          YPOL(IY,IX+4-NWISO),DUMMI(1),
+     .                          DUMMI(2),YPOL(IY,IX+3-NWISO)
+               ENDIF
+               IF (IY.EQ.dimyh) THEN
+                 READ (30,format_string(new_format))
+     .                          XPOL(IY,IX+4-NWISO),
+     .                          XPOL(dimyh+1,IX+4-NWISO),
+     .                          XPOL(dimyh+1,IX+3-NWISO),
+     .                          XPOL(IY,IX+3-NWISO)
+                 READ (30,format_string(new_format))
+     .                          YPOL(IY,IX+4-NWISO),
+     .                          YPOL(dimyh+1,IX+4-NWISO),
+     .                          YPOL(dimyh+1,IX+3-NWISO),
+     .                          YPOL(IY,IX+3-NWISO)
+               ENDIF
+  280        CONTINUE
+           ENDIF
+           IF ((IX.GE.nxcut2(2)).AND.(IX.LE.nxcut1(4)-1)) THEN
+             DO 320 IY = 1, DIMYH
+               IF (IY.LE.dimyh-1) THEN
+                 READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                          DUMMI(3),
+     .                          XPOL(IY,IX+4-NWISO)
+                 READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                          DUMMI(3),
+     .                          YPOL(IY,IX+4-NWISO)
+               ENDIF
+               IF (IY.EQ.dimyh) THEN
+                 READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                          XPOL(dimyh+1,IX+4-NWISO),
+     .                          XPOL(IY,IX+4-NWISO)
+                 READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                          YPOL(dimyh+1,IX+4-NWISO),
+     .                          YPOL(IY,IX+4-NWISO)
+               ENDIF
+  320        CONTINUE
+           ENDIF
+           IF (IX.EQ.nxcut1(4)) THEN
+             DO 340 IY = 1, DIMYH
+               IF (IY.LE.dimyh-1) THEN
+                 READ (30,format_string(new_format))
+     .                          XPOL(IY,IX+5-NWISO),DUMMI(1),
+     .                          DUMMI(2),XPOL(IY,IX+4-NWISO)
+                 READ (30,format_string(new_format))
+     .                          YPOL(IY,IX+5-NWISO),DUMMI(1),
+     .                          DUMMI(2),YPOL(IY,IX+4-NWISO)
+               ENDIF
+               IF (IY.EQ.dimyh) THEN
+                 READ (30,format_string(new_format))
+     .                          XPOL(IY,IX+5-NWISO),
+     .                          XPOL(dimyh+1,IX+5-NWISO),
+     .                          XPOL(dimyh+1,IX+4-NWISO),
+     .                          XPOL(IY,IX+4-NWISO)
+                 READ (30,format_string(new_format))
+     .                          YPOL(IY,IX+5-NWISO),
+     .                          YPOL(dimyh+1,IX+5-NWISO),
+     .                          YPOL(dimyh+1,IX+4-NWISO),
+     .                          YPOL(IY,IX+4-NWISO)
+               ENDIF
+  340        CONTINUE
+           ENDIF
+          ENDIF
         ENDIF
         IF (NNCUT.GE.1) THEN
-          IF ((IX.GE.nxcut2(1)).AND.(IX.LE.dimxh-1)) THEN
+C    snowflake/XPT case
+         IF (nxcut2(1).LE.nxcut1(2)) THEN
+          IF ((IX.GE.nxcut1(3)+1).AND.(IX.LE.dimxh-1)) THEN
             DO 22 IY = 1, DIMYH
               IF (IY.LE.dimyh-1) THEN
                 READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
@@ -602,6 +782,27 @@ C    READING OF POLYGON DATA
               ENDIF
  22         CONTINUE
           ENDIF
+         ELSE
+C   DDN/SN cases
+          IF ((IX.GE.nxcut2(1)).AND.(IX.LE.dimxh-1)) THEN
+            DO 220 IY = 1, DIMYH
+              IF (IY.LE.dimyh-1) THEN
+                READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                        DUMMI(3),XPOL(IY,IX+NPLP-1-NWISO)
+                READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                        DUMMI(3),YPOL(IY,IX+NPLP-1-NWISO)
+              ENDIF
+              IF (IY.EQ.dimyh) THEN
+                READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                         XPOL(dimyh+1,IX+NPLP-1-NWISO),
+     .                         XPOL(IY,IX+NPLP-1-NWISO)
+                READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                         YPOL(dimyh+1,IX+NPLP-1-NWISO),
+     .                         YPOL(IY,IX+NPLP-1-NWISO)
+              ENDIF
+  220       CONTINUE
+          ENDIF
+         ENDIF
         ELSEIF (NNCUT.EQ.0) THEN
           IF (IX.LE.dimxh-1) THEN
             DO IY = 1, DIMYH
@@ -649,35 +850,74 @@ C    READING OF POLYGON DATA
    10 CONTINUE
 
 C   ANFANGSPUNKT DES ERSTEN TEILSTUECKS DES I-TEN POLYGONS
+C   START OF FIRST POLOIDAL SECTION OF THE GRID
       NPOINT(1,1)=1
 C   ENDPUNKT DES ERSTEN TEILSTUECKS DES I-TEN POLYGONS
-      IF (NNCUT.LE.1) THEN
-        NPOINT(2,1)=dimxh+1
+C   Fill array of cuts in the case of a Low field Snowflake/XPT
+      IF (nxcut2(1).LE.nxcut1(2)) THEN
+       IF (NNCUT.LE.1) THEN
+         NPOINT(2,1)=dimxh+1
+       ELSE
+        NPOINT(2,1)=nxcut1(1)+1
+        NPOINT(1,2)=nxcut1(1)+2
+        NPOINT(2,2)=nxcut1(4)+2
+        NPOINT(1,3)=nxcut1(4)+3
+        IF (NNCUT.EQ.2) NPOINT(2,3)=dimxh+3
+        IF (NNCUT.EQ.4) THEN
+          NPOINT(2,3)=nxcut1(2)+3
+          NPOINT(1,4)=nxcut1(2)+4
+          NPOINT(2,4)=nxiso1(1)+4
+          NPOINT(1,5)=nxiso2(1)+5-NWISO
+          NPOINT(2,5)=nxcut1(3)+5-NWISO
+          NPOINT(1,6)=nxcut1(3)+6-NWISO
+          NPOINT(2,6)=dimxh+6-NWISO
+        ENDIF
+       ENDIF
+       TARGINDEX = 4
+C   Fill array of cuts in the case of a ddn
       ELSE
+       IF (NNCUT.LE.1) THEN
+C   ENDPUNKT DES ERSTEN TEILSTUECKS DES I-TEN POLYGONS
+C   END OF FIRST POLOIDAL SECTION OF THE GRID
+        NPOINT(2,1)=dimxh+1
+       ELSE
         NPOINT(2,1)=nxcut1(1)+1
 C   ANFANGSPUNKT DES ZWEITEN TEILSTUECKS DES I-TEN POLYGONS
+C   START OF SECOND POLOIDAL SECTION OF THE GRID
         NPOINT(1,2)=nxcut2(nncut)+1
 C   ENDPUNKT DES ZWEITEN TEILSTUECKS DES I-TEN POLYGONS
+C   END OF SECOND POLOIDAL SECTION OF THE GRID
         NPOINT(2,2)=nxcut2(nncut-1)+1
 C   ANFANGSPUNKT DES DRITTEN TEILSTUECKS DES I-TEN POLYGONS
+C   START OF THIRD POLOIDAL SECTION OF THE GRID
         NPOINT(1,3)=nxcut2(nncut-1)+2
 C   ENDPUNKT DES DRITTEN TEILSTUECKS DES I-TEN POLYGONS
         IF (NNCUT.EQ.2) NPOINT(2,3)=dimxh+3
         IF (NNCUT.EQ.4) THEN
+C   ENDPUNKT DES DRITTEN TEILSTUECKS DES I-TEN POLYGONS
+C   END OF THIRD POLOIDAL SECTION OF THE GRID
           NPOINT(2,3)=NXISO1(1)+3
 C   ANFANGSPUNKT DES VIERTEN TEILSTUECKS DES I-TEN POLYGONS
+C   START OF FOURTH POLOIDAL SECTION OF THE GRID
           NPOINT(1,4)=nxiso2(1)+4-NWISO
 C   ENDPUNKT DES VIERTEN TEILSTUECKS DES I-TEN POLYGONS
+C   END OF FOURTH POLOIDAL SECTION OF THE GRID
           NPOINT(2,4)=nxcut1(3)+4-NWISO
 C   ANFANGSPUNKT DES FUNFTEN TEILSTUECKS DES I-TEN POLYGONS
+C   START OF FIFTH POLOIDAL SECTION OF THE GRID
           NPOINT(1,5)=nxcut2(2)+4-NWISO
 C   ENDPUNKT DES FUNFTEN TEILSTUECKS DES I-TEN POLYGONS
+C   END OF FIFTH POLOIDAL SECTION OF THE GRID
           NPOINT(2,5)=nxcut1(4)+5-NWISO
 C   ANFANGSPUNKT DES SECHSTEN TEILSTUECKS DES I-TEN POLYGONS
+C   START OF SIXTH POLOIDAL SECTION OF THE GRID
           NPOINT(1,6)=nxcut2(1)+5-NWISO
 C   ENDPUNKT DES SECHSTEN TEILSTUECKS DES I-TEN POLYGONS
+C   END OF SIXTH POLOIDAL SECTION OF THE GRID
           NPOINT(2,6)=dimxh+6-NWISO
         ENDIF
+      ENDIF
+       TARGINDEX = 3
       ENDIF
 C
 C   CHECK THAT ARRAY SIZES DEDUCED FROM fort.30 MATCH THOSE FROM INPUT FILE
@@ -736,6 +976,11 @@ C
         DO I=1,NP
           XPOL(J,I)=XPOL(J,I)*100.
           YPOL(J,I)=YPOL(J,I)*100.
+cdr nov 2020: in some versions the next two lines are found
+cdr           I do not understand, it seems to be in absolute
+cdr           rather than relative units. So I remove these two lines.
+cdr       IF (ABS(XPOL(J,I)).LT.5.D-5) XPOL(J,I)=0.
+cdr       IF (ABS(YPOL(J,I)).LT.5.D-5) YPOL(J,I)=0.
         END DO
  1020 CONTINUE
       RETURN

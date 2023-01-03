@@ -211,7 +211,7 @@ C..................................................................
       MODC=EIRENE_IDEZ(MODCLF(KK),3,5)
 
 C  2.B)
-      IF (MODC.EQ.1) NEND=1   ! rate coeff vs. fixed E0, e.g. E0=0, or E0=3/2 TI
+      IF (MODC.EQ.1) NEND=1   ! rate coeff vs. (fixed E0, e.g. E0=0, or E0=3/2 TI)
 C  2.C)
       IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E0, TI)
 C  2.D)
@@ -257,7 +257,7 @@ C       NEND=9
 cdr  safety cut-off at TI= 0.1 eV. (TVAC=0.02)
               tii = max(tminl,tii)
 c  evaluate 2 parametric fit,
-c  collapse this to a new single parameter fit CF for E0 dependence, evaluated at TII.
+c  collapse this to a single parameter fit CF for E0 dependence, evaluated at TII.
               rp => reacdat(KK)%rtc%poly
               call EIRENE_dbl_poly (rp%dblpol,tii,0._dp,cou,cf,
      .               rt%rc1min, rt%rc1max, fp1, rt%jfex1mn, rt%jfex1mx,

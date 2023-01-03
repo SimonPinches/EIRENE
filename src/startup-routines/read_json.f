@@ -46,6 +46,7 @@ C
       USE EIRMOD_JSON
       USE EIRMOD_IOUSR, ONLY: EIRENE_READ_BLOCK_11_USR
       USE EIRMOD_INFCOP, ONLY: EIRENE_IF0COP
+      USE EIRMOD_PRESSURELOOP
       
       use json_module
 ! this does not work  found no matching specific binding for json%get
@@ -2862,6 +2863,7 @@ c  read surface models identified by character string 'SURFMOD_...'
           call json%get(pchild,'ISRS',REFCUR%JSRS(1), found)
           call json%get(pchild,'ISRC',REFCUR%JSRC(1), found)
           call json%get(pchild,'LCHSPNWL',REFCUR%JLCHSPNWL(1), found)
+          call json%get(pchild,'REFCELL',REFCUR%REFCELL, found)
           
           call json%get(pchild,'ZNML',REFCUR%ZNMLR, found)
           call json%get(pchild,'EWALL',REFCUR%EWALLR, found)
@@ -2913,6 +2915,8 @@ C  DEFAULT SPUTER MODEL
 
           call json%get(pchild,'ESPUTC',REFCUR%ESPTCR(1), lf(5))
           if (lf(5)) REFCUR%ESPTCR(2:NSPZ) = REFCUR%ESPTCR(1)
+
+          call json%get(pchild,'REFPRESS',REFCUR%REFPRESS, found)
           
           if (any(lf)) then
             DO I=2,NSPZ
@@ -2923,6 +2927,10 @@ C  DEFAULT SPUTER MODEL
               REFCUR%ESPTCR(I) = REFCUR%ESPTCR(1)
             ENDDO
             ideflt_sput = 1
+!Pressure feedback loop model
+            IF (REFCUR%JLREF == 4) 
+     .         WRITE(IUNOUT,*) "PFL with parameters: ",
+     .           REFCUR%REFCELL, REFCUR%REFPRESS
           end if
 
 !  check of non-default sputter model

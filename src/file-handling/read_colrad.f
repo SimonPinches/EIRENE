@@ -1,7 +1,7 @@
        subroutine EIRENE_read_colrad (ir,reac,isw,
      .                                ir_esc,ic_esc,p_esc)
 
-cdr  purpose:  prepare usage of A&M data from an internal, built-in,
+cdr  Purpose:  prepare usage of A&M data from an internal, built-in,
 cdr            collisional-radiative code:
 cdr  1)  H_colrad,
 cdr  2)  He_colrad,
@@ -138,11 +138,6 @@ cdr  TO BE STORED ON M_HCOL(1:NHCOL_STORE).
           NHCOL_STORE = ISTR
           M_HCOL(NHCOL_STORE) = IVAR
         END IF
-
-!  ALREADY INITIALIZED IN EIRENE_INIT_CMDTA
-!       REACDAT(IR)%ETH = 0._DP
-!       REACDAT(IR)%RTMAX = 0._DP
-!       REACDAT(IR)%ERTMAX = -HUGE(1._DP)
 
         SELECT CASE (ISW)
         CASE (2:4)

@@ -11,12 +11,14 @@ c                                  emission profile by "name of line"
 c
 c  output:  lno   :  "line number", i.e. the volumetric emission profile.
 
-cdr 
+cdr  so far: guessing: 
 cdr currently called from SIGLINE in diagno block. 
-cdr    
 cdr SIGLINE is called only for chords ICHORI, for which NCHTAL(ichori)=2.
 cdr Calls are whenever a change in stratum number ISTR, transition energy ENER,
 cdr       or a new internal iteration (time stepping, nonlinear BGK iterations)
+
+cdr from here we call EMISSIVITY.F  (similar to former Ba_alpha.f,...etc.)
+cdr to fill ADDV tallies, and to write them onto fort.10. fort.11, for stratum ISTR.
 
 cdr In storage saving mode (mod_addv = 0) from here we call EIRENE_EMISSIVITY.F
 cdr   for the present stratum and present line, 
@@ -164,6 +166,7 @@ c Thus re-calculate the new emissivity profile on ADDV now
 c     else
 c Sufficiently large storage on ADDV additional tally array,
 c for all lines and components. No need to reset ADDV tallies.
+c They all have been set already in ???
       end if
 
       return

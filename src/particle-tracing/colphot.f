@@ -30,14 +30,6 @@ cdr            tbd:  check setting of iestm..flags for collision estimators.
 cdr                  probably not correct (outdated).
 
 
-!pb  APR  16:  ipplds -> ipplei, pplds -> pplei
-!pb  APR  16:  patds -> patei
-!pb  APR  16:  pmlds -> pmlei
-!pb  APR  16:  piods -> pioei
-!pb  MAY  16:  nrds  -> nrei
-cdr  sept 16:  nmdsi -> nmeii, nidsi -> nieii
-
-
 cdr Aug 16:    bug fix: IPPLEI --> IPPLPI at one instance
 cdr Nov 16:
 cdr analog cascading NLCASCAD: started to document,
@@ -55,9 +47,6 @@ c   cascading with PI: identical to EI ??
 cdr Nov. 16:   cflag(7,3) --> cflag(7,mstor0)
 cdr            (was already corrected much earlier in SOLPS_4.3 by VK,
 cdr             then correction somehow lost in more recent EIRENE branches)
-cdr Jan. 17:    started to separate more clearly the (unfinished) NLCASCAD option from active code
-C               Done for COLATM and EI processes.
-C            wminv activated in colmol for EI processes (analog to colatm)
 cdr May 17: some spelling error corrections in comments adopted from ITER branch
 c            AE: analog, --> BE: analogue, etc..
 cdr Nov.18:  notational cleanup: separate OT from PH processes, e.g.: IROT --> IRPH

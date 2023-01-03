@@ -60,6 +60,7 @@ cym will disappear when parallel zone will encompass the whole code
      .                         EIRENE_IF3COP_SUM
       USE EIRMOD_CALSTR_BUFFERED
       USE EIRMOD_BALANCED_STRATEGY
+      USE EIRMOD_PRESSURELOOP
 
       IMPLICIT NONE
       PRIVATE
@@ -1626,6 +1627,12 @@ C
  1572     CONTINUE
 C
         ENDIF
+
+!     Update pressure feedback control loop:
+      DO I=1, NLIMPS
+        CALL updatePressureFeedback(RPRESSFED(I))
+      END DO
+
 C
 C  CALCULATE VOLUMETRIC LINE EMISSIVITIES, SUM OVER STRATA
 C

@@ -26,4 +26,4 @@ C
       WRITE (iunout,*) 'FROM SIGTST ',
      .                 JJJ,ZDS,NRCELL,NPCELL,NTCELL,NACELL
       RETURN
-      END
+      END SUBROUTINE EIRENE_SIGTST

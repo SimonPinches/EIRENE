@@ -5,7 +5,7 @@ cdr  Aug 19: still some cleanup and documentation needed
       SUBROUTINE EIRENE_SETTXT_INTAL
 c  Set default texts  (volume tallies: name, species, units), 
 C  similar to SETTXT.f, but for INPUT TALLIES rather than output tallies. 
-C  Set first (leading) dimension of tally arrays: nfstpi.
+C  Set first (leading) dimension of input tally arrays: NFSTPI.
 
 c  
       USE EIRMOD_PRECISION
@@ -290,7 +290,7 @@ C     TXTPUN(1,66)='TO BE READ, ADIN        '
       TXTPUN(1,100)='G*CM/S/CM               '  ! PARMOM
       TXTPUN(1,101)='G*CM/S/CM               '  ! PARMOM
       TXTPUN(1,102)='G*CM/S/CM               '  ! PARMOM
-
+c  grad PSI
       TXTPUN(1,103)='TESLA                   '  ! PSI
       TXTPUN(1,104)='TESLA                   '  ! PSI
       TXTPUN(1,105)='TESLA                   '  ! PSI
@@ -337,7 +337,9 @@ C
       NFSTPI(12)=NAIN    ! use NAIN here, as NAINI is not yet known
       NFSTPI(13)=NPLSI
       NFSTPI(14)=1
-      NFSTPI(15)=NATMI+NMOLI+NIONI
+cdr  weight window for test particles.
+cdr  inconsistent with using N1MX as first dimension
+      NFSTPI(15)=NATMI+NMOLI+NIONI  ! + nphoti
       NFSTPI(16)=1
       NFSTPI(17)=1
       NFSTPI(18)=1
@@ -356,6 +358,7 @@ C
       NFSTPI(29)=1
       NFSTPI(30)=1
 
+cdr  gradients of input tallies
       NFSTPI(31)=1
       NFSTPI(32)=1
       NFSTPI(33)=1
@@ -398,9 +401,12 @@ C
       NFSTPI(70)=1
       NFSTPI(71)=1
       NFSTPI(72)=1
-      NFSTPI(73)=NATMI+NMOLI+NIONI
+cdr  weight windows, mostly unused.
+cdr  the next 3 lines are inconsistent with N1MX being used as 1st dimension
+      NFSTPI(73)=NATMI+NMOLI+NIONI  ! NPHOTI ?
       NFSTPI(74)=NATMI+NMOLI+NIONI
       NFSTPI(75)=NATMI+NMOLI+NIONI
+cdr
       NFSTPI(76)=1
       NFSTPI(77)=1
       NFSTPI(78)=1

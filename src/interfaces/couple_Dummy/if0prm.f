@@ -4,15 +4,7 @@ C
 cdr Read block 14 from interfacing routines (not from eirene_input.f)
 c   this version: couple_dummy, i.e. only dummy interfacing routines.
 c
-c   and set storage for allocatable arrays:
-c   NSTEP :
-c   NPTRGT:
-c   NAIN  :
-c   NAOT  :
-c   NCPV  :
-c   NKNOT :
-C   NTRII :
-C   NCPVI :  no. of special couple tallies
+c
 
       SUBROUTINE EIRENE_IF0PRM(IUNIN)
 

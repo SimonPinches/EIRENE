@@ -41,7 +41,7 @@ C  MCGRD, INTEGER
      I NSURF,  NSURFM, NBLCKS, NSTRD,  NSBOX,
      I NR1P2,  NP2T3,
      I NR1TAL, NP2TAL, NT3TAL, NSBOX_TAL,NRADD_TAL,NSURF_TAL,
-     I NPLP_CGRID
+     I NPLP_CGRID  !dr: apparently added for B2.5 interface. Set eq. NPLP there
 
       CONTAINS
 

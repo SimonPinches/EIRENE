@@ -179,7 +179,10 @@ C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
      .          EIRENE_IF3COP, EIRENE_IF4COP, EIRENE_IF3COP_SUM,
      .          EIRENE_BROADCAST_INFCOP, EIRENE_DEALLOC_INFCOP,
      .          EIRENE_INFCOP_PRE_MCARLO, EIRENE_INFCOP_POST_STRATUM,
-     .          NEWUNIT, EIRENE_INFCOP_PRE_STRATA
+     .          EIRENE_INFCOP_PRE_STRATA
+#ifndef F2003
+      PUBLIC :: EIRENE_NEWUNIT
+#endif
 C
       TYPE :: CELL
         INTEGER :: TRIANGLE
@@ -731,9 +734,14 @@ C TO READ THE FILE PRODUCED BY DOS
          if (plidl) then
 c write file 'triang_new.npco_char' for triang-grid, for idl tool, in appropriate format.
 c first: fetch a free file unit number
-            jun=newunit()
+#ifdef F2003
+            open(newunit=jun,file='triang_new.npco_char',
+     .           access='SEQUENTIAL',form='FORMATTED')
+#else
+            jun=eirene_newunit()
             open(unit=jun,file='triang_new.npco_char',
      .          access='SEQUENTIAL',form='FORMATTED')
+#endif
 c next: write file 'triang_new.npco_char'
            write (jun,'(i9)') NRKNOT
            DO I=1,NRKNOT
@@ -753,6 +761,9 @@ C
         WRITE (iunout,*) ' NTRII,NRAD,NTRI = ',NTRII,NRAD,NTRI
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
+
+      IXTRI = 0
+      IYTRI = 0
 
       DO I=1,NTRII
         READ(34,*) J,NECKE(1,I),NECKE(2,I),NECKE(3,I)
@@ -885,7 +896,7 @@ C  NEXT: POLOIDAL SURFACES
             IF (IP.EQ.NP2ND) THEN
               IP1=IP-1
             ELSEIF (NPPLG.EQ.6) THEN
-              IF (IP.EQ.NPOINT(2,3)-1) IP1=IP-1
+              IF (IP.EQ.NPOINT(2,TARGINDEX)-1) IP1=IP-1
             ENDIF
             IXNI=IP !VK
             DO IR=IRPTA(ISTS,1),IRPTE(ISTS,1)-1
@@ -1477,6 +1488,8 @@ C  NDT: INDEX OF X-CELL (EAST OR NORTH SURFACE OF BRAAMS CELL) OF TARGET
 C  NINCT: DIRECTION OF OUTER TARGET NORMAL WITH RESPECT TO POSITIVE DIR.
 C  NIXY: SOURCE ON Y SURFACE: NIXY=1; SOURCE ON X SURFACE: NIXY=2
 C  NTIN,NTEN: SOURCE RANGE FROM GRIDPOINT NTIN TO GRIDPOINT NTEN
+C  ITYPE: TYPE OF THE STRATUM (0: BULK IONS, 1: ATOMS, 2: MOLECULES,
+C        3: TRACE IONS, 4: BULK IONS, 5: PHOTONS)
        IF (TRCINT)
      .  WRITE (iunout,*) '    IT,  NDT,NINCT, NIXY, NTIN, NTEN',
      .              ',NIFLG, NPTC, NPTCM,NSPZI,NSPZE,NEMOD'
@@ -2829,7 +2842,8 @@ cdr  scale to relative units of triangle coordinates
           ENDDO
 !  there has to be at least one triangle per B2 cell
           IF (ICOU == 0) THEN
-            WRITE (iunout,*) ' NO TRIANGLE FOUND FOR B2 CELL ',NPBC, IY
+            WRITE (iunout,*)
+     .       ' NO TRIANGLE FOUND (1) FOR B2 CELL ',NPBC, IY
             CALL EIRENE_EXIT_OWN(1)
           END IF
         ENDDO
@@ -3076,7 +3090,8 @@ cdr  scale to relative units of triangle coordinates
           ENDDO
 !  there has to be at least one triangle per B2 cell
           IF (ICOU == 0) THEN
-            WRITE (iunout,*) ' NO TRIANGLE FOUND FOR B2 CELL ',IX, NPBC
+            WRITE (iunout,*)
+     .       ' NO TRIANGLE FOUND (2) FOR B2 CELL ',IX, NPBC
             CALL EIRENE_EXIT_OWN(1)
           END IF
         ENDDO
@@ -3268,7 +3283,7 @@ C  INITIALIZE FUNCTION STEP (FOR RANDOM SAMPLING ALONG TARGET)
 C  SET SOME SOURCE PARAMETERS EXPLICITLY TO ENFORCE INPUT CONSISTENCY
 C  also: sum over species: flstep(0,...), elstep(0,...) will be set.
 C
-      FLUX(ITARG)=EIRENE_STEP(IIPLS,IEPLS,NRWL(ITARG),ITARG)
+      FLUX(ITARG)=EIRENE_STEP(IIPLS,IEPLS,NRWL(ITARG),ITARG,4)
 C
       NLPLS(ITARG)=.TRUE.
       NLATM(ITARG)=.FALSE.
@@ -4790,8 +4805,10 @@ C  or     (    lcoarse) already scored on B2.5 grid cell INC=IY+(IX-1)*NR1TAL_SA
                 SEE_EPEL(IX,IY,ISTRAI)=SEE_EPEL(IX,IY,ISTRAI)+
      .                                 EPEL_COP(INC)*VOLTAL(INC)*ELCHA
                 CHEES=CHEES+CHEEM(INC)*VOLTAL(INC)
-                SEES=SEES+(EAEL(INC)+EMEL(INC)+EIEL(INC)+
-     .                   EPEL_COP(INC))*VOLTAL(INC)
+                IF (LEAEL) SEES=SEES+EAEL(INC)*VOLTAL(INC)
+                IF (LEMEL) SEES=SEES+EMEL(INC)*VOLTAL(INC)
+                IF (LEIEL) SEES=SEES+EIEL(INC)*VOLTAL(INC)
+                SEES=SEES+EPEL_COP(INC)*VOLTAL(INC)
               ENDDO
             ELSEIF (LCOARSE) THEN
               INC=IY+(IX-1)*NR1TAL_SAVE
@@ -5398,6 +5415,7 @@ C
       END SUBROUTINE EIRENE_IF3COP
 C
       SUBROUTINE EIRENE_IF4COP
+      USE EIRMOD_REFUSR, ONLY : EIRENE_WRITE_CONBE
       IMPLICIT NONE
       INTEGER, SAVE :: MINSPEZ, MAXSPEZ, NREC11
       REAL(DP) :: SFNIT(0:NSTEP,NFL), SFEIT(0:NSTEP),
@@ -5837,16 +5855,15 @@ C
       SSNI=0.
       SSEI=0.
       SSEE=0.
-      DO 10150 ISTR=1,NSTRAI
+      DO ISTR=1,NSTRAI
         ISTRA = ISTR
-        IF (XMCP(ISTRA).LE.1) GOTO 10150
+        IF (XMCP(ISTRA).LE.1) CYCLE
         FLX=0.
         IF (ISTRA.LE.NTARGI) THEN
           FLX=SUM(ABS(SFNIT(ISTRA,1:NFLA)))
         ELSE
           FLX=1.
         ENDIF
-
         SSN=0.
         SSI=0.
         SSE=0.
@@ -5875,7 +5892,7 @@ C
         SSNI(1:NFLA)=SSNI(1:NFLA)+SSN(1:NFLA)*FLX
         SSEI=SSEI+SSI*FLX/ELCHA
         SSEE=SSEE+SSE*FLX/ELCHA
-10150 CONTINUE
+      END DO ! ISTR
 C
       WRITE (37,*) 'EQUILIBRATION '
       WRITE (37,8888) 0.,B2QIE,-B2QIE
@@ -5962,15 +5979,16 @@ C
         DO ITARG=1,NTARGI
           IF (ANY(SFNIT(ITARG,1:NFLA).NE.0.0)) THEN
             DO IFL=1,NFLA
-             WRITE(iunout,'(A,I3,A,I3,A,ES12.4)') 'TARGET ', ITARG,
-     .                      ', NI(IFL =',IFL,') ',SFNIT(ITARG,IFL)
+             WRITE(iunout,'(1X,A,I3,A,I3,A,ES15.8)')
+     .            'TARGET ', ITARG, ', NI(IFL =',IFL,') ',
+     .             SFNIT(ITARG,IFL)
            ENDDO
           ENDIF
         ENDDO
         CALL EIRENE_LEER(1)
         CALL EIRENE_MASR2(' TOTALS, EI,EE  ',SFEIT(0),SFEET(0))
         DO IFL=1,NFLA
-           WRITE(iunout,'(1X,A,I3,A,ES12.4)')
+           WRITE(iunout,'(1X,A,I3,A,ES15.8)')
      .          'TOTALS, NI(IFL =',IFL,') ',SFNIT(0,IFL)
         ENDDO
 
@@ -5979,7 +5997,7 @@ C
         WRITE (iunout,*) ' NEUTRAL PLASMA INTERACTION: '
         CALL EIRENE_MASR2(' SSEI,SSEE      ',SSEI,SSEE)
         DO IFL=1,NFLA
-           WRITE(iunout,'(1X,A,I3,A,ES12.4)')
+           WRITE(iunout,'(1X,A,I3,A,ES15.8)')
      .           'SSNI(IFL =',IFL,') ',SSNI(IFL)
         ENDDO
         CALL EIRENE_LEER(2)
@@ -6000,14 +6018,14 @@ C
 
         CALL EIRENE_MASR2(' BALANI,BALANE  ',BALANI,BALANE)
         DO IFL=1,NFLA
-           WRITE(iunout,'(1X,A,I3,A,ES12.4)')
+           WRITE(iunout,'(1X,A,I3,A,ES15.8)')
      .          'BALANN(IFL =',IFL,') ',BALANN(IFL)
         ENDDO
         CALL EIRENE_LEER(1)
 
         CALL EIRENE_MASR2('REL.ERR.(%)RI,RE',RI,RE)
         DO IFL=1,NFLA
-           WRITE(iunout,'(1X,A,I3,A,ES12.4)')
+           WRITE(iunout,'(1X,A,I3,A,ES15.8)')
      .           'RN(IFL =',IFL,') ',RN(IFL)
         ENDDO
         CALL EIRENE_LEER(1)
@@ -6114,6 +6132,7 @@ csw 07feb2011 extra B2.5
           if (nlemis) call eirene_extrab25_emissivity
           call eirene_wneutrals_save
           call write_f44('    ')
+          call eirene_write_conbe('    ')
         endif
 csw
       RETURN
@@ -6866,15 +6885,16 @@ C  TO THE QUADRANGLE
       return
       end subroutine eirene_if3cop_sum
 
-      integer function newunit ()
+#ifndef F2003
+      integer function eirene_newunit ()
       implicit none
       logical used
 
-      newunit = 99
+      eirene_newunit = 99
       used = .true.
-      do while (newunit.gt.0 .and. used)
-        inquire(unit=newunit,opened=used)
-        if (used) newunit = newunit - 1
+      do while (eirene_newunit.gt.0 .and. used)
+        inquire(unit=eirene_newunit,opened=used)
+        if (used) eirene_newunit = eirene_newunit - 1
       end do
       if (used) then
         call eirene_masage
@@ -6882,7 +6902,8 @@ C  TO THE QUADRANGLE
         call eirene_exit_own(1)
       end if
       return
-      end function newunit
+      end function eirene_newunit
+#endif
 
       SUBROUTINE EIRENE_DEALLOC_INFCOP
       IMPLICIT NONE

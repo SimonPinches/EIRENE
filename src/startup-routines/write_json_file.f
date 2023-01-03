@@ -36,6 +36,7 @@
       USE EIRMOD_PHOTON
       USE EIRMOD_JSON
       USE EIRMOD_IOUSR, ONLY: eirene_write_block_11_usr
+      USE EIRMOD_PRESSURELOOP
       
       use json_module
 
@@ -1271,6 +1272,7 @@
         call json%add(sm,'ISRS',REFCUR%JSRS(1))
         call json%add(sm,'ISRC',REFCUR%JSRC(1))
         call json%add(sm,'LCHSPNWL',REFCUR%JLCHSPNWL(1))
+        call json%add(sm,'REFCELL',REFCUR%REFCELL)
         call json%add(sm,'ZNML',REFCUR%ZNMLR)
         call json%add(sm,'EWALL',REFCUR%EWALLR)
         call json%add(sm,'EWBIN',REFCUR%EWBINR)
@@ -1287,6 +1289,7 @@
         call json%add(sm,'SPTPRM',REFCUR%STPRMR(1))
         call json%add(sm,'ESPUTS',REFCUR%ESPTSR(1))
         call json%add(sm,'ESPUTC',REFCUR%ESPTCR(1))
+        call json%add(sm,'REFPRESS',REFCUR%REFPRESS)
 
         call json%create_array(vrs,'CHANGES')
         spr => REFCUR%SPEC_LINES

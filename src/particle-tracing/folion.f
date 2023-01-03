@@ -203,7 +203,7 @@ C
 c  find direction parallel and perpendicular to B field, and velocity components
 c  i.e. convert cartesian velocity unit vector VELX,VELY,VELX into
 c  parallel and perpendicular unit velocity components VELPAR
-c  find B field in cell NCELL
+c  find B field in cell NCELL: return cartesian B field vectors in module CFPLK
       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,0)
 
       VELXS=VELX
@@ -1518,7 +1518,7 @@ C
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
       USE EIRMOD_CCONA
-      USE EIRMOD_CFPLK
+      USE EIRMOD_CFPLK  !  BX, BY, BZ, BF
       USE EIRMOD_COMPRT
       USE EIRMOD_CRAND
       USE EIRMOD_CINIT

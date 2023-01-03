@@ -36,7 +36,7 @@ cpb  also used for elliptical grids and poloidal resolution
      I NCLTAL(:),      ! index mapping: fine - coarse grid
      I INDPOINT(:,:), NOPNT(:)
 
-      INTEGER, PUBLIC, SAVE :: NCGM1, NCGM2, NNODES
+      INTEGER, PUBLIC, SAVE :: NCGM1, NCGM2, NNODES, TARGINDEX
 
 cdr  damaged cell ?
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE ::

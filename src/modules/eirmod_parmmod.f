@@ -100,7 +100,6 @@ C  BLOCK A FEW RESERVED OUTPUT STREAMS.
       INTEGER, PUBLIC, SAVE ::
      I NTRJ
 
-
       INTEGER, PUBLIC, SAVE ::
      I NREAC_LINES
 
@@ -131,9 +130,11 @@ cdr  additional tallies
      I NTALI,  NTALG,  NTALN,  NTALO,  NTALV,
      I NTALA,  NTALC,  NTALT,
      I NTALM,  NTALB,  NTALR,
-     I NTALS,  NTLSA,  NTLSR,  NSPZTOTW,
-     I N1MX,   N2MX,   NSPZ,   NSPZP, NSPZMC, NCOLMC, NSPZTOT,
-     I NSPZTOTS, NSPZTOTWS
+     I NTALS,  NTLSA,  NTLSR,
+cdr  size of particle species columns in various arrays 
+     I N0MX,   N1MX,   N2MX,   NSPZ,   NSPZP, 
+     I NSPZMC, NCOLMC, 
+     I NSPZTOT, NSPZTOTW, NSPZTOTS, NSPZTOTWS
 
       INTEGER, PUBLIC, SAVE ::
      I NVOLTL, NVLTLP,
@@ -300,6 +301,10 @@ c  additional surface-averaged output tallies
         NTLSA=NTALS-2
         NTLSR=NTALS-1
 
+C  MAX SPECIES INDEX, test particles and field particles
+        N0MX=MAX(NPHOT,NATM,NMOL,NION,NPLS)
+C  MAX SPECIES INDEX IN VOLUME-AVERAGED OUTPUT TALLIES
+C       N1MX=... !dr  set below, in ICAL=2 section. Why?
 C  MAX SPECIES INDEX IN SURFACE-AVERAGED OUTPUT TALLIES
         N2MX=MAX(NPHOT,NATM,NMOL,NION,NPLS,NADS,NALS)
         IF (NLSPCSCL) THEN
@@ -381,7 +386,8 @@ c  set some derived storage parameters
         NBGVP=NBGV+1
         NCOLMC=NPLS+NREI+NREC
 
-C  N1MX: storage parameter for species text for output tallies, and scltal in mcarlo.f
+C  N1MX: storage parameter for species text for input and  output tallies, 
+C        and for scltal in mcarlo.f
 
 !pb12Oct2022
 !pb     N1MX=    NSPZ+NADV+NALV+NCLV+NCPV+NBGV+NSNV+NAIN
@@ -399,12 +405,14 @@ cdr  same MEANING as n1mx?.  Check: why not n1mx=max(....)
           N1MX=MAX(N1MX,NMAX*(NMAX+1))
         END IF
 
-C  NSPZTOT: storage parameter for LMETSP(NSPZTOT) array, for standard deviation estimators
+C  NSPZTOT: storage parameter for LMETSP(NSPZTOT) array, 
+C           for standard deviation estimators
         NSPZTOTS = NSPZ+NADV+NALV+NCLV+NCPV+NBGV+NSNV
         NSPZTOT = NSPZTOTS + (NATM+NMOL+NION+NPHOT+NPLS)*
      p                       (NATMP+NMOLP+NION+NPHOTP)
 
-C  NSPZTOTW: storage parameter for LMETSPW(NSPZTOTW) array, for standard deviation estimators
+C  NSPZTOTW: storage parameter for LMETSPW(NSPZTOTW) array, 
+C            for standard deviation estimators
         NSPZTOTWS = NSPZ+NADS+NALS
         NSPZTOTW = NSPZTOTWS + (NATM+NMOL+NION+NPHOT)*
      p                        (NATMP+NMOLP+NION+NPHOTP)
@@ -602,6 +610,7 @@ C     INT_PARM(114) =         !    OUT, WAS SAME AS NTALS
       INT_PARM(117) = NSPZ
       INT_PARM(118) = NSPZP
       INT_PARM(119) = NSPZMC
+cdr   INT_PARM(120) = N0MX !   because ncolmc is obsolete
       INT_PARM(120) = NCOLMC
       INT_PARM(121) = NSPZTOT
 

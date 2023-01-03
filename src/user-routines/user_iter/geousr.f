@@ -206,11 +206,12 @@ c======================================================================
       use EIRMOD_COMPRT
       use EIRMOD_CLOGAU
       USE EIRMOD_CVARUSR
+      use EIRMOD_CTRIG
 
       IMPLICIT NONE
 
       logical :: first, normalcase, hlp_found
-      integer :: onetwo(8),limpos(8),xpolpos(8),ypolpos(8)
+      integer :: onetwo(8),limpos(8),xpolpos(8),ypolpos(8),icoor(8)
 !      character(80) :: geometry_comment
       REAL(DP), PARAMETER :: hlp_tol=0.001
 
@@ -221,6 +222,7 @@ csw 03sep2013
       REAL(DP) :: XCOOR,YCOOR,ZCOOR !VK
       real(dp) ::  XN, YN
       integer ixn,iyn
+      character*72 zeile
 csw
       save first,onetwo,limpos
       data first /.true./
@@ -228,11 +230,11 @@ c======================================================================
 c*** At the first invocation, read the data from the Eirene input file
 c*** and define the grid corners
 c
-      IF (NLPLG) THEN
-        N=max(npplg/3,1)*4
-        if(first) then
-          READ (IUNIN,'(2I6)') NADMOD,NASMOD
-          WRITE(iunout,*) "GEOUSR: NADMOD,NASMOD",NADMOD,NASMOD
+      if(first) then
+        READ (IUNIN,'(2I6)') NADMOD,NASMOD
+        WRITE(iunout,*) "GEOUSR: NADMOD,NASMOD",NADMOD,NASMOD
+        IF (NLPLG) THEN
+          N=max(npplg/3,1)*4
           do i=1,8
             onetwo(i)=0
             limpos(i)=0
@@ -255,146 +257,158 @@ C RIGHT TARGET (OUTER FOR LSN, INNER FOR USN, UPPER INNER FOR DN)
             ypolpos(3)=npoint(2,npplg)
           else if(npplg.eq.6) then
             xpolpos(3)=1
-            ypolpos(3)=npoint(2,3)-1
+            ypolpos(3)=npoint(2,TARGINDEX)-1
           end if
           if(npplg.le.3) then
             xpolpos(4)=nr1st
             ypolpos(4)=npoint(2,npplg)
           else if(npplg.eq.6) then
             xpolpos(4)=nr1st
-            ypolpos(4)=npoint(2,3)-1
+            ypolpos(4)=npoint(2,TARGINDEX)-1
           end if
 
           if(npplg.eq.6) then
 C TOP OUTER (LEFT) TARGET
             xpolpos(5)=1
-            ypolpos(5)=npoint(1,4)+1
+            ypolpos(5)=npoint(1,TARGINDEX+1)+1
             xpolpos(6)=nr1st
-            ypolpos(6)=npoint(1,4)+1
+            ypolpos(6)=npoint(1,TARGINDEX+1)+1
 C BOTTOM OUTER (RIGHT) TARGET
             xpolpos(7)=1
             ypolpos(7)=npoint(2,6)
             xpolpos(8)=nr1st
             ypolpos(8)=npoint(2,6)
           end if
+        ELSE IF (NLFEM) THEN
+          N=NASMOD
+        END IF
 
 csw 03sep2013
 
-          DO I=1,NADMOD
-            READ (IUNIN,'(2I6,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
+        DO I=1,NADMOD
+          READ (IUNIN,'(2I6,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
 
-            SELECT CASE (IPUNKT)
-            CASE (1)
-              P1(1,NRS)=XCOOR
-              P1(2,NRS)=YCOOR
-              P1(3,NRS)=ZCOOR
+          SELECT CASE (IPUNKT)
+          CASE (1)
+            P1(1,NRS)=XCOOR
+            P1(2,NRS)=YCOOR
+            P1(3,NRS)=ZCOOR
+            
+          CASE (2)
+            P2(1,NRS)=XCOOR
+            P2(2,NRS)=YCOOR
+            P2(3,NRS)=ZCOOR
 
-            CASE (2)
-              P2(1,NRS)=XCOOR
-              P2(2,NRS)=YCOOR
-              P2(3,NRS)=ZCOOR
-
-            CASE (3)
-              P3(1,NRS)=XCOOR
-              P3(2,NRS)=YCOOR
+          CASE (3)
+            P3(1,NRS)=XCOOR
+            P3(2,NRS)=YCOOR
             P3(3,NRS)=ZCOOR
 
-            CASE (4)
-              P4(1,NRS)=XCOOR
-              P4(2,NRS)=YCOOR
-              P4(3,NRS)=ZCOOR
+          CASE (4)
+            P4(1,NRS)=XCOOR
+            P4(2,NRS)=YCOOR
+            P4(3,NRS)=ZCOOR
 
-            CASE (5)
-              P5(1,NRS)=XCOOR
-              P5(2,NRS)=YCOOR
-              P5(3,NRS)=ZCOOR
+          CASE (5)
+            P5(1,NRS)=XCOOR
+            P5(2,NRS)=YCOOR
+            P5(3,NRS)=ZCOOR
 
-            CASE (6)
-              P6(1,NRS)=XCOOR
-              P6(2,NRS)=YCOOR
-              P6(3,NRS)=ZCOOR
-
-            CASE DEFAULT
-              WRITE (iunout,*) 'WRONG POINT NUMBER IN INFCOP '
-              WRITE (iunout,*) 'INPUT LINE READING'
-              WRITE (iunout,'(2I6,1P,3E12.4)')
+          CASE (6)
+            P6(1,NRS)=XCOOR
+            P6(2,NRS)=YCOOR
+            P6(3,NRS)=ZCOOR
+            
+          CASE DEFAULT
+            WRITE (iunout,*) 'WRONG POINT NUMBER IN INFCOP '
+            WRITE (iunout,*) 'INPUT LINE READING'
+            WRITE (iunout,'(2I6,1P,3E12.4)')
      .                                  NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
-              WRITE (iunout,*) ' IS IGNORED '
+            WRITE (iunout,*) ' IS IGNORED '
 
-            END SELECT
-          ENDDO
+          END SELECT
+        ENDDO
 C
 csw
-
-          normalcase=.true.
+        normalcase=.true.
 csw 03sep2013        do i=1,max(npplg/3,1)*4
-          do i=1,NASMOD
+        do i=1,NASMOD
 
 cdr either read onetwo, limpos
 cdr or     read limpos, onetwo
 
 csw 03sep2013 AARRRGH!!!!          read(iunin,*) onetwo(i),limpos(i)
-            read(iunin,*) limpos(i),onetwo(i)
-            if(onetwo(i).lt.0) then
-              normalcase=.false.
-              onetwo(i)=-onetwo(i)
-              read(iunin,*) xpolpos(i),ypolpos(i)
-            end if
-          end do
-          first=.false.
-!         write(iunout,*) 'GEOMETRY FOR'
-!         write(iunout,'(a80)') geometry_comment
+          read(iunin,'(a72)') zeile
+          call fix_integer_input(zeile,3)
+          read(zeile,*,err=91) limpos(i),onetwo(i),icoor(i)
+          goto 92
+ 91       read(zeile,*) limpos(i),onetwo(i)
+ 92       continue
+          if(onetwo(i).lt.0) then
+            normalcase=.false.
+            onetwo(i)=-onetwo(i)
+            if (nlplg) read(iunin,*) xpolpos(i),ypolpos(i)
+          end if
+        end do
+        first=.false.
+!       write(iunout,*) 'GEOMETRY FOR'
+!       write(iunout,'(a80)') geometry_comment
 csw 03sep2013
-          IF(NASMOD.NE.N) THEN
-            IF (NPPLG.EQ.1 .AND. NASMOD.EQ.2) THEN
-              write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+        IF(NASMOD.NE.N) THEN
+          IF (NPPLG.EQ.1 .AND. NASMOD.EQ.2) THEN
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
      1         ''' LINKED TO LEFT TARGET'')') onetwo(1),limpos(1)
-              write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
      1         ''' LINKED TO RIGHT TARGET'')') onetwo(2),limpos(2)
-            ELSE
-              WRITE(iunout,*) "WARNING: NASMOD.NE.NPPLG", NASMOD,npplg
-              DO I=1,NASMOD
-                WRITE(iunout,'(''P'',I3,'' FOR SEG '',I3)')
+          ELSE
+            WRITE(iunout,*) "WARNING: NASMOD.NE.NPPLG", NASMOD,npplg
+            DO I=1,NASMOD
+              WRITE(iunout,'(''P'',I3,'' FOR SEG '',I3)')
      w                   ONETWO(I),LIMPOS(I)
-              END DO
-            END IF
+            END DO
+          END IF
 csw
 
 cdr  NASMOD = N = max(npplg/3,1)*4
-          elseif (npplg.le.3) then
-            if(onetwo(1).eq.0) then
-              write(iunout,*) 'Geometry fixup skipped'
-              goto 1001
-            end if
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
-     1       ''' LINKED TO INNER LEFT TARGET'')') onetwo(1),limpos(1)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
-     1       ''' LINKED TO OUTER LEFT TARGET'')') onetwo(2),limpos(2)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
-     1       ''' LINKED TO INNER RIGHT TARGET'')') onetwo(3),limpos(3)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
-     1       ''' LINKED TO OUTER RIGHT TARGET'')') onetwo(4),limpos(4)
-          else if (npplg.eq.6) then
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
-     1       ''' LINKED TO INNER LEFT TARGET'')') onetwo(1),limpos(1)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
-     1       ''' LINKED TO INNER LEFT TARGET'')') onetwo(2),limpos(2)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
-     1       ''' LINKED TO OUTER RIGHT TARGET'')') onetwo(3),limpos(3)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
-     1       ''' LINKED TO OUTER RIGHT TARGET'')') onetwo(4),limpos(4)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
-     1       ''' LINKED TO OUTER LEFT TARGET'')') onetwo(5),limpos(5)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
-     1       ''' LINKED TO OUTER LEFT TARGET'')') onetwo(6),limpos(6)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
-     1       ''' LINKED TO INNER RIGHT TARGET'')') onetwo(7),limpos(7)
-            write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
-     1       ''' LINKED TO INNER RIGHT TARGET'')') onetwo(8),limpos(8)
-          else
-            write(iunout,*) 'Case NPPLG = ',NPPLG,' not coded. '
+!pb          elseif (npplg.le.3) then
+        elseif (nasmod == 4) then
+          if(onetwo(1).eq.0) then
+            write(iunout,*) 'Geometry fixup skipped'
+            goto 1001
           end if
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO INNER LEFT TARGET'')') onetwo(1),limpos(1)
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO OUTER LEFT TARGET'')') onetwo(2),limpos(2)
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO INNER RIGHT TARGET'')') onetwo(3),limpos(3)
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO OUTER RIGHT TARGET'')') onetwo(4),limpos(4)
+!pb          else if (npplg.eq.6) then
+        else if (nasmod == 8) then
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO INNER LEFT TARGET'')') onetwo(1),limpos(1)
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO INNER LEFT TARGET'')') onetwo(2),limpos(2)
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO OUTER RIGHT TARGET'')') onetwo(3),limpos(3)
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO OUTER RIGHT TARGET'')') onetwo(4),limpos(4)
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO OUTER LEFT TARGET'')') onetwo(5),limpos(5)
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO OUTER LEFT TARGET'')') onetwo(6),limpos(6)
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO INNER RIGHT TARGET'')') onetwo(7),limpos(7)
+          write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
+     1       ''' LINKED TO INNER RIGHT TARGET'')') onetwo(8),limpos(8)
+        else
+          write(iunout,*) 'Case NASMOD = ',NASMOD,' not coded. '
         end if
+      else
+        if (nlplg) N=max(npplg/3,1)*4
+        if (nlfem) N=NASMOD
+      end if                    ! first
 c
 c*** Switch off the additional surfaces corresponding to the targets,
 c*** that is, the surfaces between the ones to be linked to the grid
@@ -402,68 +416,69 @@ c*** corners.
 c
 c      write (iunout,'(/(2i8))') (limpos(i),onetwo(i),i=1,n)
 csw 03sep2013      do 990 i=1,n
-        do 990 i=1,nasmod
-          if(onetwo(i).eq.2) then
-            m=limpos(i)
-            hlp_p1=p2(1,m)
-            hlp_p2=p2(2,m)
+      do 990 i=1,nasmod
+        if(onetwo(i).eq.2) then
+          m=limpos(i)
+          hlp_p1=p2(1,m)
+          hlp_p2=p2(2,m)
 c           write (iunout,*) 'onetwo=2. igjum0= ',igjum0(j),
 c      ,    ',i,hlp_p1,hlp_p2 = '
 c           write (iunout,*) i,hlp_p1,hlp_p2
-            do 980 l=1,nlimi
-              do j=1,nlimi
-                hlp_found=.false.
+          do 980 l=1,nlimi
+            do j=1,nlimi
+              hlp_found=.false.
 c               write (iunout,*) 'lgjum0,j,m = ',lgjum0(j),j,m
-                if(igjum0(j)==0 .and. j.ne.m .and. iliin(j).eq.1) then
-                  if(abs(hlp_p1-p1(1,j)).le.hlp_tol .and.
-     .                             abs(hlp_p2-p1(2,j)).le.hlp_tol) then
-                    hlp_found=.true.
-                    hlp_p1=p2(1,j)
-                    hlp_p2=p2(2,j)
-                  else if(abs(hlp_p1-p2(1,j)).le.hlp_tol .and.
-     .                             abs(hlp_p2-p2(2,j)).le.hlp_tol) then
-                    hlp_found=.true.
-                    hlp_p1=p1(1,j)
-                    hlp_p2=p1(2,j)
-                  end if
-                  if(hlp_found) then
+              if(igjum0(j)==0 .and. j.ne.m .and. iliin(j).eq.1) then
+                if(abs(hlp_p1-p1(1,j)).le.hlp_tol .and.
+     .             abs(hlp_p2-p1(2,j)).le.hlp_tol) then
+                  hlp_found=.true.
+                  hlp_p1=p2(1,j)
+                  hlp_p2=p2(2,j)
+                else if(abs(hlp_p1-p2(1,j)).le.hlp_tol .and.
+     .                  abs(hlp_p2-p2(2,j)).le.hlp_tol) then
+                  hlp_found=.true.
+                  hlp_p1=p1(1,j)
+                  hlp_p2=p1(2,j)
+                end if
+                if(hlp_found) then
 c                   write (iunout,*) j,hlp_p1,hlp_p2
 c*** Check whether this segment is marked as a target edge
-                    do k=1,n
-                      if(j.eq.limpos(k)) then
-                        if(onetwo(k).eq.1) then
-                          go to 990
-                        else
-                          write(iunout,*) 'geousr_biased:',
+                  do k=1,n
+                    if(j.eq.limpos(k)) then
+                      if(onetwo(k).eq.1) then
+                        go to 990
+                      else
+                        write(iunout,*) 'geousr_biased:',
      ,                               ' something is wrong with ',
      ,                               'the target chain definition.'
-                          write(iunout,*)
+                        write(iunout,*)
      ,                      'Check the data on the target edges ',
      ,                      'at the very end of the Eirene input file.'
-                          call EIRENE_EXIT_OWN(1)
-                        end if
+                        call EIRENE_EXIT_OWN(1)
                       end if
-                    end do
+                    end if
+                  end do
 c*** Switch off the segment
-                    igjum0(j)=1
-                    write (iunout,*) 'geousr_biased: segment ',j,
+                  igjum0(j)=1
+                  write (iunout,*) 'geousr_biased: segment ',j,
      ,                                              '  is turned off'
-                    go to 980
-                  end if
+                  go to 980
                 end if
-              end do
+              end if
+            end do
 c*** The chain is broken
-              write (iunout,*) 'geousr_biased: the chain is broken'
-              go to 990
-  980       continue
-          end if
-  990   continue
- 1001   continue
+            write (iunout,*) 'geousr_biased: the chain is broken'
+            go to 990
+ 980      continue
+        end if
+ 990  continue
+ 1001 continue
 C
 C  ANFANG: MODIFY GEOMETRY
 C
 csw 03sep2013      do i=1,max(npplg/3,1)*4
-        do i=1,nasmod
+      if (nlplg) then
+         do i=1,nasmod
           select case(onetwo(i))
           case(1)
             p1(1,limpos(i))=xpol(xpolpos(i),ypolpos(i))
@@ -495,6 +510,18 @@ csw 03sep2013      do i=1,max(npplg/3,1)*4
             p2(2,limpos(i))=YN
           end select
         end do
+      else
+        do i=1,nasmod
+          select case(onetwo(i))
+          case(1)
+            p1(1,limpos(i))=xtrian(icoor(i))
+            p1(2,limpos(i))=ytrian(icoor(i))
+          case(2)
+            p2(1,limpos(i))=xtrian(icoor(i))
+            p2(2,limpos(i))=ytrian(icoor(i))
+          end select
+        end do
+      end if
 c=====================================================
 C  ABSCHALTEN NICHT ERREICHBARER ODER DOPPELT VORHANDENER FLAECHEN
 C
@@ -551,8 +578,6 @@ C
             endif
           endif
         END IF
-
-      END IF
 C
 C  SET SOME VOLUMES EXPLICITLY
 C
@@ -674,22 +699,22 @@ C RIGHT TARGET (OUTER FOR LSN, INNER FOR USN, UPPER INNER FOR DN)
             ypolpos(3)=npoint(2,npplg)
           else if(npplg.eq.6) then
             xpolpos(3)=1
-            ypolpos(3)=npoint(2,3)-1
+            ypolpos(3)=npoint(2,TARGINDEX)-1
           end if
           if(npplg.le.3) then
             xpolpos(4)=nr1st
             ypolpos(4)=npoint(2,npplg)
           else if(npplg.eq.6) then
             xpolpos(4)=nr1st
-            ypolpos(4)=npoint(2,3)-1
+            ypolpos(4)=npoint(2,TARGINDEX)-1
           end if
 
           if(npplg.eq.6) then
 C TOP OUTER (LEFT) TARGET
             xpolpos(5)=1
-            ypolpos(5)=npoint(1,4)+1
+            ypolpos(5)=npoint(1,TARGINDEX+1)+1
             xpolpos(6)=nr1st
-            ypolpos(6)=npoint(1,4)+1
+            ypolpos(6)=npoint(1,TARGINDEX+1)+1
 C BOTTOM OUTER (RIGHT) TARGET
             xpolpos(7)=1
             ypolpos(7)=npoint(2,6)

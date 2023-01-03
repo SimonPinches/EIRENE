@@ -15,6 +15,9 @@ cdr  Feb       2020: sync code for EI, PI, CX, and EL processes. add energy weig
 cdr                  for modcol=1, na = 23, 25, 27
 cdr                  e.g. also now for EL processes (because of bgk balances)
 cdr  Feb       2021  ND2 for sngl_poly. Not used yet. ND2=9 so far.
+cdr  Feb       2022  ADIN reset to zero only for tallies IAIN with NA=20,...29,
+cdr                  but not for other ADIN tallies.
+cdr                  Otherwise other ADIN tallies, e.g. from INFCOP, are lost here.
 
 CDR:  A&M Data diagnostics routine, added in Jan. 2014
 C  PUT SELECTED EIRENE ATOMIC DATA FIELDS ONTO ADIN ARRAY FOR OUTPUT.
@@ -102,9 +105,6 @@ cdr  functions for 'on the fly' evaluation of A&M data
 
 
       AU=0.6120D-08
-! reinitialize ADIN to 0 in order to avoid residual values from prior
-! iterations in case of changed LGVAC
-      ADIN = 0._DP
 
       IF (.NOT.LADIN) THEN
         WRITE (IUNOUT,*) ' INPUT TALLY ADIN NOT AVAILABLE',
@@ -118,6 +118,13 @@ cdr  functions for 'on the fly' evaluation of A&M data
         NA=NAINT(IAIN)    !  na stands for tally:  TAB..3(...),  EPL..3(...)
 
         IF ((NA < 20) .OR. (NA > 29)) CYCLE
+! reinitialize ADIN to 0 in order to avoid residual values from prior
+! iterations, e.g. in case of changed LGVAC
+        if (any(adin(iain,:).ne.0.0)) then
+          write (iunout,*) 'AMDIAG, Reset ADIN tally no. ',iain
+c         call eirene_exit_own(1)
+        endif
+        ADIN(IAIN,:) = 0._DP
 
         IF (NSTORDR < NRAD) THEN
           WRITE (IUNOUT,*) 'AMDIAG NOT READY FOR STORAGE SAVING MODE'

@@ -198,7 +198,7 @@ CYM/HJL Variables moved to module scope
 !     DATA P_AR_H /4.04,2.50,0.86,2.4756,1.7892 ,3.2737  ,0.,-3.03  ,0./
 !     DATA P_KR_H /4.45,2.50,0.80,2.7779,2.0077 ,3.7406  ,0.,-3.3375,0./
 !     DATA P_XE_H /6.75,3.80,1.08,3.2882,2.6884 ,3.8436  ,0.,-5.0625,0./
-c  special relations for MORSE-Potential functions:
+c  special relations for MORSE-Potential functions V(r):
 c                iflag=2, projectile A on target B
 c                these parameters P(5), P(6), P(8) are also now
 c                read from file AMJUEL rather than initialising them here
@@ -559,11 +559,12 @@ C  STEP 4 FINISHED, POST-COLLISION VELOCITY IS SET IN LAB FRAME
 C  NEXT: RETURN
 C
  1000 CONTINUE
+
       RETURN
 C
   995 CONTINUE
       WRITE (iunout,*)
-     . 'ERROR IN VELOEL, NO ELASTIC COLLISION DATA AVAILABLE'
+     . 'ERROR IN VELOEL, NO ELASTIC CROSS-SECTION DATA AVAILABLE'
       CALL EIRENE_MASJ5 ('ITYP,IATM,IMOL,IION,IPLS                ',
      .                    ITYP,IATM,IMOL,IION,IPLS)
       CALL EIRENE_MASJ4 ('NFLAG, IFLAG, IREL, IDREAC      ',

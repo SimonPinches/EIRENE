@@ -33,8 +33,8 @@ c  EIRENE_PLMESH: plots these contours, using GR plot software.
       USE EIRMOD_CTRCEI
       IMPLICIT NONE
 
-      INTEGER, PARAMETER :: MAXPOIN=2000
-      REAL(DP) :: partcont(maxpoin,2,2)
+      REAL(DP), ALLOCATABLE :: partcont(:,:,:)
+      INTEGER, SAVE :: MAXPOIN=2000
       REAL(DP) :: XPE, YPE, HELP
       REAL(DP) :: DISTQI, DISTQJ1, DISTQJ2
       INTEGER  :: ICONT, IPOIN, I, J,
@@ -60,6 +60,8 @@ C ILPLG WIRD IM INPUT BLOCK 3 EINGELESEN
       CALL EIRENE_LEER(2)
       WRITE (iunout,*) 'SUBROUTINE PLMESH CALLED'
       CALL EIRENE_LEER(1)
+
+      ALLOCATE (partcont(maxpoin,2,2))
 
       NCONT = 0
       DO I=1,NLIMI
@@ -96,11 +98,9 @@ C 2-PUNKT OPTION WIRD IM TIMEA0 AUF RLB=1 ZURUECKGEFUEHRT
                   WRITE(IUNOUT,*)
      .             'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
      .              ICONT
-                  WRITE(IUNOUT,*)
-     .             'INCREASE VALUE OF MAXPOIN IN plmesh.F'
-                  WRITE(IUNOUT,*)
-     .             'CURRENTLY MAXPOIN = ', MAXPOIN
-                  CALL EIRENE_EXIT_OWN(1)
+                  WRITE(IUNOUT,*) 'INCREASE VALUE OF MAXPOIN'
+                  CALL EIRENE_EXTEND_ARRAY
+                  WRITE(IUNOUT,*) 'MAXPOIN SET TO = ', MAXPOIN
                 ENDIF
                 IF (A3LM(I) .EQ. 0._DP) THEN
 C               X,Y-KOORDINATEN
@@ -141,11 +141,9 @@ C  POLOIDAL SURFACES
                       WRITE(IUNOUT,*)
      .                 'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
      .                  ICONT
-                      WRITE(IUNOUT,*)
-     .                 'INCREASE VALUE OF MAXPOIN IN plmesh.F'
-                      WRITE(IUNOUT,*)
-     .                 'CURRENTLY MAXPOIN = ', MAXPOIN
-                      CALL EIRENE_EXIT_OWN(1)
+                      WRITE(IUNOUT,*) 'INCREASE VALUE OF MAXPOIN'
+                      CALL EIRENE_EXTEND_ARRAY
+                      WRITE(IUNOUT,*) 'MAXPOIN SET TO = ', MAXPOIN
                     ENDIF
                     PARTCONT(IPOIN,1,1) = XPOL(J,INUMP(I,2))
                     PARTCONT(IPOIN,1,2) = YPOL(J,INUMP(I,2))
@@ -163,11 +161,9 @@ C  RADIAL SURFACES
                       WRITE(IUNOUT,*)
      .                 'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
      .                  ICONT
-                      WRITE(IUNOUT,*)
-     .                 'INCREASE VALUE OF MAXPOIN IN plmesh.F'
-                      WRITE(IUNOUT,*)
-     .                 'CURRENTLY MAXPOIN = ', MAXPOIN
-                      CALL EIRENE_EXIT_OWN(1)
+                      WRITE(IUNOUT,*) 'INCREASE VALUE OF MAXPOIN'
+                      CALL EIRENE_EXTEND_ARRAY
+                      WRITE(IUNOUT,*) 'MAXPOIN SET TO = ', MAXPOIN
                     ENDIF
                     PARTCONT(IPOIN,1,1) = XPOL(INUMP(I,1),J)
                     PARTCONT(IPOIN,1,2) = YPOL(INUMP(I,1),J)
@@ -200,11 +196,9 @@ C  TRIANGLE SIDES
                     WRITE(IUNOUT,*)
      .               'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
      .                ICONT
-                    WRITE(IUNOUT,*)
-     .               'INCREASE VALUE OF MAXPOIN IN plmesh.F'
-                    WRITE(IUNOUT,*)
-     .               'CURRENTLY MAXPOIN = ', MAXPOIN
-                    CALL EIRENE_EXIT_OWN(1)
+                    WRITE(IUNOUT,*) 'INCREASE VALUE OF MAXPOIN'
+                    CALL EIRENE_EXTEND_ARRAY
+                    WRITE(IUNOUT,*) 'MAXPOIN SET TO = ', MAXPOIN
                   ENDIF
                   PARTCONT(IPOIN,1,1) = XTRIAN(NECKE(IS,ITRI))
                   PARTCONT(IPOIN,1,2) = YTRIAN(NECKE(IS,ITRI))
@@ -328,5 +322,33 @@ c  re-initialize gr plot software for next picture
       call grnwpn(1)
       call grnxtf
 
+      DEALLOCATE (partcont)
+
+      RETURN
+
+      CONTAINS
+
+      SUBROUTINE EIRENE_EXTEND_ARRAY
+
+      IMPLICIT NONE
+      REAL(DP), ALLOCATABLE :: pc(:,:,:)
+      INTEGER :: NEWPOIN
+
+      ALLOCATE(PC(MAXPOIN,2,2))
+      PC = PARTCONT
+
+      DEALLOCATE (PARTCONT)
+
+      NEWPOIN = MAXPOIN + 2000
+      ALLOCATE (partcont(newpoin,2,2))
+
+      partcont(1:maxpoin,:,:) = pc(1:maxpoin,:,:)
+
+      maxpoin = newpoin
+      
+      deallocate(pc)
+
       return
+      END SUBROUTINE EIRENE_EXTEND_ARRAY
+
       END SUBROUTINE EIRENE_PLMESH

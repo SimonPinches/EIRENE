@@ -210,13 +210,13 @@ C  TALLY HOLEN
             END IF
 C
           ELSEIF (IZIF(4,IOP).LT.0) THEN
+c  2nd OPERAND IS AN INPUT TALLY: fetch an input tally, case 1 to case 25
             ITL=IABS(IZIF(4,IOP))
             IF (ITL.GT.NTALI) GOTO 90
             IF (IZIF(3,IOP).GT.NFRSTP(ITL)) GOTO 91
             K=IZIF(3,IOP)
             NF=NFRSTP(ITL)
 
-c  2nd OPERAND IS AN INPUT TALLY: fetch an input tally, case 1 to case 25
             CALL EIRENE_GET_INTAL
             IF (IER > 0) EXIT   ! NO CORRESPONDING INPUT TALLY FOUND
 cdr  input tally(itl,:) is returned as OP(:), 

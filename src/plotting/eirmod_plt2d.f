@@ -1486,9 +1486,14 @@ C
       WRITE (iunout,*) 'OPTION IN PLT2D NOT READY: Z- OR TOROIDAL GRID'
       CALL EIRENE_EXIT_OWN(1)
 
+      RETURN
+
       END SUBROUTINE EIRENE_PLT2D
+
+c--------------------------------------------------------------
+
 C
-C  PLOT PARTICLE HISTORIES IN GEOMETRY-PLOT
+C  PRINT AND PLOT PARTICLE HISTORIES IN GEOMETRY-PLOT
 C
       SUBROUTINE EIRENE_CHCTRC(XPLO,YPLO,ZPLO,IFLAG,ISYM)
       IMPLICIT NONE
@@ -1882,7 +1887,7 @@ csw 20oct08
       if(allocated(idash)) deallocate(idash)
       if(allocated(ifarb)) deallocate(ifarb)
 csw
-      return
+      RETURN
 
       END SUBROUTINE EIRENE_PLT2D_REINIT
 

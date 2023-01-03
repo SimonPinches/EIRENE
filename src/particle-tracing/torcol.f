@@ -97,4 +97,4 @@ C
         RETURN
       ENDIF
 C
-      END
+      END SUBROUTINE EIRENE_TORCOL

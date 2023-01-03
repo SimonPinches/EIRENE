@@ -34,7 +34,7 @@ C
      >                          NRCX, NREC, NREI, NREL, NRPI,
      >                          NBGK,
      >                          NSMSTRA, NTALB,
-     >                          IUNMEM, IUNRAPSVEC
+     >                          IUNMEM, IUNRAPSVEC, NLIMPS
       USE EIRMOD_COMUSR, ONLY: EIRENE_ALLOC_COMUSR,
      >                         EIRENE_DEALLOC_COMUSR, IITER, ITIMV,
      >                         NBGVI,
@@ -106,6 +106,7 @@ C
       USE EIRMOD_REFUSR, ONLY: EIRENE_DEALLOC_REFUSR
       USE EIRMOD_CCOUPL, ONLY: EIRENE_DEALLOC_CCOUPL
       USE EIRMOD_INFCOP, ONLY: EIRENE_IF4COP, EIRENE_INFCOP_PRE_MCARLO
+      USE EIRMOD_PRESSURELOOP
 
       IMPLICIT NONE
 
@@ -124,7 +125,7 @@ C
       INTEGER :: IER, ISTRAI
       REAL(DP) :: DUMMY, TIMI
       integer, save :: inentry=1, init_log=0, init_open=0
-      logical :: nlplas_save
+      logical :: nlplas_save, op
       character(20), save :: outname
       character(6), save :: outpos
       INTEGER :: PROVIDED
@@ -180,20 +181,25 @@ cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
           OUTNAME='output.'
           WRITE (OUTNAME(8:),'(I4.4)')
      .       (MY_PE*EIRENE_NTHREADS)+EIRENE_ITHREAD
-          IF ( LOUTAPP ) THEN
-            OUTPOS='APPEND'
-          ELSE
-            OUTPOS='ASIS'
-          END IF
-          IF (EIRENE_NTHREADS > 1) IUNOUT = IUNOUT + EIRENE_ITHREAD
+          inquire(UNIT=IUNOUT,opened=op)
+          if (op) then
+            init_open = 1
+          else
+            IF ( LOUTAPP ) THEN
+              OUTPOS='APPEND'
+            ELSE
+              OUTPOS='ASIS'
+            END IF
+            IF (EIRENE_NTHREADS > 1) IUNOUT = IUNOUT + EIRENE_ITHREAD
 #ifndef NAGFOR
-          OPEN (UNIT=IUNOUT,FILE=OUTNAME, ACCESS='SEQUENTIAL',
+            OPEN (UNIT=IUNOUT,FILE=OUTNAME, ACCESS='SEQUENTIAL',
      .         FORM='FORMATTED', POSITION=OUTPOS)
 #else
-          OPEN (UNIT=IUNOUT, FILE=OUTNAME, ACCESS='SEQUENTIAL',
+            OPEN (UNIT=IUNOUT, FILE=OUTNAME, ACCESS='SEQUENTIAL',
      .        FORM='FORMATTED')
 #endif
 
+          end if
           call ioflush_usr
 
           init_open=1
@@ -287,6 +293,10 @@ cdr  nlpls_save,.... ??
         CALL EIRENE_ALLOC_COMSPL
         CALL EIRENE_ALLOC_CTEXT(1)
         CALL EIRENE_ALLOC_CLGIN
+        !Allocate pressure feedback loop
+        IF (.NOT. ALLOCATED(RPRESSFED)) THEN
+          ALLOCATE(RPRESSFED(1:NLIMPS))
+        END IF
         CALL EIRENE_ALLOC_COMXS(1)
         CALL EIRENE_ALLOC_CTRIG
         CALL EIRENE_ALLOC_COMNNL(2)
@@ -490,8 +500,6 @@ C
      .        CALL EIRENE_PLTEIR(ISTRA)
   450 CONTINUE
 C
-
-
       IF ((NSTRAI.GT.1) .AND. (NSMSTRA==1))  THEN
         IF (TRCSRC(0)) CALL EIRENE_OUTEIR(0)
         IF (PLTSRC(0)) CALL EIRENE_PLTEIR(0)
@@ -839,6 +847,7 @@ CVK DBG
         WRITE(iunout,*) III,SUMMM
       END DO
 
+      RETURN
       END SUBROUTINE DBG_PRINTOUT
 
       END SUBROUTINE EIRENE_EIRENE

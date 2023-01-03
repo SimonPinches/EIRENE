@@ -61,7 +61,7 @@ c
         if (zeile(1:2) == '--') cycle
         call EIRENE_subcomma(zeile)
 
-!  read Element
+!  read element name
         ianf = 3
         iend = ianf + scan(zeile(ianf:),'|') - 1
 
@@ -100,7 +100,7 @@ c
 
         if (elementname(1:iblnk+10) /= reac(1:iblnk+10)) cycle
 
-!  skip Uebergang
+!  skip reading 'transition'
         ianf = iend + 2
         iend = ianf + scan(zeile(ianf:),'|') - 1
 
@@ -109,7 +109,7 @@ c
         iend = ianf + scan(zeile(ianf:),'|') - 1
         read (zeile(ianf:iend-1),*) aik
 
-!  skip fij
+!  skip  reading oscillator strength fij
         ianf = iend + 2
         iend = ianf + scan(zeile(ianf:),'|') - 1
 
@@ -369,6 +369,7 @@ c  Use REACDAT type "poly" also for photonic data
 
 
       subroutine EIRENE_subcomma (str)
+cdr  replace comma "," with point "." in character string STR
       implicit none
       character(len=*), intent(in out) :: str
       integer :: i
@@ -383,6 +384,7 @@ c  Use REACDAT type "poly" also for photonic data
 
 
       subroutine EIRENE_delete_blanks (str)
+cdr  remove blanks from character string STR
       implicit none
       character(len=*), intent (in out) :: str
       character, allocatable :: compact(:)

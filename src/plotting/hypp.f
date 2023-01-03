@@ -13,4 +13,4 @@ C
       RETURN
     1 EIRENE_HYPP=-E/(2.*C)+SQRT(RAD)
       RETURN
-      END
+      END FUNCTION EIRENE_HYPP

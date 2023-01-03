@@ -10,11 +10,11 @@ cdr             for default reactions, kk<0.
 C  this is the "on the fly" storage saving version to eliminate
 C  pre-computed array EHVEI1(irei,k) from with run
 
-cdr  find heavy secondary particle energy for EI process no. IREI,  energy in eV
+cdr  find heavy secondary particle energy (=KER) for EI process no. IREI,  energy in eV
 c    locally in cell K, for process kk= nhvrei(irei)
 c    sum over all heavy secondaries.
 c    Distribution to individual heavy secondary type and species is done later,
-c    e.g. in veloei for sampling, and in update, collide,.. for scoring
+c    e.g. in veloei for sampling, and in UPDATE, COLLIDE,.. for scoring
 c
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -45,10 +45,10 @@ cdr in this case (default reactions) we have: nhvrei = nreaei
            EIRENE_FEHVEI1 =0.0
 cdr  now the 6 default reactions for H2, H2+
         CASE (-5)  ! DEFAULT PROCESS KK=-5:  H2+E --> H+H +E,
-            EIRENE_FEHVEI1=6.  ! DEFAULT PROCESS KK=-5:  H2+E --> H+H +E,
-        CASE (-6)
+            EIRENE_FEHVEI1=6.
+        CASE (-6)  ! DEFAULT PROCESS KK=-6: H2 + E --> H + p + 2E,
             EIRENE_FEHVEI1=10.0
-        CASE (-7)
+        CASE (-7)  ! DEFAULT PROCESS KK=-7: H2 + E --> H2+ + 2E,
             EIRENE_FEHVEI1=0.0
         CASE (-8)   ! DEFAULT PROCESS KK=-8:  H2+ + E --> H+ + H +E,
             EIRENE_FEHVEI1=8.6
@@ -56,6 +56,9 @@ cdr  now the 6 default reactions for H2, H2+
             EIRENE_FEHVEI1=0.8
         CASE (-10)   ! DEFAULT PROCESS KK=-10: H2+ + E --> H + H, DISS. RECOMBINATION
 C  FOR THE FACTOR -0.896... SEE: EIRENE MANUAL, INPUT BLOCK 4, EXAMPLES
+C  FOR THIS PROCESS: RADIATION RATE = -POTENTIAL ENERGY RATE: DP= 15.6-4.52=11.08
+cdr  this DP is a bit too small, because H2+ is also vibr. excited.
+cdr  additional electron cost for H2+(0) --> H2+(v) may also be radiated.
             DE_10=8.964355004318D-01
             EIRENE_FEHVEI1=DE_10*TEIN(K)
         CASE (-11)   ! DEFAULT PROCESS KK=-11:  He+ E --> He+ +E, no net energy transfer to He+!

@@ -1,11 +1,5 @@
 !pb  26.10.06: close file after read or write
-!pb  31.10.06: definition of census arrays RPART, RPARTC, IPART, IPARTC changed
-cdr:  2015
-!               RPART (NPARTT,NPRNL) (now) <-- RPART (NPRNL,NPARTT) (formerly)
-!               RPARTC(NPARTT,NPRNL) (now) <-- RPARTC(NPRNL,NPARTT) (formerly)
-!               IPART (MPARTT,NPRNL) (now) <-- IPART (NPRNL,MPARTT) (formerly)
-!               IPARTC(MPARTT,NPRNL) (now) <-- IPARTC(NPRNL,MPARTT) (formerly)
-C
+
 cdr  2020
 cdr: FLUX(istr), for istr=NSTRAI (scaling for stratum ISTR) is also on fort.13.
 cdr: This may be a hidden link. Decouple flux(nstrai) written on fort.13 from

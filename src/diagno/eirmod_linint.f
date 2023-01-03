@@ -840,6 +840,7 @@ C
 C
 
       IF (IFIRST < 0) THEN
+CDR what is the purpose of this?  Needed or dead option?
         TRAJ(ICHORI)%TRJ%NCOU_CELL = TRAJ(ICHORI)%TRJ%NCOU_CELL + NCOU
         DO J=1,NCOU
           NCELL=NRCELL+NUPC(J)*NR1P2+NBLCKA

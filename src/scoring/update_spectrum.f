@@ -174,7 +174,7 @@ cdr  binning according to value of parameter EB
                 SPCVZ = ESTIML(ISPC)%SPCVZ
 cdr   both signs possible for EB now.
 cdr             EB = EB * (SPCVX*VELX+SPCVY*VELY+SPCVZ*VELZ)
-cdr   bug fix, with Sergej Makarov, May 29th 2019
+cdr   bug fix, with Sergey Makarov, May 29th 2019
                 SIG=SIGN(1._DP, SPCVX*VELX+SPCVY*VELY+SPCVZ*VELZ)
                 EB = SIG*EB * (SPCVX*VELX+SPCVY*VELY+SPCVZ*VELZ)**2
               END IF

@@ -48,12 +48,12 @@ C    IND=3:  3RD GRID, Z OR TOROIDAL COORDINATE
       IMPLICIT NONE
 
       REAL(DP) :: PC1(3), EDGELEN(6)
-      REAL(DP) :: ELPARM, X1, X2, SY, Y1, Y2, SX, AELL, X3, Y3, X4, Y4,
+      REAL(DP) :: X1, X2, SY, Y1, Y2, SX, AELL, X3, Y3, X4, Y4,
      .          VPXX, RN, RRN, FN, VPYY, PLABS, XNORM, VPX, VPY, QUOTI,
      .          GESFL, FRING, CONST, RRR, FL, FR, RL, RR, RRL, XD,
      .          PLEN, XDIFF, RORIG, XS3, PLABS2, PLABS3, XD1, YD,
-     .          XS, PLABS1, YD1, XS2, XD3, YD3, XS1, XD2, YD2, R, PIN,
-     .          POUT, EX1, XX1, XX2, YY1, YY2, DSD, COM, S, SQ,
+     .          XS, PLABS1, YD1, XS2, XD3, YD3, XS1, XD2, YD2,
+     .          XX1, XX2, YY1, YY2, DSD, COM, S, SQ,
      .          DP1, DS1, DS2
       REAL(DP), EXTERNAL :: EIRENE_ARTRI3
       INTEGER :: ITSIDE(3,4)
@@ -70,8 +70,6 @@ C    IND=3:  3RD GRID, Z OR TOROIDAL COORDINATE
      .             1,4,2,
      .             2,4,3,
      .             3,4,1/
-C STATEMENT FUNCTION FOR GRID PARAMETERS FOR LEVGEO=2 OPTION
-      ELPARM(R,PIN,POUT,EX1)=(PIN-POUT)*(1.-R**EX1)**1.+POUT
 C
       SELECT CASE (IND)
 C
@@ -653,7 +651,7 @@ C
             ENDIF
             WRITE (IUNOUT,*)
             WRITE (IUNOUT,*) ' SURFACE NO. ',JLIM
-            WRITE (IUNOUT,'(5A6,A12)') 'J','ITRI','ISIDE',
+            WRITE (IUNOUT,'(5A6,A12)') 'I','ITRI','ISIDE',
      .                                 'IP1','IP2','BLGT'
             DO I=1, SURF_TRIAN(J)%NUMTR
               IT = SURF_TRIAN(J)%ITRIAS(I)
@@ -1540,4 +1538,17 @@ C
       WRITE (iunout,*) 'GRID DATA INCONSISTENCY: 2ND GRID.  YAA > YIA ?'
       WRITE (iunout,*) 'YIA,YAA = ',YIA,YAA
       CALL EIRENE_EXIT_OWN(1)
+
+      CONTAINS
+
+C STATEMENT FUNCTION FOR GRID PARAMETERS FOR LEVGEO=2 OPTION
+      FUNCTION ELPARM(R,PIN,POUT,EX1)
+      IMPLICIT NONE
+      REAL(DP) :: ELPARM
+      REAL(DP) :: R, PIN, POUT, EX1
+
+      ELPARM = (PIN-POUT)*(1.-R**EX1)**1.+POUT
+      RETURN
+      END FUNCTION ELPARM
+
       END SUBROUTINE EIRENE_GRID

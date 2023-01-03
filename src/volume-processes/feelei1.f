@@ -60,7 +60,8 @@ c   electron energy losses per collision from the default EI processes -4 ....-1
         CASE (-5)
             EIRENE_FEELEI1=-10.5   ! DEFAULT PROCESS KK=-5:  H2 + E --> H + H + E
         CASE (-6)
-            EIRENE_FEELEI1=-25.0   ! DEFAULT PROCESS KK=-6:  H2 + E --> H + H+  +2E
+cdr changed Sept. 22:  25.0 --> 28.1, see xsectm default model kk=-6
+            EIRENE_FEELEI1=-28.1   ! DEFAULT PROCESS KK=-6:  H2 + E --> H + H+  +2E
         CASE (-7)
             EIRENE_FEELEI1=EELEI1(IREI,1) ! DEFAULT PROCESS KK=-7: H2 + E --> H2+  +2E
         CASE (-8)

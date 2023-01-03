@@ -24,15 +24,8 @@ cdr dec. 15:    missing: ftabel3
 cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option
 
 
-
-!pb APR  16:    eatds -> eatei
-!pb APR  16:    emlds -> emlei
-!pb APR  16:    eiods -> eioei
-!pb APR  16:    eelds -> eelei
-!pb MAY  16:    tabds1 -> tabei1
-!pb JUL  16:    ehvds1 -> ehvei1
-cdr sept 16:    nadsi  -> naeii
-
+cdr summer 16:  connect function fehvei1 for kinetic energy release in 
+cdr             storage saving mode
 cdr aug. 16:    bug fix re EXPO in PI branch
 cdr sept.16:    PI process: use v0/vth >> 1. to switch to beam-rate coeff
 cdr             EI process: started to check for H.3, H.1 options for EI processes
@@ -115,7 +108,8 @@ C
      .          SIGMAX,  EHEAVY,
      .          DENEL, VX, VY, VZ, PVELQ0, ELAB,
      .          VRELQ, VREL, XC,YC,ZC,
-     .          ELB,TII,V0_REL,
+     .          ELB,TII,
+cdr  .          V0_REL,  ! for diagnostic purposes only
      .          EXPO, 
 cdr  functions for 'on the fly' evaluation of A&M data
      .          EIRENE_FEELEI1, EIRENE_FEELPI3,
@@ -233,7 +227,9 @@ C
 C  1.) RATE COEFFICIENT
 C
         IF (MODCOL(4,2,IRPI).EQ.1) THEN
-C  MAXWELL, AT FIXED BEAM ENERGY, MOSTLY E0=0.0
+C  MAXWELL, AT PRE-SPECIFIED BEAM ENERGY, MOSTLY AT EB=0.0
+C           OR AT A PRE-SPEFICIED TEST PARTICLE TEMP. TB, MOSTLY TB=TI
+cdr  strictly we should use E0/Ti as smallness parameter, just the opposite case as in model 2.
           IF (NSTORDR >= NRAD) THEN
             SIGVPI(IRPI)=TABPI3(IRPI,K,1)
           ELSE
@@ -256,6 +252,7 @@ C  BEAM - MAXWELLIAN RATE IN PLASMA FRAME
 C
           IF (TIIN(IPLSTI,K).LT.TVAC) THEN  !  cannot happen, here already lgvac(ipls)=T
 C  HERE: T_I IS SO LOW, THAT ALL ION ENERGY IS IN DRIFT MOTION.
+cdr  strictly we should use Ti/E0 as smallness parameter, not Ti alone.
 C           HENCE: USE BEAM-BEAM RATE INSTEAD.
             VRELQ=PVELQ(IPLSV)
             VREL=SQRT(VRELQ)
@@ -265,9 +262,10 @@ C           HENCE: USE BEAM-BEAM RATE INSTEAD.
      .                       'FPATH PI1')
             SIGVPI(IRPI)=CII*VREL*DENIO(IPLS)
           ELSE
-C  Set hard-wired MINIMUM PROJECTILE ENERGY: 0.1 EV
+C  Set hard-wired MINIMUM PROJECTILE ENERGY cut off: 0.1 EV
+! scale log projectile energy for proper isotope, for rate coefficient, i.e. use field particle mass
             ELB=MAX(EMINL,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
-            V0_REL=SQRT(PVELQ(IPLSV))
+cdr         V0_REL=SQRT(PVELQ(IPLSV)) ! is already isotopically correct
 ! scale log temperature to target temperature for proper isotope, for rate coefficient, i.e. use charged particle mass
             TII=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
             IF (NSTORDR >= NRAD) THEN
@@ -298,6 +296,7 @@ C  MODEL 3:
 C  BEAM - BEAM, BUT WITH EFFECTIVE INTERACTION ENERGY
           VRELQ=ZTI(IPLS)+PVELQ(IPLSV)
           VREL=SQRT(VRELQ)
+! scale log collision energy to mass as used for cross-section energy scale
           ELAB=LOG(VRELQ)+DEFPI(IRPI)
           IREAC=MODCOL(4,1,IRPI)
           CII=EIRENE_CROSS(ELAB,IREAC,IRPI,FACRPI(IRPI,1),'FPATH II')
@@ -321,7 +320,9 @@ C
         ESIGPI(IRPI,1)=EATPI(IRPI,0,1)*E0+EATPI(IRPI,0,2)*EHEAVY
         ESIGPI(IRPI,2)=EMLPI(IRPI,0,1)*E0+EMLPI(IRPI,0,2)*EHEAVY
         ESIGPI(IRPI,3)=EIOPI(IRPI,0,1)*E0+EIOPI(IRPI,0,2)*EHEAVY
-
+cdr summed over post collision field particle species
+cdr tbd:  two post collision field particles with different mass, hence different EHEAVY
+cdr tbd:  use eplpi(iri,ipp,1) and eplpi(iri,ipp,2)
         ESIGPI(IRPI,4)=EPLPI(IRPI,0,1)*E0+EPLPI(IRPI,0,2)*EHEAVY
 C
         SIGMAX=MAX(SIGMAX,SIGVPI(IRPI))
@@ -362,7 +363,8 @@ C  1.) RATE COEFFICIENT
 C
         IF (MODCOL(3,2,IRCX).EQ.1) THEN
 C  MODEL 1:
-C  MAXWELLIAN RATE, IGNORE NEUTRAL VELOCITY
+C  MAXWELLIAN RATE, IGNORE TEST PARTICLE VELOCITY (or assume a pre-described temperature)
+cdr  strictly we should use E0/Ti as smallness parameter, just the opposite case as in model 2.
           IF (NSTORDR >= NRAD) THEN
             SIGVCX(IRCX)=TABCX3(IRCX,K,1)
           ELSE
@@ -374,6 +376,7 @@ C  MODEL 2:
 C  BEAM - MAXWELLIAN RATE IN PLASMA FRAME
           IF (TIIN(IPLSTI,K).LT.TVAC) THEN  !  cannot happen, here already lgvac(ipls)
 C  HERE: T_I IS SO LOW, THAT ALL ION ENERGY IS IN DRIFT MOTION.
+cdr  strictly we should use Ti/E0 as smallness parameter, not Ti alone.
 C           HENCE: USE BEAM-BEAM RATE INSTEAD.
             VRELQ=PVELQ(IPLSV)
             VREL=SQRT(VRELQ)
@@ -428,8 +431,9 @@ CDR  THIS SHOULD BE DONE IN FTABCX3.  NOT READY
           ENDIF
 
         ELSEIF (MODCOL(3,2,IRCX).EQ.3) THEN
-C  MODEL 3:  (ALSO:  DEFAULT CX MODEL, ONLY CROSS-SECTION IS USED, NO RATE COEFFICIENTS)
-C  BEAM - BEAM RATE, BUT WITH EFFECTIVE INTERACTION ENERGY
+C  MODEL 3:  (ALSO:  MINIMAL CX MODEL, ONLY CROSS-SECTION IS USED, NO RATE COEFFICIENTS)
+C  BEAM - BEAM RATE, BUT WITH EFFECTIVE INTERACTION ENERGY TO APPROX.
+c                    ACCOUNT FOR FIELD PARTICLE THERMAL ENERGY
           VEFFQ=ZTI(IPLS)+PVELQ(IPLSV)
           VEFF=SQRT(VEFFQ)
           ELAB=LOG(VEFFQ)+DEFCX(IRCX)
@@ -438,7 +442,7 @@ C  BEAM - BEAM RATE, BUT WITH EFFECTIVE INTERACTION ENERGY
           SIGVCX(IRCX)=CXS*VEFF*DENIO(IPLS)
         ELSEIF (MODCOL(3,2,IRCX).EQ.4) THEN
 C  MODEL 4
-C  BEAM - BEAM RATE, IGNORE THERMAL ION ENERGY
+C  BEAM - BEAM RATE, IGNORE FIELD PARTICLE THERMAL ENERGY ALTOGETHER
           VRELQ=PVELQ(IPLSV)
           VREL=SQRT(VRELQ)
           ELAB=LOG(VRELQ)+DEFCX(IRCX)
@@ -457,7 +461,7 @@ C
         IF (MODCOL(3,4,IRCX).EQ.1) THEN
 C  MODEL 1:
 C  MEAN ENERGY FROM DRIFTING MAXWELLIAN
-C  (ONLY NEEDED FOR TRACKLENGTH ESTIMATOR)
+C  (ONLY NEEDED FOR PRE COLLISION ENERGY TRACKLENGTH ESTIMATOR) 
 C  ION SAMPLING FROM MAXWELLIAN
           IF (LEX.AND.(IESTCX(IRCX,3).EQ.0)) THEN  ! for tracklength estimator only
             IF (NSTORDR >= NRAD) THEN
@@ -552,7 +556,8 @@ C  1.) RATE COEFFICIENT
 C
         IF (MODCOL(5,2,IREL).EQ.1) THEN
 C  MODEL 1:
-C  MAXWELLIAN RATE, IGNORE ATOM VELOCITY
+C  MAXWELLIAN RATE, IGNORE TEST PARTICLE VELOCITY (or assume a pre-described temperature)
+cdr  strictly we should use E0/Ti as smallness parameter, just the opposite case as in model 2.
           IF (NSTORDR >= NRAD) THEN
             SIGVEL(IREL)=TABEL3(IREL,K,1)
           ELSE
@@ -566,11 +571,13 @@ cdr  here should be call to ftabel3,  to be done
      .             MIN(DENSLIM(IPLS),DIIN(IPLS,K))*FACREL(IREL,1)
             SIGVEL(IREL)=TBEL
           END IF
+
         ELSEIF (MODCOL(5,2,IREL).EQ.2) THEN
 C  MODEL 2:
 C  BEAM - MAXWELL
           IF (TIIN(IPLSTI,K).LT.TVAC) THEN
 C  TEMPERATURE TOO LOW, USE: BEAM_ATOM - BEAM_DRIFT RATE COEFF.
+cdr  strictly we should use Ti/E0 as smallness parameter, not Ti alone.
             VRELQ=PVELQ(IPLSV)
             VREL=SQRT(VRELQ)
             ELAB=LOG(VRELQ)+DEFEL(IREL)
@@ -651,7 +658,7 @@ C
         IF (MODCOL(5,4,IREL).EQ.1) THEN
 C  MODEL 1:
 C  MEAN ENERGY FROM DRIFTING MAXWELLIAN
-C  (ONLY NEEDED FOR TRACKLENGTH ESTIMATOR)
+C  (ONLY NEEDED FOR PRE COLLISION ENERGY TRACKLENGTH ESTIMATOR)
 C  ION SAMPLING FROM MAXWELLIAN
           IF (NSTORDR >= NRAD) THEN
             ESIGEL(IREL,1)=EPLEL3(IREL,K,1)
