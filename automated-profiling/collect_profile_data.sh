@@ -68,7 +68,7 @@ do
 
 	if [ "$job_state" == "FAILED" ]
 	then
-	        echo "Job ${job_number} failed, skipping profile"
+	        echo "Job ${job_number} failed, skipping parsing"
 	else
     	        echo "Parsing output"
 		report cases.${case_name}.timing {}

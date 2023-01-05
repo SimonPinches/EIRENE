@@ -3,6 +3,7 @@
 eir_dir=$HOME/f-eirene/eirene
 export eir_dir
 
+# Uncomment and replce this with a local samples directory to avoid cloning from the Juelich repository
 eirene_samples_dir=$HOME/f-eirene/EIRENE-sample-cases
 export eirene_samples_dir
 

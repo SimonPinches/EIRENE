@@ -107,18 +107,15 @@ do
 	report cases.${case_name}.n_mpi_ranks $n
 	report cases.${case_name}.n_omp_threads $c
 	if [ ! -d $case_name ]
-	then    # Temporary hack for a local repo
-	        mkdir $case_name
-	        cp -r $local_samples_repo/$sample $case_name/$sample
-		#git clone $top_dir/$local_samples_repo $case_name
-	        #git clone $local_samples_repo $case_name
+	then   
+	        git clone $top_dir/$local_samples_repo $case_name
 	else
 		echo $case_name directory already exists...
 	fi
 	cd $case_name
 	cd $sample
 	echo Building $case_name/$sample
-	make -j
+	make -j CONFIG=Release.develop
 	cd ../..
 	echo
 done
