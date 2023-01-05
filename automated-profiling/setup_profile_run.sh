@@ -15,14 +15,14 @@ which jq > /dev/null || (echo "OOPS: Missing dependency: jq"; exit 1;)
 # Setup top-level directories and git repos #
 #############################################
 
-eir_dir=$EIRDIR
+##eir_dir=$EIRDIR
 
 mkdir -p $scalability_report_dir
 
 
-#Clone or copy EIRENE and build it
-# This is not necessary as it stands as ththis script is within the EIRENE repository.
-# However this may change so it will  be left in as it is
+# Clone or copy EIRENE and build it
+# This is not necessary as it stands as this script is within the EIRENE repository.
+# However this may change so it will  be left in as it is for now
 if [ ! -d $eir_dir ]
 then
 	echo Cloning eirene into $eir_dir
@@ -56,13 +56,13 @@ make -j EIRENE
 cd $top_dir
 
 # Either clone eirene samples into a local reference repo or copy from existing directory
-if [ ! -d $eirene_samples_repo ]
+if [ -d $eirene_samples_dir ]
 then
+        echo Copying existing eirene samples repo at $eirene_samples_repo into $local_samples_repo
+        cp -r $eirene_samples_dir $local_samples_repo
+else
 	echo Cloning eirene samples into $local_samples_repo
 	git clone $eirene_samples_repo $local_samples_repo
-else
-        echo Copying existing eirene samples repo at $eirene_samples_repo into $local_samples_repo
-        cp -r $eirene_samples_repo $local_samples_repo
 fi
 
 cd $local_samples_repo

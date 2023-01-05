@@ -15,6 +15,10 @@ from flatten_json import flatten
 
 class eiron_profile:
     def __init__( self, args ):
+        self.pdata = self.read_data(args)
+
+
+    def read_data(self, args):
         # Read data from a csv or json file file into a panda dataframe
         # If file type is specified then default to that, otherwise decide from extension
         if args.filetype:
@@ -25,20 +29,23 @@ class eiron_profile:
         if filetype=='json':
             print("Reading json data from",args.file)
             try:
-                self.pdata = self.read_json_with_pandas(args.file)
+                data = self.read_json_with_pandas(args.file)
             except:
                 print("ERROR: Cannot read input file")
                 exit()
         elif filetype=='csv':
             print("Reading csv data from",args.file)
             try:
-                self.pdata = self.read_flat_csv_with_pandas(args.file)
+                data = self.read_flat_csv_with_pandas(args.file)
             except:
                 print("ERROR: Cannot read input file")
                 exit()
         else:
             print("Error: Unknown file type",filetype)
             exit()
+
+        return data[data['job_state']=='COMPLETED']
+            
         
     # Read profile data from a csv file into a dataframe
     def read_flat_csv_with_pandas(self, file):
@@ -53,7 +60,7 @@ class eiron_profile:
         data = pd.read_json(file)
         # Flatten
         df = pd.json_normalize(data['cases'])
-        # Sort - will need to be adapted when more data is used one grid size is present
+        # Sort - will need to be adapted when more data is used and grid size is present
         return df.sort_values(by='n_omp_threads')
 
     # Filters data on the given values from flat csv data, 0 means all values
@@ -360,7 +367,7 @@ def read_args():
     parser.add_argument( "-n" ,"--nparticles" , default=800000 , help='Number of particles for scaling plots' )
     parser.add_argument( "-g" ,"--gridsize" , default=256 , help='Grid size for scaling plots' )
     parser.add_argument( "--firstthread" , default=2 , help='First thread number for use in weak scaling plots' )
-    parser.add_argument( "-t" ,"--filetype" , choices=['csv','json'], help='File type conataining profile data, either csv or json' )    
+    parser.add_argument( "-t" ,"--filetype" , choices=['csv','json'], help='File type conataining profile data, either csv or json. Overrides extension checking' )    
     args = parser.parse_args()
     if not exists(args.file):
         print("Error:", args.file, "does not exist, exiting")

@@ -7,10 +7,8 @@
 
 # Choose either the eirene samples juelich repository or local cases
 # Juelich
-#eirene_samples_repo=git@jugit.fz-juelich.de:eirene/EIRENE-sample-cases.git
-# Local, will save time
+eirene_samples_repo=git@jugit.fz-juelich.de:eirene/EIRENE-sample-cases.git
 eirene_samples_branch=reduced_profiling_cases
-eirene_samples_repo=$HOME/f-eirene/EIRENE-sample-cases
 
 local_samples_repo=EIRENE_SAMPLES_LOCAL
 

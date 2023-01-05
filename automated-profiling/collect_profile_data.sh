@@ -9,6 +9,8 @@ source $auto_prof_dir/automation_script_header.sh
 
 which jq > /dev/null || (echo "OOPS: Missing dependency: jq"; exit 1;)
 
+echo Collecting profile data
+
 cases=$(jq '.cases | keys[]' $report_file | tr -d '"') 
 for case_name in $cases
 do
@@ -33,15 +35,21 @@ do
 	job_number=$(read_report cases.${case_name}.job_number |tr -d '"')
 	job_state=$(sacct -j $job_number --format jobid,state -n |sed -n -r "/^$job_number /s/($job_number| +)//gp")
 	while [ "$job_state" != "COMPLETED" ]; do	        
-		job_state=$(sacct -j $job_number --format jobid,state -n |sed -n -r "/^$job_number /s/($job_number| +)//gp")
+	        job_state=$(sacct -j $job_number --format jobid,state -n |sed -n -r "/^$job_number /s/($job_number| +)//gp")
+		if [ "$job_state" == "FAILED" ]
+		then
+		        echo "Job ${job_number} failed, job state is ${job_state}"
+			break
+		fi
 		echo "Job ${job_number} not complete yet, job state is ${job_state} ... Waiting ..."
 		sleep 10
 		job_state=$(sacct -j $job_number --format jobid,state -n |sed -n -r "/^$job_number /s/($job_number| +)//gp")
 	done
 	report cases.${case_name}.job_state \"$job_state\"
-
+	
 	#Make a directory in the report dir for the case
 	case_report_dir=$scalability_report_dir/${sample}_profiles/$case_name
+	echo "creating $case_report_dir"
 	mkdir -p $case_report_dir
 
 	####################
@@ -58,11 +66,16 @@ do
 	echo "Copied output ${sample}_profiles/$case_name/profile-${N}-${n}-${c}"
 	report cases.${case_name}.output_copied "true"
 
-	echo "Parsing output"
-	report cases.${case_name}.timing {}
-	cpu_time=$(grep CPU_TIME ${case_report_dir}/eirene-2d.reference_${N}-${n}-${c}.out | sed 's/[[:blank:]]*$//; s/.*[[:blank:]]//')
-	wall_time=$(echo ${cpu_time:0:8})
-	report cases.${case_name}.output_parsed "true"
-	echo "Adding wall time: ${wall_time}"
-	report cases.${case_name}.timing.wall_time ${wall_time}
+	if [ "$job_state" == "FAILED" ]
+	then
+	        echo "Job ${job_number} failed, skipping profile"
+	else
+    	        echo "Parsing output"
+		report cases.${case_name}.timing {}
+		cpu_time=$(grep CPU_TIME ${case_report_dir}/eirene-2d.reference_${N}-${n}-${c}.out | sed 's/[[:blank:]]*$//; s/.*[[:blank:]]//')
+		wall_time=$(echo ${cpu_time:0:8})
+		report cases.${case_name}.output_parsed "true"
+		echo "Adding wall time: ${wall_time}"
+		report cases.${case_name}.timing.wall_time ${wall_time}
+	fi
 done

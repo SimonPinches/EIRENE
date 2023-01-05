@@ -1,8 +1,10 @@
 #!/bin/bash
 # The location of an existing eirene installation
 eir_dir=$HOME/f-eirene/eirene
-
 export eir_dir
+
+eirene_samples_dir=$HOME/f-eirene/EIRENE-sample-cases
+export eirene_samples_dir
 
 # Remove existing profile data
 rm -rf SCALABILITY_REPORT EIRENE_SAMPLES_LOCAL Profile*
