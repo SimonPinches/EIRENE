@@ -55,14 +55,22 @@ make -j EIRENE
 
 cd $top_dir
 
+echo "samples dir ${eirene_samples_dir}"
+
 # Either clone eirene samples into a local reference repo or copy from existing directory
-if [ -d $eirene_samples_dir ]
+if [ -v eirene_samples_dir ]
 then
-        echo Copying existing eirene samples repo at $eirene_samples_repo into $local_samples_repo
-        cp -r $eirene_samples_dir $local_samples_repo
+        echo Using local eirene samples repo at $eirene_samples_dir
+	if [ -d $eirene_samples_dir ]
+	then
+	        local_samples_repo=$eirene_samples_dir
+	else
+	        echo Local samples directory does not exist, aborting.
+		exit -1
+	fi			    
 else
 	echo Cloning eirene samples into $local_samples_repo
-	git clone $eirene_samples_repo $local_samples_repo
+	git clone $eirene_samples_repo  --branch $eirene_samples_branch --single-branch $local_samples_repo
 fi
 
 cd $local_samples_repo
@@ -84,8 +92,10 @@ max_num_threads=9999
 #thread_per_rank_range=( 1 2 4 8 16 32 64)
 #testing
 node_range=( 1 )
-rank_per_node_range=( 1 2 4 8 )
-thread_per_rank_range=( 1 2 4 8 )
+#rank_per_node_range=( 1 2 4 8)
+#thread_per_rank_range=( 1 2 )
+rank_per_node_range=( 1 2 )
+thread_per_rank_range=( 1 2 )
 
 report cases {}
 for N in ${node_range[*]}
@@ -107,15 +117,18 @@ do
 	report cases.${case_name}.n_mpi_ranks $n
 	report cases.${case_name}.n_omp_threads $c
 	if [ ! -d $case_name ]
-	then   
-	        git clone $top_dir/$local_samples_repo $case_name
+	then
+	        echo $local_samples_repo
+	        git clone $local_samples_repo --branch $eirene_samples_branch --single-branch $case_name 
 	else
 		echo $case_name directory already exists...
 	fi
-	cd $case_name
+	cd $case_name	
+	git checkout $eirene_samples_branch
+	git status      
 	cd $sample
 	echo Building $case_name/$sample
-	make -j CONFIG=Release.develop
+	make -j CONFIG=Release.develop    # the .develop is a hack until the integrated branch is fully working
 	cd ../..
 	echo
 done

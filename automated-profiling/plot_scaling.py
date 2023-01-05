@@ -125,7 +125,7 @@ class eiron_profile:
         fdata = self.filter_data(n_mpi_ranks=1)
         self.plot_data(fdata['n_omp_threads'],fdata['timing.wall_time'],{'label':'walltime'})
         self.ax.legend()
-        self.makeplot("strongThreadScaling.png")
+        self.makeplot("plots/strongThreadScaling.png")
 
         # A simple figure for eirene strong mpi scaling
     def fig_simple_strong_mpi_scaling(self,nparticles,nthreads):
@@ -134,7 +134,7 @@ class eiron_profile:
         fdata = self.filter_data(n_omp_threads=nthreads)
         self.plot_data(fdata['n_mpi_ranks'],fdata['timing.wall_time'],{'label':'walltime'})
         self.ax.legend()
-        self.makeplot("strongMPIScaling.png")
+        self.makeplot("plots/strongMPIScaling.png")
 
     # Eirene strong mpi scaling for different thread counts
     def fig_strong_mpi_scaling(self,nparticles):
@@ -149,7 +149,7 @@ class eiron_profile:
         fdata = self.filter_data(n_omp_threads=8)
         self.plot_data(fdata['n_mpi_ranks'],fdata['timing.wall_time'],{'label':'8 threads'})
         self.ax.legend()
-        self.makeplot("strongMPIScalingThreads.png")
+        self.makeplot("plots/strongMPIScalingThreads.png")
 
         
         
