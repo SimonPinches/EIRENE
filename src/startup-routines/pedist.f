@@ -231,7 +231,7 @@ C>   processes to one stratum.
           FACP=MIN(1.0_DP,REAL(NPRS_FREE,DP)/
      .                   (REAL(NPRS_OPT,DP)+eps30))
           write (iunout,*) ' facp ',facp
-          NPESTR(0)=NPRS
+!HJL this is wrong  NPESTR(0)=NPRS
           DO ISTRA=1,NSTRA
             NPESTR(ISTRA)=NPESTR(ISTRA)+int(TIMPE(ISTRA)*FACP)
             NPRS_FREE=NPRS_FREE-int(TIMPE(ISTRA)*FACP)
@@ -243,7 +243,7 @@ C>   processes to one stratum.
         else
 
 csw attempting better work load balancing
-          npestr(0)=nprs
+!HJL          npestr(0)=nprs
           tmean=xtim(0)/dble(nprs)
           do istra=1,nstra
             timpe(istra) = max(xtim(istra)-tmean,0.0_DP)/tmean
@@ -289,7 +289,7 @@ csw
         WRITE (iunout,*) ' NPRS_FREE ',NPRS_FREE
 
 csw 14jul2011
-        if(sum(npestr(1:nstra)) /= npestr(0) ) then
+        if(sum(npestr(1:nstra)) /= NPRS ) then ! HJL
           write(iunout,*) 'pedist: wrong number of processors in npestr'
           call eirene_exit_own(1)
         endif
