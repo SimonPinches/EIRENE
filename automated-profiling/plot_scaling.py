@@ -121,6 +121,7 @@ class eiron_profile:
 
     # A simple figure for eirene strong thread scaling
     def fig_simple_strong_thread_scaling(self,nparticles):
+        nparticles = 11000
         print('Plotting simple strong thread scaling:',nparticles,' particles')
         self.init_figure('Eirene Strong Thread Scaling')
         fdata = self.filter_data(n_mpi_ranks=1,n_nodes=1)
@@ -131,6 +132,7 @@ class eiron_profile:
 
     # A simple figure for eirene strong mpi scaling
     def fig_simple_strong_mpi_scaling(self,nparticles,nthreads):
+        nparticles = 11000
         print('Plotting simple strong MPI scaling:',nparticles,' particles')
         self.init_figure('Eirene Strong MPI Scaling')
         fdata = self.filter_data(n_omp_threads=nthreads).drop_duplicates('n_processes')
@@ -141,6 +143,7 @@ class eiron_profile:
 
     # Eirene strong mpi scaling for different thread counts
     def fig_strong_mpi_scaling(self,nparticles):
+        nparticles = 11000
         print('Plotting strong MPI scaling with threads:',nparticles,' particles')
         self.init_figure('Eirene Strong MPI Scaling')
         allthreads = self.pdata['n_omp_threads'].drop_duplicates()

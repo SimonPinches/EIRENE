@@ -1,11 +1,13 @@
 !> Wrapper module for MPI, and dummy module for serial compilation
 module eirmod_mpi
 #ifdef USE_MPI
+  use mpi
   implicit none
-  include 'mpif.h'
   integer, private, save :: iounit
   public :: mpi_set_own_io_unit
 
+!HJL This def check is to avoid creating ambiguous interfaces when MPI_VERSION is not set
+#ifdef MPI_VERSION
 #if MPI_VERSION < 3
 ! MPI libraries with MPI version 3 are available on all platforms.
 ! If anyone still wants to use an older library without MPI 3 subroutines,
@@ -20,7 +22,7 @@ module eirmod_mpi
     module procedure mpi_ireduce_i0_l1
     module procedure mpi_ireduce_l1_l1
   end interface
-
+#endif
 #endif
   contains
 
