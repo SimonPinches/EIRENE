@@ -15,6 +15,7 @@ from flatten_json import flatten
 
 class eiron_profile:
     def __init__( self, args ):
+        codetype = args.codetype
         self.pdata = self.read_data(args)
 
 
@@ -27,31 +28,30 @@ class eiron_profile:
             filetype = pathlib.Path(args.file).suffix[1:]
         
         if filetype=='json':
-            print("Reading json data from",args.file)
+            print('Reading json data from',args.file)
             try:
                 data = self.read_json_with_pandas(args.file)
             except:
-                print("ERROR: Cannot read input file")
+                print('ERROR: Cannot read json input file', args.file)
                 exit()
         elif filetype=='csv':
-            print("Reading csv data from",args.file)
+            print('Reading csv data from',args.file)
             try:
                 data = self.read_flat_csv_with_pandas(args.file)
             except:
-                print("ERROR: Cannot read input file")
+                print('ERROR: Cannot read csv input file')
                 exit()
         else:
-            print("Error: Unknown file type",filetype)
+            print('Error: Unknown file type',filetype)
             exit()
 
-        # Add a number of processes column and sort by threads, processes and nodes 
-        data['n_processes'] = data['n_nodes'] * data['n_mpi_ranks']            
-        return data[data['job_state']=='COMPLETED'].sort_values(by=['n_omp_threads','n_processes','n_nodes'])
+        return data
             
         
     # Read profile data from a csv file into a dataframe
     def read_flat_csv_with_pandas(self, file):
-        self.filetype = "flat csv"
+        self.filetype = "csv"
+        self.filetype = "flat"
         data = pd.read_csv(file)
         return data
 
@@ -61,19 +61,10 @@ class eiron_profile:
         self.filestruct = 'nested'
         data = pd.read_json(file)
         # Flatten
-        df = pd.json_normalize(data['cases'])
-        return df
-
-    # Filters data on the given values from flat csv data, 0 means all values
-    def filter_data_flat_csv(self,sim,tally,nparticles,xdim,ydim,nthreads):
-        filtersim   = self.pdata['sim']==sim
-        filtertally = self.pdata['tally']==tally
-        filterpart  = (self.pdata['nparticles']==nparticles) | (nparticles == 0)
-        filterxdim  = (self.pdata['xdim']==xdim) | (xdim == 0)
-        filterydim  = (self.pdata['ydim']==ydim) | (ydim == 0)
-        filternthreads  = (self.pdata['nthreads']==nthreads) | (nthreads == 0)
-        return self.pdata[ filtersim & filtertally & filterpart & filterxdim & filterydim & filternthreads]
-
+        data = pd.json_normalize(data['cases'])
+        # Add a number of processes column and sort by threads, processes and nodes 
+        data['n_processes'] = data['n_nodes'] * data['n_mpi_ranks']            
+        return data[data['job_state']=='COMPLETED'].sort_values(by=['n_omp_threads','n_processes','n_nodes'])
 
     # Filter data for plotting based on a dict containing the key values
     def filter_data(self, **filter_dict):
@@ -81,7 +72,7 @@ class eiron_profile:
         filter = True        
         for key in keys:
             if key not in self.pdata.keys() :
-                print("ERROR: Key value does not exist! Exiting")
+                print('ERROR: Key value',key,'does not exist! Exiting')
                 exit()
             filter = (self.pdata[key]==filter_dict[key]) & filter
         return self.pdata[ filter ];
@@ -156,7 +147,7 @@ class eiron_profile:
         
     # Add strong scaling plots for the synchronous execution types        
     def plot_one_strong_scaling(self,nparticles,xgrid,ygrid,sim,tally,data):
-        fdata = self.filter_data_flat_csv( sim, tally, nparticles, xgrid, ygrid, 0)
+        fdata = self.filter_data( sim=sim, tally=tally, nparticles=nparticles, xdim=xgrid, ydim=ygrid)
         self.plot_data(fdata['nthreads'],fdata[data],{'label':sim + ' ' + tally})
 
     # Add strong scaling plots showing total time of the 4 execution types        
@@ -176,7 +167,7 @@ class eiron_profile:
     
     # Add strong scaling plots for the synchronous execution types        
     def plot_one_strong_scaling_split(self,nparticles,xgrid,ygrid,tally,data):
-        fdata = self.filter_data_flat_csv( 'synchronous', tally, nparticles, xgrid, ygrid, 0)
+        fdata = self.filter_data( sim='synchronous', tally=tally, nparticles=nparticles, xdim=xgrid, ydim=ygrid)
         self.plot_data(fdata['nthreads'],fdata[data],{'label':data + ' ' + tally})       
 
     # Add strong scaling plots showing paths and tally time
@@ -199,11 +190,11 @@ class eiron_profile:
     # This relies on the data increasing as a power of 2
     def get_weak_scaling_particles(self,sim,tally,firstthread,xgrid,ygrid):
         thread = firstthread
-        particles = self.filter_data_flat_csv( sim, tally, 0, xgrid, ygrid, 1)['nparticles'].sort_values()
-        fdata = self.filter_data_flat_csv( sim, tally, particles.min(), xgrid, ygrid, thread)
+        particles = self.filter_data( sim=sim, tally=tally, xdim=xgrid, ydim=ygrid, nthreads=1)['nparticles'].sort_values()
+        fdata = self.filter_data( sim=sim, tally=tally, nparticles=particles.min(), xdim=xgrid, ydim=ygrid, nthreads=thread)
         for npart in particles.iloc[1:]:
             thread = 2 * thread
-            fdata1 = self.filter_data_flat_csv( sim, tally, npart, xgrid, ygrid, thread)            
+            fdata1 = self.filter_data( sim=sim, tally=tally, nparticles=npart, xdim=xgrid, ydim=ygrid, nthreads=thread)            
             fdata = pd.concat([fdata,fdata1],axis=0)
         return fdata
 
@@ -255,11 +246,11 @@ class eiron_profile:
     # This relies on the data increasing as a power of 2
     def get_weak_scaling_grid(self,sim,tally,firstthread,nparticles):
         thread = firstthread
-        xgrid = self.filter_data_flat_csv( sim, tally, nparticles, 0, 0, 1)['xdim'].sort_values()
-        fdata = self.filter_data_flat_csv( sim, tally, nparticles, xgrid.min(), xgrid.min(), thread)
+        xgrid = self.filter_data( sim=sim, tally=tally, nparticles=nparticles, nthreads=1)['xdim'].sort_values()
+        fdata = self.filter_data( sim=sim, tally=tally, nparticles=nparticles, xdim=xgrid.min(), ydim=xgrid.min(), nthreads=thread)
         for grid in xgrid.iloc[1:]:
             thread = 4 * thread
-            fdata1 = self.filter_data_flat_csv( sim, tally, nparticles, grid, grid, thread)            
+            fdata1 = self.filter_data( sim=sim, tally=tally, nparticles=nparticles, xdim=grid, ydim=grid, nthreads=thread)            
             fdata = pd.concat([fdata,fdata1],axis=0)
         return fdata
 
@@ -310,17 +301,17 @@ class eiron_profile:
 
     # Add plots of speedup
     def plot_speedup(self,nparticles,xgrid,ygrid):
-        fdata = self.filter_data_flat_csv('monolithic','private', nparticles, xgrid, ygrid, 0)
+        fdata = self.filter_data(sim='monolithic',tally='private', nparticles=nparticles, xdim=xgrid, ydim=ygrid)
         speedup = fdata['walltime'].iloc[0]/fdata['walltime']
         self.plot_data(fdata['nthreads'],fdata['nthreads'],{'label':'ideal'})
         self.plot_data(fdata['nthreads'],speedup,{'label':'monolithic private'})
-        fdata = self.filter_data_flat_csv('monolithic','shared', nparticles, xgrid, ygrid, 0)
+        fdata = self.filter_data(sim='monolithic',tally='shared', nparticles=nparticles, xdim=xgrid, ydim=ygrid)
         speedup = fdata['walltime'].iloc[0]/fdata['walltime']
         self.plot_data(fdata['nthreads'],speedup,{'label':'monolithic shared'})
-        fdata = self.filter_data_flat_csv('synchronous','private', nparticles, xgrid, ygrid, 0)
+        fdata = self.filter_data(sim='synchronous',tally='private', nparticles=nparticles, xdim=xgrid, ydim=ygrid)
         speedup = fdata['walltime'].iloc[0]/fdata['walltime']
         self.plot_data(fdata['nthreads'],speedup,{'label':'synchronous private'})
-        fdata = self.filter_data_flat_csv('synchronous','shared', nparticles, xgrid, ygrid, 0)
+        fdata = self.filter_data(sim='synchronous',tally='shared', nparticles=nparticles, xdim=xgrid, ydim=ygrid)
         speedup = fdata['walltime'].iloc[0]/fdata['walltime']
         self.plot_data(fdata['nthreads'],speedup,{'label':'synchronous shared'})
 
@@ -337,16 +328,16 @@ class eiron_profile:
 
     # Add plots of efficiency
     def plot_efficiency(self,nparticles,xgrid,ygrid):
-        fdata = self.filter_data_flat_csv('monolithic','private', nparticles, xgrid, ygrid, 0)
+        fdata = self.filter_data(sim='monolithic',tally='private', nparticles=nparticles, xdim=xgrid, ydim=ygrid)
         efficiency = fdata['walltime'].iloc[0] / (fdata['walltime'] * fdata['nthreads'])
         self.plot_data(fdata['nthreads'],efficiency,{'label':'monolithic private'})
-        fdata = self.filter_data_flat_csv('monolithic','shared', nparticles, xgrid, ygrid, 0)
+        fdata = self.filter_data(sim='monolithic',tally='shared', nparticles=nparticles, xdim=xgrid, ydim=ygrid)
         efficiency = fdata['walltime'].iloc[0] / (fdata['walltime'] * fdata['nthreads'])
         self.plot_data(fdata['nthreads'],efficiency,{'label':'monolithic shared'})
-        fdata = self.filter_data_flat_csv('synchronous','private', nparticles, xgrid, ygrid, 0)
+        fdata = self.filter_data(sim='synchronous',tally='private', nparticles=nparticles, xdim=xgrid, ydim=ygrid)
         efficiency = fdata['walltime'].iloc[0] / (fdata['walltime'] * fdata['nthreads'])
         self.plot_data(fdata['nthreads'],efficiency,{'label':'synchronous private'})
-        fdata = self.filter_data_flat_csv('synchronous','shared', nparticles, xgrid, ygrid, 0)
+        fdata = self.filter_data(sim='synchronous',tally='shared', nparticles=nparticles, xdim=xgrid, ydim=ygrid)
         efficiency = fdata['walltime'].iloc[0] / (fdata['walltime'] * fdata['nthreads'])
         self.plot_data(fdata['nthreads'],efficiency,{'label':'synchronous shared'})
 
@@ -364,15 +355,25 @@ class eiron_profile:
 # Read command line arguments
 def read_args():
     parser = argparse.ArgumentParser(description = 'Plot scalings from csv file containing scaling data.')
-    parser.add_argument( "-f" ,"--file" , default="./SCALABILITY_REPORT/report_2D-D_slab.json" , help='csv file containing eiron profiling data (default=eiron_profile.csv)' )
-    parser.add_argument( "-n" ,"--nparticles" , default=800000 , help='Number of particles for scaling plots' )
-    parser.add_argument( "-g" ,"--gridsize" , default=256 , help='Grid size for scaling plots' )
-    parser.add_argument( "--firstthread" , default=2 , help='First thread number for use in weak scaling plots' )
-    parser.add_argument( "-t" ,"--filetype" , choices=['csv','json'], help='File type conataining profile data, either csv or json. Overrides extension checking' )    
+    parser.add_argument( "-f" ,"--file" , default="./SCALABILITY_REPORT/report_2D-D_slab.json" ,
+                         help='csv file containing eiron profiling data (default=eiron_profile.csv)' )
+    parser.add_argument( "-n" ,"--nparticles" , default=800000 ,
+                         help='Number of particles for scaling plots' )
+    parser.add_argument( "-g" ,"--gridsize" , default=256 ,
+                         help='Grid size for scaling plots' )
+    parser.add_argument( "--firstthread" , default=2 ,
+                         help='First thread number for use in weak scaling plots' )
+    parser.add_argument( "-t" ,"--filetype" , choices=['csv','json'],
+                         help='File type conataining profile data, either csv or json. Overrides extension checking' )
+    parser.add_argument( "-c" ,"--codetype" , default='eirene', choices=['eiron','eirene'],
+                         help='Source of the profile data, either eiron or eirene.' )
+    
     args = parser.parse_args()
+
     if not exists(args.file):
         print("Error:", args.file, "does not exist, exiting")
         exit()
+                
     return args
     
         
@@ -388,17 +389,22 @@ pd.options.display.max_columns = 999
 #print(self.pdata)
 
 # Make some plots
-prof.fig_simple_strong_thread_scaling(args.nparticles)
-prof.fig_simple_strong_mpi_scaling(args.nparticles, 1)
-prof.fig_strong_mpi_scaling(args.nparticles)
-#prof.fig_strong_scaling(args.nparticles,args.gridsize,args.gridsize)
-#prof.fig_strong_scaling_split(args.nparticles,args.gridsize,args.gridsize)
-#prof.fig_weak_scaling_particles(args.firstthread,args.gridsize,args.gridsize)
-#prof.fig_weak_scaling_split_particles(args.firstthread,args.gridsize,args.gridsize)
-#prof.fig_weak_scaling_grid(args.firstthread,args.nparticles)
-#prof.fig_weak_scaling_split_grid(args.firstthread,args.nparticles)
-#prof.fig_speedup(args.nparticles,args.gridsize,args.gridsize)
-#prof.fig_efficiency(args.nparticles,args.gridsize,args.gridsize)
+# Eirene
+if args.codetype == 'eirene':
+    prof.fig_simple_strong_thread_scaling(args.nparticles)
+    prof.fig_simple_strong_mpi_scaling(args.nparticles, 1)
+    prof.fig_strong_mpi_scaling(args.nparticles)
+
+# Eiron
+if args.codetype == 'eiron':
+    prof.fig_strong_scaling(args.nparticles,args.gridsize,args.gridsize)
+    prof.fig_strong_scaling_split(args.nparticles,args.gridsize,args.gridsize)
+    prof.fig_weak_scaling_particles(args.firstthread,args.gridsize,args.gridsize)
+    prof.fig_weak_scaling_split_particles(args.firstthread,args.gridsize,args.gridsize)
+    prof.fig_weak_scaling_grid(args.firstthread,args.nparticles)
+    prof.fig_weak_scaling_split_grid(args.firstthread,args.nparticles)
+    prof.fig_speedup(args.nparticles,args.gridsize,args.gridsize)
+    prof.fig_efficiency(args.nparticles,args.gridsize,args.gridsize)
 
 
 
