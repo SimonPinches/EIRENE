@@ -87,15 +87,15 @@ max_num_node_threads=256
 #This limit is due to the way EIRENE uses output files
 max_num_threads=9999
 
-#node_range=( 1 2 4 )
-#rank_per_node_range=( 1 2 4 8 16 32 )
-#thread_per_rank_range=( 1 2 4 8 16 32 64)
+node_range=( 1 2 4 )
+rank_per_node_range=( 1 2 4 8 16 32 )
+thread_per_rank_range=( 1 2 4 8 16 32 64)
 #testing
-node_range=( 1 )
-#rank_per_node_range=( 1 2 4 8)
+node_range=( 1 2 )
+#rank_per_node_range=( 1 2 4 8 )
 #thread_per_rank_range=( 1 2 )
-rank_per_node_range=( 1 2 )
-thread_per_rank_range=( 1 2 )
+#rank_per_node_range=( 1 )
+#thread_per_rank_range=( 1 )
 
 report cases {}
 for N in ${node_range[*]}
@@ -124,11 +124,11 @@ do
 		echo $case_name directory already exists...
 	fi
 	cd $case_name	
-	git checkout $eirene_samples_branch
-	git status      
+#	git checkout $eirene_samples_branch
+#	git status      
 	cd $sample
 	echo Building $case_name/$sample
-	make -j CONFIG=Release.develop    # the .develop is a hack until the integrated branch is fully working
+	make -j
 	cd ../..
 	echo
 done

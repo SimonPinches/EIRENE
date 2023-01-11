@@ -21,6 +21,8 @@ sbatch 2>&1 << EOF
 #SBATCH -n $n
 #SBATCH -c $c
 
+echo Config $N $n $c
+
 export OMP_NUM_THREADS=$c
 ./set_links.sh
 srun ./eirene 1>eirene-2d.reference.out 2>eirene-2d.reference.err
@@ -73,6 +75,7 @@ do
 	else
 		echo "Failed to launch :(, exit code $? "
 		report cases.${case_name}.launch_success "false"
+		echo "Slurm message: $sbatch_return $N $n $c"
 		bad_config_msg="Requested node configuration is not available"
 		if [[ $sbatch_return =~ $bad_config_msg ]]; then
 			report cases.${case_name}.bad_config "true"

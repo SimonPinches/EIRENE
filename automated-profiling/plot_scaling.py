@@ -44,7 +44,9 @@ class eiron_profile:
             print("Error: Unknown file type",filetype)
             exit()
 
-        return data[data['job_state']=='COMPLETED']
+        # Add a number of processes column and sort by threads, processes and nodes 
+        data['n_processes'] = data['n_nodes'] * data['n_mpi_ranks']            
+        return data[data['job_state']=='COMPLETED'].sort_values(by=['n_omp_threads','n_processes','n_nodes'])
             
         
     # Read profile data from a csv file into a dataframe
@@ -60,8 +62,7 @@ class eiron_profile:
         data = pd.read_json(file)
         # Flatten
         df = pd.json_normalize(data['cases'])
-        # Sort - will need to be adapted when more data is used and grid size is present
-        return df.sort_values(by='n_omp_threads')
+        return df
 
     # Filters data on the given values from flat csv data, 0 means all values
     def filter_data_flat_csv(self,sim,tally,nparticles,xdim,ydim,nthreads):
@@ -93,7 +94,7 @@ class eiron_profile:
     def init_figure(self, title):
         self.fig, self.ax = plt.subplots(figsize=(6,4))#, layout='constrained')
         # Set some defaults before calling plot
-        self.ax.set_xlabel('Number of threads')
+        self.ax.set_xlabel('Number of cores')
         self.ax.set_ylabel('Execution time (s)')
         self.ax.set_xscale('log')
         self.ax.set_yscale('log')
@@ -122,17 +123,19 @@ class eiron_profile:
     def fig_simple_strong_thread_scaling(self,nparticles):
         print('Plotting simple strong thread scaling:',nparticles,' particles')
         self.init_figure('Eirene Strong Thread Scaling')
-        fdata = self.filter_data(n_mpi_ranks=1)
+        fdata = self.filter_data(n_mpi_ranks=1,n_nodes=1)
         self.plot_data(fdata['n_omp_threads'],fdata['timing.wall_time'],{'label':'walltime'})
+        self.ax.set_xlabel('Number of OpenMP Threads')
         self.ax.legend()
         self.makeplot("plots/strongThreadScaling.png")
 
-        # A simple figure for eirene strong mpi scaling
+    # A simple figure for eirene strong mpi scaling
     def fig_simple_strong_mpi_scaling(self,nparticles,nthreads):
         print('Plotting simple strong MPI scaling:',nparticles,' particles')
         self.init_figure('Eirene Strong MPI Scaling')
-        fdata = self.filter_data(n_omp_threads=nthreads)
-        self.plot_data(fdata['n_mpi_ranks'],fdata['timing.wall_time'],{'label':'walltime'})
+        fdata = self.filter_data(n_omp_threads=nthreads).drop_duplicates('n_processes')
+        self.plot_data(fdata['n_processes'],fdata['timing.wall_time'],{'label':'walltime'})
+        self.ax.set_xlabel('Number of MPI processes')
         self.ax.legend()
         self.makeplot("plots/strongMPIScaling.png")
 
@@ -140,18 +143,13 @@ class eiron_profile:
     def fig_strong_mpi_scaling(self,nparticles):
         print('Plotting strong MPI scaling with threads:',nparticles,' particles')
         self.init_figure('Eirene Strong MPI Scaling')
-        fdata = self.filter_data(n_omp_threads=1)
-        self.plot_data(fdata['n_mpi_ranks'],fdata['timing.wall_time'],{'label':'1 thread'})
-        fdata = self.filter_data(n_omp_threads=2)
-        self.plot_data(fdata['n_mpi_ranks'],fdata['timing.wall_time'],{'label':'2 threads'})
-        fdata = self.filter_data(n_omp_threads=4)
-        self.plot_data(fdata['n_mpi_ranks'],fdata['timing.wall_time'],{'label':'4 threads'})
-        fdata = self.filter_data(n_omp_threads=8)
-        self.plot_data(fdata['n_mpi_ranks'],fdata['timing.wall_time'],{'label':'8 threads'})
+        allthreads = self.pdata['n_omp_threads'].drop_duplicates()
+        for threads in allthreads:
+            fdata = self.filter_data(n_omp_threads=threads).drop_duplicates('n_processes')
+            self.plot_data(fdata['n_processes'],fdata['timing.wall_time'],{'label':str(threads)+' threads'})
+        self.ax.set_xlabel('Number of MPI processes')
         self.ax.legend()
         self.makeplot("plots/strongMPIScalingThreads.png")
-
-        
         
     # Add strong scaling plots for the synchronous execution types        
     def plot_one_strong_scaling(self,nparticles,xgrid,ygrid,sim,tally,data):

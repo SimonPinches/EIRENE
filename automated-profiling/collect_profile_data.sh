@@ -18,19 +18,21 @@ do
         echo "---$case_name---"
 	cd $top_dir
 
-	profile_generated=$(read_report cases.${case_name}.profile_success)
-	if [ "$profile_copied" == "true" ];then
-		echo "Already copied"
+	# Check launch success
+	launch_success=$(read_report cases.${case_name}.launch_success)
+	if [ "$launch_success" == "false" ];then
+		echo "Case failed to launch"
 		continue
 	fi	
+	   
 
         #Check if we've already parsed this case
         profile_parsed=$(read_report cases.${case_name}.profile_parsed)
         if [ "$profile_parsed" == "true" ];then
                 echo "Already parsed"
                 continue
-        fi      
-	   
+        fi
+
 	#Check to see if the slurm job has finished
 	job_number=$(read_report cases.${case_name}.job_number |tr -d '"')
 	job_state=$(sacct -j $job_number --format jobid,state -n |sed -n -r "/^$job_number /s/($job_number| +)//gp")
@@ -39,6 +41,11 @@ do
 		if [ "$job_state" == "FAILED" ]
 		then
 		        echo "Job ${job_number} failed, job state is ${job_state}"
+			break
+		fi
+		if [ "$job_state" == "null" ]
+		then
+		        echo "Invalid job number"
 			break
 		fi
 		echo "Job ${job_number} not complete yet, job state is ${job_state} ... Waiting ..."
