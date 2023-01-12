@@ -133,7 +133,7 @@ class eiron_profile:
     ################################################################################################
     
     # A simple figure for eirene strong thread scaling
-    def fig_simple_strong_openmp_scaling_eirene(self,nparticles):
+    def omp_simple_strong_scaling_eirene(self,nparticles):
         print('Plotting Eirene simple OpenMP strong scaling:',self.strplural(nparticles,'particle'))
         self.init_figure('Eirene OpenMP Strong Scaling')
         fdata = self.filter_data(n_mpi_ranks=1,n_nodes=1)
@@ -143,7 +143,7 @@ class eiron_profile:
         self.makeplot("plots/eireneOpenMPStrongScaling.png")
 
     # A simple figure for eirene strong mpi scaling
-    def fig_simple_strong_mpi_scaling_eirene(self,nparticles,nthreads):
+    def mpi_simple_strong_scaling_eirene(self,nparticles,nthreads):
         print('Plotting Eirene simple MPI strong scaling:',self.strplural(nparticles,'particle'),self.strplural(nthreads,'thread'))
         self.init_figure('Eirene Strong MPI Scaling')
         fdata = self.filter_data(n_omp_threads=nthreads).drop_duplicates('n_processes')
@@ -153,7 +153,7 @@ class eiron_profile:
         self.makeplot('plots/eireneMPIStrongScaling_'+str(nthreads)+'threads.png')
 
     # Eirene strong mpi scaling for different thread counts
-    def fig_strong_hybrid_scaling_eirene(self,nparticles):
+    def hybrid_strong_scaling_eirene(self,nparticles):
         print('Plotting Eirene hybrid MPI OpenMP strong scaling with threads:',self.strplural(nparticles,'particle'))
         self.init_figure('Eirene Hybrid Strong Scaling')
         allthreads = self.pdata['n_omp_threads'].drop_duplicates()
@@ -165,7 +165,7 @@ class eiron_profile:
         self.makeplot("plots/eireneHybridStrongScaling.png")
 
     # Strong OpenMP scaling showing total time and the time for each species
-    def fig_strong_omp_scaling_split_eirene(self,nparticles):
+    def omp_strong_scaling_split_eirene(self,nparticles):
         print('Plotting Eirene OpenMP strong scaling split:',self.strplural(nparticles,'particle'))
         self.init_figure('OpenMP strong scaling split: ' + self.strplural(nparticles,'particle'))
         fdata = self.filter_data(n_mpi_ranks=1,n_nodes=1)
@@ -178,7 +178,7 @@ class eiron_profile:
         self.makeplot('plots/eireneOpenMPStrongScalingSplit.png')
         
     # Strong MPI scaling showing total time and the time for each species
-    def fig_strong_mpi_scaling_split_eirene(self,nparticles,nthreads):
+    def mpi_strong_scaling_split_eirene(self,nparticles,nthreads):
         print('Plotting Eirene MPI strong scaling split:',self.strplural(nparticles,'particle'),self.strplural(nthreads,'thread'))
         self.init_figure('Strong scaling split: ' + self.strplural(nparticles,'particle') + ', ' + self.strplural(nthreads,'thread'))
         fdata = self.filter_data(n_omp_threads=nthreads).drop_duplicates('n_processes')
@@ -191,7 +191,7 @@ class eiron_profile:
         self.makeplot('plots/eireneMPIStrongScalingSplit_'+str(nthreads)+'threads.png')
 
     # Make figure of Eirene MPI speedup
-    def fig_speedup_eirene(self,nparticles):
+    def mpi_speedup_eirene(self,nparticles):
         print('Plotting Eirene MPI speedup:', self.strplural(nparticles,'particle'))
         self.init_figure('Eirene MPI speedup: ' + str(nparticles) + ' particles')
         allthreads = self.pdata['n_omp_threads'].drop_duplicates()
@@ -206,8 +206,21 @@ class eiron_profile:
         self.ax.legend()
         self.makeplot('plots/eireneMPISpeedup.png')
 
+    # Make figure of Eirene OpenMP speedup
+    def omp_speedup_eirene(self,nparticles):
+        print('Plotting Eirene OpenMP speedup:', self.strplural(nparticles,'particle'))
+        self.init_figure('Eirene OpenMP speedup: ' + str(nparticles) + ' particles')
+        fdata = self.filter_data(n_nodes=1,n_mpi_ranks=1).drop_duplicates('n_processes')
+        speedup = fdata['timing.wall_time'].iloc[0]/fdata['timing.wall_time']
+        self.plot_data(fdata['n_omp_threads'],fdata['n_omp_threads'],{'label':'ideal'})
+        self.plot_data(fdata['n_omp_threads'],speedup,{'label':'walltime'})
+        self.ax.set_ylabel('Speedup')
+        self.ax.yaxis.set_major_formatter(ticker.StrMethodFormatter("{x:.1f}"))
+        self.ax.legend()
+        self.makeplot('plots/eireneOpenMPSpeedup.png')
+
     # Make figure of Eirene MPI efficiency
-    def fig_efficiency_eirene(self,nparticles):
+    def mpi_efficiency_eirene(self,nparticles):
         print('Plotting Eirene MPI efficiency:', self.strplural(nparticles,'particle'))
         self.init_figure('MPI efficiency: ' + self.strplural(nparticles,'particle'))
         allthreads = self.pdata['n_omp_threads'].drop_duplicates()
@@ -219,6 +232,18 @@ class eiron_profile:
         self.ax.yaxis.set_major_formatter(ticker.StrMethodFormatter("{x:.1f}"))
         self.ax.legend()
         self.makeplot('plots/eireneMPIEfficiency.png')
+
+    # Make figure of Eirene OpenMP efficiency
+    def omp_efficiency_eirene(self,nparticles):
+        print('Plotting Eirene OpenMP efficiency:', self.strplural(nparticles,'particle'))
+        self.init_figure('OpenMP efficiency: ' + self.strplural(nparticles,'particle'))
+        fdata = self.filter_data(n_nodes=1,n_mpi_ranks=1)
+        efficiency = fdata['timing.wall_time'].iloc[0]/(fdata['timing.wall_time']*fdata['n_omp_threads'])
+        self.plot_data(fdata['n_omp_threads'],efficiency,{'label':'walltime'})
+        self.ax.set_ylabel('Efficiency')
+        self.ax.yaxis.set_major_formatter(ticker.StrMethodFormatter("{x:.1f}"))
+        self.ax.legend()
+        self.makeplot('plots/eireneOpenMPEfficiency.png')
 
 
     ##############################################################################################
@@ -497,13 +522,15 @@ def make_plots():
     # Eirene
     if args.codetype == 'eirene':
         args.nparticles = 11000
-        prof.fig_simple_strong_openmp_scaling_eirene(args.nparticles)
-        prof.fig_simple_strong_mpi_scaling_eirene(args.nparticles,1)
-        prof.fig_strong_hybrid_scaling_eirene(args.nparticles)
-        prof.fig_speedup_eirene(args.nparticles)
-        prof.fig_efficiency_eirene(args.nparticles)
-        prof.fig_strong_omp_scaling_split_eirene(args.nparticles)
-        prof.fig_strong_mpi_scaling_split_eirene(args.nparticles,1)
+        prof.omp_simple_strong_scaling_eirene(args.nparticles)
+        prof.mpi_simple_strong_scaling_eirene(args.nparticles,1)
+        prof.hybrid_strong_scaling_eirene(args.nparticles)
+        prof.mpi_speedup_eirene(args.nparticles)
+        prof.omp_speedup_eirene(args.nparticles)
+        prof.mpi_efficiency_eirene(args.nparticles)
+        prof.omp_efficiency_eirene(args.nparticles)
+        prof.mpi_strong_scaling_split_eirene(args.nparticles,1)
+        prof.omp_strong_scaling_split_eirene(args.nparticles)
 
     # Eiron
     if args.codetype == 'eiron':
