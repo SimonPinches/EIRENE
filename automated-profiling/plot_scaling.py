@@ -210,7 +210,7 @@ class eiron_profile:
     def omp_speedup_eirene(self,nparticles):
         print('Plotting Eirene OpenMP speedup:', self.strplural(nparticles,'particle'))
         self.init_figure('Eirene OpenMP speedup: ' + str(nparticles) + ' particles')
-        fdata = self.filter_data(n_nodes=1,n_mpi_ranks=1).drop_duplicates('n_processes')
+        fdata = self.filter_data(n_nodes=1,n_mpi_ranks=1)
         speedup = fdata['timing.wall_time'].iloc[0]/fdata['timing.wall_time']
         self.plot_data(fdata['n_omp_threads'],fdata['n_omp_threads'],{'label':'ideal'})
         self.plot_data(fdata['n_omp_threads'],speedup,{'label':'walltime'})
