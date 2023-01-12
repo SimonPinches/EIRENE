@@ -120,7 +120,7 @@ class eiron_profile:
     ################################################################################################
     
     # A simple figure for eirene strong thread scaling
-    def fig_simple_strong_thread_scaling_eirene(self,nparticles):
+    def fig_simple_strong_openmp_scaling_eirene(self,nparticles):
         nparticles = 11000
         print('Plotting Eirene simple strong thread scaling:',nparticles,' particles')
         self.init_figure('Eirene Strong Thread Scaling')
@@ -142,9 +142,9 @@ class eiron_profile:
         self.makeplot("plots/strongMPIScaling.png")
 
     # Eirene strong mpi scaling for different thread counts
-    def fig_strong_mpi_scaling_eirene(self,nparticles):
+    def fig_strong_hybrid_scaling_eirene(self,nparticles):
         nparticles = 11000
-        print('Plotting Eirene strong MPI scaling with threads:',nparticles,' particles')
+        print('Plotting Eirene strong hybrid MPI OpenMP scaling with threads:',nparticles,' particles')
         self.init_figure('Eirene Strong MPI Scaling')
         allthreads = self.pdata['n_omp_threads'].drop_duplicates()
         for threads in allthreads:
@@ -153,7 +153,6 @@ class eiron_profile:
         self.ax.set_xlabel('Number of MPI processes')
         self.ax.legend()
         self.makeplot("plots/strongMPIScalingThreads.png")
-
 
     # Make figure of Eirene MPI speedup
     def fig_speedup_eirene(self,nparticles):
@@ -213,6 +212,7 @@ class eiron_profile:
         self.ax.legend()
         self.makeplot("strongScaling.png")
     
+
     # Add strong scaling plots for the synchronous execution types        
     def plot_one_strong_scaling_split_eiron(self,nparticles,xgrid,ygrid,tally,data):
         fdata = self.filter_data( sim='synchronous', tally=tally, nparticles=nparticles, xdim=xgrid, ydim=ygrid)
@@ -268,6 +268,7 @@ class eiron_profile:
         self.ax.set_yscale('linear')
         self.makeplot('weakScalingParticles.png')
 
+
     # Get data for weak scaling with grid size for pathstime and tallytime
     def plot_weak_scaling_split_particles_eiron(self,firstthread,xgrid,ygrid):
         fdata = self.get_weak_scaling_particles('synchronous','private',firstthread,xgrid,ygrid)
@@ -290,6 +291,7 @@ class eiron_profile:
         self.ax.set_yscale('linear')
         self.makeplot('weakScalingSplitParticles.png')
     
+
     # Get data for weak scaling of total execution time with grid size
     # This relies on the data increasing as a power of 2
     def get_weak_scaling_grid_eiron(self,sim,tally,firstthread,nparticles):
@@ -324,6 +326,7 @@ class eiron_profile:
         self.ax.legend()
         self.makeplot('weakScalingGrid.png')
 
+        
     # Add plots for weak scaling with grid size for pathstime and tallytime
     def plot_weak_scaling_split_grid_eiron(self,firstthread,nparticles):
         fdata = self.get_weak_scaling_grid('synchronous','private',firstthread,nparticles)
@@ -348,7 +351,6 @@ class eiron_profile:
         self.makeplot('weakScalingSplitGrid.png')
 
     # Add plots of speedup
-
     def plot_speedup_eiron(self,nparticles,xgrid,ygrid):
         fdata = self.filter_data(sim='monolithic',tally='private', nparticles=nparticles, xdim=xgrid, ydim=ygrid)
         speedup = fdata['walltime'].iloc[0]/fdata['walltime']
@@ -374,6 +376,7 @@ class eiron_profile:
         self.ax.legend()
         self.makeplot('openMPSpeedup.png')
 
+        
     # Add plots of efficiency
     def plot_efficiency_eirene(self,nparticles,xgrid,ygrid):
         fdata = self.filter_data(sim='monolithic',tally='private', nparticles=nparticles, xdim=xgrid, ydim=ygrid)
@@ -403,7 +406,6 @@ class eiron_profile:
         fdata = self.filter_data(sim='synchronous',tally='shared', nparticles=nparticles, xdim=xgrid, ydim=ygrid)
         efficiency = fdata['walltime'].iloc[0] / (fdata['walltime'] * fdata['nthreads'])
         self.plot_data(fdata['nthreads'],efficiency,{'label':'synchronous shared'})
-
 
     # Make figure of efficiency
     def fig_efficiency_eiron(self,nparticles,xgrid,ygrid):
@@ -460,9 +462,9 @@ def make_plots():
     # Make some plots
     # Eirene
     if args.codetype == 'eirene':
-        prof.fig_simple_strong_thread_scaling_eirene(args.nparticles)
+        prof.fig_simple_strong_openmp_scaling_eirene(args.nparticles)
         prof.fig_simple_strong_mpi_scaling_eirene(args.nparticles, 1)
-        prof.fig_strong_mpi_scaling_eirene(args.nparticles)
+        prof.fig_strong_hybrid_scaling_eirene(args.nparticles)
         prof.fig_speedup_eirene(args.nparticles)
         prof.fig_efficiency_eirene(args.nparticles)
 
