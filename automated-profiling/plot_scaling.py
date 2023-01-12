@@ -415,6 +415,9 @@ class eiron_profile:
         self.ax.legend()
         self.makeplot('openMPEfficiency.png')
 
+######################################################################################
+# main routines
+######################################################################################
 
         
 # Read command line arguments
@@ -440,40 +443,45 @@ def read_args():
         exit()
                 
     return args
+
+# Read data and make the plots
+def make_plots():
+    print("Plotting scaling profiles")
     
-        
-print("Plotting scaling profiles")
+    args = read_args()
 
-args = read_args()
+    # Create object from from csv file
+    prof = eiron_profile( args )
 
-# Create object from from csv file
-prof = eiron_profile( args )
+    pd.options.display.max_rows = 999
+    pd.options.display.max_columns = 999
+    #print(self.pdata)
 
-pd.options.display.max_rows = 999
-pd.options.display.max_columns = 999
-#print(self.pdata)
+    # Make some plots
+    # Eirene
+    if args.codetype == 'eirene':
+        prof.fig_simple_strong_thread_scaling_eirene(args.nparticles)
+        prof.fig_simple_strong_mpi_scaling_eirene(args.nparticles, 1)
+        prof.fig_strong_mpi_scaling_eirene(args.nparticles)
+        prof.fig_speedup_eirene(args.nparticles)
+        prof.fig_efficiency_eirene(args.nparticles)
 
-# Make some plots
-# Eirene
-if args.codetype == 'eirene':
-    prof.fig_simple_strong_thread_scaling_eirene(args.nparticles)
-    prof.fig_simple_strong_mpi_scaling_eirene(args.nparticles, 1)
-    prof.fig_strong_mpi_scaling_eirene(args.nparticles)
-    prof.fig_speedup_eirene(args.nparticles)
-    prof.fig_efficiency_eirene(args.nparticles)
+    # Eiron
+    if args.codetype == 'eiron':
+        prof.fig_strong_scaling_eiron(args.nparticles,args.gridsize,args.gridsize)
+        prof.fig_strong_scaling_split_eiron(args.nparticles,args.gridsize,args.gridsize)
+        prof.fig_weak_scaling_particles_eiron(args.firstthread,args.gridsize,args.gridsize)
+        prof.fig_weak_scaling_split_particles_eiron(args.firstthread,args.gridsize,args.gridsize)
+        prof.fig_weak_scaling_grid_eiron(args.firstthread,args.nparticles)
+        prof.fig_weak_scaling_split_grid_eiron(args.firstthread,args.nparticles)
+        prof.fig_speedup_eiron(args.nparticles,args.gridsize,args.gridsize)
+        prof.fig_efficiency_eiron(args.nparticles,args.gridsize,args.gridsize)
 
-# Eiron
-if args.codetype == 'eiron':
-    prof.fig_strong_scaling_eiron(args.nparticles,args.gridsize,args.gridsize)
-    prof.fig_strong_scaling_split_eiron(args.nparticles,args.gridsize,args.gridsize)
-    prof.fig_weak_scaling_particles_eiron(args.firstthread,args.gridsize,args.gridsize)
-    prof.fig_weak_scaling_split_particles_eiron(args.firstthread,args.gridsize,args.gridsize)
-    prof.fig_weak_scaling_grid_eiron(args.firstthread,args.nparticles)
-    prof.fig_weak_scaling_split_grid_eiron(args.firstthread,args.nparticles)
-    prof.fig_speedup_eiron(args.nparticles,args.gridsize,args.gridsize)
-    prof.fig_efficiency_eiron(args.nparticles,args.gridsize,args.gridsize)
-
-
+##################################################################################
+# Do stuff from the cli
+##################################################################################
+if __name__ == '__main__':
+    make_plots()
 
 
 
