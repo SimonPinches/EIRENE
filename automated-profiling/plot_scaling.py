@@ -54,7 +54,12 @@ class eiron_profile:
             exit()
 
         return data
-            
+
+    def strplural(self,number,val):
+        if number > 1:
+            val=val+'s'
+        return str(number) + ' ' + val
+    
         
     # Read profile data from a csv file into a dataframe
     def read_flat_csv_with_pandas(self, file):
@@ -129,7 +134,7 @@ class eiron_profile:
     
     # A simple figure for eirene strong thread scaling
     def fig_simple_strong_openmp_scaling_eirene(self,nparticles):
-        print('Plotting Eirene simple OpenMP strong scaling:',nparticles,' particles')
+        print('Plotting Eirene simple OpenMP strong scaling:',self.strplural(nparticles,'particle'))
         self.init_figure('Eirene OpenMP Strong Scaling')
         fdata = self.filter_data(n_mpi_ranks=1,n_nodes=1)
         self.plot_data(fdata['n_omp_threads'],fdata['timing.wall_time'],{'label':'walltime'})
@@ -139,7 +144,7 @@ class eiron_profile:
 
     # A simple figure for eirene strong mpi scaling
     def fig_simple_strong_mpi_scaling_eirene(self,nparticles,nthreads):
-        print('Plotting Eirene simple MPI strong scaling:',nparticles,' particles',nthreads,' threads')
+        print('Plotting Eirene simple MPI strong scaling:',self.strplural(nparticles,'particle'),self.strplural(nthreads,'thread'))
         self.init_figure('Eirene Strong MPI Scaling')
         fdata = self.filter_data(n_omp_threads=nthreads).drop_duplicates('n_processes')
         self.plot_data(fdata['n_processes'],fdata['timing.wall_time'],{'label':'walltime'})
@@ -149,20 +154,20 @@ class eiron_profile:
 
     # Eirene strong mpi scaling for different thread counts
     def fig_strong_hybrid_scaling_eirene(self,nparticles):
-        print('Plotting Eirene hybrid MPI OpenMP strong scaling with threads:',nparticles,' particles')
+        print('Plotting Eirene hybrid MPI OpenMP strong scaling with threads:',self.strplural(nparticles,'particle'))
         self.init_figure('Eirene Hybrid Strong Scaling')
         allthreads = self.pdata['n_omp_threads'].drop_duplicates()
         for threads in allthreads:
             fdata = self.filter_data(n_omp_threads=threads).drop_duplicates('n_processes')
-            self.plot_data(fdata['n_processes'],fdata['timing.wall_time'],{'label':str(threads)+' threads'})
+            self.plot_data(fdata['n_processes'],fdata['timing.wall_time'],{'label':self.strplural(threads,'thread')})
         self.ax.set_xlabel('Number of MPI processes')
         self.ax.legend()
         self.makeplot("plots/eireneHybridStrongScaling.png")
 
     # Strong OpenMP scaling showing total time and the time for each species
     def fig_strong_omp_scaling_split_eirene(self,nparticles):
-        print('Plotting Eirene OpenMP strong scaling split:',nparticles,'particles')
-        self.init_figure('OpenMP strong scaling split: ' + str(nparticles) + ' particles')
+        print('Plotting Eirene OpenMP strong scaling split:',self.strplural(nparticles,'particle'))
+        self.init_figure('OpenMP strong scaling split: ' + self.strplural(nparticles,'particle'))
         fdata = self.filter_data(n_mpi_ranks=1,n_nodes=1)
         self.plot_data(fdata['n_omp_threads'],fdata['timing.wall_time'],{'label':'walltime'})
         self.plot_data(fdata['n_omp_threads'],fdata['timing.atom_time'],{'label':'atoms'})
@@ -174,8 +179,8 @@ class eiron_profile:
         
     # Strong MPI scaling showing total time and the time for each species
     def fig_strong_mpi_scaling_split_eirene(self,nparticles,nthreads):
-        print('Plotting Eirene MPI strong scaling split:',nparticles,'particles,',nthreads,'threads')
-        self.init_figure('Strong scaling split: ' + str(nparticles) + ' particles, ' + str(nthreads) + ' threads')
+        print('Plotting Eirene MPI strong scaling split:',self.strplural(nparticles,'particle'),self.strplural(nthreads,'thread'))
+        self.init_figure('Strong scaling split: ' + self.strplural(nparticles,'particle') + ', ' + self.strplural(nthreads,'thread'))
         fdata = self.filter_data(n_omp_threads=nthreads).drop_duplicates('n_processes')
         self.plot_data(fdata['n_processes'],fdata['timing.wall_time'],{'label':'walltime'})
         self.plot_data(fdata['n_processes'],fdata['timing.atom_time'],{'label':'atoms'})
@@ -187,7 +192,7 @@ class eiron_profile:
 
     # Make figure of Eirene MPI speedup
     def fig_speedup_eirene(self,nparticles):
-        print('Plotting Eirene MPI speedup:', nparticles, 'particles')
+        print('Plotting Eirene MPI speedup:', self.strplural(nparticles,'particle'))
         self.init_figure('Eirene MPI speedup: ' + str(nparticles) + ' particles')
         allthreads = self.pdata['n_omp_threads'].drop_duplicates()
         for threads in allthreads:
@@ -195,7 +200,7 @@ class eiron_profile:
             speedup =  fdata['timing.wall_time'].iloc[0]/fdata['timing.wall_time']
             if threads == 1:
                 self.plot_data(fdata['n_processes'],fdata['n_processes'],{'label':'ideal'})
-            self.plot_data(fdata['n_processes'],speedup,{'label':str(threads)+' threads'})
+            self.plot_data(fdata['n_processes'],speedup,{'label':self.strplural(threads,'thread')})
         self.ax.set_ylabel('Speedup')
         self.ax.yaxis.set_major_formatter(ticker.StrMethodFormatter("{x:.1f}"))
         self.ax.legend()
@@ -203,13 +208,13 @@ class eiron_profile:
 
     # Make figure of Eirene MPI efficiency
     def fig_efficiency_eirene(self,nparticles):
-        print('Plotting Eirene MPI efficiency:', nparticles, 'particles')
-        self.init_figure('MPI efficiency: ' + str(nparticles) + ' particles')
+        print('Plotting Eirene MPI efficiency:', self.strplural(nparticles,'particle'))
+        self.init_figure('MPI efficiency: ' + self.strplural(nparticles,'particle'))
         allthreads = self.pdata['n_omp_threads'].drop_duplicates()
         for threads in allthreads:
             fdata = self.filter_data(n_omp_threads=threads).drop_duplicates('n_processes')
             efficiency =  fdata['timing.wall_time'].iloc[0]/(fdata['timing.wall_time']*fdata['n_processes'])
-            self.plot_data(fdata['n_processes'],efficiency,{'label':str(threads)+' threads'})
+            self.plot_data(fdata['n_processes'],efficiency,{'label':self.strplural(threads,'thread')})
         self.ax.set_ylabel('Efficiency')
         self.ax.yaxis.set_major_formatter(ticker.StrMethodFormatter("{x:.1f}"))
         self.ax.legend()
