@@ -108,12 +108,21 @@ class eiron_profile:
         plt.savefig(filename)
         #plt.show()
 
+    ################################################################################################
     # Routines for producing particular figures
+    # There are different figures for Eirene and Eiron
+    # it is possible to make generic routines but there seems little benefit
+    # as they are so quick to write
+    ################################################################################################
 
+    ################################################################################################
+    # Eirene figures
+    ################################################################################################
+    
     # A simple figure for eirene strong thread scaling
-    def fig_simple_strong_thread_scaling(self,nparticles):
+    def fig_simple_strong_thread_scaling_eirene(self,nparticles):
         nparticles = 11000
-        print('Plotting simple strong thread scaling:',nparticles,' particles')
+        print('Plotting Eirene simple strong thread scaling:',nparticles,' particles')
         self.init_figure('Eirene Strong Thread Scaling')
         fdata = self.filter_data(n_mpi_ranks=1,n_nodes=1)
         self.plot_data(fdata['n_omp_threads'],fdata['timing.wall_time'],{'label':'walltime'})
@@ -122,9 +131,9 @@ class eiron_profile:
         self.makeplot("plots/strongThreadScaling.png")
 
     # A simple figure for eirene strong mpi scaling
-    def fig_simple_strong_mpi_scaling(self,nparticles,nthreads):
+    def fig_simple_strong_mpi_scaling_eirene(self,nparticles,nthreads):
         nparticles = 11000
-        print('Plotting simple strong MPI scaling:',nparticles,' particles')
+        print('Plotting Eirene simple strong MPI scaling:',nparticles,' particles')
         self.init_figure('Eirene Strong MPI Scaling')
         fdata = self.filter_data(n_omp_threads=nthreads).drop_duplicates('n_processes')
         self.plot_data(fdata['n_processes'],fdata['timing.wall_time'],{'label':'walltime'})
@@ -133,9 +142,9 @@ class eiron_profile:
         self.makeplot("plots/strongMPIScaling.png")
 
     # Eirene strong mpi scaling for different thread counts
-    def fig_strong_mpi_scaling(self,nparticles):
+    def fig_strong_mpi_scaling_eirene(self,nparticles):
         nparticles = 11000
-        print('Plotting strong MPI scaling with threads:',nparticles,' particles')
+        print('Plotting Eirene strong MPI scaling with threads:',nparticles,' particles')
         self.init_figure('Eirene Strong MPI Scaling')
         allthreads = self.pdata['n_omp_threads'].drop_duplicates()
         for threads in allthreads:
@@ -144,162 +153,7 @@ class eiron_profile:
         self.ax.set_xlabel('Number of MPI processes')
         self.ax.legend()
         self.makeplot("plots/strongMPIScalingThreads.png")
-        
-    # Add strong scaling plots for the synchronous execution types        
-    def plot_one_strong_scaling(self,nparticles,xgrid,ygrid,sim,tally,data):
-        fdata = self.filter_data( sim=sim, tally=tally, nparticles=nparticles, xdim=xgrid, ydim=ygrid)
-        self.plot_data(fdata['nthreads'],fdata[data],{'label':sim + ' ' + tally})
 
-    # Add strong scaling plots showing total time of the 4 execution types        
-    def plot_strong_scaling(self,nparticles,xgrid,ygrid):
-        self.plot_one_strong_scaling(nparticles,xgrid,ygrid,'monolithic','private','walltime')
-        self.plot_one_strong_scaling(nparticles,xgrid,ygrid,'monolithic','shared','walltime')
-        self.plot_one_strong_scaling(nparticles,xgrid,ygrid,'synchronous','private','walltime')
-        self.plot_one_strong_scaling(nparticles,xgrid,ygrid,'synchronous','shared','walltime')
-
-    # Strong scaling showing total time of the 4 execution types
-    def fig_strong_scaling(self,nparticles,xgrid,ygrid):
-        print('Plotting strong scaling:',nparticles,' particles')
-        self.init_figure('Strong scaling: ' + str(nparticles) + ' particles, ' + str(xgrid) + 'x' + str(ygrid) + ' grid')
-        self.plot_strong_scaling(nparticles,xgrid,ygrid)
-        self.ax.legend()
-        self.makeplot("strongScaling.png")
-    
-    # Add strong scaling plots for the synchronous execution types        
-    def plot_one_strong_scaling_split(self,nparticles,xgrid,ygrid,tally,data):
-        fdata = self.filter_data( sim='synchronous', tally=tally, nparticles=nparticles, xdim=xgrid, ydim=ygrid)
-        self.plot_data(fdata['nthreads'],fdata[data],{'label':data + ' ' + tally})       
-
-    # Add strong scaling plots showing paths and tally time
-    def plot_strong_scaling_split(self,nparticles,xgrid,ygrid):
-        self.plot_one_strong_scaling_split(nparticles,xgrid,ygrid,'private','pathstime')
-        self.plot_one_strong_scaling_split(nparticles,xgrid,ygrid,'shared','pathstime')
-        self.plot_one_strong_scaling_split(nparticles,xgrid,ygrid,'private','tallytime')
-        self.plot_one_strong_scaling_split(nparticles,xgrid,ygrid,'shared','tallytime')
-        
-    # Strong scaling showing total time of the 4 execution types
-    def fig_strong_scaling_split(self,nparticles,xgrid,ygrid):
-        print('Plotting strong scaling split:',nparticles,'particles')
-        self.init_figure('Strong scaling split: ' + str(nparticles) + ' particles, ' + str(xgrid) + 'x' + str(ygrid) + ' grid')
-        self.plot_strong_scaling_split(nparticles,xgrid,ygrid)
-        self.ax.legend()
-        self.makeplot("strongScalingSplit.png")
-    
-    
-    # Get data for weak scaling of total execution time with particles
-    # This relies on the data increasing as a power of 2
-    def get_weak_scaling_particles(self,sim,tally,firstthread,xgrid,ygrid):
-        thread = firstthread
-        particles = self.filter_data( sim=sim, tally=tally, xdim=xgrid, ydim=ygrid, nthreads=1)['nparticles'].sort_values()
-        fdata = self.filter_data( sim=sim, tally=tally, nparticles=particles.min(), xdim=xgrid, ydim=ygrid, nthreads=thread)
-        for npart in particles.iloc[1:]:
-            thread = 2 * thread
-            fdata1 = self.filter_data( sim=sim, tally=tally, nparticles=npart, xdim=xgrid, ydim=ygrid, nthreads=thread)            
-            fdata = pd.concat([fdata,fdata1],axis=0)
-        return fdata
-
-    # Get data for weak scaling of total execution time with grid size
-    def plot_weak_scaling_particles(self,firstthread,xgrid,ygrid):
-        fdata = self.get_weak_scaling_particles('monolithic','private',firstthread,xgrid,ygrid)
-        self.plot_data(fdata['nthreads'],fdata['walltime'],{'label':'Monolithic Private'})
-        fdata = self.get_weak_scaling_particles('monolithic','shared',firstthread,xgrid,ygrid)
-        self.plot_data(fdata['nthreads'],fdata['walltime'],{'label':'Monolithic Shared'})
-        fdata = self.get_weak_scaling_particles('synchronous','private',firstthread,xgrid,ygrid)
-        self.plot_data(fdata['nthreads'],fdata['walltime'],{'label':'Synchronous Private'})
-        fdata = self.get_weak_scaling_particles('synchronous','shared',firstthread,xgrid,ygrid)
-        self.plot_data(fdata['nthreads'],fdata['walltime'],{'label':'Synchronous Shared'})
-
-    # Make figure of weak scaling with particles
-    def fig_weak_scaling_particles(self,firstthread,xgrid,ygrid):
-        print('Plotting weak scaling with particles:',xgrid,'x',ygrid,'grid')
-        self.init_figure('Weak scaling with particles. '+str(xgrid)+'x'+str(ygrid)+' grid')
-        self.plot_weak_scaling_particles(firstthread,xgrid,ygrid)
-        minpart = self.pdata['nparticles'].min()
-        self.ax.text(2,3.9,'From %8d particles' %(minpart))
-        self.ax.legend()
-        self.ax.set_yscale('linear')
-        self.makeplot('weakScalingParticles.png')
-
-    # Get data for weak scaling with grid size for pathstime and tallytime
-    def plot_weak_scaling_split_particles(self,firstthread,xgrid,ygrid):
-        fdata = self.get_weak_scaling_particles('synchronous','private',firstthread,xgrid,ygrid)
-        self.plot_data(fdata['nthreads'],fdata['pathstime'],{'label':'pathstime private'})
-        fdata = self.get_weak_scaling_particles('synchronous','shared',firstthread,xgrid,ygrid)
-        self.plot_data(fdata['nthreads'],fdata['pathstime'],{'label':'pathstime shared'})
-        fdata = self.get_weak_scaling_particles('synchronous','private',firstthread,xgrid,ygrid)
-        self.plot_data(fdata['nthreads'],fdata['tallytime'],{'label':'tallytime private'})
-        fdata = self.get_weak_scaling_particles('synchronous','shared',firstthread,xgrid,ygrid)
-        self.plot_data(fdata['nthreads'],fdata['tallytime'],{'label':'tallytime shared'})
-
-    # Make figure of weak scaling with particles for pathstime and tallytime
-    def fig_weak_scaling_split_particles(self,firstthread,xgrid,ygrid):
-        print('Plotting weak scaling split with particles:',xgrid,'x',ygrid,'grid')
-        self.init_figure('Weak scaling split with particles. '+str(xgrid)+'x'+str(ygrid)+' grid')
-        self.plot_weak_scaling_split_particles(firstthread,xgrid,ygrid)
-        minpart = self.pdata['nparticles'].min()
-        self.ax.text(2,2.5,'From %8d particles' %(minpart))
-        self.ax.legend()
-        self.ax.set_yscale('linear')
-        self.makeplot('weakScalingSplitParticles.png')
-    
-    # Get data for weak scaling of total execution time with grid size
-    # This relies on the data increasing as a power of 2
-    def get_weak_scaling_grid(self,sim,tally,firstthread,nparticles):
-        thread = firstthread
-        xgrid = self.filter_data( sim=sim, tally=tally, nparticles=nparticles, nthreads=1)['xdim'].sort_values()
-        fdata = self.filter_data( sim=sim, tally=tally, nparticles=nparticles, xdim=xgrid.min(), ydim=xgrid.min(), nthreads=thread)
-        for grid in xgrid.iloc[1:]:
-            thread = 4 * thread
-            fdata1 = self.filter_data( sim=sim, tally=tally, nparticles=nparticles, xdim=grid, ydim=grid, nthreads=thread)            
-            fdata = pd.concat([fdata,fdata1],axis=0)
-        return fdata
-
-    # Add plots for weak scaling with grid size
-    def plot_weak_scaling_grid(self,firstthread,nparticles):
-        fdata = self.get_weak_scaling_grid('monolithic','private',firstthread,nparticles)
-        self.plot_data(fdata['nthreads'],fdata['walltime'],{'label':'Monolithic Private'})
-        fdata = self.get_weak_scaling_grid('monolithic','shared',firstthread,nparticles)
-        self.plot_data(fdata['nthreads'],fdata['walltime'],{'label':'Monolithic Shared'})
-        fdata = self.get_weak_scaling_grid('synchronous','private',firstthread,nparticles)
-        self.plot_data(fdata['nthreads'],fdata['walltime'],{'label':'Synchronous Private'})
-        fdata = self.get_weak_scaling_grid('synchronous','shared',firstthread,nparticles)
-        self.plot_data(fdata['nthreads'],fdata['walltime'],{'label':'Synchronous Shared'})
-
-    # Make figure of weak scaling with grid size
-    def fig_weak_scaling_grid(self,firstthread,nparticles):
-        print('Plotting weak scaling with grid size:', nparticles, ' particles' )
-        self.init_figure('Weak scaling with grid size. '+ str(nparticles) + ' particles')
-        self.plot_weak_scaling_grid(firstthread,nparticles)
-        self.ax.set_yscale('linear')
-        mingrid = self.pdata['xdim'].min()
-        self.ax.annotate('Smallest grid=%4d' %(mingrid), xy=(1.7,3.4)) 
-        self.ax.legend()
-        self.makeplot('weakScalingGrid.png')
-
-    # Add plots for weak scaling with grid size for pathstime and tallytime
-    def plot_weak_scaling_split_grid(self,firstthread,nparticles):
-        fdata = self.get_weak_scaling_grid('synchronous','private',firstthread,nparticles)
-        self.plot_data(fdata['nthreads'],fdata['pathstime'],{'label':'pathstime private'})
-        fdata = self.get_weak_scaling_grid('synchronous','shared',firstthread,nparticles)
-        self.plot_data(fdata['nthreads'],fdata['pathstime'],{'label':'pathstime shared'})
-        fdata = self.get_weak_scaling_grid('synchronous','private',firstthread,nparticles)
-        self.plot_data(fdata['nthreads'],fdata['tallytime'],{'label':'tallytime private'})
-        fdata = self.get_weak_scaling_grid('synchronous','shared',firstthread,nparticles)
-        self.plot_data(fdata['nthreads'],fdata['tallytime'],{'label':'tallytime shared'})
-
-    # Make figure of weak scaling with grid size for pathstime and tallytime
-    def fig_weak_scaling_split_grid(self,firstthread,nparticles):
-        print('Plotting weak scaling with grid size:', nparticles, ' particles' )
-        self.init_figure('Weak scaling split with grid size. '+ str(nparticles) + ' particles')
-        self.plot_weak_scaling_split_grid(firstthread,nparticles)
-        self.ax.set_yscale('linear')
-        # This won't work in general
-        mingrid = self.pdata['xdim'].min()
-        self.ax.text(2,0.6,'Smallest grid=%4d' %(mingrid)) 
-        self.ax.legend()
-        self.makeplot('weakScalingSplitGrid.png')
-
-    # Add plots of speedup
 
     # Make figure of Eirene MPI speedup
     def fig_speedup_eirene(self,nparticles):
@@ -334,6 +188,166 @@ class eiron_profile:
         self.makeplot('plots/eireneMPIEfficiency.png')
 
 
+    ##############################################################################################
+    # Eiron figures
+    ##############################################################################################
+
+        
+    # Add strong scaling plots for the synchronous execution types        
+    def plot_one_strong_scaling_eiron(self,nparticles,xgrid,ygrid,sim,tally,data):
+        fdata = self.filter_data( sim=sim, tally=tally, nparticles=nparticles, xdim=xgrid, ydim=ygrid)
+        self.plot_data(fdata['nthreads'],fdata[data],{'label':sim + ' ' + tally})
+
+    # Add strong scaling plots showing total time of the 4 execution types        
+    def plot_strong_scaling_eiron(self,nparticles,xgrid,ygrid):
+        self.plot_one_strong_scaling(nparticles,xgrid,ygrid,'monolithic','private','walltime')
+        self.plot_one_strong_scaling(nparticles,xgrid,ygrid,'monolithic','shared','walltime')
+        self.plot_one_strong_scaling(nparticles,xgrid,ygrid,'synchronous','private','walltime')
+        self.plot_one_strong_scaling(nparticles,xgrid,ygrid,'synchronous','shared','walltime')
+
+    # Strong scaling showing total time of the 4 execution types
+    def fig_strong_scaling_eiron(self,nparticles,xgrid,ygrid):
+        print('Plotting strong scaling:',nparticles,' particles')
+        self.init_figure('Strong scaling: ' + str(nparticles) + ' particles, ' + str(xgrid) + 'x' + str(ygrid) + ' grid')
+        self.plot_strong_scaling(nparticles,xgrid,ygrid)
+        self.ax.legend()
+        self.makeplot("strongScaling.png")
+    
+    # Add strong scaling plots for the synchronous execution types        
+    def plot_one_strong_scaling_split_eiron(self,nparticles,xgrid,ygrid,tally,data):
+        fdata = self.filter_data( sim='synchronous', tally=tally, nparticles=nparticles, xdim=xgrid, ydim=ygrid)
+        self.plot_data(fdata['nthreads'],fdata[data],{'label':data + ' ' + tally})       
+
+    # Add strong scaling plots showing paths and tally time
+    def plot_strong_scaling_split_eiron(self,nparticles,xgrid,ygrid):
+        self.plot_one_strong_scaling_split(nparticles,xgrid,ygrid,'private','pathstime')
+        self.plot_one_strong_scaling_split(nparticles,xgrid,ygrid,'shared','pathstime')
+        self.plot_one_strong_scaling_split(nparticles,xgrid,ygrid,'private','tallytime')
+        self.plot_one_strong_scaling_split(nparticles,xgrid,ygrid,'shared','tallytime')
+        
+    # Strong scaling showing total time of the 4 execution types
+    def fig_strong_scaling_split_eiron(self,nparticles,xgrid,ygrid):
+        print('Plotting strong scaling split:',nparticles,'particles')
+        self.init_figure('Strong scaling split: ' + str(nparticles) + ' particles, ' + str(xgrid) + 'x' + str(ygrid) + ' grid')
+        self.plot_strong_scaling_split(nparticles,xgrid,ygrid)
+        self.ax.legend()
+        self.makeplot("strongScalingSplit.png")
+    
+    
+    # Get data for weak scaling of total execution time with particles
+    # This relies on the data increasing as a power of 2
+    def get_weak_scaling_particles_eiron(self,sim,tally,firstthread,xgrid,ygrid):
+        thread = firstthread
+        particles = self.filter_data( sim=sim, tally=tally, xdim=xgrid, ydim=ygrid, nthreads=1)['nparticles'].sort_values()
+        fdata = self.filter_data( sim=sim, tally=tally, nparticles=particles.min(), xdim=xgrid, ydim=ygrid, nthreads=thread)
+        for npart in particles.iloc[1:]:
+            thread = 2 * thread
+            fdata1 = self.filter_data( sim=sim, tally=tally, nparticles=npart, xdim=xgrid, ydim=ygrid, nthreads=thread)            
+            fdata = pd.concat([fdata,fdata1],axis=0)
+        return fdata
+
+    # Get data for weak scaling of total execution time with grid size
+    def plot_weak_scaling_particles_eiron(self,firstthread,xgrid,ygrid):
+        fdata = self.get_weak_scaling_particles('monolithic','private',firstthread,xgrid,ygrid)
+        self.plot_data(fdata['nthreads'],fdata['walltime'],{'label':'Monolithic Private'})
+        fdata = self.get_weak_scaling_particles('monolithic','shared',firstthread,xgrid,ygrid)
+        self.plot_data(fdata['nthreads'],fdata['walltime'],{'label':'Monolithic Shared'})
+        fdata = self.get_weak_scaling_particles('synchronous','private',firstthread,xgrid,ygrid)
+        self.plot_data(fdata['nthreads'],fdata['walltime'],{'label':'Synchronous Private'})
+        fdata = self.get_weak_scaling_particles('synchronous','shared',firstthread,xgrid,ygrid)
+        self.plot_data(fdata['nthreads'],fdata['walltime'],{'label':'Synchronous Shared'})
+
+    # Make figure of weak scaling with particles
+    def fig_weak_scaling_particles_eiron(self,firstthread,xgrid,ygrid):
+        print('Plotting weak scaling with particles:',xgrid,'x',ygrid,'grid')
+        self.init_figure('Weak scaling with particles. '+str(xgrid)+'x'+str(ygrid)+' grid')
+        self.plot_weak_scaling_particles(firstthread,xgrid,ygrid)
+        minpart = self.pdata['nparticles'].min()
+        self.ax.text(2,3.9,'From %8d particles' %(minpart))
+        self.ax.legend()
+        self.ax.set_yscale('linear')
+        self.makeplot('weakScalingParticles.png')
+
+    # Get data for weak scaling with grid size for pathstime and tallytime
+    def plot_weak_scaling_split_particles_eiron(self,firstthread,xgrid,ygrid):
+        fdata = self.get_weak_scaling_particles('synchronous','private',firstthread,xgrid,ygrid)
+        self.plot_data(fdata['nthreads'],fdata['pathstime'],{'label':'pathstime private'})
+        fdata = self.get_weak_scaling_particles('synchronous','shared',firstthread,xgrid,ygrid)
+        self.plot_data(fdata['nthreads'],fdata['pathstime'],{'label':'pathstime shared'})
+        fdata = self.get_weak_scaling_particles('synchronous','private',firstthread,xgrid,ygrid)
+        self.plot_data(fdata['nthreads'],fdata['tallytime'],{'label':'tallytime private'})
+        fdata = self.get_weak_scaling_particles('synchronous','shared',firstthread,xgrid,ygrid)
+        self.plot_data(fdata['nthreads'],fdata['tallytime'],{'label':'tallytime shared'})
+
+    # Make figure of weak scaling with particles for pathstime and tallytime
+    def fig_weak_scaling_split_particles_eiron(self,firstthread,xgrid,ygrid):
+        print('Plotting weak scaling split with particles:',xgrid,'x',ygrid,'grid')
+        self.init_figure('Weak scaling split with particles. '+str(xgrid)+'x'+str(ygrid)+' grid')
+        self.plot_weak_scaling_split_particles(firstthread,xgrid,ygrid)
+        minpart = self.pdata['nparticles'].min()
+        self.ax.text(2,2.5,'From %8d particles' %(minpart))
+        self.ax.legend()
+        self.ax.set_yscale('linear')
+        self.makeplot('weakScalingSplitParticles.png')
+    
+    # Get data for weak scaling of total execution time with grid size
+    # This relies on the data increasing as a power of 2
+    def get_weak_scaling_grid_eiron(self,sim,tally,firstthread,nparticles):
+        thread = firstthread
+        xgrid = self.filter_data( sim=sim, tally=tally, nparticles=nparticles, nthreads=1)['xdim'].sort_values()
+        fdata = self.filter_data( sim=sim, tally=tally, nparticles=nparticles, xdim=xgrid.min(), ydim=xgrid.min(), nthreads=thread)
+        for grid in xgrid.iloc[1:]:
+            thread = 4 * thread
+            fdata1 = self.filter_data( sim=sim, tally=tally, nparticles=nparticles, xdim=grid, ydim=grid, nthreads=thread)            
+            fdata = pd.concat([fdata,fdata1],axis=0)
+        return fdata
+
+    # Add plots for weak scaling with grid size
+    def plot_weak_scaling_grid_eiron(self,firstthread,nparticles):
+        fdata = self.get_weak_scaling_grid('monolithic','private',firstthread,nparticles)
+        self.plot_data(fdata['nthreads'],fdata['walltime'],{'label':'Monolithic Private'})
+        fdata = self.get_weak_scaling_grid('monolithic','shared',firstthread,nparticles)
+        self.plot_data(fdata['nthreads'],fdata['walltime'],{'label':'Monolithic Shared'})
+        fdata = self.get_weak_scaling_grid('synchronous','private',firstthread,nparticles)
+        self.plot_data(fdata['nthreads'],fdata['walltime'],{'label':'Synchronous Private'})
+        fdata = self.get_weak_scaling_grid('synchronous','shared',firstthread,nparticles)
+        self.plot_data(fdata['nthreads'],fdata['walltime'],{'label':'Synchronous Shared'})
+
+    # Make figure of weak scaling with grid size
+    def fig_weak_scaling_grid_eiron(self,firstthread,nparticles):
+        print('Plotting weak scaling with grid size:', nparticles, ' particles' )
+        self.init_figure('Weak scaling with grid size. '+ str(nparticles) + ' particles')
+        self.plot_weak_scaling_grid(firstthread,nparticles)
+        self.ax.set_yscale('linear')
+        mingrid = self.pdata['xdim'].min()
+        self.ax.annotate('Smallest grid=%4d' %(mingrid), xy=(1.7,3.4)) 
+        self.ax.legend()
+        self.makeplot('weakScalingGrid.png')
+
+    # Add plots for weak scaling with grid size for pathstime and tallytime
+    def plot_weak_scaling_split_grid_eiron(self,firstthread,nparticles):
+        fdata = self.get_weak_scaling_grid('synchronous','private',firstthread,nparticles)
+        self.plot_data(fdata['nthreads'],fdata['pathstime'],{'label':'pathstime private'})
+        fdata = self.get_weak_scaling_grid('synchronous','shared',firstthread,nparticles)
+        self.plot_data(fdata['nthreads'],fdata['pathstime'],{'label':'pathstime shared'})
+        fdata = self.get_weak_scaling_grid('synchronous','private',firstthread,nparticles)
+        self.plot_data(fdata['nthreads'],fdata['tallytime'],{'label':'tallytime private'})
+        fdata = self.get_weak_scaling_grid('synchronous','shared',firstthread,nparticles)
+        self.plot_data(fdata['nthreads'],fdata['tallytime'],{'label':'tallytime shared'})
+
+    # Make figure of weak scaling with grid size for pathstime and tallytime
+    def fig_weak_scaling_split_grid_eiron(self,firstthread,nparticles):
+        print('Plotting weak scaling with grid size:', nparticles, ' particles' )
+        self.init_figure('Weak scaling split with grid size. '+ str(nparticles) + ' particles')
+        self.plot_weak_scaling_split_grid(firstthread,nparticles)
+        self.ax.set_yscale('linear')
+        # This won't work in general
+        mingrid = self.pdata['xdim'].min()
+        self.ax.text(2,0.6,'Smallest grid=%4d' %(mingrid)) 
+        self.ax.legend()
+        self.makeplot('weakScalingSplitGrid.png')
+
+    # Add plots of speedup
 
     def plot_speedup_eiron(self,nparticles,xgrid,ygrid):
         fdata = self.filter_data(sim='monolithic',tally='private', nparticles=nparticles, xdim=xgrid, ydim=ygrid)
@@ -401,6 +415,8 @@ class eiron_profile:
         self.ax.legend()
         self.makeplot('openMPEfficiency.png')
 
+
+        
 # Read command line arguments
 def read_args():
     parser = argparse.ArgumentParser(description = 'Plot scalings from csv file containing scaling data.')
@@ -440,20 +456,20 @@ pd.options.display.max_columns = 999
 # Make some plots
 # Eirene
 if args.codetype == 'eirene':
-    prof.fig_simple_strong_thread_scaling(args.nparticles)
-    prof.fig_simple_strong_mpi_scaling(args.nparticles, 1)
-    prof.fig_strong_mpi_scaling(args.nparticles)
+    prof.fig_simple_strong_thread_scaling_eirene(args.nparticles)
+    prof.fig_simple_strong_mpi_scaling_eirene(args.nparticles, 1)
+    prof.fig_strong_mpi_scaling_eirene(args.nparticles)
     prof.fig_speedup_eirene(args.nparticles)
     prof.fig_efficiency_eirene(args.nparticles)
 
 # Eiron
 if args.codetype == 'eiron':
-    prof.fig_strong_scaling(args.nparticles,args.gridsize,args.gridsize)
-    prof.fig_strong_scaling_split(args.nparticles,args.gridsize,args.gridsize)
-    prof.fig_weak_scaling_particles(args.firstthread,args.gridsize,args.gridsize)
-    prof.fig_weak_scaling_split_particles(args.firstthread,args.gridsize,args.gridsize)
-    prof.fig_weak_scaling_grid(args.firstthread,args.nparticles)
-    prof.fig_weak_scaling_split_grid(args.firstthread,args.nparticles)
+    prof.fig_strong_scaling_eiron(args.nparticles,args.gridsize,args.gridsize)
+    prof.fig_strong_scaling_split_eiron(args.nparticles,args.gridsize,args.gridsize)
+    prof.fig_weak_scaling_particles_eiron(args.firstthread,args.gridsize,args.gridsize)
+    prof.fig_weak_scaling_split_particles_eiron(args.firstthread,args.gridsize,args.gridsize)
+    prof.fig_weak_scaling_grid_eiron(args.firstthread,args.nparticles)
+    prof.fig_weak_scaling_split_grid_eiron(args.firstthread,args.nparticles)
     prof.fig_speedup_eiron(args.nparticles,args.gridsize,args.gridsize)
     prof.fig_efficiency_eiron(args.nparticles,args.gridsize,args.gridsize)
 
