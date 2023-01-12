@@ -300,7 +300,42 @@ class eiron_profile:
         self.makeplot('weakScalingSplitGrid.png')
 
     # Add plots of speedup
-    def plot_speedup(self,nparticles,xgrid,ygrid):
+
+    # Make figure of Eirene MPI speedup
+    def fig_speedup_eirene(self,nparticles):
+        nparticles = 11000
+        print('Plotting Eirene MPI speedup:', nparticles, 'particles')
+        self.init_figure('Eirene MPI speedup: ' + str(nparticles) + ' particles')
+        allthreads = self.pdata['n_omp_threads'].drop_duplicates()
+        for threads in allthreads:
+            fdata = self.filter_data(n_omp_threads=threads).drop_duplicates('n_processes')
+            speedup =  fdata['timing.wall_time'].iloc[0]/fdata['timing.wall_time']
+            if threads == 1:
+                self.plot_data(fdata['n_processes'],fdata['n_processes'],{'label':'ideal'})
+            self.plot_data(fdata['n_processes'],speedup,{'label':str(threads)+' threads'})
+        self.ax.set_ylabel('Speedup')
+        self.ax.yaxis.set_major_formatter(ticker.StrMethodFormatter("{x:.1f}"))
+        self.ax.legend()
+        self.makeplot('plots/eireneMPISpeedup.png')
+
+    # Make figure of Eirene MPI efficiency
+    def fig_efficiency_eirene(self,nparticles):
+        nparticles = 11000
+        print('Plotting Eirene MPI efficiency:', nparticles, 'particles')
+        self.init_figure('MPI efficiency: ' + str(nparticles) + ' particles')
+        allthreads = self.pdata['n_omp_threads'].drop_duplicates()
+        for threads in allthreads:
+            fdata = self.filter_data(n_omp_threads=threads).drop_duplicates('n_processes')
+            efficiency =  fdata['timing.wall_time'].iloc[0]/(fdata['timing.wall_time']*fdata['n_processes'])
+            self.plot_data(fdata['n_processes'],efficiency,{'label':str(threads)+' threads'})
+        self.ax.set_ylabel('Efficiency')
+        self.ax.yaxis.set_major_formatter(ticker.StrMethodFormatter("{x:.1f}"))
+        self.ax.legend()
+        self.makeplot('plots/eireneMPIEfficiency.png')
+
+
+
+    def plot_speedup_eiron(self,nparticles,xgrid,ygrid):
         fdata = self.filter_data(sim='monolithic',tally='private', nparticles=nparticles, xdim=xgrid, ydim=ygrid)
         speedup = fdata['walltime'].iloc[0]/fdata['walltime']
         self.plot_data(fdata['nthreads'],fdata['nthreads'],{'label':'ideal'})
@@ -315,19 +350,33 @@ class eiron_profile:
         speedup = fdata['walltime'].iloc[0]/fdata['walltime']
         self.plot_data(fdata['nthreads'],speedup,{'label':'synchronous shared'})
 
-
     # Make figure of speedup
-    def fig_speedup(self,nparticles,xgrid,ygrid):
+    def fig_speedup_eiron(self,nparticles,xgrid,ygrid):
         print('Plotting speedup:', nparticles, 'particles')
         self.init_figure('OpenMP speedup: ' + str(nparticles) + ' particles, ' + str(xgrid) + 'x' + str(ygrid) + ' grid')
-        self.plot_speedup(nparticles,xgrid,ygrid)
+        self.plot_speedup_eiron(nparticles,xgrid,ygrid)
         self.ax.set_ylabel('Speedup')
         self.ax.yaxis.set_major_formatter(ticker.StrMethodFormatter("{x:.1f}"))
         self.ax.legend()
         self.makeplot('openMPSpeedup.png')
 
     # Add plots of efficiency
-    def plot_efficiency(self,nparticles,xgrid,ygrid):
+    def plot_efficiency_eirene(self,nparticles,xgrid,ygrid):
+        fdata = self.filter_data(sim='monolithic',tally='private', nparticles=nparticles, xdim=xgrid, ydim=ygrid)
+        efficiency = fdata['walltime'].iloc[0] / (fdata['walltime'] * fdata['nthreads'])
+        self.plot_data(fdata['nthreads'],efficiency,{'label':'monolithic private'})
+        fdata = self.filter_data(sim='monolithic',tally='shared', nparticles=nparticles, xdim=xgrid, ydim=ygrid)
+        efficiency = fdata['walltime'].iloc[0] / (fdata['walltime'] * fdata['nthreads'])
+        self.plot_data(fdata['nthreads'],efficiency,{'label':'monolithic shared'})
+        fdata = self.filter_data(sim='synchronous',tally='private', nparticles=nparticles, xdim=xgrid, ydim=ygrid)
+        efficiency = fdata['walltime'].iloc[0] / (fdata['walltime'] * fdata['nthreads'])
+        self.plot_data(fdata['nthreads'],efficiency,{'label':'synchronous private'})
+        fdata = self.filter_data(sim='synchronous',tally='shared', nparticles=nparticles, xdim=xgrid, ydim=ygrid)
+        efficiency = fdata['walltime'].iloc[0] / (fdata['walltime'] * fdata['nthreads'])
+        self.plot_data(fdata['nthreads'],efficiency,{'label':'synchronous shared'})
+
+    # Add plots of efficiency
+    def plot_efficiency_eiron(self,nparticles,xgrid,ygrid):
         fdata = self.filter_data(sim='monolithic',tally='private', nparticles=nparticles, xdim=xgrid, ydim=ygrid)
         efficiency = fdata['walltime'].iloc[0] / (fdata['walltime'] * fdata['nthreads'])
         self.plot_data(fdata['nthreads'],efficiency,{'label':'monolithic private'})
@@ -343,7 +392,7 @@ class eiron_profile:
 
 
     # Make figure of efficiency
-    def fig_efficiency(self,nparticles,xgrid,ygrid):
+    def fig_efficiency_eiron(self,nparticles,xgrid,ygrid):
         print('Plotting efficiency:', nparticles, 'particles,', xgrid ,'x',ygrid,'grid')
         self.init_figure('OpenMP efficiency: ' + str(nparticles) + ' particles, ' + str(xgrid) + 'x' + str(ygrid) + ' grid')
         self.plot_efficiency(nparticles,xgrid,ygrid)
@@ -394,6 +443,8 @@ if args.codetype == 'eirene':
     prof.fig_simple_strong_thread_scaling(args.nparticles)
     prof.fig_simple_strong_mpi_scaling(args.nparticles, 1)
     prof.fig_strong_mpi_scaling(args.nparticles)
+    prof.fig_speedup_eirene(args.nparticles)
+    prof.fig_efficiency_eirene(args.nparticles)
 
 # Eiron
 if args.codetype == 'eiron':
@@ -403,8 +454,8 @@ if args.codetype == 'eiron':
     prof.fig_weak_scaling_split_particles(args.firstthread,args.gridsize,args.gridsize)
     prof.fig_weak_scaling_grid(args.firstthread,args.nparticles)
     prof.fig_weak_scaling_split_grid(args.firstthread,args.nparticles)
-    prof.fig_speedup(args.nparticles,args.gridsize,args.gridsize)
-    prof.fig_efficiency(args.nparticles,args.gridsize,args.gridsize)
+    prof.fig_speedup_eiron(args.nparticles,args.gridsize,args.gridsize)
+    prof.fig_efficiency_eiron(args.nparticles,args.gridsize,args.gridsize)
 
 
 
