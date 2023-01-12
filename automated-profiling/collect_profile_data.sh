@@ -78,11 +78,22 @@ do
 	        echo "Job ${job_number} failed, skipping parsing"
 	else
     	        echo "Parsing output"
+		if [ $N -gt 1 ] || [ $n -gt 1 ] || [ $c -gt 1 ]; then
+   		        output=output.0000
+		else
+		        output=eirene-2d.reference_${N}-${n}-${c}.out
+		fi
 		report cases.${case_name}.timing {}
 		cpu_time=$(grep CPU_TIME ${case_report_dir}/eirene-2d.reference_${N}-${n}-${c}.out | sed 's/[[:blank:]]*$//; s/.*[[:blank:]]//')
 		wall_time=$(echo ${cpu_time:0:8})
+		atom_time=$(grep 'TOTAL=' ${output} | sed '1q;d' |  sed 's/[[:blank:]]*$//; s/.*[[:blank:]]//')
+		mol_time=$(grep 'TOTAL=' ${output} | sed '2q;d' |  sed 's/[[:blank:]]*$//; s/.*[[:blank:]]//')
+		ion_time=$(grep 'TOTAL=' ${output} | sed '3q;d' |  sed 's/[[:blank:]]*$//; s/.*[[:blank:]]//')
 		report cases.${case_name}.output_parsed "true"
 		echo "Adding wall time: ${wall_time}"
 		report cases.${case_name}.timing.wall_time ${wall_time}
+		report cases.${case_name}.timing.atom_time ${atom_time}
+		report cases.${case_name}.timing.mol_time ${mol_time}
+		report cases.${case_name}.timing.ion_time ${ion_time}
 	fi
 done

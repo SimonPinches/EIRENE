@@ -1,6 +1,14 @@
 #!/usr/bin/env python
-# script to read scaling data from either a json or csv file and produce scaling plots
+# Authour H Leggate
+# Script to read scaling data from either a json or csv file and produce scaling plots
+# Data can be read in a flat csv file or a hierarchical json file
+# There are a set of plots for data from either Eiron or Eirene
+
+# Eiron data contains the following indexes
 # sim,tally,nparticles,xdim,ydim,nthreads,walltime,pathstime,tallytime
+
+# Eirene data contains the following indexes
+# n_nodes,n_mpi_ranks,n_omp_threads 
 
 
 from os.path import exists
