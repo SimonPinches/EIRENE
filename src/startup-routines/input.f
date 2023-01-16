@@ -641,8 +641,8 @@ C
           ELSE
             CALL GREND
 #ifdef USE_MPI
-            CALL MPI_ABORT(MPI_COMM_WORLD, -1, IER)
-            CALL MPI_FINALIZE(IER)
+            CALL MPI_ABORT(MPI_COMM_WORLD, -1, IERROR)
+            CALL MPI_FINALIZE(IERROR)
 #endif
             STOP "EIRENE TRIANGULATION PREPARATION RUN COMPLETE"
           END IF
