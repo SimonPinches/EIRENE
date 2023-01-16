@@ -356,6 +356,8 @@ cdjm Jan2017
      .                0,MPI_COMM_WORLD,ierr)
       call mpi_bcast (volsumei,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
+
+      return
       end subroutine eirene_broadcast_eirbra
 
       subroutine eirene_mpisend_eirbra(istr,irank)
@@ -370,6 +372,7 @@ cdjm Jan2017
      .                irank, istr, MPI_COMM_WORLD, ierr)
         call mpi_send(volsumei(istr), 1, MPI_DOUBLE_PRECISION,
      .                irank, istr, MPI_COMM_WORLD, ierr)
+      return
       end subroutine eirene_mpisend_eirbra
 
       subroutine eirene_mpirecv_eirbra(istr,irank)
@@ -388,6 +391,7 @@ cdjm Jan2017
         call mpi_recv(volsumei(istr), 1, MPI_DOUBLE_PRECISION,
      .                irank, istr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
      .                ierr)
+      return
       end subroutine eirene_mpirecv_eirbra
 csw
       END MODULE EIRMOD_EIRBRA

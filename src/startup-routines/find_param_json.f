@@ -84,7 +84,10 @@ C
      .                       noptim_in, nrtal_in, nsmstra_in, nstrai_in,
      .                       eirene_init_input_blocks 
 !pgf      use json_module, ck => json_ck
+!cym/cpg, keep using json_ck       
+!      use json_module
       use json_module
+!cym/cpg
 
       IMPLICIT NONE
 
@@ -111,6 +114,7 @@ cym
       character*8, allocatable :: textal(:)
 cym      
 !pgf      character(kind=CK,len=:), allocatable :: header
+!cym/cpg, keep using json_ck
       character(kind=json_CK,len=:), allocatable :: header
 
 C
@@ -458,6 +462,7 @@ cpg         TREEPATH = get_solpstop()
       logical :: found
       character(420) :: casename
 !pgf      character(kind=CK,len=:), allocatable :: case
+!cym/cpg, keep using json_ck
       character(kind=json_CK,len=:), allocatable :: case
 
       WRITE (iunout,*) '*** 2. DATA FOR VOXEL GRID GENERATION'
@@ -743,6 +748,7 @@ cym to be evaluated
       integer :: nrc, ibgk, i, j
       logical found
 !pgf      character(kind=CK,len=:), allocatable :: spname
+!cym/cpg, keep using json_ck
       character(kind=json_CK,len=:), allocatable :: spname
 
       call json%get_child(p,'SPECIES',pspecies,found)
@@ -997,6 +1003,7 @@ c  Due to the volume tally input card (indpro(12)) being optional.
 
       type(json_value), pointer :: ptom
 !pgf      character(kind=CK,len=:), allocatable :: path
+!cym/cpg, keep using json_ck
       character(kind=json_CK,len=:), allocatable :: path
       logical :: found, nltrim
 
@@ -1035,6 +1042,7 @@ c  Due to the volume tally input card (indpro(12)) being optional.
       integer, allocatable :: indsrc(:)
       logical :: found, fsub
 !pgf      character(kind=CK,len=:),allocatable :: txt
+!cym/cpg, keep using json_ck
       character(kind=json_CK,len=:),allocatable :: txt
 
       WRITE (iunout,*) '*** 7. DATA FOR PRIMARY SOURCES, NSTRAI STRATA'
@@ -1267,6 +1275,7 @@ C  ERGODIC OPTION NEEDS PRINTOUT AT LEAST FROM TIME-HORIZON
       type(json_value), pointer :: plines, pline, pcomps, pcomp,
      .                             pcnts, pcnt
 !pgf      character(kind=CK,len=:), allocatable :: ckey
+!cym/cpg, keep using json_ck
       character(kind=json_CK,len=:), allocatable :: ckey
       integer :: num_lines, mod_addv, i, j, k, num_compo, num_contrib, 
      .           lines, iratio, nadv_add, nchori, ncheni
@@ -1284,7 +1293,10 @@ C  ERGODIC OPTION NEEDS PRINTOUT AT LEAST FROM TIME-HORIZON
         call json%get(p,'KEYWORD',ckey,lkey)
 
         if (lkey) then
-          if (index(ckey,'DEFINE_LINES') == 0) lkey = .false.
+!cym type mistmatch here
+!          if (index(ckey,'DEFINE_LINES') == 0) lkey = .false.
+          if (index(ckey,json_ck_'DEFINE_LINES') == 0) lkey = .false.
+!cym end
         end if
       
         if (lkey) then

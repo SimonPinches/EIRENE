@@ -15,10 +15,10 @@
      .                         E0,VELX,VELY,VELZ,CRTX,CRTY,CRTZ
       USE EIRMOD_CLGIN, only:  ZNML,ZNCL,EWALL,RECYCS,RECYCC,ESPUTC,
      .                         IGJUM0, ISPUT, ILIIN, NSTSI, LCHSPNWL
-      USE EIRMOD_CINIT, only: NDBNAMES, DBHANDLE, DBFNAME
+      USE EIRMOD_CINIT, only: NDBNAMES, DBHANDLE, DBFNAME, MASTER_PATH
       USE EIRMOD_CPES, only: MY_PE, NPRS
       USE EIRMOD_RANF, ONLY: RANF_EIRENE
-      USE EIRMOD_REFUSR, ONLY: EIRENE_SPTUSR_INIT, EIRENE_SPTUSR
+      USE EIRMOD_REFUSR, ONLY: EIRENE_SPTUSR_INIT
 
       IMPLICIT NONE
       PRIVATE
@@ -31,17 +31,16 @@ C  DATA FOR PHYSICAL SPUTTERING: IDENTIFY TARGET-PROJECTILE
 C  target index 1-11: data read from file: SPUTER, fort.33
 C  target index 0   : data evaluated "on the fly"
 cym -> public because copyin needed
-      REAL(DP), dimension(28,0:11),PUBLIC, SAVE :: ETH,Q,
-     .                         M2M1,ETF
+      REAL(DP), dimension(28,0:11),PUBLIC, SAVE :: ETH,Q,M2M1,ETF
       REAL(DP), dimension(28), PUBLIC, SAVE :: ES
 
 
 cym these will need to be copyin (initialized in sputr0)
 !$OMP THREADPRIVATE(ETH,Q,M2M1,ES,ETF)
 
-      REAL(DP), SAVE :: RTAMU(28),ZTAR(28)
-      REAL(DP), SAVE :: BT1 = 7.0_DP, BT2 = -0.54_DP, 
-     .                  BT3 = 0.15_DP, BT4 = 1.12_DP
+      REAL(DP), PUBLIC, SAVE :: RTAMU(28),ZTAR(28)
+      REAL(DP), PUBLIC, SAVE :: BT1 = 7.0_DP, BT2 = -0.54_DP, 
+     .                          BT3 = 0.15_DP, BT4 = 1.12_DP
 
 C  NPROJ: PROJECTILE IDENTIFIER
 C  NPROJ(7) CORRESPONDS TO SELF-SPUTTERING.
@@ -70,21 +69,21 @@ C  NTARG:  TARGET IDENTIFIER
      .           'PLATINUM            ', 'GOLD                ',
      .           'LEAD                ', 'URANIUM             '/)
 
-      REAL(DP), SAVE :: RM1,RM2,Z1,Z2,Z123,Z223,ES23,
-     .                  FM2M1,GM2M1,GZ1Z213,GZ1Z212,XETF
+      REAL(DP), PUBLIC, SAVE :: RM1,RM2,Z1,Z2,Z123,Z223,ES23,
+     .                         FM2M1,GM2M1,GZ1Z213,GZ1Z212,XETF
 
 !$OMP THREADPRIVATE(RM1,RM2,Z1,Z2,Z123,Z223,ES23,
 !$OMP&               FM2M1,GM2M1,GZ1Z213,GZ1Z212,XETF)
 
-      REAL(DP), SAVE :: TWOTHIRD,ONETHIRD,ONESIXTH,FIVESIXTH
+      REAL(DP), PUBLIC, SAVE :: TWOTHIRD,ONETHIRD,ONESIXTH,FIVESIXTH
 
 C  CHEMICAL EROSION DATA
       REAL(DP), dimension(3), SAVE :: D = (/250._DP,125._DP,83._DP/)
       REAL(DP), dimension(3), SAVE :: EDAM = (/15._DP,15._DP,15._DP/)
       REAL(DP), dimension(3), SAVE :: EDES = (/2._DP,2._DP,2._DP/)
 
-      INTEGER, ALLOCATABLE, SAVE :: IPROJ(:),IPROJS(:),ITARG(:),
-     .                              ISPZSP_DEF(:)
+      INTEGER, ALLOCATABLE, PUBLIC, SAVE :: IPROJ(:), IPROJS(:),
+     .                                      ITARG(:), ISPZSP_DEF(:)
       INTEGER, SAVE :: ICOUNT
 
 !$OMP THREADPRIVATE(ICOUNT)
@@ -255,6 +254,8 @@ C
       INTEGER :: IETF(0:11)
       INTEGER :: IFILE, I28, I11, IT, ISP, IAT, IP, IIO, IPL, 
      .           ILIM, NT, IA, NA, ISTSI, ISURF
+      character*256 :: filename
+      logical :: found
 
 
 C
@@ -283,8 +284,30 @@ C
           CALL EIRENE_EXIT_OWN(1)
         END IF
 
+        inquire (FILE=trim(DBFNAME(IFILE)),exist=found)
+        if (found) then
         OPEN (UNIT=33,FILE=DBFNAME(IFILE))
-        READ(33,*)
+        else
+          inquire (FILE=trim(master_path)//
+     .     '/modules/Eirene/Database/Surfacedata/SPUTER',
+     .      exist=found)
+          if (found) then
+            filename=trim(master_path)//
+     .       '/modules/Eirene/Database/Surfacedata/SPUTER'
+            WRITE (IUNOUT,*)
+     .       ' NO SPUTTERING DATABASE FILE FOUND IN RUN DIRECTORY'
+            WRITE (IUNOUT,'(a)') ' REVERTING TO DEFAULT FILE : '//
+     .       trim(filename)
+            CALL EIRENE_LEER(1)
+            OPEN (UNIT=33,FILE=trim(filename))
+          else
+            WRITE (IUNOUT,*) ' NO SPUTTERING DATABASE FILE FOUND'
+            WRITE (IUNOUT,*) ' CALCULATION ABANDONED'
+            CALL EIRENE_EXIT_OWN(1)
+          end if
+        end if
+
+        READ(33,*,END=999)
         READ(33,*)
         READ(33,*)
         READ(33,*)
@@ -472,8 +495,12 @@ C         ENDDO
 C       ENDDO
       ENDIF
 C
-      CALL EIRENE_SPTUSR_INIT
+      IF (ANY(ISPUT(1,1:NLIMPS).EQ.9)) CALL EIRENE_SPTUSR_INIT
+      RETURN
 C
+  999 WRITE (IUNOUT,*) ' SPUTTERING DATABASE FILE FOUND EMPTY !'
+      WRITE (IUNOUT,*) ' CALCULATION ABANDONED'
+      CALL EIRENE_EXIT_OWN(1)
       END SUBROUTINE EIRENE_SPUTR0
 C
 C
@@ -649,7 +676,14 @@ C  NO SPUTTER DATA FOUND FOR THIS TARGET-PROJECTILE
 C
       ELSEIF (MODPYS.EQ.9) THEN
 C  USER-SUPPLIED SPUTTER MODEL
-        CALL EIRENE_SPTUSR
+        CALL EIRENE_SP1USR(WMIN,FMASS,FCHAR,FLXSP,
+     .             IGASP,
+     .             YIELD1,
+     .             ISPZP,ESPTP,VSPTP,VXSPTP,VYSPTP,VZSPTP,
+     .             IGASC,
+     .             YIELD2,
+     .             ISPZC,ESPTC,VSPTC,VXSPTC,VYSPTC,VZSPTC,
+     .             YSPTWL,QQS)
 C
       ENDIF
 C

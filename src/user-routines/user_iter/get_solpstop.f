@@ -9,11 +9,10 @@
 
       ! internal
       character*256 solpstop
-#ifdef USE_PXFGETENV
+#ifndef NO_GETENV
       integer lenval, ierror
-#else
-#ifdef NAGFOR
-      integer lenval, ierror
+#ifndef USE_PXFGETENV
+      intrinsic get_environment_variable
 #endif
 #endif
       logical first
@@ -22,23 +21,15 @@
 
 
 !      if(first) then
-#ifdef NO_GETENV
         solpstop=' '
-#else
-#ifdef NAGFOR
-        call get_environment_variable('SOLPSTOP', 
-     .   status=ierror, length=lenval)
-        if (ierror.eq.0) then
-          call get_environment_variable('SOLPSTOP',value=solpstop)
-        elseif (ierror.eq.1) then
-          solpstop=' '
-        endif
-#else
+#ifndef NO_GETENV
 #ifdef USE_PXFGETENV
         CALL PXFGETENV ('SOLPSTOP', 0, solpstop, lenval, ierror)
 #else
-        call getenv ('SOLPSTOP', solpstop)
-#endif
+        call get_environment_variable('SOLPSTOP',
+     .   status=ierror, length=lenval)
+        if (ierror.eq.0) call get_environment_variable('SOLPSTOP',
+     .   value=solpstop)
 #endif
 #endif
         if(solpstop.eq.' ') then
@@ -51,5 +42,5 @@
         first=.false.
 !      endif
 
-
-      end 
+      return
+      end function get_solpstop

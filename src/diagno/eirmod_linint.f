@@ -840,6 +840,7 @@ C
 C
 
       IF (IFIRST < 0) THEN
+CDR what is the purpose of this?  Needed or dead option?
         TRAJ(ICHORI)%TRJ%NCOU_CELL = TRAJ(ICHORI)%TRJ%NCOU_CELL + NCOU
         DO J=1,NCOU
           NCELL=NRCELL+NUPC(J)*NR1P2+NBLCKA
@@ -903,7 +904,6 @@ C       CALL TIMCOL (...,IRET)
 C       IF (IRET .EQ. 1) GOTO 104
 C       IF (IRET .EQ. 2) GOTO 800
 C      ENDIF
-        
 c     IF (ISRFCL.EQ.3) CALL EIRENE_TORCOL (               *104)
       IF (ISRFCL.EQ.3) THEN
         CALL EIRENE_TORCOL (IRET)

@@ -78,7 +78,7 @@ C
       IF (LCART) GOTO 991
 
 C  SKIP PUSH ?
-      IF (IND.EQ.1.OR.IND.EQ.3) GOTO 200
+      IF ((IND.EQ.1).OR.(IND.EQ.3)) GOTO 200
 
 C  1.) PUSH TO NEW POSITION ALONG REDUCED (GUIDING CENTRE) TRACK
 C     write (iunout,*) 'fpkcol push, zt used', zt
@@ -86,7 +86,7 @@ C     write (iunout,*) 'fpkcol push, zt used', zt
       Y0=Y0+VELY*ZT
       Z0=Z0+VELZ*ZT
       TIME=TIME+DUR
-      IF (LEVGEO.LE.3.AND.NLPOL) THEN
+      IF ((LEVGEO.LE.3).AND.NLPOL) THEN
         IPOLG=NPCELL
       ELSEIF (NLPLG) THEN
         IPOLG=EIRENE_LEARC2(X0,Y0,NRCELL,NPANU,'FOLION 2     ')
@@ -128,8 +128,13 @@ C
 C  PRE-COLLISION ESTIMATOR
 C
       IF (NCLVI.GT.0) THEN
+        IF (SIGTOT.GT.0) THEN ! SIGTOT can be zero here (probably empty cell, so no reactions, but in that case we should not even be here, Fokker-Planck should be deactivated as well.)
         WS=WEIGHT/SIGTOT
-        CALL EIRENE_UPCUSR(WS,1)
+        ELSE
+          WS=0._DP
+        ENDIF
+CNR     NREACI+1 : REACTION INDEX FOR FOKKER-PLANCK (NOT IN REACTION LIST IN INPUT FILE)
+        CALL EIRENE_UPCUSR(WS,1,NREACI+1)
       ENDIF
 C
 C
@@ -175,8 +180,15 @@ C  FP COLLISION DONE, LCART=F STILL, I.E. VEL = V_GC
 c  gets new B field
 
 !pb VELS is not used in NEWFIELD with option 1
+!pb but for the sake of decent programming set VELS
       VELS = VEL
+CNR   ONLY UPDATE VELOCITY VECTOR IF THE PARTICLE HAS BEEN PUSHED, NO NEED
+CNR   OTHERWISE, AND BREAKS TRAJECTORY IN CASE OF INT. GRID SURFACE: THE
+CNR   VELOCITY NEEDS TO BE KEPT FROM THE PREVIOUS CELL, OR THE FACE/VELOCITY
+CNR   INTERSECTION IN TIMER MAY NOT BE FOUND.
+      IF (IND.EQ.0.OR.IND.EQ.2) THEN
       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,1)
+      ENDIF
 
 C  SKIP TRANSFORM TO FULL VELOCITY AND RETURN WITH LCART=F  ?
 
@@ -187,6 +199,7 @@ C  RETURN WITH FULL CARTESIAN VELOCITY VECTOR V = V_FULL
 C  NEW B FIELD
 
 !pb VELS is not used in NEWFIELD with option 0
+!pb but for the sake of decent programming set VELS
       VELS = VEL
       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,0)
 
@@ -206,14 +219,19 @@ c strictly: e0new, vnew should be modified, due to new gyro phase.
       VEL=VNEW
       E0=E0NEW
       IRET = 2
-      RETURN
+CNR   RETURN
 C
 C  POST-COLLISION ESTIMATOR
 C
-C     IF (NCLVI.GT.0) THEN
-C       WS=WEIGHT/SIGTOT
-C       CALL UPCUSR(WS,2)
-C     ENDIF
+      IF (NCLVI.GT.0) THEN
+        IF (SIGTOT.GT.0) THEN ! SIGTOT can be zero here (probably empty cell, so no reactions, but in that case we should not even be here, Fokker-Planck should be deactivated as well.)
+          WS=WEIGHT/SIGTOT
+        ELSE
+          WS=0._DP
+        ENDIF
+CNR     NREACI+1 : REACTION INDEX FOR FOKKER-PLANCK (NOT IN REACTION LIST IN INPUT FILE)
+        CALL EIRENE_UPCUSR(WS,2,NREACI+1)
+      ENDIF
       IRET = 2
       RETURN
 C

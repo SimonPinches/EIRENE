@@ -17,6 +17,8 @@
      , , only: TRCINT
       use eirmod_COMPRT
      , , only: IUNOUT, ISTRA
+      use eirmod_CINIT
+     , , only: FORT
       IMPLICIT NONE
       PRIVATE
 
@@ -40,7 +42,7 @@
       !c***    emolrad :   power radiated due to molecules
       !c***    eionrad :   power radiated due to molecular ions
       !c*** Surface data:
-      !c***    wldnek  :   heat transferred with neutrals
+      !c***    wldnek  :   net kinetic energy deposited by neutrals
       !c***    wldnep  :   potential energy released by neutrals
       !c***    wldna   :   flux of atoms impinging onto the surface
       !c***    ewlda   :   their average energy
@@ -72,6 +74,19 @@
      , eneutrad, emolrad, eionrad
       real(DP), save, allocatable, public :: eirpump(:),   ! pumped flux     !iyv 07.03.18
      ,                                       eirspta(:), eirsptm(:)      ! sputtered flux  !iyv 07.03.18
+      real(DP), save, public :: aver_frac, aver_frac46
+      real(DP), save, allocatable, dimension(:,:), public ::
+     , wldnek_aver,wldnep_aver ! average fluxes, som 02.04.2019
+      real(DP), save, allocatable, dimension (:,:,:), public ::
+     , wldna_aver,ewlda_aver,wldnm_aver,ewldm_aver,wldra_aver,
+     , wldrm_aver,wldpp_aver,wldpa_aver,wldpm_aver,wldspta_aver,
+     , wldsptm_aver ! average fluxes, som 02.04.2019
+      real(DP), save, allocatable, dimension (:,:), public ::
+     , wldpeb_aver,wldspt_aver,wlpump_aver ! average fluxes, som 02.04.2018
+      real(DP), save, allocatable, dimension (:,:), public ::
+     , PDENA_aver,PDENM_aver,EDENA_aver,EDENM_aver,
+     , VXDENA_aver,VXDENM_aver,VYDENA_aver,VYDENM_aver,
+     , VZDENA_aver,VZDENM_aver ! average fluxes, som 02.04.2018
 
       integer, save, allocatable, public ::
      ,  eirdiag_nds_ind(:),   eirdiag_nds_typ(:), eirdiag_nds_srf(:),
@@ -273,6 +288,40 @@ C
 
       allocate(volcel(0:ndxp,0:ndyp))
 
+      allocate(wldnek_aver(nlim+nsts,0:nstra+1))
+      allocate(wldnep_aver(nlim+nsts,0:nstra+1))
+      allocate(wldna_aver(nlimps,natm,0:nstra+1))
+      allocate(ewlda_aver(nlimps,natm,0:nstra+1))
+      allocate(wldnm_aver(nlimps,nmol,0:nstra+1))
+      allocate(ewldm_aver(nlimps,nmol,0:nstra+1))
+      allocate(wldra_aver(nlimps,natm,0:nstra+1))
+      allocate(wldrm_aver(nlimps,nmol,0:nstra+1))
+      allocate(wldpp_aver(nlimps,npls,0:nstra+1))
+      allocate(wldpa_aver(nlimps,natm,0:nstra+1))
+      allocate(wldpm_aver(nlimps,nmol,0:nstra+1))
+      allocate(wldpeb_aver(nlimps,0:nstra+1))
+      allocate(wldspt_aver(nlimps,0:nstra+1))
+      allocate(wldspta_aver(nlimps,natm,0:nstra+1))
+      allocate(wldsptm_aver(nlimps,nmol,0:nstra+1))
+      allocate(wlpump_aver(nspz,nlim+nsts))
+
+C     READ IN THE NUMBER OF TRIANGLES
+      OPEN (UNIT=34,ACCESS='SEQUENTIAL',FORM='FORMATTED',ERR=984)
+      REWIND 34
+      READ(34,*,ERR=984) NTRII
+      CLOSE(34)
+
+      allocate(PDENA_aver(natmi,ntrii))
+      allocate(PDENM_aver(nmoli,ntrii))
+      allocate(EDENA_aver(natmi,ntrii))
+      allocate(EDENM_aver(nmoli,ntrii))
+      allocate(VXDENA_aver(natmi,ntrii))
+      allocate(VXDENM_aver(nmoli,ntrii))
+      allocate(VYDENA_aver(natmi,ntrii))
+      allocate(VYDENM_aver(nmoli,ntrii))
+      allocate(VZDENA_aver(natmi,ntrii))
+      allocate(VZDENM_aver(nmoli,ntrii))
+
       !tamas zero init
       wldnep = 0
       wldna  = 0
@@ -288,7 +337,41 @@ C
       wldspta = 0
       wldsptm = 0
 
+      aver_frac = 0
+      wldnek_aver = 0
+      wldnep_aver = 0
+      wldna_aver  = 0
+      ewlda_aver  = 0
+      wldnm_aver  = 0
+      ewldm_aver  = 0
+      wldra_aver  = 0
+      wldrm_aver  = 0
+      wldpp_aver  = 0
+      wldpa_aver  = 0
+      wldpm_aver = 0
+      wldpeb_aver = 0
+      wldspt_aver = 0
+      wldspta_aver = 0
+      wldsptm_aver = 0
+      wlpump_aver = 0
+
+      aver_frac46 = 0
+      PDENA_aver = 0
+      PDENM_aver = 0
+      EDENA_aver = 0
+      EDENM_aver = 0
+      VXDENA_aver = 0
+      VXDENM_aver = 0
+      VYDENA_aver = 0
+      VYDENM_aver = 0
+      VZDENA_aver = 0
+      VZDENM_aver = 0
+
       return
+  984 WRITE(*,*)
+     w     "ERROR IN WNEUTRALS: CANNOT READ "//FORT//"34 ",
+     .     "(TABLE OF CELLS OF TRIANGULAR GRID)"
+      CALL EIRENE_EXIT_OWN(1)
       end subroutine eirene_wneutrals_alloc_arrays
 
       subroutine eirene_wneutrals_init(broadcast)
@@ -653,6 +736,47 @@ C
       !c      write (iunout,*) '%%% wneutrals_save: istra = ',istra
       !c*** Calculate the totals (stratum 0)
       !c
+
+      ! Zero out arrays for inactive strata
+      do k=1,nstrai
+         if (.not. nlsron(k)) then
+            wldnek(:,k) = 0._DP
+            wldnep(:,k) = 0._DP
+            wldpeb(:,k) = 0._DP
+            wldspt(:,k) = 0._DP
+            ewlda(:,:,k) = 0._DP
+            wldna(:,:,k) = 0._DP
+            wldra(:,:,k) = 0._DP
+            wldpa(:,:,k) = 0._DP
+            wldspta(:,:,k) = 0._DP
+            ewldm(:,:,k) = 0._DP
+            wldnm(:,:,k) = 0._DP
+            wldrm(:,:,k) = 0._DP
+            wldpm(:,:,k) = 0._DP
+            wldsptm(:,:,k) = 0._DP
+            wldpp(:,:,k) = 0._DP
+            eneutrad(:,:,:,k) = 0.0_DP
+            emolrad(:,:,:,k) = 0.0_DP
+            eionrad(:,:,:,k) = 0.0_DP
+            edissml(:,:,:,k) = 0.0_DP
+            wldnek_aver(:,k) = 0._DP
+            wldnep_aver(:,k) = 0._DP
+            wldna_aver(:,:,k) = 0._DP
+            ewlda_aver(:,:,k) = 0._DP
+            wldnm_aver(:,:,k) = 0._DP
+            ewldm_aver(:,:,k) = 0._DP
+            wldra_aver(:,:,k) = 0._DP
+            wldrm_aver(:,:,k) = 0._DP
+            wldpp_aver(:,:,k) = 0._DP
+            wldpa_aver(:,:,k) = 0._DP
+            wldpm_aver(:,:,k) = 0._DP
+            wldpeb_aver(:,k) = 0._DP
+            wldspt_aver(:,k) = 0._DP
+            wldspta_aver(:,:,k) = 0._DP
+            wldsptm_aver(:,:,k) = 0._DP
+         end if
+      end do
+
       sptsum=0.0_DP
       do i=1,nlimps
         wldnek(i,0)=0.0_DP
@@ -773,6 +897,63 @@ C
       do j=1,nspz !{
         eirtxt(j)=texts(j)
       end do !}
+
+      if (aver_frac.ne.0.0_DP) then ! average fluxes, som 02.04.2019
+        wldnek_aver(:,0)=(1._DP-aver_frac)*wldnek(:,0)+
+     .   aver_frac*wldnek_aver(:,0)
+        wldnep_aver(:,0)=(1._DP-aver_frac)*wldnep(:,0)+
+     .   aver_frac*wldnep_aver(:,0)
+        wldpeb_aver(:,0)=(1._DP-aver_frac)*wldpeb(:,0)+
+     .   aver_frac*wldpeb_aver(:,0)
+        wldspt_aver(:,0)=(1._DP-aver_frac)*wldspt(:,0)+
+     .   aver_frac*wldspt_aver(:,0)
+        wldna_aver(:,:,0)=(1._DP-aver_frac)*wldna(:,:,0)+
+     .   aver_frac*wldna_aver(:,:,0)
+        wldra_aver(:,:,0)=(1._DP-aver_frac)*wldra(:,:,0)+
+     .   aver_frac*wldra_aver(:,:,0)
+        wldpa_aver(:,:,0)=(1._DP-aver_frac)*wldpa(:,:,0)+
+     .   aver_frac*wldpa_aver(:,:,0)
+        ewlda_aver(:,:,0)=(1._DP-aver_frac)*ewlda(:,:,0)+
+     .   aver_frac*ewlda_aver(:,:,0)
+        wldspta_aver(:,:,0)=(1._DP-aver_frac)*wldspta(:,:,0)+
+     .   aver_frac*wldspta_aver(:,:,0)
+        wldnm_aver(:,:,0)=(1._DP-aver_frac)*wldnm(:,:,0)+
+     .   aver_frac*wldnm_aver(:,:,0)
+        wldrm_aver(:,:,0)=(1._DP-aver_frac)*wldrm(:,:,0)+
+     .   aver_frac*wldrm_aver(:,:,0)
+        wldpm_aver(:,:,0)=(1._DP-aver_frac)*wldpm(:,:,0)+
+     .   aver_frac*wldpm_aver(:,:,0)
+        ewldm_aver(:,:,0)=(1._DP-aver_frac)*ewldm(:,:,0)+
+     .   aver_frac*ewldm_aver(:,:,0)
+        wldsptm_aver(:,:,0)=(1._DP-aver_frac)*wldsptm(:,:,0)+
+     .   aver_frac*wldsptm_aver(:,:,0)
+        wldpp_aver(:,:,0)=(1._DP-aver_frac)*wldpp(:,:,0)+
+     .   aver_frac*wldpp_aver(:,:,0)
+        wlpump_aver(:,:)=(1._DP-aver_frac)*wlpump(:,:)+
+     .   aver_frac*wlpump_aver(:,:)
+      endif
+      if (aver_frac46.ne.0.0_DP) then ! average fluxes, som 02.04.2019
+        PDENA_aver(:,1:ntrii)=(1._DP-aver_frac46)*PDENA(:,1:ntrii)+
+     .   aver_frac46*PDENA_aver(:,1:ntrii)
+        PDENM_aver(:,1:ntrii)=(1._DP-aver_frac46)*PDENM(:,1:ntrii)+
+     .   aver_frac46*PDENM_aver(:,1:ntrii)
+        EDENA_aver(:,1:ntrii)=(1._DP-aver_frac46)*EDENA(:,1:ntrii)+
+     .   aver_frac46*EDENA_aver(:,1:ntrii)
+        EDENM_aver(:,1:ntrii)=(1._DP-aver_frac46)*EDENM(:,1:ntrii)+
+     .   aver_frac46*EDENM_aver(:,1:ntrii)
+        VXDENA_aver(:,1:ntrii)=(1._DP-aver_frac46)*VXDENA(:,1:ntrii)+
+     .   aver_frac46*VXDENA_aver(:,1:ntrii)
+        VXDENM_aver(:,1:ntrii)=(1._DP-aver_frac46)*VXDENM(:,1:ntrii)+
+     .   aver_frac46*VXDENM_aver(:,1:ntrii)
+        VYDENA_aver(:,1:ntrii)=(1._DP-aver_frac46)*VYDENA(:,1:ntrii)+
+     .   aver_frac46*VYDENA_aver(:,1:ntrii)
+        VYDENM_aver(:,1:ntrii)=(1._DP-aver_frac46)*VYDENM(:,1:ntrii)+
+     .   aver_frac46*VYDENM_aver(:,1:ntrii)
+        VZDENA_aver(:,1:ntrii)=(1._DP-aver_frac46)*VZDENA(:,1:ntrii)+
+     .   aver_frac46*VZDENA_aver(:,1:ntrii)
+        VZDENM_aver(:,1:ntrii)=(1._DP-aver_frac46)*VZDENM(:,1:ntrii)+
+     .   aver_frac46*VZDENM_aver(:,1:ntrii)
+      endif
 
       !c
       !c*** Calculate the temperatures
@@ -1067,6 +1248,22 @@ C
         deallocate(eirdiag_nds_ind, eirdiag_nds_typ,
      &             eirdiag_nds_srf, eirdiag_nds_start,
      &             eirdiag_nds_end)
+        deallocate(wldnek_aver)
+        deallocate(wldnep_aver)
+        deallocate(wldna_aver)
+        deallocate(ewlda_aver)
+        deallocate(wldnm_aver)
+        deallocate(ewldm_aver)
+        deallocate(wldra_aver)
+        deallocate(wldrm_aver)
+        deallocate(wldpp_aver)
+        deallocate(wldpa_aver)
+        deallocate(wldpm_aver)
+        deallocate(wldpeb_aver)
+        deallocate(wldspt_aver)
+        deallocate(wldspta_aver)
+        deallocate(wldsptm_aver)
+        deallocate(wlpump_aver)
       endif
 
       if(allocated(eirpump)) then                                        !iyv 07.03.18 {
@@ -1087,6 +1284,12 @@ C
       deallocate(pdena_int,pdena_int_b2,pdenm_int,pdenm_int_b2,
      &           pdeni_int,pdeni_int_b2,edena_int,edena_int_b2,
      &           edenm_int,edenm_int_b2,edeni_int,edeni_int_b2)
+
+      deallocate(pdena_aver,pdenm_aver,
+     &           edena_aver,edenm_aver,
+     &           vxdena_aver,vxdenm_aver,
+     &           vydena_aver,vydenm_aver,
+     &           vzdena_aver,vzdenm_aver)
 
       return
       end subroutine eirene_wneutrals_dealloc
@@ -1453,6 +1656,22 @@ C
      &        MPI_DOUBLE_PRECISION, MPI_SUM, 0, comm, ierr)
       else
         call mpi_reduce(rfluxm, rfluxm, size(rfluxm),
+     &        MPI_DOUBLE_PRECISION, MPI_SUM, 0, comm, ierr)
+      endif
+
+      if (my_pe==0) then
+        call mpi_reduce(MPI_IN_PLACE, tfluxa, size(tfluxa),
+     &        MPI_DOUBLE_PRECISION, MPI_SUM, 0, comm, ierr)
+      else
+        call mpi_reduce(tfluxa, tfluxa, size(tfluxa),
+     &        MPI_DOUBLE_PRECISION, MPI_SUM, 0, comm, ierr)
+      endif
+
+      if (my_pe==0) then
+        call mpi_reduce(MPI_IN_PLACE, tfluxm, size(tfluxm),
+     &        MPI_DOUBLE_PRECISION, MPI_SUM, 0, comm, ierr)
+      else
+        call mpi_reduce(tfluxm, tfluxm, size(tfluxm),
      &        MPI_DOUBLE_PRECISION, MPI_SUM, 0, comm, ierr)
       endif
 

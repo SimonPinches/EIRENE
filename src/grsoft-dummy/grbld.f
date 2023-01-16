@@ -3,4 +3,4 @@ c-------------------------------------------------------------------------
       REAL :: XCM,YCM,XMIN,XMAX,YMIN,YMAX
       INTEGER :: ISK,JSK,NKURV
       RETURN
-      END
+      END SUBROUTINE GRBLD

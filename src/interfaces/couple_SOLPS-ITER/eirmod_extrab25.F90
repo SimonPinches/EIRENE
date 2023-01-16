@@ -126,7 +126,7 @@
       character*4, intent(in) :: edition
       !c*** label for fort.44 file
       integer, parameter :: jvft44=20201006, jvft46=20170930
-      character*31 :: get_Eir_hash
+      character*32 :: get_Eir_hash
       external get_Eir_hash
 
       character*12 :: filename
@@ -143,7 +143,7 @@
       write (iunout,*) 'nred ',nred
       OPEN (UNIT=44,FILE=trim(FILENAME),ACCESS='SEQUENTIAL',FORM='FORMATTED') ! added 19980603 dpc
       rewind (44)
-      WRITE(44,'(i4,2x,i4,2x,i8,2x,a31)') ndxa-nred,ndya,jvft44,get_Eir_hash()
+      WRITE(44,'(i4,2x,i4,2x,i8,2x,a32)') ndxa-nred,ndya,jvft44,get_Eir_hash()
       write(44,'(i4,2x,i4,2x,i4)') natmi,nmoli,nioni
       !cank
       do jatm=1,natmi
@@ -466,6 +466,82 @@
       rewind (44)
       close (44)
 
+      filename = fort_lc//'44_aver'
+      if (edition.ne.'    ') filename = trim(filename)//'.'//edition
+      if (aver_frac.ne.0._DP) then                                             !som 02.04.19
+        write (iunout,*) 'Writing ',trim(filename)
+        OPEN (UNIT=44,FILE=trim(filename),ACCESS='SEQUENTIAL',FORM='FORMATTED')
+        rewind (44)
+        WRITE(44,'(i4,2x,i4,2x,i8,2x,a32)') ndxa-nred,ndya,jvft44,get_Eir_hash()
+        write(44,'(e16.8)') aver_frac
+        write(44,'(i4)') nfla
+        call write_title(44,'wldnek_aver(0)',nlimps)
+        call remove_small_values(nlimps, wldnek_aver, EPS60)
+        call neutrs(44,wldnek_aver,1)
+        call write_title(44,'wldnep_aver(0)',nlimps)
+        call remove_small_values(nlimps, wldnep_aver, EPS60)
+        call neutrs(44,wldnep_aver,1)
+        call write_title(44,'wldna_aver(0)',nlimps*natmi)
+        call remove_small_values(nlimps*natmi, wldna_aver, EPS60)
+        call neutrs(44,wldna_aver,natmi)
+        call write_title(44,'ewlda_aver(0)',nlimps*natmi)
+        call remove_small_values(nlimps*natmi, ewlda_aver, EPS60)
+        call neutrs(44,ewlda_aver,natmi)
+        call write_title(44,'wldnm_aver(0)',nlimps*nmoli)
+        call remove_small_values(nlimps*nmoli, wldnm_aver, EPS60)
+        call neutrs(44,wldnm_aver,nmoli)
+        call write_title(44,'ewldm_aver(0)',nlimps*nmoli)
+        call remove_small_values(nlimps*nmoli, ewldm_aver, EPS60)
+        call neutrs(44,ewldm_aver,nmoli)
+        call write_title(44,'wldra_aver(0)',nlimps*natmi)
+        call remove_small_values(nlimps*natmi, wldra_aver, EPS60)
+        call neutrs(44,wldra_aver,natmi)
+        call write_title(44,'wldrm_aver(0)',nlimps*nmoli)
+        call remove_small_values(nlimps*nmoli, wldrm_aver, EPS60)
+        call neutrs(44,wldrm_aver,nmoli)
+        call write_title(44,'wldpp_aver(0)',nlimps*nfla)
+        call remove_small_values(nlimps*nfla, wldpp_aver, EPS60)
+        call neutrs(44,wldpp_aver,nfla)
+        call write_title(44,'wldpa_aver(0)',nlimps*natmi)
+        call remove_small_values(nlimps*natmi, wldpa_aver, EPS60)
+        call neutrs(44,wldpa_aver,natmi)
+        call write_title(44,'wldpm_aver(0)',nlimps*nmoli)
+        call remove_small_values(nlimps*nmoli, wldpm_aver, EPS60)
+        call neutrs(44,wldpm_aver,nmoli)
+        call write_title(44,'wldpeb_aver(0)',nlimps)
+        call remove_small_values(nlimps, wldpeb_aver, EPS60)
+        call neutrs(44,wldpeb_aver,1)
+        call write_title(44,'wldspt_aver(0)',nlimps)
+        call remove_small_values(nlimps, wldspt_aver, EPS60)
+        call neutrs(44,wldspt_aver,1)
+        call write_title(44,'wldspta_aver(0)',nlimps*natmi)
+        call remove_small_values(nlimps*natmi, wldspta_aver, EPS60)
+        call neutrs(44,wldspta_aver,natmi)
+        call write_title(44,'wldsptm_aver(0)',nlimps*nmoli)
+        call remove_small_values(nlimps*nmoli, wldsptm_aver, EPS60)
+        call neutrs(44,wldsptm_aver,nmoli)
+        k=0
+        call remove_small_values((nlim+nnstsi)*(nnatmi+nnmoli+nnioni+nfla), &
+            &  wlpump_aver, EPS60)
+        call write_title(44,'wlpump_aver(A)',(nnlimi+nnstsi)*nnatmi)
+        write(44,'(1p,6e13.5)') ((wlpump_aver(j+k,i),j=1,nnatmi),i=1,nnlimi)
+        write(44,'(1p,6e13.5)') ((wlpump_aver(j+k,nlim+i),j=1,nnatmi),i=1,nnstsi)
+        k=k+nnatmi
+        call write_title(44,'wlpump_aver(M)',(nnlimi+nnstsi)*nnmoli)
+        write(44,'(1p,6e13.5)') ((wlpump_aver(j+k,i),j=1,nnmoli),i=1,nnlimi)
+        write(44,'(1p,6e13.5)') ((wlpump_aver(j+k,nlim+i),j=1,nnmoli),i=1,nnstsi)
+        k=k+nnmoli
+        call write_title(44,'wlpump_aver(I)',(nnlimi+nnstsi)*nnioni)
+        write(44,'(1p,6e13.5)') ((wlpump_aver(j+k,i),j=1,nnioni),i=1,nnlimi)
+        write(44,'(1p,6e13.5)') ((wlpump_aver(j+k,nlim+i),j=1,nnioni),i=1,nnstsi)
+        k=k+nnioni
+        call write_title(44,'wlpump_aver(P)',(nnlimi+nnstsi)*nfla)
+        write(44,'(1p,6e13.5)') ((wlpump_aver(j+k,i),j=1,nfla),i=1,nnlimi)
+        write(44,'(1p,6e13.5)') ((wlpump_aver(j+k,nlim+i),j=1,nfla),i=1,nnstsi)
+        rewind (44)
+        close (44)
+      endif
+
       IF (NLWRMSH) THEN
 !c
 !c*** writing ft46 file
@@ -478,7 +554,7 @@
         OPEN (UNIT=46,FILE=trim(FILENAME),ACCESS='SEQUENTIAL',FORM='FORMATTED')
         rewind (46)
 
-        write(46,'(i6,2x,i8,2x,a31)') ntrii, jvft46, get_Eir_hash()
+        write(46,'(i6,2x,i8,2x,a32)') ntrii, jvft46, get_Eir_hash()
         write(46,'(i4,2x,i4,2x,i4)') natmi, nmoli, nioni
         do jatm=1,natmi
           write(46,*) texts(jatm+nsph)
@@ -612,6 +688,114 @@
         write(46,'(6e15.7)') (PVY(j),j=1,ntrii)
         rewind(46)
         close (46)
+
+        if (aver_frac46.ne.0._DP) then ! average fluxes, som 02.04.2019
+          filename = fort_lc//'46_aver'
+          if (edition.ne.'    ') filename = trim(filename)//'.'//edition
+          write (iunout,*) 'Writing ',trim(filename)
+          OPEN (UNIT=46,FILE=trim(filename),ACCESS='SEQUENTIAL',FORM='FORMATTED')
+          rewind (46)
+          write(46,'(2x,i8,2x,a32)') jvft46, get_Eir_hash()
+          write(46,'(e16.8)') aver_frac46
+          write(46,'(i6)') ntrii
+          if (lpdena) then
+            call write_title(46,'pdena_aver',ntrii*natmi)
+            call remove_small_values(ntrii*natmi, pdena_aver, EPS60)
+            write(46,'(6e15.7)') ((PDENA_aver(i,j),j=1,ntrii),i=1,natmi)
+          else
+            call write_title(46,'pdena (not computed)',ntrii)
+            call remove_small_values(ntrii, pdena_aver, EPS60)
+            write(46,'(6e15.7)') (PDENA_aver(1,j),j=1,ntrii)
+          end if
+          if (lpdenm) then
+            call write_title(46,'pdenm_aver',ntrii*nmoli)
+            call remove_small_values(ntrii*nmoli, pdenm_aver, EPS60)
+            write(46,'(6e15.7)') ((PDENM_aver(i,j),j=1,ntrii),i=1,nmoli)
+          else
+            call write_title(46,'pdenm (not computed)',ntrii)
+            call remove_small_values(ntrii, pdenm_aver, EPS60)
+            write(46,'(6e15.7)') (PDENM_aver(1,j),j=1,ntrii)
+          end if
+
+          if (ledena) then
+            call write_title(46,'edena_aver',ntrii*natmi)
+            call remove_small_values(ntrii*natmi, edena_aver, EPS60)
+            write(46,'(6e15.7)') ((EDENA_aver(i,j),j=1,ntrii),i=1,natmi)
+          else
+            call write_title(46,'edena (not computed)',ntrii)
+            call remove_small_values(ntrii, edena_aver, EPS60)
+            write(46,'(6e15.7)') (EDENA_aver(1,j),j=1,ntrii)
+          end if
+          if (ledenm) then
+            call write_title(46,'edenm_aver',ntrii*nmoli)
+            call remove_small_values(ntrii*nmoli, edenm_aver, EPS60)
+            write(46,'(6e15.7)') ((EDENM_aver(i,j),j=1,ntrii),i=1,nmoli)
+          else
+            call write_title(46,'edenm (not computed)',ntrii)
+            call remove_small_values(ntrii, edenm_aver, EPS60)
+            write(46,'(6e15.7)') (EDENM_aver(1,j),j=1,ntrii)
+          end if
+
+          if (lvxdena) then
+            call write_title(46,'vxdena_aver',ntrii*natmi)
+            call remove_small_values(ntrii*natmi, vxdena_aver, EPS60)
+            write(46,'(6e15.7)') ((VXDENA_aver(i,j),j=1,ntrii),i=1,natmi)
+          else
+            call write_title(46,'vxdena (not computed)',ntrii)
+            call remove_small_values(ntrii, vxdena_aver, EPS60)
+            write(46,'(6e15.7)') (VXDENA_aver(1,j),j=1,ntrii)
+          end if
+          if (lvxdenm) then
+            call write_title(46,'vxdenm_aver',ntrii*nmoli)
+            call remove_small_values(ntrii*nmoli, vxdenm_aver, EPS60)
+            write(46,'(6e15.7)') ((VXDENM_aver(i,j),j=1,ntrii),i=1,nmoli)
+          else
+            call write_title(46,'vxdenm (not computed)',ntrii)
+            call remove_small_values(ntrii, vxdenm_aver, EPS60)
+            write(46,'(6e15.7)') (VXDENM_aver(1,j),j=1,ntrii)
+          end if
+
+          if (lvydena) then
+            call write_title(46,'vydena_aver',ntrii*natmi)
+            call remove_small_values(ntrii*natmi, vydena_aver, EPS60)
+            write(46,'(6e15.7)') ((VYDENA_aver(i,j),j=1,ntrii),i=1,natmi)
+          else
+            call write_title(46,'vydena (not computed)',ntrii)
+            call remove_small_values(ntrii, vydena_aver, EPS60)
+            write(46,'(6e15.7)') (VYDENA_aver(1,j),j=1,ntrii)
+          end if
+          if (lvydenm) then
+            call write_title(46,'vydenm_aver',ntrii*nmoli)
+            call remove_small_values(ntrii*nmoli, vydenm_aver, EPS60)
+            write(46,'(6e15.7)') ((VYDENM_aver(i,j),j=1,ntrii),i=1,nmoli)
+          else
+            call write_title(46,'vydenm (not computed)',ntrii)
+            call remove_small_values(ntrii, vydenm_aver, EPS60)
+            write(46,'(6e15.7)') (VYDENM_aver(1,j),j=1,ntrii)
+          end if
+
+          if (lvzdena) then
+            call write_title(46,'vzdena_aver',ntrii*natmi)
+            call remove_small_values(ntrii*natmi, vzdena_aver, EPS60)
+            write(46,'(6e15.7)') ((VZDENA_aver(i,j),j=1,ntrii),i=1,natmi)
+          else
+            call write_title(46,'vzdena (not computed)',ntrii)
+            call remove_small_values(ntrii, vzdena_aver, EPS60)
+            write(46,'(6e15.7)') (VZDENA_aver(1,j),j=1,ntrii)
+          end if
+          if (lvzdenm) then
+            call write_title(46,'vzdenm_aver',ntrii*nmoli)
+            call remove_small_values(ntrii*nmoli, vzdenm_aver, EPS60)
+            write(46,'(6e15.7)') ((VZDENM_aver(i,j),j=1,ntrii),i=1,nmoli)
+          else
+            call write_title(46,'vzdenm (not computed)',ntrii)
+            call remove_small_values(ntrii, vzdenm_aver, EPS60)
+            write(46,'(6e15.7)') (VZDENM_aver(1,j),j=1,ntrii)
+          end if
+          rewind(46)
+          close (46)
+        endif
+
       ENDIF
 
 !cc<<<
@@ -668,6 +852,20 @@
 !c      end do !}
 !cc>>>
       return
+
+      contains
+
+      subroutine remove_small_values(n, field, small)
+      implicit none
+      integer i, n
+      real(DP) :: field(n), small
+
+      do i = 1, n
+        field(i) = min(-small,field(i))+max(small,field(i))
+      end do
+      return
+      end subroutine remove_small_values
+
       end subroutine write_f44
       !c======================================================================
 

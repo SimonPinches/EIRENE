@@ -115,4 +115,5 @@
 
       IF (X(2) < xf)  GOTO 100
 
-      END
+      RETURN
+      END subroutine adam_moulton

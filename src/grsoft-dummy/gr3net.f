@@ -5,4 +5,4 @@ c------------------------------------------------------------------------
       REAL, INTENT(IN OUT) :: AR(46*I1*I1)
       REAL, INTENT(IN) :: XYZ(3,I1,I1)
       RETURN
-      END
+      END SUBROUTINE GR3NET

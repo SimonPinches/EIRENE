@@ -186,6 +186,7 @@ cdr  NLSPLT(ISURF): surface isurf is a "splitting-rr" surface
 
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
+      RETURN
       END SUBROUTINE EIRENE_BROADCAST_COMSPL
 
       

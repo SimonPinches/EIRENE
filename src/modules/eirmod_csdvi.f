@@ -205,6 +205,7 @@ c  lmetspw(i1): ditto, for surface-averaged tallies
 
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
+      RETURN
       END SUBROUTINE EIRENE_BROADCAST_CSDVI
 
       END MODULE EIRMOD_CSDVI

@@ -1,4 +1,4 @@
-      SUBROUTINE EIRENE_UPCUSR(WS,IND)
+      SUBROUTINE EIRENE_UPCUSR(WS,IND,KK)
 C
 C  USER-SUPPLIED COLLISION ESTIMATOR, VOLUME-AVERAGED
 C
@@ -20,7 +20,7 @@ C+---------------------------------------------------------------+
       use EIRMOD_CUPD
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: WS
-      INTEGER, INTENT(IN) :: IND
+      INTEGER, INTENT(IN) :: IND, KK
 cswx 24sep07
       logical,save :: lfirst=.false.
       integer, save :: num=0,eirene_nbirth,eirene_njetto

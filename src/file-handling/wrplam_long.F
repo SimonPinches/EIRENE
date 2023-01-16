@@ -346,13 +346,15 @@ c  read primary source parameters as well, step functions, etc.
       RETURN
 
  990  CONTINUE
-      WRITE (IUNOUT,*) ' RPLAM_LONG: ERROR READING FILE '//FORT//'13'
+      WRITE (IUNOUT,*) ' RPLAM_LONG: cannot read FILE '//FORT//'13'
+      CALL EIRENE_LEER(1)
 c     CALL EIRENE_EXIT_OWN(1)
       IFLG=-1  ! Try to indicate to calling routine: fort.13 not found.
 c                Then there we may choose to write a "default" fort.13
 c                for an initial iteration step.
       CLOSE (UNIT=13+ifoff)
       return
+
  991  CONTINUE
       WRITE (IUNOUT,*) ' AVAILABLE INPUT TALLIES ARE DIFFERENT FROM',
      .                 ' PRIOR JOB WHICH WROTE '//FORT//'13 '

@@ -22,4 +22,4 @@ C
       X1=C*XS+S*Z1
       Z1=-S*XS+C*Z1
       RETURN
-      END
+      END SUBROUTINE EIRENE_LOCTOR

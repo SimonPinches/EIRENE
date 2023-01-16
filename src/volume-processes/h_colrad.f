@@ -81,9 +81,10 @@ c   hence: taken times "densel"
 c   for pop0,pop1,pop_ext (=pop2) - arrays of reduced population coefficients
 C*
 C***********************************************************************
-      SUBROUTINE EIRENE_H_COLRAD (TEMP, DENSEL, Q_EXT, L_EXT,
-     .                            POP0, POP1, POP2,
-     .                            ALPCR, SCR, SCR_EXT,
+      SUBROUTINE EIRENE_H_COLRAD (TEMP, DENSEL,
+     .                            Q_EXT, L_EXT,! in
+     .                            POP0, POP1, POP_EXT,! out
+     .                            ALPCR, SCR, SCR_EXT, ! out
      .                            E_ALPCR, E_SCR, E_SCR_EXT,
 ctt  .                           ,E_ALPCR_T, E_SCR_T, E_SCR_EXT_T
      .                            POP_ESC)  ! input: selected pop esc factors for some lines
@@ -100,7 +101,7 @@ C--------- ATOMIC PARAMETER ------------------------------------------
       REAL(DP), INTENT(OUT) ::   ALPCR,    SCR,     SCR_EXT
       REAL(DP), INTENT(OUT) :: E_ALPCR,  E_SCR,   E_SCR_EXT
 ctt   REAL(DP), INTENT(OUT) :: E_ALPCR_T,E_SCR_T, E_SCR_EXT_T
-      REAL(DP), INTENT(OUT) :: POP0(40), POP1(40), POP2(40)
+      REAL(DP), INTENT(OUT) :: POP0(40), POP1(40), POP_EXT(40)
 
       REAL(DP), SAVE :: A(40,40), E_AT(40), OSC(40,40)
 c     REAL(DP), SAVE :: POP_ESC(40,40)
@@ -159,7 +160,7 @@ CDR COUPLING TO H+ IONS
 CDR COUPLING TO H ATOMS
         POP1(IP)=R1(IP)*DENSEL
 CDR COUPLING TO EXTERNAL SOURCE Q  FOR H*(N)
-        POP2(IP)=R_EXT(IP)
+        POP_EXT(IP)=R_EXT(IP)
 
       END DO
 C  EFFECTIVE COLLISION RATE COEFFICIENTS, ATOMS

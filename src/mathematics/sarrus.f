@@ -19,4 +19,4 @@ cdr  Applies the Sarrus rule
 !     WRITE (iunout,*) ' DET ',A1 + A2 + A3 - B1 - B2 - B3
 
       RETURN
-      END
+      END FUNCTION EIRENE_SARRUS

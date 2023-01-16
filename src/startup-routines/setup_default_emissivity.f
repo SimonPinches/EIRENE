@@ -310,7 +310,7 @@ cdr hard-coded type: molecules. Species: default: =0
       CNT%IRC_RAT = 0
 
 cdr search all neutral molecular species with nucl. charge number=2.
-cdr These must be the isotopomeres of H2. 
+cdr These must be the isotopomers of H2. 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(1)%COMPO(3)%CONTRIB(NML))
       EMIS_LINES(1)%COMPO(3)%NUM_CONTRIB = NML

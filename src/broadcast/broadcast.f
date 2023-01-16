@@ -5,7 +5,6 @@
 !  02.03.07:  remove escd2* arrays
 !  20.06.07:  MAXLEVEL used for broadcast of RSPLST and ISPLST
 !  20.06.07:  NCONA used for broadcast of RCONA
-!  20.06.07:  NUM_PARM used for broadcast of parameters in PARMMOD
 !  20.06.07:  NSPEZV_DIM used for broadcast of NSPEZV
 !  20.06.07:  NLOGAU used for broadcast of LLOGAU
 !  01.07.09:  broadcast of HFTR0-3 arrays removed. this is done in broadref.f
@@ -14,17 +13,6 @@ cdr 15.10.14:  renaming of arrays for variances for sum over strata 'smestl' spe
 cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
 
 cdr  unification of naming conventions for electron impact collisions
-
-!pb  APR  16:  ipplds -> ipplei, pplds -> pplei
-!pb  APR  16:  ipatds -> ipatei, patds -> patei, eatds -> eatei
-!pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei, emlds -> emlei
-!pb  APR  16:  ipiods -> ipioei, piods -> pioei, eiods -> eioei
-!pb  APR  16:  pelds -> pelei, eelds -> eelei
-!pb  MAY  16:  tabds1 -> tabei1
-!pb  MAY  16:  nrds -> nrei
-!pb  JUL  16:  ehvds1 -> ehvei1
-!dr  sept 16:  nmdsi  -> nmeii
-!dr  sept 16:  nidsi  -> nieii
 
 cdr  sept 16:  ETH (collision threshold energy) added to reaction data
 cdr            RTMAX and ERTMAX added to reaction data: max. of "rate" sigma(v_rel)*v_rel
@@ -45,13 +33,21 @@ cdr            m_hcol(nreac)
 cdr  Sept 18:  redundant arrays: JEREARC, JEREAEI  removed
 cdr            NHVREI  (formerly: NREAHV)
 cdr            NHVRPI  (formerly: NRHVPI)
+cdr Oct.  18:  remove CHELP, towards more rational (and unified)
+cdr            reading of AM data in input.f
+cdr            and setting of "density models" in block 5.
+cdr            Line emissivity rates are now just ordinary A&M reactions: no. IRC.
+cdr            Population escape factors POP_ESC are
+cdr            now only via IRC reaction card, block 4. Not in block 12 any more.
+cdr            "Density Models" are now charcterized by a reaction IRC (from block 4)
+cdr            and a donor state ISPZ, ITYP, rather than by a full reaction deck CHELP.
 cdr  Oct. 18:  input tallies on PLSTLS(NINPTL). Includes 18 old input tallies but
 cdr            now also derived tallies: EDRIFT, BVIN, PARMOM
 cdr  tbd:      broadcast: livtali etc. move to correct position
 cdr  Jan. 19:  separate routine for broadcast of CCOUPL
 cdr  ???       apparently also COMNNL removed here from broadcasting
 cdr  Nov. 19:  bugfix re %poly% dimensioning. ND --> ND1. Now: separate dimensioning
-cdr            of poly% and tab1d% data. 
+cdr            of poly%... and tab1d%... or tab2d%... data. 
 
       SUBROUTINE EIRENE_BROADCAST
 cdr

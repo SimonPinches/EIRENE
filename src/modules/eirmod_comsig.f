@@ -234,6 +234,7 @@ cdr  additional output tallies added by code itself (rather than via input block
       
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
+      RETURN
       END SUBROUTINE EIRENE_BROADCAST_COMSIG
 
 
@@ -317,7 +318,6 @@ c  plus,(for ratio2) two further density factors
 
           END DO
         END DO
-
 
       END DO
 

@@ -3,8 +3,14 @@
 !  sep-05: specifications for databases added, ndbnames, dbhandle, dbfname
 !  jul-06: database handle added for ADAS
 !  20.06.07: deallocate tdmpar
+cdr oct 18 : "density models" TDMPAR are now fully characterized 
+cdr          by reaction identifyer IRC and donor state
+cdr          isp,itp,istr, 
+cdr          rather than by requiring a full reaction deck and executing SLREAC.f in here.
 cdr dec 18 : remove obsolete photon-reflection data files graphite_ext and mo_ext
 cdr aug 19 : add legal filename: AMMONX (ifile=12)
+cdr nov.20 : remove CHELP, after cleanup of reaction data for density models.
+cdr          Now only reaction number IRC read from block 4 is kept.
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
 
@@ -61,6 +67,9 @@ CDR FOR DIRECT TRANSFER OF INFO FROM FIND_PARAM.F INTO INPUT.F
      R              DVAL, TVAL,
      R              VXVAL, VYVAL, VZVAL,
      R              DFACTOR, TFACTOR, VFACTOR
+cdr  NRE contributions to field particle, single (effective temperatur)
+cdr  currently NRE GT 1 available only for densitymodel "COLRAD",
+cdr  all others: NRE=1  (to be generalized still e.g. for densitymodel "CORONA".  
         INTEGER :: NRE
         INTEGER, POINTER :: ISP(:), ITP(:), ISTR(:), IRC(:)
       END TYPE
@@ -207,7 +216,6 @@ cdr units used for input of background profiles: V, B, Ti
       CALL EIRENE_INIT_CINIT
 
       RETURN
-
       END SUBROUTINE EIRENE_ALLOC_CINIT
 
 
@@ -416,6 +424,7 @@ csw
 
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
+      RETURN
       END SUBROUTINE EIRENE_BROADCAST_CINIT
 
       END MODULE EIRMOD_CINIT

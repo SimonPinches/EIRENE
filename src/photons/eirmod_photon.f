@@ -664,6 +664,7 @@ c  factor 0.25 included, because original line shape
 c  was normalized to 4 for any fixed ctheta2.
         res=0.25* line_shape
 c     end do   ! npt
+      return
       end function EIRENE_zm_stark_profile
 
       function EIRENE_zm_stark_doppler_profile(N,Te,Ti,T_g,B,
@@ -809,6 +810,7 @@ c  factor 0.25 included, because original line shape
 c  was normalized to 4 for any fixed ctheta2.
         res=0.25*line_shape
 c     end do
+      return
       end function EIRENE_zm_stark_doppler_profile
 
 
@@ -844,6 +846,7 @@ c     end do
       EIRENE_coll=phi_i+phi_e
 c  parameter for checking validity of approximation
 c     epsilon=(e/hbar)*phi_i*((N*1.e6)**(-1./3.))/v0
+      return
       end function EIRENE_coll
 
 !******************************************************************
@@ -878,6 +881,7 @@ c     epsilon=(e/hbar)*phi_i*((N*1.e6)**(-1./3.))/v0
         EIRENE_expint=-log(arg)+A0+
      .                arg*(A1+arg*(A2+arg*(A3+arg*(A4+arg*A5))))
       end if
+      return
       end function EIRENE_expint
 !****************************** END *******************************
 
@@ -1997,6 +2001,7 @@ c  now sample from a gaussian with standard deviation sig
       f1=v1*sqrt(-(ar+ar)/s)*sig
 c     f2=v2*sqrt(-(ar+ar)/s)*sig
       res=f1+drft+e00
+      return
       END FUNCTION EIRENE_SAM_DOPPLER
 
       function
@@ -2214,6 +2219,7 @@ c  prepare next interval
         omega_old=omega
         omega=omega+del
       end do
+      return
       end function EIRENE_sam_zm_stark1
 
 
@@ -2331,6 +2337,7 @@ c  EIRENE function "Lorentz" needs FWHM, gamma is HWHM.
         shift=x(i)
         res=EIRENE_sam_lorentz(gam,shift)
 
+      return
       end function EIRENE_sam_zm_stark
 
 

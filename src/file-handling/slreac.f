@@ -1050,8 +1050,8 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
         IF (LGR1MAX .AND. .NOT. LGC1MAX.and.if1mx.ge.3.) THEN
           WRITE (IUNOUT,*) ' WARNING FROM SLREAC'
           WRITE (IUNOUT,*) ' REACTION ',IR, ' TYPE ',H123
-          WRITE (IUNOUT,'(A)') ' UPPER RANGE FOR 1ST PARAMETER OF FIT'//
-     .          ' SPECIFIED BUT'//
+          WRITE (IUNOUT,*) ' UPPER RANGE FOR 1ST PARAMETER OF FIT',
+     .          ' SPECIFIED BUT',
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED'
           CALL EIRENE_MASJ1R('IF1MX,R1MX      ',if1mx,r1mx)
           IF (IF1MX.EQ.4)
@@ -1079,8 +1079,8 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
         IF (LGR2MIN .AND. .NOT. LGC2MIN.and.if2mn.ge.3.) THEN
           WRITE (IUNOUT,*) ' WARNING FROM SLREAC'
           WRITE (IUNOUT,*) ' REACTION ',IR, ' TYPE ',H123
-          WRITE (IUNOUT,'(A)') ' LOWER RANGE FOR 2ND PARAMETER OF FIT'//
-     .          ' SPECIFIED BUT'//
+          WRITE (IUNOUT,*) ' LOWER RANGE FOR 2ND PARAMETER OF FIT',
+     .          ' SPECIFIED BUT',
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED'
           CALL EIRENE_MASJ1R('IF2MN,R2MN      ',if2mn,r2mn)
           IF (IF2MN.EQ.4)
@@ -1107,8 +1107,8 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
         IF (LGR2MAX .AND. .NOT. LGC2MAX.and.if2mx.ge.3.) THEN
           WRITE (IUNOUT,*) ' WARNING FROM SLREAC'
           WRITE (IUNOUT,*) ' REACTION ',IR, ' TYPE ',H123
-          WRITE (IUNOUT,'(A)') ' UPPER RANGE FOR 2ND PARAMETER OF FIT'//
-     .          ' SPECIFIED BUT'//
+          WRITE (IUNOUT,*) ' UPPER RANGE FOR 2ND PARAMETER OF FIT',
+     .          ' SPECIFIED BUT',
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED'
           CALL EIRENE_MASJ1R('IF2MX,R2MX      ',if2mx,r2mx)
           IF (IF2MX.EQ.4)

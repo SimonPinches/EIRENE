@@ -27,4 +27,4 @@ C
        XMU=-(P1-Q1-S1*XLA)/R1
       ENDIF
       RETURN
-      END
+      END SUBROUTINE EIRENE_GSP

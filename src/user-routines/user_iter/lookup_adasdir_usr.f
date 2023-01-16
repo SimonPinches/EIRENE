@@ -15,15 +15,15 @@
 !     If open fails, try again interpreting the path as relative
 !     to SOLPSTOP/modules/Eirene
       inquire
-     .  (FILE=trim(MASTER_PATH)//'/modules/Eirene/'//TRIM(DSN),
+     .  (FILE=trim(MASTER_PATH)//'/modules/Eirene/Database/'//TRIM(DSN),
      .   exist=found0)
       if (found0) then
         write (iunout,'(2a)') 'TAB1D OR TAB2D OR ADAS: ',
-     >  trim(MASTER_PATH)//'/modules/Eirene/'//trim(DSN)
+     >  trim(MASTER_PATH)//'/modules/Eirene/Database/'//trim(DSN)
 
         OPEN (UNIT=29+ifoff,
-     .       FILE=trim(MASTER_PATH)//'/modules/Eirene/'//TRIM(DSN),
-     .       IOSTAT=ierr)
+     .       FILE=trim(MASTER_PATH)//'/modules/Eirene/Database/'//
+     .       TRIM(DSN),IOSTAT=ierr)
       end if
 
       if ( ierr /= 0 .or. .not.found0) then

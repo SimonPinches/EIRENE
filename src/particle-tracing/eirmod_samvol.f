@@ -38,6 +38,7 @@
 
       CONTAINS
 
+cdr Sep.  21 : a bit more and corrected documentation
 cdr Nov.  19 : Nested do 6 loop: erroneous exit from loop
 cdr            corrected (300919): Possible significant
 cdr            effect on diagnostic output (EIO loss) 
@@ -68,8 +69,14 @@ C
 C
 C  SAMVL0:
 C    DEFINE THE CUMULATIVE DISTRIBUTION FUNCTION
-C    FREC(IPLS,IRRC,ICELL) FOR EACH VOLUME SOURCE DISTRIBUTION, FOR SAMPLING
+C    FREC(IPLS,IRRC,ICELL) FOR EACH VOLUME SOURCE DISTRIBUTION TABRC1, FOR SAMPLING
 C    THE CELL INDEX ICELL OF THE VOLUME SOURCE PARTICLE.
+
+C    Also the total (volume integrated) particle rate SREC, (from tabrc1(irrc))
+C         the field particle energy rate EIO, (from 1.5 Ti(ipls,:) + EDRIFT(ipls,:)
+C         and electron energy rate EEL, (from eelrc1(irrc))
+C         are computed for diagnositics.
+C
 C
 C    A FEW GEOMETRICAL CONSTANTS FOR RANDOM SAMPLING
 C    OF THE STARTING POINTS IN EACH CELL ARE PRE-COMPUTED
@@ -106,7 +113,7 @@ C  IDENTIFY THOSE IPLS WHICH NEED A VOLUME SOURCE DISTRIBUTION
      .        .AND. (FLUX(ISTR) > 0._DP)) THEN
             IPLS = NSPEZ(ISTR)
             IF (IPLS.LE.0.OR.IPLS.GT.NPLSI) THEN
-c  nspez out of range: Set volumetric sources for ALL species
+c  nspez out of range for at least one stratum: Set volumetric sources for ALL species
               LPLSSR = .TRUE.
             ELSE
               LPLSSR(IPLS) = .TRUE.
@@ -116,11 +123,13 @@ c  nspez out of range: Set volumetric sources for ALL species
 
         MXREC=MAXVAL(NPRCI(1:NPLSI))
         MXPLS=COUNT(LPLSSR(1:NPLSI))
+c  cumulated distribution of cell number index NCELL
         ALLOCATE (FREC(0:MXPLS,0:MXREC,0:NRAD))
+c  same, but compressed: only non-zero entries thereof, for faster NCELL sampling by inversion method
         ALLOCATE (VSOURC(NSRFS,0:NRAD))
         ALLOCATE (VSMXI(NSRFS))
-        ALLOCATE (RQ21(N1ST))
-        ALLOCATE (PS21(N2ND))
+        IF (LEVGEO == 2) ALLOCATE (RQ21(N1ST))
+        IF (LEVGEO == 2) ALLOCATE (PS21(N2ND))
         IF (LEVGEO == 3) ALLOCATE (ASIMP(2,NRAD))
         ALLOCATE (ISOURC(NSRFS,0:NRAD))
         ALLOCATE (ICMX(NSRFS))
@@ -151,9 +160,13 @@ C  SPECTRAL CUT-OFF FOR SOURCE RATE: ONLY FOR PHOTONS SO FAR.
 C  EXCLUDE DEAD CELLS (GRID CUTS, ISOLATED CELLS FROM COUPLE_.., ETC)
 C  EXCLUDE IPLS-VACUUM CELLS
 
-C  tabrc1 is a volumetric rate per ion  (1/s)
+cdr
+C  tabrc1(irrc,:) is a volumetric rate per ion  (1/s)
 c  turn this into rate in (amp per ion), factor 'elch'
-c  and then into source rate amp per cell, factor di * vol
+c  and then into source rate: amp per cell, factor di(ipls) * vol
+c  This then is the (discrete) cell number distribution FREC (cumulated)
+c  for this process irrc
+cdr
             IF (NSTGRD(J).EQ.0.AND..NOT.LGVAC(J,IPLS)) THEN
               IF (NSTORDR >= NRAD) THEN
                 ADD=TABRC1(IRRC,J)*DIIN(IPLS,J)*VOL(J)*ELCHA
@@ -190,6 +203,7 @@ C  SUM OVER SPECIES AND RECOMBINATION TYPE INDICES
 C
 C
       IF (TRCSOU.AND.IFPLS.GT.0) THEN
+cdr  for diagnostics only: further global primary volume source rates
         EIO=0.
         EEL=0.
         MOM=0.
@@ -299,6 +313,9 @@ cdr   endif
     7   CONTINUE    !  npls loop
 
 C  BREMSSTRAHLUNG ORIGINATING FROM IONS IPLS, CHARGE Z=NCHRGP(IPLS)
+cdr needed for diagnostics only, and also for electron energy loss rates,
+cdr in which bremsstrahlung might be either lumped into eelrc1 (ADAS) or not (ELSE), depending on data source.
+
 C  only: atomic ions. Exclude here for the time being: molecular ions
         TOT_BREMS = 0._DP
         DO JPLS=1,NPLSI
@@ -427,10 +444,11 @@ C  INITIALIZE SAMPLING DISTRIBUTIONS FOR USER SPECIFIED VOLUME SOURCE
      .                    SORAD3(IVL,ISTRA),SORAD4(IVL,ISTRA),
      .                    SORAD5(IVL,ISTRA),SORAD6(IVL,ISTRA))
 !pb assume flux is set in samusr
+cdr April 22: next line must be wrong
               SUMM=FLUX(ISTRA)
             ELSE
-C  INITIALIZE SAMPLING DISTRIBUTIONS FOR DEFAULT VOLUME RECOMBINATION SOURCES
-C  ACCOUNT FOR INGRDA(IVOLSI,ISTRA,...), INGRDE(IVOLSI,ISTRA,...)
+C  INITIALIZE SAMPLING DISTRIBUTIONS FOR EXTERNAL VOLUMETRIC SOURCES (use the rates: TABRC1(irrc,:))
+C  ACCOUNT FOR INGRDA(IVOLSI,ISTRA,...), INGRDE(IVOLSI,ISTRA,...) section of comp. grid
               I=ISTRA
               ICC=0
               IRC=-1
@@ -474,7 +492,7 @@ C  ACCOUNT FOR INGRDA(IVOLSI,ISTRA,...), INGRDE(IVOLSI,ISTRA,...)
               ENDIF
               ENDIF
               IF (NPRCI(IPLS).EQ.0) THEN
-                WRITE (iunout,*) 'NO DEFAULT VOLUME SOURCE DISTRIBUTION'
+                WRITE (iunout,*) 'NO VOLUMETRIC SOURCE DISTRIBUTION'
                 WRITE (iunout,*) 'DEFINED. SUBSTRATUM TURNED OFF'
                 WRITE (iunout,*) 'IPLS,IVOLSI,ISTRA ',IPLS,IVOLSI,ISTRA
                 SORWGT(IVL,ISTRA)=0.D0
@@ -507,7 +525,7 @@ C  ACCOUNT FOR INGRDA(IVOLSI,ISTRA,...), INGRDE(IVOLSI,ISTRA,...)
               DO 52 IIRC=1,NPRCI(IPLS)
                 IRRC=LGPRC(IPLS,IIRC)
                 IF (ISTEP.EQ.IRRC) THEN
-C  RECOMBINATION PROCESS IRRC IDENTIFIED
+C  ONE SINGLE VOLUMETRIC PROCESS RATE IRRC IDENTIFIED
                   IRC=IRRC
                   IFRC=IIRC
                 ELSEIF (ISTEP.EQ.0) THEN
@@ -538,14 +556,15 @@ C  INDIRECT ADDRESSING
    52         CONTINUE   ! summing over irrc
 c
               IF (SUM.EQ.0.D0) THEN
-                WRITE (IUNOUT,*) 'NO VOL. RECOMBINATION SOURCE FOR:'
+                WRITE (IUNOUT,*) 'NO VOLUMETRIC SOURCE RATE FOR:'
                 WRITE (IUNOUT,*) 'ISTRA, IVOLSI, IPLS, ISTEP ',
      .                            ISTRA, IVL   , IPLS, ISTEP
                 WRITE (IUNOUT,*) 'EITHER: ISTEP OUT OF RANGE IN SAMVOL'
-                WRITE (IUNOUT,*) 'OR: DENSITY OF RECOMBINING IPLS = 0'
+                WRITE (IUNOUT,*) 'OR: DENSITY OF "RECOMBINING" IPLS = 0'
                 SORWGT(IVL,ISTRA)=0.D0
                 GOTO 53
               ENDIF
+
               SORWGT(IVL,ISTRA)=SUM
               CALL EIRENE_LEER(1)
               WRITE (iunout,*) 'SUB-STRATUM WEIGHT REDEFINED'
@@ -632,7 +651,6 @@ C
      .           IR1, IR2, IP1, IP2, IT1, IT2, IR, IP, IT, ISTEP, 
      .           IFRC, IAUSR, IBUSR, IRUSR, ITUSR, IPUSR,
      .           IC1, IC2, IL, IU, IM, ICELL, IN, JSPZ
-ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
 
 C  USER-SUPPLIED SOURCE
 C
@@ -707,7 +725,7 @@ C
               IRC=IRRC
               IFRC=IIRC
             ELSEIF (ISTEP.EQ.0) THEN
-C  SUM OVER ALL RECOMBINATION PROCESSES FOR SPECIES IPLS
+C  SUM OVER ALL EXTERNAL VOLUMETRIC SOURCE PROCESSES FOR SPECIES IPLS
               IRC=0
               IFRC=0
               ISTEP=-1
@@ -1019,8 +1037,8 @@ C     the following SUBROUTINE is for reinitialization of EIRENE (DMH)
       DEALLOCATE (FREC)
       DEALLOCATE (VSOURC)
       DEALLOCATE (VSMXI)
-      DEALLOCATE (RQ21)
-      DEALLOCATE (PS21)
+      IF (LEVGEO == 2) DEALLOCATE (RQ21)
+      IF (LEVGEO == 2) DEALLOCATE (PS21)
       IF (LEVGEO == 3) DEALLOCATE (ASIMP)
       DEALLOCATE (ISOURC)
       DEALLOCATE (ICMX)

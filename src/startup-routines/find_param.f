@@ -10,12 +10,16 @@ C
       USE EIRMOD_COMPRT, ONLY: IUNIN, IUNOUT
       USE EIRMOD_CPES, ONLY: NPRS
       USE EIRMOD_CESTIM
+      USE EIRMOD_OPENMP, ONLY: EIRENE_ITHREAD, EIRENE_NTHREADS
+      USE EIRMOD_CPES, ONLY: MY_PE
  
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: STANDARD_INPUT
       INTEGER :: IUNIN_OLD
       character(80) :: ZEILE
-      LOGICAL :: UEX
+      character(20), save :: outname
+      character(6), save :: outpos
+      LOGICAL :: UEX, op
 C
 C  UNIT NUMBER FOR INPUT FILE: MUST BE DIFFERENT FROM: 5,8,10,11,12
 C  13,14, AND 15
@@ -33,6 +37,34 @@ C
         END IF
       ELSE
         IUNIN=STANDARD_INPUT !VK !XPB PASSED AS ARGUMENT SO B2PLOT AND B2MDS CAN WORK
+        IUNOUT=6
+      ENDIF
+      IF (IUNOUT.EQ. 5.OR.IUNOUT.EQ. 8.OR.IUNOUT.EQ.10.OR.
+     .    IUNOUT.EQ.11.OR.IUNOUT.EQ.12.OR.IUNOUT.EQ.13.OR.
+     .    IUNOUT.EQ.14.OR.IUNOUT.EQ.15) THEN
+        WRITE (*,*) 'INVALID OUTPUT STREAM IUNOUT: ',IUNOUT
+        WRITE (*,*) 'ERROR EXIT FROM FIND_PARAM.F      '
+        CALL EIRENE_EXIT_OWN(1)
+      ENDIF
+      inquire(unit=iunout,opened=op)
+      IF (.not.op) THEN
+        if (my_pe.ne.0) then
+          OUTNAME='output.'
+          WRITE (OUTNAME(8:),'(I4.4)')
+     .       (MY_PE*EIRENE_NTHREADS)+EIRENE_ITHREAD
+#ifndef NAGFOR
+          IF ( LOUTAPP ) THEN
+            OUTPOS='APPEND'
+          ELSE
+            OUTPOS='ASIS'
+          END IF
+          OPEN (UNIT=IUNOUT, FILE=OUTNAME, ACCESS='SEQUENTIAL',
+     .          FORM='FORMATTED', POSITION=OUTPOS)
+#else
+          OPEN (UNIT=IUNOUT, FILE=OUTNAME, ACCESS='SEQUENTIAL',
+     .          FORM='FORMATTED')
+#endif
+        end if
       ENDIF
       IF (IUNIN.EQ.5.OR.IUNIN.EQ.8.OR.IUNIN.EQ.10.OR.
      .    IUNIN.EQ.11.OR.IUNIN.EQ.12.OR.IUNIN.EQ.13.OR.

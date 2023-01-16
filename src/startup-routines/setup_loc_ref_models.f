@@ -5,6 +5,7 @@
       USE EIRMOD_CREF
       USE EIRMOD_CLGIN
       USE EIRMOD_COMPRT, ONLY : IUNOUT
+      USE EIRMOD_PRESSURELOOP
       
       IMPLICIT NONE
       
@@ -38,6 +39,14 @@ C
           SPTPRM(JSPZ,J)=SPTPRM(1,J)
           ESPUTS(JSPZ,J)=ESPUTS(1,J)
           ESPUTC(JSPZ,J)=ESPUTC(1,J)
+
+          !Initialize pressure feedback loop
+          IF (ILREF(NLJ) == 4)THEN
+            CALL initPressureFeedback(RPRESSFED(NLJ), NLJ,
+     .                                REFLIST%REFCELL,
+     .                                REFLIST%REFPRESS)
+          END IF
+
         end do
       end do
 

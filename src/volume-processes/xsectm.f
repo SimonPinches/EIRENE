@@ -21,14 +21,6 @@ cdr  oct.14:  clogau removed
 cdr  oct.14:  PLS made allocatable,
 cdr  oct.14:  further synchronization with xsecta,xsecti
 cdr           remaining relevant differences in default models only.
-cdr  aug.15:  ibgk_sp:  no of bgk species. to be distinguished from ibgk: no of bgk reaction.
-!pb  APR  16:  pplds  -> pplei
-!pb  APR  16:  patds  -> patei, eatds -> eatei
-!pb  APR  16:  piods  -> pioei, eiods -> eioei
-!pb  APR  16:  pelds  -> pelei, eelds -> eelei
-!pb  MAY  16:  tabds1 -> tabds1
-!pb  JUL  16:  ehvds1 -> ehvds1
-cdr  SEP 16:  nmdsi  -> nmeii
 cdr  May 18:  The fluid limit (critical CX Knudsen number) is now set from NGENM(imol) flag,
 cdr           rather than from the former fldlmm(imol,kk) flag (which is removed now).
 cdr           default: FDLMCX=0.0 (from initialisation phase) means:
@@ -828,6 +820,5 @@ C
       WRITE (iunout,*) 'SPECIES CONFLICT FOR BGK COLLISIONS. IMOL,IREL '
       WRITE (iunout,*) IMOL,IREL,IPLS
       CALL EIRENE_EXIT_OWN(1)
-      RETURN
 C
       END SUBROUTINE EIRENE_XSECTM

@@ -1,11 +1,5 @@
 !pb  26.10.06: close file after read or write
-!pb  31.10.06: definition of census arrays RPART, RPARTC, IPART, IPARTC changed
-cdr:  2015
-!               RPART (NPARTT,NPRNL) (now) <-- RPART (NPRNL,NPARTT) (formerly)
-!               RPARTC(NPARTT,NPRNL) (now) <-- RPARTC(NPRNL,NPARTT) (formerly)
-!               IPART (MPARTT,NPRNL) (now) <-- IPART (NPRNL,MPARTT) (formerly)
-!               IPARTC(MPARTT,NPRNL) (now) <-- IPARTC(NPRNL,MPARTT) (formerly)
-C
+
 cdr  2020
 cdr: FLUX(istr), for istr=NSTRAI (scaling for stratum ISTR) is also on fort.13.
 cdr: This may be a hidden link. Decouple flux(nstrai) written on fort.13 from
@@ -42,6 +36,7 @@ C
       WRITE (15+ifoff) ((IPARTC(J,I),J=1,MPARTT),I=1,IPRNL)
       CLOSE (UNIT=15+ifoff)
 C
+      RETURN
       END SUBROUTINE EIRENE_WRSNAP
 C
       SUBROUTINE EIRENE_RSNAP( ISTR )
@@ -95,7 +90,7 @@ cdr  make sure that iprnl in previous run was not larger than in present run.
 C
       RETURN
 C
-CXPB  SAFETY ADDED FOR CASE WHEN FORT 15 IS ABSENT
+CXPB  SAFETY ADDED FOR CASE WHEN FORT.15 IS ABSENT
   915 CONTINUE
       CLOSE (UNIT=15+ifoff)
       IPRNL=0

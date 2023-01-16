@@ -8,7 +8,7 @@ cdr  aug. 2016:  NLSCL corrections are also not on partw, i.e. not
 cdr              accounted for during bootstrapping (re-sampling) from census
 cdr  jul. 2020:  statement 300 continue moved up a bit.
 cdr              This ensures that fort.15 (census array) is written
-cdr              even in case of zero flux to census (empty censius then). To
+cdr              even in case of zero flux to census (empty census then). To
 cdr              facilitate continuation in time-dep runs even
 cdr              if "zeroth time step" (census initialization) was too large.
 cdr  oct. 2021:  Remove target-pointer structures RPSTT, IPSTT. Only use
@@ -236,7 +236,7 @@ C   PUT WEIGHT OF CURRENT CENSUS SCORE NPANU ONTO ADDS
           ADDS=ADD
         ENDIF
 
-C   WEIGHT may have been altered. So: redefine entire this component of state vector.
+C   WEIGHT may have been altered. So: redefine this entire component of state vector.
         RPART(9,I)=WEIGHT 
   140 CONTINUE
 
@@ -313,7 +313,7 @@ C
   300 CONTINUE
       IF ((NFILEJ.EQ.1.OR.NFILEJ.EQ.3).AND.ITIMV.GE.NTIME) THEN
 cdr  Even in case iprnl=0 (no flux on census):
-cdr  Open and write fort 15, at least the first line.
+cdr  Open and write fort.15, at least the first line.
         CALL EIRENE_WRSNAP(NSTRAI)
         WRITE (iunout,*) 'CENSUS ARRAY, FLUX AND TOTAL TIMESTEP STORED'
       ENDIF

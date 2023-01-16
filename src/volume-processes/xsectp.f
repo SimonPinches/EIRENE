@@ -367,13 +367,14 @@ C   CAREFUL:  EELRC1 IS TO BE TAKEN NEGATIVE, IF IT IS A LOSS!
                       EELRC1(IRRC,J)=-EELRC1(IRRC,J)*DEIN(J)*FACTKK
 C  SUBTRACT BREMSSTRAHLUNG, if it was included in recombination energy loss rate
 c  (since eelrc1 is taken negative, add the bremsstrahlung)
+cnh 28.10.2019
                       IF (LADAS) THEN
                         IF (LGVAC(J,IPLS)) CYCLE
                         IF (NCHRGP(IPLS)==0) THEN
                           BREMS = 0._DP
                         ELSE
-cnh 28.10.2019
-                          IF(ZIIN(IPLS,J).NE.ZVAC) THEN
+c                         Charge 
+                           IF(ZIIN(IPLS,J).NE.ZVAC) THEN
                             Z = ZIIN(IPLS,J)
                           ELSE
                             Z = DBLE(NCHRGP(IPLS))

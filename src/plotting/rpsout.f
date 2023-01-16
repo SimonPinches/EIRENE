@@ -913,4 +913,4 @@ c     element schreiben
       deallocate(valcont)
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_RPSOUT

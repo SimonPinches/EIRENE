@@ -35,12 +35,13 @@ C
 CDR  this routine evaluates ("side on") emissivities of certain transition lines,
 cdr  integrated along a line of sight (PSIG) and also the integrand resolved along
 cdr  line of sight (ARGST).
+
 cdr  new version:  
 cdr    the lines, components and contributions are specified in input block 12.
 cdr    the corresponding emissivity profiles are specified as 
 cdr    reaction decks in block 4.
 
-cdr old version (up to May 2018), Hydrogen only:
+cdr Old version (up to May 2018), Hydrogen only:
 c    Currently there are up to 6 contributions to each particular pre-programmed
 c    transition (depending on population coefficient data stored
 c    in file AMJUEL, section H.11 and H.12)

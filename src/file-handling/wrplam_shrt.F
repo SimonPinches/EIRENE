@@ -49,6 +49,9 @@ cdr         nonlinear iterations.
       USE EIRMOD_COMUSR, ONLY: NPLSI, TIIN, DIIN, VXIN, VYIN, VZIN,
      .                         NPLS_FIX
       USE EIRMOD_COMPRT, ONLY: IUNOUT
+
+cdr  For appended data for non-linear mode.
+cdr  Should only be written in modbgk, modphot, tmstep, etc.. routines
       USE EIRMOD_COMUSR, ONLY: LGVAC
       USE EIRMOD_COMNNL, ONLY: NFLA_VIRT, NREA_VIRT,
      .                         NFLA_IPLS, NFLA_ISWR, NFLA_IR
@@ -75,7 +78,7 @@ cdr  was when writing FORT.13
 #endif
 cdr  only write plasma background data for species, which are not already
 cdr  transferred via common BRAEIR, i.e. only: npls_fix+1,....nplsi
-cdr  I.e. the virtual background species for nonlinear iterations
+cdr  I.e. the virtual background species for non-linear iterations
 cdr  have to come last in the list of all background species.
       IF(NPLS_FIX.LT.NPLSI) THEN
         ND = NPLSI - NPLS_FIX
@@ -86,6 +89,9 @@ cdr  have to come last in the list of all background species.
           ALLOCATE (VYAR(ND,NRAD))
           ALLOCATE (VZAR(ND,NRAD))
         END IF
+
+cdr do these things ever get deallocated again?
+
         TIAR(1:ND,1:NRAD) = TIIN(NPLS_FIX+1:NPLSI,1:NRAD)
         DIAR(1:ND,1:NRAD) = DIIN(NPLS_FIX+1:NPLSI,1:NRAD)
         VXAR(1:ND,1:NRAD) = VXIN(NPLS_FIX+1:NPLSI,1:NRAD)
@@ -147,9 +153,9 @@ c  data for virt. species ipls
 
 cdr
 c   Here we should add a safety:
-c   The rates stored below should refer to a virtual bulk species reactants
+c   The rates stored below should refer to virtual bulk species reactants
 c   ipls= npls_fix+1,...,npls
-c   In some cases, however, this virtual bulk species may be an intermediate
+c   In some cases, however, these virtual bulk species may be an intermediate
 c   reactant only, i.e.: not stored.
 c   Then only the final bulk reactant in a multi-step
 c   process is retained. Example: photon excitation driven
@@ -202,6 +208,7 @@ cdr  some diagnostics, if trcfle.....
       CLOSE (UNIT=113)
 #endif
 
+      RETURN
       END SUBROUTINE EIRENE_WRPLAM_SHRT
 C .......................................................................
 
@@ -237,8 +244,12 @@ C ........................................................................
       FILENAME = FORT_LC//trim(FILENUMBER)
       INQUIRE(file=trim(FILENAME),exist=EX)
       IF (EX) THEN
+#ifdef CRAY
+        OPEN (UNIT=13+ifoff,FORM='UNFORMATTED',IOSTAT=IO)
+#else
         OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED',
      o        STATUS='OLD',IOSTAT=IO)
+#endif
         write (iunout,*) 'RPLAM_SHRT called from ',calledfrom
         IF(IO.NE.0) THEN
           CALL EIRENE_LEER(1)
@@ -246,7 +257,7 @@ C ........................................................................
      w     'ERROR IN RPLAM_SHRT: CANNOT READ ', FORT, '13'
           CALL EIRENE_LEER(1)
           CLOSE (UNIT=13+ifoff)
-          RETURN
+          GOTO 200
         END IF
       ELSE
         GOTO 200
@@ -329,6 +340,9 @@ cdr  next: read the NFLA_VIRT collisional process data related to these virtual 
       IF (ALLOCATED(TAB_STORE) .AND. SIZE(TAB_STORE,1) < NREA_VIRT) THEN
         DEALLOCATE (TAB_STORE)
         DEALLOCATE (E_STORE)
+      END IF
+
+      IF (ALLOCATED(LG_STORE) .AND. SIZE(LG_STORE,2) < NFLA_VIRT) THEN
         DEALLOCATE(LG_STORE)
       END IF
 
@@ -336,13 +350,19 @@ cdr  next: read the NFLA_VIRT collisional process data related to these virtual 
 #ifdef F2003
         ALLOCATE (TAB_STORE(NREA_VIRT,NRAD,9), SOURCE=0._DP)
         ALLOCATE (E_STORE(NREA_VIRT,NRAD,9), SOURCE=0._DP)
-        ALLOCATE (LG_STORE(NRAD,NFLA_VIRT), SOURCE=.FALSE.)
 #else
         ALLOCATE (TAB_STORE(NREA_VIRT,NRAD,9))
         ALLOCATE (E_STORE(NREA_VIRT,NRAD,9))
-        ALLOCATE (LG_STORE(NRAD,NFLA_VIRT))
         TAB_STORE = 0._DP
         E_STORE = 0._DP
+#endif
+      END IF
+
+      IF (.NOT.ALLOCATED(LG_STORE)) THEN
+#ifdef F2003
+        ALLOCATE (LG_STORE(NRAD,NFLA_VIRT), SOURCE=.FALSE.)
+#else
+        ALLOCATE (LG_STORE(NRAD,NFLA_VIRT))
         LG_STORE = .FALSE.
 #endif
       END IF

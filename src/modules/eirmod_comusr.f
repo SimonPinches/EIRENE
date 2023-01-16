@@ -1562,6 +1562,7 @@ cdr these next two B field tallies should go into LBSMO
 
       CORNER_PROFILES = 0._DP
 
+      RETURN
       END SUBROUTINE EIRENE_ALLOC_CORNERS
 
 
@@ -2173,6 +2174,7 @@ cdr   intlopts is only needed on processor 0
 
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
       
+      RETURN
       END SUBROUTINE EIRENE_BROADCAST_COMUSR
 
       END MODULE EIRMOD_COMUSR

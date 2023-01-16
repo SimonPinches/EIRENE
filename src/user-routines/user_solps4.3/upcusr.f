@@ -1,7 +1,7 @@
 C  user-supplied collision estimator.
 C  called from folion, folneut, at a collision event in cell NCELL
 C
-      SUBROUTINE EIRENE_UPCUSR(WS,IND)
+      SUBROUTINE EIRENE_UPCUSR(WS,IND,KK)
 C
 C  USER-SUPPLIED COLLISION ESTIMATOR, VOLUME-AVERAGED
 C
@@ -23,7 +23,7 @@ C
       USE EIRMOD_CGEOM
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: WS
-      INTEGER, INTENT(IN) :: IND
+      INTEGER, INTENT(IN) :: IND, KK
       INTEGER :: IRCX,IACX,ityp_save=0, IRD
       REAL(DP) :: WSSIG
 C

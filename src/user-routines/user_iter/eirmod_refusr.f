@@ -18,13 +18,14 @@ c
       USE EIRMOD_COMPRT
       USE EIRMOD_CTRCEI
       USE EIRMOD_CCONA
+      USE EIRMOD_WNEUTRALS
       IMPLICIT NONE
       PRIVATE
 
       PUBLIC :: EIRENE_REFUSR, EIRENE_REFUSR_INIT,
      .          EIRENE_RF2USR,
-     .          EIRENE_SPTUSR, EIRENE_SPTUSR_INIT,
-     .          EIRENE_DEALLOC_REFUSR
+     .          EIRENE_SPTUSR_INIT,
+     .          EIRENE_DEALLOC_REFUSR, EIRENE_WRITE_CONBE
 
       REAL(DP) :: AW         ! Initial distribution for N2 on W
       REAL(DP) :: BW         ! Mid-point temperature for N2 on W
@@ -37,6 +38,22 @@ c
       LOGICAL, ALLOCATABLE :: IS_ND(:), IS_ND2(:)
       LOGICAL, ALLOCATABLE :: IS_N(:)
       INTEGER :: N_ATOM, N2_MOL, ND3_MOL
+
+      REAL(DP), ALLOCATABLE, SAVE, PUBLIC :: CONBE(:)
+      REAL(DP), ALLOCATABLE, SAVE, PUBLIC :: CONBEPRIVIOS(:)
+      REAL(DP), ALLOCATABLE, SAVE, PUBLIC :: SPUMPADD(:)
+      REAL(DP), ALLOCATABLE, SAVE, PUBLIC :: SPUMPSAVE(:)
+C     REAL(DP), ALLOCATABLE, SAVE, PUBLIC :: SPUMPPRIVIOS(:)
+      REAL(DP), ALLOCATABLE, SAVE, PUBLIC :: SPTTOTADD(:)
+      REAL(DP), ALLOCATABLE, SAVE, PUBLIC :: SPTTOTSAVE(:)
+      REAL(DP), ALLOCATABLE, SAVE, PUBLIC :: DENSBE(:)
+      REAL(DP), ALLOCATABLE, SAVE, PUBLIC :: TSTEP_ARR(:)
+
+      INTEGER, SAVE :: IB2STEP, BEGINSURF, ENDSURF,
+     .                 NOACUM_FLAG, CONBEOUTDELAY
+      REAL(DP), SAVE :: SPUMPBE, SPTTOTBE, AVCOF, SBE, DENSBELOC
+      CHARACTER*12, SAVE :: HLP_FRM
+
 
       CONTAINS
 c
@@ -132,16 +149,6 @@ c
 c
       RETURN
       END SUBROUTINE EIRENE_REFUSR_INIT
-
-      SUBROUTINE EIRENE_SPTUSR_INIT
-      IMPLICIT NONE
-      RETURN
-      END SUBROUTINE EIRENE_SPTUSR_INIT
-
-      SUBROUTINE EIRENE_SPTUSR
-      IMPLICIT NONE
-      RETURN
-      END SUBROUTINE EIRENE_SPTUSR
 c
 c--------------------------------------------------------------------------
 c  Begin the REFUSR subroutine called from REFLEC.f
@@ -318,5 +325,202 @@ c       IF (TRCREF) WRITE (IUNOUT,*) 'REFLECT SOMETHING ELSE'
 
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_REFUSR
+
+c--------------------------------------------------------------------------
+c  SPTUSR submodule for dynamic follow-up of surface composition
+c
+c         Author  : Sergey Makarov
+c
+c--------------------------------------------------------------------------
+
+      SUBROUTINE EIRENE_SPTUSR_INIT
+      USE EIRMOD_PRECISION, ONLY: DP
+      USE EIRMOD_PARMMOD, ONLY: NLIMPS
+      USE EIRMOD_CADGEO, ONLY: NLIMI
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
+      USE EIRMOD_CPES, ONLY: MY_PE
+      USE EIRMOD_MPI
+      IMPLICIT NONE
+      REAL(DP) :: TSTEP
+      INTEGER :: TSTEP_FLAG, IER
+      LOGICAL :: file_exists
+
+      IF (.NOT.ALLOCATED(DENSBE)) THEN
+        ALLOCATE(DENSBE(0:NLIMPS))
+        ALLOCATE(TSTEP_ARR(0:NLIMPS))
+        DENSBE=0._DP
+        TSTEP_ARR=0._DP
+        IF (MY_PE == 0) THEN
+          OPEN (UNIT=36,FILE="../input_for_refusr.dat",ERR=936)
+          READ(36,*)
+          READ(36,*) BEGINSURF, ENDSURF, CONBEOUTDELAY,
+     .               SBE, TSTEP, AVCOF, TSTEP_FLAG, NOACUM_FLAG
+          IF (BEGINSURF.LT.0) BEGINSURF=NLIMI+ABS(BEGINSURF)
+          IF (ENDSURF.LT.0) ENDSURF=NLIMI+ABS(ENDSURF)
+          WRITE(HLP_FRM,'(A,I4,A)') '(',ENDSURF-BEGINSURF+1,'ES14.7)'
+          IF (TSTEP_FLAG == 1) THEN
+            READ(36,*)
+            READ(36,HLP_FRM) TSTEP_ARR(BEGINSURF:ENDSURF)
+          ELSE
+            TSTEP_ARR(BEGINSURF:ENDSURF)=TSTEP
+          ENDIF
+          CLOSE (UNIT=36)
+          WRITE (IUNOUT,*) 'BEGINSURF', BEGINSURF
+          WRITE (IUNOUT,*) 'ENDSURF', ENDSURF
+          WRITE (IUNOUT,*) 'CONBEOUTDELAY', CONBEOUTDELAY
+          WRITE (IUNOUT,*) 'SBE', SBE
+          WRITE (IUNOUT,*) 'TSTEP', TSTEP
+          WRITE (IUNOUT,*) 'AVCOF', AVCOF
+          WRITE (IUNOUT,*) 'TSTEP_FLAG', TSTEP_FLAG
+          WRITE (IUNOUT,*) 'NOACUM_FLAG', NOACUM_FLAG
+          WRITE (IUNOUT,*)  TSTEP_ARR(BEGINSURF:ENDSURF)
+          IB2STEP=0
+          IF (BEGINSURF.LT.1 .OR. BEGINSURF.GT.NLIMPS .OR.
+     .        ENDSURF.LT.BEGINSURF .OR. ENDSURF.GT.NLIMPS .OR.
+     .        CONBEOUTDELAY.LT.1 .OR. SBE.LE.0._DP .OR.
+     .        TSTEP.LE.0._DP .OR.
+     .        MINVAL(TSTEP_ARR(BEGINSURF:ENDSURF)).LE.0._DP .OR.
+     .        AVCOF.LT.0._DP .OR. AVCOF.GT.1._DP) THEN
+            WRITE(IUNOUT,*) 'FAULTY INPUT in input_for_refusr.dat !'
+            CALL EIRENE_EXIT_OWN(1)
+          ENDIF
+        ENDIF
+        WRITE (IUNOUT,*) 'START DENSBE'
+      ENDIF
+      IF (.NOT.ALLOCATED(CONBE)) THEN
+        ALLOCATE(CONBE(0:NLIMPS))
+        CONBE(0:NLIMI)=0._DP
+        CONBE(NLIMI+1:NLIMPS)=0.01_DP
+        WRITE (IUNOUT,*) 'START CONBE'
+      ENDIF
+      IF (.NOT.ALLOCATED(SPUMPADD)) THEN
+        ALLOCATE(SPUMPADD(0:NLIMPS))
+        SPUMPADD=0._DP
+        WRITE (IUNOUT,*) 'START SPUMPADD'
+      ENDIF
+      IF (.NOT.ALLOCATED(SPUMPSAVE)) THEN
+        ALLOCATE(SPUMPSAVE(0:NLIMPS))
+        SPUMPSAVE=0._DP
+        WRITE (IUNOUT,*) 'START SPUMPSAVE'
+       ENDIF
+       IF (.NOT.ALLOCATED(SPTTOTADD)) THEN
+        ALLOCATE(SPTTOTADD(0:NLIMPS))
+        SPTTOTADD=0._DP
+        WRITE (IUNOUT,*) 'START SPTTOTADD'
+      ENDIF
+      IF (.NOT.ALLOCATED(SPTTOTSAVE)) THEN
+        ALLOCATE(SPTTOTSAVE(0:NLIMPS))
+        SPTTOTSAVE=0._DP
+        WRITE (IUNOUT,*) 'START SPTTOTSAVE'
+        IF (MY_PE == 0) THEN
+          INQUIRE(FILE="../conbe.dat", EXIST=file_exists)
+          IF (file_exists) THEN
+            OPEN (UNIT=36,FILE="../conbe.dat",position="append")
+            BACKSPACE 36
+            BACKSPACE 36
+            BACKSPACE 36
+            BACKSPACE 36
+            READ(36,HLP_FRM) SPUMPSAVE(BEGINSURF:ENDSURF)
+            READ(36,HLP_FRM) SPTTOTSAVE(BEGINSURF:ENDSURF)
+            READ(36,*)
+            READ(36,HLP_FRM) DENSBE(BEGINSURF:ENDSURF)
+            CLOSE (UNIT=36)
+          ENDIF
+        ENDIF
+      ENDIF
+
+      CALL EIRENE_WRITE_CONBE('    ')
+      CALL EIRENE_CHECK_EXIT
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST(CONBE,NLIMPS+1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+
+      RETURN
+
+  936 WRITE(IUNOUT,*) 'ERROR OPENING input_for_refusr.dat FILE !'
+      CALL EIRENE_EXIT_OWN(1)
+      END SUBROUTINE EIRENE_SPTUSR_INIT
+
+      SUBROUTINE EIRENE_WRITE_CONBE(EDITION)
+      USE EIRMOD_CPES, ONLY: MY_PE
+      USE EIRMOD_CCOUPL, ONLY: NFLA
+      IMPLICIT NONE
+      CHARACTER*4, INTENT(IN) :: EDITION
+      INTEGER :: K, ISPZ, ILIMPSUSER
+      CHARACTER*14 :: FILENAME
+
+      IF (.NOT.ALLOCATED(CONBE)) RETURN
+      FILENAME = 'conbe.dat'
+      if (edition.ne.'    ') filename = trim(filename)//'.'//edition
+
+      IF (MY_PE == 0) THEN
+        IF (edition.eq.'    ') IB2STEP=IB2STEP+1
+C       WRITE (IUNOUT,*) 'IB2STEP', IB2STEP
+        DO ILIMPSUSER=BEGINSURF, ENDSURF
+        
+C Instantaneous Be deposition flux calculation
+          SPUMPADD(ILIMPSUSER)=0._DP
+          DO K = 1, NATMI
+            IF (NMASSA(K).EQ.9 .AND. NCHARA(K).EQ.4) THEN
+              SPUMPADD(ILIMPSUSER)=SPUMPADD(ILIMPSUSER)+
+     .         wlpump(K,ILIMPSUSER)
+            END IF
+          END DO
+          DO K = 1, NFLA
+            ISPZ = NATMI+NMOLI+NIONI+K
+            IF (NMASSP(K).EQ.9 .AND. NCHARP(K).EQ.4) THEN
+              SPUMPADD(ILIMPSUSER)=SPUMPADD(ILIMPSUSER)+
+     .         wlpump(ISPZ,ILIMPSUSER)
+            END IF
+          END DO
+          
+C Time-averaged Be deposition flux calculation
+          SPUMPADD(ILIMPSUSER)=SPUMPADD(ILIMPSUSER)/wlarea(ILIMPSUSER)
+          SPUMPSAVE(ILIMPSUSER)=SPUMPSAVE(ILIMPSUSER)*
+     .     AVCOF+SPUMPADD(ILIMPSUSER)*(1._DP-AVCOF)
+          SPUMPBE=SPUMPSAVE(ILIMPSUSER)
+
+C Instantaneous Be sputtering flux calculation
+          SPTTOTADD(ILIMPSUSER)=wldspt(ILIMPSUSER,0)/wlarea(ILIMPSUSER)
+          
+C Time-averaged Be sputtering flux calculation
+          SPTTOTSAVE(ILIMPSUSER)=SPTTOTSAVE(ILIMPSUSER)*
+     .     AVCOF+SPTTOTADD(ILIMPSUSER)*(1._DP-AVCOF)
+          SPTTOTBE=SPTTOTSAVE(ILIMPSUSER)
+
+          DENSBELOC=DENSBE(ILIMPSUSER)
+          
+C Time-stepping
+          DENSBE(ILIMPSUSER)=(SPUMPBE-SPTTOTBE)*
+     .     TSTEP_ARR(ILIMPSUSER)+DENSBELOC
+          DENSBE(ILIMPSUSER)=MAX(0._DP,DENSBE(ILIMPSUSER))
+
+C Be concentration calculation
+          IF (DENSBE(ILIMPSUSER)*SBE.LT.1._DP) THEN
+            CONBE(ILIMPSUSER)=DENSBE(ILIMPSUSER)*SBE
+          ELSE
+            CONBE(ILIMPSUSER)=1._DP
+            IF (NOACUM_FLAG == 1)  THEN
+              DENSBE(ILIMPSUSER)=1._DP/SBE
+            ENDIF
+          ENDIF
+        END DO
+        
+C Output
+        IF (MOD(IB2STEP+CONBEOUTDELAY-1, CONBEOUTDELAY).EQ.0 .or.
+     .      edition.ne.'    ') THEN
+          write (iunout,*) 'Writing ',trim(filename)
+          OPEN (UNIT=36,FILE=trim(FILENAME),position="append")
+          WRITE (36,HLP_FRM) SPUMPADD(BEGINSURF:ENDSURF)
+          WRITE (36,HLP_FRM) SPTTOTADD(BEGINSURF:ENDSURF)
+          WRITE (36,HLP_FRM) SPUMPSAVE(BEGINSURF:ENDSURF)
+          WRITE (36,HLP_FRM) SPTTOTSAVE(BEGINSURF:ENDSURF)
+          WRITE (36,HLP_FRM) CONBE(BEGINSURF:ENDSURF)
+          WRITE (36,HLP_FRM) DENSBE(BEGINSURF:ENDSURF)
+          CLOSE (UNIT=36)
+        ENDIF
+      ENDIF
+
+      RETURN
+      END SUBROUTINE EIRENE_WRITE_CONBE
 
       END MODULE EIRMOD_REFUSR

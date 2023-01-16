@@ -22,19 +22,20 @@
       subroutine EIRENE_plt2d
       IMPLICIT NONE
 
-      return
-      END subroutine EIRENE_plt2d
+      RETURN
+      END SUBROUTINE EIRENE_PLT2D
+
+c--------------------------------------------------------------
+
+C
+C  PRINT AND PLOT PARTICLE HISTORIES IN GEOMETRY-PLOT
+C
+      SUBROUTINE EIRENE_CHCTRC(XPLO,YPLO,ZPLO,IFLAG,ISYM)
 
 cdr  this routine is identical to the subroutine chctrc(...) inside eirene routine plt2d.
 cdr  It is kept as separate routine here, in case no further eirene default plotting routines are used,
 cdr  to still be able to provide printed trajectory output.
 
-c--------------------------------------------------------------
-
-C
-C  PLOT PARTICLE HISTORIES IN GEOMETRY-PLOT
-C
-      SUBROUTINE EIRENE_CHCTRC(XPLO,YPLO,ZPLO,IFLAG,ISYM)
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: XPLO, YPLO, ZPLO
       INTEGER, INTENT(IN) :: IFLAG, ISYM

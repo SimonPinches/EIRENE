@@ -32,6 +32,7 @@ C
         END DO
       END IF
 C
+      RETURN
       END SUBROUTINE EIRENE_STATS0_SPC
 
 C
@@ -97,6 +98,7 @@ c  sigma = ESTIML(ISPC)%SGM(I)  now is cumulated squared contribution after flig
       END DO
 C
 C
+      RETURN
       END SUBROUTINE EIRENE_STATS1_SPC
 
 

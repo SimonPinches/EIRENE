@@ -1014,7 +1014,7 @@ C
 
 !  PARTICLE TYPE AND SPECIES MAY HAVE CHANGED
 !  IF SO, THEN PREPARE POINTERS FOR UNIFIED SUBROUTINES
-cdr only if ispz ne. ispz_old:
+cdr only if ispz .ne. ispz_old:
         CALL EIRENE_SWITCH_PARTINFO
 C
         E0TERM=EWALL(MSURF)

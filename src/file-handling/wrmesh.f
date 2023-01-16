@@ -35,14 +35,14 @@ c  EIRENE_PLMESH: plots these contours, using GR plot software.
       IMPLICIT NONE
 
 
-      INTEGER, PARAMETER :: MAXPOIN=2000
-      REAL(DP) :: partcont(maxpoin,2,2), maxlen
+      REAL(DP), ALLOCATABLE :: partcont(:,:,:)
+      INTEGER, ALLOCATABLE :: IDIAG(:), irip(:,:)
+      INTEGER, SAVE :: MAXPOIN=2000
       REAL(DP) :: XPE, YPE, HELP, XT, YT, PHI1, X1, X2, Y1, Y2, PHI2
-      REAL(DP) :: DISTQI, DISTQJ1, DISTQJ2, YMN
+      REAL(DP) :: DISTQI, DISTQJ1, DISTQJ2, YMN, maxlen
       INTEGER  :: ICONT, IPOIN, IWST, IWEN, IWL, IWP,
      .            IWAN, IMN, I, NCONT, J, IUHR, ISTORE, IP, IH, IFOUND,
      .            ICO, IPO, IN, IS, IS1, ITRI, INBT, INBS
-      INTEGER  :: IDIAG(MAXPOIN),irip(maxpoin,2)
       LOGICAL  :: LCLOSED, LFOUND
       LOGICAL, ALLOCATABLE :: FOUND(:,:)
 
@@ -51,6 +51,10 @@ C ILPLG WIRD IM INPUT BLOCK 3 EINGELESEN
       CALL EIRENE_LEER(2)
       WRITE (iunout,*) 'SUBROUTINE WRMESH CALLED'
       CALL EIRENE_LEER(1)
+
+      ALLOCATE (partcont(maxpoin,2,2))
+      ALLOCATE (idiag(maxpoin))
+      ALLOCATE (irip(maxpoin,2))
 
       NCONT = 0
       DO I=1,NLIMI
@@ -107,11 +111,9 @@ C 2-PUNKT OPTION WIRD IM TIMEA0 AUF RLB=1 ZURUECKGEFUEHRT
                   WRITE(IUNOUT,*)
      .             'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
      .              ICONT
-                  WRITE(IUNOUT,*)
-     .             'INCREASE VALUE OF MAXPOIN IN wrmesh.F'
-                  WRITE(IUNOUT,*)
-     .             'CURRENTLY MAXPOIN = ', MAXPOIN
-                  CALL EIRENE_EXIT_OWN(1)
+                  WRITE(IUNOUT,*) 'INCREASE VALUE OF MAXPOIN'
+                  CALL EIRENE_EXTEND_ARRAYS
+                  WRITE(IUNOUT,*) 'MAXPOIN SET TO = ', MAXPOIN
                 ENDIF
                 IF (A3LM(I) .EQ. 0.) THEN
 C               X,Y-KOORDINATEN
@@ -167,11 +169,9 @@ C  POLOIDAL SURFACES
                       WRITE(IUNOUT,*)
      .                 'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
      .                  ICONT
-                      WRITE(IUNOUT,*)
-     .                 'INCREASE VALUE OF MAXPOIN IN wrmesh.F'
-                      WRITE(IUNOUT,*)
-     .                 'CURRENTLY MAXPOIN = ', MAXPOIN
-                      CALL EIRENE_EXIT_OWN(1)
+                      WRITE(IUNOUT,*) 'INCREASE VALUE OF MAXPOIN'
+                      CALL EIRENE_EXTEND_ARRAYS
+                      WRITE(IUNOUT,*) 'MAXPOIN SET TO = ', MAXPOIN
                     ENDIF
                     PARTCONT(IPOIN,1,1) = XPOL(J,INUMP(I,2))
                     PARTCONT(IPOIN,1,2) = YPOL(J,INUMP(I,2))
@@ -195,11 +195,9 @@ C  RADIAL SURFACES
                       WRITE(IUNOUT,*)
      .                 'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
      .                  ICONT
-                      WRITE(IUNOUT,*)
-     .                 'INCREASE VALUE OF MAXPOIN IN wrmesh.F'
-                      WRITE(IUNOUT,*)
-     .                 'CURRENTLY MAXPOIN = ', MAXPOIN
-                      CALL EIRENE_EXIT_OWN(1)
+                      WRITE(IUNOUT,*) 'INCREASE VALUE OF MAXPOIN'
+                      CALL EIRENE_EXTEND_ARRAYS
+                      WRITE(IUNOUT,*) 'MAXPOIN SET TO = ', MAXPOIN
                     ENDIF
                     PARTCONT(IPOIN,1,1) = XPOL(INUMP(I,1),J)
                     PARTCONT(IPOIN,1,2) = YPOL(INUMP(I,1),J)
@@ -239,11 +237,9 @@ C  TRIANGLE SIDES
                     WRITE(IUNOUT,*)
      .               'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
      .                ICONT
-                    WRITE(IUNOUT,*)
-     .               'INCREASE VALUE OF MAXPOIN IN wrmesh.F'
-                    WRITE(IUNOUT,*)
-     .               'CURRENTLY MAXPOIN = ', MAXPOIN
-                    CALL EIRENE_EXIT_OWN(1)
+                    WRITE(IUNOUT,*) 'INCREASE VALUE OF MAXPOIN'
+                    CALL EIRENE_EXTEND_ARRAYS
+                    WRITE(IUNOUT,*) 'MAXPOIN SET TO = ', MAXPOIN
                   ENDIF
                   PARTCONT(IPOIN,1,1) = XTRIAN(NECKE(IS,ITRI))
                   PARTCONT(IPOIN,1,2) = YTRIAN(NECKE(IS,ITRI))
@@ -271,6 +267,7 @@ cwdk Make sure the corresponding side of the neighboring triangle is not found a
 
         IF (IPOIN.LE.0) THEN
           WRITE(iunout,*) 'CONTOUR ',ICONT,' NOT FOUND'
+          CALL EIRENE_LEER(1)
           GOTO 1000
         ENDIF
 
@@ -507,5 +504,48 @@ cdr
         DEALLOCATE (YCONTOUR)
       endif
 
+      DEALLOCATE (partcont)
+      DEALLOCATE (idiag, irip)
+
       RETURN
+
+      CONTAINS
+
+      SUBROUTINE EIRENE_EXTEND_ARRAYS
+
+      IMPLICIT NONE
+      REAL(DP), ALLOCATABLE :: pc(:,:,:)
+      INTEGER, ALLOCATABLE :: ID(:), ir(:,:)
+      INTEGER :: NEWPOIN
+
+      ALLOCATE(PC(MAXPOIN,2,2))
+      ALLOCATE(ID(MAXPOIN))
+      ALLOCATE(IR(MAXPOIN,2))
+
+      PC = PARTCONT
+      ID = IDIAG
+      IR = IRIP
+
+      DEALLOCATE (PARTCONT)
+      DEALLOCATE (IDIAG)
+      DEALLOCATE (IRIP)
+
+      NEWPOIN = MAXPOIN + 2000
+      ALLOCATE (partcont(newpoin,2,2))
+      ALLOCATE (idiag(newpoin))
+      ALLOCATE (irip(newpoin,2))
+      
+      partcont(1:maxpoin,:,:) = pc(1:maxpoin,:,:)
+      idiag(1:maxpoin) = id(1:maxpoin)
+      irip(1:maxpoin,:) = ir(1:maxpoin,:)
+
+      maxpoin = newpoin
+      
+      deallocate(pc)
+      deallocate(id)
+      deallocate(ir)
+
+      return
+      END SUBROUTINE EIRENE_EXTEND_ARRAYS
+
       END SUBROUTINE EIRENE_WRMESH

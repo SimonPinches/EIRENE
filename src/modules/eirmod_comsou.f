@@ -286,6 +286,7 @@ c  some array A(0:NSTRA)) that include sum over strata
       
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
+      RETURN
       END SUBROUTINE EIRENE_BROADCAST_COMSOU
 
       END MODULE EIRMOD_COMSOU

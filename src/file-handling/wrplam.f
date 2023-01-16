@@ -26,7 +26,7 @@ C  trcfle:  confirm writing on printout unit IUNOUT
 cdr  NLSHRT13 : VIA COMMON CLOGAU. MEANING: write "long" or "short" version of fort.13
 C                 DEFAULT: FALSE,
 cdr  but, e.g.:
-cdr  NLSHRT13 : SET TRUE IN INFCOP, COUPLE_SOLPS_ITER. REDUCED SIZE FORT 13.
+cdr  NLSHRT13 : SET TRUE IN INFCOP, COUPLE_SOLPS_ITER. REDUCED SIZE FORT.13.
       USE EIRMOD_PARMMOD
       USE EIRMOD_CLOGAU, ONLY: NLSHRT13
 
@@ -39,6 +39,7 @@ cdr  NLSHRT13 : SET TRUE IN INFCOP, COUPLE_SOLPS_ITER. REDUCED SIZE FORT 13.
       ELSE
         CALL EIRENE_WRPLAM_LONG (TRCFLE,CALLEDFROM)
       ENDIF
+      RETURN
       END SUBROUTINE EIRENE_WRPLAM
 C
 c.............................................
@@ -72,7 +73,7 @@ cdr                          all ipls: 1,npls, not just ipls=nfla+1,npls
       INTEGER, INTENT(INOUT) :: IFLG
       LOGICAL, INTENT(IN) :: TRCFLE
       CHARACTER(*), INTENT(IN) :: CALLEDFROM
-      INTEGER :: J
+      INTEGER :: JPLS
 c.............................................
 
       IF (NLSHRT13) THEN  !dr  similar to RPLAM_LONG(IFLG=10), but for
@@ -83,18 +84,18 @@ cdr  only species NPLS_FIX+1:NPLS should be affected from RPLAM_SHRT.
         CALL EIRENE_ALLOC_BCKGRND
         TEINTF(1:NRAD) = TEIN(1:NRAD)
         IF (NLMLTI) THEN
-          DO J = 1, NPLSI
-            TIINTF(MPLSTI(J),1:NRAD) = TIIN(J,1:NRAD)
+          DO JPLS = 1, NPLSI
+            TIINTF(MPLSTI(JPLS),1:NRAD) = TIIN(JPLS,1:NRAD)
           ENDDO
         ELSE
           TIINTF(1,1:NRAD) = TIIN(1,1:NRAD)
         ENDIF
         DIINTF(1:NPLSI,1:NRAD) = DIIN(1:NPLSI,1:NRAD)
         IF (NLMLV) THEN
-          DO J = 1, NPLSI
-            VXINTF(MPLSV(J),1:NRAD) = VXIN(J,1:NRAD)
-            VYINTF(MPLSV(J),1:NRAD) = VYIN(J,1:NRAD)
-            VZINTF(MPLSV(J),1:NRAD) = VZIN(J,1:NRAD)
+          DO JPLS = 1, NPLSI
+            VXINTF(MPLSV(JPLS),1:NRAD) = VXIN(JPLS,1:NRAD)
+            VYINTF(MPLSV(JPLS),1:NRAD) = VYIN(JPLS,1:NRAD)
+            VZINTF(MPLSV(JPLS),1:NRAD) = VZIN(JPLS,1:NRAD)
           ENDDO
         ELSE
           VXINTF(1,1:NRAD) = VXIN(1,1:NRAD)

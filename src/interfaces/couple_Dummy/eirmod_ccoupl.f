@@ -100,6 +100,9 @@ cdr NFLA is iccpl2(3) in corresponding non-default modules
       IF (ALLOCATED(ICCPL2)) THEN
         CALL MPI_BCAST (ICCPL2,MCOUPL2,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       END IF
+
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
+
       END SUBROUTINE EIRENE_BROADCAST_CCOUPL 
 
 

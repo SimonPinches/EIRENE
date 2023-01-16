@@ -17,7 +17,7 @@ c
 cdr  5. 8.15: ARGUMENTS ADDED TO VECUSR
 cdr 20.10.15: arguments in chctrc: type of collision process: corrected for PI and OT
 cdr 24.11.15:  bug fix re coll est for PI processes, in colion: eiml --> eiio
-cdr Dec.15  :  bug fix pi reaction and cascading was wrong:
+cdr Dec.15  :  bug fix PI reaction and cascading was wrong:
 cdr            irei, rather than irpi, and p2nd
 cdr            rather than p2np, were used also for PI reactions. now corrected
 
@@ -28,14 +28,6 @@ cdr            not ready: esigei(4, ...), esigpi(4,...) must be species-resolved
 
 cdr            tbd:  check setting of iestm..flags for collision estimators.
 cdr                  probably not correct (outdated).
-
-
-!pb  APR  16:  ipplds -> ipplei, pplds -> pplei
-!pb  APR  16:  patds -> patei
-!pb  APR  16:  pmlds -> pmlei
-!pb  APR  16:  piods -> pioei
-!pb  MAY  16:  nrds  -> nrei
-cdr  sept 16:  nmdsi -> nmeii, nidsi -> nieii
 
 
 cdr Aug 16:    bug fix: IPPLEI --> IPPLPI at one instance
@@ -55,14 +47,11 @@ c   cascading with PI: identical to EI ??
 cdr Nov. 16:   cflag(7,3) --> cflag(7,mstor0)
 cdr            (was already corrected much earlier in SOLPS_4.3 by VK,
 cdr             then correction somehow lost in more recent EIRENE branches)
-cdr Jan. 17:    started to separate more clearly the (unfinished) NLCASCAD option from active code
-C               Done for COLATM and EI processes.
-C            wminv activated in colmol for EI processes (analog to colatm)
 cdr May 17: some spelling error corrections in comments adopted from ITER branch
 c            AE: analog, --> BE: analogue, etc..
 cdr Nov.18:  notational cleanup: separate OT from PH processes, e.g.: IROT --> IRPH
 
-      SUBROUTINE EIRENE_COLPHOT(CFLAG,COLTYP)
+      SUBROUTINE EIRENE_COLPHOT(CFLAG,COLTYP,KKOUT)
 C
 C  SAMPLE FROM COLLISION KERNEL C
 C
@@ -103,6 +92,7 @@ C
 
       REAL(DP), INTENT(IN) :: CFLAG(7,MSTOR0)
       INTEGER, INTENT(OUT) :: COLTYP
+      INTEGER, INTENT(INOUT) :: KKOUT
       REAL(DP) :: ZEP1, SIGSUM, WGHTO, FRSTP, E0O, VELXO,
      .          VELYO, VELZO, VELO, SCNDP,
      .          ZEP3

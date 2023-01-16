@@ -1004,5 +1004,4 @@ C
       NLSRON(1:NSTRAI) = LOGHELP(1:NSTRAI)
       call eirene_broadcast_eirbra
       return
-
       END SUBROUTINE EIRENE_EIRSRT_BROAD

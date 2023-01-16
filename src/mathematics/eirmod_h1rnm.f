@@ -138,7 +138,7 @@ cym cccccccccccccccccc
       IF(H1RN .LE. 0.) H1RN = H1RN + 1.
       IF(H1RN .GE. 1.) GOTO 100
       RETURN
-      END
+      END FUNCTION H1RN
 
 cdr  Initializes random number generator H1RN  ( = RANMAR, F. James, see below)
 c

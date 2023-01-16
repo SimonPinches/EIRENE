@@ -70,4 +70,4 @@ C
         EP1R=EP1(NP)
       ENDIF
       GOTO 100
-      END
+      END FUNCTION EIRENE_AREAA

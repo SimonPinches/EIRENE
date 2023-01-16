@@ -99,6 +99,8 @@ C
       USE EIRMOD_JSON
       USE EIRMOD_IOUSR, ONLY: EIRENE_READ_BLOCK_11_USR
       USE EIRMOD_INFCOP, ONLY: EIRENE_IF0COP
+      use json_module, only  : json_ck
+      USE EIRMOD_PRESSURELOOP
 
       IMPLICIT NONE
 
@@ -206,6 +208,9 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
       CHARACTER(10) :: CDATE, CTIME
       CHARACTER(12) :: CHR
       CHARACTER(420) :: ZEILE, ULINE
+!cym/cpg avoid type mismatch
+      CHARACTER(kind=json_CK,len=420) :: zeileCk
+!cym/cpg end
       CHARACTER(500) :: FILE, FILE45
       CHARACTER(8) :: FILNAM, varname, spcname
       CHARACTER(4) :: H123, CLAB
@@ -254,7 +259,11 @@ C
         IF (ZEILE(1:3).NE.'***') THEN
           WRITE (iunout,'(1X,A)') trim(ZEILE)
 !  STORE COMMENT LINES FOR OUTPUTING TO JSON FILE 
-          call eirene_push_string_stack(cm_stack,trim(zeile)) 
+!cym/cpg avoid type mismatch
+!          call eirene_push_string_stack(cm_stack,trim(zeile)) 
+          zeileCK=trim(zeile)
+          call eirene_push_string_stack(cm_stack,trim(zeileCK))
+!cym/cpg end
         END IF  
         GOTO 109
       ELSE
@@ -304,11 +313,11 @@ C...........................................................................
 c   done with this optional "storage save mode card"
 C
 * For gfortran: it does not accept empty field for logicals
-      call fix_logical_input(zeile,17)
+      call fix_logical_input(zeile,18)
       READ (ZEILE,6665) NLSCL,NLTEST,NLANA,NLDRFT,NLCRR,
      .                  NLERG,NLIDENT,NLONE,NLMOVIE,NLDFST,
      .                  NLOLDRAN,NLCASCAD,NLOCTREE,NLWRMSH,NEXVS,
-     .                  NLTRIMESH,NLSPCSCL
+     .                  NLTRIMESH,NLSPCSCL,NLSPCSCL_ON
 
 C  OPTIONAL INPUT CARDS, FOR PATHWAYS AND NAME DEFINITIONS
 C                        FOR EXTERNAL DATABASES: AMJUEL, HYDHEL,.....
@@ -1104,7 +1113,11 @@ C
           IREAD=0
           
 !  STORE CH0 LINES FOR OUTPUTING TO JSON FILE 
-          call eirene_push_string_stack(ch0_stack,zeile(1:72))
+!cym/cpg avoid type mismatch
+!          call eirene_push_string_stack(ch0_stack,zeile(1:72))
+          zeileCK=zeile
+          call eirene_push_string_stack(ch0_stack,zeileCK(1:72))
+!cym/cpg end
 
           CALL EIRENE_DEKEY (ZEILE(4:72),IHELP,1,1,1,NLIMPS)
           GOTO 351
@@ -1137,7 +1150,11 @@ C   GENERAL SURFACE DATA
         IF (ZEILE(1:3).EQ.'CH1') THEN
           
 !  STORE CH1 LINES FOR OUTPUTING TO JSON FILE 
-           call eirene_push_string_stack(ch1_stack(i),zeile(1:72))
+!cym/cpg avoid type mismatch
+!           call eirene_push_string_stack(ch1_stack(i),zeile(1:72))
+           zeileCK=zeile           
+           call eirene_push_string_stack(ch1_stack(i),zeileCK(1:72))
+!cym/cpg end
 
           IF (NLIMPB >= NLIMPS) THEN
             CALL EIRENE_DEKEY (ZEILE(4:72),IGJUM1,0,NLIMPS,I,NLIMPS)
@@ -1150,7 +1167,11 @@ C   GENERAL SURFACE DATA
         ELSEIF (ZEILE(1:3).EQ.'CH2') THEN
         
 !  STORE CH2 LINES FOR OUTPUTING TO JSON FILE 
-          call eirene_push_string_stack(ch2_stack(i),zeile(1:72))
+!cym/cpg avoid type mismatch
+!          call eirene_push_string_stack(ch2_stack(i),zeile(1:72))
+          zeileCK=zeile
+          call eirene_push_string_stack(ch2_stack(i),zeileCK(1:72))
+!cym/cpg end
           IF (NLIMPB >= NLIMPS) THEN
             CALL EIRENE_DEKEY (ZEILE(4:72),IGJUM2,0,NLIMPS,I,NLIMPS)
           ELSE
@@ -1434,7 +1455,12 @@ C
       IF (ZEILE(1:1).NE.'*') THEN
 
 !  STORE REACTION LINES FOR OUTPUTING TO JSON FILE 
-        call eirene_push_string_stack(crs_stack,trim(zeile)) 
+!cym/cpg avoid type mismatch
+!        call eirene_push_string_stack(crs_stack,trim(zeile)) 
+         zeileCK=zeile
+         call eirene_push_string_stack(crs_stack,trim(zeileCK))
+!cym/cpg end
+
 C
 C  READ ONE REACTION FROM FILE "FILNAM" AT A TIME. Input card is on "ZEILE"
 C
@@ -2565,9 +2591,11 @@ c  read surface models identified by character string 'SURFMOD_...'
 
         REFCUR%REFNAME = TRIM(ADJUSTL(ZEILE(9:)))
         IREAD=0
-        READ (IUNIN,6666) REFCUR%JLREF,REFCUR%JLSPT,
+        READ (IUNIN,'(A72)') ZEILE
+        call fix_integer_input(zeile,6)
+        READ (ZEILE,6666) REFCUR%JLREF,REFCUR%JLSPT,
      .                    REFCUR%JSRS(1),REFCUR%JSRC(1),
-     .                    REFCUR%JLCHSPNWL(1)
+     .                    REFCUR%JLCHSPNWL(1),REFCUR%REFCELL
         READ (IUNIN,6664) REFCUR%ZNMLR,REFCUR%EWALLR,REFCUR%EWBINR,
      .                    REFCUR%TRANSPR(1,1),REFCUR%TRANSPR(1,2),
      .                    REFCUR%FSHEATR
@@ -2692,12 +2720,12 @@ c  not a species card, hence: a sputter model card
 cxpb Assume 3.0.1 input format
                 READ (ZEILE,6664) REFCUR%RCYCSR(1),REFCUR%RCYCCR(1),
      .                            REFCUR%STPRMR(1),REFCUR%ESPTSR(1),
-     .                            REFCUR%ESPTCR(1)
+     .                            REFCUR%ESPTCR(1),REFCUR%REFPRESS
               ELSE
 cxpb Assume old SOLPS4.3 format
                 READ (ZEILE,6664) REFCUR%RCYCSR(1),REFCUR%RCYCCR(1),
      .                            REFCUR%ESPTCR(1),DUMMY,
-     .                            REFCUR%STPRMR(1)
+     .                            REFCUR%STPRMR(1),REFCUR%REFPRESS
               ENDIF
               DO I=2,NSPZ
                 REFCUR%RCYCSR(I) = REFCUR%RCYCSR(1)
@@ -2708,6 +2736,10 @@ cxpb Assume old SOLPS4.3 format
               ENDDO
               ideflt_sput=1
               ideflt_spez=-1
+              !Pressure feedback loop model
+              IF (REFCUR%JLREF == 4) 
+     .          WRITE (IUNOUT,*) "PFL with parameters: ",
+     .            REFCUR%REFCELL, REFCUR%REFPRESS
             end if
           end select
           if ((ideflt_spez > 0) .and. (ispz < 0)) then
@@ -2908,7 +2940,12 @@ C  IGJUM3 FLAG
      .                    (ZEILE(4:72),IGJUM3,0,NOPTIM,II,NLIMPB,NBITS)
             END IF
   821     CONTINUE
-          call eirene_push_string_stack(ch3_stack(i),zeile(1:72))
+  
+!cym/cpg avoid type mismatch
+!          call eirene_push_string_stack(ch3_stack(i),zeile(1:72))
+          zeileCK=zeile
+          call eirene_push_string_stack(ch3_stack(i),zeileCK(1:72))          
+!cym/cpg end
           GOTO 812
 C  TEMPERATURE
         ELSEIF (ZEILE(1:1).EQ.'T') THEN

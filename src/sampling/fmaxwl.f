@@ -15,7 +15,6 @@ C
       IMPLICIT NONE
 
       REAL(DP) :: ZCOS, ZSIN, ZT, AR, ZZ
-ctk   REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: JJ
 
 !pb   DATA PI2/6.283185_DP/

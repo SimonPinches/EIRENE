@@ -28,4 +28,4 @@
       END IF
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_QUADEQ

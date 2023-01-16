@@ -48,6 +48,8 @@ cpb  for scoring on COPV
       IF (IFIRST == 0) THEN
          ALLOCATE (UAH(NPLS,NRTAL))
          ALLOCATE (EKIN(NPLS,NRTAL))
+         UAH = 0.0_dp
+         EKIN = 0.0_dp
 
          DO IPL = 1, NPLSI
            IPLV = MPLSV(IPL)

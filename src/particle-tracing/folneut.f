@@ -3,7 +3,7 @@ cdr           tbd: photon routines, static loop, logatm, mol, ion in static loop
 cdr Oct. 17   minor sync with folion
 cdr           started: implementation of QSS branch: folstat_neut.f  not ready
 
-cdr Sept.17   conditional exp. estim: external function funexp, rather than inline.
+cdr Sept.17   conditional exp. est.: external function funexp, rather than inline.
 cdr           PR = prob to reach the next cell boundary.
 cdr           In case of geometrical multi-steps within one macro step
 cdr           (NCOU.GT.1) use PR rather than AX(2)=1, when leaving the NCOU loop
@@ -119,7 +119,7 @@ C
      .          GENRC, PHIC, WEIGHC, ZLI, XLI, YLI, T, ZTS,
      .          ZMFP, ZEP1, ZLOG, ZTST, ZINT1, ZINT2, Z0S, TIMES,
      .          X0S, Y0S, PHIS, DIST, ZTC, PSAVE, TSAVE,
-     .          EX, EXPM, FF, WMINC_LOCAL, PR, PPR,   ! cond exp. est
+     .          EX, EXPM, FF, WMINC_LOCAL, PR, PPR,   ! cond. exp. est.
      .          EIRENE_FPATH,
      .          SCOS_NEW
 ctk      REAL(DP), EXTERNAL :: RANF_EIRENE, EIRENE_FUNEXP
@@ -129,7 +129,7 @@ ctk      REAL(DP), EXTERNAL :: RANF_EIRENE, EIRENE_FUNEXP
      .           EIRENE_LEARC2, J, NCOUS, NLE, NRC, JCOL, NLI, ISTS,
      .           NPCOLC, COLTYP,
      .           JJ, NPCELC, NTCELC, NTCOLC, IFLAG, I, IM,
-     .           NCLLN, IRET, IRT_STAT
+     .           NCLLN, IRET, IRT_STAT, KK
       LOGICAL :: NLPR, LCNDEXP
       TYPE(CELL_INFO), POINTER :: NEW_CELL
 
@@ -144,6 +144,7 @@ C  XGENER: COUNTER FOR GENERATION LIMIT
 
   100 LGPART=.TRUE.
       IC_NEUT=IC_NEUT+1
+
 
 C  INITIALIZE COND. EXP. ESTIMATOR
       NLPR=.FALSE.
@@ -595,7 +596,7 @@ c
 C  PROB. FOR REACHING NEXT CELL BOUNDARY
             AX(2)=AX(2)*EXPM
             PR=AX(2)
-C  COND. EXP.EST: STOP BECAUSE OF WMINC CRITERION
+C  COND. EXP. EST.: STOP BECAUSE OF WMINC CRITERION
             IF (.NOT.NLTRJ.AND.(AX(2).LE.WMINC_LOCAL)) THEN
 C    RESTORE POINT OF COLLISION ?
               IF (JCOL.NE.0) GOTO 213
@@ -905,7 +906,12 @@ C  PUSH PARTICLE TO POINT OF COLLISION, EITHER DELTA OR REAL
       MTSURF=0
       MASURF=0
       MSURF=0
-      IF (NLTRA) PHI=MOD(PHI-ATAN2(Z01,X01)+ATAN2(Z0,(RMTOR+X0)),PI2A)
+      IF (NLTRA) THEN 
+        PHI=MOD(PHI-ATAN2(Z01,X01)+ATAN2(Z0,(RMTOR+X0)),PI2A)
+cdr  made a bit more precise, to allow calling tmstep.f from collide.f
+       X01=X0+RMTOR
+      ENDIF
+      Z01=Z0
 C
   230 CONTINUE
 C
@@ -913,7 +919,7 @@ C  PRE-COLLISION ESTIMATOR
 C
       IF (NCLVI.GT.0) THEN
         WS=WEIGHT/SIGTOT
-        CALL EIRENE_UPCUSR(WS,1)
+        CALL EIRENE_UPCUSR(WS,1,KK)
       ENDIF
 C
 C
@@ -931,11 +937,11 @@ C  AT PRESENT: NO SUPPRESSION OF ABSORPTION AT IONISATION
 C  FIND NEW WEIGHT, SPECIES INDEX, VELOCITY AND RETURN
 C
       IF (ITYP.EQ.1) THEN
-        CALL EIRENE_COLATM(CFLAG,COLTYP,DIST)
+        CALL EIRENE_COLATM(CFLAG,COLTYP,DIST,KK)
       ELSEIF (ITYP.EQ.2) THEN
-        CALL EIRENE_COLMOL(CFLAG,COLTYP)
+        CALL EIRENE_COLMOL(CFLAG,COLTYP,KK)
       ELSEIF (ITYP.EQ.0) THEN
-        CALL EIRENE_COLPHOT(CFLAG,COLTYP)
+        CALL EIRENE_COLPHOT(CFLAG,COLTYP,KK)
       ENDIF
       ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
 
@@ -947,7 +953,7 @@ C  POST-COLLISION ESTIMATOR
 C
       IF (LGPART.AND.(NCLVI.GT.0)) THEN
         WS=WEIGHT/SIGTOT
-        CALL EIRENE_UPCUSR(WS,2)
+        CALL EIRENE_UPCUSR(WS,2,KK)
         IF (NADSPC_CD >= 1) CALL EIRENE_UPDATE_SPECTRUM (WS,2,1)
       ENDIF
 C

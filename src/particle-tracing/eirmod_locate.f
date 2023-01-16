@@ -175,11 +175,6 @@ cdr           For T (time) sampling: currently: 4th digit of SORLIM and ISOR=ABS
 !pb 08.11.06: definition of splitting arrays changed
 !             RSPLST(NLEVEL,1:NPARTC) --> RSPLST(1:NPARTC,NLEVEL)
 !             ISPLST(NLEVEL,1:MPARTC) --> ISPLST(1:MPARTC,NLEVEL)
-!             definition of census arrays changed
-!             RPARTC(NPRNL,1:NPARTT) --> RPARTC(1:NPARTT,NPRNL)
-!             IPARTC(NPRNL,1:MPARTT) --> IPARTC(1:MPARTT,NPRNL)
-!             RPART(NPRNL,1:NPARTT) --> RPART(1:NPARTT,NPRNL)
-!             IPART(NPRNL,1:MPARTT) --> IPART(1:MPARTT,NPRNL)
 !   04.01.07: updating of sputter tallies ordered as in ESCAPE
 c
 cdr 22.09.14: updating of revised sputter tallies (resolved wrt. emitted species index)
@@ -662,6 +657,7 @@ C
      .                 WEISPZ)
           IF (.NOT.LGPART) RETURN
         ELSE
+cdr  NLSRF AND NLCNS:  probably unfinished option? (by Oct. 21)
           SELECT CASE( INDIM(ISURF,ISTRA) )
             CASE( 1 )
               NLSRFX=.TRUE.
@@ -1409,6 +1405,7 @@ cnh 02.11.2019 NCHRGP->ZIWL
                 ESHET=NCHRGI(IION)*EIRENE_SHEATH(TEWL,DIWL,VPWL,
      .                                    ZIWL,GAMMA,CUR,NPLSI,MSURF)
               ELSE
+cdr sheath potential factor explicitly defined on surface via input blocks 3a,3b
                 ESHET=NCHRGI(IION)*FSHEAT(MSURF)*TEWL
               ENDIF
 
@@ -2203,6 +2200,9 @@ C  ON THE DIRECTION OF EMISSION
 C
 C  planck value, for this current temperature, only for testing.
 C             IPLSTI=MPLSTI(IPLS)
+cdr  PLANCK units: intensity?
+cdr  compare with densmodel: planck (and wien).
+cdr  add here as well: WIEN function, for cases without stim. emiss.
 C             PLA=PLANCK(E0,TIIN(IPLSTI,NCELL),B_NU,1)
 C
 C  CORRECT FOR DOPPLER SHIFT: XNU = XNU_0*(1+N*VEL_B/CLIGHT)

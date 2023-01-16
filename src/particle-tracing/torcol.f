@@ -39,9 +39,16 @@ C  ANGLE FOR ROTATION IS 2*ALPHA
         VELX_OLD=VELX
         VELX= VELX_OLD*COSROT +VELZ*SINROT
         VELZ=-VELX_OLD*SINROT +VELZ*COSROT
+CNR     ADVANCE TO NEXT TOROIDAL CELL
+CNR     For neutrals, use X01 computed in EIRENE_TIMET
+CNR     which is already advanced
+        X0=X01-RMTOR
+CNR   For test ions, they follow B and VELX and VELZ are not modified,
+CNR   advance as with other coordinates.
+      ELSEIF (ITYP.EQ.3) THEN
+        X0=X0+ZT*VELX
       ENDIF
-C  ADVANCE TO NEXT TOROIDAL CELL
-      X0=X01-RMTOR
+CNR   Now advance Y and Z
       Y0=Y0+ZT*VELY
       Z01=-Z01
       Z0=Z01
@@ -90,4 +97,4 @@ C
         RETURN
       ENDIF
 C
-      END
+      END SUBROUTINE EIRENE_TORCOL

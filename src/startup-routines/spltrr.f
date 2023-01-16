@@ -165,4 +165,4 @@ C
       LGPART=.FALSE.
       IRET = 2
       RETURN
-      END
+      END SUBROUTINE EIRENE_SPLTRR

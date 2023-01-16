@@ -16,6 +16,8 @@ cdr       : added ITP (type of relevant component)
 cdr Jan 18: added MX_COMPO, generalize storage allocation PSIG(ND) for NCHTAL=2 option
 cdr         NCHTAL=5 option (He lines) is now redundant, due to generalization
 cdr                  of NCHTAL=2 option to arbitrary atomic or molecular lines.
+cdr Dec 20: code simplification: remove unfinished option NCHTAL=4 from here.
+cdr         Version sgnal.ff with that part still in saved in  folder: Options_unfinished
 C
 C
       SUBROUTINE EIRENE_SGNAL(ICHORI,IISTR,ISP,ITP,LCHOR)
@@ -32,6 +34,9 @@ C  STEP 2:  PREPARE DIRECT CONTRIBUTION FROM PRIMARY SOURCE (IF ANY)
 C           (PROBABLY NOT READY)
 C  STEP 3:  INTEGRATE ALONG LINE OF SIGHT, CALL LININT, AND LOOP OVER ENERGY/WAVELENGTH
 C  STEP 4:  PROCESS LINE INTEGRALS: CURVE FITTING, SCALING, ETC..
+
+C  isp:  species index (nchtal=1,3)
+c        or component index (nchtal=2,5)
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -279,6 +284,10 @@ C
 C  PREPARE DIRECT (PRIMARY) EMISSION FROM SOURCE, INTO LINE OF SIGHT
 C  THE SCATTERED (SECONDARY) CONTRIBUTION WILL BE DONE
 C  IN SUBR. SIGCX, SIGRAD, SIGLINE, SIGUSR, ETC.
+cdr: N.b.: "scattered" here means: scattered (or emitted) by volumetric processes.
+cdr        directly scattered (reflected) from surfaces into
+cdr        beamline would be a counted as a "primary",
+cdr        i.e. not volume-scattered, contribution.
 
       NLVL=.FALSE.
       DO 10 ISTR=1,NSTRAI
@@ -426,6 +435,17 @@ c  nlvl is not true:
           DEALLOCATE(INTADD)
           return
         ENDIF
+C.................................................................
+      ELSEIF ((NCHTAL(ICHORI).EQ.2).OR.(NCHTAL(ICHORI).EQ.5)) THEN
+C.................................................................
+        write (iunout,*) 'sgnal, emis: ichord,istra ',
+     .                            ichori,istra
+        write (iunout,*) 'volumetric line emission '
+        if (isp > 0) then
+          write (iunout,*) 'component no. isp ',isp
+        else
+          write (iunout,*) 'sum over components'
+        endif
 
       ENDIF
 
@@ -486,7 +506,7 @@ c  summation over contributions (different isotopes but same emission reactions,
         PSIG = 0._DP
       END IF
 
-      IF (NCHTAL(ICHORI).EQ.1)  NSPI=NATMI  ! post-collision CX atomic species
+      IF (NCHTAL(ICHORI).EQ.1)  NSPI=NATMI  ! post-collision CX atomic species, energy resolved.
 cdr   IF (NCHTAL(ICHORI).EQ.2)  NSPI=10  ! THIS OPTION WAS FOR H EMISSION LINES. Now superseded.
       IF (NCHTAL(ICHORI).EQ.2)  NSPI=MX_COMPO ! use maximum number of components to spectral line emissivities (transitions) in one single LOS evaluation
       IF (NCHTAL(ICHORI).EQ.3)  NSPI=NPHOTI ! one spectrally resolved radiance per LOS and per photon species ("transition")
@@ -495,13 +515,13 @@ cdr   IF (NCHTAL(ICHORI).EQ.2)  NSPI=10  ! THIS OPTION WAS FOR H EMISSION LINES.
       PSIG = 0._DP
       IFIRST=0
       DO 231 JEN=1,NCHNI
-        ZE=ENERGY(JEN)
+        ZE=ENERGY(JEN)  !dr: only needed in case NCHTAL(ICHORI).EQ.1
         CALL EIRENE_LININT
      .  (IFIRST,ICHORI,C1,C2,ICHRD,IPVOT,NBC2,NAC2,ZE,
      .               PSIG,TIMAX,ISP,NSPI,JEN,NCHNI)
         IFIRST=1
         IF (ISP.GT.0.AND.ISP.LE.NSPI) THEN
-C  SINGLE SPECIES INDEX ISP
+C  SINGLE SPECIES/COMPONENT INDEX ISP
           BUFFER(ICHORI,JEN)=PSIG(ISP)
         ELSEIF (ISP.EQ.0) THEN
 C  SUM OVER SPECIES INDEX

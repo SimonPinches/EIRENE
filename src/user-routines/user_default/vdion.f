@@ -7,4 +7,4 @@
       REAL(DP) :: EIRENE_VDION
       EIRENE_VDION=0.
       RETURN
-      END
+      END FUNCTION EIRENE_VDION

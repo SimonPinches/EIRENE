@@ -46,9 +46,11 @@ C
       USE EIRMOD_JSON
       USE EIRMOD_IOUSR, ONLY: EIRENE_READ_BLOCK_11_USR
       USE EIRMOD_INFCOP, ONLY: EIRENE_IF0COP
+      USE EIRMOD_PRESSURELOOP
       
       use json_module
-     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
+! this does not work  found no matching specific binding for json%get
+!     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
       IMPLICIT NONE
 
@@ -247,9 +249,11 @@ cdr     CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
       type(json_value), pointer, intent(in) :: p
       integer :: ncm, k
       logical :: found, found_cm
-      character(kind=CK,len=:),allocatable :: txtr
-      character(kind=CK,len=420),dimension(:),allocatable :: 
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules      
+      character(kind=json_CK,len=:),allocatable :: txtr
+      character(kind=json_CK,len=420),dimension(:),allocatable :: 
      .           cmlines
+!cym/cpg end
 
       call json%get(p,'TXTRUN',txtr,found)
       TXTRUN = trim(txtr)
@@ -276,7 +280,10 @@ cdr     CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
       type(json_value), pointer, intent(in) :: p
       type(json_value), pointer :: pfile, pdb
       logical :: found
-      character(kind=CK,len=:),allocatable :: cdbh, cdbf
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: cdbh, cdbf
+      character(len=:), allocatable :: cdbhc
+!cym/cpg end
       integer :: ifile, nch
 
       call json%get(p,'NPRLL',nprll,found)
@@ -320,13 +327,20 @@ cdr     CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
       call json%get_child(p,'CFILE',pfile,found)
       if (found) then
         call json%info(pfile,n_children=nch)
-!       do ifile = 1, ndbnames 
+!       do ifile = 1, ndbnames
+
         do i = 1, nch 
           call json%get_child(pfile,i,pdb,found)
           call json%get(pdb,'FILE',cdbh,found)
           call json%get(pdb,'PATH',cdbf,found)
+!cym/cpg
+          cdbhc=cdbh
+!cym/cpg end
           DO IFILE = 1,NDBNAMES
-            IF (INDEX(DBHANDLE(IFILE),cdbh) /= 0) EXIT
+!cym/cpg
+!            IF (INDEX(DBHANDLE(IFILE),cdbh) /= 0) EXIT
+             IF (INDEX(DBHANDLE(IFILE),cdbhc) /= 0) EXIT
+!cym/cpg end
           END DO
           IF (IFILE <= NDBNAMES) THEN
             dbhandle(ifile) = trim(cdbh)
@@ -610,7 +624,9 @@ C
       integer :: ilogs, i, j, k, nch
       integer, allocatable :: ihelp(:)
       real(dp), allocatable :: rhelp(:)
-      character(kind=CK,len=:),allocatable :: clab
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: clab
+!cym/cpg end
 
       CALL EIRENE_MASAGE
      .  ('*** 2. DATA FOR STANDARD MESH')
@@ -922,7 +938,9 @@ C
       integer :: ists, nlj, idimp, IRPTA1, IRPTA2, IRPTA3, 
      .           IRPTE1, IRPTE2, IRPTE3
       logical :: found
-      character(kind=CK,len=:),allocatable :: txts
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules   
+      character(kind=json_CK,len=:),allocatable :: txts
+!cym/cpg end
 C
       IF (IREAD.EQ.0) READ (IUNIN,*)
       CALL EIRENE_MASAGE
@@ -1116,7 +1134,9 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
       integer :: ilr
       logical :: found, foundm, foundr, founds(5)
       real(dp), allocatable :: rhelp(:)
-      character(kind=CK,len=:),allocatable :: smod
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: smod
+!cym/cpg end
 
       call json%get(srf,'SURFMOD', smod, foundm)
       
@@ -1194,9 +1214,11 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
       real(dp), allocatable :: rh(:)
       logical :: found, found_ch0, found_ch1, found_ch2, foundt,
      .           foundl, founds
-      character(kind=CK,len=:),allocatable :: txts                         
-      character(kind=CK,len=72),dimension(:),allocatable :: 
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+       character(kind=json_CK,len=:),allocatable :: txts                        
+      character(kind=json_CK,len=72),dimension(:),allocatable :: 
      .           ch0lines, ch1lines, ch2lines
+!cym/cpg end
 C
 C  * 3B: READ DATA FOR ADDITIONAL SURFACES 350--399
 C
@@ -1491,18 +1513,29 @@ C
      .            RC1MIN, RC1MAX, RC2MIN, RC2MAX, pop_esc, pesc
       real(dp), allocatable :: ffp1(:), ffp2(:), ccoef(:)
       real(dp) :: coef(9)
-      character(kind=CK,len=:),allocatable :: txt, chr
-      character(kind=CK,len=8) :: filnam
-      character(kind=CK,len=4) :: h123
-      character(kind=CK,len=50) :: reac
-      character(kind=CK,len=2) :: elname
-      character(kind=CK,len=50) :: crc
-      character(kind=CK,len=60) :: bundling
+!cym/cpg : changed type       
+      character(kind=json_CK,len=:),allocatable :: txt, chr
+      character(kind=json_CK,len=8) :: filnam
+      character(kind=json_CK,len=4) :: h123
+      character(kind=json_CK,len=50) :: reac
+      character(kind=json_CK,len=2) :: elname
+      character(kind=json_CK,len=50) :: crc
+      character(kind=json_CK,len=60) :: bundling
+      
+      character(len=8) :: filnamc
+      character(len=4) :: h123c
+      character(len=50) :: reacc
+      character(len=50) :: crcc
+      character(len=2) :: elnamec
+      character(len=60) :: bundlingc
+!cym/cpg end
       integer :: i, ndum1(1), ndum2(1), ndum3(1), ndum4(1), nti, nv, 
      .           mxdm
       real(dp) :: dum(1)
-      character(kind=CK,len=420),dimension(:),allocatable :: 
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=420),dimension(:),allocatable :: 
      .           crs_lines
+!cym/cpg end
       integer, allocatable :: lknd(:), jdnsl(:)
 
       LHYDDEF = .FALSE.
@@ -1603,7 +1636,7 @@ C
           call json%get(prea,'FP1',ffp1,found)
           call json%get(prea,'FP2',ffp2,found)
 
-          IF (INDEX(H123,'P.').eq.0) then
+          IF (INDEX(H123,json_ck_'P.').eq.0) then
 c  single parametric data, or for first parameter in 2-parameteric data
             RC1MIN = -20.     ! lower ln(E), ln(T) default limit; E,T in eV  (2E-9 EV)
             RC1MAX =  20.     ! upper ln(E), ln(T) default limit; E,T in eV  (5E8  EV)
@@ -1636,7 +1669,7 @@ c  2nd parameter in 2 parametric data
           if (allocated(ffp1)) deallocate(ffp1)
           if (allocated(ffp2)) deallocate(ffp2)
 
-          if (filnam == 'CONST') then
+          if (filnam == json_ck_'CONST') then
             call json%get(prea,'IFTFLG',iftfl,found)
             call json%get(prea,'NCOEF',ncoef,found)
             call json%get(prea,'COEF',ccoef,found)
@@ -1648,8 +1681,8 @@ c  2nd parameter in 2 parametric data
             coef = 0._dp
           end if
               
-          if (index(filnam,'ADAS') > 0 .or.
-     .        index(filnam,'TAB2D') > 0) then
+          if (index(filnam,json_ck_'ADAS') > 0 .or.
+     .        index(filnam,json_ck_'TAB2D') > 0) then
             call json%get(prea,'ELNAME',chr,found)
             elname = chr(1:2)
             deallocate(chr)         
@@ -1663,7 +1696,7 @@ c  2nd parameter in 2 parametric data
             bundling = repeat(' ',60)
           end if
 
-          if (index(filnam,'CR') /= 0) then
+          if (index(filnam,json_ck_'CR') /= 0) then
             call json%get(prea,'IROW_ESC',irow_esc,found)
             call json%get(prea,'ICOL_ESC',icol_esc,found)
             call json%get(prea,'POP_ESC',pesc,found)
@@ -1714,12 +1747,26 @@ C  PROCESSING (MASS SCALING, POTENTIAL ENERGY INCREMENT) IN XSTCX,XSTEI,...
           MASST(IR)=MT
           DELPOT(IR)=DPP
         
-          CALL EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
+!cym/cpg avoid type mismatch in call to SLREAC      
+!         CALL EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
+!    .                  RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX, ! additional input card: asymptotics P1
+!    .                  RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX, ! additional input card: asymptotics P2
+!    .                  ELNAME,IZ,BUNDLING,                ! additional input card read for TAB2D/ADAS format
+!    .                  IROW_ESC,ICOL_ESC,POP_ESC, ! (optional) additional input card read CR  internal models
+!    .                  IFTFL, NCOEF, COEF)        ! (optional) for "CONST models"
+          FILNAMc=FILNAM
+          H123c=H123
+          REACc=REAC
+          CRCc=CRC
+          ELNAMEc=ELNAME
+          BUNDLINGC=BUNDLING
+          CALL EIRENE_SLREAC (IR,FILNAMC,H123C,REACC,CRCC,
      .                  RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX, ! additional input card: asymptotics P1
      .                  RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX, ! additional input card: asymptotics P2
-     .                  ELNAME,IZ,BUNDLING,                ! additional input card read for TAB2D/ADAS format
+     .                  ELNAMEC,IZ,BUNDLINGC,                ! additional input card read for TAB2D/ADAS format
      .                  IROW_ESC,ICOL_ESC,POP_ESC, ! (optional) additional input card read CR  internal models
      .                  IFTFL, NCOEF, COEF)        ! (optional) for "CONST models"
+!cym/cpg end
 
           nullify(prea)
         end do  ! nreaci
@@ -1864,7 +1911,9 @@ C
       character(*), optional :: cdenmodel(ndim)
       integer :: i, numsec, k, id, nr, np, nsc, ltxt, nre
       logical :: lden, foundb, foundr, found, foundc
-      character(kind=CK,len=:),allocatable :: txt
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: txt
+!cym/cpg end
 
       lden = present(cdenmodel)
 
@@ -2162,7 +2211,11 @@ c  default: only for bulk ions
      .           ital, iopt, jpls
       real(dp) :: dum(1)
       logical :: found, foundp, foundi
-      character(kind=CK,len=:),allocatable :: txtr
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: txtr
+      character(kind=json_CK,len=:),allocatable :: MeshTypeCK
+      character(kind=json_CK,len=:),allocatable :: AMDoutputCK
+!cym/cpg end
       integer, allocatable :: lknd(:), jdnsl(:)
 
       CALL EIRENE_MASAGE('*** 5. DATA FOR PLASMA BACKGROUND')
@@ -2592,14 +2645,22 @@ cdr  Possible conflicts, inconsistencies.
       
       call json%get_child(p,'AMDoutpars',pAMD,found)
       if(found) then
-         call json%get(pAMD,'AMDoutput',AMDOutPars%AMDoutput,found)
+!cym/cpg type mismatch
+!        call json%get(pAMD,'AMDoutput',AMDOutPars%AMDoutput,found)
+         call json%get(pAMD,'AMDoutput',AMDoutputCK,found)
+         AMDOutPars%AMDoutput=AMDoutputCK
+!cym/cpg end
          call json%get(pAMD,'NEmin',AMDOutPars%NEmin,found)
          call json%get(pAMD,'NEmax',AMDOutPars%NEmax,found)
          call json%get(pAMD,'TEmin',AMDOutPars%TEmin,found)
          call json%get(pAMD,'TEmax',AMDOutPars%TEmax,found)
          call json%get(pAMD,'NNE',AMDOutPars%NNE,found)
          call json%get(pAMD,'NTE',AMDOutPars%NTE,found)
-         call json%get(pAMD,'MeshType',AMDOutPars%MeshType,found)
+!cym/cpg         
+!         call json%get(pAMD,'MeshType',AMDOutPars%MeshType,found)
+         call json%get(pAMD,'MeshType',MeshTypeCK,found)
+         AMDOutPars%MeshType=MeshTypeCK
+!cym/cpg end
          nullify (pAMD)
       endif
       
@@ -2616,8 +2677,10 @@ cdr  Possible conflicts, inconsistencies.
       class(json_core),intent(inout) :: json
       type(json_value), pointer, intent(in) :: p
       type(json_value), pointer :: ptom, psmods, pchild, pchan, pch
-      character(kind=CK,len=:),allocatable :: txt, varname, spcname
-      character(kind=CK,len=72),dimension(:),allocatable :: rfilnm
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: txt, varname, spcname
+      character(kind=json_CK,len=72),dimension(:),allocatable :: rfilnm
+!cym/cpg end
       integer :: iflr, nmods, imod, nch, i2, nfr, ideflt_sput, i, l,
      .           ispz, ico, is, ideflt_spez, jflr, j
       real(dp), allocatable :: rhelp(:)
@@ -2800,6 +2863,7 @@ c  read surface models identified by character string 'SURFMOD_...'
           call json%get(pchild,'ISRS',REFCUR%JSRS(1), found)
           call json%get(pchild,'ISRC',REFCUR%JSRC(1), found)
           call json%get(pchild,'LCHSPNWL',REFCUR%JLCHSPNWL(1), found)
+          call json%get(pchild,'REFCELL',REFCUR%REFCELL, found)
           
           call json%get(pchild,'ZNML',REFCUR%ZNMLR, found)
           call json%get(pchild,'EWALL',REFCUR%EWALLR, found)
@@ -2851,6 +2915,8 @@ C  DEFAULT SPUTER MODEL
 
           call json%get(pchild,'ESPUTC',REFCUR%ESPTCR(1), lf(5))
           if (lf(5)) REFCUR%ESPTCR(2:NSPZ) = REFCUR%ESPTCR(1)
+
+          call json%get(pchild,'REFPRESS',REFCUR%REFPRESS, found)
           
           if (any(lf)) then
             DO I=2,NSPZ
@@ -2861,6 +2927,10 @@ C  DEFAULT SPUTER MODEL
               REFCUR%ESPTCR(I) = REFCUR%ESPTCR(1)
             ENDDO
             ideflt_sput = 1
+!Pressure feedback loop model
+            IF (REFCUR%JLREF == 4) 
+     .         WRITE(IUNOUT,*) "PFL with parameters: ",
+     .           REFCUR%REFCELL, REFCUR%REFPRESS
           end if
 
 !  check of non-default sputter model
@@ -2920,39 +2990,42 @@ C  DEFAULT SPUTER MODEL
                 spr_last => spr_last%next
               end if
 
+!cym/cpg avoiding type mismatch 
+!  'xxxx' -> json_ck_'xxxx' consistent with varname type
               select case (varname)
-              case ('ISRS')
+              case (json_ck_'ISRS')
                 REFCUR%JSRS(ispz) = spr%ival
-              case ('ISRC')
+              case (json_ck_'ISRC')
                 REFCUR%JSRC(ispz) = spr%ival
-              case ('LCHSPNWL')
+              case (json_ck_'LCHSPNWL')
                 REFCUR%JLCHSPNWL(ispz) = spr%ival !VK
-              case ('TRANSP1')
+              case (json_ck_'TRANSP1')
                 REFCUR%TRANSPR(ispz,1) = spr%rval
-              case ('TRANSP2')
+              case (json_ck_'TRANSP2')
                 REFCUR%TRANSPR(ispz,2) = spr%rval
-              case ('RECYCF')
+              case (json_ck_'RECYCF')
                 REFCUR%RCYCFR(ispz) = spr%rval 
-              case ('RECYCT')
+              case (json_ck_'RECYCT')
                 REFCUR%RCYCTR(ispz) = spr%rval
-              case ('RECPRM')
+              case (json_ck_'RECPRM')
                 REFCUR%RCPRMR(ispz) = spr%rval
-              case ('EXPPL')
+              case (json_ck_'EXPPL')
                 REFCUR%EXPPLR(ispz) = spr%rval
-              case ('EXPEL')
+              case (json_ck_'EXPEL')
                 REFCUR%EXPELR(ispz) = spr%rval
-              case ('EXPIL')
+              case (json_ck_'EXPIL')
                 REFCUR%EXPILR(ispz) = spr%rval
-              case ('RECYCS')
+              case (json_ck_'RECYCS')
                 REFCUR%RCYCSR(ispz) = spr%rval
-              case ('RECYCC')
+              case (json_ck_'RECYCC')
                 REFCUR%RCYCCR(ispz) = spr%rval
-              case ('SPTPRM')
+              case (json_ck_'SPTPRM')
                 REFCUR%STPRMR(ispz) = spr%rval
-              case ('ESPUTS')
+              case (json_ck_'ESPUTS')
                 REFCUR%ESPTSR(ispz) = spr%rval
-              case ('ESPUTC')
+              case (json_ck_'ESPUTC')
                 REFCUR%ESPTCR(ispz) = spr%rval
+!cym/cpg end
 
               case default
                 write (iunout,*) ' unknown variable name encountered',
@@ -3006,7 +3079,9 @@ C
       class(json_core),intent(inout) :: json
       type(json_value), pointer, intent(in) :: p
       type(json_value), pointer :: pstrata, pstr, psubs, psub
-      character(kind=CK,len=:),allocatable :: txt
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: txt
+!cym/cpg end
       logical :: found
       integer, allocatable :: ihelp(:)
       integer :: nstr, ist, j 
@@ -3194,9 +3269,11 @@ C  VELOCITY SPACE DISTRIBUTION
       class(json_core),intent(inout) :: json
       type(json_value), pointer, intent(in) :: p
       type(json_value), pointer :: pzones, pz, pt, pd, pv, pvol
-      character(kind=CK,len=:),allocatable :: txt
-      character(kind=CK,len=72),dimension(:),allocatable :: 
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: txt
+      character(kind=json_CK,len=72),dimension(:),allocatable :: 
      .           ch3lines
+!cym/cpg end
       logical :: found, foundc, foundv, foundm
       integer :: inilgj, inelgj, in, idion, ini, ine, nch3
       real(dp) :: tte, tti, di, vx, vy, vz, vl
@@ -3579,7 +3656,9 @@ C  DATA FOR STANDARD DEVIATION
       logical :: found
       logical, allocatable :: lhelp(:)
       integer :: num, i, ia, nvi, nsi, nci, j
-      character(kind=CK,len=:),allocatable :: txt
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: txt
+!cym/cpg end
 C
 C     READ DATA FOR ADDITIONAL AND SURFACE-AVERAGED TALLIES
 C
@@ -4023,7 +4102,9 @@ cdr  Why do we allocate estiml in input.f and not in eirmod_cestim ?
       integer :: i, j, nsf
       integer, allocatable :: ihelp(:)
       real(dp), allocatable :: rhelp(:)
-      character(kind=CK,len=:),allocatable :: txt
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: txt
+!cym/cpg end
 C
 C   READ DATA FOR NUMERICAL AND GRAPHICAL OUTPUT 1100--1199
 C
@@ -4494,7 +4575,9 @@ C
      .           num_contrib, irc, nconts, kcontr, nrats, irt, istchr
       integer, allocatable :: ihelp(:), numtal(:)
       real(dp), allocatable :: rhelp(:)
-      character(kind=CK,len=:),allocatable :: txt, key
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: txt, key
+!cym/cpg end
 C
 C  READ DATA FOR DIAGNOSTIC MODULE
 C
@@ -4810,7 +4893,9 @@ c     dr  Alternatively the energy parameters EMIN1 may be used.
       type(json_value), pointer :: psnaps, psnap
       logical :: found
       integer :: j, nsnaps
-      character(kind=CK,len=:),allocatable :: txt
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: txt
+!cym/cpg end
 C
 C  READ DATA FOR TIME-DEPENDENT AND NONLINEAR MODE  1300--1399
 C
@@ -4954,7 +5039,9 @@ C  TURN OFF TIME DEP MODE IF EITHER NTIME=0 OR NPRNLI=0
       USE EIRMOD_INFCOP, ONLY: EIRENE_IF0COP
       
       use json_module
-     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
+!cym/cpg      
+!     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
+!cym/cpg end
 
       IMPLICIT NONE
 
@@ -4964,7 +5051,9 @@ C  TURN OFF TIME DEP MODE IF EITHER NTIME=0 OR NPRNLI=0
       type(json_value), pointer :: padds, padd
       logical :: found, founda, lshort
       integer :: j, nadds, ncopie
-      character(kind=CK,len=:),allocatable :: txt
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: txt
+!cym/cpg end
       integer :: js
       
       js = itree_num(14)

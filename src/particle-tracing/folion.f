@@ -158,7 +158,7 @@ c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
      .           ICO, NLI, NLE, JCOL, NRC, 
      .           NRCOLD, IPLTI, I, IM, ICOUN,
      .           EIRENE_LEARC2, COLTYP,
-     .           indf, NJUMP_EMC3 = 0, IRET, IRT_STAT
+     .           indf, NJUMP_EMC3 = 0, IRET, IRT_STAT, KK
       LOGICAL :: LCNDEXP
 
 
@@ -203,7 +203,7 @@ C
 c  find direction parallel and perpendicular to B field, and velocity components
 c  i.e. convert cartesian velocity unit vector VELX,VELY,VELX into
 c  parallel and perpendicular unit velocity components VELPAR
-c  find B field in cell NCELL
+c  find B field in cell NCELL: return cartesian B field vectors in module CFPLK
       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,0)
 
       VELXS=VELX
@@ -229,7 +229,7 @@ C  NOW REDUCED VELOCITY: GUIDING CENTRE APPROXIMATION
 c  APPROXIMATION A)
 c  use B field line as trajectory
 c  VLXPAR,VLYPAR,VLZPAR gives the direction of the full parallel velocity
-c  in Cartesian coordinates - absolute value is not correct!!!
+c  in cartesian coordinates - absolute value is not correct!!!
       VLXPAR=SIGPAR*BBX
       VLYPAR=SIGPAR*BBY
       VLZPAR=SIGPAR*BBZ
@@ -248,6 +248,7 @@ C     IF (ITYP.EQ.3) THEN
 C       NLPR=   : NOT AVAILABLE
         NRC=NRCI(IION)
 C     ENDIF
+        
       IF (IFPATH.NE.1.OR.NRC.LT.0) GOTO 1002
 C  STOP STATIC LOOP AFTER 100 GENERATIONS LATEST, TO AVOID ACCIDENTAL INFINITE LOOPS
       IF (IC_ION.GT.100) GOTO 1002
@@ -1169,7 +1170,7 @@ C  PRE-COLLISION ESTIMATOR
 C
       IF (NCLVI.GT.0) THEN
         WS=WEIGHT/SIGTOT
-        CALL EIRENE_UPCUSR(WS,1)
+        CALL EIRENE_UPCUSR(WS,1,KK)
         IF (NADSPC_CD >= 1) CALL EIRENE_UPDATE_SPECTRUM (WS,1,1)
       ENDIF
 C
@@ -1187,7 +1188,7 @@ C  SAMPLE FROM COLLISION KERNEL FOR TEST IONS
 C  AT PRESENT: NO SUPPRESSION OF ABSORPTION AT IONIZATION
 C  FIND NEW WEIGHT, SPECIES INDEX, VELOCITY AND RETURN
 C
-      CALL EIRENE_COLION(CFLAG,COLTYP)
+      CALL EIRENE_COLION(CFLAG,COLTYP,KK)
       ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
 
 !  PARTICLE TYPE AND SPECIES MIGHT HAVE CHANGED
@@ -1198,7 +1199,7 @@ C  POST-COLLISION ESTIMATOR
 C
       IF (LGPART.AND.(NCLVI.GT.0)) THEN
         WS=WEIGHT/SIGTOT
-        CALL EIRENE_UPCUSR(WS,2)
+        CALL EIRENE_UPCUSR(WS,2,KK)
         IF (NADSPC_CD >= 1) CALL EIRENE_UPDATE_SPECTRUM (WS,2,1)
       ENDIF
 C
@@ -1517,7 +1518,7 @@ C
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
       USE EIRMOD_CCONA
-      USE EIRMOD_CFPLK
+      USE EIRMOD_CFPLK  !  BX, BY, BZ, BF
       USE EIRMOD_COMPRT
       USE EIRMOD_CRAND
       USE EIRMOD_CINIT
