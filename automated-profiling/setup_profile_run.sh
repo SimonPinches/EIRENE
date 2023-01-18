@@ -55,8 +55,6 @@ make -j EIRENE
 
 cd $top_dir
 
-echo "samples dir ${eirene_samples_dir}"
-
 # Either clone eirene samples into a local reference repo or copy from existing directory
 if [ -v eirene_samples_dir ]
 then
@@ -65,11 +63,17 @@ then
 	then
 	        local_samples_repo=$eirene_samples_dir
 	else
-	        echo Local samples directory does not exist, aborting.
+	        echo Error: Local samples directory does not exist, aborting.
 		exit -1
 	fi			    
 else
 	echo Cloning eirene samples into $local_samples_repo
+	if [ -d $local_samples_repo ]
+	then
+	        echo Error: Local samples directory exists, please remove before continuing.
+		echo Have you commented out the deletion of EIRENE_SAMPLES_LOCAL in run_profiling and not set eirene_samples_dir?
+		exit -1
+	fi
 	git clone $eirene_samples_repo  --branch $eirene_samples_branch --single-branch $local_samples_repo
 fi
 

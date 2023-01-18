@@ -4,8 +4,17 @@
 # This script launches jobs, it may have to be run many times
 # Dependencies: jq
 
+# Variables for the job submission system
+
+#SBATCH --account=${account_name}
+
 auto_prof_dir=$eir_dir/automated-profiling
 source $auto_prof_dir/automation_script_header.sh
+
+# Change this to a valid account name (no spaces)
+account_name=project_2004753
+# and partition
+partition_name=medium
 
 launch_profile() {
 	N=$1
@@ -14,14 +23,12 @@ launch_profile() {
 sbatch 2>&1 << EOF
 #!/bin/bash
 #SBATCH --job-name=eirprof_${N}-${n}-${c}
-#SBATCH --account=project_2004753
+#SBATCH --account=${account_name}
 #SBATCH --time=00:30:00
-#SBATCH --partition=medium
+#SBATCH --partition=${partition_name}
 #SBATCH -N $N
 #SBATCH -n $n
 #SBATCH -c $c
-
-echo Config $N $n $c
 
 export OMP_NUM_THREADS=$c
 ./set_links.sh

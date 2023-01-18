@@ -1,9 +1,12 @@
 # Set this to a local eirene directory or alternatively download from the juelich repository
 # eir_dir=$HOME/f-eirene/eirene
+
+# This isn't necessary as the automated scripts are in the eirene repository,
+# however it be be desirable to build and use a different version so this is left in
+# in case that functionality is desired. possible TODO: alter scripts to allow this
 # Juelich repo
 #eirene_repo=git@jugit.fz-juelich.de:eirene/eirene.git
 #eir_dir=eirene
-#eirene_branch=develop_openmp
 
 # Choose either the eirene samples juelich repository or local cases
 # Juelich
@@ -12,6 +15,7 @@ eirene_samples_branch=reduced_profiling_cases
 
 local_samples_repo=EIRENE_SAMPLES_LOCAL
 
+# Set the sample case to be used, at present this only works for the 2D-D_slab case
 sample=2D-D_slab
 
 top_dir=$PWD
