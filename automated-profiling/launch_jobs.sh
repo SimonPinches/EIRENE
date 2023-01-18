@@ -15,6 +15,12 @@ source $auto_prof_dir/automation_script_header.sh
 account_name=project_2004753
 # and partition
 partition_name=medium
+# If it is necessary to set a QoS value uncomment this line and set it
+#qos_name=normal
+if [ -v qos_name ]
+then
+        qos_line="#SBATCH --qos=${qos_name}"
+fi
 
 launch_profile() {
 	N=$1
@@ -26,6 +32,7 @@ sbatch 2>&1 << EOF
 #SBATCH --account=${account_name}
 #SBATCH --time=00:30:00
 #SBATCH --partition=${partition_name}
+${qos_line}
 #SBATCH -N $N
 #SBATCH -n $n
 #SBATCH -c $c
