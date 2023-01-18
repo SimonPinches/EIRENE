@@ -87,15 +87,18 @@ max_num_node_threads=256
 #This limit is due to the way EIRENE uses output files
 max_num_threads=9999
 
-node_range=( 1 2 4 )
-rank_per_node_range=( 1 2 4 8 16 32 )
-thread_per_rank_range=( 1 2 4 8 16 32 64)
-#testing
+# Full profile
+#node_range=( 1 2 4 )
+#rank_per_node_range=( 1 2 4 8 16 32 )
+#thread_per_rank_range=( 1 2 4 8 16 32 64)
+
+# testing
 #node_range=( 1 2 )
 #rank_per_node_range=( 1 2 4 8 )
 #thread_per_rank_range=( 1 2 4 8)
-#rank_per_node_range=( 1 )
-#thread_per_rank_range=( 1 )
+node_range=( 1 )
+rank_per_node_range=( 1 )
+thread_per_rank_range=( 1 )
 
 report cases {}
 for N in ${node_range[*]}
@@ -118,15 +121,13 @@ do
 	report cases.${case_name}.n_omp_threads $c
 	if [ ! -d $case_name ]
 	then
-	        echo $local_samples_repo
-	        git clone $local_samples_repo --branch $eirene_samples_branch --single-branch $case_name 
+	        # This copy has replaced git clone as the full samples repository is quite large and can take up a lot of space (>100G)
+		mkdir $case_name
+	        cp -r $local_samples_repo/$sample $case_name/$sample
 	else
 		echo $case_name directory already exists...
 	fi
-	cd $case_name	
-#	git checkout $eirene_samples_branch
-#	git status      
-	cd $sample
+	cd $case_name/$sample
 	echo Building $case_name/$sample
 	make -j
 	cd ../..

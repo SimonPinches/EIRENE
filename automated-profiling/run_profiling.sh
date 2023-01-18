@@ -12,11 +12,11 @@ export eir_dir
 rm -rf SCALABILITY_REPORT
 rm -rf Profile*
 # Comment this line if you want to keep an already cloned local version
-rm -rf EIRENE_SAMPLES_LOCAL
+#rm -rf EIRENE_SAMPLES_LOCAL
 
 # And Uncomment the following line and replace with the full path to a local samples directory to avoid cloning from the Juelich repository
 # which can take a long time and may require a password depending on your setup
-eirene_samples_dir=$HOME/f-eirene/EIRENE-sample-cases
+#eirene_samples_dir=$HOME/f-eirene/EIRENE-sample-cases
 #eirene_samples_dir=$HOME/f-eirene/scratch/eirene-automated-profiling/EIRENE_SAMPLES_LOCAL
 export eirene_samples_dir
 
