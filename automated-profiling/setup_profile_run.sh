@@ -8,14 +8,11 @@ auto_prof_dir=$eir_dir/automated-profiling
 
 source $auto_prof_dir/automation_script_header.sh
 
-
 which jq > /dev/null || (echo "OOPS: Missing dependency: jq"; exit 1;)
 
 #############################################
 # Setup top-level directories and git repos #
 #############################################
-
-##eir_dir=$EIRDIR
 
 mkdir -p $scalability_report_dir
 
@@ -71,7 +68,7 @@ else
 	if [ -d $local_samples_repo ]
 	then
 	        echo Error: Local samples directory exists, please remove before continuing.
-		echo Have you commented out the deletion of EIRENE_SAMPLES_LOCAL in run_profiling and not set eirene_samples_dir?
+		echo Have you commented out the deletion of EIRENE_SAMPLES_LOCAL in run_profiling and not set eirene_samples_dir in automation_script_header?
 		exit -1
 	fi
 	git clone $eirene_samples_repo  --branch $eirene_samples_branch --single-branch $local_samples_repo

@@ -4,19 +4,9 @@
 # This script launches jobs, it may have to be run many times
 # Dependencies: jq
 
-# Variables for the job submission system
-
-#SBATCH --account=${account_name}
-
 auto_prof_dir=$eir_dir/automated-profiling
 source $auto_prof_dir/automation_script_header.sh
 
-# Change this to a valid account name (no spaces)
-account_name=project_2004753
-# and partition
-partition_name=medium
-# If it is necessary to set a QoS value uncomment this line and set it
-#qos_name=normal
 if [ -v qos_name ]
 then
         qos_line="#SBATCH --qos=${qos_name}"
