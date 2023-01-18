@@ -30,3 +30,5 @@ partition_name
 It may also be necessary to set a QoS value
 
 A location of an existing eirene samples repository can also be set in automation_script_header.sh
+
+The range of scaling can also be set in setup_profile_run.sh
