@@ -4,8 +4,20 @@
 # This script launches jobs, it may have to be run many times
 # Dependencies: jq
 
+if [ ! -v eir_dir ]
+then
+    echo Error: eir_dir not set. Exiting
+    exit -1
+fi
+
 auto_prof_dir=$eir_dir/automated-profiling
 source $auto_prof_dir/automation_script_header.sh
+
+if [ ! -d $auto_prof_dir ]
+then
+    echo Error: $auto_prof_dir not found. Exiting
+    exit -1
+fi
 
 if [ -v qos_name ]
 then

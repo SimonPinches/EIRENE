@@ -24,10 +24,11 @@ The set consists of 5 scripts. They can be run individually or collectively usin
 The following parameters in the must be set for this to work
 eir_dir - the location of the eirene repository, either in run_profiling or the runtime environment
 
-The automation_script_header.sh script contains parameters for slurm job submission
-account_name
-partition_name
+The automation_script_header.sh script contains parameters for slurm job submission (not here, this is a README)
+account_name=<your account>
+partition_name=<available partition>
 It may also be necessary to set a QoS value
+qos_name=<qos level>
 
 A location of an existing eirene samples repository can also be set in automation_script_header.sh
 
