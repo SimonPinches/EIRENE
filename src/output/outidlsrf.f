@@ -6,13 +6,14 @@ c
       USE EIRMOD_CLGIN
       USE EIRMOD_CGRID
       USE EIRMOD_CADGEO
+      USE EIRMOD_OPENFILE, ONLY: EIRENE_OPENFILE
 
       IMPLICIT NONE
 
       integer :: iout, j, iad_cell, icos, ists
 
-      IOUT = 3 + IFOFF
-      OPEN (UNIT=IOUT,FILE='srf_properties',FORM='FORMATTED',
+      IOUT = -9999
+      CALL EIRENE_OPENFILE(IOUT,FILE='srf_properties',FORM='FORMATTED',
      .      ACCESS='SEQUENTIAL')
 
       do ists = 1, nstsi

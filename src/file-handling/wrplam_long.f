@@ -161,7 +161,7 @@ cdr
 C  IFLG  :  only for  RPLAM:
 C            = 0   read background data and profiles (COMUSR)
 C                  and read A&M data (COMXS)
-C                  and primary soure data (COMSOU)
+C                  and primary source data (COMSOU)
 C            > 0   same, but do not read primary source data COMSOU
 C            < 0   ...
 cdr iflag=10:  something special, called from

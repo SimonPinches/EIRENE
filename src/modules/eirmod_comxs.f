@@ -166,7 +166,7 @@ cdr....................................................................
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R        XSTOR(:,:), XSTORV(:)
 
-cdr  local (on the flight) atomic-molecular reaction data
+cdr  local (on the fly) atomic-molecular reaction data
       REAL(DP), PUBLIC, POINTER, SAVE ::
 c  reaction rates, by reaction
      R SIGVCX(:),   SIGVPI(:),   SIGVEI(:),   SIGVEL(:),   SIGVPH(:),
@@ -548,7 +548,7 @@ C  SECOND DIMENSION OF XSTOR ARRAY
         MSTOR2 = 24
 
 cdr  ... to be removed
-cdr nstor1 and nstor: unused, 12.02.2020 !
+cdr nstor1 and nstor: unused, 16.2.2020 !
         NSTOR1 = NREL+NRCX+NRPI+NREI
         NSTOR  = NSTOR1+
      .           2*(NREL+NRCX+NRPI)+5*NREI+
@@ -1637,7 +1637,7 @@ c
 #endif
 
         ELSE IF (1<=RP%IFIT .AND. RP%IFIT <= 2) THEN
-! DATA FOR FIT EXPRESSIONS  (E.G. POLYNOMIAL, IN CASE OF HYDHEL DATABASE)
+! DATA FOR FIT EXPRESSIONS (e.g. POLYNOMIAL, IN CASE OF HYDHEL DATABASE)
           WRITE (13+IFOFF) UBOUND(RP%POLY%DBLPOL)
           WRITE (13+IFOFF)        RP%POLY%DBLPOL
 #ifdef CHECKBIN
@@ -1793,7 +1793,7 @@ cdr  high pressure gas discharge lamps, around 2002.. should not be here!
           READ (13+IFOFF) RP%LINE%REACNAME, RP%LINE%KENN
 
         ELSE IF (1<= RP%IFIT .AND. RP%IFIT <= 2) THEN
-! DATA FOR FIT EXPRESSIONS (POLYNOMIAL, E.G. IN CASE OF HYDHEL, AMJUEL DATABASE)
+! DATA FOR FIT EXPRESSIONS (POLYNOMIAL, e.g. IN CASE OF HYDHEL, AMJUEL DATABASE)
           IF (.NOT.ASSOCIATED(RP%POLY)) ALLOCATE (RP%POLY)
           IF (ASSOCIATED(RP%POLY%DBLPOL)) DEALLOCATE (RP%POLY%DBLPOL)
 
@@ -1802,7 +1802,7 @@ cdr  high pressure gas discharge lamps, around 2002.. should not be here!
           READ (13+IFOFF) RP%POLY%DBLPOL
 
         ELSE IF (RP%IFIT == 3) THEN
-! DATA FOR 2D TABULATED A&M ENTRIES (2-parameter tables, E.G. ADAS)
+! DATA FOR 2D TABULATED A&M ENTRIES (2-parameter tables, e.g. ADAS)
           READ (13+IFOFF) RP%ADAS%NDENS,RP%ADAS%NTEMP
           ND = RP%ADAS%NDENS
           NT = RP%ADAS%NTEMP
@@ -2852,6 +2852,7 @@ cdr something for the internal CRM options, of blocks 4,12 here: H_Colrad.
 
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
+      RETURN
       END SUBROUTINE EIRENE_BROADCAST_COMXS
 
 

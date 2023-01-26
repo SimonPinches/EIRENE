@@ -145,7 +145,6 @@ C  XGENER: COUNTER FOR GENERATION LIMIT
   100 LGPART=.TRUE.
       IC_NEUT=IC_NEUT+1
 
-
 C  INITIALIZE COND. EXP. ESTIMATOR
       NLPR=.FALSE.
       AX(1)=1.
@@ -906,9 +905,9 @@ C  PUSH PARTICLE TO POINT OF COLLISION, EITHER DELTA OR REAL
       MTSURF=0
       MASURF=0
       MSURF=0
+cdr  made a bit more precise, to allow calling tmstep.f from collide.f
       IF (NLTRA) THEN 
         PHI=MOD(PHI-ATAN2(Z01,X01)+ATAN2(Z0,(RMTOR+X0)),PI2A)
-cdr  made a bit more precise, to allow calling tmstep.f from collide.f
        X01=X0+RMTOR
       ENDIF
       Z01=Z0

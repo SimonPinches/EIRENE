@@ -253,11 +253,6 @@ C  MUSR, INTEGER
       INTEGER, ALLOCATABLE, PUBLIC, SAVE ::
      I         ISPZ_BACK(:,:)
 
-cym test      
-cccccccccc !$OMP  THREADPRIVATE(ISPEZI)
-
-
-
 C  LUSR, LOGICAL
       LOGICAL, ALLOCATABLE, PUBLIC, SAVE ::
      L         LGVAC(:,:)

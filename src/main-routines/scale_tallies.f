@@ -29,10 +29,9 @@ C
 
       INTEGER, INTENT(IN) :: ISTRA
       REAL(DP), ALLOCATABLE :: FATM(:), FMOL(:), FION(:), FPHOT(:)
-      REAL(DP) :: FADD, SUMP, SUMPRF, SM
+      REAL(DP) :: FADD
       INTEGER :: IATM, IMOL, IION, IPLS, IPHOT, IADV, ICLV, IBGV, ICPV,
-     .           JATM, JMOL, JION, JPHOT, J, ISPC, 
-     .           IAD, EIRENE_INDIRECT_ADDRESS
+     .           JATM, JMOL, JION, JPHOT, J, ISPC
 C
       ALLOCATE(FATM(0:NATMI))
       ALLOCATE(FMOL(0:NMOLI))
@@ -300,14 +299,6 @@ cdr  ?? scaling with bulk flux ??
           IF (NLSPCSCL) THEN
             PAATI2(0:NATM,LB_ATM:NATM) => PAATI(:,ISTRA)
             PRFAAI2(0:NATM,LB_ATM:NATM) => PRFAAI(:,ISTRA)
-!            SUMP = 0._DP
-!            SUMPRF = 0._DP
-!            DO JATM = 1,NATMI
-!              SUMP = SUMP + SUM(PAATI2(1:NATMI,JATM))*FATM(JATM)
-!              SUMPRF = SUMPRF + SUM(PRFAAI2(1:NATMI,JATM))*FATM(JATM)
-!            END DO
-!            PAATI(0,ISTRA)= SUMP
-!            PRFAAI(0,ISTRA)= SUMPRF
             DO JATM = LB_ATM,NATMI
               PAATI2(0,JATM) = SUM(PAATI2(1:NATMI,JATM))
               PRFAAI2(0,JATM) = SUM(PRFAAI2(1:NATMI,JATM))
@@ -320,14 +311,6 @@ cdr  ?? scaling with bulk flux ??
           IF (NLSPCSCL) THEN
             PMATI2(0:NATM,LB_MOL:NMOL) => PMATI(:,ISTRA)
             PRFMAI2(0:NATM,LB_MOL:NMOL) => PRFMAI(:,ISTRA)
-!           SUMP = 0._DP
-!           SUMPRF = 0._DP
-!           DO IMOL = 1,NMOLI
-!             SUMP = SUMP + SUM(PMATI2(1:NATMI,IMOL))*FMOL(IMOL)
-!             SUMPRF = SUMPRF + SUM(PRFMAI2(1:NATMI,IMOL))*FMOL(IMOL)
-!           END DO
-!           PMATI(0,ISTRA)= SUMP
-!           PRFMAI(0,ISTRA)= SUMPRF
             DO IMOL=LB_MOL,NMOLI
               PMATI2(0,IMOL) = SUM(PMATI2(1:NATMI,IMOL))
               PRFMAI2(0,IMOL) = SUM(PRFMAI2(1:NATMI,IMOL))
@@ -340,14 +323,6 @@ cdr  ?? scaling with bulk flux ??
           IF (NLSPCSCL) THEN
             PIATI2(0:NATM,LB_ION:NION) => PIATI(:,ISTRA)
             PRFIAI2(0:NATM,LB_ION:NION) => PRFIAI(:,ISTRA)
-!           SUMP = 0._DP
-!           SUMPRF = 0._DP
-!           DO IION = 1,NIONI
-!             SUMP = SUMP + SUM(PIATI2(1:NATMI,IION))*FION(IION)
-!             SUMPRF = SUMPRF + SUM(PRFIAI2(1:NATMI,IION))*FION(IION)
-!           END DO
-!           PIATI(0,ISTRA)= SUMP
-!           PRFIAI(0,ISTRA)= SUMPRF
             DO IION=LB_ION,NIONI
               PIATI2(0,IION) = SUM(PIATI2(1:NATMI,IION))
               PRFIAI2(0,IION) = SUM(PRFIAI2(1:NATMI,IION))
@@ -360,15 +335,6 @@ cdr  ?? scaling with bulk flux ??
           IF (NLSPCSCL) THEN
             PPHATI2(0:NATM,LB_PHOT:NPHOT) => PPHATI(:,ISTRA)
             PRFPHAI2(0:NATM,LB_PHOT:NPHOT) => PRFPHAI(:,ISTRA)
-!            SUMP = 0._DP
-!            SUMPRF = 0._DP
-!            DO IPHOT = 1,NPHOTI
-!              SUMP = SUMP + SUM(PPHATI2(1:NATMI,IPHOT))*FPHOT(IPHOT)
-!              SUMPRF = SUMPRF + 
-!     .                 SUM(PRFPHAI2(1:NATMI,IPHOT))*FPHOT(IPHOT)
-!            END DO
-!            PPHATI(0,ISTRA)= SUMP
-!            PRFPHAI(0,ISTRA)= SUMPRF
             DO IPHOT=LB_PHOT,NPHOT
               PPHATI2(0,IPHOT) = SUM(PPHATI2(1:NATMI,IPHOT))
               PRFPHAI2(0,IPHOT) = SUM(PRFPHAI2(1:NATMI,IPHOT))
@@ -609,14 +575,6 @@ cdr  ?? scaling with bulk flux ??
           IF (NLSPCSCL) THEN
             PAMLI2(0:NMOL,LB_ATM:NATM) => PAMLI(:,ISTRA)
             PRFAMI2(0:NMOL,LB_ATM:NATM) => PRFAMI(:,ISTRA)
-!            SUMP = 0._DP
-!            SUMPRF = 0._DP
-!            DO IATM = 1,NATMI
-!              SUMP = SUMP + SUM(PAMLI2(1:NMOLI,IATM))*FATM(IATM)
-!              SUMPRF = SUMPRF + SUM(PRFAMI2(1:NMOLI,IATM))*FATM(IATM)
-!            END DO
-!            PAMLI(0,ISTRA)= SUMP
-!            PRFAMI(0,ISTRA)= SUMPRF
             DO IATM = LB_ATM,NATMI
               PAMLI2(0,IATM) = SUM(PAMLI2(1:NMOLI,IATM))
               PRFAMI2(0,IATM) = SUM(PRFAMI2(1:NMOLI,IATM))
@@ -629,14 +587,6 @@ cdr  ?? scaling with bulk flux ??
           IF (NLSPCSCL) THEN
             PMMLI2(0:NMOL,LB_MOL:NMOL) => PMMLI(:,ISTRA)
             PRFMMI2(0:NMOL,LB_MOL:NMOL) => PRFMMI(:,ISTRA)
-!            SUMP = 0._DP
-!            SUMPRF = 0._DP
-!            DO IMOL = 1,NMOLI
-!              SUMP = SUMP + SUM(PMMLI2(1:NMOLI,IMOL))*FMOL(IMOL)
-!              SUMPRF = SUMPRF + SUM(PRFMMI2(1:NMOLI,IMOL))*FMOL(IMOL)
-!            END DO
-!            PMMLI(0,ISTRA)= SUMP
-!            PRFMMI(0,ISTRA)= SUMPRF
             DO IMOL = LB_MOL,NMOLI
               PMMLI2(0,IMOL) = SUM(PMMLI2(1:NMOLI,IMOL))
               PRFMMI2(0,IMOL) = SUM(PRFMMI2(1:NMOLI,IMOL))
@@ -649,14 +599,6 @@ cdr  ?? scaling with bulk flux ??
           IF (NLSPCSCL) THEN
             PIMLI2(0:NMOL,LB_ION:NION) => PIMLI(:,ISTRA)
             PRFIMI2(0:NMOL,LB_ION:NION) => PRFIMI(:,ISTRA)
-!            SUMP = 0._DP
-!            SUMPRF = 0._DP
-!            DO IION = 1,NIONI
-!              SUMP = SUMP + SUM(PIMLI2(1:NMOLI,IION))*FION(IION)
-!              SUMPRF = SUMPRF + SUM(PRFIMI2(1:NMOLI,IION))*FION(IION)
-!            END DO
-!            PIMLI(0,ISTRA)= SUMP
-!            PRFIMI(0,ISTRA)= SUMPRF
             DO IION = LB_ION,NIONI
               PIMLI2(0,IION) = SUM(PIMLI2(1:NMOLI,IION))
               PRFIMI2(0,IION) = SUM(PRFIMI2(1:NMOLI,IION))
@@ -669,15 +611,6 @@ cdr  ?? scaling with bulk flux ??
           IF (NLSPCSCL) THEN
             PPHMLI2(0:NMOL,LB_PHOT:NPHOT) => PPHMLI(:,ISTRA)
             PRFPHMI2(0:NMOL,LB_PHOT:NPHOT) => PRFPHMI(:,ISTRA)
-!            SUMP = 0._DP
-!            SUMPRF = 0._DP
-!            DO IPHOT = 1,NPHOTI
-!              SUMP = SUMP + SUM(PPHMLI2(1:NMOLI,IPHOT))*FPHOT(IPHOT)
-!              SUMPRF = SUMPRF + 
-!     .                 SUM(PRFPHMI2(1:NMOLI,IPHOT))*FPHOT(IPHOT)
-!            END DO
-!            PPHMLI(0,ISTRA)= SUMP
-!            PRFPHMI(0,ISTRA)= SUMPRF
             DO IPHOT = LB_PHOT,NPHOTI
               PPHMLI2(0,IPHOT) = SUM(PPHMLI2(1:NMOLI,IPHOT))
               PRFPHMI2(0,IPHOT) = SUM(PRFPHMI2(1:NMOLI,IPHOT))
@@ -919,14 +852,6 @@ cdr  ?? scaling with bulk flux ??
           IF (NLSPCSCL) THEN
             PAIOI2(0:NION,LB_ATM:NATM) => PAIOI(:,ISTRA)
             PRFAII2(0:NION,LB_ATM:NATM) => PRFAII(:,ISTRA)
-!            SUMP = 0._DP
-!            SUMPRF = 0._DP
-!            DO IATM = 1,NATMI
-!              SUMP = SUMP + SUM(PAIOI2(1:NIONI,IATM))*FATM(IATM)
-!              SUMPRF = SUMPRF + SUM(PRFAII2(1:NIONI,IATM))*FATM(IATM)
-!            END DO
-!            PAIOI(0,ISTRA)= SUMP
-!            PRFAII(0,ISTRA)= SUMPRF
             DO IATM = LB_ATM,NATMI
               PAIOI2(0,IATM) = SUM(PAIOI2(1:NIONI,IATM))
               PRFAII2(0,IATM) = SUM(PRFAII2(1:NIONI,IATM))
@@ -939,14 +864,6 @@ cdr  ?? scaling with bulk flux ??
           IF (NLSPCSCL) THEN
             PMIOI2(0:NION,LB_MOL:NMOL) => PMIOI(:,ISTRA)
             PRFMII2(0:NION,LB_MOL:NMOL) => PRFMII(:,ISTRA)
-!            SUMP = 0._DP
-!            SUMPRF = 0._DP
-!            DO IMOL = 1,NMOLI
-!              SUMP = SUMP + SUM(PMIOI2(1:NIONI,IMOL))*FMOL(IMOL)
-!              SUMPRF = SUMPRF + SUM(PRFMII2(1:NIONI,IMOL))*FMOL(IMOL)
-!            END DO
-!            PMIOI(0,ISTRA)= SUMP
-!            PRFMII(0,ISTRA)= SUMPRF
             DO IMOL = LB_MOL,NMOLI
               PMIOI2(0,IMOL) = SUM(PMIOI2(1:NIONI,IMOL))
               PRFMII2(0,IMOL) = SUM(PRFMII2(1:NIONI,IMOL))
@@ -959,14 +876,6 @@ cdr  ?? scaling with bulk flux ??
           IF (NLSPCSCL) THEN
             PIIOI2(0:NION,LB_ION:NION) => PIIOI(:,ISTRA)
             PRFIII2(0:NION,LB_ION:NION) => PRFIII(:,ISTRA)
-!            SUMP = 0._DP
-!            SUMPRF = 0._DP
-!            DO IION = 1,NIONI
-!              SUMP = SUMP + SUM(PIIOI2(1:NIONI,IION))*FION(IION)
-!              SUMPRF = SUMPRF + SUM(PRFIII2(1:NIONI,IION))*FION(IION)
-!            END DO
-!            PIIOI(0,ISTRA)= SUMP
-!            PRFIII(0,ISTRA)= SUMPRF
             DO IION = LB_ION,NIONI
               PIIOI2(0,IION) = SUM(PIIOI2(1:NIONI,IION))
               PRFIII2(0,IION) = SUM(PRFIII2(1:NIONI,IION))
@@ -979,15 +888,6 @@ cdr  ?? scaling with bulk flux ??
           IF (NLSPCSCL) THEN
             PPHIOI2(0:NION,LB_PHOT:NPHOT) => PPHIOI(:,ISTRA)
             PRFPHII2(0:NION,LB_PHOT:NPHOT) => PRFPHII(:,ISTRA)
-!            SUMP = 0._DP
-!            SUMPRF = 0._DP
-!            DO IPHOT = 1,NPHOTI
-!              SUMP = SUMP + SUM(PPHIOI2(1:NIONI,IPHOT))*FPHOT(IPHOT)
-!              SUMPRF = SUMPRF + 
-!     .                 SUM(PRFPHII2(1:NIONI,IPHOT))*FPHOT(IPHOT)
-!            END DO
-!            PPHIOI(0,ISTRA)= SUMP
-!            PRFPHII(0,ISTRA)= SUMPRF
             DO IPHOT = LB_PHOT,NPHOTI
               PPHIOI2(0,IPHOT) = SUM(PPHIOI2(1:NIONI,IPHOT))
               PRFPHII2(0,IPHOT) = SUM(PRFPHII2(1:NIONI,IPHOT))
@@ -1237,15 +1137,6 @@ cdr  ?? scaling with bulk flux ??
           IF (NLSPCSCL) THEN
             PAPHTI2(0:NPHOT,LB_ATM:NATM) => PAPHTI(:,ISTRA)
             PRFAPHTI2(0:NPHOT,LB_ATM:NATM) => PRFAPHTI(:,ISTRA)
-!            SUMP = 0._DP
-!            SUMPRF = 0._DP
-!            DO IATM = 1,NATMI
-!              SUMP = SUMP + SUM(PAPHTI2(1:NPHOTI,IATM))*FATM(IATM)
-!              SUMPRF = SUMPRF + 
-!     .                 SUM(PRFAPHTI2(1:NPHOTI,IATM))*FATM(IATM)
-!            END DO
-!            PAPHTI(0,ISTRA)= SUMP
-!            PRFAPHTI(0,ISTRA)= SUMPRF
             DO IATM = LB_ATM,NATMI
               PAPHTI2(0,IATM) = SUM(PAPHTI2(1:NPHOTI,IATM))
               PRFAPHTI2(0,IATM) = SUM(PRFAPHTI2(1:NPHOTI,IATM))
@@ -1258,15 +1149,6 @@ cdr  ?? scaling with bulk flux ??
           IF (NLSPCSCL) THEN
             PMPHTI2(0:NPHOT,LB_MOL:NMOL) => PMPHTI(:,ISTRA)
             PRFMPHTI2(0:NPHOT,LB_MOL:NMOL) => PRFMPHTI(:,ISTRA)
-!            SUMP = 0._DP
-!            SUMPRF = 0._DP
-!            DO IMOL = 1,NMOLI
-!              SUMP = SUMP + SUM(PMPHTI2(1:NPHOTI,IMOL))*FMOL(IMOL)
-!              SUMPRF = SUMPRF + 
-!     .                 SUM(PRFMPHTI2(1:NPHOTI,IMOL))*FMOL(IMOL)
-!            END DO
-!            PMPHTI(0,ISTRA)= SUMP
-!            PRFMPHTI(0,ISTRA)= SUMPRF
             DO IMOL = LB_MOL,NMOLI
               PMPHTI2(0,IMOL) = SUM(PMPHTI2(1:NPHOTI,IMOL))
               PRFMPHTI2(0,IMOL) = SUM(PRFMPHTI2(1:NPHOTI,IMOL))
@@ -1278,15 +1160,6 @@ cdr  ?? scaling with bulk flux ??
           IF (NLSPCSCL) THEN
             PIPHTI2(0:NPHOT,LB_ION:NION) => PIPHTI(:,ISTRA)
             PRFIPHTI2(0:NPHOT,LB_ION:NION) => PRFIPHTI(:,ISTRA)
-!            SUMP = 0._DP
-!            SUMPRF = 0._DP
-!            DO IION = 1,NIONI
-!              SUMP = SUMP + SUM(PIPHTI2(1:NPHOTI,IION))*FION(IION)
-!              SUMPRF = SUMPRF + 
-!     .                 SUM(PRFIPHTI2(1:NPHOTI,IION))*FION(IION)
-!            END DO
-!            PIPHTI(0,ISTRA)= SUMP
-!            PRFIPHTI(0,ISTRA)= SUMPRF
             DO IION = LB_ION,NIONI
               PIPHTI2(0,IION) = SUM(PIPHTI2(1:NPHOTI,IION))
               PRFIPHTI2(0,IION) = SUM(PRFIPHTI2(1:NPHOTI,IION))
@@ -1298,15 +1171,6 @@ cdr  ?? scaling with bulk flux ??
           IF (NLSPCSCL) THEN
             PPHPHTI2(0:NPHOT,LB_PHOT:NPHOT) => PPHPHTI(:,ISTRA)
             PRFPHPHTI2(0:NPHOT,LB_PHOT:NPHOT) => PRFPHPHTI(:,ISTRA)
-!            SUMP = 0._DP
-!            SUMPRF = 0._DP
-!            DO IPHOT = 1,NPHOTI
-!              SUMP = SUMP + SUM(PPHPHTI2(1:NPHOTI,IPHOT))*FPHOT(IPHOT)
-!              SUMPRF = SUMPRF + 
-!     .                 SUM(PRFPHPHTI2(1:NPHOTI,IPHOT))*FPHOT(IPHOT)
-!            END DO
-!            PPHPHTI(0,ISTRA)= SUMP
-!            PRFPHPHTI(0,ISTRA)= SUMPRF
             DO IPHOT = LB_PHOT,NPHOTI
               PPHPHTI2(0,IPHOT) = SUM(PPHPHTI2(1:NPHOTI,IPHOT))
               PRFPHPHTI2(0,IPHOT) = SUM(PRFPHPHTI2(1:NPHOTI,IPHOT))
@@ -1608,6 +1472,7 @@ C
           ESTIML(ISPC)%SPCS = ESTIML(ISPC)%SPCS * FADD
         END DO
 C
+        IF (NLSPCSCL_ON) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) 'RESCALING OF TRACKLENGTH TALLIES COMPLETED'
         WRITE (iunout,*) 'RESCALING FACTORS:'
@@ -1624,6 +1489,7 @@ C
      .       CALL EIRENE_MASRR1 ('FPHOT      ',FPHOT(1:NPHOTI),NPHOTI,6)
         END IF
         CALL EIRENE_LEER(2)
+        ENDIF
 C
       ENDIF
 

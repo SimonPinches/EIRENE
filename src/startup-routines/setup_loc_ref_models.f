@@ -39,14 +39,6 @@ C
           SPTPRM(JSPZ,J)=SPTPRM(1,J)
           ESPUTS(JSPZ,J)=ESPUTS(1,J)
           ESPUTC(JSPZ,J)=ESPUTC(1,J)
-
-          !Initialize pressure feedback loop
-          IF (ILREF(NLJ) == 4)THEN
-            CALL initPressureFeedback(RPRESSFED(NLJ), NLJ,
-     .                                REFLIST%REFCELL,
-     .                                REFLIST%REFPRESS)
-          END IF
-
         end do
       end do
 
@@ -80,6 +72,14 @@ C
             SPTPRM(:,NLJ) = REFCUR%STPRMR
             ESPUTS(:,NLJ) = REFCUR%ESPTSR
             ESPUTC(:,NLJ) = REFCUR%ESPTCR
+
+            !Initialize pressure feedback loop
+            IF (ILREF(NLJ) == 4)THEN
+              CALL initPressureFeedback(RPRESSFED(NLJ), NLJ,
+     .                                  REFLIST%REFCELL,
+     .                                  REFLIST%REFPRESS)
+            END IF
+
             IF (.NOT.ASSOCIATED(SURFCUR2)) THEN
               SURFLIST => SURFCUR%NEXT
               DEALLOCATE(SURFCUR)

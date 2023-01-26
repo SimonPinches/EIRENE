@@ -15,6 +15,7 @@ c     set file units that allow direct control
       IUNRAPSVEC = 70
       LOUTAPP = .FALSE. 
       LIF3COP_FROM_LOOP = .TRUE.
+      LPE0_TO_STDOUT = .TRUE.
 cpg
       MASTER_PATH = get_solpstop()
 cpg

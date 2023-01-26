@@ -39,7 +39,7 @@ C> - tallies
 
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: NATM, NION, NMOL, NPHOT, NPLS,
-     .                          NLMPGS, NRTALS, NCV, NLIMPS,
+     .                          NLMPGS, NCV, NLIMPS,
      .                          NRTAL, NADSPC, NVOLTL, NSDW, NSD, NSRFTL
       USE EIRMOD_CAI, ONLY: XMCT
       USE EIRMOD_COMUSR, ONLY: NATMI, NIONI, NMOLI, NPHOTI, NPLSI
@@ -61,9 +61,7 @@ C> - tallies
       real(dp) :: helpa(0:natm), helpm(0:nmol), helpi(0:nion),
      .            helpp(0:npls), helpph(0:nphot),
      .            helps(nlmpgs+1), helpc(1)
-
       real(dp) :: dummys(nlmpgs+1)
-      real(dp), allocatable :: dummyw(:), helpw(:)
       integer :: calstr_comm
       integer :: ier1, ier, ir, i, ispc, my_pe_gr,
      .           mxdim, ns, j, istr

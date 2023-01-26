@@ -99,8 +99,13 @@ c  transformation of parameters p1 and p2:
 
       rate = 0._dp
 
+      modc = 1
+!pb modclf is only defined for nondefault reactions
+      if (ir > 0) then
+        modc=eirene_idez(modclf(ir),3,5)
+      end if
+
 c.............................................................
-      modc=eirene_idez(modclf(ir),3,5)
 
       if (mod(iftflg(ir,2),100) == 10) then
 

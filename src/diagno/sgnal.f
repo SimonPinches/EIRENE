@@ -320,18 +320,6 @@ C 100   CONTINUE
         write (iunout,*) 'sgnal, cx: ichord,istra,sum ',
      .                      ichori,istra
         write (iunout,*) 'volumetric emission to be written'
-
-C.................................................................
-      ELSEIF ((NCHTAL(ICHORI).EQ.2).OR.(NCHTAL(ICHORI).EQ.5)) THEN
-C.................................................................
-        write (iunout,*) 'sgnal, emis: ichord,istra ',
-     .                            ichori,istra
-        write (iunout,*) 'volumetric line emission '
-        if (isp > 0) then
-          write (iunout,*) 'component no. isp ',isp        
-        else
-          write (iunout,*) 'sum over components'
-        endif
 C.................................................................
 C  FOR RADIANCE OF LINE ISP=IPHOT, IN STRATUM ISTR
       ELSEIF (NCHTAL(ICHORI).EQ.3) THEN

@@ -30,7 +30,6 @@ cdr            tbd:  check setting of iestm..flags for collision estimators.
 cdr                  probably not correct (outdated).
 
 
-cdr Aug 16:    bug fix: IPPLEI --> IPPLPI at one instance
 cdr Nov 16:
 cdr analog cascading NLCASCAD: started to document,
 cdr        synchronize and re-activate option, not ready !!

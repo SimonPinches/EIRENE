@@ -112,7 +112,6 @@ C  default extrapolation ifexmn=-1 not yet available
 C  ELAB BELOW MINIMUM ENERGY FOR FIT:
           IF (AL.LT.ALMIN) THEN
 C  USE ASYMPTOTIC EXPRESSION NO. IFEXMN(K)
-
             EMIN = EXP(ALMIN)
             B(1:8) = REACDAT(K)%CRS%POLY%DBLPOL(2:9,1)
 cdr EMIN .gt. XI is already fulfilled here.
@@ -132,7 +131,6 @@ cdr EMIN .gt. XI is already fulfilled here.
 C  ELAB ABOVE MAXIMUM ENERGY FOR FIT:
           ELSEIF (AL.GT.ALMAX) THEN
 C  USE ASYMPTOTIC EXPRESSION NO. IFEXMX(K,1)
-
             EMAX = EXP(ALMAX)
             B(1:8) = REACDAT(K)%CRS%POLY%DBLPOL(2:9,1)
             COUMAX = B(1)*LOG(EMAX/XI)

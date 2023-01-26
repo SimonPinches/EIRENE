@@ -158,6 +158,7 @@ cdr  careful:  arrhenius factor for energy rate?
 ! If it is loss, rather than a gain, sign change to be done in calling routine,
 ! as well as shift (if any) by potential energy loss rate
 
+
 c..............................................................
 
 

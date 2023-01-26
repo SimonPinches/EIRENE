@@ -124,6 +124,7 @@ C
       LMULPL = .FALSE.
       NTRII=0
 C
+c  NEXT: BROWSE INPUT FILE AND IDENTIFY THE REAL STORAGE NEEDS.
 c   e.g. NPARMI, then set the storage (for allocatable arrays): NPARM = MAX(NPARM,NPARMI)
 c   in most cases then: NPARM=NPARMI
 
@@ -498,7 +499,17 @@ C
       READ (IUNIN,'(A420)') ZEILE
 
   402 CALL EIRENE_UPPERCASE(ZEILE)
+      IEND=INDEX(ZEILE,'DEFAULT')
+cdr ............................................
+      IF (IEND > 0) THEN
 
+cdr  here error exit: unfinished option, proprietary version only...
+        WRITE (IUNOUT,*) 'INVALID OPTION LHYDDEF IN INPUT BLOCK 4 '
+        WRITE (IUNOUT,*) 'USE LHYDDEF ONLY IN PROPRIETARY VERSIONS'
+        WRITE (IUNOUT,*) 'ERROR EXIT FROM FIND_PARAM.F      '
+        CALL EIRENE_EXIT_OWN(1)
+      END IF
+cdr ....................................
       READ (ZEILE,*) NREACI
 !PB   increase number of reactions by 1 as there are still 
 !PB   calls to SLREAC which use reaction number NREACI+1 (SGNAL and HE_EMISS)
@@ -639,8 +650,8 @@ cym this variable has to be moved from extraB25 to EIRENE as an extra optionnal 
         READ (ZEILE(45:47),'(I3)') LKINDI(IION)
         DO K=1,NRC
 cpb......................................
-cdr:  try to identify if there are so-called BGK collisions, input flag IBGK::
-cdr:  to be generalized: there may be other reactions, which require multiple (IPLS) profiles
+cdr: try to identify if there are so-called BGK collisions, input flag IBGK::
+cdr: to be generalized: there may be other reactions, which require multiple (IPLS) profiles
           READ (IUNIN,'(A72)') ZEILE
           call fix_integer_input(zeile,12)
           READ (ZEILE,'(12I6)') IDUM(1:12)

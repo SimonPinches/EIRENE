@@ -124,7 +124,6 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           L, IS, NTLV, ID, IRE, 
      .           INELGJ, NPRCSF, MXL, NSPZV1, NSPZV2, NFLGV,
      .           IPRCSF, IR, MT, MP, 
-!pb  .           NRTAL1, NREAC_ADD, IPLN,x
      .           NRTAL1, IPLN,
      .           NRE, IRET,
      .           ISPSRF, ISPTYP, NSPS, NSPSA, IPTYP, IPSPZ, ISTRAI,

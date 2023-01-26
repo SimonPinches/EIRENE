@@ -75,8 +75,8 @@ factor 3 too low. This error has been introduced between the draft version and
 the final printed version of the book in 1987. Here we have corrected this error,
 i.e., the fit coefficients from the (unpublished) draft version of the book are
 given here, whereas the erroneous fit coefficients from the printed version
-of the book are retained in the database AMJUEL, (reaction 2.2.5o), for reference
-purposes.
+of the book are retained in the database AMJUEL, (reaction H.1 2.2.5org, H.2 2.2.5org), for reference
+purposes only.
 \item{Reaction 3.1.8}
 
 The cross-section H.1, 3.1.8 has been improved by adding
@@ -90,7 +90,7 @@ tracklength estimators for the CX energy loss.
 The original fits from the 1987 book have been kept in file amjuel.tex,
 under H.3, 3.1.8org
 
-In Aug. 2017 the cross section fit was further improved. It had a tiny remaining discontinuity
+In Aug. 2017 the cross-section fit was further improved. It had a tiny remaining discontinuity
 at E=0.1 eV, which is now removed.
 \item{Feb 2013}
 
@@ -99,6 +99,8 @@ model construction (species and reaction type identification) for HYDKIN online 
 \item{Mar 2013}
 
 Added: H.1 (cross-sections): \textbf{\emph{Eth}} (threshold energy), used for online plots and Maxwellian rate integration
+A possible conflict: \textbf{\emph{Eth}} related to COM (reduced) mass. EMIN mostly refers to either
+smallest correct value of cross-section, or to threshold energy in Lab system (neutral reactant at rest)
 
 Added: H.1 (cross-sections) \textbf{\emph{Mcross}} (Mass as used in energy scale. Electron mass (kg), or heavy particle mass, (AMU).)
 
@@ -152,11 +154,12 @@ AMJUEL He CR model data.
 \item{July 2015-II,  2.2.14}
 
 Reaction 2.2.14: In AMJUEL the reaction fits for H.1 and H.2 are reduced to be linear in log-log scale and hence $\ln \sigma(E) = a_0 + a_1 \ln(T)$ and $\ln \langle\sigma v\rangle(T) = b_0 + b_1 \ln(T)$, respectively,
-because higher non-
-zero coefficients in original book \cite{kn:Janev87} seem to be spurious for this reaction. In this simpler (AMJUEL) form for the rate coefficient H.2 the corresponding H.8 fit
+because higher non-zero coefficients
+in the original book \cite{kn:Janev87} seem to be spurious for this reaction.
+In this simpler (AMJUEL) form for the rate coefficient H.2 the corresponding H.8 fit
 is exact: $\ln \langle\sigma v E_{elec}\rangle(T) = h_0 +h_1 \ln(T)$ with $h_0 = b_0+\ln(3/2+b_1)$ and $h_1=b_1+1$, see H.8  2.2.14 in AMJUEL.
-An independently computed H.8 fit using a table from the full H.2 rate fit is still retained in the present HYDHEL file here, (formerly at AMJUEL H.8),
-for backward compatibility
+An independently computed H.8 fit using a table obtained from the full (spurious) H.2 rate fit is still retained in the present HYDHEL file here, (was formerly at AMJUEL H.8),
+for backward compatibility, but should not be used.
 
 \item{Sept. 2015: state notation for process 2.3.4b: final state notation was wrong.}
 Now corrected
@@ -176,7 +179,7 @@ H.1:  3.1.1, 3.1.2, 3.1.6, 3.1.8, 3.1.9, 3.1.11b, 3.2.1b, 3.2.4a, 3.2.5, 3.2.6, 
 
 \item{May 2016: H.2  3.2.3}
 added: H.2 for 3.2.3. same as earlier done (June 15) for 3.1.8: thermal rate coefficient, evaluated at Eb =0.1 eV $\approx 0.0$ eV
-Ebmin of H.3 fit for 3.2.3 is about 0.1 eV.
+E1min of H.3 fit for 3.2.3 is about 0.1 eV.
 
 \item{May 2016 H.2 2.2.10 and 2.2.12:}
 
@@ -195,7 +198,7 @@ or by direct transition from H$_2$ to the first excited H$_2^+$  B state, withou
 
 \item {H.2 rad rec coeff:}
 
-In original monograph only closed form analytic expressions are given for H+ and He+ rad rec. rate coefficients.
+In original Janev-Langer-Post monograph only closed form analytic expressions are given for H+ and He+ rad rec. rate coefficients.
 (and nothing for the cross-sections).
 2.1.8, 2.1.8a and 2.1.8b fits for H.2 rad rec rate coefficients had already been added earlier (see list of changes/errata in previous section).
 The same is needed still for
@@ -206,7 +209,7 @@ Perhaps the closed form expression allows a direct (analytical)
 translation into polynomial fit?
 It seems to be the case indeed from
 the new 2.1.8 fits that only two coefficients may be needed.
-No: two different slopes Te**s at low Te and at high Te. Cannot be accomodated
+No: two different slopes Te**s at low Te and at high Te. Cannot be accommodated
 by a single fit which is linear in log-log scale.
 
 \item {H.8 rates for recombination processes}
@@ -220,7 +223,7 @@ So the H.8  2.2.14 was approximately, but not exactly, the previous EIRENE defau
 The H.8 fit can not be derived from the H.2 fit exactly.
 H.8 follows from H.2 directly, if only the b0 and b1 coefficients in the H.2 fit are non-zero, see: AMJUEL.tex
 For 2.2.14: Change EIRENE default (H.2 and H.8) to that 2 parameter fit
-from AMJUEL for H.8, done.
+from AMJUEL for H.8 rate. Done.
 
 In Sept. 18  a fit for recombination: H.8 2.1.8 has been added, using only the first 2 coefficients b0 and b1 from
 the corresponding H.2 fit. (In an attempt to mimic the closed form analytical default model in EIRENE):
@@ -2290,7 +2293,7 @@ Reaction 3.2.2 $   p + H_2(v=0) \rightarrow p + H_2(v > 0)$}
    a3  1.394845302080e+00    a4 -5.775848321190e-01    a5  1.183902638008e-01
    a6 -1.276577600153e-02    a7  6.983034334039e-04    a8 -1.531189559106e-05
        Emin  6.02e-01   s(Emin)  1.00e-19   smax  1.24e-15   Error  2.22e-02
-       Eth  0.5
+       Eth  0.4013
        Mcross 1.0E+00
 \end{verbatim}\end{small}
 
@@ -4197,7 +4200,7 @@ Reaction 3.1.6 $   p + H(1s) \rightarrow p + H^+ + e$}
 \subsection{
 Reaction 3.1.8 $   p + H(1s) \rightarrow H(1s) + p$}
 
-original fit from Springer book replaced by this one, which has better
+original fit from 1987 Springer book replaced by this one, which has better
 consistency with cross-section, hence: better energy conservation
 
 \begin{small}\begin{verbatim}

@@ -105,5 +105,4 @@ cdr NFLA is iccpl2(3) in corresponding non-default modules
 
       END SUBROUTINE EIRENE_BROADCAST_CCOUPL 
 
-
       END MODULE EIRMOD_CCOUPL

@@ -14,7 +14,7 @@ cdr  find heavy secondary particle energy (=KER) for EI process no. IREI,  energ
 c    locally in cell K, for process kk= nhvrei(irei)
 c    sum over all heavy secondaries.
 c    Distribution to individual heavy secondary type and species is done later,
-c    e.g. in veloei for sampling, and in UPDATE, COLLIDE,.. for scoring
+c    e.g. in VELOEI for sampling, and in UPDATE, COLLIDE,.. for scoring
 c
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD

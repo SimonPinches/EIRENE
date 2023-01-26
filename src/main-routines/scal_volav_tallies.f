@@ -43,7 +43,6 @@ c                or  also: cumulated (flight times/reaction time) [1] to source 
       REAL(DP) :: DEL, DELI, ELEFT, ERIGHT
       INTEGER :: IATM, I, J, IMOL, IION, IPHOT, IPLS, IADV, ICLV,
      .           ISNV, ICPV, IBGV, ISPC, ICL
-      INTEGER :: JATM, JMOL, JION, JPHOT
 C
 C
 C*****VOLUME-AVERAGED TALLIES  220 - 239
@@ -206,7 +205,7 @@ C
                 PIIO2(1:NION,0:NION) => PIIO(:,J)
                 PIIO2(IION,:) =PIIO2(IION,:) *ZVOLIW(J)
               ELSE
-              PIIO(IION,J) =PIIO(IION,J) *ZVOLIW(J)
+                PIIO(IION,J) =PIIO(IION,J) *ZVOLIW(J)
               END IF
             END IF
             IF (LPPHIO) THEN
@@ -214,7 +213,7 @@ C
                 PPHIO2(1:NION,0:NPHOT) => PPHIO(:,J)
                 PPHIO2(IION,:) =PPHIO2(IION,:) *ZVOLIW(J)
               ELSE
-              PPHIO(IION,J)=PPHIO(IION,J)*ZVOLIW(J)
+                PPHIO(IION,J)=PPHIO(IION,J)*ZVOLIW(J)
               END IF
             END IF
             IF (LPGENI) PGENI(IION,J)=PGENI(IION,J)*ZVOLIW(J)

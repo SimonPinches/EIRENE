@@ -357,7 +357,7 @@ cdr  i.e.: H2+ produced from H2, via both channels EI plus IC.
       CNT%IRC_RAT(2) = -1
 
 cdr search all neutral molecular species with nucl. charge number=2.
-cdr These must be the isotopomeres of H2. 
+cdr These must be the isotopomers of H2. 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(1)%COMPO(4)%CONTRIB(NML))
       EMIS_LINES(1)%COMPO(4)%NUM_CONTRIB = NML
@@ -405,7 +405,7 @@ c  no second density ratio
       CNT%IRC_RAT(2) = -1
 
 cdr search all neutral molecular species with nucl. charge number=2.
-cdr These must be the isotopomeres of H2. 
+cdr These must be the isotopomers of H2. 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(1)%COMPO(5)%CONTRIB(NML))
       EMIS_LINES(1)%COMPO(5)%NUM_CONTRIB = NML
@@ -460,7 +460,7 @@ c  electron density
       CNT%IRC_RAT(2) = NRC_RAT3   ! ratio loss H3+/ prod H3+
 
 cdr search all neutral molecular species with nucl. charge number=2.
-cdr These must be the isotopomeres of H2. 
+cdr These must be the isotopomers of H2. 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(1)%COMPO(6)%CONTRIB(NML))
       EMIS_LINES(1)%COMPO(6)%NUM_CONTRIB = NML
@@ -1654,7 +1654,7 @@ C  H(n=3)/H2(g)
       CNT%IRC_RAT = 0
 
 cdr search all neutral molecular species with nucl. charge number=2.
-cdr These must be the isotopomeres of H2. 
+cdr These must be the isotopomers of H2. 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(6)%COMPO(3)%CONTRIB(NML))
       EMIS_LINES(6)%COMPO(3)%NUM_CONTRIB = NML
@@ -1698,7 +1698,7 @@ C  H(n=3)/H2+(g)
       CNT%IRC_RAT(2) = -1
 
 cdr search all neutral molecular species with nucl. charge number=2.
-cdr These must be the isotopomeres of H2. 
+cdr These must be the isotopomers of H2. 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(6)%COMPO(4)%CONTRIB(NML))
       EMIS_LINES(6)%COMPO(4)%NUM_CONTRIB = NML
@@ -1742,7 +1742,7 @@ C  H(n=3)/H-
       CNT%IRC_RAT(2) = -1
 
 cdr search all neutral molecular species with nucl. charge number=2.
-cdr These must be the isotopomeres of H2. 
+cdr These must be the isotopomers of H2. 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(6)%COMPO(5)%CONTRIB(NML))
       EMIS_LINES(6)%COMPO(5)%NUM_CONTRIB = NML
@@ -1794,7 +1794,7 @@ C  H(n=2)/H3+
       IML = 0
       DO I = 1, NMOLI
 cdr search all neutral molecular species with nucl. charge number=2.
-cdr These must be the isotopomeres of H2. 
+cdr These must be the isotopomers of H2. 
         IF (NCHARM(I) == 2) THEN
           IML = IML + 1
           CNT%ISP = I

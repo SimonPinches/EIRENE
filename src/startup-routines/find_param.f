@@ -92,6 +92,7 @@ C     Add IFOFF again if IUNIN is adapted in EIRENE_DEFAULTS_USR.
       IF (IUNIN.NE.IUNIN_OLD) THEN
         IUNIN = IUNIN + IFOFF
       ENDIF
+      CALL EIRENE_LEER(3)
  
       REWIND IUNIN
 

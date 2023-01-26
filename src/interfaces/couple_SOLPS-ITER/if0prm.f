@@ -23,8 +23,6 @@ c  also set: NDX,NDY,NFL, NDXP, NDYP
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_COMUSR
       USE EIRMOD_CINIT
-      USE EIRMOD_COMUSR
-     , , ONLY: INTLOPTS
       USE EIRMOD_BRAEIR
       USE EIRMOD_CLOGAU
      , , ONLY: NLTRIMESH
@@ -41,13 +39,13 @@ c  also set: NDX,NDY,NFL, NDXP, NDYP
       INTEGER, SAVE :: IO
       INTEGER :: IDUMMY(0:99)=0 ! Extend to read as written by uinp (jdl)
       REAL(DP) :: RDUMMY(0:9), RLAST
-      LOGICAL :: LDUMMY(0:3)
+      LOGICAL :: LDUMMY(0:4)
       CHARACTER(72) :: ZEILE
 
 C  READ INPUT BLOCK 14
       READ (IUNIN,'(A72)') ZEILE
-      call fix_logical_input(zeile,4)
-      READ (ZEILE,'(4L1)') LDUMMY(0:3)
+      call fix_logical_input(zeile,5)
+      READ (ZEILE,'(5L1)') LDUMMY(0:4)
       IF (.NOT.NLTRIMESH) NLTRIMESH = LDUMMY(3)
       READ (IUNIN,'(9I6)') IDUMMY(0:8)
       IF (IDUMMY(0).EQ.0 .OR. IDUMMY(1).LT.0) THEN ! This was a junk Eirene_96 line

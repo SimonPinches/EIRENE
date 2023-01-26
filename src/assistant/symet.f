@@ -55,5 +55,6 @@ C
           END DO
   130   CONTINUE
       ENDIF
+
       RETURN
       END SUBROUTINE EIRENE_SYMET

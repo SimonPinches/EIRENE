@@ -37,14 +37,14 @@ cdr  bug re NLSRFA in case idimm=3 ?
 
       PUBLIC :: EIRENE_STDCOL, EIRENE_STDNOR
 
-ctk stdcol and stdcol_absorb
+c stdcol and stdcol_absorb
       REAL(DP) :: X0SA, Y0SA, Z0SA
       INTEGER :: NACLLS, ICOS, IWEI, MSURFS, IRET_OUT
 
 ctk 150 and 200
       REAL(DP) :: COSROT, SINROT, VELX_OLD
 
-ctk stdcol and stdcol_x_rad
+c stdcol and stdcol_x_rad
       INTEGER :: NDUM
 
 c stdcol, stdcol_x_rad, stdcol_y_pol, stdcol_z_tor

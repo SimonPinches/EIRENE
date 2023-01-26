@@ -62,6 +62,7 @@ cdr  Should only be written in modbgk, modphot, tmstep, etc.. routines
       LOGICAL,INTENT(IN) :: TRCFLE
       CHARACTER(*) CALLEDFROM
       INTEGER :: IREA, ISWR, IREI, IRCX, IRPI, IREL, IFL, IPLS, ND, IO
+      INTEGER :: I
       REAL(DP), ALLOCATABLE, SAVE :: TIAR(:,:), DIAR(:,:),
      R                         VXAR(:,:), VYAR(:,:), VZAR(:,:)
 
@@ -100,8 +101,28 @@ cdr do these things ever get deallocated again?
         WRITE (13+ifoff,IOSTAT=IO)
      w           TIAR, DIAR, VXAR, VYAR, VZAR
 #ifdef CHECKBIN
-        WRITE (113,*)
-     w           TIAR, DIAR,  VXAR, VYAR, VZAR
+!        WRITE (113,*)
+!     w           TIAR, DIAR,  VXAR, VYAR, VZAR
+        WRITE (113,*) 'TIAR'
+        do i=1,nrad
+          WRITE (113,*) i,TIAR(:,i)
+        end do
+        WRITE (113,*) 'DIAR'
+        do i=1,nrad
+          WRITE (113,*) i,DIAR(:,i)
+        end do
+        WRITE (113,*) 'VXAR'
+        do i=1,nrad
+          WRITE (113,*) i,VXAR(:,i)
+        end do
+        WRITE (113,*) 'VYAR'
+        do i=1,nrad
+          WRITE (113,*) i,VYAR(:,i)
+        end do
+        WRITE (113,*) 'VZAR'
+        do i=1,nrad
+          WRITE (113,*) i,VZAR(:,i)
+        end do
 #endif
 
         IF (TRCFLE) THEN
@@ -134,7 +155,7 @@ cdr  now we have: NFLA_VIRT
       write (13+ifoff) nfla_ipls(1:nfla_virt), nfla_iswr(1:nrea_virt),
      w                 nfla_ir(1:nrea_virt)
 #ifdef CHECKBIN
-      write (113,*) nfla_virt, nrea_virt
+      write (113,*) 'NFLA_VIRT',nfla_virt, nrea_virt
       write (113,*) nfla_ipls(1:nfla_virt), nfla_iswr(1:nrea_virt),
      w              nfla_ir(1:nrea_virt)
 #endif
@@ -146,7 +167,7 @@ c  data for virt. species ipls
           write (13+ifoff)
      w      lgvac(1:nrad,ipls)
 #ifdef CHECKBIN
-          write (113,*) lgvac(1:nrad,ipls)
+          write (113,*) 'LGVAC ',lgvac(1:nrad,ipls)
 #endif
         endif
       END DO
@@ -173,6 +194,7 @@ c  data for reaction irei, ircx, irpi or irel
           write (13+ifoff)
      w      tabei1(irei,1:nrad),eelei1(irei,1:nrad)
 #ifdef CHECKBIN
+          write (113,*) 'TABEI1'
           write (113,*) tabei1(irei,1:nrad),eelei1(irei,1:nrad)
 #endif
         case (3)
@@ -180,6 +202,7 @@ c  data for reaction irei, ircx, irpi or irel
           write (13+ifoff)
      w      tabcx3(ircx,1:nrad,1:9),eplcx3(ircx,1:nrad,1:9)
 #ifdef CHECKBIN
+          write (113,*) 'TABCX3'
           write(113,*) tabcx3(ircx,1:nrad,1:9),eplcx3(ircx,1:nrad,1:9)
 #endif
         case (4)
@@ -187,6 +210,7 @@ c  data for reaction irei, ircx, irpi or irel
           write (13+ifoff)
      w      tabpi3(irei,1:nrad,1:9),eelpi3(irpi,1:nrad,1:9)
 #ifdef CHECKBIN
+          write (113,*) 'TABPI3'
           write(113,*) tabpi3(irei,1:nrad,1:9),eelpi3(irpi,1:nrad,1:9)
 #endif
         case (5)
@@ -194,6 +218,7 @@ c  data for reaction irei, ircx, irpi or irel
           write (13+ifoff)
      w      tabel3(irel,1:nrad,1:9),eplel3(irel,1:nrad,1:9)
 #ifdef CHECKBIN
+          write (113,*) 'TABEL3'
           write(113,*) tabel3(irel,1:nrad,1:9),eplel3(irel,1:nrad,1:9)
 #endif
 cdr  case 6,7: to be done
@@ -218,7 +243,6 @@ C .......................................................................
       USE EIRMOD_CINIT, ONLY: FORT, FORT_LC
       USE EIRMOD_COMUSR, ONLY: NPLSI, TIIN, DIIN, VXIN, VYIN, VZIN,
      .                         NPLS_FIX
-!pb   USE EIRMOD_CCOUPL, ONLY: NFLA
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_COMNNL, ONLY: NFLA_VIRT, NREA_VIRT,
      .                         NFLA_IPLS, NFLA_ISWR,

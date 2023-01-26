@@ -1676,7 +1676,7 @@ C
         IRC=1
         WRITE (11+ifoff,REC=IRC) LOGATM,LOGION,LOGMOL,LOGPLS,LOGPHOT
 #ifdef CHECKBIN
-        WRITE (111,*) 'LOGATM,LOGION,LOGMOL,LOGPLS,LOGPHOT ',
+        WRITE (111+ifoff,*) 'LOGATM,LOGION,LOGMOL,LOGPLS,LOGPHOT ',
      .                 LOGATM,LOGION,LOGMOL,LOGPLS,LOGPHOT
 #endif
         IF (TRCFLE)   WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
@@ -1685,9 +1685,9 @@ C
         CALL EIRENE_WRITE_COUTAU (OUTAU, IUNOUT)
         WRITE (11+ifoff,REC=IRC) OUTAU
 #ifdef CHECKBIN
-        WRITE (111,*) 'OUTAU '
+        WRITE (111+ifoff,*) 'OUTAU '
         do ipb=1,noutau,5
-          WRITE (111,*) ipb,(OUTAU(jpb),jpb=ipb,min(ipb+4,noutau))
+          WRITE (111+ifoff,*) ipb,(OUTAU(jpb),jpb=ipb,min(ipb+4,noutau))
         end do
 #endif
         DEALLOCATE (OUTAU)

@@ -4,7 +4,7 @@ cdr           from printout for spatially (along LOS) resolved data.
 cdr           This was, so far, all mixed with TRCSIG (for debugging printout)
 cdr  Jan. 2018  mod_addv added, as well as CNT data structure.
 cdr  Oct 18   : rationalization of line emission specification,
-cdr             now via reacdat(irc.....), block 4, exclusively.
+cdr             now via REACDAT(IRC,.....), block 4, exclusively.
 
       MODULE EIRMOD_COMSIG
 

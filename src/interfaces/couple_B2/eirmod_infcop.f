@@ -124,6 +124,7 @@ C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
       USE EIRMOD_BRASCL
       USE EIRMOD_SHEATH
       USE EIRMOD_JSON
+      USE EIRMOD_OPENFILE, ONLY: EIRENE_OPENFILE
       
       use json_module
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
@@ -2935,8 +2936,8 @@ C  WRITE RCCPL
       IF (TRCINT.OR.TRCFLE)
      .    WRITE (iunout,*) 'WRITE 11  RCCPL,   IRC= ',IRC
 #ifdef CHECKBIN
-      write (111,*) ' RCCPL '
-      write (111,*) RCCPL
+      write (111+ifoff,*) ' RCCPL '
+      write (111+ifoff,*) RCCPL
 #endif
 C     IRC=3   STILL
 C  WRITE ICCPL1
@@ -2950,8 +2951,8 @@ C  WRITE ICCPL1
             IRC=IRC+1
             WRITE (11,REC=IRC) IHELP
 #ifdef CHECKBIN
-      write (111,*) ' ICCPL1 '
-      write (111,*) IHELP
+      write (111+ifoff,*) ' ICCPL1 '
+      write (111+ifoff,*) IHELP
 #endif
             IF (TRCINT.OR.TRCFLE)
      .          WRITE (iunout,*) 'WRITE 11  ICCPL1,  IRC= ',IRC
@@ -2965,7 +2966,7 @@ c  write last (incomplete) record of ICCPL1
         IRC=IRC+1
         WRITE (11,REC=IRC) IHELP
 #ifdef CHECKBIN
-      write (111,*) IHELP
+      write (111+ifoff,*) IHELP
 #endif
         IF (TRCINT.OR.TRCFLE)
      .      WRITE (iunout,*) 'WRITE 11  ICCPL1,  IRC= ',IRC
@@ -2975,16 +2976,16 @@ C  WRITE ICCPL2
       IRC=IRC+1
       WRITE (11,REC=IRC) ICCPL2
 #ifdef CHECKBIN
-      write (111,*) ' ICCPL2 '
-      write (111,*) ICCPL2
+      write (111+ifoff,*) ' ICCPL2 '
+      write (111+ifoff,*) ICCPL2
 #endif
       IF (TRCINT.OR.TRCFLE)
      .    WRITE (iunout,*) 'WRITE 11  ICCPL2,  IRC= ',IRC
       IRC=IRC+1
       WRITE (11,REC=IRC) LCCPL
 #ifdef CHECKBIN
-      write (111,*) ' LCCPL '
-      write (111,*) LCCPL
+      write (111+ifoff,*) ' LCCPL '
+      write (111+ifoff,*) LCCPL
 #endif
       IF (TRCINT.OR.TRCFLE)
      .    WRITE (iunout,*) 'WRITE 11  LCCPL,   IRC= ',IRC
@@ -3653,7 +3654,12 @@ C  COPY USER SPECIFIC DATA TO FILE user_data.input
         READ (IUNIN,'(A72)',IOSTAT=IO) ZEILE
         IF (IO == 0) THEN
           JL = JL + 1
-          IF (JL == 1) OPEN(NEWUNIT=IUSROUT,FILE='user_data.input')
+!pb       IF (JL == 1) OPEN(NEWUNIT=IUSROUT,FILE='user_data.input')
+          IF (JL == 1) THEN
+            IUSROUT = -9999
+            CALL EIRENE_OPENFILE(IUSROUT,FILE='user_data.input',
+     .                           FORM='FORMATTED',ACCESS='DEQUENTIAL')
+          END IF
           WRITE (IUSROUT,'(A)') TRIM(ZEILE)
         END IF
       END DO
@@ -3920,8 +3926,11 @@ C  HERE: EIRENE SURFACE TALLIES
 C
 C  INPUT BLOCK 14 DONE
 C
-      OPEN(NEWUNIT=IUSROUT,FILE='user_data.input',STATUS='OLD',
-     .     IOSTAT=IO)
+!pb   OPEN(NEWUNIT=IUSROUT,FILE='user_data.input',STATUS='OLD',
+!pb  .     IOSTAT=IO)
+      IUSROUT = -9999
+      CALL EIRENE_OPENFILE(IUSROUT,FILE='user_data.input',STATUS='OLD',
+     .     FORM='FORMATTED',ACCESS='SEQUENTIAL',IOSTAT=IO)
       IUNIN_SAVE = IUNIN
       IF (IO == 0) THEN
         IUNIN = IUSROUT

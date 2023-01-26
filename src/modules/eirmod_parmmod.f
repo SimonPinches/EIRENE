@@ -58,6 +58,8 @@ C> Indicates whether output files 'output.*' should be appended or overwritten
       LOGICAL, PUBLIC, SAVE :: LOUTAPP = .FALSE.
 C> Indicates whether routine EIRENE_IF3COP is called from with strata loop
       LOGICAL, PUBLIC, SAVE :: LIF3COP_FROM_LOOP = .FALSE.
+c> Indicates whether output of master processor 0 is written to standard output
+      LOGICAL, PUBLIC, SAVE :: LPE0_TO_STDOUT = .FALSE.
 C  BLOCK A FEW RESERVED OUTPUT STREAMS.
       INTEGER, PUBLIC, PARAMETER :: NSTREAM = 16
       INTEGER, PUBLIC, SAVE :: ISTREAM(NSTREAM)
@@ -387,7 +389,7 @@ c  set some derived storage parameters
         NCOLMC=NPLS+NREI+NREC
 
 C  N1MX: storage parameter for species text for input and  output tallies, 
-C        and for scltal in mcarlo.f
+C        and for SCLTAL in mcarlo.f
 
 !pb12Oct2022
 !pb     N1MX=    NSPZ+NADV+NALV+NCLV+NCPV+NBGV+NSNV+NAIN

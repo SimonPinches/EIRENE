@@ -72,6 +72,7 @@ c            code was correct in solps4.3, and garching versions of couple_b2/b2
 
 cdr March 18: new variable LCOARSE: maintain underlying coarse structured grid, scoring
 cdr           on coarse grid (NCLTAL array). Otherwise: only fine (triangular) grid structure
+cdr Mar 18:  ELTEST from couple_Tria
 c......................................................................................
 
 
@@ -169,6 +170,7 @@ C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
       USE EIRMOD_CPES
       USE EIRMOD_SHEATH
       USE EIRMOD_JSON
+      USE EIRMOD_OPENFILE, ONLY: EIRENE_OPENFILE
       
       use json_module
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
@@ -180,9 +182,6 @@ C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
      .          EIRENE_BROADCAST_INFCOP, EIRENE_DEALLOC_INFCOP,
      .          EIRENE_INFCOP_PRE_MCARLO, EIRENE_INFCOP_POST_STRATUM,
      .          EIRENE_INFCOP_PRE_STRATA
-#ifndef F2003
-      PUBLIC :: EIRENE_NEWUNIT
-#endif
 C
       TYPE :: CELL
         INTEGER :: TRIANGLE
@@ -231,6 +230,7 @@ c  for short cycle correction terms, in vol. rec. strata.
       LOGICAL :: LXSRF
 
       CONTAINS
+
 C
 C     THIS SUBROUTINE DEFINES THE PLASMA MODEL IN CASE OF A COUPLED
 C     NEUTRAL-PLASMA CALCULATION
@@ -239,11 +239,11 @@ C     THE SUBROUTINE "IF0COP" RECEIVES GEOMETRICAL INPUT DATA FROM AN
 C     EXTERNAL FILE (E.G. OTHER PLASMA CODES)
 C     AND PREPARES THEM FOR AN EIRENE RUN
 C
-C     THE ENTRY "IF1COP" RECEIVES PLASMA INPUT DATA FROM AN
+C     THE SUBROUTINE "IF1COP" RECEIVES PLASMA INPUT DATA FROM AN
 C     EXTERNAL FILE (E.G. OTHER PLASMA CODES)
 C     AND PREPARES THEM FOR AN EIRENE RUN
 C
-C     THE ENTRY "IF2COP" PREPARES THE SOURCE SAMPLING DISTRIBUTION
+C     THE SUBROUTINE "IF2COP" PREPARES THE SOURCE SAMPLING DISTRIBUTION
 C     FROM THE EXTERNAL DATA, AND MAY OVERWRITE OTHER INPUT
 C     DATA FROM BLOCKS 1 TO 13 AS WELL
 C
@@ -734,14 +734,9 @@ C TO READ THE FILE PRODUCED BY DOS
          if (plidl) then
 c write file 'triang_new.npco_char' for triang-grid, for idl tool, in appropriate format.
 c first: fetch a free file unit number
-#ifdef F2003
-            open(newunit=jun,file='triang_new.npco_char',
+           jun=-9999
+           call eirene_openfile(jun,file='triang_new.npco_char',
      .           access='SEQUENTIAL',form='FORMATTED')
-#else
-            jun=eirene_newunit()
-            open(unit=jun,file='triang_new.npco_char',
-     .          access='SEQUENTIAL',form='FORMATTED')
-#endif
 c next: write file 'triang_new.npco_char'
            write (jun,'(i9)') NRKNOT
            DO I=1,NRKNOT
@@ -1427,6 +1422,7 @@ c  flags for orientation of radial (not in use), poloidal and toroidal magnetic 
      .                      NFLA,NCUTB,NCUTL,IMF,NTRFRM
          WRITE (iunout,*) ' IPLS,IFLB(IPLS),FCTE(IPLS),BMASS(IPLS)'
        ENDIF
+       NFLB=0
        NATMA=0
        DO IPL=1,NPLSI
          READ (IUNIN,'(2I6,2E12.4,I6)')
@@ -1435,6 +1431,7 @@ c  flags for orientation of radial (not in use), poloidal and toroidal magnetic 
          IF (TRCINT) WRITE (iunout,'(2I6,2ES12.4,I6)')
      .     IPL,IFLB(IPL),FCTE(IPL),BMASS(IPL),L
          if(iflb(ipl) .gt. 0) then
+           NFLB=NFLB+1
            if(lkindp(ipl).le.0) then
              k=NINT(BMASS(IPL))
              l=0
@@ -1595,7 +1592,11 @@ C  COPY USER SPECIFIC DATA TO FILE user_data.input
          READ (IUNIN,'(A72)',IOSTAT=IO) ZEILE
          IF (IO == 0) THEN
            JL = JL + 1
-           IF (JL == 1) OPEN(NEWUNIT=IUSROUT,FILE='user_data.input')
+           IF (JL == 1) THEN
+             IUSROUT = -9999
+             CALL EIRENE_OPENFILE(IUSROUT,FILE='user_data.input',
+     .                            FORM='FORMATTED',ACCESS='SEQUENTIAL')
+           END IF
            WRITE (IUSROUT,'(A)') TRIM(ZEILE)
          END IF
        END DO
@@ -1908,8 +1909,9 @@ C  HERE: EIRENE SURFACE TALLIES
 C
 C  INPUT BLOCK 14 DONE
 C
-       OPEN(NEWUNIT=IUSROUT,FILE='user_data.input',STATUS='OLD',
-     .      IOSTAT=IO)
+       IUSROUT = -9999
+       CALL EIRENE_OPENFILE(IUSROUT,FILE='user_data.input',STATUS='OLD',
+     .      FORM='FORMATTED',ACCESS='SEQUENTIAL',IOSTAT=IO)
        IUNIN_SAVE = IUNIN
        IF (IO == 0) THEN
          IUNIN = IUSROUT
@@ -2632,8 +2634,6 @@ csw       if(.not.nlvol(istra)) then
 !pb              FLUX(ISTRA)=1.
             ENDIF
           endif
-          write (iunout,*) 'npts in infcop ',
-     .                      npts(istra), FLUX_save(ISTRA)
         ENDDO
       endif
 csw
@@ -6884,26 +6884,6 @@ C  TO THE QUADRANGLE
       endif
       return
       end subroutine eirene_if3cop_sum
-
-#ifndef F2003
-      integer function eirene_newunit ()
-      implicit none
-      logical used
-
-      eirene_newunit = 99
-      used = .true.
-      do while (eirene_newunit.gt.0 .and. used)
-        inquire(unit=eirene_newunit,opened=used)
-        if (used) eirene_newunit = eirene_newunit - 1
-      end do
-      if (used) then
-        call eirene_masage
-     .   ('No available free unit numbers for output!     ')
-        call eirene_exit_own(1)
-      end if
-      return
-      end function eirene_newunit
-#endif
 
       SUBROUTINE EIRENE_DEALLOC_INFCOP
       IMPLICIT NONE

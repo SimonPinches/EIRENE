@@ -52,13 +52,13 @@ c  lexp=true:   return exp(POLY)
       real(dp), intent(in) :: al, rcmin, rcmax, earrh0
       integer, intent(in) :: ifexmn, ifexmx
       logical, intent(in) :: trc, lexp
-      real(dp) :: p1, ep1, cou, fp(6), s01, s02, ds12, expo1, expo2,
+      real(dp) :: p1, parm, cou, fp(6), s01, s02, ds12, expo1, expo2,
      .            ccxm1, ccxm2, almin, almax, coumin, coumax,
      .            EIRENE_extrap
       integer :: ii, if8, ifex
 
       p1=al        ! fit parameterfor log-log fit: log(T), log(E),...
-c     ep1=exp(p1)  ! physical parameter T, E
+c     parm=exp(p1)  ! physical parameter T, or E
 
       if (p1 < rcmin) then
 
@@ -105,7 +105,7 @@ C  determine parameter and fit value at left boundary. May be needed by fct. ext
         ELSE
 
 C  AL IS OUT OF RANGE, BUT NO EXTRAPOLATION SCHEME SPECIFIED (IFEXMN=0)
-C  Continue with a constant: poly evalutated at RCMIN
+C  Continue with a constant: poly evaluated at RCMIN
           P1=RCMIN
           if (trc) write (iunout,*) 'unclear extrapolation in sngl_poly'
           GOTO 100
@@ -160,7 +160,7 @@ C  determine parameter and fit value at right boundary. may be needed by fct. ex
         ELSE
 
 C  AL IS OUT OF RANGE, BUT NO EXTRAPOLATION SCHEME SPECIFIED (IFEXMX=0)
-C  Continue with a constant: poly evalutated at RCMAX
+C  Continue with a constant: poly evaluated at RCMAX
           P1=RCMAX
           if (trc) write (iunout,*) 'unclear extrapolation in sngl_poly'
           GOTO 100
@@ -184,8 +184,8 @@ C  PARAMETER "P1=AL" IS WITHIN VALID RANGE OF FIT:
 c  Arrhenius factor exp(-earrh0/T), here: add log thereof to the fit POLY.
 c  ie. add -earrh0/parm
       if (earrh0.gt.0.0) then
-        ep1=exp(p1)
-        cou=cou-earrh0/ep1
+        parm=exp(p1)
+        cou=cou-earrh0/parm
       endif
 
  1000 continue

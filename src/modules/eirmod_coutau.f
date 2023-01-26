@@ -1062,7 +1062,6 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(PDENPHI)
       OUTAU(IA:IE) = PACK(PDENPHI,.TRUE.)
-      write (iunout,*) 'PDENPHI ',IA,IE
 
       IA = IE + 1
       IE = IA - 1 + SIZE(EDENAI)
@@ -1079,7 +1078,6 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(EDENPHI)
       OUTAU(IA:IE) = PACK(EDENPHI,.TRUE.)
-      write (iunout,*) 'EDENPHI ',IA,IE
 
       IA = IE + 1
       IE = IA - 1 + SIZE(PAELI)
@@ -1104,7 +1102,6 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(PAPLI)
       OUTAU(IA:IE) = PACK(PAPLI ,.TRUE.)
-      write (iunout,*) 'PAPLI ',IA,IE
 
       IA = IE + 1
       IE = IA - 1 + SIZE(PMELI)
@@ -1129,7 +1126,6 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(PMPLI)
       OUTAU(IA:IE) = PACK(PMPLI ,.TRUE.)
-      write (iunout,*) 'PMPLI ',IA,IE
 
       IA = IE + 1
       IE = IA - 1 + SIZE(PIELI)
@@ -1154,7 +1150,6 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(PIPLI)
       OUTAU(IA:IE) = PACK(PIPLI ,.TRUE.)
-      write (iunout,*) 'PIPLI ',IA,IE
 
       IA = IE + 1
       IE = IA - 1 + SIZE(PPHELI)
@@ -1179,7 +1174,6 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(PPHPLI)
       OUTAU(IA:IE) = PACK(PPHPLI ,.TRUE.)
-      write (iunout,*) 'PPHPLI ',IA,IE
 
 
 
@@ -1207,7 +1201,6 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(EAPLI)
       OUTAU(IA:IE) = PACK(EAPLI ,.TRUE.)
-      write (iunout,*) 'EAPLI ',IA,IE
 
       IA = IE + 1
       IE = IA - 1 + SIZE(EMELI)
@@ -1232,7 +1225,6 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(EMPLI)
       OUTAU(IA:IE) = PACK(EMPLI ,.TRUE.)
-      write (iunout,*) 'EMPLI ',IA,IE
 
       IA = IE + 1
       IE = IA - 1 + SIZE(EIELI)
@@ -1257,7 +1249,6 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(EIPLI)
       OUTAU(IA:IE) = PACK(EIPLI ,.TRUE.)
-      write (iunout,*) 'EIPLI ',IA,IE
 
       IA = IE + 1
       IE = IA - 1 + SIZE(EPHELI)
@@ -1282,37 +1273,30 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(EPHPLI)
       OUTAU(IA:IE) = PACK(EPHPLI ,.TRUE.)
-      write (iunout,*) 'EPHPLI ',IA,IE
 
       IA = IE + 1
       IE = IA - 1 + SIZE(ADDVI)
       OUTAU(IA:IE) = PACK(ADDVI ,.TRUE.)
-      write (iunout,*) 'ADDVI ',IA,IE
 
       IA = IE + 1
       IE = IA - 1 + SIZE(COLVI)
       OUTAU(IA:IE) = PACK(COLVI ,.TRUE.)
-      write (iunout,*) 'COLVI ',IA,IE
 
       IA = IE + 1
       IE = IA - 1 + SIZE(SNAPVI)
       OUTAU(IA:IE) = PACK(SNAPVI,.TRUE.)
-      write (iunout,*) 'SNAPVI ',IA,IE
 
       IA = IE + 1
       IE = IA - 1 + SIZE(COPVI)
       OUTAU(IA:IE) = PACK(COPVI ,.TRUE.)
-      write (iunout,*) 'COPVI ',IA,IE
 
       IA = IE + 1
       IE = IA - 1 + SIZE(BGKVI)
       OUTAU(IA:IE) = PACK(BGKVI ,.TRUE.)
-      write (iunout,*) 'BGKVI ',IA,IE
 
       IA = IE + 1
       IE = IA - 1 + SIZE(ALGVI)
       OUTAU(IA:IE) = PACK(ALGVI ,.TRUE.)
-      write (iunout,*) 'ALGVI ',IA,IE
 
       IA = IE + 1
       IE = IA - 1 + SIZE(PGENAI)
@@ -1329,7 +1313,6 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(PGENPHI)
       OUTAU(IA:IE) = PACK(PGENPHI,.TRUE.)
-      write (iunout,*) 'PGENPHI ',IA,IE
 
       IA = IE + 1
       IE = IA - 1 + SIZE(EGENAI)
@@ -1346,7 +1329,6 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(EGENPHI)
       OUTAU(IA:IE) = PACK(EGENPHI,.TRUE.)
-      write (iunout,*) 'EGENPHI ',IA,IE
 
       IA = IE + 1
       IE = IA - 1 + SIZE(VGENAI)
@@ -1363,7 +1345,6 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(VGENPHI)
       OUTAU(IA:IE) = PACK(VGENPHI,.TRUE.)
-      write (iunout,*) 'VGENPHI ',IA,IE
 
       IA = IE + 1
       IE = IA - 1 + SIZE(PPATI)
@@ -1384,7 +1365,6 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(PPPLI)
       OUTAU(IA:IE) = PACK(PPPLI ,.TRUE.)
-      write (iunout,*) 'PPPLI ',IA,IE
 
       IA = IE + 1
       IE = IA - 1 + SIZE(EPATI)
@@ -1405,7 +1385,6 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(EPPLI)
       OUTAU(IA:IE) = PACK(EPPLI ,.TRUE.)
-      write (iunout,*) 'EPPLI ',IA,IE
 
       IA = IE + 1
       IE = IA - 1 + SIZE(VXDENAI)
@@ -1454,7 +1433,6 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(VZDENPHI)
       OUTAU(IA:IE) = PACK(VZDENPHI,.TRUE.)
-      write (iunout,*) 'VZDENPHI ',IA,IE
 
       IA = IE + 1
       IE = IA - 1 + SIZE(MAPLI)
@@ -1471,7 +1449,6 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(MPHPLI)
       OUTAU(IA:IE) = PACK(MPHPLI,.TRUE.)
-      write (iunout,*) 'MPHPLI ',IA,IE
 
 
 
@@ -1970,7 +1947,6 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(PAATI)
       PAATI  = RESHAPE(OUTAU(IA:IE),SHAPE(PAATI ))
-      write (iunout,*) ' paati ',ia,ie
 
       IA = IE + 1
       IE = IA - 1 + SIZE(PAMLI)

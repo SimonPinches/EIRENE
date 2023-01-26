@@ -1,9 +1,9 @@
-Cu_on_Si_3.49  also includes: pdf boundaries emin,emax, angmin, angmax....       
- 
-*  projectile surface binding energy parameter: 3.49 eV     
+Cu_on_Si_3.49  also includes: pdf boundaries emin,emax, angmin, angmax....
+
+*  projectile surface binding energy parameter: 3.49 eV
 *  parameter esbparm only added in first of the 84 blocks
- 
- 
+
+
    29.  63.55   14.  28.09  1.00E+00  0.00E+00  0.00E+00  0.00E+00  3.49E+00    10   0.00
 
   0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00       0.00000E+00  0.00000E+00

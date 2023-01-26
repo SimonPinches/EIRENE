@@ -33,8 +33,6 @@ c     active surface ids of surfs not in octree saved in lookup table
 c     how many surfaces are not in the octree (NSURFNOT)
       INTEGER, SAVE :: NSURFNOT = 0
 
-
-
       CONTAINS
 
 Cdr:  at some point (after 2010) this routine was extended by an "octree option" to
@@ -66,7 +64,6 @@ C
       IMPLICIT NONE
 
 C
-
       REAL(DP) :: XB(3), XC(3), XD(3), XE(3), XF(3), XG(3)
       REAL(DP) :: DZ3, XS, DZ, TEST4, TEST5, DY, DL, DX1, DX,
      .          B, XK5, V445, XN5, V335, XK4,
