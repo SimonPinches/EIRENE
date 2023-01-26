@@ -119,8 +119,8 @@ cdr
       IMPLICIT NONE
       INTEGER :: IER
       
-      CALL EIRENE_CHECK_EXIT
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
+      CALL EIRENE_CHECK_EXIT
 
 !pb  in order to avoid cyclic dependencies in compilation
 !pb  hand over processor number via argument list

@@ -2217,13 +2217,17 @@ cdr  only one common profile for all NPLS species?
         LRDMLTI=.FALSE.
       ENDIF
 
-      IF ((NPLS > 1) .AND. (NPLSTI == 1) .AND. LMULPL) THEN
+      IF ((NPLS > 1) .AND. (NPLSTI == 1) .AND. 
+     .    (LMULPL .OR. (NPLS_FIX /= NPLSI)
+     .            .OR.  ANY(CDENMODEL == FORT//'13'))) THEN
+
         CALL EIRENE_LEER(1)
         WRITE (IUNOUT,*) 'WARNING !'
         WRITE (IUNOUT,*) 'TIIN STORAGE PROVIDED FOR ONE SPECIES ONLY ',
      .                   'DUE TO INDPRO(2) > 10'
         WRITE (IUNOUT,*) 'STORAGE FOR TIIN OVERWRITTEN ',
-     .                   'BECAUSE BGK REACTIONS PRESENT'
+     .                   'BECAUSE BGK REACTIONS PRESENT',
+     .                   'OR DENSITY MODEL ',FORT//'13',' WAS FOUND'
         LRDMLTI=.FALSE.         !  read only one common Ti card, despite storage for NPLS Ti profiles.
         NPLSTI = NPLS
         WRITE (IUNOUT,*) ' NPLSTI = ',NPLSTI

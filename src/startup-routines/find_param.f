@@ -48,24 +48,9 @@ C
       ENDIF
       inquire(unit=iunout,opened=op)
       IF (.not.op) THEN
-        if (my_pe.ne.0) then
-          OUTNAME='output.'
-          WRITE (OUTNAME(8:),'(I4.4)')
-     .       (MY_PE*EIRENE_NTHREADS)+EIRENE_ITHREAD
-#ifndef NAGFOR
-          IF ( LOUTAPP ) THEN
-            OUTPOS='APPEND'
-          ELSE
-            OUTPOS='ASIS'
-          END IF
-          OPEN (UNIT=IUNOUT, FILE=OUTNAME, ACCESS='SEQUENTIAL',
-     .          FORM='FORMATTED', POSITION=OUTPOS)
-#else
-          OPEN (UNIT=IUNOUT, FILE=OUTNAME, ACCESS='SEQUENTIAL',
-     .          FORM='FORMATTED')
-#endif
-        end if
+        CALL EIRENE_COUPLE_INIT_OUTPUT
       ENDIF
+
       IF (IUNIN.EQ.5.OR.IUNIN.EQ.8.OR.IUNIN.EQ.10.OR.
      .    IUNIN.EQ.11.OR.IUNIN.EQ.12.OR.IUNIN.EQ.13.OR.
      .    IUNIN.EQ.14.OR.IUNIN.EQ.15) THEN
@@ -73,16 +58,6 @@ C
         WRITE (IUNOUT,*) 'ERROR EXIT FROM FIND_PARAM.F      '
         CALL EIRENE_EXIT_OWN(1)
       ENDIF  
-
-      IF (IUNIN.NE.5) THEN
-        INQUIRE(UNIT=IUNIN,OPENED=UEX)
-        IF (UEX) THEN
-          REWIND IUNIN
-        ELSE
-          OPEN(UNIT=IUNIN,ACCESS='SEQUENTIAL',FORM='FORMATTED',
-     .         ERR=7999)
-        ENDIF
-      ENDIF
 C
       CALL EIRENE_ALLOC_CLOGAU
       IUNIN_OLD = IUNIN
@@ -93,8 +68,16 @@ C     Add IFOFF again if IUNIN is adapted in EIRENE_DEFAULTS_USR.
         IUNIN = IUNIN + IFOFF
       ENDIF
       CALL EIRENE_LEER(3)
- 
-      REWIND IUNIN
+
+      IF (IUNIN.NE.5) THEN
+        INQUIRE(UNIT=IUNIN,OPENED=UEX)
+        IF (UEX) THEN
+          REWIND IUNIN
+        ELSE
+          OPEN(UNIT=IUNIN,ACCESS='SEQUENTIAL',FORM='FORMATTED',
+     .         ERR=7999)
+        ENDIF
+      ENDIF
 
       READ (IUNIN,'(A80)') ZEILE
       

@@ -161,12 +161,16 @@ c     IUNIN = 1
 
       IUNOUT = 6  ! Fortran standard output channel
       IF (NPRS > 1) IUNOUT = 7  ! in case of multiple PEs use separate output files
+!$OMP PARALLEL
       IF (EIRENE_NTHREADS > 1) IUNOUT = 200 ! for multiple threads use different file numbers
+!$OMP END PARALLEL
 
 cxpb 04nov16 Going back to having the master PE write to standard output
       IF (LPE0_TO_STDOUT .AND. (MY_PE == 0)) IUNOUT = 6
 
+!$OMP PARALLEL
       IUNOUT = IUNOUT + IFOFF
+!$OMP END PARALLEL
 
 CDR  OUTPUT STREAM IS: IUNOUT. THIS IS ALSO THE STREAM FOR MASTER PROCESSOR MY_PE =0
 cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
@@ -178,10 +182,10 @@ cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
 !pb_open
         if (init_open == 0) then
 
-	  IF (LPE0_TO_STDOUT.AND.(MY_PE == 0)) THEN
+          IF (LPE0_TO_STDOUT.AND.(MY_PE == 0)) THEN
 !PB   nothing to be done: use standard output
 
-  	  ELSE
+          ELSE
             OUTNAME='output.'
             WRITE (OUTNAME(8:),'(I4.4)')
      .       (MY_PE*EIRENE_NTHREADS)+EIRENE_ITHREAD
@@ -198,14 +202,18 @@ cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
               CALL EIRENE_OPENFILE (IUNOUT,FILE=OUTNAME, 
      .          ACCESS='SEQUENTIAL', FORM='FORMATTED', POSITION=OUTPOS)
             end if
-            call ioflush_usr
 
             init_open=1
-	  END IF
+          END IF
 
         else
           if (my_pe.ne.0 .and. .not.LOUTAPP) rewind (iunout)
         end if
+
+        write (iunout,*) 'NPRS, EIRENE_NTHREADS ', NPRS, EIRENE_NTHREADS
+        write (iunout,*) 'MY_PE, EIRENE_ITHREAD ', MY_PE, EIRENE_ITHREAD
+        call eirene_leer(1)
+
 
 #ifndef USE_EXT_OPENMP      
 !$OMP END PARALLEL
@@ -223,8 +231,6 @@ cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
         ELSE
           DUMMY=EIRENE_RESET_SECOND()
         END IF
-
-        write (iunout,*) ' Number of PEs ',nprs
 
         CALL EIRENE_ALLOC_COMPRT
 cdr
@@ -438,6 +444,7 @@ C
 C  ATOMIC & MOLECULAR DATA DIAGNOSTICS ON ADDITIONAL INPUT ARRAY ADIN
 C
         CALL EIRENE_AMDIAG
+        write (iunout,*) 'nach amdiag'
 C
 C  PRINT VOLUME-AVERAGED INPUT TALLIES.
 C
@@ -463,7 +470,6 @@ C
   300   CONTINUE
 
       END IF   ! MY_PE == 0
-      flush(iunout)
 
       IF (NPRS > 1) CALL EIRENE_BROADCAST
       CALL EIRENE_INFCOP_PRE_MCARLO

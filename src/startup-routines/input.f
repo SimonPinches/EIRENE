@@ -124,6 +124,9 @@ C
       USE EIRMOD_PROFILES, ONLY: EIRENE_PROFR
       USE EIRMOD_JSON
       USE EIRMOD_INFCOP, ONLY: EIRENE_IF1COP, EIRENE_IF2COP
+#ifdef USE_MPI
+      USE MPI
+#endif
       USE EIRMOD_MPI
       USE EIRMOD_OPENFILE, ONLY : EIRENE_OPENFILE
 
@@ -144,7 +147,7 @@ cdr   REAL(DP) :: timea
      .           I, J, I1, I2, I3, JL, IO, IUSR, IFLG,
      .           ITALI, IRAD, IS, ISS, II, INC, IRET,
      .           JPLS, IRE, JSPZ, JTRJ, ISTRAI, NLJ, IENTRY,
-     .           IO13
+     .           IO13, IER
 
       INTEGER, SAVE :: NITER0, IUSROUT=0
       LOGICAL :: NLSRON_SAVE(NSTRA)
@@ -440,8 +443,6 @@ C  COPY USER SPECIFIC DATA TO FILE user_data.input
               JL = JL + 1
               IF (JL == 1) THEN
                 IUSR = -9999
-                write (iunout,*) 'vor openfile'
-                call ioflush_usr
                 CALL EIRENE_OPENFILE(IUSR,FILE='user_data.input',
      .               FORM='FORMATTED',ACCESS='SEQUENTIAL')
                 IUSROUT = IUSR
