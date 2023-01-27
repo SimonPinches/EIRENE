@@ -41,7 +41,7 @@ ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
 !$OMP&    ICOUNT, J, JJ, IRL, IREAC, JATM, JMOL, JION,
 !$OMP&    IFIRST)
 
-      SAVE
+!HJL      SAVE
 
       CONTAINS
 
