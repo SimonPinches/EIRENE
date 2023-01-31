@@ -7,7 +7,7 @@ include:
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
 # For bullseye
-    SAMPLE_CASE_VERSION: a2dcd4b4c3b72a0b4c7659e46c90c006b9acd2f1
+    SAMPLE_CASE_VERSION: 772fd245ec9099fbf5afe110035304d7069f473c
     INCLUDE_SERIAL: 'true'
     INCLUDE_MPI:    'false'
     INCLUDE_OPENMP: 'false'
