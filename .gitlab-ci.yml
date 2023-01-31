@@ -6,10 +6,8 @@ include:
 
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
-#   SAMPLE_CASE_VERSION: 8ac380266264fe5f683ff8eb5dd42ef97ecc08cf
-#   SAMPLE_CASE_VERSION: 61b21a86233636db365543f8174895036f68649d
 # For bullseye
-    SAMPLE_CASE_VERSION: 84531493443dcc9d83629bb48c41cdf3099eada4
+    SAMPLE_CASE_VERSION: a2dcd4b4c3b72a0b4c7659e46c90c006b9acd2f1
     INCLUDE_SERIAL: 'true'
     INCLUDE_MPI:    'false'
     INCLUDE_OPENMP: 'false'
@@ -152,7 +150,7 @@ build_library:
     script:
         - mkdir buildRelease
         - cd buildRelease
-        - FC=gfortran cmake ../src
+        - FC=mpif90 cmake ../src
         - make EIRENE
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
@@ -741,7 +739,7 @@ coverage_report:
     script:
         - mkdir buildCoverage
         - cd buildCoverage
-        - FC=gfortran cmake ../src -DCMAKE_BUILD_TYPE=Coverage
+        - FC=mpif90 cmake ../src -DCMAKE_BUILD_TYPE=Coverage
         - make EIRENE
         - cd ..
         - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
@@ -768,12 +766,12 @@ build_openmp_library:
         - rm -rf buildRelease
         - mkdir buildRelease
         - cd buildRelease
-        - FC=gfortran cmake ../src -DOPENMP=ON
+        - FC=mpif90 cmake ../src -DOPENMP=ON
         - make clean
         - make EIRENE
-        - FC=gfortran cmake ../src -DEIRENE_INTERFACE=SOLPS-ITER -DEIRENE_USER-ROUTINES=iter -DEIRENE_POSTFIX=_iter -DOPENMP=ON
+        - FC=mpif90 cmake ../src -DEIRENE_INTERFACE=SOLPS-ITER -DEIRENE_USER-ROUTINES=iter -DEIRENE_POSTFIX=_iter -DOPENMP=ON
         - make EIRENE
-        - FC=gfortran cmake ../src -DEIRENE_INTERFACE=B2 -DEIRENE_USER-ROUTINES=default -DEIRENE_POSTFIX=_poly -DOPENMP=ON
+        - FC=mpif90 cmake ../src -DEIRENE_INTERFACE=B2 -DEIRENE_USER-ROUTINES=default -DEIRENE_POSTFIX=_poly -DOPENMP=ON
         - make EIRENE
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
