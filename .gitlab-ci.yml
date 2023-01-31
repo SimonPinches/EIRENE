@@ -12,7 +12,8 @@ variables:
     SAMPLE_CASE_VERSION: 84531493443dcc9d83629bb48c41cdf3099eada4
     INCLUDE_SERIAL: 'true'
     INCLUDE_MPI:    'false'
-    INCLUDE_OPENMP: 'true'
+    INCLUDE_OPENMP: 'false'
+    INCLUDE_EMC3:   'false'
 
 stages:
     - preparation
@@ -567,11 +568,18 @@ build_EMC3-EIRENE:
     <<: *build_executable
     variables:
         PATH_CASE: "EMC3"
+    only:
+        variables:
+            - $INCLUDE_EMC3 == 'true'
+
 
 run_EMC3-EIRENE_H:
     <<: *run
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H"
+    only:
+        variables:
+            - $INCLUDE_EMC3 == 'true'
     dependencies:
         - build_EMC3-EIRENE
     artifacts:
@@ -585,6 +593,9 @@ test_EMC3-EIRENE_H:
     <<: *test
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H"
+    only:
+        variables:
+            - $INCLUDE_EMC3 == 'true'
     dependencies:
         - run_EMC3-EIRENE_H
 
@@ -592,6 +603,9 @@ run_EMC3-EIRENE_He:
     <<: *run
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/He"
+    only:
+        variables:
+            - $INCLUDE_EMC3 == 'true'
     dependencies:
         - build_EMC3-EIRENE
     artifacts:
@@ -606,6 +620,9 @@ test_EMC3-EIRENE_He:
     <<: *test
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/He"
+    only:
+        variables:
+            - $INCLUDE_EMC3 == 'true'
     dependencies:
         - run_EMC3-EIRENE_He
     
@@ -613,6 +630,9 @@ run_EMC3-EIRENE_H_multiStrata:
     <<: *run
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrata"
+    only:
+        variables:
+            - $INCLUDE_EMC3 == 'true'
     dependencies:
         - build_EMC3-EIRENE
     artifacts:
@@ -626,6 +646,9 @@ test_EMC3-EIRENE_H_multiStrata:
     <<: *test
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrata"
+    only:
+        variables:
+            - $INCLUDE_EMC3 == 'true'
     dependencies:
         - run_EMC3-EIRENE_H_multiStrata
 
@@ -649,6 +672,7 @@ test_EMC3-EIRENE_H_multiStrataMpi:
             - $CI_COMMIT_REF_NAME == 'develop'
             - $CI_COMMIT_REF_NAME == 'master'
             - $INCLUDE_MPI == 'true'
+            - $INCLUDE_EMC3 == 'true'
     dependencies:
         - run_mpi_cases
 
@@ -661,6 +685,7 @@ test_EMC3-EIRENE_H_multiStrataMpi2:
             - $CI_COMMIT_REF_NAME == 'develop'
             - $CI_COMMIT_REF_NAME == 'master'
             - $INCLUDE_MPI == 'true'
+            - $INCLUDE_EMC3 == 'true'
     dependencies:
         - run_mpi_cases
 
@@ -673,6 +698,7 @@ test_EMC3-EIRENE_H_multiStrataMpi3:
             - $CI_COMMIT_REF_NAME == 'develop'
             - $CI_COMMIT_REF_NAME == 'master'
             - $INCLUDE_MPI == 'true'
+            - $INCLUDE_EMC3 == 'true'
     dependencies:
         - run_mpi_cases
 
@@ -680,6 +706,9 @@ run_EMC3-EIRENE_H_profile:
     <<: *run
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_profile"
+    only:
+        variables:
+            - $INCLUDE_EMC3 == 'true'
     dependencies:
         - build_EMC3-EIRENE
     artifacts:
@@ -693,6 +722,9 @@ test_EMC3-EIRENE_H_profile:
     <<: *test
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_profile"
+    only:
+        variables:
+            - $INCLUDE_EMC3 == 'true'
     dependencies:
         - run_EMC3-EIRENE_H_profile
 
