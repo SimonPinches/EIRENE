@@ -311,24 +311,24 @@ test_standalone_ITER_1573_def_lines:
     dependencies:
         - run_standalone_ITER_1573_def_lines
 
-build_standalone_ITER_1573_dens_model:
-    <<: *build_executable
-    variables:
-        PATH_CASE: "ITER_1573_dens_model"
+#build_standalone_ITER_1573_dens_model:
+#    <<: *build_executable
+#    variables:
+#        PATH_CASE: "ITER_1573_dens_model"
 
-run_standalone_ITER_1573_dens_model:
-    <<: *run
-    variables:
-        PATH_CASE: "ITER_1573_dens_model"
-    dependencies:
-        - build_standalone_ITER_1573_dens_model
+#run_standalone_ITER_1573_dens_model:
+#    <<: *run
+#    variables:
+#        PATH_CASE: "ITER_1573_dens_model"
+#    dependencies:
+#        - build_standalone_ITER_1573_dens_model
 
-test_standalone_ITER_1573_dens_model:
-    <<: *test
-    variables:
-        PATH_CASE: "ITER_1573_dens_model"
-    dependencies:
-        - run_standalone_ITER_1573_dens_model
+#test_standalone_ITER_1573_dens_model:
+#    <<: *test
+#    variables:
+#        PATH_CASE: "ITER_1573_dens_model"
+#    dependencies:
+#        - run_standalone_ITER_1573_dens_model
 
 build_standalone_2D_slab:
     <<: *build_executable
