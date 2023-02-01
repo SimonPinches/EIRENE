@@ -32,8 +32,8 @@ stages:
     stage: build:executable
     only:
         variables:
-            - $CI_COMMIT_REF_NAME == 'develop'
-            - $CI_COMMIT_REF_NAME == 'master'
+#            - $CI_COMMIT_REF_NAME == 'develop'
+#            - $CI_COMMIT_REF_NAME == 'master'
             - $INCLUDE_SERIAL == 'true'
     except: 
         - schedules
@@ -55,8 +55,8 @@ run_mpi_cases:
     stage: run_mpi
     only:
         variables:
-            - $CI_COMMIT_REF_NAME == 'develop'
-            - $CI_COMMIT_REF_NAME == 'master'
+#            - $CI_COMMIT_REF_NAME == 'develop'
+#            - $CI_COMMIT_REF_NAME == 'master'
             - $INCLUDE_MPI == 'true'
     except: 
         - schedules
@@ -89,8 +89,8 @@ run_mpi_cases:
     stage: run
     only:
         variables:
-            - $CI_COMMIT_REF_NAME == 'develop'
-            - $CI_COMMIT_REF_NAME == 'master'
+#            - $CI_COMMIT_REF_NAME == 'develop'
+#            - $CI_COMMIT_REF_NAME == 'master'
             - $INCLUDE_SERIAL == 'true'
     except: 
         - schedules
@@ -109,8 +109,8 @@ run_mpi_cases:
     stage: test
     only:
         variables:
-            - $CI_COMMIT_REF_NAME == 'develop'
-            - $CI_COMMIT_REF_NAME == 'master'
+#            - $CI_COMMIT_REF_NAME == 'develop'
+#            - $CI_COMMIT_REF_NAME == 'master'
             - $INCLUDE_SERIAL == 'true'
     except: 
         - schedules
@@ -142,8 +142,8 @@ build_library:
     stage: preparation
     only:
         variables:
-            - $CI_COMMIT_REF_NAME == 'develop'
-            - $CI_COMMIT_REF_NAME == 'master'
+#            - $CI_COMMIT_REF_NAME == 'develop'
+#            - $CI_COMMIT_REF_NAME == 'master'
             - $INCLUDE_SERIAL == 'true'
     except: 
         - schedules
@@ -667,8 +667,8 @@ test_EMC3-EIRENE_H_multiStrataMpi:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi"
     only:
         variables:
-            - $CI_COMMIT_REF_NAME == 'develop'
-            - $CI_COMMIT_REF_NAME == 'master'
+#            - $CI_COMMIT_REF_NAME == 'develop'
+#            - $CI_COMMIT_REF_NAME == 'master'
             - $INCLUDE_MPI == 'true'
             - $INCLUDE_EMC3 == 'true'
     dependencies:
@@ -680,8 +680,8 @@ test_EMC3-EIRENE_H_multiStrataMpi2:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi2"
     only:
         variables:
-            - $CI_COMMIT_REF_NAME == 'develop'
-            - $CI_COMMIT_REF_NAME == 'master'
+#            - $CI_COMMIT_REF_NAME == 'develop'
+#            - $CI_COMMIT_REF_NAME == 'master'
             - $INCLUDE_MPI == 'true'
             - $INCLUDE_EMC3 == 'true'
     dependencies:
@@ -693,8 +693,8 @@ test_EMC3-EIRENE_H_multiStrataMpi3:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi3"
     only:
         variables:
-            - $CI_COMMIT_REF_NAME == 'develop'
-            - $CI_COMMIT_REF_NAME == 'master'
+#            - $CI_COMMIT_REF_NAME == 'develop'
+#            - $CI_COMMIT_REF_NAME == 'master'
             - $INCLUDE_MPI == 'true'
             - $INCLUDE_EMC3 == 'true'
     dependencies:
@@ -757,8 +757,8 @@ build_openmp_library:
     stage: preparation:openmp
     only:
         variables:
-            - $CI_COMMIT_REF_NAME == 'develop'
-            - $CI_COMMIT_REF_NAME == 'master'
+#            - $CI_COMMIT_REF_NAME == 'develop'
+#            - $CI_COMMIT_REF_NAME == 'master'
             - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
@@ -783,8 +783,8 @@ build_openmp_library:
     stage: build:openmp_executable
     only:
         variables:
-            - $CI_COMMIT_REF_NAME == 'develop'
-            - $CI_COMMIT_REF_NAME == 'master'
+#            - $CI_COMMIT_REF_NAME == 'develop'
+#            - $CI_COMMIT_REF_NAME == 'master'
             - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
@@ -804,8 +804,8 @@ build_openmp_library:
     stage: run_openmp
     only:
         variables:
-            - $CI_COMMIT_REF_NAME == 'develop'
-            - $CI_COMMIT_REF_NAME == 'master'
+#            - $CI_COMMIT_REF_NAME == 'develop'
+#            - $CI_COMMIT_REF_NAME == 'master'
             - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
@@ -827,8 +827,8 @@ build_openmp_library:
     stage: test_openmp
     only:
         variables:
-            - $CI_COMMIT_REF_NAME == 'develop'
-            - $CI_COMMIT_REF_NAME == 'master'
+#            - $CI_COMMIT_REF_NAME == 'develop'
+#            - $CI_COMMIT_REF_NAME == 'master'
             - $INCLUDE_OPENMP == 'true'
     except: 
         - schedules
