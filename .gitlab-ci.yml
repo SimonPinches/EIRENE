@@ -7,7 +7,7 @@ include:
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
 # For bullseye
-    SAMPLE_CASE_VERSION: 772fd245ec9099fbf5afe110035304d7069f473c
+    SAMPLE_CASE_VERSION: 77d9f30a0be8c51eabbb1ddbc275b1a4efeb771e
     INCLUDE_SERIAL: 'true'
     INCLUDE_MPI:    'false'
     INCLUDE_OPENMP: 'false'
@@ -218,15 +218,15 @@ run_standalone_1D_cylindric:
         PATH_CASE: "1D_cylindric"
     dependencies:
         - build_library    
-        - build_standalone_2D_slab
+        - build_standalone_1D_cylindric
 
 test_standalone_1D_cylindric:
     <<: *test
     variables:
         PATH_CASE: "1D_cylindric"
     dependencies:
-        - build_standalone_2D_slab
-        - run_standalone_2D-D_slab
+        - build_standalone_1D_cylindric
+        - run_standalone_1D_cylindric
 
 build_standalone_1D_elliptic:
     # in fact it is a build_standalone but stored in ...1D_cylindric
@@ -240,15 +240,15 @@ run_standalone_1D_elliptic:
         PATH_CASE: "1D_elliptic"
     dependencies:
         - build_library    
-        - build_standalone_1D_cylindric
+        - build_standalone_1D_elliptic
 
 test_standalone_1D_elliptic:
     <<: *test
     variables:
         PATH_CASE: "1D_elliptic"
     dependencies:
-        - build_standalone_1D_cylindric
-        - run_standalone_1D_cylindric
+        - build_standalone_1D_elliptic
+        - run_standalone_1D_elliptic
 
 build_standalone_ITER_1573:
     <<: *build_executable
