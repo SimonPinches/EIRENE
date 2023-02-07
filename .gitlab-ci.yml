@@ -732,8 +732,8 @@ test_EMC3-EIRENE_H_profile:
     rules:
         - if: $CI_COMMIT_REF_NAME == 'develop'
         - if: $CI_COMMIT_REF_NAME == 'master'
-        - if:
-            $EXCLUDE_EMC3 == 'true'
+        - if: $EXCLUDE_EMC3 == 'true'
+          when: never
     dependencies:
         - run_EMC3-EIRENE_H_profile
 
