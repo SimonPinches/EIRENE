@@ -8,9 +8,9 @@ variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
 # For bullseye
     SAMPLE_CASE_VERSION: caef544611f93b35d07d57de66efb5d788d5f195
-    EXCLUDE_SERIAL: 'true'
+    EXCLUDE_SERIAL: 'false'
     EXCLUDE_MPI:    'true'
-    EXCLUDE_OPENMP: 'true'
+    EXCLUDE_OPENMP: 'false'
     EXCLUDE_EMC3:   'true'
 
 stages:
@@ -130,7 +130,7 @@ prepare_testcases:
     rules:
         - if: $CI_COMMIT_REF_NAME == 'develop'
         - if: $CI_COMMIT_REF_NAME == 'master'
-        - if: $EXCLUDE_SERIAL == 'true'
+#        - if: $EXCLUDE_SERIAL == 'true'
         - if: $CI_PIPELINE_SOURCE == 'schedule'
           when: never
     script:
@@ -148,9 +148,9 @@ build_library:
     rules:
         - if: $CI_COMMIT_REF_NAME == 'develop'
         - if: $CI_COMMIT_REF_NAME == 'master'
-        - if: $EXCLUDE_SERIAL == 'true'
-        - if: $CI_PIPELINE_SOURCE == 'schedule'
-          when: never
+        - if: $EXCLUDE_SERIAL == 'false'
+#        - if: $CI_PIPELINE_SOURCE == 'schedule'
+#          when: never
 #        - if: $EXCLUDE_SERIAL == 'true'
 #          when: never
     script:
@@ -775,10 +775,10 @@ build_openmp_library:
     rules:
         - if: $CI_COMMIT_REF_NAME == 'develop'
         - if: $CI_COMMIT_REF_NAME == 'master'
-        - if: $CI_PIPELINE_SOURCE == 'schedule'
-          when: never
-        - if: $EXCLUDE_OPENMP == 'true'
-          when: never
+#        - if: $CI_PIPELINE_SOURCE == 'schedule'
+#          when: never
+#        - if: $EXCLUDE_OPENMP == 'true'
+#          when: never
     script:
         - rm -rf buildRelease
         - mkdir buildRelease
