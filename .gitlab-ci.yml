@@ -126,6 +126,7 @@ run_mpi_cases:
 
 prepare_testcases:
     stage: preparation
+    when: always
     rules:
         - if: $CI_COMMIT_REF_NAME == 'develop'
         - if: $CI_COMMIT_REF_NAME == 'master'
@@ -146,7 +147,7 @@ build_library:
     rules:
         - if: $CI_COMMIT_REF_NAME == 'develop'
         - if: $CI_COMMIT_REF_NAME == 'master'
-        - if: $EXCLUDE_SERIAL == 'true'
+#        - if: $EXCLUDE_SERIAL == 'true'
         - if: $CI_PIPELINE_SOURCE == 'schedule'
           when: never
 #        - if: $EXCLUDE_SERIAL == 'true'
