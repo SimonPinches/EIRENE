@@ -8,7 +8,7 @@ variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
 # For bullseye
     SAMPLE_CASE_VERSION: caef544611f93b35d07d57de66efb5d788d5f195
-    EXCLUDE_SERIAL: 'false'
+    EXCLUDE_SERIAL: 'true'
     EXCLUDE_MPI:    'true'
     EXCLUDE_OPENMP: 'true'
     EXCLUDE_EMC3:   'true'
@@ -126,8 +126,11 @@ run_mpi_cases:
 
 prepare_testcases:
     stage: preparation
-    except: 
-        - schedules
+    rules:
+        - if: $CI_COMMIT_REF_NAME == 'develop'
+        - if: $CI_COMMIT_REF_NAME == 'master'
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
     script:
         - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
         - cd EIRENE-sample-cases
@@ -143,10 +146,11 @@ build_library:
     rules:
         - if: $CI_COMMIT_REF_NAME == 'develop'
         - if: $CI_COMMIT_REF_NAME == 'master'
+        - if: $EXCLUDE_SERIAL == 'true'
         - if: $CI_PIPELINE_SOURCE == 'schedule'
           when: never
-        - if: $EXCLUDE_SERIAL == 'true'
-          when: never
+#        - if: $EXCLUDE_SERIAL == 'true'
+#          when: never
     script:
         - mkdir buildRelease
         - cd buildRelease
