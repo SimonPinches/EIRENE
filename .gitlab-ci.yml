@@ -39,6 +39,7 @@ workflow:
               EXCLUDE_MPI:    'false'
               EXCLUDE_OPENMP: 'false'
               EXCLUDE_EMC3:   'false'
+        - when: always
 
 .build_executable: &build_executable
     stage: build:executable
