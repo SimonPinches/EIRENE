@@ -137,6 +137,8 @@ prepare_testcases:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
             - EIRENE-sample-cases
+        exclude:
+            - EIRENE-sample-cases/.git/**
       
  
 build_library:
