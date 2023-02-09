@@ -7,7 +7,7 @@ include:
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
 # For bullseye
-    SAMPLE_CASE_VERSION: caef544611f93b35d07d57de66efb5d788d5f195
+    SAMPLE_CASE_VERSION: 3ff320f12ceef44527fb2492a01c6517c5a20b95
 # These variables allow the exclusion of certain stages to speed up development
     EXCLUDE_SERIAL: 'false'
     EXCLUDE_MPI:    'true'
