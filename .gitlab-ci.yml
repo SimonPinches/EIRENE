@@ -44,12 +44,11 @@ workflow:
 .build_executable: &build_executable
     stage: build:executable
     rules:
-        - if: $CI_COMMIT_REF_NAME == 'develop'
-        - if: $CI_COMMIT_REF_NAME == 'master'
         - if: $CI_PIPELINE_SOURCE == 'schedule'
           when: never
         - if: $EXCLUDE_SERIAL == 'true'
           when: never
+        - when: always
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
         - make
@@ -67,12 +66,11 @@ workflow:
 run_mpi_cases:
     stage: run_mpi
     rules:
-        - if: $CI_COMMIT_REF_NAME == 'develop'
-        - if: $CI_COMMIT_REF_NAME == 'master'
         - if: $CI_PIPELINE_SOURCE == 'schedule'
           when: never
         - if: $EXCLUDE_MPI == 'true'
           when: never
+        - when: always
     before_script:
         # Bypass mpirun abort due to execution as root
         - export MPIRUN_FLAGS='--allow-run-as-root'
@@ -101,12 +99,11 @@ run_mpi_cases:
 .run: &run
     stage: run
     rules:
-        - if: $CI_COMMIT_REF_NAME == 'develop'
-        - if: $CI_COMMIT_REF_NAME == 'master'
         - if: $CI_PIPELINE_SOURCE == 'schedule'
           when: never
         - if: $EXCLUDE_SERIAL == 'true'
           when: never
+        - when: always
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
         - make output
@@ -121,12 +118,11 @@ run_mpi_cases:
 .test: &test
     stage: test
     rules:
-        - if: $CI_COMMIT_REF_NAME == 'develop'
-        - if: $CI_COMMIT_REF_NAME == 'master'
         - if: $CI_PIPELINE_SOURCE == 'schedule'
           when: never
         - if: $EXCLUDE_SERIAL == 'true'
           when: never
+        - when: always
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
         - make test
@@ -584,20 +580,18 @@ build_EMC3-EIRENE:
     variables:
         PATH_CASE: "EMC3"
     rules:
-        - if: $CI_COMMIT_REF_NAME == 'develop'
-        - if: $CI_COMMIT_REF_NAME == 'master'
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
+        - when: always
 
 run_EMC3-EIRENE_H:
     <<: *run
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H"
     rules:
-        - if: $CI_COMMIT_REF_NAME == 'develop'
-        - if: $CI_COMMIT_REF_NAME == 'master'
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
+        - when: always
     dependencies:
         - build_EMC3-EIRENE
     artifacts:
@@ -612,10 +606,9 @@ test_EMC3-EIRENE_H:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H"
     rules:
-        - if: $CI_COMMIT_REF_NAME == 'develop'
-        - if: $CI_COMMIT_REF_NAME == 'master'
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
+        - when: always
     dependencies:
         - run_EMC3-EIRENE_H
 
@@ -624,10 +617,9 @@ run_EMC3-EIRENE_He:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/He"
     rules:
-        - if: $CI_COMMIT_REF_NAME == 'develop'
-        - if: $CI_COMMIT_REF_NAME == 'master'
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
+        - when: always
     dependencies:
         - build_EMC3-EIRENE
     artifacts:
@@ -643,10 +635,9 @@ test_EMC3-EIRENE_He:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/He"
     rules:
-        - if: $CI_COMMIT_REF_NAME == 'develop'
-        - if: $CI_COMMIT_REF_NAME == 'master'
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
+        - when: always
     dependencies:
         - run_EMC3-EIRENE_He
     
@@ -655,10 +646,9 @@ run_EMC3-EIRENE_H_multiStrata:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrata"
     rules:
-        - if: $CI_COMMIT_REF_NAME == 'develop'
-        - if: $CI_COMMIT_REF_NAME == 'master'
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
+        - when: always
     dependencies:
         - build_EMC3-EIRENE
     artifacts:
@@ -673,10 +663,9 @@ test_EMC3-EIRENE_H_multiStrata:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrata"
     rules:
-        - if: $CI_COMMIT_REF_NAME == 'develop'
-        - if: $CI_COMMIT_REF_NAME == 'master'
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
+        - when: always
     dependencies:
         - run_EMC3-EIRENE_H_multiStrata
 
@@ -685,12 +674,11 @@ test_EMC3-EIRENE_H_multiStrataMpi:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi"
     rules:
-        - if: $CI_COMMIT_REF_NAME == 'develop'
-        - if: $CI_COMMIT_REF_NAME == 'master'
         - if: $EXCLUDE_MPI == 'true'
           when: never
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
+        - when: always
     dependencies:
         - run_mpi_cases
 
@@ -699,12 +687,11 @@ test_EMC3-EIRENE_H_multiStrataMpi2:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi2"
     rules:
-        - if: $CI_COMMIT_REF_NAME == 'develop'
-        - if: $CI_COMMIT_REF_NAME == 'master'
         - if: $EXCLUDE_MPI == 'true'
           when: never
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
+        - when: always
     dependencies:
         - run_mpi_cases
 
@@ -713,12 +700,11 @@ test_EMC3-EIRENE_H_multiStrataMpi3:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi3"
     rules:
-        - if: $CI_COMMIT_REF_NAME == 'develop'
-        - if: $CI_COMMIT_REF_NAME == 'master'
         - if: $EXCLUDE_MPI == 'true'
           when: never
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
+        - when: always
     dependencies:
         - run_mpi_cases
 
@@ -727,12 +713,9 @@ run_EMC3-EIRENE_H_profile:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_profile"
     rules:
-        - if: $CI_COMMIT_REF_NAME == 'develop'
-        - if: $CI_COMMIT_REF_NAME == 'master'
-        - if: $EXCLUDE_MPI == 'true'
-          when: never
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
+        - when: always
     dependencies:
         - build_EMC3-EIRENE
     artifacts:
@@ -747,10 +730,9 @@ test_EMC3-EIRENE_H_profile:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_profile"
     rules:
-        - if: $CI_COMMIT_REF_NAME == 'develop'
-        - if: $CI_COMMIT_REF_NAME == 'master'
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
+        - when: always
     dependencies:
         - run_EMC3-EIRENE_H_profile
 
@@ -809,12 +791,11 @@ build_openmp_library:
 .build_openmp_executable: &build_openmp_executable
     stage: build:openmp_executable
     rules:
-        - if: $CI_COMMIT_REF_NAME == 'develop'
-        - if: $CI_COMMIT_REF_NAME == 'master'
         - if: $CI_PIPELINE_SOURCE == 'schedule'
           when: never
         - if: $EXCLUDE_OPENMP == 'true'
           when: never
+        - when: always
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
         - make clean
@@ -830,14 +811,11 @@ build_openmp_library:
 .run_openmp: &run_openmp
     stage: run_openmp
     rules:
-        - if: $CI_COMMIT_REF_NAME == 'develop'
-        - if: $CI_COMMIT_REF_NAME == 'master'
         - if: $CI_PIPELINE_SOURCE == 'schedule'
-          when: never
-        - if: $EXCLUDE_MPI == 'true'
           when: never
         - if: $EXCLUDE_OPENMP == 'true'
           when: never
+        - when: always
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
         - export OMP_NUM_THREADS=4
@@ -855,12 +833,11 @@ build_openmp_library:
 .test_openmp: &test_openmp
     stage: test_openmp
     rules:
-        - if: $CI_COMMIT_REF_NAME == 'develop'
-        - if: $CI_COMMIT_REF_NAME == 'master'
         - if: $CI_PIPELINE_SOURCE == 'schedule'
           when: never
         - if: $EXCLUDE_OPENMP == 'true'
           when: never
+        - when: always
     script:
         - python --version
         - cd EIRENE-sample-cases/${PATH_CASE}
