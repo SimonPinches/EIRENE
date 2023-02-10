@@ -7,7 +7,7 @@ include:
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
 # For bullseye
-    SAMPLE_CASE_VERSION: 3ff320f12ceef44527fb2492a01c6517c5a20b95
+    SAMPLE_CASE_VERSION: 0a9f5ce14586d5debec9a46ec1c50714970741d7
 # These variables allow the exclusion of certain stages to speed up development
     EXCLUDE_SERIAL: 'false'
     EXCLUDE_MPI:    'true'
@@ -324,24 +324,24 @@ test_standalone_ITER_1573_def_lines:
     dependencies:
         - run_standalone_ITER_1573_def_lines
 
-#build_standalone_ITER_1573_dens_model:
-#    <<: *build_executable
-#    variables:
-#        PATH_CASE: "ITER_1573_dens_model"
+build_standalone_ITER_1573_dens_model:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "ITER_1573_dens_model"
 
-#run_standalone_ITER_1573_dens_model:
-#    <<: *run
-#    variables:
-#        PATH_CASE: "ITER_1573_dens_model"
-#    dependencies:
-#        - build_standalone_ITER_1573_dens_model
+run_standalone_ITER_1573_dens_model:
+    <<: *run
+    variables:
+        PATH_CASE: "ITER_1573_dens_model"
+    dependencies:
+        - build_standalone_ITER_1573_dens_model
 
-#test_standalone_ITER_1573_dens_model:
-#    <<: *test
-#    variables:
-#        PATH_CASE: "ITER_1573_dens_model"
-#    dependencies:
-#        - run_standalone_ITER_1573_dens_model
+test_standalone_ITER_1573_dens_model:
+    <<: *test
+    variables:
+        PATH_CASE: "ITER_1573_dens_model"
+    dependencies:
+        - run_standalone_ITER_1573_dens_model
 
 build_standalone_2D_slab:
     <<: *build_executable
