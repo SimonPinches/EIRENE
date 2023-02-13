@@ -58,7 +58,12 @@ workflow:
         paths:
             - buildRelease/
             - libRelease/
+            - binRelease/
             - EIRENE-sample-cases/${PATH_CASE}
+    dependencies:
+        - build_library
+        - prepare_testcases
+
 
 .build_iter_executable: &build_iter_executable
     stage: build:executable
@@ -83,7 +88,8 @@ workflow:
             - EIRENE-sample-cases/ITER_*/outpu*/fort.110
     dependencies:
         - prepare_testcases
-    needs: ["prepare_testcases"]
+    needs:
+        - prepare_testcases
 
 # Create individual stage for mpi-jobs due to recource limits (memory?)
 # of gitlab runner at juelich gitlab
@@ -301,7 +307,7 @@ test_standalone_1D_elliptic:
     needs: ["run_standalone_1D_elliptic"]
     
 build_standalone_ITER_1573:
-    <<: *build_executable
+    <<: *build_iter_executable
     variables:
         PATH_CASE: "ITER_1573"
 
@@ -322,7 +328,7 @@ test_standalone_ITER_1573:
     needs: ["run_standalone_ITER_1573"]
     
 build_standalone_ITER_1573_scaling:
-    <<: *build_executable
+    <<: *build_iter_executable
     variables:
         PATH_CASE: "ITER_1573_scaling"
 
@@ -343,7 +349,7 @@ test_standalone_ITER_1573_scaling:
     needs: ["run_standalone_ITER_1573_scaling"]
 
 build_standalone_ITER_1573_def_lines:
-    <<: *build_executable
+    <<: *build_iter_executable
     variables:
         PATH_CASE: "ITER_1573_def_lines"
 
@@ -364,7 +370,7 @@ test_standalone_ITER_1573_def_lines:
     needs: ["run_standalone_ITER_1573_def_lines"]
     
 build_standalone_ITER_1573_dens_model:
-    <<: *build_executable
+    <<: *build_iter_executable
     variables:
         PATH_CASE: "ITER_1573_dens_model"
 
