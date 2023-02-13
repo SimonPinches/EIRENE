@@ -113,6 +113,8 @@ run_mpi_cases:
             - buildRelease/
             - libRelease/
             - EIRENE-sample-cases/${PATH_CASE}
+        exclude:
+            - EIRENE-sample-cases/${PATH_CASE}/output_json/fort.110
         when: always
 
 .test: &test
@@ -131,6 +133,8 @@ run_mpi_cases:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
             - EIRENE-sample-cases/${PATH_CASE}
+        exclude:
+            - EIRENE-sample-cases/${PATH_CASE}/output_json/fort.110
         when: always
 
 prepare_testcases:
