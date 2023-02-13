@@ -7,7 +7,7 @@ include:
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
 # For bullseye - from DMH/reduced_size
-    SAMPLE_CASE_VERSION: 78b557af6e17eb65fee9af223004892e13c9243b
+    SAMPLE_CASE_VERSION: 7c49ccc368aec29468c86ae00ca3c6c6a900da58
 # These variables allow the exclusion of certain stages to speed up development
     EXCLUDE_SERIAL: 'false'
     EXCLUDE_MPI:    'true'
@@ -126,7 +126,8 @@ run_mpi_cases:
         when: always
     dependencies:
         - build_EMC3-EIRENE
-    needs: ["build_EMC3-EIRENE"]
+    needs:
+        - build_EMC3-EIRENE
 
 .run: &run
     stage: run
@@ -225,7 +226,8 @@ run_standalone_1D-H_slab:
         PATH_CASE: "1D-H_slab"
     dependencies:
         - build_standalone_1D-H_slab
-    needs: ["build_standalone_1D-H_slab"]
+    needs:
+        - build_standalone_1D-H_slab
 
 test_standalone_1D-H_slab:
     <<: *test
@@ -233,7 +235,8 @@ test_standalone_1D-H_slab:
         PATH_CASE: "1D-H_slab"
     dependencies:
         - run_standalone_1D-H_slab
-    needs: ["run_standalone_1D-H_slab"]
+    needs:
+        - run_standalone_1D-H_slab
     
 build_standalone_1D_slab_with_farming:
     <<: *build_executable
@@ -250,7 +253,8 @@ run_standalone_1D-H_slab_with_farming:
         - if: $CI_COMMIT_REF_NAME == 'PB/feature/farming'
     dependencies:
         - build_standalone_1D_slab_with_farming
-    needs: ["build_standalone_1D_slab_with_farming"]
+    needs:
+        - build_standalone_1D_slab_with_farming
     
 test_standalone_1D-H_slab_with_farming:
     <<: *test
@@ -260,7 +264,8 @@ test_standalone_1D-H_slab_with_farming:
         - if: $CI_COMMIT_REF_NAME == 'PB/feature/farming'
     dependencies:
         - run_standalone_1D-H_slab_with_farming
-    needs: ["run_standalone_1D-H_slab_with_farming"]
+    needs:
+        - run_standalone_1D-H_slab_with_farming
 
 build_standalone_1D_cylindric:
     # in fact it is a build_standalone but stored in ...1D_cylindric
@@ -274,7 +279,8 @@ run_standalone_1D_cylindric:
         PATH_CASE: "1D_cylindric"
     dependencies:
         - build_standalone_1D_cylindric
-    needs: ["build_standalone_1D_cylindric"]
+    needs:
+        - build_standalone_1D_cylindric
     
 test_standalone_1D_cylindric:
     <<: *test
@@ -282,7 +288,8 @@ test_standalone_1D_cylindric:
         PATH_CASE: "1D_cylindric"
     dependencies:
         - run_standalone_1D_cylindric
-    needs: ["run_standalone_1D_cylindric"]
+    needs:
+        - run_standalone_1D_cylindric
     
 build_standalone_1D_elliptic:
     # in fact it is a build_standalone but stored in ...1D_cylindric
@@ -296,7 +303,8 @@ run_standalone_1D_elliptic:
         PATH_CASE: "1D_elliptic"
     dependencies:
         - build_standalone_1D_elliptic
-    needs: ["build_standalone_1D_elliptic"]
+    needs:
+        - build_standalone_1D_elliptic
     
 test_standalone_1D_elliptic:
     <<: *test
@@ -304,7 +312,8 @@ test_standalone_1D_elliptic:
         PATH_CASE: "1D_elliptic"
     dependencies:
         - run_standalone_1D_elliptic
-    needs: ["run_standalone_1D_elliptic"]
+    needs:
+        - run_standalone_1D_elliptic
     
 build_standalone_ITER_1573:
     <<: *build_iter_executable
@@ -317,7 +326,8 @@ run_standalone_ITER_1573:
         PATH_CASE: "ITER_1573"
     dependencies:
         - build_standalone_ITER_1573
-    needs: ["build_standalone_ITER_1573"]
+    needs:
+        - build_standalone_ITER_1573
     
 test_standalone_ITER_1573:
     <<: *test
@@ -325,7 +335,8 @@ test_standalone_ITER_1573:
         PATH_CASE: "ITER_1573"
     dependencies:
         - run_standalone_ITER_1573
-    needs: ["run_standalone_ITER_1573"]
+    needs:
+        - run_standalone_ITER_1573
     
 build_standalone_ITER_1573_scaling:
     <<: *build_iter_executable
@@ -338,7 +349,8 @@ run_standalone_ITER_1573_scaling:
         PATH_CASE: "ITER_1573_scaling"
     dependencies:
         - build_standalone_ITER_1573_scaling
-    needs: ["build_standalone_ITER_1573_scaling"]
+    needs:
+        - build_standalone_ITER_1573_scaling
     
 test_standalone_ITER_1573_scaling:
     <<: *test
@@ -346,7 +358,8 @@ test_standalone_ITER_1573_scaling:
         PATH_CASE: "ITER_1573_scaling"
     dependencies:
         - run_standalone_ITER_1573_scaling
-    needs: ["run_standalone_ITER_1573_scaling"]
+    needs:
+        - run_standalone_ITER_1573_scaling
 
 build_standalone_ITER_1573_def_lines:
     <<: *build_iter_executable
@@ -359,7 +372,8 @@ run_standalone_ITER_1573_def_lines:
         PATH_CASE: "ITER_1573_def_lines"
     dependencies:
         - build_standalone_ITER_1573_def_lines
-    needs: ["build_standalone_ITER_1573_def_lines"]
+    needs:
+        - build_standalone_ITER_1573_def_lines
     
 test_standalone_ITER_1573_def_lines:
     <<: *test
@@ -367,7 +381,8 @@ test_standalone_ITER_1573_def_lines:
         PATH_CASE: "ITER_1573_def_lines"
     dependencies:
         - run_standalone_ITER_1573_def_lines
-    needs: ["run_standalone_ITER_1573_def_lines"]
+    needs:
+        - run_standalone_ITER_1573_def_lines
     
 build_standalone_ITER_1573_dens_model:
     <<: *build_iter_executable
@@ -380,7 +395,8 @@ run_standalone_ITER_1573_dens_model:
         PATH_CASE: "ITER_1573_dens_model"
     dependencies:
         - build_standalone_ITER_1573_dens_model
-    needs: ["build_standalone_ITER_1573_dens_model"]
+    needs:
+        - build_standalone_ITER_1573_dens_model
 
 test_standalone_ITER_1573_dens_model:
     <<: *test
@@ -388,7 +404,8 @@ test_standalone_ITER_1573_dens_model:
         PATH_CASE: "ITER_1573_dens_model"
     dependencies:
         - run_standalone_ITER_1573_dens_model
-    needs: ["run_standalone_ITER_1573_dens_model"]
+    needs:
+        - run_standalone_ITER_1573_dens_model
 
 build_standalone_2D_slab:
     <<: *build_executable
@@ -401,7 +418,8 @@ run_standalone_2D-D_slab:
         PATH_CASE: "2D-D_slab"
     dependencies:
         - build_standalone_2D_slab
-    needs: ["build_standalone_2D_slab"]
+    needs:
+        - build_standalone_2D_slab
     
 test_standalone_2D-D_slab:
     <<: *test
@@ -409,7 +427,8 @@ test_standalone_2D-D_slab:
         PATH_CASE: "2D-D_slab"
     dependencies:
         - run_standalone_2D-D_slab
-    needs: ["run_standalone_2D-D_slab"]
+    needs:
+        - run_standalone_2D-D_slab
     
 build_standalone_2D_slab_finite_cylinder_11x11:
     <<: *build_executable
@@ -422,7 +441,8 @@ run_standalone_2D-D_slab_finite_cylinder_11x11:
         PATH_CASE: "2D-D_slab_finite_cylinder_11x11"
     dependencies:
         - build_standalone_2D_slab_finite_cylinder_11x11
-    needs: ["build_standalone_2D_slab_finite_cylinder_11x11"]
+    needs:
+        - build_standalone_2D_slab_finite_cylinder_11x11
     
 test_standalone_2D-D_slab_finite_cylinder_11x11:
     <<: *test
@@ -430,7 +450,8 @@ test_standalone_2D-D_slab_finite_cylinder_11x11:
         PATH_CASE: "2D-D_slab_finite_cylinder_11x11"
     dependencies:
         - run_standalone_2D-D_slab_finite_cylinder_11x11
-    needs: ["run_standalone_2D-D_slab_finite_cylinder_11x11"]
+    needs:
+        - run_standalone_2D-D_slab_finite_cylinder_11x11
     
 build_standalone_2D_polygon:
     <<: *build_executable
@@ -443,7 +464,8 @@ run_standalone_2D-D_polygon:
         PATH_CASE: "2D-D_polygon"
     dependencies:
         - build_standalone_2D_polygon
-    needs: ["build_standalone_2D_polygon"]
+    needs:
+        - build_standalone_2D_polygon
     
 test_standalone_2D-D_polygon:
     <<: *test
@@ -451,7 +473,8 @@ test_standalone_2D-D_polygon:
         PATH_CASE: "2D-D_polygon"
     dependencies:
         - run_standalone_2D-D_polygon
-    needs: ["run_standalone_2D-D_polygon"]
+    needs:
+        - run_standalone_2D-D_polygon
     
 build_standalone_2D_polygon_NLPLG:
     <<: *build_executable
@@ -464,7 +487,8 @@ run_standalone_2D-D_polygon_NLPLG:
         PATH_CASE: "2D-D_polygon_NLPLG"
     dependencies:
         - build_standalone_2D_polygon_NLPLG
-    needs: ["build_standalone_2D_polygon_NLPLG"]
+    needs:
+        - build_standalone_2D_polygon_NLPLG
     
 test_standalone_2D-D_polygon_NLPLG:
     <<: *test
@@ -472,7 +496,8 @@ test_standalone_2D-D_polygon_NLPLG:
         PATH_CASE: "2D-D_polygon_NLPLG"
     dependencies:
         - run_standalone_2D-D_polygon_NLPLG
-    needs: ["run_standalone_2D-D_polygon_NLPLG"]
+    needs:
+        - run_standalone_2D-D_polygon_NLPLG
     
 build_standalone_2D_triang:
     <<: *build_executable
@@ -485,7 +510,8 @@ run_standalone_2D-D_triang:
         PATH_CASE: "2D-D_triang"
     dependencies:
         - build_standalone_2D_triang
-    needs: ["build_standalone_2D_triang"]
+    needs:
+        - build_standalone_2D_triang
     
 test_standalone_2D-D_triang:
     <<: *test
@@ -493,7 +519,8 @@ test_standalone_2D-D_triang:
         PATH_CASE: "2D-D_triang"
     dependencies:
         - run_standalone_2D-D_triang
-    needs: ["run_standalone_2D-D_triang"]
+    needs:
+        - run_standalone_2D-D_triang
     
 build_standalone_3D_slab_11x11x11:
     <<: *build_executable
@@ -506,7 +533,8 @@ run_standalone_3D-D_slab_11x11x11:
         PATH_CASE: "3D-D_slab_11x11x11"
     dependencies:
         - build_standalone_3D_slab_11x11x11
-    needs: ["build_standalone_3D_slab_11x11x11"]
+    needs:
+        - build_standalone_3D_slab_11x11x11
     
 test_standalone_3D-D_slab_11x11x11:
     <<: *test
@@ -514,7 +542,8 @@ test_standalone_3D-D_slab_11x11x11:
         PATH_CASE: "3D-D_slab_11x11x11"
     dependencies:
         - run_standalone_3D-D_slab_11x11x11
-    needs: ["run_standalone_3D-D_slab_11x11x11"]
+    needs:
+        - run_standalone_3D-D_slab_11x11x11
     
 build_standalone_3D_tetra:
     <<: *build_executable
@@ -527,7 +556,8 @@ run_standalone_3D-D_tetra:
         PATH_CASE: "3D-D_tetra"
     dependencies:
         - build_standalone_3D_tetra
-    needs: ["build_standalone_3D_tetra"]
+    needs:
+        - build_standalone_3D_tetra
     
 test_standalone_3D-D_tetra:
     <<: *test
@@ -535,7 +565,8 @@ test_standalone_3D-D_tetra:
         PATH_CASE: "3D-D_tetra"
     dependencies:
         - run_standalone_3D-D_tetra
-    needs: ["run_standalone_3D-D_tetra"]
+    needs:
+        - run_standalone_3D-D_tetra
     
 build_standalone_ALT2S:
     <<: *build_executable
@@ -548,7 +579,8 @@ run_standalone_ALT2S:
         PATH_CASE: "ALT2S"
     dependencies:
         - build_standalone_ALT2S
-    needs: ["build_standalone_ALT2S"]
+    needs:
+        - build_standalone_ALT2S
     
 test_standalone_ALT2S:
     <<: *test
@@ -556,7 +588,8 @@ test_standalone_ALT2S:
         PATH_CASE: "ALT2S"
     dependencies:
         - run_standalone_ALT2S
-    needs: ["run_standalone_ALT2S"]
+    needs:
+        - run_standalone_ALT2S
     
 build_standalone_ALT2S_bits:
     <<: *build_executable
@@ -569,7 +602,8 @@ run_standalone_ALT2S_bits:
         PATH_CASE: "ALT2S_bits"
     dependencies:
         - build_standalone_ALT2S_bits
-    needs: ["build_standalone_ALT2S_bits"]
+    needs:
+        - build_standalone_ALT2S_bits
     
 test_standalone_ALT2S_bits:
     <<: *test
@@ -577,7 +611,8 @@ test_standalone_ALT2S_bits:
         PATH_CASE: "ALT2S_bits"
     dependencies:
         - run_standalone_ALT2S_bits
-    needs: ["run_standalone_ALT2S_bits"]
+    needs:
+        - run_standalone_ALT2S_bits
     
 build_standalone_cylinder:
     <<: *build_executable
@@ -590,7 +625,8 @@ run_standalone_cylinder:
         PATH_CASE: "cylinder"
     dependencies:
         - build_standalone_cylinder
-    needs: ["build_standalone_cylinder"]
+    needs:
+        - build_standalone_cylinder
     
 test_standalone_cylinder:
     <<: *test
@@ -598,7 +634,8 @@ test_standalone_cylinder:
         PATH_CASE: "cylinder"
     dependencies:
         - run_standalone_cylinder
-    needs: ["run_standalone_cylinder"]
+    needs:
+        - run_standalone_cylinder
     
 build_standalone_cylinder_triang_no_octree:
     <<: *build_executable
@@ -611,7 +648,8 @@ run_standalone_cylinder_triang_no_octree:
         PATH_CASE: "cylinder_triang_no_octree"
     dependencies:
         - build_standalone_cylinder_triang_no_octree
-    needs: ["build_standalone_cylinder_triang_no_octree"]
+    needs:
+        - build_standalone_cylinder_triang_no_octree
     
 test_standalone_cylinder_triang_no_octree:
     <<: *test
@@ -619,7 +657,8 @@ test_standalone_cylinder_triang_no_octree:
         PATH_CASE: "cylinder_triang_no_octree"
     dependencies:
         - run_standalone_cylinder_triang_no_octree
-    needs: ["run_standalone_cylinder_triang_no_octree"]
+    needs:
+        - run_standalone_cylinder_triang_no_octree
     
 build_standalone_cylinder_triang_octree:
     <<: *build_executable
@@ -632,7 +671,8 @@ run_standalone_cylinder_triang_octree:
         PATH_CASE: "cylinder_triang_octree"
     dependencies:
         - build_standalone_cylinder_triang_octree
-    needs: ["build_standalone_cylinder_triang_octree"]
+    needs:
+        - build_standalone_cylinder_triang_octree
     
 test_standalone_cylinder_triang_octree:
     <<: *test
@@ -640,7 +680,8 @@ test_standalone_cylinder_triang_octree:
         PATH_CASE: "cylinder_triang_octree"
     dependencies:
         - run_standalone_cylinder_triang_octree
-    needs: ["run_standalone_cylinder_triang_octree"]
+    needs:
+        - run_standalone_cylinder_triang_octree
     
 build_EMC3-EIRENE:
     <<: *build_executable
@@ -667,7 +708,8 @@ run_EMC3-EIRENE_H:
             - buildRelease/
             - libRelease/
             - EIRENE-sample-cases/EMC3
-    needs: ["build_EMC3-EIRENE"]
+    needs:
+        - build_EMC3-EIRENE
     
 test_EMC3-EIRENE_H:
     <<: *test
@@ -679,7 +721,8 @@ test_EMC3-EIRENE_H:
         - when: always
     dependencies:
         - run_EMC3-EIRENE_H
-    needs: ["run_EMC3-EIRENE_H"]
+    needs:
+        - run_EMC3-EIRENE_H
     
 run_EMC3-EIRENE_He:
     <<: *run
@@ -698,7 +741,8 @@ run_EMC3-EIRENE_He:
             - libRelease/
             - EIRENE-sample-cases/EMC3
         when: always
-    needs: ["build_EMC3-EIRENE"]
+    needs:
+        - build_EMC3-EIRENE
     
 test_EMC3-EIRENE_He:
     <<: *test
@@ -710,7 +754,8 @@ test_EMC3-EIRENE_He:
         - when: always
     dependencies:
         - run_EMC3-EIRENE_He
-    needs: ["run_EMC3-EIRENE_He"]
+    needs:
+        - run_EMC3-EIRENE_He
 
 run_EMC3-EIRENE_H_multiStrata:
     <<: *run
@@ -728,7 +773,8 @@ run_EMC3-EIRENE_H_multiStrata:
             - buildRelease/
             - libRelease/
             - EIRENE-sample-cases/EMC3
-    needs: ["build_EMC3-EIRENE"]
+    needs:
+        - build_EMC3-EIRENE
     
 test_EMC3-EIRENE_H_multiStrata:
     <<: *test
@@ -740,7 +786,8 @@ test_EMC3-EIRENE_H_multiStrata:
         - when: always
     dependencies:
         - run_EMC3-EIRENE_H_multiStrata
-    needs: ["run_EMC3-EIRENE_H_multiStrata"]
+    needs:
+        - run_EMC3-EIRENE_H_multiStrata
     
 test_EMC3-EIRENE_H_multiStrataMpi:
     <<: *test
@@ -754,7 +801,8 @@ test_EMC3-EIRENE_H_multiStrataMpi:
         - when: always
     dependencies:
         - run_mpi_cases
-    needs: ["run_mpi_cases"]
+    needs:
+        - run_mpi_cases
     
 test_EMC3-EIRENE_H_multiStrataMpi2:
     <<: *test
@@ -768,7 +816,8 @@ test_EMC3-EIRENE_H_multiStrataMpi2:
         - when: always
     dependencies:
         - run_mpi_cases
-    needs: ["run_mpi_cases"]
+    needs:
+        - run_mpi_cases
     
 test_EMC3-EIRENE_H_multiStrataMpi3:
     <<: *test
@@ -782,7 +831,8 @@ test_EMC3-EIRENE_H_multiStrataMpi3:
         - when: always
     dependencies:
         - run_mpi_cases
-    needs: ["run_mpi_cases"]
+    needs:
+        - run_mpi_cases
     
 run_EMC3-EIRENE_H_profile:
     <<: *run
@@ -800,7 +850,8 @@ run_EMC3-EIRENE_H_profile:
             - buildRelease/
             - libRelease/
             - EIRENE-sample-cases/EMC3
-    needs: ["build_EMC3-EIRENE"]
+    needs:
+        - build_EMC3-EIRENE
     
 test_EMC3-EIRENE_H_profile:
     <<: *test
@@ -812,7 +863,8 @@ test_EMC3-EIRENE_H_profile:
         - when: always
     dependencies:
         - run_EMC3-EIRENE_H_profile
-    needs: ["run_EMC3-EIRENE_H_profile"]
+    needs:
+        - run_EMC3-EIRENE_H_profile
     
 coverage_report:
     stage: coverage
