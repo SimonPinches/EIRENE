@@ -114,6 +114,7 @@ run_mpi_cases:
             - libRelease/
             - EIRENE-sample-cases/${PATH_CASE}
         exclude:
+            - EIRENE-sample-cases/${PATH_CASE}/output_fixed/fort.110
             - EIRENE-sample-cases/${PATH_CASE}/output_json/fort.110
         when: always
 
@@ -134,6 +135,7 @@ run_mpi_cases:
         paths:
             - EIRENE-sample-cases/${PATH_CASE}
         exclude:
+            - EIRENE-sample-cases/${PATH_CASE}/output_fixed/fort.110	
             - EIRENE-sample-cases/${PATH_CASE}/output_json/fort.110
         when: always
 
