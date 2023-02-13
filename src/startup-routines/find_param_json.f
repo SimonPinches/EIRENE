@@ -121,7 +121,6 @@ C
 C  SET DEFAULT VALUES FOR STORAGE PARAMETERS
 C
       CALL EIRENE_INIT_PARAMS
-!pb   NREAC_ADD=0
       LDEFSTOR=.false.
       
       lmulpl = .false.
@@ -359,7 +358,6 @@ cpg
       nrtal_in = nrtal
       noptim_in = noptim
       nsmstra_in = nsmstra
-!pb   call json%get(p,'NREAC_ADD',nreac_add,found)
 
       call json%get(p,'NLERG',nlerg,found)
      

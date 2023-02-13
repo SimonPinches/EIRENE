@@ -112,13 +112,15 @@ cdr
       USE EIRMOD_CREF
      >    , ONLY : EIRENE_BROADCAST_CREF
       USE EIRMOD_TIMEA, ONLY : EIRENE_TIMEA0_OC
-      USE EIRMOD_CPES, ONLY : MY_PE, NLIDENT
+      USE EIRMOD_CPES
+     >    , ONLY : MY_PE, NLIDENT, 
+     >             input_distribution_strategy
       USE EIRMOD_MPI
       IMPLICIT NONE
       INTEGER :: IER
       
-      CALL EIRENE_CHECK_EXIT
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
+      CALL EIRENE_CHECK_EXIT
 
 !pb  in order to avoid cyclic dependencies in compilation
 !pb  hand over processor number via argument list
@@ -155,6 +157,9 @@ cdr
 
       CALL MPI_BCAST (NLIDENT,1,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
 
+      CALL MPI_BCAST (input_distribution_strategy,1,MPI_INTEGER,0,
+     .                MPI_COMM_WORLD,ier)
+
 cdr  broadcast arrays for interfacing with B2/B2.5 codes family
       CALL EIRENE_BROADCAST_CCOUPL(MY_PE)
 
@@ -180,5 +185,4 @@ c     on the "root" node, where this is already done via timea0 after input
       END IF
 
       RETURN
-
       END SUBROUTINE EIRENE_BROADCAST

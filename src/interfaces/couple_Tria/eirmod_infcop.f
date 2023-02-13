@@ -207,6 +207,7 @@ C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
       USE EIRMOD_EIRBRA
       USE EIRMOD_BRASCL
       USE EIRMOD_JSON
+      USE EIRMOD_OPENFILE, ONLY: EIRENE_OPENFILE
       
       use json_module
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
@@ -761,7 +762,10 @@ C
           if (plidl) then
 c write file 'triang_new.npco_char' for triang-grid, for idl tool, in appropriate format.
 c first: fetch a free file unit number
-            open(newunit=jun,file='triang_new.npco_char',
+!pb         open(newunit=jun,file='triang_new.npco_char',
+!pb  .           access='SEQUENTIAL',form='FORMATTED')
+            jun=-9999
+            call eirene_openfile(jun,file='triang_new.npco_char',
      .           access='SEQUENTIAL',form='FORMATTED')
 c next: write file 'triang_new.npco_char'
             write (jun,'(i9)') NRKNOT
@@ -4828,7 +4832,12 @@ C  COPY USER SPECIFIC DATA TO FILE user_data.input
          READ (IUNIN,'(A72)',IOSTAT=IO) ZEILE
          IF (IO == 0) THEN
            JL = JL + 1
-           IF (JL == 1) OPEN(NEWUNIT=IUSROUT,FILE='user_data.input')
+!pb        IF (JL == 1) OPEN(NEWUNIT=IUSROUT,FILE='user_data.input')
+           IF (JL == 1) THEN
+             IUSROUT = -9999
+             CALL EIRENE_OPENFILE(IUSROUT,FILE='user_data.input',
+     .                            FORM='FORMATTED',ACCESS='SQEUENTIAL')
+           END IF
            WRITE (IUSROUT,'(A)') TRIM(ZEILE)
          END IF
        END DO
@@ -5092,7 +5101,10 @@ C  HERE: EIRENE SURFACE TALLIES
 C
 C  INPUT BLOCK 14 DONE
 C
-       OPEN(NEWUNIT=IUSROUT,FILE='user_data.input',STATUS='OLD',
+!pb     OPEN(NEWUNIT=IUSROUT,FILE='user_data.input',STATUS='OLD',
+!pb  .      IOSTAT=IO)
+       IUSROUT = -9999
+       CALL EIRENE_OPENFILE(IUSROUT,FILE='user_data.input',STATUS='OLD',
      .      IOSTAT=IO)
        IUNIN_SAVE = IUNIN
        IF (IO == 0) THEN

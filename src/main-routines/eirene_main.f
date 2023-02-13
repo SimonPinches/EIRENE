@@ -62,7 +62,7 @@ c  iteration number for iterations with external code
       ITNR=1
 c  initialize MPI routines
       MPI_INIT=.TRUE.
-!!! debug / commented until -ccp option added
+!!! debug / commented until -cpp option added
 !!!      write(6,*) "EIRENE_MAIN: starting"
 !!!#ifdef USE_EXT_OPENMP
 !!!      write(6,*) "Entering paralell region replicating external region"

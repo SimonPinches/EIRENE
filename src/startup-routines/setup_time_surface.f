@@ -35,7 +35,6 @@ C
         ILIIN(NLIM+NSTSI)=2
 C
 C  B) DEFINE ONE MORE STRATUM, even if no old census may be available yet       
-
         NSTRAI=NSTRAI+1
 C  CHECK STORAGE
         IF (NSTRAI.GT.NSTRA) THEN

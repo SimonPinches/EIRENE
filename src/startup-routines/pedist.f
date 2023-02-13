@@ -243,7 +243,7 @@ C>   processes to one stratum.
         else
 
 csw attempting better work load balancing
-!HJL          npestr(0)=nprs
+!HJL      npestr(0)=nprs
           tmean=xtim(0)/dble(nprs)
           do istra=1,nstra
             timpe(istra) = max(xtim(istra)-tmean,0.0_DP)/tmean

@@ -16,48 +16,48 @@ C
       REWIND 12+ifoff
       WRITE (12+ifoff) RCGM1,RCGM2,NPOINT,NSTGRD,NGHPLS,NGHPOL,NCLTAL
 #ifdef CHECKBIN
-      OPEN (UNIT=112,ACCESS='SEQUENTIAL',FORM='FORMATTED')
-      REWIND 112
-      WRITE (112,*) 'CGEOM'
-      WRITE (112,*) 'RCGM1 '
+      OPEN (UNIT=112+ifoff,ACCESS='SEQUENTIAL',FORM='FORMATTED')
+      REWIND 112+ifoff
+      WRITE (112+ifoff,*) 'CGEOM'
+      WRITE (112+ifoff,*) 'RCGM1 '
       do i = 1, ncgm1, 10
-        WRITE (112,*) i,(RCGM1(j),j=i,min(i+9,ncgm1))
+        WRITE (112+ifoff,*) i,(RCGM1(j),j=i,min(i+9,ncgm1))
       end do
-      WRITE (112,*) 'RCGM2 ',RCGM2
-      WRITE (112,*) 'NPOINT ',NPOINT
-      WRITE (112,*) 'NSTGRD ',NSTGRD
-      WRITE (112,*) 'NGHPLS ',NGHPLS
-      WRITE (112,*) 'NGHPOL ',NGHPOL
-      WRITE (112,*) 'NCLTAL ',NCLTAL
+      WRITE (112+ifoff,*) 'RCGM2 ',RCGM2
+      WRITE (112+ifoff,*) 'NPOINT ',NPOINT
+      WRITE (112+ifoff,*) 'NSTGRD ',NSTGRD
+      WRITE (112+ifoff,*) 'NGHPLS ',NGHPLS
+      WRITE (112+ifoff,*) 'NGHPOL ',NGHPOL
+      WRITE (112+ifoff,*) 'NCLTAL ',NCLTAL
 #endif      
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 12: RCGM,ICGM '
       WRITE (12+ifoff) RCGRID,ICGRID
 #ifdef CHECKBIN
-      WRITE (112,*) 'CGRID'
-      WRITE (112,*) 'RCGRID '
+      WRITE (112+ifoff,*) 'CGRID'
+      WRITE (112+ifoff,*) 'RCGRID '
       do i = 1, ncgrd, 10
-        WRITE (112,*) i,(RCGRID(j),j=i,min(i+9,ncgrd))
+        WRITE (112+ifoff,*) i,(RCGRID(j),j=i,min(i+9,ncgrd))
       end do
-      WRITE (112,*) 'ICGRID ',ICGRID
+      WRITE (112+ifoff,*) 'ICGRID ',ICGRID
 #endif      
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 12: RCGRID,ICGRID'
       WRITE (12+ifoff) RCPLYG,RCPLY2,ICPLYG
 #ifdef CHECKBIN
-      WRITE (112,*) 'CPOLYG'
-      WRITE (112,*) 'RCPLYG '
+      WRITE (112+ifoff,*) 'CPOLYG'
+      WRITE (112+ifoff,*) 'RCPLYG '
       do i = 1, size(rcplyg,1)
-        WRITE (112,*) i,(RCPLYG(i,j),j=1,size(rcplyg,2))
+        WRITE (112+ifoff,*) i,(RCPLYG(i,j),j=1,size(rcplyg,2))
       end do
-      WRITE (112,*) 'RCPLY2 ',RCPLY2
-      WRITE (112,*) 'ICPLYG ',ICPLYG
+      WRITE (112+ifoff,*) 'RCPLY2 ',RCPLY2
+      WRITE (112+ifoff,*) 'ICPLYG ',ICPLYG
 #endif      
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 12: RCPLYG,ICPLYG'
       IF (NRKNOT > 0) THEN
         WRITE (12+ifoff) XTRIAN,YTRIAN,VTRIX,VTRIY,PTRIX,PTRIY,
      .             NECKE,NCHBAR,NSEITE,INMTI,NRKNOT,NTRII
 #ifdef CHECKBIN
-        WRITE (112,*) 'CTRIAN'
-        WRITE (112,*) XTRIAN,YTRIAN,VTRIX,VTRIY,PTRIX,PTRIY,
+        WRITE (112+ifoff,*) 'CTRIAN'
+        WRITE (112+ifoff,*) XTRIAN,YTRIAN,VTRIX,VTRIY,PTRIX,PTRIY,
      .             NECKE,NCHBAR,NSEITE,INMTI,NRKNOT,NTRII
 #endif      
         IF (TRCFLE) WRITE (iunout,*) 'WRITE 12: RCTRIG,ICTRIG'
@@ -74,29 +74,29 @@ C
      I INMP1I,INMP2I,INMP3I,
      I IGFIL,IGJUM0,IGJUM1,IGJUM2,IGJUM3
 #ifdef CHECKBIN
-      WRITE (112,*) 'RLWMN ...'
-      WRITE (112,*)
+      WRITE (112+ifoff,*) 'RLWMN ...'
+      WRITE (112+ifoff,*)
      R RLWMN,RLWMX,EWALL,EWBIN,TRANSP,FSHEAT,
      R ZNML,ZNCL,
      R RECYCF,RECYCT,RECPRM,EXPPL,EXPEL,EXPIL,
      R RECYCS,RECYCC,SPTPRM
-      WRITE (112,*) 'ILSWCH ...'
-      WRITE (112,*)
+      WRITE (112+ifoff,*) 'ILSWCH ...'
+      WRITE (112+ifoff,*)
      I ILSWCH,ILEQUI,ILTOR,ILSIDE,ILIIN,ILREF,
      I ILSPT,ILCOL,ILFIT,ILCELL,ILBOX,ILPLG,ISPUT
-      WRITE (112,*) 'NLIMII ...'
-      WRITE (112,*)
+      WRITE (112+ifoff,*) 'NLIMII ...'
+      WRITE (112+ifoff,*)
      I     NLIMII,NLIMIE,ISWICH,ILBLCK,ILACLL
-      WRITE (112,*) 'JUMLIM ...'
-      WRITE (112,*)  JUMLIM
-      WRITE (112,*) 'NSTSI ...'
-      WRITE (112,*)
+      WRITE (112+ifoff,*) 'JUMLIM ...'
+      WRITE (112+ifoff,*)  JUMLIM
+      WRITE (112+ifoff,*) 'NSTSI ...'
+      WRITE (112+ifoff,*)
      I NSTSI,INUMP,IRPTA,IRPTE,ISRF,ISRT,ISRS,ISRC
-      WRITE (112,*) 'INMP1I ...'
-      WRITE (112,*)
+      WRITE (112+ifoff,*) 'INMP1I ...'
+      WRITE (112+ifoff,*)
      I INMP1I,INMP2I,INMP3I
-      WRITE (112,*) 'IGFIL ...'
-      WRITE (112,*)
+      WRITE (112+ifoff,*) 'IGFIL ...'
+      WRITE (112+ifoff,*)
      I IGFIL,IGJUM0,IGJUM1,IGJUM2,IGJUM3
 #endif      
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 12: RCLGN,ICLGN,LCLGN'
@@ -104,10 +104,10 @@ C
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 12: RCADG,ICADG'
       CLOSE (UNIT=12+ifoff)
 #ifdef CHECKBIN
-      WRITE (112,*) 'CADGEO'
-      WRITE (112,*) 'RADGEO ',RADGEO
-      WRITE (112,*) 'IADGEO ',IADGEO,NLIMI
-      CLOSE (UNIT=112)
+      WRITE (112+ifoff,*) 'CADGEO'
+      WRITE (112+ifoff,*) 'RADGEO ',RADGEO
+      WRITE (112+ifoff,*) 'IADGEO ',IADGEO,NLIMI
+      CLOSE (UNIT=112+ifoff)
 #endif      
       END SUBROUTINE EIRENE_WRGEOM
 C

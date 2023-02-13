@@ -207,7 +207,7 @@ cdr   KL = MOD(KL,30082)
 cdr                        change back to original generator from
 cdr                        F. James, CPC 60 (1990) 329 - 344, page 340
 cdr  the max legal 4 digit seed is:      IJKL_max=(30082*31329)-1 = 942......,
-cdr  but to avoid round off errors take: IJKL_max= 30082*31328    = 942.408.896
+cdr  but to avoid round-off errors take: IJKL_max= 30082*31328    = 942.408.896
       IJ = IJKL/30082
       KL = IJKL-30082*IJ    ! = MOD(IJKL,30082)
 c
@@ -215,7 +215,7 @@ c
       J  = MOD(IJ, 177)     + 2
       K  = MOD(KL/169, 178) + 1
       L  = MOD(KL, 169)
-*
+c
 cdr  now we have the 4 small seeds.
 cdr  next: initialize RANMAR, data are transferred via common RASET1
 

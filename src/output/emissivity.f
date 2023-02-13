@@ -53,7 +53,6 @@ cdr  Write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
       USE EIRMOD_CSDVI
       USE EIRMOD_COMPRT
       USE EIRMOD_COMXS
-!pb only for comparisson 
       implicit none
 
       integer, intent(in) :: istr, lstart, lend, icall

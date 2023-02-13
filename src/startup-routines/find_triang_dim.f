@@ -3,6 +3,7 @@
 
       use eirmod_precision
       USE EIRMOD_COMPRT, ONLY: IUNOUT
+      USE EIRMOD_OPENFILE, ONLY: EIRENE_OPENFILE
 
       implicit none
 
@@ -22,15 +23,18 @@
         allocate (character(ll+10) :: filename)
 
         FILENAME=CASENAME(1:LL) // '.npco_char'
-        OPEN (NEWUNIT=iunco,FILE=FILENAME,ACCESS='SEQUENTIAL',
+        IUNCO = -9999
+        CALL EIRENE_OPENFILE (iunco,FILE=FILENAME,ACCESS='SEQUENTIAL',
      .      FORM='FORMATTED')
       
         FILENAME=CASENAME(1:LL) // '.elemente'
-        OPEN (NEWUNIT=iunel,FILE=FILENAME,ACCESS='SEQUENTIAL',
+        IUNEL = -9999
+        CALL EIRENE_OPENFILE (iunel,FILE=FILENAME,ACCESS='SEQUENTIAL',
      .       FORM='FORMATTED')
       
         FILENAME=CASENAME(1:LL) // '.neighbors'
-        OPEN (NEWUNIT=IUNNG,FILE=FILENAME,ACCESS='SEQUENTIAL',
+        IUNNG = -9999
+        CALL EIRENE_OPENFILE (IUNNG,FILE=FILENAME,ACCESS='SEQUENTIAL',
      .      FORM='FORMATTED')
       else
         iunco = 33

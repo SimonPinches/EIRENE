@@ -76,7 +76,7 @@ CVK TABLES CHECKING (FOR ELASTIC COLLISIONS)
             DO J=1,NSBOX
               IF(TABEL3(I,J,1).GT.23) THEN
                 WRITE(iunout,*) 
-     .             "SETAMD WARNING: REACTION RATE IS TOO BIG ",
+     .             "SETAMD WARNING: REACTION RATE IS TOO BIG",
      .             "IREL,ICELL,TABEL3",I,J,TABEL3(I,J,1)
               END IF
             END DO
@@ -86,7 +86,7 @@ CVK TABLES CHECKING (FOR CHARGE EXCHANGE)
             DO J=1,NSBOX
               IF(TABCX3(I,J,1).GT.23) THEN
                 WRITE(iunout,*) 
-     .            "SETAMD WARNING: REACTION RATE IS TOO BIG ",
+     .            "SETAMD WARNING: REACTION RATE IS TOO BIG",
      .            "IRCX,ICELL,TABCX",I,J,TABCX3(I,J,1)
               END IF
             END DO

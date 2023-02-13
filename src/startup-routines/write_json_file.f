@@ -170,7 +170,6 @@
       call json%add(me,'NSTORAM',nstoram)
       call json%add(me,'NGSTAL',ngstal)
       call json%add(me,'NRTAL',nrtal_in)
-      call json%add(me,'NREAC_ADD',nreac-nreaci)
 
       call json%add(me,'NLSCL',nlscl)
       call json%add(me,'NLTEST',nltest)

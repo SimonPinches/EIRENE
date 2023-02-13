@@ -1,9 +1,9 @@
-N_on_W_4.90 also includes: pdf boundaries emin,emax, angmin, angmax....       
- 
-*  projectile surface binding energy parameter: 4.90 eV     
-*  parameter esbparm only added in first of the 84 blocks  
- 
- 
+N_on_W_4.90 also includes: pdf boundaries emin,emax, angmin, angmax....
+
+*  projectile surface binding energy parameter: 4.90 eV
+*  parameter esbparm only added in first of the 84 blocks
+
+
     7.  14.01   74. 183.84  1.00E+00  0.00E+00  0.00E+00  0.00E+00  4.90E+00    10   0.00
 
   0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00       0.00000E+00  0.00000E+00

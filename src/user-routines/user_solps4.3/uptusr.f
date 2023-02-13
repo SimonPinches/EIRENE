@@ -96,7 +96,7 @@ C  ATOMS, CX ENERGY
 
 C  CHECK: STORAGE FOR AT LEAST 12 ADDITIONAL TRACKLENGTH-ESTIMATED TALLIES?
 !pb      IF (NADV.LT.MOD_ADDV+12*NATMI) THEN
-      IF (NADV.LT.2*NATMI) THEN
+      IF (NADV.LT.12*NATMI) THEN
         GOTO 9999
       ELSE
 C  THIS ROUTINE: SCORE 12 ADDITIONAL TALLIES ADDV
@@ -357,7 +357,8 @@ C
           IF (LGMEL(IMOL,0,0).EQ.0) GOTO 2590
             DO 2560 IMEL=1,NMELI(IMOL)
 !pb           IA=MOD_ADDV+12*NATM+8*NMOL  !  increment for addv tally 1st index: el energy, molecules
-              IA=12*NATM+8*NMOL  
+              IA=12*NATM+8*NMOL
+              IREL=LGMEL(IMOL,IMEL,0)
               IPLS=LGMEL(IMOL,IMEL,1)
               IF (LGVAC(IRDO,IPLS)) GOTO 2560
 c  volumetric charge exchange rate

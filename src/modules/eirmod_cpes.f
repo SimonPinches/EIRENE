@@ -104,7 +104,6 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
       !> returns true if the calling PE should do any work on stratum_idx
       logical function calc_stratum(stratum_idx)
         integer, intent(in) :: stratum_idx
-!pb     calc_stratum = procforstra(stratum_idx, my_pe)
         calc_stratum = nparts_loc(stratum_idx) > 0
       end function
 
@@ -114,7 +113,6 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
         if (my_pe==0) then
           write(iunout,*) 'Creating communicator for stratum leaders'
         end if
-!pb     comm = create_communicator(any(stratum_leader==my_pe))
         comm = create_communicator(I_am_leader())
       end function
 
@@ -126,8 +124,6 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
           write(iunout,*) 'Creating communicator within stratum ',
      &     stratum_idx
         end if
-!pb     comm = create_communicator(calc_stratum(stratum_idx), 
-!pb  &           npesta(stratum_idx))
         comm = create_communicator(nparts_loc(stratum_idx)>0, 
      &           stratum_leader(stratum_idx))
       end function      
@@ -243,9 +239,7 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
         integer, optional, intent(in) :: stratum_idx
         if (present(stratum_idx)) then
           I_am_leader = stratum_leader(stratum_idx) == my_pe
-!pb       I_am_leader = npesta(stratum_idx) == my_pe
         else
-!pb       I_am_leader = any(stratum_leader==my_pe)
           I_am_leader = any(npesta==my_pe .and. nlsron)
         end if
       end function

@@ -956,7 +956,6 @@ C
       if (plvtk) then
          call eirene_vtkout_head
          call eirene_vtkout_surfaces
-!pb         call eirene_timea3_vtkout
          call eirene_vtkout_tail
       end if
 

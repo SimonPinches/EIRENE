@@ -324,24 +324,24 @@ test_standalone_ITER_1573_def_lines:
     dependencies:
         - run_standalone_ITER_1573_def_lines
 
-build_standalone_ITER_1573_dens_model:
-    <<: *build_executable
-    variables:
-        PATH_CASE: "ITER_1573_dens_model"
+#build_standalone_ITER_1573_dens_model:
+#    <<: *build_executable
+#    variables:
+#        PATH_CASE: "ITER_1573_dens_model"
 
-run_standalone_ITER_1573_dens_model:
-    <<: *run
-    variables:
-        PATH_CASE: "ITER_1573_dens_model"
-    dependencies:
-        - build_standalone_ITER_1573_dens_model
+#run_standalone_ITER_1573_dens_model:
+#    <<: *run
+#    variables:
+#        PATH_CASE: "ITER_1573_dens_model"
+#    dependencies:
+#        - build_standalone_ITER_1573_dens_model
 
-test_standalone_ITER_1573_dens_model:
-    <<: *test
-    variables:
-        PATH_CASE: "ITER_1573_dens_model"
-    dependencies:
-        - run_standalone_ITER_1573_dens_model
+#test_standalone_ITER_1573_dens_model:
+#    <<: *test
+#    variables:
+#        PATH_CASE: "ITER_1573_dens_model"
+#    dependencies:
+#        - run_standalone_ITER_1573_dens_model
 
 build_standalone_2D_slab:
     <<: *build_executable
@@ -579,19 +579,32 @@ build_EMC3-EIRENE:
     <<: *build_executable
     variables:
         PATH_CASE: "EMC3"
+<<<<<<< HEAD
     rules:
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
         - when: always
+=======
+    only:
+        variables:
+            - $INCLUDE_EMC3 == 'true'
+
+>>>>>>> origin/WIP_eirene_unified
 
 run_EMC3-EIRENE_H:
     <<: *run
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H"
+<<<<<<< HEAD
     rules:
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
         - when: always
+=======
+    only:
+        variables:
+            - $INCLUDE_EMC3 == 'true'
+>>>>>>> origin/WIP_eirene_unified
     dependencies:
         - build_EMC3-EIRENE
     artifacts:
@@ -605,10 +618,16 @@ test_EMC3-EIRENE_H:
     <<: *test
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H"
+<<<<<<< HEAD
     rules:
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
         - when: always
+=======
+    only:
+        variables:
+            - $INCLUDE_EMC3 == 'true'
+>>>>>>> origin/WIP_eirene_unified
     dependencies:
         - run_EMC3-EIRENE_H
 
@@ -616,10 +635,16 @@ run_EMC3-EIRENE_He:
     <<: *run
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/He"
+<<<<<<< HEAD
     rules:
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
         - when: always
+=======
+    only:
+        variables:
+            - $INCLUDE_EMC3 == 'true'
+>>>>>>> origin/WIP_eirene_unified
     dependencies:
         - build_EMC3-EIRENE
     artifacts:

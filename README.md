@@ -23,7 +23,7 @@ many). But a single discrepancy invalidates a theory"
 
 ## Documentation
 
-A manual can be found on http://www.eirene.de/eirene.pdf.
+A manual can be found on http://www.eirene.de/
 
 ## Atomic and molecular databases
 
@@ -62,6 +62,8 @@ instead. The variable values correspond to the folder name without prefix (`coup
 EIRENE is an open source code and we are very happy to accept contributions. Please refer to the [contributing guide](CONTRIBUTING.md) for more details.
 
 ## Legal aspects
+
+The EIRENE public licence is contained in the same directory in the "EPL.md" file.
 
 The EIRENE code primary application domain is linear kinetic transport, mainly 
 to study interaction of neutral gas and radiation with magnetized plasmas.

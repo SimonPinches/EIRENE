@@ -564,7 +564,6 @@ C
         B2QIE=B2Q
         B2VDP=B2VP
 C
-
         IFIRST=IFIRST+1
         ICOSTP = ICOSTP + 1
         write (iunout,*) 'icostp ',icostp

@@ -124,7 +124,6 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           L, IS, NTLV, ID, IRE, 
      .           INELGJ, NPRCSF, MXL, NSPZV1, NSPZV2, NFLGV,
      .           IPRCSF, IR, MT, MP, 
-!pb  .           NRTAL1, NREAC_ADD, IPLN,x
      .           NRTAL1, IPLN,
      .           NRE, IRET,
      .           ISPSRF, ISPTYP, NSPS, NSPSA, IPTYP, IPSPZ, ISTRAI,
@@ -2358,7 +2357,9 @@ cdr  only one common profile for all NPLS species?
         LRDMLTI=.FALSE.
       ENDIF
 
-      IF ((NPLS > 1) .AND. (NPLSTI == 1) .and. lmulpl) THEN
+      IF ((NPLS > 1) .AND. (NPLSTI == 1) .AND. 
+     .    (LMULPL .OR. (NPLS_FIX /= NPLSI)
+     .            .OR.  ANY(CDENMODEL == FORT//'13'))) THEN
         CALL EIRENE_LEER(1)
         WRITE (IUNOUT,*) 'WARNING !'
         WRITE (IUNOUT,*) 'TIIN STORAGE PROVIDED FOR ONE SPECIES ONLY ',

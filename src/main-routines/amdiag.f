@@ -220,7 +220,6 @@ c  no interacting particle species found
               END IF
               ADIN(IAIN,ICELL)=TBEI/(DEIN(ICELL)+EPS30)/AU
  1720       CONTINUE
-
             GOTO 5000 !done
           else  !  mm= MODCOL(1,2,irei)=2, not ready
             goto 3000
@@ -404,6 +403,7 @@ c
           else  !  mm= MODCOL(3,4,ircx)>=2, not ready
             GOTO 3000
           endif
+
 c........................................................................
 
 C  ELASTIC COLLISION RATE COEFFICIENT NO. IREL

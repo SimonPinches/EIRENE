@@ -127,7 +127,11 @@ C
       USE EIRMOD_PROFILES, ONLY: EIRENE_PROFR
       USE EIRMOD_JSON
       USE EIRMOD_INFCOP, ONLY: EIRENE_IF1COP, EIRENE_IF2COP
+#ifdef USE_MPI
+      USE MPI
+#endif
       USE EIRMOD_MPI
+      USE EIRMOD_OPENFILE, ONLY : EIRENE_OPENFILE
 
       IMPLICIT NONE
 C
@@ -408,8 +412,9 @@ cdr  from external codes. E.g.: bgk iterations ? spectra?
         CALL EIRENE_READ_MPI_STRATEGY_JSON
 
 C  CHECK FOR USER SPECIFIC INPUT
-        OPEN(NEWUNIT=IUSR,FILE='user_data.input',STATUS='OLD',
-     .       IOSTAT=IO)
+        IUSR = -9999
+        CALL EIRENE_OPENFILE(IUSR,FILE='user_data.input',STATUS='OLD',
+     .       FORM='FORMATTED',ACCESS='SEQUENTIAL',IOSTAT=IO)
         IUSROUT = IUSR
         IUNIN_SAVE = IUNIN
         IF (IO == 0) THEN
@@ -440,7 +445,9 @@ C  COPY USER SPECIFIC DATA TO FILE user_data.input
             IF (IO == 0) THEN
               JL = JL + 1
               IF (JL == 1) THEN
-                OPEN(NEWUNIT=IUSR,FILE='user_data.input')
+                IUSR = -9999
+                CALL EIRENE_OPENFILE(IUSR,FILE='user_data.input',
+     .               FORM='FORMATTED',ACCESS='SEQUENTIAL')
                 IUSROUT = IUSR
               END IF
               WRITE (IUSROUT,'(A)') TRIM(ZEILE)
@@ -448,7 +455,9 @@ C  COPY USER SPECIFIC DATA TO FILE user_data.input
           END IF
         END DO
       
-        CALL EIRENE_READ_MPI_STRATEGY_fixed(MPI_LINE)
+        IF (VERIFY(MPI_LINE,' ') > 0) THEN
+          CALL EIRENE_READ_MPI_STRATEGY_fixed(MPI_LINE)
+        END IF
 
         IF (JL > 0) THEN
           REWIND IUSROUT

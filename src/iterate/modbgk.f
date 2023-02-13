@@ -1131,11 +1131,10 @@ c  prepare for energy residuals, and mixed Ti
 cdr  in case of cross-collisions: use new mixed energy density to compare with
 cdr  total and drift energy: eV.
 cdr  In case of only one single score in cell IRAD: these are identical
- 
       ED1=(VXIN1**2+VYIN1**2+VZIN1**2)*FACT1
       ED2=(VXIN2**2+VYIN2**2+VZIN2**2)*FACT2
-      ET1=(EDEN(IRAD)/(PDEN(IRAD)+EPS60)-ED1)/1.5
-      ET2=(EDEN2(IRAD)/(PDEN2(IRAD)+EPS60)-ED2)/1.5
+      ET1=EDEN(IRAD)/(PDEN(IRAD)+EPS60)
+      ET2=EDEN2(IRAD)/(PDEN2(IRAD)+EPS60)
       T1=0.0_dp
       if (abs(et1-ed1).gt.eps10) T1=(ET1-ED1)/1.5
       T2=0.0_dp

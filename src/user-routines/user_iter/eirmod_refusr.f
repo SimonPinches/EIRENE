@@ -54,7 +54,6 @@ C     REAL(DP), ALLOCATABLE, SAVE, PUBLIC :: SPUMPPRIVIOS(:)
       REAL(DP), SAVE :: SPUMPBE, SPTTOTBE, AVCOF, SBE, DENSBELOC
       CHARACTER*12, SAVE :: HLP_FRM
 
-
       CONTAINS
 c
 c--------------------------------------------------------------------------

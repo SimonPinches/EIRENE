@@ -85,13 +85,10 @@ cdr  molecular sinks (2,2) and sources from other types
 cdr  surface tallies: net sink: potmli+prfmmi
       P(2,2)=PMMLI(0,ISTRA)+POTMLI(0,ISTRA)+PRFMMI(0,ISTRA)+
      .       PGENMI(0,ISTRA)
-cdr  surface tallies: net sink: potmli+prfmmi
-      P(2,2)=PMMLI(0,ISTRA)+POTMLI(0,ISTRA)+PRFMMI(0,ISTRA)+
-     .       PGENMI(0,ISTRA)
+      P(2,3)=PIMLI(0,ISTRA)+PRFIMI(0,ISTRA)
       P(2,4)=0._DP
 cdr  test-ion sinks(3,3) and sources from other types
       P(3,1)=PAIOI(0,ISTRA)+PRFAII(0,ISTRA)
-      P(2,3)=PIMLI(0,ISTRA)+PRFIMI(0,ISTRA)
       P(3,2)=PMIOI(0,ISTRA)+PRFMII(0,ISTRA)
 cdr  surface tallies: net sink: potioi+prfiii
       P(3,3)=PIIOI(0,ISTRA)+POTIOI(0,ISTRA)+PRFIII(0,ISTRA)+
@@ -576,10 +573,10 @@ CNR PARTICLES WITH ENORMOUS WEIGHTS...
         FI=1._DP
         FPH=1._DP
       ELSE
-      FA=FC(1)
-      FM=FC(2)
-      FI=FC(3)
-      FPH=FC(4)
+        FA=FC(1)
+        FM=FC(2)
+        FI=FC(3)
+        FPH=FC(4)
       END IF
 C
       RETURN

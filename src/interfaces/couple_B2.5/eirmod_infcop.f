@@ -129,6 +129,7 @@ C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
       USE EIRMOD_EIRBRA
       USE EIRMOD_BRASCL
       USE EIRMOD_JSON
+      USE EIRMOD_OPENFILE, ONLY: EIRENE_OPENFILE
       
       use json_module
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
@@ -2991,7 +2992,11 @@ C  COPY USER SPECIFIC DATA TO FILE user_data.input
         READ (IUNIN,'(A72)',IOSTAT=IO) ZEILE
         IF (IO == 0) THEN
           JL = JL + 1
-          IF (JL == 1) OPEN(NEWUNIT=IUSROUT,FILE='user_data.input')
+          IF (JL == 1) THEN
+            IUSROUT = -9999
+            CALL EIRENE_OPENFILE(IUSROUT,FILE='user_data.input',
+     .                           FORM='FORMATTED',ACCESS='SEQUENTIAL')
+          END IF
           WRITE (IUSROUT,'(A)') TRIM(ZEILE)
         END IF
       END DO
@@ -3254,8 +3259,9 @@ C  HERE: EIRENE SURFACE TALLIES
 C
 C  INPUT BLOCK 14 DONE
 C
-      OPEN(NEWUNIT=IUSROUT,FILE='user_data.input',STATUS='OLD',
-     .     IOSTAT=IO)
+      IUSROUT = -9999
+      CALL EIRENE_OPENFILE(IUSROUT,FILE='user_data.input',STATUS='OLD',
+     .     FORM='FORMATTED',ACCESS='SEQUENTIAL',IOSTAT=IO)
       IUNIN_SAVE = IUNIN
       IF (IO == 0) THEN
         IUNIN = IUSROUT
@@ -3305,12 +3311,6 @@ C>
 
       RETURN
       END SUBROUTINE EIRENE_INFCOP_PRE_STRATA
-
-
-      SUBROUTINE EIRENE_INFCOP_POST_STRATUM(istra)
-      integer, intent(in) :: istra
-      RETURN
-      END SUBROUTINE EIRENE_INFCOP_POST_STRATUM
 
 
       SUBROUTINE EIRENE_IF3COP_SUM

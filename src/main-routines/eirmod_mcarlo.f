@@ -591,7 +591,9 @@ C  MOVIE OPTION (NLMOVIE):  DONE,
 C    if     nlmovie: sequence of strata is reversed, census stratum istra=nstrai comes first!
 C                    one by one re-launch of ALL particles from census
 c    if not nlmovie: census stratum istra=nstrai comes last.
+#ifdef USE_OPENMP      
 !$OMP BARRIER
+#endif
         IF (.NOT.NLSRON(ISTRA)) THEN
 !$OMP MASTER
           CALL EIRENE_LEER(2)
@@ -1471,14 +1473,20 @@ C
             call system_clock(itimend, itimrate)
             call time_postproc(istra, real(itimend-itimstart,DP)/
      &                         REAL(itimrate,DP))
+          else
+            IF (NMODE.GT.0) THEN
+!  This routine has to be called by all processors
+              CALL EIRENE_INFCOP_POST_STRATUM(ISTRA)
+            END IF
           endif  ! I_AM_LEADER(ISTRA)
 !$OMP END MASTER
+
         ELSE
          ! We update calstr timings even if we skipped the stratum
           call time_calstr(istra, 0.0_dp)
         END IF                  ! CALC_STRATUM(ISTRA)
 
-!$OMP BARRIER          
+!$OMP BARRIER 
 
       END DO                    ! ISTR
 
@@ -1514,11 +1522,11 @@ csw 08mar2013 shifted behind STRATA LOOP, do all strata in one go
 csw 13mar2013 do it here if in parallel mode
 C   AND MORE PROCESSES THAN STRATA
       IF (NMODE.GT.0) THEN
-	IF (LIF3COP_FROM_LOOP) THEN
+        IF (LIF3COP_FROM_LOOP) THEN
 !tf For SOLPS-ITER IF3COP is already called in the strata loop.
 !tf we only need to sum up the results
        	  CALL EIRENE_IF3COP_SUM
-	ELSE
+        ELSE
           IF (NPRS > 1) THEN
 C This is very case-specific and may be different for each plasma code.
 C Introducing another interfacing subroutine within the strata loop
@@ -1676,7 +1684,7 @@ C
         IRC=1
         WRITE (11+ifoff,REC=IRC) LOGATM,LOGION,LOGMOL,LOGPLS,LOGPHOT
 #ifdef CHECKBIN
-        WRITE (111,*) 'LOGATM,LOGION,LOGMOL,LOGPLS,LOGPHOT ',
+        WRITE (111+ifoff,*) 'LOGATM,LOGION,LOGMOL,LOGPLS,LOGPHOT ',
      .                 LOGATM,LOGION,LOGMOL,LOGPLS,LOGPHOT
 #endif
         IF (TRCFLE)   WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
@@ -1685,9 +1693,9 @@ C
         CALL EIRENE_WRITE_COUTAU (OUTAU, IUNOUT)
         WRITE (11+ifoff,REC=IRC) OUTAU
 #ifdef CHECKBIN
-        WRITE (111,*) 'OUTAU '
+        WRITE (111+ifoff,*) 'OUTAU '
         do ipb=1,noutau,5
-          WRITE (111,*) ipb,(OUTAU(jpb),jpb=ipb,min(ipb+4,noutau))
+          WRITE (111+ifoff,*) ipb,(OUTAU(jpb),jpb=ipb,min(ipb+4,noutau))
         end do
 #endif
         DEALLOCATE (OUTAU)

@@ -5,23 +5,37 @@ C> usual output unit.
       SUBROUTINE EIRENE_VERSION
 
       USE EIRMOD_COMPRT, ONLY: IUNOUT
+#ifdef B25_Eirene
+#     include <git_version_Eirene.h>
+#endif
 
       CALL EIRENE_HEADNG('GIT REVISION USED IN THIS RUN',72)
 
+#ifdef B25_Eirene
+      WRITE(IUNOUT,*) 'HASH:   ', git_version_Eirene
+#else
       WRITE(IUNOUT,*) 'DATE:   ', 
      . '@git_date@'
       WRITE(IUNOUT,*) 'HASH:   ', 
      . '@git_hash@'
       WRITE(IUNOUT,*) 'BRANCH:',
      . '@git_branch@'
+#endif
 
       END SUBROUTINE EIRENE_VERSION
 
       function get_Eir_hash()
       implicit none
+#ifdef B25_Eirene
+      character*32 get_Eir_hash
+#     include <git_version_Eirene.h>
+
+      get_Eir_hash = git_version_Eirene
+#else
       character*31 get_Eir_hash
 
       get_Eir_hash = '@git_hash@'
+#endif
 
       return
       end function get_Eir_hash

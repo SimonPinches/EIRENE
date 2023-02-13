@@ -34,7 +34,8 @@ C
      >                          NRCX, NREC, NREI, NREL, NRPI,
      >                          NBGK,
      >                          NSMSTRA, NTALB,
-     >                          IUNMEM, IUNRAPSVEC, NLIMPS
+     >                          IUNMEM, IUNRAPSVEC, NLIMPS,
+     >                          LPE0_TO_STDOUT
       USE EIRMOD_COMUSR, ONLY: EIRENE_ALLOC_COMUSR,
      >                         EIRENE_DEALLOC_COMUSR, IITER, ITIMV,
      >                         NBGVI,
@@ -107,6 +108,7 @@ C
       USE EIRMOD_CCOUPL, ONLY: EIRENE_DEALLOC_CCOUPL
       USE EIRMOD_INFCOP, ONLY: EIRENE_IF4COP, EIRENE_INFCOP_PRE_MCARLO
       USE EIRMOD_PRESSURELOOP
+      USE EIRMOD_OPENFILE, ONLY: EIRENE_OPENFILE
 
       IMPLICIT NONE
 
@@ -163,10 +165,8 @@ c     IUNIN = 1
       IF (EIRENE_NTHREADS > 1) IUNOUT = 200 ! for multiple threads use different file numbers
 !$OMP END PARALLEL
 
-#ifdef B25_EIRENE
 cxpb 04nov16 Going back to having the master PE write to standard output
-      IF (MY_PE == 0) IUNOUT = 6
-#endif
+      IF (LPE0_TO_STDOUT .AND. (MY_PE == 0)) IUNOUT = 6
 
 !$OMP PARALLEL
       IUNOUT = IUNOUT + IFOFF
@@ -181,34 +181,40 @@ cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
 #endif        
 !pb_open
         if (init_open == 0) then
-          OUTNAME='output.'
-          WRITE (OUTNAME(8:),'(I4.4)')
+
+          IF (LPE0_TO_STDOUT.AND.(MY_PE == 0)) THEN
+!PB   nothing to be done: use standard output
+
+          ELSE
+            OUTNAME='output.'
+            WRITE (OUTNAME(8:),'(I4.4)')
      .       (MY_PE*EIRENE_NTHREADS)+EIRENE_ITHREAD
-          inquire(UNIT=IUNOUT,opened=op)
-          if (op) then
-            init_open = 1
-          else
-            IF ( LOUTAPP ) THEN
-              OUTPOS='APPEND'
-            ELSE
-              OUTPOS='ASIS'
-            END IF
-            IF (EIRENE_NTHREADS > 1) IUNOUT = IUNOUT + EIRENE_ITHREAD
-#ifndef NAGFOR
-            OPEN (UNIT=IUNOUT,FILE=OUTNAME, ACCESS='SEQUENTIAL',
-     .         FORM='FORMATTED', POSITION=OUTPOS)
-#else
-            OPEN (UNIT=IUNOUT, FILE=OUTNAME, ACCESS='SEQUENTIAL',
-     .        FORM='FORMATTED')
-#endif
+            inquire(UNIT=IUNOUT,opened=op)
+            if (op) then
+              init_open = 1
+            else
+              IF ( LOUTAPP ) THEN
+                OUTPOS='APPEND'
+              ELSE
+                OUTPOS='ASIS'
+              END IF
+              IF (EIRENE_NTHREADS > 1) IUNOUT = IUNOUT + EIRENE_ITHREAD
+              CALL EIRENE_OPENFILE (IUNOUT,FILE=OUTNAME, 
+     .          ACCESS='SEQUENTIAL', FORM='FORMATTED', POSITION=OUTPOS)
+            end if
 
-          end if
-          call ioflush_usr
+            init_open=1
+          END IF
 
-          init_open=1
         else
           if (my_pe.ne.0 .and. .not.LOUTAPP) rewind (iunout)
         end if
+
+        write (iunout,*) 'NPRS, EIRENE_NTHREADS ', NPRS, EIRENE_NTHREADS
+        write (iunout,*) 'MY_PE, EIRENE_ITHREAD ', MY_PE, EIRENE_ITHREAD
+        call eirene_leer(1)
+
+
 #ifndef USE_EXT_OPENMP      
 !$OMP END PARALLEL
 #endif        
@@ -225,8 +231,6 @@ cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
         ELSE
           DUMMY=EIRENE_RESET_SECOND()
         END IF
-
-        write (iunout,*) ' Number of PEs ',nprs
 
         CALL EIRENE_ALLOC_COMPRT
 cdr
@@ -440,6 +444,7 @@ C
 C  ATOMIC & MOLECULAR DATA DIAGNOSTICS ON ADDITIONAL INPUT ARRAY ADIN
 C
         CALL EIRENE_AMDIAG
+        write (iunout,*) 'nach amdiag'
 C
 C  PRINT VOLUME-AVERAGED INPUT TALLIES.
 C
@@ -465,7 +470,6 @@ C
   300   CONTINUE
 
       END IF   ! MY_PE == 0
-      flush(iunout)
 
       IF (NPRS > 1) CALL EIRENE_BROADCAST
       CALL EIRENE_INFCOP_PRE_MCARLO

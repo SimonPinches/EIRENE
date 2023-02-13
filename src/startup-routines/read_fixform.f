@@ -79,7 +79,10 @@ C
       USE EIRMOD_CGEOM
       USE EIRMOD_CSDVI
       USE EIRMOD_COMPRT
-      USE EIRMOD_CPES, ONLY: NPRS,NLIDENT
+      USE EIRMOD_CPES, ONLY: NPRS,NLIDENT,
+     >    STRATEGY_UNDEFINED, STRATEGY_EMBARRASS,
+     >    STRATEGY_ORIGINAL, STRATEGY_APCAS, STRATEGY_BALANCED,
+     >    INPUT_DISTRIBUTION_STRATEGY
       USE EIRMOD_COMNNL
       USE EIRMOD_COMSOU
       USE EIRMOD_CSTEP
@@ -203,7 +206,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
       INTEGER, DIMENSION(1) :: ISTR_A
       LOGICAL :: LHELP(NLIMPS), NLSRON_SAVE(NSTRA)
       LOGICAL :: LRPS3D, LRPSCN, LHYDDEF, LINCL45, LMULPL, 
-     .           LRDMLTI, LRDMLV
+     .           LRDMLTI, LRDMLV, NLSPCSCL_DUM, NLSPCSCL_ON_DUM
       LOGICAL, ALLOCATABLE :: LOGRDH(:)
       CHARACTER(10) :: CDATE, CTIME
       CHARACTER(12) :: CHR
@@ -314,10 +317,11 @@ c   done with this optional "storage save mode card"
 C
 * For gfortran: it does not accept empty field for logicals
       call fix_logical_input(zeile,18)
+!pb do not overwrite here
       READ (ZEILE,6665) NLSCL,NLTEST,NLANA,NLDRFT,NLCRR,
      .                  NLERG,NLIDENT,NLONE,NLMOVIE,NLDFST,
      .                  NLOLDRAN,NLCASCAD,NLOCTREE,NLWRMSH,NEXVS,
-     .                  NLTRIMESH,NLSPCSCL,NLSPCSCL_ON
+     .                  NLTRIMESH,NLSPCSCL_DUM,NLSPCSCL_ON_DUM
 
 C  OPTIONAL INPUT CARDS, FOR PATHWAYS AND NAME DEFINITIONS
 C                        FOR EXTERNAL DATABASES: AMJUEL, HYDHEL,.....
@@ -381,18 +385,35 @@ C  READING OF INPUT BLOCK 1 DONE
       CALL EIRENE_LEER(2)
       CALL EIRENE_MASAGE('*** 1. DATA FOR OPERATING MODE')
       CALL EIRENE_LEER(1)
+      IF (NPRS > 1) THEN
       CALL EIRENE_MASAGE('       PARALLELISATION MODE:')
       SELECT CASE( NPRLL )
         CASE( -1 )
           CALL EIRENE_MASAGE('       MPI USER-DEFINED')
+          CALL EIRENE_MASAGE('       WILL BE SELECTED FROM END OF FILE')
+          input_distribution_strategy = STRATEGY_UNDEFINED
 C       CASE( 0 )
 C         Reserved for default, see below
         CASE( 1 )
           CALL EIRENE_MASAGE('       MPI PROPORTIONAL ALLOCATION')
+          CALL EIRENE_MASAGE('       UNLESS OVERWRITTEN AT END OF FILE')
+          input_distribution_strategy = STRATEGY_ORIGINAL
+        CASE( 2 )
+          CALL EIRENE_MASAGE('       MPI APCAS STRATEGY')
+          CALL EIRENE_MASAGE('       ALL PEs CALCULATE ALL STRATA')
+          CALL EIRENE_MASAGE('       UNLESS OVERWRITTEN AT END OF FILE')
+          input_distribution_strategy = STRATEGY_APCAS
+        CASE( 3 )
+          CALL EIRENE_MASAGE('       MPI BALANCED ALLOCATION')
+          CALL EIRENE_MASAGE('       UNLESS OVERWRITTEN AT END OF FILE')
+          input_distribution_strategy = STRATEGY_BALANCED
         CASE DEFAULT
           CALL EIRENE_MASAGE('       MPI "EMBARRASSINGLY PARALLEL"')
+          CALL EIRENE_MASAGE('       UNLESS OVERWRITTEN AT END OF FILE')
+          input_distribution_strategy = STRATEGY_EMBARRASS
           NPRLL = 0
       END SELECT
+      END IF
       WRITE (IUNOUT,*) '       NUMBER OF PROCESSES NPRS= ',NPRS
       CALL EIRENE_LEER(1)
       IF (NMODE.NE.0) THEN
@@ -2196,13 +2217,17 @@ cdr  only one common profile for all NPLS species?
         LRDMLTI=.FALSE.
       ENDIF
 
-      IF ((NPLS > 1) .AND. (NPLSTI == 1) .AND. LMULPL) THEN
+      IF ((NPLS > 1) .AND. (NPLSTI == 1) .AND. 
+     .    (LMULPL .OR. (NPLS_FIX /= NPLSI)
+     .            .OR.  ANY(CDENMODEL == FORT//'13'))) THEN
+
         CALL EIRENE_LEER(1)
         WRITE (IUNOUT,*) 'WARNING !'
         WRITE (IUNOUT,*) 'TIIN STORAGE PROVIDED FOR ONE SPECIES ONLY ',
      .                   'DUE TO INDPRO(2) > 10'
         WRITE (IUNOUT,*) 'STORAGE FOR TIIN OVERWRITTEN ',
-     .                   'BECAUSE BGK REACTIONS PRESENT'
+     .                   'BECAUSE BGK REACTIONS PRESENT',
+     .                   'OR DENSITY MODEL ',FORT//'13',' WAS FOUND'
         LRDMLTI=.FALSE.         !  read only one common Ti card, despite storage for NPLS Ti profiles.
         NPLSTI = NPLS
         WRITE (IUNOUT,*) ' NPLSTI = ',NPLSTI
@@ -3955,6 +3980,7 @@ C   ENFORCE ONE-BY-ONE RELAUNCH FROM CENSUS, IN CASE NLMOVIE
 c
 C   READ DATA FOR SNAPSHOT TALLIES (OPTIONAL)
  1310 IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE
+      IREAD = 1
       IF (ZEILE(1:3).EQ.'***') GOTO 1350
       CALL EIRENE_MASAGE('*** 13A. DATA FOR SNAPSHOT TALLIES')
       READ (IUNIN,6666) NSNVI
@@ -3985,6 +4011,7 @@ C  SKIP READING REST OF THIS BLOCK
       IREAD=1
 
       IF (IREAD.EQ.0) READ (IUNIN,*)
+
 C
 C
  6662 FORMAT (L1,1X,A24,1X,I1,1X,4(2I3,1X))
@@ -4055,6 +4082,7 @@ C
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE
      .  ('*** 14. DATA FOR INTERFACING ROUTINE "INFCOP"')
+
       IF (NMODE.EQ.0) THEN
 C  STAND ALONE RUN, READ BLOCK *** 14 HERE
         WRITE (iunout,*) '        SUBR. INFCOP NOT CALLED.'
@@ -4121,6 +4149,10 @@ cdr  possibly modified as well:  nlshrt13
       CHARACTER(80), INTENT(IN) :: LINE
       CHARACTER(80) :: ZEILE
 
+C
+C  READ MPI STRATEGY IF PRESENT
+C
+      DO
       IF (INDEX(LINE,'INFORMATION_FOR_MPI') /= 0) THEN
         CALL EIRENE_MASAGE('*** INFORMATION_FOR_MPI')
         DO
@@ -4186,6 +4218,7 @@ cdr  possibly modified as well:  nlshrt13
         CALL EIRENE_LEER(1)
         GOTO 1599
       END IF
+      END DO
  1598 CONTINUE
       IF (NPRS > 1 .and.
      &    input_distribution_strategy.eq.STRATEGY_UNDEFINED) THEN

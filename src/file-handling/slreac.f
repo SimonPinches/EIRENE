@@ -367,7 +367,6 @@ cdr       write (iunout,*) ifile, dbfname(ifile)
 ! FILNAM=AMJUEL, HYDHEL, METHAN, AMMONX, H2VIBR, PHOTON....: open data file
             DSN=DBFNAME(IFILE)
             inquire (FILE=TRIM(DSN),exist=found)
-
           ELSEIF (INDEX(FILNAM,'TAB2D').NE.0 .OR.
      .            INDEX(FILNAM,'ADAS') .NE.0) THEN
 ! FILNAM=TAB2D or FILNAM=ADAS: open data file
@@ -473,7 +472,6 @@ C  ADD ONE MORE BLANK, IF POSSIBLE
           CALL EIRENE_EXIT_OWN (1)
         END IF
       END IF
-
 C
 C Set character string identifiers CHR to search coefficients in data files.
 C  H.0

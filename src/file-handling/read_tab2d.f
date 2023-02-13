@@ -255,7 +255,6 @@ c
 
         call eirene_alloc_fit_form (reacdat(ir)%oth)
 
-
         reacdat(ir)%oth%adas => ap
         reacdat(ir)%oth%ifit = 3
 

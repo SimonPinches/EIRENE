@@ -2165,8 +2165,6 @@ C
         ewldmr_res(I,IND)= 0._DP
         IF (LPRFAML) ewldmr_res(I,IND)=
      .               ewldmr_res(I,IND)+PRFAML(I,ISS)
-        IF (LPRFPML) ewldmr_res(I,IND)=
-     .               ewldmr_res(I,IND)+PRFPML(I,ISS)
         IF (LPRFPML) THEN
           ewldmr_res(I,IND)=ewldmr_res(I,IND)+PRFPML(I,ISS)
           IF (NCHARM(I).EQ.2)
