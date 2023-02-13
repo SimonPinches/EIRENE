@@ -6,8 +6,8 @@ include:
 
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
-# For bullseye
-    SAMPLE_CASE_VERSION: 0a9f5ce14586d5debec9a46ec1c50714970741d7
+# For bullseye - from DMH/reduced_size
+    SAMPLE_CASE_VERSION: 78b557af6e17eb65fee9af223004892e13c9243b
 # These variables allow the exclusion of certain stages to speed up development
     EXCLUDE_SERIAL: 'false'
     EXCLUDE_MPI:    'true'
@@ -142,16 +142,21 @@ prepare_testcases:
           when: never
         - when: always
     script:
-        - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
+        # Make only shallow clone (fetch) of single commit defined by SHA key 
+        - mkdir EIRENE-sample-cases
         - cd EIRENE-sample-cases
-        - git checkout ${SAMPLE_CASE_VERSION}
+        - git init
+        - git remote add origin https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
+        - git fetch --depth 1 origin ${SAMPLE_CASE_VERSION}
+        - git checkout FETCH_HEAD
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
             - EIRENE-sample-cases
         exclude:
             - EIRENE-sample-cases/.git/**      
- 
+            - EIRENE-sample-cases/ITER_*/outpu*/fort.110
+
 build_library:
     stage: preparation
     rules:
