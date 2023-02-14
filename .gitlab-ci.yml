@@ -11,7 +11,7 @@ variables:
 # These variables allow the exclusion of certain stages to speed up development
     EXCLUDE_SERIAL: 'false'
     EXCLUDE_MPI:    'true'
-    EXCLUDE_OPENMP: 'false'
+    EXCLUDE_OPENMP: 'true'
     EXCLUDE_EMC3:   'true'
 
 stages:
