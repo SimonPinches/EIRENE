@@ -278,7 +278,7 @@ cdr     CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
       class(json_core),intent(inout) :: json
       type(json_value), pointer, intent(in) :: p
       type(json_value), pointer :: pfile, pdb
-      logical :: found
+      logical :: found, NLSPCSCL_DUM, NLSPCSCL_ON_DUM
 !cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
       character(kind=json_CK,len=:),allocatable :: cdbh, cdbf
       character(len=:), allocatable :: cdbhc
@@ -321,7 +321,10 @@ cdr     CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
       call json%get(p,'NLWRMSH',nlwrmsh,found)
       call json%get(p,'NEXVS',nexvs,found)
       call json%get(p,'NLTRIMESH',nltrimesh,found)
-      call json%get(p,'NLSPCSCL',nlspcscl,found)
+!pb do not overwrite
+      call json%get(p,'NLSPCSCL',nlspcscl_dum,found)
+      call json%get(p,'NLSPCSCL_ON',nlspcscl_on_dum,found)
+      call json%get(p,'NLSOLEDGE',nlsoledge,found)
 
       call json%get_child(p,'CFILE',pfile,found)
       if (found) then

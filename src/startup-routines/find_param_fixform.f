@@ -61,7 +61,7 @@ C
       USE EIRMOD_COMSOU, ONLY: NSTRAI
       USE EIRMOD_COMPRT, ONLY: IUNIN, IUNOUT
       USE EIRMOD_CLOGAU, ONLY: NLWRMSH, NLSPCSCL, EIRENE_ALLOC_CLOGAU,
-     .                         NLSPCSCL_ON
+     .                         NLSPCSCL_ON, NLSOLEDGE
       USE EIRMOD_CTRCEI, ONLY: TRCAMD, TRCINT, NVOLPR, NSURPR,
      .                         EIRENE_ALLOC_CTRCEI
       USE EIRMOD_CINIT, ONLY: CASENAME, DBFNAME, DBHANDLE, NDBNAMES,
@@ -197,11 +197,11 @@ C                                    OR =9  (FULL A&M STORAGE MODE, =DEFAULT)
       IF (NSTORAM < 9) NSTORAM = 0
       NOPTM1 = MAX(NOPTM1,1)
 C
-      call fix_logical_input(zeile,18)
+      call fix_logical_input(zeile,19)
       READ (ZEILE,6665) NLSCL,NLTEST,NLANA,NLDRFT,NLCRR,
      .                  NLERG,NLIDENT,NLONE,NLMOVIE,NLDFST,
      .                  NLOLDRAN,NLCASCAD,NLOCTREE,NLWRMSH,NEXVS,
-     .                  NLTRIMESH,NLSPCSCL,NLSPCSCL_ON
+     .                  NLTRIMESH,NLSPCSCL,NLSPCSCL_ON,NLSOLEDGE
 
       CALL EIRENE_INIT_CINIT
 

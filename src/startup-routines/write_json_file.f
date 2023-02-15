@@ -189,6 +189,7 @@
       call json%add(me,'NLTRIMESH',nltrimesh)
       call json%add(me,'NLSPCSCL',nlspcscl)
       call json%add(me,'NLSPCSCL_ON',nlspcscl_on)
+      call json%add(me,'NLSOLEDGE',nlsoledge)
 
       call json%create_array(cfile,'CFILE') !an array
       do ifile=1, ndbnames

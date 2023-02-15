@@ -229,7 +229,7 @@ C  NOW REDUCED VELOCITY: GUIDING CENTRE APPROXIMATION
 c  APPROXIMATION A)
 c  use B field line as trajectory
 c  VLXPAR,VLYPAR,VLZPAR gives the direction of the full parallel velocity
-c  in cartesian coordinates - absolute value is not correct!!!
+c  in Cartesian coordinates - absolute value is not correct!!!
       VLXPAR=SIGPAR*BBX
       VLYPAR=SIGPAR*BBY
       VLZPAR=SIGPAR*BBZ
@@ -531,7 +531,18 @@ C  default Coulomb collision model (simple energy relaxation, e.g. also: NRC=0)
 C  Set Coulomb collisions (energy relaxation) frequencies.
 C  Exclude vacuum region and virtual neutral background species
           IF (.NOT.LGVAC(NCELL,IPL) .AND. (NCHRGP(IPL) > 0) ) THEN
-            FNUIAR(IPL) = FNUEQI(DIIN(IPL,NCELL),TIIN(IPLTI,NCELL))
+CNR Slow ion assumption only (any ion vs any background incl. impurities).
+CNR Generic formula is FNUEQI_SLOWION, but does not seem
+CNR to work with impurity backgrounds like Ne+ ==> for now, 
+CNR only active for main ion bagrounds, 0 for other backgrounds. 
+CNR Here FNUEQI is only for H2+/D2+ against H+ D+ backgrounds. 
+CNR Otherwise 0 is returned.
+            IF (NLSOLEDGE) THEN
+              FNUIAR(IPL) = FNUEQI_SOL(DIIN(IPL,NCELL),
+     .                                 TIIN(IPLTI,NCELL),IION,IPL)
+            ELSE
+              FNUIAR(IPL) = FNUEQI(DIIN(IPL,NCELL),TIIN(IPLTI,NCELL))
+            END IF
             FNUI=FNUI+FNUIAR(IPL)
           END IF
 
@@ -1436,14 +1447,56 @@ c  written for fnueqi without that factor.
       RETURN
       END FUNCTION FNUEQI
 
+      FUNCTION FNUEQI_SOL(XNI,TI,ION,IPL)
+      REAL(DP) ::  FNUEQI_SOL,XNI,TI
+      INTEGER ::  ION,IPL
+c     FNUEQI_SOL=8.8E-8*XNI*TI**(-1.5)
+c  This is not exactly the relaxation time, but instead a time
+c  which appears in the analytical (BGK-like) solution EA(t).
+c  to obtain an effective  nu(Ti) that can be compared with a
+c  "relaxation time"
+c  in the dgl dEA/dt=-nu(Ti,EA,...) times EA
+c  In the present limit: this must be multiplied by a factor(EA,Ti)
+
+CNR   For H2+/D2+ ions only (mass number 2 or 4)
+      IF ((nMASSI(ION).EQ.2).OR.(nMASSI(ION).EQ.4)) THEN
+CNR     For H+ background
+        IF (nMASSP(IPL).EQ.1) THEN
+          FNUEQI_SOL=1.02E-6*XNI*TI**(-1.5)
+CNR     For D+ background
+        ELSE IF (nMASSP(IPL).EQ.2) THEN
+          FNUEQI_SOL=7.21E-7*XNI*TI**(-1.5)
+CNR     Return 0 for other backgrounds (ex: impurities), not ready (negligiblity to be checked a posteriori when general formulas ready)
+        ELSE
+          FNUEQI_SOL = 0._dp
+        END IF
+CNR   For CH4+ on H+ background (mass number 16, background 1)
+      ELSE IF ((nMASSI(ION).EQ.16).OR.(nMASSP(IPL).EQ.1)) THEN
+      FNUEQI_SOL=8.5E-8*XNI*TI**(-1.5)
+      ELSE
+        FNUEQI_SOL = 0._dp
+      END IF
+c  in calling program: FNUEQI = FNUEQI*(1.+mB/mA)**0.5-1.5*Ti/EA
+c  but this is already implicitly contained in the analytic BGK solution
+c  written for fnueqi without that factor.
+      RETURN
+      END FUNCTION FNUEQI_SOL
+
 C  ION-ION ENERGY LOSS FREQUENCY (LOW ENERGY LIMIT, NRL) (1/SEC)
 C  GENERALIZATION OF LANGER EXPRESSION TO ARBITRARY IONS (MASS, CHARGE)
 C  note: for an intermediate period (1995 --2013) the mass factor
 c  (1+mB/mA) had an incorrect exponent -1/2, in the NRL formularies.
 c  2016: back to the correct formula (as in eighties) without that exponent
+CNR: This expression corresponds to nu^e_c in page 58 of EIRENE doc, which 
+CNR is the characteristic rate in the solution (eq 1.109). It
+CNR is the generalised expression under the slow ion assumption (slow ion
+CNR velocity compared to background thermal velocity) 
+CNR ! WIP: this formula does not seem to work for H2+ on impurities
+CNR backgrounds like H2+ on Ne+ (returns 10^9 W/m3...). Probably
+CNR requires more work. This is why it is not used here.
 
-      FUNCTION FNUEQI_1(EA,XNI,TI,ION,IPL)
-      REAL(DP) ::  FNUEQI_1,EA,XNI,TI
+      FUNCTION FNUEQI_SLOWION(EA,XNI,TI,ION,IPL)
+      REAL(DP) ::  FNUEQI_SLOWION,EA,XNI,TI
       INTEGER ::  ION,IPL
       REAL(DP) ::  Coullog,fact,za,zb,XMUA,XMUB
       Coullog=10.
@@ -1451,10 +1504,10 @@ c  2016: back to the correct formula (as in eighties) without that exponent
       ZB=NCHRGP(IPL)
       XMUA=nMASSI(ION)
       XMUB=nMASSP(IPL)
-      FACT=XNI*ZA**2*ZB**2*COULLOG*6.8E-8*XMUB**0.5/XMUA/TI**0.5
-      FNUEQI_1=FACT*(2./TI*(1.+XMUB/XMUA)-2/EA-1/EA)
+      FACT=2.*XNI*ZA**2*ZB**2*COULLOG*6.8E-8*XMUB**0.5/XMUA/TI**1.5
+      FNUEQI_SLOWION=FACT*(1.+XMUB/XMUA)
       RETURN
-      END FUNCTION FNUEQI_1
+      END FUNCTION FNUEQI_SLOWION
 
 C  ION-ION ENERGY LOSS FREQUENCY (FULL EXPRESSION, NRL) (1/SEC)
 C  INVOLVING THE CHANDRASEKHAR FUNCTIONS
