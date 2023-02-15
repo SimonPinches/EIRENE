@@ -8,10 +8,13 @@ variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
 # For bullseye - from eirene_unified_bullseye
     SAMPLE_CASE_VERSION: 2d62d9743e8a6eece33740874985bd3b1779a0f4
+# OpenMP test cases, at present these exist in their own branch created from the first commit
+# This can be merged at any time
+    SAMPLE_CASE_VERSION_OPENMP: 2b6ffea7011276a7bbe0354563d2655b84cdf156
 # These variables allow the exclusion of certain stages to speed up development
-    EXCLUDE_SERIAL: 'false'
+    EXCLUDE_SERIAL: 'true'
     EXCLUDE_MPI:    'true'
-    EXCLUDE_OPENMP: 'true'
+    EXCLUDE_OPENMP: 'false'
     EXCLUDE_EMC3:   'true'
 
 stages:
@@ -909,6 +912,29 @@ build_openmp_library:
             - buildRelease/
             - libRelease/
 
+prepare_openmp_testcases:
+    stage: preparation:openmp
+    rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
+        - if: $EXCLUDE_OPENMP == 'true'
+          when: never
+        - when: always
+    script:
+        # Make only shallow clone (fetch) of single commit defined by SHA key 
+        - mkdir EIRENE-sample-cases
+        - cd EIRENE-sample-cases
+        - git init
+        - git remote add origin https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
+        - git fetch --depth 1 origin ${SAMPLE_CASE_VERSION_OPENMP}
+        - git checkout FETCH_HEAD
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - EIRENE-sample-cases
+        exclude:
+            - EIRENE-sample-cases/.git/**      
+
 .build_openmp_executable: &build_openmp_executable
     stage: build:openmp_executable
     rules:
@@ -928,8 +954,12 @@ build_openmp_library:
             - buildRelease/
             - libRelease/
             - EIRENE-sample-cases/${PATH_CASE}
+    dependencies:
+        - prepare_openmp_testcases
+        - build_openmp_library
     needs:
         - build_openmp_library
+        - prepare_openmp_testcases
 
 .run_openmp: &run_openmp
     stage: run_openmp
