@@ -26,8 +26,8 @@ module eirmod_mpi
     module procedure mpi_ireduce_i0_l1
     module procedure mpi_ireduce_l1_l1
   end interface
-
 #endif
+
   contains
 
 #else

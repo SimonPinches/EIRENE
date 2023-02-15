@@ -28,7 +28,7 @@ C      REAL(DP) :: ELB
 
       INTEGER :: IFLAG, IRL, IREAC, ICOUNT, J, JJ
 
-      SAVE
+!HJL      SAVE
 
 !$omp threadprivate(ifirst,vxn,vyn,vzn,vx,vy,vz,vn,vxi,vyi,vzi,
 !$OMP& zargx,zargy,zargz,vxdr,vydr,vzdr,vrelq,test,vrel,elab,

@@ -145,7 +145,7 @@ cym
 !$OMP& JATM, JMOL, JION, JPLS, JPHOT,
 !$OMP& IRET, IDIMM)
       
-      save
+!HJL      save
 
 
       CONTAINS

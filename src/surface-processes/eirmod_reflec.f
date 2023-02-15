@@ -148,7 +148,7 @@ ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
       integer , save :: ifile
       
            
-      SAVE
+!HJL      SAVE
            
 !$OMP THREADPRIVATE (IFILE,
 !$OMP& ZRANGES,ZENGYS,ZRS,ZIDES,
