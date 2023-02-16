@@ -116,7 +116,9 @@ prepare_testcases:
     dependencies:
         - build_library
         - prepare_testcases
-
+    needs:
+        - build_library
+        - prepare_testcases
 
 .build_iter_executable: &build_iter_executable
     stage: build:executable
@@ -138,8 +140,10 @@ prepare_testcases:
             - binRelease/
             - EIRENE-sample-cases/${PATH_CASE}
     dependencies:
+        - build_library
         - prepare_testcases
     needs:
+        - build_library
         - prepare_testcases
 
 .run: &run
@@ -283,98 +287,6 @@ test_standalone_1D_elliptic:
         - run_standalone_1D_elliptic
     needs:
         - run_standalone_1D_elliptic
-    
-build_standalone_ITER_1573:
-    <<: *build_iter_executable
-    variables:
-        PATH_CASE: "ITER_1573"
-
-run_standalone_ITER_1573:
-    <<: *run
-    variables:
-        PATH_CASE: "ITER_1573"
-    dependencies:
-        - build_standalone_ITER_1573
-    needs:
-        - build_standalone_ITER_1573
-    
-test_standalone_ITER_1573:
-    <<: *test
-    variables:
-        PATH_CASE: "ITER_1573"
-    dependencies:
-        - run_standalone_ITER_1573
-    needs:
-        - run_standalone_ITER_1573
-    
-build_standalone_ITER_1573_scaling:
-    <<: *build_iter_executable
-    variables:
-        PATH_CASE: "ITER_1573_scaling"
-
-run_standalone_ITER_1573_scaling:
-    <<: *run
-    variables:
-        PATH_CASE: "ITER_1573_scaling"
-    dependencies:
-        - build_standalone_ITER_1573_scaling
-    needs:
-        - build_standalone_ITER_1573_scaling
-    
-test_standalone_ITER_1573_scaling:
-    <<: *test
-    variables:
-        PATH_CASE: "ITER_1573_scaling"
-    dependencies:
-        - run_standalone_ITER_1573_scaling
-    needs:
-        - run_standalone_ITER_1573_scaling
-
-build_standalone_ITER_1573_def_lines:
-    <<: *build_iter_executable
-    variables:
-        PATH_CASE: "ITER_1573_def_lines"
-
-run_standalone_ITER_1573_def_lines:
-    <<: *run
-    variables:
-        PATH_CASE: "ITER_1573_def_lines"
-    dependencies:
-        - build_standalone_ITER_1573_def_lines
-    needs:
-        - build_standalone_ITER_1573_def_lines
-    
-test_standalone_ITER_1573_def_lines:
-    <<: *test
-    variables:
-        PATH_CASE: "ITER_1573_def_lines"
-    dependencies:
-        - run_standalone_ITER_1573_def_lines
-    needs:
-        - run_standalone_ITER_1573_def_lines
-    
-build_standalone_ITER_1573_dens_model:
-    <<: *build_iter_executable
-    variables:
-        PATH_CASE: "ITER_1573_dens_model"
-
-run_standalone_ITER_1573_dens_model:
-    <<: *run
-    variables:
-        PATH_CASE: "ITER_1573_dens_model"
-    dependencies:
-        - build_standalone_ITER_1573_dens_model
-    needs:
-        - build_standalone_ITER_1573_dens_model
-
-test_standalone_ITER_1573_dens_model:
-    <<: *test
-    variables:
-        PATH_CASE: "ITER_1573_dens_model"
-    dependencies:
-        - run_standalone_ITER_1573_dens_model
-    needs:
-        - run_standalone_ITER_1573_dens_model
 
 build_standalone_2D_slab:
     <<: *build_executable
@@ -651,9 +563,105 @@ test_standalone_cylinder_triang_octree:
         - run_standalone_cylinder_triang_octree
     needs:
         - run_standalone_cylinder_triang_octree
-    
+
 ######################################################################################
-# EMC3 tests
+# ITER cases
+######################################################################################
+    
+build_standalone_ITER_1573:
+    <<: *build_iter_executable
+    variables:
+        PATH_CASE: "ITER_1573"
+
+run_standalone_ITER_1573:
+    <<: *run
+    variables:
+        PATH_CASE: "ITER_1573"
+    dependencies:
+        - build_standalone_ITER_1573
+    needs:
+        - build_standalone_ITER_1573
+    
+test_standalone_ITER_1573:
+    <<: *test
+    variables:
+        PATH_CASE: "ITER_1573"
+    dependencies:
+        - run_standalone_ITER_1573
+    needs:
+        - run_standalone_ITER_1573
+    
+build_standalone_ITER_1573_scaling:
+    <<: *build_iter_executable
+    variables:
+        PATH_CASE: "ITER_1573_scaling"
+
+run_standalone_ITER_1573_scaling:
+    <<: *run
+    variables:
+        PATH_CASE: "ITER_1573_scaling"
+    dependencies:
+        - build_standalone_ITER_1573_scaling
+    needs:
+        - build_standalone_ITER_1573_scaling
+    
+test_standalone_ITER_1573_scaling:
+    <<: *test
+    variables:
+        PATH_CASE: "ITER_1573_scaling"
+    dependencies:
+        - run_standalone_ITER_1573_scaling
+    needs:
+        - run_standalone_ITER_1573_scaling
+
+build_standalone_ITER_1573_def_lines:
+    <<: *build_iter_executable
+    variables:
+        PATH_CASE: "ITER_1573_def_lines"
+
+run_standalone_ITER_1573_def_lines:
+    <<: *run
+    variables:
+        PATH_CASE: "ITER_1573_def_lines"
+    dependencies:
+        - build_standalone_ITER_1573_def_lines
+    needs:
+        - build_standalone_ITER_1573_def_lines
+    
+test_standalone_ITER_1573_def_lines:
+    <<: *test
+    variables:
+        PATH_CASE: "ITER_1573_def_lines"
+    dependencies:
+        - run_standalone_ITER_1573_def_lines
+    needs:
+        - run_standalone_ITER_1573_def_lines
+    
+build_standalone_ITER_1573_dens_model:
+    <<: *build_iter_executable
+    variables:
+        PATH_CASE: "ITER_1573_dens_model"
+
+run_standalone_ITER_1573_dens_model:
+    <<: *run
+    variables:
+        PATH_CASE: "ITER_1573_dens_model"
+    dependencies:
+        - build_standalone_ITER_1573_dens_model
+    needs:
+        - build_standalone_ITER_1573_dens_model
+
+test_standalone_ITER_1573_dens_model:
+    <<: *test
+    variables:
+        PATH_CASE: "ITER_1573_dens_model"
+    dependencies:
+        - run_standalone_ITER_1573_dens_model
+    needs:
+        - run_standalone_ITER_1573_dens_model
+
+######################################################################################
+# EMC3 cases
 ######################################################################################
 
 build_EMC3-EIRENE:
@@ -931,10 +939,10 @@ build_openmp_library:
         - FC=mpif90 cmake ../src -DOPENMP=ON
         - make clean
         - make EIRENE
-        - FC=mpif90 cmake ../src -DEIRENE_INTERFACE=SOLPS-ITER -DEIRENE_USER-ROUTINES=iter -DEIRENE_POSTFIX=_iter -DOPENMP=ON
-        - make EIRENE
-        - FC=mpif90 cmake ../src -DEIRENE_INTERFACE=B2 -DEIRENE_USER-ROUTINES=default -DEIRENE_POSTFIX=_poly -DOPENMP=ON
-        - make EIRENE
+#        - FC=mpif90 cmake ../src -DEIRENE_INTERFACE=SOLPS-ITER -DEIRENE_USER-ROUTINES=iter -DEIRENE_POSTFIX=_iter -DOPENMP=ON
+#        - make EIRENE
+#        - FC=mpif90 cmake ../src -DEIRENE_INTERFACE=B2 -DEIRENE_USER-ROUTINES=default -DEIRENE_POSTFIX=_poly -DOPENMP=ON
+#        - make EIRENE
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
@@ -986,6 +994,33 @@ prepare_openmp_testcases:
     dependencies:
         - prepare_openmp_testcases
         - build_openmp_library
+    needs:
+        - build_openmp_library
+        - prepare_openmp_testcases
+
+.build_iter_openmp_executable: &build_openmp_executable
+    stage: build:openmp_executable
+    rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
+        - if: $EXCLUDE_OPENMP == 'true'
+          when: never
+        - when: always
+    script:
+        - cd EIRENE-sample-cases/${PATH_CASE}
+        - make clean
+        - make
+    retry: 2
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease/
+            - libRelease/
+	    - binRelease/
+            - EIRENE-sample-cases/${PATH_CASE}
+    dependencies:
+        - build_openmp_library
+        - prepare_openmp_testcases
     needs:
         - build_openmp_library
         - prepare_openmp_testcases
@@ -1123,7 +1158,7 @@ test_2D-D_slab_openmp:
         - run_2D-D_slab_openmp
 
 build_ITER_1573_openmp:
-    <<: *build_openmp_executable
+    <<: *build_iter_openmp_executable
     variables:
         PATH_CASE: "ITER_1573_openmp"
 
@@ -1133,13 +1168,6 @@ run_ITER_1573_openmp:
         PATH_CASE: "ITER_1573_openmp"
     needs:
         - build_ITER_1573_openmp
-
-test_ITER_1573_openmp:
-    <<: *test_openmp
-    variables:
-        PATH_CASE: "ITER_1573_openmp"
-    needs:
-        - run_ITER_1573_openmp
 
 build_cylinder_openmp:
     <<: *build_openmp_executable
@@ -1159,3 +1187,15 @@ test_cylinder_openmp:
         PATH_CASE: "cylinder_openmp"
     needs:
         - run_cylinder_openmp
+
+######################################################################################
+# ITER openmp cases
+######################################################################################
+
+test_ITER_1573_openmp:
+    <<: *test_openmp
+    variables:
+        PATH_CASE: "ITER_1573_openmp"
+    needs:
+        - run_ITER_1573_openmp
+
