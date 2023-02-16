@@ -1,3 +1,7 @@
+######################################################################################
+# Job control
+######################################################################################
+
 image: jugit-registry.fz-juelich.de/eirene/eirene-ci-image/debianbullseye
 
 include:
@@ -8,8 +12,8 @@ variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
 # For bullseye - from eirene_unified_bullseye
     SAMPLE_CASE_VERSION: 2d62d9743e8a6eece33740874985bd3b1779a0f4
-# OpenMP test cases, at present these exist in their own branch created from the first commit
-# This can be merged at any time
+# OpenMP test cases, at present these exist in their own branch created from the
+# first commit. This can be merged at any time.
     SAMPLE_CASE_VERSION_OPENMP: 50a92edc405f2f4b4c50316251982e05f0e63cc7
 # These variables allow the exclusion of certain stages to speed up development
     EXCLUDE_SERIAL: 'true'
@@ -43,6 +47,52 @@ workflow:
               EXCLUDE_OPENMP: 'false'
               EXCLUDE_EMC3:   'false'
         - when: always
+
+######################################################################################
+# Serial tests
+######################################################################################
+
+build_library:
+    stage: preparation
+    rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
+        - if: $EXCLUDE_SERIAL == 'true'
+          when: never
+        - when: always
+    script:
+        - mkdir buildRelease
+        - cd buildRelease
+        - FC=mpif90 cmake ../src
+        - make EIRENE
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease/
+            - libRelease/
+
+prepare_testcases:
+    stage: preparation
+    rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
+        - if: $EXCLUDE_SERIAL == 'true'
+          when: never
+        - when: always
+    script:
+        # Make only shallow clone (fetch) of single commit defined by SHA key 
+        - mkdir EIRENE-sample-cases
+        - cd EIRENE-sample-cases
+        - git init
+        - git remote add origin https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
+        - git fetch --depth 1 origin ${SAMPLE_CASE_VERSION}
+        - git checkout FETCH_HEAD
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - EIRENE-sample-cases
+        exclude:
+            - EIRENE-sample-cases/.git/**      
 
 .build_executable: &build_executable
     stage: build:executable
@@ -92,44 +142,6 @@ workflow:
     needs:
         - prepare_testcases
 
-# Create individual stage for mpi-jobs due to recource limits (memory?)
-# of gitlab runner at juelich gitlab
-# this forces to mpi jobs to be run sequencially
-run_mpi_cases:
-    stage: run_mpi
-    rules:
-        - if: $CI_PIPELINE_SOURCE == 'schedule'
-          when: never
-        - if: $EXCLUDE_MPI == 'true'
-          when: never
-        - when: always
-    before_script:
-        # Bypass mpirun abort due to execution as root
-        - export MPIRUN_FLAGS='--allow-run-as-root'
-    script:
-        # job: run_EMC3-EIRENE_H_multiStrataMpi
-        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi
-        - make output
-        - cd ../../../../
-        # job: run_EMC3-EIRENE_H_multiStrataMpi2
-        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi2
-        - make output
-        - cd ../../../../
-        # job: run_EMC3-EIRENE_H_multiStrataMpi3
-        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi3
-        - make output
-    artifacts:
-        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
-        paths:
-            - buildRelease/
-            - libRelease/
-            - EIRENE-sample-cases/EMC3
-        when: always
-    dependencies:
-        - build_EMC3-EIRENE
-    needs:
-        - build_EMC3-EIRENE
-
 .run: &run
     stage: run
     rules:
@@ -167,47 +179,10 @@ run_mpi_cases:
             - EIRENE-sample-cases/${PATH_CASE}
         when: always
 
-prepare_testcases:
-    stage: preparation
-    rules:
-        - if: $CI_PIPELINE_SOURCE == 'schedule'
-          when: never
-        - if: $EXCLUDE_SERIAL == 'true'
-          when: never
-        - when: always
-    script:
-        # Make only shallow clone (fetch) of single commit defined by SHA key 
-        - mkdir EIRENE-sample-cases
-        - cd EIRENE-sample-cases
-        - git init
-        - git remote add origin https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
-        - git fetch --depth 1 origin ${SAMPLE_CASE_VERSION}
-        - git checkout FETCH_HEAD
-    artifacts:
-        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
-        paths:
-            - EIRENE-sample-cases
-        exclude:
-            - EIRENE-sample-cases/.git/**      
 
-build_library:
-    stage: preparation
-    rules:
-        - if: $CI_PIPELINE_SOURCE == 'schedule'
-          when: never
-        - if: $EXCLUDE_SERIAL == 'true'
-          when: never
-        - when: always
-    script:
-        - mkdir buildRelease
-        - cd buildRelease
-        - FC=mpif90 cmake ../src
-        - make EIRENE
-    artifacts:
-        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
-        paths:
-            - buildRelease/
-            - libRelease/
+######################################################################################
+# The individual serial test cases
+######################################################################################
 
 build_standalone_1D-H_slab:
     <<: *build_executable
@@ -677,6 +652,10 @@ test_standalone_cylinder_triang_octree:
     needs:
         - run_standalone_cylinder_triang_octree
     
+######################################################################################
+# EMC3 tests
+######################################################################################
+
 build_EMC3-EIRENE:
     <<: *build_executable
     variables:
@@ -769,7 +748,7 @@ run_EMC3-EIRENE_H_multiStrata:
             - EIRENE-sample-cases/EMC3
     needs:
         - build_EMC3-EIRENE
-    
+
 test_EMC3-EIRENE_H_multiStrata:
     <<: *test
     variables:
@@ -783,6 +762,80 @@ test_EMC3-EIRENE_H_multiStrata:
     needs:
         - run_EMC3-EIRENE_H_multiStrata
     
+run_EMC3-EIRENE_H_profile:
+    <<: *run
+    variables:
+        PATH_CASE: "EMC3/W7X_Limiter/H_profile"
+    rules:
+        - if: $EXCLUDE_EMC3 == 'true'
+          when: never
+        - when: always
+    dependencies:
+        - build_EMC3-EIRENE
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease/
+            - libRelease/
+            - EIRENE-sample-cases/EMC3
+    needs:
+        - build_EMC3-EIRENE
+    
+test_EMC3-EIRENE_H_profile:
+    <<: *test
+    variables:
+        PATH_CASE: "EMC3/W7X_Limiter/H_profile"
+    rules:
+        - if: $EXCLUDE_EMC3 == 'true'
+          when: never
+        - when: always
+    dependencies:
+        - run_EMC3-EIRENE_H_profile
+    needs:
+        - run_EMC3-EIRENE_H_profile
+
+######################################################################################
+# MPI tests - at present using EMC3
+######################################################################################
+
+# Create individual stage for mpi-jobs due to recource limits (memory?)
+# of gitlab runner at juelich gitlab
+# this forces to mpi jobs to be run sequencially
+run_mpi_cases:
+    stage: run_mpi
+    rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
+        - if: $EXCLUDE_MPI == 'true'
+          when: never
+        - when: always
+    before_script:
+        # Bypass mpirun abort due to execution as root
+        - export MPIRUN_FLAGS='--allow-run-as-root'
+    script:
+        # job: run_EMC3-EIRENE_H_multiStrataMpi
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi
+        - make output
+        - cd ../../../../
+        # job: run_EMC3-EIRENE_H_multiStrataMpi2
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi2
+        - make output
+        - cd ../../../../
+        # job: run_EMC3-EIRENE_H_multiStrataMpi3
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi3
+        - make output
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease/
+            - libRelease/
+            - EIRENE-sample-cases/EMC3
+        when: always
+    dependencies:
+        - build_EMC3-EIRENE
+    needs:
+        - build_EMC3-EIRENE
+
 test_EMC3-EIRENE_H_multiStrataMpi:
     <<: *test
     variables:
@@ -828,38 +881,10 @@ test_EMC3-EIRENE_H_multiStrataMpi3:
     needs:
         - run_mpi_cases
     
-run_EMC3-EIRENE_H_profile:
-    <<: *run
-    variables:
-        PATH_CASE: "EMC3/W7X_Limiter/H_profile"
-    rules:
-        - if: $EXCLUDE_EMC3 == 'true'
-          when: never
-        - when: always
-    dependencies:
-        - build_EMC3-EIRENE
-    artifacts:
-        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
-        paths:
-            - buildRelease/
-            - libRelease/
-            - EIRENE-sample-cases/EMC3
-    needs:
-        - build_EMC3-EIRENE
-    
-test_EMC3-EIRENE_H_profile:
-    <<: *test
-    variables:
-        PATH_CASE: "EMC3/W7X_Limiter/H_profile"
-    rules:
-        - if: $EXCLUDE_EMC3 == 'true'
-          when: never
-        - when: always
-    dependencies:
-        - run_EMC3-EIRENE_H_profile
-    needs:
-        - run_EMC3-EIRENE_H_profile
-    
+######################################################################################
+# Coverage
+######################################################################################
+
 coverage_report:
     stage: coverage
     rules:
@@ -886,6 +911,10 @@ coverage_report:
         paths:
             - EIRENE-sample-cases/coverage.info
             - EIRENE-sample-cases/coverageReport
+
+######################################################################################
+# OpenMP tests
+######################################################################################
 
 build_openmp_library:
     stage: preparation:openmp
