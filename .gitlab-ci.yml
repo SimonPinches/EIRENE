@@ -7,9 +7,7 @@ include:
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
 # For bullseye - from eirene_unified_bullseye
-#   SAMPLE_CASE_VERSION: 2d62d9743e8a6eece33740874985bd3b1779a0f4
-#   SAMPLE_CASE_VERSION: 805fcdd0e91159a521262e664396960b5b6c9d33
-    SAMPLE_CASE_VERSION: 08678c43ff6077bcf2fb7d29c16f8f7c98e7bc72
+    SAMPLE_CASE_VERSION: 4089ec6ca50c1515715605c1b06449da9f440895
 
 # These variables allow the exclusion of certain stages to speed up development
     EXCLUDE_SERIAL: 'false'
