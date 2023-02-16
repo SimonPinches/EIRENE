@@ -998,7 +998,7 @@ prepare_openmp_testcases:
         - build_openmp_library
         - prepare_openmp_testcases
 
-.build_iter_openmp_executable: &build_openmp_executable
+.build_iter_openmp_executable: &build_iter_openmp_executable
     stage: build:openmp_executable
     rules:
         - if: $CI_PIPELINE_SOURCE == 'schedule'
@@ -1016,7 +1016,7 @@ prepare_openmp_testcases:
         paths:
             - buildRelease/
             - libRelease/
-	    - binRelease/
+            - binRelease/
             - EIRENE-sample-cases/${PATH_CASE}
     dependencies:
         - build_openmp_library
@@ -1157,18 +1157,6 @@ test_2D-D_slab_openmp:
     needs:
         - run_2D-D_slab_openmp
 
-build_ITER_1573_openmp:
-    <<: *build_iter_openmp_executable
-    variables:
-        PATH_CASE: "ITER_1573_openmp"
-
-run_ITER_1573_openmp:
-    <<: *run_openmp
-    variables:
-        PATH_CASE: "ITER_1573_openmp"
-    needs:
-        - build_ITER_1573_openmp
-
 build_cylinder_openmp:
     <<: *build_openmp_executable
     variables:
@@ -1191,6 +1179,18 @@ test_cylinder_openmp:
 ######################################################################################
 # ITER openmp cases
 ######################################################################################
+
+build_ITER_1573_openmp:
+    <<: *build_iter_openmp_executable
+    variables:
+        PATH_CASE: "ITER_1573_openmp"
+
+run_ITER_1573_openmp:
+    <<: *run_openmp
+    variables:
+        PATH_CASE: "ITER_1573_openmp"
+    needs:
+        - build_ITER_1573_openmp
 
 test_ITER_1573_openmp:
     <<: *test_openmp
