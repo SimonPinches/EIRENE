@@ -48,7 +48,7 @@ C
       USE EIRMOD_INFCOP, ONLY: EIRENE_IF0COP
       USE EIRMOD_PRESSURELOOP
       
-      use json_module
+      use json_module           !IGNORE
 ! this does not work  found no matching specific binding for json%get
 !     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
@@ -5042,7 +5042,7 @@ C  TURN OFF TIME DEP MODE IF EITHER NTIME=0 OR NPRNLI=0
       USE EIRMOD_JSON
       USE EIRMOD_INFCOP, ONLY: EIRENE_IF0COP
       
-      use json_module
+      use json_module           !IGNORE
 !cym/cpg      
 !     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 !cym/cpg end
@@ -5150,7 +5150,7 @@ C  also set NAINI, NCOPII, NCOPIE there
      >    STRATEGY_ORIGINAL, STRATEGY_APCAS, STRATEGY_BALANCED,
      >    INPUT_DISTRIBUTION_STRATEGY
       USE EIRMOD_JSON
-      use json_module
+      use json_module           !IGNORE
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
       type(json_core) :: json

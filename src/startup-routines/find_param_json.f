@@ -85,15 +85,15 @@ C
      .                       eirene_init_input_blocks 
 !pgf      use json_module, ck => json_ck
 !cym/cpg, keep using json_ck       
-!      use json_module
-      use json_module
+!      use json_module           !IGNORE
+      use json_module           !IGNORE
 !cym/cpg
 
       IMPLICIT NONE
 
       INTERFACE
         SUBROUTINE EIRENE_IF0PRM_JSON(json,p)
-        use json_module
+        use json_module           !IGNORE
         class(json_core),intent(inout) :: json
         type(json_value), pointer, intent(in) :: p
         END SUBROUTINE EIRENE_IF0PRM_JSON

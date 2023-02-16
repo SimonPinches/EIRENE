@@ -36,7 +36,7 @@ C  User specific read routines
       subroutine eirene_read_block_11_usr_json(json, me)
 
       use eirmod_json
-      use json_module
+      use json_module           !IGNORE
 !pb  .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
       class(json_core) :: json
@@ -53,7 +53,7 @@ C  User specific read routines
       subroutine eirene_write_block_11_usr_json(json, me)
 
       use eirmod_json
-      use json_module
+      use json_module           !IGNORE
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
       class(json_core) :: json

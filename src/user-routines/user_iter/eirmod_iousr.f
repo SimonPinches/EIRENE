@@ -59,7 +59,7 @@ csw
       use eirmod_comprt
      , , only: iunout
       use eirmod_json
-      use json_module
+      use json_module           !IGNORE
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
       class(json_core),intent(inout) :: json
@@ -112,7 +112,7 @@ csw
       subroutine eirene_write_block_11_usr_json(json, me)
 
       use eirmod_json
-      use json_module
+      use json_module           !IGNORE
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
       class(json_core),intent(inout) :: json

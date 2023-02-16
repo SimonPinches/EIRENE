@@ -55,7 +55,8 @@ C
       use eirmod_json, only : S_STACK, STRING_STACK, CRS_STACK,
      >                        EIRENE_PUSH_STRING_STACK 
 !cym/cpg provide access to json_ck type                  
-      use json_module, only : json_ck
+      use json_module           !IGNORE
+     >  , only : json_ck
 !end cym/cpg
       
       implicit none

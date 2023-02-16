@@ -19,7 +19,7 @@
       USE EIRMOD_SPUTER, ONLY: ETH,Q,M2M1,ES,ETF
       
 #ifdef USE_OPENMP     
-      USE OMP_LIB
+      USE OMP_LIB               !IGNORE
 #endif
       
       IMPLICIT NONE

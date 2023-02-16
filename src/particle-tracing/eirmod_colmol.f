@@ -90,7 +90,7 @@ cdr          P2NDS --> P2NEI
       USE EIRMOD_VELOCX, ONLY: EIRENE_VELOCX
       USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
       
-!$    use OMP_LIB
+!$    use OMP_LIB          !IGNORE
 
       IMPLICIT NONE
       

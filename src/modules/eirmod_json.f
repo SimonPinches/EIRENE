@@ -7,7 +7,7 @@
      .                          NSTRA
 !pb      USE EIRMOD_COMPRT, ONLY: IUNOUT
 
-      use json_module
+      use json_module           !IGNORE
 !cym/cpg keep original names       
 !     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 !cym, for reference : this would be equivalent to the initial code; works too for this file 

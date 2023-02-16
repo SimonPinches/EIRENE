@@ -102,7 +102,8 @@ C
       USE EIRMOD_JSON
       USE EIRMOD_IOUSR, ONLY: EIRENE_READ_BLOCK_11_USR
       USE EIRMOD_INFCOP, ONLY: EIRENE_IF0COP
-      use json_module, only  : json_ck
+      use json_module           !IGNORE
+     .   , only  : json_ck
       USE EIRMOD_PRESSURELOOP
 
       IMPLICIT NONE

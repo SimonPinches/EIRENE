@@ -209,7 +209,7 @@ C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
       USE EIRMOD_JSON
       USE EIRMOD_OPENFILE, ONLY: EIRENE_OPENFILE
       
-      use json_module
+      use json_module           !IGNORE
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
       IMPLICIT NONE
@@ -4854,7 +4854,7 @@ C  COPY USER SPECIFIC DATA TO FILE user_data.input
 
        SUBROUTINE EIRENE_READ14_JSON(json,me)
        USE EIRMOD_JSON     
-       use json_module
+       use json_module           !IGNORE
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
        IMPLICIT NONE
