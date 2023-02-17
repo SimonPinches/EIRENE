@@ -16,10 +16,10 @@ variables:
 # first commit. This can be merged at any time.
     SAMPLE_CASE_VERSION_OPENMP: 9fc6a6a12b951a80e229f6203e95aaf16c5590bd
 # These variables allow the exclusion of certain stages to speed up development
-    EXCLUDE_SERIAL: 'true'
-    EXCLUDE_MPI:    'true'
+    EXCLUDE_SERIAL: 'false'
+    EXCLUDE_MPI:    'false'
     EXCLUDE_OPENMP: 'false'
-    EXCLUDE_EMC3:   'true'
+    EXCLUDE_EMC3:   'false'
 
 stages:
     - preparation
@@ -982,7 +982,6 @@ prepare_openmp_testcases:
         - when: always
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
-        - make clean
         - make
     retry: 2
     artifacts:
@@ -990,6 +989,7 @@ prepare_openmp_testcases:
         paths:
             - buildRelease/
             - libRelease/
+	    - binRelease/
             - EIRENE-sample-cases/${PATH_CASE}
     dependencies:
         - prepare_openmp_testcases
@@ -1008,7 +1008,6 @@ prepare_openmp_testcases:
         - when: always
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
-        - make clean
         - make
     retry: 2
     artifacts:
