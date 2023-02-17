@@ -14,7 +14,7 @@ variables:
     SAMPLE_CASE_VERSION: 2d62d9743e8a6eece33740874985bd3b1779a0f4
 # OpenMP test cases, at present these exist in their own branch created from the
 # first commit. This can be merged at any time.
-    SAMPLE_CASE_VERSION_OPENMP: 50a92edc405f2f4b4c50316251982e05f0e63cc7
+    SAMPLE_CASE_VERSION_OPENMP: d52729842d354f980ae0f1c8977365ecb62a3b77
 # These variables allow the exclusion of certain stages to speed up development
     EXCLUDE_SERIAL: 'true'
     EXCLUDE_MPI:    'true'
@@ -936,9 +936,9 @@ build_openmp_library:
         - rm -rf buildRelease
         - mkdir buildRelease
         - cd buildRelease
-        - FC=mpif90 cmake ../src -DOPENMP=ON
+        - FC=mpif90 cmake -DOPENMP=ON ../src 
         - make clean
-        - make EIRENE
+        - make -j EIRENE
 #        - FC=mpif90 cmake ../src -DEIRENE_INTERFACE=SOLPS-ITER -DEIRENE_USER-ROUTINES=iter -DEIRENE_POSTFIX=_iter -DOPENMP=ON
 #        - make EIRENE
 #        - FC=mpif90 cmake ../src -DEIRENE_INTERFACE=B2 -DEIRENE_USER-ROUTINES=default -DEIRENE_POSTFIX=_poly -DOPENMP=ON
