@@ -1443,7 +1443,7 @@ c
       i3 = index(zeile(i2+1:),' ')
       write (form,'(A4,i0,a1,i0,a2)') '(5(E',i2+i3-1,'.',i2-i1-1,'))'
       backspace kard
-c     write (iunout,*) 'plasm: detected format ', form
+!      write (6,*) 'plasm: detected format ', form
 
       ND1 = NDIMX + 2
       LIM = (ND1/5)*5 - 4
@@ -1458,7 +1458,10 @@ c     write (iunout,*) 'plasm: detected format ', form
   110   CONTINUE
        END DO
       END DO
-  500 RETURN
+
+      RETURN
+ 500  backspace kard
+      RETURN
 *//END PLASM//
       END SUBROUTINE EIRENE_PLASM
 
