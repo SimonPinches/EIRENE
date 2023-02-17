@@ -1042,6 +1042,7 @@ prepare_openmp_testcases:
         paths:
             - buildRelease/
             - libRelease/
+	    - binRelease/
             - EIRENE-sample-cases/${PATH_CASE}
         when: always
     needs:
