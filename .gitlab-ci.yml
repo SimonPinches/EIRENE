@@ -1190,6 +1190,8 @@ run_ITER_1573_openmp:
     <<: *run_openmp
     variables:
         PATH_CASE: "ITER_1573_openmp"
+    dependencies:
+        - build_ITER_1573_openmp
     needs:
         - build_ITER_1573_openmp
 
@@ -1197,6 +1199,8 @@ test_ITER_1573_openmp:
     <<: *test_openmp
     variables:
         PATH_CASE: "ITER_1573_openmp"
+    dependencies:
+        - run_ITER_1573_openmp
     needs:
         - run_ITER_1573_openmp
 
