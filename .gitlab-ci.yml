@@ -46,6 +46,9 @@ workflow:
               EXCLUDE_MPI:    'false'
               EXCLUDE_OPENMP: 'false'
               EXCLUDE_EMC3:   'true'
+        - if: $EXCLUDE_EMC3 == 'true'
+          variables:
+              EXCLUDE_MPI: 'true'
         - when: always
 
 ######################################################################################
