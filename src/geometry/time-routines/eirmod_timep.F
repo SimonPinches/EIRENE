@@ -23,7 +23,7 @@ C
       INTEGER :: IANP, I, IENP, JHELP, ISW, JJC, J1,
      .           NRCLLP, LHELP, J2, INCY, JN, ICOU, NYSAVE, NHELP,
      .           I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS,
-     .           IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J, JJ,
+     .           IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J,
 cym     .           EIRENE_LEARCA, EIRENE_LEARC2, 
      .           NJC, ITEST, JSH, NN ,IN, itc
       
@@ -38,7 +38,7 @@ cdr logicals for intersection with poloidal surfaces
 !$OMP&  IANP, I, IENP, JHELP, ISW, JJC, J1,
 !$OMP&  NRCLLP, LHELP, J2, INCY, JN, ICOU, NYSAVE, NHELP,
 !$OMP&  I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS,
-!$OMP&  IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J, JJ,
+!$OMP&  IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J,
 !$OMP&  NJC, ITEST, JSH, NN ,IN, itc,
 !$OMP&  LHITP0, lnincz)
 
@@ -124,15 +124,11 @@ cym stays here because not correct in module declaration
 cym therefore: save not there, same in timer.F
 cym check this is correct
 cdr logicals for intersection with poloidal surfaces
-      LOGICAL :: LHITP(N2NDPLGS)
       INTEGER :: NCOUNS(N2ND+N3RD)
 
 #ifdef TRACE
       INTEGER :: JJ
 #endif
-
-      INTEGER :: EIRENE_ILLZ
-      INTEGER :: EIRENE_LEARCA, EIRENE_LEARC2
       
 cym cccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cym local variables moved to module declaration section
@@ -203,6 +199,131 @@ C       Y00=Y00+ZRAD*VELY
       ENDIF
 C
       IF (LEVGEO.EQ.3) THEN
+
+        CALL EIRENE_TIMEP_CURVILINEAR_MESH(ZRAD)
+        GOTO 5000
+
+      ELSEIF (LEVGEO.EQ.2) THEN
+        IF (NLCRC) THEN
+C
+          CALL EIRENE_TIMEP_CIRCULAR_MESH(ZRAD)
+          GOTO 5000
+
+        ELSEIF (LEVGEO.EQ.2.AND..NOT.NLCRC) THEN
+
+          CALL EIRENE_TIMEP_NONCIRCULAR_MESH(ZRAD)
+          GOTO 5000
+
+      ENDIF ! (LEVGEO=2,  block 2A and 2B)
+C
+C
+      ELSEIF (LEVGEO.EQ.1) THEN
+
+        CALL EIRENE_TIMEP_SLAB(ZRAD)
+C
+      ENDIF
+
+C  FROM HERE ON: CODE COMMON TO ALL OPTIONS.
+C   ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+C
+ 5000 CONTINUE
+#ifdef TRACE
+      IF (NLTRC) THEN
+!$OMP CRITICAL
+        WRITE (iunout,*) 'NCOUP= ',NCOUP
+!$OMP END CRITICAL
+      ENDIF
+#endif
+      DO 5100 J=1,NCOUP
+        CLPD(IADD+J)=ALPD(J)
+        NUPC(IADD+J)=(JUPC(J)-1)+(NTCELL-1)*NP2T3
+        NCOUNP(IADD+J)=JUPC(J)
+        NCOUNS(IADD+J)=NTCELL
+        IF (ALPD(J).LE.0..OR.JUPC(J).LE.0.OR.
+     .      JUPC(J).GE.NP2ND) THEN
+          WRITE (iunout,*) 'ERROR DETECTED IN TIMEP '
+          WRITE (iunout,*) 'NPANU,J,IADD+J,ALPD,JUPC ',
+     .                      NPANU,J,IADD+J,ALPD(J),JUPC(J)
+        ENDIF
+#ifdef TRACE
+        IF (NLTRC) THEN
+!$OMP CRITICAL
+          JJ=J+IADD
+          WRITE (iunout,'(1X,A,3X,I6,3X,1PE12.4,3X,I6,3X,I6)')
+     .                     'TIMEP: JJ,CLPD(JJ),NUPC(JJ),NCOUNP(JJ) ',
+     .                             JJ,CLPD(JJ),NUPC(JJ),NCOUNP(JJ)
+!$OMP END CRITICAL
+        ENDIF
+#endif
+ 5100 CONTINUE
+C
+      IF (ICOUT.LT.NCOUT.AND.MPSURF.EQ.0) THEN
+        ICOUT=ICOUT+1
+        IPOLGN=0
+        IF (ICOUT.EQ.NCOUT) IPOLGN=IPOLGS
+        ZRAD=BLPD(ICOUT)
+        if (ncpan.gt.0) then
+          jn=0
+          do j=ncpan,ncpen
+            jn=jn+1
+            alpd(jn)=alpd(j)
+            jupc(jn)=jupc(j)
+            lupc(jn)=lupc(j)
+            mupc(jn)=mupc(j)
+          end do
+        endif
+        NTCELL=NCOUNT(ICOUT)
+        IADD=IADD+NCOUP
+        ncoup=jn
+#ifdef TRACE
+        IF (NLTRC) THEN
+!$OMP CRITICAL
+          WRITE (iunout,*) 'NEXT TOR. CELL: ZRAD,NTCELL,IADD ',
+     .                                      ZRAD,NTCELL,IADD
+!$OMP END CRITICAL
+        ENDIF
+#endif
+        GOTO 10000
+      ENDIF
+C
+      NCOU=IADD+NCOUP
+C
+      SUM=0.
+      DO 5110 ICOU=1,NCOU
+        SUM=SUM+CLPD(ICOU)
+        NCOUNT(ICOU)=NCOUNS(ICOU)
+C       WRITE (iunout,*) 'ICOU,NCOUNT,CLPD ',
+C    .                    ICOU,NCOUNT(ICOU),CLPD(ICOU)
+ 5110 CONTINUE
+      IF (MPSURF.EQ.0.AND.ABS(SUM-ZRADS).GT.EPS10) THEN
+        WRITE (iunout,*) 'ERROR IN TIMEP: NPANU,SUM,ZRADS ',
+     .                               NPANU,SUM,ZRADS
+        RETURN  ! changed to avoid job crash in long runs
+!       CALL EIRENE_EXIT_OWN(1)
+      ENDIF
+C
+      ZRAD=SUM
+      RETURN
+
+      END subroutine EIRENE_TIMEP
+
+!------------------------------------------------------------------------
+
+      SUBROUTINE EIRENE_TIMEP_CURVILINEAR_MESH(ZRAD)
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_CUPD
+      USE EIRMOD_CCONA
+      USE EIRMOD_COMPRT
+      USE EIRMOD_CGRID
+      USE EIRMOD_CGEOM
+      USE EIRMOD_CLGIN
+      USE EIRMOD_CPOLYG
+      USE EIRMOD_LEARC1, ONLY: EIRENE_LEARC1
+
+      IMPLICIT NONE
+      REAL(DP), INTENT(INOUT) :: ZRAD
+      INTEGER :: EIRENE_LEARC2
 C
         IF (NRCELL.GT.0) GOTO 10
 C
@@ -517,8 +638,25 @@ C
         IPCELL=NPCELL
         GOTO 5000
 C
-      ELSEIF (LEVGEO.EQ.2) THEN
-        IF (NLCRC) THEN
+
+ 5000   CONTINUE
+        RETURN
+
+      END SUBROUTINE EIRENE_TIMEP_CURVILINEAR_MESH
+
+!----------------------------------------------------------------------
+
+      SUBROUTINE EIRENE_TIMEP_CIRCULAR_MESH(ZRAD)
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_CUPD
+      USE EIRMOD_CCONA
+      USE EIRMOD_CGRID
+      USE EIRMOD_COMPRT
+
+      IMPLICIT NONE
+      REAL(DP), INTENT(INOUT) :: ZRAD
+
 C
 C  BLOCK 2A: POLOIDAL SURFACES ARE PLANE SURFACES, AT CONST. ANGLE THETA
 C
@@ -530,7 +668,7 @@ C  YES! ZRAD IS THE DISTANCE TRAVELLED IN X- OR RADIAL CELL NO. NRCELL
 C
           NCOUP=1
 
-        IF (NRCELL.LE.0.OR.NRCELL.GT.NR1STM) THEN
+          IF (NRCELL.LE.0.OR.NRCELL.GT.NR1STM) THEN
 C  PARTICLE OUTSIDE STANDARD MESH, BUT THETA GRID EXTENDS TO INFINITY
 
             X00=X00+VELX*ZRAD
@@ -578,7 +716,7 @@ C   TIMESTEP FROM X00,Y00 TO THETA-SURFACE, THETA=WIN
           LUPC(NCOUP)=JJC
           ALPD(NCOUP)=F-TWIN1
           TWIN1=F
-C
+C     
           J1=J1+NINCY
           IF (J1.EQ.0) J1=NP2NDM
           IF (J1.EQ.NP2ND) J1=1
@@ -586,7 +724,7 @@ C
           IF ((ityp.ne.3).and.(J1.NE.NJC)) GOTO 100
 C
 C   LAST THETA-CELL
-C
+C     
   150     NCOUP=NCOUP+1
           JUPC(NCOUP)=NJC
           ALPD(NCOUP)=ZRAD-TWIN1
@@ -596,8 +734,31 @@ C
           MPSURF=0
           NINCY=0
           GOTO 5000
-C
-      ELSEIF (LEVGEO.EQ.2.AND..NOT.NLCRC) THEN
+
+ 5000   CONTINUE
+        RETURN
+      
+      END SUBROUTINE EIRENE_TIMEP_CIRCULAR_MESH
+
+!----------------------------------------------------------------------
+
+      SUBROUTINE EIRENE_TIMEP_NONCIRCULAR_MESH(ZRAD)
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_CUPD
+      USE EIRMOD_CCONA
+      USE EIRMOD_COMPRT
+      USE EIRMOD_CGRID
+      USE EIRMOD_CGEOM
+      USE EIRMOD_CLGIN
+      USE EIRMOD_CPOLYG
+
+      IMPLICIT NONE
+      REAL(DP), INTENT(INOUT) :: ZRAD
+      INTEGER :: EIRENE_ILLZ
+      INTEGER :: EIRENE_LEARC2
+cdr logicals for intersection with poloidal surfaces
+      LOGICAL :: LHITP(N2NDPLGS)
 C
 C  BLOCK 2B. LEVGEO=2 BUT NOT NLCRC, POLOIDAL SURFACES ARE NOT PLANE SURFACES
 
@@ -821,10 +982,30 @@ C
           IPCELL=NPCELL
           GOTO 5000
 
-      ENDIF ! (LEVGEO=2,  block 2A and 2B)
+ 5000   CONTINUE
+        RETURN      
 C
-C
-      ELSEIF (LEVGEO.EQ.1) THEN
+ 9991  CONTINUE
+      WRITE (iunout,*)
+     .  'REENTRANCE FROM VACUUM REGION UNFINISHED IN TIMEP'
+      CALL EIRENE_EXIT_OWN(1)
+
+      END SUBROUTINE EIRENE_TIMEP_NONCIRCULAR_MESH
+
+!----------------------------------------------------------------------
+
+      SUBROUTINE EIRENE_TIMEP_SLAB(ZRAD)
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_CUPD
+      USE EIRMOD_CCONA
+      USE EIRMOD_COMPRT
+      USE EIRMOD_CGRID
+      USE EIRMOD_CLGIN
+
+      IMPLICIT NONE
+      REAL(DP), INTENT(INOUT) :: ZRAD
+      INTEGER :: EIRENE_LEARCA
 C
 C  IDENTICAL, UP TO NAMES, TO TOROIDAL GRID PART, NLTRZ BLOCK
 C
@@ -1043,95 +1224,10 @@ C
         IPCELL=NPCELL
         Y00=Y000
         GOTO 5000
-C
-      ENDIF
 
-C  FROM HERE ON: CODE COMMON TO ALL OPTIONS.
-C   ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-C
- 5000 CONTINUE
-#ifdef TRACE
-      IF (NLTRC) THEN
-!$OMP CRITICAL
-        WRITE (iunout,*) 'NCOUP= ',NCOUP
-!$OMP END CRITICAL
-      ENDIF
-#endif
-      DO 5100 J=1,NCOUP
-        CLPD(IADD+J)=ALPD(J)
-        NUPC(IADD+J)=(JUPC(J)-1)+(NTCELL-1)*NP2T3
-        NCOUNP(IADD+J)=JUPC(J)
-        NCOUNS(IADD+J)=NTCELL
-        IF (ALPD(J).LE.0..OR.JUPC(J).LE.0.OR.
-     .      JUPC(J).GE.NP2ND) THEN
-          WRITE (iunout,*) 'ERROR DETECTED IN TIMEP '
-          WRITE (iunout,*) 'NPANU,J,IADD+J,ALPD,JUPC ',
-     .                      NPANU,J,IADD+J,ALPD(J),JUPC(J)
-        ENDIF
-#ifdef TRACE
-        IF (NLTRC) THEN
-!$OMP CRITICAL
-          JJ=J+IADD
-          WRITE (iunout,'(1X,A,3X,I6,3X,1PE12.4,3X,I6,3X,I6)')
-     .                     'TIMEP: JJ,CLPD(JJ),NUPC(JJ),NCOUNP(JJ) ',
-     .                             JJ,CLPD(JJ),NUPC(JJ),NCOUNP(JJ)
-!$OMP END CRITICAL
-        ENDIF
-#endif
- 5100 CONTINUE
-C
-      IF (ICOUT.LT.NCOUT.AND.MPSURF.EQ.0) THEN
-        ICOUT=ICOUT+1
-        IPOLGN=0
-        IF (ICOUT.EQ.NCOUT) IPOLGN=IPOLGS
-        ZRAD=BLPD(ICOUT)
-        if (ncpan.gt.0) then
-          jn=0
-          do j=ncpan,ncpen
-            jn=jn+1
-            alpd(jn)=alpd(j)
-            jupc(jn)=jupc(j)
-            lupc(jn)=lupc(j)
-            mupc(jn)=mupc(j)
-          end do
-        endif
-        NTCELL=NCOUNT(ICOUT)
-        IADD=IADD+NCOUP
-        ncoup=jn
-#ifdef TRACE
-        IF (NLTRC) THEN
-!$OMP CRITICAL
-          WRITE (iunout,*) 'NEXT TOR. CELL: ZRAD,NTCELL,IADD ',
-     .                                      ZRAD,NTCELL,IADD
-!$OMP END CRITICAL
-        ENDIF
-#endif
-        GOTO 10000
-      ENDIF
-C
-      NCOU=IADD+NCOUP
-C
-      SUM=0.
-      DO 5110 ICOU=1,NCOU
-        SUM=SUM+CLPD(ICOU)
-        NCOUNT(ICOU)=NCOUNS(ICOU)
-C       WRITE (iunout,*) 'ICOU,NCOUNT,CLPD ',
-C    .                    ICOU,NCOUNT(ICOU),CLPD(ICOU)
- 5110 CONTINUE
-      IF (MPSURF.EQ.0.AND.ABS(SUM-ZRADS).GT.EPS10) THEN
-        WRITE (iunout,*) 'ERROR IN TIMEP: NPANU,SUM,ZRADS ',
-     .                               NPANU,SUM,ZRADS
-        RETURN  ! changed to avoid job crash in long runs
-!       CALL EIRENE_EXIT_OWN(1)
-      ENDIF
-C
-      ZRAD=SUM
-      RETURN
-C
- 9991  CONTINUE
-      WRITE (iunout,*)
-     .  'REENTRANCE FROM VACUUM REGION UNFINISHED IN TIMEP'
-      CALL EIRENE_EXIT_OWN(1)
-      END subroutine EIRENE_TIMEP
+ 5000   CONTINUE
+        RETURN      
+
+      END SUBROUTINE EIRENE_TIMEP_SLAB
 
       end module eirmod_timep

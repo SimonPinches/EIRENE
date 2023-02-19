@@ -55,8 +55,6 @@ cym
      .           MPOL, IPOLGO, IP, ICELLR, MSAVE, ITRI,
      .     ISTS_CELL, ISD, nclpb, icts
       INTEGER, SAVE :: ITFRST = 0, ICALL = 0
-!pb      INTEGER, ALLOCATABLE, SAVE :: ITRINO(:), ISIDNO(:)
-!pb      INTEGER, SAVE :: NSTS_CELL
 #ifdef TRACE
       INTEGER, SAVE :: ICOUP
 !$OMP THREADPRIVATE (icoup)           
@@ -64,7 +62,6 @@ cym
       INTEGER, ALLOCATABLE, SAVE :: ITRINO(:), ISIDNO(:)
       INTEGER, SAVE :: NSTS_CELL
 
-cpg      LOGICAL :: LHITP(N2NDPLGS) ! for finding re-entry into levgeo=3 grid
       LOGICAL, TARGET, SAVE :: LCTS(4)
       LOGICAL, SAVE :: LNGB1, LNGB2, LNGB3, LNGB4
 cym
@@ -116,11 +113,7 @@ cpg      SAVE
 
       SUBROUTINE EIRENE_TIMER (PT)
       IMPLICIT NONE 
-        REAL(DP), INTENT(OUT) :: PT
-        REAL(DP) ::EIRENE_SARRUS
-        LOGICAL :: LHITP(N2NDPLGS) ! for finding re-entry into levgeo=3 grid
-        LOGICAL :: EIRENE_BITGET
-        INTEGER :: EIRENE_LEARC2
+      REAL(DP), INTENT(OUT) :: PT
 C
 C  THIS SUBROUTINE CALCULATES DISTANCES TO INTERSECTION POINTS IN THE 1ST STANDARD
 C  MESH "RSURF" (X- OR RADIAL DIRECTION)
@@ -206,17 +199,6 @@ CYM/HJL Moved variables to module scope
 cym is this one really necessary ?
       SAVE
 C
-cym fixing LCTS/PTS - should be done in initialization routine
-      LCT1 => LCTS(1)
-      LCT2 => LCTS(2)
-      LCT3 => LCTS(3)
-      LCT4 => LCTS(4)
-   
-      PT1  => PTS(1)
-      PT2  => PTS(2)
-      PT3  => PTS(3)
-      PT4  => PTS(4)
-cym ---
 
 #ifdef TRACE
       IF (NLTRC) THEN
@@ -244,7 +226,72 @@ c  zero velocity in x-y plane, i.e. flight purely in z-direction
       ENDIF
 C
 C-------------------------------------------------------------------
-      IF (LEVGEO.GT.1) GOTO 100
+
+      SELECT CASE (LEVGEO)
+C
+C****SLAB MODEL IN X DIRECTION: FOR TESTING, ANALYTICAL REFERENCE CASES, ETC..
+C
+      CASE(1)
+
+        CALL EIRENE_TIMER_SLAB(PT)
+
+      CASE(2)
+C
+C****CIRCULAR MESH   (CONCENTRIC)
+C
+        IF (NLCRC) THEN
+          CALL EIRENE_TIMER_CIRCULAR_MESH(PT)
+        END IF
+C
+C****ELLIPTICAL MESH  (NOT NECESSARILY CONCENTRIC NOR CONFOCAL)
+C
+        IF (NLELL) THEN
+          CALL EIRENE_TIMER_ELLIPTICAL_MESH(PT)
+        END IF
+
+      CASE(3)
+C
+C  POLYGON MESH
+C
+        CALL EIRENE_TIMER_CURVILINEAR_MESH(PT)
+
+      CASE(4) 
+C
+C   FINITE ELEMENT DISCRETISATION (MESH TRIANGLES IN X-Y- PLANE)
+C
+        CALL EIRENE_TIMER_TRIANGLE_MESH(PT)
+
+      CASE(5)
+C
+C  MESH OF TETRAHEDRA, FULL 3D DISCRETIZATION OF COMPUTATIONAL VOLUME
+C
+        CALL EIRENE_TIMER_TETRAHEDRON_MESH(PT)
+
+      CASE(10)
+C
+C  GENERAL GEOMETRY OPTION: PROVIDE FLIGHT TIME IN CURRENT CELL
+C
+        CALL EIRENE_TIMER_USER_DEFINED_GEOMETRY(PT)
+
+      CASE DEFAULT
+
+        WRITE (IUNOUT,*) 'UNIDENTIFIED GEOMETRY OPTION'
+        WRITE (IUNOUT,*) 'LEVGEO = ',LEVGEO
+        WRITE (IUNOUT,*) 'CALCULATION ABANDONNED'
+        CALL EIRENE_EXIT_OWN(1)
+
+      END SELECT
+
+      RETURN
+C
+      END SUBROUTINE EIRENE_TIMER
+
+!----------------------------------------------------------------------
+
+      SUBROUTINE EIRENE_TIMER_SLAB(PT)
+
+      IMPLICIT NONE
+      REAL(DP), INTENT(INOUT) :: PT
 C
 C****SLAB MODEL IN X DIRECTION: FOR TESTING, ANALYTICAL REFERENCE CASES, ETC..
 C
@@ -321,19 +368,21 @@ C  TRY TO FIND REENTRY SURFACE. CHECK ONLY NON-DEFAULT RADIAL SURFACES
       ENDIF
 #endif
       RETURN
-C
-C
-  100 CONTINUE
-C
-C---------------------------------------------------------------------
-      IF (LEVGEO.GT.2) GOTO 6000
-C
-      IF (NLELL) GOTO 1000
+      
+      END SUBROUTINE EIRENE_TIMER_SLAB
+
+!-------------------------------------------------------------------------
+
+      SUBROUTINE EIRENE_TIMER_CIRCULAR_MESH(PT)
+
+      IMPLICIT NONE
+      REAL(DP), INTENT(INOUT) :: PT
 C
 C****CIRCULAR MESH   (CONCENTRIC)
 C
 #ifdef TRACE
       IF (NLTRC) THEN
+C
 !$OMP CRITICAL
         WRITE (iunout,*) 'NJUMP,NINCX,NRCELL '
         WRITE (iunout,*)  NJUMP,NINCX,NRCELL
@@ -447,8 +496,16 @@ C
         NRI=IR+1
         GOTO 200
       ENDIF
-C
- 1000 CONTINUE
+
+      END SUBROUTINE EIRENE_TIMER_CIRCULAR_MESH
+
+!-------------------------------------------------------------------------
+
+      SUBROUTINE EIRENE_TIMER_ELLIPTICAL_MESH(PT)
+
+      IMPLICIT NONE
+      REAL(DP), INTENT(INOUT) :: PT
+      INTEGER :: EIRENE_LEARC2
 C
 C****ELLIPTICAL MESH  (NOT NECESSARILY CONCENTRIC NOR CONFOCAL)
 C
@@ -585,12 +642,28 @@ CPB        ENDIF
 CPB        NRI=IR+1
 CPB        GOTO 2000
       ENDIF
+
+      END SUBROUTINE EIRENE_TIMER_ELLIPTICAL_MESH
+
+!-----------------------------------------------------------------
+
+      SUBROUTINE EIRENE_TIMER_CURVILINEAR_MESH(PT)
+
+      IMPLICIT NONE
+      REAL(DP), INTENT(INOUT) :: PT
+      LOGICAL :: LHITP(N2NDPLGS) ! for finding re-entry into levgeo=3 grid
 C
-C     POLYGONS
-C
- 6000 CONTINUE
-C
-      IF (LEVGEO.GT.3) GOTO 8000
+cym fixing LCTS/PTS - should be done in initialization routine
+      LCT1 => LCTS(1)
+      LCT2 => LCTS(2)
+      LCT3 => LCTS(3)
+      LCT4 => LCTS(4)
+   
+      PT1  => PTS(1)
+      PT2  => PTS(2)
+      PT3  => PTS(3)
+      PT4  => PTS(4)
+cym ---
 C
 C  POLYGON MESH
 C
@@ -1002,11 +1075,15 @@ C
      .                             PT,MRSURF,IPOLGN,NINCX
 #endif
       RETURN
-C
-C
- 8000 CONTINUE
-C
-      IF (LEVGEO.GT.4) GOTO 10000
+
+      END SUBROUTINE EIRENE_TIMER_CURVILINEAR_MESH
+
+!------------------------------------------------------------
+
+      SUBROUTINE EIRENE_TIMER_TRIANGLE_MESH(PT)
+
+      IMPLICIT NONE
+      REAL(DP), INTENT(INOUT) :: PT
 C
 C   FINITE ELEMENT DISCRETISATION (MESH TRIANGLES IN X-Y- PLANE)
 C
@@ -1232,13 +1309,33 @@ C PARTICLE OUTSIDE STANDARD MESH IN CELL NACELL, NRCELL=0
       END IF
 
       RETURN
-C
-10000 CONTINUE
 
-      IF (LEVGEO > 5) GOTO 12000
+ 9999 CONTINUE
+      WRITE (iunout,*) 'ERROR IN TIMER_TRIANGLE_MESH, '// 
+     .                 'EXIT CALLED AT 9999'
+      WRITE (iunout,*) 'PARTICLE TRAJECTORY STOPPED'
+      WRITE (iunout,*) 'NPANU ', NPANU
+      WRITE (iunout,*) 'XX,YY,J ',XX,YY,J
+      WRITE (iunout,'(A,I6,1X,I6,1X,1P,1E14.7,1X,I6,1X,I4)')
+     .  ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
+     .    NRCELL,MRSURF,PT,NINCX,IPOLGN
+      LGPART = .FALSE.
+      RETURN
+
+      END SUBROUTINE EIRENE_TIMER_TRIANGLE_MESH
+
+!------------------------------------------------------------
+
+      SUBROUTINE EIRENE_TIMER_TETRAHEDRON_MESH(PT)
 C
 C  MESH OF TETRAHEDRA, FULL 3D DISCRETIZATION OF COMPUTATIONAL VOLUME
 C
+
+      IMPLICIT NONE
+      REAL(DP), INTENT(INOUT) :: PT
+      REAL(DP) ::EIRENE_SARRUS
+      LOGICAL :: EIRENE_BITGET
+
       TIMTET = 1.E30
       NTIMT = 0
       IF (NRCELL .NE. 0) THEN
@@ -1596,10 +1693,29 @@ C  SEITENNUMMER DES NEUEN DREIECKS
 
       RETURN
 
-12000 CONTINUE
+ 9999 CONTINUE
+      WRITE (iunout,*) 'ERROR IN TIMER_TETRAHEDRON_MESH '//
+     .                 'EXIT CALLED AT 9999'
+      WRITE (iunout,*) 'PARTICLE TRAJECTORY STOPPED'
+      WRITE (iunout,*) 'NPANU ', NPANU
+      WRITE (iunout,*) 'XX,YY,J ',XX,YY,J
+      WRITE (iunout,'(A,I6,1X,I6,1X,1P,1E14.7,1X,I6,1X,I4)')
+     .  ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
+     .    NRCELL,MRSURF,PT,NINCX,IPOLGN
+      LGPART = .FALSE.
+      RETURN
+
+      END SUBROUTINE EIRENE_TIMER_TETRAHEDRON_MESH
+
+!--------------------------------------------------------------
+
+      SUBROUTINE EIRENE_TIMER_USER_DEFINED_GEOMETRY(PT)
 C
 C  GENERAL GEOMETRY OPTION: PROVIDE FLIGHT TIME IN CURRENT CELL
 C
+      IMPLICIT NONE
+      REAL(DP), INTENT(INOUT) :: PT
+
       IF (ICALL == 0) THEN
         ICALL = 1
 c  set nrmsrf:  = a "free virtual radial" surface index, between 1 and nsurf, such that none
@@ -1674,9 +1790,9 @@ cdr
 
       RETURN
 
-C
  9999 CONTINUE
-      WRITE (iunout,*) 'ERROR IN TIMER, EXIT CALLED AT 9999'
+      WRITE (iunout,*) 'ERROR IN TIMER_USER_DEFINED_GEOMETRY '//
+     .                 'EXIT CALLED AT 9999'
       WRITE (iunout,*) 'PARTICLE TRAJECTORY STOPPED'
       WRITE (iunout,*) 'NPANU ', NPANU
       WRITE (iunout,*) 'XX,YY,J ',XX,YY,J
@@ -1685,5 +1801,7 @@ C
      .    NRCELL,MRSURF,PT,NINCX,IPOLGN
       LGPART = .FALSE.
       RETURN
-      END SUBROUTINE EIRENE_TIMER
+
+      END SUBROUTINE EIRENE_TIMER_USER_DEFINED_GEOMETRY
+
       END MODULE EIRMOD_TIMER
