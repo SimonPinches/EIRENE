@@ -14,7 +14,7 @@ variables:
     SAMPLE_CASE_VERSION: 2d62d9743e8a6eece33740874985bd3b1779a0f4
 # OpenMP test cases, at present these exist in their own branch created from the
 # first commit. This can be merged at any time.
-    SAMPLE_CASE_VERSION_OPENMP: e0bccbac8b82d9852a4a35c70667614d5560b82c
+    SAMPLE_CASE_VERSION_OPENMP: 479a61aca2092ff9a1766a31411579e581a5743a
 # These variables allow the exclusion of certain stages to speed up development, true or false
     EXCLUDE_SERIAL: 'false'
     EXCLUDE_MPI:    'false'
