@@ -16,34 +16,37 @@ cym 04/2020 turned into a module because of SAVE attribute
 
       public :: eirene_timep
 C
-      REAL(DP) :: HELP, GS, GC, F, XNEN, DUM, SUM, BB, DY, X0TEST,
-     .          Y0TEST, V1, V2, T1, ZRADS, ZRD, WIN1, X000, Z0T,
-     .          TWIN1, XT, Y000, TSS, X0T, Y0T,
-     .          DYZR
-      INTEGER :: IANP, I, IENP, JHELP, ISW, JJC, J1,
-     .           NRCLLP, LHELP, J2, INCY, JN, ICOU, NYSAVE, NHELP,
-     .           I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS,
-     .           IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J,
+      REAL(DP) :: ZRADS
+!$OMP THREADPRIVATE(ZRADS)
+      
+!      REAL(DP) :: HELP, GS, GC, F, XNEN, DUM, SUM, BB, DY, X0TEST,
+!     .          Y0TEST, V1, V2, T1, ZRADS, ZRD, WIN1, X000, Z0T,
+!     .          TWIN1, XT, Y000, TSS, X0T, Y0T,
+!     .          DYZR
+!      INTEGER :: IANP, I, IENP, JHELP, ISW, JJC, J1,
+!     .           NRCLLP, LHELP, J2, INCY, JN, ICOU, NYSAVE, NHELP,
+!     .           I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS,
+!     .           IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J,
 cym     .           EIRENE_LEARCA, EIRENE_LEARC2, 
-     .           NJC, ITEST, JSH, NN ,IN, itc
+!     .           NJC, ITEST, JSH, NN ,IN, itc
       
 cdr logicals for intersection with poloidal surfaces
-      LOGICAL :: LHITP0
-      LOGICAL :: lnincz
+!      LOGICAL :: LHITP0
+!      LOGICAL :: lnincz
 
-!$OMP THREADPRIVATE(HELP, GS, GC, F, XNEN, DUM, SUM, BB, DY, X0TEST,
-!$OMP&  Y0TEST, V1, V2, T1, ZRADS, ZRD, WIN1, X000, Z0T,
-!$OMP&  TWIN1, XT, Y000, TSS, X0T, Y0T,
-!$OMP&  DYZR,
-!$OMP&  IANP, I, IENP, JHELP, ISW, JJC, J1,
-!$OMP&  NRCLLP, LHELP, J2, INCY, JN, ICOU, NYSAVE, NHELP,
-!$OMP&  I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS,
-!$OMP&  IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J,
-!$OMP&  NJC, ITEST, JSH, NN ,IN, itc,
-!$OMP&  LHITP0, lnincz)
+!!$OMP THREADPRIVATE(HELP, GS, GC, F, XNEN, DUM, SUM, BB, DY, X0TEST,
+!!$OMP&  Y0TEST, V1, V2, T1, ZRADS, ZRD, WIN1, X000, Z0T,
+!!$OMP&  TWIN1, XT, Y000, TSS, X0T, Y0T,
+!!$OMP&  DYZR,
+!!$OMP&  IANP, I, IENP, JHELP, ISW, JJC, J1,
+!!$OMP&  NRCLLP, LHELP, J2, INCY, JN, ICOU, NYSAVE, NHELP,
+!!$OMP&  I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS,
+!!$OMP&  IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J,
+!!$OMP&  NJC, ITEST, JSH, NN ,IN, itc,
+!!$OMP&  LHITP0, lnincz)
 
 cym is this really useful ?
-      SAVE
+!      SAVE
 
       contains
 
@@ -119,6 +122,8 @@ C
       IMPLICIT NONE
 
       REAL(DP), INTENT(INOUT) :: ZRAD
+      REAL(DP) :: SUM
+      INTEGER :: J, JN, NCPAN, NCPEN, IPOLGS, ICOUT, ICOU, IADD
 
 cym stays here because not correct in module declaration
 cym therefore: save not there, same in timer.F
@@ -224,7 +229,7 @@ C
 C
 C  POLYGON MESH
 C
-        CALL EIRENE_TIMEP_CURVILINEAR_MESH(ZRAD)
+        CALL EIRENE_TIMEP_CURVILINEAR_MESH(ZRAD, ICOUT, NCPAN, NCPEN)
 
       CASE DEFAULT
 
@@ -321,7 +326,8 @@ C
 
 !------------------------------------------------------------------------
 
-      SUBROUTINE EIRENE_TIMEP_CURVILINEAR_MESH(ZRAD)
+      SUBROUTINE EIRENE_TIMEP_CURVILINEAR_MESH(ZRAD, ICOUT, 
+     .                                         NCPAN, NCPEN)
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CUPD
@@ -335,7 +341,13 @@ C
 
       IMPLICIT NONE
       REAL(DP), INTENT(INOUT) :: ZRAD
+      INTEGER, INTENT(IN) :: ICOUT
+      INTEGER, INTENT(INOUT) :: NCPAN, NCPEN
+      REAL(DP) :: ZRD, X0T, Y0T, Z0T, V1, V2, TSS, T1
+      INTEGER :: J, JSH, ISTS, NN, NCOUPE, MPTEST, IR, IN,
+     .           IRSAVE, I1, ITEST, ITC
       INTEGER :: EIRENE_LEARC2
+      LOGICAL  :: LNINCZ, LHITP0
 C
       IF (NRCELL.GT.0) GOTO 10
 C
@@ -664,6 +676,8 @@ C
 
       IMPLICIT NONE
       REAL(DP), INTENT(INOUT) :: ZRAD
+      REAL(DP) :: X000, Y000, XT, XNEN, WIN1, TWIN1, GC, GS, F
+      INTEGER :: J1, JJC, NJC
 
 C
 C  BLOCK 2A: POLOIDAL SURFACES ARE PLANE SURFACES, AT CONST. ANGLE THETA
@@ -760,6 +774,9 @@ C
 
       IMPLICIT NONE
       REAL(DP), INTENT(INOUT) :: ZRAD
+      REAL(DP) :: X0T, Y0T, V1, V2, TSS, T1, HELP
+      INTEGER :: I, J, NCOUPE, NHELP, NRCLLP, JHELP, ITEST, IN, ISW,
+     .           IANP, IENP, LHELP
       INTEGER :: EIRENE_ILLZ
       INTEGER :: EIRENE_LEARC2
 cdr logicals for intersection with poloidal surfaces
@@ -1004,6 +1021,9 @@ C
 
       IMPLICIT NONE
       REAL(DP), INTENT(INOUT) :: ZRAD
+      REAL(DP) :: ZRD, Y0T, X0TEST, Y0TEST, Y000, F, DY, 
+     .            DYZR, DUM, BB
+      INTEGER :: ISTS, ITEST, J1, J2, MPTEST, NYSAVE, IRSAVE, IN, INCY
       INTEGER :: EIRENE_LEARCA
 C
 C  IDENTICAL, UP TO NAMES, TO TOROIDAL GRID PART, NLTRZ BLOCK

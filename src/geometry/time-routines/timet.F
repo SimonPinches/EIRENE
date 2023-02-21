@@ -146,7 +146,6 @@ C                  TO BE WRITTEN
 C  FROM HERE ON: CODE COMMON TO ALL OPTIONS.
 C   ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 C
- 5000 CONTINUE
 #ifdef TRACE
       IF (NLTRC) WRITE (iunout,*) 'NCOUT= ',NCOUT
 #endif

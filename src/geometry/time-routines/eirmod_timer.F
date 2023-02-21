@@ -33,77 +33,43 @@ C
       private
       
       PUBLIC :: EIRENE_TIMER
-           
-      REAL(DP),SAVE :: A(3,3), B(3), AB(3,3)
-cym - replace equivalence statement
-      REAL(DP), TARGET :: PTS(4) 
-      REAL(DP), POINTER :: PT1,PT2,PT3,PT4
 cym 
-      REAL(DP),SAVE :: SIG1, SIG2, DET, XMU, XETA, AX, AY, V,
-     .          TIMTET,
-     .          ZZ, RICHTY, HELP, TM, RICHTX, YY, XX, S3, TIMT, TIM,
-     .          S2, A1, A2, A3, B1, B2, B3, S1, V2, V3, ZR, ZEP1,
-     .          ZSQRT, PS, VELYQ, XX0, VVELX, VELXQ, ZT1, ZT2, YVY,
-     .          ZC1, DXA, TST, XA, ZB2, ZAB, ZAB2, ZB, Z0TEST,
-     .          Y0TEST, ZA, T, V1, ESURF,
-     .          XTEST, YTEST, X0SURF, DSRF, Y0Q, T1, T2, T3, T4, PNORMI
-      INTEGER,SAVE :: IRICH(2,4), ITSIDE(3,4)
-      INTEGER,SAVE :: IZELLO, NTIMT, IOB, I1, I2, ISW, KAN, KEN,
-     .           EIRENE_ILLZ, IHELP, IZELL, NTMS, MXSF, NTMZ, NRMSRF,
-     .           ICOS, IERR, IRS, NEWCEL, ITET, IT, IL, IS, NRI, MS, IR,
-     .           ISTS, MMSURF, J, K, I, JPOL,
-     .           MPOL, IPOLGO, IP, ICELLR, MSAVE, ITRI,
-     .     ISTS_CELL, ISD, nclpb, icts
+!      REAL(DP),SAVE :: SIG1, SIG2, DET, XMU, XETA, AX, AY, V,
+!     .          TIMTET,
+!     .          ZZ, RICHTY, HELP, TM, RICHTX, YY, XX, S3, TIMT, TIM,
+!     .          S2, A1, A2, A3, B1, B2, B3, S1, V2, V3, ZR, ZEP1,
+!     .          ZSQRT, PS, VELYQ, XX0, VVELX, VELXQ, ZT1, ZT2, YVY,
+!     .          ZC1, DXA, TST, XA, ZB2, ZAB, ZAB2, ZB, Z0TEST,
+!     .          Y0TEST, ZA, T, V1, ESURF,
+!     .          XTEST, YTEST, X0SURF, DSRF, Y0Q, T1, T2, T3, T4, PNORMI
+!      INTEGER,SAVE :: IZELLO, NTIMT, IOB, I1, I2, ISW, KAN, KEN,
+!     .           EIRENE_ILLZ, IHELP, IZELL, NTMS, MXSF, NTMZ, NRMSRF,
+!     .           ICOS, IERR, IRS, NEWCEL, ITET, IT, IL, IS, NRI, MS, IR,
+!     .           ISTS, MMSURF, J, K, I, JPOL,
+!     .           MPOL, IPOLGO, IP, ICELLR, MSAVE, ITRI,
+!     .     ISTS_CELL, ISD, nclpb, icts
       INTEGER, SAVE :: ITFRST = 0, ICALL = 0
-#ifdef TRACE
-      INTEGER, SAVE :: ICOUP
-!$OMP THREADPRIVATE (icoup)           
-#endif
       INTEGER, ALLOCATABLE, SAVE :: ITRINO(:), ISIDNO(:)
       INTEGER, SAVE :: NSTS_CELL
 
-      LOGICAL, TARGET, SAVE :: LCTS(4)
-      LOGICAL, SAVE :: LNGB1, LNGB2, LNGB3, LNGB4
-cym
-      LOGICAL, POINTER :: LCT1, LCT2, LCT3, LCT4 
-
-cpg - not OpenMP compatible
-cpg      EQUIVALENCE (LCTS(1),LCT1), (LCTS(2),LCT2),
-cpg     .            (LCTS(3),LCT3), (LCTS(4),LCT4)
-
-cpg      EQUIVALENCE (PTS(1),PT1),   (PTS(2),PT2),
-cpg     .            (PTS(3),PT3),   (PTS(4),PT4)
- 
       
-!$OMP THREADPRIVATE (A, B, AB,LCT1,LCT2,LCT3,LCT4,PT1,PT2,PT3,PT4,
-!$OMP& SIG1, SIG2, DET, XMU, XETA, AX, AY, V,TIMTET,
-!$OMP& ZZ, RICHTY, HELP, TM, RICHTX, YY, XX, S3, TIMT, TIM,
-!$OMP& S2, A1, A2, A3, B1, B2, B3, S1, V2, V3, ZR, ZEP1,
-!$OMP& ZSQRT, PS, VELYQ, XX0, VVELX, VELXQ, ZT1, ZT2, YVY,
-!$OMP& ZC1, DXA, TST, XA, ZB2, ZAB, ZAB2, ZB, Z0TEST,
-!$OMP& Y0TEST, ZA, T, V1, ESURF,
-!$OMP& XTEST, YTEST, X0SURF, DSRF, Y0Q, T1, T2, T3, T4, PNORMI,
-!$OMP& IRICH, ITSIDE,
-!$OMP& IZELLO, NTIMT, IOB, I1, I2, ISW, KAN, KEN,
-!$OMP& EIRENE_ILLZ, IHELP, IZELL, NTMS, MXSF, NTMZ, NRMSRF,
-!$OMP& ICOS, IERR, IRS, NEWCEL, ITET, IT, IL, IS, NRI, MS, IR,
-!$OMP& ICALL, ITFRST, ISTS, MMSURF, J, K, I, JPOL,
-!$OMP& MPOL, IPOLGO, IP, ICELLR, MSAVE, ITRI,
-!$OMP& ISTS_CELL, ISD, nclpb, icts,
-!$OMP& ITRINO, ISIDNO, NSTS_CELL,LNGB1, LNGB2, LNGB3, LNGB4,
-!$OMP& LCTS,PTS)
+!!$OMP THREADPRIVATE (
+!!$OMP& SIG1, SIG2, DET, XMU, XETA, AX, AY, V,TIMTET,
+!!$OMP& ZZ, RICHTY, HELP, TM, RICHTX, YY, XX, S3, TIMT, TIM,
+!!$OMP& S2, A1, A2, A3, B1, B2, B3, S1, V2, V3, ZR, ZEP1,
+!!$OMP& ZSQRT, PS, VELYQ, XX0, VVELX, VELXQ, ZT1, ZT2, YVY,
+!!$OMP& ZC1, DXA, TST, XA, ZB2, ZAB, ZAB2, ZB, Z0TEST,
+!!$OMP& Y0TEST, ZA, T, V1, ESURF,
+!!$OMP& XTEST, YTEST, X0SURF, DSRF, Y0Q, T1, T2, T3, T4, PNORMI,
+!!$OMP& IRICH, ITSIDE,
+!!$OMP& IZELLO, NTIMT, IOB, I1, I2, ISW, KAN, KEN,
+!!$OMP& EIRENE_ILLZ, IHELP, IZELL, NTMS, MXSF, NTMZ, NRMSRF,
+!!$OMP& ICOS, IERR, IRS, NEWCEL, ITET, IT, IL, IS, NRI, MS, IR,
+!!$OMP& ICALL, ITFRST, ISTS, MMSURF, J, K, I, JPOL,
+!!$OMP& MPOL, IPOLGO, IP, ICELLR, MSAVE, ITRI,
+!!$OMP& ISTS_CELL, ISD, nclpb, icts,
+!!$OMP& ITRINO, ISIDNO, NSTS_CELL)
 
-  
-      DATA ITSIDE /1,2,3,
-     .             1,4,2,
-     .             2,4,3,
-     .             3,4,1/
-      DATA IRICH / 1, -3,
-     .             4,  1,
-     .             5,  2,
-     .             6,  3 /
-!      DATA ICALL /0/
-!      DATA ITFRST /0/
 
 cpg      SAVE
       
@@ -292,6 +258,10 @@ C
 
       IMPLICIT NONE
       REAL(DP), INTENT(INOUT) :: PT
+      REAL(DP), SAVE :: XA
+      REAL(DP) :: DXA, TST, Y0TEST, Z0TEST
+      INTEGER :: IR
+!$OMP THREADPRIVATE (XA)
 C
 C****SLAB MODEL IN X DIRECTION: FOR TESTING, ANALYTICAL REFERENCE CASES, ETC..
 C
@@ -377,6 +347,10 @@ C  TRY TO FIND REENTRY SURFACE. CHECK ONLY NON-DEFAULT RADIAL SURFACES
 
       IMPLICIT NONE
       REAL(DP), INTENT(INOUT) :: PT
+      REAL(DP) :: ZR, ZSQRT, ZT1, ZT2, ZEP1
+      REAL(DP), SAVE :: ZA, ZB, ZB2, ZAB, ZAB2, ZC1, PS
+      INTEGER :: IR, IS, MS, NRI
+!$OMP THREADPRIVATE(ZA, ZB, ZB2, ZAB, ZAB2, ZC1, PS)
 C
 C****CIRCULAR MESH   (CONCENTRIC)
 C
@@ -505,7 +479,14 @@ C
 
       IMPLICIT NONE
       REAL(DP), INTENT(INOUT) :: PT
+      REAL(DP) :: ESURF, XTEST, YTEST, ZSQRT, ZT1, ZT2
+      REAL(DP), SAVE :: YVY, VELXQ, VELYQ, XX0, VVELX, X0SURF, DSRF, ZR,
+     .                  Y0Q, ZA, ZB, ZB2, ZAB, ZAB2, ZC1, ZEP1
+      INTEGER, SAVE :: MSAVE
+      INTEGER :: NRI 
       INTEGER :: EIRENE_LEARC2
+!$OMP THREADPRIVATE(YVY, VELXQ, VELYQ, XX0, VVELX, X0SURF, DSRF, ZR,
+!$OMP& Y0Q, ZA, ZB, ZB2, ZAB, ZAB2, ZC1, ZEP1)
 C
 C****ELLIPTICAL MESH  (NOT NECESSARILY CONCENTRIC NOR CONFOCAL)
 C
@@ -632,7 +613,8 @@ C
       IF (NRI.EQ.0) THEN
         RETURN
       ELSE
-        WRITE (iunout,*) ' OPTION NRI > 0 NOT READY in TIMER '
+        WRITE (iunout,*) 'OPTION NRI > 0 NOT READY in '//
+     .                   'TIMER_ELLIPTICAL_MESH '
         CALL EIRENE_EXIT_OWN(1)
 CPB        IF (PT.GT.0.AND.PT.LT.PS) THEN
 CPB          IS=MRSURF-MAX(0,NINCX)
@@ -651,6 +633,23 @@ CPB        GOTO 2000
 
       IMPLICIT NONE
       REAL(DP), INTENT(INOUT) :: PT
+      REAL(DP) :: T, T1, T2, T3, T4, V1, V2, HELP
+      INTEGER :: NCLPB, MMSURF, I, J, K, JPOL, MPOL, ISW, ISTS, ISD, IR,
+     .           IP, IHELP, ICTS
+      INTEGER, SAVE :: IPOLGO, ICELLR
+!$OMP THREADPRIVATE(IPOLGO, ICELLR)
+cym - replace equivalence statement
+      REAL(DP), TARGET :: PTS(4) 
+      REAL(DP), POINTER :: PT1,PT2,PT3,PT4
+
+#ifdef TRACE
+      INTEGER :: ICOUP
+#endif
+ 
+      LOGICAL, TARGET :: LCTS(4)
+      LOGICAL, POINTER :: LCT1, LCT2, LCT3, LCT4 
+
+      LOGICAL :: LNGB1, LNGB2, LNGB3, LNGB4
       LOGICAL :: LHITP(N2NDPLGS) ! for finding re-entry into levgeo=3 grid
 C
 cym fixing LCTS/PTS - should be done in initialization routine
@@ -1084,6 +1083,10 @@ C
 
       IMPLICIT NONE
       REAL(DP), INTENT(INOUT) :: PT
+      REAL(DP) :: AX, AY, RICHTX, RICHTY, T, TM, V, XX, YY
+      INTEGER :: I, J, ISTS, ITRI, JPOL, MPOL, ISTS_CELL
+      INTEGER, SAVE :: IPOLGO, IZELL, IZELLO
+!$OMP THREADPRIVATE(IPOLGO, IZELL, IZELLO)
 C
 C   FINITE ELEMENT DISCRETISATION (MESH TRIANGLES IN X-Y- PLANE)
 C
@@ -1333,8 +1336,26 @@ C
 
       IMPLICIT NONE
       REAL(DP), INTENT(INOUT) :: PT
+      REAL(DP) :: A(3,3), B(3), AB(3,3)
+      REAL(DP) :: A1, A2, A3, B1, B2, B3, DET, PNORMI, S1, S2, S3,
+     .            SIG1, SIG2, T, TIMT, TIMTET, TM, V1, V2, V3,
+     .            XETA, XMU, XX, YY, ZZ
+      INTEGER :: I, I1, I2, IL, IOB, IS, ISTS, IT, ITET, 
+     .           J, NTIMT, NTMS, NTMZ
+      INTEGER, SAVE :: IPOLGO, IZELL, IZELLO
+!$OMP THREADPRIVATE(IPOLGO, IZELL, IZELLO)
       REAL(DP) ::EIRENE_SARRUS
       LOGICAL :: EIRENE_BITGET
+      INTEGER,SAVE :: IRICH(2,4), ITSIDE(3,4)
+  
+      DATA ITSIDE /1,2,3,
+     .             1,4,2,
+     .             2,4,3,
+     .             3,4,1/
+      DATA IRICH / 1, -3,
+     .             4,  1,
+     .             5,  2,
+     .             6,  3 /
 
       TIMTET = 1.E30
       NTIMT = 0
@@ -1715,6 +1736,8 @@ C  GENERAL GEOMETRY OPTION: PROVIDE FLIGHT TIME IN CURRENT CELL
 C
       IMPLICIT NONE
       REAL(DP), INTENT(INOUT) :: PT
+      REAL(DP) :: TIM
+      INTEGER :: ICOS, IERR, IRS, MXSF, NEWCEL, NRMSRF
 
       IF (ICALL == 0) THEN
         ICALL = 1
@@ -1795,7 +1818,7 @@ cdr
      .                 'EXIT CALLED AT 9999'
       WRITE (iunout,*) 'PARTICLE TRAJECTORY STOPPED'
       WRITE (iunout,*) 'NPANU ', NPANU
-      WRITE (iunout,*) 'XX,YY,J ',XX,YY,J
+!PB      WRITE (iunout,*) 'XX,YY,J ',XX,YY,J
       WRITE (iunout,'(A,I6,1X,I6,1X,1P,1E14.7,1X,I6,1X,I4)')
      .  ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
      .    NRCELL,MRSURF,PT,NINCX,IPOLGN
