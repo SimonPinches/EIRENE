@@ -7,7 +7,7 @@
       USE EIRMOD_COMXS
       USE EIRMOD_COMPRT
       
-      use json_module
+      use json_module           !IGNORE
 
       implicit none
 

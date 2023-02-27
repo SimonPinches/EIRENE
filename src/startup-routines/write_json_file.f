@@ -38,7 +38,7 @@
       USE EIRMOD_IOUSR, ONLY: eirene_write_block_11_usr
       USE EIRMOD_PRESSURELOOP
       
-      use json_module
+      use json_module           !IGNORE
 
       implicit none
 
@@ -189,6 +189,7 @@
       call json%add(me,'NLTRIMESH',nltrimesh)
       call json%add(me,'NLSPCSCL',nlspcscl)
       call json%add(me,'NLSPCSCL_ON',nlspcscl_on)
+      call json%add(me,'NLSOLEDGE',nlsoledge)
 
       call json%create_array(cfile,'CFILE') !an array
       do ifile=1, ndbnames
@@ -2218,13 +2219,13 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
       integer :: i
       interface
         subroutine  eirene_wr0_json (json,this)
-        use json_module
+        use json_module           !IGNORE
         class(json_core),intent(inout) :: json
         type(json_value),pointer, intent(inout) :: this
         end subroutine  eirene_wr0_json
 
 !        subroutine eirene_wrjson_usr(me)
-!        use json_module
+!        use json_module           !IGNORE
 !        type(json_value),pointer :: me
 !        end subroutine eirene_wrjson_usr
       end interface

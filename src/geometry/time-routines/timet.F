@@ -84,8 +84,7 @@ C
      .          F, ZRADS, BB, ZRD, DUM, Z001, X0TEST, Z0TEST, DZ,
      .          Y0TEST, z01_cell
       INTEGER :: ITT, ITEST, J2, NERR, IN, J, ICOU, MTTEST, ISTS,
-     .           NZSAVE, INCZ, J1, IRSAVE,
-     .           EIRENE_LEARCA
+     .           NZSAVE, INCZ, J1, IRSAVE, IRET
       INTEGER, SAVE :: MTSAVE=-1
 
       ZRADS=ZRAD
@@ -103,6 +102,7 @@ C
           WRITE (iunout,*) 'TIMET FROM OUTSIDE, NPANU ', NPANU
           WRITE (iunout,*) 'MRSURF,MTSURF,ZRAD '
           WRITE (iunout,*)  MRSURF,MTSURF,ZRAD
+      IF (NRCELL.E
         ENDIF
       ENDIF
 #endif
@@ -110,9 +110,113 @@ C
 C
 C  BLOCK 1 STARTS HERE....
 C
-      IF (.NOT.NLTRZ) GOTO 1000
+      IF (NLTRZ) THEN
 
-c  STATEMENTS 100 -- 1000
+        CALL EIRENE_TIMET_CYLINDER_GEOMETRY(ZRAD, IRET)
+        IF (IRET == 1) GOTO 9990
+
+C
+C  BLOCK 1 (NLTRZ)  done ::::::::::::::::::::::::::::::::::::::
+C
+
+C
+C ::::::::::::::::::::::::::::::::::::::::::::::::::::::
+C
+      ELSEIF (NLTRA) THEN
+C
+C  BLOCK 2B: DISCRETE TOROIDAL APPROXIMATION,
+C            also: default toroidal periodicity model.
+C            ONLY ONE STEP AT A TIME
+C
+        CALL EIRENE_TIMET_TOR_APPROX(ZRAD, IRET)
+        IF (IRET == 2) GOTO 9998
+        IF (IRET == 3) RETURN
+
+C  BLOCK 2B DONE.... NLTRA
+C                 polygonal in x-z, (rather than x-y, as in timep.f).
+C::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+      END IF
+
+C
+C  BLOCK 2A STARTS HERE....  NLTRT,
+c                  circular in x-z, ( rather than x-y, as in timep.f).
+C                  TO BE WRITTEN
+
+
+C  FROM HERE ON: CODE COMMON TO ALL OPTIONS.
+C   ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+C
+#ifdef TRACE
+      IF (NLTRC) WRITE (iunout,*) 'NCOUT= ',NCOUT
+#endif
+      DO 5100 J=1,NCOUT
+        CLPD(J)=BLPD(J)
+        NUPC(J)=(KUPC(J)-1)*NP2T3
+        NCOUNT(J)=KUPC(J)
+        IF (CLPD(J).LE.0..OR.KUPC(J).LE.0.OR.
+     .      (KUPC(J).GE.NT3RD.AND.NLTOR)) THEN
+          WRITE (iunout,*) 'ERROR DETECTED IN TIMET '
+          WRITE (iunout,*) 'NPANU,J,BLPD,KUPC ',
+     .                      NPANU,J,BLPD(J),KUPC(J)
+        ENDIF
+#ifdef TRACE
+        IF (NLTRC) THEN
+          WRITE (iunout,'(1X,A,1X,I6,1PE12.4,3X,2I6)')
+     .     'TIMET: J,BLPD(J),NUPC(J),NCOUNT(J) ',
+     .             J,BLPD(J),NUPC(J),NCOUNT(J)
+        ENDIF
+#endif
+ 5100 CONTINUE
+#ifdef TRACE
+      IF (NLTRC) THEN
+        WRITE (iunout,*) 'MTSURF,NLSRFZ,NINCZ,IRCELL,IPCELL '
+        WRITE (iunout,*)  MTSURF,NLSRFZ,NINCZ,IRCELL,IPCELL
+        IF (NLTOR)
+     .    WRITE (iunout,*) 'INMP3I ',INMP3I(IRCELL,IPCELL,MTSURF)
+      ENDIF
+#endif
+C
+      NCOU=NCOUT
+C
+      SUM=0.
+      DO 5110 ICOU=1,NCOU
+        SUM=SUM+CLPD(ICOU)
+
+C       WRITE (iunout,*) 'ICOU,NCOUNT,CLPD ',
+C    .                    ICOU,NCOUNT(ICOU),CLPD(ICOU)
+ 5110 CONTINUE
+      IF (MTSURF.EQ.0.AND.ABS(SUM-ZRADS).GT.EPS10) THEN
+        WRITE (iunout,*) 'ERROR IN TIMET: NPANU,SUM,ZRADS ',
+     .                               NPANU,SUM,ZRADS
+        WRITE (iunout,*) 'TRY TO KILL PARTICLE ASAP '
+        SUM=-1.0D0
+      ENDIF
+C
+      ZRAD=SUM
+      RETURN
+C
+ 9990 CONTINUE
+      WRITE (iunout,*) 'ERROR IN TIMET, Z SURFACE INDEX OUT OF RANGE  '
+      WRITE (iunout,*) 'NPANU,Z0,Z01,ZRAD,VELZ,NTCELL '
+      WRITE (iunout,*)  NPANU,Z0,Z01,ZRAD,VELZ,NTCELL
+      WEIGHT=0.
+      ZRAD=-1.
+      RETURN
+ 9998 CONTINUE
+      WRITE (iunout,*) 'ERROR DETECTED IN TIMET. RETURN ZRAD=1.D30'
+      WRITE (iunout,*) 'NPANU,AA,BB ',NPANU,AA,BB
+      RETURN
+
+      CONTAINS
+      
+!---------------------------------------------------------------
+
+      SUBROUTINE EIRENE_TIMET_CYLINDER_GEOMETRY(ZRAD, IRET)
+
+      IMPLICIT NONE
+      REAL(DP), INTENT(INOUT) :: ZRAD
+      INTEGER, INTENT(OUT) :: IRET
+      INTEGER :: EIRENE_LEARCA
 C
 C  CYLINDRICAL OR CARTESIAN COORDINATE SYSTEM.
 C  Z COORDINATE IS A STRAIGHT LINE.
@@ -120,6 +224,8 @@ C  Z COORDINATE IS A STRAIGHT LINE.
 C  IDENTICAL, UP TO NAMES, TO POLOIDAL GRID PART, TIMEP.F,
 C                          THERE THE  LEVGEO=1 BLOCK
 C
+      IRET = 0
+
       IF (NRCELL.EQ.0) THEN
 C
 C  PARTICLE OUTSIDE STANDARD MESH
@@ -191,7 +297,7 @@ C  NCOUT=1 AT THIS POINT
           Z01=Z01+VELZ*ZRD
           NTCELL=KUPC(NCOUT)
           ITCELL=NTCELL
-          GOTO 5000
+          RETURN
         ELSE
 C  NO REENTRY FOUND
           NCOUT=1
@@ -223,7 +329,7 @@ C  CHECK VALID RANGE ON MRSURF
           ENDIF
 #endif
           Z01=Z01+ZRD*VELZ
-          GOTO 5000
+          RETURN
         ENDIF
 C
       ENDIF  !  part "reentry from outside grid" done
@@ -258,7 +364,10 @@ C
       NLSRFZ=.FALSE.
 C
   110 CONTINUE
-      IF (J2.LE.0.OR.J2.GT.NT3RD) GOTO 9990
+      IF (J2.LE.0.OR.J2.GT.NT3RD) THEN
+        IRET = 1
+        RETURN
+      END IF
 
 
 C OLD SURFACE = NEW SURFACE ?
@@ -308,7 +417,7 @@ C  STOP HISTORY AT NON-DEFAULT STANDARD SURFACE J2
           IF (NLTRC) WRITE (iunout,*)
      .              'STOP AT MTSURF ',MTSURF
 #endif
-          GOTO 5000
+          RETURN
         ENDIF
 C  NEXT CELL
         J1=J1+NINCZ
@@ -332,20 +441,26 @@ C
       ITCELL=NTCELL
       Z01=Z001
 C
-      GOTO 5000
+      RETURN
 C
 C  BLOCK 1 (NLTRZ)  done ::::::::::::::::::::::::::::::::::::::
 C
- 1000 CONTINUE
-C
-C ::::::::::::::::::::::::::::::::::::::::::::::::::::::
-C
-      IF (.NOT.NLTRA) GOTO 2000
+
+      END SUBROUTINE EIRENE_TIMET_CYLINDER_GEOMETRY
+
+!---------------------------------------------------------------
+
+      SUBROUTINE EIRENE_TIMET_TOR_APPROX(ZRAD,IRET)
+
+      IMPLICIT NONE
+      REAL(DP), INTENT(INOUT) :: ZRAD
+      INTEGER, INTENT(OUT) :: IRET
 C
 C  BLOCK 2B: DISCRETE TOROIDAL APPROXIMATION,
 C            also: default toroidal periodicity model.
 C            ONLY ONE STEP AT A TIME
 C
+      IRET=0
       NERR=0
       NCOUT=1
       KUPC(1)=NTCELL
@@ -365,6 +480,7 @@ C
         WRITE (iunout,*) X01,Z01,TTT
         WRITE (iunout,*) 'TRY TO KILL PARTICLE ASAP '
         ZRAD=-1._DP
+        IRET=3
         RETURN
       ENDIF
 C
@@ -425,7 +541,7 @@ C                      FOR A POLOIDAL SURFACE (OTHERWISE: ERROR EXIT)
       IF (NLTRC) CALL EIRENE_MASR3('FINAL 1: X01,Z01,PHI    ',
      .                                       X01,Z01,PHI/DEGRAD)
 #endif
-      GOTO 5000
+      RETURN
 C
 C  PARTICLE LEAVES CELL IN POSITIVE DIRECTION, REDUCE ZRAD
 C
@@ -450,7 +566,8 @@ C  PARTICLE ACCIDENTALLY ON A TOROIDAL SURFACE?
           GOTO 1010
         ENDIF
         ZRAD=1.D30
-        GOTO 9998
+        IRET=2
+        RETURN
       ENDIF
 
 C  a valid flight time F has been found
@@ -488,7 +605,7 @@ C
      .                    ZRAD,ISTS,ISRFCL,IPERID
       ENDIF
 #endif
-      GOTO 5000
+      RETURN
 C
 C  PARTICLE LEAVES CELL IN NEGATIVE DIRECTION, REDUCE ZRAD
 C
@@ -521,7 +638,8 @@ C  PARTICLE ACCIDENTALLY ON A TOROIDAL SURFACE?
           GOTO 1010
         ENDIF
         ZRAD=1.D30
-        GOTO 9998
+        IRET=2
+        RETURN
       ENDIF
 
 C  a valid flight time F has been found
@@ -560,84 +678,13 @@ C
       ENDIF
 #endif
 
-      GOTO 5000
-
- 2000 CONTINUE
+      RETURN
 C
 
 C  BLOCK 2B DONE.... NLTRA
 C                 polygonal in x-z, (rather than x-y, as in timep.f).
 C::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+      END SUBROUTINE EIRENE_TIMET_TOR_APPROX
 
-C
-C  BLOCK 2A STARTS HERE....  NLTRT,
-c                  circular in x-z, ( rather than x-y, as in timep.f).
-C                  TO BE WRITTEN
-
-
-C  FROM HERE ON: CODE COMMON TO ALL OPTIONS.
-C   ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-C
- 5000 CONTINUE
-#ifdef TRACE
-      IF (NLTRC) WRITE (iunout,*) 'NCOUT= ',NCOUT
-#endif
-      DO 5100 J=1,NCOUT
-        CLPD(J)=BLPD(J)
-        NUPC(J)=(KUPC(J)-1)*NP2T3
-        NCOUNT(J)=KUPC(J)
-        IF (CLPD(J).LE.0..OR.KUPC(J).LE.0.OR.
-     .      (KUPC(J).GE.NT3RD.AND.NLTOR)) THEN
-          WRITE (iunout,*) 'ERROR DETECTED IN TIMET '
-          WRITE (iunout,*) 'NPANU,J,BLPD,KUPC ',
-     .                      NPANU,J,BLPD(J),KUPC(J)
-        ENDIF
-#ifdef TRACE
-        IF (NLTRC) THEN
-          WRITE (iunout,'(1X,A,1X,I6,1PE12.4,3X,2I6)')
-     .     'TIMET: J,BLPD(J),NUPC(J),NCOUNT(J) ',
-     .             J,BLPD(J),NUPC(J),NCOUNT(J)
-        ENDIF
-#endif
- 5100 CONTINUE
-#ifdef TRACE
-      IF (NLTRC) THEN
-        WRITE (iunout,*) 'MTSURF,NLSRFZ,NINCZ,IRCELL,IPCELL '
-        WRITE (iunout,*)  MTSURF,NLSRFZ,NINCZ,IRCELL,IPCELL
-        IF (NLTOR)
-     .    WRITE (iunout,*) 'INMP3I ',INMP3I(IRCELL,IPCELL,MTSURF)
-      ENDIF
-#endif
-C
-      NCOU=NCOUT
-C
-      SUM=0.
-      DO 5110 ICOU=1,NCOU
-        SUM=SUM+CLPD(ICOU)
-
-C       WRITE (iunout,*) 'ICOU,NCOUNT,CLPD ',
-C    .                    ICOU,NCOUNT(ICOU),CLPD(ICOU)
- 5110 CONTINUE
-      IF (MTSURF.EQ.0.AND.ABS(SUM-ZRADS).GT.EPS10) THEN
-        WRITE (iunout,*) 'ERROR IN TIMET: NPANU,SUM,ZRADS ',
-     .                               NPANU,SUM,ZRADS
-        WRITE (iunout,*) 'TRY TO KILL PARTICLE ASAP '
-        SUM=-1.0D0
-      ENDIF
-C
-      ZRAD=SUM
-      RETURN
-C
- 9990 CONTINUE
-      WRITE (iunout,*) 'ERROR IN TIMET, Z SURFACE INDEX OUT OF RANGE  '
-      WRITE (iunout,*) 'NPANU,Z0,Z01,ZRAD,VELZ,NTCELL '
-      WRITE (iunout,*)  NPANU,Z0,Z01,ZRAD,VELZ,NTCELL
-      WEIGHT=0.
-      ZRAD=-1.
-      RETURN
- 9998 CONTINUE
-      WRITE (iunout,*) 'ERROR DETECTED IN TIMET. RETURN ZRAD=1.D30'
-      WRITE (iunout,*) 'NPANU,AA,BB ',NPANU,AA,BB
-      RETURN
       END SUBROUTINE EIRENE_TIMET

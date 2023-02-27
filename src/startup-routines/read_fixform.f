@@ -102,7 +102,8 @@ C
       USE EIRMOD_JSON
       USE EIRMOD_IOUSR, ONLY: EIRENE_READ_BLOCK_11_USR
       USE EIRMOD_INFCOP, ONLY: EIRENE_IF0COP
-      use json_module, only  : json_ck
+      use json_module           !IGNORE
+     .   , only  : json_ck
       USE EIRMOD_PRESSURELOOP
 
       IMPLICIT NONE
@@ -316,12 +317,12 @@ C...........................................................................
 c   done with this optional "storage save mode card"
 C
 * For gfortran: it does not accept empty field for logicals
-      call fix_logical_input(zeile,18)
+      call fix_logical_input(zeile,19)
 !pb do not overwrite here
       READ (ZEILE,6665) NLSCL,NLTEST,NLANA,NLDRFT,NLCRR,
      .                  NLERG,NLIDENT,NLONE,NLMOVIE,NLDFST,
      .                  NLOLDRAN,NLCASCAD,NLOCTREE,NLWRMSH,NEXVS,
-     .                  NLTRIMESH,NLSPCSCL_DUM,NLSPCSCL_ON_DUM
+     .                  NLTRIMESH,NLSPCSCL_DUM,NLSPCSCL_ON_DUM,NLSOLEDGE
 
 C  OPTIONAL INPUT CARDS, FOR PATHWAYS AND NAME DEFINITIONS
 C                        FOR EXTERNAL DATABASES: AMJUEL, HYDHEL,.....

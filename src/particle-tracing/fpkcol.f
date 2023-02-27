@@ -56,6 +56,7 @@ C
       USE EIRMOD_COMXS
       USE EIRMOD_RANF, ONLY: RANF_EIRENE
       USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
+      USE EIRMOD_CSDVI, ONLY: LMETSP
 
       IMPLICIT NONE
       
@@ -63,8 +64,10 @@ C
       INTEGER, INTENT(OUT) :: IRET
       
       REAL(DP) :: DUR, E0OLD, E0NEW, VNEW, WS, FAC, GYRO,
-     .            BVEC_1(3), VVEC(3), VELS, FNUI, EWG
-      INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IPL
+     .            BVEC_1(3), VVEC(3), VELS, FNUI, EWG,
+     .            BX, BY, BZ, BF, DIRPROJ, VDEL, VPLASP, SIG,
+     .            VX, VY, VZ
+      INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IPL, IPLSV, IPLSLOC
 ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
 C     SAVE INCIDENT SPECIES: IOLD
       
@@ -168,6 +171,30 @@ cdr
 C
 
         FAC=SQRT(E0NEW/E0OLD)
+        IF (NLSOLEDGE) THEN
+        
+CNR Now update the parallel momentum tallies (*** WARNING: Only for main background ion ***)
+        IF (LMIPL) THEN
+C  SET THE POST-COLLISION TEST PARTICLE PARALLEL VELOCITY
+          IPLSLOC = 1 ! Hardcoded only for main background ion
+          CALL EIRENE_BFIELD (NCELL,X0,Y0,Z0,BX,BY,BZ,BF,.TRUE.)
+          DIRPROJ = VELX*BX+VELY*BY+VELZ*BZ ! The test ion does not change (parallel) direction during the collision
+          VDEL=VELPAR*(1._DP-FAC)*DIRPROJ*AMUA*RMASSI(IION)*WEIGHT ! VELPAR_old-VNEW_parallel
+C
+          IF (INDPRO(4) == 8) THEN
+            CALL EIRENE_VECUSR(2,NCELL,X0,Y0,Z0,VX,VY,VZ,IPLSLOC,
+     .                         .TRUE.)
+            VPLASP=VX*BX+VY*BY+VZ*BZ
+            SIG=SIGN(1._DP,VPLASP)
+          ELSE
+            IPLSV=MPLSV(IPLSLOC)
+            SIG=1._DP
+            IF (LBVIN) SIG=SIGN(1._DP,BVIN(IPLSV,NCELL))
+          ENDIF
+          MIPL(IPLSLOC,NCELL)=MIPL(IPLSLOC,NCELL)+VDEL*SIG
+          LMETSP(NSPAMI+IPLSLOC)=.TRUE.
+        ENDIF
+        END IF
 C in this particlar case: retain old pitch: velpar/velper. No pitch angle scattering so far.
         VELPAR=VELPAR*FAC
         VELPER=VELPER*FAC

@@ -23,7 +23,7 @@ c  also set: NDX,NDY,NFL, NDXP, NDYP
       USE EIRMOD_CINIT
       USE EIRMOD_BRAEIR
       USE EIRMOD_COMPRT, only: iunout      
-      use json_module
+      use json_module           !IGNORE
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
       IMPLICIT NONE

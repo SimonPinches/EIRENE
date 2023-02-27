@@ -5,7 +5,7 @@
       USE EIRMOD_CCOUPL
       USE EIRMOD_COMUSR
       USE EIRMOD_CTEXT
-      use json_module
+      use json_module           !IGNORE
 
       implicit none
 

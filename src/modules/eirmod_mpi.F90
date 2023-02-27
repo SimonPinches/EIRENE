@@ -1,7 +1,7 @@
 !> Wrapper module for MPI, and dummy module for serial compilation
 module eirmod_mpi
 #ifdef USE_MPI
-  use mpi
+  use mpi         !IGNORE
   implicit none
 !pb  include 'mpif.h'
   integer, private, save :: iounit

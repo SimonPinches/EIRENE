@@ -48,7 +48,7 @@ C
       USE EIRMOD_INFCOP, ONLY: EIRENE_IF0COP
       USE EIRMOD_PRESSURELOOP
       
-      use json_module
+      use json_module           !IGNORE
 ! this does not work  found no matching specific binding for json%get
 !     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
@@ -278,7 +278,7 @@ cdr     CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
       class(json_core),intent(inout) :: json
       type(json_value), pointer, intent(in) :: p
       type(json_value), pointer :: pfile, pdb
-      logical :: found
+      logical :: found, NLSPCSCL_DUM, NLSPCSCL_ON_DUM
 !cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
       character(kind=json_CK,len=:),allocatable :: cdbh, cdbf
       character(len=:), allocatable :: cdbhc
@@ -321,7 +321,10 @@ cdr     CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
       call json%get(p,'NLWRMSH',nlwrmsh,found)
       call json%get(p,'NEXVS',nexvs,found)
       call json%get(p,'NLTRIMESH',nltrimesh,found)
-      call json%get(p,'NLSPCSCL',nlspcscl,found)
+!pb do not overwrite
+      call json%get(p,'NLSPCSCL',nlspcscl_dum,found)
+      call json%get(p,'NLSPCSCL_ON',nlspcscl_on_dum,found)
+      call json%get(p,'NLSOLEDGE',nlsoledge,found)
 
       call json%get_child(p,'CFILE',pfile,found)
       if (found) then
@@ -5039,7 +5042,7 @@ C  TURN OFF TIME DEP MODE IF EITHER NTIME=0 OR NPRNLI=0
       USE EIRMOD_JSON
       USE EIRMOD_INFCOP, ONLY: EIRENE_IF0COP
       
-      use json_module
+      use json_module           !IGNORE
 !cym/cpg      
 !     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 !cym/cpg end
@@ -5147,7 +5150,7 @@ C  also set NAINI, NCOPII, NCOPIE there
      >    STRATEGY_ORIGINAL, STRATEGY_APCAS, STRATEGY_BALANCED,
      >    INPUT_DISTRIBUTION_STRATEGY
       USE EIRMOD_JSON
-      use json_module
+      use json_module           !IGNORE
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
       type(json_core) :: json

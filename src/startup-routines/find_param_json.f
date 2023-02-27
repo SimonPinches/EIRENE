@@ -77,7 +77,7 @@ C
       USE EIRMOD_COMSOU, ONLY: NSTRAI
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_CLOGAU, ONLY: NLWRMSH, NLSPCSCL, EIRENE_ALLOC_CLOGAU,
-     .                         NLSPCSCL_ON
+     .                         NLSPCSCL_ON, NLSOLEDGE
       USE EIRMOD_JSON, ONLY: jtrees, blks, itree_num,
      .                       ldef_time_horizon,nlfem_in, nlplg_in,
      .                       nlpol_in, np2nd_in, nr1st_in, nt3rd_in,
@@ -85,15 +85,15 @@ C
      .                       eirene_init_input_blocks 
 !pgf      use json_module, ck => json_ck
 !cym/cpg, keep using json_ck       
-!      use json_module
-      use json_module
+!      use json_module           !IGNORE
+      use json_module           !IGNORE
 !cym/cpg
 
       IMPLICIT NONE
 
       INTERFACE
         SUBROUTINE EIRENE_IF0PRM_JSON(json,p)
-        use json_module
+        use json_module           !IGNORE
         class(json_core),intent(inout) :: json
         type(json_value), pointer, intent(in) :: p
         END SUBROUTINE EIRENE_IF0PRM_JSON
@@ -389,6 +389,7 @@ C
       call json%get(p,'NLTRIMESH',nltrimesh,found)
       call json%get(p,'NLSPCSCL',nlspcscl,found)
       call json%get(p,'NLSPCSCL_ON',nlspcscl_on,found)
+      call json%get(p,'NLSOLEDGE',nlsoledge,found)
 
       CALL EIRENE_INIT_CINIT
 

@@ -31,7 +31,7 @@ c  also set: NDX,NDY,NFL, NDXP, NDYP
       USE EIRMOD_CCOUPL
      , , ONLY: NTGPRT, NSPZE, NSPZI, EIRENE_ALLOC_CCOUPL
       use eirmod_extrab25
-      use json_module
+      use json_module           !IGNORE
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
       IMPLICIT NONE

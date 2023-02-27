@@ -149,6 +149,48 @@ prepare_testcases:
         - build_library
         - prepare_testcases
 
+<<<<<<< HEAD
+=======
+# Create individual stage for mpi-jobs due to recource limits (memory?)
+# of gitlab runner at juelich gitlab
+# this forces to mpi jobs to be run sequencially
+run_mpi_cases:
+    stage: run_mpi
+    rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
+        - if: $EXCLUDE_MPI == 'true'
+          when: never
+        - when: always
+    before_script:
+        # Bypass mpirun abort due to execution as root
+        - export MPIRUN_FLAGS='--allow-run-as-root'
+        - export OMP_NUM_THREADS=1
+    script:
+        # job: run_EMC3-EIRENE_H_multiStrataMpi
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi
+        - make output
+        - cd ../../../../
+        # job: run_EMC3-EIRENE_H_multiStrataMpi2
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi2
+        - make output
+        - cd ../../../../
+        # job: run_EMC3-EIRENE_H_multiStrataMpi3
+        - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi3
+        - make output
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease/
+            - libRelease/
+            - EIRENE-sample-cases/EMC3
+        when: always
+    dependencies:
+        - build_EMC3-EIRENE
+    needs:
+        - build_EMC3-EIRENE
+
+>>>>>>> origin/improve_geometry
 .run: &run
     stage: run
     rules:

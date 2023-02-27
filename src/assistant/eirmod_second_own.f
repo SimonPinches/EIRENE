@@ -3,10 +3,10 @@ cdr  used for internal run time monitoring
 
       USE EIRMOD_PRECISION
 #ifdef USE_OPENMP 
-      use omp_lib
+      use omp_lib               !IGNORE
 #endif
 #ifdef USE_MPI      
-      use mpi
+      use mpi               !IGNORE
 #endif
       IMPLICIT NONE
       PRIVATE
