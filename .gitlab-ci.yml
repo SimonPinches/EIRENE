@@ -823,6 +823,7 @@ run_mpi_cases:
     before_script:
         # Bypass mpirun abort due to execution as root
         - export MPIRUN_FLAGS='--allow-run-as-root'
+        - export OMP_NUM_THREADS=1
     script:
         # job: run_EMC3-EIRENE_H_multiStrataMpi
         - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi
