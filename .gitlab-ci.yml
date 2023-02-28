@@ -19,7 +19,7 @@ variables:
     EXCLUDE_SERIAL: 'false'
     EXCLUDE_MPI:    'false'
     EXCLUDE_OPENMP: 'false'
-    EXCLUDE_EMC3:   'true'
+    EXCLUDE_EMC3:   'false'
 
 stages:
     - preparation
@@ -45,7 +45,7 @@ workflow:
               EXCLUDE_SERIAL: 'false'
               EXCLUDE_MPI:    'false'
               EXCLUDE_OPENMP: 'false'
-              EXCLUDE_EMC3:   'true'
+              EXCLUDE_EMC3:   'false'
         - if: $EXCLUDE_EMC3 == 'true'
           variables:
               EXCLUDE_MPI: 'true'
