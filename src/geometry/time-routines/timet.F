@@ -102,7 +102,6 @@ C
           WRITE (iunout,*) 'TIMET FROM OUTSIDE, NPANU ', NPANU
           WRITE (iunout,*) 'MRSURF,MTSURF,ZRAD '
           WRITE (iunout,*)  MRSURF,MTSURF,ZRAD
-      IF (NRCELL.E
         ENDIF
       ENDIF
 #endif
