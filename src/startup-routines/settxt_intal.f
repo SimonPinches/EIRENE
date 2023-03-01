@@ -352,7 +352,7 @@ cdr  inconsistent with using N1MX as first dimension
 
       NFSTPI(25)=1
 
-      NFSTPI(26)=1
+      NFSTPI(26)=NPLSI
       NFSTPI(27)=1
       NFSTPI(28)=1
       NFSTPI(29)=1

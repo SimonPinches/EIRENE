@@ -685,9 +685,6 @@ c          ZIIN(1:NPLSI,1:NSBOX) = RDUMMY(1:NPLSI,1:NSBOX)
 c          DEALLOCATE(RDUMMY)
 !pb all species fields have been filled in this call thus exit loop
 c          EXIT
-        CASE DEFAULT
-          write (iunout,*) 'ziin case default, zvac ', zvac
-          ZIIN(IPLS,:) = ZVAC
         END SELECT
       ENDDO
 
