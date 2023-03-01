@@ -25,7 +25,7 @@ c  also set: NDX,NDY,NFL, NDXP, NDYP
       USE EIRMOD_CINIT
       USE EIRMOD_BRAEIR
       USE EIRMOD_CLOGAU
-     , , ONLY: NLTRIMESH
+     , , ONLY: NLTRIMESH, NLSPCSCL, NLSPCSCL_ON
       USE EIRMOD_CCOUPL
      , , ONLY: NTGPRT, NSPZE, NSPZI, EIRENE_ALLOC_CCOUPL
       use eirmod_extrab25
@@ -39,14 +39,15 @@ c  also set: NDX,NDY,NFL, NDXP, NDYP
       INTEGER, SAVE :: IO
       INTEGER :: IDUMMY(0:99)=0 ! Extend to read as written by uinp (jdl)
       REAL(DP) :: RDUMMY(0:9), RLAST
-      LOGICAL :: LDUMMY(0:4)
+      LOGICAL :: LDUMMY(0:5), LSPRCL_LOC
       CHARACTER(72) :: ZEILE
 
 C  READ INPUT BLOCK 14
       READ (IUNIN,'(A72)') ZEILE
-      call fix_logical_input(zeile,5)
-      READ (ZEILE,'(5L1)') LDUMMY(0:4)
+      call fix_logical_input(zeile,6)
+      READ (ZEILE,'(5L1,1X,5L1)') LDUMMY(0:5)
       IF (.NOT.NLTRIMESH) NLTRIMESH = LDUMMY(3)
+      LSPRCL_LOC = LDUMMY(4)
       READ (IUNIN,'(9I6)') IDUMMY(0:8)
       IF (IDUMMY(0).EQ.0 .OR. IDUMMY(1).LT.0) THEN ! This was a junk Eirene_96 line
         READ (IUNIN,'(3I6)') NFLA,NCUTB,NCUTL
@@ -192,6 +193,11 @@ cxpb Define some numbers needed by eirmod_extrab25
 !cank 960623
       nnplsi=nfla
       nns=nnplsi
+
+C  TRANSFER FLAG LSPRCL WHICH IS KNOWN ONLY IN THIS INTERFACE TO
+C  GLOBALLY KNOWN VARIABLE NLSPCSCL
+      NLSPCSCL = NLSPCSCL .OR. LSPRCL_LOC
+      NLSPCSCL_ON = NLSPCSCL_ON .OR. LSPRCL_LOC
 
       RETURN
       END SUBROUTINE EIRENE_IF0PRM

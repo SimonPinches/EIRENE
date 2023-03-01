@@ -27,7 +27,7 @@ c  also set: NDX,NDY,NFL, NDXP, NDYP
       USE EIRMOD_COMPRT, only: iunout      
       USE EIRMOD_BRAEIR
       USE EIRMOD_CLOGAU
-     , , ONLY: NLTRIMESH
+     , , ONLY: NLTRIMESH, NLSPCSCL, NLSPCSCL_ON
       USE EIRMOD_CCOUPL
      , , ONLY: NTGPRT, NSPZE, NSPZI, EIRENE_ALLOC_CCOUPL
       use eirmod_extrab25
@@ -45,7 +45,7 @@ c  also set: NDX,NDY,NFL, NDXP, NDYP
      .           NTRII, NR1ST, IFL, LKP, NSPI, NSPE
       REAL(DP) :: BM, RLAST
       INTEGER, ALLOCATABLE :: NTG(:)
-      LOGICAL :: FOUND, LDUMMY, FOUNDI, FOUNDE
+      LOGICAL :: FOUND, LDUMMY, FOUNDI, FOUNDE, LSPRCL_LOC
       CHARACTER(72) :: ZEILE
 
       WRITE (iunout,*) '*** 14. DATA FOR INTERFACING ROUTINE "INFCOP"'
@@ -53,6 +53,9 @@ c  also set: NDX,NDY,NFL, NDXP, NDYP
 C  READ INPUT BLOCK 14
       call json%get(p,'NLTRIMESH',ldummy,found)
       IF (.NOT.NLTRIMESH.AND.FOUND) NLTRIMESH = LDUMMY
+
+      call json%get(p,'LSPRCL',ldummy,found)
+      IF (FOUND) LSPRCL_LOC = LDUMMY
 
       call json%get(p,'NFLA',nfla,found)
       call json%get(p,'NCUTB',ncutb,found)
@@ -178,6 +181,11 @@ cxpb Define some numbers needed by eirmod_extrab25
 !cank 960623
       nnplsi=nfla
       nns=nnplsi
+
+C  TRANSFER FLAG LSPRCL WHICH IS KNOWN ONLY IN THIS INTERFACE TO
+C  GLOBALLY KNOWN VARIABLE NLSPCSCL
+      NLSPCSCL = NLSPCSCL .OR. LSPRCL_LOC
+      NLSPCSCL_ON = NLSPCSCL_ON .OR. LSPRCL_LOC
       
       RETURN
       END
