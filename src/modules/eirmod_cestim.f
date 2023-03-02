@@ -1992,6 +1992,7 @@ C
       INTEGER :: IER, I, NSPS
 
       IF (ME /= 0) THEN
+        CALL EIRENE_ALLOC_CESTIM(0)
         CALL EIRENE_ALLOC_CESTIM(1)
       END IF
 

@@ -1473,22 +1473,22 @@ C
         END DO
 C
         IF (NLSPCSCL_ON) THEN
-        CALL EIRENE_LEER(1)
-        WRITE (iunout,*) 'RESCALING OF TRACKLENGTH TALLIES COMPLETED'
-        WRITE (iunout,*) 'RESCALING FACTORS:'
-        CALL EIRENE_MASR4 ('FATM,FMOL,FION,FPHOT            ',
-     .               FATM(0), FMOL(0), FION(0), FPHOT(0))
-        IF (NLSPCSCL) THEN
-          IF (NLSPCSCL_ATM)
+          CALL EIRENE_LEER(1)
+          WRITE (iunout,*) 'RESCALING OF TRACKLENGTH TALLIES COMPLETED'
+          WRITE (iunout,*) 'RESCALING FACTORS:'
+          CALL EIRENE_MASR4 ('FATM,FMOL,FION,FPHOT            ',
+     .                        FATM(0), FMOL(0), FION(0), FPHOT(0))
+          IF (NLSPCSCL) THEN
+            IF(NATMI.GE.1)
      .       CALL EIRENE_MASRR1 ('FATM       ', FATM(1:NATMI), NATMI, 6)
-          IF (NLSPCSCL_MOL)
+            IF(NMOLI.GE.1)
      .       CALL EIRENE_MASRR1 ('FMOL       ', FMOL(1:NMOLI), NMOLI, 6)
-          IF (NLSPCSCL_ION)
+            IF(NIONI.GE.1)
      .       CALL EIRENE_MASRR1 ('FION       ', FION(1:NIONI), NIONI, 6)
-          IF (NLSPCSCL_PHOT)
+            IF(NPHOTI.GE.1)
      .       CALL EIRENE_MASRR1 ('FPHOT      ',FPHOT(1:NPHOTI),NPHOTI,6)
-        END IF
-        CALL EIRENE_LEER(2)
+          END IF
+          CALL EIRENE_LEER(2)
         ENDIF
 C
       ENDIF
