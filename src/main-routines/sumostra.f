@@ -82,7 +82,7 @@ C
         ELSE
           PIMLI (IMOL,0)=PIMLI (IMOL,0)+PIMLI (IMOL,ISTRA)
         END IF
-        IF (NLSPCSCL_ION) THEN
+        IF (NLSPCSCL_PHOT) THEN
           PPHMLIS(IMOL,0:NPHOTI) = PPHMLIS(IMOL,0:NPHOTI) +
      .                             PPHMLI2(IMOL,0:NPHOTI)
         ELSE
