@@ -67,7 +67,7 @@ build_library:
         - mkdir buildRelease
         - cd buildRelease
         - FC=mpif90 cmake ../src
-        - make EIRENE
+        - make -j EIRENE
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
