@@ -41,7 +41,7 @@ C
 !pb  18.02.13: take index transformation via NCLTAL into account
 
 
-cdr 29.08.15 :  CROSSTEMP WAS INTRODUCED BY VK SO THAT different
+cdr  29.08.15:  CROSSTEMP WAS INTRODUCED BY VK SO THAT different
 c               EFFECTIVE COLLISION RATE IS EVALUATED
 c               WITH THIS EFFECTIVE TEMPERATURE.
 c               This appears to be another option for the 5th (free)
@@ -298,7 +298,7 @@ C  TRY ATOMS
 !pb 05.02.2013  take care of coarse scoring cells
 c    fine cell i_fine belongs to coarser cell ird. Scoring was done on coarse cell ird only
 cdr  This is not obvious for additional cells for averaging, e.g. IR=NR1ST, etc..
-cdr  Those IRD should not appear here  (hopefully)
+cdr  Those IRD should not appear here (hopefully)
               IRD = NCLTAL(I_fine)
               IF (IRD == 0) CYCLE
               PDEN(I_fine)=PDENA(JATM,IRD)
