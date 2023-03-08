@@ -305,7 +305,12 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
         if (first_call) then
           old_stratum_leader = -1
           if (present(strategy)) then
-            work_distribution_strategy = strategy
+            if (strategy == STRATEGY_UNDEFINED) then
+              work_distribution_strategy = STRATEGY_BALANCED
+            else
+              NPRLL = 3
+              work_distribution_strategy = strategy
+            end if
           else
             NPRLL = 1
             work_distribution_strategy = STRATEGY_ORIGINAL
