@@ -2219,7 +2219,7 @@ cdr  only one common profile for all NPLS species?
       ENDIF
 
       IF ((NPLS > 1) .AND. (NPLSTI == 1) .AND. 
-     .    (LMULPL .OR. (NPLS_FIX /= NPLSI)
+     .    (LMULPL .OR. ((NPLS_FIX > 0) .AND. (NPLS_FIX /= NPLSI))
      .            .OR.  ANY(CDENMODEL == FORT//'13'))) THEN
 
         CALL EIRENE_LEER(1)
