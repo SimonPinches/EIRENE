@@ -357,9 +357,9 @@ C  CHANGED: use XX=NTCPU seconds of cpu time for calculation of trajectories
           NPTS(ISTRA)=0
           NLSRON(ISTRA)=.FALSE.
           WRITE (iunout,*) 'STRATUM ISTRA= ',ISTRA,
-     .                     ' TURNED OFF, BECAUSE',
+     .                     ' TURNED OFF, BECAUSE ',
      .                     'THE SUM OF THE FLUXES'
-          WRITE (iunout,*) 'FROM THE SUBSTRATA DEFINED BY',
+          WRITE (iunout,*) 'FROM THE SUBSTRATA DEFINED BY ',
      .                     'SORWGT(SUBSTRATUM,STRATUM) IS .LE. ZERO'
           CALL EIRENE_LEER(1)
         ENDIF
