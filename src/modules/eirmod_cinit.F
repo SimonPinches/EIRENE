@@ -115,8 +115,9 @@ C> Default output file prefix
       DO I=1,NPLS
          NULLIFY(TDMPAR(I)%TDM)
       ENDDO
-cpg    
-      MASTER_PATH= ''
+cpg
+!pb   MASTER_PATH has already been set. Do not overwrite.
+!pb   MASTER_PATH= ''
 cpg
 
       WRITE (IUNMEM,'(A,T25,I15)')
