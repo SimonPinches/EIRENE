@@ -135,17 +135,24 @@
       real(dp), target, intent(in) :: ar((n1d+1)*(n2+1))
       character(*), intent(in) :: arname
       real(dp), pointer :: p2(:,:)
-      real(dp) :: error
+      real(dp) :: error, sm, rel_err
       integer :: i
 
       p2(0:n1d,0:n2) => ar
       do i = 1, n1
-        error = p2(i,0) - sum(p2(i,1:n2))
-        if (error > eps10) then
+        sm = sum(p2(i,1:n2))
+        error = p2(i,0) - sm
+        rel_err = error / max(abs(p2(i,0)),abs(sm),eps60)
+        if (abs(error) > eps10) then
           write (iunout,*) 'PROBLEM FOUND IN TALLY_SANITY_CHECK'
           write (iunout,*) 'DISCREPANCY FOUND IN ARRAY ',arname
           write (iunout,*) 'INDEX = ',i
           write (iunout,*) 'ERROR = ',error
+          write (iunout,*) 'REL. ERROR = ',rel_err
+          write (iunout,'(a,a1,i2,a6,es25.16)') 
+     .                     arname,'(',i,'0) = ',p2(i,0)
+          write (iunout,'(a4,a,a1,i2,a2,i2,a4,es25.16)') 
+     .                     'sum(',arname,'(',i,'1:',n2,') = ',sm
         end if       
       end do
 
