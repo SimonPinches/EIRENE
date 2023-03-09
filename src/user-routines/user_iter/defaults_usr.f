@@ -3,6 +3,8 @@
       use eirmod_parmmod 
 cpg    
       use eirmod_cinit , only : MASTER_PATH
+      use eirmod_cpes , only : STRATEGY_DEFAULT, NPRLL_DEFAULT,
+     .                         STRATEGY_BALANCED
 cpg
       implicit none 
 cpg
@@ -19,5 +21,8 @@ c     set file units that allow direct control
 cpg
       MASTER_PATH = get_solpstop()
 cpg
+      STRATEGY_DEFAULT = STRATEGY_BALANCED
+      NPRLL_DEFAULT = 3
+      
       return
       end subroutine eirene_defaults_usr

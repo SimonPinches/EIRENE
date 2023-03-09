@@ -61,6 +61,10 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
       !> "Embarrassingly" parallel scheme.
       !> Each PE calculates the same number of histories.
       integer, public, parameter :: STRATEGY_EMBARRASS = 3
+      
+      !> STRATEGY_DEFAULT and NPRLL_DEFAULT are set in user_defaults
+      integer, public, save :: STRATEGY_DEFAULT
+      integer, public, save :: NPRLL_DEFAULT
 
       integer, public :: work_distribution_strategy !< stores which strategy was chosen during initialization
 
@@ -174,7 +178,7 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
           endif
         end if
         if (my_pe == 0) then
-          write(hlp_frm,'(a,i4,a)') '(1x,a,',n,'i5)'
+          write(hlp_frm,'(a,i4,a)') '(1x,a,',max(n,1),'i5)'
           write(iunout,hlp_frm)
      &     'Creating group from ranks ', ranks_tmp(1:n)
         end if
@@ -306,9 +310,10 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
           old_stratum_leader = -1
           if (present(strategy)) then
             if (strategy == STRATEGY_UNDEFINED) then
-              work_distribution_strategy = STRATEGY_BALANCED
+              NPRLL = NPRLL_DEFAULT
+              work_distribution_strategy = STRATEGY_DEFAULT
             else
-              NPRLL = 3
+!pb              NPRLL = 3
               work_distribution_strategy = strategy
             end if
           else
