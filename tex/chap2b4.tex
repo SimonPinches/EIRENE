@@ -88,7 +88,7 @@ further options, such as population escape factors (opacity effects).
 The corresponding input format is
 
 \begin{lstlisting}
-      IROW\_ESC, ICOL\_ESC, POP\_ESC
+      IROW_ESC, ICOL_ESC, POP_ESC
 
 C     (format: 2I6,E12.4)
 \end{lstlisting} 
@@ -283,6 +283,18 @@ where \textbf{\$} stands for either A (atoms), M (molecules), I (test ions), PH
 (photons) or P (bulk ions).
 I.e., a species block consists of one species specification card ISPZ\$ \dots,
 and NRC\$ ``reaction decks" of two cards each.
+
+New option in 2023:
+
+ID3 has beem removed and for molecules, test and bulk ions LKIND\$ has taken 
+its place
+
+\begin{lstlisting}
+      ISPZ$ TEXT$ NMASS$ NCHAR$ NPRT$ NCHRG$ ISRF$ ISRT$ ID1$
+      NRC$  NFOL$ NGEN$  NHSTS$ LKIND$
+C     (format: I2,1X,A8,1X,12(I2,1X))
+\end{lstlisting}
+
 
 For some particle species (in particular for hydrogenic atoms, molecules and
 molecular ions, and for helium atoms) EIRENE has default A\&M data, to which it
@@ -1037,7 +1049,9 @@ The meaning of the variables in a species block is as follows:
   \item[NHSTS\$] (only in versions 2004 and younger): NHSTS=-1 turns off the
         trajectory plot for this particular species.
         (default: NHSTS=0)
-  \item[ID3\$] not in use
+  \item[LKIND\$] index of the atomic species with which this species scales.
+        {\$} $ \in \{ M, I, P \} $  
+        Only used within SOLPS-ITER
   \item[IREAC\$] Identification flag
         for collision data.
         IREAC\$ = IR, and IR is the labelling index from the reaction card (see above).

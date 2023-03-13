@@ -80,7 +80,7 @@ ITALI=13 in \cref{tab1}).
       TRCINT  TRCLST  TRCSOU  TRCREC  TRCTIM
       TRCBLA  TRCBLM  TRCBLI  TRCBLP  TRCBLE
       TRCBLPH TRCTAL  TRCOCT  TRCCEN  TRCRNF
-      TRCHKTIM
+      TRCHKTIM TRCSCL
       TRCSRC(J), J= 0, NSTRAI
       NVOLPR, NSPCPR
       DO 101 J=1,NVOLPR
@@ -229,6 +229,8 @@ C           plot
         etc., mostly for testing ``correlated sampling'' options (flag: NLCRR).
   \item[TRCHKTIM] printout of CPU usage during particle tracing and scoring
         (excluding overhead), separated by particle type, species and strata.
+  \item[TRCSCL] test output of quantities entering the species specific 
+        scaling procedure
   \item[TRCSRC(ISTRA), ISTRA = 0, NSTRAI] ~ 
 
         The selected global, volumetric and surface crossing tallies are printed for

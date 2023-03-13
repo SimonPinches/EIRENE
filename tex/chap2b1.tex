@@ -38,7 +38,8 @@ next line (second mandatory line): logical flags for global options [format:
 \begin{lstlisting}
       NLSCL NLTEST NLANA NLDRFT NLCRR
      .  NLERG NLIDENT NLONE NLMOVIE NLDFST
-     .  NLOLDRAN NLCASCAD NLOCTREE NLWRMSH
+     .  NLOLDRAN NLCASCAD NLOCTREE NLWRMSH NEXVS
+     .  NLTRIMESH NLSPCSCL NLSPCSCL_ON NLSOLEDGE
 \end{lstlisting}
 
 next input lines are only for EIRENE$_{2005}
@@ -393,6 +394,13 @@ version dependent.
         Testing CPU optimization for timea.F routines (``additional surfaces")
   \item[NLWRMSH] write out additional surface information for internal (FZJ)
         triangular grid generators (input.f)
+  \item[NEXVS] not in use?
+  \item[NLTRIMESH] stop run after preparation for triangulation code (NLWRMSH)
+  \item[NLSPCSCL] extend volume averaged and surface averaged tallies for species
+        specific rescaling, execute species specific scoring for the respective tallies
+        and calculate refined scaling factors 
+  \item[NLSPCSCL\_ON] apply the refined scaling factors
+  \item[NLSOLEDGE] switch on use of FNUEQI\_SOL in FOLION and add contributions tally MIPL in FPKCOL
 \end{description}
 Optional input cards,
 for pathways to external databases.
