@@ -4,12 +4,16 @@ C> Prints/sends the date, branch and version hash of EIRENE to the
 C> usual output unit.
       SUBROUTINE EIRENE_VERSION
 
+      USE EIRMOD_PARMMOD, ONLY: EIRENE_VERSION_STRING
       USE EIRMOD_COMPRT, ONLY: IUNOUT
 #ifdef B25_Eirene
 #     include <git_version_Eirene.h>
 #endif
 
-      CALL EIRENE_HEADNG('GIT REVISION USED IN THIS RUN',72)
+      WRITE(IUNOUT,'(2A)') ' EIRENE VERSION ',EIRENE_VERSION_STRING
+      CALL EIRENE_LEER(2)
+
+      CALL EIRENE_HEADNG('GIT REVISION USED IN THIS RUN',29)
 
 #ifdef B25_Eirene
       WRITE(IUNOUT,*) 'HASH:   ', git_version_Eirene
