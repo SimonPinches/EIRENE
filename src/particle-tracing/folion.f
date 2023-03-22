@@ -575,93 +575,9 @@ C  BEFORE THIS SCAN: ZTST, ZDT1, CLPD(1):  MAX. POSSIBLE DISTANCE, DUE TO TIME S
 C
 CCC  210 CONTINUE
 C
-C
-C  TS:   DISTANCE TO NEXT RADIAL SURFACE OF STANDARD MESH
-C  ZDT1: DISTANCE TRAVELLED IN CURRENT RADIAL CELL
-C  ZT:   ACCUMULATED DISTANCE, UNTIL THIS SEGMENT
-C
-C  USE PARALLEL VELOCITY, I.E., COMPUTE PARALLEL DISTANCES IN GRID
-C  THUS ZT,TS,ZTST,ZDT1,CLPD ETC. ARE PARALLEL DISTANCES
-C  I.E., LCART=F AT THIS POINT
-C
-      IF (ITIME.EQ.1) THEN
-c  switch to gc velocity
-        IF (LCART) THEN
-          VELXS=VELX
-          VELYS=VELY
-          VELZS=VELZ
-          VELS =VEL
-          VELX=VLXPAR
-          VELY=VLYPAR
-          VELZ=VLZPAR
-          VEL =VELPAR
-          LCART=.FALSE.
-        ENDIF
-
-        IF (NLRAD) THEN
-          CALL EIRENE_TIMER(TS)
-          IF (.NOT.LGPART) GOTO 9911
-C
-          IF (TL.LT.TS.OR.TT.LT.TS.OR.TF.LT.TS) THEN
-            MRSURF=0
-            IPOLGN=0
-C  CHECK FOR INTERSECTION WITH ADDITIONAL SURFACE
-            IF (TL.LE.TT.AND.TL.LE.TF) THEN
-              ZDT1=TL-ZT
-              TL=ZT+ZDT1
-              ZTST=TL
-              ISRFCL=1
-C  INTERSECTION WITH TIME SURFACE. TIME LIMIT REACHED ?
-            ELSEIF (TT.LT.TL.AND.TL.LE.TF) THEN
-              ZDT1=TT-ZT
-              TT=ZT+ZDT1
-              ZTST=TT
-              ISRFCL=2
-C  Fokker-Planck collision, DIFFUSIVE STEP
-            ELSEIF (TF.LT.TL.AND.TF.LE.TT) THEN
-              ZDT1=TF-ZT
-              TF=ZT+ZDT1
-              ZTST=TF
-              ISRFCL=4
-            ENDIF
-          ELSE
-C  INTERSECTION A  WITH 1-ST (RADIAL) GRID SURFACE
-            ZDT1=TS-ZT
-            ZTST=TS
-            ISRFCL=0
-          ENDIF
-        ENDIF
-C
-        NCOU=1
-        NUPC(1)=0
-        CLPD(1)=ZDT1
-        NCOUNT(1)=1
-        NCOUNP(1)=1
-C
-        IF (NLTOR.OR.NLTRA) THEN
-          CALL EIRENE_TIMET (ZDT1)
-          TS=ZT+ZDT1
-          ZTST=TS
-        ENDIF
-C  2ND (OR POLOIDAL) SUB-GRID
-        IF (NLPOL) THEN
-          CALL EIRENE_TIMEP(ZDT1)
-          TS=ZT+ZDT1
-          ZTST=TS
-        ENDIF
-C
-        IF (ZDT1.LE.0.D0) GOTO 990
-
-c  switch to full velocity but gc velocity is not saved
-        IF (.NOT.LCART) THEN
-          VELX=VELXS
-          VELY=VELYS
-          VELZ=VELZS
-          VEL =VELS
-          LCART=.TRUE.
-        ENDIF
-
-      ENDIF
+      CALL EIRENE_TIME_TO_STANDARD_SURFACE
+     .    (TL, TF, TT, TS, ZDT1, ZT, ZTST, ISRFCL, IRET)
+      IF (IRET /= 0) GOTO 995
 C
       IF (ZTST.GE.1.D30) GOTO 990
 C
