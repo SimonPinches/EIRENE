@@ -121,7 +121,7 @@ C
      .          X0S, Y0S, PHIS, DIST, ZTC, PSAVE, TSAVE,
      .          EX, EXPM, FF, WMINC_LOCAL, PR, PPR,   ! cond. exp. est.
      .          EIRENE_FPATH,
-     .          SCOS_NEW
+     .          SCOS_NEW, VELXS, VELYS, VELZS, VELS
 ctk      REAL(DP), EXTERNAL :: RANF_EIRENE, EIRENE_FUNEXP
       REAL(DP), EXTERNAL :: EIRENE_FUNEXP
       INTEGER :: NBLCKC, NCELLC, NRCLLC, NACLLC, ITIMEC, IPERIDC,
@@ -141,6 +141,11 @@ c  IC_NEUT, IC_ION: counter for generations within static loop
       IC_NEUT=IC_ION
 C  XGENER: COUNTER FOR GENERATION LIMIT
       XGENER=0.D0
+!PB UNNECESSARY, JUST FOR SAFETY
+      VELXS=VELX
+      VELYS=VELY
+      VELZS=VELZ
+      VELS=VEL
 
   100 LGPART=.TRUE.
       IC_NEUT=IC_NEUT+1
@@ -417,8 +422,10 @@ C  SCAN OVER SEGMENT
 C
   210 CONTINUE
 C
+!PB VELS, VEL.S are only used with test ions, irrelevant here
       CALL EIRENE_TIME_TO_STANDARD_SURFACE
-     .    (TL, TF, TT, TS, ZDT1, ZT, ZTST, ISRFCL, IRET)
+     .    (TL, TF, TT, TS, ZDT1, ZT, ZTST, 
+     .     VELXS, VELYS, VELZS, VELS, ISRFCL, IRET)
       IF (IRET /= 0) GOTO 995
 
       IF (ZTST.GE.1.D30) GOTO 990

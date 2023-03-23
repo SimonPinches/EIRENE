@@ -1817,8 +1817,8 @@ cdr
       RETURN
 
  9999 CONTINUE
-      WRITE (iunout,*) 'ERROR IN TIMER_USER_DEFINED_GEOMETRY '//
-     .                 'EXIT CALLED AT 9999'
+      WRITE (iunout,*) 'ERROR IN TIMER_USER_DEFINED_GEOMETRY '
+      WRITE (iunout,*) 'EXIT CALLED AT 9999'
       WRITE (iunout,*) 'PARTICLE TRAJECTORY STOPPED'
       WRITE (iunout,*) 'NPANU ', NPANU
 !PB      WRITE (iunout,*) 'XX,YY,J ',XX,YY,J
