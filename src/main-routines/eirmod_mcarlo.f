@@ -656,7 +656,7 @@ c  and otherwise enforces that or stops the run.
 cdr
 cdr  ranmar is a fully portable generator.
 cdr  Here we test if that is the case indeed in this run, on this machine.
-            if (nloldran) then
+            if (nlranmar) then
               iadd=0
               call ranmar_test(iadd,ierr,ran)
               if (ierr.eq.0) then

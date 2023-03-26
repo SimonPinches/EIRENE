@@ -31,6 +31,7 @@ c       ref.: review paper  F. James, CPC, 60 (1990) 329,  for both generators
 c
 cdr              H1RN is a variant of the RANMAR generator described there,
 cdr              while in case NLOLDRAN=F the generator SURAND, IBM 1968, is activated
+cpb March 2023:  The old random number generator SURAND has been removed completely
 
 
       function ranf_eirene ()
@@ -76,38 +77,12 @@ cdr  since 19-eighties
      .      D2P31M/2147483647.D0/,          !    = 2**31-1 = m
      .      D2P32M/16807/                   !    = a = 7**5
 
-      IF (NLOLDRAN) THEN
 cdr April 2017:  h1rn is a variant of RANMAR. It has period 2**144, if properly used.
 cdr              initialization is by a 32 bit integer
 cdr here: initialization enforced with seeds 0<= iseed<=900.000.000 in subr. ranset.
 cdr       for each such seed a different sequence of average length 10**30 is produced.
-         ranf_eirene=h1rn(dummy)
+      ranf_eirene=h1rn(dummy)
 
-      ELSE
-
-cdr  IBM, 1968 generator, kept here for historic reasons and backward compatibility.
-         if (ifirst_ranf == 0) then
-!$OMP MASTER
-            call eirene_leer(2)
-            call eirene_headng
-     .      ('ANCIENT (1968) RANDOM NUMBER GENERATOR ACTIVATED',48)
-            call eirene_headng
-     .      ('IS THAT INTENTIONAL? Check flag NLOLDRAN in RANF.f',50)
-            call eirene_leer(2)
-!$OMP END MASTER            
-            ifirst_ranf=1
-         end if
-
-cdr  congruential generator, I_i+1 = a * I_i + c  (mod m),  c=0, a=16807, m=2**31-1
-         Z=REAL(ISEED,KIND=DP)
-         Z=DMOD(D2P32M*Z,D2P31M)
-
-         RA=Z*D2PN31
-c  save the seed for next random number.
-         ISEED=INT(Z)
-
-         ranf_eirene=ra
-      END IF
 
 c  done
       return
@@ -146,7 +121,6 @@ cym      integer :: iseed
 cdr  status of RANMAR (H1RN) generator is stored in Common RASET (after call to H1RNIN)
 cym      common /cmem/ iseed
 
-      IF (NLOLDRAN) THEN
 cdr there are various variants of initializer RMARIN, taking either
 cdr one, two or 4 input seeds.
 cdr currently we take one seed, 0<=ise<=900.000.000,
@@ -173,25 +147,6 @@ cdr  900000000 is the maximum value for the single input seed initialization. Lo
          end if
 
 
-cdr  initializing the old IBM (1968) generator
-      ELSE
-
-         if (ise <= 0) then
-           if (ifirst_ranset == 0) then
-             iseed = 9876543
-!   else seed is already set, do nothing, some older seed is already available
-           else
-             write (iunout,*) 'RANSET.F: '
-             write (iunout,*) 'no initialization of random generator'
-             write (iunout,*) 'continue sequence without new seed'
-           end if
-         else  ! here: ise > 0
-! constrain input seed to be 0 < iseed <= 2**31-1
-           iseed=mod(ise-1,2147483647)+1
-c          write (iunout,*) 'ranset: seed set to ',iseed
-         end if
-
-      END IF
 
       ifirst_ranset = 1
 cdr  just return iseed, the current legal seed used, on which the next random
@@ -232,14 +187,12 @@ cdr   2) pre-historic IBM congruential generator SURAND (1968) (loc.cit.)
 cdr  return a legal next seed for random number generator.
 cdr  output:  ISE (=ranget_eirene),  return a legal integer seed
 
-cdr  input:  NLOLDRAN:
-cdr      T :  use H1RN, which is RANMAR, F. James, CPC, 60 (1990) 329, sec 3.3
-c             A legal seed must be 0<=ISE<=900.000.000
-cdr      F :  use pre-historic IBM (1968) generator
-c             A legal seed must be 1<=ISE<=2147483647 (=2**31-1)
-C             ISE:   old reference seed,
-C                    from which the current status of random generator is set
-C                    and from which new seed should result in a deterministic way
+cdr  use H1RN, which is RANMAR, F. James, CPC, 60 (1990) 329, sec 3.3
+c    A legal seed must be 0<=ISE<=900.000.000
+cdr  input:
+C    ISE:   old reference seed,
+C           from which the current status of random generator is set
+C           and from which new seed should result in a deterministic way
 c
 
       implicit none
@@ -251,7 +204,6 @@ cym      common /cmem/ iseed
 cym cccccccccccccccccccccccccccccccccc
       real(dp) :: ran
 
-      IF (NLOLDRAN) THEN
 c  1st generator: H1RN  (RANMAR)
 
 cdr  iseed=0 is a perfectly legal seed for this generator
@@ -264,27 +216,6 @@ c  no legal seed available
 
          ranget_eirene= mod(iseed+1,900000000)+1
 
-      ELSE
-
-c  old seed already known from previous call to ranf, or ranset
-c  (from common CMEM).
-         if (iseed.le.0.or.iseed.gt.2147483647.or.iseed.ne.ISE) then
-c  no legal seed available
-           write (iunout,*) 'error in fct. ranget of random generator'
-           write (iunout,*) 'exit called from subr. ranget'
-           call eirene_exit_own(1)
-         endif
-c
-c  set a new seed ISEED
-c  Return a "derived seed" for a fresh sequence for random number starting from there
-c  call ranf with seed ISEED=ISE
-         ran=ranf_eirene()   !  switch to a next seed, by wasting a call to ranf().
-c                               now: new ISEED on CMEM
-         ranget_eirene=2147483647-ISEED
-         idumran=ranset_eirene(ISE) !  return to current seed for continuation
-c        write (iunout,*) 'ranget  ',ranget_eirene,ISEED,ISE
-
-      END IF
 
       return
       end function ranget_eirene
