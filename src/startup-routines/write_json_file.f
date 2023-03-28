@@ -97,6 +97,7 @@
       call json%add(p, block_14)    !add it to the root
       call json%add(p, block_15)    !add it to the root
 
+      call json%add(block_0,'EIRENE_VERSION',eirene_version_string)
       call json%add(block_0,'TXTRUN',txtrun)
 ! COMMENT lines
       if (associated(cm_stack%head)) then
