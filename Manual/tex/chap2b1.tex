@@ -42,7 +42,16 @@ next line (second mandatory line): logical flags for global options [format:
      .  NLTRIMESH NLSPCSCL NLSPCSCL_ON NLSOLEDGE
 \end{lstlisting}
 
-next input lines are only for EIRENE$_{2005}
+This line was changed in EIRENE tag MsV-2023Mar-PBoernerUnified-beta to
+
+\begin{lstlisting}
+      NLSCL NLTEST NLANA NLDRFT NLCRR
+     .  NLERG NLIDENT NLONE NLMOVIE NLDFST
+     .  NLRANMAR NLCASCAD NLOCTREE NLWRMSH NEXVS
+     .  NLTRIMESH NLSPCSCL NLSPCSCL_ON NLSOLEDGE
+\end{lstlisting}
+
+Next input lines are only for EIRENE$_{2005}
 $ and younger, and optional in these versions.
 There can be any number of these cards starting with character string
 \lstinline|CFILE|	  in the input file.
@@ -387,6 +396,10 @@ version dependent.
         The ``junk" congruential generator has been kept, so far, to permit full
         backward compatibility.
         But the code now (from revisions April 17 on) heavily complains if it is used.
+  \item[NLRANMAR] has replaced NLOLDRAN since EIRENE tag        
+        MsV-2023Mar-PBoerner-beta. It indicates that the ``junk'' 
+        congruential generator has been completely removed.
+        NLRANMAR switches on testing of generator ``H1RN".
   \item[NLCASCAD] for internal use.
         Unfinished option for enforcing fully analog collision cascades, rather than
         weighting  (collide.f)
