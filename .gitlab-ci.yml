@@ -31,7 +31,7 @@ stages:
     - build:openmp_executable
     - run_openmp
     - test_openmp
-    - coverage
+#    - coverage
     - tag
     - deploy
     - on-schedule
