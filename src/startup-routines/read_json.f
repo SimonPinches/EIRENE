@@ -315,7 +315,7 @@ cdr     CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
       call json%get(p,'NLMOVIE',nlmovie,found)
       call json%get(p,'NLDFST',nldfst,found)
 
-      call json%get(p,'NLOLDRAN',nloldran,found)
+      call json%get(p,'NLRANMAR',nlranmar,found)
       call json%get(p,'NLCASCAD',nlcascad,found)
       call json%get(p,'NLOCTREE',nloctree,found)
       call json%get(p,'NLWRMSH',nlwrmsh,found)

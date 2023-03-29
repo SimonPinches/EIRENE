@@ -106,7 +106,7 @@ c
       INTEGER :: IDUMMY(2)
       LOGICAL :: NLSCL, NLTEST, NLANA, NLDRFT, NLCRR, NLERG, NLIDENT,
      .           NLONE, NLMOVIE, LINCL45, NLCASCAD, NLDFST,
-     .           NLOLDRAN, NLOCTREE, NEXVS, NLTRIMESH
+     .           NLRANMAR, NLOCTREE, NEXVS, NLTRIMESH
       logical :: found0, ldefstor
 !      logical :: found0, ldefstor, lext, nlerg, lhyddef, ladapt
       logical :: lmulpl ! multiple Ti and V..IN (per species) multiple ion velocities (per species)
@@ -380,7 +380,7 @@ C
       call json%get(p,'NLMOVIE',nlmovie,found)
       call json%get(p,'NLDFST',nldfst,found)
 
-      call json%get(p,'NLOLDRAN',nloldran,found)
+      call json%get(p,'NLRANMAR',nlranmar,found)
       call json%get(p,'NLCASCAD',nlcascad,found)
       call json%get(p,'NLOCTREE',nloctree,found)
       call json%get(p,'NLWRMSH',nlwrmsh,found)

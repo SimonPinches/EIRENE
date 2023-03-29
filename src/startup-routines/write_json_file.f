@@ -97,6 +97,7 @@
       call json%add(p, block_14)    !add it to the root
       call json%add(p, block_15)    !add it to the root
 
+      call json%add(block_0,'EIRENE_VERSION',eirene_version_string)
       call json%add(block_0,'TXTRUN',txtrun)
 ! COMMENT lines
       if (associated(cm_stack%head)) then
@@ -181,7 +182,7 @@
       call json%add(me,'NLONE',nlone)
       call json%add(me,'NLMOVIE',nlmovie)
       call json%add(me,'NLDFST',nldfst)
-      call json%add(me,'NLOLDRAN',nloldran)
+      call json%add(me,'NLRANMAR',nlranmar)
       call json%add(me,'NLCASCAD',nlcascad)
       call json%add(me,'NLOCTREE',nloctree)
       call json%add(me,'NLWRMSH',nlwrmsh)
