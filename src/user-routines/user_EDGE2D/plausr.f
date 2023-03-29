@@ -77,7 +77,7 @@ C+---------------------------------------------------------------+
       integer, allocatable :: indextmp(:),itritmp(:),isidetmp(:)
       integer, allocatable :: isegtmp(:)
       real(dp), allocatable :: tetmp(:),fetmp(:),fshtmp(:)
-      REAL(DP), ALLOCATABLE :: PSI(:), PSI_CORNER(:), copy(:)
+      REAL(DP), ALLOCATABLE :: PSI_VALS(:), PSI_VALS_CORNER(:), copy(:)
 
       integer, parameter :: fp=31
       integer :: ll,ier,j,iseg,ind, fp2
@@ -88,7 +88,7 @@ C+---------------------------------------------------------------+
       real(dp) :: eirene_phi_offsets(9)
 
       integer :: ntr, NLIM_tmp, NSTS_tmp, NGITT_tmp, NGSTAL_tmp,
-     &     NATM_tmp, IPLS_tmp, NTR_tmp, NLMPGS_tmp
+     &     NATM_tmp, NMOL_tmp, IPLS_tmp, NTR_tmp, NLMPGS_tmp
       REAL(DP),ALLOCATABLE,DIMENSION(:,:) :: hydIonFLX, EIRENE_wall_area
       REAL(DP),ALLOCATABLE,DIMENSION(:)   :: hydNeutFLX
       INTEGER, ALLOCATABLE,DIMENSION(:,:) :: hydNeutFLX_info
@@ -148,7 +148,7 @@ c     set default namelist values
 cdmh
       eirene_fstoreneutflux = 'eirene.chemFluxDep'
       eirene_wallFluxModel = 1
-      NeutralFluxFileVersion = 1.0
+      NeutralFluxFileVersion = 1.2
 cdmh
 
 c     get namelist config
@@ -270,9 +270,11 @@ c     get species index/indices IPLAN(ISTEP) --> IPLEN(ISTEP)
                ipls=nspez(istra)
             END IF
 c     fudge species index for atomic impurity flux (get it from NEMODS index K)
-            IPLS_tmp = EIRENE_IDEZ(NEMODS(ISTRA),4,4)
-            IF (IPLS_tmp.gt.1) then
-               ipls=IPLS_tmp
+            IF (NLATM(ISTRA)) THEN
+              IPLS_tmp = EIRENE_IDEZ(NEMODS(ISTRA),4,4)
+              IF (IPLS_tmp.gt.0) then
+                ipls=IPLS_tmp
+              ENDIF
             ENDIF
 c     search target tag in .zplasma file
            IPLS_tmp = IPLS
@@ -376,6 +378,19 @@ c                     usrstep(ipls,istep,kstep(istep)) = usrval
 csw
 c                 enddo ipls,iplan
                   ENDDO
+C
+C                 SET PLASMA PARAMETERS FOR ATOMIC STRATA
+                  IF (NLATM(ISTRA)) THEN
+                     TISTEP(IPLS_TMP,ISTEP,KSTEP(ISTEP)) = TI ! eV
+                     DISTEP(IPLS_TMP,ISTEP,KSTEP(ISTEP)) = DI ! 1/cm**3
+                     VPSTEP(IPLS_TMP,ISTEP,KSTEP(ISTEP)) = abs(VP) ! cm/s
+                     VXSTEP(IPLS_TMP,ISTEP,KSTEP(ISTEP)) =
+     &                    VXIN(IPLS_TMP,ITRI)
+                     VYSTEP(IPLS_TMP,ISTEP,KSTEP(ISTEP)) =
+     &                    VYIN(IPLS_TMP,ITRI)
+                     VZSTEP(IPLS_TMP,ISTEP,KSTEP(ISTEP)) =
+     &                    VZIN(IPLS_TMP,ITRI)
+                  ENDIF
 
 c              endif inmti
                ENDIF
@@ -411,6 +426,7 @@ c     read neutral flux [A] to target and walls from last EIRENE run
       NGITT_tmp  = NGITT
       NGSTAL_tmp = NGSTAL
       NATM_tmp   = NATM
+      NMOL_tmp   = NMOL
       NLMPGS_tmp = NLMPGS
       NTR_tmp    = NTR
       fp2 = 4999
@@ -445,8 +461,8 @@ c        check if netral flux file is compatible with actual code version
             else
 c              neutral flux file is compatible with actual code version, so read it
                read(fp2,'(a)') line
-               read(fp2,'(7i8)') NLIM_tmp, NSTS_tmp, NGITT_tmp,
-     &              NGSTAL_tmp, NATM_tmp, NLMPGS_tmp, NTR_tmp
+               read(fp2,'(8i8)') NLIM_tmp, NSTS_tmp, NGITT_tmp,
+     &              NGSTAL_tmp, NATM_tmp, NMOL_tmp, NLMPGS_tmp, NTR_tmp
                if ((NLMPGS_tmp-NLIM_tmp-NSTS_tmp.ne.NLMPGS-NLIM-NSTS)
      &              .or.(NSTS_tmp.ne.NSTS).or.(NTR_tmp.ne.NTR).or.
      &              (NGITT_tmp.ne.NGITT).or.(NGSTAL_tmp.ne.NGSTAL)) then
@@ -461,6 +477,7 @@ c              neutral flux file is compatible with actual code version, so read
                   WRITE(IUNOUT,*)"NGSTAL = ",NGSTAL,
      &                 "; NGSTAL_tmp = ",NGSTAL_tmp
                   WRITE(IUNOUT,*)"NATM = ",NATM,"; NATM_tmp = ",NATM_tmp
+                  WRITE(IUNOUT,*)"NMOL = ",NMOL,"; NMOL_tmp = ",NMOL_tmp
                   WRITE(IUNOUT,*)"NTRII= ",NTR,"; NTRII_tmp = ",NTR_tmp
                   WRITE(IUNOUT,*)"NLMPGS_tmp-NLIM_tmp-NSTS_tmp = ",
      &                 NLMPGS_tmp-NLIM_tmp-NSTS_tmp,
@@ -481,8 +498,8 @@ c              neutral flux file is compatible with actual code version, so read
                   read(fp2,'(a)') line
                   read(fp2,'(a)') line
                   do i=1,NLMPGS_tmp
-                     read(fp2,'(i6,1x,e14.6,1x,i6,1x,i6,1x,i6)')
-     &                    j, hydNeutFLX(i),
+                     read(fp2,'(i6,1x,2(e14.6,1x),i6,1x,i6,1x,i6)')
+     &                    j, hydNeutFLX(i), tmp,
      &                    hydNeutFLX_info(i,1), hydNeutFLX_info(i,2),
      &                    hydNeutFLX_info(i,3)
                      if (i.ne.j) then
@@ -500,7 +517,7 @@ c              neutral flux file is compatible with actual code version, so read
       endif
 
 c     calculate area of wall surface elements
-      twopi = 2.d0*dabs(dacos(-1.0))
+      twopi = 2.d0*dabs(dacos(-1.d0))
       do itri=1,ntr
          do iside=1,3
             IS1 = ISIDE + 1
@@ -732,11 +749,11 @@ c     cleanup
          return
       end if
 
-      ALLOCATE (PSI(NRAD))
-      ALLOCATE (PSI_CORNER(NRAD))
+      ALLOCATE (PSI_VALS(NRAD))
+      ALLOCATE (PSI_VALS_CORNER(NRAD))
       ALLOCATE (COPY(NRAD))
-      PSI=0.
-      PSI_CORNER=0.
+      PSI_VALS=0.
+      PSI_VALS_CORNER=0.
       COPY=0._dp
 
       if (naini >= 8) then
@@ -749,14 +766,14 @@ c     cleanup
         adin(8,1:nsbox) = copy(1:nsbox)
       end if
 
-      call EIRENE_prousr(psi,11+1*npls+NPLSTI+3*NPLSV,0._dp,0._dp,0._dp,
-     .     0._dp,0._dp,0._dp,0._dp,nsbox)
+      call EIRENE_prousr(psi_vals,11+1*npls+NPLSTI+3*NPLSV,0._dp,0._dp,
+     .     0._dp,0._dp,0._dp,0._dp,0._dp,nsbox)
 
-      psi(1:nsbox) = psi(1:nsbox) * 1.e4_dp
+      psi_vals(1:nsbox) = psi_vals(1:nsbox) * 1.e4_dp
 
-      adin(1,1:nsbox) = psi(1:nsbox)
+      adin(1,1:nsbox) = psi_vals(1:nsbox)
 
-      call EIRENE_cell_to_corner (psi, psi_corner)
+      call EIRENE_cell_to_corner (psi_vals, psi_vals_corner)
 
       xref = 200._dp
       yref = 0._dp
@@ -802,7 +819,7 @@ c     cleanup
         x = xcom(icell)
         y = ycom(icell)
         rad = x
-        call EIRENE_df_dxyz (psi_corner, icell, x, y,
+        call EIRENE_df_dxyz (psi_vals_corner, icell, x, y,
      &       0._dp, dfdx, dfdy, dfdz)
 
         bx = -dfdy / rad
@@ -879,4 +896,4 @@ c     cleanup
       end if
 
    99 RETURN
-      END
+      END SUBROUTINE EIRENE_PLAUSR

@@ -16,7 +16,7 @@ c                               with Mach=1 (or: ion thermal veloc=1 ?).
 c    shstep: sheath multiplier:  sheath potential is shstep*testep
 c            e.g.: shstep= 2.5 (hydrogen, M=1, Te=Ti, single fluid)
 c            e.g.: shstep= 2.8 (deuteron, M=1, Te=Ti, single fluid)
-c    vpstep: parallel to B-field drift velocity (cm/s) at s.e.
+c    vpstep: parallel to B field drift velocity (cm/s) at s.e.
 c    mcstep: mach number of parallel flow at s.e.
 c
 c   there is now a certain redundancy of information on plasma
@@ -41,7 +41,7 @@ c
      R QUOTI(:,:,:),  ADDIV(:,:,:),
      R TESTEP(:,:),   TISTEP(:,:,:), RRSTEP(:,:),
      R VXSTEP(:,:,:), VYSTEP(:,:,:), VZSTEP(:,:,:),
-     R DISTEP(:,:,:), FESTEP(:,:),   FISTEP(:,:,:),
+     R DISTEP(:,:,:), FESTEP(:,:),   FISTEP(:,:,:), ZISTEP(:,:,:),
      R SHSTEP(:,:),   VPSTEP(:,:,:), MCSTEP(:,:,:)
 
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
@@ -49,6 +49,9 @@ c
      I IASTEP(:,:), IBSTEP(:,:), IGSTEP(:,:),
      I ISTUF(:),
      I NSMAX(:),    NSPSTI(:),   NSPSTE(:)
+
+      INTEGER, PUBLIC, SAVE ::
+     I NPSTEP, NTSTEP, NVSTEP
 
       INTEGER, PRIVATE, SAVE ::
      .   NSTPP1, NSTPP2, NSTPP3 , NSTPP4
@@ -60,9 +63,12 @@ c
 
       IF (ALLOCATED(FLSTEP)) RETURN
 
+      NPSTEP=MAX(NPLS,NATM,NMOL)
+      NTSTEP=MAX(NPLSTI,NATM,NMOL)
+      NVSTEP=MAX(NPLSV,NATM,NMOL)
       NSTPP1=(NSPZ+1)*NSTEP*NGITT
       NSTPP2=NSTEP*NGITT
-      NSTPP3=NPLS*NSTEP*NGITT
+      NSTPP3=NPSTEP*NSTEP*NGITT
       NSTPP4=(NSPZ+1)*NSTEP
 
       ALLOCATE (FLSTEP(0:NSPZ,NSTEP,NGITT))
@@ -77,18 +83,19 @@ c   next 2 tallies added nov. 05      !dr
       ALLOCATE (QUOTI (0:NSPZ,NSTEP,NGITT))
       ALLOCATE (ADDIV (0:NSPZ,NSTEP,NGITT))
       ALLOCATE (TESTEP(NSTEP,NGITT))
-      ALLOCATE (TISTEP(NPLSTI,NSTEP,NGITT))
+      ALLOCATE (TISTEP(NTSTEP,NSTEP,NGITT))
       ALLOCATE (RRSTEP(NSTEP,NGITT))
-      ALLOCATE (VXSTEP(NPLSV,NSTEP,NGITT))
-      ALLOCATE (VYSTEP(NPLSV,NSTEP,NGITT))
-      ALLOCATE (VZSTEP(NPLSV,NSTEP,NGITT))
-      ALLOCATE (DISTEP(NPLS,NSTEP,NGITT))
+      ALLOCATE (VXSTEP(NVSTEP,NSTEP,NGITT))
+      ALLOCATE (VYSTEP(NVSTEP,NSTEP,NGITT))
+      ALLOCATE (VZSTEP(NVSTEP,NSTEP,NGITT))
+      ALLOCATE (DISTEP(NPSTEP,NSTEP,NGITT))
+      ALLOCATE (ZISTEP(NPSTEP,NSTEP,NGITT))
 c  next 5 tallies added sept. 05     !dr
       ALLOCATE (FESTEP(NSTEP,NGITT))
       ALLOCATE (SHSTEP(NSTEP,NGITT))
-      ALLOCATE (FISTEP(NPLS,NSTEP,NGITT))
-      ALLOCATE (MCSTEP(NPLS,NSTEP,NGITT))
-      ALLOCATE (VPSTEP(NPLSV,NSTEP,NGITT))
+      ALLOCATE (FISTEP(NPSTEP,NSTEP,NGITT))
+      ALLOCATE (MCSTEP(NPSTEP,NSTEP,NGITT))
+      ALLOCATE (VPSTEP(NVSTEP,NSTEP,NGITT))
 
       ALLOCATE (IRSTEP(NSTEP,NGITT))
       ALLOCATE (IPSTEP(NSTEP,NGITT))
@@ -102,8 +109,8 @@ c  next 5 tallies added sept. 05     !dr
       ALLOCATE (NSPSTE(NSTEP))
 
       WRITE (IUNMEM,'(A,T25,I15)')
-     .       ' CSTEP ',(8*NSTPP1+2*NSTPP4+4*NSTPP2+3*NSTPP3 +
-     .                  (NPLSTI+4*NPLSV)*NSTPP2)*8 +
+     .       ' CSTEP ',(8*NSTPP1+2*NSTPP4+4*NSTPP2+4*NSTPP3 +
+     .                  (NTSTEP+4*NVSTEP)*NSTPP2)*8 +
      .                 (6*NSTPP2+4*NSTEP)*4
 
       CALL EIRENE_INIT_CSTEP
@@ -133,6 +140,7 @@ c  next 5 tallies added sept. 05     !dr
       DEALLOCATE (VYSTEP)
       DEALLOCATE (VZSTEP)
       DEALLOCATE (DISTEP)
+      DEALLOCATE (ZISTEP)
       DEALLOCATE (FESTEP)
       DEALLOCATE (SHSTEP)
       DEALLOCATE (FISTEP)
@@ -173,6 +181,7 @@ c  next 5 tallies added sept. 05     !dr
       VYSTEP = 0._DP
       VZSTEP = 0._DP
       DISTEP = 0._DP
+      ZISTEP = 0._DP
       FESTEP = 0._DP
       FISTEP = 0._DP
       SHSTEP = 0._DP
@@ -214,16 +223,17 @@ c  next 5 tallies added sept. 05     !dr
       CALL MPI_BCAST (QUOTI,NSTPP1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (ADDIV,NSTPP1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (TESTEP,NSTPP2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (TISTEP,NPLSTI*NSTEP*NGITT,MPI_REAL8,0,
+      CALL MPI_BCAST (TISTEP,NTSTEP*NSTPP2,MPI_REAL8,0,
      .                MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (RRSTEP,NSTPP2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (VXSTEP,NPLSV*NSTEP*NGITT,MPI_REAL8,0,
+      CALL MPI_BCAST (VXSTEP,NVSTEP*NSTPP2,MPI_REAL8,0,
      .                MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (VYSTEP,NPLSV*NSTEP*NGITT,MPI_REAL8,0,
+      CALL MPI_BCAST (VYSTEP,NVSTEP*NSTPP2,MPI_REAL8,0,
      .                MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (VZSTEP,NPLSV*NSTEP*NGITT,MPI_REAL8,0,
+      CALL MPI_BCAST (VZSTEP,NVSTEP*NSTPP2,MPI_REAL8,0,
      .                MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (DISTEP,NSTPP3,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (ZISTEP,NSTPP3,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (FESTEP,NSTPP2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (SHSTEP,NSTPP2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (FISTEP,NSTPP3,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -241,6 +251,9 @@ c  next 5 tallies added sept. 05     !dr
       CALL MPI_BCAST (NSPSTI,NSTEP,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NSPSTE,NSTEP,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
+
+      RETURN
       END SUBROUTINE EIRENE_BROADCAST_CSTEP
 
       END MODULE EIRMOD_CSTEP

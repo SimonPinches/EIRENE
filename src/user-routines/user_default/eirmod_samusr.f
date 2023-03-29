@@ -13,7 +13,7 @@
       CONTAINS
       
 C
-C  SAMPLE INITAL COORDIANTES X0,Y0,Z0 ON SURFACE NLSF
+C  SAMPLE INITIAL COORDINATES X0,Y0,Z0 ON SURFACE NLSF
 C
 
 C  CALLED IN INITIALIZATION PHASE
@@ -42,13 +42,14 @@ C  CALLED FROM SUBR. SAMSRF, FOR SURFACE SAMPLING
      .              SORAD1_IN,SORAD2_IN,SORAD3_IN,
      .              SORAD4_IN,SORAD5_IN,SORAD6_IN,
      .              IRUSR,IPUSR,ITUSR,IAUSR,IBUSR,
-     .              TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ)
+     .              TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,ZIWL,
+     .              WEISPZ)
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: SORAD1_IN,SORAD2_IN,SORAD3_IN,
      .                        SORAD4_IN,SORAD5_IN,SORAD6_IN
       REAL(DP), INTENT(OUT) :: X0,Y0,Z0,TEWL,TIWL(*),DIWL(*),
      .                         VXWL(*),VYWL(*),VZWL(*),
-     .                         EFWL(*), SHWL, WEISPZ(*)
+     .                         EFWL(*), SHWL, ZIWL(*), WEISPZ(*)
       INTEGER, INTENT(IN) :: NLSF
       INTEGER, INTENT(OUT) :: IRUSR, IPUSR, ITUSR, IAUSR, IBUSR
 
@@ -77,6 +78,7 @@ C  RETURN BACKGROUND MEDIUM PARAMETERS AT BIRTHPOINT
       vywl(1:nplsv) = 0._dp
       vzwl(1:nplsv) = 1._dp
       efwl(1:nplsi) = 0._dp
+      ziwl(1:nplsi) = dble(nchrgp(1:nplsi))
       shwl = 0._dp
       weispz(1:nspz) = 0._dp
 

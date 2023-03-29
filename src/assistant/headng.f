@@ -13,4 +13,4 @@ C*DK HEADNG
       WRITE (iunout,60) (U(I),I=1,N)
    60 FORMAT (1X,72A1)
       RETURN
-      END
+      END SUBROUTINE EIRENE_HEADNG

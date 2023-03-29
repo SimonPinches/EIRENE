@@ -3,4 +3,4 @@
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: T0
       RETURN
-      END
+      END SUBROUTINE EIRENE_TMSUSR

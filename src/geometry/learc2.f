@@ -40,8 +40,8 @@ C
      .          DX1, DX2, DX3, DX4, XMX4, YMY4, VX1, VX2, WY2,
      .          WX2, VY2, Y3N, X3N, Y1N, Y2N, Y4N, X1N, DET1,
      .          YMY2, XMX2, DET2, YMY1, XMX1
-      INTEGER :: IM, LM, LMARK, IMARK, L, K, EIRENE_LEARC2, N, IFIRST,
-     .           INUM
+      INTEGER :: IM, LM, LMARK, IMARK, L, K, EIRENE_LEARC2, N, INUM
+      INTEGER, SAVE :: IFIRST = 0
       REAL(DP), ALLOCATABLE, SAVE ::
      .          X1(:,:),Y1(:,:),X2(:,:),Y2(:,:),X3(:,:),Y3(:,:),
      .          X4(:,:),Y4(:,:),TX(:,:),TY(:,:),
@@ -49,8 +49,11 @@ C
      .          VY1(:,:),WY1(:,:),WX1(:,:),DWY(:,:),HELP(:,:),
      .          D12(:,:),D14(:,:),D32(:,:),D34(:,:)
 !pb      SAVE
-      DATA IFIRST /0/
+!     DATA IFIRST /0/
 
+!$OMP THREADPRIVATE(IFIRST,X1,Y1,X2,Y2,X3,Y3,X4,Y4,TX,TY,UX,UY,
+!$OMP&    DET,VY1,WY1,WX1,DWY,HELP,D12,D14,D32,D34)
+      
 csw 04aug08
       if(np .lt. 0) then
         if(allocated(x1)) then
@@ -301,4 +304,4 @@ C
       EIRENE_LEARC2=LM
 C
       RETURN
-      END
+      END FUNCTION EIRENE_LEARC2

@@ -1,5 +1,5 @@
       SUBROUTINE EIRENE_SCAL_SURF_TALLIES (ISTR)
-cdr May 19:    scoring of surface averaged spectra:       
+cdr May 19:    scoring of surface-averaged spectra:
 cdr   scaling with FATM, FMOL,... done elsewhere?
 
       USE EIRMOD_PRECISION
@@ -77,11 +77,11 @@ C  SCALE: FROM SCORING TALLY UNITS PER ENERGY BIN --> TALLY UNITS PER EV
 C  INTEGRATE  --> TALLY UNITS
 cdr  Test tbd: in case of total (not directional) spectrum, 
 cdr            i.e. for IDIREC=0, this
-cdr            integral must coindide with the particle outflux POT..
+cdr            integral must coincide with the particle outflux POT..
 cdr            or the energy outflux EOT..,
 cdr            at the selected surface, depending on ISPTYP=1,
 cdr            or =2, respectively.
-cdr            I beliefe this test must also work
+cdr            I believe this test must also work
 cdr            in the same way for directional spectra.
 cdr            The spectral resolution is along a line of sight,
 cdr            but cumulative wrt. to the orthogonal

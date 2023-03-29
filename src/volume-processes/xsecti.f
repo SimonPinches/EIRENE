@@ -62,11 +62,13 @@ C
      .           IIEL, IIEI, IREI, IESTM, IFRST, ISCND, ISCDE, IPL,
      .           IICX, IRCX, ITHRD, IFRTH, IRPI, IIPI
       INTEGER, EXTERNAL :: EIRENE_IDEZ
-
       ALLOCATE (PLS(NSTORDR))
 
-
-cdr: set hard-wired lower density for H.4 type fits
+cdr  PLS: ELECTRON DENSITY PARAMETER in CR MODELS
+cdr      (NOT TO BE CONFUSED WITH THE DENSITY FACTOR BETWEEN RATES AND RATE COEFF.)
+cdr: set hard-wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3
+cdr: at this lower limit density the fits are produced such
+cdr: that they collapse to the corona limit values.
       DEIMIN=LOG(1.D8)
       IF (NSTORDR >= NRAD) THEN
         DO 10 J=1,NSBOX
@@ -423,7 +425,8 @@ C
             LGIEI(IION,IDSC1)=IREI
             CALL EIRENE_XSTEI(RMASS,IREI,IIO,
      .                 IFRST,ISCND,ITHRD,IFRTH,EHEAVY,CHRDF0,
-     .                 ISCDE,EELEC,IESTM,KK,FACTKK,PLS)
+     .                 ISCDE,EELEC,IESTM,
+     .                 KK,FACTKK,PLS)
    90     CONTINUE
           NIEII(IION)=IDSC1
         ENDIF
@@ -457,7 +460,8 @@ C
         ELSEIF (NRCI(IION).GT.0) THEN
           DO 130 NRC=1,NRCI(IION)
             KK=IREACI(IION,NRC)
-            IF (ISWR(KK).NE.3) GOTO 130
+            IF (ISWR(KK).NE.3) CYCLE
+C  make sure that incident particle is a bulk particle
             IF (EIRENE_IDEZ(IBULKI(IION,NRC),1,3).NE.4) THEN
 C  WRONG TYPE OF INCIDENT BULK SPECIES
               WRITE (IUNOUT,*)
@@ -465,10 +469,11 @@ C  WRONG TYPE OF INCIDENT BULK SPECIES
               CALL EIRENE_EXIT_OWN(1)
             ENDIF
 C  CX PROCESS IDENTIFIED
+
             FACTKK=FREACI(IION,NRC)
             IF (FACTKK.EQ.0.D0) FACTKK=1.
             CHRDF0=-NCHRGI(IION)
-
+C  BULK PARTICLE INDEX
             IPLS=EIRENE_IDEZ(IBULKI(IION,NRC),3,3)
             IDSC=IDSC+1
             NRCXI=NRCXI+1
@@ -537,9 +542,10 @@ C  BULK PARTICLE INDEX
             LGIEL(IION,IDSC,1)=IPLS
 C
 C  SPECIAL TREATMENT: BGK COLLISIONS AMONGST TEST PARTICLES
+C  FOR THIS REACTION KK
             IF (IBGKI(IION,NRC).NE.0) THEN
               IF (NPBGKI(IION).EQ.0) THEN
-C  IION HAS NOT YET BEEN ASSIGNED AS BGK SPECIES.
+C  IION HAS NOT YET BEEN LABELLED AS BGK SPECIES.
 C  DO THIS HERE: IION IS BGK SPECIES NO. IBGK_SP, AND HAS 3 ADDITIONAL BGK TALLIES IN UPTBGK
                 NRBGI=NRBGI+3
                 IBGK_SP=NRBGI/3
@@ -547,6 +553,7 @@ C  DO THIS HERE: IION IS BGK SPECIES NO. IBGK_SP, AND HAS 3 ADDITIONAL BGK TALLI
               ENDIF
               IF (NPBGKP(IPLS,1).EQ.0) THEN
                 NPBGKP(IPLS,1)=NPBGKI(IION)
+cdr this is too restrictive?
               ELSE
                 GOTO 999
               ENDIF
@@ -554,7 +561,8 @@ C  SELF- OR CROSS-COLLISION?
               ITYPB=EIRENE_IDEZ(IBGKI(IION,NRC),1,3)
               ISPZB=EIRENE_IDEZ(IBGKI(IION,NRC),3,3)
               IF (ITYPB.NE.3.OR.ISPZB.NE.IION) THEN
-C  CROSS-COLLISION !
+C  CROSS-COLLISION ! SET THE SECOND TEST PARTICLE SPECIES
+C                    INVOLVED IN THIS PROCESS
                 IF (NPBGKP(IPLS,2).EQ.0) THEN
                   NPBGKP(IPLS,2)=IBGKI(IION,NRC)
                 ELSE
@@ -757,4 +765,4 @@ C
       CALL EIRENE_EXIT_OWN(1)
       RETURN
 C
-      END
+      END SUBROUTINE EIRENE_XSECTI

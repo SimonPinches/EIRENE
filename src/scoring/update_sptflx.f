@@ -1,7 +1,7 @@
 c  score sputtered fluxes
 c  modified in spring 2014: old version: resolved wrt. incident type
 cdr:  Sept. 2014: input flag 'IND' added,
-cdr   Jan 18    : ind=0 --> ind=1,  and ind=1 --> ind=2, to synchronize with
+cdr   Jan 18    : ind=0 --> ind=1, and ind=1 --> ind=2, to synchronize with
 cdr               other surface scoring (e.g. update_surface)
 c
 cdr       ind=1: FOR TOTAL TALLIES (due to sputtering by "incident" particles)
@@ -55,22 +55,43 @@ c
 C  THIS IS NEEDED IN CASE THE SPUTTERED (emitted) SPECIES IS NOT AN EIRENE TEST SPECIES IN THIS RUN
 C  ONLY THE SPUTTERED FLUX IS SCORED
 
-      IF (LSPTTOT) SPTTOT(MSURF) = SPTTOT(MSURF) + WGH
+      IF (LSPTTOT) THEN
+!$OMP ATOMIC
+        SPTTOT(MSURF) = SPTTOT(MSURF) + WGH
+      ENDIF
       IF (MSURFG.GT.0) THEN
-         IF (LSPTTOT) SPTTOT(MSURFG) = SPTTOT(MSURFG) + WGH
+         IF (LSPTTOT) THEN
+!$OMP ATOMIC
+           SPTTOT(MSURFG) = SPTTOT(MSURFG) + WGH
+         ENDIF
       ENDIF
 C  AT THIS PLACE: NEW ITYP AND NEW SPECIES INDEX NOT NECESSARILY KNOWN
       SELECT CASE (ITOLD)
       CASE (0)
-        if (lsptphtot)  sptphtot(msurf) = sptphtot(msurf) + wgh
+        if (lsptphtot)  then
+!$OMP ATOMIC
+          sptphtot(msurf) = sptphtot(msurf) + wgh
+        endif
       CASE (1)
-        if (lsptatot)   sptatot(msurf)  = sptatot(msurf)  + wgh
+        if (lsptatot) then
+!$OMP ATOMIC
+           sptatot(msurf)  = sptatot(msurf)  + wgh
+        endif
       CASE (2)
-        if (lsptmtot)   sptmtot(msurf)  = sptmtot(msurf)  + wgh
+        if (lsptmtot) then
+!$OMP ATOMIC
+           sptmtot(msurf)  = sptmtot(msurf)  + wgh
+        endif
       CASE (3)
-        if (lsptitot)   sptitot(msurf)  = sptitot(msurf)  + wgh
+        if (lsptitot) then
+!$OMP ATOMIC
+           sptitot(msurf)  = sptitot(msurf)  + wgh
+        endif
       CASE (4)
-         if (lsptpltot) sptpltot(msurf) = sptpltot(msurf) + wgh
+         if (lsptpltot) then
+!$OMP ATOMIC
+            sptpltot(msurf) = sptpltot(msurf) + wgh
+         endif
       END SELECT
 
       IF (IND.EQ.1) RETURN
@@ -101,41 +122,56 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 !      OUTGOING PARTICLE IS PHOTON
          CASE(0)
             IF (LSPTPHPHT) THEN
+!$OMP ATOMIC
                SPTPHPHT(IPHOT,MSURF)=SPTPHPHT(IPHOT,MSURF)+WGH
-               IF (MSURFG.GT.0)
-     .              SPTPHPHT(IPHOT,MSURFG)=SPTPHPHT(IPHOT,MSURFG)+WGH
+               IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
+                   SPTPHPHT(IPHOT,MSURFG)=SPTPHPHT(IPHOT,MSURFG)+WGH
+               ENDIF
                LMETSPW(IPHOT) = .TRUE.
             END IF
 !     OUTGOING PARTICLE IS ATOM
          CASE(1)
             IF (LSPTPHAT) THEN
+!$OMP ATOMIC
                SPTPHAT(IATM,MSURF)=SPTPHAT(IATM,MSURF)+WGH
-               IF (MSURFG.GT.0)
-     .              SPTPHAT(IATM,MSURFG)=SPTPHAT(IATM,MSURFG)+WGH
+               IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
+                    SPTPHAT(IATM,MSURFG)=SPTPHAT(IATM,MSURFG)+WGH
+               ENDIF
                LMETSPW(NSPH+IATM) = .TRUE.
             END IF
 !     OUTGOING PARTICLE IS MOLECULE
          CASE(2)
             IF (LSPTPHML) THEN
+!$OMP ATOMIC
                SPTPHML(IMOL,MSURF)=SPTPHML(IMOL,MSURF)+WGH
-               IF (MSURFG.GT.0)
-     .              SPTPHML(IMOL,MSURFG)=SPTPHML(IMOL,MSURFG)+WGH
+               IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
+                    SPTPHML(IMOL,MSURFG)=SPTPHML(IMOL,MSURFG)+WGH
+               ENDIF
                LMETSPW(NSPA+IMOL) = .TRUE.
             END IF
 !     OUTGOING PARTICLE IS TEST ION
          CASE(3)
             IF (LSPTPHIO) THEN
+!$OMP ATOMIC
                SPTPHIO(IION,MSURF)=SPTPHIO(IION,MSURF)+WGH
-               IF (MSURFG.GT.0)
-     .              SPTPHIO(IION,MSURFG)=SPTPHIO(IION,MSURFG)+WGH
+               IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
+                  SPTPHIO(IION,MSURFG)=SPTPHIO(IION,MSURFG)+WGH
+               ENDIF
                LMETSPW(NSPAM+IION) = .TRUE.
             END IF
 !     OUTGOING PARTICLE IS BULK ION
          CASE(4)
             IF (LSPTPHPL) THEN
+!$OMP ATOMIC
                SPTPHPL(IPLS,MSURF)=SPTPHPL(IPLS,MSURF)+WGH
-               IF (MSURFG.GT.0)
-     .              SPTPHPL(IPLS,MSURFG)=SPTPHPL(IPLS,MSURFG)+WGH
+               IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
+                   SPTPHPL(IPLS,MSURFG)=SPTPHPL(IPLS,MSURFG)+WGH
+               ENDIF
                LMETSPW(NSPAMI+IPLS) = .TRUE.
             END IF
 !     OUTGOING PARTICLE IS OF UNKNOWN TYPE
@@ -154,41 +190,56 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 !      OUTGOING PARTICLE IS PHOTON
          CASE(0)
             IF (LSPTAPHT) THEN
+!$OMP ATOMIC
                SPTAPHT(IPHOT,MSURF)=SPTAPHT(IPHOT,MSURF)+WGH
-               IF (MSURFG.GT.0)
-     .              SPTAPHT(IPHOT,MSURFG)=SPTAPHT(IPHOT,MSURFG)+WGH
+               IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
+                  SPTAPHT(IPHOT,MSURFG)=SPTAPHT(IPHOT,MSURFG)+WGH
+               ENDIF
                LMETSPW(IPHOT) = .TRUE.
             END IF
 !     OUTGOING PARTICLE IS ATOM
          CASE(1)
             IF (LSPTAAT) THEN
+!$OMP ATOMIC
                SPTAAT(IATM,MSURF)=SPTAAT(IATM,MSURF)+WGH
-               IF (MSURFG.GT.0)
-     .              SPTAAT(IATM,MSURFG)=SPTAAT(IATM,MSURFG)+WGH
+               IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
+                  SPTAAT(IATM,MSURFG)=SPTAAT(IATM,MSURFG)+WGH
+               ENDIF
                LMETSPW(NSPH+IATM) = .TRUE.
             END IF
 !     OUTGOING PARTICLE IS MOLECULE
          CASE(2)
             IF (LSPTAML) THEN
+!$OMP ATOMIC
                SPTAML(IMOL,MSURF)=SPTAML(IMOL,MSURF)+WGH
-               IF (MSURFG.GT.0)
-     .              SPTAML(IMOL,MSURFG)=SPTAML(IMOL,MSURFG)+WGH
+               IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
+                  SPTAML(IMOL,MSURFG)=SPTAML(IMOL,MSURFG)+WGH
+               ENDIF
                LMETSPW(NSPA+IMOL) = .TRUE.
             END IF
 !     OUTGOING PARTICLE IS TEST ION
          CASE(3)
             IF (LSPTAIO) THEN
+!$OMP ATOMIC
                SPTAIO(IION,MSURF)=SPTAIO(IION,MSURF)+WGH
-               IF (MSURFG.GT.0)
-     .              SPTAIO(IION,MSURFG)=SPTAIO(IION,MSURFG)+WGH
+               IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
+                  SPTAIO(IION,MSURFG)=SPTAIO(IION,MSURFG)+WGH
+               ENDIF
                LMETSPW(NSPAM+IION) = .TRUE.
             END IF
 !     OUTGOING PARTICLE IS BULK ION
          CASE(4)
             IF (LSPTAPL) THEN
+!$OMP ATOMIC
                SPTAPL(IPLS,MSURF)=SPTAPL(IPLS,MSURF)+WGH
-               IF (MSURFG.GT.0)
-     .              SPTAPL(IPLS,MSURFG)=SPTAPL(IPLS,MSURFG)+WGH
+               IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
+                  SPTAPL(IPLS,MSURFG)=SPTAPL(IPLS,MSURFG)+WGH
+               ENDIF
                LMETSPW(NSPAMI+IPLS) = .TRUE.
             END IF
 !     OUTGOING PARTICLE IS OF UNKNOWN TYPE
@@ -206,41 +257,56 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 ! OUTGOING PARTICLE IS PHOTON
          CASE(0)
             IF (LSPTMPHT) THEN
+!$OMP ATOMIC
                SPTMPHT(IPHOT,MSURF)=SPTMPHT(IPHOT,MSURF)+WGH
-               IF (MSURFG.GT.0)
-     .              SPTMPHT(IPHOT,MSURFG)=SPTMPHT(IPHOT,MSURFG)+WGH
+               IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
+                  SPTMPHT(IPHOT,MSURFG)=SPTMPHT(IPHOT,MSURFG)+WGH
+               ENDIF
                LMETSPW(IPHOT) = .TRUE.
             END IF
 ! OUTGOING PARTICLE IS ATOM
          CASE(1)
             IF (LSPTMAT) THEN
+!$OMP ATOMIC
                SPTMAT(IATM,MSURF)=SPTMAT(IATM,MSURF)+WGH
-               IF (MSURFG.GT.0)
-     .              SPTMAT(IATM,MSURFG)=SPTMAT(IATM,MSURFG)+WGH
+               IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
+                   SPTMAT(IATM,MSURFG)=SPTMAT(IATM,MSURFG)+WGH
+               ENDIF
                LMETSPW(NSPH+IATM) = .TRUE.
             END IF
 !     OUTGOING PARTICLE IS MOLECULE
          CASE(2)
             IF (LSPTMML) THEN
+!$OMP ATOMIC
                SPTMML(IMOL,MSURF)=SPTMML(IMOL,MSURF)+WGH
-               IF (MSURFG.GT.0)
-     .              SPTMML(IMOL,MSURFG)=SPTMML(IMOL,MSURFG)+WGH
+               IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
+                  SPTMML(IMOL,MSURFG)=SPTMML(IMOL,MSURFG)+WGH
+               ENDIF
                LMETSPW(NSPA+IMOL) = .TRUE.
             END IF
 !     OUTGOING PARTICLE IS ATOMTEST ION
          CASE(3)
             IF (LSPTMIO) THEN
+!$OMP ATOMIC
                SPTMIO(IION,MSURF)=SPTMIO(IION,MSURF)+WGH
-               IF (MSURFG.GT.0)
-     .              SPTMIO(IION,MSURFG)=SPTMIO(IION,MSURFG)+WGH
+               IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
+                  SPTMIO(IION,MSURFG)=SPTMIO(IION,MSURFG)+WGH
+               ENDIF
                LMETSPW(NSPAM+IION) = .TRUE.
             END IF
 !     OUTGOING PARTICLE IS BULK ION
          CASE(4)
             IF (LSPTMPL) THEN
+!$OMP ATOMIC
                SPTMPL(IPLS,MSURF)=SPTMPL(IPLS,MSURF)+WGH
-               IF (MSURFG.GT.0)
-     .              SPTMPL(IPLS,MSURFG)=SPTMPL(IPLS,MSURFG)+WGH
+               IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
+                  SPTMPL(IPLS,MSURFG)=SPTMPL(IPLS,MSURFG)+WGH
+               ENDIF
                LMETSPW(NSPAMI+IPLS) = .TRUE.
             END IF
 !     OUTGOING PARTICLE IS OF UNKNOWN TYPE
@@ -259,41 +325,56 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 ! OUTGOING PARTICLE IS PHOTON
          CASE(0)
             IF (LSPTIPHT) THEN
+!$OMP ATOMIC
                SPTIPHT(IPHOT,MSURF)=SPTIPHT(IPHOT,MSURF)+WGH
-               IF (MSURFG.GT.0)
-     .              SPTIPHT(IPHOT,MSURFG)=SPTIPHT(IPHOT,MSURFG)+WGH
+               IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
+                  SPTIPHT(IPHOT,MSURFG)=SPTIPHT(IPHOT,MSURFG)+WGH
+               ENDIF
                LMETSPW(IPHOT) = .TRUE.
             END IF
 ! OUTGOING PARTICLE IS ATOM
          CASE(1)
             IF (LSPTIAT) THEN
+!$OMP ATOMIC
                SPTIAT(IATM,MSURF)=SPTIAT(IATM,MSURF)+WGH
-               IF (MSURFG.GT.0)
-     .              SPTIAT(IATM,MSURFG)=SPTIAT(IATM,MSURFG)+WGH
+               IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
+                  SPTIAT(IATM,MSURFG)=SPTIAT(IATM,MSURFG)+WGH
+               ENDIF
                LMETSPW(NSPH+IATM) = .TRUE.
             END IF
 !     OUTGOING PARTICLE IS MOLECULE
          CASE(2)
             IF (LSPTIML) THEN
+!$OMP ATOMIC
                SPTIML(IMOL,MSURF)=SPTIML(IMOL,MSURF)+WGH
-               IF (MSURFG.GT.0)
-     .              SPTIML(IMOL,MSURFG)=SPTIML(IMOL,MSURFG)+WGH
+               IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
+                  SPTIML(IMOL,MSURFG)=SPTIML(IMOL,MSURFG)+WGH
+               ENDIF
                LMETSPW(NSPA+IMOL) = .TRUE.
             END IF
 !     OUTGOING PARTICLE IS TEST ION
          CASE(3)
             IF (LSPTIIO) THEN
+!$OMP ATOMIC
                SPTIIO(IION,MSURF)=SPTIIO(IION,MSURF)+WGH
-               IF (MSURFG.GT.0)
-     .              SPTIIO(IION,MSURFG)=SPTIIO(IION,MSURFG)+WGH
+               IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
+                  SPTIIO(IION,MSURFG)=SPTIIO(IION,MSURFG)+WGH
+               ENDIF
                LMETSPW(NSPAM+IION) = .TRUE.
             END IF
 !     OUTGOING PARTICLE IS BULK ION
          CASE(4)
             IF (LSPTIPL) THEN
+!$OMP ATOMIC
                SPTIPL(IPLS,MSURF)=SPTIPL(IPLS,MSURF)+WGH
-               IF (MSURFG.GT.0)
-     .              SPTIPL(IPLS,MSURFG)=SPTIPL(IPLS,MSURFG)+WGH
+               IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
+                  SPTIPL(IPLS,MSURFG)=SPTIPL(IPLS,MSURFG)+WGH
+               ENDIF
                LMETSPW(NSPAMI+IPLS) = .TRUE.
             END IF
 !     OUTGOING PARTICLE IS OF UNKNOWN TYPE
@@ -312,41 +393,56 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 ! OUTGOING PARTICLE IS PHOTON
          CASE(0)
             IF (LSPTPPHT) THEN
+!$OMP ATOMIC
                SPTPPHT(IPHOT,MSURF)=SPTPPHT(IPHOT,MSURF)+WGH
-               IF (MSURFG.GT.0)
-     .              SPTPPHT(IPHOT,MSURFG)=SPTPPHT(IPHOT,MSURFG)+WGH
+               IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
+                  SPTPPHT(IPHOT,MSURFG)=SPTPPHT(IPHOT,MSURFG)+WGH
+               ENDIF
                LMETSPW(IPHOT) = .TRUE.
             END IF
 ! OUTGOING PARTICLE IS ATOM
          CASE(1)
             IF (LSPTPAT) THEN
+!$OMP ATOMIC
                SPTPAT(IATM,MSURF)=SPTPAT(IATM,MSURF)+WGH
-               IF (MSURFG.GT.0)
-     .              SPTPAT(IATM,MSURFG)=SPTPAT(IATM,MSURFG)+WGH
+               IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
+                  SPTPAT(IATM,MSURFG)=SPTPAT(IATM,MSURFG)+WGH
+               ENDIF
                LMETSPW(NSPH+IATM) = .TRUE.
             END IF
 !     OUTGOING PARTICLE IS MOLECULE
          CASE(2)
             IF (LSPTPML) THEN
+!$OMP ATOMIC
                SPTPML(IMOL,MSURF)=SPTPML(IMOL,MSURF)+WGH
-               IF (MSURFG.GT.0)
-     .              SPTPML(IMOL,MSURFG)=SPTPML(IMOL,MSURFG)+WGH
+               IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
+                  SPTPML(IMOL,MSURFG)=SPTPML(IMOL,MSURFG)+WGH
+               ENDIF
                LMETSPW(NSPA+IMOL) = .TRUE.
             END IF
 !     OUTGOING PARTICLE IS TEST ION
          CASE(3)
             IF (LSPTPIO) THEN
+!$OMP ATOMIC
                SPTPIO(IION,MSURF)=SPTPIO(IION,MSURF)+WGH
-               IF (MSURFG.GT.0)
-     .              SPTPIO(IION,MSURFG)=SPTPIO(IION,MSURFG)+WGH
+               IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
+                  SPTPIO(IION,MSURFG)=SPTPIO(IION,MSURFG)+WGH
+               ENDIF
                LMETSPW(NSPAM+IION) = .TRUE.
             END IF
 !     OUTGOING PARTICLE IS BULK ION
          CASE(4)
             IF (LSPTPPL) THEN
+!$OMP ATOMIC
                SPTPPL(IPLS,MSURF)=SPTPPL(IPLS,MSURF)+WGH
-               IF (MSURFG.GT.0)
-     .              SPTPPL(IPLS,MSURFG)=SPTPPL(IPLS,MSURFG)+WGH
+               IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
+                  SPTPPL(IPLS,MSURFG)=SPTPPL(IPLS,MSURFG)+WGH
+               ENDIF
                LMETSPW(NSPAMI+IPLS) = .TRUE.
             END IF
 !     OUTGOING PARTICLE IS OF UNKNOWN TYPE

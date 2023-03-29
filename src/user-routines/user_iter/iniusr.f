@@ -1,10 +1,13 @@
 
-      SUBROUTINE EIRENE_iniUSR
+      SUBROUTINE EIRENE_INIUSR
 csw 22jul2011 modifications of input from b2.neutrals.parameters
 csw already read in into extrab25 module
+cpb 08sep2022 set INTLOPTS for plasma background
       use eirmod_precision
       use eirmod_parmmod
       use eirmod_clgin
+      use eirmod_cinit
+      use eirmod_comusr, only: intlopts
       use eirmod_extrab25
       IMPLICIT NONE
       integer :: k,i,l,j
@@ -33,6 +36,7 @@ csw already read in into extrab25 module
           end if
           if(bsps_mtri(k).gt.0.) then
             znml(l)=bsps_mtri(k)
+            xmlim(l)=znml(l)
           end if
           if(abs(bsps_tmpr(k)).le.1.d10) then
             ewall(l)=bsps_tmpr(k)
@@ -55,5 +59,12 @@ csw already read in into extrab25 module
         end do
       end do
 csw
+
+cxpb Add data provided in fort.31 file
+      IF (INDPRO(1).EQ.6.OR.INDPRO(2).EQ.6.OR.INDPRO(3).EQ.6.OR.
+     .    INDPRO(4).EQ.6.OR.INDPRO(5).EQ.6) THEN
+        INTLOPTS(22) = 1
+      END IF
+
       RETURN
-      END
+      END SUBROUTINE EIRENE_INIUSR

@@ -29,18 +29,22 @@ c  eirene_samsf2:  deallocate temporary arrays
       USE EIRMOD_LEARC1, ONLY: EIRENE_LEARC1
       USE EIRMOD_RANF, ONLY: RANF_EIRENE
       USE EIRMOD_SAMUSR, ONLY: EIRENE_SAMUSR_INIT, EIRENE_SAMUSR
+      use eirmod_sheath, only: EIRENE_SHEATH
 
       IMPLICIT NONE
       PRIVATE
 
-      PUBLIC :: EIRENE_SAMSF0, EIRENE_SAMSF1, EIRENE_SAMSF2
+      PUBLIC :: EIRENE_SAMSF0, EIRENE_SAMSF1,
+     .          EIRENE_SAMSF2
 
       REAL(DP), ALLOCATABLE, SAVE ::
      .        ALEFT(:,:,:), BRGHT(:,:,:), XI(:,:,:), XE(:,:,:)
-      REAL(DP), SAVE :: FF, VX,VY,VZ,XC,YC,ZC
+      REAL(DP), SAVE :: FL, VX,VY,VZ,XC,YC,ZC
       INTEGER, ALLOCATABLE, SAVE :: INDTEC(:,:)
-      INTEGER, SAVE :: ISTEP_SPEZ, ISTEP, IS1, ITET, IPLSTI, IPLSV, ITRI
+      INTEGER, SAVE :: ISTEP_SPEZ, ISTEP, IS1, IPLSTI, IPLSV
 
+!$OMP THREADPRIVATE(FL,VX,VY,VZ,XC,YC,ZC,
+!$OMP& ISTEP_SPEZ,ISTEP,IS1,IPLSTI,IPLSV)
 
       CONTAINS
 
@@ -68,24 +72,41 @@ C  NOV. 15: INDSRF: SURFACE NUMBER FOR SHEATH MODEL, ONLY IN CASE OF STEP FUNCTI
 CDR         now: default is ALWAYS set. INDSRF is e.g. argument in call to fct. SHEATH(...)
 cdr nov.16: istra --> istrai, ispz -->jspz, and a bit more info on diagnostic printout
 cdr dec.17: cleanup, comments
+cdr may 20: Default step function: projection to flux tube in levgeo=4 (non-orthodonal
+cdr         grids) was turned off at some point in time. This must be unphysical.
+cdr jun.22: step function species range was the IPLS range, for the
+cdr         default plasma recycling step functions set here.
+cdr         This may (and did) cause
+cdr         wrong physics and even code crashes when used with atm, mol or test ion
+cdr         sources with step function distributions, e.g. gas puffs.
+c   sep 22: Addressed the issue above for step functions related to atoms and molecules
 C
       SUBROUTINE EIRENE_SAMSF0
 
 C  INITIALIZE DATA FOR SURFACE SAMPLING FOR STRATUM NO. ISTRAI
 C
       IMPLICIT NONE
-      REAL(DP):: FF, TORL(NSTEP,NGITT), FL, EIRENE_STEP, GAMMA, CUR, 
-     .           VX,VY,VZ,XC,YC,ZC, RANDIF,
-     .           DELR, TESH, CTETHA, CS, EIRENE_STEP0
+
+cym variable defined in the module removed from the list
+      REAL(DP) :: TORL(NSTEP,NGITT), FL, EIRENE_STEP, GAMMA, CUR,
+     .            RANDIF,
+     .            DELR, TESH, CTHETA, DELRR, CS, EIRENE_STEP0,
+     .            V_MEAN, ZZ
+cym end
       REAL(DP):: FLX(NPLS),EKFLX(NPLS),ESHFLX(NPLS),
-     .           DISH(NPLS),VPSH(NPLS)
+     .           DISH(NPLS),VPSH(NPLS),ZISH(NPLS)
+      INTEGER :: ISPZD(NPLS), ISP, ISPZ
       INTEGER :: ISTRAI, IERROR, ISRFS, ISOR, ISORFL, INDSRF, ISTR, ISR, 
-     .           NL3J, NL2J, NL1J, IP, ISTS, IT, KAN, 
-     .           KEN, K, NBIN, NSMX, IPL, NANZ, IPLSD(NPLS), IS, 
+     .           NL3J, NL2J, NL1J, IP, ISTS, IT, KAN, JPLS, ITET,
+     .           KEN, K, NBIN, NSMX, IPL, NANZ, IS, ITRI, 
      .           ISGRD1, IS2, ISGRD2,
-     .           ISGRD3, INS
+     .           ISGRD3, INS, JATM, JMOL, JSPZ,
+     .           MSTEP(NSTEP),MMSTEP(NSTEP)
       INTEGER, EXTERNAL :: EIRENE_IDEZ
-      REAL(DP), EXTERNAL :: EIRENE_SHEATH
+cym      REAL(DP), EXTERNAL :: EIRENE_SHEATH
+
+      MSTEP=0      ! REDUCE DUPLICATED DIAGNOSTIC PRINTOUT FOR STEP FUNCTION ISTEP
+      MMSTEP=ISTUF ! STEP FUNCTIONS ALREADY SET EXTERNALLY
 
       DO ISTRAI=1,NSTRAI
 
@@ -94,11 +115,24 @@ C
       IERROR=0
 
       IF (.NOT.ALLOCATED(INDTEC)) THEN
+#ifdef F2003
         ALLOCATE (INDTEC(3*NSRFS,NSTRA), SOURCE = 0)
         ALLOCATE (ALEFT(3,NSRFS,NSTRA), SOURCE = 0._DP)
         ALLOCATE (BRGHT(3,NSRFS,NSTRA), SOURCE = 0._DP)
         ALLOCATE (XI(3,NSRFS,NSTRA), SOURCE = 0._DP)
         ALLOCATE (XE(3,NSRFS,NSTRA), SOURCE = 0._DP)
+#else
+        ALLOCATE (INDTEC(3*NSRFS,NSTRA))
+        ALLOCATE (ALEFT(3,NSRFS,NSTRA))
+        ALLOCATE (BRGHT(3,NSRFS,NSTRA))
+        ALLOCATE (XI(3,NSRFS,NSTRA))
+        ALLOCATE (XE(3,NSRFS,NSTRA))
+        INDTEC = 0
+        ALEFT = 0._DP
+        BRGHT = 0._DP
+        XI = 0._DP
+        XE = 0._DP
+#endif
       END IF
 C
 C  LOOP OVER SOURCE SURFACES: ISRFS
@@ -107,9 +141,9 @@ C
 C
 c  sampling distribution, for all three coordinates (and time):
 c                         4 digits: TZYX
-        ISOR=INT(SORLIM(ISRFS,ISTRAI))
+        ISOR=NINT(SORLIM(ISRFS,ISTRAI))
 c  initial birth point flags (ifpath,....) for particle tracing
-        ISORFL=EIRENE_IDEZ(INT(SORIFL(ISRFS,ISTRAI)),4,4)
+        ISORFL=EIRENE_IDEZ(NINT(SORIFL(ISRFS,ISTRAI)),4,4)
 c  number of surface for current surface source segment
         INDSRF=INSOR(ISRFS,ISTRAI)
         IF (INDSRF < 0) INDSRF=NLIM+ABS(INDSRF)
@@ -132,7 +166,7 @@ C
 c  source is on radial (x-) grid surface x= const. r= const, etc...
 c  the poloidal range of source region should be on ingrd..(...,2),
 c  not on ingrd..(...,1)
-c  sample 2nd and 3rd coordinate, evalute 1st coordinate
+c  sample 2nd and 3rd coordinate, evaluate 1st coordinate
           IF (INGRDA(ISRFS,ISTRAI,1).NE.INGRDE(ISRFS,ISTRAI,1)) THEN
             WRITE (iunout,*) 'WARNING FROM SAMSF0, ISTRAI= ',ISTRAI
             WRITE (iunout,*) 'NEW INPUT FOR INGRDA,INGRDE....'
@@ -160,14 +194,15 @@ C  IS A STEP FUNCTION REQUESTED? (indtec=4 for one of the coordinates?)
 C
         ISTEP=0
         ISTEP_SPEZ=0
+
         IF (INDTEC(NL1J,ISTRAI).NE.4.AND.INDTEC(NL2J,ISTRAI).NE.4.AND.
      .      INDTEC(NL3J,ISTRAI).NE.4) GOTO 7
 C
 C  YES. CHECK INPUT DATA AND STORAGE
 C
-C  ISTEP      IS 1ST DIGIT "A" OF REAL FLAG SORIND (="CBA.0")
+C  ISTEP      IS 1ST AND 2ND DIGIT "BA" OF REAL FLAG SORIND (="CBA.0")
 C  ISTEP_SPEZ IS 3RD DIGIT "C" OF REAL FLAG SORIND
-        ISTEP=MOD(INT(REAL(SORIND(ISRFS,ISTRAI),KIND(1.D0))),100)
+        ISTEP=MOD(NINT(REAL(SORIND(ISRFS,ISTRAI),DP)),100)
         ISTEP_SPEZ=INT(SORIND(ISRFS,ISTRAI)/100)
 C
         IF (ISTEP.EQ.0) THEN
@@ -185,6 +220,12 @@ C  HAS THIS STEP FUNCTION NO. ISTEP STILL TO BE INITIALIZED?
 C
         IF (ISTUF(ISTEP).EQ.0) THEN
 C  YES
+          IF (TRCSOU) THEN
+            CALL EIRENE_LEER(1)
+            WRITE (IUNOUT,*) 'FOR STRATUM ISTRA: ',ISTRAI
+            WRITE (iunout,*) 'SET DEFAULT STEP FUNCTION ISTEP: ',ISTEP
+          ENDIF
+
 C
 C  INITIALIZE STEP FUNCTION NO. ISTEP BY DEFAULT MODEL:
 C  DEFAULT MODEL FOR ISTEP: NPLSI STEP FUNCTIONS FROM BULK ION FLUXES
@@ -193,12 +234,13 @@ C  STEP FUNCTIONS FOR SAMPLING 1ST COORDINATE (X) FROM "RADIAL" DISTRIBUTIONS ON
 C       source surfaces must hence be either x-y or x-z surface
 c       IN CASE OF UNSTRUCTURED GRIDS: LEVGEO 4 AND LEVGEO 5,
 C       ALL NON-DEFAULT SURFACES ARE REGARDED as x-s surface, t=const
+C STEP FUNCTIONS IN ALL OTHER CASES MUST BE SET ELSEWHERE (E.G. IN USER OR INTERFACE ROUTINES)
 C
           IF (INDTEC(NL1J,ISTRAI).EQ.4) THEN
 C
-C  USE X-OR RADIAL DISTRIBUTION OF ION FLUX 0.5*NI(R,Y0,Z0)*CS(R,Y0,Z0)*(DELTA-Z
-C  WITH: CS = COMMON ION ACOUSTIC SPEED
-C  TAKE RADIAL (X) PROFILE OF PLASMA DATA ON A POLOIDAL (Y) OR TOROIDAL (Z) SURFACE:
+C  USE X-OR RADIAL DISTRIBUTION OF ION FLUX 0.5*NI(R,Y0,Z0)*CS(R,Y0,Z0)*(DELTA-Z)
+C  WITH: CS = COMMON ION ACOUSTIC SPEED, PARALLEL TO B FIELD.
+C  TAKE RADIAL (X) PROFILE OF PLASMA DATA ON A POLOIDAL (Y = CONST) SURFACE:
 C  AT SOME GIVEN POLOIDAL (Y) POSITION IP
 C  AT SOME GIVEN TOROIDAL (Z) POSITION IT
 C  SCALE FLUX DENSITY WITH A TOROIDAL LENGTH, I.E.
@@ -259,6 +301,14 @@ C
               ENDDO
               NBIN=NR1ST
             case (2:3)
+cdr May 2020 to be done:
+cdr Possible conflict here:  levgeo=2, nlcrc, then: XPOL,YPOL and BGLP may not exist.
+cdr The y-surface is: pol. angle=const.
+cdr Furthermore: we assume here that the "radial surface" is normal to the
+cdr plasma flow direction, i.e. plasma flows in y-z-plane only.
+cdr Therefore here no projection of target surface to flux tube is done.
+cdr For inclinded targets (e.g. levgeo=4) this can be different.
+cdr Generally: what about pitch ? Also needed?
               KAN=1
               KEN=NR1STM
               DO K=1,NR1STM
@@ -268,11 +318,21 @@ C
                 IPSTEP(ISTEP,K)=IP
                 IF (ISORFL == 1) IPSTEP(ISTEP,K)=IP-1
                 ITSTEP(ISTEP,K)=IT
-                RRSTEP(ISTEP,K)=BGLP(K,IP)
+cdr may 2020
+                if (levgeo.eq.2 .and. nlcrc) then
+                  RRSTEP(ISTEP,K)=RSURF(K)
+                else
+                  RRSTEP(ISTEP,K)=BGLP(K,IP)
+                endif
                 IF (NLTRZ) THEN
                   TORL(ISTEP,K)=ZDF
                 ELSEIF (NLTRA.OR.NLTRT) THEN
-                  TORL(ISTEP,K)=(XPOL(K+1,IP)+XPOL(K,IP))/2._DP
+cdr may 2020
+                  IF (levgeo.eq.2 .and. NLCRC) THEN
+                    TORL(ISTEP,K)=(RSURF(K+1)+RSURF(K))/2._DP
+                  ELSE
+                    TORL(ISTEP,K)=(XPOL(K+1,IP)+XPOL(K,IP))/2._DP
+                  ENDIF
                   TORL(ISTEP,K)=TORL(ISTEP,K)*2._DP*PIA
                 ENDIF
               ENDDO
@@ -294,15 +354,23 @@ C  TRIANGULAR GRID. RRSURF IS INTEGRATED ALONG A SET OF TRIANGLE SIDES.
                     ITSTEP(ISTEP,K)=IT
                     IASTEP(ISTEP,K)=0
                     IBSTEP(ISTEP,K)=1
-!pb  projection to b-field switched off!!!
+!pb  projection to B field switched off!!!
 !pb  to allow for step functions on surfaces perpendicular to magnetic field
-!pb                    BABS=SQRT(BXIN(ITRI)**2+BYIN(ITRI)**2+BZIN(ITRI)**2)
-!pb                    CTETHA=ABS((PTRIX(IS,ITRI)*BXIN(ITRI) +
+cdr  ??
+!pb                 BABS=SQRT(BXIN(ITRI)**2+BYIN(ITRI)**2+BZIN(ITRI)**2)
+!pb                 CTHETA=ABS((PTRIX(IS,ITRI)*BXIN(ITRI) +
 !pb     .                          PTRIY(IS,ITRI)*BYIN(ITRI))/BABS)
-                    CTETHA = 1._DP
-                    RRSTEP(ISTEP,K+1)=RRSTEP(ISTEP,K) + CTETHA*SQRT(
+                    CTHETA = 1._DP
+cdr  May 2020:  I do not think that is is correct.
+cdr  theta is the angle between parallel (to B) plasma flux and the surface normal.
+cdr  in levgeo=4 this angle can be nonzero, i.e. cos(theta) ne.1., even
+cdr  ctheta=0 (on surfaces parallel to B) is possible.
+
+                    DELRR=SQRT(
      .              (XTRIAN(NECKE(IS,ITRI))-XTRIAN(NECKE(IS1,ITRI)))**2+
      .              (YTRIAN(NECKE(IS,ITRI))-YTRIAN(NECKE(IS1,ITRI)))**2)
+
+                    RRSTEP(ISTEP,K+1)=RRSTEP(ISTEP,K) + CTHETA*DELRR
                     IF (NLTRZ) THEN
                       TORL(ISTEP,K)=ZDF
                     ELSEIF (NLTRA.OR.NLTRT) THEN
@@ -320,6 +388,7 @@ C  TRIANGULAR GRID. RRSURF IS INTEGRATED ALONG A SET OF TRIANGLE SIDES.
             case (5)
 C  GRID OF TETRAHEDRA. RRSTEP IS A CUMULATED SURFACE AREA, INTEGRATING
 C                       OVER A SET OF TETRAHEDRON SIDES (=TRIANGLES)
+cdr  i.e. no DELTA_Z factors here.
               K=0
               RRSTEP(ISTEP,1) = 0._DP
               INDSRF=INSOR(ISRFS,ISTRAI)
@@ -327,6 +396,8 @@ C                       OVER A SET OF TETRAHEDRON SIDES (=TRIANGLES)
               DO ITET=1,NTET
                 DO IS=1,4
                   IF (INMTIT(IS,ITET) == INDSRF) THEN
+cdr set irstep, ipstep and cumulated variable RRSTEP, purely geometrical.
+cdr no projection to flux tube cross-section is done.
                     CALL EIRENE_TET_STEP (ISTEP,ITET,IS,K)
                   END IF
                 END DO
@@ -345,7 +416,11 @@ C  toroidal length: already included in RRSTEP, which is a surface area
               CALL EIRENE_EXIT_OWN(1)
             end select
 C
-C  NOW SET THE FLUX DISTRIBUTION FLSTEP, AS WELL AS SURFACE TE, TI, V-PLASMA, NI
+C  NOW SET THE FLUX DISTRIBUTION FLSTEP, AS WELL AS TE, TI, V-PLASMA, NI, at surface.
+cdr also set sheath potential SHSTEP, and energy flux ELSTEP.
+cdr Set these STEP functions in default species index range ispz=1,npls.
+cdr This made sense only for strata with NLPLS=.TRUE
+cdr July 22: extend code towards nlatm, nlmol, etc. sources
 C
 
             DO K=KAN,KEN
@@ -360,8 +435,12 @@ C
      .            ((IPSTEP(ISTEP,K)-1)+(ITSTEP(ISTEP,K)-1)*NP2T3)*
      .             NR1P2+NBLCKA
               end select
+
               TESTEP(ISTEP,K)=TEIN(NCELL)
-              DO 2 IPLS=1,NPLSI
+              IF (NLPLS(ISTRAI)) THEN
+cdr  the code below sets bulk ion fluxes in the full species range
+               DO 2 JPLS=1,NPLSI
+                IPLS=JPLS
                 IPLSTI = MPLSTI(IPLS)
                 IPLSV = MPLSV(IPLS)
                 TISTEP(IPLSTI,ISTEP,K)=TIIN(IPLSTI,NCELL)
@@ -383,19 +462,82 @@ c    set drift velocities at cell center
                   VZSTEP(IPLSV,ISTEP,K)=VZIN(IPLSV,NCELL)
                 END IF
                 DISTEP(IPLS,ISTEP,K)=DIIN(IPLS,NCELL)
+                IF (ZIIN(IPLS,NCELL).NE.ZVAC) THEN
+                  ZISTEP(IPLS,ISTEP,K)=ZIIN(IPLS,NCELL)
+                ELSE
+                  ZISTEP(IPLS,ISTEP,K)=DBLE(NCHRGP(IPLS))
+                END IF
+c  isothermal ion acoustic speed
                 CS=CVEL2A*SQRT((TIIN(IPLSTI,NCELL)+TEIN(NCELL))/
      .             RMASSP(IPLS))
-                FF=ELCHA*CS
-                FLSTEP(IPLS,ISTEP,K)=FF*DIIN(IPLS,NCELL)*TORL(ISTEP,K)
+c  default: sonic flux density FL = 1/2 n_u cs = n_t cs  (AMPS)
+                FLSTEP(IPLS,ISTEP,K)=CS*DIIN(IPLS,NCELL)*
+     .                               TORL(ISTEP,K)*ELCHA
                 IF (INDSRF == 0) THEN
                    SHSTEP(ISTEP,K) = 0._DP
                 ELSE
                    SHSTEP(ISTEP,K)=FSHEAT(INDSRF)
                 END IF
+c  drifting maxwellian at sheath entrance: (not including sheath acceleration)
+c  drift speed = isothermal ion sound speed
                 ELSTEP(IPLS,ISTEP,K)=(3._DP*TISTEP(IPLSTI,ISTEP,K) +
      .                               0.5_DP*TESTEP(ISTEP,K)) *
      .                               FLSTEP(IPLS,ISTEP,K)
     2         CONTINUE
+
+              ELSEIF (NLMOL(ISTRAI)) THEN
+cdr  the code below sets molecular fluxes in the full species range 1:nmol
+               DO 3 JMOL=1,NMOLI
+                IMOL=JMOL
+
+                TISTEP(IMOL,ISTEP,K)=0.026 ! room temperature kT, eV
+                VXSTEP(IMOL,ISTEP,K)=0.0
+                VYSTEP(IMOL,ISTEP,K)=0.0
+                VZSTEP(IMOL,ISTEP,K)=0.0
+
+                DISTEP(IMOL,ISTEP,K)=1.0  ! uniform density, a.u.
+                ZISTEP(IMOL,ISTEP,K)=0.0
+c  default: thermal flux density FL = 1/4 n v_mean  (AMPS)
+                V_mean=CVEL2A*SQRT(8.0/PIA)*
+     .                 SQRT(TISTEP(IMOL,ISTEP,K)/RMASSM(IMOL))
+                FLSTEP(IMOL,ISTEP,K)=1./4.*V_mean*DISTEP(IMOL,ISTEP,K)*
+     .                                            TORL(ISTEP,K)*ELCHA
+
+                SHSTEP(ISTEP,K)=0.0
+cdr half sided stationary Maxwellian energy flux= 2 T FL
+                ELSTEP(IMOL,ISTEP,K)=2._DP*TISTEP(IMOL,ISTEP,K)*
+     .                                     FLSTEP(IMOL,ISTEP,K)
+    3          CONTINUE
+
+              ELSEIF (NLATM(ISTRAI)) THEN
+cdr  the code below sets atomic fluxes in the full species range 1:natm
+               DO JATM=1,NATMI
+                IATM=JATM
+
+                TISTEP(IATM,ISTEP,K)=0.026 ! room temperature kT, eV
+                VXSTEP(IATM,ISTEP,K)=0.0
+                VYSTEP(IATM,ISTEP,K)=0.0
+                VZSTEP(IATM,ISTEP,K)=0.0
+
+                DISTEP(IATM,ISTEP,K)=1.0  ! uniform density, a.u.
+                ZISTEP(IATM,ISTEP,K)=0.0
+c  default: thermal flux density FL = 1/4 n v_mean  (AMPS)
+                V_mean=CVEL2A*SQRT(8.0/PIA)*
+     .                 SQRT(TISTEP(IATM,ISTEP,K)/RMASSA(IATM))
+                FLSTEP(IATM,ISTEP,K)=1./4.*V_mean*DISTEP(IATM,ISTEP,K)*
+     .                                            TORL(ISTEP,K)*ELCHA
+
+                SHSTEP(ISTEP,K)=0.0
+cdr half sided stationary Maxwellian energy flux= 2 T FL
+                ELSTEP(IATM,ISTEP,K)=2._DP*TISTEP(IATM,ISTEP,K)*
+     .                                     FLSTEP(IATM,ISTEP,K)
+               ENDDO
+              ELSE
+                WRITE (IUNOUT,*)
+     .           'DEFAULT STEP FUNCTION, BUT UNEXPECTED PARTICLE TYPE'
+                CALL EIRENE_EXIT_OWN(1)
+              ENDIF
+
             END DO
 C
 C  LAST INTERVAL BOUNDARY FOR SAMPLING DISTRIBUTION
@@ -408,7 +550,12 @@ C
             case (4:)
 C             RRSTEP(ISTEP,NBIN) ALREADY SET ABOVE
             end select
-            FL=EIRENE_STEP(1,NPLSI,NBIN,ISTEP)
+
+cdr finalize step function preparation:
+            if (nlatm(istrai)) FL=EIRENE_STEP(1,NATMI,NBIN,ISTEP,1)
+            if (nlmol(istrai)) FL=EIRENE_STEP(1,NMOLI,NBIN,ISTEP,2)
+            if (nlion(istrai)) FL=EIRENE_STEP(1,NIONI,NBIN,ISTEP,3)
+            if (nlpls(istrai)) FL=EIRENE_STEP(1,NPLSI,NBIN,ISTEP,4)
 C
 c  NO DEFAULT STEP FUNCTIONS AVAILABLE FOR Y OR Z SURFACE SOURCES
 C
@@ -429,11 +576,23 @@ C
             CALL EIRENE_EXIT_OWN(1)
           ENDIF
 
-        ENDIF
+        ELSEIF (ISTUF(ISTEP).NE.0) THEN
+C  NO, ISTEP IS ALREADY DONE.
+C  TBD: CHECK FOR SAME NLPLS,NLMOL,, ETC... AS IN EARLIER ISTEP SETTING
+          IF (TRCSOU) THEN
+            CALL EIRENE_LEER(1)
+            WRITE (IUNOUT,*) 'FOR STRATUM ISTRA: ',ISTRAI
+            WRITE (iunout,*) 'STEP FUNCTION ISTEP: ',ISTEP
+            WRITE (IUNOUT,*) 'WAS ALREADY SET '
+            CALL EIRENE_LEER(1)
+          ENDIF
+
+        ENDIF  !dr  Now: istuf=0 --> istuf=1
+
 C  DEFAULT INITIALIZATION OF STEP FUNCTION ISTEP IN SAMSRF IS COMPLETE NOW.
 c  ALTERNATIVELY: STEP FUNCTIONS MAY HAVE BEEN DEFINED FROM EXTERNAL MODULES.
 
-C  AVAILABLE SPECIES RANGE: NSPSTI,NSPSTE = 1, NPLSI IS SET
+C  AVAILABLE SPECIES RANGE FOR THIS ISTEP: NSPSTI,NSPSTE = 1, NPLSI IS SET
 C  INDICATOR: ISTUF(ISTEP)=1 IS SET.
 
 C  FUNCTION STEP(ISTEP,...) CAN BE USED FOR PRESENT STRATUM ISTRAI,
@@ -441,69 +600,101 @@ C  BUT ALSO FOR LATER STRATA.
 c
 c  PREPARE SOME STEP FUNCTION DIAGNOSTIC OUTPUT (SAME FOR DEFAULT OR EXTERNAL STEP FUNCTIONS)
 C
-        IF (TRCSOU.AND.ISTEP.GT.0) THEN
+        IF (TRCSOU.AND.ISTEP.GT.0 .AND.
+cdr  printout only once for each step function ISTEP
+cdr  Hidden link: istep and istrai are now not independent.
+cdr  tbd:  make sure that for a given ISTEP
+cdr        the istrai variables: NLPLS, NLMOL, NLATM,...etc. are identical
+     .      (MSTEP(ISTEP).EQ.0 .OR. MMSTEP(ISTEP).EQ.1)) THEN
+          MSTEP(ISTEP)=1
+          MMSTEP(ISTEP)=0
+
           NSMX=NSMAX(ISTEP)
-C  IDENTIFY THOSE BULK SPECIES WITH NONZERO FLUX
+C  IDENTIFY SPECIES WITH NONZERO FLUX
           FLX=0.
           EKFLX=0.
           ESHFLX=0.
-          DO  IPLS=1,NPLSI
-            DO  K=1,NSMX-1
+          DO JSPZ=NSPSTI(ISTEP),NSPSTE(ISTEP)
+            ISPZ=JSPZ
+            DO K=1,NSMX-1
               DELR=RRSTEP(ISTEP,K+1)-RRSTEP(ISTEP,K)
-              FF=FLSTEP(IPLS,ISTEP,K)*DELR
-              FLX(IPLS)=FLX(IPLS)+FF
-              EKFLX(IPLS)=EKFLX(IPLS)+ELSTEP(IPLS,ISTEP,K)*DELR
+              FL=FLSTEP(ISPZ,ISTEP,K)*DELR
+              FLX(ISPZ)=FLX(ISPZ)+FL
+              EKFLX(ISPZ)=EKFLX(ISPZ)+ELSTEP(ISPZ,ISTEP,K)*DELR
 c  sheath factor given on step function shstep along target?
               IF (SHSTEP(ISTEP,K) > 0) THEN
-                ESHFLX(IPLS)=ESHFLX(IPLS)+
-     .               FF*SHSTEP(ISTEP,K)*TESTEP(ISTEP,K)*NCHRGP(IPLS)
-              ELSE
+c  this can happen with either nlpls or nlion:
+                ZZ=0.
+                if (nlpls(istrai)) ZZ=ZISTEP(ISPZ,ISTEP,K)
+                if (nlion(istrai)) ZZ=nchrgi(ispz)
+                ESHFLX(ISPZ)=ESHFLX(ISPZ)+
+     .               FL*SHSTEP(ISTEP,K)*TESTEP(ISTEP,K)*
+     .               ZZ
+              ELSEIF (NLPLS(ISTRAI)) THEN
 c  employ default eirene sheath model.
-c    to be done. plasma flow velocity v..step should first be projected
+c  ISPZ=IPLS now.
+c    To be done. plasma flow velocity v..step should first be projected
 c    towards surface normal.
                 GAMMA=0.
                 CUR=0.
                 TESH=TESTEP(ISTEP,K)
 CDR  THIS NEXT LOOP CAN GO OUT: IT IS NEEDED ONLY ONCE, NOT FOR EACH IPLS.
                 DO IP=1,NPLSI
-                  IPLSV = MPLSV(IPLS)
+                  IPLSV = MPLSV(ISPZ)
                   VPSH(IP)=SQRT(VXSTEP(IPLSV,ISTEP,K)**2
      .                         +VYSTEP(IPLSV,ISTEP,K)**2
      .                         +VZSTEP(IPLSV,ISTEP,K)**2)
                   DISH(IP) = DISTEP(IP,ISTEP,K)
+                  ZISH(IP) = ZISTEP(IP,ISTEP,K)
                 END DO
 CDR
-                ESHFLX(IPLS)=ESHFLX(IPLS)+
-     .             FF*NCHRGP(IPLS)*EIRENE_SHEATH(TESH,DISH,VPSH,
-     .                              NCHRGP,GAMMA,CUR,NPLSI,INDSRF)
-              END IF
-            ENDDO  ! IPLS
+                ESHFLX(ISPZ)=ESHFLX(ISPZ)+
+     .             FL*ZISH(ISPZ)*EIRENE_SHEATH(TESH,DISH,VPSH,
+     .                              ZISH,GAMMA,CUR,NPLSI,INDSRF)
+              END IF  ! NO SHEATH
+            ENDDO  ! ISPZ
           ENDDO
+
           NANZ=COUNT(FLX(:).GT.0.D0)
-          IPLSD(1:NANZ)=PACK((/(IPL,IPL=1,NPLSI)/),FLX(1:NPLSI).GT.0.D0)
+          ISPZD(1:NANZ)=PACK((/(ISP,ISP=NSPSTI(ISTEP),NSPSTE(ISTEP))/),
+     .                  FLX(NSPSTI(ISTEP):NSPSTE(ISTEP)).GT.0.D0)
 C
           WRITE (iunout,*) 'FUNCTION STEP NO. ',ISTEP,': '
           WRITE (IUNOUT,*) 'FLUXES IN AMP/CM**2 '
-          WRITE (iunout,'(1X,A4,A12,5(2X,A7,I2,A1))')
-     .    '   K','  RRSTEP    ',('FLSTEP(',IPLSD(IPL),')',
-     .                            IPL=1,NANZ)
+          IF (NANZ.LE.5) THEN
+            WRITE (iunout,
+     .       '(1X,A4,A12,5(2X,A7,I2,A1))')
+     .       '   K','  RRSTEP    ',('FLSTEP(',ISPZD(ISP),')',
+     .                              ISP=1,NANZ)
+          ELSE
+            WRITE (iunout,
+     .       '(1X,A4,A12,5(2X,A7,I2,A1)/(17x,5(2X,A7,I2,A1)))')
+     .       '   K','  RRSTEP    ',('FLSTEP(',ISPZD(ISP),')',
+     .                               ISP=1,NANZ)
+          END IF
           DO 4 K=1,NSMX-1
-            WRITE (iunout,'(1X,I4,1P,6E12.4/(5x,1P,6E12.4))')
+            IF (NANZ.LE.5) THEN
+              WRITE (iunout,'(1X,I4,1P,6E12.4/(5x,1P,6E12.4))')
      .               K,RRSTEP(ISTEP,K),
-     .               (FLSTEP(IPLSD(IPL),ISTEP,K),IPL=1,NANZ)
+     .               (FLSTEP(ISPZD(ISP),ISTEP,K),ISP=1,NANZ)
+            ELSE
+              WRITE (iunout,'(1X,I4,1P,6E12.4/(17x,1P,5E12.4))')
+     .               K,RRSTEP(ISTEP,K),
+     .               (FLSTEP(ISPZD(IPL),ISTEP,K),ISP=1,NANZ)
+            END IF
     4     CONTINUE
 
           WRITE (iunout,'(1X,I4,1P,2E12.4)') NSMX,RRSTEP(ISTEP,NSMX)
           CALL EIRENE_LEER(1)
 
           WRITE (iunout,*) 'FLUXES: PART., KINET., SHEATH; INTEGRATED:'
-          DO 5 IPL=1,NANZ
-            CALL EIRENE_MASJ1R('IP,FLUX      [A]',
-     .                          IPLSD(IPL),FLX(IPLSD(IPL)))
-            CALL EIRENE_MASJ1R('IP,EKIN-FLUX [W]',
-     .                          IPLSD(IPL),EKFLX(IPLSD(IPL)))
-            CALL EIRENE_MASJ1R('IP,ESH-FLUX  [W]',
-     .                          IPLSD(IPL),ESHFLX(IPLSD(IPL)))
+          DO 5 ISP=1,NANZ
+            CALL EIRENE_MASJ2R('ISTEP,ISPZ,FLUX      [A]',
+     .                          ISTEP,ISPZD(ISP),FLX(ISPZD(ISP)))
+            CALL EIRENE_MASJ2R('ISTEP,ISPZ,EKIN-FLUX [W]',
+     .                          ISTEP,ISPZD(ISP),EKFLX(ISPZD(ISP)))
+            CALL EIRENE_MASJ2R('ISTEP,ISPZ,ESH-FLUX  [W]',
+     .                          ISTEP,ISPZD(ISP),ESHFLX(ISPZD(ISP)))
     5     CONTINUE
           CALL EIRENE_LEER(2)
         ENDIF
@@ -515,8 +706,9 @@ C
 C
 C  DEFINE LEFT AND RIGHT BOUNDARY OF SAMPLING INTERVALS FOR STRATUM ISTRAI.
 C
-C  FLAG ISTEP INDICATES: IS STEP FUNCTION TO BE USED FOR THIS ?
-        ISTEP=MOD(INT(REAL(SORIND(ISRFS,ISTRAI),KIND(1.D0))),100)
+C  FLAG ISTEP INDICATES: STEP FUNCTION ISTEP IS TO BE USED FOR THIS STRATUM
+cdr  next 2 lines: same as already done above.
+        ISTEP=MOD(NINT(REAL(SORIND(ISRFS,ISTRAI),DP)),100)
         ISTEP_SPEZ=INT(SORIND(ISRFS,ISTRAI)/100)
 C
         IF (INDIM(ISRFS,ISTRAI).EQ.1) THEN
@@ -664,6 +856,7 @@ C  IN STRATUM ISTRAI, FOR THE SELECTED (RANGE OF) SPECIES.
 C
         ISPZ=0
         IF (NSPEZ(ISTRAI).GT.0) ISPZ=NSPEZ(ISTRAI)
+
         IF (ISTEP_SPEZ.GT.0) ISPZ=ISTEP_SPEZ
 C
         IF (ISTEP.GT.0) THEN
@@ -676,18 +869,18 @@ C
             XE(1,ISRFS,ISTRAI)=
      .           EIRENE_STEP0(ISPZ,ISTEP,BRGHT(1,ISRFS,ISTRAI))
             IF (TRCSOU) THEN
-              WRITE (IUNOUT,*) 'SAMPLING INTERVAL ON STEP FUNCTION '
-              CALL EIRENE_MASR2('ALEFT, BRGHT    ',
+              WRITE (IUNOUT,*) 'ISPZ, STEP FUNCTION SAMPLING INTERVAL'
+              CALL EIRENE_MASJR2('ISPZ, ALEFT, BRGHT      ', ISPZ,
      .                     ALEFT(1,ISRFS,ISTRAI),BRGHT(1,ISRFS,ISTRAI))
               WRITE (IUNOUT,*) 'SUB-RANGE FOR UNIFORM RANDOM NUMBERS '
               CALL EIRENE_MASR2('XI,XE           ',
      .                       XI(1,ISRFS,ISTRAI),XE(1,ISRFS,ISTRAI))
               RANDIF=XE(1,ISRFS,ISTRAI)-XI(1,ISRFS,ISTRAI)
               IF (ABS(RANDIF-1.0).GE.1.0D-4) THEN
-                DO IPL=1,NANZ
+                DO ISP=1,NANZ
                   WRITE (IUNOUT,*)
      .              'TRUNCATED FLUX ONTO SOURCE SURFACE [A] ',
-     .                   IPLSD(IPL),RANDIF*FLX(IPLSD(IPL))
+     .                   ISPZD(ISP),RANDIF*FLX(ISPZD(ISP))
                 END DO
               ENDIF
             END IF
@@ -697,16 +890,16 @@ C
             XE(2,ISRFS,ISTRAI)=
      .           EIRENE_STEP0(ISPZ,ISTEP,BRGHT(2,ISRFS,ISTRAI))
             IF (TRCSOU) THEN
-              WRITE (IUNOUT,*) 'SAMPLING INTERVAL ON STEP FUNCTION '
-              CALL EIRENE_MASR2('ALEFT, BRGHT    ',
+              WRITE (IUNOUT,*) 'ISPZ, STEP FUNCTION SAMPLING INTERVAL'
+              CALL EIRENE_MASJR2('ISPZ, ALEFT, BRGHT      ', ISPZ,
      .                     ALEFT(2,ISRFS,ISTRAI),BRGHT(2,ISRFS,ISTRAI))
               WRITE (IUNOUT,*) 'SUB-RANGE FOR UNIFORM RANDOM NUMBERS '
               CALL EIRENE_MASR2('XI,XE           ',
      .                       XI(2,ISRFS,ISTRAI),XE(2,ISRFS,ISTRAI))
-              DO IPL=1,NANZ
-                WRITE (IUNOUT,*) 'FLUX ONTO SOURCE SURFACE [A] ',IPL,
+              DO ISP=1,NANZ
+                WRITE (IUNOUT,*) 'FLUX ONTO SOURCE SURFACE [A] ',ISP,
      .                (XE(2,ISRFS,ISTRAI)-XI(2,ISRFS,ISTRAI))*
-     .                 FLX(IPLSD(IPL))
+     .                 FLX(ISPZD(ISP))
               END DO
             END IF
           ELSEIF (INDTEC(NL3J,ISTRAI).EQ.4) THEN
@@ -715,16 +908,16 @@ C
             XE(3,ISRFS,ISTRAI)=
      .           EIRENE_STEP0(ISPZ,ISTEP,BRGHT(3,ISRFS,ISTRAI))
             IF (TRCSOU) THEN
-              WRITE (IUNOUT,*) 'SAMPLING INTERVAL ON STEP FUNCTION '
-              CALL EIRENE_MASR2('ALEFT, BRGHT    ',
+              WRITE (IUNOUT,*) 'ISPZ, STEP FUNCTION SAMPLING INTERVAL'
+              CALL EIRENE_MASJR2('ISPZ, ALEFT, BRGHT      ', ISPZ,
      .                     ALEFT(3,ISRFS,ISTRAI),BRGHT(3,ISRFS,ISTRAI))
               WRITE (IUNOUT,*) 'SUB-RANGE FOR UNIFORM RANDOM NUMBERS '
               CALL EIRENE_MASR2('XI,XE           ',
      .                       XI(3,ISRFS,ISTRAI),XE(3,ISRFS,ISTRAI))
-              DO IPL=1,NANZ
-                WRITE (IUNOUT,*) 'FLUX ONTO SOURCE SURFACE [A] ',IPL,
+              DO ISP=1,NANZ
+                WRITE (IUNOUT,*) 'FLUX ONTO SOURCE SURFACE [A] ',ISP,
      .                (XE(3,ISRFS,ISTRAI)-XI(3,ISRFS,ISTRAI))*
-     .                 FLX(IPLSD(IPL))
+     .                 FLX(ISPZD(ISP))
               END DO
             END IF
           ENDIF
@@ -746,10 +939,11 @@ C
       END SUBROUTINE EIRENE_SAMSF0
 C
       SUBROUTINE EIRENE_SAMSF1
-     .      (NLSF,TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ)
+     .      (NLSF,TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,ZIWL,WEISPZ)
       IMPLICIT NONE
       REAL(DP), INTENT(OUT) :: TEWL, SHWL, VXWL(*), VYWL(*), VZWL(*),
-     .                         TIWL(*), DIWL(*), EFWL(*), WEISPZ(*)
+     .                         TIWL(*), DIWL(*), EFWL(*), WEISPZ(*),
+     .                         ZIWL(*)
       INTEGER, INTENT(IN) :: NLSF
       REAL(DP) :: ZZ(3)
       REAL(DP) :: X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3, ELLZZ1, EP1ZZ1,
@@ -759,11 +953,11 @@ C
      .          RNF, ZH, DELTA, ZM, XLAMDA,
      .          EIRENE_STEP1
       INTEGER :: ISID, IDUM, NDUM, EIRENE_LEARC2, NT,
-     .           IEN, IAN,
+     .           IEN, IAN, ITRI, ITET,
      .           EIRENE_LEARCA, 
      .           ICOUNT, IPLG, I, ILTR, IAUSR,
      .           IBUSR, IRUSR, IPUSR, ITUSR, IK, J, JCALC, IINDEX,
-     .           ICHWGHT, JSPZ
+     .           JPLS, JSPZ
       LOGICAL :: LOGTST
       INTEGER :: ITSIDE(3,4)
       DATA ITSIDE /1,2,3,
@@ -780,7 +974,6 @@ C   NLSF=SURFACE INDEX IN (NSRFS) SOURCE ARRAYS
 C
       JCALC=0
       ISTEP=0
-      ICHWGHT = 0
 C
       WEISPZ(1:NSPZ)=-1.
 C
@@ -793,7 +986,8 @@ C
      .              SORAD3(NLSF,ISTRA),SORAD4(NLSF,ISTRA),
      .              SORAD5(NLSF,ISTRA),SORAD6(NLSF,ISTRA),
      .              IRUSR,IPUSR,ITUSR,IAUSR,IBUSR,
-     .              TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,WEISPZ)
+     .              TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,ZIWL,
+     .              WEISPZ)
         ISTEP=-1
         ZZ(1)=X0
         ZZ(2)=Y0
@@ -802,36 +996,29 @@ C
       ENDIF
 C
       ZZ = 0._DP
-      DO 1000 J=1,3
+      DO J=1,3
         IK=NLSF+(J-1)*NSRFS
-        GOTO (10,20,30,40),INDTEC(IK,ISTRA)
-C   ZZ(JCALC) IS TO BE CALCULATED FROM SURFACE EQUATION
-          IF (JCALC.NE.0) GOTO 997
-          JCALC=J
-          GOTO 1000
+        select case (INDTEC(IK,ISTRA))
+        case (1)
 C   DELTA DISTRIBUTION AT CENTER OF INTERVAL
-   10   CONTINUE
           ZZ(J)=(ALEFT(J,NLSF,ISTRA)+BRGHT(J,NLSF,ISTRA))*0.5
-          GOTO 1000
+        case (2)
 C   UNIFORM DISTRIBUTION IN THIS COORDINATE
- 20     CONTINUE
           ZZ(J)=RANF_EIRENE( )*(BRGHT(J,NLSF,ISTRA)-
      .          ALEFT(J,NLSF,ISTRA))+ALEFT(J,NLSF,ISTRA)
-          GOTO 1000
+        case (3)
 C   TRUNCATED EXPONENTIAL DECAY WITH LENGTH XLAMDA, FOR ONE COORDINATE ONLY
 C   PARAMETER: SOREXP
 C   METHOD: COVEYOU-TRICK  (SPANIER-GELBARD, ADDISON WESLEY,  P 35)
-   30   CONTINUE
           DELTA=BRGHT(J,NLSF,ISTRA)-ALEFT(J,NLSF,ISTRA)
           XLAMDA=SOREXP(NLSF,ISTRA)
           ZM=DELTA/XLAMDA
           ZH=MOD(-LOG(RANF_EIRENE( )),ZM)
           ZZ(J)=XLAMDA*ZH+ALEFT(J,NLSF,ISTRA)
-          GOTO 1000
+        case (4)
 C   STEP FUNCTION NO. ISTEP, FOR ONE COORDINATE ONLY
 C   PARAMETER: SORIND
-   40   CONTINUE
-          ISTEP=MOD(INT(REAL(SORIND(NLSF,ISTRA),KIND(1.D0))),100)
+          ISTEP=MOD(NINT(REAL(SORIND(NLSF,ISTRA),DP)),100)
           ISTEP_SPEZ = INT(SORIND(NLSF,ISTRA)/100)
           ISPZ=NSPEZ(ISTRA)
           IF (ISTEP_SPEZ.GT.0) ISPZ=ISTEP_SPEZ
@@ -839,8 +1026,12 @@ c  RNF: uniform in spatial sampling interval
           RNF=XI(J,NLSF,ISTRA)+RANF_EIRENE( )*
      .        (XE(J,NLSF,ISTRA)-XI(J,NLSF,ISTRA))
           ZZ(J)=EIRENE_STEP1(IINDEX,ISTEP,RNF,ISPZ)
-          GOTO 1000
- 1000 CONTINUE
+        case default
+C   ZZ(JCALC) IS TO BE CALCULATED FROM SURFACE EQUATION
+          IF (JCALC.NE.0) GOTO 997
+          JCALC=J
+        end select
+      END DO
 C
       IPOLG=1
 C
@@ -884,8 +1075,13 @@ C
 C  FIND X COORDINATE X0 FROM Y=Y0 AND Z=Z0 ON SURFACE NO. MASURF
           Y0=ZZ(2)
           IF (NLTRA.AND.ILTR.EQ.0) THEN
-            WRITE (iunout,*) 'Z0 IN SAMSRF FOR JCALC=1 ?? '
-            CALL EIRENE_EXIT_OWN(1)
+            IF(.NOT.(A3LM(MASURF).EQ.0.0_DP .AND.
+     &               A6LM(MASURF).EQ.0.0_DP .AND.
+     &               A8LM(MASURF).EQ.0.0_DP .AND.
+     &               A9LM(MASURF).EQ.0.0_DP)) THEN
+              WRITE (iunout,*) 'Z0 IN SAMSRF FOR JCALC=1 ?? '
+              CALL EIRENE_EXIT_OWN(1)
+            ENDIF
           ENDIF
           IF (JUMLIM(MASURF).NE.0) THEN
             IF (ABS(A1LM(MASURF)).LE.EPS12) GOTO 9931
@@ -915,7 +1111,7 @@ C  SECOND ORDER IN X
                   WRITE (IUNOUT,*) 'PROBABLY ILL-DEFINED SURFACE '
                   WRITE (IUNOUT,*) 'SAMPLING, MASURF = ',MASURF
                   LGPART=.FALSE.
-                  RETURN
+                  GOTO 998
                 ENDIF
               ENDIF
             ELSEIF (ABS(P).GT.EPS12) THEN
@@ -935,7 +1131,7 @@ C  CARRY OUT RANGE TEST FOR X0?
             WRITE (iunout,*)
      .        'WARNING FROM SAMSRF FROM X0TEST, ICOUNT=1000 '
             LGPART=.FALSE.
-            RETURN
+            GOTO 998
           ENDIF
 
         ELSEIF (JCALC.EQ.2) THEN
@@ -982,7 +1178,7 @@ C  SECOND ORDER IN Y
                   WRITE (IUNOUT,*) 'PROBABLY ILL-DEFINED SURFACE '
                   WRITE (IUNOUT,*) 'SAMPLING, MASURF = ',MASURF
                   LGPART=.FALSE.
-                  RETURN
+                  GOTO 998
                 ENDIF
               ENDIF
             ELSEIF (ABS(P).GT.EPS12) THEN
@@ -1002,7 +1198,7 @@ C  CARRY OUT RANGE TEST FOR Y0?
             WRITE (iunout,*)
      .        'WARNING FROM SAMSRF FROM Y0TEST, ICOUNT=1000 '
             LGPART=.FALSE.
-            RETURN
+            GOTO 998
           ENDIF
 
         ELSEIF (JCALC.EQ.3) THEN
@@ -1038,7 +1234,7 @@ C  SECOND ORDER IN Z
                   WRITE (IUNOUT,*) 'PROBABLY ILL-DEFINED SURFACE '
                   WRITE (IUNOUT,*) 'SAMPLING, MASURF = ',MASURF
                   LGPART=.FALSE.
-                  RETURN
+                  GOTO 998
                 ENDIF
               ENDIF
             ELSEIF (ABS(P).GT.EPS12) THEN
@@ -1057,7 +1253,7 @@ C  CARRY OUT RANGE TEST FOR Z0?
             IF (ICOUNT.LT.1000) GOTO 100
             WRITE (iunout,*) 'WARNING FROM SAMSRF, Z0TEST, ICOUNT=1000 '
             LGPART=.FALSE.
-            RETURN
+            GOTO 998
           ENDIF
 C
         ELSE
@@ -1539,22 +1735,35 @@ C
 C  TAKE BACKGROUND MEDIUM DATA AT PLACE OF BIRTH FROM STEP FUNCTION ISTEP
         TEWL=TESTEP(ISTEP,IINDEX)
         SHWL=SHSTEP(ISTEP,IINDEX)
-        DO 3010 IPLS=1,NPLSI
-          IPLSTI=MPLSTI(IPLS)
-          TIWL(IPLS)=TISTEP(IPLSTI,ISTEP,IINDEX)
-          VXWL(IPLS)=VXSTEP(IPLS,ISTEP,IINDEX)
-          VYWL(IPLS)=VYSTEP(IPLS,ISTEP,IINDEX)
-          VZWL(IPLS)=VZSTEP(IPLS,ISTEP,IINDEX)
-          DIWL(IPLS)=DISTEP(IPLS,ISTEP,IINDEX)
-                  FF=FLSTEP(IPLS,ISTEP,IINDEX)
-          EFWL(IPLS)=ELSTEP(IPLS,ISTEP,IINDEX)/(FF+EPS30)
+        DO 3010 JPLS=1,MAX(NPLSI,NATMI,NMOLI)
+          IF (NLPLS(ISTRA)) THEN
+            IF (JPLS.GT.NPLSI) CYCLE
+            IPLSTI=MPLSTI(JPLS)
+            IPLSV=MPLSV(JPLS)
+          ELSE IF (NLATM(ISTRA)) THEN
+            IF (JPLS.GT.NATMI) CYCLE
+            IPLSTI=JPLS
+            IPLSV=JPLS
+          ELSE IF (NLMOL(ISTRA)) THEN
+            IF (JPLS.GT.NMOLI) CYCLE
+            IPLSTI=JPLS
+            IPLSV=JPLS
+          END IF
+          TIWL(JPLS)=TISTEP(IPLSTI,ISTEP,IINDEX)
+          VXWL(JPLS)=VXSTEP(IPLSV,ISTEP,IINDEX)
+          VYWL(JPLS)=VYSTEP(IPLSV,ISTEP,IINDEX)
+          VZWL(JPLS)=VZSTEP(IPLSV,ISTEP,IINDEX)
+          DIWL(JPLS)=DISTEP(JPLS,ISTEP,IINDEX)
+                  FL=FLSTEP(JPLS,ISTEP,IINDEX)
+          EFWL(JPLS)=ELSTEP(JPLS,ISTEP,IINDEX)/(FL+EPS30)
  3010   CONTINUE
       ELSEIF (ISTEP.EQ.0) THEN
 C  TAKE BACKGROUND MEDIUM DATA AT PLACE OF BIRTH FROM LOCAL BULK PLASMA DATA
 C                              IN SAMPLED CELL NCELL
         TEWL=TEIN(NCELL)
         SHWL=0.
-        DO 3020 IPLS=1,NPLSI
+        DO 3020 JPLS=1,NPLSI
+          IPLS=JPLS
           IPLSTI = MPLSTI(IPLS)
           IPLSV = MPLSV(IPLS)
           TIWL(IPLS)=TIIN(IPLSTI,NCELL)
@@ -1581,6 +1790,14 @@ c    set drift velocities at cell center
 C  TEWL, TIWL, .... SHWL ALREADY DEFINED IN SAMUSR
 C  NOTHING MORE TO BE DONE HERE
       ENDIF
+cnh   28.11.2019
+      DO JPLS=1,NPLSI
+        IF (ZIIN(JPLS,NCELL).NE.ZVAC) THEN
+          ZIWL(JPLS) = ZIIN(JPLS,NCELL)
+        ELSE
+          ZIWL(JPLS) = DBLE(NCHRGP(JPLS))
+        ENDIF
+      ENDDO
 C
 C  SET ANALOG SPECIES INDEX DISTRIBUTION WEISPZ
 C
@@ -1649,8 +1866,8 @@ C
       WRITE (iunout,*) 'INITIAL CELL NUMBER INVALID OR DET NEGATIVE'
       CALL EIRENE_MASR4('X0, Y0, Z0, DET                 ',X0,Y0,Z0,DET)
       WRITE (iunout,*) 'ISTEP ',ISTEP
-      WRITE (iunout,*) 'NBLOCK,NACELL,NRCELL ',NBLOCK,NACELL,NRCELL
-      WRITE (iunout,*) 'NPCELL,NTCELL,IPOLG ',NPCELL,NTCELL,IPOLG
+      CALL EIRENE_MASJ3('NBLOCK,NACELL,NRCELL    ',NBLOCK,NACELL,NRCELL)
+      CALL EIRENE_MASJ3('NPCELL,NTCELL,IPOLG     ',NPCELL,NTCELL,IPOLG)
       CALL EIRENE_EXIT_OWN(1)
       END SUBROUTINE EIRENE_SAMSF1
 
@@ -1667,4 +1884,5 @@ C
 
       RETURN
       END SUBROUTINE EIRENE_SAMSF2
+
       END MODULE EIRMOD_SAMSRF

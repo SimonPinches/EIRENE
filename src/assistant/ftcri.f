@@ -4,6 +4,6 @@ C
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: I
       CHARACTER(6), INTENT(OUT) :: C
-      WRITE(C,'(1P,I6)') I
+      WRITE(C,'(I6)') I
       RETURN
-      END
+      END SUBROUTINE EIRENE_FTCRI

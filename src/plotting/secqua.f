@@ -90,4 +90,4 @@ C
         ENDIF
       ENDIF
       RETURN
-      END
+      END SUBROUTINE EIRENE_SECQUA

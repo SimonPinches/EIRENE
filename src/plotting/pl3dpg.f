@@ -28,12 +28,9 @@ C
 
       REAL(DP) :: REMIN, REMAX, XMT, DX, YMI, YMA, RMI, RMA, AAR, XMINN,
      .          XMAXN, YMINN, YMAXN, YMT, XMI, XMA
-!pb      REAL(SP) :: AR(LAR), EXT(3,3), VALU(3,2)
-!pb      REAL(SP) :: XYZ(3,128,128)
-!pb      real(sp) :: yh
-      REAL :: AR(LAR), EXT(3,3), VALU(3,2)
-      REAL :: XYZ(3,128,128)
-      real :: yh
+      REAL(SP) :: AR(LAR), EXT(3,3), VALU(3,2)
+      REAL(SP) :: XYZ(3,128,128)
+      real(sp) :: yh
       INTEGER :: IR, IPX, IPY, IER, IPAN, IPEN, K, I, J
       CHARACTER(17) :: CH
       CHARACTER(20) :: CHAXS(3)
@@ -131,23 +128,23 @@ C
           DO 20 J=NPOINT(1,K),NPOINT(2,K)-1
             IF (IPX+2.GT.128) GOTO 999
             IF (IPY+2.GT.128) GOTO 999
-            XYZ(1,IPX+1,IPY+1)=XPOL(I,J)
-            XYZ(1,IPX+1,IPY+2)=XPOL(I,J+1)
-            XYZ(1,IPX+2,IPY+1)=XPOL(I+1,J)
-            XYZ(1,IPX+2,IPY+2)=XPOL(I+1,J+1)
+            XYZ(1,IPX+1,IPY+1)=REAL(XPOL(I,J),SP)
+            XYZ(1,IPX+1,IPY+2)=REAL(XPOL(I,J+1),SP)
+            XYZ(1,IPX+2,IPY+1)=REAL(XPOL(I+1,J),SP)
+            XYZ(1,IPX+2,IPY+2)=REAL(XPOL(I+1,J+1),SP)
 C
-            XYZ(2,IPX+1,IPY+1)=YPOL(I,J)
-            XYZ(2,IPX+1,IPY+2)=YPOL(I,J+1)
-            XYZ(2,IPX+2,IPY+1)=YPOL(I+1,J)
-            XYZ(2,IPX+2,IPY+2)=YPOL(I+1,J+1)
+            XYZ(2,IPX+1,IPY+1)=REAL(YPOL(I,J),SP)
+            XYZ(2,IPX+1,IPY+2)=REAL(YPOL(I,J+1),SP)
+            XYZ(2,IPX+2,IPY+1)=REAL(YPOL(I+1,J),SP)
+            XYZ(2,IPX+2,IPY+2)=REAL(YPOL(I+1,J+1),SP)
 C
             IR=I+(J-1)*NR1ST
             AAR=ARR(IR)
             AAR=MAX(MIN(REMAX,AAR),REMIN)
-            XYZ(3,IPX+1,IPY+1)=AAR
-            XYZ(3,IPX+1,IPY+2)=AAR
-            XYZ(3,IPX+2,IPY+1)=AAR
-            XYZ(3,IPX+2,IPY+2)=AAR
+            XYZ(3,IPX+1,IPY+1)=REAL(AAR,SP)
+            XYZ(3,IPX+1,IPY+2)=REAL(AAR,SP)
+            XYZ(3,IPX+2,IPY+1)=REAL(AAR,SP)
+            XYZ(3,IPX+2,IPY+2)=REAL(AAR,SP)
             IPY=IPY+2
    20     CONTINUE
           IPX=IPX+2
@@ -158,53 +155,53 @@ C
         DO 26 I=2,IPY
           XYZ(1,1,I)=XYZ(1,2,I)
           XYZ(2,1,I)=XYZ(2,2,I)
-          XYZ(3,1,I)=REMIN
+          XYZ(3,1,I)=REAL(REMIN,SP)
           XYZ(1,IPX+1,I)=XYZ(1,IPX,I)
           XYZ(2,IPX+1,I)=XYZ(2,IPX,I)
-          XYZ(3,IPX+1,I)=REMIN
+          XYZ(3,IPX+1,I)=REAL(REMIN,SP)
    26   CONTINUE
         DO 27 I=2,IPX
           XYZ(1,I,1)=XYZ(1,I,2)
           XYZ(2,I,1)=XYZ(2,I,2)
-          XYZ(3,I,1)=REMIN
+          XYZ(3,I,1)=REAL(REMIN,SP)
           XYZ(1,I,IPY+1)=XYZ(1,I,IPY)
           XYZ(2,I,IPY+1)=XYZ(2,I,IPY)
-          XYZ(3,I,IPY+1)=REMIN
+          XYZ(3,I,IPY+1)=REAL(REMIN,SP)
    27   CONTINUE
         XYZ(1,1,1)=XYZ(1,2,2)
         XYZ(2,1,1)=XYZ(2,2,2)
-        XYZ(3,1,1)=REMIN
+        XYZ(3,1,1)=REAL(REMIN,SP)
         XYZ(1,IPX+1,1)=XYZ(1,IPX,2)
         XYZ(2,IPX+1,1)=XYZ(2,IPX,2)
-        XYZ(3,IPX+1,1)=REMIN
+        XYZ(3,IPX+1,1)=REAL(REMIN,SP)
         XYZ(1,IPX+1,IPY+1)=XYZ(1,IPX,IPY)
         XYZ(2,IPX+1,IPY+1)=XYZ(2,IPX,IPY)
-        XYZ(3,IPX+1,IPY+1)=REMIN
+        XYZ(3,IPX+1,IPY+1)=REAL(REMIN,SP)
         XYZ(1,1,IPY+1)=XYZ(1,2,IPY)
         XYZ(2,1,IPY+1)=XYZ(2,2,IPY)
-        XYZ(3,1,IPY+1)=REMIN
+        XYZ(3,1,IPY+1)=REAL(REMIN,SP)
         DO I=1,IPX+1
           DO J=1,IPY+1
-            XYZ(1,I,J)=(XYZ(1,I,J)-XMINN)/(XMAXN-XMINN)
-            XYZ(2,I,J)=(XYZ(2,I,J)-YMINN)/(YMAXN-YMINN)
-            XYZ(3,I,J)=(XYZ(3,I,J)-REMIN)/(REMAX-REMIN)
+            XYZ(1,I,J)=REAL((XYZ(1,I,J)-XMINN)/(XMAXN-XMINN),SP)
+            XYZ(2,I,J)=REAL((XYZ(2,I,J)-YMINN)/(YMAXN-YMINN),SP)
+            XYZ(3,I,J)=REAL((XYZ(3,I,J)-REMIN)/(REMAX-REMIN),SP)
           ENDDO
         ENDDO
         CALL GR3NET(AR,IER,128,XYZ,IPX+1,1,IPY+1,1,1,2)
    30 CONTINUE
       CALL GR3EXT(AR,IER,EXT)
-      VALU(1,1)=XMI
-      VALU(1,2)=XMA
-      VALU(2,1)=YMI
-      VALU(2,2)=YMA
-      VALU(3,1)=REMIN
-      VALU(3,2)=REMAX
+      VALU(1,1)=REAL(XMI,SP)
+      VALU(1,2)=REAL(XMA,SP)
+      VALU(2,1)=REAL(YMI,SP)
+      VALU(2,2)=REAL(YMA,SP)
+      VALU(3,1)=REAL(REMIN,SP)
+      VALU(3,2)=REAL(REMAX,SP)
       CHAXS(1) = ' '
       CHAXS(2) = ' '
       CHAXS(3) = ' '
       CALL GR3AXS(AR,IER,EXT,VALU,CHAXS,.FALSE.,4,1)
-      CALL GR3ROT(AR,IER,'Z',REAL(W1,KIND(1.E0)),
-     .            'X',REAL(W2,KIND(1.E0)),'Y',0.0)
+      CALL GR3ROT(AR,IER,'Z',REAL(W1,SP),
+     .            'X',REAL(W2,SP),'Y',0.0)
       CALL GR3PLO(AR,IER,'HID')
 C
 C     WRITE TEXT AND MEAN VALUE ONTO THE PLOT
@@ -212,24 +209,24 @@ C
       CALL GRSCLC (0.,0.,39.,28.)
       CALL GRSCLV (0.,0.,39.,28.)
       YH=27.5
-      CALL GRTXT (1.,REAL(YH,KIND(1.E0)),72,RUNID)
+      CALL GRTXT (1.,REAL(YH,SP),72,RUNID)
       YH=26.75
-      CALL GRTXT (1.,REAL(YH,KIND(1.E0)),72,HEAD)
+      CALL GRTXT (1.,REAL(YH,SP),72,HEAD)
       YH=26.00
-      CALL GRTXT (1.,REAL(YH,KIND(1.E0)),72,TXHEAD)
+      CALL GRTXT (1.,REAL(YH,SP),72,TXHEAD)
       YH=25.25
-      CALL GRTXT (1.,REAL(YH,KIND(1.E0)),10,'TALLY :  ')
+      CALL GRTXT (1.,REAL(YH,SP),10,'TALLY :  ')
       CALL GRTXTC (72,TEXT1)
-      CALL GRTXT (1.,REAL(YH-0.5,KIND(1.E0)),10,'SPECIES :')
+      CALL GRTXT (1.,REAL(YH-0.5,SP),10,'SPECIES :')
       CALL GRTXTC (24,TEXT2)
-      CALL GRTXT (1.,REAL(YH-1.,KIND(1.E0)),10,'UNITS :   ')
+      CALL GRTXT (1.,REAL(YH-1.,SP),10,'UNITS :   ')
       CALL GRTXTC (24,TEXT3)
-      CALL GRTXT (1.,REAL(YH-2.,KIND(1.E0)),10,'MAX. VALUE')
+      CALL GRTXT (1.,REAL(YH-2.,SP),10,'MAX. VALUE')
       WRITE (CH,'(1P,E10.3)') RMA
-      CALL GRTXT (1.,REAL(YH-2.5,KIND(1.E0)),10,CH)
-      CALL GRTXT (1.,REAL(YH-3.,KIND(1.E0)),10,'MIN. VALUE')
+      CALL GRTXT (1.,REAL(YH-2.5,SP),10,CH)
+      CALL GRTXT (1.,REAL(YH-3.,SP),10,'MIN. VALUE')
       WRITE (CH,'(1P,E10.3)') RMI
-      CALL GRTXT (1.,REAL(YH-3.5,KIND(1.E0)),10,CH)
+      CALL GRTXT (1.,REAL(YH-3.5,SP),10,CH)
 C
       RETURN
   999 CONTINUE
@@ -237,4 +234,4 @@ C
       WRITE (iunout,*) 'REDUCE PLOT AREA '
       WRITE (iunout,*) 'PLOT ABANDONED'
       RETURN
-      END
+      END SUBROUTINE EIRENE_PL3DPG

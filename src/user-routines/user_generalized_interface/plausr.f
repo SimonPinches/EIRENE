@@ -1,3 +1,5 @@
+cdr  aug 19 learc not needed
+c
 C ===== SOURCE: plausr.f
 c
 c modified: s.wiesen@fz-juelich.de
@@ -374,4 +376,4 @@ c     enddo istra
 
 
    99 RETURN
-      END
+      END SUBROUTINE EIRENE_PLAUSR

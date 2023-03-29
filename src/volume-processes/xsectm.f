@@ -21,19 +21,10 @@ cdr  oct.14:  clogau removed
 cdr  oct.14:  PLS made allocatable,
 cdr  oct.14:  further synchronization with xsecta,xsecti
 cdr           remaining relevant differences in default models only.
-cdr  aug.15:  ibgk_sp:  no of bgk species. to be distinguished from ibgk: no of bgk reaction.
-
-!pb  APR  16:  pplds  -> pplei
-!pb  APR  16:  patds  -> patei, eatds -> eatei
-!pb  APR  16:  piods  -> pioei, eiods -> eioei
-!pb  APR  16:  pelds  -> pelei, eelds -> eelei
-!pb  MAY  16:  tabds1 -> tabds1
-!pb  JUL  16:  ehvds1 -> ehvds1
-cdr  SEP 16:  nmdsi  -> nmeii
-cdr  May 18:  The fluid limit (critical cx Knudsen number) is now set from NGENM(imol) flag,
+cdr  May 18:  The fluid limit (critical CX Knudsen number) is now set from NGENM(imol) flag,
 cdr           rather than from the former fldlmm(imol,kk) flag (which is removed now).
 cdr           default: FDLMCX=0.0 (from initialisation phase) means:
-CDR           no fluid limit cut-off at CX collisions.
+cdr           no fluid limit cut-off at CX collisions.
 cdr  sept 18: nhvrei rationalization for default reactions (==-KK)
 C
 
@@ -331,7 +322,7 @@ C
           IA1=IATM1
           IP2=IPLS2
 c   in case iatm1 ne iatm2:  this next segment is executed twice.
-c   Split reaction kk=-6 into two ei processes irei and irei+1, with factkk=0.5 each.
+c   Split reaction kk=-6 into two EI processes irei and irei+1, with factkk=0.5 each.
 c   Accumulate totals....
    73     ACCMAS=0.D0
           ACCINV=0.D0
@@ -433,7 +424,7 @@ C           EHVEI1(IREI,1)= 0.0 SET IN ....?
           FACREI(IREI,2) = 0._DP
 C
    76     CONTINUE
-
+C
           NMEII(IMOL)=IDSC1
 C
 C  NON-DEFAULT ELEC IMP. COLLISION MODEL SPECIFIED IN INPUT BLOCK 4
@@ -520,7 +511,7 @@ C  BULK PARTICLE INDEX
             LGMCX(IMOL,IDSC,1)=IPLS
 c
             if (ngenm(imol).lt.0) then  !  in range -1,...-infinity
-c  set cx fluid limit FDLM (critical Knudsen number Kn_c = mfp_cx/delta
+c  set CX fluid limit FDLM (critical Knudsen number Kn_c = mfp_cx/delta
 c  delta: typical length (could be cell size, or gradient length...)
 c  use the integer input flag ngenm (generation limit).
               MFL=-(ngenm(imol)+1)  !  now MFL in range 0 to +infinity
@@ -597,7 +588,7 @@ C  BULK PARTICLE INDEX
             LGMEL(IMOL,IDSC,1)=IPLS
 C
 C  SPECIAL TREATMENT: BGK COLLISIONS AMONGST TEST PARTICLES
-C  
+C  FOR THIS REACTION KK
             IF (IBGKM(IMOL,NRC).NE.0) THEN
               IF (NPBGKM(IMOL).EQ.0) THEN
 C  IMOL HAS NOT YET BEEN LABELLED AS BGK SPECIES.
@@ -608,11 +599,10 @@ C  AND HAS 3 ADDITIONAL BGK TALLIES IN UPTBGK
                 NPBGKM(IMOL)=IBGK_SP
               ELSE
 cdr imol is already a bgk species.
-        
               ENDIF
               IF (NPBGKP(IPLS,1).EQ.0) THEN
                 NPBGKP(IPLS,1)=NPBGKM(IMOL)
-cdr this is too special.
+cdr this is too restrictive?
               ELSE
                 GOTO 999
               ENDIF
@@ -830,6 +820,5 @@ C
       WRITE (iunout,*) 'SPECIES CONFLICT FOR BGK COLLISIONS. IMOL,IREL '
       WRITE (iunout,*) IMOL,IREL,IPLS
       CALL EIRENE_EXIT_OWN(1)
-      RETURN
 C
-      END
+      END SUBROUTINE EIRENE_XSECTM

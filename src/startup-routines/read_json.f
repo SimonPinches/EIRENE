@@ -25,7 +25,7 @@ C
       USE EIRMOD_CGEOM
       USE EIRMOD_CSDVI
       USE EIRMOD_COMPRT
-      USE EIRMOD_CPES, ONLY: NPRS,NLIDENT
+      USE EIRMOD_CPES, ONLY: NPRS, NLIDENT
       USE EIRMOD_COMNNL
       USE EIRMOD_COMSOU
       USE EIRMOD_CSTEP
@@ -44,9 +44,13 @@ C
       USE EIRMOD_TIMEA, ONLY: EIRENE_TIMEA0
       USE EIRMOD_PROFILES
       USE EIRMOD_JSON
+      USE EIRMOD_IOUSR, ONLY: EIRENE_READ_BLOCK_11_USR
+      USE EIRMOD_INFCOP, ONLY: EIRENE_IF0COP
+      USE EIRMOD_PRESSURELOOP
       
-      use json_module
-     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
+      use json_module           !IGNORE
+! this does not work  found no matching specific binding for json%get
+!     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
       IMPLICIT NONE
 
@@ -67,7 +71,7 @@ cdr  optional arguments for FILNAM=CONST options
         SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
      .             RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .             RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .             ELNAME, IZ1, 
+     .             ELNAME, IZ1, BUNDLING,
      .             IROW_ESC, ICOL_ESC, POP_ESC,  ! for internal CR models, line emission etc..
      .             IFTFL, NCOEF, COEF)  ! for filnam=const
         USE EIRMOD_PRECISION
@@ -76,6 +80,7 @@ cdr  optional arguments for FILNAM=CONST options
      .                                        IFTFL, NCOEF
         REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC
         REAL(DP),     INTENT(IN), OPTIONAL :: COEF(9)      
+        CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: BUNDLING
         CHARACTER(8), INTENT(IN) :: FILNAM
         CHARACTER(4), INTENT(IN) :: H123
         CHARACTER(LEN=*), INTENT(IN) :: REAC
@@ -100,7 +105,9 @@ C
      .          VNORM
 
 C  RUN TIME STATISTICS IN INITIALIZATION PHASE, WITHIN INPUT.F
-cdr   REAL(DP) :: tpb1, tpb2, EIRENE_SECOND_OWN, timea
+      REAL(DP) :: tpb1, tpb2
+cdr   REAL(DP) :: timea
+c
 C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
       REAL(DP) :: AMPTS
 
@@ -108,38 +115,41 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
       INTEGER :: JP, KT, IM, II, IP, IA, NFLGS, NSPZS1, NSPZS2, IPH,
      .           NTLVF, NSRF, NTLS, I1000, NSP, NTL, ICHORI, IRAD,
      .           ILIMPS, ISS, ILA, IB, INC, NSOPT, IIN, IEN, 
-     .           EIRENE_ILLZ, IZ, ISTREAM, ITALI, IBEND,
-     .           JATM, JMOL, JION, JPHOT, JPLS, JTRJ, JSPZ,
+     .           EIRENE_ILLZ, IZ, ITALI, IBEND,
+     .           JATM, JMOL, JION, JPHOT, JPLS, JTRJ, JSPZ, JSTRA,
      .           NO, IGO,  
      .           JDUMMY, NLJ, I1, I2, I3,
-     .           NTIME0, IERROR, IREAD, I, J, ISTS,
+     .           NTIME0, IERROR, IREAD, I, J, IST, IMSG,
      .           IPOS2, IPOS0, NM, K, JJ, IPOS1, NRGEN, INUM, NTLSF,
      .           L, IS, NTLV, ID, IRE, 
-     .           IN, NPRCSF, MXL, NSPZV1, NSPZV2, NFLGV,
+     .           INELGJ, NPRCSF, MXL, NSPZV1, NSPZV2, NFLGV,
      .           IPRCSF, IR, MT, MP, 
-!pb  .           NRTAL1, NREAC_ADD, IPLN,x
      .           NRTAL1, IPLN,
      .           NRE, IRET,
-     .           ISPSRF, ISPTYP, NSPS, NSPSA, IPTYP, IPSPZ,
+     .           ISPSRF, ISPTYP, NSPS, NSPSA, IPTYP, IPSPZ, ISTRAI,
      .           IANF, IEND,  
      .           IPLSTI, IPLSV, ISRFCLL,
      .           IDIREC, ISTCHR,  ITOK, IER, IL, ILOGS, IO,
-     .           IUNIN_SAVE, NLOGIN, IFLG, IDUM,
+     .           NLOGIN, IFLG, IDUM,
      .           NB,NS,NA, ISTR,
      .           NRC, IADV, NUM_COMPO, NUM_CONTRIB, ICNT, IDMDL, IND,
      .           JS, IUSR
+     .          ,KK, ELONLY
 
       INTEGER, SAVE :: NITER0, IUSROUT=0
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       INTEGER, DIMENSION(1) :: ISTR_A
       LOGICAL :: LHELP(NLIMPS), NLSRON_SAVE(NSTRA)
-      LOGICAL :: LRPS3D, LRPSCN, LHYDDEF, LINCL45, LMULTI, LRDMLTI
-      LOGICAL, ALLOCATABLE :: LOGRDH(:)
+      LOGICAL :: LRPS3D, LRPSCN, LHYDDEF, LINCL45, LMULPL, 
+     .           LRDMLTI, LRDMLV
       CHARACTER(10) :: CDATE, CTIME
-      CHARACTER(12) :: CHR, HYDKIN_DEFAULT, CADAPT
+      CHARACTER(12) :: CHR
       CHARACTER(420) :: ZEILE, ULINE
       CHARACTER(4) :: CLAB
       CHARACTER(6) :: HANDLE
+cdr  intermediate data for those already set in find_param.f
+      integer :: noptim_save
+
 C
 C  DO NOT READ ANY INPUT, IF THIS IS NOT THE VERY FIRST ITERATION
 C  STEP IN THIS RUN. IITER IS THE ACTUAL ITERATION NUMBER
@@ -150,19 +160,15 @@ C  INITIALISE SOME DATA AND SET DEFAULTS
 C
       IREAD=0
       IERROR=0
-
-C  UNIT NUMBER FOR INPUT FILE: MUST BE DIFFERENT FROM: 5,8,10,11,12
-C  13,14, AND 15
+C
 !pb IUNIN set in COMPRT
-!pb IUNIN=1+ifoff
-      IUNIN_SAVE=IUNIN   
-      IUSROUT = 0
 C
 C  UNIT NUMBER FOR OUTPUT FILE: MUST BE DIFFERENT FROM: 5,8,10,11,12
 C  13,14, AND 15 AND IUNIN
-!pb IUNOUT has already been set in subroutine EIRENE
+cdr IUNOUT has already been setin COMPRT and in subroutine EIRENE
 !pb   IUNOUT=6+ifoff
 C
+      IUSROUT = 0
 
       NULLIFY(SURFLIST)
       NULLIFY(REFLIST)
@@ -175,7 +181,7 @@ C
       NTMSTP=1
 
 
-      LMULTI = .FALSE.
+      LMULPL = .FALSE.
 
       js = itree_num(0)
       CALL EIRENE_READ_BLOCK_0(jtrees(js),blks(0)%p)
@@ -242,21 +248,21 @@ cdr     CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
       type(json_value), pointer, intent(in) :: p
       integer :: ncm, k
       logical :: found, found_cm
-      character(kind=CK,len=:),allocatable :: txtr
-      character(kind=CK,len=420),dimension(:),allocatable :: 
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules      
+      character(kind=json_CK,len=:),allocatable :: txtr
+      character(kind=json_CK,len=420),dimension(:),allocatable :: 
      .           cmlines
+!cym/cpg end
 
       call json%get(p,'TXTRUN',txtr,found)
       TXTRUN = trim(txtr)
       WRITE (iunout,'(1X,A)') trim(TXTRUN)
-      CALL EIRENE_LEER(1)
       
       call json%get(p,'COMMENTS',cmlines,found_cm)
       if (found_cm) then
         ncm = size(cmlines)
         do k = 1, ncm                           
           WRITE (IUNOUT,'(1X,A)') TRIM(CMLINES(K))
-          CALL EIRENE_LEER(1)
 !  STORE CM LINES FOR OUTPUTING TO JSON FILE 
           call eirene_push_string_stack(cm_stack,cmlines(k)) 
         end do
@@ -272,8 +278,11 @@ cdr     CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
       class(json_core),intent(inout) :: json
       type(json_value), pointer, intent(in) :: p
       type(json_value), pointer :: pfile, pdb
-      logical :: found
-      character(kind=CK,len=:),allocatable :: cdbh, cdbf
+      logical :: found, NLSPCSCL_DUM, NLSPCSCL_ON_DUM
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: cdbh, cdbf
+      character(len=:), allocatable :: cdbhc
+!cym/cpg end
       integer :: ifile, nch
 
       call json%get(p,'NPRLL',nprll,found)
@@ -284,6 +293,9 @@ cdr     CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
       call json%get(p,'NITER',niter,found)
       call json%get(p,'NTIME0',ntime0,found)
       call json%get(p,'NTIME',ntime,found)
+      NTIME_IN = NTIME
+      call json%get(p,'NSTORAM',nstoram,found)
+      call json%get(p,'NGSTAL',ngstal,found)
 
       CALL EIRENE_LEER(1)
       IITER=MAX0(1,NITER0)
@@ -303,30 +315,47 @@ cdr     CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
       call json%get(p,'NLMOVIE',nlmovie,found)
       call json%get(p,'NLDFST',nldfst,found)
 
-      call json%get(p,'NLOLDRAN',nloldran,found)
+      call json%get(p,'NLRANMAR',nlranmar,found)
       call json%get(p,'NLCASCAD',nlcascad,found)
       call json%get(p,'NLOCTREE',nloctree,found)
       call json%get(p,'NLWRMSH',nlwrmsh,found)
       call json%get(p,'NEXVS',nexvs,found)
+      call json%get(p,'NLTRIMESH',nltrimesh,found)
+!pb do not overwrite
+      call json%get(p,'NLSPCSCL',nlspcscl_dum,found)
+      call json%get(p,'NLSPCSCL_ON',nlspcscl_on_dum,found)
+      call json%get(p,'NLSOLEDGE',nlsoledge,found)
 
       call json%get_child(p,'CFILE',pfile,found)
       if (found) then
         call json%info(pfile,n_children=nch)
-!       do ifile = 1, ndbnames 
+!       do ifile = 1, ndbnames
+
         do i = 1, nch 
           call json%get_child(pfile,i,pdb,found)
           call json%get(pdb,'FILE',cdbh,found)
           call json%get(pdb,'PATH',cdbf,found)
+!cym/cpg
+          cdbhc=cdbh
+!cym/cpg end
           DO IFILE = 1,NDBNAMES
-            IF (INDEX(DBHANDLE(IFILE),cdbh) /= 0) EXIT
+!cym/cpg
+!            IF (INDEX(DBHANDLE(IFILE),cdbh) /= 0) EXIT
+             IF (INDEX(DBHANDLE(IFILE),cdbhc) /= 0) EXIT
+!cym/cpg end
           END DO
           IF (IFILE <= NDBNAMES) THEN
             dbhandle(ifile) = trim(cdbh)
             dbfname(ifile) = trim(cdbf)
+            call eirene_filepath_usr(cdbf,dbfname(ifile),
+     .                               1,len_trim(cdbf))
             ldbread(ifile) = .true.
-            WRITE (IUNOUT,'(2A)')
-     .           'PATH SET FOR FILE ',trim(dbhandle(ifile))
-            WRITE (IUNOUT,'(2A)') 'PATH = ',trim(dbfname(ifile))
+            WRITE (IUNOUT,'(2A)') 'PATH SET FOR FILE ',dbhandle(ifile)
+            WRITE (IUNOUT,'(2A)') 'PATH = ',dbfname(ifile)
+          ELSE
+            WRITE (IUNOUT,*) ' WRONG NAME FOR DATABASE ENTERED'
+            WRITE (IUNOUT,*) ' DATABASE DEFINITION FOR ',
+     .                         trim(cdbh),' IGNORED'
           end if
           deallocate(cdbh)
           deallocate(cdbf)
@@ -508,14 +537,14 @@ C         Reserved for default, see below
           WRITE (iunout,*)
      .      '       EIRENE READS DATA FOR RECOMMENDED INPUT'
           WRITE (iunout,*)
-     .      '       MODIFICATIONS AND RUN TIME PER STARTUM FROM FILE'
+     .      '       MODIFICATIONS AND RUN TIME PER STRATUM FROM FILE'
           WRITE (iunout,*) 
      .      '       FT14, AND CARRIES OUT INPUT MODIFICATIONS THIS RUN'
         CASE (3)
           WRITE (iunout,*)
      .      '       EIRENE READS OLD DATA FOR RECOMMENDED INPUT'
           WRITE (iunout,*)
-     .      '       MODIFICATIONS AND RUN TIME PER STARTUM FROM FILE'
+     .      '       MODIFICATIONS AND RUN TIME PER STRATUM FROM FILE'
           WRITE (iunout,*) 
      .      '       FT14, AND CARRIES OUT INPUT MODIFICATIONS THIS RUN'
           WRITE (iunout,*)
@@ -529,7 +558,7 @@ C         Reserved for default, see below
           WRITE (iunout,*) '       FT14'
         CASE (5)
           WRITE (iunout,*)
-     .      '       EIRENE READS OLD RUN TIME PER STARTUM FROM FILE'
+     .      '       EIRENE READS OLD RUN TIME PER STRATUM FROM FILE'
           WRITE (iunout,*) '       FT14'
           WRITE (iunout,*)
      .      '       EIRENE SAVES NEW RUN TIME PER STRATUM ON FILE FT14'
@@ -597,7 +626,9 @@ C
       integer :: ilogs, i, j, k, nch
       integer, allocatable :: ihelp(:)
       real(dp), allocatable :: rhelp(:)
-      character(kind=CK,len=:),allocatable :: clab
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: clab
+!cym/cpg end
 
       CALL EIRENE_MASAGE
      .  ('*** 2. DATA FOR STANDARD MESH')
@@ -909,7 +940,9 @@ C
       integer :: ists, nlj, idimp, IRPTA1, IRPTA2, IRPTA3, 
      .           IRPTE1, IRPTE2, IRPTE3
       logical :: found
-      character(kind=CK,len=:),allocatable :: txts
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules   
+      character(kind=json_CK,len=:),allocatable :: txts
+!cym/cpg end
 C
       IF (IREAD.EQ.0) READ (IUNIN,*)
       CALL EIRENE_MASAGE
@@ -919,6 +952,7 @@ C
 
       WRITE (iunout,*) '        NSTSI= ',NSTSI
       CALL EIRENE_LEER(1)
+      IMSG=0
 
       call json%get(p,'SURFACES',pnstd) 
 
@@ -970,6 +1004,7 @@ C  OLD INPUT VERSION BEGIN
           WRITE (iunout,*) 'WARNING FROM INPUT BLOCK 3A, ISTS= ',ISTS
           WRITE (iunout,*) 'NEW INPUT FOR IRPTA,IRPTE....'
           WRITE (iunout,*) 'AUTOMATIC CORRECTION CARRIED OUT'
+          IMSG=1
           IRPTA2=IRPTA1
           IRPTE2=IRPTE1
           IRPTA1=INUMP(ISTS,1)
@@ -1005,6 +1040,7 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
             WRITE (iunout,*) 'WARNING:'
             WRITE (iunout,*) 'NON-DEFAULT STANDARD SURFACE NO. ',ISTS
             WRITE (iunout,*) 'OUT OF RANGE. INVISIBLE!'
+            IMSG=1
           ENDIF
         ELSE ! IDIMP .EQ. 1
           IRPTA(ISTS,1) = IRPTA1
@@ -1022,6 +1058,7 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
             WRITE (iunout,*) 'WARNING:'
             WRITE (iunout,*) 'NON-DEFAULT STANDARD SURFACE NO. ',ISTS
             WRITE (iunout,*) 'OUT OF RANGE. INVISIBLE!'
+            IMSG=1
           ENDIF
         ELSE ! IDIMP .EQ. 2
           IRPTA(ISTS,2) = IRPTA2
@@ -1049,6 +1086,8 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
         call eirene_read_surf_switches(json,psrf,nlj)
 
         call eirene_read_ref_model(json,psrf,nlj)
+
+        IF (IMSG.EQ.1) CALL EIRENE_LEER(1)
 
       end do
 
@@ -1082,6 +1121,7 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
         WRITE (iunout,*)
      .      'SURFACES" (SPLITTING, R.R., WEIGHT WINDOWS,..)'
         ILCOL(NLJ)=ILCOL(NLJ)-2
+        IMSG=1
       ENDIF
 
       end subroutine eirene_read_surf_switches
@@ -1096,7 +1136,9 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
       integer :: ilr
       logical :: found, foundm, foundr, founds(5)
       real(dp), allocatable :: rhelp(:)
-      character(kind=CK,len=:),allocatable :: smod
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: smod
+!cym/cpg end
 
       call json%get(srf,'SURFMOD', smod, foundm)
       
@@ -1116,6 +1158,7 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
           call json%get(srf,'ILSPT',ilspt(nlj),found)
           call json%get(srf,'ISRS',isrs(1,nlj),found)
           call json%get(srf,'ISRC',isrc(1,nlj),found)
+          call json%get(srf,'LCHSPNWL',lchspnwl(1,nlj),found)
           call json%get(srf,'ZNML',znml(nlj),found)
           call json%get(srf,'EWALL',ewall(nlj),found)
           call json%get(srf,'EWBIN',ewbin(nlj),found)
@@ -1135,6 +1178,7 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
           call json%get(srf,'ESPUTS',esputs(1,nlj),founds(4))
           call json%get(srf,'ESPUTC',esputc(1,nlj),founds(5))
 
+          IF (ALL(FOUNDS)) LCHSPNWL(1,NLJ)=1
           IF ((ILSPT(NLJ).NE.0) .AND. .NOT.ALL(FOUNDS)) THEN
             IF (NLJ > NLIM) THEN
               WRITE (iunout,*)
@@ -1150,6 +1194,7 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
      .        'DEFAULT MODEL: "NO SPUTTERING" IS USED.'
             WRITE (iunout,*) 'DO YOU REALLY WANT THIS?'
             ILSPT(NLJ)=0
+            IMSG=1
           ENDIF
 
         end if
@@ -1171,9 +1216,11 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
       real(dp), allocatable :: rh(:)
       logical :: found, found_ch0, found_ch1, found_ch2, foundt,
      .           foundl, founds
-      character(kind=CK,len=:),allocatable :: txts                         
-      character(kind=CK,len=72),dimension(:),allocatable :: 
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+       character(kind=json_CK,len=:),allocatable :: txts                        
+      character(kind=json_CK,len=72),dimension(:),allocatable :: 
      .           ch0lines, ch1lines, ch2lines
+!cym/cpg end
 C
 C  * 3B: READ DATA FOR ADDITIONAL SURFACES 350--399
 C
@@ -1326,7 +1373,7 @@ C  READ BOUNDARY DATA
           call json%get(psrf,'YLIMS2',ylims2(1,i),found)
           call json%get(psrf,'ZLIMS2',zlims2(1,i),found)
         ELSEIF (RLB(I).LE.0.D0) THEN
-          IH=-RLB(I)
+          IH=NINT(-RLB(I))
           ILIN(I)=EIRENE_IDEZ(IH,1,2)
           ISCN(I)=EIRENE_IDEZ(IH,2,2)
           call json%get(psrf,'LIN_BOUNDS',pln,foundl)
@@ -1468,18 +1515,33 @@ C
      .            RC1MIN, RC1MAX, RC2MIN, RC2MAX, pop_esc, pesc
       real(dp), allocatable :: ffp1(:), ffp2(:), ccoef(:)
       real(dp) :: coef(9)
-      character(kind=CK,len=:),allocatable :: txt, chr
-      character(kind=CK,len=8) :: filnam
-      character(kind=CK,len=4) :: h123
-      character(kind=CK,len=50) :: reac
-      character(kind=CK,len=2) :: elname
-      character(kind=CK,len=50) :: crc
-      integer :: i, ndum1(1), ndum2(1), ndum3(1), ndum4(1), nti, nv
+!cym/cpg : changed type       
+      character(kind=json_CK,len=:),allocatable :: txt, chr
+      character(kind=json_CK,len=8) :: filnam
+      character(kind=json_CK,len=4) :: h123
+      character(kind=json_CK,len=50) :: reac
+      character(kind=json_CK,len=2) :: elname
+      character(kind=json_CK,len=50) :: crc
+      character(kind=json_CK,len=60) :: bundling
+      
+      character(len=8) :: filnamc
+      character(len=4) :: h123c
+      character(len=50) :: reacc
+      character(len=50) :: crcc
+      character(len=2) :: elnamec
+      character(len=60) :: bundlingc
+!cym/cpg end
+      integer :: i, ndum1(1), ndum2(1), ndum3(1), ndum4(1), nti, nv, 
+     .           mxdm
       real(dp) :: dum(1)
-      character(kind=CK,len=420),dimension(:),allocatable :: 
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=420),dimension(:),allocatable :: 
      .           crs_lines
+!cym/cpg end
+      integer, allocatable :: lknd(:), jdnsl(:)
 
       LHYDDEF = .FALSE.
+      IMSG=0
 
       CALL EIRENE_MASAGE
      .  ('*** 4. DATA FOR SPECIES SPECIFICATION AND')
@@ -1522,6 +1584,7 @@ C
           filnam = repeat(' ',8)
           h123 = repeat(' ',4)
           reac = repeat(' ',50)
+          bundling = repeat(' ',60)
           crc = '   '
           elname = '  '
           iz = 0
@@ -1575,7 +1638,7 @@ C
           call json%get(prea,'FP1',ffp1,found)
           call json%get(prea,'FP2',ffp2,found)
 
-          IF (INDEX(H123,'P.').eq.0) then
+          IF (INDEX(H123,json_ck_'P.').eq.0) then
 c  single parametric data, or for first parameter in 2-parameteric data
             RC1MIN = -20.     ! lower ln(E), ln(T) default limit; E,T in eV  (2E-9 EV)
             RC1MAX =  20.     ! upper ln(E), ln(T) default limit; E,T in eV  (5E8  EV)
@@ -1608,7 +1671,7 @@ c  2nd parameter in 2 parametric data
           if (allocated(ffp1)) deallocate(ffp1)
           if (allocated(ffp2)) deallocate(ffp2)
 
-          if (filnam == 'CONST') then
+          if (filnam == json_ck_'CONST') then
             call json%get(prea,'IFTFLG',iftfl,found)
             call json%get(prea,'NCOEF',ncoef,found)
             call json%get(prea,'COEF',ccoef,found)
@@ -1620,18 +1683,22 @@ c  2nd parameter in 2 parametric data
             coef = 0._dp
           end if
               
-          if (index(filnam,'ADAS') > 0 .or.
-     .        index(filnam,'TAB2D') > 0) then
+          if (index(filnam,json_ck_'ADAS') > 0 .or.
+     .        index(filnam,json_ck_'TAB2D') > 0) then
             call json%get(prea,'ELNAME',chr,found)
             elname = chr(1:2)
             deallocate(chr)         
             call json%get(prea,'IZ',iz,found)
+            call json%get(prea,'FILNAM',chr,found)
+            bundling = chr(1:60)
+            deallocate(chr)
           else
             elname = '  '
             iz = 0
+            bundling = repeat(' ',60)
           end if
 
-          if (index(filnam,'CR') /= 0) then
+          if (index(filnam,json_ck_'CR') /= 0) then
             call json%get(prea,'IROW_ESC',irow_esc,found)
             call json%get(prea,'ICOL_ESC',icol_esc,found)
             call json%get(prea,'POP_ESC',pesc,found)
@@ -1682,12 +1749,26 @@ C  PROCESSING (MASS SCALING, POTENTIAL ENERGY INCREMENT) IN XSTCX,XSTEI,...
           MASST(IR)=MT
           DELPOT(IR)=DPP
         
-          CALL EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
+!cym/cpg avoid type mismatch in call to SLREAC      
+!         CALL EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
+!    .                  RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX, ! additional input card: asymptotics P1
+!    .                  RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX, ! additional input card: asymptotics P2
+!    .                  ELNAME,IZ,BUNDLING,                ! additional input card read for TAB2D/ADAS format
+!    .                  IROW_ESC,ICOL_ESC,POP_ESC, ! (optional) additional input card read CR  internal models
+!    .                  IFTFL, NCOEF, COEF)        ! (optional) for "CONST models"
+          FILNAMc=FILNAM
+          H123c=H123
+          REACc=REAC
+          CRCc=CRC
+          ELNAMEc=ELNAME
+          BUNDLINGC=BUNDLING
+          CALL EIRENE_SLREAC (IR,FILNAMC,H123C,REACC,CRCC,
      .                  RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX, ! additional input card: asymptotics P1
      .                  RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX, ! additional input card: asymptotics P2
-     .                  ELNAME,IZ,                 ! additional input card read for TAB2D/ADAS format
+     .                  ELNAMEC,IZ,BUNDLINGC,                ! additional input card read for TAB2D/ADAS format
      .                  IROW_ESC,ICOL_ESC,POP_ESC, ! (optional) additional input card read CR  internal models
      .                  IFTFL, NCOEF, COEF)        ! (optional) for "CONST models"
+!cym/cpg end
 
           nullify(prea)
         end do  ! nreaci
@@ -1695,6 +1776,7 @@ C  PROCESSING (MASS SCALING, POTENTIAL ENERGY INCREMENT) IN XSTCX,XSTEI,...
         nullify (preacs)
         nullify (preac)
       end if
+      IF (TRCAMD) CALL EIRENE_LEER(1)
 
 !   set up pointers to particle types (ATOMS, MOLEUCLES, TEST_IONS, PHOTONS)
 !   read the respective species numbers      
@@ -1714,6 +1796,10 @@ C  PROCESSING (MASS SCALING, POTENTIAL ENERGY INCREMENT) IN XSTCX,XSTEI,...
       NSPA=NSPH+NATMI
       NSPAM=NSPH+NATMI+NMOLI
       NSPAMI=NSPH+NATMI+NMOLI+NIONI    
+
+      mxdm=max(nphot,natm,nmol,nion,1)
+      allocate (lknd(mxdm))
+      allocate (jdnsl(mxdm))
 C     
 C  READ NEUTRAL ATOMS SPECIES CARDS
 C
@@ -1722,9 +1808,8 @@ C
      . '*** 4A. NEUTRAL ATOMS SPECIES CARDS, NATMI SPECIES'
       WRITE (iunout,*) '       NATMI= ',NATMI
       CALL EIRENE_LEER(1)
-      NATMI_IN = NATMI
 
-      lmulti = .false.
+      lmulpl = .false.
 
       ityp = 1
       call eirene_read_block_4abcd 
@@ -1732,7 +1817,8 @@ C
      .     texts, 'IATM', 'A', nmassa, nchara, nprt, ndum2, isrf, isrt,  
      .     nrca, nfola, ngena, nhsts, ireaca, ibulka,
      .     iscd1a, iscd2a, iscd3a, iscd4a, iscdea, iestma, ibgka,
-     .     eeleca, ebulka, escd1a, freaca, edpota, lmulti)
+     .     eeleca, ebulka, escd1a, freaca, edpota, lmulpl,
+     .     lknd, jdnsl)
       nullify(patm)
 
 C
@@ -1742,7 +1828,6 @@ C
      . '*** 4B. NEUTRAL MOLECULE SPECIES CARDS, NMOLI SPECIES'
       WRITE (iunout,*) '       NMOLI= ',NMOLI
       CALL EIRENE_LEER(1)
-      NMOLI_IN=NMOLI
 
       ityp = 2
       call eirene_read_block_4abcd 
@@ -1750,7 +1835,9 @@ C
      .     texts, 'IMOL', 'M', nmassm, ncharm, nprt, ndum2, isrf, isrt,  
      .     nrcm, nfolm, ngenm, nhsts, ireacm, ibulkm,
      .     iscd1m, iscd2m, iscd3m, iscd4m, iscdem, iestmm, ibgkm,
-     .     eelecm, ebulkm, escd1m, freacm, edpotm, lmulti)
+     .     eelecm, ebulkm, escd1m, freacm, edpotm, lmulpl,
+     .     lknd, jdnsl)
+      lkindm(1:nmoli) = lknd(1:nmoli)
       nullify(pmol)
 
 C
@@ -1759,7 +1846,6 @@ C
       WRITE (iunout,*) '*** 4C. TEST IONS SPECIES CARDS, NIONI SPECIES'
       WRITE (iunout,*) '       NIONI= ',NIONI
       CALL EIRENE_LEER(1)
-      NIONI_IN=NIONI
 
       ityp = 3
       call eirene_read_block_4abcd
@@ -1767,7 +1853,9 @@ C
      .     texts, 'IION', 'I', nmassi, nchari, nprt, nchrgi, isrf, isrt,  
      .     nrci, nfoli, ngeni, nhsts, ireaci, ibulki,
      .     iscd1i, iscd2i, iscd3i, iscd4i, iscdei, iestmi, ibgki,
-     .     eeleci, ebulki, escd1i, freaci, edpoti, lmulti)
+     .     eeleci, ebulki, escd1i, freaci, edpoti, lmulpl,
+     .     lknd, jdnsl)
+      lkindi(1:nioni) = lknd(1:nioni)
       nullify(pion)
 
 C
@@ -1777,7 +1865,6 @@ C
      . '*** 4D. NEUTRAL PHOTONS SPECIES CARDS, NPHOTI SPECIES'
       WRITE (iunout,*) '       NPHOTI= ',NPHOTI
       CALL EIRENE_LEER(1)
-      NPHOTI_IN=NPHOTI
 
       ityp = 0
       call eirene_read_block_4abcd
@@ -1785,10 +1872,14 @@ C
      .     texts, 'IPHOT', 'PH', ndum1, ndum2, nprt, ndum4, isrf, isrt,  
      .     nrcph, nfolph, ngenph, nhsts, ireacph, ibulkph,
      .     iscd1ph, iscd2ph, iscd3ph, iscd4ph, iscdeph, iestmph, ibgkph,
-     .     eelecph, ebulkph, escd1ph, freacph, edpotph, lmulti)
+     .     eelecph, ebulkph, escd1ph, freacph, edpotph, lmulpl,
+     .     lknd, jdnsl)
       nullify(pphot)
 
       nullify(pspc)
+
+      deallocate (lknd)
+      deallocate (jdnsl)
 
       return
       end subroutine eirene_read_block_4
@@ -1800,7 +1891,8 @@ C
      .     texts, cndx, cext, nmass, nchar, nprt, nchrg, isrf, isrt, 
      .     nrc, nfol, ngen, nhsts, ireac, ibulk,
      .     iscd1, iscd2, iscd3, iscd4, iscde, iestm, ibgk,
-     .     eelec, ebulk, escd1, freac, edpot, lmulti, cdenmodel)
+     .     eelec, ebulk, escd1, freac, edpot, lmulpl, 
+     .     lknd, jdnsl, cdenmodel)
 
       class(json_core),intent(inout) :: json
       type(json_value),pointer :: me
@@ -1813,16 +1905,22 @@ C
      .         ireac(ndim,*), ibulk(ndim,*), iscd1(ndim,*), 
      .         iscd2(ndim,*), iscd3(ndim,*), iscd4(ndim,*), 
      .         iscde(ndim,*), iestm(ndim,*), ibgk(ndim,*)
+      integer, intent(out) :: lknd(ndim), jdnsl(ndim)
       real(dp), intent(inout) :: eelec(ndim,*), ebulk(ndim,*), 
      .         escd1(ndim,*), freac(ndim,*), edpot(ndim,*)
-      logical, intent(inout) :: lmulti
+      logical, intent(inout) :: lmulpl
       character(*) :: texts(*), cndx, cext    
       character(*), optional :: cdenmodel(ndim)
       integer :: i, numsec, k, id, nr, np, nsc, ltxt, nre
       logical :: lden, foundb, foundr, found, foundc
-      character(kind=CK,len=:),allocatable :: txt
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: txt
+!cym/cpg end
 
       lden = present(cdenmodel)
+
+      lknd = 0
+      jdnsl = 0
       
       call json%get_child(me,'SPECIES',blk,foundb)
       if (foundb) then
@@ -1866,6 +1964,14 @@ C
 
           call json%get(prt,'NHSTS',nhsts(ispz),found)
 
+          if ((ityp == 2) .or. (ityp == 3)) then
+            call json%get(prt,'LKIND'//cext,lknd(i),found)
+          end if
+
+          if (ityp == 4) then
+            call json%get(prt,'DENSLIM',jdnsl(i),found)
+          end if
+
           if (ityp == 2) then
             IF (ISRT(ISPZ,1).LT.0) THEN
               WRITE (iunout,*) 'INPUT ERROR IN BLOCK 4B '
@@ -1906,8 +2012,8 @@ C
                   call json%get(rea,'IBGK'//cext,ibgk(i,k),found)
                 end if
 
-                if (numsec == 3) then
-                  WRITE (iunout,*) ' WARNING !!! '
+                if ((numsec == 3) .and. (iscd3(i,k) > 0)) then
+                  WRITE (iunout,*) ' WARNING: REACTION KK= ', ireac(i,k)
                   WRITE (iunout,*)
      .              ' THREE SECONDARY GROUPS USED FOR SPECIES ',
      .              TEXTS(ISPZ)
@@ -1917,8 +2023,8 @@ C
                   WRITE (iunout,*) ' ISCDE'//cext,' = ',ISCDE(I,K)
                   WRITE (iunout,*) ' IESTM'//cext,' = ',IESTM(I,K)
                   WRITE (iunout,*) ' IBGK'//cext,'  = ',IBGK(I,K)
-                elseif (numsec == 4) then
-                  WRITE (iunout,*) ' WARNING !!! '
+                elseif ((numsec == 4) .and. (iscd4(i,k) > 0)) then
+                  WRITE (iunout,*) ' WARNING: REACTION KK= ', ireac(i,k)
                   WRITE (iunout,*)
      .              ' FOUR SECONDARY GROUPS USED FOR SPECIES ',
      .              TEXTS(ISPZ)
@@ -1931,7 +2037,20 @@ C
                   WRITE (iunout,*) ' IBGK'//cext,'  = ',IBGK(I,K)
                 end if
                 
-                if (ityp < 4) LMULTI = LMULTI .OR. (IBGK(I,K) /= 0)
+                if (ityp < 4) then
+CDR  FOR THE TIME BEING:  NONLINEAR BGK REACTIONS MUST BE ELASTIC
+                  kk=IREAC(I,K)
+                  elonly=iswr(kk)
+                  IF (IBGK(I,K).NE.0 .AND. elonly.ne.5) then
+                    WRITE (IUNOUT,*)
+     .                 'REACT. KK: BGK ITERAT. FOR IMOL IGNORED. NOT EL'
+                    WRITE (IUNOUT,*) 'I, KK', I,KK, elonly
+                    IBGK(I,K)=0
+                    IMSG=1
+                  endif
+cdr  enforce multiple background field temperature arrays, in case of any BGK reactions.
+                  LMULPL = LMULPL .OR. (IBGK(I,K) /= 0)
+                end if
 
                 call json%get(rea,'EELEC'//cext,eelec(i,k),found)
                 call json%get(rea,'EBULK'//cext,ebulk(i,k),found)
@@ -1964,6 +2083,8 @@ C
               end do  ! nrc
             end if  ! foundr
           end if  ! nrc > 0
+          IF (IMSG.EQ.1) CALL EIRENE_LEER(1)
+          IMSG=0
 
 !  check for density models
           if ((ityp == 4) .and. lden) then
@@ -1982,12 +2103,12 @@ C
               ALLOCATE (TDMPAR(I)%TDM%ISTR(TDMPAR(I)%TDM%NRE))
               ALLOCATE (TDMPAR(I)%TDM%IRC(TDMPAR(I)%TDM%NRE))
               SELECT CASE (CDENMODEL(I))
-              CASE (FORT//'13')
+              CASE ('FORT.13','FTN13')
                 IDMDL = IDMDL + 1
                 call json%get(cden,'ISP',TDMPAR(I)%TDM%ISP(1),found)
 c  default: only for bulk ions
                 TDMPAR(I)%TDM%ITP(1)=4
-              CASE (FORT//'10')
+              CASE ('FORT.10','FTN10')
                 IDMDL = IDMDL + 1
                 call json%get(cden,'ISP',TDMPAR(I)%TDM%ISP(1),found)
                 call json%get(cden,'ITP',TDMPAR(I)%TDM%ITP(1),found)
@@ -2014,6 +2135,12 @@ c  default: only for bulk ions
               CASE ('SAHA      ')
                 IDMDL = IDMDL + 1
 !PB   TO BE WRITTEN
+              CASE ('PLANCK')
+                IDMDL = IDMDL + 1
+                call json%get(cden,'G_PLANCK',
+     .                        TDMPAR(I)%TDM%G_PLANCK,found)
+                TDMPAR(I)%TDM%ITP(1)=4
+!dr   unfinished, TO BE WRITTEN
               CASE ('BOLTZMANN ')
                 IDMDL = IDMDL + 1
                 call json%get(cden,'ISP',TDMPAR(I)%TDM%ISP(1),found)
@@ -2080,13 +2207,18 @@ c  default: only for bulk ions
       type(json_value), pointer, intent(in) :: p
       type(json_value), pointer :: pbck, pbulk, plsm, pch,
      .                             pte, pti, pdi, pvel, pbfld, pvol,
-     .                             pintl, pAMD
+     .                             pintl, pAMD, pzi
       integer, allocatable :: ihelp(:)
       integer :: i, ndum1(1), ndum2(1), ndum3(1), ndum4(1), nch,
      .           ital, iopt, jpls
       real(dp) :: dum(1)
       logical :: found, foundp, foundi
-      character(kind=CK,len=:),allocatable :: txtr
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: txtr
+      character(kind=json_CK,len=:),allocatable :: MeshTypeCK
+      character(kind=json_CK,len=:),allocatable :: AMDoutputCK
+!cym/cpg end
+      integer, allocatable :: lknd(:), jdnsl(:)
 
       CALL EIRENE_MASAGE('*** 5. DATA FOR PLASMA BACKGROUND')
       CALL EIRENE_LEER(1)
@@ -2102,11 +2234,13 @@ C
       WRITE (iunout,*) '*** 5A. BULK ION SPECIES CARDS, NPLSI SPECIES'
       WRITE (iunout,*) '       NPLSI= ',NPLSI
       CALL EIRENE_LEER(1)
-      NPLSI_IN=NPLSI
       NSPAMI=NSPAM+NIONI
       NSPTOT=NSPAMI+NPLSI
 ! counter for additional reaction cards possibly needed for "density models".
       IDMDL = 0
+
+      allocate (lknd(npls))
+      allocate (jdnsl(npls))
 
       ityp = 4
       call eirene_read_block_4abcd 
@@ -2114,26 +2248,48 @@ C
      .     texts, 'IPLS', 'P', nmassp, ncharp, nprt, nchrgp, isrf, isrt,  
      .     nrcp, ndum1, ndum2, nhsts, ireacp, ibulkp,
      .     iscd1p, iscd2p, iscd3p, iscd4p, iscdep, ndum3, ndum4,
-     .     eelecp, ebulkp, escd1p, freacp, dum, lmulti, cdenmodel)
+     .     eelecp, ebulkp, escd1p, freacp, dum, lmulpl,
+     .     lknd, jdnsl, cdenmodel)
+
       nullify(pbulk)
-      CALL EIRENE_LEER(1)
 C
       DO I=1,NSPZ
         CALL EIRENE_UPPERCASE (TEXTS(I))
       END DO
+
+!PB DENSITY LIMIT FOR PLASMA SPECIES
+      DO JPLS=1,NPLSI
+        ISPZ=NSPAMI+JPLS
+        IF(JDNSL(JPLS).EQ.0) THEN
+c         DENSLIM(JPLS)=10**(MAXEXPONENT(DENSLIM(JPLS))-1)
+        DENSLIM(JPLS)=10e30
+        ELSE
+         DENSLIM(JPLS)=2._DP**JDNSL(JPLS)
+        END IF
+        WRITE(iunout,*) TEXTS(ISPZ), DENSLIM(JPLS)
+      END DO
+
+      deallocate (lknd)
+      deallocate (jdnsl)
 C
       call json%get_child(pbck,'PLASMA',plsm,foundp)
 
       CALL EIRENE_MASAGE('*** 5B. PLASMA BACKGROUND DATA')
       CALL EIRENE_LEER(1)
       
+cdr  indpro(2) has already been determined in find_param.
       call json%get(plsm,'INDPRO',ihelp,found)
       indpro(1:12) = ihelp(1:12)
       indpro_in(1:12) = indpro(1:12)
       deallocate(ihelp)
+      if (indpro(2).ne.indpro2_save) then
+        write (iunout,*) 'indpro(2) reset to ',indpro2_save
+        call eirene_leer(1)
+        indpro(2)=indpro2_save
+      endif
 
       DO J=1,12
-C  Indicate "smoothed" input tallies (interpolation into cells)
+C  Indicate "smoothed" input tallies (interpolation from cell vertices into cells)
 C  amongst the 12 input tallies read here.
 C  formerly: LSMOPRO(J) flag.
 C  Smoothing is currently only for tallies 1 to 7.
@@ -2188,33 +2344,59 @@ C  Te profile
       nullify (pte)
 
 C  Ti profile(s)
+cdr  default is: eV units for Ti
+      NLKELV=INDPRO(2) < 0  ! Kelvin units instead of eV
+      INDPRO(2)=IABS(INDPRO(2))
+
+cdr  default is: |indpro| < 10: npls Ti fields, one per background species
+cdr              |indpro| > 10: only one common Ti field is specified
 
       NPLSTI = NPLS
-      IF (INDPRO(2) < 0) NPLSTI=1
+      LRDMLTI=.TRUE.
 
-      IF ((NPLS > 1) .AND. (NPLSTI == 1)) THEN
+cdr  only one common profile for all NPLS species?
+      IF (INDPRO(2) > 9) THEN
+        NPLSTI = 1
+        LRDMLTI=.FALSE.
+      ENDIF
+
+      IF ((NPLS > 1) .AND. (NPLSTI == 1) .AND. 
+     .    (LMULPL .OR. ((NPLS_FIX > 0) .AND. (NPLS_FIX /= NPLSI))
+     .            .OR.  ANY(CDENMODEL == FORT//'13'))) THEN
+        CALL EIRENE_LEER(1)
         WRITE (IUNOUT,*) 'WARNING !'
-        WRITE (IUNOUT,*) 'TIIN PROVIDED FOR ONE SPECIES ONLY ',
+        WRITE (IUNOUT,*) 'TIIN STORAGE PROVIDED FOR ONE SPECIES ONLY ',
      .                   'DUE TO INDPRO(2) < 0'
-        IF (LMULTI) THEN
-          WRITE (IUNOUT,*) 'DIMENSION OF TIIN OVERWRITTEN ',
-     .                     'BECAUSE BGK REACTIONS PRESENT'
-          NPLSTI = NPLS
-        END IF
+        WRITE (IUNOUT,*) 'STORAGE FOR TIIN OVERWRITTEN ',
+     .                   'BECAUSE BGK REACTIONS PRESENT'
+        LRDMLTI=.FALSE.         !  read only one common Ti card, despite storage for NPLS Ti profiles.
+        NPLSTI = NPLS
         WRITE (IUNOUT,*) ' NPLSTI = ',NPLSTI
+        CALL EIRENE_LEER(1)
+c     ELSE
+c  read one Ti card for each of the NPLS Ti profiles
+c       LRDMLTI=.TRUE.
       END IF
 
-!pb   ion temperature for each bulk ion
+      IF (INDPRO(2) > 9) INDPRO(2) = MOD(INDPRO(2),10)
+
       NLMLTI = (NPLSTI > 1)
+ 
+cdr  indirect addressing: IVL= MPLSTI(IPLS)   ! find Ti field for IPLS on TIIN(IVL)
+      IF (NPLSTI == 1) THEN
+        MPLSTI = 1                    ! find ALL Ti fields on IPLS=1 storage
+      ELSEIF (NPLSTI == NPLS) THEN
+        MPLSTI = (/ (I,I=1,NPLS) /)   ! find each individual Ti field on its IPLS storage
+      ELSE
+cdr     more general options: to be written.
+cdr     E.g.: only virtual background species with different flow fields
+      ENDIF
+
       MPLSTI=1
       IF (NLMLTI)     MPLSTI = (/ (I,I=1,NPLS) /)
 
-      INDPRO(2)=IABS(INDPRO(2))
-!pb   read parameters TI0...TI5 for each temperature
-      LRDMLTI= INDPRO(2) > 9
-      IF (INDPRO(2) > 9) INDPRO(2) = MOD(INDPRO(2),10)
 
-      IF (INDPRO(2).LE.5.AND.NPLSI.GT.0) THEN
+      IF (INDPRO(2).LE.5.AND.NPLS.GT.0) THEN
         call json%info(pti,n_children=nch)
         if (lrdmlti.and.(nch /= nplsi)) then
           write (iunout,*) ' ERROR READING ION TEMPERATURE PROFILES '
@@ -2271,33 +2453,60 @@ c  di profiles
       END IF
       nullify (pdi)
 
-c  vi profile(s)
+c  V_IN profile(s)
 cdr  default is: cm/s units for flow field(s)
       NLMACH=INDPRO(4).LT.0  ! Mach number units instead, rather than cm/s
       INDPRO(4)=IABS(INDPRO(4))
 
 cdr  default is: |indpro| < 10:  npls flow fields, one per background species
 cdr              |indpro| > 10:  only one common flow field
+
       NPLSV = NPLS
-      IF (INDPRO(4) > 9) NPLSV = 1
+      LRDMLV=.TRUE.
+
+cdr  only one common profile for all NPLS species?
+      IF (INDPRO(4) > 9) THEN
+        NPLSV = 1
+        LRDMLV=.FALSE.
+      ENDIF
+
+      IF ((NPLS > 1) .AND. (NPLSV == 1) .and. lmulpl) THEN
+        WRITE (IUNOUT,*) 'WARNING !'
+        WRITE (IUNOUT,*) 'V.IN STORAGE PROVIDED FOR ONE SPECIES ONLY ',
+     .                   'DUE TO INDPRO(4) > 10'
+        WRITE (IUNOUT,*) 'STORAGE FOR VXIN, VYIN, VZIN OVERWRITTEN ',
+     .                   'BECAUSE BGK REACTIONS PRESENT'
+        LRDMLV=.FALSE.  !  read only one common V.IN card, despite storage for NPLS V.IN profiles.
+        NPLSV = NPLS
+        WRITE (IUNOUT,*) ' NPLSV = ',NPLSV
+c     ELSE
+c  read one V.IN card for each of the NPLS V.IN profiles
+c       LRDMLV=.TRUE.
+      END IF
 
       IF (INDPRO(4) > 9) INDPRO(4) = MOD(INDPRO(4),10)
+
       NLMLV = (NPLSV > 1)
-      IF (.NOT.NLMLV) THEN
-        MPLSV = 1                    ! find all flow fields on ipls=1 storage
+
+cdr  indirect addressing: IVL= MPLSV(IPLS)   ! find flow field for IPLS on V_XYZ(IVL)
+      IF (NPLSV == 1) THEN
+        MPLSV = 1                    ! find ALL flow fields on IPLS=1 storage
+      ELSEIF (NPLSV == NPLS) THEN
+        MPLSV = (/ (I,I=1,NPLS) /)   ! find each individual flow field on its IPLS storage
       ELSE
-        MPLSV = (/ (I,I=1,NPLS) /)   ! find each individual flow field on its ipls storage
+cdr     more general options: to be written.
+cdr     E.g.: only virtual background species with different flow fields
       ENDIF
       IF ((INDPRO(4).LE.5).AND.(NPLSI.GT.0)) THEN
         call json%info(pvel,n_children=nch)
-        if (NLMLV.and.(nch /= nplsi)) then
+        if (LRDMLV.and.(nch /= nplsi)) then
           write (iunout,*) ' ERROR READING FLOW VELOCITY PROFILES '
           write (iunout,*) ' TOO FEW VELOCITY PROFILES PROVIDED '
           write (iunout,*) ' NO. PROFILES FOUND ',nch
           write (iunout,*) ' NPLSI = ',NPLSI
           call eirene_exit_own(1)
         end if
-        if (.not.NLMLV .and. (nch > 1)) nch = 1
+        if (.not.LRDMLV .and. (nch > 1)) nch = 1
         do i = 1,nch
           call json%get_child(pvel,i,pch,found)
           
@@ -2323,12 +2532,34 @@ cdr              |indpro| > 10:  only one common flow field
           call json%get(pch,'VZ5',vz5(i),found)
           nullify(pch)
         end do
+        if (.not.lrdmlv) then
+          vx0(2:nplsti) = vx0(1)
+          vx1(2:nplsti) = vx1(1)
+          vx2(2:nplsti) = vx2(1)
+          vx3(2:nplsti) = vx3(1)
+          vx4(2:nplsti) = vx4(1)
+          vx5(2:nplsti) = vx5(1)
+
+          vy0(2:nplsti) = vy0(1)
+          vy1(2:nplsti) = vy1(1)
+          vy2(2:nplsti) = vy2(1)
+          vy3(2:nplsti) = vy3(1)
+          vy4(2:nplsti) = vy4(1)
+          vy5(2:nplsti) = vy5(1)
+
+          vz0(2:nplsti) = vz0(1)
+          vz1(2:nplsti) = vz1(1)
+          vz2(2:nplsti) = vz2(1)
+          vz3(2:nplsti) = vz3(1)
+          vz4(2:nplsti) = vz4(1)
+          vz5(2:nplsti) = vz5(1)
+        end if
       END IF
       nullify (pvel)
 
-c  pitch - or B-field profile
-c                              !  default:                B-FIELD WITH BX=0
-      NLPITCH=INDPRO(5).LT.0   !  for 1D parallel B runs: B-FIELD WITH BY=0
+c  pitch - or B field profile
+c                              !  default:                B FIELD WITH BX=0
+      NLPITCH=INDPRO(5).LT.0   !  for 1D parallel B runs: B FIELD WITH BY=0
 
       INDPRO(5)=IABS(INDPRO(5))
       IF (INDPRO(5).LE.5) THEN
@@ -2341,7 +2572,31 @@ c                              !  default:                B-FIELD WITH BX=0
       END IF
       nullify (pbfld)
 
-c  cell volume -profile
+c  zi profiles
+      IF ((INDPRO(11) > 0) .AND. (INDPRO(3).LE.5)) THEN
+        call json%info(pzi,n_children=nch)
+        if (nch /= nplsi) then
+          write (iunout,*) ' ERROR READING ZI PROFILES '
+          write (iunout,*) ' NO. OF PROFILES DOES NOT MATCH',
+     .                     ' NO. OF BULK SPECIES'
+          write (iunout,*) ' NO. PROFILES FOUND ',nch
+          write (iunout,*) ' NPLSI = ',NPLSI
+          call eirene_exit_own(1)
+        end if
+        do i = 1,nch
+          call json%get_child(pzi,i,pch,found)
+          call json%get(pch,'ZI0',zi0(i),found)
+          call json%get(pch,'ZI1',zi1(i),found)
+          call json%get(pch,'ZI2',zi2(i),found)
+          call json%get(pch,'ZI3',zi3(i),found)
+          call json%get(pch,'ZI4',zi4(i),found)
+          call json%get(pch,'ZI5',zi5(i),found)
+          nullify (pch)
+        end do
+      END IF
+      nullify (pzi)
+
+c  cell volume profile card, OPTIONAL
 
       IF (INDPRO(12).LE.5) THEN
         if (associated(pvol)) then
@@ -2353,17 +2608,24 @@ c  cell volume -profile
           call json%get(pvol,'VL5',vl5,found)    
           nullify(pvol)
         else
+          WRITE (iunout,*) 'ONE INPUT LINE (VOL) MISSING IN BLOCK 5'
+          WRITE (iunout,*) 'AUTOMATIC CORRECTION PERFORMED'
+          CALL EIRENE_LEER(1)
           vl0 = 0
         end if
       END IF
 
 c  check for "OPTIONAL" input cards.
-c  Here: explicitly switch off input tallies,
+c  Here: explicitly switch on/off input tallies,
 c        or activate gradient tallies: INTLOPTS(ITAL)
 c  ITAL:  -ntali<ital<0, then: ital=iabs(ital).
 c  IOPT:   turn off or add gradient tally
 
       if (foundi) then
+cdr  read an arbitrary number of tally-option cards ITAL, IOPT
+cdr  and store results on INTLOPTS(ITAL).
+cdr  Above some switches LTESMO, LDESMO, etc.. have already been set from INDPRO > 100.
+cdr  Possible conflicts, inconsistencies.
         call json%info(pintl,n_children=nch)
         if ((nch == 0) .or.(nch > ntali)) then
           write (iunout,*) ' ERROR READING OPTIONS FOR INPUT TALLIES'
@@ -2387,14 +2649,22 @@ c  IOPT:   turn off or add gradient tally
       
       call json%get_child(p,'AMDoutpars',pAMD,found)
       if(found) then
-         call json%get(pAMD,'AMDoutput',AMDOutPars%AMDoutput,found)
+!cym/cpg type mismatch
+!        call json%get(pAMD,'AMDoutput',AMDOutPars%AMDoutput,found)
+         call json%get(pAMD,'AMDoutput',AMDoutputCK,found)
+         AMDOutPars%AMDoutput=AMDoutputCK
+!cym/cpg end
          call json%get(pAMD,'NEmin',AMDOutPars%NEmin,found)
          call json%get(pAMD,'NEmax',AMDOutPars%NEmax,found)
          call json%get(pAMD,'TEmin',AMDOutPars%TEmin,found)
          call json%get(pAMD,'TEmax',AMDOutPars%TEmax,found)
          call json%get(pAMD,'NNE',AMDOutPars%NNE,found)
          call json%get(pAMD,'NTE',AMDOutPars%NTE,found)
-         call json%get(pAMD,'MeshType',AMDOutPars%MeshType,found)
+!cym/cpg         
+!         call json%get(pAMD,'MeshType',AMDOutPars%MeshType,found)
+         call json%get(pAMD,'MeshType',MeshTypeCK,found)
+         AMDOutPars%MeshType=MeshTypeCK
+!cym/cpg end
          nullify (pAMD)
       endif
       
@@ -2411,10 +2681,12 @@ c  IOPT:   turn off or add gradient tally
       class(json_core),intent(inout) :: json
       type(json_value), pointer, intent(in) :: p
       type(json_value), pointer :: ptom, psmods, pchild, pchan, pch
-      character(kind=CK,len=:),allocatable :: txt, varname, spcname
-      character(kind=CK,len=72),dimension(:),allocatable :: rfilnm
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: txt, varname, spcname
+      character(kind=json_CK,len=72),dimension(:),allocatable :: rfilnm
+!cym/cpg end
       integer :: iflr, nmods, imod, nch, i2, nfr, ideflt_sput, i, l,
-     .           ispz, ico, is, ideflt_spez, jflr
+     .           ispz, ico, is, ideflt_spez, jflr, j
       real(dp), allocatable :: rhelp(:)
       logical :: found, foundp, founds, foundc, lf(5)
       CHARACTER(500) :: FILE
@@ -2455,12 +2727,13 @@ C  PATH SPECIFICATION FOR DATA BASE FOUND
      .                  ' TOO LONG !'
             CALL EIRENE_EXIT_OWN(1)
           END IF
+          I=INDEX(TXT,ACHAR(13)) !VK
+          IF(I.GT.0.AND.I.LE.LEN_TRIM(TXT)) TXT(I:I)=' ' !VK TO REMOVE \r
           I2=LEN(TXT)
           FILE=REPEAT(' ',420)
           FILE(1:I2)=txt
           WRITE (iunout,*) ' PATH = ',FILE(1:I2)
 C  PATH FOUND. NEXT: READ ONE OR MORE CARDS FILNAM A_ON_B
-C         NFR=0  !dr now already set above
           call json%get_child(p,'PROJ_ON_MAT',ptom,found)
           call json%info(ptom,n_children=nfr)
           if (nfr > 0) then 
@@ -2468,6 +2741,10 @@ c  TRIM files for NFR target projectile combinations are requested.
 c  read them one by one in subr. RDTRIM
 c  RFILNM is array of strings and holds NFR filenames             
             call json%get(ptom,rfilnm)
+            do j=1, nfr
+              I=INDEX(RFILNM(J),ACHAR(13)) !VK
+              IF(I.GT.0.AND.I.LE.LEN_TRIM(RFILNM(J))) RFILNM(J)(I:I)=' ' !VK TO REMOVE \r
+            end do
             nhd6 = nfr
           else
 c  old default: all TRIM data in one single file.
@@ -2495,30 +2772,31 @@ c  read this (single) file "TRIM.DAT" in subr. REFDAT
           REFFIL(JFLR) = FILE
         end do
         deallocate (rfilnm)
+        IF (NFR.GE.1) CALL EIRENE_LEER(1)
       end if
 
 c  next: read species index sampling distributions datm, dmol, dion, dpls, and in case nphot > 0, also dphot
 
       call json%get(p,'DATD',rhelp,found)
-      datd(1:natmi_in) = rhelp(1:natmi_in)
+      datd(1:natmi) = rhelp(1:natmi)
       deallocate(rhelp)
 
       call json%get(p,'DMLD',rhelp,found)
-      dmld(1:nmoli_in) = rhelp(1:nmoli_in)
+      dmld(1:nmoli) = rhelp(1:nmoli)
       deallocate(rhelp)
 
       call json%get(p,'DIOD',rhelp,found)
-      diod(1:nioni_in) = rhelp(1:nioni_in)
+      diod(1:nioni) = rhelp(1:nioni)
       deallocate(rhelp)
 
       call json%get(p,'DPLD',rhelp,found)
-      dpld(1:nplsi_in) = rhelp(1:nplsi_in)
+      dpld(1:nplsi) = rhelp(1:nplsi)
       deallocate(rhelp)
 
-      if (nphoti > 0) then   !dr try to make this more logic: always read dphd.
+      if (nphoti > 0) then   !dr try to make this more logical: always read dphd.
                              !dr backward compatible ?
         call json%get(p,'DPHD',rhelp,found)
-        dphd(1:nphoti_in) = rhelp(1:nphoti_in)
+        dphd(1:nphoti) = rhelp(1:nphoti)
         deallocate(rhelp)
       end if
 
@@ -2548,6 +2826,7 @@ c  read surface models identified by character string 'SURFMOD_...'
           ALLOCATE (REFCUR)
           ALLOCATE (REFCUR%JSRS(nspz))
           ALLOCATE (REFCUR%JSRC(nspz))
+          ALLOCATE (REFCUR%JLCHSPNWL(nspz))
           ALLOCATE (REFCUR%TRANSPR(nspz,2))
           ALLOCATE (REFCUR%RCYCFR(nspz))
           ALLOCATE (REFCUR%RCYCTR(nspz))
@@ -2564,6 +2843,7 @@ c  read surface models identified by character string 'SURFMOD_...'
           
           REFCUR%JSRS = 0
           REFCUR%JSRC = 0
+          REFCUR%JLCHSPNWL = 0
           REFCUR%TRANSPR = 0._DP
           REFCUR%RCYCFR  = 0._DP
           REFCUR%RCYCTR  = 0._DP
@@ -2586,6 +2866,8 @@ c  read surface models identified by character string 'SURFMOD_...'
           call json%get(pchild,'ILSPT',REFCUR%JLSPT, found)
           call json%get(pchild,'ISRS',REFCUR%JSRS(1), found)
           call json%get(pchild,'ISRC',REFCUR%JSRC(1), found)
+          call json%get(pchild,'LCHSPNWL',REFCUR%JLCHSPNWL(1), found)
+          call json%get(pchild,'REFCELL',REFCUR%REFCELL, found)
           
           call json%get(pchild,'ZNML',REFCUR%ZNMLR, found)
           call json%get(pchild,'EWALL',REFCUR%EWALLR, found)
@@ -2604,6 +2886,7 @@ c  read surface models identified by character string 'SURFMOD_...'
 
           REFCUR%JSRS(2:NSPZ) = REFCUR%JSRS(1)
           REFCUR%JSRC(2:NSPZ) = REFCUR%JSRC(1)
+          REFCUR%JLCHSPNWL(2:NSPZ) = REFCUR%JLCHSPNWL(1)    !VK
           REFCUR%TRANSPR(2:NSPZ,1)=REFCUR%TRANSPR(1,1)
           REFCUR%TRANSPR(2:NSPZ,2)=REFCUR%TRANSPR(1,2)
           REFCUR%RCYCFR(2:NSPZ) = REFCUR%RCYCFR(1)
@@ -2636,6 +2919,8 @@ C  DEFAULT SPUTER MODEL
 
           call json%get(pchild,'ESPUTC',REFCUR%ESPTCR(1), lf(5))
           if (lf(5)) REFCUR%ESPTCR(2:NSPZ) = REFCUR%ESPTCR(1)
+
+          call json%get(pchild,'REFPRESS',REFCUR%REFPRESS, found)
           
           if (any(lf)) then
             DO I=2,NSPZ
@@ -2646,6 +2931,10 @@ C  DEFAULT SPUTER MODEL
               REFCUR%ESPTCR(I) = REFCUR%ESPTCR(1)
             ENDDO
             ideflt_sput = 1
+!Pressure feedback loop model
+            IF (REFCUR%JLREF == 4) 
+     .         WRITE(IUNOUT,*) "PFL with parameters: ",
+     .           REFCUR%REFCELL, REFCUR%REFPRESS
           end if
 
 !  check of non-default sputter model
@@ -2688,7 +2977,8 @@ C  DEFAULT SPUTER MODEL
               allocate(spr)
               spr%varname = varname
               spr%spcname = spcname
-              if ((varname == 'ISRS') .or. (varname == 'ISRC')) then  
+              if ((varname == 'ISRS') .or. (varname == 'ISRC') .or.
+     .            (varname == 'LCHSPNWL')) then  
                 call json%get(pch,'VALUE',spr%ival,found)
               else
                 call json%get(pch,'VALUE',spr%rval,found)
@@ -2704,37 +2994,42 @@ C  DEFAULT SPUTER MODEL
                 spr_last => spr_last%next
               end if
 
+!cym/cpg avoiding type mismatch 
+!  'xxxx' -> json_ck_'xxxx' consistent with varname type
               select case (varname)
-              case ('ISRS')
+              case (json_ck_'ISRS')
                 REFCUR%JSRS(ispz) = spr%ival
-              case ('ISRC')
+              case (json_ck_'ISRC')
                 REFCUR%JSRC(ispz) = spr%ival
-              case ('TRANSP1')
+              case (json_ck_'LCHSPNWL')
+                REFCUR%JLCHSPNWL(ispz) = spr%ival !VK
+              case (json_ck_'TRANSP1')
                 REFCUR%TRANSPR(ispz,1) = spr%rval
-              case ('TRANSP2')
+              case (json_ck_'TRANSP2')
                 REFCUR%TRANSPR(ispz,2) = spr%rval
-              case ('RECYCF')
+              case (json_ck_'RECYCF')
                 REFCUR%RCYCFR(ispz) = spr%rval 
-              case ('RECYCT')
+              case (json_ck_'RECYCT')
                 REFCUR%RCYCTR(ispz) = spr%rval
-              case ('RECPRM')
+              case (json_ck_'RECPRM')
                 REFCUR%RCPRMR(ispz) = spr%rval
-              case ('EXPPL')
+              case (json_ck_'EXPPL')
                 REFCUR%EXPPLR(ispz) = spr%rval
-              case ('EXPEL')
+              case (json_ck_'EXPEL')
                 REFCUR%EXPELR(ispz) = spr%rval
-              case ('EXPIL')
+              case (json_ck_'EXPIL')
                 REFCUR%EXPILR(ispz) = spr%rval
-              case ('RECYCS')
+              case (json_ck_'RECYCS')
                 REFCUR%RCYCSR(ispz) = spr%rval
-              case ('RECYCC')
+              case (json_ck_'RECYCC')
                 REFCUR%RCYCCR(ispz) = spr%rval
-              case ('SPTPRM')
+              case (json_ck_'SPTPRM')
                 REFCUR%STPRMR(ispz) = spr%rval
-              case ('ESPUTS')
+              case (json_ck_'ESPUTS')
                 REFCUR%ESPTSR(ispz) = spr%rval
-              case ('ESPUTC')
+              case (json_ck_'ESPUTC')
                 REFCUR%ESPTCR(ispz) = spr%rval
+!cym/cpg end
 
               case default
                 write (iunout,*) ' unknown variable name encountered',
@@ -2752,7 +3047,7 @@ C all lines of this particular SURFMOD_... are read now
 C
           IF (ideflt_sput.le.0.and.REFCUR%JLSPT.NE.0) THEN
             WRITE (iunout,*) 'WARNING: SPUTTERING FOR MODEL ',
-     .            REFCUR%REFNAME
+     .            TRIM(REFCUR%REFNAME)
             WRITE (iunout,*) 
      .            'BUT NO PARAMETERS RECYCS, RECYCC ARE READ '
             WRITE (iunout,*) 'DEFAULT MODEL: "NO SPUTTERING" IS USED. '
@@ -2788,7 +3083,9 @@ C
       class(json_core),intent(inout) :: json
       type(json_value), pointer, intent(in) :: p
       type(json_value), pointer :: pstrata, pstr, psubs, psub
-      character(kind=CK,len=:),allocatable :: txt
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: txt
+!cym/cpg end
       logical :: found
       integer, allocatable :: ihelp(:)
       integer :: nstr, ist, j 
@@ -2800,6 +3097,7 @@ C
 
       call json%get(p,'NSTRAI',nstrai,found)
       WRITE (iunout,*) '       NSTRAI= ',NSTRAI
+      NSTRAI_IN = NSTRAI
       CALL EIRENE_LEER(1)
 
       call json%get(p,'INDSRC',ihelp,found)
@@ -2817,7 +3115,7 @@ C          and for number of histories NPTS (see below)
         WRITE (iunout,*) '       NTCPU, NPTS ENHANCED BY FACTOR AMPTS ',
      .                     AMPTS
       ELSE
-        MPTS_COMSOU=1.0
+        MPTS_COMSOU=1.0_DP
       END IF
       
       call json%get_child(p,'STRATA',pstrata,found)
@@ -2827,117 +3125,116 @@ C          and for number of histories NPTS (see below)
 
         call json%get_child(pstrata,istr,pstr,found)
 
-        call json%get(pstr,'ISTRA',istra,found)
+        call json%get(pstr,'ISTRA',jstra,found)
 
         call json%get(pstr,'TXTSOU',txt,found)
-        TXTSOU(ISTRA) = TXT
+        TXTSOU(JSTRA) = TXT
         deallocate(txt)
 
-        call json%get(pstr,'NLAVRP',nlavrp(istra),found)
-        call json%get(pstr,'NLAVRT',nlavrt(istra),found)
-        call json%get(pstr,'NLSYMP',nlsymp(istra),found)
-        call json%get(pstr,'NLSYMT',nlsymt(istra),found)
-!       call json%get(pstr,'NLRAY',nlray(istra),found)
-        NLRAY(ISTRA)=.FALSE.        ! CDR: UNFINISHED PROPRIETARY OPTION
+        call json%get(pstr,'NLAVRP',nlavrp(jstra),found)
+        call json%get(pstr,'NLAVRT',nlavrt(jstra),found)
+        call json%get(pstr,'NLSYMP',nlsymp(jstra),found)
+        call json%get(pstr,'NLSYMT',nlsymt(jstra),found)
+!       call json%get(pstr,'NLRAY',nlray(jstra),found)
+        NLRAY(JSTRA)=.FALSE.        ! CDR: UNFINISHED PROPRIETARY OPTION
 
-        call json%get(pstr,'NPTS',npts(istra),found)
-        call json%get(pstr,'NINITL',ninitl(istra),found)
-        call json%get(pstr,'NEMODS',nemods(istra),found)
-        call json%get(pstr,'NAMODS',namods(istra),found)
+        call json%get(pstr,'NPTS',npts(jstra),found)
+        call json%get(pstr,'NINITL',ninitl(jstra),found)
+        call json%get(pstr,'NEMODS',nemods(jstra),found)
+        call json%get(pstr,'NAMODS',namods(jstra),found)
 
 c.............................................
-c  further proprietary input flags. Not ready for external use.
 c  NMINPTS:   ENFORCE MINIMUM NUMBER OF HISTORIES FOR STRATUM.
 cdr           currently set in various places, but not used anywhere.
-        call json%get(pstr,'NMINPTS',nminpts(istra),found)
+        call json%get(pstr,'NMINPTS',nminpts(jstra),found)
 
 c  NPTSDEL: =0   (VALUES NPTSDEL .GT.0 ONLY FOR INTERNAL TESTTING PROCEDURES
 C                 OF MPI parallelization. Requires 2 runs with special input settings
 cdr See comments in MCARLO.F
-        call json%get(pstr,'NPTSDEL',nptsdel(istra),found)
-!       call json%get(pstr,'NRAYEN',nrayen(istra),found)   !CDR  NOT IN USE
+        call json%get(pstr,'NPTSDEL',nptsdel(jstra),found)
+!       call json%get(pstr,'NRAYEN',nrayen(jstra),found)   !CDR  NOT IN USE
 c...................................................................
 
 C APPLY MULTIPLIER AMPTS TO SELECTED MC PARTICLE NUMBER RANGE
         IF(AMPTS.GT.0) THEN
-          NPTS(ISTRA)=INT(NPTS(ISTRA)*AMPTS)
-          NMINPTS(ISTRA)=INT(NMINPTS(ISTRA)*AMPTS)
+          NPTS(JSTRA)=INT(NPTS(JSTRA)*AMPTS)
+          NMINPTS(JSTRA)=INT(NMINPTS(JSTRA)*AMPTS)
         END IF
 C
 
 csw if npts < 0 --> npts = infty
-        if(npts(istra).lt.0) npts(istra) = huge(1)-1
+        if(npts(jstra).lt.0) npts(jstra) = huge(1)-1
 
-        call json%get(pstr,'FLUX',flux(istra),found)
-        call json%get(pstr,'SCALV',scalv(istra),found)
-        call json%get(pstr,'IVLSF',ivlsf(istra),found)
-        call json%get(pstr,'ISCLS',iscls(istra),found)
-        call json%get(pstr,'ISCLT',isclt(istra),found)
-        call json%get(pstr,'ISCL1',iscl1(istra),found)
-        call json%get(pstr,'ISCL2',iscl2(istra),found)
-        call json%get(pstr,'ISCL3',iscl3(istra),found)
-        call json%get(pstr,'ISCLB',isclb(istra),found)
-        call json%get(pstr,'ISCLA',iscla(istra),found)
+        call json%get(pstr,'FLUX',flux(jstra),found)
+        call json%get(pstr,'SCALV',scalv(jstra),found)
+        call json%get(pstr,'IVLSF',ivlsf(jstra),found)
+        call json%get(pstr,'ISCLS',iscls(jstra),found)
+        call json%get(pstr,'ISCLT',isclt(jstra),found)
+        call json%get(pstr,'ISCL1',iscl1(jstra),found)
+        call json%get(pstr,'ISCL2',iscl2(jstra),found)
+        call json%get(pstr,'ISCL3',iscl3(jstra),found)
+        call json%get(pstr,'ISCLB',isclb(jstra),found)
+        call json%get(pstr,'ISCLA',iscla(jstra),found)
 
-        call json%get(pstr,'NLATM',nlatm(istra),found)
-        call json%get(pstr,'NLMOL',nlmol(istra),found)
-        call json%get(pstr,'NLION',nlion(istra),found)
-        call json%get(pstr,'NLPLS',nlpls(istra),found)
-        call json%get(pstr,'NLPHOT',nlphot(istra),found)
+        call json%get(pstr,'NLATM',nlatm(jstra),found)
+        call json%get(pstr,'NLMOL',nlmol(jstra),found)
+        call json%get(pstr,'NLION',nlion(jstra),found)
+        call json%get(pstr,'NLPLS',nlpls(jstra),found)
+        call json%get(pstr,'NLPHOT',nlphot(jstra),found)
 
-        call json%get(pstr,'NSPEZ',nspez(istra),found)
+        call json%get(pstr,'NSPEZ',nspez(jstra),found)
    
-        call json%get(pstr,'NLPNT',nlpnt(istra),found)
-        call json%get(pstr,'NLLNE',nllne(istra),found)
-        call json%get(pstr,'NLSRF',nlsrf(istra),found)
-        call json%get(pstr,'NLVOL',nlvol(istra),found)
-        call json%get(pstr,'NLCNS',nlcns(istra),found)
+        call json%get(pstr,'NLPNT',nlpnt(jstra),found)
+        call json%get(pstr,'NLLNE',nllne(jstra),found)
+        call json%get(pstr,'NLSRF',nlsrf(jstra),found)
+        call json%get(pstr,'NLVOL',nlvol(jstra),found)
+        call json%get(pstr,'NLCNS',nlcns(jstra),found)
 
 C  SAME FOR POINT, LINE, SURFACE AND VOLUME SOURCES
 
-        call json%get(pstr,'NSRFSI',nsrfsi(istra),found)
-        IF (NSRFSI(ISTRA).GT.NSRFS)
+        call json%get(pstr,'NSRFSI',nsrfsi(jstra),found)
+        IF (NSRFSI(JSTRA).GT.NSRFS)
      .    CALL EIRENE_MASPRM(
      .         'NSRFS',5,NSRFS,'NSRFSI(I)',9,NSRFSI(I),IERROR)
 
         call json%get_child(pstr,'SUBSTRATA',psubs, found)
 
-        do j = 1, nsrfsi(istra)
+        do j = 1, nsrfsi(jstra)
           call json%get_child(psubs,j,psub,found)
 
-          call json%get(psub,'INDIM',indim(j,istra),found)
-          call json%get(psub,'INSOR',insor(j,istra),found)
+          call json%get(psub,'INDIM',indim(j,jstra),found)
+          call json%get(psub,'INSOR',insor(j,jstra),found)
           call json%get(psub,'INGRDA',ihelp,found)
           if (found) then
-            ingrda(j,istra,1:3) = ihelp(1:3)
+            ingrda(j,jstra,1:3) = ihelp(1:3)
             deallocate(ihelp)
           end if
           call json%get(psub,'INGRDE',ihelp,found)
           if (found) then
-            ingrde(j,istra,1:3) = ihelp(1:3)
+            ingrde(j,jstra,1:3) = ihelp(1:3)
             deallocate(ihelp)
           end if
 
-          call json%get(psub,'SORWGT',sorwgt(j,istra),found)
-          call json%get(psub,'SORLIM',sorlim(j,istra),found)
-          call json%get(psub,'SORIND',sorind(j,istra),found)
-          call json%get(psub,'SOREXP',sorexp(j,istra),found)
-          call json%get(psub,'SORIFL',sorifl(j,istra),found)
+          call json%get(psub,'SORWGT',sorwgt(j,jstra),found)
+          call json%get(psub,'SORLIM',sorlim(j,jstra),found)
+          call json%get(psub,'SORIND',sorind(j,jstra),found)
+          call json%get(psub,'SOREXP',sorexp(j,jstra),found)
+          call json%get(psub,'SORIFL',sorifl(j,jstra),found)
 
-          call json%get(psub,'NRSOR',nrsor(j,istra),found)
-          call json%get(psub,'NPSOR',npsor(j,istra),found)
-          call json%get(psub,'NTSOR',ntsor(j,istra),found)
-          call json%get(psub,'NBSOR',nbsor(j,istra),found)
-          call json%get(psub,'NASOR',nasor(j,istra),found)
-          call json%get(psub,'NISOR',nisor(j,istra),found)
-          call json%get(psub,'ISTOR',istor(j,istra),found)
+          call json%get(psub,'NRSOR',nrsor(j,jstra),found)
+          call json%get(psub,'NPSOR',npsor(j,jstra),found)
+          call json%get(psub,'NTSOR',ntsor(j,jstra),found)
+          call json%get(psub,'NBSOR',nbsor(j,jstra),found)
+          call json%get(psub,'NASOR',nasor(j,jstra),found)
+          call json%get(psub,'NISOR',nisor(j,jstra),found)
+          call json%get(psub,'ISTOR',istor(j,jstra),found)
 
-          call json%get(psub,'SORAD1',sorad1(j,istra),found)
-          call json%get(psub,'SORAD2',sorad2(j,istra),found)
-          call json%get(psub,'SORAD3',sorad3(j,istra),found)
-          call json%get(psub,'SORAD4',sorad4(j,istra),found)
-          call json%get(psub,'SORAD5',sorad5(j,istra),found)
-          call json%get(psub,'SORAD6',sorad6(j,istra),found)
+          call json%get(psub,'SORAD1',sorad1(j,jstra),found)
+          call json%get(psub,'SORAD2',sorad2(j,jstra),found)
+          call json%get(psub,'SORAD3',sorad3(j,jstra),found)
+          call json%get(psub,'SORAD4',sorad4(j,jstra),found)
+          call json%get(psub,'SORAD5',sorad5(j,jstra),found)
+          call json%get(psub,'SORAD6',sorad6(j,jstra),found)
 
           nullify(psub)
         end do
@@ -2945,21 +3242,21 @@ C  SAME FOR POINT, LINE, SURFACE AND VOLUME SOURCES
 
 C  VELOCITY SPACE DISTRIBUTION
 
-        call json%get(pstr,'SORENI',soreni(istra),found)
-        call json%get(pstr,'SORENE',sorene(istra),found)
-        call json%get(pstr,'SORVDX',sorvdx(istra),found)
-        call json%get(pstr,'SORVDY',sorvdy(istra),found)
-        call json%get(pstr,'SORVDZ',sorvdz(istra),found)
+        call json%get(pstr,'SORENI',soreni(jstra),found)
+        call json%get(pstr,'SORENE',sorene(jstra),found)
+        call json%get(pstr,'SORVDX',sorvdx(jstra),found)
+        call json%get(pstr,'SORVDY',sorvdy(jstra),found)
+        call json%get(pstr,'SORVDZ',sorvdz(jstra),found)
 
-        call json%get(pstr,'SORCOS',sorcos_in(istra),found)
-        call json%get(pstr,'SORMAX',sormax_in(istra),found)
-        call json%get(pstr,'SORCTX',sorctx(istra),found)
-        call json%get(pstr,'SORCTY',sorcty(istra),found)
-        call json%get(pstr,'SORCTZ',sorctz(istra),found)
-        call json%get(pstr,'RAYFRAC',rayfrac(istra),found)
+        call json%get(pstr,'SORCOS',sorcos_in(jstra),found)
+        call json%get(pstr,'SORMAX',sormax_in(jstra),found)
+        call json%get(pstr,'SORCTX',sorctx(jstra),found)
+        call json%get(pstr,'SORCTY',sorcty(jstra),found)
+        call json%get(pstr,'SORCTZ',sorctz(jstra),found)
+        call json%get(pstr,'RAYFRAC',rayfrac(jstra),found)
 
-        sorcos(istra) = sorcos_in(istra)
-        sormax(istra) = sormax_in(istra)
+        sorcos(jstra) = sorcos_in(jstra)
+        sormax(jstra) = sormax_in(jstra)
 
         nullify(pstr)
       end do
@@ -2976,9 +3273,11 @@ C  VELOCITY SPACE DISTRIBUTION
       class(json_core),intent(inout) :: json
       type(json_value), pointer, intent(in) :: p
       type(json_value), pointer :: pzones, pz, pt, pd, pv, pvol
-      character(kind=CK,len=:),allocatable :: txt
-      character(kind=CK,len=72),dimension(:),allocatable :: 
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: txt
+      character(kind=json_CK,len=72),dimension(:),allocatable :: 
      .           ch3lines
+!cym/cpg end
       logical :: found, foundc, foundv, foundm
       integer :: inilgj, inelgj, in, idion, ini, ine, nch3
       real(dp) :: tte, tti, di, vx, vy, vz, vl
@@ -3034,13 +3333,13 @@ C  IGJUM3 FLAG
           if (inelgj.ne.ine) write (iunout,*)
      .      'CH3 option failed. ine, noptim =',ine,NOPTIM
           do k = 1, nch3
-            DO IN=INILGJ,INELGJ
+            DO II=INILGJ,INELGJ
               IF (NLIMPB >= NLIMPS) THEN
                 CALL EIRENE_DEKEY (ch3lines(k)(4:72),IGJUM3,
-     .                             0,NOPTIM,IN,NLIMPS)
+     .                             0,NOPTIM,II,NLIMPS)
               ELSE
                 CALL EIRENE_DEKEYB(ch3lines(k)(4:72),IGJUM3,
-     .                             0,NOPTIM,IN,NLIMPB,NBITS)
+     .                             0,NOPTIM,II,NLIMPB,NBITS)
               END IF
             END DO
             call eirene_push_string_stack(ch3_stack(i),ch3lines(k))
@@ -3054,9 +3353,9 @@ C  TEMPERATURE
           call json%get(pt,'IDION',idion,found)
           call json%get(pt,'TE',tte,found)
           call json%get(pt,'TI',tti,found)
-          do in = ini,ine
+          do ii = ini,ine
             ALLOCATE(TEMPCUR)
-            TEMPCUR%IN = IN
+            TEMPCUR%II = II
             TEMPCUR%IDION = IDION
             TEMPCUR%TE = TTE
             TEMPCUR%TI = TTI
@@ -3071,9 +3370,9 @@ C  DENSITY
         if (foundc) then
           call json%get(pd,'IDION',idion,found)
           call json%get(pd,'DI',di,found)
-          do in = ini,ine
+          do ii = ini,ine
             ALLOCATE(DENCUR)
-            DENCUR%IN = IN
+            DENCUR%II = II
             DENCUR%IDION = IDION
             DENCUR%DI = DI
             DENCUR%NEXT => DENLIST
@@ -3090,9 +3389,9 @@ C  VELOCITY (CM/SEC OR MACH)
           call json%get(pv,'VX',vx,found)
           call json%get(pv,'VY',vy,found)
           call json%get(pv,'VZ',vz,found)
-          do in = ini,ine
+          do ii = ini,ine
             ALLOCATE(VELCUR)
-            VELCUR%IN = IN
+            VELCUR%II = II
             VELCUR%IDION = IDION
             VELCUR%VX = VX
             VELCUR%VY = VY
@@ -3109,9 +3408,9 @@ C  VOLUME
         call json%get_child(pz,'VL',pvol,foundc)
         if (foundc) then
           call json%get(pvol,'VOL',vl,found)
-          do in = ini,ine
+          do ii = ini,ine
             ALLOCATE(VOLCUR)
-            VOLCUR%IN = IN
+            VOLCUR%II = II
             VOLCUR%VOL = VL
             VOLCUR%NEXT => VOLLIST
             VOLLIST => VOLCUR
@@ -3361,7 +3660,9 @@ C  DATA FOR STANDARD DEVIATION
       logical :: found
       logical, allocatable :: lhelp(:)
       integer :: num, i, ia, nvi, nsi, nci, j
-      character(kind=CK,len=:),allocatable :: txt
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: txt
+!cym/cpg end
 C
 C     READ DATA FOR ADDITIONAL AND SURFACE-AVERAGED TALLIES
 C
@@ -3594,12 +3895,12 @@ C
 
         do j = 1, nadspc
           call json%get_child(pspeci,j,psp,found)
+          call json%get(psp,'ISRFCLL',isrfcll,found)
           call json%get(psp,'ISPSRF',ispsrf,found)
           call json%get(psp,'IPTYP',iptyp,found)
           call json%get(psp,'IPSPZ',ipspz,found)
           call json%get(psp,'ISPTYP',isptyp,found)
           call json%get(psp,'NSPS',nsps,found)
-          call json%get(psp,'ISRFCLL',isrfcll,found)
           call json%get(psp,'IDIREC',idirec,found)
 
           call json%get(psp,'SPCMN',spcmn,found)
@@ -3608,7 +3909,6 @@ C
           call json%get(psp,'SPCPLT_X',spcplt_x,found)
           call json%get(psp,'SPCPLT_Y',spcplt_y,found)
           call json%get(psp,'SPCPLT_SAME',spcplt_same,found)
-
           SPCVX = 0._DP
           SPCVY = 0._DP
           SPCVZ = 0._DP
@@ -3630,13 +3930,11 @@ C
             END IF
           END IF
 
-cdr  better: first discriminate by isrfcll,  then, for each value of isrfcll: do the rest
 c   isrcfll=0 : surface-averaged tally
 c   isrfcll=1 : volume-averaged tally, integrated over all directions
 c   isrfcll=2 : volume-averaged tally, along a specific direction
 c  it seems: surface-averaged directional tallies: not yet forseen
 c  one may try to score coefficients of orthogonal angular expansion, per energy bin.
-
           IF (ISPSRF > 0) THEN
             IF ((ISRFCLL == 0) .AND. (ISPSRF > NLIMI)) THEN
 C  SPECTRUM AT AN ADDITIONAL SURFACE
@@ -3791,7 +4089,6 @@ cdr  Why do we allocate estiml in input.f and not in eirmod_cestim ?
           ALLOCATE(ESTIML(1))
         END IF
       END IF
-                      
 
       end subroutine eirene_read_block_10
 
@@ -3809,7 +4106,9 @@ cdr  Why do we allocate estiml in input.f and not in eirmod_cestim ?
       integer :: i, j, nsf
       integer, allocatable :: ihelp(:)
       real(dp), allocatable :: rhelp(:)
-      character(kind=CK,len=:),allocatable :: txt
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: txt
+!cym/cpg end
 C
 C   READ DATA FOR NUMERICAL AND GRAPHICAL OUTPUT 1100--1199
 C
@@ -3852,6 +4151,7 @@ cdr  .                  TRCDBG2,TRCDBGE,TRCDBGM,TRCDBGF,TRCDBGL,
 cdr  .                  TRCDBGS,TRCDBGG,TRCDBGMPI,TRCDBGC,
 CPB  ACTIVATE SPECIES-RESOLVED CPU CONSUMPTION OPTION
       call json%get(p,'TRCHKTIM',trchktim,found)
+      call json%get(p,'TRCSCL',trcscl,found)
 
       call json%get(p,'TRCSRC',lhelp,found)
       trcsrc(0:nstra) = lhelp(1:nstra+1)
@@ -3942,19 +4242,19 @@ c  zero as surface number for time horizon
 
 c  overrule default switching on/off of volume-averaged tallies
 
-      call json%get(p,'NVTLOUT',nvtlout,foundt)
+      call json%get(p,'NTLVOUT',ntlvout,foundt)
       if (foundt) then
         call json%get(p,'NUMTAL_V',ihelp,found)
-        if (.not.allocated(ivtlout)) allocate(ivtlout(nvtlout))
-        ivtlout(1:nvtlout) = ihelp(1:nvtlout)
+        if (.not.allocated(itlvout)) allocate(itlvout(ntlvout))
+        itlvout(1:ntlvout) = ihelp(1:ntlvout)
         deallocate(ihelp)
 
-        do j = 1, nvtlout
-          IF ((IVTLOUT(J) /= 0) .AND. (ABS(IVTLOUT(J)) <= NTALV)) THEN
-            IF (IVTLOUT(J) < 0) THEN
-              LMISTALV(ABS(IVTLOUT(J))) = .TRUE. ! SWITCHED OFF
+        do j = 1, ntlvout
+          IF ((ITLVOUT(J) /= 0) .AND. (ABS(ITLVOUT(J)) <= NTALV)) THEN
+            IF (ITLVOUT(J) < 0) THEN
+              LMISTALV(ABS(ITLVOUT(J))) = .TRUE. ! SWITCHED OFF
             ELSE
-              LMISTALV(IVTLOUT(J)) = .FALSE. ! SWITCHED ON
+              LMISTALV(ITLVOUT(J)) = .FALSE. ! SWITCHED ON
             END IF
           END IF
         end do
@@ -3962,19 +4262,19 @@ c  overrule default switching on/off of volume-averaged tallies
 
 c  overrule default switching on/off of surface-averaged tallies
 
-      call json%get(p,'NSTLOUT',nstlout,foundt)
+      call json%get(p,'NTLSOUT',ntlsout,foundt)
       if (foundt) then
         call json%get(p,'NUMTAL_S',ihelp,found)
-        if (.not.allocated(istlout)) allocate(istlout(nstlout))
-        istlout(1:nstlout) = ihelp(1:nstlout)
+        if (.not.allocated(itlsout)) allocate(itlsout(ntlsout))
+        itlsout(1:ntlsout) = ihelp(1:ntlsout)
         deallocate(ihelp)
 
-        do j = 1, nstlout
-          IF ((ISTLOUT(J) /= 0) .AND. (ABS(ISTLOUT(J)) <= NTALV)) THEN
-            IF (ISTLOUT(J) < 0) THEN
-              LMISTALV(ABS(ISTLOUT)) = .TRUE. ! SWITCHED OFF
+        do j = 1, ntlsout
+          IF ((ITLSOUT(J) /= 0) .AND. (ABS(ITLSOUT(J)) <= NTALV)) THEN
+            IF (ITLSOUT(J) < 0) THEN
+              LMISTALV(ABS(ITLSOUT)) = .TRUE. ! SWITCHED OFF
             ELSE
-              LMISTALV(ISTLOUT(J)) = .FALSE. ! SWITCHED ON
+              LMISTALV(ITLSOUT(J)) = .FALSE. ! SWITCHED ON
             END IF
           END IF
         end do
@@ -4014,6 +4314,8 @@ C  2D GEOMETRY PLOT
       call json%get(p,'NPLINT',nplint,found) 
       call json%get(p,'NPLOTT',nplott,found) 
       call json%get(p,'NPLDLT',npldlt,found) 
+
+      call eirene_read_block_11_usr(json, p)
 
 C  3D GEOMETRY PLOT
 
@@ -4277,7 +4579,9 @@ C
      .           num_contrib, irc, nconts, kcontr, nrats, irt, istchr
       integer, allocatable :: ihelp(:), numtal(:)
       real(dp), allocatable :: rhelp(:)
-      character(kind=CK,len=:),allocatable :: txt, key
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: txt, key
+!cym/cpg end
 C
 C  READ DATA FOR DIAGNOSTIC MODULE
 C
@@ -4593,7 +4897,9 @@ c     dr  Alternatively the energy parameters EMIN1 may be used.
       type(json_value), pointer :: psnaps, psnap
       logical :: found
       integer :: j, nsnaps
-      character(kind=CK,len=:),allocatable :: txt
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: txt
+!cym/cpg end
 C
 C  READ DATA FOR TIME-DEPENDENT AND NONLINEAR MODE  1300--1399
 C
@@ -4635,6 +4941,10 @@ C     DATA FOR DEFAULT TIME HORIZON
         IREAD=0
       END IF
 
+cdr NLERG: try to use ergodic property to infer cell volumes.
+cdr        All absorption processes are turned off, so we need
+cdr        a time horizon. Strictly nprnli=1 would be enough,
+cdr        but we use a larger default value to estimate variances as well
       IF (NLERG.AND.NPRNLI.LE.0) THEN
 C  NO TIME HORIZON DEFINED, DESPITE NLERG=.TRUE.
 C  THEREFORE: SET A DEFAULT TIME HORIZON HERE
@@ -4730,9 +5040,12 @@ C  TURN OFF TIME DEP MODE IF EITHER NTIME=0 OR NPRNLI=0
       USE EIRMOD_COMUSR
       USE EIRMOD_CTEXT
       USE EIRMOD_JSON
+      USE EIRMOD_INFCOP, ONLY: EIRENE_IF0COP
       
-      use json_module
-     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
+      use json_module           !IGNORE
+!cym/cpg      
+!     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
+!cym/cpg end
 
       IMPLICIT NONE
 
@@ -4740,9 +5053,11 @@ C  TURN OFF TIME DEP MODE IF EITHER NTIME=0 OR NPRNLI=0
       type(json_core) :: json
       type(json_value), pointer :: p
       type(json_value), pointer :: padds, padd
-      logical :: found, founda
+      logical :: found, founda, lshort
       integer :: j, nadds, ncopie
-      character(kind=CK,len=:),allocatable :: txt
+!cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
+      character(kind=json_CK,len=:),allocatable :: txt
+!cym/cpg end
       integer :: js
       
       js = itree_num(14)
@@ -4810,9 +5125,107 @@ C  STAND ALONE RUN, READ BLOCK *** 14 HERE
       ELSEIF (NMODE.NE.0) THEN
 C  COUPLED RUN, READ BLOCK *** 14 IN INTERFACING ROUTINE INFCOP (ENTRY IF0COP)
         NCPVI=0
+!pb     NCOPII=0
+        NCOPIE=0
         NAINI=0
-C  READ BLOCK 14 AND GEOMETRY FROM EXTERNAL DATABASE (FT30), also set NAINI, NCOPII, NCOPIE there
-        CALL EIRENE_IF0COP(.FALSE.)
+C  READ BLOCK 14 AND GEOMETRY FROM EXTERNAL DATABASE (FT30),
+C  also set NAINI, NCOPII, NCOPIE there
+        LSHORT=.FALSE.
+        CALL EIRENE_IF0COP(.FALSE.,LSHORT)
+        WRITE (iunout,*) 'SUBR. INFCOP IS CALLED.'
+!pb     write (iunout,*) 'NAINI, NCOPII, NCOPIE, NCPVI ',
+!pb  .                    NAINI, NCOPII, NCOPIE, NCPVI
+        write (iunout,*) 'NAINI, NCOPIE, NCPVI ',
+     .                    NAINI, NCOPIE, NCPVI
       END IF
       
       END SUBROUTINE EIRENE_READ_BLK14_JSON
+
+!*****************************************************************
+
+      subroutine eirene_read_mpi_strategy_json
+      USE EIRMOD_COMUSR, ONLY: NPRLL
+      USE EIRMOD_CPES, ONLY: NPRS, NLIDENT, 
+     >    STRATEGY_UNDEFINED, STRATEGY_EMBARRASS,
+     >    STRATEGY_ORIGINAL, STRATEGY_APCAS, STRATEGY_BALANCED,
+     >    INPUT_DISTRIBUTION_STRATEGY
+      USE EIRMOD_JSON
+      use json_module           !IGNORE
+     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
+
+      type(json_core) :: json
+      type(json_value), pointer :: p
+      character(80) :: strategy
+      character(kind=CK,len=:),allocatable :: txt
+      logical :: found
+      integer :: js
+      
+      js = itree_num(15)
+      json = jtrees(js)
+      p => blks(15)%p
+
+      strategy = repeat(' ',80)
+
+      if (associated(p)) then
+        call json%get(p,'STRATEGY',txt,found)
+        if (found) strategy(1:len_trim(txt)) = trim(txt)
+        deallocate(txt)
+      end if
+
+      select case (strategy)
+      case ('ORIGINAL')
+        NPRLL = 1
+        input_distribution_strategy = STRATEGY_ORIGINAL
+        CALL EIRENE_MASAGE
+     .           ('APPLYING "ORIGINAL" PARALLELIZATION STRATEGY')
+      case ('APCAS')
+        NPRLL = 2
+        input_distribution_strategy = STRATEGY_APCAS
+        CALL EIRENE_MASAGE
+     .           ('APPLYING "APCAS" PARALLELIZATION STRATEGY')
+      case ('BALANCED')  
+        NPRLL = 3
+        input_distribution_strategy = STRATEGY_BALANCED
+        CALL EIRENE_MASAGE
+     .           ('APPLYING "BALANCED" PARALLELIZATION STRATEGY')
+      case ('EMBARRASS')
+        NPRLL = 0
+        input_distribution_strategy = STRATEGY_EMBARRASS
+        CALL EIRENE_MASAGE
+     .           ('APPLYING "EMBARRASSINGLY PARALLEL" STRATEGY')
+      case ('AUTOMATIC')
+        CALL EIRENE_MASAGE
+     .           ('APPLYING AUTOMATIC PARALLELIZATION STRATEGY')
+#if MPI_VERSION < 3
+        NPRLL = 1
+        input_distribution_strategy = STRATEGY_ORIGINAL
+        CALL EIRENE_MASAGE
+     .           ('CURRENT AUTOMATIC ASSIGNMENT IS "ORIGINAL"')
+#else
+        NPRLL = 3
+        input_distribution_strategy = STRATEGY_BALANCED
+        CALL EIRENE_MASAGE
+     .           ('CURRENT AUTOMATIC ASSIGNMENT IS "BALANCED"')
+#endif
+      case default
+        IF (NPRS > 1 .and.
+     &     input_distribution_strategy.eq.STRATEGY_UNDEFINED) THEN
+          CALL EIRENE_MASAGE
+     .       ('NO MPI PARALLELIZATION STRATEGY PROVIDED')
+#if MPI_VERSION < 3
+          NPRLL = 1
+          input_distribution_strategy = STRATEGY_ORIGINAL
+          CALL EIRENE_MASAGE
+     .       ('APPLYING DEFAULT "ORIGINAL" STRATEGY')
+#else
+          NPRLL = 3
+          input_distribution_strategy = STRATEGY_BALANCED
+          CALL EIRENE_MASAGE
+     .       ('APPLYING DEFAULT "BALANCED" STRATEGY')
+#endif
+          CALL EIRENE_LEER(1)
+        END IF
+      end select
+        
+      return
+      end subroutine eirene_read_mpi_strategy_json

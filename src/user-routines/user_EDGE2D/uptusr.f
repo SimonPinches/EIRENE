@@ -94,6 +94,10 @@ C
             VRY(IRD)=PPLNY(IR,IP)
           END DO
         END DO
+!pb  MOD_ADDV is no incremental value. It is a flag indicating whether all the 
+!pb  rates used for emissivity lines are to be stored or whether storage saving
+!pb  mode ist to be used, only storing the rates for the latest used line
+!pb     IA0=MOD_ADDV
         IA0=0
         IA1=IA0+NATMI+NMOLI
         IA2=IA1+NATMI+NMOLI
@@ -150,4 +154,4 @@ c        if(allocated(cndynp)) deallocate(cndynp)
         if(allocated(vry)) deallocate(vry)
       endif
       return
-      END
+      END SUBROUTINE EIRENE_UPTUSR

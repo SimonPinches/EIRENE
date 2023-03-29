@@ -1,9 +1,9 @@
-T_on_Cu_1.00  also includes: pdf boundaries emin,emax, angmin, angmax....       
- 
-*  projectile surface binding energy parameter: 1.00 eV     
+T_on_Cu_1.00  also includes: pdf boundaries emin,emax, angmin, angmax....
+
+*  projectile surface binding energy parameter: 1.00 eV
 *  parameter esbparm only added in first of the 84 blocks
- 
- 
+
+
     1.   3.02   29.  63.55  1.00E+00  0.00E+00  3.83E-01  1.78E-01  1.00E+00    10   0.00
 
   1.54830E-01  2.74670E-01  3.50880E-01  4.13000E-01  4.70250E-01  5.22870E-01  5.58460E-01  5.91230E-01  6.31390E-01  6.83680E-01       8.05730E-04  7.70990E-01

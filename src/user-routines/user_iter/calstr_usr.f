@@ -1,10 +1,10 @@
 
       SUBROUTINE EIRENE_CALSTR_USR(MY_PE, ICGRP)
-c called from broadcast/calstr
-c can be used from user or case-specific routines (...usr.f, ...cop.f)
-c to collect user/case  specific data from all
-c PEs sharing calculations for a particular stratum
+      ! This subroutine is not called if you use STRATEGY_BALANCED parallelizaton.
+      ! In that case only eirene_calstr_buffered is called.
+      ! Therefore, if you add any reduction operations here, then please add the same to
+      ! eirmod_calstr_buffered.
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: MY_PE, ICGRP
       RETURN
-      END
+      END SUBROUTINE EIRENE_CALSTR_USR

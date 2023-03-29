@@ -8,6 +8,7 @@ cdr dec 15:  energy balance tallies for bulk ions: now have a species index (ipl
 cdr          tallies 38,44,50,56,84
 cdr june 17: comments
 cdr oct 18 : nfrstp (leading dimension of input tallies) now set in setprm_intal.f
+cdr mar 21 : commments, cleanup
 
 C
 C  *************************
@@ -34,6 +35,7 @@ C
       USE EIRMOD_CSPEI
       USE EIRMOD_CTEXT
       USE EIRMOD_CTRCEI
+      USE EIRMOD_CLOGAU
 
       IMPLICIT NONE
 
@@ -131,8 +133,8 @@ c         generation limit activated
       LEXTALV(NTALA) = NADV>0  ! additional tracklength estimator tally (update.f)
       LEXTALV(NTALC) = NCLV>0  ! additional collision estimator tally   (collide.f)
       LEXTALV(NTALT) = NSNV>0  ! additional snapshot tally
-      LEXTALV(NTALM) = NCPV>0
-      LEXTALV(NTALB) = NBGV>0
+      LEXTALV(NTALM) = NCPV>0  ! additional tallies for interfacing to external codes
+      LEXTALV(NTALB) = NBGV>0  ! additional tallies for BGK iterations
       LEXTALV(NTALR) = NALV>0  ! additional tally, algebraic expression, postprocessing
 C  GENERATION LIMIT TALLIES
 C  some of these tallies may be
@@ -177,13 +179,17 @@ C  MOMENTUM DENSITY, Z DIRECTION
       LEXTALV(94) = NMOL>0
       LEXTALV(95) = NION>0
       LEXTALV(96) = NPHOT>0
-C  PARALLEL (TO B-FIELD) MOMENTUM SOURCE RATES
+C  PARALLEL (TO B FIELD) MOMENTUM SOURCE RATES
       LEXTALV(97) = (NPLS>0) .AND. (NATM>0)
       LEXTALV(98) = (NPLS>0) .AND. (NMOL>0)
       LEXTALV(99) = (NPLS>0) .AND. (NION>0)
       LEXTALV(100) = (NPLS>0) .AND. (NPHOT>0)
-
-C  CURRENTLY THE LAST DEFAULT TALLY IS TALLY NO. 100
+C  RADIATION RATES
+      LEXTALV(101) = NATM>0
+      LEXTALV(102) = NMOL>0
+      LEXTALV(103) = NION>0
+      
+C  CURRENTLY THE LAST DEFAULT TALLY IS TALLY NO. 103
 
 C  LMISTALV(ITAL) = FALSE: TALLY HAS BEEN DEACTIVATED BY INPUT FLAGS SET IN INPUT BLOCK 11
 C  DEFAULT: LMISTALV=.FALSE. FOR ALL TALLIES, I.E. "ALL TALLIES ARE LIVING"
@@ -218,24 +224,52 @@ C  PARTICLE SOURCES
       NFIRST(12)=NION
       NFIRST(13)=NPHOT
       NFIRST(14)=NPLS
+      IF (NLSPCSCL_ATM) THEN
+        NFIRST(10)=NATM*NATMP
+        NFIRST(11)=NMOL*NATMP
+        NFIRST(12)=NION*NATMP
+        NFIRST(13)=NPHOT*NATMP
+        NFIRST(14)=NPLS*NATMP
+      END IF
       NFIRST(15)=0
       NFIRST(16)=NATM
       NFIRST(17)=NMOL
       NFIRST(18)=NION
       NFIRST(19)=NPHOT
       NFIRST(20)=NPLS
+      IF (NLSPCSCL_MOL) THEN
+        NFIRST(16)=NATM*NMOLP
+        NFIRST(17)=NMOL*NMOLP
+        NFIRST(18)=NION*NMOLP
+        NFIRST(19)=NPHOT*NMOLP
+        NFIRST(20)=NPLS*NMOLP
+      END IF
       NFIRST(21)=0
       NFIRST(22)=NATM
       NFIRST(23)=NMOL
       NFIRST(24)=NION
       NFIRST(25)=NPHOT
       NFIRST(26)=NPLS
+      IF (NLSPCSCL_ION) THEN
+        NFIRST(22)=NATM*NIONP
+        NFIRST(23)=NMOL*NIONP
+        NFIRST(24)=NION*NIONP
+        NFIRST(25)=NPHOT*NIONP
+        NFIRST(26)=NPLS*NIONP
+      END IF
       NFIRST(27)=0
       NFIRST(28)=NATM
       NFIRST(29)=NMOL
       NFIRST(30)=NION
       NFIRST(31)=NPHOT
       NFIRST(32)=NPLS
+      IF (NLSPCSCL_PHOT) THEN
+        NFIRST(28)=NATM*NPHOTP
+        NFIRST(29)=NMOL*NPHOTP
+        NFIRST(30)=NION*NPHOTP
+        NFIRST(31)=NPHOT*NPHOTP
+        NFIRST(32)=NPLS*NPHOTP
+      END IF
 C  ENERGY SOURCES
       NFIRST(33)=0
       NFIRST(34)=0
@@ -307,13 +341,17 @@ C  MOMENTUM DENSITY, Z DIRECTION
       NFIRST(94)=NMOL
       NFIRST(95)=NION
       NFIRST(96)=NPHOT
-C  PARALLEL (TO B-FIELD) MOMENTUM SOURCE RATES
+C  PARALLEL (TO B FIELD) MOMENTUM SOURCE RATES
       NFIRST(97)=NPLS
       NFIRST(98)=NPLS
       NFIRST(99)=NPLS
       NFIRST(100)=NPLS
+C  RADIATION RATES
+      NFIRST(101)=NATM
+      NFIRST(102)=NMOL
+      NFIRST(103)=NION
 C
-C  NTALV=100 ?
+C  NTALV=103 ?
 C
       DO 1 J=1,NTALV
         NFRSTI(J)=NFIRST(J)+1
@@ -341,6 +379,9 @@ C
 C  TOTAL NUMBER OF VOLUME-AVERAGED TALLIES
 !pb   NVOLTL=NADDV(NTALV)+NFIRST(NTALV)
       NVOLTL=NADDV(NTALV)+NFIRST(NLSTTL)
+      WRITE (IUNOUT,*) 'NVOLTL = ', NVOLTL
+      WRITE (IUNOUT,*) 'NADDV'
+      WRITE (IUNOUT,'(10I6)') NADDV
 
 
 cdr  NEXT VARIABLES WERE USED FOR TESTING STORAGE FOR VOLUME-AVERAGED TALLIES
@@ -474,27 +515,43 @@ C  SPUTTERED FLUX; TOTAL, NOT SCALED BY NLSCL OPTION
 C
       NFRSTW(1)=NATM
       NFRSTW(2)=NATM
+      IF (NLSPCSCL_ATM) NFRSTW(2)=NATM*NATMP
       NFRSTW(3)=NATM
+      IF (NLSPCSCL_MOL) NFRSTW(3)=NATM*NMOLP
       NFRSTW(4)=NATM
+      IF (NLSPCSCL_ION) NFRSTW(4)=NATM*NIONP
       NFRSTW(5)=NATM
+      IF (NLSPCSCL_PHOT) NFRSTW(5)=NATM*NPHOTP
       NFRSTW(6)=NATM
       NFRSTW(7)=NMOL
       NFRSTW(8)=NMOL
+      IF (NLSPCSCL_ATM) NFRSTW(8)=NMOL*NATMP
       NFRSTW(9)=NMOL
+      IF (NLSPCSCL_MOL) NFRSTW(9)=NMOL*NMOLP
       NFRSTW(10)=NMOL
+      IF (NLSPCSCL_ION) NFRSTW(10)=NMOL*NIONP
       NFRSTW(11)=NMOL
+      IF (NLSPCSCL_PHOT) NFRSTW(11)=NMOL*NPHOTP
       NFRSTW(12)=NMOL
       NFRSTW(13)=NION
       NFRSTW(14)=NION
+      IF (NLSPCSCL_ATM) NFRSTW(14)=NION*NATMP
       NFRSTW(15)=NION
+      IF (NLSPCSCL_MOL) NFRSTW(15)=NION*NMOLP
       NFRSTW(16)=NION
+      IF (NLSPCSCL_ION) NFRSTW(16)=NION*NIONP
       NFRSTW(17)=NION
+      IF (NLSPCSCL_PHOT) NFRSTW(17)=NION*NPHOTP
       NFRSTW(18)=NION
       NFRSTW(19)=NPHOT
       NFRSTW(20)=NPHOT
+      IF (NLSPCSCL_ATM) NFRSTW(20)=NPHOT*NATMP
       NFRSTW(21)=NPHOT
+      IF (NLSPCSCL_MOL) NFRSTW(21)=NPHOT*NMOLP
       NFRSTW(22)=NPHOT
+      IF (NLSPCSCL_ION) NFRSTW(22)=NPHOT*NIONP
       NFRSTW(23)=NPHOT
+      IF (NLSPCSCL_PHOT) NFRSTW(23)=NPHOT*NPHOTP
       NFRSTW(24)=NPHOT
       NFRSTW(25)=NPLS
 
@@ -587,6 +644,9 @@ C
 C  TOTAL NUMBER OF SURFACE-AVERAGED TALLIES
 !pb   NSRFTL=NADDW(NTALS)+NFRSTW(NTALS)
       NSRFTL=NADDW(NTALS)+NFRSTW(NLSTTW)
+      WRITE (IUNOUT,*) 'NSRFTL = ', NSRFTL
+      WRITE (IUNOUT,*) 'NADDW'
+      WRITE (IUNOUT,'(10I6)') NADDW
 
 
 cdr  NEXT VARIABLES WERE USED FOR TESTING STORAGE FOR SURFACE-AVERAGED TALLIES
@@ -708,8 +768,18 @@ c.....................................................................
 
       END IF  ! FALSE   storage tests deactivated
 
+cdr  correct for the derived tallies mixed into primary input tallies.
+cdr  Aug.18: also this storage test is now de-activated,
+cdr          due to new options to turn off input tallies
+cdr          and to remove their storage
+c     NPLPRM_TEST=NPLPRM + (2+NPLS)*NRAD
+c     IF (NTESTP.NE.NPLPRM_TEST) THEN
+c        WRITE (iunout,*) 'PARAMETER ERROR DETECTED IN SETPRM: NPLPRM'
+c        WRITE (iunout,*) 'NTESTP, NPLPRM ',NTESTP,NPLPRM_TEST
+c        CALL EIRENE_EXIT_OWN(1)
+c     ENDIF
 c............................................................................. 
- 
+
       IF (TRCTAL) THEN
         CALL EIRENE_LEER(2)
         WRITE(IUNOUT,*) 'VOLUME-AVERAGED TALLIES CALCULATED IN THIS RUN'
@@ -782,4 +852,4 @@ c.............................................................................
       END IF
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_SETPRM

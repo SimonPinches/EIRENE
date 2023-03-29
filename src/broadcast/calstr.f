@@ -39,16 +39,20 @@ C> - tallies
 
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: NATM, NION, NMOL, NPHOT, NPLS,
-     .                          NLMPGS, NRTALS, NCV, NLIMPS,
+     .                          NLMPGS, NCV, NLIMPS,
      .                          NRTAL, NADSPC, NVOLTL, NSDW, NSD, NSRFTL
       USE EIRMOD_CAI, ONLY: XMCT
       USE EIRMOD_COMUSR, ONLY: NATMI, NIONI, NMOLI, NPHOTI, NPLSI
       USE EIRMOD_CESTIM, ONLY: ESTIML, ESTIMS, ESTIMV
       USE EIRMOD_CSPEZ, ONLY: LOGATM, LOGION, LOGMOL, LOGPHOT, LOGPLS
       USE EIRMOD_COMPRT, ONLY: ISTRA
-      USE EIRMOD_CPES, ONLY: NEED_CALSTR, CALC_STRATUM, GET_STRATUM_COMM
+      USE EIRMOD_CPES, ONLY: NEED_CALSTR, CALC_STRATUM,
+     .                       GET_STRATUM_COMM, I_AM_LEADER,
+     ,                       STRATEGY_BALANCED,
+     ,                       WORK_DISTRIBUTION_STRATEGY
       USE EIRMOD_CSDVI, ONLY: NSIGI_SPC, SDVI1, SDVI2, SIGMAC, SGMCS
       USE EIRMOD_COUTAU
+      USE EIRMOD_CALSTR_BUFFERED
       USE EIRMOD_MPI
 
       IMPLICIT NONE
@@ -56,12 +60,11 @@ C> - tallies
       real(dp), allocatable :: helpest(:), helpv(:), dummyv(:)
       real(dp) :: helpa(0:natm), helpm(0:nmol), helpi(0:nion),
      .            helpp(0:npls), helpph(0:nphot),
-     .            helps(nlmpgs+1), helpc
+     .            helps(nlmpgs+1), helpc(1)
       real(dp) :: dummys(nlmpgs+1)
-      real(dp), allocatable :: dummyw(:), helpw(:)
       integer :: calstr_comm
       integer :: ier1, ier, ir, i, ispc, my_pe_gr,
-     .           mxdim, ns, j
+     .           mxdim, ns, j, istr
       logical, allocatable :: lhelp(:)
       logical :: lhelpa(0:natm), lhelpm(0:nmol), lhelpi(0:nion),
      .           lhelpp(0:npls), lhelpph(0:nphot)
@@ -71,7 +74,10 @@ C Could not check whether need_calstr(istra) can be moved outside of this subrou
       if( need_calstr(istra) .and. calc_stratum(istra)) then
 CDR  more than one single processor was active on this stratum ISTRA,
 CDR  and my_pe is one of them
-        calstr_comm = get_stratum_comm(istra)
+
+!pb     istra is a pointer, type check failure with Intel compiler under Windows
+        istr = istra
+        calstr_comm = get_stratum_comm(istr)
 
 c  my_pe_gr=0 indicates: my_pe is the master processor for istra
 C Would it make more sense to turn my_pe_gr into a logical?
@@ -81,6 +87,17 @@ C Need to clarify what eirene_calstr_usr does with my_pe_gr.
           call eirene_masage
      .     ('ERROR IN SUBROUTINE EIRENE_CALSTR at mpi_comm_rank.')
           call eirene_exit_own(1)
+        end if
+
+        if (work_distribution_strategy == STRATEGY_BALANCED) then
+          call eirene_calstr_buffered(calstr_comm, my_pe_gr,
+     &                                I_am_leader(istra))
+          ! Note that if eirene_calstr_usr has any variables to reduce,
+          ! then they must be added to eirmod_buffered_calstr. Otherwise
+          ! we lose the advantage of non-blocking calls, and we probably
+          ! run into a deadlock.
+          ! call eirene_calstr_usr (my_pe_gr, calstr_comm)
+          return
         end if
 
         mxdim = max(nvoltl,nsrftl,nsd,nsdw,
@@ -104,41 +121,41 @@ cdr missing: wtotph ??
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) WTOTP(0:nplsi,istra) = helpp(0:nplsi)
 
-        call mpi_reduce(WTOTE(istra),helpc,1,
+        call mpi_reduce(WTOTE(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) WTOTE(istra) = helpc
+        if (my_pe_gr==0) WTOTE(istra) = helpc(1)
 
-        call mpi_reduce(XMCP(istra),helpc,1,
+        call mpi_reduce(XMCP(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) XMCP(istra) = helpc
+        if (my_pe_gr==0) XMCP(istra) = helpc(1)
 
-        call mpi_reduce(XMCT(istra),helpc,1,
+        call mpi_reduce(XMCT(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) XMCT(istra) = helpc
+        if (my_pe_gr==0) XMCT(istra) = helpc(1)
 
-        call mpi_reduce(PTRASH(istra),helpc,1,
+        call mpi_reduce(PTRASH(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) PTRASH(istra) = helpc
+        if (my_pe_gr==0) PTRASH(istra) = helpc(1)
 
-        call mpi_reduce(ETRASH(istra),helpc,1,
+        call mpi_reduce(ETRASH(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) ETRASH(istra) = helpc
+        if (my_pe_gr==0) ETRASH(istra) = helpc(1)
 
-        call mpi_reduce(ETOTA(istra),helpc,1,
+        call mpi_reduce(ETOTA(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) ETOTA(istra) = helpc
+        if (my_pe_gr==0) ETOTA(istra) = helpc(1)
 
-        call mpi_reduce(ETOTM(istra),helpc,1,
+        call mpi_reduce(ETOTM(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) ETOTM(istra) = helpc
+        if (my_pe_gr==0) ETOTM(istra) = helpc(1)
 
-        call mpi_reduce(ETOTI(istra),helpc,1,
+        call mpi_reduce(ETOTI(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) ETOTI(istra) = helpc
+        if (my_pe_gr==0) ETOTI(istra) = helpc(1)
 
-        call mpi_reduce(ETOTP(istra),helpc,1,
+        call mpi_reduce(ETOTP(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) ETOTP(istra) = helpc
+        if (my_pe_gr==0) ETOTP(istra) = helpc(1)
 
         call mpi_reduce(EELFI(0:nioni,istra),helpi,nioni+1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
@@ -168,21 +185,21 @@ c  particle balance tallies:  from bulk (ipls) to species a,m,i,ph,pl
         if (my_pe_gr==0) PPPLI(0:nplsi,istra) = helpp(0:nplsi)
 
 c  energy balance tallies:  from bulk (ipls) to species a,m,i,ph,pl
-        call mpi_reduce(EPATI(istra),helpc,1,
+        call mpi_reduce(EPATI(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) EPATI(istra) = helpc
+        if (my_pe_gr==0) EPATI(istra) = helpc(1)
 
-        call mpi_reduce(EPMLI(istra),helpc,1,
+        call mpi_reduce(EPMLI(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) EPMLI(istra) = helpc
+        if (my_pe_gr==0) EPMLI(istra) = helpc(1)
 
-        call mpi_reduce(EPIOI(istra),helpc,1,
+        call mpi_reduce(EPIOI(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) EPIOI(istra) = helpc
+        if (my_pe_gr==0) EPIOI(istra) = helpc(1)
 
-        call mpi_reduce(EPPHTI(istra),helpc,1,
+        call mpi_reduce(EPPHTI(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-        if (my_pe_gr==0) EPPHTI(istra) = helpc
+        if (my_pe_gr==0) EPPHTI(istra) = helpc(1)
 
         call mpi_reduce(EPPLI(0:nplsi,istra),helpp,nplsi+1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
@@ -232,9 +249,9 @@ c  standard deviation of energy-resolved "spectra": estiml%sdv,...?
             if (my_pe_gr==0)
      .        estiml(ispc)%sgm(0:ns+1) = helpest(1:ns+2)
 
-            call mpi_reduce(estiml(ispc)%sgms,helpc,1,
+            call mpi_reduce(estiml(ispc)%sgms,helpc(1),1,
      .           mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-            if (my_pe_gr==0) estiml(ispc)%sgms = helpc
+            if (my_pe_gr==0) estiml(ispc)%sgms = helpc(1)
           end if
 
           deallocate (helpest)
@@ -304,7 +321,6 @@ cdr in case of nrtal < ncv: crash ?
      .       mpi_logical,mpi_LOR,0,calstr_comm,ier1)
         if (my_pe_gr==0) LOGION(0:nioni,ISTRA) = lhelpi(0:nioni)
 
-cdr why do we need if(...) here, and not above ?
         if (nphoti > 0) then
           call mpi_reduce(LOGPHOT(0:nphoti,ISTRA),lhelpph,NPHOTI+1,
      .         mpi_logical,mpi_LOR,0,calstr_comm,ier1)
@@ -328,4 +344,4 @@ c  Strictly there should also be an analogue call to eirene_calstr_cop.f
       if (allocated(helpv)) deallocate (helpv)
       if (allocated(dummyv)) deallocate (dummyv)
       RETURN
-      END
+      END SUBROUTINE EIRENE_CALSTR

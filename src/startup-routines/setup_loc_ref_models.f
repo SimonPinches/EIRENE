@@ -5,6 +5,7 @@
       USE EIRMOD_CREF
       USE EIRMOD_CLGIN
       USE EIRMOD_COMPRT, ONLY : IUNOUT
+      USE EIRMOD_PRESSURELOOP
       
       IMPLICIT NONE
       
@@ -24,6 +25,7 @@ C
         DO JSPZ=1,NSPZ
           ISRS(JSPZ,J)=ISRS(1,J)
           ISRC(JSPZ,J)=ISRC(1,J)
+          LCHSPNWL(JSPZ,J)=LCHSPNWL(1,J)
           TRANSP(JSPZ,1,J)=TRANSP(1,1,J)
           TRANSP(JSPZ,2,J)=TRANSP(1,2,J)
           RECYCF(JSPZ,J)=RECYCF(1,J)
@@ -52,6 +54,7 @@ C
             ILSPT(NLJ) = REFCUR%JLSPT
             ISRS(:,NLJ) = REFCUR%JSRS
             ISRC(:,NLJ) = REFCUR%JSRC
+            LCHSPNWL(:,NLJ) = REFLIST%JLCHSPNWL
             ZNML(NLJ) = REFCUR%ZNMLR
             EWALL(NLJ) = REFCUR%EWALLR
             EWBIN(NLJ) = REFCUR%EWBINR
@@ -69,6 +72,14 @@ C
             SPTPRM(:,NLJ) = REFCUR%STPRMR
             ESPUTS(:,NLJ) = REFCUR%ESPTSR
             ESPUTC(:,NLJ) = REFCUR%ESPTCR
+
+            !Initialize pressure feedback loop
+            IF (ILREF(NLJ) == 4)THEN
+              CALL initPressureFeedback(RPRESSFED(NLJ), NLJ,
+     .                                  REFLIST%REFCELL,
+     .                                  REFLIST%REFPRESS)
+            END IF
+
             IF (.NOT.ASSOCIATED(SURFCUR2)) THEN
               SURFLIST => SURFCUR%NEXT
               DEALLOCATE(SURFCUR)
@@ -136,6 +147,8 @@ C
         RSAVE=ZNML(J)
         ZNML(J)=DBLE(INT(RSAVE/100.D0))
         ZNCL(J)=RSAVE-100.*ZNML(J)
+        XMLIM(J)=ZNML(J) !VK - for consistency with AK code
+        XCLIM(J)=ZNCL(J) !VK - ditto
         DO 2001 JSPZ=1,NSPZ
           ISRF(JSPZ,J)=ISRF(JSPZ,1)
           ISRT(JSPZ,J)=ISRT(JSPZ,1)

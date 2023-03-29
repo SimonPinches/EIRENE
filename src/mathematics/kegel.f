@@ -56,4 +56,5 @@ C     DATA              EPS  / 5.D-10 /
 *        Kreisfoermiger Kegel
          R = ATAN(sqrt(-LAMBDA(3))/sqrt(LAMBDA(1)))
       ENDIF
-      END
+      RETURN
+      END SUBROUTINE EIRENE_KEGEL

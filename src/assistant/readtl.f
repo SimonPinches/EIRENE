@@ -10,6 +10,7 @@ c  Called from INPUT.F  (for cell volumes, tally -12)
 c  and   from PLASMA.F  (for all other input tallies)
 C
       USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
 
@@ -18,13 +19,10 @@ C
       REAL(DP), INTENT(OUT) :: PROF(*)
       INTEGER, INTENT(IN) :: IFILE, IFLAG
       INTEGER, INTENT(OUT) :: NR, NP, NT, NB, NTT
-      INTEGER, PARAMETER :: NSTREAM=15
-      INTEGER :: ISTREAM(NSTREAM)
       INTEGER :: IRAD, IST, IR
       CHARACTER(72) :: TL
 
 C     DATA TL/72*'='/
-      DATA ISTREAM/6,50,20,21,29,30,31,32,33,10,11,12,13,14,15/
       SAVE
       IF (IFILE.GT.0) THEN
         DO IST=1,NSTREAM
@@ -48,4 +46,4 @@ C     DATA TL/72*'='/
       ENDIF
 11111 CONTINUE
       RETURN
-      END
+      END SUBROUTINE EIRENE_READTL

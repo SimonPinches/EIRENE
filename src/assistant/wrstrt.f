@@ -11,7 +11,7 @@ cdr    (volume-averaged, surface-averaged, spectra, and their standard deviation
 cdr  SUBROUTINE RSTRT:
 cdr  read MC estimated tallies, per stratum, onto fort.10
 cdr    (volume-averaged, surface-averaged, spectra, and their standard deviations)
-cdr     e.g. for printout, plotting etc.. of results from specified strata
+cdr     e.g. for printout, plotting, etc.. of results from specified strata
 
 cdr  on input:  IG     :  number of stratum ISTRA
 cdr             IG=0   :  sum over strata
@@ -67,11 +67,13 @@ C  SPECTRUM BINS RANGE FROM 0 TO NSPC+1
       ISTRA=IG
       IRC=ISTRA*IMAX+1
       IF (TRCFLE.AND.IG.NE.0) WRITE (iunout,*) 'WRITE STRATUM NO. ',IG
-      IF (TRCFLE.AND.IG.EQ.0) WRITE (iunout,*) 'WRITE SUM OVER STRATA '
+      IF (TRCFLE.AND.IG.EQ.0) WRITE (iunout,*) 'WRITE SUM OVER STRATA'
 C
       OPEN (UNIT=10+ifoff,ACCESS='DIRECT',FORM='UNFORMATTED',
-!pb     .      RECL=8*NRECL,STATUS='UNKNOWN',FILE=fort_lc//'10')
      .      RECL=8*NRECL,STATUS='UNKNOWN')
+#ifdef CHECKBIN
+      OPEN (UNIT=110+ifoff,ACCESS='SEQUENTIAL',FORM='FORMATTED')
+#endif
 
       JINI=1
       IF (TRCFLE) WRITE (iunout,*) 'ESTIMV'
@@ -81,6 +83,11 @@ C
      .                             IRC,JINI,JEND
       ENDIF
       WRITE (10+ifoff,REC=IRC) (TALLYV(J),J=JINI,JEND)
+#ifdef CHECKBIN
+      WRITE (110+ifoff,*) 'ESTIMV'
+      write (110+ifoff,*) 'IRC = ', IRC,' JINI, JEND ', jini, jend
+      write (110+ifoff,*) (TALLYV(J),J=JINI,JEND)
+#endif
       IF (JEND.EQ.IESTM1) GOTO 12
       JINI=JEND+1
       IRC=IRC+1
@@ -96,6 +103,11 @@ C
      .                             IRC,JINI,JEND
       ENDIF
       WRITE (10+ifoff,REC=IRC) (TALLYS(J),J=JINI,JEND)
+#ifdef CHECKBIN
+      WRITE (110+ifoff,*) 'ESTIMS'
+      write (110+ifoff,*) 'IRC = ', IRC,' JINI, JEND ', jini, jend
+      write (110+ifoff,*) (TALLYS(J),J=JINI,JEND)
+#endif
       IF (JEND.EQ.IESTM2) GOTO 2
       JINI=JEND+1
       IRC=IRC+1
@@ -111,6 +123,11 @@ C
      .                             IRC,JINI,JEND
       ENDIF
       WRITE (10+ifoff,REC=IRC) (STAT1(J),J=JINI,JEND)
+#ifdef CHECKBIN
+      WRITE (110+ifoff,*) 'STATIS 1'
+      write (110+ifoff,*) 'IRC = ', IRC,' JINI, JEND ', jini, jend
+      write (110+ifoff,*) (STAT1(J),J=JINI,JEND)
+#endif
       IF (JEND.EQ.ISDVI1) GOTO 21
       JINI=JEND+1
       IRC=IRC+1
@@ -126,6 +143,11 @@ C
      .                             IRC,JINI,JEND
       ENDIF
       WRITE (10+ifoff,REC=IRC) (STAT2(J),J=JINI,JEND)
+#ifdef CHECKBIN
+      WRITE (110+ifoff,*) 'STATIS 2'
+      write (110+ifoff,*) 'IRC = ', IRC,' JINI, JEND ', jini, jend
+      write (110+ifoff,*) (STAT2(J),J=JINI,JEND)
+#endif
       IF (JEND.EQ.ISDVI2) GOTO 23
       JINI=JEND+1
       IRC=IRC+1
@@ -141,6 +163,11 @@ C
      .                             IRC,JINI,JEND
       ENDIF
       WRITE (10+ifoff,REC=IRC) (SIGC(J),J=JINI,JEND)
+#ifdef CHECKBIN
+      WRITE (110+ifoff,*) 'STATIS 3'
+      write (110+ifoff,*) 'IRC = ', IRC,' JINI, JEND ', jini, jend
+      write (110+ifoff,*) (Sigc(J),J=JINI,JEND)
+#endif
       IF (JEND.EQ.ISDVC1) GOTO 25
       JINI=JEND+1
       IRC=IRC+1
@@ -156,6 +183,11 @@ C
      .                             IRC,JINI,JEND
       ENDIF
       WRITE (10+ifoff,REC=IRC) (SIGCS(J),J=JINI,JEND)
+#ifdef CHECKBIN
+      WRITE (110+ifoff,*) 'STATIS 4'
+      write (110+ifoff,*) 'IRC = ', IRC,' JINI, JEND ', jini, jend
+      write (110+ifoff,*) (Sigcs(J),J=JINI,JEND)
+#endif
       IF (JEND.EQ.ISDVC2) GOTO 62
       JINI=JEND+1
       IRC=IRC+1
@@ -183,11 +215,33 @@ C  SET RANGE OF SPECTRUM ISPC, ADD BIN 0 AND NSPC+1 FOR LOW AND HIGH END OF SPEC
      .                     TALLYL(ISPC)%IPRTYP,
      .                     TALLYL(ISPC)%IPRSP,
      .                     TALLYL(ISPC)%IMETSP
+#ifdef CHECKBIN
+      WRITE (110+ifoff,*) 'SPECTRA'
+      write (110+ifoff,*) 'IRC = ', IRC
+      WRITE (110+ifoff,*) TALLYL(ISPC)%SPCMIN,
+     .              TALLYL(ISPC)%SPCMAX,
+     .              TALLYL(ISPC)%SPCDEL,
+     .              TALLYL(ISPC)%SPCDELI,
+     .              TALLYL(ISPC)%SPCS,
+     .              TALLYL(ISPC)%SGMS,
+     .              TALLYL(ISPC)%STVS,
+     .              TALLYL(ISPC)%GGS,
+     .              TALLYL(ISPC)%NSPC,
+     .              TALLYL(ISPC)%ISPCTYP,
+     .              TALLYL(ISPC)%ISPCSRF,
+     .              TALLYL(ISPC)%IPRTYP,
+     .              TALLYL(ISPC)%IPRSP,
+     .              TALLYL(ISPC)%IMETSP
+#endif
         DO JINI=NSPECI,NSPECE,NRECL
           IRC=IRC+1
           JEND=MIN(NSPECE, JINI+NRECL-1)
           WRITE (10+ifoff,REC=IRC)
      .      (TALLYL(ISPC)%SPC(J),J=JINI,JEND)
+#ifdef CHECKBIN
+          WRITE (110+ifoff,*) 'SPC IRC =',IRC
+          write (110+ifoff,*) (TALLYL(ISPC)%SPC(J),J=JINI,JEND)
+#endif
         END DO
         IF (ISPCI.NE.0) THEN
           DO JINI=NSPECI,NSPECE,NRECL
@@ -195,31 +249,51 @@ C  SET RANGE OF SPECTRUM ISPC, ADD BIN 0 AND NSPC+1 FOR LOW AND HIGH END OF SPEC
             JEND=MIN(NSPECE, JINI+NRECL-1)
             WRITE (10+ifoff,REC=IRC)
      .        (TALLYL(ISPC)%SGM(J),J=JINI,JEND)
+#ifdef CHECKBIN
+          WRITE (110+ifoff,*) 'SGM IRC =',IRC
+          write (110+ifoff,*) (TALLYL(ISPC)%SGM(J),J=JINI,JEND)
+#endif
           END DO
           DO JINI=NSPECI,NSPECE,NRECL
             IRC=IRC+1
             JEND=MIN(NSPECE, JINI+NRECL-1)
             WRITE (10+ifoff,REC=IRC)
      .        (TALLYL(ISPC)%SDV(J),J=JINI,JEND)
+#ifdef CHECKBIN
+          WRITE (110+ifoff,*) 'SDV IRC =',IRC
+          write (110+ifoff,*) (TALLYL(ISPC)%SDV(J),J=JINI,JEND)
+#endif
           END DO
           DO JINI=NSPECI,NSPECE,NRECL
             IRC=IRC+1
             JEND=MIN(NSPECE, JINI+NRECL-1)
             WRITE (10+ifoff,REC=IRC)
      .        (TALLYL(ISPC)%STV(J),J=JINI,JEND)
+#ifdef CHECKBIN
+          WRITE (110+ifoff,*) 'STV IRC =',IRC
+          write (110+ifoff,*) (TALLYL(ISPC)%STV(J),J=JINI,JEND)
+#endif
           END DO
           DO JINI=NSPECI,NSPECE,NRECL
             IRC=IRC+1
             JEND=MIN(NSPECE, JINI+NRECL-1)
             WRITE (10+ifoff,REC=IRC)
      .        (TALLYL(ISPC)%GG(J),J=JINI,JEND)
+#ifdef CHECKBIN
+          WRITE (110+ifoff,*) 'GG IRC =',IRC
+          write (110+ifoff,*) (TALLYL(ISPC)%GG(J),J=JINI,JEND)
+#endif
           END DO
         END IF
       END DO
 
       CLOSE (UNIT=10+ifoff)
+#ifdef CHECKBIN
+      CLOSE (UNIT=110+ifoff)
+#endif
 C
-      END
+      RETURN
+      END SUBROUTINE EIRENE_WRSTRT
 C
       SUBROUTINE EIRENE_RSTRT(IG,NSTRAI,IESTM1,IESTM2,IESTM3,
      .            TALLYV,TALLYS,TALLYL,
@@ -268,7 +342,7 @@ C  SPECTRUM BINS RANGE FROM 0 TO NSPC+1
       ISTRA=IG
       IRC=ISTRA*IMAX+1
       IF (TRCFLE.AND.IG.NE.0) WRITE (iunout,*) 'READ STRATUM NO. ',IG
-      IF (TRCFLE.AND.IG.EQ.0) WRITE (iunout,*) 'READ SUM OVER STRATA '
+      IF (TRCFLE.AND.IG.EQ.0) WRITE (iunout,*) 'READ SUM OVER STRATA'
 
       OPEN (UNIT=10+ifoff,ACCESS='DIRECT',FORM='UNFORMATTED',
      .      RECL=8*NRECL,STATUS='OLD')
@@ -421,4 +495,4 @@ C  SET RANGE OF SPECTRUM ISPC, ADD BIN 0 AND NSPC+1 FOR LOW AND HIGH END OF SPEC
       CLOSE (UNIT=10+ifoff)
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_RSTRT

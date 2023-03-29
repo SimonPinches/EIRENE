@@ -89,7 +89,7 @@ C  2ND EXPONENTIAL
    20 CONTINUE
       PRO(NR1ST)=0.
       RETURN
-      END
+      END SUBROUTINE EIRENE_PROFE
       
 *****************************************************************
       
@@ -165,7 +165,7 @@ C
    20 CONTINUE
       PRO(NR1ST)=0.
       RETURN
-      END
+      END SUBROUTINE EIRENE_PROFN
 
 ********************************************************************
       
@@ -175,13 +175,7 @@ C
 C
 C  READ ENTIRE PROFILE FROM TARGET DATA STRUCTURE PLASMA_BCKGRND  
 C      (EIRMOD_CSPEI)
-C  NSPZ1: first dimension of PRO array as in calling program
-C  NSPZI: fill the first NSPZI fields 1:NZPZI. NZPZI LE NSPZ1 necessarily.
-C  NSPZ1,IINDEX:  = 1,     0        for TEIN
-C                 = NPLSTI,1        for TIIN
-C                 = NPLS,  NPLSTI   for DIIN
-C  etc...
-C
+cdr  PRO is a 1D array, nspz1=1 necessarily (unused), 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CSPEI
@@ -190,17 +184,16 @@ C
       IMPLICIT NONE
 
       INTEGER, INTENT(IN) :: IINDEX, NSPZI, NSPZ1, NDAT
-!     REAL(DP), INTENT(OUT) :: PRO(NSPZ1,*)
       REAL(DP), INTENT(OUT) :: PRO(:)
-      if (nspzi.gt.nspz1 .or. nspz1.le.0) then
+      if (nspz1.ne.1) then
         write (iunout,*) 'error in PROFR'
         write (iunout,*) 'PRO: incorrect dimension in calling program'
-        write (iunout,*) 'nspz1, nspzi= ',NSPZ1, NSPZI
+        write (iunout,*) 'nspz1= ',NSPZ1
       endif
 
       PRO(1:NDAT) = PLASMA_BCKGRND(IINDEX+1,1:NDAT)
       RETURN
-      END
+      END SUBROUTINE EIRENE_PROFR_1D
 
 C
 C
@@ -208,6 +201,7 @@ C
 C
 C  READ ENTIRE PROFILE FROM TARGET DATA STRUCTURE PLASMA_BCKGRND  
 C      (EIRMOD_CSPEI)
+cdr  same as PROFR_1D, but PRO is a 2D array, 
 C  NSPZ1: first dimension of PRO array as in calling program
 C  NSPZI: fill the first NSPZI fields 1:NZPZI. NZPZI LE NSPZ1 necessarily.
 C  NSPZ1,IINDEX:  = 1,     0        for TEIN
@@ -223,7 +217,7 @@ C
       IMPLICIT NONE
 
       INTEGER, INTENT(IN) :: IINDEX, NSPZI, NSPZ1, NDAT
-!     REAL(DP), INTENT(OUT) :: PRO(NSPZ1,*)
+!     REAL(DP), INTENT(OUT) :: PRO(NSPZ1,NDAT)
       REAL(DP), INTENT(OUT) :: PRO(:,:)
       if (nspzi.gt.nspz1 .or. nspz1.le.0) then
         write (iunout,*) 'error in PROFR'
@@ -233,7 +227,7 @@ C
 
       PRO(1:NSPZI,1:NDAT) = PLASMA_BCKGRND(IINDEX+1:IINDEX+NSPZI,1:NDAT)
       RETURN
-      END
+      END SUBROUTINE EIRENE_PROFR_2D
 
 **************************************************************************
       
@@ -294,6 +288,6 @@ C
    20 CONTINUE
       PRO(NR1ST)=0.
       RETURN
-      END
+      END SUBROUTINE EIRENE_PROFS
       
       end module  eirmod_profiles

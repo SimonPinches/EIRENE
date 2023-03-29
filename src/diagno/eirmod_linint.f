@@ -7,6 +7,8 @@
       USE EIRMOD_ADDCOL, ONLY: EIRENE_ADDCOL
       USE EIRMOD_STDCOL, ONLY: EIRENE_STDCOL
       USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
+      use eirmod_timer
+      use eirmod_timep
       
       IMPLICIT NONE
       PRIVATE
@@ -410,10 +412,12 @@ C
         TRCHST=.TRUE.
         NPANU=ICHORI
         ISPZ=0
+!$OMP CRITICAL
         CALL EIRENE_LEER(2)
         WRITE (iunout,*) 'INIT. POINT C2 IN LININT: '
         CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
         CALL EIRENE_LEER(1)
+!$OMP END CRITICAL
         TRCHST=TRCSAV
       ENDIF
 C
@@ -617,7 +621,11 @@ C
       IF (ILIIN(MSURF).LE.0) GOTO 14
 C     PERIODICITY (inspired by escape.f):
       IF (ILIIN(MSURF).GE.4) THEN
-        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,11)
+      IF (NLTRC) THEN
+!$OMP CRITICAL
+        CALL EIRENE_CHCTRC(X0,Y0,Z0,0,11)
+!$OMP END CRITICAL
+      ENDIF
         GOTO 14
       ENDIF
 C
@@ -687,10 +695,12 @@ C
         TRCHST=.TRUE.
         NPANU=ICHORI
         ISPZ=0
+!$OMP CRITICAL
         CALL EIRENE_LEER(2)
         WRITE (iunout,*) 'SIGNAL: STARTING POINT ON CHORD'
         CALL EIRENE_CHCTRC(X0,Y0,Z0,16,8)
         CALL EIRENE_LEER(1)
+!$OMP END CRITICAL
         TRCHST=TRCSAV
       ENDIF
 C
@@ -830,7 +840,7 @@ C
 C
 
       IF (IFIRST < 0) THEN
-CDR WAS PASSIERT HIER ???
+CDR what is the purpose of this?  Needed or dead option?
         TRAJ(ICHORI)%TRJ%NCOU_CELL = TRAJ(ICHORI)%TRJ%NCOU_CELL + NCOU
         DO J=1,NCOU
           NCELL=NRCELL+NUPC(J)*NR1P2+NBLCKA
@@ -892,9 +902,8 @@ C
 C     IF (ISRFCL.EQ.2) THEN
 C       CALL TIMCOL (...,IRET)
 C       IF (IRET .EQ. 1) GOTO 104
-C       IF (IRET .eq. 2) GOTO 800
+C       IF (IRET .EQ. 2) GOTO 800
 C      ENDIF
-        
 c     IF (ISRFCL.EQ.3) CALL EIRENE_TORCOL (               *104)
       IF (ISRFCL.EQ.3) THEN
         CALL EIRENE_TORCOL (IRET)
@@ -981,8 +990,12 @@ C
       IF (ILIIN(MSURF).LE.0) GOTO 104
 C     PERIODICITY (inspired by escape.f):
       IF (ILIIN(MSURF).GE.4) THEN
-        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,11)
-        GOTO 104
+      IF (NLTRC) THEN
+!$OMP CRITICAL
+         CALL EIRENE_CHCTRC(X0,Y0,Z0,0,11)
+!$OMP END CRITICAL
+      ENDIF
+      GOTO 104
       ENDIF
 C
       IF (TRCSIG.AND.IFIRST.EQ.0) THEN
@@ -990,10 +1003,12 @@ C
         TRCHST=.TRUE.
         NPANU=ICHORI
         ISPZ=0
+!$OMP CRITICAL
         CALL EIRENE_LEER(2)
         WRITE (iunout,*) 'SIGNAL: END POINT ON CHORD'
         CALL EIRENE_CHCTRC(X0,Y0,Z0,16,8)
         CALL EIRENE_LEER(2)
+!$OMP END CRITICAL
         TRCHST=TRCSAV
       ENDIF
 C
@@ -1152,9 +1167,10 @@ C
       CALL EIRENE_MASAGE
      .  ('AA AND VPLOT. EXIT CALLED                      ')
       CALL EIRENE_EXIT_OWN(1)
-      END
+      END SUBROUTINE EIRENE_LININT
 
       SUBROUTINE EIRENE_LININT2
+      IMPLICIT NONE
 
       IF (ALLOCATED(ARGST)) THEN
 c  these arrays have been allocated for PRSPEC option.
@@ -1165,12 +1181,11 @@ c  these arrays have been allocated for PRSPEC option.
       END IF
 
       RETURN
-      END
-
+      END SUBROUTINE EIRENE_LININT2
 
       SUBROUTINE EIRENE_LININT_REINIT
 c  clarify role of ifirst<0 first.
       RETURN
-      END
+      END SUBROUTINE EIRENE_LININT_REINIT
 
       END MODULE EIRMOD_LININT

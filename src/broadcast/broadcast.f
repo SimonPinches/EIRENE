@@ -5,7 +5,6 @@
 !  02.03.07:  remove escd2* arrays
 !  20.06.07:  MAXLEVEL used for broadcast of RSPLST and ISPLST
 !  20.06.07:  NCONA used for broadcast of RCONA
-!  20.06.07:  NUM_PARM used for broadcast of parameters in PARMMOD
 !  20.06.07:  NSPEZV_DIM used for broadcast of NSPEZV
 !  20.06.07:  NLOGAU used for broadcast of LLOGAU
 !  01.07.09:  broadcast of HFTR0-3 arrays removed. this is done in broadref.f
@@ -14,17 +13,6 @@ cdr 15.10.14:  renaming of arrays for variances for sum over strata 'smestl' spe
 cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
 
 cdr  unification of naming conventions for electron impact collisions
-
-!pb  APR  16:  ipplds -> ipplei, pplds -> pplei
-!pb  APR  16:  ipatds -> ipatei, patds -> patei, eatds -> eatei
-!pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei, emlds -> emlei
-!pb  APR  16:  ipiods -> ipioei, piods -> pioei, eiods -> eioei
-!pb  APR  16:  pelds -> pelei, eelds -> eelei
-!pb  MAY  16:  tabds1 -> tabei1
-!pb  MAY  16:  nrds -> nrei
-!pb  JUL  16:  ehvds1 -> ehvei1
-!dr  sept 16:  nmdsi  -> nmeii
-!dr  sept 16:  nidsi  -> nieii
 
 cdr  sept 16:  ETH (collision threshold energy) added to reaction data
 cdr            RTMAX and ERTMAX added to reaction data: max. of "rate" sigma(v_rel)*v_rel
@@ -35,9 +23,9 @@ cdr  Jan  17:  only comments
 cdr  July 17:  bug fix: dimensioning of LCUT(0:N2NDPLGS) corrected
 cdr            remove NCHORD (is: NCHOR)
 c    Aug. 17:  NMODE, LSMOPRO: exception wrt. MPI.  Why necessary?
-c              broadcasting of CHRTLS was done twice.  removed once.
+c              broadcasting of CHRTLS was done twice. Removed once.
 cpb  Dec. 17:  remove type SPECT_ARRAY, not needed in Fortran 2003
-cpb  jan 2018:  remove unused arrays TEDTEDX, TEDTEDY, TEDTEDZ
+cpb  Jan. 18:  remove unused arrays TEDTEDX, TEDTEDY, TEDTEDZ
 c    Jan. 18:  new submodule alloc_fit_form used to allocate, and initialize REACDAT(IR)
 cdr  May 18 :  broadcast new variables for internal CR code (currently H_COLRAD):
 cdr            nhcol_store
@@ -45,12 +33,21 @@ cdr            m_hcol(nreac)
 cdr  Sept 18:  redundant arrays: JEREARC, JEREAEI  removed
 cdr            NHVREI  (formerly: NREAHV)
 cdr            NHVRPI  (formerly: NRHVPI)
-cdr  Oct. 18:  input tallies on PLSTLS(NINPTL). includes 18 old input tallies but
+cdr Oct.  18:  remove CHELP, towards more rational (and unified)
+cdr            reading of AM data in input.f
+cdr            and setting of "density models" in block 5.
+cdr            Line emissivity rates are now just ordinary A&M reactions: no. IRC.
+cdr            Population escape factors POP_ESC are
+cdr            now only via IRC reaction card, block 4. Not in block 12 any more.
+cdr            "Density Models" are now charcterized by a reaction IRC (from block 4)
+cdr            and a donor state ISPZ, ITYP, rather than by a full reaction deck CHELP.
+cdr  Oct. 18:  input tallies on PLSTLS(NINPTL). Includes 18 old input tallies but
 cdr            now also derived tallies: EDRIFT, BVIN, PARMOM
 cdr  tbd:      broadcast: livtali etc. move to correct position
 cdr  Jan. 19:  separate routine for broadcast of CCOUPL
 cdr  ???       apparently also COMNNL removed here from broadcasting
-cdr  Nov. 19:  bugfix re %poly% dimensioning. ND --> ND1 
+cdr  Nov. 19:  bugfix re %poly% dimensioning. ND --> ND1. Now: separate dimensioning
+cdr            of poly%... and tab1d%... or tab2d%... data. 
 
       SUBROUTINE EIRENE_BROADCAST
 cdr
@@ -112,16 +109,21 @@ cdr
      >    , ONLY : EIRENE_BROADCAST_COMNNL
       USE EIRMOD_PHOTON
      >    , ONLY : EIRENE_BROADCAST_PHOTON
+      USE EIRMOD_CREF
+     >    , ONLY : EIRENE_BROADCAST_CREF
       USE EIRMOD_TIMEA, ONLY : EIRENE_TIMEA0_OC
-      USE EIRMOD_CPES, ONLY : MY_PE
+      USE EIRMOD_CPES
+     >    , ONLY : MY_PE, NLIDENT, 
+     >             input_distribution_strategy
       USE EIRMOD_MPI
       IMPLICIT NONE
       INTEGER :: IER
       
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
+      CALL EIRENE_CHECK_EXIT
 
 !pb  in order to avoid cyclic dependencies in compilation
-!pb  hand over processor number via argumet list
+!pb  hand over processor number via argument list
       
       CALL EIRENE_BROADCAST_PARMMOD(MY_PE)
 
@@ -153,18 +155,27 @@ cdr
       CALL EIRENE_BROADCAST_CTEXT(MY_PE)
       CALL EIRENE_BROADCAST_CTRCEI(MY_PE)
 
+      CALL MPI_BCAST (NLIDENT,1,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
+
+      CALL MPI_BCAST (input_distribution_strategy,1,MPI_INTEGER,0,
+     .                MPI_COMM_WORLD,ier)
+
 cdr  broadcast arrays for interfacing with B2/B2.5 codes family
       CALL EIRENE_BROADCAST_CCOUPL(MY_PE)
 
       CALL EIRENE_BROADCAST_COMNNL(MY_PE)
 
-      CALL EIRENE_BROAD_USR
+      CALL EIRENE_BROADCAST_USR(MY_PE)
+
+      CALL EIRENE_BROADCAST_PHOTON(MY_PE)
+      CALL EIRENE_BROADCAST_CREF(MY_PE)
 
 c     ------------------------------------------------------------     c
 c     for the trace ion module
 !pb   CALL EIRENE_BROAD_TIM_PARMS
 c     ------------------------------------------------------------     c
 c
+      CALL EIRENE_CHECK_EXIT
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
 cOS   now call the octree-builder to build an octree on every node except
@@ -174,5 +185,4 @@ c     on the "root" node, where this is already done via timea0 after input
       END IF
 
       RETURN
-
-      END
+      END SUBROUTINE EIRENE_BROADCAST

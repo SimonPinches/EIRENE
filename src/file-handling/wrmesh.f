@@ -35,14 +35,14 @@ c  EIRENE_PLMESH: plots these contours, using GR plot software.
       IMPLICIT NONE
 
 
-      INTEGER, PARAMETER :: MAXPOIN=2000
-      REAL(DP) :: partcont(maxpoin,2,2), maxlen
+      REAL(DP), ALLOCATABLE :: partcont(:,:,:)
+      INTEGER, ALLOCATABLE :: IDIAG(:), irip(:,:)
+      INTEGER, SAVE :: MAXPOIN=2000
       REAL(DP) :: XPE, YPE, HELP, XT, YT, PHI1, X1, X2, Y1, Y2, PHI2
-      REAL(DP) :: DISTQI, DISTQJ1, DISTQJ2, YMN
+      REAL(DP) :: DISTQI, DISTQJ1, DISTQJ2, YMN, maxlen
       INTEGER  :: ICONT, IPOIN, IWST, IWEN, IWL, IWP,
      .            IWAN, IMN, I, NCONT, J, IUHR, ISTORE, IP, IH, IFOUND,
      .            ICO, IPO, IN, IS, IS1, ITRI, INBT, INBS
-      INTEGER  :: IDIAG(MAXPOIN),irip(maxpoin,2)
       LOGICAL  :: LCLOSED, LFOUND
       LOGICAL, ALLOCATABLE :: FOUND(:,:)
 
@@ -51,6 +51,10 @@ C ILPLG WIRD IM INPUT BLOCK 3 EINGELESEN
       CALL EIRENE_LEER(2)
       WRITE (iunout,*) 'SUBROUTINE WRMESH CALLED'
       CALL EIRENE_LEER(1)
+
+      ALLOCATE (partcont(maxpoin,2,2))
+      ALLOCATE (idiag(maxpoin))
+      ALLOCATE (irip(maxpoin,2))
 
       NCONT = 0
       DO I=1,NLIMI
@@ -91,127 +95,129 @@ C AKTUELLE KONTOUR BESTIMMEN, STUECKE MIT ILPLG=ICONT GEHOEREN ZUR
 C AKTUELLEN KONTOUR, ANFANGS UND ENDPUNKT DIESES STUECKES WERDEN AUF
 C PARTCONT GESPEICHERT
 
-c  ADDITIONAL SURFACES
-        DO I=1,NLIMI
-          IF (ABS(ILPLG(I)) .EQ. ICONT) THEN
-            IUHR=ILPLG(I)
-C 0 < RLB(I) < 2
-C 2-PUNKT OPTION WIRD IM TIMEA0 AUF RLB=1 ZURUECKGEFUEHRT
-            IF ((RLB(I) .GT. 0.) .AND. (RLB(I) .LT. 2.) .AND.
-     >          (P3(1,I) .EQ. 1.D55 .OR. P3(2,I) .EQ. 1.D55
-     >          .OR. P3(3,I) .EQ. 1.D55)) THEN
-              IPOIN = IPOIN + 1
-              IF (IPOIN.GT.MAXPOIN) THEN
-                WRITE(IUNOUT,*)
-     .           'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
-     .            ICONT
-                WRITE(IUNOUT,*)
-     .           'INCREASE VALUE OF MAXPOIN IN wrmesh.F'
-                WRITE(IUNOUT,*)
-     .           'CURRENTLY MAXPOIN = ', MAXPOIN
-                CALL EIRENE_EXIT_OWN(1)
-              ENDIF
-              IF (A3LM(I) .EQ. 0.) THEN
-C               X,Y-KOORDINATEN
-                PARTCONT(IPOIN,1,1) = P1(1,I)
-                PARTCONT(IPOIN,1,2) = P1(2,I)
-                PARTCONT(IPOIN,2,1) = P2(1,I)
-                PARTCONT(IPOIN,2,2) = P2(2,I)
-                idiag(ipoin)=i
-              ELSEIF (A2LM(I) .EQ. 0.) THEN
-C               X,Z-KOORDINATEN
-                PARTCONT(IPOIN,1,1) = P1(1,I)
-                PARTCONT(IPOIN,1,2) = P1(3,I)
-                PARTCONT(IPOIN,2,1) = P2(1,I)
-                PARTCONT(IPOIN,2,2) = P2(3,I)
-                idiag(ipoin)=i
-              ELSEIF (A1LM(I) .EQ. 0.) THEN
-C               Y,Z-KOORDINATEN
-                PARTCONT(IPOIN,1,1) = P1(2,I)
-                PARTCONT(IPOIN,1,2) = P1(3,I)
-                PARTCONT(IPOIN,2,1) = P2(2,I)
-                PARTCONT(IPOIN,2,2) = P2(3,I)
-                idiag(ipoin)=i
-              ENDIF
-              maxlen = maxlen +
-     >               sqrt((partcont(ipoin,1,1)-partcont(ipoin,2,1))**2
-     >                   +(partcont(ipoin,1,2)-partcont(ipoin,2,2))**2)
-            ELSE
-C  ERROR
-              WRITE(iunout,'(a,f11.4,2i4)')
-     >         'FALSCHE ANGABE FUER RLB, RLB = ',RLB(I),ILPLG(I),I
-            ENDIF
-          ENDIF
-        ENDDO
-
         select case (LEVGEO)
         case (3)
-        DO I=1,NSTSI
-          IF (ABS(ILPLG(NLIM+I)) .EQ. ICONT) THEN
-            IUHR=ILPLG(NLIM+I)
-            IF (INUMP(I,2) .NE. 0) THEN
-C  POLOIDAL SURFACES
-              DO J=IRPTA(I,1),IRPTE(I,1)-1
-                IF ((XPOL(J,INUMP(I,2)) .NE. XPOL(J+1,INUMP(I,2))) .OR.
-     >              (YPOL(J,INUMP(I,2)) .NE. YPOL(J+1,INUMP(I,2)))) THEN
-                  IPOIN = IPOIN + 1
-                  IF (IPOIN.GT.MAXPOIN) THEN
-                    WRITE(IUNOUT,*)
-     .               'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
-     .                ICONT
-                    WRITE(IUNOUT,*)
-     .               'INCREASE VALUE OF MAXPOIN IN wrmesh.F'
-                    WRITE(IUNOUT,*)
-     .               'CURRENTLY MAXPOIN = ', MAXPOIN
-                    CALL EIRENE_EXIT_OWN(1)
-                  ENDIF
-                  PARTCONT(IPOIN,1,1) = XPOL(J,INUMP(I,2))
-                  PARTCONT(IPOIN,1,2) = YPOL(J,INUMP(I,2))
-                  PARTCONT(IPOIN,2,1) = XPOL(J+1,INUMP(I,2))
-                  PARTCONT(IPOIN,2,2) = YPOL(J+1,INUMP(I,2))
-                  idiag(ipoin)=-i
-                  irip(ipoin,1)=j
-                  irip(ipoin,2)=INUMP(I,2)
-                  maxlen = maxlen +
+c  ADDITIONAL SURFACES
+          DO I=1,NLIMI
+            IF (ABS(ILPLG(I)) .EQ. ICONT) THEN
+              IUHR=ILPLG(I)
+C 0 < RLB(I) < 2
+C 2-PUNKT OPTION WIRD IM TIMEA0 AUF RLB=1 ZURUECKGEFUEHRT
+              IF ((RLB(I) .GT. 0.) .AND. (RLB(I) .LT. 2.) .AND.
+     >          (P3(1,I) .EQ. 1.D55 .OR. P3(2,I) .EQ. 1.D55
+     >          .OR. P3(3,I) .EQ. 1.D55)) THEN
+                IPOIN = IPOIN + 1
+                IF (IPOIN.GT.MAXPOIN) THEN
+                  WRITE(IUNOUT,*)
+     .             'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
+     .              ICONT
+                  WRITE(IUNOUT,*) 'INCREASE VALUE OF MAXPOIN'
+                  CALL EIRENE_EXTEND_ARRAYS
+                  WRITE(IUNOUT,*) 'MAXPOIN SET TO = ', MAXPOIN
+                ENDIF
+                IF (A3LM(I) .EQ. 0.) THEN
+C               X,Y-KOORDINATEN
+                  PARTCONT(IPOIN,1,1) = P1(1,I)
+                  PARTCONT(IPOIN,1,2) = P1(2,I)
+                  PARTCONT(IPOIN,2,1) = P2(1,I)
+                  PARTCONT(IPOIN,2,2) = P2(2,I)
+                  idiag(ipoin)=i
+                ELSEIF (A2LM(I) .EQ. 0.) THEN
+C               X,Z-KOORDINATEN
+                  PARTCONT(IPOIN,1,1) = P1(1,I)
+                  PARTCONT(IPOIN,1,2) = P1(3,I)
+                  PARTCONT(IPOIN,2,1) = P2(1,I)
+                  PARTCONT(IPOIN,2,2) = P2(3,I)
+                  idiag(ipoin)=i
+                ELSEIF (A1LM(I) .EQ. 0.) THEN
+C               Y,Z-KOORDINATEN
+                  PARTCONT(IPOIN,1,1) = P1(2,I)
+                  PARTCONT(IPOIN,1,2) = P1(3,I)
+                  PARTCONT(IPOIN,2,1) = P2(2,I)
+                  PARTCONT(IPOIN,2,2) = P2(3,I)
+                  idiag(ipoin)=i
+                ENDIF
+                maxlen = maxlen +
      >               sqrt((partcont(ipoin,1,1)-partcont(ipoin,2,1))**2
      >                   +(partcont(ipoin,1,2)-partcont(ipoin,2,2))**2)
-                ENDIF
-              ENDDO
-            ELSEIF (INUMP(I,1) .NE. 0) THEN
-C  RADIAL SURFACES
-              DO J=IRPTA(I,2),IRPTE(I,2)-1
-                IF ((XPOL(INUMP(I,1),J) .NE. XPOL(INUMP(I,1),J+1)) .OR.
-     >              (YPOL(INUMP(I,1),J) .NE. YPOL(INUMP(I,1),J+1))) THEN
-                  IPOIN = IPOIN + 1
-                  IF (IPOIN.GT.MAXPOIN) THEN
-                    WRITE(IUNOUT,*)
-     .               'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
-     .                ICONT
-                    WRITE(IUNOUT,*)
-     .               'INCREASE VALUE OF MAXPOIN IN wrmesh.F'
-                    WRITE(IUNOUT,*)
-     .               'CURRENTLY MAXPOIN = ', MAXPOIN
-                    CALL EIRENE_EXIT_OWN(1)
-                  ENDIF
-                  PARTCONT(IPOIN,1,1) = XPOL(INUMP(I,1),J)
-                  PARTCONT(IPOIN,1,2) = YPOL(INUMP(I,1),J)
-                  PARTCONT(IPOIN,2,1) = XPOL(INUMP(I,1),J+1)
-                  PARTCONT(IPOIN,2,2) = YPOL(INUMP(I,1),J+1)
-                  idiag(ipoin)=-i
-                  irip(ipoin,1)=INUMP(I,1)
-                  irip(ipoin,2)=j
-                  maxlen = maxlen +
-     >               sqrt((partcont(ipoin,1,1)-partcont(ipoin,2,1))**2
-     >                   +(partcont(ipoin,1,2)-partcont(ipoin,2,2))**2)
-                ENDIF
-              ENDDO
-            ELSE
+                IF (TRCGRD)
+     >            WRITE(iunout,
+     >              '(a,g14.7,a,g14.7,a,g14.7,a,g14.7,a,i4)')
+     >              'Grabbed segment (',
+     >              PARTCONT(IPOIN,1,1),',',PARTCONT(IPOIN,1,2),
+     >              ') to (',
+     >              PARTCONT(IPOIN,2,1),',',PARTCONT(IPOIN,2,2),
+     >              ') from wall ',I
+              ELSE
 C  ERROR
-              WRITE(iunout,*) 'CASE NOT FORESEEN: INUMP: ',
-     >                     (INUMP(I,J),J=1,3)
+                WRITE(iunout,'(a,f11.4,2i4)')
+     >           'FALSCHE ANGABE FUER RLB, RLB = ',RLB(I),ILPLG(I),I
+              ENDIF
             ENDIF
-          ENDIF
-        ENDDO
+          ENDDO
+
+          DO I=1,NSTSI
+            IF (ABS(ILPLG(NLIM+I)) .EQ. ICONT) THEN
+              IUHR=ILPLG(NLIM+I)
+              IF (INUMP(I,2) .NE. 0) THEN
+C  POLOIDAL SURFACES
+                DO J=IRPTA(I,1),IRPTE(I,1)-1
+                  IF ((XPOL(J,INUMP(I,2)).NE.XPOL(J+1,INUMP(I,2))) .OR.
+     >                (YPOL(J,INUMP(I,2)).NE.YPOL(J+1,INUMP(I,2)))) THEN
+                    IPOIN = IPOIN + 1
+                    IF (IPOIN.GT.MAXPOIN) THEN
+                      WRITE(IUNOUT,*)
+     .                 'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
+     .                  ICONT
+                      WRITE(IUNOUT,*) 'INCREASE VALUE OF MAXPOIN'
+                      CALL EIRENE_EXTEND_ARRAYS
+                      WRITE(IUNOUT,*) 'MAXPOIN SET TO = ', MAXPOIN
+                    ENDIF
+                    PARTCONT(IPOIN,1,1) = XPOL(J,INUMP(I,2))
+                    PARTCONT(IPOIN,1,2) = YPOL(J,INUMP(I,2))
+                    PARTCONT(IPOIN,2,1) = XPOL(J+1,INUMP(I,2))
+                    PARTCONT(IPOIN,2,2) = YPOL(J+1,INUMP(I,2))
+                    idiag(ipoin)=-i
+                    irip(ipoin,1)=j
+                    irip(ipoin,2)=INUMP(I,2)
+                    maxlen = maxlen +
+     >               sqrt((partcont(ipoin,1,1)-partcont(ipoin,2,1))**2
+     >                   +(partcont(ipoin,1,2)-partcont(ipoin,2,2))**2)
+                  ENDIF
+                ENDDO
+              ELSEIF (INUMP(I,1) .NE. 0) THEN
+C  RADIAL SURFACES
+                DO J=IRPTA(I,2),IRPTE(I,2)-1
+                  IF ((XPOL(INUMP(I,1),J).NE.XPOL(INUMP(I,1),J+1)) .OR.
+     >                (YPOL(INUMP(I,1),J).NE.YPOL(INUMP(I,1),J+1))) THEN
+                    IPOIN = IPOIN + 1
+                    IF (IPOIN.GT.MAXPOIN) THEN
+                      WRITE(IUNOUT,*)
+     .                 'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
+     .                  ICONT
+                      WRITE(IUNOUT,*) 'INCREASE VALUE OF MAXPOIN'
+                      CALL EIRENE_EXTEND_ARRAYS
+                      WRITE(IUNOUT,*) 'MAXPOIN SET TO = ', MAXPOIN
+                    ENDIF
+                    PARTCONT(IPOIN,1,1) = XPOL(INUMP(I,1),J)
+                    PARTCONT(IPOIN,1,2) = YPOL(INUMP(I,1),J)
+                    PARTCONT(IPOIN,2,1) = XPOL(INUMP(I,1),J+1)
+                    PARTCONT(IPOIN,2,2) = YPOL(INUMP(I,1),J+1)
+                    idiag(ipoin)=-i
+                    irip(ipoin,1)=INUMP(I,1)
+                    irip(ipoin,2)=j
+                    maxlen = maxlen +
+     >               sqrt((partcont(ipoin,1,1)-partcont(ipoin,2,1))**2
+     >                   +(partcont(ipoin,1,2)-partcont(ipoin,2,2))**2)
+                  ENDIF
+                ENDDO
+              ELSE
+C  ERROR
+                WRITE(iunout,*) 'CASE NOT FORESEEN: INUMP: ',
+     >                       (INUMP(I,J),J=1,3)
+              ENDIF
+            ENDIF
+          ENDDO
 
         case (4)
 C  TRIANGLE SIDES
@@ -231,11 +237,9 @@ C  TRIANGLE SIDES
                     WRITE(IUNOUT,*)
      .               'INSUFFICIENT NUMBER OF POINTS FOR CONTOUR ',
      .                ICONT
-                    WRITE(IUNOUT,*)
-     .               'INCREASE VALUE OF MAXPOIN IN wrmesh.F'
-                    WRITE(IUNOUT,*)
-     .               'CURRENTLY MAXPOIN = ', MAXPOIN
-                    CALL EIRENE_EXIT_OWN(1)
+                    WRITE(IUNOUT,*) 'INCREASE VALUE OF MAXPOIN'
+                    CALL EIRENE_EXTEND_ARRAYS
+                    WRITE(IUNOUT,*) 'MAXPOIN SET TO = ', MAXPOIN
                   ENDIF
                   PARTCONT(IPOIN,1,1) = XTRIAN(NECKE(IS,ITRI))
                   PARTCONT(IPOIN,1,2) = YTRIAN(NECKE(IS,ITRI))
@@ -263,6 +267,7 @@ cwdk Make sure the corresponding side of the neighboring triangle is not found a
 
         IF (IPOIN.LE.0) THEN
           WRITE(iunout,*) 'CONTOUR ',ICONT,' NOT FOUND'
+          CALL EIRENE_LEER(1)
           GOTO 1000
         ENDIF
 
@@ -274,6 +279,7 @@ C STUECKE DER AKTUELLEN KONTOUR WERDEN SORTIERT
      .           (PARTCONT(I,2,2)-PARTCONT(I,1,2))**2
           IFOUND=0
           DO J=I+1,IPOIN
+            IF (IFOUND.EQ.1) CYCLE
             DISTQJ1=(XPE-PARTCONT(J,1,1))**2+
      .              (YPE-PARTCONT(J,1,2))**2
             DISTQJ2=(XPE-PARTCONT(J,2,1))**2+
@@ -380,7 +386,7 @@ C  BERECHNUNG VON DELTA ALS MITTLERE LAENGE DER TEILSTUECKE
 C  DELTA IST MASS FUER DIE GROESSE DER DREIECKE
 
         IF (ICONT .EQ. 1) THEN
-          maxlen = maxlen / REAL(IPOIN,KIND(1.D0))
+          maxlen = maxlen / REAL(IPOIN,DP)
           WRITE(78+ifoff,*) maxlen
           WRITE(78+ifoff,*)
         endif
@@ -498,5 +504,48 @@ cdr
         DEALLOCATE (YCONTOUR)
       endif
 
+      DEALLOCATE (partcont)
+      DEALLOCATE (idiag, irip)
+
+      RETURN
+
+      CONTAINS
+
+      SUBROUTINE EIRENE_EXTEND_ARRAYS
+
+      IMPLICIT NONE
+      REAL(DP), ALLOCATABLE :: pc(:,:,:)
+      INTEGER, ALLOCATABLE :: ID(:), ir(:,:)
+      INTEGER :: NEWPOIN
+
+      ALLOCATE(PC(MAXPOIN,2,2))
+      ALLOCATE(ID(MAXPOIN))
+      ALLOCATE(IR(MAXPOIN,2))
+
+      PC = PARTCONT
+      ID = IDIAG
+      IR = IRIP
+
+      DEALLOCATE (PARTCONT)
+      DEALLOCATE (IDIAG)
+      DEALLOCATE (IRIP)
+
+      NEWPOIN = MAXPOIN + 2000
+      ALLOCATE (partcont(newpoin,2,2))
+      ALLOCATE (idiag(newpoin))
+      ALLOCATE (irip(newpoin,2))
+      
+      partcont(1:maxpoin,:,:) = pc(1:maxpoin,:,:)
+      idiag(1:maxpoin) = id(1:maxpoin)
+      irip(1:maxpoin,:) = ir(1:maxpoin,:)
+
+      maxpoin = newpoin
+      
+      deallocate(pc)
+      deallocate(id)
+      deallocate(ir)
+
       return
-      END
+      END SUBROUTINE EIRENE_EXTEND_ARRAYS
+
+      END SUBROUTINE EIRENE_WRMESH

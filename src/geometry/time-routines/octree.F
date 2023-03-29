@@ -177,7 +177,7 @@ c       definie explicit interfaces to the checking routines
         INTEGER :: I, J, SID
         REAL(DP) :: DISTANCE
 
-c       give birth to childs of the parental node
+c       give birth to children of the parental node
         CALL OCTREE_CreateChildren(TREE, PARENT)
 
 c       now iterate over all children and give them the love... eh... the

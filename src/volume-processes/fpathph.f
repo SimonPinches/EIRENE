@@ -1,6 +1,6 @@
 c  25.11.05: option modcol(3,4...)=3 added
 c            (first implemented in fpatha)
-c            cx rate option 4 added (adopted from fpatha)
+c            CX rate option 4 added (adopted from fpatha)
 C               added: jcou,ncou
 !pb  30.08.06:  data structure for reaction data redefined
 !pb  12.10.06:  modcol revised
@@ -23,19 +23,9 @@ cdr 13.08.15 :  cflag(4,1) changed from 2 to 1 (as it was in fpatha).  Is that c
 cdr dec. 15:    missing: ftabel3
 cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option
 
-
-
-!pb APR  16:    eatds -> eatei
-!pb APR  16:    emlds -> emlei
-!pb APR  16:    eiods -> eioei
-!pb APR  16:    eelds -> eelei
-!pb MAY  16:    tabds1 -> tabei1
-!pb JUL  16:    ehvds1 -> ehvei1
-cdr sept 16:    nadsi  -> naeii
-
 cdr aug. 16:    bug fix re EXPO in PI branch
-cdr sept.16:    pi process: use v0/vth >> 1. to switch to beam-rate coeff
-cdr             ei process: started to check for H.3, H.1 options for EI processes
+cdr sept.16:    PI process: use v0/vth >> 1. to switch to beam-rate coeff
+cdr             EI process: started to check for H.3, H.1 options for EI processes
 cdr                         according to v0/vth >> 1. criteria
 cdr Nov. 16:    cflag(7,mstor0) rather than cflag(6,3), see comments
 
@@ -163,7 +153,7 @@ csw
         irph =phv_lgphot(iphot,ipph,0) !  -->  lgxph, with x=ph, IRPH corresponds to: irei, ircx, ....
         ipls =phv_lgphot(iphot,ipph,1) !  -->  ipls: bulk, mit der interation, wie bei anderen auch.
         il   =phv_lgphot(iphot,ipph,2) !  -->   diese gibt es nicht bei ei, pi, cx,... prozessen
-cdr     il wird hier nirgends verwendet! kann ev. ganz raus aus photonenmodul
+cdr     il wird hier nirgends verwendet! kann evtl. ganz raus aus photonenmodul
         kk   =phv_lgphot(iphot,ipph,3) !  -->   diese gibt es nicht bei ei, cx, pi prozessen, KK=NREAPI(IRPI) z.b. bei pi
 cdr                                    !        d.h. hier sollte kk=nreaph(IRPH) verwendet werden
         IF (LGVAC(K,IPLS)) GOTO 61
@@ -188,7 +178,7 @@ cdr  spaeter: allgemein raten (1/s) auch fuer testteilchen (fpatha, fpathm, fpat
 cdr           als neue option einfuehren, analog Aik in xsectp.
             GOTO 997
           endif
-          SIGVPH(IRPH)=sigv
+          SIGVPH(IRPH)=SIGV
           GOTO 997
         ELSEIF (MODCOL(7,2,   IRPH).EQ.4) THEN
 C  MODEL 4:
@@ -277,4 +267,4 @@ C
       WRITE (iunout,*) 'ITYP,IPHOT,IRPH,MODCOL(7,J,IRPH),J=1,4 '
       WRITE (iunout,*)  ITYP,IPHOT,IRPH,(MODCOL(7,J,IRPH),J=1,4)
       CALL EIRENE_EXIT_OWN(1)
-      END
+      END FUNCTION EIRENE_FPATHPH

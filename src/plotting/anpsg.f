@@ -59,11 +59,11 @@ C
             GOTO 10
          ENDIF
          IPT=EIRENE_IEXP10(LKS)
-         MIN=LKS+SIGN(1._DP,LKS)*10.D0**(-14+IPT)
+         MIN=REAL(LKS+SIGN(1._DP,LKS)*10.D0**(-14+IPT),SP)
          IPT=EIRENE_IEXP10(RTS)
-         MAX=RTS+SIGN(1._DP,RTS)*10.D0**(-14+IPT)
+         MAX=REAL(RTS+SIGN(1._DP,RTS)*10.D0**(-14+IPT),SP)
          IPT=EIRENE_IEXP10(STPS2)
-         STPSZ=STPS2+10.**(-14+IPT)
+         STPSZ=REAL(STPS2+10.**(-14+IPT),SP)
       ELSE
          WRITE(iunout,*)  '------------------------------------'
          WRITE(iunout,*)  'PARAMETERFEHLER IN ANPSG: MIN > MAX'
@@ -73,4 +73,4 @@ C
       ENDIF
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_ANPSG

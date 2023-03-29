@@ -1,5 +1,7 @@
       module eirmod_algebra
 
+      USE EIRMOD_PRECISION
+
       private
 
       public :: eirene_algebr
@@ -18,6 +20,7 @@ cdr            SUBTIT, SCHRIT, SIGNOK can also
 cdr            be made local to this present module.
 cdr
 Cdr  Sept. 16: Bug fix: added option: two or more constants next to each other
+c  summer 2019: added function eirene_replace(...)
 C
 C-----------------------------------------------------------------------
       SUBROUTINE EIRENE_ALGEBR (TERM,OPER,IZIF,CONST,NOP,IOUT)
@@ -44,7 +47,7 @@ C           : EINZULESENDER AUSDRUCK
 
          CHARACTER(2), INTENT(OUT) :: OPER(*)
          INTEGER, INTENT(OUT) :: IZIF(4,*)
-         REAL*8, INTENT(INOUT) :: CONST(*)
+         REAL(DP), INTENT(INOUT) :: CONST(*)
          INTEGER, INTENT(OUT) :: NOP
          INTEGER, INTENT(IN) :: IOUT
 C
@@ -115,7 +118,7 @@ chr
       ic = 0
 
 !pb change TERM to uppercase
-      call eirene_to_upper(term)
+      call eirene_uppercase(term)
 C
 C        LESE TERM UND WERTE AUS
 C
@@ -304,7 +307,6 @@ cdr from ALGEBR, i.e. from the routines
 cdr that try to decipher the coded algebraic
 cdr expressions for the algebraic tallies
 cdr ALGV, ALGS specified in input block 10C and 10E, resp.
-cdr Mecker.f should be moved into ALGEBR.f
 
 
 C-----------------------------------------------------------------------
@@ -452,7 +454,7 @@ C
 C
 C     ENDE VON FEHLER
 C
-      END
+      END SUBROUTINE EIRENE_FEHLER
       
 *************************************************************************
 
@@ -565,7 +567,7 @@ C
 C
 C     ENDE VON KLAMME
 C
-      END
+      END SUBROUTINE EIRENE_KLAMME
       
 *************************************************************************
 
@@ -681,9 +683,9 @@ C
          ENDIF
    20 CONTINUE
 C
-C     ENDE VON OPRATO
-C
-      END
+C     ENDE VON OPERAT
+C     
+      END SUBROUTINE  EIRENE_OPERAT
       
 *************************************************************************
       
@@ -761,7 +763,6 @@ C
                if (AUSDRU(I:I) == AUSDRU(I+1:I+1)) OANDEN=OANDEN+1
                I=I+2
                POS=INDEX( BUCHST, AUSDRU(I:I) )
-!pb               OANDEN=OANDEN+1
             ENDIF
             GOTO 10
          ENDIF
@@ -778,7 +779,7 @@ C     ENDWHILE-1
 C
 C     ENDE VON OPRAND
 C
-      END
+      END SUBROUTINE EIRENE_OPRAND
       
 *************************************************************************
 
@@ -875,7 +876,7 @@ C
 C
 C     ENDE VON RUKSUB
 C
-      END
+      END SUBROUTINE EIRENE_RUKSUB
 
 *************************************************************************
 
@@ -1095,7 +1096,7 @@ C     ZERLEGUNG BEENDET, DA TEILSTRING KEIN OPERATOR MEHR ENTHAELT
 C
 C     ENDE VON SCHRIT
 C
-      END
+      END SUBROUTINE EIRENE_SCHRIT
 
 *************************************************************************
 
@@ -1142,7 +1143,7 @@ C
 C      
 C     ENDE VON SIGNOK
 C
-      END
+      END SUBROUTINE EIRENE_SIGNOK
 
 *************************************************************************
 
@@ -1205,7 +1206,6 @@ C
 C     SUBTITUTION VON '**' DURCH '^'
 C
       CALL EIRENE_REPLACE(AUSDRU,'**','^',AKTLEN)
-
       CALL EIRENE_REPLACE(AUSDRU,'DX', 'QA',AKTLEN)
       CALL EIRENE_REPLACE(AUSDRU,'DY', 'QB',AKTLEN)
       CALL EIRENE_REPLACE(AUSDRU,'DZ', 'QC',AKTLEN)
@@ -1224,60 +1224,58 @@ C
       CHARACTER(*), INTENT(IN) :: REP, WITH
       INTEGER, INTENT(INOUT) :: LENGTH
       INTEGER :: LREP, LWITH, POS
+#ifdef F2003
       CHARACTER(:), ALLOCATABLE :: CREP, CWITH, HILFE
+#else
+      INTEGER :: N
+      INTEGER, PARAMETER :: STRMAX = 512
+      CHARACTER(LEN=STRMAX) :: CREP, CWITH, HILFE
+#endif
 
+#ifndef F2003
+      N = LEN(ADJUSTL(TRIM(REP)))
+      IF (N.GT.STRMAX) THEN
+        WRITE(IPROUT,*)
+     .   'INCREASE SIZE OF STRMAX IN SUBTIT.EIRENE_REPLACE'
+        CALL EIRENE_EXIT_OWN(1)
+      ENDIF
+      N = LEN(ADJUSTL(TRIM(WITH)))
+      IF (N.GT.STRMAX) THEN
+        WRITE(IPROUT,*)
+     .   'INCREASE SIZE OF STRMAX IN SUBTIT.EIRENE_REPLACE'
+        CALL EIRENE_EXIT_OWN(1)
+      ENDIF
+#endif
       CREP = ADJUSTL(TRIM(REP))
       CWITH = ADJUSTL(TRIM(WITH))
-      LREP = LEN(CREP)
-      LWITH = LEN(CWITH)
+      LREP = LEN_TRIM(CREP)
+      LWITH = LEN_TRIM(CWITH)
       
-      POS=INDEX(STR,CREP)
+      POS=INDEX(STR,CREP(1:LREP))
 
       DO WHILE ( POS .GE. 1 .AND. POS .LT. LENGTH-1) 
 
+#ifndef F2003
+         N = LWITH+LENGTH-LREP+1
+         IF (N.GT.STRMAX) THEN
+           WRITE(IPROUT,*)
+     .      'INCREASE SIZE OF STRMAX IN SUBTIT.EIRENE_REPLACE'
+           CALL EIRENE_EXIT_OWN(1)
+         ENDIF
+#endif
          IF (POS == 1) THEN
-           HILFE = CWITH // STR(POS+LREP:LENGTH)
+           HILFE = CWITH(1:LWITH) // STR(POS+LREP:LENGTH)
          ELSE
-           HILFE=STR(1:POS-1) // CWITH // STR(POS+LREP:LENGTH)
+           HILFE=STR(1:POS-1) // CWITH(1:LWITH) // STR(POS+LREP:LENGTH)
          END IF
          STR=HILFE
          LENGTH=LENGTH - (LREP - LWITH)
-         POS=INDEX(STR,CREP)
+         POS=INDEX(STR,CREP(1:LREP))
       END DO  
       
       END SUBROUTINE EIRENE_REPLACE
 
-      END
-
-*************************************************************************
-
-
-      subroutine EIRENE_to_upper (zeile)
-cdr  set letters in character string to "upper case".
-cdr  cut ZEILE by removing leading and final blanks.
-
-      IMPLICIT NONE
-      character(*), INTENT(INOUT) :: zeile
-      INTEGER :: L, I, J, LANF, LEND
-      character(26) :: klein, gross
-      data klein /'abcdefghijklmnopqrstuvwxyz'/
-      data gross /'ABCDEFGHIJKLMNOPQRSTUVWXYZ'/
-
-      LANF=verify(zeile,' ')
-      LEND=verify(zeile,' ',.true.)
-      if (lanf == 0) return
-      l = lend-lanf+1
-      if (l < lend) then
-        zeile(1:l) = zeile(lanf:lend)
-        zeile(l+1:lend) = repeat(' ',lanf)
-      end if
-      do i=1,l
-        j=index(klein,zeile(i:i))
-        if (j>0) zeile(i:i)=gross(j:j)
-      end do
-
-      return
-      end subroutine EIRENE_to_upper
+      END SUBROUTINE EIRENE_SUBTIT
 
 *************************************************************************
       
@@ -1494,7 +1492,7 @@ C
 C
 C     ENDE VON ZERLEG
 C
-      END
+      END SUBROUTINE EIRENE_ZERLEG
 
 *************************************************************************
       
@@ -1504,7 +1502,7 @@ C
       IMPLICIT NONE
 C
       CHARACTER(*), INTENT(IN) :: ERSETZ
-      REAL*8, INTENT(OUT) :: CONST
+      REAL(DP), INTENT(OUT) :: CONST
       INTEGER :: IEXPO, IW, IPUNKT, ILEN, ICON
       CHARACTER(10) :: FORM
 C

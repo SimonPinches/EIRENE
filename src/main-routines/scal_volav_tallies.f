@@ -30,6 +30,7 @@ c                or  also: cumulated (flight times/reaction time) [1] to source 
       USE EIRMOD_CGEOM
       USE EIRMOD_CSPEZ
       USE EIRMOD_COMNNL
+      USE EIRMOD_CLOGAU
 
       IMPLICIT NONE
 
@@ -53,10 +54,38 @@ C
           DO 221 J=1,NSBOX_TAL
             IF (LPDENA) PDENA(IATM,J)=PDENA(IATM,J)*ZVOLIN(J)
             IF (LEDENA) EDENA(IATM,J)=EDENA(IATM,J)*ZVOLIN(J)
-            IF (LPAAT)  PAAT(IATM,J) =PAAT(IATM,J) *ZVOLIW(J)
-            IF (LPMAT)  PMAT(IATM,J) =PMAT(IATM,J) *ZVOLIW(J)
-            IF (LPIAT)  PIAT(IATM,J) =PIAT(IATM,J) *ZVOLIW(J)
-            IF (LPPHAT) PPHAT(IATM,J)=PPHAT(IATM,J)*ZVOLIW(J)
+            IF (LPAAT) THEN 
+              IF (NLSPCSCL_ATM) THEN
+                PAAT2(1:NATM,0:NATM) => PAAT(:,J)
+                PAAT2(IATM,:) =PAAT2(IATM,:) *ZVOLIW(J) 
+              ELSE
+                PAAT(IATM,J) = PAAT(IATM,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPMAT) THEN
+              IF (NLSPCSCL_MOL) THEN
+                PMAT2(1:NATM,0:NMOL) => PMAT(:,J)
+                PMAT2(IATM,:) =PMAT2(IATM,:) *ZVOLIW(J)
+              ELSE 
+                PMAT(IATM,J) = PMAT(IATM,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPIAT) THEN
+              IF (NLSPCSCL_ION) THEN
+                PIAT2(1:NATM,0:NION) => PIAT(:,J)
+                PIAT2(IATM,:) =PIAT2(IATM,:) *ZVOLIW(J)
+              ELSE
+                PIAT(IATM,J) = PIAT(IATM,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPPHAT) THEN
+              IF (NLSPCSCL_PHOT) THEN
+                PPHAT2(1:NATM,0:NPHOT) => PPHAT(:,J)
+                PPHAT2(IATM,:) =PPHAT2(IATM,:) *ZVOLIW(J)
+              ELSE
+               PPHAT(IATM,J) = PPHAT(IATM,J)*ZVOLIW(J)
+              END IF
+            END IF
             IF (LPGENA) PGENA(IATM,J)=PGENA(IATM,J)*ZVOLIW(J)
             IF (LEGENA) EGENA(IATM,J)=EGENA(IATM,J)*ZVOLIW(J)
             IF (LVGENA) VGENA(IATM,J)=VGENA(IATM,J)*ZVOLIW(J)
@@ -64,6 +93,7 @@ C
             IF (LVXDENA) VXDENA(IATM,J)=VXDENA(IATM,J)*ZVOLIN(J)
             IF (LVYDENA) VYDENA(IATM,J)=VYDENA(IATM,J)*ZVOLIN(J)
             IF (LVZDENA) VZDENA(IATM,J)=VZDENA(IATM,J)*ZVOLIN(J)
+            IF (LRAEL)  RAEL(IATM,J) =RAEL(IATM,J) *ZVOLIW(J)
   221     CONTINUE
         ENDIF
         SCLTAL(IATM,1)=1
@@ -79,6 +109,7 @@ C
         SCLTAL(IATM,85)=1
         SCLTAL(IATM,89)=1
         SCLTAL(IATM,93)=1
+        SCLTAL(IATM,101)=3
   220 CONTINUE
 C
 C  MOLECULAR PARTICLE SPECIES LOOP FOR THE STRATUM ISTRA
@@ -88,10 +119,38 @@ C
           DO 223 J=1,NSBOX_TAL
             IF (LPDENM) PDENM(IMOL,J)=PDENM(IMOL,J)*ZVOLIN(J)
             IF (LEDENM) EDENM(IMOL,J)=EDENM(IMOL,J)*ZVOLIN(J)
-            IF (LPAML)  PAML(IMOL,J) =PAML(IMOL,J) *ZVOLIW(J)
-            IF (LPMML)  PMML(IMOL,J) =PMML(IMOL,J) *ZVOLIW(J)
-            IF (LPIML)  PIML(IMOL,J) =PIML(IMOL,J) *ZVOLIW(J)
-            IF (LPPHML) PPHML(IMOL,J)=PPHML(IMOL,J)*ZVOLIW(J)
+            IF (LPAML) THEN
+              IF (NLSPCSCL_ATM) THEN
+                PAML2(1:NMOL,0:NATM) => PAML(:,J)
+                PAML2(IMOL,:) =PAML2(IMOL,:) *ZVOLIW(J)
+              ELSE
+                PAML(IMOL,J) = PAML(IMOL,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPMML) THEN
+              IF (NLSPCSCL_MOL) THEN
+                PMML2(1:NMOL,0:NMOL) => PMML(:,J)
+                PMML2(IMOL,:) =PMML2(IMOL,:) *ZVOLIW(J)
+              ELSE
+                PMML(IMOL,J) = PMML(IMOL,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPIML) THEN
+              IF (NLSPCSCL_ION) THEN
+                PIML2(1:NMOL,0:NION) => PIML(:,J)
+                PIML2(IMOL,:) =PIML2(IMOL,:) *ZVOLIW(J)
+              ELSE
+                PIML(IMOL,J) = PIML(IMOL,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPPHML) THEN
+              IF (NLSPCSCL_PHOT) THEN
+                PPHML2(1:NMOL,0:NPHOT) => PPHML(:,J)
+                PPHML2(IMOL,:) =PPHML2(IMOL,:) *ZVOLIW(J)
+              ELSE
+                PPHML(IMOL,J)= PPHML(IMOL,J)*ZVOLIW(J)
+              END IF
+            END IF
             IF (LPGENM) PGENM(IMOL,J)=PGENM(IMOL,J)*ZVOLIW(J)
             IF (LEGENM) EGENM(IMOL,J)=EGENM(IMOL,J)*ZVOLIW(J)
             IF (LVGENM) VGENM(IMOL,J)=VGENM(IMOL,J)*ZVOLIW(J)
@@ -99,6 +158,7 @@ C
             IF (LVXDENM) VXDENM(IMOL,J)=VXDENM(IMOL,J)*ZVOLIN(J)
             IF (LVYDENM) VYDENM(IMOL,J)=VYDENM(IMOL,J)*ZVOLIN(J)
             IF (LVZDENM) VZDENM(IMOL,J)=VZDENM(IMOL,J)*ZVOLIN(J)
+            IF (LRMEL)  RMEL(IMOL,J) =RMEL(IMOL,J) *ZVOLIW(J)
   223     CONTINUE
         ENDIF
         SCLTAL(IMOL,2)=1
@@ -114,6 +174,7 @@ C
         SCLTAL(IMOL,86)=1
         SCLTAL(IMOL,90)=1
         SCLTAL(IMOL,94)=1
+        SCLTAL(IMOL,102)=3
   222 CONTINUE
 C
 C  TEST ION PARTICLE SPECIES LOOP FOR THE STRATUM ISTRA
@@ -123,10 +184,38 @@ C
           DO 226 J=1,NSBOX_TAL
             IF (LPDENI) PDENI(IION,J)=PDENI(IION,J)*ZVOLIN(J)
             IF (LEDENI) EDENI(IION,J)=EDENI(IION,J)*ZVOLIN(J)
-            IF (LPAIO)  PAIO(IION,J) =PAIO(IION,J) *ZVOLIW(J)
-            IF (LPMIO)  PMIO(IION,J) =PMIO(IION,J) *ZVOLIW(J)
-            IF (LPIIO)  PIIO(IION,J) =PIIO(IION,J) *ZVOLIW(J)
-            IF (LPPHIO) PPHIO(IION,J)=PPHIO(IION,J)*ZVOLIW(J)
+            IF (LPAIO) THEN
+              IF (NLSPCSCL_ATM) THEN
+                PAIO2(1:NION,0:NATM) => PAIO(:,J)
+                PAIO2(IION,:) =PAIO2(IION,:) *ZVOLIW(J)
+              ELSE
+                PAIO(IION,J) = PAIO(IION,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPMIO) THEN
+              IF (NLSPCSCL_MOL) THEN
+                PMIO2(1:NION,0:NMOL) => PMIO(:,J)
+                PMIO2(IION,:) =PMIO2(IION,:) *ZVOLIW(J)
+              ELSE
+                PMIO(IION,J) = PMIO(IION,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPIIO) THEN
+              IF (NLSPCSCL_ION) THEN
+                PIIO2(1:NION,0:NION) => PIIO(:,J)
+                PIIO2(IION,:) =PIIO2(IION,:) *ZVOLIW(J)
+              ELSE
+                PIIO(IION,J) =PIIO(IION,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPPHIO) THEN
+              IF (NLSPCSCL_PHOT) THEN
+                PPHIO2(1:NION,0:NPHOT) => PPHIO(:,J)
+                PPHIO2(IION,:) =PPHIO2(IION,:) *ZVOLIW(J)
+              ELSE
+                PPHIO(IION,J)=PPHIO(IION,J)*ZVOLIW(J)
+              END IF
+            END IF
             IF (LPGENI) PGENI(IION,J)=PGENI(IION,J)*ZVOLIW(J)
             IF (LEGENI) EGENI(IION,J)=EGENI(IION,J)*ZVOLIW(J)
             IF (LVGENI) VGENI(IION,J)=VGENI(IION,J)*ZVOLIW(J)
@@ -134,6 +223,7 @@ C
             IF (LVXDENI) VXDENI(IION,J)=VXDENI(IION,J)*ZVOLIN(J)
             IF (LVYDENI) VYDENI(IION,J)=VYDENI(IION,J)*ZVOLIN(J)
             IF (LVZDENI) VZDENI(IION,J)=VZDENI(IION,J)*ZVOLIN(J)
+            IF (LRIEL)  RIEL(IION,J) =RIEL(IION,J)*ZVOLIW(J)
   226     CONTINUE
         ENDIF
         SCLTAL(IION,3)=1
@@ -149,6 +239,7 @@ C
         SCLTAL(IION,87)=1
         SCLTAL(IION,91)=1
         SCLTAL(IION,95)=1
+        SCLTAL(IION,103)=3
   225 CONTINUE
 C
 C  PHOTON PARTICLE SPECIES LOOP FOR THE STRATUM ISTRA
@@ -158,10 +249,38 @@ C
           DO J=1,NSBOX_TAL
             IF (LPDENPH) PDENPH(IPHOT,J)=PDENPH(IPHOT,J)*ZVOLIN(J)
             IF (LEDENPH) EDENPH(IPHOT,J)=EDENPH(IPHOT,J)*ZVOLIN(J)
-            IF (LPAPHT)  PAPHT(IPHOT,J) =PAPHT(IPHOT,J) *ZVOLIW(J)
-            IF (LPMPHT)  PMPHT(IPHOT,J) =PMPHT(IPHOT,J) *ZVOLIW(J)
-            IF (LPIPHT)  PIPHT(IPHOT,J) =PIPHT(IPHOT,J) *ZVOLIW(J)
-            IF (LPPHPHT) PPHPHT(IPHOT,J)=PPHPHT(IPHOT,J)*ZVOLIW(J)
+            IF (LPAPHT) THEN
+              IF (NLSPCSCL_ATM) THEN
+                PAPHT2(1:NPHOT,0:NATM) => PAPHT(:,J)
+                PAPHT2(IPHOT,:) =PAPHT2(IPHOT,:) *ZVOLIW(J)
+              ELSE
+                PAPHT(IPHOT,J) = PAPHT(IPHOT,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPMPHT) THEN
+              IF (NLSPCSCL_MOL) THEN
+                PMPHT2(1:NPHOT,0:NMOL) => PMPHT(:,J)
+                PMPHT2(IPHOT,:) =PMPHT2(IPHOT,:) *ZVOLIW(J)
+              ELSE
+                PMPHT(IPHOT,J) = PMPHT(IPHOT,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPIPHT) THEN
+              IF (NLSPCSCL_ION) THEN
+                PIPHT2(1:NPHOT,0:NION) => PIPHT(:,J)
+                PIPHT2(IPHOT,:) =PIPHT2(IPHOT,:) *ZVOLIW(J)
+              ELSE
+                PIPHT(IPHOT,J) = PIPHT(IPHOT,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPPHPHT) THEN
+              IF (NLSPCSCL_PHOT) THEN
+                PPHPHT2(1:NPHOT,0:NPHOT) => PPHPHT(:,J)
+                PPHPHT2(IPHOT,:) =PPHPHT2(IPHOT,:) *ZVOLIW(J)
+              ELSE
+                PPHPHT(IPHOT,J) = PPHPHT(IPHOT,J)*ZVOLIW(J)
+              END IF
+            END IF
             IF (LPGENPH) PGENPH(IPHOT,J)=PGENPH(IPHOT,J)*ZVOLIW(J)
             IF (LEGENPH) EGENPH(IPHOT,J)=EGENPH(IPHOT,J)*ZVOLIW(J)
             IF (LVGENPH) VGENPH(IPHOT,J)=VGENPH(IPHOT,J)*ZVOLIW(J)
@@ -192,10 +311,38 @@ C
       DO 227 IPLS=1,NPLSI
         IF (LOGPLS(IPLS,ISTR)) THEN
           DO 228 J=1,NSBOX_TAL
-            IF (LPAPL)  PAPL(IPLS,J) =PAPL(IPLS,J) *ZVOLIW(J)
-            IF (LPMPL)  PMPL(IPLS,J) =PMPL(IPLS,J) *ZVOLIW(J)
-            IF (LPIPL)  PIPL(IPLS,J) =PIPL(IPLS,J) *ZVOLIW(J)
-            IF (LPPHPL) PPHPL(IPLS,J)=PPHPL(IPLS,J)*ZVOLIW(J)
+            IF (LPAPL) THEN
+              IF (NLSPCSCL_ATM) THEN
+                PAPL2(1:NPLS,0:NATM) => PAPL(:,J)
+                PAPL2(IPLS,:) =PAPL2(IPLS,:) *ZVOLIW(J)
+              ELSE
+                PAPL(IPLS,J) = PAPL(IPLS,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPMPL) THEN
+              IF (NLSPCSCL_MOL) THEN
+                PMPL2(1:NPLS,0:NMOL) => PMPL(:,J)
+                PMPL2(IPLS,:) =PMPL2(IPLS,:) *ZVOLIW(J)
+              ELSE
+                PMPL(IPLS,J) = PMPL(IPLS,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPIPL) THEN
+              IF (NLSPCSCL_ION) THEN
+                PIPL2(1:NPLS,0:NION) => PIPL(:,J)
+                PIPL2(IPLS,:) =PIPL2(IPLS,:) *ZVOLIW(J)
+              ELSE
+                PIPL(IPLS,J) = PIPL(IPLS,J) *ZVOLIW(J)
+              END IF
+            END IF
+            IF (LPPHPL) THEN
+              IF (NLSPCSCL_PHOT) THEN
+                PPHPL2(1:NPLS,0:NPHOT) => PPHPL(:,J)
+                PPHPL2(IPLS,:) =PPHPL2(IPLS,:) *ZVOLIW(J)
+              ELSE
+                PPHPL(IPLS,J)=PPHPL(IPLS,J)*ZVOLIW(J)
+              END IF
+            END IF
             IF (LPPPL)  PPPL(IPLS,J) =PPPL(IPLS,J) *ZVOLIW(J)
 
             IF (LEAPL)  EAPL(IPLS,J) =EAPL(IPLS,J) *ZVOLIW(J)
@@ -527,7 +674,7 @@ C  SCALE: FROM SCORING TALLY UNITS # PER ENERGY BIN --> TALLY UNITS # PER EV
      .      ESTIML(ISPC)%SPC(I)*ZFAC*DELI
 C  INTEGRATE--> TALLY UNITS
 cdr  Test tbd: in case of total (not directional) spectrum, i.e. for IDIREC=0, this
-cdr            integral must coindide with the particle density PDEN.. or the energy density EDEN..,
+cdr            integral must coincide with the particle density PDEN.. or the energy density EDEN..,
 cdr            in the selected cell, depending on ISPTYP=1, 
 cdr            or ISPTYP=2, respectively.
 cdr  See text in scale_surf_tallies: this test should

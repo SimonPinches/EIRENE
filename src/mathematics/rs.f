@@ -132,4 +132,4 @@ C     ********** FIND BOTH EIGENVALUES AND EIGENVECTORS **********
       CALL  EIRENE_TQL2(NM,N,W,FV1,Z,IERR)
    50 RETURN
 C     ********** LAST CARD OF RS **********
-      END
+      END SUBROUTINE EIRENE_RS

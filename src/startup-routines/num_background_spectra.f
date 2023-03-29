@@ -11,17 +11,22 @@
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: IADTYP(0:4)
       INTEGER :: J, ISPZ
-      
-      NBACK_SPEC = 0
 
 c  number of spectra directly estimated from Monte Carlo trajectories
 
       NADSPC_S = 0   !  surface-based
-cdr  surface based directional missing? Already programmed in OUTSPEC.
+cdr   NADSPC_P = 0   !  surface-based directional missing? Already programmed in OUTSPEC?
+cdr   NADSPC_SP = 0  !  surface-based, both
       NADSPC_C = 0   !  cell-based
       NADSPC_D = 0   !  cell-based, directional
-      NADSPC_CD = 0  !  cell-based, total
+      NADSPC_CD = 0  !  cell-based, both
 
+!   Determine these numbers of spectra (from block 10F), by type,
+cdr as well as the number NBACK_SPEC of particular directional cell based
+cdr spectra needed for line of sight integration
+cdr as specified by an option in input block 12.
+
+      NBACK_SPEC = 0
       DO J = 1, NADSPC
 !  directional spectrum in geometrical cell
 cdr I do not know what that option is. Unfinished or redundant?
@@ -46,6 +51,9 @@ C  COUNT CELL-BASED SPECTRA
           NADSPC_C=NADSPC_C+1
         ELSEIF (ESTIML(J)%ISRFCLL == 2) THEN
 C  COUNT DIRECTIONAL CELL-BASED SPECTRA
+cdr  in other parts of the code isrfcll seems to
+cdr  switch between (fine) geometry grid cells and (coarse) scoring grid cells
+cdr  whereas IDIREC is used to switch between cell averages and directional spectra
           NADSPC_D=NADSPC_D+1
         ENDIF
       END DO

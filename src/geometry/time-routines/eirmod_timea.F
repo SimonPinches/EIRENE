@@ -21,10 +21,11 @@ c     using special octree stuff, to speed up additional surface handling
       IMPLICIT NONE
       PRIVATE
 
-      PUBLIC :: EIRENE_TIMEA0, EIRENE_TIMEA3_VTKOUT,
-     .          EIRENE_TIMEA1, EIRENE_TIMEA0_OC,
+      PUBLIC :: EIRENE_TIMEA0, EIRENE_TIMEA1,
+     .          EIRENE_TIMEA0_OC,
      .          EIRENE_DEALLOC_TIMEA
 
+cym this variable seem to be shared (OMP)      
 c     the octree
       TYPE(octree), POINTER, SAVE :: TREE
 c     active surface ids of surfs not in octree saved in lookup table
@@ -54,9 +55,9 @@ C   ADDITIONAL SURFACES, DEFINED BY 1.ST OR 2.ND ORDER EQUATIONS IN INPUT BLOCK 
 C   IT IS ALSO CHECKED, WHETHER THIS INTERSECTION TAKES PLACE INSIDE THE
 C   SPECIFIED BOUNDARIES OF THOSE SURFACES
 C
-C  ENTRY TIMEA0: INITIALIZATION, PRE-COMPUTING SOME EXPRESSIONS, CONSISTENCY CHECKS, ETC..
+C  TIMEA0: INITIALIZATION, PRE-COMPUTING SOME EXPRESSIONS, CONSISTENCY CHECKS, ETC.
 C                IN CASE: NLOCTREE: SET UP OCTREE, FOR SPEED UP OF GEOMETRICAL CALCULATIONS
-C  ENTRY TIMEA1: FIND CLOSEST LEGAL INTERSECTION POINT. MORE COMMENTS: SEE AT ENTRY TIMEA1.
+C  TIMEA1: FIND CLOSEST LEGAL INTERSECTION POINT. MORE COMMENTS: SEE IN SUBR. TIMEA1.
 C
 C
 
@@ -540,7 +541,7 @@ c  create HNF coefficients (normalized vector and distance)
 c.....................................................
 
 !pb 04122019
-!pb   clean up in case NLIMI changed from a prior iteration      
+!pb   clean up in case NLIMI is changed compared to an earlier iteration      
       call eirene_dealloc_timea
       IF (NLOCTREE) then
 c  calling an internal subroutine for preparing octree procedure:
@@ -553,52 +554,48 @@ c
 
       ELSE  !   NOT NLOCTREE
 c  old default: ALL surfaces are outside the octree procedure,
-c               i.e. OCTREE optimization in in-active
+c               i.e. OCTREE optimization is inactive
         if (.not.allocated(NOTOCSURFS)) ALLOCATE(NOTOCSURFS(NLIMI))
         DO J=1,NLIMI
           NOTOCSURFS(J) = J
         END DO
         NSURFNOT = NLIMI
       ENDIF
-
+      RETURN
 
       END SUBROUTINE EIRENE_TIMEA0
-
-c  write the octree to vtk tool output
-      SUBROUTINE EIRENE_TIMEA3_VTKOUT
-      IMPLICIT NONE
-        if (associated(tree) .and. NLOCTREE) then
-c  call octree function to plot the tree recursive
-          call OCTREE_PrintVTK(tree, IVTKOUT)
-
-          open(200,file='graphviz.out')
-          call OCTREE_PrintGraphviz(tree, 200)
-          close(200)
-        end if
-      END SUBROUTINE EIRENE_TIMEA3_VTKOUT
-
 C
       SUBROUTINE EIRENE_TIMEA1
      . (MSURF,NCELL,NLI,NLE,NTCELL,IPERID,XX,YY,ZZ,TMT,
      .  VXX,VYY,VZZ,VV,MASURF,XR,YR,ZR,SG,TL,NLTRC,LCNDEXP)
       IMPLICIT NONE
 
-      REAL(DP) :: TMIN, TL
-      REAL(DP) :: XX, YY, ZZ, TMT, VXX, VYY, VZZ, VV, X_S, Y_S, Z_S,
-     .          SG_S, XR, YR, ZR, SG
-     .          
-      INTEGER MSURF, NNTCL, NTCELL, IPERID, MASURF, NCELL, 
-     .        NLI, NLE, MASURF_S
+cym seperate arguments of subroutine from other local variables
+cym in order to handle the save properly
+
+      REAL(DP) :: XX, YY, ZZ, TMT, VXX, VYY, VZZ, VV
+      REAL(DP) :: XR, YR, ZR, SG, TL           
+      INTEGER :: MSURF, NCELL ,NLI, NLE, NTCELL, IPERID, MASURF
       LOGICAL, INTENT(OUT) :: LCNDEXP
-      LOGICAL :: NLTRC, LCNDEXP_S
+      LOGICAL :: NLTRC
+
+cym local variables with save attribute      
+      REAL(DP),save :: TMIN, X_S, Y_S, Z_S, SG_S
+      INTEGER,save :: NNTCL,MASURF_S
+      LOGICAL,save :: LCNDEXP_S
 c     some vars for checking on intersection/where we are
-      TYPE(ocnode), POINTER :: block
-      REAL(DP), DIMENSION(3) :: ip, start, direction
-      REAL(DP) :: runlength, norm
-      LOGICAL :: status
+      TYPE(ocnode), POINTER,save :: block
+      
+      REAL(DP), DIMENSION(3),save :: ip, start, direction
+      REAL(DP),save :: runlength, norm
+      LOGICAL,save :: status
+      
 
+!$OMP THREADPRIVATE(TMIN,X_S, Y_S, Z_S, SG_S,
+!$OMP&        NNTCL, MASURF_S, LCNDEXP_S,
+!$OMP&        block,ip, start, direction,runlength, norm,status)
 
-      SAVE 
+cym      SAVE 
 
       INTERFACE
         SUBROUTINE EIRENE_TIMEA_CheckInter(
@@ -634,8 +631,10 @@ C  FIND LOCAL COORDINATE SYSTEM IN CASE OF NLTRA
 #ifdef TRACE
       IF (NLTRC) THEN
         CALL EIRENE_LEER(1)
-        WRITE (iunout,*) 'TIMEA ,X,Y,Z,T ',XX,YY,ZZ,TMT
-        WRITE (iunout,*) '      VX,VY,VZ,V ',VXX,VYY,VZZ,VV
+        CALL EIRENE_MASR4('TIMEA: X,Y,Z,T                  ',
+     .                            XX,YY,ZZ,TMT)
+        CALL EIRENE_MASR4('      VX,VY,VZ,V                ',
+     .                            VXX,VYY,VZZ,VV)
         IF (NLTRA) WRITE (iunout,*) 'MSURF,NNTCL ',MSURF,NNTCL
         IF (.NOT.NLTRA) WRITE (iunout,*) 'MSURF ',MSURF
       ENDIF
@@ -654,7 +653,7 @@ C  FIND LOCAL COORDINATE SYSTEM IN CASE OF NLTRA
         WRITE(iunout,*) "PROCESSING ADDITIONAL SURFACES WITH RLB < 3"
       endif
 
-c   call timea2 for all those SURFACES which ARE no plane triangle
+c   call timea2 for all those SURFACES which ARE not plane triangles
 c   -> we will get a time minimum out of this, if any of these
 c   surfaces are hit.
       CALL EIRENE_TIMEA_CheckInter(MSURF,NCELL,NLI,NLE,NNTCL,
@@ -853,16 +852,18 @@ c  that are no tri/quad/quintangles
            NOTOCSURFS(NSURFNOT) = J
         END IF
       END DO
-
+      RETURN
 
       END SUBROUTINE EIRENE_TIMEA0_BUILDOC
 
       
       SUBROUTINE EIRENE_DEALLOC_TIMEA
+      IMPLICIT NONE
 
       if (ALLOCATED(NOTOCSURFS)) DEALLOCATE (NOTOCSURFS)
       if (ASSOCIATED(tree)) call OCTREE_DeleteTree(tree)
+      RETURN
       
       END SUBROUTINE EIRENE_DEALLOC_TIMEA
-      
+
       END MODULE EIRMOD_TIMEA

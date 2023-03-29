@@ -141,14 +141,17 @@ C
         ARGST(0,JJJ)=ADDV(NADVI+3,NCELC)
       END IF
 C
-      END
+      RETURN
+      END SUBROUTINE EIRENE_SIGHE
 
 C     Following lines added for reinitialisation of eirene (DMH)
 
       SUBROUTINE EIRENE_SIGHE_REINIT
+      IMPLICIT NONE
       ISTOLD = -1
       ITROLD = -1
       PENOLD = -1._DP
-      END
+      RETURN
+      END SUBROUTINE EIRENE_SIGHE_REINIT
 
       END MODULE EIRMOD_SIGHE

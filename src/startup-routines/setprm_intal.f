@@ -1,9 +1,16 @@
-
-
+cdr  docu started, still more needed. What are the rules applied
+cdr  to switch input tallies off?
 C
 C      SUBROUTINE SETPRM_INTAL
 C
       SUBROUTINE EIRENE_SETPRM_INTAL
+cdr  dwell on livtal, lsmopro, intlopts and the pointers LTIIN,LTEIN,....
+cdr  ...probably...:
+cdr  set defaults for livtali, and then
+cdr  use optional input tally flags INTLOPTS
+cdr  found from block 5 of input file, to set: LIVTALI, LSMOPRO.
+cdr  after this: INTLOPTS should not be needed any more?
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -14,13 +21,14 @@ C
  
       IMPLICIT NONE
  
-      INTEGER :: J, ITAL, NLSTTL, INDGRAD, INDTL
+      INTEGER :: J, ITAL, NLSTTL, INDGRAD, INDTL,
+     .              NTAL              !dr  NTAL = NTALG or = NTALI
 C
  
 C  LIVTALI: SWITCH OFF SOME INPUT TALLIES AUTOMATICALLY;
 C           Finally set in COMUSR.f
 c  Structure similar to LIVTALV(..) FOR OUTPUT (SCORED) VOLUME TALLIES
-c            (which is finally set in CESTIM.f
+c          (which is finally set in CESTIM.f)
 
 c default setting:
       LIVTALI = .FALSE.
@@ -32,15 +40,21 @@ c  plasma background
       LIVTALI(4)   = .TRUE.       ! DIIN
 
 C  background flow velocities
+cdr should be related to nldrft, rather than nplsv?
       LIVTALI(5)   = NPLSV>0      ! VXIN
       LIVTALI(6)   = NPLSV>0      ! VYIN 
       LIVTALI(7)   = NPLSV>0      ! VZIN 
 
 c  magnetic field
+cdr should be related to whether B field is needed or not.
+cdr rather than always being "true"
       LIVTALI(8)   = .TRUE.       ! BXIN, else: =0.0
       LIVTALI(9)   = .TRUE.       ! BYIN, else: =0.0
       LIVTALI(10)  = .TRUE.       ! BZIN, else: =1.0
       LIVTALI(11)  = .TRUE.       ! BFIN, else: =1.0
+
+c  electric field
+cdr to be written
 
       LIVTALI(12)  = NAIN>0       ! ADIN
 
@@ -50,21 +64,26 @@ c  magnetic field
       LIVTALI(23)  = NPLSV>0      ! BVIN, else: sign(1.,bvin)=1.0   
       LIVTALI(24)  = NPLS>0       ! PARMOM, else: = 0.0
 
-C  CURRENTLY THE LAST USED INPUT TALLY IS TALLY NO. 25 (NTALG=30)
+cnh   02.12.2019
+      LIVTALI(26)  = .TRUE.       ! ZIIN
+
+C  CURRENTLY THE LAST INPUT TALLY IN USE IS TALLY NO. 26 (NTALG=30)
 
 C  INTLOPT < 0  : SWITCH OFF TALLY
-C          = 0  : KEEP DEFAULT
-C          = 1  : EXPLICITELY SWITCH ON TALLY
-C          = 2  : PREPARE FOR SMOOTHING, INTERPOLATE TO CORNERPOINTS
-C          = 3  : SWITCH ON GRADIENTS
+C          = 0  : KEEP DEFAULT: on or off
+C          = 1  : EXPLICITLY SWITCH ON TALLY
+C          = 2  : PREPARE FOR INTERPOLATING IN CELL, INTERPOLATE TO CORNER POINTS
+cdr               not ready for all LEVGEO geometry options
+C          = 3  : SWITCH ON GRADIENTS (IMPLIES 2)
 
-      DO ITAL = 1, NTALI
+      DO ITAL = 1, NTALI  !=120
         IF (INTLOPTS(ITAL) < 0) THEN
 C  SWITCH OFF TALLY
           LIVTALI(ITAL) = .FALSE.
         ELSE IF (INTLOPTS(ITAL) > 0) THEN
-C  EXPLICITELY SWITCH ON TALLY
+C  EXPLICITLY SWITCH ON TALLY
           LIVTALI(ITAL) = .TRUE.
+
           IF (ITAL <= NTALG) THEN
 C  SWITCH ON INTERPOLATION TO CELL VERTICES  
             IF (INTLOPTS(ITAL) >= 2) LSMOPRO(ITAL) = .TRUE.
@@ -73,14 +92,17 @@ C  SWITCH ON GRADIENT TALLIES d(TL)/dX, d(TL)/dY,  d(TL)/dZ
               INDGRAD = NTALG + (ITAL-1)*3
               LIVTALI(INDGRAD+1 : INDGRAD+3) = .TRUE.
             END IF
+
           ELSE   ! ITAL > NTALG
 C  TALLY ITAL IS A GRADIENT TALLY; 
 C  ENSURE THAT INTERPOLATION TO CELL VERTICES IS SWITCHED ON FOR
-C  CORRESPONDING INPUT TALLY
+C  CORRESPONDING INPUT TALLY INDTL
             INDTL = (ITAL - NTALG) / 3 
             IF (MOD(ITAL-NTALG,3) > 0) INDTL = INDTL + 1
+c    now: 1 <= indtl <= ntalg=30
 C  SWITCH ON INTERPOLATION TO CELL VERTICES  
             LSMOPRO(INDTL) = .TRUE.
+cdr careful: lsmopro(indtl) may be true, but livtali(indtl)=false?
           END IF
         END IF
       END DO 
@@ -117,6 +139,7 @@ C  ARE SWITCHED ON
       END IF
 
       IF (.NOT.(LVXIN .AND. LVYIN .AND. LVZIN)) THEN
+cdr ?? for a stationary background (NLDRFT=FALSE) we should not need any LV.IN
         WRITE (IUNOUT,*) ' SWITCHING OFF OF PLASMA DRIFT VELOCITY' //
      .                   ' IS PROHIBITED'
         WRITE (IUNOUT,*) ' TALLIES ARE SWITCHED ON AGAIN '
@@ -136,6 +159,15 @@ C  ARE SWITCHED ON
         INTLOPTS(14) = 0
       END IF
 
+CNH SWITCHING OFF OF CHARGE IS PROHIBITED AT THE MOMENT
+      IF (.NOT.LZIIN) THEN
+        WRITE (IUNOUT,*) ' SWITCHING OFF OF CHARGE' //
+     .                   ' IS PROHIBITED'
+        WRITE (IUNOUT,*) ' TALLY IS SWITCHED ON AGAIN '
+        LZIIN = .TRUE.
+        INTLOPTS(26) = 0
+      END IF
+
 C  ENSURE THAT CONNECTED TALLIES HAVE THE SAME SETTING
 
       IF (.NOT.(LBXPERP .AND. LBYPERP)) THEN
@@ -143,7 +175,7 @@ C  ENSURE THAT CONNECTED TALLIES HAVE THE SAME SETTING
         LBYPERP = .FALSE.
       END IF
 
-      IF (.NOT.(LBXIN .AND. LBYIN .AND. LBZIN .AND. LBFIN)) THEN
+      IF (.NOT.LBIN) THEN
         LBXIN = .FALSE.
         LBYIN = .FALSE.
         LBZIN = .FALSE.
@@ -152,26 +184,29 @@ C  ENSURE THAT CONNECTED TALLIES HAVE THE SAME SETTING
         LBYPERP = .FALSE.
       END IF
 
-      IF (.NOT.(LEXIN .AND. LEYIN .AND. LEZIN .AND. LEFIN)) THEN
+      IF (.NOT.LEIN) THEN
         LEXIN = .FALSE.
         LEYIN = .FALSE.
         LEZIN = .FALSE.
         LEFIN = .FALSE.
+#ifndef B25_EIRENE
         LPOT  = .FALSE.
+#endif
       END IF
 
       
-C  18 primary input tallies plus 6 derived background tallies, (# ...)
+C  19 primary input tallies plus 7 derived background tallies, (# ...)
 c     unfortunately mixed 
-C  --> 24 rather than 18 background tallies
-C  --> 30 include 6 free slots
-      NFRSTP(1)=0
-      NFRSTP(2)=NPLSTI
+C  --> 26 rather than 19 background tallies
+C  --> NTALG: 30, includes 4 free slots
+
+      NFRSTP(1)=0       ! TEIN
+      NFRSTP(2)=NPLSTI  ! TIIN
       NFRSTP(3)=0       ! # DEIN,  DERIVED QUANTITY
       NFRSTP(4)=NPLS    ! DIIN
-      NFRSTP(5)=NPLSV   
-      NFRSTP(6)=NPLSV
-      NFRSTP(7)=NPLSV
+      NFRSTP(5)=NPLSV   ! VXIN
+      NFRSTP(6)=NPLSV   ! VYIN
+      NFRSTP(7)=NPLSV   ! VZIN
       NFRSTP(8)=0       ! BX
       NFRSTP(9)=0       ! BY
       NFRSTP(10)=0      ! BZ
@@ -187,11 +222,11 @@ C  --> 30 include 6 free slots
       NFRSTP(20)=0      ! EZ
       NFRSTP(21)=0      ! EF
       NFRSTP(22)=0      ! POT
-      NFRSTP(23)=NPLSV  ! # BVIN
-      NFRSTP(24)=NPLS   ! # PARMON
-      NFRSTP(25)=0      ! # PSI
+      NFRSTP(23)=NPLSV  ! # BVIN,    DERIVED QUANTITY
+      NFRSTP(24)=NPLS   ! # PARMOM,  DERIVED QUANTITY
+      NFRSTP(25)=0      ! # PSI  (belongs to; BX,BY,BZ,BF, but added to code only later)
+      NFRSTP(26)=NPLS   ! # ZIIN
 
-      NFRSTP(26)=0      ! # FREE26
       NFRSTP(27)=0      ! # FREE27
       NFRSTP(28)=0      ! # FREE28
       NFRSTP(29)=0      ! # FREE29
@@ -267,15 +302,15 @@ c  from here on: derivatives (gradients) of input tallies
       NFRSTP(97)=NPLSV  ! BVIN
       NFRSTP(98)=NPLSV  ! BVIN
       NFRSTP(99)=NPLSV  ! BVIN
-      NFRSTP(100)=NPLS   ! PARMON
-      NFRSTP(101)=NPLS   ! PARMON
-      NFRSTP(102)=NPLS   ! PARMON
+      NFRSTP(100)=NPLS  ! PARMOM
+      NFRSTP(101)=NPLS  ! PARMOM
+      NFRSTP(102)=NPLS  ! PARMOM
       NFRSTP(103)=0      ! PSI
       NFRSTP(104)=0      ! PSI
       NFRSTP(105)=0      ! PSI
-      NFRSTP(106)=0      ! FREE26
-      NFRSTP(107)=0      ! FREE26
-      NFRSTP(108)=0      ! FREE26
+      NFRSTP(106)=NPLS   ! ZIIN
+      NFRSTP(107)=NPLS   ! ZIIN
+      NFRSTP(108)=NPLS   ! ZIIN
       NFRSTP(109)=0      ! FREE27
       NFRSTP(110)=0      ! FREE27
       NFRSTP(111)=0      ! FREE27
@@ -289,12 +324,12 @@ c  from here on: derivatives (gradients) of input tallies
       NFRSTP(119)=0      ! FREE30
       NFRSTP(120)=0      ! FREE30
 C
-C  NTALI=96?  number of input tallies  (19 PRIMARY + 5 DERIVED + 24 GRADIENTS)
+C  NTALI=120?  Number of input tallies  (19 PRIMARY + 7 DERIVED + 4 FREE + 30 GRADIENT VECTORS)
  
 cdr Since primary and derived input tallies got mixed up anyway, 
 cdr add magnetic flux (vector potential). 
 cdr Be careful:
-cdr in some places in the code currently the numbering  of input tallies is hard coded.
+cdr In some places in the code currently the numbering of input tallies is hard-coded.
 cdr (ALGTAL, OUTPLA,....) 
 C
       DO 5 J=1,NTALI
@@ -328,7 +363,7 @@ c  allocate and initialize plstls
 c  set pointers:  input tallies tein, tiin,....parmom,.....on plttls
       CALL EIRENE_ASSOCIATE_COMUSR
 
-cdr  hard coded test, in case parmom is the last active input tally
+cdr  hard-coded test, in case parmom is the last active input tally
 cdr   tsave=parmom(npls,nrad)
 cdr   parmom(npls,nrad)=1.2345678
 cdr   if (abs(plstls(ninptl,nrad)-1.2345678).gt.eps10) then
@@ -350,8 +385,18 @@ c.............................................................................
         CALL EIRENE_LEER(1)
         WRITE(IUNOUT,'(A6,1X,A)') 'NO.','DESCRIPTION'
         DO ITAL=1,NTALI
-          IF (LIVTALI(ITAL))
-     .      WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTPLS(1,ITAL)
+          IF (LIVTALI(ITAL)) THEN
+            IF (ITAL <= NTALG) THEN
+              IF (LSMOPRO(ITAL)) THEN
+                WRITE (IUNOUT,'(I6,1X,A,1X,A8)')
+     .            ITAL,trim(TXTPLS(1,ITAL)),', SMOOTHED'
+              ELSE
+                WRITE (IUNOUT,'(I6,1X,A)') ITAL,trim(TXTPLS(1,ITAL))
+              ENDIF
+            ELSE
+              WRITE (IUNOUT,'(I6,1X,A)') ITAL,trim(TXTPLS(1,ITAL))
+            ENDIF
+          ENDIF
         END DO
  
         IF (.NOT.ALL(LIVTALI)) THEN
@@ -360,12 +405,20 @@ c.............................................................................
      .                    'IN THIS RUN'
           CALL EIRENE_LEER(1)
           WRITE(IUNOUT,'(A6,1X,A)') 'NO.','DESCRIPTION'
-          DO ITAL=1,NTALI
+cdr 2020:  reduce obsolete printout
+cdr typically we will have no gradient input tallies
+          ntal=ntalg
+          IF (any(livtali(ntalg+1:ntali))) ntal=ntali
+
+          DO ITAL=1,NTAL
             IF (.NOT.LIVTALI(ITAL))
-     .        WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTPLS(1,ITAL)
+     .        WRITE (IUNOUT,'(I6,1X,A)') ITAL,trim(TXTPLS(1,ITAL))
           END DO
         END IF
- 
+        if (ntal.lt.ntali) then
+          call eirene_leer(1)
+          write (iunout,*) '   NO DERIVATIVES OF INPUT TALLIES SELECTED'
+        endif
         IF (ANY(INTLOPTS < 0)) THEN
           CALL EIRENE_LEER(2)
           WRITE(IUNOUT,*) 'INPUT TALLIES EXPLICITLY ',
@@ -374,7 +427,7 @@ c.............................................................................
           WRITE(IUNOUT,'(A6,1X,A)') 'NO.','DESCRIPTION'
           DO ITAL=1,NTALI
             IF (INTLOPTS(ITAL) < 0)
-     .        WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTPLS(1,ITAL)
+     .        WRITE (IUNOUT,'(I6,1X,A)') ITAL,trim(TXTPLS(1,ITAL))
           END DO
         END IF
   
@@ -383,8 +436,4 @@ c.............................................................................
       END IF
 C
       RETURN
-      END
- 
- 
- 
- 
+      END SUBROUTINE EIRENE_SETPRM_INTAL

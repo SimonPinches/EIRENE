@@ -10,12 +10,13 @@
 
       IMPLICIT NONE
 
-      INTEGER :: ISTRA
+      INTEGER :: ISTRA, ISTRAI
       REAL(DP) :: THMAX, RP1
       
       NLSYMT(0)=.TRUE.
       NLSYMP(0)=.TRUE.
-      DO ISTRA=1,NSTRAI
+      DO ISTRAI=1,NSTRAI
+        ISTRA=ISTRAI
         IF (INDSRC(ISTRA).EQ.6) CYCLE
 
         IF (.NOT.NLSRF(ISTRA))

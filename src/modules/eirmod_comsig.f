@@ -4,7 +4,7 @@ cdr           from printout for spatially (along LOS) resolved data.
 cdr           This was, so far, all mixed with TRCSIG (for debugging printout)
 cdr  Jan. 2018  mod_addv added, as well as CNT data structure.
 cdr  Oct 18   : rationalization of line emission specification,
-cdr             now via reacdat(irc.....), block 4, exclusively.
+cdr             now via REACDAT(IRC,.....), block 4, exclusively.
 
       MODULE EIRMOD_COMSIG
 
@@ -17,7 +17,7 @@ cdr             now via reacdat(irc.....), block 4, exclusively.
 
       PUBLIC :: EIRENE_ALLOC_COMSIG, EIRENE_DEALLOC_COMSIG,
      P          EIRENE_INIT_COMSIG, EIRENE_BROADCAST_COMSIG,
-     p          TEMIS_MODEL, TCOMPO, TCONTRIB,
+     P          TEMIS_MODEL, TCOMPO, TCONTRIB,
      P          ASSIGNMENT(=)
 
 
@@ -54,7 +54,7 @@ cdr             now via reacdat(irc.....), block 4, exclusively.
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE :: NLSTCHR(:)
 
 cdr data structures below are for line emission options,
-cdr and generalize the older Ba_alpha, Ba_beta, ..., Ly_beta hard coded
+cdr and generalize the older Ba_alpha, Ba_beta, ..., Ly_beta hard-coded
 cdr six hydrogenic line emission routines (6 lines), and, by coincidence, also
 cdr six components per line: H, H+, H-, H2, H2+, H3+.
 
@@ -232,6 +232,9 @@ cdr  additional output tallies added by code itself (rather than via input block
         CALL EIRENE_BROAD_EMIS_LINES(ME)
       END IF
       
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
+
+      RETURN
       END SUBROUTINE EIRENE_BROADCAST_COMSIG
 
 
@@ -240,8 +243,10 @@ cdr  additional output tallies added by code itself (rather than via input block
       INTEGER, INTENT(IN) :: ME
       INTEGER :: I, J, K, NUM_COMPO, NUM_CONTRIB, IER
       TYPE(TCONTRIB) :: CNT
+      LOGICAL :: LINES_ALLOCATED
 
-      IF (.NOT.ALLOCATED(EMIS_LINES)) THEN
+      LINES_ALLOCATED = ALLOCATED(EMIS_LINES)
+      IF (.NOT.LINES_ALLOCATED) THEN
         ALLOCATE (EMIS_LINES(NUM_LINES))
         EMIS_LINES%LINE_NAME = REPEAT(' ',80)
         EMIS_LINES%NUM_COMPO = 0
@@ -259,11 +264,15 @@ cdr  additional output tallies added by code itself (rather than via input block
      .                  0,MPI_COMM_WORLD,ier)
         CALL MPI_BCAST (EMIS_LINES(I)%TRANS_EN,1,MPI_REAL8,
      .                  0,MPI_COMM_WORLD,ier)
+        CALL MPI_BCAST (EMIS_LINES(I)%ENERGY,1,MPI_REAL8,
+     .                  0,MPI_COMM_WORLD,ier)
 
         NUM_COMPO = EMIS_LINES(I)%NUM_COMPO
 
         IF (ME /= 0) THEN
-          ALLOCATE (EMIS_LINES(I)%COMPO(NUM_COMPO))
+          IF (.NOT.LINES_ALLOCATED) THEN
+            ALLOCATE (EMIS_LINES(I)%COMPO(NUM_COMPO))
+          END IF
         END IF
 
         DO J = 1, NUM_COMPO
@@ -279,7 +288,9 @@ cdr  additional output tallies added by code itself (rather than via input block
           NUM_CONTRIB = EMIS_LINES(I)%COMPO(J)%NUM_CONTRIB
 
           IF (ME /= 0) THEN
-            ALLOCATE (EMIS_LINES(I)%COMPO(J)%CONTRIB(NUM_CONTRIB))
+            IF (.NOT.LINES_ALLOCATED) THEN
+              ALLOCATE (EMIS_LINES(I)%COMPO(J)%CONTRIB(NUM_CONTRIB))
+            END IF
           END IF
 
           DO K = 1, NUM_CONTRIB
@@ -307,7 +318,6 @@ c  plus,(for ratio2) two further density factors
 
           END DO
         END DO
-
 
       END DO
 

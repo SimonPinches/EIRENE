@@ -112,11 +112,11 @@ C PLOTTE DIE KREISSTUECKE, NK STUECK
         PY=Y0+T*VY
         PZ=Z0+T*VZ
         IF (I.EQ.1.AND.ILEFT.NE.0) THEN
-          CALL
-     .  EIRENE_SHNITT(P,PXS,PYS,PZS,-VX,-VY,-VZ,AL,ILEFT,XP,YP,1,NA+1,1)
+          CALL EIRENE_SHNITT
+     .     (P,PXS,PYS,PZS,-VX,-VY,-VZ,AL,ILEFT,XP,YP,1,NA+1,1)
         ELSEIF (I.EQ.NK.AND.IRIGHT.NE.0) THEN
-          CALL
-     .  EIRENE_SHNITT(P,PXS,PYS,PZS,VX,VY,VZ,AR,IRIGHT,XP,YP,1,NA+1,1)
+          CALL EIRENE_SHNITT
+     .     (P,PXS,PYS,PZS,VX,VY,VZ,AR,IRIGHT,XP,YP,1,NA+1,1)
         ELSE
           DO 3 J=1,NA+1
             PXX=P(1,J)+PX
@@ -127,13 +127,13 @@ C PLOTTE DIE KREISSTUECKE, NK STUECK
         ENDIF
         IF (IO.GE.2) CALL GRNWPN(IO)
         do 7 jj=1,na+1
-          xps(jj)=xp(jj)
-          yps(jj)=yp(jj)
+          xps(jj)=real(xp(jj),sp)
+          yps(jj)=real(yp(jj),sp)
     7   continue
         CALL GRLN (XPS,YPS,NA+1)
 C  FAERBE DIE ENDEN DES ZYLINDERS EIN
-        IF ((I.EQ.1.OR.I.EQ.NK).AND.NF) CALL
-     .  GRFILL(NA+1,XPS,YPS,1,1)
+        IF ((I.EQ.1.OR.I.EQ.NK).AND.NF)
+     .   CALL GRFILL(NA+1,XPS,YPS,1,1)
         IF (IO.GE.2) CALL GRNWPN(1)
     2 CONTINUE
 C
@@ -173,8 +173,8 @@ C
      .  (P,PXS,PYS,PZS,VX,VY,VZ,AR,IRIGHT,XP,YP,J,J,NK)
         ENDIF
         do 9 jj=1,nk
-          xps(jj)=xp(jj)
-          yps(jj)=yp(jj)
+          xps(jj)=real(xp(jj),sp)
+          yps(jj)=real(yp(jj),sp)
     9   continue
         CALL GRLN (XPS,YPS,NK)
     5 CONTINUE
@@ -186,4 +186,4 @@ C
       DEALLOCATE (YPS)
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_ZYLIND

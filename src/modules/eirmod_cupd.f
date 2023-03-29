@@ -14,14 +14,14 @@ cdr  contains redundant coding: cell_info, type traject,....
       PUBLIC :: EIRENE_ALLOC_CUPD, EIRENE_DEALLOC_CUPD, EIRENE_INIT_CUPD
       PUBLIC :: CELL_INFO, TRAJECT, TRAJECT_ARRAY, EIRENE_CELL_INSERT,
      .          EIRENE_CELL_DELETE, EIRENE_CLEAR_TRAJECTORY
-
+cdr  probably out
       TYPE CELL_INFO
         REAL(DP) :: FLIGHT
         INTEGER :: NO_CELL, NO_SPECT
         TYPE(CELL_INFO), POINTER :: NEXTC, PREVC
       END TYPE CELL_INFO
 
-
+cdr  probably out
       TYPE TRAJECT
         REAL(DP) :: VX, VY, VZ, WGHT
         REAL(DP) :: P1(3), P2(3)
@@ -49,6 +49,12 @@ cdr  contains redundant coding: cell_info, type traject,....
      I JUPC(:),   KUPC(:),   NUPC(:),
      I NCOUNP(:), NCOUNT(:),
      I LUPC(:),   MUPC(:)
+
+!$OMP  THREADPRIVATE(X00,Y00,Z00,X01,Y01,Z01,ALPD,BLPD,CLPD,NCOUP,NCOUT,
+!$OMP& NCOU,NNTCLL,IRCELL,IPCELL,ITCELL,ISRFCL,JUPC,KUPC,NUPC,NCOUNP,
+!$OMP& NCOUNT,LUPC,MUPC)
+ 
+   
 
       CONTAINS
 

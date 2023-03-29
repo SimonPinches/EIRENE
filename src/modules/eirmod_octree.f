@@ -599,7 +599,7 @@ c     unum : unit number of the ALREADY OPEN file we write to
         INTEGER, INTENT(IN) :: unum
 
         write(unum,*) '<cubes>'
-c       recursive tour through the octree, printing leaf childs only
+c       recursive tour through the octree, printing leaf children only
         call PrintCube(tree%root, unum)
         write(unum,*) '</cubes>'
 
@@ -629,7 +629,7 @@ c       else go one level deeper
         INTEGER, INTENT(IN) :: unum
 
         write(unum,*) 'digraph G {'
-c       recursive tour through the octree, printing leaf childs only
+c       recursive tour through the octree, printing leaf children only
         call PrintDot(tree%root, unum)
         write(unum,*) '}'
       END SUBROUTINE OCTREE_PrintGraphviz

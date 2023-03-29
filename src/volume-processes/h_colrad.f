@@ -1,3 +1,8 @@
+cdr   mar   20: remove routines LAX, GALPD (linear alg. eqs. solver)
+cdr             and put them to "mathematics", for common use by all
+cdr             internal CR models.
+cdr   mar   19: change sequence in parameter list (pop_esc),
+cdr             to better sync with logic in He_Colrad.
 cdr   feb   18: sync with h_colrad, H,H2 CRM, Sawada-Fujimoto-Reiter
 cdr             cleaned up, more comments.
 cdr             added lopaque, ebeta, e_alpcr
@@ -76,9 +81,10 @@ c   hence: taken times "densel"
 c   for pop0,pop1,pop_ext (=pop2) - arrays of reduced population coefficients
 C*
 C***********************************************************************
-      SUBROUTINE EIRENE_H_COLRAD (TEMP, DENSEL, Q_EXT, L_EXT,
-     .                            POP0, POP1, POP2,
-     .                            ALPCR, SCR, SCR_EXT,
+      SUBROUTINE EIRENE_H_COLRAD (TEMP, DENSEL,
+     .                            Q_EXT, L_EXT,! in
+     .                            POP0, POP1, POP_EXT,! out
+     .                            ALPCR, SCR, SCR_EXT, ! out
      .                            E_ALPCR, E_SCR, E_SCR_EXT,
 ctt  .                           ,E_ALPCR_T, E_SCR_T, E_SCR_EXT_T
      .                            POP_ESC)  ! input: selected pop esc factors for some lines
@@ -89,13 +95,13 @@ C     USE EIRMOD_CCRM
 
 C--------- ATOMIC PARAMETER ------------------------------------------
       REAL(DP), INTENT(IN) :: TEMP, DENSEL
-      REAL(DP), INTENT(INOUT) :: Q_EXT(40), POP_ESC(40,40)
+      REAL(DP), INTENT(IN) :: Q_EXT(40), POP_ESC(40,40)
       logical lopaque,l_ext
 
       REAL(DP), INTENT(OUT) ::   ALPCR,    SCR,     SCR_EXT
       REAL(DP), INTENT(OUT) :: E_ALPCR,  E_SCR,   E_SCR_EXT
 ctt   REAL(DP), INTENT(OUT) :: E_ALPCR_T,E_SCR_T, E_SCR_EXT_T
-      REAL(DP), INTENT(OUT) :: POP0(40), POP1(40), POP2(40)
+      REAL(DP), INTENT(OUT) :: POP0(40), POP1(40), POP_EXT(40)
 
       REAL(DP), SAVE :: A(40,40), E_AT(40), OSC(40,40)
 c     REAL(DP), SAVE :: POP_ESC(40,40)
@@ -154,7 +160,7 @@ CDR COUPLING TO H+ IONS
 CDR COUPLING TO H ATOMS
         POP1(IP)=R1(IP)*DENSEL
 CDR COUPLING TO EXTERNAL SOURCE Q  FOR H*(N)
-        POP2(IP)=R_EXT(IP)
+        POP_EXT(IP)=R_EXT(IP)
 
       END DO
 C  EFFECTIVE COLLISION RATE COEFFICIENTS, ATOMS
@@ -210,7 +216,7 @@ C
       AJ=J
       X=1.-(AI/AJ)**2
 
-cdr: johnson gaunt factor approx.
+cdr: Johnson Gaunt factor approx.
 cdr  gaunt=g(i,x)=G(I,J)
       IF(I.GE.3) THEN
 
@@ -238,7 +244,7 @@ cdr apply population escape factor to transition J-->I
   101 CONTINUE
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_EINSTN
 
 C***********************************************************************
       SUBROUTINE EIRENE_CLSAHA(TEMP,SAHA)
@@ -265,7 +271,7 @@ c     endif
   101 CONTINUE
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_CLSAHA
 
 C***********************************************************************
       SUBROUTINE EIRENE_RATCOF(TEMP,OSC,SAHA,C,F,S,ALPHA,BETA,EBETA
@@ -531,7 +537,7 @@ c
 c
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_RATCOF
 
 C***********************************************************************
       SUBROUTINE EIRENE_EXCOFF(U,OSC,TEMP,C,F,S,ALPHA)
@@ -619,7 +625,7 @@ C*********  S  I(>11) ->
       S(I)=SV
   220 CONTINUE
       RETURN
-      END
+      END SUBROUTINE EIRENE_EXCOFF
 
 C***********************************************************************
       SUBROUTINE EIRENE_COF1N(U,OSC,TE,F,I,J)
@@ -700,7 +706,7 @@ cdr  use exponential integral here
         F=1.093D-10*SQRT(TE)*P**2/X*Y**2*(A*E1+B*E2)*P**2/Q**2*EXP(Y)
       END IF
       RETURN
-      END
+      END SUBROUTINE EIRENE_COF1N
 
 C***********************************************************************
       SUBROUTINE EIRENE_COFJO(U,OSC,TE,C,I,J)
@@ -746,7 +752,7 @@ C
       RETURN
  1000 WRITE(iunout,*) 'ERROR IN COFJO        ICON = ',ICON
       CALL EIRENE_EXIT_OWN(1)
-      END
+      END SUBROUTINE EIRENE_COFJO
 
 C***********************************************************************
       SUBROUTINE EIRENE_COFVR(U,OSC,TEMP,C,I,J)
@@ -781,7 +787,7 @@ C
       C=C1*(A*LOG(C2)+B)
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_COFVR
 
 C***********************************************************************
       SUBROUTINE EIRENE_COFJS(TE,S,I)
@@ -878,7 +884,7 @@ C
       S=1.093D-10*SQRT(TE)*P**2*Y**2*(A*E1+B*E2)
       END IF
       RETURN
-      END
+      END SUBROUTINE EIRENE_COFJS
 
 C***********************************************************************
       SUBROUTINE EIRENE_COFJS2(TE,W,I)
@@ -945,7 +951,7 @@ C     IF (I.EQ.1) THEN
      */2.414D15/SQRT(TE**3)
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_COFJS2
 
 C***********************************************************************
       SUBROUTINE EIRENE_COFVS(TEMP,S,I)
@@ -968,7 +974,7 @@ C
       S=9.56D-6/TEMP**1.5*EXP(-UI)/UIZ
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_COFVS
 
 cdr
       FUNCTION EIRENE_GINT(xX)
@@ -987,7 +993,7 @@ cdr
       EIRENE_GINT=(GG(1)+GG(2)*X+GG(3)*X**2+GG(4)*X**3+X**4)/
      *            (GG(5)+GG(6)*X+GG(7)*X**2+GG(8)*X**3+X**4)
       RETURN
-      END
+      END FUNCTION EIRENE_GINT
 
 
 C***********************************************************************
@@ -1009,7 +1015,6 @@ C
 C   integrate functions gaunt3(x), for S and gaunt4, for ES, from 0 to 20
 C
       USE EIRMOD_PRECISION
-C      USE EIRMOD_COMPRT, ONLY: IUNOUT
 
       IMPLICIT REAL(DP) (A-H,O-Z)
       REAL(DP) EIRENE_GAUNT3,EIRENE_GAUNT4,PP,XPP,A,B,EPSR
@@ -1028,13 +1033,12 @@ cdr   EPSR=1.0D-5  slowed down code by factor of 100 !!
       NMIN=15
       NMAX=511
 
+c  integrate functions GAUNT from x=0 to 20:
       CALL EIRENE_AQC8(A,B,EIRENE_GAUNT3,EPSR,NMIN,NMAX, S)
       CALL EIRENE_AQC8(A,B,EIRENE_GAUNT4,EPSR,NMIN,NMAX,ES)
 C
-
-
       RETURN
-      END
+      END SUBROUTINE EIRENE_CLBETA
 
 C***********************************************************************
 
@@ -1049,7 +1053,7 @@ C***********************************************************************
      .               0.0496*(U**2+4./3.*U+1.)/B**(4./3.)/
      .               (U+1.)**(7./3.))*EXP(-X)
       RETURN
-      END
+      END FUNCTION EIRENE_GAUNT3
 
       FUNCTION EIRENE_GAUNT4(X)
 c  same as gaunt3, but for energy-weighted rate coeff (juel rep,3858 (2001) crmol manual, , eq. 9a, 9b)
@@ -1066,7 +1070,7 @@ cdr careful: integration of gaunt4 fails above Te gt 4500 eV
      .    (1./(U+1.)+0.1728*(U-1.)/B**(2./3.)/(U+1.)**(5./3.)-0.0496*
      .    (U**2+4./3.*U+1.)/B**(4./3.)/(U+1.)**(7./3.))*EXP(-X)
       RETURN
-      END
+      END FUNCTION EIRENE_GAUNT4
 
 C***********************************************************************
       SUBROUTINE EIRENE_POPCOF_M(DENSEL,SAHA,C,F,S,A,ALPHA,BETA,LUP,LIM,
@@ -1126,11 +1130,11 @@ cdr bevoelkerung durch: stoesse von oben, spontan von oben
   203   CONTINUE
 
   201 CONTINUE
-cdr k loop finished, k=2, lup-1 (d.h. ohne letzte Zeile)
+cdr k loop finished, k=2, lup-1 (i.e. without last state lup)
 
 
-c  special treatment letzter zustand lup: 2-->lup, 3-->lup,..., gibt es nur bei excitation, nicht
-c                                  bei de-exit, auch nicht bei rad rec.
+c  special treatment of last state lup: 2-->lup, 3-->lup,..., only for excitation to it,
+c                                  but not for de-exit to it, also not for rad rec to it.
       DO 211 L=2,LUP-1
         W(LUP,L)=C(L,LUP)*DENSEL
   211 CONTINUE
@@ -1140,7 +1144,7 @@ c  beitrag des letzten zustandes lup zu diagonal
         SUMF=SUMF+F(LUP,I)
   311 CONTINUE
       SUMC=0.0
-      DO 313 I=LUP+1,LIM   !Boltzmann LTE contribution fuer LIM gt. LUP
+      DO 313 I=LUP+1,LIM   !Boltzmann LTE contribution for LIM gt. LUP
         SUMC=SUMC+C(LUP,I)
   313 CONTINUE
       SUMA=0.
@@ -1213,7 +1217,7 @@ coupling to Q_EXT
         ENDIF
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_POPCOF_M
 
 C***********************************************************************
       SUBROUTINE EIRENE_IONREC
@@ -1535,7 +1539,7 @@ C  test done, 11.01.05,  o.k.,  then test switched off.
 
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_E_IONREC
 
 C********************************************************************
 C            C(I,J)  FROM  JOHNSON
@@ -1604,7 +1608,7 @@ C
 C
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_JOHN
 c
       subroutine EIRENE_LAX_M(A,N1,N,B,nb,nbi,eps,ifl,is,vw,ip,icon)
 C
@@ -1652,7 +1656,7 @@ C    B(NB,NG): ELEMENTE DER RECHTEN SEITE DES GLEICHUNGS-SYSTEMS
 C    NB      : DIMENSION ANZAHL DER RECHTEN SEITEN (NB >= 1)
 C    NBI     : ANZAHL DER RECHTEN SEITEN (NB >= 1)
 c    B WIRD MODIFIZIERT UND ENTHAELT BEIM OUTPUT DIE NBI LOESUNGSVEKTOREN
-C    IW(NG)  : INTEGER-HILFS-ARRAY FUER EINE MOEGLICHE PROGRAMM-
+C    IW(NG)  : INTEGER HILFS-ARRAY FUER EINE MOEGLICHE PROGRAMM-
 C              INTERNE UMNUMERIERUNG DER GLEICHUNGEN
 C    IER     : ERROR-INDEX (IER = 1: MATRIX SINGULAER)
 C***********************************************************************
@@ -1790,7 +1794,7 @@ C     ******************************************************************
 C
    15 IER=1
       RETURN
-      END
+      END SUBROUTINE EIRENE_GALPD_M
 
 
       subroutine EIRENE_expi(x,ei,icon)
@@ -1814,14 +1818,14 @@ cdr     write (iunout,*) 'argument in expi lt.0, call exit'
 cdr     call eirene_exit_own(1)
 cdr   endif
       return
-      end
+      end subroutine EIRENE_expi
 c
       subroutine EIRENE_aqc8(a,b,f,epsr,nmin,nmax,S)
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
-c  S=integral von a bis b, der function f(x) (external).
+c  S=integral from a to b, of the function f(x) (external).
 c  epsr : relative errors, input
-c   nmin,nmax  min u max anzahl der functionsaufrufe
+c   nmin,nmax:  min and max number of function calls
 c   (nmax<511, nmin>15)
 c
 c output
@@ -1833,9 +1837,10 @@ c icon: error code
       real(dp) f
       external f
       external EIRENE_midpnt
+cdr  perhaps Romberg integration?
       call EIRENE_qromo(f,a,b,s,EIRENE_midpnt,epsr)
       return
-      end
+      end subroutine EIRENE_aqc8
 
 
 
@@ -1882,7 +1887,7 @@ c     endif
       EIRENE_MMDEI=VAL
       ier=0
       RETURN
-      END
+      END FUNCTION EIRENE_MMDEI
 
       SUBROUTINE EIRENE_QROMO(FUNC,A,B,SS,CHOOSE,epsr)
       USE EIRMOD_PRECISION
@@ -1909,7 +1914,7 @@ c     endif
         H(J+1)=H(J)/9.
    11 CONTINUE
       write(iunout,*) '(W) Too many steps.'
-      END
+      END SUBROUTINE EIRENE_QROMO
 
       SUBROUTINE EIRENE_POLINT(XA,YA,N,X,Y,DY)
       USE EIRMOD_PRECISION
@@ -1957,7 +1962,7 @@ c     endif
         Y=Y+DY
    13 CONTINUE
       RETURN
-      END
+      END SUBROUTINE EIRENE_POLINT
 C
       SUBROUTINE EIRENE_MIDPNT(FUNC,A,B,S,N)
       USE EIRMOD_PRECISION
@@ -1984,5 +1989,5 @@ C
         IT=3*IT
       ENDIF
       RETURN
-      END
+      END SUBROUTINE EIRENE_MIDPNT
 c

@@ -32,4 +32,4 @@ C
       ZTETRA(NCOOR) = Z
       IC = NCOOR
       RETURN
-      END
+      END SUBROUTINE EIRENE_INSERT_POINT

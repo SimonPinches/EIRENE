@@ -1,4 +1,5 @@
-
+cdr  return SARRUS = determinant of 3x3 matrix A
+cdr  Applies the Sarrus rule
 
       FUNCTION EIRENE_SARRUS (A)
       USE EIRMOD_PRECISION
@@ -18,4 +19,4 @@
 !     WRITE (iunout,*) ' DET ',A1 + A2 + A3 - B1 - B2 - B3
 
       RETURN
-      END
+      END FUNCTION EIRENE_SARRUS

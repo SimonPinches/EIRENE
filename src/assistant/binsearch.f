@@ -56,7 +56,7 @@ c  binary search
         end if
       end if
 c
-      END
+      END SUBROUTINE EIRENE_BINSEARCH
 
       SUBROUTINE EIRENE_binsearch_2(xx,n,x,i)
 c  fast version:
@@ -85,4 +85,4 @@ c
       i=bl
 
       return
-      end
+      end subroutine eirene_binsearch_2

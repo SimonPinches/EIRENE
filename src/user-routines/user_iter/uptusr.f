@@ -21,7 +21,7 @@ C
       USE EIRMOD_CSPEZ
       USE EIRMOD_CGRID
       USE EIRMOD_CLOGAU
-
+      USE EIRMOD_COMSIG
       USE EIRMOD_CCONA
       USE EIRMOD_CPOLYG
       USE EIRMOD_CZT1
@@ -39,6 +39,9 @@ CDR
       INTEGER, SAVE :: IFIRST, IA0, IA1, IA2, IA3, IA4
       integer :: icou
       real(dp) :: wtr,vr,vp,dist
+
+!$OMP THREADPRIVATE(VPX,VPY,VRX,VRY,IFIRST,IA0,IA1,IA2,IA3,IA4)
+
       DATA IFIRST/0/
 
       IF (IFIRST.EQ.0) THEN
@@ -46,8 +49,8 @@ CDR
 C
 CDR
 CDR  PROVIDE A RADIAL UNIT VECTOR PER CELL
-CDR  VPX,VPY NEEDED FOR PROJECTING PARTICLE VELOCITIES
-CDR  SAME FOR POLOIDAL UNIT VECTOR VRX,VRY
+CDR  VRX,VRY NEEDED FOR PROJECTING PARTICLE VELOCITIES
+CDR  SAME FOR POLOIDAL UNIT VECTOR VPX,VPY
 C
         if(allocated(vpx)) deallocate(vpx,vpy,vrx,vry)
         ALLOCATE (VPX(NRAD))
@@ -59,15 +62,19 @@ C
         VRX=0.
         VRY=0.
         DO I=1,NTRII
-          VPX(I)=PLNXTRI(i)    ! radial unit vector 
-          VPY(I)=PLNYTRI(i)    ! => bxperp, byperp
-          VRX(I)=PPLNXTRI(i)   ! poloidal unit vector
-          VRY(I)=PPLNYTRI(i)   ! => BXIN, BYIN TO BE NORMALIZED
+          VRX(I)=PLNXTRI(i)    ! radial unit vector 
+          VRY(I)=PLNYTRI(i)    ! => bxperp, byperp
+          VPX(I)=PPLNXTRI(i)   ! poloidal unit vector
+          VPY(I)=PPLNYTRI(i)   ! => BXIN, BYIN TO BE NORMALIZED
         END DO
 
 cdr  increments for tally number iadv
+!pb  MOD_ADDV is no incremental value. It is a flag indicating whether all the 
+!pb  rates used for emissivity lines are to be stored or whether storage saving
+!pb  mode ist to be used, only storing the rates for the latest used line
+!pb     IA0=MOD_ADDV        !  RADIAL CURRENT
         IA0=0               !  RADIAL CURRENT
-        IA1=IA0+NATMI+NMOLI !  RADIAL ENREGY FLUX
+        IA1=IA0+NATMI+NMOLI !  RADIAL ENERGY FLUX
         IA2=IA1+NATMI+NMOLI !  POLOIDAL CURRENT
         IA3=IA2+NATMI+NMOLI !  POLOIDAL ENERGY FLUX
         IA4=IA3+NATMI+NMOLI !  FLUX (ANGLE-AVERAGED)
@@ -98,16 +105,20 @@ cdr       IF (LGVAC(IRD,0)) GOTO 20   ! score neutral fluxes also in Vac. region
 C
 CDR
 C  particle current, radial component  (CM/SEC)
-          VR=(VELX*VPX(IRD)+VELY*VPY(IRD))*VEL
+          VR=(VELX*VRX(IRD)+VELY*VRY(IRD))*VEL
           if(ia0+iatm.gt.nadv) goto 20
+!$OMP ATOMIC
           ADDV(IA0+IATM,IRD)=ADDV(IA0+IATM,IRD)+WTR*VR
           if(ia1+iatm.gt.nadv) goto 20
+!$OMP ATOMIC
           ADDV(IA1+IATM,IRD)=ADDV(IA1+IATM,IRD)+WTR*VR*E0
 C  particle current, poloidal component (CM/SEC)
-          VP=(VELX*VRX(IRD)+VELY*VRY(IRD))*VEL
+          VP=(VELX*VPX(IRD)+VELY*VPY(IRD))*VEL
           if(ia2+iatm.gt.nadv) goto 20
+!$OMP ATOMIC
           ADDV(IA2+IATM,IRD)=ADDV(IA2+IATM,IRD)+WTR*VP
           if(ia3+iatm.gt.nadv) goto 20
+!$OMP ATOMIC
           ADDV(IA3+IATM,IRD)=ADDV(IA3+IATM,IRD)+WTR*VP*E0
 
 c  particle current: toroidal component (cm/sec)
@@ -116,6 +127,7 @@ c    note   particle current, cartesian, vden_xyz is now a default tally.
 
 C  particle flux, integrated over all directions
           if(ia4+iatm.gt.nadv) goto 20
+!$OMP ATOMIC
           ADDV(IA4+IATM,IRD)=ADDV(IA4+IATM,IRD)+WTR*VEL
 CDR
    20   CONTINUE
@@ -130,16 +142,20 @@ CDR
 C
           IF (LGVAC(IRD,0)) GOTO 200
 C  particle current, radial component  (CM/SEC)
-          VR=(VELX*VPX(IRD)+VELY*VPY(IRD))*VEL
+          VR=(VELX*VRX(IRD)+VELY*VRY(IRD))*VEL
           if(ia0+natmi+imol.gt.nadv) goto 200
+!$OMP ATOMIC
           ADDV(NATMI+IMOL,IRD)=ADDV(NATMI+IMOL,IRD)+WTR*VR
           if(ia1+natmi+imol.gt.nadv) goto 200
+!$OMP ATOMIC
           ADDV(IA1+NATMI+IMOL,IRD)=ADDV(IA1+NATMI+IMOL,IRD)+WTR*VR*E0
 C  particle current, poloidal component (CM/SEC)
-          VP=(VELX*VRX(IRD)+VELY*VRY(IRD))*VEL
+          VP=(VELX*VPX(IRD)+VELY*VPY(IRD))*VEL
           if(ia2+natmi+imol.gt.nadv) goto 200
+!$OMP ATOMIC
           ADDV(IA2+NATMI+IMOL,IRD)=ADDV(IA2+NATMI+IMOL,IRD)+WTR*VP
           if(ia3+natmi+imol.gt.nadv) goto 200
+!$OMP ATOMIC
           ADDV(IA3+NATMI+IMOL,IRD)=ADDV(IA3+NATMI+IMOL,IRD)+WTR*VP*E0
 
 c  particle current: toroidal component (cm/sec)
@@ -150,6 +166,7 @@ c::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 C  particle flux, integrated over all directions
 
           if(ia4+NATMI+IMOL.gt.nadv) goto 200
+!$OMP ATOMIC
           ADDV(IA4+NATMI+IMOL,IRD)=ADDV(IA4+NATMI+IMOL,IRD)+WTR*VEL
 C
   200   CONTINUE
@@ -162,4 +179,4 @@ C
       ENDIF
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_UPTUSR

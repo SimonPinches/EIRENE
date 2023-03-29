@@ -1,18 +1,12 @@
 CDR   June 17:  comments, and fix re option indpro=4 (unused so far)
 C     May  05:  "no multip on averaging cells" corrected for 3D grids
 C
-      SUBROUTINE EIRENE_MULTI
 cdr  subroutine multig:  copy grid data NBMLT times
 cdr  subroutine multip:  indpro<=3: copy 1D profiles NP2ND*NT3RD*NBMLT times
 cdr                 indpro>=4: copy    profiles            *NBMLT times
 cdr                 indpro =4: check this option: tbd.
 cdr                 Currently available for indpro(I), I=1,2,3,4,5,6
 cdr                 indpro(7) (electr. field): still missing here 
-
-      IMPLICIT NONE
-
-      CALL EIRENE_MULTIG
-      END SUBROUTINE EIRENE_MULTI
 C
 C  GEOMETRY DATA
 C
@@ -57,7 +51,7 @@ C  INDPRO.LT.4: ONLY RADIAL PLASMA PROFILES ARE GIVEN
 C  RADIAL PLASMA PROFILES, KNOWN IN ZONES 1 TO NR1ST
 C  NBLCKS=NP2ND*NT3RD*NBMLT
 C  COPY THESE 1D (RADIAL) PROFILES, NBLCKS TIMES
-c  EXCEPTION: B-FIELD DATA, INDPRO(5). SEE BELOW
+c  EXCEPTION: B FIELD DATA, INDPRO(5). SEE BELOW
 C
       DO 210 J=2,NBLCKS
 C  RADIAL "BLOCK" NO J
@@ -95,7 +89,7 @@ C  IS THIS A SPACE FOR AVERAGING: THEN DO NOT COPY
   205     CONTINUE
         ENDIF
         IF ((INDPRO(5).LT.4) .AND. LCPYPRO(5))  THEN
-C  BFIELD DATA, INDPRO(5), ARE ALREADY SET ON 1:NSURF, SET IN PLASMA.F
+C  B FIELD DATA, INDPRO(5), ARE ALREADY SET ON 1:NSURF, SET IN PLASMA.F
         ENDIF
         IF (LADIN.AND.(INDPRO(6).LT.4)) THEN
           DO 207 K=1,NAINI
@@ -103,6 +97,13 @@ C  BFIELD DATA, INDPRO(5), ARE ALREADY SET ON 1:NSURF, SET IN PLASMA.F
               ADIN(K,I+(J-1)*NR1ST)=ADIN(K,I)
             END DO
   207     CONTINUE
+        ENDIF
+        IF (INDPRO(11).LT.4) THEN
+          DO 211 K=1,NPLSI
+            DO I=1,NR1ST
+              ZIIN(K,I+(J-1)*NR1ST)=ZIIN(K,I)
+            END DO
+  211     CONTINUE
         ENDIF
   210 CONTINUE
 C
@@ -127,16 +128,18 @@ C  INDPRO.GT.4: ONLY NSTRD=NR1ST*NP2ND*NT3RD PLASMA DATA GIVEN
             END DO
   304     CONTINUE
         ENDIF
-        IF ((INDPRO(4).GT.4) .AND. LCPYPRO(4)) THEN
-          DO 305 K=1,NPLSV
-            DO I=1,NSTRD
-              VXIN(K,I+(J-1)*NSTRD)=VXIN(K,I)
-              VYIN(K,I+(J-1)*NSTRD)=VYIN(K,I)
-              VZIN(K,I+(J-1)*NSTRD)=VZIN(K,I)
-            END DO
-  305     CONTINUE
+        IF (LVIN) THEN
+          IF ((INDPRO(4).GT.4) .AND. LCPYPRO(4)) THEN
+            DO 305 K=1,NPLSV
+              DO I=1,NSTRD
+                VXIN(K,I+(J-1)*NSTRD)=VXIN(K,I)
+                VYIN(K,I+(J-1)*NSTRD)=VYIN(K,I)
+                VZIN(K,I+(J-1)*NSTRD)=VZIN(K,I)
+              END DO
+ 305        CONTINUE
+          ENDIF
         ENDIF
-        IF (LBXIN .AND. LBYIN .AND. LBZIN .AND. LBFIN) THEN
+        IF (LBIN) THEN
           IF ((INDPRO(5).GT.4) .AND. LCPYPRO(5)) THEN
             DO 306 I=1,NSTRD
               BXIN(I+(J-1)*NSTRD)=BXIN(I)
@@ -152,6 +155,13 @@ C  INDPRO.GT.4: ONLY NSTRD=NR1ST*NP2ND*NT3RD PLASMA DATA GIVEN
               ADIN(K,I+(J-1)*NSTRD)=ADIN(K,I)
             END DO
   307     CONTINUE
+        ENDIF
+        IF (INDPRO(11).GT.4) THEN
+          DO 311 K=1,NPLSI
+            DO I=1,NSTRD
+              ZIIN(K,I+(J-1)*NSTRD)=ZIIN(K,I)
+            END DO
+  311     CONTINUE
         ENDIF
   310 CONTINUE
 C

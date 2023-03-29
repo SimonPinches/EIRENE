@@ -1,8 +1,17 @@
+cdr  nov. 19:
 cdr  tally 22 (electric potential) added, and a few comments, started...
+cdr  Possible pitfall: coarse graining onto scoring grid is not done here.
+cdr  Perhaps now some input tallies are on different grids?
+cpb  Input tallies are ALWAYS defined on the fine grid.
+
 C
       SUBROUTINE EIRENE_OUTIDLPLA
 C
-C  This routine prints background tallies for plotting in IDL tool.
+Cdr  This routine prints background tallies ("field particles") for plotting in IDL tool.
+cdr  Probably code mostly adopted from subr. outpla.f, but no
+cdr  coarse graining onto scoring grid done here.
+cpb  All tallies printed by OUTIDL... routines are provided on the fine grid
+cpb  as that is the only grid known in the plotting tool.
 C
 C  PRINT INPUT TALLIES ONTO OUTPUT FILE IUNOUT
 C
@@ -36,8 +45,10 @@ C                 TALTYP=2: VOLUME         (CM**3)
 C                 TALTYP=3: DIMENSIONLESS  (1)
 C                 TALTYP=4: UNKNOWN        (?)
 c
-c  number of volumetric input tallies: ntali = 24(tallies) + 3*24(gradients)
-
+c  number of volumetric input tallies:
+c     ntalg = 26(tallies) + 4 free tallies = 30
+c     ntali = 26(tallies) + 4 free tallies + 3*30(gradients) = 120
+c
       TALTYP(1)=0
       TALTYP(2)=0
       TALTYP(3)=1
@@ -63,7 +74,7 @@ c  number of volumetric input tallies: ntali = 24(tallies) + 3*24(gradients)
       TALTYP(23)=0
       TALTYP(24)=0
       TALTYP(25)=0  ! psi
-      TALTYP(26)=0  ! free26
+      TALTYP(26)=3  ! zi
       TALTYP(27)=0  ! free27
       TALTYP(28)=0  ! free28
       TALTYP(29)=0  ! free29
@@ -111,7 +122,7 @@ C
         NFTI=1
         NFTE=NFSTPI(ITAL)
 
-c  K  leading dimension of input tally ITAL
+c  K: leading dimension of input tally ITAL
         DO 119 K=NFTI,NFTE
 
           SELECT CASE (ITAL)
@@ -166,7 +177,7 @@ c  K  leading dimension of input tally ITAL
           CASE (25)
             HELPP(1:NSBOX,K) = PSI(1:NSBOX)
           CASE (26)
-            HELPP(1:NSBOX,K) = FREE26(1:NSBOX)
+            HELPP(1:NSBOX,K) = ZIIN(K,1:NSBOX)
           CASE (27)
             HELPP(1:NSBOX,K) = FREE27(1:NSBOX)
           CASE (28)
@@ -209,11 +220,11 @@ C  ION DRIFT VELOCITY: NI(K)*VOLUME-WEIGHTED AVERAGES
 C  FLOW VELOCITY PARALLEL B
               HELPW(I,K)=DIIN(K,I)*VOL(I)
             CASE (8:11)
-C  B-FIELD UNIT VECTOR, B-FIELD STRENGTH "1 - WEIGHTED" AVERAGES
+C  B FIELD UNIT VECTOR, B FIELD STRENGTH "1 - WEIGHTED" AVERAGES
               HELPW(I,K)=1.D0
               IF (NSTGRD(I).GT.0) HELPW(I,K)=0.D0
             CASE (16:17)
-C  B_PERP-FIELD: "1 - WEIGHTED" AVERAGES
+C  B_PERP FIELD: "1 - WEIGHTED" AVERAGES
               HELPW(I,K)=1.D0
               IF (NSTGRD(I).GT.0) HELPW(I,K)=0.D0
             CASE (12,14:15)
@@ -224,7 +235,7 @@ C  ADDITIONAL TALLY, CELL VOLUME, WEIGHT FUNCTION "1 - WEIGHTED" AVERAGES
 C  ION DRIFT ENERGY
               HELPW(I,K)=DIIN(K,I)*VOL(I)
             CASE (18:21)
-C  E-FIELD UNIT VECTOR, E-FIELD STRENGTH
+C  E FIELD UNIT VECTOR, E FIELD STRENGTH
               HELPW(I,K)=1.D0
             CASE (22)
 C  ELECTRIC POTENTIAL
@@ -236,7 +247,7 @@ C  PARALLEL TO B FLOW MOMENTUM
 C  PSI   
               HELPW(I,K)=1.D0
             CASE (26)
-C  FREE26   
+C  ZI   
               HELPW(I,K)=1.D0
             CASE (27)
 C  FREE27   
@@ -278,11 +289,11 @@ C  ION DRIFT VELOCITY: NI(K)*VOLUME-WEIGHTED AVERAGES
 C  FLOW VELOCITY PARALLEL B
               HELPW(I,K)=DIIN(K,I)*VOL(I)
             CASE (8:11)
-C  B-FIELD UNIT VECTOR, B-FIELD STRENGTH "1 - WEIGHTED" AVERAGES
+C  B FIELD UNIT VECTOR, B FIELD STRENGTH "1 - WEIGHTED" AVERAGES
               HELPW(I,K)=1.D0
               IF (NSTGRD(I).GT.0) HELPW(I,K)=0.D0
             CASE (16:17)
-C  B_PERP-FIELD: "1 - WEIGHTED" AVERAGES
+C  B_PERP FIELD: "1 - WEIGHTED" AVERAGES
               HELPW(I,K)=1.D0
               IF (NSTGRD(I).GT.0) HELPW(I,K)=0.D0
             CASE (12,14:15)
@@ -293,7 +304,7 @@ C  ADDITIONAL TALLY, CELL VOLUME, WEIGHT FUNCTION " 1 - WEIGHTED" AVERAGES
 C  ION DRIFT ENERGY: NI(K)*VOLUME-WEIGHTED AVERAGES
               HELPW(I,K)=DIIN(K,I)*VOL(I)
             CASE (18:21)
-C  E-FIELD UNIT VECTOR, E-FIELD STRENGTH
+C  E FIELD UNIT VECTOR, E FIELD STRENGTH
               HELPW(I,K)=1.D0
             CASE (22)
 C  ELECTRIC POTENTIAL
@@ -305,7 +316,7 @@ C  PARALLEL TO B FLOW MOMENTUM
 C  PSI   
               HELPW(I,K)=1.D0
             CASE (26)
-C  FREE26   
+C  ZI   
               HELPW(I,K)=1.D0
             CASE (27)
 C  FREE27   
@@ -402,4 +413,4 @@ C
       DEALLOCATE (TALAV)
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_OUTIDLPLA

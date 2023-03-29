@@ -3,9 +3,9 @@ c               part 1: parsing of data files for
 c                       2d tables. Format of files:
 c                       to be described
 c               part 2: transfer the information onto
-c                       eirene data structure REACDAT(ir)
+c                       eirene data structure REACDAT(IR)
 cdr
-!pb  21.11.06: index error corrected in defintion of ap%dte
+!pb  21.11.06: index error corrected in definition of ap%dte
 
       subroutine EIRENE_read_tab2d (ir,reac,isw,iz1)
 
@@ -80,13 +80,23 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
 
       read (29+ifoff,*)
 
-cdr probably: distuingish between "MS resolved" and "MS unresolved"?
+cdr probably: distinguish between "MS resolved" and "MS unresolved"?
 cdr           by using a certain file name convention? 
 cdr           Is REAC(..) only use here?
       lc = len_trim(reac)
       if (reac(lc:lc) == 'r') then
         read (29+ifoff,*)
         read (29+ifoff,*)
+      end if
+
+      read (29+ifoff,'(A132)') zeile
+      if (index(zeile,'p').ne.0) then ! partition listing for bundles
+        do
+          read (29+ifoff,'(A132)') zeile
+          if (zeile(2:5) == '----') exit
+        end do
+      else
+        backspace(29+ifoff)
       end if
 
 ! read densities
@@ -103,6 +113,7 @@ cdr           Is REAC(..) only use here?
         read (29+ifoff,'(A132)') zeile
         if (zeile(2:5) == '----') then
           ind = index(zeile,'Z1')
+          if (ind == 0) ind = index(zeile,'S1')
           if (ind == 0) cycle
           ian = ind + scan(zeile(ind+1:),'=') + 1
           ien = ian + scan(zeile(ian+1:),'/') - 1
@@ -138,7 +149,7 @@ cdr           Is REAC(..) only use here?
       end do
 
 cdr part 1 done. Next:
-cdr transfer this stuff to data structure REACDAT
+cdr transfer this stuff to data structure REACDAT(IR)
 c
       select case (isw)
 
@@ -243,7 +254,6 @@ c
         reacdat(ir)%loth = .true.
 
         call eirene_alloc_fit_form (reacdat(ir)%oth)
-
 
         reacdat(ir)%oth%adas => ap
         reacdat(ir)%oth%ifit = 3

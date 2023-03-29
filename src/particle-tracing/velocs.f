@@ -53,6 +53,9 @@ C     USE EIRMOD_COMPRT
 ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
       DATA PISQ/1.772454_DP/  ! sqrt(pi)
       DATA SQ2I/0.707107_DP/  ! 1/sqrt(2)
+#ifdef PGF90
+      REAL(DP) :: DERF
+#endif
 C
 C---------------------------------------------------------------------
 C
@@ -125,13 +128,17 @@ CDR
 C
         VMXSQ=-VMX*VMX
         FNOM=EXP(VLX*(VMX+VMX-CCM*VLX))*RCCM
+#ifdef PGF90
+        FACTOR=FNOM/(1.+VMX*PISQ*(1.+DERF(VMX))/EXP(VMXSQ))
+#else
         FACTOR=FNOM/(1.+VMX*PISQ*(1.+ERF(VMX))/EXP(VMXSQ))
+#endif
         WGHTVS=WGHTVS*FACTOR
       ENDIF
 
  1000 CONTINUE
 C
-C  SHEATH CONTRIBUTION: ADD A COMPONTENT TO X-VELOCITY VLLX (CM/S),
+C  SHEATH CONTRIBUTION: ADD A COMPONENT TO X-VELOCITY VLLX (CM/S),
 C                       SUCH THAT ENERGY OF INCIDENT ION IS INCREASED BY
 C                       ESHET (EV)
 C
@@ -153,4 +160,4 @@ C  NORMALIZE CARTESIAN SPEED VECTOR, SET VEL=VELS(CM/S)  AND E0=E0S (EV)
       E0S=CVRSS*VELSQ
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_VELOCS

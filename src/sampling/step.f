@@ -1,10 +1,8 @@
-C nov. 05:  add mcstep, fistep, festep, shstep, vpstep
-c                              ve and eltot
-c requires also:  2005, patch 1 of cstep.f
 c
 Cdr  sept 17: call learca  --> learca2  (search along 1 coordinate in 2D array)
+cdr  aug. 20: code safeties from ITER branch
 
-      FUNCTION EIRENE_STEP(NSPZI,NSPZE,NS,ISTEP)
+      FUNCTION EIRENE_STEP(NSPZI,NSPZE,NS,ISTEP,ITYP)
 C
 C   SET CUMULATIVE DISTRIBUTION FUNCTION VF(I),I=1,NS; VF(1)=0;
 C   VF(NS)=1. ON THE GRID RRSTEP(I),I=1,NS
@@ -23,17 +21,18 @@ C
       USE EIRMOD_CCONA
       USE EIRMOD_CTRCEI
       USE EIRMOD_CSTEP
+      USE EIRMOD_COMXS, ONLY: NPBGKP
 
       IMPLICIT NONE
 
-      INTEGER, INTENT(IN) :: ISTEP, NSPZI, NSPZE, NS
+      INTEGER, INTENT(IN) :: ISTEP, ITYP, NSPZI, NSPZE, NS
       REAL(DP), ALLOCATABLE ::
      .            SP0(:,:),SP1(:,:),SP2(:,:),
      .            SP3(:,:),SP4(:,:),SP5(:,:)
       INTEGER, ALLOCATABLE :: IP0(:),IP1(:),IP2(:),IP3(:),IP4(:)
       REAL(DP) ::  DELR, EIRENE_STEP
       INTEGER :: ISPZ, I, J, IS, NSM,
-     .           ISPZTI, ISPZV
+     .           ISPZTI, ISPZV, IBGK
       LOGICAL :: NLINV
       SAVE
 C
@@ -88,8 +87,13 @@ C
     5   CONTINUE
 C
         DO 8 ISPZ=NSPZI,NSPZE
-          ISPZTI=MPLSTI(ISPZ)
-          ISPZV=MPLSV(ISPZ)
+          IF (ITYP.EQ.4) THEN
+            ISPZTI=MPLSTI(ISPZ)
+            ISPZV=MPLSV(ISPZ)
+          ELSE
+            ISPZTI=ISPZ
+            ISPZV=ISPZ
+          END IF
           DO J=1,NSM
             SP1(ISPZ,J)=VXSTEP(ISPZV,ISTEP,J)
             SP2(ISPZ,J)=VYSTEP(ISPZV,ISTEP,J)
@@ -99,8 +103,13 @@ C
           END DO
     8   CONTINUE
         DO 9 ISPZ=NSPZI,NSPZE
-          ISPZTI=MPLSTI(ISPZ)
-          ISPZV=MPLSV(ISPZ)
+          IF (ITYP.EQ.4) THEN
+            ISPZTI=MPLSTI(ISPZ)
+            ISPZV=MPLSV(ISPZ)
+          ELSE
+            ISPZTI=ISPZ
+            ISPZV=ISPZ
+          END IF
           DO J=1,NSM
             VXSTEP(ISPZV,ISTEP,J)=SP1(ISPZ,NSM-J+1)
             VYSTEP(ISPZV,ISTEP,J)=SP2(ISPZ,NSM-J+1)
@@ -110,17 +119,27 @@ C
           END DO
     9   CONTINUE
         DO  ISPZ=NSPZI,NSPZE
-          ISPZTI=MPLSTI(ISPZ)
-          ISPZV=MPLSV(ISPZ)
-          DO  J=1,NSM
+          IF (ITYP.EQ.4) THEN
+            ISPZTI=MPLSTI(ISPZ)
+            ISPZV=MPLSV(ISPZ)
+          ELSE
+            ISPZTI=ISPZ
+            ISPZV=ISPZ
+          END IF
+           DO  J=1,NSM
             SP1(ISPZ,J)=VPSTEP(ISPZV,ISTEP,J)
             SP2(ISPZ,J)=MCSTEP(ISPZ,ISTEP,J)
             SP3(ISPZ,J)=FISTEP(ISPZ,ISTEP,J)
           END DO
         END DO
         DO  ISPZ=NSPZI,NSPZE
-          ISPZTI=MPLSTI(ISPZ)
-          ISPZV=MPLSV(ISPZ)
+          IF (ITYP.EQ.4) THEN
+            ISPZTI=MPLSTI(ISPZ)
+            ISPZV=MPLSV(ISPZ)
+          ELSE
+            ISPZTI=ISPZ
+            ISPZV=ISPZ
+          ENDIF
           DO  J=1,NSM
             VPSTEP(ISPZV,ISTEP,J)=SP1(ISPZ,NSM-J+1)
             MCSTEP(ISPZ,ISTEP,J)=SP2(ISPZ,NSM-J+1)
@@ -222,7 +241,12 @@ C  save totals before normalization
         FLTOT(ISPZ,ISTEP)=VF(ISPZ,ISTEP,NS)
         ELTOT(ISPZ,ISTEP)=VE(ISPZ,ISTEP,NS)
 
-        IF (FLTOT(ISPZ,ISTEP).LE.0.D0) THEN
+cdr IBGK: Try to remove virtual background species 
+cdr       (those used for BGK iterations)
+cdr from the surface flux step functions
+        IBGK=0
+        IF (ISPZ.GT.0 .AND. ITYP.EQ.4) IBGK = NPBGKP(ISPZ,1)
+        IF (FLTOT(ISPZ,ISTEP).LE.0.D0.AND.IBGK.EQ.0) THEN
           WRITE (iunout,*) 'WARNING FROM FUNCTION "STEP"'
           WRITE (iunout,*)
      .      'DENSITY FUNCTION FLSTEP(ISPZ,ISTEP) VANISHES '
@@ -332,7 +356,7 @@ C
       ENDIF
       RETURN
   990 CONTINUE
-      WRITE (iunout,*) 'ERROR IN FUNCTION EIRENE_STEP, ISTEP= ',ISTEP
+      WRITE (iunout,*) 'ERROR IN FUNCTION EIRENE_STEP0, ISTEP= ',ISTEP
       CALL EIRENE_EXIT_OWN(1)
       END FUNCTION EIRENE_STEP0
 C
@@ -369,6 +393,7 @@ C
       IF (ISPZ1.GT.0.AND.ISPZ1.LT.NSPSTI(ISTEP)) ISPZ1=0
       IF (ISPZ1.GT.NSPSTE(ISTEP)) ISPZ1=0
 C
+      JJ=2
       NS1=NSMAX(ISTEP)
       DO 100 J=2,NS1
         JJ=J
@@ -381,6 +406,6 @@ C
       RETURN
 C
   990 CONTINUE
-      WRITE (iunout,*) 'ERROR IN FUNCTION EIRENE_STEP, ISTEP= ',ISTEP
+      WRITE (iunout,*) 'ERROR IN FUNCTION EIRENE_STEP1, ISTEP= ',ISTEP
       CALL EIRENE_EXIT_OWN(1)
       END FUNCTION EIRENE_STEP1

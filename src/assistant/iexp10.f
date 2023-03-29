@@ -36,4 +36,4 @@ C
       ENDIF
       EIRENE_IEXP10=I
       RETURN
-      END
+      END FUNCTION EIRENE_IEXP10

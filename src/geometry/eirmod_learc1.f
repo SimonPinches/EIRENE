@@ -18,6 +18,8 @@
       REAL(DP), ALLOCATABLE, SAVE ::
      R D12(:,:), D12I(:,:), D14(:,:), D14I(:,:), OBSC(:,:)
 
+      REAL(DP), ALLOCATABLE :: D(:,:)
+
 CTK DATENSTRUKTUR FUER DREIECKS UND VIERECKSGITTER
       TYPE :: CELL
         INTEGER :: TRIANGLE
@@ -40,6 +42,14 @@ CTK DATENSTRUKTUR FUER DREIECKS UND VIERECKSGITTER
 
       TYPE (POIFELD),ALLOCATABLE,SAVE :: HEADS(:,:)
       TYPE (POI4),ALLOCATABLE,SAVE :: HEADS4(:,:)
+
+cym - because of save attribute
+      REAL(DP), SAVE :: XMIN, YMIN, DISTX, DISTY, XMAX, YMAX,
+     .                  EPDY, EPDXDY, EPDX
+
+!$OMP THREADPRIVATE(IFIRST,D12,D12I,D14,D14I,OBSC,
+!$OMP&    XMIN, YMIN, DISTX, DISTY, XMAX, YMAX, EPDY, EPDXDY, EPDX,
+!$OMP&    HEADS,HEADS4) 
 
       CONTAINS
 
@@ -94,8 +104,7 @@ C
      .          DET1, DET2, D1, D2, D3, XTRMIN, XTRMAX, YTRMIN, YTRMAX,
      .          D4, DELTAX, DELTAY, O23, O12, O31, O41, O34, O13, XS1,
      .          XS2, YS1, YS2, O1, O2, DD
-      REAL(DP), SAVE :: XMIN, YMIN, DISTX, DISTY, XMAX, YMAX,
-     .                  EPDY, EPDXDY, EPDX
+
       INTEGER :: K, L, IM, LM, KH, EIRENE_LEARCT, EIRENE_LEAUSR,
      .           IMARK, LMARK,
      .           I, J, IE, EIRENE_LEARC1, IA, INTR1, INTR2,
@@ -282,6 +291,8 @@ C
 
         LG1=.FALSE.
         IM = 0
+        IF (.NOT.ALLOCATED(D)) ALLOCATE(D(3,NTRII))
+        D = 0._DP
         DO J=1,4
           DO WHILE (ASSOCIATED(HELPCUR(J)%P))
             I = HELPCUR(J)%P%TRIANGLE
@@ -300,6 +311,9 @@ C  CELL I ALREADY TESTED BEFORE ?
             IF (ABS(DET1+DET2+DET3) .LT. EPDXDY) THEN
               INUM=INUM+1
               IM = I
+              D(1,INUM) = D1
+              D(2,INUM) = D2
+              D(3,INUM) = D3
             ENDIF
     5       HELPCUR(J)%P => HELPCUR(J)%P%NEXT
           ENDDO
@@ -309,13 +323,25 @@ C  CELL I ALREADY TESTED BEFORE ?
           WRITE (iunout,*) 'X = ',X,' Y = ',Y
           WRITE (iunout,*) 'LEARC1 CALLED FROM SUBR. ',TEXT
           WRITE (iunout,*) 'NPANU,IM= ',NP,IM
+        ELSEIF (INUM.EQ.2 .AND.
+     .        ((MIN(ABS(D(1,1)),ABS(D(2,1)),ABS(D(3,1))).LT.EPDXDY .AND.
+     .          MIN(ABS(D(1,2)),ABS(D(2,2)),ABS(D(3,2))).LT.EPDXDY) .OR.
+     .         (MIN(ABS(D(1,1)),ABS(D(2,1)),ABS(D(3,1))).LT.EPS5 .AND.
+     .          MIN(ABS(D(1,2)),ABS(D(2,2)),ABS(D(3,2))).LT.EPS5 .AND.
+     .          MIN(ABS(D(1,1)),ABS(D(2,1)),ABS(D(3,1)))-
+     .          MIN(ABS(D(1,2)),ABS(D(2,2)),ABS(D(3,2))).LT.EPDXDY)))
+     .   THEN
+          CONTINUE ! POINT ON BOUNDARY BETWEEN TWO TRIANGLES
         ELSEIF (INUM.GT.1) THEN
-          CALL EIRENE_MASAGE
-     .                ('WARNING FROM LEARC1, INUM.GT.1               ')
+          CALL EIRENE_MASAGE('WARNING FROM LEARC1, INUM.GT.1')
           CALL EIRENE_MASR2('X,Y             ',X,Y)
           WRITE (iunout,*) 'LEARC1 CALLED FROM SUBR. ',TEXT
           WRITE (iunout,*) 'NPANU,INUM,IM= ',NP,INUM,IM
           WRITE (iunout,*) 'IAN,IEN,LOGX,LOGY ',IAN,IEN,LOGX,LOGY
+          DO I = 1, INUM
+            CALL EIRENE_MASJR3('I, D1, D2, D3                   ',
+     .                          I, D(1,I), D(2,I), D(3,I))
+          END DO
         ENDIF
         EIRENE_LEARC1=IM
 
@@ -935,7 +961,7 @@ C
       return
       end function dist_point_line
 C
-      END
+      END FUNCTION EIRENE_LEARC1
 
 
       FUNCTION EIRENE_LEARC1_RESET()
@@ -947,6 +973,8 @@ C
       type(cell),pointer :: curhelp
 
       EIRENE_LEARC1_RESET = 0
+
+      IF (ALLOCATED(D)) DEALLOCATE(D)
 
       select case (levgeo)
       case (3)
@@ -973,8 +1001,8 @@ C
           deallocate(heads4)
         ENDIF
 
-
       case (4)
+
         IFIRST=0
         if(allocated(obsc)) deallocate(obsc)
         if(allocated(heads)) then
@@ -992,9 +1020,9 @@ C
           deallocate(heads)
         endif
 
-        return
       end select
 
-      END
+      return
+      END FUNCTION EIRENE_LEARC1_RESET
 
       END MODULE EIRMOD_LEARC1

@@ -53,7 +53,6 @@ cdr  Write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
       USE EIRMOD_CSDVI
       USE EIRMOD_COMPRT
       USE EIRMOD_COMXS
-
       implicit none
 
       integer, intent(in) :: istr, lstart, lend, icall
@@ -68,8 +67,7 @@ cdr  Write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
       REAL(DP), ALLOCATABLE :: OUTAU(:)
 
       CHARACTER(6) :: CISTRA
-!pb      character(len=80) :: ctest2
-      character(len=:), allocatable :: ctest2
+      character(len=80) :: ctest2
 
       IF (TRCSIG .AND. ICALL.EQ.0) THEN
       CALL EIRENE_LEER(2)
@@ -86,13 +84,13 @@ cdr  Write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
       do i = lstart, lend
         ILINE=I
         IF (TRCSIG .AND. ICALL.EQ.0) THEN
-          ctest2 = adjustl(trim(emis_lines(iline)%line_name))
-          WRITE (iunout,'(a,i6,3a)') 'LINE no. ',ILINE,', ',CTEST2,':' 
-          deallocate(ctest2)
+          ctest2 = emis_lines(iline)%line_name
+          WRITE (iunout,'(1X,A,I2,3A)') 'LINE no. ',
+     .                                   ILINE,', ',TRIM(CTEST2),':' 
           
-        write (iunout,'(1X,A,ES12.4)') 'EINSTEIN COEFFICIENT',
+          write (iunout,'(1X,A,ES12.4)') 'EINSTEIN COEFFICIENT',
      .                               emis_lines(i)%einstein
-        write (iunout,'(1X,A,ES12.4/1x)') 'TRANSITION ENERGY   ',
+          write (iunout,'(1X,A,ES12.4/1x)') 'TRANSITION ENERGY   ',
      .                               emis_lines(i)%trans_en
 
         WRITE (iunout,*) ' FLUX (AMP) AND POWER (WATT) BY '
@@ -118,6 +116,7 @@ c
           addv(iadv,:) = 0._dp
           sigadd = 0._dp
           powalf = 0._dp
+
 cdr run over contributions:  density models, isotopes, QSS states            
           do k = 1, emis_lines(i)%compo(j)%num_contrib
             isp(1) = emis_lines(i)%compo(j)%contrib(k)%isp
@@ -196,7 +195,7 @@ c  population coefficient, relative to density(1)
 c  density ratio, if true parent density is not available (or in QSS mode)
 c  then: ratio1 converts from density(1) to density
 c  density is the "true" parent density for this component.
-c  density(1) is taken as "intermediate" parent density. Fetch from IRC_RAT(1)
+c  density(1) is taken as "intermediate" parent density. Fetch reduced population coefficent
 c  and density ratio  ratio1="density"/"density(1)" will be applied,
 c  to turn density(1) into "density"
 c  e.g. density    = H2+

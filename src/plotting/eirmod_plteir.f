@@ -1,4 +1,30 @@
       MODULE EIRMOD_PLTEIR
+
+cdr  30.4.04:  call plttly for spectra corrected.
+cdr            first bin (no. 0) and last bin (no. nsts+1) contain
+cdr            the fluxes outside the range of spectra.
+cpb  30.7.04:  deal with switched off tallies
+cdr  10.6.05:  further modifications of plot for spectra (text,
+c              total, plot vs. wavelength, plot 2 spectra into same frame)
+!pb  18.12.06: general checking of XMCP removed to allow plots of
+!              input tallies even if no Monte Carlo particle has been followed
+!    10.01.07: SUBROUTINE PLTEIR_REINIT added for reinitialization of EIRENE
+!    30.01.09: TEXT CORRECTED FOR PLOTS OF SPECTRA (INPUT BLOCK 10F)
+!    30.01.09: additional wavelength unit plots only for photon spectra.
+C              Turned off for all other particle types
+cdr  Oct.14  : bug fix re. 'l_same', make sure that first spectra plot is on own frame,
+cdr            even if other (volumetric) output tallies have already been plotted
+cdr            from same stratum in same call to plteir.
+cdr  Aug.15  : scaling of spectrum tallies: hard-wired options. To be done !
+cdr  Mai 19  : Plotting of spectra incomplete. Tbd: use velocity scale too,
+cdr            Allow also plotting for volumetric spectra.
+cdr            Careful: log energy scale option, and combination with negative energies?
+cdr            Directional spectra
+cdr            Sum over species of intensive input tallies is certainly nonsense !
+cdr            proper weighting is missing here.
+cpb  Oct 22  : I0 and INDX removed
+C
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -28,23 +54,6 @@
 
       CONTAINS
 
-cdr  30.4.04:  call plttly for spectra corrected.
-cdr            first bin (no.0) and last bin (no. nsts+1) contain
-cdr            the fluxes outside the range of spectra.
-cpb  30.7.04:  deal with switched off tallies
-cdr  10.6.05:  further modifications of plot for spectra (text,
-c              total, plot vs. wavelength, plot 2 spectra into same frame
-!pb  18.12.06: general checking of XMCP removed to allow plots of
-!              input tallies even is no Monte Carlo particle has been followed
-!    10.01.07: ENTRY PLTEIR_REINIT added for reinitialization of EIRENE
-!    30.01.09: TEXT CORRECTED FOR PLOTS OF SPECTRA (INPUT BLOCK 10F)
-!    30.01.09: additional wavelength unit plots only for photon spectra.
-C              Turned off for all other particle types
-cdr  Oct.14  : bug fix re. 'l_same',  make sure that first spectra plot is on own frame,
-cdr            even if other (volumetric) output tallies have already been plotted
-cdr            from same stratum in same call to plteir.
-cdr  Aug.15  : scaling of spectrum tallies: hard-wired options. To be done !
-C
 C
       SUBROUTINE EIRENE_PLTEIR (ISTRA)
 C
@@ -65,12 +74,12 @@ C
       REAL(DP) :: XMI, XMA, TMIN, TMAX, XI, XE, DEL, OUTAUI,
      .            SPCAN, SPC00,WL00,DE, DW
       INTEGER :: IR1(NPLT), IR2(NPLT), IRS(NPLT)
-      INTEGER :: IXXE, IXXI, IYYE, IYYI, K, IINDEX, ISPC, NSPS, INULL,
+      INTEGER :: IXXE, IXXI, IYYE, IYYI, K, ISPC, NSPS, INULL,
      .           NF, NFT, I, IA, N, IXSET2, ISPZ, IALG, N1SDVI, ISAVE,
      .           IALV, ITL, JTAL, IBLD, ICURV, IE, IXSET3, IS,
-     .           IERR, ICINC, IYSET3, IX, I2M, J, IRAD, I0, I1, I2, IT,
-     .           INDX, ITT, ITP, KK
-      LOGICAL :: LPLOT2(NPLT), LSDVI(NPLT), LPLTT2, LINLOG, L_SAME
+     .           IERR, ICINC, IYSET3, IX, I2M, J, IRAD, I1, I2, IT,
+     .           ITT, ITP, KK, JJTAL
+      LOGICAL :: LPLOT2(NPLT), LSDVI(NPLT), LINLOG, L_SAME
       CHARACTER(24) :: TXUNIT(NPLT), TXSPEC(NPLT)
       CHARACTER(24) :: TXUNT1, TXSPC1
       CHARACTER(72) :: TXTALL(NPLT)
@@ -265,7 +274,6 @@ c
               WRITE (iunout,*) 'PLOT REQUESTED FOR TALLY NO. ',JTAL
             ENDIF
 C
-            LPLTT2=.FALSE.
 C
 C .............................................
 C
@@ -293,8 +301,9 @@ cdr  ITL = IABS(JTAL)
               END IF  
 
               IF (ISPZ.EQ.0) THEN
-cdr  sum over species:  this is nonsense in case of intensive quantities, such as Ti,V_in
-cdr                     and also in case of derivatives.
+cdr  sum over species: this is nonsense in case of intensive quantities,
+cdr                    such as Ti,V_in,
+cdr                    and also in case of derivatives.
 cdr  tbd:  summing with proper weighting, as in outtal.f
                 SELECT CASE (ITL)
                 CASE (1)
@@ -347,7 +356,9 @@ cdr  tbd:  summing with proper weighting, as in outtal.f
                   VECTOR(1:NSBOX,ICURV) = SUM(PARMOM(1:NF,1:NSBOX),1)
                 CASE (25)
                   VECTOR(1:NSBOX,ICURV) = PSI(1:NSBOX)
-! INPUT TALLIES 26 -- 30:  CURRENTLY UNUSED (FREE)
+                CASE (26)
+                  VECTOR(1:NSBOX,ICURV) = SUM(ZIIN(1:NF,1:NSBOX),1)
+! INPUT TALLIES 27 -- 30:  CURRENTLY UNUSED (FREE)
 ! GRADIENTS OF INPUT TALLIES
                 CASE (31:120)     ! ntali=120, constant required here
                   KK = NADDP(ITL)
@@ -356,7 +367,7 @@ cdr  tbd:  summing with proper weighting, as in outtal.f
                 CASE DEFAULT
                   WRITE (iunout,*) ' WRONG TALLY NUMBER IN PLTEIR',
      .                        ' JTAL = ',JTAL
-                  WRITE (iunout,*) ' NO PLOT PERFORMED '
+                  WRITE (iunout,*) ' NO PLOT PERFORMED'
                   CALL EIRENE_LEER(1)
                   GOTO 10000
                 END SELECT
@@ -414,7 +425,9 @@ cdr  individual species indices
                   VECTOR(1:NSBOX,ICURV) = PARMOM(ISPZ,1:NSBOX)
                 CASE (25)
                   VECTOR(1:NSBOX,ICURV) = PSI(1:NSBOX)
-! INPUT TALLIES 26 -- 30:  CURRENTLY UNUSED (FREE)
+                CASE (26)
+                  VECTOR(1:NSBOX,ICURV) = ZIIN(ISPZ,1:NSBOX)
+! INPUT TALLIES 27 -- 30:  CURRENTLY UNUSED (FREE)
 ! GRADIENTS
                 CASE (31:120)     ! ntali=120, constant required here
                   KK = NADDP(ITL)+ISPZ
@@ -422,18 +435,18 @@ cdr  individual species indices
                 CASE DEFAULT
                   WRITE (iunout,*) ' WRONG TALLY NUMBER IN PLTEIR',
      .                        ' JTAL = ',JTAL
-                  WRITE (iunout,*) ' NO PLOT PERFORMED '
+                  WRITE (iunout,*) ' NO PLOT PERFORMED'
                   CALL EIRENE_LEER(1)
                   CYCLE
                 END SELECT
 
               ELSE
                 IF (TRCPLT) THEN
-                  WRITE (iunout,*) 'SPECIES INDEX OUT OF RANGE '
+                  WRITE (iunout,*) 'SPECIES INDEX OUT OF RANGE'
                   WRITE (iunout,*) 'ICURV,ISPTAL(IBLD,ICURV) ',
      .                              ICURV,ISPZ
                   WRITE (iunout,*)
-     .              'ALL PLOTS FOR THIS TALLY TURNED OFF '
+     .              'ALL PLOTS FOR THIS TALLY TURNED OFF'
                 ENDIF
                 PLTL2D(IBLD)=.FALSE.
                 PLTL3D(IBLD)=.FALSE.
@@ -448,8 +461,8 @@ cdr  plot output tallies
               
               IF (.NOT.LIVTALV(JTAL)) THEN
                 WRITE (iunout,*) TXTTAL(1,JTAL)
-                WRITE (iunout,*) 'TALLY SWITCHED OFF '
-                WRITE (iunout,*) 'ALL PLOTS FOR THIS TALLY TURNED OFF '
+                WRITE (iunout,*) 'TALLY SWITCHED OFF'
+                WRITE (iunout,*) 'ALL PLOTS FOR THIS TALLY TURNED OFF'
                 CYCLE
               END IF
 
@@ -468,11 +481,11 @@ c  sum over species
   125           CONTINUE
               ELSE
                 IF (TRCPLT) THEN
-                  WRITE (iunout,*) 'SPECIES INDEX OUT OF RANGE '
+                  WRITE (iunout,*) 'SPECIES INDEX OUT OF RANGE'
                   WRITE (iunout,*) 'ICURV,ISPTAL(IBLD,ICURV) ',
      .                              ICURV,ISPZ
                   WRITE (iunout,*)
-     .              'ALL PLOTS FOR THIS TALLY TURNED OFF '
+     .              'ALL PLOTS FOR THIS TALLY TURNED OFF'
                 ENDIF
                 PLTL2D(IBLD)=.FALSE.
                 PLTL3D(IBLD)=.FALSE.
@@ -616,18 +629,23 @@ C
               YMNLG2(ICURV)=1.D60
               YMXLG2(ICURV)=-1.D60
               IF (JTAL.GT.0.) THEN
-                I0=0
-                IF (NFRSTI(ITL).GT.1) I0=1
-                INDX=NADDI(ITL)*NSTRAP+NFRSTI(ITL)*ISTRA+ISPZ+I0
-                CALL EIRENE_FETCH_OUTAU (OUTAUI,JTAL,ISPZ,ISTRA,IUNOUT)
+                JJTAL = JTAL
+                IF (NEXTVI(JTAL) > 0) THEN
+                  KK = 0
+                  DO K=1,JTAL
+                    KK = KK + 1
+                    IF ((K > NEXTVI(JTAL) .AND. 
+     .                  (MOD(K,NEXTVI(JTAL)) == 1))) KK = KK + 1
+                  END DO
+                  JJTAL = KK
+                END IF
+                CALL EIRENE_FETCH_OUTAU (OUTAUI,JJTAL,ISPZ,ISTRA,IUNOUT)
                 IF (OUTAUI.EQ.0.) THEN
                   IF (TRCPLT) THEN
                     WRITE (iunout,*) 'TALLY NO. ',JTAL,
      .                               ' CURVE NO. ',ICURV
                     WRITE (iunout,*) 'NOT PLOTTED BECAUSE'
-                    WRITE (iunout,*) 'ZERO INTEGRAL (OUTAU(INDX)=0.) '
-                    WRITE (iunout,*) 'INDX,NADDI(JTAL),NFRSTI(JTAL),I0'
-                    WRITE (iunout,*)  INDX,NADDI(ITL),NFRSTI(ITL),I0
+                    WRITE (iunout,*) 'ZERO INTEGRAL (OUTAUI=0.)'
                   ENDIF
                   YMN2(ICURV)=0.
                   YMX2(ICURV)=0.
@@ -637,7 +655,6 @@ C
                 ENDIF
               ENDIF
               LPLOT2(ICURV)=.TRUE.
-              LPLTT2=.TRUE.
               I1=IR1(ICURV)
               I2=IR2(ICURV)
               I2M=I2-1
@@ -1080,6 +1097,7 @@ CDR
         IF (ITT.EQ.1.AND.IT == 1) TXUNIT='#/CM**3/BIN(EV)         '
         IF (ITT.EQ.1.AND.IT == 2) TXUNIT='EV/CM**3/BIN(EV)        '
 cdr  itt=2 was still missing....  units probably: (TO BE CHECKED)
+cdr  June20: probably IDIREC controls directional vs. nondirectional spectrum
         IF (ITT.EQ.2.AND.IT == 1) TXUNIT='#/CM**3/BIN(EV)/STERAD  '
         IF (ITT.EQ.2.AND.IT == 2) TXUNIT='EV/CM**3/BIN(EV)/STERAD '
         TXHEAD=REPEAT(' ',72)
@@ -1217,7 +1235,7 @@ cdr  itt=2 was still missing....  units probably: (TO BE CHECKED)
       RETURN
       END SUBROUTINE EIRENE_PLTEIR
 
-C     the following ENTRY is for reinitialization of EIRENE (DMH)
+C     the following SUBROUTINE is for reinitialization of EIRENE (DMH)
 
       SUBROUTINE EIRENE_PLTEIR_REINIT
       IMPLICIT NONE

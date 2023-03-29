@@ -1,8 +1,15 @@
 C
-cdr  march 2019: bug fix: counter ICO was not transfered --> infinite loops possible
+cdr  march 2019: bug fix: counter ICO was not transferred --> infinite loops possible
+cdr  still not working properly, in case of trace ions: the discontinuity
+cdr  of the B-field at cell boundaries (and projection of velocity onto
+cdr  the B-field) may lead ambiguity wrt next cell and SG value
+cdr  Much better performance results with INDPRO(5)=106 (smooth B-field)
 C
       SUBROUTINE EIRENE_SRFCHK(VX,VY,VZ,SG,ICO,EPSLIM,IRET)
-C  newly added in March 2019:  code snipped removed from FOLION.F
+c  input: sg:     cosine of tracjetory with surface normal.
+c         epslim: limiting value for SG, to identify motion parallel to surface.
+c
+C  newly added in March 2019: code snippet removed from FOLION.F
 C                              similar code snippet still to be removed from LOCATE.F
 CDR  CHECK FOR CORRECT ORIENTATION OF FLIGHT "SG" AND CELL NUMBERS,
 CDR  IF A TEST PARTICLE STARTS FROM STITTING EXACTLY ON A SURFACE
@@ -31,7 +38,7 @@ C  ICO        >1 GIVE UP, TRY TO CONTINUE TRAJECTORY ANYWAY.
       REAL(DP), INTENT(INOUT) :: EPSLIM
       REAL(DP), INTENT(OUT) :: SG
       INTEGER, INTENT(INOUT) :: ICO
-      REAL(DP) :: SH, PUX,PUY,PN, XOLD,YOLD
+      REAL(DP) :: SH, PUX, PUY, PN, XOLD,YOLD
       INTEGER :: NRCELL_OLD,NPCELL_OLD,NTCELL_OLD, NTEST,
      .           IDUM, IFPB
 
@@ -182,7 +189,7 @@ C  NOTHING TO BE DONE
 
 c  particle is on one of the poloidal grid surfaces (MPSURF)
 C  POLOIDAL CELL NO. NPCELL MAY BE WRONG
-C  CHECK ORIENTATION OF PARTICLE MOTION RELATIV TO POLOIDAL COORDINATE
+C  CHECK ORIENTATION OF PARTICLE MOTION RELATIVE TO POLOIDAL COORDINATE
 C
         NPCELL_OLD=NPCELL
         select case (LEVGEO)
@@ -225,7 +232,7 @@ C  ACCOUNT FOR CUTS, PERIODICITY, ETC.
 
 c  particle is on one of the toroidal grid surfaces (MTSURF)
 C  TOROIDAL CELL NO. NTCELL MAY BE WRONG
-C  CHECK ORIENTATION OF PARALLEL MOTION RELATIV TO POLOIDAL COORDINATE
+C  CHECK ORIENTATION OF PARALLEL MOTION RELATIVE TO POLOIDAL COORDINATE
 C
         NTCELL_OLD=NTCELL
 C  VLZPAR IS THE RELEVANT VELOCITY COMPONENT, BOTH FOR
@@ -255,12 +262,12 @@ C  NLTRZ AND NLTRT OPTION
         RETURN
       ENDIF
 
-999   CONTINUE
-      WRITE (IUNOUT,*) 'WARNING: ICO GE.3, INFINITE LOOP IN SRFCHK ?'
-      WRITE (IUNOUT,*) 'PARTICLE MOTION NEARLY WITHIN A SURFACE'
-      WRITE (IUNOUT,*) 'SG ',SG
-      WRITE (IUNOUT,*) 'TRY TO CONTINUE TRACK ANYWAY', NPANU, ICO
+  999 CONTINUE
+cdiag WRITE (IUNOUT,*) 'WARNING: ICO GE.3, INFINITE LOOP IN SRFCHK ?'
+cdiag WRITE (IUNOUT,*) 'PARTICLE MOTION NEARLY WITHIN A SURFACE'
+cdiag WRITE (IUNOUT,*) 'ICO, SG ', ICO, SG
+cdiag WRITE (IUNOUT,*) 'TRY TO CONTINUE TRACK ANYWAY', NPANU, ICO
 
       IRET = 0
       RETURN
-      END
+      END SUBROUTINE EIRENE_SRFCHK

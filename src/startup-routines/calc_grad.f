@@ -3,10 +3,11 @@ c           using fem interpolation options.
 
       subroutine eirene_calc_grad (f, fdx, fdy, fdz, lfdx, lfdy, lfdz)
 c  input:
-c         f(:)   a function given on computational mesh 1:nrtal, 2D or 3D
+c         f(:) a function given on computational mesh 1:nrtal, 2D or 3D.
 c         lfdx,lfdy,lfdz:  =.t. : storage for resp. derivates is allocated
 c  output: 
-c         fdx,fdy,fdz,  corresponding derivatives df/dx (dx: in cm)
+c         fdx,fdy,fdz, corresponding derivatives df/dx (dx: in cm)
+c                      df/dy, and df/dz, resp.
 
       use eirmod_precision
       use eirmod_parmmod
@@ -59,7 +60,6 @@ c  2d cartesian x-y- grid
       if ((levgeo == 1) 
      .    .and. nlrad .and. nlpol.and..not.nltor) then
 c  ready for 2d x-y- slab grid.  
-
          IT = 1 
          ZC = 0._DP
          DO IR=1,NR1STM
@@ -106,8 +106,10 @@ c  3d cartesian x-y-z grid
              END DO  ! it
            END DO  ! ip
          END DO  ! ir
+
+c  3d semi-toroidal grid: x-y-phi, phi approximated by polygon
       elseif ((levgeo == 1) 
-     .    .and. nlrad .and.nlpol.and.nltor) then 
+     .    .and. nlrad.and.nlpol.and.nltor.and.nltra) then
 c   TO BE DONE: 3d   x,y,phi grid
          ierr=3
          goto 999
@@ -181,7 +183,7 @@ c  3d grid of tetrahedra
       write (iunout,*) ' levgeo = ',levgeo,' to be written in',
      .                 ' subroutine calc_grad '
       write (iunout,*) ' ierr = ',ierr      
-      write (iunout,*) ' calculation abandonned '
+      write (iunout,*) ' calculation abandoned'
       call  eirene_exit_own(1)
 
       return

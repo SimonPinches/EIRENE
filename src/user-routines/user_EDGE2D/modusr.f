@@ -1,4 +1,4 @@
       subroutine EIRENE_modusr
       IMPLICIT NONE
       return
-      end
+      end subroutine eirene_modusr

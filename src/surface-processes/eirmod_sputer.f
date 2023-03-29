@@ -14,11 +14,11 @@
       USE EIRMOD_COMPRT, only: IUNOUT, NPANU, ISPZ, MSURF,
      .                         E0,VELX,VELY,VELZ,CRTX,CRTY,CRTZ
       USE EIRMOD_CLGIN, only:  ZNML,ZNCL,EWALL,RECYCS,RECYCC,ESPUTC,
-     .                         IGJUM0, ISPUT, ILIIN, NSTSI
-      USE EIRMOD_CINIT, only: NDBNAMES, DBHANDLE, DBFNAME
+     .                         IGJUM0, ISPUT, ILIIN, NSTSI, LCHSPNWL
+      USE EIRMOD_CINIT, only: NDBNAMES, DBHANDLE, DBFNAME, MASTER_PATH
       USE EIRMOD_CPES, only: MY_PE, NPRS
       USE EIRMOD_RANF, ONLY: RANF_EIRENE
-      USE EIRMOD_REFUSR, ONLY: EIRENE_SPTUSR_INIT, EIRENE_SPTUSR
+      USE EIRMOD_REFUSR, ONLY: EIRENE_SPTUSR_INIT
 
       IMPLICIT NONE
       PRIVATE
@@ -30,11 +30,17 @@ C
 C  DATA FOR PHYSICAL SPUTTERING: IDENTIFY TARGET-PROJECTILE
 C  target index 1-11: data read from file: SPUTER, fort.33
 C  target index 0   : data evaluated "on the fly"
-      REAL(DP), SAVE :: ETH(28,0:11),Q(28,0:11),M2M1(28,0:11),ES(28)
-      REAL(DP), SAVE :: ETF(28,0:11)
+cym -> public because copyin needed
+      REAL(DP), dimension(28,0:11),PUBLIC, SAVE :: ETH,Q,M2M1,ETF
+      REAL(DP), dimension(28), PUBLIC, SAVE :: ES
 
-      REAL(DP), SAVE :: RTAMU(28),ZTAR(28)
-      REAL(DP), SAVE :: BT1 = 7.0, BT2 = -0.54, BT3 = 0.15, BT4 = 1.12
+
+cym these will need to be copyin (initialized in sputr0)
+!$OMP THREADPRIVATE(ETH,Q,M2M1,ES,ETF)
+
+      REAL(DP), PUBLIC, SAVE :: RTAMU(28),ZTAR(28)
+      REAL(DP), PUBLIC, SAVE :: BT1 = 7.0_DP, BT2 = -0.54_DP, 
+     .                          BT3 = 0.15_DP, BT4 = 1.12_DP
 
 C  NPROJ: PROJECTILE IDENTIFIER
 C  NPROJ(7) CORRESPONDS TO SELF-SPUTTERING.
@@ -49,34 +55,38 @@ C  NTARG:  TARGET IDENTIFIER
       INTEGER, SAVE :: NTAMU(28)
       CHARACTER(20), dimension(28), SAVE :: TTARG = (/
      .           'LITHIUM             ', 'BERYLLIUM           ',
-     .           'BOR                 ', 'GRAPHITE            ',
-     .           'ALUMINIUM           ', 'SILICIUM            ',
+     .           'BORON               ', 'GRAPHITE            ',
+     .           'ALUMINIUM           ', 'SILICON             ',
      .           'TITANIUM            ', 'VANADIUM            ',
      .           'CHROMIUM            ', 'MANGANESE           ',
      .           'IRON                ', 'COBALT              ',
      .           'NICKEL              ', 'COPPER              ',
      .           'GALLIUM             ', 'GERMANIUM           ',
      .           'ZIRCONIUM           ', 'NIOBIUM             ',
-     .           'MOLYBDENUM          ', 'PALADIUM            ',
+     .           'MOLYBDENUM          ', 'PALLADIUM           ',
      .           'SILVER              ', 'INDIUM              ',
      .           'TANTALUM            ', 'TUNGSTEN            ',
      .           'PLATINUM            ', 'GOLD                ',
      .           'LEAD                ', 'URANIUM             '/)
 
-      REAL(DP), SAVE :: RM1,RM2,Z1,Z2,Z123,Z223,ES23,
-     .                  FM2M1,GM2M1,GZ1Z213,GZ1Z212,XETF
-      REAL(DP), SAVE :: TWOTHIRD,ONETHIRD,ONESIXTH,FIVESIXTH
+      REAL(DP), PUBLIC, SAVE :: RM1,RM2,Z1,Z2,Z123,Z223,ES23,
+     .                         FM2M1,GM2M1,GZ1Z213,GZ1Z212,XETF
+
+!$OMP THREADPRIVATE(RM1,RM2,Z1,Z2,Z123,Z223,ES23,
+!$OMP&               FM2M1,GM2M1,GZ1Z213,GZ1Z212,XETF)
+
+      REAL(DP), PUBLIC, SAVE :: TWOTHIRD,ONETHIRD,ONESIXTH,FIVESIXTH
 
 C  CHEMICAL EROSION DATA
-      REAL(DP), dimension(3), SAVE :: D = (/250.,125.,83./)
-      REAL(DP), dimension(3), SAVE :: EDAM = (/15.,15.,15./)
-      REAL(DP), dimension(3), SAVE :: EDES = (/2.,2.,2./)
+      REAL(DP), dimension(3), SAVE :: D = (/250._DP,125._DP,83._DP/)
+      REAL(DP), dimension(3), SAVE :: EDAM = (/15._DP,15._DP,15._DP/)
+      REAL(DP), dimension(3), SAVE :: EDES = (/2._DP,2._DP,2._DP/)
 
-      INTEGER, ALLOCATABLE, SAVE :: IPROJ(:),IPROJS(:),ITARG(:),
-     .                              ISPZSP_DEF(:)
+      INTEGER, ALLOCATABLE, PUBLIC, SAVE :: IPROJ(:), IPROJS(:),
+     .                                      ITARG(:), ISPZSP_DEF(:)
       INTEGER, SAVE :: ICOUNT
 
-
+!$OMP THREADPRIVATE(ICOUNT)
 
 
       CONTAINS
@@ -244,10 +254,11 @@ C
       INTEGER :: IETF(0:11)
       INTEGER :: IFILE, I28, I11, IT, ISP, IAT, IP, IIO, IPL, 
      .           ILIM, NT, IA, NA, ISTSI, ISURF
-
+      character*256 :: filename
+      logical :: found
 
 C
-C  INITIALIZE SPUTER OPTION MODPYS=2
+C  INITIALIZE SPUTTER OPTION MODPYS=2
 C
       ICOUNT=0
 
@@ -272,8 +283,30 @@ C
           CALL EIRENE_EXIT_OWN(1)
         END IF
 
+        inquire (FILE=trim(DBFNAME(IFILE)),exist=found)
+        if (found) then
         OPEN (UNIT=33,FILE=DBFNAME(IFILE))
-        READ(33,*)
+        else
+          inquire (FILE=trim(master_path)//
+     .     '/modules/Eirene/Database/Surfacedata/SPUTER',
+     .      exist=found)
+          if (found) then
+            filename=trim(master_path)//
+     .       '/modules/Eirene/Database/Surfacedata/SPUTER'
+            WRITE (IUNOUT,*)
+     .       ' NO SPUTTERING DATABASE FILE FOUND IN RUN DIRECTORY'
+            WRITE (IUNOUT,'(a)') ' REVERTING TO DEFAULT FILE : '//
+     .       trim(filename)
+            CALL EIRENE_LEER(1)
+            OPEN (UNIT=33,FILE=trim(filename))
+          else
+            WRITE (IUNOUT,*) ' NO SPUTTERING DATABASE FILE FOUND'
+            WRITE (IUNOUT,*) ' CALCULATION ABANDONED'
+            CALL EIRENE_EXIT_OWN(1)
+          end if
+        end if
+
+        READ(33,*,END=999)
         READ(33,*)
         READ(33,*)
         READ(33,*)
@@ -378,7 +411,7 @@ C  ANY TARGET DATA FOR SELF-SPUTTERING WITH IPL?
       ITARG=0
       ISPZSP_DEF=0
       DO ILIM=1,NLIMI
-        NT=INT(100.0*ZNML(ILIM)+ZNCL(ILIM)+1.0D-10)
+        NT=100*NINT(ZNML(ILIM))+NINT(ZNCL(ILIM))
         ITARG(ILIM)=0
         DO IT=1,28
           IF (NT.EQ.NTARG(IT)) ITARG(ILIM)=IT
@@ -389,7 +422,7 @@ C  ANY TARGET DATA FOR SELF-SPUTTERING WITH IPL?
         ENDDO
       ENDDO
       DO ILIM=NLIM+1,NLIM+NSTSI
-        NT=INT(100.*ZNML(ILIM)+ZNCL(ILIM)+1.0D-10)
+        NT=100*NINT(ZNML(ILIM))+NINT(ZNCL(ILIM))
         ITARG(ILIM)=0
         DO IT=1,28
           IF (NT.EQ.NTARG(IT)) ITARG(ILIM)=IT
@@ -417,6 +450,8 @@ C
         DO ILIM=1,NLIMI
           IF (ILIIN(ILIM).LE.0) THEN
             WRITE (iunout,*) ILIM, ' TRANSPARENT SURFACE '
+          ELSEIF (ILIIN(ILIM).EQ.2) THEN
+            WRITE (iunout,*) ILIM, ' ABSORBING SURFACE '
           ELSEIF (ILIIN(ILIM).GE.3) THEN
             WRITE (iunout,*) ILIM, ' PERIODICITY- OR MIRROR SURFACE '
           ELSEIF (IGJUM0(ILIM).EQ.1) THEN
@@ -434,6 +469,8 @@ C
             WRITE(iunout,*) -ISTSI,' TIME HORIZON, CENSUS TALLYING '
           ELSEIF (ILIIN(ISURF).LE.0) THEN
             WRITE(iunout,*) -ISTSI,' TRANSPARENT SURFACE '
+          ELSEIF (ILIIN(ISURF).EQ.2) THEN
+            WRITE (iunout,*) -ISTSI, ' ABSORBING SURFACE '
           ELSEIF (ILIIN(ISURF).GE.3) THEN
             WRITE(iunout,*) -ISTSI,' PERIODICITY- OR MIRROR SURFACE '
           ELSEIF (ITARG(ISURF).GT.0.AND.ITARG(ISURF).LE.28) THEN
@@ -457,8 +494,12 @@ C         ENDDO
 C       ENDDO
       ENDIF
 C
-      CALL EIRENE_SPTUSR_INIT
+      IF (ANY(ISPUT(1,1:NLIMPS).EQ.9)) CALL EIRENE_SPTUSR_INIT
+      RETURN
 C
+  999 WRITE (IUNOUT,*) ' SPUTTERING DATABASE FILE FOUND EMPTY !'
+      WRITE (IUNOUT,*) ' CALCULATION ABANDONED'
+      CALL EIRENE_EXIT_OWN(1)
       END SUBROUTINE EIRENE_SPUTR0
 C
 C
@@ -469,7 +510,8 @@ C
      .             ISPZP,ESPTP,VSPTP,VXSPTP,VYSPTP,VZSPTP,
      .             IGASC,
      .             YIELD2,
-     .             ISPZC,ESPTC,VSPTC,VXSPTC,VYSPTC,VZSPTC)
+     .             ISPZC,ESPTC,VSPTC,VXSPTC,VYSPTC,VZSPTC,
+     .             YSPTWL)
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: WMIN, FMASS, FCHAR, FLXSP
       REAL(DP), INTENT(OUT) :: YIELD1, YIELD2, ESPTC, VSPTC, ESPTP,
@@ -477,13 +519,14 @@ C
      .                         VXSPTC, VYSPTC, VZSPTC
       INTEGER, INTENT(IN) :: IGASC, IGASP
       INTEGER, INTENT(OUT) :: ISPZC, ISPZP
+      REAL(DP),INTENT(OUT) :: YSPTWL !VK NUMBER OF WALL ATOMS IN SPUTTERED PARTICLE
 
 C  PURE CARBON
-      REAL(DP) :: EREL = 1.8
+      REAL(DP) :: EREL = 1.8_DP
 C  SI,TI,W DOPED CARBON
-c      REAL(DP) :: EREL = 1.5
+C     REAL(DP) :: EREL = 1.5_DP
 C  B DOPED CARBON
-c      REAL(DP) :: EREL = 1.2
+C     REAL(DP) :: EREL = 1.2_DP
 
 c
       INTEGER :: IATMC, MSS, IMOLC, ITYPC     
@@ -496,7 +539,7 @@ ctk      real(dp) :: EIRENE_YHAASZ97M
      .            EMAX, RSQDV, CVRSS, RT, EIRENE_FTHOMP, VX, UB, 
      .            VY, VZ, FLX, PRFCC, ETHERM, ETHEKT, ERELKT, C, 
      .            G2, G3, YTHERM, YDES,
-     .            EDESE0, EDAME0, QSE, YDAM, YSURF, 
+     .            EDESE0, EDAME0, QSE, YDAM, YSURF, ARG,
      .            VXR, VYR, VZR, VWL, WGHTVS   ! FOR SAMPLING WITH VELOCS
       INTEGER :: ITA, IPS, IPR, MODCHM, MODPYS, MS, ITYPP, IATMP
 
@@ -621,7 +664,9 @@ C         AOPT=75.
 C         CAOPT=COS(AOPT*PIA/180.D0)
           CAOPT=0.26
           F=2.
-          ANGFAC=COSIN**(-F)*EXP(F*(1.-1./COSIN)*CAOPT)
+!         ANGFAC=COSIN**(-F)*EXP(F*(1.-1./COSIN)*CAOPT)
+          ARG=MAX(-500._DP,LOG(COSIN)*(-F)+F*(1.-1./COSIN)*CAOPT)
+          ANGFAC=EXP(ARG)
           YIELD1=YIELD1*ANGFAC
         ELSE
 C  NO SPUTTER DATA FOUND FOR THIS TARGET-PROJECTILE
@@ -630,7 +675,14 @@ C  NO SPUTTER DATA FOUND FOR THIS TARGET-PROJECTILE
 C
       ELSEIF (MODPYS.EQ.9) THEN
 C  USER-SUPPLIED SPUTTER MODEL
-        CALL EIRENE_SPTUSR
+        CALL EIRENE_SP1USR(WMIN,FMASS,FCHAR,FLXSP,
+     .             IGASP,
+     .             YIELD1,
+     .             ISPZP,ESPTP,VSPTP,VXSPTP,VYSPTP,VZSPTP,
+     .             IGASC,
+     .             YIELD2,
+     .             ISPZC,ESPTC,VSPTC,VXSPTC,VYSPTC,VZSPTC,
+     .             YSPTWL,QQS)
 C
       ENDIF
 C
@@ -733,6 +785,8 @@ C  AT THIS POINT: ESPTP < 0.0, THERMAL (TWALL) DISTRIBUTION OF SPUTTERED PARTICL
 C
 C   PHYSICAL SPUTTERING DONE
 C
+C.....................................................................
+C
 C   CHEMICAL SPUTTERING, REEMITTED PARTICLES ARE COSINE DISTRIBUTED AND
 C   THERMAL
 C
@@ -753,6 +807,8 @@ C  IS INCIDENT PARTICLE "HYDROGENIC" AND "ATOMIC"?
 C  IS TARGET SURFACE CARBON?
 C
         IF (IPR.GT.0.AND.IPR.LE.3.AND.ITA.EQ.4) THEN
+cdr  For H,D,T particles incident onto C target
+cdr  Distinction can be made between H,D,T projectiles (ISPZ dependence).
           YIELD2=RECYCC(ISPZ,MSURF)
         ELSE
 C  NO CHEM. SPUTTERING DATA FOR THIS TARGET-PROJECTILE COMBINATION
@@ -764,6 +820,9 @@ C
 C   ROTH/PACHER MODEL: PSI 1998, SAN DIEGO (J.NUCL.MAT)
 C
         IF (IPR.GT.0.AND.IPR.LE.3.AND.ITA.EQ.4) THEN
+cdr  For H,D,T particles incident onto C target
+cdr  Isotopic dependence is in parameters EDAM(IPR), EDES(IPR),...
+C
 C  CEILING OF FLX: 1E19 #/S/M**2. FOR LOWER FLX AND AT HIGH TWALL
 C                                 THE FORMULA BECOMES UNPHYSICAL (PROTO 1/FLX)
           FLX=MAX(1.E19_DP,FLX)
@@ -866,10 +925,14 @@ C  NO CHEM. SPUTTERING DATA FOR THIS TARGET-PROJECTILE COMBINATION
 C
       CASE(6)
 C  Haasz-Davis formula, 1998
+cdr  no projectile isotopic dependence (on IPR=IPROJ(ISPZ)=1,2,3)
+cdr  except via scaling RECYCC(ISPZ...)
          PRFCC = RECYCC(ISPZ,MSURF)
          yield2=EIRENE_yhaasz97m(e0,twall)*PRFCC
       CASE(7)
 C  Haasz-Davis formula, 1998, with flx. dep from Roth, Nucl.Fus 2004
+cdr  no projectile isotopic dependence (on IPR=IPROJ(ISPZ)=1,2,3)
+cdr  except via scaling RECYCC(ISPZ...)
          PRFCC = RECYCC(ISPZ,MSURF)
          C=1._DP/(1._DP+(1.67E-22_DP*FLX)**0.54)
          yield2=C * EIRENE_yhaasz97m(e0,twall)*PRFCC
@@ -880,6 +943,12 @@ C  USER-SUPPLIED SPUTTER MODEL
         write (iunout,*) 'error in sputer.f. modchm ?? ',modchm
         call EIRENE_exit_own(1)
       END SELECT
+CVK FOR SPTTOT TALLY
+      IF (LCHSPNWL(ISPZ,MSURF).NE.0._DP) THEN
+        YSPTWL=LCHSPNWL(ISPZ,MSURF)
+      ELSE
+        YSPTWL=1.0_DP
+      ENDIF
 C
 C  FIND TYPE AND SPECIES OF CHEM. SPUTTERED MOLECULE
 C  ATOMS OR MOLECULES
@@ -1046,21 +1115,21 @@ C
 C
 C     Poly. fit c. /       a0,      a1,      a2,      a3
 C
-      DATA FITC300 / -0.03882, 0.07432,-0.03470, 0.00486/
-      DATA FITC350 / -0.05185, 0.10126,-0.05065, 0.00797/
-      DATA FITC400 / -0.06089, 0.12186,-0.06240, 0.01017/
-      DATA FITC450 / -0.08065, 0.16884,-0.09224, 0.01625/
-      DATA FITC500 / -0.08872, 0.19424,-0.10858, 0.01988/
-      DATA FITC550 / -0.08728, 0.20002,-0.11420, 0.02230/
-      DATA FITC600 / -0.05106, 0.13146,-0.07514, 0.01706/
-      DATA FITC650 /  0.07373,-0.13263, 0.09571,-0.01672/
-      DATA FITC700 /  0.02722,-0.03599, 0.02064, 0.00282/
-      DATA FITC750 /  0.09052,-0.18253, 0.12362,-0.02109/
-      DATA FITC800 /  0.02604,-0.05480, 0.04025,-0.00484/
-      DATA FITC850 /  0.03478,-0.08537, 0.06883,-0.01404/
-      DATA FITC900 /  0.02173,-0.06399, 0.05862,-0.01380/
-      DATA FITC950 / -0.00086,-0.01858, 0.02897,-0.00829/
-      DATA FITC1000/ -0.01551, 0.01359, 0.00600,-0.00353/
+      DATA FITC300 / -0.03882_DP, 0.07432_DP,-0.03470_DP, 0.00486_DP/
+      DATA FITC350 / -0.05185_DP, 0.10126_DP,-0.05065_DP, 0.00797_DP/
+      DATA FITC400 / -0.06089_DP, 0.12186_DP,-0.06240_DP, 0.01017_DP/
+      DATA FITC450 / -0.08065_DP, 0.16884_DP,-0.09224_DP, 0.01625_DP/
+      DATA FITC500 / -0.08872_DP, 0.19424_DP,-0.10858_DP, 0.01988_DP/
+      DATA FITC550 / -0.08728_DP, 0.20002_DP,-0.11420_DP, 0.02230_DP/
+      DATA FITC600 / -0.05106_DP, 0.13146_DP,-0.07514_DP, 0.01706_DP/
+      DATA FITC650 /  0.07373_DP,-0.13263_DP, 0.09571_DP,-0.01672_DP/
+      DATA FITC700 /  0.02722_DP,-0.03599_DP, 0.02064_DP, 0.00282_DP/
+      DATA FITC750 /  0.09052_DP,-0.18253_DP, 0.12362_DP,-0.02109_DP/
+      DATA FITC800 /  0.02604_DP,-0.05480_DP, 0.04025_DP,-0.00484_DP/
+      DATA FITC850 /  0.03478_DP,-0.08537_DP, 0.06883_DP,-0.01404_DP/
+      DATA FITC900 /  0.02173_DP,-0.06399_DP, 0.05862_DP,-0.01380_DP/
+      DATA FITC950 / -0.00086_DP,-0.01858_DP, 0.02897_DP,-0.00829_DP/
+      DATA FITC1000/ -0.01551_DP, 0.01359_DP, 0.00600_DP,-0.00353_DP/
 C
 C in calling program (eirene), temp_EV is in eV
 c convert to K
@@ -1181,7 +1250,7 @@ C
       real(dp) :: EIRENE_YHAASZ97M, YDAVIS98
       real(dp) :: m1,m2,m3,reducf,FRAC
 
-      DATA m1/602.39/, m2/202.24/, m3/43.561/, reducf/0.2/
+      DATA m1/602.39_DP/, m2/202.24_DP/, m3/43.561_DP/, reducf/0.2_DP/
 C
 C in calling program (eirene), TEMP_EV is in eV
 c convert to K
@@ -1202,5 +1271,4 @@ c convert to K
       RETURN
       END FUNCTION EIRENE_YHAASZ97M
  
-
       END MODULE EIRMOD_SPUTER

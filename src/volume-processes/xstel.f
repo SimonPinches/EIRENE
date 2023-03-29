@@ -68,9 +68,10 @@ C
      .            EIRENE_ENERGY_RATE_COEFF,
      .            TB, TII,
      .            FP1(6),FP2(6)
+      REAL(DP) :: DENSLIMLOG
       INTEGER :: NSEEL4, NEND, J, KREAD, MODC,  IPLTI
       INTEGER, EXTERNAL :: EIRENE_IDEZ
-      REAL(DP), PARAMETER :: EMINL=-2.3_DP
+      REAL(DP), PARAMETER :: TMINL=-2.3_DP
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt
 
@@ -128,6 +129,7 @@ C...................................................................
       IF (EIRENE_IDEZ(MODCLF(KK),2,5).EQ.1) THEN
         MODCOL(5,1,IREL)=KK
 C  TENTATIVLEY ASSUME: SIGMA * V_EFF MODEL FOR RATE COEFFICIENT
+c  v0 velocity-dependent rate coefficient
         MODCOL(5,2,IREL)=3
       ENDIF
 
@@ -136,7 +138,7 @@ C 2. RATE COEFFICIENT  (CM**3/S) * TARGET DENSITY (CM**-3)
 C..................................................................
 
       MODC=EIRENE_IDEZ(MODCLF(KK),3,5)
-
+      
       IF (MODC.GE.1.AND.MODC.LE.2) THEN
 
         MODCOL(5,2,IREL)=MODC
@@ -144,37 +146,42 @@ C  2.B)
         IF (MODC.EQ.1) NEND=1       ! rate coeff for (FIXED E0, e.g. E0=0.0, TI)
 C  2.C)
         IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E0, TI) NEND=9 HERE
+
 C   STORAGE SAVING MODE ?
         IF (NSTORDR >= NRAD) THEN
 C   NO, NSTORDT=9 HERE
 
-C  2.B) RATE COEFFICIENT(TI, FIXED E0, E.G. E0=0)
+C  2.B) RATE COEFFICIENT(TI, FIXED E0, E.G. E0=0),
+cdr     V0 velocity-independent rate coefficient
           IF (MODC.EQ.1) THEN
 C           NEND=1
             DO 245 J=1,NSBOX
               IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
+! this is another cut-off, at TIIN <=0.1 eV rather than at TVAC = 0.02 eV
+              tii = max(tminl,tii)
               COU = EIRENE_RATE_COEFF(KK,J,TII,0._DP,.TRUE.,0)
-              TABEL3(IREL,J,1)=COU*DIIN(IPL,J)*FACTKK
+              TABEL3(IREL,J,1)=COU*MIN(DENSLIM(IPL),DIIN(IPL,J))*FACTKK
   245       CONTINUE
+
+C  2.C) RATE COEFFICIENT(TI,EBEAM),
+cdr     V0 velocity-dependent rate coefficient
           ELSEIF (MODC.EQ.2) THEN
 C           NEND=9
-C  2.C) RATE COEFFICIENT(TI,EBEAM)
-C       NEND=9
           FCTKKL=LOG(FACTKK)
           rt => reacdat(kk)%rtc
           fp1(1:3) = rt%fp1l
           fp1(4:6) = rt%fp1r
           fp2(1:3) = rt%fp2b
           fp2(4:6) = rt%fp2t
+          DENSLIMLOG=LOG(DENSLIM(IPL))
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
-! this is another cut-off, at TIIN <=0.1 eV rather than at TVAC = 0.02 ev
-              tii = max(eminl,tii)
-c old
-c old         CALL EIRENE_PREP_RTCS (KK,3,TII,CF)
-c old
+! this is another cut-off, at TIIN <=0.1 eV rather than at TVAC = 0.02 eV
+cdr  when FP1L asymptotics are properly set, we should not need a cut-off here.
+              tii = max(tminl,tii)
+
               rp => reacdat(KK)%rtc%poly
               call EIRENE_dbl_poly (rp%dblpol,tii,0._dp,cou,cf,
      .               rt%rc1min, rt%rc1max, fp1, rt%jfex1mn, rt%jfex1mx,
@@ -182,18 +189,22 @@ c old
      .               trcamd)
 
               TABEL3(IREL,J,1:9) = CF(1:9)
-              TABEL3(IREL,J,1)=TABEL3(IREL,J,1)+DIINL(IPL,J)+FCTKKL
-            END DO
+              TABEL3(IREL,J,1)=TABEL3(IREL,J,1)+
+     .                    MIN(DENSLIMLOG,DIINL(IPL,J))+FCTKKL
+             END DO
           END IF  ! MODC=1,2
         ELSE ! NOT SUFFICIENT STORAGE ON TABEL3
-C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
-!pb       GOTO 995
-          write (iunout,*) ' reaction kk = ',kk, ' modc =',modc
+C  STORAGE SAVE MODE NOT READY FOR THIS OPTION MODC=1 OR MODC=2 ??
+!PB       GOTO 995
 
         ENDIF
-      ELSEIF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.3) THEN
+
 C  2.D) RATE COEFFICIENT(TI=TE, NE=NI ?, E0 FIXED, E.G. E0=0.)
 C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
+cdr     V0 velocity-independent rate coefficient
+      ELSEIF (MODC.EQ.3) THEN
+cdr unfinished option....extrapolation not done.
+C       NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
 
         MODCOL(5,2,IREL)=1 !  indicate: rate coefficient as fct. of local plasma conditions only
         FCTKKL=LOG(FACTKK)
@@ -201,7 +212,10 @@ C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
 
           DO J=1,NSBOX
             IF (LGVAC(J,IPL)) CYCLE
-            COU = EIRENE_RATE_COEFF(KK,J,TEINL(J),PLS(J),.FALSE.,1)
+            TII=TIINL(IPLTI,J)+ADDTL
+! this is another cut-off, at TIIN <=0.1 eV rather than at TVAC = 0.02 eV
+            tii = max(tminl,tii)
+            COU = EIRENE_RATE_COEFF(KK,J,TII,PLS(J),.FALSE.,1)
             TB = COU + FCTKKL
             IF (IFTFLG(KK,2) < 100) TB = TB + DIINL(IPL,J)
             TB=MAX(-100._DP,TB)
@@ -298,7 +312,7 @@ C  use i-integral expressions. to be written
       ELSEIF (NSEEL4.EQ.3) THEN
 C  4.1C)  ENERGY LOSS RATE OF IMP. ION = EN.-WEIGHTED RATE
 C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN, WITH WEIGHTING/REJECTION
-        KREAD=INT(EBULK)
+        KREAD=NINT(EBULK)
         IF (KREAD.EQ.0) THEN
 c  data for mean ion energy loss are not available
 c  use collision estimator for energy balance
@@ -346,7 +360,7 @@ C  ENERGY RATE COEFFICIENT(TI,EBEAM)
               DO 257 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
-                tii = max(eminl,tii)
+                tii = max(tminl,tii)
 c old
 c old           CALL EIRENE_PREP_RTCS (KREAD,5,TII,CF)
 c old
@@ -393,7 +407,7 @@ C
 
       IF (IESTEL(IREL,2).EQ.0.AND.NPBGKP(IPL,1).EQ.0) THEN
         WRITE (iunout,*)
-     .    'WARNING: TR.L.EST NOT AVAILABLE FOR MOM. BALANCE'
+     .    'WARNING XSTEL: TR.L.EST NOT AVAILABLE FOR MOM. BALANCE'
         WRITE (iunout,*) 'IREL = ',IREL
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO COLLISION ESTIMATOR'
         CALL EIRENE_LEER(1)
@@ -401,7 +415,7 @@ C
       ENDIF
       IF (IESTEL(IREL,3).EQ.0.AND.NPBGKP(IPL,1).EQ.0) THEN
         WRITE (iunout,*)
-     .    'WARNING: TR.L.EST NOT AVAILABLE FOR EN. BALANCE'
+     .    'WARNING XSTEL: TR.L.EST NOT AVAILABLE FOR EN. BALANCE'
         WRITE (iunout,*) 'IREL = ',IREL
         WRITE (iunout,*) 'AUTOMATICALLY RESET TO COLLISION ESTIMATOR'
         CALL EIRENE_LEER(1)
@@ -419,21 +433,15 @@ C
      .  'STORAGE SAVING MODE NOT READY; KK, IREL'
       WRITE (iunout,*) 'KK, IREL ',KK,IREL
       CALL EIRENE_EXIT_OWN(1)
-      END
+      END SUBROUTINE EIRENE_XSTEL
 C
 C-----------------------------------------------------------------------
 C
 
       SUBROUTINE EIRENE_XSTEL_2(IREL,IPL)
-CTK      USE EIRMOD_PRECISION
-CTK      USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
       USE EIRMOD_COMPRT, ONLY: IUNOUT
-CTK      USE EIRMOD_CCONA
-CTK      USE EIRMOD_CGRID
-CTK      USE EIRMOD_CZT1
       USE EIRMOD_COMXS
-CTK      use EIRMOD_ctrcei, only: trcamd
 
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: IREL, IPL
@@ -485,4 +493,4 @@ C
       WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',
      .                  FACREL(IREL,1)
       CALL EIRENE_LEER(1)
-      END
+      END SUBROUTINE EIRENE_XSTEL_2

@@ -10,14 +10,25 @@ cdr Jan 2016 : comments,  and: stop scoring census not only after total number
 cdr            of allowed census scores is reached,
 cdr            but instead do so also for each stratum, and for the scores per stratum limit.
 
-!pb   SUBROUTINE EIRENE_TIMCOL (PR,*,*)
+cdr  Time cycles (each: ntmstp*dtimv) and time steps (each: dtimv):
+cdr
+cdr  itmstp:  Each history starts with itmstp=0.
+cdr           itmstp is incremented by one (1) after each time step DTIMV.
+cdr           One complete time cycle consists of ntmstp such small steps,
+cdr           After a complete time cycle, the trajectory is stopped in this routine
+cdr           (absorbing time horizon).
+
+cdr           If ntmstp < 0, then a trajectory is never stopped in this routine.
+cdr           The scores on census then correspond to a steady state.
+cdr
+
       SUBROUTINE EIRENE_TIMCOL (PR,IRET)
 C
 C  COLLISION WITH "TIME SURFACE", FIND NEW COORDINATES
 C  UPDATE (TIME-) SURFACE TALLIES
 C  UPDATE USER-SUPPLIED SNAPSHOT-ESTIMATED TALLIES (CALL UPNUSR)
 C  PUT PARTICLE ONTO CENSUS ARRAYS
-C  AND EITHER STOP HISTORY OR CONTINUE
+C  AND EITHER STOP HISTORY (ITMSTP<NTMSTP) OR CONTINUE
 
 C  RETURN: IRET = 1, CONTINUE FLIGHT
 C  RETURN: IRET = 2, STOP FLIGHT
@@ -53,7 +64,7 @@ C
 
       REAL(DP), INTENT(IN) :: PR
       INTEGER, INTENT(OUT) :: IRET
-      INTEGER  :: IND
+      INTEGER  :: IND, IOLD, IPRNLI_OLD
       REAL(DP) :: DIST, WGHTSG
 C
       IRET = 0
@@ -82,26 +93,31 @@ C
       Z01=Z0
       WEIGHT=WEIGHT*PR
 C
-      IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,15)
+      IF (NLTRC) THEN
+!$OMP CRITICAL
+        CALL EIRENE_CHCTRC(X0,Y0,Z0,16,15)
+!$OMP END CRITICAL
+      ENDIF
 C
 C  UPDATE SNAPSHOT ESTIMATORS
       IF (NSNVI.GT.0) CALL EIRENE_UPNUSR
 C
 cdpc
-CDR:  this must be generalized, towards a more general horizon
+CDR   this must be generalized, towards a more general horizon
 CDR   rather than fixed horizon at 100 meters in x-y plane
       dist=sqrt(x0**2+y0**2)
       if(dist.gt.1e4) then
         write(iunout,*) 'timcol: ERROR!  dist = ',dist,
      1   ' (particle more than 100 m from the origin)'
-        write(iunout,*) 'npanu,x0,y0,z0,velx,vely,velz ',
-     1   npanu,x0,y0,z0,velx,vely,velz
+        write(iunout,*) 'npanu,x0,y0,z0,velx,vely,velz,vel ',
+     1                   npanu,x0,y0,z0,velx,vely,velz,vel
         weight=0.
         goto 112
       endif
 cdpc
 C
-C  TOTAL NO. OF SCORES ON CENSUS
+C  TOTAL (ACCUMULATED, ALL STRATA) NO. OF SCORES ON CENSUS
+      IPRNLI_OLD=IPRNLI
       IPRNLI=IPRNLI+1
 C  NO. OF SCORES ON CENSUS FOR PRESENT STRATUM ISTRA
       IPRNLS=IPRNLS+1
@@ -116,15 +132,20 @@ C   STOP SCORING ON CENSUS AFTER NPRNL SCORES TOTAL
 
 CDR STOP ALSO AFTER NPRNLS SCORES FOR STRATUM ISTRA ??
       if (iprnli <= nprnl.and.iprnls <= nprnls(istra)) then
-cdr   if (iprnli <= nprnl) then
 
         RPART(1:NPARTT,IPRNLI)=RPSTT(1:NPARTT)
         IPART(1:MPARTT,IPRNLI)=IPSTT(1:MPARTT)
       end if
 
 C  DO NOT SCORE ON CENSUS ANYMORE FOR THIS STRATUM
-      if (iprnls > nprnls(istra)) iprnls = nprnls(istra)
-      if (iprnli > nprnl)         iprnli = nprnl
+cdr  iprnli and iprnls have tentatively been increased above.
+cdr  Do we need to the revert this now, to avoid storage overflows?
+
+      if (iprnls > nprnls(istra)) then
+         iprnls = nprnls(istra)
+         iprnli = iprnli_old
+      end if
+      if (iprnli > nprnl) iprnli = nprnl
 
 C
   112 continue
@@ -141,28 +162,69 @@ C
 cdr  to replace cdr out ini -- cdr out end code below with call to update_surface.
 cdr  Still to be tested first...
 cdr     ITYP_OLD=ITYP
+cxpb    select case (ITYP_OLD)
+cxpb    case (0)
+cxpb      IOLD = IPHOT
+cxpb    case (1)
+cxpb      IOLD = IATM
+cxpb    case (2)
+cxpb      IOLD = IMOL
+cxpb    case (3)
+cxpb      IOLD = IION
+cxpb    case (4)
+cxpb      IOLD = IPLS
+cxpb    case default
+cxpb      IOLD = 0
+cxpb    end select
         MSURFG=0
         WGHTSG=WEIGHT
         IND=1
-cdr     CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,WGHTSG,IND)
+cdr     CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,IOLD,WGHTSG,IND)
 cdr out ini
         IF (ITYP.EQ.0) THEN
-          IF (LEOTPHT) EOTPHT(IPHOT,MSURF)=EOTPHT(IPHOT,MSURF)+E0*WEIGHT
-          IF (LPOTPHT) POTPHT(IPHOT,MSURF)=POTPHT(IPHOT,MSURF)+WEIGHT
+          IF (LEOTPHT) THEN
+!$OMP ATOMIC
+            EOTPHT(IPHOT,MSURF)=EOTPHT(IPHOT,MSURF)+E0*WEIGHT
+          ENDIF
+          IF (LPOTPHT) THEN
+!$OMP ATOMIC
+            POTPHT(IPHOT,MSURF)=POTPHT(IPHOT,MSURF)+WEIGHT
+          ENDIF
         ELSEIF (ITYP.EQ.1) THEN
-          IF (LEOTAT) EOTAT(IATM,MSURF)=EOTAT(IATM,MSURF)+E0*WEIGHT
-          IF (LPOTAT) POTAT(IATM,MSURF)=POTAT(IATM,MSURF)+WEIGHT
+          IF (LEOTAT) THEN
+!$OMP ATOMIC
+            EOTAT(IATM,MSURF)=EOTAT(IATM,MSURF)+E0*WEIGHT
+          ENDIF
+          IF (LPOTAT) THEN
+!$OMP ATOMIC
+            POTAT(IATM,MSURF)=POTAT(IATM,MSURF)+WEIGHT
+          ENDIF
         ELSEIF (ITYP.EQ.2) THEN
-          IF (LEOTML) EOTML(IMOL,MSURF)=EOTML(IMOL,MSURF)+E0*WEIGHT
-          IF (LPOTML) POTML(IMOL,MSURF)=POTML(IMOL,MSURF)+WEIGHT
+          IF (LEOTML) THEN
+!$OMP ATOMIC
+            EOTML(IMOL,MSURF)=EOTML(IMOL,MSURF)+E0*WEIGHT
+          ENDIF
+          IF (LPOTML) THEN
+!$OMP ATOMIC
+            POTML(IMOL,MSURF)=POTML(IMOL,MSURF)+WEIGHT
+          ENDIF
         ELSEIF (ITYP.EQ.3) THEN
-          IF (LEOTIO) EOTIO(IION,MSURF)=EOTIO(IION,MSURF)+E0*WEIGHT
-          IF (LPOTIO) POTIO(IION,MSURF)=POTIO(IION,MSURF)+WEIGHT
+          IF (LEOTIO) THEN
+!$OMP ATOMIC
+            EOTIO(IION,MSURF)=EOTIO(IION,MSURF)+E0*WEIGHT
+          ENDIF
+          IF (LPOTIO) THEN
+!$OMP ATOMIC
+            POTIO(IION,MSURF)=POTIO(IION,MSURF)+WEIGHT
+          ENDIF
         ENDIF
 cdr out end
         ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
 c spatial resolution on time-surface is not available. MSURFG ?
-        IF (LSPUMP) SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
+        IF (LSPUMP) THEN
+!$OMP ATOMIC
+          SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
+        ENDIF
         IF (LSPUMP) LMETSPW(ISPZ)    = .TRUE.
         IRET = 2
         RETURN 
@@ -177,4 +239,4 @@ C  OTHERWISE: RESTORE WEIGHT = WEIGHT/PR, TIME, AND CONTINUE ANOTHER TIME STEP
       ENDIF
       IRET = 0
       RETURN
-      END
+      END SUBROUTINE EIRENE_TIMCOL

@@ -20,8 +20,9 @@
      .                  EPDX, EPDY, EPDZ
       REAL(DP) :: DELTAX, DELTAY, DELTAZ,
      .            XTRMIN, YTRMIN, ZTRMIN, XTRMAX, YTRMAX, ZTRMAX
-      INTEGER :: ITET, IFIRST, I, J, K, IX, IY, IZ, IHEADX1, IHEADX2,
+      INTEGER :: ITET, I, J, K, IX, IY, IZ, IHEADX1, IHEADX2,
      .           IHEADY1, IHEADY2, IHEADZ1, IHEADZ2
+      INTEGER, SAVE :: IFIRST=0
       LOGICAL :: LG(NTET)
 
       TYPE :: CELL
@@ -37,8 +38,10 @@
       TYPE (POIFELD),ALLOCATABLE,SAVE :: HEADS(:,:,:)
       TYPE (CELL),POINTER :: CUR
 
-      DATA IFIRST /0/
-
+!$OMP THREADPRIVATE(XMIN,XMAX,YMIN,YMAX,ZMIN,ZMAX,
+!$OMP&              DISTX,DISTY,DISTZ,EPDX,EPDY,EPDZ,
+!$OMP&              HEADS,IFIRST)   
+      
       IF (IFIRST.EQ.0) THEN
         IFIRST = 1
         ALLOCATE(HEADS(NCL,NCL,NCL))
@@ -198,8 +201,6 @@ C  CELL I ALREADY TESTED BEFORE ?
               V3 = EIRENE_CAL_VOL (PC1,PC3,PC4,P)
               V4 = EIRENE_CAL_VOL (PC1,PC4,PC2,P)
 
-!              IF ((ABS(V1+V2+V3+V4-VOL(ITET)) < 1.D-3*VOL(ITET)) .AND.
-!     .            (MIN(V1,V2,V3,V4) >= -EPS5*VOL(ITET))) THEN
               IF ((ABS(V1+V2+V3+V4-VOL(ITET)) < 1.D-3*VOL(ITET)) .AND.
      .            (MIN(V1,V2,V3,V4) >= -EPS10*VOL(ITET))) THEN
                 EIRENE_LEARCT=ITET
@@ -215,4 +216,4 @@ C  CELL I ALREADY TESTED BEFORE ?
       WRITE (iunout,*) ' OUTSIDE OF ALL TETRAHEDRA '
       EIRENE_LEARCT=0
       RETURN
-      END
+      END FUNCTION EIRENE_LEARCT

@@ -1,11 +1,14 @@
-C 0406: default resonant cx for He in He+/He++ plasma added:
+C 0406: default resonant CX for He in He+/He++ plasma added:
 C       Janev (HYDHEL) ,1987, reactions 5.3.1 and 6.3.1
 C
 C 0710: provide value of cross-section for reaction K
 C       K=0 means no cross-section available for this reaction
 c       k=-1,-2,-3:  default (hard-wired) CX cross-sections
-c 0315: increase kk>=-10 to kk>=-11 for He ei process, to fully reserve k=-1
+c 0315: increase kk>=-10 to kk>=-11 for He EI process, to fully reserve k=-1
 c       for H+p CX as default process
+C Nov.19: Arrhenius factor (not needed here,
+cdr       but for coding consistency)
+cdr Jan 20: Added proper cut-off for iftflg=3 at threshold XI.
 
       FUNCTION EIRENE_CROSS(AL,K,IR,FACT,TEXT)
 C
@@ -15,17 +18,17 @@ C    RETURN CROSS-SECTION IN CM**2
 C
 C  K>0 :  DATA FROM ARRAY REACDAT, I.E. FROM EXTERNAL DATABASE
 C
-C  K<0 :  DEFAULT MODEL DEFINED IN SETUP_DEFAULT_REACTIONS, BUT NOW ALSO ON REACDAT
+C  K<0 : DEFAULT MODEL DEFINED IN SETUP_MINIMAL_REACTIONS, BUT NOW ALSO ON REACDAT
 C
-C  K=-1:  H + H+ --> H+ + H   CROSS-SECTION, JANEV, 3.1.8
+C  K=-1: H + H+ --> H+ + H   CX CROSS-SECTION, JANEV, 3.1.8
 C         LINEAR EXTRAPOLATION ON LOG-LOG SCALE AT LOW ENERGY END FOR LN(SIGMA)
 C         IDENTICAL TO hydhel.tex, H.1, 3.1.8
 C
-C  K=-2:  He + He+ --> He+ + He   CROSS-SECTION, JANEV, 5.3.1
+C  K=-2: He + He+ --> He+ + He  CX CROSS-SECTION, JANEV, 5.3.1
 C         LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
 C         IDENTICAL TO hydhel.tex, H.1, 5.3.1
 C
-C  K=-3:  He + He++ --> He++ + He   CROSS-SECTION, JANEV, 6.3.1
+C  K=-3: He + He++ --> He++ + He  CX CROSS-SECTION, JANEV, 6.3.1
 C         LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
 C         IDENTICAL TO hydhel.tex, H.1, 6.3.1
 
@@ -45,10 +48,11 @@ C
       CHARACTER(LEN=*), INTENT(IN) :: TEXT
       REAL(DP) :: B(8), FP(6)
       REAL(DP) :: EIRENE_CROSS,
-     .            ALMIN,ALMAX,COUMIN,COUMAX,
-     .            EXPO, EIRENE_EXTRAP, E, XI,
-     .            EIRENE_SNGL_POLY
+     .            ALMIN, ALMAX, COUMIN, COUMAX, EMIN, EMAX,
+     .            RES, EIRENE_EXTRAP, E, XI,
+     .            EIRENE_SNGL_POLY, EARRH0
       INTEGER :: I
+      LOGICAL :: LEXP
       type(poly_data), pointer :: rpp
       type(fit_forms), pointer :: rpc
 
@@ -58,7 +62,7 @@ C
         IF (K == 0) THEN
 
           EIRENE_CROSS = 0._DP
-          WRITE (IUNOUT,*) 'ERROR IN CROSS '
+          WRITE (IUNOUT,*) 'ERROR IN CROSS: K=0'
           WRITE (iunout,*) 'CALLED FROM ',TEXT
           WRITE (iunout,*) 'REACTION NO. ',IR
           WRITE (IUNOUT,*) 'NO CROSS-SECTION DATA AVAILABLE FOR ',
@@ -76,72 +80,84 @@ C  FILL CROSS-SECTION DATA, SINGLE PARAMETER POLYNOMIAL IN AL=LN(E)
           RPP => RPC%POLY
           FP(1:3) = RPC%FP1L
           FP(4:6) = RPC%FP1R
-          EXPO = EIRENE_SNGL_POLY(RPP%DBLPOL,AL,
+CDR no Arrhenius factor in case of cross-sections:
+          EARRH0=0.0
+          LEXP=.TRUE.
+cdr  Notation: rpp%dblpol is a single parameter polynomial?
+          RES = EIRENE_SNGL_POLY(RPP%DBLPOL,AL,
      .                            RPC%RC1MIN,RPC%RC1MAX,FP,
      .                            RPC%JFEX1MN,RPC%JFEX1MX,
-     .                            TRCAMD,.TRUE.)
-          EIRENE_CROSS = EXP(MAX(-100._DP,EXPO))
+     .                            EARRH0,TRCAMD,LEXP)
 
-          EIRENE_CROSS = EIRENE_CROSS*FACT
+          EIRENE_CROSS = RES*FACT
 
         ELSE IF (IFTFLG(K,1) == 3) THEN
+cdr Near threshold and high energy Born-Bethe asymptotically correct cross-section fit
+
+cdr  XI: threshold. ie. E>XI necessarily for this fit.
+          E = EXP(AL)
+          XI = REACDAT(K)%CRS%POLY%DBLPOL(1,1)
+
+cdr  careful: E and XI must relate to same mass.
+          if (E .le. XI) then
+            eirene_cross=0._dp
+            return
+          endif
 
 C  default extrapolation ifexmn=-1 not yet available
-C  ELAB BELOW MINIMUM ENERGY FOR FIT:
+
           ALMIN=REACDAT(K)%CRS%RC1MIN
           ALMAX=REACDAT(K)%CRS%RC1MAX
+
+C  ELAB BELOW MINIMUM ENERGY FOR FIT:
           IF (AL.LT.ALMIN) THEN
 C  USE ASYMPTOTIC EXPRESSION NO. IFEXMN(K)
-
-            E = EXP(ALMIN)
-            XI = REACDAT(K)%CRS%POLY%DBLPOL(1,1)
+            EMIN = EXP(ALMIN)
             B(1:8) = REACDAT(K)%CRS%POLY%DBLPOL(2:9,1)
-            COUMIN = B(1)*LOG(E/XI)
+cdr EMIN .gt. XI is already fulfilled here.
+            COUMIN = B(1)*LOG(EMIN/XI)
             DO I=1,7
-              COUMIN = COUMIN + B(I+1)*(1.D0-XI/E)**I
+              COUMIN = COUMIN + B(I+1)*(1.D0-XI/EMIN)**I
             END DO
-            COUMIN = COUMIN * 1.D-13/(XI*E)
+            COUMIN = COUMIN * 1.D-13/(XI*EMIN)
 
             FP(1:3) = REACDAT(K)%CRS%FP1L
-            EIRENE_CROSS=EIRENE_EXTRAP(AL,ALMIN,COUMIN,
+            RES=EIRENE_EXTRAP(AL,ALMIN,COUMIN,
      .                   REACDAT(K)%CRS%JFEX1MN,
      .                   FP(1),FP(2),FP(3))
 
-            EIRENE_CROSS = EIRENE_CROSS*FACT
+            EIRENE_CROSS = RES*FACT
 
 C  ELAB ABOVE MAXIMUM ENERGY FOR FIT:
           ELSEIF (AL.GT.ALMAX) THEN
 C  USE ASYMPTOTIC EXPRESSION NO. IFEXMX(K,1)
-
-            E = EXP(ALMAX)
-            XI = REACDAT(K)%CRS%POLY%DBLPOL(1,1)
+            EMAX = EXP(ALMAX)
             B(1:8) = REACDAT(K)%CRS%POLY%DBLPOL(2:9,1)
-            COUMAX = B(1)*LOG(E/XI)
+            COUMAX = B(1)*LOG(EMAX/XI)
             DO I=1,7
-              COUMAX = COUMAX + B(I+1)*(1.D0-XI/E)**I
+              COUMAX = COUMAX + B(I+1)*(1.D0-XI/EMAX)**I
             END DO
-            COUMAX = COUMAX * 1.D-13/(XI*E)
+            COUMAX = COUMAX * 1.D-13/(XI*EMAX)
 
             FP(1:3) = REACDAT(K)%CRS%FP1R
-            EIRENE_CROSS=EIRENE_EXTRAP(AL,ALMAX,COUMAX,
+            RES=EIRENE_EXTRAP(AL,ALMAX,COUMAX,
      .                   REACDAT(K)%CRS%JFEX1MX,
      .                   FP(1),FP(2),FP(3))
 
-            EIRENE_CROSS = EIRENE_CROSS*FACT
+            EIRENE_CROSS = RES*FACT
 
 C  ELAB IS WITHIN VALID RANGE OF FIT EXPRESSION
 C  EVALUATE FIT EXPRESSION IFTFLG=3:
           ELSE
-            E = EXP(AL)
-            XI = REACDAT(K)%CRS%POLY%DBLPOL(1,1)
             B(1:8) = REACDAT(K)%CRS%POLY%DBLPOL(2:9,1)
-            EIRENE_CROSS = B(1)*LOG(E/XI)
+cdr E .gt. XI is already fulfilled here.
+            RES = B(1)*LOG(E/XI)
             DO I=1,7
-              EIRENE_CROSS = EIRENE_CROSS + B(I+1)*(1.D0-XI/E)**I
+              RES = RES + B(I+1)*(1.D0-XI/E)**I
             END DO
-            EIRENE_CROSS = EIRENE_CROSS * 1.D-13/(XI*E)
+            RES = RES * 1.D-13/(XI*E)
 
-            EIRENE_CROSS = EIRENE_CROSS*FACT
+            EIRENE_CROSS = RES*FACT
 
           ENDIF
 
@@ -160,4 +176,4 @@ C  EVALUATE FIT EXPRESSION IFTFLG=3:
       ENDIF
 
       RETURN
-      END
+      END FUNCTION EIRENE_CROSS

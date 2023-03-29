@@ -1,6 +1,6 @@
-cdr Oct 17  :
-cdr from W.Zholobenko: add         He emission lines, new options NCHTAL=5
-cdr                    analogous to H emission lines,             NCHTAL=2
+cdr  Oct. 17:
+cdr  from W.Zholobenko: add         He emission lines, new options NCHTAL=5
+cdr                     analogous to H emission lines,             NCHTAL=2
 cdr  itp (select type) of component relevant for LOS (not in use yet)
 cdr  Aug. 16:  re LOS option:
 cdr            the option described in the manual regarding
@@ -128,4 +128,4 @@ C
 C
       PLHST=PLSAVE
       RETURN
-      END
+      END SUBROUTINE EIRENE_DIAGNO

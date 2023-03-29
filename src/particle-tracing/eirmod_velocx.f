@@ -1,4 +1,17 @@
       MODULE EIRMOD_VELOCX
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_COMUSR
+      USE EIRMOD_CCONA
+      USE EIRMOD_CLOGAU
+      USE EIRMOD_CRAND
+      USE EIRMOD_CINIT
+      USE EIRMOD_CZT1
+      USE EIRMOD_CTRCEI
+      USE EIRMOD_COMPRT
+      USE EIRMOD_COMXS
+      USE EIRMOD_CLAST
+      USE EIRMOD_RANF, ONLY: RANF_EIRENE
       IMPLICIT NONE
       PRIVATE
 
@@ -6,9 +19,25 @@
 
       INTEGER, SAVE :: IFIRST = 0
 
+      REAL(DP) :: VXN, VYN, VZN, VX,VY,VZ, VN, VXI, VYI, VZI,
+     .          ZARGX, ZARGY, ZARGZ,
+     .          VXDR, VYDR, VZDR, VRELQ,
+     .          TEST, VREL, ELAB, CXS,
+     .          VR, VRQ, ELMAX, ELMIN
+C      REAL(DP) :: ELB
+
+      INTEGER :: IFLAG, IRL, IREAC, ICOUNT, J, JJ
+
+!HJL      SAVE
+
+!$omp threadprivate(ifirst,vxn,vyn,vzn,vx,vy,vz,vn,vxi,vyi,vzi,
+!$OMP& zargx,zargy,zargz,vxdr,vydr,vzdr,vrelq,test,vrel,elab,
+!$OMP& cxs,vr,vrq,elmax,elmin,icount,j,jj,irl,ireac)
+
+
       CONTAINS
 
-!pb  100107: ENTRY VELOCX_REINIT added for reinitialization of EIRENE
+!pb  100107: SUBROUTINE VELOCX_REINIT added for reinitialization of EIRENE
 !pb  110311: avoid relative velocity VREL=0
 !pb  110311: ensure ELMIN <= ELAB <= ELMAX
 !DR  250311: ensure ELMIN <= ELAB <= ELMAX disabled again: would lead
@@ -19,6 +48,8 @@ cdr  sep.17: sync with veloel. Prepare bgk relaxation. perhaps ready: nflag=2
 cdr  jan.18: comments, cleanup. Sync with veloel, velopi, for incident ion sampling
 cdr          then here: only relaxation, Delta_E=0. Scattering angle= Pi in COM.
 cdr          but exchange of masses also allowed (distrinct from EL processes).
+cdr  feb.22: adapt search range for maximum of sigma times vrel,
+cdr          so it also works for He charge exchange.
 C
       SUBROUTINE EIRENE_VELOCX(K,VXO,VYO,VZO,VLO,IOLD,NOLD,VELQ,NFLAG,
      .                  IRCX,DUMT,DUMV)
@@ -70,43 +101,21 @@ C  MAXWELLIAN (NFLAG=2), WEIGHTED BY SIGMA*VREL (NFLAG=3)
 
 C  ADDITIONALLY:
 C  USED E.G. FOR VOLUME RECOMBINATION SOURCE (NFLAG=2)
-C
-      USE EIRMOD_PRECISION
-      USE EIRMOD_PARMMOD
-      USE EIRMOD_COMUSR
-      USE EIRMOD_CCONA
-      USE EIRMOD_CLOGAU
-      USE EIRMOD_CRAND
-      USE EIRMOD_CINIT
-      USE EIRMOD_CZT1
-      USE EIRMOD_CTRCEI
-      USE EIRMOD_COMPRT
-      USE EIRMOD_COMXS
-      USE EIRMOD_CLAST
-      USE EIRMOD_RANF, ONLY: RANF_EIRENE
-
+C      
       IMPLICIT NONE
 
       REAL(DP), INTENT(IN) :: DUMT(3), DUMV(3)
       REAL(DP), INTENT(IN) :: VXO, VYO, VZO, VLO
       REAL(DP), INTENT(OUT) :: VELQ
       INTEGER, INTENT(IN) :: K, IOLD, NOLD, NFLAG, IRCX
+      REAL(DP) ::EIRENE_CROSS
 
-      REAL(DP) :: VXN, VYN, VZN, VX,VY,VZ, VN, VXI, VYI, VZI,
-     .          ZARGX, ZARGY, ZARGZ,
-     .          VXDR, VYDR, VZDR, VRELQ,
-     .          TEST, VREL, ELAB, CXS,
-     .          VR, VRQ, EIRENE_CROSS, ELMAX, ELMIN
-C      REAL(DP) :: ELB
-ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
-
-      INTEGER :: ICOUNT, J, JJ, IRL, IREAC
-
-      SAVE
+cpg      SAVE
 C
 c initialize arrays for "on the fly" rejection efficiency estimates
-C IFLAG=1 AND IFLAG=3 OPTIONS
+C NFLAG=1 AND NFLAG=3 OPTIONS
       IF (IFIRST.EQ.0) THEN
+        IFLAG=0  ! currently unused, controls scattering angle model in veloel
         IFIRST=1
         DO IRL=1,NRCXI
           IFLRCX(IRL)=0
@@ -116,14 +125,23 @@ C IFLAG=1 AND IFLAG=3 OPTIONS
       ENDIF
 C
       IF (IFLRCX(IRCX).EQ.0.AND.NFLAG.NE.2) THEN
+!$OMP CRITICAL
+        CALL EIRENE_LEER(1)
+        WRITE (iunout,*) 'FIRST CALL TO VELOCX FOR IRCX= ',IRCX
+        WRITE (iunout,*) 'PREPARE REJECTION TECHNIQUE '
+        WRITE (iunout,*) 'FIND MAX. "SGCVMX" OF SIGMA(VEL) * VEL '
+!$OMP END CRITICAL
         IFLRCX(IRCX)=-1
-C  PREPARE REJECTION SAMPLING OF INCIDENT ION VELOCITY
+C  PREPARE REJECTION SAMPLING OF INCIDENT ION VELOCITY.
 C  IS CROSS-SECTION AVAILABLE?
         IREAC=MODCOL(3,1,IRCX)
         IF (IREAC.EQ.0) GOTO 1
-C CURRENTLY: HARD-WIRED SEARCH RANGE
+C CURRENTLY: HARD-WIRED INITIAL SEARCH RANGE
         elmin=log(0.1_dp)
         elmax=log(1.e4_dp)
+
+!$OMP CRITICAL
+    2   continue
         SGCVMX(IRCX)=-1.D60
         JJ=1
         do j=1,1000
@@ -141,20 +159,25 @@ c
           endif
         enddo
 
-        CALL EIRENE_LEER(1)
-        WRITE (iunout,*) 'FIRST CALL TO VELOCX FOR IRCX= ',IRCX
-        WRITE (iunout,*) 'PREPARE REJECTION TECHNIQUE '
-        WRITE (iunout,*) 'FIND MAX. "SGCVMX" OF SIGMA(VEL) * VEL '
-        CALL EIRENE_MASJ1R('JJ, SGCVMX      ',JJ, SGCVMX(IRCX))
+!pb!$OMP CRITICAL
         IF (JJ.NE.1.AND.JJ.NE.1000) THEN
+cdr  maximum found
           elab=elmin+(JJ-1)/999.*(elmax-elmin)
           ELAB=EXP(ELAB)
+          CALL EIRENE_MASJ1R('JJ, SGCVMX      ',JJ, SGCVMX(IRCX))
           WRITE (iunout,*) 'TRUE MAXIMUM FOUND AT ELAB(EV) = ',ELAB
           IFLRCX(IRCX)=1
+        ELSEIF (JJ.EQ.1000 .AND. ELMAX.LT.log(9.9e5_dp)) THEN
+cdr (sigma times v) is still rising. Search at higher energies
+          elmin=elmin+log(10.0_dp)
+          elmax=elmax+log(10.0_dp)
+          goto 2
         ELSE
           WRITE (iunout,*) 'NO TRUE MAXIMUM FOUND, USE WEIGHTING '
         ENDIF
         CALL EIRENE_LEER(1)
+!$OMP END CRITICAL
+
       ENDIF
     1 CONTINUE
 
@@ -219,7 +242,7 @@ C  SAMPLE FROM 3D NORMALIZED MAXWELLIAN (m=0;s=1)
       INIV2=INIV2-1
 C
       IF (NFLAG.EQ.1) THEN
-C  DRIFTING, MONOENERGETIC ISOTROPIC DISTRIBUTION
+C  DRIFTING, IN PLASMA FRAME MONO-ENERGETIC ISOTROPIC DISTRIBUTION
 C  ZT1 CORRESPONDS TO MEAN SQUARE VELOCITY AT TIIN(IPLS,K)
         VEL=SQRT(ZT1(IPLS,K))
         VN=VEL/SQRT(VXN*VXN+VYN*VYN+VZN*VZN)
@@ -233,7 +256,8 @@ C  ALL OTHER CASES: MAXWELLIAN AT LOCAL TEMPERATURE TIIN AND DRIFT VDR
         VZN=VZN*ZARGZ+VZDR
       ENDIF
 C
-C  DRIFTING MAXWELLIAN DISTRIBUTION (FOR MAXWELL-1/r^4-POTENTIAL: SIGMA*V = CONST.)
+C  DRIFTING MAXWELLIAN DISTRIBUTION (FOR MAXWELL-1/r^4-POTENTIAL:
+C  SIGMA*V = CONST(T), BUT INDEPENDENT OF V)
 C
       IF (NFLAG.EQ.2) THEN
 C
@@ -255,6 +279,7 @@ C   PRESENT VERSION: REJECTION
         VREL=SQRT(VRELQ)
         ELAB=LOG(VRELQ)+DEFCX(IRCX)
         IREAC=MODCOL(3,1,IRCX)
+        IF (IREAC.EQ.0) GOTO 995
         CXS=EIRENE_CROSS(ELAB,IREAC,IRCX,FACRCX(IRCX,1),'VELOCX 2')
 C
 c...........................................................
@@ -315,6 +340,14 @@ C   CX = EXCHANGE OF IDENTITY (RELAXATION). NOTHING MORE TO BE DONE
 C
       RETURN
 C
+  995 CONTINUE
+      WRITE (iunout,*)
+     . 'ERROR IN VELOCX, NO CX CROSS SECTION DATA AVAILABLE'
+      CALL EIRENE_MASJ5 ('ITYP,IATM,IMOL,IION,IPLS                ',
+     .                    ITYP,IATM,IMOL,IION,IPLS)
+      CALL EIRENE_MASJ4 ('NFLAG, IFLAG, IRCX, IDREAC      ',
+     .                    NFLAG, IFLAG, IRCX, IDREAC)
+      CALL EIRENE_EXIT_OWN(1)
   999 CONTINUE
       WRITE (iunout,*)
      .  'PARAMETER ERROR IN SUBR. VELOCX. EXIT CALLED'

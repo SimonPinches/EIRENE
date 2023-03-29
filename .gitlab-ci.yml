@@ -1,4 +1,8 @@
-image: jugit-registry.fz-juelich.de/eirene/eirene-ci-image/debianbuster
+######################################################################################
+# Job control
+######################################################################################
+
+image: jugit-registry.fz-juelich.de/eirene/eirene-ci-image/debianbullseye
 
 include:
     - '.update_fork_branches.yml'
@@ -6,15 +10,16 @@ include:
 
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
-#    SAMPLE_CASE_VERSION: a0a015c4a06e060d84f718bed021b633cb151e83
-#    SAMPLE_CASE_VERSION: 272ddfac67030b518e7047b3066b8d036e8039a6
-#   SAMPLE_CASE_VERSION: 99708cb2086dba10f970584a820b20f5b30e8814
-#    SAMPLE_CASE_VERSION: 2009bb57025877d09bfb4e8f298924b364ddc07f
-#    SAMPLE_CASE_VERSION: fc8845a38bf98d38881339d38d9138574c548923
-#   SAMPLE_CASE_VERSION: 07cab8ccac4484344c0af4d166500262120feee9 
-#   SAMPLE_CASE_VERSION: e31ce4260d9d5c2ef32e2729396fa464fe44d0d3
-#    SAMPLE_CASE_VERSION: 8c2cab906d768da55e78435ff1b922a8f313423a
-    SAMPLE_CASE_VERSION: d490ca1d6f931b7cadb50a387077ed27b017210a
+# For bullseye - from eirene_unified_bullseye
+    SAMPLE_CASE_VERSION: 90e693a5db7314e9da015291d4c0de5312f932cf
+# OpenMP test cases, at present these exist in their own branch created from the
+# first commit. This can be merged at any time.
+    SAMPLE_CASE_VERSION_OPENMP: 4201a341cbc82b3ce9af8c228052bceebab7851e
+# These variables allow the exclusion of certain stages to speed up development, true or false
+    EXCLUDE_SERIAL: 'false'
+    EXCLUDE_MPI:    'false'
+    EXCLUDE_OPENMP: 'false'
+    EXCLUDE_EMC3:   'false'
 
 stages:
     - preparation
@@ -22,19 +27,89 @@ stages:
     - run
     - run_mpi
     - test
+    - preparation:openmp
+    - build:openmp_executable
+    - run_openmp
+    - test_openmp
     - coverage
     - tag
     - deploy
     - on-schedule
 
+
+workflow:
+    name: 'EIRENE CI Pipeline for branch $CI_COMMIT_BRANCH'
+    rules:
+        - if:  ($CI_COMMIT_REF_NAME == 'develop' || $CI_COMMIT_REF_NAME == 'master')
+          variables:
+              EXCLUDE_SERIAL: 'false'
+              EXCLUDE_MPI:    'false'
+              EXCLUDE_OPENMP: 'false'
+              EXCLUDE_EMC3:   'false'
+        - if: $EXCLUDE_SERIAL == 'true'
+          variables:
+              EXCLUDE_EMC3: 'true'
+              EXCLUDE_MPI:  'true'
+        - if: $EXCLUDE_EMC3 == 'true'
+          variables:
+              EXCLUDE_MPI: 'true'
+        - when: always
+
+######################################################################################
+# Serial tests
+######################################################################################
+
+build_library:
+    stage: preparation
+    rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
+        - if: $EXCLUDE_SERIAL == 'true'
+          when: never
+        - when: always
+    script:
+        - mkdir buildRelease
+        - cd buildRelease
+        - FC=mpif90 cmake ../src
+        - make -j EIRENE
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease/
+            - libRelease/
+
+prepare_testcases:
+    stage: preparation
+    rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
+        - if: $EXCLUDE_SERIAL == 'true'
+          when: never
+        - when: always
+    script:
+        # Make only shallow clone (fetch) of single commit defined by SHA key 
+        - mkdir EIRENE-sample-cases
+        - cd EIRENE-sample-cases
+        - git init
+        - git remote add origin https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
+        - git fetch --depth 1 origin ${SAMPLE_CASE_VERSION}
+        - git checkout FETCH_HEAD
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - EIRENE-sample-cases
+        exclude:
+            - EIRENE-sample-cases/.git/**      
+
 .build_executable: &build_executable
     stage: build:executable
-    except: 
-        - schedules
+    rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
+        - if: $EXCLUDE_SERIAL == 'true'
+          when: never
+        - when: always
     script:
-#        - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
-#        - cd EIRENE-sample-cases
-#        - git checkout ${SAMPLE_CASE_VERSION}
         - cd EIRENE-sample-cases/${PATH_CASE}
         - make
     retry: 2
@@ -44,17 +119,611 @@ stages:
             - buildRelease/
             - libRelease/
             - EIRENE-sample-cases/${PATH_CASE}
+    needs:
+        - build_library
+        - prepare_testcases
+
+.build_iter_executable: &build_iter_executable
+    stage: build:executable
+    rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
+        - if: $EXCLUDE_SERIAL == 'true'
+          when: never
+        - when: always
+    script:
+        - cd EIRENE-sample-cases/${PATH_CASE}
+        - make -j
+    retry: 2
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease/
+            - binRelease/
+            - EIRENE-sample-cases/${PATH_CASE}
+    needs:
+        - build_library
+        - prepare_testcases
+
+.run: &run
+    stage: run
+    rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
+        - if: $EXCLUDE_SERIAL == 'true'
+          when: never
+        - when: always
+    script:
+        - cd EIRENE-sample-cases/${PATH_CASE}
+        - make output
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease/
+            - libRelease/
+            - EIRENE-sample-cases/${PATH_CASE}
+        when: always
+
+.test: &test
+    stage: test
+    rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
+        - if: $EXCLUDE_SERIAL == 'true'
+          when: never
+        - when: always
+    script:
+        - cd EIRENE-sample-cases/${PATH_CASE}
+        - make test
+    retry: 2
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - EIRENE-sample-cases/${PATH_CASE}
+        when: always
+
+
+######################################################################################
+# The individual serial test cases
+######################################################################################
+
+build_standalone_1D-H_slab:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "1D-H_slab"
+
+run_standalone_1D-H_slab:
+    <<: *run
+    variables:
+        PATH_CASE: "1D-H_slab"
+    needs:
+        - build_standalone_1D-H_slab
+
+test_standalone_1D-H_slab:
+    <<: *test
+    variables:
+        PATH_CASE: "1D-H_slab"
+    needs:
+        - run_standalone_1D-H_slab
+    
+build_standalone_1D_slab_with_farming:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "1D-H_slab_with_farming"
+    rules:
+        - if: $CI_COMMIT_REF_NAME == 'PB/feature/farming'
+
+run_standalone_1D-H_slab_with_farming:
+    <<: *run
+    variables:
+        PATH_CASE: "1D-H_slab_with_farming"
+    rules:
+        - if: $CI_COMMIT_REF_NAME == 'PB/feature/farming'
+    needs:
+        - build_standalone_1D_slab_with_farming
+    
+test_standalone_1D-H_slab_with_farming:
+    <<: *test
+    variables:
+        PATH_CASE: "1D-H_slab_with_farming"
+    rules:
+        - if: $CI_COMMIT_REF_NAME == 'PB/feature/farming'
+    needs:
+        - run_standalone_1D-H_slab_with_farming
+
+build_standalone_1D_cylindric:
+    # in fact it is a build_standalone but stored in ...1D_cylindric
+    <<: *build_executable
+    variables:
+        PATH_CASE: "1D_cylindric"
+
+run_standalone_1D_cylindric:
+    <<: *run
+    variables:
+        PATH_CASE: "1D_cylindric"
+    needs:
+        - build_standalone_1D_cylindric
+    
+test_standalone_1D_cylindric:
+    <<: *test
+    variables:
+        PATH_CASE: "1D_cylindric"
+    needs:
+        - run_standalone_1D_cylindric
+    
+build_standalone_1D_elliptic:
+    # in fact it is a build_standalone but stored in ...1D_cylindric
+    <<: *build_executable
+    variables:
+        PATH_CASE: "1D_elliptic"
+
+run_standalone_1D_elliptic:
+    <<: *run
+    variables:
+        PATH_CASE: "1D_elliptic"
+    needs:
+        - build_standalone_1D_elliptic
+    
+test_standalone_1D_elliptic:
+    <<: *test
+    variables:
+        PATH_CASE: "1D_elliptic"
+    needs:
+        - run_standalone_1D_elliptic
+
+build_standalone_2D_slab:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "2D-D_slab"
+
+run_standalone_2D-D_slab:
+    <<: *run
+    variables:
+        PATH_CASE: "2D-D_slab"
+    needs:
+        - build_standalone_2D_slab
+    
+test_standalone_2D-D_slab:
+    <<: *test
+    variables:
+        PATH_CASE: "2D-D_slab"
+    needs:
+        - run_standalone_2D-D_slab
+    
+build_standalone_2D_slab_finite_cylinder_11x11:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "2D-D_slab_finite_cylinder_11x11"
+
+run_standalone_2D-D_slab_finite_cylinder_11x11:
+    <<: *run
+    variables:
+        PATH_CASE: "2D-D_slab_finite_cylinder_11x11"
+    needs:
+        - build_standalone_2D_slab_finite_cylinder_11x11
+    
+test_standalone_2D-D_slab_finite_cylinder_11x11:
+    <<: *test
+    variables:
+        PATH_CASE: "2D-D_slab_finite_cylinder_11x11"
+    needs:
+        - run_standalone_2D-D_slab_finite_cylinder_11x11
+    
+build_standalone_2D_polygon:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "2D-D_polygon"
+
+run_standalone_2D-D_polygon:
+    <<: *run
+    variables:
+        PATH_CASE: "2D-D_polygon"
+    needs:
+        - build_standalone_2D_polygon
+    
+test_standalone_2D-D_polygon:
+    <<: *test
+    variables:
+        PATH_CASE: "2D-D_polygon"
+    needs:
+        - run_standalone_2D-D_polygon
+    
+build_standalone_2D_polygon_NLPLG:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "2D-D_polygon_NLPLG"
+
+run_standalone_2D-D_polygon_NLPLG:
+    <<: *run
+    variables:
+        PATH_CASE: "2D-D_polygon_NLPLG"
+    needs:
+        - build_standalone_2D_polygon_NLPLG
+    
+test_standalone_2D-D_polygon_NLPLG:
+    <<: *test
+    variables:
+        PATH_CASE: "2D-D_polygon_NLPLG"
+    needs:
+        - run_standalone_2D-D_polygon_NLPLG
+    
+build_standalone_2D_triang:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "2D-D_triang"
+
+run_standalone_2D-D_triang:
+    <<: *run
+    variables:
+        PATH_CASE: "2D-D_triang"
+    needs:
+        - build_standalone_2D_triang
+    
+test_standalone_2D-D_triang:
+    <<: *test
+    variables:
+        PATH_CASE: "2D-D_triang"
+    needs:
+        - run_standalone_2D-D_triang
+    
+build_standalone_3D_slab_11x11x11:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "3D-D_slab_11x11x11"
+
+run_standalone_3D-D_slab_11x11x11:
+    <<: *run
+    variables:
+        PATH_CASE: "3D-D_slab_11x11x11"
+    needs:
+        - build_standalone_3D_slab_11x11x11
+    
+test_standalone_3D-D_slab_11x11x11:
+    <<: *test
+    variables:
+        PATH_CASE: "3D-D_slab_11x11x11"
+    needs:
+        - run_standalone_3D-D_slab_11x11x11
+    
+build_standalone_3D_tetra:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "3D-D_tetra"
+
+run_standalone_3D-D_tetra:
+    <<: *run
+    variables:
+        PATH_CASE: "3D-D_tetra"
+    needs:
+        - build_standalone_3D_tetra
+    
+test_standalone_3D-D_tetra:
+    <<: *test
+    variables:
+        PATH_CASE: "3D-D_tetra"
+    needs:
+        - run_standalone_3D-D_tetra
+    
+build_standalone_ALT2S:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "ALT2S"
+
+run_standalone_ALT2S:
+    <<: *run
+    variables:
+        PATH_CASE: "ALT2S"
+    needs:
+        - build_standalone_ALT2S
+    
+test_standalone_ALT2S:
+    <<: *test
+    variables:
+        PATH_CASE: "ALT2S"
+    needs:
+        - run_standalone_ALT2S
+    
+build_standalone_ALT2S_bits:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "ALT2S_bits"
+
+run_standalone_ALT2S_bits:
+    <<: *run
+    variables:
+        PATH_CASE: "ALT2S_bits"
+    needs:
+        - build_standalone_ALT2S_bits
+    
+test_standalone_ALT2S_bits:
+    <<: *test
+    variables:
+        PATH_CASE: "ALT2S_bits"
+    needs:
+        - run_standalone_ALT2S_bits
+    
+build_standalone_cylinder:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "cylinder"
+
+run_standalone_cylinder:
+    <<: *run
+    variables:
+        PATH_CASE: "cylinder"
+    needs:
+        - build_standalone_cylinder
+    
+test_standalone_cylinder:
+    <<: *test
+    variables:
+        PATH_CASE: "cylinder"
+    needs:
+        - run_standalone_cylinder
+    
+build_standalone_cylinder_triang_no_octree:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "cylinder_triang_no_octree"
+
+run_standalone_cylinder_triang_no_octree:
+    <<: *run
+    variables:
+        PATH_CASE: "cylinder_triang_no_octree"
+    needs:
+        - build_standalone_cylinder_triang_no_octree
+    
+test_standalone_cylinder_triang_no_octree:
+    <<: *test
+    variables:
+        PATH_CASE: "cylinder_triang_no_octree"
+    needs:
+        - run_standalone_cylinder_triang_no_octree
+    
+build_standalone_cylinder_triang_octree:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "cylinder_triang_octree"
+
+run_standalone_cylinder_triang_octree:
+    <<: *run
+    variables:
+        PATH_CASE: "cylinder_triang_octree"
+    needs:
+        - build_standalone_cylinder_triang_octree
+    
+test_standalone_cylinder_triang_octree:
+    <<: *test
+    variables:
+        PATH_CASE: "cylinder_triang_octree"
+    needs:
+        - run_standalone_cylinder_triang_octree
+
+######################################################################################
+# ITER cases
+######################################################################################
+    
+build_standalone_ITER_1573:
+    <<: *build_iter_executable
+    variables:
+        PATH_CASE: "ITER_1573"
+
+run_standalone_ITER_1573:
+    <<: *run
+    variables:
+        PATH_CASE: "ITER_1573"
+    needs:
+        - build_standalone_ITER_1573
+    
+test_standalone_ITER_1573:
+    <<: *test
+    variables:
+        PATH_CASE: "ITER_1573"
+    needs:
+        - run_standalone_ITER_1573
+    
+build_standalone_ITER_1573_scaling:
+    <<: *build_iter_executable
+    variables:
+        PATH_CASE: "ITER_1573_scaling"
+
+run_standalone_ITER_1573_scaling:
+    <<: *run
+    variables:
+        PATH_CASE: "ITER_1573_scaling"
+    needs:
+        - build_standalone_ITER_1573_scaling
+    
+test_standalone_ITER_1573_scaling:
+    <<: *test
+    variables:
+        PATH_CASE: "ITER_1573_scaling"
+    needs:
+        - run_standalone_ITER_1573_scaling
+
+build_standalone_ITER_1573_def_lines:
+    <<: *build_iter_executable
+    variables:
+        PATH_CASE: "ITER_1573_def_lines"
+
+run_standalone_ITER_1573_def_lines:
+    <<: *run
+    variables:
+        PATH_CASE: "ITER_1573_def_lines"
+    needs:
+        - build_standalone_ITER_1573_def_lines
+    
+test_standalone_ITER_1573_def_lines:
+    <<: *test
+    variables:
+        PATH_CASE: "ITER_1573_def_lines"
+    needs:
+        - run_standalone_ITER_1573_def_lines
+    
+build_standalone_ITER_1573_dens_model:
+    <<: *build_iter_executable
+    variables:
+        PATH_CASE: "ITER_1573_dens_model"
+
+run_standalone_ITER_1573_dens_model:
+    <<: *run
+    variables:
+        PATH_CASE: "ITER_1573_dens_model"
+    needs:
+        - build_standalone_ITER_1573_dens_model
+
+test_standalone_ITER_1573_dens_model:
+    <<: *test
+    variables:
+        PATH_CASE: "ITER_1573_dens_model"
+    needs:
+        - run_standalone_ITER_1573_dens_model
+
+######################################################################################
+# EMC3 cases
+######################################################################################
+
+build_EMC3-EIRENE:
+    <<: *build_executable
+    variables:
+        PATH_CASE: "EMC3"
+    rules:
+        - if: $EXCLUDE_EMC3 == 'true'
+          when: never
+        - when: always
+
+run_EMC3-EIRENE_H:
+    <<: *run
+    variables:
+        PATH_CASE: "EMC3/W7X_Limiter/H"
+    rules:
+        - if: $EXCLUDE_EMC3 == 'true'
+          when: never
+        - when: always
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease/
+            - libRelease/
+            - EIRENE-sample-cases/EMC3
+    needs:
+        - build_EMC3-EIRENE
+    
+test_EMC3-EIRENE_H:
+    <<: *test
+    variables:
+        PATH_CASE: "EMC3/W7X_Limiter/H"
+    rules:
+        - if: $EXCLUDE_EMC3 == 'true'
+          when: never
+        - when: always
+    needs:
+        - run_EMC3-EIRENE_H
+    
+run_EMC3-EIRENE_He:
+    <<: *run
+    variables:
+        PATH_CASE: "EMC3/W7X_Limiter/He"
+    rules:
+        - if: $EXCLUDE_EMC3 == 'true'
+          when: never
+        - when: always
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease/
+            - libRelease/
+            - EIRENE-sample-cases/EMC3
+        when: always
+    needs:
+        - build_EMC3-EIRENE
+    
+test_EMC3-EIRENE_He:
+    <<: *test
+    variables:
+        PATH_CASE: "EMC3/W7X_Limiter/He"
+    rules:
+        - if: $EXCLUDE_EMC3 == 'true'
+          when: never
+        - when: always
+    needs:
+        - run_EMC3-EIRENE_He
+
+run_EMC3-EIRENE_H_multiStrata:
+    <<: *run
+    variables:
+        PATH_CASE: "EMC3/W7X_Limiter/H_multiStrata"
+    rules:
+        - if: $EXCLUDE_EMC3 == 'true'
+          when: never
+        - when: always
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease/
+            - libRelease/
+            - EIRENE-sample-cases/EMC3
+    needs:
+        - build_EMC3-EIRENE
+
+test_EMC3-EIRENE_H_multiStrata:
+    <<: *test
+    variables:
+        PATH_CASE: "EMC3/W7X_Limiter/H_multiStrata"
+    rules:
+        - if: $EXCLUDE_EMC3 == 'true'
+          when: never
+        - when: always
+    needs:
+        - run_EMC3-EIRENE_H_multiStrata
+    
+run_EMC3-EIRENE_H_profile:
+    <<: *run
+    variables:
+        PATH_CASE: "EMC3/W7X_Limiter/H_profile"
+    rules:
+        - if: $EXCLUDE_EMC3 == 'true'
+          when: never
+        - when: always
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease/
+            - libRelease/
+            - EIRENE-sample-cases/EMC3
+    needs:
+        - build_EMC3-EIRENE
+    
+test_EMC3-EIRENE_H_profile:
+    <<: *test
+    variables:
+        PATH_CASE: "EMC3/W7X_Limiter/H_profile"
+    rules:
+        - if: $EXCLUDE_EMC3 == 'true'
+          when: never
+        - when: always
+    needs:
+        - run_EMC3-EIRENE_H_profile
+
+######################################################################################
+# MPI tests - at present using EMC3
+######################################################################################
 
 # Create individual stage for mpi-jobs due to recource limits (memory?)
 # of gitlab runner at juelich gitlab
 # this forces to mpi jobs to be run sequencially
 run_mpi_cases:
     stage: run_mpi
-    except: 
-        - schedules
+    rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
+        - if: $EXCLUDE_MPI == 'true'
+          when: never
+        - when: always
     before_script:
         # Bypass mpirun abort due to execution as root
         - export MPIRUN_FLAGS='--allow-run-as-root'
+        - export OMP_NUM_THREADS=1
     script:
         # job: run_EMC3-EIRENE_H_multiStrataMpi
         - cd EIRENE-sample-cases/EMC3/W7X_Limiter/H_multiStrataMpi
@@ -74,593 +743,66 @@ run_mpi_cases:
             - libRelease/
             - EIRENE-sample-cases/EMC3
         when: always
-    dependencies:
+    needs:
         - build_EMC3-EIRENE
-  
-.run: &run
-    stage: run
-    except: 
-        - schedules
-    script:
-        - cd EIRENE-sample-cases/${PATH_CASE}
-        - make output
-    artifacts:
-        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
-        paths:
-            - buildRelease/
-            - libRelease/
-            - EIRENE-sample-cases/${PATH_CASE}
-        when: always
-
-.test: &test
-    stage: test
-    except: 
-        - schedules
-    script:
-        - cd EIRENE-sample-cases/${PATH_CASE}
-        - make test
-        # - make ci_test
-    artifacts:
-        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
-        paths:
-            - EIRENE-sample-cases/${PATH_CASE}
-        when: always
-
-prepare_testcases:
-    stage: preparation
-    except: 
-        - schedules
-    script:
-        - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
-        - cd EIRENE-sample-cases
-        - git checkout ${SAMPLE_CASE_VERSION}
-    artifacts:
-        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
-        paths:
-            - EIRENE-sample-cases
-      
- 
-build_library:
-    stage: preparation
-    except: 
-        - schedules
-    script:
-        - mkdir buildRelease
-        - cd buildRelease
-        - FC=gfortran cmake ../src
-        - make EIRENE
-    artifacts:
-        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
-        paths:
-            - buildRelease/
-            - libRelease/
-
-build_standalone_1D_slab:
-    <<: *build_executable
-    variables:
-        PATH_CASE: "1D-H_slab"
-
-run_standalone_1D-H_slab:
-    <<: *run
-    variables:
-        PATH_CASE: "1D-H_slab"
-    dependencies:
-        - build_standalone_1D_slab
-
-test_standalone_1D-H_slab:
-    <<: *test
-    variables:
-        PATH_CASE: "1D-H_slab"
-    dependencies:
-        - run_standalone_1D-H_slab
-
-build_standalone_1D_slab_with_farming:
-    <<: *build_executable
-    variables:
-        PATH_CASE: "1D-H_slab_with_farming"
-    only:
-        - PB/feature/farming
-
-run_standalone_1D-H_slab_with_farming:
-    <<: *run
-    variables:
-        PATH_CASE: "1D-H_slab_with_farming"
-    only:
-        - PB/feature/farming
-    dependencies:
-        - build_standalone_1D_slab_with_farming
-
-test_standalone_1D-H_slab_with_farming:
-    <<: *test
-    variables:
-        PATH_CASE: "1D-H_slab_with_farming"
-    only:
-        - PB/feature/farming
-    dependencies:
-        - run_standalone_1D-H_slab_with_farming
-
-build_standalone_1D_cylindric:
-    # in fact it is a build_standalone but stored in ...1D_cylindric
-    <<: *build_executable
-    variables:
-        PATH_CASE: "1D_cylindric"
-
-run_standalone_1D_cylindric:
-    <<: *run
-    variables:
-        PATH_CASE: "1D_cylindric"
-    dependencies:
-        - build_standalone_1D_cylindric
-
-test_standalone_1D_cylindric:
-    <<: *test
-    variables:
-        PATH_CASE: "1D_cylindric"
-    dependencies:
-        - run_standalone_1D_cylindric
-
-build_standalone_1D_elliptic:
-    # in fact it is a build_standalone but stored in ...1D_cylindric
-    <<: *build_executable
-    variables:
-        PATH_CASE: "1D_elliptic"
-
-run_standalone_1D_elliptic:
-    <<: *run
-    variables:
-        PATH_CASE: "1D_elliptic"
-    dependencies:
-        - build_standalone_1D_elliptic
-
-test_standalone_1D_elliptic:
-    <<: *test
-    variables:
-        PATH_CASE: "1D_elliptic"
-    dependencies:
-        - run_standalone_1D_elliptic
-
-build_standalone_ITER_1573:
-    <<: *build_executable
-    variables:
-        PATH_CASE: "ITER_1573"
-
-run_standalone_ITER_1573:
-    <<: *run
-    variables:
-        PATH_CASE: "ITER_1573"
-    dependencies:
-        - build_standalone_ITER_1573
-
-test_standalone_ITER_1573:
-    <<: *test
-    variables:
-        PATH_CASE: "ITER_1573"
-    dependencies:
-        - run_standalone_ITER_1573
-
-build_standalone_ITER_1573_def_lines:
-    <<: *build_executable
-    variables:
-        PATH_CASE: "ITER_1573_def_lines"
-
-run_standalone_ITER_1573_def_lines:
-    <<: *run
-    variables:
-        PATH_CASE: "ITER_1573_def_lines"
-    dependencies:
-        - build_standalone_ITER_1573_def_lines
-
-test_standalone_ITER_1573_def_lines:
-    <<: *test
-    variables:
-        PATH_CASE: "ITER_1573_def_lines"
-    dependencies:
-        - run_standalone_ITER_1573_def_lines
-
-build_standalone_ITER_1573_dens_model:
-    <<: *build_executable
-    variables:
-        PATH_CASE: "ITER_1573_dens_model"
-
-run_standalone_ITER_1573_dens_model:
-    <<: *run
-    variables:
-        PATH_CASE: "ITER_1573_dens_model"
-    dependencies:
-        - build_standalone_ITER_1573_dens_model
-
-test_standalone_ITER_1573_dens_model:
-    <<: *test
-    variables:
-        PATH_CASE: "ITER_1573_dens_model"
-    dependencies:
-        - run_standalone_ITER_1573_dens_model
-
-build_standalone_2D_slab:
-    <<: *build_executable
-    variables:
-        PATH_CASE: "2D-D_slab"
-
-run_standalone_2D-D_slab:
-    <<: *run
-    variables:
-        PATH_CASE: "2D-D_slab"
-    dependencies:
-        - build_standalone_2D_slab
-
-test_standalone_2D-D_slab:
-    <<: *test
-    variables:
-        PATH_CASE: "2D-D_slab"
-    dependencies:
-        - run_standalone_2D-D_slab
-
-build_standalone_2D_slab_finite_cylinder_11x11:
-    <<: *build_executable
-    variables:
-        PATH_CASE: "2D-D_slab_finite_cylinder_11x11"
-
-run_standalone_2D-D_slab_finite_cylinder_11x11:
-    <<: *run
-    variables:
-        PATH_CASE: "2D-D_slab_finite_cylinder_11x11"
-    dependencies:
-        - build_standalone_2D_slab_finite_cylinder_11x11
-
-test_standalone_2D-D_slab_finite_cylinder_11x11:
-    <<: *test
-    variables:
-        PATH_CASE: "2D-D_slab_finite_cylinder_11x11"
-    dependencies:
-        - run_standalone_2D-D_slab_finite_cylinder_11x11
-
-build_standalone_2D_polygon:
-    <<: *build_executable
-    variables:
-        PATH_CASE: "2D-D_polygon"
-
-run_standalone_2D-D_polygon:
-    <<: *run
-    variables:
-        PATH_CASE: "2D-D_polygon"
-    dependencies:
-        - build_standalone_2D_polygon
-
-test_standalone_2D-D_polygon:
-    <<: *test
-    variables:
-        PATH_CASE: "2D-D_polygon"
-    dependencies:
-        - run_standalone_2D-D_polygon
-
-build_standalone_2D_polygon_NLPLG:
-    <<: *build_executable
-    variables:
-        PATH_CASE: "2D-D_polygon_NLPLG"
-
-run_standalone_2D-D_polygon_NLPLG:
-    <<: *run
-    variables:
-        PATH_CASE: "2D-D_polygon_NLPLG"
-    dependencies:
-        - build_standalone_2D_polygon_NLPLG
-
-test_standalone_2D-D_polygon_NLPLG:
-    <<: *test
-    variables:
-        PATH_CASE: "2D-D_polygon_NLPLG"
-    dependencies:
-        - run_standalone_2D-D_polygon_NLPLG
-
-build_standalone_2D_triang:
-    <<: *build_executable
-    variables:
-        PATH_CASE: "2D-D_triang"
-
-run_standalone_2D-D_triang:
-    <<: *run
-    variables:
-        PATH_CASE: "2D-D_triang"
-    dependencies:
-        - build_standalone_2D_triang
-
-test_standalone_2D-D_triang:
-    <<: *test
-    variables:
-        PATH_CASE: "2D-D_triang"
-    dependencies:
-        - run_standalone_2D-D_triang
-
-build_standalone_3D_slab_11x11x11:
-    <<: *build_executable
-    variables:
-        PATH_CASE: "3D-D_slab_11x11x11"
-
-run_standalone_3D-D_slab_11x11x11:
-    <<: *run
-    variables:
-        PATH_CASE: "3D-D_slab_11x11x11"
-    dependencies:
-        - build_standalone_3D_slab_11x11x11
-
-test_standalone_3D-D_slab_11x11x11:
-    <<: *test
-    variables:
-        PATH_CASE: "3D-D_slab_11x11x11"
-    dependencies:
-        - run_standalone_3D-D_slab_11x11x11
-
-build_standalone_3D_tetra:
-    <<: *build_executable
-    variables:
-        PATH_CASE: "3D-D_tetra"
-
-run_standalone_3D-D_tetra:
-    <<: *run
-    variables:
-        PATH_CASE: "3D-D_tetra"
-    dependencies:
-        - build_standalone_3D_tetra
-
-test_standalone_3D-D_tetra:
-    <<: *test
-    variables:
-        PATH_CASE: "3D-D_tetra"
-    dependencies:
-        - run_standalone_3D-D_tetra
-
-build_standalone_ALT2S:
-    <<: *build_executable
-    variables:
-        PATH_CASE: "ALT2S"
-
-run_standalone_ALT2S:
-    <<: *run
-    variables:
-        PATH_CASE: "ALT2S"
-    dependencies:
-        - build_standalone_ALT2S
-
-test_standalone_ALT2S:
-    <<: *test
-    variables:
-        PATH_CASE: "ALT2S"
-    dependencies:
-        - run_standalone_ALT2S
-
-build_standalone_ALT2S_bits:
-    <<: *build_executable
-    variables:
-        PATH_CASE: "ALT2S_bits"
-
-run_standalone_ALT2S_bits:
-    <<: *run
-    variables:
-        PATH_CASE: "ALT2S_bits"
-    dependencies:
-        - build_standalone_ALT2S_bits
-
-test_standalone_ALT2S_bits:
-    <<: *test
-    variables:
-        PATH_CASE: "ALT2S_bits"
-    dependencies:
-        - run_standalone_ALT2S_bits
-
-build_standalone_cylinder:
-    <<: *build_executable
-    variables:
-        PATH_CASE: "cylinder"
-
-run_standalone_cylinder:
-    <<: *run
-    variables:
-        PATH_CASE: "cylinder"
-    dependencies:
-        - build_standalone_cylinder
-
-test_standalone_cylinder:
-    <<: *test
-    variables:
-        PATH_CASE: "cylinder"
-    dependencies:
-        - run_standalone_cylinder
-
-build_standalone_cylinder_triang_no_octree:
-    <<: *build_executable
-    variables:
-        PATH_CASE: "cylinder_triang_no_octree"
-
-run_standalone_cylinder_triang_no_octree:
-    <<: *run
-    variables:
-        PATH_CASE: "cylinder_triang_no_octree"
-    dependencies:
-        - build_standalone_cylinder_triang_no_octree
-
-test_standalone_cylinder_triang_no_octree:
-    <<: *test
-    variables:
-        PATH_CASE: "cylinder_triang_no_octree"
-    dependencies:
-        - run_standalone_cylinder_triang_no_octree
-
-build_standalone_cylinder_triang_octree:
-    <<: *build_executable
-    variables:
-        PATH_CASE: "cylinder_triang_octree"
-
-run_standalone_cylinder_triang_octree:
-    <<: *run
-    variables:
-        PATH_CASE: "cylinder_triang_octree"
-    dependencies:
-        - build_standalone_cylinder_triang_octree
-
-test_standalone_cylinder_triang_octree:
-    <<: *test
-    variables:
-        PATH_CASE: "cylinder_triang_octree"
-    dependencies:
-        - run_standalone_cylinder_triang_octree
-
-build_EMC3-EIRENE:
-    <<: *build_executable
-    variables:
-        PATH_CASE: "EMC3"
-
-run_EMC3-EIRENE_H:
-    <<: *run
-    variables:
-        PATH_CASE: "EMC3/W7X_Limiter/H"
-    dependencies:
-        - build_EMC3-EIRENE
-    artifacts:
-        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
-        paths:
-            - buildRelease/
-            - libRelease/
-            - EIRENE-sample-cases/EMC3
-
-test_EMC3-EIRENE_H:
-    <<: *test
-    variables:
-        PATH_CASE: "EMC3/W7X_Limiter/H"
-    dependencies:
-        - run_EMC3-EIRENE_H
-
-run_EMC3-EIRENE_He:
-    <<: *run
-    variables:
-        PATH_CASE: "EMC3/W7X_Limiter/He"
-    dependencies:
-        - build_EMC3-EIRENE
-    artifacts:
-        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
-        paths:
-            - buildRelease/
-            - libRelease/
-            - EIRENE-sample-cases/EMC3
-        when: always
-
-test_EMC3-EIRENE_He:
-    <<: *test
-    variables:
-        PATH_CASE: "EMC3/W7X_Limiter/He"
-    dependencies:
-        - run_EMC3-EIRENE_He
-    
-run_EMC3-EIRENE_H_multiStrata:
-    <<: *run
-    variables:
-        PATH_CASE: "EMC3/W7X_Limiter/H_multiStrata"
-    dependencies:
-        - build_EMC3-EIRENE
-    artifacts:
-        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
-        paths:
-            - buildRelease/
-            - libRelease/
-            - EIRENE-sample-cases/EMC3
-
-test_EMC3-EIRENE_H_multiStrata:
-    <<: *test
-    variables:
-        PATH_CASE: "EMC3/W7X_Limiter/H_multiStrata"
-    dependencies:
-        - run_EMC3-EIRENE_H_multiStrata
-
-# moved this job to run_mpi_cases due to failures of gitlab runner        
-#run_EMC3-EIRENE_H_multiStrataMpi:
-#    <<: *run
-#    before_script:
-#        # Bypass mpirun abort due to execution as root
-#        - export MPIRUN_FLAGS='--allow-run-as-root'
-#    variables:
-#        PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi"
-#    dependencies:
-#        - build_EMC3-EIRENE
 
 test_EMC3-EIRENE_H_multiStrataMpi:
     <<: *test
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi"
-    dependencies:
+    rules:
+        - if: $EXCLUDE_MPI == 'true'
+          when: never
+        - if: $EXCLUDE_EMC3 == 'true'
+          when: never
+        - when: always
+    needs:
         - run_mpi_cases
-#        - run_EMC3-EIRENE_H_multiStrataMpi
     
-# moved this job to run_mpi_cases due to failures of gitlab runner        
-#run_EMC3-EIRENE_H_multiStrataMpi2:
-#    <<: *run
-#    before_script:
-#        # Bypass mpirun abort due to execution as root
-#        - export MPIRUN_FLAGS='--allow-run-as-root'
-#    variables:
-#        PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi2"
-#    dependencies:
-#        - build_EMC3-EIRENE
-
 test_EMC3-EIRENE_H_multiStrataMpi2:
     <<: *test
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi2"
-    dependencies:
+    rules:
+        - if: $EXCLUDE_MPI == 'true'
+          when: never
+        - if: $EXCLUDE_EMC3 == 'true'
+          when: never
+        - when: always
+    needs:
         - run_mpi_cases
-#        - run_EMC3-EIRENE_H_multiStrataMpi2
     
-# moved this job to run_mpi_cases due to failures of gitlab runner        
-#run_EMC3-EIRENE_H_multiStrataMpi3:
-#    <<: *run
-#    before_script:
-#        # Bypass mpirun abort due to execution as root
-#        - export MPIRUN_FLAGS='--allow-run-as-root'
-#    variables:
-#        PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi3"
-#    dependencies:
-#        - build_EMC3-EIRENE
-
 test_EMC3-EIRENE_H_multiStrataMpi3:
     <<: *test
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi3"
-    dependencies:
+    rules:
+        - if: $EXCLUDE_MPI == 'true'
+          when: never
+        - if: $EXCLUDE_EMC3 == 'true'
+          when: never
+        - when: always
+    needs:
         - run_mpi_cases
-#        - run_EMC3-EIRENE_H_multiStrataMpi3
-
-run_EMC3-EIRENE_H_profile:
-    <<: *run
-    variables:
-        PATH_CASE: "EMC3/W7X_Limiter/H_profile"
-    dependencies:
-        - build_EMC3-EIRENE
-    artifacts:
-        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
-        paths:
-            - buildRelease/
-            - libRelease/
-            - EIRENE-sample-cases/EMC3
-
-test_EMC3-EIRENE_H_profile:
-    <<: *test
-    variables:
-        PATH_CASE: "EMC3/W7X_Limiter/H_profile"
-    dependencies:
-        - run_EMC3-EIRENE_H_profile
+    
+######################################################################################
+# Coverage
+######################################################################################
 
 coverage_report:
     stage: coverage
-    only:
-        - develop
-        - master
-    except:
-        - schedules
+    rules:
+        - if: $CI_COMMIT_REF_NAME == 'develop'
+        - if: $CI_COMMIT_REF_NAME == 'master'
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
     before_script:
         # Bypass mpirun abort due to execution as root
         - export MPIRUN_FLAGS='--allow-run-as-root'
     script:
         - mkdir buildCoverage
         - cd buildCoverage
-        - FC=gfortran cmake ../src -DCMAKE_BUILD_TYPE=Coverage
+        - FC=mpif90 cmake ../src -DCMAKE_BUILD_TYPE=Coverage
         - make EIRENE
         - cd ..
         - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
@@ -673,3 +815,271 @@ coverage_report:
         paths:
             - EIRENE-sample-cases/coverage.info
             - EIRENE-sample-cases/coverageReport
+
+######################################################################################
+# OpenMP tests
+######################################################################################
+
+build_openmp_library:
+    stage: preparation:openmp
+    rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
+        - if: $EXCLUDE_OPENMP == 'true'
+          when: never
+        - when: always
+    script:
+        - mkdir -p buildRelease
+        - cd buildRelease
+        - rm -rf ./*
+        - FC=mpif90 cmake -DOPENMP=ON ../src
+        - make clean
+        - make -j EIRENE
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease/
+            - libRelease/
+
+prepare_openmp_testcases:
+    stage: preparation:openmp
+    rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
+        - if: $EXCLUDE_OPENMP == 'true'
+          when: never
+        - when: always
+    script:
+        # Make only shallow clone (fetch) of single commit defined by SHA key 
+        - mkdir -p EIRENE-sample-cases
+        - cd EIRENE-sample-cases
+        - git init
+        - git remote add origin https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
+        - git fetch --depth 1 origin ${SAMPLE_CASE_VERSION_OPENMP}
+        - git checkout FETCH_HEAD
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - EIRENE-sample-cases
+        exclude:
+            - EIRENE-sample-cases/.git/**      
+
+.build_openmp_executable: &build_openmp_executable
+    stage: build:openmp_executable
+    rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
+        - if: $EXCLUDE_OPENMP == 'true'
+          when: never
+        - when: always
+    script:
+        - cd EIRENE-sample-cases/${PATH_CASE}
+        - make
+    retry: 2
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease/
+            - libRelease/
+            - binRelease/
+            - EIRENE-sample-cases/${PATH_CASE}
+    needs:
+        - build_openmp_library
+        - prepare_openmp_testcases
+
+.build_iter_openmp_executable: &build_iter_openmp_executable
+    stage: build:openmp_executable
+    rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
+        - if: $EXCLUDE_OPENMP == 'true'
+          when: never
+        - when: always
+    script:
+        - cd EIRENE-sample-cases/${PATH_CASE}
+        - make -j
+    retry: 2
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease/
+            - binRelease/
+            - EIRENE-sample-cases/${PATH_CASE}
+    needs:
+        - build_openmp_library
+        - prepare_openmp_testcases
+
+.run_openmp: &run_openmp
+    stage: run_openmp
+    rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
+        - if: $EXCLUDE_OPENMP == 'true'
+          when: never
+        - when: always
+    script:
+        - cd EIRENE-sample-cases/${PATH_CASE}
+        - export OMP_NUM_THREADS=4
+        - make output
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease/
+            - libRelease/
+            - EIRENE-sample-cases/${PATH_CASE}
+        when: always
+    needs:
+        - build_openmp_library
+
+.test_openmp: &test_openmp
+    stage: test_openmp
+    rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
+        - if: $EXCLUDE_OPENMP == 'true'
+          when: never
+        - when: always
+    script:
+        - python3 --version
+        - cd EIRENE-sample-cases/${PATH_CASE}
+        - export OMP_NUM_THREADS=4
+        - make test_openmp
+    retry: 2
+
+build_1D-H_slab_openmp:
+    <<: *build_openmp_executable
+    variables:
+        PATH_CASE: "1D-H_slab_openmp"
+
+run_1D-H_slab_openmp:
+    <<: *run_openmp
+    variables:
+        PATH_CASE: "1D-H_slab_openmp"
+    needs:
+        - build_1D-H_slab_openmp
+
+test_1D-H_slab_openmp:
+    <<: *test_openmp
+    variables:
+        PATH_CASE: "1D-H_slab_openmp"
+    needs:
+        - run_1D-H_slab_openmp
+
+build_1D_cylindric_openmp:
+    <<: *build_openmp_executable
+    variables:
+        PATH_CASE: "1D_cylindric_openmp"
+
+run_1D_cylindric_openmp:
+    <<: *run_openmp
+    variables:
+        PATH_CASE: "1D_cylindric_openmp"
+    needs:
+        - build_1D_cylindric_openmp
+
+test_1D_cylindric_openmp:
+    <<: *test_openmp
+    variables:
+        PATH_CASE: "1D_cylindric_openmp"
+    needs:
+        - run_1D_cylindric_openmp
+
+build_1D_elliptic_openmp:
+    <<: *build_openmp_executable
+    variables:
+        PATH_CASE: "1D_elliptic_openmp"
+
+run_1D_elliptic_openmp:
+    <<: *run_openmp
+    variables:
+        PATH_CASE: "1D_elliptic_openmp"
+    needs:
+        - build_1D_elliptic_openmp
+
+test_1D_elliptic_openmp:
+    <<: *test_openmp
+    variables:
+        PATH_CASE: "1D_elliptic_openmp"
+    needs:
+        - run_1D_elliptic_openmp
+
+build_2D-D_polygon_openmp:
+    <<: *build_openmp_executable
+    variables:
+        PATH_CASE: "2D-D_polygon_openmp"
+
+run_2D-D_polygon_openmp:
+    <<: *run_openmp
+    variables:
+        PATH_CASE: "2D-D_polygon_openmp"
+    needs:
+        - build_2D-D_polygon_openmp
+
+test_2D-D_polygon_openmp:
+    <<: *test_openmp
+    variables:
+        PATH_CASE: "2D-D_polygon_openmp"
+    needs:
+        - run_2D-D_polygon_openmp
+
+build_2D-D_slab_openmp:
+    <<: *build_openmp_executable
+    variables:
+        PATH_CASE: "2D-D_slab_openmp"
+
+run_2D-D_slab_openmp:
+    <<: *run_openmp
+    variables:
+        PATH_CASE: "2D-D_slab_openmp"
+    needs:
+        - build_2D-D_slab_openmp
+
+test_2D-D_slab_openmp:
+    <<: *test_openmp
+    variables:
+        PATH_CASE: "2D-D_slab_openmp"
+    needs:
+        - run_2D-D_slab_openmp
+
+build_cylinder_openmp:
+    <<: *build_openmp_executable
+    variables:
+        PATH_CASE: "cylinder_openmp"
+
+run_cylinder_openmp:
+    <<: *run_openmp
+    variables:
+        PATH_CASE: "cylinder_openmp"
+    needs:
+        - build_cylinder_openmp
+
+test_cylinder_openmp:
+    <<: *test_openmp
+    variables:
+        PATH_CASE: "cylinder_openmp"
+    needs:
+        - run_cylinder_openmp
+
+######################################################################################
+# ITER openmp cases
+######################################################################################
+
+build_ITER_1573_openmp:
+    <<: *build_iter_openmp_executable
+    variables:
+        PATH_CASE: "ITER_1573_openmp"
+
+run_ITER_1573_openmp:
+    <<: *run_openmp
+    variables:
+        PATH_CASE: "ITER_1573_openmp"
+    needs:
+        - build_ITER_1573_openmp
+
+test_ITER_1573_openmp:
+    <<: *test_openmp
+    variables:
+        PATH_CASE: "ITER_1573_openmp"
+    needs:
+        - run_ITER_1573_openmp
+

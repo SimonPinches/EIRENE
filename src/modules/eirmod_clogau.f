@@ -1,7 +1,7 @@
 !    20.06.07: constant NLOGAU = number of logicals introduced
 cdr  April 2017:  NEXVS added to logicals (something from Vlad for photons?),
 cdr               nlogau=38
-cdr  Jan. 2018:   NLEMIS added, nlogau=39
+cdr  Jan. 2018:   NLEMIS added, nlogau=40
 
       MODULE EIRMOD_CLOGAU
 cdr global control switches, all set in input.f      
@@ -13,7 +13,7 @@ cdr global control switches, all set in input.f
 
       PUBLIC :: EIRENE_ALLOC_CLOGAU, EIRENE_BROADCAST_CLOGAU
 
-      INTEGER, PUBLIC, PARAMETER :: NLOGAU=39
+      INTEGER, PUBLIC, PARAMETER :: NLOGAU=46
 
       LOGICAL, PUBLIC, TARGET, SAVE :: LLOGAU(NLOGAU)
 
@@ -24,9 +24,11 @@ cdr global control switches, all set in input.f
      L NLPOL,  NLPLY,  NLPLA,  NLPLP,
      L NLTOR,  NLTRZ,  NLTRA,  NLTRT,
      L NLMLT,  NLADD,
-     L NLTRIM, NLONE,  NLDFST, NLOLDRAN,
+     L NLTRIM, NLONE,  NLDFST, NLRANMAR,
      L NLCASCAD, NLOCTREE, NLSHRT13, NLWRMSH,
-     L NEXVS,  NLEMIS
+     L NEXVS,  NLEMIS, NLTRIMESH, 
+     L NLSPCSCL, NLSPCSCL_ATM, NLSPCSCL_MOL, NLSPCSCL_ION,
+     L NLSPCSCL_PHOT, NLSPCSCL_ON, NLSOLEDGE
 C    L NLFREE0, NLFREE1
 
       CONTAINS
@@ -63,21 +65,31 @@ C
       NLMLT   => LLOGAU(26)
       NLADD   => LLOGAU(27)
 C
-      NLTRIM  => LLOGAU(28)
-C     NLFREE1 => LLOGAU(29) ! NOT IN USE
-      NLONE   => LLOGAU(30)
-C     NLFREE0 => LLOGAU(31) ! NOT IN USE
-      NLDFST  => LLOGAU(32)
-      NLOLDRAN => LLOGAU(33)
+      NLTRIM   => LLOGAU(28)
+C     NLFREE1  => LLOGAU(29) ! NOT IN USE
+      NLONE    => LLOGAU(30)
+      NLSOLEDGE=> LLOGAU(31) ! was NLFREE0
+      NLSPCSCL => LLOGAU(31)  
+      NLDFST   => LLOGAU(32)
+      NLRANMAR => LLOGAU(33)
       NLCASCAD => LLOGAU(34)
       NLOCTREE => LLOGAU(35)
       NLSHRT13 => LLOGAU(36)
       NLWRMSH  => LLOGAU(37)
       NEXVS    => LLOGAU(38)  ! added April 2017. Not in use, but perhaps needed in photon module.
       NLEMIS   => LLOGAU(39)
+      NLTRIMESH=> LLOGAU(40)
+
+      NLSPCSCL => LLOGAU(41)  
+      NLSPCSCL_ATM => LLOGAU(42)  
+      NLSPCSCL_MOL => LLOGAU(43) 
+      NLSPCSCL_ION => LLOGAU(44)  
+      NLSPCSCL_PHOT => LLOGAU(45)  
+      NLSPCSCL_ON  => LLOGAU(46) 
 
       LLOGAU = .FALSE.
 
+      RETURN
       END SUBROUTINE EIRENE_ALLOC_CLOGAU
 
 
@@ -90,6 +102,9 @@ C     NLFREE0 => LLOGAU(31) ! NOT IN USE
 
       CALL MPI_BCAST (LLOGAU,NLOGAU,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
+
+      RETURN
       END SUBROUTINE EIRENE_BROADCAST_CLOGAU
 
       END MODULE EIRMOD_CLOGAU

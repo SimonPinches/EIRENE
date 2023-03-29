@@ -16,4 +16,4 @@ C
       integer :: iadv
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_OUTUSR

@@ -16,24 +16,27 @@
 
       PUBLIC :: EIRENE_PLT2D, EIRENE_CHCTRC, EIRENE_PLT2D_REINIT
 
+      INTEGER,PARAMETER :: NTXHST=21
       CONTAINS
 
       subroutine EIRENE_plt2d
       IMPLICIT NONE
 
-      return
-      END subroutine EIRENE_plt2d
+      RETURN
+      END SUBROUTINE EIRENE_PLT2D
 
-cdr  this routine is identical to the entry chctrc(...) inside eirene routine plt2d.
-cdr  it is kept as separate routine here, in case no further eirene default plotting routines are used,
+c--------------------------------------------------------------
+
+C
+C  PRINT AND PLOT PARTICLE HISTORIES IN GEOMETRY-PLOT
+C
+      SUBROUTINE EIRENE_CHCTRC(XPLO,YPLO,ZPLO,IFLAG,ISYM)
+
+cdr  this routine is identical to the subroutine chctrc(...) inside eirene routine plt2d.
+cdr  It is kept as separate routine here, in case no further eirene default plotting routines are used,
 cdr  to still be able to provide printed trajectory output.
 
-c------------------------------------------------------------------------
-      SUBROUTINE EIRENE_CHCTRC(XPLO,YPLO,ZPLO,IFLAG,ISYM)
       IMPLICIT NONE
-C
-      INTEGER,PARAMETER :: NTXHST=19
-
       REAL(DP), INTENT(IN) :: XPLO, YPLO, ZPLO
       INTEGER, INTENT(IN) :: IFLAG, ISYM
       INTEGER :: ISTR, I
@@ -58,9 +61,12 @@ C
      .            'TIME LIMIT(15)      ',
      .            'GENERATION LIMIT(16)',
      .            'FLUID LIMIT(17)     ',
-     .            'ERROR DETECTED      ',
+     .            'ERROR DETECTED      ',     ! SYMBOL FOR PARTICLE TRACING ERROR.
 c  next symbols/text: only for printout, not on plot.
-     .            'INT. GRID SURFACE(8)'/
+     .            'INT. GRID SURFACE(8)',
+cym
+     .            'DIFFUSION STEP(20)  ',
+     .            'STATIC LOOP(21)     '/
 C
 C  WRITE TRACK DATA
 C
@@ -81,6 +87,7 @@ C
         CALL EIRENE_MASJ4 ('ITIME,IFPATH,IUPDTE,ICOL        ',
      .               ITIME,IFPATH,IUPDTE,ICOL)
         CALL EIRENE_MASR3 ('X0,Y0,Z0                ',XPLO,YPLO,ZPLO)
+C  FOR TRACE IONS: VELOCITY IS EITHER CARTESIAN (LCART) OR THE REDUCED (GC) VELOCITY
         IF (ITYP.EQ.3) THEN
           IF (LCART) THEN
             CALL EIRENE_MASR5
@@ -92,6 +99,7 @@ C
      .             VLXPAR,VLYPAR,VLZPAR,VELPAR,E0PAR,E0)
           ENDIF
         ELSE
+C  FOR NEUTRALS OR PHOTONS: VELOCITY IS ALWAYS GIVEN BY THE CARTESIAN COMPONENTS
           CALL EIRENE_MASR5
      .         ('VELX,VELY,VELZ,VEL,E0                   ',
      .           VELX,VELY,VELZ,VEL,E0)
@@ -120,7 +128,8 @@ C  CALLED FROM DIAGNO, WITH ISTRA=0?
         ELSE
           ISTR=ISTRA
         ENDIF
-        IF ((ISYM.GE.6.AND.ISYM.LE.10).OR.
+C  SURFACE EVENT
+        IF ((ISYM.GE.8.AND.ISYM.LE.11.OR.ISYM.EQ.19).OR.
      .      (ISYM.EQ.1.AND.NLSRF(ISTR))) THEN
           IF (NLSRFX) THEN
             CALL EIRENE_MASJ1 ('MRSURF  ',MRSURF)
@@ -140,9 +149,10 @@ C    .                 MRSURF,MPSURF,MTSURF,MASURF)
       RETURN
       END SUBROUTINE EIRENE_CHCTRC
 
-      SUBROUTINE eirene_plt2d_reinit
+C     following SUBROUTINE is for reinitialization of EIRENE (DMH)
+      SUBROUTINE EIRENE_PLT2D_REINIT
       IMPLICIT NONE
-      return
-      end SUBROUTINE eirene_plt2d_reinit
+      RETURN
+      END SUBROUTINE EIRENE_PLT2D_REINIT
 
       END MODULE EIRMOD_PLT2D

@@ -1,7 +1,18 @@
+cdr  Jan 2020: Below here is also hidden the former timea1.f, which is
+cdr                 always called, not only in case of octree.f
+cdr            Adding and correcting comments.
+cdr   tbd:
+cdr            Identify: ACTSURFS, NACTSURFS, when no octree is present?
+cdr                      and how they may be related to
+cdr                      lgjum1,2,3(..).
+cdr
+
+cdr  aug. 20: code cleanup from ITER branch
 c*********************************************
 c     This file contains routines for checking on intersections
 c     between blocks and planes (triangles, quadrangles, ...)
-c     It is only used by octree.f.
+c     It is only used by octree.f.   cdr:  No: the timea_CheckInter(...) below
+c                                    cdr   is always used !
 c     -------------------------------
 c     Author: Oliver Schmidt <o.schmidt@fz-juelich.de>
 c     Revision: 0.1
@@ -66,7 +77,7 @@ c       (i,1) = x, (i,2) = y, (i,3) = z, only 4 needed (reuse with function)
      .                                        2, 1, 2,
      .                                        1, 2, 2/),
      .                                      (/3, 4/))
-c       saving the diagonal entrys for the 4 points.
+c       saving the diagonal entries for the 4 points.
 c       every point has 3 vectors for the edge direction.
 c       to generate these we use the matrix
 c       x 0 0
@@ -82,7 +93,7 @@ c       make sure we are looking at a tria/quadr/quintangle
         IF (RLB(SID).ge.3) THEN
 c         for every triangle we may get (triangle = 1, quadrangle = 2, quintangle = 3)
 c         make a test run! (wow... that is much work to do...)
-          DO T=1,int((RLB(SID)-2))
+          DO T=1,nint(RLB(SID)-2.)
 c           get us these points of the triangle we look at
             SELECT CASE(T)
               CASE(1)
@@ -175,10 +186,16 @@ c           line from C to A
         END IF
 c       we found nothing, so we have no intersection -> return false
         STATUS = .FALSE.
-      END FUNCTION EIRENE_TIMEA_ThirdCheck
+        END FUNCTION EIRENE_TIMEA_ThirdCheck
+      
+cdr  Here starts the original timea1.f: check additional surfaces.
+cdr  It is now called: EIRENE_TIMEA_CheckInter
+cdr  For comparison with older versions: then compare with eirene_timea1.
+cdr  this part is always used, not only in case nloctree
 
 c     --- CHECK FOR INTERSECTIONS ON SURFACES (FORMER EIRENE_TIMEA1) ---
-C  AT THIS ENTRY: THE RAY STARTS AT "XX,YY,ZZ", IN DIRECTION "VXX,VYY,VZZ"
+c
+C         THE RAY STARTS AT "XX,YY,ZZ", IN DIRECTION "VXX,VYY,VZZ"
 C                 STARTING POINT IS IN CELL "NCELL", AND TOROIDAL PERIODICITY
 C                 SEGMENT "IPERID, NTCELL".
 C                 SEARCH FOR LEGAL INTERSECTIONS WITH ADDITIONAL SURFACES
@@ -204,6 +221,7 @@ C                 RETURN MASURF=0 IF NO LEGAL INTERSECTION WAS FOUND
 C                 IF MASURF.GT.0: ALSO RETURN POINT OF INTERSECTION XR,YR,ZR,
 C                 THE ORIENTATION "SG" OF RAY RELATIVE TO SURFACE NORMAL
 C                 AND THE DISTANCE "TL" ALONG RAY UNTIL INTERSECTION POINT.
+
       SUBROUTINE EIRENE_TIMEA_CheckInter(
      .             MSURF,NCELL,NLI,NLE,NNTCL,XX,YY,ZZ,TMT,
      .             VXX,VYY,VZZ,VV,
@@ -289,7 +307,7 @@ C  WORKING COORDINATES
       NN=NNTCL
 
       NLLLI=MSURF
-!PB PARTICLE IS ON SURFACE THAT HAS BEEN SWITCHED OF IN INFCOP
+!dr PARTICLE IS ON SURFACE THAT HAS BEEN SWITCHED OFF
       IF(IGJUM0(MSURF).NE.0) NLLLI=0     !VK!!!!!!!!!
       TADD=0.
 C
@@ -298,12 +316,12 @@ C
       MASURF=0
 C
 C  LOOP OVER SURFACE NUMBER, DO 100
-C  --> loop only over the surfaces we have in our lookup table, respect
-c      offset if given
+C  --> loop only over the surfaces we have in our lookup table,
+C      respect offset, if given
       DO 100 K=1,NACTSURFS
 
 c       get J for the former processing out of the running index K
-c       using an offset (we can jump in the array, if timea1 wants this)
+c       using an offset (we can jump in the array, if driver timea1 wants this)
         J = ACTSURFS(K)
 
 C  FIRST ELIMINATE ALL SURFACES WHICH ARE KNOWN A PRIORI TO BE
@@ -572,7 +590,13 @@ C
           END IF
         END IF
         WR=-A2
-        IF (RLB(J)) 26,16,36
+        IF (RLB(J).LT.0.) THEN
+          GOTO 26
+        ELSE IF (RLB(J).GT.0.) THEN
+          GOTO 36
+        ELSE
+          GOTO 16
+        END IF
 C
 C   A2*TMX+A3=0
 C
@@ -591,7 +615,13 @@ C
           END IF
         END IF
         WR=A2
-        IF (RLB(J)) 26,16,36
+        IF (RLB(J).LT.0.) THEN
+          GOTO 26
+        ELSE IF (RLB(J).GT.0.) THEN
+          GOTO 36
+        ELSE
+          GOTO 16
+        END IF
 C
 C  A1LM(J).NE.0
 C
@@ -614,7 +644,13 @@ C
         XN=ALM(J)+BLM(J)*YN+CLM(J)*ZN
         TUP=TMA
         ICOUNT=2
-        IF (RLB(J)) 28,18,38
+        IF (RLB(J).LT.0.) THEN
+          GOTO 28
+        ELSE IF (RLB(J).GT.0.) THEN
+          GOTO 38
+        ELSE
+          GOTO 18
+        END IF
 C
 C  A2LM(J).NE.0
 C
@@ -637,7 +673,13 @@ C
         YN=ALM(J)+BLM(J)*XN+CLM(J)*ZN
         TUP=TMA
         ICOUNT=2
-        IF (RLB(J)) 28,18,38
+        IF (RLB(J).LT.0.) THEN
+          GOTO 28
+        ELSE IF (RLB(J).GT.0.) THEN
+          GOTO 38
+        ELSE
+          GOTO 18
+        END IF
 C
 C  A3LM(J).NE.0
 C
@@ -660,7 +702,13 @@ C
         ZN=ALM(J)+BLM(J)*XN+CLM(J)*YN
         TUP=TMA
         ICOUNT=2
-        IF (RLB(J)) 28,18,38
+        IF (RLB(J).LT.0.) THEN
+          GOTO 28
+        ELSE IF (RLB(J).GT.0.) THEN
+          GOTO 38
+        ELSE
+          GOTO 18
+        END IF
 C
 C
 C   DATA RETURNED TO CALLING PROGRAM
@@ -727,4 +775,5 @@ C  TRANSPARENT, BUT SWITCH AND/OR SURFACE TALLIES
         RETURN
       ENDIF
 
+      RETURN
       END SUBROUTINE EIRENE_TIMEA_CheckInter

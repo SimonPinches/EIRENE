@@ -22,4 +22,4 @@ C
       Z1=-S*XS+C*Z1
       X1=X1-RM
       RETURN
-      END
+      END SUBROUTINE EIRENE_TORLOC

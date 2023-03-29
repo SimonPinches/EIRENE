@@ -1,6 +1,6 @@
 cdr  oct. 2015:
-cdr  k=-1:  cx  H  + p
-cdr  k=-11  ei  He + e   (was formerly also k=-1)
+cdr  k=-1:  CX  H  + p
+cdr  k=-11  EI  He + e (was formerly also k=-1)
 !pb  june 2016: nullify unused pointers in default reaction k=-11
 cdr  sept. 16:  extend options for asymptotics  (extrapolation of fits)
 cdr             currently this is by far overdone, all fits in here are single parametric

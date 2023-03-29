@@ -2,7 +2,7 @@ C
 C
       SUBROUTINE EIRENE_ZYLND2
      .  (X0,Y0,Z0,VX,VY,VZ,TAR,RAD,NK,NP,NA,IO,NF,NUM,
-     .                   ILEFT,AL,IRIGHT,AR,PHIAN,PHIEN,NDP,IPART)
+     .   ILEFT,AL,IRIGHT,AR,PHIAN,PHIEN,NDP,IPART)
 C
 C  ZYLINDERACHSE IST GERADE X+T*V, T1<T<T2, RADIUS RAD.
 C  NK KREISE, NA STUETZSTELLEN AUF KREIS (POLYGON, NA-ECK)
@@ -115,13 +115,13 @@ C  INNERHALB DES BEREICHES T1----T2, FUER SHNITT-OPTION
           IF (I.EQ.1.AND.ILEFT.NE.0) THEN
           WRITE (iunout,*) ' LEFT END OF ZYLINDER '
           WRITE (iunout,*) (AL(ILFT),ILFT=1,ILEFT)
-          CALL
-     .  EIRENE_SHNITT(P,PXS,PYS,PZS,-VX,-VY,-VZ,AL,ILEFT,XP,YP,1,NA+1,1)
+          CALL EIRENE_SHNITT
+     .     (P,PXS,PYS,PZS,-VX,-VY,-VZ,AL,ILEFT,XP,YP,1,NA+1,1)
           ELSEIF (I.EQ.NK.AND.IRIGHT.NE.0) THEN
           WRITE (iunout,*) ' RIGHT END OF ZYLINDER '
           WRITE (iunout,*) (AR(IRGHT),IRGHT=1,IRIGHT)
-          CALL
-     .  EIRENE_SHNITT(P,PXS,PYS,PZS,VX,VY,VZ,AR,IRIGHT,XP,YP,1,NA+1,1)
+          CALL EIRENE_SHNITT
+     .     (P,PXS,PYS,PZS,VX,VY,VZ,AR,IRIGHT,XP,YP,1,NA+1,1)
           ELSE
             DO 3 J=1,NA+1
               PXX=P(1,J)+PX
@@ -132,13 +132,13 @@ C  INNERHALB DES BEREICHES T1----T2, FUER SHNITT-OPTION
           ENDIF
           IF (IO.GE.2) CALL GRNWPN(IO)
           do 7 jj=1,na+1
-            xps(jj)=xp(jj)
-            yps(jj)=yp(jj)
+            xps(jj)=real(xp(jj),sp)
+            yps(jj)=real(yp(jj),sp)
     7     continue
           CALL GRLN (XPS,YPS,NA+1)
 C  FAERBE DIE ENDEN DES ZYLINDERS EIN
-          IF ((I.EQ.1.OR.I.EQ.NK).AND.NF) CALL
-     .  GRFILL(NA+1,XPS,YPS,1,1)
+          IF ((I.EQ.1.OR.I.EQ.NK).AND.NF)
+     .     CALL GRFILL(NA+1,XPS,YPS,1,1)
           IF (IO.GE.2) CALL GRNWPN(1)
    10   CONTINUE
     2 CONTINUE
@@ -169,8 +169,8 @@ C
           DO 11 IP=1,IPART(1)
             IF (PHIDEG.LT.PHIAN(1,IP).OR.PHIDEG.GT.PHIEN(1,IP)) GOTO 11
             JP=JP+1
-            CALL
-     .  EIRENE_SHNITT(P,PXS,PYS,PZS,-VX,-VY,-VZ,AL,ILEFT,XP,YP,J,J,JP)
+            CALL EIRENE_SHNITT
+     .       (P,PXS,PYS,PZS,-VX,-VY,-VZ,AL,ILEFT,XP,YP,J,J,JP)
    11     CONTINUE
         ENDIF
         DO 4 I=IA,IE
@@ -199,8 +199,8 @@ C
    14   CONTINUE
         IF (JP.GT.1) THEN
           do 9 jj=1,jp
-            xps(jj)=xp(jj)
-            yps(jj)=yp(jj)
+            xps(jj)=real(xp(jj),sp)
+            yps(jj)=real(yp(jj),sp)
     9     continue
           CALL GRLN (XPS,YPS,JP)
         endif
@@ -213,4 +213,4 @@ C
       DEALLOCATE (YPS)
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_ZYLND2

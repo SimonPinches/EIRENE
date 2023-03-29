@@ -7,7 +7,6 @@ cdr           H+  (type=4)
 cdr           H   (type=1)
 cdr   to be checked: contributions? multiple isotopes ?
 
-
       subroutine eirene_setup_default_emissivity
 
 cdr originally programmed by PB 2017
@@ -19,7 +18,7 @@ cdr            replacing the former 6 routines:
 cdr            ba_alpha.f, ba_beta.f, ba_gamma.f, ba_delta.f,
 cdr            ly_alpha.f, ly_beta.f
 
-cdr  This present routine (pb, 2017):
+cdr  This present routine:
 cdr  Try to reproduce the content of the old versions of these 6 routines,
 cdr  by filling (and later using)
 cdr  the new structures EMIS_LINES%....
@@ -33,10 +32,10 @@ cdr                            on ADDV tallies),
 cdr  hard-coded here: use pop. coeffs from amjuel H.12, and
 cdr                   use ratios for short living radicals (H2+, H3+, H-)
 cdr                   from amjuel H.11 and H.12
-cdr  hard coded: 
-cdr              H2+, H- and H3+ QSS states, because of hard coded density ratios.
+cdr  hard-coded:
+cdr              H2+, H- and H3+ QSS states, because of hard-coded density ratios.
 cdr              H2+ must be produced from both EI and IC processes, because
-cdr              hard coded ratio H.12 2.0c is used here.
+cdr              hard-coded ratio H.12 2.0c is used here.
 cdr
 cdr  tbd:  make consistent notation "component vs. contribution":  DONE !
 cdr  
@@ -62,7 +61,8 @@ cdr
         SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
      .             RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .             RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .             ELNAME, IZ1, IROW_ESC, ICOL_ESC, POP_ESC,
+     .             ELNAME, IZ1, BUNDLING,
+     .             IROW_ESC, ICOL_ESC, POP_ESC,
      .             IFTFL, NCOEF, COEF)
         USE EIRMOD_PRECISION
         INTEGER,      INTENT(IN) :: IR, IZ1
@@ -70,6 +70,7 @@ cdr
      .                                        IFTFL, NCOEF
         REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC       
         REAL(DP),     INTENT(IN), OPTIONAL :: COEF(9)      
+        CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: BUNDLING
         CHARACTER(8), INTENT(IN) :: FILNAM
         CHARACTER(4), INTENT(IN) :: H123
         CHARACTER(LEN=*), INTENT(IN) :: REAC
@@ -93,6 +94,7 @@ cdr
       character(50) :: reac
       character(3) :: crc
       character(2) :: elname 
+      character(60) :: bundling
       real(dp) :: ry = 13.605
 
       NUM_lines    = 6  ! Ba_alpha, Ba_beta, Ba_gamma, Ba_delta, Ly_alpha, Ly_beta
@@ -104,6 +106,7 @@ c     NUM_contrib  = inferred from input file, species specification block 4a,b,
 !  defaults for reactions which are to be added for default emissivity model
       elname = '  '
       iz = 0
+      bundling = repeat(' ',60)
       irow_esc = 0
       icol_esc = 0
       pop_esc = 1._dp
@@ -136,7 +139,8 @@ c ratio H2+/H2, and assuming also an IC contribution to H2+ formation
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
 
 c ratio H-/H2
@@ -149,7 +153,8 @@ c ratio H-/H2
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
 
 c ratio H3+/H2:  prod rate: [H2+] [H2].  loss rate: [ne] [H3+]
@@ -162,7 +167,8 @@ c ratio H3+/H2:  prod rate: [H2+] [H2].  loss rate: [ne] [H3+]
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
 
 
@@ -200,7 +206,8 @@ C  H(n=3)/H(n=1)
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(1)%COMPO(1)%IRC = NRC
 
@@ -245,7 +252,8 @@ C  H(n=3)/H+
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(1)%COMPO(2)%IRC = NRC
 
@@ -287,7 +295,8 @@ C  H(n=3)/H2(g)
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(1)%COMPO(3)%IRC = NRC
 
@@ -301,7 +310,7 @@ cdr hard-coded type: molecules. Species: default: =0
       CNT%IRC_RAT = 0
 
 cdr search all neutral molecular species with nucl. charge number=2.
-cdr These must be the isotopomeres of H2. 
+cdr These must be the isotopomers of H2. 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(1)%COMPO(3)%CONTRIB(NML))
       EMIS_LINES(1)%COMPO(3)%NUM_CONTRIB = NML
@@ -330,7 +339,8 @@ C  H(n=3)/H2+(g)
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(1)%COMPO(4)%IRC = NRC
 
@@ -347,7 +357,7 @@ cdr  i.e.: H2+ produced from H2, via both channels EI plus IC.
       CNT%IRC_RAT(2) = -1
 
 cdr search all neutral molecular species with nucl. charge number=2.
-cdr These must be the isotopomeres of H2. 
+cdr These must be the isotopomers of H2. 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(1)%COMPO(4)%CONTRIB(NML))
       EMIS_LINES(1)%COMPO(4)%NUM_CONTRIB = NML
@@ -376,7 +386,8 @@ C  H(n=3)/H-
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(1)%COMPO(5)%IRC = NRC
 
@@ -394,7 +405,7 @@ c  no second density ratio
       CNT%IRC_RAT(2) = -1
 
 cdr search all neutral molecular species with nucl. charge number=2.
-cdr These must be the isotopomeres of H2. 
+cdr These must be the isotopomers of H2. 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(1)%COMPO(5)%CONTRIB(NML))
       EMIS_LINES(1)%COMPO(5)%NUM_CONTRIB = NML
@@ -423,7 +434,8 @@ C  H(n=3)/H3+
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(1)%COMPO(6)%IRC = NRC
 
@@ -448,7 +460,7 @@ c  electron density
       CNT%IRC_RAT(2) = NRC_RAT3   ! ratio loss H3+/ prod H3+
 
 cdr search all neutral molecular species with nucl. charge number=2.
-cdr These must be the isotopomeres of H2. 
+cdr These must be the isotopomers of H2. 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(1)%COMPO(6)%CONTRIB(NML))
       EMIS_LINES(1)%COMPO(6)%NUM_CONTRIB = NML
@@ -492,7 +504,8 @@ C  H(n=4)/H(n=1)
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(2)%COMPO(1)%IRC = NRC
 
@@ -517,7 +530,7 @@ C  H(n=4)/H(n=1)
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H+ ION DENSITY
+C  COMPONENT 2: LINEAR IN H+ ION DENSITY
 C  H(n=4)/H+
 
       EMIS_LINES(2)%COMPO(2)%COMPO_NAME = 'ATOMIC HYDR. ION'
@@ -531,7 +544,8 @@ C  H(n=4)/H+
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(2)%COMPO(2)%IRC = NRC
 
@@ -556,7 +570,7 @@ C  H(n=4)/H+
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H2 MOLEC. DENSITY
+C  COMPONENT 3: LINEAR IN H2 MOLEC. DENSITY
 C  H(n=4)/H2(g)
 
       EMIS_LINES(2)%COMPO(3)%COMPO_NAME = 'DIATOMIC NEUTRAL HYDR. MOL'
@@ -570,7 +584,8 @@ C  H(n=4)/H2(g)
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(2)%COMPO(3)%IRC = NRC
 
@@ -595,7 +610,7 @@ C  H(n=4)/H2(g)
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H2+ MOLEC. ION DENSITY
+C  COMPONENT 4: LINEAR IN H2+ MOLEC. ION DENSITY
 C  H(n=4)/H2+(g)
 
       EMIS_LINES(2)%COMPO(4)%COMPO_NAME =
@@ -610,7 +625,8 @@ C  H(n=4)/H2+(g)
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(2)%COMPO(4)%IRC = NRC
 
@@ -636,7 +652,7 @@ C  H(n=4)/H2+(g)
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H- NEG. ION DENSITY
+C  COMPONENT 5: LINEAR IN H- NEG. ION DENSITY
 C  H(n=4)/H-
 
       EMIS_LINES(2)%COMPO(5)%COMPO_NAME =
@@ -651,7 +667,8 @@ C  H(n=4)/H-
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(2)%COMPO(5)%IRC = NRC
 
@@ -677,7 +694,7 @@ C  H(n=4)/H-
         END IF
       END DO
 
-C  CONTRIBUTION LINEAR IN H3+ MOL. ION DENSITY
+C  COMPONENT 6: LINEAR IN H3+ MOL. ION DENSITY
 C  H(n=4)/H3+
 
       EMIS_LINES(2)%COMPO(6)%COMPO_NAME =
@@ -692,7 +709,8 @@ C  H(n=4)/H3+
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(2)%COMPO(6)%IRC = NRC
 
@@ -751,7 +769,8 @@ C  H(n=5)/H(n=1)
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(3)%COMPO(1)%IRC = NRC
 
@@ -789,7 +808,8 @@ C  H(n=5)/H+
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(3)%COMPO(2)%IRC = NRC
 
@@ -828,7 +848,8 @@ C  H(n=5)/H2(g)
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(3)%COMPO(3)%IRC = NRC
 
@@ -868,7 +889,8 @@ C  H(n=5)/H2+(g)
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(3)%COMPO(4)%IRC = NRC
 
@@ -908,7 +930,8 @@ C  H(n=5)/H-
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(3)%COMPO(5)%IRC = NRC
 
@@ -948,7 +971,8 @@ C  H(n=5)/H3+
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(3)%COMPO(6)%IRC = NRC
 
@@ -1008,7 +1032,8 @@ C  H(n=6)/H(n=1)
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(4)%COMPO(1)%IRC = NRC
 
@@ -1047,7 +1072,8 @@ C  H(n=6)/H+
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(4)%COMPO(2)%IRC = NRC
 
@@ -1086,7 +1112,8 @@ C  H(n=6)/H2(g)
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(4)%COMPO(3)%IRC = NRC
 
@@ -1126,7 +1153,8 @@ C  H(n=6)/H2+(g)
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(4)%COMPO(4)%IRC = NRC
 
@@ -1167,7 +1195,8 @@ C  H(n=6)/H-
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(4)%COMPO(5)%IRC = NRC
 
@@ -1208,7 +1237,8 @@ C  H(n=6)/H3+
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(4)%COMPO(6)%IRC = NRC
 
@@ -1266,7 +1296,8 @@ C  H(n=2)/H(n=1)
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(5)%COMPO(1)%IRC = NRC
 
@@ -1305,7 +1336,8 @@ C  H(n=2)/H+
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(5)%COMPO(2)%IRC = NRC
 
@@ -1344,7 +1376,8 @@ C  H(n=2)/H2(g)
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(5)%COMPO(3)%IRC = NRC
 
@@ -1384,7 +1417,8 @@ C  H(n=2)/H2+(g)
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(5)%COMPO(4)%IRC = NRC
 
@@ -1425,7 +1459,8 @@ C  H(n=2)/H-
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(5)%COMPO(5)%IRC = NRC
 
@@ -1466,7 +1501,8 @@ C  H(n=2)/H3+
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(5)%COMPO(6)%IRC = NRC
 
@@ -1524,7 +1560,8 @@ C  H(n=3)/H(n=1)
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(6)%COMPO(1)%IRC = NRC
 
@@ -1563,7 +1600,8 @@ C  H(n=3)/H+
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(6)%COMPO(2)%IRC = NRC
 
@@ -1602,7 +1640,8 @@ C  H(n=3)/H2(g)
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(6)%COMPO(3)%IRC = NRC
 
@@ -1615,7 +1654,7 @@ C  H(n=3)/H2(g)
       CNT%IRC_RAT = 0
 
 cdr search all neutral molecular species with nucl. charge number=2.
-cdr These must be the isotopomeres of H2. 
+cdr These must be the isotopomers of H2. 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(6)%COMPO(3)%CONTRIB(NML))
       EMIS_LINES(6)%COMPO(3)%NUM_CONTRIB = NML
@@ -1644,7 +1683,8 @@ C  H(n=3)/H2+(g)
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(6)%COMPO(4)%IRC = NRC
 
@@ -1658,7 +1698,7 @@ C  H(n=3)/H2+(g)
       CNT%IRC_RAT(2) = -1
 
 cdr search all neutral molecular species with nucl. charge number=2.
-cdr These must be the isotopomeres of H2. 
+cdr These must be the isotopomers of H2. 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(6)%COMPO(4)%CONTRIB(NML))
       EMIS_LINES(6)%COMPO(4)%NUM_CONTRIB = NML
@@ -1687,7 +1727,8 @@ C  H(n=3)/H-
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(6)%COMPO(5)%IRC = NRC
 
@@ -1701,7 +1742,7 @@ C  H(n=3)/H-
       CNT%IRC_RAT(2) = -1
 
 cdr search all neutral molecular species with nucl. charge number=2.
-cdr These must be the isotopomeres of H2. 
+cdr These must be the isotopomers of H2. 
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(6)%COMPO(5)%CONTRIB(NML))
       EMIS_LINES(6)%COMPO(5)%NUM_CONTRIB = NML
@@ -1730,7 +1771,8 @@ C  H(n=2)/H3+
       CALL EIRENE_SLREAC (NRC,FILNAM,H123,REAC,CRC,
      .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
      .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
-     .               ELNAME,IZ,IROW_ESC,ICOL_ESC,POP_ESC,
+     .               ELNAME,IZ,BUNDLING,
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(6)%COMPO(6)%IRC = NRC
 
@@ -1752,7 +1794,7 @@ C  H(n=2)/H3+
       IML = 0
       DO I = 1, NMOLI
 cdr search all neutral molecular species with nucl. charge number=2.
-cdr These must be the isotopomeres of H2. 
+cdr These must be the isotopomers of H2. 
         IF (NCHARM(I) == 2) THEN
           IML = IML + 1
           CNT%ISP = I
@@ -1760,5 +1802,6 @@ cdr These must be the isotopomeres of H2.
         END IF
       END DO
 
+      RETURN
 
       end subroutine eirene_setup_default_emissivity

@@ -2,6 +2,7 @@
 \documentclass[12pt,dvipdfmx]{article}
 
 \usepackage{epsf}
+
 \oddsidemargin 0. true cm
 \topmargin -2.5 true cm
 \textheight 24 true cm
@@ -12,7 +13,16 @@
 \pagecolor{white}
 \setcounter{secnumdepth}{3}
 \usepackage{times}
+\usepackage{longtable}
+\usepackage{epsf}
+\usepackage{amsbsy}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsmath}
 
+
+\usepackage{graphicx}
+\usepackage{epstopdf}
 
 \usepackage[unicode=true,
 % hypertex, % use for activating links in DVI file
@@ -26,17 +36,25 @@
 
 \begin{document}
 \parindent 0pt
-%titelpage
+%titlepage
 {\LARGE \bf \center
 \vspace*{3truecm}
 
-The data file H2VIBR: \\
-Additional  Molecular Data for EIRENE: vibrationally resolved H$_2(X)$ ground state
+The data file H2VIBR\_DR: \\
+Additional  Molecular Data for EIRENE: vibrationally resolved H$_2$(X;v) ground state
+}
+{\Large \bf \center
+\vspace*{1truecm}
+
+Since 2019 this particular version is modified by Detlev-Reiter-Consulting, D\"uren,
+under various specific contracts with IPP Greifswald and Aalto University,
+as well as under the auspices of the ITER ISFN fellowship network.
 \vspace*{3truecm}
 
-D.Reiter \\
-FZJ, Forschungszentrum J\"ulich GmbH \\
-52425 J\"ulich \\
+D. Reiter \\
+Detlev-Reiter-Consulting \\
+Lerchenweg 10\\
+52353 D\"uren \\
 %Post-box 1917 \\
 Germany
 \vspace{3truecm}
@@ -44,19 +62,23 @@ Germany
 Version: \today
 \vspace{1truecm}
 
-Available via E-mail from d.reiter@fz-juelich.de, or as part of the
-EIRENE code git-repository hosted at FZ J\"ulich
+Available via E-mail from reiterd@uni-duesseldorf.de, or as part of
+EIRENE code git-repositories, if these have been updated regularly.
 }
 \pagenumbering{Roman}
 \newpage
 \renewcommand\thesection{\Roman{section}}
-\tableofcontents
-%ende titelpage
 \newpage
+\addcontentsline{toc}{section}{Table of contents}
+\tableofcontents
+%end titlepage
+\newpage
+%\renewcommand{\thesubsection}{\thesection.\Roman{subsection}}
+%\renewcommand{\thesubsubsection}{\thesection.\thesubsection.\Roman{subsubsection}}
 \section{Introduction}\label{sec-intro}
 %\addcontentsline{toc}{section}{Introduction}
 
-This file contains some rate coefficients (cross sections)
+This file contains some rate coefficients (cross-sections)
 supplementing the AMJUEL data. This area is the playground for
 ongoing FZ Juelich internal (EIRENE group) work, in parallel and
 supplementing the HYDKIN online database.
@@ -67,7 +89,6 @@ file are for internal applications and testing of EIRENE code
 development needs at FZ Juelich.
 
 
-
 Detlev Reiter
 
 
@@ -75,9 +96,9 @@ Detlev Reiter
 %\addcontentsline{toc}{subsection}{Record:}
 \begin{itemize}
 \item update  nov.00  \\
-Nov.00: Tennyson Data for H2(v) $\rightarrow$ $b_{triplet}$ additional to\\
+Nov.00: Stibbe-Tennyson Data for H2(v) $\rightarrow$ $b_{triplet}$ additional to\\
         Janev-Greenland Data       \\
-        Note: Tennyson Raten from v=8 on are identical (with this for v=7)
+        Note: Tennyson rates from v=8 on are identical (with the rate for v=7)
 \item update  12.1/02 \\
    Hyd. atom: rates for radiation transfer, Form. I\\
      rates H.4, 2.1.5b, 2.1.5c, 2.1.5d, 2.1.5e \\
@@ -88,42 +109,61 @@ Nov.00: Tennyson Data for H2(v) $\rightarrow$ $b_{triplet}$ additional to\\
      rates H.4, 2.1.8a \\
 \item update  12.6/02 \\
    Hyd. atom: rates for radiation transfer, direct rad rec (phot.source) \\
-     rates H.2, 2.1.8rs\\
+     rates H.2, 2.1.8rr1\\
 \item update   6.7/02 \\
    Hyd. atom: rates for radiation transfer, spont. decay 2$\rightarrow$1 \\
      rates H.4, 2.1.5f\\
 \item update   5.5/03 \\
      rates H.4, 2.1.5f removed, now in data file spectral,tex\\
 \item update  15.8/03 \\
-     rates H.2, 2.1.8rs new, also plot: hydrrs.eps\\
-\item update  12.15/15 \\
-     rates H.2, 2.0l4 ... 2.14l4 added, H$_2(v) \rightarrow $H$_2^+$, vibr. resolved, Janev-Reiter, JUEL report \cite{kn:JRS}.
+     rates H.2, 2.1.8rr1 new, also plot: hydrrs.eps\\
+\item update  15.12/15 \\
+     rates H.2, 2.0l4 ... 2.14l4 added, H$_2(v) \rightarrow $H$_2^+$, vibr. resolved, Janev-Reiter,
+     JUEL report 4105 \cite{kn:JRS}.
 \item update  11.10/16 \\
-cross sections H.1 and
+cross-sections H.1 and
 rate coeff. H.2, added, for 2.0l2 ... 2.14l2, p + H$_2(v) \rightarrow $H + H$_2^+$, vibr. resolved,
 These rate coefficients are for stationary H2. The previous ones,
 now called H.2 2.0l2th,...2.14l2th, have been
-for equilibrated temperatures T-H2 = T-p.
-The new cross section data for v=0 coincide with the HYDHEL data vor v=0,
-and scaling to v=1,...14 is obtained by re-scaling by a single factor g(v), i.e.
+for equilibrated temperatures T-H2 = T-p and for a reduced mass of 2/3.
+The new cross-section data for v=0 coincide with the HYDHEL data for v=0,
+and scaling to v=1,...14 is obtained by re-scaling by a single factor $g_2(v)$, i.e.
 adding increments to fit coeff. a0, or b0)
 according to the Greenland scaling in H2FUJI-Colrad routine.
+\item update  24.04/20 \\
+al4 loss rates verified again, T1MIN, T1MAX added, Eth added  (for better low Te extrapolation
+using exp(-Eth/T) dependence). Fits with this extra factor have been made,
+not included here yet)
+\item update Nov. 21\\
+H.1 and H.3 loss 2 (Ion conversion), Greenland scaling with saturation, added.
 \end{itemize}
 
 \subsection{To be done:}
 %\addcontentsline{toc}{subsection}{To be done:}
 \begin{itemize}
-\item update 12.15/15 \\
-for l4 loss rates: still missing: fit error max err and rel.err:
-fits to be redone  ??\\
-\item update 11.10/16 loss rate \\
-l2 loss rates are proton impact rates. So far we have H.1 and H.2
+\item update 15.12/15 \\
+for the al4 loss rates: still missing: fit error max err and rel.err:
+fits to be redone  ?\\
+April 2020:  No. The al4 Fits have been validated, with HYDKIN, are ok. But still no error bars \\
+Probably better use fits with $b_{-1}$ term.
+\item update 11.10/16 al2 loss rate \\
+al2 loss rates are proton impact rates. So far we have H.1 and H.2
 Still to be done:  H.3, (Beam-Maxw. rates), scaled to
 higher v)
+Oct. 2021: Scaling done. Identical from v=5 onwards (higher).
+Missing pieces: full Greenland resonance scaling without saturation.
+So far we only have the saturated (near v=4.5) rates.
+
+Also: Greenland used thermal (TH2=Tp=Te) rates, derived from Janev H.3 rates.
+But the Janev H.3 rates are poor fits to the properly integrated cross sections, at low T
+(see note in original 1987 book). So: also scaled cross sections are not fully
+consistent with scaled H.3 rates. Tbd: first redo H.3 (and H.2) fits from H.1, with threshold Boltzmann factor.
+and scale them then!
 
 \item  move H.2 e+ .. rates and H.2 p+ .. rates to separate subsections, for HYDKIN\\
-\item move 2.1.8rs to AMJUEL database\\
-\item add:  e + H2(v) to  H + H*  (diss. ex), for v gt 0.
+\item move 2.1.8rr1 to AMJUEL database\\
+\item add:  al5: e + H2(v) to  H + H*(n)  (diss. ex), for v gt 0.
+\item The 2.al2T (Stibbe-Tennyson (Greenland fits) are probably not in correct format for EIRENE tex-file parser SLREAC.f
 \end{itemize}
 
 Below the following line do not use H.1,....H.12 in text, because EIRENE searches for theses section headers
@@ -134,7 +174,7 @@ from here on.
 %\addcontentsline{toc}{subsection}{End of preface. EIRENE starts to read here}
 This next string is searched by EIRENE in subroutine SLREAC
 to initialize search for a particular set of fit coefficients.
-From here on, a character string \textbf{`H.n'} , n an integer, must only appear in the
+From here on, a character string \textbf{`H.n'}, with n an integer, must only appear in the
 section title,
 but not in the text. Likewise: identifiers p0, a0, b0, ....,h0, k0 are used
 in SLREAC and must not
@@ -164,12 +204,15 @@ appear in the text elsewhere, from here on.
 
 $E$ is the ``laboratory energy" (in eV) for the charged collision
 partner. In case of proton impact collisions this happens to
-coincide with the collision energy in eV/amu units.
+coincide with the collision energy in eV/amu units. $Eth$ is the threshold
+energy in center of mass.
 
 \subsection{
 Reaction 2.0l2 $   p + H_2(v=0) \rightarrow H(1s) + H_2^+$}
 
-same cross section as 3.2.3 in HYDHEL.
+Eth = 1.83 for H2(v=0) and H2+(v=0). But goes to H2+(v)
+Final distribution H2+(v) mentioned in Janev et al., 1987.
+Here now: same cross-section as 3.2.3 in HYDHEL.
 
 \begin{small}\begin{verbatim}
    a0 -8.965985910240e+01    a1  1.057326823133e+02    a2 -8.364373343149e+01
@@ -183,27 +226,29 @@ same cross section as 3.2.3 in HYDHEL.
 \subsection{
 Reaction 2.1l2 $   p + H_2(v=1) \rightarrow H(1s) + H_2^+$}
 
-scaled from cross section from 3.2.3 in HYDHEL, Greenland resonance scaling
+scaled from cross-section from 3.2.3 in HYDHEL, Greenland resonance scaling \cite{kn:Green} $g_2(v)$
+incremented $a0$. But still incorrect Eth behaviour, due to use of const. scaling factor  $g_2(v=1)$
 
 \begin{small}\begin{verbatim}
    a0 -8.900261350000e+01    a1  1.057326823133e+02    a2 -8.364373343149e+01
    a3  3.396650519934e+01    a4 -7.931279499027e+00    a5  1.110667708159e+00
    a6 -9.213077375317e-02    a7  4.170940125995e-03    a8 -7.937779949951e-05
        Emin  2.72e+00   s(Emin)  1.00e-19   smax  1.03e-15   Error  2.46e-01
-       Eth  1.83
+       Eth  1.3144
        Mcross 1.0E+00
 \end{verbatim}\end{small}
 \subsection{
 Reaction 2.2l2 $   p + H_2(v=2) \rightarrow H(1s) + H_2^+$}
 
-scaled from cross section from 3.2.3 in HYDHEL, Greenland resonance scaling
+scaled from cross-section from 3.2.3 in HYDHEL, Greenland resonance scaling, \cite{kn:Green} $g_2(v)$
+incremented $a0$. But incorrect Eth, due to use of const. scaling factor $g_2(v=2)$
 
 \begin{small}\begin{verbatim}
    a0 -8.809585123000e+01    a1  1.057326823133e+02    a2 -8.364373343149e+01
    a3  3.396650519934e+01    a4 -7.931279499027e+00    a5  1.110667708159e+00
    a6 -9.213077375317e-02    a7  4.170940125995e-03    a8 -7.937779949951e-05
        Emin  2.72e+00   s(Emin)  1.00e-19   smax  1.03e-15   Error  2.46e-01
-       Eth  1.83
+       Eth  0.829
        Mcross 1.0E+00
 \end{verbatim}\end{small}
 
@@ -211,14 +256,15 @@ scaled from cross section from 3.2.3 in HYDHEL, Greenland resonance scaling
 \subsection{
 Reaction 2.3l2 $   p + H_2(v=3) \rightarrow H(1s) + H_2^+$}
 
-scaled from cross section from 3.2.3 in HYDHEL, Greenland resonance scaling
+scaled from cross-section from 3.2.3 in HYDHEL, Greenland resonance scaling, \cite{kn:Green} $g_2(v)$
+but incorrect Eth, due to const. scaling factor $g_2(v=3)$
 
 \begin{small}\begin{verbatim}
    a0 -8.660200911000e+01    a1  1.057326823133e+02    a2 -8.364373343149e+01
    a3  3.396650519934e+01    a4 -7.931279499027e+00    a5  1.110667708159e+00
    a6 -9.213077375317e-02    a7  4.170940125995e-03    a8 -7.937779949951e-05
        Emin  2.72e+00   s(Emin)  1.00e-19   smax  1.03e-15   Error  2.46e-01
-       Eth  1.83
+       Eth  0.3735
        Mcross 1.0E+00
 \end{verbatim}\end{small}
 
@@ -226,156 +272,167 @@ scaled from cross section from 3.2.3 in HYDHEL, Greenland resonance scaling
 \subsection{
 Reaction 2.4l2 $   p + H_2(v=4) \rightarrow H(1s) + H_2^+$}
 
-scaled from cross section as 3.2.3 in HYDHEL, Greenland resonance scaling
+scaled from cross-section as 3.2.3 in HYDHEL, Greenland resonance scaling, \cite{kn:Green} $g_2(v)$
+but incorrect Eth, due to const. scaling factor
 
 \begin{small}\begin{verbatim}
    a0 -8.468190770000e+01    a1  1.057326823133e+02    a2 -8.364373343149e+01
    a3  3.396650519934e+01    a4 -7.931279499027e+00    a5  1.110667708159e+00
    a6 -9.213077375317e-02    a7  4.170940125995e-03    a8 -7.937779949951e-05
        Emin  2.72e+00   s(Emin)  1.00e-19   smax  1.03e-15   Error  2.46e-01
-       Eth  1.83
+       Eth  0.0
        Mcross 1.0E+00
 \end{verbatim}\end{small}
 
 \subsection{
 Reaction 2.5l2 $   p + H_2(v=5) \rightarrow H(1s) + H_2^+$}
 
-scaled from cross section from 3.2.3 in HYDHEL, Greenland resonance scaling.
-Same cross section for all v-levels above resonance
+scaled from cross-section from 3.2.3 in HYDHEL,
+Greenland resonance scaling, \cite{kn:Green} $g_2(v)$
+Same cross-section for all v-levels above resonance
+These cross section have not the proper exothermic low energy behaviour.
 
 \begin{small}\begin{verbatim}
    a0 -8.472331263000e+01    a1  1.057326823133e+02    a2 -8.364373343149e+01
    a3  3.396650519934e+01    a4 -7.931279499027e+00    a5  1.110667708159e+00
    a6 -9.213077375317e-02    a7  4.170940125995e-03    a8 -7.937779949951e-05
        Emin  2.72e+00   s(Emin)  1.00e-19   smax  1.03e-15   Error  2.46e-01
-       Eth  1.83
+       Eth  0.00
        Mcross 1.0E+00
 \end{verbatim}\end{small}
 
 \subsection{
 Reaction 2.6l2 $   p + H_2(v=6) \rightarrow H(1s) + H_2^+$}
 
-scaled from cross section as 3.2.3 in HYDHEL, Greenland resonance scaling
-Same cross section for all v-levels above resonance
+scaled from cross-section as 3.2.3 in HYDHEL, Greenland resonance scaling, \cite{kn:Green} $g_2(v)$
+Same cross-section for all v-levels above resonance around v=4--5
 
 \begin{small}\begin{verbatim}
    a0 -8.472331263000e+01    a1  1.057326823133e+02    a2 -8.364373343149e+01
    a3  3.396650519934e+01    a4 -7.931279499027e+00    a5  1.110667708159e+00
    a6 -9.213077375317e-02    a7  4.170940125995e-03    a8 -7.937779949951e-05
        Emin  2.72e+00   s(Emin)  1.00e-19   smax  1.03e-15   Error  2.46e-01
-       Eth  1.83
+       Eth  0.00
        Mcross 1.0E+00
 \end{verbatim}\end{small}
 
 \subsection{
 Reaction 2.7l2 $   p + H_2(v=7) \rightarrow H(1s) + H_2^+$}
 
-scaled from cross section as 3.2.3 in HYDHEL, Greenland resonance scaling
+scaled from cross-section as 3.2.3 in HYDHEL, Greenland resonance scaling, \cite{kn:Green} $g_2(v)$
+Same cross-section for all v-levels above resonance around v=4--5
 
 \begin{small}\begin{verbatim}
    a0 -8.472331263000e+01    a1  1.057326823133e+02    a2 -8.364373343149e+01
    a3  3.396650519934e+01    a4 -7.931279499027e+00    a5  1.110667708159e+00
    a6 -9.213077375317e-02    a7  4.170940125995e-03    a8 -7.937779949951e-05
        Emin  2.72e+00   s(Emin)  1.00e-19   smax  1.03e-15   Error  2.46e-01
-       Eth  1.83
+       Eth  0.00
        Mcross 1.0E+00
 \end{verbatim}\end{small}
 
 \subsection{
 Reaction 2.8l2 $   p + H_2(v=8) \rightarrow H(1s) + H_2^+$}
 
-scaled from cross section as 3.2.3 in HYDHEL, Greenland resonance scaling
+scaled from cross-section as 3.2.3 in HYDHEL, Greenland resonance scaling, \cite{kn:Green} $g_2(v)$
+Same cross-section for all v-levels above resonance around v=4--5
 
 \begin{small}\begin{verbatim}
    a0 -8.472331263000e+01    a1  1.057326823133e+02    a2 -8.364373343149e+01
    a3  3.396650519934e+01    a4 -7.931279499027e+00    a5  1.110667708159e+00
    a6 -9.213077375317e-02    a7  4.170940125995e-03    a8 -7.937779949951e-05
        Emin  2.72e+00   s(Emin)  1.00e-19   smax  1.03e-15   Error  2.46e-01
-       Eth  1.83
+       Eth  0.00
        Mcross 1.0E+00
 \end{verbatim}\end{small}
 
 \subsection{
 Reaction 2.9l2 $   p + H_2(v=9) \rightarrow H(1s) + H_2^+$}
 
-scaled from cross section as 3.2.3 in HYDHEL, Greenland resonance scaling
+scaled from cross-section as 3.2.3 in HYDHEL, Greenland resonance scaling, \cite{kn:Green} $g_2(v)$
+Same cross-section for all v-levels above resonance around v=4--5
 
 \begin{small}\begin{verbatim}
    a0 -8.472331263000e+01    a1  1.057326823133e+02    a2 -8.364373343149e+01
    a3  3.396650519934e+01    a4 -7.931279499027e+00    a5  1.110667708159e+00
    a6 -9.213077375317e-02    a7  4.170940125995e-03    a8 -7.937779949951e-05
        Emin  2.72e+00   s(Emin)  1.00e-19   smax  1.03e-15   Error  2.46e-01
-       Eth  1.83
+       Eth  0.00
        Mcross 1.0E+00
 \end{verbatim}\end{small}
 
 \subsection{
 Reaction 2.10l2 $   p + H_2(v=10) \rightarrow H(1s) + H_2^+$}
 
-scaled from cross section as 3.2.3 in HYDHEL, Greenland resonance scaling
+scaled from cross-section as 3.2.3 in HYDHEL, Greenland resonance scaling, \cite{kn:Green} $g_2(v)$
+Same cross-section for all v-levels above resonance around v=4--5
 
 \begin{small}\begin{verbatim}
    a0 -8.472331263000e+01    a1  1.057326823133e+02    a2 -8.364373343149e+01
    a3  3.396650519934e+01    a4 -7.931279499027e+00    a5  1.110667708159e+00
    a6 -9.213077375317e-02    a7  4.170940125995e-03    a8 -7.937779949951e-05
        Emin  2.72e+00   s(Emin)  1.00e-19   smax  1.03e-15   Error  2.46e-01
-       Eth  1.83
+       Eth  0.00
        Mcross 1.0E+00
 \end{verbatim}\end{small}
 
 \subsection{
 Reaction 2.11l2 $   p + H_2(v=11) \rightarrow H(1s) + H_2^+$}
 
-scaled from cross section as 3.2.3 in HYDHEL, Greenland resonance scaling
+scaled from cross-section as 3.2.3 in HYDHEL, Greenland resonance scaling, \cite{kn:Green} $g_2(v)$
+Same cross-section for all v-levels above resonance around v=4--5
 
 \begin{small}\begin{verbatim}
    a0 -8.472331263000e+01    a1  1.057326823133e+02    a2 -8.364373343149e+01
    a3  3.396650519934e+01    a4 -7.931279499027e+00    a5  1.110667708159e+00
    a6 -9.213077375317e-02    a7  4.170940125995e-03    a8 -7.937779949951e-05
        Emin  2.72e+00   s(Emin)  1.00e-19   smax  1.03e-15   Error  2.46e-01
-       Eth  1.83
+       Eth  0.00
        Mcross 1.0E+00
 \end{verbatim}\end{small}
 
 \subsection{
 Reaction 2.12l2 $   p + H_2(v=12) \rightarrow H(1s) + H_2^+$}
 
-scaled from cross section as 3.2.3 in HYDHEL, Greenland resonance scaling
+scaled from cross-section as 3.2.3 in HYDHEL, Greenland resonance scaling, \cite{kn:Green} $g_2(v)$
+Same cross-section for all v-levels above resonance around v=4--5
 
 \begin{small}\begin{verbatim}
    a0 -8.472331263000e+01    a1  1.057326823133e+02    a2 -8.364373343149e+01
    a3  3.396650519934e+01    a4 -7.931279499027e+00    a5  1.110667708159e+00
    a6 -9.213077375317e-02    a7  4.170940125995e-03    a8 -7.937779949951e-05
        Emin  2.72e+00   s(Emin)  1.00e-19   smax  1.03e-15   Error  2.46e-01
-       Eth  1.83
+       Eth  0.00
        Mcross 1.0E+00
 \end{verbatim}\end{small}
 
 \subsection{
 Reaction 2.13l2 $   p + H_2(v=13) \rightarrow H(1s) + H_2^+$}
 
-scaled from cross section as 3.2.3 in HYDHEL, Greenland resonance scaling
+scaled from cross-section as 3.2.3 in HYDHEL, Greenland resonance scaling, \cite{kn:Green} $g_2(v)$
+Same cross-section for all v-levels above resonance around v=4--5
 
 \begin{small}\begin{verbatim}
    a0 -8.472331263000e+01    a1  1.057326823133e+02    a2 -8.364373343149e+01
    a3  3.396650519934e+01    a4 -7.931279499027e+00    a5  1.110667708159e+00
    a6 -9.213077375317e-02    a7  4.170940125995e-03    a8 -7.937779949951e-05
        Emin  2.72e+00   s(Emin)  1.00e-19   smax  1.03e-15   Error  2.46e-01
-       Eth  1.83
+       Eth  0.00
        Mcross 1.0E+00
 \end{verbatim}\end{small}
 
 \subsection{
 Reaction 2.14l2 $   p + H_2(v=14) \rightarrow H(1s) + H_2^+$}
 
-scaled from cross section as 3.2.3 in HYDHEL, Greenland resonance scaling
+scaled from cross-section as 3.2.3 in HYDHEL, Greenland resonance scaling, \cite{kn:Green} $g_2(v)$
+Same cross-section for all v-levels above resonance around v=4--5
 
 \begin{small}\begin{verbatim}
    a0 -8.472331263000e+01    a1  1.057326823133e+02    a2 -8.364373343149e+01
    a3  3.396650519934e+01    a4 -7.931279499027e+00    a5  1.110667708159e+00
    a6 -9.213077375317e-02    a7  4.170940125995e-03    a8 -7.937779949951e-05
        Emin  2.72e+00   s(Emin)  1.00e-19   smax  1.03e-15   Error  2.46e-01
-       Eth  1.83
+       Eth  0.00
        Mcross 1.0E+00
 \end{verbatim}\end{small}
 
@@ -383,11 +440,15 @@ scaled from cross section as 3.2.3 in HYDHEL, Greenland resonance scaling
 \newpage
 \section{H.2 :  Fits for $<\sigma v> (T)$}
 
-Maxwellian averaged rate coefficients $\langle \sigma v\rangle$ in this section are given as fct. of temperatur  T(eV).
+Maxwellian averaged rate coefficients $\langle \sigma v\rangle$ in this section
+are given as function of temperature  T(eV).
 
 If both collision partners (masses $M_1, M_2$) have a different temperature $T_1$ and $T_2$, respectively,
-then the rate coefficient has to be evaluated with $T_{eff} = \frac{M}{M_1} T_1 + \frac{M}{M_2} T_2$, were M is the mass
-used for definition of the rate coefficient. For electron impact collision this was the electron mass: $M_e$,
+then the rate coefficient has to be evaluated
+with $T_{eff} = \frac{M}{M_1} T_1 + \frac{M}{M_2} T_2$,
+were $M$ is the mass
+used for definition of the rate coefficient.
+For electron impact collisions this was the electron mass: $M_e$,
 but since usually $M_2 \gg M_e$ we have $T_{eff} \simeq T_1 (=T_e)$ \\
 
 For proton impact collisions $M$ is the proton mass, with the $H_2$ molecule at rest (here: 0.1 eV).
@@ -396,11 +457,11 @@ For proton impact collisions $M$ is the proton mass, with the $H_2$ molecule at 
 next:
 some rates: e + H2(v=a)$\rightarrow$e + H2(v=b). notation: 2.avb
 
-here: rates for v=0
 \subsection{
 Reaction 2.0v1
 $ e + H_2(v=0) \rightarrow e + H_2(v=1) $
 }
+here: 2.avb rates for a=0
 
 v=  0 $\rightarrow$ v= 1
 
@@ -418,18 +479,19 @@ $\Delta_{E_{elec}}=-0.515579$
 \end{verbatim}\end{small}
 
 \newpage
-some rates: e + H2(v=a)$\rightarrow$e + H2(v=b). notation: 2.avb
-
-here: rates for v=1
-
-  v=  1 $\rightarrow$ v= 2
-
-$\Delta_{E_{elec}}=-0.485491$
 
 \subsection{
 Reaction 2.1v2
 $ e + H_2(v=1) \rightarrow e + H_2(v=2) $
 }
+
+here: 2.avb rates for a=1
+
+  v=  1 $\rightarrow$ v= 2
+
+$\Delta_{E_{elec}}=-0.485491$
+
+
 
 \begin{small}\begin{verbatim}
   b0 -1.977633757458D+01  b1  9.564088337422D-01  b2 -6.931762378599D-01
@@ -442,14 +504,17 @@ $ e + H_2(v=1) \rightarrow e + H_2(v=2) $
 
 \end{verbatim}\end{small}
 
-  v=  1 $\rightarrow$ v= 0
-
-$\Delta_{E_{elec}}=+0.515579$
-
 \subsection{
 Reaction 2.1v0
 $ e + H_2(v=1) \rightarrow e + H_2(v=0) $
 }
+
+  v=  1 $\rightarrow$ v= 0
+
+exothermic
+$\Delta_{E_{elec}}=+0.515579$
+
+
 
 \begin{small}\begin{verbatim}
   b0 -1.968309407999D+01  b1  4.413866852302D-01  b2 -4.375491623531D-01
@@ -462,18 +527,16 @@ $ e + H_2(v=1) \rightarrow e + H_2(v=0) $
 
 \end{verbatim}\end{small}
 \newpage
-some rates: e + H2(v=a)$\rightarrow$e + H2(v=b). notation: 2.avb
-
-here: rates for v=2
-
-  v=  2 $\rightarrow$ v= 3
-
-$\Delta_{E_{elec}}=-0.455403$
 
 \subsection{
 Reaction 2.2v3
 $ e + H_2(v=2) \rightarrow e + H_2(v=3) $
 }
+here: 2.avb rates for a=2
+
+  v=  2 $\rightarrow$ v= 3
+
+$\Delta_{E_{elec}}=-0.455403$
 
 
 \begin{small}\begin{verbatim}
@@ -486,14 +549,17 @@ $ e + H_2(v=2) \rightarrow e + H_2(v=3) $
 
 \end{verbatim}\end{small}
 
-  v=  2 $\rightarrow$ v= 1
-
-$\Delta_{E_{elec}}=+0.485491$
-
 \subsection{
 Reaction 2.2v1
 $ e + H_2(v=2) \rightarrow e + H_2(v=1) $
 }
+
+  v=  2 $\rightarrow$ v= 1
+
+exotermic
+$\Delta_{E_{elec}}=+0.485491$
+
+
 
 
 \begin{small}\begin{verbatim}
@@ -508,18 +574,18 @@ $ e + H_2(v=2) \rightarrow e + H_2(v=1) $
 \end{verbatim}\end{small}
 
 \newpage
-some rates: e + H2(v=a)$\rightarrow$e + H2(v=b). notation: 2.avb
 
-here: rates for v=3
-
-  v=  3 $\rightarrow$ v= 4
-
-$\Delta_{E_{elec}}=-0.425316$
 
 \subsection{
 Reaction 2.3v4
 $ e + H_2(v=3) \rightarrow e + H_2(v=4) $
 }
+here: 2.avb rates for a=3
+
+  v=  3 $\rightarrow$ v= 4
+
+$\Delta_{E_{elec}}=-0.425316$
+
 
 
 \begin{small}\begin{verbatim}
@@ -532,14 +598,16 @@ $ e + H_2(v=3) \rightarrow e + H_2(v=4) $
 
 \end{verbatim}\end{small}
 
-  v=  3 $\rightarrow$ v= 2
-
-$\Delta_{E_{elec}}=+0.455403$
 
 \subsection{
 Reaction 2.3v2
 $ e + H_2(v=3) \rightarrow e + H_2(v=2) $
 }
+
+  v=  3 $\rightarrow$ v= 2
+
+exothermic
+$\Delta_{E_{elec}}=+0.455403$
 
 
 \begin{small}\begin{verbatim}
@@ -556,7 +624,7 @@ $ e + H_2(v=3) \rightarrow e + H_2(v=2) $
 \newpage
 some rates: e + H2(v=a)$\rightarrow$e + H2(v=b). notation: 2.avb
 
-here: rates for v=4
+here: rates for a=4
 
   v=  4 $\rightarrow$ v= 5
 
@@ -585,7 +653,7 @@ $ e + H_2(v=4) \rightarrow e + H_2(v=3) $
 
   v=  4 $\rightarrow$ v= 3
 
-$\Delta_{E_{elec}}=+0.425316$
+exothermic $\Delta_{E_{elec}}=+0.425316$
 
 
 \begin{small}\begin{verbatim}
@@ -599,15 +667,14 @@ $\Delta_{E_{elec}}=+0.425316$
 \end{verbatim}\end{small}
 
 \newpage
-some rates: e + H2(v=a)$\rightarrow$e + H2(v=b). notation: 2.avb
-
-here: rates for v=5
-
 
 \subsection{
 Reaction 2.5v6
 $ e + H_2(v=5) \rightarrow e + H_2(v=6) $
 }
+
+here: 2.avb rates for a=5
+
 
   v=  5 $\rightarrow$ v= 6
 
@@ -633,7 +700,7 @@ $ e + H_2(v=5) \rightarrow e + H_2(v=4) $
 
   v=  5 $\rightarrow$ v= 4
 
-$\Delta_{E_{elec}}= 0.395228$
+exothermic $\Delta_{E_{elec}}= 0.395228$
 
 
 \begin{small}\begin{verbatim}
@@ -647,19 +714,19 @@ $\Delta_{E_{elec}}= 0.395228$
 
 \end{verbatim}\end{small}
 \newpage
-some rates: e + H2(v=a)$\rightarrow$e + H2(v=b). notation: 2.avb
 
-here: rates for v=6
+\subsection{
+Reaction 2.6v7
+$ e + H_2(v=6) \rightarrow e + H_2(v=7) $
+}
+
+here: 2.avb rates for a=6
 
   v=  6 $\rightarrow$ v= 7
 
 $\Delta_{E_{elec}}=-0.335052$
 
 
-\subsection{
-Reaction 2.6v7
-$ e + H_2(v=6) \rightarrow e + H_2(v=7) $
-}
 
 \begin{small}\begin{verbatim}
   b0 -1.791750176477D+01  b1  9.563765394068D-01  b2 -6.931114557277D-01
@@ -671,15 +738,16 @@ $ e + H_2(v=6) \rightarrow e + H_2(v=7) $
 
 \end{verbatim}\end{small}
 
-  v=  6 $\rightarrow$ v= 5
-
-$\Delta_{E_{elec}}= 0.365140$
 
 
 \subsection{
 Reaction 2.6v5
 $ e + H_2(v=6) \rightarrow e + H_2(v=5) $
 }
+
+  v=  6 $\rightarrow$ v= 5
+
+exothermic $\Delta_{E_{elec}}= 0.365140$
 
 
 \begin{small}\begin{verbatim}
@@ -695,7 +763,7 @@ $ e + H_2(v=6) \rightarrow e + H_2(v=5) $
 \newpage
 some rates: e + H2(v=a)$\rightarrow$e + H2(v=b). notation: 2.avb
 
-here: rates for v=7
+here: rates for a=7
 
   v=  7 $\rightarrow$ v= 8
 
@@ -741,7 +809,7 @@ $ e + H_2(v=7) \rightarrow e + H_2(v=6) $
 \newpage
 some rates: e + H2(v=a)$\rightarrow$e + H2(v=b). notation: 2.avb
 
-here: rates for v=8
+here: rates for a=8
 
 
   v=  8 $\rightarrow$ v= 9
@@ -787,7 +855,7 @@ $ e + H_2(v=8) \rightarrow e + H_2(v=7) $
 \newpage
 some rates: e + H2(v=a)$\rightarrow$e + H2(v=b). notation: 2.avb
 
-here: rates for v=9
+here: rates for a=9
 
 
   v=  9 $\rightarrow$ v= 10
@@ -832,9 +900,13 @@ $ e + H_2(v=9) \rightarrow e + H_2(v=8) $
 
 \end{verbatim}\end{small}
 \newpage
-some rates: e + H2(v=a)$\rightarrow$e + H2(v=b). notation: 2.avb
 
-here: rates for v=10
+
+\subsection{
+Reaction 2.10v11
+$ e + H_2(v=10) \rightarrow e + H_2(v=11) $
+}
+here: 2.avb rates for a=10
 
 
   v=  10 $\rightarrow$ v= 11
@@ -842,10 +914,6 @@ here: rates for v=10
 $\Delta_{E_{elec}}=-0.214702$
 
 
-\subsection{
-Reaction 2.10v11
-$ e + H_2(v=10) \rightarrow e + H_2(v=11) $
-}
 
 
 \begin{small}\begin{verbatim}
@@ -858,15 +926,17 @@ $ e + H_2(v=10) \rightarrow e + H_2(v=11) $
 
 \end{verbatim}\end{small}
 
-  v=  10 $\rightarrow$ v= 9
-
-$\Delta_{E_{elec}}= 0.244789$
-
 
 \subsection{
 Reaction 2.10v9
 $ e + H_2(v=10) \rightarrow e + H_2(v=9) $
 }
+
+  v=  10 $\rightarrow$ v= 9
+
+exothermic $\Delta_{E_{elec}}= 0.244789$
+
+
 
 
 \begin{small}\begin{verbatim}
@@ -881,7 +951,7 @@ $ e + H_2(v=10) \rightarrow e + H_2(v=9) $
 \newpage
 some rates: e + H2(v=a)$\rightarrow$e + H2(v=b). notation: 2.avb
 
-here: rates for v=11
+here: rates for a=11
 
 
 
@@ -930,7 +1000,12 @@ $ e + H_2(v=11) \rightarrow e + H_2(v=10) $
 \newpage
 some rates: e + H2(v=a)$\rightarrow$e + H2(v=b). notation: 2.avb
 
-here: rates for v=12
+
+\subsection{
+Reaction 2.12v13
+$ e + H_2(v=12) \rightarrow e + H_2(v=13) $
+}
+here: 2.avb rates for a=12
 
 
   v=  12 $\rightarrow$ v= 13
@@ -938,10 +1013,6 @@ here: rates for v=12
 $\Delta_{E_{elec}}=-0.154526$
 
 
-\subsection{
-Reaction 2.12v13
-$ e + H_2(v=12) \rightarrow e + H_2(v=13) $
-}
 
 
 \begin{small}\begin{verbatim}
@@ -954,15 +1025,15 @@ $ e + H_2(v=12) \rightarrow e + H_2(v=13) $
 
 \end{verbatim}\end{small}
 
-  v=  12 $\rightarrow$ v= 11
-
-$\Delta_{E_{elec}}= 0.184614$
-
 
 \subsection{
 Reaction 2.12v11
 $ e + H_2(v=12) \rightarrow e + H_2(v=11) $
 }
+
+  v=  12 $\rightarrow$ v= 11
+
+exothermic $\Delta_{E_{elec}}= 0.184614$
 
 
 \begin{small}\begin{verbatim}
@@ -975,20 +1046,17 @@ $ e + H_2(v=12) \rightarrow e + H_2(v=11) $
 
 \end{verbatim}\end{small}
 \newpage
-some rates: e + H2(v=a)$\rightarrow$e + H2(v=b). notation: 2.avb
-
-here: rates for v=13
-
-
-  v=  13 $\rightarrow$ v= 14
-
-$\Delta_{E_{elec}}=-0.124438$
-
 
 \subsection{
 Reaction 2.13v14
 $ e + H_2(v=13) \rightarrow e + H_2(v=14) $
 }
+here: 2.avb rates for a=13
+
+
+  v=  13 $\rightarrow$ v= 14
+
+$\Delta_{E_{elec}}=-0.124438$
 
 
 \begin{small}\begin{verbatim}
@@ -1001,15 +1069,17 @@ $ e + H_2(v=13) \rightarrow e + H_2(v=14) $
 
 \end{verbatim}\end{small}
 
-  v=  13 $\rightarrow$ v= 12
-
-$\Delta_{E_{elec}}= 0.154526$
-
 
 \subsection{
 Reaction 2.13v12
 $ e + H_2(v=13) \rightarrow e + H_2(v=12) $
 }
+
+  v=  13 $\rightarrow$ v= 12
+
+exothermic $\Delta_{E_{elec}}= 0.154526$
+
+
 
 
 \begin{small}\begin{verbatim}
@@ -1023,21 +1093,18 @@ $ e + H_2(v=13) \rightarrow e + H_2(v=12) $
 \end{verbatim}\end{small}
 
 \newpage
-some rates: e + H2(v=a)$\rightarrow$e + H2(v=b). notation: 2.avb
-
-here: rates for v=14
-
-
-  v=  14 $\rightarrow$ v= 13
-
-$\Delta_{E_{elec}}= 0.124438$
-
 
 \subsection{
 Reaction 2.14v13
 $ e + H_2(v=14) \rightarrow e + H_2(v=13) $
 }
 
+here: 2.avb rates for a=14
+
+
+  v=  14 $\rightarrow$ v= 13
+
+exothermic $\Delta_{E_{elec}}= 0.124438$
 
 \begin{small}\begin{verbatim}
   b0 -1.589837154244D+01  b1  8.320824642517D-01  b2 -6.314283588817D-01
@@ -1058,37 +1125,53 @@ now: loss from vibrational state $v$: loss channel $a=1, a=2, a=3, a=4$. Notatio
 
 \item{a=1}: $e + H_2(v) $ to repulsive triplet state $b^3\Sigma \rightarrow H+H $ \\
 
-     currently available: Hydhel 2.2.5 (v=0) and Greenland scaling \cite{kn:Green},
+     currently available: Hydhel 2.2.5 (v=0) and Greenland scaling \cite{kn:Green}, $g_1(v)$
 
-                      or, as alternative: Tennyson rate coefficient (J. Tennyson, 2001)
+                      or, as alternative: Stibbe-Tennyson and Rescignio-Schneider rate coefficient
+                      (Greenland, CRMOL Manual, 2001, \cite{kn:Tennyson}, individual fits for each $v$)
 
 \item{a=2}: ion conversion $p+H_2(v) \rightarrow H_2^+  +  H$
 
-     currently available: Hydhel 3.2.3 $(v=0)$ and Greenland scaling \cite{kn:Green}, i.e.:
+     currently available: Hydhel 3.2.3 $(v=0)$ and Greenland
+                           resonance scaling \cite{kn:Green}, $g_2(v)$ i.e.:
 
-     cross sections are as in Hydhel, with incremented a0 coefficient for Greenland scaling
+     Cross-sections are as in Hydhel, with incremented a0 coefficient for Greenland scaling.
 
-     the ``thermal" rate coeff. data labeled ..l2th given here are evaluated from HYDHEL, 3.2.3, at $E_{H_2}=0.37\approx 0.0$ eV. The temperature scale here
-     is $T=T_{H_2} = T_p$, i.e. to obtain this Maxwellian (single temperature) rate coefficient the HYDHEL beam-Maxwellian rate fit is evaluated at
+     The ``thermal" rate coeff. data labeled 2.al2th given here are evaluated from HYDHEL, 3.2.3,
+     at $E_{H_2}=0.37\approx 0.0$ eV.
+     The temperature scale here
+     is $T=T_{H_2} = T_p$.
+ I.e. to obtain this Maxwellian (single temperature) rate coefficient
+ the HYDHEL Beam-Maxwellian rate fit is first evaluated at $E_{H_2} = 0.0$ eV.
+
+ Greenland actually had used  $E_{H_2}=0.37 \approx 0.0$.
+ The resulting fit
+ for cold molecules vs. $T_p/m_p$ is then rescaled to a fit vs.
 
      $T_{eff}= m/m_1 T_1 + m/m_2 T_2 = 1.5 T$, with $m=1, m_1=1, m_2=2$
      and $T_1=T_p, T_2=T_{H_2}$.
 
-     The rate coeff. data labeled ...l2  (without th) are for stationary H2 molecules (taken at $E_{H_2}=0.1\approx 0.0$ eV), same as for v=0 in Hydhel, and then
+     The rate coeff. data labeled 2.al2  (without ``th") are for stationary H2 molecules (taken at $E_{H_2}=0.1\approx 0.0$ eV), same as for v=0 in HYDHEL, and then
      have been scaled (incremented fit coeff. b0) to higher vibr. states.
+
+     The same scaling $g_2(v)$ has also been applied to the full Beam-Maxwellian (H.3) rates 2.al2
 
 \item{a=3}: dissociative attachment  $e + H_2(v) \rightarrow H_2^- \rightarrow H(n) + H^-$,
 
-Greenland scaling, \cite{kn:Green}
+orig: Bardsley and Wadehra; \cite{kn:Green}
 
-\item{a=4}: ionisation $e + H_2(v) \rightarrow H_2^+  + e$,
+\item{a=4}: ionization $e + H_2(v) \rightarrow H_2^+  + e$,
 
-Janev, Reiter report, JUEL, \cite{kn:JRS}
+Janev, Reiter report, JUEL, \cite{kn:JRS}.
+Corresponds to reaction 2.2.9 in HYDHEL and AMJUEL
 
 \item{a=5}: dissociative excitation/ionisation $e + H_2(v) \rightarrow H + H*  + e$, or
 $\rightarrow H + H^+ + 2e$
 
 Janev, Reiter report, JUEL, \cite{kn:JRS}, to be done, not yet here.
+
+Corresponds to reaction 2.2.10 in HYDHEL and AMJUEL
+
 \end{itemize}
 \newpage
 
@@ -1112,7 +1195,8 @@ $ e + H_2(v=0) \rightarrow e+ H_2(b_{triplet})\rightarrow e +  H + H $ (Greenl.)
 Reaction 2.0l1T
 $ e +  H_2(v=0) \rightarrow e+ H_2(b_{triplet})\rightarrow e + H + H $ (Ten.)
 }
-Tennyson rate coeff.:
+Stibbe-Tennyson Rescignio-Schneider rate coeff. (Greenland fit):
+
 \begin{small}\begin{verbatim}
   b0      -27.737228809932  b1      11.4261099558375  b2     -7.10684878187016
   b3      2.91291925736074  b4    -0.813578474322528  b5     0.143951459534869
@@ -1128,7 +1212,8 @@ $ p + H_2(v=0) \rightarrow H + H_2^+$ (ion conversion)
 }
 Thermal rate coeff.:
 Original HYDHEL fit vs. $T_p$ and $E(H_2)$, taken at $E(H_2) = 0.37 \approx 0.0$ eV.
-Then rescaled (and refitted) for effective temperature $T_p=T_{H_2}=T$.
+Then rescaled (and refitted) for effective temperature $T_p=T_{H_2}=T$,
+$T/m$ with $m=m_{red}=2/3$.
 
 \begin{small}\begin{verbatim}
   b0 -2.358503880904D+01  b1  1.287800684831D+00  b2 -1.477574532576D+00
@@ -1144,7 +1229,8 @@ Reaction 2.0l2
 $ p + H_2(v=0) \rightarrow H + H_2^+$ (ion conversion)
 }
 Rate coeff. for H2 at rest, derived from HYDHEL rate coeff. data.
-Taken at $E(H_2) = 0.1 \approx 0.0$ eV,  and fit is for temperature $T_p=T$ with $H_2$ at rest.
+Taken at $E(H_2) = 0.1 \approx 0.0$ eV,  and fit is for temperature $T_p=T$ with $H_2$ at rest,
+$T/m$ with $m=m_p=1$.
 
 \begin{small}\begin{verbatim}
 
@@ -1176,13 +1262,35 @@ Reaction 2.0l3
 Reaction 2.0l4
  $ e + H_2(v=0) \rightarrow e + H_2^+ + e$
 }
-Janev-Reiter, JUEL-rep. eth 1.542000E+01
+Janev-Reiter, JUEL-rep. 4105 \cite{kn:JRS} eth 1.542000E+01
 
 \begin{small}\begin{verbatim}
   b0 -3.540823398177E+01  b1  1.657145033166E+01  b2 -7.228943029682E+00
   b3  2.032462219400E+00  b4 -3.938257813639E-01  b5  5.235094832810E-02
   b6 -4.578745995938E-03  b7  2.369472437341E-04  b8 -5.461691892092E-06
-TEMAX =   1.00000D 03 EV
+T1MIN =   1.00000D-01 EV
+T1MAX =   1.00000D 03 EV
+      Eth  15.42
+  Max. rel. Error:    .xxx %
+  Mean rel. Error:    .xxx %
+\end{verbatim}\end{small}
+
+\subsection{
+Reaction 2.0l4ar
+ $ e + H_2(v=0) \rightarrow e + H_2^+ + e$
+}
+Janev-Reiter, JUEL-rep. 4105 \cite{kn:JRS}, eth 1.542000E+01,
+with separated exponential Arrhenius pre-factor
+
+\begin{small}\begin{verbatim}
+  b-1 1.542000000000E+01
+  b0 -1.999480681654E+01  b1  1.255127602054E+00  b2  2.014963920740E-01
+  b3 -2.280390412519E-01  b4  6.511763952242E-02  b5 -9.534117648640E-03
+  b6  7.120466801526E-04  b7 -2.131371338727E-05  b8 -1.214366936845E-19
+
+T1MIN =   1.00000D-03 EV
+T1MAX =   1.00000D 03 EV
+      Eth  15.42
   Max. rel. Error:    .xxx %
   Mean rel. Error:    .xxx %
 \end{verbatim}\end{small}
@@ -1226,7 +1334,8 @@ $ e +  H_2(v=1) \rightarrow e + H_2(b_{triplet})\rightarrow e + H + H $ (Ten.)
 Reaction 2.1l2th
 $ p + H_2(v=1) \rightarrow H + H_2^+$ (ion conversion)
 }
-Thermal rate coeff., Tp=TH2, Greenland scaling
+Thermal rate coeff., Tp=TH2, Greenland scaling,
+$T/m$ with $m=m_{red}=2/3$.
 
 \begin{small}\begin{verbatim}
   b0 -2.292919657678D+01  b1  1.287794638677D+00  b2 -1.477559046391D+00
@@ -1241,8 +1350,9 @@ Thermal rate coeff., Tp=TH2, Greenland scaling
 Reaction 2.1l2
 $ p + H_2(v=1) \rightarrow H + H_2^+$ (ion conversion)
 }
-Rate coeff. for H2 at rest, derived from HYDHEL data. Greenland scaling
-
+Rate coeff. for H2 at rest, derived from HYDHEL data. Greenland resonance scaling
+Taken at $E(H_2) = 0.1 \approx 0.0$ eV,  and fit is for temperature $T_p=T$ with $H_2$ at rest,
+$T/m$ with $m=m_p=1$.
 
 \begin{small}\begin{verbatim}
 
@@ -1273,13 +1383,34 @@ Reaction 2.1l3
 Reaction 2.1l4
  $ e + H_2(v=1) \rightarrow e + H_2^+ + e$
 }
-Janev-Reiter, JUEL-rep., eth 1.490400E+01
+Janev-Reiter, JUEL-rep. 4105 \cite{kn:JRS}, eth 1.490400E+01
 
 \begin{small}\begin{verbatim}
-  b0 -3.481334039125E+01 b1  1.624419918008E+01 b2 -7.360715783239E+00
-  b3  2.218244862146E+00 b4 -4.664334315731E-01 b5  6.642982009994E-02
-  b6 -6.050396486944E-03 b7  3.160608551072E-04 b8 -7.173333297668E-06
-TEMAX =   1.00000D 03 EV
+  b0 -3.481334039125E+01  b1  1.624419918008E+01  b2 -7.360715783239E+00
+  b3  2.218244862146E+00  b4 -4.664334315731E-01  b5  6.642982009994E-02
+  b6 -6.050396486944E-03  b7  3.160608551072E-04  b8 -7.173333297668E-06
+T1MIN =   1.00000D-01 EV
+T1MAX =   1.00000D 03 EV
+      Eth 14.904
+  Max. rel. Error:    .xxx %
+  Mean rel. Error:    .xxx %
+\end{verbatim}\end{small}
+
+\subsection{
+Reaction 2.1l4ar
+ $ e + H_2(v=1) \rightarrow e + H_2^+ + e$
+}
+Janev-Reiter, JUEL-rep., eth 1.490400E+01,
+with separated exponential Arrhenius pre-factor
+
+\begin{small}\begin{verbatim}
+  b-1 1.490400000000E+01
+  b0 -1.991308015095E+01  b1  1.409524377881E+00  b2 -1.138311156908E-01
+  b3 -2.079323340873E-02  b4 -2.848006524890E-04  b5  1.458463887853E-03
+  b6 -2.793669335691E-04  b7  2.264011168061E-05  b8 -7.053467780789E-07
+T1MIN =   1.00000D-03 EV
+T1MAX =   1.00000D 03 EV
+      Eth 14.904
   Max. rel. Error:    .xxx %
   Mean rel. Error:    .xxx %
 \end{verbatim}\end{small}
@@ -1321,7 +1452,8 @@ $ e +  H_2(v=2) \rightarrow e + H_2(b_{triplet})\rightarrow e + H + H $ (Ten.)
 Reaction 2.2l2th
 $ p + H_2(v=2) \rightarrow H + H_2^+$ (ion conversion)
 }
-thermal Rate coeff. for T(p) = T(H2), Greenland scaling
+thermal Rate coeff. for T(p) = T(H2), Greenland scaling,
+$T/m$ with $m=m_{red}=2/3$.
 
 \begin{small}\begin{verbatim}
   b0 -2.202529493081D+01  b1  1.287806068192D+00  b2 -1.477582420825D+00
@@ -1337,6 +1469,8 @@ Reaction 2.2l2
 $ p + H_2(v=2) \rightarrow H + H_2^+$ (ion conversion)
 }
 Rate coeff. for H2 at rest, derived from HYDHEL data. Greenland scaling
+Taken at $E(H_2) = 0.1 \approx 0.0$ eV,  and fit is for temperature $T_p=T$ with $H_2$ at rest,
+$T/m$ with $m=m_p=1$.
 
 
 \begin{small}\begin{verbatim}
@@ -1368,13 +1502,35 @@ Reaction 2.2l3
 Reaction 2.2l4
  $ e + H_2(v=2) \rightarrow e + H_2^+  + e$
 }
-Janev-Reiter, JUEL-rep., eth 1.441700E+01
+Janev-Reiter, JUEL-rep.4105 \cite{kn:JRS}, eth 1.441700E+01
 
 \begin{small}\begin{verbatim}
   b0 -3.428836104964E+01 b1  1.565808679005E+01 b2 -6.893018168570E+00
   b3  1.955837175253E+00 b4 -3.753879507425E-01 b5  4.764687790230E-02
   b6 -3.813417228001E-03 b7  1.743203731125E-04 b8 -3.478720752808E-06
-TEMAX =   1.00000D 03 EV
+T1MIN =   1.00000D-01 EV
+T1MAX =   1.00000D 03 EV
+    Eth 14.417
+  Max. rel. Error:    .xxx %
+  Mean rel. Error:    .xxx %
+\end{verbatim}\end{small}
+
+\subsection{
+Reaction 2.2l4ar
+ $ e + H_2(v=2) \rightarrow e + H_2^+  + e$
+}
+Janev-Reiter, JUEL-rep., eth 1.441700E+01,
+with separated exponential Arrhenius pre-factor
+
+\begin{small}\begin{verbatim}
+  b-1 1.441700000000E+01
+  b0 -1.988108861624E+01  b1  1.380327454118E+00  b2 -3.504017357917E-02
+  b3 -8.343722550589E-02  b4  2.281006518055E-02  b5 -3.152175094877E-03
+  b6  2.333984036075E-04  b7 -7.178754747349E-06  b8 -4.851195132529E-20
+
+T1MIN =   1.00000D-03 EV
+T1MAX =   1.00000D 03 EV
+    Eth 14.417
   Max. rel. Error:    .xxx %
   Mean rel. Error:    .xxx %
 \end{verbatim}\end{small}
@@ -1417,7 +1573,8 @@ $  e + H_2(v=3) \rightarrow e + H_2(b_{triplet})\rightarrow e + H + H $ (Ten.)
 Reaction 2.3l2th
 $ p + H_2(v=3) \rightarrow H + H_2^+$ (ion conversion)
 }
-thermal rate coeff. for T(p) = T(H2)
+thermal rate coeff. for T(p) = T(H2),
+$T/m$ with $m=m_{red}=2/3$.
 
 \begin{small}\begin{verbatim}
   b0 -2.053940214067D+01  b1  1.287794934319D+00  b2 -1.477562410575D+00
@@ -1435,6 +1592,8 @@ Reaction 2.3l2
 $ p + H_2(v=3) \rightarrow H + H_2^+$ (ion conversion)
 }
 Rate coeff. for H2 at rest, derived from HYDHEL data. Greenland scaling
+Taken at $E(H_2) = 0.1 \approx 0.0$ eV,  and fit is for temperature $T_p=T$ with $H_2$ at rest,
+$T/m$ with $m=m_p=1$.
 
 
 \begin{small}\begin{verbatim}
@@ -1474,11 +1633,34 @@ Janev-Reiter, JUEL-rep., eth 1.395900E+01
   b0 -3.378879447664E+01 b1  1.523672637854E+01 b2 -6.745590257052E+00
   b3  1.974828926502E+00 b4 -4.098427218451E-01 b5  5.919650377042E-02
   b6 -5.603508387710E-03 b7  3.087429479944E-04 b8 -7.428722816433E-06
-TEMAX =   1.00000D 03 EV
+T1MIN =   1.00000D-01 EV
+T1MAX =   1.00000D 03 EV
+      Eth  13.959
+
   Max. rel. Error:    .xxx %
   Mean rel. Error:    .xxx %
 \end{verbatim}\end{small}
 
+\subsection{
+Reaction 2.3l4ar
+ $ e + H_2(v=3) \rightarrow e + H_2^+  + e $
+}
+Janev-Reiter, JUEL-rep., eth 1.395900E+01,
+with separated exponential Arrhenius pre-factor
+
+\begin{small}\begin{verbatim}
+  b-1 1.395900000000E+01
+  b0 -1.983329774434E+01  b1  1.342656584583E+00  b2  4.179960502647E-02
+  b3 -1.222410791273E-01  b4  2.674936384095E-02  b5 -1.655289063249E-03
+  b6 -1.983958074452E-04  b7  3.392679310612E-05  b8 -1.370844411435E-06
+
+T1MIN =   1.00000D-03 EV
+T1MAX =   1.00000D 03 EV
+      Eth  13.959
+
+  Max. rel. Error:    .xxx %
+  Mean rel. Error:    .xxx %
+\end{verbatim}\end{small}
 \newpage
 
 \subsection{
@@ -1506,9 +1688,9 @@ $  e + H_2(v=4) \rightarrow e + H_2(b_{triplet})\rightarrow e + H + H $ (Ten.)
 
 
 \begin{small}\begin{verbatim}
-  b0     -22.3116918809814  b1      4.66004285894235  b2     -2.89882553184163
-  b3      1.37064885936369  b4      -0.4659672655505  b5     0.095784763158149
-  b6   -0.0113104860539474  b7  0.000707639911960273  b8 -1.81837538257139e-05
+  b0 -22.3116918809814    b1  4.66004285894235    b2 -2.898825531842D+00
+  b3  1.37064885936369    b4 -0.4659672655505     b5  9.578476315815D-02
+  b6 -0.0113104860539474  b7  7.076399119603D-04  b8 -1.818375382571D-05
 
   Max. rel. Error: 4.04e-05 %
   Mean rel. Error: 4.864e-06 %
@@ -1519,7 +1701,8 @@ $  e + H_2(v=4) \rightarrow e + H_2(b_{triplet})\rightarrow e + H + H $ (Ten.)
 Reaction 2.4l2th
 $ p + H_2(v=4) \rightarrow H + H_2^+$ (ion conversion)
 }
-thermal rate coeff. for T(p) = T(H2)
+thermal rate coeff. for T(p) = T(H2),
+$T/m$ with $m=m_{red}=2/3$.
 
 \begin{small}\begin{verbatim}
   b0 -1.858781180352D+01  b1  1.287785079093D+00  b2 -1.477535830536D+00
@@ -1536,6 +1719,8 @@ Reaction 2.4l2
 $ p + H_2(v=4) \rightarrow H + H_2^+$ (ion conversion)
 }
 Rate coeff. for H2 at rest, derived from HYDHEL data. Greenland scaling
+Taken at $E(H_2) = 0.1 \approx 0.0$ eV,  and fit is for temperature $T_p=T$ with $H_2$ at rest,
+$T/m$ with $m=m_p=1$.
 
 
 \begin{small}\begin{verbatim}
@@ -1568,17 +1753,40 @@ Reaction 2.4l3
 Reaction 2.4l4
  $ e + H_2(v=4) \rightarrow e + H_2^+  + e$
 }
-Janev-Reiter, JUEL-rep. eth 1.352900E+01
+Janev-Reiter, JUEL-rep.4105 \cite{kn:JRS} eth 1.352900E+01
 
 \begin{small}\begin{verbatim}
   b0 -3.330086528303E+01 b1  1.491564676374E+01 b2 -6.802923904629E+00
   b3  2.110712395565E+00 b4 -4.678815789295E-01 b5  7.099619985562E-02
   b6 -6.872951706756E-03 b7  3.778766156092E-04 b8 -8.915811243923E-06
-TEMAX =   1.00000D 03 EV
+T1MIN =   1.00000D-01 EV
+T1MAX =   1.00000D 03 EV
+    Eth 13.529
+
   Max. rel. Error:    .xxx %
   Mean rel. Error:    .xxx %
 \end{verbatim}\end{small}
 
+\subsection{
+Reaction 2.4l4ar
+ $ e + H_2(v=4) \rightarrow e + H_2^+  + e$
+}
+Janev-Reiter, JUEL-rep. eth 1.352900E+01,
+with separated exponential Arrhenius pre-factor
+
+\begin{small}\begin{verbatim}
+  b-1 1.352900000000E+01
+  b0 -1.977525999726E+01  b1  1.449576193073E+00  b2 -2.246158761824E-01
+  b3  7.824148486684E-02  b4 -4.473847373276E-02  b5  1.201891322904E-02
+  b6 -1.634340664249E-03  b7  1.115260221152E-04  b8 -3.044542471029E-06
+
+T1MIN =   1.00000D-03 EV
+T1MAX =   1.00000D 03 EV
+    Eth 13.529
+
+  Max. rel. Error:    .xxx %
+  Mean rel. Error:    .xxx %
+\end{verbatim}\end{small}
 
 
 \newpage
@@ -1619,7 +1827,8 @@ $  e + H_2(v=5) \rightarrow e +  H_2(b_{triplet})\rightarrow e + H + H $ (Ten.)
 Reaction 2.5l2th
 $ p + H_2(v=5) \rightarrow H + H_2^+$ (ion conversion)
 }
-thermal rate coeff. for T(p) = T(H2)
+thermal rate coeff. for T(p) = T(H2),
+$T/m$ with $m=m_{red}=2/3$.
 
 \begin{small}\begin{verbatim}
   b0 -2.085159225482D+01  b1  1.287785621840D+00  b2 -1.477538158990D+00
@@ -1635,8 +1844,9 @@ thermal rate coeff. for T(p) = T(H2)
 Reaction 2.5l2
 $ p + H_2(v=5) \rightarrow H + H_2^+$ (ion conversion)
 }
-Rate coeff. for H2 at rest, derived from HYDHEL data. Greenland scaling
-
+Rate coeff. for H2 at rest (0.1 eV), derived from HYDHEL data. Greenland scaling
+Taken at $E(H_2) = 0.1 \approx 0.0$ eV,  and fit is for temperature $T_p=T$ with $H_2$ at rest,
+$T/m$ with $m=m_p=1$.
 
 \begin{small}\begin{verbatim}
 
@@ -1674,12 +1884,34 @@ Janev-Reiter, JUEL-rep. eth 13.127
   b0 -3.281190667595E+01 b1  1.451688819145E+01 b2 -6.829388255185E+00
   b3  2.300762824373E+00 b4 -5.727472024827E-01 b5  9.761110682421E-02
   b6 -1.043168740981E-02 b7  6.208936382936E-04 b8 -1.560452675954E-05
-TEMAX =   1.00000D 03 EV
+T1MIN =   1.00000D-01 EV
+T1MAX =   1.00000D 03 EV
+    Eth 13.127
+
   Max. rel. Error:    .xxx %
   Mean rel. Error:    .xxx %
 \end{verbatim}\end{small}
 
+\subsection{
+Reaction 2.5l4ar
+ $ e + H_2(v=5) \rightarrow e + H_2^+  + e $
+}
+Janev-Reiter, JUEL-rep. eth 13.127,
+with separated exponential Arrhenius pre-factor
 
+\begin{small}\begin{verbatim}
+  b-1 13.12700000000E+00
+  b0 -1.968820093858E+01  b1  1.450948155910E+00  b2 -4.465479318758E-01
+  b3  3.286847111773E-01  b4 -1.621773625324E-01  b5  4.038627004057E-02
+  b6 -5.348736344615E-03  b7  3.624573806803E-04  b8 -9.907716742314E-06
+
+T1MIN =   1.00000D-03 EV
+T1MAX =   1.00000D 03 EV
+    Eth 13.127
+
+  Max. rel. Error:    .xxx %
+  Mean rel. Error:    .xxx %
+\end{verbatim}\end{small}
 
 
 \newpage
@@ -1720,7 +1952,8 @@ $  e + H_2(v=6) \rightarrow e +  H_2(b_{triplet}) \rightarrow e + H + H $ (Ten.)
 Reaction 2.6l2th
 $ p + H_2(v=6) \rightarrow H + H_2^+$ (ion conversion)
 }
-thermal rate coeff. for T(p) = T(H2)
+thermal rate coeff. for T(p) = T(H2),
+$T/m$ with $m=m_{red}=2/3$.
 
 \begin{small}\begin{verbatim}
   b0 -2.198120878181D+01  b1  1.287800277418D+00  b2 -1.477569386898D+00
@@ -1736,7 +1969,8 @@ Reaction 2.6l2
 $ p + H_2(v=6) \rightarrow H + H_2^+$ (ion conversion)
 }
 Rate coeff. for H2 at rest, derived from HYDHEL data. Greenland scaling
-
+Taken at $E(H_2) = 0.1 \approx 0.0$ eV,  and fit is for temperature $T_p=T$ with $H_2$ at rest,
+$T/m$ with $m=m_p=1$.
 
 \begin{small}\begin{verbatim}
 
@@ -1773,7 +2007,29 @@ Janev-Reiter, JUEL-rep. eth 1.275300E+01
   b0 -3.241016595549E+01 b1  1.388073863431E+01 b2 -5.922094220968E+00
   b3  1.604395247906E+00 b4 -2.946889149200E-01 b5  3.654977851345E-02
   b6 -2.968203805941E-03 b7  1.443221949914E-04 b8 -3.204695160354E-06
-TEMAX =   1.00000D 03 EV
+T1MIN =   1.00000D-01 EV
+T1MAX =   1.00000D 03 EV
+   Eth  12.753
+  Max. rel. Error:    .xxx %
+  Mean rel. Error:    .xxx %
+\end{verbatim}\end{small}
+
+\subsection{
+Reaction 2.6l4ar
+ $ e + H_2(v=6) \rightarrow e + H_2^+  + e$
+}
+Janev-Reiter, JUEL-rep. eth 1.275300E+01,
+with separated exponential Arrhenius pre-factor
+
+\begin{small}\begin{verbatim}
+  b-1 1.275300000000E+01
+  b0 -1.966549000393E+01  b1  1.247595496620E+00  b2  1.513213490020E-01
+  b3 -2.053174899209E-01  b4  5.996873386256E-02  b5 -8.939051925029E-03
+  b6  6.820053065774E-04  b7 -2.092478358000E-05  b8 -1.855204539636E-20
+
+T1MIN =   1.00000D-03 EV
+T1MAX =   1.00000D 03 EV
+   Eth  12.753
   Max. rel. Error:    .xxx %
   Mean rel. Error:    .xxx %
 \end{verbatim}\end{small}
@@ -1816,7 +2072,8 @@ $ e +  H_2(v=7) \rightarrow e +  H_2(b_{triplet})\rightarrow e + H + H $ (Ten.)
 Reaction 2.7l2th
 $ p + H_2(v=7) \rightarrow H + H_2^+$ (ion conversion)
 }
-thermal rate coeff. for T(p) = T(H2)
+thermal rate coeff. for T(p) = T(H2),
+$T/m$ with $m=m_{red}=2/3$.
 
 \begin{small}\begin{verbatim}
   b0 -2.265768563070D+01  b1  1.287790813817D+00  b2 -1.477557104204D+00
@@ -1831,8 +2088,9 @@ thermal rate coeff. for T(p) = T(H2)
 Reaction 2.7l2
 $ p + H_2(v=7) \rightarrow H + H_2^+$ (ion conversion)
 }
-Rate coeff. for H2 at rest, derived from HYDHEL data. Greenland scaling
-
+Rate coeff. for H2 at rest (0.1 eV), derived from HYDHEL data. Greenland scaling
+Taken at $E(H_2) = 0.1 \approx 0.0$ eV,  and fit is for temperature $T_p=T$ with $H_2$ at rest,
+$T/m$ with $m=m_p=1$.
 
 \begin{small}\begin{verbatim}
 
@@ -1869,12 +2127,31 @@ Janev-Reiter, JUEL-rep. eth 1.240800E+01
   b0 -3.199508030297E+01 b1  1.365940877532E+01 b2 -6.049963928526E+00
   b3  1.751601536116E+00 b4 -3.473823631818E-01 b5  4.594389870428E-02
   b6 -3.858383561780E-03 b7  1.863363584155E-04 b8 -3.953846213463E-06
-TEMAX =   1.00000D 03 EV
+T1MIN =   1.00000D-01 EV
+T1MAX =   1.00000D 03 EV
+    Eth  12.408
   Max. rel. Error:    .xxx %
   Mean rel. Error:    .xxx %
 \end{verbatim}\end{small}
 
+\subsection{
+Reaction 2.7l4ar
+ $ e + H_2(v=7) \rightarrow e + H_2^+  + e$
+}
+Janev-Reiter, JUEL-rep. eth 1.240800E+01,
+with separated exponential Arrhenius pre-factor
 
+\begin{small}\begin{verbatim}
+  b-1 1.240800000000E+01
+  b0 -1.959334081278E+01  b1  1.346303283762E+00  b2 -9.507879818493E-02
+  b3 -4.724842256587E-02  b4  1.354385837415E-02  b5 -1.939915619011E-03
+  b6  1.551407654363E-04  b7 -5.231574049420E-06  b8 -1.118438651688E-18
+T1MIN =   1.00000D-03 EV
+T1MAX =   1.00000D 03 EV
+    Eth  12.408
+  Max. rel. Error:    .xxx %
+  Mean rel. Error:    .xxx %
+\end{verbatim}\end{small}
 
 \newpage
 \subsection{
@@ -1913,7 +2190,8 @@ $ e +  H_2(v=8) \rightarrow e +  H_2(b_{triplet}) \rightarrow e + H + H $ (Ten.)
 Reaction 2.8l2th
 $ p + H_2(v=8) \rightarrow H + H_2^+$ (ion conversion)
 }
-Rate coeff. for T(p) = T(H2)
+Rate coeff. for T(p) = T(H2),
+$T/m$ with $m=m_{red}=2/3$.
 
 \begin{small}\begin{verbatim}
   b0 -2.312377572562D+01  b1  1.287797017082D+00  b2 -1.477563048344D+00
@@ -1928,8 +2206,9 @@ Rate coeff. for T(p) = T(H2)
 Reaction 2.8l2
 $ p + H_2(v=8) \rightarrow H + H_2^+$ (ion conversion)
 }
-Rate coeff. for H2 at rest, derived from HYDHEL data. Greenland scaling
-
+Rate coeff. for H2 at rest (0.1 eV), derived from HYDHEL data. Greenland scaling
+Taken at $E(H_2) = 0.1 \approx 0.0$ eV,  and fit is for temperature $T_p=T$ with $H_2$ at rest,
+$T/m$ with $m=m_p=1$.
 
 \begin{small}\begin{verbatim}
 
@@ -1955,6 +2234,7 @@ Reaction 2.8l3
   Max. rel. Error:    .0024 %
   Mean rel. Error:    .0012 %
 \end{verbatim}\end{small}
+
 \subsection{
 Reaction 2.8l4
  $ e + H_2(v=8) \rightarrow e + H_2^+  + e$
@@ -1965,12 +2245,34 @@ Janev-Reiter, JUEL-rep. eth 1.209300E+01
   b0 -3.161209981241E+01 b1  1.315443924925E+01 b2 -5.565861497924E+00
   b3  1.466628707574E+00 b4 -2.498209080604E-01 b5  2.622910410308E-02
   b6 -1.531860781957E-03 b7  3.792496165572E-05 b8 -9.865107527778E-09
-TEMAX =   1.00000D 03 EV
+T1MIN =   1.00000D-01 EV
+T1MAX =   1.00000D 03 EV
+   Eth 12.093
+
   Max. rel. Error:    .xxx %
   Mean rel. Error:    .xxx %
 \end{verbatim}\end{small}
 
+\subsection{
+Reaction 2.8l4ar
+ $ e + H_2(v=8) \rightarrow e + H_2^+  + e$
+}
+Janev-Reiter, JUEL-rep. eth 1.209300E+01,
+with separated exponential Arrhenius pre-factor
 
+\begin{small}\begin{verbatim}
+  b-1 1.209300000000E+01
+  b0 -1.953368145316E+01  b1  1.254084488062E+00  b2  2.680074687430E-02
+  b3 -1.109101081211E-01  b4  2.880495513269E-02  b5 -3.723481850850E-03
+  b6  2.494848782952E-04  b7 -6.821937535592E-06  b8 -2.684744901126E-19
+
+T1MIN =   1.00000D-03 EV
+T1MAX =   1.00000D 03 EV
+   Eth 12.093
+
+  Max. rel. Error:    .xxx %
+  Mean rel. Error:    .xxx %
+\end{verbatim}\end{small}
 
 \newpage
 \subsection{
@@ -2009,7 +2311,8 @@ $ e +  H_2(v=9) \rightarrow e + H_2(b_{triplet}) \rightarrow e + H + H $ (Ten.)
 Reaction 2.9l2th
 $ p + H_2(v=9) \rightarrow H + H_2^+$ (ion conversion)
 }
-thermal Rate coeff. for T(p) = T(H2)
+thermal Rate coeff. for T(p) = T(H2),
+$T/m$ with $m=m_{red}=2/3$.
 
 \begin{small}\begin{verbatim}
   b0 -2.346789836907D+01  b1  1.287805383903D+00  b2 -1.477588720367D+00
@@ -2024,8 +2327,9 @@ thermal Rate coeff. for T(p) = T(H2)
 Reaction 2.9l2
 $ p + H_2(v=9) \rightarrow H + H_2^+$ (ion conversion)
 }
-Rate coeff. for H2 at rest, derived from HYDHEL data. Greenland scaling
-
+Rate coeff. for H2 at rest (0.1 eV), derived from HYDHEL data. Greenland scaling
+Taken at $E(H_2) = 0.1 \approx 0.0$ eV,  and fit is for temperature $T_p=T$ with $H_2$ at rest,
+$T/m$ with $m=m_p=1$.
 
 \begin{small}\begin{verbatim}
 
@@ -2063,12 +2367,34 @@ Janev-Reiter, JUEL-rep. eth 1.180900E+01
   b0 -3.129110031970E+01 b1  1.299658870009E+01 b2 -5.666154017553E+00
   b3  1.584294271614E+00 b4 -2.941981567042E-01 b5  3.467135918621E-02
   b6 -2.401613093175E-03 b7  8.406824396275E-05 b8 -9.845880388168E-07
-TEMAX =   1.00000D 03 EV
+T1MIN =   1.00000D-01 EV
+T1MAX =   1.00000D 03 EV
+   Eth 11.809
+
   Max. rel. Error:    .xxx %
   Mean rel. Error:    .xxx %
 \end{verbatim}\end{small}
 
+\subsection{
+Reaction 2.9l4ar
+ $ e + H_2(v=9) \rightarrow e + H_2^+  + e$
+}
+Janev-Reiter, JUEL-rep. eth 1.180900E+01,
+with separated exponential Arrhenius pre-factor
 
+\begin{small}\begin{verbatim}
+  b-1 1.180900000000E+01
+  b0 -1.949416843703E+01  b1  1.350090118753E+00  b2 -1.508710919706E-01
+  b3 -1.096485880940E-03  b4 -3.422486390747E-03  b5  1.150343034735E-03
+  b6 -1.177308166450E-04  b7  4.099019404424E-06  b8 -1.304715779986E-21
+
+T1MIN =   1.00000D-03 EV
+T1MAX =   1.00000D 03 EV
+   Eth 11.809
+
+  Max. rel. Error:    .xxx %
+  Mean rel. Error:    .xxx %
+\end{verbatim}\end{small}
 
 \newpage
 \subsection{
@@ -2107,7 +2433,8 @@ $ e +  H_2(v=10) \rightarrow e + e+ H_2(b_{triplet})\rightarrow e + H + H $ (Ten
 Reaction 2.10l2th
 $ p + H_2(v=10) \rightarrow H + H_2^+$ (ion conversion)
 }
-thermal rate coeff. for T(p) = T(H2)
+thermal rate coeff. for T(p) = T(H2),
+$T/m$ with $m=m_{red}=2/3$.
 
 \begin{small}\begin{verbatim}
   b0 -2.373156447008D+01  b1  1.287797144053D+00  b2 -1.477569836046D+00
@@ -2122,8 +2449,9 @@ thermal rate coeff. for T(p) = T(H2)
 Reaction 2.10l2
 $ p + H_2(v=10) \rightarrow H + H_2^+$ (ion conversion)
 }
-Rate coeff. for H2 at rest, derived from HYDHEL data. Greenland scaling
-
+Rate coeff. for H2 at rest (0.1 eV), derived from HYDHEL data. Greenland scaling
+Taken at $E(H_2) = 0.1 \approx 0.0$ eV,  and fit is for temperature $T_p=T$ with $H_2$ at rest,
+$T/m$ with $m=m_p=1$.
 
 \begin{small}\begin{verbatim}
 
@@ -2160,12 +2488,33 @@ Janev-Reiter, JUEL-rep. eth 11.557
   b0 -3.100582302649E+01 b1  1.274999381088E+01 b2 -5.673204141782E+00
   b3  1.689291367906E+00 b4 -3.519487708149E-01 b5  4.915723567388E-02
   b6 -4.314196523316E-03 b7  2.129587027608E-04 b8 -4.482246060660E-06
-TEMAX =   1.00000D 03 EV
+T1MIN =   1.00000D-01 EV
+T1MAX =   1.00000D 03 EV
+   Eth 11.557
+
   Max. rel. Error:    .xxx %
   Mean rel. Error:    .xxx %
 \end{verbatim}\end{small}
 
+\subsection{
+Reaction 2.10l4ar
+ $ e + H_2(v=10) \rightarrow e + H_2^+  + e$
+}
+Janev-Reiter, JUEL-rep. eth 11.557,
+with separated exponential Arrhenius pre-factor
 
+\begin{small}\begin{verbatim}
+  b-1 11.55700000000E+00
+  b0 -1.945289532879E+01  b1  1.260603191167E+00  b2 -8.295052464082E-02
+  b3 -2.262541851055E-02  b4 -6.022500746933E-04  b5  1.089319137439E-03
+  b6 -1.339304891776E-04  b7  5.074412449086E-06  b8 -2.077788243221E-22
+T1MIN =   1.00000D-03 EV
+T1MAX =   1.00000D 03 EV
+   Eth 11.557
+
+  Max. rel. Error:    .xxx %
+  Mean rel. Error:    .xxx %
+\end{verbatim}\end{small}
 
 \newpage
 \subsection{
@@ -2203,7 +2552,8 @@ $  e + H_2(v=11) \rightarrow e + H_2(b_{triplet})\rightarrow e + H + H $ (Ten.)
 Reaction 2.11l2th
 $ p + H_2(v=11) \rightarrow H + H_2^+$ (ion conversion)
 }
-thermal rate coeff. for T(p) = T(H2)
+thermal rate coeff. for T(p) = T(H2),
+$T/m$ with $m=m_{red}=2/3$.
 
 \begin{small}\begin{verbatim}
   b0 -2.393739736481D+01  b1  1.287787931375D+00  b2 -1.477544702789D+00
@@ -2218,8 +2568,9 @@ thermal rate coeff. for T(p) = T(H2)
 Reaction 2.11l2
 $ p + H_2(v=11) \rightarrow H + H_2^+$ (ion conversion)
 }
-Rate coeff. for H2 at rest, derived from HYDHEL data. Greenland scaling
-
+Rate coeff. for H2 at rest (0.1 eV), derived from HYDHEL data. Greenland scaling
+Taken at $E(H_2) = 0.1 \approx 0.0$ eV,  and fit is for temperature $T_p=T$ with $H_2$ at rest,
+$T/m$ with $m=m_p=1$.
 
 \begin{small}\begin{verbatim}
 
@@ -2257,10 +2608,35 @@ Janev-Reiter, JUEL-rep. eth 1.133400E+01
   b0 -3.079446327037E+01 b1  1.259121133842E+01 b2 -5.554414001000E+00
   b3  1.627653615551E+00 b4 -3.364988459532E-01 b5  4.759783628804E-02
   b6 -4.327984150924E-03 b7  2.256855418333E-04 b8 -5.093163873610E-06
-TEMAX =   1.00000D 03 EV
+T1MIN =   1.00000D-01 EV
+T1MAX =   1.00000D 03 EV
+  Eth  11.334
+
   Max. rel. Error:    .xxx %
   Mean rel. Error:    .xxx %
 \end{verbatim}\end{small}
+
+\subsection{
+Reaction 2.11l4ar
+ $ e + H_2(v=11) \rightarrow e + H_2^+  + e$
+}
+Janev-Reiter, JUEL-rep. eth 1.133400E+01,
+with separated exponential Arrhenius pre-factor
+
+\begin{small}\begin{verbatim}
+  b-1 1.133400000000E+01
+  b0 -1.946330781490E+01  b1  1.309931441017E+00  b2 -4.339772265708E-02
+  b3 -7.506085535637E-02  b4  1.799178153471E-02  b5 -1.810732791932E-03
+  b6  6.069309047168E-05  b7  2.548764084991E-06  b8 -1.744738940036E-07
+T1MIN =   1.00000D-03 EV
+T1MAX =   1.00000D 03 EV
+  Eth  11.334
+
+  Max. rel. Error:    .xxx %
+  Mean rel. Error:    .xxx %
+\end{verbatim}\end{small}
+
+
 \newpage
 \subsection{
 Reaction 2.12l1
@@ -2297,7 +2673,8 @@ $  e + H_2(v=12) \rightarrow e + H_2(b_{triplet})\rightarrow e + H + H $ (Ten.)
 Reaction 2.12l2th
 $ p + H_2(v=12) \rightarrow H + H_2^+$ (ion conversion)
 }
-thermal rate coeff. for T(p) = T(H2)
+thermal rate coeff. for T(p) = T(H2),
+$T/m$ with $m=m_{red}=2/3$.
 
 \begin{small}\begin{verbatim}
   b0 -2.409894660398D+01  b1  1.287796545437D+00  b2 -1.477563283235D+00
@@ -2312,8 +2689,9 @@ thermal rate coeff. for T(p) = T(H2)
 Reaction 2.12l2
 $ p + H_2(v=12) \rightarrow H + H_2^+$ (ion conversion)
 }
-Rate coeff. for H2 at rest, derived from HYDHEL data. Greenland scaling
-
+Rate coeff. for H2 at rest (0.1 eV), derived from HYDHEL data. Greenland scaling
+Taken at $E(H_2) = 0.1 \approx 0.0$ eV,  and fit is for temperature $T_p=T$ with $H_2$ at rest,
+$T/m$ with $m=m_p=1$.
 
 \begin{small}\begin{verbatim}
 
@@ -2350,10 +2728,34 @@ Janev-Reiter, JUEL-rep. eth 11.166
   b0 -3.059332240574E+01 b1  1.235407166829E+01 b2 -5.305620831066E+00
   b3  1.453071037647E+00 b4 -2.664731004959E-01 b5  3.162021399547E-02
   b6 -2.272804513332E-03 b7  8.697749637266E-05 b8 -1.276410280092E-06
-TEMAX =   1.00000D 03 EV
+T1MIN =   1.00000D-01 EV
+T1MAX =   1.00000D 03 EV
+  Eth 11.166
+
   Max. rel. Error:    .xxx %
   Mean rel. Error:    .xxx %
 \end{verbatim}\end{small}
+
+\subsection{
+Reaction 2.12l4ar
+ $ e + H_2(v=12) \rightarrow e + H_2^+  + e$
+}
+Janev-Reiter, JUEL-rep. eth 11.166,
+with separated exponential Arrhenius pre-factor
+
+\begin{small}\begin{verbatim}
+  b-1 11.16600000000E+00
+  b0 -1.924850182249E+01  b1  1.010238647984E+00  b2  1.631937799994E-01
+  b3 -1.464660799314E-01  b4  3.144628167956E-02  b5 -3.315668366658E-03
+  b6  1.726199235661E-04  b7 -3.431227743517E-06  b8 -6.669682946895E-19
+T1MIN =   1.00000D-03 EV
+T1MAX =   1.00000D 03 EV
+  Eth 11.166
+
+  Max. rel. Error:    .xxx %
+  Mean rel. Error:    .xxx %
+\end{verbatim}\end{small}
+
 \newpage
 \subsection{
 Reaction 2.13l1
@@ -2391,7 +2793,8 @@ $ e +  H_2(v=13) \rightarrow e + H_2(b_{triplet})\rightarrow e + H + H $ (Ten.)
 Reaction 2.13l2th
 $ p + H_2(v=13) \rightarrow H + H_2^+$ (ion conversion)
 }
-thermal rate coeff. for T(p) = T(H2)
+thermal rate coeff. for T(p) = T(H2),
+$T/m$ with $m=m_{red}=2/3$.
 
 \begin{small}\begin{verbatim}
   b0 -2.422483601892D+01  b1  1.287790908632D+00  b2 -1.477549007523D+00
@@ -2406,8 +2809,9 @@ thermal rate coeff. for T(p) = T(H2)
 Reaction 2.13l2
 $ p + H_2(v=13) \rightarrow H + H_2^+$ (ion conversion)
 }
-Rate coeff. for H2 at rest, derived from HYDHEL data. Greenland scaling
-
+Rate coeff. for H2 at rest (0.1 eV), derived from HYDHEL data. Greenland scaling
+Taken at $E(H_2) = 0.1 \approx 0.0$ eV,  and fit is for temperature $T_p=T$ with $H_2$ at rest,
+$T/m$ with $m=m_p=1$.
 
 \begin{small}\begin{verbatim}
 
@@ -2444,7 +2848,30 @@ Janev-Reiter, JUEL-rep. eth 1.103600E+01
   b0 -3.040637628145E+01 b1  1.206139604914E+01 b2 -5.133567877491E+00
   b3  1.420670602666E+00 b4 -2.718421480963E-01 b5  3.485869586564E-02
   b6 -2.812572602589E-03 b7  1.272053775577E-04 b8 -2.424574709641E-06
-TEMAX =   1.00000D 03 EV
+T1MIN =   1.00000D-01 EV
+T1MAX =   1.00000D 03 EV
+   Eth  11.036
+
+  Max. rel. Error:    .xxx %
+  Mean rel. Error:    .xxx %
+\end{verbatim}\end{small}
+
+\subsection{
+Reaction 2.13l4ar
+ $ e + H_2(v=13) \rightarrow e + H_2^+  + e$
+}
+Janev-Reiter, JUEL-rep. eth 1.103600E+01,
+with separated exponential Arrhenius pre-factor
+
+\begin{small}\begin{verbatim}
+  b-1 1.103600000000E+01
+  b0 -1.937834529948E+01  b1  1.138168549504E+00  b2  1.030714963736E-01
+  b3 -1.295069297668E-01  b4  2.845088774605E-02  b5 -2.993653782248E-03
+  b6  1.534686508642E-04  b7 -2.950144939001E-06  b8 -6.585824084197E-22
+T1MIN =   1.00000D-03 EV
+T1MAX =   1.00000D 03 EV
+   Eth  11.036
+
   Max. rel. Error:    .xxx %
   Mean rel. Error:    .xxx %
 \end{verbatim}\end{small}
@@ -2486,7 +2913,8 @@ $ e +  H_2(v=14) \rightarrow e + H_2(b_{triplet}) \rightarrow e + H + H $ (Ten.)
 Reaction 2.14l2th
 $ p + H_2(v=14) \rightarrow H + H_2^+$ (ion conversion)
 }
-thermal rate coeff. for T(p) = T(H2)
+thermal rate coeff. for T(p) = T(H2),
+$T/m$ with $m=m_{red}=2/3$.
 
 \begin{small}\begin{verbatim}
   b0 -2.432076996732D+01  b1  1.287803404369D+00  b2 -1.477573884680D+00
@@ -2501,8 +2929,9 @@ thermal rate coeff. for T(p) = T(H2)
 Reaction 2.14l2
 $ p + H_2(v=14) \rightarrow H + H_2^+$ (ion conversion)
 }
-Rate coeff. for H2 at rest, derived from HYDHEL data. Greenland scaling
-
+Rate coeff. for H2 at rest (0.1 eV), derived from HYDHEL data. Greenland scaling
+Taken at $E(H_2) = 0.1 \approx 0.0$ eV,  and fit is for temperature $T_p=T$ with $H_2$ at rest,
+$T/m$ with $m=m_p=1$.
 
 \begin{small}\begin{verbatim}
 
@@ -2538,40 +2967,74 @@ Janev-Reiter, JUEL-rep. eth  10.959
   b0 -3.032266556048E+01 b1  1.230019998846E+01 b2 -5.638800771953E+00
   b3  1.795709971225E+00 b4 -4.147784008872E-01 b5  6.552622885626E-02
   b6 -6.544169502584E-03 b7  3.672791438275E-04 b8 -8.764761530765E-06
-TEMAX =   1.00000D 03 EV
+T1MIN =   1.00000D-01 EV
+T1MAX =   1.00000D 03 EV
+   Eth  10.959
+
   Max. rel. Error:    .xxx %
   Mean rel. Error:    .xxx %
+\end{verbatim}\end{small}
+
+
+\subsection{
+Reaction 2.14l4ar
+ $ e + H_2(v=14) \rightarrow e + H_2^+  + e$
+}
+Janev-Reiter, JUEL-rep. eth  10.959,
+with separated exponential Arrhenius pre-factor
+
+\begin{small}\begin{verbatim}
+  b-1 10.95900000000E+00
+  b0 -1.936641600171E+01  b1  1.392175790560E+00  b2 -3.101235770021E-01
+  b3  1.493320052789E-01  b4 -7.201655314234E-02  b5  1.775240602694E-02
+  b6 -2.300697309614E-03  b7  1.515251342432E-04  b8  2.002201976529E-03
+T1MIN =   1.00000D-03 EV
+T1MAX =   1.00000D 03 EV
+   Eth  10.959
+
+  Max. rel. Error:    .xxx %
+  Mean rel. Error:    .xxx %
+
 \end{verbatim}\end{small}
 \newpage
 
 
 \subsection{
-Reaction 2.1.8rs
+Reaction 2.1.8rr1
  $ p + e \rightarrow H(n=1) + h\nu$, direct rad.rec
 }
-Fujimoto, single step rate, for Lyman rad.rec. continuum emission
-to be used as Lyman-cont. source rate
+Sawada-Fujimoto, single step rate, for Lyman rad.rec. continuum emission
+to be used as Lyman-cont. source rate.
+Tbd.: Find H.1 cross section and H.8 rate for electron energy loss,
+sample electron from sigma(v) v fmax, (sigma:  corresponding H.1 cross section,
+and then find Lyman cont. frequency, e.g. for photo-ionisation.
+
 
 \begin{small}\begin{verbatim}
 
   b0 -2.957888914571D+01  b1 -5.407764512982D-01  b2 -1.887782807843D-02
   b3 -5.957963562133D-03  b4 -6.689096738611D-04  b5  1.798038419103D-04
   b6  5.588505208658D-06  b7 -4.618096511047D-06  b8  3.313570987992D-07
+T1MIN =   1.00000D-01
+T1MAX =   1.00000D 03
 
   Max. rel. Error:    .0700 %
   Mean rel. Error:    .0372 %
 
 \end{verbatim}\end{small}
-\begin{figure} \label{2.1.8rs}
+\begin{figure} \label{2.1.8rr1}
 \epsfxsize=16truecm
 \epsffile{H2vibr_PS/hydrrs.eps}
 \end{figure}
 \newpage
+
+
 \section{H.3 :  Fits for $<\sigma v> (E_b,T)$}
 
 \subsection{
 Reaction 2.0l2 $   p + H_2(v=0) \rightarrow H(1s) + H_2^+$}
-same as in HYDHEL 3.2.3, for $v=0$. Scaling from here to other vibr. states $v$
+same as in HYDHEL 3.2.3, for $v=0$.
+Then from here: scaling to other init. vibr. states $v$, see below.
 
 
 \begin{small}\begin{verbatim}
@@ -2618,6 +3081,722 @@ same as in HYDHEL 3.2.3, for $v=0$. Scaling from here to other vibr. states $v$
 \end{verbatim}\end{small}
 \newpage
 
+\subsection{
+Reaction 2.1l2 $   p + H_2(v=1) \rightarrow H(1s) + H_2^+$}
+scaled from HYDHEL 3.2.3, to $v=1$. Scaled cross section, Greenland: $g_2(v)$
+Only the 00 coefficient (constant factor) is scaled.
+
+
+\begin{small}\begin{verbatim}
+    E Index         0                   1                   2
+  T Index
+     0     -2.327365458433E+01  6.248759475696e-01  4.860672617319e-02
+     1      1.497880823202e+00 -1.321184618254e+00  1.610180305377e-01
+     2     -1.108848312589e+00  1.026939763848e+00 -2.764437632008e-01
+     3      2.723796545755e-01 -3.349189897157e-01  1.525831234833e-01
+     4      2.721877464232e-02  4.328258310611e-02 -4.172607648071e-02
+     5     -1.779177173774e-02  4.465034873018e-04  6.494173133750e-03
+     6      2.547195398346e-03 -6.602886969983e-04 -5.936946344163e-04
+     7     -1.581068390892e-04  6.000753124589e-05  2.989789198510e-05
+     8      3.720016363224e-06 -1.724843689004e-06 -6.403267693113e-07
+
+    E Index         3                   4                   5
+  T Index
+     0     -1.200688114292e-01  8.087736504737e-03  9.460417081363e-03
+     1      1.165310493854e-01 -3.963918450387e-02  4.451468403951e-03
+     2     -3.948109106588e-02  3.853676685634e-02 -9.097709483121e-03
+     3     -9.592981926094e-03 -1.131614493158e-02  3.519316476081e-03
+     4      1.001163900824e-02  3.016020168360e-04 -4.649867654705e-04
+     5     -2.726517864643e-03  3.947434451322e-04 -3.560364682888e-06
+     6      3.516907384191e-04 -7.253981468239e-05  6.007588925145e-06
+     7     -2.210901325776e-05  5.074761954649e-06 -4.890225279817e-07
+     8      5.443461456508e-07 -1.285040546716e-07  1.225908917355e-08
+
+    E Index         6                   7                   8
+  T Index
+     0     -2.128651089328e-03  1.685181886244e-04 -4.665309226730e-06
+     1     -1.304738719348e-04 -8.714697396102e-06  4.796574269551e-07
+     2      1.042066219239e-03 -5.955686719189e-05  1.358749516236e-06
+     3     -4.463914380371e-04  2.672110767494e-05 -6.218012239798e-07
+     4      7.356430658399e-05 -4.797055206851e-06  1.159195338618e-07
+     5     -4.585211534749e-06  4.292978331848e-07 -1.209703556619e-08
+     6     -1.866842996766e-08 -2.383240469589e-08  9.353713300206e-10
+     7      1.067090708836e-08  1.188959741308e-09 -5.741789281748e-11
+     8     -1.967393094286e-10 -3.854014407618e-11  1.748544462760e-12
+
+     Error  7.17e-03 (D)
+
+    Error is improved to 2.24e-03 (C) if only values of <sv> for T > 1 eV are
+    considered.
+\end{verbatim}\end{small}
+\newpage
+
+\subsection{
+Reaction 2.2l2 $   p + H_2(v=2) \rightarrow H(1s) + H_2^+$}
+scaled from HYDHEL 3.2.3, to $v=2$. Scaled cross section, Greenland: $g_2(v)$
+tbd:
+Only the 00 coefficient (constant factor) is scaled.
+
+
+\begin{small}\begin{verbatim}
+    E Index         0                   1                   2
+  T Index
+     0     -2.236689231433E+01  6.248759475696e-01  4.860672617319e-02
+     1      1.497880823202e+00 -1.321184618254e+00  1.610180305377e-01
+     2     -1.108848312589e+00  1.026939763848e+00 -2.764437632008e-01
+     3      2.723796545755e-01 -3.349189897157e-01  1.525831234833e-01
+     4      2.721877464232e-02  4.328258310611e-02 -4.172607648071e-02
+     5     -1.779177173774e-02  4.465034873018e-04  6.494173133750e-03
+     6      2.547195398346e-03 -6.602886969983e-04 -5.936946344163e-04
+     7     -1.581068390892e-04  6.000753124589e-05  2.989789198510e-05
+     8      3.720016363224e-06 -1.724843689004e-06 -6.403267693113e-07
+
+    E Index         3                   4                   5
+  T Index
+     0     -1.200688114292e-01  8.087736504737e-03  9.460417081363e-03
+     1      1.165310493854e-01 -3.963918450387e-02  4.451468403951e-03
+     2     -3.948109106588e-02  3.853676685634e-02 -9.097709483121e-03
+     3     -9.592981926094e-03 -1.131614493158e-02  3.519316476081e-03
+     4      1.001163900824e-02  3.016020168360e-04 -4.649867654705e-04
+     5     -2.726517864643e-03  3.947434451322e-04 -3.560364682888e-06
+     6      3.516907384191e-04 -7.253981468239e-05  6.007588925145e-06
+     7     -2.210901325776e-05  5.074761954649e-06 -4.890225279817e-07
+     8      5.443461456508e-07 -1.285040546716e-07  1.225908917355e-08
+
+    E Index         6                   7                   8
+  T Index
+     0     -2.128651089328e-03  1.685181886244e-04 -4.665309226730e-06
+     1     -1.304738719348e-04 -8.714697396102e-06  4.796574269551e-07
+     2      1.042066219239e-03 -5.955686719189e-05  1.358749516236e-06
+     3     -4.463914380371e-04  2.672110767494e-05 -6.218012239798e-07
+     4      7.356430658399e-05 -4.797055206851e-06  1.159195338618e-07
+     5     -4.585211534749e-06  4.292978331848e-07 -1.209703556619e-08
+     6     -1.866842996766e-08 -2.383240469589e-08  9.353713300206e-10
+     7      1.067090708836e-08  1.188959741308e-09 -5.741789281748e-11
+     8     -1.967393094286e-10 -3.854014407618e-11  1.748544462760e-12
+
+     Error  7.17e-03 (D)
+
+    Error is improved to 2.24e-03 (C) if only values of <sv> for T > 1 eV are
+    considered.
+\end{verbatim}\end{small}
+\newpage
+
+\subsection{
+Reaction 2.3l2 $   p + H_2(v=3) \rightarrow H(1s) + H_2^+$}
+scaled from HYDHEL 3.2.3, to $v=3$. Scaled cross section, Greenland: $g_2(v)$
+tbd:
+Only the 00 coefficient (constant factor) is scaled.
+
+
+\begin{small}\begin{verbatim}
+    E Index         0                   1                   2
+  T Index
+     0     -2.087305019433E+01  6.248759475696e-01  4.860672617319e-02
+     1      1.497880823202e+00 -1.321184618254e+00  1.610180305377e-01
+     2     -1.108848312589e+00  1.026939763848e+00 -2.764437632008e-01
+     3      2.723796545755e-01 -3.349189897157e-01  1.525831234833e-01
+     4      2.721877464232e-02  4.328258310611e-02 -4.172607648071e-02
+     5     -1.779177173774e-02  4.465034873018e-04  6.494173133750e-03
+     6      2.547195398346e-03 -6.602886969983e-04 -5.936946344163e-04
+     7     -1.581068390892e-04  6.000753124589e-05  2.989789198510e-05
+     8      3.720016363224e-06 -1.724843689004e-06 -6.403267693113e-07
+
+    E Index         3                   4                   5
+  T Index
+     0     -1.200688114292e-01  8.087736504737e-03  9.460417081363e-03
+     1      1.165310493854e-01 -3.963918450387e-02  4.451468403951e-03
+     2     -3.948109106588e-02  3.853676685634e-02 -9.097709483121e-03
+     3     -9.592981926094e-03 -1.131614493158e-02  3.519316476081e-03
+     4      1.001163900824e-02  3.016020168360e-04 -4.649867654705e-04
+     5     -2.726517864643e-03  3.947434451322e-04 -3.560364682888e-06
+     6      3.516907384191e-04 -7.253981468239e-05  6.007588925145e-06
+     7     -2.210901325776e-05  5.074761954649e-06 -4.890225279817e-07
+     8      5.443461456508e-07 -1.285040546716e-07  1.225908917355e-08
+
+    E Index         6                   7                   8
+  T Index
+     0     -2.128651089328e-03  1.685181886244e-04 -4.665309226730e-06
+     1     -1.304738719348e-04 -8.714697396102e-06  4.796574269551e-07
+     2      1.042066219239e-03 -5.955686719189e-05  1.358749516236e-06
+     3     -4.463914380371e-04  2.672110767494e-05 -6.218012239798e-07
+     4      7.356430658399e-05 -4.797055206851e-06  1.159195338618e-07
+     5     -4.585211534749e-06  4.292978331848e-07 -1.209703556619e-08
+     6     -1.866842996766e-08 -2.383240469589e-08  9.353713300206e-10
+     7      1.067090708836e-08  1.188959741308e-09 -5.741789281748e-11
+     8     -1.967393094286e-10 -3.854014407618e-11  1.748544462760e-12
+
+     Error  7.17e-03 (D)
+
+    Error is improved to 2.24e-03 (C) if only values of <sv> for T > 1 eV are
+    considered.
+\end{verbatim}\end{small}
+\newpage
+
+\subsection{
+Reaction 2.4l2 $   p + H_2(v=4) \rightarrow H(1s) + H_2^+$}
+scaled from HYDHEL 3.2.3, to $v=4$. Scaled cross section, Greenland: \cite{kn:Green} $g_2(v)$
+tbd:
+Only the 00 coefficient (constant factor) is scaled.
+
+
+\begin{small}\begin{verbatim}
+    E Index         0                   1                   2
+  T Index
+     0     -1.895294878433E+01  6.248759475696e-01  4.860672617319e-02
+     1      1.497880823202e+00 -1.321184618254e+00  1.610180305377e-01
+     2     -1.108848312589e+00  1.026939763848e+00 -2.764437632008e-01
+     3      2.723796545755e-01 -3.349189897157e-01  1.525831234833e-01
+     4      2.721877464232e-02  4.328258310611e-02 -4.172607648071e-02
+     5     -1.779177173774e-02  4.465034873018e-04  6.494173133750e-03
+     6      2.547195398346e-03 -6.602886969983e-04 -5.936946344163e-04
+     7     -1.581068390892e-04  6.000753124589e-05  2.989789198510e-05
+     8      3.720016363224e-06 -1.724843689004e-06 -6.403267693113e-07
+
+    E Index         3                   4                   5
+  T Index
+     0     -1.200688114292e-01  8.087736504737e-03  9.460417081363e-03
+     1      1.165310493854e-01 -3.963918450387e-02  4.451468403951e-03
+     2     -3.948109106588e-02  3.853676685634e-02 -9.097709483121e-03
+     3     -9.592981926094e-03 -1.131614493158e-02  3.519316476081e-03
+     4      1.001163900824e-02  3.016020168360e-04 -4.649867654705e-04
+     5     -2.726517864643e-03  3.947434451322e-04 -3.560364682888e-06
+     6      3.516907384191e-04 -7.253981468239e-05  6.007588925145e-06
+     7     -2.210901325776e-05  5.074761954649e-06 -4.890225279817e-07
+     8      5.443461456508e-07 -1.285040546716e-07  1.225908917355e-08
+
+    E Index         6                   7                   8
+  T Index
+     0     -2.128651089328e-03  1.685181886244e-04 -4.665309226730e-06
+     1     -1.304738719348e-04 -8.714697396102e-06  4.796574269551e-07
+     2      1.042066219239e-03 -5.955686719189e-05  1.358749516236e-06
+     3     -4.463914380371e-04  2.672110767494e-05 -6.218012239798e-07
+     4      7.356430658399e-05 -4.797055206851e-06  1.159195338618e-07
+     5     -4.585211534749e-06  4.292978331848e-07 -1.209703556619e-08
+     6     -1.866842996766e-08 -2.383240469589e-08  9.353713300206e-10
+     7      1.067090708836e-08  1.188959741308e-09 -5.741789281748e-11
+     8     -1.967393094286e-10 -3.854014407618e-11  1.748544462760e-12
+
+     Error  7.17e-03 (D)
+
+    Error is improved to 2.24e-03 (C) if only values of <sv> for T > 1 eV are
+    considered.
+\end{verbatim}\end{small}
+\newpage
+
+\subsection{
+Reaction 2.5l2 $   p + H_2(v=5) \rightarrow H(1s) + H_2^+$}
+scaled from HYDHEL 3.2.3, to $v=5$. Scaled cross section, Greenland: $g_2(v)$
+tbd:
+Only the 00 coefficient (constant factor) is scaled.
+
+
+\begin{small}\begin{verbatim}
+    E Index         0                   1                   2
+  T Index
+     0     -1.899435371433E+01  6.248759475696e-01  4.860672617319e-02
+     1      1.497880823202e+00 -1.321184618254e+00  1.610180305377e-01
+     2     -1.108848312589e+00  1.026939763848e+00 -2.764437632008e-01
+     3      2.723796545755e-01 -3.349189897157e-01  1.525831234833e-01
+     4      2.721877464232e-02  4.328258310611e-02 -4.172607648071e-02
+     5     -1.779177173774e-02  4.465034873018e-04  6.494173133750e-03
+     6      2.547195398346e-03 -6.602886969983e-04 -5.936946344163e-04
+     7     -1.581068390892e-04  6.000753124589e-05  2.989789198510e-05
+     8      3.720016363224e-06 -1.724843689004e-06 -6.403267693113e-07
+
+    E Index         3                   4                   5
+  T Index
+     0     -1.200688114292e-01  8.087736504737e-03  9.460417081363e-03
+     1      1.165310493854e-01 -3.963918450387e-02  4.451468403951e-03
+     2     -3.948109106588e-02  3.853676685634e-02 -9.097709483121e-03
+     3     -9.592981926094e-03 -1.131614493158e-02  3.519316476081e-03
+     4      1.001163900824e-02  3.016020168360e-04 -4.649867654705e-04
+     5     -2.726517864643e-03  3.947434451322e-04 -3.560364682888e-06
+     6      3.516907384191e-04 -7.253981468239e-05  6.007588925145e-06
+     7     -2.210901325776e-05  5.074761954649e-06 -4.890225279817e-07
+     8      5.443461456508e-07 -1.285040546716e-07  1.225908917355e-08
+
+    E Index         6                   7                   8
+  T Index
+     0     -2.128651089328e-03  1.685181886244e-04 -4.665309226730e-06
+     1     -1.304738719348e-04 -8.714697396102e-06  4.796574269551e-07
+     2      1.042066219239e-03 -5.955686719189e-05  1.358749516236e-06
+     3     -4.463914380371e-04  2.672110767494e-05 -6.218012239798e-07
+     4      7.356430658399e-05 -4.797055206851e-06  1.159195338618e-07
+     5     -4.585211534749e-06  4.292978331848e-07 -1.209703556619e-08
+     6     -1.866842996766e-08 -2.383240469589e-08  9.353713300206e-10
+     7      1.067090708836e-08  1.188959741308e-09 -5.741789281748e-11
+     8     -1.967393094286e-10 -3.854014407618e-11  1.748544462760e-12
+
+     Error  7.17e-03 (D)
+
+    Error is improved to 2.24e-03 (C) if only values of <sv> for T > 1 eV are
+    considered.
+\end{verbatim}\end{small}
+\newpage
+
+\subsection{
+Reaction 2.6l2 $   p + H_2(v=6) \rightarrow H(1s) + H_2^+$}
+scaled from HYDHEL 3.2.3, to $v=6$. Scaled cross section, Greenland: $g_2(v)$
+tbd:
+Only the 00 coefficient (constant factor) is scaled.
+
+
+\begin{small}\begin{verbatim}
+    E Index         0                   1                   2
+  T Index
+     0     -1.899435371433E+01  6.248759475696e-01  4.860672617319e-02
+     1      1.497880823202e+00 -1.321184618254e+00  1.610180305377e-01
+     2     -1.108848312589e+00  1.026939763848e+00 -2.764437632008e-01
+     3      2.723796545755e-01 -3.349189897157e-01  1.525831234833e-01
+     4      2.721877464232e-02  4.328258310611e-02 -4.172607648071e-02
+     5     -1.779177173774e-02  4.465034873018e-04  6.494173133750e-03
+     6      2.547195398346e-03 -6.602886969983e-04 -5.936946344163e-04
+     7     -1.581068390892e-04  6.000753124589e-05  2.989789198510e-05
+     8      3.720016363224e-06 -1.724843689004e-06 -6.403267693113e-07
+
+    E Index         3                   4                   5
+  T Index
+     0     -1.200688114292e-01  8.087736504737e-03  9.460417081363e-03
+     1      1.165310493854e-01 -3.963918450387e-02  4.451468403951e-03
+     2     -3.948109106588e-02  3.853676685634e-02 -9.097709483121e-03
+     3     -9.592981926094e-03 -1.131614493158e-02  3.519316476081e-03
+     4      1.001163900824e-02  3.016020168360e-04 -4.649867654705e-04
+     5     -2.726517864643e-03  3.947434451322e-04 -3.560364682888e-06
+     6      3.516907384191e-04 -7.253981468239e-05  6.007588925145e-06
+     7     -2.210901325776e-05  5.074761954649e-06 -4.890225279817e-07
+     8      5.443461456508e-07 -1.285040546716e-07  1.225908917355e-08
+
+    E Index         6                   7                   8
+  T Index
+     0     -2.128651089328e-03  1.685181886244e-04 -4.665309226730e-06
+     1     -1.304738719348e-04 -8.714697396102e-06  4.796574269551e-07
+     2      1.042066219239e-03 -5.955686719189e-05  1.358749516236e-06
+     3     -4.463914380371e-04  2.672110767494e-05 -6.218012239798e-07
+     4      7.356430658399e-05 -4.797055206851e-06  1.159195338618e-07
+     5     -4.585211534749e-06  4.292978331848e-07 -1.209703556619e-08
+     6     -1.866842996766e-08 -2.383240469589e-08  9.353713300206e-10
+     7      1.067090708836e-08  1.188959741308e-09 -5.741789281748e-11
+     8     -1.967393094286e-10 -3.854014407618e-11  1.748544462760e-12
+
+     Error  7.17e-03 (D)
+
+    Error is improved to 2.24e-03 (C) if only values of <sv> for T > 1 eV are
+    considered.
+\end{verbatim}\end{small}
+\newpage
+
+
+\subsection{
+Reaction 2.7l2 $   p + H_2(v=7) \rightarrow H(1s) + H_2^+$}
+scaled from HYDHEL 3.2.3, to $v=7$. Scaled cross section, Greenland: $g_2(v)$
+tbd:
+Only the 00 coefficient (constant factor) is scaled.
+
+
+\begin{small}\begin{verbatim}
+    E Index         0                   1                   2
+  T Index
+     0     -1.899435371433E+01  6.248759475696e-01  4.860672617319e-02
+     1      1.497880823202e+00 -1.321184618254e+00  1.610180305377e-01
+     2     -1.108848312589e+00  1.026939763848e+00 -2.764437632008e-01
+     3      2.723796545755e-01 -3.349189897157e-01  1.525831234833e-01
+     4      2.721877464232e-02  4.328258310611e-02 -4.172607648071e-02
+     5     -1.779177173774e-02  4.465034873018e-04  6.494173133750e-03
+     6      2.547195398346e-03 -6.602886969983e-04 -5.936946344163e-04
+     7     -1.581068390892e-04  6.000753124589e-05  2.989789198510e-05
+     8      3.720016363224e-06 -1.724843689004e-06 -6.403267693113e-07
+
+    E Index         3                   4                   5
+  T Index
+     0     -1.200688114292e-01  8.087736504737e-03  9.460417081363e-03
+     1      1.165310493854e-01 -3.963918450387e-02  4.451468403951e-03
+     2     -3.948109106588e-02  3.853676685634e-02 -9.097709483121e-03
+     3     -9.592981926094e-03 -1.131614493158e-02  3.519316476081e-03
+     4      1.001163900824e-02  3.016020168360e-04 -4.649867654705e-04
+     5     -2.726517864643e-03  3.947434451322e-04 -3.560364682888e-06
+     6      3.516907384191e-04 -7.253981468239e-05  6.007588925145e-06
+     7     -2.210901325776e-05  5.074761954649e-06 -4.890225279817e-07
+     8      5.443461456508e-07 -1.285040546716e-07  1.225908917355e-08
+
+    E Index         6                   7                   8
+  T Index
+     0     -2.128651089328e-03  1.685181886244e-04 -4.665309226730e-06
+     1     -1.304738719348e-04 -8.714697396102e-06  4.796574269551e-07
+     2      1.042066219239e-03 -5.955686719189e-05  1.358749516236e-06
+     3     -4.463914380371e-04  2.672110767494e-05 -6.218012239798e-07
+     4      7.356430658399e-05 -4.797055206851e-06  1.159195338618e-07
+     5     -4.585211534749e-06  4.292978331848e-07 -1.209703556619e-08
+     6     -1.866842996766e-08 -2.383240469589e-08  9.353713300206e-10
+     7      1.067090708836e-08  1.188959741308e-09 -5.741789281748e-11
+     8     -1.967393094286e-10 -3.854014407618e-11  1.748544462760e-12
+
+     Error  7.17e-03 (D)
+
+    Error is improved to 2.24e-03 (C) if only values of <sv> for T > 1 eV are
+    considered.
+\end{verbatim}\end{small}
+\newpage
+
+\subsection{
+Reaction 2.8l2 $   p + H_2(v=8) \rightarrow H(1s) + H_2^+$}
+scaled from HYDHEL 3.2.3, to $v=8$. Scaled cross section, Greenland: $g_2(v)$
+tbd:
+Only the 00 coefficient (constant factor) is scaled.
+
+
+\begin{small}\begin{verbatim}
+    E Index         0                   1                   2
+  T Index
+     0     -1.899435371433E+01  6.248759475696e-01  4.860672617319e-02
+     1      1.497880823202e+00 -1.321184618254e+00  1.610180305377e-01
+     2     -1.108848312589e+00  1.026939763848e+00 -2.764437632008e-01
+     3      2.723796545755e-01 -3.349189897157e-01  1.525831234833e-01
+     4      2.721877464232e-02  4.328258310611e-02 -4.172607648071e-02
+     5     -1.779177173774e-02  4.465034873018e-04  6.494173133750e-03
+     6      2.547195398346e-03 -6.602886969983e-04 -5.936946344163e-04
+     7     -1.581068390892e-04  6.000753124589e-05  2.989789198510e-05
+     8      3.720016363224e-06 -1.724843689004e-06 -6.403267693113e-07
+
+    E Index         3                   4                   5
+  T Index
+     0     -1.200688114292e-01  8.087736504737e-03  9.460417081363e-03
+     1      1.165310493854e-01 -3.963918450387e-02  4.451468403951e-03
+     2     -3.948109106588e-02  3.853676685634e-02 -9.097709483121e-03
+     3     -9.592981926094e-03 -1.131614493158e-02  3.519316476081e-03
+     4      1.001163900824e-02  3.016020168360e-04 -4.649867654705e-04
+     5     -2.726517864643e-03  3.947434451322e-04 -3.560364682888e-06
+     6      3.516907384191e-04 -7.253981468239e-05  6.007588925145e-06
+     7     -2.210901325776e-05  5.074761954649e-06 -4.890225279817e-07
+     8      5.443461456508e-07 -1.285040546716e-07  1.225908917355e-08
+
+    E Index         6                   7                   8
+  T Index
+     0     -2.128651089328e-03  1.685181886244e-04 -4.665309226730e-06
+     1     -1.304738719348e-04 -8.714697396102e-06  4.796574269551e-07
+     2      1.042066219239e-03 -5.955686719189e-05  1.358749516236e-06
+     3     -4.463914380371e-04  2.672110767494e-05 -6.218012239798e-07
+     4      7.356430658399e-05 -4.797055206851e-06  1.159195338618e-07
+     5     -4.585211534749e-06  4.292978331848e-07 -1.209703556619e-08
+     6     -1.866842996766e-08 -2.383240469589e-08  9.353713300206e-10
+     7      1.067090708836e-08  1.188959741308e-09 -5.741789281748e-11
+     8     -1.967393094286e-10 -3.854014407618e-11  1.748544462760e-12
+
+     Error  7.17e-03 (D)
+
+    Error is improved to 2.24e-03 (C) if only values of <sv> for T > 1 eV are
+    considered.
+\end{verbatim}\end{small}
+\newpage
+
+
+\subsection{
+Reaction 2.9l2 $   p + H_2(v=9) \rightarrow H(1s) + H_2^+$}
+scaled from HYDHEL 3.2.3, to $v=9$. Scaled cross section, Greenland: $g_2(v)$
+tbd:
+Only the 00 coefficient (constant factor) is scaled.
+
+
+\begin{small}\begin{verbatim}
+    E Index         0                   1                   2
+  T Index
+     0     -1.899435371433E+01  6.248759475696e-01  4.860672617319e-02
+     1      1.497880823202e+00 -1.321184618254e+00  1.610180305377e-01
+     2     -1.108848312589e+00  1.026939763848e+00 -2.764437632008e-01
+     3      2.723796545755e-01 -3.349189897157e-01  1.525831234833e-01
+     4      2.721877464232e-02  4.328258310611e-02 -4.172607648071e-02
+     5     -1.779177173774e-02  4.465034873018e-04  6.494173133750e-03
+     6      2.547195398346e-03 -6.602886969983e-04 -5.936946344163e-04
+     7     -1.581068390892e-04  6.000753124589e-05  2.989789198510e-05
+     8      3.720016363224e-06 -1.724843689004e-06 -6.403267693113e-07
+
+    E Index         3                   4                   5
+  T Index
+     0     -1.200688114292e-01  8.087736504737e-03  9.460417081363e-03
+     1      1.165310493854e-01 -3.963918450387e-02  4.451468403951e-03
+     2     -3.948109106588e-02  3.853676685634e-02 -9.097709483121e-03
+     3     -9.592981926094e-03 -1.131614493158e-02  3.519316476081e-03
+     4      1.001163900824e-02  3.016020168360e-04 -4.649867654705e-04
+     5     -2.726517864643e-03  3.947434451322e-04 -3.560364682888e-06
+     6      3.516907384191e-04 -7.253981468239e-05  6.007588925145e-06
+     7     -2.210901325776e-05  5.074761954649e-06 -4.890225279817e-07
+     8      5.443461456508e-07 -1.285040546716e-07  1.225908917355e-08
+
+    E Index         6                   7                   8
+  T Index
+     0     -2.128651089328e-03  1.685181886244e-04 -4.665309226730e-06
+     1     -1.304738719348e-04 -8.714697396102e-06  4.796574269551e-07
+     2      1.042066219239e-03 -5.955686719189e-05  1.358749516236e-06
+     3     -4.463914380371e-04  2.672110767494e-05 -6.218012239798e-07
+     4      7.356430658399e-05 -4.797055206851e-06  1.159195338618e-07
+     5     -4.585211534749e-06  4.292978331848e-07 -1.209703556619e-08
+     6     -1.866842996766e-08 -2.383240469589e-08  9.353713300206e-10
+     7      1.067090708836e-08  1.188959741308e-09 -5.741789281748e-11
+     8     -1.967393094286e-10 -3.854014407618e-11  1.748544462760e-12
+
+     Error  7.17e-03 (D)
+
+    Error is improved to 2.24e-03 (C) if only values of <sv> for T > 1 eV are
+    considered.
+\end{verbatim}\end{small}
+\newpage
+
+\subsection{
+Reaction 2.10l2 $   p + H_2(v=10) \rightarrow H(1s) + H_2^+$}
+scaled from HYDHEL 3.2.3, to $v=10$. Scaled cross section, Greenland: $g_2(v)$
+tbd:
+Only the 00 coefficient (constant factor) is scaled.
+
+
+\begin{small}\begin{verbatim}
+    E Index         0                   1                   2
+  T Index
+     0     -1.899435371433E+01  6.248759475696e-01  4.860672617319e-02
+     1      1.497880823202e+00 -1.321184618254e+00  1.610180305377e-01
+     2     -1.108848312589e+00  1.026939763848e+00 -2.764437632008e-01
+     3      2.723796545755e-01 -3.349189897157e-01  1.525831234833e-01
+     4      2.721877464232e-02  4.328258310611e-02 -4.172607648071e-02
+     5     -1.779177173774e-02  4.465034873018e-04  6.494173133750e-03
+     6      2.547195398346e-03 -6.602886969983e-04 -5.936946344163e-04
+     7     -1.581068390892e-04  6.000753124589e-05  2.989789198510e-05
+     8      3.720016363224e-06 -1.724843689004e-06 -6.403267693113e-07
+
+    E Index         3                   4                   5
+  T Index
+     0     -1.200688114292e-01  8.087736504737e-03  9.460417081363e-03
+     1      1.165310493854e-01 -3.963918450387e-02  4.451468403951e-03
+     2     -3.948109106588e-02  3.853676685634e-02 -9.097709483121e-03
+     3     -9.592981926094e-03 -1.131614493158e-02  3.519316476081e-03
+     4      1.001163900824e-02  3.016020168360e-04 -4.649867654705e-04
+     5     -2.726517864643e-03  3.947434451322e-04 -3.560364682888e-06
+     6      3.516907384191e-04 -7.253981468239e-05  6.007588925145e-06
+     7     -2.210901325776e-05  5.074761954649e-06 -4.890225279817e-07
+     8      5.443461456508e-07 -1.285040546716e-07  1.225908917355e-08
+
+    E Index         6                   7                   8
+  T Index
+     0     -2.128651089328e-03  1.685181886244e-04 -4.665309226730e-06
+     1     -1.304738719348e-04 -8.714697396102e-06  4.796574269551e-07
+     2      1.042066219239e-03 -5.955686719189e-05  1.358749516236e-06
+     3     -4.463914380371e-04  2.672110767494e-05 -6.218012239798e-07
+     4      7.356430658399e-05 -4.797055206851e-06  1.159195338618e-07
+     5     -4.585211534749e-06  4.292978331848e-07 -1.209703556619e-08
+     6     -1.866842996766e-08 -2.383240469589e-08  9.353713300206e-10
+     7      1.067090708836e-08  1.188959741308e-09 -5.741789281748e-11
+     8     -1.967393094286e-10 -3.854014407618e-11  1.748544462760e-12
+
+     Error  7.17e-03 (D)
+
+    Error is improved to 2.24e-03 (C) if only values of <sv> for T > 1 eV are
+    considered.
+\end{verbatim}\end{small}
+\newpage
+
+
+\subsection{
+Reaction 2.11l2 $   p + H_2(v=11) \rightarrow H(1s) + H_2^+$}
+scaled from HYDHEL 3.2.3, to $v=11$. Scaled cross section, Greenland: $g_2(v)$
+tbd:
+Only the 00 coefficient (constant factor) is scaled.
+
+
+\begin{small}\begin{verbatim}
+    E Index         0                   1                   2
+  T Index
+     0     -1.899435371433E+01  6.248759475696e-01  4.860672617319e-02
+     1      1.497880823202e+00 -1.321184618254e+00  1.610180305377e-01
+     2     -1.108848312589e+00  1.026939763848e+00 -2.764437632008e-01
+     3      2.723796545755e-01 -3.349189897157e-01  1.525831234833e-01
+     4      2.721877464232e-02  4.328258310611e-02 -4.172607648071e-02
+     5     -1.779177173774e-02  4.465034873018e-04  6.494173133750e-03
+     6      2.547195398346e-03 -6.602886969983e-04 -5.936946344163e-04
+     7     -1.581068390892e-04  6.000753124589e-05  2.989789198510e-05
+     8      3.720016363224e-06 -1.724843689004e-06 -6.403267693113e-07
+
+    E Index         3                   4                   5
+  T Index
+     0     -1.200688114292e-01  8.087736504737e-03  9.460417081363e-03
+     1      1.165310493854e-01 -3.963918450387e-02  4.451468403951e-03
+     2     -3.948109106588e-02  3.853676685634e-02 -9.097709483121e-03
+     3     -9.592981926094e-03 -1.131614493158e-02  3.519316476081e-03
+     4      1.001163900824e-02  3.016020168360e-04 -4.649867654705e-04
+     5     -2.726517864643e-03  3.947434451322e-04 -3.560364682888e-06
+     6      3.516907384191e-04 -7.253981468239e-05  6.007588925145e-06
+     7     -2.210901325776e-05  5.074761954649e-06 -4.890225279817e-07
+     8      5.443461456508e-07 -1.285040546716e-07  1.225908917355e-08
+
+    E Index         6                   7                   8
+  T Index
+     0     -2.128651089328e-03  1.685181886244e-04 -4.665309226730e-06
+     1     -1.304738719348e-04 -8.714697396102e-06  4.796574269551e-07
+     2      1.042066219239e-03 -5.955686719189e-05  1.358749516236e-06
+     3     -4.463914380371e-04  2.672110767494e-05 -6.218012239798e-07
+     4      7.356430658399e-05 -4.797055206851e-06  1.159195338618e-07
+     5     -4.585211534749e-06  4.292978331848e-07 -1.209703556619e-08
+     6     -1.866842996766e-08 -2.383240469589e-08  9.353713300206e-10
+     7      1.067090708836e-08  1.188959741308e-09 -5.741789281748e-11
+     8     -1.967393094286e-10 -3.854014407618e-11  1.748544462760e-12
+
+     Error  7.17e-03 (D)
+
+    Error is improved to 2.24e-03 (C) if only values of <sv> for T > 1 eV are
+    considered.
+\end{verbatim}\end{small}
+\newpage
+
+\subsection{
+Reaction 2.12l2 $   p + H_2(v=12) \rightarrow H(1s) + H_2^+$}
+scaled from HYDHEL 3.2.3, to $v=12$. Scaled cross section, Greenland: $g_2(v)$
+tbd:
+Only the 00 coefficient (constant factor) is scaled.
+
+
+\begin{small}\begin{verbatim}
+    E Index         0                   1                   2
+  T Index
+     0     -1.899435371433E+01  6.248759475696e-01  4.860672617319e-02
+     1      1.497880823202e+00 -1.321184618254e+00  1.610180305377e-01
+     2     -1.108848312589e+00  1.026939763848e+00 -2.764437632008e-01
+     3      2.723796545755e-01 -3.349189897157e-01  1.525831234833e-01
+     4      2.721877464232e-02  4.328258310611e-02 -4.172607648071e-02
+     5     -1.779177173774e-02  4.465034873018e-04  6.494173133750e-03
+     6      2.547195398346e-03 -6.602886969983e-04 -5.936946344163e-04
+     7     -1.581068390892e-04  6.000753124589e-05  2.989789198510e-05
+     8      3.720016363224e-06 -1.724843689004e-06 -6.403267693113e-07
+
+    E Index         3                   4                   5
+  T Index
+     0     -1.200688114292e-01  8.087736504737e-03  9.460417081363e-03
+     1      1.165310493854e-01 -3.963918450387e-02  4.451468403951e-03
+     2     -3.948109106588e-02  3.853676685634e-02 -9.097709483121e-03
+     3     -9.592981926094e-03 -1.131614493158e-02  3.519316476081e-03
+     4      1.001163900824e-02  3.016020168360e-04 -4.649867654705e-04
+     5     -2.726517864643e-03  3.947434451322e-04 -3.560364682888e-06
+     6      3.516907384191e-04 -7.253981468239e-05  6.007588925145e-06
+     7     -2.210901325776e-05  5.074761954649e-06 -4.890225279817e-07
+     8      5.443461456508e-07 -1.285040546716e-07  1.225908917355e-08
+
+    E Index         6                   7                   8
+  T Index
+     0     -2.128651089328e-03  1.685181886244e-04 -4.665309226730e-06
+     1     -1.304738719348e-04 -8.714697396102e-06  4.796574269551e-07
+     2      1.042066219239e-03 -5.955686719189e-05  1.358749516236e-06
+     3     -4.463914380371e-04  2.672110767494e-05 -6.218012239798e-07
+     4      7.356430658399e-05 -4.797055206851e-06  1.159195338618e-07
+     5     -4.585211534749e-06  4.292978331848e-07 -1.209703556619e-08
+     6     -1.866842996766e-08 -2.383240469589e-08  9.353713300206e-10
+     7      1.067090708836e-08  1.188959741308e-09 -5.741789281748e-11
+     8     -1.967393094286e-10 -3.854014407618e-11  1.748544462760e-12
+
+     Error  7.17e-03 (D)
+
+    Error is improved to 2.24e-03 (C) if only values of <sv> for T > 1 eV are
+    considered.
+\end{verbatim}\end{small}
+\newpage
+
+
+\subsection{
+Reaction 2.13l2 $   p + H_2(v=13) \rightarrow H(1s) + H_2^+$}
+scaled from HYDHEL 3.2.3, to $v=13$. Scaled cross section, Greenland: $g_2(v)$
+tbd:
+Only the 00 coefficient (constant factor) is scaled.
+
+
+\begin{small}\begin{verbatim}
+    E Index         0                   1                   2
+  T Index
+     0     -1.899435371433E+01  6.248759475696e-01  4.860672617319e-02
+     1      1.497880823202e+00 -1.321184618254e+00  1.610180305377e-01
+     2     -1.108848312589e+00  1.026939763848e+00 -2.764437632008e-01
+     3      2.723796545755e-01 -3.349189897157e-01  1.525831234833e-01
+     4      2.721877464232e-02  4.328258310611e-02 -4.172607648071e-02
+     5     -1.779177173774e-02  4.465034873018e-04  6.494173133750e-03
+     6      2.547195398346e-03 -6.602886969983e-04 -5.936946344163e-04
+     7     -1.581068390892e-04  6.000753124589e-05  2.989789198510e-05
+     8      3.720016363224e-06 -1.724843689004e-06 -6.403267693113e-07
+
+    E Index         3                   4                   5
+  T Index
+     0     -1.200688114292e-01  8.087736504737e-03  9.460417081363e-03
+     1      1.165310493854e-01 -3.963918450387e-02  4.451468403951e-03
+     2     -3.948109106588e-02  3.853676685634e-02 -9.097709483121e-03
+     3     -9.592981926094e-03 -1.131614493158e-02  3.519316476081e-03
+     4      1.001163900824e-02  3.016020168360e-04 -4.649867654705e-04
+     5     -2.726517864643e-03  3.947434451322e-04 -3.560364682888e-06
+     6      3.516907384191e-04 -7.253981468239e-05  6.007588925145e-06
+     7     -2.210901325776e-05  5.074761954649e-06 -4.890225279817e-07
+     8      5.443461456508e-07 -1.285040546716e-07  1.225908917355e-08
+
+    E Index         6                   7                   8
+  T Index
+     0     -2.128651089328e-03  1.685181886244e-04 -4.665309226730e-06
+     1     -1.304738719348e-04 -8.714697396102e-06  4.796574269551e-07
+     2      1.042066219239e-03 -5.955686719189e-05  1.358749516236e-06
+     3     -4.463914380371e-04  2.672110767494e-05 -6.218012239798e-07
+     4      7.356430658399e-05 -4.797055206851e-06  1.159195338618e-07
+     5     -4.585211534749e-06  4.292978331848e-07 -1.209703556619e-08
+     6     -1.866842996766e-08 -2.383240469589e-08  9.353713300206e-10
+     7      1.067090708836e-08  1.188959741308e-09 -5.741789281748e-11
+     8     -1.967393094286e-10 -3.854014407618e-11  1.748544462760e-12
+
+     Error  7.17e-03 (D)
+
+    Error is improved to 2.24e-03 (C) if only values of <sv> for T > 1 eV are
+    considered.
+\end{verbatim}\end{small}
+\newpage
+
+\subsection{
+Reaction 2.14l2 $   p + H_2(v=14) \rightarrow H(1s) + H_2^+$}
+scaled from HYDHEL 3.2.3, to $v=14$. Scaled cross section, Greenland: $g_2(v)$
+tbd:
+Only the 00 coefficient (constant factor) is scaled.
+
+
+\begin{small}\begin{verbatim}
+    E Index         0                   1                   2
+  T Index
+     0     -1.899435371433E+01  6.248759475696e-01  4.860672617319e-02
+     1      1.497880823202e+00 -1.321184618254e+00  1.610180305377e-01
+     2     -1.108848312589e+00  1.026939763848e+00 -2.764437632008e-01
+     3      2.723796545755e-01 -3.349189897157e-01  1.525831234833e-01
+     4      2.721877464232e-02  4.328258310611e-02 -4.172607648071e-02
+     5     -1.779177173774e-02  4.465034873018e-04  6.494173133750e-03
+     6      2.547195398346e-03 -6.602886969983e-04 -5.936946344163e-04
+     7     -1.581068390892e-04  6.000753124589e-05  2.989789198510e-05
+     8      3.720016363224e-06 -1.724843689004e-06 -6.403267693113e-07
+
+    E Index         3                   4                   5
+  T Index
+     0     -1.200688114292e-01  8.087736504737e-03  9.460417081363e-03
+     1      1.165310493854e-01 -3.963918450387e-02  4.451468403951e-03
+     2     -3.948109106588e-02  3.853676685634e-02 -9.097709483121e-03
+     3     -9.592981926094e-03 -1.131614493158e-02  3.519316476081e-03
+     4      1.001163900824e-02  3.016020168360e-04 -4.649867654705e-04
+     5     -2.726517864643e-03  3.947434451322e-04 -3.560364682888e-06
+     6      3.516907384191e-04 -7.253981468239e-05  6.007588925145e-06
+     7     -2.210901325776e-05  5.074761954649e-06 -4.890225279817e-07
+     8      5.443461456508e-07 -1.285040546716e-07  1.225908917355e-08
+
+    E Index         6                   7                   8
+  T Index
+     0     -2.128651089328e-03  1.685181886244e-04 -4.665309226730e-06
+     1     -1.304738719348e-04 -8.714697396102e-06  4.796574269551e-07
+     2      1.042066219239e-03 -5.955686719189e-05  1.358749516236e-06
+     3     -4.463914380371e-04  2.672110767494e-05 -6.218012239798e-07
+     4      7.356430658399e-05 -4.797055206851e-06  1.159195338618e-07
+     5     -4.585211534749e-06  4.292978331848e-07 -1.209703556619e-08
+     6     -1.866842996766e-08 -2.383240469589e-08  9.353713300206e-10
+     7      1.067090708836e-08  1.188959741308e-09 -5.741789281748e-11
+     8     -1.967393094286e-10 -3.854014407618e-11  1.748544462760e-12
+
+     Error  7.17e-03 (D)
+
+    Error is improved to 2.24e-03 (C) if only values of <sv> for T > 1 eV are
+    considered.
+\end{verbatim}\end{small}
+\newpage
 \section{H.4 :  Fits for $<\sigma v> (n_e,T)$}
 
 \subsection{
@@ -2663,6 +3842,8 @@ Reaction 2.1.5a  $H + e \rightarrow H^+ + 2e, Ly_\alpha$-removed }
         6    2.021803051693D-09    8.863805177302D-10   -2.875901203141D-11
         7   -7.327880180666D-10   -1.432779345041D-11    1.214953547643D-12
         8   -4.482535378130D-11    1.201150148690D-12   -3.597174268523D-14
+N2MIN =   1.00000D 08 1/CM3
+N2MAX =   1.00000D 16 1/CM3
 
   Max. rel. Error:   2.5098 %
   Mean rel. Error:    .6261 %
@@ -2671,7 +3852,7 @@ Reaction 2.1.5a  $H + e \rightarrow H^+ + 2e, Ly_\alpha$-removed }
 \end{verbatim}\end{small}
 \begin{figure} \label{2.1.5a}
 \epsfxsize=16truecm
-\epsffile{H2vibr_PS/hydia.eps}
+\epsffile{H2vibr_PS/Ly-alpha-removed-formI-formII/hydia.eps}
 \end{figure}
 \newpage
 
@@ -2682,7 +3863,7 @@ Reaction 2.1.5b  $H(n=1) + e \rightarrow H^+ + 2e, Ly_\alpha$-removed}
    Effective hydrogenic ionisation rate.
    Ly-alpha removed, Formulation I, data for radiation transfer
    or for Lyman-alpha opaque case, all other Lyman lines transparent,
-   and n=2 state metastable
+   and n=2 state meta-stable
 \begin{small}\begin{verbatim}
 
         E-Index:     0                     1                     2
@@ -2721,7 +3902,7 @@ Reaction 2.1.5b  $H(n=1) + e \rightarrow H^+ + 2e, Ly_\alpha$-removed}
         7   -8.584512206848D-11    1.997928983568D-11   -4.790497915314D-13
         8   -7.083680798821D-11    1.139617384842D-12    7.735673361710D-16
 N2MIN =   1.00000D 08 1/CM3
-N2MAX =   1.00000D 16 1/CM3        
+N2MAX =   1.00000D 16 1/CM3
 
   Max. rel. Error:   1.6577 %
   Mean rel. Error:    .2764 %
@@ -2729,7 +3910,7 @@ N2MAX =   1.00000D 16 1/CM3
 \end{verbatim}\end{small}
 \begin{figure} \label{2.1.5b}
 \epsfxsize=16truecm
-\epsffile{H2vibr_PS/hydib.eps}
+\epsffile{H2vibr_PS/Ly-alpha-removed-formI-formII/hydib.eps}
 \end{figure}
 \newpage
 
@@ -2738,7 +3919,8 @@ Reaction 2.1.5c  $H(n=1) + e \rightarrow H(n=2) + e, Ly_\alpha$-removed}
 
 
    Effective hydrogenic ionisation rate.
-   Ly-alpha removed, Formulation I, data for radiation transfer
+   Ly-alpha removed, Formulation I, and n=2 state meta-stable
+   data for radiation transfer simulations
 
 \begin{small}\begin{verbatim}
         E-Index:     0                     1                     2
@@ -2777,7 +3959,7 @@ Reaction 2.1.5c  $H(n=1) + e \rightarrow H(n=2) + e, Ly_\alpha$-removed}
         7    3.746419877493D-11    1.529859104815D-12   -8.525738644768D-14
         8   -5.810958440786D-12    6.995905890738D-14    1.757130683111D-15
 N2MIN =   1.00000D 08 1/CM3
-N2MAX =   1.00000D 16 1/CM3        
+N2MAX =   1.00000D 16 1/CM3
 
   Max. rel. Error:    .1532 %
   Mean rel. Error:    .0592 %
@@ -2786,7 +3968,7 @@ N2MAX =   1.00000D 16 1/CM3
 \end{verbatim}\end{small}
 \begin{figure} \label{2.1.5c}
 \epsfxsize=16truecm
-\epsffile{H2vibr_PS/hydic.eps}
+\epsffile{H2vibr_PS/Ly-alpha-removed-formI-formII/hydic.eps}
 \end{figure}
 \newpage
 \subsection{
@@ -2794,7 +3976,8 @@ Reaction 2.1.5d  $H(n=2) + e \rightarrow H(n=1) + e, Ly_\alpha$-removed}
 
 
    Effective hydrogenic ionisation rate.
-   Ly-alpha removed, Formulation I, data for radiation transfer
+   Ly-alpha removed, Formulation I, and n=2 state meta-stable
+   data for radiation transfer simulations
 
 \begin{small}\begin{verbatim}
         E-Index:     0                     1                     2
@@ -2833,7 +4016,7 @@ Reaction 2.1.5d  $H(n=2) + e \rightarrow H(n=1) + e, Ly_\alpha$-removed}
         7   -7.619004757300D-10    3.585200856379D-10   -8.907451129040D-12
         8   -4.285833264589D-10   -2.317364247767D-12    2.299707584654D-13
 N2MIN =   1.00000D 08 1/CM3
-N2MAX =   1.00000D 16 1/CM3        
+N2MAX =   1.00000D 16 1/CM3
 
   Max. rel. Error:   9.1628 %
   Mean rel. Error:   3.6082 %
@@ -2842,7 +4025,7 @@ N2MAX =   1.00000D 16 1/CM3
 \end{verbatim}\end{small}
 \begin{figure} \label{2.1.5d}
 \epsfxsize=16truecm
-\epsffile{H2vibr_PS/hydid.eps}
+\epsffile{H2vibr_PS/Ly-alpha-removed-formI-formII/hydid.eps}
 \end{figure}
 \newpage
 \subsection{
@@ -2851,7 +4034,8 @@ Reaction 2.1.5e  $H(n=2) + e \rightarrow H^+ + 2e, Ly_\alpha$-removed
 
 
    Effective hydrogenic ionisation rate.
-   Ly-alpha removed, Formulation I, data for radiation transfer
+   Ly-alpha removed, Formulation I, and n=2 state meta-stable
+   data for radiation transfer simulations
 
 \begin{small}\begin{verbatim}
         E-Index:     0                     1                     2
@@ -2890,7 +4074,7 @@ Reaction 2.1.5e  $H(n=2) + e \rightarrow H^+ + 2e, Ly_\alpha$-removed
         7    6.582775573429D-09   -2.790931932103D-10    4.242120120127D-12
         8   -9.022658909532D-10    3.311018546718D-11   -4.760695087298D-13
 N2MIN =   1.00000D 08 1/CM3
-N2MAX =   1.00000D 16 1/CM3        
+N2MAX =   1.00000D 16 1/CM3
 
   Max. rel. Error:   3.8493 %
   Mean rel. Error:   1.2476 %
@@ -2899,7 +4083,7 @@ N2MAX =   1.00000D 16 1/CM3
 \end{verbatim}\end{small}
 \begin{figure} \label{2.1.5e}
 \epsfxsize=16truecm
-\epsffile{H2vibr_PS/hydie.eps}
+\epsffile{H2vibr_PS/Ly-alpha-removed-formI-formII/hydie.eps}
 \end{figure}
 \newpage
 \subsection{
@@ -2908,7 +4092,8 @@ Reaction 2.1.8a  $H^+ + e \rightarrow H, Ly_\alpha$-removed
 
 
    Effective hydrogenic recombination rate.
-   Ly-alpha removed, Formulation II, data for radiation transfer
+   Ly-alpha removed, Formulation II,
+   data for radiation transfer simulations
 
 \begin{small}\begin{verbatim}
 
@@ -2948,7 +4133,7 @@ Reaction 2.1.8a  $H^+ + e \rightarrow H, Ly_\alpha$-removed
         7    7.217991219922D-09   -4.756643628740D-10    1.051833018767D-11
         8   -6.664003260557D-10    3.399636029899D-11   -6.762717749689D-13
 N2MIN =   1.00000D 08 1/CM3
-N2MAX =   1.00000D 16 1/CM3        
+N2MAX =   1.00000D 16 1/CM3
 
   Max. rel. Error:  15.1059 %
   Mean rel. Error:   1.7676 %
@@ -2958,7 +4143,7 @@ N2MAX =   1.00000D 16 1/CM3
 \end{verbatim}\end{small}
 \begin{figure} \label{2.1.8a}
 \epsfxsize=16truecm
-\epsffile{H2vibr_PS/hydra.eps}
+\epsffile{H2vibr_PS/Ly-alpha-removed-formI-formII/hydra.eps}
 \end{figure}
 \newpage
 \subsection{
@@ -2967,7 +4152,8 @@ Reaction 2.1.8b  $H^+ + e \rightarrow H(n=1), Ly_\alpha$-removed
 
 
    Effective hydrogenic recombination rate.
-   Ly-alpha removed, Formulation I, data for radiation transfer
+   Ly-alpha removed, Formulation I, and n=2 state meta-stable
+   data for radiation transfer simulations
 
 \begin{small}\begin{verbatim}
         E-Index:     0                     1                     2
@@ -3006,7 +4192,7 @@ Reaction 2.1.8b  $H^+ + e \rightarrow H(n=1), Ly_\alpha$-removed
         7   -8.575444723676D-09    6.123179214785D-10   -1.187879809144D-11
         8   -2.932846221875D-10   -7.940750343776D-12    3.012879621855D-13
 N2MIN =   1.00000D 08 1/CM3
-N2MAX =   1.00000D 16 1/CM3        
+N2MAX =   1.00000D 16 1/CM3
 
   Max. rel. Error:   2.5149 %
   Mean rel. Error:    .5219 %
@@ -3016,7 +4202,7 @@ N2MAX =   1.00000D 16 1/CM3
 \end{verbatim}\end{small}
 \begin{figure} \label{2.1.8b}
 \epsfxsize=16truecm
-\epsffile{H2vibr_PS/hydrb.eps}
+\epsffile{H2vibr_PS/Ly-alpha-removed-formI-formII/hydrb.eps}
 \end{figure}
 \newpage
 \subsection{
@@ -3025,7 +4211,8 @@ Reaction 2.1.8c  $H^+ + e \rightarrow H(n=2), Ly_\alpha$-removed
 
 
    Effective hydrogenic recombination rate.
-   Ly-alpha removed, Formulation I, data for radiation transfer
+   Ly-alpha removed, Formulation I, and n=2 state meta-stable
+   data for radiation transfer simulations
 
 \begin{small}\begin{verbatim}
 
@@ -3065,7 +4252,7 @@ Reaction 2.1.8c  $H^+ + e \rightarrow H(n=2), Ly_\alpha$-removed
         7   -1.107938818946D-08    4.764505739843D-10   -7.448416706593D-12
         8    8.952403415503D-10   -3.662329587020D-11    5.594497105623D-13
 N2MIN =   1.00000D 08 1/CM3
-N2MAX =   1.00000D 16 1/CM3        
+N2MAX =   1.00000D 16 1/CM3
 
   Max. rel. Error:   2.8117 %
   Mean rel. Error:    .7203 %
@@ -3074,7 +4261,7 @@ N2MAX =   1.00000D 16 1/CM3
 \end{verbatim}\end{small}
 \begin{figure} \label{2.1.8c}
 \epsfxsize=16truecm
-\epsffile{H2vibr_PS/hydrc.eps}
+\epsffile{H2vibr_PS/Ly-alpha-removed-formI-formII/hydrc.eps}
 \end{figure}
 \newpage
 
@@ -3086,6 +4273,10 @@ N2MAX =   1.00000D 16 1/CM3
 \bibitem{kn:Green} Greenland, T., Reiter, D.,
                    ``The Role of Molecular Hydrogen in Plasma
                     Recombination", Report, JUEL-3258 (1996), FZ-J\"ulich
+                    and: Greenland, T. ``The CRMOL Manual", Report, JUEL-3858 (2001), FZ-J\"ulich
+\bibitem{kn:Tennyson} Stibbe D.T. and Tennyson J (1998): New J. Phys. 1, 2.1-2.9.
+and: Rescignio T.N, Schneider B.I (1988): J. Phys. B (At. Mol. Phys)
+{\bf 21}, L691
 \bibitem{kn:JRS} R.K. Janev, Reiter, D., U. Samm
                    ``Collision Processes in Low-Temperature Hydrogen Plasmas"
 Report, JUEL-4105 (December 2003), FZ-J\"ulich, ISSN 0944-2952

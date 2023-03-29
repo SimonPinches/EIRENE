@@ -27,7 +27,7 @@ cdr           ifit=4 option was missing (1D tables). added, but not checked.
 !  ifit=3:   interpolation in 2-parameter table (e.g. ADAS)
 !  ifit=4:   interpolation in single parameter table (e.g. open ADAS,...)
 !  ifit=5:   use internal eirene collision radiative code. To be generalized
-!            (currently here also other rates, orate  for this particular option.
+!            (currently here also other rates, orate, for this particular option).
 !            More logical if the latter are moved
 !            to routine "eirene_energy_rate_coeff"
 
@@ -66,6 +66,7 @@ cdr           ifit=4 option was missing (1D tables). added, but not checked.
       real(dp) :: orate, EIRENE_sngl_poly, dum(9),
      .            pp1, rc1min,  rc1max, fp1(6),
      .            pp2, rc2min,  rc2max, fp2(6),
+     .                 earrh0,
      .                 rrc2min, rrc2max,
      .            O_SCR
       real(dp), save :: xlog10e =  4.34294482d-01,      !1./ln(10) = log10(e)
@@ -88,8 +89,8 @@ c  transformation of parameters p1 and p2:
 
         function EIRENE_intp_tab1d (tb,p1,ip1) result(res)
           use EIRMOD_precision
-          use EIRMOD_comxs, only: hydkin_data
-          type(hydkin_data), pointer :: tb
+          use EIRMOD_comxs, only: tab1d_data
+          type(tab1d_data), pointer :: tb
           real(dp), intent(in) :: p1
           integer, intent(out) :: ip1
           real(dp) :: res
@@ -130,13 +131,14 @@ c  extrapolation data:  for 1d polynomial fits
         fp1(4:6)= reacdat(ir)%oth%fp1r
         jfex1mn = reacdat(ir)%oth%jfex1mn
         jfex1mx = reacdat(ir)%oth%jfex1mx
+        earrh0  = reacdat(ir)%earrh0
+cdr  careful: Arrhenius factor for orate?
+        earrh0=0._DP
 
         orate = eirene_sngl_poly(reacdat(ir)%oth%poly%dblpol(1:9,1),
      .                   p1, rc1min, rc1max, fp1, jfex1mn, jfex1mx,
-     .                   trcamd, lexp)
+     .                   earrh0, trcamd, lexp)
 
-C       if (.not. lexp)  orate=orate
-        if (lexp)        orate = exp(max(-100._dp,orate))
 
 c..............................................................
 
@@ -210,7 +212,7 @@ c..............................................................
 
       else if (reacdat(ir)%oth%ifit == 4) then
 
-! SINGLE PARAMETER TABLE  (E.G. HYDKIN)
+! SINGLE PARAMETER TABLE
 cdr  extrapolation data: for 1d tabulated data:  option not ready (only CxHy data ?)
 cdr  to be added here
 
@@ -218,7 +220,7 @@ cdr  to be added here
 
         pp1 = exp(p1)
 C  assume here: tabulated data are neither ln nor log10  (to be generalized)
-        orate = eirene_intp_tab1d(reacdat(ir)%oth%hyd,pp1,ip1)
+        orate = eirene_intp_tab1d(reacdat(ir)%oth%tab1d,pp1,ip1)
 
 !  lexp option not connected here !
 

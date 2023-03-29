@@ -38,8 +38,10 @@ c
 
       EIRENE_FEELEI1=0.D0
 C  IDENTIFY NUMBER OF PROCESS.
-C  CURRENTLY KK=-11 -- KK=-4 EIRENE DEFAULT PROCESSES
+C  CURRENTLY KK=-11 -- KK=-4 EIRENE DEFAULT PROCESSES (FLAG JELREI IS UNUSED).
 C            KK> 0  KREAD: COLLISION PROCESSES STORED ON REACDAT FROM EXTERNAL DATABASES
+c                          USE JELREI FLAG FOR ELECTRON KINETIC ENERGY LOSS
+C            KK= 0  SET DEFAULT ELECTRON KINETIC ENERGY LOSS FROM JELREI FLAG
 
       KK=NELREI(IREI)
 
@@ -58,11 +60,12 @@ c   electron energy losses per collision from the default EI processes -4 ....-1
         CASE (-5)
             EIRENE_FEELEI1=-10.5   ! DEFAULT PROCESS KK=-5:  H2 + E --> H + H + E
         CASE (-6)
-            EIRENE_FEELEI1=-25.0  ! DEFAULT PROCESS KK=-6:  H2 + E --> H + H+  +2E
+cdr changed Sept. 22:  25.0 --> 28.1, see xsectm default model kk=-6
+            EIRENE_FEELEI1=-28.1   ! DEFAULT PROCESS KK=-6:  H2 + E --> H + H+  +2E
         CASE (-7)
             EIRENE_FEELEI1=EELEI1(IREI,1) ! DEFAULT PROCESS KK=-7: H2 + E --> H2+  +2E
         CASE (-8)
-            EIRENE_FEELEI1=-10.5  ! DEFAULT PROCESS KK=-8: H2+ + E --> H + H+ +E  (DE)
+            EIRENE_FEELEI1=-10.5   ! DEFAULT PROCESS KK=-8: H2+ + E --> H + H+ +E  (DE)
         CASE (-9)
             EIRENE_FEELEI1=-15.5   ! DEFAULT PROCESS KK=-9: H2+ + E --> H+ + H+ + 2E (DI)
         CASE (-10)  ! DEFAULT PROCESS KK=-10: H2+ E --> H + H, DISS. RECOMBINATION (DR)
@@ -97,6 +100,8 @@ CDR: missing still:  EB,Te dependence
         END IF
 
       ELSE IF (KK == 0) THEN
+CDR  NO EXTERNAL DATASET FOR ELECTRON COOLING RATE FOR PROCESS IREI
+CDR  SET SIMPLE DEFAULTS
         IF (JELREI(IREI) == -1) THEN  !  constant electron energy loss:
           EE=EELEI1(IREI,1)
           EIRENE_FEELEI1=EE
@@ -114,4 +119,4 @@ CDR: missing still:  EB,Te dependence
       WRITE (IUNOUT,*) 'FEELEI1: INVALID PARAMETER NELREI '
       WRITE (IUNOUT,*) 'IREI, NELREI ',IREI,NELREI
       CALL EIRENE_EXIT_OWN(1)
-      END
+      END FUNCTION EIRENE_FEELEI1

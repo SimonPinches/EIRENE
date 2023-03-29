@@ -5,6 +5,8 @@ C
 
       USE EIRMOD_PRECISION
       USE EIRMOD_STCOOR, ONLY: EIRENE_STCOOR
+cym
+      use eirmod_tstchm, only : EIRENE_TSTCHM
 
       IMPLICIT NONE
 
@@ -25,28 +27,28 @@ C
         IF (IN.EQ.0) IN=4
         SELECT CASE (IN)
           CASE (1)
-            CALL GRDRW(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
+            CALL GRDRW(REAL(XTN,SP),REAL(YTN,SP))
             IF (LSTORE) CALL EIRENE_STCOOR(XTN,YTN,1)
           CASE (2)
-            CALL GRDRW(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
-            CALL GRJMP(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
+            CALL GRDRW(REAL(XT,SP),REAL(YT,SP))
+            CALL GRJMP(REAL(XTN,SP),REAL(YTN,SP))
             IF (LSTORE) THEN
               CALL EIRENE_STCOOR(XT,YT,0)
               CALL EIRENE_STCOOR(XTN,YTN,1)
             END IF
           CASE (3)
-            CALL GRJMP(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
-            CALL GRDRW(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
+            CALL GRJMP(REAL(XT,SP),REAL(YT,SP))
+            CALL GRDRW(REAL(XTN,SP),REAL(YTN,SP))
             IF (LSTORE) THEN
               CALL EIRENE_STCOOR(XT,YT,0)
               CALL EIRENE_STCOOR(XTN,YTN,1)
             END IF
           CASE (4)
-            CALL GRJMP(REAL(XTN,KIND(1.E0)),REAL(YTN,KIND(1.E0)))
+            CALL GRJMP(REAL(XTN,SP),REAL(YTN,SP))
             IF (LSTORE) CALL EIRENE_STCOOR(XTN,YTN,0)
           CASE (5)
-            CALL GRJMP(REAL(XT,KIND(1.E0)),REAL(YT,KIND(1.E0)))
-            CALL GRDRW(REAL(XT2,KIND(1.E0)),REAL(YT2,KIND(1.E0)))
+            CALL GRJMP(REAL(XT,SP),REAL(YT,SP))
+            CALL GRDRW(REAL(XT2,SP),REAL(YT2,SP))
             IF (LSTORE) THEN
               CALL EIRENE_STCOOR(XT,YT,0)
               CALL EIRENE_STCOOR(XT2,YT2,1)
@@ -54,5 +56,5 @@ C
         END SELECT
 C
   148 CONTINUE
-      return
-      end
+      RETURN
+      END SUBROUTINE EIRENE_PLTLNE

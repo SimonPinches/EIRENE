@@ -11,6 +11,8 @@ cdr  Few are directly scored: ptrash, etrash, .... xmcp
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
+      USE EIRMOD_CLOGAU, ONLY: NLSPCSCL_ATM, NLSPCSCL_MOL,
+     .                         NLSPCSCL_ION, NLSPCSCL_PHOT
 
       IMPLICIT NONE
 
@@ -23,7 +25,7 @@ cdr  Few are directly scored: ptrash, etrash, .... xmcp
      .          EIRENE_BROADCAST_COUTAU 
 
 ! INTEGRALS OF VOLUME-AVERAGED TALLIES
-      REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
+      REAL(DP), PUBLIC, ALLOCATABLE, TARGET, SAVE ::
      R PDENAI(:,:), PDENMI(:,:), PDENII(:,:), PDENPHI(:,:),
      R EDENAI(:,:), EDENMI(:,:), EDENII(:,:), EDENPHI(:,:),
      R PAELI(:),    PAATI(:,:),  PAMLI(:,:),  PAIOI(:,:),  PAPHTI(:,:),
@@ -42,6 +44,7 @@ cdr  Few are directly scored: ptrash, etrash, .... xmcp
      R EIPLI(:,:),
      R EPHELI(:),   EPHATI(:),   EPHMLI(:), EPHIOI(:), EPHPHTI(:),
      R EPHPLI(:,:),
+     R RAELI(:,:),  RMELI(:,:),  RIELI(:,:),
      R ADDVI(:,:),
      R COLVI(:,:),  SNAPVI(:,:), COPVI(:,:),  BGKVI(:,:), ALGVI(:,:),
      R PGENAI(:,:), PGENMI(:,:), PGENII(:,:), PGENPHI(:,:),
@@ -55,7 +58,7 @@ cdr  Few are directly scored: ptrash, etrash, .... xmcp
      R MAPLI(:,:),  MMPLI(:,:),  MIPLI(:,:),  MPHPLI(:,:)
 
 ! INTEGRALS OF SURFACE TALLIES: PARTICLE FLUXES
-      REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
+      REAL(DP), PUBLIC, ALLOCATABLE, TARGET, SAVE ::
      R POTATI(:,:), PRFAAI(:,:), PRFMAI(:,:), PRFIAI(:,:), PRFPHAI(:,:),
      R PRFPAI(:,:),
      R POTMLI(:,:), PRFAMI(:,:), PRFMMI(:,:), PRFIMI(:,:), PRFPHMI(:,:),
@@ -98,13 +101,33 @@ cdr  Few are directly scored: ptrash, etrash, .... xmcp
      R WTOTA(:,:),  WTOTM(:,:),  WTOTI(:,:),  WTOTP(:,:),  WTOTPH(:,:),
      R WTOTE(:),
      R ETOTA(:),    ETOTM(:),    ETOTI(:),    ETOTP(:),    ETOTPH(:),
-     R XMCP(:),     FLUXT(:),    FLXFAC(:),   EELFI(:,:),
+cdr scored along the flights
+     R XMCP(:),     EELFI(:,:),
      R PTRASH(:),   ETRASH(:),
-     R FASCL(:),    FMSCL(:),    FISCL(:),    FPHSCL(:)
+
+cdr for scaling
+     R FLUXT(:),    FLXFAC(:),  
+     R FASCL(:,:),  FMSCL(:,:),  FISCL(:,:),  FPHSCL(:,:)
+
+! helper pointers for species resolved integrals
+      REAL(DP), PUBLIC, POINTER ::
+     R PAATI2(:,:), PAMLI2(:,:), PAIOI2(:,:), PAPHTI2(:,:), PAPLI2(:,:),
+     R PMATI2(:,:), PMMLI2(:,:), PMIOI2(:,:), PMPHTI2(:,:), PMPLI2(:,:),
+     R PIATI2(:,:), PIMLI2(:,:), PIIOI2(:,:), PIPHTI2(:,:), PIPLI2(:,:),
+     R PPHATI2(:,:), PPHMLI2(:,:), PPHIOI2(:,:), PPHPHTI2(:,:),
+     R PPHPLI2(:,:)
+
+      REAL(DP), PUBLIC, POINTER ::
+     R PRFAAI2(:,:), PRFMAI2(:,:), PRFIAI2(:,:), PRFPHAI2(:,:),
+     R PRFAMI2(:,:), PRFMMI2(:,:), PRFIMI2(:,:), PRFPHMI2(:,:),
+     R PRFAII2(:,:), PRFMII2(:,:), PRFIII2(:,:), PRFPHII2(:,:),
+     R PRFAPHTI2(:,:), PRFMPHTI2(:,:), PRFIPHTI2(:,:),
+     R PRFPHPHTI2(:,:)
 
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NADDI(:),  NFRSTI(:), NDDWI(:),  NFRTWI(:),
-     I NFSTVI(:), NFSTWI(:)
+     I NFSTVI(:), NFSTWI(:),
+     I NEXTVI(:), NEXTWI(:)
 
       INTEGER, PUBLIC, SAVE ::
      I NOUTA1, NOUTA2, NOUTAS, NOUTAU, NOUTTL
@@ -114,14 +137,15 @@ cdr  Few are directly scored: ptrash, etrash, .... xmcp
 
 
       SUBROUTINE EIRENE_ALLOC_COUTAU
+      LOGICAL :: LOGHELP(NSTRA)
 
       IF (ALLOCATED(PDENAI)) RETURN
 
       NOUTA1 = NVLTLP*NSTRAP
       NOUTA2 = NSFTLP*NSTRAP
-      NOUTAS = (1*NPHOTP+1*NATMP+1*NMOLP+1*NPLSP+2*NIONP+15)*NSTRAP
+      NOUTAS = (2*NPHOTP+2*NATMP+2*NMOLP+1*NPLSP+3*NIONP+11)*NSTRAP
       NOUTAU = NOUTA1+NOUTA2+NOUTAS
-      NOUTTL = 3*(NTALV+NTALS)
+      NOUTTL = 4*(NTALV+NTALS)
 
       ALLOCATE (PDENAI(0:NATM,0:NSTRA))
       ALLOCATE (PDENMI(0:NMOL,0:NSTRA))
@@ -134,32 +158,64 @@ cdr  Few are directly scored: ptrash, etrash, .... xmcp
       ALLOCATE (EDENPHI(0:NPHOT,0:NSTRA))
 cdr  volumetric particles source tallies, from incident atoms, sources for e,a,m,i,ph,pl
       ALLOCATE (PAELI(0:NSTRA))
-      ALLOCATE (PAATI(0:NATM,0:NSTRA))
-      ALLOCATE (PAMLI(0:NMOL,0:NSTRA))
-      ALLOCATE (PAIOI(0:NION,0:NSTRA))
-      ALLOCATE (PAPHTI(0:NPHOT,0:NSTRA))
-      ALLOCATE (PAPLI(0:NPLS,0:NSTRA))
+      IF (NLSPCSCL_ATM) THEN
+        ALLOCATE (PAATI(0:NATMP*NATMP-1,0:NSTRA))
+        ALLOCATE (PAMLI(0:NMOLP*NATMP-1,0:NSTRA))
+        ALLOCATE (PAIOI(0:NIONP*NATMP-1,0:NSTRA))
+        ALLOCATE (PAPHTI(0:NPHOTP*NATMP-1,0:NSTRA))
+        ALLOCATE (PAPLI(0:NPLSP*NATMP-1,0:NSTRA))
+      ELSE
+        ALLOCATE (PAATI(0:NATM,0:NSTRA))
+        ALLOCATE (PAMLI(0:NMOL,0:NSTRA))
+        ALLOCATE (PAIOI(0:NION,0:NSTRA))
+        ALLOCATE (PAPHTI(0:NPHOT,0:NSTRA))
+        ALLOCATE (PAPLI(0:NPLS,0:NSTRA))
+      END IF
 cdr  volumetric particles source tallies, from incident molec., sources for e,a,m,i,ph,pl
       ALLOCATE (PMELI(0:NSTRA))
-      ALLOCATE (PMATI(0:NATM,0:NSTRA))
-      ALLOCATE (PMMLI(0:NMOL,0:NSTRA))
-      ALLOCATE (PMIOI(0:NION,0:NSTRA))
-      ALLOCATE (PMPHTI(0:NPHOT,0:NSTRA))
-      ALLOCATE (PMPLI(0:NPLS,0:NSTRA))
+      IF (NLSPCSCL_MOL) THEN
+        ALLOCATE (PMATI(0:NATMP*NMOLP-1,0:NSTRA))
+        ALLOCATE (PMMLI(0:NMOLP*NMOLP-1,0:NSTRA))
+        ALLOCATE (PMIOI(0:NIONP*NMOLP-1,0:NSTRA))
+        ALLOCATE (PMPHTI(0:NPHOTP*NMOLP-1,0:NSTRA))
+        ALLOCATE (PMPLI(0:NPLSP*NMOLP-1,0:NSTRA))
+      ELSE
+        ALLOCATE (PMATI(0:NATM,0:NSTRA))
+        ALLOCATE (PMMLI(0:NMOL,0:NSTRA))
+        ALLOCATE (PMIOI(0:NION,0:NSTRA))
+        ALLOCATE (PMPHTI(0:NPHOT,0:NSTRA))
+        ALLOCATE (PMPLI(0:NPLS,0:NSTRA))
+      END IF
 cdr  volumetric particles source tallies, from incident test ions, sources for e,a,m,i,ph,pl
       ALLOCATE (PIELI(0:NSTRA))
-      ALLOCATE (PIATI(0:NATM,0:NSTRA))
-      ALLOCATE (PIMLI(0:NMOL,0:NSTRA))
-      ALLOCATE (PIIOI(0:NION,0:NSTRA))
-      ALLOCATE (PIPHTI(0:NPHOT,0:NSTRA))
-      ALLOCATE (PIPLI(0:NPLS,0:NSTRA))
+      IF (NLSPCSCL_ION) THEN
+        ALLOCATE (PIATI(0:NATMP*NIONP-1,0:NSTRA))
+        ALLOCATE (PIMLI(0:NMOLP*NIONP-1,0:NSTRA))
+        ALLOCATE (PIIOI(0:NIONP*NIONP-1,0:NSTRA))
+        ALLOCATE (PIPHTI(0:NPHOTP*NIONP-1,0:NSTRA))
+        ALLOCATE (PIPLI(0:NPLSP*NIONP-1,0:NSTRA))
+      ELSE
+        ALLOCATE (PIATI(0:NATM,0:NSTRA))
+        ALLOCATE (PIMLI(0:NMOL,0:NSTRA))
+        ALLOCATE (PIIOI(0:NION,0:NSTRA))
+        ALLOCATE (PIPHTI(0:NPHOT,0:NSTRA))
+        ALLOCATE (PIPLI(0:NPLS,0:NSTRA))
+      END IF
 cdr  volumetric particles source tallies, from incident photons, sources for e,a,m,i,ph,pl
       ALLOCATE (PPHELI(0:NSTRA))
-      ALLOCATE (PPHATI(0:NATM,0:NSTRA))
-      ALLOCATE (PPHMLI(0:NMOL,0:NSTRA))
-      ALLOCATE (PPHIOI(0:NION,0:NSTRA))
-      ALLOCATE (PPHPHTI(0:NPHOT,0:NSTRA))
-      ALLOCATE (PPHPLI(0:NPLS,0:NSTRA))
+      IF (NLSPCSCL_PHOT) THEN
+        ALLOCATE (PPHATI(0:NATMP*NPHOTP-1,0:NSTRA))
+        ALLOCATE (PPHMLI(0:NMOLP*NPHOTP-1,0:NSTRA))
+        ALLOCATE (PPHIOI(0:NIONP*NPHOTP-1,0:NSTRA))
+        ALLOCATE (PPHPHTI(0:NPHOTP*NPHOTP-1,0:NSTRA))
+        ALLOCATE (PPHPLI(0:NPLSP*NPHOTP-1,0:NSTRA))
+      ELSE
+        ALLOCATE (PPHATI(0:NATM,0:NSTRA))
+        ALLOCATE (PPHMLI(0:NMOL,0:NSTRA))
+        ALLOCATE (PPHIOI(0:NION,0:NSTRA))
+        ALLOCATE (PPHPHTI(0:NPHOT,0:NSTRA))
+        ALLOCATE (PPHPLI(0:NPLS,0:NSTRA))
+      END IF
 
       ALLOCATE (EAELI(0:NSTRA))
       ALLOCATE (EAATI(0:NSTRA))
@@ -188,6 +244,10 @@ cdr  volumetric particles source tallies, from incident photons, sources for e,a
       ALLOCATE (EPHIOI(0:NSTRA))
       ALLOCATE (EPHPHTI(0:NSTRA))
       ALLOCATE (EPHPLI(0:NPLS,0:NSTRA))
+
+      ALLOCATE (RAELI(0:NATM,0:NSTRA))
+      ALLOCATE (RMELI(0:NMOL,0:NSTRA))
+      ALLOCATE (RIELI(0:NION,0:NSTRA))
 
       ALLOCATE (ADDVI(0:NADV,0:NSTRA))
       ALLOCATE (COLVI(0:NCLV,0:NSTRA))
@@ -249,33 +309,96 @@ cdr  note: distinct from volumetric sources, these are ordered here
 cdr  by receiving species
 cdr  surface rates, for particle balance atoms
       ALLOCATE (POTATI(0:NATM,0:NSTRA))
-      ALLOCATE (PRFAAI(0:NATM,0:NSTRA))
-      ALLOCATE (PRFMAI(0:NATM,0:NSTRA))
-      ALLOCATE (PRFIAI(0:NATM,0:NSTRA))
-      ALLOCATE (PRFPHAI(0:NATM,0:NSTRA))
+      IF (NLSPCSCL_ATM) THEN
+        ALLOCATE (PRFAAI(0:NATMP*NATMP-1,0:NSTRA))
+      ELSE
+        ALLOCATE (PRFAAI(0:NATM,0:NSTRA))
+      END IF
+      IF (NLSPCSCL_MOL) THEN
+        ALLOCATE (PRFMAI(0:NATMP*NMOLP-1,0:NSTRA))
+      ELSE
+        ALLOCATE (PRFMAI(0:NATM,0:NSTRA))
+      END IF
+      IF (NLSPCSCL_ION) THEN
+        ALLOCATE (PRFIAI(0:NATMP*NIONP-1,0:NSTRA))
+      ELSE
+        ALLOCATE (PRFIAI(0:NATM,0:NSTRA))
+      END IF
+      IF (NLSPCSCL_PHOT) THEN
+        ALLOCATE (PRFPHAI(0:NATMP*NPHOTP-1,0:NSTRA))
+      ELSE
+        ALLOCATE (PRFPHAI(0:NATM,0:NSTRA))
+      END IF
       ALLOCATE (PRFPAI(0:NATM,0:NSTRA))
 cdr  surface rates, for particle balance molecules
       ALLOCATE (POTMLI(0:NMOL,0:NSTRA))
-      ALLOCATE (PRFAMI(0:NMOL,0:NSTRA))
-      ALLOCATE (PRFMMI(0:NMOL,0:NSTRA))
-      ALLOCATE (PRFIMI(0:NMOL,0:NSTRA))
-      ALLOCATE (PRFPHMI(0:NMOL,0:NSTRA))
+      IF (NLSPCSCL_ATM) THEN
+        ALLOCATE (PRFAMI(0:NMOLP*NATMP-1,0:NSTRA))
+      ELSE
+        ALLOCATE (PRFAMI(0:NMOL,0:NSTRA))
+      END IF
+      IF (NLSPCSCL_MOL) THEN
+        ALLOCATE (PRFMMI(0:NMOLP*NMOLP-1,0:NSTRA))
+      ELSE
+        ALLOCATE (PRFMMI(0:NMOL,0:NSTRA))
+      END IF
+      IF (NLSPCSCL_ION) THEN
+        ALLOCATE (PRFIMI(0:NMOLP*NIONP-1,0:NSTRA))
+      ELSE
+        ALLOCATE (PRFIMI(0:NMOL,0:NSTRA))
+      END IF
+      IF (NLSPCSCL_PHOT) THEN
+        ALLOCATE (PRFPHMI(0:NMOLP*NPHOTP-1,0:NSTRA))
+      ELSE
+        ALLOCATE (PRFPHMI(0:NMOL,0:NSTRA))
+      END IF
       ALLOCATE (PRFPMI(0:NMOL,0:NSTRA))
 cdr  surface rates, for particle balance test ions
       ALLOCATE (POTIOI(0:NION,0:NSTRA))
-      ALLOCATE (PRFAII(0:NION,0:NSTRA))
-      ALLOCATE (PRFMII(0:NION,0:NSTRA))
-      ALLOCATE (PRFIII(0:NION,0:NSTRA))
-      ALLOCATE (PRFPHII(0:NION,0:NSTRA))
+      IF (NLSPCSCL_ATM) THEN
+        ALLOCATE (PRFAII(0:NIONP*NATMP-1,0:NSTRA))
+      ELSE
+        ALLOCATE (PRFAII(0:NION,0:NSTRA))
+      END IF
+      IF (NLSPCSCL_MOL) THEN
+        ALLOCATE (PRFMII(0:NIONP*NMOLP-1,0:NSTRA))
+      ELSE
+        ALLOCATE (PRFMII(0:NION,0:NSTRA))
+      END IF
+      IF (NLSPCSCL_ION) THEN
+        ALLOCATE (PRFIII(0:NIONP*NIONP-1,0:NSTRA))
+      ELSE
+        ALLOCATE (PRFIII(0:NION,0:NSTRA))
+      END IF
+      IF (NLSPCSCL_PHOT) THEN
+        ALLOCATE (PRFPHII(0:NIONP*NPHOTP-1,0:NSTRA))
+      ELSE
+        ALLOCATE (PRFPHII(0:NION,0:NSTRA))
+      END IF
       ALLOCATE (PRFPII(0:NION,0:NSTRA))
 cdr  surface rates, for particle balance photons
       ALLOCATE (POTPHTI(0:NPHOT,0:NSTRA))
-      ALLOCATE (PRFAPHTI(0:NPHOT,0:NSTRA))
-      ALLOCATE (PRFMPHTI(0:NPHOT,0:NSTRA))
-      ALLOCATE (PRFIPHTI(0:NPHOT,0:NSTRA))
-      ALLOCATE (PRFPHPHTI(0:NPHOT,0:NSTRA))
+      IF (NLSPCSCL_ATM) THEN
+        ALLOCATE (PRFAPHTI(0:NPHOTP*NATMP-1,0:NSTRA))
+      ELSE
+        ALLOCATE (PRFAPHTI(0:NPHOT,0:NSTRA))
+      END IF
+      IF (NLSPCSCL_MOL) THEN
+        ALLOCATE (PRFMPHTI(0:NPHOTP*NMOLP-1,0:NSTRA))
+      ELSE
+        ALLOCATE (PRFMPHTI(0:NPHOT,0:NSTRA))
+      END IF
+      IF (NLSPCSCL_ION) THEN
+        ALLOCATE (PRFIPHTI(0:NPHOTP*NIONP-1,0:NSTRA))
+      ELSE
+        ALLOCATE (PRFIPHTI(0:NPHOT,0:NSTRA))
+      END IF
+      IF (NLSPCSCL_PHOT) THEN
+        ALLOCATE (PRFPHPHTI(0:NPHOTP*NPHOTP-1,0:NSTRA))
+      ELSE
+        ALLOCATE (PRFPHPHTI(0:NPHOT,0:NSTRA))
+      END IF
       ALLOCATE (PRFPPHTI(0:NPHOT,0:NSTRA))
-
 
       ALLOCATE (EOTATI(0:NATM,0:NSTRA))
       ALLOCATE (ERFAAI(0:NATM,0:NSTRA))
@@ -353,7 +476,6 @@ cdr  surface incident fluxes of bulk ions (no fluxes emitted for bulk ions from 
 
       ALLOCATE (WTOTE(0:NSTRA))
 
-
 cdr  etote still missing ??
       ALLOCATE (ETOTA(0:NSTRA))
       ALLOCATE (ETOTM(0:NSTRA))
@@ -361,16 +483,18 @@ cdr  etote still missing ??
       ALLOCATE (ETOTPH(0:NSTRA))
       ALLOCATE (ETOTP(0:NSTRA))
 
+cdr  scored along the flight
       ALLOCATE (XMCP(0:NSTRA))
-      ALLOCATE (FLUXT(0:NSTRA))
-      ALLOCATE (FLXFAC(0:NSTRA))
       ALLOCATE (EELFI(0:NION,0:NSTRA))
       ALLOCATE (PTRASH(0:NSTRA))
       ALLOCATE (ETRASH(0:NSTRA))
-      ALLOCATE (FASCL(0:NSTRA))
-      ALLOCATE (FMSCL(0:NSTRA))
-      ALLOCATE (FISCL(0:NSTRA))
-      ALLOCATE (FPHSCL(0:NSTRA))
+cdr  for scaling
+      ALLOCATE (FLUXT(0:NSTRA))
+      ALLOCATE (FLXFAC(0:NSTRA))
+      ALLOCATE (FASCL(0:NATM,0:NSTRA))
+      ALLOCATE (FMSCL(0:NMOL,0:NSTRA))
+      ALLOCATE (FISCL(0:NION,0:NSTRA))
+      ALLOCATE (FPHSCL(0:NPHOT,0:NSTRA))
 
       ALLOCATE (NADDI(NTALV))
       ALLOCATE (NFRSTI(NTALV))
@@ -378,6 +502,8 @@ cdr  etote still missing ??
       ALLOCATE (NFRTWI(NTALS))
       ALLOCATE (NFSTVI(NTALV))
       ALLOCATE (NFSTWI(NTALS))
+      ALLOCATE (NEXTVI(NTALV))
+      ALLOCATE (NEXTWI(NTALS))
 
       WRITE (IUNMEM,'(A,T25,I15)')
      .       ' COUTAU ',NOUTAU*8 + NOUTTL*4
@@ -389,9 +515,13 @@ cdr this should go to another place?
       NFRTWI = 0
       NFSTVI = 0
       NFSTWI = 0
+      NEXTVI = 0
+      NEXTWI = 0
 
 csw 19mar2013
       xmcp=0  !dr  this is done in init_coutau. So can go out here?
+      LOGHELP = .TRUE.
+      CALL EIRENE_INIT_COUTAU(LOGHELP)
 
       RETURN
       END SUBROUTINE EIRENE_ALLOC_COUTAU
@@ -459,6 +589,9 @@ c tallies obtained by integration from volumetric tallies
       DEALLOCATE (EPHPHTI)
       DEALLOCATE (EPHIOI)
       DEALLOCATE (EPHPLI)
+      DEALLOCATE (RAELI)
+      DEALLOCATE (RMELI)
+      DEALLOCATE (RIELI)
       DEALLOCATE (ADDVI)
       DEALLOCATE (COLVI)
       DEALLOCATE (SNAPVI)
@@ -504,7 +637,7 @@ c tallies obtained by integration from volumetric tallies
       DEALLOCATE (MIPLI)
       DEALLOCATE (MPHPLI)
 
-c  integrated surface averaged tallies
+c  integrated surface-averaged tallies
       DEALLOCATE (POTATI)
       DEALLOCATE (PRFAAI)
       DEALLOCATE (PRFMAI)
@@ -605,14 +738,18 @@ c  global fluxes from primary source
       DEALLOCATE (ETOTP)
       DEALLOCATE (ETOTPH)
 
-c scored "on the flight"
+c scored "on the fly"
       DEALLOCATE (XMCP)
-      DEALLOCATE (FLUXT)
-      DEALLOCATE (FLXFAC)
+cdr At surface events of test ions:
+cdr from energy gained from (sheath) electric field
       DEALLOCATE (EELFI)
 cdr trash: particles killed during tracing, "fail-safe"
       DEALLOCATE (PTRASH)
       DEALLOCATE (ETRASH)
+
+c stuff for scaling tallies
+      DEALLOCATE (FLUXT)
+      DEALLOCATE (FLXFAC)
       DEALLOCATE (FASCL)
       DEALLOCATE (FMSCL)
       DEALLOCATE (FISCL)
@@ -625,20 +762,28 @@ c size of tallies
       DEALLOCATE (NFRTWI)
       DEALLOCATE (NFSTVI)
       DEALLOCATE (NFSTWI)
+      DEALLOCATE (NEXTVI)
+      DEALLOCATE (NEXTWI)
 
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_COUTAU
 
 
-      SUBROUTINE EIRENE_INIT_COUTAU(LOGARR)
+      SUBROUTINE EIRENE_INIT_COUTAU(LSTR)
+cdr input: lstr(istra)=true : this stratum ISTRA exists
+cdr                    false: stratum ISTRA turned off in this run
 
-      LOGICAL, INTENT(IN) :: LOGARR(NSTRA)
-      INTEGER :: ISTRA
+      LOGICAL, INTENT(IN) :: LSTR(NSTRA)
+      INTEGER :: JSTRA, ISTRA
 
-      DO ISTRA=0,NSTRA
+      DO JSTRA=0,NSTRA
+        ISTRA = JSTRA
 
+cdr  what is this ?
+cpb  for short cycle:
+cpb  keep results of strata which are not calculated in this timestep/iteration
         IF ((ISTRA >= 1) .AND. (IFRST > 0)) THEN
-          IF (.NOT. LOGARR(ISTRA)) CYCLE
+          IF (.NOT. LSTR(ISTRA)) CYCLE
         END IF
 
 cdr particle densities
@@ -710,12 +855,17 @@ cdr volumetric tallies for energy balance, sources from atoms for el, a,m,i,ph,p
         EPHPHTI(ISTRA) = 0._DP
         EPHPLI(:,ISTRA)  = 0._DP
 
+        RAELI(:,ISTRA) = 0._DP
+        RMELI(:,ISTRA) = 0._DP
+        RIELI(:,ISTRA) = 0._DP
+
         ADDVI(:,ISTRA)   = 0._DP
         COLVI(:,ISTRA)   = 0._DP
         SNAPVI(:,ISTRA)  = 0._DP
         COPVI(:,ISTRA)   = 0._DP
         BGKVI(:,ISTRA)   = 0._DP
         ALGVI(:,ISTRA)   = 0._DP
+
         PGENAI(:,ISTRA)  = 0._DP
         PGENMI(:,ISTRA)  = 0._DP
         PGENII(:,ISTRA)  = 0._DP
@@ -856,19 +1006,19 @@ cdr  energy sources from pl, for electrons:  tally epeli missing ??
         ETOTI(ISTRA)  = 0._DP
         ETOTP(ISTRA)  = 0._DP
         ETOTPH(ISTRA) = 0._DP
-        FLUXT(ISTRA)  = 0._DP
-        FLXFAC(ISTRA) = 0._DP
+cdr  scored along the flight
         EELFI(:,ISTRA)  = 0._DP
         PTRASH(ISTRA) = 0._DP
         ETRASH(ISTRA) = 0._DP
-        FASCL(ISTRA)  = 0._DP
-        FMSCL(ISTRA)  = 0._DP
-        FISCL(ISTRA)  = 0._DP
-        FPHSCL(ISTRA)  = 0._DP
+        XMCP(ISTRA)   = 0._DP
 
-!pb     IF (IFRST == 0) THEN
-          XMCP(ISTRA)   = 0._DP
-!pb     END IF
+cdr  for scaling
+        FLUXT(ISTRA)  = 0._DP
+        FLXFAC(ISTRA) = 0._DP
+        FASCL(:,ISTRA)  = 0._DP
+        FMSCL(:,ISTRA)  = 0._DP
+        FISCL(:,ISTRA)  = 0._DP
+        FPHSCL(:,ISTRA)  = 0._DP
 
       END DO
       IFRST = 1
@@ -876,7 +1026,7 @@ cdr  energy sources from pl, for electrons:  tally epeli missing ??
       RETURN
       END SUBROUTINE EIRENE_INIT_COUTAU
 
-C     The following ENTRY is for reinitialization of EIRENE
+C     The following SUBROUTINE is for reinitialization of EIRENE
 
       SUBROUTINE EIRENE_INIT_COUTAU_REINIT
       IMPLICIT NONE
@@ -1639,7 +1789,17 @@ C     The following ENTRY is for reinitialization of EIRENE
       IE = IA - 1 + SIZE(SPUMPI)
       OUTAU(IA:IE) = PACK(SPUMPI,.TRUE.)
 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(RAELI)
+      OUTAU(IA:IE) = PACK(RAELI,.TRUE.)
 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(RMELI)
+      OUTAU(IA:IE) = PACK(RMELI,.TRUE.)
+
+      IA = IE + 1
+      IE = IA - 1 + SIZE(RIELI)
+      OUTAU(IA:IE) = PACK(RIELI,.TRUE.)
 
 
       IA = IE + 1
@@ -2489,7 +2649,17 @@ C     The following ENTRY is for reinitialization of EIRENE
       IE = IA - 1 + SIZE(SPUMPI)
       SPUMPI = RESHAPE(OUTAU(IA:IE),SHAPE(SPUMPI))
 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(RAELI)
+      RAELI  = RESHAPE(OUTAU(IA:IE),SHAPE(RAELI ))
 
+      IA = IE + 1
+      IE = IA - 1 + SIZE(RMELI)
+      RMELI  = RESHAPE(OUTAU(IA:IE),SHAPE(RMELI ))
+
+      IA = IE + 1
+      IE = IA - 1 + SIZE(RIELI)
+      RIELI  = RESHAPE(OUTAU(IA:IE),SHAPE(RIELI ))
 
 
       IA = IE + 1
@@ -2791,6 +2961,12 @@ C     The following ENTRY is for reinitialization of EIRENE
         OUTAU = MIPLI(ISP,ISTRA)
       CASE (100)
         OUTAU = MPHPLI(ISP,ISTRA)
+      CASE (101)
+        OUTAU = RAELI(ISP,ISTRA)
+      CASE (102)
+        OUTAU = RMELI(ISP,ISTRA)
+      CASE (103)
+        OUTAU = RIELI(ISP,ISTRA)
       CASE DEFAULT
         WRITE (iunout,*) ' WRONG TALLY NUMBER IN FETCH_OUTAU '
         WRITE (iunout,*) ' 0 RETURNED '
@@ -2811,10 +2987,15 @@ C     The following ENTRY is for reinitialization of EIRENE
       CALL MPI_BCAST (NADDI,NTALV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NFRSTI,NTALV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NFSTVI,NTALV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NEXTVI,NTALV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NDDWI,NTALS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NFRTWI,NTALS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NFSTWI,NTALS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NEXTWI,NTALS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
+
+      RETURN
       END SUBROUTINE EIRENE_BROADCAST_COUTAU
 
       END MODULE EIRMOD_COUTAU

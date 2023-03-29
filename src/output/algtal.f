@@ -2,7 +2,7 @@ cdr:   evaluate algebraic expression of tallies, as specified in
 cdr:   input block 10c for volume tallies and in 10e for surface tallies
 cpb: Sept 16:  bug fix: case added for 2 constant operators next to each other
 
-c  revised, to accomodate more algebraic, analytic and differentiation operations.
+c  revised, to accommodate more algebraic, analytic and differentiation operations.
 c  1) get_intal.f :  pick input tally, return it on the fine grid, 
 c                    and also return the weighting function for averaging onto the
 C                    coarse (scoring) grid (if any)   
@@ -210,13 +210,13 @@ C  TALLY HOLEN
             END IF
 C
           ELSEIF (IZIF(4,IOP).LT.0) THEN
+c  2nd OPERAND IS AN INPUT TALLY: fetch an input tally, case 1 to case 25
             ITL=IABS(IZIF(4,IOP))
             IF (ITL.GT.NTALI) GOTO 90
             IF (IZIF(3,IOP).GT.NFRSTP(ITL)) GOTO 91
             K=IZIF(3,IOP)
             NF=NFRSTP(ITL)
 
-c  2nd OPERAND IS AN INPUT TALLY: fetch an input tally, case 1 to case 25
             CALL EIRENE_GET_INTAL
             IF (IER > 0) EXIT   ! NO CORRESPONDING INPUT TALLY FOUND
 cdr  input tally(itl,:) is returned as OP(:), 
@@ -702,7 +702,7 @@ C
   394     CONTINUE
 C
           WRITE (iunout,*) ' DERIVATIVES ARE NOT FORESEEN FOR',
-     .                     ' ALOGBRAIC SURFACE TALLIES '
+     .                     ' ALGEBRAIC SURFACE TALLIES'
           WRITE (iunout,*) ' NO CALCULATION IS DONE FOR TALLY NO. ',IALS
           WRITE (iunout,*) CHRTLS(IALS)
           WRITE (iunout,'(1X,A,4I4)')
@@ -937,8 +937,8 @@ c  psi
         OP(1:NSBOX) = PSI(1:NSBOX)
         WEI(1:NSBOX) = 1._DP
       CASE (26)
-c  free26
-        OP(1:NSBOX) = FREE26(1:NSBOX)
+c  zi
+        OP(1:NSBOX) = ZIIN(K,1:NSBOX)
         WEI(1:NSBOX) = 1._DP
       CASE (27)
 c  free27
@@ -970,6 +970,8 @@ c
         CALL EIRENE_LEER(1)
         IER = 1
       END SELECT
+      RETURN
 
       END SUBROUTINE EIRENE_GET_INTAL
-      END
+
+      END SUBROUTINE EIRENE_ALGTAL

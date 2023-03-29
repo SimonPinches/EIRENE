@@ -32,6 +32,7 @@ C
       USE EIRMOD_CSPEZ
       USE EIRMOD_CGRID
       USE EIRMOD_CLOGAU
+      USE EIRMOD_COMSIG
       USE EIRMOD_CGEOM
       USE EIRMOD_CZT1
 
@@ -93,11 +94,12 @@ C
 C  ATOMS, CX ENERGY
       IF (ITYP.NE.1) GOTO 999
 
-C  CHECK: STORAGE FOR AT LEAST 8 ADDITIONAL TRACKLENGTH-ESTIMATED TALLIES?
+C  CHECK: STORAGE FOR AT LEAST 12 ADDITIONAL TRACKLENGTH-ESTIMATED TALLIES?
+!pb      IF (NADV.LT.MOD_ADDV+12*NATMI) THEN
       IF (NADV.LT.12*NATMI) THEN
         GOTO 9999
       ELSE
-C  THIS ROUTINE: SCORE 8 ADDITIONAL TALLIES ADDV
+C  THIS ROUTINE: SCORE 12 ADDITIONAL TALLIES ADDV
 c  initial species index for ADDV tally: nspan
         nti=NSPAN(ntala)
         nte=Nti+12*NATM-1
@@ -138,10 +140,13 @@ C
 
 C
 C
-          IA = 0
           IF (LGACX(IATM,0,0).EQ.0) GOTO 590
             DO 560 IACX=1,NACXI(IATM)
-              IA=0   !  increment for addv tally 1st index:  cx energy, atoms
+!pb  MOD_ADDV is no incremental value. It is a flag indicating whether all the 
+!pb  rates used for emissivity lines are to be stored or whether storage saving
+!pb  mode ist to be used, only storing the rates for the latest used line
+!pb           IA=MOD_ADDV   !  increment for addv tally 1st index: cx energy, atoms
+              IA=0
               IRCX=LGACX(IATM,IACX,0)
               IPLS=LGACX(IATM,IACX,1)
               IF (LGVAC(IRDO,IPLS)) GOTO 560
@@ -233,7 +238,8 @@ C
 C  MOLECULES, CX ENERGY
       IF (ITYP.NE.2) GOTO 1999
 
-C  CHECK: STORAGE FOR AT LEAST 4 MORE ADDITIONAL TRACKLENGTH-ESTIMATED TALLIES?
+C  CHECK: STORAGE FOR AT LEAST 8 MORE ADDITIONAL TRACKLENGTH-ESTIMATED TALLIES?
+!pb   IF (NADV.LT.MOD_ADDV+12*NATMI+8*NMOLI) THEN
       IF (NADV.LT.12*NATMI+8*NMOLI) THEN
         GOTO 9999
       ELSE
@@ -274,7 +280,8 @@ C
 C
           IF (LGMCX(IMOL,0,0).EQ.0) GOTO 1590
             DO 1560 IMCX=1,NMCXI(IMOL)
-              IA=12*NATM  !  increment for addv tally 1st index:  cx energy, molecules
+!pb           IA=MOD_ADDV+12*NATM  !  increment for addv tally 1st index: cx energy, molecules
+              IA = 12*NATM
               IRCX=LGMCX(IMOL,IMCX,0)
               IPLS=LGMCX(IMOL,IMCX,1)
               IF (LGVAC(IRDO,IPLS)) GOTO 1560
@@ -320,7 +327,8 @@ C
 C  MOLECULES, EL ENERGY
       IF (ITYP.NE.2) GOTO 2999
 
-C  CHECK: STORAGE FOR AT LEAST 4 MORE ADDITIONAL TRACKLENGTH-ESTIMATED TALLIES?
+C  CHECK: STORAGE FOR AT LEAST 8 MORE ADDITIONAL TRACKLENGTH-ESTIMATED TALLIES?
+!pb   IF (NADV.LT.MOD_ADDV+12*NATMI+12*NMOLI) THEN
       IF (NADV.LT.12*NATMI+12*NMOLI) THEN
         GOTO 9999
       ELSE
@@ -348,7 +356,8 @@ C
 C
           IF (LGMEL(IMOL,0,0).EQ.0) GOTO 2590
             DO 2560 IMEL=1,NMELI(IMOL)
-              IA=12*NATM+8*NMOL  !  increment for addv tally 1st index:  el energy, molecules
+!pb           IA=MOD_ADDV+12*NATM+8*NMOL  !  increment for addv tally 1st index: el energy, molecules
+              IA=12*NATM+8*NMOL
               IREL=LGMEL(IMOL,IMEL,0)
               IPLS=LGMEL(IMOL,IMEL,1)
               IF (LGVAC(IRDO,IPLS)) GOTO 2560
@@ -386,4 +395,4 @@ C
 
 C     WRITE (IUNOUT,*) 'NOTHING DONE IN UPTUSR '
       RETURN
-      END
+      END SUBROUTINE EIRENE_UPTUSR

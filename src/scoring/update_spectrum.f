@@ -4,13 +4,14 @@ cdr             All current calls are with either isc=0 or isc=1.
 cdr             isc=2: is apparently unused but ready?
 cdr  16.05.19:  log spectra disabled for directional spectra (with negative signs of EB possible)
 cdr             IDIREC=1 option is not available here for surface spectra (forgotten?).
-cdr             but already programed in OUTSPEC. "Fail-safe" added for now.
+cdr             but already programmed in OUTSPEC. "Fail-safe" added for now.
 cdr             Lots of identical code twice in ISC=0 and ISC > 0. Can be reduced.
-cdr  29.05.19:  Bug fix: binning for directional volumetrix spectra
+cdr  29.05.19:  Bug fix: binning for directional volumetric spectra
 cdr             use E0_par times sign(vel,chord), 
 cdr             to bin in (parallel) energy units with sign.
 cdr             More convenient units: parallel velocity (parallel to chord)
 cdr             with sign (tbd)
+cdr  March 21:  typo fixed in one place: WTR --> WT
 
       SUBROUTINE EIRENE_UPDATE_SPECTRUM (WT,IND,ISC)
 C  update contributions to surface- or volume/line-averaged energy spectra
@@ -28,7 +29,7 @@ c       isc =1:  score in coarse (scoring) grid
 c       isc =2:  score in fine (geometry)  grid
 c       ind:  not in use  (often: ind = iflag in calling programs,
 c                          IFLAG is a flag used for special (non-standard)
-c                          options for volume averged tally estimators)
+c                          options for volume-averaged tally estimators)
 c  ityp:  type of particle
 
       USE EIRMOD_PRECISION
@@ -94,7 +95,7 @@ cdr  IDIREC=1 option not written. See ISC > 0 for required coding.
             CASE (2)
               ADD = WT*E0 ! energy-weighted flux (power flux) per bin
             CASE (3)
-              ADD = WTR*VEL*CDYN
+              ADD = WT*VEL*CDYN
             CASE DEFAULT
               ADD = 0._DP ! no scoring
             END SELECT
@@ -121,10 +122,13 @@ c  find the bin I  (energy units)
             END IF
 
 cdr  score SPC(I), ESP_MIN and ESP_MAX
+!$OMP ATOMIC
             ESTIML(ISPC)%SPC(I) = ESTIML(ISPC)%SPC(I) + ADD
+!$OMP ATOMIC
             ESTIML(ISPC)%ESP_MIN= MIN(ESTIML(ISPC)%ESP_MIN,EB)
+!$OMP ATOMIC
             ESTIML(ISPC)%ESP_MAX= MAX(ESTIML(ISPC)%ESP_MAX,EB)
-            ESTIML(ISPC)%IMETSP = 1
+            ESTIML(ISPC)%IMETSP = 1    
           END IF
         END DO
 
@@ -133,7 +137,7 @@ cdr  score SPC(I), ESP_MIN and ESP_MAX
 ! CELL-BASED SPECTRA
 
 cdr  meaning of isc = 1,2  see subr. input, flag ISRFCLL
-cdr  meaning of ind:   not in use for cell-based spectra    ??  iflag in calling program ??
+cdr  meaning of ind: not in use for cell-based spectra    ??  iflag in calling program ??
 
         WV=WEIGHT/VEL
         DO IC=1,NCOU
@@ -170,7 +174,7 @@ cdr  binning according to value of parameter EB
                 SPCVZ = ESTIML(ISPC)%SPCVZ
 cdr   both signs possible for EB now.
 cdr             EB = EB * (SPCVX*VELX+SPCVY*VELY+SPCVZ*VELZ)
-cdr   bug fix, with Sergej Makarov, May 29th 2019
+cdr   bug fix, with Sergey Makarov, May 29th 2019
                 SIG=SIGN(1._DP, SPCVX*VELX+SPCVY*VELY+SPCVZ*VELZ)
                 EB = SIG*EB * (SPCVX*VELX+SPCVY*VELY+SPCVZ*VELZ)**2
               END IF
@@ -189,8 +193,11 @@ c  find the bin I  (energy units)
               END IF
 
 cdr  score SPC(I), ESP_MIN and ESP_MAX
+!$OMP ATOMIC
               ESTIML(ISPC)%SPC(I) = ESTIML(ISPC)%SPC(I) + ADD
+!$OMP ATOMIC
               ESTIML(ISPC)%ESP_MIN= MIN(ESTIML(ISPC)%ESP_MIN,EB)
+!$OMP ATOMIC
               ESTIML(ISPC)%ESP_MAX= MAX(ESTIML(ISPC)%ESP_MAX,EB)
               ESTIML(ISPC)%IMETSP = 1
             END IF

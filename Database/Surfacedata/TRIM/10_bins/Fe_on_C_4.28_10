@@ -1,9 +1,9 @@
-Fe_on_C_4.28  also includes: pdf boundaries emin,emax, angmin, angmax....  
- 
-*  projectile surface binding energy parameter: 4.28 eV     
-*  parameter esbparm only added in first of the 84 blocks  
- 
- 
+Fe_on_C_4.28  also includes: pdf boundaries emin,emax, angmin, angmax....
+
+*  projectile surface binding energy parameter: 4.28 eV
+*  parameter esbparm only added in first of the 84 blocks
+
+
    26.  55.85    6.  12.01  1.00E+00  0.00E+00  0.00E+00  0.00E+00  4.28E+00    10   0.00
 
   0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00  0.00000E+00       0.00000E+00  0.00000E+00

@@ -1,9 +1,9 @@
-H_on_Mo_1.00  also includes: pdf boundaries emin,emax, angmin, angmax....       
- 
-*  projectile surface binding energy parameter: 1.00 eV     
-*  parameter esbparm only added in first of the 84 blocks 
- 
- 
+H_on_Mo_1.00  also includes: pdf boundaries emin,emax, angmin, angmax....
+
+*  projectile surface binding energy parameter: 1.00 eV
+*  parameter esbparm only added in first of the 84 blocks
+
+
     1.   1.01   42.  95.94  1.00E+00  0.00E+00  6.17E-01  3.83E-01  1.00E+00    10   0.00
 
   2.33760E-01  4.00990E-01  5.09940E-01  5.74180E-01  6.56470E-01  6.92860E-01  7.21680E-01  7.90960E-01  8.21360E-01  8.33260E-01       6.95900E-04  8.55080E-01

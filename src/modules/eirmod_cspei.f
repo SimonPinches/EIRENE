@@ -1,10 +1,11 @@
       MODULE EIRMOD_CSPEI
 cdr Handle storage for:
 c   cspei: Standard deviations, co.-variances, etc.
-c   plasma-bckgrnd: For interfacing with external plasma code)
+c   plasma_bckgrnd: For interfacing with external plasma code
+c                   also used for internal non-lin. iterations within eirene
 c
 c   Size of plasma_bckgrnd:  currently NIINTF (formerly: NIDC)
-c   to be checked: consistent with usage of plasma_bckgrnd 
+c   to be checked: is this consistent with usage of plasma_bckgrnd?
 c   also in modbgk? 
 
       USE EIRMOD_PRECISION
@@ -43,7 +44,7 @@ c   also in modbgk?
       INTEGER, PUBLIC, SAVE :: IESTR
 
       INTEGER, PUBLIC, SAVE ::
-     I  NIDC, NIDV, NIDS
+     I  NIINTF, NIDV, NIDS
 
 
       CONTAINS
@@ -69,7 +70,7 @@ cdr
         NIDV=1
         NIDS=1
       END IF
-C  storage for for sum over strata....
+CDR  storage for for sum over strata, surface and volume tallies.
       ALLOCATE (SMESTV(NIDV,NRTAL))
       ALLOCATE (SMESTS(NIDS,NLMPGS))
 CDR   same for spectra, but:
@@ -92,7 +93,9 @@ cdr  these next arrays are intermediate storage array to perform variance per hi
       ALLOCATE (SDVIAC(2,NCV,NRTAL))
 
 CDR  same again: intermediate storage for spectra, data type prevents this from having it here?
-CDR BEGIN:  TO BE MOVED HERE FROM INPUT.F, NOT POSSIBLE, BECAUSE DIFFERENT DATA TYPE FOR SSPEC
+CDR BEGIN:
+CDR TO BE MOVED HERE FROM INPUT.F, NOT EASILY POSSIBLE,
+CDR BECAUSE, SADLY, DIFFERENT DATA TYPE FOR SSPEC
 c     ALLOCATE(SSPEC)
 c     ALLOCATE(SSPEC%SPC(0:NSPS+1))
 c  standard deviation of spectra tallies, sum over strata intermediate storage
@@ -170,19 +173,47 @@ C  TOTAL ALLOCATED STORAGE IN THIS ROUTINE
 
 
       SUBROUTINE EIRENE_ALLOC_BCKGRND
+cdr  Sept 19:  NIDC renamed to NIINTF
+cdr  some time in past: typo in NIDC fixed: NIDC=...+3*NPLSV
+cdr                            rather than: NIDC=...+4*NPLSV
+cdr  Jan 20: further comments.
 
-cdr  if any indpro(1..12)=6, then alloc background is called: provide storage for
-c    transfer of background (plasma) tallies into eirene
-c    currently: no efield information ?
+cdr  Allocate storage for handling background medium,
+cdr  originally only for transfer of plasma data from external code
+cdr  and PROFR  profile options INDPRO=6 or INDPRO=7
 
+cdr  called from:
+c    input.f  (if any indpro(1:12)=6 or =7). Called TWICE
+c              once after reading block 13 and before reading block 14,
+c              once again after statement 4000.
+c    eirsrt.f (coupling to various B2 code variants)
+c    rplam.f:
+c       rplam_shrt.f
+c       rplam_long.f (if IFLG=10)
+c    modbgk.f (transfer of modified virtual background for next iteration)
+cdr
 
-!pb   NIDC=1*NPLS+NAIN+6+NPLSTI+4*NPLSV
-      NIDC=1*NPLS+NAIN+6+NPLSTI+3*NPLSV
+cdr  If any indpro(1..12)=6,7, then ALLOC_BCKGRND is called:
+c      provide storage for
+c      transfer of background (plasma) tallies
+c      from an external code into eirene background tallies
+c
+cdr  In iterative mode, e.g. BGK iterations,
+c      ALLOC_BCKGRND may also be called.
+c      Then: risk of a hidden link? And unnecessary stuff to be dealt
+cdr    within MODBGK (such as B field ?)
+cdr    And other stuff from MODBGK may be missing:  tabel3, lgvac,....
+c
+c    currently: no E field information ?
+
+cdr  size of interfacing plasma data storage
+      NIINTF=6+1*NPLS+NPLSTI+3*NPLSV+NAIN
 
       IF (.NOT.ALLOCATED(PLASMA_BCKGRND)) THEN
 
-        ALLOCATE(PLASMA_BCKGRND(NIDC,NRAD))
+        ALLOCATE(PLASMA_BCKGRND(NIINTF,NRAD))
 
+cdr initial : final storage for ADINTF tally corrected
         TEINTF => PLASMA_BCKGRND(1+0+0*NPLS             ,   :)
         TIINTF => PLASMA_BCKGRND(1+1+0*NPLS        :
      .                           1+0+0*NPLS+NPLSTI,         :)
@@ -199,8 +230,6 @@ c    currently: no efield information ?
         BZINTF => PLASMA_BCKGRND(1+3+1*NPLS+NPLSTI+3*NPLSV, :)
         BFINTF => PLASMA_BCKGRND(1+4+1*NPLS+NPLSTI+3*NPLSV, :)
         VLINTF => PLASMA_BCKGRND(1+5+1*NPLS+NPLSTI+3*NPLSV, :)
-!pb     ADINTF => PLASMA_BCKGRND(1+6+1*NPLS+NPLSTI+3*NPLSV :
-!pb  .                             6+1*NPLS+NPLSTI+4*NPLSV+NAIN, :)
         ADINTF => PLASMA_BCKGRND(1+6+1*NPLS+NPLSTI+3*NPLSV :
      .                             6+1*NPLS+NPLSTI+3*NPLSV+NAIN, :)
 
@@ -235,7 +264,7 @@ c    currently: no efield information ?
 
       SUBROUTINE EIRENE_INIT_BCKGRND
 
-      PLASMA_BCKGRND = 0._DP
+      IF (ALLOCATED(PLASMA_BCKGRND)) PLASMA_BCKGRND = 0._DP
 
       RETURN
       END SUBROUTINE EIRENE_INIT_BCKGRND

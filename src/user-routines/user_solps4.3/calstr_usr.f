@@ -7,4 +7,4 @@ c PEs sharing calculations for a particular stratum
       IMPLICIT NONE
       integer, intent(in) :: ipe, ic
       RETURN
-      END
+      END SUBROUTINE EIRENE_CALSTR_USR

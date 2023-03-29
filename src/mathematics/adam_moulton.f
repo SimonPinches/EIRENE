@@ -27,7 +27,7 @@
       real(DP) H,C1,C2,C3,C4,XX,YY,YC,YP
       integer K, L, ms
 
-      H = (xf - xi) / real(m-1,kind(1.d0))  !integration step
+      H = (xf - xi) / real(m-1,dp)  !integration step
       X(0) = xi
       Y(0) = yi               !Initial conditions
 
@@ -115,4 +115,5 @@
 
       IF (X(2) < xf)  GOTO 100
 
-      END
+      RETURN
+      END subroutine adam_moulton

@@ -1,6 +1,6 @@
 !pb  19.12.06: bremsstrahlung added
 !dr  31.07.07: bug fix: tein(j) --> tein(k)
-cdr  nov.14:  function brems, replaces gaunt factor function,
+cdr  nov.14:  function brems, replaces Gaunt factor function,
 cdr           reaction scaling factor factkk removed from bremsstrahlung
 cdr  nov 17:  comments. bremsstrahlung handling is currently connected
 cdr           to 2d tab format. This is not generally correct, only if
@@ -8,10 +8,9 @@ cdr           the 2d tab comes from ADAS.  Should be handled in read_tab2d?
 cdr           or as iftflg(..4) option.
 cdr sept 18:  try to revive storage save mode.
 cdr           Rationalization with options in feelei1.f:
-cdr           as for ei processes:  KK < 0: default, minimal (here: -1,-2)
-cdr                                 KK > 0: kk=kread, read from datadase
-cdr                                 KK = 0: else, simple models (via jelrrc)
-
+cdr           as for EI processes: KK < 0: default, minimal (here: -1,-2)
+cdr                                KK > 0: kk=kread, read from datadase
+cdr                                KK = 0: else, simple models (via jelrrc)
 
       FUNCTION EIRENE_FEELRC1 (IRRC,K)
 
@@ -73,7 +72,12 @@ c  to avoid double-counting.
 c
         LADAS = EIRENE_IS_RTCEW_TAB2D(KK)  ! ifit=3 <--> ladas.
         IF (LADAS.AND.(NCHRGP(IPLS) /= 0)) THEN
-          Z = NCHRGP(IPLS)
+cnh       28.10.2019
+          if(ZIIN(IPLS,K) .ne. ZVAC) then
+            Z = ZIIN(IPLS,K)
+          else
+            Z = DBLE(NCHRGP(IPLS))
+          endif
           BREMS = EIRENE_BREMS(TEIN(K),DEIN(K),Z)/ELCHA   ! W per ion --> eV/s  per ion
           EIRENE_FEELRC1=EIRENE_FEELRC1 + BREMS
         END IF
@@ -100,4 +104,4 @@ c  by adding potential energy transfer contribution
   999 continue
       write (iunout,*) 'error in feelrc1, KK= 0 option'
       call eirene_exit_own(1)
-      END
+      END FUNCTION EIRENE_FEELRC1

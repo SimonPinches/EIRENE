@@ -13,6 +13,7 @@ C  IFLAG= 3:  ADDITIONALLY: 3D PROFILES
 C  IFLAG> 3:  ONLY FULL PROFILES, NO AVERAGES
 C
       USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
 
@@ -20,16 +21,14 @@ C
       REAL(DP), INTENT(IN) :: PROF(*)
       INTEGER, INTENT(IN) :: NR, NP, NT, NB, NTT, IFLAG, IFILE,
      .                       IR1, IR2, IP1, IP2, IT1, IT2
-      INTEGER, PARAMETER :: NSTREAM=15
       REAL(DP) :: H(6)
-      INTEGER :: K(6), ISTREAM(NSTREAM)
+      INTEGER :: K(6)
       INTEGER :: JR, JP, JT, IJ, N1DEL, N2DEL, IADD, IB, I,
      .           IC, IT, IP, NRM, NS, NTM, NPM, IRAD, IST, NCOL, IR,
-     .           IRM, IPM, ITM
+     .           IRN, IPN, ITN
       CHARACTER(1) :: TL(72)
 
       DATA TL/72*'='/
-      DATA ISTREAM/6,50,20,21,29,30,31,32,33,10,11,12,13,14,15/
       SAVE
 
       CALL EIRENE_LEER(3)
@@ -55,7 +54,7 @@ C
         WRITE (IFILE,*) TL
         WRITE (IFILE,*) NR,NP,NT,NB,NTT
         DO IRAD=1,NTT,5
-          WRITE (IFILE,*) (PROF(IR),IR=IRAD,MIN(IRAD+4,NTT))
+          WRITE (IFILE,5) (PROF(IR),IR=IRAD,MIN(IRAD+4,NTT))
         ENDDO
         CLOSE (UNIT=IFILE)
       ENDIF
@@ -68,9 +67,9 @@ C
       NRM=MAX(1,NR-1)
       NPM=MAX(1,NP-1)
       NTM=MAX(1,NT-1)
-      IRM=MAX(1,IR2-1)
-      IPM=MAX(1,IP2-1)
-      ITM=MAX(1,IT2-1)
+      IRN=MAX(1,IR2-1)
+      IPN=MAX(1,IP2-1)
+      ITN=MAX(1,IT2-1)
       N1DEL=0
       IF (NP.GT.1.OR.NT.GT.1) N1DEL=NR
       N2DEL=0
@@ -108,11 +107,11 @@ C
         WRITE (iunout,82)
         IF (NR.GT.1) WRITE (iunout,881)
         IF (NR.GT.1) CALL EIRENE_LEER(1)
-        DO 2 JT=IT1,ITM
+        DO 2 JT=IT1,ITN
           WRITE (iunout,77) JT
           IJ=IP1
           IP=0
-  220     DO 222 JP=IJ,IPM
+  220     DO 222 JP=IJ,IPN
             IC=NR+((JP-1)+(JT-1)*N2DEL)*N1DEL+IADD
             IP=IP+1
             IJ=IJ+1
@@ -123,7 +122,7 @@ C
   223     CONTINUE
           WRITE (iunout,6) (K(I),H(I),I=1,IP)
           IP=0
-          IF (IJ.LE.IPM) GOTO 220
+          IF (IJ.LE.IPN) GOTO 220
 C  NEXT SEGMENT
           CALL EIRENE_LEER(2)
     2   CONTINUE
@@ -136,11 +135,11 @@ C
         WRITE (iunout,81)
         IF (NT.GT.1) WRITE (iunout,883)
         IF (NT.GT.1) CALL EIRENE_LEER(1)
-        DO 3 JP=IP1,IPM
+        DO 3 JP=IP1,IPN
           WRITE (iunout,7) JP
           IJ=IR1
           IR=0
-  330     DO 333 JR=IJ,IRM
+  330     DO 333 JR=IJ,IRN
             IC=JR+((JP-1)+(NT-1)*N2DEL)*N1DEL+IADD
             IR=IR+1
             IJ=IJ+1
@@ -151,7 +150,7 @@ C
   334     CONTINUE
           WRITE (iunout,6) (K(I),H(I),I=1,IR)
           IR=0
-          IF (IJ.LE.IRM) GOTO 330
+          IF (IJ.LE.IRN) GOTO 330
 C  NEXT SEGMENT
           CALL EIRENE_LEER(2)
     3   CONTINUE
@@ -164,11 +163,11 @@ C
         WRITE (iunout,81)
         IF (NP.GT.1) WRITE (iunout,882)
         IF (NP.GT.1) CALL EIRENE_LEER(1)
-          DO 4 JT=IT1,ITM
+          DO 4 JT=IT1,ITN
           WRITE (iunout,77) JT
           IJ=IR1
           IR=0
-  440     DO 444 JR=IJ,IRM
+  440     DO 444 JR=IJ,IRN
             IC=JR+((NP-1)+(JT-1)*N2DEL)*N1DEL+IADD
             IR=IR+1
             IJ=IJ+1
@@ -179,7 +178,7 @@ C
   445     CONTINUE
           WRITE (iunout,6) (K(I),H(I),I=1,IR)
           IR=0
-          IF (IJ.LE.IRM) GOTO 440
+          IF (IJ.LE.IRN) GOTO 440
 C  NEXT SEGMENT
           CALL EIRENE_LEER(2)
     4   CONTINUE
@@ -201,7 +200,7 @@ C
         IF (NP.GT.1.AND.NT.GT.1) WRITE (iunout,8883)
         IJ=IR1
         IR=0
- 1110   DO 1111 JR=IJ,IRM
+ 1110   DO 1111 JR=IJ,IRN
           IC=JR+((NP-1)+(NT-1)*N2DEL)*N1DEL+IADD
           IR=IR+1
           IJ=IJ+1
@@ -212,7 +211,7 @@ C
  1112   CONTINUE
         WRITE (iunout,6) (K(I),H(I),I=1,IR)
         IR=0
-        IF (IJ.LE.IRM) GOTO 1110
+        IF (IJ.LE.IRN) GOTO 1110
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) TL
       ENDIF
@@ -226,7 +225,7 @@ C
         IF (NR.GT.1.AND.NT.GT.1) WRITE (iunout,8882)
         IJ=IP1
         IP=0
- 1220   DO 1222 JP=IJ,IPM
+ 1220   DO 1222 JP=IJ,IPN
           IC=NR+((JP-1)+(NT-1)*N2DEL)*N1DEL+IADD
           IP=IP+1
           IJ=IJ+1
@@ -237,7 +236,7 @@ C
  1223   CONTINUE
         WRITE (iunout,6) (K(I),H(I),I=1,IP)
         IP=0
-        IF (IJ.LE.IPM) GOTO 1220
+        IF (IJ.LE.IPN) GOTO 1220
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) TL
       ENDIF
@@ -251,7 +250,7 @@ C
         IF (NR.GT.1.AND.NP.EQ.1) WRITE (iunout,881)
         IF (NR.EQ.1.AND.NP.GT.1) WRITE (iunout,882)
         IF (NR.GT.1.AND.NP.GT.1) WRITE (iunout,8881)
- 1330   DO 1333 JT=IJ,ITM
+ 1330   DO 1333 JT=IJ,ITN
           IC=NR+((NP-1)+(JT-1)*N2DEL)*N1DEL+IADD
           IT=IT+1
           IJ=IJ+1
@@ -262,7 +261,7 @@ C
  1334   CONTINUE
         WRITE (iunout,6) (K(I),H(I),I=1,IT)
         IT=0
-        IF (IJ.LE.ITM) GOTO 1330
+        IF (IJ.LE.ITN) GOTO 1330
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) TL
       ENDIF
@@ -279,6 +278,7 @@ C
 50000 CONTINUE
       CALL EIRENE_LEER(2)
 C
+    5 FORMAT (1X,5(1PE12.4,2X))
     6 FORMAT (1X,6(I6,2X,1PE12.4,2X))
     7 FORMAT (1X,'Y- OR POLOIDAL SEGMENT NUMBER ',I6)
    77 FORMAT (1X,'Z- OR TOROIDAL SEGMENT NUMBER ',I6)
@@ -294,4 +294,4 @@ C
  8883 FORMAT (1X,'Y- OR POL. AND Z- OR TOR. TOTAL ',1PE12.4)
  8888 FORMAT (1X,'BLOCK TOTAL ',1PE12.4)
       RETURN
-      END
+      END SUBROUTINE EIRENE_PRTTLS

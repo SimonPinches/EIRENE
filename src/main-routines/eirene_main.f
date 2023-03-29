@@ -1,12 +1,13 @@
 Cdr  june 17:  gr-cleanup: call grstrt, grend --> call eirene_plstrt, eirene_plend
 cdr  comments
+cd   oct 20: modified to obtain total cpu time, sum over all iterations.
 C
 C     EIRENE VERSION SVN ....  (Jan.2014)... MOVED TO GIT REPOSITORY
 C
 C
       PROGRAM EIRENE_MAIN
 
-cdr  Main program, to run eirene as stand alone code.
+cdr  Main program, to run EIRENE as standalone code.
 c
 c     a)  initialize graphics routines
 c     b)  set default global run parameters NLM, DT, NLL, ITNR, MPI_INIT
@@ -35,20 +36,25 @@ cdr  set from the external code, or in EIRSRT, and are problem-specific.
 
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
-      USE EIRMOD_SECOND_OWN, ONLY: EIRENE_SECOND_OWN
+      USE EIRMOD_SECOND_OWN, ONLY: EIRENE_SECOND_OWN,
+     .                             EIRENE_RESET_SECOND
+
       IMPLICIT NONE
       REAL(DP) :: DT
       REAL(DP) :: TIMI, TIMEND
+      REAL(DP), SAVE :: TIMI0
       INTEGER :: ITNR
       LOGICAL :: NLM,NLL,MPI_INIT
 C
       TIMI=EIRENE_SECOND_OWN()
+      TIMI0=TIMI
+c     write (iunout,*) 'timi ',timi0
 C
       CALL EIRENE_PLSTRT
 C
 C  call eirene, to carry out a "standalone eirene run"
       NLM=.FALSE.
-C  time step set internally from input file
+C  time step set later internally from input file
       DT=0._DP
 c  last call, deallocate arrays at the end of run
       NLL=.TRUE.
@@ -56,13 +62,23 @@ c  iteration number for iterations with external code
       ITNR=1
 c  initialize MPI routines
       MPI_INIT=.TRUE.
-
+!!! debug / commented until -cpp option added
+!!!      write(6,*) "EIRENE_MAIN: starting"
+!!!#ifdef USE_EXT_OPENMP
+!!!      write(6,*) "Entering paralell region replicating external region"
+!!!$OMP PARALLEL DEFAULT(SHARED)
+!!!      write(6,*) "Entered paralell region replicating external region"
+!!!#endif
       CALL EIRENE_EIRENE(DT,NLM,NLL,ITNR,MPI_INIT)
-C
+!!!#ifdef USE_EXT_OPENMP
+!!!!$OMP END PARALLEL      
+!!!#endif
+C     
       CALL EIRENE_PLEND
 C
-      TIMEND=EIRENE_SECOND_OWN()
-      WRITE (IUNOUT,*) 'TOTAL CPU_TIME OF THIS RUN: ',TIMEND-TIMI
+      TIMEND=EIRENE_RESET_SECOND()
+      WRITE (IUNOUT,*) 'TOTAL CPU_TIME (SEC) OF THIS RUN: ',
+     .                  TIMEND-TIMI0
 C
       STOP
       END

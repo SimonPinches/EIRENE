@@ -18,7 +18,7 @@ cdr             inttal and intvol are largely identical, remove one ?
 cdr             prttal and prtvol are largely identical, remove one ?
 cdr oct 18    : all input tallies selectable, also derived tallies.
 cdr             also: gradient tallies of input tallies: currently no. 31--120
-cdr may 19:     remove NF=NFRSTP(ITAL)  (unused, Meaning ??), comments...
+cdr may 19    : remove NF=NFRSTP(ITAL) (unused, meaning ?), comments...
 
 C
       SUBROUTINE EIRENE_OUTPLA(ICAL)
@@ -92,8 +92,8 @@ C                 TALTYP=4: UNKNOWN        (?)
       TALTYP(23)=0  ! bvin   units ??
       TALTYP(24)=0  ! parmom units ??
       TALTYP(25)=0  ! psi units ??
+      TALTYP(26)=3  ! zi
 
-      TALTYP(26)=0  ! free26 units ??
       TALTYP(27)=0  ! free27 units ??
       TALTYP(28)=0  ! free28 units ??
       TALTYP(29)=0  ! free29 units ??
@@ -239,7 +239,7 @@ cdr  missing here: verify cdenmodel(k) ?
             CASE (25)
               HELPP(1:NSBOX) = PSI(1:NSBOX)
             CASE (26)
-              HELPP(1:NSBOX) = FREE26(1:NSBOX)
+              HELPP(1:NSBOX) = ZIIN(K,1:NSBOX)
             CASE (27)
               HELPP(1:NSBOX) = FREE27(1:NSBOX)
             CASE (28)
@@ -328,12 +328,12 @@ C  23: FLOW VELOCITY PARALLEL B
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
               CASE (8:11)
-C  8,9,10,11: B-FIELD UNIT VECTOR, B-FIELD STRENGTH "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
+C  8,9,10,11: B FIELD UNIT VECTOR, B FIELD STRENGTH "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (16:17)
-C  16,17: B_PERP-FIELD: "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
+C  16,17: B_PERP FIELD: "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
@@ -354,7 +354,7 @@ C  13: ION DRIFT ENERGY: NI(K)*VOLUME-WEIGHTED AVERAGES
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
               CASE (18:21)
-C  18,19,20,21: E-FIELD UNIT VECTOR, E-FIELD STRENGTH
+C  18,19,20,21: E FIELD UNIT VECTOR, E FIELD STRENGTH
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
@@ -374,7 +374,7 @@ C  25) PSI
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (26)
-C  26) FREE26
+C  26) ZI
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
@@ -400,7 +400,7 @@ C  30) FREE30
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
 
               CASE (31:120)  ! ntali=120, constant required here
-C  (25 .. NTALI) GRADIENTS
+C  (31 .. NTALI) GRADIENTS
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
@@ -438,12 +438,12 @@ C  FLOW VELOCITY PARALLEL TO B FIELD
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
               CASE (8:11)
-C  B-FIELD UNIT VECTOR, B-FIELD STRENGTH "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
+C  B FIELD UNIT VECTOR, B FIELD STRENGTH "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (16:17)
-C  B_PERP-FIELD: "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
+C  B_PERP FIELD: "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
@@ -464,7 +464,7 @@ C  ION DRIFT ENERGY: NI(K)*VOLUME-WEIGHTED AVERAGES
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
               CASE (18:21)
-C  E-FIELD UNIT VECTOR, E-FIELD STRENGTH
+C  E FIELD UNIT VECTOR, E FIELD STRENGTH
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
@@ -478,12 +478,13 @@ C  PARALLEL TO B FLOW MOMENTUM
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-C  25) PSI
+              CASE (25)
+C  PSI
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (26)
-C  26) FREE26
+C  ZI
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
@@ -602,4 +603,4 @@ C   PRINT ONLY THE HEADER FOR TALLY, BECAUSE TALLY IDENTICALLY ZERO
       DEALLOCATE (X1D)
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_OUTPLA

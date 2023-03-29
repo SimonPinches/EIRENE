@@ -9,8 +9,8 @@
       USE EIRMOD_CSPEZ
       USE EIRMOD_CTRCEI
       USE EIRMOD_COMSOU
+      USE EIRMOD_CLOGAU
       USE EIRMOD_SECOND_OWN, ONLY: eirene_second_own
-
        
       IMPLICIT NONE
       real(dp), allocatable, save :: time_array(:,:,:)
@@ -21,6 +21,9 @@
      .                 imol_old=-1,
      .                 iion_old=-1,
      .                 ipls_old=-1
+     
+!$omp  threadprivate(istra_old,ityp_old,iphot_old,iatm_old,imol_old,
+!$omp&   iion_old,ipls_old)     
 
       PRIVATE
 
@@ -117,8 +120,11 @@ C  save stratum, old type, species
       NULLIFY (VYDENX)
       NULLIFY (VZDENX)
       NULLIFY (MXPL)
+      NULLIFY (RXEL)
       NULLIFY (PXX)
       NULLIFY (EXX)
+
+      NDXX = 0
 
       select case(ityp)
 
@@ -141,16 +147,41 @@ C  save stratum, old type, species
        LVYDENX => LVYDENPH
        LVZDENX => LVZDENPH
        LMXPL   => LMPHPL
+       LRXEL   => LRPHEL
        LPXX    => LPPHPHT
        LEXX    => LEPHPHT
+       LSCX    => NLSPCSCL_PHOT
 
        IF (LPDENX)  PDENX  => PDENPH(IPHOT,:)
        IF (LEDENX)  EDENX  => EDENPH(IPHOT,:)
        IF (LPXEL)   PXEL   => PPHEL(:)
-       IF (LPXAT)   PXAT   => PPHAT(1:NATMI,:)
-       IF (LPXML)   PXML   => PPHML(1:NMOLI,:)
-       IF (LPXIO)   PXIO   => PPHIO(1:NIONI,:)
-       IF (LPXPL)   PXPL   => PPHPL(1:NPLSI,:)
+       IF (LSCX) THEN
+         IF (LPXAT) THEN
+           NTS_PXATA = NTS_PI+1
+           NTS_PXATE = NTS_APH
+           PXAT   => PPHAT(1:NATM*NPHOTP,:)
+         END IF
+         IF (LPXML) THEN
+           NTS_PXMLA = NTS_APH+1
+           NTS_PXMLE = NTS_MPH
+           PXML   => PPHML(1:NMOL*NPHOTP,:)
+         END IF
+         IF (LPXIO) THEN
+           NTS_PXIOA = NTS_MPH+1
+           NTS_PXIOE = NTS_IPH
+           PXIO   => PPHIO(1:NION*NPHOTP,:)
+         END IF
+         IF (LPXPL) THEN
+           NTS_PXPLA = NTS_PHPH+1
+           NTS_PXPLE = NTS_PPH
+           IF (LPXPL) PXPL   => PPHPL(1:NPLS*NPHOTP,:)
+         END IF
+       ELSE
+         IF (LPXAT) PXAT   => PPHAT(1:NATMI,:)
+         IF (LPXML) PXML   => PPHML(1:NMOLI,:)
+         IF (LPXIO) PXIO   => PPHIO(1:NIONI,:)
+         IF (LPXPL) PXPL   => PPHPL(1:NPLSI,:)
+       END IF
        IF (LEXEL)   EXEL   => EPHEL(:)
        IF (LEXAT)   EXAT   => EPHAT(:)
        IF (LEXML)   EXML   => EPHML(:)
@@ -160,7 +191,15 @@ C  save stratum, old type, species
        IF (LVYDENX) VYDENX => VYDENPH(IPHOT,:)
        IF (LVZDENX) VZDENX => VZDENPH(IPHOT,:)
        IF (LMXPL)   MXPL   => MPHPL(1:NPLSI,:)
-       IF (LPXX)    PXX    => PPHPHT(1:NPHOTI,:)
+       IF (LRXEL)   RXEL   => RPHEL(1:NPHOTI,:)
+       IF (LSCX) THEN
+         NDXX = NPHOT
+         NDXXA = NTS_IPH+1
+         NDXXE = NTS_PHPH
+         IF (LPXX)  PXX    => PPHPHT(1:NPHOT*NPHOT,:)
+       ELSE
+         IF (LPXX)  PXX    => PPHPHT(1:NPHOTI,:)
+       END IF
        IF (LEXX)    EXX    => EPHPHT(:)
 
        LEX     => LEPH
@@ -204,16 +243,41 @@ C  save stratum, old type, species
        LVYDENX => LVYDENA
        LVZDENX => LVZDENA
        LMXPL   => LMAPL
+       LRXEL   => LRAEL
        LPXX    => LPAAT
        LEXX    => LEAAT
+       LSCX    => NLSPCSCL_ATM
 
        IF (LPDENX)  PDENX  => PDENA(IATM,:)
        IF (LEDENX)  EDENX  => EDENA(IATM,:)
        IF (LPXEL)   PXEL   => PAEL(:)
-       IF (LPXAT)   PXAT   => PAAT(1:NATMI,:)
-       IF (LPXML)   PXML   => PAML(1:NMOLI,:)
-       IF (LPXIO)   PXIO   => PAIO(1:NIONI,:)
-       IF (LPXPL)   PXPL   => PAPL(1:NPLSI,:)
+       IF (LSCX) THEN
+         IF (LPXAT) THEN 
+           NTS_PXATA = NSPZTOTS+1
+           NTS_PXATE = NTS_AA
+           PXAT   => PAAT(1:NATM*NATMP,:)
+         END IF
+         IF (LPXML) THEN
+           NTS_PXMLA = NTS_AA+1
+           NTS_PXMLE = NTS_MA
+           PXML   => PAML(1:NMOL*NATMP,:)
+         END IF
+         IF (LPXIO) THEN 
+           NTS_PXIOA = NTS_MA+1
+           NTS_PXIOE = NTS_IA
+           PXIO   => PAIO(1:NION*NATMP,:)
+         END IF
+         IF (LPXPL) THEN 
+           NTS_PXPLA = NTS_PHA+1
+           NTS_PXPLE = NTS_PA
+           PXPL   => PAPL(1:NPLS*NATMP,:)
+         END IF
+       ELSE
+         IF (LPXAT) PXAT   => PAAT(1:NATMI,:)
+         IF (LPXML) PXML   => PAML(1:NMOLI,:)
+         IF (LPXIO) PXIO   => PAIO(1:NIONI,:)
+         IF (LPXPL) PXPL   => PAPL(1:NPLSI,:)
+       END IF
        IF (LEXEL)   EXEL   => EAEL(:)
        IF (LEXAT)   EXAT   => EAAT(:)
        IF (LEXML)   EXML   => EAML(:)
@@ -223,7 +287,15 @@ C  save stratum, old type, species
        IF (LVYDENX) VYDENX => VYDENA(IATM,:)
        IF (LVZDENX) VZDENX => VZDENA(IATM,:)
        IF (LMXPL)   MXPL   => MAPL(1:NPLSI,:)
-       IF (LPXX)    PXX    => PAAT(1:NATMI,:)
+       IF (LRXEL)   RXEL   => RAEL(1:NATMI,:)
+       IF (LSCX) THEN
+         NDXX = NATM
+         NDXXA = NSPZTOTS+1
+         NDXXE = NTS_AA
+         IF (LPXX)  PXX    => PAAT(1:NATM*NATMP,:)
+       ELSE
+         IF (LPXX)  PXX    => PAAT(1:NATMI,:)
+       END IF
        IF (LEXX)    EXX    => EAAT(:)
 
        LEX     => LEA
@@ -268,16 +340,41 @@ C  save stratum, old type, species
        LVYDENX => LVYDENM
        LVZDENX => LVZDENM
        LMXPL   => LMMPL
+       LRXEL   => LRMEL
        LPXX    => LPMML
        LEXX    => LEMML
+       LSCX    => NLSPCSCL_MOL
 
        IF (LPDENX)  PDENX  => PDENM(IMOL,:)
        IF (LEDENX)  EDENX  => EDENM(IMOL,:)
        IF (LPXEL)   PXEL   => PMEL(:)
-       IF (LPXAT)   PXAT   => PMAT(1:NATMI,:)
-       IF (LPXML)   PXML   => PMML(1:NMOLI,:)
-       IF (LPXIO)   PXIO   => PMIO(1:NIONI,:)
-       IF (LPXPL)   PXPL   => PMPL(1:NPLSI,:)
+       IF (LSCX) THEN
+         IF (LPXAT) THEN
+           NTS_PXATA = NTS_PA+1
+           NTS_PXATE = NTS_AM
+           PXAT   => PMAT(1:NATM*NMOLP,:)
+         END IF
+         IF (LPXML) THEN
+           NTS_PXMLA = NTS_AM+1
+           NTS_PXMLE = NTS_MM
+           PXML   => PMML(1:NMOL*NMOLP,:)
+         END IF
+         IF (LPXIO) THEN
+           NTS_PXIOA = NTS_MM+1
+           NTS_PXIOE = NTS_IM
+           PXIO   => PMIO(1:NION*NMOLP,:)
+         END IF
+         IF (LPXPL) THEN
+           NTS_PXPLA = NTS_PHM+1
+           NTS_PXPLE = NTS_PM
+           PXPL   => PMPL(1:NPLS*NMOLP,:)
+         END IF
+       ELSE
+         IF (LPXAT) PXAT   => PMAT(1:NATMI,:)
+         IF (LPXML) PXML   => PMML(1:NMOLI,:)
+         IF (LPXIO) PXIO   => PMIO(1:NIONI,:)
+         IF (LPXPL) PXPL   => PMPL(1:NPLSI,:)
+       END IF
        IF (LEXEL)   EXEL   => EMEL(:)
        IF (LEXAT)   EXAT   => EMAT(:)
        IF (LEXML)   EXML   => EMML(:)
@@ -287,7 +384,15 @@ C  save stratum, old type, species
        IF (LVYDENX) VYDENX => VYDENM(IMOL,:)
        IF (LVZDENX) VZDENX => VZDENM(IMOL,:)
        IF (LMXPL)   MXPL   => MMPL(1:NPLSI,:)
-       IF (LPXX)    PXX    => PMML(1:NMOLI,:)
+       IF (LRXEL)   RXEL   => RMEL(1:NMOLI,:)
+       IF (LSCX) THEN
+         NDXX = NMOL
+         NDXXA = NTS_AM+1
+         NDXXE = NTS_MM
+         IF (LPXX)  PXX    => PMML(1:NMOL*NMOLP,:)
+       ELSE
+         IF (LPXX)  PXX    => PMML(1:NMOLI,:)
+       END IF
        IF (LEXX)    EXX    => EMML(:)
 
        LEX     => LEM
@@ -332,16 +437,41 @@ C  save stratum, old type, species
        LVYDENX => LVYDENI
        LVZDENX => LVZDENI
        LMXPL   => LMIPL
+       LRXEL   => LRIEL
        LPXX    => LPIIO
        LEXX    => LEIIO
+       LSCX    => NLSPCSCL_ION
 
        IF (LPDENX)  PDENX  => PDENI(IION,:)
        IF (LEDENX)  EDENX  => EDENI(IION,:)
        IF (LPXEL)   PXEL   => PIEL(:)
-       IF (LPXAT)   PXAT   => PIAT(1:NATMI,:)
-       IF (LPXML)   PXML   => PIML(1:NMOLI,:)
-       IF (LPXIO)   PXIO   => PIIO(1:NIONI,:)
-       IF (LPXPL)   PXPL   => PIPL(1:NPLSI,:)
+       IF (LSCX) THEN
+         IF (LPXAT) THEN
+           NTS_PXATA = NTS_PM+1
+           NTS_PXATE = NTS_AI
+           PXAT   => PIAT(1:NATM*NIONP,:)
+         END IF
+         IF (LPXML) THEN
+           NTS_PXMLA = NTS_AI+1
+           NTS_PXMLE = NTS_MI
+           PXML   => PIML(1:NMOL*NIONP,:)
+         END IF
+         IF (LPXIO) THEN
+           NTS_PXIOA = NTS_MI+1
+           NTS_PXIOE = NTS_II
+           PXIO   => PIIO(1:NION*NIONP,:)
+         END IF
+         IF (LPXPL) THEN
+           NTS_PXPLA = NTS_PHI+1
+           NTS_PXPLE = NTS_PI
+           PXPL   => PIPL(1:NPLS*NIONP,:)
+         END IF
+       ELSE
+         IF (LPXAT) PXAT   => PIAT(1:NATMI,:)
+         IF (LPXML) PXML   => PIML(1:NMOLI,:)
+         IF (LPXIO) PXIO   => PIIO(1:NIONI,:)
+         IF (LPXPL) PXPL   => PIPL(1:NPLSI,:)
+       END IF
        IF (LEXEL)   EXEL   => EIEL(:)
        IF (LEXAT)   EXAT   => EIAT(:)
        IF (LEXML)   EXML   => EIML(:)
@@ -351,7 +481,15 @@ C  save stratum, old type, species
        IF (LVYDENX) VYDENX => VYDENI(IION,:)
        IF (LVZDENX) VZDENX => VZDENI(IION,:)
        IF (LMXPL)   MXPL   => MIPL(1:NPLSI,:)
-       IF (LPXX)    PXX    => PIIO(1:NIONI,:)
+       IF (LRXEL)   RXEL   => RIEL(1:NIONI,:)
+       IF (LSCX) THEN
+         NDXX = NION
+         NDXXA = NTS_MI+1
+         NDXXE = NTS_II
+         IF (LPXX)  PXX    => PIIO(1:NION*NIONP,:)
+       ELSE
+         IF (LPXX)  PXX    => PIIO(1:NIONI,:)
+       END IF
        IF (LEXX)    EXX    => EIIO(:)
 
        LEX     => LEIO
@@ -429,7 +567,7 @@ C  save stratum, old type, species
           call eirene_leer(1)
           write (iunout,*) 'TIME (SEC) SPENT IN FOLLOWING '
           CALL EIRENE_MASYR1 ('PHOTONS = ',time_array(0,0:nphot,:),
-     .                LOGPHOT,ISTR,0,NPHOT,0,NSTRA,TEXTS(1))
+     .                LOGPHOT,ISTR,0,NPHOT,NPHOT,0,NSTRA,TEXTS(1))
           CALL EIRENE_MASAGE
      .      ('SUM OVER SPECIES                               ')
           CALL EIRENE_MASR1 ('TOTAL=  ',time_array(0,0,ISTR))
@@ -439,7 +577,7 @@ C  save stratum, old type, species
           call eirene_leer(1)
           write (iunout,*) 'TIME (SEC) SPENT IN FOLLOWING '
           CALL EIRENE_MASYR1 ('ATOMS =   ',time_array(1,0:natm,:),
-     .                LOGATM,ISTR,0,NATM,0,NSTRA,TEXTS(NSPH+1))
+     .                LOGATM,ISTR,0,NATM,NATM,0,NSTRA,TEXTS(NSPH+1))
          CALL EIRENE_MASAGE
      .      ('SUM OVER SPECIES                               ')
           CALL EIRENE_MASR1 ('TOTAL=  ',time_array(1,0,ISTR))
@@ -449,7 +587,7 @@ C  save stratum, old type, species
           call eirene_leer(1)
           write (iunout,*) 'TIME (SEC) SPENT IN FOLLOWING '
           CALL EIRENE_MASYR1 ('MOLECULES=',time_array(2,0:nmol,:),
-     .                LOGMOL,ISTR,0,NMOL,0,NSTRA,TEXTS(NSPA+1))
+     .                LOGMOL,ISTR,0,NMOL,NMOL,0,NSTRA,TEXTS(NSPA+1))
           CALL EIRENE_MASAGE
      .      ('SUM OVER SPECIES                               ')
           CALL EIRENE_MASR1 ('TOTAL=  ',time_array(2,0,ISTR))
@@ -459,7 +597,7 @@ C  save stratum, old type, species
           call eirene_leer(1)
           write (iunout,*) 'TIME (SEC) SPENT IN FOLLOWING '
           CALL EIRENE_MASYR1 ('TEST IONS=',time_array(3,0:nion,:),
-     .                LOGION,ISTR,0,NION,0,NSTRA,TEXTS(NSPAM+1))
+     .                LOGION,ISTR,0,NION,NION,0,NSTRA,TEXTS(NSPAM+1))
           CALL EIRENE_MASAGE
      .      ('SUM OVER SPECIES                               ')
           CALL EIRENE_MASR1 ('TOTAL=  ',time_array(3,0,ISTR))
@@ -468,7 +606,7 @@ C  save stratum, old type, species
 !        if (any(time_array(4,:,istr) > 0._dp)) then
 !          write (iunout,*) ' TIME (SEC) SPENT IN FOLLOWING '
 !          CALL EIRENE_MASYR1 ('BULK IONS=',time_array(4,1:npls,:),
-!     .                LOGPLS,ISTR,1,NPLS,1,NSTRA,TEXTS(NSPAMI+1))
+!     .                LOGPLS,ISTR,1,NPLS,NPLS,1,NSTRA,TEXTS(NSPAMI+1))
 !          CALL EIRENE_MASAGE
 !     .      ('SUM OVER SPECIES                               ')
 !          CALL EIRENE_MASR1 ('TOTAL=  ',SUM(time_array(4,1:npls,ISTR)))

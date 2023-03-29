@@ -47,6 +47,7 @@ C  NESTM1, REAL, VOLUME-AVERAGED TALLIES
      R PIPL(:,:),
      R PPHEL(:),   PPHAT(:,:), PPHML(:,:), PPHIO(:,:), PPHPHT(:,:),
      R PPHPL(:,:),
+     R RAEL(:,:),  RMEL(:,:),  RIEL(:,:),  RPHEL(:,:),
      R EAEL(:),  EAAT(:),  EAML(:),  EAIO(:),  EAPHT(:),  EAPL(:,:),
      R EMEL(:),  EMAT(:),  EMML(:),  EMIO(:),  EMPHT(:),  EMPL(:,:),
      R EIEL(:),  EIAT(:),  EIML(:),  EIIO(:),  EIPHT(:),  EIPL(:,:),
@@ -58,6 +59,7 @@ c  more recent tallies  63 --100
      R PGENA(:,:), PGENM(:,:), PGENI(:,:), PGENPH(:,:),
      R EGENA(:,:), EGENM(:,:), EGENI(:,:), EGENPH(:,:),
      R VGENA(:,:), VGENM(:,:), VGENI(:,:), VGENPH(:,:),
+cdr missing tallies: ppel, epel, electron terms from initial "P" bulk particle
      R PPAT(:,:),  PPML(:,:),  PPIO(:,:),  PPPHT(:,:), PPPL(:,:),
      R EPAT(:),    EPML(:),    EPIO(:),    EPPHT(:),   EPPL(:,:),
      R VXDENA(:,:), VXDENM(:,:), VXDENI(:,:), VXDENPH(:,:),
@@ -71,7 +73,10 @@ c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
      R PXEL(:),   PXAT(:,:),  PXML(:,:),  PXIO(:,:), PXPL(:,:),
      R EXEL(:),   EXAT(:),    EXML(:),    EXIO(:),   EXPL(:,:),
      R VXDENX(:), VYDENX(:),  VZDENX(:),
-     R MXPL(:,:), PXX(:,:),   EXX(:)
+     R MXPL(:,:), RXEL(:,:),  PXX(:,:),   EXX(:)
+
+!$OMP  THREADPRIVATE(PDENX,EDENX,PXEL,PXAT,PXML,PXIO,PXPL,EXEL,EXAT, 
+!$OMP& EXML,EXIO,EXPL,VXDENX,VYDENX,VZDENX,MXPL,RXEL,PXX,EXX)
 
 C  NESTM2, REAL, SURFACE-AVERAGED TALLIES
       REAL(DP), PUBLIC, POINTER, SAVE ::
@@ -132,11 +137,45 @@ C
      R ADDS(:,:),  ALGS(:,:),
      R SPUMP(:,:)
 
+! helper pointers for species resolved tallies
+      REAL(DP), PUBLIC, POINTER :: 
+     R PAAT2(:,:), PAML2(:,:), PAIO2(:,:), PAPHT2(:,:), PAPL2(:,:),
+     R PMAT2(:,:), PMML2(:,:), PMIO2(:,:), PMPHT2(:,:), PMPL2(:,:),
+     R PIAT2(:,:), PIML2(:,:), PIIO2(:,:), PIPHT2(:,:), PIPL2(:,:),
+     R PPHAT2(:,:), PPHML2(:,:), PPHIO2(:,:), PPHPHT2(:,:), PPHPL2(:,:)
+!$OMP  THREADPRIVATE(PAAT2,PAML2,PAIO2,PAPHT2,PAPL2,PMAT2,PMML2,PMIO2,
+!$OMP& PMPHT2,PMPL2,PIAT2,PIML2,PIIO2,PIPHT2,PIPL2,PPHAT2,PPHML2,
+!$OMP& PPHIO2,PPHPHT2,PPHPL2)
+
+      REAL(DP), PUBLIC, POINTER :: 
+     R PRFAAT2(:,:), PRFMAT2(:,:), PRFIAT2(:,:), PRFPHAT2(:,:),
+     R PRFAML2(:,:), PRFMML2(:,:), PRFIML2(:,:), PRFPHML2(:,:),
+     R PRFAIO2(:,:), PRFMIO2(:,:), PRFIIO2(:,:), PRFPHIO2(:,:),
+     R PRFAPHT2(:,:), PRFMPHT2(:,:), PRFIPHT2(:,:), PRFPHPHT2(:,:)
+!$OMP  THREADPRIVATE(PRFAAT2,PRFMAT2,PRFIAT2,PRFPHAT2,PRFAML2,
+!$OMP& PRFMML2,PRFIML2,PRFPHML2,PRFAIO2,PRFMIO2,PRFIIO2,PRFPHIO2,
+!$OMP& PRFAPHT2,PRFMPHT2,PRFIPHT2,PRFPHPHT2)
+
 C  FROM HERE: NO POINTERS ?
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NFIRST(:), NADDV(:),
      I IRESC1(:), IRESC2(:),
      I NFRSTW(:), NADDW(:)
+
+!  lower boundaries of species resolved tallies
+      INTEGER, PUBLIC, SAVE :: LB_ATM, LB_MOL, LB_ION, LB_PHOT
+      INTEGER, TARGET, SAVE :: NTSAR(20), NTWSAR(16)
+      INTEGER, PUBLIC, POINTER, SAVE::
+     I NTS_AA, NTS_MA, NTS_IA, NTS_PHA, NTS_PA,
+     I NTS_AM, NTS_MM, NTS_IM, NTS_PHM, NTS_PM,
+     I NTS_AI, NTS_MI, NTS_II, NTS_PHI, NTS_PI,
+     I NTS_APH, NTS_MPH, NTS_IPH, NTS_PHPH, NTS_PPH
+      INTEGER, PUBLIC, POINTER, SAVE::
+     I NTWS_AA, NTWS_AM, NTWS_AI, NTWS_APH,
+     I NTWS_MA, NTWS_MM, NTWS_MI, NTWS_MPH,
+     I NTWS_IA, NTWS_IM, NTWS_II, NTWS_IPH,
+     I NTWS_PHA, NTWS_PHM, NTWS_PHI, NTWS_PHPH
+
 
       LOGICAL, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      L LIVTALV(:), LIVTALS(:)
@@ -155,17 +194,25 @@ c  either active tally (if true) or deactivated tally, no storage (if false)
      L LEMEL,  LEMAT,  LEMML,  LEMIO,   LEMPHT,  LEMPL,
      L LEIEL,  LEIAT,  LEIML,  LEIIO,   LEIPHT,  LEIPL,
      L LEPHEL, LEPHAT, LEPHML, LEPHIO,  LEPHPHT, LEPHPL,
+c  additional tallies
      L LADDV,  LCOLV,  LSNAPV,
      L LCOPV,  LBGKV,  LALGV,
+c  generation (fluid) limit tallies
      L LPGENA, LPGENM, LPGENI, LPGENPH,
      L LEGENA, LEGENM, LEGENI, LEGENPH,
      L LVGENA, LVGENM, LVGENI, LVGENPH,
+c  volumetric primary source (field particle) tallies
      L LPPAT,  LPPML,  LPPIO,  LPPPHT,  LPPPL,
      L LEPAT,  LEPML,  LEPIO,  LEPPHT,  LEPPL,
+c  test particle flow velocity densities
      L LVXDENA, LVXDENM, LVXDENI, LVXDENPH,
      L LVYDENA, LVYDENM, LVYDENI, LVYDENPH,
      L LVZDENA, LVZDENM, LVZDENI, LVZDENPH,
-     L LMAPL,  LMMPL,  LMIPL,  LMPHPL
+c  parallel (to B field) momentum source tallies
+     L LMAPL,  LMMPL,  LMIPL,  LMPHPL,
+c  radiation tallies
+     L LRAEL,  LRMEL,  LRIEL
+      LOGICAL, PUBLIC, TARGET, SAVE :: LRPHEL
 
 c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
       LOGICAL, PUBLIC, POINTER, SAVE ::
@@ -173,7 +220,19 @@ c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
      L LPXEL,   LPXAT,   LPXML,   LPXIO, LPXPL,
      L LEXEL,   LEXAT,   LEXML,   LEXIO, LEXPL,
      L LVXDENX, LVYDENX, LVZDENX,
-     L LMXPL,   LPXX,    LEXX
+     L LMXPL,   LRXEL,   LPXX,    LEXX,  
+     L LSCX
+      
+      INTEGER, PUBLIC, SAVE :: NDXX, NDXXA, NDXXE,
+     I NTS_PXATA, NTS_PXATE, NTS_PXMLA, NTS_PXMLE,
+     I NTS_PXIOA, NTS_PXIOE, NTS_PXPLA, NTS_PXPLE
+
+!$OMP  THREADPRIVATE(LPDENX,LEDENX,LPXEL,LPXAT,LPXML,LPXIO,LPXPL,LEXEL,
+!$OMP& LEXAT,LEXML,LEXIO,LEXPL,LVXDENX,LVYDENX,LVZDENX,LMXPL,LRXEL,
+!$OMP& LPXX,LEXX,LSCX,NDXX,NDXXA,NDXXE,NTS_PXATA,NTS_PXATE,NTS_PXMLA,
+!$OMP& NTS_PXMLE,NTS_PXIOA,NTS_PXIOE,NTS_PXPLA,NTS_PXPLE)
+
+
 
       LOGICAL, PUBLIC, POINTER, SAVE ::
      L LMSPDENA, LMSPDENM, LMSPDENI, LMSPDENPH,
@@ -196,7 +255,8 @@ c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
      L LMSVXDENA, LMSVXDENM, LMSVXDENI, LMSVXDENPH,
      L LMSVYDENA, LMSVYDENM, LMSVYDENI, LMSVYDENPH,
      L LMSVZDENA, LMSVZDENM, LMSVZDENI, LMSVZDENPH,
-     L LMSMAPL,  LMSMMPL,  LMSMIPL,  LMSMPHPL
+     L LMSMAPL,  LMSMMPL,  LMSMIPL,  LMSMPHPL,
+     L LMSRAEL,  LMSRMEL,  LMSRIEL
 
 c  logical, for each surface-averaged tally, particle flux.
 c  either active tally (if true) or deactivated tally, no storage (if false)
@@ -297,11 +357,9 @@ C
 !  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES: ENERGY RATE TALLIES
       LOGICAL, PUBLIC, POINTER, SAVE :: LEX
 C
-
-
+!$OMP  THREADPRIVATE(LEX)
 
 C
-
       CONTAINS
 
 
@@ -874,13 +932,31 @@ c  ntalr =62
         MIPL => CEMETERYV(0:0,:)
       END IF
       IF (LMPHPL) THEN
-!pb   I would have expected the compiler to find the length of
-!pb   array ESTIMV automatically but ifort version 12.0.4 does not
-!pb 20.06.2012        MPHPL => ESTIMV(NADDV(100)+1: ,:)
-        MPHPL => ESTIMV(NADDV(100)+1:NVOLTL ,:)
+        MPHPL => ESTIMV(NADDV(100)+1:NADDV(101),:)
       ELSE
         MPHPL => CEMETERYV(0:0,:)
       END IF
+      IF (LRAEL) THEN
+        RAEL => ESTIMV(NADDV(101)+1:NADDV(102),:)
+      ELSE
+        RAEL => CEMETERYV(0:0,:)
+      END IF
+      IF (LRMEL) THEN
+        RMEL => ESTIMV(NADDV(102)+1:NADDV(103),:)
+      ELSE
+        RMEL => CEMETERYV(0:0,:)
+      END IF
+      IF (LRIEL) THEN
+!pb   I would have expected the compiler to find the length of
+!pb   array ESTIMV automatically but ifort version 12.0.4 does not
+!       RIEL => ESTIMV(NADDV(103)+1: ,:)
+        RIEL => ESTIMV(NADDV(103)+1:NVOLTL ,:)
+cdr     RIEL => ESTIMV(NADDV(103)+1:NADDV(104),:)  ! Clearer.
+cdr Instead check: nvoltl=naddv(104) for consistency?
+      ELSE
+        RIEL => CEMETERYV(0:0,:)
+      END IF
+      RPHEL => CEMETERYV(0:0,:)
 
 C  SURFACE-AVERAGED TALLIES:
 C     if tally is active in this run     : Pointer to allocatable array ESTIMS
@@ -890,7 +966,6 @@ C     if tally is deactivated in this run: Pointer to CEMETERYS
       ELSE
         POTAT => CEMETERYS(0:0,:)
       END IF
-
       IF (LPRFAAT) THEN
         PRFAAT => ESTIMS(NADDW(2)+1:NADDW(3),:)
       ELSE
@@ -922,7 +997,6 @@ C
       ELSE
         POTML => CEMETERYS(0:0,:)
       END IF
-
       IF (LPRFAML) THEN
         PRFAML => ESTIMS(NADDW(8)+1:NADDW(9),:)
       ELSE
@@ -954,7 +1028,6 @@ C
       ELSE
         POTIO => CEMETERYS(0:0,:)
       END IF
-
       IF (LPRFAIO) THEN
         PRFAIO => ESTIMS(NADDW(14)+1:NADDW(15),:)
       ELSE
@@ -986,7 +1059,6 @@ C
       ELSE
         POTPHT => CEMETERYS(0:0,:)
       END IF
-
       IF (LPRFAPHT) THEN
         PRFAPHT => ESTIMS(NADDW(20)+1:NADDW(21),:)
       ELSE
@@ -1024,7 +1096,6 @@ C
       ELSE
         EOTAT => CEMETERYS(0:0,:)
       END IF
-
       IF (LERFAAT) THEN
         ERFAAT => ESTIMS(NADDW(27)+1:NADDW(28),:)
       ELSE
@@ -1405,7 +1476,100 @@ cdr  heinke frerichs, juli 2016
 
       INTEGER, INTENT(IN) :: ICAL
 C
-      IF (ICAL == 1) THEN
+      IF (ICAL == 0) THEN
+
+        NTSAR = 0
+        NTS_AA  => NTSAR(1) 
+        NTS_MA  => NTSAR(2) 
+        NTS_IA  => NTSAR(3)
+        NTS_PHA => NTSAR(4)
+        NTS_PA  => NTSAR(5)
+
+        NTS_AM  => NTSAR(6)
+        NTS_MM  => NTSAR(7) 
+        NTS_IM  => NTSAR(8) 
+        NTS_PHM => NTSAR(9)
+        NTS_PM  => NTSAR(10)
+        
+        NTS_AI  => NTSAR(11)
+        NTS_MI  => NTSAR(12)
+        NTS_II  => NTSAR(13)
+        NTS_PHI => NTSAR(14)
+        NTS_PI  => NTSAR(15)
+        
+        NTS_APH => NTSAR(16) 
+        NTS_MPH => NTSAR(17)
+        NTS_IPH => NTSAR(18)
+        NTS_PHPH=> NTSAR(19)
+        NTS_PPH => NTSAR(20)
+
+
+        NTWSAR = 0
+        NTWS_AA  => NTWSAR(1) 
+        NTWS_AM  => NTWSAR(2) 
+        NTWS_AI  => NTWSAR(3) 
+        NTWS_APH => NTWSAR(4) 
+        
+        NTWS_MA  => NTWSAR(5)
+        NTWS_MM  => NTWSAR(6)
+        NTWS_MI  => NTWSAR(7)
+        NTWS_MPH => NTWSAR(8)
+        
+        NTWS_IA  => NTWSAR(9) 
+        NTWS_IM  => NTWSAR(10) 
+        NTWS_II  => NTWSAR(11) 
+        NTWS_IPH => NTWSAR(12)
+        
+        NTWS_PHA => NTWSAR(13)
+        NTWS_PHM => NTWSAR(14)
+        NTWS_PHI => NTWSAR(15)
+        NTWS_PHPH=> NTWSAR(16)
+
+        NTS_AA  = NSPZTOTS + NATM*NATMP
+        NTS_MA  = NTS_AA   + NMOL*NATMP
+        NTS_IA  = NTS_MA   + NION*NATMP
+        NTS_PHA = NTS_IA   + NPHOT*NATMP
+        NTS_PA  = NTS_PHA  + NPLS*NATMP
+        
+        NTS_AM  = NTS_PA   + NATM*NMOLP
+        NTS_MM  = NTS_AM   + NMOL*NMOLP
+        NTS_IM  = NTS_MM   + NION*NMOLP
+        NTS_PHM = NTS_IM   + NPHOT*NMOLP
+        NTS_PM  = NTS_PHM  + NPLS*NMOLP
+        
+        NTS_AI  = NTS_PM   + NATM*NIONP
+        NTS_MI  = NTS_AI   + NMOL*NIONP
+        NTS_II  = NTS_MI   + NION*NIONP
+        NTS_PHI = NTS_II   + NPHOT*NIONP
+        NTS_PI  = NTS_PHI  + NPLS*NIONP
+        
+        NTS_APH = NTS_PI   + NATM*NPHOTP
+        NTS_MPH = NTS_APH  + NMOL*NPHOTP
+        NTS_IPH = NTS_MPH  + NION*NPHOTP
+        NTS_PHPH= NTS_IPH  + NPHOT*NPHOTP
+        NTS_PPH = NTS_PHPH + NPLS*NPHOTP
+        
+        NTWS_AA  = NSPZTOTWS + NATM*NATMP
+        NTWS_AM  = NTWS_AA   + NATM*NMOLP
+        NTWS_AI  = NTWS_AM   + NATM*NIONP
+        NTWS_APH = NTWS_AI   + NATM*NPHOTP
+      
+        NTWS_MA  = NTWS_APH  + NMOL*NATMP
+        NTWS_MM  = NTWS_MA   + NMOL*NMOLP
+        NTWS_MI  = NTWS_MM   + NMOL*NIONP
+        NTWS_MPH = NTWS_MI   + NMOL*NPHOTP
+        
+        NTWS_IA  = NTWS_MPH  + NION*NATMP
+        NTWS_IM  = NTWS_IA   + NION*NMOLP
+        NTWS_II  = NTWS_IM   + NION*NIONP
+        NTWS_IPH = NTWS_II   + NION*NPHOTP
+        
+        NTWS_PHA  = NTWS_IPH  + NPHOT*NATMP
+        NTWS_PHM  = NTWS_PHA  + NPHOT*NMOLP
+        NTWS_PHI  = NTWS_PHM  + NPHOT*NIONP
+        NTWS_PHPH = NTWS_PHI  + NPHOT*NPHOTP
+        
+      ELSE IF (ICAL == 1) THEN
 
         LIVTALV = .TRUE.
         LIVTALS = .TRUE.
@@ -1514,6 +1678,10 @@ C
         LMMPL    => LIVTALV(98)
         LMIPL    => LIVTALV(99)
         LMPHPL   => LIVTALV(100)
+        LRAEL    => LIVTALV(101)
+        LRMEL    => LIVTALV(102)
+        LRIEL    => LIVTALV(103)
+        LRPHEL   = .FALSE.
 
         LMSPDENA   => LMISTALV(1)
         LMSPDENM   => LMISTALV(2)
@@ -1615,6 +1783,10 @@ C
         LMSMMPL    => LMISTALV(98)
         LMSMIPL    => LMISTALV(99)
         LMSMPHPL   => LMISTALV(100)
+
+        LMSRAEL    => LMISTALV(101)
+        LMSRMEL    => LMISTALV(102)
+        LMSRIEL    => LMISTALV(103)
 
 ! surface-averaged tallies
 
@@ -1820,6 +1992,7 @@ C
       INTEGER :: IER, I, NSPS
 
       IF (ME /= 0) THEN
+        CALL EIRENE_ALLOC_CESTIM(0)
         CALL EIRENE_ALLOC_CESTIM(1)
       END IF
 
@@ -1829,6 +2002,14 @@ C
       CALL MPI_BCAST (IRESC2,NTALV,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NFRSTW,NTALS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NADDW,NTALS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+
+      CALL MPI_BCAST (LB_ATM,1,MPI_INTEGER,0,MPI_COMM_WORLD,IER)
+      CALL MPI_BCAST (LB_MOL,1,MPI_INTEGER,0,MPI_COMM_WORLD,IER)
+      CALL MPI_BCAST (LB_ION,1,MPI_INTEGER,0,MPI_COMM_WORLD,IER)
+      CALL MPI_BCAST (LB_PHOT,1,MPI_INTEGER,0,MPI_COMM_WORLD,IER)
+
+      CALL MPI_BCAST (NTSAR,20,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NTWSAR,16,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
 c  active and inactive tallies:
 C  OUTPUT:
@@ -1928,6 +2109,9 @@ C  variances for sum over strata
         END IF
       END IF
       
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
+
+      RETURN
       END SUBROUTINE EIRENE_BROADCAST_CESTIM
 
       END MODULE EIRMOD_CESTIM

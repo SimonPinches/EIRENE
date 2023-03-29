@@ -1,3 +1,3 @@
       subroutine EIRENE_modusr
       return
-      end
+      end subroutine eirene_modusr

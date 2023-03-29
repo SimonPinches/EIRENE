@@ -81,4 +81,5 @@ cdr  noch nicht fertig
       WRITE (iunout,*) ' CX,CY,CZ ',CX,CY,CZ
       WRITE (iunout,*) ' R ',R
 
-      END
+      RETURN
+      END SUBROUTINE EIRENE_KUGEL

@@ -9,7 +9,6 @@
       use EIRMOD_cplot
       use EIRMOD_module_avltree
       USE EIRMOD_SECOND_OWN, ONLY: EIRENE_second_own
-
       implicit none
 
       REAL(DP), INTENT(IN) :: AORIG(*)
@@ -30,7 +29,6 @@
      .        2, 3,
      .        3, 4 /), (/ 2, 6 /) )
       integer, save :: nkanten, ifirst=0
-      real(dp) :: timi, timen
       real(dp), allocatable, save :: spar(:)
       integer :: i
 
@@ -43,16 +41,7 @@
         tetra_kanten=0
         kanten=0
         nkanten=0
-!        call suche_kanten
-!      timen = EIRENE_second_own()
-!      write (0,*) ' cpu time spend in suche_kanten ',timen-timi,' sec'
-!        kanten=0
-!        nkanten=0
-        timi = EIRENE_second_own()
         call EIRENE_suche_kanten2
-        timen = EIRENE_second_own()
-        write (0,*) ' cpu time spend in suche_kanten2 ',
-     .                timen-timi,' sec'
 
         call EIRENE_schneide_kanten
         call EIRENE_berechne_koordinaten
@@ -73,88 +62,6 @@
 
 
       contains
-
-
-      subroutine EIRENE_suche_kanten
-
-      implicit none
-      type(tet_elem), pointer :: cur
-      integer :: itet, j, nxt_side, akt_tet, akt_edge, isi, ip1
-      integer :: ic, i, nump1, nump2, noedge, jc, no_side, nxt_tet
-
-      nkanten = 0
-! fuer jede Koordinate
-      do ic=1,ncoord
-
-! durchsuche die Kanten der angrenzenden Tetraeder
-        cur => coortet(ic)%ptet
-        do while (associated(cur))
-          itet = cur%notet
-
-! Koordinate ic ist Eckpunkt des Tetraeders itet,
-! bestimme die Nummer der Ecke
-          do i=1,4
-            if (nteck(i,itet) == ic) ip1 = i
-        end do
-
-! bearbeite alle Kanten, die von Eckpunkt nump1 ausgehen
-! d.h. die Kanten zu den anderen Eckpunkten
-        do i=1,4
-          nump1 = ip1
-          if (i == nump1) cycle
-          nump2 = i
-          noedge = kanten_nummer(nump1,nump2)
-! die Kante ist schon bei einer anderen Koordinate gefunden worden
-            if (tetra_kanten(noedge,itet) /= 0) cycle
-! die Kante ist neu
-          jc = nteck(nump2,itet)
-          nkanten = nkanten+1
-          kanten(1,nkanten) = ic
-          kanten(2,nkanten) = jc
-          tetra_kanten(noedge,itet) = nkanten
-
-! durchlaufe alle Nachbartetraeder und markiere die gemeinsame Kante
-
-          akt_tet = itet
-          akt_edge = noedge
-          no_side = angrenzende_seiten(1,akt_edge)
-          isi = 0
-          do
-            nxt_tet = ntbar(no_side,akt_tet)
-          if (nxt_tet == 0) then
-            isi = isi+1
-! an beiden Seiten bis zum Rand gelaufen
-            if (isi > 1) exit
-                no_side = angrenzende_seiten(2,akt_edge)
-            nxt_tet = ntbar(no_side,itet)
-            if (nxt_tet == 0) exit
-            akt_tet = itet
-          end if
-            nxt_side = ntseite(no_side,akt_tet)
-          if (nxt_tet == itet) exit
-! bestimme die Kantennummer auf dem neuen Tetraeder
-          do j=1,4
-            if (nteck(j,nxt_tet) == ic) nump1 = j
-            if (nteck(j,nxt_tet) == jc) nump2 = j
-          end do
-          noedge = kanten_nummer(nump1,nump2)
-            tetra_kanten(noedge,nxt_tet) = nkanten
-          no_side = angrenzende_seiten(1,noedge) +
-     .              angrenzende_seiten(2,noedge) - nxt_side
-          akt_tet = nxt_tet
-          end do
-
-        end do
-
-          cur => cur%next_tet
-
-        end do
-
-      end do
-
-      write (0,*) 'min(tetra_kanten) ',minval(tetra_kanten(:,1:ntet))
-      return
-      end subroutine EIRENE_suche_kanten
 
 
       subroutine EIRENE_suche_kanten2

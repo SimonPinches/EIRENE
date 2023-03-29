@@ -116,13 +116,13 @@ C PLOTTE DIE KREISE
         ENDIF
         IF (IO.GE.2) CALL GRNWPN(IO)
         do 7 jj=1,na+1
-          xps(jj)=xp(jj)
-          yps(jj)=yp(jj)
+          xps(jj)=real(xp(jj),sp)
+          yps(jj)=real(yp(jj),sp)
     7   continue
         CALL GRLN (XPS,YPS,NA+1)
 C  FAERBE DIE ENDEN DES CONES EIN
-        IF ((I.EQ.1.OR.I.EQ.NK).AND.NF) CALL
-     .  GRFILL(NA+1,XPS,YPS,1,1)
+        IF ((I.EQ.1.OR.I.EQ.NK).AND.NF)
+     .   CALL GRFILL(NA+1,XPS,YPS,1,1)
         IF (IO.GE.2) CALL GRNWPN(1)
     2 CONTINUE
 C
@@ -136,9 +136,9 @@ C  PLOTTE PHI=CONST LINIEN, INSGESAMT NP STUECK
       IF (IRIGHT.NE.0) IE=NK-1
       DO 5 J=1,NP
         IF (ILEFT.NE.0) THEN
-          CALL
-     .  EIRENE_SCCONE(X0,Y0,Z0,-VX,-VY,-VZ,ALF,TH,T1,BX,BY,BZ,CX,CY,CZ,
-     .                DANG,AL,ILEFT,XP,YP,J,J,1)
+          CALL EIRENE_SCCONE
+     .     (X0,Y0,Z0,-VX,-VY,-VZ,ALF,TH,T1,BX,BY,BZ,CX,CY,CZ,
+     .      DANG,AL,ILEFT,XP,YP,J,J,1)
         ENDIF
         DO 4 I=IA,IE
           T=T1+(I-1)*DT
@@ -155,13 +155,13 @@ C  PLOTTE PHI=CONST LINIEN, INSGESAMT NP STUECK
           CALL EIRENE_PL3D (PXX+PX,PYY+PY,PZZ+PZ,XP(I),YP(I))
     4   CONTINUE
         IF (IRIGHT.NE.0) THEN
-          CALL
-     .  EIRENE_SCCONE(X0,Y0,Z0,VX,VY,VZ,ALF,TH,T2,BX,BY,BZ,CX,CY,CZ,
-     .                DANG,AR,IRIGHT,XP,YP,J,J,NK)
+          CALL EIRENE_SCCONE
+     .     (X0,Y0,Z0,VX,VY,VZ,ALF,TH,T2,BX,BY,BZ,CX,CY,CZ,
+     .      DANG,AR,IRIGHT,XP,YP,J,J,NK)
         ENDIF
         do 9 jj=1,nk
-          xps(jj)=xp(jj)
-          yps(jj)=yp(jj)
+          xps(jj)=real(xp(jj),sp)
+          yps(jj)=real(yp(jj),sp)
     9   continue
         CALL GRLN (XPS,YPS,NK)
     5 CONTINUE
@@ -172,4 +172,4 @@ C  PLOTTE PHI=CONST LINIEN, INSGESAMT NP STUECK
       DEALLOCATE (YPS)
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_CONE

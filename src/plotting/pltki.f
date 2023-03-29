@@ -28,11 +28,11 @@ C
       GERAX(YG)=(YG-YY)*(XX-XXO)/(YY-YYO)+XX
       IF (TRCPLT) WRITE (iunout,*) 'PLTKI'
       IF (LBOX) THEN
-        CALL GRJMP(REAL(XL1,KIND(1.E0)),REAL(YL1,KIND(1.E0)))
-        CALL GRDRW(REAL(XL2,KIND(1.E0)),REAL(YL1,KIND(1.E0)))
-        CALL GRDRW(REAL(XL2,KIND(1.E0)),REAL(YL2,KIND(1.E0)))
-        CALL GRDRW(REAL(XL1,KIND(1.E0)),REAL(YL2,KIND(1.E0)))
-        CALL GRDRW(REAL(XL1,KIND(1.E0)),REAL(YL1,KIND(1.E0)))
+        CALL GRJMP(REAL(XL1,SP),REAL(YL1,SP))
+        CALL GRDRW(REAL(XL2,SP),REAL(YL1,SP))
+        CALL GRDRW(REAL(XL2,SP),REAL(YL2,SP))
+        CALL GRDRW(REAL(XL1,SP),REAL(YL2,SP))
+        CALL GRDRW(REAL(XL1,SP),REAL(YL1,SP))
       ENDIF
       INC=100
       XINC=DBLE(INC)
@@ -56,7 +56,7 @@ C
          IF (YY.LE.YL1+EPS10) ISIDE=4
          IF (YY.GE.YL2-EPS10) ISIDE=1
          IF (ISIDE.NE.0) THEN
-             IF (IFLAG.EQ.0) GOTO 431
+             IF (IFLAG.EQ.0) CYCLE
              IJUMP=ISIDE
              IF (IFLAG.NE.0) GOTO 432
          ENDIF
@@ -64,48 +64,46 @@ C        ISIDE=0
          IF (IFLAG.EQ.0.AND.I.NE.1) GOTO 432
   439    IF (I.NE.1) IFLAG=24
          IF (IFLAG.EQ.0) THEN
-            IF (LZR) CALL GRJMP (REAL(XX,KIND(1.E0)),
-     .                           REAL(YY,KIND(1.E0)))
-            IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS) CALL EIRENE_STCOOR
-     .  (XX,YY,0)
+            IF (LZR) CALL GRJMP (REAL(XX,SP), REAL(YY,SP))
+            IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS)
+     .        CALL EIRENE_STCOOR(XX,YY,0)
          ENDIF
          IF (IFLAG.NE.0) THEN
-         IF (LZR) CALL GRDRW (REAL(XX,KIND(1.E0)),
-     .                        REAL(YY,KIND(1.E0)))
-            IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS) CALL EIRENE_STCOOR
-     .  (XX,YY,1)
+         IF (LZR) CALL GRDRW (REAL(XX,SP), REAL(YY,SP))
+         IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS)
+     .     CALL EIRENE_STCOOR(XX,YY,1)
          ENDIF
          INN=MAX0(INN,IFLAG)
-         GOTO 431
-  432    GOTO (451,452,453,454),IJUMP
-         GOTO 439
-  451    XP=GERAX(YL2)
-         YP=YL2
-         GOTO 429
-  452    XP=XL2
-CPB      YP=YTRAN(XP,FCN(XP-XM)+YM)
-         YP=GERAY(XL2)
-         GOTO 429
-  453    XP=XL1
-CPB      YP=YTRAN(XP,FCN(XP-XM)+YM)
-         YP=GERAY(XL1)
-         GOTO 429
-  454    XP=GERAX(YL1)
-         YP=YL1
-         GOTO 429
+         CYCLE
+  432    CONTINUE
+         SELECT CASE(IJUMP)
+         CASE (1)
+           XP=GERAX(YL2)
+           YP=YL2
+         CASE (2)
+           XP=XL2
+CPB        YP=YTRAN(XP,FCN(XP-XM)+YM)
+           YP=GERAY(XL2)
+         CASE (3)
+           XP=XL1
+CPB        YP=YTRAN(XP,FCN(XP-XM)+YM)
+           YP=GERAY(XL1)
+         CASE (4)
+           XP=GERAX(YL1)
+           YP=YL1
+         CASE DEFAULT
+           GOTO 439
+         END SELECT
 C
-  429    CONTINUE
          IF (IFLAG.EQ.0) THEN
-            IF (LZR) CALL GRJMP (REAL(XP,KIND(1.E0)),
-     .                           REAL(YP,KIND(1.E0)))
-            IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS) CALL EIRENE_STCOOR
-     .  (XP,YP,0)
+            IF (LZR) CALL GRJMP (REAL(XP,SP), REAL(YP,SP))
+            IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS) 
+     .        CALL EIRENE_STCOOR(XP,YP,0)
          ENDIF
          IF (IFLAG.NE.0) THEN
-            IF (LZR) CALL GRDRW (REAL(XP,KIND(1.E0)),
-     .                           REAL(YP,KIND(1.E0)))
-            IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS) CALL EIRENE_STCOOR
-     .  (XP,YP,1)
+            IF (LZR) CALL GRDRW (REAL(XP,SP), REAL(YP,SP))
+            IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS) 
+     .        CALL EIRENE_STCOOR(XP,YP,1)
          ENDIF
          INN=MAX0(INN,IFLAG)
          IF (IFLAG.EQ.0) GOTO 439
@@ -113,4 +111,4 @@ C
 C
   431 CONTINUE
       RETURN
-      END
+      END SUBROUTINE EIRENE_PLTKI

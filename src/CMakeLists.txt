@@ -1,6 +1,7 @@
 # CMake project file for EIRENE
 
 cmake_minimum_required(VERSION 2.8)
+
 project(EIRENE Fortran)
 
 # Set a default build type if none was specified.
@@ -16,13 +17,21 @@ endif()
 
 # Adds compiler flags to all build types.
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
-  set(CMAKE_Fortran_FLAGS_RELEASE "-fp-model source")
-  set(CMAKE_Fortran_FLAGS_DEBUG "-g -gen-interfaces -warn all,interfaces -check all -traceback")
+  set(CMAKE_Fortran_FLAGS_RELEASE "-fp-model source -fpp")
+  set(CMAKE_Fortran_FLAGS_DEBUG "-g -fpp -gen-interfaces -warn all,interfaces -check all -traceback")
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
-  set(CMAKE_Fortran_FLAGS_RELEASE "-O3")
-  set(CMAKE_Fortran_FLAGS_DEBUG "-g -O0 -Wall -fcheck=all -Wdo-subscript -Wtarget-lifetime")
+  set(CMAKE_Fortran_FLAGS_RELEASE "-O3 -cpp -fopenmp -Wno-argument-mismatch")
+  set(CMAKE_Fortran_FLAGS_DEBUG "-g -O0 -cpp -fopenmp -Wall -fcheck=all -Wdo-subscript -Wtarget-lifetime")
   set(CMAKE_Fortran_FLAGS_COVERAGE "-g -fprofile-arcs -ftest-coverage")
+elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
+  set(CMAKE_Fortran_FLAGS_RELEASE "-O3 -cpp -mp")
+  set(CMAKE_Fortran_FLAGS_DEBUG "-g -O0 -cpp -mp -C -Mchkptr -Mchkstk")
 endif()
+
+message("-- Adding Fortran 2003 flag...")
+add_definitions(-DF2003)
+
+
 
 # Output names and postfix.
 set(EIRENE_LIBRARY_NAME "EIRENE" CACHE STRING "EIRENE library name")
@@ -141,13 +150,39 @@ if (CHECKBIN)
   add_definitions(-DCHECKBIN)
 endif()
 
-# Add option to control whether MPI will be use.
+# Add option to control whether MPI will be used.
 option(MPI "Build with MPI" ON)
 if (MPI)
   message("-- Adding USE_MPI flag...")
   add_definitions(-DUSE_MPI)
   find_package(MPI REQUIRED)
+#  add definitions(-DMPI_VERSION=${MPI_VERSION})
   include_directories(${JSON_MODULES} ${MPI_Fortran_INCLUDE_PATH})
+endif()
+
+# Add option to enable OpenMP with the parallel region defined in eirmod_mcarlo.
+option(OPENMP "Build for use with internal parallel region" OFF)
+if (OPENMP)
+  cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
+  message("-- Adding USE_OPENMP flag...")
+  add_definitions(-DUSE_OPENMP)
+  find_package(OpenMP REQUIRED)
+endif()
+
+# Add option to enable OpenMP with the parallel region defined in the calling program.
+option(EXT_OPENMP "Build for use with external parallel region" OFF)
+if (EXT_OPENMP)
+  cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
+  message("-- Adding USE_EXT_OPENMP flag...")
+  add_definitions(-DUSE_OPENMP)
+  add_definitions(-DUSE_EXT_OPENMP)
+  find_package(OpenMP REQUIRED)
+endif()
+
+# Adds openMP using the old style CMake approach to ensure backwards compatibility
+# This should be changed at some point to use the newer OpenMP Fortran capabilities
+if (OPENMP_FOUND)
+  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${OpenMP_Fortran_FLAGS}")
 endif()
 
 # Finds all fortran files (*.[fF]/*.[fF]90) in the source directory and extract the 
@@ -219,6 +254,13 @@ endif()
 if(LibGKS AND LibGRS AND LibX11 AND Libz AND LibXt AND LibJSON)
   target_link_libraries(eirene EIRENE ${LibGRS} ${LibGKS} ${LibX11} ${LibXt} ${LibJSON})
 endif()
+
+# This is the newer approach for adding OpenMP - ver >= 3.9
+#if(OPENMP OR EXT_OPENMP)
+#  target_compile_options(EIRENE PRIVATE ${OpenMP_Fortran_FLAGS})
+#  target_compile_options(eirene PRIVATE ${OpenMP_Fortran_FLAGS})
+#  target_link_libraries(eirene EIRENE ${OpenMP_Fortran_LIBRARIES})
+#endif()
 
 # Sets output directory of the library and executbale and output name 
 # of the executable.

@@ -18,34 +18,75 @@ c  also set: NDX,NDY,NFL, NDXP, NDYP
 
       SUBROUTINE EIRENE_IF0PRM_JSON(json,p)
 
+      USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
       USE EIRMOD_CINIT
-      USE EIRMOD_BRAEIR
+      USE EIRMOD_COMUSR
+     , , ONLY: INTLOPTS
       USE EIRMOD_COMPRT, only: iunout      
-      use json_module
+      USE EIRMOD_BRAEIR
+      USE EIRMOD_CLOGAU
+     , , ONLY: NLTRIMESH, NLSPCSCL, NLSPCSCL_ON
+      USE EIRMOD_CCOUPL
+     , , ONLY: NTGPRT, NSPZE, NSPZI, EIRENE_ALLOC_CCOUPL
+      use eirmod_extrab25
+      use json_module           !IGNORE
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
       IMPLICIT NONE
 
       class(json_core),intent(inout) :: json
       type(json_value), pointer, intent(in) :: p
+      type(json_value), pointer :: pflds, pfld,ptrgs, ptrg, prts, prt
 
       INTEGER :: NFLA, NCUTB, NCUTL, NDXA, NDYA, IPL, NTARGI, IT, IPRT,
-     .           NAINB, IAIN, NAOTB, IAOT, NRKNOT,
-     .           NTRII, NR1ST
-      INTEGER, ALLOCATABLE :: NTGPRT(:)
-      LOGICAL :: FOUND
+     .           NAINB, IAIN, NAOTB, IAOT, NRKNOT, ITRG,
+     .           NTRII, NR1ST, IFL, LKP, NSPI, NSPE
+      REAL(DP) :: BM, RLAST
+      INTEGER, ALLOCATABLE :: NTG(:)
+      LOGICAL :: FOUND, LDUMMY, FOUNDI, FOUNDE, LSPRCL_LOC
       CHARACTER(72) :: ZEILE
 
       WRITE (iunout,*) '*** 14. DATA FOR INTERFACING ROUTINE "INFCOP"'
 
 C  READ INPUT BLOCK 14
+      call json%get(p,'NLTRIMESH',ldummy,found)
+      IF (.NOT.NLTRIMESH.AND.FOUND) NLTRIMESH = LDUMMY
+
+      call json%get(p,'LSPRCL',ldummy,found)
+      IF (FOUND) LSPRCL_LOC = LDUMMY
 
       call json%get(p,'NFLA',nfla,found)
       call json%get(p,'NCUTB',ncutb,found)
       call json%get(p,'NCUTL',ncutl,found)
-      
+
+      IF(.NOT.ALLOCATED(LKINDP)) ALLOCATE(LKINDP(NPLS))
+      LKINDP=0
+      call json%get_child(p,'B2FLUIDS',pflds)
+      DO IPL=1,NPLS
+        call json%get_child(pflds,ipl,pfld)
+        call json%get(pfld,'IFLB',ifl,found)
+        call json%get(pfld,'BMASS',bm,found)
+        call json%get(pfld,'LKIND',lkp,found)
+        if (ifl .gt. 0) then
+          if (lkp .gt. 0) then
+            lkindp(ipl) = lkp
+          else
+            if (ipl .eq. 1) then
+              lkindp(ipl) = 1
+              rlast = bm
+            else
+              if (bm .eq. rlast) then
+                lkindp(ipl) = lkindp(ipl-1)
+              else
+                lkindp(ipl) = lkindp(ipl-1)+1
+              end if
+              rlast = bm
+            end if
+          end if
+        end if
+      END DO
 C  GRID SIZE IN 2D PLASMA FLUID CODE
       call json%get(p,'NDXA',ndxa,found)
       call json%get(p,'NDYA',ndya,found)
@@ -56,9 +97,45 @@ C     NUMBER OF TARGET SOURCES ON B2 SURFACES: NTARGI
 C     NUMBER OF PARTS PER TARGET RECYCLING SOURCE
       IF (NTARGI.GT.0) THEN
         NSTEP=MAX(NSTEP,NTARGI)
-        call json%get(p,'NTGPRT',ntgprt,found)
-        NPTRGT=SUM(NTGPRT)
-        DEALLOCATE (NTGPRT)
+        call json%get(p,'NTGPRT',ntg,found)
+        IF (FOUND) THEN
+          NPTRGT=SUM(NTG)
+        ELSE
+          IF (.NOT.ALLOCATED(NTG)) ALLOCATE(NTG(NTARGI))
+          NTG(1:NTARGI)=1
+          NPTRGT=NTARGI
+        END IF
+        CALL EIRENE_ALLOC_CCOUPL(1)
+        NTGPRT(1:NTARGI)=NTG(1:NTARGI)
+        DEALLOCATE (NTG)
+
+        call json%get_child(p,'TARGETS',ptrgs,found)
+        ITRG=0
+        DO IT=1,NTARGI
+          call json%get_child(ptrgs,it,ptrg,found)
+          call json%get_child(ptrg,'PARTS',prts,found)
+          DO IPRT=1,NTGPRT(IT)
+            ITRG=ITRG+1
+            call json%get_child(prts,iprt,prt)
+            call json%get(prt,'NSPZI',nspi,foundi)
+            call json%get(prt,'NSPZE',nspe,founde)
+            if (.not.foundi) nspi=1
+            if (.not.founde) nspe=nfla
+            NSPZI(IT,IPRT)=nspi
+            NSPZE(IT,IPRT)=nspe
+            nullify(prt)
+          END DO
+          nullify(prts)
+          nullify(ptrg)
+        END DO
+        nullify(ptrgs)
+#ifdef B25_EIRENE
+        IF (.NOT.ALLOCATED(RCPOS_EIR)) THEN
+          ALLOCATE(RCPOS_EIR(ITRG),RCBEG_EIR(ITRG),RCEND_EIR(ITRG))
+          ALLOCATE(RCPRT_EIR(ITRG),RCSPI_EIR(ITRG),RCSPE_EIR(ITRG))
+          ALLOCATE(RCCHR_EIR(ITRG))
+        END IF
+#endif
       END IF
 
 C  READ ADDITIONAL DATA TO BE TRANSFERRED FROM B2 INTO EIRENE
@@ -93,8 +170,22 @@ C
 C
 C  READ DATA FOR TRIANGULAR MESH
 C
+C
       nr1st = n1st
       call eirene_find_triang_dim(nr1st,ntri,ntrii,nknot,ngitt,' ',0)
+
+csw 09jan2012
+      IF(NOPTIM.LT.0) NOPTIM=(NTRII+1)*N3RD !VK no storage optimization
+csw
+cxpb Define some numbers needed by eirmod_extrab25
+!cank 960623
+      nnplsi=nfla
+      nns=nnplsi
+
+C  TRANSFER FLAG LSPRCL WHICH IS KNOWN ONLY IN THIS INTERFACE TO
+C  GLOBALLY KNOWN VARIABLE NLSPCSCL
+      NLSPCSCL = NLSPCSCL .OR. LSPRCL_LOC
+      NLSPCSCL_ON = NLSPCSCL_ON .OR. LSPRCL_LOC
       
       RETURN
       END

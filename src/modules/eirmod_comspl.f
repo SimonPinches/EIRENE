@@ -5,8 +5,11 @@
 cdr  oct 19:
 cdr             MAXLEVEL is the "depth" of splitting cascades.
 cdr             Formerly: MAXLEVEL=15
-cdr             now (2013) hard coded: MAXLEVEL =300, why? 
+cdr             now (2013) hard-coded: MAXLEVEL=300, why?
 cdr             Is this intended indeed?
+cpb             MAXLEVEL was increased for NLCASCAD option. If all secondary
+cpb             particles of a reaction are to be traced the storage for
+cpb             storing not yet followed secondaries needs to be somewhat larger.
 
       MODULE EIRMOD_COMSPL
 
@@ -52,9 +55,26 @@ cdr  NLPRCS should also become POINTER, belongs to NLPRCA; ..., cond exp. est.
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE ::
      L NLPRCS(:)  ! indicate additional surfaces as attractors for cond. exp. est.
 
-      INTEGER, PRIVATE, SAVE ::
+cym PRIVATE-> PUBLIC      
+      INTEGER, PUBLIC, SAVE ::
      I NCMSPL, MCMSPL, KCMSPL
 
+!pb moved to EIRMOD_CCOUPL
+!csw 20.01.11: SOLPS5.2 legacy code, SOURCE CORRECTION DATA
+!     LOGICAL, PUBLIC, ALLOCATABLE, SAVE ::
+!    L NLPBLS(:,:)
+!$OMP  THREADPRIVATE(WMINV,WMINS,WMINC,WMINL,SPLPAR,RNUMB,PRMSPL,
+!$OMP& RSPLST,MAXLEV,NLEVEL,MAXRAD,MAXPOL,MAXTOR,MAXADD,NODES,NSSPL,
+!$OMP& ISPLST,
+cym again not private 18/04 
+cym nlsplt,nlprca,nlprcm,nlprci,nlprcph,nlprcs,
+cym - not private, initialized in this module
+cym!$omp& ncmspl,mcmspl,kcmspl,
+cym again not private 18/04
+cym!$omp& lcmspl,
+!$OMP& RCMSPL,ICMSPL)
+
+cdr  end threadprivate here
 
       CONTAINS
 
@@ -97,7 +117,7 @@ cdr  .      +NLIMPS                 ! for NLPRCS, tbd.
       MAXTOR => ICMSPL(5)
       MAXADD => ICMSPL(6)
 
-cdr formerly: maxlevel=15 was hard coded, now: maxlevel=300 ?
+cdr formerly: maxlevel=15 was hard-coded, now: maxlevel=300 ?
       NODES  => ICMSPL(7:6+MAXLEVEL)
       NSSPL  => ICMSPL(7+MAXLEVEL:MCMSPL)
 
@@ -164,6 +184,9 @@ cdr  NLSPLT(ISURF): surface isurf is a "splitting-rr" surface
       CALL MPI_BCAST (LCMSPL,KCMSPL,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NLPRCS,NLIMPS+1,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
 
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
+
+      RETURN
       END SUBROUTINE EIRENE_BROADCAST_COMSPL
 
       

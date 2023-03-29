@@ -48,12 +48,12 @@ C    IND=3:  3RD GRID, Z OR TOROIDAL COORDINATE
       IMPLICIT NONE
 
       REAL(DP) :: PC1(3), EDGELEN(6)
-      REAL(DP) :: ELPARM, X1, X2, SY, Y1, Y2, SX, AELL, X3, Y3, X4, Y4,
+      REAL(DP) :: X1, X2, SY, Y1, Y2, SX, AELL, X3, Y3, X4, Y4,
      .          VPXX, RN, RRN, FN, VPYY, PLABS, XNORM, VPX, VPY, QUOTI,
      .          GESFL, FRING, CONST, RRR, FL, FR, RL, RR, RRL, XD,
      .          PLEN, XDIFF, RORIG, XS3, PLABS2, PLABS3, XD1, YD,
-     .          XS, PLABS1, YD1, XS2, XD3, YD3, XS1, XD2, YD2, R, PIN,
-     .          POUT, EX1, XX1, XX2, YY1, YY2, DSD, COM, S, SQ,
+     .          XS, PLABS1, YD1, XS2, XD3, YD3, XS1, XD2, YD2,
+     .          XX1, XX2, YY1, YY2, DSD, COM, S, SQ,
      .          DP1, DS1, DS2
       REAL(DP), EXTERNAL :: EIRENE_ARTRI3
       INTEGER :: ITSIDE(3,4)
@@ -70,8 +70,6 @@ C    IND=3:  3RD GRID, Z OR TOROIDAL COORDINATE
      .             1,4,2,
      .             2,4,3,
      .             3,4,1/
-C STATEMENT FUNCTION FOR GRID PARAMETERS FOR LEVGEO=2 OPTION
-      ELPARM(R,PIN,POUT,EX1)=(PIN-POUT)*(1.-R**EX1)**1.+POUT
 C
       SELECT CASE (IND)
 C
@@ -264,7 +262,7 @@ C
           CALL EIRENE_LEER(2)
         ENDIF
 C
-      case (3)
+      CASE (3)
 C
 C  GRID DATA GENERATION FOR LEVGEO.EQ.3
 C
@@ -390,16 +388,17 @@ C
             WRITE (iunout,*) ' POLYGON NO. J = ',J
             DO 156 K=1,NPPLG
               WRITE (iunout,*) 'IA = ',NPOINT(1,K),' IE = ',NPOINT(2,K)
-              WRITE (iunout,'(/1X,1P,6E12.4)') (XPOL(J,I),YPOL(J,I),
+              WRITE (iunout,'(1X,1P,6E12.4)') (XPOL(J,I),YPOL(J,I),
      .                                   I=NPOINT(1,K),NPOINT(2,K))
+              CALL EIRENE_LEER(1)
   156       CONTINUE
+            CALL EIRENE_LEER(1)
   155     CONTINUE
-          CALL EIRENE_LEER(2)
           WRITE (iunout,*)
      .      'ARCLENGTH BGL(I,K) OF RADIAL SURFACES AT Z=0.'
           DO 153 I=1,NR1ST
             WRITE (iunout,*) 'I = ',I
-            WRITE (iunout,'(/1X,1P,6E12.4)') (BGL(I,K),K=1,NRPLG)
+            WRITE (iunout,'(1X,1P,6E12.4)') (BGL(I,K),K=1,NRPLG)
             CALL EIRENE_LEER(1)
   153     CONTINUE
         ENDIF
@@ -495,7 +494,7 @@ C
           WRITE (iunout,*)
      .      ' WRONG INDEX OF REFLECTION MODEL SPECIFIED '
           WRITE (iunout,*) ' CHECK DEFINITION OF TRIANGLES ',
-     .                     ' AND THEIR MODEL-FLAGS FOR SIDES '
+     .                     ' AND THEIR MODEL FLAGS FOR SIDES'
           CALL EIRENE_EXIT_OWN(1)
         END IF
 
@@ -652,7 +651,7 @@ C
             ENDIF
             WRITE (IUNOUT,*)
             WRITE (IUNOUT,*) ' SURFACE NO. ',JLIM
-            WRITE (IUNOUT,'(5A6,A12)') 'J','ITRI','ISIDE',
+            WRITE (IUNOUT,'(5A6,A12)') 'I','ITRI','ISIDE',
      .                                 'IP1','IP2','BLGT'
             DO I=1, SURF_TRIAN(J)%NUMTR
               IT = SURF_TRIAN(J)%ITRIAS(I)
@@ -769,7 +768,6 @@ C  SIDE 3-1-4
             PTETZ(J,ITET)=PTETZ(J,ITET)/PLEN
           END DO
         END DO
-
 
         CALL EIRENE_SUCHE_NACHBARN
 
@@ -1005,7 +1003,9 @@ C
         IF (NLTRA) THEN
           CALL EIRENE_MASR2('ROA,RMTOR=      ',ROA,RMTOR)
           IF (.NOT.NLTOR) THEN
+            CALL EIRENE_LEER(1)
             CALL EIRENE_MASRR1 (' N,  ZSURF ',ZSURF,NTTRA,3)
+            CALL EIRENE_LEER(1)
             CALL EIRENE_MASRR1 (' N,  ZZONE ',ZZONE,NTTRAM,3)
           ENDIF
           CALL EIRENE_LEER(2)
@@ -1175,7 +1175,7 @@ C
 C
         IF (TRCGRD) THEN
           CALL EIRENE_LEER(1)
-          WRITE (iunout,*) 'GRIDPOINTS IN Y DIRECTION '
+          WRITE (iunout,*) 'GRID POINTS IN Y DIRECTION '
           CALL EIRENE_LEER(1)
           CALL EIRENE_MASRR1('  N, PSURF ',PSURF,NP2ND,3)
           CALL EIRENE_LEER(2)
@@ -1253,8 +1253,9 @@ C
           DO 219 I=1,NRPLG
             WRITE (iunout,*) ' PERP. POLYGON NO. I = ',I
             WRITE (iunout,*) ' JA = ',1,' JE = ',NR1ST
-            WRITE (iunout,'(/1X,1P,6E12.4)') (XPOL(K,I),YPOL(K,I),
+            WRITE (iunout,'(1X,1P,6E12.4)') (XPOL(K,I),YPOL(K,I),
      .             K=1,NR1ST)
+            CALL EIRENE_LEER(1)
   219     CONTINUE
         ENDIF
 C
@@ -1278,7 +1279,7 @@ C
      .      'ARCLENGTH BGLP(I,K) OF POLOIDAL SURFACES AT Z=0.'
           DO 223 K=1,NRPLG
             WRITE (iunout,*) 'K = ',K
-            WRITE (iunout,'(/1X,1P,6E12.4)') (BGLP(I,K),I=1,NR1ST)
+            WRITE (iunout,'(1X,1P,6E12.4)') (BGLP(I,K),I=1,NR1ST)
             CALL EIRENE_LEER(1)
   223     CONTINUE
         ENDIF
@@ -1492,14 +1493,14 @@ C
       IF (TRCGRD) THEN
         CALL EIRENE_LEER(1)
         IF (NLTRZ)
-     .   WRITE (iunout,*) 'GRIDPOINTS IN Z DIRECTION'
+     .   WRITE (iunout,*) 'GRID POINTS IN Z DIRECTION'
         IF (NLTRA)
-     .   WRITE (iunout,*) 'GRIDPOINTS IN TOROIDAL DIRECTION, IN RADIANS'
+     .   WRITE (iunout,*)
+     .    'GRID POINTS IN TOROIDAL DIRECTION, IN RADIANS'
         CALL EIRENE_LEER(1)
         CALL EIRENE_MASRR1 (' N,  ZSURF ',ZSURF,NT3RD,3)
         CALL EIRENE_LEER(2)
       ENDIF
-
 
 !  SET NSTGRD FOR CELLS IT=NT3RD CONTAINING 2-DIMENSIONAL AVERAGES
 
@@ -1537,4 +1538,17 @@ C
       WRITE (iunout,*) 'GRID DATA INCONSISTENCY: 2ND GRID.  YAA > YIA ?'
       WRITE (iunout,*) 'YIA,YAA = ',YIA,YAA
       CALL EIRENE_EXIT_OWN(1)
-      END
+
+      CONTAINS
+
+C STATEMENT FUNCTION FOR GRID PARAMETERS FOR LEVGEO=2 OPTION
+      FUNCTION ELPARM(R,PIN,POUT,EX1)
+      IMPLICIT NONE
+      REAL(DP) :: ELPARM
+      REAL(DP) :: R, PIN, POUT, EX1
+
+      ELPARM = (PIN-POUT)*(1.-R**EX1)**1.+POUT
+      RETURN
+      END FUNCTION ELPARM
+
+      END SUBROUTINE EIRENE_GRID

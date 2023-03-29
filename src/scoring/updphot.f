@@ -28,13 +28,6 @@ cdr nov.15: tracklength estimators for eapl,empl,eipl: species ipl resolved.
 cdr apr. 16: bug fix J.Lore re index in lgiel. This part of code is still unused,
 cdr          so no effect on any result.  Few further comments corrected
 
-!pb APR 16: ipplds -> ipplei, pplds -> pplei
-!pb APR 16: ipatds -> ipatei, patds -> patei
-!pb APR 16: ipmlds -> ipmlei, pmlds -> pmlei
-!pb APR 16: ipiods -> ipioei, piods -> pioei
-!pb APR 16: pelds -> pelei
-
-
 C
       SUBROUTINE EIRENE_UPDPHOT (XSTOR2,XSTORV2,IFLAG)
 C
@@ -84,6 +77,7 @@ C          (BOTH SOURCE (DUE TO C) AND SINK (DUE TO B)
       USE EIRMOD_CCONA
       USE EIRMOD_PHOTON
       USE EIRMOD_CINIT
+      USE EIRMOD_CLOGAU
 
       IMPLICIT NONE
 C
@@ -92,8 +86,9 @@ C
       INTEGER, INTENT(IN) :: IFLAG
       REAL(DP) :: WTRSIG, DIST, WTR, WTRE0, WV, CNDYNPH, WTRV
       INTEGER :: IRD,  I, IRDO, INUM
+C     INTEGER :: NPBGK
 C SECONDARY SPECIES IDENTIFIERS
-      INTEGER ::  IAT1,IAT2,IML1,IML2,IIO1,IIO2,IPH1,IPH2,IPL1,IPL2
+      INTEGER :: IAT1,IAT2,IML1,IML2,IIO1,IIO2,IPH1,IPH2,IPL1,IPL2
 C PH PROCESSES
       INTEGER ::      IAPH,IRPH
 C    .               ,UPDF        ! out, something for stim. emiss ?
@@ -137,13 +132,28 @@ C  FOR STANDARD DEVIATION: INDICATE CELLS THAT HAVE BEEN MET BY THE PRESENT MC H
 C
 C  PARTICLE, MOMENTUM AND ENERGY DENSITY ESTIMATORS
 C
-        IF (LEDENPH) EDENPH(IPHOT,IRD)=EDENPH(IPHOT,IRD)+WTRE0
-        IF (LPDENPH) PDENPH(IPHOT,IRD)=PDENPH(IPHOT,IRD)+WTR
+        IF (LEDENPH) THEN
+!$OMP ATOMIC
+          EDENPH(IPHOT,IRD)=EDENPH(IPHOT,IRD)+WTRE0
+        ENDIF
+        IF (LPDENPH) THEN 
+!$OMP ATOMIC
+          PDENPH(IPHOT,IRD)=PDENPH(IPHOT,IRD)+WTR
+        ENDIF
         IF (LEDENPH.OR.LPDENPH) LMETSP(IPHOT)=.TRUE.
 
-        IF (LVXDENPH) VXDENPH(IPHOT,IRD)=VXDENPH(IPHOT,IRD)+WTRV*VELX
-        IF (LVYDENPH) VYDENPH(IPHOT,IRD)=VYDENPH(IPHOT,IRD)+WTRV*VELY
-        IF (LVZDENPH) VZDENPH(IPHOT,IRD)=VZDENPH(IPHOT,IRD)+WTRV*VELZ
+        IF (LVXDENPH) THEN
+!$OMP ATOMIC
+          VXDENPH(IPHOT,IRD)=VXDENPH(IPHOT,IRD)+WTRV*VELX
+        ENDIF
+        IF (LVYDENPH) THEN
+!$OMP ATOMIC
+          VYDENPH(IPHOT,IRD)=VYDENPH(IPHOT,IRD)+WTRV*VELY
+        ENDIF
+        IF (LVZDENPH) THEN
+!$OMP ATOMIC
+          VZDENPH(IPHOT,IRD)=VZDENPH(IPHOT,IRD)+WTRV*VELZ
+        ENDIF
         IF (LVXDENPH.OR.LVYDENPH.OR.LVZDENPH) LMETSP(IPHOT)=.TRUE.
 C
 C  ESTIMATORS FOR SOURCES AND SINKS
@@ -161,21 +171,53 @@ C  PRE-COLLISION RATES, ASSUME: TEST PARTICLES (AND THEIR ENERGY) ARE LOST
 C
         IF ((LAST_EVENT%IFLAG == 1) .AND.
      .      (LAST_EVENT%NCELL == IRD)) THEN
+cdr  particle was born, is now on first flight
+cdr  particle track is still in same cell
 
-! collision estimator for first cell ("brick") along the track
-! in case of a collision sample 1 (the whole weight)
-! in case of no collision sample 0
+! use collision estimator for first cell ("brick") along the track.
+! in case UPDATE is called at a collision point: sample 1 (score the whole weight)
+cdr This perfectly cancels the source rate.
+! in case UPDATE is called at any other instance (no collision in cell IRD): sample 0 (do not score)
           IF ((IFLAG == 4).OR.(IFLAG == 5)) THEN
-            IF (LPPHPHT) PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)-WEIGHT
-            IF (LEPHPHT) EPHPHT(IRD)      =EPHPHT(IRD)      -WEIGHT*E0
+            IF (LPPHPHT) THEN
+!$OMP ATOMIC
+              PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)-WEIGHT
+              IF (NLSPCSCL_PHOT) THEN
+                PPHPHT2(1:NPHOT,0:NPHOT) => PPHPHT(:,IRD)
+!$OMP ATOMIC
+                PPHPHT2(IPHOT,IPHOT)=PPHPHT2(IPHOT,IPHOT)-WEIGHT
+                LMETSP2(1:NPHOT,0:NPHOT) => LMETSP(NTS_IPH+1:NTS_PHPH)
+                LMETSP2(IPHOT,0)=.TRUE.
+                LMETSP2(IPHOT,IPHOT)=.TRUE.
+              END IF
+            ENDIF
+            IF (LEPHPHT) THEN
+!$OMP ATOMIC
+              EPHPHT(IRD)      =EPHPHT(IRD)      -WEIGHT*E0
+            ENDIF
           ELSE
 !  nothing to be done, sample a 0
           END IF
 
         ELSE
+! use tracklength estimator
           WTRSIG=WTR*(SIGTOT-SIGBGK)
-          IF (LPPHPHT) PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)-WTRSIG
-          IF (LEPHPHT) EPHPHT(IRD)      =EPHPHT(IRD)      -WTRSIG*E0
+          IF (LPPHPHT) THEN
+!$OMP ATOMIC
+            PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)-WTRSIG
+            IF (NLSPCSCL_PHOT) THEN
+              PPHPHT2(1:NPHOT,0:NPHOT) => PPHPHT(:,IRD)
+!$OMP ATOMIC
+              PPHPHT2(IPHOT,IPHOT)=PPHPHT2(IPHOT,IPHOT)-WEIGHT
+              LMETSP2(1:NPHOT,0:NPHOT) => LMETSP(NTS_IPH+1:NTS_PHPH)
+              LMETSP2(IPHOT,0)=.TRUE.
+              LMETSP2(IPHOT,IPHOT)=.TRUE.
+            END IF
+          ENDIF
+          IF (LEPHPHT) THEN
+!$OMP ATOMIC
+            EPHPHT(IRD)      =EPHPHT(IRD)      -WTRSIG*E0
+          ENDIF
         END IF
 C
 C  OTHER (OT) CONTRIBUTION for photons
@@ -198,7 +240,18 @@ C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
 C  COMPENSATE PRE-COLLISION RATES HERE
 C
           IF (PHV_IESTOTPH(iphot,IRPH,1).NE.0) THEN
-            IF (LPPHPHT) PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)+WTRSIG
+            IF (LPPHPHT) THEN 
+!$OMP ATOMIC
+              PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)+WTRSIG
+              IF (NLSPCSCL_PHOT) THEN
+                PPHPHT2(1:NPHOT,0:NPHOT) => PPHPHT(:,IRD)
+!$OMP ATOMIC
+                PPHPHT2(IPHOT,IPHOT)=PPHPHT2(IPHOT,IPHOT)+WTRSIG
+                LMETSP2(1:NPHOT,0:NPHOT) => LMETSP(NTS_IPH+1:NTS_PHPH)
+                LMETSP2(IPHOT,0)=.TRUE.
+                LMETSP2(IPHOT,IPHOT)=.TRUE.
+              END IF
+            ENDIF
 cdr         if(updf==1) PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)+WTRSIG !prob. wrong
           ELSE
 C
@@ -207,7 +260,16 @@ C
 cdr  if(ipls > 0) then
 cdr  do this check in initialisation, only once
             IF (LPPHPL) THEN
+!$OMP ATOMIC
               PPHPL(IPLS,IRD)=PPHPL(IPLS,IRD)-WTRSIG
+              IF (NLSPCSCL_PHOT) THEN
+                PPHPL2(1:NPLS,0:NPHOT) => PPHPL(:,IRD)
+!$OMP ATOMIC
+                PPHPL2(IPLS,IPHOT)=PPHPL2(IPLS,IPHOT)-WTRSIG
+                LMETSP2(1:NPLS,0:NPHOT) => LMETSP(NTS_PHPH+1:NTS_PPH)
+                LMETSP2(IPLS,0)=.TRUE.
+                LMETSP2(IPLS,IPHOT)=.TRUE.
+              END IF
               LMETSP(NSPAMI+IPLS)=.TRUE.
             END IF
 C
@@ -222,14 +284,33 @@ C  FIRST SECONDARY:
                 INUM=PHV_N1STOTPH(iphot,IRPH,3)
                 LOGATM(IAT1,ISTRA)=.TRUE.
                 IF (LPPHAT) THEN
+!$OMP ATOMIC
                   PPHAT(IAT1,IRD)= PPHAT(IAT1,IRD)+WTRSIG*INUM
+                  IF (NLSPCSCL_PHOT) THEN
+                    PPHAT2(1:NATM,0:NPHOT) => PPHAT(:,IRD)
+!$OMP ATOMIC
+                    PPHAT2(IAT1,IPHOT)= PPHAT2(IAT1,IPHOT)+WTRSIG*INUM
+                    LMETSP2(1:NATM,0:NPHOT) => LMETSP(NTS_PI+1:NTS_APH)
+                    LMETSP2(IAT1,0)=.TRUE.
+                    LMETSP2(IAT1,IPHOT)=.TRUE.
+                  END IF
                   LMETSP(NSPH+IAT1)=.TRUE.
                 END IF
               ELSEIF (PHV_N1STOTPH(iphot,IRPH,1).EQ.2) THEN
                 IML1=PHV_N1STOTPH(iphot,IRPH,2)
+                INUM=PHV_N1STOTPH(iphot,IRPH,3)
                 LOGMOL(IML1,ISTRA)=.TRUE.
                 IF (LPPHML) THEN
-                  PPHML(IML1,IRD)= PPHML(IML1,IRD)+WTRSIG
+!$OMP ATOMIC
+                  PPHML(IML1,IRD)= PPHML(IML1,IRD)+WTRSIG*INUM
+                  IF (NLSPCSCL_PHOT) THEN
+                    PPHML2(1:NMOL,0:NPHOT) => PPHML(:,IRD)
+!$OMP ATOMIC
+                    PPHML2(IML1,IPHOT)= PPHML2(IML1,IPHOT)+WTRSIG*INUM
+                    LMETSP2(1:NMOL,0:NPHOT) => LMETSP(NTS_APH+1:NTS_MPH)
+                    LMETSP2(IML1,0)=.TRUE.
+                    LMETSP2(IML1,IPHOT)=.TRUE.
+                  END IF
                   LMETSP(NSPA+IML1)=.TRUE.
                 END IF
               ELSEIF (PHV_N1STOTPH(iphot,IRPH,1).EQ.3) THEN
@@ -237,7 +318,16 @@ C  FIRST SECONDARY:
                 INUM=PHV_N1STOTPH(iphot,IRPH,3)
                 LOGION(IIO1,ISTRA)=.TRUE.
                 IF (LPPHIO) THEN
+!$OMP ATOMIC
                   PPHIO(IIO1,IRD)= PPHIO(IIO1,IRD)+WTRSIG*INUM
+                  IF (NLSPCSCL_PHOT) THEN
+                    PPHIO2(1:NION,0:NPHOT) => PPHIO(:,IRD)
+!$OMP ATOMIC
+                    PPHIO2(IIO1,IPHOT)= PPHIO2(IIO1,IPHOT)+WTRSIG*INUM
+                    LMETSP2(1:NION,0:NPHOT) => LMETSP(NTS_MPH+1:NTS_IPH)
+                    LMETSP2(IIO1,0)=.TRUE.
+                    LMETSP2(IIO1,IPHOT)=.TRUE.
+                  END IF
                   LMETSP(NSPAM+IIO1)=.TRUE.
                 END IF
               ELSEIF (PHV_N1STOTPH(iphot,IRPH,1).EQ.4) THEN
@@ -246,7 +336,16 @@ C               INUM=PHV_N1STOTPH(iphot,IRPH,3)
                 INUM=1
                 LOGPLS(IPL1,ISTRA)=.TRUE.
                 IF (LPPHPL) THEN
+!$OMP ATOMIC
                   PPHPL(IPL1,IRD)= PPHPL(IPL1,IRD)+WTRSIG*INUM
+                  IF (NLSPCSCL_PHOT) THEN
+                    PPHPL2(1:NPLS,0:NPHOT) => PPHPL(:,IRD)
+!$OMP ATOMIC
+                    PPHPL2(IPL1,IPHOT)= PPHPL2(IPL1,IPHOT)+WTRSIG*INUM
+                    LMETSP2(1:NPLS,0:NPHOT)=>LMETSP(NTS_PHPH+1:NTS_PPH)
+                    LMETSP2(IPL1,0)=.TRUE.
+                    LMETSP2(IPL1,IPHOT)=.TRUE.
+                  END IF
 csw added updf check (stim.em)
 cdr: not ready
 cdr  stim emission: am besten: 2 secondaries in group 1. hier jedoch:
@@ -263,7 +362,16 @@ cdr  test iph1 > 0 only once, in initialisation. here: removed
                 if ((inum > 0) .and. (iph1 > 0)) then
                   logphot(iph1,istra)=.true.
                   IF (LPPHPHT) THEN
+!$OMP ATOMIC
                     PPHPHT(iph1,ird)=PPHPHT(iph1,ird)+wtrsig*inum
+                    IF (NLSPCSCL_PHOT) THEN
+                    PPHPHT2(1:NPHOT,0:NPHOT) => PPHPHT(:,IRD)
+!$OMP ATOMIC
+                    PPHPHT2(iph1,iPHOT)=PPHPHT2(iph1,iPHOT)+wtrsig*inum
+                    LMETSP2(1:NPHOT,0:NPHOT)=>LMETSP(NTS_IPH+1:NTS_PHPH)
+                    LMETSP2(IPH1,0)=.TRUE.
+                    LMETSP2(IPH1,IPHOT)=.TRUE.
+                  END IF
                     LMETSP(IPH1)=.TRUE.
                   END IF
                 end if
@@ -278,14 +386,33 @@ C  SECOND SECONDARY:
                 INUM=PHV_N2NDOTPH(iphot,IRPH,3)
                 LOGATM(IAT2,ISTRA)=.TRUE.
                 IF (LPPHAT) THEN
+!$OMP ATOMIC
                   PPHAT(IAT2,IRD)= PPHAT(IAT2,IRD)+WTRSIG*INUM
+                  IF (NLSPCSCL_PHOT) THEN
+                    PPHAT2(1:NATM,0:NPHOT) => PPHAT(:,IRD)
+!$OMP ATOMIC
+                    PPHAT2(IAT2,IPHOT)= PPHAT2(IAT2,IPHOT)+WTRSIG*INUM
+                    LMETSP2(1:NATM,0:NPHOT)=>LMETSP(NTS_PI+1:NTS_APH)
+                    LMETSP2(IAT2,0)=.TRUE.
+                    LMETSP2(IAT2,IPHOT)=.TRUE.
+                  END IF
                   LMETSP(NSPH+IAT2)=.TRUE.
                 END IF
               ELSEIF (PHV_N2NDOTPH(iphot,IRPH,1).EQ.2) THEN
                 IML2=PHV_N2NDOTPH(iphot,IRPH,2)
+                INUM=PHV_N2NDOTPH(iphot,IRPH,3)
                 LOGMOL(IML2,ISTRA)=.TRUE.
                 IF (LPPHML) THEN
-                  PPHML(IML2,IRD)= PPHML(IML2,IRD)+WTRSIG
+!$OMP ATOMIC
+                  PPHML(IML2,IRD)= PPHML(IML2,IRD)+WTRSIG*INUM
+                  IF (NLSPCSCL_PHOT) THEN
+                    PPHML2(1:NMOL,0:NPHOT) => PPHML(:,IRD)
+!$OMP ATOMIC
+                    PPHML2(IML2,IPHOT)= PPHML2(IML2,IPHOT)+WTRSIG*INUM
+                    LMETSP2(1:NMOL,0:NPHOT)=>LMETSP(NTS_APH+1:NTS_MPH)
+                    LMETSP2(IML2,0)=.TRUE.
+                    LMETSP2(IML2,IPHOT)=.TRUE.
+                  END IF
                   LMETSP(NSPA+IML2)=.TRUE.
                 END IF
               ELSEIF (PHV_N2NDOTPH(iphot,IRPH,1).EQ.3) THEN
@@ -293,7 +420,16 @@ C  SECOND SECONDARY:
                 INUM=PHV_N2NDOTPH(iphot,IRPH,3)
                 LOGION(IIO2,ISTRA)=.TRUE.
                 IF (LPPHIO) THEN
+!$OMP ATOMIC
                   PPHIO(IIO2,IRD)= PPHIO(IIO2,IRD)+WTRSIG*INUM
+                  IF (NLSPCSCL_PHOT) THEN
+                    PPHIO2(1:NION,0:NPHOT) => PPHIO(:,IRD)
+!$OMP ATOMIC
+                    PPHIO2(IIO2,IPHOT)= PPHIO2(IIO2,IPHOT)+WTRSIG*INUM
+                    LMETSP2(1:NION,0:NPHOT)=>LMETSP(NTS_MPH+1:NTS_IPH)
+                    LMETSP2(IIO2,0)=.TRUE.
+                    LMETSP2(IIO2,IPHOT)=.TRUE.
+                  END IF
                   LMETSP(NSPAM+IIO2)=.TRUE.
                 END IF
               ELSEIF (PHV_N2NDOTPH(iphot,IRPH,1).EQ.4) THEN
@@ -302,7 +438,16 @@ C               INUM=PHV_N2NDOTPH(iphot,IRPH,3)
                 INUM=1
                 LOGPLS(IPL2,ISTRA)=.TRUE.
                 IF (LPPHPL) THEN
+!$OMP ATOMIC
                   PPHPL(IPL2,IRD)= PPHPL(IPL2,IRD)+WTRSIG*INUM
+                  IF (NLSPCSCL_PHOT) THEN
+                    PPHPL2(1:NPLS,0:NPHOT) => PPHPL(:,IRD)
+!$OMP ATOMIC
+                    PPHPL2(IPL2,IPHOT)= PPHPL2(IPL2,IPHOT)+WTRSIG*INUM
+                    LMETSP2(1:NPLS,0:NPHOT)=>LMETSP(NTS_PHPH+1:NTS_PPH)
+                    LMETSP2(IPL2,0)=.TRUE.
+                    LMETSP2(IPL2,IPHOT)=.TRUE.
+                  END IF
 csw added updf check (stim.em)
 cdr  stim emission: am besten: 2 secondaries in group 2.
 cdr  dazu PI-process vervollstandigen.
@@ -318,7 +463,18 @@ cdr test iph2 > 0 removed, to be done only once in initialisation
                 if ((inum > 0) .and. (iph2 > 0)) then
                   logphot(iph2,istra)=.true.
                   IF (LPPHPHT) THEN
+!$OMP ATOMIC
                     PPHPHT(iph2,ird)=PPHPHT(iph2,ird)+wtrsig*inum
+                    IF (NLSPCSCL_PHOT) THEN
+                      PPHPHT2(1:NPHOT,0:NPHOT) => PPHPHT(:,IRD)
+!$OMP ATOMIC
+                      PPHPHT2(iph2,iPHOT)=PPHPHT2(iph2,iPHOT)+
+     .                                    wtrsig*inum
+                      LMETSP2(1:NPHOT,0:NPHOT)=>
+     .                       LMETSP(NTS_IPH+1:NTS_PHPH)
+                      LMETSP2(IPH2,0)=.TRUE.
+                      LMETSP2(IPH2,IPHOT)=.TRUE.
+                    END IF
                     LMETSP(iph2)=.true.
                   END IF
                 END IF
@@ -332,6 +488,7 @@ C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
 C  COMPENSATE PRE-COLLISION RATES HERE
 C
           IF (LEPHPHT.AND.(PHV_IESTOTph(iphot,IRPH,3).NE.0)) THEN
+!$OMP ATOMIC
             EPHPHT(IRD)=EPHPHT(IRD)          +WTRSIG*E0
 cdr         if(updf==1) EPHPHT(IRD)=EPHPHT(IRD)+WTRSIG*E0 ! verm. falsch
           ELSE
@@ -379,7 +536,10 @@ cdr         ELSEIF (PHV_N1STOTPH(iphot,IRPH,1).EQ.0) THEN
                 INUM=PHV_N1STOTPH(iphot,IRPH,2)
 cdr  if(iph1 > 0) then abfrage hier raus, nur in initialisation
                 LOGPHOT(IPH1,ISTRA)=.TRUE.
-                IF (LEPHPHT) EPHPHT(IRD)=EPHPHT(IRD) +WTRSIG*E0*INUM
+                IF (LEPHPHT) THEN
+!$OMP ATOMIC
+                  EPHPHT(IRD)=EPHPHT(IRD) +WTRSIG*E0*INUM
+                ENDIF
               ENDIF
 !dr         ENDIF
 
@@ -415,7 +575,10 @@ cdr         ELSEIF (PHV_N2NDOTPH(iphot,IRPH,1).EQ.0) THEN
 cdr if(iph2 > 0) then  ! dieser test nur in initialisation phase
                 if ((inum > 0) .and. (iph2 > 0)) then
                   LOGPHOT(IPH2,ISTRA)=.TRUE.
-                  IF (LEPHPHT) EPHPHT(IRD) = EPHPHT(IRD)+WTRSIG*E0*INUM
+                  IF (LEPHPHT) THEN
+!$OMP ATOMIC
+                    EPHPHT(IRD) = EPHPHT(IRD)+WTRSIG*E0*INUM
+                  ENDIF
                 end if
               ENDIF
 !dr         ENDIF
@@ -426,4 +589,4 @@ C
   131  CONTINUE
       RETURN
 
-      END
+      END SUBROUTINE EIRENE_UPDPHOT

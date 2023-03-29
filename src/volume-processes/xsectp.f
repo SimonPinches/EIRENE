@@ -8,7 +8,7 @@ C  aug. 05: corrected electron energy loss rate for default rec. rate
 ! 2013    : DENSITY LIMIT 1E8 SET FOR POLYNOMIAL FITS (ARRAY PLS).
 cdr  oct.14:  pls made allocatable, plus minor synchronisation with other xsect... routines
 cdr  Nov.14:  reaction scaling factor removed from Bremsstrahlung.
-CDR           bremsstrahlung: new function eirene_brems, replaces gaunt factor function
+CDR           bremsstrahlung: new function eirene_brems, replaces Gaunt factor function
 cdr  June 15:  added: default He+ --> He(1S) + rad  model. same analytic form of rate as for H+ default model.
 cdr  April 16:  typo re TABRC1 for default He recombination corrected. Correction by SOLPS-ITER group
 cdr             should not have had any effect, on any run, so far,
@@ -17,7 +17,7 @@ cdr  Jan 18  :  call energy_rate_coeff with lexp=true, because internal colrad (
 cdr             option is now available.
 cdr  May 18 :  still missing. low Te cut-off (should be done as in xstei, there:
 cdr            0.1 eV, until asymptotics from database are fully implemented.
-cdr            DEIMIN density cut-off now redundant, due to defaults read from AMJUEL 
+cdr            DEIMIN density cut-off now redundant, due to defaults read from AMJUEL
 
 C
       SUBROUTINE EIRENE_XSECTP
@@ -39,11 +39,12 @@ C
 
       IMPLICIT NONE
 
-      REAL(DP), ALLOCATABLE :: PLS(:)
+      REAL(DP), ALLOCATABLE :: PLS(:), TEPLS(:)
       REAL(DP) :: DELE, FCTKKL, ZX, DEIMIN, RMASS2, FACTKK,
      .            RMASS2_2, CORSUM, COU, EIRENE_RATE_COEFF,
      .            EIRENE_ENERGY_RATE_COEFF,
-     .            BREMS, Z, eirene_brems
+     .            BREMS, Z, eirene_brems,
+     .            DEIMAX, TEIMIN
       INTEGER :: IIRC, IION3, IPLS3, IATM3, IMOL3, KK, NRC, IATM,
      .           IRRC, J, IDSC, IPLS, NSERC5, KREAD, MODC, IATM1,
      .           ITYP, ISPZ, ITYP2, ISPZ2, IPHOT3
@@ -52,14 +53,19 @@ C
       SAVE
 
       ALLOCATE (PLS(NSTORDR))
+      ALLOCATE (TEPLS(NSTORDR))
 
 cdr: set hard-wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3
 cdr: at this lower limit density the fits are produced such
 cdr: that they collapse to the corona limit values.
       DEIMIN=LOG(1.D8)
-      IF (NSTORDR >= NRAD) THEN
+      DEIMAX=LOG(1.D16) !VK
+      TEIMIN=log(0.1d0) !csw
+       IF (NSTORDR >= NRAD) THEN
         DO 10 J=1,NSBOX
           PLS(J)=MAX(DEIMIN,DEINL(J))
+          PLS(J)=MIN(DEIMAX,PLS(J))        !VK
+          TEPLS(J)=MAX(TEIMIN,TEINL(J))
    10   CONTINUE
       END IF
 
@@ -67,6 +73,7 @@ C
 C   RECOMBINATION
 C
       DO 1000 IPLS=1,NPLSI
+        ISPZ=NSPAMI+IPLS
 C
         IDSC=0
         LGPRC(IPLS,0)=0
@@ -108,6 +115,8 @@ c  corsum approx +1.0 for Te --> infinity
                     corsum=(-0.5_dp*zx+0.59)/(zx+0.59)
                     EELRC1(IRRC,J)=-(1.5+CORSUM)*TEIN(J)*TABRC1(IRRC,J)
    51             CONTINUE
+cdr  this setting kk=-1 is confusing. It may work, but
+cdr  kk=-1 is already reserved for "minimal" default H+p charge exchange process
                   NREARC(IRRC) = -1
                   NELRRC(IRRC) = -1
                 ELSE          !  storage saving mode: tabrc1, eelrc1 to be found "on the fly"
@@ -127,7 +136,9 @@ C
 C
             NPRCI(IPLS)=IDSC
 
-          ELSEIF (NCHARP(IPLS).EQ.2.AND.NCHRGP(IPLS).EQ.1) THEN  ! this is now He+
+cdr Sept. 19 added: nprt=1, to avoid confusing D2+ and He+ virtual background here
+          ELSEIF (NCHARP(IPLS).EQ.2.AND.NCHRGP(IPLS).EQ.1
+     .      .AND. NPRT(ISPZ).EQ.1) THEN  ! this is now He+
 C
 C  DEFAULT HELIUM + RADIATIVE RECOMBINATION MODEL
 C  HELIUM ION (HE+) RECOMBINATION RATE COEFFICIENT (1/S/CCM) E + HE+ --> HE(1S) + RAD.
@@ -159,6 +170,8 @@ c  corsum approx +1.0 for Te --> infinity
                     corsum=(-0.5_dp*zx+0.35)/(zx+0.35)
                     EELRC1(IRRC,J)=-(1.5+CORSUM)*TEIN(J)*TABRC1(IRRC,J)
    53             CONTINUE
+cdr  this setting kk=-2 is confusing. It may work, but
+cdr  kk=-2 is already reserved for other "minimal" default processes
                   NREARC(IRRC) = -2
                   NELRRC(IRRC) = -2
                 ELSE          !  storage saving mode: tabrc1, eelrc1 to be found "on the fly"
@@ -295,7 +308,7 @@ C  DO NOT STORE DATA, BUT COMPUTE THEM WHEN NEEDED
                   NREARC(IRRC) = KK
                 END IF
                 MODCOL(6,2,IRRC)=1
-              ENDIF  ! NSERC3
+              ENDIF  ! (MODCLF(KK),3,5) options
 
               FACRRC(IRRC,1) = FACTKK
               FACRRC(IRRC,2) = LOG(FACTKK)
@@ -337,13 +350,12 @@ C  4.B)  ENERGY LOSS RATE OF IMP. ELECTRON = -1.5*TE*RATE COEFF.
 C
               ELSEIF (NSERC5.EQ.3) THEN
 
-                KREAD=INT(EELECP(IPLS,NRC))
+                KREAD=NINT(EELECP(IPLS,NRC))
                 IF ((KREAD < 1) .OR. (KREAD > NREACI)) GOTO 996
                 MODC=EIRENE_IDEZ(MODCLF(KREAD),5,5)
 c  special treatment in case bremsstrahlung is contained in energy loss rate
 c  as e.g. the case in ADAS ADF11- PRB files
                 LADAS = EIRENE_IS_RTCEW_TAB2D(KREAD)
-                Z = NCHRGP(IPLS)
 C  4.C)  ENERGY LOSS RATE OF IMP. ELECTRON = EN.-WEIGHTED RATE(TE)
                 IF (MODC.EQ.1) THEN
                   IF (NSTORDR >= NRAD) THEN
@@ -355,11 +367,18 @@ C   CAREFUL:  EELRC1 IS TO BE TAKEN NEGATIVE, IF IT IS A LOSS!
                       EELRC1(IRRC,J)=-EELRC1(IRRC,J)*DEIN(J)*FACTKK
 C  SUBTRACT BREMSSTRAHLUNG, if it was included in recombination energy loss rate
 c  (since eelrc1 is taken negative, add the bremsstrahlung)
+cnh 28.10.2019
                       IF (LADAS) THEN
                         IF (LGVAC(J,IPLS)) CYCLE
                         IF (NCHRGP(IPLS)==0) THEN
                           BREMS = 0._DP
                         ELSE
+c                         Charge 
+                           IF(ZIIN(IPLS,J).NE.ZVAC) THEN
+                            Z = ZIIN(IPLS,J)
+                          ELSE
+                            Z = DBLE(NCHRGP(IPLS))
+                          ENDIF
                           BREMS =EIRENE_BREMS(TEIN(J),DEIN(J),Z)/ELCHA  !eV/s/ion
                         END IF
                         EELRC1(IRRC,J) = EELRC1(IRRC,J) + BREMS
@@ -401,21 +420,28 @@ c  (since eelrc1 is taken negative, add the bremsstrahlung)
                         IF (NCHRGP(IPLS)==0) THEN
                           BREMS = 0._DP
                         ELSE
+cnh 28.10.2019
+                          IF(ZIIN(IPLS,J).NE.ZVAC) THEN
+                            Z = ZIIN(IPLS,J)
+                          ELSE
+                            Z = DBLE(NCHRGP(IPLS))
+                          ENDIF
                           BREMS =EIRENE_BREMS(TEIN(J),DEIN(J),Z)/ELCHA  !eV/s/ion
                         END IF
                         EELRC1(IRRC,J) = EELRC1(IRRC,J) + BREMS
                       ENDIF
 c  bremsstrahlung correction done.
 
-                    END DO
+                    END DO ! nsbox
                     NELRRC(IRRC)=KREAD
                     JELRRC(IRRC)=9
                   ELSE  ! STORAGE SAVING MODE
                     NELRRC(IRRC)=KREAD
                     JELRRC(IRRC)=9
                   END IF
+
                   MODCOL(6,4,IRRC)=1
-                ENDIF   ! MODC =1 or =3
+                ENDIF   ! MODC =1, 2 or 3
 
                 FACRRC(IRRC,1) = FACTKK
                 FACRRC(IRRC,2) = LOG(FACTKK)
@@ -436,9 +462,9 @@ c                 ELSE  ! ??
                   END IF
 C
                 ENDIF   ! DELPOT
+              ENDIF  !  NSERC5 
             ELSE
               GOTO 997
-               ENDIF  !  NSERC5 
             ENDIF  !  ISWR
 C
    82     CONTINUE
@@ -525,6 +551,7 @@ C
  1000 CONTINUE
 
       DEALLOCATE (PLS)
+      DEALLOCATE (TEPLS)
 C
       RETURN
 C
@@ -559,7 +586,7 @@ C
       CALL EIRENE_EXIT_OWN(1)
   997 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSECTP: ISCDE FLAG'
-      WRITE (iunout,*) 'IRRC, EFLAG ',IRRC,NSERC5
+      WRITE (iunout,*) 'IRRC, EFLAG, KK, ISWR ',IRRC,NSERC5,KK,ISWR(KK)
       CALL EIRENE_EXIT_OWN(1)
 C
-      END
+      END SUBROUTINE EIRENE_XSECTP

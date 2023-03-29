@@ -2,4 +2,4 @@ c------------------------------------------------------------------------
       SUBROUTINE GRSCLP(XD,YD)
       REAL :: XD,YD
       RETURN
-      END
+      END SUBROUTINE GRSCLP

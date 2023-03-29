@@ -1,9 +1,9 @@
 cdr Nov. 17   unification of update, fpath.
-cdr           tbd: photon routines, static loop, logatm,mol.ion in static loop.
+cdr           tbd: photon routines, static loop, logatm, mol, ion in static loop.
 cdr Oct. 17   minor sync with folion
 cdr           started: implementation of QSS branch: folstat_neut.f  not ready
 
-cdr Sept.17   conditional exp. estim: external function funexp, rather than inline.
+cdr Sept.17   conditional exp. est.: external function funexp, rather than inline.
 cdr           PR = prob to reach the next cell boundary.
 cdr           In case of geometrical multi-steps within one macro step
 cdr           (NCOU.GT.1) use PR rather than AX(2)=1, when leaving the NCOU loop
@@ -63,7 +63,7 @@ C           ITYP=4  NO NEXT GENERATION TEST PARTICLE IS GENERATED
 C                   (PARTICLE ABSORBED IN BULK ION SPECIES)
 c
 c  at 100 :   start a new neutral particle, velocity is given as full cartesian vector, lcart=true
-c  at 1004:   reduced (guiding centre) velocities and B-field are now set for particle. lcart=false.
+c  at 1004:   reduced (guiding centre) velocities and B field are now set for particle. lcart=false.
 C  at 1001:   particle enters static loop
 C  at 1002:   particle leaves static loop
 c  at 101 :   full new trajectory starts here.
@@ -100,6 +100,12 @@ C
       USE EIRMOD_STDCOL, ONLY: EIRENE_STDCOL
       USE EIRMOD_SWITCH_PARTINFO, ONLY: EIRENE_SWITCH_PARTINFO
       USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
+      use eirmod_timer
+      use eirmod_timep
+      use eirmod_colatm  
+      use eirmod_colmol
+
+      use EIRMOD_OPENMP
 
       IMPLICIT NONE
 
@@ -108,22 +114,22 @@ C
       REAL(DP) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
      .            XSTORV2(NSTORV,N2ND+N3RD)
       REAL(DP) :: XSTORC(MSTOR1,MSTOR2), XSTORVC(NSTORV)
-      REAL(DP) :: VELXC, TIMEC, WS, COLTYP, X0C, Y0C, Z0C, ZDT1C,
+      REAL(DP) :: VELXC, TIMEC, WS, X0C, Y0C, Z0C, ZDT1C,
      .          X0ERR, Y0ERR, Z0ERR, VELC, E0C, VELYC, VELZC, SG,
      .          GENRC, PHIC, WEIGHC, ZLI, XLI, YLI, T, ZTS,
      .          ZMFP, ZEP1, ZLOG, ZTST, ZINT1, ZINT2, Z0S, TIMES,
      .          X0S, Y0S, PHIS, DIST, ZTC, PSAVE, TSAVE,
-     .          EX, EXPM, FF, WMINC_LOCAL, PR, PPR,   ! cond exp. est
+     .          EX, EXPM, FF, WMINC_LOCAL, PR, PPR,   ! cond. exp. est.
      .          EIRENE_FPATH,
-     .          SCOS_NEW
+     .          SCOS_NEW, VELXS, VELYS, VELZS, VELS
 ctk      REAL(DP), EXTERNAL :: RANF_EIRENE, EIRENE_FUNEXP
       REAL(DP), EXTERNAL :: EIRENE_FUNEXP
       INTEGER :: NBLCKC, NCELLC, NRCLLC, NACLLC, ITIMEC, IPERIDC,
      .           IFPTHC, IUPDTC, NPCLLC, NTCLLC, NTSAVE, NPSAVE,
      .           EIRENE_LEARC2, J, NCOUS, NLE, NRC, JCOL, NLI, ISTS,
-     .           NPCOLC,
+     .           NPCOLC, COLTYP,
      .           JJ, NPCELC, NTCELC, NTCOLC, IFLAG, I, IM,
-     .           NCLLN, IRET, IRT_STAT
+     .           NCLLN, IRET, IRT_STAT, KK
       LOGICAL :: NLPR, LCNDEXP
       TYPE(CELL_INFO), POINTER :: NEW_CELL
 
@@ -135,6 +141,11 @@ c  IC_NEUT, IC_ION: counter for generations within static loop
       IC_NEUT=IC_ION
 C  XGENER: COUNTER FOR GENERATION LIMIT
       XGENER=0.D0
+!PB UNNECESSARY, JUST FOR SAFETY
+      VELXS=VELX
+      VELYS=VELY
+      VELZS=VELZ
+      VELS=VEL
 
   100 LGPART=.TRUE.
       IC_NEUT=IC_NEUT+1
@@ -229,8 +240,8 @@ C  PREPARE CELL NUMBERS FOR FIRST FLIGHT
           IPOLGN=IPOLG
           IF (NLSRFA) THEN
             CALL EIRENE_ADDCOL (X0,Y0,Z0,SCOS,IRET)
-            if (IRET .EQ. 1) GOTO 101
-            if (IRET .EQ. 2) GOTO 380
+            IF (IRET .EQ. 1) GOTO 101
+            IF (IRET .EQ. 2) GOTO 380
           ELSEIF (NLSRFX) THEN
             select case (LEVGEO)
             case (:3)
@@ -238,32 +249,32 @@ C  PREPARE CELL NUMBERS FOR FIRST FLIGHT
               MSURFG=NPCELL+(NTCELL-1)*NP2T3
               IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
                  CALL EIRENE_STDCOL (ISTS,1,SCOS,IRET)
-                 if (IRET .EQ. 1) GOTO 101
-                 if (IRET .EQ. 2) GOTO 380
+                 IF (IRET .EQ. 1) GOTO 101
+                 IF (IRET .EQ. 2) GOTO 380
               ENDIF
             case (4)
               ISTS=ABS(INMTI(IPOLGN,MRSURF))  !dr NLIM already added in ISTS ?
               MSURFG=INSPAT(IPOLGN,MRSURF)
               IF (ILIIN(ISTS) .NE. 0) THEN
                  CALL EIRENE_STDCOL (ISTS,1,SCOS,IRET)
-                 if (IRET .EQ. 1) GOTO 101
-                 if (IRET .EQ. 2) GOTO 380
+                 IF (IRET .EQ. 1) GOTO 101
+                 IF (IRET .EQ. 2) GOTO 380
               ENDIF
             case (5)
               ISTS=ABS(INMTIT(IPOLGN,MRSURF)) !dr NLIM already added in ISTS ?
 C             MSURFG= ??
               IF (ILIIN(ISTS) .NE. 0) THEN
                  CALL EIRENE_STDCOL (ISTS,1,SCOS,IRET)
-                 if (IRET .EQ. 1) GOTO 101
-                 if (IRET .EQ. 2) GOTO 380
+                 IF (IRET .EQ. 1) GOTO 101
+                 IF (IRET .EQ. 2) GOTO 380
               ENDIF
             case (10)
               ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
 C             MSURFG= ??
               IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
                  CALL EIRENE_STDCOL (ISTS,1,SCOS,IRET)
-                 if (IRET .EQ. 1) GOTO 101
-                 if (IRET .EQ. 2) GOTO 380
+                 IF (IRET .EQ. 1) GOTO 101
+                 IF (IRET .EQ. 2) GOTO 380
               ENDIF
             end select
           ELSEIF (NLSRFY) THEN
@@ -271,16 +282,16 @@ C             MSURFG= ??
             MSURFG=NRCELL+(NTCELL-1)*NR1P2
             IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
                CALL EIRENE_STDCOL (ISTS,2,SCOS,IRET)
-               if (IRET .EQ. 1) GOTO 101
-               if (IRET .EQ. 2) GOTO 380
+               IF (IRET .EQ. 1) GOTO 101
+               IF (IRET .EQ. 2) GOTO 380
             ENDIF
           ELSEIF (NLSRFZ) THEN
             ISTS=INMP3I(IRCELL,IPCELL,MTSURF)
             MSURFG=NRCELL+(NPCELL-1)*NR1P2
             IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
                CALL EIRENE_STDCOL (ISTS,3,SG,IRET)
-               if (IRET .EQ. 1) GOTO 101
-               if (IRET .EQ. 2) GOTO 380
+               IF (IRET .EQ. 1) GOTO 101
+               IF (IRET .EQ. 2) GOTO 380
             ENDIF
           ENDIF
 C         WRITE (IUNOUT,*) 'FOLNEUT: I SHOULD NOT BE HERE'
@@ -352,6 +363,7 @@ C                            REFRESH MFP SAMPLING
       TT=1.D30
       TL=1.D30
       TS=1.D30
+      TF=1.D30
       ZTST=1.D30
       ZT=0.0
 C
@@ -410,78 +422,12 @@ C  SCAN OVER SEGMENT
 C
   210 CONTINUE
 C
-C  TS:   DISTANCE TO NEXT SURFACE OF STANDARD MESH
-C  ZDT1: DISTANCE TRAVELLED IN CURRENT CELL
-C  ZT: DISTANCE ALREADY TRAVELLED IN PREVIOUS PARTS OF THIS TRACK
-C
-      IF (ITIME.EQ.1) THEN
-        IF (NLRAD) THEN
-          CALL EIRENE_TIMER(TS)
-          IF (.NOT.LGPART) GOTO 9911
-C
-          T=TS/TL-1.0_DP
-          IF (ABS(T).LE.EPS10.AND.TL.NE.1.E30_DP) GOTO 992
-          IF (TL.LT.TS.OR.TT.LT.TS) THEN
-            MRSURF=0
-            IPOLGN=0
-C  CHECK FOR INTERSECTION WITH ADDITIONAL SURFACE
-            IF (TL.LE.TT) THEN
-              ZDT1=TL-ZT
-              TL=ZT+ZDT1
-              ZTST=TL
-              ISRFCL=1
-C  INTERSECTION WITH TIME SURFACE. TIME LIMIT REACHED ?
-            ELSEIF (TT.LT.TL) THEN
-              ZDT1=TT-ZT
-              TT=ZT+ZDT1
-              ZTST=TT
-              ISRFCL=2
-            ENDIF
-          ELSE
-C  INTERSECTION A  WITH 1-ST (RADIAL) GRID SURFACE
-            ZDT1=TS-ZT
-            ZTST=TS
-            ISRFCL=0
-          ENDIF
-        ENDIF
-C
-        NCOU=1
-        NUPC(1)=0
-        CLPD(1)=ZDT1
-        NCOUNT(1)=1
-        NCOUNP(1)=1
+!PB VELS, VEL.S are only used with test ions, irrelevant here
+      CALL EIRENE_TIME_TO_STANDARD_SURFACE
+     .    (TL, TF, TT, TS, ZDT1, ZT, ZTST, 
+     .     VELXS, VELYS, VELZS, VELS, ISRFCL, IRET)
+      IF (IRET /= 0) GOTO 995
 
-C  CHECK SUB-GRIDS.  FOR OPTIONAL Y,Z RESOLUTION, ON 1D BACKGROUND MEDIUM
-c  (can be switched off: nlpol, nltor, nltra)
-C  sub-cells have the same background parameters as the parent (x-or-radial) cell,
-C  i.e. same collision rates, same mean free path.
-
-C  3RD Z (OR TOROIDAL) SUB-GRID, ALSO:  TOROIDAL PERIODICITY SURFACES
-C  SUBDIVIDE GIVEN TRACK INTO Z (OR TOROIDAL) SMALLER SEGMENTS
-        IF (NLTOR.OR.NLTRA) THEN
-          CALL EIRENE_TIMET (ZDT1)
-          TS=ZT+ZDT1
-          ZTST=TS
-        ENDIF
-C  2ND (OR POLOIDAL) SUB-GRID
-        IF (NLPOL) THEN
-          CALL EIRENE_TIMEP(ZDT1)
-          TS=ZT+ZDT1
-          ZTST=TS
-        ENDIF
-C
-        IF (ZDT1.LE.0.D0) GOTO 990
-C
-      ELSEIF (ITIME.NE.1) THEN
-C
-        IF (NLTOR.OR.NLTRA) THEN
-          CALL EIRENE_TIMET (ZDT1)
-          TS=ZT+ZDT1
-          ZTST=TS
-        ENDIF
-
-      ENDIF
-C
       IF (ZTST.GE.1.D30) GOTO 990
 C
 C  LOCAL MEAN FREE PATH
@@ -491,7 +437,6 @@ C  NCOU CELLS ARE CROSSED BY THE CURRENT TRACK.
 C  EVALUATE REACTION RATES, MEAN FREE PATH, ETC. IN THESE CELLS
 C
       IFLAG=3
-
       IF (NLTRJ) THEN
 C  STORE THIS TRAJECTORY, FOR LATER USE IN CORRELATED SAMPLING
         TRAJ(ITRJ)%TRJ%NCOU_CELL = TRAJ(ITRJ)%TRJ%NCOU_CELL + NCOU
@@ -523,8 +468,8 @@ C  USE VACUUM VALUES FOR REACTION RATES, MFP, ETC..
           IF (LDAMCEL(NCELL)) GOTO 9912
           ZMFP=EIRENE_FPATH(NCELL,CFLAG,J,NCOU)
 
-c  so far for photons only: local (WMINL) criterion for cond. exp.est.
-c  if mfp smaller than geometrical step size times WMINL, turn off
+c  So far for photons only: local (WMINL) criterion for cond. exp.est.
+c  If mfp smaller than geometrical step size times WMINL, turn off
 c  cond. exp. est.
           IF ((ITYP.EQ.0).AND.(ZMFP < WMINL*CLPD(J))) WMINC_LOCAL=1._DP
 
@@ -559,7 +504,7 @@ c   STILL UNCOLLIDED FLUX
               ENDIF
             ENDIF
 c
-c  conditional expexctation estimator for flight segment J
+c  conditional expectation estimator for flight segment J
             AX(1)=AX(2)
             EX=CLPD(J)*ZMFPI
 c
@@ -589,7 +534,7 @@ c
 C  PROB. FOR REACHING NEXT CELL BOUNDARY
             AX(2)=AX(2)*EXPM
             PR=AX(2)
-C  COND. EXP.EST: STOP BECAUSE OF WMINC CRITERION
+C  COND. EXP. EST.: STOP BECAUSE OF WMINC CRITERION
             IF (.NOT.NLTRJ.AND.(AX(2).LE.WMINC_LOCAL)) THEN
 C    RESTORE POINT OF COLLISION ?
               IF (JCOL.NE.0) GOTO 213
@@ -676,8 +621,8 @@ C  ESCAPE AT 1ST GRID SURFACE (X OR RADIAL) MRSURF
           MSURFG=NPCELL+(NTCELL-1)*NP2T3
           IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
              CALL EIRENE_STDCOL (ISTS,1,SG,IRET)
-             if (IRET .EQ. 1) GOTO 104
-             if (IRET .EQ. 2) GOTO 380
+             IF (IRET .EQ. 1) GOTO 104
+             IF (IRET .EQ. 2) GOTO 380
           ENDIF
         ENDIF
 
@@ -689,8 +634,8 @@ C  ESCAPE AT 2ND GRID SURFACE (Y OR POLOIDAL) NO. MPSURF
           MSURFG=NRCELL+(NTCELL-1)*NR1P2
           IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
              CALL EIRENE_STDCOL (ISTS,2,SG,IRET)
-             if (IRET .EQ. 1) GOTO 104
-             if (IRET .EQ. 2) GOTO 380
+             IF (IRET .EQ. 1) GOTO 104
+             IF (IRET .EQ. 2) GOTO 380
           ENDIF
         ENDIF
 
@@ -702,8 +647,8 @@ C  ESCAPE AT 3RD GRID SURFACE (Z OR TOROIDAL) MTSURF
           MSURFG=NRCELL+(NPCELL-1)*NR1P2
           IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
              CALL EIRENE_STDCOL (ISTS,3,SG,IRET)
-             if (IRET .EQ. 1) GOTO 104
-             if (IRET .EQ. 2) GOTO 380
+             IF (IRET .EQ. 1) GOTO 104
+             IF (IRET .EQ. 2) GOTO 380
           ENDIF
         ENDIF
 C
@@ -735,8 +680,8 @@ C  ESCAPE AT 3RD (Z OR TOROIDAL) GRID SURFACE FOR TRIANGULAR X-Y GRID OPTION: MT
             MSURFG=NRCELL+(NPCELL-1)*NR1P2
             IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
                CALL EIRENE_STDCOL(ISTS,3,SG,IRET)
-             if (IRET .EQ. 1) GOTO 104
-             if (IRET .EQ. 2) GOTO 380
+             IF (IRET .EQ. 1) GOTO 104
+             IF (IRET .EQ. 2) GOTO 380
             ENDIF
           ENDIF
         END IF
@@ -752,8 +697,8 @@ C  ESCAPE AT GRID SURFACE BUILD FROM TETRAHEDRA SIDES: MRSURF
 C         MSURFG= ??
           IF (ILIIN(ISTS) .NE. 0) THEN
              CALL EIRENE_STDCOL (ISTS,1,SG,IRET)
-             if (IRET .EQ. 1) GOTO 104
-             if (IRET .EQ. 2) GOTO 380
+             IF (IRET .EQ. 1) GOTO 104
+             IF (IRET .EQ. 2) GOTO 380
           ENDIF
        ENDIF
 
@@ -765,8 +710,8 @@ C  ESCAPE TO GRID SURFACE ON USER-DEFINED GEOMETRY BLOCK: MRSURF
           NLSRFX=.TRUE.
           IF (ILIIN(NLIM+ISTS) .NE. 0) THEN
              CALL EIRENE_STDCOL (ISTS,1,SG,IRET)
-             if (IRET .EQ. 1) GOTO 104
-             if (IRET .EQ. 2) GOTO 380
+             IF (IRET .EQ. 1) GOTO 104
+             IF (IRET .EQ. 2) GOTO 380
           ENDIF
         ENDIF
       end select
@@ -803,9 +748,11 @@ C  ADVANCE IN SAME CELL, AND CONTINUE TRACK
 C
 C  CHECK IF WE HAVE ENCOUNTERED A SPLITTING ZONE
 C  SPLITTING AND RR NOT READY FOR LEVGEO.GE.4
+cdr  also: additional surfaces not yet allowed as splitting-rr surfaces,
+cdr        neither is the time horizon surface
+cdr  for this: also NLSRFA, MASURF... needs to be stored in statistical cellar.
       IF (LEVGEO.LE.3) THEN
         IF (NLSPLT(MRSURF).AND.NLEVEL.LT.MAXLEV.AND.ICOL.EQ.0) THEN
-!PB       CALL EIRENE_SPLTRR(1,MRSURF,NINCX,*210,*700)
           CALL EIRENE_SPLTRR(1,MRSURF,NINCX,IRET)
           IF (IRET == 1) GOTO 210
           IF (IRET == 2) GOTO 700
@@ -829,7 +776,10 @@ C  TEMPORARILY
           PHI=PHIS
           TSAVE=TIME
           TIME=TIMES
+cym
+!$OMP CRITICAL
           CALL EIRENE_CHCTRC(X0S,Y0S,Z0S,16,19)
+!$OMP END CRITICAL
           PHI=PSAVE
           TIME=TSAVE
         ENDIF
@@ -894,7 +844,12 @@ C  PUSH PARTICLE TO POINT OF COLLISION, EITHER DELTA OR REAL
       MTSURF=0
       MASURF=0
       MSURF=0
-      IF (NLTRA) PHI=MOD(PHI-ATAN2(Z01,X01)+ATAN2(Z0,(RMTOR+X0)),PI2A)
+cdr  made a bit more precise, to allow calling tmstep.f from collide.f
+      IF (NLTRA) THEN 
+        PHI=MOD(PHI-ATAN2(Z01,X01)+ATAN2(Z0,(RMTOR+X0)),PI2A)
+       X01=X0+RMTOR
+      ENDIF
+      Z01=Z0
 C
   230 CONTINUE
 C
@@ -902,7 +857,7 @@ C  PRE-COLLISION ESTIMATOR
 C
       IF (NCLVI.GT.0) THEN
         WS=WEIGHT/SIGTOT
-        CALL EIRENE_UPCUSR(WS,1)
+        CALL EIRENE_UPCUSR(WS,1,KK)
       ENDIF
 C
 C
@@ -920,11 +875,11 @@ C  AT PRESENT: NO SUPPRESSION OF ABSORPTION AT IONISATION
 C  FIND NEW WEIGHT, SPECIES INDEX, VELOCITY AND RETURN
 C
       IF (ITYP.EQ.1) THEN
-        CALL EIRENE_COLATM(CFLAG,COLTYP,DIST)
+        CALL EIRENE_COLATM(CFLAG,COLTYP,DIST,KK)
       ELSEIF (ITYP.EQ.2) THEN
-        CALL EIRENE_COLMOL(CFLAG,COLTYP)
+        CALL EIRENE_COLMOL(CFLAG,COLTYP,KK)
       ELSEIF (ITYP.EQ.0) THEN
-        CALL EIRENE_COLPHOT(CFLAG,COLTYP)
+        CALL EIRENE_COLPHOT(CFLAG,COLTYP,KK)
       ENDIF
       ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
 
@@ -936,11 +891,11 @@ C  POST-COLLISION ESTIMATOR
 C
       IF (LGPART.AND.(NCLVI.GT.0)) THEN
         WS=WEIGHT/SIGTOT
-        CALL EIRENE_UPCUSR(WS,2)
+        CALL EIRENE_UPCUSR(WS,2,KK)
         IF (NADSPC_CD >= 1) CALL EIRENE_UPDATE_SPECTRUM (WS,2,1)
       ENDIF
 C
-      IF (COLTYP.EQ.2.) GOTO 700
+      IF (COLTYP.EQ.2) GOTO 700
 C
       GOTO 100
 C
@@ -1040,7 +995,10 @@ C  IN CASE NCOU.EQ.1: XSTORV HAS NOT BEEN STORED ONTO XSTORV2
         TIME=TIMEC
         NPCELL=NPCLLC
         NTCELL=NTCLLC
+cym
+!$OMP CRITICAL
         CALL EIRENE_CHCTRC(X0C,Y0C,Z0C,16,13)
+!$OMP END CRITICAL
         PHI=PSAVE
         TIME=TSAVE
         NPCELL=NPSAVE
@@ -1104,7 +1062,12 @@ C   RESTORE PRE-COLLISION DATA AND SAMPLE FROM COLLISION KERNEL
       IF (NLTRA) PHI=PHIC
       XSTOR(:,:) = XSTORC(:,:)
       XSTORV(:)  = XSTORVC(:)
-      IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,14)
+cym
+      IF (NLTRC) THEN
+!$OMP CRITICAL
+        CALL EIRENE_CHCTRC(X0,Y0,Z0,0,14)
+!$OMP END CRITICAL
+      ENDIF
       ICOL=0
       LGPART=.TRUE.
       NLTRJ = .FALSE.
@@ -1122,38 +1085,32 @@ C  REGULAR STOP IN SUBR. FOLNEUT, STOP HISTORY, CENSUS ARRAY FULL
       RETURN
 C
   990 CONTINUE
+cym
+!$OMP CRITICAL
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE('ERROR IN FOLNEUT, ZDT1 OR NCELL OUT OF RANGE')
       CALL EIRENE_MASAGE('PARTICLE IS KILLED')
-      WRITE (iunout,*) 'NPANU,NCELL,ZDT1,ZTST,TL,TS '
+     
+      write(iunout,*) 'ERROR for NPANU,thread =',NPANU,
+     .                EIRENE_ITHREAD
+      WRITE (iunout,*) 'ERROR NPANU,NCELL,ZDT1,ZTST,TL,TS '
       WRITE (iunout,'(I8,1X,I6,1P,4(1X,1E14.7))')
      .                  NPANU,NCELL,ZDT1,ZTST,TL,TS
       CALL EIRENE_MASJ4('NRCELL,NPCELL,NTCELL,NACELL     ',
      .                   NRCELL,NPCELL,NTCELL,NACELL)
+!$OMP END CRITICAL
+cym
       GOTO 995
 C
- 9911 CONTINUE
-      CALL EIRENE_LEER(1)
-      CALL EIRENE_MASAGE('ERROR IN FOLNEUT, NO INTERSECTION FOUND')
-      CALL EIRENE_MASAGE('PARTICLE IS KILLED')
-      WRITE (iunout,*) 'NPANU,NCELL,NRCELL,NPCELL,NTCELL '
-      WRITE (iunout,*)  NPANU,NCELL,NRCELL,NPCELL,NTCELL
-      GOTO 995
 C
  9912 CONTINUE
+!$OMP CRITICAL
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE('ERROR IN FOLNEUT, DAMAGED CELL HIT')
       CALL EIRENE_MASAGE('PARTICLE IS KILLED')
       WRITE (iunout,*) 'NPANU,NCELL,NRCELL,NPCELL,NTCELL '
       WRITE (iunout,*)  NPANU,NCELL,NRCELL,NPCELL,NTCELL
-      GOTO 995
-C
-  992 CONTINUE
-      CALL EIRENE_LEER(1)
-      CALL EIRENE_MASAGE('ERROR IN FOLNEUT, SURFACE CONFLICT')
-      CALL EIRENE_MASR2('TL,TS           ',TL,TS)
-      WRITE (iunout,*) 'NPANU ',NPANU
-      ZT=TL
+!$OMP END CRITICAL
       GOTO 995
 C
   995 WRITE (iunout,*) 'MRSURF,MPSURF,MTSURF,MASURF ',
@@ -1162,19 +1119,29 @@ C
       Y0ERR=Y0+ZT*VELY
       Z0ERR=Z0+ZT*VELZ
       IF (NLTRC) THEN
+cym
+!$OMP CRITICAL
         CALL EIRENE_CHCTRC(X0ERR,Y0ERR,Z0ERR,16,18)
+!$OMP END CRITICAL
       ELSE
+!$OMP CRITICAL
         WRITE (iunout,'(A,1P,4(1X,1E14.7))') 'X0,Y0,Z0,ZT ',X0,Y0,Z0,ZT
-        WRITE (iunout,'(A,1P,3(1X,1E14.7))') 'VELX,VELY,VELZ ',
-     .                                        VELX,VELY,VELZ
+        WRITE (iunout,'(A,1P,4(1X,1E14.7))') 'VELX,VELY,VELZ,VEL ',
+     .                                        VELX,VELY,VELZ,VEL
         WRITE (iunout,'(A,1P,3(1X,1E14.7))') 'X0ERR,Y0ERR,Z0ERR ',
      .                                        X0ERR,Y0ERR,Z0ERR
+!$OMP END CRITICAL
       ENDIF
       GOTO 999
   997 CALL EIRENE_MASAGE('ERROR IN FOLNEUT, DETECTED IN SUBR. CLLTST')
       CALL EIRENE_MASAGE('PARTICLE IS KILLED')
 C   DETAILED PRINTOUT ALREADY DONE FROM SUBR. CLLTST
-      IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+cym
+      IF (NLTRC) THEN
+!$OMP CRITICAL
+        CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+!$OMP END CRITICAL
+      ENDIF
       GOTO 999
 C
   998 CALL EIRENE_MASAGE('ERROR IN FOLNEUT, SPECIES INDEX OUT OF RANGE')
@@ -1184,9 +1151,11 @@ C
       GOTO 999
 C
   999 CONTINUE
+!$OMP ATOMIC
       PTRASH(ISTRA)=PTRASH(ISTRA)-WEIGHT
+!$OMP ATOMIC
       ETRASH(ISTRA)=ETRASH(ISTRA)-WEIGHT*E0
       LGPART=.FALSE.
       CALL EIRENE_LEER(1)
       RETURN
-      END
+      END SUBROUTINE EIRENE_FOLNEUT

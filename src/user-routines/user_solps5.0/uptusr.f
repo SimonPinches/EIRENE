@@ -22,7 +22,7 @@ C
       USE EIRMOD_CSPEZ
       USE EIRMOD_CGRID
       USE EIRMOD_CLOGAU
-
+      USE EIRMOD_COMSIG
       USE EIRMOD_CGEOM
       USE EIRMOD_CPOLYG
       USE EIRMOD_CZT1
@@ -70,6 +70,10 @@ C
     2   CONTINUE
 
 cdr  increments for tally number iadv
+!pb  MOD_ADDV is no incremental value. It is a flag indicating whether all the 
+!pb  rates used for emissivity lines are to be stored or whether storage saving
+!pb  mode ist to be used, only storing the rates for the latest used line
+!pb     IA0=MOD_ADDV        !  RADIAL CURRENT
         IA0=0               !  RADIAL CURRENT
         IA1=IA0+NATMI+NMOLI !  RADIAL ENERGY FLUX
         IA2=IA1+NATMI+NMOLI !  POLOIDAL CURRENT
@@ -228,4 +232,4 @@ C
 C
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_UPTUSR

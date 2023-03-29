@@ -41,9 +41,6 @@ cdr            LEXP=.true.
 !  ifit=3:   interpolation in 2 parameter table (e.g. ADAS)
 !  ifit=4:   interpolation in single parameter table (e.g. open ADAS, ...)
 !  ifit=5:   use internal eirene collision radiative code. To be generalized
-!            (currently here also energy rates, erate  for this particular option.
-!            More logical if the latter are moved
-!            to routine "eirene_energy_rate_coeff"
 
 !   input:
 !   ir:        reaction number, as stored in eirene arrays.
@@ -80,6 +77,7 @@ cdr            LEXP=.true.
       real(dp) :: res, erate, EIRENE_sngl_poly, dum(9),
      .            pp1, rc1min,  rc1max, fp1(6),
      .            pp2, rc2min,  rc2max, fp2(6),
+     .                 earrh0,
      .                 rrc2min, rrc2max
       real(dp), save :: xlog10e =  4.34294482d-01,      !1./ln(10) = log10(e)
      .                  xln10   =  2.30258509299_dp,    !ln(10)
@@ -100,8 +98,8 @@ cdr            LEXP=.true.
 
         function EIRENE_intp_tab1d (tb,p1,ip1) result(res)
           use EIRMOD_precision
-          use EIRMOD_comxs, only: hydkin_data
-          type(hydkin_data), pointer :: tb
+          use EIRMOD_comxs, only: tab1d_data
+          type(tab1d_data), pointer :: tb
           real(dp), intent(in) :: p1
           integer, intent(out) :: ip1
           real(dp) :: res
@@ -147,20 +145,19 @@ c  extrapolation data: for 1d polynomial fits
         fp1(4:6)= reacdat(ir)%rtcew%fp1r
         jfex1mn = reacdat(ir)%rtcew%jfex1mn
         jfex1mx = reacdat(ir)%rtcew%jfex1mx
+cdr  careful:  arrhenius factor for energy rate?
+        earrh0  = reacdat(ir)%earrh0
+        earrh0  = 0._DP
 
-        res = eirene_sngl_poly(reacdat(ir)%rtcew%poly%dblpol(1:9,1),
+        erate = eirene_sngl_poly(reacdat(ir)%rtcew%poly%dblpol(1:9,1),
      .                           p1,rc1min,rc1max,fp1,jfex1mn,jfex1mx,
-     .                           trcamd,lexp)
+     .                           earrh0,trcamd,lexp)
 
-! RES is ln(energy rate), with energy rate >0.
+! lexp=false: erate is ln(energy rate), with energy rate >0.
+! lexp=true : erate is the energy rate
 ! If it is loss, rather than a gain, sign change to be done in calling routine,
 ! as well as shift (if any) by potential energy loss rate
 
-        if (lexp) then
-          erate = exp(max(-100._dp,res))
-        else
-          erate=res
-        endif
 
 c..............................................................
 
@@ -250,16 +247,16 @@ c..............................................................
       else if (reacdat(ir)%rtcew%ifit == 4) then
 
 !  proprietary option: not ready
-        goto 990
-! SINGLE PARAMETER 1D TABLE (E.G. HYDKIN)
-cdr  extrapolation data: for 1d tabulated data:  option not ready (only CxHy data ?)
+        if (.true.) goto 990
+! SINGLE PARAMETER 1D TABLE
+cdr  extrapolation data: for 1D tabulated data: option not ready (only CxHy data ?)
 cdr  to be added here
 
 ! currently hard-wired: input parameters q1 and table coefficients are neither ln nor log10
 
         pp1 = exp(p1)
 C  assume here: tabulated data are neither ln nor log10 (to be generalized)
-        res = eirene_intp_tab1d(reacdat(ir)%rtcew%hyd,pp1,ip1)
+        res = eirene_intp_tab1d(reacdat(ir)%rtcew%tab1d,pp1,ip1)
 
 !  lexp option not connected here !
 

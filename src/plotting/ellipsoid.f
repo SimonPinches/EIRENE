@@ -62,13 +62,13 @@
           X = X0 + RX*COS(PHIAN(IPRT))
           Y = Y0 + RY*SIN(PHIAN(IPRT))
           CALL EIRENE_PL3D (X,Y,Z,XS,YS)
-          CALL GRJMP (REAL(XS,KIND(1.E0)),REAL(YS,KIND(1.E0)))
+          CALL GRJMP (REAL(XS,SP),REAL(YS,SP))
           DO I = 2,N
             PHI = PHIAN(IPRT) + (I-1)*DPH
             X = X0 + RX*COS(PHI)
             Y = Y0 + RY*SIN(PHI)
             CALL EIRENE_PL3D (X,Y,Z,XS,YS)
-            CALL GRDRW (REAL(XS,KIND(1.E0)),REAL(YS,KIND(1.E0)))
+            CALL GRDRW (REAL(XS,SP),REAL(YS,SP))
           END DO
         END DO
 
@@ -91,13 +91,13 @@
           X = X0 + RX*COS(PHIAN(IPRT))
           Z = Z0 + RZ*SIN(PHIAN(IPRT))
           CALL EIRENE_PL3D (X,Y,Z,XS,YS)
-          CALL GRJMP (REAL(XS,KIND(1.E0)),REAL(YS,KIND(1.E0)))
+          CALL GRJMP (REAL(XS,SP),REAL(YS,SP))
           DO I = 2,N
             PHI = PHIAN(IPRT) + (I-1)*DPH
             X = X0 + RX*COS(PHI)
             Z = Z0 + RZ*SIN(PHI)
             CALL EIRENE_PL3D (X,Y,Z,XS,YS)
-            CALL GRDRW (REAL(XS,KIND(1.E0)),REAL(YS,KIND(1.E0)))
+            CALL GRDRW (REAL(XS,SP),REAL(YS,SP))
           END DO
         END DO
       END DO ! IY
@@ -119,13 +119,13 @@
           Y = Y0 + RY*COS(PHIAN(IPRT))
           Z = Z0 + RZ*SIN(PHIAN(IPRT))
           CALL EIRENE_PL3D (X,Y,Z,XS,YS)
-          CALL GRJMP (REAL(XS,KIND(1.E0)),REAL(YS,KIND(1.E0)))
+          CALL GRJMP (REAL(XS,SP),REAL(YS,SP))
           DO I = 2,N
             PHI = PHIAN(IPRT) + (I-1)*DPH
             Y = Y0 + RY*COS(PHI)
             Z = Z0 + RZ*SIN(PHI)
             CALL EIRENE_PL3D (X,Y,Z,XS,YS)
-            CALL GRDRW (REAL(XS,KIND(1.E0)),REAL(YS,KIND(1.E0)))
+            CALL GRDRW (REAL(XS,SP),REAL(YS,SP))
           END DO
         END DO
       END DO ! IY
@@ -133,4 +133,4 @@
       CALL GRNWPN(1)
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_ELLIPSOID

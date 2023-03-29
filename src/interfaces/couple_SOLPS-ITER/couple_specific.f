@@ -4,6 +4,7 @@ cdr  09.02.2016:  done ! synchronization of eirsrt.f started, but not completed 
 c  jan 2017: synchronisation with corresponding version in other couple_...
 c            re. reading polygon data in geomd_linda from fort.30
 c            added: species index in eapl,empl,eipl tallies
+cdr july 21: added: additional test re. 2nd dimension (np2nd), from forks/iter...
 C
 C  ASSISTANT ROUTINES, SPECIFIC TO A PARTICULAR EDGE CODE INTERFACE
 C  DATA STRUCTURES (grid, plasma data, etc...)
@@ -26,7 +27,7 @@ C
 C=======================================================================
 C          S U B R O U T I N E   G E O M D
 C=======================================================================
-      SUBROUTINE EIRENE_GEOMD(NDXA,NDYA,NPLP,NR1ST,
+      SUBROUTINE EIRENE_GEOMD(NDXA,NDYA,NPLP,NR1ST,NP2ND,
      .                 PUX,PUY,PVX,PVY,itype)
 C
       USE EIRMOD_PRECISION
@@ -36,9 +37,10 @@ C
       IMPLICIT NONE
 C
       REAL(DP), INTENT(OUT) :: PUX(*),PUY(*),PVX(*),PVY(*)
-      INTEGER, INTENT(INOUT) :: NDXA,NDYA,NPLP,NR1ST
+      INTEGER, INTENT(INOUT) :: NDXA,NDYA,NPLP,NR1ST,NP2ND
       INTEGER, INTENT(IN) :: ITYPE
 
+      TARGINDEX = 3
       IF (ITYPE == 1) THEN
         CALL EIRENE_GEOMD_SONNET(NDXA,NDYA,NPLP,NR1ST,
      .                 PUX,PUY,PVX,PVY)
@@ -48,13 +50,13 @@ C
      .                 PUX,PUY,PVX,PVY)
 
       ELSE
-        CALL EIRENE_GEOMD_LINDA(NDXA,NDYA,NPLP,NR1ST,
+        CALL EIRENE_GEOMD_LINDA(NDXA,NDYA,NPLP,NR1ST,NP2ND,
      .                 PUX,PUY,PVX,PVY)
       END IF
 
       RETURN
 *//END GEOMD//
-      END
+      END SUBROUTINE EIRENE_GEOMD
 
 C
 *//GEOMD//
@@ -237,13 +239,13 @@ C     enddo
 C
       RETURN
 *//END GEOMD_CARRE//
-      END
+      END SUBROUTINE EIRENE_GEOMD_CARRE
 
 *//GEOMD//
 C=======================================================================
 C          S U B R O U T I N E   G E O M D _ L I N D A
 C=======================================================================
-      SUBROUTINE EIRENE_GEOMD_LINDA(NDXA,NDYA,NPLP,NR1ST,
+      SUBROUTINE EIRENE_GEOMD_LINDA(NDXA,NDYA,NPLP,NR1ST,NP2ND,
      .                        PUX,PUY,PVX,PVY)
 C
       USE EIRMOD_PRECISION
@@ -251,11 +253,12 @@ C
       USE EIRMOD_CCONA
       USE EIRMOD_CPOLYG
       USE EIRMOD_CGEOM
+      USE EIRMOD_CINIT
       USE EIRMOD_COMPRT,ONLY:IUNOUT
       IMPLICIT NONE
 C
-      INTEGER, INTENT(INOUT) :: NDXA, NDYA, NPLP
-      INTEGER, INTENT(INOUT) :: NR1ST
+      INTEGER, INTENT(IN) :: NDXA, NDYA, NR1ST, NP2ND
+      INTEGER, INTENT(OUT) :: NPLP
       REAL(DP), INTENT(OUT) :: PUX(*),PUY(*),PVX(*),PVY(*)
 C
 C  GEOMETRY DATA: CELL VERTICES (LINDA ---> EIRENE)
@@ -265,12 +268,22 @@ C  GEOMETRY DATA: CELL VERTICES (LINDA ---> EIRENE)
 C
       CHARACTER(80) :: LINE
 C   DIMENSIONIERUNG FUER GITTER
-      INTEGER :: DIMXH,DIMYH,NNCUT,NNISO,
-     1 NXCUT1(10),NXCUT2(10),NYCUT1(10),NYCUT2(10),
-     2 NXISO1(10),NXISO2(10),NYISO1(10),NYISO2(10)
+      INTEGER :: DIMXH,DIMYH,NNCUT,NNISO
+      INTEGER, ALLOCATABLE ::
+     1 NXCUT1(:),NXCUT2(:),NYCUT1(:),NYCUT2(:),
+     2 NXISO1(:),NXISO2(:),NYISO1(:),NYISO2(:)
       INTEGER :: IX, IY, I, J, NP, NWISO
 
-      REAL(DP) :: DUMMI(3)
+      character*54 format_string(2)
+      character*7 filename
+      integer, save :: new_format, exp_location
+
+      data new_format/1/
+      data format_string/
+     . '(T2,1E15.7,T17,1E15.7,T32,1E15.7,T47,1E15.7)',
+     . '(T2,1E16.8,T18,1E16.8,T34,1E16.8,T50,1E16.8)' /
+
+      REAL(DP) :: DUMMI(4)
 
 C  ACTUAL MESH USED IN THIS RUN
 C
@@ -278,18 +291,9 @@ C      EINLESEROUTINE ANGEPASST AUF BRAAMS-OUTPUT
 C   GEAENDERTE DIMENSIONIERUNG BZW. CUT-POSITION
 C        MUSS PER HAND ANGEPASST WERDEN:
 C        PARAMETER DIMXH,DIMYH                        RFS 14.5.1991
-       NXCUT1=0
-       NXCUT2=0
-       NYCUT1=0
-       NYCUT2=0
-       NXISO1=0
-       NXISO2=0
-       NYISO1=0
-       NYISO2=0
-       nniso = -1 !pb
-       OPEN (UNIT=30,ACCESS='SEQUENTIAL',FORM='FORMATTED',ERR=100) !VK
+      filename = fort_lc//'30'
+      OPEN (UNIT=30,ACCESS='SEQUENTIAL',FORM='FORMATTED',ERR=100) !VK
       REWIND 30
- 3366 FORMAT(/)
       read(30,*)
       do
         read (30,'(A80)') LINE
@@ -301,12 +305,14 @@ C        PARAMETER DIMXH,DIMYH                        RFS 14.5.1991
       end do
 
       read(30,*,ERR=100,END=100) dimxh,dimyh,nncut
-      if(nncut.gt.10) stop 'Increase array sizes for cut'
+      allocate(nxcut1(0:nncut),nxcut2(0:nncut),
+     .         nycut1(0:nncut),nycut2(0:nncut))
       read(30,*,ERR=100,END=100)
      r     (nxcut1(i),nxcut2(i),nycut1(i),nycut2(i),i=1,nncut)
       if (nncut.gt.2) then
          read(30,*,ERR=100,END=100) nniso
-         if(nniso.gt.10) stop 'Increase array sizes for insulating cut'
+         allocate(nxiso1(0:nniso),nxiso2(0:nniso),
+     .            nyiso1(0:nniso),nyiso2(0:nniso))
          read(30,*,ERR=100,END=100)
      r            (nxiso1(i),nxiso2(i),nyiso1(i),nyiso2(i),i=1,nniso)
       ELSE
@@ -316,7 +322,11 @@ C        PARAMETER DIMXH,DIMYH                        RFS 14.5.1991
 C    ANZAHL DER TEILSTUECKE PRO POLYGON
       NPLP = MAX((NNCUT/2)*3,1)
 C    COMPUTE WIDTH OF INSULATING CUT FOR DOUBLE NULL
-      NWISO=NXISO2(1)-NXISO1(1)
+      IF (NNISO.GE.1) THEN
+        NWISO=NXISO2(1)-NXISO1(1)
+      ELSE
+        NWISO=0
+      ENDIF
 C     PRINT MESSAGE AND CHECK
       CALL EIRENE_LEER (1)
       CALL EIRENE_MASJ4 ('GEOMD: NNCUT, NNISO, NPLP, NWISO',
@@ -351,140 +361,597 @@ C     PRINT MESSAGE AND CHECK
       END IF
 
 C    READING OF POLYGON DATA
+      read (30,'(A80)') line
+      exp_location = 81
+      if (index(line,'E').ne.0)
+     . exp_location = min(exp_location,index(line,'E'))
+      if (index(line,'e').ne.0)
+     . exp_location = min(exp_location,index(line,'e'))
+      if (index(line,'d').ne.0)
+     . exp_location = min(exp_location,index(line,'d'))
+      if (index(line,'D').ne.0)
+     . exp_location = min(exp_location,index(line,'D'))
+      if (exp_location.eq.12) then
+        new_format = 1
+      else if (exp_location.eq.13) then
+        new_format = 2
+      else
+        call eirene_masage
+     .   ('Unrecognized format in '//trim(filename)//' file')
+        call eirene_exit_own(1)
+      endif
+      backspace(30)
+      write(iunout,'(a,a)') 'Detected '//trim(filename)//' is using ',
+     .  format_string(new_format)
+
       DO 10 IX = 1, DIMXH
-       IF (IX.LE.nxcut1(1)-1) THEN
-        DO 12 IY = 1, DIMYH
-         IF (IY.LE.dimyh-1) THEN
-          READ (30,*,ERR=100,END=100) DUMMI(1),
+        IF (NNCUT.GE.1) THEN
+          IF (IX.LE.nxcut1(1)-1) THEN
+            DO 12 IY = 1, DIMYH
+              IF (IY.LE.dimyh-1) THEN
+                READ (30,format_string(new_format)) DUMMI(1),
      .                  DUMMI(2),DUMMI(3),XPOL(IY,IX)
-          READ (30,*,ERR=100,END=100) DUMMI(1),
+                READ (30,format_string(new_format)) DUMMI(1),
      .                  DUMMI(2),DUMMI(3),YPOL(IY,IX)
-         ENDIF
-         IF (IY.EQ.dimyh) THEN
-          READ (30,*,ERR=100,END=100) DUMMI(1),
+              ENDIF
+              IF (IY.EQ.dimyh) THEN
+                READ (30,format_string(new_format)) DUMMI(1),
      .                   DUMMI(2),XPOL(dimyh+1,IX),XPOL(IY,IX)
-          READ (30,*,ERR=100,END=100) DUMMI(1),
+                READ (30,format_string(new_format)) DUMMI(1),
      .                   DUMMI(2),YPOL(dimyh+1,IX),YPOL(IY,IX)
+              ENDIF
+   12       CONTINUE
+          ENDIF
+          IF (IX.EQ.nxcut1(1)) THEN
+            DO 14 IY = 1, DIMYH
+              IF (IY.LE.dimyh-1) THEN
+                READ (30,format_string(new_format))
+     .                         XPOL(IY,nxcut2(NNCUT)),DUMMI(1),
+     .                         DUMMI(2),XPOL(IY,IX)
+                READ (30,format_string(new_format))
+     .                         YPOL(IY,nxcut2(NNCUT)),DUMMI(1),
+     .                         DUMMI(2),YPOL(IY,IX)
+              ENDIF
+              IF (IY.EQ.dimyh) THEN
+                READ (30,format_string(new_format))
+     .                         XPOL(IY,nxcut2(NNCUT)),
+     .                         XPOL(dimyh+1,nxcut2(NNCUT)),
+     .                         XPOL(dimyh+1,IX),XPOL(IY,IX)
+                READ (30,format_string(new_format))
+     .                         YPOL(IY,nxcut2(NNCUT)),
+     .                         YPOL(dimyh+1,nxcut2(NNCUT)),
+     .                         YPOL(dimyh+1,IX),YPOL(IY,IX)
+              ENDIF
+ 14         CONTINUE
+          ENDIF
+        ENDIF
+C    READING OF SECOND POLOIDAL PATCH
+        IF (NNCUT.GE.2) THEN
+C    Snowflake Case
+         IF (nxcut2(1).LE.nxcut1(2)) THEN
+          IF ((IX.GE.nxcut2(NNCUT)).AND.(IX.LE.nxcut1(NNCUT)-1)) THEN
+            DO 19 IY = 1, DIMYH
+              IF (IY.LE.dimyh-1) THEN
+                READ (30,format_string(new_format)) DUMMI(1),
+     .                       DUMMI(2),DUMMI(3),XPOL(IY,IX+1)
+                READ (30,format_string(new_format)) DUMMI(1),
+     .                       DUMMI(2),DUMMI(3),YPOL(IY,IX+1)
+              ENDIF
+              IF (IY.EQ.dimyh) THEN
+                READ (30,format_string(new_format))
+     .                       DUMMI(1),DUMMI(2),
+     .                       XPOL(dimyh+1,IX+1),XPOL(IY,IX+1)
+                READ (30,format_string(new_format))
+     .                       DUMMI(1),DUMMI(2),
+     .                       YPOL(dimyh+1,IX+1),YPOL(IY,IX+1)
+              ENDIF
+   19       CONTINUE
+          ENDIF
+          IF (IX.EQ.nxcut1(NNCUT)) THEN
+            DO 20 IY = 1, DIMYH
+              IF (IY.LE.dimyh-1) THEN
+                READ (30,format_string(new_format))
+     .                       XPOL(IY,IX+2),DUMMI(1),
+     .                       DUMMI(2),XPOL(IY,IX+1)
+                READ (30,format_string(new_format))
+     .                       YPOL(IY,IX+2),DUMMI(1),
+     .                       DUMMI(2),YPOL(IY,IX+1)
+              ENDIF
+              IF (IY.EQ.dimyh) THEN
+                READ (30,format_string(new_format)) XPOL(IY,IX+2),
+     .                       XPOL(dimyh+1,IX+2),
+     .                       XPOL(dimyh+1,IX+1),XPOL(IY,IX+1)
+                READ (30,format_string(new_format)) YPOL(IY,IX+2),
+     .                       YPOL(dimyh+1,IX+2),
+     .                       YPOL(dimyh+1,IX+1),YPOL(IY,IX+1)
+              ENDIF
+   20       CONTINUE
+          ENDIF
+C   DDN/SN Case
+         ELSE
+          IF ((IX.GE.nxcut2(NNCUT)).AND.(IX.LE.nxcut1(2)-1)) THEN
+            DO 190 IY = 1, DIMYH
+              IF (IY.LE.dimyh-1) THEN
+                READ (30,format_string(new_format)) DUMMI(1),
+     .                         DUMMI(2),DUMMI(3),XPOL(IY,IX+1)
+                READ (30,format_string(new_format)) DUMMI(1),
+     .                         DUMMI(2),DUMMI(3),YPOL(IY,IX+1)
+              ENDIF
+              IF (IY.EQ.dimyh) THEN
+                READ (30,format_string(new_format))
+     .                         DUMMI(1),DUMMI(2),
+     .                         XPOL(dimyh+1,IX+1),XPOL(IY,IX+1)
+                READ (30,format_string(new_format))
+     .                         DUMMI(1),DUMMI(2),
+     .                         YPOL(dimyh+1,IX+1),YPOL(IY,IX+1)
+              ENDIF
+ 190        CONTINUE
+          ENDIF
+          IF (IX.EQ.nxcut1(2)) THEN
+            DO 200 IY = 1, DIMYH
+              IF (IY.LE.dimyh-1) THEN
+                READ (30,format_string(new_format))
+     .                         XPOL(IY,IX+2),DUMMI(1),
+     .                         DUMMI(2),XPOL(IY,IX+1)
+                READ (30,format_string(new_format))
+     .                         YPOL(IY,IX+2),DUMMI(1),
+     .                         DUMMI(2),YPOL(IY,IX+1)
+              ENDIF
+              IF (IY.EQ.dimyh) THEN
+                READ (30,format_string(new_format)) XPOL(IY,IX+2),
+     .                         XPOL(dimyh+1,IX+2),
+     .                         XPOL(dimyh+1,IX+1),XPOL(IY,IX+1)
+                READ (30,format_string(new_format)) YPOL(IY,IX+2),
+     .                         YPOL(dimyh+1,IX+2),
+     .                         YPOL(dimyh+1,IX+1),YPOL(IY,IX+1)
+              ENDIF
+ 200        CONTINUE
+          ENDIF
          ENDIF
-   12   CONTINUE
-       ENDIF
-       IF (IX.EQ.nxcut1(1)) THEN
-        DO 14 IY = 1, DIMYH
-         IF (IY.LE.dimyh-1) THEN
-         READ (30,*,ERR=100,END=100) XPOL(IY,nxcut2(2)),DUMMI(1),
-     .                  DUMMI(2),XPOL(IY,IX)
-         READ (30,*,ERR=100,END=100) YPOL(IY,nxcut2(2)),DUMMI(1),
-     .                  DUMMI(2),YPOL(IY,IX)
+        ENDIF
+C    READING OF THIRD AND FOURTH POLOIDAL PATCHES
+        IF (NNCUT.GE.4 .AND. NNISO.GE.1) THEN
+C    Snowflake Case
+         IF (nxcut2(1).LE.nxcut1(2)) THEN
+          IF ((IX.GE.nxcut1(4)+1).AND.(IX.LE.nxcut1(2)-1)) THEN
+            DO 26 IY = 1, DIMYH
+              IF (IY.LE.dimyh-1) THEN
+                READ (30,format_string(new_format)) DUMMI(1),
+     .                         DUMMI(2),DUMMI(3),XPOL(IY,IX+2)
+                READ (30,format_string(new_format)) DUMMI(1),
+     .                         DUMMI(2),DUMMI(3),YPOL(IY,IX+2)
+              ENDIF
+              IF (IY.EQ.dimyh) THEN
+                READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                         XPOL(dimyh+1,IX+2),XPOL(IY,IX+2)
+                READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                         YPOL(dimyh+1,IX+2),YPOL(IY,IX+2)
+              ENDIF
+   26       CONTINUE
+          ENDIF
+          IF (IX.EQ.nxcut1(2)) THEN
+            DO 36 IY = 1, DIMYH
+              IF (IY.LE.dimyh-1) THEN
+                READ (30,format_string(new_format))
+     .                         XPOL(IY,IX+3),DUMMI(1),
+     .                         DUMMI(2),XPOL(IY,IX+2)
+                READ (30,format_string(new_format))
+     .                         YPOL(IY,IX+3),DUMMI(1),
+     .                         DUMMI(2),YPOL(IY,IX+2)
+              ENDIF
+              IF (IY.EQ.dimyh) THEN
+                READ (30,format_string(new_format))
+     .                         XPOL(IY,IX+3),XPOL(IY+1,IX+3),
+     .                         XPOL(IY+1,IX+2),XPOL(IY,IX+2)
+                READ (30,format_string(new_format))
+     .                         YPOL(IY,IX+3),YPOL(IY+1,IX+3),
+     .                         YPOL(IY+1,IX+2),YPOL(IY,IX+2)
+              ENDIF
+   36       CONTINUE
+          ENDIF
+          IF ((IX.GE.nxcut1(2)+1).AND.(IX.LE.nxiso1(1)-1)) THEN
+            DO 38 IY = 1, DIMYH
+              IF (IY.LE.dimyh-1) THEN
+                READ (30,format_string(new_format)) DUMMI(1),
+     .                         DUMMI(2),DUMMI(3),XPOL(IY,IX+3-NWISO)
+                READ (30,format_string(new_format)) DUMMI(1),
+     .                         DUMMI(2),DUMMI(3),YPOL(IY,IX+3-NWISO)
+              ENDIF
+              IF (IY.EQ.dimyh) THEN
+                READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                         XPOL(dimyh+1,IX+3-NWISO),
+     .                         XPOL(IY,IX+3-NWISO)
+                READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                         YPOL(dimyh+1,IX+3-NWISO),
+     .                         YPOL(IY,IX+3-NWISO)
+              ENDIF
+   38       CONTINUE
+          ENDIF
+          IF (IX.EQ.nxiso1(1)) THEN
+            DO 28 IY = 1, DIMYH
+              IF (IY.LE.dimyh-1) THEN
+                READ (30,format_string(new_format))
+     .                         XPOL(IY,IX+4-NWISO),DUMMI(1),
+     .                         DUMMI(2),XPOL(IY,IX+3-NWISO)
+                READ (30,format_string(new_format))
+     .                         YPOL(IY,IX+4-NWISO),DUMMI(1),
+     .                         DUMMI(2),YPOL(IY,IX+3-NWISO)
+              ENDIF
+              IF (IY.EQ.dimyh) THEN
+                READ (30,format_string(new_format))
+     .                         XPOL(IY,IX+4-NWISO),
+     .                         XPOL(dimyh+1,IX+4-NWISO),
+     .                         XPOL(dimyh+1,IX+3-NWISO),
+     .                         XPOL(IY,IX+3-NWISO)
+                READ (30,format_string(new_format))
+     .                         YPOL(IY,IX+4-NWISO),
+     .                         YPOL(dimyh+1,IX+4-NWISO),
+     .                         YPOL(dimyh+1,IX+3-NWISO),
+     .                         YPOL(IY,IX+3-NWISO)
+              ENDIF
+   28       CONTINUE
+          ENDIF
+          IF ((IX.GE.nxiso2(1)+1).AND.(IX.LE.nxcut1(3)-1)) THEN
+            DO 32 IY = 1, DIMYH
+              IF (IY.LE.dimyh-1) THEN
+                READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                         DUMMI(3),
+     .                         XPOL(IY,IX+4-NWISO)
+                READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                         DUMMI(3),
+     .                         YPOL(IY,IX+4-NWISO)
+              ENDIF
+              IF (IY.EQ.dimyh) THEN
+                READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                         XPOL(dimyh+1,IX+4-NWISO),
+     .                         XPOL(IY,IX+4-NWISO)
+                READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                         YPOL(dimyh+1,IX+4-NWISO),
+     .                         YPOL(IY,IX+4-NWISO)
+              ENDIF
+   32       CONTINUE
+          ENDIF
+          IF (IX.EQ.nxcut1(3)) THEN
+            DO 34 IY = 1, DIMYH
+              IF (IY.LE.dimyh-1) THEN
+                READ (30,format_string(new_format))
+     .                         XPOL(IY,IX+5-NWISO),DUMMI(1),
+     .                         DUMMI(2),XPOL(IY,IX+4-NWISO)
+                READ (30,format_string(new_format))
+     .                         YPOL(IY,IX+5-NWISO),DUMMI(1),
+     .                         DUMMI(2),YPOL(IY,IX+4-NWISO)
+              ENDIF
+              IF (IY.EQ.dimyh) THEN
+                READ (30,format_string(new_format))
+     .                         XPOL(IY,IX+5-NWISO),
+     .                         XPOL(dimyh+1,IX+5-NWISO),
+     .                         XPOL(dimyh+1,IX+4-NWISO),
+     .                         XPOL(IY,IX+4-NWISO)
+                READ (30,format_string(new_format))
+     .                         YPOL(IY,IX+5-NWISO),
+     .                         YPOL(dimyh+1,IX+5-NWISO),
+     .                         YPOL(dimyh+1,IX+4-NWISO),
+     .                         YPOL(IY,IX+4-NWISO)
+              ENDIF
+   34       CONTINUE
+          ENDIF
+          ELSE
+C    DDN case
+           IF ((IX.GE.nxcut2(3)).AND.(IX.LE.nxiso1(1)-1)) THEN
+             DO 260 IY = 1, DIMYH
+               IF (IY.LE.dimyh-1) THEN
+                 READ (30,format_string(new_format)) DUMMI(1),
+     .                          DUMMI(2),DUMMI(3),XPOL(IY,IX+2)
+                 READ (30,format_string(new_format)) DUMMI(1),
+     .                          DUMMI(2),DUMMI(3),YPOL(IY,IX+2)
+               ENDIF
+               IF (IY.EQ.dimyh) THEN
+                 READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                          XPOL(dimyh+1,IX+2),XPOL(IY,IX+2)
+                 READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                          YPOL(dimyh+1,IX+2),YPOL(IY,IX+2)
+               ENDIF
+  260        CONTINUE
+           ENDIF
+           IF (IX.EQ.nxiso1(1)) THEN
+             DO 360 IY = 1, DIMYH
+               IF (IY.LE.dimyh-1) THEN
+                 READ (30,format_string(new_format))
+     .                          XPOL(IY,IX+3),DUMMI(1),
+     .                          DUMMI(2),XPOL(IY,IX+2)
+                 READ (30,format_string(new_format))
+     .                          YPOL(IY,IX+3),DUMMI(1),
+     .                          DUMMI(2),YPOL(IY,IX+2)
+               ENDIF
+               IF (IY.EQ.dimyh) THEN
+                 READ (30,format_string(new_format))
+     .                          XPOL(IY,IX+3),XPOL(IY+1,IX+3),
+     .                          XPOL(IY+1,IX+2),XPOL(IY,IX+2)
+                 READ (30,format_string(new_format))
+     .                          YPOL(IY,IX+3),YPOL(IY+1,IX+3),
+     .                          YPOL(IY+1,IX+2),YPOL(IY,IX+2)
+               ENDIF
+  360        CONTINUE
+           ENDIF
+           IF ((IX.GE.nxiso2(1)+1).AND.(IX.LE.nxcut1(3)-1)) THEN
+             DO 380 IY = 1, DIMYH
+               IF (IY.LE.dimyh-1) THEN
+                 READ (30,format_string(new_format)) DUMMI(1),
+     .                          DUMMI(2),DUMMI(3),XPOL(IY,IX+3-NWISO)
+                 READ (30,format_string(new_format)) DUMMI(1),
+     .                          DUMMI(2),DUMMI(3),YPOL(IY,IX+3-NWISO)
+               ENDIF
+               IF (IY.EQ.dimyh) THEN
+                 READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                          XPOL(dimyh+1,IX+3-NWISO),
+     .                          XPOL(IY,IX+3-NWISO)
+                 READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                          YPOL(dimyh+1,IX+3-NWISO),
+     .                          YPOL(IY,IX+3-NWISO)
+               ENDIF
+  380        CONTINUE
+           ENDIF
+           IF (IX.EQ.nxcut1(3)) THEN
+             DO 280 IY = 1, DIMYH
+               IF (IY.LE.dimyh-1) THEN
+                 READ (30,format_string(new_format))
+     .                          XPOL(IY,IX+4-NWISO),DUMMI(1),
+     .                          DUMMI(2),XPOL(IY,IX+3-NWISO)
+                 READ (30,format_string(new_format))
+     .                          YPOL(IY,IX+4-NWISO),DUMMI(1),
+     .                          DUMMI(2),YPOL(IY,IX+3-NWISO)
+               ENDIF
+               IF (IY.EQ.dimyh) THEN
+                 READ (30,format_string(new_format))
+     .                          XPOL(IY,IX+4-NWISO),
+     .                          XPOL(dimyh+1,IX+4-NWISO),
+     .                          XPOL(dimyh+1,IX+3-NWISO),
+     .                          XPOL(IY,IX+3-NWISO)
+                 READ (30,format_string(new_format))
+     .                          YPOL(IY,IX+4-NWISO),
+     .                          YPOL(dimyh+1,IX+4-NWISO),
+     .                          YPOL(dimyh+1,IX+3-NWISO),
+     .                          YPOL(IY,IX+3-NWISO)
+               ENDIF
+  280        CONTINUE
+           ENDIF
+           IF ((IX.GE.nxcut2(2)).AND.(IX.LE.nxcut1(4)-1)) THEN
+             DO 320 IY = 1, DIMYH
+               IF (IY.LE.dimyh-1) THEN
+                 READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                          DUMMI(3),
+     .                          XPOL(IY,IX+4-NWISO)
+                 READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                          DUMMI(3),
+     .                          YPOL(IY,IX+4-NWISO)
+               ENDIF
+               IF (IY.EQ.dimyh) THEN
+                 READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                          XPOL(dimyh+1,IX+4-NWISO),
+     .                          XPOL(IY,IX+4-NWISO)
+                 READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                          YPOL(dimyh+1,IX+4-NWISO),
+     .                          YPOL(IY,IX+4-NWISO)
+               ENDIF
+  320        CONTINUE
+           ENDIF
+           IF (IX.EQ.nxcut1(4)) THEN
+             DO 340 IY = 1, DIMYH
+               IF (IY.LE.dimyh-1) THEN
+                 READ (30,format_string(new_format))
+     .                          XPOL(IY,IX+5-NWISO),DUMMI(1),
+     .                          DUMMI(2),XPOL(IY,IX+4-NWISO)
+                 READ (30,format_string(new_format))
+     .                          YPOL(IY,IX+5-NWISO),DUMMI(1),
+     .                          DUMMI(2),YPOL(IY,IX+4-NWISO)
+               ENDIF
+               IF (IY.EQ.dimyh) THEN
+                 READ (30,format_string(new_format))
+     .                          XPOL(IY,IX+5-NWISO),
+     .                          XPOL(dimyh+1,IX+5-NWISO),
+     .                          XPOL(dimyh+1,IX+4-NWISO),
+     .                          XPOL(IY,IX+4-NWISO)
+                 READ (30,format_string(new_format))
+     .                          YPOL(IY,IX+5-NWISO),
+     .                          YPOL(dimyh+1,IX+5-NWISO),
+     .                          YPOL(dimyh+1,IX+4-NWISO),
+     .                          YPOL(IY,IX+4-NWISO)
+               ENDIF
+  340        CONTINUE
+           ENDIF
+          ENDIF
+        ENDIF
+        IF (NNCUT.GE.1) THEN
+C    snowflake/XPT case
+         IF (nxcut2(1).LE.nxcut1(2)) THEN
+          IF ((IX.GE.nxcut1(3)+1).AND.(IX.LE.dimxh-1)) THEN
+            DO 22 IY = 1, DIMYH
+              IF (IY.LE.dimyh-1) THEN
+                READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                         DUMMI(3),XPOL(IY,IX+NPLP-1-NWISO)
+                READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                         DUMMI(3),YPOL(IY,IX+NPLP-1-NWISO)
+              ENDIF
+              IF (IY.EQ.dimyh) THEN
+                READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                         XPOL(dimyh+1,IX+NPLP-1-NWISO),
+     .                         XPOL(IY,IX+NPLP-1-NWISO)
+                READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                         YPOL(dimyh+1,IX+NPLP-1-NWISO),
+     .                         YPOL(IY,IX+NPLP-1-NWISO)
+              ENDIF
+ 22         CONTINUE
+          ENDIF
+         ELSE
+C   DDN/SN cases
+          IF ((IX.GE.nxcut2(1)).AND.(IX.LE.dimxh-1)) THEN
+            DO 220 IY = 1, DIMYH
+              IF (IY.LE.dimyh-1) THEN
+                READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                        DUMMI(3),XPOL(IY,IX+NPLP-1-NWISO)
+                READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                        DUMMI(3),YPOL(IY,IX+NPLP-1-NWISO)
+              ENDIF
+              IF (IY.EQ.dimyh) THEN
+                READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                         XPOL(dimyh+1,IX+NPLP-1-NWISO),
+     .                         XPOL(IY,IX+NPLP-1-NWISO)
+                READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                         YPOL(dimyh+1,IX+NPLP-1-NWISO),
+     .                         YPOL(IY,IX+NPLP-1-NWISO)
+              ENDIF
+  220       CONTINUE
+          ENDIF
          ENDIF
-         IF (IY.EQ.dimyh) THEN
-          READ (30,*,ERR=100,END=100)
-     .                  XPOL(IY,nxcut2(2)),XPOL(dimyh+1,nxcut2(2)),
-     .                                XPOL(dimyh+1,IX),XPOL(IY,IX)
-          READ (30,*,ERR=100,END=100)
-     .                  YPOL(IY,nxcut2(2)),YPOL(dimyh+1,nxcut2(2)),
-     .                                YPOL(dimyh+1,IX),YPOL(IY,IX)
-         ENDIF
-   14   CONTINUE
-       ENDIF
-       IF ((IX.GE.nxcut2(2)).AND.(IX.LE.nxcut1(2)-1)) THEN
-        DO 16 IY = 1, DIMYH
-         IF (IY.LE.dimyh-1) THEN
-          READ (30,*,ERR=100,END=100) DUMMI(1),
-     .                   DUMMI(2),DUMMI(3),XPOL(IY,IX+1)
-          READ (30,*,ERR=100,END=100) DUMMI(1),
-     .                   DUMMI(2),DUMMI(3),YPOL(IY,IX+1)
-         ENDIF
-         IF (IY.EQ.dimyh) THEN
-          READ (30,*,ERR=100,END=100) DUMMI(1),DUMMI(2),
-     .                   XPOL(dimyh+1,IX+1),XPOL(IY,IX+1)
-          READ (30,*,ERR=100,END=100) DUMMI(1),DUMMI(2),
-     .                   YPOL(dimyh+1,IX+1),YPOL(IY,IX+1)
-         ENDIF
-   16   CONTINUE
-       ENDIF
-       IF (IX.EQ.nxcut1(2)) THEN
-        DO 18 IY = 1, DIMYH
-         IF (IY.LE.dimyh-1) THEN
-         READ (30,*,ERR=100,END=100) XPOL(IY,nxcut2(1)+1),DUMMI(1),
-     .                  DUMMI(2),XPOL(IY,IX+1)
-         READ (30,*,ERR=100,END=100) YPOL(IY,nxcut2(1)+1),DUMMI(1),
-     .                  DUMMI(2),YPOL(IY,IX+1)
-         ENDIF
-         IF (IY.EQ.dimyh) THEN
-          READ (30,*,ERR=100,END=100)
-     .                  XPOL(IY,nxcut2(1)+1),XPOL(dimyh+1,nxcut2(1)+1),
-     .                                XPOL(dimyh+1,IX+1),XPOL(IY,IX+1)
-          READ (30,*,ERR=100,END=100)
-     .                  YPOL(IY,nxcut2(1)+1),YPOL(dimyh+1,nxcut2(1)+1),
-     .                                YPOL(dimyh+1,IX+1),YPOL(IY,IX+1)
-         ENDIF
-   18   CONTINUE
-       ENDIF
-       IF ((IX.GE.nxcut2(1)).AND.(IX.LE.dimxh-1)) THEN
-        DO 22 IY = 1, DIMYH
-         IF (IY.LE.dimyh-1) THEN
-          READ (30,*,ERR=100,END=100) DUMMI(1),DUMMI(2),DUMMI(3),
-     .                   XPOL(IY,IX+2)
-          READ (30,*,ERR=100,END=100) DUMMI(1),DUMMI(2),DUMMI(3),
-     .                   YPOL(IY,IX+2)
-         ENDIF
-         IF (IY.EQ.dimyh) THEN
-          READ (30,*,ERR=100,END=100) DUMMI(1),DUMMI(2),
-     .                   XPOL(dimyh+1,IX+2),XPOL(IY,IX+2)
-          READ (30,*,ERR=100,END=100) DUMMI(1),DUMMI(2),
-     .                   YPOL(dimyh+1,IX+2),YPOL(IY,IX+2)
-         ENDIF
-   22   CONTINUE
-       ENDIF
-       IF (IX.EQ.dimxh) THEN
-        DO 24 IY = 1, DIMYH
-         IF (IY.LE.dimyh-1) THEN
-         READ (30,*,ERR=100,END=100) XPOL(IY,dimxh+3),DUMMI(1),DUMMI(2),
-     .                  XPOL(IY,IX+2)
-         READ (30,*,ERR=100,END=100) YPOL(IY,dimxh+3),DUMMI(1),DUMMI(2),
-     .                  YPOL(IY,IX+2)
-         ENDIF
-         IF (IY.EQ.dimyh) THEN
-          READ (30,*,ERR=100,END=100)
-     .                  XPOL(IY,dimxh+3),XPOL(dimyh+1,dimxh+3),
-     .                                XPOL(dimyh+1,IX+2),XPOL(IY,IX+2)
-          READ (30,*,ERR=100,END=100)
-     .                  YPOL(IY,dimxh+3),YPOL(dimyh+1,dimxh+3),
-     .                                YPOL(dimyh+1,IX+2),YPOL(IY,IX+2)
-         ENDIF
-   24   CONTINUE
-       ENDIF
+        ELSEIF (NNCUT.EQ.0) THEN
+          IF (IX.LE.dimxh-1) THEN
+            DO IY = 1, DIMYH
+              IF (IY.LE.dimyh-1) THEN
+                READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                         DUMMI(3),XPOL(IY,IX+NPLP-1-NWISO)
+                READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                         DUMMI(3),YPOL(IY,IX+NPLP-1-NWISO)
+              ENDIF
+              IF (IY.EQ.dimyh) THEN
+                READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                         XPOL(dimyh+1,IX+NPLP-1-NWISO),
+     .                         XPOL(IY,IX+NPLP-1-NWISO)
+                READ (30,format_string(new_format)) DUMMI(1),DUMMI(2),
+     .                         YPOL(dimyh+1,IX+NPLP-1-NWISO),
+     .                         YPOL(IY,IX+NPLP-1-NWISO)
+              ENDIF
+            ENDDO
+          ENDIF
+        ENDIF
+        IF (IX.EQ.dimxh) THEN
+          DO 24 IY = 1, DIMYH
+            IF (IY.LE.dimyh-1) THEN
+              READ (30,format_string(new_format))
+     .                         XPOL(IY,dimxh+NPLP-NWISO),DUMMI(1),
+     .                         DUMMI(2),XPOL(IY,IX+NPLP-1-NWISO)
+              READ (30,format_string(new_format))
+     .                         YPOL(IY,dimxh+NPLP-NWISO),DUMMI(1),
+     .                         DUMMI(2),YPOL(IY,IX+NPLP-1-NWISO)
+            ENDIF
+            IF (IY.EQ.dimyh) THEN
+              READ (30,format_string(new_format))
+     .                         XPOL(IY,dimxh+NPLP-NWISO),
+     .                         XPOL(dimyh+1,dimxh+NPLP-NWISO),
+     .                         XPOL(dimyh+1,IX+NPLP-1-NWISO),
+     .                         XPOL(IY,IX+NPLP-1-NWISO)
+              READ (30,format_string(new_format))
+     .                         YPOL(IY,dimxh+NPLP-NWISO),
+     .                         YPOL(dimyh+1,dimxh+NPLP-NWISO),
+     .                         YPOL(dimyh+1,IX+NPLP-1-NWISO),
+     .                         YPOL(IY,IX+NPLP-1-NWISO)
+            ENDIF
+   24     CONTINUE
+        ENDIF
    10 CONTINUE
 
- 3333 FORMAT(4E15.7)
-
 C   ANFANGSPUNKT DES ERSTEN TEILSTUECKS DES I-TEN POLYGONS
+C   START OF FIRST POLOIDAL SECTION OF THE GRID
       NPOINT(1,1)=1
 C   ENDPUNKT DES ERSTEN TEILSTUECKS DES I-TEN POLYGONS
-      NPOINT(2,1)=nxcut1(1)+1
-      IF (NNCUT.EQ.0) NPOINT(2,1)=dimxh+1
+C   Fill array of cuts in the case of a Low field Snowflake/XPT
+      IF (nxcut2(1).LE.nxcut1(2)) THEN
+       IF (NNCUT.LE.1) THEN
+         NPOINT(2,1)=dimxh+1
+       ELSE
+        NPOINT(2,1)=nxcut1(1)+1
+        NPOINT(1,2)=nxcut1(1)+2
+        NPOINT(2,2)=nxcut1(4)+2
+        NPOINT(1,3)=nxcut1(4)+3
+        IF (NNCUT.EQ.2) NPOINT(2,3)=dimxh+3
+        IF (NNCUT.EQ.4) THEN
+          NPOINT(2,3)=nxcut1(2)+3
+          NPOINT(1,4)=nxcut1(2)+4
+          NPOINT(2,4)=nxiso1(1)+4
+          NPOINT(1,5)=nxiso2(1)+5-NWISO
+          NPOINT(2,5)=nxcut1(3)+5-NWISO
+          NPOINT(1,6)=nxcut1(3)+6-NWISO
+          NPOINT(2,6)=dimxh+6-NWISO
+        ENDIF
+       ENDIF
+       TARGINDEX = 4
+C   Fill array of cuts in the case of a ddn
+      ELSE
+       IF (NNCUT.LE.1) THEN
+C   ENDPUNKT DES ERSTEN TEILSTUECKS DES I-TEN POLYGONS
+C   END OF FIRST POLOIDAL SECTION OF THE GRID
+        NPOINT(2,1)=dimxh+1
+       ELSE
+        NPOINT(2,1)=nxcut1(1)+1
 C   ANFANGSPUNKT DES ZWEITEN TEILSTUECKS DES I-TEN POLYGONS
+C   START OF SECOND POLOIDAL SECTION OF THE GRID
         NPOINT(1,2)=nxcut2(nncut)+1
 C   ENDPUNKT DES ZWEITEN TEILSTUECKS DES I-TEN POLYGONS
+C   END OF SECOND POLOIDAL SECTION OF THE GRID
         NPOINT(2,2)=nxcut2(nncut-1)+1
 C   ANFANGSPUNKT DES DRITTEN TEILSTUECKS DES I-TEN POLYGONS
+C   START OF THIRD POLOIDAL SECTION OF THE GRID
         NPOINT(1,3)=nxcut2(nncut-1)+2
 C   ENDPUNKT DES DRITTEN TEILSTUECKS DES I-TEN POLYGONS
         IF (NNCUT.EQ.2) NPOINT(2,3)=dimxh+3
         IF (NNCUT.EQ.4) THEN
+C   ENDPUNKT DES DRITTEN TEILSTUECKS DES I-TEN POLYGONS
+C   END OF THIRD POLOIDAL SECTION OF THE GRID
           NPOINT(2,3)=NXISO1(1)+3
 C   ANFANGSPUNKT DES VIERTEN TEILSTUECKS DES I-TEN POLYGONS
+C   START OF FOURTH POLOIDAL SECTION OF THE GRID
           NPOINT(1,4)=nxiso2(1)+4-NWISO
 C   ENDPUNKT DES VIERTEN TEILSTUECKS DES I-TEN POLYGONS
+C   END OF FOURTH POLOIDAL SECTION OF THE GRID
           NPOINT(2,4)=nxcut1(3)+4-NWISO
 C   ANFANGSPUNKT DES FUNFTEN TEILSTUECKS DES I-TEN POLYGONS
+C   START OF FIFTH POLOIDAL SECTION OF THE GRID
           NPOINT(1,5)=nxcut2(2)+4-NWISO
 C   ENDPUNKT DES FUNFTEN TEILSTUECKS DES I-TEN POLYGONS
+C   END OF FIFTH POLOIDAL SECTION OF THE GRID
           NPOINT(2,5)=nxcut1(4)+5-NWISO
 C   ANFANGSPUNKT DES SECHSTEN TEILSTUECKS DES I-TEN POLYGONS
+C   START OF SIXTH POLOIDAL SECTION OF THE GRID
           NPOINT(1,6)=nxcut2(1)+5-NWISO
 C   ENDPUNKT DES SECHSTEN TEILSTUECKS DES I-TEN POLYGONS
+C   END OF SIXTH POLOIDAL SECTION OF THE GRID
           NPOINT(2,6)=dimxh+6-NWISO
+        ENDIF
+      ENDIF
+       TARGINDEX = 3
+      ENDIF
+C
+C   CHECK THAT ARRAY SIZES DEDUCED FROM fort.30 MATCH THOSE FROM INPUT FILE
+C
+      IF (NPPLG.NE.NPLP) THEN
+        WRITE(IUNOUT,*)
+     .   'MISMATCH BETWEEN INPUT FILE AND '//trim(filename)
+        WRITE(IUNOUT,*) 'FOR THE NUMBER OF SEGMENTS : '
+        WRITE(IUNOUT,*) 'INPUT    : NPPLG = ', NPPLG
+        WRITE(IUNOUT,*) filename//'  : NNCUT = ', NNCUT
+        WRITE(IUNOUT,*) 'WE MUST HAVE NPPLG = MAX((NNCUT/2)*3,1)'
+        CALL EIRENE_EXIT_OWN(1)
+      ENDIF
+      IF (NR1ST.NE.dimyh+1) THEN
+        WRITE(IUNOUT,*)
+     .   'MISMATCH BETWEEN INPUT FILE AND '//trim(filename)
+        WRITE(IUNOUT,*) 'FOR THE NUMBER OF RADIAL CELLS : '
+        WRITE(IUNOUT,*) 'INPUT    : NR1ST = ', NR1ST
+        WRITE(IUNOUT,*) filename//'  : NY    = ', dimyh
+        WRITE(IUNOUT,*) 'WE MUST HAVE NR1ST = NY+1'
+        CALL EIRENE_EXIT_OWN(1)
+      ENDIF
+      IF (NP2ND.NE.NPOINT(2,NPLP)) THEN
+        WRITE(IUNOUT,*)
+     .   'MISMATCH BETWEEN INPUT FILE AND '//trim(filename)
+        WRITE(IUNOUT,*) 'FOR THE NUMBER OF POLOIDAL CELLS : '
+        WRITE(IUNOUT,*) 'INPUT    : NP2ND = ', NP2ND
+        WRITE(IUNOUT,*) filename//'  : NX    = ', dimxh
+        WRITE(IUNOUT,*) filename//'  : NNCUT = ', NNCUT
+        WRITE(IUNOUT,*) filename//'  : NNISO = ', NNISO
+        WRITE(IUNOUT,*) filename//'  : NWISO = ', NWISO
+        WRITE(IUNOUT,*) 
+     .   'WE MUST HAVE NP2ND = NX+MAX(3*(NNCUT/2),1)+NNISO*NWISO'
+        CALL EIRENE_EXIT_OWN(1)
       ENDIF
 C
       DO 1015 IY=1,NDYA
@@ -509,17 +976,20 @@ C
         DO I=1,NP
           XPOL(J,I)=XPOL(J,I)*100.
           YPOL(J,I)=YPOL(J,I)*100.
-          IF (ABS(XPOL(J,I)).LT.5.D-5) XPOL(J,I)=0.
-          IF (ABS(YPOL(J,I)).LT.5.D-5) YPOL(J,I)=0.
+cdr nov 2020: in some versions the next two lines are found
+cdr           I do not understand, it seems to be in absolute
+cdr           rather than relative units. So I remove these two lines.
+cdr       IF (ABS(XPOL(J,I)).LT.5.D-5) XPOL(J,I)=0.
+cdr       IF (ABS(YPOL(J,I)).LT.5.D-5) YPOL(J,I)=0.
         END DO
  1020 CONTINUE
       RETURN
 
-  100 WRITE(IUNOUT,*) "COULD NOT OPEN FORT.30. ",
+  100 WRITE(IUNOUT,*) "COULD NOT OPEN "//trim(filename)//". ",
      w                "SKIP READING THE B2 GEOMETRY" !VK
 
 *//END GEOMD_LINDA//
-      END
+      END SUBROUTINE EIRENE_GEOMD_LINDA
 
 
 C
@@ -702,7 +1172,7 @@ C     enddo
 C
       RETURN
 *//END GEOMD_SONNET//
-      END
+      END SUBROUTINE EIRENE_GEOMD_SONNET
 
 
 C
@@ -763,7 +1233,7 @@ C
 C
     1 CONTINUE
       RETURN
-      END
+      END SUBROUTINE EIRENE_MSHPROJ
 
 
 C
@@ -829,7 +1299,11 @@ C  "CUT REGION" AND LAST X ZONE IX = NDXA+1
               INB=IX-(IPART-1)*(NCUTL-NCUTB)
               DUMMY(IX,IY)=FIELD(INB,IY,IFL)
   213       CONTINUE
-            DUMMY(IINID,IY) = FIELD(INB+1,IY,IFL)
+            IF (MOD(IPART,3).EQ.0 .AND. IPART.NE.NPPLG) THEN
+              DUMMY(IINID,IY) = FIELD(INB  ,IY,IFL)
+            ELSE
+              DUMMY(IINID,IY) = FIELD(INB+1,IY,IFL)
+            ENDIF
             IF (IENDD.NE.IINID)
      >       DUMMY(IENDD,IY) = FIELD(INB+NCUTB,IY,IFL)
   212     CONTINUE
@@ -853,7 +1327,7 @@ C
       WRITE (iunout,*) 'NCUTL = ',NCUTL, ' IENDD-IINID+1 = ',
      .                  IENDD-IINID+1
       CALL EIRENE_EXIT_OWN(1)
-      END
+      END SUBROUTINE EIRENE_INDMAP
 
 
 C
@@ -911,7 +1385,11 @@ C  "CUT REGION" AND LAST X ZONE IX = NDXA+1
               INB=IX-(IPART-1)*(NCUTL-NCUTB)
               DUMMY(INB,IY)=FIELD(IX,IY,IFL,ISTR)
   213       CONTINUE
-            DUMMY(INB+1,IY)=FIELD(IINID,IY,IFL,ISTR)
+            IF (MOD(IPART,3).EQ.0 .AND. IPART.NE.NPPLG) THEN
+              DUMMY(INB  ,IY)=FIELD(IINID,IY,IFL,ISTR)
+            ELSE
+              DUMMY(INB+1,IY)=FIELD(IINID,IY,IFL,ISTR)
+            ENDIF
             IF (IENDD.NE.IINID)
      .          DUMMY(INB+NCUTB,IY)=FIELD(IENDD,IY,IFL,ISTR)
   212     CONTINUE
@@ -935,7 +1413,7 @@ C
       WRITE (iunout,*) 'NCUTL = ',NCUTL, ' IENDD-IINID+1 = ',
      .                  IENDD-IINID+1
       CALL EIRENE_EXIT_OWN(1)
-      END
+      END SUBROUTINE EIRENE_INDMPI
 
 
 C
@@ -951,7 +1429,7 @@ C=======================================================================
 
       INTEGER, INTENT(IN) :: KARD, NDIMX, NDIMY, NDIMF, N, M, NF
       REAL(DP), INTENT(INOUT) :: DUMMY(0:N+1,0:M+1,NF)
-      INTEGER :: ND1, LIM, IF, III, IX, IY, i1, i2, i3
+      INTEGER :: ND1, LIM, IF, I1, I2, I3, III, IX, IY
       character(50) :: form
       character(200) :: zeile
 
@@ -982,7 +1460,7 @@ c     write (iunout,*) 'plasm: detected format ', form
       END DO
   500 RETURN
 *//END PLASM//
-      END
+      END SUBROUTINE EIRENE_PLASM
 
 
 C
@@ -1016,7 +1494,7 @@ C
       RETURN
   910 FORMAT(5(ES16.7E3))
 *//END NEUTR//
-      END
+      END SUBROUTINE EIRENE_NEUTR
 
 
 
@@ -1041,6 +1519,7 @@ C
       USE EIRMOD_COMUSR
       USE EIRMOD_CGRID
       USE EIRMOD_CESTIM
+      USE EIRMOD_CLOGAU
 
       IMPLICIT NONE
 
@@ -1067,33 +1546,42 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
         DO IN=1,NSBOX_TAL
           IF (LPAPL) THEN
             IF (PAPL(IPLS,IN) .NE. 0.D0) THEN
-!pb           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
               CPMUL%VALUEM = PAPL(IPLS,IN)*FLXI
+              IF (NLSPCSCL_ATM) THEN
+                PAPL2(1:NPLS,0:NATM) => PAPL(:,IN)
+                CPMUL%VALUAM(1:NATMI) = PAPL2(IPLS,1:NATMI)*FLXI
+              END IF
               CPMUL%NXTMUL => PAPLS(ISTRAI)%PMUL
               PAPLS(ISTRAI)%PMUL => CPMUL
             ENDIF
           ENDIF
           IF (LPMPL) THEN
             IF (PMPL(IPLS,IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
               CPMUL%VALUEM = PMPL(IPLS,IN)*FLXI
+              IF (NLSPCSCL_MOL) THEN
+                PMPL2(1:NPLS,0:NMOL) => PMPL(:,IN)
+                CPMUL%VALUMM(1:NMOL) = PMPL2(IPLS,1:NMOL)*FLXI
+              END IF
               CPMUL%NXTMUL => PMPLS(ISTRAI)%PMUL
               PMPLS(ISTRAI)%PMUL => CPMUL
             ENDIF
           ENDIF
           IF (LPIPL) THEN
             IF (PIPL(IPLS,IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
               CPMUL%VALUEM = PIPL(IPLS,IN)*FLXI
+              IF (NLSPCSCL_ION) THEN
+                PIPL2(1:NPLS,0:NION) => PIPL(:,IN)
+                CPMUL%VALUIM(1:NION) = PIPL2(IPLS,1:NION)*FLXI
+              END IF
               CPMUL%NXTMUL => PIPLS(ISTRAI)%PMUL
               PIPLS(ISTRAI)%PMUL => CPMUL
             ENDIF
@@ -1101,7 +1589,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
 
           IF (LEAPL) THEN
             IF (EAPL(IPLS,IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
@@ -1113,7 +1600,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
 
           IF (LEMPL) THEN
             IF (EMPL(IPLS,IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
@@ -1125,7 +1611,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
 
           IF (LEIPL) THEN
             IF (EIPL(IPLS,IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
@@ -1137,7 +1622,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
 
           IF (LMAPL) THEN
             IF (MAPL(IPLS,IN) .NE. 0.D0) THEN
-!pb           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
@@ -1149,7 +1633,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
 
           IF (LMMPL) THEN
             IF (MMPL(IPLS,IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
@@ -1161,7 +1644,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
 
           IF (LMIPL) THEN
             IF (MIPL(IPLS,IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
@@ -1173,7 +1655,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
 
           IF (LMPHPL) THEN
             IF (MPHPL(IPLS,IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
@@ -1189,7 +1670,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
       DO IN=1,NSBOX_TAL
         IF (LEAEL) THEN
           IF (EAEL(IN) .NE. 0.D0) THEN
-!PB         ALLOCATE(CPSIM)
             CPSIM => EIRENE_NEW_SIMARR()
             CPSIM%ICS = IN
             CPSIM%VALUES = EAEL(IN)*FLXI
@@ -1199,7 +1679,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
         ENDIF
         IF (LEMEL) THEN
           IF (EMEL(IN) .NE. 0.D0) THEN
-!PB         ALLOCATE(CPSIM)
             CPSIM => EIRENE_NEW_SIMARR()
             CPSIM%ICS = IN
             CPSIM%VALUES = EMEL(IN)*FLXI
@@ -1209,7 +1688,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
         ENDIF
         IF (LEIEL) THEN
           IF (EIEL(IN) .NE. 0.D0) THEN
-!PB         ALLOCATE(CPSIM)
             CPSIM => EIRENE_NEW_SIMARR()
             CPSIM%ICS = IN
             CPSIM%VALUES = EIEL(IN)*FLXI
@@ -1223,7 +1701,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
         DO IN=1,NSBOX_TAL
           IF (LPDENA) THEN
             IF (PDENA(IATM,IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IATM
               CPMUL%ICM = IN
@@ -1234,7 +1711,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
           ENDIF
           IF (LEDENA) THEN
             IF (EDENA(IATM,IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IATM
               CPMUL%ICM = IN
@@ -1250,7 +1726,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
         DO IN=1,NSBOX_TAL
           IF (LPDENM) THEN
             IF (PDENM(IMOL,IN) .NE. 0.D0) THEN
-!PB            ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IMOL
               CPMUL%ICM = IN
@@ -1266,7 +1741,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
         DO IN=1,NSBOX_TAL
           IF (LPDENI) THEN
             IF (PDENI(IION,IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IION
               CPMUL%ICM = IN
@@ -1282,7 +1756,6 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
         DO IN=1,NSBOX_TAL
           IF (LCOPV) THEN
             IF (COPV(ICPV,IN) .NE. 0.D0) THEN
-!PB           ALLOCATE(CPMUL)
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = ICPV
               CPMUL%ICM = IN
@@ -1295,7 +1768,7 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
       ENDDO
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_SAVE_TALLIES
 
 C
 C

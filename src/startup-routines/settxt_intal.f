@@ -1,11 +1,11 @@
 cdr  Aug 18: formerly this was part of settxt.f.
 cdr  Generalisation of input tallies (and gradients thereof)
-
+cdr  Aug 19: still some cleanup and documentation needed
 
       SUBROUTINE EIRENE_SETTXT_INTAL
 c  Set default texts  (volume tallies: name, species, units), 
 C  similar to SETTXT.f, but for INPUT TALLIES rather than output tallies. 
-C  Set first (leading) dimension of tally arrays: nfstpi.
+C  Set first (leading) dimension of input tally arrays: NFSTPI.
 
 c  
       USE EIRMOD_PRECISION
@@ -25,9 +25,9 @@ C  TEXT FOR INPUT (BACKGROUND) TALLIES
 cdr  the numbering is "a bit" illogical, due to historic reasons.
 c    primary and derived tallies are mixed here. 
 C
-      TXTPLS(1,1)='PLASMA TEMPERATURE                               '
-      TXTPLS(1,2)='PLASMA TEMPERATURE                               '
-      TXTPLS(1,3)='PLASMA DENSITY (BULK PARTICLES)                  '
+      TXTPLS(1,1)='PLASMA TEMPERATURE (ELECTRONS)                   '
+      TXTPLS(1,2)='PLASMA TEMPERATURE (BULK PARTICLES)              '
+      TXTPLS(1,3)='PLASMA DENSITY (ELECTRONS)                       '
       TXTPLS(1,4)='PLASMA DENSITY (BULK PARTICLES)                  '
       TXTPLS(1,5)='DRIFT VELOCITY IN X-DIRECTION (BULK IONS)        '
       TXTPLS(1,6)='DRIFT VELOCITY IN Y-DIRECTION (BULK IONS)        '
@@ -37,6 +37,7 @@ C
       TXTPLS(1,10)='MAGN. FIELD UNIT VECTOR, Z DIRECTION             '
       TXTPLS(1,11)='MAGN. FIELD STRENGTH                             '
 cdr to be added here  TXTPLS(1,xx)='Magn. POTENTIAL, e.g. PSI fct.   '
+cdr 2019: now added as tally 25 below.
       TXTPLS(1,12)='ADDITIONAL INPUT TALLIES, OPTIONAL' 
       TXTPLS(1,13)='BULK ION KINETIC DRIFT ENERGY                    '
       TXTPLS(1,14)='ZONE VOLUMES                                     '
@@ -53,35 +54,43 @@ cdr to be added here  TXTPLS(1,xx)='Magn. POTENTIAL, e.g. PSI fct.   '
       TXTPLS(1,23)='FLOW VELOCITY PARALLEL TO BFIELD                 '
       TXTPLS(1,24)='PARALLEL TO B MOMENTUM FLOW                      '
       TXTPLS(1,25)='PSI                                              '
+      TXTPLS(1,26)='ZI                                               '
 
-      TXTPLS(1,26)='FREE26                                           '
       TXTPLS(1,27)='FREE27                                           '
       TXTPLS(1,28)='FREE28                                           '
       TXTPLS(1,29)='FREE29                                           '
       TXTPLS(1,30)='FREE30                                           '
 
 C  gradient tallies:  derivatives wrt. cartesian coordinates
+c 1
       TXTPLS(1,31)='dTE/dX                                           '
       TXTPLS(1,32)='dTE/dY                                           '
       TXTPLS(1,33)='dTE/dZ                                           '
+c 2
       TXTPLS(1,34)='dTI/dX                                           '
       TXTPLS(1,35)='dTI/dY                                           '
       TXTPLS(1,36)='dTI/dZ                                           '
+c 3
       TXTPLS(1,37)='dNE/dX                                           '
       TXTPLS(1,38)='dNE/dY                                           '
       TXTPLS(1,39)='dNE/dZ                                           '
+c 4
       TXTPLS(1,40)='dNI/dX                                           '
       TXTPLS(1,41)='dNI/dY                                           '
       TXTPLS(1,42)='dNI/dZ                                           '
+
       TXTPLS(1,43)='dVX/dX                                           '
       TXTPLS(1,44)='dVX/dY                                           '
       TXTPLS(1,45)='dVX/dZ                                           '
+
       TXTPLS(1,46)='dVY/dX                                           '
       TXTPLS(1,47)='dVY/dY                                           '
       TXTPLS(1,48)='dVY/dZ                                           '
+
       TXTPLS(1,49)='dVZ/dX                                           '
       TXTPLS(1,50)='dVZ/dY                                           '
       TXTPLS(1,51)='dVZ/dZ                                           '
+c 8
       TXTPLS(1,52)='dBX/dX                                           '
       TXTPLS(1,53)='dBX/dY                                           '
       TXTPLS(1,54)='dBX/dZ                                           '
@@ -91,28 +100,35 @@ C  gradient tallies:  derivatives wrt. cartesian coordinates
       TXTPLS(1,58)='dBZ/dX                                           '
       TXTPLS(1,59)='dBZ/dY                                           '
       TXTPLS(1,60)='dBZ/dZ                                           '
+
       TXTPLS(1,61)='dBF/dX                                           '
       TXTPLS(1,62)='dBF/dY                                           '
       TXTPLS(1,63)='dBF/dZ                                           '
+c 12
       TXTPLS(1,64)='dADIN/dX                                         '
-cdr  psi funct. gradient to be added here ?
       TXTPLS(1,65)='dADIN/dY                                         '
       TXTPLS(1,66)='dADIN/dZ                                         '
+
       TXTPLS(1,67)='dEDRIFT/dX                                       '
       TXTPLS(1,68)='dEDRIFT/dY                                       '
       TXTPLS(1,69)='dEDRIFT/dZ                                       '
+
       TXTPLS(1,70)='dVOL/dX                                          '
       TXTPLS(1,71)='dVOL/dY                                          '
       TXTPLS(1,72)='dVOL/dZ                                          '
+
       TXTPLS(1,73)='dWGHT/dX                                         '
       TXTPLS(1,74)='dWGHT/dY                                         '
       TXTPLS(1,75)='dWGHT/dZ                                         '
+
       TXTPLS(1,76)='dBXPERP/dX                                       '
       TXTPLS(1,77)='dBXPERP/dY                                       '
       TXTPLS(1,78)='dBXPERP/dZ                                       '
+
       TXTPLS(1,79)='dBYPERP/dX                                       '
       TXTPLS(1,80)='dBYPERP/dY                                       '
       TXTPLS(1,81)='dBYPERP/dZ                                       '
+
       TXTPLS(1,82)='dEX/dX                                           '
       TXTPLS(1,83)='dEX/dY                                           '
       TXTPLS(1,84)='dEX/dZ                                           '
@@ -131,15 +147,19 @@ cdr  psi funct. gradient to be added here ?
       TXTPLS(1,97)='dBVIN/dX                                          '
       TXTPLS(1,98)='dBVIN/dY                                          '
       TXTPLS(1,99)='dBVIN/dZ                                          '
+
       TXTPLS(1,100)='dPARMOM/dX                                        '
       TXTPLS(1,101)='dPARMOM/dY                                        '
       TXTPLS(1,102)='dPARMOM/dZ                                        '
+c 25 psi-function
       TXTPLS(1,103)='dPSI/dX                                           '
       TXTPLS(1,104)='dPSI/dY                                           '
       TXTPLS(1,105)='dPSI/dZ                                           '
-      TXTPLS(1,106)='dFREE26/dX                                        '
-      TXTPLS(1,107)='dFREE26/dY                                        '
-      TXTPLS(1,108)='dFREE26/dZ                                        '
+cnh 19.08.2020 Average charge
+      TXTPLS(1,106)='dZI/dX                                            '
+      TXTPLS(1,107)='dZI/dY                                            '
+      TXTPLS(1,108)='dZI/dZ                                            '
+
       TXTPLS(1,109)='dFREE27/dX                                        '
       TXTPLS(1,110)='dFREE27/dY                                        '
       TXTPLS(1,111)='dFREE27/dZ                                        '
@@ -153,9 +173,9 @@ cdr  psi funct. gradient to be added here ?
       TXTPLS(1,119)='dFREE30/dY                                        '
       TXTPLS(1,120)='dFREE30/dZ                                        '
 C
-c  currently: ntali=4*24=96
+c  currently: ntali=4*30=120
       DO J=1,NTALI
-        IF (J.NE.12) THEN
+        IF (J.NE.12) THEN  ! retain individual tally names for adin tally no. 12
           DO I=2,N1MX
             TEXT72=TXTPLS(1,J)
             TXTPLS(I,J)=TEXT72
@@ -175,6 +195,7 @@ C
       TXTPUN(1,10)=' ---                    '
       TXTPUN(1,11)='TESLA                   '
 cdr  here might come: magn. potential (at least: tor. component?): PSI fct. TESLA*CM
+CDR  JUNE 2019: SEE BELOW, TALLY 25
       TXTPUN(1,12)='ADDITIONAL TALLY UNITS  '
       TXTPUN(1,13)='EV                      '  ! EDRIFT  --> DERIVED QUANTITY
       TXTPUN(1,14)='CM**3                   '  ! VOL
@@ -188,15 +209,15 @@ cdr  here might come: magn. potential (at least: tor. component?): PSI fct. TESL
       TXTPUN(1,22)='V                       '  ! POT
       TXTPUN(1,23)='CM/S                    '  ! BVIN
       TXTPUN(1,24)='G*CM/S                  '  ! PARMOM
-      TXTPUN(1,25)=' ---                    '  ! PSI
+      TXTPUN(1,25)='TESLA*CM                '  ! PSI   ! CHECK FOR FACTOR 2Pi
+      TXTPUN(1,26)=' ---                    '  ! ZI
 
-      TXTPUN(1,26)=' ---                    '  ! FREE26
       TXTPUN(1,27)=' ---                    '  ! FREE27
       TXTPUN(1,28)=' ---                    '  ! FREE28
       TXTPUN(1,29)=' ---                    '  ! FREE29
       TXTPUN(1,30)=' ---                    '  ! FREE30
 
-cdr derivaties in cart. coordinates  (gradient vector)  
+cdr derivatives in cart. coordinates (gradient vector)  
       TXTPUN(1,31)='EV/CM                   '  ! grad(Te) 
       TXTPUN(1,32)='EV/CM                   '
       TXTPUN(1,33)='EV/CM                   '
@@ -269,12 +290,15 @@ C     TXTPUN(1,66)='TO BE READ, ADIN        '
       TXTPUN(1,100)='G*CM/S/CM               '  ! PARMOM
       TXTPUN(1,101)='G*CM/S/CM               '  ! PARMOM
       TXTPUN(1,102)='G*CM/S/CM               '  ! PARMOM
-      TXTPUN(1,103)=' ---                    '  ! PSI
-      TXTPUN(1,104)=' ---                    '  ! PSI
-      TXTPUN(1,105)=' ---                    '  ! PSI
-      TXTPUN(1,106)=' ---                    '  ! FREE26
-      TXTPUN(1,107)=' ---                    '  ! FREE26
-      TXTPUN(1,108)=' ---                    '  ! FREE26
+c  grad PSI
+      TXTPUN(1,103)='TESLA                   '  ! PSI
+      TXTPUN(1,104)='TESLA                   '  ! PSI
+      TXTPUN(1,105)='TESLA                   '  ! PSI
+
+      TXTPUN(1,106)='/CM                     '  ! ZI
+      TXTPUN(1,107)='/CM                     '  ! ZI
+      TXTPUN(1,108)='/CM                     '  ! ZI
+
       TXTPUN(1,109)=' ---                    '  ! FREE27
       TXTPUN(1,110)=' ---                    '  ! FREE27
       TXTPUN(1,111)=' ---                    '  ! FREE27
@@ -313,7 +337,9 @@ C
       NFSTPI(12)=NAIN    ! use NAIN here, as NAINI is not yet known
       NFSTPI(13)=NPLSI
       NFSTPI(14)=1
-      NFSTPI(15)=NATMI+NMOLI+NIONI
+cdr  weight window for test particles.
+cdr  inconsistent with using N1MX as first dimension
+      NFSTPI(15)=NATMI+NMOLI+NIONI  ! + nphoti
       NFSTPI(16)=1
       NFSTPI(17)=1
       NFSTPI(18)=1
@@ -325,12 +351,14 @@ C
       NFSTPI(24)=NPLS
 
       NFSTPI(25)=1
-      NFSTPI(26)=1
+
+      NFSTPI(26)=NPLSI
       NFSTPI(27)=1
       NFSTPI(28)=1
       NFSTPI(29)=1
       NFSTPI(30)=1
 
+cdr  gradients of input tallies
       NFSTPI(31)=1
       NFSTPI(32)=1
       NFSTPI(33)=1
@@ -373,9 +401,12 @@ C
       NFSTPI(70)=1
       NFSTPI(71)=1
       NFSTPI(72)=1
-      NFSTPI(73)=NATMI+NMOLI+NIONI
+cdr  weight windows, mostly unused.
+cdr  the next 3 lines are inconsistent with N1MX being used as 1st dimension
+      NFSTPI(73)=NATMI+NMOLI+NIONI  ! NPHOTI ?
       NFSTPI(74)=NATMI+NMOLI+NIONI
       NFSTPI(75)=NATMI+NMOLI+NIONI
+cdr
       NFSTPI(76)=1
       NFSTPI(77)=1
       NFSTPI(78)=1
@@ -438,18 +469,21 @@ C
       TXTPSP(1,22)=' ---                    '
 
       TXTPSP(1,25)=' ---                    '
+
       TXTPSP(1,26)=' ---                    '
       TXTPSP(1,27)=' ---                    '
       TXTPSP(1,28)=' ---                    '
       TXTPSP(1,29)=' ---                    '
       TXTPSP(1,30)=' ---                    '
-      
+c  grad Te
       TXTPSP(1,31)='ELECTRONS               '
       TXTPSP(1,32)='ELECTRONS               '
       TXTPSP(1,33)='ELECTRONS               '
+c  grad ne
       TXTPSP(1,37)='ELECTRONS               '
       TXTPSP(1,38)='ELECTRONS               '
       TXTPSP(1,39)='ELECTRONS               '
+
       TXTPSP(1,52)=' ---                    '
       TXTPSP(1,53)=' ---                    '
       TXTPSP(1,54)=' ---                    '
@@ -528,21 +562,27 @@ C
         TXTPSP(IPLS,13)=TEXTS(ISPZ)
         TXTPSP(IPLS,23)=TEXTS(ISPZ)
         TXTPSP(IPLS,24)=TEXTS(ISPZ)
+c  dTi/dx, dTi/dy, dTi/dz
         TXTPSP(IPLS,34)=TEXTS(ISPZ)
         TXTPSP(IPLS,35)=TEXTS(ISPZ)
         TXTPSP(IPLS,36)=TEXTS(ISPZ)
+c grad ni
         TXTPSP(IPLS,40)=TEXTS(ISPZ)
         TXTPSP(IPLS,41)=TEXTS(ISPZ)
         TXTPSP(IPLS,42)=TEXTS(ISPZ)
+c grad vx
         TXTPSP(IPLS,43)=TEXTS(ISPZ)
         TXTPSP(IPLS,44)=TEXTS(ISPZ)
         TXTPSP(IPLS,45)=TEXTS(ISPZ)
+c grad vy
         TXTPSP(IPLS,46)=TEXTS(ISPZ)
         TXTPSP(IPLS,47)=TEXTS(ISPZ)
         TXTPSP(IPLS,48)=TEXTS(ISPZ)
+c grad vz
         TXTPSP(IPLS,49)=TEXTS(ISPZ)
         TXTPSP(IPLS,50)=TEXTS(ISPZ)
         TXTPSP(IPLS,51)=TEXTS(ISPZ)
+
         TXTPSP(IPLS,67)=TEXTS(ISPZ)
         TXTPSP(IPLS,68)=TEXTS(ISPZ)
         TXTPSP(IPLS,69)=TEXTS(ISPZ)
@@ -555,11 +595,4 @@ C
  80     CONTINUE
 C
       RETURN
-      END
- 
- 
- 
- 
- 
- 
- 
+      END SUBROUTINE EIRENE_SETTXT_INTAL

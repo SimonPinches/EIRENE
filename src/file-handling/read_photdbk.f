@@ -3,11 +3,11 @@ cdr  re-activated: Jan 2018
       subroutine EIRENE_read_photdbk (ir, reac, isw)
 c   read parameters relevant "reaction no IR" for line transport (photon gas transport)
 c   from photonic database, into EIRENE data structure REACDAT(IR).
+c   A photon (IPHOT) "line" is a sharp or broadened emission source.
+c   A continuum emission from a given spectral source distribution is also
+c   a "line" (=photon species), by abuse of language.
 c
 
-
-!  16.2.05:  write statement taken out
-!  2.11.05:  database handling introduced for file POLARI
       use EIRMOD_precision
       use EIRMOD_parmmod
       USE EIRMOD_COMXS
@@ -23,9 +23,10 @@ c
 
       real(dp) :: wl, aik, ei, ej, c2, c3, c4, c6_theo, b12, b21,
      .            c3_theo, c6_qs_mess, c6_ar_mess, c3_mess, c6
-      real(dp) :: c6a(12), rdata(9,1)
+      real(dp) :: c6a(12)
+      real(dp) :: rdata(9,1)
       real(dp), save :: polari_fac(120)
-      integer :: gi, gj
+      integer :: gi, gj, inep, knep
       integer :: ianf, iend, iblnk, lr, ic, i, j, iplsc3, iprftype,
      .           imess, ifremd, ii, i1, lel, nrjprt
       integer :: ik6, ipc6(12)
@@ -60,7 +61,7 @@ c
         if (zeile(1:2) == '--') cycle
         call EIRENE_subcomma(zeile)
 
-!  read Element
+!  read element name
         ianf = 3
         iend = ianf + scan(zeile(ianf:),'|') - 1
 
@@ -99,7 +100,7 @@ c
 
         if (elementname(1:iblnk+10) /= reac(1:iblnk+10)) cycle
 
-!  skip Uebergang
+!  skip reading 'transition'
         ianf = iend + 2
         iend = ianf + scan(zeile(ianf:),'|') - 1
 
@@ -108,7 +109,7 @@ c
         iend = ianf + scan(zeile(ianf:),'|') - 1
         read (zeile(ianf:iend-1),*) aik
 
-!  skip fij
+!  skip  reading oscillator strength fij
         ianf = iend + 2
         iend = ianf + scan(zeile(ianf:),'|') - 1
 
@@ -216,7 +217,7 @@ cdr next: line broadening constants, e.g. for pressure broadening etc.
 
 cdr  done with pressure broadening constants
 
-        exit
+        if (.true.) exit
 
       end do
 
@@ -268,8 +269,6 @@ cdr  done with pressure broadening constants
 
       c2=0._dp
 
-      reac_name(ir)(1:len_trim(reac)) = reac(1:len_trim(reac))
-
       allocate (phline)
 
       phline%aik = aik
@@ -319,7 +318,7 @@ c  reaction no IR is a "photonic" reaction
 
       nullify (reacdat(ir)%phr%adas)
       nullify (reacdat(ir)%phr%poly)
-      nullify (reacdat(ir)%phr%hyd)
+      nullify (reacdat(ir)%phr%tab1d)
       nullify (reacdat(ir)%phr%crm)
 
       reacdat(ir)%phr%line => phline
@@ -333,7 +332,7 @@ c  reaction no IR is a "photonic" reaction
       phline%b12 = b12
       phline%nrjprt = nrjprt
 
-      phline%reacname = reac_name(ir)
+      phline%reacname = reac(1:len_trim(reac))
 
 cdr
 c  rest of data: use reacdat(ir)%phr%poly, e.g. for Aik, and volumetric
@@ -343,17 +342,21 @@ c  i.e. a single reaction IR can consist of OT and of RC processes.
 c
 
       modclf(ir) = 100
+c  constant rate (1/s)
       iftflg(ir,2) = 110
 
       rdata = 0._dp
       rdata(1,1) = aik
 
 cdr
-c  So far photonic cross-sections, rate coeff. and rates are const.
+c  So far photonic cross-sections, rate coeff. and rates are constant.
 c  i.e. special (trivial, 0th-order) cases of polygonial fits.
 c  Use REACDAT type "poly" also for photonic data
+      inep=1
+      knep=1
       call EIRENE_set_reaction_data
-     .  (ir,isw,iftflg(ir,2),rdata,iunout,.false.)
+     .  (ir,isw,iftflg(ir,2),rdata,inep,knep,
+     .   iunout,.false.)
 
       return
 
@@ -366,6 +369,7 @@ c  Use REACDAT type "poly" also for photonic data
 
 
       subroutine EIRENE_subcomma (str)
+cdr  replace comma "," with point "." in character string STR
       implicit none
       character(len=*), intent(in out) :: str
       integer :: i
@@ -380,6 +384,7 @@ c  Use REACDAT type "poly" also for photonic data
 
 
       subroutine EIRENE_delete_blanks (str)
+cdr  remove blanks from character string STR
       implicit none
       character(len=*), intent (in out) :: str
       character, allocatable :: compact(:)

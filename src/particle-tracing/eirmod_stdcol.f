@@ -1,4 +1,17 @@
       MODULE EIRMOD_STDCOL
+c  eirene_stdcol   CALLED FROM FOLNEUT, FOLION, FOLSTAT_NEUT, FOLSTAT_ION, LININT: idimm=1,2,3
+c  eirene_stdnor   CALLED FROM LOCATE: idimm=1,2,3,4
+
+cdr  summer 2019: TK: remove ALTERNATE RETURN, and ENTRY.
+cdr  dec. 2019        comments, cleanup, add missing features: stdcol_ass
+
+cdr  msurf=ists in case nltet, nltri ? later used_ nlim+ists ?
+CDR  IDIMM=5. also CALL STDCOL_XYMIX. Difference to IDIMM=4 ? removed.
+cdr  Some comments are now in wrong places, misleading.
+cdr  Periodicity in nltet option: call norusr. (make optional?)
+cdr  Periodicity legveo=2 and nlcrc: use polyg. data? Hidden link
+cdr  bug re NLSRFA in case idimm=3 ?
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -24,24 +37,27 @@
 
       PUBLIC :: EIRENE_STDCOL, EIRENE_STDNOR
 
-ctk stdcol und 300
+c stdcol and stdcol_absorb
       REAL(DP) :: X0SA, Y0SA, Z0SA
       INTEGER :: NACLLS, ICOS, IWEI, MSURFS, IRET_OUT
 
-ctk 150 und 200
+ctk 150 and 200
       REAL(DP) :: COSROT, SINROT, VELX_OLD
 
-ctk stdcol und 100
+c stdcol and stdcol_x_rad
       INTEGER :: NDUM
 
-ctk stdcol, 100, 150, 200
+c stdcol, stdcol_x_rad, stdcol_y_pol, stdcol_z_tor
       INTEGER, EXTERNAL :: EIRENE_IDEZ
 
-ctk in fast allen
       INTEGER :: IDIMM
-
-ctk weiss nicht wo
+      
       INTEGER :: M
+
+!$OMP THREADPRIVATE(X0SA,Y0SA,Z0SA,
+!$OMP&   NACLLS,ICOS,IWEI,MSURFS,IRET_OUT,
+!$OMP&   COSROT,SINROT,VELX_OLD,
+!$OMP&   NDUM,IDIMM,M)
 
       CONTAINS
 
@@ -63,13 +79,14 @@ C
 C  1.) ADVANCE TRAJECTORY TO A NON-DEFAULT STANDARD SURFACE (DISTANCE: ZT)
 C  2.) SWITCHING (CELL NUMBERS, FLAGS, ETC...)
 C  3A.) IF TRANSPARENT AND NO SURFACE TALLIES: CONTINUE FLIGHT
-C  3B.) ELSE: IF NEEDED, PREPARE REFLECTION (SURFACE NORMALS), THEN CALL ESCAPE
+C  3B.) ELSE: IF NEEDED, PREPARE REFLECTION (SURFACE NORMALS),
+C             THEN CALL ESCAPE
 C
-C  SG:    =SIGN OF COSINE OF ANGLE OF INCIDENCE
-C  ISTS:  =SURFACE INDEX IN NSTSI ARRAYS
-C  IDIMM: =INDEX (1,2,3) FOR: RADIAL, POLOIDAL OR TOROIDAL SURFACE
-C  RETURN 1:  NO SURFACE TALLIES, FLIGHT CONTINUES
-C  RETURN 2:  SURFACE TALLIES,
+C  SG = SIGN OF COSINE OF ANGLE OF INCIDENCE
+C  ISTS = SURFACE INDEX IN NSTSI ARRAYS
+C  IDIMM = INDEX (1,2,3) FOR: RADIAL, POLOIDAL OR TOROIDAL SURFACE
+C  RETURN IRET=1: NO SURFACE TALLIES, FLIGHT CONTINUES
+C  RETURN IRET=2: SURFACE TALLIES,
 C             THEN ABSORPTION, REFLECTION MODEL OR CONTINUATION OF FLIGHT
 C             (CALL SUBR. ESCAPE)
 C
@@ -83,10 +100,8 @@ C
       REAL(DP) :: WINK
       INTEGER :: IDUM, IAN, IEN, EIRENE_LEARCA, EIRENE_LEARC2
 
-
-
 C
-C   COLLISION WITH STANDARD SURFACE NO. MSURF=NLIM+ISTS
+C   "COLLISION" WITH STANDARD SURFACE NO. MSURF=NLIM+ISTS
 C   OF THE RADIAL   (OR X-) GRID: IDIMM=1
 C   OR THE POLOIDAL (OR Y-) GRID: IDIMM=2
 C   OR THE TOROIDAL (OR Z-) GRID: IDIMM=3
@@ -106,6 +121,8 @@ C  SET NEW POINT ON NON-DEFAULT STANDARD SURFACE ISTS. FLIGHT TIME: ZT
       Z0=Z0+VELZ*ZT
       TIME=TIME+ZT/VEL
       if (nlfem.or.nltet) then
+cdr  no additional surfaces (NLIM) allowed in nlfem nor in nltet?
+cpb  for NLFEM and NLTET MSURF already contains NLIM
         MSURF=ISTS
       else
         MSURF=NLIM+ISTS
@@ -120,20 +137,17 @@ C  SET NEW POINT ON NON-DEFAULT STANDARD SURFACE ISTS. FLIGHT TIME: ZT
         IMETWL(MSURF) = NWLMT
       END IF
 
-C  SET PHI AND X01
+C  SET IPOLG, PHI AND OTHER ASSISTANT COORDINATES
+      IPOLG=IPOLGN
       IF (NLTRA) THEN
         PHI=MOD(PHI-ATAN2(Z01,X01)+ATAN2(Z0,(RMTOR+X0)),PI2A)
-        X01=X0+RMTOR
       ENDIF
-C  SET IPOLG
-      IPOLG=IPOLGN
-      X00=X0
-      Y00=Y0
-      Z00=Z0
-      Z01=Z0
+      CALL EIRENE_STDCOL_ASS
 C
 C  CARRY OUT DEFAULT CELL SWITCHING AT TRANSPARENT STANDARD SURFACES
-      IF (IDIMM.EQ.1) THEN
+      select case (IDIMM)
+
+      case (1)
         NLSRFX=.TRUE.
         NLSRFY=.FALSE.
         NLSRFZ=.FALSE.
@@ -145,7 +159,7 @@ C  IN NLFEM, NLTET AND NLGEN OPTIONS: ALL SURFACES ARE IDIMM=1 SURFACES
         IF (NLTET) NRCELL=MRSURF
 C       IF (NLGEN) NRCELL=MRSURF
 C
-      ELSEIF (IDIMM.EQ.2) THEN
+      case (2)
         NLSRFX=.FALSE.
         NLSRFY=.TRUE.
         NLSRFZ=.FALSE.
@@ -154,27 +168,38 @@ C
 C
         IF (NLPLG.AND.ILIIN(MSURF).GT.0.AND.SCOS.GT.0) IPOLG=IPOLG-1
 C
-      ELSEIF (IDIMM.EQ.3) THEN
+      case (3)
         NLSRFX=.FALSE.
         NLSRFY=.FALSE.
         NLSRFZ=.TRUE.
+CDR NEXT STATEMENT IS PROBABLY WRONG.
         NLSRFA=.TRUE.
         IF (ILIIN(MSURF).LE.0) NTCELL=NTCELL+ICOS
-      ENDIF
+
+      case default
+        WRITE (iunout,*) 'ERROR EXIT IN STDCOL, IDIMM ',IDIMM
+        CALL EIRENE_EXIT_OWN(1)
+
+      end select
 C
       IWEI=ILSIDE(MSURF)*ICOS
-!pb   IF (IWEI.LT.0) GOTO 300
-
+!pb   IF (IWEI.LT.0) call stdcol_absorb
 cdr
 cdr: july 17: by removing this statement from here
-cdr           the ilside options for geometry debugging are partially disabled
-cdr           at least for absorbing surfaces, for which now code segment 300...ff is
-cdr           bypassed.
+cdr           the ILSIDE options for geometry debugging are partially disabled,
+cdr           at least for absorbing surfaces, for which now code segment
+cdr           stdcol_absorb... is bypassed.
 
       IF (ILIIN(MSURF).EQ.2) THEN
-         CALL EIRENE_STDCOL_400 ! ABSORPTION
-         IRET = IRET_OUT
-         RETURN
+c  Regular absorbing surface (from both sides).
+C  SCORE FLUXES LATER IN ESCAPE (DO NOT SET WEIGHT=0.D0 HERE),
+C  AND STOP THEN.
+C
+        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,8)
+        LGPART=.FALSE.
+        IRET_OUT = 2
+        IRET = IRET_OUT
+        RETURN
       ENDIF
 C
 C  OPERATE A SWITCH
@@ -209,7 +234,7 @@ C  SET CELL INDEX EQUAL TO ILACLL
               NTCELL=1
               IF (.NOT.NLADD.OR.NACELL.GT.NRADD.OR.NACELL.LT.1) THEN
                 IWEI=-10
-                CALL EIRENE_STDCOL_300
+                CALL EIRENE_STDCOL_ABSORB
                 IRET = IRET_OUT
                 RETURN
               ENDIF
@@ -219,34 +244,36 @@ C  ENTRANCE INTO STANDARD MESH, INTO NBLOCK=ILBLCK
             NBLOCK=ILBLCK(MSURF)
             NACELL=0
 C  FIND  NRCELL,IPOLG IN STANDARD MESH, BLOCK NBLOCK
-            IF (IDIMM.EQ.1) THEN
+            select case (idimm)
+
+            case (1)
               NRCELL=MIN0(NR1STM,MRSURF)
               IAN=MRSURF
               IEN=MRSURF
               NDUM=EIRENE_LEARC1(X0,Y0,Z0,IPOLG,IAN,IEN,NLSRFX,NLSRFY,
      .                           NPANU,'STDCOL      ')
-            ELSEIF (IDIMM.EQ.2) THEN
+            case (2)
               IPOLG=MIN0(NP2NDM,MPSURF)
               IAN=MPSURF
               IEN=MPSURF
               NRCELL=EIRENE_LEARC1(X0,Y0,Z0,IDUM,IAN,IEN,NLSRFX,NLSRFY,
      .                             NPANU,'STDCOL      ')
-            ELSE
+            case default
               NRCELL=EIRENE_LEARC1(X0,Y0,Z0,IPOLG,1,NR1STM,
      .                     .FALSE.,.FALSE.,NPANU,'STDCOL      ')
-            ENDIF
+            end select
+
 C  FIND NTCELL IN STANDARD MESH, BLOCK NBLOCK
             IF (NLTOR) THEN
               IF (NLTRZ) THEN
                 NTCELL=EIRENE_LEARCA(Z0,ZSURF,1,NT3RD,1,'STDCOL    ')
               ELSEIF (NLTRA) THEN
                 NTCELL=EIRENE_LEARCA(PHI,ZSURF,1,NT3RD,1,'STDCOL    ')
-
               ENDIF
             ELSE
               NTCELL=1
-
             ENDIF
+
 C  FIND NPCELL IN STANDARD MESH, BLOCK NBLOCK
             IF (NLPOL) THEN
               select case (LEVGEO)
@@ -284,7 +311,7 @@ C
             NTCELL=1
             IF (.NOT.NLADD.OR.NACELL.GT.NRADD.OR.NACELL.LT.1) THEN
                IWEI=-10
-              CALL EIRENE_STDCOL_300 
+              CALL EIRENE_STDCOL_ABSORB
               IRET = IRET_OUT
               RETURN
             ENDIF
@@ -293,34 +320,35 @@ C  ENTRANCE INTO STANDARD MESH, INTO NBLOCK=NACELL+ILBLCK
             NBLOCK=NACELL+ICOS*ISWICH(6,MSURF)*ILBLCK(MSURF)
             NACELL=0
 C  FIND  NRCELL,IPOLG IN STANDARD MESH, BLOCK NBLOCK
-            IF (IDIMM.EQ.1) THEN
+            select case (idimm)
+            case (1)
               NRCELL=MIN0(NR1STM,MRSURF)
               IAN=MRSURF
               IEN=MRSURF
               NDUM=EIRENE_LEARC1(X0,Y0,Z0,IPOLG,IAN,IEN,NLSRFX,NLSRFY,
      .                           NPANU,'STDCOL      ')
-            ELSEIF (IDIMM.EQ.2) THEN
+            case (2)
               IPOLG=MIN0(NP2NDM,MPSURF)
               IAN=MPSURF
               IEN=MPSURF
               NRCELL=EIRENE_LEARC1(X0,Y0,Z0,IDUM,IAN,IEN,NLSRFX,NLSRFY,
      .                             NPANU,'STDCOL      ')
-            ELSE
+            case default
               NRCELL=EIRENE_LEARC1(X0,Y0,Z0,IPOLG,1,NR1STM,
      .                     .FALSE.,.FALSE.,NPANU,'STDCOL      ')
-            ENDIF
+            end select
+
 C  FIND NTCELL IN STANDARD MESH, BLOCK NBLOCK
             IF (NLTOR) THEN
               IF (NLTRZ) THEN
                 NTCELL=EIRENE_LEARCA(Z0,ZSURF,1,NT3RD,1,'STDCOL    ')
               ELSEIF (NLTRA) THEN
                 NTCELL=EIRENE_LEARCA(PHI,ZSURF,1,NT3RD,1,'STDCOL    ')
-
               ENDIF
             ELSE
               NTCELL=1
-
             ENDIF
+
 C  FIND NPCELL IN STANDARD MESH, BLOCK NBLOCK
             IF (NLPOL) THEN
               select case (LEVGEO)
@@ -342,6 +370,7 @@ C  FIND NPCELL IN STANDARD MESH, BLOCK NBLOCK
             ELSE
               NPCELL=1
             ENDIF
+
           ENDIF
           NBLCKA=NSTRD*(NBLOCK-1)+NACELL
         ENDIF
@@ -350,13 +379,15 @@ C
 C  SWITCHING DONE
 C
       IF (IWEI.LT.0) then
-         CALL EIRENE_STDCOL_300
+         CALL EIRENE_STDCOL_ABSORB
          IRET = IRET_OUT
          RETURN
       ENDIF
-
-      IF (NLTRC.AND.EIRENE_IDEZ(ILIIN(MSURF),1,2).LE.4)
-     .  CALL EIRENE_CHCTRC(X0,Y0,Z0,16,8)
+      IF (NLTRC.AND.EIRENE_IDEZ(ILIIN(MSURF),1,2).LE.4) THEN
+!$OMP CRITICAL
+        CALL EIRENE_CHCTRC(X0,Y0,Z0,16,8)
+!$OMP END CRITICAL
+      ENDIF
 C
 C     
       IF (ILIIN(MSURF).LT.0) THEN
@@ -369,16 +400,17 @@ C
          RETURN
       ENDIF
 C     
-C  ILIIN(MASURF) .GT. 0, AND  ILIIN(MASURF) .NE. 2
-C  PREPARE REFLECTION, OR CARRY OUT PERIODICITY. I.E. SET OUTER NORMAL
+C  ILIIN(MSURF) .GT. 0, AND  ILIIN(MSURF) .NE. 2
+C  PREPARE REFLECTION, OR CARRY OUT PERIODICITY.
+C  I.E. SET OUTER NORMAL
 C
       select case (IDIMM)
       case (1)
-         CALL EIRENE_STDCOL_100
+         CALL EIRENE_STDCOL_X_RAD
       case (2)
-         CALL EIRENE_STDCOL_150
+         CALL EIRENE_STDCOL_Y_POL
       case (3)
-         CALL EIRENE_STDCOL_200
+         CALL EIRENE_STDCOL_Z_TOR
       end select
       IRET = IRET_OUT
       RETURN
@@ -406,12 +438,10 @@ c     Note: this periodicity is ready only for some geometry options
 c           and surfaces
 c
 c
-c  idimm=1:  radial surface
-c  idimm=2:  poloidal surface
-c  idimm=3:  toroidal surface
-c  idimm=4:  ???
-c  idimm=5:  ???
-
+c  idimm=1: x or radial surface
+c  idimm=2: y or poloidal surface
+c  idimm=3: z or toroidal surface
+c  idimm=4: mixed x or y grid surface
 
       IDIMM = IDIMM_IN
       X0=X0E
@@ -430,92 +460,104 @@ C     DISTINGUISH NEUTRAL AND IONISED PARTICLES
 C
       select case (IDIMM)
       case (1)
-         CALL EIRENE_STDCOL_100
+         CALL EIRENE_STDCOL_X_RAD
       case (2)
-         CALL EIRENE_STDCOL_150
+         CALL EIRENE_STDCOL_Y_POL
       case (3)
-         CALL EIRENE_STDCOL_200
-      case (4:5)
-         CALL EIRENE_STDCOL_250
+         CALL EIRENE_STDCOL_Z_TOR
+      case (4)
+         CALL EIRENE_STDCOL_XYMIX
+      case default
+        WRITE (iunout,*) 'ERROR EXIT IN STDNOR, IDIMM ',IDIMM
+        CALL EIRENE_EXIT_OWN(1)
       end select
       
       END SUBROUTINE EIRENE_STDNOR
 
 
-      SUBROUTINE EIRENE_STDCOL_100
+      SUBROUTINE EIRENE_STDCOL_X_RAD
+C
+C  RADIAL (or X- ) SURFACE, ALSO: SURFACES IN TRIANGULAR,
+C                           TETRAHEDRAL AND GENERAL (usr) GRIDS
       IMPLICIT NONE
       REAL(DP) :: TANPHI, PHINM, VCOS, VELS
       INTEGER :: IP, IST
 C
-C  RADIAL (or X- ) SURFACE, ALSO: SURFACES IN TRIANGULAR,
-C                            TETRAHEDRAL AND GENERAL (usr) GRIDS
-C
-C
       select case (LEVGEO)
       case (1)
+c  cartesian x coordinate
         CRTX=SCOS
         CRTY=0.
         CRTZ=0.
+c
 C  PERIODICITY SURFACE IN X DIRECTION
         IF (ILIIN(MSURF).GT.3) THEN
-          M=EIRENE_IDEZ(ILIIN(MSURF),2,2)
+          MRSURF=EIRENE_IDEZ(ILIIN(MSURF),2,2)
 C  NEW X0, AND KEEP Y AND Z (NLTRZ) OR Y AND PHI (NLTRA) CONSTANT
           IF (NLTRA) THEN
             TANPHI=Z0/(X0+RMTOR)
-            X0=RSURF(M)
+            X0=RSURF(MRSURF)
             Z0=TANPHI*(X0+RMTOR)
           ELSEIF (NLTRZ) THEN
-            X0=RSURF(M)
+            X0=RSURF(MRSURF)
           ELSEIF (NLTRT) THEN
-            WRITE (iunout,*) 'EXIT IN STDNOR'
+            WRITE (iunout,*) 'EXIT IN STDCOL_X_RAD'
             CALL EIRENE_EXIT_OWN(1)
           ENDIF
 C  NEW CELL NUMBERS
-          MRSURF=M
-          IF (SCOS.GT.0) NRCELL=M
-          IF (SCOS.LT.0) NRCELL=M-1
-          CALL EIRENE_STDCOL_500
+          IF (SCOS.GT.0) NRCELL=MRSURF
+          IF (SCOS.LT.0) NRCELL=MRSURF-1
+          CALL EIRENE_STDCOL_ASS
+          IRET_OUT = 2
           RETURN
         ENDIF
 
       case (2)
+c  radial coordinate in polar-toroidal- system
         CRTX=(X0-EP1(MRSURF))*ELLQ(MRSURF)
         CRTY=Y0
         PHINM=SQRT(CRTX*CRTX+CRTY*CRTY)
         CRTX=CRTX/PHINM*SCOS
         CRTY=CRTY/PHINM*SCOS
         CRTZ=0.
+c
 C  PERIODICITY SURFACE IN RADIAL DIRECTION, LEVGEO=2
         IF (ILIIN(MSURF).GT.3) THEN
           GOTO 998  ! OPTION NOT AVAILABLE
         ENDIF
 
       case (3)
+c  1st ("radial") coordinate in 2D polygonal grid
         IF (NLPOL)      IP=IPCELL
         IF (.NOT.NLPOL) IP=IPOLG
         CRTX=PLNX(MRSURF,IP)*SCOS
         CRTY=PLNY(MRSURF,IP)*SCOS
         CRTZ=0.
+c
 C  PERIODICITY SURFACE IN RADIAL DIRECTION, POLYGON GRID
         IF (ILIIN(MSURF).GT.3) THEN
           GOTO 998  ! OPTION NOT AVAILABLE
         ENDIF
 
       case (4)
+c  triangular grid
         IP=IPOLG
         CRTX=PTRIX(IP,MRSURF)*SCOS
         CRTY=PTRIY(IP,MRSURF)*SCOS
         CRTZ=0.
+c
 C  PERIODICITY SURFACE IN TRIANGULAR GRID
         IF (ILIIN(MSURF).GT.3) THEN
           GOTO 998  ! OPTION NOT AVAILABLE
         ENDIF
 
       case (5)
+c  tetrahedral grid
         IP=IPOLG
         CRTX=PTETX(IP,MRSURF)*SCOS
         CRTY=PTETY(IP,MRSURF)*SCOS
         CRTZ=PTETZ(IP,MRSURF)*SCOS
+c
 C  PERIODICITY SURFACE IN TETRAHEDRAL GRID
         IF (iliin(msurf).gt.3) THEN
           IST=MSURF-NLIM
@@ -540,7 +582,7 @@ C  IN CASE OF TEST IONS:  AT THIS POINT VELX,VELZ,VELX ARE THE REDUCED SPEED UNI
 C  E.G. THE PARALLEL TO B OR THE GUIDING CENTRE VELOCITY
           IF (ITYP.EQ.3) THEN
 C  IN CASE OF TEST IONS: FIND NEW SIGPAR, LOCAL BFIELD, RETAIN REDUCED SPEEDS VELPER, VELPAR
-C  FIND B-FIELD IN CELL NCELL
+C  FIND B FIELD IN CELL NCELL
 !pb VELS is not used in NEWFIELD with option 0
 !pb but for the sake of decent programming set VELS
             VELS = VEL
@@ -553,7 +595,7 @@ C  VELPER, VELPAR: AS BEFORE, BUT SPEED UNIT VECTOR:
 C  NOW REDUCED VELOCITY: GUIDING CENTRE APPROXIMATION
 
 C  APPROXIMATION A)
-C  USE B-FIELD LINE AS TRAJECTORY
+C  USE B FIELD LINE AS TRAJECTORY
             VLXPAR=SIGPAR*BBX
             VLYPAR=SIGPAR*BBY
             VLZPAR=SIGPAR*BBZ
@@ -578,67 +620,69 @@ C     VL_PAR=(/VLXPAR,VLYPAR,VLZPAR/)
   992 CONTINUE
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE
-     .  ('ERROR IN STDNOR, PROJECTION TO V_PAR, V_PERP    ')
+     .  ('STDCOL IDIMM=1, PROJECTION TO V_PAR, V_PERP    ')
       CALL EIRENE_MASAGE
-     .  ('PROBABLY ILL-DEFINED B-FIELD WRT. PARTICLE SPEED')
+     .  ('PROBABLY ILL-DEFINED B FIELD WRT. PARTICLE SPEED')
       WRITE (iunout,*) 'BBX,BBY,BBZ ',BBX,BBY,BBZ
       IRET_OUT = 0
       RETURN
   998 CONTINUE
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE
-     .  ('ERROR IN STDNOR, UNWRITTEN PERIODICITY OPTION   ')
+     .  ('STDCOL IDIMM=1, UNWRITTEN PERIODICITY OPTION   ')
       WRITE (iunout,*) 'MSURF ',MSURF
       IRET_OUT = 0
       RETURN
 
-      END SUBROUTINE EIRENE_STDCOL_100
+      END SUBROUTINE EIRENE_STDCOL_X_RAD
 
 
-      SUBROUTINE EIRENE_STDCOL_150
+      SUBROUTINE EIRENE_STDCOL_Y_POL
       IMPLICIT NONE
       REAL(DP) :: DST0, DSTT, FR, SINPHI, COSPHI
-      INTEGER :: IR
+      INTEGER :: IR, MP_NEW
+
 C  POLOIDAL SURFACE  MPSURF
-C
 C
       select case (LEVGEO)
       case (1)
         CRTX=0.
         CRTY=SCOS
         CRTZ=0.
+c
 C  PERIODICITY SURFACE IN Y DIRECTION
         IF (ILIIN(MSURF).GT.3) THEN
-          M=EIRENE_IDEZ(ILIIN(MSURF),2,2)
-          Y0=PSURF(M)
+          MPSURF=EIRENE_IDEZ(ILIIN(MSURF),2,2)
+          Y0=PSURF(MPSURF)
 C  NEW CELL NUMBERS, NEW SURFACE NUMBER
-          MPSURF=M
-          IF (SCOS.GT.0) NPCELL=M
-          IF (SCOS.LT.0) NPCELL=M-1
-          CALL EIRENE_STDCOL_500
+          IF (SCOS.GT.0) NPCELL=MPSURF
+          IF (SCOS.LT.0) NPCELL=MPSURF-1
+          CALL EIRENE_STDCOL_ASS
+          IRET_OUT = 2
           RETURN
         ENDIF
 
-C  PERIODICITY SURFACE IN POLOIDAL DIRECTION: USE POLYGON GRID EVEN IN CASE LEVGEO=2
+C  PERIODICITY SURFACE IN POLOIDAL DIRECTION:
+C  USE POLYGON GRID EVEN IN CASE LEVGEO=2, NLCRC
       case (2:3)
         IF (NLRAD)      IR=IRCELL
 C       IF (.NOT.NLRAD) IR=???
-!PB USE OUTER NORMAL OF PERIODICITY COUNTERPART
-!PB        CRTX=PPLNX(IR,MPSURF)*SCOS
-!PB        CRTY=PPLNY(IR,MPSURF)*SCOS
-!PB        CRTZ=0.
 C
         IF (ILIIN(MSURF).GT.3) THEN
-          M=EIRENE_IDEZ(ILIIN(MSURF),2,2)
+cdr Bug: in case levgeo=2 and nlcrc: xpol,... are undefined
+          MP_NEW=EIRENE_IDEZ(ILIIN(MSURF),2,2)
           DST0 = SQRT((XPOL(IR,MPSURF)-X0)**2+(YPOL(IR,MPSURF)-Y0)**2)
           DSTT = BGLP(IR+1,MPSURF)-BGLP(IR,MPSURF)
           FR = DST0 / DSTT
-          X0 = XPOL(IR,M) + FR*VVTX(IR,M)
-          Y0 = YPOL(IR,M) + FR*VVTY(IR,M)
+          X0 = XPOL(IR,MP_NEW) + FR*VVTX(IR,MP_NEW)
+          Y0 = YPOL(IR,MP_NEW) + FR*VVTY(IR,MP_NEW)
+          CALL EIRENE_STDCOL_ASS
+          IRET_OUT = 2
+
 ! NEW VELOCITY
 ! (PPLNX,PPLNY) ARE ALREADY NORMALIZED
-          COSPHI=PPLNX(IR,MPSURF)*PPLNX(IR,M) +
-     .           PPLNY(IR,MPSURF)*PPLNY(IR,M)
+          COSPHI=PPLNX(IR,MPSURF)*PPLNX(IR,MP_NEW) +
+     .           PPLNY(IR,MPSURF)*PPLNY(IR,MP_NEW)
           SINPHI=SQRT(1._DP-COSPHI*COSPHI)
 ! COS(-PHI)=COS(PHI) ; SIN(-PHI)=-SIN(PHI)
           COSROT=COSPHI
@@ -646,17 +690,17 @@ C
           VELX_OLD = VELX
           VELX = VELX_OLD*COSROT - VELY*SINROT
           VELY = VELX_OLD*SINROT + VELY*COSROT
-C  NEW CELL NUMBERS
-          MPSURF=M
+C  NEW SURFACE AND CELL NUMBERS
+          MPSURF=MP_NEW
           IF (SCOS.GT.0) THEN
-            NPCELL = M
-            IPOLG = M
-            IPOLGN = M
+            NPCELL = MPSURF
+            IPOLG = MPSURF
+            IPOLGN = MPSURF
           END IF
           IF (SCOS.LT.0) THEN
-            NPCELL = M-1
-            IPOLG = M-1
-            IPOLGN = M-1
+            NPCELL = MPSURF-1
+            IPOLG = MPSURF-1
+            IPOLGN = MPSURF-1
           END IF
         END IF
 !PB USE OUTER NORMAL OF PERIODICITY COUNTERPART
@@ -670,38 +714,40 @@ C  NEW CELL NUMBERS
       end select
       IRET_OUT = 2
       RETURN
-      END SUBROUTINE EIRENE_STDCOL_150
+      END SUBROUTINE EIRENE_STDCOL_Y_POL
 
 
-      SUBROUTINE EIRENE_STDCOL_200
+      SUBROUTINE EIRENE_STDCOL_Z_TOR
       IMPLICIT NONE
 C
 C  TOROIDAL SURFACE
-C
 C
       IF (NLTRZ) THEN
         CRTX=0.
         CRTY=0.
         CRTZ=SCOS
+
 C  PERIODICITY SURFACE IN Z-DIRECTION
         IF (ILIIN(MSURF).GT.3) THEN
-          M=EIRENE_IDEZ(ILIIN(MSURF),2,2)
-          Z0=ZSURF(M)
-          MTSURF=M
-          IF (SCOS.GT.0) NTCELL=M
-          IF (SCOS.LT.0) NTCELL=M-1
-          CALL EIRENE_STDCOL_500
+          MTSURF=EIRENE_IDEZ(ILIIN(MSURF),2,2)
+          Z0=ZSURF(MTSURF)
+          IF (SCOS.GT.0) NTCELL=MTSURF
+          IF (SCOS.LT.0) NTCELL=MTSURF-1
+          CALL EIRENE_STDCOL_ASS
+          IRET_OUT = 2
           RETURN
         ENDIF
+
       ELSEIF (NLTRA) THEN
         CRTX=-SIN(ALPHA)
         CRTY=0.
         CRTZ=SCOS*COS(ALPHA)
+
 C  PERIODICITY SURFACE IN TOROIDAL-DIRECTION
         IF (ILIIN(MSURF).GT.3) THEN
-          M=EIRENE_IDEZ(ILIIN(MSURF),2,2)
-C  NEW POSITION. KEEP X0,Y0 FIXED
-          PHI=ZSURF(M)
+          MTSURF=EIRENE_IDEZ(ILIIN(MSURF),2,2)
+C  NEW PHI POSITION. KEEP X0,Y0 FIXED
+          PHI=ZSURF(MTSURF)
 C  ROTATE VELOCITY BECAUSE OF LOCAL COORDINATE SYSTEM ROTATION
           IF (ITYP.LE.2) THEN
 C  ANGLE FOR ROTATION IS ONLY 2*ALPHA, BECAUSE THE REST OF THE TOROIDAL
@@ -715,11 +761,11 @@ C  PERIODICITY IS CONTAINED IN ROTATED LOCAL COORDINATE SYSTEMS.
           Z01=-Z01
           Z0=Z01
 C  NEW CELL NUMBERS
-          MTSURF=M
-          IF (SCOS.GT.0) NTCELL=M
-          IF (SCOS.LT.0) NTCELL=M-1
+          IF (SCOS.GT.0) NTCELL=MTSURF
+          IF (SCOS.LT.0) NTCELL=MTSURF-1
           IPERID=NTCELL
-          CALL EIRENE_STDCOL_500
+          CALL EIRENE_STDCOL_ASS
+          IRET_OUT = 2
           RETURN
         ELSE
 C         CRTX=?
@@ -736,26 +782,26 @@ C         CRTZ=?
       ENDIF
       IRET_OUT = 2
       RETURN
-      END SUBROUTINE EIRENE_STDCOL_200
+      END SUBROUTINE EIRENE_STDCOL_Z_TOR
 
 
-      SUBROUTINE EIRENE_STDCOL_250
+      SUBROUTINE EIRENE_STDCOL_XYMIX
       IMPLICIT NONE
 C
 C  MIXED X-Y GRID SURFACE,  idimm=4
 C
-      IF (NLSRFX) CALL EIRENE_STDCOL_100
-      IF (NLSRFY) CALL EIRENE_STDCOL_150
+      IF (NLSRFX) CALL EIRENE_STDCOL_X_RAD
+      IF (NLSRFY) CALL EIRENE_STDCOL_Y_POL
       IF (NLSRFX .OR. NLSRFY) RETURN
-      WRITE (iunout,*) ' ERROR IN STDNOR,',
+      WRITE (iunout,*) ' ERROR IN STDCOL_XY-MIX,',
      .            ' IDIMM=4 AND NEITHER NLSRFX NOR NLSRFY '
       CALL EIRENE_EXIT_OWN(1)
 C
 C
-      END SUBROUTINE EIRENE_STDCOL_250
+      END SUBROUTINE EIRENE_STDCOL_XYMIX
 
 
-      SUBROUTINE EIRENE_STDCOL_300
+      SUBROUTINE EIRENE_STDCOL_ABSORB
       IMPLICIT NONE
       INTEGER :: MSURFO
 C
@@ -763,14 +809,23 @@ C  IWEI.LT.0, I.E., ILIIN OPTION IS OVERRULED FROM THIS SIDE
 C
       IF (IWEI.EQ.-1) THEN
 C  PARTICLE HAS HIT A SURFACE FROM AN ABSORBING SIDE
-C  UPDATE FLUXES (DO NOT SET WEIGHT=0.D0) AND ABSORB PARTICLE
+C  SCORE FLUXES (DO NOT SET WEIGHT=0.D0, IRET_OUT=2)
+C  AND ABSORB PARTICLE LATER
         IF (NLTRC) THEN
+!$OMP CRITICAL
           CALL EIRENE_CHCTRC(X0,Y0,Z0,16,8)
           WRITE (iunout,*) 'ABSORB PARTICLE: NPANU ',NPANU
+!$OMP END CRITICAL
         ENDIF
-        IF (LSPUMP) SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
+        IF (LSPUMP) THEN
+!$OMP ATOMIC
+          SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
+        ENDIF
         IF (MSURFG.GT.0) THEN
-          IF (LSPUMP) SPUMP(ISPZ,MSURFG)=SPUMP(ISPZ,MSURFG)+WEIGHT
+          IF (LSPUMP) THEN
+!$OMP ATOMIC
+             SPUMP(ISPZ,MSURFG)=SPUMP(ISPZ,MSURFG)+WEIGHT
+          ENDIF
         END IF
         IF (LSPUMP) LMETSPW(ISPZ) = .TRUE.
         LGPART=.FALSE.
@@ -778,11 +833,15 @@ C  UPDATE FLUXES (DO NOT SET WEIGHT=0.D0) AND ABSORB PARTICLE
         RETURN
       ELSEIF (IWEI.EQ.-2) THEN
 C  KILL THIS PARTICLE BECAUSE IT COMES FROM WRONG SIDE
-C  DO NOT UPDATE FLUXES (SET WEIGHT=0.D0)
+C  DO NOT SCORE FLUXES (SET WEIGHT=0.D0, IRET_OUT=2)
+!$OMP ATOMIC
         PTRASH(ISTRA)=PTRASH(ISTRA)-WEIGHT
+!$OMP ATOMIC
         ETRASH(ISTRA)=ETRASH(ISTRA)-WEIGHT*E0
         IF (NLTRC) THEN
+!$OMP CRITICAL
           CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+!$OMP END CRITICAL
         ENDIF
         WRITE (iunout,*) 'ERROR DETECTED IN SUBR. STDCOL'
         WRITE (iunout,*) 'PARTICLE COMES FROM WRONG SIDE'
@@ -795,10 +854,16 @@ C  DO NOT UPDATE FLUXES (SET WEIGHT=0.D0)
         CALL EIRENE_MASR3 ('X0,Y0,Z0 (NEW)          ',X0,Y0,Z0)
         CALL EIRENE_MASR3 ('X0,Y0,Z0 (OLD)          ',X0SA,Y0SA,Z0SA)
         CALL EIRENE_MASR3 ('VELX,VELY,VELZ          ',VELX,VELY,VELZ)
-        CALL EIRENE_MASR2 ('WEIGHT,E0       ',WEIGHT,E0)
-        IF (LSPUMP) SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
+        CALL EIRENE_MASR3 ('VEL,WEIGHT,E0           ',VEL,WEIGHT,E0)
+        IF (LSPUMP) THEN
+!$OMP ATOMIC
+          SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
+        ENDIF
         IF (MSURFG.GT.0) THEN
-          IF (LSPUMP) SPUMP(ISPZ,MSURFG)=SPUMP(ISPZ,MSURFG)+WEIGHT
+          IF (LSPUMP) THEN
+!$OMP ATOMIC
+            SPUMP(ISPZ,MSURFG)=SPUMP(ISPZ,MSURFG)+WEIGHT
+          ENDIF
         END IF
         IF (LSPUMP) LMETSPW(ISPZ) = .TRUE.
         WEIGHT=0.
@@ -815,17 +880,25 @@ C  ACTS AS ILIIN=0 OPTION (NO SURFACE TALLIES, NO SWITCHES)
           IF (IDIMM.EQ.2.AND.ILIIN(MSURF).GT.0) NPCELL=NPCELL+ICOS
           IF (IDIMM.EQ.3.AND.ILIIN(MSURF).GT.0) NTCELL=NTCELL+ICOS
         END IF
-        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,8)
+        IF (NLTRC) THEN
+!$OMP CRITICAL
+          CALL EIRENE_CHCTRC(X0,Y0,Z0,16,8)
+!$OMP END CRITICAL
+        ENDIF
         colflag = .true.
         IRET_OUT = 1
         RETURN
       ELSEIF (IWEI.EQ.-10) THEN
 C  KILL THIS PARTICLE BECAUSE CELL NUMBER OUT OF RANGE DUE TO SWITCHING
-C  DO NOT UPDATE FLUXES (SET WEIGHT=0.D0)
+C  DO NOT SCORE FLUXES (SET WEIGHT=0.D0)
+!$OMP ATOMIC
         PTRASH(ISTRA)=PTRASH(ISTRA)-WEIGHT
+!$OMP ATOMIC
         ETRASH(ISTRA)=ETRASH(ISTRA)-WEIGHT*E0
         IF (NLTRC) THEN
+!$OMP CRITICAL
           CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+!$OMP END CRITICAL
         ENDIF
         WRITE (iunout,*) 'ERROR DETECTED IN SUBR. STDCOL'
         WRITE (iunout,*) 'NACELL OUT OF RANGE'
@@ -842,10 +915,16 @@ C  DO NOT UPDATE FLUXES (SET WEIGHT=0.D0)
         CALL EIRENE_MASR3 ('X0,Y0,Z0 (NEW)          ',X0,Y0,Z0)
         CALL EIRENE_MASR3 ('X0,Y0,Z0 (OLD)          ',X0SA,Y0SA,Z0SA)
         CALL EIRENE_MASR3 ('VELX,VELY,VELZ          ',VELX,VELY,VELZ)
-        CALL EIRENE_MASR2 ('WEIGHT,E0       ',WEIGHT,E0)
-        IF (LSPUMP) SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
+        CALL EIRENE_MASR3 ('VEL,WEIGHT,E0           ',VEL,WEIGHT,E0)
+        IF (LSPUMP) THEN
+!$OMP ATOMIC
+           SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
+        ENDIF
         IF (MSURFG.GT.0) THEN
-          IF (LSPUMP) SPUMP(ISPZ,MSURFG)=SPUMP(ISPZ,MSURFG)+WEIGHT
+          IF (LSPUMP) THEN
+!$OMP ATOMIC
+            SPUMP(ISPZ,MSURFG)=SPUMP(ISPZ,MSURFG)+WEIGHT
+          ENDIF
         END IF
         IF (LSPUMP) LMETSPW(ISPZ) = .TRUE.
         WEIGHT=0.
@@ -853,30 +932,21 @@ C  DO NOT UPDATE FLUXES (SET WEIGHT=0.D0)
         IRET_OUT = 2
         RETURN
       ENDIF
-      END SUBROUTINE EIRENE_STDCOL_300
+      END SUBROUTINE EIRENE_STDCOL_ABSORB
 
 
-      SUBROUTINE EIRENE_STDCOL_400
+      SUBROUTINE EIRENE_STDCOL_ASS
+c  set further assistant coordinates for curvilinear 2nd and or 3rd grid
+c        x01,z01      (for tracing in toroidal grid)
+c        x00,y00,z00  (for tracing in poloidal grid)
+
       IMPLICIT NONE
-C
-C  ABSORBING SURFACE
-C  UPDATE FLUXES IN ESCAPE (DO NOT SET WEIGHT=0.D0 HERE), AND STOP THEN.
-C
-      IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,8)
-      LGPART=.FALSE.
-      IRET_OUT = 2
-C
-      END SUBROUTINE EIRENE_STDCOL_400
 
-
-      SUBROUTINE EIRENE_STDCOL_500
-      IMPLICIT NONE
-      IF (NLTRA) X01=X0+RMTOR
       X00=X0
       Y00=Y0
       Z00=Z0
+      IF (NLTRA) X01=X0+RMTOR
       Z01=Z0
-      IRET_OUT = 2
-      END SUBROUTINE EIRENE_STDCOL_500
+      END SUBROUTINE EIRENE_STDCOL_ASS
 
       END MODULE EIRMOD_STDCOL

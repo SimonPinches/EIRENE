@@ -21,7 +21,7 @@ c  mpartc, npartc and mpartt, npartt are set in eirmod_parmmod
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
-
+      
       IMPLICIT NONE
 
       PRIVATE
@@ -71,6 +71,8 @@ C  SOME FURTHER REAL VARIABLES USED ALONG PARTICLE TRAJECTORY
      R CRTX,   CRTY,   CRTZ,   SCOS,   SCOS_SAVE,  WGHTSP, WGHTSC,
      R CRTXG,  CRTYG,  CRTZG
 
+      REAL(DP), PUBLIC, SAVE ::
+     R VEL_MEAN, VELX_MEAN, VELY_MEAN, VELZ_MEAN, E0_MEAN
 c............................................................
 cdr the following variables are unused. Left over from former, mostly
 cdr unfinished options. To be removed?
@@ -97,7 +99,7 @@ C MPARTC=14
      I ISPZ,  ! UP TO HERE: STORE ON CENSUS
      I MRSURF, MPSURF, MTSURF, MASURF, MSURF,  ! UP TO HERE: STORE FULL PARTICLE INFORMATION
      I MSURFG
-
+!$OMP THREADPRIVATE(ISTRA)
 C  SOME FURTHER INTEGER VARIABLES USED ALONG PARTICLE TRAJECTORY
 
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
@@ -108,31 +110,50 @@ C  SOME FURTHER INTEGER VARIABLES USED ALONG PARTICLE TRAJECTORY
      I IC_NEUT, IC_ION,
      I ITYP,   IATM,   IMOL,   IION,   IPLS,   IPHOT,
      I ICOL,   IPOLGN, NINCX,  NINCY,  NINCZ,  NINCA,  NJUMP,
-     I NIMINT, ITRJ,
+     I NIMINT, ITRJ
 
-c  unrelated to particle trajectories:  IO streams
-     I IUNIN,  IUNOUT, IVTKOUT
-
-      DATA IUNIN / 1 /  ! must be known already during compile time.
-c                       ! better: move iunin, iunout, etc.. to parmmod ??
-
-!     VARIABLES FOR UNIFIED SUBROUTINES
+!   VARIABLES FOR UNIFIED SUBROUTINES FOR ATOMS, MOLECULES, TRACE IONS.
+!   SUCH AS: FPATH, UPDATE, .... TBD: COLLIDE
       INTEGER, PUBLIC, SAVE ::
      I IXSPZ, NMETOFF
 
       LOGICAL, PUBLIC, SAVE ::
      L LGPART, LGLAST, LGTIME,
      L NLSRFX, NLSRFY, NLSRFZ, NLSRFA,
-     L NLTRC,  NLTRJ
+     L NLTRC,  
+     L NLTRJ
 
+! Needed to avoid circular dependancy when testing for output values      
+      INTEGER, PUBLIC :: NTHREAD
+      
+!$OMP  THREADPRIVATE(RPSTT,X0,Y0,Z0,VEL,VELX,VELY,VELZ,E0,WEIGHT,
+!$OMP& IPSTD,RPST,
+!$OMP& TIME,PHI,XGENER,TIMINT,TIMPOL,TL,TT,TS,TF,ZT,ZDT1,CRTX,CRTY,
+!$OMP& CRTZ,SCOS,SCOS_SAVE,WGHTSP,WGHTSC,CRTXG,CRTYG,CRTZG,
+!$OMP& DE0_RAYL,
+!$OMP& DE0_RAYR,E0_RAY,IPST,IPSTT,NPANU,IPOLG,IPERID,NCELL,
+!$OMP& ITIME,IFPATH,IUPDTE,ISPZ,MRSURF,MPSURF,MTSURF,MASURF,MSURF,
+!$OMP& MSURFG,NTIM,IIMPOL,IIMINT,NRCELL,NPCELL,NTCELL,NACELL,NBLOCK,
+!$OMP& NBLCKA,NSTCLL,IC_NEUT,IC_ION,ITYP,IATM,IMOL,IION,IPLS,IPHOT,ICOL,
+!$OMP& IPOLGN,NINCX,NINCY,NINCZ,NINCA,NJUMP,NIMINT,ITRJ,IXSPZ,NMETOFF,
+!$OMP& LGPART,LGLAST,LGTIME,NLSRFX,NLSRFY,NLSRFZ,NLSRFA,NLTRC,NLTRJ)
+
+c  unrelated to particle trajectories:  IO streams
+      INTEGER, PUBLIC, SAVE ::
+     I IUNIN,  IUNOUT, IVTKOUT
+cym
+!$OMP THREADPRIVATE(IUNOUT)
+
+      DATA IUNIN / 1 /  ! must be known already during compile time.
+c                       ! better: move iunin, iunout, etc.. to parmmod ??
+
+cdr ...... declarations finished
 
 
       CONTAINS
 
 
-      SUBROUTINE EIRENE_ALLOC_COMPRT(NPRS)
-
-      INTEGER, INTENT(IN) :: NPRS
+      SUBROUTINE EIRENE_ALLOC_COMPRT
 
       IF (ALLOCATED(RPST)) RETURN
 
@@ -167,7 +188,8 @@ c  up to here: for census, npartt
 c  up to here: for splitting, npartc
 
       IPST  => IPSTD(2:MPARTC+1)  !  full (2:mpartc+1) particle information, integer
-
+cdr  why remove npanu from state vector for splitting?
+cdr  why do we need two different pointers here, and not for real(dp) state vectors?
       IPSTT => IPSTD(1:MPARTT)    !  reduced (1:mpartt), for census
 
       NPANU  => IPSTD( 1)
@@ -179,6 +201,7 @@ c  up to here: for splitting, npartc
       IUPDTE => IPSTD( 7)
       ISTRA  => IPSTD( 8)
       ISPZ   => IPSTD( 9)
+cdr  why is mrsurf on census?
       MRSURF => IPSTD(10)
 c  up to here: for census, mpartt
       MPSURF => IPSTD(11)
@@ -186,9 +209,10 @@ c  up to here: for census, mpartt
       MASURF => IPSTD(13)
       MSURF  => IPSTD(14)
 c  up to here: for splitting, mpartc
+cdr  why is msurfg on state vector?
       MSURFG => IPSTD(15)
 
-      CALL EIRENE_INIT_COMPRT (NPRS)
+      CALL EIRENE_INIT_COMPRT
 
       RETURN
       END SUBROUTINE EIRENE_ALLOC_COMPRT
@@ -211,13 +235,7 @@ c  up to here: for splitting, mpartc
       END SUBROUTINE EIRENE_DEALLOC_COMPRT
 
 
-      SUBROUTINE EIRENE_INIT_COMPRT (NPRS)
-cdr:  called from ??
-cdr   purpose ??
-C NPRS: NUMBER OF COMPUTE THREADS IN MPI PARALLEL MODE
-C     needed for IUNOUT
-
-      INTEGER, INTENT(IN) :: NPRS
+      SUBROUTINE EIRENE_INIT_COMPRT 
 
       RPST   = 0._DP
       IPSTD  = 0
@@ -292,10 +310,6 @@ C     needed for IUNOUT
       DE0_RAYR = 0._DP
 
 c  io files
-cdr same code as in subr. EIRENE
-      IUNOUT = 6 + IFOFF
-      IF (NPRS > 1) IUNOUT = 7 + IFOFF
-
       IVTKOUT= 28
 
 

@@ -25,7 +25,7 @@ c    npesta(istra):  master processor ("group-leader") for each stratum ISTRA
 c
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: NADSPC, NLIMPS, NLMPGS, NRTAL, NSTRA,
-     .                          NSMSTRA, NSTRAP
+     .                          NSMSTRA
       USE EIRMOD_CAI, ONLY: XMCT
       USE EIRMOD_CPES, ONLY: MY_PE, I_AM_LEADER, GET_LEADER_COMM
       USE EIRMOD_COUTAU, ONLY: NOUTAU, EIRENE_WRITE_COUTAU,
@@ -61,9 +61,9 @@ c
         if (my_pe == 0) CALL EIRENE_READ_COUTAU (help, IUNOUT)
         DEALLOCATE (OUTAU)
 
-        CALL MPI_REDUCE(XMCT,help,NSTRAP,
+        CALL MPI_REDUCE(XMCT,help,NSTRA+1,
      .                  mpi_double_precision,mpi_sum,0,icomgrp,ier)
-        if (my_pe == 0) XMCT = help(:NSTRAP)
+        if (my_pe == 0) XMCT(0:NSTRA) = help(1:NSTRA+1)
 
         mxdim = (max(NMOLI,NATMI,NIONI,NPHOTI,NPLSI)+1)*(NSTRA+1)
         allocate (lhelp(mxdim))

@@ -56,6 +56,7 @@ C
       USE EIRMOD_COMXS
       USE EIRMOD_RANF, ONLY: RANF_EIRENE
       USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
+      USE EIRMOD_CSDVI, ONLY: LMETSP
 
       IMPLICIT NONE
       
@@ -63,8 +64,10 @@ C
       INTEGER, INTENT(OUT) :: IRET
       
       REAL(DP) :: DUR, E0OLD, E0NEW, VNEW, WS, FAC, GYRO,
-     .            BVEC_1(3), VVEC(3), VELS, FNUI, EWG
-      INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IPL
+     .            BVEC_1(3), VVEC(3), VELS, FNUI, EWG,
+     .            BX, BY, BZ, BF, DIRPROJ, VDEL, VPLASP, SIG,
+     .            VX, VY, VZ
+      INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IPL, IPLSV, IPLSLOC
 ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
 C     SAVE INCIDENT SPECIES: IOLD
       
@@ -78,7 +81,7 @@ C
       IF (LCART) GOTO 991
 
 C  SKIP PUSH ?
-      IF (IND.EQ.1.OR.IND.EQ.3) GOTO 200
+      IF ((IND.EQ.1).OR.(IND.EQ.3)) GOTO 200
 
 C  1.) PUSH TO NEW POSITION ALONG REDUCED (GUIDING CENTRE) TRACK
 C     write (iunout,*) 'fpkcol push, zt used', zt
@@ -86,7 +89,7 @@ C     write (iunout,*) 'fpkcol push, zt used', zt
       Y0=Y0+VELY*ZT
       Z0=Z0+VELZ*ZT
       TIME=TIME+DUR
-      IF (LEVGEO.LE.3.AND.NLPOL) THEN
+      IF ((LEVGEO.LE.3).AND.NLPOL) THEN
         IPOLG=NPCELL
       ELSEIF (NLPLG) THEN
         IPOLG=EIRENE_LEARC2(X0,Y0,NRCELL,NPANU,'FOLION 2     ')
@@ -103,7 +106,11 @@ C     write (iunout,*) 'fpkcol push, zt used', zt
       MSURF=0
       IF (NLTRA) PHI=MOD(PHI-ATAN2(Z01,X01)+ATAN2(Z0,(RMTOR+X0)),PI2A)
 
-      IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,7)
+      IF (NLTRC) THEN
+!$OMP CRITICAL
+        CALL EIRENE_CHCTRC(X0,Y0,Z0,16,7)
+!$OMP END CRITICAL
+      ENDIF
 
 C  TEST FOR CORRECT CELL NUMBER AT COLLISION POINT
 C  KILL PARTICLE, IF TOO LARGE ROUND-OFF ERRORS DURING
@@ -124,8 +131,13 @@ C
 C  PRE-COLLISION ESTIMATOR
 C
       IF (NCLVI.GT.0) THEN
+        IF (SIGTOT.GT.0) THEN ! SIGTOT can be zero here (probably empty cell, so no reactions, but in that case we should not even be here, Fokker-Planck should be deactivated as well.)
         WS=WEIGHT/SIGTOT
-        CALL EIRENE_UPCUSR(WS,1)
+        ELSE
+          WS=0._DP
+        ENDIF
+CNR     NREACI+1 : REACTION INDEX FOR FOKKER-PLANCK (NOT IN REACTION LIST IN INPUT FILE)
+        CALL EIRENE_UPCUSR(WS,1,NREACI+1)
       ENDIF
 C
 C
@@ -142,7 +154,10 @@ cdr currently: arbitrary 1.5*Tiin(1,...)
         VNEW=RSQDVI(IOLD)*SQRT(E0NEW)
 C
 C  UPDATE ESTIMATORS EIIO,EIPL
+
+!$OMP ATOMIC
         EIIO(NCELLT)=EIIO(NCELLT)+WEIGHT*(E0NEW-E0OLD)
+
 cdr  for the time being: distribute bulk ion energy loss proportional to collision frequency
 cdr  strictly bulk ipls1 and ipls2 can have different gains/losses, depending on their
 cdr  temprature(ipls), even different sign.
@@ -150,11 +165,36 @@ cdr
         EWG = WEIGHT*(E0NEW-E0OLD)
         FNUI = SUM(FNUIAR(1:NPLSI))  ! CDR THIS SUM SHOULD BE KNOWN FROM CALLING ROUTINE
         DO IPL = 1, NPLSI
+!$OMP ATOMIC
           EIPL(IPL,NCELLT)=EIPL(IPL,NCELLT)-EWG*FNUIAR(IPL)/FNUI
         END DO
 C
 
         FAC=SQRT(E0NEW/E0OLD)
+        IF (NLSOLEDGE) THEN
+        
+CNR Now update the parallel momentum tallies (*** WARNING: Only for main background ion ***)
+        IF (LMIPL) THEN
+C  SET THE POST-COLLISION TEST PARTICLE PARALLEL VELOCITY
+          IPLSLOC = 1 ! Hardcoded only for main background ion
+          CALL EIRENE_BFIELD (NCELL,X0,Y0,Z0,BX,BY,BZ,BF,.TRUE.)
+          DIRPROJ = VELX*BX+VELY*BY+VELZ*BZ ! The test ion does not change (parallel) direction during the collision
+          VDEL=VELPAR*(1._DP-FAC)*DIRPROJ*AMUA*RMASSI(IION)*WEIGHT ! VELPAR_old-VNEW_parallel
+C
+          IF (INDPRO(4) == 8) THEN
+            CALL EIRENE_VECUSR(2,NCELL,X0,Y0,Z0,VX,VY,VZ,IPLSLOC,
+     .                         .TRUE.)
+            VPLASP=VX*BX+VY*BY+VZ*BZ
+            SIG=SIGN(1._DP,VPLASP)
+          ELSE
+            IPLSV=MPLSV(IPLSLOC)
+            SIG=1._DP
+            IF (LBVIN) SIG=SIGN(1._DP,BVIN(IPLSV,NCELL))
+          ENDIF
+          MIPL(IPLSLOC,NCELL)=MIPL(IPLSLOC,NCELL)+VDEL*SIG
+          LMETSP(NSPAMI+IPLSLOC)=.TRUE.
+        ENDIF
+        END IF
 C in this particlar case: retain old pitch: velpar/velper. No pitch angle scattering so far.
         VELPAR=VELPAR*FAC
         VELPER=VELPER*FAC
@@ -164,11 +204,18 @@ C in this particlar case: retain old pitch: velpar/velper. No pitch angle scatte
         GOTO 998
       ENDIF
 C  FP COLLISION DONE, LCART=F STILL, I.E. VEL = V_GC
-c  gets new B-field
+c  gets new B field
 
 !pb VELS is not used in NEWFIELD with option 1
+!pb but for the sake of decent programming set VELS
       VELS = VEL
+CNR   ONLY UPDATE VELOCITY VECTOR IF THE PARTICLE HAS BEEN PUSHED, NO NEED
+CNR   OTHERWISE, AND BREAKS TRAJECTORY IN CASE OF INT. GRID SURFACE: THE
+CNR   VELOCITY NEEDS TO BE KEPT FROM THE PREVIOUS CELL, OR THE FACE/VELOCITY
+CNR   INTERSECTION IN TIMER MAY NOT BE FOUND.
+      IF (IND.EQ.0.OR.IND.EQ.2) THEN
       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,1)
+      ENDIF
 
 C  SKIP TRANSFORM TO FULL VELOCITY AND RETURN WITH LCART=F  ?
 
@@ -176,9 +223,10 @@ C  SKIP TRANSFORM TO FULL VELOCITY AND RETURN WITH LCART=F  ?
 
 C  RETURN WITH FULL CARTESIAN VELOCITY VECTOR V = V_FULL
 
-C  NEW B-FIELD
+C  NEW B FIELD
 
 !pb VELS is not used in NEWFIELD with option 0
+!pb but for the sake of decent programming set VELS
       VELS = VEL
       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,0)
 
@@ -198,14 +246,19 @@ c strictly: e0new, vnew should be modified, due to new gyro phase.
       VEL=VNEW
       E0=E0NEW
       IRET = 2
-      RETURN
+CNR   RETURN
 C
 C  POST-COLLISION ESTIMATOR
 C
-C     IF (NCLVI.GT.0) THEN
-C       WS=WEIGHT/SIGTOT
-C       CALL UPCUSR(WS,2)
-C     ENDIF
+      IF (NCLVI.GT.0) THEN
+        IF (SIGTOT.GT.0) THEN ! SIGTOT can be zero here (probably empty cell, so no reactions, but in that case we should not even be here, Fokker-Planck should be deactivated as well.)
+          WS=WEIGHT/SIGTOT
+        ELSE
+          WS=0._DP
+        ENDIF
+CNR     NREACI+1 : REACTION INDEX FOR FOKKER-PLANCK (NOT IN REACTION LIST IN INPUT FILE)
+        CALL EIRENE_UPCUSR(WS,2,NREACI+1)
+      ENDIF
       IRET = 2
       RETURN
 C
@@ -217,7 +270,11 @@ C
      .  ('ERROR IN FPKCOL, DETECTED IN SUBR. CLLTST')
       CALL EIRENE_MASAGE('PARTICLE IS KILLED')
 C   DETAILED PRINTOUT ALREADY DONE FROM SUBR. CLLTST
-      IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+      IF (NLTRC) THEN
+!$OMP CRITICAL
+        CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+!$OMP END CRITICAL
+      ENDIF
       GOTO 999
 998   CALL EIRENE_MASAGE
      .  ('ERROR IN FPKCOL, NEG. FLIGHT TIME ENCOUNTERED')
@@ -225,14 +282,21 @@ C   DETAILED PRINTOUT ALREADY DONE FROM SUBR. CLLTST
 C   DETAILED PRINTOUT ALREADY DONE FROM SUBR. CLLTST
       WRITE (IUNOUT,'(A,I6)') ' NPANU = ',NPANU
       WRITE (IUNOUT,'(A,2ES12.4)') ' ZT, VEL = ', ZT, VEL
-      IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+      IF (NLTRC) THEN
+!$OMP CRITICAL
+        CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+!$OMP END CRITICAL
+      ENDIF 
       GOTO 999
 C
-  999 PTRASH(ISTRA)=PTRASH(ISTRA)-WEIGHT
+  999 LGPART=.FALSE. 
+!$OMP ATOMIC 
+      PTRASH(ISTRA)=PTRASH(ISTRA)-WEIGHT
+!$OMP ATOMIC
       ETRASH(ISTRA)=ETRASH(ISTRA)-WEIGHT*E0
       LGPART=.FALSE.
       WEIGHT=0.
       CALL EIRENE_LEER(1)
       IRET = 3
       RETURN
-      END
+      END SUBROUTINE EIRENE_FPKCOL

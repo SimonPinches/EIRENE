@@ -23,7 +23,7 @@ C  GEOMETRY
       NPPART=1
       NKNOT=1
       NTRI=1
-!      NTRII=0
+!     NTRII=0
       NTETRA=1
       NCOORD=1
 C  PRIMARY SOURCE
@@ -38,20 +38,19 @@ C  TEST PARTICLE SPECIES AND TALLIES
       NION=0
       NPLS=1
       NPHOT=0
+
       NADV=0
       NADS=0
       NCLV=0
       NSNV=0
       NALV=0
       NALS=0
-!PB   NAIN=1
       NAIN=0
       NCPV=0
       NBGK=0
       NADSPC=0
 C  BACKGROUND PARTICLE SPECIES AND TALLIES
-!     LMULTI = .FALSE.
-!     LMULVI = .FALSE.
+!     LMULPL = .FALSE.
       NPLSTI=1
       NPLSV=1
 C  STATISTICS
@@ -60,8 +59,6 @@ C  STATISTICS
       NCV=1
 C  ATOMIC DATA
       NREAC=1
-cdr I think nreac_add is fully redundant now --> tbd: remove 
-!pb   NREAC_ADD=0
 c  total no. of reaction cards read in block 4
       NREAC_LINES=0
       NREC=1

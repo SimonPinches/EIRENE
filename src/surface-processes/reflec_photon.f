@@ -1,10 +1,9 @@
 CDR  NOV 17 : lemtspw arguments corrected
 cdr  jan 18 : start to implement bi-directional reflectance functions
-cdr  dec.18: remove unfinished "hollmann databse model"
-cpb  oct.19: set ISPZO=ISPZ for default reflection model      
+cdr  dec.18 : remove unfinished "hollmann databse model"
+cpb  oct.19 : set ISPZO=ISPZ for default reflection model      
 C
 C
-      SUBROUTINE EIRENE_REFLEC_photon
 C
 C  REFLECT ESCAPING PHOTONS
 C  INPUT:
@@ -19,16 +18,6 @@ C       ITYP = 0  PHOTON IPHOT IS RETURNED TO CALLING PROGRAM
 C     LGPART= FALSE  NO PARTICLE IS RETURNED (ABSORPTION)
 C       ITYP = -1
 C
-
-      IMPLICIT NONE
-
-C
-C---------------------------------------------------------------------
-C
-
-      CALL EIRENE_REFLC0_PHOTON
-      END SUBROUTINE EIRENE_REFLEC_photon
-
 C
 C  INITIALIZE SURFACE REFLECTION MODELS FOR PHOTONS
 C
@@ -37,6 +26,8 @@ C
       IMPLICIT NONE
 C
       INTEGER, SAVE :: IFIRST=0
+
+!$OMP THREADPRIVATE(IFIRST)
 
       IF (IFIRST.EQ.1) RETURN
       IFIRST=1
@@ -89,6 +80,9 @@ C
      .            RPROB, PRFCF, PRFCT, PABS, PLAMBERT, WABS,
      .            ZEP1
       INTEGER, EXTERNAL :: EIRENE_IDEZ
+
+!$OMP THREADPRIVATE(NPANOLD)
+
 C
 C  RE-SYNCHRONIZE RANDOM NUMBERS (CORRELATED SAMPLING):  out.
 C  tbd:  introduce counter of max. possible random numbers used up to this point
@@ -117,7 +111,7 @@ C   MODREF=0: "PERFECTLY ABSORBING SURFACE", DEFAULT
 C   MODREF=1: "DATABASE REFLECTION MODEL"  (out)
 C
 !PB  to be revised
-!    RPROB: propability of the photon to be reflected
+!    RPROB: probability of the photon to be reflected
       RPROB = 0._dp
 
       IF (MODREF.EQ.1) THEN
@@ -167,7 +161,7 @@ C   COSINE OF ANGLE OF INCIDENCE against outer normal
 
 c  SPECULAR LOBE, BDRF MODEL.
         GOTO 600
-      ELSE
+      ELSE   ! modref gt 2
 C  ABSORB THIS PHOTON
         ISPZO = ISPZ      
         GOTO 700
@@ -175,6 +169,10 @@ C  ABSORB THIS PHOTON
 C
 C  UNFINISHED DATABASE MODEL REMOVED HERE. OLD STATEMENT LABELS: 100 TO 130.
 C
+cdr  currently this code part from here to statement label 600 cannot be reached.
+!    RPROB: probability of the photon to be reflected
+      RPROB = 0._dp
+
 C  DECIDE IF PARTICLE IS TO BE REFLECTED OR ABSORBED
 C  (NO THERMAL RE-EMISSION MODEL FOR INCIDENT PHOTONS)
 C
@@ -183,8 +181,10 @@ C  WITH SUPPRESSION OF ABSORPTION
         WABS=WEIGHT*(1.D0-RPROB)
         IF (WABS.GT.0.D0) THEN
           IF (LSPUMP) THEN 
+!$OMP ATOMIC
             SPUMP(ISPZO,MSURF)=SPUMP(ISPZO,MSURF)+WABS
             IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
               SPUMP(ISPZO,MSURFG)=SPUMP(ISPZO,MSURFG)+WABS
             END IF
             LMETSPW(ISPZO) = .TRUE.
@@ -204,7 +204,7 @@ C  SPECIES OF REFLECTED PARTICLE
       ISPZ=IPHOT
       ITYP=0
 C
-C  ENERGIE (WAVELENGTH):  NOT MODIFIED
+C  ENERGY (WAVELENGTH): NOT MODIFIED
 C
   600 CONTINUE
 C
@@ -242,9 +242,11 @@ C
   700 CONTINUE
       IF (LSPUMP) THEN
         IF (MSURF.GT.0) THEN
+!$OMP ATOMIC
           SPUMP(ISPZO,MSURF)=SPUMP(ISPZO,MSURF)+WEIGHT
         ENDIF
         IF (MSURFG.GT.0) THEN
+!$OMP ATOMIC
           SPUMP(ISPZO,MSURFG)=SPUMP(ISPZO,MSURFG)+WEIGHT
         END IF
         LMETSPW(ISPZO) = .TRUE.

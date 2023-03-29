@@ -2,4 +2,4 @@ c-------------------------------------------------------------------------
       SUBROUTINE GRJMP(X,Y)
       real :: x, y
       RETURN
-      END
+      END SUBROUTINE GRJMP

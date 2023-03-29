@@ -57,6 +57,7 @@ C  test ion secondaries:
   220     CONTINUE
   200   CONTINUE
    20 CONTINUE
+      call eirene_leer(1)
 C
       RETURN
       END

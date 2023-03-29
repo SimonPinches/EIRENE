@@ -74,7 +74,7 @@ C
      .           IML, MODC, IIO, IPLTI, IP, IAT,
      .           ICOUNT, IAA, IMM, III, IPP, KREAD
       INTEGER, EXTERNAL :: EIRENE_IDEZ
-      REAL(DP),PARAMETER :: EMINL=-2.3_DP
+      REAL(DP),PARAMETER :: TMINL=-2.3_DP
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt
 
@@ -204,6 +204,7 @@ C  FRACTIONS OF KINETIC ENERGY RELEASE; TO SECONDARY ATOMS
         EATPI(IRPI,IAT,1)=EATPI(IRPI,IAT,1)/ACCMAS
         EATPI(IRPI,IAT,2)=EATPI(IRPI,IAT,2)/ACCINV
       ENDDO
+cdr summed over post collision atom species
       EATPI(IRPI,0,1)=ACCMSA/ACCMAS
       EATPI(IRPI,0,2)=ACCINA/ACCINV
 C  FRACTIONS OF KINETIC ENERGY RELEASE; TO SECONDARY MOLECULES
@@ -211,6 +212,7 @@ C  FRACTIONS OF KINETIC ENERGY RELEASE; TO SECONDARY MOLECULES
         EMLPI(IRPI,IML,1)=EMLPI(IRPI,IML,1)/ACCMAS
         EMLPI(IRPI,IML,2)=EMLPI(IRPI,IML,2)/ACCINV
       ENDDO
+cdr summed over post collision molecule species
       EMLPI(IRPI,0,1)=ACCMSM/ACCMAS
       EMLPI(IRPI,0,2)=ACCINM/ACCINV
 C  FRACTIONS OF KINETIC ENERGY RELEASE; TO SECONDARY TEST IONS
@@ -218,6 +220,7 @@ C  FRACTIONS OF KINETIC ENERGY RELEASE; TO SECONDARY TEST IONS
         EIOPI(IRPI,IIO,1)=EIOPI(IRPI,IIO,1)/ACCMAS
         EIOPI(IRPI,IIO,2)=EIOPI(IRPI,IIO,2)/ACCINV
       ENDDO
+cdr summed over post collision test ion species
       EIOPI(IRPI,0,1)=ACCMSI/ACCMAS
       EIOPI(IRPI,0,2)=ACCINI/ACCINV
 C  FRACTIONS OF KINETIC ENERGY RELEASE; TO SECONDARY BULK IONS
@@ -225,6 +228,7 @@ C  FRACTIONS OF KINETIC ENERGY RELEASE; TO SECONDARY BULK IONS
         EPLPI(IRPI,IPP,1)=EPLPI(IRPI,IPP,1)/ACCMAS
         EPLPI(IRPI,IPP,2)=EPLPI(IRPI,IPP,2)/ACCINV
       ENDDO
+cdr summed over post collision heavy field particle species
       EPLPI(IRPI,0,1)=ACCMSP/ACCMAS
       EPLPI(IRPI,0,2)=ACCINP/ACCINV
 C
@@ -297,7 +301,7 @@ C           NEND=9
             DO J=1,NSBOX
               IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
-              tii = max(eminl,tii) ! this is another cut-off, at TIIN <=0.1 eV rather than at TVAC = 0.02 ev
+              tii = max(tminl,tii) ! this is another cut-off, at TIIN <=0.1 eV rather than at TVAC = 0.02 ev
 c old
 c old         CALL EIRENE_PREP_RTCS (KK,3,TII,CF)
 c old
@@ -422,7 +426,7 @@ C  use i-integral expressions. to be written
       ELSEIF (NSEPI4.EQ.3) THEN
 C  4.1C)  ENERGY LOSS RATE OF IMP. ION = EN.-WEIGHTED RATE
 C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN, WITH WEIGHTING/REJECTION
-        KREAD=INT(EBULK)
+        KREAD=NINT(EBULK)
         IF (KREAD.EQ.0) THEN
 c  data for mean ion energy loss are not available
 c  use collision estimator for energy balance
@@ -470,7 +474,7 @@ C  ENERGY RATE COEFFICIENT(TI,EBEAM)
               DO 257 J=1,NSBOX
                 IF (LGVAC(J,IPL)) CYCLE
                 TII=TIINL(IPLTI,J)+ADDTL
-                tii = max(eminl,tii)
+                tii = max(tminl,tii)
 c old
 c old           CALL EIRENE_PREP_RTCS (KREAD,5,TII,CF)
 c old
@@ -524,7 +528,7 @@ C  4.A1) ENERGY LOSS RATE OF IMP. ELECTRON = CONST.*RATE COEFF.
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
 C
-C  4.3. HEAVY PARTICLE ENERGY GAIN RATE
+C  4.3. HEAVY SECONDARY PARTICLE ENERGY GAIN RATE
 C
       EFLAG=EIRENE_IDEZ(ISCDE,3,5)
       IF (EFLAG.EQ.0) THEN
@@ -544,7 +548,7 @@ C        NOT A VALID OPTION
 
       ELSEIF (EFLAG.EQ.3) THEN
 C  4.3C)  SECONDARY HEAVY ENERGY GAIN RATE = EN.-WEIGHTED RATE(TI)
-        KREAD=INT(EHEAVY)
+        KREAD=NINT(EHEAVY)
         MODC=EIRENE_IDEZ(MODCLF(KREAD),5,5)
         IF (MODC.EQ.1) THEN
           IF (NSTORDR >= NRAD) THEN
@@ -633,7 +637,7 @@ C
       WRITE (iunout,*) IRPI
       CALL EIRENE_EXIT_OWN(1)
 
-      END
+      END SUBROUTINE EIRENE_XSTPI
 
 C
 C-----------------------------------------------------------------------
@@ -705,7 +709,8 @@ CDR  no photon secondaries here, otherwise loop would start with ispz1=1
      .  P2NP(IRPI,ISPZ1)=P2NP(IRPI,ISPZ1)/P2N
   550 CONTINUE
 C
-      END
+      RETURN
+      END SUBROUTINE EIRENE_XSTPI_1
 C
 C-----------------------------------------------------------------------
 C
@@ -717,9 +722,7 @@ C
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_CCONA
       USE EIRMOD_CGRID
-ctk      USE EIRMOD_CZT1
       USE EIRMOD_COMXS
-ctk      use EIRMOD_ctrcei, only: trcamd
 
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: IRPI, IPL
@@ -763,8 +766,8 @@ C  ARE SECONDARY ELECTRONS INVOLVED?
           WRITE (iunout,'(1X,A8,3(1PE12.4))') 'EL      ',
      .                   PELPI(IRPI),EI,EA
         ENDIF
+cdr     write (iunout,*) ' imin = ', imin, ' imax = ',imax
       ENDIF
-c     write (iunout,*) ' imin = ', imin, ' imax = ',imax
 C
       EI=1.D30
       EA=-1.D30
@@ -897,5 +900,6 @@ C
       WRITE (IUNOUT,'(1X,A15,1(1PE12.4))') 'SCALING FACTOR ',
      .                  FACRPI(IRPI,1)
       CALL EIRENE_LEER(1)
+      RETURN
 
-      END
+      END SUBROUTINE EIRENE_XSTPI_2

@@ -27,7 +27,14 @@ C
       REAL(DP), INTENT(IN) :: WTT
       REAL(DP), INTENT(OUT) :: ZWW, ZW, ZVOLNT, ZVOLWT
 ! ONLY SCLTAL(1,..) IS USED SO FAR.
-! THIS RULES OUT RESCALING TALLIES NTALA (=57),NTALB,NTALM,NTALT,NTALC,NTALR (=62),
+! THIS RULES OUT RESCALING BASED ON ADDITIONAL TALLIES NTALA (=57),
+!                                                      NTALC (=58),
+!                                                      NTALT (=59),
+!                                                      NTALM (=60),
+!                                                      NTALB (=61),
+!                                                      NTALR (=62)
+
+! BECAUSE IN THESE CASES SCLTAL MAY BE DEPENDENT ON FIRST (SPECIES) INDEX
 !
       REAL(DP), INTENT(IN) :: SCLTAL(N1DIM,*)
       REAL(DP), INTENT(OUT) :: ZVOLIN(*), ZVOLIW(*)
@@ -59,6 +66,7 @@ cdr  This is too restrictive.  Tallies 63 -- 100 should be fine.
 cdr  Only tallies between 57 and 62 (algebr. tallies) should be excluded.
 cdr  Even those may be possible choices, when SCLTAL is used with proper
 cdr  1st index below, rather than only SCLTAL(1,..).
+
           IF (IT.LE.0.OR.IT.GE.NTALA) GOTO 207
 c
           IF (IS.LT.0.OR.IS.GT.NFSTVI(IT)) GOTO 207

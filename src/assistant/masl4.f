@@ -9,4 +9,4 @@ C*DK MASL4
       WRITE (iunout,60) A,B,C,D,E
    60 FORMAT (1X,A,5X,4L3)
       RETURN
-      END
+      END SUBROUTINE EIRENE_MASL4

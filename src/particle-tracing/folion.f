@@ -53,20 +53,11 @@ C  Sept 05: also vel=velpar before call  to ...col  routines.
 !DR  eps12 --> eps6 for testing cosine of angle of incidence.
 !DR  levgeo=4:  if nlsrfx: correction of nrcell for SG gt.0 SG lt.eps6
 
-
-
-
-
-
-
 C  .......................................................................................
 C  DIFFERENCES FROM SUBR. FOLNEUT:
-
-
-
 C    0) INTRODUCE PARAMETERS VELPAR, VELPER:
 C       VELOCITY PARALLEL AND PERP TO B FIELD, RESP.
-C    1) REDUCED EQ. OF MOTION: A) MOTION ALONG B-FIELD: VEL= VELPAR
+C    1) REDUCED EQ. OF MOTION: A) MOTION ALONG B FIELD: VEL= VELPAR
 C                              B) GUIDING CENTRE, INCL DRIFTS (EXPL. EULER: JOSEF)
 C                              C) FULL GYRO MOTION (CORRECTIONS) NEAR TARGETS (TO BE DONE)
 C    2) ADDITIONALLY: "FOKKER-PLANCK COLLISIONS", ISRFCL=4
@@ -75,7 +66,6 @@ C                              B) TRUBNIKOV REFINED, SEMI-ANALYTICAL
 C                              C) BINARY: TAKIZUKA  (BENJAMIN)
 C                              D) HYBRID: PARTICLE-FLUID-FOKKER-PLANCK (JOSEF)
 C  .......................................................................................
-
 
 C
       SUBROUTINE EIRENE_FOLION
@@ -104,7 +94,7 @@ C           ITYP=4  NO NEXT GENERATION TEST PARTICLE IS GENERATED
 C                   (PARTICLE ABSORBED IN BULK ION SPECIES)
 c
 c  at 100 :   start a new trace ion, velocity is given as full cartesian vector, lcart=true
-c  at 1004:   reduced (guiding centre) velocities and B-field are now set for particle. lcart=false.
+c  at 1004:   reduced (guiding centre) velocities and B field are now set for particle. lcart=false.
 C  at 1001:   particle enters static loop
 C  at 1002:   particle leaves static loop
 c  at 101 :   full new trajectory starts here.
@@ -142,6 +132,9 @@ C
       USE EIRMOD_STDCOL, ONLY: EIRENE_STDCOL
       USE EIRMOD_SWITCH_PARTINFO, ONLY: EIRENE_SWITCH_PARTINFO
       USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
+      use eirmod_timer  
+      use eirmod_timep
+      use eirmod_colion
 
       IMPLICIT NONE
 
@@ -151,8 +144,8 @@ c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
       REAL(DP) :: AX(2)
       REAL(DP) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
      .            XSTORV2(NSTORV,N2ND+N3RD)
-      REAL(DP) :: COSIN, XLI, YLI, ZLI, DIST,
-     .          PR, WS, COLTYP, X0ERR, Y0ERR, Z0ERR,
+      REAL(DP) :: COSIN, XLI, YLI, ZLI,
+     .          PR, WS, X0ERR, Y0ERR, Z0ERR,
      .          FNUI,
      .          VELXS, VELYS, VELZS, VELS,
      .          SG,
@@ -160,12 +153,12 @@ c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
      .          ZLOG, ZINT1, ZEP1, ZTST, ZINT2,
      .          ZMFP, EIRENE_FPATH, ZTC,
      .          DELFAC, TIFAC,
-     .          SCOS_NEW, XOLD, YOLD, EPSLIM
+     .          SCOS_NEW, EPSLIM
       INTEGER :: ISTS, NCOUS, ICOU, J, JJ, IPL,
      .           ICO, NLI, NLE, JCOL, NRC, 
      .           NRCOLD, IPLTI, I, IM, ICOUN,
-     .           EIRENE_LEARC2, 
-     .           indf, NJUMP_EMC3 = 0, IRET, IRT_STAT
+     .           EIRENE_LEARC2, COLTYP,
+     .           indf, NJUMP_EMC3 = 0, IRET, IRT_STAT, KK
       LOGICAL :: LCNDEXP
 
 
@@ -187,7 +180,6 @@ c  with a new full (cartesian) velocity vector.
 c
       IF (.NOT.LCART) GOTO 9921
 
-
       XGENER=0.D0
 
 C  CHECK FOR VALID SPECIES INDEX
@@ -208,11 +200,10 @@ C
       IF (LDAMCEL(NCELL)) GOTO 9912
       IF (NCELL.GT.NSBOX.OR.NCELL.LT.1) GOTO 991
 
-
-c  find direction parallel and perpendicular to B-field, and velocity components
+c  find direction parallel and perpendicular to B field, and velocity components
 c  i.e. convert cartesian velocity unit vector VELX,VELY,VELX into
-c  parallel and perpendicular unit velocity componentes VELPAR
-c  find B-field in cell NCELL
+c  parallel and perpendicular unit velocity components VELPAR
+c  find B field in cell NCELL: return cartesian B field vectors in module CFPLK
       CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,0)
 
       VELXS=VELX
@@ -221,14 +212,14 @@ c  find B-field in cell NCELL
       VELS=VEL
 
 C  SIGPAR: SIGN OF PARALLEL VELOCITY WITH RESPECT TO B
-c  calculating the angle between full velocity and B-field
+c  calculating the angle between full velocity and B field
 c  BBX, BBY, BBZ are normalized!
       VCOS = VELX*BBX + VELY*BBY + VELZ*BBZ
       IF (ABS(VCOS).LT.EPS30) GOTO 992
       SIGPAR=SIGN(1._DP,VCOS)
       VELPAR=ABS(VEL*VCOS)
       VELPER=SQRT(MAX(0._DP,VEL**2 - VELPAR**2))
-c  VELOCITY WITH RESPECT TO B-FIELD IS NOW DEFINED:
+c  VELOCITY WITH RESPECT TO B FIELD IS NOW DEFINED:
 c  VELPAR: full parallel velocity, absolute value
 c  VELPER: full perpendicular velocity, always non-negative
 c  SIGPAR: sign of parallel velocity with respect to B
@@ -236,7 +227,7 @@ c  SIGPAR: sign of parallel velocity with respect to B
 C  NOW REDUCED VELOCITY: GUIDING CENTRE APPROXIMATION
 
 c  APPROXIMATION A)
-c  use B-field line as trajectory
+c  use B field line as trajectory
 c  VLXPAR,VLYPAR,VLZPAR gives the direction of the full parallel velocity
 c  in Cartesian coordinates - absolute value is not correct!!!
       VLXPAR=SIGPAR*BBX
@@ -257,6 +248,7 @@ C     IF (ITYP.EQ.3) THEN
 C       NLPR=   : NOT AVAILABLE
         NRC=NRCI(IION)
 C     ENDIF
+        
       IF (IFPATH.NE.1.OR.NRC.LT.0) GOTO 1002
 C  STOP STATIC LOOP AFTER 100 GENERATIONS LATEST, TO AVOID ACCIDENTAL INFINITE LOOPS
       IF (IC_ION.GT.100) GOTO 1002
@@ -266,7 +258,7 @@ C
 C  the particle may be sitting exactly on a surface (nlsrf...=.true.).
 C
 C  this part is special for ions: due to projection of velocity
-C  onto Guiding Center Motion (or even onto B-field) the correct
+C  onto Guiding Center Motion (or even onto B field) the correct
 C  angle relative to surface may be lost (e.g. cosin lt 0 may result).
 c  Also NINC may be different, depending on whether computed with full
 c  or with reduced (guiding centre) velocity
@@ -285,8 +277,6 @@ c  Else: continue at 1002
         call eirene_exit_own(1)
       ENDIF
       GOTO 1002
-
-
 
 c***********************************************************************
 c  CORRECTIONS FOR PARTICLES SITTING EXACTLY ON SURFACES DONE.
@@ -520,8 +510,6 @@ C
 C FNUI: collision frequency with background ions.
 
       FNUI   = 1.D-30
-
-
       IF (NRC.GE.0) THEN
         DO IPL=1,NPLSI
           IPLTI=MPLSTI(IPL)
@@ -543,7 +531,18 @@ C  default Coulomb collision model (simple energy relaxation, e.g. also: NRC=0)
 C  Set Coulomb collisions (energy relaxation) frequencies.
 C  Exclude vacuum region and virtual neutral background species
           IF (.NOT.LGVAC(NCELL,IPL) .AND. (NCHRGP(IPL) > 0) ) THEN
-            FNUIAR(IPL) = FNUEQI(DIIN(IPL,NCELL),TIIN(IPLTI,NCELL))
+CNR Slow ion assumption only (any ion vs any background incl. impurities).
+CNR Generic formula is FNUEQI_SLOWION, but does not seem
+CNR to work with impurity backgrounds like Ne+ ==> for now, 
+CNR only active for main ion bagrounds, 0 for other backgrounds. 
+CNR Here FNUEQI is only for H2+/D2+ against H+ D+ backgrounds. 
+CNR Otherwise 0 is returned.
+            IF (NLSOLEDGE) THEN
+              FNUIAR(IPL) = FNUEQI_SOL(DIIN(IPL,NCELL),
+     .                                 TIIN(IPLTI,NCELL),IION,IPL)
+            ELSE
+              FNUIAR(IPL) = FNUEQI(DIIN(IPL,NCELL),TIIN(IPLTI,NCELL))
+            END IF
             FNUI=FNUI+FNUIAR(IPL)
           END IF
 
@@ -576,94 +575,10 @@ C  BEFORE THIS SCAN: ZTST, ZDT1, CLPD(1):  MAX. POSSIBLE DISTANCE, DUE TO TIME S
 C
 CCC  210 CONTINUE
 C
-C
-C  TS:   DISTANCE TO NEXT RADIAL SURFACE OF STANDARD MESH
-C  ZDT1: DISTANCE TRAVELLED IN CURRENT RADIAL CELL
-C  ZT:   ACCUMULATED DISTANCE, UNTIL THIS SEGMENT
-C
-C  USE PARALLEL VELOCITY, I.E., COMPUTE PARALLEL DISTANCES IN GRID
-C  THUS ZT,TS,ZTST,ZDT1,CLPD ETC. ARE PARALLEL DISTANCES
-C  I.E., LCART=F AT THIS POINT
-C
-      IF (ITIME.EQ.1) THEN
-c  switch to gc velocity
-        IF (LCART) THEN
-          VELXS=VELX
-          VELYS=VELY
-          VELZS=VELZ
-          VELS =VEL
-
-          VELX=VLXPAR
-          VELY=VLYPAR
-          VELZ=VLZPAR
-          VEL =VELPAR
-          LCART=.FALSE.
-        ENDIF
-
-        IF (NLRAD) THEN
-          CALL EIRENE_TIMER(TS)
-          IF (.NOT.LGPART) GOTO 9911
-C
-          IF (TL.LT.TS.OR.TT.LT.TS.OR.TF.LT.TS) THEN
-            MRSURF=0
-            IPOLGN=0
-C  CHECK FOR INTERSECTION WITH ADDITIONAL SURFACE
-            IF (TL.LE.TT.AND.TL.LE.TF) THEN
-              ZDT1=TL-ZT
-              TL=ZT+ZDT1
-              ZTST=TL
-              ISRFCL=1
-C  INTERSECTION WITH TIME SURFACE. TIME LIMIT REACHED ?
-            ELSEIF (TT.LT.TL.AND.TL.LE.TF) THEN
-              ZDT1=TT-ZT
-              TT=ZT+ZDT1
-              ZTST=TT
-              ISRFCL=2
-C  Fokker-Planck collision, DIFFUSIVE STEP
-            ELSEIF (TF.LT.TL.AND.TF.LE.TT) THEN
-              ZDT1=TF-ZT
-              TF=ZT+ZDT1
-              ZTST=TF
-              ISRFCL=4
-            ENDIF
-          ELSE
-C  INTERSECTION A  WITH 1-ST (RADIAL) GRID SURFACE
-            ZDT1=TS-ZT
-            ZTST=TS
-            ISRFCL=0
-          ENDIF
-        ENDIF
-C
-        NCOU=1
-        NUPC(1)=0
-        CLPD(1)=ZDT1
-        NCOUNT(1)=1
-        NCOUNP(1)=1
-C
-        IF (NLTOR.OR.NLTRA) THEN
-          CALL EIRENE_TIMET (ZDT1)
-          TS=ZT+ZDT1
-          ZTST=TS
-        ENDIF
-C  2ND (OR POLOIDAL) SUB-GRID
-        IF (NLPOL) THEN
-          CALL EIRENE_TIMEP(ZDT1)
-          TS=ZT+ZDT1
-          ZTST=TS
-        ENDIF
-C
-        IF (ZDT1.LE.0.D0) GOTO 990
-
-c  switch to full velocity but gc velocity is not saved
-        IF (.NOT.LCART) THEN
-          VELX=VELXS
-          VELY=VELYS
-          VELZ=VELZS
-          VEL =VELS
-          LCART=.TRUE.
-        ENDIF
-
-      ENDIF
+      CALL EIRENE_TIME_TO_STANDARD_SURFACE
+     .    (TL, TF, TT, TS, ZDT1, ZT, ZTST, 
+     .     VELXS, VELYS, VELZS, VELS, ISRFCL, IRET)
+      IF (IRET /= 0) GOTO 995
 C
       IF (ZTST.GE.1.D30) GOTO 990
 C
@@ -733,7 +648,7 @@ C  COLLISION IN SECTION J OF CURRENT TRACK
 CCC         ENDIF
 C  THESE NEXT TWO LINES CAN NEVER BE REACHED, BECAUSE ONLY ONE
 C  CELL FOR EACH TRACK OF IONS (DISTINCT FROM FOLNEUT).
-C  THEN (AT THE LATEST): ROTATION OF VELOCITY DUE TO NEW B-FIELD
+C  THEN (AT THE LATEST): ROTATION OF VELOCITY DUE TO NEW B FIELD
 C           ZINT2=ZINT1
 C           ZT=ZT+CLPD(J)
 C         ELSEIF (JCOL.EQ.0) THEN
@@ -1145,7 +1060,11 @@ cdr  try to tell external code: particle on surface, but it is an old particle, 
           NJUMP_EMC3 = 3
         ENDIF
 
-        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,19)
+        IF (NLTRC) THEN
+!$OMP CRITICAL
+          CALL EIRENE_CHCTRC(X0,Y0,Z0,16,19)
+!$OMP END CRITICAL
+        ENDIF
         NUPC(1)=NPCELL-1+(NTCELL-1)*NP2T3
         NCELL=NRCELL+NUPC(1)*NR1P2+NBLCKA
         IF (LDAMCEL(NCELL)) GOTO 9912
@@ -1157,7 +1076,7 @@ C  DELTA COLLISION AT SURFACE DONE, NEW CELL FOUND (except in case levgeo 10 ?)
         IF (IRET == 2) GOTO 229
         IF (IRET == 3) GOTO 9991
 
-C  FIND NEW B-FIELD, NEW REDUCED (GC) VELOCITY
+C  FIND NEW B FIELD, NEW REDUCED (GC) VELOCITY
   229   CONTINUE
 C STORE NEW FULL VELOCITY
         VELS = VEL
@@ -1166,7 +1085,7 @@ cdr Warning: this call is probably incorrect in case of levgeo=10.
 !   Jump to external (e.g. emc3) routine)
 !   but there the cell number may be set only later.
 !   In fpkcol a new B field may already have been set.
-!   Futhermore: a new vel vector from fpkcol may get curruped here.
+!   Futhermore: a new vel vector from fpkcol may get corrupted here.
 
         ICO = 0
         GOTO 1004
@@ -1179,7 +1098,7 @@ C  PRE-COLLISION ESTIMATOR
 C
       IF (NCLVI.GT.0) THEN
         WS=WEIGHT/SIGTOT
-        CALL EIRENE_UPCUSR(WS,1)
+        CALL EIRENE_UPCUSR(WS,1,KK)
         IF (NADSPC_CD >= 1) CALL EIRENE_UPDATE_SPECTRUM (WS,1,1)
       ENDIF
 C
@@ -1197,7 +1116,7 @@ C  SAMPLE FROM COLLISION KERNEL FOR TEST IONS
 C  AT PRESENT: NO SUPPRESSION OF ABSORPTION AT IONIZATION
 C  FIND NEW WEIGHT, SPECIES INDEX, VELOCITY AND RETURN
 C
-      CALL EIRENE_COLION(CFLAG,COLTYP)
+      CALL EIRENE_COLION(CFLAG,COLTYP,KK)
       ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
 
 !  PARTICLE TYPE AND SPECIES MIGHT HAVE CHANGED
@@ -1208,11 +1127,11 @@ C  POST-COLLISION ESTIMATOR
 C
       IF (LGPART.AND.(NCLVI.GT.0)) THEN
         WS=WEIGHT/SIGTOT
-        CALL EIRENE_UPCUSR(WS,2)
+        CALL EIRENE_UPCUSR(WS,2,KK)
         IF (NADSPC_CD >= 1) CALL EIRENE_UPDATE_SPECTRUM (WS,2,1)
       ENDIF
 C
-      IF (COLTYP.EQ.2.) GOTO 700
+      IF (COLTYP.EQ.2) GOTO 700
 C
       GOTO 100
 C
@@ -1240,7 +1159,12 @@ C              FULL CARTESIAN VELOCITY COMPONENTS
           WRITE (IUNOUT,*) 'ERROR AT PERIODICITY SURFACE, LGPART=FALSE'
           RETURN
         ENDIF
-        IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,11)
+
+        IF (NLTRC) THEN
+!$OMP CRITICAL
+          CALL EIRENE_CHCTRC(X0,Y0,Z0,0,11)
+!$OMP END CRITICAL
+        ENDIF
         GOTO 1004
       ENDIF
 C
@@ -1354,7 +1278,7 @@ C
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE('ERROR IN FOLION, PROJECTION TO V_PAR, V_PERP')
       CALL EIRENE_MASAGE
-     .  ('PROBABLY ILL-DEFINED B-FIELD WRT. PARTICLE SPEED')
+     .  ('PROBABLY ILL-DEFINED B FIELD WRT. PARTICLE SPEED')
       WRITE (iunout,*) 'BBX,BBY,BBZ ',BBX,BBY,BBZ
       ZT=0.
       GOTO 9951
@@ -1363,7 +1287,11 @@ C
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE('ERROR IN FOLION, LCART HAS WRONG VALUE')
       WRITE (IUNOUT,*) 'NPANU,LCART ',NPANU,LCART
-      IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+      IF (NLTRC) THEN
+!$OMP CRITICAL
+        CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+!$OMP END CRITICAL
+      ENDIF
       GOTO 999
 C
   994 CALL EIRENE_MASAGE('ERROR IN FOLION, AT SURFACE DELTA EVENT')
@@ -1376,23 +1304,31 @@ C
       Y0ERR=Y0+ZT*VELY
       Z0ERR=Z0+ZT*VELZ
       IF (NLTRC) THEN
+!$OMP CRITICAL
         CALL EIRENE_CHCTRC(X0ERR,Y0ERR,Z0ERR,16,18)
+!$OMP END CRITICAL
       ELSE
+!$OMP CRITICAL
         WRITE (iunout,'(A,1P,4(1X,1E14.7))') 'X0,Y0,Z0,ZT ',X0,Y0,Z0,ZT
-        WRITE (iunout,'(A,1P,3(1X,1E14.7))') 'VELX,VELY,VELZ ',
-     .                                        VELX,VELY,VELZ
+        WRITE (iunout,'(A,1P,4(1X,1E14.7))') 'VELX,VELY,VELZ,VEL ',
+     .                                        VELX,VELY,VELZ,VEL
         WRITE (iunout,'(A,1P,3(1X,1E14.7))') 'X0ERR,Y0ERR,Z0ERR ',
      .                                        X0ERR,Y0ERR,Z0ERR
+!$OMP END CRITICAL
       ENDIF
       GOTO 999
   996 CALL EIRENE_MASAGE
      .  ('ERROR IN FOLION, COND. EXP. ESTIM. NOT IN USE')
       GOTO 999
-  997 CALL EIRENE_MASAGE
-     .  ('ERROR IN FOLION, DETECTED IN SUBR. CLLTST')
+  997 CALL EIRENE_MASAGE('ERROR IN FOLION, DETECTED IN SUBR. CLLTST')
       CALL EIRENE_MASAGE('PARTICLE IS KILLED')
 C   DETAILED PRINTOUT ALREADY DONE FROM SUBR. CLLTST
-      IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+
+      IF (NLTRC) THEN
+!$OMP CRITICAL
+        CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+!$OMP END CRITICAL
+      ENDIF
       GOTO 999
 C
   998 CALL EIRENE_MASAGE('ERROR IN FOLION, SPECIES INDEX OUT OF RANGE')
@@ -1400,7 +1336,9 @@ C
       GOTO 999
 C
   999 CONTINUE
+!$OMP ATOMIC
       PTRASH(ISTRA)=PTRASH(ISTRA)-WEIGHT
+!$OMP ATOMIC
       ETRASH(ISTRA)=ETRASH(ISTRA)-WEIGHT*E0
       LGPART=.FALSE.
       WEIGHT=0.
@@ -1426,14 +1364,56 @@ c  written for fnueqi without that factor.
       RETURN
       END FUNCTION FNUEQI
 
+      FUNCTION FNUEQI_SOL(XNI,TI,ION,IPL)
+      REAL(DP) ::  FNUEQI_SOL,XNI,TI
+      INTEGER ::  ION,IPL
+c     FNUEQI_SOL=8.8E-8*XNI*TI**(-1.5)
+c  This is not exactly the relaxation time, but instead a time
+c  which appears in the analytical (BGK-like) solution EA(t).
+c  to obtain an effective  nu(Ti) that can be compared with a
+c  "relaxation time"
+c  in the dgl dEA/dt=-nu(Ti,EA,...) times EA
+c  In the present limit: this must be multiplied by a factor(EA,Ti)
+
+CNR   For H2+/D2+ ions only (mass number 2 or 4)
+      IF ((nMASSI(ION).EQ.2).OR.(nMASSI(ION).EQ.4)) THEN
+CNR     For H+ background
+        IF (nMASSP(IPL).EQ.1) THEN
+          FNUEQI_SOL=1.02E-6*XNI*TI**(-1.5)
+CNR     For D+ background
+        ELSE IF (nMASSP(IPL).EQ.2) THEN
+          FNUEQI_SOL=7.21E-7*XNI*TI**(-1.5)
+CNR     Return 0 for other backgrounds (ex: impurities), not ready (negligiblity to be checked a posteriori when general formulas ready)
+        ELSE
+          FNUEQI_SOL = 0._dp
+        END IF
+CNR   For CH4+ on H+ background (mass number 16, background 1)
+      ELSE IF ((nMASSI(ION).EQ.16).OR.(nMASSP(IPL).EQ.1)) THEN
+      FNUEQI_SOL=8.5E-8*XNI*TI**(-1.5)
+      ELSE
+        FNUEQI_SOL = 0._dp
+      END IF
+c  in calling program: FNUEQI = FNUEQI*(1.+mB/mA)**0.5-1.5*Ti/EA
+c  but this is already implicitly contained in the analytic BGK solution
+c  written for fnueqi without that factor.
+      RETURN
+      END FUNCTION FNUEQI_SOL
+
 C  ION-ION ENERGY LOSS FREQUENCY (LOW ENERGY LIMIT, NRL) (1/SEC)
 C  GENERALIZATION OF LANGER EXPRESSION TO ARBITRARY IONS (MASS, CHARGE)
 C  note: for an intermediate period (1995 --2013) the mass factor
 c  (1+mB/mA) had an incorrect exponent -1/2, in the NRL formularies.
 c  2016: back to the correct formula (as in eighties) without that exponent
+CNR: This expression corresponds to nu^e_c in page 58 of EIRENE doc, which 
+CNR is the characteristic rate in the solution (eq 1.109). It
+CNR is the generalised expression under the slow ion assumption (slow ion
+CNR velocity compared to background thermal velocity) 
+CNR ! WIP: this formula does not seem to work for H2+ on impurities
+CNR backgrounds like H2+ on Ne+ (returns 10^9 W/m3...). Probably
+CNR requires more work. This is why it is not used here.
 
-      FUNCTION FNUEQI_1(EA,XNI,TI,ION,IPL)
-      REAL(DP) ::  FNUEQI_1,EA,XNI,TI
+      FUNCTION FNUEQI_SLOWION(EA,XNI,TI,ION,IPL)
+      REAL(DP) ::  FNUEQI_SLOWION,EA,XNI,TI
       INTEGER ::  ION,IPL
       REAL(DP) ::  Coullog,fact,za,zb,XMUA,XMUB
       Coullog=10.
@@ -1441,10 +1421,10 @@ c  2016: back to the correct formula (as in eighties) without that exponent
       ZB=NCHRGP(IPL)
       XMUA=nMASSI(ION)
       XMUB=nMASSP(IPL)
-      FACT=XNI*ZA**2*ZB**2*COULLOG*6.8E-8*XMUB**0.5/XMUA/TI**0.5
-      FNUEQI_1=FACT*(2./TI*(1.+XMUB/XMUA)-2/EA-1/EA)
+      FACT=2.*XNI*ZA**2*ZB**2*COULLOG*6.8E-8*XMUB**0.5/XMUA/TI**1.5
+      FNUEQI_SLOWION=FACT*(1.+XMUB/XMUA)
       RETURN
-      END FUNCTION FNUEQI_1
+      END FUNCTION FNUEQI_SLOWION
 
 C  ION-ION ENERGY LOSS FREQUENCY (FULL EXPRESSION, NRL) (1/SEC)
 C  INVOLVING THE CHANDRASEKHAR FUNCTIONS
@@ -1473,7 +1453,12 @@ C  INVOLVING THE CHANDRASEKHAR FUNCTIONS
 
       FUNCTION PSI_CHAND(X)
       REAL(DP) :: PSI_CHAND,X
+#ifdef PGF90
+      REAL(DP) :: DERF
+      PSI_CHAND=-DERF(SQRT(X))+2./SQRT(PIA)*EXP(-X)*SQRT(X)
+#else
       PSI_CHAND=-ERF(SQRT(X))+2./SQRT(PIA)*EXP(-X)*SQRT(X)
+#endif
       RETURN
       END FUNCTION PSI_CHAND
 
@@ -1483,12 +1468,11 @@ C  INVOLVING THE CHANDRASEKHAR FUNCTIONS
       RETURN
       END FUNCTION DPSI_CHAND
 
-
-      END
+      END SUBROUTINE EIRENE_FOLION
 
       SUBROUTINE EIRENE_NEWFIELD(X,Y,Z,VELS,IND)
 C  FIND NEW MAGNETIC FIELD AT NEW POINT X,Y,Z IN CELL NCELL
-C  IF (IND.EQ.0) RETURN WITH NEW LOCAL B-FIELD BVEC
+C  IF (IND.EQ.0) RETURN WITH NEW LOCAL B FIELD BVEC
 C
 C  IF (IND.GE.1) ADDITIONALLY ALSO PROVIDE REDUCED (GC) VELOCITY VECTOR (SPEED UNIT VECTOR)
 C    BUT RETAIN PREVIOUS MODULI: V_PARALLEL, V_PERP.
@@ -1504,13 +1488,12 @@ C
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
       USE EIRMOD_CCONA
-      USE EIRMOD_CFPLK
+      USE EIRMOD_CFPLK  !  BX, BY, BZ, BF
       USE EIRMOD_COMPRT
       USE EIRMOD_CRAND
       USE EIRMOD_CINIT
       USE EIRMOD_RANF, ONLY: RANF_EIRENE
       IMPLICIT NONE
-ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
       REAL(DP), INTENT(IN) :: X,Y,Z,VELS
       REAL(DP) :: BVEC_1(3), VVEC(3), GYRO, BBF
       INTEGER :: IND
@@ -1545,4 +1528,4 @@ C  BACK TO CARTESIAN COORDINATES
       VEL  = VELS
       LCART=.TRUE.
       RETURN
-      END
+      END SUBROUTINE EIRENE_NEWFIELD

@@ -1,6 +1,7 @@
 cdr  june 16: comments added
 cdr  in learca1: same code, but there NS=N1=1 always
 cdr  to be done: binary search
+cdr  aug. 20: code safeties from ITER branch
 C
 C*DK LEARCA2
       FUNCTION EIRENE_LEARCA2 (X,R,N1,N,NS,TEXT)
@@ -27,15 +28,14 @@ C
       IF (X.LT.R(NS,1)-1.D-12) GOTO 20
 
 cdr  this loop should be replaced with a binary search
+      I=2
       DO 10 J=2,N
         I=J
         IF (X-R(NS,J).LE.0.0) GOTO 15
    10 CONTINUE
 
-
       NNN=N
       IF (X.GT.R(NS,N)+1.D-12) GOTO 20
-
 
    15 EIRENE_LEARCA2=I-1
       RETURN
@@ -46,4 +46,4 @@ C
       EIRENE_LEARCA2=NNN
 C
       RETURN
-      END
+      END FUNCTION EIRENE_LEARCA2

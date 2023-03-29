@@ -3,11 +3,15 @@
  
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD, ONLY: NLIM, NLIMPS,
-     .                          NATM, NMOL, NION, NPHOT, NPLS, NSTRA
+     .                          NATM, NMOL, NION, NPHOT, NPLS, NSPZ, 
+     .                          NSTRA
 !pb      USE EIRMOD_COMPRT, ONLY: IUNOUT
 
-      use json_module
-     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
+      use json_module           !IGNORE
+!cym/cpg keep original names       
+!     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
+!cym, for reference : this would be equivalent to the initial code; works too for this file 
+!      use json_kinds, only: lk, rk, ik, ck
  
       IMPLICIT NONE
  
@@ -19,7 +23,7 @@
      .          eirene_push_string_stack, eirene_copy_addsrf,
      p          TRANSFORM, TRANSFORM_QUEUE
 
-      integer, public, parameter :: nblks=14
+      integer, public, parameter :: nblks=15
       character(20), public, parameter :: blknam(0:nblks)=
      .            (/ "HEADER              ",
      1               "GENERAL_DATA        ",
@@ -35,11 +39,13 @@
      1               "OUTPUT              ",
      2               "DIAGNOSTICS         ",
      3               "TIMEDEPENDENT_MODE  ",
-     4               "INTERFACING         " /)
+     4               "INTERFACING         ",
+     5               "MPI_INFORMATION     " /)
       logical, public, parameter :: blk_required(0:nblks)=
      >     (/.true.,  .true.,  .true.,  .true.,  .true.,
      >       .true.,  .true.,  .true.,  .false., .false., 
-     >       .false., .true.,  .false., .false., .true. /)
+     >       .false., .true.,  .false., .false., .true.,
+     >       .false. /)
       
       type jval_array
         type(json_value), pointer :: p
@@ -71,7 +77,8 @@
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R ALIMS0_IN(:,:), XLIMS3_IN(:,:), YLIMS3_IN(:,:), ZLIMS3_IN(:,:)
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE :: RLB_IN(:)
-      INTEGER, PUBLIC, ALLOCATABLE, SAVE :: ILCOL_IN(:)
+      INTEGER, PUBLIC, ALLOCATABLE, SAVE :: 
+     I ILCOL_IN(:), LCHSPNWL_IN(:,:)
        
       REAl(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R DATD_IN(:), DMLD_IN(:), DIOD_IN(:), DPLD_IN(:), DPHD_IN(:) 
@@ -81,11 +88,12 @@
       
 ! arrays for storing numbers of tallies explicitly switched on or off
 ! allocated in subroutine input      
-      INTEGER, PUBLIC, ALLOCATABLE, SAVE :: IVTLOUT(:), ISTLOUT(:)
-      INTEGER, PUBLIC, SAVE :: NVTLOUT, NSTLOUT
+      INTEGER, PUBLIC, ALLOCATABLE, SAVE :: ITLVOUT(:), ITLSOUT(:)
+      INTEGER, PUBLIC, SAVE :: NTLVOUT, NTLSOUT
 
       INTEGER, PUBLIC, SAVE :: NR1ST_IN, NP2ND_IN, NT3RD_IN, NRTAL_IN,
-     .                         NOPTIM_IN, NSMSTRA_IN
+     .                         NOPTIM_IN, NSMSTRA_IN, NSTRAI_IN, 
+     .                         NTIME_IN
       LOGICAL, PUBLIC, SAVE :: NLPOL_IN, NLPLG_IN, NLFEM_IN
 
       LOGICAL, PUBLIC, SAVE :: LDEF_LINES, LDEF_TIME_HORIZON
@@ -129,6 +137,8 @@
       implicit none
       character(*), intent(in) :: fname
       integer, intent(in) :: iblk, iunout
+      logical :: status_ok
+      character(kind=json_CK,len=:),allocatable :: error_msg
 
       njs = njs + 1
 
@@ -138,9 +148,12 @@
      .          case_sensitive_keys=.false.,compress_vectors=.false.)
 
       call jtrees(njs)%parse(file=fname, p=ptree(njs)%p)
-      if (jtrees(njs)%failed()) then
+      call jtrees(njs)%check_for_errors(status_ok,error_msg)
+!      if (jtrees(njs)%failed()) then
+      if (.not. status_ok) then
          write (iunout,*) ' EIRENE INPUT FILE ',fname,
      .                    ' COULD NOT BE READ '
+         write(*,*) 'Error: '//error_msg
          call eirene_exit_own(1)
       end if
 
@@ -160,7 +173,11 @@
       integer, intent(in) :: iunout
       integer :: i
       character(200) :: fname
-      character(kind=CK,len=:), allocatable :: incname
+!cym/cpg ck -> json_ck
+      character(kind=json_CK,len=:), allocatable :: incname
+!cym - avoid type mismatch
+      character(kind=json_CK,len=1), parameter :: space=' '
+!cym            
       integer :: ind, j
       logical :: found
 
@@ -175,7 +192,10 @@
 
         if (found) then
 !  separate file found, get filename
-          ind = index(incname,' ')
+!cym gfortran reports type mismatch
+!cym          ind = index(incname,' ')
+          ind = index(incname,space)
+!cym
           if (ind == 0) then
             fname = incname
           else
@@ -255,6 +275,7 @@
       ALLOCATE(ZLIMS3_IN(9,NLIM))
 
       ALLOCATE(ILCOL_IN(NLIMPS))
+      ALLOCATE(LCHSPNWL_IN(NSPZ,0:NLIMPS))
 
       ALLOCATE(DATD_IN(NATM))
       ALLOCATE(DMLD_IN(NMOL))
@@ -315,7 +336,8 @@
       DEALLOCATE(ZLIMS3_IN)
       
       DEALLOCATE(ILCOL_IN)
-
+      DEALLOCATE(LCHSPNWL_IN)
+      
       DEALLOCATE(DATD_IN)
       DEALLOCATE(DMLD_IN)
       DEALLOCATE(DIOD_IN)
@@ -400,6 +422,7 @@
       ZLIMS3_IN = 0._DP
 
       ILCOL_IN = 0
+      LCHSPNWL_IN = 0
 
       DATD_IN = 0._DP
       DMLD_IN = 0._DP
@@ -427,7 +450,10 @@
 !******************************************************************************
 
       subroutine eirene_push_string_stack (stack, str)
-      character(*), intent(in) :: str
+!cym/cpg      
+!      character(*), intent(in) :: str
+      character(kind=json_CK,len=*), intent(in) :: str
+!cym/cpg end    
       type(string_stack), intent(inout) :: stack
       type(s_stack), pointer :: new_elem
 
@@ -487,6 +513,7 @@
       ZLIMS3_IN(:,I) = ZLIMS3(:,I)
 
       ILCOL_IN(I) = ILCOL(I)
+      LCHSPNWL_IN(:,I) = LCHSPNWL(:,I)
       
       end subroutine eirene_copy_addsrf
 !******************************************************************************
