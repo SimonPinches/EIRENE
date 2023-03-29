@@ -1,0 +1,278 @@
+\documentclass[%
+  12pt,
+  DIV=13,
+  abstract=true,
+  chapterprefix=true,
+  numbers=noendperiod,
+  toc=bib
+]{scrreprt}
+
+\parindent=0pt
+
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{newtxtext}
+\usepackage{newtxmath}
+\usepackage[%
+  backend=biber,
+  citestyle=numeric-comp,
+  firstinits=true,
+  sorting=none,
+  maxcitenames=99,
+  maxbibnames=10,
+  url=false,
+  doi=false,
+  eprint=false
+]{biblatex}
+\usepackage[%
+  bookmarks=true,
+  bookmarksnumbered=true,
+  breaklinks=true,
+  colorlinks=true
+]{hyperref}
+\usepackage{cleveref}
+\usepackage[nolist]{acronym}
+\usepackage{siunitx}
+\usepackage{listings}
+\usepackage{fmtcount}
+\usepackage{lscape}
+\usepackage[%
+  labelformat=simple,
+  labelsep=colon
+]{subcaption}
+
+\hypersetup{
+  pdftitle={EIRENE Documentation},
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue,
+  filecolor=blue
+}
+
+\crefname{equation}{}{}
+
+\sisetup{
+  detect-weight = true
+}
+\DeclareSIUnit\ampere{amp}
+\DeclareSIUnit\atomicmassunit{AMU}
+\DeclareSIUnit\torr{Torr}
+\DeclareSIUnit\watt{watt}
+
+\lstset{
+  language=[77]Fortran
+}
+
+\DeclareCaptionSubType*{figure}
+\renewcommand\thesubfigure{Figure~\thefigure~(\alph{subfigure})}
+
+\newcommand{\vOmega}{\mathbf{\Omega}}
+\newcommand{\vvv}{\mathbf{v}}
+\newcommand{\ve}{\mathbf{e}}
+\newcommand{\vV}{\mathbf{V}}
+\newcommand{\vx}{\mathbf{x}}
+\newcommand{\vr}{\mathbf{r}}
+\newcommand{\vb}{\mathbf{b}}
+\newcommand{\ver}{\mathbf{e}_r}
+\newcommand{\veth}{\mathbf{e}_\theta}
+\newcommand{\veph}{\mathbf{e}_\phi}
+\newcommand{\vC}{\mathbf{C}}
+\newcommand{\vF}{\mathbf{F}}
+\newcommand{\vB}{\mathbf{B}}
+\newcommand{\vj}{\mathbf{j}}
+
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+% special hyphenations not known to LaTex:
+\hyphenation{bi-as-sing}
+\hyphenation{break-even}
+\hyphenation{EI-RE-NE}
+\hyphenation{Max-well-ian}
+\hyphenation{mol-e-cule}
+\hyphenation{mol-e-cules}
+\hyphenation{pa-ram-e-triza-tion}
+\hyphenation{phys-ics}
+\hyphenation{res-o-nant}
+\hyphenation{spe-cies}
+\hyphenation{to-roi-dal}
+
+\graphicspath{{figures/}}
+
+\addbibresource{eirene.bib}
+
+\begin{document}
+  \begin{titlepage}
+
+    \vspace*{5cm}
+
+    \begin{center}
+      {\Huge \textbf{The EIRENE Code User Manual}}
+
+      \vspace{1cm}
+
+      {\Large \textbf{including: B2-EIRENE interface }}
+      \vspace{2cm}
+
+      {\huge \textbf{Manual version:  \today}}
+    \end{center}
+
+      \vspace{5cm}
+
+      {\Large \textit{original author:}
+
+              \textbf{D.~Reiter\\
+                        Institut f\"ur Energie- und Klimaforschung -- Plasmaphysik\\
+                        Forschungszentrum J\"ulich GmbH\\
+                        P.O.B.\ 1913\\
+                        D-52425 J\"ulich, GERMANY}
+
+              \vspace{1em}
+
+              \textit{since Apr.\ 2019 maintained via}\\
+              \url{https://jugit.fz-juelich.de/eirene/eirene-manual}}
+
+      \clearpage\thispagestyle{empty}
+
+    \begin{center}
+      \begin{figure} \label{eirene}
+        \centering
+        \includegraphics[width=8cm]{manual00}
+      \end{figure}
+
+      {\Huge \textbf{EIRENE}}
+
+      \vspace{1.0cm}
+
+      {\Large \textbf{THE GREEK GODDESS OF PEACE}}
+
+      \vspace{2.0cm}
+
+      The Greek author Hesiodos wrote a genealogy of the gods, The Theogony, in 
+      the 8th century B.C.. 
+      According to him, EIRENE and her sisters, Eunomia and Dike, were the daughters 
+      of Zeus and Themis. 
+      These sisters were called the horae, the Greek word for the right time, hora.
+    \end{center}
+  \end{titlepage}
+
+  \begin{abstract}\label{abstract}
+    The EIRENE neutral particle (incl.\ photons) transport code \cite{kn:Reiter92a} 
+    is described.
+    This code resorts to a combinatorial discretization of general 3 dimensional
+    computational domains. 
+    It is a multi-species code solving simultaneously a system of time dependent 
+    (optional) or stationary (default) linear or non-linear kinetic transport 
+    equations of almost arbitrary complexity. 
+    A rather crude model for transport of ionized particles in an externally 
+    specified magnetic field lines is also included. 
+    EIRENE is coupled to external databases for atomic and molecular data and for 
+    surface reflection data, and it calls various user supplied routines, e.g.\ 
+    for exchange of data with other (fluid-) transport codes. 
+    The main goal of code development was to provide a tool to investigate neutral 
+    gas transport in magnetically confined plasmas. 
+    But, due to its flexibility, it also can be used to solve more general linear 
+    kinetic transport equations, by applying a stochastic rather than a numerical 
+    or analytical method of solution.
+    In particular, options are retained to reduce the model equations to the
+    theoretically important case of the one speed transport problem.
+
+    Major applications of EIRENE are in connection with plasma fluid codes, in 
+    particular with the various versions of the B2 code \cite{kn:Braams}.
+    The semi-implicit iterative coupling method of B2-EIRENE \cite{kn:Reiter91b},
+    \cite{kn:Reiter92b} and it's implementation (code segment: EIRCOP) are also 
+    described.
+    Both, in its stand alone form and also non-linearly integrated into plasma 
+    fluid transport solvers the EIRENE code has become a widely spread 
+    ''community code" since the nineties of the last century.
+    A short overall summary of the code package, including some historical notes, 
+    is given in \cite{kn:Reiter2004}.
+  \end{abstract}
+
+  \pagenumbering{Roman}
+  \renewcommand\thechapter{\Roman{chapter}}
+
+  \include{tex/foreword}
+
+  \tableofcontents
+
+  \include{tex/intro}
+
+  % to make sure that bookmarks stay correct in pdf:
+  % due to roman and arabic section numbering otherwise section1 would be there twice.
+  % and pdf viewer gets confused.
+  \renewcommand{\theHchapter}{arabicchapter.\thechapter}
+  \renewcommand\thechapter{\arabic{chapter}}
+  %\renewcommand{\thesection}{\arabic{section}}
+  %\renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
+  %\renewcommand{\thesubsubsection}{\thesection.\thesubsection.\arabic{subsubsection}}
+  \pagenumbering{arabic}
+
+  \setcounter{chapter}{0}
+
+  \include{tex/chap1}
+
+  \include{tex/chap2}
+
+  \include{tex/chap2b1}
+
+  \include{tex/chap2b2}
+
+  \include{tex/chap2b3a}
+
+  \include{tex/chap2b3b}
+
+  \include{tex/chap2b4}
+
+  \include{tex/chap2b5}
+
+  \include{tex/chap2b6}
+
+  \include{tex/chap2b7}
+
+  \include{tex/chap2b8}
+
+  \include{tex/chap2b9}
+
+  \include{tex/chap2b10}
+
+  \include{tex/chap2b11}
+
+  \include{tex/chap2b12}
+
+  \include{tex/chap2b13}
+
+  \include{tex/chap2b14}
+
+  \include{tex/chap3}
+
+  \include{tex/chap4}
+
+  \include{tex/tables}
+
+  \printbibliography[heading=bibintoc]
+
+  \begin{acronym}
+    \acro{Ats}[Ats.]{atoms}
+    \acro{ADAS}{atomic data and analysis structure}
+    \acro{AMU}[\si{\atomicmassunit}]{atomic mass unit}
+    \acro{BGK}{Bhatnagar--Gross--Krook}
+    \acro{BI}[B.I.]{bulk ions}
+    \acro{BREP}{boundary representation}
+    \acro{CAD}{computer-aided design}
+    \acro{CFD}{computational fluid dynamics}
+    \acro{CFL}{Courant--Friedrichs--Lewy}
+    \acro{CSG}{constructive solid geometry}
+    \acro{DMCS}{direct Monte Carlo simulation}
+    \acro{ELM}{edge localised mode}
+    \acro{FOM}{figure of merit}
+    \acro{MCNP}{Monte Carlo N-particle}
+    \acro{Mls}[Mls.]{molecules}
+    \acro{Pht}[Pht.]{photons}
+    \acro{SLPM}[\si{s\litre\per\minute}]{standard litre per minute}
+    \acro{TEXTOR}{tokamak experiment for technology-oriented research}
+    \acro{TI}[T.I.]{test ions}
+    \acro{WCU}{Wang Chang--Uhlenbeck}
+  \end{acronym}
+
+\end{document}

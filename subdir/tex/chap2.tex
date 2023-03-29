@@ -1,0 +1,402 @@
+\chapter{Description of EIRENE input file} \label{sec2}
+
+\textbf{General Remarks} 
+
+\medskip 
+
+Reading of all input data is initialized in subroutine  INPUT. Starting with EIRENE 
+version EIRENE\_JSON\_input two I/O options are available: the traditional 
+formatted input or the more modern JSON input. In order to distinguish which
+type of input is available the code reads the first line of input from I/O channel 
+IUNIN. Depending on the first character found the appropriate read procedure is 
+carried out. \\
+First character 
+\begin{description} 
+  \itemsep0em
+  \item [$= *$] means traditional formatted input is used.
+  \item [$= \{$] means JSON input is expected. 
+\end{description}
+Independent of the input format used the code will produce a corresponding
+JSON file. Thus the code works as an input converter as it is planned to completely
+move to JSON format over time.
+
+\medskip
+
+\textbf{Formatted Input}
+
+\medskip
+
+The formatted input is read from unit IUNIN via subroutine READ\_FIXFORM
+
+There are 14 "blocks", each one starting with a card 
+
+\begin{lstlisting}
+*** n. TEXT
+\end{lstlisting} 
+where n is the number of the input block, n = 1, 2, \dots, 14.
+Some blocks are subdivided into so called "sub-blocks", each one starting with
+a card 
+
+\begin{lstlisting}
+** TEXT .
+\end{lstlisting} 
+
+Each input block is described in one of the following 14
+\crefrange{sec2.1}{sec2.14}:
+
+\medskip
+
+\textsl{2.1  Input data for operating mode}
+
+\textsl{2.2  Input data for standard mesh}
+
+\textsl{2.3A Input data for "Non-default Standard Surfaces"}
+
+\textsl{2.3B Input data for "Additional Surfaces"}
+
+\textsl{2.4  Input data for species specification and atomic physics module}
+
+\textsl{2.5  Input data for plasma background}
+
+\textsl{2.6  Input data for surface interaction models}
+
+\textsl{2.7  Input data for initial distribution of test particles}
+
+\textsl{2.8  Additional data for some specific mesh zones}
+
+\textsl{2.9  Data for statistics and non-analog methods}
+
+\textsl{2.10 Data for additional volumetric and surface averaged tallies}
+
+\textsl{2.11 Data for numerical and graphical output}
+
+\textsl{2.12 Data for plasma diagnostic module DIAGNO}
+
+\textsl{2.13 Data for nonlinear and time-dependent mode}
+
+\textsl{2.14 Data for interfacing with external codes}
+
+\medskip
+
+This last block 14 may be read in from the user supplied part (with any format
+specified there) from this same unit IUNIN, (but equally well from any other
+unit specified there), e.g., from the subroutine INFCOP for interfacing with
+other codes.
+
+\medskip 
+
+\textbf{Input format} 
+
+\medskip 
+
+The following conventions are used:
+\begin{itemize}
+  \item Standard Fortran naming conventions, i.e., variable names starting with
+        the letters I, J, \dots, N are Integer, all other variables are Real.
+\end{itemize}
+In addition to these standard convention the following rules are employed:
+\begin{itemize}
+  \item Character strings start with the letter C\dots\ or with T\dots
+  \item
+        Logical variables start with NL\dots, LG\dots\ or with TRC\dots
+\end{itemize}
+The format for a card containing only real variables: (6E12.4)
+
+The format for a card containing only integer variables: (12I6)
+
+The format for a card containing only logical variables: (12(5L1,1X))
+
+The format for a card containing text: (A72) 
+
+The format for a card containing K (K $<$ 6) integer variables first and then
+up to 6-K real variables next: (K(I6,6x),(6-K)E12.4) 
+
+An input card starting with '*' is recognized as a comment line, i.e., it does
+not contain input data.
+These comment lines should not start with  '**' or '***', because in this
+latter case EIRENE would assume that the input for the current block is
+completed.
+It would expect the first card of the following block (or '* comment\dots'
+lines belonging to this next block) as next card.
+Any data not read from the input file, before the following block is read, are
+set to default values.
+
+An arbitrary number of such comment lines may be included in the input file,
+but each block of comment lines must always be put at the beginning of a block
+or sub-block.
+I.e., comment lines are only identified by EIRENE if preceded by a card
+starting with '**' or '***' indicating a new sub-block or block respectively.
+
+\medskip
+
+Example (see \cref{sec2.7} below):
+
+\begin{lstlisting}
+*** 7. Data for initial distribution of test particles
+* this is a comment
+* there are NSTRAI=2 strata in this run
+* this is a comment
+ 2
+** Data for first stratum
+* this is a surface recycling source of helium ions, IPLS=2
+* this is a comment
+FFFF
+  .
+  .
+  .
+  .
+** Data for second stratum
+* this is a hydrogen ion volume re-combination source, IPLS=1
+FFFF
+  .
+  .
+  .
+*** 8. Data for some specific zones
+  .
+  .
+  .
+  .
+\end{lstlisting}
+
+and so on.
+
+\medskip
+
+In very few cases formats other than these are used.
+They are then explicitly mentioned in this manual and in case of doubt the user
+should check in subroutine READ\_FIXFORM.
+
+\medskip
+
+\medskip
+
+\textbf{JSON input}
+
+\medskip
+
+JSON is an acronym for JavaScript Object Notation \cite{kn:Json} which is an open standard 
+file format.  
+It can represent four primitive types and  two structured types. The primitive types are
+strings, numbers, boolean and null. The structured types are objects and arrays. 
+
+An object is a
+
+\begin{center}
+name : value
+\end{center}
+
+pair where "name" is a string and "value" can be any of the primitive or structured types.
+A JSON input is easily readable and can also be viewed within browsers or online editors.
+
+Libraries for JSON have been implemented for many programming languages including
+FORTRAN. An implementation for an object-oriented FORTRAN library can be found on github 
+\cite{kn:Williams}.
+ 
+Unlike the formatted I/O reading the JSON input file does not use the I/O unit IUNIN but 
+expects the input file to have a specific filename. The name \textbf{eirene.input.json} has
+been chosen. Therefore this file should be linked to unit IUNIN initially.
+
+Similar to the formatted input the JSON input consists of 15 blocks. A zeroth block was
+introduced to hold the input header and comments on the specified case. Each block is its own 
+JSON object. Usually all blocks are placed into the main input file \textbf{eirene.input.json} 
+but can be put into separat files as well. Then the main input file only gets a skeleton object of 
+the block with an indicator where to look for the corresponding input. 
+The names of the blocks follow the naming in the formatted input and describe the intended
+subject of the data in the block. An entry "MANUAL" in each block refers to the corresponding
+section in this manual. Sub-blocks are grouped into their own objects with appropriate names.
+The blocks are named:
+
+\medskip
+
+\textsl{HEADER}
+
+\medskip
+
+\textsl{GENERAL\_DATA}
+
+\medskip
+
+\textsl{STANDARD\_MESH} \\
+	\hspace*{1cm} \textsl{RADIAL\_GRID} \\
+	\hspace*{1cm} \textsl{POLOIDAL\_GRID} \\
+	\hspace*{1cm} \textsl{TOROIDAL\_GRID} \\
+	\hspace*{1cm} \textsl{MESH\_MULTIPLICATION} \\
+	\hspace*{1cm} \textsl{ADD\_CELLS}
+
+\medskip
+
+\textsl{NONDEF\_STD\_SURFACES}
+
+\medskip
+
+\textsl{ADDITIONAL\_SURFACES}
+
+\medskip
+
+\textsl{PHYSICS\_MODEL} \\
+	\hspace*{1cm} \textsl{SPECIES\_SPEC} \\
+   		\hspace*{2cm} \textsl{REACTIONS} \\
+		\hspace*{2cm} \textsl{ATOMS} \\
+		\hspace*{2cm} \textsl{MOLECULES} \\
+		\hspace*{2cm} \textsl{TEST\_IONS} \\
+		\hspace*{2cm} \textsl{PHOTONS} \\
+	\hspace*{1cm} \textsl{BACKGROUND} \\
+		\hspace*{2cm} \textsl{BULK\_IONS} \\
+		\hspace*{2cm} \textsl{PLASMA} 
+
+\medskip
+
+\textsl{REFLECTION\_MODELS}
+
+\medskip
+
+\textsl{SOURCES}
+
+\medskip
+
+\textsl{SPECIFIC\_ZONES}
+
+\medskip
+
+\textsl{STATISTICS}
+
+\medskip
+
+\textsl{ADDITIONAL\_TALLIES} 
+
+\medskip
+
+\textsl{OUTPUT}
+
+\medskip
+
+\textsl{DIAGNOSTICS}
+
+\medskip
+
+\textsl{TIMEDEPENDENT\_MODE}
+
+\medskip
+
+\textsl{INTERFACING}
+
+\medskip
+
+The input of interfacing blocks has been converted to JSON format as well. Any other data
+read by user routines is placed into a file \textbf{user\_data.input} by the converter and is read
+in the same way as with the formatted input.
+
+The names for the variables are almost everywhere identical to those given in this manual. 
+Deviations are indicated in the corresponding block.
+
+Variables and blocks can be omitted from the input file if they are not required by the 
+simulation. Omitted variables are set to 0 or .false. in case of boolean. The converter however
+will always produce the complete JSON files. The two blocks \textsl{ADDITIONAL\_SURFACES} 
+and \textsl{PHYSICS\_MODEL} are always placed into and read from separate files named 
+\textbf{eirene\_add\_surfaces.input.json} and \textbf{eirene\_physics\_model.input.json}.
+
+
+\medskip
+
+\medskip
+
+\textbf{Units} 
+
+cgs units are used, with two exceptions:
+
+\medskip
+
+All \textbf{temperatures and energies} are in \si{\electronvolt}.
+
+All \textbf{particle fluxes} are in Ampere (i.e.\
+\SI{1.6022e-19}{\#\per\second}), even neutral particle fluxes.
+Since energies are given in \si{\electronvolt} units, a particle flux $\times$
+energy is already in \si{\watt}.
+
+E.g., to convert a \textbf{gas flow rate} $Q$ (= ``mass-flow rate" at
+temperature $T_0$), which is a quantity given with dimension pressure times
+volume divided by time, to a particle flux (source strength, given in
+1/\;time), one utilizes the universal gas law $P \times V = N \times k_B T$ to
+convert from pressure times volume (typically at standard temperature $T_0=
+  \SI{273.15}{\kelvin}$) to the number $N$ of particles.
+For example  $x$ \ac{SLPM} first divide $x$ by \num{22.4} (then:
+\si{\mole\per\minute}, at ``standard conditions" = normal pressure
+\SI{1013.25}{\milli\bar} and normal temperature $T_0$).
+Next multiply by Avogadro's no.\ $N_A = \num{6.0221e23}$, (i.e., then
+particles~\si{\per\minute}), then divide by \num{60} (then:
+particles~\si{\per\second}), and finally multiply by the elementary charge
+\num{1.6022e-19}
+(then \si{\ampere}, as used for particle fluxes in EIRENE).
+Gas (mass-) flow rates given in other units, e.g.\
+\si{\torr\cubic\metre\per\second} are converted correspondingly.
+
+Another frequently used dimensional quantity is the (effective) 
+\textbf{pumping speed} $S$, and also \textbf{conductance} $L$ which both have 
+dimension volume / time (e.g.\ litres/sec), i.e.\ these are 
+``volumetric flow rates" rather than mass flow rates.
+Multiplying these volume flow rates by the entrance gas pressure (or by the
+pressure difference in case of conductance) produces the (pump-) throughput, a
+mass flow rate again, i.e., at given temperature a ``pumped particle flux"
+(\si{\per\second}).
+
+Pumping speeds and conductances typically depend on pressure themselves, and on
+temperature $T$ and the type of gas (mass $m$).
+In the molecular flow regime the pressure dependence in $S, L$ diminishes, and
+$S$ ($L$) can be written as product $S,L =A_{S,L} \cdot v$, of an area and
+velocity, with $v \propto \sqrt{T/m}$.
+Implementation of a specified volumetric flow (e.g.\ a given effective pumping
+speed at pumps) in EIRENE is via effective surface area and  sticking
+probabilities, see \cref{sec2.6.1}, input flag \textbf{RECYCT}
+
+All \textbf{densities} are in \si{\per\cubic\centi\metre}.
+
+All \textbf{velocities} are in either \si{\centi\metre\per\second} or in
+(isothermal) Mach-number units.
+
+All geometrical data are in \si{\centi\metre}.
+
+Note: consequently, e.g., energy densities are in
+$\si{\electronvolt\per\cubic\centi\metre}$, and energy fluxes are given in
+\si{\electronvolt\ampere}, i.e., in \si{\watt}.
+
+Hence: In order to convert from EIRENE \textbf{energy density} units
+(\si{\electronvolt\per\cubic\centi\metre}) into  \textbf{pressure} units in
+\si{\newton\per\square\metre} (i.e., Pascal: \si{\pascal}) one must multiply by
+\num{1.6022e-19} (\si{\electronvolt} to \si{\newton\metre}) and multiply by
+\num{1e6} ($\si{\per\cubic\centi\metre} \rightarrow \si{\per\cubic\metre}$).
+Check: \SI{1}{\pascal} gas at \SI{300}{\kelvin} corresponds to about
+$\num{2.7e14} \ \times \ \SI{0.026}{\electronvolt\per\cubic\centi\metre}
+  \approx \SI{7e12}{\electronvolt\per\cubic\centi\metre}$, or:
+a gas pressure P in \si{\pascal}, at gas temperature T (\si{\kelvin})
+corresponds to a gas density n with $n (\si{\per\cubic\metre}) = P/k_B T$,
+with $k_B = \num{1.38e-23}
+$ the Boltzmann constant in \si{\joule\per\kelvin} units.
+At \SI{300}{\kelvin} and \SI{1}{\pascal}, the corresponding gas density is
+%$n=\SI{2.415 \dots e20}{\per\cubic\metre} = \SI{2.415 \dots e14}{\per\cubic\centi\metre}$.
+$n=\num{2.415} \dots \SI {e20}{\per\cubic\metre} = \num{2.415} \dots \SI{e14}{\per\cubic\centi\metre}$.
+
+For example, energy densities as computed by EIRENE defaults tallies 5, 6, 7
+and 8 (see \cref{tab2}) must be converted into ``temperature densities" (a
+factor 2/3, if one neglects the energy of the directed motion) and then be
+re-scaled to pressure units as described above.
+
+For further scaling to other pressure units note, e.g.:
+
+\SI{101.3}{\pascal} = \SI{760}{\milli\torr} = \SI{1}{\milli\bar}
+
+Further: momentum is in \si{\gram\centi\metre\per\second}, and a
+\textbf{momentum flux} or momentum rate of change is in
+\si{\gram\centi\metre\per\second\ampere} (per cell) and the momentum source
+density in the EIRENE tallies for interfacing with plasma codes is then in
+\si{\gram\centi\metre\per\second\ampere\per\cubic\centi\metre}.
+
+Hence, conversion from \si{\gram\centi\metre\per\second\ampere} into
+\si{\pascal\square\metre} (momentum source per cell in plasma momentum balance
+equations in SI units) is done by firstly multiplying with \num{1e-5} (then:
+\si{\kilo\gram\metre\per\second\ampere}) and then dividing by \num{1.6022e-19}
+(hence: \si{\kilo\gram\metre\per\square\second}).
+After dividing by the cell volume (\si{\cubic\metre}) the momentum source is in
+\si{\pascal\per\metre}, or \si{\newton\per\cubic\metre} (force density).
+
+\medskip
+
