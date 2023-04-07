@@ -4,7 +4,7 @@ Documentation of the master version of [EIRENE](https://jugit.fz-juelich.de/eire
 
 ## LaTex source
 
-The LaTex source of the EIRENE code documentation is [hosted on JuGit](https://jugit.fz-juelich.de/eirene/eirene-manual).
+The LaTex source of the EIRENE code documentation is stored along with the EIRENE FORTRAN code in the same repository.
 
 ## Compilation
 
