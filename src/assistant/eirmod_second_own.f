@@ -13,7 +13,7 @@ cdr  used for internal run time monitoring
 
       PUBLIC :: EIRENE_SECOND_OWN, EIRENE_RESET_SECOND
 
-      real(dp),save :: start=0.0
+      real(dp),save :: start=0.0_dp
       integer :: ifirst = 0
 
       CONTAINS

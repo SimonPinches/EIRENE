@@ -782,6 +782,7 @@
      .      (reaclines(i)%FILE == 'TAB2D')) then
           call json%add(rea,'ELNAME',reaclines(i)%element)
           call json%add(rea,'IZ',reaclines(i)%iz)
+          call json%add(rea,'BUNDLING',trim(reaclines(i)%bundling))
         end if
 
         if (index(reaclines(i)%FILE,'CR') /= 0) then
