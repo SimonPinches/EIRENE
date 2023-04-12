@@ -53,6 +53,8 @@
       integer :: i, ndum1(1), ndum2(1), ndum3(1), ndum4(1), nti, nv
       real(dp) :: dum(1)
 
+      character(300) :: sCReactStr
+
       call json%add(pAMD,'MANUAL',
      .     "http://www.eirene.de/eirene.pdf#subsection.2.4.1")
       call json%add(pAMD,'INCLUDE',
@@ -79,6 +81,32 @@
         end do 
         call json%add(REACT,crs_lines)
       end if
+
+      do i=1, IRLINES
+ 100     format(i3,1x,A8,1x,A4,1x,A,1x,A3,1x,i3,1x,i3,5es12.4)
+         write (sCReactStr, 100) reaclines(i)%no, reaclines(i)%FILE, 
+     >         reaclines(i)%h_select,reaclines(i)%reac_string,
+     >         reaclines(i)%reactyp,reaclines(i)%mp, 
+     >         reaclines(i)%mt,reaclines(i)%dpp,   
+     >         reaclines(i)%r1mn,reaclines(i)%r1mx,   
+     >         reaclines(i)%r2mn,reaclines(i)%r2mx  
+
+          if (reaclines(i)%r1mn > 0)
+     >    write (sCReactStr, "(A/,i3,1x,3es12.4)")  sCReactStr, 
+     >           reaclines(i)%jfex1mn, reaclines(i)%fp1(1:3)
+          if (reaclines(i)%r1mx.gt.0) 
+     >    write (sCReactStr, "(A,i3,1x,3es12.4)")  sCReactStr, 
+     >           reaclines(i)%jfex1mx, reaclines(i)%fp1(4:6)
+          if (reaclines(i)%r2mn.gt.0)
+     >    write (sCReactStr, "(A,i3,1x,3es12.4)")  sCReactStr, 
+     >           reaclines(i)%jfex2mn, reaclines(i)%fp2(1:3)
+          if (reaclines(i)%r2mx.gt.0) 
+     >    write (sCReactStr, "(A,i3,1x,3es12.4)")  sCReactStr, 
+     >           reaclines(i)%jfex2mx, reaclines(i)%fp2(4:6)
+
+          call json%add(REACT, 'CStr' ,sCReactStr)
+      enddo
+      
       
 #ifdef NEVERCOMEHERE
 ! loop over reaction lines
