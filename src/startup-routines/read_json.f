@@ -1510,7 +1510,7 @@ C
       logical :: found, foundr, found_crs
       integer :: nrea, j, ir, mp, mt, iz,
      .           jfex1mn, jfex1mx, jfex2mn, jfex2mx, iftfl, ncoef,
-     .           irow_esc, icol_esc, ncrs, k
+     .           irow_esc, icol_esc, ncrs, k, ll
       real(dp) :: r1mn, r1mx, r2mn, r2mx, fp1(6), fp2(6),
      .            RC1MIN, RC1MAX, RC2MIN, RC2MAX, pop_esc, pesc
       real(dp), allocatable :: ffp1(:), ffp2(:), ccoef(:)
@@ -1689,9 +1689,15 @@ c  2nd parameter in 2 parametric data
             elname = chr(1:2)
             deallocate(chr)         
             call json%get(prea,'IZ',iz,found)
-            call json%get(prea,'FILNAM',chr,found)
-            bundling = chr(1:60)
-            deallocate(chr)
+            call json%get(prea,'BUNDLING',chr,found)
+            if (found) then
+              ll = len_trim(trim(chr))
+              bundling = chr(1:min(60,ll))
+              if (ll == 0) bundling = ' '
+              deallocate(chr)
+            else
+              bundling = repeat(' ',60)
+            end if
           else
             elname = '  '
             iz = 0
@@ -1726,6 +1732,7 @@ C       ONLY NEEDED FOR AUTOMATED INTERFACE TO HYDKIN DATABASE.
           REACLINES(IL)%R2MN = R2MN
           REACLINES(IL)%R2MX = R2MX
           REACLINES(IL)%ELEMENT = ELNAME
+          REACLINES(IL)%BUNDLING = BUNDLING
           REACLINES(IL)%IZ = IZ
           REACLINES(IL)%JFEX1MN = 0
           REACLINES(IL)%JFEX1MX = 0
@@ -2211,7 +2218,6 @@ c  default: only for bulk ions
       integer, allocatable :: ihelp(:)
       integer :: i, ndum1(1), ndum2(1), ndum3(1), ndum4(1), nch,
      .           ital, iopt, jpls
-      real(dp) :: dum(1)
       logical :: found, foundp, foundi
 !cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
       character(kind=json_CK,len=:),allocatable :: txtr
@@ -2248,7 +2254,7 @@ C
      .     texts, 'IPLS', 'P', nmassp, ncharp, nprt, nchrgp, isrf, isrt,  
      .     nrcp, ndum1, ndum2, nhsts, ireacp, ibulkp,
      .     iscd1p, iscd2p, iscd3p, iscd4p, iscdep, ndum3, ndum4,
-     .     eelecp, ebulkp, escd1p, freacp, dum, lmulpl,
+     .     eelecp, ebulkp, escd1p, freacp, edpotp, lmulpl,
      .     lknd, jdnsl, cdenmodel)
 
       nullify(pbulk)
@@ -2598,7 +2604,7 @@ c  zi profiles
 
 c  cell volume profile card, OPTIONAL
 
-      IF (INDPRO(12).LE.5) THEN
+      IF ((INDPRO(12) > 0) .AND. (INDPRO(12).LE.5)) THEN
         if (associated(pvol)) then
           call json%get(pvol,'VL0',vl0,found)
           call json%get(pvol,'VL1',vl1,found)

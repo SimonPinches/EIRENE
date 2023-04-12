@@ -46,7 +46,9 @@
         write(iunout,*) 'POST-COUPLING TEST FAILED'
         write(iunout,*) 'THE ACTUALLY USED ARRAY SIZES DO NOT MATCH'
         write(iunout,*) 'CHECK INPUT FILES'
-        call xerrab ('Error in post-coupling parameters')
+!PB     call xerrab ('Error in post-coupling parameters')
+        write(iunout,*) 'Error in post-coupling parameters'
+        call eirene_exit_own(1)
       else
         write(iunout,*) 'POST-COUPLING TEST PASSED'
       endif
