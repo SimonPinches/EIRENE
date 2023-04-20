@@ -792,7 +792,6 @@ test_EMC3-EIRENE_H_multiStrataMpi3:
 coverage_report:
     stage: coverage
     rules:
-        - when: never
         - if: $CI_COMMIT_REF_NAME == 'develop'
         - if: $CI_COMMIT_REF_NAME == 'master'
         - if: $CI_PIPELINE_SOURCE == 'schedule'
