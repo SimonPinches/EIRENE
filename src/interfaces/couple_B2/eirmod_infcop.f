@@ -103,11 +103,12 @@ C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
       USE EIRMOD_JSON
       USE EIRMOD_OPENFILE, ONLY: EIRENE_OPENFILE
       
-      use json_module           !IGNORE
-     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
+      use json_module       
 
       IMPLICIT NONE
-      
+
+      PRIVATE
+
 C
 C  GEOMETRICAL DATA FROM GRIDADAP
       REAL(DP), ALLOCATABLE, SAVE ::
@@ -217,11 +218,13 @@ C
 
       DATA LTARG/0/
 
+      PUBLIC :: EIRENE_INFCOP, EIRENE_IF0COP, EIRENE_IF1COP,
+     .          EIRENE_IF2COP, EIRENE_IF3COP, EIRENE_IF4COP,
+     .          EIRENE_INTER0, EIRENE_INTER3, EIRENE_INFCOP_PRE_MCARLO,
+     .          EIRENE_INFCOP_PRE_STRATA, EIRENE_INFCOP_POST_STRATUM,
+     .          EIRENE_IF3COP_SUM
       
-
       
-      PUBLIC
-
       CONTAINS
 
       SUBROUTINE EIRENE_INFCOP
