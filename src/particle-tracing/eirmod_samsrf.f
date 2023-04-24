@@ -680,7 +680,7 @@ C
             ELSE
               WRITE (iunout,'(1X,I4,1P,6E12.4/(17x,1P,5E12.4))')
      .               K,RRSTEP(ISTEP,K),
-     .               (FLSTEP(ISPZD(IPL),ISTEP,K),ISP=1,NANZ)
+     .               (FLSTEP(ISPZD(ISP),ISTEP,K),ISP=1,NANZ)
             END IF
     4     CONTINUE
 

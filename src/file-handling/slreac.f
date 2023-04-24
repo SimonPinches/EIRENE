@@ -386,13 +386,15 @@ cdr       write (iunout,*) ifile, dbfname(ifile)
      .            ADJUSTL(TRIM(REAC)) // CUT
               IL = INDEX(DIR,CUT,.TRUE.)
             END IF
-            IF (PRESENT(BUNDLING) .AND. VERIFY(BUNDLING,' ').NE.0) THEN
-              IF (IL == 0) THEN
-                DSN = ADJUSTL(TRIM(REAC)) // '_' //
-     .                TRIM(ELNAME) // '_' // TRIM(BUNDLING) // '.dat'
-              ELSE
-                DSN = DIR(1:IL) // ADJUSTL(TRIM(REAC)) // '_' //
-     .                TRIM(ELNAME) // '_' // TRIM(BUNDLING) // '.dat'
+            IF (PRESENT(BUNDLING) .AND. (LEN_TRIM(BUNDLING) > 0)) THEN
+              IF (VERIFY(BUNDLING,' ').NE.0) THEN
+                IF (IL == 0) THEN
+                  DSN = ADJUSTL(TRIM(REAC)) // '_' //
+     .                  TRIM(ELNAME) // '_' // TRIM(BUNDLING) // '.dat'
+                ELSE
+                  DSN = DIR(1:IL) // ADJUSTL(TRIM(REAC)) // '_' //
+     .                  TRIM(ELNAME) // '_' // TRIM(BUNDLING) // '.dat'
+                END IF
               END IF
             ELSE
               IF (IL == 0) THEN
