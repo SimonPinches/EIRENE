@@ -3766,7 +3766,7 @@ C  COPY USER SPECIFIC DATA TO FILE user_data.input
           IF (JL == 1) THEN
             IUSROUT = -9999
             CALL EIRENE_OPENFILE(IUSROUT,FILE='user_data.input',
-     .                           FORM='FORMATTED',ACCESS='DEQUENTIAL')
+     .                           FORM='FORMATTED',ACCESS='SEQUENTIAL')
           END IF
           WRITE (IUSROUT,'(A)') TRIM(ZEILE)
         END IF
