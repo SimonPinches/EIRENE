@@ -662,11 +662,11 @@ C
       ENDIF
 C  SKIP READING PLASMA, IF NLPLAS
 !     IF (NLPLAS) GOTO 2100
-!HJL Replaced gotos with subroutine calls. 1st == 2100, 2nd == 99991
-      IF (.NOT. NLPLAS) CALL EIRENE_IF1COP_EXT()
-      CALL EIRENE_INTER1()
-!      IF (NLPLAS) CALL EIRENE_INTER1()
-!      CALL EIRENE_IF1COP_EXT()
+!HJL  Replaced gotos with subroutine calls. 1st == 2100, 2nd == 99991
+!     This does not seem to match the logic in the original ENTRY calls
+!     However it works and what seems to be the correct logic does not
+      IF (NLPLAS) CALL EIRENE_INTER1()
+      CALL EIRENE_IF1COP_EXT()
       
       RETURN
       END SUBROUTINE
