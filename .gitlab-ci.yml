@@ -17,9 +17,9 @@ variables:
     SAMPLE_CASE_VERSION_OPENMP: 52c85e4c8a9223a354aa4f93fd8e50e32db5798a
 # These variables allow the exclusion of certain stages to speed up development, true or false
     EXCLUDE_SERIAL: 'false'
-    EXCLUDE_MPI:    'true'
-    EXCLUDE_OPENMP: 'true'
-    EXCLUDE_EMC3:   'true'
+    EXCLUDE_MPI:    'false'
+    EXCLUDE_OPENMP: 'false'
+    EXCLUDE_EMC3:   'false'
 
 stages:
     - preparation
