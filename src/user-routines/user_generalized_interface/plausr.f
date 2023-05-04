@@ -323,7 +323,7 @@ c        enddo isrfs
 
          IF (KSTEP(ISTEP) > 0) THEN
             NBIN=KSTEP(ISTEP)+1
-            FL=EIRENE_STEP(IPLAN(ISTEP),IPLEN(ISTEP),NBIN,ISTEP)
+            FL=EIRENE_STEP(IPLAN(ISTEP),IPLEN(ISTEP),NBIN,ISTEP,4)
             FLUX(INOSRC(ISTEP))=FL
          END IF
 

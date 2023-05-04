@@ -208,6 +208,7 @@ C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
       USE EIRMOD_BRASCL
       USE EIRMOD_JSON
       USE EIRMOD_OPENFILE, ONLY: EIRENE_OPENFILE
+      USE EIRMOD_SHEATH, ONLY: EIRENE_SHEATH
       
       use json_module           !IGNORE
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
@@ -237,7 +238,7 @@ C
       REAL(DP), ALLOCATABLE, SAVE ::
      .            CHPM(:,:), CHEEM(:), CHEIM(:),
      .            CHMOM(:,:)
-      REAL(DP) :: DI(NPLS), VP(NPLS)
+      REAL(DP) :: DI(NPLS), VP(NPLS), ZI(NPLS)
 
 cdr for species-dependent global particle balance
       REAL(DP) :: SFNISY(NFL),SFNINY(NFL),SFNIWX(NFL),SFNIEX(NFL)
@@ -308,7 +309,7 @@ C
      .           NPBC, IACT, IANF, IO, IIPLS, IEPLS, IG, ITARG, IGITT,
      .           I34, IRRC, ISC1, ISC2, ISCS, ICOU, ISP,
      .           IXI, IXE, NCOPIB, NCOPEB, IPLSTI, IPLSV, IPLV,
-     .           IST_RATE, nfilel_save, MSHFRM, IMF, ITCO,
+     .           IST_RATE, nfilel_save, IMF, ITCO,
 !  ADDITIONAL STORAGE FOR LIN. COMB. OF TALLIES (E.G. INTERNAL ENERGY SOURCES)
      .           ICPV, icp1, icp2, icp3,
      .           icoadd, icoscr, icog,
@@ -319,7 +320,7 @@ C
 
       INTEGER, INTENT(IN) :: ISTRAA, ISTRAE, NEW_ITER, IFRST, ITRG
       REAL(DP) :: EIRENE_STEP, EIRENE_FTABRC1, EIRENE_FEELRC1,
-     .            EIRENE_SHEATH, EIRENE_EMAXW
+     .            EIRENE_EMAXW
       INTEGER, EXTERNAL :: EIRENE_IDEZ
 C
       LOGICAL, INTENT(INOUT) :: LSTP
@@ -2119,6 +2120,11 @@ C  DISTEP: ZONE-CENTERED DENSITY IN BOUNDARY ZONE
             IFL=IFLB(IPLS)
             IF (IFL.LE.0.OR.IFL.GT.NFLA) GOTO 3013
             DISTEP(IPLS,ITARG,IG)=DNIB(NPBC,IY,IFL)*D(IPLS)
+!           IF (ZIB(NPBC,IY,IFL).NE.ZVAC) THEN
+!             ZISTEP(JPLS,ITARG,IG)=ZIB(NPBC,IY,IFL)
+!           ELSE
+              ZISTEP(IPLS,ITARG,IG)=DBLE(NCHRGP(IPLS))
+!           END IF
 C  FLSTEP: SURFACE-CENTERED FLUX (AMP/CM ALONG TARGET)
             IF (NSPZI(ITARG,IPRT).LE.IFL.AND.
      .                               IFL.LE.NSPZE(ITARG,IPRT)) THEN
@@ -2362,6 +2368,11 @@ C  DISTEP: ZONE-CENTERED DENSITY IN BOUNDARY ZONE (EV)
             IFL=IFLB(IPLS)
             IF (IFL.LE.0.OR.IFL.GT.NFLA) GOTO 3023
             DISTEP(IPLS,ITARG,IG)=DNIB(IX,NPBC,IFL)*D(IPLS)
+!           IF (ZIB(IX,NPBC,IFL).NE.ZVAC) THEN
+!             ZISTEP(JPLS,ITARG,IG)=ZIB(IX,NPBC,IFL)
+!           ELSE
+              ZISTEP(IPLS,ITARG,IG)=DBLE(NCHRGP(IPLS))
+!           END IF
 C  FLSTEP: SURFACE-CENTERED FLUX (AMP/CM ALONG TARGET)
             IF (NSPZI(ITARG,IPRT).LE.IFL.AND.
      .                               IFL.LE.NSPZE(ITARG,IPRT)) THEN
@@ -2483,7 +2494,7 @@ C  INITIALIZE FUNCTION STEP (FOR RANDOM SAMPLING ALONG TARGET)
 C  SET SOME SOURCE PARAMETERS EXPLICITLY TO ENFORCE INPUT CONSISTENCY
 C  also: sum over species: flstep(0,...), elstep(0,...) will be set.
 C
-      FLUX(ITARG)=EIRENE_STEP(IIPLS,IEPLS,NRWL(ITARG),ITARG)
+      FLUX(ITARG)=EIRENE_STEP(IIPLS,IEPLS,NRWL(ITARG),ITARG,4)
 C
       NLPLS(ITARG)=.TRUE.
       NLATM(ITARG)=.FALSE.
@@ -2618,11 +2629,12 @@ C
             VPZ=VZSTEP(IPLV,ITARG,IG)
             VP(IPL)=SQRT(VPX**2+VPY**2+VPZ**2)
             DI(IPL)=DISTEP(IPL,ITARG,IG)
+            ZI(IPL)=ZISTEP(IPL,ITARG,IG)
  6005     CONTINUE
           TE=TESTEP(ITARG,IG)
           CUR=0.
           GAMMA=0.
-          ESHT(ITARG,IG)=EIRENE_SHEATH(TE,DI,VP,NCHRGP,GAMMA,CUR,
+          ESHT(ITARG,IG)=EIRENE_SHEATH(TE,DI,VP,ZI,GAMMA,CUR,
      .                         NPLSI,-ITARG)
         ELSE IF (NEM == 9) THEN
           IF (IGSTEP(ITARG,IG).GT.200000) THEN
@@ -2799,7 +2811,7 @@ C
       RETURN
 C
 C
-      ENTRY EIRENE_IF3COP(ISTRAA,ISTRAE,NEW_ITER)
+      ENTRY EIRENE_IF3COP(IENTRY,LSTP,IFRST,ISTRAA,ISTRAE,NEW_ITER)
 C
 C
       WRITE (iunout,*) ' IF3COP IS CALLED, ISTRAA,ISTRAE '
@@ -4637,7 +4649,7 @@ C
       CALL EIRENE_EXIT_OWN (1)
  1982 WRITE(IUNOUT,*)
      w     "ERROR IN INFCOP: CANNOT OPEN "//FORT//"30 ",
-    w      "(PLASMA GRID)"
+     w      "(PLASMA GRID)"
       CALL EIRENE_EXIT_OWN (1)
  1983 WRITE(IUNOUT,*)
      w     "ERROR IN INFCOP: CANNOT OPEN "//FORT//"33 ",
