@@ -3,6 +3,12 @@
 cdr Jan 17: remove local allocatable cndyn.. arrays. These are now
 cdr         set in code initialisation phase
 C
+      MODULE EIRMOD_UPTUSR
+
+      PUBLIC
+
+      CONTAINS
+   
 C
       SUBROUTINE EIRENE_UPTUSR(XSTOR2,XSTORV2,WV,IFLAG)
 C
@@ -396,3 +402,5 @@ C
 C     WRITE (IUNOUT,*) 'NOTHING DONE IN UPTUSR '
       RETURN
       END SUBROUTINE EIRENE_UPTUSR
+
+      END MODULE EIRMOD_UPTUSR

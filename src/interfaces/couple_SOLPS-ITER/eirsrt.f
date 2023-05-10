@@ -84,6 +84,7 @@ csw
       use eirmod_infcop
       use eirmod_mpi
       USE EIRMOD_SECOND_OWN
+      USE EIRMOD_EIRENE
 
       IMPLICIT NONE
 c

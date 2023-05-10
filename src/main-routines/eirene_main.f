@@ -38,6 +38,8 @@ cdr  set from the external code, or in EIRSRT, and are problem-specific.
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_SECOND_OWN, ONLY: EIRENE_SECOND_OWN,
      .                             EIRENE_RESET_SECOND
+      USE EIRMOD_EIRENE, ONLY: EIRENE_EIRENE
+      
 
       IMPLICIT NONE
       REAL(DP) :: DT
