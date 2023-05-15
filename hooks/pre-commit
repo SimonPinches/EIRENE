@@ -11,13 +11,15 @@
 EIRENE_VERSION=$(head -n 1 version.txt)
 
 echo "Running pre-commit hook for EIRENE version" $EIRENE_VERSION
-echo $@
-
 
 # Set the version text in modules/eirmod_parmmod.f90 to the value in version.txt
-VERSION_LINE="CHARACTER(12), PUBLIC, SAVE :: EIRENE_VERSION_STRING=$EIRENE_VERSION"
-
-
+src_file="src/modules/eimord_parmod.f"
+src_new="EIRENE_VERSION_STRING='$EIRENE_VERSION'"
+src_old=$(grep "EIRENE_VERSION_STRING" src/modules/eirmod_parmmod.f | sed 's/[[:blank:]]*$//; s/.*[[:blank:]]//')
+if [ "$src_old" != "$src_new" ]; then
+    echo "Updating $src_old to $src_new"
+    replace=$(sed -i "s/$src_old/$src_new/" src/modules/eirmod_parmmod.f)
+fi
 
 
 if git rev-parse --verify HEAD >/dev/null 2>&1
