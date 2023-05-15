@@ -11,6 +11,14 @@
 EIRENE_VERSION=$(head -n 1 version.txt)
 
 echo "Running pre-commit hook for EIRENE version" $EIRENE_VERSION
+echo $@
+
+
+# Set the version text in modules/eirmod_parmmod.f90 to the value in version.txt
+VERSION_LINE="CHARACTER(12), PUBLIC, SAVE :: EIRENE_VERSION_STRING=$EIRENE_VERSION"
+
+
+
 
 if git rev-parse --verify HEAD >/dev/null 2>&1
 then
