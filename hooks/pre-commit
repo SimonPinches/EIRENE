@@ -41,7 +41,8 @@ if [ "$man_ver" != "$ver" ]; then
     retval=1
 fi
 
-if [ retval == 1 ]; then
+if [ "$retval" == "1" ]; then
+    echo "Version numbers did not match, they have been replaced however the commit did not proceeed. Please commit again"
     exit 1
 fi
 
