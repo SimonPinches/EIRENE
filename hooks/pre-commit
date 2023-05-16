@@ -30,7 +30,7 @@ if [ "$epl_old" != "$epl_new" ]; then
     replace=$(sed -i "s/$epl_old/$epl_new/" $epl_file)
 fi
 
-# Set the version text in eirene.txt to the value in version.txt
+# Set the version text in eirene.tex to the value in version.txt
 man_file="Manual/eirene.tex"
 man_new="$eirene_version"
 man_old=$(awk '/Manual version/{print $4}' $man_file )
