@@ -8,36 +8,34 @@
 # To enable this hook, rename this file to "pre-commit".
 
 # Read eirene version from version.txt file
-eirene_version=$(head -n 1 version.txt)
+ver=$(head -n 1 version.txt)
 
 echo "Running pre-commit hook for EIRENE version" $EIRENE_VERSION
 
 # Set the version text in modules/eirmod_parmmod.f90 to the value in version.txt
 src_file="src/modules/eirmod_parmmod.f"
-src_new="EIRENE_VERSION_STRING='$eirene_version'"
-src_old=$(grep "EIRENE_VERSION_STRING" $src_file | sed 's/[[:blank:]]*$//; s/.*[[:blank:]]//')
-if [ "$src_old" != "$src_new" ]; then
-    echo "Updating source $src_old to $src_new"
-    replace=$(sed -i "s/$src_old/$src_new/" $src_file)
+src_ver=$(awk 'BEGIN { FS = "=" }/EIRENE_VERSION_STRING/{ print $2 }' $src_file )
+src_ver=${src_ver:1:-1}
+if [ "$src_ver" != "$ver" ]; then
+    echo "Updating source $src_ver to $ver"
+    replace=$(sed -i "s/$src_ver/$ver/" $src_file)
 fi
 
 # Set the version text in EPL.md to the value in version.txt
 epl_file="EPL.md"
-epl_new="Version: $eirene_version"
-epl_old=$(grep "Version:" $epl_file )
-if [ "$epl_old" != "$epl_new" ]; then
-    echo "Updating license $epl_old to $epl_new"
-    replace=$(sed -i "s/$epl_old/$epl_new/" $epl_file)
+epl_ver=$(awk '/Version:/{ print $2 }' $epl_file )
+if [ "$ver" != "$epl_ver" ]; then
+    echo "Updating license $epl_ver to $ver"
+    replace=$(sed -i "s/$epl_ver/$ver/" $epl_file)
 fi
 
 # Set the version text in eirene.tex to the value in version.txt
 man_file="Manual/eirene.tex"
-man_new="$eirene_version"
-man_old=$(awk '/Manual version/{print $4}' $man_file )
-man_old=${man_old::-2}
-if [ "$man_old" != "$man_new" ]; then
-    echo "Updating manual ${man_old/M/} to $man_new"
-    replace=$(sed -i "s/$man_old/$man_new/" $man_file)
+man_ver=$(awk '/Manual version/{print $4 }' $man_file )
+man_ver=${man_ver::-2}
+if [ "$man_ver" != "$ver" ]; then
+    echo "Updating manual ${man_ver} to $ver"
+    replace=$(sed -i "s/$man_ver/$ver/" $man_file)
 fi
 
 
