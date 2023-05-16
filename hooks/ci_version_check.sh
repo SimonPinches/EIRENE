@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/usr/bin/env bash
 #
 # A script to check that the version number in version.txt is
 # the same in the source, manual and license
