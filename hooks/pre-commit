@@ -19,6 +19,7 @@ src_ver=${src_ver:1:-1}
 if [ "$src_ver" != "$ver" ]; then
     echo "Updating source $src_ver to $ver"
     replace=$(sed -i "s/$src_ver/$ver/" $src_file)
+    retval=1
 fi
 
 # Set the version text in EPL.md to the value in version.txt
@@ -27,6 +28,7 @@ epl_ver=$(awk '/Version:/{ print $2 }' $epl_file )
 if [ "$ver" != "$epl_ver" ]; then
     echo "Updating license $epl_ver to $ver"
     replace=$(sed -i "s/$epl_ver/$ver/" $epl_file)
+    retval=1
 fi
 
 # Set the version text in eirene.tex to the value in version.txt
@@ -36,8 +38,12 @@ man_ver=${man_ver::-2}
 if [ "$man_ver" != "$ver" ]; then
     echo "Updating manual ${man_ver} to $ver"
     replace=$(sed -i "s/$man_ver/$ver/" $man_file)
+    retval=1
 fi
 
+if [ retval == 1 ]; then
+    exit 1
+fi
 
 if git rev-parse --verify HEAD >/dev/null 2>&1
 then
