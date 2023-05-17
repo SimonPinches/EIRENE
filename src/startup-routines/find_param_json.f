@@ -4,24 +4,25 @@ c             Set default for NPARM             (for example NATM=0, no atomic s
 c             Read input file, to find NPARMI,  (for example NATMI)
 c             Then set NPARM=MAX(NPARM,NPARMI)  (for example NATM=MAX(NATM,NATMI))
 c
-c    Later these parameters may be modified, but NPARM >= NPARMI always.
+c    Later these parameters NPARMI may be modified, but NPARM >= NPARMI must be assured always.
 C
 !pb  11.12.06:  allow letters 'f' or 't' in case name of fem or tetrahedron
 !pb             calculation
-!pb  27.12.06:  bug fix: increase NSTS in case of time dependent mode
-!pb  15.01.07:  additional line in input block 4 defining HYDKIN  model
+!pb  27.12.06:  bug fix: increase NSTS in case of time-dependent mode
+!pb  15.01.07:  additional line in input block 4 defining HYDKIN model
 !pb  02.03.07:  NUMSEC=4 introduced
 !pb  20.03.07:  include input block written by HYDKIN model
 !pb  22.03.07:  input for NLFEM and NLTET corrected.
 !dr  16.01.14:  default NOPTIM changed from 1 to NRAD (automatically), some printout rearranged
 !cd  29.10.14:  reading external file for block 4&5: allow comment lines at the beginning of file
-!               (same in find-param)
-!cd  2.2.15:    nfr (number of TRIM A_on_B files), now same name as in input.f
+!               (same in find_param.f)
+cdr  2.2.15:    nflr renamed to nfr (number of TRIM A_on_B files), now same name as in input.f
+cdr             because nflr (common CREF) is later used in RDTRIM and REFDAT with a slightly other meaning.
 cdr  Jan 2016:  storage for second dimension only if nlpol=true
 cdr             to be tested: storage for nplg, if nlpol=false?
 cdr             storage for third dimension only if nltor=true
 cdr             to be tested:  storage for nltra, if nltor=false?
-cdr             to be done: check for comment lines *... syncronized with input.f?
+cdr             to be done: check for comment lines *... synchronized with input.f?
 !pb  June 16:   default for NPLSTI changed from 1 to NPLS
 !pb  MAY  16:   nrds -> nrei
 cdr  March 17:  NPTRGT printed. May have been changed in call to if0parm, block 14.
@@ -30,7 +31,9 @@ cdr             same thing: NCPVI, NCPV  (and eliminate old parameters NCOP, NCO
 cdr  July 17 :  lmulpl:  automatic options for multiple ion temperatures,
 cdr                      multiple ion velocities in case of BGK nonlinear collisions
 cdr  July 17 :  initialize 2D CFD code coupling parameters NDX,....
-c               move nrad=... after call to if0prm, because of emc3 coupling
+c               move NRAD=... after call to if0prm, because of 3D CFD (emc3) coupling
+cdr  Jun 18  : various corrections, comments in new (generalized) block 12 options.
+cdr            nadv=nadv+10: now out, is contained in more general storage settings.
 cdr  Oct. 19 : block 5 card counting to infere the setting of INDPRO(2).
 cdr            From then on: completely symmetric options for both background parameter
 cdr            sets: Ti (temperature) and V.IN (flow field) in multispecies cases.
@@ -264,6 +267,8 @@ c  additional volumetric tallies
       WRITE (iunout,'(a14,i8)') 'NCLV        = ',NCLV
       WRITE (iunout,'(a14,i8)') 'NSNV        = ',NSNV
       WRITE (iunout,'(a14,i8)') 'NALV        = ',NALV
+C     WRITE (iunout,'(a14,i8)') 'NBGV        = ',NBGV ! determined later
+C     WRITE (iunout,'(a14,i8)') 'NCPV        = ',NCPV ! determined later
 c  additional surface-averaged tallies
       WRITE (iunout,'(a14,i8)') 'NADS        = ',NADS
       WRITE (iunout,'(a14,i8)') 'NALS        = ',NALS
@@ -272,8 +277,6 @@ c  additional input tallies
 
       CALL EIRENE_LEER(1)
 c  statistical variances, covariances
-      WRITE (iunout,'(a14,i8)') 'NCPV        = ',NCPV
-      WRITE (iunout,'(a14,i8)') 'NBGK        = ',NBGK
       WRITE (iunout,'(a14,i8)') 'NSD         = ',NSD
       WRITE (iunout,'(a14,i8)') 'NSDW        = ',NSDW
       WRITE (iunout,'(a14,i8)') 'NCV         = ',NCV
@@ -282,11 +285,14 @@ c  statistical variances, covariances
       WRITE (IUNOUT,*) 'MAX. NO. OF ATOMIC/MOLECULAR "REACTIONS"'
       WRITE (iunout,'(a14,i8)') 'NREAC       = ',NREAC
       WRITE (IUNOUT,*) 'NREC,NREI,NRCX,NREL,NRPI: DETERMINED LATER'
+      WRITE (IUNOUT,*) 'NRPH,NRBG,NROT          : DETERMINED LATER'
 C     WRITE (iunout,'(a14,i8)') 'NREC        = ',NREC
 C     WRITE (iunout,'(a14,i8)') 'NREI        = ',NREI
 C     WRITE (iunout,'(a14,i8)') 'NRCX        = ',NRCX
 C     WRITE (iunout,'(a14,i8)') 'NREL        = ',NREL
 C     WRITE (iunout,'(a14,i8)') 'NRPI        = ',NRPI
+C     WRITE (iunout,'(a14,i8)') 'NRBG        = ',NRBG
+C     WRITE (iunout,'(a14,i8)') 'NRPH        = ',NRPH
 
       CALL EIRENE_LEER(1)
       WRITE (IUNOUT,*) 'SETTING OF STORAGE OPTIMIZATION OPTIONS'
@@ -715,7 +721,8 @@ cym to be evaluated
 
 !  PHOTONS
 
-      WRITE (iunout,*) '*4D.   PHOTONS SPECIES CARDS, NPHOTI SPECIES '
+      WRITE (iunout,*)
+     .  '*** 4D. PHOTONS SPECIES CARDS, NPHOTI SPECIES '
 
       call json%get_child(species,'PHOTONS',pspc,found)
       call json%get(pspc,'NPHOTI',nphoti,found)
@@ -1083,7 +1090,7 @@ cpb  ascending order starting with 1
              call json%get(pst,'TXTSOU',txt,found)
              WRITE (IUNOUT,'(A1,A)') ' ',trim(txt)
              deallocate(txt)
-!  check for substrata
+!  number of substrata
              call json%get(pst,'NSRFSI',nsrfsi,found)
              NSRFS = MAX(NSRFS,NSRFSI)
 

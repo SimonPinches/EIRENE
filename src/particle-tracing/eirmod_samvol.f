@@ -32,12 +32,14 @@
       INTEGER, ALLOCATABLE, SAVE  :: ISOURC(:,:), ICMX(:),
      .                               IFREC(:)
       INTEGER, SAVE :: ISTROLD=-1
-      LOGICAL, ALLOCATABLE, SAVE :: LPLSSR(:)
+      LOGICAL, ALLOCATABLE, SAVE :: LPLSSR(:), LATSSR(:)
 
 !$OMP THREADPRIVATE(ISTROLD)
 
       CONTAINS
 
+cdr Aug.  22 : notation, and bugfig: sumn,sumnt vs. sum (only affecting
+cdr            diagnostic output
 cdr Sep.  21 : a bit more and corrected documentation
 cdr Nov.  19 : Nested do 6 loop: erroneous exit from loop
 cdr            corrected (300919): Possible significant
@@ -75,7 +77,7 @@ C    THE CELL INDEX ICELL OF THE VOLUME SOURCE PARTICLE.
 C    Also the total (volume integrated) particle rate SREC, (from tabrc1(irrc))
 C         the field particle energy rate EIO, (from 1.5 Ti(ipls,:) + EDRIFT(ipls,:)
 C         and electron energy rate EEL, (from eelrc1(irrc))
-C         are computed for diagnositics.
+C         are computed for diagnostics.
 C
 C
 C    A FEW GEOMETRICAL CONSTANTS FOR RANDOM SAMPLING
@@ -94,7 +96,8 @@ C
      .            BX, BY, BZ, BF, VX, VY, VZ, EIRENE_FEELRC1, 
      .            VPARA, EELRC, MOMPARA, TOT_BREMS(NPLS), Z,
      .            BREMS, EIRENE_BREMS,
-     .            SUMM, EISUMM, EISUM, SUM,
+cdr  sum over sub-strata
+     .            SUMNT, SUMEIT, SUMEI, SUMN,
      .            X1, Y1, X2, Y2, X3, Y3
       INTEGER :: ISTR, MXREC, MXPLS, IVOLSI, IVL,
      .           IFPLS, IIRC, IRRC, I, J, KK, ICCT, IPLSTI, IPLSV,
@@ -103,11 +106,18 @@ C
 
       IF (.NOT.ALLOCATED(FREC)) THEN
 
+cdr  some preparatory work, for plasma (field particle) sources (strata with NLPLS=T),
+cdr  termed: "recombination", which is sometimes by abuse of language
+
 C  LPLSSR(IPLS):
-C  IDENTIFY THOSE IPLS WHICH NEED A VOLUME SOURCE DISTRIBUTION
+C  IDENTIFY THOSE FIELD PARTICLE SPECIES IPLS TO WHICH A 
+C                 VOLUME SOURCE DISTRIBUTION IS ASSIGNED
 
         ALLOCATE (LPLSSR(NPLSI))
+        ALLOCATE (LATSSR(NATMI))
         LPLSSR = .FALSE.
+        LATSSR = .FALSE.
+
         DO ISTR=1,NSTRAI
           IF (NLVOL(ISTR) .AND. NLPLS(ISTR)
      .        .AND. (FLUX(ISTR) > 0._DP)) THEN
@@ -140,6 +150,12 @@ C
       SREC=0.
       IFREC=0
 C
+cdr  prepare volumetric source distribution
+cdr  for primary field particles ITYP_PRIM = 4 with LPLSSR(IPLS) = T
+
+cdr  select case ityp_prim
+cdr  case = 4
+
       IFPLS=0
       DO 2 JPLS=1,NPLSI
         IPLS=JPLS
@@ -316,7 +332,7 @@ C  BREMSSTRAHLUNG ORIGINATING FROM IONS IPLS, CHARGE Z=NCHRGP(IPLS)
 cdr needed for diagnostics only, and also for electron energy loss rates,
 cdr in which bremsstrahlung might be either lumped into eelrc1 (ADAS) or not (ELSE), depending on data source.
 
-C  only: atomic ions. Exclude here for the time being: molecular ions
+C  only: atomic ions. Exclude here, for the time being: molecular ions
         TOT_BREMS = 0._DP
         DO JPLS=1,NPLSI
           IPLS=JPLS
@@ -412,7 +428,7 @@ C
         DO JPLS=1,NPLSI
           ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,JPLS)
           CALL EIRENE_MASAJR('IPLS,TOT.BREMSSTRAHLUNG ',
-     .                 TEXTS(ISPZ),0   ,TOT_BREMS(JPLS))
+     .                 TEXTS(ISPZ),JPLS,TOT_BREMS(JPLS))
         END DO
 
       ENDIF    !trcsou
@@ -430,13 +446,14 @@ C
             CALL EIRENE_EXIT_OWN(1)
           ENDIF
           IPLSTI = MPLSTI(IPLS)
-          SUMM=0.D0
-          EISUMM=0.D0
+
+          SUMNT=0.D0
+          SUMEIT=0.D0
 C  VOLUMETRIC SUB-STRATA
           DO 53 IVOLSI=1,NSRFSI(ISTRA)
             IVL=IVOLSI
-            SUM=0.D0
-            EISUM=0.D0
+            SUMN=0.D0
+            SUMEI=0.D0
             IF (SORLIM(IVL,ISTRA).LT.0) THEN
 C  INITIALIZE SAMPLING DISTRIBUTIONS FOR USER SPECIFIED VOLUME SOURCE
               CALL EIRENE_SAMUSR_INIT(IVL,ISTRA,
@@ -444,8 +461,8 @@ C  INITIALIZE SAMPLING DISTRIBUTIONS FOR USER SPECIFIED VOLUME SOURCE
      .                    SORAD3(IVL,ISTRA),SORAD4(IVL,ISTRA),
      .                    SORAD5(IVL,ISTRA),SORAD6(IVL,ISTRA))
 !pb assume flux is set in samusr
-cdr April 22: next line must be wrong
-              SUMM=FLUX(ISTRA)
+cdr April 22:  bug fix. do not overwrite total flux sumnt (old: summ) here.
+              SUMN=FLUX(ISTRA)
             ELSE
 C  INITIALIZE SAMPLING DISTRIBUTIONS FOR EXTERNAL VOLUMETRIC SOURCES (use the rates: TABRC1(irrc,:))
 C  ACCOUNT FOR INGRDA(IVOLSI,ISTRA,...), INGRDE(IVOLSI,ISTRA,...) section of comp. grid
@@ -547,15 +564,15 @@ C  INDIRECT ADDRESSING
                       IF (REC.GT.0.D0) THEN
                         ICC=ICC+1
                         SUM=SUM+REC
-                        EISUM=EISUM-1.5*TIIN(IPLSTI,NCELL)*REC
-                        IF (LEDRIFT) EISUM=EISUM-EDRIFT(IPLS,NCELL)*REC
+                        SUMEI=SUMEI-1.5*TIIN(IPLSTI,NCELL)*REC
+                        IF (LEDRIFT) SUMEI=SUMEI-EDRIFT(IPLS,NCELL)*REC
                       ENDIF
                     END DO
                   END DO
                 END DO
    52         CONTINUE   ! summing over irrc
 c
-              IF (SUM.EQ.0.D0) THEN
+              IF (SUMN.EQ.0.D0) THEN
                 WRITE (IUNOUT,*) 'NO VOLUMETRIC SOURCE RATE FOR:'
                 WRITE (IUNOUT,*) 'ISTRA, IVOLSI, IPLS, ISTEP ',
      .                            ISTRA, IVL   , IPLS, ISTEP
@@ -565,26 +582,26 @@ c
                 GOTO 53
               ENDIF
 
-              SORWGT(IVL,ISTRA)=SUM
+              SORWGT(IVL,ISTRA)=SUMN
               CALL EIRENE_LEER(1)
               WRITE (iunout,*) 'SUB-STRATUM WEIGHT REDEFINED'
               CALL EIRENE_MASJ2R
-     .          ('IVOLSI,ISTRA,SORWGT     ',IVOLSI,ISTRA,SUM)
+     .          ('IVOLSI,ISTRA,SORWGT     ',IVOLSI,ISTRA,SUMN)
               IF (TRCSOU) THEN
                 CALL EIRENE_MASJ3 ('IRRC,IPLS,ICMX          ',
      .                              IRC ,IPLS,ICC)
                 CALL EIRENE_LEER(1)
               ENDIF
-              SUMM=SUMM+SUM
-              EISUMM=EISUMM+EISUM
+              SUMNT=SUMNT+SUM
+              SUMEIT=SUMEIT+SUMEI
             ENDIF
    53     CONTINUE
 C
-          IF (SUMM.GT.0.D0) THEN
-            FLUX(ISTRA)=SUMM
+          IF (SUMNT.GT.0.D0) THEN
+            FLUX(ISTRA)=SUMNT
             WRITE (iunout,*) 'SOURCE STRENGTH REDEFINED'
             CALL EIRENE_MASJR2('ISTRA, FLUX, EIFLUX     ',
-     .                          ISTRA,FLUX(ISTRA),EISUMM)
+     .                          ISTRA,FLUX(ISTRA),SUMEIT)
             CALL EIRENE_LEER(1)
           ELSE
             FLUX(ISTRA)=0.D0

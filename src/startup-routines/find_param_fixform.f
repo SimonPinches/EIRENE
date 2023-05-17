@@ -671,7 +671,8 @@ C  FIND START OF NEXT INPUT BLOCK: 4D
       READ (IUNIN,'(A72)') ZEILE
       NPHOTI=0
       IF (ZEILE(1:3) == '***') GOTO 500
-      WRITE (iunout,*) '*4D.   PHOTONS SPECIES CARDS, NPHOTI SPECIES '
+      WRITE (iunout,*)
+     .  '*** 4D. PHOTONS SPECIES CARDS, NPHOTI SPECIES '
       READ (IUNIN,*) NPHOTI
       NPHOT = MAX(NPHOT,NPHOTI)
 
@@ -887,6 +888,7 @@ C * ZEILE...: STRATUM NAME
         READ (IUNIN,*)
         READ (IUNIN,*)
         READ (IUNIN,*)
+cdr  number of substrata
         READ (IUNIN,6666) NSRFSI
         NSRFS = MAX(NSRFS,NSRFSI)
 
@@ -1385,6 +1387,8 @@ c  additional volumetric tallies
       WRITE (iunout,'(a14,i8)') 'NCLV        = ',NCLV
       WRITE (iunout,'(a14,i8)') 'NSNV        = ',NSNV
       WRITE (iunout,'(a14,i8)') 'NALV        = ',NALV
+C     WRITE (iunout,'(a14,i8)') 'NBGV        = ',NBGV ! determined later
+C     WRITE (iunout,'(a14,i8)') 'NCPV        = ',NCPV ! determined later
 c  additional surface-averaged tallies
       WRITE (iunout,'(a14,i8)') 'NADS        = ',NADS
       WRITE (iunout,'(a14,i8)') 'NALS        = ',NALS
@@ -1393,8 +1397,6 @@ c  additional input tallies
 
       CALL EIRENE_LEER(1)
 c  statistical variances, covariances
-      WRITE (iunout,'(a14,i8)') 'NCPV        = ',NCPV
-      WRITE (iunout,'(a14,i8)') 'NBGK        = ',NBGK
       WRITE (iunout,'(a14,i8)') 'NSD         = ',NSD
       WRITE (iunout,'(a14,i8)') 'NSDW        = ',NSDW
       WRITE (iunout,'(a14,i8)') 'NCV         = ',NCV
@@ -1403,11 +1405,14 @@ c  statistical variances, covariances
       WRITE (IUNOUT,*) 'MAX. NO. OF ATOMIC/MOLECULAR "REACTIONS"'
       WRITE (iunout,'(a14,i8)') 'NREAC       = ',NREAC
       WRITE (IUNOUT,*) 'NREC,NREI,NRCX,NREL,NRPI: DETERMINED LATER'
+      WRITE (IUNOUT,*) 'NRPH,NRBG,NROT          : DETERMINED LATER'
 C     WRITE (iunout,'(a14,i8)') 'NREC        = ',NREC
 C     WRITE (iunout,'(a14,i8)') 'NREI        = ',NREI
 C     WRITE (iunout,'(a14,i8)') 'NRCX        = ',NRCX
 C     WRITE (iunout,'(a14,i8)') 'NREL        = ',NREL
 C     WRITE (iunout,'(a14,i8)') 'NRPI        = ',NRPI
+C     WRITE (iunout,'(a14,i8)') 'NRBG        = ',NRBG
+C     WRITE (iunout,'(a14,i8)') 'NRPH        = ',NRPH
 
       CALL EIRENE_LEER(1)
       WRITE (IUNOUT,*) 'SETTING OF STORAGE OPTIMIZATION OPTIONS'

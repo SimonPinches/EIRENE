@@ -25,8 +25,10 @@ cdr  Data for triangular meshes: LEVGEO=4
      I INMTI(:,:), INSPAT(:,:), IXTRI(:), IYTRI(:), IREVERS(:,:),
      I INMTI3(:,:)
 
+cdr:  this part seems to be specific to coupling to B2.5: infcop.f
 CVK TO HAVE CORRECT SIGNS FOR PARTICLES CROSSING TRANSPARENT NDS
       INTEGER,ALLOCATABLE,SAVE, PUBLIC :: INMTINSS(:,:)         !VK
+cdr
 
       INTEGER, PUBLIC, SAVE ::
      I NRKNOT, NTRII, NCTRIG, MCTRIG
