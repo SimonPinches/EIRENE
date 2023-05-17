@@ -5,6 +5,12 @@ cdr         set in code initialisation phase
 cdr may 18: revised, particle currents, particle flux,...., comments..
 cdr         I am not sure that the rad and pol normal vectors are correct.
 cdr         In solps5.0 we use the underlying polygon grid.
+
+      MODULE EIRMOD_UPTUSR
+
+      PUBLIC
+
+      CONTAINS
 C
 C
       SUBROUTINE EIRENE_UPTUSR(XSTOR2,XSTORV2,WV,IFLAG)
@@ -233,3 +239,5 @@ C
 C
       RETURN
       END SUBROUTINE EIRENE_UPTUSR
+
+      END MODULE EIRMOD_UPTUSR

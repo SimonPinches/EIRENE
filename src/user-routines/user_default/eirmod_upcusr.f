@@ -1,4 +1,11 @@
-C  user-supplied collision estimator.
+      MODULE EIRMOD_UPCUSR
+
+      PUBLIC
+
+      CONTAINS
+
+      
+C     user-supplied collision estimator.
 C  called from folion, folneut
 C
       SUBROUTINE EIRENE_UPCUSR(WS,IND,KK)
@@ -28,3 +35,6 @@ C     COLV(1,NCELL)=COLV(1,NCELL)+WS
 C
       RETURN
       END SUBROUTINE EIRENE_UPCUSR
+
+      END MODULE EIRMOD_UPCUSR
+      

@@ -104,6 +104,7 @@ C
       use eirmod_timep
       use eirmod_colatm  
       use eirmod_colmol
+      use eirmod_upcusr
 
       use EIRMOD_OPENMP
 

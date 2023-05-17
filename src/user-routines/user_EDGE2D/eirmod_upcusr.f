@@ -1,3 +1,32 @@
+      MODULE EIRMOD_UPCUSR
+
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_CESTIM
+      USE EIRMOD_COMUSR
+      USE EIRMOD_COMPRT
+      USE EIRMOD_COMXS
+      USE EIRMOD_CGRID
+      USE EIRMOD_CCONA
+      use EIRMOD_CUPD
+      
+      IMPLICIT NONE
+      PRIVATE
+
+      PUBLIC :: EIRENE_UPCUSR, EIRENE_upcusr_reinit
+
+c     swx 24sep07
+      logical,save :: lfirst=.false.
+      integer, save :: num=0,eirene_nbirth,eirene_njetto
+      real*8,save :: delang
+      character(len=256), save :: eirene_fbirth,eirene_ftransfer,
+     &     eirene_fstoreneutflux
+
+      real*8, allocatable,save :: rdata(:,:)
+      integer, allocatable,save :: idata(:,:)
+
+      CONTAINS
+     
       SUBROUTINE EIRENE_UPCUSR(WS,IND,KK)
 C
 C  USER-SUPPLIED COLLISION ESTIMATOR, VOLUME-AVERAGED
@@ -9,25 +38,10 @@ C| 16/07/2010   D.Harting    Added two variables to eirene_user  |
 C|                           namelist for use of flux dependency |
 C|                           in chemical sputtering.             |
 C+---------------------------------------------------------------+
-      USE EIRMOD_PRECISION
-      USE EIRMOD_PARMMOD
-      USE EIRMOD_CESTIM
-      USE EIRMOD_COMUSR
-      USE EIRMOD_COMPRT
-      USE EIRMOD_COMXS
-      USE EIRMOD_CGRID
-      USE EIRMOD_CCONA
-      use EIRMOD_CUPD
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: WS
       INTEGER, INTENT(IN) :: IND, KK
-cswx 24sep07
-      logical,save :: lfirst=.false.
-      integer, save :: num=0,eirene_nbirth,eirene_njetto
-      real*8,save :: delang
       real*8 :: xx,yy,zz,d,pphi,alph,v0v
-      character(len=256), save :: eirene_fbirth,eirene_ftransfer,
-     &     eirene_fstoreneutflux
       real(dp) :: eirene_phi_offsets(9)
       integer :: eirene_wallFluxModel ! calculation of wall fluxes for chemical sputtering
 c                = 0: no wall fluxes are used (old edge2d model)
@@ -36,8 +50,6 @@ c                = 2: ion fluxes and neutral fluxes from last eirene iteration a
 c                = 3: ion and neutral fluxes are used, and EIRENE is iterated to give
 c                     converged neutral fluxes.
       logical :: eirene_use_elstepdat_bug
-      real*8, allocatable,save :: rdata(:,:)
-      integer, allocatable,save :: idata(:,:)
       integer :: i,j
       real*8 :: cosrot, sinrot, my_velx, my_vely, my_velz
 
@@ -134,8 +146,12 @@ csw change ordering
       endif
 cswx
       RETURN
+      END SUBROUTINE EIRENE_UPCUSR
 
-      entry EIRENE_upcusr_reinit
+      SUBROUTINE EIRENE_upcusr_reinit
+      IMPLICIT NONE
+      INTEGER :: I
+      
       if(lfirst) then
         lfirst=.false.
 
@@ -160,4 +176,6 @@ cswx
         endif
       endif
       return
-      END SUBROUTINE EIRENE_UPCUSR
+      END SUBROUTINE EIRENE_UPCUSR_reinit
+      
+      END MODULE EIRMOD_UPCUSR

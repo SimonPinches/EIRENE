@@ -1,5 +1,12 @@
 ! 20.11.09: use NSBOX as number of accounted cells instead of NTRII in order to
 !           generalize the routine
+
+      MODULE EIRMOD_UPTUSR
+
+      PUBLIC
+
+      CONTAINS
+
 C
 C
       SUBROUTINE EIRENE_UPTUSR(XSTOR2,XSTORV2,WV,IFLAG)
@@ -122,3 +129,5 @@ C
 
       RETURN
       END SUBROUTINE EIRENE_UPTUSR
+
+      END MODULE EIRMOD_UPTUSR

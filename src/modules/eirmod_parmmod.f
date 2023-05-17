@@ -60,6 +60,8 @@ C> Indicates whether routine EIRENE_IF3COP is called from with strata loop
       LOGICAL, PUBLIC, SAVE :: LIF3COP_FROM_LOOP = .FALSE.
 c> Indicates whether output of master processor 0 is written to standard output
       LOGICAL, PUBLIC, SAVE :: LPE0_TO_STDOUT = .FALSE.
+C> Indicates whether fixed form input of JSON formatted input is used
+      LOGICAL, PUBLIC, SAVE :: LRDJSON = .FALSE.
 C  BLOCK A FEW RESERVED OUTPUT STREAMS.
       INTEGER, PUBLIC, PARAMETER :: NSTREAM = 16
       INTEGER, PUBLIC, SAVE :: ISTREAM(NSTREAM)

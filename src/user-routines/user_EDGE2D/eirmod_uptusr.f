@@ -1,3 +1,37 @@
+      MODULE EIRMOD_UPTUSR
+      
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_CESTIM
+      USE EIRMOD_COMUSR
+      USE EIRMOD_COMPRT
+      USE EIRMOD_CUPD
+      USE EIRMOD_COMXS
+      USE EIRMOD_CSPEZ
+      USE EIRMOD_CGRID
+      USE EIRMOD_CLOGAU
+      USE EIRMOD_CCONA
+      USE EIRMOD_CPOLYG
+      USE EIRMOD_CZT1
+
+      IMPLICIT NONE
+      PRIVATE
+
+      PUBLIC :: EIRENE_UPTUSR, EIRENE_uptusr_reinit
+      
+c      REAL(DP), ALLOCATABLE, SAVE :: CNDYNA(:),CNDYNP(:)
+CDR
+      REAL(DP), ALLOCATABLE, SAVE :: VPX(:),VPY(:),VRX(:),VRY(:)
+      
+      INTEGER, SAVE :: IFIRST, IA0, IA1, IA2, IA3, NA4, INDEXM, INDEXF
+      DATA IFIRST/0/
+      
+      integer, save :: num=0,eirene_nbirth,eirene_njetto
+      character(len=256), save :: eirene_fbirth,eirene_ftransfer,
+     &     eirene_fstoreneutflux
+
+      CONTAINS
+      
       SUBROUTINE EIRENE_UPTUSR(XSTOR2,XSTORV2,WV,IFLAG)
 C
 C  USER-SUPPLIED TRACKLENGTH ESTIMATOR, VOLUME-AVERAGED
@@ -13,36 +47,15 @@ C| 16/07/2010   D.Harting    Added two variables to eirene_user  |
 C|                           namelist for use of flux dependency |
 C|                           in chemical sputtering.             |
 C+---------------------------------------------------------------+
-      USE EIRMOD_PRECISION
-      USE EIRMOD_PARMMOD
-      USE EIRMOD_CESTIM
-      USE EIRMOD_COMUSR
-      USE EIRMOD_COMPRT
-      USE EIRMOD_CUPD
-      USE EIRMOD_COMXS
-      USE EIRMOD_CSPEZ
-      USE EIRMOD_CGRID
-      USE EIRMOD_CLOGAU
-      USE EIRMOD_CCONA
-      USE EIRMOD_CPOLYG
-      USE EIRMOD_CZT1
       IMPLICIT NONE
       REAL(DP), INTENT(INOUT) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
      .                         XSTORV2(NSTORV,N2ND+N3RD), WV
       INTEGER, INTENT(IN) :: IFLAG
-c      REAL(DP), ALLOCATABLE, SAVE :: CNDYNA(:),CNDYNP(:)
-CDR
-      REAL(DP), ALLOCATABLE, SAVE :: VPX(:),VPY(:),VRX(:),VRY(:)
 CDR
       INTEGER :: IAT, IPL, I, IR, IP, IRD
-      INTEGER, SAVE :: IFIRST, IA0, IA1, IA2, IA3, NA4, INDEXM, INDEXF
-      DATA IFIRST/0/
 csw
       real(dp) :: dist,wtr
       integer :: iaei,irei,iacx,ircx
-      integer, save :: num=0,eirene_nbirth,eirene_njetto
-      character(len=256), save :: eirene_fbirth,eirene_ftransfer,
-     &     eirene_fstoreneutflux
       real(dp) :: eirene_phi_offsets(9)
       integer :: eirene_wallFluxModel ! calculation of wall fluxes for chemical sputtering
 c                = 0: no wall fluxes are used (old edge2d model)
@@ -143,7 +156,10 @@ c         net sources due CX:
         enddo
       endif
       RETURN
-      entry EIRENE_uptusr_reinit
+      END SUBROUTINE EIRENE_UPTUSR
+
+      
+      SUBROUTINE EIRENE_uptusr_reinit
       if(ifirst .ne. 0) then
         ifirst=0
 c        if(allocated(cndyna)) deallocate(cndyna)
@@ -154,4 +170,6 @@ c        if(allocated(cndynp)) deallocate(cndynp)
         if(allocated(vry)) deallocate(vry)
       endif
       return
-      END SUBROUTINE EIRENE_UPTUSR
+      END SUBROUTINE EIRENE_UPTUSR_reinit
+
+      END MODULE EIRMOD_UPTUSR

@@ -135,6 +135,7 @@ C
       use eirmod_timer  
       use eirmod_timep
       use eirmod_colion
+      use eirmod_upcusr
 
       IMPLICIT NONE
 
