@@ -651,7 +651,7 @@ C
             ENDIF
             WRITE (IUNOUT,*)
             WRITE (IUNOUT,*) ' SURFACE NO. ',JLIM
-            WRITE (IUNOUT,'(5A6,A12)') 'I','ITRI','ISIDE',
+            WRITE (IUNOUT,'(5A6,A12)') 'J','ITRI','ISIDE',
      .                                 'IP1','IP2','BLGT'
             DO I=1, SURF_TRIAN(J)%NUMTR
               IT = SURF_TRIAN(J)%ITRIAS(I)

@@ -391,7 +391,7 @@ c  set some derived storage parameters
         NBGVP=NBGV+1
         NCOLMC=NPLS+NREI+NREC
 
-C  N1MX: storage parameter for species text for input and  output tallies, 
+C  N1MX: storage parameter for species text for input and output tallies, 
 C        and for SCLTAL in mcarlo.f
 
 !pb12Oct2022

@@ -53,7 +53,7 @@ C
       INTEGER, INTENT(IN) :: ISTRA
       REAL(DP), INTENT(OUT) :: FA, FM, FI, FPH
       REAL(DP) :: FC(4), P(4,5), B(4), PP(4,4), FFC(3), BB(3)
-      REAL(DP) :: DTB1, DTB2, DTA, EIRENE_DETER, DTB3, FNEN, DTB4,
+      REAL(DP) :: DTB1, DTB2, DTA, EIRENE_DETER3x3, DTB3, FNEN, DTB4,
      .            EIRENE_DETER4X4
       REAL(DP) :: P11, P12, P13, P21, P22, P23, P31, P32, P33,
      .            B1, B2, B3,
@@ -327,21 +327,21 @@ cdr  We use the explicit Cramer's Rule.
           B1=BB(1)
           B2=BB(2)
           B3=BB(3)
-          dta=EIRENE_deter(p11,p21,p31,
-     .              p12,p22,p32,
-     .              p13,p23,p33)
+          dta=EIRENE_deter3x3(p11,p21,p31,
+     .                        p12,p22,p32,
+     .                        p13,p23,p33)
 cdr  tbd:  check if determinant=0
 cdr        see below, same as for IROW=4/ICOL=3 case
 
-          dtb1=EIRENE_deter(b1,b2,b3,
-     .               p12,p22,p32,
-     .               p13,p23,p33)
-          dtb2=EIRENE_deter(p11,p21,p31,
-     .               b1,b2,b3,
-     .               p13,p23,p33)
-          dtb3=EIRENE_deter(p11,p21,p31,
-     .               p12,p22,p32,
-     .               b1,b2,b3)
+          dtb1=EIRENE_deter3x3(b1,b2,b3,
+     .                         p12,p22,p32,
+     .                         p13,p23,p33)
+          dtb2=EIRENE_deter3x3(p11,p21,p31,
+     .                         b1,b2,b3,
+     .                         p13,p23,p33)
+          dtb3=EIRENE_deter3x3(p11,p21,p31,
+     .                         p12,p22,p32,
+     .                         b1,b2,b3)
           Ffc(1)=dtb1/(dta+1.d-30)
           Ffc(2)=dtb2/(dta+1.d-30)
           Ffc(3)=dtb3/(dta+1.d-30)
@@ -411,9 +411,9 @@ C
           B1=B(1)
           B2=B(2)
           B3=B(3)
-          dta=EIRENE_deter(p11,p21,p31,
-     .              p12,p22,p32,
-     .              p13,p23,p33)
+          dta=EIRENE_deter3x3(p11,p21,p31,
+     .                        p12,p22,p32,
+     .                        p13,p23,p33)
 
 cdr build a certain norm (L1) of the 3x3 matrix, to compare with determinant
           ap3ma=maxval(pp(1:3,1:3))
@@ -424,15 +424,15 @@ cdr 3x3 matrix, hence: **3, to compare with determinant
           ap3n3=ap3m**3
 cdr check determinant=0, relative to L1 norm
           if (abs(dta)/ap3n3 > eps10) then
-          dtb1=EIRENE_deter(b1,b2,b3,
-     .               p12,p22,p32,
-     .               p13,p23,p33)
-          dtb2=EIRENE_deter(p11,p21,p31,
-     .               b1,b2,b3,
-     .               p13,p23,p33)
-          dtb3=EIRENE_deter(p11,p21,p31,
-     .               p12,p22,p32,
-     .               b1,b2,b3)
+          dtb1=EIRENE_deter3x3(b1,b2,b3,
+     .                         p12,p22,p32,
+     .                         p13,p23,p33)
+          dtb2=EIRENE_deter3x3(p11,p21,p31,
+     .                         b1,b2,b3,
+     .                         p13,p23,p33)
+          dtb3=EIRENE_deter3x3(p11,p21,p31,
+     .                         p12,p22,p32,
+     .                         b1,b2,b3)
           Ffc(1)=dtb1/(dta+1.d-30)
           Ffc(2)=dtb2/(dta+1.d-30)
           Ffc(3)=dtb3/(dta+1.d-30)
@@ -591,8 +591,7 @@ C
       USE EIRMOD_COMSOU
       USE EIRMOD_COUTAU
       USE EIRMOD_CCOUPL
-      USE EIRMOD_COMPRT
-     , ,ONLY : IUNOUT
+      USE EIRMOD_COMPRT,ONLY : IUNOUT
       USE EIRMOD_CLOGAU
      , ,ONLY : NLSPCSCL, NLSPCSCL_ATM, NLSPCSCL_MOL, NLSPCSCL_ION,
      ,         NLSPCSCL_PHOT, NLSPCSCL_ON
