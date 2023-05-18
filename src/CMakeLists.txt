@@ -83,6 +83,8 @@ else()
 	  "When LibJSON includes the library name -DJSON_MODULES should also be set.")
       endif()
     endif()
+  else()
+    message(STATUS " Cannot find LibJSON " ${LibJSON})
   endif()
 endif()
 
