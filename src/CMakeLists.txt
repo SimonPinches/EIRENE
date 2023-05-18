@@ -40,31 +40,23 @@ set(EIRENE_POSTFIX "" CACHE STRING "EIRENE output names postfix")
 
 # Check for modules and library for JSON
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-if (NOT JSON_MODULES)
-  message(STATUS "Setting default directory for JSON_MODULES.")
-  set(JSON_MODULES "/var/lib")
-endif()
-if(JSON_MODULES)
-  get_filename_component(JSON_MODULES ${JSON_MODULES} ABSOLUTE)
-  include_directories(${JSON_MODULES})
-  message(STATUS "  JSON_MODULES:   " ${JSON_MODULES})
-else()
-#  message(FATAL_ERROR "Directory of JSON module files not set. "
-#                      "Use cmake -DJSON_MODULES=\"<directory>\" to set it.")
-  message(STATUS "Directory of JSON module files not set. "
-                      "Use cmake -DJSON_MODULES=\"<directory>\" to set it.")
-endif()
-if (NOT LibJSON)
-  message(STATUS "Setting default directory for LibJSON.")
-  set(LibJSON "/var/lib")
-endif()
+if(NOT LibJSON)
+  find_package(jsonfortran
+    NAMES
+    jsonfortran
+    jsonfortran-gnu
+    jsonfortran-intel
+    REQUIRED)
 
-if(LibJSON)
-  get_filename_component(LibJSON ${LibJSON} ABSOLUTE)
-  message(STATUS "  Lib json_fortran:   " ${LibJSON})
-else()
-  message(STATUS  "Path to LibJSON unset")
-  message(STATUS  "You may want to try -DLibJSON=$PATH_TO_JSON_LIB/libjsonfortran.so")
+  if(jsonfortran_FOUND)
+    message(STATUS    " Found jsonfortran version "  ${jsonfortran_VERSION} )
+    message(STATUS    " " ${jsonfortran_INCLUDE_DIRS} )
+    include_directories(${jsonfortran_INCLUDE_DIRS})
+    set(LibJSON "${jsonfortran_INCLUDE_DIRS}/libjsonfortran.a")
+  else()
+    message(FATAL_ERROR "JSON library not found. "
+      "Use cmake -DLibJSON=\"<directory>\" to set it.")
+  endif()
 endif()
 
 # Libraries used for plotting
@@ -156,8 +148,11 @@ if (MPI)
   message("-- Adding USE_MPI flag...")
   add_definitions(-DUSE_MPI)
   find_package(MPI REQUIRED)
-#  add definitions(-DMPI_VERSION=${MPI_VERSION})
-  include_directories(${JSON_MODULES} ${MPI_Fortran_INCLUDE_PATH})
+  if ( NOT MPI_FOUND )
+    
+  endif()
+#  include_directories(${JSON_MODULES} ${MPI_Fortran_INCLUDE_PATH})
+  include_directories(${MPI_Fortran_INCLUDE_PATH})
 endif()
 
 # Add option to enable OpenMP with the parallel region defined in eirmod_mcarlo.
@@ -217,7 +212,6 @@ set(plotpath "")
 if( LibGRS AND LibGKS AND LibX11 AND Libz AND LibXt )
   list(APPEND plotpath ${src_plotting})
 else()
-#  list(APPEND plotpath ${src_plot_dummy})
   list(APPEND plotpath ${src_plotting})
   list(APPEND plotpath ${src_grsoft-dummy})
 endif()
@@ -247,6 +241,7 @@ add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno}
 add_executable(eirene main-routines/eirene_main.f)
 if (MPI)
   target_link_libraries(eirene EIRENE ${LibJSON} ${MPI_Fortran_LIBRARIES})
+#  target_link_libraries(eirene EIRENE ${MPI_Fortran_LIBRARIES})
 else()
   target_link_libraries(eirene EIRENE ${LibJSON})
 endif()
