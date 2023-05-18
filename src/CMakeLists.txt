@@ -63,19 +63,20 @@ else()
     set(jsonfortran_FOUND TRUE)
     set(LibJSON ${jsonfortran_INCLUDE_DIRS})
     if(JSON_MODULES) # If JSON_MODULES is set look for the moduless there
-      if(EXISTS ${JSON_MODULES})
+      if(EXISTS "${JSON_MODULES}/json_module.mod")
 	set(jsonfortran_INCLUDE_DIRS ${JSON_MODULES})
       else()
 	message(FATAL_ERROR "JSON Modules not found. "
 	  "The -DJSON_MODULES variable must be set to the directory containing JSON Modules.")
       endif()
     else() # If JSON_MODULES is not set try to find them
+      message(STATUS " Searching for JSON Modules using LibJSON path ")
       string(REPLACE "libjsonfortran.a" "" MOD_TRY ${LibJSON}) 
-      if(EXISTS ${MOD_TRY})
-	message(STATUS " JSON Modules found at " ${jsonfortran_INCLUDE_DIRS})
+      if(EXISTS "${MOD_TRY}/json_module.mod")
 	set(jsonfortran_INCLUDE_DIRS ${MOD_TRY}) 
+	message(STATUS " JSON Modules path set to " ${jsonfortran_INCLUDE_DIRS})
       else()
-	message(FATAL_ERROR "JSON Modules not found. "
+	message(FATAL_ERROR "JSON Modules not found at " ${jsonfortran_INCLUDE_DIRS}
 	  "When LibJSON includes the library name -DJSON_MODULES should also be set.")
       endif()
     endif()
