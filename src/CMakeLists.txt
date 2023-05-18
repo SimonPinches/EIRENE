@@ -41,18 +41,19 @@ set(EIRENE_POSTFIX "" CACHE STRING "EIRENE output names postfix")
 # Check for modules and library for JSON
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 if(NOT LibJSON)
+  message(STATUS  " Detecting LibJSON. By default the static library will be used")
   find_package(jsonfortran
     NAMES
     jsonfortran
     jsonfortran-gnu
     jsonfortran-intel
-    REQUIRED)
+    REQUIRED) 
   if(jsonfortran_FOUND)
     set(LibJSON "${jsonfortran_INCLUDE_DIRS}/libjsonfortran.a")
   endif()
 else()
   message(STATUS  " Checking user defined LibJSON "  ${LibJSON} )
-  message(WARNING  " No check on JSON compiler compatibility will be done ")
+  message(WARNING  " No check on JSON compiler version compatibility will be done ")
   if(EXISTS "${LibJSON}/libjsonfortran.a")
     set(jsonfortran_FOUND TRUE)
     set(jsonfortran_INCLUDE_DIRS ${LibJSON})
@@ -61,16 +62,22 @@ else()
     # This should catch the case where the library name is included in the path
     set(jsonfortran_FOUND TRUE)
     set(LibJSON ${jsonfortran_INCLUDE_DIRS})
-    if(JSON_MODULES)
+    if(JSON_MODULES) # If JSON_MODULES is set look for the moduless there
       if(EXISTS ${JSON_MODULES})
 	set(jsonfortran_INCLUDE_DIRS ${JSON_MODULES})
       else()
 	message(FATAL_ERROR "JSON Modules not found. "
 	  "The -DJSON_MODULES variable must be set to the directory containing JSON Modules.")
       endif()
-    else()
-      message(FATAL_ERROR "JSON Modules not found. "
-	"When LibJSON includes the library name -DJSON_MODULES must also be set.")      
+    else() # If JSON_MODULES is not set try to find them
+      string(REPLACE "libjsonfortran.a" "" MOD_TRY ${LibJSON}) 
+      if(EXISTS ${MOD_TRY})
+	message(STATUS " JSON Modules found at " ${jsonfortran_INCLUDE_DIRS})
+	set(jsonfortran_INCLUDE_DIRS ${MOD_TRY}) 
+      else()
+	message(FATAL_ERROR "JSON Modules not found. "
+	  "When LibJSON includes the library name -DJSON_MODULES should also be set.")
+      endif()
     endif()
   endif()
 endif()
