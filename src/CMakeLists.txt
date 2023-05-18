@@ -47,17 +47,25 @@ if(NOT LibJSON)
     jsonfortran-gnu
     jsonfortran-intel
     REQUIRED)
-
-  if(jsonfortran_FOUND)
-    message(STATUS    " Found jsonfortran version "  ${jsonfortran_VERSION} )
-    message(STATUS    " " ${jsonfortran_INCLUDE_DIRS} )
-    include_directories(${jsonfortran_INCLUDE_DIRS})
-    set(LibJSON "${jsonfortran_INCLUDE_DIRS}/libjsonfortran.a")
-  else()
-    message(FATAL_ERROR "JSON library not found. "
-      "Use cmake -DLibJSON=\"<directory>\" to set it.")
+else()
+  message(STATUS    " Using user defined LibJSON "  ${LibJSON} )
+  if(EXISTS ${LibJSON})
+    message(STATUS    " Found user defined LibJSON "  ${LibJSON} )
+    set(jsonfortran_FOUND TRUE)
+    set(jsonfortran_INCLUDE_DIRS ${LibJSON})
   endif()
 endif()
+
+if(jsonfortran_FOUND)
+  message(STATUS    " Found jsonfortran. version "  ${jsonfortran_VERSION} )
+  message(STATUS    " " ${jsonfortran_INCLUDE_DIRS} )
+  include_directories(${jsonfortran_INCLUDE_DIRS})
+  set(LibJSON "${jsonfortran_INCLUDE_DIRS}/libjsonfortran.a")
+else()
+  message(FATAL_ERROR "JSON library not found. "
+    "Use cmake -DLibJSON=\"<directory>\" to set it.")
+endif()
+
 
 # Libraries used for plotting
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
