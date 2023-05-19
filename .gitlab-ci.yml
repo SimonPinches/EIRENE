@@ -10,9 +10,8 @@ include:
 
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
-# For bullseye - from eirene_unified_bullseye
-#   SAMPLE_CASE_VERSION: b21dec505accb8ce4a6bfb8a1044a12339615853
-    SAMPLE_CASE_VERSION: 79656b9c060fc6057250065334f555c73aeee4b8
+# For bullseye - from HJL/update_sampl_makefiles_for_new_cmak
+    SAMPLE_CASE_VERSION: fc484eca9a6f736529f318a9519df23a08bbe0fc
 # OpenMP test cases, at present these exist in their own branch created from the
 # first commit. This can be merged at any time.
     SAMPLE_CASE_VERSION_OPENMP: 8cea7bfb6a0726768e3064ca1c1983188bf752c6
