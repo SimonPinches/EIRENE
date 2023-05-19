@@ -277,7 +277,6 @@ add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno}
 add_executable(eirene main-routines/eirene_main.f)
 if (MPI)
   target_link_libraries(eirene EIRENE ${LibJSON} ${MPI_Fortran_LIBRARIES})
-#  target_link_libraries(eirene EIRENE ${MPI_Fortran_LIBRARIES})
 else()
   target_link_libraries(eirene EIRENE ${LibJSON})
 endif()
