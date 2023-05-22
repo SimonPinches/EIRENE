@@ -11,7 +11,7 @@ include:
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
 # For bullseye - from HJL/update_sampl_makefiles_for_new_cmak
-    SAMPLE_CASE_VERSION: 8d71d4c25b2e885b3f10bbad110b28d66f123ac8
+    SAMPLE_CASE_VERSION: 27e2562f6c82cf5b0677d307896409e8986233de
 # OpenMP test cases, at present these exist in their own branch created from the
 # first commit. This can be merged at any time.
     SAMPLE_CASE_VERSION_OPENMP: 8cea7bfb6a0726768e3064ca1c1983188bf752c6
