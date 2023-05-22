@@ -22,6 +22,7 @@ variables:
     EXCLUDE_EMC3:   'false'
 
 stages:
+    - compliance
     - preparation
     - build:executable
     - run
@@ -54,6 +55,16 @@ workflow:
           variables:
               EXCLUDE_MPI: 'true'
         - when: always
+
+
+######################################################################################
+# Compliance tests to ensure code meets requirements - at present just version number
+######################################################################################
+
+compliance_check:
+    stage: compliance
+    script:
+        - hooks/ci_version_check.sh
 
 ######################################################################################
 # Serial tests
