@@ -3,33 +3,33 @@
 \section{Compiling EIRENE using cmake}
 The EIRENE source code is hosted on the Juelich Gitlab server at \url{https://jugit.fz-juelich.de}. An account is required for access which can be requested at \\ \url{http://eirene.de/cgi-bin/eirene/registration.cgi}. Once you have an account the code can be cloned using git.
 
-\begin{lstlisting}[language=bash]
-  $ git clone git@jugit.fz-juelich.de:eirene/eirene.git
+\begin{lstlisting}[language=bash,columns=fullflexible]
+  > git clone git@jugit.fz-juelich.de:eirene/eirene.git
 \end{lstlisting}
 
 The recommended way to compile EIRENE is by using the CMake utility available on multiple platforms \url{https://cmake.org/}. Cmake will ensure that the necessary dependencies are met. EIRENE now uses JSON format input and output files and requires a json library for this purpose. This library must be installed prior to compiling EIRENE.
 
-\begin{lstlisting}[language=bash]
-  $ git clone https://github.com/jacobwilliams/json-fortran.git
-  $ cd json-fortran
-  $ mkdir build
-  $ cd build
-  $ FC=gfortran cmake ../
-  $ sudo make install
+\begin{lstlisting}[language=bash,columns=fullflexible]
+  > git clone https://github.com/jacobwilliams/json-fortran.git
+  > cd json-fortran
+  > mkdir build
+  > cd build
+  > FC=gfortran cmake ../
+  > sudo make install
 \end{lstlisting}
 
 This will by default put the library in /usr/local/jsonfortran-gnu-8.3.0/. You can add \\ -DCMAKE\_INSTALL\_PREFIX=\textless path-to-jsonlib\textgreater if you would like a custom location. Once this is done you can compile EIRENE with
 
-\begin{lstlisting}[language=bash]
-  $ cd eirene
-  $ mkdir buildRelease
-  $ FC=gfortran cmake ../src
-  $ make -j EIRENE
+\begin{lstlisting}[language=bash,columns=fullflexible]
+  > cd eirene
+  > mkdir buildRelease
+  > FC=gfortran cmake ../src
+  > make -j EIRENE
 \end{lstlisting}
 
 The JSON library should be found automatically, if it does not, or you have put the JSON library in a non standard location use
-\begin{lstlisting}[language=bash]
-  $ FC=gfortran cmake -DLibJSON=<full-path-to-jsonlib> \
+\begin{lstlisting}[language=bash,columns=fullflexible]
+  > FC=gfortran cmake -DLibJSON=<full-path-to-jsonlib> \
   -DJSON_MODULES=<directory-of-jsonlib> ../src
 \end{lstlisting}
 
@@ -37,14 +37,14 @@ In order to enable OPENMP also add -DOPENMP=ON to the cmake line. In order to us
 
 This will generate a default EIRENE library libEIRENE.a in eirene/libRelease with the Dummy interface and default user-routines, where -j enables multi threaded  compilation. EIRENE can also be compiled with different user interfaces. To compile for SOLPS-ITER
 
-\begin{lstlisting}[language=bash]
-  $ FC=gfortran cmake -DEIRENE_INTERFACE=SOLPS-ITER \
+\begin{lstlisting}[language=bash,columns=fullflexible]
+  > FC=gfortran cmake -DEIRENE_INTERFACE=SOLPS-ITER \
   -DEIRENE_USER-ROUTINES=iter ../src
 \end{lstlisting}
 
 For polygons
-\begin{lstlisting}[language=bash]
-  $ FC=gfortran -DEIRENE_INTERFACE=B2 -DEIRENE_USER-ROUTINES=default \
+\begin{lstlisting}[language=bash,columns=fullflexible]
+  > FC=gfortran -DEIRENE_INTERFACE=B2 -DEIRENE_USER-ROUTINES=default \
   -DEIRENE_POSTFIX=_poly ../src
 \end{lstlisting}
 
@@ -215,16 +215,16 @@ Create a directory within which one can run the docker container
 
 First build the docker image locally by first cloning the Docker image repository. This will create a directory eirene-ci-image, go into this directory and build the image. 
 
-\begin{lstlisting}[language=bash]
-  $ git clone git@jugit.fz-juelich.de:eirene/eirene-ci-image.git
-  $ cd eirene-ci-image
-  $ sudo docker image build . -t debianbullseye:test
+\begin{lstlisting}[language=bash,columns=fullflexible]
+  > git clone git@jugit.fz-juelich.de:eirene/eirene-ci-image.git
+  > cd eirene-ci-image
+  > sudo docker image build . -t debianbullseye:test
 \end{lstlisting}
   
 The {debianbullseye:test} tags can be changed to any tags you prefer. This may take some time. It is also necessary to clone the EIRENE and EIRENE-sample-cases repositories. This can be done from either the docker container or from your default environment, if you have ssh keys enabled then this may be easier,  however there is the potential for conflict between the git version on your system and that used in the docker container. You can run the docker image from a directory of your choice, if cloning the EIRENE repository using your local system it should be cloned into the directory that you will run docker from. The sample cases repository should be cloned into the {eirene} directory containing the EIRENE source. Assuming you have already cloned the EIRENE and sample cases repositories you should run the following command under sudo.
 
-\begin{lstlisting}[language=bash]
-  $ sudo docker run --privileged=true -it -v `pwd`:`pwd` \
+\begin{lstlisting}[language=bash,columns=fullflexible]
+  > sudo docker run --privileged=true -it -v `pwd`:`pwd` \
     -w `pwd` debianbullseye:test
 \end{lstlisting}
 
