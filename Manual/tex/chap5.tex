@@ -18,7 +18,7 @@ The recommended way to compile EIRENE is by using the CMake utility available on
   > sudo make install
 \end{lstlisting}
 
-This will by default put the library in /usr/local/jsonfortran-gnu-8.3.0/. You can add \\ -DCMAKE\_INSTALL\_PREFIX=\textless path-to-jsonlib\textgreater if you would like a custom location. Once this is done you can compile EIRENE with
+This will by default put the library in /usr/local/jsonfortran-gnu-8.3.0/. You can add \\ -DCMAKE\_INSTALL\_PREFIX=\textless path-to-jsonlib\textgreater if you would like a custom location. If you do not have ford installed the documentation will fail to build, adding -DSKIP\_DOC\_GEN=TRUE to the cmake step will resolver this. Once this is done you can compile EIRENE with
 
 \begin{lstlisting}[language=bash,columns=fullflexible]
   > cd eirene
