@@ -190,7 +190,7 @@ cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
 
       IF (NPRS > 1 .OR. EIRENE_NTHREADS > 1) THEN
 #ifndef USE_EXT_OPENMP      
-!$OMP PARALLEL
+!$OMP PARALLEL PRIVATE(OP)
 #endif        
 !pb_open
         if (init_open == 0) then
