@@ -1,10 +1,63 @@
-\chapter{EIRENE Continuous Integration}
+\chapter{Compiling and developing EIRENE}
 \label{sec5}
+\section{Compiling EIRENE using cmake}
+The EIRENE source code is hosted on the Juelich Gitlab server at \url{https://jugit.fz-juelich.de}. An account is required for access which can be requested at \\ \url{http://eirene.de/cgi-bin/eirene/registration.cgi}. Once you have an account the code can be cloned using git.
+
+\begin{lstlisting}[language=bash,columns=fullflexible]
+  > git clone git@jugit.fz-juelich.de:eirene/eirene.git
+\end{lstlisting}
+
+The recommended way to compile EIRENE is by using the CMake utility available on multiple platforms \url{https://cmake.org/}. Cmake will ensure that the necessary dependencies are met. EIRENE now uses JSON format input and output files and requires a json library for this purpose. This library must be installed prior to compiling EIRENE.
+
+\begin{lstlisting}[language=bash,columns=fullflexible]
+  > git clone https://github.com/jacobwilliams/json-fortran.git
+  > cd json-fortran
+  > mkdir build
+  > cd build
+  > FC=gfortran cmake ../
+  > sudo make install
+\end{lstlisting}
+
+This will by default put the library in /usr/local/jsonfortran-gnu-8.3.0/. You can add \\ -DCMAKE\_INSTALL\_PREFIX=\textless path-to-jsonlib\textgreater if you would like a custom location. If you do not have ford installed the documentation will fail to build, adding -DSKIP\_DOC\_GEN=TRUE to the cmake step will resolver this. Once this is done you can compile EIRENE with
+
+\begin{lstlisting}[language=bash,columns=fullflexible]
+  > cd eirene
+  > mkdir buildRelease
+  > FC=gfortran cmake ../src
+  > make -j EIRENE
+\end{lstlisting}
+
+The JSON library should be found automatically, if it does not, or you have put the JSON library in a non standard location use
+\begin{lstlisting}[language=bash,columns=fullflexible]
+  > FC=gfortran cmake -DLibJSON=<full-path-to-jsonlib> \
+  -DJSON_MODULES=<directory-of-jsonlib> ../src
+\end{lstlisting}
+
+In order to enable OPENMP also add -DOPENMP=ON to the cmake line. In order to use MPI replace gfortran with an MPI compile command such as mpif90. You can also replace gfortran with the intel compiler ifort. You can also add -DCMAKE\_BUILD\_TYPE=DEBUG for a debug build.
+
+This will generate a default EIRENE library libEIRENE.a in eirene/libRelease with the Dummy interface and default user-routines, where -j enables multi threaded  compilation. EIRENE can also be compiled with different user interfaces. To compile for SOLPS-ITER
+
+\begin{lstlisting}[language=bash,columns=fullflexible]
+  > FC=gfortran cmake -DEIRENE_INTERFACE=SOLPS-ITER \
+  -DEIRENE_USER-ROUTINES=iter ../src
+\end{lstlisting}
+
+For polygons
+\begin{lstlisting}[language=bash,columns=fullflexible]
+  > FC=gfortran -DEIRENE_INTERFACE=B2 -DEIRENE_USER-ROUTINES=default \
+  -DEIRENE_POSTFIX=_poly ../src
+\end{lstlisting}
+
+The variable values correspond to the folder name without prefix (couple\_, user\_) in src/interfaces and src/user-routines.
+
+
+
+\section{EIRENE Continuous Integration}
 
 The EIRENE Continuous Integration (CI) pipeline ensures developments to EIRENE do not adversely impact the existing EIRENE code base and allows developers to verify their code across a wide range of EIRENE use cases. The pipeline runs through a series of tests and requires that all the tests pass for successful completion. These tests run on a Gitlab Runner \url{https://docs.gitlab.com/runner/} instance that is triggered whenever code is pushed to the repository, they can also be run manually at any time. The set of tests is defined and controlled by the {.gitlab-ci.yml} file in the EIRENE repository root directory
 
 
-\section{Overview}
+\subsection{Overview}
 The CI pipeline is broken into the following stages. Each stage contains a number of jobs, the stages run in order, however the \textbf{needs} keyword is used in many of the jobs to allow jobs in later stages to start before the previous stage has finished as long as the \textbf{needs} are met.
 
 \begin{enumerate}
@@ -23,32 +76,32 @@ The CI pipeline is broken into the following stages. Each stage contains a numbe
 \item on-schedule
 \end{enumerate}
 
-\subsection{Pipeline control}
+\subsubsection{Pipeline control}
 It is possible to exclude some stages by setting the {EXCLUDE} variables to {true} in order to save time during development. When pushing to either the {develop} or {master} branches the {EXCLUDE} variables are overidden in the {workflow} section so that all stages will run for these branches. The {rules} keyword is used in the {workflow} and also  in the individual jobs to enforce this behaviour. At present the available variables are {EXCLUDE\_SERIAL}, {EXCLUDE\_MPI}, {EXCLUDE\_EMC3}, {EXCLUDE\_OPENMP}. 
 
 The \textbf{rules} keyword allows conditional control of pipeline jobs, each rule is evaluated in order and stops when the first true condition is reached. Detailed documentation of this and other CI commands can be found at \url{https://docs.gitlab.com/ee/ci/yaml/gitlab_ci_yaml.html}.
 
-\section{Continuous Integration Stages}
+\subsection{Continuous Integration Stages}
 
-\subsection{preparation}
+\subsubsection{preparation}
 The preparation stage contains 2 jobs, {build\_library} and {prepare\_testcases}. The build library stage creates a {buildRelease} directory then calls cmake and make to build the EIRENE library before uploading the {buildRelease} and {libRelease} directories as artefacts. The serial test cases then link to {libRelease/libEIRENE.a}.
 
 The prepare testcases job retrieves the set of EIRENE test cases from the {EIRENE-sample-cases} repository, also on the jugit server. Rather than using git clone a new temporary git repository is created and the remote origin set to the url of the repository. {git fetch} with a depth of 1 is then called using the commit hash in the variable {SAMPLE\_CASE\_VERSION}. When changing the sample cases used in the CI it is this variable that must be changed. {FETCH\_HEAD} is then checked out, resulting in a shallow checkout of depth one, avoiding the download of the complete repository. and saving significant time in the CI pipeline. The {EIRENE-sample-cases} directory is then uploaded as an artefact wit the {.git} directory excluded.
 
-\subsection{build:executable}
+\subsubsection{build:executable}
 In this stage executables are built for each test case. {build\_executable} is an anchor used by the job specification for each sample case. The majority of cases build a standalone executable that is linked to {libRelease/libEIRENE.a}. However for the ITER cases the jobs use the {build\_iter\_executable} anchor and the executable is built directly from the EIRENE source. The build is started from within the makefiles of the ITER cases, which call cmake with the following switches  {-DEIRENE\_INTERFACE=SOLPS-ITER}, {-DEIRENE\_USER-ROUTINES=iter}, and {-DEIRENE\_POSTFIX=\_iter}. An EIRENE executable is then created in binRelease and called from the ITER sample case directories.
 
-\subsection{run}
+\subsubsection{run}
 The run stage executes all of the sample cases with the command {make output}, which ensures the case has been compiled and runs the executable to produce output. Output is generated in both fixed format and json format and stored in the directories {output\_fixed} and {output\_json}. The {run} anchor is used for each of the sample cases.
 
-\subsection{run\_mpi}
+\subsubsection{run\_mpi}
 The MPI enabled jobs run in a separate stage that runs each tests sequentially due to local resource limits although this will likely be reviewed. The MPI tests are all based on EMC3 coupled cases that are stored in the serial sample repository. This testing is very limited at present and will likely be extended in the future.
 
-\subsection{test}
+\subsubsection{test}
 The test stage uses system {diff} to compare the output of all of the sample cases with reference output stored in each case with the command {make test}. This means that the output must match exactly, so that running the tests on differenct machines or operating systems will almost certainly cause the tests to fail. It is therefore necessary to update the sample cases \cref{loc:sampleCases} when a new Docker image \cref{loc:DockerImage} is used.
 
 
-\subsection{OpenMP stages}
+\subsubsection{OpenMP stages}
 The OpenMP stages duplicate the serial stages with {\_openmp} appended to the name.  They run after the completion of the serial and MPI tests and compile the tests with OpenMP support using {-DOPENMP=ON} in the cmake command and use 4 OpenMP threads at execution time. Only a subset of testcases are duplicated. A separate branch of the {EIRENE-sample-cases} repository is used for the tests, at the time of writing this is {eirene\_unified\_openmp\_bullseye}. This branch was created from the initial commit, so they can be merged into the original branch containing the serial tests at any time.
 
 The input files for OpenMP are largely the same as for the serial cases apart from the use of the variables {NLIDENT} and {NPTSDEL}. {NLIDENT} is a logical in the first operating mode block of the input file described in \cref{sec2.1} and sets the random seed used by each process or thread to the same value, so that the output can be compared. {NPTSDEL} is not currently described in the input section of the EIRENE manual. It is the sixth entry in the second line of each stratum distribution definition, \cref{sec2.7} in the EIRENE manual, section 7 of the input file. This integer parameter sets the number of particles after which the random seed is reset to the value given by {NINITL}. This means that as long as $NPTS/NPTSDEL$ is an integer product of the number of threads used the serial and threaded cases will use the same initial seed for each block of particles, allowing comparison
@@ -111,10 +164,10 @@ There is no simple solution available to this problem although in practice only 
 
 It is likely that changes to the code will result in different cells being affected by this problem, in which case the cells will need to be identified and added to the lists for exclusions. However care must be taken to ensure that this process is in fact the cause of the new errors.
 
-\subsection{coverage}
+\subsubsection{coverage}
 The coverage stage only runs when pushing to the develop and master branches and can only be used with GNU compilers. This stage clones EIRENE and the sample cases and compiles with the -ftest-coverage flag to produce a coverage report using the Makefile in the EIRENE-sample-cases root dorectory. The GNU tool gcov is used to asses the level of code coverage provided by the serial sample cases and this is reported through the CI. As of the latest release (MsV-2023Mar-PBoerner-beta) the coverage report fails due to a compiler error, this is being investigated.
 
-\subsection{tag, deploy and on-schedule}
+\subsubsection{tag, deploy and on-schedule}
 There are 3 stages that use the {.tag\_and\_deploy.yml} and {.update\_fork\_branches.yml} files in the EIRENE root directory. These stages do not have any impact on the normal running of the EIRENE CI so are not discussed here.
 
 
@@ -162,16 +215,16 @@ Create a directory within which one can run the docker container
 
 First build the docker image locally by first cloning the Docker image repository. This will create a directory eirene-ci-image, go into this directory and build the image. 
 
-\begin{lstlisting}[language=bash]
-  $ git clone git@jugit.fz-juelich.de:eirene/eirene-ci-image.git
-  $ cd eirene-ci-image
-  $ sudo docker image build . -t debianbullseye:test
+\begin{lstlisting}[language=bash,columns=fullflexible]
+  > git clone git@jugit.fz-juelich.de:eirene/eirene-ci-image.git
+  > cd eirene-ci-image
+  > sudo docker image build . -t debianbullseye:test
 \end{lstlisting}
   
 The {debianbullseye:test} tags can be changed to any tags you prefer. This may take some time. It is also necessary to clone the EIRENE and EIRENE-sample-cases repositories. This can be done from either the docker container or from your default environment, if you have ssh keys enabled then this may be easier,  however there is the potential for conflict between the git version on your system and that used in the docker container. You can run the docker image from a directory of your choice, if cloning the EIRENE repository using your local system it should be cloned into the directory that you will run docker from. The sample cases repository should be cloned into the {eirene} directory containing the EIRENE source. Assuming you have already cloned the EIRENE and sample cases repositories you should run the following command under sudo.
 
-\begin{lstlisting}[language=bash]
-  $ sudo docker run --privileged=true -it -v `pwd`:`pwd` \
+\begin{lstlisting}[language=bash,columns=fullflexible]
+  > sudo docker run --privileged=true -it -v `pwd`:`pwd` \
     -w `pwd` debianbullseye:test
 \end{lstlisting}
 

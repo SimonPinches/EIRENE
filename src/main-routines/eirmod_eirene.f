@@ -190,14 +190,12 @@ cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
 
       IF (NPRS > 1 .OR. EIRENE_NTHREADS > 1) THEN
 #ifndef USE_EXT_OPENMP      
-!$OMP PARALLEL PRIVATE(OP)
+!$OMP PARALLEL FIRSTPRIVATE(OP,INIT_OPEN)
 #endif        
 !pb_open
         if (init_open == 0) then
-
           IF (LPE0_TO_STDOUT.AND.(MY_PE == 0)) THEN
 !PB   nothing to be done: use standard output
-
           ELSE
             OUTNAME='output.'
             WRITE (OUTNAME(8:),'(I4.4)')
