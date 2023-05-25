@@ -40,32 +40,60 @@ set(EIRENE_POSTFIX "" CACHE STRING "EIRENE output names postfix")
 
 # Check for modules and library for JSON
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-if (NOT JSON_MODULES)
-  message(STATUS "Setting default directory for JSON_MODULES.")
-  set(JSON_MODULES "/var/lib")
+# This is a bit convoluted but allows for some user error in the JSON library location
+# First check for user defined paths
+if(LibJSON)
+  message(STATUS    " Searching for user defined LibJSON. " ${LibJSON} )
+  if(IS_DIRECTORY ${LibJSON})
+    if((EXISTS "${LibJSON}/libjsonfortran.a" OR EXISTS "${LibJSON}/libjsonfortran.so"))
+      message(STATUS    " Found user defined LibJSON in path. ")
+      set(jsonfortran_FOUND TRUE)
+    endif()
+    if(NOT ${JSON_MODULES})
+      set(JSON_MODULES ${LibJSON})
+    endif()
+  else()  # Assume the library is included in the path
+    if(EXISTS ${LibJSON})
+      message(STATUS    " Found user defined LibJSON. ")
+      set(jsonfortran_FOUND TRUE)
+    endif()
+    if(NOT JSON_MODULES)
+      string(REPLACE "libjsonfortran.a" "" MOD_TRY ${LibJSON})
+      if(NOT (EXISTS "${MOD_TRY}/json_module.mod"))
+	string(REPLACE "libjsonfortran.so" "" MOD_TRY ${LibJSON})
+      endif()
+      set(JSON_MODULES ${MOD_TRY})
+    endif()
+  endif()
+  if(EXISTS "${JSON_MODULES}/json_module.mod")
+    message(STATUS    " Found user defined JSON modules. ")
+    set(jsonfortran_INCLUDE_DIRS ${JSON_MODULES})
+  else()
+    message(FATAL_ERROR "JSON Modules not found at. " ${JSON_MODULES}
+      "The -DJSON_MODULES variable must be set to the directory containing JSON Modules.")
+  endif()
+else()	
+  message(STATUS  " Detecting LibJSON. By default the static library will be used")
+  find_package(jsonfortran
+    NAMES
+    jsonfortran
+    jsonfortran-gnu
+    jsonfortran-intel
+    REQUIRED) 
+  if(jsonfortran_FOUND)
+    set(LibJSON "${jsonfortran_INCLUDE_DIRS}/libjsonfortran.a")
+    message(STATUS    " Found LibJSON. Version: "  ${jsonfortran_VERSION} )
+  endif()
 endif()
-if(JSON_MODULES)
-  get_filename_component(JSON_MODULES ${JSON_MODULES} ABSOLUTE)
-  include_directories(${JSON_MODULES})
-  message(STATUS "  JSON_MODULES:   " ${JSON_MODULES})
+  
+if(jsonfortran_FOUND)
+  message(STATUS    " LibJSON path " ${jsonfortran_INCLUDE_DIRS} )
+  include_directories(${jsonfortran_INCLUDE_DIRS})
 else()
-#  message(FATAL_ERROR "Directory of JSON module files not set. "
-#                      "Use cmake -DJSON_MODULES=\"<directory>\" to set it.")
-  message(STATUS "Directory of JSON module files not set. "
-                      "Use cmake -DJSON_MODULES=\"<directory>\" to set it.")
-endif()
-if (NOT LibJSON)
-  message(STATUS "Setting default directory for LibJSON.")
-  set(LibJSON "/var/lib")
+  message(FATAL_ERROR "JSON library not found. "
+    "Use cmake -DLibJSON=\"<directory>\" to set it.")
 endif()
 
-if(LibJSON)
-  get_filename_component(LibJSON ${LibJSON} ABSOLUTE)
-  message(STATUS "  Lib json_fortran:   " ${LibJSON})
-else()
-  message(STATUS  "Path to LibJSON unset")
-  message(STATUS  "You may want to try -DLibJSON=$PATH_TO_JSON_LIB/libjsonfortran.so")
-endif()
 
 # Libraries used for plotting
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -156,8 +184,11 @@ if (MPI)
   message("-- Adding USE_MPI flag...")
   add_definitions(-DUSE_MPI)
   find_package(MPI REQUIRED)
-#  add definitions(-DMPI_VERSION=${MPI_VERSION})
-  include_directories(${JSON_MODULES} ${MPI_Fortran_INCLUDE_PATH})
+  if ( NOT MPI_FOUND )
+    
+  endif()
+#  include_directories(${JSON_MODULES} ${MPI_Fortran_INCLUDE_PATH})
+  include_directories(${MPI_Fortran_INCLUDE_PATH})
 endif()
 
 # Add option to enable OpenMP with the parallel region defined in eirmod_mcarlo.
@@ -217,7 +248,6 @@ set(plotpath "")
 if( LibGRS AND LibGKS AND LibX11 AND Libz AND LibXt )
   list(APPEND plotpath ${src_plotting})
 else()
-#  list(APPEND plotpath ${src_plot_dummy})
   list(APPEND plotpath ${src_plotting})
   list(APPEND plotpath ${src_grsoft-dummy})
 endif()
