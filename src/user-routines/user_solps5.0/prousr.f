@@ -5,7 +5,7 @@ C
 C
       SUBROUTINE EIRENE_PROUSR (PRO,INDX,P0,P1,P2,P3,P4,P5,PROVAC,N)
 
-c  user-defined backgound (plasma) profiles.
+c  user-defined background (plasma) profiles.
 c  called from routine plasma.f, indpro=5 option
 c  input:  indx  : indicates which input tally (e.g. Te, ni, vx, etc...)
 c          provac: eirene default vacuum value (e.g. dvac, tvac, etc...)
@@ -28,7 +28,7 @@ C
       REAL(DP), INTENT(OUT) :: PRO(*)
       INTEGER, INTENT(IN) :: INDX, N
 
-      PRO(1:N)=0.0
+      PRO(1:N) = 0.0_DP
 
       RETURN
       END SUBROUTINE EIRENE_PROUSR

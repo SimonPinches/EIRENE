@@ -26,7 +26,9 @@
       END SUBROUTINE EIRENE_SPTUSR
 
       SUBROUTINE EIRENE_REFUSR (XMW,XCW,XMP,XCP,IGASF,IGAST,ZCOS,ZSIN,
-     .                          EXPI,RPROB,E0TERM,ITYP,MSURF,ISPZO,IRET)
+     .                          EXPI,RPROB,E0TERM,
+     .                          ITYP,MSURF,ISPZO,
+     .                          IRET)
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: XMW,XCW,XMP,XCP,ZCOS,ZSIN,EXPI,RPROB,
      .                        E0TERM
