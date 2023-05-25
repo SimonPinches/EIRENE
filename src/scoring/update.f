@@ -32,7 +32,8 @@ cdr dec. 16: some more comments re sign convention for momentum sources
 cdr Nov. 17: merging of entries for atoms, molecules, test ions, from
 cdr          branch "code-combine" (p.b.), plus some naming conventions re-enforced
 cdr          tbd: entry update_photons now own routine: update_phot. to be integrated still.
-
+cdr Mar- 22: remove unnecessary dimensions in LGX, PXX, etc.. pointer arrays
+cdr          as cleanup prior to adding new dimensions for species rescaling
 
 C
       SUBROUTINE EIRENE_UPDATE (XSTOR2,XSTORV2,IFLAG)
@@ -101,7 +102,7 @@ C
      .            ELEI, EHEAVY
       REAL(DP) :: EIRENE_FEELEI1, EIRENE_FEHVEI1
       REAL(DP) :: VSIG_PARB(NPLS), VAL_PARB(NPLS), VX(NPLS), VY(NPLS),
-     .            VZ(NPLS),XC,YC,ZC
+     .            VZ(NPLS),XC,YC,ZC, VELQ
       INTEGER :: IRD,  I, IRDO,
      .           IPL, IAT, IA,
      .           IM,  IIO, IP, IML, II, KK, NPBGK,
@@ -146,6 +147,8 @@ C
 
       IF (IUPDTE == 2) RETURN
 
+C
+      VELQ=VEL*VEL
 C
       DO 51 I=1,NCOU
         DIST=CLPD(I)
@@ -233,11 +236,11 @@ C..........................................................................
 C
 C  CHARGE EXCHANGE CONTRIBUTION
 C
-        IF (LGXCX(IXSPZ,0,0).EQ.0) GOTO 43
+        IF (LGXCX(0,0).EQ.0) GOTO 43
 C  DEFAULT TRACKLENGTH ESTIMATOR
         DO 44  IXCX=1,NXCXI
-          IRCX=LGXCX(IXSPZ,IXCX,0)
-          IPLS=LGXCX(IXSPZ,IXCX,1)
+          IRCX=LGXCX(IXCX,0)
+          IPLS=LGXCX(IXCX,1)
 
           IF (LGVAC(IRDO,IPLS)) CYCLE
           LOGPLS(IPLS,ISTRA)=.TRUE.
@@ -504,11 +507,11 @@ C
 C
 C  ELASTIC NEUTRAL BULK ION COLLISION CONTRIBUTION
 C
-        IF (LGXEL(IXSPZ,0,0).EQ.0) GOTO 60
+        IF (LGXEL(0,0).EQ.0) GOTO 60
 C  DEFAULT TRACKLENGTH ESTIMATOR
         DO 61  IXEL=1,NXELI
-          IREL=LGXEL(IXSPZ,IXEL,0)
-          IPLS=LGXEL(IXSPZ,IXEL,1)
+          IREL=LGXEL(IXEL,0)
+          IPLS=LGXEL(IXEL,1)
 C  DO NOT UPDATE BGK SOURCE RATE TALLIES HERE
           IBGK=NPBGKP(IPLS,1)
 C  ELASTIC REACTION IXEL, BETWEEN SPECIES IXSPZ/IPLS:
@@ -615,10 +618,10 @@ C.............................................................
 C  ELECTRON IMPACT COLLISION CONTRIBUTION:  EL + IXSPZ --> ....
 C.............................................................
 C
-        IF (LGXEI(IXSPZ,0).EQ.0) GOTO 57
+        IF (LGXEI(0).EQ.0) GOTO 57
 C
         DO 55 IXEI=1,NXEII
-          IREI=LGXEI(IXSPZ,IXEI)
+          IREI=LGXEI(IXEI)
           IF (SIGVEI(IREI).LE.0.D0) GOTO 55
 C
           WTRSIG=WTR*SIGVEI(IREI)
@@ -823,11 +826,11 @@ C........................................................
 C  PLASMA ION IMPACT CONTRIBUTION: IPLS + IXSPZ --> ......
 C........................................................
 C
-        IF (LGXPI(IXSPZ,0,0).EQ.0) GOTO 59
+        IF (LGXPI(0,0).EQ.0) GOTO 59
 
         DO 58  IXPI=1,NXPII
-          IRPI=LGXPI(IXSPZ,IXPI,0)
-          IPLS=LGXPI(IXSPZ,IXPI,1)
+          IRPI=LGXPI(IXPI,0)
+          IPLS=LGXPI(IXPI,1)
           IF (LGVAC(IRDO,IPLS)) CYCLE
 
           LOGPLS(IPLS,ISTRA)=.TRUE.
@@ -1035,7 +1038,7 @@ cdr  Must be fragmented into individual ipl contributions
 C
 C.........................................................................
 C
-C   PARALLEL MOMENTUM EXCHANGE RATE: DYN/CM**3,  WITH TEST PARTICLE IXSPZ
+C   MOMENTUM EXCHANGE RATE: DYN/CM**3,  WITH TEST PARTICLE IXSPZ
 C
 C   CONTRIBUTIONS FROM CX, EI, PI, EL
 C   PI: TO BE WRITTEN
@@ -1110,10 +1113,10 @@ c     |PARMOM_0| IS SUBTRACTED FROM IPL MOMENTUM (SOURCE), IF IT HAS OPPOSITE SI
 
 C  CHARGE EXCHANGE CONTRIBUTION FROM SPECIES IXSPZ
 C
-          IF (LGXCX(IXSPZ,0,0).EQ.0) GOTO 159
+          IF (LGXCX(0,0).EQ.0) GOTO 159
           DO 156 IXCX=1,NXCXI
-            IRCX=LGXCX(IXSPZ,IXCX,0)
-            IPLS=LGXCX(IXSPZ,IXCX,1)
+            IRCX=LGXCX(IXCX,0)
+            IPLS=LGXCX(IXCX,1)
             IF (LGVAC(IRDO,IPLS)) GOTO 156
 C
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
@@ -1150,7 +1153,7 @@ C
 C  ELECTRON IMPACT CONTRIBUTION
 C
           DO 161 IXEI=1,NXEII
-            IREI=LGXEI(IXSPZ,IXEI)
+            IREI=LGXEI(IXEI)
 C
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
             IF (IESTEI(IREI,2).NE.0) GOTO 161
@@ -1175,7 +1178,7 @@ C
 C
 C  ELASTIC CONTRIBUTION FROM SPECIES IXSPZ
 C
-          IF (LGXEL(IXSPZ,0,0).EQ.0) GOTO 180
+          IF (LGXEL(0,0).EQ.0) GOTO 180
 
 C  PRESENTLY: PARALLEL COMPONENT OF VSIGEL(IREL) IS NOT AVAILABLE
 C             FROM FUNCTION FPATH
@@ -1183,8 +1186,8 @@ C  DEFAULT TRACKLENGTH ESTIMATOR ("PERFECT IDENTITY EXCHANGE" APPROXIMATION,
 C                                  AS FOR CX, and neglecting vel. dep. in rate)
 cdr By default we switch to collision estimator. May be too restrictive?
           DO 181 IXEL=1,NXELI
-            IREL=LGXEL(IXSPZ,IXEL,0)
-            IPLS=LGXEL(IXSPZ,IXEL,1)
+            IREL=LGXEL(IXEL,0)
+            IPLS=LGXEL(IXEL,1)
             IBGK=NPBGKP(IPLS,1)
 C
             IF (IBGK.NE.0) GOTO 181

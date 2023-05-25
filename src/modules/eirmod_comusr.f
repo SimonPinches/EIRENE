@@ -243,13 +243,21 @@ C  MUSR, INTEGER
      I         NSNVI,  NCPVI,  NADVI,   NBGVI,
      I         NALVI,  NCLVI,  NADSI,   NALSI, NAINI, NBITS
       INTEGER, ALLOCATABLE, PUBLIC, SAVE ::
-     I         NMASSA(:), NCHARA(:), NFOLA(:),  NGENA(:),
-     I         NMASSM(:), NCHARM(:), NFOLM(:),  NGENM(:),
-     I         NMASSI(:), NCHARI(:), NCHRGI(:), NFOLI(:), NGENI(:),
+     I         NMASSA(:), NCHARA(:), NFOLA(:),
+     I         NMASSM(:), NCHARM(:), NFOLM(:),
+     I         NMASSI(:), NCHARI(:), NCHRGI(:), NFOLI(:),
      I         NMASSP(:), NCHARP(:), NCHRGP(:),
-     I         NFOLPH(:), NGENPH(:),
+     I         NFOLPH(:),
      I         NPRT(:),   ISPEZ(:,:,:,:,:,:),   ISPEZI(:,:),
      I         MPLSTI(:), MPLSV(:)
+
+      INTEGER, ALLOCATABLE, TARGET, PUBLIC, SAVE ::
+     I         NGENA(:), NGENM(:), NGENI(:), NGENPH(:)
+
+!     POINTER FOR UNIFIED SUBROUTINES
+      INTEGER, POINTER, PUBLIC, SAVE :: NGENX
+!$OMP  THREADPRIVATE(NGENX)
+
       INTEGER, ALLOCATABLE, PUBLIC, SAVE ::
      I         ISPZ_BACK(:,:)
 

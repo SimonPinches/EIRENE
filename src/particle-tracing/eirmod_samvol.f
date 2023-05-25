@@ -563,7 +563,7 @@ C  TRY OTHER RECOMBINATION PROCESS ASSIGNED TO IPLS
 C  INDIRECT ADDRESSING
                       IF (REC.GT.0.D0) THEN
                         ICC=ICC+1
-                        SUM=SUM+REC
+                        SUMN=SUMN+REC
                         SUMEI=SUMEI-1.5*TIIN(IPLSTI,NCELL)*REC
                         IF (LEDRIFT) SUMEI=SUMEI-EDRIFT(IPLS,NCELL)*REC
                       ENDIF
@@ -592,7 +592,7 @@ c
      .                              IRC ,IPLS,ICC)
                 CALL EIRENE_LEER(1)
               ENDIF
-              SUMNT=SUMNT+SUM
+              SUMNT=SUMNT+SUMN
               SUMEIT=SUMEIT+SUMEI
             ENDIF
    53     CONTINUE

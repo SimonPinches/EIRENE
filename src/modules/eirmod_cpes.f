@@ -91,7 +91,6 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
       subroutine create_all_communicators()
         use eirmod_comsou, only: nstrai, nlsron
         use eirmod_mpi, only: MPI_COMM_NULL
-        use eirmod_parmmod, only: nstra
         integer :: k
         call free_communicators(nstrai)
         ! Initialize communicators 

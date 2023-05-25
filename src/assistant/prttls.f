@@ -1,4 +1,5 @@
-C
+C   Back to widely used eirene variable naming convention: IX-1 = IXM, 
+C   for integers IX.
 C
       SUBROUTINE EIRENE_PRTTLS
      .                 (T1,T2,T3,PROF,NR,NP,NT,NB,NTT,IFLAG,IFILE,
