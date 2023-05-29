@@ -50,7 +50,7 @@ workflow:
               EXCLUDE_MPI:    'false'
               EXCLUDE_OPENMP: 'false'
               EXCLUDE_EMC3:   'false'
-	      EXCLUDE_COVERAGE: 'false'
+              EXCLUDE_COVERAGE: 'false'
         - if: $EXCLUDE_SERIAL == 'true'
           variables:
               EXCLUDE_EMC3: 'true'
