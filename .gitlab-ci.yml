@@ -22,7 +22,7 @@ variables:
     EXCLUDE_OPENMP: 'false'
     EXCLUDE_EMC3:   'false'
 # Coverage takes a long time to run so by default is excluded
-    EXCLUDE_COVERAGE: 'false'
+    EXCLUDE_COVERAGE: 'true'
 
 stages:
     - compliance
