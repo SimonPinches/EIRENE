@@ -811,7 +811,7 @@ coverage_report:
         - if: $CI_COMMIT_REF_NAME == 'master'
         - if: $CI_PIPELINE_SOURCE == 'schedule'
           when: never
-	- if: $EXCLUDE_COVERAGE == 'true'
+        - if: $EXCLUDE_COVERAGE == 'true'
           when: never
     before_script:
         # Bypass mpirun abort due to execution as root
