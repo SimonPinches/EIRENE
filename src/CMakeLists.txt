@@ -74,12 +74,13 @@ if(LibJSON)
   endif()
 else()	
   message(STATUS  " Detecting LibJSON. By default the static library will be used")
-  find_package(jsonfortran
-    NAMES
-    jsonfortran
-    jsonfortran-gnu
-    jsonfortran-intel
-    REQUIRED) 
+  if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
+    find_package(jsonfortran NAMES jsonfortran-intel REQUIRED)
+  elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
+    find_package(jsonfortran NAMES jsonfortran-gnu REQUIRED)
+  else()
+    message(STATUS    " Compiler version not known for JSONlibrary ")
+  endif()
   if(jsonfortran_FOUND)
     set(LibJSON "${jsonfortran_INCLUDE_DIRS}/libjsonfortran.a")
     message(STATUS    " Found LibJSON. Version: "  ${jsonfortran_VERSION} )
