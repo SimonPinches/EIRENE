@@ -102,7 +102,7 @@ C
      .            ELEI, EHEAVY
       REAL(DP) :: EIRENE_FEELEI1, EIRENE_FEHVEI1
       REAL(DP) :: VSIG_PARB(NPLS), VAL_PARB(NPLS), VX(NPLS), VY(NPLS),
-     .            VZ(NPLS),XC,YC,ZC, VELQ
+     .            VZ(NPLS),XC,YC,ZC
       INTEGER :: IRD,  I, IRDO,
      .           IPL, IAT, IA,
      .           IM,  IIO, IP, IML, II, KK, NPBGK,
@@ -118,7 +118,7 @@ C PH PROCESSES
 C PI PROCESSES
       INTEGER ::      IXPI,IRPI
 C EI PROCESSES
-      INTEGER ::      IXEI,IREI
+      INTEGER ::      IXEI,IREI !natma is something specific to solps. should not be here.
 
       REAL(DP) :: EIRENE_VDION
       REAL(DP), POINTER :: PXX2(:,:), PXPL2(:,:), PXAT2(:,:),
@@ -147,8 +147,6 @@ C
 
       IF (IUPDTE == 2) RETURN
 
-C
-      VELQ=VEL*VEL
 C
       DO 51 I=1,NCOU
         DIST=CLPD(I)

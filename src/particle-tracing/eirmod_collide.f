@@ -60,7 +60,7 @@ cdr 2022   : cascading at collisions enabled: currently for CX 1st secondary
 cdr 2023   : absorption biassing generalized, no also for CX.
 cdr          tbd: for PI, EL, processes
 
-      MODULE EIRMOD_COLMOL
+      MODULE EIRMOD_COLLIDE
 
 
       USE EIRMOD_PRECISION
@@ -91,13 +91,13 @@ cdr          tbd: for PI, EL, processes
 
       PRIVATE
       
-      PUBLIC :: EIRENE_COLMOL
+      PUBLIC :: EIRENE_COLLIDE
 
       REAL(DP) :: DUMT(3), DUMV(3)
       REAL(DP) :: SIGSUM, WGHTO, FRSTP, SCNDP, PTOT,
      .          VELXO, VELYO, VELZO, VELO, E0O,
      .          BX, BY, BZ, V0_PARBO,
-     .          BXN(0:2), BYN(0:2), BZN(0:2), 
+     .          BXN(0:2), BYN(0:2), BZN(0:2),
      .          V0_O(0:2), M0_O(0:2), VP_O(0:2), MP_O(0:2),
      .          EDEL, VDEL, SIGNUM,
      .          V0_PARB,
@@ -139,7 +139,7 @@ cym IAPH, RMMIO, RMIIO and IRPH removed during merge
 
       contains
 
-      SUBROUTINE EIRENE_COLMOL(CFLAG,COLTYP,DIST,KK)
+      SUBROUTINE EIRENE_COLLIDE(CFLAG,COLTYP,DIST,KK)
 C
 C  SAMPLE FROM COLLISION KERNEL C
 C
@@ -1392,6 +1392,6 @@ cdr   write (iunout,*) 'genlim, npanu ',npanu
       RETURN
       END SUBROUTINE EIRENE_GENLIM
 
-      END SUBROUTINE EIRENE_COLMOL
+      END SUBROUTINE EIRENE_COLLIDE
 
-      END MODULE EIRMOD_COLMOL
+      END MODULE EIRMOD_COLLIDE

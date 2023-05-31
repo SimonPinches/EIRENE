@@ -17,7 +17,7 @@ C  25.04.07 update of tallies because of PI reactions revised
 C  07.08.07 collision estimators vollstaendig fuer atom, mol und iion.
 C           entries: atm, mol, ion voll synchronisiert.
 C  28.8.07: esigpi(...,4) --> PL, esigpi(...,5)--> EL
-c  oct.14:  some intermediate scoring of additional tally ADDV removed, back to development branch
+c  oct.14:  some intermediate scoring of additional tally ADDV removed
 c  06.08.15 arguments added to vecusr
 c  24.08.15 comments and documention wrt. BGK collision treatment
 cdr dec.15: tracklength estimators for heavy test particle post-collision energies
@@ -27,6 +27,9 @@ cdr dec.15: further corrections, lea --> leio, and other logical flags for turni
 cdr nov.15: tracklength estimators for eapl,empl,eipl: species ipl resolved.
 cdr apr. 16: bug fix J.Lore re index in lgiel. This part of code is still unused,
 cdr          so no effect on any result.  Few further comments corrected
+cdr fix ph7  phv_lgphot --> lgphph
+cde feb.23: prepage for merging into subr. update (unified treatment)
+
 
 C
       SUBROUTINE EIRENE_UPDPHOT (XSTOR2,XSTORV2,IFLAG)
@@ -95,8 +98,8 @@ C PH PROCESSES
 C    .               ,UPDF        ! out, something for stim. emiss ?
 
 C
-C
 C  ESTIMATORS FOR PHOTONS
+C
 
 cdr: summer 2016
 cdr  this entire section has not been looked at (nor used) since long.

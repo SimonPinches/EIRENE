@@ -247,6 +247,7 @@ c  for FEM-routines (interpolations, gradients,...)
 C  MUSR, INTEGER
       INTEGER, PUBLIC, SAVE ::
      I         NSPH  , NPHOTI, NPHOTIM,
+cdr natma is something specific to solps. Should not be here.
      I         NSPA  , NATMI,  NATMIM,  NATMA,
      I         NSPAM , NMOLI,  NMOLIM,
      I         NSPAMI, NIONI,  NIONIM, 

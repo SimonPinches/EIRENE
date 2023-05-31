@@ -98,7 +98,8 @@ C
      .          E0TERM, FR2, COSI2, ZVZ, WABS,
      .          CUR, GAMMA, TEWL, VX, VY, VZ, FCHAR, WPR, FMASS,
      .          FLX, YIELD1, YIELD2, VELS, WEIGHS, E0S, ESHET,EVCQ,
-     .          VSHETQ, V, VELSH, VC, VCQ, VC2, SPLFLG,
+     .          VSHETQ, V, VELSH, VC, VCQ, VC2, 
+     .          SPLFLG,
      .          VXR, VYR, VZR, VWL, WGHTVS, RATR, YSPTWL
       INTEGER :: ISG, ISPZS, I, J, IDIM, MS, IC, IP, ISTS,
      .           ISSPTP, ISSPTC, IPV, MODREF, MOL_DEFAULT,
