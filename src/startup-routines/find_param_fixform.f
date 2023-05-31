@@ -36,7 +36,7 @@ cdr  Jun 18  : various corrections, comments in new (generalized) block 12 optio
 cdr            nadv=nadv+10: now out, is contained in more general storage settings.
 cdr  Oct. 19 : block 5 card counting to infere the setting of INDPRO(2).
 cdr            From then on: completely symmetric options for both background parameter
-cdr            sets: Ti (temperature) and V.IN (flow field) in multispecies cases.
+cdr            sets: Ti (temperature) and V.IN (flow field) in multi-species cases.
 cdr            Only unsolved case: NPLS=2. This can mean: two different ion temperatures
 cdr            or one ion temperature plus one optional VOL (INDPRO(12) card).
 cdr            Default: 1 Ti card and 1 Vol card. If two Ti cards are to be read,
@@ -1482,7 +1482,7 @@ C
 
       integer icount, nv, indpro2
 cdr Nov. 2019
-cdr Achieve synchronisation of input options for multispecies Ti and Vi.
+cdr Achieve synchronisation of input options for multi-species Ti and Vi.
 cdr Return a "best guess" of what INDPRO(2) should be.
 
 cdr Ti_IN(ipls) options have historically been just opposite to V_IN(ipls) options.

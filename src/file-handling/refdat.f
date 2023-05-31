@@ -254,6 +254,7 @@ c  7*5*5*5:  azimuthal angle quantiles
           END DO
     2   CONTINUE
     1 CONTINUE
+      CLOSE(IUN)
 C
 
   661 FORMAT (4E20.12)
