@@ -386,12 +386,13 @@ cdr now: allocatable, rather than pointer
        IF (LVYDENX) VYDENX => VYDENA(IATM,:)
        IF (LVZDENX) VZDENX => VZDENA(IATM,:)
 
-       IF (LPGENX) PGENX => PGENA(IATM,:)
-       IF (LEGENX) EGENX => EGENA(IATM,:)
-       IF (LVGENX) VGENX => VGENA(IATM,:)
+       IF (LRXEL)   RXEL   => RAEL(1:NATMI,:)
+
+       IF (LPGENX)  PGENX  => PGENA(IATM,:)
+       IF (LEGENX)  EGENX  => EGENA(IATM,:)
+       IF (LVGENX)  VGENX  => VGENA(IATM,:)
 
        IF (LMXPL)   MXPL   => MAPL(1:NPLSI,:)
-       IF (LRXEL)   RXEL   => RAEL(1:NATMI,:)
 
        IF (LSCX) THEN
          NDXX = NATM
@@ -521,13 +522,14 @@ cdr now: allocatable, rather than pointer
        IF (LVXDENX) VXDENX => VXDENM(IMOL,:)
        IF (LVYDENX) VYDENX => VYDENM(IMOL,:)
        IF (LVZDENX) VZDENX => VZDENM(IMOL,:)
+
+       IF (LRXEL)   RXEL   => RMEL(1:NMOLI,:)
        
-       IF (LPGENX) PGENX => PGENM(IMOL,:)
-       IF (LEGENX) EGENX => EGENM(IMOL,:)
-       IF (LVGENX) VGENX => VGENM(IMOL,:)
+       IF (LPGENX)  PGENX  => PGENM(IMOL,:)
+       IF (LEGENX)  EGENX  => EGENM(IMOL,:)
+       IF (LVGENX)  VGENX  => VGENM(IMOL,:)
 
        IF (LMXPL)   MXPL   => MMPL(1:NPLSI,:)
-       IF (LRXEL)   RXEL   => RMEL(1:NMOLI,:)
 
        IF (LSCX) THEN
          NDXX = NMOL
@@ -599,12 +601,13 @@ cdr now: allocatable, rather than pointer
        LVYDENX => LVYDENI
        LVZDENX => LVZDENI
 
+       LRXEL   => LRIEL
+
        LPGENX  => LPGENI
        LEGENX  => LEGENI
        LVGENX  => LVGENI
 
        LMXPL   => LMIPL
-       LRXEL   => LRIEL
 
        LPXX    => LPIIO
        LEXX    => LEIIO
@@ -659,12 +662,13 @@ cdr now: allocatable, rather than pointer
        IF (LVYDENX) VYDENX => VYDENI(IION,:)
        IF (LVZDENX) VZDENX => VZDENI(IION,:)
 
-       IF (LPGENX) PGENX => PGENI(IION,:)
-       IF (LEGENX) EGENX => EGENI(IION,:)
-       IF (LVGENX) VGENX => VGENI(IION,:)
+       IF (LRXEL)   RXEL   => RIEL(1:NIONI,:)
+
+       IF (LPGENX)  PGENX  => PGENI(IION,:)
+       IF (LEGENX ) EGENX  => EGENI(IION,:)
+       IF (LVGENX)  VGENX  => VGENI(IION,:)
 
        IF (LMXPL)   MXPL   => MIPL(1:NPLSI,:)
-       IF (LRXEL)   RXEL   => RIEL(1:NIONI,:)
 
        IF (LSCX) THEN
          NDXX = NION

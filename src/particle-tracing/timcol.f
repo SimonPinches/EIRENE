@@ -1,11 +1,6 @@
 C  SEPT 05:  IN CASE OF TEST IONS, VEL IS THE PARALLEL VELOCITY ONLY
 C            THIS HAS STILL TO BE TAKEN INTO ACCOUNT WHEN STORING AND SAMPLING
 C            THE CENSUS ARRAY
-!pb 08.11.06: definition of CENSUS arrays changed
-!             RPART (NPRNL,1:NPARTT) --> RPART (1:NPARTT,NPRNL)
-!             IPART (NPRNL,1:MPARTT) --> IPART (1:MPARTT,NPRNL)
-!             RPARTC(NPRNL,1:NPARTT) --> RPARTC(1:NPARTT,NPRNL)
-!             IPARTC(NPRNL,1:MPARTT) --> IPARTC(1:MPARTT,NPRNL)
 cdr Jan 2016 : comments,  and: stop scoring census not only after total number
 cdr            of allowed census scores is reached,
 cdr            but instead do so also for each stratum, and for the scores per stratum limit.
@@ -13,18 +8,18 @@ cdr            but instead do so also for each stratum, and for the scores per s
 cdr  Time cycles (each: ntmstp*dtimv) and time steps (each: dtimv):
 cdr
 cdr  itmstp:  Each history starts with itmstp=0.
-cdr           itmstp is incremented by one (1) after each time step DTIMV.
-cdr           One complete time cycle consists of ntmstp such small steps,
+cdr           ITMSTP is incremented by one (1) after each time step DTIMV.
+cdr           One complete time cycle consists of NTMSTP such small steps,
 cdr           After a complete time cycle, the trajectory is stopped in this routine
 cdr           (absorbing time horizon).
 
-cdr           If ntmstp < 0, then a trajectory is never stopped in this routine.
+cdr           If NTMSTP < 0, then a trajectory is never stopped in this routine.
 cdr           The scores on census then correspond to a steady state.
 cdr
 
       SUBROUTINE EIRENE_TIMCOL (PR,IRET)
 C
-C  COLLISION WITH "TIME SURFACE", FIND NEW COORDINATES
+C  "COLLISION WITH TIME SURFACE" (CENSUS) AFTER A FLIGHT OF TT SECONDS
 C  UPDATE (TIME-) SURFACE TALLIES
 C  UPDATE USER-SUPPLIED SNAPSHOT-ESTIMATED TALLIES (CALL UPNUSR)
 C  PUT PARTICLE ONTO CENSUS ARRAYS
@@ -154,12 +149,13 @@ C  DECIDE: CONTINUE OR STOP TRAJECTORY
       IF (NTMSTP.GE.0.AND.ITMSTP.GE.NTMSTP) THEN
 C
 C  DO NOT CONTINUE THIS TRACK
-C  UPDATE PARTICLE EFFLUX ONTO TIME SURFACE MSURF=NLIM+NSTSI
-C  UPDATE ENERGY FLUX ONTO TIME SURFACE MSURF=NLIM+NSTSI
+C  UPDATE PARTICLE EFFLUX ONTO "TIME SURFACE" MSURF=NLIM+NSTSI
+C  UPDATE ENERGY FLUX ONTO "TIME SURFACE" MSURF=NLIM+NSTSI
 C  THEN STOP HISTORY
 C
         MSURF=NLIM+NSTSI
-cdr  to replace cdr out ini -- cdr out end code below with call to update_surface.
+cdr  to replace the: cdr out ini -- cdr out end 
+cdr  code below with a call to: update_surface.
 cdr  Still to be tested first...
 cdr     ITYP_OLD=ITYP
 cxpb    select case (ITYP_OLD)
@@ -176,9 +172,11 @@ cxpb      IOLD = IPLS
 cxpb    case default
 cxpb      IOLD = 0
 cxpb    end select
+
         MSURFG=0
         WGHTSG=WEIGHT
         IND=1
+
 cdr     CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,IOLD,WGHTSG,IND)
 cdr out ini
         IF (ITYP.EQ.0) THEN
@@ -219,6 +217,7 @@ cdr out ini
           ENDIF
         ENDIF
 cdr out end
+
         ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
 c spatial resolution on time-surface is not available. MSURFG ?
         IF (LSPUMP) THEN

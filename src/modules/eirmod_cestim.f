@@ -61,12 +61,15 @@ c  more recent tallies  63 --100
      R PGENA(:,:), PGENM(:,:), PGENI(:,:), PGENPH(:,:),
      R EGENA(:,:), EGENM(:,:), EGENI(:,:), EGENPH(:,:),
      R VGENA(:,:), VGENM(:,:), VGENI(:,:), VGENPH(:,:),
-cdr missing tallies: ppel, epel, electron terms from initial "P" bulk particle
+cdr from bulk to test particles, and bulk losses.  MPAT,..., MPPL etc: missing.
+cdr These tallies are currently available only in INFCOP: MPPL_COP,...
+cdr PPPL, MPPL, EPPL, EPEL
      R PPAT(:,:),  PPML(:,:),  PPIO(:,:),  PPPHT(:,:), PPPL(:,:),
      R EPAT(:),    EPML(:),    EPIO(:),    EPPHT(:),   EPPL(:,:),
      R VXDENA(:,:), VXDENM(:,:), VXDENI(:,:), VXDENPH(:,:),
      R VYDENA(:,:), VYDENM(:,:), VYDENI(:,:), VYDENPH(:,:),
      R VZDENA(:,:), VZDENM(:,:), VZDENI(:,:), VZDENPH(:,:),
+cdr parallel (to B field) momentum sources/sinks, from test particles to bulk particles
      R MAPL(:,:), MMPL(:,:), MIPL(:,:), MPHPL(:,:)
 
 c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
@@ -210,6 +213,7 @@ c  either active tally (if true) or deactivated tally, no storage (if false)
      L LPMEL,  LPMAT,  LPMML,  LPMIO,   LPMPHT,  LPMPL,
      L LPIEL,  LPIAT,  LPIML,  LPIIO,   LPIPHT,  LPIPL,
      L LPPHEL, LPPHAT, LPPHML, LPPHIO,  LPPHPHT, LPPHPL,
+
      L LEAEL,  LEAAT,  LEAML,  LEAIO,   LEAPHT,  LEAPL,
      L LEMEL,  LEMAT,  LEMML,  LEMIO,   LEMPHT,  LEMPL,
      L LEIEL,  LEIAT,  LEIML,  LEIIO,   LEIPHT,  LEIPL,
@@ -484,7 +488,9 @@ C     if tally is deactivated in this run: Pointer to CEMETERYV
       END IF
 
       IF (LPAEL) THEN
-        PAEL => ESTIMV(NADDV(10),:)
+cdr  1D tally no. 9. Here: naddv(9)+1 = naddv(10)
+cdr     PAEL => ESTIMV(NADDV(9)+1:NADDV(10),:), but this target has rank 1 only.
+        PAEL => ESTIMV(NADDV(9)+1,:)
       ELSE
         PAEL => CEMETERYV(0,:)
       END IF
@@ -608,7 +614,9 @@ C     if tally is deactivated in this run: Pointer to CEMETERYV
       END IF
 
       IF (LEAEL) THEN
-        EAEL => ESTIMV(NADDV(34),:)
+cdr  1D tally no. 33. Here: naddv(33)+1 = naddv(34)
+cdr     EAEL => ESTIMV(NADDV(33)+1:NADDV(34),:), but this target has rank 1 only.
+        EAEL => ESTIMV(NADDV(33)+1,:)
       ELSE
         EAEL => CEMETERYV(0,:)
       END IF

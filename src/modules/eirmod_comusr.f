@@ -19,6 +19,8 @@ cdr  may 20  :  remove unused variables: natmi_in, nmoli_in,...
 cdr             add npls_fix:  number of background species kept fixed
 cdr             in eirene. Only npls_fix+1,...,npls are stored stream fort.13shrt,
 cdr             for iterations (BGK, Photons,...)
+cdr jan.22:     generation limit parameters made target, for unified
+cdr             routine COLLIDE.f
 
       MODULE EIRMOD_COMUSR
 
@@ -137,6 +139,7 @@ c  free tallies, unused
      L         LFREE28,    LFREE29,    LFREE30,
 
 c  gradient tallies
+c  background, drifting maxwellian parameters
      L         LDTEDX,     LDTEDY,     LDTEDZ,
      L         LDTIDX,     LDTIDY,     LDTIDZ,
      L         LDDEDX,     LDDEDY,     LDDEDZ,
@@ -158,6 +161,7 @@ c  electr. field
      L         LDEYDX,     LDEYDY,     LDEYDZ,
      L         LDEZDX,     LDEZDY,     LDEZDZ,
      L         LDEFDX,     LDEFDY,     LDEFDZ,
+C  gradient of electric potential
      L         LDPOTDX,    LDPOTDY,    LDPOTDZ,
 C  gradients of derived tallies
      L         LDBXPERPDX, LDBXPERPDY, LDBXPERPDZ,
@@ -180,7 +184,7 @@ cdr Jan. 2020
 cdr try to enforce physical consisteny in new option: living "input" tallies,
 cdr in case of physically related tallies, e.g. vector components,
 cdr flow-field, B-field, E-field  fields.
-cdr In case of vector fieLds, all components (and their modulus) must be
+cdr In case of vector fields, all components (and their modulus) must be
 cdr in the same "smoothing category"
      L         LDIN, LVIN,  LBIN,  LEIN
 
@@ -283,6 +287,9 @@ C
      L         LBVSMO,     LPARMOMSMO, LEDRIFTSMO,
      L         LPSISMO,    LZISMO,     LFREE27SMO,
      L         LFREE28SMO, LFREE29SMO, LFREE30SMO
+
+cdr What about smoothed gradient input tallies?
+
 
       LOGICAL, PUBLIC, SAVE ::
 cdr Jan. 2020
@@ -1377,6 +1384,8 @@ cdr  ncorner is set in GRID.f (levgeo=4,5) or in SNEIGH.f (levgeo=1,2,3)
       END IF
 
       IF (LDSMO) THEN
+cdr Enforce smoothing interpolations for all charged particles
+cdr incl. electrons, in order to not wreck quasineutrality. 
         IF (LDESMO) THEN
           DEINCORNER => CORNER_PROFILES(:,NADDCOR(3)+1)
         ELSE
@@ -1838,13 +1847,13 @@ cdr oct 18: initialization of input volumetric tallies moved to ICAL==2
         LDEIN      => LIVTALI(3)
         LDIIN      => LIVTALI(4)
 cdr
-        ldin = ldein.and.ldiin
+        LDIN = ldein.and.ldiin
 c
         LVXIN      => LIVTALI(5)
         LVYIN      => LIVTALI(6)
         LVZIN      => LIVTALI(7)
 cdr
-        lvin = lvxin.and.lvyin.and.lvzin
+        LVIN = lvxin.and.lvyin.and.lvzin
 c
         LBXIN      => LIVTALI(8)
         LBYIN      => LIVTALI(9)
@@ -1852,7 +1861,7 @@ c
         LBFIN      => LIVTALI(11)
         LPSI       => LIVTALI(25)
 cdr
-        lbin = lbxin.and.lbyin.and.lbzin.and.lbfin  !  psi ?
+        LBIN = lbxin.and.lbyin.and.lbzin.and.lbfin  !  psi ?
 c
         LADIN      => LIVTALI(12)
         LEDRIFT    => LIVTALI(13)
@@ -1867,7 +1876,7 @@ c
         LEFIN      => LIVTALI(21)
         LPOT       => LIVTALI(22)
 cdr
-        lein = lexin.and.leyin.and.lezin.and.lefin  !  pot ?
+        LEIN = lexin.and.leyin.and.lezin.and.lefin  !  pot ?
 c
 
         LBVIN      => LIVTALI(23)
@@ -1886,12 +1895,14 @@ c
         LDTIDX     => LIVTALI(34)
         LDTIDY     => LIVTALI(35)
         LDTIDZ     => LIVTALI(36)
+
         LDDEDX     => LIVTALI(37)
         LDDEDY     => LIVTALI(38)
         LDDEDZ     => LIVTALI(39)
         LDDIDX     => LIVTALI(40)
         LDDIDY     => LIVTALI(41)
         LDDIDZ     => LIVTALI(42)
+
         LDVXDX     => LIVTALI(43)
         LDVXDY     => LIVTALI(44)
         LDVXDZ     => LIVTALI(45)
@@ -1901,6 +1912,7 @@ c
         LDVZDX     => LIVTALI(49)
         LDVZDY     => LIVTALI(50)
         LDVZDZ     => LIVTALI(51)
+
         LDBXDX     => LIVTALI(52)
         LDBXDY     => LIVTALI(53)
         LDBXDZ     => LIVTALI(54)
