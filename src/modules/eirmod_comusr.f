@@ -12,9 +12,15 @@ cdr             missing:  dealloc_corners  ??
 cdr             remove redundant tally LGDFT (also from LUSR)
 cdr  jan 19  :  nains, naint moved here, formerly: ccoupl
 cdr             input tally no. 25 added: PSI, poloidal magn. flux.
-cdr  jan 20  :  fix smoothing options for some interrelated input tallies
-cdr             in particular for vector components of the same physical quantity.
-cdr             Comments...
+cdr  jan 20  :  comments, cleanup, and logical connection
+cdr             established (started) for physically connected tallies.
+cdr             E.g. for vector components of the same field,
+cdr             wrt. smoothing options and input tally disabling.
+cdr             This is WIP, unfinished.
+cdr             See variables LDSMO, LVSMO,  LBSMO,  LESMO.
+cdr             It is still not ensured that LIVTALI and LSMOPRO flags
+cdr             lead to physically or mathematically meaningful
+cdr             setting always.
 cdr  may 20  :  remove unused variables: natmi_in, nmoli_in,...
 cdr             add npls_fix:  number of background species kept fixed
 cdr             in eirene. Only npls_fix+1,...,npls are stored stream fort.13shrt,
@@ -72,7 +78,7 @@ c  derived from primary input profils, in subr. PLASMA_DERIV
 c  (strictly: tally no. -3: DEIN, is also a derived tally) :
      R        BXPERP(:),      BYPERP(:),
      R        BVIN(:,:),      PARMOM(:,:),    EDRIFT(:,:),
-c  B field fluxfunction PSI, corresponds to POT for electric field
+c  B field fluxfunction PSI, corresponds to POT tally for electric field
      R        PSI(:),         ZIIN(:,:),      FREE27(:),
      R        FREE28(:),      FREE29(:),      FREE30(:),
 
@@ -153,6 +159,9 @@ c  magn. field
      L         LDBYDX,     LDBYDY,     LDBYDZ,
      L         LDBZDX,     LDBZDY,     LDBZDZ,
      L         LDBFDX,     LDBFDY,     LDBFDZ,
+C  gradient of PSI-function tally (for poloidal magn. field)
+     L         LDPSIDX,    LDPSIDY,    LDPSIDZ,
+c
      L         LDADINDX,   LDADINDY,   LDADINDZ,
      L         LDVOLDX,    LDVOLDY,    LDVOLDZ,
      L         LDWGHTDX,   LDWGHTDY,   LDWGHTDZ,
@@ -169,8 +178,6 @@ C  gradients of derived tallies
      L         LDBVINDX,   LDBVINDY,   LDBVINDZ,
      L         LDPARMOMDX, LDPARMOMDY, LDPARMOMDZ,
      L         LDEDRIFTDX, LDEDRIFTDY, LDEDRIFTDZ,
-C  gradient of PSI-function tally (for poloidal magn. field)
-     L         LDPSIDX,    LDPSIDY,    LDPSIDZ,
 C  gradient of average ion charge
      L         LDZIDX,     LDZIDY,     LDZIDZ,
 C  gradient of free tallies

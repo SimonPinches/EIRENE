@@ -5,6 +5,9 @@ cdr          ie. KK or IR reaction indices do not cover minimal model reactions.
 cdr          write_cmamf and read_cmamf also do not cover minimal model reactions
 cdr Feb. 22: some missing photonic tally data added.
 cdr          More "unified type pointers" added, to prepare for unification of collide.f 
+cdr dec. 21: some extra stuff is in this module for IFIT=5 (internal cr codes) option,
+cdr          whereas for other IFIT options these corresponding parts
+cdr          seem to be elsewhere?  cleanup needed?
 cdr dec. 20: clean up nomenclature for reaction energetics flags: nelr.., nplr.., nhvr..
 cdr Nov. 20:  various data within TYPE.. Data constructs have been made
 cdr           ALLOCATABLE, rather than POINTER, due to more recent Fortran capabilities
@@ -291,7 +294,7 @@ c  EL type processes
      I LGIEL(:,:,:),
      I LGPHEL(:,:,:),
 c  RC type processes
-     I LGPRC(:,:),
+     I LGPRC(:,:),   !  e.g. e + H+ --> H + ph,  and H is the resulting test particle
 c  PI type processes
      I LGAPI(:,:,:),LGMPI(:,:,:),
      I LGIPI(:,:,:),
@@ -299,6 +302,7 @@ c  PI type processes
 c  PH type processes
 
 !  POINTER FOR UNIFIED "A,M,I,PH" SUBROUTINES
+cdr values assigned in SWITCH_PARTINFO during particle tracing
 cdr April 22: Remove redundant leading dimension in 3d arrays LGX...
 cdr           Remove POINTER attribute, use ALLOCATABLE instead
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
@@ -1531,12 +1535,17 @@ cdr  read and write A&M data onto fort.13, controlled by NFILEL option (input bl
 
      . NSEACX ,NSEMCX ,NSEICX ,NSEAEL ,NSEMEL ,NSEIEL ,NSEPRC ,
      . NREACX ,NREAPI ,NREAEL ,NREAEI ,NREARC ,NREAPH ,
-     . NELREI ,JELREI ,NHVREI ,NELREL ,NELRRC ,JELRRC ,NELRPI ,JELRPI ,
+     . NELREI ,JELREI ,NHVREI ,NELREL ,
+     . NELRRC ,JELRRC ,
+     . NELRPI ,JELRPI ,
      . NELRCX ,NHVRPI ,NPLRPI ,
      . NELRPH ,NREACT ,
      . IPATEI ,IPMLEI ,IPIOEI ,IPPLEI ,IPATPI ,IPMLPI ,IPIOPI ,IPPLPI ,
-     . LGACX  ,LGMCX  ,LGICX  ,LGAEI  ,LGMEI  ,LGIEI  ,
-     . LGAEL  ,LGMEL  ,LGIEL  ,LGPRC  ,LGAPI  ,LGMPI  ,LGIPI
+     . LGACX  ,LGMCX  ,LGICX  ,
+     . LGAEI  ,LGMEI  ,LGIEI  ,
+     . LGAEL  ,LGMEL  ,LGIEL  ,
+     . LGPRC  ,
+     . LGAPI  ,LGMPI  ,LGIPI
 #ifdef CHECKBIN
       write (113,*) 'CMDTA MODCOL ...'
       WRITE (113,*)
@@ -1559,13 +1568,18 @@ cdr  read and write A&M data onto fort.13, controlled by NFILEL option (input bl
 
      . NSEACX ,NSEMCX ,NSEICX ,NSEAEL ,NSEMEL ,NSEIEL ,NSEPRC ,
      . NREACX ,NREAPI ,NREAEL ,NREAEI ,NREARC ,NREAPH ,
-     . NELREI ,JELREI ,NHVREI ,NELREL ,NELRRC ,JELRRC ,NELRPI ,JELRPI ,
+     . NELREI ,JELREI ,NHVREI ,NELREL ,
+     . NELRRC ,JELRRC ,
+     . NELRPI ,JELRPI ,
      . NELRCX ,NHVRPI ,NPLRPI ,
      . NELRPH ,
      . NREACT ,
      . IPATEI ,IPMLEI ,IPIOEI ,IPPLEI ,IPATPI ,IPMLPI ,IPIOPI ,IPPLPI ,
-     . LGACX  ,LGMCX  ,LGICX  ,LGAEI  ,LGMEI  ,LGIEI  ,
-     . LGAEL  ,LGMEL  ,LGIEL  ,LGPRC  ,LGAPI  ,LGMPI  ,LGIPI
+     . LGACX  ,LGMCX  ,LGICX  ,
+     . LGAEI  ,LGMEI  ,LGIEI  ,
+     . LGAEL  ,LGMEL  ,LGIEL  ,
+     . LGPRC  ,
+     . LGAPI  ,LGMPI  ,LGIPI
 #endif
 
       RETURN
@@ -1612,13 +1626,18 @@ cdr  read and write A&M data onto fort.13, controlled by NFILEL option (input bl
 
      . NSEACX ,NSEMCX ,NSEICX ,NSEAEL ,NSEMEL ,NSEIEL ,NSEPRC ,
      . NREACX ,NREAPI ,NREAEL ,NREAEI ,NREARC ,NREAPH ,
-     . NELREI ,JELREI ,NHVREI ,NELREL ,NELRRC ,JELRRC ,NELRPI ,JELRPI ,
+     . NELREI ,JELREI ,NHVREI ,NELREL ,
+     . NELRRC ,JELRRC ,
+     . NELRPI ,JELRPI ,
      . NELRCX ,NHVRPI ,NPLRPI ,
      . NELRPH ,
      . NREACT ,
      . IPATEI ,IPMLEI ,IPIOEI ,IPPLEI ,IPATPI ,IPMLPI ,IPIOPI ,IPPLPI ,
-     . LGACX  ,LGMCX  ,LGICX  ,LGAEI  ,LGMEI  ,LGIEI  ,
-     . LGAEL  ,LGMEL  ,LGIEL  ,LGPRC  ,LGAPI  ,LGMPI  ,LGIPI
+     . LGACX  ,LGMCX  ,LGICX  ,
+     . LGAEI  ,LGMEI  ,LGIEI  ,
+     . LGAEL  ,LGMEL  ,LGIEL  ,
+     . LGPRC  ,
+     . LGAPI  ,LGMPI  ,LGIPI
 
       RETURN
       END SUBROUTINE EIRENE_READ_CMDTA
@@ -2460,7 +2479,7 @@ c  set default asymptotics, for reacdat(ir)%typ%...
         ALLOCATE (RP)
         NULLIFY (RP%POLY)
         NULLIFY (RP%ADAS)
-        NULLIFY (RP%LINE)
+        NULLIFY (RP%LINE)  ! this should not be here. It is not a data fit type
         NULLIFY (RP%TAB1D)
         NULLIFY (RP%CRM)
 

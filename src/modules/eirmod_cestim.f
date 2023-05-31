@@ -41,12 +41,16 @@ C  NESTM1, REAL, VOLUME-AVERAGED TALLIES
       REAL(DP), PUBLIC, POINTER, SAVE ::
      R PDENA(:,:), PDENM(:,:), PDENI(:,:), PDENPH(:,:),
      R EDENA(:,:), EDENM(:,:), EDENI(:,:), EDENPH(:,:),
+
      R PAEL(:),    PAAT(:,:),  PAML(:,:),  PAIO(:,:),  PAPHT(:,:),
      R PAPL(:,:),
+
      R PMEL(:),    PMAT(:,:),  PMML(:,:),  PMIO(:,:),  PMPHT(:,:),
      R PMPL(:,:),
+
      R PIEL(:),    PIAT(:,:),  PIML(:,:),  PIIO(:,:),  PIPHT(:,:),
      R PIPL(:,:),
+
      R PPHEL(:),   PPHAT(:,:), PPHML(:,:), PPHIO(:,:), PPHPHT(:,:),
      R PPHPL(:,:),
      R RAEL(:,:),  RMEL(:,:),  RIEL(:,:),  RPHEL(:,:),
