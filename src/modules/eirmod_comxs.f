@@ -1,10 +1,10 @@
 cdr Jan. 23: Remove obsolete FACREA
 cdr          Except for REACDAT and IFTFLG, which are (-11:nreac),
 cdr          all other input flag parameters are only (1:NREAC),
-cdr          ie. KK or IR reaction indices do not cover minimal model reactions. 
+cdr          ie. KK or IR reaction indices do not cover minimal model reactions.
 cdr          write_cmamf and read_cmamf also do not cover minimal model reactions
 cdr Feb. 22: some missing photonic tally data added.
-cdr          More "unified type pointers" added, to prepare for unification of collide.f 
+cdr          More "unified type pointers" added, to prepare for unification of collide.f
 cdr dec. 21: some extra stuff is in this module for IFIT=5 (internal cr codes) option,
 cdr          whereas for other IFIT options these corresponding parts
 cdr          seem to be elsewhere?  cleanup needed?
@@ -58,8 +58,8 @@ cdr            first: rationalize naming of integer flags for collision models
 cdr            nhvrei, nhvrpi, for KER (heavy particle post-collision kinetics)
 cdr            remove redundant flags: JEREARC  (UNUSED)
 cdr            remove redundant flags: JEREAEI  (UNUSED)
-cdr jun   22:  add splitting post collision secondaries 
-cdr            at selected collision processes. 
+cdr jun   22:  add splitting post-collision secondaries 
+cdr            at selected collision processes.
 cdr            So far: tested for CX
 
       USE EIRMOD_PRECISION
@@ -88,7 +88,7 @@ cdr
 c
      .          EIRENE_ALLOC_FIT_FORM
 
-cdr  user defined data types:
+cdr  user-defined data types:
       TYPE LINE_DATA
         REAL(DP) :: E0, E1, AIK, G1, G2, C2, C3, C4, C6, B12, B21
         REAL(DP) :: C6A(12)
@@ -273,7 +273,7 @@ c  secondaries, species distribution, for CX processes
      I NREAEI(:),NREARC(:),NREAPH(:),
      I NELREI(:),JELREI(:),NHVREI(:),NELREL(:),
      I NELRRC(:),JELRRC(:),NELRPI(:),JELRPI(:),NELRCX(:),
-     I NELRPH(:),NPLRPI(:),NHVRPI(:),
+     I NELRPH(:),NHVRPI(:),NPLRPI(:),
      I NREACT(:),
      I IPATEI(:,:),IPMLEI(:,:),
      I IPIOEI(:,:),IPPLEI(:,:),
@@ -311,7 +311,7 @@ cdr           Remove POINTER attribute, use ALLOCATABLE instead
 
 
       INTEGER, PUBLIC, SAVE ::
-     I NRPII, NREII, NRCXI, NRELI, NRRCI, NRPHI, NRBGI
+     I NRPII, NREII, NRCXI, NRELI, NRRCI, NRPHI, NROTI, NRBGI
 
       INTEGER, PUBLIC, SAVE ::
      I NSTOR1, NSTOR,  NSTORV, NTAB, NDAT, NMDTA, MMDTA, NAMF, MAMF,
@@ -799,7 +799,7 @@ c
         ALLOCATE (LGIPI(0:NION,0:NRPI,0:1))
         ALLOCATE (LGPHPI(0:NPHOT,0:NRPI,0:1))
 
-cdr  for unified routines UPDATE, FPATH, COLLIDE 
+cdr  for unified routines UPDATE, FPATH, COLLIDE
 cdr  (single code of atoms, molecules and test ions. tbd: photons)
         ALLOCATE (LGXCX(0:NRCX,0:1))
         ALLOCATE (LGXEI(0:NREI))
@@ -1234,7 +1234,7 @@ cdr  ical=2:  ??
         NRCM    = 0
         NRCI    = 0
         NRCPH   = 0
- 
+
 cdr  input flags for collision kinetics, secondaries, etc.
         IREACA  = 0
         IREACM  = 0
@@ -2409,7 +2409,7 @@ c  "other reaction", e.g. population rate coefficient, density ratio
            deallocate (rea)
         END IF
 
-cdr probably: obsolete:
+cdr probably obsolete:
 c  photonic reaction
         IF (REACDAT(IR)%LPHR) THEN
            rea => REACDAT(IR)%PHR

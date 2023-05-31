@@ -95,7 +95,7 @@ C                 TALTYP=4: UNKNOWN        (?)
       TALTYP(22)=0
       TALTYP(23)=0  ! bvin   cm/s
       TALTYP(24)=0  ! parmom units: g*cm/s
-      TALTYP(25)=0  ! psi units: tesla*m
+      TALTYP(25)=0  ! psi units: Tesla*m
       TALTYP(26)=3  ! zi
 
       TALTYP(27)=0  ! free27 units ??
@@ -113,13 +113,13 @@ cdr from other field particle parameters plus some further data, e.g. certain ra
 
 !  IS ANY "DENSITY MODEL" DEFINED IN THIS RUN AT ALL?
         IF (ALL(CDENMODEL == REPEAT(' ',LEN(CDENMODEL)))
-cdr  tbd: .and. all: npbgkp(ipls,1) .eq.0     also bgk virt. species should be printed.
-cdr   since bgk field species should be just special cases of "cdenmodel" cases
+cdr  tbd: .and. all: npbgkp(ipls,1) .eq.0     also BGK virt. species should be printed.
+cdr   since BGK field species should be just special cases of "cdenmodel" cases
      .     ) RETURN
 !  IS OUTPUT OF AN INPUT TALLY ASKED FOR?
         DO IPRV=1,NVOLPR
           ITAL=NPRTLV(IPRV)
-cdr further below we check, if the prinout species range  NSPEZI, NSPEZE
+cdr further below we check, if the prinout species range NSPEZI, NSPEZE
 cdr includes any IPLS with a "density model"
           IF (ANY(JPRTAL == ITAL)) THEN
             CALL EIRENE_LEER (2)
@@ -336,7 +336,7 @@ C  1: ELECTR. TEMPERATURE: NE*VOLUME-WEIGHTED AVERAGES
                 HELPW(I)=HELPW(I)+DEIN(I_FINE)*VOL(I_FINE)
               CASE (2)
 C  2: ION TEMPERATURE: NI(K)*VOLUME-WEIGHTED AVERAGES
-cdr  here K also must range from 1 to nplsi,  not only to nplsti
+cdr  here K also must range from 1 to NPLSI,  not only to NPLSTI
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)

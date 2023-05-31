@@ -123,7 +123,7 @@ c
 
 c  pointer to LIVTALI: active or inactive input tallies
       LOGICAL, PUBLIC, POINTER, SAVE ::
-c  background, drifting maxwellian parameters
+c  background, drifting Maxwellian parameters
      L         LTEIN,      LTIIN,      LDEIN,     LDIIN,
      L         LVXIN,      LVYIN,      LVZIN,
 c  magn. field
@@ -247,7 +247,7 @@ c  for FEM-routines (interpolations, gradients,...)
 C  MUSR, INTEGER
       INTEGER, PUBLIC, SAVE ::
      I         NSPH  , NPHOTI, NPHOTIM,
-cdr natma is something specific to solps. Should not be here.
+cdr NATMA is something specific to SOLPS. Should not be here.
      I         NSPA  , NATMI,  NATMIM,  NATMA,
      I         NSPAM , NMOLI,  NMOLIM,
      I         NSPAMI, NIONI,  NIONIM, 

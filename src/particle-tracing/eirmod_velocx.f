@@ -141,7 +141,7 @@ C CURRENTLY: HARD-WIRED INITIAL SEARCH RANGE
         elmax=log(1.e4_dp)
 
 !$OMP CRITICAL
- 2      continue
+    2   continue
         SGCVMX(IRCX)=-1.D60
         JJ=1
         do j=1,1000

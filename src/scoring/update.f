@@ -118,7 +118,7 @@ C PH PROCESSES
 C PI PROCESSES
       INTEGER ::      IXPI,IRPI
 C EI PROCESSES
-      INTEGER ::      IXEI,IREI !natma is something specific to solps. should not be here.
+      INTEGER ::      IXEI,IREI
 
       REAL(DP) :: EIRENE_VDION
       REAL(DP), POINTER :: PXX2(:,:), PXPL2(:,:), PXAT2(:,:),

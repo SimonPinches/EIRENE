@@ -6,16 +6,16 @@ c   Here: 3 files are read and used to build a triangular grid. (LEVGEO=4 option
 c   casename.npco.char
 c   casename.elemente
 c   casename.neighbors
-c   These three files are read via temporary stream "fort.30"
-c   Non default standard surfaces are defined (composed) via the INMTI parameters
+c   These three files are read via temporary stream "fort.30".
+c   Non-default standard surfaces are defined (composed) via the INMTI parameters
 c   also read from casename.neighbors
 c
-c   Orientation is checked per triangle (counter clockwise vertices). 
-c   But it not related to a common orientation on 
+c   Orientation is checked per triangle (counter-clockwise vertices).
+c   But it not related to a common orientation on
 c   the non-default standard surfaces
-c   Such a code snipped, e.g. needed for splitting-rr options,
+c   Such a code snippet, e.g. needed for splitting-rr options,
 c   and other diagnostics would exist in B2. B2.5 interface part.
-c   
+c
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -134,7 +134,7 @@ c
 
 ! check and correct the orientation
 c within each triangle separately.
-c Counter clockwise vertices are required for cell volume calculations
+c Counter-clockwise vertices are required for cell volume calculations
 c in subr. VOLUME.f
 
       do it=1,ntrii

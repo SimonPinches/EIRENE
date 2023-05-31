@@ -39,7 +39,7 @@
       CONTAINS
 
 cdr Aug.  22 : notation, and bugfig: sumn,sumnt vs. sum (only affecting
-cdr            diagnostic output
+cdr            diagnostic output)
 cdr Sep.  21 : a bit more and corrected documentation
 cdr Nov.  19 : Nested do 6 loop: erroneous exit from loop
 cdr            corrected (300919): Possible significant

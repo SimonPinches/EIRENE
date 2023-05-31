@@ -6,7 +6,7 @@ cdr                  of sum over strata
 cdr dec 15:  species index added for eapl,empl,eipl,ephpl,eppl
 cdr mar 17:  comments added
 cpb Dec. 17: remove type SPECT_ARRAY, not needed in Fortran 2003
-cdr Apr. 22: preparing for vectorial in/ut tallies:
+cdr Apr. 22: preparing for vectorial in/out tallies:
 cdr          unnecessary array dimensions removed: PXX, PXX2. tbd: RXEL?
 
       MODULE EIRMOD_CESTIM
@@ -81,14 +81,14 @@ cdr added feb 22: pxpht, expht, pgenx, egenx, vgenx,
 cdr               for unified treatment in subr. COLLIDE.f
       REAL(DP), PUBLIC, POINTER, SAVE ::
      R PDENX(:),  EDENX(:),
-     R PXEL(:),   PXAT(:,:), PXML(:,:), PXIO(:,:), PXPHT(:,:), 
-     R PXPL(:,:),
-     R EXEL(:),   EXAT(:),   EXML(:),   EXIO(:),   EXPHT(:), 
-     R EXPL(:,:),
+     R PXEL(:),   PXAT(:,:), PXML(:,:), PXIO(:,:),
+     R PXPHT(:,:), PXPL(:,:),
+     R EXEL(:),   EXAT(:),   EXML(:),   EXIO(:),
+     R EXPHT(:), EXPL(:,:),
      R VXDENX(:), VYDENX(:), VZDENX(:),
      R PGENX(:),  EGENX(:),  VGENX(:),
      R MXPL(:,:), 
-     R RXEL(:,:)  ! I think this should also be a "reflexive"tally, 1D rather 2D array
+     R RXEL(:,:)  ! I think this should also be a "reflexive" tally, 1D rather 2D array
 
 c   Next: "reflexive" tallies for identical donor and target species: 
 c         e.g iatm --> iatm, etc.

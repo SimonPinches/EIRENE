@@ -8,7 +8,7 @@ cdr       Also: accomodate photon tracing tallies now.
 
 cdr        PXX, PXX2 pointers had excess species indices. Now removed.
 cdr        LGX.. etc... pointers had excess species index. Now removed
-cdr mar 22: done. 
+cdr mar 22: done.
 cdr
 cdr         3D time_array split into 4 separate 2D time_ar, one for each type
 cdr         for compiler complains from MASYR1 printout routine.
@@ -78,7 +78,7 @@ c  Output: ixspz,nmetoff,logphot,logatm,logmol,logion
      .    (iphot_old == iphot) .and. (ipls_old == ipls).and.
      .    (istra_old == istra)) return
 
-cdr  this next part: split cpu time consumption 
+cdr  this next part: split CPU time consumption
 cdr  by test particle species and type.
 
       if (trchktim) then
@@ -178,14 +178,14 @@ C  save stratum, old type, species
        LPXAT   => LPPHAT
        LPXML   => LPPHML
        LPXIO   => LPPHIO
-       LPXPHT  => LPPHPHT  ! same as LPXX 
+       LPXPHT  => LPPHPHT  ! same as LPXX
        LPXPL   => LPPHPL
 
        LEXEL   => LEPHEL
        LEXAT   => LEPHAT
        LEXML   => LEPHML
        LEXIO   => LEPHIO
-       LEXPHT  => LEPHPHT  ! same as LEXX 
+       LEXPHT  => LEPHPHT  ! same as LEXX
        LEXPL   => LEPHPL
 
        LVXDENX => LVXDENPH
@@ -314,7 +314,7 @@ cdr now: allocatable, rather than pointer
        LPXAT   => LPAAT  ! same as LPXX
        LPXML   => LPAML
        LPXIO   => LPAIO
-       LPXPHT  => LPAPHT 
+       LPXPHT  => LPAPHT
        LPXPL   => LPAPL
 
        LEXEL   => LEAEL
@@ -450,7 +450,7 @@ cdr now: allocatable, rather than pointer
        LPXAT   => LPMAT
        LPXML   => LPMML  ! same as LPXX
        LPXIO   => LPMIO
-       LPXPHT  => LPMPHT 
+       LPXPHT  => LPMPHT
        LPXPL   => LPMPL
 
        LEXEL   => LEMEL
@@ -524,7 +524,7 @@ cdr now: allocatable, rather than pointer
        IF (LVZDENX) VZDENX => VZDENM(IMOL,:)
 
        IF (LRXEL)   RXEL   => RMEL(1:NMOLI,:)
-       
+
        IF (LPGENX)  PGENX  => PGENM(IMOL,:)
        IF (LEGENX)  EGENX  => EGENM(IMOL,:)
        IF (LVGENX)  VGENX  => VGENM(IMOL,:)
@@ -587,7 +587,7 @@ cdr now: allocatable, rather than pointer
        LPXAT   => LPIAT
        LPXML   => LPIML
        LPXIO   => LPIIO  ! same as LPXX
-       LPXPHT  => LPIPHT 
+       LPXPHT  => LPIPHT
        LPXPL   => LPIPL
 
        LEXEL   => LEIEL
