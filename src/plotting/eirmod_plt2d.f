@@ -1690,6 +1690,9 @@ C
       IF (TRCHST .AND. LWR) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) TXTHST(ISYM)
+        IF (ISYM.EQ.12) THEN        
+          CALL EIRENE_MASJ1('NLEVEL  ',NLEVEL)
+        ENDIF
         IF (ISPZ.GT.0.AND.ISPZ.LE.NSPZ) THEN
           IF (ISYM.EQ.1.OR..NOT.NLTRC)
      .      CALL EIRENE_MASJ1('NPANU   ',NPANU)

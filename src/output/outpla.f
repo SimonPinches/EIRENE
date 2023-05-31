@@ -19,6 +19,10 @@ cdr             prttal and prtvol are largely identical, remove one ?
 cdr oct 18    : all input tallies selectable, also derived tallies.
 cdr             also: gradient tallies of input tallies: currently no. 31--120
 cdr may 19    : remove NF=NFRSTP(ITAL) (unused, meaning ?), comments...
+cdr jan 22    : bug fix: missing weighting function for PARMOM tally added
+cdr             as long as fine-grid data are identical to coarse grid
+cdr             data, as e.g. in B2.5 interfaces, this bug made no difference.
+cdr mar 23    : account for bgk virt. species as if they were "densmodel" species
 
 C
       SUBROUTINE EIRENE_OUTPLA(ICAL)
@@ -89,9 +93,9 @@ C                 TALTYP=4: UNKNOWN        (?)
       TALTYP(20)=0
       TALTYP(21)=0
       TALTYP(22)=0
-      TALTYP(23)=0  ! bvin   units ??
-      TALTYP(24)=0  ! parmom units ??
-      TALTYP(25)=0  ! psi units ??
+      TALTYP(23)=0  ! bvin   cm/s
+      TALTYP(24)=0  ! parmom units: g*cm/s
+      TALTYP(25)=0  ! psi units: tesla*m
       TALTYP(26)=3  ! zi
 
       TALTYP(27)=0  ! free27 units ??
@@ -103,11 +107,20 @@ cdr to be done: weighting function for gradient tallies. Tentatively set =0
       TALTYP(31:NTALI)=0
 
       IF (ICAL == 1) THEN
-!  IS ANY DENSITY MODEL DEFINED ?
-        IF (ALL(CDENMODEL == REPEAT(' ',LEN(CDENMODEL)))) RETURN
+
+cdr "density model" is jargon for setting field particle parameters di,ti and v_vec
+cdr from other field particle parameters plus some further data, e.g. certain rate coefficients.
+
+!  IS ANY "DENSITY MODEL" DEFINED IN THIS RUN AT ALL?
+        IF (ALL(CDENMODEL == REPEAT(' ',LEN(CDENMODEL)))
+cdr  tbd: .and. all: npbgkp(ipls,1) .eq.0     also bgk virt. species should be printed.
+cdr   since bgk field species should be just special cases of "cdenmodel" cases
+     .     ) RETURN
 !  IS OUTPUT OF AN INPUT TALLY ASKED FOR?
         DO IPRV=1,NVOLPR
           ITAL=NPRTLV(IPRV)
+cdr further below we check, if the prinout species range  NSPEZI, NSPEZE
+cdr includes any IPLS with a "density model"
           IF (ANY(JPRTAL == ITAL)) THEN
             CALL EIRENE_LEER (2)
             CALL EIRENE_HEADNG
@@ -162,12 +175,18 @@ c  positive tally numbers ital: output tallies, printed from OUTEIR.
           END IF
 
           NFTI=1
+cdr  be careful with indirect species index addressing here.
+cdr  nfte=NPLSI for Ti and Vin_VEC profiles.
+cdr            not = NPLSTI and NPLSV, resp. 
+cdr  due to different density weighting, even if Ti or Vin are identical
+cdr  for different IPLS
           NFTE=NFSTPI(ITALI)
           IF (NSPEZV(IPRV,1).GT.0) THEN
-c  print tally only for selected species indices
+c  print tally only for selected range of species indices
             NFTI=NSPEZV(IPRV,1)
             NFTE=MAX(NFTI,NSPEZV(IPRV,2))
           ENDIF
+c
           DO 119 K=NFTI,NFTE
 c  check for valid range of tally ITALI
             IF (K.GT.NFSTPI(ITALI)) THEN
@@ -265,6 +284,9 @@ C  IN CASE OF TWO GRIDS, (COARSE-GRAINING)
 C  SWITCH BETWEEN PRINTOUT OF TALLY ITALI EITHER ON UNDERLYING FINE GRID (OLD DEFAULT)
 C  OR OF THE AVERAGED (COARSE GRAINED) TALLY ON COARSE GRID
 C  IF NCLTAL(I_FINE)==I_COARSE, EVERYWHERE, THEN THERE IS ONLY ONE GRID
+
+cdr  Apr.22  coarse graining may be incorrect for Ti, VXIN,... and BVIN,
+cdr          i.e. for tallies with indirect species index addressing
             if (nflagv(iprv).lt.0) then
 c  before printing: reset input tallies onto coarse (structured) grid
               nr1pr  =nr1tal
@@ -314,6 +336,7 @@ C  1: ELECTR. TEMPERATURE: NE*VOLUME-WEIGHTED AVERAGES
                 HELPW(I)=HELPW(I)+DEIN(I_FINE)*VOL(I_FINE)
               CASE (2)
 C  2: ION TEMPERATURE: NI(K)*VOLUME-WEIGHTED AVERAGES
+cdr  here K also must range from 1 to nplsi,  not only to nplsti
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
@@ -365,8 +388,10 @@ C  22: (ELECTRIC) POTENTIAL
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (24)
 C  24) PARALLEL TO B FLOW MOMENTUM
-                HELPP(I)=HELPP(I)+HELPS(I_FINE)
-                HELPW(I)=HELPW(I)+1.D0
+cdr jan 22: bug fix. weighting was missing
+                HELPP(I)=HELPP(I)+
+     .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
+                HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (25)
 C  25) PSI
@@ -475,8 +500,10 @@ C  (ELECTRIC) POTENTIAL
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (24)
 C  PARALLEL TO B FLOW MOMENTUM
-                HELPP(I)=HELPP(I)+HELPS(I_FINE)
-                HELPW(I)=HELPW(I)+1.D0
+cdr jan. 22 bug fix, weighting was missing
+                HELPP(I)=HELPP(I)+
+     .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
+                HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (25)
 C  PSI

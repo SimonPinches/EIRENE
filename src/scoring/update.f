@@ -17,7 +17,7 @@ C  25.04.07 update of tallies because of PI reactions revised
 C  07.08.07 collision estimators vollstaendig fuer atom, mol und iion.
 C           entries: atm, mol, ion voll synchronisiert.
 C  28.8.07: esigpi(...,4) --> PL, esigpi(...,5)--> EL
-c  oct.14:  some intermediate scoring of additional tally ADDV removed, back to development branch
+c  oct.14:  some intermediate scoring of additional tally ADDV removed
 c  06.08.15 arguments added to vecusr
 c  24.08.15 comments and documention wrt. BGK collision treatment
 cdr dec.15: tracklength estimators for heavy test particle post-collision energies
@@ -615,7 +615,7 @@ C
    60   CONTINUE
 C
 C.............................................................
-C  ELECTRON IMPACT COLLISION CONTRIBUTION:  EL + IXSPZ --> ....
+C  ELECTRON IMPACT (EI) COLLISION CONTRIBUTION:  EL + IXSPZ --> ....
 C.............................................................
 C
         IF (LGXEI(0).EQ.0) GOTO 57
@@ -823,7 +823,7 @@ C
    57   CONTINUE
 C
 C........................................................
-C  PLASMA ION IMPACT CONTRIBUTION: IPLS + IXSPZ --> ......
+C  PLASMA ION IMPACT (PI) CONTRIBUTION: IPLS + IXSPZ --> ......
 C........................................................
 C
         IF (LGXPI(0,0).EQ.0) GOTO 59
@@ -1085,6 +1085,7 @@ C  PARMOM AND BVIN NOT KNOWN FROM PLASMA_DERIV
               VSIG_PARB(IPL)=CNDYNP(IPL)*VAL_PARB(IPL)*
      .                        SIGN(1._DP,VAL_PARB(IPL))
             END DO
+cdr use the regular eirene B field input tallies
           ELSE
             VAL_PARB(1:NPLSI) = 0._DP
             VSIG_PARB(1:NPLSI)= 0._DP

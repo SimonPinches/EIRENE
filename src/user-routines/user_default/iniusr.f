@@ -1,7 +1,4 @@
-
-
       SUBROUTINE EIRENE_INIUSR
-      use eirmod_parmmod
       IMPLICIT NONE
       RETURN
       END SUBROUTINE EIRENE_INIUSR

@@ -542,7 +542,8 @@ CNR Otherwise 0 is returned.
               FNUIAR(IPL) = FNUEQI_SOL(DIIN(IPL,NCELL),
      .                                 TIIN(IPLTI,NCELL),IION,IPL)
             ELSE
-              FNUIAR(IPL) = FNUEQI(DIIN(IPL,NCELL),TIIN(IPLTI,NCELL))
+              FNUIAR(IPL) = FNUEQI(DIIN(IPL,NCELL),
+     .                             TIIN(IPLTI,NCELL))
             END IF
             FNUI=FNUI+FNUIAR(IPL)
           END IF

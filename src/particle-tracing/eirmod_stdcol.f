@@ -41,7 +41,6 @@ c stdcol and stdcol_absorb
       REAL(DP) :: X0SA, Y0SA, Z0SA
       INTEGER :: NACLLS, ICOS, IWEI, MSURFS, IRET_OUT
 
-ctk 150 and 200
       REAL(DP) :: COSROT, SINROT, VELX_OLD
 
 c stdcol and stdcol_x_rad

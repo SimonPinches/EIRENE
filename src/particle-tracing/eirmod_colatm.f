@@ -91,8 +91,8 @@ c  unify: iold: nxeii, lgxei, rmassx, LEXEL, EXEL, EXPL, etc.
      .          V0_O(0:2), M0_O(0:2), 
      .          EDEL, VDEL, SIGNUM, 
      .          V0_PARB, 
-     .          FP, FLTEST, ZEP3, VELQ,
      .          V0_N(0:2), M0_N(0:2), VP_N(0:2), MP_N(0:2),
+     .          FP, FLTEST, ZEP3, VELQ,
      .          VX, VY, VZ, VPLASP, RMXIO, BF, ZEP
       REAL(DP) :: SIG_ELIM, SIG_TOT_N, SIG_TOT_O, SIG_TEST
       INTEGER ::
@@ -708,8 +708,6 @@ C  IATMN: ATOM SPECIES AFTER CX
                   LMETSP2(IOLD,0) = .TRUE.
                   LMETSP2(IOLD,IOLD) = .TRUE.
                 END IF
-              END IF
-              IF (LPAAT) THEN
 !$OMP ATOMIC
                 PAAT(IATMN,NCELL)=PAAT(IATMN,NCELL)+WEIGHT
                 LMETSP(NSPH+IATMN)=.TRUE.
