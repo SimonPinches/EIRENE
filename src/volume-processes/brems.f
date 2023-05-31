@@ -21,7 +21,7 @@ c  bremsstrahlung in W, per ion, based on free-free Gaunt factors
 c  formula from ADAS, see function ngffmh_b
       if (zi.ne.0._DP) then
         BREMS = 1.54E-32_DP * TE**0.5 * ZI**2 *
-     .         eirene_ngffmh_B(ZI**2 * 13.6_DP/TE) *ne
+     .          eirene_ngffmh_B(ZI**2 * 13.6_DP/TE) *ne
       else
         BREMS = 0._DP
       endif

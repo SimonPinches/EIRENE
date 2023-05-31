@@ -1240,17 +1240,17 @@ C  CARRY OUT SOME CONSISTENCY CHECKS ON NEW TRIANGULAR GRID
 
             write (iunout,*) ' necke ',necke(1:3,itri)
             write (iunout,*) ' xtrian,ytrian(1) ',xtrian(necke(1,itri)),
-     .                                       ytrian(necke(1,itri))
+     .                                            ytrian(necke(1,itri))
             write (iunout,*) ' xtrian,ytrian(2) ',xtrian(necke(2,itri)),
-     .                                       ytrian(necke(2,itri))
+     .                                            ytrian(necke(2,itri))
             write (iunout,*) ' xtrian,ytrian(3) ',xtrian(necke(3,itri)),
-     .                                       ytrian(necke(3,itri))
+     .                                            ytrian(necke(3,itri))
             IS1=IS+1
             IF (IS.EQ.3) IS1=1
             WRITE (iunout,*) ' XTRIAN,YTRIAN ',XTRIAN(NECKE(IS,ITRI)),
-     .                                    YTRIAN(NECKE(IS,ITRI))
+     .                                         YTRIAN(NECKE(IS,ITRI))
             WRITE (iunout,*) ' XTRIAN,YTRIAN ',XTRIAN(NECKE(IS1,ITRI)),
-     .                                    YTRIAN(NECKE(IS1,ITRI))
+     .                                         YTRIAN(NECKE(IS1,ITRI))
           ENDIF
         ENDDO
       ENDDO
@@ -6631,7 +6631,7 @@ C
        D=A*X+B*Y+C
        D=D*D
        L=A*A+B*B
-       IF(L.LT.EPS5) THEN
+       IF(L.LT.EPS6) THEN
         WRITE(iunout,*) "WARNING FROM  POINT_ON_INTERVAL"
         WRITE(iunout,*) "THE LENGTH OF THE INTERVAL IS TOO SMALL"
         WRITE(iunout,'(1x,a,1p,5(1e14.7,1x))') "L,X1,Y1,X2,Y2 ",

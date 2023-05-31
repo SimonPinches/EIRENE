@@ -94,9 +94,9 @@ C
      .           NUM_CONTRIB, ISP, ITP, IRATIO,
      .           I, J, K,
      .           I2, I3, I4, IH, IANF, IFILE,
-     .           ILINE, JCOMP, KCONTR, IREAC_ADD           
+     .           ILINE, JCOMP, KCONTR, IREAC_ADD, IDUM1, IDUM2        
       REAL(DP) :: SORIND, SORLIM, DUMM1, ROA, ZAA, ZZA, ZGA, YAA, YYA,
-     .            ZIA, YP, XP, YIA, YGA
+     .            ZIA, YP, XP, YIA, YGA, RDUM1, RDUM2
       LOGICAL :: NLSCL, NLTEST, NLANA, NLDRFT, NLCRR, NLERG, NLIDENT,
      .           NLONE, NLMOVIE, LINCL45, NLCASCAD, NLDFST,
      .           NLRANMAR, NLOCTREE, NEXVS, NLTRIMESH
@@ -1279,12 +1279,20 @@ C
       NSTS = MAX(NSTS,NSTSI)
       NSTRA = MAX(NSTRA,NSTRAI)
       NLIMPS = NLIM + NSTS
-     
+
+      READ (IUNIN,'(A72)') ZEILE
+      IF (ZEILE(1:3).EQ.'***') THEN
+         IREAD = 1
+      ELSE
+         READ (ZEILE,'(12I6)') IDUM1, IDUM2
+         READ (IUNIN,'(6E12.4)') RDUM1, RDUM2
+         IREAD = 0
+      END IF
 
 C   SNAPSHOT TALLIES AND CENSUS ARRAY
       NSNVI=0
       IF (NPRNLI > 0) THEN
-        READ (IUNIN,'(A72)') ZEILE
+        IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE
         IREAD=1
         IF (ZEILE(1:1).NE.'*') THEN
           READ (IUNIN,*)
