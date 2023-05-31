@@ -162,12 +162,12 @@ particular species (a particular component of a gas mixture) $i_0$ reads
 \begin{align}
   \label{eq1a} \lbrack\frac\partial{\partial t} + \vvv \cdot
   \nabla_{\vr} + \frac{\vF(\vr,\vvv,t)}{m} \cdot \nabla_{\vvv}\rbrack \
-  f(\vr,\vvv,t) & = \int\!\int\!\int \sigma(\vvv',\vvv';\vvv,\vvv) |\vvv'-\vvv'| f(\vvv')
-  f_b(\vvv') \nonumber                                                             \\
+  f(\vr,\vvv,t) & = \int\!\int\!\int \sigma(\vvv',\vV';\vvv,\vV) |\vvv'-\vV'| f(\vvv')
+  f_b(\vV') \nonumber                                                             \\
                & -
   \int\!\int\!\int
-  \sigma(\vvv,\vvv;\vvv',\vvv')
-  |\vvv-\vvv| f(\vvv) f_b(\vvv)
+  \sigma(\vvv,\vV;\vvv',\vV')
+  |\vvv-\vV| f(\vvv) f_b(\vV)
   \nonumber
   \\
                & + Q(\vr,\vvv,t)
@@ -183,28 +183,28 @@ $Q \ (= Q_{i_0})$ is any external source (particles of species $i_0$ injected
 per unit volume  in phase space and per unit time).
 
 Integration in the first term on the right hand side (``gain term") of this
-equation is over the (pre-collision) velocities $\vvv', \vvv'$  as well as over
-one of the two post-collision velocities: $\vvv$, the velocity of species $b$.
-We write more suggestively  $\sigma(\vvv',\vvv'; \vvv,\vvv) = \sigma(\vvv',\vvv'
-  \rightarrow \vvv,\vvv)$ for the (multi-) differential cross section for a binary
+equation is over the (pre-collision) velocities $\vvv', \vV'$  as well as over
+one of the two post-collision velocities: $\vV$, the velocity of species $b$.
+We write more suggestively  $\sigma(\vvv',\vV'; \vvv,\vV) = \sigma(\vvv',\vV'
+  \rightarrow \vvv,\vV)$ for the (multi-) differential cross section for a binary
 particle collision process.
 The product of this $\sigma$ with the relative pre-collision velocity
-$|\vvv'-\vvv'|$ is the transitional (collision) probability leading from
-velocities prior to the collision $(\vvv',\vvv')$ to the pair $(\vvv,\vvv)$ of
+$|\vvv'-\vV'|$ is the transitional (collision) probability leading from
+velocities prior to the collision $(\vvv',\vV')$ to the pair $(\vvv,\vV)$ of
 velocities after the collision.
 
 In a multi-component gas mixture the first two arguments in $\sigma$, namely
-the velocities $\vvv',\vvv'$ in the first integral, correspond to the species
+the velocities $\vvv',\vV'$ in the first integral, correspond to the species
 $i_0$ and $b$, respectively.
 Via elastic collisions these are turned into the post-collision velocities
-$\vvv, \vvv$, again for the same species $i_0$ and $b$, respectively.
+$\vvv, \vV$, again for the same species $i_0$ and $b$, respectively.
 The first integral, therefore, describes the total rate of collisional
 transitions into the velocity space interval $[\vvv,\vvv+d\vvv]$ for species $i_0$
 
 In the second integral on the right hand side (``loss term") the role of pre-
 and post-collision velocities is exchanged, but the integration remains over
-the same three velocities $\vvv',\vvv'$ and $\vvv$, i.e.\ integration is now over
-all post-collision velocities and over all incident velocities $\vvv$ of
+the same three velocities $\vvv',\vV'$ and $\vV$, i.e.\ integration is now over
+all post-collision velocities and over all incident velocities $\vV$ of
 collision partner $b$.
 Hence this integral describes the total collisional rate of loss for species
 $i_0$ from that phase space interval $[\vvv,\vvv+d\vvv]$.
@@ -221,7 +221,7 @@ the conservation laws for total energy and
 momentum in a collision event must be fulfilled.
 \begin{align}
   \label{massenergy}
-  m_{i_0} \vvv' + m_b\vvv'             & = m_{i_0}\vvv + m_b \vvv \nonumber
+  m_{i_0} \vvv' + m_b\vV'             & = m_{i_0}\vvv + m_b \vV \nonumber
   \\
   \frac12 m_{i_0}v'^2+\frac12m_bV'^2 & =\frac12 m_{i_0}v^2 + m_b V^2 +\Delta_E
 \end{align}
@@ -233,9 +233,9 @@ factors such that the three integrations over velocity spaces reduce to
 integrations over lower dimensional manifolds on which these conservation laws
 are fulfilled.
 The modulus of the relative velocity $g$ is unchanged in elastic collisions,
-$g_{i_0,b} = |\vvv-\vvv| = |\vvv'-\vvv'| = g_{i_0,b}'$, and hence the collision is
+$g_{i_0,b} = |\vvv-\vV| = |\vvv'-\vV'| = g_{i_0,b}'$, and hence the collision is
 just a rotation of this relative velocity, by an angle $\vec\Omega$.
-6-fold integration over full velocity spaces $\vvv', \vvv'$ in $\Re^6$ reduce to
+6-fold integration over full velocity spaces $\vvv', \vV'$ in $\Re^6$ reduce to
 just the 2 fold integration over $\Omega:  d\Omega=\sin\chi d\chi d\epsilon$
 with $\chi$ being the deflection angle and $\epsilon$ the scattering angle.
 
@@ -250,14 +250,14 @@ to the Boltzmann equation in more commonly used text book form:
 \begin{align}
   \label{eq1a1}\nonumber
   D_t^{i_0} \ f_{i_0}
-  (\vr,\vvv,t) & = \int_{\Re^3,\Omega}  d\vvv'd\Omega \ \ \sigma(\vvv,\vvv;\vvv',\vvv')
-  |\vvv-\vvv| \left[f_{i_0}(\vvv') f_b(\vvv')- f_{i_0}(\vvv) f_b(\vvv)\right] \nonumber
+  (\vr,\vvv,t) & = \int_{\Re^3,\Omega}  d\vV'd\Omega \ \ \sigma(\vvv,\vV;\vvv',\vV')
+  |\vvv-\vV| \left[f_{i_0}(\vvv') f_b(\vV')- f_{i_0}(\vvv) f_b(\vV)\right] \nonumber
   \\
               & + Q_{i_0}
   (\vr,\vvv,t) \tag{1.a1}
 \end{align}
 
-and the velocities $\vvv',\vvv $ are uniquely determined by $\vvv, \vvv'$ and
+and the velocities $\vvv',\vV $ are uniquely determined by $\vvv, \vV'$ and
 scattering angles $\Omega$ via mass and energy conservation \cref{massenergy}.
 
 The integral in this equation, or, equivalently, the first two terms on the
@@ -280,7 +280,7 @@ The first term on the right hand side is due to scattering into the element
 $d\vvv$ of velocity space and we shall abbreviate it by defining the collision
 kernel (``redistribution function") $C_{i_0}$ for $i_0$ particles alone, i.e.\
 with an operator acting on (pre-collision) $f_{i_0}$ alone, already containing
-the proper integrations over pre- and post-collision velocities $\vvv', \vvv$ of
+the proper integrations over pre- and post-collision velocities $\vV', \vV$ of
 species $b$ collision partners:
 \begin{equation}
   \label{colkern}
@@ -330,14 +330,14 @@ particles $i_0$, the macroscopic cross section $\Sigma_t$ itself is a
 (nonlinear) function of the dependent variable $f_{i_0}:
   \Sigma_{t,i_0}
   (\vr,\vvv,f_{i_0})$, since it then contains also an integration (over velocities
-$\vvv$ of the collision partners) of $\sigma(\dots, \vvv \rightarrow \dots)
-  \times f_{i_0}(\vvv)$.
+$\vV$ of the collision partners) of $\sigma(\dots, \vV \rightarrow \dots)
+  \times f_{i_0}(\vV)$.
 
 \minisec{The linear form of Boltzmann transport equation}
 
 \vspace{1em}
 
-If all distributions $f_b(\vvv)$ of  the collision partners $b$ of species $i_0$
+If all distributions $f_b(\vV)$ of  the collision partners $b$ of species $i_0$
 are assumed to be given, then the kernel $C = C_{i_0}$ defined in
 \cref{colkern} is linear and the expression given there defines  a linear
 integral (``collision") operator acting on the distribution $f_{i_0}(\vvv)$.
@@ -499,27 +499,27 @@ post-collision particles only)
 
 \begin{align}
   \label{WCU} D_t^{i_0l_0} \ f_{i_0l_0}(\vr,\vvv,t) & =
-  \sum_{i',l',b,l_1,b',l_1'}\int_{\Re^3,\Omega}  d\vvv'd\Omega \ \
-  B_{i_0l_0,bl_1}^{i'l',b'l_1'}(\vvv,\vvv) \ \times                       \\
+  \sum_{i',l',b,l_1,b',l_1'}\int_{\Re^3,\Omega}  d\vV'd\Omega \ \
+  B_{i_0l_0,bl_1}^{i'l',b'l_1'}(\vvv,\vV) \ \times                       \\
                                                    & \phantom{=} \times
   \left[f_{i'l'}
-    (\vvv') f_{b'l_1'}(\vvv')- f_{i_0l_0}(\vvv) f_{b,l_1}(\vvv)\right] \nonumber
+    (\vvv') f_{b'l_1'}(\vV')- f_{i_0l_0}(\vvv) f_{b,l_1}(\vV)\right] \nonumber
   \\
                                                    & + Q_{i_0l_0}
   (\vr,\vvv,t) \nonumber
 \end{align}
 with
 \begin{equation}
-  B_{il,bl_1}^{i'l',b'l_1'}(\vvv,\vvv) =
-  \sigma_{il,bl_1}^{i'l',b'l_1'}(\vvv,\vvv;\vvv',\vvv') \ |\vvv-\vvv|
+  B_{il,bl_1}^{i'l',b'l_1'}(\vvv,\vV) =
+  \sigma_{il,bl_1}^{i'l',b'l_1'}(\vvv,\vV;\vvv',\vV') \ |\vvv-\vV|
 \end{equation}
 
 The cross sections in the corresponding collision integrals
-$\sigma_{il,bl_1}^{i'l',b'l_1'}(\vvv',\vvv',\vvv,\vvv)$ are multiple differential
+$\sigma_{il,bl_1}^{i'l',b'l_1'}(\vvv',\vV',\vvv,\vV)$ are multiple differential
 for scattering at a certain solid angle and post collision energies with
 simultaneous transition from $(il, bl_1)$ to $(i'l',b'l_1')$.
 Again, as already in the Boltzmann equation restricted to elastic collisions,
-the pre- and post-collision velocities $\vvv',\vvv'$ and $\vvv,\vvv$, respectively,
+the pre- and post-collision velocities $\vvv',\vV'$ and $\vvv,\vV$, respectively,
 are not independent, but constrained by momentum and energy conservation, and
 the corresponding constrains are contained in the multi-differential cross
 sections, e.g.\ in form of delta functions.
@@ -1647,15 +1647,15 @@ Hence, e.g., for all isotropic target distributions $f_b$ one has:
 \end{displaymath}
 
 Furthermore, let $f_b$ be a drifting Maxwellian, with temperature $T_b$ and
-drift $\vvv_b$: $f_b = f_b(T_b,\vvv_b)$.
+drift $\vV_b$: $f_b = f_b(T_b,\vV_b)$.
 
 Then:
 
-$\nu = \nu(T_b,|\vvv-\vvv_b|,i)$ 
+$\nu = \nu(T_b,|\vvv-\vV_b|,i)$ 
 
 Finally, if the thermal speed $v_b^{therm}$ in this Maxwellian:
 $v_b^{therm} = \sqrt{T_b/m_b}$ is very large compared to typical values of
-$|\vvv-\vvv_b|$ (i.e.: nearly incompressible flow conditions), then:
+$|\vvv-\vV_b|$ (i.e.: nearly incompressible flow conditions), then:
 
 $\nu \approx \nu(T_b,0,i) = n_b \langle\sigma \cdot v\rangle_b$
 
@@ -2265,11 +2265,11 @@ The kinetic plasma ion flux distribution entering the electrostatic sheath is
 given as
 \begin{equation}
   \Gamma^0_{Sh,ion} = \frac{1}{\alpha^2}   \cdot
-  v_{\pi}   \cdot \exp \left ( - \frac{1}{v_{T_i}^2} (\vvv - \vvv_d )^2    \right
+  v_{\pi}   \cdot \exp \left ( - \frac{1}{v_{T_i}^2} (\vvv - \vV_d )^2    \right
   ), \quad v_{\pi} > 0 \label{eq1.23}
 \end{equation}
 with $v_{T_i} = \sqrt{2 kT_i/m_i}$, the thermal ion velocity, normalizing 
-constant $\alpha^2$ and with the drift velocity $\vvv_d$.
+constant $\alpha^2$ and with the drift velocity $\vV_d$.
 See \cref{sec2.7} for a description of related EIRENE input flags.
 The superscript 0 indicates normalization of the flux to one particle per unit
 time and unit area:
@@ -2422,11 +2422,11 @@ $\vvv$, and:
     \cdot \frac{g({\cal V}_{\pi} )  - 1}{g({\cal V}_{\pi} )}\right],
   \label{eq1.31}
 \end{equation}
-Here we have decomposed the drift velocity $\vvv_d$ into a normal (to the
-surface) $\pi$-component $\vvv_{d,\pi}$ and a $\sigma$-component
-$\vvv_{d,\sigma}$ parallel to the wall surface.
-\begin{equation}{\cal V}_{\sigma} = \frac{| \vvv_d   -	\vvv_{d, \pi} |}
-  {v_{T_i}} = \frac{| \vvv_{d,\sigma} |} {v_{T_i}}. \label{eq1.32}
+Here we have decomposed the drift velocity $\vV_d$ into a normal (to the
+surface) $\pi$-component $\vV_{d,\pi}$ and a $\sigma$-component
+$\vV_{d,\sigma}$ parallel to the wall surface.
+\begin{equation}{\cal V}_{\sigma} = \frac{| \vV_d   -	\vV_{d, \pi} |}
+  {v_{T_i}} = \frac{| \vV_{d,\sigma} |} {v_{T_i}}. \label{eq1.32}
 \end{equation}
 Note that for ${\cal V}_{\pi}$ = 0 \cref{eq1.31} reduces to the expected
 formula $\gamma_E = 2  + {{\cal V}_{\sigma}}^2$  for a half sided Maxwellian
@@ -2596,18 +2596,18 @@ $\approx -2.98$.
 \subsection{The magnetic pre-sheath} \label{sec1.4.2}
 
 In most situations when EIRENE is applied to plasma surface interaction studies
-the ion-plasma flow velocity $\vvv_i$ is predominantly parallel to a $\vB$
-field: $V_{\parallel,i} \approx |\vvv_i|$, and it is this parallel ion flow
+the ion-plasma flow velocity $\vV_i$ is predominantly parallel to a $\vB$
+field: $V_{\parallel,i} \approx |\vV_i|$, and it is this parallel ion flow
 velocity, which is usually available from \ac{CFD} plasma simulations, via
 boundary conditions specified for the (parallel component of the) momentum
 balance equation at the entrance of the magnetic pre-sheath ($mpSh$) rather
 than at the entrance of the electrostatic sheath $eSh$.
 
 The sheath model of EIRENE then is to be supplemented by a model
-\textbf{PRE-SHEATH} for the transition of known currents and $\vvv_{i,mpSh}$  to
-$\vvv_{i,eSh}$, i.e. in particular to derive the currents $j_{\pi,eSh}$ and flow
+\textbf{PRE-SHEATH} for the transition of known currents and $\vV_{i,mpSh}$  to
+$\vV_{i,eSh}$, i.e. in particular to derive the currents $j_{\pi,eSh}$ and flow
 components $V_{\pi,i,eSh}$ entering the electrostatic sheath from $\vj_{mpSh}$
-and $\vvv_{i,mpSh}$ 
+and $\vV_{i,mpSh}$ 
 
 to be written\dots 
 
@@ -3336,11 +3336,11 @@ The \ac{BGK} approximation to the Boltzmann collision integral reads:
 \end{equation}
 where
 \begin{equation}
-  f^0(\vvv)=\frac{n}{(2\pi mT)^{3/2}} \exp\left[-\frac{m(\vvv-\vvv)^2}{2T}\right]
+  f^0(\vvv)=\frac{n}{(2\pi mT)^{3/2}} \exp\left[-\frac{m(\vvv-\vV)^2}{2T}\right]
 \end{equation}
 is a drifting Maxwellian distribution.
 
-The parameters $n, \vvv, T$ in $f^0$ are uniquely determined by conservation of
+The parameters $n, \vV, T$ in $f^0$ are uniquely determined by conservation of
 particles, momentum and energy in these elastic collisions.
 
 When the collision rate $\nu$ is independent of velocity $v$, as it is the case
