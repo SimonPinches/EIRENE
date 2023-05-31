@@ -28,7 +28,7 @@ cdr nov.15: tracklength estimators for eapl,empl,eipl: species ipl resolved.
 cdr apr. 16: bug fix J.Lore re index in lgiel. This part of code is still unused,
 cdr          so no effect on any result.  Few further comments corrected
 cdr fix ph7  phv_lgphot --> lgphph
-cde feb.23: prepage for merging into subr. update (unified treatment)
+cdr feb.23: prepare for merging into subr. update (unified treatment)
 
 
 C
