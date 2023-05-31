@@ -1051,6 +1051,7 @@ C     the following SUBROUTINE is for reinitialization of EIRENE (DMH)
       ISTROLD = -1
 
       DEALLOCATE (LPLSSR)
+      DEALLOCATE (LATSSR)
       DEALLOCATE (FREC)
       DEALLOCATE (VSOURC)
       DEALLOCATE (VSMXI)
