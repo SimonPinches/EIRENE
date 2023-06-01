@@ -123,6 +123,13 @@ cdr  first call is with ityp_old=-1
         end select
       end if
 
+      if (.not.allocated(lgxcx)) then
+        ALLOCATE (LGXCX(0:NRCX,0:1))
+        ALLOCATE (LGXEI(0:NREI))
+        ALLOCATE (LGXEL(0:NREL,0:1))
+        ALLOCATE (LGXPI(0:NRPI,0:1))
+      endif
+
 C  save stratum, old type, species
       istra_old= istra
       ityp_old = ityp

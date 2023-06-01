@@ -801,10 +801,13 @@ c
 
 cdr  for unified routines UPDATE, FPATH, COLLIDE
 cdr  (single code of atoms, molecules and test ions. tbd: photons)
-        ALLOCATE (LGXCX(0:NRCX,0:1))
-        ALLOCATE (LGXEI(0:NREI))
-        ALLOCATE (LGXEL(0:NREL,0:1))
-        ALLOCATE (LGXPI(0:NRPI,0:1))
+!pb  allocation moved to EIRENE_SWITCH_PARTINFO 
+!pb  This is necessary for OPENMP as the allocation needs to done 
+!pb  at a place which all threads visit.
+!pb     ALLOCATE (LGXCX(0:NRCX,0:1))
+!pb     ALLOCATE (LGXEI(0:NREI))
+!pb     ALLOCATE (LGXEL(0:NREL,0:1))
+!pb     ALLOCATE (LGXPI(0:NRPI,0:1))
 
         MEM = (MSTOR1*MSTOR2+NMDTA)*8_ILONG +
      .                       MMDTA*4_ILONG
