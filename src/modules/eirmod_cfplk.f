@@ -16,7 +16,8 @@ C   local, along the trajectory
 cdr  begin threadprivate  here
       REAL(DP), PUBLIC, SAVE ::
      R E0PAR, VELPAR, VELPER, VLXPAR, VLYPAR, VLZPAR, SIGPAR,
-     R BVEC(3), BBX, BBY, BBZ,
+     R BVEC(3),  !dr B field vector, cartesian
+     R BBX, BBY, BBZ,
      R TAUE
       LOGICAL, public, save :: LCART,COLFLAG
 

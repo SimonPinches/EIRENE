@@ -36,7 +36,7 @@ cdr  Jun 18  : various corrections, comments in new (generalized) block 12 optio
 cdr            nadv=nadv+10: now out, is contained in more general storage settings.
 cdr  Oct. 19 : block 5 card counting to infere the setting of INDPRO(2).
 cdr            From then on: completely symmetric options for both background parameter
-cdr            sets: Ti (temperature) and V.IN (flow field) in multispecies cases.
+cdr            sets: Ti (temperature) and V.IN (flow field) in multi-species cases.
 cdr            Only unsolved case: NPLS=2. This can mean: two different ion temperatures
 cdr            or one ion temperature plus one optional VOL (INDPRO(12) card).
 cdr            Default: 1 Ti card and 1 Vol card. If two Ti cards are to be read,
@@ -94,9 +94,9 @@ C
      .           NUM_CONTRIB, ISP, ITP, IRATIO,
      .           I, J, K,
      .           I2, I3, I4, IH, IANF, IFILE,
-     .           ILINE, JCOMP, KCONTR, IREAC_ADD           
+     .           ILINE, JCOMP, KCONTR, IREAC_ADD, IDUM1, IDUM2        
       REAL(DP) :: SORIND, SORLIM, DUMM1, ROA, ZAA, ZZA, ZGA, YAA, YYA,
-     .            ZIA, YP, XP, YIA, YGA
+     .            ZIA, YP, XP, YIA, YGA, RDUM1, RDUM2
       LOGICAL :: NLSCL, NLTEST, NLANA, NLDRFT, NLCRR, NLERG, NLIDENT,
      .           NLONE, NLMOVIE, LINCL45, NLCASCAD, NLDFST,
      .           NLRANMAR, NLOCTREE, NEXVS, NLTRIMESH
@@ -671,7 +671,8 @@ C  FIND START OF NEXT INPUT BLOCK: 4D
       READ (IUNIN,'(A72)') ZEILE
       NPHOTI=0
       IF (ZEILE(1:3) == '***') GOTO 500
-      WRITE (iunout,*) '*4D.   PHOTONS SPECIES CARDS, NPHOTI SPECIES '
+      WRITE (iunout,*)
+     .  '*** 4D. PHOTONS SPECIES CARDS, NPHOTI SPECIES '
       READ (IUNIN,*) NPHOTI
       NPHOT = MAX(NPHOT,NPHOTI)
 
@@ -887,6 +888,7 @@ C * ZEILE...: STRATUM NAME
         READ (IUNIN,*)
         READ (IUNIN,*)
         READ (IUNIN,*)
+cdr  number of substrata
         READ (IUNIN,6666) NSRFSI
         NSRFS = MAX(NSRFS,NSRFSI)
 
@@ -1277,12 +1279,20 @@ C
       NSTS = MAX(NSTS,NSTSI)
       NSTRA = MAX(NSTRA,NSTRAI)
       NLIMPS = NLIM + NSTS
-     
+
+      READ (IUNIN,'(A72)') ZEILE
+      IF (ZEILE(1:3).EQ.'***') THEN
+         IREAD = 1
+      ELSE
+         READ (ZEILE,'(12I6)') IDUM1, IDUM2
+         READ (IUNIN,'(6E12.4)') RDUM1, RDUM2
+         IREAD = 0
+      END IF
 
 C   SNAPSHOT TALLIES AND CENSUS ARRAY
       NSNVI=0
       IF (NPRNLI > 0) THEN
-        READ (IUNIN,'(A72)') ZEILE
+        IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE
         IREAD=1
         IF (ZEILE(1:1).NE.'*') THEN
           READ (IUNIN,*)
@@ -1385,6 +1395,8 @@ c  additional volumetric tallies
       WRITE (iunout,'(a14,i8)') 'NCLV        = ',NCLV
       WRITE (iunout,'(a14,i8)') 'NSNV        = ',NSNV
       WRITE (iunout,'(a14,i8)') 'NALV        = ',NALV
+C     WRITE (iunout,'(a14,i8)') 'NBGV        = ',NBGV ! determined later
+C     WRITE (iunout,'(a14,i8)') 'NCPV        = ',NCPV ! determined later
 c  additional surface-averaged tallies
       WRITE (iunout,'(a14,i8)') 'NADS        = ',NADS
       WRITE (iunout,'(a14,i8)') 'NALS        = ',NALS
@@ -1393,8 +1405,6 @@ c  additional input tallies
 
       CALL EIRENE_LEER(1)
 c  statistical variances, covariances
-      WRITE (iunout,'(a14,i8)') 'NCPV        = ',NCPV
-      WRITE (iunout,'(a14,i8)') 'NBGK        = ',NBGK
       WRITE (iunout,'(a14,i8)') 'NSD         = ',NSD
       WRITE (iunout,'(a14,i8)') 'NSDW        = ',NSDW
       WRITE (iunout,'(a14,i8)') 'NCV         = ',NCV
@@ -1403,11 +1413,14 @@ c  statistical variances, covariances
       WRITE (IUNOUT,*) 'MAX. NO. OF ATOMIC/MOLECULAR "REACTIONS"'
       WRITE (iunout,'(a14,i8)') 'NREAC       = ',NREAC
       WRITE (IUNOUT,*) 'NREC,NREI,NRCX,NREL,NRPI: DETERMINED LATER'
+      WRITE (IUNOUT,*) 'NRPH,NRBG,NROT          : DETERMINED LATER'
 C     WRITE (iunout,'(a14,i8)') 'NREC        = ',NREC
 C     WRITE (iunout,'(a14,i8)') 'NREI        = ',NREI
 C     WRITE (iunout,'(a14,i8)') 'NRCX        = ',NRCX
 C     WRITE (iunout,'(a14,i8)') 'NREL        = ',NREL
 C     WRITE (iunout,'(a14,i8)') 'NRPI        = ',NRPI
+C     WRITE (iunout,'(a14,i8)') 'NRBG        = ',NRBG
+C     WRITE (iunout,'(a14,i8)') 'NRPH        = ',NRPH
 
       CALL EIRENE_LEER(1)
       WRITE (IUNOUT,*) 'SETTING OF STORAGE OPTIMIZATION OPTIONS'
@@ -1469,7 +1482,7 @@ C
 
       integer icount, nv, indpro2
 cdr Nov. 2019
-cdr Achieve synchronisation of input options for multispecies Ti and Vi.
+cdr Achieve synchronisation of input options for multi-species Ti and Vi.
 cdr Return a "best guess" of what INDPRO(2) should be.
 
 cdr Ti_IN(ipls) options have historically been just opposite to V_IN(ipls) options.

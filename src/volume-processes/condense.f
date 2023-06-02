@@ -40,12 +40,15 @@ C  electron impact process no. irei, on molecules imol
 c  search for secondaries, that are not followed:
 c  atom secondaries
 c         DO   NATMI
+c         ENDDO
 c  molecule secondaries
 C         DO   NMOLI
+c         ENDDO
 c  photonic secondaries
 C         DO   NPHOTI
+c         ENDDO
 C  test ion secondaries:
-          DO 220 IION=1,NIONI
+          DO IION=1,NIONI
             ISP=NSPAM+IION
             IF (PIOEI(IREI,IION).GT.0) THEN
               IF (NFOLI(IION).LT.0) THEN
@@ -54,8 +57,10 @@ C  test ion secondaries:
      .                           ' CAN BE CONDENSED'
               ENDIF
             ENDIF
-  220     CONTINUE
+          ENDDO
   200   CONTINUE
+C  here the same for heavy particle impact collisions on molecules
+c  tbd.
    20 CONTINUE
       call eirene_leer(1)
 C

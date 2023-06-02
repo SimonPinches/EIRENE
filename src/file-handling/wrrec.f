@@ -94,6 +94,7 @@ C
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 14: RATIO, NRECOM, XMCT'
       WRITE (14+ifoff) RATIO,NRECOM
       WRITE (14+ifoff) XMCT
+      CLOSE (14+ifoff)
 C
       IF (.NOT.TRCREC.OR.NSTRAI.EQ.1) GOTO 1000
       CALL EIRENE_PAGE
@@ -142,6 +143,7 @@ C
       IF (TRCFLE) WRITE (iunout,*) 'READ 14: RATIO, NRECOM, XMCT'
       READ (14+ifoff,END=914) RATIO,NRECOM
       READ (14+ifoff) XMCT
+      CLOSE(14+ifoff)
 C
       RETURN
 C

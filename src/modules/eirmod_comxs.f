@@ -1,6 +1,20 @@
+cdr Jan. 23: Remove obsolete FACREA
+cdr          Except for REACDAT and IFTFLG, which are (-11:nreac),
+cdr          all other input flag parameters are only (1:NREAC),
+cdr          ie. KK or IR reaction indices do not cover minimal model reactions.
+cdr          write_cmamf and read_cmamf also do not cover minimal model reactions
+cdr Feb. 22: some missing photonic tally data added.
+cdr          More "unified type pointers" added, to prepare for unification of collide.f
+cdr dec. 21: some extra stuff is in this module for IFIT=5 (internal cr codes) option,
+cdr          whereas for other IFIT options these corresponding parts
+cdr          seem to be elsewhere?  cleanup needed?
+cdr dec. 20: clean up nomenclature for reaction energetics flags: nelr.., nplr.., nhvr..
+cdr Nov. 20:  various data within TYPE.. Data constructs have been made
+cdr           ALLOCATABLE, rather than POINTER, due to more recent Fortran capabilities
+cdr           e.g.: ADAS_DATA (= TAB2D_DATA), POLY_DATA, TAB1D_DATA
 cdr Feb  20:  tbd: remove redundant nstor, nstor1 (unused),
 cdr           removed: reac_name (unused)
-cdr           except read_photdbk, but not needed there either.
+
 cdr Aug  19: remove redundant data typ: HYDKIN, tbd: TAB1D, started
 cdr Oct  18: tbd: separate quantities that vary along trajectories  (i.e. per thread)
 cdr               from those that remain fixed after initialization (i.e. per node)
@@ -31,30 +45,22 @@ cdr MODULE FOR ALL ATOMIC/MOLECULAR/PHOTONIC DATA STRUCTURES.
 !  02.03.07: remove ESCD2* arrays
 !  02.03.07: fourth secondary group specifier introduced
 !
-!  02.03.07: IMESS added in photon "line" reaction data type
-!
 cdr sometime between 2004 and 2007 the atomic data structure was revised.
 cdr
 cdr  now it is on REACDAT.  Commenting, cleanup started: jan 2016.
 !
 !  24.03.15: number of default reactions increased from 10 to 11, REACDAT(-11)...
 cdr23.04.15: only text, comments.... continued: Nov. 15, still not complete
-cdr  JAN  16:  additional species index for eplds-->eplei, eplpi
-!pb  APR  16:  ipplds -> ipplei, pplds -> pplei
-!pb  APR  16:  ipatds -> ipatei, patds -> patei, eatds -> eatei
-!pb  APR  16:  ipmlds -> ipmlei, pmlds -> pmlei, emlds -> emlei
-!pb  APR  16:  ipiods -> ipioei, piods -> pioei, eiods -> eioei
-!pb  APR  16:  pelds  -> pelei,  eelds -> eelei
-!pb  MAY  16:  tabds1 -> tabei1
-!pb  MAY  16:  nrds   -> nrei
-!pb  JUL  16:  ehvds1 -> ehvei1
-cdr  Sept 16:  nmdsi  -> nmeii, nidsi -> nieii, ...
-cdr  Jan  18:  added colrad_data, alloc_fit_form, rp%ifit=5 option: use internal crm code
+
+cdr  Jan  18:  added colrad_data, alloc_fit_form, rp%ifit=5 option: use internal CR code
 cdr  sept 18:  prepare reviving "storage save mode" (for large 3D grids):
 cdr            first: rationalize naming of integer flags for collision models
 cdr            nhvrei, nhvrpi, for KER (heavy particle post-collision kinetics)
 cdr            remove redundant flags: JEREARC  (UNUSED)
 cdr            remove redundant flags: JEREAEI  (UNUSED)
+cdr jun   22:  add splitting post-collision secondaries 
+cdr            at selected collision processes.
+cdr            So far: tested for CX
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -82,6 +88,7 @@ cdr
 c
      .          EIRENE_ALLOC_FIT_FORM
 
+cdr  user-defined data types:
       TYPE LINE_DATA
         REAL(DP) :: E0, E1, AIK, G1, G2, C2, C3, C4, C6, B12, B21
         REAL(DP) :: C6A(12)
@@ -120,11 +127,12 @@ cdr  for all types of A&M data input
       TYPE FIT_FORMS
         INTEGER :: IFIT
         TYPE(POLY_DATA),   POINTER :: POLY
-        TYPE(ADAS_DATA),   POINTER :: ADAS
+        TYPE(ADAS_DATA),   POINTER :: ADAS  ! or: TAB2D
         TYPE(LINE_DATA),   POINTER :: LINE
         TYPE(TAB1D_DATA),  POINTER :: TAB1D
         TYPE(COLRAD_DATA), POINTER :: CRM
-c
+
+cdr asymptotics, common to all of these 5 A&M data formats.
         REAL(DP) :: RC1MIN, RC1MAX, RC2MIN, RC2MAX
         REAL(DP) :: FP1L(3), FP1R(3), FP2B(3), FP2T(3)
         INTEGER  :: JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
@@ -142,10 +150,12 @@ c
 
       TYPE REACTION_INPUT_LINE
         INTEGER :: NO, MT, MP, IZ, JFEX1MN, JFEX1MX, NCONST,
-     .             JFEX2MN, JFEX2MX, IROW_ESC, ICOL_ESC,
+     .             JFEX2MN, JFEX2MX, 
+     .             IROW_ESC, ICOL_ESC,
      .             IFTFLG, NCOEF
         REAL(DP) :: R1MN, R1MX, DPP, FP1(6), COEF(9),
-     .              R2MN, R2MX, FP2(6), POP_ESC
+     .              R2MN, R2MX, FP2(6)
+        REAL(DP) :: POP_ESC
         CHARACTER(8) :: FILE
         CHARACTER(50) :: REAC_STRING
         CHARACTER(4) :: H_SELECT
@@ -155,7 +165,8 @@ c
       END TYPE REACTION_INPUT_LINE
 
       TYPE(LINE_DATA), POINTER, PUBLIC, SAVE :: REACTION
-      INTEGER, PUBLIC, SAVE :: IDREAC, IRLINES
+      INTEGER, PUBLIC, SAVE :: IDREAC,  ! save kk value of previous reacdat(kk) evaluation
+     .                         IRLINES
 
       TYPE(REACTION_DATA), ALLOCATABLE, PUBLIC, SAVE :: REACDAT(:)
  
@@ -228,22 +239,28 @@ c  post-collision energies: to EL (electrons), PI (background) or HV (heavy test
 
 !  POINTER FOR UNIFIED "A,M,I,PH" SUBROUTINES
       INTEGER, PUBLIC, POINTER, SAVE ::
+cdr  No need for pointer attributes. These are just scalar integers
+cdr  Just set these values in SWITCH_PARTINFO.f
      I NXEII, NXCXI, NXELI, NXPII,
+     I NXEIIM, NXCXIM, NXELIM, NXPIIM,
      I NPBGKX
 cym p2nei removed from threadprivate list
-!$OMP  THREADPRIVATE(NXEII,NXCXI,NXELI,NXPII,NPBGKX) 
+!$OMP  THREADPRIVATE(NXEII,NXCXI,NXELI,NXPII,
+!$OMP& NXEIIM,NXCXIM,NXELIM,NXPIIM,NPBGKX) 
 
 
-      INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
-     I NAEIIM(:),   NMEIIM(:),   NIEIIM(:),
-     I NACXIM(:),   NMCXIM(:),   NICXIM(:),
-     I NAELIM(:),   NMELIM(:),   NIELIM(:),
-     I NAPIIM(:),   NMPIIM(:),   NIPIIM(:),
+      INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
+     I NAEIIM(:),   NMEIIM(:),   NIEIIM(:), NPHEIIM(:),
+     I NACXIM(:),   NMCXIM(:),   NICXIM(:), NPHCXIM(:),
+     I NAELIM(:),   NMELIM(:),   NIELIM(:), NPHELIM(:),
+     I NAPIIM(:),   NMPIIM(:),   NIPIIM(:), NPHPIIM(:),
      I NPRCI(:),    NPRCIM(:)
 
+c  secondaries, species distribution, for RC processes
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NATPRC(:),  NMLPRC(:), NIOPRC(:), NPLPRC(:), NPHPRC(:),
      I NATPRC_2(:),  NMLPRC_2(:), NIOPRC_2(:), NPLPRC_2(:), NPHPRC_2(:),
+c  secondaries, species distribution, for CX processes
      I N1STX(:,:), N2NDX(:,:)
 
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
@@ -253,34 +270,48 @@ cym p2nei removed from threadprivate list
 
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NREACX(:),NREAPI(:),NREAEL(:),
-     I NREAEI(:),NREARC(:),
+     I NREAEI(:),NREARC(:),NREAPH(:),
      I NELREI(:),JELREI(:),NHVREI(:),NELREL(:),
      I NELRRC(:),JELRRC(:),NELRPI(:),JELRPI(:),NELRCX(:),
-     I NELRPH(:),NREAPH(:),NREACT(:),NHVRPI(:),
+     I NELRPH(:),NHVRPI(:),NPLRPI(:),
+     I NREACT(:),
      I IPATEI(:,:),IPMLEI(:,:),
      I IPIOEI(:,:),IPPLEI(:,:),
      I IPATPI(:,:),IPMLPI(:,:),
      I IPIOPI(:,:),IPPLPI(:,:)
 
       INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
+c  CX type processes
      I LGACX(:,:,:),LGMCX(:,:,:),
-     I LGICX(:,:,:),LGPHCX(:,:,:),
+     I LGICX(:,:,:),
+     I LGPHCX(:,:,:),
+c  EI type processes
      I LGAEI(:,:),  LGMEI(:,:),
-     I LGIEI(:,:),  LGPHEI(:,:),
+     I LGIEI(:,:),
+     I LGPHEI(:,:),
+c  EL type processes
      I LGAEL(:,:,:),LGMEL(:,:,:),
-     I LGIEL(:,:,:),LGPHEL(:,:,:),
-     I LGPRC(:,:),
+     I LGIEL(:,:,:),
+     I LGPHEL(:,:,:),
+c  RC type processes
+     I LGPRC(:,:),   !  e.g. e + H+ --> H + ph,  and H is the resulting test particle
+c  PI type processes
      I LGAPI(:,:,:),LGMPI(:,:,:),
-     I LGIPI(:,:,:),LGPHPI(:,:,:)
+     I LGIPI(:,:,:),
+     I LGPHPI(:,:,:)
+c  PH type processes
 
 !  POINTER FOR UNIFIED "A,M,I,PH" SUBROUTINES
-      INTEGER, PUBLIC, POINTER, SAVE ::
-     I LGXCX(:,:,:), LGXEI(:,:), LGXEL(:,:,:), LGXPI(:,:,:)
+cdr values assigned in SWITCH_PARTINFO during particle tracing
+cdr April 22: Remove redundant leading dimension in 3d arrays LGX...
+cdr           Remove POINTER attribute, use ALLOCATABLE instead
+      INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
+     I LGXCX(:,:), LGXEI(:), LGXEL(:,:), LGXPI(:,:)
 !$OMP  THREADPRIVATE(LGXCX,LGXEI,LGXEL,LGXPI) 
 
 
       INTEGER, PUBLIC, SAVE ::
-     I NRPII, NREII, NRCXI, NRELI, NRRCI, NRBGI
+     I NRPII, NREII, NRCXI, NRELI, NRRCI, NRPHI, NROTI, NRBGI
 
       INTEGER, PUBLIC, SAVE ::
      I NSTOR1, NSTOR,  NSTORV, NTAB, NDAT, NMDTA, MMDTA, NAMF, MAMF,
@@ -297,7 +328,7 @@ cym p2nei removed from threadprivate list
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I ISWR(:),     MODCLF(:),   MASSP(:),    MASST(:),
      I IFTFLG(:,:),
-     I NRCP(:),     NRCA(:),     NRCM(:),     NRCI(:),     NRCPH(:),
+     I NRCA(:),     NRCM(:),     NRCI(:),     NRCP(:),     NRCPH(:),
      I IREACA(:,:), IREACM(:,:), IREACI(:,:), IREACP(:,:), IREACPH(:,:),
      I IBULKA(:,:), IBULKM(:,:), IBULKI(:,:), IBULKP(:,:), IBULKPH(:,:),
      I ISCD1A(:,:), ISCD1M(:,:), ISCD1I(:,:), ISCD1P(:,:), ISCD1PH(:,:),
@@ -322,12 +353,15 @@ cym p2nei removed from threadprivate list
 CDR
 C  AUTOMATED ALLOCATION OF STORAGE FOR A&M DATA STRUCTURES AND ARRAYS.
 C  CALLED FROM:  ALLOCATE_MODULES.F
-C  ICAL=1: ...
-C  ICAL=2: ...
+cdr  ICAL=1: ...?  comments ?
+cdr  ICAL=2: ...?  comments ?
+cdr  ILONG: predefined type for 8 byte integer variables
+cpb         needed as the amount of storage allocated in this module
+cpb         exceeds the range of 4 byte integer variables.
 
       INTEGER, INTENT(IN) :: ICAL
-      INTEGER, PARAMETER :: IL = SELECTED_INT_KIND(15)
-      INTEGER(IL) :: MEM
+      INTEGER, PARAMETER :: ILONG = SELECTED_INT_KIND(15)
+      INTEGER(ILONG) :: MEM
 
       IF (ICAL == 1) THEN
 
@@ -337,9 +371,10 @@ C  ICAL=2: ...
 C
         NAMF=9*11*11+11+2*(2*11+6*11)+
      P       NREAC*(9*11+18+ 6*NPHOT+ 6*NATM+ 6*NMOL+ 6*NION+ 6*NPLS)
-        MAMF=NREAC*(      8+ 8*NPHOT+ 8*NATM+ 8*NMOL+ 8*NION+ 6*NPLS)+
-     P       1*NATM+ 1*NMOL+ 1*NION+ 1*NPLS+ 1 +
-     P       (12+NREAC)*10
+cdr next line: corrected. Was probably incorrect, but unused
+        MAMF=NREAC*(      4+10*NPHOT+10*NATM+10*NMOL+10*NION+ 7*NPLS)+
+     P       1*NATM+ 1*NMOL+ 1*NION+ 1*NPLS+ 1*NPHOT +
+     P       (12+NREAC)*6
 
         ALLOCATE (XSTORV(NSTORV))
 
@@ -352,6 +387,7 @@ C
         SIGBGK  => XSTORV(7)
         ZMFPI   => XSTORV(8)
 
+cdr  Range for looping over type of processes: DO IXYY=1:NXYYI(NSPZ)
         ALLOCATE (NAEII(NATM))
         ALLOCATE (NMEII(NMOL))
         ALLOCATE (NIEII(NION))
@@ -374,25 +410,30 @@ C
 c  for background particle we allow only RC type reactions
         ALLOCATE (NPRCI(NPLS))
 
-cdr apparently missing: ...M arrays for photon test particles
+cdr  Now the same arrays, all values reduced by one. To avoid unnecessary do loops.
         ALLOCATE (NAEIIM(NATM))
         ALLOCATE (NMEIIM(NMOL))
         ALLOCATE (NIEIIM(NION))
+        ALLOCATE (NPHEIIM(NPHOT))
 
         ALLOCATE (NACXIM(NATM))
         ALLOCATE (NMCXIM(NMOL))
         ALLOCATE (NICXIM(NION))
+        ALLOCATE (NPHCXIM(NPHOT))
 
         ALLOCATE (NAELIM(NATM))
         ALLOCATE (NMELIM(NMOL))
         ALLOCATE (NIELIM(NION))
+        ALLOCATE (NPHELIM(NPHOT))
 
         ALLOCATE (NAPIIM(NATM))
         ALLOCATE (NMPIIM(NMOL))
         ALLOCATE (NIPIIM(NION))
+        ALLOCATE (NPHPIIM(NPHOT))
 
         ALLOCATE (NPRCIM(NPLS))
 
+c  for BGK reactions
         ALLOCATE (NPBGKA(NATM))
         ALLOCATE (NPBGKM(NMOL))
         ALLOCATE (NPBGKI(NION))
@@ -464,10 +505,11 @@ cdr
         ALLOCATE (MASSP(NREAC))
         ALLOCATE (MASST(NREAC))
         ALLOCATE (IFTFLG(-11:NREAC,0:5))
-        ALLOCATE (NRCP(NPLS))
+
         ALLOCATE (NRCA(NATM))
         ALLOCATE (NRCM(NMOL))
         ALLOCATE (NRCI(NION))
+        ALLOCATE (NRCP(NPLS))
         ALLOCATE (NRCPH(NPHOT))
 
         ALLOCATE (IREACA(NATM,NREAC))
@@ -529,10 +571,10 @@ cdr    1 ... NREAC: atomic/molecular data read from external data files, input b
 
         ALLOCATE (M_HCOL(NREAC))
 
-        MEM = (NSTORV+NAMF)*8_IL + (MAMF+
-     .                      9_IL*(NATM+NMOL+NION)+4_IL*NPLS+
-     .                      10_IL*NPLS*(NATM+NMOL+NION))*4_IL +
-     .                      NREAC*4_IL
+        MEM = (NSTORV+NAMF)*8_ILONG + (MAMF+
+     .                      9_ILONG*(NATM+NMOL+NION)+4_ILONG*NPLS+
+     .                      10_ILONG*NPLS*(NATM+NMOL+NION))*4_ILONG +
+     .                      NREAC*4_ILONG
 
         WRITE (IUNMEM,'(A,T25,I15)')
      .        ' COMXS(1) ', MEM
@@ -564,7 +606,7 @@ c  tab..1/3 arrays  (photon processes missing ?)
      P       2*(NREC+NRPI+NREL+NREI+NRCX)
 C
 cdr rates for energy loss/gain rates for tracklength estimators
-c  exx..1/3 arrays  xx=(el,pl,hv),  
+c  exx..1/3 arrays  xx=(cx,el,pl,hv),  
         NDAT=NSTORDR*(2*NREI+NREC)+
      P       NSTORDR*NSTORDT*(NRCX+NREL+3*NRPI+NRPH)+
 c  
@@ -705,6 +747,8 @@ c   for particle (1), momentum (2) and energy (3) source rates, resp.
         ALLOCATE (NREAEL(NREL))
         ALLOCATE (NREAEI(NREI))
         ALLOCATE (NREARC(NREC))
+        ALLOCATE (NREAPH(NRPH))
+
         ALLOCATE (NELREI(NREI))
         ALLOCATE (JELREI(NREI))
         ALLOCATE (NHVREI(NREI))
@@ -713,14 +757,16 @@ c   for particle (1), momentum (2) and energy (3) source rates, resp.
         ALLOCATE (JELRRC(NREC))
         ALLOCATE (NELRPI(NRPI))
         ALLOCATE (JELRPI(NRPI))
+        ALLOCATE (NHVRPI(NRPI))
+        ALLOCATE (NPLRPI(NRPI))
         ALLOCATE (NELRCX(NRCX))
         ALLOCATE (NELRPH(NRPH))
-        ALLOCATE (NREAPH(NRPH))
+
         ALLOCATE (NREACT(NREAC))
-        ALLOCATE (NHVRPI(NRPI))
 c  again: some arrays for species distribution of secondaries
 c         derived from P..EI and P..PI, above.
 c         for speeding up scoring in update, collide
+cdr unclear meaning. Perhaps redundant. But might be useful?
 cdr unclear meaning. Perhaps redundant. But might be useful?
         ALLOCATE (IPATEI(NREI,0:NATM))
         ALLOCATE (IPMLEI(NREI,0:NMOL))
@@ -735,22 +781,36 @@ c
         ALLOCATE (LGMCX(0:NMOL,0:NRCX,0:1))
         ALLOCATE (LGICX(0:NION,0:NRCX,0:1))
         ALLOCATE (LGPHCX(0:NPHOT,0:NRCX,0:1))
+
         ALLOCATE (LGAEI(0:NATM,0:NREI))
         ALLOCATE (LGMEI(0:NMOL,0:NREI))
         ALLOCATE (LGIEI(0:NION,0:NREI))
         ALLOCATE (LGPHEI(0:NPHOT,0:NREI))
+
         ALLOCATE (LGAEL(0:NATM,0:NREL,0:1))
         ALLOCATE (LGMEL(0:NMOL,0:NREL,0:1))
         ALLOCATE (LGIEL(0:NION,0:NREL,0:1))
         ALLOCATE (LGPHEL(0:NPHOT,0:NREL,0:1))
+
         ALLOCATE (LGPRC(0:NPLS,0:NREC))
+
         ALLOCATE (LGAPI(0:NATM,0:NRPI,0:1))
         ALLOCATE (LGMPI(0:NMOL,0:NRPI,0:1))
         ALLOCATE (LGIPI(0:NION,0:NRPI,0:1))
         ALLOCATE (LGPHPI(0:NPHOT,0:NRPI,0:1))
 
-        MEM = (MSTOR1*MSTOR2+NMDTA)*8_IL +
-     .                       MMDTA*4_IL
+cdr  for unified routines UPDATE, FPATH, COLLIDE
+cdr  (single code of atoms, molecules and test ions. tbd: photons)
+!pb  allocation moved to EIRENE_SWITCH_PARTINFO 
+!pb  This is necessary for OPENMP as the allocation needs to done 
+!pb  at a place which all threads visit.
+!pb     ALLOCATE (LGXCX(0:NRCX,0:1))
+!pb     ALLOCATE (LGXEI(0:NREI))
+!pb     ALLOCATE (LGXEL(0:NREL,0:1))
+!pb     ALLOCATE (LGXPI(0:NRPI,0:1))
+
+        MEM = (MSTOR1*MSTOR2+NMDTA)*8_ILONG +
+     .                       MMDTA*4_ILONG
 
         WRITE (IUNMEM,'(A,T25,I15)')
      .        ' COMXS(2) ', MEM
@@ -855,15 +915,23 @@ c
       DEALLOCATE (NAEIIM)
       DEALLOCATE (NMEIIM)
       DEALLOCATE (NIEIIM)
+      DEALLOCATE (NPHEIIM)
+
       DEALLOCATE (NACXIM)
       DEALLOCATE (NMCXIM)
       DEALLOCATE (NICXIM)
+      DEALLOCATE (NPHCXIM)
+
       DEALLOCATE (NAELIM)
       DEALLOCATE (NMELIM)
       DEALLOCATE (NIELIM)
+      DEALLOCATE (NPHELIM)
+
       DEALLOCATE (NAPIIM)
       DEALLOCATE (NMPIIM)
       DEALLOCATE (NIPIIM)
+      DEALLOCATE (NPHPIIM)
+
       DEALLOCATE (NPRCIM)
 
       DEALLOCATE (NPBGKA)
@@ -900,6 +968,8 @@ c
       DEALLOCATE (NREAEL)
       DEALLOCATE (NREAEI)
       DEALLOCATE (NREARC)
+      DEALLOCATE (NREAPH)
+
       DEALLOCATE (NELREI)
       DEALLOCATE (JELREI)
       DEALLOCATE (NHVREI)
@@ -908,11 +978,12 @@ c
       DEALLOCATE (JELRRC)
       DEALLOCATE (NELRPI)
       DEALLOCATE (JELRPI)
+      DEALLOCATE (NHVRPI)
+      DEALLOCATE (NPLRPI)
       DEALLOCATE (NELRCX)
       DEALLOCATE (NELRPH)
-      DEALLOCATE (NREAPH)
+
       DEALLOCATE (NREACT)
-      DEALLOCATE (NHVRPI)
 
       DEALLOCATE (IPATEI)
       DEALLOCATE (IPMLEI)
@@ -944,6 +1015,11 @@ c
       DEALLOCATE (LGMPI)
       DEALLOCATE (LGIPI)
       DEALLOCATE (LGPHPI)
+
+      DEALLOCATE (LGXCX)
+      DEALLOCATE (LGXEI)
+      DEALLOCATE (LGXEL)
+      DEALLOCATE (LGXPI)
 
       DEALLOCATE (DELPOT)
 
@@ -1062,28 +1138,45 @@ cdr  ical=2:  ??
         NAEII   = 0
         NMEII   = 0
         NIEII   = 0
+        NPHEII  = 0
+
         NACXI   = 0
         NMCXI   = 0
         NICXI   = 0
+        NPHCXI  = 0
+
         NAELI   = 0
         NMELI   = 0
         NIELI   = 0
+        NPHELI  = 0
+
         NAPII   = 0
         NMPII   = 0
         NIPII   = 0
+        NPHPII  = 0
+
         NPRCI   = 0
+
         NAEIIM  = 0
         NMEIIM  = 0
         NIEIIM  = 0
+        NPHEIIM = 0
+
         NACXIM  = 0
         NMCXIM  = 0
         NICXIM  = 0
+        NPHCXIM = 0
+
         NAELIM  = 0
         NMELIM  = 0
         NIELIM  = 0
+        NPHELIM = 0
+
         NAPIIM  = 0
         NMPIIM  = 0
         NIPIIM  = 0
+        NPHPIIM = 0
+
         NPRCIM  = 0
 
         NPBGKA  = 0
@@ -1144,6 +1237,8 @@ cdr  ical=2:  ??
         NRCM    = 0
         NRCI    = 0
         NRCPH   = 0
+
+cdr  input flags for collision kinetics, secondaries, etc.
         IREACA  = 0
         IREACM  = 0
         IREACI  = 0
@@ -1299,6 +1394,7 @@ c  ditto, for upper limit value of 2nd parameter in 2-parameter fits or tables
         IESTPI  = 0
         IESTEI  = 0
 
+cdr  RC secondaries
         NATPRC  = 0
         NMLPRC  = 0
         NIOPRC  = 0
@@ -1309,6 +1405,8 @@ c  ditto, for upper limit value of 2nd parameter in 2-parameter fits or tables
         NIOPRC_2= 0
         NPLPRC_2= 0
         NPHPRC_2= 0
+
+cdr  CX secondaries
         N1STX   = 0
         N2NDX   = 0
 cdr  number of reaction of type PI,EI,CX,EL,RC,...
@@ -1318,6 +1416,7 @@ cdr  These will be counted in setamd.f and subprograms
         NRCXI   = 0
         NRELI   = 0
         NRRCI   = 0
+        NRPHI   = 0
 cdr  number of bgk reactions (nonlinear mode), counted in setamd.f and subprograms
         NRBGI   = 0
 
@@ -1328,6 +1427,8 @@ cdr  number of bgk reactions (nonlinear mode), counted in setamd.f and subprogra
         NREAEL  = 0
         NREAEI  = 0
         NREARC  = 0
+        NREAPH  = 0
+
         NELREI  = 0
         JELREI  = 0
         NHVREI  = 0
@@ -1336,11 +1437,13 @@ cdr  number of bgk reactions (nonlinear mode), counted in setamd.f and subprogra
         JELRRC  = 0
         NELRPI  = 0
         JELRPI  = 0
+        NHVRPI  = 0
+        NPLRPI  = 0
         NELRCX  = 0
         NELRPH  = 0
-        NREAPH  = 0
+
         NREACT  = 0
-        NHVRPI  = 0
+
         IPATEI  = 0
         IPMLEI  = 0
         IPIOEI  = 0
@@ -1349,16 +1452,21 @@ cdr  number of bgk reactions (nonlinear mode), counted in setamd.f and subprogra
         IPMLPI  = 0
         IPIOPI  = 0
         IPPLPI  = 0
+
         LGACX   = 0
         LGMCX   = 0
         LGICX   = 0
+
         LGAEI   = 0
         LGMEI   = 0
         LGIEI   = 0
+
         LGAEL   = 0
         LGMEL   = 0
         LGIEL   = 0
+
         LGPRC   = 0
+
         LGAPI   = 0
         LGMPI   = 0
         LGIPI   = 0
@@ -1411,46 +1519,70 @@ cdr  read and write A&M data onto fort.13, controlled by NFILEL option (input bl
       
       WRITE (13+IFOFF)
      . MODCOL ,IESTCX ,IESTEL ,IESTPI ,IESTEI ,
-     . NAEII  ,NMEII  ,NIEII  ,NACXI  ,NMCXI  ,NICXI  ,
-     . NAELI  ,NMELI  ,NIELI  ,NAPII  ,NMPII  ,NIPII  ,NPRCI  ,
-     . NAEIIM ,NMEIIM ,NIEIIM ,NACXIM ,NMCXIM ,NICXIM ,
-     . NAELIM ,NMELIM ,NIELIM ,NAPIIM ,NMPIIM ,NIPIIM ,NPRCIM ,
+     . NAEII  ,NMEII  ,NIEII  ,NPHEII  ,
+     . NACXI  ,NMCXI  ,NICXI  ,NPHCXI  ,
+     . NAELI  ,NMELI  ,NIELI  ,NPHELI  ,
+     . NAPII  ,NMPII  ,NIPII  ,NPHPII  ,
+     . NPRCI  ,
+     . NAEIIM ,NMEIIM ,NIEIIM ,NPHEIIM  ,
+     . NACXIM ,NMCXIM ,NICXIM ,NPHCXIM  ,
+     . NAELIM ,NMELIM ,NIELIM ,NPHELIM  ,
+     . NAPIIM ,NMPIIM ,NIPIIM ,NPHPIIM  ,
+     . NPRCIM ,
      . NPBGKA ,NPBGKM ,NPBGKI ,NPBGKP ,
      . NATPRC ,NMLPRC ,NIOPRC ,NPLPRC ,NPHPRC ,
      . NATPRC_2 ,NMLPRC_2 ,NIOPRC_2 ,NPLPRC_2 ,NPHPRC_2 ,
      . N1STX  ,N2NDX  ,
 
-     . NRPII  ,NREII  ,NRCXI  ,NRELI  ,NRRCI  ,NRBGI  ,
+     . NRPII  ,NREII  ,NRCXI  ,NRELI  ,NRRCI  ,NRPHI  ,NRBGI  ,
 
      . NSEACX ,NSEMCX ,NSEICX ,NSEAEL ,NSEMEL ,NSEIEL ,NSEPRC ,
-     . NREACX ,NREAPI ,NREAEL ,NREAEI ,NREARC ,
-     . NELREI ,JELREI ,NHVREI ,NELREL ,NELRRC ,JELRRC ,NELRPI ,JELRPI ,
-     . NELRCX ,NELRPH ,NREAPH ,NREACT ,NHVRPI ,
+     . NREACX ,NREAPI ,NREAEL ,NREAEI ,NREARC ,NREAPH ,
+     . NELREI ,JELREI ,NHVREI ,NELREL ,
+     . NELRRC ,JELRRC ,
+     . NELRPI ,JELRPI ,
+     . NELRCX ,NHVRPI ,NPLRPI ,
+     . NELRPH ,NREACT ,
      . IPATEI ,IPMLEI ,IPIOEI ,IPPLEI ,IPATPI ,IPMLPI ,IPIOPI ,IPPLPI ,
-     . LGACX  ,LGMCX  ,LGICX  ,LGAEI  ,LGMEI  ,LGIEI  ,
-     . LGAEL  ,LGMEL  ,LGIEL  ,LGPRC  ,LGAPI  ,LGMPI  ,LGIPI
+     . LGACX  ,LGMCX  ,LGICX  ,
+     . LGAEI  ,LGMEI  ,LGIEI  ,
+     . LGAEL  ,LGMEL  ,LGIEL  ,
+     . LGPRC  ,
+     . LGAPI  ,LGMPI  ,LGIPI
 #ifdef CHECKBIN
       write (113,*) 'CMDTA MODCOL ...'
       WRITE (113,*)
      . MODCOL ,IESTCX ,IESTEL ,IESTPI ,IESTEI ,
-     . NAEII  ,NMEII  ,NIEII  ,NACXI  ,NMCXI  ,NICXI  ,
-     . NAELI  ,NMELI  ,NIELI  ,NAPII  ,NMPII  ,NIPII  ,NPRCI  ,
-     . NAEIIM ,NMEIIM ,NIEIIM ,NACXIM ,NMCXIM ,NICXIM ,
-     . NAELIM ,NMELIM ,NIELIM ,NAPIIM ,NMPIIM ,NIPIIM ,NPRCIM ,
-     . NPBGKA ,NPBGKM ,NPBGKI ,NPBGKP ,
+     . NAEII  ,NMEII  ,NIEII  ,NPHEII  ,
+     . NACXI  ,NMCXI  ,NICXI  ,NPHCXI  ,
+     . NAELI  ,NMELI  ,NIELI  ,NPHELI  ,
+     . NAPII  ,NMPII  ,NIPII  ,NPHPII  ,
+     . NPRCI  ,
+     . NAEIIM ,NMEIIM ,NIEIIM ,NPHEIIM  ,
+     . NACXIM ,NMCXIM ,NICXIM ,NPHCXIM  ,
+     . NAELIM ,NMELIM ,NIELIM ,NPHELIM  ,
+     . NAPIIM ,NMPIIM ,NIPIIM ,NPHPIIM  ,
+     . NPRCIM ,
      . NATPRC ,NMLPRC ,NIOPRC ,NPLPRC ,NPHPRC ,
      . NATPRC_2 ,NMLPRC_2 ,NIOPRC_2 ,NPLPRC_2 ,NPHPRC_2 ,
      . N1STX  ,N2NDX  ,
 
-     . NRPII  ,NREII  ,NRCXI  ,NRELI  ,NRRCI  ,NRBGI  ,
+     . NRPII  ,NREII  ,NRCXI  ,NRELI  ,NRRCI  ,NRPHI  ,NRBGI  ,
 
      . NSEACX ,NSEMCX ,NSEICX ,NSEAEL ,NSEMEL ,NSEIEL ,NSEPRC ,
-     . NREACX ,NREAPI ,NREAEL ,NREAEI ,NREARC ,
-     . NELREI ,JELREI ,NHVREI ,NELREL ,NELRRC ,JELRRC ,NELRPI ,JELRPI ,
-     . NELRCX ,NELRPH ,NREAPH ,NREACT ,NHVRPI ,
+     . NREACX ,NREAPI ,NREAEL ,NREAEI ,NREARC ,NREAPH ,
+     . NELREI ,JELREI ,NHVREI ,NELREL ,
+     . NELRRC ,JELRRC ,
+     . NELRPI ,JELRPI ,
+     . NELRCX ,NHVRPI ,NPLRPI ,
+     . NELRPH ,
+     . NREACT ,
      . IPATEI ,IPMLEI ,IPIOEI ,IPPLEI ,IPATPI ,IPMLPI ,IPIOPI ,IPPLPI ,
-     . LGACX  ,LGMCX  ,LGICX  ,LGAEI  ,LGMEI  ,LGIEI  ,
-     . LGAEL  ,LGMEL  ,LGIEL  ,LGPRC  ,LGAPI  ,LGMPI  ,LGIPI
+     . LGACX  ,LGMCX  ,LGICX  ,
+     . LGAEI  ,LGMEI  ,LGIEI  ,
+     . LGAEL  ,LGMEL  ,LGIEL  ,
+     . LGPRC  ,
+     . LGAPI  ,LGMPI  ,LGIPI
 #endif
 
       RETURN
@@ -1478,24 +1610,37 @@ cdr  read and write A&M data onto fort.13, controlled by NFILEL option (input bl
 
       READ (13+IFOFF)
      . MODCOL ,IESTCX ,IESTEL ,IESTPI ,IESTEI ,
-     . NAEII  ,NMEII  ,NIEII  ,NACXI  ,NMCXI  ,NICXI  ,
-     . NAELI  ,NMELI  ,NIELI  ,NAPII  ,NMPII  ,NIPII  ,NPRCI  ,
-     . NAEIIM ,NMEIIM ,NIEIIM ,NACXIM ,NMCXIM ,NICXIM ,
-     . NAELIM ,NMELIM ,NIELIM ,NAPIIM ,NMPIIM ,NIPIIM ,NPRCIM ,
+     . NAEII  ,NMEII  ,NIEII  ,NPHEII  ,
+     . NACXI  ,NMCXI  ,NICXI  ,NPHCXI  ,
+     . NAELI  ,NMELI  ,NIELI  ,NPHELI  ,
+     . NAPII  ,NMPII  ,NIPII  ,NPHPII  ,
+     . NPRCI  ,
+     . NAEIIM ,NMEIIM ,NIEIIM ,NPHEIIM  ,
+     . NACXIM ,NMCXIM ,NICXIM ,NPHCXIM  ,
+     . NAELIM ,NMELIM ,NIELIM ,NPHELIM  ,
+     . NAPIIM ,NMPIIM ,NIPIIM ,NPHPIIM  ,
+     . NPRCIM ,
      . NPBGKA ,NPBGKM ,NPBGKI ,NPBGKP ,
      . NATPRC ,NMLPRC ,NIOPRC ,NPLPRC ,NPHPRC ,
      . NATPRC_2 ,NMLPRC_2 ,NIOPRC_2 ,NPLPRC_2 ,NPHPRC_2 ,
      . N1STX  ,N2NDX  ,
 
-     . NRPII  ,NREII  ,NRCXI  ,NRELI  ,NRRCI  ,NRBGI  ,
+     . NRPII  ,NREII  ,NRCXI  ,NRELI  ,NRRCI  ,NRPHI  ,NRBGI  ,
 
      . NSEACX ,NSEMCX ,NSEICX ,NSEAEL ,NSEMEL ,NSEIEL ,NSEPRC ,
-     . NREACX ,NREAPI ,NREAEL ,NREAEI ,NREARC ,
-     . NELREI ,JELREI ,NHVREI ,NELREL ,NELRRC ,JELRRC ,NELRPI ,JELRPI ,
-     . NELRCX ,NELRPH ,NREAPH ,NREACT ,NHVRPI ,
+     . NREACX ,NREAPI ,NREAEL ,NREAEI ,NREARC ,NREAPH ,
+     . NELREI ,JELREI ,NHVREI ,NELREL ,
+     . NELRRC ,JELRRC ,
+     . NELRPI ,JELRPI ,
+     . NELRCX ,NHVRPI ,NPLRPI ,
+     . NELRPH ,
+     . NREACT ,
      . IPATEI ,IPMLEI ,IPIOEI ,IPPLEI ,IPATPI ,IPMLPI ,IPIOPI ,IPPLPI ,
-     . LGACX  ,LGMCX  ,LGICX  ,LGAEI  ,LGMEI  ,LGIEI  ,
-     . LGAEL  ,LGMEL  ,LGIEL  ,LGPRC  ,LGAPI  ,LGMPI  ,LGIPI
+     . LGACX  ,LGMCX  ,LGICX  ,
+     . LGAEI  ,LGMEI  ,LGIEI  ,
+     . LGAEL  ,LGMEL  ,LGIEL  ,
+     . LGPRC  ,
+     . LGAPI  ,LGMPI  ,LGIPI
 
       RETURN
       END SUBROUTINE EIRENE_READ_CMDTA
@@ -1548,7 +1693,7 @@ cdr  read and write A&M data onto fort.13, controlled by NFILEL option (input bl
 
       WRITE (113,*) 'WRITE_CMAMF REACDAT ...'
 #endif
-      DO IR=1,NREACI
+      DO IR=1,NREACI   !  reacdat(-11:nreac)%.... minimal model is not written
         WRITE (13+IFOFF)
      .             REACDAT(IR)%LPOT,
      .             REACDAT(IR)%LCRS,
@@ -1608,7 +1753,7 @@ c
       CONTAINS
 
         SUBROUTINE EIRENE_WRITE_FIT_FORM (RP)
-        TYPE(FIT_FORMS),POINTER :: RP
+        TYPE(FIT_FORMS),POINTER :: RP ! =reacdat(ir)%xxx%
 
         WRITE (13+IFOFF) RP%IFIT
 
@@ -1637,7 +1782,7 @@ c
 #endif
 
         ELSE IF (1<=RP%IFIT .AND. RP%IFIT <= 2) THEN
-! DATA FOR FIT EXPRESSIONS (e.g. POLYNOMIAL, IN CASE OF HYDHEL DATABASE)
+! DATA FOR FIT EXPRESSIONS (E.G. POLYNOMIAL, IN CASE OF HYDHEL DATABASE)
           WRITE (13+IFOFF) UBOUND(RP%POLY%DBLPOL)
           WRITE (13+IFOFF)        RP%POLY%DBLPOL
 #ifdef CHECKBIN
@@ -1736,7 +1881,7 @@ cdr options for extrapolation from data tables or from validity range of fits.
      . IESTMA, IESTMM, IESTMI, IESTMPH,
      . IBGKA,  IBGKM,  IBGKI,  IBGKPH
 
-      DO IR=1,NREACI
+      DO IR=1,NREACI   !  reacdat(-11:nreac)%.... minimal model is not read
         READ (13+IFOFF)
      .            REACDAT(IR)%LPOT,
      .            REACDAT(IR)%LCRS,
@@ -1771,7 +1916,7 @@ cdr options for extrapolation from data tables or from validity range of fits.
       CONTAINS
 
         SUBROUTINE EIRENE_READ_FIT_FORM (RP)
-        TYPE(FIT_FORMS),POINTER :: RP
+        TYPE(FIT_FORMS),POINTER :: RP  !  RP = REACDAT(IR)%... IN CALLING PROGRAM
         INTEGER :: ND1, ND2,  ! table range for POLY
      .             ND, NT     ! table range for TAB1D, TAB2D
 
@@ -1793,8 +1938,7 @@ cdr  high pressure gas discharge lamps, around 2002.. should not be here!
           READ (13+IFOFF) RP%LINE%REACNAME, RP%LINE%KENN
 
         ELSE IF (1<= RP%IFIT .AND. RP%IFIT <= 2) THEN
-! DATA FOR FIT EXPRESSIONS (POLYNOMIAL, e.g. IN CASE OF HYDHEL, AMJUEL DATABASE)
-          IF (.NOT.ASSOCIATED(RP%POLY)) ALLOCATE (RP%POLY)
+! DATA FOR FIT EXPRESSIONS (POLYNOMIAL, E.G. IN CASE OF HYDHEL, AMJUEL DATABASE)          IF (.NOT.ASSOCIATED(RP%POLY)) ALLOCATE (RP%POLY)
           IF (ASSOCIATED(RP%POLY%DBLPOL)) DEALLOCATE (RP%POLY%DBLPOL)
 
           READ (13+IFOFF) ND1,ND2
@@ -1815,7 +1959,7 @@ cdr  high pressure gas discharge lamps, around 2002.. should not be here!
      .                    RP%ADAS%DDE, RP%ADAS%DTE
 
         ELSE IF (RP%IFIT == 4) THEN
-! DATA FOR 1D TABULATED a&m ENTRIES (single parameter table)
+! DATA FOR 1D TABULATED A&M ENTRIES (single parameter table)
 cdr unfinished and untested.
           READ (13+IFOFF) RP%TAB1D%NTEMPS
           NT = RP%TAB1D%NTEMPS
@@ -1830,6 +1974,7 @@ cdr: tbd: set difference quotient in table: tab1d vs. temps
 
         ELSE IF (RP%IFIT == 5) THEN
 ! DATA FOR COLLISIONAL-RADIATIVE MODEL A&M ENTRIES
+cdr may 2020 added: m_popesc,  and pop_esc arrays, rather scalars.
           IF (.NOT.ASSOCIATED(RP%CRM)) ALLOCATE (RP%CRM)
           READ (13+IFOFF) RP%CRM%IFLAV,
      .                    RP%CRM%IVARST,
@@ -1876,10 +2021,14 @@ c               RDATA --> REA, and then: REACDAT(IR)%...%POLY => REA
 c  and:                          NULLIFY REACDAT(IR)%...%ADAS
 c  and:                          NULLIFY REACDAT(IR)%...%LINE
 c  and:                          NULLIFY REACDAT(IR)%...%TAB1D
+c  and:                         NULLIFY REACDAT(IR)%...%CRM
 c
 c  1) called from READ_PHOTDBK
 c  2) called from SLREAC, option "CONST"
 c  3) called from SLREAC, option AMJUEL, HYDHEL, H2VIBR, METHAN, AMMONX
+cpb   not called from READ_COLRAD
+cpb   not called from READ_TAB2D
+cpb   not called from READ_POLY
 
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: IR, ISW, IFTFL, INEP, KNEP, IUNOUT
@@ -2262,6 +2411,8 @@ c  "other reaction", e.g. population rate coefficient, density ratio
            call eirene_free_fit_form (rea)
            deallocate (rea)
         END IF
+
+cdr probably obsolete:
 c  photonic reaction
         IF (REACDAT(IR)%LPHR) THEN
            rea => REACDAT(IR)%PHR
@@ -2320,9 +2471,10 @@ c  photonic reaction
 
 
       SUBROUTINE EIRENE_ALLOC_FIT_FORM (RP)
-c  RP = REACDAT(ir)%???
+cdr
+c  RP = REACDAT(IR)%TYP%...   with TYP= POT, CRS, RTC, ...
 C  Initialize pointers (NULLIFY) and 
-c  set default asymptotics, for reacdat(ir)%???%.....
+c  set default asymptotics, for reacdat(ir)%typ%...
 
       TYPE(FIT_FORMS),POINTER :: RP
 
@@ -2330,7 +2482,7 @@ c  set default asymptotics, for reacdat(ir)%???%.....
         ALLOCATE (RP)
         NULLIFY (RP%POLY)
         NULLIFY (RP%ADAS)
-        NULLIFY (RP%LINE)
+        NULLIFY (RP%LINE)  ! this should not be here. It is not a data fit type
         NULLIFY (RP%TAB1D)
         NULLIFY (RP%CRM)
 
@@ -2465,6 +2617,7 @@ c  EL post-collision energetics
       CALL MPI_BCAST (NRELI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NRRCI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NRBGI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+
       CALL MPI_BCAST (NAEII,NATM,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NMEII,NMOL,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NIEII,NION,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -2478,6 +2631,7 @@ c  EL post-collision energetics
       CALL MPI_BCAST (NMPII,NMOL,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NIPII,NION,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NPRCI,NPLS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+
       CALL MPI_BCAST (NAEIIM,NATM,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NMEIIM,NMOL,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NIEIIM,NION,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -2491,10 +2645,12 @@ c  EL post-collision energetics
       CALL MPI_BCAST (NMPIIM,NMOL,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NIPIIM,NION,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NPRCIM,NPLS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+
       CALL MPI_BCAST (NPBGKA,NATM,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NPBGKM,NMOL,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NPBGKI,NION,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NPBGKP,2*NPLS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+
       CALL MPI_BCAST (NATPRC,NREC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NMLPRC,NREC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NIOPRC,NREC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -2505,6 +2661,7 @@ c  EL post-collision energetics
       CALL MPI_BCAST (NIOPRC_2,NREC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NPLPRC_2,NREC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NPHPRC_2,NREC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+
       CALL MPI_BCAST (N1STX,3*NRCX,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (N2NDX,3*NRCX,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NSEACX,5*NATM*NPLS,MPI_INTEGER,
@@ -2542,9 +2699,9 @@ cdr  FLAGS FOR EI TYPE REACTIONS:
       CALL MPI_BCAST (NELREI,NREI,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (JELREI,NREI,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NHVREI,NREI,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-cdr  FLAGS FOR OT TYPE REACTIONS:
-      CALL MPI_BCAST (NELRPH,NRPH,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+cdr  FLAGS FOR PH TYPE REACTIONS:
       CALL MPI_BCAST (NREAPH,NRPH,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NELRPH,NRPH,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       CALL MPI_BCAST (IPATEI,NREI*NATMP,MPI_INTEGER,
@@ -2563,32 +2720,36 @@ cdr  FLAGS FOR OT TYPE REACTIONS:
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (IPPLPI,NRPI*NPLSP,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
-c
+c  CX
       CALL MPI_BCAST (LGACX,NATMP*(NRCX+1)*2,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LGMCX,NMOLP*(NRCX+1)*2,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LGICX,NIONP*(NRCX+1)*2,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
+c  EI
       CALL MPI_BCAST (LGAEI,NATMP*(NREI+1),MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LGMEI,NMOLP*(NREI+1),MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LGIEI,NIONP*(NREI+1),MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
+c  EL
       CALL MPI_BCAST (LGAEL,NATMP*(NREL+1)*2,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LGMEL,NMOLP*(NREL+1)*2,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LGIEL,NIONP*(NREL+1)*2,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (LGPRC,NPLSP*(NREC+1),MPI_INTEGER,
-     .                0,MPI_COMM_WORLD,ier)
+c  PI
       CALL MPI_BCAST (LGAPI,NATMP*(NRPI+1)*2,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LGMPI,NMOLP*(NRPI+1)*2,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LGIPI,NIONP*(NRPI+1)*2,MPI_INTEGER,
+     .                0,MPI_COMM_WORLD,ier)
+c  RC
+      CALL MPI_BCAST (LGPRC,NPLSP*(NREC+1),MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
@@ -2823,6 +2984,7 @@ c  data for photon line transport
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (ISCDEPH,NPHOT*NREAC,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
+
       CALL MPI_BCAST (IESTMA,NATM*NREAC,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (IESTMM,NMOL*NREAC,MPI_INTEGER,
@@ -2833,6 +2995,7 @@ c  data for photon line transport
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (IESTMPH,NPHOT*NREAC,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
+
       CALL MPI_BCAST (IBGKA,NATM*NREAC,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (IBGKM,NMOL*NREAC,MPI_INTEGER,
@@ -2861,6 +3024,7 @@ cdr something for the internal CRM options, of blocks 4,12 here: H_Colrad.
 !++++++ IYS 27.02.2015
 
       SUBROUTINE EIRENE_BROAD_FIT_FORM (RP, ME)
+cdr  input:  pointer RP = REACDAT(IR)%TYP%.... with TYP = POT, CRS, RTC,...
       USE EIRMOD_MPI
       USE EIRMOD_COMPRT, ONLY : IUNOUT
       IMPLICIT NONE
@@ -2873,6 +3037,8 @@ cdr broadcast A&M data, general for a process, independent of data structure RP%
       CALL MPI_BCAST (RP%IFIT,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
+
+cdr broadcast data for asymptotic extrapolations
       CALL MPI_BCAST (RP%JFEX1MN,1,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (RP%JFEX1MX,1,MPI_INTEGER,
@@ -2901,6 +3067,9 @@ cdr broadcast A&M data, general for a process, independent of data structure RP%
 C.....................................................................
       IF (RP%IFIT < 0) THEN
 C DATA FOR PHOTONIC LINE SHAPE AND LINE TRANSPORT
+cdr 2020:  this code is mostly obsolete. This structure stems from high pressure
+cdr        gas discharges (lighting) applications 2000-2002.
+cdr        Mostly irrelevant for radiation tranfer in fusion applications.
         IF (ME .NE. 0) THEN
           IF (.NOT.ASSOCIATED(RP%LINE)) ALLOCATE (RP%LINE)  ! IYS
         ENDIF
@@ -3064,7 +3233,7 @@ C.....................................................................
 
 C.....................................................................
 C     ELSE IF (RP%IFIT == 4) THEN
-! 1D TABLES. E.G. FORMERLY: HYDKIN DATA:  moved to "snippets_hydkin"
+cdr 1D TABLES. E.G. FORMERLY: HYDKIN DATA: out.  moved to "snippets_hydkin"
 
 C.....................................................................
       ELSE IF (RP%IFIT == 5 ) THEN

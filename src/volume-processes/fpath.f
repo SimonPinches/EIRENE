@@ -42,6 +42,7 @@ cdr             Removed need for cross-sections, when
 cdr             we have only (H.2) Maxwellian rates anyway.
 cdr             Simpler (in velopi.f) and also more consistent.
 cdr             tbd: full modcol(4,4,..) options for PI processes
+cdr Feb. 22:    remove unused leading dimension in LGX... arrays.
 
 C
       FUNCTION EIRENE_FPATH (K,CFLAG,JCOU,NCOU)
@@ -182,9 +183,9 @@ C
 C  ELECTRON IMPACT COLLISION - RATE - COEFFICIENT
 C  NO MASS SCALING NEEDED FOR BULK ELECTRONS
 C
-      IF (LGXEI(IXSPZ,0).EQ.0.OR.LGVAC(K,NPLS+1)) GOTO 30
+      IF (LGXEI(0).EQ.0.OR.LGVAC(K,NPLS+1)) GOTO 30
       DO 10 IXEI=1,NXEII
-        IREI=LGXEI(IXSPZ,IXEI)
+        IREI=LGXEI(IXEI)
         IF (MODCOL(1,2,IREI).EQ.1) THEN
           IF (NSTORDR >= NRAD) THEN
             SIGVEI(IREI)=TABEI1(IREI,K)
@@ -216,10 +217,10 @@ C
 C  GENERAL ION IMPACT ON TEST PARTICLE IXSPZ, BULK ION SPEZIES IPLS=1,NPLSI
 C  30--->40
 C
-   30 IF (LGXPI(IXSPZ,0,0).EQ.0) GOTO 40
+   30 IF (LGXPI(0,0).EQ.0) GOTO 40
       DO 36 IXPI=1,NXPII
-        IRPI=LGXPI(IXSPZ,IXPI,0)
-        IPLS=LGXPI(IXSPZ,IXPI,1)
+        IRPI=LGXPI(IXPI,0)
+        IPLS=LGXPI(IXPI,1)
         IPLSV=MPLSV(IPLS)
         IPLSTI=MPLSTI(IPLS)
         IF (LGVAC(K,IPLS)) GOTO 36
@@ -329,6 +330,8 @@ C
         SIGPIT=SIGPIT+SIGVPI(IRPI)
 C
 C  2.C BULK ION ENERGY LOSS PER COLLISION (EV)
+
+cdr  here should come LEX condition, as well as iest(..,3)=0 (tracklength) condition 
 C
 cdr     IF (NSTORDR >= NRAD) THEN
 cdr       ESIGPI(IRPI,4)=EPLPI3(IRPI,K,1)
@@ -351,10 +354,10 @@ C  WITH BULK IONS OF SPEZIES IPLS=1,NPLSI
 C  40--->50
 C
    40 CONTINUE
-      IF (LGXCX(IXSPZ,0,0).EQ.0.OR.LGVAC(K,0)) GOTO 50
+      IF (LGXCX(0,0).EQ.0.OR.LGVAC(K,0)) GOTO 50
       DO 41 IXCX=1,NXCXI
-        IRCX=LGXCX(IXSPZ,IXCX,0)
-        IPLS=LGXCX(IXSPZ,IXCX,1)
+        IRCX=LGXCX(IXCX,0)
+        IPLS=LGXCX(IXCX,1)
         IPLSTI=MPLSTI(IPLS)
         IPLSV=MPLSV(IPLS)
         IF (LGVAC(K,IPLS)) GOTO 41
@@ -543,10 +546,10 @@ C  ELASTIC COLLISIONS OF TEST PARTICLE IXSPZ  WITH BULK IONS OF SPEZIES IPLS=1,N
 C  50--->60
 C
    50 CONTINUE
-      IF (LGXEL(IXSPZ,0,0).EQ.0.OR.LGVAC(K,0)) GOTO 60
+      IF (LGXEL(0,0).EQ.0.OR.LGVAC(K,0)) GOTO 60
       DO 51 IXEL=1,NXELI
-        IREL=LGXEL(IXSPZ,IXEL,0)
-        IPLS=LGXEL(IXSPZ,IXEL,1)
+        IREL=LGXEL(IXEL,0)
+        IPLS=LGXEL(IXEL,1)
         IPLSTI=MPLSTI(IPLS)
         IPLSV=MPLSV(IPLS)
         IBGK=NPBGKP(IPLS,1)
@@ -660,7 +663,8 @@ C  MODEL 1:
 C  MEAN ENERGY FROM DRIFTING MAXWELLIAN
 C  (ONLY NEEDED FOR PRE COLLISION ENERGY TRACKLENGTH ESTIMATOR)
 C  ION SAMPLING FROM MAXWELLIAN
-          IF (NSTORDR >= NRAD) THEN
+cdr if (lex .and. .....), analog to CX
+           IF (NSTORDR >= NRAD) THEN
             ESIGEL(IREL,1)=EPLEL3(IREL,K,1)
           ELSE
 ! CALCULATE ENERGY LOSS RATE COEFFICIENT ON THE FLY
@@ -737,7 +741,7 @@ C  CURRENTLY: CUT-OFF AT 1E-10 TIMES SIGMAX
 C
       IF (SIGEIT.GT.0._DP) THEN
         DO IXEI=1,NXEII
-          IREI=LGXEI(IXSPZ,IXEI)
+          IREI=LGXEI(IXEI)
           IF (SIGVEI(IREI) .LE. SIGMAX*1.D-10) THEN
             SIGEIT=SIGEIT-SIGVEI(IREI)
             SIGVEI(IREI) = 0.D0
@@ -747,7 +751,7 @@ C
 
       IF (SIGPIT.GT.0._DP) THEN
         DO IXPI=1,NXPII
-          IRPI=LGXPI(IXSPZ,IXPI,0)
+          IRPI=LGXPI(IXPI,0)
           IF (SIGVPI(IRPI) .LE. SIGMAX*1.D-10) THEN
             SIGPIT=SIGPIT-SIGVPI(IRPI)
             SIGVPI(IRPI) = 0.D0
@@ -757,7 +761,7 @@ C
 
       IF (SIGCXT.GT.0._DP) THEN
         DO IXCX=1,NXCXI
-          IRCX=LGXCX(IXSPZ,IXCX,0)
+          IRCX=LGXCX(IXCX,0)
           IF (SIGVCX(IRCX) .LE. SIGMAX*1.D-10) THEN
             SIGCXT=SIGCXT-SIGVCX(IRCX)
             SIGVCX(IRCX) = 0.D0
@@ -767,7 +771,7 @@ C
 C
       IF (SIGELT.GT.0._DP) THEN
         DO IXEL=1,NXELI
-          IREL=LGXEL(IXSPZ,IXEL,0)
+          IREL=LGXEL(IXEL,0)
           IF (SIGVEL(IREL) .LE. SIGMAX*1.D-10) THEN
             SIGELT=SIGELT-SIGVEL(IREL)
             SIGVEL(IREL) = 0.D0

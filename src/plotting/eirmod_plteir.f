@@ -255,6 +255,7 @@ C  REDO ALGEBRAIC TALLY IN CASE NFILEN=2 OR NFILEN=7
                 ALGV(IALV,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
   105         CONTINUE
             ENDIF
+
             ITL=IABS(JTAL)
 C  PLOT OUTPUT TALLIES ONLY FOR STRATA WITH TWO OR MORE HISTORIES
             IF (JTAL.GT.0.AND.XMCP(ISTRA).LE.1) GOTO 10000
@@ -305,16 +306,25 @@ cdr  sum over species: this is nonsense in case of intensive quantities,
 cdr                    such as Ti,V_in,
 cdr                    and also in case of derivatives.
 cdr  tbd:  summing with proper weighting, as in outtal.f
+                if (NF .gt. 1) then
+                  write (iunout,*) 'DR: wrong code in plteir '
+                  write (iunout,*) 'ITAL, ISPZ ',itl,ispz
+                  write (iunout,*) 'plot abandonned for safety '
+                  goto 110
+                endif
                 SELECT CASE (ITL)
                 CASE (1)
                   VECTOR(1:NSBOX,ICURV) = TEIN(1:NSBOX)
                 CASE (2)
+cdr  this makes no sense. Ti cannot be summed.
                   VECTOR(1:NSBOX,ICURV) = SUM(TIIN(1:NF,1:NSBOX),1)
                 CASE (3)
                   VECTOR(1:NSBOX,ICURV) = DEIN(1:NSBOX)
                 CASE (4)
                   VECTOR(1:NSBOX,ICURV) = SUM(DIIN(1:NF,1:NSBOX),1)
                 CASE (5)
+cdr  summing should use density weighting.
+cdr  clearly wrong. 
                   VECTOR(1:NSBOX,ICURV) = SUM(VXIN(1:NF,1:NSBOX),1)
                 CASE (6)
                   VECTOR(1:NSBOX,ICURV) = SUM(VYIN(1:NF,1:NSBOX),1)
@@ -371,6 +381,7 @@ cdr  tbd:  summing with proper weighting, as in outtal.f
                   CALL EIRENE_LEER(1)
                   GOTO 10000
                 END SELECT
+cdr  done with sum over species index
 
               ELSEIF (ISPZ.GT.0.AND.ISPZ.LE.NF) THEN
 cdr  individual species indices
@@ -468,6 +479,8 @@ cdr  plot output tallies
 
               IF (ISPZ.EQ.0) THEN
 c  sum over species
+c  output tallies are also intensive quantities, must be volume weighted.
+c  But this cancels here. No density weighting as e.g. for Ti Vi input tallies.
 
                 DO 122 K=1,NFT
                   DO I=1,NRAD

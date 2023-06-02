@@ -852,12 +852,11 @@ C   DDN/SN cases
 C   ANFANGSPUNKT DES ERSTEN TEILSTUECKS DES I-TEN POLYGONS
 C   START OF FIRST POLOIDAL SECTION OF THE GRID
       NPOINT(1,1)=1
-C   ENDPUNKT DES ERSTEN TEILSTUECKS DES I-TEN POLYGONS
+      IF (NNCUT.LE.1) THEN
+       NPOINT(2,1)=dimxh+1
+      ELSE
+       IF (nxcut2(1).LE.nxcut1(2)) THEN
 C   Fill array of cuts in the case of a Low field Snowflake/XPT
-      IF (nxcut2(1).LE.nxcut1(2)) THEN
-       IF (NNCUT.LE.1) THEN
-         NPOINT(2,1)=dimxh+1
-       ELSE
         NPOINT(2,1)=nxcut1(1)+1
         NPOINT(1,2)=nxcut1(1)+2
         NPOINT(2,2)=nxcut1(4)+2
@@ -872,15 +871,11 @@ C   Fill array of cuts in the case of a Low field Snowflake/XPT
           NPOINT(1,6)=nxcut1(3)+6-NWISO
           NPOINT(2,6)=dimxh+6-NWISO
         ENDIF
-       ENDIF
-       TARGINDEX = 4
+        TARGINDEX = 4
+       ELSE
 C   Fill array of cuts in the case of a ddn
-      ELSE
-       IF (NNCUT.LE.1) THEN
 C   ENDPUNKT DES ERSTEN TEILSTUECKS DES I-TEN POLYGONS
 C   END OF FIRST POLOIDAL SECTION OF THE GRID
-        NPOINT(2,1)=dimxh+1
-       ELSE
         NPOINT(2,1)=nxcut1(1)+1
 C   ANFANGSPUNKT DES ZWEITEN TEILSTUECKS DES I-TEN POLYGONS
 C   START OF SECOND POLOIDAL SECTION OF THE GRID
@@ -916,8 +911,8 @@ C   ENDPUNKT DES SECHSTEN TEILSTUECKS DES I-TEN POLYGONS
 C   END OF SIXTH POLOIDAL SECTION OF THE GRID
           NPOINT(2,6)=dimxh+6-NWISO
         ENDIF
-      ENDIF
-       TARGINDEX = 3
+        TARGINDEX = 3
+       ENDIF
       ENDIF
 C
 C   CHECK THAT ARRAY SIZES DEDUCED FROM fort.30 MATCH THOSE FROM INPUT FILE

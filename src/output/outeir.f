@@ -596,7 +596,7 @@ C   GENERATION LIMIT
         CALL EIRENE_MASR1 ('TOTAL=  ',PGENAI(0,ISTRA))
         CALL EIRENE_LEER(1)
       ENDIF
-C   ESCAPING FLUX
+C   ESCAPING FLUX, OR CENSUS
       IF (.NOT.LPOTAT) THEN
         IF (LMSPOTAT) THEN
           CALL EIRENE_MASAGE('ATOMIC EFFLUX ONTO THE SURFACES')
@@ -2343,6 +2343,9 @@ C
       CALL EIRENE_LEER(1)
 C  PRIMARY SOURCE ORIGINATING FROM BULK PARTICLES
       IF (ANY(WTOTP(1:NPLS,ISTRA).NE.0.D0)) THEN
+cdr probably a redundancy here: wtotp and pppli are identical most often.
+cdr Exception: pppl contains bulk secondaries (products) from initial bulk,
+cdr wtotp is initial bulk reactant only (for source scaling)
         IF (.NOT.LPPPL) THEN
           IF (LMSPPPL) THEN
             CALL EIRENE_MASAGE('BULK PARTICLE FLUX')
@@ -2679,6 +2682,7 @@ C
 C
       CALL EIRENE_HEADNG ('PARTICLE FLUX BALANCE (AMP), ELECTRONS',39)
       CALL EIRENE_LEER(1)
+cdr  wtote exists, but tally ppel and ppeli not. So use wtote here
       IF (WTOTE(ISTRA).NE.0.D0) THEN
         CALL EIRENE_MASAGE
      .   ('BULK ELECTRON PARTICLE FLUX BEING NEUTRALIZED')
@@ -2858,8 +2862,8 @@ C   DETAILED OUTPUT OF FLUXES ONTO AND FROM SURFACES
 
       IF (SUM(ABS(CEMETERYS)) > 0._DP) THEN
         CALL EIRENE_LEER(2)
-        WRITE (iunout,*) ' CEMETERYS != 0'
-        WRITE (iunout,*) ' CHECK SUBROUTINE EIRENE_UPDATE FOR BUGS!'
+        WRITE (iunout,*) ' SURFACE TALLIES: CEMETERYS != 0'
+        WRITE (iunout,*) ' CHECK SCORING IN UPDATE_SURFACE FOR BUGS'
         CALL EIRENE_LEER(2)
       END IF
 C

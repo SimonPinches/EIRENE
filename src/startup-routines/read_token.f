@@ -1,6 +1,10 @@
       subroutine EIRENE_read_token (inchar, divide, outchar, itok, ier,
      .  lreal)
-
+cdr
+cdr  comments ?  in ? out?
+cdr  seems to be used in many places. 
+cdr  perhaps move to general purpose "assistant" section
+cdr
       implicit none
 
       character(len=*), intent(in) :: inchar, divide
