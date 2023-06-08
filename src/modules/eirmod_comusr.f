@@ -12,13 +12,21 @@ cdr             missing:  dealloc_corners  ??
 cdr             remove redundant tally LGDFT (also from LUSR)
 cdr  jan 19  :  nains, naint moved here, formerly: ccoupl
 cdr             input tally no. 25 added: PSI, poloidal magn. flux.
-cdr  jan 20  :  fix smoothing options for some interrelated input tallies
-cdr             in particular for vector components of the same physical quantity.
-cdr             Comments...
+cdr  jan 20  :  comments, cleanup, and logical connection
+cdr             established (started) for physically connected tallies.
+cdr             E.g. for vector components of the same field,
+cdr             wrt. smoothing options and input tally disabling.
+cdr             This is WIP, unfinished.
+cdr             See variables LDSMO, LVSMO,  LBSMO,  LESMO.
+cdr             It is still not ensured that LIVTALI and LSMOPRO flags
+cdr             lead to physically or mathematically meaningful
+cdr             setting always.
 cdr  may 20  :  remove unused variables: natmi_in, nmoli_in,...
 cdr             add npls_fix:  number of background species kept fixed
 cdr             in eirene. Only npls_fix+1,...,npls are stored stream fort.13shrt,
 cdr             for iterations (BGK, Photons,...)
+cdr jan.22:     generation limit parameters made target, for unified
+cdr             routine COLLIDE.f
 
       MODULE EIRMOD_COMUSR
 
@@ -70,7 +78,7 @@ c  derived from primary input profils, in subr. PLASMA_DERIV
 c  (strictly: tally no. -3: DEIN, is also a derived tally) :
      R        BXPERP(:),      BYPERP(:),
      R        BVIN(:,:),      PARMOM(:,:),    EDRIFT(:,:),
-c  B field fluxfunction PSI, corresponds to POT for electric field
+c  B field fluxfunction PSI, corresponds to POT tally for electric field
      R        PSI(:),         ZIIN(:,:),      FREE27(:),
      R        FREE28(:),      FREE29(:),      FREE30(:),
 
@@ -115,7 +123,7 @@ c
 
 c  pointer to LIVTALI: active or inactive input tallies
       LOGICAL, PUBLIC, POINTER, SAVE ::
-c  background, drifting maxwellian parameters
+c  background, drifting Maxwellian parameters
      L         LTEIN,      LTIIN,      LDEIN,     LDIIN,
      L         LVXIN,      LVYIN,      LVZIN,
 c  magn. field
@@ -137,6 +145,7 @@ c  free tallies, unused
      L         LFREE28,    LFREE29,    LFREE30,
 
 c  gradient tallies
+c  background, drifting maxwellian parameters
      L         LDTEDX,     LDTEDY,     LDTEDZ,
      L         LDTIDX,     LDTIDY,     LDTIDZ,
      L         LDDEDX,     LDDEDY,     LDDEDZ,
@@ -150,6 +159,9 @@ c  magn. field
      L         LDBYDX,     LDBYDY,     LDBYDZ,
      L         LDBZDX,     LDBZDY,     LDBZDZ,
      L         LDBFDX,     LDBFDY,     LDBFDZ,
+C  gradient of PSI-function tally (for poloidal magn. field)
+     L         LDPSIDX,    LDPSIDY,    LDPSIDZ,
+c
      L         LDADINDX,   LDADINDY,   LDADINDZ,
      L         LDVOLDX,    LDVOLDY,    LDVOLDZ,
      L         LDWGHTDX,   LDWGHTDY,   LDWGHTDZ,
@@ -158,6 +170,7 @@ c  electr. field
      L         LDEYDX,     LDEYDY,     LDEYDZ,
      L         LDEZDX,     LDEZDY,     LDEZDZ,
      L         LDEFDX,     LDEFDY,     LDEFDZ,
+C  gradient of electric potential
      L         LDPOTDX,    LDPOTDY,    LDPOTDZ,
 C  gradients of derived tallies
      L         LDBXPERPDX, LDBXPERPDY, LDBXPERPDZ,
@@ -165,8 +178,6 @@ C  gradients of derived tallies
      L         LDBVINDX,   LDBVINDY,   LDBVINDZ,
      L         LDPARMOMDX, LDPARMOMDY, LDPARMOMDZ,
      L         LDEDRIFTDX, LDEDRIFTDY, LDEDRIFTDZ,
-C  gradient of PSI-function tally (for poloidal magn. field)
-     L         LDPSIDX,    LDPSIDY,    LDPSIDZ,
 C  gradient of average ion charge
      L         LDZIDX,     LDZIDY,     LDZIDZ,
 C  gradient of free tallies
@@ -180,7 +191,7 @@ cdr Jan. 2020
 cdr try to enforce physical consisteny in new option: living "input" tallies,
 cdr in case of physically related tallies, e.g. vector components,
 cdr flow-field, B-field, E-field  fields.
-cdr In case of vector fieLds, all components (and their modulus) must be
+cdr In case of vector fields, all components (and their modulus) must be
 cdr in the same "smoothing category"
      L         LDIN, LVIN,  LBIN,  LEIN
 
@@ -236,6 +247,7 @@ c  for FEM-routines (interpolations, gradients,...)
 C  MUSR, INTEGER
       INTEGER, PUBLIC, SAVE ::
      I         NSPH  , NPHOTI, NPHOTIM,
+cdr NATMA is something specific to SOLPS. Should not be here.
      I         NSPA  , NATMI,  NATMIM,  NATMA,
      I         NSPAM , NMOLI,  NMOLIM,
      I         NSPAMI, NIONI,  NIONIM, 
@@ -243,13 +255,21 @@ C  MUSR, INTEGER
      I         NSNVI,  NCPVI,  NADVI,   NBGVI,
      I         NALVI,  NCLVI,  NADSI,   NALSI, NAINI, NBITS
       INTEGER, ALLOCATABLE, PUBLIC, SAVE ::
-     I         NMASSA(:), NCHARA(:), NFOLA(:),  NGENA(:),
-     I         NMASSM(:), NCHARM(:), NFOLM(:),  NGENM(:),
-     I         NMASSI(:), NCHARI(:), NCHRGI(:), NFOLI(:), NGENI(:),
+     I         NMASSA(:), NCHARA(:), NFOLA(:),
+     I         NMASSM(:), NCHARM(:), NFOLM(:),
+     I         NMASSI(:), NCHARI(:), NCHRGI(:), NFOLI(:),
      I         NMASSP(:), NCHARP(:), NCHRGP(:),
-     I         NFOLPH(:), NGENPH(:),
+     I         NFOLPH(:),
      I         NPRT(:),   ISPEZ(:,:,:,:,:,:),   ISPEZI(:,:),
      I         MPLSTI(:), MPLSV(:)
+
+      INTEGER, ALLOCATABLE, TARGET, PUBLIC, SAVE ::
+     I         NGENA(:), NGENM(:), NGENI(:), NGENPH(:)
+
+!     POINTER FOR UNIFIED SUBROUTINES
+      INTEGER, POINTER, PUBLIC, SAVE :: NGENX
+!$OMP  THREADPRIVATE(NGENX)
+
       INTEGER, ALLOCATABLE, PUBLIC, SAVE ::
      I         ISPZ_BACK(:,:)
 
@@ -275,6 +295,9 @@ C
      L         LBVSMO,     LPARMOMSMO, LEDRIFTSMO,
      L         LPSISMO,    LZISMO,     LFREE27SMO,
      L         LFREE28SMO, LFREE29SMO, LFREE30SMO
+
+cdr What about smoothed gradient input tallies?
+
 
       LOGICAL, PUBLIC, SAVE ::
 cdr Jan. 2020
@@ -1369,6 +1392,8 @@ cdr  ncorner is set in GRID.f (levgeo=4,5) or in SNEIGH.f (levgeo=1,2,3)
       END IF
 
       IF (LDSMO) THEN
+cdr Enforce smoothing interpolations for all charged particles
+cdr incl. electrons, in order to not wreck quasineutrality. 
         IF (LDESMO) THEN
           DEINCORNER => CORNER_PROFILES(:,NADDCOR(3)+1)
         ELSE
@@ -1830,13 +1855,13 @@ cdr oct 18: initialization of input volumetric tallies moved to ICAL==2
         LDEIN      => LIVTALI(3)
         LDIIN      => LIVTALI(4)
 cdr
-        ldin = ldein.and.ldiin
+        LDIN = ldein.and.ldiin
 c
         LVXIN      => LIVTALI(5)
         LVYIN      => LIVTALI(6)
         LVZIN      => LIVTALI(7)
 cdr
-        lvin = lvxin.and.lvyin.and.lvzin
+        LVIN = lvxin.and.lvyin.and.lvzin
 c
         LBXIN      => LIVTALI(8)
         LBYIN      => LIVTALI(9)
@@ -1844,7 +1869,7 @@ c
         LBFIN      => LIVTALI(11)
         LPSI       => LIVTALI(25)
 cdr
-        lbin = lbxin.and.lbyin.and.lbzin.and.lbfin  !  psi ?
+        LBIN = lbxin.and.lbyin.and.lbzin.and.lbfin  !  psi ?
 c
         LADIN      => LIVTALI(12)
         LEDRIFT    => LIVTALI(13)
@@ -1859,7 +1884,7 @@ c
         LEFIN      => LIVTALI(21)
         LPOT       => LIVTALI(22)
 cdr
-        lein = lexin.and.leyin.and.lezin.and.lefin  !  pot ?
+        LEIN = lexin.and.leyin.and.lezin.and.lefin  !  pot ?
 c
 
         LBVIN      => LIVTALI(23)
@@ -1878,12 +1903,14 @@ c
         LDTIDX     => LIVTALI(34)
         LDTIDY     => LIVTALI(35)
         LDTIDZ     => LIVTALI(36)
+
         LDDEDX     => LIVTALI(37)
         LDDEDY     => LIVTALI(38)
         LDDEDZ     => LIVTALI(39)
         LDDIDX     => LIVTALI(40)
         LDDIDY     => LIVTALI(41)
         LDDIDZ     => LIVTALI(42)
+
         LDVXDX     => LIVTALI(43)
         LDVXDY     => LIVTALI(44)
         LDVXDZ     => LIVTALI(45)
@@ -1893,6 +1920,7 @@ c
         LDVZDX     => LIVTALI(49)
         LDVZDY     => LIVTALI(50)
         LDVZDZ     => LIVTALI(51)
+
         LDBXDX     => LIVTALI(52)
         LDBXDY     => LIVTALI(53)
         LDBXDZ     => LIVTALI(54)

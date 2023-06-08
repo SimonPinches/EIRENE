@@ -392,18 +392,17 @@ csw
      .                MPI_COMM_WORLD,ier)
 
         IF (ME > 0) THEN
-csw
-!pb       if(.not.allocated(tdmpar)) then
+
           if(.not.associated(tdmpar(ipls)%tdm)) then
-csw
+
             ALLOCATE (TDMPAR(IPLS)%TDM)
             ALLOCATE (TDMPAR(IPLS)%TDM%ISP(NREF))
             ALLOCATE (TDMPAR(IPLS)%TDM%ITP(NREF))
             ALLOCATE (TDMPAR(IPLS)%TDM%ISTR(NREF))
             ALLOCATE (TDMPAR(IPLS)%TDM%IRC(NREF))
-csw
+
           endif
-csw
+
           TDMPAR(IPLS)%TDM%NRE = NREF
           TDMPAR(IPLS)%TDM%G_BOLTZ = RHELP(1)
           TDMPAR(IPLS)%TDM%DELTAE = RHELP(2)

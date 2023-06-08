@@ -1,4 +1,5 @@
-C
+C   Back to widely used eirene variable naming convention: IX-1 = IXM, 
+C   for integers IX.
 C
       SUBROUTINE EIRENE_PRTTLS
      .                 (T1,T2,T3,PROF,NR,NP,NT,NB,NTT,IFLAG,IFILE,
@@ -25,7 +26,7 @@ C
       INTEGER :: K(6)
       INTEGER :: JR, JP, JT, IJ, N1DEL, N2DEL, IADD, IB, I,
      .           IC, IT, IP, NRM, NS, NTM, NPM, IRAD, IST, NCOL, IR,
-     .           IRN, IPN, ITN
+     .           IR2M, IP2M, IT2M
       CHARACTER(1) :: TL(72)
 
       DATA TL/72*'='/
@@ -67,9 +68,9 @@ C
       NRM=MAX(1,NR-1)
       NPM=MAX(1,NP-1)
       NTM=MAX(1,NT-1)
-      IRN=MAX(1,IR2-1)
-      IPN=MAX(1,IP2-1)
-      ITN=MAX(1,IT2-1)
+      IR2M=MAX(1,IR2-1)
+      IP2M=MAX(1,IP2-1)
+      IT2M=MAX(1,IT2-1)
       N1DEL=0
       IF (NP.GT.1.OR.NT.GT.1) N1DEL=NR
       N2DEL=0
@@ -107,11 +108,11 @@ C
         WRITE (iunout,82)
         IF (NR.GT.1) WRITE (iunout,881)
         IF (NR.GT.1) CALL EIRENE_LEER(1)
-        DO 2 JT=IT1,ITN
+        DO 2 JT=IT1,IT2M
           WRITE (iunout,77) JT
           IJ=IP1
           IP=0
-  220     DO 222 JP=IJ,IPN
+  220     DO 222 JP=IJ,IP2M
             IC=NR+((JP-1)+(JT-1)*N2DEL)*N1DEL+IADD
             IP=IP+1
             IJ=IJ+1
@@ -122,7 +123,7 @@ C
   223     CONTINUE
           WRITE (iunout,6) (K(I),H(I),I=1,IP)
           IP=0
-          IF (IJ.LE.IPN) GOTO 220
+          IF (IJ.LE.IP2M) GOTO 220
 C  NEXT SEGMENT
           CALL EIRENE_LEER(2)
     2   CONTINUE
@@ -135,11 +136,11 @@ C
         WRITE (iunout,81)
         IF (NT.GT.1) WRITE (iunout,883)
         IF (NT.GT.1) CALL EIRENE_LEER(1)
-        DO 3 JP=IP1,IPN
+        DO 3 JP=IP1,IP2M
           WRITE (iunout,7) JP
           IJ=IR1
           IR=0
-  330     DO 333 JR=IJ,IRN
+  330     DO 333 JR=IJ,IR2M
             IC=JR+((JP-1)+(NT-1)*N2DEL)*N1DEL+IADD
             IR=IR+1
             IJ=IJ+1
@@ -150,7 +151,7 @@ C
   334     CONTINUE
           WRITE (iunout,6) (K(I),H(I),I=1,IR)
           IR=0
-          IF (IJ.LE.IRN) GOTO 330
+          IF (IJ.LE.IR2M) GOTO 330
 C  NEXT SEGMENT
           CALL EIRENE_LEER(2)
     3   CONTINUE
@@ -163,11 +164,11 @@ C
         WRITE (iunout,81)
         IF (NP.GT.1) WRITE (iunout,882)
         IF (NP.GT.1) CALL EIRENE_LEER(1)
-          DO 4 JT=IT1,ITN
+          DO 4 JT=IT1,IT2M
           WRITE (iunout,77) JT
           IJ=IR1
           IR=0
-  440     DO 444 JR=IJ,IRN
+  440     DO 444 JR=IJ,IR2M
             IC=JR+((NP-1)+(JT-1)*N2DEL)*N1DEL+IADD
             IR=IR+1
             IJ=IJ+1
@@ -178,7 +179,7 @@ C
   445     CONTINUE
           WRITE (iunout,6) (K(I),H(I),I=1,IR)
           IR=0
-          IF (IJ.LE.IRN) GOTO 440
+          IF (IJ.LE.IR2M) GOTO 440
 C  NEXT SEGMENT
           CALL EIRENE_LEER(2)
     4   CONTINUE
@@ -200,7 +201,7 @@ C
         IF (NP.GT.1.AND.NT.GT.1) WRITE (iunout,8883)
         IJ=IR1
         IR=0
- 1110   DO 1111 JR=IJ,IRN
+ 1110   DO 1111 JR=IJ,IR2M
           IC=JR+((NP-1)+(NT-1)*N2DEL)*N1DEL+IADD
           IR=IR+1
           IJ=IJ+1
@@ -211,7 +212,7 @@ C
  1112   CONTINUE
         WRITE (iunout,6) (K(I),H(I),I=1,IR)
         IR=0
-        IF (IJ.LE.IRN) GOTO 1110
+        IF (IJ.LE.IR2M) GOTO 1110
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) TL
       ENDIF
@@ -225,7 +226,7 @@ C
         IF (NR.GT.1.AND.NT.GT.1) WRITE (iunout,8882)
         IJ=IP1
         IP=0
- 1220   DO 1222 JP=IJ,IPN
+ 1220   DO 1222 JP=IJ,IP2M
           IC=NR+((JP-1)+(NT-1)*N2DEL)*N1DEL+IADD
           IP=IP+1
           IJ=IJ+1
@@ -236,7 +237,7 @@ C
  1223   CONTINUE
         WRITE (iunout,6) (K(I),H(I),I=1,IP)
         IP=0
-        IF (IJ.LE.IPN) GOTO 1220
+        IF (IJ.LE.IP2M) GOTO 1220
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) TL
       ENDIF
@@ -250,7 +251,7 @@ C
         IF (NR.GT.1.AND.NP.EQ.1) WRITE (iunout,881)
         IF (NR.EQ.1.AND.NP.GT.1) WRITE (iunout,882)
         IF (NR.GT.1.AND.NP.GT.1) WRITE (iunout,8881)
- 1330   DO 1333 JT=IJ,ITN
+ 1330   DO 1333 JT=IJ,IT2M
           IC=NR+((NP-1)+(JT-1)*N2DEL)*N1DEL+IADD
           IT=IT+1
           IJ=IJ+1
@@ -261,7 +262,7 @@ C
  1334   CONTINUE
         WRITE (iunout,6) (K(I),H(I),I=1,IT)
         IT=0
-        IF (IJ.LE.ITN) GOTO 1330
+        IF (IJ.LE.IT2M) GOTO 1330
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) TL
       ENDIF

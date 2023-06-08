@@ -46,11 +46,16 @@ c   cascading with PI: identical to EI ??
 cdr Nov. 16:   cflag(7,3) --> cflag(7,mstor0)
 cdr            (was already corrected much earlier in SOLPS_4.3 by VK,
 cdr             then correction somehow lost in more recent EIRENE branches)
+cdr Jan. 17: started to separate more clearly the (unfinished) NLCASCAD option from active code
+C            Done for COLATM and EI processes.
+C            wminv activated in colmol for EI processes (analog to colatm)
 cdr May 17: some spelling error corrections in comments adopted from ITER branch
 c            AE: analog, --> BE: analogue, etc..
 cdr Nov.18:  notational cleanup: separate OT from PH processes, e.g.: IROT --> IRPH
+cdr Jan 22:  added parameter DIST, for "fluid-limit" transition
+cdr          DIST:  characteristic cell size (cm)
 
-      SUBROUTINE EIRENE_COLPHOT(CFLAG,COLTYP,KKOUT)
+      SUBROUTINE EIRENE_COLPHOT(CFLAG,COLTYP,DIST,KKOUT)
 C
 C  SAMPLE FROM COLLISION KERNEL C
 C
@@ -89,7 +94,7 @@ C
 
       IMPLICIT NONE
 
-      REAL(DP), INTENT(IN) :: CFLAG(7,MSTOR0)
+      REAL(DP), INTENT(IN) :: CFLAG(7,MSTOR0),DIST
       INTEGER, INTENT(OUT) :: COLTYP
       INTEGER, INTENT(INOUT) :: KKOUT
       REAL(DP) :: ZEP1, SIGSUM, WGHTO, FRSTP, E0O, VELXO,
@@ -104,7 +109,6 @@ CDR  check: are the corresponding arrays PATEI,PMLEI, PIOEI real or integer (1/2
 
 C      INTEGER, ALLOCATABLE :: NAMIEI(:),NAMIPI(:)  ! preparing code synchronisation
 
-cdr unclear. Needed still?
       INTEGER :: iaph,irph,kk,updf,t1
       real(dp):: sump
 

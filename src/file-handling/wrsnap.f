@@ -72,18 +72,33 @@ cdr  fort.15 (census) was written in a previous run.
 cdr  In the present run allocation of storage for census arrays rpartc,ipartc,rpartw
 cdr  is determined by input: --> nprnl
 cdr  make sure that iprnl in previous run was not larger than in present run.
-      IF (NPRNL.LT.IPRNL) THEN
+      IF ((NPRNL.LT.IPRNL).AND.(NPRNL.GT.0)) THEN
         WRITE (IUNOUT,*)
      .     ' ERROR WHEN READING CENSUS ARRAY FOR T-DEP MODE'
         WRITE (IUNOUT,*)
      .     ' OLD CENSUS FILE CANNOT BE READ, BECAUSE NPRNL TOO SMALL'
         CALL EIRENE_MASJ2(' NPRNL, IPRNL=  ',NPRNL,IPRNL)
         CALL EIRENE_EXIT_OWN(1)
+      ELSE IF (NPRNL.LE.0) THEN
+        IPRNL=0
+        FLXCEN=0.0_DP
+        DTIMV=DTIMVN
+        RPARTW(0)=0.0_DP
+        WRITE (IUNOUT,*)
+     .     ' WARNING: '//FORT//'15 FILE WAS FOUND NON-EMPTY'
+        WRITE (IUNOUT,*)
+     .     ' BUT CENSUS ARRAY IS TURNED OFF IN INPUT FILE.'
+        WRITE (IUNOUT,*)
+     .     ' CONTINUING WITH AN EMPTY CENSUS ARRAY.'
+        WRITE (IUNOUT,*)
+     .     ' AVOID THIS BY SETTING NFILEJ TO ZERO.'
       ENDIF
 
-      READ (15+ifoff) ((RPARTC(J,I),J=1,NPARTT),I=1,IPRNL)
-      READ (15+ifoff)  (RPARTW(  I)            ,I=0,IPRNL)
-      READ (15+ifoff) ((IPARTC(J,I),J=1,MPARTT),I=1,IPRNL)
+      IF (NPRNL.GT.0) THEN
+        READ (15+ifoff) ((RPARTC(J,I),J=1,NPARTT),I=1,IPRNL)
+        READ (15+ifoff)  (RPARTW(  I)            ,I=0,IPRNL)
+        READ (15+ifoff) ((IPARTC(J,I),J=1,MPARTT),I=1,IPRNL)
+      END IF
       CLOSE (UNIT=15+ifoff)
 
       FLUX(ISTR)=FLXCEN

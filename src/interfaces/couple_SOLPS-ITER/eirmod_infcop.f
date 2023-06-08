@@ -477,6 +477,7 @@ C
       CALL EIRENE_GEOMD (NDXA,NDYA,NPLP,NR1ST,NP2ND,
      .                   PUX,PUY,PVX,PVY,MSHFRM)
       NPLP_CGRID=NPLP
+      CLOSE(30)
 #ifdef B25_EIRENE
       JTRG=0
       DO IT=1,NTARGI
@@ -1240,17 +1241,17 @@ C  CARRY OUT SOME CONSISTENCY CHECKS ON NEW TRIANGULAR GRID
 
             write (iunout,*) ' necke ',necke(1:3,itri)
             write (iunout,*) ' xtrian,ytrian(1) ',xtrian(necke(1,itri)),
-     .                                       ytrian(necke(1,itri))
+     .                                            ytrian(necke(1,itri))
             write (iunout,*) ' xtrian,ytrian(2) ',xtrian(necke(2,itri)),
-     .                                       ytrian(necke(2,itri))
+     .                                            ytrian(necke(2,itri))
             write (iunout,*) ' xtrian,ytrian(3) ',xtrian(necke(3,itri)),
-     .                                       ytrian(necke(3,itri))
+     .                                            ytrian(necke(3,itri))
             IS1=IS+1
             IF (IS.EQ.3) IS1=1
             WRITE (iunout,*) ' XTRIAN,YTRIAN ',XTRIAN(NECKE(IS,ITRI)),
-     .                                    YTRIAN(NECKE(IS,ITRI))
+     .                                         YTRIAN(NECKE(IS,ITRI))
             WRITE (iunout,*) ' XTRIAN,YTRIAN ',XTRIAN(NECKE(IS1,ITRI)),
-     .                                    YTRIAN(NECKE(IS1,ITRI))
+     .                                         YTRIAN(NECKE(IS1,ITRI))
           ENDIF
         ENDDO
       ENDDO
@@ -5569,8 +5570,8 @@ C
 C
       LNONREC_SY=ANY(SFNISY(1:nfla).NE.0.0).OR.SFEISY.NE.0.0.OR.
      .                                         SFEESY.NE.0.0
-      WRITE (37,*) 'NON-RECYCLING FLUXES FROM SOUTH EDGE '
-      WRITE (37,8888) sum(SFNISY(1:nfla)),SFEISY,SFEESY
+      WRITE (IUNOUT,*) 'NON-RECYCLING FLUXES FROM SOUTH EDGE '
+      WRITE (IUNOUT,8888) sum(SFNISY(1:nfla)),SFEISY,SFEESY
 C
 C
 C  SECOND: NORTH EDGE: IY=NDYA
@@ -5635,8 +5636,8 @@ C
 C
       LNONREC_NY=ANY(SFNINY(1:nfla).NE.0.0).OR.SFEINY.NE.0.0.OR.
      .                                         SFEENY.NE.0.0
-      WRITE (37,*) 'NON-RECYCLING FLUXES TO NORTH EDGE '
-      WRITE (37,8888) sum(SFNINY(1:nfla)),SFEINY,SFEENY
+      WRITE (IUNOUT,*) 'NON-RECYCLING FLUXES TO NORTH EDGE '
+      WRITE (IUNOUT,8888) sum(SFNINY(1:nfla)),SFEINY,SFEENY
 C
 C
 C  THIRD: WEST EDGE: IX=0
@@ -5693,8 +5694,8 @@ C
 C
       LNONREC_WX=ANY(SFNIWX(1:nfla).NE.0.0).OR.SFEIWX.NE.0.0.OR.
      .                                         SFEEWX.NE.0.0
-      WRITE (37,*) 'NON-RECYCLING FLUXES FROM WEST EDGE '
-      WRITE (37,8888) sum(SFNIWX(1:nfla)),SFEIWX,SFEEWX
+      WRITE (IUNOUT,*) 'NON-RECYCLING FLUXES FROM WEST EDGE '
+      WRITE (IUNOUT,8888) sum(SFNIWX(1:nfla)),SFEIWX,SFEEWX
 C
 C
 C  FOURTH: EAST EDGE: IX=NDXA
@@ -5754,8 +5755,8 @@ C
 C
       LNONREC_EX=ANY(SFNIEX(1:nfla).NE.0.0).OR.SFEIEX.NE.0.0.OR.
      .                                         SFEEEX.NE.0.0
-      WRITE (37,*) 'NON-RECYCLING FLUXES TO EAST EDGE '
-      WRITE (37,8888) sum(SFNIEX(1:nfla)),SFEIEX,SFEEEX
+      WRITE (IUNOUT,*) 'NON-RECYCLING FLUXES TO EAST EDGE '
+      WRITE (IUNOUT,8888) sum(SFNIEX(1:nfla)),SFEIEX,SFEEEX
 C
 C  NEXT: FLUXES TO THOSE SURFACES, AT WHICH RECYCLING BOUNDARY
 C        CONDITIONS ARE SPECIFIED
@@ -5845,8 +5846,8 @@ C
         SFNIT(I,:)=SFNIT(I,:)*ELCHA
 C
 C
-        WRITE (37,*) 'FLUXES TO TARGET NO. ',I
-        WRITE (37,8888) (SFNIT(I,IFL),IFL=1,NFL),SFEIT(I),SFEET(I)
+        WRITE (IUNOUT,*) 'FLUXES TO TARGET NO. ',I
+        WRITE (IUNOUT,8888) (SFNIT(I,IFL),IFL=1,NFL),SFEIT(I),SFEET(I)
 C
         SFEIT(0)=SFEIT(0)+SFEIT(I)
         SFEET(0)=SFEET(0)+SFEET(I)
@@ -5880,35 +5881,35 @@ C
           END DO
         END DO
 C
-        WRITE (37,*)
+        WRITE (IUNOUT,*)
      .   'RECYCLING SOURCE RATES, POTENTIAL+RAD. EN. ',ISTRA
-        WRITE (37,8888) SSN*FLX,SSI*FLX/ELCHA,SSE*FLX/ELCHA
+        WRITE (IUNOUT,8888) SSN*FLX,SSI*FLX/ELCHA,SSE*FLX/ELCHA
 C
 C  TRENNEN VON RAD. UND POTENTIELLER ENERGY IM ELECTRONENKANAL.
 C  DAZU ABER TEILCHENQUELLE SPEZIESAUFGELOEST NOETIG.
 C
 C
 C
-C     WRITE (37,*) 'RADIATION LOSSES VIA NEUTRAL CHANNEL ',ISTRA
-C     WRITE (37,8888) 0.,0.,0.
+C     WRITE (IUNOUT,*) 'RADIATION LOSSES VIA NEUTRAL CHANNEL ',ISTRA
+C     WRITE (IUNOUT,8888) 0.,0.,0.
 C
         SSNI(1:NFLA)=SSNI(1:NFLA)+SSN(1:NFLA)*FLX
         SSEI=SSEI+SSI*FLX/ELCHA
         SSEE=SSEE+SSE*FLX/ELCHA
       END DO ! ISTR
 C
-      WRITE (37,*) 'EQUILIBRATION '
-      WRITE (37,8888) 0.,B2QIE,-B2QIE
+      WRITE (IUNOUT,*) 'EQUILIBRATION '
+      WRITE (IUNOUT,8888) 0.,B2QIE,-B2QIE
 C
 C
-      WRITE (37,*) 'BREMSSTRAHLUNG '
-      WRITE (37,8888) 0.,0.,B2BREM
+      WRITE (IUNOUT,*) 'BREMSSTRAHLUNG '
+      WRITE (IUNOUT,8888) 0.,0.,B2BREM
 C
-      WRITE (37,*) 'CHARGED IMPURITY RAD.,IONIZ. AND RECOMB. '
-      WRITE (37,8888) 0.,0.,B2RAD
+      WRITE (IUNOUT,*) 'CHARGED IMPURITY RAD.,IONIZ. AND RECOMB. '
+      WRITE (IUNOUT,8888) 0.,0.,B2RAD
 C
-      WRITE (37,*) 'ELECTRIC FIELD TERMS (PRESSURE GRADIENTS)'
-      WRITE (37,8888) 0.,B2VDP,-B2VDP
+      WRITE (IUNOUT,*) 'ELECTRIC FIELD TERMS (PRESSURE GRADIENTS)'
+      WRITE (IUNOUT,8888) 0.,B2VDP,-B2VDP
 C
       BALANI=SFEISY+SFEINY+SFEIT(0)+SSEI+B2QIE+B2VDP+
      .       SFEIWX+SFEIEX
@@ -6631,7 +6632,7 @@ C
        D=A*X+B*Y+C
        D=D*D
        L=A*A+B*B
-       IF(L.LT.EPS5) THEN
+       IF(L.LT.EPS6) THEN
         WRITE(iunout,*) "WARNING FROM  POINT_ON_INTERVAL"
         WRITE(iunout,*) "THE LENGTH OF THE INTERVAL IS TOO SMALL"
         WRITE(iunout,'(1x,a,1p,5(1e14.7,1x))') "L,X1,Y1,X2,Y2 ",

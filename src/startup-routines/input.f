@@ -2,11 +2,11 @@ cdr             call eirene_skip_read_comments: not fully implemented, more plac
 cdr Nov. 19 :   Clearer messages re BGK iterations
 cdr             Started to bring back surface-chemistry model
 cdr             (unfinished)
-cdr             started to add a Planckian densitymodel
+cdr             started to add a Planckian density model
 cdr             as further option, similar to SAHA,
 cdr             Boltzmann,... this one only for background
 cdr             radiation field. (unfinished)
-cdr Oct.  19:   In block 5 finally: Ti and V-flow multispecies (NPLS) input options completed and corrected
+cdr Oct.  19:   In block 5 finally: Ti and V-flow multi-species (NPLS) input options completed and corrected
 cdr             The treatment is now fully identical for both parameters.
 cdr             Backward compatibility is achieved
 cdr             by not reading indpro(2), but instead by infering it from the

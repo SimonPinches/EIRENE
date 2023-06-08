@@ -37,16 +37,15 @@ c              for evaluation of rate coefficient.
       INTEGER :: KK
 
       TBEI=0.D0
-      KK = NREAEI(IREI)
+      KK = NREAEI(IREI)   !  KK=-11:NREAC in REACDAT, IFTFLG 
+!                            KK=  1:NREAC else
 
 
       DEIMIN=LOG(1.D8)
       PLS=MAX(DEIMIN,DEINL(K))
 
 c   density parameter rescaling: now done in rate_coeff(....,1)
-c                                only for double polynomial fit
-!pb   DSUB=LOG(1.D8)
-!pb   PLS=MAX(DEIMIN,DEINL(K))-DSUB
+cdr careful, hidden link: this is only for double polynomial fit (and: MODC=3)
 
 cdr  safety cut-off at Te= 0.1 eV. (note: TVAC=0.02)
       TEE = max(-2.3_dp,TEINL(K))

@@ -496,6 +496,7 @@ C  IUHR=ILPLG < 0 ==> ENTGEGEN DEM UHRZEIGERSINN AUSGEBEN
       write (iunout,*)
      .  'input file ', FORT_LC, '78 for FEM mesh generator written'
       call EIRENE_leer(2)
+      close(78+ifoff)
 
 cdr
       if (allocated(nconpoint)) then

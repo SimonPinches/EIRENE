@@ -36,7 +36,7 @@ C
      .          VR1, VR2, VR3, AMNPY, AMNPZ, AMXPY, AMXPZ, XMU,
      .          EIRENE_FMU, XP1, V1, V2, V3, XCHL, XCHR, YCHL, YCHR,
      .          DCHX, AMXPX, AMNPX, DCHY, YP1, SINAQ,
-     .          COSAQ, ALF, DELS, DET, DETS, EIRENE_DETER,
+     .          COSAQ, ALF, DELS, DET, DETS, EIRENE_DETER3x3,
      .          SCA, DH, EH, CK, DK, EK, BK, XP2, YP2, AK, AKEK2,
      .          S, DEL, AKEK, FK, DKCK, DKCK2
       INTEGER :: INN1, INN2, INN3, I, INN4, INN, IS, ICOLOR,
@@ -557,7 +557,7 @@ C
           IF (ABS(E).LT.EPS10) E=0.
           DH=D*0.5
           EH=E*0.5
-          DET=EIRENE_DETER(A,0._DP,DH,0._DP,C,EH,DH,EH,F)
+          DET=EIRENE_DETER3x3(A,0._DP,DH,0._DP,C,EH,DH,EH,F)
           IF (ABS(DET).LE.EPS10) DET=0.
         ENDIF
 C

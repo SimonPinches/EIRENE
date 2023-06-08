@@ -29,6 +29,7 @@ c 16.01.06:  bug fix: suma1, suma2, etc... initialized (=0)
 c            otherwise problems due to new options for deactivation of tallies
 C 07.12.06:  some comments introduced to clarify status with iliin=-3 option
 C 18.04.16:  reduced string length to match variable, J.Lore
+cdr nov.21:  typo corrected, re. reflected photons
 C
       SUBROUTINE EIRENE_OUTFLX(A,ISTRA)
 
@@ -253,7 +254,7 @@ C  TOROIDAL SURFACE
               N2=1
               N3=1
             end select
-            write (iunout,*) 'test ',sum1
+
             NTOTAL=N1*N2*N3
             IF (NTOTAL > 0) THEN
               CALL EIRENE_INTVOL (HELP,1,1,NTOTAL,DUMMY,N1,N2,N3,1)
@@ -267,7 +268,8 @@ C  TOROIDAL SURFACE
               ELSE
                 CALL EIRENE_PRTTLS(TXTTLW(K,ITALS),TXTSPW(K,ITALS),
      .                  TXTUNW(K,ITALS),
-     .                  HELP,N1,N2,N3,1,NTOTAL,-1,NTLSFL(ISPR),
+     .                  HELP,N1,N2,N3,1,NTOTAL,-1,
+     .                  NTLSFL(ISPR),
      .                  IRPTA(ISTS,1),IRPTE(ISTS,1),IRPTA(ISTS,2),
      .                  IRPTE(ISTS,2),1,1)
                 CALL EIRENE_MASAGE
@@ -277,7 +279,7 @@ C  TOROIDAL SURFACE
             END IF
    10     CONTINUE
    11     CONTINUE
-        ENDIF
+        ENDIF  ! non-def. standard surf. with spatial resolution: done
 
 
 C  SPECTRA
@@ -1573,10 +1575,10 @@ C
         LGVRPH1(IPHOT,ISTRA)=.FALSE.
         LGVRPH2(IPHOT,ISTRA)=.FALSE.
         IF (LPRFPHPHT) SUMPH1(IPHOT,ISTRA)=PRFPHPHT(IPHOT,I)
-        SUMMTI=SUMMTI+SUMPH1(IPHOT,ISTRA)*NPRT(0+IPHOT)
+        SUMMTPH=SUMMTPH+SUMPH1(IPHOT,ISTRA)*NPRT(0+IPHOT)
         SUMPH=SUMPH+SUMPH1(IPHOT,ISTRA)
         IF (LERFPHPHT) SUMPH2(IPHOT,ISTRA)=ERFPHPHT(IPHOT,I)
-        SUMMEI=SUMMEI+SUMPH2(IPHOT,ISTRA)
+        SUMMEPH=SUMMEPH+SUMPH2(IPHOT,ISTRA)
       ENDDO
 
       DO N=1,NSIGSI
@@ -2941,9 +2943,9 @@ C
       IF (SUMMS.NE.0._DP) THEN
 C  SURFACE-AVERAGED TALLY NO. 82
         CALL EIRENE_MASYR1('ADD.TALLY',
-     .       SUMS,LOGADS,ISTRA,0,NADS,NADS,0,NSTRA,TEXTA)
+     .       SUMS,LOGADS,ISTRA,0,NADS,NADSI,0,NSTRA,TEXTA)
         CALL EIRENE_MASYR1('ST.DEV.% ',
-     .       VARS,LGVARS,ISTRA,0,NADS,NADS,0,NSTRA,TEXTA)
+     .       VARS,LGVARS,ISTRA,0,NADS,NADSI,0,NSTRA,TEXTA)
       ENDIF
       CALL EIRENE_LEER (1)
 C

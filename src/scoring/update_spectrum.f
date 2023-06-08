@@ -80,7 +80,8 @@ C  set "type" specific parameters:  IS, CDYN
       IF (ISC == 0) THEN
 ! SURFACE-AVERAGED SPECTRA
 
-cdr  IDIREC=1 option not written. See ISC > 0 for required coding.
+cdr  IDIREC=1 option is not written for surface tallies.
+cdr  See ISC > 0 for the required coding.
 
         DO ISPC=1,NADSPC
           P => ESTIML(ISPC)
@@ -137,7 +138,8 @@ cdr  score SPC(I), ESP_MIN and ESP_MAX
 ! CELL-BASED SPECTRA
 
 cdr  meaning of isc = 1,2  see subr. input, flag ISRFCLL
-cdr  meaning of ind: not in use for cell-based spectra    ??  iflag in calling program ??
+cdr  meaning of ind: not in use for cell-based spectra ??
+cdr  iflag in calling program ?? Unused here.
 
         WV=WEIGHT/VEL
         DO IC=1,NCOU

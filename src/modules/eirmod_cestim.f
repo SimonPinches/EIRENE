@@ -6,6 +6,8 @@ cdr                  of sum over strata
 cdr dec 15:  species index added for eapl,empl,eipl,ephpl,eppl
 cdr mar 17:  comments added
 cpb Dec. 17: remove type SPECT_ARRAY, not needed in Fortran 2003
+cdr Apr. 22: preparing for vectorial in/out tallies:
+cdr          unnecessary array dimensions removed: PXX, PXX2. tbd: RXEL?
 
       MODULE EIRMOD_CESTIM
 
@@ -39,12 +41,16 @@ C  NESTM1, REAL, VOLUME-AVERAGED TALLIES
       REAL(DP), PUBLIC, POINTER, SAVE ::
      R PDENA(:,:), PDENM(:,:), PDENI(:,:), PDENPH(:,:),
      R EDENA(:,:), EDENM(:,:), EDENI(:,:), EDENPH(:,:),
+
      R PAEL(:),    PAAT(:,:),  PAML(:,:),  PAIO(:,:),  PAPHT(:,:),
      R PAPL(:,:),
+
      R PMEL(:),    PMAT(:,:),  PMML(:,:),  PMIO(:,:),  PMPHT(:,:),
      R PMPL(:,:),
+
      R PIEL(:),    PIAT(:,:),  PIML(:,:),  PIIO(:,:),  PIPHT(:,:),
      R PIPL(:,:),
+
      R PPHEL(:),   PPHAT(:,:), PPHML(:,:), PPHIO(:,:), PPHPHT(:,:),
      R PPHPL(:,:),
      R RAEL(:,:),  RMEL(:,:),  RIEL(:,:),  RPHEL(:,:),
@@ -59,24 +65,44 @@ c  more recent tallies  63 --100
      R PGENA(:,:), PGENM(:,:), PGENI(:,:), PGENPH(:,:),
      R EGENA(:,:), EGENM(:,:), EGENI(:,:), EGENPH(:,:),
      R VGENA(:,:), VGENM(:,:), VGENI(:,:), VGENPH(:,:),
-cdr missing tallies: ppel, epel, electron terms from initial "P" bulk particle
+cdr from bulk to test particles, and bulk losses.  MPAT,..., MPPL etc: missing.
+cdr These tallies are currently available only in INFCOP: MPPL_COP,...
+cdr PPPL, MPPL, EPPL, EPEL
      R PPAT(:,:),  PPML(:,:),  PPIO(:,:),  PPPHT(:,:), PPPL(:,:),
      R EPAT(:),    EPML(:),    EPIO(:),    EPPHT(:),   EPPL(:,:),
      R VXDENA(:,:), VXDENM(:,:), VXDENI(:,:), VXDENPH(:,:),
      R VYDENA(:,:), VYDENM(:,:), VYDENI(:,:), VYDENPH(:,:),
      R VZDENA(:,:), VZDENM(:,:), VZDENI(:,:), VZDENPH(:,:),
+cdr parallel (to B field) momentum sources/sinks, from test particles to bulk particles
      R MAPL(:,:), MMPL(:,:), MIPL(:,:), MPHPL(:,:)
 
 c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
+cdr added feb 22: pxpht, expht, pgenx, egenx, vgenx,
+cdr               for unified treatment in subr. COLLIDE.f
       REAL(DP), PUBLIC, POINTER, SAVE ::
      R PDENX(:),  EDENX(:),
-     R PXEL(:),   PXAT(:,:),  PXML(:,:),  PXIO(:,:), PXPL(:,:),
-     R EXEL(:),   EXAT(:),    EXML(:),    EXIO(:),   EXPL(:,:),
-     R VXDENX(:), VYDENX(:),  VZDENX(:),
-     R MXPL(:,:), RXEL(:,:),  PXX(:,:),   EXX(:)
+     R PXEL(:),   PXAT(:,:), PXML(:,:), PXIO(:,:),
+     R PXPHT(:,:), PXPL(:,:),
+     R EXEL(:),   EXAT(:),   EXML(:),   EXIO(:),
+     R EXPHT(:), EXPL(:,:),
+     R VXDENX(:), VYDENX(:), VZDENX(:),
+     R PGENX(:),  EGENX(:),  VGENX(:),
+     R MXPL(:,:), 
+     R RXEL(:,:)  ! I think this should also be a "reflexive" tally, 1D rather 2D array
 
-!$OMP  THREADPRIVATE(PDENX,EDENX,PXEL,PXAT,PXML,PXIO,PXPL,EXEL,EXAT, 
-!$OMP& EXML,EXIO,EXPL,VXDENX,VYDENX,VZDENX,MXPL,RXEL,PXX,EXX)
+c   Next: "reflexive" tallies for identical donor and target species: 
+c         e.g iatm --> iatm, etc.
+cdr Used for pre-collision (collisional loss) terms.
+cdr Remove unnecessary leading dimensions in these arrays
+cdr Careful: changing dimension of arrays in pointer-target structure
+cdr may be illegal code?
+cdr MXX is not available (no global test particle momentum flux balances are done so far)
+      REAL(DP), PUBLIC, POINTER, SAVE ::
+     R PXX(:,:),  EXX(:)
+
+!$OMP  THREADPRIVATE(PDENX,EDENX,PXEL,PXAT,PXML,PXIO,PXPHT,PXPL,
+!$OMP& EXEL,EXAT,EXML,EXIO,EXPHT,EXPL,VXDENX,VYDENX,VZDENX,
+!$OMP& PGENX,EGENX,VGENX,MXPL,RXEL,PXX,EXX)
 
 C  NESTM2, REAL, SURFACE-AVERAGED TALLIES
       REAL(DP), PUBLIC, POINTER, SAVE ::
@@ -143,6 +169,7 @@ C
      R PMAT2(:,:), PMML2(:,:), PMIO2(:,:), PMPHT2(:,:), PMPL2(:,:),
      R PIAT2(:,:), PIML2(:,:), PIIO2(:,:), PIPHT2(:,:), PIPL2(:,:),
      R PPHAT2(:,:), PPHML2(:,:), PPHIO2(:,:), PPHPHT2(:,:), PPHPL2(:,:)
+cdr  missing pael2(:,:), pmel2(:,:), missing piel2(:,:), pphel2(:,:)?
 !$OMP  THREADPRIVATE(PAAT2,PAML2,PAIO2,PAPHT2,PAPL2,PMAT2,PMML2,PMIO2,
 !$OMP& PMPHT2,PMPL2,PIAT2,PIML2,PIIO2,PIPHT2,PIPL2,PPHAT2,PPHML2,
 !$OMP& PPHIO2,PPHPHT2,PPHPL2)
@@ -190,6 +217,7 @@ c  either active tally (if true) or deactivated tally, no storage (if false)
      L LPMEL,  LPMAT,  LPMML,  LPMIO,   LPMPHT,  LPMPL,
      L LPIEL,  LPIAT,  LPIML,  LPIIO,   LPIPHT,  LPIPL,
      L LPPHEL, LPPHAT, LPPHML, LPPHIO,  LPPHPHT, LPPHPL,
+
      L LEAEL,  LEAAT,  LEAML,  LEAIO,   LEAPHT,  LEAPL,
      L LEMEL,  LEMAT,  LEMML,  LEMIO,   LEMPHT,  LEMPL,
      L LEIEL,  LEIAT,  LEIML,  LEIIO,   LEIPHT,  LEIPL,
@@ -217,20 +245,24 @@ c  radiation tallies
 c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
       LOGICAL, PUBLIC, POINTER, SAVE ::
      L LPDENX,  LEDENX,
-     L LPXEL,   LPXAT,   LPXML,   LPXIO, LPXPL,
-     L LEXEL,   LEXAT,   LEXML,   LEXIO, LEXPL,
+     L LPXEL,   LPXAT,   LPXML,   LPXIO, LPXPHT, LPXPL,
+     L LEXEL,   LEXAT,   LEXML,   LEXIO, LEXPHT, LEXPL,
      L LVXDENX, LVYDENX, LVZDENX,
+     L LPGENX,  LEGENX,  LVGENX,
      L LMXPL,   LRXEL,   LPXX,    LEXX,  
      L LSCX
       
       INTEGER, PUBLIC, SAVE :: NDXX, NDXXA, NDXXE,
      I NTS_PXATA, NTS_PXATE, NTS_PXMLA, NTS_PXMLE,
-     I NTS_PXIOA, NTS_PXIOE, NTS_PXPLA, NTS_PXPLE
+     I NTS_PXIOA, NTS_PXIOE, NTS_PXPHA, NTS_PXPHE,
+     I NTS_PXPLA, NTS_PXPLE
 
-!$OMP  THREADPRIVATE(LPDENX,LEDENX,LPXEL,LPXAT,LPXML,LPXIO,LPXPL,LEXEL,
-!$OMP& LEXAT,LEXML,LEXIO,LEXPL,LVXDENX,LVYDENX,LVZDENX,LMXPL,LRXEL,
+!$OMP  THREADPRIVATE(LPDENX,LEDENX,LPXEL,LPXAT,LPXML,LPXIO,LPXPHT,LPXPL,
+!$OMP& LEXEL,LEXAT,LEXML,LEXIO,LEXPHT,LEXPL,LVXDENX,LVYDENX,LVZDENX,
+!$OMP& LPGENX,LEGENX,LVGENX,LMXPL,LRXEL,
 !$OMP& LPXX,LEXX,LSCX,NDXX,NDXXA,NDXXE,NTS_PXATA,NTS_PXATE,NTS_PXMLA,
-!$OMP& NTS_PXMLE,NTS_PXIOA,NTS_PXIOE,NTS_PXPLA,NTS_PXPLE)
+!$OMP& NTS_PXMLE,NTS_PXIOA,NTS_PXIOE,NTS_PXPHA,NTS_PXPHE,
+!$OMP& NTS_PXPLA,NTS_PXPLE)
 
 
 
@@ -460,7 +492,9 @@ C     if tally is deactivated in this run: Pointer to CEMETERYV
       END IF
 
       IF (LPAEL) THEN
-        PAEL => ESTIMV(NADDV(10),:)
+cdr  1D tally no. 9. Here: naddv(9)+1 = naddv(10)
+cdr     PAEL => ESTIMV(NADDV(9)+1:NADDV(10),:), but this target has rank 1 only.
+        PAEL => ESTIMV(NADDV(9)+1,:)
       ELSE
         PAEL => CEMETERYV(0,:)
       END IF
@@ -584,7 +618,9 @@ C     if tally is deactivated in this run: Pointer to CEMETERYV
       END IF
 
       IF (LEAEL) THEN
-        EAEL => ESTIMV(NADDV(34),:)
+cdr  1D tally no. 33. Here: naddv(33)+1 = naddv(34)
+cdr     EAEL => ESTIMV(NADDV(33)+1:NADDV(34),:), but this target has rank 1 only.
+        EAEL => ESTIMV(NADDV(33)+1,:)
       ELSE
         EAEL => CEMETERYV(0,:)
       END IF
@@ -830,6 +866,8 @@ c  ntalr =62
       ELSE
         PPPL => CEMETERYV(0:0,:)
       END IF
+cdr:  here should come the missing ppel tally?
+cdr   naddv(80)+1:naddv(81)
 
       IF (LEPAT) THEN
         EPAT => ESTIMV(NADDV(81),:)
@@ -856,6 +894,9 @@ c  ntalr =62
       ELSE
         EPPL => CEMETERYV(0:0,:)
       END IF
+cdr:  here we would put epel tally. E.g. electron energy source
+cdr:  from recombination processes RC
+
       IF (LVXDENA) THEN
         VXDENA => ESTIMV(NADDV(85)+1:NADDV(86),:)
       ELSE
@@ -959,6 +1000,7 @@ cdr Instead check: nvoltl=naddv(104) for consistency?
       RPHEL => CEMETERYV(0:0,:)
 
 C  SURFACE-AVERAGED TALLIES:
+cdr particle currents, outgoing, atoms, wrt. surface normal
 C     if tally is active in this run     : Pointer to allocatable array ESTIMS
 C     if tally is deactivated in this run: Pointer to CEMETERYS
       IF (LPOTAT) THEN
@@ -966,6 +1008,7 @@ C     if tally is deactivated in this run: Pointer to CEMETERYS
       ELSE
         POTAT => CEMETERYS(0:0,:)
       END IF
+cdr particle currents, ingoing, atoms, wrt. surface normal
       IF (LPRFAAT) THEN
         PRFAAT => ESTIMS(NADDW(2)+1:NADDW(3),:)
       ELSE
@@ -997,6 +1040,7 @@ C
       ELSE
         POTML => CEMETERYS(0:0,:)
       END IF
+
       IF (LPRFAML) THEN
         PRFAML => ESTIMS(NADDW(8)+1:NADDW(9),:)
       ELSE
@@ -1028,6 +1072,7 @@ C
       ELSE
         POTIO => CEMETERYS(0:0,:)
       END IF
+
       IF (LPRFAIO) THEN
         PRFAIO => ESTIMS(NADDW(14)+1:NADDW(15),:)
       ELSE
@@ -1059,6 +1104,7 @@ C
       ELSE
         POTPHT => CEMETERYS(0:0,:)
       END IF
+
       IF (LPRFAPHT) THEN
         PRFAPHT => ESTIMS(NADDW(20)+1:NADDW(21),:)
       ELSE
@@ -1096,6 +1142,7 @@ C
       ELSE
         EOTAT => CEMETERYS(0:0,:)
       END IF
+
       IF (LERFAAT) THEN
         ERFAAT => ESTIMS(NADDW(27)+1:NADDW(28),:)
       ELSE
@@ -1571,8 +1618,10 @@ C
         
       ELSE IF (ICAL == 1) THEN
 
+cdr  default: all tallies turned on
         LIVTALV = .TRUE.
         LIVTALS = .TRUE.
+cdr  default: no tallies turned off in input block 11
         LMISTALV = .FALSE.
         LMISTALS = .FALSE.
 
@@ -1652,16 +1701,19 @@ C
         LVGENM   => LIVTALV(72)
         LVGENI   => LIVTALV(73)
         LVGENPH  => LIVTALV(74)
+
         LPPAT    => LIVTALV(75)
         LPPML    => LIVTALV(76)
         LPPIO    => LIVTALV(77)
         LPPPHT   => LIVTALV(78)
         LPPPL    => LIVTALV(79)
+
         LEPAT    => LIVTALV(80)
         LEPML    => LIVTALV(81)
         LEPIO    => LIVTALV(82)
         LEPPHT   => LIVTALV(83)
         LEPPL    => LIVTALV(84)
+
         LVXDENA  => LIVTALV(85)
         LVXDENM  => LIVTALV(86)
         LVXDENI  => LIVTALV(87)
@@ -1678,6 +1730,7 @@ C
         LMMPL    => LIVTALV(98)
         LMIPL    => LIVTALV(99)
         LMPHPL   => LIVTALV(100)
+
         LRAEL    => LIVTALV(101)
         LRMEL    => LIVTALV(102)
         LRIEL    => LIVTALV(103)

@@ -98,7 +98,8 @@ C
      .          E0TERM, FR2, COSI2, ZVZ, WABS,
      .          CUR, GAMMA, TEWL, VX, VY, VZ, FCHAR, WPR, FMASS,
      .          FLX, YIELD1, YIELD2, VELS, WEIGHS, E0S, ESHET,EVCQ,
-     .          VSHETQ, V, VELSH, VC, VCQ, VC2, SPLFLG,
+     .          VSHETQ, V, VELSH, VC, VCQ, VC2, 
+     .          SPLFLG,
      .          VXR, VYR, VZR, VWL, WGHTVS, RATR, YSPTWL
       INTEGER :: ISG, ISPZS, I, J, IDIM, MS, IC, IP, ISTS,
      .           ISSPTP, ISSPTC, IPV, MODREF, MOL_DEFAULT,
@@ -215,7 +216,7 @@ C
 C
 C   HERE: EITHER: ILIIN .GE.0,    NOT TRANSPARENT, SCORE OUTGOING FLUX (WPR >=0 always)
 c             OR: ILIIN.EQ.-3,    TRANSPARENT,     SCORE NET FLUX (WPR contains sign)
-C             OR: SG .GT.0        SCORE ONE-SIDED POSITIVE CURRENT EVEN FOR TRANSPARENT SURF.
+C             OR: SG .GT.0        SCORE ONE-SIDED POSITIVE CURRENT ONLY, EVEN FOR TRANSPARENT SURF.
 
       IF (ITYP.EQ.0) THEN
 C  INCIDENT PHOTONS
@@ -230,10 +231,12 @@ C  INCIDENT MOLECULES
         FMASS=DBLE(NMASSM(IMOL))
         FCHAR=DBLE(NCHARM(IMOL))
       ELSEIF (ITYP.EQ.3) THEN
+
 C  SPECIAL CASE: INCIDENT TEST IONS. SHEATH ACCELERATION.
 !pb ispz calculated for check of semitransparency
-cdr:  sheath ion orbit part: make separate routine. tbd: E.g. Lindner-formula.
-cdr:  mirror: no sheath acceleration
+cdr: sheath ion orbit part: make separate routine. tbd: E.g. Lindner-formula.
+cdr: iliin=3:  mirror     : no sheath acceleration
+cdr: iliin>=4: periodicity: no sheath acceleration
         ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
         IF (
      .      (ILIIN(MSURF).GT.0)                                    .AND.
@@ -537,6 +540,7 @@ C
       IF (ILIIN(MSURF).EQ.3.AND..NOT.LTRANS) THEN
 C
 C ITYP_OLD=ITNEW=ITYP
+cdr this next stuff can go into update_surface(wpr,2)
 C
         IF (ITYP.EQ.1) THEN
           IF (LERFAAT) THEN
@@ -696,7 +700,7 @@ C  CONTINUE WITH UNMODIFIED VELOCITY.
 C  COMPENSATE INCIDENT SURFACE FLUX TALLY CONTRIBUTIONS
 C  SCORED ABOVE.
         CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,IOLD,-WPR,1)
-
+cdr  for additional surface tallies: this is treated as re-emitted flux.
         IF (NADSI.GE.1) CALL EIRENE_UPSUSR (WPR,2)
         IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM (WPR,2,0)
         COLFLAG = .TRUE.
@@ -706,6 +710,8 @@ C
 C  ... OR: PERFECT SPECULAR REFLECTION
 C
       ELSEIF (ILIIN(MSURF).EQ.3) THEN
+cdr  why no call to update_surface for emitted fluxes?
+cdr  Because already done above, under: if (iliin=3 and not ltransp)
         COSI2=-2.*(VELX*CRTX+VELY*CRTY+VELZ*CRTZ)
         VELX=VELX+COSI2*CRTX
         VELY=VELY+COSI2*CRTY
@@ -931,6 +937,10 @@ C  .                                                    .
 C  .  REFLECTION MODEL 600--699 FOR INCIDENT MOLECULES  .
 C  ......................................................
 C
+cdr  tbd: make a universal "thermal" reflection model. 
+cdr       called from here for molecules. 
+cdr       called from reflec1 for atoms etc.
+cdr       called from reflec_photons for photons...
 C
       IF (ITYP.EQ.2) THEN
 C
