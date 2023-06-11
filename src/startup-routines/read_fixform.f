@@ -50,6 +50,8 @@ cdr            call to plasma code interface-initialization done in block 14.
 cdr            Still fiddling with Ti(ipls) input card counting.
 cdr            tbd: call eirene_skip_read_comments: not yet implemented here.
 cdr  Aug. 20 : remove PART_NAME, BULK_NAME,... fix NSTRA, NSRFS,..
+cmg  Feb 1, 23: added ISPOPT and ESPEC%ISPCOPT to turn on scoring of angle distribution
+cmg             additional flag in input deck: ISPSRF ... IDIREC ISPOPT in block 10F
 
       SUBROUTINE EIRENE_READ_FIXFORM (NL, SAREA_SAVE, IERROR)
 C
@@ -194,7 +196,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           ISPSRF, ISPTYP, NSPS, NSPSA, IPTYP, IPSPZ, ISTRAI,
      .           IANF, IEND, IDEFLT_SPUT, IDEFLT_SPEZ,
      .           IPLSTI, IPLSV, IFILE, ISRFCLL,
-     .           IDIREC, ISTCHR,  ITOK, IER, ILOGS, IO,
+     .           IDIREC, ISTCHR,  ITOK, IER, ILOGS, IO, ISPOPT,
      .           IUNIN_SAVE, NLOGIN, IFLG, IDUM,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
      .           NB, NS, NA, ISTR, IRC, IOPT, ITAL,
@@ -3220,7 +3222,7 @@ c  then further details (species: iptyp,ipspz, and then: direction,....)
 c
 
           READ (ZEILE,'(12I6)') ISPSRF, IPTYP, IPSPZ, ISPTYP, NSPS,
-     .                          ISRFCLL, IDIREC
+     .                          ISRFCLL, IDIREC, ISPOPT
           READ (IUNIN,'(6E12.4)') SPCMN, SPCMX, SPC_SHIFT,
      .                            SPCPLT_X, SPCPLT_Y, SPCPLT_SAME
           SPCVX = 0._DP
@@ -3327,6 +3329,7 @@ C    .      ... WRONG INPUT !
           ESPEC%NSPC = ABS(NSPS)
           ESPEC%ISRFCLL = ISRFCLL
           ESPEC%IDIREC = IDIREC
+          ESPEC%ISPCOPT = ISPOPT
 cdr
 cdr       ESPEC%LOG = .FALSE. ! this was too restrictive !
 cdr  Option     LOG = .TRUE. WAS ALREADY AVAILABLE IN SCORING/UPDATE_SPECTRUM

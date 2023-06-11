@@ -1,3 +1,10 @@
+cmg Sep 21: added SIGEIR option (NCHTAL(ICHORI)=13) to write out line-
+C           integrated neutral parameters to output file, plasma parameter
+C           set by NSPSPZ(ICHORI)
+cmg Sep21:  added line integral and segments for LOS integrated plasma
+c           parameters via NCHTAL(ICHORI)=12, plasma parameter
+C           set by NSPSPZ(ICHORI)
+cmg Aug21:  added line integral and segments for ICHORI LOS via
 c april05:  *sqrt(ze) moved from here (for CX spectra) into sigcx
 c april06:  restriction to iphot.eq.isp in case of los-radiances
 c
@@ -57,7 +64,7 @@ C
       USE EIRMOD_CGEOM
       USE EIRMOD_CTEXT
       USE EIRMOD_CUPD
-      USE EIRMOD_LININT, ONLY: EIRENE_LININT
+      USE EIRMOD_LININT, ONLY: EIRENE_LININT, EIRENE_LININT2
 
       IMPLICIT NONE
 C
@@ -489,6 +496,9 @@ c  summation over contributions (different isotopes but same emission reactions,
 
         IF (ANY(NCLTAL == 5)) ND = MAX(ND, 10)
         IF (ANY(NCHTAL == 10)) ND = MAX(ND, NSPZ)
+        IF (ANY(NCHTAL == 11)) ND = MAX(ND,1)
+        IF (ANY(NCHTAL == 12)) ND = MAX(ND,10)
+        IF (ANY(NCHTAL == 13)) ND = MAX(ND,10)
 
         ALLOCATE (PSIG(0:ND))
         PSIG = 0._DP
@@ -500,6 +510,9 @@ cdr   IF (NCHTAL(ICHORI).EQ.2)  NSPI=10  ! THIS OPTION WAS FOR H EMISSION LINES.
       IF (NCHTAL(ICHORI).EQ.3)  NSPI=NPHOTI ! one spectrally resolved radiance per LOS and per photon species ("transition")
       IF (NCHTAL(ICHORI).EQ.5)  NSPI=10 ! THIS OPTION WAS FOR HE EMISSION LINES. Now superseded.
       IF (NCHTAL(ICHORI).EQ.10) NSPI=NSPZ   ! 3rd party specified LOS integrals.
+      IF (NCHTAL(ICHORI).EQ.11) NSPI=1    ! one integral value per LOS
+      IF (NCHTAL(ICHORI).EQ.12) NSPI=10 ! 4 plasma parameter per LOS
+      IF (NCHTAL(ICHORI).EQ.13) NSPI=10 ! 4 neutral parameter per LOS
       PSIG = 0._DP
       IFIRST=0
       DO 231 JEN=1,NCHNI
@@ -513,10 +526,15 @@ C  SINGLE SPECIES/COMPONENT INDEX ISP
           BUFFER(ICHORI,JEN)=PSIG(ISP)
         ELSEIF (ISP.EQ.0) THEN
 C  SUM OVER SPECIES INDEX
-          ZSI=0.
-          DO 239 IS=1,NSPI
-            ZSI=ZSI+PSIG(IS)
-  239     CONTINUE
+C  FIND THE INDEX OF THE LAST USED ELEMENT IN PSIG
+	  NSPI = ND
+	  DO IS = ND, 1,-1
+	    IF (ABS(PSIG(IS)) > EPS30) THEN
+              NSPI = IS
+	      EXIT
+	    END IF
+	  END DO
+	  ZSI = SUM(PSIG(1:NSPI))
           BUFFER(ICHORI,JEN)=ZSI
           WRITE (80,'(I6,3ES12.4)') ICHORI,C2
           WRITE (80,'(6ES12.4)') PSIG(0:NSPI)
@@ -542,6 +560,15 @@ C  LINE INTEGRAL: PHOTONS/SEC/CM**2/EV/STERAD (SPECTRAL RADIANCE)
         ELSEIF (NCHTAL(ICHORI).EQ.10) THEN
 C  LINE INTEGRAL: USER-SUPPLIED INTEGRAND ALONG LINE OF SIGHT
           FUFFER(ICHORI,JEN)=BUFFER(ICHORI,JEN)
+        ELSEIF (NCHTAL(ICHORI).EQ.11) THEN
+C  LINE INTEGRAL: CM (LENGTH of LOS)
+          FUFFER(ICHORI,JEN)=BUFFER(ICHORI,JEN)
+        ELSEIF (NCHTAL(ICHORI).EQ.12) THEN
+C  LINE INTEGRAL: PLASMA PARAMETER x CM
+          FUFFER(ICHORI,JEN)=BUFFER(ICHORI,JEN)           
+        ELSEIF (NCHTAL(ICHORI).EQ.13) THEN
+C  LINE INTEGRAL: NEUTRAL PARAMETER x CM
+          FUFFER(ICHORI,JEN)=BUFFER(ICHORI,JEN)           
         ENDIF
   231 CONTINUE
 C
@@ -624,5 +651,9 @@ C
         DEALLOCATE(RECADD)
         DEALLOCATE(INTADD)
       ENDIF
+
+      IF (ALLOCATED(PSIG)) DEALLOCATE(PSIG)
+      CALL EIRENE_LININT2
+
       RETURN
       END SUBROUTINE EIRENE_SGNAL
