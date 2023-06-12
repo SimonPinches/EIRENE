@@ -20,6 +20,14 @@
 
       CONTAINS
      
+cmg Sep 21  :  added SIGEIR option (NCHTAL(ICHORI)=13) to write out line-
+C              integrated neutral parameters to output file, plasma parameter
+C              set by NSPSPZ(ICHORI)
+cmg Sep 21  :  added SIGPLA option (NCHTAL(ICHORI)=12) to write out line-
+C              integrated plasma parameters to output file, plasma parameter
+C              set by NSPSPZ(ICHORI)
+cmg Aug 21  :  added SIGLOS option (NCHTAL(ICHORI)=11) to write out
+cmg            segments and total line integral into output file     
 cdr Jan 18  :  additional parameter ICHORI in calls to SIHGA
 cdr            added: MX_compo
 cdr Oct 17  :
@@ -145,13 +153,47 @@ C   ARRAYS FOR PLOTTING, AND RESOLUTION ALONG LINE OF SIGHT
      .             DUMMY2,ARGST,XD0,YD0,ZD0,XD1,YD1,ZD1)
           USE EIRMOD_PRECISION
           USE EIRMOD_PARMMOD
-          INTEGER, INTENT(IN) :: JJJ
-          INTEGER, INTENT(INOUT) :: IFIRST
+          INTEGER, INTENT(IN) :: IFIRST, JJJ
           REAL(DP), INTENT(INOUT) ::
      .              PSIG(0:NSPZ+10),ARGST(0:NSPZ+10,NRAD)
           REAL(DP), INTENT(IN) ::
      .              ZDS,DUMMY1,DUMMY2,XD0,YD0,ZD0,XD1,YD1,ZD1
         END SUBROUTINE EIRENE_SIGUSR
+
+CMG 27Aug21 Adapt sigtst.f to write out line integrals for ICHORI
+C           sight lines for an assumed flat-field domain,
+C           output via linit.f as for sigha.f      
+        SUBROUTINE EIRENE_SIGLOS(INIT,JJJ,ZDS,DUM1,PSIG,DUM2,ARGST)
+          USE EIRMOD_PRECISION
+          USE EIRMOD_PARMMOD
+          INTEGER, INTENT(IN) :: INIT, JJJ
+          REAL(DP), INTENT(IN) :: ZDS,DUM1,DUM2
+          REAL(DP), INTENT(IN OUT) :: PSIG(0:)
+          REAL(DP), INTENT(IN OUT) :: ARGST(0:,:)
+        END SUBROUTINE EIRENE_SIGLOS
+
+CMG 27Aug21 Adapt siglos.f to write out line integrals for ICHORI
+C           sight lines for background, output as in sigha.f
+        SUBROUTINE EIRENE_SIGPLA(INIT,JJJ,ZDS,DUM1,PSIG,DUM2,ARGST)
+          USE EIRMOD_PRECISION
+          USE EIRMOD_PARMMOD
+          INTEGER, INTENT(IN) :: INIT, JJJ
+          REAL(DP), INTENT(IN) :: ZDS,DUM1,DUM2
+          REAL(DP), INTENT(IN OUT) :: PSIG(0:)
+          REAL(DP), INTENT(IN OUT) :: ARGST(0:,:)
+        END SUBROUTINE EIRENE_SIGPLA
+
+CMG 3Sep21 Adapt sigpla.f to write out line integrals for ICHORI
+C          sight lines for EIRENE, output as in sigha.f
+        SUBROUTINE EIRENE_SIGEIR(INIT,JJJ,ZDS,DUM1,PSIG,DUM2,ARGST)
+          USE EIRMOD_PRECISION
+          USE EIRMOD_PARMMOD
+          INTEGER, INTENT(IN) :: INIT, JJJ
+          REAL(DP), INTENT(IN) :: ZDS,DUM1,DUM2
+          REAL(DP), INTENT(IN OUT) :: PSIG(0:)
+          REAL(DP), INTENT(IN OUT) :: ARGST(0:,:)
+        END SUBROUTINE EIRENE_SIGEIR      
+      
       END INTERFACE
 
       SAVE
@@ -723,6 +765,12 @@ C
           IFUSR=0  
           CALL EIRENE_SIGUSR(IFUSR,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,
      .                XD0,YD0,ZD0,XD1,YD1,ZD1)
+        ELSEIF (NCHTAL(ICHORI).EQ.11) THEN
+          CALL EIRENE_SIGLOS(0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
+        ELSEIF (NCHTAL(ICHORI).EQ.12) THEN
+          CALL EIRENE_SIGPLA(0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
+        ELSEIF (NCHTAL(ICHORI).EQ.13) THEN
+          CALL EIRENE_SIGEIR(0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)           
         ELSE
           CALL EIRENE_SIGTST(0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
         ENDIF
@@ -888,6 +936,12 @@ C  contribution to line-of-sight integral, segment no. jjj
             IFUSR=1    
             CALL EIRENE_SIGUSR(IFUSR,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,
      .                  XD0,YD0,ZD0,XD1,YD1,ZD1)
+          ELSEIF (NCHTAL(ICHORI).EQ.11) THEN
+            CALL EIRENE_SIGLOS(1,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
+          ELSEIF (NCHTAL(ICHORI).EQ.12) THEN
+            CALL EIRENE_SIGPLA(1,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
+          ELSEIF (NCHTAL(ICHORI).EQ.13) THEN
+            CALL EIRENE_SIGEIR(1,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
           ELSE
             CALL EIRENE_SIGTST(1,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
           ENDIF
@@ -1031,6 +1085,12 @@ C       CALL SIGLINE (2,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,ICHORI)
 C       IFUSR=2  
 C       CALL SIGUSR(IFUSR,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,XD0,YD0,ZD0,
 C    .              XD1,YD1,ZD1)
+      ELSEIF (NCHTAL(ICHORI).EQ.11) THEN
+C     CALL SIGLOS(2,JJJ,ZDS,DUM1,PSIG,DUM2,ARGST,XD0,YD0,ZD0)
+      ELSEIF (NCHTAL(ICHORI).EQ.12) THEN
+C        CALL SIGPLA(2,JJJ,ZDS,DUM1,PSIG,DUM2,ARGST,XD0,YD0,ZD0)         
+      ELSEIF (NCHTAL(ICHORI).EQ.13) THEN
+C        CALL SIGEIR(2,JJJ,ZDS,DUM1,PSIG,DUM2,ARGST,XD0,YD0,ZD0)
       ELSE
 C       CALL SIGTST(2,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
       ENDIF
@@ -1145,6 +1205,21 @@ C
           DO 550 J=1,JJJ
             WRITE (iunout,*) J,XNTG(J),AA(J)
   550     CONTINUE
+        ELSEIF (NCHTAL(ICHORI).EQ.11) THEN
+          WRITE (iunout,*)  'J,XNTG(J),ARGST(J),CTRB ISP= ',ISP
+          DO 560 J=1,JJJ
+            WRITE (iunout,*) J,XNTG(J),AA(J)
+  560     CONTINUE
+        ELSEIF (NCHTAL(ICHORI).EQ.12) THEN
+          WRITE (iunout,*)  'J,XNTG(J),ARGST(J),CTRB ISP= ',ISP
+          DO 570 J=1,JJJ
+            WRITE (iunout,*) J,XNTG(J),AA(J)
+  570     CONTINUE
+        ELSEIF (NCHTAL(ICHORI).EQ.13) THEN
+          WRITE (iunout,*)  'J,XNTG(J),ARGST(J),CTRB ISP= ',ISP
+          DO 580 J=1,JJJ
+            WRITE (iunout,*) J,XNTG(J),AA(J)
+  580     CONTINUE
         ENDIF
       ENDIF
 C

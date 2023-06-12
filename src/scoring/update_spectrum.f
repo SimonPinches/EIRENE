@@ -12,6 +12,8 @@ cdr             to bin in (parallel) energy units with sign.
 cdr             More convenient units: parallel velocity (parallel to chord)
 cdr             with sign (tbd)
 cdr  March 21:  typo fixed in one place: WTR --> WT
+cmg  Feb 1, 23: added angularly resolved scoring for surface-averaged tallies
+cmg             switch ISPCOPT = 1, calculation of EB = (velx*crtx + vely*crty + velz*crtz)
 
       SUBROUTINE EIRENE_UPDATE_SPECTRUM (WT,IND,ISC)
 C  update contributions to surface- or volume/line-averaged energy spectra
@@ -95,13 +97,20 @@ cdr  See ISC > 0 for the required coding.
               ADD = WT  ! particle flux per bin
             CASE (2)
               ADD = WT*E0 ! energy-weighted flux (power flux) per bin
+cmg Feb 1, 2023: added angle weighted flux per Sven's change to SOLPS-ITER version, Sep 2022
             CASE (3)
-              ADD = WT*VEL*CDYN
+              ADD = WT*VEL*CDYN ! angle weighted flux (power flux) per bin
             CASE DEFAULT
               ADD = 0._DP ! no scoring
             END SELECT
 
-            EB = E0
+cmg Feb1, 2023: introduced ISPCOPT to recalculate EB per Sven's change to SOLPS-ITER version, Sep 2022
+            if(P%ISPCOPT == 1) then
+cmg Feb 1, 2023: EB cosine of incident angle wr. surface normal 
+              EB = (velx*crtx + vely*crty + velz*crtz)
+            else
+              EB = E0
+            endif
 
             IF (ESTIML(ISPC)%IDIREC > 0) THEN
               WRITE (IUNOUT,*) 'error in update_spectrum (block 10F)'

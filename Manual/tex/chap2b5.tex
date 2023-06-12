@@ -91,7 +91,7 @@ PROUSR ($INDPRO(5)=5$) or, ($INDPRO(5)=4$) from external file or,
 
 \medskip
 
-\minisec{Other input tallies: ADIN, VOL, WGHT}
+\minisec{Other input tallies: ADIN, ZIIN, VOL, WGHT}
 The same applies to the ``additional plasma profile array" ADIN, $INDPRO(6)$,
 to permit usage of EIRENE output and graphics routines for additional (derived)
 plasma profiles such as pressure, energy fluxes, collision rate coefficients
@@ -112,6 +112,9 @@ It furthermore also applies to the zone volume array VOL
 \si{\per\cubic\centi\metre}, $INDPRO(12)$.
 Defaults are the cell volumes computed in EIRENE subroutine VOLUME from the
 standard mesh data.
+
+Additionally it also applies to the ion charge array ZIIN, $INDPRO(11)$.
+Defaults are the charge states of the respective bulk ions.
 
 Plasma data in the additional zones IADD, IADD=NSURF+1,NSURF+NADD outside the
 standard mesh are defaulted to the ``EIRENE vacuum data" given below.
@@ -206,6 +209,9 @@ C End of NPLSI species cards reading
       IF (INDPRO(5).LE.5) THEN
         B0  B1  B2  B3  B4  B5
       ENDIF
+      IF (INDPRO(11).NE.0.AND.INDPRO(11).LE.5) THEN
+        (ZI0(I),ZI1(I),ZI2(I),ZI3(I),ZI4(I),ZI5(I) I=1,NPLSI)
+      END IF
       IF (INDPRO(12).LE.5) THEN
         VL0  VL1  VL2  VL3  VL4  VL5
       ENDIF
