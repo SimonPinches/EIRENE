@@ -2374,7 +2374,7 @@ c                              !  default:                B FIELD WITH BX=0
 c  zi profiles
       IF (INDPRO(11).NE.0.AND.INDPRO(11).LE.5)
      .  READ (IUNIN,6664) (ZI0(I),ZI1(I),ZI2(I),ZI3(I),ZI4(I),ZI5(I),
-     .                     I=1,NPLS)
+     .                     I=1,NPLSI)
 
 c  cell volume profile card, OPTIONAL
 

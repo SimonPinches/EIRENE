@@ -25,7 +25,7 @@ At present there are two (version 2004 and older) or three preprogrammed
 functions $g(l)$, and the option to call a user supplied integrand.
 
 Firstly there are a number of Lyman- and Balmer series volume source rates
-(emissivity), see Subr.\ SIGHA.
+(emissivity), see Subr.\ SIGLINE.
 Each hydrogenic line emissivity is available for coupling to up to 6 states
 (``donor states") and linear in the corresponding density (output tally),
 namely to the (ground) states:
@@ -46,12 +46,55 @@ A number of different emission line shape profiles is available for these.
 For testing and \ordinalnum{3} party defined further integrands $g(x)$ along
 lines of side there is a user defined option (Subr.\ SIGTST).
 
+In 2018 a more general option for definition of emission lines (in NCHTAL = 2
+option) was introduced. It allows the definition of emission lines via the 
+Eirene input file. The population coefficients, QSS ratios, etc. needed for
+setting up volumetric line emissivity profiles as further additional tally ADDV
+need to be specified in input block 4. The ADDV tallies may then be used 
+for line of sight integration, along the chords defined further below.
+
+Distinct from the other addv tallies from block 10a these
+further addv tallies (beyond NADVI) are currently apparently neither
+scaled, averaged, integrated, nor do they have text (units, species) assigned.
+
+One of the keywords ``DEFINE\_LINES'' or ``DEFAULT\_LINES'' needs to specified 
+in the input to determine if the originally implemented Lyman- and 
+Balmer series volume source rates should be used or line definitions are 
+given. Please be aware: there is no mixing of default and 
+selfdefined lines. If at least one selfdefined line is to be used all 
+emission lines need to be defined in the input.
+
+
+
 \medskip
 
 \textbf{The Input Block} 
 
 \begin{lstlisting}
 *** 12. Data for Diagnostic Module
+      KEYWORD
+      IF (KEYWORD == ``DEFINE_LINES'') THEN
+        NUM_LINES, MOD_ADDV
+        DO ILINE=1, NUM_LINES
+**
+          LINE_NAME
+          NUM_COMPO
+          EINSTEIN TRANS_EN
+          DO JCOMP=1,NUM_COMPO
+            COMPO_NAME
+            NUM_CONTRIB, IRC
+            DO KCONTR = 1, NUM_CONTRIB
+              ISP, ITP, IRATIO
+              IF (IRATIO > 0) THEN
+                IRC_RAT(1)
+                IF (IRATIO == 2) THEN
+                  IRC_RAT(2), (ISP_RAT(I), ITP_RAT(I) I=1, 2)
+                ENDIF
+              ENDIF
+            ENDDO
+          ENDDO
+        ENDDO
+      ENDIF 
       NCHORI  NCHENI
       IF (NCHORI.GT.0) THEN
         DO 121 ICHORI=1,NCHORI
@@ -73,8 +116,77 @@ lines of side there is a user defined option (Subr.\ SIGTST).
 \medskip 
 
 \begin{description}
-  \item[NCHORI] Total number of different line of sights
-  \item[NCHENI] $\mid$NCHENI$\mid$ is the total number of energies, at which the
+  \item[KEYWORD] Keyword indicating if the originally implemented Lyman- and 
+        Balmer series volume source rates should be used or 
+        line definitions are provide. 
+        \begin{description}
+          \item[$=$ DEFAULT\_LINES] the implemented Lyman- and 
+               Balmer series volume source rates are used
+          \item[$=$ DEFINE\_LINES] definition of emission lines is expected
+        \end{description}
+  \item[NUM\_LINES] Total number of different emission lines
+  \item[MOD\_ADDV] flag for memory management of ADDV tallies
+        \begin{description}
+          \item[$= 0$] memory saving mode
+               Only the components of the latest calculated emission line
+               are kept in storage. A new calculated emission line 
+               overwrites the previously calculated data. If a previously
+               calculated emission line is used again for a chord lateron
+               it needs to be recalculated.
+          \item[$= 1$] All components of all emission lines are stored
+               and kept. This option is much more storage consuming but
+               also faster than MOD\_ADDV=0.
+        \end{description}
+   \item[LINE\_NAME] name of the emission line, e.g. BA\_ALPHA.
+
+         LINE\_NAME can be used to identify the particular emission
+         profile in the specification of a line of sight.
+   \item[NUM\_COMPO] Number of components of the line
+   \item[EINSTEIN] radiative transition rate (1/sec)
+   \item[TRANS\_EN] transition energy, identifyer for line
+   \item[COMPO\_NAME] name of the component, 
+
+         used for identification of the component in the emissivity output
+   \item[NUM\_CONTRIB] Number of contributions to the component of the line
+   \item[IRC] Number of a reaction defined in input block 4 for a
+         population coefficient such as H.12 2.2.5a
+   \item[ISP] species index of density which is used for building the 
+         emission line
+   \item[ITP] particle type
+        \begin{description}
+          \item[$= 0$] photon density PDENPH is used
+          \item[$= 1$] atom density PDENA is used
+          \item[$= 2$] molecule density PDENM is used
+          \item[$= 3$] ion density PDENI is used
+          \item[$= 4$] bulk ion density DIIN is used
+          \item[$= 5$] electron density DEIN is used
+        \end{description}
+   \item[IRATIO] number of density ratios to be used for this contribution,
+         maximal 2 ratios are allowed.
+
+         The use of a ratio is required if the true parent density is not
+         available (or in QSS mode). Then the first ratio converts from 
+         density(1) the to ``true'' density for this component.
+
+         density(1) is taken as "intermediate" parent density. Fetch 
+         reduced population coefficent and density ratio  
+         ratio1="density"/"density(1)" will be applied,
+         to turn density(1) into "density"
+
+         e.g. density    = H2+
+
+         \hspace{0.6 true cm} density(1) = H2
+
+         \hspace{0.6 true cm} ratio1     = [H2+]/[H2]
+
+         This works when the second species involved in loss and gain rates
+         for species H2+ from H2 is the same
+   \item[IRC\_RAT] Number of a reaction defined in input block 4 for providing
+         a density ratio
+   \item[ISP\_RAT] species number of the density to be used with ratio I, I=1,2
+   \item[ITP\_RAT] type of particle density to be used with ratio I, I=1,2
+   \item[NCHORI] Total number of different line of sights
+   \item[NCHENI] $\mid$NCHENI$\mid$ is the total number of energies, at which the
         spectrum is evaluated (irrelevant e.g.\ for total signals, such as Lyman and
         Balmer emissivity without line shape resolution).
 
@@ -89,13 +201,18 @@ lines of side there is a user defined option (Subr.\ SIGTST).
         \begin{description}
           \item[$= 1$] charge-exchange source rate (SIGCX)
           \item[$= 2$] Hydrogen line
-                emission source rate (SIGAL)
+                emission source rate (SIGLINE)
           \item[$= 3$] spectral radiance of photonic lines
                 (SIGRAD) (new in versions 2005 and younger)
           \item[$= 10$] user supplied
                 integrand (SIGUSR) 
 
                 (this was option NSPTAL =3, in versions 2004 and older)
+          \item[$= 11$] integrand is line of sight (SIGLOS) 
+          \item[$= 12$] back ground (input) tallies
+                user supplied integrand (SIGPLA) 
+          \item[$= 13$] volume averaged (output) tallies
+                user supplied integrand (SIGEIR) 
         \end{description}
   \item[NSPSCL] Flag for choice of linear or logarithmic axes in plots of spectra
         (vs.\ energy or wavelength, resp.) and of source term distribution along 
