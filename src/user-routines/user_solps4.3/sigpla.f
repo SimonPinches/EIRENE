@@ -22,16 +22,19 @@ C
       USE EIRMOD_COMUSR
       USE EIRMOD_COMPRT
       USE EIRMOD_CGEOM
+      USE EIRMOD_CTRCEI
 
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: INIT,JJJ
       REAL(DP), INTENT(INOUT) :: PSIG(0:),ARGST(0:,:)
       REAL(DP), INTENT(IN) :: ZDS,DUM1,DUM2
-      INTEGER :: NCELC,ITROLD
+      INTEGER :: NCELC,UDIM
+      INTEGER,SAVE :: ITROLD
       LOGICAL :: LARGST
-      SAVE
+!pb   SAVE
 
       LARGST = SIZE(ARGST,2) >= NRAD
+      udim=ubound(psig,1)
 
       IF (INIT.EQ.0) THEN
         PSIG=0.
@@ -42,6 +45,7 @@ C
            
         ENDIF
         ITROLD=IITER
+        IF (TRCSIG) WRITE(IUNOUT,*) 'SIGEIR, UDIM= ',UDIM
         RETURN
       ENDIF
  
@@ -49,16 +53,24 @@ C
 C  LINE INTEGRAL: PLASMA PARAMETER * CM
 C
       ncelc=ncltal(ncell)
-      PSIG(1)=PSIG(1)+ZDS*TEIN(NCELC)
-      PSIG(2)=PSIG(2)+ZDS*TIIN(1,NCELC)
-      PSIG(3)=PSIG(3)+ZDS*DEIN(NCELC)
-      PSIG(4)=PSIG(4)+ZDS*DIIN(1,NCELC)
+      if (udim >= 1)
+     .  PSIG(1)=PSIG(1)+ZDS*TEIN(NCELC)
+      if (udim >= 2)
+     .  PSIG(2)=PSIG(2)+ZDS*TIIN(1,NCELC)
+      if (udim >= 3)
+     .  PSIG(3)=PSIG(3)+ZDS*DEIN(NCELC)
+      if (udim >= 4)
+     .  PSIG(4)=PSIG(4)+ZDS*DIIN(1,NCELC)
 
       IF (LARGST) THEN
-        ARGST(1,JJJ)=TEIN(NCELC)
-        ARGST(2,JJJ)=TIIN(1,NCELC)
-        ARGST(3,JJJ)=DEIN(NCELC)
-        ARGST(4,JJJ)=DIIN(1,NCELC)
+        if (udim >= 1)
+     .    ARGST(1,JJJ)=TEIN(NCELC)
+        if (udim >= 2)
+     .    ARGST(2,JJJ)=TIIN(1,NCELC)
+        if (udim >= 3)
+     .    ARGST(3,JJJ)=DEIN(NCELC)
+        if (udim >= 4)
+     .    ARGST(4,JJJ)=DIIN(1,NCELC)
       ENDIF
       
       RETURN

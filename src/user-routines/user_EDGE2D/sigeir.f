@@ -22,16 +22,19 @@ C
       USE EIRMOD_COMUSR
       USE EIRMOD_COMPRT
       USE EIRMOD_CGEOM
+      USE EIRMOD_CTRCEI
 
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: INIT,JJJ
       REAL(DP), INTENT(INOUT) :: PSIG(0:),ARGST(0:,:)
       REAL(DP), INTENT(IN) :: ZDS,DUM1,DUM2
-      INTEGER :: NCELC,ITROLD
+      INTEGER :: NCELC,UDIM
+      INTEGER, SAVE :: ITROLD
       LOGICAL :: LARGST
-      SAVE
+!pb   SAVE
 
       LARGST = SIZE(ARGST,2) >= NRAD
+      udim=ubound(psig,1)
 
       IF (INIT.EQ.0) THEN
         PSIG=0.
@@ -42,19 +45,25 @@ C
            
         ENDIF
         ITROLD=IITER
+        IF (TRCSIG) WRITE(IUNOUT,*) 'SIGEIR, UDIM= ',UDIM
         RETURN
       ENDIF
  
 
 C  LINE INTEGRAL: NEUTRAL PARAMETER * CM
 C  
+      udim=ubound(psig,1)
       ncelc=ncltal(ncell)
-      PSIG(1)=PSIG(1)+ZDS*PDENA(1,NCELC)
-      PSIG(2)=PSIG(2)+ZDS*PDENM(1,NCELC)
+      if (udim >= 1)
+     .  PSIG(1)=PSIG(1)+ZDS*PDENA(1,NCELC)
+      if (udim >= 2)
+     .  PSIG(2)=PSIG(2)+ZDS*PDENM(1,NCELC)
 
       IF (LARGST) THEN
-        ARGST(1,JJJ)=PDENA(1,NCELC)
-        ARGST(2,JJJ)=PDENM(1,NCELC)
+        if (udim >= 1)
+     .    ARGST(1,JJJ)=PDENA(1,NCELC)
+        if (udim >= 2)
+     .    ARGST(2,JJJ)=PDENM(1,NCELC)
       ENDIF
       
       RETURN
