@@ -112,6 +112,21 @@ C
      .      ('USER-DEFINED LINE INTEGRAL (SUBR. SIGUSR)',41)
           TXHEAD(1:41) =
      .      'USER-DEFINED LINE INTEGRAL (SUBR. SIGUSR)'
+        ELSEIF (NCHTAL(ICHORI).EQ.11) THEN
+          CALL EIRENE_HEADNG
+     .      ('LOS INTEGRAL: CM  ',41)
+          TXHEAD(1:41) =
+     .      'LOS INTEGRAL: CM '     
+        ELSEIF (NCHTAL(ICHORI).EQ.12) THEN
+          CALL EIRENE_HEADNG
+     .      ('INT.: UNIT x CM  ',41)
+          TXHEAD(1:41) =
+     .      'INT.: UNIT x CM '     
+        ELSEIF (NCHTAL(ICHORI).EQ.13) THEN
+          CALL EIRENE_HEADNG
+     .      ('INT.: UNIT x CM  ',41)
+          TXHEAD(1:41) =
+     .      'INT.: UNIT x CM '
         ELSE
           CALL EIRENE_HEADNG
      .      ('LINE INTEGRAL TESTING OPTION: NO SIGNALS)',41)
@@ -370,6 +385,24 @@ C
           write (iunout,*)
      .           'printout for user-defined line integral '
           write (iunout,*) 'still to be written in subr. outsig '
+          
+        ELSEIF (NCHTAL(ICHORI).EQ.11) THEN
+C
+          DUMTIL=FUFFER(ICHORI,1)
+          CALL EIRENE_MASR1('LOS INT. ',DUMTIL)
+          CALL EIRENE_LEER(2)
+
+        ELSEIF (NCHTAL(ICHORI).EQ.12) THEN
+C
+          DUMTIL=FUFFER(ICHORI,1)
+          CALL EIRENE_MASR1('PLA INT. ',DUMTIL)
+          CALL EIRENE_LEER(2)
+
+        ELSEIF (NCHTAL(ICHORI).EQ.13) THEN
+C
+          DUMTIL=FUFFER(ICHORI,1)
+          CALL EIRENE_MASR1('EIR INT. ',DUMTIL)
+          CALL EIRENE_LEER(2)
         ENDIF
 
   100 CONTINUE

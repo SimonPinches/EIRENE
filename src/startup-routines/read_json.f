@@ -129,7 +129,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           ISPSRF, ISPTYP, NSPS, NSPSA, IPTYP, IPSPZ, ISTRAI,
      .           IANF, IEND,  
      .           IPLSTI, IPLSV, ISRFCLL,
-     .           IDIREC, ISTCHR,  ITOK, IER, IL, ILOGS, IO,
+     .           IDIREC, ISTCHR,  ITOK, IER, IL, ILOGS, IO, ISPOPT,
      .           NLOGIN, IFLG, IDUM,
      .           NB,NS,NA, ISTR,
      .           NRC, IADV, NUM_COMPO, NUM_CONTRIB, ICNT, IDMDL, IND,
@@ -3907,6 +3907,7 @@ C
           call json%get(psp,'ISPTYP',isptyp,found)
           call json%get(psp,'NSPS',nsps,found)
           call json%get(psp,'IDIREC',idirec,found)
+          call json%get(psp,'ISPCOPT',ispopt,found)
 
           call json%get(psp,'SPCMN',spcmn,found)
           call json%get(psp,'SPCMX',spcmx,found)
@@ -4018,6 +4019,7 @@ C    .      ... WRONG INPUT !
           ESPEC%NSPC = ABS(NSPS)
           ESPEC%ISRFCLL = ISRFCLL
           ESPEC%IDIREC = IDIREC
+          ESPEC%ISPCOPT = ISPOPT
 cdr
 cdr       ESPEC%LOG = .FALSE. ! this was too restrictive !
 cdr  Option     LOG = .TRUE. WAS ALREADY AVAILABLE IN SCORING/UPDATE_SPECTRUM
