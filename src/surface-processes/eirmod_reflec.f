@@ -146,11 +146,7 @@ ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
       LOGICAL :: NLDATA, NLBEHR
     
       integer , save :: ifile
-      
 
-      Break the code!
-!HJL      SAVE
-           
 !$OMP THREADPRIVATE (IFILE,
 !$OMP& ZRANGES,ZENGYS,ZRS,ZIDES,
 !$OMP& ZRANGE,ZDE,ZDEL,ZENGY,ZR,ZIDE,
