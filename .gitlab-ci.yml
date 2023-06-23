@@ -605,7 +605,7 @@ build_EMC3-EIRENE:
     rules:
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
-        - when: on_sucess
+        - when: on_success
 
 run_EMC3-EIRENE_H:
     <<: *run
