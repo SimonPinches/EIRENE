@@ -147,7 +147,8 @@ ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
     
       integer , save :: ifile
       
-           
+
+      Break the code!
 !HJL      SAVE
            
 !$OMP THREADPRIVATE (IFILE,
