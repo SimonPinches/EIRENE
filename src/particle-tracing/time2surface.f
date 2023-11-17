@@ -1,10 +1,10 @@
-      SUBROUTINE EIRENE_TIME_TO_STANDARD_SURFACE 
-     .           (TL, TF, TT, TS, ZDT1, ZT, ZTST, 
+      SUBROUTINE EIRENE_TIME_TO_STANDARD_SURFACE
+     .           (TL, TF, TT, TS, ZDT1, ZT, ZTST,
      .            VELXS, VELYS, VELZS, VELS, ISRFCL, IRET)
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
-      USE EIRMOD_COMPRT, ONLY : ITIME, ITYP, VELX, VELY, VELZ, VEL, 
+      USE EIRMOD_COMPRT, ONLY : ITIME, ITYP, VELX, VELY, VELZ, VEL,
      .                          LGPART, MRSURF, IPOLGN, IUNOUT, NPANU,
      .                          NCELL, NRCELL, NPCELL, NTCELL, NACELL
       USE EIRMOD_CLOGAU
@@ -148,7 +148,7 @@ cym
       CALL EIRENE_MASAGE('ERROR IN TIME_TO_STANDARD_SURFACE, '//
      .                   'ZDT1 OR NCELL OUT OF RANGE')
       CALL EIRENE_MASAGE('PARTICLE IS KILLED')
-     
+
       write(iunout,*) 'ERROR for NPANU,thread =',NPANU,
      .                EIRENE_ITHREAD
       WRITE (iunout,*) 'ERROR NPANU,NCELL,ZDT1,ZTST,TL,TS '
@@ -159,15 +159,15 @@ cym
 !$OMP END CRITICAL
 cym
       RETURN
-C   
+C
   994 CONTINUE
 !$OMP CRITICAL
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE('ERROR IN TIME_TO_STANDARD_SURFACE, '//
-     .                   'FOKKER PLANCK COLLISION INDICATED BUT '//
+     .                   'FOKKER-PLANCK COLLISION INDICATED BUT '//
      .                   'PARTICLE IS NO ION')
       CALL EIRENE_MASAGE('PARTICLE IS KILLED')
-     
+
       write(iunout,*) 'ERROR for NPANU,thread =',NPANU,
      .                EIRENE_ITHREAD
       WRITE (iunout,*) 'ERROR NPANU,NCELL,ZDT1,ZTST,TL,TS,TT,TF '

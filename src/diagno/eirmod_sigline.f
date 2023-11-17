@@ -2,7 +2,7 @@ cdr  Formerly: SIGHA (atomic hydrogen lines), now generalized to SIGLINE
 
       MODULE EIRMOD_SIGLINE
       USE EIRMOD_PRECISION
-      
+
       IMPLICIT NONE
       PRIVATE
 
@@ -12,7 +12,7 @@ cdr  Formerly: SIGHA (atomic hydrogen lines), now generalized to SIGLINE
       INTEGER, SAVE :: ISTOLD=-1, ITROLD=-1
 
       CONTAINS
-     
+
 CDR  parameter PEN introduced, to identify hydrogen line by central energy
 Cdr Aug.16:  The identification of particular lines
 cdr          by upper and lower energy level (input flags EMIN1,EMAX1 in block 12)
@@ -25,7 +25,7 @@ c            PEN parameter is different from that from previous call,
 c            i.e. a new line is requested for same stratum flag.
 cdr Jan 18:  parameter ICHORI added
 c   june 18: renamed from sigha (hydrogen only) to sigline (generalized,
-c            any transition line)
+c            any bound-bound transition line)
 cdr Aug  19: calls FIND_EMISS_LINE to bring the chosen line emissivity onto ADDV arrays
 cdr          Comments misleading, still corresponds to the old (hydrogen only) version
 c
@@ -38,7 +38,7 @@ cdr  line of sight (ARGST).
 
 cdr  New version:
 cdr    The lines, components and contributions are specified in input block 12.
-cdr    The corresponding emissivity profiles are specified as 
+cdr    The corresponding emissivity profiles are specified as
 cdr    reaction decks in block 4.
 
 cdr Old version (up to May 2018), Hydrogen only:
@@ -46,12 +46,12 @@ c    Currently there are up to 6 contributions to each particular pre-programmed
 c    transition (depending on population coefficient data stored
 c    in file AMJUEL, section H.11 and H.12)
 c  aug.16: available transitions in H-atom:
-c          ly-alpha  (2 - 1)
-c          ly-beta   (3 - 1)
-c          ba-alpha  (3 - 2)
-c          ba-beta   (4 - 2)
-c          ba-gamma  (5 - 2)
-c          ba-delta  (6 - 2)
+c          ly-alpha (2 - 1)
+c          ly-beta  (3 - 1)
+c          ba-alpha (3 - 2)
+c          ba-beta  (4 - 2)
+c          ba-gamma (5 - 2)
+c          ba-delta (6 - 2)
 c    for each of these lines there are separate components from
 c    1) coupling to H
 c    2) coupling to H+
@@ -69,10 +69,10 @@ C
 C  INPUT:
 C          INIT: FLAG FOR INITIALISATION (DO NOT CHANGE!)
 C          NCELL (COMPRT): INDEX IN TALLY ARRAYS FOR CURRENT ZONE
-C          JJJ:    INDEX OF SEGMENT ALONG CHORD
-C          ZDS:    LENGTH OF SEGMENT NO. JJJ
-C          PEN:    CENTRAL ENERGY OF LINE (EV)
-C  OUTPUT: PSIG:  LINE INTEGRAL OF EMISSION,I=0,6 COMPONENTS
+C          JJJ: INDEX OF SEGMENT ALONG CHORD
+C          ZDS: LENGTH OF SEGMENT NO. JJJ
+C          PEN: CENTRAL ENERGY OF LINE (EV)
+C  OUTPUT: PSIG: LINE INTEGRAL OF EMISSION,I=0,6 COMPONENTS
 C          ARGST: CONTRIB. FROM CELL NCELL AND CHORD SEGMENT JJJ TO:
 C          THE H LINE FLUX PSIG(I),I=0,6 COMPONENTS
 C          FROM ATOMS, MOLECULES, TEST IONS, BULK IONS AND NEGATIVE IONS
@@ -116,7 +116,8 @@ c  new, unified routine for line emissivities, replacing: Ly_alpha, Ba_alpha, Ba
 c  identify the selected emission line LNO from the input flags.
           CALL EIRENE_FIND_EMIS_LINE (ISTRA,ICHORI,PEN,LNO)
 
-        endif   ! additional tallies ADDV are now filled, for new LINE, and for present stratum
+        endif   ! additional tallies ADDV are now filled,
+                ! for new LINE, and for present stratum
 
         ISTOLD=ISTRA
         ITROLD=IITER
@@ -134,7 +135,7 @@ C
         PSIG(0) = 0._DP
         IF (LARGST) ARGST(0,JJJ) = 0._DP
       ELSE
-! USE DATA PROVIDED FOR EMISSION LINE LNO
+! USE DATA PROVIDED FOR EMISSION LINE LNO, ALL COMPONENTS
         DO JCOMP = 1, EMIS_LINES(LNO)%NUM_COMPO
           IADV = EMIS_LINES(LNO)%COMPO(JCOMP)%IADV
           PSIG(JCOMP) = PSIG(JCOMP) + ZDS*ADDV(IADV,NCELC)

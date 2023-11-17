@@ -239,7 +239,7 @@ C
         DO 7 IR=1,NR1ST,NR1STM
           CALL GRJMP(real(XPOL(IR,1),SP),real(YPOL(IR,1),SP))
           DO 9 IP = 2,NP2ND
-            CALL GRDRW(real(XPOL(IR,IP),SP), real(YPOL(IR,IP),SP))
+            CALL GRDRW(real(XPOL(IR,IP),SP),real(YPOL(IR,IP),SP))
     9     CONTINUE
     7   CONTINUE
       ELSEIF (LEVGEO.EQ.3.AND.LPTOR3(IBLD)) THEN

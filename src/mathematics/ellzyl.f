@@ -41,9 +41,9 @@ C
 C     DATA              EPS  / 5.D-10 /
 *     Zentrum:
 *
-      CX  = EV(1,3)
-      CY  = EV(2,3)
-      CZ  = EV(3,3)
+      CX = EV(1,3)
+      CY = EV(2,3)
+      CZ = EV(3,3)
 *
       X0 = M(1)
       Y0 = M(2)

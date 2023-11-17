@@ -12,6 +12,7 @@
       USE EIRMOD_COMXS
       USE EIRMOD_CLAST
       USE EIRMOD_RANF, ONLY: RANF_EIRENE
+
       IMPLICIT NONE
       PRIVATE
 
@@ -58,17 +59,17 @@ C  THIS SUBROUTINE CARRIES OUT A CHARGE EXCHANGE COLLISION OF A TEST PARTICLE
 C  WITH A BULK PARTICLE.
 C  IT RETURNS THE POST-COLLISION VELOCITY VECTOR.
 C
-C  NFLAG= 1:       SAMPLING FROM MONOENERGETIC DISTRIBUTION
-C                  OF ION SPEED IN 3D, X,Y,Z DIRECTION
-C                  (I.E., DELTA FUNCTION IN ENERGY SPACE)
-C                  E=M/2 V_M^2 =3/2 KT, IN REST FRAME OF IPLS
-C                  USE WEIGHT CORRECTION OR REJECTION
-C                  to be generalized to E=ESIGCX(IRCX,1)
-C  NFLAG= 2:       SAMPLING FROM SHIFTED MAXWELLIAN
-C                  "FMAXW" AT TI AND V-DRIFT IN CELL K
-C  NFLAG= 3:       SAMPLING FROM SHIFTED MAXWELLIAN + WEIGHT CORRECTION
-C                  FACTOR = SIGMA*VREL*FMAXW/<SIGMA*VREL>
-C                  OR ALTERNATIVELY: REJECTION
+C  NFLAG= 1: SAMPLING FROM MONOENERGETIC DISTRIBUTION
+C            OF ION SPEED IN 3D, X,Y,Z DIRECTION
+C            (I.E., DELTA FUNCTION IN ENERGY SPACE)
+C            E=M/2 V_M^2 =3/2 KT, IN REST FRAME OF IPLS
+C            USE WEIGHT CORRECTION OR REJECTION
+C            to be generalized to E=ESIGCX(IRCX,1)
+C  NFLAG= 2: SAMPLING FROM SHIFTED MAXWELLIAN
+C            "FMAXW" AT TI AND V-DRIFT IN CELL K
+C  NFLAG= 3: SAMPLING FROM SHIFTED MAXWELLIAN + WEIGHT CORRECTION
+C            FACTOR = SIGMA*VREL*FMAXW/<SIGMA*VREL>
+C            OR ALTERNATIVELY: REJECTION
 C
 C  K   : CELL INDEX
 
@@ -101,21 +102,22 @@ C  MAXWELLIAN (NFLAG=2), WEIGHTED BY SIGMA*VREL (NFLAG=3)
 
 C  ADDITIONALLY:
 C  USED E.G. FOR VOLUME RECOMBINATION SOURCE (NFLAG=2)
-C      
+C
       IMPLICIT NONE
 
       REAL(DP), INTENT(IN) :: DUMT(3), DUMV(3)
       REAL(DP), INTENT(IN) :: VXO, VYO, VZO, VLO
       REAL(DP), INTENT(OUT) :: VELQ
       INTEGER, INTENT(IN) :: K, IOLD, NOLD, NFLAG, IRCX
-      REAL(DP) ::EIRENE_CROSS
+      REAL(DP) :: EIRENE_CROSS
 
 cpg      SAVE
 C
 c initialize arrays for "on the fly" rejection efficiency estimates
 C NFLAG=1 AND NFLAG=3 OPTIONS
       IF (IFIRST.EQ.0) THEN
-        IFLAG=0  ! currently unused, controls scattering angle model in veloel
+        IFLAG=0  ! currently unused,
+                 ! controls scattering angle model in veloel
         IFIRST=1
         DO IRL=1,NRCXI
           IFLRCX(IRL)=0
@@ -145,7 +147,7 @@ C CURRENTLY: HARD-WIRED INITIAL SEARCH RANGE
         SGCVMX(IRCX)=-1.D60
         JJ=1
         do j=1,1000
-c  elab:  here ln(E), with E from 0.1 to 1e4 eV
+c  elab: here ln(E), with E from 0.1 to 1e4 eV
           elab=elmin+(j-1)/999._dp*(elmax-elmin)
 
 c  find cross-section at ENERGY ELAB from a fit or table.
@@ -160,7 +162,7 @@ c
         enddo
 
 !pb!$OMP CRITICAL
-        IF (JJ.NE.1.AND.JJ.NE.1000) THEN
+        IF (JJ.NE.1 .AND. JJ.NE.1000) THEN
 cdr  maximum found
           elab=elmin+(JJ-1)/999.*(elmax-elmin)
           ELAB=EXP(ELAB)
@@ -191,7 +193,8 @@ C  NEXT: STEP 1
 C
 C    set parameters for random sampling in cell icell=K
 C
-      IF (K.GT.0.AND.K.LE.NRAD) THEN  ! K is the grid cell number. Use local bulk medium parameters
+      IF (K.GT.0.AND.K.LE.NRAD) THEN  ! K is the grid cell number.
+                                      ! Use local bulk medium parameters
 c  scaled 1d temperatures, per degree of freedom
         ZARGX=ZRG(IPLS,K)
         ZARGY=ZRG(IPLS,K)
@@ -211,7 +214,8 @@ c  drift velocity, cm/s
           VYDR=0.D0
           VZDR=0.D0
         ENDIF
-      ELSEIF (K.EQ.0) THEN  !  K=0, USE ARGUMENTS DUMT AND DUMV AS PARAMETERS FOR DRIFTING MAXWELLIAN
+      ELSEIF (K.EQ.0) THEN  !  K=0, USE ARGUMENTS DUMT AND DUMV
+                            !  AS PARAMETERS FOR DRIFTING MAXWELLIAN
         IF (NFLAG.NE.2) GOTO 999
         ZARGX=DUMT(1)
         ZARGY=DUMT(2)
@@ -292,7 +296,7 @@ cdr
 c.....................................................................
 
 C
-C       IF (NLREJC) THEN    !  REJECTION IS NOW DEFAULT OPTION
+C       IF (NLREJC) THEN   !  REJECTION IS NOW DEFAULT OPTION
 C
         IF (IFLRCX(IRCX).GT.0) THEN
           TEST=RANF_EIRENE()*SGCVMX(IRCX)

@@ -30,8 +30,8 @@ C       WRITE (iunout,......)
 
       ZEILE=ZEILE_OUT
 
-c  now on exit:  iread=1:
-c  next read must come from ZEILE:  READ(ZEILE, FORMAT) ....
+c  now on exit: iread=1:
+c  next read must come from ZEILE: READ(ZEILE, FORMAT) ....
 c
        return
        end subroutine eirene_skip_read_comment

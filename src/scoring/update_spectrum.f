@@ -7,7 +7,7 @@ cdr             IDIREC=1 option is not available here for surface spectra (forgo
 cdr             but already programmed in OUTSPEC. "Fail-safe" added for now.
 cdr             Lots of identical code twice in ISC=0 and ISC > 0. Can be reduced.
 cdr  29.05.19:  Bug fix: binning for directional volumetric spectra
-cdr             use E0_par times sign(vel,chord), 
+cdr             use E0_par times sign(vel,chord),
 cdr             to bin in (parallel) energy units with sign.
 cdr             More convenient units: parallel velocity (parallel to chord)
 cdr             with sign (tbd)
@@ -17,7 +17,7 @@ cmg             switch ISPCOPT = 1, calculation of EB = (velx*crtx + vely*crty +
 
       SUBROUTINE EIRENE_UPDATE_SPECTRUM (WT,IND,ISC)
 C  update contributions to surface- or volume/line-averaged energy spectra
-c  wt:  particle weight, (or wt=wpr, conditional particle weight)
+c  wt: particle weight, (or wt=wpr, conditional particle weight)
 c
 c  cell crossing   : (conditional) tracklength estimator for cell-based spectra
 c  surface crossing: here tracklength estim. collapses to a collision estim.
@@ -27,12 +27,12 @@ c       ind:  =1: particle incident on surface
 c       ind:  =2: particle reemitted from surface
 
 c  isc:  =1,2: else (update cell-based spectra)
-c       isc =1:  score in coarse (scoring) grid
-c       isc =2:  score in fine (geometry)  grid
-c       ind:  not in use  (often: ind = iflag in calling programs,
-c                          IFLAG is a flag used for special (non-standard)
-c                          options for volume-averaged tally estimators)
-c  ityp:  type of particle
+c       isc =1: score in coarse (scoring) grid
+c       isc =2: score in fine (geometry)  grid
+c       ind:  not in use (often: ind = iflag in calling programs,
+c                         IFLAG is a flag used for special (non-standard)
+c                         options for volume-averaged tally estimators)
+c  ityp: type of particle
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -50,7 +50,7 @@ c  ityp:  type of particle
       INTEGER, INTENT(IN) :: IND, ISC
       REAL(DP), INTENT(IN) :: WT
       INTEGER :: ISPC, I, IS, IC, IRDO, IRD
-      REAL(DP) :: ADD, WV, DIST, WTR, SPCVX, SPCVY, SPCVZ, CDYN, 
+      REAL(DP) :: ADD, WV, DIST, WTR, SPCVX, SPCVY, SPCVZ, CDYN,
      .            EB, SIG
 
       TYPE(EIRENE_SPECTRUM), POINTER :: P
@@ -60,7 +60,7 @@ c             no spectra of emitted particles (ind=2) yet
 
       IF ((ISC == 0) .AND. (IND .NE. 1)) RETURN
 
-C  set "type" specific parameters:  IS, CDYN
+C  set "type" specific parameters: IS, CDYN
       SELECT CASE (ITYP)
       CASE (0)
         IS = IPHOT
@@ -96,17 +96,18 @@ cdr  See ISC > 0 for the required coding.
             CASE (1)
               ADD = WT  ! particle flux per bin
             CASE (2)
-              ADD = WT*E0 ! energy-weighted flux (power flux) per bin
-cmg Feb 1, 2023: added angle weighted flux per Sven's change to SOLPS-ITER version, Sep 2022
+              ADD = WT*E0 ! energy-weighted flux (energy flux) per bin
+cmg Feb 1, 2023: added angle weighted flux per change by Sven Wiesen to SOLPS-ITER version, Sep 2022
             CASE (3)
-              ADD = WT*VEL*CDYN ! angle weighted flux (power flux) per bin
+              ADD = WT*VEL*CDYN ! momentum weighted flux (power flux)
+                                ! per bin
             CASE DEFAULT
               ADD = 0._DP ! no scoring
             END SELECT
 
-cmg Feb1, 2023: introduced ISPCOPT to recalculate EB per Sven's change to SOLPS-ITER version, Sep 2022
+cmg Feb1, 2023: introduced ISPCOPT to recalculate EB per change by Sven Wiesen to SOLPS-ITER version, Sep 2022
             if(P%ISPCOPT == 1) then
-cmg Feb 1, 2023: EB cosine of incident angle wr. surface normal 
+cmg Feb 1, 2023: EB cosine of incident angle wr. surface normal
               EB = (velx*crtx + vely*crty + velz*crtz)
             else
               EB = E0
@@ -138,7 +139,7 @@ cdr  score SPC(I), ESP_MIN and ESP_MAX
             ESTIML(ISPC)%ESP_MIN= MIN(ESTIML(ISPC)%ESP_MIN,EB)
 !$OMP ATOMIC
             ESTIML(ISPC)%ESP_MAX= MAX(ESTIML(ISPC)%ESP_MAX,EB)
-            ESTIML(ISPC)%IMETSP = 1    
+            ESTIML(ISPC)%IMETSP = 1
           END IF
         END DO
 
@@ -161,8 +162,10 @@ cdr  iflag in calling program ?? Unused here.
           DO ISPC=1,NADSPC
             P => ESTIML(ISPC)
             IF ((P%ISRFCLL > 0) .AND.
-     .          (((P%ISRFCLL == 1).AND.(P%ISPCSRF == IRD)) .OR.      ! scoring cell, coarse grid
-     .           ((P%ISRFCLL == 2).AND.(P%ISPCSRF == IRDO))) .AND.   ! geometry cell, fine grid
+              ! scoring cell, coarse grid
+     .          (((P%ISRFCLL == 1).AND.(P%ISPCSRF == IRD)) .OR.
+              ! geometry cell, fine grid
+     .           ((P%ISRFCLL == 2).AND.(P%ISPCSRF == IRDO))) .AND.
      .          (P%IPRTYP == ITYP) .AND.
      .          ((P%IPRSP == IS) .OR. (P%IPRSP == 0))) THEN
 

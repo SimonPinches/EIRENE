@@ -14,7 +14,7 @@ cdr           rather than using parameters NHD1,...NHD5 ?
 
       PUBLIC :: EIRENE_ALLOC_CREF, EIRENE_DEALLOC_CREF,
      .          EIRENE_INIT_CREF, EIRENE_BROADCAST_CREF,
-     .          EIRENE_DEALLOC_REFLIST, 
+     .          EIRENE_DEALLOC_REFLIST,
      .          REFMODEL, SPEC_REF
 
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE :: RCREF(:)
@@ -82,9 +82,10 @@ CVK VARIABLES FOR CHEMICAL SPUTTERING: ESPTCR,JLCHSPNWL,STPRMR(:)
         TYPE(REFMODEL),POINTER :: NEXT
       END TYPE REFMODEL
 
-      TYPE(REFMODEL), POINTER, PUBLIC, SAVE :: REFLIST      
+      TYPE(REFMODEL), POINTER, PUBLIC, SAVE :: REFLIST
 
-      CONTAINS 
+      CONTAINS
+
 
       SUBROUTINE EIRENE_ALLOC_CREF
 
@@ -111,7 +112,8 @@ C  generalized to become surface-specific (allows for different values per surfa
 
       WRITE (IUNMEM,'(A,T25,I15)')
      .       ' CREF ',(NCREF+3*(NLIMPS+1))*8 + MCREF*4 +
-     .                 NHD6*500 +  ! reffile array: character-string for path to datafiles
+     .                 NHD6*500 +  ! reffile array: character-string
+                                   ! for path to datafiles
      .                (NHD1*NHD2*NHD6*(1+NHD3*(1+NHD4*(1+NHD5))))*8
 
       RPROB0    => RCREF(1)
@@ -123,7 +125,7 @@ cdr Why can we not use NHDx directly?
       DENAR     => RCREF(16:26)  ! here for NHD1=12, 12-1=11
       WIAR      => RCREF(27:33)  ! here for NHD2=7.
       DWIAR     => RCREF(34:39)  ! here for NID2=7, 7-1=6
-      RAAR      => RCREF(40:44)  !              =5 
+      RAAR      => RCREF(40:44)  !              =5
       DRAAR     => RCREF(45:48)  !                  5-1=4
 
       TM        => RCREF(49+0*NHD6 : 48+1*NHD6)
@@ -194,7 +196,7 @@ cdr Why can we not use NHDx directly?
         REFCUR => REFLIST
       ENDDO
       END SUBROUTINE EIRENE_DEALLOC_REFLIST
-      
+
 
       SUBROUTINE EIRENE_INIT_CREF
 
@@ -247,5 +249,5 @@ cdr Why can we not use NHDx directly?
 
       RETURN
       END SUBROUTINE EIRENE_BROADCAST_CREF
-      
+
       END MODULE EIRMOD_CREF

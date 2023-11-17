@@ -17,11 +17,13 @@ cdr  purpose ....?
      .          EIRENE_NEW_SIMARR, EIRENE_NEW_MULARR,
      .          EIRENE_FREE_SIMARR, EIRENE_FREE_MULARR
       PUBLIC :: CELLSIM, CELLMUL, SIMARR, MULARR,
-     .          EAELS, EMELS, EIELS,
-     .          EAPLS, EMPLS, EIPLS, PAPLS, PMPLS, PIPLS,
-     .          PDENAS, PDENMS, PDENIS, EDENAS, COPVS,
-     .          PPPL_COPS, CPPVS, EPPL_COPS, EPELS,
-     .          MAPLS, MMPLS, MIPLS, MPHPLS
+     .          EAELS, EMELS, EIELS, EPELS,
+     .          EAPLS, EMPLS, EIPLS,
+     .          PAPLS, PMPLS, PIPLS,
+     .          PDENAS, PDENMS, PDENIS,
+     .          EDENAS, COPVS,
+     .          MAPLS, MMPLS, MIPLS, MPHPLS,
+     .          PPPL_COPS, CPPVS, EPPL_COPS
 
       TYPE :: CELLSIM
         REAL(DP) :: VALUES

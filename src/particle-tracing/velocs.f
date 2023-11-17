@@ -1,12 +1,12 @@
 C  sept 2014: few minor comments
 c
-c  "weight" moved to argument list as "WGHTVS"  (removed: use parmmod, use comprt, use ccona)
-c  drift vector: vxwl,vywl,vzwl,vwl:  intent(in). Do not modify ! (rather than intent(inout))
+c  "weight" moved to argument list as "WGHTVS" (removed: use parmmod, use comprt, use ccona)
+c  drift vector: vxwl,vywl,vzwl,vwl: intent(in). Do not modify ! (rather than intent(inout))
 
       SUBROUTINE EIRENE_VELOCS(WGHTVS,
      .   TIWL,ESHET,VWL,VXWL,VYWL,VZWL,RSQDV,CVRSS,
-     .                   CX,CY,CZ,
-     .                   E0S,VELXS,VELYS,VELZS,VELS)
+     .   CX,CY,CZ,
+     .   E0S,VELXS,VELYS,VELZS,VELS)
 C
 C  FETCH A NEW VELOCITY FROM A MAXWELLIAN FLUX AT A SURFACE GIVEN
 C  BY THE NORMAL: CX,CY,CZ
@@ -31,7 +31,7 @@ C  TOWARDS THE TARGET BY A SHEATH POTENTIAL V WITH ENERGY eV = ESHET (EV)
 C  (IF ESHET.GT.0.)
 C  OUTPUT ENERGY, SPEED UNIT VECTOR AND VELOCITY ARE, RESP.:
 C         E0S,    VELXS,VELYS,VELZS AND VELS
-C         ALSO RETURNED: STAT. WEIGHT OF SAMPLE:  WGHT_NEW= WGHTVS = WGHT_OLD * FACTOR.
+C         ALSO RETURNED: STAT. WEIGHT OF SAMPLE: WGHT_NEW = WGHTVS = WGHT_OLD * FACTOR.
 C
       USE EIRMOD_PRECISION
 C     USE EIRMOD_PARMMOD
@@ -61,8 +61,10 @@ C---------------------------------------------------------------------
 C
       IF (INIV1.EQ.0) CALL EIRENE_FMAXWL
 C
-      ZARG2=SQRT(TIWL)*RSQDV  ! THERMAL VELOCITY,               sqrt(2 kT/m) in cm/s
-      ZARG=ZARG2*SQ2I         ! STANDARD DEVIATION IN GAUSSIAN: sqrt(kT/m) in cm/s
+      ZARG2=SQRT(TIWL)*RSQDV  ! THERMAL VELOCITY,
+                              ! sqrt(2 kT/m) in cm/s
+      ZARG=ZARG2*SQ2I         ! STANDARD DEVIATION IN GAUSSIAN:
+                              ! sqrt(kT/m) in cm/s
 C
 C  ROTATE DRIFT VELOCITY VXWL,VYWL,VZWL FROM A GLOBAL CARTESIAN
 C  INTO A CARTESIAN COORDINATE SYSTEM, IN WHICH THE TARGET NORMAL

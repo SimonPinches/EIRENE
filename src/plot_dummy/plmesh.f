@@ -1,4 +1,4 @@
-cdr june 17:  separate WRMESH and PLMESH.
+cdr june 17: separate WRMESH and PLMESH.
 
       SUBROUTINE EIRENE_PLMESH
 

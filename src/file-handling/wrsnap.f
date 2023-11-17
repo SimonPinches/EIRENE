@@ -18,11 +18,11 @@ C
       USE EIRMOD_COMSOU, ONLY: FLUX
       USE EIRMOD_COMPRT, ONLY: IUNOUT
 
-
       IMPLICIT NONE
 
       INTEGER, INTENT(IN) :: ISTR
       INTEGER :: I, J
+
 c  (atomic) census flux
       FLXCEN=FLUX(ISTR)
 C
@@ -72,7 +72,7 @@ cdr  fort.15 (census) was written in a previous run.
 cdr  In the present run allocation of storage for census arrays rpartc,ipartc,rpartw
 cdr  is determined by input: --> nprnl
 cdr  make sure that iprnl in previous run was not larger than in present run.
-      IF ((NPRNL.LT.IPRNL).AND.(NPRNL.GT.0)) THEN
+      IF (NPRNL.LT.IPRNL.AND.NPRNL.GT.0) THEN
         WRITE (IUNOUT,*)
      .     ' ERROR WHEN READING CENSUS ARRAY FOR T-DEP MODE'
         WRITE (IUNOUT,*)

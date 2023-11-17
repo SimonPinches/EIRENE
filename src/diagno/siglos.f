@@ -1,8 +1,8 @@
-C 
+C
 C
       SUBROUTINE EIRENE_SIGLOS(INIT,JJJ,ZDS,DUM1,PSIG,DUM2,ARGST)
 C  MG 27/8/21 (MG) User routine to test line integral, but writing of
-C  output via linint.f as done for sigha.f  
+C  output via linint.f as done for sigha.f
 C
 C  ONLY FOR TESTING LINE INTEGRAL ROUTINES
 C  INPUT:
@@ -14,7 +14,7 @@ C  OUTPUT:
 C          PSIG: TOTAL LINE INTEGRAL OF LOS
 C          ARGST: CONTRIB. FROM CELL NCELL AND CHORD SEGMENT JJJ
 C                 (=ZDS)
-C          THE INTEGRANT ARGST IS SUCH THAT INTEGR.(ARGST*DL) = PSIG     
+C          THE INTEGRANT ARGST IS SUCH THAT INTEGR.(ARGST*DL) = PSIG
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMPRT
@@ -33,7 +33,7 @@ C
         IF (LARGST) ARGST=0.
         RETURN
       ENDIF
- 
+
 
 C  LINE INTEGRAL: CM
 C

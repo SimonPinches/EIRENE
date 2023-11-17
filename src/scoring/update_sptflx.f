@@ -12,17 +12,17 @@ cdr              resolved wrt. species of emitted particle
 
 
 
-      SUBROUTINE EIRENE_UPDATE_SPTFLX (ITOLD, WGH,IND)
+      SUBROUTINE EIRENE_UPDATE_SPTFLX (ITOLD,WGH,IND)
 
 cdr  score sputtered fluxes on
-cdr            sputtered flux tallies SP_A_OT(MSURF)  (_A_: type of incident particle), IND=1, IND=2)
-cdr        and sputtered (reemitted) particle species-resolved tallies:  SP_A_B(MSURF) IND=2
+cdr            sputtered flux tallies SP_A_OT(MSURF) (_A_: type of incident particle), IND=1, IND=2)
+cdr        and sputtered (reemitted) particle species-resolved tallies: SP_A_B(MSURF)  IND=2
 
 C  present version: resolved with respect to incidence species type (for nlscl option)
 C  and also resolved wrt.  emitted species type and species
 c  INPUT:
-c  incident type :                      itold  (parameter list)
-c  weight of sputtered particle:        wgh    (parameter list)
+c  incident type :               itold (parameter list)
+c  weight of sputtered particle: wgh   (parameter list)
 
 c  ind=1:  type and species index of sputtered particle may not be not known:
 c          Update only total sputtered fluxes resolved by outgoing flux particle type.
@@ -32,8 +32,8 @@ c          than the sum over emitted species
 c          of species-resolved sputtered tallies.
 c  ind=2:  Type and species index of sputtered particle is known: update both: total and species-resolved fluxes
 c          only in case IND=2:
-c          sputtered (emitted) particle type:            ityp   (common)
-c          sputtered (emitted) particle species:         iphot,iatm,imol,iion,ipls  (common)
+c          sputtered (emitted) particle type:    ityp (common)
+c          sputtered (emitted) particle species: iphot,iatm,imol,iion,ipls (common)
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -68,7 +68,7 @@ C  ONLY THE SPUTTERED FLUX IS SCORED
 C  AT THIS PLACE: NEW ITYP AND NEW SPECIES INDEX NOT NECESSARILY KNOWN
       SELECT CASE (ITOLD)
       CASE (0)
-        if (lsptphtot)  then
+        if (lsptphtot) then
 !$OMP ATOMIC
           sptphtot(msurf) = sptphtot(msurf) + wgh
         endif
@@ -96,7 +96,7 @@ C  AT THIS PLACE: NEW ITYP AND NEW SPECIES INDEX NOT NECESSARILY KNOWN
 
       IF (IND.EQ.1) RETURN
 
-C  FROM HERE ON:  INCIDENT TYPE (ITOLD) AND
+C  FROM HERE ON: INCIDENT TYPE (ITOLD) AND
 C  SPUTTERED TYPE (ITYP) AND SPECIES (IPHOT,IATM,....) RESOLVED FLUXES,
 C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 
@@ -126,7 +126,7 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
                SPTPHPHT(IPHOT,MSURF)=SPTPHPHT(IPHOT,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
 !$OMP ATOMIC
-                   SPTPHPHT(IPHOT,MSURFG)=SPTPHPHT(IPHOT,MSURFG)+WGH
+                  SPTPHPHT(IPHOT,MSURFG)=SPTPHPHT(IPHOT,MSURFG)+WGH
                ENDIF
                LMETSPW(IPHOT) = .TRUE.
             END IF
@@ -137,7 +137,7 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
                SPTPHAT(IATM,MSURF)=SPTPHAT(IATM,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
 !$OMP ATOMIC
-                    SPTPHAT(IATM,MSURFG)=SPTPHAT(IATM,MSURFG)+WGH
+                  SPTPHAT(IATM,MSURFG)=SPTPHAT(IATM,MSURFG)+WGH
                ENDIF
                LMETSPW(NSPH+IATM) = .TRUE.
             END IF
@@ -148,7 +148,7 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
                SPTPHML(IMOL,MSURF)=SPTPHML(IMOL,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
 !$OMP ATOMIC
-                    SPTPHML(IMOL,MSURFG)=SPTPHML(IMOL,MSURFG)+WGH
+                  SPTPHML(IMOL,MSURFG)=SPTPHML(IMOL,MSURFG)+WGH
                ENDIF
                LMETSPW(NSPA+IMOL) = .TRUE.
             END IF
@@ -170,7 +170,7 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
                SPTPHPL(IPLS,MSURF)=SPTPHPL(IPLS,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
 !$OMP ATOMIC
-                   SPTPHPL(IPLS,MSURFG)=SPTPHPL(IPLS,MSURFG)+WGH
+                  SPTPHPL(IPLS,MSURFG)=SPTPHPL(IPLS,MSURFG)+WGH
                ENDIF
                LMETSPW(NSPAMI+IPLS) = .TRUE.
             END IF
@@ -272,7 +272,7 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
                SPTMAT(IATM,MSURF)=SPTMAT(IATM,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
 !$OMP ATOMIC
-                   SPTMAT(IATM,MSURFG)=SPTMAT(IATM,MSURFG)+WGH
+                  SPTMAT(IATM,MSURFG)=SPTMAT(IATM,MSURFG)+WGH
                ENDIF
                LMETSPW(NSPH+IATM) = .TRUE.
             END IF

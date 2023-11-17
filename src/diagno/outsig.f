@@ -1,4 +1,5 @@
-CDR  aug. 17:  printout of spectra: conditional on prspec
+CDR  aug. 17:  printout of post-processed spectra (diagno line of sight):
+cdr            conditional on prspec
 c              plot of spectra vs. energy /wavelength: conditional on plspec
 C
 C*DK OUTSIG
@@ -22,8 +23,8 @@ C*DK OUTSIG
       LOGICAL, INTENT(IN) :: L_CHOR(NCHOR)
 
       REAL(DP) :: XPLEN(NCHEN)
-      REAL(DP) :: DUMFFD(NCHEN),WLDUMFFD(NCHEN),
-     .            DELENE(NCHEN),DELWL(NCHEN),
+      REAL(DP) :: DUMFFD(NCHEN), WLDUMFFD(NCHEN),
+     .            DELENE(NCHEN), DELWL(NCHEN),
      .            DEL_HELP(NCHEN), VSPEC(NCHEN)
       REAL(DP) :: YMN2(1), YMX2(1), YMNLG2(1), YMXLG2(1), XMI, XMA
       REAL(DP) :: TIMA, DUMTIL, AH, TIMI, DEL1, DEL2, SUM,WLSHFT
@@ -74,7 +75,7 @@ C  NEW FRAME FOR EACH PICTURE IN PLTTLY
 
     1 CONTINUE
 
-      DO 100  ICHORI=1,NCHORI
+      DO 100 ICHORI=1,NCHORI
         IF (.NOT.L_CHOR(ICHORI)) GOTO 100
 C
         CALL EIRENE_LEER(2)
@@ -116,12 +117,12 @@ C
           CALL EIRENE_HEADNG
      .      ('LOS INTEGRAL: CM  ',41)
           TXHEAD(1:41) =
-     .      'LOS INTEGRAL: CM '     
+     .      'LOS INTEGRAL: CM '
         ELSEIF (NCHTAL(ICHORI).EQ.12) THEN
           CALL EIRENE_HEADNG
      .      ('INT.: UNIT x CM  ',41)
           TXHEAD(1:41) =
-     .      'INT.: UNIT x CM '     
+     .      'INT.: UNIT x CM '
         ELSEIF (NCHTAL(ICHORI).EQ.13) THEN
           CALL EIRENE_HEADNG
      .      ('INT.: UNIT x CM  ',41)
@@ -145,7 +146,7 @@ C
           ENERGY(I)=ENSAVE(ICHORI,I)
    30   CONTINUE
 C...................................................
-C  ENERGY-RESOLVED CX SPECTRA, ATOMS.  100 -- 199
+C  ENERGY-RESOLVED CX SPECTRA, ATOMS. 100 -- 199
 C...................................................
         IF ((NCHTAL(ICHORI).EQ.1) .OR. (NCHTAL(ICHORI).EQ.4)) THEN
 
@@ -185,7 +186,7 @@ C
             IF (NCHTAL(ICHORI).EQ.4) SUM=SUM+AH*DELENE(I)
             XPLEN(I)=ENERGY(I)
    70     CONTINUE
-c   printing:  conditional on prspec
+c   printing: conditional on prspec
           IF (PRSPEC) THEN
             CALL EIRENE_MASRR2('ENERGY,CXFLUX         ',
      .                          ENERGY,DUMFFD,NCHNI)
@@ -194,7 +195,7 @@ c   printing:  conditional on prspec
               CALL EIRENE_MASR1('INTEGR. ',SUM)
               CALL EIRENE_LEER(1)
             END IF
-            CALL EIRENE_MASR1('INP. TEM.',TINP(ICHORI))
+            CALL EIRENE_MASR1('INP.TEM.',TINP(ICHORI))
             CALL EIRENE_MASR1('DT. TMP.',DUMTIL)
             CALL EIRENE_MASAGE('FITTING RANGE:  TIMIN,TIMAX=')
             TIMI=NSPINI(ICHORI)*TINP(ICHORI)
@@ -204,7 +205,7 @@ c   printing:  conditional on prspec
           ENDIF
 C
 C  PREPARE DATA FOR PLOT OF SPECTRUM NO ICHORI
-c   plotting:  conditional on plspec
+c   plotting: conditional on plspec
           IF (PLSPEC) THEN
             L_SAME = NSPNEW(ICHORI).NE.1
 C  INITIALIZE NEW PICTURE
@@ -249,7 +250,7 @@ C  PLOT
 C
           TEXTS(1)=TSAFE
 C..............................................
-C  PHOTONS, LINE INTENSITY.  200-- 299
+C  PHOTONS, LINE INTENSITY. 200 -- 299
 C..............................................
         ELSEIF (NCHTAL(ICHORI).EQ.2) THEN
 C
@@ -264,7 +265,7 @@ C
           CALL EIRENE_LEER(2)
 
 C...............................................
-C  PHOTONS, SPECTRALLY RESOLVED SIDE ON SPECTRA.  300-- 399
+C  PHOTONS, SPECTRALLY RESOLVED SIDE ON SPECTRA. 300 -- 399
 C...............................................
         ELSEIF (NCHTAL(ICHORI).EQ.3) THEN
 
@@ -305,7 +306,7 @@ C  1.: INVERT SCALE, FOR CONVERSION TO WAVELENGTH:
             DELENE(I)=DEL_HELP(NCHNI-I+1)
             DUMFFD(NCHNI-I+1)=MAX(1.E-30_DP,FUFFER(ICHORI,I))
           ENDDO
-C  2.:  CONVERT FROM EV TO NM
+C  2.: CONVERT FROM EV TO NM
           WLSHFT=0._DP
           IF (ABS(ESHIFT(ICHORI)).GT.1E-20)
      .            WLSHFT=HPCL/ESHIFT(ICHORI)*1.D7
@@ -323,10 +324,10 @@ C  FIRST INTERVAL (HALF SIZE)
 C  LAST INTERVAL (HALF SIZE)
           DELWL(NCHNI)=0.5*(XPLEN(NCHNI)-XPLEN(NCHNI-1))
 
-C  3.:  CONVERT SPECTRAL DENSITY FROM EV TO NM
+C  3.: CONVERT SPECTRAL DENSITY FROM EV TO NM
           WLDUMFFD=DUMFFD*DELWL/DELENE
 C
-c  printing:  conditional on prspec
+c  printing: conditional on prspec
           IF (PRSPEC) THEN
             CALL EIRENE_MASRR2('WAVEL. ,RADIATIVE FLUX ',
      .                          XPLEN,WLDUMFFD,NCHNI)
@@ -335,7 +336,7 @@ c  printing:  conditional on prspec
           ENDIF
 C
 C  PREPARE DATA FOR PLOT OF SPECTRUM NO ICHORI
-c  plotting:  conditional on plspec
+c  plotting: conditional on plspec
           IF (PLSPEC) THEN
             L_SAME = NSPNEW(ICHORI).NE.1
 C  INITIALIZE NEW PICTURE
@@ -383,9 +384,9 @@ C
 
         ELSEIF (NCHTAL(ICHORI).EQ.10) THEN
           write (iunout,*)
-     .           'printout for user-defined line integral '
-          write (iunout,*) 'still to be written in subr. outsig '
-          
+     .           'printout for user-defined line integral'
+          write (iunout,*) 'still to be written in subr. outsig'
+
         ELSEIF (NCHTAL(ICHORI).EQ.11) THEN
 C
           DUMTIL=FUFFER(ICHORI,1)

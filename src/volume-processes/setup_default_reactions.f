@@ -2,14 +2,14 @@ cdr  oct. 2015:
 cdr  k=-1:  CX  H  + p
 cdr  k=-11  EI  He + e (was formerly also k=-1)
 !pb  june 2016: nullify unused pointers in default reaction k=-11
-cdr  sept. 16:  extend options for asymptotics  (extrapolation of fits)
+cdr  sept. 16:  extend options for asymptotics (extrapolation of fits)
 cdr             currently this is by far overdone, all fits in here are single parametric
 cdr             but leave as is, for later extensions....
-cdr  nov.17  : exclusively  iftflg(K,2)=0 for rate coefficients
-c                      and  iftflg(K,1)=0 for cross-sections are set.
-c              H.8 reaction for process K=-10:  dis rec of H2+, could be set here.
-c                      then iftflg(K,4)=0  as well.
-cdr            asympt. corrections missing for He CX cross-sections.
+cdr  nov.17  :  exclusively  iftflg(K,2)=0 for rate coefficients
+c                       and  iftflg(K,1)=0 for cross-sections are set.
+c               H.8 reaction for process K=-10: dis rec of H2+, could be set here.
+c                       then iftflg(K,4)=0  as well.
+cdr             asympt. corrections missing for He CX cross-sections.
 
       subroutine EIRENE_setup_default_reactions
 C
@@ -17,10 +17,10 @@ C  for the trivial minimal set of hard-wired reaction processes,
 C  selected by ...=0 flag in input block 4 for each species.
 C
 c  fill reacdat(k)%... with default reaction data, K < 0.
-c  first set default rate coefficients K= -4,-5,...-11  (-1, -2 and -3 are not used)
-c                                                   (extrapolation flags: 0)
+c  first set default rate coefficients K= -4,-5,...-11 (-1, -2 and -3 are not used)
+c                                                  (extrapolation flags: 0)
 c  and
-c  then  set default cross-sections    K= -1,-2,-3  (extrapolation flags: 5)
+c  then set default cross-sections     K= -1,-2,-3 (extrapolation flags: 5)
 c
 
 
@@ -30,7 +30,8 @@ c
 
       implicit none
 
-      integer :: ir  ! corresponds to flags k, kk, istore,..... in calling programs
+      integer :: ir  ! corresponds to flags k, kk, istore,.....
+                     ! in calling programs
 
 
 !  SPECIFY DEFAULT MODEL FOR RATE COEFFICIENTS,
@@ -40,11 +41,11 @@ c
 !  HERE: K= -4,-5,...-10,-11
 !        K= -1,-2,-3: currently not used, only for cross-sections, see below
 C
-C K=-1:   FREE
-C K=-2:   FREE
-C K=-3:   FREE
+C K=-1: FREE
+C K=-2: FREE
+C K=-3: FREE
 
-C K=-4:   E + H --> H+ + 2E
+C K=-4: E + H --> H+ + 2E
 C  RATE COEFFICIENT, JANEV, 2.1.5
       IR = -4
       CALL EIRENE_ALLOC_FIT_FORM(REACDAT(IR)%RTC)
@@ -53,7 +54,7 @@ C  RATE COEFFICIENT, JANEV, 2.1.5
       ALLOCATE(REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1))
       REACDAT(IR)%LRTC = .TRUE.
       REACDAT(IR)%RTC%IFIT = 1
-c  currently:  no asymptotics for this default reaction
+c  currently: no asymptotics for this default reaction
 c
 !  ALREADY INITIALIZED IN EIRENE_INIT_CMDTA
 !     REACDAT(IR)%RTMAX = 0._DP
@@ -66,7 +67,7 @@ c
      .   -2.631976175590D-03,  1.119543953861D-04, -2.039149852002D-06/)
       IFTFLG(IR,2) = 0
 
-C K=-5:  E + H2 --> H + H + E
+C K=-5: E + H2 --> H + H + E
 C  RATE COEFFICIENT, JANEV, 2.2.5, PREPRINT (CORRECT), NOT "BOOK"
       IR = -5
       CALL EIRENE_ALLOC_FIT_FORM(REACDAT(IR)%RTC)
@@ -74,7 +75,7 @@ C  RATE COEFFICIENT, JANEV, 2.2.5, PREPRINT (CORRECT), NOT "BOOK"
       ALLOCATE(REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1))
       REACDAT(IR)%LRTC = .TRUE.
       REACDAT(IR)%RTC%IFIT = 1
-c  currently:  no asymptotics for this default reaction
+c  currently: no asymptotics for this default reaction
 c
 !  ALREADY INITIALIZED IN EIRENE_INIT_CMDTA
 !     REACDAT(IR)%RTMAX = 0._DP
@@ -87,7 +88,7 @@ c
      .   -4.096344172875D-03,  2.159670289222D-04, -4.928545325189D-06/)
       IFTFLG(IR,2) = 0
 
-C K=-6:  E + H2 --> H+ + H + 2E
+C K=-6: E + H2 --> H+ + H + 2E
 C  RATE COEFFICIENT, JANEV, 2.2.10
       IR = -6
       CALL EIRENE_ALLOC_FIT_FORM(REACDAT(IR)%RTC)
@@ -95,7 +96,7 @@ C  RATE COEFFICIENT, JANEV, 2.2.10
       ALLOCATE(REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1))
       REACDAT(IR)%LRTC = .TRUE.
       REACDAT(IR)%RTC%IFIT = 1
-c  currently:  no asymptotics for this default reaction
+c  currently: no asymptotics for this default reaction
 c
 !  ALREADY INITIALIZED IN EIRENE_INIT_CMDTA
 !     REACDAT(IR)%RTMAX = 0._DP
@@ -116,7 +117,7 @@ C  RATE COEFFICIENT, JANEV, 2.2.9
       ALLOCATE(REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1))
       REACDAT(IR)%LRTC = .TRUE.
       REACDAT(IR)%RTC%IFIT = 1
-c  currently:  no asymptotics for this default reaction
+c  currently: no asymptotics for this default reaction
 c
 !  ALREADY INITIALIZED IN EIRENE_INIT_CMDTA
 !     REACDAT(IR)%RTMAX = 0._DP
@@ -137,7 +138,7 @@ C  RATE COEFFICIENT, JANEV, 2.2.12
       ALLOCATE(REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1))
       REACDAT(IR)%LRTC = .TRUE.
       REACDAT(IR)%RTC%IFIT = 1
-c  currently:  no asymptotics for this default reaction
+c  currently: no asymptotics for this default reaction
 c
 !  ALREADY INITIALIZED IN EIRENE_INIT_CMDTA
 !     REACDAT(IR)%RTMAX = 0._DP
@@ -158,7 +159,7 @@ C  RATE COEFFICIENT, JANEV, 2.2.11
       ALLOCATE(REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1))
       REACDAT(IR)%LRTC = .TRUE.
       REACDAT(IR)%RTC%IFIT = 1
-c  currently:  no asymptotics for this default reaction
+c  currently: no asymptotics for this default reaction
 c
 !  ALREADY INITIALIZED IN EIRENE_INIT_CMDTA
 !     REACDAT(IR)%RTMAX = 0._DP
@@ -179,7 +180,7 @@ C  RATE COEFFICIENT, JANEV, 2.2.14
       ALLOCATE(REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1))
       REACDAT(IR)%LRTC = .TRUE.
       REACDAT(IR)%RTC%IFIT = 1
-c  currently:  no asymptotics for this default reaction
+c  currently: no asymptotics for this default reaction
 c
 !  ALREADY INITIALIZED IN EIRENE_INIT_CMDTA
 !     REACDAT(IR)%RTMAX = 0._DP
@@ -203,7 +204,7 @@ cdr
 
 cdr  here a corresponding H.8 reaction can be set, and: IFTFLG(IR,4)=0
 
-C K=-11:   E + HE --> 2E + HE+
+C K=-11: E + HE --> 2E + HE+
 C  RATE COEFFICIENT, JANEV, 2.3.9
       IR = -11
       CALL EIRENE_ALLOC_FIT_FORM(REACDAT(IR)%RTC)
@@ -211,7 +212,7 @@ C  RATE COEFFICIENT, JANEV, 2.3.9
       ALLOCATE(REACDAT(IR)%RTC%POLY%DBLPOL(1:9,1))
       REACDAT(IR)%LRTC = .TRUE.
       REACDAT(IR)%RTC%IFIT = 1
-c  currently:  no asymptotics for this default reaction
+c  currently: no asymptotics for this default reaction
 c
 !  ALREADY INITIALIZED IN EIRENE_INIT_CMDTA
 !     REACDAT(IR)%RTMAX = 0._DP
@@ -231,9 +232,9 @@ c.......................................................................
 !  SPECIFY DEFAULT MODEL FOR CROSS-SECTIONS:  K=-1,-2,-3, DEFAULT CX CROSS-SECTIONS
 !  FILL REACDAT..%CRS...
 
-C  K=-1:  H + H+ --> H+ + H   CROSS-SECTION, JANEV, 3.1.8
-C         LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
-C         IDENTICAL TO hydhel.tex, H.1, 3.1.8
+C  K=-1: H + H+ --> H+ + H CROSS-SECTION, JANEV, 3.1.8
+C        LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
+C        IDENTICAL TO hydhel.tex, H.1, 3.1.8
       IR = -1
       CALL EIRENE_ALLOC_FIT_FORM(REACDAT(IR)%CRS)
       ALLOCATE(REACDAT(IR)%CRS%POLY)
@@ -267,9 +268,9 @@ c
       IFTFLG(IR,1) = 0
 
 C
-C  K=-2:  He + He+ --> He+ + He   CROSS-SECTION, JANEV, 5.3.1
-C         LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
-C         IDENTICAL TO hydhel.tex, H.1, 5.3.1
+C  K=-2: He + He+ --> He+ + He CROSS-SECTION, JANEV, 5.3.1
+C        LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
+C        IDENTICAL TO hydhel.tex, H.1, 5.3.1
       IR = -2
       CALL EIRENE_ALLOC_FIT_FORM(REACDAT(IR)%CRS)
       ALLOCATE(REACDAT(IR)%CRS%POLY)
@@ -303,9 +304,9 @@ c
       IFTFLG(IR,1) = 0
 
 C
-C  K=-3:  He + He++ --> He++ + He   CROSS-SECTION, JANEV, 6.3.1
-C         LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
-C         IDENTICAL TO hydhel.tex, H.1, 6.3.1
+C  K=-3: He + He++ --> He++ + He CROSS-SECTION, JANEV, 6.3.1
+C        LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
+C        IDENTICAL TO hydhel.tex, H.1, 6.3.1
       IR = -3
       CALL EIRENE_ALLOC_FIT_FORM(REACDAT(IR)%CRS)
       ALLOCATE(REACDAT(IR)%CRS%POLY)

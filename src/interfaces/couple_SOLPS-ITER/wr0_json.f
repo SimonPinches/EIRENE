@@ -1,5 +1,5 @@
       subroutine eirene_wr0_json(json,this)
-      
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CCOUPL
@@ -76,7 +76,7 @@
         end do
         call json%add(this,trgs)
       end if
-      
+
       call json%add(this,'CHGP',chgp)
       call json%add(this,'CHGEE',chgee)
       call json%add(this,'CHGEI',chgei)
@@ -112,5 +112,5 @@
         end do
         call json%add(this,ottls)
       end if
-        
+
       end subroutine eirene_wr0_json

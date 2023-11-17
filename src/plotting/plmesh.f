@@ -345,7 +345,7 @@ c  re-initialize gr plot software for next picture
       partcont(1:maxpoin,:,:) = pc(1:maxpoin,:,:)
 
       maxpoin = newpoin
-      
+
       deallocate(pc)
 
       return

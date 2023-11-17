@@ -133,8 +133,8 @@ c          which actually have been associated with the root node
         if (trcoct) then
           WRITE(iunout,*)
           WRITE(iunout,*) 'OCTREE BUILD PHASE FINISHED'
-          WRITE(iunout,*)'CPU TIME USED IN BUILD:',
-     .                   EIRENE_SECOND_OWN()-start
+          WRITE(iunout,*) 'CPU TIME USED IN BUILD:',
+     .                     EIRENE_SECOND_OWN()-start
           WRITE(iunout,*)
         end if
       END FUNCTION EIRENE_TIMEA_BuildOctree

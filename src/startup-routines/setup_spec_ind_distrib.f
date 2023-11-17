@@ -25,7 +25,7 @@ C
       NIONIM=NIONI-1
       NPLSIM=NPLSI-1
       NPHOTIM=NPHOTI-1
-      
+
       SA=0.
       SI=0.
       SM=0.

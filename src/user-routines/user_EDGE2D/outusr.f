@@ -727,8 +727,8 @@ c     store neutral particle fluxes [A] on wall
       write(fp,'(a28,f14.6)') "* Neutral flux file version:",
      &     NeutralFluxFileVersion
       write(fp,'(a,a)') '*  NLIM,   NSTS,  NGITT, NGSTAL,',
-     &     '   NATM,  NMOL, NLMPGS,  NTRII'
-      write(fp,'(8i8)') NLIM, NSTS, NGITT, NGSTAL, NATM,  NMOL, NLMPGS,
+     &     '   NATM, NMOL, NLMPGS,  NTRII'
+      write(fp,'(8i8)') NLIM, NSTS, NGITT, NGSTAL, NATM, NMOL, NLMPGS,
      &     NTRII
       do iatm=1,NATM
          write(fp,'(a,i0)') '* neutral fluxes from atom species ',iatm
@@ -742,7 +742,7 @@ c           find corresponding triangle
             do i=1,ntrii
                do j=1,3
                   if ((INSPAT(j,i).eq. is -(NLIM+NSTS))
-     &                 .and.(INSPAT(j,i).ne.0) )then
+     &                 .and.(INSPAT(j,i).ne.0) ) then
                      if (lfound) then
                         write(iunout,*)"* EIRENE_OUTUSR:"
                         write(iunout,*)"* Edge twice found"

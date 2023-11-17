@@ -7,11 +7,14 @@ cpb  Input tallies are ALWAYS defined on the fine grid.
 C
       SUBROUTINE EIRENE_OUTIDLPLA
 C
-Cdr  This routine prints background tallies ("field particles") for plotting in IDL tool.
+Cdr  This routine prints background tallies ("field particles") for plotting in external IDL tool.
+cdr  Each tally printed on its own file.
 cdr  Probably code mostly adopted from subr. outpla.f, but no
 cdr  coarse graining onto scoring grid done here.
 cpb  All tallies printed by OUTIDL... routines are provided on the fine grid
 cpb  as that is the only grid known in the plotting tool.
+cdr  Note: cells in which a tally contains only zero entries (for all 1st indices)
+cdr        are omitted.
 C
 C  PRINT INPUT TALLIES ONTO OUTPUT FILE IUNOUT
 C
@@ -32,11 +35,13 @@ C
 
       IMPLICIT NONE
 
-      REAL(DP), ALLOCATABLE :: HELPP(:,:),HELPW(:,:),TALAV(:),TALTOT(:)
+      REAL(DP), ALLOCATABLE :: HELPP(:,:), HELPW(:,:),
+     .                         TALAV(:), TALTOT(:)
       REAL(DP) :: TALTYP(NTALI)
       REAL(DP) :: HELPI, TOTAL
       INTEGER :: IR, IP, IT, I, NBLCKA, IB, ITAL, NXM, NYM, NZM,
-     .           K, KK, NFTI, NFTE, MXSPZ, IOUT
+     .           K, KK,
+     .           NFTI, NFTE, MXSPZ, IOUT
       CHARACTER(50) :: FNAME, FORMA, FORME, FORME2
 C
 C  TYPE OF TALLY: TALTYP=0: #              (#-UNITS)
@@ -49,6 +54,7 @@ c  number of volumetric input tallies:
 c     ntalg = 26(tallies) + 4 free tallies = 30
 c     ntali = 26(tallies) + 4 free tallies + 3*30(gradients) = 120
 c
+
       TALTYP(1)=0
       TALTYP(2)=0
       TALTYP(3)=1
@@ -122,24 +128,35 @@ C
         NFTI=1
         NFTE=NFSTPI(ITAL)
 
-c  K: leading dimension of input tally ITAL
+c  K: leading (physical) dimension of input tally ITAL
+c     Do not confuse with 1st dimension on storage, NFRSTP,
+c     when indirect species indexing is used.
         DO 119 K=NFTI,NFTE
 
           SELECT CASE (ITAL)
           CASE (1)
             HELPP(1:NSBOX,K) = TEIN(1:NSBOX)
           CASE (2)
+cdr  K is in range 1,..NPLSI for this tally
+cdr  while on eirene storage: (1:NPLSTI)
+cdr  We need full range here temporarily, even if identical fields,
+cdr  for density weighted averaging
             HELPP(1:NSBOX,K) = TIIN(MPLSTI(K),1:NSBOX)
           CASE (3)
             HELPP(1:NSBOX,K) = DEIN(1:NSBOX)
           CASE (4)
             HELPP(1:NSBOX,K) = DIIN(K,1:NSBOX)
+cdr  next three tallies. K=1,...NPLSI,
+cdr  while on eirene storage: (1:NPLSV)
+cdr  We need full range here temporarily, even if identical fields,
+cdr  for density weighted averaging
           CASE (5)
             HELPP(1:NSBOX,K) = VXIN(MPLSV(K),1:NSBOX)
           CASE (6)
             HELPP(1:NSBOX,K) = VYIN(MPLSV(K),1:NSBOX)
           CASE (7)
             HELPP(1:NSBOX,K) = VZIN(MPLSV(K),1:NSBOX)
+cdr
           CASE (8)
             HELPP(1:NSBOX,K) = BXIN(1:NSBOX)
           CASE (9)
@@ -193,7 +210,7 @@ c  K: leading dimension of input tally ITAL
           CASE DEFAULT
             WRITE (iunout,*) ' WRONG TALLY NUMBER (OUTIDLPLA), ITAL = '
      .                        ,ITAL
-            WRITE (iunout,*) ' NO OUTPUT PERFORMED '
+            WRITE (iunout,*) ' NO OUTPUT PERFORMED'
             CALL EIRENE_LEER(1)
             GOTO 100
           END SELECT
@@ -244,22 +261,22 @@ C  ELECTRIC POTENTIAL
 C  PARALLEL TO B FLOW MOMENTUM
               HELPW(I,K)=1.D0
             CASE (25)
-C  PSI   
+C  PSI
               HELPW(I,K)=1.D0
             CASE (26)
-C  ZI   
+C  ZI
               HELPW(I,K)=1.D0
             CASE (27)
-C  FREE27   
+C  FREE27
               HELPW(I,K)=1.D0
             CASE (28)
-C  FREE28   
+C  FREE28
               HELPW(I,K)=1.D0
             CASE (29)
-C  FREE29   
+C  FREE29
               HELPW(I,K)=1.D0
             CASE (30)
-C  FREE30   
+C  FREE30
               HELPW(I,K)=1.D0
 
             CASE (31:120)  ! ntali=120, constant required here
@@ -313,22 +330,22 @@ C  ELECTRIC POTENTIAL
 C  PARALLEL TO B FLOW MOMENTUM
               HELPW(I,K)=1.D0
             CASE (25)
-C  PSI   
+C  PSI
               HELPW(I,K)=1.D0
             CASE (26)
-C  ZI   
+C  ZI
               HELPW(I,K)=1.D0
             CASE (27)
-C  FREE27   
+C  FREE27
               HELPW(I,K)=1.D0
             CASE (28)
-C  FREE28   
+C  FREE28
               HELPW(I,K)=1.D0
             CASE (29)
-C  FREE29   
+C  FREE29
               HELPW(I,K)=1.D0
             CASE (30)
-C  FREE30   
+C  FREE30
               HELPW(I,K)=1.D0
 
             CASE (31:120)  ! ntali=120, constant required here
@@ -342,7 +359,7 @@ C
             CALL EIRENE_INTTAL (HELPP(1,K),HELPW(1,K),1,1,NSBOX,HELPI,
      .                          NR1ST,NP2ND,NT3RD,NBMLT)
           ELSEIF (ITAL.EQ.NTALO) THEN
-            CALL EIRENE_INTVOL (HELPP(1,K),      1,1,NSBOX,HELPI,
+            CALL EIRENE_INTVOL (HELPP(1,K),           1,1,NSBOX,HELPI,
      .                          NR1ST,NP2ND,NT3RD,NBMLT)
           ENDIF
 
@@ -405,7 +422,7 @@ C
 
         CLOSE (UNIT=IOUT)
 C
-  100 CONTINUE
+  100 CONTINUE   !  NTAL - LOOP
 
       DEALLOCATE (HELPP)
       DEALLOCATE (HELPW)

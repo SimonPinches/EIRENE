@@ -24,7 +24,7 @@ cdr dec. 15:    missing: ftabel3
 cdr jan. 16:    call to ftabcx3 added and tested for modcol=1 option
 
 
-cdr summer 16:  connect function fehvei1 for kinetic energy release in 
+cdr summer 16:  connect function fehvei1 for kinetic energy release in
 cdr             storage saving mode
 cdr aug. 16:    bug fix re EXPO in PI branch
 cdr sept.16:    PI process: use v0/vth >> 1. to switch to beam-rate coeff
@@ -67,17 +67,17 @@ C           CFLAG(3,...): CX
 C           CFLAG(4,...): PI
 C           CFLAG(5,...): EL
 C           CFLAG(6,...): RC
-c           CFLAG(7,...): PH  PHOTONIC PROCESSES
+c           CFLAG(7,...): PH PHOTONIC PROCESSES
 C
 C   FLAG FOR POST-COLLISION DISTRIBUTION IN VELOCITY SPACE
 C  CFLAG(...,IRCL),  IRCL: IREI,..., IRCX,IRPI,IREL,IRRC,IRPH
-C      =0:   VI: DELTA COLLISION IN VELOCITY SPACE (BUT DIFFERENT
+C      =0: VI: DELTA COLLISION IN VELOCITY SPACE (BUT DIFFERENT
 C                                                   SPECIES ALLOWED)
-C      =1:   VI: MONOENERGETIC AND ISOTROPIC IN FRAME MOVING WITH BULK SPECIES
-C      =2:   VI: DRIFTING MAXWELLIAN
-C      =3:   VI: SIGMA-V-WEIGHTED MAXWELLIAN IN FRAME MOVING WITH BULK SPECIES
-C      =X    VI: DELTA COLLISION IN VELOCITY SPACE: VI=V0 (BUT DIFFERENT SPECIES ALLOWED)
-C                TO BE WRITTEN
+C      =1: VI: MONOENERGETIC AND ISOTROPIC IN FRAME MOVING WITH BULK SPECIES
+C      =2: VI: DRIFTING MAXWELLIAN
+C      =3: VI: SIGMA-V-WEIGHTED MAXWELLIAN IN FRAME MOVING WITH BULK SPECIES
+C      =X  VI: DELTA COLLISION IN VELOCITY SPACE: VI=V0 (BUT DIFFERENT SPECIES ALLOWED)
+C              TO BE WRITTEN
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -106,12 +106,12 @@ C
      .          EIRENE_ENERGY_RATE_COEFF,
      .          CEL, CXS, CII, VEFFQ, VEFF,
      .          TBEL,
-     .          SIGMAX,  EHEAVY,
+     .          SIGMAX, EHEAVY,
      .          DENEL, VX, VY, VZ, PVELQ0, ELAB,
-     .          VRELQ, VREL, XC,YC,ZC,
-     .          ELB,TII,
+     .          VRELQ, VREL, XC, YC, ZC,
+     .          ELB, TII,
 cdr  .          V0_REL,  ! for diagnostic purposes only
-     .          EXPO, 
+     .          EXPO,
 cdr  functions for 'on the fly' evaluation of A&M data
      .          EIRENE_FEELEI1, EIRENE_FEELPI3,
      .          EIRENE_FEHVEI1, EIRENE_FEHVPI3,
@@ -121,12 +121,13 @@ cdr  functions for 'on the fly' evaluation of A&M data
      .          RCMIN, RCMAX, EARRH,
      .          RC2MIN, RC2MAX
       INTEGER :: IBGK, IXEL, IREL, IXEI, IREI, IXPI, IRPI,
-     .                 IXCX, IRCX, 
+     .                 IXCX, IRCX,
      .           J, KK, IPLSTI,
      .           JPLS, IPLSV, IREAC,
      .           jfex2mn, jfex2mx
       REAL(DP), PARAMETER :: TMINL=-2.3_DP
-      REAL(DP),PARAMETER :: EMINL=-2.3_DP ! hard-coded cut-off for EBEAM parameter in H.3 fits
+      REAL(DP), PARAMETER :: EMINL=-2.3_DP  ! hard-coded cut-off
+                                  ! for EBEAM parameter in H.3 fits
 
 !  FOR PHOTONS CALL EIRENE_FPATHPH
       IF (ITYP == 0) THEN
@@ -155,7 +156,7 @@ C
       END DO
 C
 C  TRANSFORM TEST PARTICLE VELOCITY TO FRAME MOVING WITH BULK SPECIES IPLS
-C            PVELQ(IPLSV) IS THE VELOCITY IN THESE REFERENCE FRAMES, SQUARED 
+C            PVELQ(IPLSV) IS THE VELOCITY IN THESE REFERENCE FRAMES, SQUARED
 C
       PVELQ0=VEL*VEL
       DO JPLS=1,NPLS
@@ -251,7 +252,8 @@ C  BEAM - MAXWELLIAN RATE IN PLASMA FRAME
 ! Scale log collision energy to projectile energy for proper isotope, for rate coefficient,
 ! i.e. use neutral particle mass.
 C
-          IF (TIIN(IPLSTI,K).LT.TVAC) THEN  !  cannot happen, here already lgvac(ipls)=T
+          IF (TIIN(IPLSTI,K).LT.TVAC) THEN  ! cannot happen,
+                                            ! here already lgvac(ipls)=T
 C  HERE: T_I IS SO LOW, THAT ALL ION ENERGY IS IN DRIFT MOTION.
 cdr  strictly we should use Ti/E0 as smallness parameter, not Ti alone.
 C           HENCE: USE BEAM-BEAM RATE INSTEAD.
@@ -264,10 +266,10 @@ C           HENCE: USE BEAM-BEAM RATE INSTEAD.
             SIGVPI(IRPI)=CII*VREL*DENIO(IPLS)
           ELSE
 C  Set hard-wired MINIMUM PROJECTILE ENERGY cut off: 0.1 EV
-! scale log projectile energy for proper isotope, for rate coefficient, i.e. use field particle mass
+! scale log projectile energy for proper isotope, for rate coefficient, i.e. use test particle mass
             ELB=MAX(EMINL,LOG(PVELQ(IPLSV))+EEFPI(IRPI))
 cdr         V0_REL=SQRT(PVELQ(IPLSV)) ! is already isotopically correct
-! scale log temperature to target temperature for proper isotope, for rate coefficient, i.e. use charged particle mass
+! scale log temperature to target temperature for proper isotope, for rate coefficient, i.e. use field particle mass
             TII=TIINL(IPLSTI,K)+ADDPI(IRPI,IPLS)
             IF (NSTORDR >= NRAD) THEN
               TBPI3(1:NSTORDT) = TABPI3(IRPI,K,1:NSTORDT)
@@ -331,7 +333,7 @@ C
 C
 C  2.C BULK ION ENERGY LOSS PER COLLISION (EV)
 
-cdr  here should come LEX condition, as well as iest(..,3)=0 (tracklength) condition 
+cdr  here should come LEX condition, as well as iest(..,3)=0 (tracklength) condition
 C
 cdr     IF (NSTORDR >= NRAD) THEN
 cdr       ESIGPI(IRPI,4)=EPLPI3(IRPI,K,1)
@@ -377,7 +379,8 @@ cdr  strictly we should use E0/Ti as smallness parameter, just the opposite case
         ELSEIF (MODCOL(3,2,IRCX).EQ.2) THEN
 C  MODEL 2:
 C  BEAM - MAXWELLIAN RATE IN PLASMA FRAME
-          IF (TIIN(IPLSTI,K).LT.TVAC) THEN  !  cannot happen, here already lgvac(ipls)
+          IF (TIIN(IPLSTI,K).LT.TVAC) THEN  !  cannot happen,
+                                            !  here already lgvac(ipls)
 C  HERE: T_I IS SO LOW, THAT ALL ION ENERGY IS IN DRIFT MOTION.
 cdr  strictly we should use Ti/E0 as smallness parameter, not Ti alone.
 C           HENCE: USE BEAM-BEAM RATE INSTEAD.
@@ -434,7 +437,7 @@ CDR  THIS SHOULD BE DONE IN FTABCX3.  NOT READY
           ENDIF
 
         ELSEIF (MODCOL(3,2,IRCX).EQ.3) THEN
-C  MODEL 3:  (ALSO:  MINIMAL CX MODEL, ONLY CROSS-SECTION IS USED, NO RATE COEFFICIENTS)
+C  MODEL 3: (ALSO: MINIMAL CX MODEL, ONLY CROSS-SECTION IS USED, NO RATE COEFFICIENTS)
 C  BEAM - BEAM RATE, BUT WITH EFFECTIVE INTERACTION ENERGY TO APPROX.
 c                    ACCOUNT FOR FIELD PARTICLE THERMAL ENERGY
           VEFFQ=ZTI(IPLS)+PVELQ(IPLSV)
@@ -464,9 +467,10 @@ C
         IF (MODCOL(3,4,IRCX).EQ.1) THEN
 C  MODEL 1:
 C  MEAN ENERGY FROM DRIFTING MAXWELLIAN
-C  (ONLY NEEDED FOR PRE COLLISION ENERGY TRACKLENGTH ESTIMATOR) 
+C  (ONLY NEEDED FOR PRE COLLISION ENERGY TRACKLENGTH ESTIMATOR)
 C  ION SAMPLING FROM MAXWELLIAN
-          IF (LEX.AND.(IESTCX(IRCX,3).EQ.0)) THEN  ! for tracklength estimator only
+          IF (LEX.AND.(IESTCX(IRCX,3).EQ.0)) THEN  ! for tracklength
+                                                   ! estimator only
             IF (NSTORDR >= NRAD) THEN
               ESIGCX(IRCX,1)=EPLCX3(IRCX,K,1)
             ELSE
@@ -481,7 +485,8 @@ C  MODEL 2:
 C  MEAN ENERGY FROM CROSS-SECTION-WEIGHTED DRIFTING MAXWELLIAN
 C  (ONLY NEEDED FOR TRACKLENGTH ESTIMATOR)
 C  ION SAMPLING FROM WEIGHTED DRIFTING MAXWELLIAN (E.G., BY REJECTION)
-          IF (LEX.AND.(IESTCX(IRCX,3).EQ.0)) THEN  ! for tracklength estimator only
+          IF (LEX.AND.(IESTCX(IRCX,3).EQ.0)) THEN  ! for tracklength
+                                                   ! estimator only
 C  MINIMUM PROJECTILE ENERGY: 0.1 EV
 cdr         if (LOG(PVELQ(IPLSV))+EEFCX(IRCX).le.EMINL) then
 cdr           elb=LOG(PVELQ(IPLSV))+EEFCX(IRCX)
@@ -527,7 +532,8 @@ C  MODEL 3:
 C  MEAN ENERGY FROM DRIFTING ISOTROPIC ONE SPEED DISTRIBUTION
 C  (ONLY NEEDED FOR TRACKLENGTH ESTIMATOR)
 C  ION SAMPLING FROM WEIGHTED DRIFTING ISOTROPIC ONE SPEED DISTRIBUTION
-          IF (LEX.AND.(IESTCX(IRCX,3).EQ.0)) THEN  ! for tracklength estimator only
+          IF (LEX.AND.(IESTCX(IRCX,3).EQ.0)) THEN  ! for tracklength
+                                                   ! estimator only
             IF (NSTORDR >= NRAD) THEN
               ESIGCX(IRCX,1)=EPLCX3(IRCX,K,1)
             ELSE
@@ -612,7 +618,7 @@ C  MINIMUM PROJECTILE ENERGY: 0.1 EV
      .               K,TIIN(IPLSTI,K),ELB,DIIN(IPLS,K)*1.e6_dp
               end if
               SIGVEL(IREL)=EXPO
-             ELSE
+            ELSE
 ! CALCULATE RATE COEFFICIENT ON THE FLY
 CDR  THIS SHOULD BE DONE IN FTABEL3.  NOT READY
               KK=NREAEL(IREL)
@@ -635,7 +641,7 @@ C  BEAM - BEAM RATE, BUT WITH EFFECTIVE INTERACTION ENERGY
           ELAB=LOG(VEFFQ)+DEFEL(IREL)
           IREAC=MODCOL(5,1,IREL)
 C  FIND SIGMA FROM AMJUEL DATA TABLES (e.g. BACHMANN ET AL.)
-            CEL=EIRENE_CROSS(ELAB,IREAC,IREL,FACREL(IREL,1),
+          CEL=EIRENE_CROSS(ELAB,IREAC,IREL,FACREL(IREL,1),
      .                       'FPATH EL2')
           SIGVEL(IREL)=CEL*VEFF*DENIO(IPLS)
         ELSEIF (MODCOL(5,2,IREL).EQ.4) THEN
@@ -664,7 +670,7 @@ C  MEAN ENERGY FROM DRIFTING MAXWELLIAN
 C  (ONLY NEEDED FOR PRE COLLISION ENERGY TRACKLENGTH ESTIMATOR)
 C  ION SAMPLING FROM MAXWELLIAN
 cdr if (lex .and. .....), analog to CX
-           IF (NSTORDR >= NRAD) THEN
+          IF (NSTORDR >= NRAD) THEN
             ESIGEL(IREL,1)=EPLEL3(IREL,K,1)
           ELSE
 ! CALCULATE ENERGY LOSS RATE COEFFICIENT ON THE FLY
@@ -678,7 +684,8 @@ C  MODEL 2:
 C  MEAN ENERGY FROM CROSS-SECTION-WEIGHTED DRIFTING MAXWELLIAN
 C  (ONLY NEEDED FOR TRACKLENGTH ESTIMATOR)
 C  ION SAMPLING FROM WEIGHTED DRIFTING MAXWELLIAN (E.G., BY REJECTION)
-          IF (IESTEL(IREL,3).EQ.0) THEN  ! for tracklength estimator only
+          IF (IESTEL(IREL,3).EQ.0) THEN  ! for tracklength
+                                         ! estimator only
 C  MINIMUM PROJECTILE ENERGY: 0.1 EV
             ELB=MAX(EMINL,LOG(PVELQ(IPLSV))+EEFEL(IREL))
             IF (NSTORDR >= NRAD) THEN

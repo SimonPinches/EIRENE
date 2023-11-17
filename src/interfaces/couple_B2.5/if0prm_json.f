@@ -22,7 +22,7 @@ c  also set: NDX,NDY,NFL, NDXP, NDYP
       USE EIRMOD_COMUSR
       USE EIRMOD_CINIT
       USE EIRMOD_BRAEIR
-      USE EIRMOD_COMPRT, only: iunout      
+      USE EIRMOD_COMPRT, only: iunout
       use json_module           !IGNORE
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
@@ -45,7 +45,7 @@ C  READ INPUT BLOCK 14
       call json%get(p,'NFLA',nfla,found)
       call json%get(p,'NCUTB',ncutb,found)
       call json%get(p,'NCUTL',ncutl,found)
-      
+
 C  GRID SIZE IN 2D PLASMA FLUID CODE
       call json%get(p,'NDXA',ndxa,found)
       call json%get(p,'NDYA',ndya,found)

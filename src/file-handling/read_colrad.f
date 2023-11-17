@@ -1,11 +1,24 @@
+cdr aug 19: remove argument iz1 (unused)
+cdr sept 18:
+cdr alternative reaction component pop. coeff: revised.
+
+
+cdr  1) character(*) "filnam" is interpreted to identify
+cdr               a particular "internal CR-model".
+cdr     character(*) "filnam" --> iflav (=1,2, or 4), iformul (=1,2)
+cdr     e.g.  filnam='CR' (default, = 'CR_H_2'),  or filnam='CR_He_2',...
+cdr  2) recognized data from internal CR-Models: crl(..)%ihsw
+cdr                                              crl(..)%hsrt  (character(10)
+
+
        subroutine EIRENE_read_colrad (ir,reac,isw,
      .                                ir_esc,ic_esc,p_esc)
 
-cdr  Purpose:  prepare usage of A&M data from an internal, built-in,
-cdr            collisional-radiative code:
-cdr  1)  H_colrad,
-cdr  2)  He_colrad,
-cdr  3)  H2-colrad....
+cdr  Purpose: prepare usage of A&M data from an internal, built-in,
+cdr           collisional-radiative code:
+cdr  1) H_colrad,
+cdr  2) He_colrad,
+cdr  3) H2-colrad....
 cdr            internal eirene reaction no. IR
 cdr
 cdr  input:
@@ -18,9 +31,9 @@ c                  =5-7   data for momentum-weighted rate coefficient    (not in
 c                  =8-10  data for energy-weighted rate coefficient      (only = 10 in use)
 c                  =11,12 other data, such as red. pop. coefficients     (not in use)
 c
-cdr   currently used only H.4, 2.1.5 and H.10, 2.1.5, EI, ionisation
-cdr                       H.4. 2.1.8 and H.10, 2.1.8, RC, recombination
-cdr                       and  H.11, H.12: selected population coefficients
+cdr  currently used only H.4, 2.1.5 and H.10, 2.1.5, EI, ionisation
+cdr                      H.4. 2.1.8 and H.10, 2.1.8, RC, recombination
+cdr                      and H.11, H.12: selected population coefficients
 c
 c  to be done: units, log-lin, scaling, asymptotics
 
@@ -32,9 +45,11 @@ c  to be done: units, log-lin, scaling, asymptotics
       implicit none
 
       integer, intent(in) :: ir, isw
+      character(len=*), intent(in) :: reac
+c  optional input parameters
       integer, intent(in), optional :: ir_esc, ic_esc
       real(dp) , intent(in), optional :: p_esc
-      character(len=*), intent(in) :: reac
+
       integer, save :: ifirst
       integer, save :: ihsw(21)
       integer :: ivar, i, istr, irow_esc, icol_esc
@@ -156,9 +171,12 @@ cdr  TO BE STORED ON M_HCOL(1:NHCOL_STORE).
           ALLOCATE (REACDAT(IR)%RTC%CRM)
           REACDAT(IR)%RTC%CRM%IFLAV = 1      !  decide: H, He, H2,....
           REACDAT(IR)%RTC%CRM%IVARST = ISTR  !   ??
-          REACDAT(IR)%RTC%CRM%IROW_ESC = IROW_ESC  !  population excape factor, upper level
-          REACDAT(IR)%RTC%CRM%ICOL_ESC = ICOL_ESC  !  population excape factor, lower level
-          REACDAT(IR)%RTC%CRM%POP_ESC  = POP_ESC   !  population escape factor, reaction IR
+          REACDAT(IR)%RTC%CRM%IROW_ESC = IROW_ESC  !  population escape
+                                             !  factor, upper level
+          REACDAT(IR)%RTC%CRM%ICOL_ESC = ICOL_ESC  !  population escape
+                                             !  factor, lower level
+          REACDAT(IR)%RTC%CRM%POP_ESC  = POP_ESC   !  population escape
+                                             !  factor, reaction IR
 
         CASE (5:7)
           IF (REACDAT(IR)%LRTCMW) THEN
@@ -225,7 +243,7 @@ cdr  TO BE STORED ON M_HCOL(1:NHCOL_STORE).
         CASE DEFAULT
           GOTO 1000
         END SELECT
-        RETURN
+      RETURN
 
  1000 continue
       CALL EIRENE_LEER(1)

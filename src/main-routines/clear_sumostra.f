@@ -1,4 +1,4 @@
-c  19.12.05:  stvw, stvws = 0   included
+c  19.12.05: stvw, stvws = 0 included
       SUBROUTINE EIRENE_CLEAR_SUMOSTRA
 
       USE EIRMOD_PRECISION

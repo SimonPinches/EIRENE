@@ -21,11 +21,11 @@
 
       REAL(DP) :: VXISO, VYISO, VZISO, EHEAVY,
      .            VX, VY, VZ,
-     .            CVRSS, RSQDV, EFRAC, EDISS, ZEP3, VELDS, VREL,VRELQ,
+     .            CVRSS, RSQDV, EFRAC, EDISS, ZEP3, VELDS, VREL, VRELQ,
      .            VXI, VYI, VZI,
      .            VXN, VYN, VZN, VN,
      .            VXDR, VYDR, VZDR, ZARGX, ZARGY, ZARGZ,
-     .            ELMIN,ELMAX,CPI,ELAB,ELLAB,VRQ,VR,TEST
+     .            ELMIN, ELMAX, CPI, ELAB, ELLAB, VRQ, VR, TEST
 ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: ISPZI, ISPZM, ISPZA
       INTEGER :: ICOUNT, J, JJ, IRL, IREAC, JATM, JMOL, JION
@@ -84,7 +84,7 @@ C        SHIFT VECTOR (IPLS IN COMMON COMUSR)
 C  IRPI: LABEL FOR PI-REACTION, E.G., FOR SIGVPI(IRPI)
 C        NOT NEEDED FOR NFLAG=2, THEN SET E.G.: IRPI=1
 C
-      
+
       IMPLICIT NONE
 
       REAL(DP), INTENT(IN) :: RMASS, ZEP_IN
@@ -92,9 +92,8 @@ C
       REAL(DP), INTENT(OUT) :: VELQ
       INTEGER, INTENT(IN) :: K, IOLD, NOLD, NFLAG, IRPI
 
-      REAL(DP) :: EIRENE_FEHVPI3,EIRENE_CROSS
+      REAL(DP) :: EIRENE_FEHVPI3, EIRENE_CROSS
 
-cym is that still doing something ?
       SAVE
 C
 c initialize arrays for "on the fly" rejection efficiency estimates
@@ -161,7 +160,8 @@ C  NEXT: STEP 1
 C
 C    set parameters for random sampling in cell icell=K
 C
-      IF (K.GT.0.AND.K.LE.NRAD) THEN  ! K is the grid cell number. Use local bulk medium parameters
+      IF (K.GT.0.AND.K.LE.NRAD) THEN  ! K is the grid cell number.
+                                      ! Use local bulk medium parameters
 c  scaled 1d temperatures, per degree of freedom
         ZARGX=ZRG(IPLS,K)
         ZARGY=ZRG(IPLS,K)

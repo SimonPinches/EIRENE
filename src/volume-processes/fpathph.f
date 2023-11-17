@@ -45,11 +45,11 @@ C   IN CELL K
 
 C
 C   INPUT:
-C   IPHOT     :  PHOTON LINE SPECIES INDEX (INPUT VIA COMMON)
-C   K         :  CURRENT GRID CELL
-C   JCOU, NCOU:  THERE WILL BE NCOU CALLS TO FPATH, FOR SAME TEST PARTICLE
-C                COORDINATES WITH DIFFERENT CELL NUMBER K.
-C                THIS CURRENT CALL IS CALL NO. JCOU.
+C   IPHOT     : PHOTON LINE SPECIES INDEX (INPUT VIA COMMON)
+C   K         : CURRENT GRID CELL
+C   JCOU, NCOU: THERE WILL BE NCOU CALLS TO FPATH, FOR SAME TEST PARTICLE
+C               COORDINATES WITH DIFFERENT CELL NUMBER K.
+C               THIS CURRENT CALL IS CALL NO. JCOU.
 
 C   OUTPUT: COMMON COMLCA
 C           CFLAG: FLAG FOR SAMPLING OF POST-COLLISION STATES
@@ -59,17 +59,17 @@ C           CFLAG(3,...): CX
 C           CFLAG(4,...): PI
 C           CFLAG(5,...): EL
 C           CFLAG(6,...): RC
-c           CFLAG(7,...): PH    (photonic processes, formerly: OT)
+c           CFLAG(7,...): PH (photonic processes, formerly: OT)
 C
 C   FLAG FOR POST-COLLISION DISTRIBUTION IN VELOCITY SPACE
 C  CFLAG(...,IRCL),  IRCL: IREI,..., IRCX,IRPI,IREL,IRRC,IRPH
-C      =0:   VI: DELTA COLLISION IN VELOCITY SPACE (BUT DIFFERENT
-C                                                   SPECIES ALLOWED)
-C      =1:   VI: MONOENERGETIC AND ISOTROPIC IN FRAME MOVING WITH BULK SPECIES
-C      =2:   VI: DRIFTING MAXWELLIAN
-C      =3:   VI: SIGMA-V-WEIGHTED MAXWELLIAN IN FRAME MOVING WITH BULK SPECIES
-C      =X    VI: DELTA COLLISION IN VELOCITY SPACE: VI=V0 (BUT DIFFERENT SPECIES ALLOWED)
-C                TO BE WRITTEN
+C      =0: VI: DELTA COLLISION IN VELOCITY SPACE (BUT DIFFERENT
+C                                                 SPECIES ALLOWED)
+C      =1: VI: MONOENERGETIC AND ISOTROPIC IN FRAME MOVING WITH BULK SPECIES
+C      =2: VI: DRIFTING MAXWELLIAN
+C      =3: VI: SIGMA-V-WEIGHTED MAXWELLIAN IN FRAME MOVING WITH BULK SPECIES
+C      =X  VI: DELTA COLLISION IN VELOCITY SPACE: VI=V0 (BUT DIFFERENT SPECIES ALLOWED)
+C              TO BE WRITTEN
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -91,9 +91,9 @@ C
       REAL(DP) :: DENIO(NPLS), ZTI(NPLS)
       REAL(DP) :: PVELQ(NPLSV)
       REAL(DP) :: EIRENE_FPATHPH,
-     .            sigmax, sigv, 
+     .            sigmax, sigv,
      .            DENEL, VX, VY, VZ, PVELQ0, fac,
-     .            XC,YC,ZC,
+     .            XC, YC, ZC,
 cdr  functions for 'on the fly' evaluation of a&m data
      .            EIRENE_FEPLPH3
       INTEGER :: J, KK, irph, ipph, IL, jpls,
@@ -150,12 +150,17 @@ c
 csw
       if(phv_lgphot(iphot,0,0) == 0) goto 70
       do 61 ipph=1,phv_nphoti(iphot)
-        irph =phv_lgphot(iphot,ipph,0) !  -->  lgxph, with x=ph, IRPH corresponds to: irei, ircx, ....
-        ipls =phv_lgphot(iphot,ipph,1) !  -->  ipls: bulk, mit der interation, wie bei anderen auch.
-        il   =phv_lgphot(iphot,ipph,2) !  -->   diese gibt es nicht bei ei, pi, cx,... prozessen
+!  -->  lgxph, with x=ph, IRPH corresponds to: irei, ircx, ....
+        irph =phv_lgphot(iphot,ipph,0)
+!  -->  ipls: bulk, mit der interation, wie bei anderen auch.
+        ipls =phv_lgphot(iphot,ipph,1)
+        il   =phv_lgphot(iphot,ipph,2)
+!  -->  diese gibt es nicht bei ei, pi, cx,... prozessen
 cdr     il wird hier nirgends verwendet! kann evtl. ganz raus aus photonenmodul
-        kk   =phv_lgphot(iphot,ipph,3) !  -->   diese gibt es nicht bei ei, cx, pi prozessen, KK=NREAPI(IRPI) z.b. bei pi
-cdr                                    !        d.h. hier sollte kk=nreaph(IRPH) verwendet werden
+        kk   =phv_lgphot(iphot,ipph,3)
+!  -->  diese gibt es nicht bei ei, cx, pi prozessen,
+!       KK=NREAPI(IRPI) z.b. bei pi
+cdr     d.h. hier sollte kk=nreaph(IRPH) verwendet werden
         IF (LGVAC(K,IPLS)) GOTO 61
 C
 C  1.) RATE COEFFICIENT

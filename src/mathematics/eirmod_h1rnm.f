@@ -9,21 +9,21 @@ cym common /raset1/ /raset2/ removed
       PUBLIC :: H1RN,H1RNIN,H1RNIV,H1RNSV,H1RNV
 cym care needs to taken that some variables chaneg names in the commons
 cmathematics/h1rn.f:40:      COMMON /RASET1/ U(97),C,CD,CM,I,J
-cmathematics/h1rn.f:41:!$omp threadprivate(/raset1/)            
+cmathematics/h1rn.f:41:!$omp threadprivate(/raset1/)
 cmathematics/h1rnin.f:31:      COMMON /RASET1/ U(97),C,CD,CM,IP,JP
-cmathematics/h1rnin.f:32:!$omp threadprivate(/raset1/)     
+cmathematics/h1rnin.f:32:!$omp threadprivate(/raset1/)
 cmathematics/h1rnin.f:52:cdr  next: initialize RANMAR, data are transfered via common RASET1
 cmathematics/h1rniv.f:15:      COMMON /RASET1/ U(97),C,CD,CM,IP,JP
-cmathematics/h1rniv.f:16:!$omp threadprivate(/raset1/)      
+cmathematics/h1rniv.f:16:!$omp threadprivate(/raset1/)
 cmathematics/h1rnsv.f:13:      COMMON /RASET1/ U(97),C,CD,CM,I,J
-cmathematics/h1rnsv.f:14:!$omp threadprivate(/raset1/)      
+cmathematics/h1rnsv.f:14:!$omp threadprivate(/raset1/)
 cmathematics/h1rnv.f:17:      COMMON /RASET1/ U(97),C,CD,CM,I,J
 cmathematics/h1rnv.f:18:!$omp threadprivate(/raset1/)
 
 cmathematics/h1rn.f:42:      COMMON /RASET2/ FLAG
-cmathematics/h1rn.f:43:!$omp threadprivate(/raset2/)      
+cmathematics/h1rn.f:43:!$omp threadprivate(/raset2/)
 cmathematics/h1rnin.f:33:      COMMON /RASET2/ FLAG
-cmathematics/h1rnin.f:34:!$omp threadprivate(/raset2/)      
+cmathematics/h1rnin.f:34:!$omp threadprivate(/raset2/)
 cmathematics/h1rniv.f:17:      COMMON /RASET2/ FLAG
 cmathematics/h1rniv.f:18:!$omp threadprivate(/raset2/)
 cmathematics/h1rnv.f:19:      COMMON /RASET2/ FLAG
@@ -33,7 +33,7 @@ cmathematics/h1rnv.f:20:!$omp threadprivate(/raset2/)
 cym - former RASET1 common
       real(dp) :: U(97)
       real(dp) :: C,CD,CM
-cym these where IP,JP in some places and I,J elsewhere 
+cym these where IP,JP in some places and I,J elsewhere
       integer :: IM,JM
 
 cym - former RASET2 common
@@ -75,7 +75,7 @@ C  period length: 2**144
 *#**********************************************************************
 *
       USE EIRMOD_PRECISION
-      
+
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: DUMMY
       REAL(DP) :: H1RN
@@ -90,10 +90,10 @@ cym      CHARACTER(16) :: FLAG
 cym      REAL(DP) :: U, C, CD, CM
 cym      INTEGER :: I, J
 cym      COMMON /RASET1/ U(97),C,CD,CM,I,J
-cym!$omp threadprivate(/raset1/)            
+cym!$omp threadprivate(/raset1/)
 cym      COMMON /RASET2/ FLAG
 cym!$omp threadprivate(/raset2/)
-cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc      
+cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 *
 cym  moved to module declaration part- check - renamed FIRST1
 cym      LOGICAL, SAVE :: FIRST1=.TRUE.
@@ -192,10 +192,10 @@ cym      CHARACTER*16    FLAG
 cym      REAL(DP) :: U, C, CD, CM
 cym      INTEGER :: IP, JP
 cym      COMMON /RASET1/ U(97),C,CD,CM,IP,JP
-cym !$omp threadprivate(/raset1/)     
+cym !$omp threadprivate(/raset1/)
 cym      COMMON /RASET2/ FLAG
 cym !$omp threadprivate(/raset2/)
-cym cccccccccccccccccccccccccccccccccccccccccccccccc      
+cym cccccccccccccccccccccccccccccccccccccccccccccccc
 *
 cdr  old code
 cdr  enforce legal values IJ, KL:
@@ -256,13 +256,13 @@ cdr from H1RN (=RANMAR) generator, in a single call.
 c
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
-   
+
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: LEN
       REAL(DP), INTENT(OUT) :: RVEC(LEN)
       REAL(DP) :: UNI
       INTEGER :: IVEC
-  
+
       CHARACTER(16) :: CHECK
 
 cym ccccccccccccccccccccccccccccccccccccccc
@@ -323,17 +323,17 @@ cdr          according to status vector VEC(100)
 *
       USE EIRMOD_PRECISION
 C     USE EIRMOD_COMPRT, ONLY: IUNOUT
-      
+
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: VEC(100)
       INTEGER :: IC
 
-cym ccccccccccccccccccccccccccccccccccccccc      
+cym ccccccccccccccccccccccccccccccccccccccc
 cym      CHARACTER*16    FLAG
 cym      REAL(DP) :: U, C, CD, CM
 cym      INTEGER :: IP, JP
 cym      COMMON /RASET1/ U(97),C,CD,CM,IP,JP
-cym      !$omp threadprivate(/raset1/)      
+cym      !$omp threadprivate(/raset1/)
 cym      COMMON /RASET2/ FLAG
 cym      !$omp threadprivate(/raset2/)
 cym cccccccccccccccccccccccccccccccccccccccc
@@ -372,18 +372,18 @@ cdr  The full vector VEC is needed instead.
 *
       USE EIRMOD_PRECISION
 C     USE EIRMOD_COMPRT, ONLY: IUNOUT
-     
+
       IMPLICIT NONE
       REAL(DP), INTENT(OUT) :: VEC(100)
       INTEGER :: IC
-      
+
 cym cccccccccccccccccccccccccccccccccccccc
 cym      REAL(DP) :: U, C, CD, CM
 cym      INTEGER :: I, J
 cym      COMMON /RASET1/ U(97),C,CD,CM,I,J
 cym      !$omp threadprivate(/raset1/)
 cym cccccccccccccccccccccccccccccccccccccc
-      
+
 *
       DO 10 IC = 1, 97
         VEC(IC) = U(IC)

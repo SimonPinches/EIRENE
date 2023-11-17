@@ -13,7 +13,7 @@ c            e.g.: flstep=4.5= 2 + 2.5 (2: maxwellian energy flux, 2.5: sheath)
 c    fistep: thermal part of ion energy flux at s.e. is fistep*tistep
 c            e.g.: fistep= 2.5 (drifting maxwellian thermal energy flux,
 c                               with Mach=1 (or: ion thermal veloc=1 ?).
-c    shstep: sheath multiplier:  sheath potential is shstep*testep
+c    shstep: sheath multiplier: sheath potential is shstep*testep
 c            e.g.: shstep= 2.5 (hydrogen, M=1, Te=Ti, single fluid)
 c            e.g.: shstep= 2.8 (deuteron, M=1, Te=Ti, single fluid)
 c    vpstep: parallel to B field drift velocity (cm/s) at s.e.
@@ -36,8 +36,8 @@ c
      P          EIRENE_INIT_CSTEP, EIRENE_BROADCAST_CSTEP
 
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R FLSTEP(:,:,:), ELSTEP(:,:,:), FLTOT(:,:), ELTOT(:,:),
-     R VF(:,:,:),  VE(:,:,:),   QUOT(:,:,:),   ADD(:,:,:),
+     R FLSTEP(:,:,:), ELSTEP(:,:,:), FLTOT(:,:),  ELTOT(:,:),
+     R VF(:,:,:),     VE(:,:,:),     QUOT(:,:,:), ADD(:,:,:),
      R QUOTI(:,:,:),  ADDIV(:,:,:),
      R TESTEP(:,:),   TISTEP(:,:,:), RRSTEP(:,:),
      R VXSTEP(:,:,:), VYSTEP(:,:,:), VZSTEP(:,:,:),
@@ -54,7 +54,7 @@ c
      I NPSTEP, NTSTEP, NVSTEP
 
       INTEGER, PRIVATE, SAVE ::
-     .   NSTPP1, NSTPP2, NSTPP3 , NSTPP4
+     . NSTPP1, NSTPP2, NSTPP3 , NSTPP4
 
       CONTAINS
 
@@ -110,7 +110,7 @@ c  next 5 tallies added sept. 05     !dr
 
       WRITE (IUNMEM,'(A,T25,I15)')
      .       ' CSTEP ',(8*NSTPP1+2*NSTPP4+4*NSTPP2+4*NSTPP3 +
-     .                  (NTSTEP+4*NVSTEP)*NSTPP2)*8 +
+     .                 (NTSTEP+4*NVSTEP)*NSTPP2)*8 +
      .                 (6*NSTPP2+4*NSTEP)*4
 
       CALL EIRENE_INIT_CSTEP

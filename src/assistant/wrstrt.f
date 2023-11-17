@@ -13,12 +13,13 @@ cdr  read MC estimated tallies, per stratum, onto fort.10
 cdr    (volume-averaged, surface-averaged, spectra, and their standard deviations)
 cdr     e.g. for printout, plotting, etc.. of results from specified strata
 
-cdr  on input:  IG     :  number of stratum ISTRA
-cdr             IG=0   :  sum over strata
-cdr             TRCFLE :  print diagnostics
+cdr  on input:  IG     : number of stratum ISTRA
+cdr             IG=0   : sum over strata
+cdr             TRCFLE : print diagnostics
 cpb  Dec. 2017: remove type SPECT_ARRAY, not needed in Fortran 2003
 
-      SUBROUTINE EIRENE_WRSTRT(IG,NSTRAI,IESTM1,IESTM2,IESTM3,
+      SUBROUTINE EIRENE_WRSTRT(IG,NSTRAI,
+     .                  IESTM1,IESTM2,IESTM3,
      .                  TALLYV,TALLYS,TALLYL,
      .                  ISDVI1,STAT1,ISDVI2,STAT2,
      .                  ISDVC1,SIGC,ISDVC2,SIGCS,
@@ -34,13 +35,14 @@ cpb  Dec. 2017: remove type SPECT_ARRAY, not needed in Fortran 2003
      .                           STAT1(*)
       REAL(DP), INTENT(INOUT) :: STAT2(*), SIGC(*), SIGCS(*)
       INTEGER, INTENT(IN) :: IG, NSTRAI, IESTM1, IESTM2, ISDVI1, ISDVI2,
-     .                       ISDVC1, ISDVC2, 
+     .                       ISDVC1, ISDVC2,
      .                       IESTM3, ISPCI
       LOGICAL, INTENT(IN) :: TRCFLE
 
-      INTEGER :: IMAX11, IMAX12, IMAX21, IMAX22, IMAX23, IMAX24, IMAX2,
+      INTEGER :: IMAX11, IMAX12,
+     .           IMAX21, IMAX22, IMAX23, IMAX24, IMAX2,
      .           NRECL, IRC, ISTRA,
-     .           JINI, J, JEND, IMAX, ISPC, IMAXS, NSPECI,NSPECE
+     .           JINI, J, JEND, IMAX, ISPC, IMAXS, NSPECI, NSPECE
 
 C
 C  WRITE DATA FOR SINGLE STRATA OR FROM SUM OVER STRATA ON TEMP. FILE FORT.10
@@ -53,7 +55,7 @@ C
       IMAX23=ISDVC1/NRECL+1
       IMAX24=ISDVC2/NRECL+1
       IMAX2=IMAX21+IMAX22+IMAX23+IMAX24
- 
+
       IMAXS=0
       DO ISPC=1,IESTM3
         IMAXS=IMAXS+1
@@ -295,7 +297,8 @@ C
       RETURN
       END SUBROUTINE EIRENE_WRSTRT
 C
-      SUBROUTINE EIRENE_RSTRT(IG,NSTRAI,IESTM1,IESTM2,IESTM3,
+      SUBROUTINE EIRENE_RSTRT(IG,NSTRAI,
+     .            IESTM1,IESTM2,IESTM3,
      .            TALLYV,TALLYS,TALLYL,
      .            ISDVI1,STAT1,ISDVI2,STAT2,
      .            ISDVC1,SIGC,ISDVC2,SIGCS,
@@ -310,13 +313,14 @@ C
      .                         STAT1(*)
       REAL(DP), INTENT(INOUT) :: STAT2(*), SIGC(*), SIGCS(*)
       INTEGER, INTENT(IN) :: IG, NSTRAI, IESTM1, IESTM2, ISDVI1, ISDVI2,
-     .                       ISDVC1, ISDVC2,  
+     .                       ISDVC1, ISDVC2,
      .                       IESTM3, ISPCI
       LOGICAL, INTENT(IN) :: TRCFLE
 
-      INTEGER :: IMAX11, IMAX12, IMAX21, IMAX22, IMAX23, IMAX24, IMAX2,
+      INTEGER :: IMAX11, IMAX12,
+     .           IMAX21, IMAX22, IMAX23, IMAX24, IMAX2,
      .           NRECL, IRC, ISTRA,
-     .           JINI, J, JEND, IMAX, ISPC, IMAXS, NSPECI,NSPECE
+     .           JINI, J, JEND, IMAX, ISPC, IMAXS, NSPECI, NSPECE
 C
 C  READ DATA FOR SINGLE STRATA OR SUM OVER STRATA FROM TEMP. FILE FORT.10
 C
@@ -328,7 +332,7 @@ C
       IMAX23=ISDVC1/NRECL+1
       IMAX24=ISDVC2/NRECL+1
       IMAX2=IMAX21+IMAX22+IMAX23+IMAX24
- 
+
       IMAXS=0
       DO ISPC=1,IESTM3
         IMAXS=IMAXS+1

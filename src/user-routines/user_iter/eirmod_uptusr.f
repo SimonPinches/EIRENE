@@ -68,14 +68,14 @@ C
         VRX=0.
         VRY=0.
         DO I=1,NTRII
-          VRX(I)=PLNXTRI(i)    ! radial unit vector 
+          VRX(I)=PLNXTRI(i)    ! radial unit vector
           VRY(I)=PLNYTRI(i)    ! => bxperp, byperp
           VPX(I)=PPLNXTRI(i)   ! poloidal unit vector
           VPY(I)=PPLNYTRI(i)   ! => BXIN, BYIN TO BE NORMALIZED
         END DO
 
 cdr  increments for tally number iadv
-!pb  MOD_ADDV is no incremental value. It is a flag indicating whether all the 
+!pb  MOD_ADDV is no incremental value. It is a flag indicating whether all the
 !pb  rates used for emissivity lines are to be stored or whether storage saving
 !pb  mode ist to be used, only storing the rates for the latest used line
 !pb     IA0=MOD_ADDV        !  RADIAL CURRENT

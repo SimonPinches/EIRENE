@@ -39,17 +39,17 @@ c   start to clean up splitting, for analogue game and for anticorrelated moment
 c   started for colatm, and EI processes.
 c   not sure if ispz is known, NOW
 cdr tbd:
-c   cascading with EI: nlevel =nlevel+ptot-1 (because one particle continues)
+c   cascading with EI: nlevel = nlevel+ptot-1 (because one particle continues)
 c   cascading with CX: define analogue PTOT
 c   cascading with PI: identical to EI ??
 
-cdr Nov. 16:   cflag(7,3) --> cflag(7,mstor0)
-cdr            (was already corrected much earlier in SOLPS_4.3 by VK,
-cdr             then correction somehow lost in more recent EIRENE branches)
+cdr Nov. 16: cflag(7,3) --> cflag(7,mstor0)
+cdr          (was already corrected much earlier in SOLPS_4.3 by VK,
+cdr          then correction somehow lost in more recent EIRENE branches)
 cdr Jan. 17: started to separate more clearly the (unfinished) NLCASCAD option from active code
 C            Done for COLATM and EI processes.
 C            wminv activated in colmol for EI processes (analog to colatm)
-cdr May 17: some spelling error corrections in comments adopted from ITER branch
+cdr May 17:  some spelling error corrections in comments adopted from ITER branch
 c            AE: analog, --> BE: analogue, etc..
 cdr Nov.18:  notational cleanup: separate OT from PH processes, e.g.: IROT --> IRPH
 cdr Jan 22:  added parameter DIST, for "fluid-limit" transition
@@ -94,7 +94,7 @@ C
 
       IMPLICIT NONE
 
-      REAL(DP), INTENT(IN) :: CFLAG(7,MSTOR0),DIST
+      REAL(DP), INTENT(IN) :: CFLAG(7,MSTOR0), DIST
       INTEGER, INTENT(OUT) :: COLTYP
       INTEGER, INTENT(INOUT) :: KKOUT
       REAL(DP) :: ZEP1, SIGSUM, WGHTO, FRSTP, E0O, VELXO,
@@ -107,7 +107,7 @@ Cdr  additional arrays for ANALOG CASCADE and SPLITTING AT COLLISIONS.
 Cdr (should be set in initialization phase, not here)
 CDR  check: are the corresponding arrays PATEI,PMLEI, PIOEI real or integer (1/2 particle possible?)
 
-C      INTEGER, ALLOCATABLE :: NAMIEI(:),NAMIPI(:)  ! preparing code synchronisation
+C     INTEGER, ALLOCATABLE :: NAMIEI(:), NAMIPI(:)  ! preparing code synchronisation
 
       INTEGER :: iaph,irph,kk,updf,t1
       real(dp):: sump
@@ -122,7 +122,7 @@ C  INCIDENT SPECIES: IOLD
       NCLLO = NCELL
       NCELL = NCLTAL(NCLLO)
 
-C  parallel momentum of photon:  not ready
+C  parallel momentum of photon: not ready
 C     CALL EIRENE_BFIELD (NCLLO, X0, Y0, Z0, BX, BY, BZ, BF,.TRUE.)
 C     V0_PARBO=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
 c     V0_PARBO=V0_PARBO*AMUA*RMASSA(IATM)
@@ -167,7 +167,6 @@ C
           CALL EIRENE_CHCTRC(X0,Y0,Z0,16,4)
 !$OMP END CRITICAL
         ENDIF
-
 C
 C   FIND SPECIES INDEX OF BULK COLLISION PARTNER
         SIGSUM=SIGEIT+SIGCXT+SIGELT
@@ -310,7 +309,7 @@ c
 
           CASE DEFAULT
             WRITE (iunout,*) ' ITYP = ',ITYP,' AS FIRST SECONDARY IS',
-     .                  ' NOT FORESEEN IN COLLIDE '
+     .                  ' NOT FORESEEN IN COLLIDE'
           END SELECT
 
         ELSE
@@ -377,7 +376,7 @@ c
             CASE DEFAULT
               WRITE (iunout,*) ' ITYP = ',ITYP,
      .                    ' AS SECOND SECONDARY IS',
-     .                    ' NOT FORESEEN IN COLLIDE '
+     .                    ' NOT FORESEEN IN COLLIDE'
             END SELECT
 
          ENDIF
@@ -390,7 +389,7 @@ C     GENERAL IMPACT COLLISION: NOT READY
 C
 
 C
-  999 WRITE (iunout,*) 'ERROR IN COLLIDE '
+  999 WRITE (iunout,*) 'ERROR IN COLLIDE'
       WRITE (iunout,*) 'ITYP ',ITYP,IPHOT,IATM,IMOL,IION,IPLS
       CALL EIRENE_EXIT_OWN(1)
       END SUBROUTINE EIRENE_COLPHOT

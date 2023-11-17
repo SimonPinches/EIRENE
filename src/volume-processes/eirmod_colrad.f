@@ -9,7 +9,7 @@
      .                               q_ext(:),
      .                               pop_esc(:,:)
 
-      PUBLIC :: eirene_colrad, eirene_colrad_reinit, 
+      PUBLIC :: eirene_colrad, eirene_colrad_reinit,
      .          eirene_dealloc_colrad
 
 cdr jan 18: distinct from solps4.3 version: e_alpcr correct now.
@@ -33,19 +33,19 @@ cdr dec.18: additional flag: iform: CR condensed vs. CR resolved. Not fully avai
 !     for one and the same cell, for two or more differenct CRM output quantities
 
 !   input:
-!   ir:        reaction number, as stored in eirene input arrays.
-!   icrm:      choice of internal CR model. Currently icrm=1: H-colrad
-!              Soon:
-!              icrm=4: He-colrad, icrm=2:  H2-colrad
-!   ivar:      this call to colrad pick one particular CR variable for cell icell.
-!              Currently, for H_COLRAD, there are
+!   ir:    reaction number, as stored in eirene input arrays.
+!   icrm:  choice of internal CR model. Currently icrm=1: H-colrad
+!          Soon:
+!          icrm=4: He-colrad, icrm=2: H2-colrad
+!   ivar:  this call to colrad pick one particular CR variable for cell icell.
+!          Currently, for H_COLRAD, there are
 !
-!   icell:     cell for which collisional-radiative model should be calculated
-!   p1:        first parameter (usually:  log_e temperature,...)
-!   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...)
+!   icell: cell for which collisional-radiative model should be calculated
+!   p1:    first parameter (usually: log_e temperature,...)
+!   p2:    second parameter (if any, e.g. log_e (density),...,log_e(test particle energy),...)
 
 !   output:
-!   res:       result, for cell no. icell.
+!   res:   result, for cell no. icell.
 
       use EIRMOD_precision
       use EIRMOD_parmmod
@@ -79,10 +79,12 @@ c      for the current run/iteration/time-cycle
           allocate(pop0(40))
           allocate(pop1(40))
           allocate(pop_ext(40))
-          allocate(q_ext(40))      !   e.g. photoexcitation rate for H*(n)
-          allocate(pop_esc(40,40)) !   line population escape factor (default:==1)
+          allocate(q_ext(40))      ! e.g. photoexcitation rate for H*(n)
+          allocate(pop_esc(40,40)) ! line population escape factor
+                                   ! (default:==1)
 
-          POP_ESC =1.0_DP          !   default: all transitions are optically thin
+          POP_ESC =1.0_DP          ! default:
+                                   ! all transitions are optically thin
 
 cdr  cumulate all population escape factors for internal CR model.
 cdr  either read
@@ -145,7 +147,7 @@ cdr  scan over all reaction decks (from block 4 and/or block 12)
         Q_EXT = 0._DP
         L_EXT = .FALSE.
 
-        if (.not.lvis_h(icell))  then
+        if (.not.lvis_h(icell)) then
 ! cell number ICELL has not yet been visited so far in this run
 ! CR model needs to be calculated.
 ! In later calls, for this ICELL,
@@ -235,7 +237,7 @@ cdr  it may be a rate, an energly loss rate or a reduced population coefficient
 
       else   ! icrm .ne.1
          write (iunout,*) ' REQUESTED COLLISIONAL-RADIATIVE MODEL' //
-     .                    ' NOT AVAILABLE '
+     .                    ' NOT AVAILABLE'
          WRITE (iunout,*) 'icrm ',icrm
          WRITE (iunout,*) 'ir   ',ir
          call eirene_exit_own(1)

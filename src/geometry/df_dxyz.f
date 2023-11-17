@@ -2,14 +2,14 @@ cdr: nov 2013: comments added
 cdr: nov 2015:  further comments
 c  : summer 2019: bug fix re x coordinates for levgeo=1 case
 c
-c  AFEM:  course "Advanced Finite Element Methods",
-c         Department of Aerospace Engineering Sciences,
-c         University of Colorado at Boulder
-c         https://www.colorado.edu/engineering/CAS/courses.d/AFEM.d/
-c  IFEM:  course "Introduction to Finite Element Methods"
-c         Department of Aerospace Engineering Sciences,
-c         University of Colorado at Boulder
-c         https://www.colorado.edu/engineering/CAS/courses.d/IFEM.d/Home.html
+c  AFEM: course "Advanced Finite Element Methods",
+c        Department of Aerospace Engineering Sciences,
+c        University of Colorado at Boulder
+c        https://www.colorado.edu/engineering/CAS/courses.d/AFEM.d/
+c  IFEM: course "Introduction to Finite Element Methods"
+c        Department of Aerospace Engineering Sciences,
+c        University of Colorado at Boulder
+c        https://www.colorado.edu/engineering/CAS/courses.d/IFEM.d/Home.html
 c
       subroutine  eirene_df_dxyz (fecken, icell, x, y, z,
      .                           dfdx, dfdy, dfdz)
@@ -18,8 +18,8 @@ c
 c  return partial derivatives of function fecken, at internal point x,y,z,
 c         which is known to be located in grid cell icell
 
-c  input:  fecken: values of function f on cell vertices
-c          function fecken must be defined already, e.g. from an earlier call to 'cell-to-corner.f'
+c  input: fecken: values of function f on cell vertices
+c         function fecken must be defined already, e.g. from an earlier call to 'cell-to-corner.f'
 c
 c  for speed-up, and overhead reduction:
 c  fill array 'visited' to indicate, which cells have been visited in earlier calls
@@ -66,9 +66,9 @@ cdr   integer, save :: icount=0  !  for test output only
 
 c  2d grid, quadrangles, x-y plane. z: ignorable.
 
-c  levgeo=1,  2d regular orthogonal cartesian grid, x-y plane. z: ignorable.
-c  levgeo=2:  quadrangles obtained from second order alg. surfaces,
-c  levgeo=3:  general polygon grid, but convex cell.
+c  levgeo=1, 2d regular orthogonal cartesian grid, x-y plane. z: ignorable.
+c  levgeo=2: quadrangles obtained from second order alg. surfaces,
+c  levgeo=3: general polygon grid, but convex cell.
 
 
       if (((levgeo == 1) .and. nlrad .and. nlpol) .or.
@@ -236,7 +236,7 @@ c  tetrahedra, 3d grid.
 
       else if (levgeo == 5) then
 
-c  setting of array 'visited(icell)':  to be done
+c  setting of array 'visited(icell)': to be done
 
         x1=xtetra(nteck(1,icell))
         x2=xtetra(nteck(2,icell))

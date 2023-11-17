@@ -1,5 +1,5 @@
-Cdr Jan 2017:  start to synchronize with intvol. goal: should
-C              become identical, if weighting function "VOL == 1"
+Cdr Jan 2017: start to synchronize with intvol. goal: should
+C             become identical, if weighting function "VOL == 1"
 C
 C
 C

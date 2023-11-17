@@ -53,8 +53,8 @@ C
       INTEGER, INTENT(IN) :: ISTRA
       REAL(DP), INTENT(OUT) :: FA, FM, FI, FPH
       REAL(DP) :: FC(4), P(4,5), B(4), PP(4,4), FFC(3), BB(3)
-      REAL(DP) :: DTB1, DTB2, DTA, EIRENE_DETER3x3, DTB3, FNEN, DTB4,
-     .            EIRENE_DETER4X4
+      REAL(DP) :: DTB1, DTB2, DTA, DTB3, FNEN, DTB4,
+     .            EIRENE_DETER3X3, EIRENE_DETER4X4
       REAL(DP) :: P11, P12, P13, P21, P22, P23, P31, P32, P33,
      .            B1, B2, B3,
      .            ap3ma, ap3mi, ap3m, ap3n3, ap3n2
@@ -314,7 +314,7 @@ C  AT LEAST THREE COLUMNS ARE NONZERO
           END DO
 
 cdr  We are in IROW=3 case, so we need to solve a 3x3 linear eq. system
-cdr  We use the explicit Cramer's Rule.
+cdr  We use the explicit Cramer Rule.
           P11=PP(1,1)
           P21=PP(2,1)
           P31=PP(3,1)
@@ -424,18 +424,18 @@ cdr 3x3 matrix, hence: **3, to compare with determinant
           ap3n3=ap3m**3
 cdr check determinant=0, relative to L1 norm
           if (abs(dta)/ap3n3 > eps10) then
-          dtb1=EIRENE_deter3x3(b1,b2,b3,
-     .                         p12,p22,p32,
-     .                         p13,p23,p33)
-          dtb2=EIRENE_deter3x3(p11,p21,p31,
-     .                         b1,b2,b3,
-     .                         p13,p23,p33)
-          dtb3=EIRENE_deter3x3(p11,p21,p31,
-     .                         p12,p22,p32,
-     .                         b1,b2,b3)
-          Ffc(1)=dtb1/(dta+1.d-30)
-          Ffc(2)=dtb2/(dta+1.d-30)
-          Ffc(3)=dtb3/(dta+1.d-30)
+            dtb1=EIRENE_deter3x3(b1,b2,b3,
+     .                           p12,p22,p32,
+     .                           p13,p23,p33)
+            dtb2=EIRENE_deter3x3(p11,p21,p31,
+     .                           b1,b2,b3,
+     .                           p13,p23,p33)
+            dtb3=EIRENE_deter3x3(p11,p21,p31,
+     .                           p12,p22,p32,
+     .                           b1,b2,b3)
+            Ffc(1)=dtb1/(dta+1.d-30)
+            Ffc(2)=dtb2/(dta+1.d-30)
+            Ffc(3)=dtb3/(dta+1.d-30)
           else
             write (iunout,*) 'SINGULAR MATRIX ENCOUNTERED IN GETSCL4'
             write (iunout,*) 'for ISTRA = ',ISTRA
@@ -563,7 +563,7 @@ C
       END IF
 C
 CNR IF ANY OF THESE FACTORS ARE NEGATIVE, KEEP AT 1.
-CNR CAN HAPPEN IF BALANCES ARE BADLY BROKEN BY 
+CNR CAN HAPPEN IF BALANCES ARE BADLY BROKEN BY
 CNR PARTICLES WITH ENORMOUS WEIGHTS...
       IF (ANY(FC < 0._DP)) THEN
         WRITE(*,*) '/!\ NEGATIVE RESCALING FOUND !',
@@ -591,7 +591,8 @@ C
       USE EIRMOD_COMSOU
       USE EIRMOD_COUTAU
       USE EIRMOD_CCOUPL
-      USE EIRMOD_COMPRT,ONLY : IUNOUT
+      USE EIRMOD_COMPRT
+     , ,ONLY : IUNOUT
       USE EIRMOD_CLOGAU
      , ,ONLY : NLSPCSCL, NLSPCSCL_ATM, NLSPCSCL_MOL, NLSPCSCL_ION,
      ,         NLSPCSCL_PHOT, NLSPCSCL_ON
@@ -607,7 +608,7 @@ C
      .           JSP, JMOL, JION, JPHOT
       INTEGER :: IER
       INTEGER, ALLOCATABLE :: IW(:)
-      REAL(DP), ALLOCATABLE :: PP(:,:),B(:)
+      REAL(DP), ALLOCATABLE :: PP(:,:), B(:)
 
       IF (NATMI.LE.1.AND.NMOLI.LE.1.AND.
      .    NIONI.LE.1.AND.NPHOTI.LE.1) THEN
@@ -760,7 +761,7 @@ C
           IF(JSP.LE.NATMI) THEN
             DO IATM = 1, NATMI
               PP(IATM,JSP) = PAATI2(IATM,JSP)+
-     .                       PRFAAI2(IATM,JSP)              
+     .                       PRFAAI2(IATM,JSP)
             END DO
             PP(JSP,JSP) = PP(JSP,JSP)+
      .                    POTATI(JSP,ISTRA)+PGENAI(JSP,ISTRA)
@@ -778,7 +779,7 @@ C
               JPHOT = NATMI+NMOLI+NIONI+IPHOT
               PP(JPHOT,JSP) = PAPHTI2(IPHOT,JSP)+
      .                      PRFAPHTI2(IPHOT,JSP)
-           END DO
+            END DO
           ELSE IF (JSP.GT.NATMI.AND.JSP.LE.NATMI+NMOLI) THEN
             JMOL = JSP-NATMI
             DO IATM = 1, NATMI
@@ -789,7 +790,7 @@ C
               JMOL = NATMI+IMOL
               PP(JMOL,JSP) = PMMLI2(IMOL,JSP-NATMI)+
      .                      PRFMMI2(IMOL,JSP-NATMI)
-           END DO
+            END DO
             JMOL = JSP-NATMI
             PP(JSP,JSP) = PP(JSP,JSP)+
      .                    POTMLI(JMOL,ISTRA)+PGENMI(JMOL,ISTRA)
@@ -797,7 +798,7 @@ C
               JION = NATMI+NMOLI+IION
               PP(JION,JSP) = PMIOI2(IION,JMOL)+
      .                      PRFMII2(IION,JMOL)
-           END DO
+            END DO
             DO IPHOT = 1, NPHOTI
               JPHOT = NATMI+NMOLI+NIONI+IPHOT
               PP(JPHOT,JSP) = PMPHTI2(IPHOT,JMOL)+
@@ -825,8 +826,8 @@ C
             DO IPHOT = 1, NPHOTI
               JPHOT = NATMI+NMOLI+NIONI+IPHOT
               PP(JPHOT,JSP) = PIPHTI2(IPHOT,JION)+
-     .                      PRFIPHTI2(IPHOT,JION) 
-           END DO
+     .                      PRFIPHTI2(IPHOT,JION)
+            END DO
           ELSE IF (JSP.GT.NATMI+NMOLI+NIONI.AND.
      .             JSP.LE.NATMI+NMOLI+NIONI+NPHOTI) THEN
             JPHOT = JSP-NATMI-NMOLI-NIONI

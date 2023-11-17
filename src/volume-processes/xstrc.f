@@ -7,15 +7,15 @@ cdr  Notation often just the other way round?
       SUBROUTINE EIRENE_XSTRC(ipls,nrc,idsc,irrc)
 cdr
 cdr  to replace       ISWR==6, non-default RC part, as called from XSECTP.F
-cdr  already done for ISWR==7 (photonic reaction part).
+cdr  already done for ISWR==7 (photonic reaction part, "lines").
 cdr  Prepare volume recombination processes: bulk (+ bulk)--> test (+ bulk)
 cdr  e.g.   ISWR==6  (RC)                    H+    +  e   --> H    (+ rad.)
 cdr  e.g.   ISWR==7  (PH)                    H(n=2)       --> Ly-alpha (+H(n=1))
 cdr
 c    ipls: incident bulk
-c    nrc : index of reaction in list of all reactions for IPLS
-c    idsc: index of RC reaction for species ipls
-c    irrc: index of RC reaction in NRRC arrays
+c    nrc : index of reaction in list of all reactions for field particle IPLS
+c    idsc: index of RC/PH reaction for species ipls
+c    irrr: index of RC/PH reaction in NRRC/NRPH arrays
 c
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD

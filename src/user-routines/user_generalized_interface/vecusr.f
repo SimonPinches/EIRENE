@@ -11,7 +11,7 @@ c  note: ipls is the true background species,
 c        not to be confused with the mapped species index mplsv(ipls)
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
-            IMPLICIT NONE
+      IMPLICIT NONE
       INTEGER, INTENT(IN) :: I, IC,IPLS
       LOGICAL             :: L
       REAL(DP), INTENT(IN) :: X,Y,Z

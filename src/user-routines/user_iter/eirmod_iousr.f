@@ -22,7 +22,7 @@ C  User specific read routines
       end interface eirene_write_block_11_usr
 
       contains
-      
+
       subroutine eirene_read_block_11_usr_fixed
 
       use eirmod_comprt
@@ -33,7 +33,7 @@ C  User specific read routines
 
       backspace iunin
 csw 22jul2011
-      read (iunin,6666) idumm, nsrfcls 
+      read (iunin,6666) idumm, nsrfcls
       if(abs(nsrfcls) > 0) call eirene_extrab25_srfprvsl_init()
       do j=1,abs(nsrfcls)
         read (iunin,6666) msrfcls(j)
@@ -86,7 +86,7 @@ csw
             write (iunout,*) 'NSF =   ',nsf
             call eirene_exit_own(1)
           end if
-          
+
           do j=1,abs(nsrfcls)
             call json%get_child(pcrits,j,pcrit,found)
             call json%get(pcrit,'MSRFCLS', msrfcls(j),found)
@@ -103,7 +103,7 @@ csw
             end if
           end do
         end if ! foundc
-      end if      
+      end if
 
       return
       end subroutine eirene_read_block_11_usr_json
@@ -119,7 +119,7 @@ csw
       type(json_value),pointer :: me
       type(json_value),pointer :: pcrits, pcrit
       integer :: j
-       
+
       call json%add(me,'NSRFCLS',nsrfcls)
 
       if (abs(nsrfcls) > 0) then
@@ -132,10 +132,10 @@ csw
         end do
         call json%add(me,pcrits)
       end if
-            
+
       return
       end subroutine eirene_write_block_11_usr_json
 
-      end module eirmod_iousr 
+      end module eirmod_iousr
 
-      
+

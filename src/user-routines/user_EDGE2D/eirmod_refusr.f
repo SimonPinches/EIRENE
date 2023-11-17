@@ -9,7 +9,7 @@
      .          EIRENE_DEALLOC_REFUSR
 
       CONTAINS
-      
+
       SUBROUTINE EIRENE_REFUSR_INIT
       IMPLICIT NONE
       RETURN

@@ -1,7 +1,7 @@
 C  10.6.05:  L_SAME:  USE SAME FRAME AS IN PREVIOUS CALL
 C  8.8.06 :  GRPP taken out
-Cdr sept.17:  plot options logx are not available.
-C             But would be good for spectra, at least
+Cdr sept.17: plot options logx are not available.
+C            But would be good for spectra, at least
 C
       SUBROUTINE EIRENE_PLTTLY
      .  (X,Y,VBAR,YMN,YMX,IR1,IR2,IRS,NKURV,TXTTAL,
@@ -14,9 +14,9 @@ c  make a x-y plot, with or without error bars (VBAR), up to ncurv curves into s
 C    input
 c
 c
-c   l_same  :  plot one more curve (or histogram) into previous picture
-c              if true :  add the tally text under the previous legend
-c              if false:  make a new picture, and new frame
+c   l_same : plot one more curve (or histogram) into previous picture
+c            if true :  add the tally text under the previous legend
+c            if false:  make a new picture, and new frame
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -197,14 +197,14 @@ C  PLOT LINES
           ELSE
             YMY=MINY
           ENDIF
-          CALL GRJMP(REAL(X(I1),SP),REAL(YMY,SP))
+          CALL GRJMP (REAL(X(I1),SP),REAL(YMY,SP))
           CALL GRDRW (REAL(X(I1),SP),REAL(Y(I1,I),SP))
           CALL GRDRW (REAL(X(I1+IS),SP),REAL(Y(I1,I),SP))
           DO J=I1+IS,I2,IS
             CALL GRDRW (REAL(X(J),SP),REAL(Y(J,I),SP))
-            CALL GRDRW (REAL(X(J+IS),SP), REAL(Y(J,I),SP))
+            CALL GRDRW (REAL(X(J+IS),SP),REAL(Y(J,I),SP))
           END DO
-          CALL GRDRW(REAL(X(I2+IS),SP),REAL(YMY,SP))
+          CALL GRDRW (REAL(X(I2+IS),SP),REAL(YMY,SP))
 C  PLOT SYMBOLS
           ISY=IPEN2+1
           NP=(I2-I1+1)/IS
@@ -216,7 +216,7 @@ C  PLOT SYMBOLS
 C
         ELSEIF (.NOT.LHIST) THEN
 C  PLOT LINES
-          CALL GRJMP(REAL(X(I1),SP),REAL(Y(I1,I),SP))
+          CALL GRJMP (REAL(X(I1),SP),REAL(Y(I1,I),SP))
           DO 33 J=I1+IS,I2,IS
             CALL GRDRW (REAL(X(J),SP),REAL(Y(J,I),SP))
    33     CONTINUE

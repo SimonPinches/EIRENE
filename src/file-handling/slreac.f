@@ -1,9 +1,9 @@
 !  03.08.06: data structure for reaction data redefined
 !  25.04.07: reading of rate coefficients from HYDKIN database added
-c  changed in 2011:  new atomic/molecular data structure introduced,
-c                    REACDAT(IR)% ..., replaces array CREAC(...)
+c  changed in 2011: new atomic/molecular data structure introduced,
+c                   REACDAT(IR)% ..., replaces array CREAC(...)
 C
-c    at the end of this routine, for each reaction card, call: 
+c    at the end of this routine, for each reaction card, call:
 cdr  SET_REACTION_DATA(IR,..)
 cdr  jan.14: started to comment, cleanup
 cdr  april 2015: further commenting, cleanup, nov. 15: continued
@@ -26,9 +26,9 @@ c     Sept.16: two new internal subroutines,
 c              a) READ_RANGE:  to read validity range information,
 c              b) READ_COEFFS: three parameters for each validity boundary, for extrapolation options
 c    June  17: read_colrad (for old H-COL option (now CRM)) moved to separate routine.
-cdr  Jan   19:  filnam=CRM --> CR... to prepare merge with branch ...emis....,
-cdr             H, He internal CR codes, formulation I, II (MS resolved or not)
-cdr  Feb   19:  remove obsolete (and unfinished) option HYDRTC 
+cdr  Jan   19: filnam=CRM --> CR... to prepare merge with branch ...emis....,
+cdr            H, He internal CR codes, formulation I, II (MS resolved or not)
+cdr  Feb   19: remove obsolete (and unfinished) option HYDRTC
 cdr  Nov.  19: add parameters for range of poly-data: inep, knep
 cdr  Nov.  19: add DE=EARRH prefactor to separate Arrhenius factor exp(-DE/T)
 cdr            (Add a minus-1st term to the polynomial series).
@@ -38,10 +38,12 @@ cdr            And add DELP (potential energy gap reactants - products).
 cdr            bugfix: isw=7 rather than =8 in one place
 C
 C
-      SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
+      SUBROUTINE EIRENE_SLREAC (IR, FILNAM, H123, REAC, CRC,
      .                          RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .                          RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
      .                          ELNAME, IZ1, BUNDLING,
+cdr from here on: optional input: CR models, and filnam=CONST option.
+c    .                          M_popesc, M_upper, M_lower,
      .                          IROW_ESC, ICOL_ESC, POP_ESC,
      .                          IFTFL, NCOEF, COEF)
 c
@@ -106,12 +108,12 @@ c            else: extrapolation is set explicitly in input file, block 4a
 c                  skip reading extrapolation data from data file, even if they are available
 
 c  specific input, only available in case FILNAM=ADAS
-c    ELNAME  :  only in case FILNAM=ADAS: the new file name REAC_ELNAME is construced
-C    IZ1     :  only in case FILNAM=ADAS: ionization stage number within ADAS file
+c    ELNAME  : only in case FILNAM=ADAS: the new file name REAC_ELNAME is construced
+C    IZ1     : only in case FILNAM=ADAS: ionization stage number within ADAS file
 C    BUNDLING: only in case FILNAM=ADAS: bundling scheme name (optional)
 
 C  internal
-C    ISW   <-- H123:   H.0: ISW=0, H.1: ISW=1, H.2: ISW=2, ...,H.12: ISW=12
+C    ISW   <-- H123: H.0: ISW=0, H.1: ISW=1, H.2: ISW=2, ..., H.12: ISW=12
 C    I0    derived from ISW, initial value of 2nd index in old CREAC arrays
 
 C  output
@@ -204,7 +206,7 @@ c     USE EIRMOD_PHOTON  ! currently not needed
       CHARACTER(LEN=*), INTENT(IN) :: REAC
 
 cdr  optional, only needed for CR (COLRAD) format
-      INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC, 
+      INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC,
      .                                      IFTFL, NCOEF
       REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC
 
@@ -213,7 +215,7 @@ cdr  optional, only needed for TAB2D (ADAS) format
       CHARACTER(2), INTENT(IN) :: ELNAME
       CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: BUNDLING
 
-      REAL(DP),     INTENT(IN), OPTIONAL :: COEF(9)      
+      REAL(DP),     INTENT(IN), OPTIONAL :: COEF(9)
 
 cdr  asymptotics parameters already read from input block 4?
 cdr  if not: try to read from external A&M data file
@@ -231,14 +233,15 @@ cdr
       REAL(DP) :: CREACD(9,9)  ! INTERMEDIATE STORAGE FOR FIT PARAMETERS
 
 cdr  for reading asymptotics parameters from data files
-      INTEGER ::  IF1MN, IF1MX, IF2MN, IF2MX
+      INTEGER  :: IF1MN, IF1MX, IF2MN, IF2MX
       REAL(DP) :: FP1L(3), FP1R(3), FP2L(3), FP2R(3)
       REAL(DP) :: R1MN, R1MX, R2MN, R2MX
 
       INTEGER :: I, IND, J, K, IH, I0, IC, IREAC, ISW, INDFF,
      .           IFLG, IANF, IFILE, IL, INDG, INDADD, IERR,
      .           INI, INE, KNI, KNE,
-     .           INIP, INEP, KNIP, KNEP      ! range of non-zero fit parameters
+     .           INIP, INEP, KNIP, KNEP ! range of non-zero
+                                        ! fit parameters
 
       CHARACTER(80) :: ZEILE, LAST_TEX, ULINE
       CHARACTER(4) :: CHR, CHRA, CETH, CKER, CDEL, BEND
@@ -262,14 +265,14 @@ cdr  for reading asymptotics parameters from data files
         CHARACTER(LEN=*), INTENT(IN) :: REAC
         END SUBROUTINE EIRENE_READ_COLRAD
 
-        subroutine eirene_lookup_adasdir_usr(DSN, FOUND, 
+        subroutine eirene_lookup_adasdir_usr(DSN, FOUND,
      .                                       REAC_IN, ELNAME, BUNDLING)
         character(*),intent(inout) :: DSN
         character(LEN=*), intent(in) :: REAC_IN
         logical, intent(inout) :: found
         character(LEN=*), intent(in), optional :: ELNAME, BUNDLING
         end subroutine eirene_lookup_adasdir_usr
-        
+
       END INTERFACE
 C
       IF(TRCAMD) WRITE(IUNOUT,'(A,1X,I3,1X,A8,1X,A4,1X,A,1X,A2)')
@@ -306,8 +309,8 @@ cdr this coefficient can appear as "-1st" coeff, e.g b-1
 
 cdr end of dataset (optional)
 c  some additional reaction data: threshold energy,
-c                                              max rate coeff sigma*v_rel,
-c                                              at E_rel=ERTMAX
+c                                           max rate coeff sigma*v_rel,
+c                                           at E_rel=ERTMAX
       CMR  = 'MAXRATE'
       CEMR = 'ELAB'
       CETH = 'ETH'
@@ -382,8 +385,8 @@ cdr       write (iunout,*) ifile, dbfname(ifile)
               ELSE
                 CUT = '/'
               END IF
-              DIR=TRIM(DBFNAME(IFILE)) // CUT //
-     .            ADJUSTL(TRIM(REAC)) // CUT
+              DIR = TRIM(DBFNAME(IFILE)) // CUT //
+     .              ADJUSTL(TRIM(REAC)) // CUT
               IL = INDEX(DIR,CUT,.TRUE.)
             END IF
             IF (PRESENT(BUNDLING) .AND. (LEN_TRIM(BUNDLING) > 0)) THEN
@@ -429,18 +432,18 @@ C  THE A&M DATA FILE FILNAM IS NOW OPENED, ON STREAM 29 (+ifoff)
         ELSE
           WRITE (iunout,*)
      .      ' NO VALID FILENAME IN REACTION CARD'
-          WRITE (iunout,*) ' CHOOSE EITHER '
-          WRITE (iunout,*) ' AMJUEL, METHAN, HYDHEL, AMMONX, H2VIBR '
-          WRITE (iunout,*) ' OR '
-          WRITE (iunout,*) ' TAB1D, TAB2D, ADAS '
-          WRITE (iunout,*) ' OR '
+          WRITE (iunout,*) ' CHOOSE EITHER'
+          WRITE (iunout,*) ' AMJUEL, METHAN, HYDHEL, AMMONX, H2VIBR'
+          WRITE (iunout,*) ' OR'
+          WRITE (iunout,*) ' TAB1D, TAB2D, ADAS'
+          WRITE (iunout,*) ' OR'
           WRITE (iunout,*) ' CR'
-          WRITE (iunout,*) ' OR '
-          WRITE (iunout,*) ' CONST '
-          WRITE (iunout,*) ' OR '
+          WRITE (iunout,*) ' OR'
+          WRITE (iunout,*) ' CONST'
+          WRITE (iunout,*) ' OR'
           WRITE (iunout,*) ' PHOTON'
-          WRITE (iunout,*) ' FOR ENTERING REACTION DATA VIA '
-          WRITE (iunout,*) ' EIRENE INPUT FILE '
+          WRITE (iunout,*) ' FOR ENTERING REACTION DATA VIA'
+          WRITE (iunout,*) ' EIRENE INPUT FILE'
           WRITE (iunout,*) ' FILNAM WAS : ', FILNAM
           CALL EIRENE_EXIT_OWN(1)
         END IF
@@ -685,14 +688,14 @@ C   OTHER COEFFICIENTS (RATIOS, POPULATION COEFFICIENTS, ETC)
       IF (INDEX(FILNAM,'CR').NE.0) THEN
         CALL EIRENE_READ_COLRAD (IR,REAC,ISW,
      .                           IROW_ESC,ICOL_ESC,POP_ESC)
-c  close unit=29+ifoff:   done in READ_COLRAD.f
+c  close unit=29+ifoff: done in READ_COLRAD.f
         RETURN
       END IF
 
       IF (INDEX(FILNAM,'TAB2D').NE.0 .OR.
      .    INDEX(FILNAM,'ADAS') .NE.0) THEN
         CALL EIRENE_READ_TAB2D (IR,REAC,ISW,IZ1)
-c  close unit=29+ifoff:   done in READ_TAB2D.f
+c  close unit=29+ifoff: done in READ_TAB2D.f
         RETURN
       END IF
 
@@ -704,7 +707,7 @@ cdr  Oct. 18: rationalization: as with other data, (FILNAM options)
 cdr  we now transfer the parameters IFTFL, COEF(NCOEF) as optional
 cdr  parameters via the parameter list, rather than reading from input file IUNIN
 cdr  here, as it was the case before
-        IF (PRESENT(IFTFL).AND.PRESENT(NCOEF).AND.PRESENT(COEF)) THEN 
+        IF (PRESENT(IFTFL).AND.PRESENT(NCOEF).AND.PRESENT(COEF)) THEN
           IFTFLG(IR,IFLG) = IFTFL
           CREACD(1:NCOEF,1) = COEF(1:NCOEF)
 cdr  remove zero coefficients from the end
@@ -716,23 +719,24 @@ cdr  remove zero coefficients from the end
 
 cdr Put these coefficients onto "poly" data structure.
 cdr Probably: only 1 parameter fits allowed here?
-          CALL EIRENE_SET_REACTION_DATA    ! this routine sets only "POLY" data
+          CALL EIRENE_SET_REACTION_DATA    ! this routine sets only
+                                           ! "POLY" data
      .          (IR,ISW,IFTFLG(IR,IFLG),CREACD,
      .           INEP,KNEP,
      .           IUNOUT,.FALSE.)
 c  no optional extrapolation flags here
           goto 3000
         ELSE
-          WRITE (iunout,*) 'CONSTANT REACTION REACTION REQUESTED '
+          WRITE (iunout,*) 'CONSTANT REACTION REACTION REQUESTED'
           WRITE (iunout,*) 'BUT NO DATA AVAILABLE FOR IR ', IR
-          CALL EIRENE_EXIT_OWN(1)         
+          CALL EIRENE_EXIT_OWN(1)
         ENDIF
       ENDIF
 C
 C  READ FROM DATA FILE, stream 29
 C
 C  already ruled out here (done at this point):
-C  FILNAM= "CR...", "CONST", "ADAS", "TAB2D", "PHOTON"
+C  FILNAM= "CR", "CONST", "ADAS", "TAB2D", "PHOTON"
 C  in all these cases: already returned to calling program
 C
 C......................................................................
@@ -787,14 +791,14 @@ c  read Arrhenius parameter
           GOTO 3
         ENDIF
 
-C  read only one constant:  (FIT-FLAG = 10, 110, ....)
+C  read only one constant: (FIT-FLAG = 10, 110, ....)
         IF (MOD(IFTFLG(IR,IFLG),100) == 10) THEN
           IND=INDEX(ZEILE,CHR(2:2)) ! position of a,b,...k
           READ (ZEILE((IND+2):80),'(E20.12)') CREACD(1,1)
           INEP=1    ! RATHER THAN DEFAULT: INEP=9
 
-         ELSE
-C  READ 9 FIT COEFFICIENTS, SEPARATED BY 'CHR'  FIXED FORMAT E20.12
+        ELSE
+C  READ 9 FIT COEFFICIENTS, SEPARATED BY 'CHR' FIXED FORMAT E20.12
 C  THREE LINES WITH THREE DATA PER LINE
 c  READ ONLY THE NON-ZERO PARAMETERS
           INEP=0
@@ -846,7 +850,7 @@ c  read parameter for type of fitting expression from data file
 
           READ (29+ifoff,'(1X)')
           IF (MOD(IFTFLG(IR,IFLG),100) == 10) THEN
-C  IFTFLG = 10, 110,  210,....ETC:  READ ONLY ONE CONSTANT PARAMETER
+C  IFTFLG = 10, 110, 210,....ETC: READ ONLY ONE CONSTANT PARAMETER
             READ (29+ifoff,*) IH,CREACD(1,1)
             EXIT
           ELSE
@@ -855,7 +859,7 @@ C   READ 9 LINES, THREE DATA EACH LINE, UNFORMATTED I.E. READ 3 SUB-BLOCKS K,K+1
               READ (29+ifoff,*) IH,(CREACD(I,K),K=J*3+1,J*3+3)
    17       CONTINUE
 c    first  index I: I-th block, vertical, Temp. dependence
-c    second index K:  from sub block to sub-block (horizontal), ne, eb dependence.
+c    second index K: from sub block to sub-block (horizontal), ne, eb dependence.
 c  d.h. erster sub block entspricht ln(ne/1e8))=0, oder ne=1e8, corona rate vs. T
           END IF
    11   CONTINUE
@@ -882,14 +886,14 @@ C FOR 1D: ONLY "LEFT1" AND "RIGHT1" ARE USED
       IF (ISW.EQ.0) GOTO 2000    ! NO ASYMPTOTICS FOR POTENTIALS
 
 c  INDICATE, IF EXTRAPOLATION INFORMATION (r1mn,.., if1mn,...) IS FOUND ON DATA FILE
-c  DEFAULT:  NO DATA FOUND
+c  DEFAULT: NO DATA FOUND
       LGR1MIN=.FALSE.
       LGR1MAX=.FALSE.
       LGR2MIN=.FALSE.
       LGR2MAX=.FALSE.
 
 c  INDICATE, IF EXTRAPOLATION COEFFICIENTS (fp1l,fp1r,fp2l,fp2r) ARE FOUND ON DATA FILE
-c  DEFAULT:  NO DATA FOUND
+c  DEFAULT: NO DATA FOUND
       LGC1MIN=.FALSE.
       LGC1MAX=.FALSE.
       LGC2MIN=.FALSE.
@@ -943,9 +947,9 @@ c
         END IF
 c
 c  currently foreseen asymptotic data identifiers in data files:
-c  c1l,c2l,c1r,c2r:  ELABMIN, ELABMAX,
-c                    T1MIN,T1MAX,E2MIN,E2MAX, N2MIN, N2MAX,
-c                    P1MIN,P1MAX,P2MIN,P2MAX
+c  c1l,c2l,c1r,c2r: ELABMIN, ELABMAX,
+c                   T1MIN,T1MAX,E2MIN,E2MAX,N2MIN,N2MAX,
+c                   P1MIN,P1MAX,P2MIN,P2MAX
         IF (INDEX(ULINE,TRIM(C1L)) /= 0) THEN
           CALL EIRENE_READ_RANGE (ULINE,C1L,'EXT-FLG',R1MN,IF1MN)
           LGR1MIN = .TRUE.
@@ -1133,7 +1137,8 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
 C
  2000 CONTINUE
 
-      CALL EIRENE_SET_REACTION_DATA   ! this routine sets only "POLY" data
+      CALL EIRENE_SET_REACTION_DATA   ! this routine sets only
+                                      ! "POLY" data
      .            (IR,ISW,IFTFLG(IR,IFLG),CREACD,INEP,KNEP,
      .             IUNOUT,.TRUE.,
 c  from here on: optional input to SET_REACTION_DATA
@@ -1155,7 +1160,7 @@ c  double fits, two parameters
           if (isw.eq.3 .or. isw.eq.4 .or.   ! RATE COEFF.
      .        isw.eq.6 .or. isw.eq.7 .or.   ! MOMENTUM RATE COEFF.
      .        isw.eq.9 .or. isw.eq.10 .or.  ! ENERGY RATE COEFF.
-     .        isw.eq.12)                    ! DENSITY RATIO, RATE COEFF. RATIO
+     .        isw.eq.12)            ! DENSITY RATIO, RATE COEFF. RATIO
      .        kne=9
           if (I.eq.0) then
 cdr  the Arrhenius factor exp(-EARR/T) is factored out of the fit.
@@ -1175,7 +1180,7 @@ C
 C
   990 WRITE (iunout,*) ' NO DATA FOUND FOR REACTION ',H123,
      .                 ' ',REAC(1:LEN_TRIM(REAC)),
-     .                 ' IN DATA SET ',FILNAM
+     .                 ' IN DATASET ',FILNAM
       WRITE (iunout,*) ' IR,MODCLF(IR) ',IR,MODCLF(IR)
       CLOSE (UNIT=29+ifoff)
       CALL EIRENE_EXIT_OWN(1)
@@ -1222,10 +1227,10 @@ c  This routine:
 c  Reads validity range from atomic data file:
 c  Search in ZEILE for key1, key2 and return: RNG, IFX
 
-c  key1:  'ELABMIN', 'ELABMAX',   'T1MIN','T1MAX','E2MIN','E2MAX',
-C         'N2MIN','N2MAX','P1MIN','P1MAX','P1MIN','P1MAX'=,
-C                     read RNG (unformatted, real)
-c  key2:  'EXT-FLG'= ,read IFX (unformatted, integer)
+c  key1: 'ELABMIN','ELABMAX','T1MIN','T1MAX','E2MIN','E2MAX',
+C        'N2MIN','N2MAX','P1MIN','P1MAX','P1MIN','P1MAX'=,
+C                    read RNG (unformatted, real)
+c  key2: 'EXT-FLG'= ,read IFX (unformatted, integer)
 
       CHARACTER(80), INTENT(IN) :: ZEILE
       CHARACTER(7), INTENT(IN) :: KEY1, KEY2

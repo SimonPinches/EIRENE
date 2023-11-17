@@ -1,77 +1,67 @@
-cpg called from find_param.f 
- 
-      subroutine eirene_couple_param_consistency(nlimi,nstsi,textal,ntx)
-       use eirmod_parmmod
-       use eirmod_extrab25
-       use eirmod_comusr, only : natmi,nmoli,nioni
-       
-       IMPLICIT NONE
-       integer, intent(in) :: nlimi,nstsi,ntx
-       character(8), intent(in) :: textal(ntx)
+cpg called from find_param.f
 
-      
+      subroutine eirene_couple_param_consistency(nlimi,nstsi,textal,ntx)
+      use eirmod_parmmod
+      use eirmod_extrab25
+      use eirmod_comusr, only : natmi,nmoli,nioni
+
+      IMPLICIT NONE
+      integer, intent(in) :: nlimi,nstsi,ntx
+      character(8), intent(in) :: textal(ntx)
+
+
 #ifndef DEF_ISOEXTRA
 #define DEF_ISOEXTRA 0
 #endif
 
 #ifndef DEF_NPHID
 #define DEF_NPHID 1
-         N3RD=DEF_NPHID
-#endif    
-      
-      
+      N3RD=DEF_NPHID
+#endif
+
 #ifndef DEF_NGSTAL
 #define DEF_NGSTAL 0
-         NGSTAL=DEF_NGSTAL
-#endif     
-      
+      NGSTAL=DEF_NGSTAL
+#endif
 
 #ifdef B25_EIRENE
 #include <DIMENSIONS.F>
 
-
-
-        IF (NGSTAL.GT.DEF_NGSTAL) THEN
-          WRITE(iunout,*)
-     .     'NGSTAL from KOPPLDIM.F (',DEF_NGSTAL,') is too small'
-          WRITE(iunout,*)
-     .     'compared to value from input file (',NGSTAL,')'
-          WRITE(iunout,*) 'Expect trouble at coupling time !'
-          WRITE(iunout,*)
-     .     'Increase DEF_NGSTAL in DIMENSIONS.F and recompile.'
-          WRITE(0,*)
-     .     'NGSTAL from KOPPLDIM.F (',DEF_NGSTAL,') is too small'
-          WRITE(0,*)
-     .     'compared to value from input file (',NGSTAL,')'
-          WRITE(0,*) 'Expect trouble at coupling time !'
-          WRITE(0,*)
-     .     'Increase DEF_NGSTAL in DIMENSIONS.F and recompile.'
-        ENDIF
-     
-        
-      
+      IF (NGSTAL.GT.DEF_NGSTAL) THEN
+        WRITE(iunout,*)
+     .   'NGSTAL from KOPPLDIM.F (',DEF_NGSTAL,') is too small'
+        WRITE(iunout,*)
+     .   'compared to value from input file (',NGSTAL,')'
+        WRITE(iunout,*) 'Expect trouble at coupling time !'
+        WRITE(iunout,*)
+     .   'Increase DEF_NGSTAL in DIMENSIONS.F and recompile.'
+        WRITE(0,*)
+     .   'NGSTAL from KOPPLDIM.F (',DEF_NGSTAL,') is too small'
+        WRITE(0,*)
+     .   'compared to value from input file (',NGSTAL,')'
+        WRITE(0,*) 'Expect trouble at coupling time !'
+        WRITE(0,*)
+     .   'Increase DEF_NGSTAL in DIMENSIONS.F and recompile.'
+      ENDIF
 
 #ifndef ALLOCATE_AND_NAMELIST
-        IF (NR1ST.GT.DEF_NYD+1) THEN
-          WRITE(iunout,*)
-     .     'N1ST from KOPPLDIM.F is too small (',DEF_NYD+1,')'
-          WRITE(iunout,*)
-     .     'compared to NR1ST from input file (',NR1ST,')'
-          WRITE(iunout,*) 'Expect trouble at coupling time !'
-          WRITE(iunout,*)
-     .     'Increase DEF_NYD in DIMENSIONS.F and recompile.'
-          WRITE(0,*)
-     .     'N1ST from KOPPLDIM.F is too small (',DEF_NYD+1,')'
-          WRITE(0,*)
-     .     'compared to NR1ST from input file (',NR1ST,')'
-          WRITE(0,*) 'Expect trouble at coupling time !'
-          WRITE(0,*)
-     .     'Increase DEF_NYD in DIMENSIONS.F and recompile.'
-        ENDIF
+      IF (NR1ST.GT.DEF_NYD+1) THEN
+        WRITE(iunout,*)
+     .   'N1ST from KOPPLDIM.F is too small (',DEF_NYD+1,')'
+        WRITE(iunout,*)
+     .   'compared to NR1ST from input file (',NR1ST,')'
+        WRITE(iunout,*) 'Expect trouble at coupling time !'
+        WRITE(iunout,*)
+     .   'Increase DEF_NYD in DIMENSIONS.F and recompile.'
+        WRITE(0,*)
+     .   'N1ST from KOPPLDIM.F is too small (',DEF_NYD+1,')'
+        WRITE(0,*)
+     .   'compared to NR1ST from input file (',NR1ST,')'
+        WRITE(0,*) 'Expect trouble at coupling time !'
+        WRITE(0,*)
+     .   'Increase DEF_NYD in DIMENSIONS.F and recompile.'
+      ENDIF
 #endif
- 
-      
- 
 
 #ifndef ALLOCATE_AND_NAMELIST
       IF (NLPOL.AND.NP2ND.GT.
@@ -93,9 +83,6 @@ cpg called from find_param.f
       ENDIF
 #endif
 
- 
- 
-
 #ifndef ALLOCATE_AND_NAMELIST
       IF (NSTSI.GT.DEF_NSTS) THEN
         WRITE(iunout,*)
@@ -114,7 +101,6 @@ cpg called from find_param.f
       ENDIF
 
 #endif 
- 
 
 #ifndef ALLOCATE_AND_NAMELIST
       IF (NLIMI.GT.DEF_NLIM) THEN
@@ -132,8 +118,6 @@ cpg called from find_param.f
      .   'Increase DEF_NLIM in DIMENSIONS.F and recompile.'
       ENDIF
 #endif
-
-
 
 #ifndef ALLOCATE_AND_NAMELIST
       IF (NATMI.GT.DEF_NATM) THEN
@@ -153,7 +137,6 @@ cpg called from find_param.f
 #endif
       if(.not.allocated(TEXTA)) allocate(TEXTA(NATM))
 
-
 #ifndef ALLOCATE_AND_NAMELIST
       IF (NMOLI.GT.DEF_NMOL) THEN
         WRITE(iunout,*)
@@ -172,7 +155,6 @@ cpg called from find_param.f
 
 #endif
 
-
 #ifndef ALLOCATE_AND_NAMELIST
       IF (NIONI.GT.DEF_NION) THEN
         WRITE(iunout,*)
@@ -189,8 +171,6 @@ cpg called from find_param.f
      .   'Increase DEF_NION in DIMENSIONS.F and recompile.'
       ENDIF
 #endif
-
-
 
 #ifndef ALLOCATE_AND_NAMELIST
       IF (NSTRAI.GT.DEF_NSTRA) THEN
@@ -210,8 +190,8 @@ cpg called from find_param.f
      .   'Increase DEF_NSTRA in DIMENSIONS.F and recompile.'
       ENDIF
 #endif
-  
-#endif      
+
+#endif
 
 cxpb Define some numbers needed by eirmod_extrab25
 !cank 960623
@@ -225,9 +205,6 @@ cxpb Define some numbers needed by eirmod_extrab25
 !cym get texta from local variable in find_param
       allocate(texta(size(textal)))
       texta=textal
-      
+
       return
-      
-      
-      
       end subroutine eirene_couple_param_consistency

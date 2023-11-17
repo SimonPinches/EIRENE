@@ -121,7 +121,7 @@ csw 14apr2011
       CALL MPI_BCAST (ICPLYG,MCPLYG,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 cdr dimensioning of LCUT array corrected:
       CALL MPI_BCAST (LCUT,N2NDPLGS+1,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
-      
+
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       RETURN

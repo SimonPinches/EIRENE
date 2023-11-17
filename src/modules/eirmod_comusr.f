@@ -7,8 +7,8 @@ cpb  jan 2018:  remove unused arrays TEDTEDX, TEDTEDY, TEDTEDZ
 cdr             added: nstpi (formerly: coutou), naddcor
 cdr  oct 2018:  bvin moved into LBSMO condition
 cdr             POT  moved into LESMO condition
-cdr             tbd:  BXPERP, BYPERP, PSI:  move into LBSMO condition
-cdr             missing:  dealloc_corners  ??
+cdr             tbd: BXPERP, BYPERP, PSI: move into LBSMO condition
+cdr             missing: dealloc_corners  ??
 cdr             remove redundant tally LGDFT (also from LUSR)
 cdr  jan 19  :  nains, naint moved here, formerly: ccoupl
 cdr             input tally no. 25 added: PSI, poloidal magn. flux.
@@ -17,7 +17,7 @@ cdr             established (started) for physically connected tallies.
 cdr             E.g. for vector components of the same field,
 cdr             wrt. smoothing options and input tally disabling.
 cdr             This is WIP, unfinished.
-cdr             See variables LDSMO, LVSMO,  LBSMO,  LESMO.
+cdr             See variables LDSMO, LVSMO, LBSMO, LESMO.
 cdr             It is still not ensured that LIVTALI and LSMOPRO flags
 cdr             lead to physically or mathematically meaningful
 cdr             setting always.
@@ -47,19 +47,22 @@ cdr             routine COLLIDE.f
 
       INTEGER, SAVE :: IFIRST=0
       INTEGER, SAVE ::
-     P NPLPR1, NSFPRM, NPLPR2  ! internal, not public. former storage tests in setprm are abandoned
+     P NPLPR1, NSFPRM, NPLPR2  ! internal, not public.
+                               ! former storage tests
+                               ! in setprm are abandoned
       INTEGER, PUBLIC, SAVE ::
      P NPLPRM  ! nplprm, is also used in setprm, for a storage test.
 c
       INTEGER, SAVE ::
-     P MUSR,   LUSR             ! also only local in this module, apparently
+     P MUSR,   LUSR            ! also only local in this module,
+                               ! apparently
 
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R         PLSTLS(:,:)
 
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      R          CEMETERYP(:,:)
- 
+
       REAL(DP), POINTER, PUBLIC, SAVE ::
 C  NPLPRM, REAL.
 C  THE FIRST NPLPR1 DATA ARE PRIMARY INPUT PROFILES, SET IN SUBROUTINE PLASMA
@@ -74,9 +77,10 @@ cdr Next: Derived and assistant input tallies:
      R        VOL(:),         WGHT(:,:),
      R        EXIN(:),        EYIN(:),        EZIN(:),     EFIN(:),
      R        POT(:),
-c  derived from primary input profils, in subr. PLASMA_DERIV  
+c  derived from primary input profils, in subr. PLASMA_DERIV
 c  (strictly: tally no. -3: DEIN, is also a derived tally) :
      R        BXPERP(:),      BYPERP(:),
+cdr   only set in plasma_deriv.
      R        BVIN(:,:),      PARMOM(:,:),    EDRIFT(:,:),
 c  B field fluxfunction PSI, corresponds to POT tally for electric field
      R        PSI(:),         ZIIN(:,:),      FREE27(:),
@@ -105,7 +109,7 @@ c  then provide the full dyad (all nine components).
      R        DEZDX(:),       DEZDY(:),       DEZDZ(:),
      R        DEFDX(:),       DEFDY(:),       DEFDZ(:),
      R        DPOTDX(:),      DPOTDY(:),      DPOTDZ(:),
-c 
+c
      R        DBXPERPDX(:),   DBXPERPDY(:),   DBXPERPDZ(:),
      R        DBYPERPDX(:),   DBYPERPDY(:),   DBYPERPDZ(:),
      R        DBVINDX(:,:),   DBVINDY(:,:),   DBVINDZ(:,:),
@@ -116,7 +120,7 @@ c
      R        DFREE27DX(:),   DFREE27DY(:),   DFREE27DZ(:),
      R        DFREE28DX(:),   DFREE28DY(:),   DFREE28DZ(:),
      R        DFREE29DX(:),   DFREE29DY(:),   DFREE29DZ(:),
-     R        DFREE30DX(:),   DFREE30DY(:),   DFREE30DZ(:) 
+     R        DFREE30DX(:),   DFREE30DY(:),   DFREE30DZ(:)
 
       LOGICAL, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      L         LIVTALI(:)
@@ -134,10 +138,12 @@ c  electr. field
      L         LEXIN,      LEYIN,      LEZIN,     LEFIN,
      L         LPOT,
 c  derived tallies
-     L         LBXPERP,    LBYPERP,  ! redundant, now: optional gradient tallies.
+     L         LBXPERP,    LBYPERP,  ! redundant, now:
+                                     !optional gradient tallies.
      L         LBVIN,      LPARMOM,    LEDRIFT,
 c  added later, belongs to magn. field tallies
-     L         LPSI,
+     L         LPSI,                 !dr not ready,
+                                     !   just placeholder by now.
 c  average charge
      L         LZIIN,
 c  free tallies, unused
@@ -145,7 +151,7 @@ c  free tallies, unused
      L         LFREE28,    LFREE29,    LFREE30,
 
 c  gradient tallies
-c  background, drifting maxwellian parameters
+c  background, drifting Maxwellian parameters
      L         LDTEDX,     LDTEDY,     LDTEDZ,
      L         LDTIDX,     LDTIDY,     LDTIDZ,
      L         LDDEDX,     LDDEDY,     LDDEDZ,
@@ -204,7 +210,7 @@ C  SIMILAR (TO BE MOVED HERE (?)) ZTI, ZT1,....
 
      R        TEINL(:),  TIINL(:,:),  DEINL(:),  DIINL(:,:),
 
-C  NSFPRM:  SURFACE-AVERAGED INPUT TALLIES (BY ABUSE OF LANGUAGE).
+C  NSFPRM: SURFACE-AVERAGED INPUT TALLIES (BY ABUSE OF LANGUAGE).
      R        FLXOUT(:), SAREA(:),
 C
      R        DIOD(:),   DATD(:),     DMLD(:),   DPLD(:),    DPHD(:),
@@ -230,13 +236,15 @@ c  for FEM-routines (interpolations, gradients,...)
      .        DIINCORNER(:,:),
      .        VXINCORNER(:,:), VYINCORNER(:,:), VZINCORNER(:,:),
      .        BXINCORNER(:),   BYINCORNER(:),   BZINCORNER(:),
-     .        BFINCORNER(:),   
+     .        BFINCORNER(:),
      .        EXCORNER(:),     EYCORNER(:),     EZCORNER(:),
      .        EFCORNER(:),     POTCORNER(:),
      .        ADCORNER(:,:),   VOLCORNER(:),    WGHTCORNER(:,:),
 
-     .        BXPERPCORNER(:), BYPERPCORNER(:), BVINCORNER(:,:),
-     .        PARMOMCORNER(:,:), EDRIFTCORNER(:,:),
+     .        BXPERPCORNER(:), BYPERPCORNER(:),
+     .        BVINCORNER(:,:),
+     .        PARMOMCORNER(:,:),
+     .        EDRIFTCORNER(:,:),
      .        PSICORNER(:),    ZIINCORNER(:,:), FREE27CORNER(:),
      .        FREE28CORNER(:), FREE29CORNER(:), FREE30CORNER(:)
 
@@ -248,10 +256,13 @@ C  MUSR, INTEGER
       INTEGER, PUBLIC, SAVE ::
      I         NSPH  , NPHOTI, NPHOTIM,
 cdr NATMA is something specific to SOLPS. Should not be here.
+cdr It is part of the old "Kukushkin rescaling magic".
+cdr All other parameters for these options are in module extrab25
+cdr So move that there too, as part of "eirpbls globals".
      I         NSPA  , NATMI,  NATMIM,  NATMA,
      I         NSPAM , NMOLI,  NMOLIM,
-     I         NSPAMI, NIONI,  NIONIM, 
-     I         NSPTOT, NPLSI,  NPLSIM, NPLS_FIX,
+     I         NSPAMI, NIONI,  NIONIM,
+     I         NSPTOT, NPLSI,  NPLSIM,  NPLS_FIX,
      I         NSNVI,  NCPVI,  NADVI,   NBGVI,
      I         NALVI,  NCLVI,  NADSI,   NALSI, NAINI, NBITS
       INTEGER, ALLOCATABLE, PUBLIC, SAVE ::
@@ -278,7 +289,7 @@ C  LUSR, LOGICAL
      L         LGVAC(:,:)
 
 c
-C  FLAGS FOR "SMOOTHED INPUT TALLIES" (for  interpolation from cell vertices into cell)
+C  FLAGS FOR "SMOOTHED INPUT TALLIES" (for interpolation from cell vertices into cell)
 C  (REQUIRES AVAILABILITY OF ...CORNER(:) TALLIES)
       LOGICAL, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      L         LSMOPRO(:)
@@ -325,7 +336,7 @@ cdr in the same "smoothing category"
       INTEGER, ALLOCATABLE, PUBLIC, SAVE ::
      I         INTLOPTS(:)
 
-      INTEGER, ALLOCATABLE, PUBLIC, SAVE :: 
+      INTEGER, ALLOCATABLE, PUBLIC, SAVE ::
      I         LKINDP(:), LKINDM(:), LKINDI(:)
 
       INTEGER, PUBLIC, SAVE ::
@@ -336,13 +347,14 @@ cdr in the same "smoothing category"
       TYPE(EIRENE_SPECTRUM), PUBLIC, ALLOCATABLE, SAVE :: BACK_SPEC(:)
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE :: LSPCCLL(:)
 
-      REAL(DP), ALLOCATABLE, PUBLIC, SAVE :: DENSLIM(:) !VK SPECIES DENSITY LIMIT
+      !VK SPECIES DENSITY LIMIT
+      REAL(DP), ALLOCATABLE, PUBLIC, SAVE :: DENSLIM(:)
 
       REAL(DP), ALLOCATABLE, PUBLIC, SAVE :: EION(:)
 
       LOGICAL, PUBLIC, SAVE :: COMUSR_FIRST_PASS(4)
 
-! TYPE DEFINITIONS MOVED HERE FOR WRITING OF JSON FILE 
+! TYPE DEFINITIONS MOVED HERE FOR WRITING OF JSON FILE
       TYPE TEMPERATURE
         DOUBLE PRECISION          :: TE, TI
         INTEGER                   :: II, IDION
@@ -373,7 +385,7 @@ C
       TYPE(VOLUMEP),POINTER, PUBLIC, SAVE :: VOLLIST
 
       INTEGER, PUBLIC, SAVE :: NZADD
-      INTEGER, ALLOCATABLE, PUBLIC, SAVE :: INI_ZONE(:),INE_ZONE(:)
+      INTEGER, ALLOCATABLE, PUBLIC, SAVE :: INI_ZONE(:), INE_ZONE(:)
 
 cDB   AMD output
 
@@ -387,8 +399,8 @@ cDB   AMD output
         INTEGER  :: NTE
         character(LEN=:), allocatable :: MeshType
       ENDTYPE AMDOutParsTYPE
-      TYPE (AMDOutParsTYPE), public, save :: AMDOutpars  
-      
+      TYPE (AMDOutParsTYPE), public, save :: AMDOutpars
+
       CONTAINS
 
       SUBROUTINE EIRENE_ALLOC_COMUSR (ICAL)
@@ -402,9 +414,10 @@ cDB   AMD output
 
         IF (ALLOCATED(RMASSI)) RETURN
 
-        NPLPR2= 3*(NATM+NMOL+NION+NPLS)+4+NSPZ+2*NPHOT ! species (test particle and background) related data
-     .          +NPLS
- 
+! species (test particle and background) related data
+        NPLPR2= 3*(NATM+NMOL+NION+NPLS)+4+NSPZ+2*NPHOT
+     .            +NPLS
+
         MUSR=4*NATM+4*NMOL+5*NION+3*NPLS+27+NSPZ+2*NPHOT+
      .       6*(1+NPHOTP)*(1+NATMP)*(1+NMOLP)*(1+NIONP)*(1+NPLSP)+NSPZ*6
      .       +2*NPLS+NSPZ*NPLS
@@ -447,7 +460,7 @@ cym to be evaluated - see calling order
 cym to be evaluated
         ALLOCATE (NFOLA(MAX(1,NATM)))
         ALLOCATE (NGENA(MAX(1,NATM)))
-cym to be evaluated - see calling order        
+cym to be evaluated - see calling order
         if (.not.allocated(NMASSM)) THEN
           ALLOCATE (NMASSM(MAX(1,NMOL)))
           COMUSR_FIRST_PASS(3) = .TRUE.
@@ -515,7 +528,7 @@ c  logicals
         ALLOCATE (LIVTALI(NTALI))
 
         WRITE (IUNMEM,'(A,T25,I15)')
-     .        ' COMUSR(1) ', NPLPR2*8 + MUSR*4 + LUSR*4 
+     .        ' COMUSR(1) ', NPLPR2*8 + MUSR*4 + LUSR*4
 
       ELSE IF (ICAL == 2) THEN
 
@@ -523,17 +536,16 @@ c  logicals
 
 c
 !        NPLPR1=(12+1*NPLS+NPLSTI+3*NPLSV)*NRAD  ! background data, set in plasma.f, 17 arrays
-!        NPLPRM=NPLPR1+(NAIN+NSPZMC)*NRAD        !  adin, wght,...??? adin is allocated in call with ICAL == 2
-cdr BVIN: add nplsv to nplpr2 and remove npls from nplprm. tbd:  check correct dimension of bvin !
+!        NPLPRM=NPLPR1+(NAIN+NSPZMC)*NRAD        ! adin, wght,...??? adin is allocated in call with ICAL == 2
+cdr BVIN: add nplsv to nplpr2 and remove npls from nplprm. tbd: check correct dimension of bvin !
 
 
-        NPLPR1 = NINPTL*NRAD            ! storage only for active input tallies
-
+        NPLPR1 = NINPTL*NRAD            ! storage only for
+                                        ! active input tallies
         ALLOCATE (PLSTLS(NINPTL,NRAD))
- 
-        ALLOCATE (CEMETERYP(0:0,NRAD))  ! storage for inactive input tallies
 
-
+        ALLOCATE (CEMETERYP(0:0,NRAD))  ! storage for
+                                        ! inactive input tallies
         ALLOCATE (TEINL(NRAD))
         ALLOCATE (TIINL(NPLSTI,NRAD))
         ALLOCATE (DEINL(NRAD))
@@ -553,10 +565,11 @@ c  NCPV, NBGV are now set
         ALLOCATE (IBGRC(NBGV))
 
         WRITE (IUNMEM,'(A,T25,I15)')
-     .        ' COMUSR(2) ',(NPLPR1+                   ! ACTIVE INPUT TALLIES PLSTLS
-     .                      (3+NPLSTI+NPLS)*NRAD)*8 +  ! TEINL,TIINL,DEINL,DIINL
-     .                      4*(NCPV+NBGV)*4 +          ! BGK AND CPV INTEGERS
-     .                      2*NAIN*4                   ! NAINS, NAINT
+     .        ' COMUSR(2) ',
+     .        (NPLPR1+                   ! ACTIVE INPUT TALLIES PLSTLS
+     .        (3+NPLSTI+NPLS)*NRAD)*8 +  ! TEINL,TIINL,DEINL,DIINL
+     .         4*(NCPV+NBGV)*4 +         ! BGK AND CPV INTEGERS
+     .         2*NAIN*4                  ! NAINS, NAINT
 
       ELSE IF (ICAL == 3) THEN
 
@@ -587,610 +600,617 @@ c  NCPV, NBGV are now set
 
 
       SUBROUTINE EIRENE_ASSOCIATE_COMUSR
-cdr special treatment of Ti:  intlopts.....
+cdr special treatment of Ti: intlopts.....
 
       IF (LTEIN) THEN
         TEIN => PLSTLS(NADDP(1)+1,:)
-      ELSE 
+      ELSE
         TEIN => CEMETERYP(0,:)
       END IF
       IF (LTIIN) THEN
         IF (INTLOPTS(2) >= 0) THEN
           TIIN => PLSTLS(NADDP(2)+1:NADDP(3),:)
-        ELSE 
-          TIIN => PLSTLS(NADDP(1)+1:NADDP(1)+1,:)    ! Ti = Te, no own storage for Ti
+        ELSE
+          TIIN => PLSTLS(NADDP(1)+1:NADDP(1)+1,:) ! Ti = Te,
+                                    ! no own storage for Ti
         END IF
       END IF
       IF (LDEIN) THEN
         DEIN => PLSTLS(NADDP(3)+1,:)
-      ELSE 
+      ELSE
         DEIN => CEMETERYP(0,:)
       END IF
       IF (LDIIN) THEN
         DIIN => PLSTLS(NADDP(4)+1:NADDP(5),:)
-      ELSE 
+      ELSE
         DIIN => CEMETERYP(0:0,:)
       END IF
+
       IF (LVXIN) THEN
         VXIN => PLSTLS(NADDP(5)+1:NADDP(6),:)
-      ELSE 
+      ELSE
         VXIN => CEMETERYP(0:0,:)
       END IF
       IF (LVYIN) THEN
         VYIN => PLSTLS(NADDP(6)+1:NADDP(7),:)
-      ELSE 
+      ELSE
         VYIN => CEMETERYP(0:0,:)
       END IF
       IF (LVZIN) THEN
         VZIN => PLSTLS(NADDP(7)+1:NADDP(8),:)
-      ELSE 
+      ELSE
         VZIN => CEMETERYP(0:0,:)
       END IF
+
       IF (LBXIN) THEN
         BXIN => PLSTLS(NADDP(8)+1,:)
-      ELSE 
+      ELSE
         BXIN => CEMETERYP(0,:)
       END IF
       IF (LBYIN) THEN
         BYIN => PLSTLS(NADDP(9)+1,:)
-      ELSE 
+      ELSE
         BYIN => CEMETERYP(0,:)
       END IF
       IF (LBZIN) THEN
         BZIN => PLSTLS(NADDP(10)+1,:)
-      ELSE 
+      ELSE
         BZIN => CEMETERYP(0,:)
       END IF
       IF (LBFIN) THEN
         BFIN => PLSTLS(NADDP(11)+1,:)
-      ELSE 
+      ELSE
         BFIN => CEMETERYP(0,:)
       END IF
+
       IF (LADIN) THEN
         ADIN => PLSTLS(NADDP(12)+1:NADDP(13),:)
-      ELSE 
+      ELSE
         ADIN => CEMETERYP(0:0,:)
       END IF
       IF (LEDRIFT) THEN
         EDRIFT => PLSTLS(NADDP(13)+1:NADDP(14),:)
-      ELSE 
+      ELSE
         EDRIFT => CEMETERYP(0:0,:)
       END IF
       IF (LVOL) THEN
         VOL => PLSTLS(NADDP(14)+1,:)
-      ELSE 
+      ELSE
         VOL => CEMETERYP(0,:)
       END IF
       IF (LWGHT) THEN
         WGHT => PLSTLS(NADDP(15)+1:NADDP(16),:)
-      ELSE 
+      ELSE
         WGHT => CEMETERYP(0:0,:)
       END IF
       IF (LBXPERP) THEN
         BXPERP => PLSTLS(NADDP(16)+1,:)
-      ELSE 
+      ELSE
         BXPERP => CEMETERYP(0,:)
       END IF
        IF (LBYPERP) THEN
         BYPERP => PLSTLS(NADDP(17)+1,:)
-      ELSE 
+      ELSE
         BYPERP => CEMETERYP(0,:)
       END IF
+cdr  BZPERP == 0, for the time being
+
       IF (LEXIN) THEN
         EXIN => PLSTLS(NADDP(18)+1,:)
-      ELSE 
+      ELSE
         EXIN => CEMETERYP(0,:)
       END IF
       IF (LEYIN) THEN
         EYIN => PLSTLS(NADDP(19)+1,:)
-      ELSE 
+      ELSE
         EYIN => CEMETERYP(0,:)
       END IF
       IF (LEZIN) THEN
         EZIN => PLSTLS(NADDP(20)+1,:)
-      ELSE 
+      ELSE
         EZIN => CEMETERYP(0,:)
       END IF
       IF (LEFIN) THEN
         EFIN => PLSTLS(NADDP(21)+1,:)
-      ELSE 
+      ELSE
         EFIN => CEMETERYP(0,:)
       END IF
       IF (LPOT) THEN
         POT => PLSTLS(NADDP(22)+1,:)
-      ELSE 
+      ELSE
         POT => CEMETERYP(0,:)
       END IF
+
       IF (LBVIN) THEN
         BVIN => PLSTLS(NADDP(23)+1:NADDP(24),:)
-      ELSE 
+      ELSE
         BVIN => CEMETERYP(0:0,:)
       END IF
       IF (LPARMOM) THEN
         PARMOM => PLSTLS(NADDP(24)+1:NADDP(25),:)
-      ELSE 
+      ELSE
         PARMOM => CEMETERYP(0:0,:)
       END IF
       IF (LPSI) THEN
         PSI => PLSTLS(NADDP(25)+1,:)
-      ELSE 
+      ELSE
         PSI => CEMETERYP(0,:)
       END IF
       IF (LZIIN) THEN
         ZIIN => PLSTLS(NADDP(26)+1:NADDP(27),:)
-      ELSE 
+      ELSE
         ZIIN => CEMETERYP(0:0,:)
       END IF
       IF (LFREE27) THEN
         FREE27 => PLSTLS(NADDP(27)+1,:)
-      ELSE 
+      ELSE
         FREE27 => CEMETERYP(0,:)
       END IF
       IF (LFREE28) THEN
         FREE28 => PLSTLS(NADDP(28)+1,:)
-      ELSE 
+      ELSE
         FREE28 => CEMETERYP(0,:)
       END IF
       IF (LFREE29) THEN
         FREE29 => PLSTLS(NADDP(29)+1,:)
-      ELSE 
+      ELSE
         FREE29 => CEMETERYP(0,:)
       END IF
       IF (LFREE30) THEN
         FREE30 => PLSTLS(NADDP(30)+1,:)
-      ELSE 
+      ELSE
         FREE30 => CEMETERYP(0,:)
       END IF
 
-C  TALLIES 31--130: DERIVATIVES WRT. X,Y,Z COORDINATES OF TALLIES 1--30     
+C  TALLIES 31--130: DERIVATIVES WRT. X,Y,Z COORDINATES OF TALLIES 1--30
       IF (LDTEDX) THEN
         DTEDX => PLSTLS(NADDP(31)+1,:)
-      ELSE 
+      ELSE
         DTEDX => CEMETERYP(0,:)
       END IF
       IF (LDTEDY) THEN
         DTEDY => PLSTLS(NADDP(32)+1,:)
-      ELSE 
+      ELSE
         DTEDY => CEMETERYP(0,:)
       END IF
       IF (LDTEDZ) THEN
         DTEDZ => PLSTLS(NADDP(33)+1,:)
-      ELSE 
+      ELSE
         DTEDZ => CEMETERYP(0,:)
       END IF
       IF (LDTIDX) THEN
         DTIDX => PLSTLS(NADDP(34)+1:NADDP(35),:)
-      ELSE 
+      ELSE
         DTIDX => CEMETERYP(0:0,:)
       END IF
       IF (LDTIDY) THEN
         DTIDY => PLSTLS(NADDP(35)+1:NADDP(36),:)
-      ELSE 
+      ELSE
         DTIDY => CEMETERYP(0:0,:)
       END IF
       IF (LDTIDZ) THEN
         DTIDZ => PLSTLS(NADDP(36)+1:NADDP(37),:)
-      ELSE 
+      ELSE
         DTIDZ => CEMETERYP(0:0,:)
       END IF
       IF (LDDEDX) THEN
         DDEDX => PLSTLS(NADDP(37)+1,:)
-      ELSE 
+      ELSE
         DDEDX => CEMETERYP(0,:)
       END IF
       IF (LDDEDY) THEN
         DDEDY => PLSTLS(NADDP(38)+1,:)
-      ELSE 
+      ELSE
         DDEDY => CEMETERYP(0,:)
       END IF
       IF (LDDEDZ) THEN
         DDEDZ => PLSTLS(NADDP(39)+1,:)
-      ELSE 
+      ELSE
         DDEDZ => CEMETERYP(0,:)
       END IF
       IF (LDDIDX) THEN
         DDIDX => PLSTLS(NADDP(40)+1:NADDP(41),:)
-      ELSE 
+      ELSE
         DDIDX => CEMETERYP(0:0,:)
       END IF
       IF (LDDIDY) THEN
         DDIDY => PLSTLS(NADDP(41)+1:NADDP(42),:)
-      ELSE 
+      ELSE
         DDIDY => CEMETERYP(0:0,:)
       END IF
       IF (LDDIDZ) THEN
         DDIDZ => PLSTLS(NADDP(42)+1:NADDP(43),:)
-      ELSE 
+      ELSE
         DDIDZ => CEMETERYP(0:0,:)
       END IF
       IF (LDVXDX) THEN
         DVXDX => PLSTLS(NADDP(43)+1:NADDP(44),:)
-      ELSE 
+      ELSE
         DVXDX => CEMETERYP(0:0,:)
       END IF
       IF (LDVXDY) THEN
         DVXDY => PLSTLS(NADDP(44)+1:NADDP(45),:)
-      ELSE 
+      ELSE
         DVXDY => CEMETERYP(0:0,:)
       END IF
       IF (LDVXDZ) THEN
         DVXDZ => PLSTLS(NADDP(45)+1:NADDP(46),:)
-      ELSE 
+      ELSE
         DVXDZ => CEMETERYP(0:0,:)
       END IF
       IF (LDVYDX) THEN
         DVYDX => PLSTLS(NADDP(46)+1:NADDP(47),:)
-      ELSE 
+      ELSE
         DVYDX => CEMETERYP(0:0,:)
       END IF
       IF (LDVYDY) THEN
         DVYDY => PLSTLS(NADDP(47)+1:NADDP(48),:)
-      ELSE 
+      ELSE
         DVYDY => CEMETERYP(0:0,:)
       END IF
       IF (LDVYDZ) THEN
         DVYDZ => PLSTLS(NADDP(48)+1:NADDP(49),:)
-      ELSE 
+      ELSE
         DVYDZ => CEMETERYP(0:0,:)
       END IF
       IF (LDVZDX) THEN
         DVZDX => PLSTLS(NADDP(49)+1:NADDP(50),:)
-      ELSE 
+      ELSE
         DVZDX => CEMETERYP(0:0,:)
       END IF
       IF (LDVZDY) THEN
         DVZDY => PLSTLS(NADDP(50)+1:NADDP(51),:)
-      ELSE 
+      ELSE
         DVZDY => CEMETERYP(0:0,:)
       END IF
       IF (LDVZDZ) THEN
         DVZDZ => PLSTLS(NADDP(51)+1:NADDP(52),:)
-      ELSE 
+      ELSE
         DVZDZ => CEMETERYP(0:0,:)
       END IF
       IF (LDBXDX) THEN
         DBXDX => PLSTLS(NADDP(52)+1,:)
-      ELSE 
+      ELSE
         DBXDX => CEMETERYP(0,:)
       END IF
       IF (LDBXDY) THEN
         DBXDY => PLSTLS(NADDP(53)+1,:)
-      ELSE 
+      ELSE
         DBXDY => CEMETERYP(0,:)
       END IF
       IF (LDBXDZ) THEN
         DBXDZ => PLSTLS(NADDP(54)+1,:)
-      ELSE 
+      ELSE
         DBXDZ => CEMETERYP(0,:)
       END IF
       IF (LDBYDX) THEN
         DBYDX => PLSTLS(NADDP(55)+1,:)
-      ELSE 
+      ELSE
         DBYDX => CEMETERYP(0,:)
       END IF
       IF (LDBYDY) THEN
         DBYDY => PLSTLS(NADDP(56)+1,:)
-      ELSE 
+      ELSE
         DBYDY => CEMETERYP(0,:)
       END IF
       IF (LDBYDZ) THEN
         DBYDZ => PLSTLS(NADDP(57)+1,:)
-      ELSE 
+      ELSE
         DBYDZ => CEMETERYP(0,:)
       END IF
       IF (LDBZDX) THEN
         DBZDX => PLSTLS(NADDP(58)+1,:)
-      ELSE 
+      ELSE
         DBZDX => CEMETERYP(0,:)
       END IF
       IF (LDBZDY) THEN
         DBZDY => PLSTLS(NADDP(59)+1,:)
-      ELSE 
+      ELSE
         DBZDY => CEMETERYP(0,:)
       END IF
       IF (LDBZDZ) THEN
         DBZDZ => PLSTLS(NADDP(60)+1,:)
-      ELSE 
+      ELSE
         DBZDZ => CEMETERYP(0,:)
       END IF
       IF (LDBFDX) THEN
         DBFDX => PLSTLS(NADDP(61)+1,:)
-      ELSE 
+      ELSE
         DBFDX => CEMETERYP(0,:)
       END IF
       IF (LDBFDY) THEN
         DBFDY => PLSTLS(NADDP(62)+1,:)
-      ELSE 
+      ELSE
         DBFDY => CEMETERYP(0,:)
       END IF
       IF (LDBFDZ) THEN
         DBFDZ => PLSTLS(NADDP(63)+1,:)
-      ELSE 
+      ELSE
         DBFDZ => CEMETERYP(0,:)
       END IF
       IF (LDADINDX) THEN
         DADINDX => PLSTLS(NADDP(64)+1:NADDP(65),:)
-      ELSE 
+      ELSE
         DADINDX => CEMETERYP(0:0,:)
       END IF
       IF (LDADINDY) THEN
         DADINDY => PLSTLS(NADDP(65)+1:NADDP(66),:)
-      ELSE 
+      ELSE
         DADINDY => CEMETERYP(0:0,:)
       END IF
       IF (LDADINDZ) THEN
         DADINDZ => PLSTLS(NADDP(66)+1:NADDP(67),:)
-      ELSE 
+      ELSE
         DADINDZ => CEMETERYP(0:0,:)
       END IF
       IF (LDEDRIFTDX) THEN
         DEDRIFTDX => PLSTLS(NADDP(67)+1:NADDP(68),:)
-      ELSE 
+      ELSE
         DEDRIFTDX => CEMETERYP(0:0,:)
       END IF
       IF (LDEDRIFTDY) THEN
         DEDRIFTDY => PLSTLS(NADDP(68)+1:NADDP(69),:)
-      ELSE 
+      ELSE
         DEDRIFTDY => CEMETERYP(0:0,:)
       END IF
       IF (LDEDRIFTDZ) THEN
         DEDRIFTDZ => PLSTLS(NADDP(69)+1:NADDP(70),:)
-      ELSE 
+      ELSE
         DEDRIFTDZ => CEMETERYP(0:0,:)
       END IF
       IF (LDVOLDX) THEN
         DVOLDX => PLSTLS(NADDP(70)+1,:)
-      ELSE 
+      ELSE
         DVOLDX => CEMETERYP(0,:)
       END IF
       IF (LDVOLDY) THEN
         DVOLDY => PLSTLS(NADDP(71)+1,:)
-      ELSE 
+      ELSE
         DVOLDY => CEMETERYP(0,:)
       END IF
       IF (LDVOLDZ) THEN
         DVOLDZ => PLSTLS(NADDP(72)+1,:)
-      ELSE 
+      ELSE
         DVOLDZ => CEMETERYP(0,:)
       END IF
       IF (LDWGHTDX) THEN
         DWGHTDX => PLSTLS(NADDP(73)+1:NADDP(74),:)
-      ELSE 
+      ELSE
         DWGHTDX => CEMETERYP(0:0,:)
       END IF
       IF (LDWGHTDY) THEN
         DWGHTDY => PLSTLS(NADDP(74)+1:NADDP(75),:)
-      ELSE 
+      ELSE
         DWGHTDY => CEMETERYP(0:0,:)
       END IF
       IF (LDWGHTDZ) THEN
         DWGHTDZ => PLSTLS(NADDP(75)+1:NADDP(76),:)
-      ELSE 
+      ELSE
         DWGHTDZ => CEMETERYP(0:0,:)
       END IF
       IF (LDBXPERPDX) THEN
         DBXPERPDX => PLSTLS(NADDP(76)+1,:)
-      ELSE 
+      ELSE
         DBXPERPDX => CEMETERYP(0,:)
       END IF
       IF (LDBXPERPDY) THEN
         DBXPERPDY => PLSTLS(NADDP(77)+1,:)
-      ELSE 
+      ELSE
         DBXPERPDY => CEMETERYP(0,:)
       END IF
       IF (LDBXPERPDZ) THEN
         DBXPERPDZ => PLSTLS(NADDP(78)+1,:)
-      ELSE 
+      ELSE
         DBXPERPDZ => CEMETERYP(0,:)
       END IF
       IF (LDBYPERPDX) THEN
         DBYPERPDX => PLSTLS(NADDP(79)+1,:)
-      ELSE 
+      ELSE
         DBYPERPDX => CEMETERYP(0,:)
       END IF
       IF (LDBYPERPDY) THEN
         DBYPERPDY => PLSTLS(NADDP(80)+1,:)
-      ELSE 
+      ELSE
         DBYPERPDY => CEMETERYP(0,:)
       END IF
       IF (LDBYPERPDZ) THEN
         DBYPERPDZ => PLSTLS(NADDP(81)+1,:)
-      ELSE 
+      ELSE
         DBYPERPDZ => CEMETERYP(0,:)
       END IF
       IF (LDEXDX) THEN
         DEXDX => PLSTLS(NADDP(82)+1,:)
-      ELSE 
+      ELSE
         DEXDX => CEMETERYP(0,:)
       END IF
       IF (LDEXDY) THEN
         DEXDY => PLSTLS(NADDP(83)+1,:)
-      ELSE 
+      ELSE
         DEXDY => CEMETERYP(0,:)
       END IF
       IF (LDEXDZ) THEN
         DEXDZ => PLSTLS(NADDP(84)+1,:)
-      ELSE 
+      ELSE
         DEXDZ => CEMETERYP(0,:)
       END IF
       IF (LDEYDX) THEN
         DEYDX => PLSTLS(NADDP(85)+1,:)
-      ELSE 
+      ELSE
         DEYDX => CEMETERYP(0,:)
       END IF
       IF (LDEYDY) THEN
         DEYDY => PLSTLS(NADDP(86)+1,:)
-      ELSE 
+      ELSE
         DEYDY => CEMETERYP(0,:)
       END IF
       IF (LDEYDZ) THEN
         DEYDZ => PLSTLS(NADDP(87)+1,:)
-      ELSE 
+      ELSE
         DEYDZ => CEMETERYP(0,:)
       END IF
       IF (LDEZDX) THEN
         DEZDX => PLSTLS(NADDP(88)+1,:)
-      ELSE 
+      ELSE
         DEZDX => CEMETERYP(0,:)
       END IF
       IF (LDEZDY) THEN
         DEZDY => PLSTLS(NADDP(89)+1,:)
-      ELSE 
+      ELSE
         DEZDY => CEMETERYP(0,:)
       END IF
       IF (LDEZDZ) THEN
         DEZDZ => PLSTLS(NADDP(90)+1,:)
-      ELSE 
+      ELSE
         DEZDZ => CEMETERYP(0,:)
       END IF
       IF (LDEFDX) THEN
         DEFDX => PLSTLS(NADDP(91)+1,:)
-      ELSE 
+      ELSE
         DEFDX => CEMETERYP(0,:)
       END IF
       IF (LDEFDY) THEN
         DEFDY => PLSTLS(NADDP(92)+1,:)
-      ELSE 
+      ELSE
         DEFDY => CEMETERYP(0,:)
       END IF
       IF (LDEFDZ) THEN
         DEFDZ => PLSTLS(NADDP(93)+1,:)
-      ELSE 
+      ELSE
         DEFDZ => CEMETERYP(0,:)
       END IF
       IF (LDPOTDX) THEN
         DPOTDX => PLSTLS(NADDP(94)+1,:)
-      ELSE 
+      ELSE
         DPOTDX => CEMETERYP(0,:)
       END IF
       IF (LDPOTDY) THEN
         DPOTDY => PLSTLS(NADDP(95)+1,:)
-      ELSE 
+      ELSE
         DPOTDY => CEMETERYP(0,:)
       END IF
       IF (LDPOTDZ) THEN
         DPOTDZ => PLSTLS(NADDP(96)+1,:)
-      ELSE 
+      ELSE
         DPOTDZ => CEMETERYP(0,:)
       END IF
       IF (LDBVINDX) THEN
         DBVINDX => PLSTLS(NADDP(97)+1:NADDP(98),:)
-      ELSE 
+      ELSE
         DBVINDX => CEMETERYP(0:0,:)
       END IF
       IF (LDBVINDY) THEN
         DBVINDY => PLSTLS(NADDP(98)+1:NADDP(99),:)
-      ELSE 
+      ELSE
         DBVINDY => CEMETERYP(0:0,:)
       END IF
       IF (LDBVINDZ) THEN
         DBVINDZ => PLSTLS(NADDP(99)+1:NADDP(100),:)
-      ELSE 
+      ELSE
         DBVINDZ => CEMETERYP(0:0,:)
       END IF
       IF (LDPARMOMDX) THEN
         DPARMOMDX => PLSTLS(NADDP(100)+1:NADDP(101),:)
-      ELSE 
+      ELSE
         DPARMOMDX => CEMETERYP(0:0,:)
       END IF
       IF (LDPARMOMDY) THEN
         DPARMOMDY => PLSTLS(NADDP(101)+1:NADDP(102),:)
-      ELSE 
+      ELSE
         DPARMOMDY => CEMETERYP(0:0,:)
       END IF
       IF (LDPARMOMDZ) THEN
         DPARMOMDZ => PLSTLS(NADDP(102)+1:NADDP(103),:)
-      ELSE 
+      ELSE
         DPARMOMDZ => CEMETERYP(0:0,:)
       END IF
       IF (LDPSIDX) THEN
         DPSIDX => PLSTLS(NADDP(103)+1,:)
-      ELSE 
+      ELSE
         DPSIDX => CEMETERYP(0,:)
       END IF
       IF (LDPSIDY) THEN
         DPSIDY => PLSTLS(NADDP(104)+1,:)
-      ELSE 
+      ELSE
         DPSIDY => CEMETERYP(0,:)
       END IF
       IF (LDPSIDZ) THEN
         DPSIDZ => PLSTLS(NADDP(105)+1,:)
-      ELSE 
+      ELSE
         DPSIDZ => CEMETERYP(0,:)
       END IF
       IF (LDZIDX) THEN
         DZIDX => PLSTLS(NADDP(106)+1:NADDP(107),:)
-      ELSE 
+      ELSE
         DZIDX => CEMETERYP(0:0,:)
       END IF
       IF (LDZIDY) THEN
         DZIDY => PLSTLS(NADDP(107)+1:NADDP(108),:)
-      ELSE 
+      ELSE
         DZIDY => CEMETERYP(0:0,:)
       END IF
       IF (LDZIDZ) THEN
         DZIDZ => PLSTLS(NADDP(108)+1:NADDP(109),:)
-      ELSE 
+      ELSE
         DZIDZ => CEMETERYP(0:0,:)
       END IF
       IF (LDFREE27DX) THEN
         DFREE27DX => PLSTLS(NADDP(109)+1,:)
-      ELSE 
+      ELSE
         DFREE27DX => CEMETERYP(0,:)
       END IF
       IF (LDFREE27DY) THEN
         DFREE27DY => PLSTLS(NADDP(110)+1,:)
-      ELSE 
+      ELSE
         DFREE27DY => CEMETERYP(0,:)
       END IF
       IF (LDFREE27DZ) THEN
         DFREE27DZ => PLSTLS(NADDP(111)+1,:)
-      ELSE 
+      ELSE
         DFREE27DZ => CEMETERYP(0,:)
       END IF
       IF (LDFREE28DX) THEN
         DFREE28DX => PLSTLS(NADDP(112)+1,:)
-      ELSE 
+      ELSE
         DFREE28DX => CEMETERYP(0,:)
       END IF
       IF (LDFREE28DY) THEN
         DFREE28DY => PLSTLS(NADDP(113)+1,:)
-      ELSE 
+      ELSE
         DFREE28DY => CEMETERYP(0,:)
       END IF
       IF (LDFREE28DZ) THEN
         DFREE28DZ => PLSTLS(NADDP(114)+1,:)
-      ELSE 
+      ELSE
         DFREE28DZ => CEMETERYP(0,:)
       END IF
       IF (LDFREE29DX) THEN
         DFREE29DX => PLSTLS(NADDP(115)+1,:)
-      ELSE 
+      ELSE
         DFREE29DX => CEMETERYP(0,:)
       END IF
       IF (LDFREE29DY) THEN
         DFREE29DY => PLSTLS(NADDP(116)+1,:)
-      ELSE 
+      ELSE
         DFREE29DY => CEMETERYP(0,:)
       END IF
       IF (LDFREE29DZ) THEN
         DFREE29DZ => PLSTLS(NADDP(117)+1,:)
-      ELSE 
+      ELSE
         DFREE29DZ => CEMETERYP(0,:)
       END IF
       IF (LDFREE30DX) THEN
         DFREE30DX => PLSTLS(NADDP(118)+1,:)
-      ELSE 
+      ELSE
         DFREE30DX => CEMETERYP(0,:)
       END IF
       IF (LDFREE30DY) THEN
         DFREE30DY => PLSTLS(NADDP(119)+1,:)
-      ELSE 
+      ELSE
         DFREE30DY => CEMETERYP(0,:)
       END IF
       IF (LDFREE30DZ) THEN
         DFREE30DZ => PLSTLS(NADDP(120)+1,:)
-      ELSE 
+      ELSE
         DFREE30DZ => CEMETERYP(0,:)
       END IF
 
@@ -1220,22 +1240,29 @@ cdr  are there any FEM interpolated background tallies in this run?
       IF (LDISMO) IDSMO = IDSMO + 1
 
       IVSMO = 0
+cdr  strictly: a vectorial quantity.
+cdr  Smoothing is probably not correctly implemented
       IF (LVXSMO) IVSMO = IVSMO + 1
       IF (LVYSMO) IVSMO = IVSMO + 1
       IF (LVZSMO) IVSMO = IVSMO + 1
       IF (LBVSMO) IVSMO = IVSMO + 1
 
       IBSMO = 0
+cdr  strictly: a vectorial quantity.
+cdr  Smoothing is probably not correctly implemented
       IF (LBXSMO) IBSMO = IBSMO + 1
       IF (LBYSMO) IBSMO = IBSMO + 1
       IF (LBZSMO) IBSMO = IBSMO + 1
       IF (LBFSMO) IBSMO = IBSMO + 1
 
       IESMO = 0
+cdr  strictly: a vectorial quantity.
+cdr  Smoothing is probably not correctly implemented
       IF (LEXSMO) IESMO = IESMO + 1
       IF (LEYSMO) IESMO = IESMO + 1
       IF (LEZSMO) IESMO = IESMO + 1
       IF (LEFSMO) IESMO = IESMO + 1
+cdr   POT should also be here
 
       IF ((IDSMO > 0) .AND. (IDSMO < 2)) THEN
         WRITE (IUNOUT,*)
@@ -1303,6 +1330,7 @@ cdr  are there any FEM interpolated background tallies in this run?
         END IF
       END IF
 
+cdr legal values IESMO: =0 or =4
       IF ((IESMO > 0) .AND. (IESMO < 4)) THEN
         WRITE (IUNOUT,*)
      .       'INCONSISTENCY IN SMOOTHING OF '//
@@ -1326,12 +1354,14 @@ cdr  are there any FEM interpolated background tallies in this run?
           LEFSMO =.TRUE.
           WRITE (IUNOUT,*)
      .      'SMOOTHING OF ELEC. FIELD STRENGTH SWITCHED ON'
+cdr  electr. potential POT missing here. iesmo=0 or =5 are legal
         END IF
       END IF
 
 cdr changed Jan 2020: to avoid physical inconsistency, enforce links
 cdr                   between related input tallies (e.g. vector components)
 cdr not finished. WIP.
+cdr but at least now: if one component, then automatically all.
       LDSMO = LDESMO .AND. LDISMO
       LVSMO = LVXSMO .AND. LVYSMO .AND. LVZSMO .AND. LBVSMO
       LBSMO = LBXSMO .AND. LBYSMO .AND. LBZSMO .AND. LBFSMO
@@ -1339,13 +1369,13 @@ CDR  .       .OR.LPSISMO
       LESMO = LEXSMO .AND. LEYSMO .AND. LEZSMO .AND. LEFSMO
 CDR  .       .OR.LPOTSMO
 
-c  NTOT2: total number of smoothed tallies, counting also with species index 
+c  NTOT2: total number of smoothed tallies, counting also with species index
       NTOT2 = 0
       DO I= 1, NTALG
         IF (LSMOPRO(I)) THEN
           NTOT2 = NTOT2 + NFRSTP(I)
         END IF
-      END DO     
+      END DO
 
 c  NADDCOR: cumulated index of position of smoothed tally J within all smoothed tallies
 C  NLSTLL : highest tally index J amongst all smoothed tallies
@@ -1357,11 +1387,11 @@ C  NLSTLL : highest tally index J amongst all smoothed tallies
         ELSE
           NADDCOR(J)=NADDCOR(J-1)
         END IF
- 6    CONTINUE
+    6 CONTINUE
 
       IF (LSMOPRO(NTALG)) NLSTTL = NTALG
 C
-c  NTOT: total number of smoothed tallies, counting also with species index 
+c  NTOT: total number of smoothed tallies, counting also with species index
       NTOT = 0
       IF (ANY(LSMOPRO)) THEN
         NTOT = NADDCOR(NTALG)
@@ -1376,7 +1406,7 @@ cdr  ncorner is set in GRID.f (levgeo=4,5) or in SNEIGH.f (levgeo=1,2,3)
         ALLOCATE (CORNER_PROFILES(1,1))
       END IF
 
-       WRITE (IUNMEM,'(A,T25,I15)')
+      WRITE (IUNMEM,'(A,T25,I15)')
      .        ' COMUSR(CORNERS) ',SIZE(CORNER_PROFILES)*8
 
       IF (LTESMO) THEN
@@ -1393,7 +1423,7 @@ cdr  ncorner is set in GRID.f (levgeo=4,5) or in SNEIGH.f (levgeo=1,2,3)
 
       IF (LDSMO) THEN
 cdr Enforce smoothing interpolations for all charged particles
-cdr incl. electrons, in order to not wreck quasineutrality. 
+cdr incl. electrons, in order to not wreck quasineutrality.
         IF (LDESMO) THEN
           DEINCORNER => CORNER_PROFILES(:,NADDCOR(3)+1)
         ELSE
@@ -1414,12 +1444,12 @@ cdr incl. electrons, in order to not wreck quasineutrality.
           VXINCORNER => CORNER_PROFILES(:,NADDCOR(5)+1 : NADDCOR(6))
         ELSE
           NULLIFY(VXINCORNER)
-        END IF 
+        END IF
         IF (LVYSMO) THEN
           VYINCORNER => CORNER_PROFILES(:,NADDCOR(6)+1 : NADDCOR(7))
         ELSE
           NULLIFY(VYINCORNER)
-        END IF 
+        END IF
         IF (LVZSMO) THEN
           VZINCORNER => CORNER_PROFILES(:,NADDCOR(7)+1 : NADDCOR(8))
         ELSE
@@ -1436,7 +1466,7 @@ cdr incl. electrons, in order to not wreck quasineutrality.
         NULLIFY(VZINCORNER)
         NULLIFY(BVINCORNER)
       END IF
-
+cdr  same simplification needed for other vectors...
       IF (LBSMO) THEN
         IF (LBXSMO) THEN
           BXINCORNER => CORNER_PROFILES(:,NADDCOR(8)+1)
@@ -1542,7 +1572,8 @@ cdr these next two B field tallies should go into LBSMO
       ELSE
         NULLIFY(PARMOMCORNER)
       END IF
-
+cdr  hidden link warning:
+cdr  this should go into LBSMO
       IF (LPSISMO) THEN
         PSICORNER => CORNER_PROFILES(:,NADDCOR(25)+1)
       ELSE
@@ -1739,8 +1770,7 @@ c  B field
         LBYSMO      => LSMOPRO(9)
         LBZSMO      => LSMOPRO(10)
         LBFSMO      => LSMOPRO(11)
-
-c  B  perp
+c  B  perp  unit vector
         LBXPSMO     => LSMOPRO(16)
         LBYPSMO     => LSMOPRO(17)
 
@@ -1756,11 +1786,11 @@ c  E field
         LEFSMO      => LSMOPRO(21)
         LPOTSMO     => LSMOPRO(22)
 
-c  poloidal B-flux function 
-        LPSISMO  => LSMOPRO(25)
+c  poloidal B-flux function
+        LPSISMO     => LSMOPRO(25)
 
 c  average bundle charge
-        LZISMO  => LSMOPRO(26)
+        LZISMO      => LSMOPRO(26)
 
 c  free slots
         LFREE27SMO  => LSMOPRO(27)
@@ -1774,11 +1804,11 @@ c  free slots
       IF (ICAL == 1) THEN
 cdr oct 18: initialization of input volumetric tallies moved to ICAL==2
 
-        RMASSA = 0._DP
-        RMASSM = 0._DP
-        RMASSI = 0._DP
+        RMASSA  = 0._DP
+        RMASSM  = 0._DP
+        RMASSI  = 0._DP
         RMASSPH = 0._DP
-        RMASSP = 0._DP
+        RMASSP  = 0._DP
 
         DIOD   = 0._DP
         DATD   = 0._DP
@@ -1839,16 +1869,16 @@ cdr oct 18: initialization of input volumetric tallies moved to ICAL==2
         NSPEN  = 0
         NSPANW = 0
         NSPENW = 0
-        INTLOPTS  = 0
+        INTLOPTS = 0
 
         LKINDM = 0
         LKINDI = 0
         LKINDP = 0
 
-        LGVAC  = .FALSE.
+        LGVAC   = .FALSE.
         LSPCCLL = .FALSE.
         LIVTALI = .TRUE.
-        
+
         LTEIN      => LIVTALI(1)
         LTIIN      => LIVTALI(2)
 
@@ -1875,8 +1905,11 @@ c
         LEDRIFT    => LIVTALI(13)
         LVOL       => LIVTALI(14)
         LWGHT      => LIVTALI(15)
+
+cdr June 23: now included in LBIN  (B field components)
         LBXPERP    => LIVTALI(16)
         LBYPERP    => LIVTALI(17)
+cdr     LBZPERP
 
         LEXIN      => LIVTALI(18)
         LEYIN      => LIVTALI(19)
@@ -1972,12 +2005,15 @@ c
         LDPARMOMDX => LIVTALI(100)
         LDPARMOMDY => LIVTALI(101)
         LDPARMOMDZ => LIVTALI(102)
+
         LDPSIDX    => LIVTALI(103)
         LDPSIDY    => LIVTALI(104)
         LDPSIDZ    => LIVTALI(105)
+
         LDZIDX     => LIVTALI(106)
         LDZIDY     => LIVTALI(107)
         LDZIDZ     => LIVTALI(108)
+
         LDFREE27DX => LIVTALI(109)
         LDFREE27DY => LIVTALI(110)
         LDFREE27DZ => LIVTALI(111)
@@ -2002,8 +2038,8 @@ c  Cemetery for inactive input tallies (no storage)
         DEINL  = 0._DP
         DIINL  = 0._DP
 
-        NAINS = 0
-        NAINT = 0
+        NAINS  = 0
+        NAINT  = 0
 
         ICPVE  = 0
         ICPVS  = 0
@@ -2049,8 +2085,8 @@ c  Cemetery for inactive input tallies (no storage)
         CALL EIRENE_ALLOC_COMUSR(4)
       END IF
 
-! LSMOPRO needs to be broadcasted before corner arrays are allocated      
-      CALL MPI_BCAST (LSMOPRO,NTALG,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)     
+! LSMOPRO needs to be broadcasted before corner arrays are allocated
+      CALL MPI_BCAST (LSMOPRO,NTALG,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       IF (ME /= 0) CALL EIRENE_ALLOC_CORNERS
 
 c  active and inactive tallies:
@@ -2070,7 +2106,7 @@ cdr   intlopts is only needed on processor 0
 
       CALL MPI_BCAST (FLXOUT,NLMPGS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (SAREA,NLMPGS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-      
+
       CALL MPI_BCAST (EION,NATM,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
       CALL MPI_BCAST (RMASSI,NION,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -2177,7 +2213,7 @@ cdr   intlopts is only needed on processor 0
      .                ier)
       CALL MPI_BCAST (DENSLIM,NPLS,MPI_REAL8,0,MPI_COMM_WORLD,ier) !VK
       CALL MPI_BCAST (NPRLL,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      CALL MPI_BCAST (NMODE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier) 
+      CALL MPI_BCAST (NMODE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NTCPU,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NFILE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NFILEN,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -2196,7 +2232,7 @@ cdr   intlopts is only needed on processor 0
       END IF
 
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
-      
+
       RETURN
       END SUBROUTINE EIRENE_BROADCAST_COMUSR
 

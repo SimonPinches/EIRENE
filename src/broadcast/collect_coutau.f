@@ -21,7 +21,7 @@ C master is not at the same time process with rank 0. (i.e. in a simple
 C "embarrassingly" parallelisation concept not needed)
 C ANY( NPESTA > 0 .AND. MASK = NLSRON )
 C
-c    npesta(istra):  master processor ("group-leader") for each stratum ISTRA
+c    npesta(istra): master processor ("group-leader") for each stratum ISTRA
 c
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: NADSPC, NLIMPS, NLMPGS, NRTAL, NSTRA,

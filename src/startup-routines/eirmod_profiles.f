@@ -14,7 +14,7 @@ CDR  june 17: COMMENTS, MINOR NOTATIONAL CHANGES
 C
 C
 C
-      SUBROUTINE EIRENE_PROFE(PRO,PRO0,RIN0,A1,E,SEP,PROVAC)
+      SUBROUTINE EIRENE_PROFE (PRO,PRO0,RIN0,A1,E,SEP,PROVAC)
 c
 c  input profile parameters, see subr. input,  p0,...p5
 c  p0: pro0
@@ -99,7 +99,7 @@ C           rra gt. raa indicates: one more vacuum cell in radial direction.
 cdr jun 17: comments
 
 C
-      SUBROUTINE EIRENE_PROFN(PRO,PRO0,PROS,P,Q,E,SEP,PROVAC)
+      SUBROUTINE EIRENE_PROFN (PRO,PRO0,PROS,P,Q,E,SEP,PROVAC)
 c  p1: pro0: value at x=rsurf(1)
 c  p2: proS: value at x=sep
 c  p3: profile parameter p, for rsurf(1) <= x <= sep
@@ -199,7 +199,7 @@ C
 C
       SUBROUTINE EIRENE_PROFR_2D (PRO,IINDEX,NSPZI,NSPZ1,NDAT)
 C
-C  READ ENTIRE PROFILE FROM TARGET DATA STRUCTURE PLASMA_BCKGRND  
+C  READ ENTIRE PROFILE FROM TARGET DATA STRUCTURE PLASMA_BCKGRND
 C      (EIRMOD_CSPEI)
 cdr  same as PROFR_1D, but PRO is a 2D array, 
 C  NSPZ1: first dimension of PRO array as in calling program
@@ -290,4 +290,4 @@ C
       RETURN
       END SUBROUTINE EIRENE_PROFS
       
-      end module  eirmod_profiles
+      end module eirmod_profiles

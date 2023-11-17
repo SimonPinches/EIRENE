@@ -12,7 +12,7 @@ c   NAOT  :
 c   NCPV  :
 c   NKNOT :
 C   NTRII :
-C   NCPVI :  no. of special couple tallies
+C   NCPVI : no. of special couple tallies
 
 c  also set: NDX,NDY,NFL, NDXP, NDYP
 
@@ -81,7 +81,7 @@ C
 C
 C  DEFINE ADDITIONAL TALLIES FOR COUPLING (UPDATED IN SUBR. UPTCOP
 C                                          AND IN SUBR. COLLIDE)
-      NCPVI=NPLS
+      NCPVI= NPLS
       NCPV = MAX(NCPV,NCPVI)
 C
 C SAVE SOME MORE INPUT DATA FOR SHORT CYCLE ON COMMON CCOUPL

@@ -15,7 +15,7 @@ C 08.08.06: error exit 991 introduced: charge conservation violation
 ! 20.01.14:  H.4 option for CX rate coefficients (e.g. CR rates: p + H-minus)
 c            additional argument PLS, also in calling routines xsecta,xsectm,xsecti
 C            remove plsti(nstordt), now: TII
-c 25.03.15:  rename nelrcx  to nplrcx, in order to enable
+c 25.03.15:  rename nelrcx to nplrcx, in order to enable
 c            consistency in notation with PI processes: not ready
 cdr   sept.16: calls to prep_rtcs removed. prep_rtcs is now redundant
 cdr   jan 17 : added nuclear charge number conservation test,
@@ -31,13 +31,12 @@ C
 
       SUBROUTINE EIRENE_XSTCX(RMASS,IRCX,ISP,IPL,
      .                        ISCD1,ISCD2,
-     .                        EBULK, CHRDF0,
-     .                        ISCDE,IESTM,
+     .                        EBULK,CHRDF0,ISCDE,IESTM,
      .                        KK,FACTKK,PLS)
 
 c  set NON-DEFAULT CX collision cross-sections and rates
 c  IPL{n+} + ISP -->  IPL1{(n-m)+} + ISP2{m+}
-c  defaults for CX type processes:  exchange of identity
+c  defaults for CX type processes: exchange of identity
 
 c  carry out some consistency checks
 c  first  secondary == previous bulk particle
@@ -88,7 +87,7 @@ C
      .            EIRENE_RATE_COEFF,
      .            EIRENE_ENERGY_RATE_COEFF, TB, TII,
      .            DENSLIMLOG,
-     .            FP1(6),FP2(6)
+     .            FP1(6), FP2(6)
       INTEGER :: ITYP1, ITYP2, KREAD, IFLG,
      .           J, NEND, MODC, NSECX4, IPL2, IIO2, IPLTI,
      .           NCBULK, NCGBLK
@@ -119,7 +118,8 @@ C  1ST SECONDARY INDEX, PREVIOUS BULK MASS
       N1STX(IRCX,1)=EIRENE_IDEZ(ISCD1,1,3)    !TYPE
       N1STX(IRCX,2)=EIRENE_IDEZ(ISCD1,3,3)    !SPECIES WITHIN TYPE CLASS
       N1STX(IRCX,3)=0
-      IF (N1STX(IRCX,1).LT.4) N1STX(IRCX,3)=1 !DEFAULT: ONE "FIRST" TEST SECONDARY, IF ANY
+      IF (N1STX(IRCX,1).LT.4) N1STX(IRCX,3)=1 !DEFAULT: ONE "FIRST"
+                                              !TEST SECONDARY, IF ANY
 
       IF ((N1STX(IRCX,2) < 1) .OR.
      .    (N1STX(IRCX,2) > MAXSPC(N1STX(IRCX,1)))) GOTO 994
@@ -144,10 +144,11 @@ cdr     IF (ABS(NCGBLK-NCHRGP(N1STX(IRCX,2))).ne.1) GOTO 992
       ENDIF
 C
 C  2ND SECONDARY INDEX, PREVIOUS TEST PARTICLE MASS
-      N2NDX(IRCX,1)=EIRENE_IDEZ(ISCD2,1,3)    !TYPE
-      N2NDX(IRCX,2)=EIRENE_IDEZ(ISCD2,3,3)    !SPECIES WITHIN TYPE CLASS
-      N2NDX(IRCX,3)=N1STX(IRCX,3)             !CUMULATED NO. OF TEST PARTICLE SECONDARIES
-      IF (N2NDX(IRCX,1).LT.4) N2NDX(IRCX,3)=N2NDX(IRCX,3)+1 !DEFAULT: ONE "SECOND" TEST SECONDARY, IF ANY
+      N2NDX(IRCX,1)=EIRENE_IDEZ(ISCD2,1,3) !TYPE
+      N2NDX(IRCX,2)=EIRENE_IDEZ(ISCD2,3,3) !SPECIES WITHIN TYPE CLASS
+      N2NDX(IRCX,3)=N1STX(IRCX,3)          !CUMULATED NO. OF SECONDARIES
+      IF (N2NDX(IRCX,1).LT.4) N2NDX(IRCX,3)=N2NDX(IRCX,3)+1 !DEFAULT:
+                                  ! 1 "SECOND" TEST SECONDARY, IF ANY
 C
       IF ((N2NDX(IRCX,2) < 1) .OR.
      .    (N2NDX(IRCX,2) > MAXSPC(N2NDX(IRCX,1)))) GOTO 994
@@ -207,7 +208,8 @@ C..................................................................
       MODC=EIRENE_IDEZ(MODCLF(KK),3,5)
 
 C  2.B)
-      IF (MODC.EQ.1) NEND=1   ! rate coeff vs. (fixed E0, e.g. E0=0, or E0=3/2 TI)
+      IF (MODC.EQ.1) NEND=1   ! rate coeff vs.
+                              ! (fixed E0, e.g. E0=0, or E0=3/2 TI)
 C  2.C)
       IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E0, TI)
 C  2.D)
@@ -229,8 +231,8 @@ cdr  indicate: no density dependence in polynomial fit.
             TABCX3(IRCX,J,1)=COU*DIIN(IPL,J)*FACTKK
   245     CONTINUE
         ELSE ! NOT SUFFICIENT STORAGE ON TABCX3
-C  STORAGE SAVE MODE 
-c  use ftabcx3, with modc=1, at Tii.          
+C  STORAGE SAVE MODE
+c  use ftabcx3, with modc=1, at Tii.
         ENDIF
         MODCOL(3,2,IRCX)=1
 
@@ -275,7 +277,7 @@ c         call eirene_exit_own(1)
         MODCOL(3,2,IRCX)=2
 
       ELSEIF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.3) THEN
-C  2.D) RATE COEFFICIENT(TI=TE, NE, E0 FIXED, E.G. E0=0.)
+C  2.D) RATE COEFFICIENT(TI=TE, NE=NI ?, E0 FIXED, E.G. E0=0.)
 C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
         FCTKKL=LOG(FACTKK)
         IF (NSTORDR >= NRAD) THEN
@@ -303,9 +305,10 @@ cdr  ftabcx3 now uses isotopically shifted TII, not Te
           write (iunout,*) 'exit called'
           call eirene_exit_own(1)
         ENDIF
-        MODCOL(3,2,IRCX)=1 !  indicate: rate coefficient as fct. of local plasma conditions only
+        MODCOL(3,2,IRCX)=1 ! indicate: rate coefficient as fct.
+                           ! of local plasma conditions only
       ELSE
-C  NO RATE COEFFICIENT PROVIDED. 
+C  NO RATE COEFFICIENT PROVIDED.
 C  IS THERE A CROSS-SECTION AT LEAST?
         IF (MODCOL(3,2,IRCX).NE.3) GOTO 996
 C  YES. AN APPROXIMATE RATE COEFFICIENT SIGMA(VEFF)*VEFF IS BUILD IN SUBR. FPATH
@@ -314,8 +317,10 @@ C  YES. AN APPROXIMATE RATE COEFFICIENT SIGMA(VEFF)*VEFF IS BUILD IN SUBR. FPATH
       FACRCX(IRCX,1) = FACTKK
       FACRCX(IRCX,2) = LOG(FACTKK)
 
-      DEFCX(IRCX)=LOG(CVELI2*PMASS)  ! vq_rel  --> elab (for cross section, H.1)
-      EEFCX(IRCX)=LOG(CVELI2*TMASS)  ! vq_beam --> ebeam, only needed for H.3, H.6 or H.9 rates
+      DEFCX(IRCX)=LOG(CVELI2*PMASS)  ! vq_rel  --> elab
+                                     ! (for cross section, H.1)
+      EEFCX(IRCX)=LOG(CVELI2*TMASS)  ! vq_beam --> ebeam,
+                           ! only needed for H.3, H.6 or H.9 rates
 C
 C  3. BULK PARTICLE MOMENTUM LOSS RATE
 C
@@ -326,7 +331,7 @@ C  SET ENERGY LOSS RATE OF IMPACTING ION
 C
       NSECX4=EIRENE_IDEZ(ISCDE,4,5)
       IF (NSECX4.EQ.0) THEN
-C  4.1A) ENERGY LOSS RATE OF IMP. BULK PARTICLE = CONST.*RATECOEFF.
+C  4.1A) ENERGY LOSS RATE OF IMP. BULK PARTICLE = CONST.*RATE COEFF.
 C        SAMPLE COLLIDING ION FROM DRIFTING MONOENERGETIC ISOTROPIC DISTRIBUTION
 c        WITH WEIGHTING/REJECTION
         IF (EBULK.LE.0.D0) THEN
@@ -359,7 +364,7 @@ CDR   ERROR: EBULK < 0 IS NOT FORESEEN
         ENDIF
         MODCOL(3,4,IRCX)=3
       ELSEIF (NSECX4.EQ.1) THEN
-C  4.1B) ENERGY LOSS RATE OF IMP. ION = (1.5*TI+EDRIFT)* RATECOEFF.
+C  4.1B) ENERGY LOSS RATE OF IMP. ION = (1.5*TI+EDRIFT)* RATE COEFF.
 C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
         IF (EBULK.LE.0.D0) THEN
           IF (NSTORDR >= NRAD) THEN

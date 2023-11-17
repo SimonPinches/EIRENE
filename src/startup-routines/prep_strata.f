@@ -12,7 +12,7 @@
 
       INTEGER :: ISTRA, ISTRAI
       REAL(DP) :: THMAX, RP1
-      
+
       NLSYMT(0)=.TRUE.
       NLSYMP(0)=.TRUE.
       DO ISTRAI=1,NSTRAI
@@ -43,6 +43,6 @@
         NLSYMT(0)=NLSYMT(0).AND.NLSYMT(ISTRA)
         NLSYMP(0)=NLSYMP(0).AND.NLSYMP(ISTRA)
       END DO
-      
+
       RETURN
       END SUBROUTINE EIRENE_PREP_STRATA

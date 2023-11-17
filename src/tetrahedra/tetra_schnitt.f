@@ -30,8 +30,8 @@
         spanz=0; i=1; j=1
         DSTMIN=HUGE(1.D0)
         dmat=DSTMIN
-    !Schleife ueber alle moeglichen Kombinationen der Tetra-Eckpunkte
-    !als Punkte einer Geraden
+! Schleife ueber alle moeglichen Kombinationen der Tetra-Eckpunkte
+! als Punkte einer Geraden
         do i=1,3
           j=(i+1)
           teti = tetra(i,:)
@@ -76,7 +76,7 @@
         end do
 
 
-    !bei vier Schnittpunkten
+! bei vier Schnittpunkten
         if (spanz == 4) then
 
           call EIRENE_sort_ueberpruef(spunkt)
@@ -151,7 +151,8 @@
         end if
 
 
-        !Abfrage, ob der Schnittpunkt auch auf der Kante des Tetraeders liegt
+        !Abfrage, ob der Schnittpunkt auch
+        !auf der Kante des Tetraeders liegt
         if ((schnittfakt >= 0._dp) .and.
      .      (schnittfakt <= 1._dp+eps5)) then
            !Berechnung des Schnittpunktes der Geraden und der Ebene

@@ -9,7 +9,7 @@
       USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
       use eirmod_timer
       use eirmod_timep
-      
+
       IMPLICIT NONE
       PRIVATE
 
@@ -19,7 +19,7 @@
       REAL(DP), SAVE, ALLOCATABLE :: ARGST(:,:)
 
       CONTAINS
-     
+
 cmg Sep 21  :  added SIGEIR option (NCHTAL(ICHORI)=13) to write out line-
 C              integrated neutral parameters to output file, plasma parameter
 C              set by NSPSPZ(ICHORI)
@@ -27,13 +27,13 @@ cmg Sep 21  :  added SIGPLA option (NCHTAL(ICHORI)=12) to write out line-
 C              integrated plasma parameters to output file, plasma parameter
 C              set by NSPSPZ(ICHORI)
 cmg Aug 21  :  added SIGLOS option (NCHTAL(ICHORI)=11) to write out
-cmg            segments and total line integral into output file     
-cdr Jan 18  :  additional parameter ICHORI in calls to SIHGA
-cdr            added: MX_compo
-cdr Oct 17  :
-cdr from W.Zholobenko: add         He emission lines, new options NCHTAL=5
-cdr                    analogous to H emission lines,             NCHTAL=2
-cdr  Oct 17  :  W.Z. : periodicity: iliin ge 4:  added for LOS
+cmg            segments and total line integral into output file
+cdr  Jan 18  :  additional parameter ICHORI in calls to SIHGA
+cdr             added: MX_compo
+cdr  Oct 17  :
+cdr  from W.Zholobenko: add         He emission lines, new options NCHTAL=5
+cdr                     analogous to H emission lines,             NCHTAL=2
+cdr  Oct 17  :  W.Z. : periodicity: iliin ge 4: added for LOS
 cdr  July 17 :  separate TRCSIG (read in block 11, dignostic output for debugging)
 cdr             from PRSPEC,PLSPEC (read in block 12, print plot results from diagno module)
 c
@@ -65,10 +65,10 @@ C  (C2-C1), IE. OPPOSITE TO THE DIRECTION USED ABOVE,
 C  UNTIL THE NEXT INTERSECTION WITH ANY NON-TRANSPARENT
 C  SURFACE (P2) IS FOUND.
 c
-c  ifirst=0:  first call for one particular LOS
-c  ifirst=1:  same LOS as previous LOS, but different (energy, wavelength) parameter PEN
+c  ifirst=0: first call for one particular LOS
+c  ifirst=1: same LOS as previous LOS, but different (energy, wavelength) parameter PEN
 cdr
-c  ifirst<0:  unclear  ?? something related to nltrj, storing trajectories/chords ??
+c  ifirst<0: unclear ?? something related to nltrj, storing trajectories/chords ??
 c
 C
       USE EIRMOD_PRECISION
@@ -162,7 +162,7 @@ C   ARRAYS FOR PLOTTING, AND RESOLUTION ALONG LINE OF SIGHT
 
 CMG 27Aug21 Adapt sigtst.f to write out line integrals for ICHORI
 C           sight lines for an assumed flat-field domain,
-C           output via linit.f as for sigha.f      
+C           output via linit.f as for sigha.f
         SUBROUTINE EIRENE_SIGLOS(INIT,JJJ,ZDS,DUM1,PSIG,DUM2,ARGST)
           USE EIRMOD_PRECISION
           USE EIRMOD_PARMMOD
@@ -192,8 +192,8 @@ C          sight lines for EIRENE, output as in sigha.f
           REAL(DP), INTENT(IN) :: ZDS,DUM1,DUM2
           REAL(DP), INTENT(IN OUT) :: PSIG(0:)
           REAL(DP), INTENT(IN OUT) :: ARGST(0:,:)
-        END SUBROUTINE EIRENE_SIGEIR      
-      
+        END SUBROUTINE EIRENE_SIGEIR
+
       END INTERFACE
 
       SAVE
@@ -297,7 +297,8 @@ C  NEAREST NON-TRANSPARENT STANDARD MESH SURFACE OR NON-TRANSPARENT
 C  ADDITIONAL SURFACE,
 C  STARTING FROM C2, SEARCHING IN THE DIRECTION C1-C2
 C
-      IF (NLTRA) THEN   ! NLTRA=.TRUE. => discrete toroidal approximation is used.
+      IF (NLTRA) THEN   ! NLTRA=.TRUE.
+                        ! => discrete toroidal approximation is used.
 C  IF ICHRD=0:
 C  C2(1) R COORDINATES IN THE TORUS SYSTEM (INCL. R0A!)
 C  C2(2) Z COORDINATES (REFERRED TO AS Y-COORDINATE IN EIRENE)
@@ -314,7 +315,7 @@ C
           PHI22=C2(3)*PIA/180.D0
           IF (PHI22.LT.ZSURF(1).OR.PHI22.GT.ZSURF(NTTRA)) THEN
             CALL EIRENE_MASAGE
-     .           ('ERROR IN LININT, WRONG INPUT FOR CHORDS ')
+     .           ('ERROR IN LININT, WRONG INPUT FOR CHORDS')
             CALL EIRENE_EXIT_OWN(1)
           ENDIF
 C  FIND TOROIDAL BLOCK NUMBER OF P2
@@ -333,7 +334,7 @@ C  PIVOT POINT C1:
           PHI11=C1(3)*PIA/180.D0
           IF (PHI11.LT.ZSURF(1).OR.PHI11.GT.ZSURF(NTTRA)) THEN
             CALL EIRENE_MASAGE
-     .          ('ERROR IN LININT, WRONG INPUT FOR CHORDS ')
+     .          ('ERROR IN LININT, WRONG INPUT FOR CHORDS')
             CALL EIRENE_EXIT_OWN(1)
           ENDIF
 C  FIND TOROIDAL BLOCK NUMBER OF P1
@@ -351,7 +352,8 @@ C  DIRECTION COSINUS OF CHORD, IN IPERID_2
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
 C
-      ELSEIF (NLTRZ) THEN   !Default: NLTRZ = TRUE (cylindrical). z-coordinate is straight (cm)
+      ELSEIF (NLTRZ) THEN   ! Default: NLTRZ = TRUE (cylindrical).
+                            ! z-coordinate is straight (cm)
 C
 C  C1(1) AND C2(1) X COORDINATES (CM)
 C  C1(2) AND C2(2) Y COORDINATES (CM)
@@ -363,7 +365,9 @@ C  C1(3) AND C2(3) Z COORDINATES (CM)
         VELY=C2(2)-C1(2)
         VELZ=C2(3)-C1(3)
 C
-      ELSEIF (NLTRT) THEN   ! NLTRT=.TRUE. => torus coordinates R,PHI,THETA. Option not ready.
+      ELSEIF (NLTRT) THEN   ! NLTRT=.TRUE.
+                            ! => torus coordinates R,PHI,THETA.
+                            ! Option not ready.
 C
 C  C1(1) AND C2(1) R COORDINATES IN CYLINDRICAL COORDINATES
 C  C1(2) AND C2(2) Z COORDINATES IN CYLINDRICAL COORDINATES
@@ -664,11 +668,11 @@ C
       IF (ILIIN(MSURF).LE.0) GOTO 14
 C     PERIODICITY (inspired by escape.f):
       IF (ILIIN(MSURF).GE.4) THEN
-      IF (NLTRC) THEN
+        IF (NLTRC) THEN
 !$OMP CRITICAL
-        CALL EIRENE_CHCTRC(X0,Y0,Z0,0,11)
+          CALL EIRENE_CHCTRC(X0,Y0,Z0,0,11)
 !$OMP END CRITICAL
-      ENDIF
+        ENDIF
         GOTO 14
       ENDIF
 C
@@ -762,7 +766,7 @@ C
         ELSEIF (NCHTAL(ICHORI).EQ.5) THEN
             CALL EIRENE_SIGHE (0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
         ELSEIF (NCHTAL(ICHORI).EQ.10) THEN
-          IFUSR=0  
+          IFUSR=0
           CALL EIRENE_SIGUSR(IFUSR,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,
      .                XD0,YD0,ZD0,XD1,YD1,ZD1)
         ELSEIF (NCHTAL(ICHORI).EQ.11) THEN
@@ -770,7 +774,7 @@ C
         ELSEIF (NCHTAL(ICHORI).EQ.12) THEN
           CALL EIRENE_SIGPLA(0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
         ELSEIF (NCHTAL(ICHORI).EQ.13) THEN
-          CALL EIRENE_SIGEIR(0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)           
+          CALL EIRENE_SIGEIR(0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
         ELSE
           CALL EIRENE_SIGTST(0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
         ENDIF
@@ -933,7 +937,7 @@ C  contribution to line-of-sight integral, segment no. jjj
           ELSEIF (NCHTAL(ICHORI).EQ.5) THEN
             CALL EIRENE_SIGHE (1,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
           ELSEIF (NCHTAL(ICHORI).EQ.10) THEN
-            IFUSR=1    
+            IFUSR=1
             CALL EIRENE_SIGUSR(IFUSR,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,
      .                  XD0,YD0,ZD0,XD1,YD1,ZD1)
           ELSEIF (NCHTAL(ICHORI).EQ.11) THEN
@@ -960,7 +964,7 @@ C     IF (ISRFCL.EQ.2) THEN
 C       CALL TIMCOL (...,IRET)
 C       IF (IRET .EQ. 1) GOTO 104
 C       IF (IRET .EQ. 2) GOTO 800
-C      ENDIF
+C     ENDIF
 c     IF (ISRFCL.EQ.3) CALL EIRENE_TORCOL (               *104)
       IF (ISRFCL.EQ.3) THEN
         CALL EIRENE_TORCOL (IRET)
@@ -1047,12 +1051,12 @@ C
       IF (ILIIN(MSURF).LE.0) GOTO 104
 C     PERIODICITY (inspired by escape.f):
       IF (ILIIN(MSURF).GE.4) THEN
-      IF (NLTRC) THEN
+        IF (NLTRC) THEN
 !$OMP CRITICAL
-         CALL EIRENE_CHCTRC(X0,Y0,Z0,0,11)
+          CALL EIRENE_CHCTRC(X0,Y0,Z0,0,11)
 !$OMP END CRITICAL
-      ENDIF
-      GOTO 104
+        ENDIF
+        GOTO 104
       ENDIF
 C
       IF (TRCSIG.AND.IFIRST.EQ.0) THEN
@@ -1082,13 +1086,13 @@ C       CALL SIGLINE (2,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,ICHORI)
       ELSEIF (NCHTAL(ICHORI).EQ.3) THEN
         CALL EIRENE_SIGRAD (2,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
       ELSEIF (NCHTAL(ICHORI).EQ.10) THEN
-C       IFUSR=2  
+C       IFUSR=2
 C       CALL SIGUSR(IFUSR,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,XD0,YD0,ZD0,
 C    .              XD1,YD1,ZD1)
       ELSEIF (NCHTAL(ICHORI).EQ.11) THEN
 C     CALL SIGLOS(2,JJJ,ZDS,DUM1,PSIG,DUM2,ARGST,XD0,YD0,ZD0)
       ELSEIF (NCHTAL(ICHORI).EQ.12) THEN
-C        CALL SIGPLA(2,JJJ,ZDS,DUM1,PSIG,DUM2,ARGST,XD0,YD0,ZD0)         
+C        CALL SIGPLA(2,JJJ,ZDS,DUM1,PSIG,DUM2,ARGST,XD0,YD0,ZD0)
       ELSEIF (NCHTAL(ICHORI).EQ.13) THEN
 C        CALL SIGEIR(2,JJJ,ZDS,DUM1,PSIG,DUM2,ARGST,XD0,YD0,ZD0)
       ELSE

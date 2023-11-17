@@ -4,12 +4,12 @@
       PUBLIC
 
       CONTAINS
-      
+
       SUBROUTINE EIRENE_INFCOP
       RETURN
       END SUBROUTINE EIRENE_INFCOP
-      
-      SUBROUTINE EIRENE_IF0COP(LFIXED,LSHRT)      
+
+      SUBROUTINE EIRENE_IF0COP(LFIXED,LSHRT)
       LOGICAL, INTENT(IN) :: LFIXED, LSHRT
       RETURN
       END SUBROUTINE EIRENE_IF0COP
@@ -18,23 +18,23 @@
       INTEGER, INTENT(IN) :: IENTRY
       RETURN
       END SUBROUTINE EIRENE_IF1COP
-      
+
       SUBROUTINE EIRENE_IF2COP(I1)
       INTEGER, INTENT(IN) :: I1
       RETURN
       END SUBROUTINE EIRENE_IF2COP
-  
+
       SUBROUTINE EIRENE_IF3COP(I1,LSTP,I2,I3,I4,I5)
       LOGICAL, INTENT(IN) :: LSTP
       INTEGER, INTENT(IN) :: I1, I2, I3, I4, I5
       RETURN
       END SUBROUTINE EIRENE_IF3COP
-      
+
       SUBROUTINE EIRENE_IF4COP
       RETURN
       END SUBROUTINE EIRENE_IF4COP
 
-      
+
 C> \brief Any property requiring hand-over in parallel part.
 C>
 C> This interfacing routine is called in the parallel part of EIRENE
@@ -62,7 +62,7 @@ C> transfer to the external code
       END SUBROUTINE EIRENE_INFCOP_POST_STRATUM
 
 C> \brief Prepare some data prior to calculation of strata but after
-C> the distribution of processors has been updated 
+C> the distribution of processors has been updated
 C>
       SUBROUTINE EIRENE_INFCOP_PRE_STRATA
 
@@ -74,5 +74,5 @@ C>
 
       RETURN
       END SUBROUTINE EIRENE_IF3COP_SUM
-      
+
       END MODULE EIRMOD_INFCOP

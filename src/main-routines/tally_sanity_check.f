@@ -16,16 +16,16 @@
       integer, intent(in) :: istra
 
       if (nlspcscl_atm) then
-        if (lpaat) 
-     .    call eirene_calc_tally_error(natmi, natm, natmi, 
+        if (lpaat)
+     .    call eirene_calc_tally_error(natmi, natm, natmi,
      .                                 paati(:,istra), 'PAATI')
-        if (lpaml) 
+        if (lpaml)
      .    call eirene_calc_tally_error(nmoli, nmol, natmi,
      .                                  pamli(:,istra), 'PAMLI')
-        if (lpaio) 
+        if (lpaio)
      .    call eirene_calc_tally_error(nioni, nion, natmi,
      .                                  paioi(:,istra), 'PAIOI')
-        if (lpapht) 
+        if (lpapht)
      .    call eirene_calc_tally_error(nphoti, nphot, natmi,
      .                                  paphti(:,istra),'PAPHTI')
         IF (lprfaat)
@@ -43,16 +43,16 @@
       end if
 
       if (nlspcscl_mol) then
-        if (lpmat) 
-     .    call eirene_calc_tally_error(natmi, natm, nmoli, 
+        if (lpmat)
+     .    call eirene_calc_tally_error(natmi, natm, nmoli,
      .                                 pmati(:,istra), 'PMATI')
-        if (lpmml) 
+        if (lpmml)
      .    call eirene_calc_tally_error(nmoli, nmol, nmoli,
      .                                  pmmli(:,istra), 'PMMLI')
-        if (lpmio) 
+        if (lpmio)
      .    call eirene_calc_tally_error(nioni, nion, nmoli,
      .                                  pmioi(:,istra), 'PMIOI')
-        if (lpmpht) 
+        if (lpmpht)
      .    call eirene_calc_tally_error(nphoti, nphot, nmoli,
      .                                  pmphti(:,istra),'PMPHTI')
         IF (lprfmat)
@@ -70,16 +70,16 @@
       end if
 
       if (nlspcscl_ion) then
-        if (lpiat) 
-     .    call eirene_calc_tally_error(natmi, natm, nioni, 
+        if (lpiat)
+     .    call eirene_calc_tally_error(natmi, natm, nioni,
      .                                 piati(:,istra), 'PIATI')
-        if (lpiml) 
+        if (lpiml)
      .    call eirene_calc_tally_error(nmoli, nmol, nioni,
      .                                  pimli(:,istra), 'PIMLI')
-        if (lpiio) 
+        if (lpiio)
      .    call eirene_calc_tally_error(nioni, nion, nioni,
      .                                  piioi(:,istra), 'PIIOI')
-        if (lpipht) 
+        if (lpipht)
      .    call eirene_calc_tally_error(nphoti, nphot, nioni,
      .                                  piphti(:,istra),'PIPHTI')
         IF (lprfiat)
@@ -98,16 +98,16 @@
 
 
       if (nlspcscl_phot) then
-        if (lpphat) 
-     .    call eirene_calc_tally_error(natmi, natm, nphoti, 
+        if (lpphat)
+     .    call eirene_calc_tally_error(natmi, natm, nphoti,
      .                                 pphati(:,istra), 'PPHATI')
-        if (lpphml) 
+        if (lpphml)
      .    call eirene_calc_tally_error(nmoli, nmol, nphoti,
      .                                  pphmli(:,istra), 'PPHMLI')
-        if (lpphio) 
+        if (lpphio)
      .    call eirene_calc_tally_error(nioni, nion, nphoti,
      .                                  pphioi(:,istra), 'PPHIOI')
-        if (lpphpht) 
+        if (lpphpht)
      .    call eirene_calc_tally_error(nphoti, nphot, nphoti,
      .                                  pphphti(:,istra),'PPHPHTI')
         IF (lprfphat)
@@ -125,7 +125,7 @@
       end if
 
       return
-      
+
       contains
 
       subroutine eirene_calc_tally_error(n1, n1d, n2, ar, arname)
@@ -149,11 +149,11 @@
           write (iunout,*) 'INDEX = ',i
           write (iunout,*) 'ERROR = ',error
           write (iunout,*) 'REL. ERROR = ',rel_err
-          write (iunout,'(a,a1,i2,a6,es25.16)') 
+          write (iunout,'(a,a1,i2,a6,es25.16)')
      .                     arname,'(',i,'0) = ',p2(i,0)
-          write (iunout,'(a4,a,a1,i2,a2,i2,a4,es25.16)') 
+          write (iunout,'(a4,a,a1,i2,a2,i2,a4,es25.16)')
      .                     'sum(',arname,'(',i,'1:',n2,') = ',sm
-        end if       
+        end if
       end do
 
       return

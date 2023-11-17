@@ -1,6 +1,6 @@
       MODULE EIRMOD_CLMSUR
-cdr Only for plotting, in case of 
-cdr eirene proprietary options. Should be removed, when plot_dummy is used.       
+cdr Only for plotting, in case of
+cdr eirene proprietary options. Should be removed, when plot_dummy is used.
 
       USE EIRMOD_PRECISION
 

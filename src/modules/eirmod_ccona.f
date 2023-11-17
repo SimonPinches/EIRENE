@@ -1,7 +1,7 @@
 C   6.12.05   AU_TO_CM2 added here (and removed from fpatha, veloel)
 C   1.01.06   hplnk_bar = hplnk/2Pi added here (and set in setcon.f)
 C  22.12.06   Periodic Table of Elements (PTE) introduced.
-C  16.01.06   Functions SET_PTE_ELEMENT and FIND_PTE_ELEMENT 
+C  16.01.06   Functions SET_PTE_ELEMENT and FIND_PTE_ELEMENT
 C             identify a chemical element in the PTE
 C             and returns the element number, resp.
 !  20.06.07   constant NCONA = number of constants in module introduced
@@ -14,9 +14,9 @@ C             and made private (Aug.20)
 
       PRIVATE
 
-      PUBLIC :: EIRENE_ALLOC_CCONA, 
-     P          PTE_TYPE, 
-     P          EIRENE_SET_PTE_ELEMENT, EIRENE_FIND_PTE_ELEMENT, 
+      PUBLIC :: EIRENE_ALLOC_CCONA,
+     P          PTE_TYPE,
+     P          EIRENE_SET_PTE_ELEMENT, EIRENE_FIND_PTE_ELEMENT,
      P          EIRENE_BROADCAST_CCONA
 
 cd  Periodic Table Element (PTE):
@@ -149,14 +149,14 @@ cdr unused (Jan. 2020)
       USE EIRMOD_MPI
       INTEGER, INTENT(IN) :: ME
       INTEGER :: IER
-      
+
       IF (ME /= 0) CALL EIRENE_ALLOC_CCONA
 
       CALL MPI_BCAST (RCONA,NCONA,MPI_REAL8,0,MPI_COMM_WORLD,ier)
-      
+
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       RETURN
       END SUBROUTINE EIRENE_BROADCAST_CCONA
-      
+
       END MODULE EIRMOD_CCONA

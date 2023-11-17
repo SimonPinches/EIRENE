@@ -24,10 +24,9 @@
       if (levgeo /= 4) return
       IF (NOPTIM < NR1ST) return
 
-
 ! by default switch off view to additional surfaces
       IF (NLIMPB >= NLIMPS) THEN
-         IGJUM3 = 1
+        IGJUM3 = 1
       ELSE
         NO=NOT(0)
 ! NUMBER OF INTEGERS USED TO STORE SURFACE INFORMATION
@@ -62,7 +61,7 @@
           ic2 = EIRENE_LEARC1(P2(1,ilim),P2(2,ilim),P2(3,ilim),IS2,1,
      .               NR1STM,.FALSE.,.FALSE.,0,'CUT_ADS_CELL')
 
-! check if additional surface starts or end at a cornerpoint of a triangle
+! check if additional surface starts or end at a corner point of a triangle
           ihit1 = 0
           ihit2 = 0
 
@@ -100,11 +99,11 @@
           vy = p2(2,ilim) - p1(2,ilim)
 
           if (lhit1) then
-! startpoint on cornerpoint
+! start point on corner point
             cur1 => coortri(ihit1)%ptri
             izell = cur1%notri
           else
-! startpoint inside triangle
+! start point inside triangle
             izell = ic1
           end if
 
@@ -153,7 +152,7 @@ C     SEITENNUMMER DES NEUEN DREIECKS
                   IGJUM3(IZELL,ILIM) = 0
                 ELSE
                   CALL EIRENE_BITSET
-     .  (IGJUM3,0,NOPTIM,IZELL,ILIM,0,NBITS)
+     .             (IGJUM3,0,NOPTIM,IZELL,ILIM,0,NBITS)
                 END IF
                 cycle lalong
               end if

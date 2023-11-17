@@ -27,7 +27,7 @@ C     DATA TL/72*'='/
       IF (IFILE.GT.0) THEN
         DO IST=1,NSTREAM
           IF (IFILE.EQ.ISTREAM(IST)) THEN
-            WRITE (iunout,*) 'ERROR IN INPUT BLOCK 5, INDPRO=4 '
+            WRITE (iunout,*) 'ERROR IN INPUT BLOCK 5, INDPRO=4'
             WRITE (iunout,*) 'STREAM NO. ',IFILE,' IS NOT AVAILABLE'
             GOTO 11111
           ENDIF

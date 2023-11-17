@@ -3,9 +3,9 @@
 !  sep-05: specifications for databases added, ndbnames, dbhandle, dbfname
 !  jul-06: database handle added for ADAS
 !  20.06.07: deallocate tdmpar
-cdr oct 18 : "density models" TDMPAR are now fully characterized 
+cdr oct 18 : "density models" TDMPAR are now fully characterized
 cdr          by reaction identifyer IRC and donor state
-cdr          isp,itp,istr, 
+cdr          isp,itp,istr,
 cdr          rather than by requiring a full reaction deck and executing SLREAC.f in here.
 cdr dec 18 : remove obsolete photon-reflection data files graphite_ext and mo_ext
 cdr aug 19 : add legal filename: AMMONX (ifile=12)
@@ -55,7 +55,7 @@ CDR FOR DIRECT TRANSFER OF INFO FROM FIND_PARAM.F INTO INPUT.F
 
 !pb   for NBMLT option, default .true.
       LOGICAL, PUBLIC, SAVE :: LCPYPRO(12)
-      
+
       LOGICAL, PUBLIC, POINTER, SAVE ::
      L NLMACH, NLPITCH, NLKELV, NLMLTI, NLMLV
 
@@ -67,9 +67,9 @@ CDR FOR DIRECT TRANSFER OF INFO FROM FIND_PARAM.F INTO INPUT.F
      R              DVAL, TVAL,
      R              VXVAL, VYVAL, VZVAL,
      R              DFACTOR, TFACTOR, VFACTOR
-cdr  NRE contributions to field particle, single (effective temperatur)
-cdr  currently NRE GT 1 available only for densitymodel "COLRAD",
-cdr  all others: NRE=1  (to be generalized still e.g. for densitymodel "CORONA".  
+cdr  NRE contributions to field particle, single (effective temperature)
+cdr  currently NRE GT 1 available only for density model "COLRAD",
+cdr  all others: NRE=1 (to be generalized still e.g. for density model "CORONA").
         INTEGER :: NRE
         INTEGER, POINTER :: ISP(:), ITP(:), ISTR(:), IRC(:)
       END TYPE
@@ -86,14 +86,14 @@ cdr  all others: NRE=1  (to be generalized still e.g. for densitymodel "CORONA".
       LOGICAL, PUBLIC, SAVE :: LDBREAD(NDBNAMES)
 cpg
       character(400), public, save :: MASTER_PATH
-cpg 
-      
+cpg
+
 C> Default output file prefix
 #ifndef HPUX
       CHARACTER(5), PUBLIC, PARAMETER :: FORT    = 'FORT.'
       CHARACTER(5), PUBLIC, PARAMETER :: FORT_LC = 'fort.'
 #else
-      CHARACTER(3), PUBLIC, PARAMETER :: FORT = 'FTN'
+      CHARACTER(3), PUBLIC, PARAMETER :: FORT    = 'FTN'
       CHARACTER(3), PUBLIC, PARAMETER :: FORT_LC = 'ftn'
 #endif
 
@@ -106,7 +106,7 @@ C> Default output file prefix
 
       NCINIT=42+36*NPLS
       MCINIT=12+3+NSTRA
-      LCINIT=5   !dr: unused, so far.
+      LCINIT=5    !dr: unused, so far.
 
       ALLOCATE (RCINIT(NCINIT))
       ALLOCATE (ICINIT(MCINIT))
@@ -122,7 +122,8 @@ cpg
 
       WRITE (IUNMEM,'(A,T25,I15)')
      .      ' CINIT ',NCINIT*8 + MCINIT*4 +
-     .                NPLS*LEN(CDENMODEL(1))  !dr  here should be added also LCINIT*.
+     .                NPLS*LEN(CDENMODEL(1))
+!dr  here should be added also LCINIT*.
 
       EP1IN  => RCINIT(1)
       EP1CH  => RCINIT(2)
@@ -366,13 +367,10 @@ cdr  e.g. corona, colrad, const, saha, planck, .....
         CALL MPI_BCAST(NREF,1,MPI_INTEGER,0,
      .                 MPI_COMM_WORLD,ier)
 
-csw 15apr2011
+cdr
         if(.not.allocated(ihelp)) then
-csw
-      	  ALLOCATE (IHELP(4*NREF))
-csw
+          ALLOCATE (IHELP(4*NREF))
         endif
-csw
 
         IF (ME == 0) THEN
           RHELP(1) = TDMPAR(IPLS)%TDM%G_BOLTZ
@@ -409,10 +407,10 @@ csw
           TDMPAR(IPLS)%TDM%A_CORONA = RHELP(3)
           TDMPAR(IPLS)%TDM%G_PLANCK = RHELP(4)
 
-          TDMPAR(IPLS)%TDM%ISP(1:NREF) = IHELP(1:NREF)
-          TDMPAR(IPLS)%TDM%ITP(1:NREF) = IHELP(1+NREF:2*NREF)
+          TDMPAR(IPLS)%TDM%ISP(1:NREF)  = IHELP(1:NREF)
+          TDMPAR(IPLS)%TDM%ITP(1:NREF)  = IHELP(1+NREF:2*NREF)
           TDMPAR(IPLS)%TDM%ISTR(1:NREF) = IHELP(1+2*NREF:3*NREF)
-          TDMPAR(IPLS)%TDM%IRC(1:NREF) = IHELP(1+3*NREF:4*NREF)
+          TDMPAR(IPLS)%TDM%IRC(1:NREF)  = IHELP(1+3*NREF:4*NREF)
         END IF
 
         DEALLOCATE (IHELP)

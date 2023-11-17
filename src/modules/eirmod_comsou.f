@@ -20,7 +20,7 @@ cdr  for velocity space distributions.
      P          EIRENE_INIT_COMSOU, EIRENE_BROADCAST_COMSOU
 
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
-     R        RCMSOU(:,:)
+     R          RCMSOU(:,:)
 
       REAL(DP), PUBLIC, POINTER, SAVE ::
      R FLUX(:),     SCALV(:),    RAYFRAC(:),
@@ -283,7 +283,7 @@ cdr  should go into LCMSOU
 c  some array A(0:NSTRA)) that include sum over strata
       CALL MPI_BCAST (NLSYMP,NSTRAP,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NLSYMT,NSTRAP,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
-      
+
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       RETURN

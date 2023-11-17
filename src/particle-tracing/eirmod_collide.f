@@ -11,7 +11,7 @@ C 20.3.07: PI reactions revised
 
 cdr oct 14.14 some hard-wired additional tallies ADDV removed again
 cdr oct.21.14 evaluate v-parallel of incident particle only in case of need
-c             i.e.  momentum collision estimators, or generation limit
+c             i.e. momentum collision estimators, or generation limit
 c             otherwise: avoid calls to bfield.f
 c
 cdr  5. 8.15: ARGUMENTS ADDED TO VECUSR
@@ -26,8 +26,8 @@ cdr         :  see also corresponding corrections/changes in update for tracklen
 cdr DEC. 15 :  bulk ion energy estimators: species-resolved.
 cdr            not ready: esigei(4, ...), esigpi(4,...) must be species-resolved.
 
-cdr            tbd:  check setting of iestm..flags for collision estimators.
-cdr                  probably not correct (outdated).
+cdr            tbd: check setting of iestm..flags for collision estimators.
+cdr                 probably not correct (outdated).
 
 cdr Aug 16:    bug fix: IPPLEI --> IPPLPI at one instance
 cdr Nov 16:
@@ -43,13 +43,13 @@ c   cascading with EI: nlevel =nlevel+ptot-1 (because one particle continues)
 c   cascading with CX: define analogue PTOT
 c   cascading with PI: identical to EI ??
 
-cdr Nov. 16:   cflag(7,3) --> cflag(7,mstor0)
-cdr            (was already corrected much earlier in SOLPS_4.3 by VK,
-cdr             then correction somehow lost in more recent EIRENE branches)
-cdr Jan. 17:    started to separate more clearly the (unfinished) NLCASCAD option from active code
-C               Done for COLATM and EI processes.
+cdr Nov. 16: cflag(7,3) --> cflag(7,mstor0)
+cdr          (was already corrected much earlier in SOLPS_4.3 by VK,
+cdr          then correction somehow lost in more recent EIRENE branches)
+cdr Jan. 17: started to separate more clearly the (unfinished) NLCASCAD option from active code
+C            Done for COLATM and EI processes.
 C            wminv activated in colmol for EI processes (analog to colatm)
-cdr May 17: some spelling error corrections in comments adopted from ITER branch
+cdr May  17: some spelling error corrections in comments adopted from ITER branch
 c            AE: analog, --> BE: analogue, etc..
 cdr Nov. 17: remove call to subr.store  (flag NLSTOR: out)
 cdr          comments for further unification of colatm,colmol,colion routines
@@ -61,7 +61,6 @@ cdr 2023   : absorption biassing generalized, no also for CX.
 cdr          tbd: for PI, EL, processes
 
       MODULE EIRMOD_COLLIDE
-
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -90,27 +89,28 @@ cdr          tbd: for PI, EL, processes
       IMPLICIT NONE
 
       PRIVATE
-      
+
       PUBLIC :: EIRENE_COLLIDE
 
       REAL(DP) :: DUMT(3), DUMV(3)
       REAL(DP) :: SIGSUM, WGHTO, FRSTP, SCNDP, PTOT,
      .          VELXO, VELYO, VELZO, VELO, E0O,
-     .          BX, BY, BZ, V0_PARBO,
+     .          BX, BY, BZ,
      .          BXN(0:2), BYN(0:2), BZN(0:2),
      .          V0_O(0:2), M0_O(0:2), VP_O(0:2), MP_O(0:2),
      .          EDEL, VDEL, SIGNUM,
-     .          V0_PARB,
+     .          V0_PARB, V0_PARBO,
      .          V0_N(0:2), M0_N(0:2), VP_N(0:2), MP_N(0:2),
      .          FP, FLTEST, ZEP3, VELQ,
-     .          VX, VY, VZ, VPLASP, RMXIO, BF, ZEP
+     .          VX, VY, VZ, VPLASP,
+     .          RMXIO, BF, ZEP
       REAL(DP) :: SIG_ELIM, SIG_TOT_N, SIG_TOT_O, SIG_TEST
       INTEGER ::
      .           IXCX, IXEI, IXPI, IXEL, !IXPH,
      .           IOLD, NOLD, INEW, NNEW, ITYPO, ITYPN, IPLSO,
      .           IRCX, IREI, IRPI, IREL, !IRPH,
      .           IBGK, IP, NFLAG,
-     .           IATMN, IMOLN, IIONN, IPLSN, 
+     .           IATMN, IMOLN, IIONN, IPLSN,
      .           NCLLO, IPLSV, IPL,
      .           IPTYPO, IPTYPN
 
@@ -121,7 +121,7 @@ CDR         or integer (1/2 particle possible?)
       INTEGER, ALLOCATABLE :: NAMIEI(:),NAMIPI(:)
       CHARACTER(50) :: CCOLEST
 
-      SAVE  
+      SAVE
 
 cym IAPH, RMMIO, RMIIO and IRPH removed during merge
 !$OMP THREADPRIVATE (dumt,dumv,
@@ -130,12 +130,14 @@ cym IAPH, RMMIO, RMIIO and IRPH removed during merge
 !$OMP& BXN, BYN, BZN, V0_O, M0_O,
 !$OMP& EDEL, VDEL, SIGNUM, V0_PARB, V0_N, M0_N, VP_N, MP_N,
 !$OMP& FP, FLTEST, ZEP3, VELQ,
-!$OMP& VX, VY, VZ, VPLASP, RMXIO, BF, ZEP,
+!$OMP& VX, VY, VZ, VPLASP,
+!$OMP& RMXIO, BF, ZEP,
 !$OMP& SIG_ELIM, SIG_TOT_N, SIG_TOT_O, SIG_TEST,
-!$OMP& IXCX,IXEI,IXPI,IXEL,IOLD,NOLD,INEW,NNEW,ITYPO,ITYPN,IPLSO,
-!$OMP& IRCX,IREI,IRPI,IREL,
-!$OMP& IBGK, IP, NFLAG, IATMN, IMOLN, IIONN, IPLSN, NCLLO, IPLSV, IPL,
-!$OMP& NAMIEI,NAMIPI,IPTYPO,IPTYPN,CCOLEST)
+!$OMP& IXCX, IXEI, IXPI, IXEL,
+!$OMP& IOLD, NOLD, INEW, NNEW, ITYPO, ITYPN, IPLSO,
+!$OMP& IRCX, IREI, IRPI, IREL,
+!$OMP& IBGK, IP, NFLAG, IATMN, IMOLN, IIONN, IPLSN, IPLSV, IPL, NCLLO,
+!$OMP& NAMIEI, NAMIPI, IPTYPO, IPTYPN, CCOLEST)
 
       contains
 
@@ -158,12 +160,12 @@ C          KK    , GLOBAL REACTION NUMBER
 C  LGPART: TRUE,  TRAJECTORY CONTINUES, AT LEAST FOR POST-COLL. SCORING.
 C  LGPART: FALSE, TRAJECTORY STOPS, NO FURTHER SCORING
 C
-      REAL(DP), INTENT(IN) :: CFLAG(7,MSTOR0),DIST
+      REAL(DP), INTENT(IN) :: CFLAG(7,MSTOR0), DIST
       INTEGER, INTENT(OUT) :: COLTYP
       INTEGER, INTENT(OUT) :: KK
-      INTEGER :: NEII_RED,LGEI_RED(0:NREI)
+      INTEGER :: NEII_RED, LGEI_RED(0:NREI)
       REAL(DP) :: ZEP1
-      INTEGER :: I,J
+      INTEGER :: I, J
       REAL(DP), POINTER :: PXX2(:,:), PXPL2(:,:), PXAT2(:,:),
      .                     PXML2(:,:), PXIO2(:,:)
 
@@ -190,18 +192,18 @@ cdr  needed only in case if(any(iestab(:,2) .ne. 0)), "ab" stands for ei,cx,pi,e
 
       E0O=E0
       WGHTO=WEIGHT
-
+c
       IOLD=IXSPZ
       NOLD=NMETOFF+IXSPZ
       ITYPO=ITYP
 
       IF (ITYPO.EQ.3) THEN
-cdr  called from folion 
+cdr  called from folion
         IPTYPO=1
       ELSE
 cdr  called from folneut
         IPTYPO=0
-      ENDIF      
+      ENDIF
 
       IF (IMETCL(NCELL) == 0) THEN
         NCLMT = NCLMT+1
@@ -290,7 +292,7 @@ C  FIND TYPE OF ELECTR. IMPACT COLLISION PROCESS: IREI
   240   CONTINUE
         IREI=LGEI_RED(NEII_RED)
   245   CONTINUE
-C       GET GLOBAL REACTION NUMBER          
+C       GET GLOBAL REACTION NUMBER
         KK = NREAEI(IREI)
 C
 C  CALCULATE WEIGHT OF THE NEXT GENERATION PARTICLE FOR PROCESS IREI
@@ -309,11 +311,11 @@ C  NET PRE- AND POST-COLLISION ESTIMATOR FOR EXPL AND EXEL
 C  score loss of incoming test particle energy
           IF (LEXX) THEN
 !$OMP ATOMIC
-             EXX(NCELL)=EXX(NCELL)-WEIGHT*E0
+            EXX(NCELL)=EXX(NCELL)-WEIGHT*E0
           ENDIF
 
-cdr EXPL, EXEL       :  SCORE NET CHANGES HERE.
-cdr EXAT, EXML, EXIO :  SCORE EXACT POST-COLLISION GAINS LATER.
+cdr EXPL, EXEL       : SCORE NET CHANGES HERE.
+cdr EXAT, EXML, EXIO : SCORE EXACT POST-COLLISION GAINS LATER.
           IF (LEXPL) THEN
             DO IP=1,IPPLEI(IREI,0)
 cdr: This is incorrect. esigei must be split into ipl secondaries.
@@ -368,8 +370,8 @@ cdr
 c    splitting of post-collision particles, i.e. create a true cascade
 
 cdr  ANALOGUE SAMPLING, I.E. SPLITTING, IN CASE OF MORE THAN ONE SECONDARY.
-        IF (NLEVEL+PTOT <= MAXLEV) THEN   ! there is still storage for splitting
-
+        IF (NLEVEL+PTOT <= MAXLEV) THEN   ! there is still storage
+                                          ! for splitting
 cdr
           IF (.NOT.ALLOCATED(NAMIEI)) THEN
             ALLOCATE(NAMIEI(NSPAMI))
@@ -380,7 +382,8 @@ cdr  this NAMIEI is the underlying discrete pdf, which led to the normalized cum
 cdr  NAMIEI is not normalized. The entries are the number of secondaries,
           NAMIEI = 0
 
-          NAMIEI(1:NSPH)         = 0    !  PPHEI(IREI,1:NPHOTI) IS NOT YET SET IN XSTEI.F
+          NAMIEI(1:NSPH)         = 0    !  PPHEI(IREI,1:NPHOTI)
+                                        !  IS NOT YET SET IN XSTEI.F
           NAMIEI(NSPH+1:NSPA)    = INT(PATEI(IREI,1:NATMI))
           NAMIEI(NSPA+1:NSPAM)   = INT(PMLEI(IREI,1:NMOLI))
           NAMIEI(NSPAM+1:NSPAMI) = INT(PIOEI(IREI,1:NIONI))
@@ -390,17 +393,19 @@ cdr  NAMIEI is not normalized. The entries are the number of secondaries,
 
 cdr  generate secondaries, one by one, call veloei, and store them on splitting arrays
 
-          DO I = NSPAMI, NSPH+1, -1  ! LOOP OVER ALL POTENTIAL SECONDARY SPECIES 'I'
-            DO J=1, NAMIEI(I)   ! THERE ARE NAMIEI(I) COPIES OF THIS SECONDARY 'I'
+          DO I = NSPAMI, NSPH+1, -1  ! LOOP OVER ALL POTENTIAL
+                                     ! SECONDARY SPECIES 'I'
+            DO J=1, NAMIEI(I)   ! THERE ARE NAMIEI(I) COPIES
+                                ! OF THIS SECONDARY 'I'
 C  FIND A "RANDOM NUMBER" TO ENFORCE "SAMPLING" OF THIS PARTICULAR SPECIES 'I' IN VELOEI
 cdr
 cdr WIP: unclear code here. Still not unravelled.
 cdr die drei zeilen hier vor: ggfls. sehr lange do loop, meist aber nur 1 oder hoechstens 2 treffer
-cdr (1 oder 2 test folgeteilchen). Grund in der naechsten zeile soll ggfls 2 mal das gleiche
+cdr (1 oder 2 test folgeteilchen). Grund: in der naechsten zeile soll ggfls 2 mal das gleiche
 cdr teilchen durch zep ausgewaehlt werden.
 cdr
 cdr alternative: p2nei folgeteilchen gibt es. anstatt zep zu setzen: nur loop ueber diese, deren
-cdr ispz dann fest mitgeben, und in veloel nicht mehr auswürfeln
+cdr ispz dann fest mitgeben, und in veloel nicht mehr auswuerfeln
 
               ZEP = 0.5_DP * (P2ND(IREI,I-1)+P2ND(IREI,I))
 
@@ -418,7 +423,7 @@ C  NUMBER OF NODES AT THIS LEVEL
               NODES(NLEVEL)=2  !  ONE PARTICLE SCORE IN EACH LEVEL
 
               IF (NLTRC) THEN
-                WRITE (IUNOUT,*) 'SPLITTING IN COLLIDE, EI PROCESS '
+                WRITE (IUNOUT,*) 'SPLITTING IN COLLIDE, EI PROCESS'
                 WRITE (IUNOUT,*) 'STORE ', TEXTS(ISPZ)
               ENDIF
             END DO
@@ -452,7 +457,7 @@ CDR:  (NORMAL) NON-CASCADING GAME AT EI PROCESSES
 
         ITYPN=ITYP
         IF (ITYP.EQ.3) THEN
-cdr  return to folion 
+cdr  return to folion
           IPTYPN=1
         ELSE
 cdr  return to folneut
@@ -502,13 +507,14 @@ C
 C  CHARGE-EXCHANGE:
 C
         IF (NLTRC) THEN
-!$OMP CRITICAL              
+!$OMP CRITICAL
           CALL EIRENE_CHCTRC(X0,Y0,Z0,16,6)
 !$OMP END CRITICAL
         ENDIF
 C
 C   FIND CX PROCESS IRCX AND SPECIES INDEX IPLS OF INCIDENT BULK ION
         SIGSUM=SIGEIT
+
         DO 271 IXCX=1,NXCXIM
           IRCX=LGXCX(IXCX,0)
           IPLS=LGXCX(IXCX,1)
@@ -518,7 +524,7 @@ C   FIND CX PROCESS IRCX AND SPECIES INDEX IPLS OF INCIDENT BULK ION
         IRCX=LGXCX(NXCXI,0)
         IPLS=LGXCX(NXCXI,1)
   272   CONTINUE
-C       GET GLOBAL REACTION NUMBER          
+C       GET GLOBAL REACTION NUMBER
         KK = NREACX(IRCX)
 
         IPLSO=IPLS
@@ -627,7 +633,7 @@ C  FOLLOW FIRST SECONDARY, SPEED FROM BULK POPULATION
 
           ITYPN=ITYP
           IF (ITYPN.EQ.3) THEN
-cdr  return to folion 
+cdr  return to folion
             IPTYPN=1
           ELSE
 cdr  return to folneut
@@ -728,6 +734,7 @@ C  IATMN: ATOM SPECIES AFTER CX
                   LMETSP2(IATMN,IOLD) = .TRUE.
                 END IF
               END IF
+
               IF (N2NDX(IRCX,1).EQ.4) THEN
 C  IPLSN: ION SPECIES AFTER CX
                 IPLSN=N2NDX(IRCX,2)
@@ -739,7 +746,7 @@ C  IPLSN: ION SPECIES AFTER CX
                     PXPL2(1:NPLS,0:NDXX) => PXPL(:,NCELL)
 !$OMP ATOMIC
                     PXPL2(IPLSN,IOLD)=PXPL2(IPLSN,IOLD)+WGHTO
-                    LMETSP2(1:NPLS,0:NDXX) => 
+                    LMETSP2(1:NPLS,0:NDXX) =>
      .                      LMETSP(NTS_PXPLA:NTS_PXPLE)
                     LMETSP2(IPLSN,0) = .TRUE.
                     LMETSP2(IPLSN,IOLD) = .TRUE.
@@ -947,7 +954,7 @@ C  FOLLOW 2ND SECONDARY, SPEED OF PREVIOUS TEST PARTICLE
 
           ITYPN=ITYP
           IF (ITYPN.EQ.3) THEN
-cdr  return to folion 
+cdr  return to folion
             IPTYPN=1
           ELSE
 cdr  return to folneut
@@ -1046,7 +1053,7 @@ C   FIND IREL, AND SPECIES INDEX IPLS OF BULK (ION) COLLISION PARTNER
         IREL=LGXEL(NXELI,0)
         IPLS=LGXEL(NXELI,1)
   282   CONTINUE
-C       GET GLOBAL REACTION NUMBER          
+C       GET GLOBAL REACTION NUMBER
         KK = NREAEL(IREL)
 
         IPLSV=MPLSV(IPLS)
@@ -1158,7 +1165,7 @@ C   FIND INDEX OF THAT ION IMPACT COLLISION
         IRPI=LGXPI(NXPII,0)
         IPLS=LGXPI(NXPII,1)
   262   CONTINUE
-C       GET GLOBAL REACTION NUMBER          
+C       GET GLOBAL REACTION NUMBER
         KK = NREAPI(IRPI)
 C
 C  CALCULATE WEIGHT OF THE NEXT GENERATION PARTICLE
@@ -1179,11 +1186,11 @@ C  score loss of incoming test particle energy
             EXX(NCELL)=EXX(NCELL)-WEIGHT*E0
           ENDIF
 
-cdr EXPL, EXEL       :  SCORE NET CHANGES HERE.
-cdr EXAT, EXML, EXIO :  SCORE EXACT GAINS LATER.
+cdr EXPL, EXEL       : SCORE NET CHANGES HERE.
+cdr EXAT, EXML, EXIO : SCORE EXACT GAINS LATER.
           IF (LEXPL) THEN
             DO IP=1,IPPLPI(IRPI,0)
-cdr:  this is incorrect. esigpi must be split into ipl secondaries
+cdr: this is incorrect. esigpi must be split into ipl secondaries
               IPL=IPPLPI(IRPI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
 !$OMP ATOMIC
@@ -1224,7 +1231,8 @@ C
 
 Cdr  PTOT=0,1,2,etc..., = integer,  number of next generation particles
 
-        IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEV)) THEN  ! PI PROCESS CASCADING
+        IF (NLCASCAD .AND. (NLEVEL+PTOT <= MAXLEV)) THEN
+          ! PI PROCESS CASCADING
 
           IF (.NOT.ALLOCATED(NAMIPI)) THEN
             ALLOCATE(NAMIPI(NSPAMI))
@@ -1280,7 +1288,7 @@ C  NUMBER OF NODES AT THIS LEVEL
 
         ITYPN=ITYP
         IF (ITYPN.EQ.3) THEN
-cdr  return to folion 
+cdr  return to folion
           IPTYPN=1
         ELSE
 cdr  return to folneut
@@ -1379,7 +1387,7 @@ c  Mass of post-collision test particle is the same as pre-collision mass RMASSX
       IF (LPGENX.OR.LEGENX.OR.LVGENX) LMETSP(NOLD)=.TRUE.
 
       IF (NLTRC) THEN
-!$OMP CRITICAL                
+!$OMP CRITICAL
         CALL EIRENE_CHCTRC(X0,Y0,Z0,16,16)
 !$OMP END CRITICAL
       ENDIF

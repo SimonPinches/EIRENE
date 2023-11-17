@@ -45,7 +45,7 @@ module eirmod_calstr_buffered
   !> number of buffers (1 double and 1 logical)
   integer, parameter :: N_BUFFERS = 2
   !> Identifies the communication operations, one request object for each buffer
-  integer, save, dimension(N_BUFFERS) :: calstr_request =  MPI_REQUEST_NULL
+  integer, save, dimension(N_BUFFERS) :: calstr_request = MPI_REQUEST_NULL
 
   real(kind=dp), allocatable, dimension(:) :: calstr_buffer_d
   integer :: pos_d !< position in the double precision buffer
@@ -167,6 +167,7 @@ module eirmod_calstr_buffered
 
   subroutine calstr_pack_d0(buff)
     real(kind=dp), intent(in) :: buff
+
     if (.not. allocated(calstr_buffer_d)) then
       write(iunout,*) 'Error, calstr_buffer_d not allocated'
       call eirene_exit_own(1)
@@ -199,6 +200,7 @@ module eirmod_calstr_buffered
 
   subroutine calstr_unpack_d0(buff)
     real(kind=dp), intent(out) :: buff
+
     if (.not. allocated(calstr_buffer_d)) then
       write(iunout,*) 'Error, calstr_buffer not allocated'
       call eirene_exit_own(1)
@@ -215,6 +217,7 @@ module eirmod_calstr_buffered
   subroutine calstr_unpack_d(n, buff)
     integer, intent(in) :: n
     real(kind=dp), dimension(*) :: buff
+
     if (.not. allocated(calstr_buffer_d)) then
       write(iunout,*) 'Error, calstr_buffer not allocated'
       call eirene_exit_own(1)
@@ -230,6 +233,7 @@ module eirmod_calstr_buffered
 
   subroutine calstr_pack_l0(buff)
     logical, intent(in) :: buff
+
     if (.not. allocated(calstr_buffer_l)) then
       write(iunout,*) 'Error, calstr_buffer_l not allocated'
       call eirene_exit_own(1)
@@ -262,6 +266,7 @@ module eirmod_calstr_buffered
 
   subroutine calstr_unpack_l0(buff)
     logical, intent(out) :: buff
+
     if (.not. allocated(calstr_buffer_l)) then
       write(iunout,*) 'Error, calstr_buffer not allocated'
       call eirene_exit_own(1)
@@ -539,7 +544,7 @@ module eirmod_calstr_buffered
       call calstr_unpack_l(size(LOGPHOT(0:nphoti,ISTRA)), LOGPHOT(0:nphoti,ISTRA))
     end if
     call calstr_unpack_l(size(LOGPLS(0:nplsi,ISTRA)), LOGPLS(0:nplsi,ISTRA))
-    ! variables from eirene_calstr_usr should be also unpacked
+! variables from eirene_calstr_usr should be also unpacked
   end subroutine calstr_unpack_all
 
 

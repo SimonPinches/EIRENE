@@ -1,6 +1,6 @@
 cdr  28.4.04:  nhsts(ispz) option connected (to select species
 cdr            for trajectory plot). see modification to input.f, 28.4.04
-cdr  24.8.06:  plot symbols corrected to more recent GR  software standards
+cdr  24.8.06:  plot symbols corrected to more recent GR software standards
 !pb  5.10.06:  plot for triangle geometry in x-z plane added
 !pb  11.04.08: remove restriction NTTRA<100
 cdr  JAN 2014: add a bit more trcplt diagnostics for non-def. std. surfaces.
@@ -42,7 +42,7 @@ C   2D GEOMETRY (AND TRAJECTORY) PLOT
       USE EIRMOD_CTRIG
       USE EIRMOD_PL3D, ONLY: EIRENE_PL3D
       USE EIRMOD_STCOOR, ONLY: EIRENE_STCOOR
-cym      
+cym
       use eirmod_tstchm, only : EIRENE_TSTCHM
       IMPLICIT NONE
       PRIVATE
@@ -53,7 +53,7 @@ cym
       REAL(SP), SAVE :: ABSMAX = 21._SP, ORDMAX = 21._SP,
      .                  XNULL = 9._SP, YNULL = 4._SP
       REAL(DP), SAVE :: XWN = 0._DP, YWN = 0._DP
-      REAL(DP), SAVE :: XMI2D, XMA2D, YMI2D, YMA2D, XT, YT, XT2, YT2, 
+      REAL(DP), SAVE :: XMI2D, XMA2D, YMI2D, YMA2D, XT, YT, XT2, YT2,
      .                  TESTN
       INTEGER, SAVE :: IWRIT = 0,
      .                 ISPL(NTXHST) = (/2,101,103,205,100,206,208,104,
@@ -69,8 +69,8 @@ cym CHKTRC variables - need to be threadprivate & there is a SAVE ...
       INTEGER :: IA, I, J, ICP, ISTR, IC, NTDUM, NTT,
      .           NT, ICOLOR, ISP, IAA
       LOGICAL :: LWR
-      
-!$OMP THREADPRIVATE(XNP05, YYIA, XN1, YN, FX, FY, XN2, Z1, XN3, YNP, 
+
+!$OMP THREADPRIVATE(XNP05, YYIA, XN1, YN, FX, FY, XN2, Z1, XN3, YNP,
 !$OMP&              XN, YWO, XWO, XR, THET, PPHI, XPL, RWN, YPL, ZPL,
 !$OMP&              ZWN, XN0,
 !$OMP&              IA, I, J, ICP, ISTR, IC, NTDUM, NTT,
@@ -78,17 +78,6 @@ cym CHKTRC variables - need to be threadprivate & there is a SAVE ...
 !$OMP&              IN)
 
       CONTAINS
-
-cdr  28.4.04:  nhsts(ispz) option connected (to select species
-cdr            for trajectory plot. see modification to input.f, 28.4.04
-cdr  24.8.06:  plot symbols corrected to more recent GR  software standards
-!pb  5.10.06:  plot for triangle geometry in x-z plane added
-!pb  11.04.08: remove restriction NTTRA<100
-cdr  JAN 2014: add a bit more trcplt diagnostics for non-def. std. surfaces.
-cdr  jan 2014: remove old (redundant) code, in case levgeo=3, rad. pol. surfaces
-cdr  may 2018: plarr (surface normal) only for levgeo 2 and levgeo 3.
-cdr            if levgeo=2 and nlcrc: then polygon grid may not be defined.
-cdr             tbd: print warning...
 
 C   2D GEOMETRY (AND TRAJECTORY) PLOT
 
@@ -103,11 +92,11 @@ C
      .           ISWC(2*NSTS+1), INON(2*NSTS+1)
       REAL(DP) :: SCLFCY, SCLFCX, XW1, XW2, X, Y, Z,
      .            RR, YW1, YW2, DM, TR, RS, EP, EL, XTN,
-     .            YTN, R, SLT, DXX, DYY, A, B, XTIP, P, 
+     .            YTN, R, SLT, DXX, DYY, A, B, XTIP, P,
      .            YTIP, ZW1, ZW2
-      INTEGER :: IERR, J, NU, IPA, IPE, ITA, ITE, IR, IP, IT, 
-     .           IB, IA, NRET, I, NSW, ISW, IHELP, K, IFL, IDUMMY, 
-     .           JJ, IC1, IC2, ISTS, IY, IECKE2, NCTPNT, ICT, IAN, IEN, 
+      INTEGER :: IERR, J, NU, IPA, IPE, ITA, ITE, IR, IP, IT,
+     .           IB, IA, NRET, I, NSW, ISW, IHELP, K, IFL, IDUMMY,
+     .           JJ, IC1, IC2, ISTS, IY, IECKE2, NCTPNT, ICT, IAN, IEN,
      .           IRA, IRE, ITH
       LOGICAL :: LSTORE, PLSAV1, PLSAV2
       CHARACTER(10) :: CX, CY, CX0, CY0, CZ0
@@ -117,7 +106,8 @@ C
 C
       IWRIT=0
 C  SYMBOL FOR PARTICLE TRACING ERROR, CURRENTLY NO. 18
-      ISYM_ERR=18   !  SYMBOL NO. 18 IS CURRENTLY HARD-WIRED FOR TRACING ERRORS, SUBR., FOLNEUT, FOLION, ETC...
+      ISYM_ERR=18   !  SYMBOL NO. 18 IS CURRENTLY HARD-WIRED FOR
+                    !  TRACING ERRORS, SUBR., FOLNEUT, FOLION, ETC...
       IF (.NOT.ALLOCATED(ICPSPZ)) ALLOCATE (ICPSPZ(0:NSPZ))
 
       ALLOCATE (XX(MAX(101,NTTRA+1)))
@@ -184,7 +174,7 @@ C
       CALL GRTXT (-8.,20.,7,'FACT-Y=')
       CALL GRTXT (-5.3,21.,10,CX)
       CALL GRTXT (-5.3,20.,10,CY)
-      CALL GRTXT (-8.,18.,6,'ORIGIN         ')
+      CALL GRTXT (-8.,18.,6,'ORIGIN')
       CALL GRTXT (-8.,17.,7,'CH2X0= ')
       CALL GRTXT (-8.,16.,7,'CH2Y0= ')
       CALL GRTXT (-5.3,17.,10,CX0)
@@ -426,13 +416,13 @@ C  X-Z-PLANE
   136       CALL GRDSH(0.2,0.5,0.2)
   137       CONTINUE
             IF (NLSPLT(NU)) CALL GRNWPN(2)
-C  PLOT AT Y=CH2Z0 , TO BE WRITTEN. PRESENTLY AT Y=0
+C  PLOT AT Y=CH2Z0, TO BE WRITTEN. PRESENTLY AT Y=0
             IF (CH2Z0.NE.0.) THEN
-              WRITE (iunout,*) 'PLOTOPTION CH2Z0.NE.0 NOT READY. EXIT '
+              WRITE (iunout,*) 'PLOT OPTION CH2Z0.NE.0 NOT READY. EXIT'
               CALL EIRENE_EXIT_OWN(1)
             ENDIF
 C  FIND X= CONST. LINES AT Y=CH2Z0: XW1, XW2
-            XW1=RSURF(NU)+EP1(NU)
+            XW1= RSURF(NU)+EP1(NU)
             XW2=-RSURF(NU)+EP1(NU)
 C
             IF (NLTRZ) THEN
@@ -1153,7 +1143,8 @@ C Y-Z-PLANE
 
         CALL GRDSH(1.,0.,1.)
 C
-      ELSEIF ((LEVGEO.EQ.2.OR.LEVGEO.EQ.3).AND.PLCUT(3)) THEN  ! AND POLOIDAL GRID
+! AND POLOIDAL GRID
+      ELSEIF ((LEVGEO.EQ.2.OR.LEVGEO.EQ.3).AND.PLCUT(3)) THEN
 C
         DO 176 NU=NPLINP,NPLOTP,NPLDLP
           IF (NLSPLT(N1ST+NU)) CALL GRNWPN(2)
@@ -1333,9 +1324,8 @@ C
                 CALL EIRENE_TSTCHM(1,XTN,YTN,XTip,YTip,IN,TESTN,
      .                      XMI2D,XMA2D,YMI2D,YMA2D,XT2,YT2)
                 if (testn .ne. 2)
-     .          call grarrw (REAL(xtn,SP),REAL(ytn,SP),
-     .                       REAL(xtip,SP),REAL(ytip,SP),
-     .                       0.4,0.4,0)
+     .          call grarrw(REAL(xtn,SP),REAL(ytn,SP),
+     .                      REAL(xtip,SP),REAL(ytip,SP),0.4,0.4,0)
               endif
             enddo
           enddo
@@ -1358,7 +1348,7 @@ C Y-Z-PLANE
         IF (PLCUT(1)) THEN
           XW1=YIA
           XW2=YAA
-          IF (NLPOL)THEN
+          IF (NLPOL) THEN
             XW1=PSURF(NPLINP)
             XW2=PSURF(NPLOTP)
           ENDIF
@@ -1424,7 +1414,7 @@ C
 C
   220 CONTINUE
 C
-C   PLOT  ADDITIONAL SURFACES
+C   PLOT ADDITIONAL SURFACES
 C
       IF (.NOT.PLADD) GOTO 250
 C
@@ -1498,13 +1488,14 @@ C
       SUBROUTINE EIRENE_CHCTRC(XPLO,YPLO,ZPLO,IFLAG,ISYM)
       IMPLICIT NONE
       REAL(DP) :: XPLO, YPLO, ZPLO
-      INTEGER :: IFLAG,ISYM
+      INTEGER :: IFLAG, ISYM
 
 cym cccccccc  need to be private, SAVE requires action ... ccccccccccccccc
 cym      REAL(DP) :: XNP05, YYIA, XN1, YN, FX, FY, XN2, Z1, XN3, YNP, XN,
-cym     .          YWO, XWO, XR, THET, PPHI, XPL, RWN, YPL, ZPL, ZWN, 
+cym     .          YWO, XWO, XR, THET, PPHI, XPL, RWN, YPL, ZPL, ZWN,
 cym     .          XPLO, YPLO, ZPLO, XN0
-cym      INTEGER :: IA, I, J, ICP, ISTR, IC, NTDUM, NTT,  EIRENE_LEARCA,
+cym      INTEGER :: IA, I, J
+cym      INTEGER :: ICP, ISTR, IC, NTDUM, NTT,  EIRENE_LEARCA,
 cym     .           NT, ICOLOR, ISYM, IFLAG, ISP, IAA
 cym      LOGICAL :: LWR
 cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -1533,7 +1524,8 @@ ccccccccccccc
      .            'TIME LIMIT(15)      ',
      .            'GENERATION LIMIT(16)',
      .            'FLUID LIMIT(17)     ',
-     .            'ERROR DETECTED      ',     ! SYMBOL FOR PARTICLE TRACING ERROR.
+! SYMBOL FOR PARTICLE TRACING ERROR.
+     .            'ERROR DETECTED      ',
 c  next symbols/text: only for printout, not on plot.
      .            'INT.GRID SURFACE(19)',
      .            'DIFFUSION STEP(20)  ',
@@ -1690,7 +1682,7 @@ C
       IF (TRCHST .AND. LWR) THEN
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) TXTHST(ISYM)
-        IF (ISYM.EQ.12) THEN        
+        IF (ISYM.EQ.12) THEN
           CALL EIRENE_MASJ1('NLEVEL  ',NLEVEL)
         ENDIF
         IF (ISPZ.GT.0.AND.ISPZ.LE.NSPZ) THEN
@@ -1706,13 +1698,13 @@ C
 C  FOR TRACE IONS: VELOCITY IS EITHER CARTESIAN (LCART) OR THE REDUCED (GC) VELOCITY
         IF (ITYP.EQ.3) THEN
           IF (LCART) THEN
-          CALL EIRENE_MASR5
-     .         ('VELX,VELY,VELZ,VEL,E0                   ',
-     .           VELX,VELY,VELZ,VEL,E0)
+            CALL EIRENE_MASR5
+     .           ('VELX,VELY,VELZ,VEL,E0                   ',
+     .             VELX,VELY,VELZ,VEL,E0)
           ELSE
-          CALL EIRENE_MASR6
-     .         ('VLXPAR,VLYPAR,VLZPAR,VELPAR,E0PAR,E0             ',
-     .           VLXPAR,VLYPAR,VLZPAR,VELPAR,E0PAR,E0)
+            CALL EIRENE_MASR6
+     .           ('VLXPAR,VLYPAR,VLZPAR,VELPAR,E0PAR,E0             ',
+     .             VLXPAR,VLYPAR,VLZPAR,VELPAR,E0PAR,E0)
           ENDIF
         ELSE
 C  FOR NEUTRALS OR PHOTONS: VELOCITY IS ALWAYS GIVEN BY THE CARTESIAN COMPONENTS
@@ -1880,11 +1872,11 @@ C     following SUBROUTINE is for reinitialization of EIRENE (DMH)
       XNULL = 9.
       YNULL = 4.
       XWN = 0.
-      YWN =0.
+      YWN = 0.
       IWRIT = 0
       ISPL = (/  2,101,103,205,100,206,208,104,105,106,
-     .         107,108,200,201,202,204,207,4  ,104,105,
-     .         102/) 
+     .         107,108,200,201,202,204,207,  4,104,105,
+     .         102/)
 csw 20oct08
       if(allocated(icpspz)) deallocate(icpspz)
       if(allocated(idash)) deallocate(idash)

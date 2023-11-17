@@ -1,4 +1,4 @@
-cdr  feb 2014  :  iftflg :  select rate or rate coefficient produced by rate_coeff.
+cdr  feb 2014  :  iftflg : select rate or rate coefficient produced by rate_coeff.
 cdr  march 2014:  density parameter added, H.4 option for rate coeff, ifit=2
 c    already accommodates H.4 option (two parameter fits vs TII,PLS)
 cdr  sept. 2014:  use heavy bulk particle (ipls) density, rather than electron density)

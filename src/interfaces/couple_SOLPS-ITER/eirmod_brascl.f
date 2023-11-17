@@ -9,7 +9,7 @@ cdr          --seiod, seinw separated from seioda, seinwa. Have different meanin
 cdr            (ion energy density in plasma flow, per species) !
 cdr             --> missing rescaling of EI rates from atoms is now possible.
 cdr            seioda(..npls) --> seioda(..natm), and seiod(..npls): additional new array
-cdr          --Made alloc, dealloc, init:  more symmetric code between od and nw arrays
+cdr          --Made alloc, dealloc, init: more symmetric code between od and nw arrays
 cdr Dec. 18:  more consistent notation:
 cdr           init_brascl2                   --> init_brascl
 cdr           separated from dealloc_brascl: --> dealloc_rate_array
@@ -162,7 +162,9 @@ C
 
 
       SUBROUTINE EIRENE_DEALLOC_RATE_ARRAY
-
+cdr  dec.20
+cdr  dealloc_rate_array must come before dealloc_brascl,
+cdr  because the latter also deallocates RTS....
       INTEGER :: ISTR
 
       DO ISTR = 1, NSTRA
@@ -173,10 +175,12 @@ C
         DEALLOCATE (RTS(ISTR)%RTA%SEIODA)
         DEALLOCATE (RTS(ISTR)%RTA%SEEODA)
         DEALLOCATE (RTS(ISTR)%RTA%SMOODA)
+
         DEALLOCATE (RTS(ISTR)%RTA%SPLODI)
         DEALLOCATE (RTS(ISTR)%RTA%SEIODI)
         DEALLOCATE (RTS(ISTR)%RTA%SEEODI)
         DEALLOCATE (RTS(ISTR)%RTA%SMOODI)
+
         DEALLOCATE (RTS(ISTR)%RTA%SPLODM)
         DEALLOCATE (RTS(ISTR)%RTA%SEIODM)
         DEALLOCATE (RTS(ISTR)%RTA%SEEODM)

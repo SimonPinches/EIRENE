@@ -1,5 +1,5 @@
 !pb  This subroutine has been moved from the SOLPS-ITER interface into the main EIRENE code
-!pb  as EION is needed for calculation of radiation tallies 
+!pb  as EION is needed for calculation of radiation tallies
 
       !c
       !c*** Obtain ionization potentials for consistency with B2.5
@@ -65,29 +65,29 @@
         close(99)
 
       else
- 
+
         write (iunout,*) 'in INIT_EION, no ionization file '
         allocate(pot_data(npot))
-        pot_data = (/13.598_DP, !H
-     .               24.587_DP, !He
-     .                5.392_DP, !Li
-     .                9.322_DP, !Be
-     .                8.298_DP, !B
-     .               11.260_DP, !C
-     .               14.534_DP, !N
-     .               13.618_DP, !O
-     .               17.422_DP, !F
-     .               21.564_DP, !Ne
-     .                5.139_DP, !Na
-     .                7.646_DP, !Mg
-     .                5.986_DP, !Al
-     .                8.151_DP, !Si
-     .               10.486_DP, !P
-     .               10.360_DP, !S
-     .               12.967_DP, !Cl
-     .               15.759_DP, !Ar
-     .                4.341_DP, !K
-     .                6.113_DP/) !Ca
+        pot_data = (/13.598_DP,  ! H
+     .               24.587_DP,  ! He
+     .                5.392_DP,  ! Li
+     .                9.322_DP,  ! Be
+     .                8.298_DP,  ! B
+     .               11.260_DP,  ! C
+     .               14.534_DP,  ! N
+     .               13.618_DP,  ! O
+     .               17.422_DP,  ! F
+     .               21.564_DP,  ! Ne
+     .                5.139_DP,  ! Na
+     .                7.646_DP,  ! Mg
+     .                5.986_DP,  ! Al
+     .                8.151_DP,  ! Si
+     .               10.486_DP,  ! P
+     .               10.360_DP,  ! S
+     .               12.967_DP,  ! Cl
+     .               15.759_DP,  ! Ar
+     .                4.341_DP,  ! K
+     .                6.113_DP/) ! Ca
 
         write (iunout,'(a6,a12)') '  JATM','        Eion'
         do jatm = 1, natm
@@ -105,7 +105,7 @@
           endif
           write (iunout,'(i6,es12.4)') jatm, eion(jatm)
         enddo
-        
+
         deallocate (pot_data)
       endif
 

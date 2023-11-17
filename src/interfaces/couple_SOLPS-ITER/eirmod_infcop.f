@@ -4,8 +4,8 @@
 !PB             SETTINGS CONSISTENT WITH SHEATH SETTINGS IN B2
 !PB             IF SHEATH PARAMETERS ARE GIVEN BY B2 NEMODS=9
 !PB             IF NO SHEATH PARAMETERS WERE TRANSFERRED BY B2 NEMODS=8
-CDR  09. 2014 GENERAL RELATIONS BETWEEN FINE (UNSTRUCTURED)  AND COARSE (STRUCTURED)
-C             GRID MADE MORE EXPLICIT.  NEW NSBOX FOR FINE GRID SET.
+CDR  09. 2014 GENERAL RELATIONS BETWEEN FINE (UNSTRUCTURED) AND COARSE (STRUCTURED)
+C             GRID MADE MORE EXPLICIT. NEW NSBOX FOR FINE GRID SET.
 C             NP2NDQ REMOVED (REDUNDANT: =NP2TAL)
 C             NR1STQ REMOVED (REDUNDANT: =NR1TAL),
 C             AND ERROR: NR1STQ WAS USED BEFORE DEFINITION --> PROBLEMS WITH NSTGRD ARRAYS
@@ -33,7 +33,7 @@ cdr  nov.15:  eapl,empl,eipl: now species-resolved
 cdr           --> eppl_cop, eploda get an additional species index ipls
 C
 cdr  dec. 15: not ready. Started to comment, and to extend copv tallies
-cdr           for total and internal energy with species index.  Not ready...
+cdr           for total and internal energy with species index. Not ready...
 
 cdr  tbd:  check storage on copv, whenever used.
 
@@ -169,13 +169,14 @@ C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
       USE EIRMOD_MPI
       USE EIRMOD_CPES
       USE EIRMOD_SHEATH
-      USE EIRMOD_JSON
       USE EIRMOD_OPENFILE, ONLY: EIRENE_OPENFILE
-      
+      USE EIRMOD_JSON
+
       use json_module           !IGNORE
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
       IMPLICIT NONE
+
       PRIVATE
       PUBLIC :: EIRENE_IF0COP, EIRENE_IF1COP, EIRENE_IF2COP,
      .          EIRENE_IF3COP, EIRENE_IF4COP, EIRENE_IF3COP_SUM,
@@ -197,21 +198,23 @@ C
       TYPE (POIFELD), ALLOCATABLE, SAVE :: HEADS(:,:)
 
       REAL(DP), ALLOCATABLE, SAVE ::
-     . CHPS(:),    SNIS(:),    CHMOS(:),  SMOS(:),  SCALN(:),
+     . CHPS(:), SNIS(:), CHMOS(:), SMOS(:), SCALN(:),
      . SEES0(:), SEIS0(:), SNIS0(:,:), SMOS0(:,:),
-     . RESSNI(:,:),  RESSMO(:,:),
+     . RESSNI(:,:), RESSMO(:,:),
      . RESSEE(:), RESSEI(:),
      . FLXEIR(:)
       REAL(DP), ALLOCATABLE, SAVE ::
      . CHPM(:,:), CHEEM(:), CHEIM(:), CHMOM(:,:)
 
 C pppl_cop, mppl_cop, eppl_cop and epel_cop are the exact
-c volumetric source tallies,
-c while default tallies pppl, mppl, eppl and epel are
+c volumetric primary source tallies,
+c while default eirene tallies pppl, mppl, eppl and epel would be
 c the corresponding tallies scored from random sampling in eirene
+c Aug 22: ...both: mppl and epel tallies do not exist so far.
       REAL(DP), ALLOCATABLE, SAVE ::
      .            PPPL_COP(:,:), MPPL_COP(:,:),
      .            EPPL_COP(:,:), EPEL_COP(:)
+C
 c  for short cycle correction terms, in vol. rec. strata.
       REAL(DP), ALLOCATABLE, SAVE ::
      .            PPLODA(:,:), CPVODA(:,:),
@@ -247,7 +250,7 @@ C     THE SUBROUTINE "IF2COP" PREPARES THE SOURCE SAMPLING DISTRIBUTION
 C     FROM THE EXTERNAL DATA, AND MAY OVERWRITE OTHER INPUT
 C     DATA FROM BLOCKS 1 TO 13 AS WELL
 C
-C     THE SUBROUTINES "IF3COP, IF4COP" RETURN  RESULTS TO AN EXTERNAL CODE
+C     THE SUBROUTINES "IF3COP, IF4COP" RETURN RESULTS TO AN EXTERNAL CODE
 C
 
       SUBROUTINE EIRENE_IF0COP(LFIXED, LSHORT)
@@ -270,13 +273,12 @@ C  GEOMETRICAL DATA FROM GRIDADAP
 C
       INTEGER, ALLOCATABLE :: XNMTI_BUF(:), YNMTI_BUF(:), TNMTI_BUF(:)
 C
-!pb   INTEGER, SAVE :: MSHFRM, NTRFRM, IO29, IO, IMF
       INTEGER, SAVE :: IO29, IO, IMF
       INTEGER :: N, I, J, K, L, IX, IY, IXI, IXE, IXNI, IPL, JPLS, JUN,
      I           IREAD, IS, IS1, ISC, ISC1, ISC2, ISCS, ISTS, ISTR,
      I           IT, IN, IP, IP1, IR, IR1, IPRT, NTGPRI, IMODE,
      I           ICOADD, ICOSCR, ICOG, ICOU, IDUMMY, IERROR,
-     I           IAIN, IAOT, ITRI, NBAR, NUMSI, NBARSI, 
+     I           IAIN, IAOT, ITRI, NBAR, NUMSI, NBARSI,
      I           IUNIN_SAVE, IUSROUT, JS
       REAL(DP) :: PX, PY, TX, TY, VS, VT,
      R            VSX, VSY, VTX, VTY, VPRO, XMUE, TEST,
@@ -295,16 +297,20 @@ C
       IMODE=IABS(NMODE)
 C
       IF (.NOT.ALLOCATED(CHPM)) THEN
+cdr  for short cycle only. Obsolete
         ALLOCATE (CHPM(NPLS,NRAD))
         ALLOCATE (CHEEM(NRAD))
         ALLOCATE (CHEIM(NRAD))
         ALLOCATE (CHMOM(NPLS,NRAD))
 
+cdr  for direct (primary) contributions from vol.rec sources
+cdr  Always needed for vol rec strata. Not only for short cycle
         ALLOCATE (PPPL_COP(NPLS,NRAD))
         ALLOCATE (MPPL_COP(NPLS,NRAD))
         ALLOCATE (EPPL_COP(NPLS,NRAD))
         ALLOCATE (EPEL_COP(NRAD))
 
+cdr  for short cycle only. Obsolete
         ALLOCATE (PPLODA(NPLS,NRAD))
         ALLOCATE (CPVODA(NPLS,NRAD))
         ALLOCATE (EPLODA(NPLS,NRAD))
@@ -313,8 +319,10 @@ C
 cdr March 18: removed from input block 14. Unclear meaning.
       lchkqud = .false.
 cdr
-      mshfrm = 0   !  optional flag for geometry file format: linda, carre, sonnet
-      NLSHRT13 = .TRUE.  !  only short version of fort13 is used: calls WRPLAM_SHRT, RPLAM_SHRT
+      mshfrm = 0   !  optional flag for geometry file format:
+                   !  linda, carre, sonnet
+      NLSHRT13 = .TRUE.  !  only short version of fort13 is used:
+                         !  calls WRPLAM_SHRT, RPLAM_SHRT
       ntrfrm = 0
 
       if (.not.allocated(eapl0)) then
@@ -332,8 +340,11 @@ C
         ENDIF
       ENDIF
 C
-C  DEFINE ADDITIONAL TALLIES FOR COUPLING (UPDATED IN SUBR. UPTCOP
-C                                              AND IN SUBR. COLLIDE)
+C READING BLOCK 14 FROM FORMATTED INPUT FILE (IUNIN) FINISHED
+C
+C
+C DEFINE ADDITIONAL TALLIES FOR COUPLING (UPDATED IN SUBR. UPTCOP
+C                                             AND IN SUBR. COLLIDE)
 
 cdr  already done in if0prm. Hidden link, must be removed....
       NCPVI = NPLSI
@@ -417,7 +428,7 @@ C
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
 C
-C  EACH FLUXSURFACE IS GIVEN BY A POLYGON OF LENGTH NDXA+1, I.E.
+C  EACH FLUX SURFACE IS GIVEN BY A POLYGON OF LENGTH NDXA+1, I.E.
 C  WITH NDXA SEGMENTS. THERE ARE NDYA+1 POLYGONS
 C  READ IN POLYGONS CELL BY CELL. IX IS INDEX ALONG ONE POLYGON
 C                                 IY IS INDEX PERP. TO THE POLYGONS
@@ -476,8 +487,8 @@ c  only for inclined target option:
 C
       CALL EIRENE_GEOMD (NDXA,NDYA,NPLP,NR1ST,NP2ND,
      .                   PUX,PUY,PVX,PVY,MSHFRM)
-      NPLP_CGRID=NPLP
       CLOSE(30)
+      NPLP_CGRID=NPLP
 #ifdef B25_EIRENE
       JTRG=0
       DO IT=1,NTARGI
@@ -494,6 +505,7 @@ C
             END DO
             RCBEG_EIR(JTRG)=NTIN(IT,IPRT)-1
             RCEND_EIR(JTRG)=NTEN(IT,IPRT)-1-1
+cdr  W,E or Y surface?
             IF (NINCT(IT,IPRT).EQ.-1) THEN
               RCCHR_EIR(JTRG)='W'
             ELSE IF (NINCT(IT,IPRT).EQ.1) THEN
@@ -511,6 +523,7 @@ C
               IF (NTEN(IT,IPRT).GE.NPOINT(1,IPLG))
      .         RCEND_EIR(JTRG)=RCEND_EIR(JTRG)-1
             END DO
+cdr  S,N or X surface?
             IF (NINCT(IT,IPRT).EQ.-1) THEN
               RCCHR_EIR(JTRG)='S'
             ELSE IF (NINCT(IT,IPRT).EQ.1) THEN
@@ -522,6 +535,7 @@ C
             RCPOS_EIR(JTRG)=NDT(IT,IPRT)
             RCBEG_EIR(JTRG)=NTIN(IT,IPRT)
             RCEND_EIR(JTRG)=NTEN(IT,IPRT)
+cdr  A surface
             RCCHR_EIR(JTRG)='A'
           ENDIF
         ENDDO
@@ -652,10 +666,10 @@ C
         CALL EIRENE_LEER(1)
         WRITE (iunout,*)
      .    ' NO FILE '//FORT//'29 WITH MODIFIED GRID INFO FOUND'
-        WRITE (iunout,*) ' OLD VERSION CALCULATION MAGN. FIELD FROM ',
-     .                   ' GRID IS USED '
-        WRITE (iunout,*) ' GRID IS ASSUMED TO BE ORTHOGONAL '
-        WRITE (iunout,*) ' NO INFO RE. ISOLATED CELLS FROM THIS FILE '
+        WRITE (iunout,*) ' OLD VERSION CALCULATION MAGN. FIELD FROM',
+     .                   ' GRID IS USED'
+        WRITE (iunout,*) ' GRID IS ASSUMED TO BE ORTHOGONAL'
+        WRITE (iunout,*) ' NO INFO RE. ISOLATED CELLS FROM THIS FILE'
         CALL EIRENE_LEER(1)
       END IF
 C
@@ -727,61 +741,61 @@ C TO READ THE FILE PRODUCED BY DOS
             END DO
             WRITE(iunout,*) "... ready!"
           END IF
-         if (plidl) then
+          if (plidl) then
 c write file 'triang_new.npco_char' for triang-grid, for idl tool, in appropriate format.
 c first: fetch a free file unit number
-           jun=-9999
-           call eirene_openfile(jun,file='triang_new.npco_char',
+            jun=-9999
+            call eirene_openfile(jun,file='triang_new.npco_char',
      .           access='SEQUENTIAL',form='FORMATTED')
 c next: write file 'triang_new.npco_char'
-           write (jun,'(i9)') NRKNOT
-           DO I=1,NRKNOT
-             WRITE(jun,'(i9,2es24.16)') I,XTRIAN(I),YTRIAN(I)
-           ENDDO
-           close (unit=jun)
-         end if
-       ELSE
-         DO I=1,NRKNOT
-           READ(33,*) J,XTRIAN(I),YTRIAN(I)
-         ENDDO
-       END IF
+            write (jun,'(i9)') NRKNOT
+            DO I=1,NRKNOT
+              WRITE(jun,'(i9,2es24.16)') I,XTRIAN(I),YTRIAN(I)
+            ENDDO
+            close (unit=jun)
+          end if
+        ELSE
+          DO I=1,NRKNOT
+            READ(33,*) J,XTRIAN(I),YTRIAN(I)
+          ENDDO
+        END IF
 C
-      IF (NTRII.GT.NRAD.OR.NTRII.GT.NTRI) THEN
-        WRITE (iunout,*) ' PARAMETER ERROR DETECTED IN INFUSR '
-        WRITE (iunout,*) ' NTRII MUST BE < NRAD AND <= NTRI'
-        WRITE (iunout,*) ' NTRII,NRAD,NTRI = ',NTRII,NRAD,NTRI
-        CALL EIRENE_EXIT_OWN(1)
-      ENDIF
+        IF (NTRII.GT.NRAD.OR.NTRII.GT.NTRI) THEN
+          WRITE (iunout,*) ' PARAMETER ERROR DETECTED IN INFUSR '
+          WRITE (iunout,*) ' NTRII MUST BE < NRAD AND <= NTRI'
+          WRITE (iunout,*) ' NTRII,NRAD,NTRI = ',NTRII,NRAD,NTRI
+          CALL EIRENE_EXIT_OWN(1)
+        ENDIF
 
-      IXTRI = 0
-      IYTRI = 0
+        IXTRI = 0
+        IYTRI = 0
 
-      DO I=1,NTRII
-        READ(34,*) J,NECKE(1,I),NECKE(2,I),NECKE(3,I)
-      ENDDO
+        DO I=1,NTRII
+          READ(34,*) J,NECKE(1,I),NECKE(2,I),NECKE(3,I)
+        ENDDO
 
-      DO I=1,NTRII
+        DO I=1,NTRII
 cdr  june 17:
 cdr: careful: I ne J possible. Unless triangles are sorted as J= 1,2,3... on fort.35
 cdr           This is implicitly assumed here ?
 cpb           J is of no consequence here. It could have been called IDUM as well.
-        READ(35,*) J,NCHBAR(1,I),NSEITE(1,I),IDUMMY,
-     >               NCHBAR(2,I),NSEITE(2,I),IDUMMY,
-     >               NCHBAR(3,I),NSEITE(3,I),IDUMMY,
-     >               IXTRI(I),IYTRI(I)
+          READ(35,*) J,NCHBAR(1,I),NSEITE(1,I),IDUMMY,
+     >                 NCHBAR(2,I),NSEITE(2,I),IDUMMY,
+     >                 NCHBAR(3,I),NSEITE(3,I),IDUMMY,
+     >                 IXTRI(I),IYTRI(I)
 
-C       WRITE (iunout,*) J,NECKE(1,J),NECKE(2,J),NECKE(3,J),
-C    >                   NCHBAR(1,I),NSEITE(1,I),
-C    >                   NCHBAR(2,I),NSEITE(2,I),NCHBAR(3,I),NSEITE(3,I)
+C         WRITE(iunout,*) J,NECKE(1,J),NECKE(2,J),NECKE(3,J),
+C    >                 NCHBAR(1,I),NSEITE(1,I),
+C    >                 NCHBAR(2,I),NSEITE(2,I),NCHBAR(3,I),NSEITE(3,I)
 
 C THE SPECIAL SURFACE PROPERTY (IF ANY) IS ON INMTI ARRAY, AND TRANSFERRED INTO
 C EIRENE VIA COMMON.
-      ENDDO
+        ENDDO
 
-      CLOSE (UNIT=33)
-      CLOSE (UNIT=34)
-      CLOSE (UNIT=35)
-      CALL EIRENE_LEER(1)
+        CLOSE (UNIT=33)
+        CLOSE (UNIT=34)
+        CLOSE (UNIT=35)
+        CALL EIRENE_LEER(1)
       end if !}
 
       IF (MAXVAL(IXTRI).GT.NDXP .OR. MAXVAL(IYTRI).GT.NDYP) THEN
@@ -849,7 +863,8 @@ CVKG TO FIX A BUG WITH GEOMETRY
               ENDDO
 
 C  NODES ISC1 AND ISC2 OF TRIANGLE ITRI ARE LOCATED ON RADIAL SURFACE IR
-C  THAT MEANS  SIDE "NUMSI" OF TRIANGLE "ITRI" BELONGS TO NDS
+C  THAT MEANS SIDE "NUMSI" OF TRIANGLE "ITRI" BELONGS TO
+cdr NON-DEF. STD. SURFACE INMTI=NLIM+ISTS
               IF (ISC1.GT.0.AND.ISC2.GT.0) THEN
                 NUMSI=MIN(ISC1,ISC2)
                 IF (NUMSI.EQ.1.AND.MAX(ISC1,ISC2).EQ.3) NUMSI=3
@@ -886,6 +901,7 @@ C  NEXT: POLOIDAL SURFACES
             IP1=IP+1
             IF (IP.EQ.NP2ND) THEN
               IP1=IP-1
+cdr this next line must be something specific to a certain case
             ELSEIF (NPPLG.EQ.6) THEN
               IF (IP.EQ.NPOINT(2,TARGINDEX)-1) IP1=IP-1
             ENDIF
@@ -907,17 +923,17 @@ CVKG TO FIX GEOMETRY BUG
      f                      YTRIAN(NECKE(IS,ITRI)),
      f                      XPOL(IR,IXNI),YPOL(IR,IXNI),
      f                      XPOL(IR+1,IXNI),YPOL(IR+1,IXNI))) THEN
-                  IF(ISC1.GT.0) THEN
-                    ISC2=IS
-                  ELSE
-                    ISC1=IS
+                    IF(ISC1.GT.0) THEN
+                      ISC2=IS
+                    ELSE
+                      ISC1=IS
+                    END IF
                   END IF
-                END IF
-              ENDDO
+                ENDDO
 
 C  NODES ISC1 AND ISC2 OF TRIANGLE ITRI ARE LOCATED ON POLOIDAL SURFACE IP
-C  THAT MEANS  SIDE "NUMSI" OF TRIANGLE "ITRI" BELONGS TO NDS
-              IF (ISC1.GT.0.AND.ISC2.GT.0) THEN
+C  THAT MEANS SIDE "NUMSI" OF TRIANGLE "ITRI" BELONGS TO NDS
+                IF (ISC1.GT.0.AND.ISC2.GT.0) THEN
                   NUMSI=MIN(ISC1,ISC2)
                   IF (NUMSI.EQ.1.AND.MAX(ISC1,ISC2).EQ.3) NUMSI=3
 C
@@ -1113,22 +1129,24 @@ C  SAVE OLD, STRUCTURED, 2D GRID INFO FOR TALLY OUTPUT, ETC...
 C     NSBOX_TAL, NRADD_TAL: SEE BELOW
 
 C  SET NEW, FINER GRID STRUCTURE
-        NR1ST=NTRII+1  !  add one cell, for volume average in TRIA region
+        NR1ST=NTRII+1  ! add one cell, for volume average in TRIA region
         NP2ND=1
         NT3RD=1
         NSURF=NR1ST*NP2ND*NT3RD*NBMLT
         NSBOX=NSURF+NRADD
+cdr from now on: nr1st > n1st possible.
+cdr tbd: check array dimensions (e,g, splitting options, etc?)
 
 
 C  counter for additional cells outside original COARSE standard grid
         icoadd = NSURF_TAL
 
-C  NCLTAL(ITRI):  TRIANGLE ITRI IS PART OF ORIGINAL STRUCTURED GRID CELL (IX,IY),
-C                 WITH (IX,IY) CODED IN THE 1D ARRAY FORM (NCELL) OF EIRENE STANDARD GRIDS
-C                 NCELL=NCLTAL(ITRI)
+C  NCLTAL(ITRI): TRIANGLE ITRI IS PART OF ORIGINAL STRUCTURED GRID CELL (IX,IY),
+C                WITH (IX,IY) CODED IN THE 1D ARRAY FORM (NCELL) OF EIRENE STANDARD GRIDS
+C                NCELL=NCLTAL(ITRI)
         IF (LCOARSE) THEN
           write (iunout,*) 'SCORING OF VOLUME-AVERAGED TALLIES ',
-     ,                   'IS ON COARSE GRID CELLS NCELL ONLY. '
+     ,                     'IS ON COARSE GRID CELLS NCELL ONLY.'
           DO ITRI=1,NTRII
             IY=IYTRI(ITRI)
             IX=IXTRI(ITRI)
@@ -1143,7 +1161,7 @@ C                 NCELL=NCLTAL(ITRI)
 
         ELSEIF (.NOT.LCOARSE) THEN
           write (iunout,*) 'SCORING OF VOLUME-AVERAGED TALLIES ',
-     ,                     'IS ON FINE (TRIA) GRID ONLY. '
+     ,                     'IS ON FINE (TRIA) GRID ONLY.'
 C                 NCLTAL(ITRI)=ITRI
           DO ITRI=1,NTRII
             IY=IYTRI(ITRI)
@@ -1162,7 +1180,7 @@ c   ntrii+1 is the storage for summed/integrated tallies, over the standard grid
 c           i.e. not including the additional cell region (if any)
         NCLTAL(NTRII+1) = 0
 
-        ICOSCR= icoadd          ! NUMBER OF SCORING CELLS, SO FAR.
+        ICOSCR= icoadd   ! NUMBER OF SCORING CELLS, SO FAR.
 !
         if (nsbox > nsurf) then
 c  There are NRADD further additional cells, from input block 2e.
@@ -1179,7 +1197,7 @@ c  These are not part of triangular grid. Add them now to grid
             end do
           ENDIF
         end if
-        
+
 C  ADDITIONAL CELLS: THOSE CELLS THAT ARE ADDED FROM OUTSIDE ORIGINAL GRID,
 C  PLUS THOSE FROM INPUT FILE BLOCK 2E (NRADD)
         NRADD_TAL = (ICOSCR - NSURF_TAL)
@@ -1206,7 +1224,7 @@ c  reset scoring grid parameters back to fine tally grid
           nsbox_tal=nsbox
           nradd_tal=nradd
         ENDIF
-        
+
         NGITT = COUNT(INMTI(1:3,1:NTRII) .NE. 0)
 
       ELSE IF (.NOT.NLTRIMESH) THEN
@@ -1223,7 +1241,7 @@ C  CARRY OUT SOME CONSISTENCY CHECKS ON NEW TRIANGULAR GRID
       DO ITRI=1,NTRII
         DO IS=1,3
           IF (NCHBAR(IS,ITRI).EQ.0.AND.INMTI(IS,ITRI).EQ.0) THEN
-            WRITE (iunout,*) ' ERROR IN INFCOP '
+            WRITE (iunout,*) ' ERROR IN INFCOP'
             WRITE (iunout,*) ' NCHBAR,INMTI',
      .                         NCHBAR(IS,ITRI),INMTI(IS,ITRI)
             WRITE (iunout,*) ' OPEN SIDE OF TRIANGLE ',ITRI,' SIDE ',IS
@@ -1258,8 +1276,7 @@ C  CARRY OUT SOME CONSISTENCY CHECKS ON NEW TRIANGULAR GRID
 C
 
 csw 09jan2012 missing IGJUM3 correction!
-CVK CORRECT  IGJUM1 AND IGJUM3 FOR TRIANGLES OUTSIDE STANDARD (B2) MESH
-
+CVK CORRECT IGJUM1 AND IGJUM3 FOR TRIANGLES OUTSIDE STANDARD (B2) MESH
 
       WRITE(iunout,*) 'IF0COP: CHECKING IGJUM3 FROM SETTINGS IN GEOUSR'
       DO ITRI=1,NTRII
@@ -1279,14 +1296,13 @@ c                  is not part of the STANDARD (polygonal) grid
           END IF
         END DO
 
-
         DO I=1,NLIM
 C SWITCHING ON ADDITIONAL SURFACE CHECKING FOR TRIANGULAR CELL ITRI (OUTSIDE B2 MESH)
           IF(IXTRI(ITRI).LE.0.AND.IYTRI(ITRI).LE.0
-     .                      .AND.IGJUM0(I).EQ.0) THEN
+     .                       .AND.IGJUM0(I).EQ.0) THEN
             if (IGJUM3(ITRI,I).ne.0) then
               if (trcint.and.trcsur)
-     .        write (iunout,*) 'activated itri,i, 1', itri,i
+     .         write (iunout,*) 'activated itri,i, 1', itri,i
               IGJUM3(ITRI,I)=0
             endif
           END IF
@@ -1336,12 +1352,12 @@ csw
       WRITE (iunout,*) 'NLPLG,NLFEM ',NLPLG,NLFEM
       WRITE (iunout,*) 'NLPOL       ',NLPOL
 
-      WRITE (IUNOUT,*) 'NEW (FINE, UNSTRUCTURED) GRID '
+      WRITE (IUNOUT,*) 'NEW (FINE, UNSTRUCTURED) GRID'
       CALL EIRENE_MASJ5('NR1ST,   NP2ND,  NSURF,  NRADD,  NSBOX  ',
      .                   NR1ST,   NP2ND,  NSURF,  NRADD,  NSBOX)
 
-      WRITE (IUNOUT,*) 'OLD (COARSE, STRUCTURED) GRID '
-      CALL EIRENE_MASJ5('NR1_TAL,NP2_TAL,NSF_TAL, NRA_TAL,NBX_TAL',
+      WRITE (IUNOUT,*) 'OLD (COARSE, STRUCTURED) GRID'
+      CALL EIRENE_MASJ5('NR1_TAL,NP2_TAL,NSF_TAL,NRA_TAL,NBX_TAL ',
      .                   NR1TAL_SAVE, NP2TAL_SAVE, NSURF_TAL_SAVE,
      .                   NRADD_TAL_SAVE, NSBOX_TAL_SAVE)
       CALL EIRENE_LEER(2)
@@ -1381,7 +1397,7 @@ csw
        INTEGER :: JL
        LOGICAL :: LDUMMY
 
-       WRITE (iunout,*) '        SUBROUTINE INFCOP IS CALLED  '
+       WRITE (iunout,*) '        SUBROUTINE INFCOP IS CALLED'
 C  READ INPUT DATA OF BLOCK 14
 C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
        CALL EIRENE_LEER(1)
@@ -1398,8 +1414,8 @@ C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
      .                     LOLD31
 
        READ (IUNIN,'(9I6)') NFLA,NCUTB,NCUTL,IMF,
-     .                      ntrfrm, nfull,ibrad,ibpol,ibtor
-      NPLS_FIX = NFLA
+     .                      ntrfrm,nfull,ibrad,ibpol,ibtor
+       NPLS_FIX = NFLA
 cdr  imf  flag for different formats of geometry file: linda, sonnet, carre. What is what?
        IF (IMF /= 0) MSHFRM=IMF
 
@@ -1423,6 +1439,7 @@ c  flags for orientation of radial (not in use), poloidal and toroidal magnetic 
        DO IPL=1,NPLSI
          READ (IUNIN,'(2I6,2E12.4,I6)')
      -     I,IFLB(IPL),FCTE(IPL),BMASS(IPL),L
+cdr  prepare for particle balance rescaling options? AK?
          if(iflb(ipl) .gt. 0) lkindp(ipl) = l
          IF (TRCINT) WRITE (iunout,'(2I6,2ES12.4,I6)')
      .     IPL,IFLB(IPL),FCTE(IPL),BMASS(IPL),L
@@ -1480,7 +1497,7 @@ C  ALL INDICES: AFTER INDEX MAPPING
 C  NDT: INDEX OF X-CELL (EAST OR NORTH SURFACE OF BRAAMS CELL) OF TARGET
 C  NINCT: DIRECTION OF OUTER TARGET NORMAL WITH RESPECT TO POSITIVE DIR.
 C  NIXY: SOURCE ON Y SURFACE: NIXY=1; SOURCE ON X SURFACE: NIXY=2
-C  NTIN,NTEN: SOURCE RANGE FROM GRIDPOINT NTIN TO GRIDPOINT NTEN
+C  NTIN,NTEN: SOURCE RANGE FROM GRID POINT NTIN TO GRID POINT NTEN
 C  ITYPE: TYPE OF THE STRATUM (0: BULK IONS, 1: ATOMS, 2: MOLECULES,
 C        3: TRACE IONS, 4: BULK IONS, 5: PHOTONS)
        IF (TRCINT)
@@ -1507,7 +1524,7 @@ C        3: TRACE IONS, 4: BULK IONS, 5: PHOTONS)
            ENDIF
            IF (TRCINT)
      .      WRITE (iunout,'(1X,7I6,2I7,3I6)')
-     .                               IT,NDT(IT,IPRT),NINCT(IT,IPRT),
+     .                            IT,NDT(IT,IPRT),NINCT(IT,IPRT),
      .                               NIXY(IT,IPRT),NTIN(IT,IPRT),
      .                               NTEN(IT,IPRT),NIFLG(IT,IPRT),
      .                               NPTC(IT,IPRT),NPTCM(IT,IPRT),
@@ -1541,7 +1558,7 @@ C  HERE: B2.5 VOLUME TALLIES
 C  ADDITIONAL INPUT TALLY ADIN:  ITAL=12
        NAIN = MAX(NAIN,NAINB)
        CALL EIRENE_ALLOC_CCOUPL(2)
-       WRITE (iunout,*) '        NAINI = ',NAINB
+       WRITE (iunout,*) '       NAINI = ',NAINB
        IF (NAINB.GT.NAIN) THEN
          CALL EIRENE_MASPRM ('NAIN',4,NAIN,'NAINB',5,NAINB,IERROR)
          WRITE (iunout,*) 'EXIT CALLED FROM SUBR. INFCOP '
@@ -1562,7 +1579,7 @@ C  ADDITIONAL INPUT TALLY ADIN:  ITAL=12
 C  READ ADDITIONAL DATA TO BE TRANSFERRED FROM EIRENE INTO B2
 C  HERE: EIRENE SURFACE TALLIES
        READ (IUNIN,'(I6)') NAOTB
-       WRITE (iunout,*) '        NAOTI = ',NAOTB
+       WRITE (iunout,*) '       NAOTI = ',NAOTB
        IF (NAOTB.GT.NLIMPS) THEN
          CALL EIRENE_MASPRM ('NLIMPS',6,NLIMPS,'NAOTB',5,NAOTB,IERROR)
          WRITE (iunout,*) 'EXIT CALLED FROM SUBR. INFCOP '
@@ -1602,13 +1619,13 @@ C  COPY USER SPECIFIC DATA TO FILE user_data.input
        ELSE
          IUSROUT = 0
        END IF
-       
+
        RETURN
        END SUBROUTINE EIRENE_READ14_FIXED
 
 
        SUBROUTINE EIRENE_READ14_JSON(json,me)
-       USE EIRMOD_JSON     
+       USE EIRMOD_JSON
        use json_module           !IGNORE
 !pgf     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
@@ -1618,12 +1635,12 @@ C  COPY USER SPECIFIC DATA TO FILE user_data.input
        type(json_value), pointer, intent(in) :: me
        type(json_value), pointer :: pflds, pfld, ptrgs, ptrg,
      .                             prts, prt, padds, padd
-!pgf       character(kind=CK,len=:),allocatable :: txt                       
-       character(kind=json_CK,len=:),allocatable :: txt                       
+!pgf       character(kind=CK,len=:), allocatable :: txt
+       character(kind=json_CK,len=:), allocatable :: txt
        integer :: j, npl, ntrg
        integer, allocatable :: ihelp(:)
        logical :: found, foundi, foundo, ldummy
-      
+
        WRITE (iunout,*) '        SUBROUTINE INFCOP IS CALLED  '
 C  READ INPUT DATA OF BLOCK 14
 C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
@@ -1665,13 +1682,13 @@ c  flags for orientation of radial (not in use), poloidal and toroidal magnetic 
        if (ibtor < 0) btor = -btor
 
        NCUTB_SAVE=NCUTB
-      
+
        IF (TRCINT) THEN
          WRITE (iunout,*) ' NFLA,NCUTB,NCUTL,IMF,NTRFRM = ',
      .                      NFLA,NCUTB,NCUTL,IMF,NTRFRM
          WRITE (iunout,*) ' IPLS,IFLB(IPLS),FCTE(IPLS),BMASS(IPLS)'
        ENDIF
-      
+
        call json%get_child(me,'B2FLUIDS',pflds)
        call json%info(pflds,n_children=npl)
        if (npl /= NPLSI) then
@@ -1681,7 +1698,7 @@ c  flags for orientation of radial (not in use), poloidal and toroidal magnetic 
          write (iunout,*) 'NPL =   ',npl
          call eirene_exit_own(1)
        end if
-        
+
        NATMA=0
        DO IPL=1,NPLSI
          call json%get_child(pflds,ipl,pfld)
@@ -1724,7 +1741,7 @@ c  flags for orientation of radial (not in use), poloidal and toroidal magnetic 
      .               IPL,IFLB(IPL),FCTE(IPL),BMASS(IPL),L
        END DO
        nullify(pflds)
-      
+
        call json%get(me,'NDXA',ndxa,found)
        call json%get(me,'NDYA',ndya,found)
        IF (TRCINT) WRITE (iunout,*) 'NDXA,NDYA= ',NDXA,NDYA
@@ -1837,7 +1854,7 @@ C  NTIN,NTEN: SOURCE RANGE FROM GRIDPOINT NTIN TO GRIDPOINT NTEN
 
 C  READ ADDITIONAL DATA TO BE TRANSFERRED FROM B2 INTO EIRENE
 C  HERE: B2 VOLUME TALLIES
-       call json%get(me,'NAINB',nainb,found)   
+       call json%get(me,'NAINB',nainb,found)
 C  ADDITIONAL INPUT TALLY ADIN:  ITAL=12
        NAIN = MAX(NAIN,NAINB)
        CALL EIRENE_ALLOC_CCOUPL(2)
@@ -1875,10 +1892,10 @@ C  ADDITIONAL INPUT TALLY ADIN:  ITAL=12
            nullify(padds)
          END IF
        END IF
-      
+
 C  READ ADDITIONAL DATA TO BE TRANSFERRED FROM EIRENE INTO B2
 C  HERE: EIRENE SURFACE TALLIES
-       call json%get(me,'NAOTB',naotb,found)   
+       call json%get(me,'NAOTB',naotb,found)
        WRITE (iunout,*) '        NAOTI = ',NAOTB
        IF (NAOTB.GT.NLIMPS) THEN
          CALL EIRENE_MASPRM ('NLIMPS',6,NLIMPS,'NAOTB',5,NAOTB,IERROR)
@@ -1918,7 +1935,7 @@ C
          CALL EIRENE_LEER(1)
          WRITE (IUNOUT,*) 'NO FILE FOR USR SPECIFIC INPUT FOUND'
        END IF
-        
+
        RETURN
        END SUBROUTINE EIRENE_READ14_JSON
 
@@ -1942,18 +1959,18 @@ C   AT PRESENT THE DATA COME FROM THE FILE FT31
 C   FURTHERMORE: SCALING TO EIRENE UNITS AND INDEX MAPPING
 C   STATEMENT NO. 2000 ---> 2999
 C
-C  IN CASE OF "SHORT CYCLE" THE PLASMA STATE IS TRANSFERRED VIA COMMON
+C  IN CASE OF "SHORT CYCLE" THE PLASMA STATE IS TRANSFERRED VIA COMMON BRAEIR
 C
       IF (IENTRY.EQ.0) THEN
-      LSHORT=.FALSE.
-      CALL EIRENE_LEER(1)
-      WRITE (iunout,*) 'IF1COP CALLED '
+        LSHORT = .FALSE.
+        CALL EIRENE_LEER(1)
+        WRITE (iunout,*) 'IF1COP CALLED'
 C  SKIP READING PLASMA, IF NLPLAS
         IF (NLPLAS) THEN
           WRITE (iunout,*) 'PLASMA DATA EXPECTED ON BRAEIR'
         ELSE
 C
-C  TRANSFER PROFILES
+C  TRANSFER PLASMA PROFILES VIA FORT 31
 C
           IF (.NOT.(INDPRO(1).EQ.6.OR.INDPRO(2).EQ.6.OR.INDPRO(3).EQ.6
      .          .OR.INDPRO(4).EQ.6.OR.INDPRO(5).EQ.6)) RETURN
@@ -1961,77 +1978,79 @@ C
           WRITE (iunout,*) 'PLASMA DATA EXPECTED ON '//FORT//'31'
 C
           OPEN (UNIT=31,ACCESS='SEQUENTIAL',FORM='FORMATTED',ERR=1986)
-      REWIND 31
+          REWIND 31
 C
-      IF (NFLA.GT.NFL) THEN
-        WRITE (iunout,*) ' PARAMETER ERROR DETECTED IN INFCOP '
-        WRITE (iunout,*) ' NFLA MUST BE <= NFL'
-        WRITE (iunout,*) ' NFLA,NFL = ',NFLA,NFL
-        CALL EIRENE_EXIT_OWN(1)
-      ENDIF
+          IF (NFLA.GT.NFL) THEN
+            WRITE (iunout,*) ' PARAMETER ERROR DETECTED IN INFCOP'
+            WRITE (iunout,*) ' NFLA MUST BE <= NFL'
+            WRITE (iunout,*) ' NFLA,NFL = ',NFLA,NFL
+            CALL EIRENE_EXIT_OWN(1)
+          ENDIF
 
-      CALL EIRENE_ALLOC_BRAEIR(NDX,NDY,NFL)
+          CALL EIRENE_ALLOC_BRAEIR(NDX,NDY,NFL)
 C
 C  B2-BRAAMS CODE SPECIFIC BEGIN
-      NRED=(NPPLG-1)*(NCUTL-NCUTB)
-      NDX2=NDXA-NRED
-      write(iunout,*) 'NDX2, NDYA, NFLA = ',ndx2,ndya,nfla
-      CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,DNIB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,UUB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,VVB)
-      IF (.NOT.LOLD31)
-     .  CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,WWB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,TEB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,TIB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,PRB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,UPB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,RRB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,FNIXB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,FNIYB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,FEIXB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,FEIYB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,FEEXB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,FEEYB)
+          NRED=(NPPLG-1)*(NCUTL-NCUTB)
+          NDX2=NDXA-NRED
+          write(iunout,*) 'NDX2, NDYA, NFLA = ',ndx2,ndya,nfla
+          CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,DNIB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,UUB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,VVB)
+          IF (.NOT.LOLD31)
+     .      CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,WWB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,TEB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,TIB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,PRB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,UPB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,RRB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,FNIXB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,FNIYB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,FEIXB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,FEIYB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,FEEXB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,FEEYB)
 C
-      CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,UUDIAB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,VVDIAB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,POB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,UUDIAB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,VVDIAB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,POB)
 
 C  CELL VOLUMES AS USED IN B2
-      CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,VOLB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,VOLB)
 C  MAGNETIC FIELD STRENGTH (TESLA)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,BFELDB)
-      IF (.NOT.LOLD31) THEN
-        CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,BPOLB)
-        CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,BRADB)
-        CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,BTORB)
-      END IF
+          CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,BFELDB)
+          IF (.NOT.LOLD31) THEN
+            CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,BPOLB)
+            CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,BRADB)
+            CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,BTORB)
+          END IF
 
 !pb 15.09.2015
-      where (bfeldb == 0._dp)
-         bfeldb = 1._dp
-      elsewhere
+          where (bfeldb == 0._dp)
+            bfeldb = 1._dp
+          elsewhere
 ! nothing to be done
-      end where
+          end where
 
-      CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,VPARXB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,VPARYB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,VRADXB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,VRADYB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,DELTAE_PARXB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,DELTAE_PARYB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,DELTAE_RADXB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,DELTAE_RADYB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,DELTAI_PARXB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,DELTAI_PARYB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,DELTAI_RADXB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,DELTAI_RADYB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,DELTA_SHEATHXB)
-      CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,DELTA_SHEATHYB)
-      IF (.NOT.LOLD31)
-     .  CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,ZIB)
-      if (ANY(ZIB(:,:,:) /= 0._DP)) INDPRO(11)=9 ! To avoid overwriting by
-                                                 ! eirene_plasma calls
+          CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,VPARXB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,VPARYB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,VRADXB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,VRADYB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,DELTAE_PARXB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,DELTAE_PARYB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,DELTAE_RADXB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,DELTAE_RADYB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,DELTAI_PARXB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,DELTAI_PARYB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,DELTAI_RADXB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,DELTAI_RADYB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,DELTA_SHEATHXB)
+          CALL EIRENE_PLASM (31,NDX2,NDYA,1,NDX,NDY,1,DELTA_SHEATHYB)
+          IF (.NOT.LOLD31)
+     .     CALL EIRENE_PLASM (31,NDX2,NDYA,NFLA,NDX,NDY,NFL,ZIB)
+          if (ANY(ZIB(:,:,:) /= 0._DP)) INDPRO(11)=9 ! To avoid
+                                                     ! overwriting by
+                                                     ! eirene_plasma
+                                                     ! calls
         END IF ! NLPLAS
 C
 C  IN CASE OF "SHORT CYCLE" OR TIME DEP. MODE
@@ -2045,6 +2064,7 @@ csw 26sep2011
 c      delta_sheathxb=3.1
 c      delta_sheathyb=3.1
 csw 06jan2012 NO! not for direct comparison SOLSP4.3!!!
+
 cwd do not set zero here; are initialized to zero, but could be passed through braeir for
 c   consistent potential drop on both sides (including effect of currents, secondary electron
 c   emission)
@@ -2120,6 +2140,7 @@ C  UNUSED INPUT TALLIES
      .             NCUTB,NCUTL,NPOINT,NPLP)
       CALL EIRENE_INDMAP (BFELDB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,
      .             NCUTB,NCUTL,NPOINT,NPLP)
+
       IF (.NOT.LOLD31) THEN
         CALL EIRENE_INDMAP (BPOLB,DUMMY,NDX,NDY,1,NDXA,NDYA,1,
      .             NCUTB,NCUTL,NPOINT,NPLP)
@@ -2183,7 +2204,7 @@ C  VACUUM DATA NEEDED FOR REGION OUTSIDE B2-MESH
 CTRIG E
       DO 2105 JPLS=1,NPLSI
         D(JPLS)=1.D-6*FCTE(JPLS)         !pb 1.e-6 -> 1.d-6
-        FL(JPLS)=ELCHA*FCTE(JPLS)        !  SCALING FOR FLUX: 1/S --> AMP
+        FL(JPLS)=ELCHA*FCTE(JPLS)        !SCALING FOR FLUX: 1/S --> AMP
  2105 CONTINUE
 C
 C  SET PLASMA BACKGROUND ON TRIANGULAR GRID
@@ -2218,7 +2239,8 @@ c    modulus of the ratio poloidal to poloidal field is given by the B2 array pi
 C    magnitude of B-field is given by B2-array BFELDB
 
 C  poloidal field
-            BX=PUX(IN)*RRB(IX,IY) ! +PVX(IN)*0., but radial field is zero
+            BX=PUX(IN)*RRB(IX,IY) ! +PVX(IN)*0.,
+                                  !  but radial field is zero
             BY=PUY(IN)*RRB(IX,IY) ! +PVY(IN)*0.
 c  toroidal field
             BZ=SQRT(1.-RRB(IX,IY)**2)
@@ -2236,15 +2258,19 @@ C    c) components of the B field passed through EIRMOD_BRAEIR:
 C         BPOLB:  poloidal field (including sign)
 C         BRADB:  radial field (0)
 C         BTORB:  toroidal field (including sign)
+cdr warning:  eirene x,y,z cartesian coordinates may be left-handed.
+cdr           I do not know if that matters somewhere now (drifts?)
 C         BFELDB: magnitude of the field
 C
 
 C  poloidal field
-            BX=PUX(IN)*BPOLB(IX,IY) ! + PVX(IN)*BRADB(IX,IY), but radial field is zero
+            BX=PUX(IN)*BPOLB(IX,IY) ! + PVX(IN)*BRADB(IX,IY),
+                                    !   but radial field is zero
             BY=PUY(IN)*BPOLB(IX,IY) ! + PVY(IN)*BRADB(IX,IY)
 c  toroidal field
             BZ=BTORB(IX,IY)
 c  normalize B field vector to length 1 (one)
+c  avoid using bfeldb, because limited accuracy if coming through fort.31 (standalone cases)
             BN=SQRT(BX**2 + BY**2 + BZ**2)
             IF (BN <= EPS30) THEN
               BZ = 1._DP
@@ -2269,13 +2295,14 @@ c  default unit vector along B
           BYINTF(ITRI)=0.
           BZINTF(ITRI)=1.*btor
 c  default modulus of B field
-          BFINTF(ITRI)=1.
+          BFINTF(ITRI)=1.  !dr here:  = BTORB (magnitude),
+                           !   e.g. for Zeeman splitting
 c
 C         VLINTF(ITRI)=1.
         ENDIF
       ENDDO  !ITRI LOOP
 
-C  ntrii+1:  for average over ntrii grid
+C  ntrii+1: for average over ntrii grid
 
 C  additional cells from input block 2e
       DO itri=ntrii+2, nsbox
@@ -2286,7 +2313,8 @@ c  default unit vector along B
         BYINTF(ITRI)=0.
         BZINTF(ITRI)=1.*btor
 c  default modulus of B field
-        BFINTF(ITRI)=1.
+        BFINTF(ITRI)=1.  !dr here:   = BTORB (magnitude),
+                         !   e.g. for Zeeman splitting
 c
 C       VLINTF(ITRI)=1.
       ENDDO
@@ -2303,12 +2331,12 @@ C
 CDR  set density from B2 array DNIB, for each fluid
 CDR  set plasma flow velocity field from B2 arrays UPB (parallel velocity)
 c  without drifts:
-c  upb * pitch: poloidal velocity (i.e. cartesian x,y direction).
+c  upb * pitch: poloidal velocity (i.e. in cartesian x,y direction).
 c  poloidal field direction is given by that of the poloidal cell face PU..(in),
 C  i.e. along a flux surface. (PU(...) is cell-centered)
-c  and upb*(1-pitch^2): toroidal velocity  (i.e. cartesian z direction (nltrz) or
+c  and upb*sqrt(1-pitch^2): toroidal velocity  (i.e. cartesian z direction (nltrz) or
 c                                                toroidal phi direction (nltra)
-c  sign of flowfield follows the sign of poloidal grid in B2.
+c  sign of flow field follows the sign of poloidal grid in B2.
 c
 c  with drifts:
 c  uudia and vvdia are additional flow velocities in B2.5 only.
@@ -2318,7 +2346,8 @@ c
 c
       IREAD=0
       DO 2200 JPLS=1,NPLSI
-        IF (IFLB(JPLS).GT.0) THEN  ! DEAL WITH B2.5 ION SPECIES ONLY, EXCLUDE VIRTUAL EIRENE BACKGROUND
+        IF (IFLB(JPLS).GT.0) THEN  ! DEAL WITH B2.5 ION SPECIES ONLY,
+                                   ! EXCLUDE VIRTUAL EIRENE BACKGROUND
           IPLSV=MPLSV(JPLS)
           DO 2201 IFL=1,NFLA
             IF (IFLB(JPLS).NE.IFL) GOTO 2201
@@ -2358,7 +2387,7 @@ cdr  now set cartesian flow velocity components
                   VZINTF(IPLSV,ITRI)=
      &              (UPBC*SQRT(1.-RRBC**2)+UDBC*RRBC)*V
 
-		ELSE
+                ELSE
 
 cwd projection onto poloidal, radial, toroidal directions now done on the B2.5 side,
 c   including correct signs, and effect of drifts
@@ -2372,7 +2401,7 @@ c   including correct signs, and effect of drifts
                 END IF
 
               ELSE
-c  region outside  B2.5 grid, but inside triangular grid
+c  region outside B2.5 grid, but inside triangular grid
                 DIINTF(JPLS,ITRI)=DVAC
                 VXINTF(IPLSV,ITRI)=VVAC
                 VYINTF(IPLSV,ITRI)=VVAC
@@ -2578,13 +2607,12 @@ cdr  magnetic field strength, Tesla
             ENDIF
  2336     CONTINUE
 
-cdr  free: NAINT=20 --29:  reserved for AMDIAG:  scaled atomic/molecular rate coefficients
-cdr                        evaluated on computational grid. See Manual.
+cdr  free: NAINT=20 --39: reserved for AMDIAG: scaled atomic/molecular rate coefficients
+cdr                       evaluated on computational grid. See Manual.
 
         ENDIF
  2300 CONTINUE
 C
-c
 c.......................................................................
 C
 !pb 22.01.2014 change of source strength for gas puff as required
@@ -2596,7 +2624,7 @@ csw 24oct2011
            allocate(flux_save(nstra))
            flux_save = 0._dp
         end if
-!pb  if FLUX_SAVE was not set before it now needs to be set to 
+!pb  if FLUX_SAVE was not set before it now needs to be set to
 !pb  the flux specified by the input
         if (.not.flux_saved) then
           flux_save=flux/elcha
@@ -2607,7 +2635,7 @@ csw 24oct2011
            allocate(npts_saved(nstra))
            npts_saved = .false.
            npts_save = 0
-        endif           
+        endif
 
         DO ISTRAI=NTARGI+1,NSTRAI
           ISTRA = ISTRAI
@@ -2725,11 +2753,11 @@ C
 C
       IF (TRCINT.AND.LTARG.EQ.0) THEN
         LTARG=1
-        WRITE (iunout,*) 'ITARG: TARGET NUMBER '
-        WRITE (iunout,*) 'IPRT : SUBSECTION OF TARGET '
+        WRITE (iunout,*) 'ITARG: TARGET NUMBER'
+        WRITE (iunout,*) 'IPRT : SUBSECTION OF TARGET'
         WRITE (iunout,*)
-     .        'NPBS : BRAAMS (SURFACE) X-CELL INDEX OF TARGET '
-        WRITE (iunout,*) 'NPBC : BRAAMS (ZONE) P-CELL INDEX OF TARGET '
+     .        'NPBS : BRAAMS (SURFACE) X-CELL INDEX OF TARGET'
+        WRITE (iunout,*) 'NPBC : BRAAMS (ZONE) P-CELL INDEX OF TARGET'
         WRITE (iunout,*) 'NPES : POLOIDAL SURFACE INDEX OF TARGET'
         WRITE (iunout,*) '       IN EIRENE MESH'
         WRITE (iunout,*) 'NPEC : 1ST POLOIDAL CELL INDEX OF EIRENE MESH'
@@ -2778,6 +2806,7 @@ C  EIRENE SURFACE NUMBER AT TARGET
         ENDIF
 C
 C  FIRST: SOURCES AT POLOIDAL (Y) SURFACES (EAST OR WEST CELL FACES)
+C         OF THE UNDERLYING STRUCTURED 2D GRID
         IF (NIXY(ITARG,IPRT).EQ.2) GOTO 3020
 C
         ITRI=0
@@ -2815,7 +2844,7 @@ cdr  scale to relative units of triangle coordinates
                     ITRI=ITRI+1
                     IF (ITRI.GT.NGITT) THEN
                       WRITE (iunout,*)
-     .                        ' NOT ENOUGH GRIDPOINTS FOR DEFINING',
+     .                        ' NOT ENOUGH GRID POINTS FOR DEFINING',
      .                        ' STEP FUNCTION '
                       WRITE (iunout,*) ' INCREASE PARAMETER NGITT '
                       WRITE (iunout,*) ' NGITT = ',NGITT
@@ -2825,7 +2854,7 @@ cdr  scale to relative units of triangle coordinates
                     NUMTRI(ITRI)=IT
                     NUMSID(ITRI)=IS
                     IF (LCHKQUD)
-     .              IREVERS(IS,IT) = 
+     .              IREVERS(IS,IT) =
      .                  NINT(SIGN(1._DP,DXPOL*VTRIX(IS,IT) +
      .                                  DYPOL*VTRIY(IS,IT)))
                     ICOU = ICOU + 1
@@ -2845,18 +2874,18 @@ cdr  scale to relative units of triangle coordinates
         ENDDO
         MTRI=ITRI
 C SORT TRIANGLES ALONG TARGET
-         XANF=XPOL(NTIN(ITARG,IPRT),NPES)
-         YANF=YPOL(NTIN(ITARG,IPRT),NPES)
-         IANF=1
-         IACT=1
-         DO WHILE (IANF .LT. MTRI)
-           DO IT=IANF,MTRI
-             ITRI=NUMTRI(IT)
-             IS=NUMSID(IT)
-             IS1=IS+1
-             IF (IS1.GT.3) IS1=1
-             IF (((XANF-XTRIAN(NECKE(IS,ITRI)))**2+
-     .           (YANF-YTRIAN(NECKE(IS,ITRI)))**2) .LT. 5*EPS5) THEN
+        XANF=XPOL(NTIN(ITARG,IPRT),NPES)
+        YANF=YPOL(NTIN(ITARG,IPRT),NPES)
+        IANF=1
+        IACT=1
+        DO WHILE (IANF .LT. MTRI)
+          DO IT=IANF,MTRI
+            ITRI=NUMTRI(IT)
+            IS=NUMSID(IT)
+            IS1=IS+1
+            IF (IS1.GT.3) IS1=1
+            IF (((XANF-XTRIAN(NECKE(IS,ITRI)))**2+
+     .           (YANF-YTRIAN(NECKE(IS,ITRI)))**2).LT.5*EPS5) THEN
               NUMTRI(IT)=NUMTRI(IACT)
               NUMSID(IT)=NUMSID(IACT)
               NUMTRI(IACT)=ITRI
@@ -2952,8 +2981,8 @@ C  SET DEFAULT ION ENERGY FLUXES FROM B2.5 BOUNDARY CONDITIONS
 !pb                delte_para=deltae_parxb(npbs,iy)
 !pb                delte_perp=deltae_radxb(npbs,iy)
 
-                   tis=TISTEP(IPLSTI,ITARG,IG)
-                   tes=TESTEP(ITARG,IG)
+                tis=TISTEP(IPLSTI,ITARG,IG)
+                tes=TESTEP(ITARG,IG)
 !pb                ELSTEP(JPLS,ITARG,IG) = ELSTEP(JPLS,ITARG,IG)+
 !pb     .                                  FL(JPLS)/DELY*
 !pb     .            (TIS*delti_para+TES*delte_para)*ABS(fnixb(npbs,iy,ifl))
@@ -3026,7 +3055,8 @@ C
 C
  3020   CONTINUE
 C
-C  SECOND: SOURCES AT RADIAL (X) SURFACES
+C  SECOND: SOURCES AT RADIAL (X) SURFACES  (NORTH OR SOUTH CELL FACES)
+C          OF THE UNDERLYING STRUCTURED GRID
 C
         ITRI=0
         DO IX=NTIN(ITARG,IPRT),NTEN(ITARG,IPRT)-1
@@ -3064,7 +3094,7 @@ cdr  scale to relative units of triangle coordinates
                     ITRI=ITRI+1
                     IF (ITRI.GT.NGITT) THEN
                       WRITE (iunout,*)
-     .                        ' NOT ENOUGH GRIDPOINTS FOR DEFINING',
+     .                        ' NOT ENOUGH GRID POINTS FOR DEFINING',
      .                        ' STEP FUNCTION '
                       WRITE (iunout,*) ' INCREASE PARAMETER NGITT '
                       WRITE (iunout,*) ' NGITT = ',NGITT
@@ -3104,7 +3134,7 @@ C SORT TRIANGLES ALONG TARGET
             IS1=IS+1
             IF (IS1.GT.3) IS1=1
             IF (((XANF-XTRIAN(NECKE(IS,ITRI)))**2+
-     .           (YANF-YTRIAN(NECKE(IS,ITRI)))**2) .LT. 5*EPS5) THEN
+     .           (YANF-YTRIAN(NECKE(IS,ITRI)))**2).LT.5*EPS5) THEN
               NUMTRI(IT)=NUMTRI(IACT)
               NUMSID(IT)=NUMSID(IACT)
               NUMTRI(IACT)=ITRI
@@ -3227,7 +3257,7 @@ C  ORTHONORMALIZE PV VECTOR WITH RESPECT TO PU
             PVXS=PVXS/(PNORM+EPS60)
             PVYS=PVYS/(PNORM+EPS60)
 
-	    IF (LOLD31) THEN
+            IF (LOLD31) THEN
 ! Detlev und Xavier
 !22102012            VXSTEP(IPLSV,ITARG,IG)=
 !22102012     .            (PUXS*UUB(IX,NPBS,IFL)+PVXS*VVB(IX,NPBS,IFL))*V
@@ -3254,7 +3284,7 @@ C  SURFACE-CENTERED VELOCITIES
 !pb          VZSTEP(IPLSV,ITARG,IG)=
 !pb   .            (SQRT(1.-RRBS**2)*UPB(IX,NPBS,IFL))*V
 
-	    ELSE
+            ELSE
 cwd projection onto poloidal, radial, toroidal directions now done on the B2.5 side,
 c   including correct signs, and effect of drifts
 c   guard cell values used: could contain different data than domain values
@@ -3265,7 +3295,7 @@ c   (in particular: only grad-B drift vs. full diamagnetic drift)
               VXSTEP(IPLSV,ITARG,IG)=(PUXS*UU+PVXS*VV)*V
               VYSTEP(IPLSV,ITARG,IG)=(PUYS*UU+PVYS*VV)*V
               VZSTEP(IPLSV,ITARG,IG)= WW*V
-	    END IF
+            END IF
  3023     CONTINUE
         ENDDO
  3030   CONTINUE
@@ -3310,7 +3340,7 @@ C  IN CASE INDIM=4: INSOR,INDGRD,... ARE REDUNDANT
       NRSOR(1,ITARG)=-1
       NPSOR(1,ITARG)=-1
       IF (INDSRC(ITARG).LT.6) THEN
-        WRITE (iunout,*) 'MESSAGE FROM IF2COP: '
+        WRITE (iunout,*) 'MESSAGE FROM IF2COP:'
         WRITE (iunout,'(a,i2,a)')
      .   'SOURCE STRENGTH AND SPATIAL DISTRIBUTION FOR STRATUM ',
      .    ITARG,' MODIFIED.'
@@ -3330,7 +3360,8 @@ C
         TXTSOU(ITARG)= 'SURFACE RECYCLING SOURCE NO.'//CITARG
         NPTS(ITARG)=INT(NPTC(ITARG,1)*MPTS_COMSOU)
         IF (NPTS(ITARG) < 0) NPTS(ITARG) = HUGE(1)
-        NMINPTS(ITARG)=INT(NPTCM(ITARG,1)*MPTS_COMSOU) !VK MINIMUM NUMBER OF HISTORIES FOR THE STRATUM
+!VK MINIMUM NUMBER OF HISTORIES FOR THE STRATUM
+        NMINPTS(ITARG)=INT(NPTCM(ITARG,1)*MPTS_COMSOU)
         IF (NTIME > 0) THEN
           IF (NINITL(NSTRAI).LT.0.AND.(.NOT.NLCRR)) THEN
             NINITL(ITARG)=NINITL(NSTRAI)
@@ -3351,7 +3382,8 @@ C  USE ENERGY FLUXES SPECIFIED HERE, IE., SORENE, SORENI ARE REDUNDANT
         IF (NIXY(ITARG,1).EQ.1) THEN      ! THIS IS A E/W SURFACE
           NEMODS(ITARG)=7                 ! INCLUDE SHEATH ACCELERATION
         ELSE IF (NIXY(ITARG,1).EQ.2) THEN ! THIS IS A N/S SURFACE
-          NEMODS(ITARG)=6                 ! DO NOT INCLUDE SHEATH ACCELERATION
+          NEMODS(ITARG)=6                 ! DO NOT INCLUDE
+                                          ! SHEATH ACCELERATION
         END IF
         NAMODS(ITARG)=1
 C
@@ -3403,8 +3435,9 @@ C
       NEM=IABS(NEMODS(ITARG))
       DO 6011 IG=1,NRWL(ITARG)-1
 C
-C  COMPUTE SHEATH POTENTIAL ESHT(ITARG,IG)
+C  COMPUTE EIRENE SHEATH POTENTIAL ESHT(ITARG,IG)
 C  USE ALL NPLSI SPECIES, NOT JUST IFL=NSPZI,NSPZE
+C  IN CASE NEMOD=9: USE THE SHEATH PARAMETERS TRANSFERED FROM B2.5
 C
         ESHT(ITARG,IG)=0.D0
         IF (NEM.EQ.3.OR.NEM.EQ.5.OR.NEM.EQ.7) THEN
@@ -3522,13 +3555,13 @@ C  ADD ENERGY GAIN BY SHEATH ACCELERATION TO TOTAL
 
  6009   CONTINUE  ! JPLS loop
         IF (TRCINT.AND.ISP.GT.1) CALL EIRENE_LEER(1)
- 6011 CONTINUE    ! IG,  CELL ALONG TARGET
+ 6011 CONTINUE    ! IG, CELL ALONG TARGET
 C
       CALL EIRENE_LEER(1)
       WRITE (iunout,*) 'TARGET DATA: TARGET NO. ITARG=ISTRA= ',ITARG
       WRITE (iunout,*) TXTSOU(ITARG)
       WRITE (iunout,'(1X,A3,9A11,A3)')
-     .'IG','ARC','P-FLUX','E-FLUX','TE','TI','SHEATH/TE',
+     . 'IG','ARC','P-FLUX','E-FLUX','TE','TI','SHEATH/TE',
      . 'VXSTEP','VYSTEP','VZSTEP'
       DO 6100 IG=1,NRWL(ITARG)-1
 
@@ -3554,7 +3587,6 @@ C
       CALL EIRENE_MASR1 ('EESHT   ',EESHT)
       flush(iunout)
 C
-!pb   ETOT=EEMAX+EESHT
       EFLX(ITARG)=EEMAX+EESHT
       WRITE (iunout,*) 'PARTICLE FLUX(IPLS), IPLS=1,NPLSI '
       WRITE (iunout,'(1X,1P,6E12.4)') (FLTOT(ISP,ITARG),ISP=1,NPLSI)
@@ -3578,7 +3610,7 @@ C
 C
       RETURN
   999 CONTINUE
-      WRITE (iunout,*) 'ERROR IN IF2COP: NGITT TOO SMALL '
+      WRITE (iunout,*) 'ERROR IN IF2COP: NGITT TOO SMALL'
       CALL EIRENE_EXIT_OWN(1)
       RETURN
       END SUBROUTINE EIRENE_IF2COP
@@ -3591,8 +3623,10 @@ C
       LOGICAL, INTENT(INOUT) :: LSTP
       REAL(DP), SAVE :: SCALM, SCALE, SCALI, SEES, SEIS,
      .          SIGNUM, SMOCL, SNIRES, SMORES, SEERES, SEIRES,
-     .          SUMM, SUMN, SUMEI, SUMEE, SUMN_OLD, TEST, FLX, FLXI,
-     .          RECADD, RECTOT, PIADD, PRESS00, SNICL, FLX_EIR,
+     .          SUMM, SUMN, SUMEI, SUMEE, SUMN_OLD,
+     .          TEST, FLX, FLXI,
+     .          RECADD, RECTOT, PIADD,
+     .          PRESS00, SNICL, FLX_EIR,
      .          EAMISUM, EEADD, EIADD, CHE, CHI, CHP, CHEES, CHEIS
 C
       logical :: lhit(nrad)
@@ -3609,7 +3643,7 @@ C
       REAL(DP), EXTERNAL :: EIRENE_FTABRC1, EIRENE_FEELRC1
 C
       IF (IENTRY.EQ.0) THEN
-        WRITE (iunout,*) ' IF3COP IS CALLED, ISTRAA,ISTRAE '
+        WRITE (iunout,*) 'IF3COP IS CALLED, ISTRAA,ISTRAE'
         WRITE (iunout,*) ISTRAA,ISTRAE
         LSHORT=.FALSE.
         LSTP3=.TRUE.
@@ -3662,7 +3696,7 @@ csw 14jul2011
         ALLOCATE (FLXEIR(NSTRA))
 
         CALL EIRENE_ALLOC_BRASPOI
-        CALL EIRENE_ALLOC_EIRBRA(NDX,NDY,NFL,NATM,NMOL,NION,NSTRA)
+        CALL EIRENE_ALLOC_EIRBRA(NDX, NDY, NFL, NATM, NMOL, NION, NSTRA)
 C
         RESSNI = 0._DP
         RESSMO = 0._DP
@@ -3670,14 +3704,19 @@ C
         RESSEI = 0._DP
       END IF
       if (.not.allocated(chpm)) then
+cdr  next 4: for short cycle. Obsolete
         ALLOCATE (CHPM(NPLS,NRAD))
         ALLOCATE (CHEEM(NRAD))
         ALLOCATE (CHEIM(NRAD))
         ALLOCATE (CHMOM(NPLS,NRAD))
+cdr  primary volumetric source contributions, from volumetric sources
+cdr  Here: not sampled, but exact
+cdr  Always needed for vol. rec. strata. Not only for short cycle
         ALLOCATE (PPPL_COP(NPLS,NRAD))
         ALLOCATE (MPPL_COP(NPLS,NRAD))
         ALLOCATE (EPPL_COP(NPLS,NRAD))
         ALLOCATE (EPEL_COP(NRAD))
+cdr  next 4: for short cycle. Obsolete
         ALLOCATE (PPLODA(NPLS,NRAD))
         ALLOCATE (CPVODA(NCPV,NRAD))
         ALLOCATE (EPLODA(NPLS,NRAD))
@@ -3703,10 +3742,10 @@ C
         RESSEI(ISTRAA:ISTRAE) = 0._DP
       ENDIF
 
-      volSUMN(ISTRAA:ISTRAE)=0.0 !dpc
-      volSUMM(ISTRAA:ISTRAE)=0.0 !dpc
-      volSUMEI(ISTRAA:ISTRAE)=0.0 !dpc
-      volSUMEE(ISTRAA:ISTRAE)=0.0 !dpc
+      volSUMN(ISTRAA:ISTRAE)=0.0           !dpc
+      volSUMM(ISTRAA:ISTRAE)=0.0           !dpc
+      volSUMEI(ISTRAA:ISTRAE)=0.0          !dpc
+      volSUMEE(ISTRAA:ISTRAE)=0.0          !dpc
 
       DO 10000 ISTRAI=ISTRAA,ISTRAE
 C
@@ -3849,6 +3888,9 @@ C
         IST_RATE = ITS(ISTRAI)
         RTIS => RTS(IST_RATE)%RTA
 
+cdr begin
+cdr this next code snippet is likely something unfinished for primary vol.rec.
+cdr momentum sinks for bulk ions?
         COPV=0.D0
         IF (LCOPV) THEN
           CPMUL => COPVS(ISTRAI)%PMUL
@@ -3859,6 +3901,7 @@ C
             CPMUL => CPMUL%NXTMUL
           ENDDO
         END IF
+cdr end
 
         MAPL=0.D0
         IF (LMAPL) THEN
@@ -3960,8 +4003,8 @@ cdr for particle source, from atoms
             IF (LPAPL) THEN
               PAPL(JPLS,IN)=PAPL(JPLS,IN)+CHP
               IF (NLSPCSCL_ATM) THEN
-              PAPL2(1:NPLS,0:NATM) => PAPL(:,IN)
-              PAPL2(JPLS,IATM)=PAPL2(JPLS,IATM)+CHP
+                PAPL2(1:NPLS,0:NATM) => PAPL(:,IN)
+                PAPL2(JPLS,IATM)=PAPL2(JPLS,IATM)+CHP
               END IF
             END IF
             CHPM(JPLS,IN)=CHPM(JPLS,IN)+CHP
@@ -4007,7 +4050,7 @@ cdr for particle source, from test ions
             PIPL(IPLS,IN)=CPMUL%VALUEM
             IF (NLSPCSCL_ION) THEN
               PIPL2(1:NPLS,0:NION) => PIPL(:,IN)
-              PIPL2(IPLS,1:NIONI)=CPMUL%VALUIM(1:NIONI)              
+              PIPL2(IPLS,1:NIONI)=CPMUL%VALUIM(1:NIONI)
             END IF
             CPMUL => CPMUL%NXTMUL
           ENDDO
@@ -4077,7 +4120,6 @@ C
 C  SHORT LOOP CORRECTION FOR ELECTRON IMPACT COLLISIONS
 C             OF MOLECULES
 C
-
         PMPL=0.D0
         IF (LPMPL) THEN
           CPMUL => PMPLS(ISTRAI)%PMUL
@@ -4148,9 +4190,10 @@ cdr for electron energy source, from molecules
 C  CORRECTION FOR ELECTRON IMPACT DISSOCIATION OF MOLECULES FINISHED
 
 C
-C  SHORT LOOP CORRECTION FOR VOLUME RECOMBINATION PROCESSES  (UNFINISHED)
+C  SHORT LOOP CORRECTION FOR VOLUME RECOMBINATION PROCESSES (UNFINISHED)
 C
-
+cdr begin
+cdr  probably obsolete: no short cycle for vol. rec strata ever existed?
         PPLODA=0.D0
         CPMUL => PPPL_COPS(ISTRAI)%PMUL
         DO WHILE (ASSOCIATED(CPMUL))
@@ -4185,6 +4228,7 @@ C
           EPEODA(IN)=CPSIM%VALUES
           CPSIM => CPSIM%NXTSIM
         END DO
+cdr end
 C
 C
 C  SHORT LOOP CORRECTION FINISHED
@@ -4203,50 +4247,52 @@ C
 C
           RECTOT = 0._DP
 cdr  only one bulk ion species per volume source stratum supported
-          IPLS=NSPEZ(ISTRAI)  ! RANGE CHECK FOR IPLS ALREADY DONE IN SAMVOL
+          IPLS=NSPEZ(ISTRAI)  ! RANGE CHECK FOR IPLS
+                              ! ALREADY DONE IN SAMVOL
 
           IPLSTI = MPLSTI(IPLS)
           DO 7472 IIRC=1,NPRCI(IPLS)
-              IRRC=LGPRC(IPLS,IIRC)
-              SUMN=0.0
-              SUMM=0.0
-              SUMEI=0.0
-              SUMEE=0.0
-              lhit = .false.
-              DO 7471 IN=1,NTRII
-                INC=NCLTAL(IN)
-                if ((nstgrd(in) /= 0) .or. lgvac(in,ipls)) cycle
-                IF (NSTORDR >= NRAD) THEN
-                  RECADD=-TABRC1(IRRC,IN)*DIIN(IPLS,IN)*ELCHA
-                  EEADD=  EELRC1(IRRC,IN)*DIIN(IPLS,IN)*ELCHA
-                ELSE
-                  RECADD=-EIRENE_FTABRC1(IRRC,IN)*DIIN(IPLS,IN)*ELCHA
-                  EEADD=  EIRENE_FEELRC1(IRRC,IN)*DIIN(IPLS,IN)*ELCHA
-                END IF
-                PIADD=0._DP
-                IF (LPARMOM) PIADD=PARMOM(IPLS,IN)*RECADD
-                EIADD=1.5*TIIN(IPLSTI,IN)*RECADD
-                IF (LEDRIFT) EIADD=EIADD+EDRIFT(IPLS,IN)*RECADD
+            IRRC=LGPRC(IPLS,IIRC)
+            SUMN=0.0
+            SUMM=0.0
+            SUMEI=0.0
+            SUMEE=0.0
+            lhit = .false.
+            DO 7471 IN=1,NTRII
+              INC=NCLTAL(IN)
+              if ((nstgrd(in) /= 0) .or. lgvac(in,ipls)) cycle
+              IF (NSTORDR >= NRAD) THEN
+                RECADD=-TABRC1(IRRC,IN)*DIIN(IPLS,IN)*ELCHA
+                EEADD=  EELRC1(IRRC,IN)*DIIN(IPLS,IN)*ELCHA
+              ELSE
+                RECADD=-EIRENE_FTABRC1(IRRC,IN)*DIIN(IPLS,IN)*ELCHA
+                EEADD=  EIRENE_FEELRC1(IRRC,IN)*DIIN(IPLS,IN)*ELCHA
+              END IF
+              PIADD=0._DP
+              IF (LPARMOM) PIADD=PARMOM(IPLS,IN)*RECADD
+              EIADD=1.5*TIIN(IPLSTI,IN)*RECADD
+              IF (LEDRIFT) EIADD=EIADD+EDRIFT(IPLS,IN)*RECADD
 
 !pb 21012013
 !  if lcoarse: add contribution to tallies only once per fine grid cell
 !  tallies are to be scaled with voltal
-                if (.not.lhit(inc)) then
-                  PPPL_COP(IPLS,INC)=PPPL_COP(IPLS,INC)+RECADD
-                  MPPL_COP(IPLS,INC)=MPPL_COP(IPLS,INC)+PIADD
-                  EPPL_COP(IPLS,INC)=EPPL_COP(IPLS,INC)+EIADD
-                  EPEL_COP(INC)=EPEL_COP(INC)+EEADD
-                  lhit(inc) = .true.
-                end if
+cdr to be checked again. Not sure that this is correct
+              if (.not.lhit(inc)) then
+                PPPL_COP(IPLS,INC)=PPPL_COP(IPLS,INC)+RECADD
+                MPPL_COP(IPLS,INC)=MPPL_COP(IPLS,INC)+PIADD
+                EPPL_COP(IPLS,INC)=EPPL_COP(IPLS,INC)+EIADD
+                EPEL_COP(INC)=EPEL_COP(INC)+EEADD
+                lhit(inc) = .true.
+              end if
 
 ! ALL INPUT TALLIES, TAB.., FTAB.., VOL, ARE ON UNDERLYING FINE GRID.
 ! and hence: RECADD,PIADD,EIADD,EEADD also on fine grid.
 !  here we scale with volume of triangle cell
 !  this needs to be done per triangle
-                SUMN=SUMN+RECADD*VOL(IN)
-                SUMM=SUMM+PIADD*VOL(IN)
-                SUMEI=SUMEI+EIADD*VOL(IN)
-                SUMEE=SUMEE+EEADD*VOL(IN)
+              SUMN=SUMN+RECADD*VOL(IN)
+              SUMM=SUMM+PIADD*VOL(IN)
+              SUMEI=SUMEI+EIADD*VOL(IN)
+              SUMEE=SUMEE+EEADD*VOL(IN)
 
 cdr may 18: This next code changes PAAT, EAPL, EAEL, for some B2.5 specific
 cdr         purpose, adding the vol-rec sink there, rather than on pppl_cop,.etc..
@@ -4308,7 +4354,7 @@ CC SUMN_OLD=WTOTP ???
           IF (.NOT.LSHORT) SUMN_OLD=RECTOT
 csw 08jun2010
           sumn_old=rectot
-csw
+
 C  RESCALE PPPL_COP,.... TO SOURCE STRENGTH FROM LAST FULL EIRENE RUN
 C  BECAUSE ALSO PAPL,.... ARE SCALED LIKE THIS
           PPPL_COP=PPPL_COP*SUMN_OLD/RECTOT
@@ -4326,6 +4372,7 @@ cdr
               CHEIM(1:NSBOX_TAL) = CHEIM(1:NSBOX_TAL) +
      .             EPPL_COP(JPLS,1:NSBOX_TAL) - EPLODA(JPLS,1:NSBOX_TAL)
             END DO
+
             CHEEM(1:NSBOX_TAL) = CHEEM(1:NSBOX_TAL) +
      .            EPEL_COP(1:NSBOX_TAL) - EPEODA (1:NSBOX_TAL)
           END IF
@@ -4408,19 +4455,19 @@ cdr  test particle sources papl,pmpl,pipl,pppl (...,ipls)
 cdr  test particle may have scored on a finer mesh (lcoarse=.false)
 
         DO IFL=1,NFLA
+
+cdr  fill bulk particle source rate sni(...ifl) from all contributing
+cdr  test particle sources papl,pmpl,pipl,pphpl,pppl(...,ipls)
+cdr  test particle may have scored on a finer mesh (lcoarse=.false)
           CHPS(IFL)=0.
           SNIS(IFL)=0.
           CHMOS(IFL)=0.
           SMOS(IFL)=0.
 
-cdr  fill bulk particle source rate sni(...ifl) from all contributing
-cdr  test particle sources papl,pmpl,pipl,pppl (...,ipls)
-cdr  test particle may have scored on a finer mesh (lcoarse=.false)
-
           DO JPLS=1,NPLSI
             IF (IFLB(JPLS).NE.IFL) CYCLE
             IPLSV=MPLSV(JPLS)
-c  ipls contributes to plasma code species ifl
+c  jpls contributes to plasma code species ifl
             DO IX=1,NDXA
               IF (LCUT(IX)) CYCLE
               DO IY=1,NDYA
@@ -4429,11 +4476,12 @@ C  either (not lcoarse) LOOP OVER ALL TRIANGLES CONTRIBUTING TO (ix,iy) CELL
 C  or     (    lcoarse) already scored on B2.5 grid cell INC=IY+(IX-1)*NR1TAL_SAVE
                 IF (.NOT.LCOARSE) THEN
 
-                CURPOI => HEADS(IY,IX)%P
-                DO WHILE (ASSOCIATED(CURPOI))
-                  IT=CURPOI%TRIANGLE
-                  INC=NCLTAL(IT)  !here: inc=it: all tally data are on fine grid
-                  CURPOI=>CURPOI%NEXT
+                  CURPOI => HEADS(IY,IX)%P
+                  DO WHILE (ASSOCIATED(CURPOI))
+                    IT=CURPOI%TRIANGLE
+                    INC=NCLTAL(IT)  !here: inc=it:
+                                    !all tally data are on fine grid
+                    CURPOI=>CURPOI%NEXT
                     SNICL=0._DP
                     IF (LPAPL)
      .               SNICL=SNICL+PAPL(JPLS,INC)*VOLTAL(INC)*FLX_EIR
@@ -4441,8 +4489,12 @@ C  or     (    lcoarse) already scored on B2.5 grid cell INC=IY+(IX-1)*NR1TAL_SA
      .               SNICL=SNICL+PMPL(JPLS,INC)*VOLTAL(INC)*FLX_EIR
                     IF (LPIPL)
      .               SNICL=SNICL+PIPL(JPLS,INC)*VOLTAL(INC)*FLX_EIR
+cdr  pppl would be the sampled bulk particle (ifl, jpls) volumetric recombination sink
+cdr       directly from the primary source
+cdr  pppl_cop is the analytic version of that tally.
                     SNICL=SNICL+PPPL_COP(JPLS,INC)*VOLTAL(INC)*FLX_EIR
-                  SNI(IX,IY,IFL,ISTRAI)=SNI(IX,IY,IFL,ISTRAI)+SNICL
+
+                    SNI(IX,IY,IFL,ISTRAI)=SNI(IX,IY,IFL,ISTRAI)+SNICL
 cdjm Jan2017
                     IF (LPAPL) SNI_PAPL(IX,IY,IFL,ISTRAI)=
      .               SNI_PAPL(IX,IY,IFL,ISTRAI)+PAPL(JPLS,INC)*
@@ -4453,12 +4505,16 @@ cdjm Jan2017
                     IF (LPIPL) SNI_PIPL(IX,IY,IFL,ISTRAI)=
      .               SNI_PIPL(IX,IY,IFL,ISTRAI)+PIPL(JPLS,INC)*
      .                                         VOLTAL(INC)*FLX_EIR
+cdr  pppl would be the sampled bulk particle (ifl, jpls) volumetric recombination sink
+cdr  pppl_cop is the analytic version of that tally.
+cdr  It is always allocated, and non-zero for vol. rec strata
                     SNI_PPPL(IX,IY,IFL,ISTRAI)=
      .               SNI_PPPL(IX,IY,IFL,ISTRAI)+PPPL_COP(JPLS,INC)*
      .                                         VOLTAL(INC)*FLX_EIR
-                  SNIS(IFL)=SNIS(IFL)+ SNICL
+cdr:  totals, these now include pppl contribution (from pppl_cop)
+                    SNIS(IFL)=SNIS(IFL)+ SNICL
                     CHPS(IFL)=CHPS(IFL)+CHPM(JPLS,INC)*VOLTAL(INC)
-                ENDDO
+                  ENDDO
                 ELSEIF (LCOARSE) THEN
                   INC=IY+(IX-1)*NR1TAL_SAVE
 
@@ -4469,9 +4525,13 @@ cdjm Jan2017
      .             SNICL=SNICL+PMPL(JPLS,INC)*VOLTAL(INC)*FLX_EIR
                   IF (LPIPL)
      .             SNICL=SNICL+PIPL(JPLS,INC)*VOLTAL(INC)*FLX_EIR
+cdr  pppl would be the sampled bulk particle (ifl, jpls) volumetric recombination sink
+cdr  pppl_cop is the analytic version of that tally.
+cdr  It is always allocated, and non-zero for vol. rec strata
                   SNICL=SNICL+PPPL_COP(JPLS,INC)*VOLTAL(INC)*FLX_EIR
+
                   SNI(IX,IY,IFL,ISTRAI)=SNI(IX,IY,IFL,ISTRAI)+SNICL
-cdjm Jan2017
+cdjm Jan2017:  split SNI (into AT,ML,IO, PL parts)
                   IF (LPAPL) SNI_PAPL(IX,IY,IFL,ISTRAI)=
      .                       SNI_PAPL(IX,IY,IFL,ISTRAI)+
      .                                       PAPL(JPLS,INC)*
@@ -4484,9 +4544,14 @@ cdjm Jan2017
      .                       SNI_PIPL(IX,IY,IFL,ISTRAI)+
      .                                       PIPL(JPLS,INC)*
      .                                       VOLTAL(INC)*FLX_EIR
+cdr  pppl would be the sampled bulk particle (ifl, jpls) volumetric recombination sink
+cdr  pppl_cop is the analytic version of that tally.
+cdr  It is always allocated, and non-zero for vol. rec strata
                   SNI_PPPL(IX,IY,IFL,ISTRAI)=SNI_PPPL(IX,IY,IFL,ISTRAI)+
      .                                       PPPL_COP(JPLS,INC)*
      .                                       VOLTAL(INC)*FLX_EIR
+
+cdr:  totals, these now include pppl contribution (from pppl_cop)
                   SNIS(IFL)=SNIS(IFL)+ SNICL
                   CHPS(IFL)=CHPS(IFL)+CHPM(JPLS,INC)*VOLTAL(INC)
                 ENDIF  ! LCOARSE OPTION
@@ -4533,21 +4598,22 @@ cdr  scaling was on fine grid: sum up to coarse grid for B2.5: in=ncltal(it)
 
 cdr   particle sources done.
 
-cdr   next: dwell on parallel momentum sources. still inside ifl and ipls loop
-cdr   ipls contributes to plasma code species ifl
+cdr   next: dwell on momentum sources. still inside IFL and JPLS loop
+cdr   JPLS contributes to plasma code species IFL
 
             DO IX=1,NDXA
               IF (LCUT(IX)) CYCLE
               DO IY=1,NDYA
                 IF (.NOT.LCOARSE) THEN
-                CURPOI => HEADS(IY,IX)%P
-                DO WHILE (ASSOCIATED(CURPOI))
-                  IT=CURPOI%TRIANGLE
-                  INC=NCLTAL(IT)
-                  CURPOI=>CURPOI%NEXT
-                  SIGNUM=1._DP
-                  IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
+                  CURPOI => HEADS(IY,IX)%P
+                  DO WHILE (ASSOCIATED(CURPOI))
+                    IT=CURPOI%TRIANGLE
+                    INC=NCLTAL(IT)
+                    CURPOI=>CURPOI%NEXT
+                    SIGNUM=1._DP
+                    IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
                     SMOCL=0._DP
+
                     IF (LMAPL) SMOCL=SMOCL+MAPL(JPLS,INC)*
      .                     VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
                     IF (LMMPL) SMOCL=SMOCL+MMPL(JPLS,INC)*
@@ -4572,16 +4638,16 @@ cdjm Jan2017
      .                VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
                     SMOS(IFL)=SMOS(IFL)+SMOCL
                     CHMOS(IFL)=CHMOS(IFL)+CHMOM(JPLS,INC)*VOLTAL(INC)
-                ENDDO
-              ELSEIF (LCOARSE) THEN
+                  ENDDO
+                ELSEIF (LCOARSE) THEN
 ! use BVIN from first triangle belonging the quadrangular cell
 cdr  associated(curpoi) is taken for granted here !?
 
-                CURPOI => HEADS(IY,IX)%P
-                IT=CURPOI%TRIANGLE
-                INC=IY+(IX-1)*NR1TAL_SAVE
+                  CURPOI => HEADS(IY,IX)%P
+                  IT=CURPOI%TRIANGLE
+                  INC=IY+(IX-1)*NR1TAL_SAVE
 
-                SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
+                  SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
                   SMOCL=0._DP
                   IF (LMAPL) SMOCL=SMOCL+MAPL(JPLS,INC)*
      .                   VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
@@ -4595,26 +4661,27 @@ cdr  associated(curpoi) is taken for granted here !?
 cdjm Jan2017
                   IF (LMAPL) SMO_MAPL(IX,IY,IFL,ISTRAI)=
      .                       SMO_MAPL(IX,IY,IFL,ISTRAI)+
-     .                                       MAPL(JPLS,INC)*VOLTAL(INC)*
-     .                                       1.D-5*SIGNUM*FLX_EIR
+     .                           MAPL(JPLS,INC)*VOLTAL(INC)*
+     .                           1.D-5*SIGNUM*FLX_EIR
                   IF (LMMPL) SMO_MMPL(IX,IY,IFL,ISTRAI)=
      .                       SMO_MMPL(IX,IY,IFL,ISTRAI)+
-     .                                       MMPL(JPLS,INC)*VOLTAL(INC)*
-     .                                       1.D-5*SIGNUM*FLX_EIR
+     .                           MMPL(JPLS,INC)*VOLTAL(INC)*
+     .                           1.D-5*SIGNUM*FLX_EIR
                   IF (LMIPL) SMO_MIPL(IX,IY,IFL,ISTRAI)=
      .                       SMO_MIPL(IX,IY,IFL,ISTRAI)+
-     .                                       MIPL(JPLS,INC)*VOLTAL(INC)*
-     .                                       1.D-5*SIGNUM*FLX_EIR
+     .                           MIPL(JPLS,INC)*VOLTAL(INC)*
+     .                           1.D-5*SIGNUM*FLX_EIR
                   SMO_CPPV(IX,IY,IFL,ISTRAI)=SMO_CPPV(IX,IY,IFL,ISTRAI)+
      .                                       MPPL_COP(JPLS,INC)*
      .                                       VOLTAL(INC)*
      .                                       1.D-5*SIGNUM*FLX_EIR
+cdr:  totals, these now include MPPL contribution (from mppl_cop)
                   SMOS(IFL)=SMOS(IFL)+SMOCL
                   CHMOS(IFL)=CHMOS(IFL)+CHMOM(JPLS,INC)*VOLTAL(INC)
               ENDIF  ! LCOARSE OPTION
 
-              ENDDO  !IY LOOP
-            ENDDO  !IX LOOP
+              ENDDO  ! IY LOOP
+            ENDDO  ! IX LOOP
 
             IF (.NOT.LSHORT) THEN
 
@@ -4635,7 +4702,8 @@ cdr   ntalm is a copv tally.
                      CURPOI => HEADS(IY,IX)%P
                      DO WHILE (ASSOCIATED(CURPOI))
                        IT=CURPOI%TRIANGLE
-                       INC=NCLTAL(IT) !here: inc=it: all tally data are on fine grid
+                       INC=NCLTAL(IT) !here: inc=it:
+                                      !all tally data are on fine grid
                        CURPOI=>CURPOI%NEXT
                        SIGNUM=1._DP
                        IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
@@ -4646,6 +4714,8 @@ cdr   ntalm is a copv tally.
      .                  VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
                        IF (LMIPL) SMORES=SMORES+MIPL(JPLS,INC)*
      .                         VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
+
+cdr  no need to add mppl_cop contribution here, because this is exact (MC noise free)
                        RESSMO(ISTRAI,IFL)=RESSMO(ISTRAI,IFL)+
      .                                    ABS(SIGMA(ISTAT_COP,INC)*
      .                                    SMORES/100.D0*1.D5)
@@ -4668,7 +4738,8 @@ C
                 CURPOI => HEADS(IY,IX)%P
                 DO WHILE (ASSOCIATED(CURPOI))
                   IT=CURPOI%TRIANGLE
-                  INC=NCLTAL(IT)  !here: inc=it: all tally data are on fine grid
+                  INC=NCLTAL(IT)  !here: inc=it:
+                                  !all tally data are on fine grid
                   CURPOI=>CURPOI%NEXT
                   IF (LPAAT) SNA_PAAT(IX,IY,JATM,ISTRAI)=
      .               SNA_PAAT(IX,IY,JATM,ISTRAI)+PAAT(JATM,INC)*
@@ -4704,7 +4775,8 @@ C
                 CURPOI => HEADS(IY,IX)%P
                 DO WHILE (ASSOCIATED(CURPOI))
                   IT=CURPOI%TRIANGLE
-                  INC=NCLTAL(IT)  !here: inc=it: all tally data are on fine grid
+                  INC=NCLTAL(IT)  !here: inc=it:
+                                  !all tally data are on fine grid
                   CURPOI=>CURPOI%NEXT
                   IF (LPAML) SNA_PAML(IX,IY,JMOL,ISTRAI)=
      .               SNA_PAML(IX,IY,JMOL,ISTRAI)+PAML(JMOL,INC)*
@@ -4740,7 +4812,8 @@ C
                 CURPOI => HEADS(IY,IX)%P
                 DO WHILE (ASSOCIATED(CURPOI))
                   IT=CURPOI%TRIANGLE
-                  INC=NCLTAL(IT)  !here: inc=it: all tally data are on fine grid
+                  INC=NCLTAL(IT)  !here: inc=it:
+                                  !all tally data are on fine grid
                   CURPOI=>CURPOI%NEXT
                   IF (LPAIO) SNA_PAIO(IX,IY,JION,ISTRAI)=
      .               SNA_PAIO(IX,IY,JION,ISTRAI)+PAIO(JION,INC)*
@@ -4780,7 +4853,8 @@ C  or     (    lcoarse) already scored on B2.5 grid cell INC=IY+(IX-1)*NR1TAL_SA
               CURPOI => HEADS(IY,IX)%P
               DO WHILE (ASSOCIATED(CURPOI))
                 IT=CURPOI%TRIANGLE
-                INC=NCLTAL(IT)  !here: inc=it: all tally data are on fine grid
+                INC=NCLTAL(IT) !here: inc=it:
+                               !all tally data are on fine grid
                 CURPOI=>CURPOI%NEXT
 
                 IF (LEAEL) SEE(IX,IY,ISTRAI)=SEE(IX,IY,ISTRAI)+
@@ -4789,8 +4863,10 @@ C  or     (    lcoarse) already scored on B2.5 grid cell INC=IY+(IX-1)*NR1TAL_SA
      .            EMEL(INC)*VOLTAL(INC)*ELCHA
                 IF (LEIEL) SEE(IX,IY,ISTRAI)=SEE(IX,IY,ISTRAI)+
      .            EIEL(INC)*VOLTAL(INC)*ELCHA
+cdr  account for vol.rec electron energy loss
                 SEE(IX,IY,ISTRAI)=SEE(IX,IY,ISTRAI)+
      .            EPEL_COP(INC)*VOLTAL(INC)*ELCHA
+c
                 IF (LPAEL) SNE_PAEL(IX,IY,ISTRAI)=
      .                     SNE_PAEL(IX,IY,ISTRAI)+
      .                                 PAEL(INC)*VOLTAL(INC)*FLX_EIR
@@ -4806,8 +4882,10 @@ C  or     (    lcoarse) already scored on B2.5 grid cell INC=IY+(IX-1)*NR1TAL_SA
                 IF (LEIEL) SEE_EIEL(IX,IY,ISTRAI)=
      .                     SEE_EIEL(IX,IY,ISTRAI)+
      .                                 EIEL(INC)*VOLTAL(INC)*ELCHA
+cdr  account for vol.rec electron energy loss
                 SEE_EPEL(IX,IY,ISTRAI)=SEE_EPEL(IX,IY,ISTRAI)+
      .                                 EPEL_COP(INC)*VOLTAL(INC)*ELCHA
+cdr:  totals, these now include EPEL contribution (from epel_cop)
                 CHEES=CHEES+CHEEM(INC)*VOLTAL(INC)
                 IF (LEAEL) SEES=SEES+EAEL(INC)*VOLTAL(INC)
                 IF (LEMEL) SEES=SEES+EMEL(INC)*VOLTAL(INC)
@@ -4822,20 +4900,25 @@ C  or     (    lcoarse) already scored on B2.5 grid cell INC=IY+(IX-1)*NR1TAL_SA
      .                               EMEL(INC)*VOLTAL(INC)*ELCHA
               IF (LEIEL) SEE(IX,IY,ISTRAI)=SEE(IX,IY,ISTRAI)+
      .                               EIEL(INC)*VOLTAL(INC)*ELCHA
+cdr  account for vol.rec electron energy loss
               SEE(IX,IY,ISTRAI)=SEE(IX,IY,ISTRAI)+
      .                           EPEL_COP(INC)*VOLTAL(INC)*ELCHA
               IF (LPAEL) SNE_PAEL(IX,IY,ISTRAI)=SNE_PAEL(IX,IY,ISTRAI)+
      .                               PAEL(INC)*VOLTAL(INC)*FLX_EIR
               IF (LPMEL) SNE_PMEL(IX,IY,ISTRAI)=SNE_PMEL(IX,IY,ISTRAI)+
      .                               PMEL(INC)*VOLTAL(INC)*FLX_EIR
+cdr  LPIEL ... SNE_PIEL ?
               IF (LEAEL) SEE_EAEL(IX,IY,ISTRAI)=SEE_EAEL(IX,IY,ISTRAI)+
      .                               EAEL(INC)*VOLTAL(INC)*ELCHA
               IF (LEMEL) SEE_EMEL(IX,IY,ISTRAI)=SEE_EMEL(IX,IY,ISTRAI)+
      .                               EMEL(INC)*VOLTAL(INC)*ELCHA
               IF (LEIEL) SEE_EIEL(IX,IY,ISTRAI)=SEE_EIEL(IX,IY,ISTRAI)+
      .                               EIEL(INC)*VOLTAL(INC)*ELCHA
+cdr  account for vol.rec electron energy loss
               SEE_EPEL(IX,IY,ISTRAI)=SEE_EPEL(IX,IY,ISTRAI)+
      .                               EPEL_COP(INC)*VOLTAL(INC)*ELCHA
+
+cdr:  totals, these now include EPEL contribution (from epel_cop)
               CHEES=CHEES+CHEEM(INC)*VOLTAL(INC)
               IF (LEAEL) SEES=SEES+EAEL(INC)*VOLTAL(INC)
               IF (LEMEL) SEES=SEES+EMEL(INC)*VOLTAL(INC)
@@ -4843,8 +4926,8 @@ C  or     (    lcoarse) already scored on B2.5 grid cell INC=IY+(IX-1)*NR1TAL_SA
               SEES=SEES+EPEL_COP(INC)*VOLTAL(INC)
             ENDIF  ! LCOARSE OPTION
 
-          ENDDO  !IY LOOP
-        ENDDO  !IX LOOP
+          ENDDO  ! IY LOOP
+        ENDDO  ! IX LOOP
 C
         SEIS=0.
         CHEIS=0.
@@ -4866,7 +4949,8 @@ C  or     (    lcoarse) already scored on B2.5 grid cell INC=IY+(IX-1)*NR1TAL_SA
                   CURPOI => HEADS(IY,IX)%P
                   DO WHILE (ASSOCIATED(CURPOI))
                     IT=CURPOI%TRIANGLE
-                    INC=NCLTAL(IT) !here: inc=it: all tally data are on fine grid
+                    INC=NCLTAL(IT) !here: inc=it:
+                                   !all tally data are on fine grid
                     CURPOI=>CURPOI%NEXT
                     IF (LEAPL) SEI(IX,IY,ISTRAI)=SEI(IX,IY,ISTRAI)+
      .                  EAPL(JPLS,INC)*VOLTAL(INC)*ELCHA
@@ -4874,6 +4958,7 @@ C  or     (    lcoarse) already scored on B2.5 grid cell INC=IY+(IX-1)*NR1TAL_SA
      .                  EMPL(JPLS,INC)*VOLTAL(INC)*ELCHA
                     IF (LEIPL) SEI(IX,IY,ISTRAI)=SEI(IX,IY,ISTRAI)+
      .                  EIPL(JPLS,INC)*VOLTAL(INC)*ELCHA
+cdr  account for vol.rec bulk ion energy loss
                     SEI(IX,IY,ISTRAI)=SEI(IX,IY,ISTRAI)+
      .                  EPPL_COP(JPLS,INC)*VOLTAL(INC)*ELCHA
 cdjm Jan2017
@@ -4886,12 +4971,16 @@ cdjm Jan2017
                     IF (LEIPL) SEI_EIPL(IX,IY,ISTRAI)=
      .                  SEI_EIPL(IX,IY,ISTRAI)+
      .                  EIPL(JPLS,INC)*VOLTAL(INC)*ELCHA
+
                     SEI_EPPL(IX,IY,ISTRAI)=SEI_EPPL(IX,IY,ISTRAI)+
      .                  EPPL_COP(JPLS,INC)*VOLTAL(INC)*ELCHA
+
+cdr:  totals, these now include EPPL contribution (from eppl_cop)
                     CHEIS=CHEIS+CHEIM(INC)*VOLTAL(INC)
                     IF (LEAPL) SEIS=SEIS+EAPL(JPLS,INC)*VOLTAL(INC)
                     IF (LEMPL) SEIS=SEIS+EMPL(JPLS,INC)*VOLTAL(INC)
                     IF (LEIPL) SEIS=SEIS+EIPL(JPLS,INC)*VOLTAL(INC)
+cdr  account for vol.rec bulk ion energy loss
                     SEIS=SEIS+EPPL_COP(JPLS,INC)*VOLTAL(INC)
                   ENDDO
                 ELSEIF (LCOARSE) THEN
@@ -4902,6 +4991,7 @@ cdjm Jan2017
      .                EMPL(JPLS,INC)*VOLTAL(INC)*ELCHA
                   IF (LEIPL) SEI(IX,IY,ISTRAI)=SEI(IX,IY,ISTRAI)+
      .                EIPL(JPLS,INC)*VOLTAL(INC)*ELCHA
+cdr  account for vol.rec bulk ion energy loss
                   SEI(IX,IY,ISTRAI)=SEI(IX,IY,ISTRAI)+
      .                EPPL_COP(JPLS,INC)*VOLTAL(INC)*ELCHA
 cdjm Jan2017
@@ -4914,12 +5004,14 @@ cdjm Jan2017
                   IF (LEIPL) SEI_EIPL(IX,IY,ISTRAI)=
      .                SEI_EIPL(IX,IY,ISTRAI)+
      .                EIPL(JPLS,INC)*VOLTAL(INC)*ELCHA
+
                   SEI_EPPL(IX,IY,ISTRAI)=SEI_EPPL(IX,IY,ISTRAI)+
      .                EPPL_COP(JPLS,INC)*VOLTAL(INC)*ELCHA
                   CHEIS=CHEIS+CHEIM(INC)*VOLTAL(INC)
                   IF (LEAPL) SEIS=SEIS+EAPL(JPLS,INC)*VOLTAL(INC)
                   IF (LEMPL) SEIS=SEIS+EMPL(JPLS,INC)*VOLTAL(INC)
                   IF (LEIPL) SEIS=SEIS+EIPL(JPLS,INC)*VOLTAL(INC)
+cdr  account for vol.rec bulk ion energy loss
                   SEIS=SEIS+EPPL_COP(JPLS,INC)*VOLTAL(INC)
                 ENDIF  ! LCOARSE OPTION
 
@@ -4927,7 +5019,7 @@ cdjm Jan2017
             ENDDO ! IX LOOP
 
           ENDDO  ! JPLS LOOP
-        ENDDO ! IFL LOOP
+        ENDDO  ! IFL LOOP
 
         IF (.NOT.LSHORT) THEN
 
@@ -4997,7 +5089,7 @@ cdr   ntalm is a copv tally.
               END DO   !NDYA
             END DO    !NDXA
           end if   !ISTAT_COP
-      END IF  !lshort
+        END IF  !lshort
 
 CVK CALCULATES TOTAL POWER FOR SCALING
         IF (.NOT.LSHORT) THEN
@@ -5026,8 +5118,8 @@ CVK SCALING TO MAKE POSSIBLE COMPARISON WITH B2
         END IF
 
         CALL EIRENE_LEER(1)
-      WRITE (iunout,*) 'RECYCLING SOURCE FROM IF3COP ',ISTRAI
-        WRITE (iunout,'(3E14.6)') sum(SNIS(1:nfla)), seis, sees
+        WRITE (iunout,*) 'RECYCLING SOURCE FROM IF3COP ',ISTRAI
+        WRITE (iunout,'(3E14.6)') sum(SNIS(1:nfla)), SEIS, SEES
 C
 C   NEXT:
 C   IF LSHORT OR IFIRST.GT.0     : CRITERION TO STOP SHORT CYCLE,
@@ -5041,6 +5133,7 @@ C
           DO 7550 IFL=1,NFLA
             SNIS0(ISTRAI,0)=SNIS0(ISTRAI,0)+SNIS(IFL)*FLXI
             SNIS0(ISTRAI,IFL)=SNIS(IFL)*FLXI
+
             SMOS0(ISTRAI,0)=SMOS0(ISTRAI,0)+SMOS(IFL)*FLXI
             SMOS0(ISTRAI,IFL)=SMOS(IFL)*FLXI
  7550     CONTINUE
@@ -5075,6 +5168,7 @@ cdjm Jan2017
               SEE_EMEL(IX,IY,ISTRAI)=SEE_EMEL(IX,IY,ISTRAI)*SCALN(0)
               SEE_EIEL(IX,IY,ISTRAI)=SEE_EIEL(IX,IY,ISTRAI)*SCALN(0)
               SEE_EPEL(IX,IY,ISTRAI)=SEE_EPEL(IX,IY,ISTRAI)*SCALN(0)
+
               SEI(IX,IY,ISTRAI)=SEI(IX,IY,ISTRAI)*SCALN(0)
 cdjm Jan2017
               SEI_EAPL(IX,IY,ISTRAI)=SEI_EAPL(IX,IY,ISTRAI)*SCALN(0)
@@ -5096,7 +5190,9 @@ cdjm Jan2017
      .                     SNI_PIPL(IX,IY,IFL,ISTRAI)*SCALN(IFL)
                 SNI_PPPL(IX,IY,IFL,ISTRAI)=
      .                     SNI_PPPL(IX,IY,IFL,ISTRAI)*SCALN(IFL)
-                SMO(IX,IY,IFL,ISTRAI)=SMO(IX,IY,IFL,ISTRAI)*SCALN(IFL)
+
+                SMO(IX,IY,IFL,ISTRAI)=SMO(IX,IY,IFL,ISTRAI)*
+     .                                SCALN(IFL)
 cdjm Jan2017
                 SMO_MAPL(IX,IY,IFL,ISTRAI)=
      .                     SMO_MAPL(IX,IY,IFL,ISTRAI)*SCALN(IFL)
@@ -5158,10 +5254,11 @@ cdjm Jan2017
             END DO
           END DO
 C
-          LTEST=.TRUE.  ! tactically assume: this stratum will continue in short cycle mode
+          LTEST=.TRUE.  ! tactically assume:
+                        ! this stratum will continue in short cycle mode
 
           IF (LSTOP)
-     .      WRITE (iunout,*) 'STOP SHORT CYCLE: ALL B2 TIMESTEPS DONE '
+     .      WRITE (iunout,*) 'STOP SHORT CYCLE: ALL B2 TIMESTEPS DONE'
 
 !  DO AT LEAST ONE MORE TIME STEP
 CDR  DECIDE FOR THIS CURRENT STRATUM ISTRAI:
@@ -5169,10 +5266,11 @@ CDR  SHORT CYCLE (IMPLICIT CORRECTION) ONLY, OR FULL MONTE CARLO
 
           DO 7558 IFL=1,NFLA
             TEST=CHPS(IFL)/(SNIS(IFL)+1.D-60)*100.
-              write (iunout,*) ' global change in sni,ifl ',test,ifl
+            write (iunout,*) ' global change in sni,ifl ',test,ifl
             IF (ABS(TEST).GT.CHGP) THEN
               LSTP3=.TRUE.
-              LTEST=.FALSE.  !  stop short cycle mode. Full new set of trajectories.
+              LTEST=.FALSE.  ! stop short cycle mode.
+                             ! Full new set of trajectories.
               WRITE (iunout,'(A,1P,3E12.4)')
      .                    'STOP SHORT CYCLE: PART. SOURCES: ',
      .                     SNIS(IFL),CHPS(IFL),TEST
@@ -5180,10 +5278,11 @@ CDR  SHORT CYCLE (IMPLICIT CORRECTION) ONLY, OR FULL MONTE CARLO
      .                          ISTRAI,IFL
             ENDIF
             TEST=CHMOS(IFL)/(SMOS(IFL)+1.D-60)*100.
-              write (iunout,*) ' global change in smo,ifl ',test,ifl
+            write (iunout,*) ' global change in smo,ifl ',test,ifl
             IF (ABS(TEST).GT.CHGMOM) THEN
               LSTP3=.TRUE.
-              LTEST=.FALSE. !  stop short cycle mode. Full new set of  trajectories.
+              LTEST=.FALSE. ! stop short cycle mode.
+                            ! Full new set of trajectories.
               WRITE (iunout,'(A,1P,3E12.4)')
      .                    'STOP SHORT CYCLE: MOMENTUM SOURCE: ',
      .                     SMOS(IFL),CHMOS(IFL),TEST
@@ -5196,7 +5295,8 @@ CDR  SHORT CYCLE (IMPLICIT CORRECTION) ONLY, OR FULL MONTE CARLO
           write (iunout,*) ' global change in see ',test
           IF (ABS(TEST).GT.CHGEE) THEN
             LSTP3=.TRUE.
-            LTEST=.FALSE. !  stop short cycle mode. Full new set of  trajectories.
+            LTEST=.FALSE. ! stop short cycle mode.
+                          ! Full new set of trajectories.
             WRITE (iunout,'(A,1P,3E12.4)')
      .                  'STOP SHORT CYCLE: EL. EN. SOURCE: ',
      .                   SEES,CHEES,TEST
@@ -5206,10 +5306,11 @@ CDR  SHORT CYCLE (IMPLICIT CORRECTION) ONLY, OR FULL MONTE CARLO
           write (iunout,*) ' global change in sei ',test
           IF (ABS(TEST).GT.CHGEI) THEN
             LSTP3=.TRUE.
-            LTEST=.FALSE. !  stop short cycle mode. Full new set of  trajectories.
+            LTEST=.FALSE. ! stop short cycle mode.
+                          ! Full new set of trajectories.
             WRITE (iunout,'(A,1P,3E12.4)')
      .                  'STOP SHORT CYCLE: ION EN. SOURCE: ',
-     .                        SEIS,CHEIS,TEST
+     .                   SEIS,CHEIS,TEST
             WRITE (iunout,*) 'STRATUM ISTRAI ',ISTRAI
           ENDIF
           IF (LSHORT) LSTP=LSTP3
@@ -5262,6 +5363,7 @@ cdjm Jan2017
      .               SNI_PIPL(IX,IY,IFL,ISTRAI)*FLXI
                 SNI_PPPL(IX,IY,IFL,ISTRAI)=
      .               SNI_PPPL(IX,IY,IFL,ISTRAI)*FLXI
+
                 SMO(IX,IY,IFL,ISTRAI)=SMO(IX,IY,IFL,ISTRAI)*FLXI
 cdjm Jan2017
                 SMO_MAPL(IX,IY,IFL,ISTRAI)=
@@ -5469,7 +5571,8 @@ C  WRITE ICCPL1
       END DO
 c  write last (incomplete) record of ICCPL1
       IF (JC > 0) THEN
-        IHELP(JC+1:NOUTAU) = 0   ! fill up last record, up to full length NOUTAU
+        IHELP(JC+1:NOUTAU) = 0   ! fill up last record,
+                                 ! up to full length NOUTAU
         IRC=IRC+1
         WRITE (11,REC=IRC) IHELP
         IF (TRCINT.OR.TRCFLE)
@@ -5570,7 +5673,7 @@ C
 C
       LNONREC_SY=ANY(SFNISY(1:nfla).NE.0.0).OR.SFEISY.NE.0.0.OR.
      .                                         SFEESY.NE.0.0
-      WRITE (IUNOUT,*) 'NON-RECYCLING FLUXES FROM SOUTH EDGE '
+      WRITE (IUNOUT,*) 'NON-RECYCLING FLUXES FROM SOUTH EDGE'
       WRITE (IUNOUT,8888) sum(SFNISY(1:nfla)),SFEISY,SFEESY
 C
 C
@@ -5636,7 +5739,7 @@ C
 C
       LNONREC_NY=ANY(SFNINY(1:nfla).NE.0.0).OR.SFEINY.NE.0.0.OR.
      .                                         SFEENY.NE.0.0
-      WRITE (IUNOUT,*) 'NON-RECYCLING FLUXES TO NORTH EDGE '
+      WRITE (IUNOUT,*) 'NON-RECYCLING FLUXES TO NORTH EDGE'
       WRITE (IUNOUT,8888) sum(SFNINY(1:nfla)),SFEINY,SFEENY
 C
 C
@@ -5694,7 +5797,7 @@ C
 C
       LNONREC_WX=ANY(SFNIWX(1:nfla).NE.0.0).OR.SFEIWX.NE.0.0.OR.
      .                                         SFEEWX.NE.0.0
-      WRITE (IUNOUT,*) 'NON-RECYCLING FLUXES FROM WEST EDGE '
+      WRITE (IUNOUT,*) 'NON-RECYCLING FLUXES FROM WEST EDGE'
       WRITE (IUNOUT,8888) sum(SFNIWX(1:nfla)),SFEIWX,SFEEWX
 C
 C
@@ -5755,7 +5858,7 @@ C
 C
       LNONREC_EX=ANY(SFNIEX(1:nfla).NE.0.0).OR.SFEIEX.NE.0.0.OR.
      .                                         SFEEEX.NE.0.0
-      WRITE (IUNOUT,*) 'NON-RECYCLING FLUXES TO EAST EDGE '
+      WRITE (IUNOUT,*) 'NON-RECYCLING FLUXES TO EAST EDGE'
       WRITE (IUNOUT,8888) sum(SFNIEX(1:nfla)),SFEIEX,SFEEEX
 C
 C  NEXT: FLUXES TO THOSE SURFACES, AT WHICH RECYCLING BOUNDARY
@@ -5781,17 +5884,17 @@ C  BALANCE CONTRIB. X-GRID REC. SOURCE
               DO 10131 IFL=NSPZI(I,IPRT),NSPZE(I,IPRT)
                 IF (NINCT(I,IPRT)*FNIXB(NDT(I,IPRT),IY,IFL).GE.0.D0)
      >           THEN
-                SFNIT(I,IFL)=SFNIT(I,IFL)-
-     .                   NINCT(I,IPRT)*FNIXB(NDT(I,IPRT),IY,IFL)
+                  SFNIT(I,IFL)=SFNIT(I,IFL)-
+     .              NINCT(I,IPRT)*FNIXB(NDT(I,IPRT),IY,IFL)
 
 cdr sheath contributions: count negative for electrons, positive for ions
-cdr unfinished:  need to account for charge state of ion species IFL
-                SHEAE(I)=SHEAE(I)+TEB(NDT(I,IPRT),IY)*
-     .           NINCT(I,IPRT)*FNIXB(NDT(I,IPRT),IY,IFL)*
-     .           (-DELTA_SHEATHXB(NDT(I,IPRT),IY))
-                SHEAI(I)=SHEAI(I)+TEB(NDT(I,IPRT),IY)*
-     .           NINCT(I,IPRT)*FNIXB(NDT(I,IPRT),IY,IFL)*
-     .           DELTA_SHEATHXB(NDT(I,IPRT),IY)
+cdr unfinished: need to account for charge state of ion species IFL
+                  SHEAE(I)=SHEAE(I)+TEB(NDT(I,IPRT),IY)*
+     .              NINCT(I,IPRT)*FNIXB(NDT(I,IPRT),IY,IFL)*
+     .             (-DELTA_SHEATHXB(NDT(I,IPRT),IY))
+                  SHEAI(I)=SHEAI(I)+TEB(NDT(I,IPRT),IY)*
+     .              NINCT(I,IPRT)*FNIXB(NDT(I,IPRT),IY,IFL)*
+     .              DELTA_SHEATHXB(NDT(I,IPRT),IY)
 cdr  sheath done
                 ELSE
                   WRITE (iunout,*)
@@ -5815,17 +5918,17 @@ C  BALANCE CONTRIB. FROM Y-GRID RECYCLING SOURCE
               DO 10136 IFL=NSPZI(I,IPRT),NSPZE(I,IPRT)
                 IF (NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL).GE.0.D0)
      >           THEN
-                SFNIT(I,IFL)=SFNIT(I,IFL)-
-     .                   NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)
+                  SFNIT(I,IFL)=SFNIT(I,IFL)-
+     .             NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)
 
 cdr sheath contributions: count negative for electrons, positive for ions
-cdr unfinished:  need to account for charge state of ion species IFL
-                SHEAE(I)=SHEAE(I)+TEB(IX,NDT(I,IPRT))*
-     .           NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)*
-     .           (-DELTA_SHEATHYB(IX,NDT(I,IPRT)))
-                SHEAI(I)=SHEAI(I)+TEB(IX,NDT(I,IPRT))*
-     .           NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)*
-     .           DELTA_SHEATHYB(IX,NDT(I,IPRT))
+cdr unfinished: need to account for charge state of ion species IFL
+                  SHEAE(I)=SHEAE(I)+TEB(IX,NDT(I,IPRT))*
+     .             NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)*
+     .             (-DELTA_SHEATHYB(IX,NDT(I,IPRT)))
+                  SHEAI(I)=SHEAI(I)+TEB(IX,NDT(I,IPRT))*
+     .             NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)*
+     .             DELTA_SHEATHYB(IX,NDT(I,IPRT))
 cdr  sheath done
                 ELSE
                   WRITE (iunout,*)
@@ -5873,11 +5976,11 @@ C
         SSE=0.
         DO IX=1,NDXA
           DO IY=1,NDYA
-             DO 10141 IFL=1,NFLA
-               SSN(IFL)=SSN(IFL)+SNI(IX,IY,IFL,ISTRA)
-10141        CONTINUE
-             SSI=SSI+SEI(IX,IY,ISTRA)
-             SSE=SSE+SEE(IX,IY,ISTRA)
+            DO 10141 IFL=1,NFLA
+              SSN(IFL)=SSN(IFL)+SNI(IX,IY,IFL,ISTRA)
+10141       CONTINUE
+            SSI=SSI+SEI(IX,IY,ISTRA)
+            SSE=SSE+SEE(IX,IY,ISTRA)
           END DO
         END DO
 C
@@ -5939,12 +6042,12 @@ c  sum over strata
 C
       CALL EIRENE_LEER (1)
       IF (LBALAN) THEN
-        WRITE (iunout,*) 'B2-EIRENE GLOBAL BALANCES '
+        WRITE (iunout,*) 'B2-EIRENE GLOBAL BALANCES'
         WRITE (iunout,*) 'PARTICLE FLUXES (SFNI..) IN AMP'
         WRITE (iunout,*) 'ENERGY FLUXES (SFEI..,SFEE..,) IN WATT'
         CALL EIRENE_LEER(1)
         IF (LNONREC_SY) THEN
-          WRITE (iunout,*) ' NON-RECYCLING FLUXES AT SOUTH EDGE '
+          WRITE (iunout,*) ' NON-RECYCLING FLUXES AT SOUTH EDGE'
           CALL EIRENE_MASR2(' SFEISY,SFEESY  ',SFEISY,SFEESY)
           DO IFL=1,NFLA
             WRITE(iunout,'(A,I3,A,ES12.4)') 'SFNISY(IFL =',IFL,') ',
@@ -5960,7 +6063,7 @@ C
           ENDDO
         ENDIF
         IF (LNONREC_WX) THEN
-          WRITE (iunout,*) ' NON-RECYCLING FLUXES AT WEST EDGE '
+          WRITE (iunout,*) ' NON-RECYCLING FLUXES AT WEST EDGE'
           CALL EIRENE_MASR2(' SFEIWX,SFEEWX  ',SFEIWX,SFEEWX)
           DO IFL=1,NFLA
             WRITE(iunout,'(A,I3,A,ES12.4)') 'SFNIWX(IFL =',IFL,') ',
@@ -5968,7 +6071,7 @@ C
           ENDDO
         ENDIF
         IF (LNONREC_EX) THEN
-          WRITE (iunout,*) ' NON-RECYCLING FLUXES AT EAST EDGE '
+          WRITE (iunout,*) ' NON-RECYCLING FLUXES AT EAST EDGE'
           CALL EIRENE_MASR2(' SFEIEX,SFEEEX  ',SFEIEX,SFEEEX)
           DO IFL=1,NFLA
             WRITE(iunout,'(A,I3,A,ES12.4)') 'SFNIEX(IFL =',IFL,') ',
@@ -5983,44 +6086,44 @@ C
         DO ITARG=1,NTARGI
           IF (ANY(SFNIT(ITARG,1:NFLA).NE.0.0)) THEN
             DO IFL=1,NFLA
-             WRITE(iunout,'(1X,A,I3,A,I3,A,ES15.8)')
+              WRITE(iunout,'(1X,A,I3,A,I3,A,ES15.8)')
      .            'TARGET ', ITARG, ', NI(IFL =',IFL,') ',
      .             SFNIT(ITARG,IFL)
-           ENDDO
+            ENDDO
           ENDIF
         ENDDO
         CALL EIRENE_LEER(1)
         CALL EIRENE_MASR2(' TOTALS, EI,EE  ',SFEIT(0),SFEET(0))
         DO IFL=1,NFLA
-           WRITE(iunout,'(1X,A,I3,A,ES15.8)')
+          WRITE(iunout,'(1X,A,I3,A,ES15.8)')
      .          'TOTALS, NI(IFL =',IFL,') ',SFNIT(0,IFL)
         ENDDO
 
         CALL EIRENE_LEER(2)
 
-        WRITE (iunout,*) ' NEUTRAL PLASMA INTERACTION: '
+        WRITE (iunout,*) ' NEUTRAL PLASMA INTERACTION:'
         CALL EIRENE_MASR2(' SSEI,SSEE      ',SSEI,SSEE)
         DO IFL=1,NFLA
-           WRITE(iunout,'(1X,A,I3,A,ES15.8)')
+          WRITE(iunout,'(1X,A,I3,A,ES15.8)')
      .           'SSNI(IFL =',IFL,') ',SSNI(IFL)
         ENDDO
         CALL EIRENE_LEER(2)
 
         WRITE (iunout,*)
-     .    ' VOLUMETRIC ENERGY SINKS FOR ELECTRONS, FROM B2 '
-        CALL EIRENE_MASR4(' B2BREM,B2RAD,-B2QIE,-B2VDP     ',
+     .    'VOLUMETRIC ENERGY SINKS FOR ELECTRONS, FROM B2'
+        CALL EIRENE_MASR4('B2BREM,B2RAD,-B2QIE,-B2VDP      ',
      .               B2BREM,B2RAD,-B2QIE,-B2VDP)
         WRITE (iunout,*)
-     .    ' TARGET SHEATH CONTRIBUTIONS,ELECTRONS AND IONS '
+     .    'TARGET SHEATH CONTRIBUTIONS, ELECTRONS AND IONS'
         SFETMP(1:NTARGI)=SHEAI(1:NTARGI)
         CALL EIRENE_MASRR1 (' TARGETS,EI',SFETMP,NTARGI,5)
         SFETMP(1:NTARGI)=SHEAE(1:NTARGI)
         CALL EIRENE_MASRR1 (' TARGETS,EE',SFETMP,NTARGI,5)
         DEALLOCATE(SFETMP)
-        CALL EIRENE_MASR2(' TOTALS,EI,EE    ',SHEAI(0),SHEAE(0))
+        CALL EIRENE_MASR2('TOTALS,EI,EE    ',SHEAI(0),SHEAE(0))
         CALL EIRENE_LEER(2)
 
-        CALL EIRENE_MASR2(' BALANI,BALANE  ',BALANI,BALANE)
+        CALL EIRENE_MASR2('BALANI,BALANE   ',BALANI,BALANE)
         DO IFL=1,NFLA
            WRITE(iunout,'(1X,A,I3,A,ES15.8)')
      .          'BALANN(IFL =',IFL,') ',BALANN(IFL)
@@ -6054,24 +6157,24 @@ C
         CALL EIRENE_MASR3('BALAN,TOT,RNT           ',BALAN,TOT,RNT)
 
         CALL EIRENE_LEER(1)
-        WRITE (iunout,*) ' NOISE FROM SOURCE TERMS '
+        WRITE (iunout,*) 'NOISE FROM SOURCE TERMS'
 
         RESSNI(0,1:NFLA) = RESSNI(0,1:NFLA)/ELCHA
         RESSMO(0,1:NFLA) = RESSMO(0,1:NFLA)/ELCHA
-        CALL EIRENE_MASR4(' RESSEE,RESSEI,RESSNI,RESSMO    ',
+        CALL EIRENE_MASR4('RESSEE,RESSEI,RESSNI,RESSMO     ',
      .        RESSEE(0),RESSEI(0),SUM(RESSNI(0,1:NFLA)),
      .        SUM(RESSMO(0,1:NFLA)))
         CALL EIRENE_LEER(1)
 
-        WRITE (iunout,*) ' RESSNI-CONTRIBUTIONS BY DIFFERENT SPECIES '
+        WRITE (iunout,*) 'RESSNI-CONTRIBUTIONS BY DIFFERENT SPECIES'
         if (.not.allocated(helpw)) allocate (helpw(nfla))
         helpw(1:nfla) = RESSNI(0,1:NFLA)
-        CALL EIRENE_MASRR1 (' RESSNI    ',HELPW,NFLA,5)
+        CALL EIRENE_MASRR1 ('RESSNI     ',HELPW,NFLA,5)
         CALL EIRENE_LEER(1)
 
-        WRITE (iunout,*) ' RESSMO-CONTRIBUTIONS BY DIFFERENT SPECIES '
+        WRITE (iunout,*) 'RESSMO-CONTRIBUTIONS BY DIFFERENT SPECIES'
         helpw(1:nfla) = RESSMO(0,1:NFLA)
-        CALL EIRENE_MASRR1 (' RESSMO    ',HELPW,NFLA,5)
+        CALL EIRENE_MASRR1 ('RESSMO     ',HELPW,NFLA,5)
         if (allocated(helpw)) deallocate (helpw)
       ENDIF  !LBALAN
 C
@@ -6154,67 +6257,68 @@ csw mpi 07apr2010
       IMPLICIT NONE
       integer :: ier
 
-        if(my_pe > 0) then
-          if(.not.allocated(lcut)) allocate(lcut(0:NDXP))
+      if(my_pe > 0) then
+        if(.not.allocated(lcut)) allocate(lcut(0:NDXP))
 
-          if(.not.allocated(pux)) then
-            ALLOCATE (PUX(NRAD))
-            ALLOCATE (PUY(NRAD))
-            ALLOCATE (PUXE(NRAD))
-            ALLOCATE (PUYE(NRAD))
-            ALLOCATE (PUXN(NRAD))
-            ALLOCATE (PUYN(NRAD))
-            ALLOCATE (PVX(NRAD))
-            ALLOCATE (PVY(NRAD))
-            ALLOCATE (PVXE(NRAD))
-            ALLOCATE (PVYE(NRAD))
-            ALLOCATE (PVXN(NRAD))
-            ALLOCATE (PVYN(NRAD))
-          endif
+        if(.not.allocated(pux)) then
+          ALLOCATE (PUX(NRAD))
+          ALLOCATE (PUY(NRAD))
+          ALLOCATE (PUXE(NRAD))
+          ALLOCATE (PUYE(NRAD))
+          ALLOCATE (PUXN(NRAD))
+          ALLOCATE (PUYN(NRAD))
+          ALLOCATE (PVX(NRAD))
+          ALLOCATE (PVY(NRAD))
+          ALLOCATE (PVXE(NRAD))
+          ALLOCATE (PVYE(NRAD))
+          ALLOCATE (PVXN(NRAD))
+          ALLOCATE (PVYN(NRAD))
         endif
-        call mpi_bcast(lcut(0),ndxp+1,MPI_LOGICAL,
-     .                 0,MPI_COMM_WORLD,ier)
+      endif
+      call mpi_bcast(lcut(0),ndxp+1,MPI_LOGICAL,
+     .               0,MPI_COMM_WORLD,ier)
 
-        call mpi_bcast(nr1tal_save,1,MPI_INTEGER,
-     .                 0,MPI_COMM_WORLD,ier)
-        call mpi_bcast(np2tal_save,1,MPI_INTEGER,
-     .                 0,MPI_COMM_WORLD,ier)
-        call mpi_bcast(nt3tal_save,1,MPI_INTEGER,
-     .                 0,MPI_COMM_WORLD,ier)
-        call mpi_bcast(nsbox_tal_save,1,MPI_INTEGER,
-     .                 0,MPI_COMM_WORLD,ier)
-        call mpi_bcast(nsurf_tal_save,1,MPI_INTEGER,
-     .                 0,MPI_COMM_WORLD,ier)
-        call mpi_bcast(nradd_tal_save,1,MPI_INTEGER,
-     .                 0,MPI_COMM_WORLD,ier)
+      call mpi_bcast(nr1tal_save,1,MPI_INTEGER,
+     .               0,MPI_COMM_WORLD,ier)
+      call mpi_bcast(np2tal_save,1,MPI_INTEGER,
+     .               0,MPI_COMM_WORLD,ier)
+      call mpi_bcast(nt3tal_save,1,MPI_INTEGER,
+     .               0,MPI_COMM_WORLD,ier)
+      call mpi_bcast(nsbox_tal_save,1,MPI_INTEGER,
+     .               0,MPI_COMM_WORLD,ier)
+      call mpi_bcast(nsurf_tal_save,1,MPI_INTEGER,
+     .               0,MPI_COMM_WORLD,ier)
+      call mpi_bcast(nradd_tal_save,1,MPI_INTEGER,
+     .               0,MPI_COMM_WORLD,ier)
 
-        call mpi_bcast(pux,nrad,MPI_DOUBLE_PRECISION,
-     .                 0,MPI_COMM_WORLD,ier)
-        call mpi_bcast(puy,nrad,MPI_DOUBLE_PRECISION,
-     .                 0,MPI_COMM_WORLD,ier)
-        call mpi_bcast(puxe,nrad,MPI_DOUBLE_PRECISION,
-     .                 0,MPI_COMM_WORLD,ier)
-        call mpi_bcast(puye,nrad,MPI_DOUBLE_PRECISION,
-     .                 0,MPI_COMM_WORLD,ier)
-        call mpi_bcast(puxn,nrad,MPI_DOUBLE_PRECISION,
-     .                 0,MPI_COMM_WORLD,ier)
-        call mpi_bcast(puyn,nrad,MPI_DOUBLE_PRECISION,
-     .                 0,MPI_COMM_WORLD,ier)
-        call mpi_bcast(pvx,nrad,MPI_DOUBLE_PRECISION,
-     .                 0,MPI_COMM_WORLD,ier)
-        call mpi_bcast(pvy,nrad,MPI_DOUBLE_PRECISION,
-     .                 0,MPI_COMM_WORLD,ier)
-        call mpi_bcast(pvxe,nrad,MPI_DOUBLE_PRECISION,
-     .                 0,MPI_COMM_WORLD,ier)
-        call mpi_bcast(pvye,nrad,MPI_DOUBLE_PRECISION,
-     .                 0,MPI_COMM_WORLD,ier)
-        call mpi_bcast(pvxn,nrad,MPI_DOUBLE_PRECISION,
-     .                 0,MPI_COMM_WORLD,ier)
-        call mpi_bcast(pvyn,nrad,MPI_DOUBLE_PRECISION,
-     .                 0,MPI_COMM_WORLD,ier)
-        if (.not. allocated(heads)) then
-          call build_heads_array
-        endif
+      call mpi_bcast(pux,nrad,MPI_DOUBLE_PRECISION,
+     .               0,MPI_COMM_WORLD,ier)
+      call mpi_bcast(puy,nrad,MPI_DOUBLE_PRECISION,
+     .               0,MPI_COMM_WORLD,ier)
+      call mpi_bcast(puxe,nrad,MPI_DOUBLE_PRECISION,
+     .               0,MPI_COMM_WORLD,ier)
+      call mpi_bcast(puye,nrad,MPI_DOUBLE_PRECISION,
+     .               0,MPI_COMM_WORLD,ier)
+      call mpi_bcast(puxn,nrad,MPI_DOUBLE_PRECISION,
+     .               0,MPI_COMM_WORLD,ier)
+      call mpi_bcast(puyn,nrad,MPI_DOUBLE_PRECISION,
+     .               0,MPI_COMM_WORLD,ier)
+      call mpi_bcast(pvx,nrad,MPI_DOUBLE_PRECISION,
+     .               0,MPI_COMM_WORLD,ier)
+      call mpi_bcast(pvy,nrad,MPI_DOUBLE_PRECISION,
+     .               0,MPI_COMM_WORLD,ier)
+      call mpi_bcast(pvxe,nrad,MPI_DOUBLE_PRECISION,
+     .               0,MPI_COMM_WORLD,ier)
+      call mpi_bcast(pvye,nrad,MPI_DOUBLE_PRECISION,
+     .               0,MPI_COMM_WORLD,ier)
+      call mpi_bcast(pvxn,nrad,MPI_DOUBLE_PRECISION,
+     .               0,MPI_COMM_WORLD,ier)
+      call mpi_bcast(pvyn,nrad,MPI_DOUBLE_PRECISION,
+     .               0,MPI_COMM_WORLD,ier)
+
+      if (.not. allocated(heads)) then
+        call build_heads_array
+      endif
 
       call mpi_barrier(MPI_COMM_WORLD,ier)
       return
@@ -6226,72 +6330,71 @@ csw mpi 09jun2010
       integer :: ifl, istrx, ier
       real(dp), allocatable :: dumvec(:)
 
-        if(.not.allocated(snis0)) then
+      if(.not.allocated(snis0)) then
         ALLOCATE (SEES0(NSTRAi))
         ALLOCATE (SEIS0(NSTRAi))
-          ALLOCATE (SNIS0(NSTRAi,0:NFL))
-          ALLOCATE (SMOS0(NSTRAi,0:NFL))
-          ALLOCATE (RESSNI(0:NSTRAi,NFL))
-          ALLOCATE (RESSMO(0:NSTRAi,NFL))
-          ALLOCATE (RESSEE(0:NSTRAi))
-          ALLOCATE (RESSEI(0:NSTRAi))
-          ALLOCATE (FLXEIR(NSTRAi))
+        ALLOCATE (SNIS0(NSTRAi,0:NFL))
+        ALLOCATE (SMOS0(NSTRAi,0:NFL))
+        ALLOCATE (RESSNI(0:NSTRAi,NFL))
+        ALLOCATE (RESSMO(0:NSTRAi,NFL))
+        ALLOCATE (RESSEE(0:NSTRAi))
+        ALLOCATE (RESSEI(0:NSTRAi))
+        ALLOCATE (FLXEIR(NSTRAi))
+      endif
+
+      do istrx=1,nstrai
+        if(procforstra(istrx,my_pe) .and. my_pe /= 0) then
+          SNIS0(istrx,0) = sum(snis0(istrx,1:nfl))
+          SMOS0(istrx,0) = sum(smos0(istrx,1:nfl))
+          DO IFL=1,NFL
+            RESSNI(0,IFL) = ressni(0,ifl) + RESSNI(istrx,IFL)
+            RESSMO(0,IFL) = ressni(0,ifl) + RESSMO(istrx,IFL)
+          END DO
+          RESSEE(0) = ressee(0) + RESSEE(istrx)
+          RESSEI(0) = ressei(0) + RESSEI(istrx)
         endif
+      enddo
 
-        do istrx=1,nstrai
-          if(procforstra(istrx,my_pe) .and. my_pe /= 0) then
-            SNIS0(istrx,0) = sum(snis0(istrx,1:nfl))
-            SMOS0(istrx,0) = sum(smos0(istrx,1:nfl))
-            DO IFL=1,NFL
-              RESSNI(0,IFL) = ressni(0,ifl) + RESSNI(istrx,IFL)
-              RESSMO(0,IFL) = ressni(0,ifl) + RESSMO(istrx,IFL)
-            END DO
-            RESSEE(0) = ressee(0) + RESSEE(istrx)
-            RESSEI(0) = ressei(0) + RESSEI(istrx)
-          endif
-        enddo
-
-        allocate(dumvec(0:nfl))
-        do istrx=1,nstrai
-
-          dumvec(0:nfl) = snis0(istrx,0:nfl)
-          call mpi_bcast(dumvec, nfl+1,MPI_DOUBLE_PRECISION,
+      allocate(dumvec(0:nfl))
+      do istrx=1,nstrai
+        dumvec(0:nfl) = snis0(istrx,0:nfl)
+        call mpi_bcast(dumvec, nfl+1,MPI_DOUBLE_PRECISION,
      .                 0, MPI_COMM_WORLD,ier)
-          snis0(istrx,0:nfl) = dumvec(0:nfl)
+        snis0(istrx,0:nfl) = dumvec(0:nfl)
 
-          dumvec(0:nfl) = smos0(istrx,0:nfl)
-          call mpi_bcast(dumvec, nfl+1,MPI_DOUBLE_PRECISION,
+        dumvec(0:nfl) = smos0(istrx,0:nfl)
+        call mpi_bcast(dumvec, nfl+1,MPI_DOUBLE_PRECISION,
      .                 0, MPI_COMM_WORLD,ier)
-          smos0(istrx,0:nfl) = dumvec(0:nfl)
+        smos0(istrx,0:nfl) = dumvec(0:nfl)
 
-          call mpi_bcast(sees0(istrx),    1,MPI_DOUBLE_PRECISION,
+        call mpi_bcast(sees0(istrx),    1,MPI_DOUBLE_PRECISION,
      .                 0, MPI_COMM_WORLD,ier)
 
-          call mpi_bcast(seis0(istrx),    1,MPI_DOUBLE_PRECISION,
+        call mpi_bcast(seis0(istrx),    1,MPI_DOUBLE_PRECISION,
      .                 0, MPI_COMM_WORLD,ier)
 
-          call mpi_bcast(flxeir(istrx),   1,MPI_DOUBLE_PRECISION,
+        call mpi_bcast(flxeir(istrx),   1,MPI_DOUBLE_PRECISION,
      .                 0, MPI_COMM_WORLD,ier)
 
-          dumvec(1:nfl) = ressni(istrx,1:nfl)
-          call mpi_bcast(dumvec, nfl+1,MPI_DOUBLE_PRECISION,
+        dumvec(1:nfl) = ressni(istrx,1:nfl)
+        call mpi_bcast(dumvec, nfl+1,MPI_DOUBLE_PRECISION,
      .                 0, MPI_COMM_WORLD,ier)
-          ressni(istrx,1:nfl) = dumvec(1:nfl)
+        ressni(istrx,1:nfl) = dumvec(1:nfl)
 
-          dumvec(1:nfl) = ressmo(istrx,1:nfl)
-          call mpi_bcast(dumvec, nfl+1,MPI_DOUBLE_PRECISION,
+        dumvec(1:nfl) = ressmo(istrx,1:nfl)
+        call mpi_bcast(dumvec, nfl+1,MPI_DOUBLE_PRECISION,
      .                 0, MPI_COMM_WORLD,ier)
-          ressmo(istrx,1:nfl) = dumvec(1:nfl)
+        ressmo(istrx,1:nfl) = dumvec(1:nfl)
 
-          call mpi_bcast(ressee(istrx),   1,MPI_DOUBLE_PRECISION,
-     .                 0, MPI_COMM_WORLD,ier)
-
-          call mpi_bcast(ressei(istrx),   1,MPI_DOUBLE_PRECISION,
+        call mpi_bcast(ressee(istrx),   1,MPI_DOUBLE_PRECISION,
      .                 0, MPI_COMM_WORLD,ier)
 
-        enddo
-        deallocate(dumvec)
-        return
+        call mpi_bcast(ressei(istrx),   1,MPI_DOUBLE_PRECISION,
+     .                 0, MPI_COMM_WORLD,ier)
+
+      enddo
+      deallocate(dumvec)
+      return
       end subroutine eirene_broadcast_if3cop
 
       subroutine eirene_mpirecv_if3cop(istrr,irank)
@@ -6300,53 +6403,52 @@ csw mpi 09jun2010
       integer ier
       real(dp), allocatable :: dumvec(:)
 
-        allocate(dumvec(0:nfl))
-
+      allocate(dumvec(0:nfl))
       call mpi_recv(xmct(istrr),     1, MPI_DOUBLE_PRECISION,
      .              irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
      .              ier)
 
-        call mpi_recv(dumvec, (nfl+1), MPI_DOUBLE_PRECISION,
-     .                irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
-     .                ier)
-        snis0(istrr,0:nfl) = dumvec(0:nfl)
+      call mpi_recv(dumvec, (nfl+1), MPI_DOUBLE_PRECISION,
+     .              irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
+     .              ier)
+      snis0(istrr,0:nfl) = dumvec(0:nfl)
 
-        call mpi_recv(dumvec, (nfl+1), MPI_DOUBLE_PRECISION,
-     .                irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
-     .                ier)
-        smos0(istrr,0:nfl) = dumvec(0:nfl)
+      call mpi_recv(dumvec, (nfl+1), MPI_DOUBLE_PRECISION,
+     .              irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
+     .              ier)
+      smos0(istrr,0:nfl) = dumvec(0:nfl)
 
-        call mpi_recv(sees0(istrr),    1, MPI_DOUBLE_PRECISION,
-     .                irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
-     .                ier)
+      call mpi_recv(sees0(istrr),    1, MPI_DOUBLE_PRECISION,
+     .              irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
+     .              ier)
 
-        call mpi_recv(seis0(istrr),    1, MPI_DOUBLE_PRECISION,
-     .                irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
-     .                ier)
+      call mpi_recv(seis0(istrr),    1, MPI_DOUBLE_PRECISION,
+     .              irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
+     .              ier)
 
-        call mpi_recv(flxeir(istrr),   1, MPI_DOUBLE_PRECISION,
-     .                irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
-     .                ier)
+      call mpi_recv(flxeir(istrr),   1, MPI_DOUBLE_PRECISION,
+     .              irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
+     .              ier)
 
-        call mpi_recv(dumvec, nfl+1, MPI_DOUBLE_PRECISION,
-     .                irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
-     .                ier)
-        ressni(istrr,1:nfl) = dumvec(1:nfl)
+      call mpi_recv(dumvec, nfl+1, MPI_DOUBLE_PRECISION,
+     .              irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
+     .              ier)
+      ressni(istrr,1:nfl) = dumvec(1:nfl)
 
-        call mpi_recv(dumvec, nfl+1, MPI_DOUBLE_PRECISION,
-     .                irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
-     .                ier)
-        ressmo(istrr,1:nfl) = dumvec(1:nfl)
+      call mpi_recv(dumvec, nfl+1, MPI_DOUBLE_PRECISION,
+     .              irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
+     .              ier)
+      ressmo(istrr,1:nfl) = dumvec(1:nfl)
 
-        call mpi_recv(ressee(istrr),   1, MPI_DOUBLE_PRECISION,
-     .                irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
-     .                ier)
+      call mpi_recv(ressee(istrr),   1, MPI_DOUBLE_PRECISION,
+     .              irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
+     .              ier)
 
-        call mpi_recv(ressei(istrr),   1, MPI_DOUBLE_PRECISION,
-     .                irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
-     .                ier)
+      call mpi_recv(ressei(istrr),   1, MPI_DOUBLE_PRECISION,
+     .              irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
+     .              ier)
 
-        deallocate(dumvec)
+      deallocate(dumvec)
 
       call mpi_recv(see(0,0,istrr), size(see(:,:,istrr)),
      &              MPI_DOUBLE_PRECISION, irank, istrr,
@@ -6467,7 +6569,7 @@ cdjm Jan2017
      &              MPI_DOUBLE_PRECISION, irank, istrr,
      &              MPI_COMM_WORLD, MPI_STATUS_IGNORE, ier)
 
-        return
+      return
       end subroutine eirene_mpirecv_if3cop
 
       subroutine eirene_mpisend_if3cop(istrr,irank)
@@ -6476,43 +6578,42 @@ cdjm Jan2017
       integer :: ier
       real(dp), allocatable :: dumvec(:)
 
-        allocate(dumvec(0:nfl))
-
-        call mpi_send(xmct(istrr),     1, MPI_DOUBLE_PRECISION,
+      allocate(dumvec(0:nfl))
+      call mpi_send(xmct(istrr),     1, MPI_DOUBLE_PRECISION,
      .              irank, istrr, MPI_COMM_WORLD, ier)
 
-        dumvec(0:nfl) = snis0(istrr,0:nfl)
-        call mpi_send(dumvec, (nfl+1), MPI_DOUBLE_PRECISION,
-     .                irank,istrr, MPI_COMM_WORLD, ier)
+      dumvec(0:nfl) = snis0(istrr,0:nfl)
+      call mpi_send(dumvec, (nfl+1), MPI_DOUBLE_PRECISION,
+     .              irank, istrr, MPI_COMM_WORLD, ier)
 
-        dumvec(0:nfl) = smos0(istrr,0:nfl)
-        call mpi_send(dumvec, (nfl+1), MPI_DOUBLE_PRECISION,
-     .                irank,istrr, MPI_COMM_WORLD, ier)
+      dumvec(0:nfl) = smos0(istrr,0:nfl)
+      call mpi_send(dumvec, (nfl+1), MPI_DOUBLE_PRECISION,
+     .              irank, istrr, MPI_COMM_WORLD, ier)
 
-        call mpi_send(sees0(istrr),    1, MPI_DOUBLE_PRECISION,
-     .                irank,istrr, MPI_COMM_WORLD, ier)
+      call mpi_send(sees0(istrr),    1, MPI_DOUBLE_PRECISION,
+     .              irank, istrr, MPI_COMM_WORLD, ier)
 
-        call mpi_send(seis0(istrr),    1, MPI_DOUBLE_PRECISION,
-     .                irank,istrr, MPI_COMM_WORLD, ier)
+      call mpi_send(seis0(istrr),    1, MPI_DOUBLE_PRECISION,
+     .              irank, istrr, MPI_COMM_WORLD, ier)
 
-        call mpi_send(flxeir(istrr),   1, MPI_DOUBLE_PRECISION,
-     .                irank,istrr, MPI_COMM_WORLD, ier)
+      call mpi_send(flxeir(istrr),   1, MPI_DOUBLE_PRECISION,
+     .              irank, istrr, MPI_COMM_WORLD, ier)
 
-        dumvec(1:nfl) = ressni(istrr,1:nfl)
-        call mpi_send(dumvec, nfl+1, MPI_DOUBLE_PRECISION,
-     .                irank,istrr, MPI_COMM_WORLD, ier)
+      dumvec(1:nfl) = ressni(istrr,1:nfl)
+      call mpi_send(dumvec, nfl+1, MPI_DOUBLE_PRECISION,
+     .              irank, istrr, MPI_COMM_WORLD, ier)
 
-        dumvec(1:nfl) = ressmo(istrr,1:nfl)
-        call mpi_send(dumvec, nfl+1, MPI_DOUBLE_PRECISION,
-     .                irank,istrr, MPI_COMM_WORLD, ier)
+      dumvec(1:nfl) = ressmo(istrr,1:nfl)
+      call mpi_send(dumvec, nfl+1, MPI_DOUBLE_PRECISION,
+     .              irank, istrr, MPI_COMM_WORLD, ier)
 
-        call mpi_send(ressee(istrr),   1, MPI_DOUBLE_PRECISION,
-     .                irank,istrr, MPI_COMM_WORLD, ier)
+      call mpi_send(ressee(istrr),   1, MPI_DOUBLE_PRECISION,
+     .              irank, istrr, MPI_COMM_WORLD, ier)
 
-        call mpi_send(ressei(istrr),   1, MPI_DOUBLE_PRECISION,
-     .                irank,istrr, MPI_COMM_WORLD, ier)
+      call mpi_send(ressei(istrr),   1, MPI_DOUBLE_PRECISION,
+     .              irank, istrr, MPI_COMM_WORLD, ier)
 
-        deallocate(dumvec)
+      deallocate(dumvec)
 
       call mpi_send(see(0,0,istrr), size(see(:,:,istrr)),
      &         MPI_DOUBLE_PRECISION, irank, istrr, MPI_COMM_WORLD, ier)
@@ -6602,58 +6703,58 @@ cdjm Jan2017
      &         size(sna_piio(:,:,:,istrr)),
      &         MPI_DOUBLE_PRECISION, irank, istrr, MPI_COMM_WORLD, ier)
 csw
-        return
+      return
       end subroutine eirene_mpisend_if3cop
 
-       FUNCTION EIRENE_POINT_ON_INTERVAL(X,Y,X1,Y1,X2,Y2)
+      FUNCTION EIRENE_POINT_ON_INTERVAL(X,Y,X1,Y1,X2,Y2)
 C
 C FINDS IF THE POINT (X,Y) BELONGS TO INTERVAL (X1,Y1)..(X2,Y2)
 C
       IMPLICIT NONE
-       LOGICAL :: EIRENE_POINT_ON_INTERVAL
-       REAL(DP),INTENT(IN) :: X,Y,X1,Y1,X2,Y2
-       REAL(DP) :: A,B,C,D,L, EPS4
+      LOGICAL :: EIRENE_POINT_ON_INTERVAL
+      REAL(DP),INTENT(IN) :: X,Y,X1,Y1,X2,Y2
+      REAL(DP) :: A,B,C,D,L, EPS4
 
-       EIRENE_POINT_ON_INTERVAL=.FALSE.
-       EPS4 = 10._DP * EPS5
+      EIRENE_POINT_ON_INTERVAL=.FALSE.
+      EPS4 = 10._DP * EPS5
 
-       IF(X1.LT.X2.AND.
-     f    (X.GT.X2+EPS4.OR.X.LT.X1-EPS4)) RETURN
-       IF(X1.GT.X2.AND.
-     f    (X.GT.X1+EPS4.OR.X.LT.X2-EPS4)) RETURN
-       IF(Y1.LT.Y2.AND.
-     f    (Y.GT.Y2+EPS4.OR.Y.LT.Y1-EPS4)) RETURN
-       IF(Y1.GT.Y2.AND.
-     f    (Y.GT.Y1+EPS4.OR.Y.LT.Y2-EPS4)) RETURN
+      IF(X1.LT.X2.AND.
+     f   (X.GT.X2+EPS4.OR.X.LT.X1-EPS4)) RETURN
+      IF(X1.GT.X2.AND.
+     f   (X.GT.X1+EPS4.OR.X.LT.X2-EPS4)) RETURN
+      IF(Y1.LT.Y2.AND.
+     f   (Y.GT.Y2+EPS4.OR.Y.LT.Y1-EPS4)) RETURN
+      IF(Y1.GT.Y2.AND.
+     f   (Y.GT.Y1+EPS4.OR.Y.LT.Y2-EPS4)) RETURN
 
-       A=Y2-Y1
-       B=X1-X2
-       C=Y1*X2-Y2*X1
-       D=A*X+B*Y+C
-       D=D*D
-       L=A*A+B*B
-       IF(L.LT.EPS6) THEN
-        WRITE(iunout,*) "WARNING FROM  POINT_ON_INTERVAL"
+      A=Y2-Y1
+      B=X1-X2
+      C=Y1*X2-Y2*X1
+      D=A*X+B*Y+C
+      D=D*D
+      L=A*A+B*B
+      IF(L.LT.EPS6) THEN
+        WRITE(iunout,*) "WARNING FROM POINT_ON_INTERVAL"
         WRITE(iunout,*) "THE LENGTH OF THE INTERVAL IS TOO SMALL"
         WRITE(iunout,'(1x,a,1p,5(1e14.7,1x))') "L,X1,Y1,X2,Y2 ",
      .                                          L,X1,Y1,X2,Y2
         if ((abs(x1-x)/(x1+eps60) <= eps10) .and.
-     .      (abs(y1-y)/(y1+eps60) <= eps10)) then 
+     .      (abs(y1-y)/(y1+eps60) <= eps10)) then
           write (iunout,*) 'vertex 1 met'
           EIRENE_POINT_ON_INTERVAL=.TRUE.
         endif
         if ((abs(x2-x)/(x2+eps60) <= eps10) .and.
-     .      (abs(y2-y)/(y2+eps60) <= eps10)) then 
+     .      (abs(y2-y)/(y2+eps60) <= eps10)) then
           write (iunout,*) 'vertex 2 met'
           EIRENE_POINT_ON_INTERVAL=.TRUE.
         endif
         RETURN
-       END IF
-       IF(D.LT.1.D-8*L) EIRENE_POINT_ON_INTERVAL=.TRUE.
+      END IF
+      IF(D.LT.1.D-8*L) EIRENE_POINT_ON_INTERVAL=.TRUE.
 
-       RETURN
+      RETURN
 
-       END FUNCTION EIRENE_POINT_ON_INTERVAL
+      END FUNCTION EIRENE_POINT_ON_INTERVAL
 
 
 
@@ -6662,80 +6763,80 @@ C DEFINE NORMAL DIRECTION FOR SURFACE-AVERAGED TALLIES (SEE FOLNEUT.F)
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: ITRI, NBAR, NUMSI, NBARSI
 
-       IF(ITRI.GT.NTRIS.OR.NBAR.GT.NTRIS.OR.
+      IF(ITRI.GT.NTRIS.OR.NBAR.GT.NTRIS.OR.
      .   NUMSI.GT.3.OR.NBARSI.GT.3)
-     .   WRITE(iunout,*) "ERROR IN CORRECTNSS",
-     .                   "ITRI,NTRIS,NBAR,NTRIS,NUMSI,NBARSI",
+     .     WRITE(iunout,*) "ERROR IN CORRECTNSS",
+     .                  "ITRI,NTRIS,NBAR,NTRIS,NUMSI,NBARSI",
      .                   ITRI,NTRIS,NBAR,NTRIS,NUMSI,NBARSI
 
-       INMTINSS(NUMSI,ITRI)=1
-       INMTINSS(NBARSI,NBAR)=1
+      INMTINSS(NUMSI,ITRI)=1
+      INMTINSS(NBARSI,NBAR)=1
 
-       IF ((IXTRI(ITRI) > 0) .AND. (IYTRI(ITRI) > 0) .AND.
-     .     (IXTRI(NBAR) > 0) .AND. (IYTRI(NBAR) > 0)) THEN
+      IF ((IXTRI(ITRI) > 0) .AND. (IYTRI(ITRI) > 0) .AND.
+     .    (IXTRI(NBAR) > 0) .AND. (IYTRI(NBAR) > 0)) THEN
 !  both triangles inside mesh
-         IF (IXTRI(ITRI) == IXTRI(NBAR)) THEN
-           IF (IYTRI(ITRI) > IYTRI(NBAR)) THEN
-             INMTINSS(NUMSI,ITRI) = -1
-           ELSE
-             INMTINSS(NBARSI,NBAR) = -1
-           END IF
+        IF (IXTRI(ITRI) == IXTRI(NBAR)) THEN
+          IF (IYTRI(ITRI) > IYTRI(NBAR)) THEN
+            INMTINSS(NUMSI,ITRI) = -1
+          ELSE
+            INMTINSS(NBARSI,NBAR) = -1
+          END IF
 
-         ELSE IF (IYTRI(ITRI) == IYTRI(NBAR)) THEN
-           IF (IXTRI(ITRI) > IXTRI(NBAR)) THEN
-             INMTINSS(NUMSI,ITRI) = -1
-           ELSE
-             INMTINSS(NBARSI,NBAR) = -1
-           END IF
-         END IF
+        ELSE IF (IYTRI(ITRI) == IYTRI(NBAR)) THEN
+          IF (IXTRI(ITRI) > IXTRI(NBAR)) THEN
+            INMTINSS(NUMSI,ITRI) = -1
+          ELSE
+            INMTINSS(NBARSI,NBAR) = -1
+          END IF
+        END IF
 
 !  triangle IT inside mesh, triangle NBAR outside mesh
-       ELSE IF ((IXTRI(ITRI) > 0) .AND. (IYTRI(ITRI) > 0)) THEN
+      ELSE IF ((IXTRI(ITRI) > 0) .AND. (IYTRI(ITRI) > 0)) THEN
 
 !  poloidal surface
-         IF (LXSRF) THEN
-           IF (IXTRI(ITRI).EQ.1) THEN ! 'W SURFACE'
-             INMTINSS(NUMSI,ITRI ) = -1
-           ELSE                 ! 'E SURFACE'
-             INMTINSS(NBARSI,NBAR) = -1
-           END IF
+        IF (LXSRF) THEN
+          IF (IXTRI(ITRI).EQ.1) THEN        ! 'W SURFACE'
+            INMTINSS(NUMSI,ITRI ) = -1
+          ELSE                              ! 'E SURFACE'
+            INMTINSS(NBARSI,NBAR) = -1
+          END IF
 
 !  radial surface
-         ELSE
-           IF (IYTRI(ITRI).EQ.1) THEN ! 'S SURFACE'
-             INMTINSS(NUMSI,ITRI ) = -1
-           ELSE                 ! 'N SURFACE'
-             INMTINSS(NBARSI,NBAR) = -1
-           END IF
-           
-         END IF
+        ELSE
+          IF (IYTRI(ITRI).EQ.1) THEN        ! 'S SURFACE'
+            INMTINSS(NUMSI,ITRI ) = -1
+          ELSE                              ! 'N SURFACE'
+            INMTINSS(NBARSI,NBAR) = -1
+          END IF
+
+        END IF
 
 !  triangle NBAR inside mesh, triangle IT outside mesh
-       ELSEIF((IXTRI(NBAR) > 0) .AND. (IYTRI(NBAR) > 0)) THEN
-         
+      ELSEIF((IXTRI(NBAR) > 0) .AND. (IYTRI(NBAR) > 0)) THEN
+
 !  poloidal surface
-         IF (LXSRF) THEN
-           IF (IXTRI(NBAR).EQ.1) THEN ! 'W SURFACE'
-             INMTINSS(NBARSI,NBAR ) = -1
-           ELSE                 ! 'E SURFACE'
-             INMTINSS(NUMSI,ITRI) = -1
-           END IF
-           
+        IF (LXSRF) THEN
+          IF (IXTRI(NBAR).EQ.1) THEN      ! 'W SURFACE'
+            INMTINSS(NBARSI,NBAR ) = -1
+          ELSE                            ! 'E SURFACE'
+            INMTINSS(NUMSI,ITRI) = -1
+          END IF
+
 !  radial surface
-         ELSE
-           IF (IYTRI(NBAR).EQ.1) THEN ! 'S SURFACE'
-             INMTINSS(NBARSI,NBAR ) = -1
-           ELSE                 ! 'N SURFACE'
-             INMTINSS(NUMSI,ITRI) = -1
-           END IF
-           
-         END IF
+        ELSE
+          IF (IYTRI(NBAR).EQ.1) THEN      ! 'S SURFACE'
+            INMTINSS(NBARSI,NBAR ) = -1
+          ELSE                            ! 'N SURFACE'
+            INMTINSS(NUMSI,ITRI) = -1
+          END IF
+
+        END IF
 
 !  both triangles outside mesh --> do not know - do nothing
-       END IF
+      END IF
 
       RETURN
-       END  SUBROUTINE CORRECTNSS
+      END SUBROUTINE CORRECTNSS
 CVK END
 
       SUBROUTINE IMPORT_B2_CHEM_SPUT
@@ -6991,7 +7092,7 @@ C> transfer to the external code
       END SUBROUTINE EIRENE_INFCOP_POST_STRATUM
 
 C> \brief Prepare some data prior to calculation of strata but after
-C> the distribution of processors has been updated 
+C> the distribution of processors has been updated
 C>
       SUBROUTINE EIRENE_INFCOP_PRE_STRATA
       USE EIRMOD_WNEUTRALS

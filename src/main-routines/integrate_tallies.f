@@ -29,6 +29,8 @@ C
 C
 C
 C   INTEGRATE VOLUME-AVERAGED PROFILES   450 --- 459
+
+cdr  electron source rates, particles. missing: photon contributions PPHEL
 C
       IF (LPAEL) THEN
         DUMMY(1:NSBOX_TAL) = PAEL(1:NSBOX_TAL)
@@ -51,6 +53,7 @@ C
         PIEL(1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
       END IF
 
+cdr  source rates, energy.
       IF (LEAEL) THEN
         DUMMY(1:NSBOX_TAL) = EAEL(1:NSBOX_TAL)
         CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,EAELI(ISTRA),
@@ -219,6 +222,7 @@ C
         EPPHT(1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
       END IF
 
+cdr atom particle tallies
       DO 450 IATM=1,NATMI
         IF (.NOT.LOGATM(IATM,ISTRA)) CYCLE
           IF (LPDENA) THEN
@@ -244,7 +248,7 @@ C
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
             PAAT(IATM,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
             IF (TRCSCL) THEN
-              WRITE (IUNOUT,*) 'INTEGATE_TALLIES '
+              WRITE (IUNOUT,*) 'INTEGRATE_TALLIES'
               WRITE (IUNOUT,*) ' PAATI ',IATM, PAATI(IATM,ISTRA)
             END IF
             IF (NLSPCSCL_ATM) THEN
@@ -262,7 +266,6 @@ C
               IF (TRCSCL)
      .          WRITE (IUNOUT,*) 'SUM(1:NATMI) ',IATM,
      .                            SUM(PAATI2(IATM,1:NATMI))
-               
             END IF
           END IF
 
@@ -273,7 +276,7 @@ C
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
             PMAT(IATM,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
             IF (TRCSCL) THEN
-              WRITE (IUNOUT,*) 'INTEGATE_TALLIES '
+              WRITE (IUNOUT,*) 'INTEGRATE_TALLIES'
               WRITE (IUNOUT,*) ' PMATI ',IATM, PMATI(IATM,ISTRA)
             END IF
             IF (NLSPCSCL_MOL) THEN
@@ -397,6 +400,8 @@ C
           END IF
 
   450 CONTINUE
+
+cdr molecule particle tallies
       DO 451 IMOL=1,NMOLI
         IF (.NOT.LOGMOL(IMOL,ISTRA)) CYCLE
           IF (LPDENM) THEN
@@ -556,6 +561,8 @@ C
           END IF
 
   451 CONTINUE
+
+cdr test ion particle tallies
       DO 452 IION=1,NIONI
         IF (.NOT.LOGION(IION,ISTRA)) CYCLE
           IF (LPDENI) THEN
@@ -705,7 +712,7 @@ C
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
             VZDENI(IION,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
           END IF
-          
+
           IF (LRIEL) THEN
             DUMMY(1:NSBOX_TAL) = RIEL(IION,1:NSBOX_TAL)
             CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
@@ -715,6 +722,8 @@ C
           END IF
 
   452 CONTINUE
+
+cdr  photon particle tallies
       DO 453 IPHOT=1,NPHOTI
         IF (.NOT.LOGPHOT(IPHOT,ISTRA)) CYCLE
           IF (LPDENPH) THEN
@@ -866,6 +875,9 @@ C
           END IF
 
   453 CONTINUE
+
+cdr bulk (field) particle tallies,
+cdr plus EAPL, EMPL, EIPL, EPHPL, EPPL energy sources
       DO 454 IPLS=1,NPLSI
         IF (.NOT.LOGPLS(IPLS,ISTRA)) CYCLE
         IF (LPAPL) THEN

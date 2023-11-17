@@ -3,8 +3,8 @@ c   march 19, 2006:  corrected pointer for spttot in "associate_cestim"
 cdr 14.10.14:        naming of arrays in smestl adapted to those of other eirene std. dev. tallies
 cdr                  two further tallies introduced (gg, stv) for stand. dev.
 cdr                  of sum over strata
-cdr dec 15:  species index added for eapl,empl,eipl,ephpl,eppl
-cdr mar 17:  comments added
+cdr dec  15:  species index added for eapl,empl,eipl,ephpl,eppl
+cdr mar  17:  comments added
 cpb Dec. 17: remove type SPECT_ARRAY, not needed in Fortran 2003
 cdr Apr. 22: preparing for vectorial in/out tallies:
 cdr          unnecessary array dimensions removed: PXX, PXX2. tbd: RXEL?
@@ -19,7 +19,7 @@ cdr          unnecessary array dimensions removed: PXX, PXX2. tbd: RXEL?
       PRIVATE
 
       PUBLIC :: EIRENE_ALLOC_CESTIM, EIRENE_DEALLOC_CESTIM,
-     P          EIRENE_ASSOCIATE_CESTIM,
+     P          EIRENE_ASSOCIATE_CESTIM,  ! pointers to tally targets
      P          EIRENE_INIT_CESTIM, EIRENE_BROADCAST_CESTIM
 
 
@@ -44,13 +44,10 @@ C  NESTM1, REAL, VOLUME-AVERAGED TALLIES
 
      R PAEL(:),    PAAT(:,:),  PAML(:,:),  PAIO(:,:),  PAPHT(:,:),
      R PAPL(:,:),
-
      R PMEL(:),    PMAT(:,:),  PMML(:,:),  PMIO(:,:),  PMPHT(:,:),
      R PMPL(:,:),
-
      R PIEL(:),    PIAT(:,:),  PIML(:,:),  PIIO(:,:),  PIPHT(:,:),
      R PIPL(:,:),
-
      R PPHEL(:),   PPHAT(:,:), PPHML(:,:), PPHIO(:,:), PPHPHT(:,:),
      R PPHPL(:,:),
      R RAEL(:,:),  RMEL(:,:),  RIEL(:,:),  RPHEL(:,:),
@@ -65,16 +62,18 @@ c  more recent tallies  63 --100
      R PGENA(:,:), PGENM(:,:), PGENI(:,:), PGENPH(:,:),
      R EGENA(:,:), EGENM(:,:), EGENI(:,:), EGENPH(:,:),
      R VGENA(:,:), VGENM(:,:), VGENI(:,:), VGENPH(:,:),
-cdr from bulk to test particles, and bulk losses.  MPAT,..., MPPL etc: missing.
-cdr These tallies are currently available only in INFCOP: MPPL_COP,...
-cdr PPPL, MPPL, EPPL, EPEL
+cdr from bulk to test particles, i.e.: primary bulk losses.
+cdr PPPL (ok), MPPL (not available), EPPL (ok), EPEL (not available)
      R PPAT(:,:),  PPML(:,:),  PPIO(:,:),  PPPHT(:,:), PPPL(:,:),
      R EPAT(:),    EPML(:),    EPIO(:),    EPPHT(:),   EPPL(:,:),
+cdr test particle momentum density vectors (e.g. used for BGK iterations)
      R VXDENA(:,:), VXDENM(:,:), VXDENI(:,:), VXDENPH(:,:),
      R VYDENA(:,:), VYDENM(:,:), VYDENI(:,:), VYDENPH(:,:),
      R VZDENA(:,:), VZDENM(:,:), VZDENI(:,:), VZDENPH(:,:),
-cdr parallel (to B field) momentum sources/sinks, from test particles to bulk particles
+cdr parallel (to B field) momentum sources/sinks, from test particles A,M,I,PH to bulk particles PL
      R MAPL(:,:), MMPL(:,:), MIPL(:,:), MPHPL(:,:)
+
+cdr  begin threadprivate here
 
 c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
 cdr added feb 22: pxpht, expht, pgenx, egenx, vgenx,
@@ -84,13 +83,14 @@ cdr               for unified treatment in subr. COLLIDE.f
      R PXEL(:),   PXAT(:,:), PXML(:,:), PXIO(:,:),
      R PXPHT(:,:), PXPL(:,:),
      R EXEL(:),   EXAT(:),   EXML(:),   EXIO(:),
-     R EXPHT(:), EXPL(:,:),
+     R EXPHT(:),  EXPL(:,:),
      R VXDENX(:), VYDENX(:), VZDENX(:),
      R PGENX(:),  EGENX(:),  VGENX(:),
-     R MXPL(:,:), 
-     R RXEL(:,:)  ! I think this should also be a "reflexive" tally, 1D rather 2D array
+     R MXPL(:,:),
+     R RXEL(:,:)  ! I think this should also be a "reflexive" tally,
+                  ! 1D rather 2D array
 
-c   Next: "reflexive" tallies for identical donor and target species: 
+c   Next: "reflexive" tallies for identical donor and target species:
 c         e.g iatm --> iatm, etc.
 cdr Used for pre-collision (collisional loss) terms.
 cdr Remove unnecessary leading dimensions in these arrays
@@ -142,7 +142,7 @@ C
      R ERFPPHT(:,:),
 C
      R EOTPL(:,:),
-C  FULL MATRIX: SPUTTERED FLUXES RESOLVED BY INCIDENT TYPE 
+C  FULL MATRIX: SPUTTERED FLUXES RESOLVED BY INCIDENT TYPE
 C               AND EMITTED TYPE AND SPECIES
      R SPTAAT(:,:), SPTMAT(:,:), SPTIAT(:,:), SPTPHAT(:,:),
      R SPTPAT(:,:),
@@ -164,17 +164,16 @@ C
      R SPUMP(:,:)
 
 ! helper pointers for species resolved tallies
-      REAL(DP), PUBLIC, POINTER :: 
+      REAL(DP), PUBLIC, POINTER ::
      R PAAT2(:,:), PAML2(:,:), PAIO2(:,:), PAPHT2(:,:), PAPL2(:,:),
      R PMAT2(:,:), PMML2(:,:), PMIO2(:,:), PMPHT2(:,:), PMPL2(:,:),
      R PIAT2(:,:), PIML2(:,:), PIIO2(:,:), PIPHT2(:,:), PIPL2(:,:),
      R PPHAT2(:,:), PPHML2(:,:), PPHIO2(:,:), PPHPHT2(:,:), PPHPL2(:,:)
-cdr  missing pael2(:,:), pmel2(:,:), missing piel2(:,:), pphel2(:,:)?
 !$OMP  THREADPRIVATE(PAAT2,PAML2,PAIO2,PAPHT2,PAPL2,PMAT2,PMML2,PMIO2,
 !$OMP& PMPHT2,PMPL2,PIAT2,PIML2,PIIO2,PIPHT2,PIPL2,PPHAT2,PPHML2,
 !$OMP& PPHIO2,PPHPHT2,PPHPL2)
 
-      REAL(DP), PUBLIC, POINTER :: 
+      REAL(DP), PUBLIC, POINTER ::
      R PRFAAT2(:,:), PRFMAT2(:,:), PRFIAT2(:,:), PRFPHAT2(:,:),
      R PRFAML2(:,:), PRFMML2(:,:), PRFIML2(:,:), PRFPHML2(:,:),
      R PRFAIO2(:,:), PRFMIO2(:,:), PRFIIO2(:,:), PRFPHIO2(:,:),
@@ -202,7 +201,6 @@ C  FROM HERE: NO POINTERS ?
      I NTWS_MA, NTWS_MM, NTWS_MI, NTWS_MPH,
      I NTWS_IA, NTWS_IM, NTWS_II, NTWS_IPH,
      I NTWS_PHA, NTWS_PHM, NTWS_PHI, NTWS_PHPH
-
 
       LOGICAL, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      L LIVTALV(:), LIVTALS(:)
@@ -240,7 +238,10 @@ c  parallel (to B field) momentum source tallies
      L LMAPL,  LMMPL,  LMIPL,  LMPHPL,
 c  radiation tallies
      L LRAEL,  LRMEL,  LRIEL
+cdr  ? next line: tbd.: also a pointer ?
       LOGICAL, PUBLIC, TARGET, SAVE :: LRPHEL
+
+cdr  begin threadprivate here
 
 c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
       LOGICAL, PUBLIC, POINTER, SAVE ::
@@ -249,9 +250,9 @@ c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
      L LEXEL,   LEXAT,   LEXML,   LEXIO, LEXPHT, LEXPL,
      L LVXDENX, LVYDENX, LVZDENX,
      L LPGENX,  LEGENX,  LVGENX,
-     L LMXPL,   LRXEL,   LPXX,    LEXX,  
+     L LMXPL,   LRXEL,   LPXX,    LEXX,
      L LSCX
-      
+
       INTEGER, PUBLIC, SAVE :: NDXX, NDXXA, NDXXE,
      I NTS_PXATA, NTS_PXATE, NTS_PXMLA, NTS_PXMLE,
      I NTS_PXIOA, NTS_PXIOE, NTS_PXPHA, NTS_PXPHE,
@@ -263,8 +264,6 @@ c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
 !$OMP& LPXX,LEXX,LSCX,NDXX,NDXXA,NDXXE,NTS_PXATA,NTS_PXATE,NTS_PXMLA,
 !$OMP& NTS_PXMLE,NTS_PXIOA,NTS_PXIOE,NTS_PXPHA,NTS_PXPHE,
 !$OMP& NTS_PXPLA,NTS_PXPLE)
-
-
 
       LOGICAL, PUBLIC, POINTER, SAVE ::
      L LMSPDENA, LMSPDENM, LMSPDENI, LMSPDENPH,
@@ -288,7 +287,7 @@ c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
      L LMSVYDENA, LMSVYDENM, LMSVYDENI, LMSVYDENPH,
      L LMSVZDENA, LMSVZDENM, LMSVZDENI, LMSVZDENPH,
      L LMSMAPL,  LMSMMPL,  LMSMIPL,  LMSMPHPL,
-     L LMSRAEL,  LMSRMEL,  LMSRIEL
+     L LMSRAEL,  LMSRMEL,  LMSRIEL  !  ph tally still missing?
 
 c  logical, for each surface-averaged tally, particle flux.
 c  either active tally (if true) or deactivated tally, no storage (if false)
@@ -392,6 +391,7 @@ C
 !$OMP  THREADPRIVATE(LEX)
 
 C
+
       CONTAINS
 
 
@@ -1121,7 +1121,7 @@ C
         PRFIPHT => CEMETERYS(0:0,:)
       END IF
       IF (LPRFPHPHT) THEN
-        PRFPHPHT =>ESTIMS(NADDW(23)+1:NADDW(24),:)
+        PRFPHPHT => ESTIMS(NADDW(23)+1:NADDW(24),:)
       ELSE
         PRFPHPHT => CEMETERYS(0:0,:)
       END IF
@@ -1268,7 +1268,7 @@ C
         EOTPL => CEMETERYS(0:0,:)
       END IF
 C
-C  SPUTTER TALLIES  
+C  SPUTTER TALLIES
 C
 C  EMITTED TYPE: ATOMS
       IF (LSPTAAT) THEN
@@ -1526,25 +1526,25 @@ C
       IF (ICAL == 0) THEN
 
         NTSAR = 0
-        NTS_AA  => NTSAR(1) 
-        NTS_MA  => NTSAR(2) 
+        NTS_AA  => NTSAR(1)
+        NTS_MA  => NTSAR(2)
         NTS_IA  => NTSAR(3)
         NTS_PHA => NTSAR(4)
         NTS_PA  => NTSAR(5)
 
         NTS_AM  => NTSAR(6)
-        NTS_MM  => NTSAR(7) 
-        NTS_IM  => NTSAR(8) 
+        NTS_MM  => NTSAR(7)
+        NTS_IM  => NTSAR(8)
         NTS_PHM => NTSAR(9)
         NTS_PM  => NTSAR(10)
-        
+
         NTS_AI  => NTSAR(11)
         NTS_MI  => NTSAR(12)
         NTS_II  => NTSAR(13)
         NTS_PHI => NTSAR(14)
         NTS_PI  => NTSAR(15)
-        
-        NTS_APH => NTSAR(16) 
+
+        NTS_APH => NTSAR(16)
         NTS_MPH => NTSAR(17)
         NTS_IPH => NTSAR(18)
         NTS_PHPH=> NTSAR(19)
@@ -1552,21 +1552,21 @@ C
 
 
         NTWSAR = 0
-        NTWS_AA  => NTWSAR(1) 
-        NTWS_AM  => NTWSAR(2) 
-        NTWS_AI  => NTWSAR(3) 
-        NTWS_APH => NTWSAR(4) 
-        
+        NTWS_AA  => NTWSAR(1)
+        NTWS_AM  => NTWSAR(2)
+        NTWS_AI  => NTWSAR(3)
+        NTWS_APH => NTWSAR(4)
+
         NTWS_MA  => NTWSAR(5)
         NTWS_MM  => NTWSAR(6)
         NTWS_MI  => NTWSAR(7)
         NTWS_MPH => NTWSAR(8)
-        
-        NTWS_IA  => NTWSAR(9) 
-        NTWS_IM  => NTWSAR(10) 
-        NTWS_II  => NTWSAR(11) 
+
+        NTWS_IA  => NTWSAR(9)
+        NTWS_IM  => NTWSAR(10)
+        NTWS_II  => NTWSAR(11)
         NTWS_IPH => NTWSAR(12)
-        
+
         NTWS_PHA => NTWSAR(13)
         NTWS_PHM => NTWSAR(14)
         NTWS_PHI => NTWSAR(15)
@@ -1577,45 +1577,45 @@ C
         NTS_IA  = NTS_MA   + NION*NATMP
         NTS_PHA = NTS_IA   + NPHOT*NATMP
         NTS_PA  = NTS_PHA  + NPLS*NATMP
-        
+
         NTS_AM  = NTS_PA   + NATM*NMOLP
         NTS_MM  = NTS_AM   + NMOL*NMOLP
         NTS_IM  = NTS_MM   + NION*NMOLP
         NTS_PHM = NTS_IM   + NPHOT*NMOLP
         NTS_PM  = NTS_PHM  + NPLS*NMOLP
-        
+
         NTS_AI  = NTS_PM   + NATM*NIONP
         NTS_MI  = NTS_AI   + NMOL*NIONP
         NTS_II  = NTS_MI   + NION*NIONP
         NTS_PHI = NTS_II   + NPHOT*NIONP
         NTS_PI  = NTS_PHI  + NPLS*NIONP
-        
+
         NTS_APH = NTS_PI   + NATM*NPHOTP
         NTS_MPH = NTS_APH  + NMOL*NPHOTP
         NTS_IPH = NTS_MPH  + NION*NPHOTP
         NTS_PHPH= NTS_IPH  + NPHOT*NPHOTP
         NTS_PPH = NTS_PHPH + NPLS*NPHOTP
-        
+
         NTWS_AA  = NSPZTOTWS + NATM*NATMP
         NTWS_AM  = NTWS_AA   + NATM*NMOLP
         NTWS_AI  = NTWS_AM   + NATM*NIONP
         NTWS_APH = NTWS_AI   + NATM*NPHOTP
-      
+
         NTWS_MA  = NTWS_APH  + NMOL*NATMP
         NTWS_MM  = NTWS_MA   + NMOL*NMOLP
         NTWS_MI  = NTWS_MM   + NMOL*NIONP
         NTWS_MPH = NTWS_MI   + NMOL*NPHOTP
-        
+
         NTWS_IA  = NTWS_MPH  + NION*NATMP
         NTWS_IM  = NTWS_IA   + NION*NMOLP
         NTWS_II  = NTWS_IM   + NION*NIONP
         NTWS_IPH = NTWS_II   + NION*NPHOTP
-        
+
         NTWS_PHA  = NTWS_IPH  + NPHOT*NATMP
         NTWS_PHM  = NTWS_PHA  + NPHOT*NMOLP
         NTWS_PHI  = NTWS_PHM  + NPHOT*NIONP
         NTWS_PHPH = NTWS_PHI  + NPHOT*NPHOTP
-        
+
       ELSE IF (ICAL == 1) THEN
 
 cdr  default: all tallies turned on
@@ -1726,6 +1726,7 @@ cdr  default: no tallies turned off in input block 11
         LVZDENM  => LIVTALV(94)
         LVZDENI  => LIVTALV(95)
         LVZDENPH => LIVTALV(96)
+
         LMAPL    => LIVTALV(97)
         LMMPL    => LIVTALV(98)
         LMIPL    => LIVTALV(99)
@@ -1893,7 +1894,7 @@ cdr  default: no tallies turned off in input block 11
         LERFPHPHT => LIVTALS(48)
         LERFPPHT  => LIVTALS(49)
         LEOTPL    => LIVTALS(50)
-C  SPUTTER TALLIES:  51 -- 75
+C  SPUTTER TALLIES: 51 -- 75
         LSPTAAT   => LIVTALS(51)
         LSPTAML   => LIVTALS(52)
         LSPTAIO   => LIVTALS(53)
@@ -2161,7 +2162,7 @@ C  variances for sum over strata
           END IF
         END IF
       END IF
-      
+
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       RETURN

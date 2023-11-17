@@ -6,19 +6,19 @@ cdr             for which surfaces are NOT transparent.
 cdr             update_sptflx: different meaning of flag IND. More consistent
 cdr             now with IND-flag in other surface scoring routines.
 
-cdr nov. 17   :  lmetspw arguments corrected
-cdr sept.17   :  no ion sheath orbit correction at mirror surfaces (=symmetry BC)
-cdr aug.17    :  bug fix. cond exp. estimator, on purely absorbing surface.
-c                return 3, if icol=1, even for purely absorbing surfaces.
-c                plus some minor clean-up, commenting.
-c 06.08.15    :  arguments added to vecusr
-c   aug.15    :  periodicity and icol=1, return iret=3 rather than return iret=2
-C   OCT.14    :  ARGUMENTS IN VELOCS: WEIGHT AND VWL
-C   OCT.14    :  SPUTTERING:  SCORE FLUXES ALSO IN CASE SPUTTERED PARTICLES ARE NOT FOLLOWED
-c                new meaning of isrs, isrc=0:  sputter, score fluxes, but do not follow.
-C                IGASP_OLD = 0 OPTION.  INTRODUCED: ITYP_OLD, IGASP_OLD, IGASC_OLD
+cdr nov. 17   : lmetspw arguments corrected
+cdr sept.17   : no ion sheath orbit correction at mirror surfaces (=symmetry BC)
+cdr aug.17    : bug fix. cond exp. estimator, on purely absorbing surface.
+c               return 3, if icol=1, even for purely absorbing surfaces.
+c               plus some minor clean-up, commenting.
+c 06.08.15    : arguments added to vecusr
+c   aug.15    : periodicity and icol=1, return iret=3 rather than return iret=2
+C   OCT.14    : ARGUMENTS IN VELOCS: WEIGHT AND VWL
+C   OCT.14    : SPUTTERING: SCORE FLUXES ALSO IN CASE SPUTTERED PARTICLES ARE NOT FOLLOWED
+c               new meaning of isrs, isrc=0: sputter, score fluxes, but do not follow.
+C               IGASP_OLD = 0 OPTION. INTRODUCED: ITYP_OLD, IGASP_OLD, IGASC_OLD
 
-CDR 21.04.2010:  ILIIN=2: DO NOT SPUTTER (CRTX,... ETC. IS NOT DEFINED).
+CDR 21.04.2010: ILIIN=2: DO NOT SPUTTER (CRTX,... ETC. IS NOT DEFINED).
 !   20.06.07: maximum number of stored splitting particle MAXLEVEL introduced
 CDR 07.12.06: comments, correction for ILIIN=-3 option:
 c             old: prf... and erf... tallies have also been filled in
@@ -33,11 +33,6 @@ c             now: do not fill prf... and erf... tallies at all in case ILIIN=-3
 !pb 21.08.06: calls to update_surface introduced
 c   20.01.06: sheath repulsion added for negative ions (or
 c             positive ions and positive sheath potentials).
-CVK 25.02.04: splitting for sputtering is re-introduced, (from eirene_02)
-CVK 25.02.04: spttot updated (total sputtered flux tally)
-CDR 25.02.04: return, return1 for reflected flux tallies moved after call
-CDR 25.02.04:                 to upsusr, update_spectrum (from eirene_02)
-
 C
       SUBROUTINE EIRENE_ESCAPE(PR,SG,IRET)
 C
@@ -53,10 +48,12 @@ C                       THEN UPDATE TALLIES FOR EMITTED PARTICLES
 C        LGPART=.FALSE. UPDATE TALLIES FOR INCIDENT PARTICLES, THEN STOP.
 C        ICOL:  =1:  CONDITIONAL EXPECTATION ESTIMATOR, AND AN EARLIER COLLISION
 C                    ALONG THIS TRACK IS STORED
+cdr    IND flag used internally:  IND=1 score on OT tallies (going "onto" surface)
+cdr                               IND=2 score on RF tallies (coming "from" surface)
 C
 C  RETURN  : STOP TRACK OF THIS PARTICLE TYPE. RETURN TO SUBR. MCARLO
 C  RETURN IRET=1: START NEW TRACK OF SAME TYPE IN CALLING PROGRAM
-C            (I.E. IN FOLNEUT OR FOLION)
+C                 (I.E. IN FOLNEUT OR FOLION)
 C  RETURN IRET=2: CONTINUE THIS TRACK IN CALLING PROGRAM (TRANSP. SURFACE)
 C  RETURN IRET=3: RESTORE COLLISION DATA, CONDITIONAL EXPECTATION WAS USED
 C
@@ -86,7 +83,7 @@ C
       USE EIRMOD_REFLEC, ONLY: EIRENE_REFLC1
       USE EIRMOD_REFUSR, ONLY: EIRENE_RF2USR
       USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
-      use eirmod_sheath, only: eirene_sheath
+      USE EIRMOD_SHEATH, ONLY: EIRENE_SHEATH
 
       IMPLICIT NONE
 
@@ -98,16 +95,16 @@ C
      .          E0TERM, FR2, COSI2, ZVZ, WABS,
      .          CUR, GAMMA, TEWL, VX, VY, VZ, FCHAR, WPR, FMASS,
      .          FLX, YIELD1, YIELD2, VELS, WEIGHS, E0S, ESHET,EVCQ,
-     .          VSHETQ, V, VELSH, VC, VCQ, VC2, 
+     .          VSHETQ, V, VELSH, VC, VCQ, VC2,
      .          SPLFLG,
      .          VXR, VYR, VZR, VWL, WGHTVS, RATR, YSPTWL
       INTEGER :: ISG, ISPZS, I, J, IDIM, MS, IC, IP, ISTS,
      .           ISSPTP, ISSPTC, IPV, MODREF, MOL_DEFAULT,
-     .           ITYP_OLD,IGASP_OLD,IGASC_OLD, IOLD
+     .           ITYP_OLD, IGASP_OLD, IGASC_OLD, IOLD, IND
       LOGICAL :: NLSPUT, LTRANS
 C
       IRET = 0
-      
+
       IF (IMETWL(MSURF) == 0) THEN
         NWLMT = NWLMT+1
         IWLMT(NWLMT) = MSURF
@@ -160,6 +157,7 @@ C  .............................
 C
       ITYP_OLD=ITYP
       WPR=WEIGHT*PR
+
       select case (ITYP_OLD)
       case (0)
         IOLD = IPHOT
@@ -217,6 +215,8 @@ C
 C   HERE: EITHER: ILIIN .GE.0,    NOT TRANSPARENT, SCORE OUTGOING FLUX (WPR >=0 always)
 c             OR: ILIIN.EQ.-3,    TRANSPARENT,     SCORE NET FLUX (WPR contains sign)
 C             OR: SG .GT.0        SCORE ONE-SIDED POSITIVE CURRENT ONLY, EVEN FOR TRANSPARENT SURF.
+c
+C                                         NEGATIVE CURRENTS ARE TAKEN CARE OF FURTHER BELOW
 
       IF (ITYP.EQ.0) THEN
 C  INCIDENT PHOTONS
@@ -332,7 +332,8 @@ C  REDUCE NORMAL VELOCITY DUE TO SHEATH REPULSION
               VEL=SQRT(E0)*RSQDVI(IION)
               EELFI(IION,ISTRA)=EELFI(IION,ISTRA)+ESHET*WPR
             ELSEIF (VCQ.LT.-VSHETQ) THEN
-C  CASE B2:  REFLECTION AT SHEATH, NO CHANGE IN ENERGY
+C  CASE B2: REFLECTION AT SHEATH, NO CHANGE IN ENERGY
+C           NO SURFACE TALLY SCORING, RETURN TO CALLING PROGRAM
               VC2=VC+VC
               VX=VEL*VELX-VC2*CRTX
               VY=VEL*VELY-VC2*CRTY
@@ -369,6 +370,8 @@ cdr           TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
         FCHAR=DBLE(NCHARI(IION))
 
       ENDIF
+cdr sheath done
+
       CALL EIRENE_UPDATE_SURFACE(ITYP_OLD,IOLD,WPR,1)
 C
       ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
@@ -443,13 +446,15 @@ C
         IGASP_OLD = ISRS(ISPZ,MSURF)
         IGASC_OLD = ISRC(ISPZ,MSURF)
 C
-      ENDIF ! SPUTTER MODEL DONE, SO FAR. SCORING, SPLITTING ETC. CONTINUED BELOW
+      ENDIF ! SPUTTER MODEL DONE, SO FAR.
+CDR SCORING, SPLITTING ETC. WILL BE DONE FURTHER BELOW
 C
    50 CONTINUE
 C
 C   ...................................................................
 C   .                                                                 .
-C   .  SEMI-TRANSPARENT SURFACE, FOR A FRACTION "TRANSP" OF THE FLUX  .
+C   .  "SEMI-TRANSPARENT" SURFACE, MADE
+c   .        TRANSPARENT FOR A FRACTION "TRANSP" OF THE FLUX          .
 C   ...................................................................
 C
 C
@@ -514,16 +519,16 @@ C
           LMETSPW(ISPZ) = .TRUE.
         ENDIF
 
-cdr unfinished option: store trajectories
+cdr  apparently an unfinished option ?
 cdr     NLTRJ = .FALSE.
 cdr     TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
 
-!pb     IF (ICOL.EQ.1) RETURN 3 ! conditional expectation estimator. Continue.
         IF (ICOL.EQ.1) THEN
           IRET = 3
-          RETURN                ! conditional expectation estimator. Continue.
+          RETURN                ! conditional expectation estimator.
+                                ! Continue.
         END IF
-C     
+C
         WEIGHT=0.D0
         LGPART=.FALSE.
 
@@ -531,11 +536,11 @@ C
         RETURN
       ENDIF
 C
-C   ..............................................
-C   .                                            .
-C   .   MIRROR                                   .
-C   .   REEMITTED FLUX=INCOMING FLUX AND RETURN  .
-C   ..............................................
+C   ................................................
+C   .                                              .
+C   .   MIRROR                                     .
+C   .   REEMITTED FLUX=INCOMING FLUX AND RETURN    .
+C   ................................................
 C
       IF (ILIIN(MSURF).EQ.3.AND..NOT.LTRANS) THEN
 C
@@ -718,13 +723,16 @@ cdr  Because already done above, under: if (iliin=3 and not ltransp)
         VELZ=VELZ+COSI2*CRTZ
         IF (NADSI.GE.1) CALL EIRENE_UPSUSR (WPR,2)
         IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM (WPR,2,0)
+
+cdr  redundant code from an unfinished option?
 C       NLTRJ = .FALSE.
 C       TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
+cdr
         IF (ICOL.EQ.1) THEN
           IRET = 3
           RETURN
         END IF
-        IRET = 1        
+        IRET = 1
         RETURN
       ENDIF
 C
@@ -740,9 +748,9 @@ C                  POSITIVE COMPONENT, SG.GT.0, WAS ALREADY ON "OT-TALLIES"
 C  IN CASE ILIIN=-3: NET FLUXES HAVE ALREADY BEEN UPDATED ABOVE ON "OT-TALLIES".
 C                    NEED NOT BE UPDATED AGAIN HERE.
 C
-        IF ((SG.GT.0.D0).OR.(ILIIN(MSURF).EQ.-3))  GOTO 90
+        IF ((SG.GT.0.D0).OR.(ILIIN(MSURF).EQ.-3)) GOTO 90
 C
-C  HERE:  ILIIN NE -3, AND SG LE 0, SCORE ONE-SIDED "NEGATIVE" CURRENTS (WPR <=0)
+C  HERE: ILIIN NE -3, AND SG LE 0, SCORE ONE-SIDED "NEGATIVE" CURRENTS (WPR <=0)
 C
 C ITYP_OLD=ITNEW=ITYP
 C
@@ -911,8 +919,8 @@ C   .............................
 C
       XGENER=0.
 C
-C  ALL INCIDENT SURFACE TALLIES (INCLUDING SPUTTERING TALLIES, AND
-C  INCLUDING CONDITIONAL EXPECTATION CORRECTION, ARE UPDATED.
+C  ALL INCIDENT SURFACE TALLIES, AND
+C  INCLUDING CONDITIONAL EXPECTATION CORRECTIONS, ARE UPDATED.
 C  TRANSPARENT, MIRROR AND ABSORBING SURFACES ARE ALSO DONE
 C
 C  CONDITIONAL EXPECTATION ESTIMATOR: HAS THIS PARTICLE COLLIDED IN THE VOLUME,
@@ -937,8 +945,8 @@ C  .                                                    .
 C  .  REFLECTION MODEL 600--699 FOR INCIDENT MOLECULES  .
 C  ......................................................
 C
-cdr  tbd: make a universal "thermal" reflection model. 
-cdr       called from here for molecules. 
+cdr  tbd: make a universal "thermal" reflection model.
+cdr       called from here for molecules.
 cdr       called from reflec1 for atoms etc.
 cdr       called from reflec_photons for photons...
 C
@@ -989,7 +997,7 @@ C
 C  NEW SPECIES: AGAIN MOLECULE
 C
 C       ITYP=2
-        IMOL=ISRT(ISPZ,MSURF)
+        IMOL = ISRT(ISPZ,MSURF)
         MOL_DEFAULT = IMOL
         MODREF=ILREF(MSURF)
         IF (MODREF.GE.9) CALL EIRENE_RF2USR (IMOL,MOL_DEFAULT)
@@ -1049,7 +1057,8 @@ c are INTENT(IN) !
           VXR = 0._DP
           VYR = 0._DP
           VZR = 0._DP
-          VWL = 0._DP  !  INDICATE: NON-DRIFTING MAXWELLIAN FLUX, WEIGHT IS NOT MODIFIED
+          VWL = 0._DP  !  INDICATE: NON-DRIFTING MAXWELLIAN FLUX,
+                       !            WEIGHT IS NOT MODIFIED
           WGHTVS= WEIGHT
           CALL EIRENE_VELOCS(WGHTVS,
      .       TW,0._DP,VWL,VXR,VYR,VZR,RSQDVM(IMOL),
@@ -1103,10 +1112,12 @@ C
 C  ITYP_OLD.NE.ITNEW=ITYP POSSIBLE
 C
           CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD,WGHTSP,2)
+
           IF (NADSI.GE.1) CALL EIRENE_UPSUSR (WGHTSP,2)
           IF (NADSPC_S.GE.1) CALL EIRENE_UPDATE_SPECTRUM (WGHTSP,2,0)
 
-          IF (IGASP_OLD.EQ.0) GOTO 4711 ! SCORE SPUTTERED PARTICLES ON SURFACE TALLIES ONLY
+          IF (IGASP_OLD.EQ.0) GOTO 4711 ! SCORE SPUTTERED PARTICLES
+                                        ! ON SURFACE TALLIES ONLY
 C                                         IF THEY ARE FOLLOWED.
 C                                         OTHERWISE: ONLY ON SPUTTER TALLIES
           CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,IOLD,WGHTSP,2)
@@ -1163,8 +1174,10 @@ C
           IF (NADSI.GE.1) CALL EIRENE_UPSUSR (WGHTSC,2)
           IF (NADSPC_S.GE.1) CALL EIRENE_UPDATE_SPECTRUM (WGHTSC,2,0)
 
-          IF (IGASC_OLD.EQ.0) GOTO 4712  ! SCORE SPUTTERED PARTICLES ON SURFACE TALLIES ONLY
-C                                          IF THEY ARE FOLLOWED. OTHERWISE: ONLY ON SPUTTER TALLIES
+          IF (IGASC_OLD.EQ.0) GOTO 4712  ! SCORE SPUTTERED PARTICLES
+                                         ! ON SURFACE TALLIES ONLY
+C                                          IF THEY ARE FOLLOWED.
+C                               OTHERWISE: ONLY ON SPUTTER TALLIES
           CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,IOLD,WGHTSC,2)
 C
 C.....................................................................
@@ -1262,7 +1275,7 @@ C     TRAJ(ITRJ)%TRJ%NO_SURF = MSURF
         RETURN
       END IF
       IF ((ITYP.EQ.1.AND.ITYP_OLD.EQ.2).OR.
-     .     (ITYP.EQ.2.AND.ITYP_OLD.EQ.1)) THEN
+     .    (ITYP.EQ.2.AND.ITYP_OLD.EQ.1)) THEN
         IRET = 1
         RETURN
       END IF

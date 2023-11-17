@@ -26,7 +26,7 @@ cdr  oct.2014:  parameter istr (stratum number) in argument list
       INTEGER :: IOUT, ISPC, I, IT, IE, IEND, IINI
       REAL(DP) :: EN,EN1,EN2
       CHARACTER(10) :: TEXTYP(0:4)
-      CHARACTER(8) :: UNITINT(1:3),UNITOUT
+      CHARACTER(8) :: UNITINT(1:3), UNITOUT
 
 C  SPECTRA
 
@@ -56,7 +56,7 @@ cdr   OPEN (UNIT=IOUT,FILE='spectra.out')
         IF (ISTR.EQ.0) WRITE (IOUT,*) 'SUM OVER STRATA'
         WRITE (IOUT,*)
 
-        IF (ESTIML(ISPC)%ISRFCLL == 0)  THEN
+        IF (ESTIML(ISPC)%ISRFCLL == 0) THEN
 c  surface-averaged spectra
           IF (I > NLIM) THEN
             WRITE (IOUT,'(A,A,I6)') ' SPECTRUM CALCULATED FOR',
@@ -82,7 +82,7 @@ cdr  this option apparently does not exist yet, in update_spectrum
             UNITOUT=UNITINT(2)
           END IF
 
-        ELSE IF (ESTIML(ISPC)%ISRFCLL == 1)  THEN
+        ELSE IF (ESTIML(ISPC)%ISRFCLL == 1) THEN
 cdr  "cell-based spectra", scoring cell (coarse grid)
           WRITE (IOUT,'(A,A,I6)') ' SPECTRUM CALCULATED FOR',
      .                   ' SCORING CELL ',I
@@ -102,7 +102,7 @@ cdr  "cell-based spectra", scoring cell (coarse grid)
      .        'SPECTRAL MOMENTUM DENSITY IN (G*CM/S)/CM**3/BIN(EV)    '
           END IF
 
-        ELSE IF (ESTIML(ISPC)%ISRFCLL == 2)  THEN
+        ELSE IF (ESTIML(ISPC)%ISRFCLL == 2) THEN
 cdr  "cell-based spectra", geometry cell (fine grid)
 cdr  otherwise: identical code as above
           WRITE (IOUT,'(A,A,I6)') ' SPECTRUM CALCULATED FOR',
@@ -171,10 +171,10 @@ C  central energy bin value
      .            (IE-0.5_DP)*ESTIML(ISPC)%SPCDEL
 c  LOWER energy bin value
               EN1= ESTIML(ISPC)%SPCMIN +
-     .             (IE-1)*ESTIML(ISPC)%SPCDEL
+     .            (IE-1)*ESTIML(ISPC)%SPCDEL
 c  UPPER energy bin value
               EN2= ESTIML(ISPC)%SPCMIN +
-     .             (IE  )*ESTIML(ISPC)%SPCDEL
+     .            (IE  )*ESTIML(ISPC)%SPCDEL
               IF (ESTIML(ISPC)%LOG) THEN
                 EN = 10._DP**EN
                 EN1= 10._DP**EN1
@@ -208,10 +208,10 @@ C  central energy bin value
      .            (IE-0.5_DP)*ESTIML(ISPC)%SPCDEL
 c  LOWER energy bin value
               EN1= ESTIML(ISPC)%SPCMIN +
-     .             (IE-1)*ESTIML(ISPC)%SPCDEL
+     .            (IE-1)*ESTIML(ISPC)%SPCDEL
 c  UPPER energy bin value
               EN2= ESTIML(ISPC)%SPCMIN +
-     .             (IE  )*ESTIML(ISPC)%SPCDEL
+     .            (IE  )*ESTIML(ISPC)%SPCDEL
               IF (ESTIML(ISPC)%LOG) THEN
                 EN =10._DP**EN
                 EN1=10._DP**EN1

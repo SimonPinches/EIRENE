@@ -106,7 +106,7 @@ CVK END
         TRCRNF => LTRCEI(25)
         TRCHKTIM => LTRCEI(26)
         TRCSCL => LTRCEI(27)
-        
+
 !       NPRTLV => ITRCEI(  1 : 100)
 !       NFLAGV => ITRCEI(101 : 200)
 !       NTLVFL => ITRCEI(201 : 300)

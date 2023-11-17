@@ -2,9 +2,23 @@ C
 c  written by P. Boerner, for FZJ proprietary IDL plotting tool.
 c  not intended for 3rd party use.
 c  last modified: jan 2017
+
+
 cdr correction: 3 digits rather than 2 digits for I0 in outtal file name
 
       SUBROUTINE EIRENE_OUTIDLTAL
+cdr write all volumetric output tallies, each one on a separate file.
+
+cdr abuse of language: tallies are 2d arrays A(N1,N2).
+cdr                    N1 "species index", (not necessarily a species, can also be a vector component, etc..)
+cdr                    N2  cell number index.
+
+
+cdr for each tally: write data for all "species" (1st dimension of tally array), ordered
+cdr                 such that each "species" has its own column.
+cdr for each tally skip cells in which all "species" entries for that tally are zero.
+cdr consequently: the tally files written here may have different lengths,
+cdr               depending on how many non-zero rows a tally has.
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -27,7 +41,7 @@ cdr correction: 3 digits rather than 2 digits for I0 in outtal file name
 
       IMPLICIT NONE
 C
-      REAL(DP), ALLOCATABLE :: VECTOR(:,:),TALAV(:),TALTOT(:)
+      REAL(DP), ALLOCATABLE :: VECTOR(:,:), TALAV(:), TALTOT(:)
       REAL(DP) :: OUTAUI
       INTEGER :: NFTI, NFTE, K, ITAL, I, ISTR, MXSPZ, IOUT, IN, KK
       LOGICAL :: LFIRST
@@ -77,8 +91,11 @@ C
         IF (ISTRA.EQ.IESTR) THEN
 C  NOTHING TO BE DONE
         ELSEIF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
+cdr  read ISTRA tallies from fort.10.
+cdr  Totals (outau, fort.11) are still on storage.
           IESTR=ISTRA
-          CALL EIRENE_RSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
+          CALL EIRENE_RSTRT(ISTRA,NSTRAI,
+     .             NESTM1,NESTM2,NADSPC,
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
@@ -87,9 +104,12 @@ C  NOTHING TO BE DONE
             CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRTAL,NR1TAL,NP2TAL,NT3TAL,
      .               NLSYMP(ISTRA),NLSYMT(ISTRA))
           ENDIF
+cdr  read only ISTRA=0 (sum over strata) tallies from fort.10.
+cdr  Totals (outau, fort.11) are still on storage.
         ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.ISTRA.EQ.0) THEN
           IESTR=ISTRA
-          CALL EIRENE_RSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
+          CALL EIRENE_RSTRT(ISTRA,NSTRAI,
+     .             NESTM1,NESTM2,NADSPC,
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
@@ -106,7 +126,7 @@ C  NOTHING TO BE DONE
         ENDIF
 C
 C
-C  PRINT VOLUME-AVERAGED TALLIES
+C  PRINT VOLUME-AVERAGED TALLIES, STRATUM: ISTRA
 
         DO 100 ITAL = 1, NTALV
 
@@ -123,7 +143,7 @@ C
           DO 119 K=NFTI,NFTE
             IF (NEXTVI(ITAL) > 0) THEN
               KK = KK + 1
-              IF ((K > NEXTVI(ITAL) .AND. 
+              IF ((K > NEXTVI(ITAL) .AND.
      .             (MOD(K,NEXTVI(ITAL)) == 1))) KK = KK + 1
             ELSE
               KK = K
@@ -166,9 +186,10 @@ C
           WRITE (IOUT,'(A)')
      .      '+++++++++++++++++++++++++++++++++++++++++++++++++'
 
+cdr  tally name is the same for all "species"
           WRITE (IOUT,'(A)') TXTTAL(1,ITAL)
+
           WRITE (IOUT,'(A,I10)') 'NCELLS:   ',NSBOX
-!pb          WRITE (IOUT,'(A,I10)') 'NSPECIES: ',NFSTVI(ITAL)
           WRITE (IOUT,'(A,I10)') 'NSPECIES: ',NFTE
           WRITE (IOUT,'(A)') 'SPECIES'
           WRITE (IOUT,FORMA) (TRIM(TXTSPC(K,ITAL)), K=NFTI, NFTE)
@@ -185,6 +206,7 @@ C
           WRITE (IOUT,'(A)')
      .      '================================================='
           DO I=1, NSBOX
+cdr  only write cells with at least one non-zero contribution
             IF (ANY(ABS(VECTOR(I,NFTI:NFTE)) > EPS30))
      .        WRITE (IOUT,FORME) I,(VECTOR(I,K), K=NFTI, NFTE)
           END DO
@@ -193,11 +215,11 @@ C
 
           CLOSE (UNIT=IOUT)
 C
-  100   CONTINUE
+  100   CONTINUE  ! ITAL
 
         LFIRST = .FALSE.
 
-      END DO
+      END DO  ! ISTR
 
       DEALLOCATE (VECTOR)
       DEALLOCATE (TALTOT)

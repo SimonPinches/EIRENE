@@ -56,10 +56,10 @@ cdr  aug. 20: code safeties from ITER branch
       IMPLICIT NONE
       PRIVATE
 
-      PUBLIC :: EIRENE_REFLC0, EIRENE_REFLC1, 
+      PUBLIC :: EIRENE_REFLC0, EIRENE_REFLC1,
      .          EIRENE_REFLEC_REINIT,
 cym will be removed once the parallel zone encompasses the code
-     .          IREDUC,FREDUC,EREDUC      
+     .          IREDUC, FREDUC, EREDUC
 cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       REAL(DP), SAVE, ALLOCATABLE :: EREDUC(:,:), FREDUC(:,:)
@@ -72,12 +72,12 @@ C  I.E. ABSCISSA FOR ENERGY DISTRIBUTION FUNCTIONS, H INCIDENT ON FE
 C  SIZE OF "BEHRISCH TABLES"
       INTEGER :: IDIM=12
       REAL(DP) :: ZRANGES(0:12)=(/0.0_DP,    6.81_DP,    14.7_DP,
-     .                          31.63_DP,    68.1_DP,   146.8_DP, 
+     .                          31.63_DP,    68.1_DP,   146.8_DP,
      .                          316.3_DP,   681.9_DP,  1468.0_DP,
      .                         3162.0_DP,  6813.0_DP, 14678.0_DP,
      .                        31630.0_DP/)
 C  ENERGY, ABSCISSA FOR REFLECTION PROBABILITY, H INCIDENT ON FE
-      REAL(DP) :: ZENGYS(0:12)=(/0.0_DP,    4.64_DP,    10.0_DP, 
+      REAL(DP) :: ZENGYS(0:12)=(/0.0_DP,    4.64_DP,    10.0_DP,
      .                          21.5_DP,    46.4_DP,   100.0_DP,
      .                         215.4_DP,   464.1_DP,  1000.0_DP,
      .                        2154.3_DP,  4641.3_DP, 10000.0_DP,
@@ -88,7 +88,7 @@ C  REFLECTION PROBABILITY RPROB(ENERGY)= ZR(ZENGY)
      .                        0.46_DP, 0.37_DP, 0.29_DP,
      .                        0.21_DP, 0.14_DP, 0.095_DP,
      .                        0.04_DP/)
-C  DISTRIBUTION FUNCTIONS ZIDE(ZRANGE) , ONE FOR EACH ZENGY
+C  DISTRIBUTION FUNCTIONS ZIDE(ZRANGE), ONE FOR EACH ZENGY
       REAL(DP) :: ZIDES(12,12)
       DATA ZIDES /12*1._DP,
      .  0.2_DP,11*1._DP,
@@ -114,7 +114,7 @@ C---------------------------------------------------------------------
      .  ZIDED(12,12),XSP(13),YSP(13),ASP(13),BSP(13),CSP(13),DSP(13),
      .  E0AV(0:12),QUOTR(0:11),QUOTE(0:11)
 
-      REAL(DP)       :: ERDUC, EFCT
+      REAL(DP) :: ERDUC, EFCT
 
       REAL(DP) :: VX, VY, VZ, ED, ZCTHET, ZSTHET, RO4, ZCPHI,
      .          ZSPHI, RO5, PRBRF, WATOM, RPROBA, ZE0,
@@ -133,50 +133,47 @@ C---------------------------------------------------------------------
      .          RFF1, RFF2, RFF3, RFF4, RFF5, RFF6, RFF7, RFF8,
      .          RFFF1, RFFF2, RFFF3, RFFF4,
      .          RFFFF1, RFFFF2
-ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
 
-      INTEGER::  IRANGE, IRM, INDR2, INDR3P, MSS,
+      INTEGER :: IRANGE, IRM, INDR2, INDR3P, MSS,
      .           IBOX, ILIM, JP, ISP, ISTS, I, MODREF,
      .           NRE, NREP,
      .           ICOANGL,
      .           J, NRI, INDR3, ISAVE, INDEP, INDWP, INDE, INDR2P,
      .           INDR1P, INDR1, ISPZO, INDW, IDUMMY, IRET
 
- 
       LOGICAL :: NLDATA, NLBEHR
-    
       integer , save :: ifile
 
 !$OMP THREADPRIVATE (IFILE,
-!$OMP& ZRANGES,ZENGYS,ZRS,ZIDES,
-!$OMP& ZRANGE,ZDE,ZDEL,ZENGY,ZR,ZIDE,
-!$OMP& ZIDED,XSP,YSP,ASP,BSP,CSP,DSP,
-!$OMP& E0AV,QUOTR,QUOTE,
+!$OMP& ZRANGES, ZENGYS, ZRS, ZIDES,
+!$OMP& ZRANGE, ZDE, ZDEL, ZENGY, ZR, ZIDE,
+!$OMP& ZIDED, XSP, YSP, ASP, BSP, CSP, DSP,
+!$OMP& E0AV, QUOTR, QUOTE,
 !$OMP& EREDUC, FREDUC, IREDUC,
-!$OMP& ERDUC,EFCT,
+!$OMP& ERDUC, EFCT,
 !$OMP& VX, VY, VZ, ED, ZCTHET, ZSTHET, RO4, ZCPHI,
 !$OMP& ZSPHI, RO5, PRBRF, WATOM, RPROBA, ZE0,
 !$OMP& ZA, A, VXR, VYR, VZR, VWL, WGHTVS,
 !$OMP& ZTHET, ZE, ESUM, EFAC, ZDELTA, COSI2, WABS, WLOSS, TW,
 !$OMP& FLPRT, WMOLEC, RPROBM, FR2, PRTEST, RPROBL, DUMMY,
 !$OMP& XCH, XMFE, XMH, EPSHFE, E0TERM, XCW, EBIND, PRFCT,
-!$OMP& PRFCF, XMW, CON, ZWDR, EOQ, 
+!$OMP& PRFCF, XMW, CON, ZWDR, EOQ,
 !$OMP& XCFE, DX, RO1, EQSAVE, ZEP1, RO3,
 !$OMP& EMINR, EMAXR, RPROB, APROB, COSIN,
 !$OMP& EXPP, EXPI, EXPE, RINTG, AINTG, EINTG,
 !$OMP& EQTO, ETEST, EQT, F1, WFAC, F2,
-!$OMP& FR1,RO2,
+!$OMP& FR1, RO2,
 !$OMP& RF, RF1, RF2, RF3, RF4, RF5, RF6, RF7, RF8, RF9, RF10,
 !$OMP& RF11, RF12, RF13, RF14, RF15, RF16,
 !$OMP& RFF1, RFF2, RFF3, RFF4, RFF5, RFF6, RFF7, RFF8,
 !$OMP& RFFF1, RFFF2, RFFF3, RFFF4,
-!$OMP& RFFFF1,RFFFF2, 
+!$OMP& RFFFF1,RFFFF2,
 !$OMP& NPANOLD, IDIM, IRANGE, IRM, INDR2, INDR3P, MSS,
-!$OMP& IBOX, ILIM, JP, ISP, ISTS, I, MODREF, 
+!$OMP& IBOX, ILIM, JP, ISP, ISTS, I, MODREF,
 !$OMP& NRE, NREP,
 !$OMP& ICOUNT, IFIRST, ICOANGL,
 !$OMP& J, NRI, INDR3, ISAVE, INDEP, INDWP, INDE, INDR2P,
-!$OMP& INDR1P, INDR1, ISPZO, INDW, IDUMMY,IRET)
+!$OMP& INDR1P, INDR1, ISPZO, INDW, IDUMMY, IRET)
 
 
       CONTAINS
@@ -191,15 +188,15 @@ C                  SCHOOL 1976
 C       ILREF = 9  USER-SUPPLIED REFLECTION MODEL, CALL: REFUSR
 C
 C       ITYP  = 1  INCIDENT ATOM
-C       ITYP  = 2  INCIDENT MOLECULES:  this is handled in calling program: only thermal re-emission
+C       ITYP  = 2  INCIDENT MOLECULES: this is handled in calling program: only thermal re-emission
 C       ITYP  = 3  INCIDENT TEST ION
 C       ITYP  = 4  INCIDENT BULK ION
 C  OUTPUT:
 C     LGPART= TRUE AND:
 C       ITYP = 1  ATOM IATM IS RETURNED TO CALLING PROGRAM
 C       ITYP = 2  MOLECULE IMOL IS RETURNED TO CALLING PROGRAM
-C       ITYP = 3  TEST ION  IION IS RETURNED TO CALLING PROGRAM
-C     LGPART= FALSE  NO PARTICLE IS RETURNED (ABSORPTION)
+C       ITYP = 3  TEST ION IION IS RETURNED TO CALLING PROGRAM
+C     LGPART= FALSE NO PARTICLE IS RETURNED (ABSORPTION)
 C       ITYP = -1
 C
 C
@@ -208,8 +205,7 @@ C
       SUBROUTINE EIRENE_REFLC0
       IMPLICIT NONE
       INTEGER :: EIRENE_LEARCA
-CYM/HJL Moved variables to module scope      
-cym is that still useful ?
+CYM/HJL Moved variables to module scope
       SAVE
 C
       IF (.NOT.ALLOCATED(EREDUC)) ALLOCATE(EREDUC(NSPZ,0:NLIMPS))
@@ -246,7 +242,7 @@ C               FIXED SET OF TARGET -- PROJECTILES CASES
 C               there are NHD6=12  target-projectile combinations on the file TRIM.DAT
             IF (LTRIM_OLD) THEN
               CALL EIRENE_REFDAT(TM,TC,WM,WC)
-C  NEWER VERSION:  READ SOME SELECTED (IN INPUT FILE) TRIM A_ON_B FILES
+C  NEWER VERSION: READ SOME SELECTED (IN INPUT FILE) TRIM A_ON_B FILES
             ELSE
               CALL EIRENE_RDTRIM
             ENDIF
@@ -286,7 +282,8 @@ C
     5     CONTINUE
           CALL EIRENE_LEER(2)
         ENDIF
-      ELSE         !  .NOT.NLDATA, NO TRIM DATABASE REFLECTION MODEL AVAILABLE
+      ELSE         !  .NOT.NLDATA,
+                   !  NO TRIM DATABASE REFLECTION MODEL AVAILABLE
         INE=1
         INW=1
         INR=1
@@ -449,17 +446,16 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       IMPLICIT NONE
       REAL(DP) :: WMIN, XMP, XCP
       INTEGER :: NPRIN, IGASF, IGAST
-      
+
 c DATA FOR REDUCED ENERGY SCALING
-CYM/HJL Moved variables to module scope      
-cym is that useful ??
+CYM/HJL Moved variables to module scope
       SAVE
 
 C.................................................................
 C
 C  ONLY FOR CORRELATED SAMPLING:
 C  RE-SYNCHRONIZE RANDOM NUMBERS AT FIRST CALL AFTER PRIMARY SOURCE SAMPLING
-cdr April 17:  turned off, revise random number generator seeds....,
+cdr April 17: turned off, revise random number generator seeds....,
 C
       IF (NLCRR.AND.(NPANU.NE.NPANOLD).AND..FALSE.) THEN
 
@@ -474,8 +470,8 @@ C
       END IF
 C..................................................................
 C
-C  SURFACE NUMBER  : MSURF (MSURF=0: DEFAULT MODEL)
-C  SPECIES INDEX   : ISPZ
+C  SURFACE NUMBER : MSURF (MSURF=0: DEFAULT MODEL)
+C  SPECIES INDEX  : ISPZ
 C
       MODREF=ILREF(MSURF)
       XMW=ZNML(MSURF)
@@ -681,7 +677,7 @@ C     LINEAR EXTRAPOLATION IF INCIDENT ENERGY AND ANGLE ARE OUT OF RANGE
         RF2=RF2+RO1*(HFTR0(INDEP,INDWP,IFILE)-RF2)
 C
         RPROB=RF1+RO2*(RF2-RF1)
-        RPROB=MAX(0.D0,MIN(1._DP,RPROB))   ! avoid spurious extrapolations
+        RPROB=MAX(0.D0,MIN(1._DP,RPROB)) ! avoid spurious extrapolations
 
 C  APPLY SCALING (PRFCF= RECYCF) AND CUT-OFF (PRCFT= RECYCT)
         RPROB=MIN(RPROB*PRFCF,PRFCT)
@@ -747,11 +743,14 @@ c  indr1p
         RF4=HFTR1(INDE,INDWP,INDR1P,IFILE)
         RF4=RF4+RO1*(HFTR1(INDEP,INDWP,INDR1P,IFILE)-RF4)
 C
-        RFF1=RF1+RO2*(RF2-RF1)   ! bi-linear in incident parameters, for quantile indr1,
-        RFF2=RF3+RO2*(RF4-RF3)   ! bi-linear in incident parameters, for quantile indr1p,
+        RFF1=RF1+RO2*(RF2-RF1)   ! bi-linear in incident parameters,
+                                 ! for quantile indr1,
+        RFF2=RF3+RO2*(RF4-RF3)   ! bi-linear in incident parameters,
+                                 ! for quantile indr1p,
 Cdr  cut-off here, to avoid spurious extrapolations ??
 C
-        E0=RFF1+RO3*(RFF2-RFF1)  !    linear between quantiles indr1 and indr1p
+        E0=RFF1+RO3*(RFF2-RFF1)  ! linear between quantiles
+                                 ! indr1 and indr1p
 
 c  cut-off, to avoid spurious extrapolation
         E0=MAX(E0,EMINR)
@@ -769,12 +768,12 @@ C        OR CONTINUE WITH ORIGINAL ANGULAR DISTRIBUTION FROM TRIM DATABASE SAMPL
 C
       IF (AINTG.GT.0.0_DP) THEN
 C  CONSTANT MOMENTUM REFLECTION COEFFICIENT (ACCOMMODATION COEFFICIENT)
-C  FRACTION  AINTG:       specular
-C  FRACTION (1.0-AINTG):  cosine (Lambertian)
+C  FRACTION  AINTG:      specular
+C  FRACTION (1.0-AINTG): cosine (Lambertian)
         ZEP1=RANF_EIRENE( )
         APROB=MIN(1.0_DP,AINTG)
         IF (ZEP1.GT.APROB) THEN
-cdr   evaporated fraction
+cdr  evaporated fraction
 cdr  decide: Maxwellian flux or monoenergetic Lambertian:
           IF (E0TERM.LT.0.0) THEN
 C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
@@ -783,8 +782,10 @@ C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
             VXR = 0._DP
             VYR = 0._DP
             VZR = 0._DP
-            VWL = 0._DP    ! INDICATE: SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
-            WGHTVS= WEIGHT ! WEIGHT IS NOT ALTERED WHEN SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+            VWL = 0._DP    ! INDICATE:
+                           ! SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+            WGHTVS= WEIGHT ! WEIGHT IS NOT ALTERED WHEN
+                           ! SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
             CALL EIRENE_VELOCS(WGHTVS,
      .              TW,0._DP,VWL,VXR,VYR,VZR,RSQDVA(IATM),
      .                    CVRSSA(IATM),
@@ -1019,7 +1020,7 @@ C
 C     ELSEIF (EINTG.LT.0.D0) THEN
 cdr  tbd: use eintg as thermal energy parameter for reflected atomic (fast particle) model
 C       E0=E0
-C  OR:  (? TO BE DONE ?)
+C  OR: (? TO BE DONE ?)
 C
 C  E0 FROM MEAN ENERGY MODEL
 C
@@ -1062,11 +1063,10 @@ C
 C  NEXT: SIMPLE ANGULAR DISTRIBUTION (AINTG)
 C        OR CONTINUE WITH ORIGINAL EIRENE ANGULAR DISTRIBUTION (WITH PARAMETER EXPI)
 C
-
       IF (AINTG.GT.0.) THEN
 C  CONSTANT MOMENTUM REFLECTION (ACCOMMODATION) COEFFICIENT
-C  FRACTION  AINTG:     specular
-C  FRACTION (1_AINTG):  cosine (Lambertian)
+C  FRACTION  AINTG:    specular
+C  FRACTION (1_AINTG): cosine (Lambertian)
         ZEP1=RANF_EIRENE( )
         APROB=MIN(1.0_DP,AINTG)
         IF (ZEP1.GT.APROB) THEN
@@ -1078,8 +1078,10 @@ C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
             VXR = 0._DP
             VYR = 0._DP
             VZR = 0._DP
-            VWL = 0._DP  ! INDICATE: SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
-            WGHTVS= WEIGHT !  WEIGHT IS NOT ALTERED WHEN SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+            VWL = 0._DP    ! INDICATE:
+                           ! SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+            WGHTVS= WEIGHT ! WEIGHT IS NOT ALTERED WHEN
+                           ! SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
             CALL EIRENE_VELOCS(WGHTVS,
      .              TW,0._DP,VWL,VXR,VYR,VZR,RSQDVA(IATM),
      .                    CVRSSA(IATM),
@@ -1105,7 +1107,7 @@ C  PERFECT (SPECULAR) REFLECTION: COS_IN = COS_OUT
         EXPI=200.
         GOTO 400
       ENDIF
-C  AINTG=0.0:  Original Behrisch Matrix assigned angular reflection distribution
+C  AINTG=0.0: Original Behrisch Matrix assigned angular reflection distribution
 C     GOTO 400
 C
   400 CONTINUE
@@ -1231,8 +1233,10 @@ C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
         VXR = 0._DP
         VYR = 0._DP
         VZR = 0._DP
-        VWL = 0._DP  ! INDICATE: SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
-        WGHTVS= WEIGHT !  WEIGHT IS NOT ALTERED WHEN SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+        VWL = 0._DP    ! INDICATE:
+                       ! SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+        WGHTVS= WEIGHT ! WEIGHT IS NOT ALTERED WHEN
+                       ! SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
         CALL EIRENE_VELOCS(WGHTVS,
      .          TW,0._DP,VWL,VXR,VYR,VZR,RSQDVM(IMOL),
      .                CVRSSM(IMOL),
@@ -1318,8 +1322,10 @@ C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
         VXR = 0._DP
         VYR = 0._DP
         VZR = 0._DP
-        VWL = 0._DP  ! INDICATE: SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
-        WGHTVS= WEIGHT !  WEIGHT IS NOT ALTERED WHEN SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+        VWL = 0._DP    !  INDICATE:
+                       !  SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+        WGHTVS= WEIGHT !  WEIGHT IS NOT ALTERED WHEN
+                       !  SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
         CALL EIRENE_VELOCS(WGHTVS,
      .            TW,0._DP,VWL,VXR,VYR,VZR,RSQDVA(IATM),
      .             CVRSSA(IATM),
@@ -1409,6 +1415,7 @@ C     The following SUBROUTINE is for reinitialization of EIRENE (DMH)
       ICOUNT = 0
       NPANOLD = 0
       IFIRST = 0
+
       END SUBROUTINE EIRENE_REFLEC_REINIT
 
       FUNCTION EREDC(XMTT,XCTT,XMPP,XCPP)

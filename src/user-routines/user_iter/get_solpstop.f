@@ -33,7 +33,7 @@
 #endif
 #endif
         if(solpstop.eq.' ') then
-          if (first) 
+          if (first)
      >     write(IUNOUT,'(A,A)') 'get_solpstop: no SOLPSTOP set'
         else
           if (first) write(IUNOUT,'(A,A)')

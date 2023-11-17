@@ -16,10 +16,10 @@ C
       INMP1I=0
       INMP2I=0
       INMP3I=0
-      
+
       DO 2019 ISTS=1,NSTSI
 
-C     RADIAL SURFACE
+C  RADIAL SURFACE
         DO 2014 IR=1,NR1ST
           IF (IR.EQ.INUMP(ISTS,1)) THEN
             INMP1I(IR,0,0)=ISTS

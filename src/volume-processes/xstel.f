@@ -1,7 +1,7 @@
 !pb  30.08.06: data structure for reaction data redefined
 !pb  12.10.06: modcol revised
 !pb  22.11.06: flag for shift of first parameter to rate_coeff introduced
-cdr  05.01.07:  write(6,...) --> write(iunout,...) in one place
+cdr  05.01.07: write(6,...) --> write(iunout,...) in one place
 !    01.02.07: do not evaluate rates in vacuum region for IPL (use lgvac(..IPL)
 
 cdr  20.04.14: bug fix: + edrift(...) was missing in eplel3, in case nseel4=0 and ebulk>0
@@ -10,10 +10,10 @@ cdr    oct.14: remove pls array, synchronize with xstcx started
 cdr    aug.16: nend is always =1 or =9, remove redundant arguments in prep_poly
 cdr   sept.16: calls to prep_rtcs removed. prep_rtcs is now redundant
 cdr   jan .17: modcol(5,0,irel):  flag for differential cross-section model, rather than =kk.
-!              modcol(5,0,irel)=-1  : bgk (relaxation) collision, scattering angle =Pi in COM
-!              modcol(5,0,irel)=0   : isotropic in COM, assume: the cross-section
-!                                     and rate coefficients are "diffusion" cross-section,
-!                                     and rate coefficients, respectively.
+!              modcol(5,0,irel)=-1 : bgk (relaxation) collision, scattering angle =Pi in COM
+!              modcol(5,0,irel)=0  : isotropic in COM, assume: the cross-section
+!                                    and rate coefficients are "diffusion" cross-section,
+!                                    and rate coefficients, respectively.
 !              modcol(5,0,irel)=1,2,...: interaction potential is given via fit parameters
 cdr     currently still: modcol(5,0,irel)=kk, and veloel uses reacdat(kk) directly.
 
@@ -31,9 +31,9 @@ C       SET UP TABLES (E.G. OF REACTION RATE ) FOR EL PROCESSES
 C
 C   MEANING OF INPUT VARIABLES: SEE XSTCX
 
-C   KK:      COMMON IDENTIFIER FOR PROCESS, USED FOR POTENTIAL, CROSS-SECTION, RATES,
-C                                           STORAGE SAVING MODE ETC...
-C   FACTKK:  COMMON SCALING FACTOR FOR PROCESS KK
+C   KK:     COMMON IDENTIFIER FOR PROCESS, USED FOR POTENTIAL, CROSS-SECTION, RATES,
+C                                          STORAGE SAVING MODE ETC...
+C   FACTKK: COMMON SCALING FACTOR FOR PROCESS KK
 C   NREAEL(IREL) = KK DURING MC RUN. THIS ESTABLISHES LINK BETWEEN IREL AND KK, MUST BE UNIQUE
 
 
@@ -69,7 +69,7 @@ C
      .            TB, TII,
      .            FP1(6),FP2(6)
       REAL(DP) :: DENSLIMLOG
-      INTEGER :: NSEEL4, NEND, J, KREAD, MODC,  IPLTI
+      INTEGER :: NSEEL4, NEND, J, KREAD, MODC, IPLTI
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       REAL(DP), PARAMETER :: TMINL=-2.3_DP
       type(poly_data), pointer :: rp
@@ -138,14 +138,16 @@ C 2. RATE COEFFICIENT  (CM**3/S) * TARGET DENSITY (CM**-3)
 C..................................................................
 
       MODC=EIRENE_IDEZ(MODCLF(KK),3,5)
-      
+
       IF (MODC.GE.1.AND.MODC.LE.2) THEN
 
         MODCOL(5,2,IREL)=MODC
 C  2.B)
-        IF (MODC.EQ.1) NEND=1       ! rate coeff for (FIXED E0, e.g. E0=0.0, TI)
+        IF (MODC.EQ.1) NEND=1       ! rate coeff for
+                                    ! (FIXED E0, e.g. E0=0.0, TI)
 C  2.C)
-        IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E0, TI) NEND=9 HERE
+        IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E0, TI)
+                                    ! NEND=9 HERE
 
 C   STORAGE SAVING MODE ?
         IF (NSTORDR >= NRAD) THEN
@@ -168,15 +170,15 @@ C  2.C) RATE COEFFICIENT(TI,EBEAM),
 cdr     V0 velocity-dependent rate coefficient
           ELSEIF (MODC.EQ.2) THEN
 C           NEND=9
-          FCTKKL=LOG(FACTKK)
-          rt => reacdat(kk)%rtc
-          fp1(1:3) = rt%fp1l
-          fp1(4:6) = rt%fp1r
-          fp2(1:3) = rt%fp2b
-          fp2(4:6) = rt%fp2t
-          DENSLIMLOG=LOG(DENSLIM(IPL))
-          DO J=1,NSBOX
-            IF (LGVAC(J,IPL)) CYCLE
+            FCTKKL=LOG(FACTKK)
+            rt => reacdat(kk)%rtc
+            fp1(1:3) = rt%fp1l
+            fp1(4:6) = rt%fp1r
+            fp2(1:3) = rt%fp2b
+            fp2(4:6) = rt%fp2t
+            DENSLIMLOG=LOG(DENSLIM(IPL))
+            DO J=1,NSBOX
+             IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
 ! this is another cut-off, at TIIN <=0.1 eV rather than at TVAC = 0.02 eV
 cdr  when FP1L asymptotics are properly set, we should not need a cut-off here.
@@ -191,7 +193,7 @@ cdr  when FP1L asymptotics are properly set, we should not need a cut-off here.
               TABEL3(IREL,J,1:9) = CF(1:9)
               TABEL3(IREL,J,1)=TABEL3(IREL,J,1)+
      .                    MIN(DENSLIMLOG,DIINL(IPL,J))+FCTKKL
-             END DO
+            END DO
           END IF  ! MODC=1,2
         ELSE ! NOT SUFFICIENT STORAGE ON TABEL3
 C  STORAGE SAVE MODE NOT READY FOR THIS OPTION MODC=1 OR MODC=2 ??
@@ -206,7 +208,8 @@ cdr     V0 velocity-independent rate coefficient
 cdr unfinished option....extrapolation not done.
 C       NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
 
-        MODCOL(5,2,IREL)=1 !  indicate: rate coefficient as fct. of local plasma conditions only
+        MODCOL(5,2,IREL)=1 !  indicate: rate coefficient as
+                           !  fct. of local plasma conditions only
         FCTKKL=LOG(FACTKK)
         IF (NSTORDR >= NRAD) THEN
 
@@ -249,7 +252,7 @@ C  SET ENERGY LOSS RATE OF IMPACTING ION
 C
       NSEEL4=EIRENE_IDEZ(ISCDE,4,5)
       IF (NSEEL4.EQ.0) THEN
-C  4.1A)  ENERGY LOSS RATE OF IMP. BULK PARTICLE = CONST.*RATECOEFF.
+C  4.1A)  ENERGY LOSS RATE OF IMP. BULK PARTICLE = CONST.*RATE COEFF.
 C        SAMPLE COLLIDING ION FROM DRIFTING MONOENERGETIC ISOTROPIC DISTRIBUTION
 c        WITH WEIGHTING/REJECTION
         IF (EBULK.LE.0.D0) THEN
@@ -276,7 +279,7 @@ CDR   ERROR: EBULK < 0 IS NOT FORESEEN
         ENDIF
         MODCOL(5,4,IREL)=3
       ELSEIF (NSEEL4.EQ.1) THEN
-C  4.1B) ENERGY LOSS RATE OF IMP. ION = (1.5*TI+EDRIFT)* RATECOEFF.
+C  4.1B) ENERGY LOSS RATE OF IMP. ION = (1.5*TI+EDRIFT)* RATE COEFF.
 C       SAMPLE COLLIDING ION FROM DRIFTING MAXWELLIAN
         IF (EBULK.LE.0.D0) THEN
           IF (NSTORDR >= NRAD) THEN

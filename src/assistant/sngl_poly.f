@@ -2,7 +2,7 @@ cdr  Nov. 2019: add functionality for Arrhenius factors EXP(-DE/T)
 cdr             excluded from rest of fit.
 cdr             Should replace the need for
 cdr             low temp asymptotics in H.2, H.5, and H.8 polynomial data.
-cdr  Aug. 2016:  generalized (ifexmx<0 enabled), two new parameters in list for fct. extrap
+cdr  Aug. 2016: generalized (ifexmx<0 enabled), two new parameters in list for fct. extrap
 
 cdr  This function evaluates the standard single parameter 8th-order polynomial
 cdr  fits for cross-section and rate coefficients, used in the
@@ -14,10 +14,11 @@ cdr  The same fit format is also used most of the time in the eirene home-made
 cdr  databases AMJUEL, H2VIBR.
 
       function EIRENE_sngl_poly (cf, al, rcmin, rcmax, fpp,
-     .                                   ifexmn, ifexmx, 
+     .                                   ifexmn, ifexmx,
      .                                   earrh0, trc, lexp)
      .                   result(cou)
 c  input:
+c  nd1     : order of fit polynomial: nd1-1 (here still: nd1=9, merging tbd.)
 c  cf      : fit coefficients for fit POLY=f(parm=)=sum_1^9 (cf(i) log(parm)^(i-1))
 c  al      : argument of fit, al=log(parm)
 c  rcmin   : left boundary of valid range of PARM
@@ -27,22 +28,23 @@ c            1:3  left (low PARM values) extrapolation.
 c            4:6  right (high PARM values) extrapolation
 c  ifexmn: flag for choice of left (low end) extrapolation expression
 c  ifexmx: flag for choice of right (high end) extrapolation expression
-c  earrh0: Arrhenius factor exp(-earrh0/T) separated from fit
-cdr           ifex=0:  constant extrapolation
-cdr           ifex<0:  determine extrapolation parameters here
-cdr                    (linear extrapolation),
-cdr                    and call extrap.f with model IFEX=3
-cdr           ifex>0:  evaluate fit at corresponding boundary,
-cdr                    and call extrap.f with model IFEX
-c  trc     : flag for diagnostic print output
-c  lexp    : return exp(POLY), i.e. the fit polynomial POLY is the
-c                                   Logarithm of the requested result
-c            a cutoff at COU == -100 is introduced to avoid floating
-c            point underflow exceptions 
+c  earrh0: if > 0: Arrhenius factor exp(-earrh0/T) separated from fit
+c          if <=0: no extra Arrhenius factor
+cdr           ifex=0: constant extrapolation
+cdr           ifex<0: determine extrapolation parameters here
+cdr                   (linear extrapolation),
+cdr                   and call extrap.f with model IFEX=3
+cdr           ifex>0: evaluate fit at corresponding boundary,
+cdr                   and call extrap.f with model IFEX
+c  trc   : flag for diagnostic print output
+c  lexp  : return exp(POLY), i.e. the fit polynomial POLY is the
+c                                 Logarithm of the requested result
+c          a cutoff at COU == -100 is introduced to avoid floating
+c          point underflow exceptions
 c output:
 c  lexp=false:  return POLY
 c  lexp=true:   return exp(POLY)
-      
+
       use EIRMOD_precision
       USE EIRMOD_COMPRT, ONLY: IUNOUT
 
@@ -57,7 +59,7 @@ c  lexp=true:   return exp(POLY)
      .            EIRENE_extrap
       integer :: ii, if8, ifex
 
-      p1=al        ! fit parameterfor log-log fit: log(T), log(E),...
+      p1=al        ! fit parameter for log-log fit: log(T), log(E),...
 c     parm=exp(p1)  ! physical parameter T, or E
 
       if (p1 < rcmin) then
@@ -67,16 +69,21 @@ C  PARM BELOW MINIMUM PARAMETER FOR POLYNOMIAL FIT:
 
 C  USE ASYMPTOTIC EXPRESSION NO. IFEXMN
         IF (IFEXMN.LT.0) THEN
-C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR LINEAR EXTRAP. OF LOG(FIT) IN LN(parm)
+C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR LINEAR EXTRAP. Y = a X + b
+C  OF Y=LOG(FIT) IN X=LN(parm), i.e. extrapolate as: Fit(parm) = c * parm**a
           S01=RCMIN
-          S02=LOG(1.25_DP)+RCMIN    ! use parm=exp(rcmin) and 1.25*parm for extrapolation
+          S02=LOG(1.25_DP)+RCMIN    ! use parm=exp(rcmin) and
+                                    ! 1.25*parm for extrapolation
           DS12=S02-S01
           EXPO1=CF(9)
           EXPO2=CF(9)
           DO 1 II=1,8
             IF8=9-II
-            EXPO1=EXPO1*S01+CF(IF8)  !  evaluate fit at left boundary -->EXPO1=log(fit)
-            EXPO2=EXPO2*S02+CF(IF8)  !  evaluate fit at PARM=(1.25*parleft), parleft= left boundary
+            EXPO1=EXPO1*S01+CF(IF8)  !  evaluate fit at left boundary
+                                     !   -->EXPO1=log(fit)
+            EXPO2=EXPO2*S02+CF(IF8)  !  evaluate fit at
+                                     !  PARM=(1.25*parleft),
+                                     !  parleft= left boundary
     1     CONTINUE
           CCXM1=EXPO1
           CCXM2=EXPO2
@@ -124,14 +131,18 @@ C  USE ASYMPTOTIC EXPRESSION NO. IFEXMX
         IF (IFEXMX.LT.0) THEN
 C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR LINEAR EXTRAP. OF LOG(FIT) IN LN(parm)
           S01=RCMAX
-          S02=LOG(0.75_DP)+RCMAX   ! use parm=exp(rcmin) and 0.75*parm for extrapolation
+          S02=LOG(0.75_DP)+RCMAX   ! use parm=exp(rcmin) and
+                                   ! 0.75*parm for extrapolation
           DS12=S02-S01
           EXPO1=CF(9)
           EXPO2=CF(9)
           DO 2 II=1,8
             IF8=9-II
-            EXPO1=EXPO1*S01+CF(IF8)  !  evaluate fit at right boundary -->EXPO1=log(fit)
-            EXPO2=EXPO2*S02+CF(IF8)  !  evaluate fit at PARM=(0.75*parright), parright= right boundary
+            EXPO1=EXPO1*S01+CF(IF8)  !  evaluate fit at right boundary
+                                     !   -->EXPO1=log(fit)
+            EXPO2=EXPO2*S02+CF(IF8)  !  evaluate fit at
+                                     !  PARM=(0.75*parright),
+                                     !  parright= right boundary
     2     CONTINUE
           CCXM1=EXPO1
           CCXM2=EXPO2
@@ -156,7 +167,7 @@ C  determine parameter and fit value at right boundary. may be needed by fct. ex
           ALMAX= RCMAX
           COUMAX=EXP(COUMAX)
           FP(4:6) = FPP(4:6)
-          
+
         ELSE
 
 C  AL IS OUT OF RANGE, BUT NO EXTRAPOLATION SCHEME SPECIFIED (IFEXMX=0)
@@ -191,6 +202,6 @@ c  ie. add -earrh0/parm
  1000 continue
 cdr  return cou=POLY, or cou=exp(POLY):
       if (lexp) cou = exp(max(-100._dp, cou))
-      
+
       return
       end function EIRENE_sngl_poly

@@ -48,7 +48,7 @@ c    new: write file of triang. data for idl plotting tool.
 
 cdr  a number of changes involving internal energy source options have been changed.
 cdr  to be checked.
-cdr  distinct from solps_iter version:  all pppl_cop, mppl_cop, eppl_cop, epel_cop
+cdr  distinct from solps_iter version: all pppl_cop, mppl_cop, eppl_cop, epel_cop
 cdr  are all set.
 cdr  in solps_iter: only pppl_cop is set. eppl_cop and epel_cop contributions are directly
 cdr                 removed from eapl, eael, and not set. --> short cycle not possibel there.
@@ -81,7 +81,7 @@ c            parameters nr1tal, np2tal, ..... for scoring
 c            parameters nr1tal_save, ....     for interfacing tallies between b2 and eirene
 c                                             is always the b2 (structured) coarse grid
 
-cdr June 17: NFL dependence added:  SFNIT(0:NSTEP,NFL) in global particle balance: from couple_SOLPS
+cdr June 17: NFL dependence added: SFNIT(0:NSTEP,NFL) in global particle balance: from couple_SOLPS
 c                            sfni..(..,nfl), ssns,ssni,balann,totn,rn.
 cdr Nov 17 : precision checks with triangles vs. quadrangles: use relative units.
 cdr          only partially done
@@ -150,7 +150,7 @@ C
 *DK COUPLE
 C
       MODULE EIRMOD_INFCOP
-      
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CESTIM
@@ -186,7 +186,7 @@ C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
       USE EIRMOD_JSON
       USE EIRMOD_OPENFILE, ONLY: EIRENE_OPENFILE
       USE EIRMOD_SHEATH, ONLY: EIRENE_SHEATH
-      
+
       use json_module           !IGNORE
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
@@ -258,7 +258,7 @@ C
      .          FLX_EIR,
      .          SUMN_OLD,
      .          SNIRES, SMORES, SEERES, SEIRES, UU, PITB,
-     .          DXPOL,DYPOL,PAR,
+     .          DXPOL, DYPOL, PAR,
      .          fniprt, fltt, e0b2, frac, celdel, dd, cfac, bv
 
       INTEGER, SAVE :: J, IRC, JC, INC,
@@ -388,7 +388,7 @@ C
       LFIXED=LRDJSON
       LSHRT=.TRUE.
       CALL EIRENE_IF0COP_GENERIC(LFIXED,LSHRT)
-      
+
       RETURN
       END SUBROUTINE EIRENE_INTER0
 
@@ -672,7 +672,7 @@ C
 C
 !  ALPHXB, ALPHYB GIVE THE DIRECTION OF THE B FIELD IN THE
 !  CARTESIAN PLANE
-        write (iunout,*) 'testoutput from '//fort_lc//'29 in infcop'
+        write (iunout,*) 'test output from '//fort_lc//'29 in infcop'
         write (iunout,*) 'irad,ipol, angles.....'
         DO IY=1,NDYA
           DO IX =1,NDXA
@@ -759,9 +759,9 @@ C     READ IN THE NUMBER OF TRIANGLES AND ATTRIBUTES OF THE TRIANGLES
         READ (35,*,IOSTAT=IO) IDUMMY
         IF(IO.NE.0) IDUMMY=0
         IF (IDUMMY /= NTRII) THEN
-          WRITE (IUNOUT,*) ' NUMBERS OF TRIANGLES DO NOT MATCH '
+          WRITE (IUNOUT,*) ' NUMBERS OF TRIANGLES DO NOT MATCH'
           WRITE (IUNOUT,*) ' IN ELEMENTE AND NEIGHBOR FILES'
-          WRITE (IUNOUT,*) ' CHECK THE GRID FILES '
+          WRITE (IUNOUT,*) ' CHECK THE GRID FILES'
           CALL EIRENE_EXIT_OWN(1)
         END IF
 
@@ -780,7 +780,7 @@ C
         IF (NTRFRM == 0) THEN
           READ(33,*) (XTRIAN(I),I=1,NRKNOT)
           READ(33,*) (YTRIAN(I),I=1,NRKNOT)
-          
+
           if (plidl) then
 c write file 'triang_new.npco_char' for triang-grid, for idl tool, in appropriate format.
 c first: fetch a free file unit number
@@ -822,7 +822,7 @@ cdr           This is implicitly assumed here ??
      >                 NCHBAR(3,I),NSEITE(3,I),IDUMMY,
      >                 IXTRI(I),IYTRI(I)
 
-C     WRITE (iunout,*) J,NECKE(1,J),NECKE(2,J),NECKE(3,J),
+C       WRITE (iunout,*) J,NECKE(1,J),NECKE(2,J),NECKE(3,J),
 C    >                   NCHBAR(1,J),NSEITE(1,J),
 C    >                   NCHBAR(2,J),NSEITE(2,J),NCHBAR(3,J),NSEITE(3,J)
 
@@ -966,7 +966,7 @@ C  THAT MEANS  SIDE "NUMSI" OF TRIANGLE "ITRI" BELONGS TO NDS
                 IF (ISC1.GT.0.AND.ISC2.GT.0) THEN
                   NUMSI=MIN(ISC1,ISC2)
                   IF (NUMSI.EQ.1.AND.MAX(ISC1,ISC2).EQ.3) NUMSI=3
-C     
+C
                   ICOG=ICOG+1
                   INSPAT(NUMSI,ITRI)=ICOG
                   INMTI(NUMSI,ITRI)=NLIM+ISTS
@@ -985,7 +985,7 @@ C
             ENDDO
           ENDIF
         ENDDO
-          
+
 C  NEXT TOROIDAL SURFACES
 
 C  ADDED HERE ONLY FOR OTHER INFCOP, IN CASE OF 3D GRID RESOLUTION. IRRELEVANT FOR B2_TRIA
@@ -1004,7 +1004,7 @@ C  ADDED HERE ONLY FOR OTHER INFCOP, IN CASE OF 3D GRID RESOLUTION. IRRELEVANT F
             END DO
           END IF
         END DO
-        
+
       ENDDO
 C
 C  NOW THE ADJUSTMENTS, WHICH ARE AUTOMATICALLY DONE IN GEOUSR
@@ -1016,7 +1016,7 @@ C
 C
 C  DETERMINE THE ARRAY INMTI FOR ALL ADDITIONAL SURFACES
 C  ISTS=INMTI(ISIDE,NRCELL), ISIDE=1, 2, OR 3
-C     
+C
       DO I=1,NLIMI
         IF (IGJUM0(I)==0) THEN
 C  SURFACE I IS ACTIVE
@@ -1048,7 +1048,7 @@ C
                   ISC2=1
                 ENDIF
                 VT=SQRT(VTX**2+VTY**2)+EPS60
-C     
+C
                 VPRO=(VSX*VTY-VTX*VSY)/(VT*VS)
                 IF (ABS(VPRO).LT.1.E-2) THEN
 C  SURFACES ARE PARALLEL,
@@ -1131,12 +1131,12 @@ C  AND REPLACE IT BY NON-DEFAULT STD. SURFACE
                         ENDIF
                       ENDIF
                     ENDIF
-                    
+
                   endif
-                  
+
                 ENDIF
               ENDDO
- 1111       CONTINUE            ! END OF ITRI LOOP
+ 1111       CONTINUE  ! END OF ITRI LOOP
           ENDIF
         ENDIF
       ENDDO
@@ -1176,9 +1176,9 @@ C  SET NEW, FINER GRID STRUCTURE
 C  counter for additional cells outside original COARSE standard grid
       icoadd = NSURF_TAL
 
-C  NCLTAL(ITRI):  TRIANGLE ITRI IS PART OF ORIGINAL STRUCTURED GRID CELL IX,IY,
-C                 WITH IX,IY, CODED IN THE 1D ARRAY FORM (NCELL) OF EIRENE STANDARD GRIDS
-C                 NCELL=NCLTAL(ITRI)
+C  NCLTAL(ITRI): TRIANGLE ITRI IS PART OF ORIGINAL STRUCTURED GRID CELL IX,IY,
+C                WITH IX,IY, CODED IN THE 1D ARRAY FORM (NCELL) OF EIRENE STANDARD GRIDS
+C                NCELL=NCLTAL(ITRI)
       IF (LCOARSE) THEN
         write (iunout,*) 'SCORING OF VOLUME-AVERAGED TALLIES  '
         write (iunout,*) 'IS ON COARSE GRID CELLS NCELL ONLY. '
@@ -1301,7 +1301,6 @@ C
 csw 09jan2012 missing IGJUM3 correction!
 CVK CORRECT  IGJUM1 AND IGJUM3 FOR TRIANGLES OUTSIDE STANDARD (B2) MESH
 
-
       WRITE(iunout,*) 'IF0COP: CHECKING IGJUM3 FROM SETTINGS IN GEOUSR'
       DO ITRI=1,NTRII
 
@@ -1320,14 +1319,13 @@ c                  is not part of the STANDARD (polygonal) grid
           END IF
         END DO
 
-
         DO I=1,NLIM
 C SWITCHING ON ADDITIONAL SURFACE CHECKING FOR TRIANGULAR CELL ITRI (OUTSIDE B2 MESH)
           IF(IXTRI(ITRI).LE.0.AND.IYTRI(ITRI).LE.0
      .                      .AND.IGJUM0(I).EQ.0) THEN
             if (IGJUM3(ITRI,I).ne.0) then
               if (trcint.and.trcsur)
-     .        write (iunout,*) 'activated itri,i, 1', itri,i
+     .         write (iunout,*) 'activated itri,i, 1', itri,i
               IGJUM3(ITRI,I)=0
             endif
           END IF
@@ -1361,12 +1359,12 @@ csw
      .                   NRADD_TAL_SAVE, NSBOX_TAL_SAVE)
       CALL EIRENE_LEER(2)
 CTRIG E
-      
+
       IUNIN = IUNIN_SAVE
       IF (IUSROUT /= 0) CLOSE(IUSROUT)
 
       RETURN
-      
+
  1981 WRITE(IUNOUT,*)
      w     "ERROR IN INFCOP: CANNOT OPEN "//FORT//"29"
       CALL EIRENE_EXIT_OWN (1)
@@ -1398,7 +1396,7 @@ CTRIG E
 C
 C   GEOMETRY DEFINITION PART FINISHED
 C
-!PB  Replaced ENTRY point      
+!PB  Replaced ENTRY point
 !      ENTRY EIRENE_IF1COP(IENTRY)
       SUBROUTINE EIRENE_IF1COP(IENTRY)
 
@@ -1437,7 +1435,7 @@ C  IN CASE OF "SHORT CYCLE" OR TIME DEP. MODE
 C  THE PLASMA STATE IS TRANSFERRED VIA COMMON
 C  ONLY SCALING TO EIRENE UNITS AND INDEX MAPPING NEEDS TO BE DONE HERE
 C
-!PB  Replaced ENTRY point      
+!PB  Replaced ENTRY point
 !     ENTRY EIRENE_INTER1
       SUBROUTINE EIRENE_INTER1
       LSHORT=.TRUE.
@@ -1445,7 +1443,7 @@ C
 
       RETURN
       END SUBROUTINE EIRENE_INTER1
-      
+
 C
       SUBROUTINE EIRENE_IF1COP_READ_PLASMA
 C
@@ -1521,15 +1519,15 @@ C  MAGNETIC FIELD STRENGTH (TESLA)
 
 
       RETURN
-      
+
  1986 WRITE(IUNOUT,*)
      w     "ERROR IN INFCOP: CANNOT OPEN "//FORT//"31 ",
      w     "(PLASMA BACKGROUND)"
       CALL EIRENE_EXIT_OWN (1)
-      
+
       END SUBROUTINE EIRENE_IF1COP_READ_PLASMA
 C
- 
+
       SUBROUTINE EIRENE_IF1COP_GENERIC
       REAL(DP) :: DUMMY(0:NDXP,0:NDYP)
 C
@@ -1697,7 +1695,7 @@ C         VLINTF(ITRI)=1.
         ENDIF
       ENDDO  !ITRI LOOP
 
-C  ntrii+1:  for average over ntrii grid
+C  ntrii+1: for average over ntrii grid
 
 C  additional cells from input block 2e
       DO itri=ntrii+2, nsbox
@@ -1724,8 +1722,8 @@ c  without drifts:
 c  upb * pitch: poloidal velocity (i.e. cartesian x,y direction).
 c  poloidal field direction is given by that of the poloidal cell face PU..(in),
 C  i.e. along a flux surface. (PU(...) is cell-centered)
-c  and upb*(1-pitch^2): toroidal velocity  (i.e. cartesian z direction (nltrz) or
-c                                                toroidal phi direction (nltra)
+c  and upb*sqrt(1-pitch^2): toroidal velocity  (i.e. cartesian z direction (nltrz) or
+c                                                    toroidal phi direction (nltra)
 c  sign of flowfield follows the sign of poloidal grid in B2.
 c
 c  with drifts:
@@ -1803,17 +1801,17 @@ C  READ DATA FOR "IPLS" FROM EIRENE DUMP FILE FT13
             IREAD=1
             IF (TRCFLE) WRITE (iunout,*) 'READ 13: RCMUSR, IO= ',IO
             IF(IO.NE.0) THEN
-              WRITE(IUNOUT,*) "WARNING FROM INFCOP: ", 
+              WRITE(IUNOUT,*) "WARNING FROM INFCOP: ",
      w                 "FORT.13 IS IN SHORT FORMAT"
-C IF READING IN OLD FORMAT DOESN'T WORK, THEN TRY THE NEW ONE        
-              REWIND 13  
+C IF READING IN OLD FORMAT DOES NOT WORK, THEN TRY THE NEW ONE
+              REWIND 13
               READ (13,IOSTAT=IO)
      R          TIIN(NFLA+1:NPLSI,1:NRAD),DIIN(NFLA+1:NPLSI,1:NRAD),
      R          VXIN(NFLA+1:NPLSI,1:NRAD),VYIN(NFLA+1:NPLSI,1:NRAD),
      R          VZIN(NFLA+1:NPLSI,1:NRAD)
               IF (TRCFLE) WRITE (iunout,*)
-     w                'INFCOP: BGK BACKGROUND IS READ FROM FORT.13'
-            END IF 
+     w         'INFCOP: BGK BACKGROUND IS READ FROM FORT.13'
+            END IF
             CLOSE (UNIT=13)
           ENDIF
           IF (IO.EQ.0) THEN
@@ -1950,7 +1948,7 @@ c  pitch angle, no species index
               ADINTF(IAIN,IN)=0.
             ENDIF
  2334     CONTINUE
-C   NAINT=15,16:  USED ONLY IN B2.5 COUPLING: UUDIAG, VVDIAG
+C   NAINT=15,16: USED ONLY IN B2.5 COUPLING: UUDIAG, VVDIAG
 c   cell volume as in b2 code, no species index (cell-centered)
         ELSEIF (NAINT(IAIN).EQ.17) THEN
           DO 2335 IN=1,NTRII
@@ -1971,8 +1969,8 @@ cdr  magnetic field strength, Tesla
  2336     CONTINUE
 
 
-cdr  free: NAINT=20 --29:  reserved for AMDIAG:  scaled atomic/molecular rate coefficients
-cdr                        evaluated on computational grid. See Manual.
+cdr  free: NAINT=20 --29: reserved for AMDIAG: scaled atomic/molecular rate coefficients
+cdr                       evaluated on computational grid. See Manual.
 
         ENDIF
  2300 CONTINUE
@@ -2016,11 +2014,11 @@ C
 C
       IF (TRCINT.AND.LTARG.EQ.0) THEN
         LTARG=1
-        WRITE (iunout,*) 'ITARG: TARGET NUMBER '
-        WRITE (iunout,*) 'IPRT : SUBSECTION OF TARGET '
+        WRITE (iunout,*) 'ITARG: TARGET NUMBER'
+        WRITE (iunout,*) 'IPRT : SUBSECTION OF TARGET'
         WRITE (iunout,*)
-     .     'NPBS : BRAAMS (SURFACE) X-CELL INDEX OF TARGET '
-        WRITE (iunout,*) 'NPBC : BRAAMS (ZONE) P-CELL INDEX OF TARGET '
+     .     'NPBS : BRAAMS (SURFACE) X-CELL INDEX OF TARGET'
+        WRITE (iunout,*) 'NPBC : BRAAMS (ZONE) P-CELL INDEX OF TARGET'
         WRITE (iunout,*) 'NPES : POLOIDAL SURFACE INDEX OF TARGET'
         WRITE (iunout,*) '       IN EIRENE MESH'
         WRITE (iunout,*) 'NPEC : 1ST POLOIDAL CELL INDEX OF EIRENE MESH'
@@ -2105,7 +2103,7 @@ cdr  scale to relative units of triangle coordinates
                     ITRI=ITRI+1
                     IF (ITRI.GT.NGITT) THEN
                       WRITE (iunout,*)
-     .                        ' NOT ENOUGH GRIDPOINTS FOR DEFINING',
+     .                        ' NOT ENOUGH GRID POINTS FOR DEFINING',
      .                        ' STEP-FUNCTION '
                       WRITE (iunout,*) ' INCREASE PARAMETER NGITT '
                       WRITE (iunout,*) ' NGITT = ',NGITT
@@ -2358,7 +2356,7 @@ cdr  scale to relative units of triangle coordinates
                     ITRI=ITRI+1
                     IF (ITRI.GT.NGITT) THEN
                       WRITE (iunout,*)
-     .                        ' NOT ENOUGH GRIDPOINTS FOR DEFINING',
+     .                        ' NOT ENOUGH GRID POINTS FOR DEFINING',
      .                        ' STEP-FUNCTION '
                       WRITE (iunout,*) ' INCREASE PARAMETER NGITT '
                       WRITE (iunout,*) ' NGITT = ',NGITT
@@ -2623,7 +2621,7 @@ C  SORLIM DEFAULT WAS 0.D0
 !  intermediate model for testing:
       IF (.FALSE.) THEN
 !  SELECT THE PREPROGRAMMED SOURCE ENERGY CONDITIONAL DISTRIBUTION CONSISTENT
-!  TO B2 SETTINGS:  USE ELSTEP DIRECTLY, NO SAMPLING
+!  TO B2 SETTINGS: USE ELSTEP DIRECTLY, NO SAMPLING
 C  USE ENERGY FLUXES ELSTEP SPECIFIED ABOVE, IE., SORENE, SORENI ARE REDUNDANT
       IF (ABS(SUM(SHSTEP(ITARG,1:NRWL(ITARG)))) > EPS10) THEN
 !  USE SHEATH PARAMETER GIVEN BY B2
@@ -3400,7 +3398,7 @@ cdr  only one bulk ion species per volume source stratum supported
               RECTOT = RECTOT + SUMN
               WRITE (iunout,*) 'IPLS,IRRC ',IPLS,IRRC
               CALL EIRENE_MASR4('SUMN, SUMM, SUMEI, SUMEE        ',
-     .                     SUMN,SUMM,SUMEI,SUMEE)
+     .                           SUMN, SUMM, SUMEI, SUMEE)
  7472     CONTINUE
 
 cdr
@@ -3899,7 +3897,7 @@ c  skip working on internal lin. comb. of tallies, unless sufficient storage
          endif  ! STORAGE ON COPV
 
 
-      IF (.NOT.LSHORT) THEN
+         IF (.NOT.LSHORT) THEN
 
 cdr   try to find stat. variance for ion energy balance sources
 cdr   ntalm is a copv tally.
@@ -3931,11 +3929,11 @@ cdr   ntalm is a copv tally.
               END DO   !NDYA
             END DO    !NDXA
           end if   !ISTAT_COP
-      END IF  !lshort
+        END IF  !lshort
 
-      WRITE (iunout,*) 'RECYCLING SOURCE FROM IF3COP ',ISTRAI
-      WRITE (iunout,8888) sum(SNIS(1:nfla)), seis, sees
- 8888 FORMAT (3E14.6)
+        WRITE (iunout,*) 'RECYCLING SOURCE FROM IF3COP ',ISTRAI
+        WRITE (iunout,8888) sum(SNIS(1:nfla)), seis, sees
+ 8888   FORMAT (3E14.6)
 C
 C   NEXT:
 C   IF LSHORT OR IFIRST.GT.0     : CRITERION TO STOP SHORT CYCLE,
@@ -4093,7 +4091,7 @@ C
       END SUBROUTINE EIRENE_IF3COP_GENERIC
 
 !      ENTRY EIRENE_IF4COP
-!PB   REplaces entry with subroutine      
+!PB   replaces entry with subroutine
 C
       SUBROUTINE EIRENE_IF4COP
 C
@@ -4477,7 +4475,7 @@ C  BALANCE CONTRIB. X-GRID REC. SOURCE
                   fniprt = fniprt + FNIXB(NPBS,IY,IFL)
 
 cdr sheath contributions: count negative for electrons, positive for ions
-cdr unfinished:  need to account for charge state of ion species IFL
+cdr unfinished: need to account for charge state of ion species IFL
                   SHEAE(I)=SHEAE(I)+TEB(NPBC,IY)*
      .             NINCT(I,IPRT)*FNIXB(NPBS,IY,IFL)*
      .             (-DELTA_SHEATHXB(NPBS,IY))
@@ -4508,7 +4506,7 @@ C  BALANCE CONTRIB. FROM Y-GRID RECYCLING SOURCE
               IF (LLCUT(IX)) GOTO 10135
               DO 10136 IFL=NSPZI(I,IPRT),NSPZE(I,IPRT)
                 IF (NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL).GT.0._DP)
-     .          THEN
+     .           THEN
                   SFNIT(I,IFL)=SFNIT(I,IFL)-
      .                   NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)
 
@@ -4517,7 +4515,7 @@ C  BALANCE CONTRIB. FROM Y-GRID RECYCLING SOURCE
                   fniprt = fniprt + FNIYB(IX,NDT(I,IPRT),IFL)
 
 cdr sheath contributions: count negative for electrons, positive for ions
-cdr unfinished:  need to account for charge state of ion species IFL
+cdr unfinished: need to account for charge state of ion species IFL
                   SHEAE(I)=SHEAE(I)+TEB(IX,NDT(I,IPRT))*
      .              NINCT(I,IPRT)*FNIYB(IX,NDT(I,IPRT),IFL)*
      .              (-DELTA_SHEATHYB(IX,NDT(I,IPRT)))
@@ -4637,12 +4635,12 @@ c  sum over strata
 C
       CALL EIRENE_LEER (1)
       IF (LBALAN) THEN
-        WRITE (iunout,*) 'B2-EIRENE GLOBAL BALANCES '
+        WRITE (iunout,*) 'B2-EIRENE GLOBAL BALANCES'
         WRITE (iunout,*) 'PARTICLE FLUXES (SFNI..) IN AMP'
         WRITE (iunout,*) 'ENERGY FLUXES (SFEI..,SFEE..,) IN WATT'
         CALL EIRENE_LEER(1)
         IF (LNONREC_SY) THEN
-          WRITE (iunout,*) ' NON-RECYCLING FLUXES AT SOUTH EDGE '
+          WRITE (iunout,*) ' NON-RECYCLING FLUXES AT SOUTH EDGE'
           CALL EIRENE_MASR2(' SFEISY,SFEESY  ',SFEISY,SFEESY)
           DO IFL=1,NFLA
             WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNISY(IFL =',IFL,') ',
@@ -4658,7 +4656,7 @@ C
           ENDDO
         ENDIF
         IF (LNONREC_WX) THEN
-          WRITE (iunout,*) ' NON-RECYCLING FLUXES AT WEST EDGE '
+          WRITE (iunout,*) ' NON-RECYCLING FLUXES AT WEST EDGE'
           CALL EIRENE_MASR2(' SFEIWX,SFEEWX  ',SFEIWX,SFEEWX)
           DO IFL=1,NFLA
             WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNIWX(IFL =',IFL,') ',
@@ -4666,7 +4664,7 @@ C
           ENDDO
         ENDIF
         IF (LNONREC_EX) THEN
-          WRITE (iunout,*) ' NON-RECYCLING FLUXES AT EAST EDGE '
+          WRITE (iunout,*) ' NON-RECYCLING FLUXES AT EAST EDGE'
           CALL EIRENE_MASR2(' SFEIEX,SFEEEX  ',SFEIEX,SFEEEX)
           DO IFL=1,NFLA
             WRITE(iunout,'(A,I0,A,ES12.4)') 'SFNIEX(IFL =',IFL,') ',
@@ -4693,20 +4691,20 @@ C
 
         CALL EIRENE_LEER(2)
 
-        WRITE (iunout,*) ' NEUTRAL PLASMA INTERACTION: '
+        WRITE (iunout,*) ' NEUTRAL PLASMA INTERACTION:'
         CALL EIRENE_MASR2(' SSEI,SSEE      ',SSEI,SSEE)
         DO IFL=1,NFLA
-           WRITE(iunout,'(A,I0,A,ES12.4)') 'SSNI(IFL=',IFL,') ',
+           WRITE(iunout,'(A,I0,A,ES12.4)') 'SSNI(IFL =',IFL,') ',
      .                                      SSNI(IFL)
         ENDDO
         CALL EIRENE_LEER(2)
 
         WRITE (iunout,*)
-     .    ' VOLUMETRIC ENERGY SINKS FOR ELECTRONS, FROM B2 '
+     .    ' VOLUMETRIC ENERGY SINKS FOR ELECTRONS, FROM B2'
         CALL EIRENE_MASR4(' B2BREM,B2RAD,-B2QIE,-B2VDP     ',
      .               B2BREM,B2RAD,-B2QIE,-B2VDP)
         WRITE (iunout,*)
-     .    ' TARGET SHEATH CONTRIBUTIONS,ELECTRONS AND IONS '
+     .    ' TARGET SHEATH CONTRIBUTIONS, ELECTRONS AND IONS'
         CALL EIRENE_MASRR1 (' TARGETS,EI',SHEAI(1),NTARGI,5)
         CALL EIRENE_MASRR1 (' TARGETS,EE',SHEAE(1),NTARGI,5)
         CALL EIRENE_MASR2(' TOTALS,EI,EE    ',SHEAI(0),SHEAE(0))
@@ -4844,7 +4842,7 @@ C  ALL INDICES: AFTER INDEX MAPPING
 C  NDT: INDEX OF X-CELL (EAST OR NORTH SURFACE OF BRAAMS CELL) OF TARGET
 C  NINCT: DIRECTION OF OUTER TARGET NORMAL WITH RESPECT TO POSITIVE DIR.
 C  NIXY: SOURCE ON Y SURFACE: NIXY=1; SOURCE ON X SURFACE: NIXY=2
-C  NTIN,NTEN: SOURCE RANGE FROM GRIDPOINT NTIN TO GRIDPOINT NTEN
+C  NTIN,NTEN: SOURCE RANGE FROM GRID POINT NTIN TO GRID POINT NTEN
        IF (TRCINT)
      .  WRITE (iunout,*) '    IT,  NDT,NINCT, NIXY, NTIN, NTEN',
      .              ',NIFLG, NPTC, NPTCM,NSPZI,NSPZE,NEMOD'
@@ -4897,10 +4895,10 @@ C  NTIN,NTEN: SOURCE RANGE FROM GRIDPOINT NTIN TO GRIDPOINT NTEN
        IF (TRCINT) CALL EIRENE_MASR4
      .                         ('CHGP,CHGEE,CHGEI,CHGMOM         ',
      .                           CHGP,CHGEE,CHGEI,CHGMOM)
-C  READ ADDITIONAL DATA TO BE TRANSFERRED FROM B2.5 INTO EIRENE
-C  HERE: B2.5 VOLUME TALLIES
+C  READ ADDITIONAL DATA TO BE TRANSFERRED FROM B2_TRIA INTO EIRENE
+C  HERE: B2_TRIA VOLUME TALLIES
        READ (IUNIN,'(I6)') NAINB
-C  ADDITIONAL INPUT TALLY ADIN:  ITAL=12
+C  ADDITIONAL INPUT TALLY ADIN: ITAL=12
        NAIN = MAX(NAIN,NAINB)
        CALL EIRENE_ALLOC_CCOUPL(2)
        WRITE (iunout,*) '        NAINI = ',NAINB
@@ -4965,13 +4963,13 @@ C  COPY USER SPECIFIC DATA TO FILE user_data.input
        ELSE
          IUSROUT = 0
        END IF
-       
+
        RETURN
        END SUBROUTINE EIRENE_READ14_FIXED
 
 
        SUBROUTINE EIRENE_READ14_JSON(json,me)
-       USE EIRMOD_JSON     
+       USE EIRMOD_JSON
        use json_module           !IGNORE
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 
@@ -4981,11 +4979,11 @@ C  COPY USER SPECIFIC DATA TO FILE user_data.input
        type(json_value), pointer, intent(in) :: me
        type(json_value), pointer :: pflds, pfld, ptrgs, ptrg,
      .                             prts, prt, padds, padd
-       character(kind=CK,len=:),allocatable :: txt                       
+       character(kind=CK,len=:), allocatable :: txt
        integer :: j, npl, ntrg
        integer, allocatable :: ihelp(:)
        logical :: found, foundi, foundo
-      
+
        WRITE (iunout,*) '        SUBROUTINE INFCOP IS CALLED  '
 C  READ INPUT DATA OF BLOCK 14
 C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
@@ -5009,13 +5007,13 @@ cdr  imf  flag for different formats of geometry file: linda, sonnet, carre. Wha
        if (imf /= 0) mshfrm = imf
 
        NCUTB_SAVE=NCUTB
-      
+
        IF (TRCINT) THEN
          WRITE (iunout,*) ' NFLA,NCUTB,NCUTL,IMF,NTRFRM = ',
      .                      NFLA,NCUTB,NCUTL,IMF,NTRFRM
          WRITE (iunout,*) ' IPLS,IFLB(IPLS),FCTE(IPLS),BMASS(IPLS)'
        ENDIF
-      
+
        call json%get_child(me,'B2FLUIDS',pflds)
        call json%info(pflds,n_children=npl)
        if (npl /= NPLSI) then
@@ -5025,7 +5023,7 @@ cdr  imf  flag for different formats of geometry file: linda, sonnet, carre. Wha
          write (iunout,*) 'NPL =   ',npl
          call eirene_exit_own(1)
        end if
-        
+
        DO IPL=1,NPLSI
          call json%get_child(pflds,ipl,pfld)
 
@@ -5038,7 +5036,7 @@ cdr  imf  flag for different formats of geometry file: linda, sonnet, carre. Wha
      .               IPL,IFLB(IPL),FCTE(IPL),BMASS(IPL)
        END DO
        nullify(pflds)
-      
+
        call json%get(me,'NDXA',ndxa,found)
        call json%get(me,'NDYA',ndya,found)
        IF (TRCINT) WRITE (iunout,*) 'NDXA,NDYA= ',NDXA,NDYA
@@ -5151,7 +5149,7 @@ C  NTIN,NTEN: SOURCE RANGE FROM GRIDPOINT NTIN TO GRIDPOINT NTEN
 
 C  READ ADDITIONAL DATA TO BE TRANSFERRED FROM B2 INTO EIRENE
 C  HERE: B2 VOLUME TALLIES
-       call json%get(me,'NAINB',nainb,found)   
+       call json%get(me,'NAINB',nainb,found)
 C  ADDITIONAL INPUT TALLY ADIN:  ITAL=12
        NAIN = MAX(NAIN,NAINB)
        CALL EIRENE_ALLOC_CCOUPL(2)
@@ -5189,10 +5187,10 @@ C  ADDITIONAL INPUT TALLY ADIN:  ITAL=12
            nullify(padds)
          END IF
        END IF
-      
+
 C  READ ADDITIONAL DATA TO BE TRANSFERRED FROM EIRENE INTO B2
 C  HERE: EIRENE SURFACE TALLIES
-       call json%get(me,'NAOTB',naotb,found)   
+       call json%get(me,'NAOTB',naotb,found)
        WRITE (iunout,*) '        NAOTI = ',NAOTB
        IF (NAOTB.GT.NLIMPS) THEN
          CALL EIRENE_MASPRM ('NLIMPS',6,NLIMPS,'NAOTB',5,NAOTB,IERROR)
@@ -5234,7 +5232,7 @@ C
          CALL EIRENE_LEER(1)
          WRITE (IUNOUT,*) 'NO FILE FOR USR SPECIFIC INPUT FOUND'
        END IF
-        
+
        RETURN
        END SUBROUTINE EIRENE_READ14_JSON
 
@@ -5385,7 +5383,7 @@ C> transfer to the external code
       END SUBROUTINE EIRENE_INFCOP_POST_STRATUM
 
 C> \brief Prepare some data prior to calculation of strata but after
-C> the distribution of processors has been updated 
+C> the distribution of processors has been updated
 C>
       SUBROUTINE EIRENE_INFCOP_PRE_STRATA
 
@@ -5397,5 +5395,5 @@ C>
 
       RETURN
       END SUBROUTINE EIRENE_IF3COP_SUM
- 
+
       END MODULE EIRMOD_INFCOP

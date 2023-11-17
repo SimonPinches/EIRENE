@@ -38,7 +38,8 @@ cdjm Jan2017
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R VOLSUMN(:), VOLSUMM(:), VOLSUMEI(:), VOLSUMEE(:)
 
-      INTEGER, SAVE :: NDXD, NDYD, NFLD,  NATD, NMLD, NIOD, NSTRAD
+      INTEGER, SAVE ::
+     I NDXD, NDYD, NFLD, NATD, NMLD, NIOD, NSTRAD
 
 C AK
       REAL(DP),PUBLIC,ALLOCATABLE,SAVE ::
@@ -363,6 +364,7 @@ cdjm Jan2017
         integer, intent(in) :: istr  !< stratum index
         integer, intent(in) :: irank !< where to send
         integer :: ierr
+
         call mpi_send(volsumn(istr), 1, MPI_DOUBLE_PRECISION,
      .                irank, istr, MPI_COMM_WORLD, ierr)
         call mpi_send(volsumm(istr), 1, MPI_DOUBLE_PRECISION,
@@ -376,8 +378,10 @@ cdjm Jan2017
 
       subroutine eirene_mpirecv_eirbra(istr,irank)
         integer, intent(in) :: istr !< stratum index
-        integer, intent(in) :: irank !< rank from where the message was sent
+!> rank from where the message was sent
+        integer, intent(in) :: irank
         integer :: ierr
+
         call mpi_recv(volsumn(istr), 1, MPI_DOUBLE_PRECISION,
      .                irank, istr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
      .                ierr)

@@ -55,7 +55,7 @@ C
       B2 = B2 / NORM
       B3 = B3 / NORM
 *
-*     Ein Punkt der Ebene:   P = (sqrt(-lambda(2)/lambda(1),1.,0.)
+*     Ein Punkt der Ebene: P = (sqrt(-lambda(2)/lambda(1),1.,0.)
 *     Ruecktransformation:
       P(1) = EV(1,1)*SQRT(-LAMBDA(2)/LAMBDA(1)) + EV(1,2)+M(1)
       P(2) = EV(2,1)*SQRT(-LAMBDA(2)/LAMBDA(1)) + EV(2,2)+M(2)
@@ -91,7 +91,7 @@ C
       C2 = C2 / NORM
       C3 = C3 / NORM
 *
-*     Ein Punkt der Ebene:   P = (-SQRT(-LAMBDA(2)/LAMBDA(1)),1.,0.)
+*     Ein Punkt der Ebene: P = (-SQRT(-LAMBDA(2)/LAMBDA(1)),1.,0.)
 *     Transformation:
       P(1) = -EV(1,1)*SQRT(-LAMBDA(2)/LAMBDA(1))+EV(1,2) + M(1)
       P(2) = -EV(2,1)*SQRT(-LAMBDA(2)/LAMBDA(1))+EV(2,2) + M(2)

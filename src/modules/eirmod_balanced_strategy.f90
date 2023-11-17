@@ -237,7 +237,7 @@ module eirmod_balanced_strategy
       ! Initialize output arrays
       !> the number of particles that needs to be distributed:
       npts_remaining = npts(1:nstrai) 
-      npestr = 0         !< numbre of PEs per stratum
+      npestr = 0         !< number of PEs per stratum
       !> The most important output quantity will be calculated in nparts_loc_all
       !> nparts_loc_all(i*nstrai + k) is the number of particles from stratum k
       !> processed by PE i
@@ -386,6 +386,7 @@ module eirmod_balanced_strategy
     integer, dimension(nstrai*nprs) :: nparts_processed_all  !< for MPI communication
     integer :: k, i, idx, n, ierr, n_strat
     real(kind=dp) :: t, t_strat
+
     ! gather the processing time and particle numbers from other PEs
     call MPI_Gather(t_particles_loc, nstrai, MPI_DOUBLE_PRECISION, &
                         t_particles_all, nstrai, MPI_DOUBLE_PRECISION, &
@@ -521,6 +522,7 @@ module eirmod_balanced_strategy
     real(kind=dp), dimension(:), allocatable :: t_calstr_pe
     integer, dimension(nstrai) :: n_calstr_sum 
     integer :: ierr, k, i, idx
+
     if(.not.allocated(t_calstr_strat_avg)) then
       if (my_pe==0) then
         allocate(t_calstr_strat_avg(nstrai))
@@ -584,6 +586,7 @@ module eirmod_balanced_strategy
     real(kind=dp), dimension(nstrai) :: t_postproc_avg
     integer :: ierr, k, n_tot
     real(kind=dp) :: n, tmp
+
     call MPI_REDUCE(t_postproc_loc, t_postproc_avg, nstrai, &
            MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierr)
     call MPI_REDUCE(n_postproc_executed, n_tot, 1, &

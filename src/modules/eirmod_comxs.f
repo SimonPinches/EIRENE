@@ -5,26 +5,26 @@ cdr          ie. KK or IR reaction indices do not cover minimal model reactions.
 cdr          write_cmamf and read_cmamf also do not cover minimal model reactions
 cdr Feb. 22: some missing photonic tally data added.
 cdr          More "unified type pointers" added, to prepare for unification of collide.f
-cdr dec. 21: some extra stuff is in this module for IFIT=5 (internal cr codes) option,
+cdr dec. 21: some extra stuff is in this module for IFIT=5 (internal CR codes) option,
 cdr          whereas for other IFIT options these corresponding parts
 cdr          seem to be elsewhere?  cleanup needed?
 cdr dec. 20: clean up nomenclature for reaction energetics flags: nelr.., nplr.., nhvr..
-cdr Nov. 20:  various data within TYPE.. Data constructs have been made
-cdr           ALLOCATABLE, rather than POINTER, due to more recent Fortran capabilities
-cdr           e.g.: ADAS_DATA (= TAB2D_DATA), POLY_DATA, TAB1D_DATA
-cdr Feb  20:  tbd: remove redundant nstor, nstor1 (unused),
-cdr           removed: reac_name (unused)
+cdr Nov. 20: various data within TYPE.. Data constructs have been made
+cdr          ALLOCATABLE, rather than POINTER, due to more recent Fortran capabilities
+cdr          e.g.: ADAS_DATA (= TAB2D_DATA), POLY_DATA, TAB1D_DATA
+cdr Feb  20: tbd: remove redundant nstor, nstor1 (unused),
+cdr          removed: reac_name (unused)
 
 cdr Aug  19: remove redundant data typ: HYDKIN, tbd: TAB1D, started
 cdr Oct  18: tbd: separate quantities that vary along trajectories  (i.e. per thread)
 cdr               from those that remain fixed after initialization (i.e. per node)
 cdr          private per thread: sigv..., i.e.: xstor and xstorv
 cdr          public per node: all the rest ?
-cdr Sept.18:  remove XDR format for stream fort.13
-cdr May  18:  FLDLM arrays (old fluid limit flags) now replaced by EDPOT arrays,
-cdr           for potential energy difference in reactions.
-cdr           The old fluid limit critical Knudsen number is now defined
-cdr           via negative ngen..(..) flags
+cdr Sept.18: remove XDR format for stream fort.13
+cdr May  18: FLDLM arrays (old fluid limit flags) now replaced by EDPOT arrays,
+cdr          for potential energy difference in reactions.
+cdr          The old fluid limit critical Knudsen number is now defined
+cdr          via negative ngen..(..) flags
 cdr Apr. 18: further pointer, targets set for photons, towards code synchronisation
 cdr          across particle types, incl. photons
 cdr Nov. 17: p2nds --> p2nei (now in full analogy with p2npi)
@@ -58,7 +58,7 @@ cdr            first: rationalize naming of integer flags for collision models
 cdr            nhvrei, nhvrpi, for KER (heavy particle post-collision kinetics)
 cdr            remove redundant flags: JEREARC  (UNUSED)
 cdr            remove redundant flags: JEREAEI  (UNUSED)
-cdr jun   22:  add splitting post-collision secondaries 
+cdr jun   22:  add splitting post-collision secondaries
 cdr            at selected collision processes.
 cdr            So far: tested for CX
 
@@ -70,7 +70,7 @@ cdr            So far: tested for CX
       PRIVATE
 
       PUBLIC :: EIRENE_ALLOC_COMXS, EIRENE_DEALLOC_COMXS,
-     .          EIRENE_INIT_CMDTA, EIRENE_BROADCAST_COMXS,
+     .          EIRENE_INIT_CMDTA,  EIRENE_BROADCAST_COMXS,
      .          EIRENE_WRITE_CMDTA, EIRENE_READ_CMDTA,
      .          EIRENE_WRITE_CMAMF, EIRENE_READ_CMAMF,
      .          EIRENE_GET_REACTION, EIRENE_SET_REACTION_DATA,
@@ -88,8 +88,12 @@ cdr
 c
      .          EIRENE_ALLOC_FIT_FORM
 
-cdr  user-defined data types:
+cdr Next: various specific data types for the 5 fit forms IFIT=1,2,...,5.
+
       TYPE LINE_DATA
+cdr fix ph4, nothing allocatable in here any more
+cdr also: distinct from poly, adas, colrad, tab1d, this is not a fit form
+cdr but a bound-bound line shape parametrization.
         REAL(DP) :: E0, E1, AIK, G1, G2, C2, C3, C4, C6, B12, B21
         REAL(DP) :: C6A(12)
         INTEGER :: IGND, IRCART, IPROFILETYPE, IFREMD, NRJPRT, IMESS
@@ -105,7 +109,7 @@ cdr  user-defined data types:
       END TYPE ADAS_DATA
 
 !pb  IFEXMN, IFEXMX, RCMN, RCMX, FPARM removed from POLY_DATA
-cdr  The extrapolation options are now made available generally, 
+cdr  The extrapolation options are now made available generally,
 cdr  for all types of A&M data input
 
       TYPE POLY_DATA
@@ -119,18 +123,21 @@ cdr  for all types of A&M data input
         CHARACTER(100) :: RPRT
       END TYPE TAB1D_DATA
 
-      TYPE COLRAD_DATA
+      TYPE COLRAD_DATA  !dr:  internal CR codes, eff. rates & pop.coefs
         INTEGER :: IFLAV, IVARST, IROW_ESC, ICOL_ESC
         REAL(DP) :: POP_ESC
       END TYPE COLRAD_DATA
 
       TYPE FIT_FORMS
         INTEGER :: IFIT
-        TYPE(POLY_DATA),   POINTER :: POLY
-        TYPE(ADAS_DATA),   POINTER :: ADAS  ! or: TAB2D
+        TYPE(POLY_DATA),   POINTER :: POLY              ! IFIT = 1,2
+        TYPE(ADAS_DATA),   POINTER :: ADAS  ! or: TAB2D ! IFIT = 3
+cdr line_data is not a "fit form", but just some parameters that
+cdr define a particular bound-bound line (here: "photon test particle").
+cdr It should not be part of this data structure
         TYPE(LINE_DATA),   POINTER :: LINE
-        TYPE(TAB1D_DATA),  POINTER :: TAB1D
-        TYPE(COLRAD_DATA), POINTER :: CRM
+        TYPE(TAB1D_DATA),  POINTER :: TAB1D             ! IFIT = 4
+        TYPE(COLRAD_DATA), POINTER :: CRM               ! IFIT = 5
 
 cdr asymptotics, common to all of these 5 A&M data formats.
         REAL(DP) :: RC1MIN, RC1MAX, RC2MIN, RC2MAX
@@ -150,11 +157,11 @@ cdr asymptotics, common to all of these 5 A&M data formats.
 
       TYPE REACTION_INPUT_LINE
         INTEGER :: NO, MT, MP, IZ, JFEX1MN, JFEX1MX, NCONST,
-     .             JFEX2MN, JFEX2MX, 
+     .             JFEX2MN, JFEX2MX,
      .             IROW_ESC, ICOL_ESC,
      .             IFTFLG, NCOEF
         REAL(DP) :: R1MN, R1MX, DPP, FP1(6), COEF(9),
-     .              R2MN, R2MX, FP2(6)
+     .              R2MN, R2MX,      FP2(6)
         REAL(DP) :: POP_ESC
         CHARACTER(8) :: FILE
         CHARACTER(50) :: REAC_STRING
@@ -165,11 +172,12 @@ cdr asymptotics, common to all of these 5 A&M data formats.
       END TYPE REACTION_INPUT_LINE
 
       TYPE(LINE_DATA), POINTER, PUBLIC, SAVE :: REACTION
-      INTEGER, PUBLIC, SAVE :: IDREAC,  ! save kk value of previous reacdat(kk) evaluation
+      INTEGER, PUBLIC, SAVE :: IDREAC,  ! save kk value of previous
+                                        ! reacdat(kk) evaluation
      .                         IRLINES
 
       TYPE(REACTION_DATA), ALLOCATABLE, PUBLIC, SAVE :: REACDAT(:)
- 
+
       TYPE(REACTION_INPUT_LINE), ALLOCATABLE, PUBLIC, SAVE ::
      .                           REACLINES(:)
 cdr....................................................................
@@ -192,8 +200,8 @@ c  inverse mean free path
      R ZMFPI
 
       REAL(DP), PUBLIC, SAVE :: ZMFPTHI, TDGTEMX
-      
-!$OMP  THREADPRIVATE(SIGVCX,SIGVPI,SIGVEI,SIGVEL,SIGVPH,XSTOR,XSTORV, 
+
+!$OMP  THREADPRIVATE(SIGVCX,SIGVPI,SIGVEI,SIGVEL,SIGVPH,XSTOR,XSTORV,
 !$OMP& ESIGCX,ESIGPI,ESIGEI,ESIGEL,ESIGPH,VSIGCX,VSIGPI,VSIGEL,SIGCXT,
 !$OMP& SIGPIT,SIGEIT,SIGELT,SIGPHT,SIGTOT,SIGBGK,ZMFPI,ZMFPTHI,TDGTEMX)
 
@@ -214,12 +222,13 @@ c  ...and cumulated distributions thereof, for species sampling
      R P2ND(:,:), P2NP(:,:),  P2NEI(:),   P2NPI(:)
 c  post-collision energies: to EL (electrons), PI (background) or HV (heavy test particles)
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R EELEI1(:,:), EHVEI1(:,:), 
-     R EELRC1(:,:),       
+     R EELEI1(:,:), EHVEI1(:,:),
+     R EELRC1(:,:),
      R EPLPI3(:,:,:), EELPI3(:,:,:), EHVPI3(:,:,:),
-     R EPLCX3(:,:,:), !  CX processes have no secondary electrons 
+     R EPLCX3(:,:,:), !  CX processes have no secondary electrons
      R EPLEL3(:,:,:), !  EL processes have no secondary electrons
-     R EPLPH3(:,:,:)  !  missing: eelph...,  PH processes energetics unfinished
+     R EPLPH3(:,:,:)  !  missing: eelph...,
+                      !  PH processes energetics unfinished
 
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R EATEI(:,:,:), EMLEI(:,:,:), EIOEI(:,:,:), EPLEI(:,:,:),
@@ -246,22 +255,23 @@ cdr  Just set these values in SWITCH_PARTINFO.f
      I NPBGKX
 cym p2nei removed from threadprivate list
 !$OMP  THREADPRIVATE(NXEII,NXCXI,NXELI,NXPII,
-!$OMP& NXEIIM,NXCXIM,NXELIM,NXPIIM,NPBGKX) 
-
+!$OMP& NXEIIM,NXCXIM,NXELIM,NXPIIM,NPBGKX)
 
       INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
-     I NAEIIM(:),   NMEIIM(:),   NIEIIM(:), NPHEIIM(:),
-     I NACXIM(:),   NMCXIM(:),   NICXIM(:), NPHCXIM(:),
-     I NAELIM(:),   NMELIM(:),   NIELIM(:), NPHELIM(:),
-     I NAPIIM(:),   NMPIIM(:),   NIPIIM(:), NPHPIIM(:),
-     I NPRCI(:),    NPRCIM(:)
+     I NAEIIM(:),   NMEIIM(:),   NIEIIM(:),  NPHEIIM(:),
+     I NACXIM(:),   NMCXIM(:),   NICXIM(:),  NPHCXIM(:),
+     I NAELIM(:),   NMELIM(:),   NIELIM(:),  NPHELIM(:),
+     I NAPIIM(:),   NMPIIM(:),   NIPIIM(:),  NPHPIIM(:),
 
+     I NPRCI(:),    NPRCIM(:)
 c  secondaries, species distribution, for RC processes
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
-     I NATPRC(:),  NMLPRC(:), NIOPRC(:), NPLPRC(:), NPHPRC(:),
+     I NATPRC(:),    NMLPRC(:),   NIOPRC(:),   NPLPRC(:),   NPHPRC(:),
      I NATPRC_2(:),  NMLPRC_2(:), NIOPRC_2(:), NPLPRC_2(:), NPHPRC_2(:),
 c  secondaries, species distribution, for CX processes
      I N1STX(:,:), N2NDX(:,:)
+c  secondaries, species distribution, for PH processes
+cdr  tbd.
 
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NSEACX(:,:,:), NSEMCX(:,:,:), NSEICX(:,:,:),
@@ -271,8 +281,15 @@ c  secondaries, species distribution, for CX processes
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NREACX(:),NREAPI(:),NREAEL(:),
      I NREAEI(:),NREARC(:),NREAPH(:),
-     I NELREI(:),JELREI(:),NHVREI(:),NELREL(:),
-     I NELRRC(:),JELRRC(:),NELRPI(:),JELRPI(:),NELRCX(:),
+cdr  flags for field particle reaction energetics:
+cdr  electrons (net),      ...el...
+cdr  incident heavy bulk,  ...hv...
+cdr  post coll. heavy bulk,...pl...
+     I NELREI(:),JELREI(:),NHVREI(:),
+     I                               NELREL(:),   ! --> nplrel, misnomer
+     I NELRRC(:),JELRRC(:),
+     I NELRPI(:),JELRPI(:),
+     I                               NELRCX(:),   ! --> nplrcx, misnomer
      I NELRPH(:),NHVRPI(:),NPLRPI(:),
      I NREACT(:),
      I IPATEI(:,:),IPMLEI(:,:),
@@ -294,12 +311,15 @@ c  EL type processes
      I LGIEL(:,:,:),
      I LGPHEL(:,:,:),
 c  RC type processes
-     I LGPRC(:,:),   !  e.g. e + H+ --> H + ph,  and H is the resulting test particle
+     I LGPRC(:,:),   !  e.g. e + H+ --> H + ph,
+                     !  and H is the resulting test particle
 c  PI type processes
      I LGAPI(:,:,:),LGMPI(:,:,:),
      I LGIPI(:,:,:),
      I LGPHPI(:,:,:)
 c  PH type processes
+
+cdr  begin threadprivate here
 
 !  POINTER FOR UNIFIED "A,M,I,PH" SUBROUTINES
 cdr values assigned in SWITCH_PARTINFO during particle tracing
@@ -307,8 +327,7 @@ cdr April 22: Remove redundant leading dimension in 3d arrays LGX...
 cdr           Remove POINTER attribute, use ALLOCATABLE instead
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I LGXCX(:,:), LGXEI(:), LGXEL(:,:), LGXPI(:,:)
-!$OMP  THREADPRIVATE(LGXCX,LGXEI,LGXEL,LGXPI) 
-
+!$OMP  THREADPRIVATE(LGXCX,LGXEI,LGXEL,LGXPI)
 
       INTEGER, PUBLIC, SAVE ::
      I NRPII, NREII, NRCXI, NRELI, NRRCI, NRPHI, NROTI, NRBGI
@@ -352,7 +371,7 @@ cdr           Remove POINTER attribute, use ALLOCATABLE instead
       SUBROUTINE EIRENE_ALLOC_COMXS (ICAL)
 CDR
 C  AUTOMATED ALLOCATION OF STORAGE FOR A&M DATA STRUCTURES AND ARRAYS.
-C  CALLED FROM:  ALLOCATE_MODULES.F
+C  CALLED FROM: ALLOCATE_MODULES.F
 cdr  ICAL=1: ...?  comments ?
 cdr  ICAL=2: ...?  comments ?
 cdr  ILONG: predefined type for 8 byte integer variables
@@ -407,7 +426,8 @@ cdr  Range for looping over type of processes: DO IXYY=1:NXYYI(NSPZ)
         ALLOCATE (NMPII(NMOL))
         ALLOCATE (NIPII(NION))
         ALLOCATE (NPHPII(NPHOT))
-c  for background particle we allow only RC type reactions
+
+c  for background field particles we allow only RC type reactions
         ALLOCATE (NPRCI(NPLS))
 
 cdr  Now the same arrays, all values reduced by one. To avoid unnecessary do loops.
@@ -432,7 +452,6 @@ cdr  Now the same arrays, all values reduced by one. To avoid unnecessary do loo
         ALLOCATE (NPHPIIM(NPHOT))
 
         ALLOCATE (NPRCIM(NPLS))
-
 c  for BGK reactions
         ALLOCATE (NPBGKA(NATM))
         ALLOCATE (NPBGKM(NMOL))
@@ -462,9 +481,9 @@ cdr  former fluid limit, now contained in ngen..
 cdr  fldlm=10000/[-(1+ngen)](generation limit: negative values)
 
 
-cdr new:  potential difference in a particular reaction.
-cdr       allows to derive radiation loss from
-cdr                electron energy loss      PELEC (=eelec)
+cdr new: potential difference in a particular reaction.
+cdr      allows to derive radiation loss from
+cdr                       electron energy loss PELEC (=eelec)
 cdr                                            KER (=escd1)
 cdr                                            POT (=edpot)
 cdr   Warning: strictly PRAD and PELEC refer to a species,
@@ -589,7 +608,7 @@ C  FIRST DIMENSION OF XSTOR ARRAY
 C  SECOND DIMENSION OF XSTOR ARRAY
         MSTOR2 = 24
 
-cdr  ... to be removed
+cdr  ...to be removed
 cdr nstor1 and nstor: unused, 16.2.2020 !
         NSTOR1 = NREL+NRCX+NRPI+NREI
         NSTOR  = NSTOR1+
@@ -606,10 +625,10 @@ c  tab..1/3 arrays  (photon processes missing ?)
      P       2*(NREC+NRPI+NREL+NREI+NRCX)
 C
 cdr rates for energy loss/gain rates for tracklength estimators
-c  exx..1/3 arrays  xx=(cx,el,pl,hv),  
+c  exx..1/3 arrays  xx=(cx,el,pl,hv),
         NDAT=NSTORDR*(2*NREI+NREC)+
      P       NSTORDR*NSTORDT*(NRCX+NREL+3*NRPI+NRPH)+
-c  
+c
      P      (NREI+NRPI)*
      P      (NATMP+NMOLP+NIONP+NPLSP+1)+
      P      (NRPI+NREI)*(NSPZP+1)+
@@ -767,7 +786,6 @@ c  again: some arrays for species distribution of secondaries
 c         derived from P..EI and P..PI, above.
 c         for speeding up scoring in update, collide
 cdr unclear meaning. Perhaps redundant. But might be useful?
-cdr unclear meaning. Perhaps redundant. But might be useful?
         ALLOCATE (IPATEI(NREI,0:NATM))
         ALLOCATE (IPMLEI(NREI,0:NMOL))
         ALLOCATE (IPIOEI(NREI,0:NION))
@@ -801,8 +819,8 @@ c
 
 cdr  for unified routines UPDATE, FPATH, COLLIDE
 cdr  (single code of atoms, molecules and test ions. tbd: photons)
-!pb  allocation moved to EIRENE_SWITCH_PARTINFO 
-!pb  This is necessary for OPENMP as the allocation needs to done 
+!pb  allocation moved to EIRENE_SWITCH_PARTINFO
+!pb  This is necessary for OPENMP as the allocation needs to done
 !pb  at a place which all threads visit.
 !pb     ALLOCATE (LGXCX(0:NRCX,0:1))
 !pb     ALLOCATE (LGXEI(0:NREI))
@@ -814,7 +832,7 @@ cdr  (single code of atoms, molecules and test ions. tbd: photons)
 
         WRITE (IUNMEM,'(A,T25,I15)')
      .        ' COMXS(2) ', MEM
-        
+
       END IF
 
       CALL EIRENE_INIT_CMDTA (ICAL)
@@ -865,6 +883,7 @@ cdr  (single code of atoms, molecules and test ions. tbd: photons)
 
       DEALLOCATE (EELEI1)
       DEALLOCATE (EHVEI1)
+
       DEALLOCATE (EELRC1)
       DEALLOCATE (EELPI3)
       DEALLOCATE (EHVPI3)
@@ -1128,8 +1147,8 @@ cdr  (single code of atoms, molecules and test ions. tbd: photons)
 
       SUBROUTINE EIRENE_INIT_CMDTA (ICAL)
 cdr  initialize (nullify) A&M data
-cdr  ical=1:  ??
-cdr  ical=2:  ??
+cdr  ical=1: ??
+cdr  ical=2: ??
 
       INTEGER, INTENT(IN) :: ICAL
       INTEGER :: IREAC
@@ -1301,7 +1320,8 @@ cdr  ireac=1    to ireac=nreac: reaction data sets read from external files
 
 c  some universal data for reaction no. ireac
 c  data needed for rejection sampling in velocx, veloel, velopi
-          REACDAT(IREAC)%RTMAX  = 0._DP   ! max value of vel times sigma(vel)
+   ! max value of vel times sigma(vel)
+          REACDAT(IREAC)%RTMAX  = 0._DP
 c  kinetic collision energy at which this maximum is attained.
           REACDAT(IREAC)%ERTMAX = -HUGE(1._DP)
 c  reaction threshold (if any)
@@ -1409,6 +1429,7 @@ cdr  RC secondaries
 cdr  CX secondaries
         N1STX   = 0
         N2NDX   = 0
+
 cdr  number of reaction of type PI,EI,CX,EL,RC,...
 cdr  These will be counted in setamd.f and subprograms
         NRPII   = 0
@@ -1516,7 +1537,7 @@ cdr  read and write A&M data onto fort.13, controlled by NFILEL option (input bl
      . EATPI  ,EMLPI  ,EIOPI  ,EPLPI  ,
      . EATEI  ,EMLEI  ,EIOEI  ,EPLEI
 #endif
-      
+
       WRITE (13+IFOFF)
      . MODCOL ,IESTCX ,IESTEL ,IESTPI ,IESTEI ,
      . NAEII  ,NMEII  ,NIEII  ,NPHEII  ,
@@ -1524,10 +1545,10 @@ cdr  read and write A&M data onto fort.13, controlled by NFILEL option (input bl
      . NAELI  ,NMELI  ,NIELI  ,NPHELI  ,
      . NAPII  ,NMPII  ,NIPII  ,NPHPII  ,
      . NPRCI  ,
-     . NAEIIM ,NMEIIM ,NIEIIM ,NPHEIIM  ,
-     . NACXIM ,NMCXIM ,NICXIM ,NPHCXIM  ,
-     . NAELIM ,NMELIM ,NIELIM ,NPHELIM  ,
-     . NAPIIM ,NMPIIM ,NIPIIM ,NPHPIIM  ,
+     . NAEIIM ,NMEIIM ,NIEIIM ,NPHEIIM ,
+     . NACXIM ,NMCXIM ,NICXIM ,NPHCXIM ,
+     . NAELIM ,NMELIM ,NIELIM ,NPHELIM ,
+     . NAPIIM ,NMPIIM ,NIPIIM ,NPHPIIM ,
      . NPRCIM ,
      . NPBGKA ,NPBGKM ,NPBGKI ,NPBGKP ,
      . NATPRC ,NMLPRC ,NIOPRC ,NPLPRC ,NPHPRC ,
@@ -1558,10 +1579,10 @@ cdr  read and write A&M data onto fort.13, controlled by NFILEL option (input bl
      . NAELI  ,NMELI  ,NIELI  ,NPHELI  ,
      . NAPII  ,NMPII  ,NIPII  ,NPHPII  ,
      . NPRCI  ,
-     . NAEIIM ,NMEIIM ,NIEIIM ,NPHEIIM  ,
-     . NACXIM ,NMCXIM ,NICXIM ,NPHCXIM  ,
-     . NAELIM ,NMELIM ,NIELIM ,NPHELIM  ,
-     . NAPIIM ,NMPIIM ,NIPIIM ,NPHPIIM  ,
+     . NAEIIM ,NMEIIM ,NIEIIM ,NPHEIIM ,
+     . NACXIM ,NMCXIM ,NICXIM ,NPHCXIM ,
+     . NAELIM ,NMELIM ,NIELIM ,NPHELIM ,
+     . NAPIIM ,NMPIIM ,NIPIIM ,NPHPIIM ,
      . NPRCIM ,
      . NATPRC ,NMLPRC ,NIOPRC ,NPLPRC ,NPHPRC ,
      . NATPRC_2 ,NMLPRC_2 ,NIOPRC_2 ,NPLPRC_2 ,NPHPRC_2 ,
@@ -1659,7 +1680,7 @@ cdr  read and write A&M data onto fort.13, controlled by NFILEL option (input bl
      . ESCD1A, ESCD1M, ESCD1I, ESCD1P, ESCD1PH,
 
      . NREACI, ISWR,   MODCLF, MASSP,  MASST,  IFTFLG,
-     . NRCP,   NRCA,   NRCM,   NRCI, NRCPH,
+     . NRCP,   NRCA,   NRCM,   NRCI,   NRCPH,
      . IREACA, IREACM, IREACI, IREACP, IREACPH,
      . IBULKA, IBULKM, IBULKI, IBULKP, IBULKPH,
      . ISCD1A, ISCD1M, ISCD1I, ISCD1P, ISCD1PH,
@@ -1693,7 +1714,8 @@ cdr  read and write A&M data onto fort.13, controlled by NFILEL option (input bl
 
       WRITE (113,*) 'WRITE_CMAMF REACDAT ...'
 #endif
-      DO IR=1,NREACI   !  reacdat(-11:nreac)%.... minimal model is not written
+!  reacdat(-11:nreac)%.... minimal model is not written
+      DO IR=1,NREACI
         WRITE (13+IFOFF)
      .             REACDAT(IR)%LPOT,
      .             REACDAT(IR)%LCRS,
@@ -1753,7 +1775,7 @@ c
       CONTAINS
 
         SUBROUTINE EIRENE_WRITE_FIT_FORM (RP)
-        TYPE(FIT_FORMS),POINTER :: RP ! =reacdat(ir)%xxx%
+        TYPE(FIT_FORMS),POINTER :: RP  ! =reacdat(ir)%xxx%
 
         WRITE (13+IFOFF) RP%IFIT
 
@@ -1870,7 +1892,7 @@ cdr options for extrapolation from data tables or from validity range of fits.
      . ESCD1A, ESCD1M, ESCD1I, ESCD1P, ESCD1PH,
 
      . NREACI, ISWR,   MODCLF, MASSP,  MASST,  IFTFLG,
-     . NRCP,   NRCA,   NRCM,   NRCI, NRCPH,
+     . NRCP,   NRCA,   NRCM,   NRCI,   NRCPH,
      . IREACA, IREACM, IREACI, IREACP, IREACPH,
      . IBULKA, IBULKM, IBULKI, IBULKP, IBULKPH,
      . ISCD1A, ISCD1M, ISCD1I, ISCD1P, ISCD1PH,
@@ -1879,9 +1901,10 @@ cdr options for extrapolation from data tables or from validity range of fits.
      . ISCD4A, ISCD4M, ISCD4I, ISCD4P, ISCD4PH,
      . ISCDEA, ISCDEM, ISCDEI, ISCDEP, ISCDEPH,
      . IESTMA, IESTMM, IESTMI, IESTMPH,
-     . IBGKA,  IBGKM,  IBGKI,  IBGKPH
+     . IBGKA , IBGKM , IBGKI,  IBGKPH
 
-      DO IR=1,NREACI   !  reacdat(-11:nreac)%.... minimal model is not read
+!  reacdat(-11:nreac)%.... minimal model is not read
+      DO IR=1,NREACI
         READ (13+IFOFF)
      .            REACDAT(IR)%LPOT,
      .            REACDAT(IR)%LCRS,
@@ -1916,7 +1939,8 @@ cdr options for extrapolation from data tables or from validity range of fits.
       CONTAINS
 
         SUBROUTINE EIRENE_READ_FIT_FORM (RP)
-        TYPE(FIT_FORMS),POINTER :: RP  !  RP = REACDAT(IR)%... IN CALLING PROGRAM
+!  RP = REACDAT(IR)%A... IN CALLING PROGRAM, A= CRS, RTC, ....
+        TYPE(FIT_FORMS),POINTER :: RP
         INTEGER :: ND1, ND2,  ! table range for POLY
      .             ND, NT     ! table range for TAB1D, TAB2D
 
@@ -1924,7 +1948,7 @@ cdr options for extrapolation from data tables or from validity range of fits.
 
         IF (RP%IFIT < 0) THEN
 ! DATA FOR PHOTONIC LINE
-cdr  most of this stuff: obsolete, from lighting applications, 
+cdr  most of this stuff: obsolete, from lighting applications,
 cdr  high pressure gas discharge lamps, around 2002.. should not be here!
           IF (.NOT.ASSOCIATED(RP%LINE)) ALLOCATE (RP%LINE)
           READ (13+IFOFF) RP%LINE%E0, RP%LINE%E1, RP%LINE%AIK,
@@ -2016,11 +2040,11 @@ c  from here on: optional input parameters
      .            RTMAX, ERTMAX, ETH, KER, DELP, EARRH0, EARRH1)
 
 c  set reaction data structure REACDAT, for reaction no. IR.
-c  here only:  1D or 2D polygonial fits for reaction data.
-c               RDATA --> REA, and then: REACDAT(IR)%...%POLY => REA
-c  and:                          NULLIFY REACDAT(IR)%...%ADAS
-c  and:                          NULLIFY REACDAT(IR)%...%LINE
-c  and:                          NULLIFY REACDAT(IR)%...%TAB1D
+c  here only: 1D or 2D polygonial fits for reaction data.
+c              RDATA --> REA, and then: REACDAT(IR)%...%POLY => REA
+c  and:                         NULLIFY REACDAT(IR)%...%ADAS
+c  and:                         NULLIFY REACDAT(IR)%...%LINE
+c  and:                         NULLIFY REACDAT(IR)%...%TAB1D
 c  and:                         NULLIFY REACDAT(IR)%...%CRM
 c
 c  1) called from READ_PHOTDBK
@@ -2369,7 +2393,7 @@ cdr  something special about adas ?  unused !
 
 
       SUBROUTINE EIRENE_FREE_REACDAT
-cdr  called from dealloc_comxs:  Free data structure REACDAT at the end of a run.
+cdr  called from dealloc_comxs: Free data structure REACDAT at the end of a run.
 
       type(fit_forms), pointer :: rea
       integer :: ir
@@ -2473,7 +2497,7 @@ c  photonic reaction
       SUBROUTINE EIRENE_ALLOC_FIT_FORM (RP)
 cdr
 c  RP = REACDAT(IR)%TYP%...   with TYP= POT, CRS, RTC, ...
-C  Initialize pointers (NULLIFY) and 
+C  Initialize pointers (NULLIFY) and
 c  set default asymptotics, for reacdat(ir)%typ%...
 
       TYPE(FIT_FORMS),POINTER :: RP
@@ -2482,7 +2506,8 @@ c  set default asymptotics, for reacdat(ir)%typ%...
         ALLOCATE (RP)
         NULLIFY (RP%POLY)
         NULLIFY (RP%ADAS)
-        NULLIFY (RP%LINE)  ! this should not be here. It is not a data fit type
+        NULLIFY (RP%LINE)   ! this should not be here.
+                            ! It is not a data fit type
         NULLIFY (RP%TAB1D)
         NULLIFY (RP%CRM)
 
@@ -2865,7 +2890,8 @@ c  data for photon line transport
           END IF
           CALL EIRENE_BROAD_FIT_FORM(REACDAT(IR)%PHR,ME)
         END IF
-      END DO
+      END DO  ! IR  -11,...,NREAC
+
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       CALL MPI_BCAST (FACREA,(NREAC+12)*2,MPI_REAL8,0,
@@ -3233,11 +3259,11 @@ C.....................................................................
 
 C.....................................................................
 C     ELSE IF (RP%IFIT == 4) THEN
-cdr 1D TABLES. E.G. FORMERLY: HYDKIN DATA: out.  moved to "snippets_hydkin"
+cdr 1D TABLES. E.G. FORMERLY: HYDKIN DATA: out. moved to "snippets_hydkin"
 
 C.....................................................................
       ELSE IF (RP%IFIT == 5 ) THEN
-cdr  internal CR Model
+cdr  atomic data from internal CR model codes: H_colrad, He_colrad, etc.
         IF (ME .NE. 0) THEN
           IF (.NOT.ASSOCIATED(RP%CRM)) THEN
             ALLOCATE (RP%CRM)
@@ -3260,10 +3286,10 @@ C.....................................................................
       ELSE
 cdr     INVALID RP%IFIT
 
-        WRITE (iunout,*) 'ERROR IN BROADCAST:' 
+        WRITE (iunout,*) 'ERROR IN BROADCAST:'
         WRITE (iunout,*) 'IFIT DATA FORMAT NOT AVAILABLE'
         WRITE (iunout,*) 'IFIT ',RP%IFIT
-        CALL EIRENE_EXIT_OWN(1) 
+        CALL EIRENE_EXIT_OWN(1)
       END IF
 
       CALL EIRENE_CHECK_EXIT

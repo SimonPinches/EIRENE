@@ -45,7 +45,7 @@ C
       B2 = B2 / NORM
       B3 = B3 / NORM
 *
-*     Ein Punkt der Ebene:   P = (0.0,1.,1.)
+*     Ein Punkt der Ebene: P = (0.0,1.,1.)
 *     Transformation:
       P(1) = EV(1,2) + EV(1,3) + M(1)
       P(2) = EV(2,2) + EV(2,3) + M(2)

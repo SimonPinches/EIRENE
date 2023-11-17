@@ -4,15 +4,15 @@ cdr            secondaries.
 cdr            This is temporarily necessary, as a consequence of making the
 cdr            (bulk) ion energy sources eapl, empl, eipl species-dependent
 cdr            We are not aware of any application of eirene, in which this new error exit
-cdr             would be activated.
+cdr            would be activated.
 
       SUBROUTINE EIRENE_SETAMD(ICAL)
 C
 C  SET ATOMIC AND MOLECULAR DATA: DRIVER
 C
 CDR  CALLED IN INITIALIZATION PHASE OF RUN
-c  ical =   0:      allocate storage
-c  ical ne. 0:      call EIRENE_INIT_CMDTA(2) (contained in eirmod_comxs) cdr: called twice ??
+c  ical =   0: allocate storage
+c  ical ne. 0: call EIRENE_INIT_CMDTA(2) (contained in eirmod_comxs) cdr: called twice ??
 C
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMXS
@@ -27,7 +27,6 @@ C
 
       INTEGER, INTENT(IN) :: ICAL
       INTEGER :: I, J, IRPI, IREI, IERROR
-
 
       IF (ICAL == 0) THEN
         write (iunout,*) 'setamd(0) called '
@@ -57,7 +56,8 @@ C
         CALL EIRENE_ALLOC_COMSOU(2)
         CALL EIRENE_ALLOC_CZT1(2)
 
-        MAXSPC(0:4) = (/ NPHOTI,NATMI,NMOLI,NIONI,NPLSI /)  ! find valid species range via "maxspc(ityp)"
+        ! find valid species range via "maxspc(ityp)"
+        MAXSPC(0:4) = (/ NPHOTI,NATMI,NMOLI,NIONI,NPLSI /)
 
         RETURN
 
@@ -75,7 +75,7 @@ CVK TABLES CHECKING (FOR ELASTIC COLLISIONS)
           DO I=1,NREL
             DO J=1,NSBOX
               IF(TABEL3(I,J,1).GT.23) THEN
-                WRITE(iunout,*) 
+                WRITE(iunout,*)
      .             "SETAMD WARNING: REACTION RATE IS TOO BIG",
      .             "IREL,ICELL,TABEL3",I,J,TABEL3(I,J,1)
               END IF
@@ -85,13 +85,13 @@ CVK TABLES CHECKING (FOR CHARGE EXCHANGE)
           DO I=1,NRCX
             DO J=1,NSBOX
               IF(TABCX3(I,J,1).GT.23) THEN
-                WRITE(iunout,*) 
+                WRITE(iunout,*)
      .            "SETAMD WARNING: REACTION RATE IS TOO BIG",
      .            "IRCX,ICELL,TABCX",I,J,TABCX3(I,J,1)
               END IF
             END DO
           END DO
-          
+
         END IF
       END IF
 
@@ -143,9 +143,10 @@ cdr
 cdr   IPPHEI = 0   ARRAY IPPHEI IS STILL MISSING, NO PHOTON SECONDARIES IN EI REACTIONS.
       IPPLEI = 0
       DO IREI=1,NREI
-        ipatei(IREI,0)=COUNT(PATEI(IREI,1:) > 0)  ! amongst all natm species there are ipatei(...,0) (<= natm)
-cdr                                                 distinct atomic species which appear as secondaries,
-cdr                                                 with one or more fragments per atomic species iatm
+cdr amongst all natm species there are ipatei(...,0) (<= natm)
+cdr distinct atomic species which appear as secondaries,
+cdr with one or more fragments per atomic species iatm
+        ipatei(IREI,0)=COUNT(PATEI(IREI,1:) > 0)
         IF (ipatei(IREI,0).GT.0) THEN
              IPATEI(IREI,1:ipatei(IREI,0))=PACK( (/ (i,i=1,natm) /),
      .                                     PATEI(IREI,1:) > 0)

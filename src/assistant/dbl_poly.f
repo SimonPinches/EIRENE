@@ -1,14 +1,14 @@
-cdr: aug 16:  comments, bug fixes re.   ji,je=1,1 option
+cdr: aug 16:  comments, bug fixes re. ji,je=1,1 option
 cdr           finally: remove ji:je parameters, set back to defaults: 1:9
 cdr: sept.16: prepare extrapolation options for double poly. fits.
 cdr:          to be written: 2nd parameter out of range   (2 options)
 cdr:          to be written: both parameters out of range (4 options)
 cdr: may 17 : speedup possible, if only dum(..) but not cou is needed. Tbd.
-cdr: july 17: trc:  print warning in case of extrapolation
+cdr: july 17: trc: print warning in case of extrapolation
 cdr: aprl 18: extrapolation wrt. 2nd parameter added.
-cdr           ifex=0:  constant extrapolation
-cdr           ifex<0:  find extrapolation parameters here, and call extrap.f
-cdr           ifex>0:  find parameters boundary, and call extrap.f
+cdr           ifex=0: constant extrapolation
+cdr           ifex<0: find extrapolation parameters here, and call extrap.f
+cdr           ifex>0: find parameters boundary, and call extrap.f
 cdr  aug. 20: code safeties from ITER branch: activate transfer of fp1, fp2
 cdr           to routine extrap.f
 cdr           Still missing: what if both al1 AND al2 are out of range?
@@ -25,13 +25,14 @@ c               other_rate_coeff.f
 
 c  used for evaluating double polynomial fit.
 c  return        COU=fit2(AL1,AL2)
-C  INTERNAL INTERPRETATION:  AL1=LOG(PARM1),
-C                            AL2=LOG(PARM2), WITH PHYSICAL PARAMETERS PARM1, PARM2
+C  INTERNAL INTERPRETATION: AL1=LOG(PARM1),
+C                           AL2=LOG(PARM2), WITH PHYSICAL PARAMETERS PARM1, PARM2
 c  and return also:
 c  reduced fit coefficients dum(1,9) for AL2 dependency at fixed first parameter AL1.
 c  Then COU=fit1(AL2)=sum_1^9 [dum(j) log(parm2)^(j-1)]
 
 c  input:
+c  nd1, nd2: orders of double fit polynomial: nd1-1,nd2-1 (here still: nd1=nd2=9, merging tbd.)
 c  cf    : fit coefficients for 2D polyn. fit. We require data: cf(1:9,1:9)
 c          f(parm1,parm2)=sum_1^9 [sum_1^9 (cf(i,j) log(parm1)^(i-1)] log(parm2)^(j-1)
 c  al1   : 1st argument of fit, log(parm1)  e.g. Te, Ti, ...
@@ -56,6 +57,7 @@ c  cou   : log of value of fit(al1,al2)
 c  dum   : dum(1,9), summation over 1st parameter is done,
 c          dum provides 1D fit coefficients for 2nd parameter dependency (e.g. ne, E0)
 c          for reduced 1D fit evaluation "on the fly", at fixed parameter AL1.
+c          Also: dum(1) is the fit value at al2=0, e.g. at density=1e8 for amjuel.
 
       use EIRMOD_precision
       USE EIRMOD_COMPRT, ONLY: IUNOUT
@@ -84,10 +86,11 @@ c          for reduced 1D fit evaluation "on the fly", at fixed parameter AL1.
         IF (IFEX1MN.EQ.0) THEN
 C  FIT OUT OF VALID RANGE, AL1 < RC1MIN
 C  DEFAULT: TAKE THE FIT AT AL1=RC1MIN
+c  same as IFEXMN1=4 option further below
           p1=rc1min
           if (trc) write (iunout,*) 'extrap option 0 dbl_pol',al1,rc1min
           GOTO 100
-          
+
         ELSEIF (IFEX1MN.LT.0) THEN
 C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR AL1 - LINEAR EXTRAP. IN LN(FIT) AT FIXED AL2
 C  EVALUATED AT AL2, WHICH MUST BE INSIDE VALID RANGE
@@ -146,10 +149,11 @@ C       DUM(1:9)= ???
        IF (IFEX1MX.EQ.0) THEN
 C  FIT OUT OF VALID RANGE, AL1 > RC1MAX
 C  DEFAULT: TAKE THE FIT AT AL1=RC1MAX
+c  same as IFEXMX1=4 option further below
           p1=rc1max
           if (trc) write (iunout,*) 'extrap option 0 dbl_pol',al1,rc1max
           GOTO 100
-          
+
         ELSEIF (IFEX1MX.LT.0) THEN
 C  DETERMINE EXTRAPOLATION COEFFICIENTS FOR AL1 - LINEAR EXTRAP. IN LN(FIT) AT FIXED AL2
 C  EVALUATED AT AL2, WHICH MUST BE INSIDE VALID RANGE
@@ -159,8 +163,10 @@ C  EVALUATED AT AL2, WHICH MUST BE INSIDE VALID RANGE
           EXPO1=0.
           EXPO2=0.
 c  evaluate double parameter fit at s01,al2, and at s02,al2
+cdr  ne or E dependence:
           DO J=1,9
             JJ=J-1
+cdr  T-dependence:
             DO I=1,9
               II=I-1
               EXPO1=EXPO1+S01**II*AL2**JJ*CF(I,J)
@@ -208,6 +214,7 @@ C       DUM(1:9)= ???
         IF (IFEX2MN.EQ.0) THEN
 C  FIT OUT OF VALID RANGE, AL1 < RC1MIN
 C  DEFAULT: TAKE THE FIT AT AL1=RC1MIN
+c  same as IFEXMN2=4 option further below
           p2=rc2min
           if (trc) write (iunout,*) 'extrap option 0 dbl_pol',al2,rc2min
           GOTO 100
@@ -220,9 +227,9 @@ C  EVALUATED AT AL1, WHICH MUST BE INSIDE VALID RANGE
           EXPO1=0.
           EXPO2=0.
 c  evaluate double parameter fit at s01,al1, and at s02,al1
-          DO  J=1,9
+          DO J=1,9
             JJ=J-1
-            DO  I=1,9
+            DO I=1,9
               II=I-1
               EXPO1=EXPO1+AL1**II*S01**JJ*CF(I,J)
               EXPO2=EXPO2+AL1**II*S02**JJ*CF(I,J)
@@ -258,7 +265,7 @@ c  evaluate double parameter fit at s01,al1
           FPAR1=FP2(1)
           FPAR2=FP2(2)
           FPAR3=FP2(3)
-         ENDIF
+        ENDIF
 
 
         COU=EIRENE_EXTRAP(AL2,AL2MIN,COU2MIN,IFEX,FPAR1,FPAR2,FPAR3)
@@ -270,6 +277,7 @@ C       DUM(1:9)= ???
        IF (IFEX2MX.EQ.0) THEN
 C  FIT OUT OF VALID RANGE, AL2 > RC2MAX
 C  DEFAULT: TAKE THE FIT AT AL2=RC2MAX
+c  same as IFEXMX2=4 option further below
           p2=rc2max
           if (trc) write (iunout,*) 'extrap option 0 dbl_pol',al2,rc2max
           GOTO 100
@@ -342,11 +350,11 @@ cdr  the reduced single parameter fit coefficients at fixed AL1 are returned on 
   100 CONTINUE
 
 cdr  split the fit evaluation into two steps.
-cdr  first:   p1=al1 dependence, to provide collapsed fit dum(..)
-cdr  second:  p2=al2 dependence using dum(..)
+cdr  first:  p1=al1 dependence, to provide collapsed fit dum(..)
+cdr  second: p2=al2 dependence using dum(..)
 
-cdr  each of the 9 coefficients for the al2 dependence
-cdr  is obtained by summing over the 9 terms
+cdr  each of the 9 coefficients dum(jj) for the al2 dependence
+cdr  is obtained by summing over all 9 terms
       do jj = 9, 1, -1
         dum(jj) = cf(9,jj)
         do kk = 8, 1, -1
@@ -355,10 +363,10 @@ cdr  is obtained by summing over the 9 terms
       end do
 
 cdr  this second evaluation may not be needed, if only a collapsed fit is wanted,
-cdr  or if al2=0.0 (as in H.4, H.10, AMJUEL fits), for automatic corona limit.
+cdr  or if al2=0.0 (as in H.4, H.10, AMJUEL fits at 1e8 density), for automatic corona limit.
 
 cdr  H.4, H.10, H.12 fits from AMJUEL: corona at p2 <= log(ne/10**8) = rc2min = 0.0
-cdr   if p2.le.0.0, just return cou=dum(0) = fit2(AL1,AL2)
+cdr  if p2.le.0.0, just return cou=dum(1) = fit2(AL1,AL2)
 
       cou = dum(9)
       do jj = 8, 1, -1

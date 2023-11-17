@@ -18,7 +18,7 @@ cym 04/2020 turned into a module because of SAVE attribute
 C
       REAL(DP) :: ZRADS
 !$OMP THREADPRIVATE(ZRADS)
-      
+
 !      REAL(DP) :: HELP, GS, GC, F, XNEN, DUM, SUM, BB, DY, X0TEST,
 !     .          Y0TEST, V1, V2, T1, ZRADS, ZRD, WIN1, X000, Z0T,
 !     .          TWIN1, XT, Y000, TSS, X0T, Y0T,
@@ -27,9 +27,9 @@ C
 !     .           NRCLLP, LHELP, J2, INCY, JN, ICOU, NYSAVE, NHELP,
 !     .           I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS,
 !     .           IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J,
-cym     .           EIRENE_LEARCA, EIRENE_LEARC2, 
+cym     .           EIRENE_LEARCA, EIRENE_LEARC2,
 !     .           NJC, ITEST, JSH, NN ,IN, itc
-      
+
 cdr logicals for intersection with poloidal surfaces
 !      LOGICAL :: LHITP0
 !      LOGICAL :: lnincz
@@ -57,8 +57,8 @@ C     X-RADIALLY AND Y-POLOIDALLY RESOLVED
 C
 C   BLOCK 1 : LEVGEO.EQ.1
 C   BLOCK 3 : LEVGEO.EQ.3
-C   BLOCK 2a: LEVGEO.EQ.2  and NLCRC
-C   BLOCK 2b: LEVGEO.EQ.2  and .NOT.NLCRC  (use poloidal polygons)
+C   BLOCK 2a: LEVGEO.EQ.2 and NLCRC
+C   BLOCK 2b: LEVGEO.EQ.2 and .NOT.NLCRC  (use poloidal polygons)
 
 C
 C   INPUT:
@@ -134,7 +134,7 @@ cdr logicals for intersection with poloidal surfaces
 #ifdef TRACE
       INTEGER :: JJ
 #endif
-      
+
 cym cccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cym local variables moved to module declaration section
 cym cccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -204,7 +204,7 @@ C       Y00=Y00+ZRAD*VELY
       ENDIF
 C
 
-      SELECT CASE (LEVGEO) 
+      SELECT CASE (LEVGEO)
 
       CASE(1)
 C
@@ -235,7 +235,7 @@ C
 
         WRITE (IUNOUT,*) 'UNIDENTIFIED GEOMETRY OPTION FOUND IN TIMEP'
         WRITE (IUNOUT,*) 'LEVGEO = ',LEVGEO
-        WRITE (IUNOUT,*) 'CALCULATION ABANDONNED'
+        WRITE (IUNOUT,*) 'CALCULATION ABANDONED'
         CALL EIRENE_EXIT_OWN(1)
 
       END SELECT
@@ -322,11 +322,11 @@ C
       ZRAD=SUM
       RETURN
 
-      END subroutine EIRENE_TIMEP
+      END SUBROUTINE EIRENE_TIMEP
 
 !------------------------------------------------------------------------
 
-      SUBROUTINE EIRENE_TIMEP_CURVILINEAR_MESH(ZRAD, ICOUT, 
+      SUBROUTINE EIRENE_TIMEP_CURVILINEAR_MESH(ZRAD, ICOUT,
      .                                         NCPAN, NCPEN)
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -369,7 +369,7 @@ C  TEST POLOIDAL SURFACE NO. MPTEST FOR REENTRY
 ! allow only intersections with non-default poloidal standard surfaces
 ! no intersections with "default parts" of the grid are calculated
             LHITP0=(V1*V2.LE.0.) .AND. (INMP2I(IR,MPTEST,0) /= 0)
-              
+
             IF (.NOT.LHITP0) CYCLE
             T1=((XPOL(IR,MPTEST)-X00)*VVTY(IR,MPTEST)-
      .          (YPOL(IR,MPTEST)-Y00)*VVTX(IR,MPTEST))
@@ -396,10 +396,10 @@ C  TEST POLOIDAL SURFACE NO. MPTEST FOR REENTRY
      .                                  VELY*PPLNY(IR,MPTEST)))
             JUPC(NCOUP)=1
             ZRD=T1
- 2        CONTINUE
+    2     CONTINUE
 
         ENDIF
- 3    CONTINUE
+    3 CONTINUE
       IF (NCOUP.GT.0.AND.LUPC(MAX(1,NCOUP)).NE.MPSURF) THEN
 C  REENTRY FOUND, REDUCE ZRAD TO T1
 C  NCOUP=1 AT THIS POINT
@@ -444,7 +444,7 @@ C  NO REENTRY FOUND
         RETURN
       ENDIF
 C
- 10   CONTINUE
+   10 CONTINUE
 C
 C  PARTICLE INSIDE STANDARD MESH, RADIAL CELL NO. NRCELL
 C
@@ -500,14 +500,14 @@ C
         ENDDO
  4711   CONTINUE
       ENDIF
-C     
+C
 C   ADJUST ALPD AND ACCOUNT FOR "NON-DEFAULT" POLOIDAL SURFACES
-C     
+C
       TSS=0.
       DO J=1,NCOUP
         ALPD(J)=ALPD(J)-TSS
         TSS=TSS+ALPD(J)
-c
+C
         ITEST=INMP2I(NRCELL,LUPC(J),0)
         IN=ITEST+NLIM
         if (LUPC(J) > 0) then
@@ -602,7 +602,7 @@ C
       MPSURF=0
       NINCY=0
 C
- 311  CONTINUE
+  311 CONTINUE
 #ifdef TRACE
       IF (NLTRC) THEN
 !$OMP CRITICAL
@@ -643,7 +643,7 @@ C
       MPSURF=0
       NINCY=0
 C
- 31   CONTINUE
+   31 CONTINUE
       NCOUP=NCOUPE
 #ifdef TRACE
       IF (NLTRC) THEN
@@ -726,7 +726,7 @@ C   JJC    : SURFACEINDEX
 C   J1     : CELLINDEX
 C   NJC    : ENDINDEX
       J1=NPCELL
- 100  JJC=J1
+  100 JJC=J1
       IF (NINCY.EQ.1) JJC=JJC+1
 C   TIMESTEP FROM X00,Y00 TO THETA-SURFACE, THETA=WIN
       GS=SINPH(JJC)
@@ -738,7 +738,7 @@ C   TIMESTEP FROM X00,Y00 TO THETA-SURFACE, THETA=WIN
       LUPC(NCOUP)=JJC
       ALPD(NCOUP)=F-TWIN1
       TWIN1=F
-C     
+C
       J1=J1+NINCY
       IF (J1.EQ.0) J1=NP2NDM
       IF (J1.EQ.NP2ND) J1=1
@@ -746,8 +746,8 @@ C
       IF ((ityp.ne.3).and.(J1.NE.NJC)) GOTO 100
 C
 C   LAST THETA-CELL
-C     
- 150  NCOUP=NCOUP+1
+C
+  150 NCOUP=NCOUP+1
       JUPC(NCOUP)=NJC
       ALPD(NCOUP)=ZRAD-TWIN1
       X00=X000
@@ -756,7 +756,7 @@ C
       MPSURF=0
       NINCY=0
       RETURN
-      
+
       END SUBROUTINE EIRENE_TIMEP_CIRCULAR_MESH
 
 !----------------------------------------------------------------------
@@ -813,7 +813,7 @@ C
 !$OMP END CRITICAL
         ENDIF
 #endif
- 112  CONTINUE
+  112 CONTINUE
 
 C  PARTICLE EXACTLY ON A (PLANE) POLOIDAL SURFACE
       IF (NLSRFY) THEN
@@ -864,11 +864,11 @@ C
             IF (I.EQ.1) NCOUP=NCOUP-1
           ENDIF
         ENDIF
- 114  CONTINUE
+  114 CONTINUE
 C
 C   REARRANGE THE FLIGHT TIMES IN ASCENDING ORDER
 C
- 115  ISW=0
+  115 ISW=0
       DO 120 J=1,NCOUP-1
         IF (ALPD(J).GT.ALPD(J+1)) THEN
           ISW=ISW+1
@@ -885,7 +885,7 @@ C
           MUPC(J)=MUPC(J+1)
           MUPC(J+1)=NHELP
         ENDIF
- 120  CONTINUE
+  120 CONTINUE
       IF (ISW.GT.0.AND.NCOUP.GT.2) GOTO 115
 #ifdef TRACE
       IF (NLTRC.AND.NCOUP.GT.0) THEN
@@ -925,7 +925,7 @@ C
             MUPC(J+1)=NHELP
           ENDIF
         ENDIF
- 125  CONTINUE
+  125 CONTINUE
 C
 C   ADJUST ALPD AND ACCOUNT FOR "NON-DEFAULT" POLOIDAL SURFACES
 C
@@ -933,7 +933,7 @@ C
       DO 130 J=1,NCOUP
         ALPD(J)=ALPD(J)-TSS
         TSS=TSS+ALPD(J)
-C     
+C
         ITEST=INMP2I(NRCELL,LUPC(J),0)
         IN=ITEST+NLIM
 !pb          IF (ITEST.NE.0.AND.ILIIN(IN).NE.0) THEN
@@ -963,7 +963,7 @@ C
           GOTO 131
         ENDIF
 C
- 130  CONTINUE
+  130 CONTINUE
 C
 C  LAST CELL, TRACK DOES NOT END ON A POLOIDAL SURFACE
 C
@@ -987,7 +987,7 @@ C
       MPSURF=0
       NINCY=0
 C
- 131  CONTINUE
+  131 CONTINUE
       NCOUP=NCOUPE
 #ifdef TRACE
       IF (NLTRC) THEN
@@ -1004,7 +1004,7 @@ C
       Y00=Y00+ZRAD*VELY
       NPCELL=JUPC(NCOUP)
       IPCELL=NPCELL
-      RETURN      
+      RETURN
 C
       END SUBROUTINE EIRENE_TIMEP_NONCIRCULAR_MESH
 
@@ -1021,7 +1021,7 @@ C
 
       IMPLICIT NONE
       REAL(DP), INTENT(INOUT) :: ZRAD
-      REAL(DP) :: ZRD, Y0T, X0TEST, Y0TEST, Y000, F, DY, 
+      REAL(DP) :: ZRD, Y0T, X0TEST, Y0TEST, Y000, F, DY,
      .            DYZR, DUM, BB
       INTEGER :: ISTS, ITEST, J1, J2, MPTEST, NYSAVE, IRSAVE, IN, INCY
       INTEGER :: EIRENE_LEARCA
@@ -1165,8 +1165,8 @@ C
  3000 CONTINUE
       IF (J2.LE.0.OR.J2.GT.NP2ND) THEN
         WRITE (iunout,*) 'ERROR IN TIMEP ',J2,J1,VELY
-        RETURN                  ! changed to avoid job crash in long runs
-!         CALL EIRENE_EXIT_OWN(1)
+        RETURN  ! changed to avoid job crash in long runs
+!       CALL EIRENE_EXIT_OWN(1)
       ENDIF
 C  TIME FROM Y00 TO PSURF
       IF (MPSURF.EQ.J2) THEN
@@ -1242,7 +1242,7 @@ C
       ALPD(NCOUP)=ZRAD-DUM
       IPCELL=NPCELL
       Y00=Y000
-      RETURN      
+      RETURN
 
       END SUBROUTINE EIRENE_TIMEP_SLAB
 

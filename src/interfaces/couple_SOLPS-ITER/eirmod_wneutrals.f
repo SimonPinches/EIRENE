@@ -34,35 +34,36 @@
       public :: eirene_wneutrals_dealloc
       public :: eirene_wneutrals_alloc_arrays
 
-      ! eirdiag.h/eirdiag.f
-      !c*** Volume data:
-      !c***    srcml   :   power loss due to molecules, including
-      !c***    edissml :   power loss due to molecule dissociation
-      !c***    eneutrad:   power radiated due to neutral atoms
-      !c***    emolrad :   power radiated due to molecules
-      !c***    eionrad :   power radiated due to molecular ions
-      !c*** Surface data:
-      !c***    wldnek  :   net kinetic energy deposited by neutrals
-      !c***    wldnep  :   potential energy released by neutrals
-      !c***    wldna   :   flux of atoms impinging onto the surface
-      !c***    ewlda   :   their average energy
-      !c***    wldnm   :   flux of molecules impinging onto the surface
-      !c***    ewldm   :   their average energy
-      !c***    wldra   :   flux of reflected atoms
-      !c***    wldrm   :   flux of reflected molecules
-      !c***    wldpp   :   flux of plasma ions impinging onto the surface
-      !c***    wldpa   :   flux of resulting atoms
-      !c***    wldpm   :   flux of resulting molecules
-      !c***    wldpeb  :   power carried away by these atoms and molecules
-      !c***    wldspt  :   flux of sputtered wall material
-      !c***    isrftype:   surface type (iliin in Eirene)
-      !c***    wlarea  :   areas of the surface segments from Eirene
-      !c***    wlabsrp :   absorption at the surfaces (1-recyct from Eirene)
-      !c***    wlpump  :   pumped flux at the surfaces
+! eirdiag.h/eirdiag.f
+!c*** Volume data:
+!c***    srcml   :  power loss due to molecules, including
+!c***    edissml :  power loss due to molecule dissociation
+!c***    eneutrad:  power radiated due to neutral atoms
+!c***    emolrad :  power radiated due to molecules
+!c***    eionrad :  power radiated due to molecular ions
+!c*** Surface data:
+!c***    wldnek  :  net kinetic energy deposited by neutrals
+!c***    wldnep  :  potential energy released by neutrals
+!c***    wldna   :  flux of atoms impinging onto the surface
+!c***    ewlda   :  their average energy
+!c***    wldnm   :  flux of molecules impinging onto the surface
+!c***    ewldm   :  their average energy
+!c***    wldra   :  flux of reflected atoms
+!c***    wldrm   :  flux of reflected molecules
+!c***    wldpp   :  flux of plasma ions impinging onto the surface
+!c***    wldpa   :  flux of resulting atoms
+!c***    wldpm   :  flux of resulting molecules
+!c***    wldpeb  :  power carried away by these atoms and molecules
+!c***    wldspt  :  flux of sputtered wall material
+!c***    isrftype:  surface type (iliin in Eirene)
+!c***    wlarea  :  areas of the surface segments from Eirene
+!c***    wlabsrp :  absorption at the surfaces
+!c***               (1-recyct from Eirene)
+!c***    wlpump  :  pumped flux at the surfaces
       real(DP), save, allocatable, dimension(:,:,:,:), public ::
      , dab2,dmb2,dib2,tab2,tmb2,tib2,rfluxa,rfluxm,refluxa,refluxm,
      , pfluxa,pfluxm,pefluxa,pefluxm,emiss,emissmol,srcml,edissml,
-     , tfluxa,tfluxm,tefluxa,tefluxm    ! toroidal fluxes, IYS 20.01.2017
+     , tfluxa,tfluxm,tefluxa,tefluxm   ! toroidal fluxes, IYS 20.01.2017
       real(DP), save, allocatable, dimension(:,:), public ::
      , wldnek,wldnep
       real(DP), save, allocatable, dimension (:,:,:), public ::
@@ -72,7 +73,7 @@
      , wldpeb,wldspt,wlabsrp,wlpump
       real(DP), save, allocatable, dimension (:,:,:,:), public ::
      , eneutrad, emolrad, eionrad
-      real(DP), save, allocatable, public :: eirpump(:),   ! pumped flux     !iyv 07.03.18
+      real(DP), save, allocatable, public :: eirpump(:),   ! pumped flux
      ,                                       eirspta(:), eirsptm(:)      ! sputtered flux  !iyv 07.03.18
       real(DP), save, public :: aver_frac, aver_frac46
       real(DP), save, allocatable, dimension(:,:), public ::
@@ -82,7 +83,7 @@
      , wldrm_aver,wldpp_aver,wldpa_aver,wldpm_aver,wldspta_aver,
      , wldsptm_aver ! average fluxes, som 02.04.2019
       real(DP), save, allocatable, dimension (:,:), public ::
-     , wldpeb_aver,wldspt_aver,wlpump_aver ! average fluxes, som 02.04.2018
+     , wldpeb_aver,wldspt_aver,wlpump_aver ! average fluxes
       real(DP), save, allocatable, dimension (:,:), public ::
      , PDENA_aver,PDENM_aver,EDENA_aver,EDENM_aver,
      , VXDENA_aver,VXDENM_aver,VYDENA_aver,VYDENM_aver,
@@ -92,9 +93,11 @@
      ,  eirdiag_nds_ind(:),   eirdiag_nds_typ(:), eirdiag_nds_srf(:),
      ,  eirdiag_nds_start(:), eirdiag_nds_end(:)
 
-      !c*** NEUTRAL FLUXES, SPATIALLY RESOLVED ON NON-DEFAULT STANDARD SURFACES (NDS)
+      !c*** NEUTRAL FLUXES,
+      !c*** SPATIALLY RESOLVED ON NON-DEFAULT STANDARD SURFACES (NDS)
       !c*** First dimension : index of atom or molecule.
-      !c*** Second dimension: index of surface element, controlled by 'eirdiag_nds_ind'
+      !c*** Second dimension: index of surface element,
+      !                       controlled by 'eirdiag_nds_ind'
       real(DP), save, allocatable, dimension(:), public ::
      ,  wlarea, sarea_res      !area of the surface elements
       real(DP), save, allocatable, public ::
@@ -105,11 +108,15 @@
      ,  ewldt_res(:),      !total energy wall load from Eirene particles
      ,  ewldea_res(:,:),   !emitted energy flux of atoms
      ,  ewldem_res(:,:),   !net incident energy flux due of molecules
-     ,  ewldrp_res(:),     !kinetic energy of reflected neutrals originated from ions
-     ,  ewldmr_res(:,:),   !energy due to recombination of atoms and atomic ions into molecules
+     ,  ewldrp_res(:),     !kinetic energy of reflected neutrals
+                           !originated from ions
+     ,  ewldmr_res(:,:),   !energy due to recombination of atoms and
+                           !atomic ions into molecules
      ,  wldspt_res(:),     !flux of sputtered wall material
-     ,  wldspta_res(:,:),  !sputtered flux for each type of emitted atom
-     ,  wldsptm_res(:,:),  !sputtered flux for each type of emitted molecule
+     ,  wldspta_res(:,:),  !sputtered flux
+                           !for each type of emitted atom
+     ,  wldsptm_res(:,:),  !sputtered flux
+                           !for each type of emitted molecule
      ,  wlpump_res(:,:)    !pumped flux
 
       !c*** dissociation energy of the hydrogen molecule
@@ -118,12 +125,12 @@
       ! Integrals over volume.
       ! _INT: WHOLE GRID; _INT_B2: B2 grid.
       real(DP), save, allocatable, dimension (:,:), public ::
-     &                  PDENA_INT, PDENA_INT_B2, !Total number of particles
-     &                  PDENM_INT, PDENM_INT_B2,
-     &                  PDENI_INT, PDENI_INT_B2,
-     &                  EDENA_INT, EDENA_INT_B2, !Total energy, Joules
-     &                  EDENM_INT, EDENM_INT_B2,
-     &                  EDENI_INT, EDENI_INT_B2
+     &  PDENA_INT, PDENA_INT_B2, !Total number of particles
+     &  PDENM_INT, PDENM_INT_B2,
+     &  PDENI_INT, PDENI_INT_B2,
+     &  EDENA_INT, EDENA_INT_B2, !Total energy, Joules
+     &  EDENM_INT, EDENM_INT_B2,
+     &  EDENI_INT, EDENI_INT_B2
 
       integer, save, allocatable, public :: isrftype(:)
       logical, save, allocatable, public :: amark(:,:)
@@ -383,10 +390,10 @@ C     READ IN THE NUMBER OF TRIANGLES
       logical :: do_broadcast
       logical, optional :: broadcast
 
-!     !c======================================================================
-      !c---------------------------------------------------------------------<
+!     !c================================================================
+      !c---------------------------------------------------------------<
       !c      write(iunout,*) '%%% wneutrals_init'
-      !c--------------------------------------------------------------------->
+      !c--------------------------------------------------------------->
 
       IF (IFIRST_wneutral.EQ.0) then
       ! if it is not the first call, then we skip over initialization
@@ -410,10 +417,10 @@ C     READ IN THE NUMBER OF TRIANGLES
         ia3=ia2+natmi+nmoli
 
       endif ! IFIRST_wneutral
-      !c---------------------------------------------------------------------<
+      !c---------------------------------------------------------------<
       if (new_leader) then
-        ! there are new PEs among the leaders, we have to distribute the data
-        ! to them
+! there are new PEs among the leaders, we have to distribute the data
+! to them
         if (present(broadcast)) then
           do_broadcast = broadcast
         else
@@ -435,7 +442,7 @@ C     READ IN THE NUMBER OF TRIANGLES
       end subroutine eirene_wneutrals_init_broadcast
 
       !c
-      !c======================================================================
+      !c================================================================
       subroutine eirene_wneutrals_fill(istra_in)
       implicit none
       integer, intent(in) :: istra_in
@@ -447,12 +454,13 @@ C     READ IN THE NUMBER OF TRIANGLES
       !c                                       istra,istra_in
       istra_save=istra
       istra=istra_in
-      !c--------------------------------------------------------------------->
+      !c--------------------------------------------------------------->
 
-      !csw
-      !csw 21feb2012 corrected radiation from neutrals (atoms only), taken from SOLPS4.3 (V.Kotov)
-      !csw 04mar2013 shifted from wneutrals_save to here (wneutrals_fill)
-      !csw
+!csw
+!csw 21feb2012 corrected radiation from neutrals (atoms only),
+!csw taken from SOLPS4.3 (V.Kotov)
+!csw 04mar2013 shifted from wneutrals_save to here (wneutrals_fill)
+!csw
       write(hlp_frm,'(a,i3,a)') '(a,i6,1p,',natmi+1,'(1x,e13.6))'
       eneutrad(:,:,:,istra) = 0.0_dp
       emolrad(:,:,:,istra) = 0.0_dp
@@ -569,7 +577,7 @@ C     READ IN THE NUMBER OF TRIANGLES
              if(ia0+natmi+jmol.le.nadv)
      >         rfluxm(ix,iy,jmol,1)=rfluxm(ix,iy,jmol,1)+
      &                                 addv(ia0+natmi+jmol,in)*1.0e4
-            if(ia2+natmi+jmol.le.nadv)
+             if(ia2+natmi+jmol.le.nadv)
      >         pfluxm(ix,iy,jmol,1)=pfluxm(ix,iy,jmol,1)+
      &                                 addv(ia2+natmi+jmol,in)*1.0e4
             end if
@@ -614,14 +622,14 @@ C     READ IN THE NUMBER OF TRIANGLES
         end do
       end do
 
-      !c
-      !c*** Rescale the surface data from A to 1/sec and average the energy
-      !c
+!c
+!c*** Rescale the surface data from A to 1/sec and average the energy
+!c
       do i=1,nlimps
         wldnek(i,istra)=0.
         wldnep(i,istra)=0.
         wldpeb(i,istra)=0.
-        !c*** hlp accumulates the power taken away with re-emitted particles
+!c*** hlp accumulates the power taken away with re-emitted particles
         hlp=0.
         do j=1,natmi
           if (leotat)  wldnek(i,istra)=wldnek(i,istra)+eotat(j,i)
@@ -720,7 +728,7 @@ C     READ IN THE NUMBER OF TRIANGLES
       !c
       call update_integrals(istra)
 
-      !c---------------------------------------------------------------------<
+      !c---------------------------------------------------------------<
       istra=istra_save
       return
       end subroutine eirene_wneutrals_fill
@@ -859,15 +867,15 @@ C     READ IN THE NUMBER OF TRIANGLES
           end do
         end do
       end do
-      !c--------------------------------------------------------------------->
+      !c--------------------------------------------------------------->
 
 
       !c*** Surface type and properties
       wlabsrp=0.0_DP
       pumpsum=0.0_DP
-      eirpump = 0.0_DP                                                 !iyv 07.03.18 {
+      eirpump = 0.0_DP
       eirspta = 0.0_DP
-      eirsptm = 0.0_DP                                                 !iyv 07.03.18 }
+      eirsptm = 0.0_DP
       do i=1,nlim+nsts
         isrftype(i)=iliin(i)
         wlarea(i)=1.e-4*sarea(i)
@@ -883,15 +891,15 @@ C     READ IN THE NUMBER OF TRIANGLES
           IF (LSPUMP) THEN
             wlpump(j,i)=SPUMP(j,i)*hlp_cnv
             pumpsum=pumpsum+wlpump(j,i)
-            eirpump(j) = eirpump(j) + wlpump(j,i)                     !iyv 07.03.18
+            eirpump(j) = eirpump(j) + wlpump(j,i)
           END IF
         end do
-        do j = 1, natmi                                               !iyv 07.03.18 {
+        do j = 1, natmi
           eirspta(j) = eirspta(j) + wldspta(i,j,0)
         enddo
         do j = 1, nmoli
           eirsptm(j) = eirsptm(j) + wldsptm(i,j,0)
-        enddo                                                         !iyv 07.03.18 }
+        enddo
       end do
 
       do j=1,nspz !{
@@ -1042,32 +1050,6 @@ C     READ IN THE NUMBER OF TRIANGLES
         end if
       end do
       call eirene_leer(1)
-!cc%%%
-!c      write (iunout,*) '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
-!c      write (iunout,'(/6x,20(a8,2x))')
-!c     &        'wldnek','wldnep','wldna','ewlda','wldnm','ewldm',
-!c     &        'wldna He','ewlda He','wldna Ne','ewlda Ne','wldra H',
-!c     &        'wldra He','wldra Ne','wldrm','prfaat'
-!c      do i=1,nlimi
-!c      write (iunout,'(1p,i6,20e10.2)') i,wldnek(i),wldnep(i),
-!c     &      wldna(i,1),ewlda(i,1),wldnm(i,1),ewldm(i,1),
-!c     &      wldna(i,2),ewlda(i,2),wldna(i,3),ewlda(i,3),
-!c     &      wldra(i,1),wldra(i,2),wldra(i,3),wldrm(i,1),
-!c     &      prfaat(1,i)
-!c      end do
-!c      write (iunout,'(/6x,20(a8,2x))')
-!c     &        'wldnek','wldnep','wldna','ewlda','wldnm','ewldm',
-!c     &        'wldna He','ewlda He','wldna Ne','ewlda Ne','wldra H',
-!c     &        'wldra He','wldra Ne','wldrm','prfaat'
-!c      do i=nlim+1,nlim+nstsi
-!c      write (iunout,'(1p,i6,20e10.2)') i-nlim,wldnek(i),wldnep(i),
-!c     ,       wldna(i,1),ewlda(i,1),wldnm(i,1),ewldm(i,1),
-!c     ,       wldna(i,2),ewlda(i,2),wldna(i,3),ewlda(i,3),
-!c     ,       wldra(i,1),wldra(i,2),wldra(i,3),wldrm(i,1),
-!c     ,       prfaat(1,i)
-!c      end do
-!c      write (iunout,*) '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
-!cc%%%
       write(iunout,*) 'ncutl,ncutb ',ncutl,ncutb
       write(iunout,'(1x,a,7i6)') 'ndx,ndy,natm,ndxa,ndya,nfla,n1st',
      &                            ndx,ndy,natm,ndxa,ndya,nfla,n1st
@@ -2012,7 +1994,8 @@ C*******************************************************************************
       DO IT=1,NTRII
        DO IS=1,3
          ISS=INMTI(IS,IT)-NLIM
-         IF(ISS.LT.1) CYCLE !THE EDGE OF THE TRIANGLE DOES NOT BELONG TO NDS
+         IF(ISS.LT.1) CYCLE !THE EDGE OF THE TRIANGLE
+                            !DOES NOT BELONG TO NDS
          IF(eirdiag_nds_ind(ISS).LT.0) CYCLE !THIS SURFACE IS SKIPPED
          MS=INSPAT(IS,IT)
          IF(MS.LT.1.OR.MS.GT.NNNMTI) GOTO 100

@@ -785,8 +785,8 @@ C
          IF (LOGL)
      .    YWERT(1:NCOOR,1)=LOG10(MAX(1.E-48_DP,YWERT(1:NCOOR,1)))
       ELSE
-        WRITE (iunout,*) 'CELINT CALLED WITH INVALID OPTIONS '
-        WRITE (iunout,*) 'PLOT ABANDONED '
+        WRITE (iunout,*) 'CELINT CALLED WITH INVALID OPTIONS'
+        WRITE (iunout,*) 'PLOT ABANDONED'
         IERR=1
       ENDIF
 C

@@ -62,14 +62,14 @@ C     LGPART=FALSE
 C           ITYP=4  NO NEXT GENERATION TEST PARTICLE IS GENERATED
 C                   (PARTICLE ABSORBED IN BULK ION SPECIES)
 c
-c  at 100 :   start a new neutral particle, velocity is given as full cartesian vector, lcart=true
-c  at 1004:   reduced (guiding centre) velocities and B field are now set for particle. lcart=false.
-C  at 1001:   particle enters static loop
-C  at 1002:   particle leaves static loop
-c  at 101 :   full new trajectory starts here.
-c  at 104 :   an earlier track continues here.
-c             initial position of track and cumulated integral for mfp sampling is not refreshed.
-c             meant for continuing a track across a transparent surface
+c  at 100 :  start a new neutral particle, velocity is given as full cartesian vector, lcart=true
+c  at 1004:  reduced (guiding centre) velocities and B field are now set for particle. lcart=false.
+C  at 1001:  particle enters static loop
+C  at 1002:  particle leaves static loop
+c  at 101 :  full new trajectory starts here.
+c  at 104 :  an earlier track continues here.
+c            initial position of track and cumulated integral for mfp sampling is not refreshed.
+c            meant for continuing a track across a transparent surface
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -102,7 +102,7 @@ C
       USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
       use eirmod_timer
       use eirmod_timep
-      use eirmod_collide  
+      use eirmod_collide
       use eirmod_upcusr
 
       use EIRMOD_OPENMP
@@ -252,7 +252,8 @@ C  PREPARE CELL NUMBERS FOR FIRST FLIGHT
                  IF (IRET .EQ. 2) GOTO 380
               ENDIF
             case (4)
-              ISTS=ABS(INMTI(IPOLGN,MRSURF))  !dr NLIM already added in ISTS ?
+!dr NLIM already added in ISTS ?
+              ISTS=ABS(INMTI(IPOLGN,MRSURF))
               MSURFG=INSPAT(IPOLGN,MRSURF)
               IF (ILIIN(ISTS) .NE. 0) THEN
                  CALL EIRENE_STDCOL (ISTS,1,SCOS,IRET)
@@ -260,7 +261,8 @@ C  PREPARE CELL NUMBERS FOR FIRST FLIGHT
                  IF (IRET .EQ. 2) GOTO 380
               ENDIF
             case (5)
-              ISTS=ABS(INMTIT(IPOLGN,MRSURF)) !dr NLIM already added in ISTS ?
+!dr NLIM already added in ISTS ?
+              ISTS=ABS(INMTIT(IPOLGN,MRSURF))
 C             MSURFG= ??
               IF (ILIIN(ISTS) .NE. 0) THEN
                  CALL EIRENE_STDCOL (ISTS,1,SCOS,IRET)
@@ -423,7 +425,7 @@ C
 C
 !PB VELS, VEL.S are only used with test ions, irrelevant here
       CALL EIRENE_TIME_TO_STANDARD_SURFACE
-     .    (TL, TF, TT, TS, ZDT1, ZT, ZTST, 
+     .    (TL, TF, TT, TS, ZDT1, ZT, ZTST,
      .     VELXS, VELYS, VELZS, VELS, ISRFCL, IRET)
       IF (IRET /= 0) GOTO 995
 
@@ -436,6 +438,7 @@ C  NCOU CELLS ARE CROSSED BY THE CURRENT TRACK.
 C  EVALUATE REACTION RATES, MEAN FREE PATH, ETC. IN THESE CELLS
 C
       IFLAG=3
+
       IF (NLTRJ) THEN
 C  STORE THIS TRAJECTORY, FOR LATER USE IN CORRELATED SAMPLING
         TRAJ(ITRJ)%TRJ%NCOU_CELL = TRAJ(ITRJ)%TRJ%NCOU_CELL + NCOU
@@ -467,7 +470,7 @@ C  USE VACUUM VALUES FOR REACTION RATES, MFP, ETC..
           IF (LDAMCEL(NCELL)) GOTO 9912
           ZMFP=EIRENE_FPATH(NCELL,CFLAG,J,NCOU)
 
-c  So far for photons only: local (WMINL) criterion for cond. exp.est.
+c  So far for photons only: local (WMINL) criterion for cond. exp. est.
 c  If mfp smaller than geometrical step size times WMINL, turn off
 c  cond. exp. est.
           IF ((ITYP.EQ.0).AND.(ZMFP < WMINL*CLPD(J))) WMINC_LOCAL=1._DP
@@ -545,7 +548,8 @@ C          we might then need old PR for surface tallies.
               AX(2)=1.
             ENDIF
           ENDIF
-  212   CONTINUE   ! NCOU LOOP OVER SUB-STEPS ICOU IN BIG RADIAL STEP: DONE
+  212   CONTINUE   ! NCOU LOOP OVER SUB-STEPS ICOU IN
+                   ! BIG RADIAL STEP: DONE
 C
   213   CONTINUE   ! EXIT FROM NCOU LOOP DUE TO COLLISION AT JCOL=JJ
         NCOU=JJ
@@ -653,7 +657,8 @@ C  ESCAPE AT 3RD GRID SURFACE (Z OR TOROIDAL) MTSURF
 C
 C  ESCAPE AT GRID SURFACE BUILT FROM TRIANGLE SIDES IN X-Y PLANE: MRSURF
       case (4)
-        ISTS=ABS(INMTI(IPOLGN,MRSURF)) !dr NLIM already added in ISTS ?
+!dr NLIM already added in ISTS ?
+        ISTS=ABS(INMTI(IPOLGN,MRSURF))
         IF (NLRAD.AND.ISTS.NE.0) THEN
           SG=SIGN(1._DP,VELX*PTRIX(IPOLGN,MRSURF)+
      .                  VELY*PTRIY(IPOLGN,MRSURF))
@@ -663,8 +668,8 @@ C  ESCAPE AT GRID SURFACE BUILT FROM TRIANGLE SIDES IN X-Y PLANE: MRSURF
              CALL EIRENE_STDCOL (ISTS,1,SG,IRET)
              IF (IRET .EQ. 1) GOTO 104
              IF (IRET .EQ. 2) THEN
-               SG=INMTINSS(IPOLGN,MRSURF) !VK
-               GOTO 380         !VK
+               SG=INMTINSS(IPOLGN,MRSURF)                            !VK
+               GOTO 380                                              !VK
              END IF
           ENDIF
         ENDIF
@@ -686,7 +691,8 @@ C  ESCAPE AT 3RD (Z OR TOROIDAL) GRID SURFACE FOR TRIANGULAR X-Y GRID OPTION: MT
 C
 C  ESCAPE AT GRID SURFACE BUILD FROM TETRAHEDRA SIDES: MRSURF
       case (5)
-        ISTS=ABS(INMTIT(IPOLGN,MRSURF))  !dr NLIM already added in ISTS ?
+!dr NLIM already added in ISTS ?
+        ISTS=ABS(INMTIT(IPOLGN,MRSURF))
         IF (NLRAD.AND.ISTS.NE.0) THEN
           SG=SIGN(1._DP,VELX*PTETX(IPOLGN,MRSURF)+
      .                  VELY*PTETY(IPOLGN,MRSURF)+
@@ -845,7 +851,7 @@ C  PUSH PARTICLE TO POINT OF COLLISION, EITHER DELTA OR REAL
 cdr  made a bit more precise, to allow calling tmstep.f from collide.f
       IF (NLTRA) THEN 
         PHI=MOD(PHI-ATAN2(Z01,X01)+ATAN2(Z0,(RMTOR+X0)),PI2A)
-       X01=X0+RMTOR
+        X01=X0+RMTOR
       ENDIF
       Z01=Z0
 C
@@ -937,7 +943,7 @@ C
 C
 C
 C   SAVE PRE-COLLISION DATA OF FIRST COLLISION ALONG CONDITIONAL TRACK
-C   AT THIS POINT:  JCOL= NO. OF TRACK SEGMENT IN RANGE J= 1:NCOU,
+C   AT THIS POINT: JCOL= NO. OF TRACK SEGMENT IN RANGE J= 1:NCOU,
 C   IN WHICH 1ST COLLISION FOUND.
   505 CONTINUE
       IF (NCOU.GT.1) THEN
@@ -1086,7 +1092,7 @@ cym
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE('ERROR IN FOLNEUT, ZDT1 OR NCELL OUT OF RANGE')
       CALL EIRENE_MASAGE('PARTICLE IS KILLED')
-     
+
       write(iunout,*) 'ERROR for NPANU,thread =',NPANU,
      .                EIRENE_ITHREAD
       WRITE (iunout,*) 'ERROR NPANU,NCELL,ZDT1,ZTST,TL,TS '
@@ -1110,7 +1116,7 @@ C
       GOTO 995
 C
   995 WRITE (iunout,*) 'MRSURF,MPSURF,MTSURF,MASURF ',
-     .             MRSURF,MPSURF,MTSURF,MASURF
+     .                  MRSURF,MPSURF,MTSURF,MASURF
       X0ERR=X0+ZT*VELX
       Y0ERR=Y0+ZT*VELY
       Z0ERR=Z0+ZT*VELZ

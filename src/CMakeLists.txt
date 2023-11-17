@@ -28,11 +28,6 @@ elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
   set(CMAKE_Fortran_FLAGS_DEBUG "-g -O0 -cpp -mp -C -Mchkptr -Mchkstk")
 endif()
 
-message("-- Adding Fortran 2003 flag...")
-add_definitions(-DF2003)
-
-
-
 # Output names and postfix.
 set(EIRENE_LIBRARY_NAME "EIRENE" CACHE STRING "EIRENE library name")
 set(EIRENE_EXECUTABLE_NAME "eirene" CACHE STRING "EIRENE executable name")
@@ -43,12 +38,12 @@ set(EIRENE_POSTFIX "" CACHE STRING "EIRENE output names postfix")
 # This is a bit convoluted but allows for some user error in the JSON library location
 # First check for user defined paths
 if(LibJSON)
-  message(STATUS    " Searching for user defined LibJSON. " ${LibJSON} )
+  message(STATUS " Searching for user defined LibJSON. " ${LibJSON} )
   if(IS_DIRECTORY ${LibJSON})
     if((EXISTS "${LibJSON}/libjsonfortran.a" OR EXISTS "${LibJSON}/libjsonfortran.so"))
-      message(STATUS    " Found user defined LibJSON in path. ")
+      message(STATUS " Found user defined LibJSON in path. ")
       if(NOT JSON_MODULES)
-	set(JSON_MODULES ${LibJSON})
+        set(JSON_MODULES ${LibJSON})
       endif()
       set(LibJSON "${LibJSON}/libjsonfortran.a")
       set(jsonfortran_FOUND TRUE)
@@ -57,23 +52,23 @@ if(LibJSON)
     endif()
   else()  # Assume the library is included in the path
     if(EXISTS ${LibJSON})
-      message(STATUS    " Found user defined LibJSON. ")
+      message(STATUS " Found user defined LibJSON. ")
       set(jsonfortran_FOUND TRUE)
     endif()
     if(NOT JSON_MODULES)
       string(REPLACE "libjsonfortran.a" "" MOD_TRY ${LibJSON})
       if(NOT (EXISTS "${MOD_TRY}/json_module.mod"))
-	string(REPLACE "libjsonfortran.so" "" MOD_TRY ${LibJSON})
+        string(REPLACE "libjsonfortran.so" "" MOD_TRY ${LibJSON})
       endif()
       set(JSON_MODULES ${MOD_TRY})
     endif()
   endif()
   if(EXISTS "${JSON_MODULES}/json_module.mod")
-    message(STATUS    " Found user defined JSON modules. ")
+    message(STATUS " Found user defined JSON modules. ")
     set(jsonfortran_INCLUDE_DIRS ${JSON_MODULES})
   else()
     message(FATAL_ERROR "JSON Modules not found at. " ${JSON_MODULES}
-      "The -DJSON_MODULES variable must be set to the directory containing JSON Modules.")
+     "The -DJSON_MODULES variable must be set to the directory containing JSON Modules.")
   endif()
 else()
   if(DEFINED ENV{JSONF_LIB_DIR})
@@ -95,27 +90,27 @@ else()
       set(JSON_MODULES $ENV{JSONF_LIB_DIR})
     endif()
     if(EXISTS "${JSON_MODULES}/json_module.mod")
-      message(STATUS    " Found JSON modules defined by environment variable. ")
+      message(STATUS " Found JSON modules defined by environment variable. ")
       set(jsonfortran_INCLUDE_DIRS ${JSON_MODULES})
     endif()
   else()
-    message(STATUS  " Detecting LibJSON. By default the static library will be used")
+    message(STATUS " Detecting LibJSON. By default the static library will be used")
     if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
       find_package(jsonfortran NAMES jsonfortran-intel REQUIRED)
     elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
       find_package(jsonfortran NAMES jsonfortran-gnu REQUIRED)
     else()
-      message(STATUS    " Compiler version not known for JSONlibrary ")
+      message(STATUS " Compiler version not known for JSONlibrary ")
     endif()
     if(jsonfortran_FOUND)
       set(LibJSON "${jsonfortran_INCLUDE_DIRS}/libjsonfortran.a")
-      message(STATUS    " Found LibJSON. Version: "  ${jsonfortran_VERSION} )
+      message(STATUS " Found LibJSON. Version: "  ${jsonfortran_VERSION} )
     endif()
   endif()
 endif()
-  
+
 if(jsonfortran_FOUND)
-  message(STATUS    " LibJSON path " ${jsonfortran_INCLUDE_DIRS} )
+  message(STATUS " LibJSON path " ${jsonfortran_INCLUDE_DIRS} )
   include_directories(${jsonfortran_INCLUDE_DIRS})
 else()
   message(FATAL_ERROR "JSON library not found. "
@@ -123,74 +118,17 @@ else()
 endif()
 
 
-# Libraries used for plotting
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-message(STATUS    " --  Setting libraries for internal plotting:  --  --")
-
-if(LibGKS)
-  get_filename_component(LibGKS ${LibGKS} ABSOLUTE)
-else()
-  message(STATUS  "Path to LibGKS unset")
-  message(STATUS  "You may want to try -DLibGKS=$PATH_TO_GKS_LIB/libgks.a")
-endif()
-
-if(LibGRS)
-  get_filename_component(LibGRS ${LibGRS} ABSOLUTE)
-else()
-  message(STATUS  "Path to LibGRS unset")
-  message(STATUS  "You may want to try -DLibGRS=$PATH_TO_GRSOFT_LIB/libgr.a")
-endif()
-
-if(LibX11)
-  get_filename_component(LibX11 ${LibX11} ABSOLUTE)
-else()
-  message(STATUS  "Path to LibX11 unset")
-  message(STATUS  "You may want to try -DLibX11=$PATH_TO_X11_LIB/libX11.so")
-endif()
-
-if(Libz)
-  get_filename_component(Libz ${Libz} ABSOLUTE)
-else()
-  message(STATUS  "Path to Libz unset")
-  message(STATUS  "You may want to try -DLibz=$PATH_TO_z_LIB/libz.so")
-endif()
-
-if(LibXt)
-  get_filename_component(LibXt ${LibXt} ABSOLUTE)
-else()
-  message(STATUS  "Path to LibXt unset")
-  message(STATUS  "You may want to try -DLibXt=$PATH_TO_Xt_LIB/libXt.so")
-endif()
-
-if(LibGKS AND LibGRS AND LibX11 AND Libz AND LibXt)
-  message(STATUS "Found the following libraries used for plotting:")
-  message(STATUS "  Lib GKS: " ${LibGKS})
-  message(STATUS "  Lib GRS: " ${LibGRS})
-  message(STATUS "  Lib X11: " ${LibX11})
-  message(STATUS "  Lib Xt:  " ${LibXt})
-  message(STATUS "  Lib z:   " ${Libz})
-  
-  message(STATUS "For running, please export the following 2 statements "
-		 "into your console:")
-  message(STATUS "export GLI_HOME=$PATH_TO_GKS_LIB")
-  message(STATUS "export GRSOFT_DEVICE=62")
-  message(STATUS " --  Plotting will be enabled.")
-else()
-  message(STATUS " --  Plotting will be disabled.")
-endif()
-
-
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Control of interface and user-routines to compile.
+message(STATUS " --  Setting interface and user-routines to compile:")
+message(STATUS "       If flag -DEIRENE_INTERFACE is unspecified, \"Dummy\"")
+message(STATUS "       will be set. Try e.g. -DEIRENE_INTERFACE=SOLPS-ITER.  ")
+message(STATUS "       If flag -DEIRENE_USER-ROUTINES is unspecified, \"default\"")
+message(STATUS "       will be set. Try e.g. -DEIRENE_USER-ROUTINES=iter.  ")
 set(EIRENE_INTERFACE "Dummy" CACHE STRING "EIRENE interface to compile")
 set(EIRENE_USER-ROUTINES "default" CACHE STRING "EIRENE user-routines to compile")
 
-message(STATUS   " --  Setting interface and user-routines to compile:")
-message(STATUS   "       If flag -DEIRENE_INTERFACE is unspecified, \"Dummy\"")
-message(STATUS   "       will be set. Try e.g. -DEIRENE_INTERFACE=SOLPS-ITER.  ")
-message(STATUS   "       If flag -DEIRENE_USER-ROUTINES is unspecified, \"default\"")
-message(STATUS   "       will be set. Try e.g. -DEIRENE_USER-ROUTINES=iter.  ")
 
 # Add option to control whether trace output will be compiled.
 option(TRACE "Build with trace output" OFF)
@@ -206,6 +144,9 @@ if (CHECKBIN)
   add_definitions(-DCHECKBIN)
 endif()
 
+message("-- Adding Fortran 2003 flag...")
+add_definitions(-DF2003)
+
 # Add option to control whether MPI will be used.
 option(MPI "Build with MPI" ON)
 if (MPI)
@@ -213,7 +154,7 @@ if (MPI)
   add_definitions(-DUSE_MPI)
   find_package(MPI REQUIRED)
   if ( NOT MPI_FOUND )
-    
+
   endif()
 #  include_directories(${JSON_MODULES} ${MPI_Fortran_INCLUDE_PATH})
   include_directories(${MPI_Fortran_INCLUDE_PATH})
@@ -244,11 +185,11 @@ if (OPENMP_FOUND)
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${OpenMP_Fortran_FLAGS}")
 endif()
 
-# Finds all fortran files (*.[fF]/*.[fF]90) in the source directory and extract the 
+# Finds all fortran files (*.[fF]/*.[fF]90) in the source directory and extract the
 # relative path. Relative path is stored in variable 'fortran_dirs'.
-message(STATUS "Detecting fortran files (*.[fF]/*.[fF]90) in subdirectories of " 
+message(STATUS "Detecting fortran files (*.[fF]/*.[fF]90) in subdirectories of "
                ${PROJECT_SOURCE_DIR})
-file(GLOB_RECURSE fortran_files RELATIVE ${PROJECT_SOURCE_DIR} 
+file(GLOB_RECURSE fortran_files RELATIVE ${PROJECT_SOURCE_DIR}
      ${PROJECT_SOURCE_DIR}/*.[fF]
      ${PROJECT_SOURCE_DIR}/*.[fF]90)
 set(fortran_dirs "")
@@ -258,7 +199,7 @@ foreach(fortran_file ${fortran_files})
 endforeach()
 list(REMOVE_DUPLICATES fortran_dirs)
 
-# Sets variables 'src_[relative path to subdirectory]' which contain a list of 
+# Sets variables 'src_[relative path to subdirectory]' which contain a list of
 # all fortran files (*.[fF]/*.[fF]90) in this subdirectory.
 message(STATUS "Configuring variables src_[relative path to subdirectory]")
 foreach(fortran_dir ${fortran_dirs})
@@ -266,19 +207,10 @@ foreach(fortran_dir ${fortran_dirs})
                                ${PROJECT_SOURCE_DIR}/${fortran_dir}/*.[fF]90)
 endforeach()
 
-# Remove program file to be able to add it seperately if required.
+# Remove program file to be able to add it separately if required.
 list(GET src_main-routines 0 fortran_file)
 get_filename_component(fortran_dir ${fortran_file} PATH)
 list(REMOVE_ITEM src_main-routines ${fortran_dir}/eirene_main.f)
-
-# Decide whether to use plotting or plot_dummy.
-set(plotpath "")
-if( LibGRS AND LibGKS AND LibX11 AND Libz AND LibXt )
-  list(APPEND plotpath ${src_plotting})
-else()
-  list(APPEND plotpath ${src_plotting})
-  list(APPEND plotpath ${src_grsoft-dummy})
-endif()
 
 # Specify interface and user-routines to use.
 set(src_interface/x ${src_interfaces/couple_${EIRENE_INTERFACE}})
@@ -290,19 +222,86 @@ if( NOT src_user-routines/x )
   message(FATAL_ERROR "No user-routines named \"${EIRENE_USER-ROUTINES}\"")
 endif()
 
+# Adds eirene executable to the project and links it to the MPI library.
+# Add linking to the plotting libraries
+set(plotpath "")
+
+add_executable(eirene main-routines/eirene_main.f)
+
+message(STATUS " --  Setting libraries for internal plotting:  --  --")
+
+if(LibGKS)
+  get_filename_component(LibGKS ${LibGKS} ABSOLUTE)
+else()
+  message(STATUS "Path to LibGKS unset")
+  message(STATUS "You may want to try -DLibGKS=$PATH_TO_GKS_LIB/libgks.a")
+endif()
+
+if(LibGRS)
+  get_filename_component(LibGRS ${LibGRS} ABSOLUTE)
+else()
+  message(STATUS "Path to LibGRS unset")
+  message(STATUS "You may want to try -DLibGRS=$PATH_TO_GRSOFT_LIB/libgr.a")
+endif()
+
+if(LibX11)
+  get_filename_component(LibX11 ${LibX11} ABSOLUTE)
+else()
+  message(STATUS "Path to LibX11 unset")
+  message(STATUS "You may want to try -DLibX11=$PATH_TO_X11_LIB/libX11.so")
+endif()
+
+if(LibXt)
+  get_filename_component(LibXt ${LibXt} ABSOLUTE)
+else()
+  message(STATUS "Path to LibXt unset")
+  message(STATUS "You may want to try -DLibXt=$PATH_TO_Xt_LIB/libXt.so")
+endif()
+
+if(Libz)
+  get_filename_component(Libz ${Libz} ABSOLUTE)
+else()
+  message(STATUS "Path to Libz unset")
+  message(STATUS "You may want to try -DLibz=$PATH_TO_z_LIB/libz.so")
+endif()
+
+if(LibGKS AND LibGRS AND LibX11 AND Libz AND LibXt)
+  message(STATUS "Found the following libraries used for plotting:")
+  message(STATUS "  Lib GKS: " ${LibGKS})
+  message(STATUS "  Lib GRS: " ${LibGRS})
+  message(STATUS "  Lib X11: " ${LibX11})
+  message(STATUS "  Lib Xt:  " ${LibXt})
+  message(STATUS "  Lib z:   " ${Libz})
+
+  message(STATUS "For running, please export the following 2 statements "
+		 "into your console:")
+  message(STATUS "export GLI_HOME=$PATH_TO_GKS_LIB")
+  message(STATUS "export GRSOFT_DEVICE=62")
+  message(STATUS " --  Plotting will be enabled.")
+else()
+  message(STATUS " --  Plotting will be disabled.")
+endif()
+
+
+# Decide whether to use plotting or plot_dummy.
+if( LibGRS AND LibGKS AND LibX11 AND Libz AND LibXt )
+  list(APPEND plotpath ${src_plotting})
+else()
+  list(APPEND plotpath ${src_plotting})
+  list(APPEND plotpath ${src_grsoft-dummy})
+endif()
+
 # Adds EIRENE library to the project.
-add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno} 
+add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno}
                    ${src_file-handling} ${src_function_modules} ${src_geometry}
-                   ${src_geometry/time-routines} ${src_interface/x} 
-                   ${src_iterate} ${src_main-routines} ${src_mathematics} 
-                   ${src_modules} ${src_output} ${src_particle-tracing} 
-                   ${src_photons} ${plotpath} ${src_sampling} 
-                   ${src_scoring} ${src_startup-routines}  
-                   ${src_surface-processes} ${src_tetrahedra} 
+                   ${src_geometry/time-routines} ${src_interface/x}
+                   ${src_iterate} ${src_main-routines} ${src_mathematics}
+                   ${src_modules} ${src_output} ${src_particle-tracing}
+                   ${src_photons} ${plotpath} ${src_sampling}
+                   ${src_scoring} ${src_startup-routines}
+                   ${src_surface-processes} ${src_tetrahedra}
                    ${src_user-routines/x} ${src_volume-processes})
 
-# Adds eirene executable to the project and links it to the MPI library.
-add_executable(eirene main-routines/eirene_main.f)
 if (MPI)
   target_link_libraries(eirene EIRENE ${LibJSON} ${MPI_Fortran_LIBRARIES})
 else()
@@ -320,14 +319,14 @@ endif()
 #  target_link_libraries(eirene EIRENE ${OpenMP_Fortran_LIBRARIES})
 #endif()
 
-# Sets output directory of the library and executbale and output name 
+# Sets output directory of the library and executable and output name
 # of the executable.
 set_target_properties(EIRENE PROPERTIES
-                      ARCHIVE_OUTPUT_DIRECTORY 
+                      ARCHIVE_OUTPUT_DIRECTORY
                       ${PROJECT_BINARY_DIR}/../lib${CMAKE_BUILD_TYPE}
                       OUTPUT_NAME ${EIRENE_LIBRARY_NAME}${EIRENE_POSTFIX})
 set_target_properties(eirene PROPERTIES
-                      RUNTIME_OUTPUT_DIRECTORY 
+                      RUNTIME_OUTPUT_DIRECTORY
                       ${PROJECT_BINARY_DIR}/../bin${CMAKE_BUILD_TYPE}
                       OUTPUT_NAME ${EIRENE_EXECUTABLE_NAME}${EIRENE_POSTFIX})
 
@@ -337,27 +336,27 @@ find_package(Git)
 if(GIT_FOUND)
   if(EXISTS ${PROJECT_SOURCE_DIR}/../.git)
     set(git_hash_command log --pretty=format:"%ci" --abbrev-commit -1)
-    execute_process(COMMAND ${GIT_EXECUTABLE} ${git_hash_command} 
-                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/.. 
-                    OUTPUT_VARIABLE git_date 
+    execute_process(COMMAND ${GIT_EXECUTABLE} ${git_hash_command}
+                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/..
+                    OUTPUT_VARIABLE git_date
                     OUTPUT_STRIP_TRAILING_WHITESPACE)
 
     set(git_hash_command log --pretty=format:"%H" --abbrev-commit -1)
-    execute_process(COMMAND ${GIT_EXECUTABLE} ${git_hash_command} 
-                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/.. 
-                    OUTPUT_VARIABLE git_hash 
+    execute_process(COMMAND ${GIT_EXECUTABLE} ${git_hash_command}
+                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/..
+                    OUTPUT_VARIABLE git_hash
                     OUTPUT_STRIP_TRAILING_WHITESPACE)
 
     set(git_hash_command log --pretty=format:"%d" --abbrev-commit -1)
-    execute_process(COMMAND ${GIT_EXECUTABLE} ${git_hash_command} 
-                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/.. 
-                    OUTPUT_VARIABLE git_branch 
+    execute_process(COMMAND ${GIT_EXECUTABLE} ${git_hash_command}
+                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/..
+                    OUTPUT_VARIABLE git_branch
                     OUTPUT_STRIP_TRAILING_WHITESPACE)
 
     set(git_hash_command log --pretty=format:"%ci %H %d" --abbrev-commit -1)
-    execute_process(COMMAND ${GIT_EXECUTABLE} ${git_hash_command} 
-                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/.. 
-                    OUTPUT_VARIABLE git_full_hash 
+    execute_process(COMMAND ${GIT_EXECUTABLE} ${git_hash_command}
+                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/..
+                    OUTPUT_VARIABLE git_full_hash
                     OUTPUT_STRIP_TRAILING_WHITESPACE)
 
     # Configures the version CMakeLists file.
@@ -366,7 +365,7 @@ if(GIT_FOUND)
                    @ONLY)
 
     # Trigger the EIRENE version output.
-    add_custom_target(version 
+    add_custom_target(version
                       ${CMAKE_COMMAND} -D PROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}
                                        -P version.cmake)
     add_dependencies(EIRENE version)
@@ -378,7 +377,7 @@ endif()
 find_package(Doxygen)
 
 if(DOXYGEN_FOUND)
-  configure_file(${PROJECT_SOURCE_DIR}/cmake/Doxyfile.in 
+  configure_file(${PROJECT_SOURCE_DIR}/cmake/Doxyfile.in
                  ${PROJECT_BINARY_DIR}/../doc/Doxyfile @ONLY)
 
   add_custom_target(doc

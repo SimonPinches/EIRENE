@@ -28,7 +28,7 @@ C
       REAL(DP), INTENT(OUT) :: PRO(*)
       INTEGER, INTENT(IN) :: INDX, N
 
-      PRO(1:N)=0.0_DP
+      PRO(1:N) = 0.0_DP
 
       RETURN
       END SUBROUTINE EIRENE_PROUSR

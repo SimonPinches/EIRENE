@@ -20,6 +20,18 @@ C
 C      SUBROUTINE SETPRM
 C
       SUBROUTINE EIRENE_SETPRM
+cdr  called from main routine EIRENE, for MY_P=0:
+c
+cdr  1) set storage parameters (leading dimension)  for tally (targets) in CESTIM
+cdr  2) then: call alloc_cestim(2)   (allocate storage for targets)
+cdr  3) then: call associate_cestim  (pointers to tally targets)
+
+cdr  Steps 2 and 3 are repeated for other compute nodes in a call:
+cdr  EIRENE --> BROADCAST --> call BROADCAST_CESTIM(ME)
+
+cdr careful: spec. resolved particle balance tallies
+cdr          may be allocated multiple times in associate_cestim?
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
@@ -50,7 +62,6 @@ C
      .    'POSSIBLE STORAGE CONFLICT. NSTORDT OUT OF RANGE '
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
-
 
 C  SWITCH OFF SOME VOLUME-AVERAGED OUTPUT TALLIES AUTOMATICALLY;
 C  TRY TO KEEP ONLY THOSE TALLIES THAT ARE NEEDED FOR THE TYPE OF
@@ -130,16 +141,21 @@ c         generation limit activated
       LEXTALV(55) =               NPHOT>0
       LEXTALV(56) = (NPLS<0).and.(NPHOT>0)
 
-      LEXTALV(NTALA) = NADV>0  ! additional tracklength estimator tally (update.f)
-      LEXTALV(NTALC) = NCLV>0  ! additional collision estimator tally   (collide.f)
+      LEXTALV(NTALA) = NADV>0  ! additional tracklength estimator tally
+                               ! (update.f)
+      LEXTALV(NTALC) = NCLV>0  ! additional collision estimator tally
+                               ! (collide.f)
       LEXTALV(NTALT) = NSNV>0  ! additional snapshot tally
-      LEXTALV(NTALM) = NCPV>0  ! additional tallies for interfacing to external codes
+      LEXTALV(NTALM) = NCPV>0  ! additional tallies for interfacing to
+                               ! external codes
       LEXTALV(NTALB) = NBGV>0  ! additional tallies for BGK iterations
-      LEXTALV(NTALR) = NALV>0  ! additional tally, algebraic expression, postprocessing
+      LEXTALV(NTALR) = NALV>0  ! additional tally, algebraic expression,
+                               ! postprocessing
 C  GENERATION LIMIT TALLIES
 C  some of these tallies may be
 c  turned off, depending upon whether generation limits
 c  are activated or not.
+
       LEXTALV(63) = NATM>0  .AND. LEXGENA
       LEXTALV(64) = NMOL>0  .AND. LEXGENM
       LEXTALV(65) = NION>0  .AND. LEXGENI
@@ -184,25 +200,30 @@ C  PARALLEL (TO B FIELD) MOMENTUM SOURCE RATES
       LEXTALV(98) = (NPLS>0) .AND. (NMOL>0)
       LEXTALV(99) = (NPLS>0) .AND. (NION>0)
       LEXTALV(100) = (NPLS>0) .AND. (NPHOT>0)
+
 C  RADIATION RATES
       LEXTALV(101) = NATM>0
       LEXTALV(102) = NMOL>0
       LEXTALV(103) = NION>0
-      
-C  CURRENTLY THE LAST DEFAULT TALLY IS TALLY NO. 103
 
-C  LMISTALV(ITAL) = FALSE: TALLY HAS BEEN DEACTIVATED BY INPUT FLAGS SET IN INPUT BLOCK 11
+C  CURRENTLY THE LAST DEFAULT OUTPUT VOLUME TALLY IS TALLY NO. 103
+
+C  LMISTALV(ITAL) = TRUE: TALLY HAS BEEN DEACTIVATED BY INPUT FLAGS SET IN INPUT BLOCK 11
 C  DEFAULT: LMISTALV=.FALSE. FOR ALL TALLIES, I.E. "ALL TALLIES ARE LIVING"
       LIVTALV = LEXTALV .AND. .NOT.LMISTALV
 
 C  LMISTALV = TRUE: TURNING OFF A TALLY IN BLOCK 11 IS ONLY POSSIBLE
 C                   IF THE CORRESPONDING TYPE OF PARTICLE EXISTS
-      LMISTALV = LMISTALV .AND. LEXTALV
+      LMISTALV = LEXTALV .AND. LMISTALV
 
-      LEA  = LEAAT .OR. LEAML .OR. LEAIO .OR. LEAPHT .OR. LEAPL      ! ATOM PLASMA INTERACTION --> ANY ENERGY EXCHANGE TALLY ?
-      LEM  = LEMAT .OR. LEMML .OR. LEMIO .OR. LEMPHT .OR. LEMPL      ! MOLECULE PLASMA INTERACTION --> ANY ENERGY EXCHANGE TALLY ?
-      LEIO = LEIAT .OR. LEIML .OR. LEIIO .OR. LEIPHT .OR. LEIPL      ! TEST ION PLASMA INTERACTION --> ANY ENERGY EXCHANGE TALLY ?
-      LEPH = LEPHAT .OR. LEPHML .OR. LEPHIO .OR. LEPHPHT .OR. LEPHPL ! PHOTON PLASMA INTERACTION --> ANY ENERGY EXCHANGE TALLY ?
+      ! ATOM PLASMA INTERACTION --> ANY ENERGY EXCHANGE TALLY ?
+      LEA  = LEAAT .OR. LEAML .OR. LEAIO .OR. LEAPHT .OR. LEAPL
+      ! MOLECULE PLASMA INTERACTION --> ANY ENERGY EXCHANGE TALLY ?
+      LEM  = LEMAT .OR. LEMML .OR. LEMIO .OR. LEMPHT .OR. LEMPL
+      ! TEST ION PLASMA INTERACTION --> ANY ENERGY EXCHANGE TALLY ?
+      LEIO = LEIAT .OR. LEIML .OR. LEIIO .OR. LEIPHT .OR. LEIPL
+      ! PHOTON PLASMA INTERACTION --> ANY ENERGY EXCHANGE TALLY ?
+      LEPH = LEPHAT .OR. LEPHML .OR. LEPHIO .OR. LEPHPHT .OR. LEPHPL
 
 C
 C  LEADING DIMENSIONS OF FIELDS IN COMMON BLOCK CESTIM AND COUTAU
@@ -295,6 +316,7 @@ C  ENERGY SOURCES
       NFIRST(54)=0
       NFIRST(55)=0
       NFIRST(56)=NPLS
+C  VARIOUS ADDITIONAL TALLIES
       NFIRST(NTALA)=NADV
       NFIRST(NTALC)=NCLV
       NFIRST(NTALT)=NSNV
@@ -346,6 +368,7 @@ C  PARALLEL (TO B FIELD) MOMENTUM SOURCE RATES
       NFIRST(98)=NPLS
       NFIRST(99)=NPLS
       NFIRST(100)=NPLS
+
 C  RADIATION RATES
       NFIRST(101)=NATM
       NFIRST(102)=NMOL
@@ -376,13 +399,11 @@ C  SET NLSTTL: NUMBER OF LAST LIVING TALLY (MAY BE LESS THAN 100)
 
       IF (LIVTALV(NTALV)) NLSTTL = NTALV
 C
-C  TOTAL NUMBER OF VOLUME-AVERAGED TALLIES
-!pb   NVOLTL=NADDV(NTALV)+NFIRST(NTALV)
+C  TOTAL NUMBER OF "LIVING" VOLUME-AVERAGED TALLIES
       NVOLTL=NADDV(NTALV)+NFIRST(NLSTTL)
       WRITE (IUNOUT,*) 'NVOLTL = ', NVOLTL
       WRITE (IUNOUT,*) 'NADDV'
       WRITE (IUNOUT,'(10I6)') NADDV
-
 
 cdr  NEXT VARIABLES WERE USED FOR TESTING STORAGE FOR VOLUME-AVERAGED TALLIES
 cdr  NOW OUT, TEST NOT CARRIED OUT ANYMORE, PERHAPS BECAUSE OF TALLY REDUCTION
@@ -395,12 +416,13 @@ cdr   NTESTI=NTESTI*NSTRAP
 C
 c  now do the same for surface-averaged tallies, incident, emitted, sputtered
 c  three times similar structure, 25 tallies each. sputter tallies: total by emitted type and species missing
-c  surface tallies:  incident bulk ions resolved wrt. emitted type and species missing
+c  surface tallies: incident bulk ions resolved wrt. emitted type and species missing
 C   1 --25  particle fluxes
       LEXTALS(1) =                (NATM>0)  ! outgoing, atoms
 
       LEXTALS(2) =                (NATM>0)  ! ingoing, atoms, from atoms
-      LEXTALS(3) = (NMOL>0)  .and.(NATM>0)  ! ingoing, atoms from molecules
+      LEXTALS(3) = (NMOL>0)  .and.(NATM>0)  ! ingoing, atoms,
+                                            ! from molecules
       LEXTALS(4) = (NION>0)  .and.(NATM>0)
       LEXTALS(5) = (NPHOT>0) .and.(NATM>0)
       LEXTALS(6) = (NPLS>0)  .and.(NATM>0)
@@ -508,10 +530,11 @@ C  SPUTTERED FLUX; TOTAL, NOT SCALED BY NLSCL OPTION
 
       LEXTALS(NTLSA) = NADS>0
       LEXTALS(NTLSR) = NALS>0
+C  TALLY NTALS=84: PUMPED FLUX
       LEXTALS(NTALS) = NSPZ>0
 
-      LIVTALS = LEXTALS .AND. .NOT.LMISTALS
-      LMISTALS = LMISTALS .AND. LEXTALS
+      LIVTALS  = LEXTALS .AND. .NOT.LMISTALS
+      LMISTALS = LEXTALS .AND.      LMISTALS
 C
       NFRSTW(1)=NATM
       NFRSTW(2)=NATM
@@ -642,12 +665,10 @@ C
       IF (LIVTALS(NTALS)) NLSTTW = NTALS
 
 C  TOTAL NUMBER OF SURFACE-AVERAGED TALLIES
-!pb   NSRFTL=NADDW(NTALS)+NFRSTW(NTALS)
       NSRFTL=NADDW(NTALS)+NFRSTW(NLSTTW)
       WRITE (IUNOUT,*) 'NSRFTL = ', NSRFTL
       WRITE (IUNOUT,*) 'NADDW'
       WRITE (IUNOUT,'(10I6)') NADDW
-
 
 cdr  NEXT VARIABLES WERE USED FOR TESTING STORAGE FOR SURFACE-AVERAGED TALLIES
 cdr  NOW OUT, TEST IS NOT CARRIED OUT ANYMORE, PERHAPS BECAUSE OF TALLY REDUCTION
@@ -663,13 +684,13 @@ cdr   NTESTI=NTESTI*NSTRAP
 
 C
 C  CHECK LENGTH OF ALLOCATABLE ARRAYS, WHICH ARE I/O IN DUMP FILES,
-c  E.G. FORT.10,  FORT.11, ETC....
+c  E.G. FORT.10, FORT.11, ETC....
 C
 C
       IF (.FALSE.) THEN
 cdr  March 2017: checking of allocatable array sizes has been deactivated,
 cdr              at some point in time.
-cdr              Probable reason:  it did not work properly together with
+cdr              Probable reason: it did not work properly together with
 cdr              compiler optimization. And in case of estimv, estims
 cdr              arrays: apparently some parts may have been moved to cemetery,
 cdr              so that the programmed size checks would not work anyway.
@@ -778,7 +799,7 @@ c        WRITE (iunout,*) 'PARAMETER ERROR DETECTED IN SETPRM: NPLPRM'
 c        WRITE (iunout,*) 'NTESTP, NPLPRM ',NTESTP,NPLPRM_TEST
 c        CALL EIRENE_EXIT_OWN(1)
 c     ENDIF
-c............................................................................. 
+c.............................................................................
 
       IF (TRCTAL) THEN
         CALL EIRENE_LEER(2)
@@ -786,8 +807,9 @@ c.............................................................................
         CALL EIRENE_LEER(1)
         WRITE(IUNOUT,'(A6,1X,A)') 'NO.','DESCRIPTION'
         DO ITAL=1,NTALV
-          IF (LIVTALV(ITAL))
-     .      WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTTAL(1,ITAL)
+          IF (LIVTALV(ITAL)) THEN
+            WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTTAL(1,ITAL)
+          ENDIF
         END DO
 
         IF (.NOT.ALL(LIVTALV)) THEN
@@ -797,8 +819,9 @@ c.............................................................................
           CALL EIRENE_LEER(1)
           WRITE(IUNOUT,'(A6,1X,A)') 'NO.','DESCRIPTION'
           DO ITAL=1,NTALV
-            IF (.NOT.LIVTALV(ITAL))
-     .        WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTTAL(1,ITAL)
+            IF (.NOT.LIVTALV(ITAL)) THEN
+              WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTTAL(1,ITAL)
+            ENDIF
           END DO
         END IF
 
@@ -809,8 +832,9 @@ c.............................................................................
           CALL EIRENE_LEER(1)
           WRITE(IUNOUT,'(A6,1X,A)') 'NO.','DESCRIPTION'
           DO ITAL=1,NTALV
-            IF (LMISTALV(ITAL))
-     .        WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTTAL(1,ITAL)
+            IF (LMISTALV(ITAL)) THEN
+              WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTTAL(1,ITAL)
+            ENDIF
           END DO
         END IF
 

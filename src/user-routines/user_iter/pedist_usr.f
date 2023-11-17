@@ -4,7 +4,8 @@
 
       IMPLICIT NONE
 
-      REAL(DP), INTENT(INOUT) :: XTIM(0:NSTRA) !< time allocated for stratum
+      !> time allocated for stratum
+      REAL(DP), INTENT(INOUT) :: XTIM(0:NSTRA)
       REAL(DP), INTENT(IN) :: XX1 !< remaining CPU time
 
       END SUBROUTINE EIRENE_PEDIST_USR

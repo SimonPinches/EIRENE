@@ -20,11 +20,11 @@ C
       IMPLICIT NONE
       PRIVATE
 
-      PUBLIC :: EIRENE_STATS0, EIRENE_STATS1, 
+      PUBLIC :: EIRENE_STATS0, EIRENE_STATS1,
      .          EIRENE_STATS2, EIRENE_STATS3,
 cym will be removed once the parallel zone encompasses the whole code
-     .          IIND           
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc      
+     .          IIND
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       REAL(DP), ALLOCATABLE, SAVE :: VECTOR(:), VECTRC(:,:),
      .          SD(:),   SDC(:,:)
@@ -139,10 +139,9 @@ C
       LOGICAL, INTENT(IN) :: LP, LT
 C
 cym      REAL(DP) :: SAV, SD1S, SD1, SD2S
-cym      INTEGER :: NR1, NP2, NT3, I, J, IRU, IGS, IC, IIN, INP, IGF, ITL, 
-cym     .           ISCO, IGE, IGI, NSYM, NSYH, J1, J2, IR, IP, IG, IT, 
+cym      INTEGER :: NR1, NP2, NT3, I, J, IRU, IGS, IC, IIN, INP, IGF, ITL,
+cym     .           ISCO, IGE, IGI, NSYM, NSYH, J1, J2, IR, IP, IG, IT,
 cym     .           ICO, IS, ISCO2, ITL2, ISCO1, ITL1
-
 
       NSB=NBIN
       NR1=NRIN

@@ -19,9 +19,9 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
 !---- input variables
       REAL(DP), DIMENSION(2,2), INTENT(IN):: D
-      REAL(DP), INTENT(IN)  :: RX, RY
+      REAL(DP), INTENT(IN) :: RX, RY
 !---- output variables
-      REAL(DP), INTENT(OUT)  :: Z
+      REAL(DP), INTENT(OUT) :: Z
 
 !---- local variables
       REAL(DP)  :: Z1, Z2

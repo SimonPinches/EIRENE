@@ -24,32 +24,32 @@ C
       select case (K)
       case (1)
         IF (IFRST1.EQ.1) THEN
-        CALL GRNXTF
-      ELSE
-        IFRST1=1
-      ENDIF
+          CALL GRNXTF
+        ELSE
+          IFRST1=1
+        ENDIF
       case (2)
         IF (IFRST1.EQ.0) THEN
-        CALL GRSCLC (0.,0.0,39.5,28.7)
-        CALL GRSCLC (3.,3.5,39.5,28.7)
-        IFRST1=1
-        IFRST2=1
-      ELSE IF (IFRST2.EQ.0) THEN
-        CALL GRNXTF
-        CALL GRSCLC (0.,0.,39.5,28.7)
-        CALL GRSCLC (3.,3.5,39.5,28.7)
-        IFRST2=1
-      ELSE
-        CALL GRSCLC (3.,3.5,39.5,28.7)
-      ENDIF
+          CALL GRSCLC (0.,0.0,39.5,28.7)
+          CALL GRSCLC (3.,3.5,39.5,28.7)
+          IFRST1=1
+          IFRST2=1
+        ELSE IF (IFRST2.EQ.0) THEN
+          CALL GRNXTF
+          CALL GRSCLC (0.,0.,39.5,28.7)
+          CALL GRSCLC (3.,3.5,39.5,28.7)
+          IFRST2=1
+        ELSE
+          CALL GRSCLC (3.,3.5,39.5,28.7)
+        ENDIF
       case (3)
-      IF (IFRST1.EQ.1) CALL GRNXTF
-      IFRST1=0
-      IF (IFRST2.EQ.1) THEN
-        CALL GRSCLC (0.,0.,39.5,28.7)
-        CALL GRSCLC (3.,3.5,39.5,28.7)
-      ENDIF
-      IFRST2=0
+        IF (IFRST1.EQ.1) CALL GRNXTF
+        IFRST1=0
+        IF (IFRST2.EQ.1) THEN
+          CALL GRSCLC (0.,0.,39.5,28.7)
+          CALL GRSCLC (3.,3.5,39.5,28.7)
+        ENDIF
+        IFRST2=0
       end select
       RETURN
       END

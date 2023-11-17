@@ -1,11 +1,12 @@
-C  SEPT 05:  IN CASE OF TEST IONS, VEL IS THE PARALLEL VELOCITY ONLY
-C            THIS HAS STILL TO BE TAKEN INTO ACCOUNT WHEN STORING AND SAMPLING
-C            THE CENSUS ARRAY
+C  SEPT 05: IN CASE OF TEST IONS, VEL IS THE PARALLEL VELOCITY ONLY
+C           THIS HAS STILL TO BE TAKEN INTO ACCOUNT WHEN STORING AND SAMPLING
+C           THE CENSUS ARRAY
 cdr Jan 2016 : comments,  and: stop scoring census not only after total number
 cdr            of allowed census scores is reached,
 cdr            but instead do so also for each stratum, and for the scores per stratum limit.
 
-cdr  Time cycles (each: ntmstp*dtimv) and time steps (each: dtimv):
+cdr  Time cycles (each one: ntmstp*dtimv seconds)
+cdr               and time steps (each one: dtimv seconds):
 cdr
 cdr  itmstp:  Each history starts with itmstp=0.
 cdr           ITMSTP is incremented by one (1) after each time step DTIMV.
@@ -15,6 +16,11 @@ cdr           (absorbing time horizon).
 
 cdr           If NTMSTP < 0, then a trajectory is never stopped in this routine.
 cdr           The scores on census then correspond to a steady state.
+
+cdr special case: called from COLLIDE, to store secondary (post collision)
+cdr               particles, for re-launch in later cycle.
+cdr               Then call with:  TT=0., NTMSTP=0, PR=1.0
+cdr               Not a "time surface" then, better use: "census" instead.
 cdr
 
       SUBROUTINE EIRENE_TIMCOL (PR,IRET)
@@ -48,7 +54,7 @@ C
      >                         NLSRFY, NLSRFZ, NLTRC, NPANU, PHI,
      >                         RPSTT, TIME, TT, VEL, VELX, VELY, VELZ,
      >                         WEIGHT, X0, Y0, Z0,
-     >                         IUNOUT     
+     >                         IUNOUT
       USE EIRMOD_COMNNL, ONLY: IPART, IPRNLI, IPRNLS, ITMSTP, NPRNLS,
      >                         NTMSTP, RPART, TIME0
       USE EIRMOD_CLGIN, ONLY: NSTSI
@@ -154,7 +160,7 @@ C  UPDATE ENERGY FLUX ONTO "TIME SURFACE" MSURF=NLIM+NSTSI
 C  THEN STOP HISTORY
 C
         MSURF=NLIM+NSTSI
-cdr  to replace the: cdr out ini -- cdr out end 
+cdr  to replace the: cdr out ini -- cdr out end
 cdr  code below with a call to: update_surface.
 cdr  Still to be tested first...
 cdr     ITYP_OLD=ITYP
@@ -226,7 +232,7 @@ c spatial resolution on time-surface is not available. MSURFG ?
         ENDIF
         IF (LSPUMP) LMETSPW(ISPZ)    = .TRUE.
         IRET = 2
-        RETURN 
+        RETURN
 
       ELSE
 C  OTHERWISE: RESTORE WEIGHT = WEIGHT/PR, TIME, AND CONTINUE ANOTHER TIME STEP

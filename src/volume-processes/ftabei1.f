@@ -7,7 +7,7 @@ cdr  jan 2014:   comments.
 C  this is the "on the fly" storage saving version to eliminate
 C  pre-computed array TABEI1(irei,k) from this run
 c
-c  evaluate electron impact rate (1/s),  include density factor
+c  evaluate electron impact rate (1/s), include density factor
 c  for EI process no. IREI,
 c         in cell no. K
 
@@ -34,7 +34,8 @@ c              for evaluation of rate coefficient.
       REAL(DP) :: EIRENE_FTABEI1, DEIMIN, PLS, TBEI,
      .            EIRENE_RATE_COEFF
       REAL(DP) :: TEE
-      INTEGER :: KK
+      INTEGER :: KK   ! reaction counting index in reaction
+                      ! input parameter arrays
 
       TBEI=0.D0
       KK = NREAEI(IREI)   !  KK=-11:NREAC in REACDAT, IFTFLG 

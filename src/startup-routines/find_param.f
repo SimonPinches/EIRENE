@@ -12,7 +12,7 @@ C
       USE EIRMOD_CESTIM
       USE EIRMOD_OPENMP, ONLY: EIRENE_ITHREAD, EIRENE_NTHREADS
       USE EIRMOD_CPES, ONLY: MY_PE
- 
+
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: STANDARD_INPUT
       INTEGER :: IUNIN_OLD
@@ -23,7 +23,7 @@ C
 C
 C  UNIT NUMBER FOR INPUT FILE: MUST BE DIFFERENT FROM: 5,8,10,11,12
 C  13,14, AND 15
-C    
+C
       IF (STANDARD_INPUT.EQ.0) THEN  !XPB CALL FROM EIRENE_MAIN
         IF (NPRS.GT.1) THEN
           IUNIN=1+IFOFF !VK SWITCHING TO READING FROM FORT.1
@@ -36,7 +36,8 @@ C
           ENDIF
         END IF
       ELSE
-        IUNIN=STANDARD_INPUT !VK !XPB PASSED AS ARGUMENT SO B2PLOT AND B2MDS CAN WORK
+        IUNIN=STANDARD_INPUT !VK !XPB PASSED AS ARGUMENT
+                                 !    SO B2PLOT AND B2MDS CAN WORK
         IUNOUT=6
       ENDIF
       IF (IUNOUT.EQ. 5.OR.IUNOUT.EQ. 8.OR.IUNOUT.EQ.10.OR.
@@ -51,13 +52,13 @@ C
         CALL EIRENE_COUPLE_INIT_OUTPUT
       ENDIF
 
-      IF (IUNIN.EQ.5.OR.IUNIN.EQ.8.OR.IUNIN.EQ.10.OR.
+      IF (IUNIN.EQ. 5.OR.IUNIN.EQ. 8.OR.IUNIN.EQ.10.OR.
      .    IUNIN.EQ.11.OR.IUNIN.EQ.12.OR.IUNIN.EQ.13.OR.
      .    IUNIN.EQ.14.OR.IUNIN.EQ.15) THEN
         WRITE (IUNOUT,*) 'INVALID INPUT STREAM IUNIN: ',IUNIN
         WRITE (IUNOUT,*) 'ERROR EXIT FROM FIND_PARAM.F      '
         CALL EIRENE_EXIT_OWN(1)
-      ENDIF  
+      ENDIF
 C
       CALL EIRENE_ALLOC_CLOGAU
       IUNIN_OLD = IUNIN
@@ -80,7 +81,7 @@ C     Add IFOFF again if IUNIN is adapted in EIRENE_DEFAULTS_USR.
       ENDIF
 
       READ (IUNIN,'(A80)') ZEILE
-      
+
       REWIND IUNIN
 
       IF (ZEILE(1:1) == '*') THEN
@@ -95,7 +96,7 @@ C     Add IFOFF again if IUNIN is adapted in EIRENE_DEFAULTS_USR.
       END IF
 
 !PB   switch off species specific rescaling if only one species per
-!PB   particle type is used 
+!PB   particle type is used
       IF (NLSPCSCL_ON) NLSPCSCL=.TRUE.
       IF (MAX(NATM,NMOL,NION,NPLS,NPHOT) <= 1) THEN
         NLSPCSCL=.FALSE.
@@ -118,7 +119,7 @@ C     Add IFOFF again if IUNIN is adapted in EIRENE_DEFAULTS_USR.
 
       WRITE (IUNOUT,*) 'FLAGS FOR SPECIES SPECIFIC RESCALING'
       CALL EIRENE_MASL5('NLSPCSCL, _ATM, _MOL, _ION, _PHOT       ',
-     .                   NLSPCSCL, NLSPCSCL_ATM, NLSPCSCL_MOL, 
+     .                   NLSPCSCL, NLSPCSCL_ATM, NLSPCSCL_MOL,
      .                   NLSPCSCL_ION, NLSPCSCL_PHOT)
       CALL EIRENE_LEER(1)
 
@@ -127,5 +128,5 @@ C     Add IFOFF again if IUNIN is adapted in EIRENE_DEFAULTS_USR.
  7999 WRITE (IUNOUT,*) 'Could not open input file!'
       CALL EIRENE_EXIT_OWN(1)
       RETURN
-      
-      end subroutine eirene_find_param
+
+      END SUBROUTINE EIRENE_FIND_PARAM

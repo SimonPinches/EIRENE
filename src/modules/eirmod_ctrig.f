@@ -1,5 +1,5 @@
       MODULE EIRMOD_CTRIG
-cdr  Data for triangular meshes: LEVGEO=4      
+cdr  Data for triangular meshes: LEVGEO=4
 
 !pb 07.12.06: use POINTER rather than ALLOCATABLE in datatype definition
 !pb           at this place ALLOCATABLE is allowed only in FORTRAN 2000
@@ -27,7 +27,7 @@ cdr  Data for triangular meshes: LEVGEO=4
 
 cdr:  this part seems to be specific to coupling to B2.5: infcop.f
 CVK TO HAVE CORRECT SIGNS FOR PARTICLES CROSSING TRANSPARENT NDS
-      INTEGER,ALLOCATABLE,SAVE, PUBLIC :: INMTINSS(:,:)         !VK
+      INTEGER, ALLOCATABLE, SAVE, PUBLIC :: INMTINSS(:,:)         !VK
 cdr
 
       INTEGER, PUBLIC, SAVE ::
@@ -222,31 +222,31 @@ cdr
         IF (NMT > 0) THEN
           IF (ME /= 0) THEN
             SURF_TRIAN(I)%NUMTR = NMT
-            IF (ASSOCIATED(SURF_TRIAN(I)%ITRIAS)) THEN! IYS
+            IF (ASSOCIATED(SURF_TRIAN(I)%ITRIAS)) THEN        ! IYS
               IF (NMT.ne.UBOUND(SURF_TRIAN(I)%ITRIAS,1)) THEN ! IYS
-                DEALLOCATE (SURF_TRIAN(I)%ITRIAS)  ! IYS
-                NULLIFY (SURF_TRIAN(I)%ITRIAS)      ! IYS
-                ALLOCATE (SURF_TRIAN(I)%ITRIAS(NMT)) ! IYS
+                DEALLOCATE (SURF_TRIAN(I)%ITRIAS)             ! IYS
+                NULLIFY (SURF_TRIAN(I)%ITRIAS)                ! IYS
+                ALLOCATE (SURF_TRIAN(I)%ITRIAS(NMT))          ! IYS
               ENDIF
-            ELSE  ! IYS
+            ELSE                                              ! IYS
               ALLOCATE (SURF_TRIAN(I)%ITRIAS(NMT))
             ENDIF
-            IF (ASSOCIATED(SURF_TRIAN(I)%ITRISI)) THEN! IYS
+            IF (ASSOCIATED(SURF_TRIAN(I)%ITRISI)) THEN        ! IYS
               IF (NMT.ne.UBOUND(SURF_TRIAN(I)%ITRISI,1)) THEN ! IYS
-                DEALLOCATE (SURF_TRIAN(I)%ITRISI)  ! IYS
-                NULLIFY (SURF_TRIAN(I)%ITRISI)      ! IYS
-                ALLOCATE (SURF_TRIAN(I)%ITRISI(NMT)) ! IYS
+                DEALLOCATE (SURF_TRIAN(I)%ITRISI)             ! IYS
+                NULLIFY (SURF_TRIAN(I)%ITRISI)                ! IYS
+                ALLOCATE (SURF_TRIAN(I)%ITRISI(NMT))          ! IYS
               ENDIF
-            ELSE  ! IYS
+            ELSE                                              ! IYS
               ALLOCATE (SURF_TRIAN(I)%ITRISI(NMT))
             ENDIF
-            IF (ASSOCIATED(SURF_TRIAN(I)%BGLT)) THEN! IYS
+            IF (ASSOCIATED(SURF_TRIAN(I)%BGLT)) THEN          ! IYS
               IF (NMT+1.ne.UBOUND(SURF_TRIAN(I)%BGLT,1)) THEN ! IYS
-                DEALLOCATE (SURF_TRIAN(I)%BGLT)  ! IYS
-                NULLIFY (SURF_TRIAN(I)%BGLT)      ! IYS
-                ALLOCATE (SURF_TRIAN(I)%BGLT(NMT+1)) ! IYS
+                DEALLOCATE (SURF_TRIAN(I)%BGLT)               ! IYS
+                NULLIFY (SURF_TRIAN(I)%BGLT)                  ! IYS
+                ALLOCATE (SURF_TRIAN(I)%BGLT(NMT+1))          ! IYS
               ENDIF
-            ELSE  ! IYS
+            ELSE                                              ! IYS
               ALLOCATE (SURF_TRIAN(I)%BGLT(NMT+1))
             END IF
           END IF
@@ -262,7 +262,7 @@ cdr
 !+++++++++++ In this block dynamical structures are processed with care
 
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
-      
+
       RETURN
       END SUBROUTINE EIRENE_BROADCAST_CTRIG
 

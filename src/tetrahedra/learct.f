@@ -40,8 +40,8 @@
 
 !$OMP THREADPRIVATE(XMIN,XMAX,YMIN,YMAX,ZMIN,ZMAX,
 !$OMP&              DISTX,DISTY,DISTZ,EPDX,EPDY,EPDZ,
-!$OMP&              HEADS,IFIRST)   
-      
+!$OMP&              HEADS,IFIRST)
+
       IF (IFIRST.EQ.0) THEN
         IFIRST = 1
         ALLOCATE(HEADS(NCL,NCL,NCL))

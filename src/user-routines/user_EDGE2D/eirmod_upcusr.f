@@ -9,13 +9,13 @@
       USE EIRMOD_CGRID
       USE EIRMOD_CCONA
       use EIRMOD_CUPD
-      
+
       IMPLICIT NONE
       PRIVATE
 
       PUBLIC :: EIRENE_UPCUSR, EIRENE_upcusr_reinit
 
-c     swx 24sep07
+cswx 24sep07
       logical,save :: lfirst=.false.
       integer, save :: num=0,eirene_nbirth,eirene_njetto
       real*8,save :: delang
@@ -26,7 +26,7 @@ c     swx 24sep07
       integer, allocatable,save :: idata(:,:)
 
       CONTAINS
-     
+
       SUBROUTINE EIRENE_UPCUSR(WS,IND,KK)
 C
 C  USER-SUPPLIED COLLISION ESTIMATOR, VOLUME-AVERAGED
@@ -151,7 +151,7 @@ cswx
       SUBROUTINE EIRENE_upcusr_reinit
       IMPLICIT NONE
       INTEGER :: I
-      
+
       if(lfirst) then
         lfirst=.false.
 
@@ -177,5 +177,5 @@ cswx
       endif
       return
       END SUBROUTINE EIRENE_UPCUSR_reinit
-      
+
       END MODULE EIRMOD_UPCUSR

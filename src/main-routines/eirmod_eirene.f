@@ -4,8 +4,8 @@
 cdr  140416  allow for NSTRAI .le. NSTRA  (e.g. if time stratum has been turned off)
 cdr          currently turning off time stratum may not be detected
 cdr          when setting dynamic allocatable storage parameters in "find_param.f"
-cdr  to be done:  check for further use of NSTRA, rather than NSTRAI
-cdr  to be done:  add warnings whenever a storage paramater Nxxx differs from Nxxxi
+cdr  to be done: check for further use of NSTRA, rather than NSTRAI
+cdr  to be done: add warnings whenever a storage paramater Nxxx differs from Nxxxi
 !pb  MAY 16  nrds -> nrei
 cdr  June 17: GR cleanup: call grnxtb...  --> call eirene_plnxtb...
 cdr           (to remove redundant dummy gr routines)
@@ -46,7 +46,7 @@ cdr           It must be cleaned up and documented.
       USE EIRMOD_CSPEZ, ONLY: EIRENE_ALLOC_CSPEZ, EIRENE_DEALLOC_CSPEZ
       USE EIRMOD_CZT1, ONLY: EIRENE_ALLOC_CZT1, EIRENE_DEALLOC_CZT1
       USE EIRMOD_CTRCEI, ONLY: EIRENE_ALLOC_CTRCEI,
-     >                         EIRENE_DEALLOC_CTRCEI, 
+     >                         EIRENE_DEALLOC_CTRCEI,
      >                         TRCAMD, TRCSRC, TRCINT, I2TRC
       USE EIRMOD_CGEOM, ONLY: EIRENE_ALLOC_CGEOM, EIRENE_DEALLOC_CGEOM
       USE EIRMOD_CSDVI, ONLY: EIRENE_ALLOC_CSDVI, EIRENE_DEALLOC_CSDVI
@@ -77,7 +77,7 @@ cdr           It must be cleaned up and documented.
       USE EIRMOD_CLAST, ONLY: EIRENE_ALLOC_CLAST, EIRENE_DEALLOC_CLAST
       USE EIRMOD_CFPLK, ONLY: EIRENE_ALLOC_CFPLK, EIRENE_DEALLOC_CFPLK
       USE EIRMOD_MPI
-      USE EIRMOD_SECOND_OWN, ONLY: EIRENE_RESET_SECOND, 
+      USE EIRMOD_SECOND_OWN, ONLY: EIRENE_RESET_SECOND,
      >                             EIRENE_SECOND_OWN
       USE EIRMOD_LININT, ONLY: EIRENE_LININT2
       USE EIRMOD_COLRAD, ONLY: EIRENE_DEALLOC_COLRAD
@@ -95,10 +95,9 @@ cdr           It must be cleaned up and documented.
       USE EIRMOD_INFCOP, ONLY: EIRENE_IF4COP, EIRENE_INFCOP_PRE_MCARLO
       USE EIRMOD_PRESSURELOOP
       USE EIRMOD_OPENFILE, ONLY: EIRENE_OPENFILE
-      
 
       IMPLICIT NONE
-      
+
       PRIVATE
       PUBLIC :: EIRENE_EIRENE, EIRENE_EIRENE_COUPLE,
      .          EIRENE_EIRENE_REINIT
@@ -119,8 +118,8 @@ C                  PLASMA DATA TRANSFER INTO EIRENE CONTROLLED BY REGULAR INPUT 
 C                  INCLUDING, POSSIBLY, TRANSFER VIA INFCOP, ARRAYS.....
 C  NLMODE=.TRUE. : CALLED FROM INTERFACING ROUTINE EIRSRT
 C                  PLASMA DATA ON COMMON BRAEIR IN SUBROUTINE INFCOP.
-C  NLLAST=.FALSE.:  ?
-C  NLLAST=.TRUE. :  ?
+C  NLLAST=.FALSE.: ?
+C  NLLAST=.TRUE. : ?
 C  ITNR          : ITERATION NUMBER, FOR ITERATIONS WITH EXTERNAL CODE (IF ANY)
 C  MPI_INITIALIZE: INITIALIZE USAGE OF MPI-ROUTINES FOR PARALLEL COMPUTATION
 C
@@ -149,9 +148,9 @@ C
 C
 C               1.         INITIALIZE PACKAGE
 C
-#ifdef USE_EXT_OPENMP      
-!$OMP MASTER      
-#endif      
+#ifdef USE_EXT_OPENMP
+!$OMP MASTER
+#endif
       TIMI=EIRENE_SECOND_OWN()
       IF (MPI_INITIALIZE) THEN
 #ifdef USE_OPENMP
@@ -160,7 +159,7 @@ C
          CALL MPI_INIT(IER)
 #endif
       ENDIF
-      
+
       CALL MPI_COMM_SIZE (MPI_COMM_WORLD,NPRS,IER)
       CALL MPI_COMM_RANK (MPI_COMM_WORLD,MY_PE,IER)
       CALL EIRENE_INIT_OPENMP()
@@ -173,9 +172,11 @@ c     IUNIN = 1
       IUNIN = IUNIN + IFOFF
 
       IUNOUT = 6  ! Fortran standard output channel
-      IF (NPRS > 1) IUNOUT = 7  ! in case of multiple PEs use separate output files
+      IF (NPRS > 1) IUNOUT = 7  ! in case of multiple PEs
+                                ! use separate output files
 !$OMP PARALLEL
-      IF (EIRENE_NTHREADS > 1) IUNOUT = 200 ! for multiple threads use different file numbers
+      IF (EIRENE_NTHREADS > 1) IUNOUT = 200 ! for multiple threads
+                                            ! use different file numbers
 !$OMP END PARALLEL
 
 cxpb 04nov16 Going back to having the master PE write to standard output
@@ -186,12 +187,12 @@ cxpb 04nov16 Going back to having the master PE write to standard output
 !$OMP END PARALLEL
 
 CDR  OUTPUT STREAM IS: IUNOUT. THIS IS ALSO THE STREAM FOR MASTER PROCESSOR MY_PE =0
-cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
+cdr  MPI: DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
 
       IF (NPRS > 1 .OR. EIRENE_NTHREADS > 1) THEN
-#ifndef USE_EXT_OPENMP      
+#ifndef USE_EXT_OPENMP
 !$OMP PARALLEL FIRSTPRIVATE(OP,INIT_OPEN)
-#endif        
+#endif
 !pb_open
         if (init_open == 0) then
           IF (LPE0_TO_STDOUT.AND.(MY_PE == 0)) THEN
@@ -210,7 +211,7 @@ cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
                 OUTPOS='ASIS'
               END IF
               IF (EIRENE_NTHREADS > 1) IUNOUT = IUNOUT + EIRENE_ITHREAD
-              CALL EIRENE_OPENFILE (IUNOUT,FILE=OUTNAME, 
+              CALL EIRENE_OPENFILE (IUNOUT,FILE=OUTNAME,
      .          ACCESS='SEQUENTIAL', FORM='FORMATTED', POSITION=OUTPOS)
             end if
 
@@ -225,10 +226,9 @@ cdr  MPI:  DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
         write (iunout,*) 'MY_PE, EIRENE_ITHREAD ', MY_PE, EIRENE_ITHREAD
         call eirene_leer(1)
 
-
-#ifndef USE_EXT_OPENMP      
+#ifndef USE_EXT_OPENMP
 !$OMP END PARALLEL
-#endif        
+#endif
       END IF
 
       IF (MY_PE == 0) THEN
@@ -264,14 +264,14 @@ c  Calls to find_param, set_parmod(1),... have already been done above
       END IF  ! MY_PE == 0
 
 #ifdef USE_EXT_OPENMP
-!$OMP END MASTER      
+!$OMP END MASTER
 #endif
-      
+
       CALL EIRENE_EIRENE_COUPLE (NLLAST,ITNR,MPI_INITIALIZE)
 
       RETURN
       END SUBROUTINE EIRENE_EIRENE
-      
+
 C
 C  READ FORMATTED INPUT FILE OR RESTART FOR NEXT ITERATION
 c  ENTRY TO EIRENE FROM AN EXTERNAL CODE
@@ -293,9 +293,9 @@ C
 
       INTEGER :: IER, ISTRAI
       logical :: nlplas_save
-      
+
 #ifdef USE_EXT_OPENMP
-!$OMP MASTER      
+!$OMP MASTER
 #endif
       IF (MY_PE == 0) THEN
 
@@ -303,7 +303,7 @@ C
 C
         IF (INENTRY == 1) THEN
 cdr  first entry to eirene is via call eirene_couple, not via call eirene.
-cdr  Should we not set inentry=0 now ??  meaning of init_log, inentry, 
+cdr  Should we not set inentry=0 now ??  meaning of init_log, inentry,
 cdr  nlpls_save,.... ??
           nlplas_save = nlplas
           CALL EIRENE_SET_PARMMOD(1)
@@ -363,7 +363,7 @@ C  each internal iteration or internal time step (fixed plasma) starts here
 #ifdef USE_EXT_OPENMP
 !$OMP MASTER
 #endif
-CIITER=... , ITIMV=...
+C  IITER=... , ITIMV=...
 
       CALL EIRENE_PLNXTB(3,'EIRENE.F')
 
@@ -491,8 +491,9 @@ C    .        'CPU TIME CONSUMED IN XSECT: ',TIME-TIMI,' SEC'
 C
 C               2.         PLOT GEOMETRY
 C
-        IF ((IITER.GT.1.OR.ITIMV.GT.1) .AND.       ! GEOMETRY PLOT ONLY ONCE
-     .      .NOT.(PLHST.AND.I2TRC.GT.0)) GOTO 300  ! UNLESS PLOTTING TRAJECTORIES
+        IF ((IITER.GT.1.OR.ITIMV.GT.1).AND.      ! GEOMETRY PLOT ONLY
+     .     .NOT.(PLHST.AND.I2TRC.GT.0)) GOTO 300 ! ONCE UNLESS PLOTTING
+                                                 ! TRAJECTORIES
 
 C       TIMI=EIRENE_SECOND_OWN()
         CALL EIRENE_PLT2D
@@ -518,9 +519,8 @@ CVK END
 
 C  MAIN MONTE CARLO ROUTINE: LOOP OVER STRATA AND PARTICLE HISTORIES, SCORING
 
-C  MAIN MONTE CARLO ROUTINE: LOOP OVER STRATA AND PARTICLE HISTORIES, SCORING
 #ifdef USE_EXT_OPENMP
-!$OMP END MASTER 
+!$OMP END MASTER
 #endif
       CALL EIRENE_MCARLO
 #ifdef USE_EXT_OPENMP
@@ -541,7 +541,7 @@ C
      .        CALL EIRENE_PLTEIR(ISTRA)
   450 CONTINUE
 C
-      IF ((NSTRAI.GT.1) .AND. (NSMSTRA==1))  THEN
+      IF ((NSTRAI.GT.1) .AND. (NSMSTRA==1)) THEN
         IF (TRCSRC(0)) CALL EIRENE_OUTEIR(0)
         IF (PLTSRC(0)) CALL EIRENE_PLTEIR(0)
       ENDIF
@@ -590,10 +590,10 @@ C
 !$OMP END MASTER
 #endif
       IF (NITER.GE.1.AND.IITER.LE.NITER) THEN
-#ifdef USE_EXT_OPENMP         
+#ifdef USE_EXT_OPENMP
 !$OMP MASTER
 #endif
-       IF (MY_PE == 0) THEN
+        IF (MY_PE == 0) THEN
 cdr  are there any nonlinear "BGK" reactions?
           IF (NBGK > 0) CALL EIRENE_MODBGK
           CALL EIRENE_MODUSR
@@ -602,7 +602,8 @@ CVK ADDITIONAL PRINTOUT
             WRITE(iunout,*) "BACKGROUND: AFTER MODUSR"
             CALL DBG_PRINTOUT
           END IF
-       END IF
+        END IF
+CVK END
 #ifdef USE_EXT_OPENMP
 !$OMP END MASTER
 #endif
@@ -616,7 +617,7 @@ cdr  prepare next internal iteration
           GOTO 101
         ENDIF
       ENDIF
-#ifdef USE_EXT_OPENMP   
+#ifdef USE_EXT_OPENMP
 !$OMP MASTER
 #endif
       IF (MY_PE == 0) THEN
@@ -635,13 +636,13 @@ C  SUBROUTINE STOSS IS A SUBROUTINE, IN WHICH BINARY COLLISION
 C  EVENTS BETWEEN TEST PARTICLES ARE CARRIED OUT
 C  STOSS IS ALSO CALLED AFTER THE LAST "TIMESTEP"
 C
-#ifdef USE_EXT_OPENMP      
+#ifdef USE_EXT_OPENMP
 !$OMP END MASTER
 #endif
       IF (NTIME.GE.1) THEN
 C  COLLISIONS BETWEEN TEST PARTICLES ON CENSUS, OLD DSMC ALGORITHM, NOT AVAILABLE ANYMORE
 C       CALL STOSS
-C     MODIFY BACKGROUND (TIME DEP. MODE)
+C  MODIFY BACKGROUND (TIME DEP. MODE)
 #ifdef USE_EXT_OPENMP
 !$OMP MASTER
 #endif
@@ -713,13 +714,18 @@ C  PRINT OUTPUT FOR IDL BASED EXTERNAL GRAPHICS AND POSTPROCESSING
          CALL EIRENE_DEALLOC_CSPEI
          CALL EIRENE_DEALLOC_CLAST
          call EIRENE_dealloc_cfplk
-         CALL EIRENE_LOCAT2        ! DEALLOCATE LOCAL ARRAYS FROM SUBR. LOCATE
-         CALL EIRENE_SAMSF2        ! DEALLOCATE LOCAL ARRAYS FROM SUBR. SAMSRF
-         CALL EIRENE_STATS3        ! DEALLOCATE LOCAL ARRAYS FROM SUBR. STATIS
-         CALL EIRENE_LININT2       ! DEALLOCATE LOCAL ARRAYS FROM SUBR. LININT
-         CALL EIRENE_DEALLOC_COLRAD    ! pb, august 15, deallocate local arrays used for CRM
+         CALL EIRENE_LOCAT2        ! DEALLOCATE LOCAL ARRAYS
+                                   ! FROM SUBR. LOCATE
+         CALL EIRENE_SAMSF2        ! DEALLOCATE LOCAL ARRAYS
+                                   ! FROM SUBR. SAMSRF
+         CALL EIRENE_STATS3        ! DEALLOCATE LOCAL ARRAYS
+                                   ! FROM SUBR. STATIS
+         CALL EIRENE_LININT2       ! DEALLOCATE LOCAL ARRAYS
+                                   ! FROM SUBR. LININT
+         CALL EIRENE_DEALLOC_COLRAD    ! pb, august 15, deallocate
+                                       ! local arrays used for CRM
          CALL EIRENE_MCARLO2
-         CALL EIRENE_DEALLOC_TIMEA  
+         CALL EIRENE_DEALLOC_TIMEA
          CALL EIRENE_DEALLOC_REFUSR
 C
          CLOSE(IUNMEM)
@@ -730,27 +736,17 @@ csw 27jul2011 flush filesystem just in case
       call ioflush_usr
 csw
 
-cdr april 2015
-c  nprs: total number of processors used in this run
-c  my_pe is the current processor
-c
-c  in case of multi-timesteps, t-dep coupling, (or internal iterations?),
-c  output is reduced by the next three lines.
-c  This leads to confusing (missing) output then.
-c  Probably these next three lines must go out?
-cdr april 2015
-
 !pb   IF (MY_PE > 0) THEN
       IF (NPRS > 1 .OR. EIRENE_NTHREADS > 1) THEN
-#ifndef USE_EXT_OPENMP      
+#ifndef USE_EXT_OPENMP
 !$OMP PARALLEL
-#endif        
-         CLOSE (UNIT=IUNOUT)
-#ifndef USE_EXT_OPENMP      
+#endif
+        CLOSE (UNIT=IUNOUT)
+#ifndef USE_EXT_OPENMP
 !$OMP END PARALLEL
-#endif        
-
+#endif
       END IF
+
 #ifdef USE_EXT_OPENMP
 !$OMP END MASTER
 #endif
@@ -765,7 +761,6 @@ C     the following entry is for reinitialization of EIRENE (DMH)
       return
       END SUBROUTINE EIRENE_EIRENE_REINIT
 
-      
 CVK DBG
       SUBROUTINE DBG_PRINTOUT
       USE EIRMOD_PARMMOD

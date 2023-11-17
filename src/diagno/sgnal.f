@@ -36,11 +36,11 @@ C  DUE TO DIRECT EMISSION FROM THE SOURCE INTO THE LINE OF SIGHT,
 C  AS WELL AS A SECONDARY SOURCE (POST-COLLISION) CONTRIBUTION, DUE TO
 C  SCATTERING INTO THE LINE OF SIGHT
 
-C  STEP 1:  FETCH THE APPROPRIATE STRATUM DATA (OR: SUM OVER STRATA) IISTR
-C  STEP 2:  PREPARE DIRECT CONTRIBUTION FROM PRIMARY SOURCE (IF ANY)
-C           (PROBABLY NOT READY)
-C  STEP 3:  INTEGRATE ALONG LINE OF SIGHT, CALL LININT, AND LOOP OVER ENERGY/WAVELENGTH
-C  STEP 4:  PROCESS LINE INTEGRALS: CURVE FITTING, SCALING, ETC..
+C  STEP 1: FETCH THE APPROPRIATE STRATUM DATA (OR: SUM OVER STRATA) IISTR
+C  STEP 2: PREPARE DIRECT CONTRIBUTION FROM PRIMARY SOURCE (IF ANY)
+C          (PROBABLY NOT READY)
+C  STEP 3: INTEGRATE ALONG LINE OF SIGHT, CALL LININT, AND LOOP OVER ENERGY/WAVELENGTH
+C  STEP 4: PROCESS LINE INTEGRALS: CURVE FITTING, SCALING, ETC..
 
 C  isp:  species index (nchtal=1,3)
 c        or component index (nchtal=2,5)
@@ -76,8 +76,8 @@ C
      .          FP1(6), FP2(6), DUM(9)
       REAL(DP) :: ZE1, ZE2, ZSCALE, ZZ, EIRENE_SLOPE, STEIG, PMI, PMA,
      .            XMI, XMAX, XMIN, ZSI, TIMAX, ZE, SUMM, ADD, FAC32,
-     .            TEF, DEF, DE, TE, ZDS, RATE, CHKSUM
-     .           ,summt,addt, XMA,
+     .            TEF, DEF, DE, TE, ZDS, RATE, CHKSUM,
+     .            SUMMT, ADDT, XMA,
      .            RC1MIN, RC1MAX, RC2MIN, RC2MAX
       REAL(DP) :: EIRENE_FTABRC1
       INTEGER :: I1, I2, IN, I, IS, NAC2, NBC2, ICHRD, IPVOT, NCHNI,
@@ -95,7 +95,7 @@ C
       TYPE(CELL_INFO), POINTER :: FIRST, CUR
 
       INTERFACE
-        SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
+        SUBROUTINE EIRENE_SLREAC (IR, FILNAM, H123, REAC, CRC,
      .             RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .             RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
      .             ELNAME, IZ1, BUNDLING,
@@ -103,17 +103,17 @@ C
      .             IFTFL, NCOEF, COEF)
         USE EIRMOD_PRECISION
         INTEGER,      INTENT(IN) :: IR, IZ1
-        INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC, 
+        INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC,
      .                                        IFTFL, NCOEF
         REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC
-        REAL(DP),     INTENT(IN), OPTIONAL :: COEF(9)      
+        REAL(DP),     INTENT(IN), OPTIONAL :: COEF(9)
         CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: BUNDLING
         CHARACTER(8), INTENT(IN) :: FILNAM
         CHARACTER(4), INTENT(IN) :: H123
         CHARACTER(LEN=*), INTENT(IN) :: REAC
         CHARACTER(2), INTENT(IN) :: ELNAME
         CHARACTER(3), INTENT(IN) :: CRC
-        INTEGER,  INTENT(IN OUT) :: JFEX1MN, JFEX1MX,JFEX2MN, JFEX2MX
+        INTEGER,  INTENT(IN OUT) :: JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
         REAL(DP), INTENT(IN OUT) :: RC1MIN, RC1MAX, FP1(6),
      .                              RC2MIN, RC2MAX, FP2(6)
         END SUBROUTINE EIRENE_SLREAC
@@ -147,7 +147,8 @@ C  NOTHING TO BE DONE
 
       ELSEIF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
         IESTR=ISTRA
-        CALL EIRENE_RSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
+        CALL EIRENE_RSTRT(ISTRA,NSTRAI,
+     .             NESTM1,NESTM2,NADSPC,
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
@@ -158,7 +159,8 @@ C  NOTHING TO BE DONE
         ENDIF
       ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.ISTRA.EQ.0) THEN
         IESTR=ISTRA
-        CALL EIRENE_RSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
+        CALL EIRENE_RSTRT(ISTRA,NSTRAI,
+     .             NESTM1,NESTM2,NADSPC,
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
@@ -188,11 +190,11 @@ cdr  complain and then return to calling program
       IF ((NCHTAL(ICHORI) == 4) .AND. NLSTCHR(ICHORI)) THEN
 
         if (.not.associated(traj(ichori)%trj%cells)) then
-           write (iunout,*) 'WARNING FROM MODULE: DIAGNO '
-           write (iunout,*) 'error in SGNAL, NCHTAL=4 '
-           write (iunout,*) 'no proper spectra found for NCHORI '
+           write (iunout,*) 'WARNING FROM MODULE: DIAGNO'
+           write (iunout,*) 'error in SGNAL, NCHTAL=4'
+           write (iunout,*) 'no proper spectra found for NCHORI'
            call EIRENE_MASJ1('NCHORI= ',NCHORI)
-           write (iunout,*) 'OPTION NOT READY, RETURN '
+           write (iunout,*) 'OPTION NOT READY, RETURN'
            return
         end if
 C
@@ -204,9 +206,9 @@ cdr : an attempt had been made, apparently, to use velocity-resolved
 cdr : neutral distributions (the velocity component along the line of sight),
 cdr : then to turn that into a Doppler-broadened line shape of the Ba-alpha line
 
-        write (iunout,*) 'WARNING FROM MODULE: DIAGNO '
-        write (iunout,*) 'error in proprietary section NCHTAL=4 '
-        write (iunout,*) 'OPTION NOT READY, RETURN '
+        write (iunout,*) 'WARNING FROM MODULE: DIAGNO'
+        write (iunout,*) 'error in proprietary section NCHTAL=4'
+        write (iunout,*) 'OPTION NOT READY, RETURN'
         return
 
 C
@@ -236,7 +238,7 @@ C
 C  H(n=3)/H(n=1) component  (currently no further components available)
         REAC='2.1.5a   '
         REACDAT(NREACI+1)%LOTH = .FALSE.
-        CALL EIRENE_SLREAC(NREACI+1,FILNAM,H123,REAC,CRC,
+        CALL EIRENE_SLREAC(NREACI+1, FILNAM, H123, REAC, CRC,
      .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
      .              ELNAME, IZ)
@@ -307,7 +309,7 @@ C  HOWEVER, THIS STRATUM MIGHT NOT NECESSARILY HAVE BEEN ACTIVE?
 C.................................................................
       IF (NCHTAL(ICHORI).EQ.1) THEN
 C.................................................................
-C  FOR CX SIGNAL:  TO BE WRITTEN
+C  FOR CX SIGNAL: TO BE WRITTEN
 C     CALL ZEROA2(RECADD,NATM,NRAD)
 C     IF (NLVL) THEN
 C       WRITE (iunout,*) 'WARNING:'
@@ -504,15 +506,25 @@ c  summation over contributions (different isotopes but same emission reactions,
         PSIG = 0._DP
       END IF
 
-      IF (NCHTAL(ICHORI).EQ.1)  NSPI=NATMI  ! post-collision CX atomic species, energy resolved.
-cdr   IF (NCHTAL(ICHORI).EQ.2)  NSPI=10  ! THIS OPTION WAS FOR H EMISSION LINES. Now superseded.
-      IF (NCHTAL(ICHORI).EQ.2)  NSPI=MX_COMPO ! use maximum number of components to spectral line emissivities (transitions) in one single LOS evaluation
-      IF (NCHTAL(ICHORI).EQ.3)  NSPI=NPHOTI ! one spectrally resolved radiance per LOS and per photon species ("transition")
-      IF (NCHTAL(ICHORI).EQ.5)  NSPI=10 ! THIS OPTION WAS FOR HE EMISSION LINES. Now superseded.
-      IF (NCHTAL(ICHORI).EQ.10) NSPI=NSPZ   ! 3rd party specified LOS integrals.
-      IF (NCHTAL(ICHORI).EQ.11) NSPI=1    ! one integral value per LOS
-      IF (NCHTAL(ICHORI).EQ.12) NSPI=10 ! 4 plasma parameter per LOS
-      IF (NCHTAL(ICHORI).EQ.13) NSPI=10 ! 4 neutral parameter per LOS
+      IF (NCHTAL(ICHORI).EQ.1)  NSPI=NATMI  ! post-collision CX atomic
+                                            ! species, energy resolved.
+cdr   IF (NCHTAL(ICHORI).EQ.2)  NSPI=10     ! THIS OPTION WAS FOR H EMISSION LINES. Now superseded.
+      IF (NCHTAL(ICHORI).EQ.2)  NSPI=MX_COMPO ! use maximum number of
+                                            ! components to spectral
+                                            ! line emissivities
+                                            ! (transitions) in one
+                                            ! single LOS evaluation
+      IF (NCHTAL(ICHORI).EQ.3)  NSPI=NPHOTI ! one spectrally resolved
+                                        ! radiance per LOS and per
+                                        ! photon species ("transition")
+      IF (NCHTAL(ICHORI).EQ.5)  NSPI=10    ! THIS OPTION WAS FOR HE
+                                           ! EMISSION LINES.
+                                           ! Now superseded.
+      IF (NCHTAL(ICHORI).EQ.10) NSPI=NSPZ  ! 3rd party specified
+                                           ! LOS integrals.
+      IF (NCHTAL(ICHORI).EQ.11) NSPI=1     ! one integral value per LOS
+      IF (NCHTAL(ICHORI).EQ.12) NSPI=10    ! 4 plasma parameter per LOS
+      IF (NCHTAL(ICHORI).EQ.13) NSPI=10    ! 4 neutral parameter per LOS
       PSIG = 0._DP
       IFIRST=0
       DO 231 JEN=1,NCHNI
@@ -527,14 +539,14 @@ C  SINGLE SPECIES/COMPONENT INDEX ISP
         ELSEIF (ISP.EQ.0) THEN
 C  SUM OVER SPECIES INDEX
 C  FIND THE INDEX OF THE LAST USED ELEMENT IN PSIG
-	  NSPI = ND
-	  DO IS = ND, 1,-1
-	    IF (ABS(PSIG(IS)) > EPS30) THEN
+          NSPI = ND
+          DO IS = ND, 1,-1
+            IF (ABS(PSIG(IS)) > EPS30) THEN
               NSPI = IS
-	      EXIT
-	    END IF
-	  END DO
-	  ZSI = SUM(PSIG(1:NSPI))
+              EXIT
+            END IF
+          END DO
+          ZSI = SUM(PSIG(1:NSPI))
           BUFFER(ICHORI,JEN)=ZSI
           WRITE (80,'(I6,3ES12.4)') ICHORI,C2
           WRITE (80,'(6ES12.4)') PSIG(0:NSPI)
@@ -565,10 +577,10 @@ C  LINE INTEGRAL: CM (LENGTH of LOS)
           FUFFER(ICHORI,JEN)=BUFFER(ICHORI,JEN)
         ELSEIF (NCHTAL(ICHORI).EQ.12) THEN
 C  LINE INTEGRAL: PLASMA PARAMETER x CM
-          FUFFER(ICHORI,JEN)=BUFFER(ICHORI,JEN)           
+          FUFFER(ICHORI,JEN)=BUFFER(ICHORI,JEN)
         ELSEIF (NCHTAL(ICHORI).EQ.13) THEN
 C  LINE INTEGRAL: NEUTRAL PARAMETER x CM
-          FUFFER(ICHORI,JEN)=BUFFER(ICHORI,JEN)           
+          FUFFER(ICHORI,JEN)=BUFFER(ICHORI,JEN)
         ENDIF
   231 CONTINUE
 C

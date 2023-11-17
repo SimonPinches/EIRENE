@@ -30,7 +30,7 @@ C
      .            SP0(:,:),SP1(:,:),SP2(:,:),
      .            SP3(:,:),SP4(:,:),SP5(:,:)
       INTEGER, ALLOCATABLE :: IP0(:),IP1(:),IP2(:),IP3(:),IP4(:)
-      REAL(DP) ::  DELR, EIRENE_STEP
+      REAL(DP) :: DELR, EIRENE_STEP
       INTEGER :: ISPZ, I, J, IS, NSM,
      .           ISPZTI, ISPZV, IBGK
       LOGICAL :: NLINV
@@ -118,7 +118,7 @@ C
             TISTEP(ISPZTI,ISTEP,J)=SP5(ISPZTI,NSM-J+1)
           END DO
     9   CONTINUE
-        DO  ISPZ=NSPZI,NSPZE
+        DO ISPZ=NSPZI,NSPZE
           IF (ITYP.EQ.4) THEN
             ISPZTI=MPLSTI(ISPZ)
             ISPZV=MPLSV(ISPZ)
@@ -126,13 +126,13 @@ C
             ISPZTI=ISPZ
             ISPZV=ISPZ
           END IF
-           DO  J=1,NSM
+          DO J=1,NSM
             SP1(ISPZ,J)=VPSTEP(ISPZV,ISTEP,J)
             SP2(ISPZ,J)=MCSTEP(ISPZ,ISTEP,J)
             SP3(ISPZ,J)=FISTEP(ISPZ,ISTEP,J)
           END DO
         END DO
-        DO  ISPZ=NSPZI,NSPZE
+        DO ISPZ=NSPZI,NSPZE
           IF (ITYP.EQ.4) THEN
             ISPZTI=MPLSTI(ISPZ)
             ISPZV=MPLSV(ISPZ)
@@ -140,7 +140,7 @@ C
             ISPZTI=ISPZ
             ISPZV=ISPZ
           ENDIF
-          DO  J=1,NSM
+          DO J=1,NSM
             VPSTEP(ISPZV,ISTEP,J)=SP1(ISPZ,NSM-J+1)
             MCSTEP(ISPZ,ISTEP,J)=SP2(ISPZ,NSM-J+1)
             FISTEP(ISPZ,ISTEP,J)=SP3(ISPZ,NSM-J+1)
@@ -242,7 +242,7 @@ C  save totals before normalization
         ELTOT(ISPZ,ISTEP)=VE(ISPZ,ISTEP,NS)
 
 cdr IBGK: Try to remove virtual background species 
-cdr       (those used for BGK iterations)
+cdr      (those used for BGK iterations)
 cdr from the surface flux step functions
         IBGK=0
         IF (ISPZ.GT.0 .AND. ITYP.EQ.4) IBGK = NPBGKP(ISPZ,1)

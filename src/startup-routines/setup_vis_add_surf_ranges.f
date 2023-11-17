@@ -1,6 +1,6 @@
 
       SUBROUTINE EIRENE_SETUP_VIS_ADD_SURF_RANGES
-      
+
 C  SET 'VISIBLE ADDITIONAL SURFACES' RANGES nlimii(j),nlimie(j), for each grid cell j
 C  FROM INFORMATION ON IGJUM3
 C
@@ -10,12 +10,12 @@ C
       USE EIRMOD_CGRID
       USE EIRMOD_CADGEO
       USE EIRMOD_COMUSR, ONLY : NBITS
-      
+
       IMPLICIT NONE
       INTEGER :: J, I, IIN, IEN , NO, IGO, IBEND, IB, ILA, NSOPT,
      .           EIRENE_ILLZ
       LOGICAL :: LHELP(NLIMPS)
-      
+
 C  DEFAULT
       NLIMII=1
       NLIMIE=NLIMI

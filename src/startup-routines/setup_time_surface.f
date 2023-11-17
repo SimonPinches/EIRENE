@@ -34,7 +34,7 @@ C
         TXTSFL(NLIM+NSTSI)='"TIME HORIZON"                           '
         ILIIN(NLIM+NSTSI)=2
 C
-C  B) DEFINE ONE MORE STRATUM, even if no old census may be available yet       
+C  B) DEFINE ONE MORE STRATUM, even if no old census may be available yet
         NSTRAI=NSTRAI+1
 C  CHECK STORAGE
         IF (NSTRAI.GT.NSTRA) THEN
@@ -81,7 +81,7 @@ cdr
         NLPLS(NSTRAI)=.FALSE.
         NSPEZ(NSTRAI)=0
         NSRFSI(NSTRAI)=0
-C     
+C
         SORENI(NSTRAI)=0.
         SORENE(NSTRAI)=0.
         SORVDX(NSTRAI)=0.
@@ -93,15 +93,17 @@ C
         SORCTY(NSTRAI)=0.
         SORCTZ(NSTRAI)=0.
 C
-C  NEW TIMESTEP
+C  NEW TIMESTEP READ: DTIMV
 C
+cdr Is new timestep controlled by an external code (subr. eirene_main)?
         IF (DTIMVN.LE.0.D0) THEN
+cdr No, use the value read here
           DTIMVN=DTIMV
 C       ELSE
 C         DTIMVN=DTIMVN
         ENDIF
 C
-C  OLD TIMESTEP DTIMVO found from fort.15 below, or default:
+C  OLD TIMESTEP DTIMVO will be found from fort.15 below, tentative default:
         DTIMVO=DTIMV
 C
 C  READ INITIAL POPULATION FROM FILE, FORT.15, OVERWRITE DEFAULTS
@@ -109,6 +111,7 @@ C
         IPRNL=0
         FLXCEN=0.D0
         NLSRON(NSTRAI)=.FALSE.
+
         IF (NFILEJ.LE.1) THEN
 cdr  no initial census population to be used in this run.
 cdr  Use default empty census
@@ -136,15 +139,15 @@ C
 C
           CALL EIRENE_LEER(2)
           IF (TIME0.GE.0.) THEN
-c    reset clock of source particles from old census to time0.
-cdr  Must be done also for time0=0.0, for otherwise flight time =0 is possible
+c    Reset clock TIME of source particles from old census to TIME0.
+cdr  Must be done also for TIME0=0.0, for otherwise flight time =0 is possible
 cdr  for census source particles. This may result in error exits
 C Would gain performance by turning RPSTT into a pointer
-cpb  changed due to optimizer problem            
+cpb  changed due to optimizer problem
 cpb  try to determine the index of the element of RPSTT which TIME points to
             RPSTT(1:NPARTT)=RPARTC(1:NPARTT,1)
             TIME=HUGE(1._DP)
-            IPNT = MAXLOC(RPSTT,1)
+            IPNT=MAXLOC(RPSTT,1)
 cpb  reset time stamp
             IF (RPSTT(IPNT) > EPS30) THEN
               RPARTC(IPNT,1:IPRNL) = TIME0
@@ -181,7 +184,7 @@ C  OLD CENSUS CONTAINS IPRNL ENTRIES.
           NMINPTS(NSTRAI)=IPRNL
         ENDIF
 
-        CALL EIRENE_MASJ1('NPTS=    ',NPTS(NSTRAI))
+        CALL EIRENE_MASJ1('NPTS=   ',NPTS(NSTRAI))
 C
         IF (NPTS(NSTRAI).GT.0.AND.FLUX(NSTRAI).GT.0) THEN
           NSRFSI(NSTRAI)=1
@@ -190,21 +193,21 @@ C
         ENDIF
 C
       ELSE
-cdr  at this point: NTIME LT 0
-cdr  New option (M.R.: 2017):
+cdr  at this point: NTIME LT 0.
+cdr  New option (M. Rack: 2017):
 CDR  Read an external census array from fort.15, and launch one by one.
 
-       IF (NFILEJ.EQ.2.OR.NFILEJ.EQ.3) THEN
+        IF (NFILEJ.EQ.2.OR.NFILEJ.EQ.3) THEN
 
 
 !pb        IF ( SIZE( PACK((/ (i, i = 1, NSTRA) /),NLCNS) ) == 1 ) THEN
         IF ( COUNT(NLCNS(1:NSTRA)) == 1 ) THEN
-C Only read census from file if exactly one stratum is a census stratum
+C Only read census from file if exactly one stratum ISTR is a census stratum
           ISTR_A = PACK((/ (i, I = 1, NSTRA) /),NLCNS)
           ISTR = ISTR_A(1)
           CALL EIRENE_RSNAP( ISTR )
 C
-          WRITE (iunout,*) 'INITIAL POPULATION READ FROM FILE ', FORT, 
+          WRITE (iunout,*) 'INITIAL POPULATION READ FROM FILE ', FORT,
      .                     '15'
           CALL EIRENE_MASJ1('IPRNL   ',IPRNL)
           FLUX(ISTR)=FLXCEN
@@ -214,7 +217,7 @@ C  ONE BY ONE RELAUNCH FROM OLD CENSUS
 C  OLD CENSUS CONTAINS IPRNL ENTRIES.
           NPTS(ISTR)=IPRNL
           NMINPTS(ISTR)=IPRNL   ! NMINPTS is currently not used anywhere
-          CALL EIRENE_MASJ1('NPTS=    ',NPTS(ISTR))
+          CALL EIRENE_MASJ1('NPTS=   ',NPTS(ISTR))
 
           IF (NPTS(ISTR).GT.0.AND.FLUX(ISTR).GT.0) THEN
             NSRFSI(ISTR)=1
@@ -222,9 +225,9 @@ C  OLD CENSUS CONTAINS IPRNL ENTRIES.
             NLSRON(ISTR)=.TRUE.
           ENDIF
         ENDIF
-       ENDIF
+       ENDIF  ! nfilej
 
-      ENDIF
+      ENDIF   ! ntime
 
       RETURN
       END SUBROUTINE EIRENE_SETUP_TIME_SURFACE

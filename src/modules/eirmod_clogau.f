@@ -4,7 +4,7 @@ cdr               nlogau=38
 cdr  Jan. 2018:   NLEMIS added, nlogau=40
 
       MODULE EIRMOD_CLOGAU
-cdr global control switches, all set in input.f      
+cdr global control switches, all set in input.f
 
 
       IMPLICIT NONE
@@ -26,7 +26,7 @@ cdr global control switches, all set in input.f
      L NLMLT,  NLADD,
      L NLTRIM, NLONE,  NLDFST, NLRANMAR,
      L NLCASCAD, NLOCTREE, NLSHRT13, NLWRMSH,
-     L NEXVS,  NLEMIS, NLTRIMESH, 
+     L NEXVS,  NLEMIS, NLTRIMESH,
      L NLSPCSCL, NLSPCSCL_ATM, NLSPCSCL_MOL, NLSPCSCL_ION,
      L NLSPCSCL_PHOT, NLSPCSCL_ON, NLSOLEDGE
 C    L NLFREE0, NLFREE1
@@ -75,16 +75,17 @@ C     NLFREE1  => LLOGAU(29) ! NOT IN USE
       NLOCTREE => LLOGAU(35)
       NLSHRT13 => LLOGAU(36)
       NLWRMSH  => LLOGAU(37)
-      NEXVS    => LLOGAU(38)  ! added April 2017. Not in use, but perhaps needed in photon module.
+      NEXVS    => LLOGAU(38)  ! added April 2017. Not in use,
+                              ! but perhaps needed in photon module.
       NLEMIS   => LLOGAU(39)
       NLTRIMESH=> LLOGAU(40)
 
-      NLSPCSCL => LLOGAU(41)  
-      NLSPCSCL_ATM => LLOGAU(42)  
-      NLSPCSCL_MOL => LLOGAU(43) 
-      NLSPCSCL_ION => LLOGAU(44)  
-      NLSPCSCL_PHOT => LLOGAU(45)  
-      NLSPCSCL_ON  => LLOGAU(46) 
+      NLSPCSCL => LLOGAU(41)
+      NLSPCSCL_ATM => LLOGAU(42)
+      NLSPCSCL_MOL => LLOGAU(43)
+      NLSPCSCL_ION => LLOGAU(44)
+      NLSPCSCL_PHOT=> LLOGAU(45)
+      NLSPCSCL_ON  => LLOGAU(46)
 
       LLOGAU = .FALSE.
 
@@ -100,7 +101,7 @@ C     NLFREE1  => LLOGAU(29) ! NOT IN USE
       IF (ME /= 0) CALL EIRENE_ALLOC_CLOGAU
 
       CALL MPI_BCAST (LLOGAU,NLOGAU,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
-      
+
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       RETURN

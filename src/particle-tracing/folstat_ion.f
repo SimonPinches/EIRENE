@@ -2,15 +2,15 @@ Cdr
 c Sync between folneut and folion.
 c March 2019: extracted from folion: static loop:
 c  particles do not move, but carry out next collision or surface event
-c  instantaneously. 
+c  instantaneously.
 c  Careful: infinite loops are possible, if no collisions or surface
 c  events lead away from the community of static loop particles
 c
       SUBROUTINE EIRENE_FOLSTAT_ION(IC_PART,VLX,VLY,VLZ,CFLAG,IRET)
 C  FOLLOW IONS IN STATIC LOOP
 
-C  IN CALLING PROGRAM ALREADY VERIFIED: FINITE CHANCE TO LEAVE STATIC LOOP. 
-C  IFPATH=1. 
+C  IN CALLING PROGRAM ALREADY VERIFIED: FINITE CHANCE TO LEAVE STATIC LOOP.
+C  IFPATH=1.
 C  NRC>0, --> ZMFP NOT INFINITY
 C  FURTHER: IF ONLY ELASTIC COLLISION, THEN STATIC LOOP CANNOT BE LEFT, INFINITE LOOP.
 C  ALSO: NOT LGVAC(NCELL)
@@ -39,7 +39,9 @@ cym following pgi compilation ...
 
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: VLX,VLY,VLZ
-      INTEGER,  INTENT(IN) :: IC_PART ! = IC_ION OR IC_NEUT, FROM CALLING PROGRAMS FOLION, FOLNEUT, RESP.
+      INTEGER,  INTENT(IN) :: IC_PART ! = IC_ION OR IC_NEUT,
+                                      ! FROM CALLING PROGRAMS
+                                      ! FOLION, FOLNEUT, RESP.
       INTEGER,  INTENT(OUT) :: IRET
 
       REAL(DP) :: CFLAG(7,MSTOR0)
@@ -51,10 +53,11 @@ cym following pgi compilation ...
       INTEGER :: ISTS, IFLAG, IRT
 
       IRET = 0
-      
+
 c  particle enters the static loop, NFOL$(ISPZ)=-1
 
-      IF (IC_PART.EQ.1.AND.NLTRC.AND.TRCHST) THEN !FIRST ENTRY TO STATIC LOOP
+      IF (IC_PART.EQ.1.AND.NLTRC.AND.TRCHST) THEN
+!FIRST ENTRY TO STATIC LOOP
 !$OMP CRITICAL
         WRITE (iunout,*) 'TRAJECTORY ENTERS STATIC LOOP, ITYP=', ITYP
         CALL EIRENE_CHCTRC(X0,Y0,Z0,0,21)
@@ -64,12 +67,12 @@ c  particle enters the static loop, NFOL$(ISPZ)=-1
         WRITE (iunout,*) 'ion static generation ic_part=',ic_part
 !$OMP END CRITICAL
       ENDIF
- 
+
 C***********************************************************************
 C  STATIC APPROXIMATION
 C  SIMULATE NEXT COLLISION (OR SURFACE EVENT) INSTANTANEOUSLY
 C***********************************************************************
- 
+
 C  WEIGHT TOO SMALL? STOP HISTORY
       IF (WEIGHT.LT.EPS30) THEN
         LGPART=.FALSE.
@@ -111,7 +114,7 @@ C
       END IF
 
       ZMFP=EIRENE_FPATH(NCELL,CFLAG,1,1)
-C  XSTOR IN STATIC LOOP:  NOT NEEDED, BECAUSE NCOU=1
+C  XSTOR IN STATIC LOOP: NOT NEEDED, BECAUSE NCOU=1
 C     XSTOR2(:,:,1)=XSTOR(:,:)
 C     XSTORV2(:,1) =XSTORV(:)
 C  DECIDE TO FOLLOW OR NOT TO FOLLOW THIS TRACK ON BASIS OF MFP
@@ -142,7 +145,7 @@ C  VOLUME EVENT
       WRITE (IUNOUT,*) 'FOLSTAT_ION: I SHOULD NOT BE HERE'
 C
 C..................................................................
-C  AT THIS POINT: PARTICLE WAS IN STATIC APPROXIMATION, 
+C  AT THIS POINT: PARTICLE WAS IN STATIC APPROXIMATION,
 C                 BUT NOW IT RETURNS TO FULL MOTION
 C
       IF (IC_PART.GT.1.AND.NLTRC.AND.TRCHST)
@@ -153,7 +156,7 @@ C  SOME MORE WORK NEEDS TO BE DONE, TO REVIVE IT TO FULL KINETIC MODE.
       IF (IC_PART.GT.1.AND.
      .   (NLSRFX.OR.NLSRFY.OR.NLSRFZ.OR.NLSRFA)) THEN
 
-C  PARTICLE CONTINUES FROM SURFACE AND FROM PREVIOUS "STATIC LOOP" 
+C  PARTICLE CONTINUES FROM SURFACE AND FROM PREVIOUS "STATIC LOOP"
 C  PREPARE CELL NUMBERS FOR FIRST FLIGHT
         IC_ION=0
         IC_NEUT=0
@@ -204,7 +207,7 @@ C             MSURFG= ??
      .          CALL EIRENE_STDCOL (ISTS,1,SCOS,IRT)
               IF (IRT == 1) GOTO 101
               IF (IRT == 2) GOTO 380
-           case (10)
+            case (10)
               ISTS=INMP1I(MRSURF,IPCELL,ITCELL)
 C             MSURFG= ??
               IF (ILIIN(NLIM+ISTS) .NE. 0)
@@ -238,13 +241,13 @@ C**********************************************************************
       IRET = 0
       RETURN
 
- 101  CONTINUE
+  101 CONTINUE
       IRET = 1
       RETURN
- 230  CONTINUE
+  230 CONTINUE
       IRET = 2
-      RETURN 
- 380  CONTINUE
+      RETURN
+  380 CONTINUE
       IRET = 3
       RETURN
 

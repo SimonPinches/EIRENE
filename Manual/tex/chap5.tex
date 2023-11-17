@@ -18,7 +18,7 @@ The recommended way to compile EIRENE is by using the CMake utility available on
   > sudo make install
 \end{lstlisting}
 
-This will by default put the library in /usr/local/jsonfortran-gnu-8.3.0/. You can add \\ -DCMAKE\_INSTALL\_PREFIX=\textless path-to-jsonlib\textgreater if you would like a custom location. If you do not have ford installed the documentation will fail to build, adding -DSKIP\_DOC\_GEN=TRUE to the cmake step will resolver this. Once this is done you can compile EIRENE with
+This will by default put the library in /usr/local/jsonfortran-gnu-8.3.0/. You can add \\ -DCMAKE\_INSTALL\_PREFIX=\textless path-to-jsonlib\textgreater if you would like a custom location. If you do not have ford installed the documentation will fail to build, adding -DSKIP\_DOC\_GEN=TRUE to the cmake step will resolve this. Once this is done you can compile EIRENE with
 
 \begin{lstlisting}[language=bash,columns=fullflexible]
   > cd eirene
@@ -27,15 +27,15 @@ This will by default put the library in /usr/local/jsonfortran-gnu-8.3.0/. You c
   > make -j EIRENE
 \end{lstlisting}
 
-The loaction of the JSON library and the compiler dependent FORTRAN module 
+The location of the JSON library and the compiler dependent FORTRAN module
 files can be specified by environment variables JSONF\_LIB\_DIR and
-JSONF\_MOD\_DIR, respectively. This can be utilized e.g. by environment 
+JSONF\_MOD\_DIR, respectively. This can be utilized e.g. by environment
 modules.
 
-If the JSON library and module locations are not specified by environment 
-variables, cmake tries to find the JSON library automatically. 
+If the JSON library and module locations are not specified by environment
+variables, cmake tries to find the JSON library automatically.
 If cmake can't find the JSON library,
-or you have put the JSON library in a non standard location, you can force 
+or you have put the JSON library in a non standard location, you can force
 the locations with -DLibJSON and -DJSON\_MODULES:
 \begin{lstlisting}[language=bash,columns=fullflexible]
   > FC=gfortran cmake -DLibJSON=<full-path-to-jsonlib> \
@@ -86,7 +86,7 @@ The CI pipeline is broken into the following stages. Each stage contains a numbe
 \end{enumerate}
 
 \subsubsection{Pipeline control}
-It is possible to exclude some stages by setting the {EXCLUDE} variables to {true} in order to save time during development. When pushing to either the {develop} or {master} branches the {EXCLUDE} variables are overidden in the {workflow} section so that all stages will run for these branches. The {rules} keyword is used in the {workflow} and also  in the individual jobs to enforce this behaviour. At present the available variables are {EXCLUDE\_SERIAL}, {EXCLUDE\_MPI}, {EXCLUDE\_EMC3}, {EXCLUDE\_OPENMP}. 
+It is possible to exclude some stages by setting the {EXCLUDE} variables to {true} in order to save time during development. When pushing to either the {develop} or {master} branches the {EXCLUDE} variables are overidden in the {workflow} section so that all stages will run for these branches. The {rules} keyword is used in the {workflow} and also  in the individual jobs to enforce this behaviour. At present the available variables are {EXCLUDE\_SERIAL}, {EXCLUDE\_MPI}, {EXCLUDE\_EMC3}, {EXCLUDE\_OPENMP}.
 
 The \textbf{rules} keyword allows conditional control of pipeline jobs, each rule is evaluated in order and stops when the first true condition is reached. Detailed documentation of this and other CI commands can be found at \url{https://docs.gitlab.com/ee/ci/yaml/gitlab_ci_yaml.html}.
 
@@ -127,15 +127,15 @@ The {compare\_eirene.py} script compares EIRENE output in 2 directories. \cref{t
       \hline
       Option  &  Description \\
       \hline
-     -h, --help                  & Show the help message and exit                                \\	
+      -h, --help                  & Show the help message and exit                                \\
       -d DIR1, --dir1 DIR1        & First directory containing output files (default=output)      \\
       -r DIR2, --dir2 DIR2        & Second directory containing output files (default=output\_ref) \\
       -f FILE, --file FILE        & If specified only this file will be checked                   \\
       -q, --quiet                 & Only prints a message if differences exist                    \\
       -b, --binary                & Check binary files                                            \\
       -v, --verbose               & Prints more detail about the comparisons being made           \\
-      -t, --statwarn              & Prints out values of all mismatches above machine precision   \\ 
-      -w, --warnings              & Prints out values of all mismatches above statistical error   \\ 
+      -t, --statwarn              & Prints out values of all mismatches above machine precision   \\
+      -w, --warnings              & Prints out values of all mismatches above statistical error   \\
       -e, --errall                & Prints out all mismatches                                     \\
       -s, --single\_precision     & Sets tolerance to single precision                            \\
       -i, --ignore\_small\_values & Ignore values that are much smaller than the mean             \\
@@ -165,7 +165,7 @@ The script compares the relative difference between all numeric values in the ou
     \caption{Thresholds and labels for comparison of the relative difference of EIRENE output in the script compare\_eirene.py \label{tab:compareThresh}}
   \end{center}
 \end{table}
-      
+
 \subsubsection{Exclusion of selected data points}
 Some of the EIRENE tallies result in zero or very close to zero values after the addition and subtraction of values that are expected to be the identical due to particles changing species in the relevant cell. In practice machine precision limits mean that the 2 values can differ by a small amount and when one is subtracted from the other a remainder is left. When running serially this remainder is in general the same for repeated runs on the same system, as in the CI. However when OpenMP threading is enabled these values can vary due to the change in ordering of the operations, causing problems for the CI testing as the values can be different by up to a factor 2, causing the pipeline to fail when testing these values.
 
@@ -197,7 +197,7 @@ Changes to the made to the {gitlab-ci.yml} file can be validated on the EIRENE g
 
 \url{https://jugit.fz-juelich.de/eirene/eirene/-/ci/lint}
 
-The contents of the gitlab-ci.yml file can be pasted into this page which will validates the syntax and report any errors. In the case of valid syntax it will produce a table of the commands launched by the CI. For developers with permission to write to the develop or master branch a full CI simulation can also be run by selecting the check box \textbf{Simulate pipeline creation for the default branch}. 
+The contents of the gitlab-ci.yml file can be pasted into this page which will validates the syntax and report any errors. In the case of valid syntax it will produce a table of the commands launched by the CI. For developers with permission to write to the develop or master branch a full CI simulation can also be run by selecting the check box \textbf{Simulate pipeline creation for the default branch}.
 
 \subsection{Docker Images}
 \label{loc:DockerImage}
@@ -222,14 +222,14 @@ In order to run the tests cases on a local Linux machine follow the steps descri
 
 Create a directory within which one can run the docker container
 
-First build the docker image locally by first cloning the Docker image repository. This will create a directory eirene-ci-image, go into this directory and build the image. 
+First build the docker image locally by first cloning the Docker image repository. This will create a directory eirene-ci-image, go into this directory and build the image.
 
 \begin{lstlisting}[language=bash,columns=fullflexible]
   > git clone git@jugit.fz-juelich.de:eirene/eirene-ci-image.git
   > cd eirene-ci-image
   > sudo docker image build . -t debianbullseye:test
 \end{lstlisting}
-  
+
 The {debianbullseye:test} tags can be changed to any tags you prefer. This may take some time. It is also necessary to clone the EIRENE and EIRENE-sample-cases repositories. This can be done from either the docker container or from your default environment, if you have ssh keys enabled then this may be easier,  however there is the potential for conflict between the git version on your system and that used in the docker container. You can run the docker image from a directory of your choice, if cloning the EIRENE repository using your local system it should be cloned into the directory that you will run docker from. The sample cases repository should be cloned into the {eirene} directory containing the EIRENE source. Assuming you have already cloned the EIRENE and sample cases repositories you should run the following command under sudo.
 
 \begin{lstlisting}[language=bash,columns=fullflexible]

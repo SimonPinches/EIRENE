@@ -21,8 +21,8 @@ C
       SUBROUTINE EIRENE_WRPLAM_SHRT(TRCFLE,CALLEDFROM)
 
 cdr Only the input tallies of the last (virtual) plasma species: npls_fix+1,...nplsi
-cdr are written/read using I/O stream fort.13. 
-cdr The other ones 1,...,npls_fix are directly transferred 
+cdr are written/read using I/O stream fort.13.
+cdr The other ones 1,...,npls_fix are directly transferred
 cdr from external plasma code/ external data set, or re-computed
 
 cdr Only cross-sections, collision rates, other parameters,
@@ -64,7 +64,7 @@ cdr  Should only be written in modbgk, modphot, tmstep, etc.. routines
       INTEGER :: IREA, ISWR, IREI, IRCX, IRPI, IREL, IFL, IPLS, ND, IO
       INTEGER :: I
       REAL(DP), ALLOCATABLE, SAVE :: TIAR(:,:), DIAR(:,:),
-     R                         VXAR(:,:), VYAR(:,:), VZAR(:,:)
+     R                               VXAR(:,:), VYAR(:,:), VZAR(:,:)
 
       write (iunout,*) 'WRPLAM_SHRT called from ',calledfrom
 
@@ -134,7 +134,7 @@ cdr do these things ever get deallocated again?
         ENDIF
       END IF
 
-cdr  next: write atomic/molecular data set in MODUSR, for collision processes
+cdr  Next: write atomic/molecular data set in MODUSR, for collision processes
 cdr        involving the npls_fix+1:npls virtual background species
 cdr        and their possible dependencies on parameters distinct from PLSTLS.
 cdr        There are NFLA_VIRT such data arrays.
@@ -261,7 +261,7 @@ C .......................................................................
 C ........................................................................
 
       if (13+ifoff.ge.100) then
-      WRITE(FILENUMBER,'(I3)') 13+ifoff
+        WRITE(FILENUMBER,'(I3)') 13+ifoff
       else
         WRITE(FILENUMBER,'(I2)') 13+ifoff
       end if
@@ -289,11 +289,11 @@ C ........................................................................
 
       REWIND 13+ifoff
 
-      IF(NPLS_FIX.LT.NPLSI) THEN
+      IF (NPLS_FIX.LT.NPLSI) THEN
 cdr  only read plasma background data for species, which are not already
 cdr  transferred via common BRAEIR, i.e. only: npls_fix+1,....nplsi
 cdr  I.e. the virtual background species for nonlinear iterations
-cdr  have to come last in the list of all background species.  
+cdr  have to come last in the list of all background species.
         REWIND 13+ifoff
         READ (13+ifoff,IOSTAT=IO)
      R       TIIN(NPLS_FIX+1:NPLSI,1:NRAD),
@@ -367,7 +367,7 @@ cdr  next: read the NFLA_VIRT collisional process data related to these virtual 
       END IF
 
       IF (ALLOCATED(LG_STORE) .AND. SIZE(LG_STORE,2) < NFLA_VIRT) THEN
-        DEALLOCATE(LG_STORE)
+        DEALLOCATE (LG_STORE)
       END IF
 
       IF (.NOT.ALLOCATED(TAB_STORE)) THEN

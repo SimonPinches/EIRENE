@@ -4,7 +4,7 @@
 
       CONTAINS
 
-      
+
 C  user-supplied collision estimator.
 C  called from folion, folneut, at a collision event in cell NCELL
 C
@@ -39,4 +39,3 @@ C
       END SUBROUTINE EIRENE_UPCUSR
 
       END MODULE EIRMOD_UPCUSR
-      

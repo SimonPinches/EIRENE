@@ -54,10 +54,10 @@ C
           DO 221 J=1,NSBOX_TAL
             IF (LPDENA) PDENA(IATM,J)=PDENA(IATM,J)*ZVOLIN(J)
             IF (LEDENA) EDENA(IATM,J)=EDENA(IATM,J)*ZVOLIN(J)
-            IF (LPAAT) THEN 
+            IF (LPAAT) THEN
               IF (NLSPCSCL_ATM) THEN
                 PAAT2(1:NATM,0:NATM) => PAAT(:,J)
-                PAAT2(IATM,:) =PAAT2(IATM,:) *ZVOLIW(J) 
+                PAAT2(IATM,:) =PAAT2(IATM,:) *ZVOLIW(J)
               ELSE
                 PAAT(IATM,J) = PAAT(IATM,J) *ZVOLIW(J)
               END IF
@@ -66,7 +66,7 @@ C
               IF (NLSPCSCL_MOL) THEN
                 PMAT2(1:NATM,0:NMOL) => PMAT(:,J)
                 PMAT2(IATM,:) =PMAT2(IATM,:) *ZVOLIW(J)
-              ELSE 
+              ELSE
                 PMAT(IATM,J) = PMAT(IATM,J) *ZVOLIW(J)
               END IF
             END IF
@@ -350,7 +350,6 @@ C
             IF (LEIPL)  EIPL(IPLS,J) =EIPL(IPLS,J) *ZVOLIW(J)
             IF (LEPHPL) EPHPL(IPLS,J)=EPHPL(IPLS,J)*ZVOLIW(J)
             IF (LEPPL)  EPPL(IPLS,J) =EPPL(IPLS,J) *ZVOLIW(J)
-
             IF (LMAPL)  MAPL(IPLS,J) =MAPL(IPLS,J) *ZVOLIW(J)
             IF (LMMPL)  MMPL(IPLS,J) =MMPL(IPLS,J) *ZVOLIW(J)
             IF (LMIPL)  MIPL(IPLS,J) =MIPL(IPLS,J) *ZVOLIW(J)
@@ -376,7 +375,7 @@ C
 C  ADDITIONAL TRACKLENGTH-ESTIMATED TALLIES FOR THE STRATUM ISTRA
 C  TALLY ADDV; NO. NTALA
 C  # is a placeholder for the units of the detector function used
-C  for scoring these additional tallies (see manual, block 10) 
+C  for scoring these additional tallies (see manual, block 10)
 C
       IF (LADDV) THEN
         DO 230 IADV=1,NADVI
@@ -675,7 +674,7 @@ C  SCALE: FROM SCORING TALLY UNITS # PER ENERGY BIN --> TALLY UNITS # PER EV
 C  INTEGRATE--> TALLY UNITS
 cdr  Test tbd: in case of total (not directional) spectrum, i.e. for IDIREC=0, this
 cdr            integral must coincide with the particle density PDEN.. or the energy density EDEN..,
-cdr            in the selected cell, depending on ISPTYP=1, 
+cdr            in the selected cell, depending on ISPTYP=1,
 cdr            or ISPTYP=2, respectively.
 cdr  See text in scale_surf_tallies: this test should
 cdr  also work for directional resolved spectra.

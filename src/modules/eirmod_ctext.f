@@ -10,7 +10,7 @@ cdr  sept 18: typo in CTEXT(2)  (size of array) corrected
 
       PUBLIC :: EIRENE_ALLOC_CTEXT, EIRENE_DEALLOC_CTEXT,
      P          EIRENE_INIT_CTEXT, EIRENE_BROADCAST_CTEXT,
-     p          EIRENE_DEALLOC_CTEXT3 
+     p          EIRENE_DEALLOC_CTEXT3
 
       CHARACTER(72), PUBLIC, ALLOCATABLE, SAVE ::
      C TXTSFL(:),   TXTTAL(:,:), TXTPLS(:,:),
@@ -84,7 +84,7 @@ cdr input tallies
         ALLOCATE (TXTTLA(NADV))
         ALLOCATE (TXTSCA(NADV))
         ALLOCATE (TXTUTA(NADV))
-        
+
         ALLOCATE (TXTTLC(NCLV))
         ALLOCATE (TXTSCC(NCLV))
         ALLOCATE (TXTUTC(NCLV))
@@ -121,7 +121,7 @@ cdr input tallies
         DEALLOCATE (TEXTLA)
         DEALLOCATE (TEXTLS)
       END IF
-      
+
       IF (ALLOCATED(TXTTAL)) THEN
         DEALLOCATE (TXTTAL)
         DEALLOCATE (TXTSPC)
@@ -132,18 +132,18 @@ cdr input tallies
       END IF
 
       CALL EIRENE_DEALLOC_CTEXT3
-      
+
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_CTEXT
 
 
       SUBROUTINE EIRENE_DEALLOC_CTEXT3
-      
+
       IF (ALLOCATED(TXTTLA)) THEN
         DEALLOCATE (TXTTLA)
         DEALLOCATE (TXTSCA)
         DEALLOCATE (TXTUTA)
-        
+
         DEALLOCATE (TXTTLC)
         DEALLOCATE (TXTSCC)
         DEALLOCATE (TXTUTC)
@@ -156,7 +156,7 @@ cdr input tallies
         DEALLOCATE (TXTSCT)
         DEALLOCATE (TXTUTT)
       ENDIF
-      
+
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_CTEXT3
 

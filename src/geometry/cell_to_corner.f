@@ -176,7 +176,7 @@ c  3d grid of tetrahedra
       write (iunout,*) ' levgeo = ',levgeo,' to be written in',
      .                 ' subroutine cell_to_corner '
       write (iunout,*) ' calculation abandoned '
-      call  eirene_exit_own(1)
+      call eirene_exit_own(1)
 
       return
-      end subroutine  eirene_cell_to_corner
+      end subroutine eirene_cell_to_corner

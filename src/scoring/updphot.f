@@ -25,8 +25,8 @@ cdr         in PI processes added. For A, M, I incident test particles.
 cdr dec.15: further corrections, lea --> leio, and other logical flags for turning on-off estimators
 
 cdr nov.15: tracklength estimators for eapl,empl,eipl: species ipl resolved.
-cdr apr. 16: bug fix J.Lore re index in lgiel. This part of code is still unused,
-cdr          so no effect on any result.  Few further comments corrected
+cdr apr.16: bug fix J.Lore re index in lgiel. This part of code is still unused,
+cdr         so no effect on any result.  Few further comments corrected
 cdr fix ph7  phv_lgphot --> lgphph
 cdr feb.23: prepare for merging into subr. update (unified treatment)
 
@@ -39,30 +39,30 @@ C T (CM) IS STORED ON CLPD ARRAY FOR ONE OR MORE CELLS, THAT HAVE
 C BEEN CROSSED WITHOUT COLLISION.
 
 C
-C  NCOU:  NUMBER OF PIECES OF TRACK IN DIFFERENT CELLS SCORED IN THIS PRESENT CALL (BUT FIXED NRCELL)
-C     I:  INDIVIDUAL TRACK, I=1,NCOU
-C  IRDO:  TRACK IS IN (FINE) GEOMETRY CELL IRDO (=NRCELL+NUPC(I)*NR1P2+NBLCKA)
-C  IRD:   ESTIMATORS ARE UPDATED IN (COARSE) SCORING CELL IRD  (=NCLTAL(IRDO))
+C  NCOU: NUMBER OF PIECES OF TRACK IN DIFFERENT CELLS SCORED IN THIS PRESENT CALL (BUT FIXED NRCELL)
+C     I: INDIVIDUAL TRACK, I=1,NCOU
+C  IRDO: TRACK IS IN (FINE) GEOMETRY CELL IRDO (=NRCELL+NUPC(I)*NR1P2+NBLCKA)
+C  IRD:  ESTIMATORS ARE UPDATED IN (COARSE) SCORING CELL IRD  (=NCLTAL(IRDO))
 C
-C  IFLAG:  CURRENTLY ONLY USED FOR PHOTON TALLIES, TO AVOID CANCELLATION OF TERMS
+C  IFLAG: CURRENTLY ONLY USED FOR PHOTON TALLIES, TO AVOID CANCELLATION OF TERMS
 
 C  IFLAG=1:
 C  IFLAG=2:
 C  IFLAG=3:
-C  IFLAG=4:  CALLED FROM WITHIN STATIC LOOP  (PATH LENGTH SET TO MFP), OR CALLED AT POINT OF COLLISION
+C  IFLAG=4: CALLED FROM WITHIN STATIC LOOP  (PATH LENGTH SET TO MFP), OR CALLED AT POINT OF COLLISION
 C  IFLAG=5:
 
 C  SPECIAL TREATMENT OF "BGK" COLLISIONS (= ELASTIC COLLISIONS WITH VIRTUAL BACKGROUND SPECIES)
 C
-C  A) NPBGK..(ITEST) :  IF GT 0, THE CORRESPONDING PARTICLE (IATM, IMOL OR IION) IS A SO-CALLED "BGK" SPECIES
-C                             IF, ADDITIONALLY, LBGKV = T, THEN ADDITIONAL BGK TALLIES ARE SCORED VIA A CALL TO UPTBGK
+C  A) NPBGK..(ITEST) : IF GT 0, THE CORRESPONDING PARTICLE (IATM, IMOL OR IION) IS A SO-CALLED "BGK" SPECIES
+C                      IF, ADDITIONALLY, LBGKV = T, THEN ADDITIONAL BGK TALLIES ARE SCORED VIA A CALL TO UPTBGK
 C  B) SIGBGK         : TOTAL RATE OF BGK TYPE COLLISIONS. INCIDENT ATOM AND ITS ENERGY IS NOT LOST
-C  C) NPBGKP (IPLS,1):  IREL ELASTIC COLLISION CONTRIBUTIONS WITH BULK COLLISION PARTNERS WITH NPBGKP(IPLS,1)>0
+C  C) NPBGKP (IPLS,1): IREL ELASTIC COLLISION CONTRIBUTIONS WITH BULK COLLISION PARTNERS WITH NPBGKP(IPLS,1)>0
 C          ARE NOT INCLUDED IN SOURCE/SINK TALLIES.
 
 C          IN CASE OF EAPL THIS IS IMPORTANT, IN ORDER NOT TO MIX ENERGY SOURCES FOR REAL BACKGROUND
 C          IONS WITH ENERGY SOURCES FOR VIRTUAL BACKGROUND "IONS"  (MISSING SPECIES INDEX)
-C          BUT:  CURRENTLY MISSING IN EAAT: CONTRIBUTIONS OF ENERGY EXCHANGE DUE TO BGK COLLISIONS
+C          BUT: CURRENTLY MISSING IN EAAT: CONTRIBUTIONS OF ENERGY EXCHANGE DUE TO BGK COLLISIONS
 C          (BOTH SOURCE (DUE TO C) AND SINK (DUE TO B)
 
 
@@ -89,13 +89,13 @@ C
      .                            XSTORV2(NSTORV,N2ND+N3RD)
       INTEGER, INTENT(IN) :: IFLAG
       REAL(DP) :: WTRSIG, DIST, WTR, WTRE0, WV, CNDYNPH, WTRV
-      INTEGER :: IRD,  I, IRDO, INUM
+      INTEGER :: IRD, I, IRDO, INUM
 C     INTEGER :: NPBGK
 C SECONDARY SPECIES IDENTIFIERS
       INTEGER :: IAT1,IAT2,IML1,IML2,IIO1,IIO2,IPH1,IPH2,IPL1,IPL2
 C PH PROCESSES
-      INTEGER ::      IAPH,IRPH
-C    .               ,UPDF        ! out, something for stim. emiss ?
+      INTEGER :: IAPH,IRPH
+C    .          ,UPDF        ! out, something for stim. emiss ?
 
 C
 C  ESTIMATORS FOR PHOTONS
@@ -140,7 +140,7 @@ C
 !$OMP ATOMIC
           EDENPH(IPHOT,IRD)=EDENPH(IPHOT,IRD)+WTRE0
         ENDIF
-        IF (LPDENPH) THEN 
+        IF (LPDENPH) THEN
 !$OMP ATOMIC
           PDENPH(IPHOT,IRD)=PDENPH(IPHOT,IRD)+WTR
         ENDIF
@@ -179,9 +179,9 @@ cdr  particle was born, is now on first flight
 cdr  particle track is still in same cell
 
 ! use collision estimator for first cell ("brick") along the track.
-! in case UPDATE is called at a collision point: sample 1 (score the whole weight)
-cdr This perfectly cancels the source rate.
-! in case UPDATE is called at any other instance (no collision in cell IRD): sample 0 (do not score)
+! In case UPDATE is called at a collision point: sample 1 (score the whole weight)
+cdr This perfectly cancels the source rate. This is an "idle" Monte Carlo particle.
+! In case UPDATE is called at any other instance (no collision in cell IRD): score with a zero weight (do not score)
           IF ((IFLAG == 4).OR.(IFLAG == 5)) THEN
             IF (LPPHPHT) THEN
 !$OMP ATOMIC
@@ -244,7 +244,7 @@ C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
 C  COMPENSATE PRE-COLLISION RATES HERE
 C
           IF (PHV_IESTOTPH(iphot,IRPH,1).NE.0) THEN
-            IF (LPPHPHT) THEN 
+            IF (LPPHPHT) THEN
 !$OMP ATOMIC
               PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)+WTRSIG
               IF (NLSPCSCL_PHOT) THEN
@@ -293,7 +293,7 @@ C  FIRST SECONDARY:
                   IF (NLSPCSCL_PHOT) THEN
                     PPHAT2(1:NATM,0:NPHOT) => PPHAT(:,IRD)
 !$OMP ATOMIC
-                    PPHAT2(IAT1,IPHOT)= PPHAT2(IAT1,IPHOT)+WTRSIG*INUM
+                    PPHAT2(IAT1,IPHOT)=PPHAT2(IAT1,IPHOT)+WTRSIG*INUM
                     LMETSP2(1:NATM,0:NPHOT) => LMETSP(NTS_PI+1:NTS_APH)
                     LMETSP2(IAT1,0)=.TRUE.
                     LMETSP2(IAT1,IPHOT)=.TRUE.
@@ -310,7 +310,7 @@ C  FIRST SECONDARY:
                   IF (NLSPCSCL_PHOT) THEN
                     PPHML2(1:NMOL,0:NPHOT) => PPHML(:,IRD)
 !$OMP ATOMIC
-                    PPHML2(IML1,IPHOT)= PPHML2(IML1,IPHOT)+WTRSIG*INUM
+                    PPHML2(IML1,IPHOT)=PPHML2(IML1,IPHOT)+WTRSIG*INUM
                     LMETSP2(1:NMOL,0:NPHOT) => LMETSP(NTS_APH+1:NTS_MPH)
                     LMETSP2(IML1,0)=.TRUE.
                     LMETSP2(IML1,IPHOT)=.TRUE.
@@ -327,7 +327,7 @@ C  FIRST SECONDARY:
                   IF (NLSPCSCL_PHOT) THEN
                     PPHIO2(1:NION,0:NPHOT) => PPHIO(:,IRD)
 !$OMP ATOMIC
-                    PPHIO2(IIO1,IPHOT)= PPHIO2(IIO1,IPHOT)+WTRSIG*INUM
+                    PPHIO2(IIO1,IPHOT)=PPHIO2(IIO1,IPHOT)+WTRSIG*INUM
                     LMETSP2(1:NION,0:NPHOT) => LMETSP(NTS_MPH+1:NTS_IPH)
                     LMETSP2(IIO1,0)=.TRUE.
                     LMETSP2(IIO1,IPHOT)=.TRUE.
@@ -345,7 +345,7 @@ C               INUM=PHV_N1STOTPH(iphot,IRPH,3)
                   IF (NLSPCSCL_PHOT) THEN
                     PPHPL2(1:NPLS,0:NPHOT) => PPHPL(:,IRD)
 !$OMP ATOMIC
-                    PPHPL2(IPL1,IPHOT)= PPHPL2(IPL1,IPHOT)+WTRSIG*INUM
+                    PPHPL2(IPL1,IPHOT)=PPHPL2(IPL1,IPHOT)+WTRSIG*INUM
                     LMETSP2(1:NPLS,0:NPHOT)=>LMETSP(NTS_PHPH+1:NTS_PPH)
                     LMETSP2(IPL1,0)=.TRUE.
                     LMETSP2(IPL1,IPHOT)=.TRUE.
@@ -369,13 +369,15 @@ cdr  test iph1 > 0 only once, in initialisation. here: removed
 !$OMP ATOMIC
                     PPHPHT(iph1,ird)=PPHPHT(iph1,ird)+wtrsig*inum
                     IF (NLSPCSCL_PHOT) THEN
-                    PPHPHT2(1:NPHOT,0:NPHOT) => PPHPHT(:,IRD)
+                      PPHPHT2(1:NPHOT,0:NPHOT) => PPHPHT(:,IRD)
 !$OMP ATOMIC
-                    PPHPHT2(iph1,iPHOT)=PPHPHT2(iph1,iPHOT)+wtrsig*inum
-                    LMETSP2(1:NPHOT,0:NPHOT)=>LMETSP(NTS_IPH+1:NTS_PHPH)
-                    LMETSP2(IPH1,0)=.TRUE.
-                    LMETSP2(IPH1,IPHOT)=.TRUE.
-                  END IF
+                      PPHPHT2(iph1,iphot)=PPHPHT2(iph1,iphot)+
+     .                                    wtrsig*inum
+                      LMETSP2(1:NPHOT,0:NPHOT)=>
+     .                       LMETSP(NTS_IPH+1:NTS_PHPH)
+                      LMETSP2(IPH1,0)=.TRUE.
+                      LMETSP2(IPH1,IPHOT)=.TRUE.
+                    END IF
                     LMETSP(IPH1)=.TRUE.
                   END IF
                 end if
@@ -447,7 +449,7 @@ C               INUM=PHV_N2NDOTPH(iphot,IRPH,3)
                   IF (NLSPCSCL_PHOT) THEN
                     PPHPL2(1:NPLS,0:NPHOT) => PPHPL(:,IRD)
 !$OMP ATOMIC
-                    PPHPL2(IPL2,IPHOT)= PPHPL2(IPL2,IPHOT)+WTRSIG*INUM
+                    PPHPL2(IPL2,IPHOT)=PPHPL2(IPL2,IPHOT)+WTRSIG*INUM
                     LMETSP2(1:NPLS,0:NPHOT)=>LMETSP(NTS_PHPH+1:NTS_PPH)
                     LMETSP2(IPL2,0)=.TRUE.
                     LMETSP2(IPL2,IPHOT)=.TRUE.
@@ -472,7 +474,7 @@ cdr test iph2 > 0 removed, to be done only once in initialisation
                     IF (NLSPCSCL_PHOT) THEN
                       PPHPHT2(1:NPHOT,0:NPHOT) => PPHPHT(:,IRD)
 !$OMP ATOMIC
-                      PPHPHT2(iph2,iPHOT)=PPHPHT2(iph2,iPHOT)+
+                      PPHPHT2(iph2,IPHOT)=PPHPHT2(iph2,IPHOT)+
      .                                    wtrsig*inum
                       LMETSP2(1:NPHOT,0:NPHOT)=>
      .                       LMETSP(NTS_IPH+1:NTS_PHPH)
@@ -588,9 +590,9 @@ cdr if(iph2 > 0) then  ! dieser test nur in initialisation phase
 !dr         ENDIF
           ENDIF
 C
-       ENDDO
-  133  CONTINUE
-  131  CONTINUE
+        ENDDO
+  133   CONTINUE
+  131 CONTINUE
       RETURN
 
       END SUBROUTINE EIRENE_UPDPHOT

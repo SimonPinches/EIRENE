@@ -30,17 +30,19 @@ cdr nov. 17:  nspztotw introduced, in analogy with nspztot
      I IIH(:),    IGH(:),
      I IIHW(:),   IGHW(:),
      I ICOV(:),
-     I NSIGI,     NSIGVI,   NSIGSI, NSIGCI, 
+     I NSIGI,     NSIGVI,   NSIGSI, NSIGCI,
      I NSIGI_SPC,
 C SPEED UP OF SUBROUTINE STATIS
 
 cdr This list stores information along history.
 cdr It is refreshed in MCARLO.f after each completed history.
 cdr Currently stored per history:
-c    cell visited:    ICELL=ICLMT(IC),   IC=1,...,NCLMTS
-c    surface visited: ISURF=IWLMT(ICW), ICW=1,...,NWLMTS
-c    species scoring in volume:  ISPZ=LMETSP (...)
-c    species scoring at surface: ISPZ=LMETSPW(...)
+c    cell visited:    ICELL=ICLMT(IC),   IC=1,..,NCLMTS
+c    cell score:      SCELL=SCLMT(IS,IC),IC=1,..,NCLMTS, IS=1,.. tbd.
+c    surface visited: ISURF=IWLMT(ICW), ICW=1,..,NWLMTS
+
+c    species scoring in volume, somewhere:  ISPZ=LMETSP (...)
+c    species scoring at surface, somewhere: ISPZ=LMETSPW(...)
 
      I IMETCL(:), ICLMT(:), NCLMT, NCLMTS,
      I IMETWL(:), IWLMT(:), NWLMT, NWLMTS
@@ -78,7 +80,6 @@ c    species scoring at surface: ISPZ=LMETSPW(...)
         NSDVC2 = 3*NCV
         NSDVI  = NSDVI1+NSDVI2+NSDVC1+NSDVC2
         MSDVI  = NSD*2+NSDW*2+NCV+7+2*NRTAL+2+2*NLIMPS+2
-
 
         ALLOCATE (SDVI1(NSD,NRTAL+1))
         ALLOCATE (SDVI2(NSDW,NLIMPS+1))

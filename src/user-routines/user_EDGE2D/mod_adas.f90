@@ -1772,7 +1772,7 @@ contains
 
           IF(X.EQ.XA(IX(K),K)) THEN
              exit l1
-          ELSEIF (X.LT.XA(IX(K),K))THEN
+          ELSEIF (X.LT.XA(IX(K),K)) THEN
              IX(K)=IX(K)-IR
           ELSE
              IX(K)=IX(K)+IR
@@ -1783,19 +1783,19 @@ contains
              cycle l1
           endif
 
-          if(ix(k) .le. 0)  then
+          if(ix(k) .le. 0) then
              !write(*,*) ' mod_adas: warning, ix(k) <= 0 (2)'
              ix(k) = 0
              exit l1
           endif
 
-          if(ix(k) .gt. nxdim)  then
+          if(ix(k) .gt. nxdim) then
              !write(*,*) ' mod_adas: warning, ix(k) > nxdim (3)'
              ix(k) = nxdim
              exit l1
           endif
 
-          IF (X.LT.XA(IX(K),K))THEN
+          IF (X.LT.XA(IX(K),K)) THEN
              IX(K)=IX(K)-IR
              exit l1
           ENDIF

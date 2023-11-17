@@ -38,13 +38,13 @@
 
       CONTAINS
 
-cdr Aug.  22 : notation, and bugfig: sumn,sumnt vs. sum (only affecting
+cdr Aug.  22 : notation, and bugfix: sumn,sumnt vs. sum (only affecting
 cdr            diagnostic output)
 cdr Sep.  21 : a bit more and corrected documentation
 cdr Nov.  19 : Nested do 6 loop: erroneous exit from loop
 cdr            corrected (300919): Possible significant
-cdr            effect on diagnostic output (EIO loss) 
-cdr Sept. 19 : added: nprt(ispz)=1 condition for bremsstrahlung (exclude molec. ions) 
+cdr            effect on diagnostic output (EIO loss)
+cdr Sept. 19 : added: nprt(ispz)=1 condition for bremsstrahlung (exclude molec. ions)
 chf Nov.  18 : samvol_usr added, for levgeo=10 option
 cdr Jan   18 : only notational change, to distinguish surface substrata from volume substrata
 cdr  5.14.15 : vecusr called with ncell, and 0,0,0 (center of gravity)
@@ -52,8 +52,8 @@ cdr  2.11.14 : new function eirene_brems: bremsstrahlung in W per ion
 cdr            replaces explicit expression.
 cdr 21.10.14 : bug fix: spectral cut-off flag ICCT set to zero for default vol.rec (KK=0)
 cdr           -->now runs again on eirene default vol.rec model.
-cdr 30.10.14 :  lplssr true even if npts=0, to allow setting up volume source tallies,
-cdr             even if npts=0 for the vol-rec stratum
+cdr 30.10.14 : lplssr true even if npts=0, to allow setting up volume source tallies,
+cdr            even if npts=0 for the vol-rec stratum
 
 cdr  1111.07: "istep out of range" error message removed once again.
 !pb  2203.07: LEVGEO=6 --> LEVGEO=10
@@ -68,8 +68,9 @@ c             rather than code crash
 C  JET 2005, PATCH 1: NEW ARGUMENTS EFWL AND SHWL IN PARAMETER LIST
 c                     FOR SUBROUTINES SMVOL1 AND SMUSR1
 C
-C
 C  SAMVL0:
+cdr  IN CASE: NLVOL .AND. NLPLS:
+cdr  scan over all IPLS=1,NPLSI and for those who have assigned RC processes to them:
 C    DEFINE THE CUMULATIVE DISTRIBUTION FUNCTION
 C    FREC(IPLS,IRRC,ICELL) FOR EACH VOLUME SOURCE DISTRIBUTION TABRC1, FOR SAMPLING
 C    THE CELL INDEX ICELL OF THE VOLUME SOURCE PARTICLE.
@@ -92,17 +93,21 @@ C    AND THE CELL NUMBERS ARE COMPUTED
 C
       SUBROUTINE EIRENE_SAMVL0
       IMPLICIT NONE
-      REAL(DP) :: ADD, EIRENE_FTABRC1, CDYN, REC, XC, YC, ZC, 
-     .            BX, BY, BZ, BF, VX, VY, VZ, EIRENE_FEELRC1, 
-     .            VPARA, EELRC, MOMPARA, TOT_BREMS(NPLS), Z,
+      REAL(DP) :: ADD, EIRENE_FTABRC1, CDYN, REC, XC, YC, ZC,
+     .            BX, BY, BZ, BF,
+     .            VX, VY, VZ, EIRENE_FEELRC1,
+     .            VPARA, EELRC,
+     .            MOMPARA,
+     .            TOT_BREMS(NPLS), Z,
      .            BREMS, EIRENE_BREMS,
 cdr  sum over sub-strata
      .            SUMNT, SUMEIT, SUMEI, SUMN,
      .            X1, Y1, X2, Y2, X3, Y3
       INTEGER :: ISTR, MXREC, MXPLS, IVOLSI, IVL,
-     .           IFPLS, IIRC, IRRC, I, J, KK, ICCT, IPLSTI, IPLSV,
+     .           IFPLS, IIRC, IRRC, I, J, ICCT, IPLSTI, IPLSV,
      .           IR1, IR2, IP1, IP2, IT1, IT2, IR, IP, IT,
-     .           ICC, IRC, ISTEP, IFRC, IND, JPLS, ISTRAI
+     .           ICC, IRC, ISTEP, IFRC, IND, JPLS, ISTRAI,
+     .           KK
 
       IF (.NOT.ALLOCATED(FREC)) THEN
 
@@ -110,7 +115,7 @@ cdr  some preparatory work, for plasma (field particle) sources (strata with NLP
 cdr  termed: "recombination", which is sometimes by abuse of language
 
 C  LPLSSR(IPLS):
-C  IDENTIFY THOSE FIELD PARTICLE SPECIES IPLS TO WHICH A 
+C  IDENTIFY THOSE FIELD PARTICLE SPECIES IPLS TO WHICH A
 C                 VOLUME SOURCE DISTRIBUTION IS ASSIGNED
 
         ALLOCATE (LPLSSR(NPLSI))
@@ -279,7 +284,6 @@ cdr  take center of gravity in cell, if needed (last parameter (logical) in bfie
                 IF (ICCT > 0)
      .            ADD = ADD*(XINTLEFT(ICCT,J) +
      .                       XINT_INF(ICCT,J) - XINTRIGHT(ICCT,J))
-
                 MOM(IPLS,IRRC)=MOM(IPLS,IRRC)-ADD
                 MOM(IPLS,0)   =MOM(IPLS,0   )-ADD
               ENDIF
@@ -461,7 +465,7 @@ C  INITIALIZE SAMPLING DISTRIBUTIONS FOR USER SPECIFIED VOLUME SOURCE
      .                    SORAD3(IVL,ISTRA),SORAD4(IVL,ISTRA),
      .                    SORAD5(IVL,ISTRA),SORAD6(IVL,ISTRA))
 !pb assume flux is set in samusr
-cdr April 22:  bug fix. do not overwrite total flux sumnt (old: summ) here.
+cdr April 22 bug fix. do not overwrite total flux sumnt (old: summ) here.
               SUMN=FLUX(ISTRA)
             ELSE
 C  INITIALIZE SAMPLING DISTRIBUTIONS FOR EXTERNAL VOLUMETRIC SOURCES (use the rates: TABRC1(irrc,:))
@@ -470,8 +474,8 @@ C  ACCOUNT FOR INGRDA(IVOLSI,ISTRA,...), INGRDE(IVOLSI,ISTRA,...) section of com
               ICC=0
               IRC=-1
               IF (NR1ST.GT.1) THEN
-              IF (INGRDA(IVL,I,1).LE.0 .OR.
-     .            INGRDE(IVL,I,1).LE.0) THEN
+               IF (INGRDA(IVL,I,1).LE.0 .OR.
+     .             INGRDE(IVL,I,1).LE.0) THEN
                 CALL EIRENE_LEER(1)
                 WRITE (iunout,*) 'WARNING FROM SAMVL0, ISTRA= ',ISTRA
                 WRITE (iunout,*)
@@ -480,11 +484,11 @@ C  ACCOUNT FOR INGRDA(IVOLSI,ISTRA,...), INGRDE(IVOLSI,ISTRA,...) section of com
                 INGRDA(IVL,I,1)=1
                 INGRDE(IVL,I,1)=MAX0(1,NR1ST)
                 CALL EIRENE_LEER(1)
-              ENDIF
+               ENDIF
               ENDIF
               IF (NP2ND.GT.1) THEN
-              IF (INGRDA(IVL,I,2).LE.0 .OR.
-     .            INGRDE(IVL,I,2).LE.0) THEN
+               IF (INGRDA(IVL,I,2).LE.0 .OR.
+     .             INGRDE(IVL,I,2).LE.0) THEN
                 CALL EIRENE_LEER(1)
                 WRITE (iunout,*) 'WARNING FROM SAMVL0, ISTRA= ',ISTRA
                 WRITE (iunout,*)
@@ -493,11 +497,11 @@ C  ACCOUNT FOR INGRDA(IVOLSI,ISTRA,...), INGRDE(IVOLSI,ISTRA,...) section of com
                 INGRDA(IVL,I,2)=1
                 INGRDE(IVL,I,2)=MAX0(1,NP2ND)
                 CALL EIRENE_LEER(1)
-              ENDIF
+               ENDIF
               ENDIF
               IF (NT3RD.GT.1) THEN
-              IF (INGRDA(IVL,I,3).LE.0 .OR.
-     .            INGRDE(IVL,I,3).LE.0) THEN
+               IF (INGRDA(IVL,I,3).LE.0 .OR.
+     .             INGRDE(IVL,I,3).LE.0) THEN
                 CALL EIRENE_LEER(1)
                 WRITE (iunout,*) 'WARNING FROM SAMVL0, ISTRA= ',ISTRA
                 WRITE (iunout,*)
@@ -506,7 +510,7 @@ C  ACCOUNT FOR INGRDA(IVOLSI,ISTRA,...), INGRDE(IVOLSI,ISTRA,...) section of com
                 INGRDA(IVL,I,3)=1
                 INGRDE(IVL,I,3)=MAX0(1,NT3RD)
                 CALL EIRENE_LEER(1)
-              ENDIF
+               ENDIF
               ENDIF
               IF (NPRCI(IPLS).EQ.0) THEN
                 WRITE (iunout,*) 'NO VOLUMETRIC SOURCE DISTRIBUTION'
@@ -592,6 +596,8 @@ c
      .                              IRC ,IPLS,ICC)
                 CALL EIRENE_LEER(1)
               ENDIF
+
+cdr  sum over sub-strata
               SUMNT=SUMNT+SUMN
               SUMEIT=SUMEIT+SUMEI
             ENDIF
@@ -601,7 +607,7 @@ C
             FLUX(ISTRA)=SUMNT
             WRITE (iunout,*) 'SOURCE STRENGTH REDEFINED'
             CALL EIRENE_MASJR2('ISTRA, FLUX, EIFLUX     ',
-     .                          ISTRA,FLUX(ISTRA),SUMEIT)
+     .                          ISTRA, FLUX(ISTRA), SUMEIT)
             CALL EIRENE_LEER(1)
           ELSE
             FLUX(ISTRA)=0.D0
@@ -649,6 +655,7 @@ c  then 2nd: sample uniformly within this triangle
         END DO
       end select
 C
+
       END SUBROUTINE EIRENE_SAMVL0
 C
 C  AT THIS POINT: CALLED FROM PARTICLE LOOP TO INITIALIZE TEST FLIGHT
@@ -665,7 +672,7 @@ C
      .            RR, RRI, RRD, RRN, EPR, ELR, Z1, Z2, Z3, ZZ,
      .            X4, Y4, Z4, X01, CNORM
       INTEGER :: IFPLS, IIRC, IRRC, IVOLSI, IVL, ICC, IRC,
-     .           IR1, IR2, IP1, IP2, IT1, IT2, IR, IP, IT, ISTEP, 
+     .           IR1, IR2, IP1, IP2, IT1, IT2, IR, IP, IT, ISTEP,
      .           IFRC, IAUSR, IBUSR, IRUSR, ITUSR, IPUSR,
      .           IC1, IC2, IL, IU, IM, ICELL, IN, JSPZ
 

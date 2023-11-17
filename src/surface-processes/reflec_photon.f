@@ -1,7 +1,7 @@
 CDR  NOV 17 : lemtspw arguments corrected
 cdr  jan 18 : start to implement bi-directional reflectance functions
-cdr  dec.18 : remove unfinished "hollmann databse model"
-cpb  oct.19 : set ISPZO=ISPZ for default reflection model      
+cdr  dec.18 : remove unfinished "hollmann database model"
+cpb  oct.19 : set ISPZO=ISPZ for default reflection model
 C
 C
 C
@@ -84,8 +84,8 @@ C
 !$OMP THREADPRIVATE(NPANOLD)
 
 C
-C  RE-SYNCHRONIZE RANDOM NUMBERS (CORRELATED SAMPLING):  out.
-C  tbd:  introduce counter of max. possible random numbers used up to this point
+C  RE-SYNCHRONIZE RANDOM NUMBERS (CORRELATED SAMPLING): out.
+C  tbd: introduce counter of max. possible random numbers used up to this point
 C  see report Kalos, 1955, on correlated sampling, synchronisation...
 C
       IF (NLCRR.AND.(NPANU.NE.NPANOLD).AND..FALSE.) THEN
@@ -108,7 +108,7 @@ C
 C
 C
 C   MODREF=0: "PERFECTLY ABSORBING SURFACE", DEFAULT
-C   MODREF=1: "DATABASE REFLECTION MODEL"  (out)
+C   MODREF=1: "DATABASE REFLECTION MODEL" (out)
 C
 !PB  to be revised
 !    RPROB: probability of the photon to be reflected
@@ -163,7 +163,7 @@ c  SPECULAR LOBE, BDRF MODEL.
         GOTO 600
       ELSE   ! modref gt 2
 C  ABSORB THIS PHOTON
-        ISPZO = ISPZ      
+        ISPZO = ISPZ
         GOTO 700
       ENDIF
 C
@@ -180,7 +180,7 @@ C
 C  WITH SUPPRESSION OF ABSORPTION
         WABS=WEIGHT*(1.D0-RPROB)
         IF (WABS.GT.0.D0) THEN
-          IF (LSPUMP) THEN 
+          IF (LSPUMP) THEN
 !$OMP ATOMIC
             SPUMP(ISPZO,MSURF)=SPUMP(ISPZO,MSURF)+WABS
             IF (MSURFG.GT.0) THEN

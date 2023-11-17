@@ -15,7 +15,7 @@ C     SUBROUTINE SAMSRF
 C     SUBROUTINE SAMVOL
 C
       SUBROUTINE EIRENE_SAMPNT (NLPT,TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,
-     .                        EFWL,SHWL,ZIWL,WEISPZ)
+     .                          EFWL,SHWL,ZIWL,WEISPZ)
 
 cdr  point source. identify the starting point coordinates (from IPOINT)
 c  input:
@@ -38,7 +38,7 @@ c    ISTRA         (no. of stratum), via Common
       IMPLICIT NONE
 
       REAL(DP), INTENT(OUT) :: TEWL, SHWL, TIWL(*), DIWL(*), EFWL(*),
-     .                         VXWL(*), VYWL(*), VZWL(*), ZIWL(*), 
+     .                         VXWL(*), VYWL(*), VZWL(*), ZIWL(*),
      .                         WEISPZ(*)
       INTEGER, INTENT(IN) :: NLPT
       REAL(DP) :: X01, CNORM, WINK

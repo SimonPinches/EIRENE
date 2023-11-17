@@ -1,7 +1,7 @@
       module eirmod_openfile
 
       private
-      
+
       public :: eirene_openfile
 
       contains
@@ -15,7 +15,7 @@
       character(len=*), optional :: form, access, status, position
       character(len=:), allocatable :: frm, acc, stat, pos
       integer :: iun, io
-      
+
       if (present(form)) then
         frm = form
       else
@@ -40,7 +40,7 @@
       io = 0
       if (iunit > 0) then
         iun = iunit
-#ifndef NAGFOR      
+#ifndef NAGFOR
         open (iun,file=file,form=frm,access=acc,status=stat,
      .        position=pos,iostat=io)
 #else
@@ -51,7 +51,7 @@
       else
 
 #ifdef F2003
-#ifndef NAGFOR      
+#ifndef NAGFOR
         open (newunit=iun,file=file,
      .        form=frm,access=acc,status=stat,position=pos,iostat=io)
 #else
@@ -61,7 +61,7 @@
         iunit=iun
 #else
         iun=eirene_newunit()
-#ifndef NAGFOR      
+#ifndef NAGFOR
         open (iun,file=file,form=frm,access=acc,status=stat,
      .        position=pos,iostat=io)
 #else

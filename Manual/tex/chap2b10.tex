@@ -72,7 +72,7 @@ optional, in versions Eirene$_{2003}$ and younger:
 \begin{lstlisting}
 * 10F. Data for energy spectra
       DO 106 IADSP=1,NADSPC
-        ISPSRF IPTYP IPSPZ ISPTYP NSPS ISRFCLL IDIREC
+        ISPSRF IPTYP IPSPZ ISPTYP NSPS ISRFCLL IDIREC ISPCOPT
         SPCMN SPCMX SPC_SHIFT SPCPLT_X SPCPLT_Y SPCPLT_SAME
         if (idirec.ne.0) SPCVX SPCVY SPCVZ
   106 CONTINUE
@@ -434,6 +434,7 @@ Printout of these spectra is activated in input block 11a, flag NSPCPR.
         .
 
   \item[SPCPLT\_SAME] plot this spectrum into previous frame
+  \item[ISPCOPT] flag to score angle resolved tallies (when set to 1)
 \end{description}
 The surface flux spectra are printed together with the other surface averaged
 tallies, for those surfaces, which are selected for printout in sub-block 11A.

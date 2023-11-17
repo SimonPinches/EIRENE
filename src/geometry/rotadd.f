@@ -21,7 +21,7 @@ C
       REAL(DP), INTENT(IN) :: A(3,3),AI(3,3)
       INTEGER,  INTENT(IN) :: ILINI, ILEND
       REAL(DP) :: P1S, P2S, P3S, A3S, A4S, A5S, A6S, A7S, A8S, A9S, S,
-     .            DEL, EIRENE_DETER3x3, T, A1S, A2S
+     .            DEL, EIRENE_DETER3X3, T, A1S, A2S
       INTEGER  :: I, J
 C
 C
@@ -29,7 +29,7 @@ C
 C
 C   CHANGE COEFFICIENTS FOR ALGEBRAIC EQUATION, TRY TO KEEP INVARIANTS
           S=A4LM(I)+A5LM(I)+A6LM(I)
-          DEL=EIRENE_DETER3x3(A4LM(I),A7LM(I)/2._DP,A9LM(I)/2._DP,
+          DEL=EIRENE_DETER3X3(A4LM(I),A7LM(I)/2._DP,A9LM(I)/2._DP,
      .              A7LM(I)/2._DP,
      .              A5LM(I),A8LM(I)/2._DP,A9LM(I)/2._DP,A8LM(I)/2._DP,
      .              A6LM(I))
@@ -88,7 +88,7 @@ C
           A9LM(I)=A9S
 C
           S=A4LM(I)+A5LM(I)+A6LM(I)
-          DEL=EIRENE_DETER3x3(A4LM(I),A7LM(I)/2._DP,A9LM(I)/2._DP,
+          DEL=EIRENE_DETER3X3(A4LM(I),A7LM(I)/2._DP,A9LM(I)/2._DP,
      .              A7LM(I)/2._DP,
      .              A5LM(I),A8LM(I)/2._DP,A9LM(I)/2._DP,A8LM(I)/2._DP,
      .              A6LM(I))

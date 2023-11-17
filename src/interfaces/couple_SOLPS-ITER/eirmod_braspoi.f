@@ -5,6 +5,7 @@ cdr            not concluded yet: e.g. eplpls,  photon tallies
 cdr            nomenclature: eppl_cops --> eppls  ???
 
       MODULE EIRMOD_BRASPOI
+cdr  purpose: Lists and pointers for stratum-selective short cycle
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -16,11 +17,17 @@ cdr            nomenclature: eppl_cops --> eppls  ???
      .          EIRENE_NEW_SIMARR, EIRENE_NEW_MULARR,
      .          EIRENE_FREE_SIMARR, EIRENE_FREE_MULARR
       PUBLIC :: CELLSIM, CELLMUL, SIMARR, MULARR,
-     .          EAELS, EMELS, EIELS,
-     .          EAPLS, EMPLS, EIPLS, PAPLS, PMPLS, PIPLS,
-     .          PDENAS, PDENMS, PDENIS, EDENAS, COPVS,
-     .          PPPL_COPS, CPPVS, EPPL_COPS, EPELS,
-     .          MAPLS, MMPLS, MIPLS, MPHPLS
+cdr  June 23: short cycle is incomplete (at least). Missing terms indicated.
+     .          EAELS, EMELS, EIELS, EPELS,  !dr ephels ?
+     .          EAPLS, EMPLS, EIPLS,         !dr eppls, ephpls ?
+     .          PAPLS, PMPLS, PIPLS,         !dr pphpls, pppls ?
+     .          PDENAS, PDENMS, PDENIS,      !dr pphpls ?
+     .          EDENAS, COPVS,
+     .          MAPLS, MMPLS, MIPLS, MPHPLS, !dr mppls ?
+cdr  Primary source rates, vol. rec., analytic.
+     .          PPPL_COPS, CPPVS, EPPL_COPS !dr epel_cops ?
+cdr  Their sampled (scored) counterparts would be:
+cdr  .          PPPL, COPV, EPPL, EPEL, in module CESTIM.
 
       TYPE :: CELLSIM
         REAL(DP) :: VALUES
@@ -49,6 +56,8 @@ cdr            nomenclature: eppl_cops --> eppls  ???
      .                                   EPELS(:)
       TYPE(MULARR), ALLOCATABLE, SAVE :: PAPLS(:), PMPLS(:), PIPLS(:),
      .                                   EAPLS(:), EMPLS(:), EIPLS(:),
+cdr  The ..._cops tallies below have no noise.
+cdr  They are analytically derived from B2.5 data.
      .                                   EPPL_COPS(:),
      .                                   PDENAS(:),PDENMS(:),PDENIS(:),
      .                                   EDENAS(:),COPVS(:),
@@ -115,11 +124,13 @@ cdr            nomenclature: eppl_cops --> eppls  ???
       NULLIFY(PPPL_COPS(ISTRAI)%PMUL)
       NULLIFY(EPPL_COPS(ISTRAI)%PMUL)
       NULLIFY(CPPVS(ISTRAI)%PMUL)
+cdr   missing: epel_cops ?
 
       NULLIFY(MAPLS(ISTRAI)%PMUL)
       NULLIFY(MMPLS(ISTRAI)%PMUL)
       NULLIFY(MIPLS(ISTRAI)%PMUL)
       NULLIFY(MPHPLS(ISTRAI)%PMUL)
+cdr   missing: mppls ?
 
       END DO
 

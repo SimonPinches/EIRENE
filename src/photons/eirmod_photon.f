@@ -18,7 +18,7 @@ cdr    The original version was developed in 2000 -- 2003 within a project (BMBF
 cdr    in collaboration with Philips research Lab. Aachen, for applications to
 cdr    to high pressure gas discharge lamps.
 cdr    It was largely re-written later, re-structured, several times,
-cdr    for use in (nonlinear) stand alone eirene
+cdr    for use in (nonlinear) standalone eirene
 cdr    (applications to high density divertor plasmas with hydrogen resonance line re-absorption)
 cdr    Further re-writing (2006-2007): V.Kotov, to support iterations for self-consistently
 cdr    coupled 2D B2-EIRENE plasma solutions.
@@ -28,8 +28,8 @@ cdr STARTING ONCE AGAIN:
 cdr new data structure REACDAT. Try to re-connect photonic reactions to
 cdr rest of code, unify notation....
 cdr
-cdr jan 18:  note: ph_xsectp is still there.
-cdr          But corresponds to what would be called XSTPH?,
+cdr jan 18: note: ph_xsectp is still there.
+cdr         But corresponds to what would be called XSTPH?,
 cdr         (what is XSTRC?)
 cdr nov 18: notational cleanup: nrot -> nrph. nnrot  is now obsolete.
 cdr now 20: remove alloc_xsectph, all variables now in comxs
@@ -73,12 +73,12 @@ cdr jan 18:  immer noch da. entspricht aber wohl dem xstot, (xstrc) was es nicht
 !          and sam_vdwqs (quasistatic vdWaals, red wing).
 ! 18.8.05: iunout in write statements, index for number of foreign gases in
 !          pressure broadening introduced in LORVDWPROF: reaction%ifremd
-c  4.1.06:  hplnk_bar = hplck/2Pi introduced in ccona, and used here
-c           some more speed ups in lorvdwprof. still much more to be done
+c  4.1.06: hplnk_bar = hplck/2Pi introduced in ccona, and used here
+c          some more speed ups in lorvdwprof. still much more to be done
 ! 08.2.06: phv_lgprc removed from declaration, no longer needed
 
-! 08.5.06:  zm_stark_profile and zm_stark_doppler added, for Lyman_alpha
-! 08.5.06:  sam_zm_stark added
+! 08.5.06: zm_stark_profile and zm_stark_doppler added, for Lyman_alpha
+! 08.5.06: sam_zm_stark added
 ! 19.12.06: sam_zm_stark rewritten. old version --> sam_zm_stark1
 !
 !    do be done:
@@ -201,9 +201,9 @@ C  current version: iptype=0,1,2,3,4,5,6,7,8,9,10,11
 
 c  input:
 c          kkin: nrearc(irrc), nreaph(irph), reaction number from input block 4
-c          isp :            = iphot, iatm (redundant?)
-c          ity :  (=ityp),  = 0: test photons point of view
-c          ity :  (=ityp),  = 1: test atoms point of view (out)
+c          isp :           = iphot, iatm (redundant?)
+c          ity : (=ityp),  = 0: test photons point of view
+c          ity : (=ityp),  = 1: test atoms point of view (out)
 c          iipl: species index of background species for reaction kk
 c     derived from kkin:
 c          iid = 4  photon absorption
@@ -219,7 +219,7 @@ c          iid = 5  res= rate coeff. = B21 * E00 * c/4 Pi * Phi(E)
 c          iid = 6  res= rate        = A12 * Phi(E) to be done
 c          iid = 7  res= rate coeff. = out
 cdr  special treatment of delta function line shape: Phi(E)=1 und E00 weglassen ?
-cdr  als:  z.b. iid=4  res=B12 *c/4 Pi  --> Planck  bei E (=line center ?)
+cdr  als: z.b. iid=4  res=B12 *c/4 Pi  --> Planck  bei E (=line center ?)
 c
       IMPLICIT NONE
       integer, intent(in) :: kkin,isp,ity,icell,iipl
@@ -250,10 +250,10 @@ c
 cdr  find $fac(E0)$: the value of the line profile $fac(E)$
 cdr  (emission profile or absorption profile) at E0:
 cdr  the current photon energy.
-cdr  units of fac:  1/eV, because: integral dE fac(E) = 1.0
+cdr  units of fac: 1/eV, because: integral dE fac(E) = 1.0
 
       select case(iid)
-c  case 1,2,3  : atoms point of view in radiation field:  out
+c  case 1,2,3  : atoms point of view in radiation field: out
 c  case 4,5,6  : photons point of view in neutral gas field
 c  to be done: remove case iid=7 from this routine. And add
 c              rates for stim. emission in calling program, e.g.
@@ -325,7 +325,7 @@ c  use energy scale
      .                                 e00,7)
             endif
          case(8,9)
-!normal zeeman:  lorentz or voigt components
+!normal zeeman: lorentz or voigt components
            call EIRENE_zeeman_normalprof(icell,ctheta2,dbz)
            call EIRENE_naturalprof(gam)
            if(iptype == 8) then
@@ -471,12 +471,12 @@ c     end select
      .                           DRFT,E00,IPROF)
      .         RESULT(RES)
 c  zeeman - profile - splitting
-c  input:   x:    photon energy [eV]
-c  output:  res:  value of zeeman splitted absorption profile
-c   iprof:  6:  delta
-c           7:  doppler
-c           8:  lorentz
-c           9:  lorentz+doppler, i.e., voigt
+c   input:  x:   photon energy [eV]
+c  output:  res: value of zeeman splitted absorption profile
+c   iprof:  6:   delta
+c           7:   doppler
+c           8:   lorentz
+c           9:   lorentz+doppler, i.e., voigt
       implicit none
       real(dp), intent(in) :: x, ctheta2,dbz,gam,dnd,drft,e00
       integer, intent(in) :: iprof
@@ -510,8 +510,8 @@ c           9:  lorentz+doppler, i.e., voigt
           yy=gam*0.5_dp/dnd
           val = DBLE(EIRENE_PH_FADDEEVA(xx,yy,dnd))
 c
-c  next cases:  perhaps from atoms point of view?
-c               all taken out.
+c  next cases: perhaps from atoms point of view?
+c              all taken out.
 
         case default
            write(iunout,*) 'zm_profile: error(1)'
@@ -831,6 +831,7 @@ c     end do
       real(dp)::EIRENE_coll,N,Te,Ti,epsilon,v0,ve,rhoWi,rhoWe,
      .          lambda_Di,lambda_De,
      .          ymin_i,ymin_e,phi_i,phi_e
+
       v0=sqrt(2.*e*Ti/m_D)
       ve=sqrt(2.*e*Te/me)
       rhoWi=sqrt(6.)*hbar/(me*v0)
@@ -929,9 +930,9 @@ c convert [cm^2 / (eV*s) ] --> [cm^2]
       IMPLICIT NONE
 cdr  sample frequency (here: energy) from emission profile
 !
-!  icell:   cell number (needed for parameters in sampling distributions)
-!  kk   :   process number (for data provided by call get_reaction(kk))
-!  ipl2 :   species index of emitting atom (ityp=4, bulk)
+!  icell: cell number (needed for parameters in sampling distributions)
+!  kk   : process number (for data provided by call get_reaction(kk))
+!  ipl2 : species index of emitting atom (ityp=4, bulk)
 !
 cdr  iprofiletype =0  only line centre (delta),  stationary atoms
 cdr  iprofiletype =1  ditto plus doppler in calling program
@@ -961,8 +962,8 @@ cdr
 cdr  iprofiletype =10 zeeman-stark,  stationary atoms
 cdr  iprofiletype =11 zeeman-stark, doppler (not in calling program)
 cdr
-cdr  may 2006:  argument VN added, so that doppler (and motional Stark)
-cdr             can be included in line-shape 10,11 (zm_stark_profile)
+cdr  may 2006: argument VN added, so that doppler (and motional Stark)
+cdr            can be included in line-shape 10,11 (zm_stark_profile)
 cdr
       integer, intent(in) :: icell,kk,ipl2
       real(dp), intent(in) :: vn
@@ -1101,9 +1102,9 @@ cdr      call EIRENE_voigtprof(ipl2,icell,dnd,drft,gam)
          nldoppl=.true.
       case(10)
 c  zeeman stark, no doppler, no motional stark
-c  stark  broadening by electrons:
+c  stark broadening by electrons:
          T_e=Tein(icell)
-c  stark  broadening by ions: protons, deuterons, tritons
+c  stark broadening by ions: protons, deuterons, tritons
          T_p=T_e
 c  doppler broadening by emitting gas: hydrogen, deuterium, tritium
          T_g=0.0
@@ -1125,7 +1126,7 @@ c  doppler broadening by emitting gas: hydrogen, deuterium, tritium
       case(11)
 c  zeeman stark, doppler and motional stark is included in sampling
          T_e=Tein(icell)
-c  stark  broadening by ions: protons, deuterons, tritons
+c  stark broadening by ions: protons, deuterons, tritons
          T_p=T_e
 c  doppler broadening by emitting gas: hydrogen, deuterium, tritium
          T_g=TIIN(mplsti(ipl2),icell)
@@ -1526,9 +1527,9 @@ C  NORMAL-ZEEMANN
 !
 !  set parameters for convoluted Lorentz / vdWaals profile
 !
-!  input:   icell:  cell number (for background data for broadening parameters)
-!           lscale: true : output parameters in energy units, eV
-!           lscale: false: output parameters in wavelength units, cm
+!  input: icell:  cell number (for background data for broadening parameters)
+!         lscale: true : output parameters in energy units, eV
+!         lscale: false: output parameters in wavelength units, cm
 !
       implicit none
       integer, intent(in) :: icell
@@ -1792,7 +1793,7 @@ c
       END subroutine EIRENE_zeeman_normalprof
 
 C.........................................................................................
-c  evaluate line shape functions at fixed frequency (or wavelength or energy) 
+c  evaluate line shape functions at fixed frequency (or wavelength or energy)
 c  1) lorentz                          --> evaluates lorentz profile
 c  2) doppler                          --> evaluates doppler profile
 c  3) faddeeva  (via humlick function) --> evaluates lorentz-doppler convol. (Voigt profile)
@@ -1838,9 +1839,9 @@ c  input : E and T in eV
 c  output: B_E(T) in 1/cm**3/eV/sterad * cm/s * eV
 c          i.e.   in 1/cm**2/s/sterad
 
-cdr  imode:  =1 Planck
-cdr          =2 Wien limit E >> kT
-cdr          =3 Rayleigh-Jeans limit E << kT
+cdr  imode: =1 Planck
+cdr         =2 Wien limit E >> kT
+cdr         =3 Rayleigh-Jeans limit E << kT
 
       implicit none
       real(dp), intent(in) :: t,e
@@ -2004,9 +2005,8 @@ c     f2=v2*sqrt(-(ar+ar)/s)*sig
       return
       END FUNCTION EIRENE_SAM_DOPPLER
 
-      function
-     .  EIRENE_sam_zeeman_normal(ctheta2,dbz,gam,dnd,drft,e00,iprof)
-     .                                result(res)
+      function EIRENE_sam_zeeman_normal
+     . (ctheta2,dbz,gam,dnd,drft,e00,iprof) result(res)
 !
 !  sample energy (eV) from a normal zeeman triplet, each component either
 !     iprof=0: delta
@@ -2020,6 +2020,7 @@ c     f2=v2*sqrt(-(ar+ar)/s)*sig
       real(dp) :: dsum,e00d,del,r0,ssum,res
       real(dp) :: strength(-1:1)
       integer :: ipol
+
       res = 0._dp
 c  3 normal zeeman components:
 c   build sampling distribution for sampling the component, given theta
@@ -2258,7 +2259,7 @@ c   B: Magnetic field (T)
 c   ctheta2: cos**2 of: Observation angle with magnetic field
 c   v: Emitter/Absorber velocity (m/s)
 c  on output:
-c   res:  random number sampled from zeemann-stark-profile
+c   res: random number sampled from zeemann-stark-profile
       implicit none
 
 !Physical and mathematical constants
@@ -2641,11 +2642,13 @@ c To calculate the FADDEEVA function with relative error less than 10^(-R).
 c R0=1.51*EXP(1.144*R) and R1=1.60*EXP(0.554*R) can be set by the the user
 c subject to the constraints 14.88<R0<460.4 and 4.85<R1<25.5
       REAL(dp) :: K,L
-      real(dp), PARAMETER :: R0 = 146.7, R1 = 14.67 ! for R=4, region boundaries
+      real(dp), PARAMETER :: R0 = 146.7, R1 = 14.67 ! for R=4,
+                                                    ! region boundaries
 
 c Constants
       real(dp), PARAMETER :: RRTPI = 0.56418958     ! 1/sqrt(pi)
-      real(dp), PARAMETER :: Y0 = 1.5, Y0PY0 = Y0+Y0, Y0Q = Y0*Y0 ! for cpf12 algor.
+      real(dp), PARAMETER :: Y0 = 1.5, Y0PY0 = Y0+Y0, Y0Q = Y0*Y0
+                                                    ! for cpf12 algor.
       REAL(dp), save :: C(0:5), S(0:5), T(0:5)
 c SAVE preserves values of C, S and T (static) arrays between procedure calls
 
@@ -2660,11 +2663,14 @@ c Local variables
       INTEGER :: J                 ! Loop variable
       INTEGER :: RG1, RG2, RG3     ! y polynomial flags
       REAL(dp) :: ABX, XQ, YQ, YRRTPI ! |x|, x^2, y^2, y/SQRT(pi)
-      REAL(dp) :: XLIM0, XLIM1, XLIM2, XLIM3, XLIM4 ! |x| on region boundaries
-      REAL(dp) :: A0, D0, D2, E0, E2, E4, H0, H2, H4, H6 ! W4 temporary variables
+      REAL(dp) :: XLIM0, XLIM1, XLIM2, XLIM3, XLIM4 ! |x| on
+                                                    ! region boundaries
+      REAL(dp) :: A0, D0, D2, E0, E2, E4, H0, H2, H4, H6
+                                   ! W4 temporary variables
       REAL(dp) :: P0, P2, P4, P6, P8, Z0, Z2, Z4, Z6, Z8
       real(dp) :: b1,f1,f3,f5,q1,q3,q5,q7
-      REAL(dp) :: XP(0:5), XM(0:5), YP(0:5), YM(0:5) ! CPF12 temporary values
+      REAL(dp) :: XP(0:5), XM(0:5), YP(0:5), YM(0:5)
+                                   ! CPF12 temporary values
       REAL(dp) :: MQ(0:5), PQ(0:5), MF(0:5), PF(0:5)
       REAL(dp) :: D, YF, YPY0, YPY0Q
 
@@ -2696,7 +2702,7 @@ c.....
       ELSEIF ( ABX .GT. XLIM1 ) THEN ! Humlicek W4 Region 1
          IF ( RG1 .NE. 0 ) THEN ! First point in Region 1
             RG1 = 0
-            A0 = YQ + 0.5       ! Region 1 y-dependents
+            A0 = YQ + 0.5       ! Region 1 y-dependence
             D0 = A0*A0
             D2 = YQ + YQ - 1.0
             b1 = yq - 0.5
@@ -2707,7 +2713,9 @@ c.....
       ELSEIF ( ABX .GT. XLIM2 ) THEN ! Humlicek W4 Region 2
          IF ( RG2 .NE. 0 ) THEN ! First point in Region 2
             RG2 = 0
-            H0 =  0.5625 + YQ*(4.5 + YQ*(10.5 + YQ*(6.0 + YQ))) ! Region 2 y-dependents
+            H0 =  0.5625 + YQ*(4.5 +
+     &                     YQ*(10.5 + YQ*(6.0 + YQ)))
+                                ! Region 2 y-dependence
             H2 = -4.5    + YQ*(9.0 + YQ*( 6.0 + YQ* 4.0))
             H4 = 10.5    - YQ*(6.0 - YQ*  6.0)
             H6 = -6.0    + YQ* 4.0
@@ -2723,38 +2731,50 @@ c.....
          L = d*x   *(f1 + xq*(f3 + xq*(f5 + xq)))
       ELSEIF ( ABX .LT. XLIM3 ) THEN ! Humlicek W4 Region 3
          IF ( RG3 .NE. 0 ) THEN ! First point in Region 3
-            RG3 = 0
-            Z0 = 272.1014     + Y*(1280.829 + Y*(2802.870 + Y*(3764.966 ! Region 3 y-dependents
-     &         + Y*(3447.629 + Y*(2256.981 + Y*(1074.409 + Y*(369.1989
-     &         + Y*(88.26741 + Y*(13.39880 + Y)))))))))
-            Z2 = 211.678      + Y*(902.3066 + Y*(1758.336 + Y*(2037.310
-     &           + Y*(1549.675 + Y*(793.4273 + Y*(266.2987
+            RG3 = 0 ! Region 3 y-dependence
+            Z0 = 272.1014     + Y*(1280.829 + Y*(2802.870
+     &           + Y*(3764.966 + Y*(3447.629
+     &           + Y*(2256.981 + Y*(1074.409
+     &           + Y*(369.1989 + Y*(88.26741
+     &           + Y*(13.39880 + Y)))))))))
+            Z2 = 211.678      + Y*(902.3066 + Y*(1758.336
+     &           + Y*(2037.310 + Y*(1549.675
+     &           + Y*(793.4273 + Y*(266.2987
      &           + Y*(53.59518 + Y*5.0)))))))
-            Z4 = 78.86585     + Y*(308.1852 + Y*(497.3014 + Y*(479.2576
-     &           + Y*(269.2916 + Y*(80.39278 + Y*10.0)))))
-            Z6 = 22.03523     + Y*(55.02933 + Y*(92.75679 + Y*(53.59518
-     &           + Y*10.0)))
+            Z4 = 78.86585     + Y*(308.1852 + Y*(497.3014
+     &           + Y*(479.2576 + Y*(269.2916
+     &           + Y*(80.39278 + Y*10.0)))))
+            Z6 = 22.03523     + Y*(55.02933 + Y*(92.75679
+     &           + Y*(53.59518 + Y*10.0)))
             Z8 = 1.496460     + Y*(13.39880 + Y*5.0)
-            P0 = 153.5168     + Y*(549.3954 + Y*(919.4955 + Y*(946.8970
-     &          + Y*(662.8097 + Y*(328.2151 + Y*(115.3772 + Y*(27.93941
-     &          + Y*(4.264678 + Y*0.3183291))))))))
-            P2 = -34.16955    + Y*(-1.322256+ Y*(124.5975 + Y*(189.7730
-     &           + Y*(139.4665 + Y*(56.81652 + Y*(12.79458
+            P0 = 153.5168     + Y*(549.3954 + Y*(919.4955
+     &           + Y*(946.8970 + Y*(662.8097
+     &           + Y*(328.2151 + Y*(115.3772
+     &           + Y*(27.93941 + Y*(4.264678
+     &           + Y*0.3183291))))))))
+            P2 = -34.16955    + Y*(-1.322256 + Y*(124.5975
+     &           + Y*(189.7730 + Y*(139.4665
+     &           + Y*(56.81652 + Y*(12.79458
      &           + Y*1.2733163))))))
-            P4 = 2.584042     + Y*(10.46332 + Y*(24.01655 + Y*(29.81482
-     &           + Y*(12.79568 + Y*1.9099744))))
-            P6= -0.07272979  + Y*(0.9377051+ Y*(4.266322 + Y*1.273316))
+            P4 = 2.584042     + Y*(10.46332 + Y*(24.01655
+     &           + Y*(29.81482 + Y*(12.79568
+     &           + Y*1.9099744))))
+            P6= -0.07272979   + Y*(0.9377051+ Y*(4.266322
+     &           + Y*1.273316))
             P8 = 0.0005480304 + Y*0.3183291
-            q1 = 173.2355  + y*(508.2585 + y*(685.8378 + y*(557.5178
-     .                     + y*(301.3208 + y*(111.0528 + y*(27.62940
-     .                     + y*(4.264130 + y*0.3183291)))))))
-            q3 = 18.97431  + y*(100.7375 + y*(160.4013 + y*(130.8905
-     .                     + y*(55.88650 + y*(12.79239+y*1.273316)))))
-            q5 = 7.985877  + y*(19.83766 + y*(28.88480 + y*(12.79239
-     .                     + y*1.909974)))
+            q1 = 173.2355  + y*(508.2585 + y*(685.8378
+     .           + y*(557.5178 + y*(301.3208
+     .           + y*(111.0528 + y*(27.62940
+     .           + y*(4.264130 + y*0.3183291)))))))
+            q3 = 18.97431  + y*(100.7375 + y*(160.4013
+     .           + y*(130.8905 + y*(55.88650
+     .           + y*(12.79239 + y*1.273316)))))
+            q5 = 7.985877  + y*(19.83766 + y*(28.88480
+     .           + y*(12.79239 + y*1.909974)))
             q7 = 0.6276985 + y*(4.264130 + y*1.273316)
          ENDIF
-         D =1.7724538 / (Z0 + XQ*(Z2 + XQ*(Z4 + XQ*(Z6 + XQ*(Z8+XQ)))))
+         D = 1.7724538 /
+     .       (Z0 + XQ*(Z2 + XQ*(Z4 + XQ*(Z6 + XQ*(Z8+XQ)))))
          K = D*(P0 + XQ*(P2 + XQ*(P4 + XQ*(P6 + XQ*P8))))
          L = d*x*(q1+xq*(q3+xq*(q5+xq*(q7 + xq*0.3183291))))
       ELSE                      ! Humlicek CPF12 algorithm
@@ -3930,7 +3950,7 @@ c    .                           res
 
           end if
 
-          call  EIRENE_lorvdwprof(icell,fwhm,shift,dvdw,.true.)
+          call EIRENE_lorvdwprof(icell,fwhm,shift,dvdw,.true.)
 
           do
             icount = icount + 1
@@ -3991,7 +4011,6 @@ c    .                           res
       INTEGER, INTENT(IN) :: ME
       INTEGER :: IER, NNROT, NRC, KK, IATM, IPHOT
 
-
       IF (NPHOTI > 0) THEN
         nnrot=0
         do iatm=1,natmi
@@ -4047,10 +4066,10 @@ c    .                           res
         CALL MPI_BCAST (CLIGHT,1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
       END IF
-      
+
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       RETURN
       END SUBROUTINE EIRENE_BROADCAST_PHOTON
-      
+
       END MODULE EIRMOD_PHOTON

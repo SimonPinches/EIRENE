@@ -1,28 +1,28 @@
-cdr jan 2017 :  started to synchronize with prttal. should be largely identical
-c               added: 1d output onto stream ifile, also for VOL tally.
-c               more comments, better formats for large grids.
-cdr jun 2017 :  sync. with prttal. Also 1D printout on separate output streams.
+cdr jan 2017 : started to synchronize with prttal. should be largely identical
+c              added: 1d output onto stream ifile, also for VOL tally.
+c              more comments, better formats for large grids.
+cdr jun 2017 : sync. with prttal. Also 1D printout on separate output streams.
 C
-C  INPUT:  T1,T2,T3:         TALLY TEXT, SPECIES AND UNITS, RESP.
-C          PROF:             TALLY DATA, ON 1d ARRAX PROF(1:NRAD)
-C          X:                X-COORDINATE: ONLY FOR 1D STANDARD GRIDS
-C                            CURRENTLY: ZONE-CENTERED
-C          NR,NP,NT,NB,NTT:  GRID STRUCTURE FOR 2D OR 3D CASES
-C          IFLAG:            SEE BELOW
-C          IFILE:            WRITE OUT TALLY "PROF" ONTO STREAM: FORT.IFILE
+C  INPUT: T1,T2,T3:        TALLY TEXT, SPECIES AND UNITS, RESP.
+C         PROF:            TALLY DATA, ON 1d ARRAX PROF(1:NRAD)
+C         X:               X-COORDINATE: ONLY FOR 1D STANDARD GRIDS
+C                          CURRENTLY: ZONE-CENTERED
+C         NR,NP,NT,NB,NTT: GRID STRUCTURE FOR 2D OR 3D CASES
+C         IFLAG:           SEE BELOW
+C         IFILE:           WRITE OUT TALLY "PROF" ONTO STREAM: FORT.IFILE
 C
       SUBROUTINE EIRENE_PRTVOL
      .  (T1,T2,T3,PROF,X,NR,NP,NT,NB,NTT,IFLAG,IFILE)
 C
 C  SIMILAR TO PRTTAL, BUT FOR "TOTAL TALLIES" SUCH AS CELL VOLUMES
-C  IFLAG=-1:  ONLY HEADER IS PRINTED
-C  IFLAG= 0:  ONLY MEAN VALUES IN EACH BLOCK
-C  IFLAG= 1:  ADDITIONALLY: 1D PROFILES (THESE MAY BE AVERAGES)
-C  IFLAG= 2:  ADDITIONALLY: 2D PROFILES (THESE MAY BE AVERAGES)
-C  IFLAG= 3:  ADDITIONALLY: 3D PROFILES
-C  IFLAG> 3:  ONLY FULL PROFILES, NO AVERAGES
+C  IFLAG=-1: ONLY HEADER IS PRINTED
+C  IFLAG= 0: ONLY MEAN VALUES IN EACH BLOCK
+C  IFLAG= 1: ADDITIONALLY: 1D PROFILES (THESE MAY BE AVERAGES)
+C  IFLAG= 2: ADDITIONALLY: 2D PROFILES (THESE MAY BE AVERAGES)
+C  IFLAG= 3: ADDITIONALLY: 3D PROFILES
+C  IFLAG> 3: ONLY FULL PROFILES, NO AVERAGES
 C
-C  IFILE> 0:  WRITE FULL TALLY ONTO STREAM FORT.IFILE
+C  IFILE> 0: WRITE FULL TALLY ONTO STREAM FORT.IFILE
 C
       USE EIRMOD_PRECISION  ! istream(nstream)
       USE EIRMOD_PARMMOD
@@ -30,7 +30,7 @@ C
       IMPLICIT NONE
 
       CHARACTER(*), INTENT(IN) :: T1, T2, T3
-      REAL(DP), INTENT(IN) :: PROF(*),X(*)
+      REAL(DP), INTENT(IN) :: PROF(*), X(*)
       INTEGER, INTENT(IN) :: NR, NP, NT, NB, NTT, IFLAG, IFILE
       REAL(DP) :: H(6)
       INTEGER :: K(6)

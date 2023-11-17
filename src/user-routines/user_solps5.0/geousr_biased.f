@@ -30,7 +30,7 @@ c======================================================================
 csw 03sep2013
       INTEGER :: NADMOD,NASMOD, NRS,IPUNKT !VK
       REAL(DP) :: XCOOR,YCOOR,ZCOOR !VK
-      real(dp) ::  xpt, ypt, XN, YN
+      real(dp) :: xpt, ypt, XN, YN
       integer ixn,iyn
 csw
       save first,onetwo,limpos,geometry_comment
@@ -88,10 +88,10 @@ csw 03sep2013
           READ (IUNIN,'(2I6,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
 
           GOTO (1,2,3,4,5,6),IPUNKT
-          WRITE (iunout,*) 'WRONG POINTNUMBER IN INFCOP '
+          WRITE (iunout,*) 'WRONG POINT NUMBER IN INFCOP'
           WRITE (iunout,*) 'INPUT LINE READING'
           WRITE (iunout,'(2I6,1P,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
-          WRITE (iunout,*) ' IS IGNORED '
+          WRITE (iunout,*) 'IS IGNORED'
           GOTO 10
 
     1     CONTINUE
@@ -409,6 +409,6 @@ C  ERROR
        YN=YPOL(IXN,IYN)
        IF(INDS.EQ.0) WRITE(iunout,*) "ERROR IN  FIND_NEAREST_NDS:",
      w                          "CANNOT FIND A NEAREST POINT"
-      END SUBROUTINE  FIND_NEAREST_NDS
+      END SUBROUTINE FIND_NEAREST_NDS
 
       END subroutine eirene_geousr_biased

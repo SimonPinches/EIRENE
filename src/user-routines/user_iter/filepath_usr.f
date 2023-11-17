@@ -8,7 +8,7 @@
       character(400) :: treepath
       character*256 :: get_solpstop
       external get_solpstop
-      
+
       TREEPATH = get_solpstop()
       IF (INDEX(TREEPATH,' ').NE.1) THEN
         I4 = SCAN(TREEPATH,' ')-1

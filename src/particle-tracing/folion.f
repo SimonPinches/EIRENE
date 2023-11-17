@@ -93,14 +93,14 @@ C     LGPART=FALSE
 C           ITYP=4  NO NEXT GENERATION TEST PARTICLE IS GENERATED
 C                   (PARTICLE ABSORBED IN BULK ION SPECIES)
 c
-c  at 100 :   start a new trace ion, velocity is given as full cartesian vector, lcart=true
-c  at 1004:   reduced (guiding centre) velocities and B field are now set for particle. lcart=false.
-C  at 1001:   particle enters static loop
-C  at 1002:   particle leaves static loop
-c  at 101 :   full new trajectory starts here.
-c  at 104 :   an earlier track continues here.
-c             initial position of track and cumulated integral for mfp sampling is not refreshed.
-c             meant for continuing a track across a transparent surface
+c  at 100 :  start a new trace ion, velocity is given as full cartesian vector, lcart=true
+c  at 1004:  reduced (guiding centre) velocities and B field are now set for particle. lcart=false.
+C  at 1001:  particle enters static loop
+C  at 1002:  particle leaves static loop
+c  at 101 :  full new trajectory starts here.
+c  at 104 :  an earlier track continues here.
+c            initial position of track and cumulated integral for mfp sampling is not refreshed.
+c            meant for continuing a track across a transparent surface
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -132,7 +132,7 @@ C
       USE EIRMOD_STDCOL, ONLY: EIRENE_STDCOL
       USE EIRMOD_SWITCH_PARTINFO, ONLY: EIRENE_SWITCH_PARTINFO
       USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
-      use eirmod_timer  
+      use eirmod_timer
       use eirmod_timep
       use eirmod_collide
       use eirmod_upcusr
@@ -156,7 +156,7 @@ c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
      .          DELFAC, TIFAC,
      .          SCOS_NEW, EPSLIM
       INTEGER :: ISTS, NCOUS, ICOU, J, JJ, IPL,
-     .           ICO, NLI, NLE, JCOL, NRC, 
+     .           ICO, NLI, NLE, JCOL, NRC,
      .           NRCOLD, IPLTI, I, IM, ICOUN,
      .           EIRENE_LEARC2, COLTYP,
      .           indf, NJUMP_EMC3 = 0, IRET, IRT_STAT, KK
@@ -194,7 +194,8 @@ C  IF NLSRFY, SURFACE INDEX MPSURF MUST BE DEFINED AT THIS POINT
 C  IF NLSRFZ, SURFACE INDEX MTSURF MUST BE DEFINED AT THIS POINT
 C  IF NLSRFA, SURFACE INDEX MASURF MUST BE DEFINED AT THIS POINT
 C
-      ICO=0  ! counter for particles sitting on surface: allow for two attemps in srfchk.
+      ICO=0  ! counter for particles sitting on surface:
+             ! allow for two attemps in srfchk.
       EPSLIM=EPS6
  1005 NUPC(1)=NPCELL-1+(NTCELL-1)*NP2T3
       NCELL=NRCELL+NUPC(1)*NR1P2+NBLCKA
@@ -249,7 +250,7 @@ C     IF (ITYP.EQ.3) THEN
 C       NLPR=   : NOT AVAILABLE
         NRC=NRCI(IION)
 C     ENDIF
-        
+
       IF (IFPATH.NE.1.OR.NRC.LT.0) GOTO 1002
 C  STOP STATIC LOOP AFTER 100 GENERATIONS LATEST, TO AVOID ACCIDENTAL INFINITE LOOPS
       IF (IC_ION.GT.100) GOTO 1002
@@ -353,15 +354,17 @@ C PUSH PARTICLE TO SURFACE, USE REDUCED (GC) VELOCITY
                  IF (IRET .EQ. 2) GOTO 380
               ENDIF
             case (4)
-              ISTS=ABS(INMTI(IPOLGN,MRSURF))  !dr NLIM already added in ISTS ?
+              !dr NLIM already added in ISTS ?
+              ISTS=ABS(INMTI(IPOLGN,MRSURF))
               MSURFG=INSPAT(IPOLGN,MRSURF)
               IF (ILIIN(ISTS) .NE. 0) THEN
                  CALL EIRENE_STDCOL (ISTS,1,SCOS,IRET)
                  IF (IRET .EQ. 1) GOTO 101
                  IF (IRET .EQ. 2) GOTO 380
               ENDIF
-             case (5)
-              ISTS=ABS(INMTIT(IPOLGN,MRSURF)) !dr NLIM already added in ISTS ?
+            case (5)
+              !dr NLIM already added in ISTS ?
+              ISTS=ABS(INMTIT(IPOLGN,MRSURF))
 C             MSURFG= ??
               IF (ILIIN(ISTS) .NE. 0) THEN
                  CALL EIRENE_STDCOL (ISTS,1,SCOS,IRET)
@@ -534,9 +537,9 @@ C  Exclude vacuum region and virtual neutral background species
           IF (.NOT.LGVAC(NCELL,IPL) .AND. (NCHRGP(IPL) > 0) ) THEN
 CNR Slow ion assumption only (any ion vs any background incl. impurities).
 CNR Generic formula is FNUEQI_SLOWION, but does not seem
-CNR to work with impurity backgrounds like Ne+ ==> for now, 
-CNR only active for main ion bagrounds, 0 for other backgrounds. 
-CNR Here FNUEQI is only for H2+/D2+ against H+ D+ backgrounds. 
+CNR to work with impurity backgrounds like Ne+ ==> for now,
+CNR only active for main ion backgrounds, 0 for other backgrounds.
+CNR Here FNUEQI is only for H2+/D2+ against H+ D+ backgrounds.
 CNR Otherwise 0 is returned.
             IF (NLSOLEDGE) THEN
               FNUIAR(IPL) = FNUEQI_SOL(DIIN(IPL,NCELL),
@@ -573,12 +576,12 @@ C     LATER: VELPAR --> VEL_GC
 C
 C  SCAN OVER SEGMENT
 
-C  BEFORE THIS SCAN: ZTST, ZDT1, CLPD(1):  MAX. POSSIBLE DISTANCE, DUE TO TIME STEP, FP_COL OR ADD. SURF.
+C  BEFORE THIS SCAN: ZTST, ZDT1, CLPD(1): MAX. POSSIBLE DISTANCE, DUE TO TIME STEP, FP_COL OR ADD. SURF.
 C
 CCC  210 CONTINUE
 C
       CALL EIRENE_TIME_TO_STANDARD_SURFACE
-     .    (TL, TF, TT, TS, ZDT1, ZT, ZTST, 
+     .    (TL, TF, TT, TS, ZDT1, ZT, ZTST,
      .     VELXS, VELYS, VELZS, VELS, ISRFCL, IRET)
       IF (IRET /= 0) GOTO 995
 C
@@ -855,7 +858,8 @@ C  ESCAPE AT 3RD (Z OR TOROIDAL) GRID SURFACE FOR TRIANGULAR X-Y GRID OPTION: MT
 C
 C  ESCAPE AT GRID SURFACE BUILT FROM TETRAHEDRA SIDES: MRSURF
       case (5)
-        ISTS=ABS(INMTIT(IPOLGN,MRSURF))  !dr NLIM already added in ISTS ?
+!dr NLIM already added in ISTS ?
+        ISTS=ABS(INMTIT(IPOLGN,MRSURF))
         IF (NLRAD.AND.ISTS.NE.0) THEN
           SG=SIGN(1._DP,VELX*PTETX(IPOLGN,MRSURF)+
      .                  VELY*PTETY(IPOLGN,MRSURF)+
@@ -886,7 +890,7 @@ C
       NRCELL=NRCELL+NINCX
       IF (NRCELL.GT.NR1STM.OR.NRCELL.LT.1) GOTO 990
 C
-CDR: SPLITTING AND COND.EXP.EST. NOT AVAILABLE FOR TEST IONS
+CDR: SPLITTING AND COND. EXP. EST. NOT AVAILABLE FOR TEST IONS
 C
 C  CHECK IF WE HAVE ENCOUNTERED A SPLITTING ZONE
 C     IF (NLSPLT(MRSURF).AND.NLEVEL.LT.MAXLEV.AND.ICOL.EQ.0) GOTO 330
@@ -911,7 +915,8 @@ c        WRITE (IUNOUT,*) 'WARNING: VEL IS ALREADY = VELPAR HERE'
 c        WRITE (IUNOUT,*) VEL,VELPAR,VELS
          CLPD(1)=CLPD(1)*VELPAR/VELS
       ENDIF
-      ZTC=CLPD(1)*VELPAR/VEL   !   this now does nothing: Velpar=vel here
+      ZTC=CLPD(1)*VELPAR/VEL   !   this now does nothing:
+                               !   Velpar=vel here
       IF (LCART) THEN
         VELXS=VELX
         VELYS=VELY
@@ -1176,8 +1181,8 @@ C
 C  ???
         IF (LDAMCEL(NCELL)) GOTO 9912  ! damaged cell, stop particle
 
-cdr:  try to distinguish: transparent or not. Use arrays "transp(ispz...)"
-cdr:  indf=1: transparent, indf=2: non-transparent
+cdr: try to distinguish: transparent or not. Use arrays "transp(ispz...)"
+cdr: indf=1: transparent, indf=2: non-transparent
 
         ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
 cdr  for solid surface: produce a full cartesian velocity vector, lcart=.true.
@@ -1196,8 +1201,10 @@ c  add gyro velocity (with random phase) to GC velocity:
           CALL EIRENE_NEWFIELD(X0,Y0,Z0,VELS,indf)
           COSIN=VELX*CRTX+VELY*CRTY+VELZ*CRTZ
 C  DOES THE PARTICLE SPEED UNIT VECTOR NOW POINT TOWARDS THE SURFACE ?
-          IF (.NOT.LGPART) EXIT  ! DO NOT CARE ABOUT GYRO MOTION, ABSORBED PARTICLE ANYWAY
-          IF (ILIIN(MSURF) < 0) EXIT ! DO NOT CARE ABOUT GYRO MOTION, TRANSPARENT SURFACE
+          IF (.NOT.LGPART) EXIT  ! DO NOT CARE ABOUT GYRO MOTION,
+                                 ! ABSORBED PARTICLE ANYWAY
+          IF (ILIIN(MSURF) < 0) EXIT ! DO NOT CARE ABOUT GYRO MOTION,
+                                     ! TRANSPARENT SURFACE
           IF (COSIN.GT.0.) EXIT
 C  NO, TRY ANOTHER GYRO PHASE
           ICOUN=ICOUN+1
@@ -1351,7 +1358,7 @@ C
 C  ION-ION ENERGY LOSS FREQUENCY (LANGER APPROXIMATION) (1/SEC)
 C  NUCL.FUS. 22, NO. 6, (1986) P754, FOR CH4+ (mA=16) ON H+ (mB=1)
       FUNCTION FNUEQI(XNI,TI)
-      REAL(DP) ::  FNUEQI,XNI,TI
+      REAL(DP) :: FNUEQI,XNI,TI
 c     FNUEQI=8.8E-8*XNI*TI**(-1.5)
 c  This is not exactly the relaxation time, but instead a time
 c  which appears in the analytical (BGK-like) solution EA(t).
@@ -1367,8 +1374,8 @@ c  written for fnueqi without that factor.
       END FUNCTION FNUEQI
 
       FUNCTION FNUEQI_SOL(XNI,TI,ION,IPL)
-      REAL(DP) ::  FNUEQI_SOL,XNI,TI
-      INTEGER ::  ION,IPL
+      REAL(DP) :: FNUEQI_SOL,XNI,TI
+      INTEGER :: ION,IPL
 c     FNUEQI_SOL=8.8E-8*XNI*TI**(-1.5)
 c  This is not exactly the relaxation time, but instead a time
 c  which appears in the analytical (BGK-like) solution EA(t).
@@ -1406,18 +1413,18 @@ C  GENERALIZATION OF LANGER EXPRESSION TO ARBITRARY IONS (MASS, CHARGE)
 C  note: for an intermediate period (1995 --2013) the mass factor
 c  (1+mB/mA) had an incorrect exponent -1/2, in the NRL formularies.
 c  2016: back to the correct formula (as in eighties) without that exponent
-CNR: This expression corresponds to nu^e_c in page 58 of EIRENE doc, which 
+CNR: This expression corresponds to nu^e_c in page 58 of EIRENE doc, which
 CNR is the characteristic rate in the solution (eq 1.109). It
 CNR is the generalised expression under the slow ion assumption (slow ion
-CNR velocity compared to background thermal velocity) 
+CNR velocity compared to background thermal velocity)
 CNR ! WIP: this formula does not seem to work for H2+ on impurities
 CNR backgrounds like H2+ on Ne+ (returns 10^9 W/m3...). Probably
 CNR requires more work. This is why it is not used here.
 
       FUNCTION FNUEQI_SLOWION(EA,XNI,TI,ION,IPL)
-      REAL(DP) ::  FNUEQI_SLOWION,EA,XNI,TI
-      INTEGER ::  ION,IPL
-      REAL(DP) ::  Coullog,fact,za,zb,XMUA,XMUB
+      REAL(DP) :: FNUEQI_SLOWION,EA,XNI,TI
+      INTEGER  :: ION,IPL
+      REAL(DP) :: Coullog,fact,za,zb,XMUA,XMUB
       Coullog=10.
       ZA=NCHRGI(ION)
       ZB=NCHRGP(IPL)
@@ -1432,10 +1439,10 @@ C  ION-ION ENERGY LOSS FREQUENCY (FULL EXPRESSION, NRL) (1/SEC)
 C  INVOLVING THE CHANDRASEKHAR FUNCTIONS
 
       FUNCTION FNUEQI_2(EA,XNI,TI,ION,IPL)
-      REAL(DP) ::  FNUEQI_2,EA,XNI,TI
-      INTEGER ::  ION,IPL
-      REAL(DP) ::  Coullog,XNUE0,za,zb,XMUA,XMUB,XAB,
-     .             vela,xma,xmb,eza,ezb
+      REAL(DP) :: FNUEQI_2,EA,XNI,TI
+      INTEGER  :: ION,IPL
+      REAL(DP) :: Coullog,XNUE0,za,zb,XMUA,XMUB,XAB,
+     .            vela,xma,xmb,eza,ezb
       COULLOG=10.
       ZA=NCHRGI(ION)
       ZB=NCHRGP(IPL)
@@ -1478,7 +1485,7 @@ C  IF (IND.EQ.0) RETURN WITH NEW LOCAL B FIELD BVEC
 C
 C  IF (IND.GE.1) ADDITIONALLY ALSO PROVIDE REDUCED (GC) VELOCITY VECTOR (SPEED UNIT VECTOR)
 C    BUT RETAIN PREVIOUS MODULI: V_PARALLEL, V_PERP.
-C    NEW REDUCED SPEED VECTOR:  LCART=FALSE AND VELX,VELY,VELY, SPEED: VEL (=VELPAR),
+C    NEW REDUCED SPEED VECTOR: LCART=FALSE AND VELX,VELY,VELY, SPEED: VEL (=VELPAR),
 C    CHECKS DONE THAT VELPER AND VERPAR ARE PRESERVED, CHECKS REMOVED.
 
 C  IF (IND.GE.2) ADDITIONALLY ALSO PROVIDE NEW CARTESIAN VELOCITY
@@ -1500,7 +1507,7 @@ C
       REAL(DP) :: BVEC_1(3), VVEC(3), GYRO, BBF
       INTEGER :: IND
 
-      CALL EIRENE_BFIELD (NCELL, X, Y, Z, BBX, BBY, BBZ, BBF,.TRUE.)
+      CALL EIRENE_BFIELD (NCELL, X, Y, Z, BBX, BBY, BBZ, BBF, .TRUE.)
       BVEC = (/ BBX, BBY, BBZ /)
 
       IF (IND.LT.1) RETURN

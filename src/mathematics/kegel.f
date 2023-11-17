@@ -40,9 +40,9 @@ C     DATA              EPS  / 5.D-10 /
       NORM = 0.0
       R = 0.0
 *
-      X0  = M(1)
-      Y0  = M(2)
-      Z0  = M(3)
+      X0 = M(1)
+      Y0 = M(2)
+      Z0 = M(3)
 *
       CX = EV(1,3) * (-LAMBDA(3))
       CY = EV(2,3) * (-LAMBDA(3))

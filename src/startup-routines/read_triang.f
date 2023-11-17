@@ -12,7 +12,7 @@ c   also read from casename.neighbors
 c
 c   Orientation is checked per triangle (counter-clockwise vertices).
 c   But it not related to a common orientation on
-c   the non-default standard surfaces
+c   the non-default standard surfaces.
 c   Such a code snippet, e.g. needed for splitting-rr options,
 c   and other diagnostics would exist in B2. B2.5 interface part.
 c

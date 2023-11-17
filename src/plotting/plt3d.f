@@ -202,7 +202,7 @@ C                       SURFACE
                 IF (TRCPLT) THEN
                   WRITE (iunout,*) 'SURFACE NO. ',J,
      .              ' TOROIDALLY SYMMETRIC'
-                  WRITE (iunout,*) 'PLOT LATER INTO STANDARD MESH '
+                  WRITE (iunout,*) 'PLOT LATER INTO STANDARD MESH'
                 ENDIF
                 CYCLE
               ELSE
@@ -251,7 +251,7 @@ C** 1 <= RLB < 2 ?
 C
           IF (RLB(J).EQ.1..OR.RLB(J).EQ.1.5) THEN
 C
-C**GEKRUEMMTE FLAECHE ODER  EBENENPAAR ?
+C**GEKRUEMMTE FLAECHE ODER EBENENPAAR ?
             IF (JUMLIM(J).EQ.0) THEN
               CALL EIRENE_FL2O (A0LM(J),A1LM(J),A2LM(J),
      .                   A3LM(J),A4LM(J),A5LM(J),
@@ -356,13 +356,13 @@ C**PAAR VON EBENEN (ODER EINE DOPPELEBENE)
                 ENDIF
               ELSE
                 PLABLE(J)=.TRUE.
-                CYCLE  
+                CYCLE
               ENDIF
 C**EINE EBENE
             ELSEIF (JUMLIM(J).NE.0) THEN
               CALL EIRENE_PLANE
-     .             (A0LM(J),A1LM(J),A2LM(J),A3LM(J),RLB(J),9,
-     .              EPS10,ALIMS,XLIMS,YLIMS,ZLIMS,
+     .         (A0LM(J),A1LM(J),A2LM(J),A3LM(J),RLB(J),9,
+     .               EPS10,ALIMS,XLIMS,YLIMS,ZLIMS,
      .                    ALIMS0,XLIMS1,YLIMS1,ZLIMS1,
      .                           XLIMS2,YLIMS2,ZLIMS2,
      .                           XLIMS3,YLIMS3,ZLIMS3,
@@ -421,7 +421,7 @@ C**ZYLINDER ?
 C**ZYLINDER BEGRENZT DURCH MAXIMAL 9 EBENEN
                 IF (ISCN(J).EQ.0) THEN
                   CALL EIRENE_ZYLPLN
-     .            (ZX0,ZY0,ZZ0,CX,CY,CZ,RZYL,J,NZAD,NINNE,
+     .             (ZX0,ZY0,ZZ0,CX,CY,CZ,RZYL,J,NZAD,NINNE,
      .                        NIN)
 C**ZYLINDER BEGRENZT DURCH MAXIMAL EINE FLAECHE ZWEITER ORDNUNG
                 ELSEIF (ILIN(J).EQ.0.AND.ISCN(J).EQ.1) THEN
@@ -448,9 +448,9 @@ C**ZYLINDER BEGRENZT VON 2 EBENEN
                     AR(3)=F2B
                     AR(4)=F3B
                     CALL EIRENE_SECQUA
-     .                 (ZX0,ZY0,ZZ0,CX,CY,CZ,AL,4,TA,TD,LERR1)
+     .               (ZX0,ZY0,ZZ0,CX,CY,CZ,AL,4,TA,TD,LERR1)
                     CALL EIRENE_SECQUA
-     .                 (ZX0,ZY0,ZZ0,CX,CY,CZ,AR,4,TB,TD,LERR2)
+     .               (ZX0,ZY0,ZZ0,CX,CY,CZ,AR,4,TB,TD,LERR2)
                     IF (LERR1.OR.LERR2) THEN
                       IF (TRCPLT) WRITE (iunout,*)
      .                     ' FEHLER IN BERANDUNG VON FLAECHE ',J
@@ -467,7 +467,7 @@ C**ZYLINDER BEGRENZT VON 2 EBENEN
                         TD=AL(II)
                         AL(II)=AR(II)
                         AR(II)=TD
- 15                   CONTINUE
+   15                 CONTINUE
                     ENDIF
                     CALL EIRENE_ZYLIND (ZX0,ZY0,ZZ0,CX,CY,CZ,T1,T2,
      .                          RZYL,NZAD,NINNE,NIN,
@@ -503,7 +503,7 @@ C**ZYLINDER BEGRENZT VON ECHT GEKRUEMMTEN FLAECHE 2TER ORDNUNG
                     ENDIF
                     DO 18 K=1,10
                       AR(K)=AL(K)
- 18                 CONTINUE
+   18               CONTINUE
                     CALL EIRENE_ZYLIND (ZX0,ZY0,ZZ0,CX,CY,CZ,T1,T2,
      .                      RZYL,NZAD,NINNE,NIN,
      .                      ILCOL(J),IGFIL(J).NE.0,
@@ -533,18 +533,18 @@ C
 C**EBENE BEGRENZT DURCH ANDERE EBENEN
               IF (ISCN(J).EQ.0) THEN
                 CALL EIRENE_PLANE
-     .              (A0LM(J),A1LM(J),A2LM(J),A3LM(J),RLB(J),
-     .                      9,EPS10,ALIMS,XLIMS,YLIMS,ZLIMS,
-     .                      ALIMS0,XLIMS1,YLIMS1,ZLIMS1,
-     .                             XLIMS2,YLIMS2,ZLIMS2,
-     .                             XLIMS3,YLIMS3,ZLIMS3,
+     .           (A0LM(J),A1LM(J),A2LM(J),A3LM(J),RLB(J),
+     .                    9,EPS10,ALIMS,XLIMS,YLIMS,ZLIMS,
+     .                     ALIMS0,XLIMS1,YLIMS1,ZLIMS1,
+     .                            XLIMS2,YLIMS2,ZLIMS2,
+     .                            XLIMS3,YLIMS3,ZLIMS3,
      .                      ILCOL(J),IGFIL(J).NE.0,J)
               ELSEIF (ILIN(J).EQ.0) THEN
 C**EBENE BEGRENZT DURCH EINEN ODER MEHRERE ZYLINDER?
                 IB=0
    20           IB=IB+1
                 CALL EIRENE_FL2O
-     .              (ALIMS0(IB,J),XLIMS1(IB,J),YLIMS1(IB,J),
+     .                    (ALIMS0(IB,J),XLIMS1(IB,J),YLIMS1(IB,J),
      .                     ZLIMS1(IB,J),XLIMS2(IB,J),YLIMS2(IB,J),
      .                     ZLIMS2(IB,J),XLIMS3(IB,J),YLIMS3(IB,J),
      .                     ZLIMS3(IB,J),MERK2,ZX0,ZY0,ZZ0,CX,CY,CZ,
@@ -559,7 +559,7 @@ C**EBENE BEGRENZT DURCH EINEN ODER MEHRERE ZYLINDER?
                   AL(3)=A2LM(J)
                   AL(4)=A3LM(J)
                   CALL EIRENE_SECQUA
-     .                (ZX0,ZY0,ZZ0,CX,CY,CZ,AL,4,TA,TD,LERR1)
+     .             (ZX0,ZY0,ZZ0,CX,CY,CZ,AL,4,TA,TD,LERR1)
                   IF (LERR1) THEN
                     WRITE (iunout,*)
      .                ' FEHLER IN DER BERANDUNG VON FLAECHE',J
@@ -836,9 +836,9 @@ C              OR 10 POINTS, IF CURVED LINE
                   ENDIF
                   CALL EIRENE_PL3D(X,Y,Z,XP(NA),YP(NA))
                   IF (CUR%NPL2D.EQ.0)
-     .              CALL GRJMP (REAL(XP(NA),SP),REAL(YP(NA),SP))
+     .             CALL GRJMP (REAL(XP(NA),SP),REAL(YP(NA),SP))
                   IF (CUR%NPL2D.EQ.1)
-     .              CALL GRDRW ( REAL(XP(NA),SP),REAL(YP(NA),SP))
+     .             CALL GRDRW (REAL(XP(NA),SP),REAL(YP(NA),SP))
 C
                   IS=IS+1
                   XSAVE(IS,IZ)=XP(NA)

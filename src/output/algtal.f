@@ -1,17 +1,17 @@
-cdr:   evaluate algebraic expression of tallies, as specified in
-cdr:   input block 10c for volume tallies and in 10e for surface tallies
-cpb: Sept 16:  bug fix: case added for 2 constant operators next to each other
+cdr: evaluate algebraic expression of tallies, as specified in
+cdr: input block 10c for volume tallies and in 10e for surface tallies
+cpb: Sept 16: bug fix: case added for 2 constant operators next to each other
 
 c  revised, to accommodate more algebraic, analytic and differentiation operations.
-c  1) get_intal.f :  pick input tally, return it on the fine grid, 
-c                    and also return the weighting function for averaging onto the
-C                    coarse (scoring) grid (if any)   
+c  1) get_intal.f : pick input tally, return it on the fine grid,
+c                   and also return the weighting function for averaging onto the
+C                   coarse (scoring) grid (if any)
 C
       SUBROUTINE EIRENE_ALGTAL
-cdr  purpose:  take character string CHRTAL(IALV)  (IALV=1,NALVI)
-cdr            carry out the coded operations on input and/or output tallies
-cdr            write resulting tally ALGV(IALV,ICELL), ICELL is from coarse 
-cdr            (scoring) grid:  ICELL=NCLTAL(IC), IC=1,NSBOX, ICELL=1,NSBOX_TAL
+cdr  purpose: take character string CHRTAL(IALV) (IALV=1,NALVI)
+cdr           carry out the coded operations on input and/or output tallies
+cdr           write resulting tally ALGV(IALV,ICELL), ICELL is from coarse
+cdr           (scoring) grid: ICELL=NCLTAL(IC), IC=1,NSBOX, ICELL=1,NSBOX_TAL
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -52,7 +52,7 @@ C
           real(dp), intent(in) :: f(:)
           real(dp), intent(out) :: fdx(:), fdy(:), fdz(:)
           logical, intent(in) :: lfdx, lfdy, lfdz
-        end subroutine eirene_calc_grad 
+        end subroutine eirene_calc_grad
       end interface
 C
 C
@@ -62,9 +62,9 @@ C
       IF (NALVI+NALSI <= 0) RETURN
 
       IF (.NOT.LALGV.AND.NALVI.GT.0) THEN
-        WRITE (iunout,*) ' ALGV IS SWITCHED OFF '
+        WRITE (iunout,*) ' ALGV IS SWITCHED OFF'
         WRITE (iunout,*)
-     .    ' NO ALGEBRAIC VOLUME TALLIES CAN BE CALCULATED '
+     .    ' NO ALGEBRAIC VOLUME TALLIES CAN BE CALCULATED'
         GOTO 300
       END IF
 
@@ -137,14 +137,17 @@ C
 c  1ST OPERAND IS AN INPUT TALLY: fetch an input tally, case 1 to case 25
             ITL=IABS(IZIF(2,IOP))
             IF (ITL.GT.NTALI) GOTO 90
+cdr use physical species index NFSTPI,
+cdr not the reduced "storage species index" NFRSTP
             IF (IZIF(1,IOP).GT.NFRSTP(ITL)) GOTO 91
             K=IZIF(1,IOP)
+
             NF=NFRSTP(ITL)
 
             CALL EIRENE_GET_INTAL
             IF (IER > 0) EXIT   ! NO CORRESPONDING INPUT TALLY FOUND
-cdr  input tally(itl,:) is returned as OP(:), 
-cdr  weighting fct is returned as WEI(:).              
+cdr  input tally(itl,:) is returned as OP(:),
+cdr  weighting fct is returned as WEI(:).
 
 cdr  weighted sum over subcells: in=ncltal(i)
             SUMWEI = EPS60
@@ -213,15 +216,17 @@ C
 c  2nd OPERAND IS AN INPUT TALLY: fetch an input tally, case 1 to case 25
             ITL=IABS(IZIF(4,IOP))
             IF (ITL.GT.NTALI) GOTO 90
+cdr use physical species index NFSTPI,
+cdr not the reduced "storage species index" NFRSTP
             IF (IZIF(3,IOP).GT.NFRSTP(ITL)) GOTO 91
             K=IZIF(3,IOP)
             NF=NFRSTP(ITL)
 
             CALL EIRENE_GET_INTAL
             IF (IER > 0) EXIT   ! NO CORRESPONDING INPUT TALLY FOUND
-cdr  input tally(itl,:) is returned as OP(:), 
+cdr  input tally(itl,:) is returned as OP(:),
 cdr  weighting fct is returned as WEI(:).
-     
+
 cdr  weighted sum over subcells: in=ncltal(i)
             SUMWEI = EPS60
             VEC2 = 0._DP
@@ -316,11 +321,11 @@ C  DIVISION BY IDENTICALLY ZERO TALLY. ALGEBR. TALLY CANNOT BE EVALUATED. RETURN
             CALL EIRENE_CELL_TO_CORNER (VEC1,VECCOR)
             CALL EIRENE_CALC_GRAD (VECCOR,DFDX,DFDY,DFDZ,
      .                            .TRUE.,.TRUE.,.TRUE.)
-            IF (OPER(IOP) == 'QA') 
+            IF (OPER(IOP) == 'QA')
      .          RESULT(II,1:NSBOX_TAL) = DFDX(1:NSBOX_TAL)
-            IF (OPER(IOP) == 'QB') 
+            IF (OPER(IOP) == 'QB')
      .          RESULT(II,1:NSBOX_TAL) = DFDY(1:NSBOX_TAL)
-            IF (OPER(IOP) == 'QC') 
+            IF (OPER(IOP) == 'QC')
      .          RESULT(II,1:NSBOX_TAL) = DFDZ(1:NSBOX_TAL)
           CASE ('QD')
 !         ELSEIF (OPER(IOP) == 'QD') THEN
@@ -358,32 +363,32 @@ c         write (iunout,*) 'iop, k=icell ',result(II,icell)
           GOTO 100
 C
    90     CONTINUE
-          WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL '
-          WRITE (iunout,*) ' TALLY NUMBER OUT OF RANGE '
+          WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL'
+          WRITE (iunout,*) ' TALLY NUMBER OUT OF RANGE'
           WRITE (iunout,*)
      .      ' CHECK INPUT FOR ADDITIONAL VOLUME TALLY NO. ',IALV
           WRITE (iunout,*) CHRTAL(IALV)
           GOTO 160
 C
    91     CONTINUE
-          WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL '
-          WRITE (iunout,*) ' SPECIES INDEX OUT OF RANGE '
+          WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL'
+          WRITE (iunout,*) ' SPECIES INDEX OUT OF RANGE'
           WRITE (iunout,*)
      .      ' CHECK INPUT FOR ADDITIONAL VOLUME TALLY NO. ',IALV
           WRITE (iunout,*) CHRTAL(IALV)
           GOTO 160
 C
    92     CONTINUE
-          WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL '
-          WRITE (iunout,*) ' WRONG NUMBER OF INTERMEDIATE RESULT FOUND '
+          WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL'
+          WRITE (iunout,*) ' WRONG NUMBER OF INTERMEDIATE RESULT FOUND'
           WRITE (iunout,*) CHRTAL(IALV)
           WRITE (iunout,'(1X,A,4I4)')
      .          (OPER(J),(IZIF(K,J),K=1,4),J=1,NOP)
           GOTO 160
 C
    93     CONTINUE
-          WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL '
-          WRITE (iunout,*) ' OPERATOR NOT FORESEEN '
+          WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL'
+          WRITE (iunout,*) ' OPERATOR NOT FORESEEN'
           WRITE (iunout,*) ' NO CALCULATION IS DONE FOR TALLY NO. ',IALV
           WRITE (iunout,*) CHRTAL(IALV)
           WRITE (iunout,'(1X,A,4I4)')
@@ -391,9 +396,9 @@ C
           GOTO 160
 C
    94     CONTINUE
-          WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL '
+          WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL'
           WRITE (iunout,*)
-     .      ' ARGUMENTS OF OPERATION HAVE DIFFERENT SPACING '
+     .      ' ARGUMENTS OF OPERATION HAVE DIFFERENT SPACING'
           WRITE (iunout,*) ' NO CALCULATION IS DONE FOR TALLY NO. ',IALV
           WRITE (iunout,*) CHRTAL(IALV)
           WRITE (iunout,'(1X,A,4I4)')
@@ -401,7 +406,7 @@ C
           GOTO 160
 C
    95     CONTINUE
-          WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL '
+          WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL'
           WRITE (iunout,*)
      .      ' OPERAND OF ALGEBRAIC EXPRESSION IS SWITCHED OFF'
           WRITE (iunout,*) ' NO CALCULATION IS DONE FOR TALLY NO. ',IALV
@@ -411,7 +416,7 @@ C
           GOTO 160
 C
    96     CONTINUE
-          WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL '
+          WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL'
           WRITE (iunout,*)
      .      ' OPERAND OF EXPONENTIAL FUNCTION > 150'
           WRITE (iunout,*) ' NO CALCULATION IS DONE FOR TALLY NO. ',IALV
@@ -421,10 +426,10 @@ C
           GOTO 160
 C
    97     CONTINUE
-          WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL '
+          WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL'
           WRITE (iunout,*)
      .      ' EIRENE SCORES ON COMPLEX CELLS, CALCULATION OF',
-     .      ' DERIVATIVES IS NOT POSSIBLE '
+     .      ' DERIVATIVES IS NOT POSSIBLE'
           WRITE (iunout,*) ' I, NCLTAL(I) ', I, NCLTAL(I)
           WRITE (iunout,*) ' NO CALCULATION IS DONE FOR TALLY NO. ',IALV
           WRITE (iunout,*) CHRTAL(IALV)
@@ -455,9 +460,9 @@ C
   300 CONTINUE
 
       IF (.NOT.LALGS.AND.NALSI.GT.0) THEN
-        WRITE (iunout,*) ' ALGS IS SWITCHED OFF '
+        WRITE (iunout,*) ' ALGS IS SWITCHED OFF'
         WRITE (iunout,*)
-     .    ' NO ALGEBRAIC SURFACE TALLIES CAN BE CALCULATED '
+     .    ' NO ALGEBRAIC SURFACE TALLIES CAN BE CALCULATED'
         RETURN
       END IF
 
@@ -671,29 +676,29 @@ C
           GOTO 400
 C
   390     CONTINUE
-          WRITE (iunout,*) ' TALLY NUMBER OUT OF RANGE '
+          WRITE (iunout,*) ' TALLY NUMBER OUT OF RANGE'
           WRITE (iunout,*)
      .      ' CHECK INPUT FOR ADDITIONAL SURFACE TALLY NO. ',IALS
           WRITE (iunout,*) CHRTLS(IALS)
           GOTO 500
 C
   391     CONTINUE
-          WRITE (iunout,*) ' SPECIES INDEX OUT OF RANGE '
+          WRITE (iunout,*) ' SPECIES INDEX OUT OF RANGE'
           WRITE (iunout,*)
      .      ' CHECK INPUT FOR ADDITIONAL SURFACE TALLY NO. ',IALS
           WRITE (iunout,*) CHRTLS(IALS)
           GOTO 500
 C
   392     CONTINUE
-          WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGEBR '
-          WRITE (iunout,*) ' WRONG NUMBER OF INTERMEDIATE RESULT FOUND '
+          WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGEBR'
+          WRITE (iunout,*) ' WRONG NUMBER OF INTERMEDIATE RESULT FOUND'
           WRITE (iunout,*) CHRTLS(IALS)
           WRITE (iunout,'(1X,A,4I4)')
      .          (OPER(J),(IZIF(K,J),K=1,4),J=1,NOP)
           GOTO 500
   393     CONTINUE
 C
-          WRITE (iunout,*) ' OPERATOR NOT FORESEEN '
+          WRITE (iunout,*) ' OPERATOR NOT FORESEEN'
           WRITE (iunout,*) ' NO CALCULATION IS DONE FOR TALLY NO. ',IALS
           WRITE (iunout,*) CHRTLS(IALS)
           WRITE (iunout,'(1X,A,4I4)')
@@ -710,7 +715,7 @@ C
           GOTO 500
 C
   395     CONTINUE
-          WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL '
+          WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL'
           WRITE (iunout,*)
      .      ' OPERAND OF ALGEBRAIC EXPRESSION IS SWITCHED OFF'
           WRITE (iunout,*) ' NO CALCULATION IS DONE FOR TALLY NO. ',IALS
@@ -720,7 +725,7 @@ C
           GOTO 500
 C
   396     CONTINUE
-          WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL '
+          WRITE (iunout,*) ' ERROR IN SUBROUTINE EIRENE_ALGTAL'
           WRITE (iunout,*)
      .      ' OPERAND OF EXPONENTIAL FUNCTION > 150'
           WRITE (iunout,*) ' NO CALCULATION IS DONE FOR TALLY NO. ',IALS
@@ -761,8 +766,11 @@ C     return
 
       SUBROUTINE EIRENE_GET_INTAL
       INTEGER KK
-cdr fetch input tally no. ITL, return as OP(:)
-cdr also set weighting function WEI(:) for averaging in calling routine 
+cdr fetch input tally no. ITL, species K, return as OP(:)
+cdr also set weighting function WEI(:) for averaging in calling routine.
+cdr K from full physical species range: 1:NF.
+cdr even if reduced indirect species indices NSPLV or NPLSTI exist
+cdr K=0: sum over species index.
 
       IER = 0
 
@@ -770,7 +778,7 @@ cdr also set weighting function WEI(:) for averaging in calling routine
       IF (.NOT.LIVTALI(ITL)) THEN
         WRITE (iunout,*) ' WRONG TALLY NOT AVAILABLE ALGTAL IALV = ',
      .                      IALV, ' ITAL = ', ITL
-        WRITE (iunout,*) ' NO ALGEBRAIC TALLY CALCULATED '
+        WRITE (iunout,*) ' NO ALGEBRAIC TALLY CALCULATED'
         CALL EIRENE_LEER(1)
         IER = 1
       END IF
@@ -783,6 +791,9 @@ c  Te
       CASE (2)
 c  Ti
         IF ( K == 0 ) THEN
+c  sum over species index KK=1,NF
+cdr I think the code below is wrong.
+cdr WEI must be applied already within sum for OP.
           OP = 0._DP
           WEI = 0._DP
           DO KK = 1, NF
@@ -810,6 +821,9 @@ c  ni
       CASE (5)
 c  vxin
         IF ( K == 0 ) THEN
+c  sum over species index KK=1,NF
+cdr I think the code below is wrong.
+cdr WEI must be applied already within sum for OP.
           OP = 0._DP
           WEI = 0._DP
           DO KK = 1, NF
@@ -823,6 +837,7 @@ c  vxin
         END IF
       CASE (6)
 c  vyin
+cdr same bug as above
         IF ( K == 0 ) THEN
           OP = 0._DP
           WEI = 0._DP
@@ -837,6 +852,7 @@ c  vyin
         END IF
       CASE (7)
 c  vzin
+cdr same bug as above
         IF ( K == 0 ) THEN
           OP = 0._DP
           WEI = 0._DP
@@ -877,6 +893,9 @@ c  Adin
       CASE (13)
 c  Ed
         IF ( K == 0 ) THEN
+c  sum over species index KK=1,NF
+cdr I think the code below is wrong.
+cdr WEI must be applied already within sum for OP.
           OP(1:NSBOX) = SUM(EDRIFT(1:NF,1:NSBOX),1)
           WEI(1:NSBOX) = SUM(DIIN(1:NF,1:NSBOX),1)*VOL(1:NSBOX)
         ELSE
@@ -956,7 +975,7 @@ c  free29
 c  free30
         OP(1:NSBOX) = FREE30(1:NSBOX)
         WEI(1:NSBOX) = 1._DP
-c  
+c
 c
       CASE (31:120)   ! ntali=120, constant required here
 !  GRADIENTS
@@ -966,7 +985,7 @@ c
       CASE DEFAULT
         WRITE (iunout,*) ' WRONG TALLY NUMBER IN ALGTAL IALV = ',
      .                      IALV
-        WRITE (iunout,*) ' NO ALGEBRAIC TALLY CALCULATED '
+        WRITE (iunout,*) ' NO ALGEBRAIC TALLY CALCULATED'
         CALL EIRENE_LEER(1)
         IER = 1
       END SELECT

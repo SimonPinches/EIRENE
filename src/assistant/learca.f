@@ -2,7 +2,7 @@ cdr  june 16: comments added
 cdr  NS=N1=1 always, except: call from STEP.f
 cdr  to be done: binary search
 cdr  aug. 20: code safeties from ITER branch
-C     
+C
 C*DK LEARCA
       FUNCTION EIRENE_LEARCA (X,R,N1,N,NS,TEXT)
 C
@@ -27,7 +27,7 @@ C
       NNN=1
       IF (X.LT.R(NS,1)-1.D-12) GOTO 20
       I=2
-      
+
 cdr  this loop should be replaced with a binary search
       DO 10 J=2,N
         I=J
@@ -37,7 +37,7 @@ cdr  this loop should be replaced with a binary search
       NNN=N
       IF (X.GT.R(NS,N)+1.D-12) GOTO 20
       I=N
-      
+
    15 EIRENE_LEARCA=I-1
       RETURN
 C

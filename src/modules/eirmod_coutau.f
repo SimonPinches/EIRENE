@@ -4,10 +4,10 @@ cdr dec. 15:  comments added. missing tallies ppeli, epeli, etc..??
 cpb jan. 18:  array NFSTPI moved to module EIRMOD_COMUSR
 
       MODULE EIRMOD_COUTAU
-cdr  mostly global tallies integrated from more deeply 
+cdr  mostly global tallies integrated from more deeply
 cdr  resolved tallies,
 cdr  integration done during post MC-loop processing.
-cdr  Few are directly scored: ptrash, etrash, .... xmcp 
+cdr  Few tallies are directly scored: ptrash, etrash, .... xmcp
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -22,7 +22,7 @@ cdr  Few are directly scored: ptrash, etrash, .... xmcp
      .          EIRENE_INIT_COUTAU, EIRENE_FETCH_OUTAU,
      .          EIRENE_WRITE_COUTAU, EIRENE_READ_COUTAU,
      .          EIRENE_INIT_COUTAU_REINIT,
-     .          EIRENE_BROADCAST_COUTAU 
+     .          EIRENE_BROADCAST_COUTAU
 
 ! INTEGRALS OF VOLUME-AVERAGED TALLIES
       REAL(DP), PUBLIC, ALLOCATABLE, TARGET, SAVE ::
@@ -55,7 +55,8 @@ cdr  Few are directly scored: ptrash, etrash, .... xmcp
      R VXDENAI(:,:), VXDENMI(:,:), VXDENII(:,:), VXDENPHI(:,:),
      R VYDENAI(:,:), VYDENMI(:,:), VYDENII(:,:), VYDENPHI(:,:),
      R VZDENAI(:,:), VZDENMI(:,:), VZDENII(:,:), VZDENPHI(:,:),
-     R MAPLI(:,:),  MMPLI(:,:),  MIPLI(:,:),  MPHPLI(:,:)
+     R MAPLI(:,:),  MMPLI(:,:),  MIPLI(:,:),
+     R MPHPLI(:,:)
 
 ! INTEGRALS OF SURFACE TALLIES: PARTICLE FLUXES
       REAL(DP), PUBLIC, ALLOCATABLE, TARGET, SAVE ::
@@ -93,10 +94,11 @@ cdr  Few are directly scored: ptrash, etrash, .... xmcp
      R SPTPPLI(:,:),
      R sptatti(:), sptmtti(:), sptitti(:), sptphtti(:), sptpltti(:),
      R SPTTTI(:),
+! INTEGRALS OF ADDITIONAL TALLIES
      R ADDSI(:,:),  ALGSI(:,:),
      R SPUMPI(:,:)
 
-! INTEGRAL VALUES, global balances, scaling
+! INTEGRAL VALUES, global balances, scaling, from primary sources
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R WTOTA(:,:),  WTOTM(:,:),  WTOTI(:,:),  WTOTP(:,:),  WTOTPH(:,:),
      R WTOTE(:),
@@ -106,7 +108,7 @@ cdr scored along the flights
      R PTRASH(:),   ETRASH(:),
 
 cdr for scaling
-     R FLUXT(:),    FLXFAC(:),  
+     R FLUXT(:),    FLXFAC(:),
      R FASCL(:,:),  FMSCL(:,:),  FISCL(:,:),  FPHSCL(:,:)
 
 ! helper pointers for species resolved integrals
@@ -140,8 +142,9 @@ cdr for scaling
       LOGICAL :: LOGHELP(NSTRA)
 
       IF (ALLOCATED(PDENAI)) RETURN
-
+cdr integrated volume tallies
       NOUTA1 = NVLTLP*NSTRAP
+cdr integrated surface tallies
       NOUTA2 = NSFTLP*NSTRAP
       NOUTAS = (2*NPHOTP+2*NATMP+2*NMOLP+1*NPLSP+3*NIONP+11)*NSTRAP
       NOUTAU = NOUTA1+NOUTA2+NOUTAS
@@ -244,10 +247,6 @@ cdr  volumetric particles source tallies, from incident photons, sources for e,a
       ALLOCATE (EPHIOI(0:NSTRA))
       ALLOCATE (EPHPHTI(0:NSTRA))
       ALLOCATE (EPHPLI(0:NPLS,0:NSTRA))
-
-      ALLOCATE (RAELI(0:NATM,0:NSTRA))
-      ALLOCATE (RMELI(0:NMOL,0:NSTRA))
-      ALLOCATE (RIELI(0:NION,0:NSTRA))
 
       ALLOCATE (ADDVI(0:NADV,0:NSTRA))
       ALLOCATE (COLVI(0:NCLV,0:NSTRA))
@@ -467,6 +466,10 @@ cdr  surface incident fluxes of bulk ions (no fluxes emitted for bulk ions from 
       ALLOCATE (ADDSI(0:NADS,0:NSTRA))
       ALLOCATE (ALGSI(0:NALS,0:NSTRA))
       ALLOCATE (SPUMPI(0:NSPZ,0:NSTRA))
+
+      ALLOCATE (RAELI(0:NATM,0:NSTRA))
+      ALLOCATE (RMELI(0:NMOL,0:NSTRA))
+      ALLOCATE (RIELI(0:NION,0:NSTRA))
 
       ALLOCATE (WTOTA(0:NATM,0:NSTRA))
       ALLOCATE (WTOTM(0:NMOL,0:NSTRA))
@@ -853,7 +856,7 @@ cdr volumetric tallies for energy balance, sources from atoms for el, a,m,i,ph,p
         EPHMLI(ISTRA)  = 0._DP
         EPHIOI(ISTRA)  = 0._DP
         EPHPHTI(ISTRA) = 0._DP
-        EPHPLI(:,ISTRA)  = 0._DP
+        EPHPLI(:,ISTRA)= 0._DP
 
         RAELI(:,ISTRA) = 0._DP
         RMELI(:,ISTRA) = 0._DP
@@ -879,19 +882,19 @@ cdr volumetric tallies for energy balance, sources from atoms for el, a,m,i,ph,p
         VGENII(:,ISTRA)  = 0._DP
         VGENPHI(:,ISTRA) = 0._DP
 
-cdr  particle sources from pl, for electrons:  tally ppeli missing ??
+cdr  particle sources from pl, for electrons: tally ppeli missing ??
         PPATI(:,ISTRA)  = 0._DP
         PPMLI(:,ISTRA)  = 0._DP
         PPIOI(:,ISTRA)  = 0._DP
         PPPHTI(:,ISTRA) = 0._DP
-        PPPLI(:,ISTRA) = 0._DP
+        PPPLI(:,ISTRA)  = 0._DP
 
-cdr  energy sources from pl, for electrons:  tally epeli missing ??
+cdr  energy sources from pl, for electrons: tally epeli missing ??
         EPATI(ISTRA)  = 0._DP
         EPMLI(ISTRA)  = 0._DP
         EPIOI(ISTRA)  = 0._DP
         EPPHTI(ISTRA) = 0._DP
-        EPPLI(:,ISTRA) = 0._DP
+        EPPLI(:,ISTRA)= 0._DP
 
         VXDENAI(:,ISTRA)  = 0._DP
         VXDENMI(:,ISTRA)  = 0._DP
@@ -908,8 +911,9 @@ cdr  energy sources from pl, for electrons:  tally epeli missing ??
         MAPLI(:,ISTRA)    = 0._DP
         MMPLI(:,ISTRA)    = 0._DP
         MIPLI(:,ISTRA)    = 0._DP
-        MPHPLI(:,ISTRA)    = 0._DP
+        MPHPLI(:,ISTRA)   = 0._DP
 
+cdr  surface tallies
         POTATI(:,ISTRA) = 0._DP
         PRFAAI(:,ISTRA) = 0._DP
         PRFMAI(:,ISTRA) = 0._DP
@@ -929,11 +933,11 @@ cdr  energy sources from pl, for electrons:  tally epeli missing ??
         PRFPHII(:,ISTRA)= 0._DP
         PRFPII(:,ISTRA) = 0._DP
         POTPHTI(:,ISTRA)= 0._DP
-        PRFAPHTI(:,ISTRA)= 0._DP
-        PRFMPHTI(:,ISTRA)= 0._DP
-        PRFIPHTI(:,ISTRA)= 0._DP
-        PRFPHPHTI(:,ISTRA)=0._DP
-        PRFPPHTI(:,ISTRA)= 0._DP
+        PRFAPHTI(:,ISTRA) = 0._DP
+        PRFMPHTI(:,ISTRA) = 0._DP
+        PRFIPHTI(:,ISTRA) = 0._DP
+        PRFPHPHTI(:,ISTRA)= 0._DP
+        PRFPPHTI(:,ISTRA) = 0._DP
         POTPLI(:,ISTRA) = 0._DP
         EOTATI(:,ISTRA) = 0._DP
         ERFAAI(:,ISTRA) = 0._DP
@@ -953,47 +957,47 @@ cdr  energy sources from pl, for electrons:  tally epeli missing ??
         ERFIII(:,ISTRA) = 0._DP
         ERFPHII(:,ISTRA)= 0._DP
         ERFPII(:,ISTRA) = 0._DP
-        EOTPHTI(:,ISTRA) = 0._DP
+        EOTPHTI(:,ISTRA)= 0._DP
         ERFAPHTI(:,ISTRA) = 0._DP
         ERFMPHTI(:,ISTRA) = 0._DP
         ERFIPHTI(:,ISTRA) = 0._DP
         ERFPHPHTI(:,ISTRA)= 0._DP
         ERFPPHTI(:,ISTRA) = 0._DP
-        EOTPLI(:,ISTRA) = 0._DP
+        EOTPLI(:,ISTRA)   = 0._DP
         SPTAATI(:,ISTRA) = 0._DP
         SPTMATI(:,ISTRA) = 0._DP
         SPTIATI(:,ISTRA) = 0._DP
-        SPTPHATI(:,ISTRA) = 0._DP
+        SPTPHATI(:,ISTRA)= 0._DP
         SPTPATI(:,ISTRA) = 0._DP
         SPTAMLI(:,ISTRA) = 0._DP
         SPTMMLI(:,ISTRA) = 0._DP
         SPTIMLI(:,ISTRA) = 0._DP
-        SPTPHMLI(:,ISTRA) = 0._DP
+        SPTPHMLI(:,ISTRA)= 0._DP
         SPTPMLI(:,ISTRA) = 0._DP
         SPTAIOI(:,ISTRA) = 0._DP
         SPTMIOI(:,ISTRA) = 0._DP
         SPTIIOI(:,ISTRA) = 0._DP
-        SPTPHIOI(:,ISTRA) = 0._DP
+        SPTPHIOI(:,ISTRA)= 0._DP
         SPTPIOI(:,ISTRA) = 0._DP
         SPTAPHTI(:,ISTRA) = 0._DP
         SPTMPHTI(:,ISTRA) = 0._DP
         SPTIPHTI(:,ISTRA) = 0._DP
-        SPTPHPHTI(:,ISTRA) = 0._DP
+        SPTPHPHTI(:,ISTRA)= 0._DP
         SPTPPHTI(:,ISTRA) = 0._DP
         SPTAPLI(:,ISTRA) = 0._DP
         SPTMPLI(:,ISTRA) = 0._DP
         SPTIPLI(:,ISTRA) = 0._DP
-        SPTPHPLI(:,ISTRA) = 0._DP
+        SPTPHPLI(:,ISTRA)= 0._DP
         SPTPPLI(:,ISTRA) = 0._DP
         SPTATTI(ISTRA) = 0._DP
         SPTMTTI(ISTRA) = 0._DP
         SPTITTI(ISTRA) = 0._DP
-        SPTPHTTI(ISTRA) = 0._DP
-        SPTPLTTI(ISTRA) = 0._DP
-        SPTTTI(ISTRA) = 0._DP
-        ADDSI(:,ISTRA)  = 0._DP
-        ALGSI(:,ISTRA)  = 0._DP
-        SPUMPI(:,ISTRA) = 0._DP
+        SPTPHTTI(ISTRA)= 0._DP
+        SPTPLTTI(ISTRA)= 0._DP
+        SPTTTI(ISTRA)  = 0._DP
+        ADDSI(:,ISTRA) = 0._DP
+        ALGSI(:,ISTRA) = 0._DP
+        SPUMPI(:,ISTRA)= 0._DP
 
         WTOTA(:,ISTRA)  = 0._DP
         WTOTM(:,ISTRA)  = 0._DP
@@ -1007,7 +1011,7 @@ cdr  energy sources from pl, for electrons:  tally epeli missing ??
         ETOTP(ISTRA)  = 0._DP
         ETOTPH(ISTRA) = 0._DP
 cdr  scored along the flight
-        EELFI(:,ISTRA)  = 0._DP
+        EELFI(:,ISTRA)= 0._DP
         PTRASH(ISTRA) = 0._DP
         ETRASH(ISTRA) = 0._DP
         XMCP(ISTRA)   = 0._DP
@@ -1015,10 +1019,10 @@ cdr  scored along the flight
 cdr  for scaling
         FLUXT(ISTRA)  = 0._DP
         FLXFAC(ISTRA) = 0._DP
-        FASCL(:,ISTRA)  = 0._DP
-        FMSCL(:,ISTRA)  = 0._DP
-        FISCL(:,ISTRA)  = 0._DP
-        FPHSCL(:,ISTRA)  = 0._DP
+        FASCL(:,ISTRA) = 0._DP
+        FMSCL(:,ISTRA) = 0._DP
+        FISCL(:,ISTRA) = 0._DP
+        FPHSCL(:,ISTRA)= 0._DP
 
       END DO
       IFRST = 1
@@ -1175,7 +1179,7 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IE = IA - 1 + SIZE(PPHPLI)
       OUTAU(IA:IE) = PACK(PPHPLI ,.TRUE.)
 
-
+cdr  particle sources done.
 
 
       IA = IE + 1
@@ -1273,6 +1277,8 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(EPHPLI)
       OUTAU(IA:IE) = PACK(EPHPLI ,.TRUE.)
+
+cdr energy sources done.Next: additional tallies
 
       IA = IE + 1
       IE = IA - 1 + SIZE(ADDVI)
@@ -1451,8 +1457,7 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       OUTAU(IA:IE) = PACK(MPHPLI,.TRUE.)
 
 
-
-
+cdr  surface tallies
       IA = IE + 1
       IE = IA - 1 + SIZE(POTATI)
       OUTAU(IA:IE) = PACK(POTATI,.TRUE.)
@@ -1789,6 +1794,7 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IE = IA - 1 + SIZE(SPUMPI)
       OUTAU(IA:IE) = PACK(SPUMPI,.TRUE.)
 
+
       IA = IE + 1
       IE = IA - 1 + SIZE(RAELI)
       OUTAU(IA:IE) = PACK(RAELI,.TRUE.)
@@ -1800,7 +1806,6 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IA = IE + 1
       IE = IA - 1 + SIZE(RIELI)
       OUTAU(IA:IE) = PACK(RIELI,.TRUE.)
-
 
       IA = IE + 1
       IE = IA - 1 + SIZE(WTOTA)
@@ -2757,6 +2762,8 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
 
 
       SUBROUTINE EIRENE_FETCH_OUTAU (OUTAU,ITAL,ISP,ISTRA,IUNOUT)
+cdr  return OUTAU = total (volume integrated tally),
+cdr    for tally ITAL, species ISP, stratum ISTRA
       REAL(DP) :: OUTAU
       INTEGER, INTENT(IN) :: ITAL, ISP, ISTRA, IUNOUT
 

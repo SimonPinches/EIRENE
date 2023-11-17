@@ -826,7 +826,7 @@ coverage_report:
         - cd EIRENE-sample-cases
         - git init
         - git remote add origin https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
-        - git fetch --depth 1 origin ${SAMPLE_CASE_VERSION}	
+        - git fetch --depth 1 origin ${SAMPLE_CASE_VERSION}
         - git checkout FETCH_HEAD
         - make coverageReport FFLAGS="-g -fprofile-arcs -ftest-coverage" CONFIG=Coverage
     dependencies: []

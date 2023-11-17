@@ -48,14 +48,15 @@ cpb             storing not yet followed secondaries needs to be somewhat larger
       LOGICAL, PUBLIC, TARGET, ALLOCATABLE, SAVE :: LCMSPL(:)
 
       LOGICAL, PUBLIC, POINTER, SAVE ::
-     L NLSPLT(:),  ! indicate non dev. surfacs as "splitting-rr" surfaces
+     L NLSPLT(:),  ! mark surfaces as "splitting-rr" surfaces
 
      L NLPRCA(:), NLPRCM(:), NLPRCI(:), NLPRCPH(:)
 cdr  NLPRCS should also become POINTER, belongs to NLPRCA; ..., cond exp. est.
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE ::
-     L NLPRCS(:)  ! indicate additional surfaces as attractors for cond. exp. est.
+     L NLPRCS(:)  ! indicate additional surfaces
+                  ! as attractors for cond. exp. est.
 
-cym PRIVATE-> PUBLIC      
+cym PRIVATE-> PUBLIC
       INTEGER, PUBLIC, SAVE ::
      I NCMSPL, MCMSPL, KCMSPL
 
@@ -66,7 +67,7 @@ cym PRIVATE-> PUBLIC
 !$OMP  THREADPRIVATE(WMINV,WMINS,WMINC,WMINL,SPLPAR,RNUMB,PRMSPL,
 !$OMP& RSPLST,MAXLEV,NLEVEL,MAXRAD,MAXPOL,MAXTOR,MAXADD,NODES,NSSPL,
 !$OMP& ISPLST,
-cym again not private 18/04 
+cym again not private 18/04
 cym nlsplt,nlprca,nlprcm,nlprci,nlprcph,nlprcs,
 cym - not private, initialized in this module
 cym!$omp& ncmspl,mcmspl,kcmspl,
@@ -97,7 +98,6 @@ cdr  .      +NLIMPS                 ! for NLPRCS, tbd.
       ALLOCATE (RSPLST(NPARTC,MAXLEVEL))
       ALLOCATE (ISPLST(MPARTC,MAXLEVEL))
 
-
       WRITE (IUNMEM,'(A,T25,I15)')
      .       ' COMSPL ',(NCMSPL+MAXLEVEL*NPARTC)*8 +
      .                  (MCMSPL+MAXLEVEL*MPARTC)*4 + (KCMSPL+NLIMPS+1)*4
@@ -108,7 +108,7 @@ cdr  .      +NLIMPS                 ! for NLPRCS, tbd.
       WMINL  => RCMSPL(4)
       SPLPAR => RCMSPL(5)
       RNUMB  => RCMSPL(6:5+N1ST+N2ND+N3RD+NLIM)
-      PRMSPL => RCMSPL(6+N1ST+N2ND+N3RD+NLIM : NCMSPL)
+      PRMSPL => RCMSPL(6+  N1ST+N2ND+N3RD+NLIM : NCMSPL)
 
       MAXLEV => ICMSPL(1)
       NLEVEL => ICMSPL(2)
@@ -119,17 +119,19 @@ cdr  .      +NLIMPS                 ! for NLPRCS, tbd.
 
 cdr formerly: maxlevel=15 was hard-coded, now: maxlevel=300 ?
       NODES  => ICMSPL(7:6+MAXLEVEL)
-      NSSPL  => ICMSPL(7+MAXLEVEL:MCMSPL)
+      NSSPL  => ICMSPL(7  +MAXLEVEL:MCMSPL)
 
 cdr
 c  conditional expectation estimator, if trajectory "sees" additional surface ILIM
       ALLOCATE (NLPRCS(0:NLIMPS))
+
 cdr conditional expectation estimator for A, M, I, PH
       NLPRCA => LCMSPL(1:NATM)
       NLPRCM => LCMSPL(1+NATM:NATM+NMOL)
       NLPRCI => LCMSPL(1+NATM+NMOL:NATM+NMOL+NION)
       NLPRCPH=> LCMSPL(1+NATM+NMOL+NION:NATM+NMOL+NION+NPHOT)
-cdr  NLSPLT(ISURF): surface isurf is a "splitting-rr" surface
+
+cdr  NLSPLT(ISURF): surface ISURF is a "splitting-rr" surface
       NLSPLT => LCMSPL(1+NATM+NMOL+NION+NPHOT:KCMSPL)
 
       CALL EIRENE_INIT_COMSPL
@@ -189,5 +191,5 @@ cdr  NLSPLT(ISURF): surface isurf is a "splitting-rr" surface
       RETURN
       END SUBROUTINE EIRENE_BROADCAST_COMSPL
 
-      
+
       END MODULE EIRMOD_COMSPL
