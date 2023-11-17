@@ -15,7 +15,10 @@ cdr  jan 18: comments
 cdr  2019,2020, more comments
 cdr  feb 2020: revived within ISFN activities: retain selected A&M rates
 cdr            involving the NPLS_FIX+1:NPLS virtual field species, lgvac, etc...
-
+cdr  2021    : read/write temporary arrays TIAR. DIAR. etc.,
+cdr            for a reduced range of species
+cdr  tbd.:  deallocate these temp. arrays somewhere?
+cdr  Aug. 2022: sync format for printout (4a) --> (1x,4a)
 c
 C
       SUBROUTINE EIRENE_WRPLAM_SHRT(TRCFLE,CALLEDFROM)
@@ -30,17 +33,6 @@ cdr involving some virt. species need to be retained.
 
 c  Here: NLSRT13=true : wrplam_short and rplam_short are called from WRPLAM, RPLAM, resp.
 c
-
-cdr this is the SHORT version of WRPLAM.F
-cdr It writes and reads (RPLAM_SHRT) background data onto/from fort.13
-cdr Distinct from WRPLAM_long here only the background tallies are written/read,
-cdr (tallies T, n, V for ipls=1,nplsi), but not the atomic data,
-cdr nor the primary source sampling information.
-cdr for BGK type nonlinear iterations, with velocity-independent rates,
-cdr this may be sufficient.
-cdr Better: add here also the rates and other atomic data needed to streamline
-cdr         nonlinear iterations.
-
 
 
       USE EIRMOD_PRECISION, ONLY: DP
@@ -401,6 +393,10 @@ c  data for virt. species ipls
           read (13+ifoff) lg_store(1:nrad,ifl)
         endif
       END DO
+
+cdr tab_store and e_store will be transfered to proper
+cdr tab... and eel..., epl... arrays in calling routine,
+cdr after the last call to SETAMD
 
       do irea = 1, nrea_virt
         iswr=nfla_iswr(irea)

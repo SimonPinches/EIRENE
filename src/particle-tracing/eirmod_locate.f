@@ -1736,9 +1736,9 @@ C   update total sputter fluxes for those cases in which sputtered particle spec
 C   (e.g. if target material is not an eirene test particle in this run)
 
                 IF (WGHTSP.GT.0.AND.ISSPTP.EQ.0)
-     .            CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD, WGHTSP,1)
+     .            CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD,WGHTSP,1)
                 IF (WGHTSC.GT.0..AND.ISSPTC.EQ.0)
-     .            CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD, WGHTSC*YSPTWL,1)
+     .            CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD,WGHTSC*YSPTWL,1)
 C
               ENDIF
             ENDIF
@@ -1779,8 +1779,7 @@ C
 C
 cdr  species index of physically sputtered particle is known.
 cdr  update total and sputtered species-resolved sputtered fluxes
-
-              CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD, WGHTSP,2)
+              CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD,WGHTSP,2)
 C
               IF (NADSI.GE.1) CALL EIRENE_UPSUSR(WGHTSP,2)
               IF (NADSPC_S.GE.1) CALL EIRENE_UPDATE_SPECTRUM(WGHTSP,2,0)

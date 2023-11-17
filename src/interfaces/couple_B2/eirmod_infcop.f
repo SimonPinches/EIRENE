@@ -2369,9 +2369,11 @@ C  EXCLUDE IPLS-VACUUM CELLS
                     PPPL_COP(IPLS,INC)=PPPL_COP(IPLS,INC)+RECADD
                     SUMN=SUMN+RECADD*VOL(IN)
                     PIADD=0._DP
-                    IF (LPARMOM) PIADD=PARMOM(IPLS,IN)*RECADD
-                    MPPL_COP(IPLS,INC)=MPPL_COP(IPLS,INC)+PIADD
-                    SUMM=SUMM+PIADD*VOL(IN)
+                    IF (LPARMOM) THEN
+                      PIADD=PARMOM(IPLS,IN)*RECADD
+                      MPPL_COP(IPLS,INC)=MPPL_COP(IPLS,INC)+PIADD
+                      SUMM=SUMM+PIADD*VOL(IN)
+                    END IF
                     EIADD=1.5*TIIN(IPLSTI,IN)*RECADD
                     IF (LEDRIFT) EIADD=EIADD+EDRIFT(IPLS,IN)*RECADD
                     EPPL_COP(IPLS,INC)=EPPL_COP(IPLS,INC)+EIADD

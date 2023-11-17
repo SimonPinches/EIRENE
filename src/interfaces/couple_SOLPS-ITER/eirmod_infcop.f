@@ -2287,13 +2287,16 @@ c
         ELSE
 c  outside the original b2.5 grid:
 C    set default vacuum temperatures TVAC
-C    set default B field: (0,0,1)
+C    set default B field: (0,0,1) or (0,0,-1)
           TEINTF(ITRI)=TVAC
           TIINTF(1,ITRI)=TVAC
 c  default unit vector along B
           BXINTF(ITRI)=0.
           BYINTF(ITRI)=0.
-          BZINTF(ITRI)=1.*btor
+cdr  BTOR is a sign factor (=1 or = -1), read from block 14.
+cdr  This may perhaps be inconsistent with the use of BTORB above
+          BZINTF(ITRI)=1.*BTOR  ! B_INTF is interpreted as
+                                ! unit vector inside eirene
 c  default modulus of B field
           BFINTF(ITRI)=1.  !dr here:  = BTORB (magnitude),
                            !   e.g. for Zeeman splitting
@@ -2311,7 +2314,8 @@ C  additional cells from input block 2e
 c  default unit vector along B
         BXINTF(ITRI)=0.
         BYINTF(ITRI)=0.
-        BZINTF(ITRI)=1.*btor
+cdr  apply same sign factor BTOR as above
+        BZINTF(ITRI)=1.*BTOR
 c  default modulus of B field
         BFINTF(ITRI)=1.  !dr here:   = BTORB (magnitude),
                          !   e.g. for Zeeman splitting
@@ -4269,7 +4273,9 @@ cdr  only one bulk ion species per volume source stratum supported
                 EEADD=  EIRENE_FEELRC1(IRRC,IN)*DIIN(IPLS,IN)*ELCHA
               END IF
               PIADD=0._DP
-              IF (LPARMOM) PIADD=PARMOM(IPLS,IN)*RECADD
+              IF (LPARMOM) THEN
+                PIADD=PARMOM(IPLS,IN)*RECADD
+              ENDIF
               EIADD=1.5*TIIN(IPLSTI,IN)*RECADD
               IF (LEDRIFT) EIADD=EIADD+EDRIFT(IPLS,IN)*RECADD
 
@@ -4614,16 +4620,22 @@ cdr   JPLS contributes to plasma code species IFL
                     IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
                     SMOCL=0._DP
 
-                    IF (LMAPL) SMOCL=SMOCL+MAPL(JPLS,INC)*
+                    IF (LMAPL)
+     .                 SMOCL=SMOCL+MAPL(JPLS,INC)*
      .                     VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
-                    IF (LMMPL) SMOCL=SMOCL+MMPL(JPLS,INC)*
+                    IF (LMMPL)
+     .                 SMOCL=SMOCL+MMPL(JPLS,INC)*
      .                     VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
-                    IF (LMIPL) SMOCL=SMOCL+MIPL(JPLS,INC)*
+                    IF (LMIPL)
+     .                 SMOCL=SMOCL+MIPL(JPLS,INC)*
      .                     VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
                     SMOCL=SMOCL+MPPL_COP(JPLS,INC)*
      .                   VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
                     SMO(IX,IY,IFL,ISTRAI)=SMO(IX,IY,IFL,ISTRAI)+SMOCL
+                    SMOS(IFL)=SMOS(IFL)+SMOCL
+                    CHMOS(IFL)=CHMOS(IFL)+CHMOM(JPLS,INC)*VOLTAL(INC)
 cdjm Jan2017
+cdr  careful: IFL is B2.5 species index, JPLS is EIRENE species index
                     IF (LMAPL) SMO_MAPL(IX,IY,IFL,ISTRAI)=
      .               SMO_MAPL(IX,IY,IFL,ISTRAI)+MAPL(JPLS,INC)*
      .                VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
@@ -4636,8 +4648,6 @@ cdjm Jan2017
                     SMO_CPPV(IX,IY,IFL,ISTRAI)=
      .               SMO_CPPV(IX,IY,IFL,ISTRAI)+MPPL_COP(JPLS,INC)*
      .                VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
-                    SMOS(IFL)=SMOS(IFL)+SMOCL
-                    CHMOS(IFL)=CHMOS(IFL)+CHMOM(JPLS,INC)*VOLTAL(INC)
                   ENDDO
                 ELSEIF (LCOARSE) THEN
 ! use BVIN from first triangle belonging the quadrangular cell
@@ -4649,15 +4659,21 @@ cdr  associated(curpoi) is taken for granted here !?
 
                   SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
                   SMOCL=0._DP
-                  IF (LMAPL) SMOCL=SMOCL+MAPL(JPLS,INC)*
+                  IF (LMAPL)
+     .                   SMOCL=SMOCL+MAPL(JPLS,INC)*
      .                   VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
-                  IF (LMMPL) SMOCL=SMOCL+MMPL(JPLS,INC)*
+                  IF (LMMPL)
+     .                   SMOCL=SMOCL+MMPL(JPLS,INC)*
      .                   VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
-                  IF (LMIPL) SMOCL=SMOCL+MIPL(JPLS,INC)*
+                  IF (LMIPL)
+     .                   SMOCL=SMOCL+MIPL(JPLS,INC)*
      .                   VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
                   SMOCL=SMOCL+MPPL_COP(JPLS,INC)*
      .                 VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
+
                   SMO(IX,IY,IFL,ISTRAI)=SMO(IX,IY,IFL,ISTRAI)+SMOCL
+                  SMOS(IFL)=SMOS(IFL)+SMOCL
+                  CHMOS(IFL)=CHMOS(IFL)+CHMOM(JPLS,INC)*VOLTAL(INC)
 cdjm Jan2017
                   IF (LMAPL) SMO_MAPL(IX,IY,IFL,ISTRAI)=
      .                       SMO_MAPL(IX,IY,IFL,ISTRAI)+
@@ -4676,9 +4692,7 @@ cdjm Jan2017
      .                                       VOLTAL(INC)*
      .                                       1.D-5*SIGNUM*FLX_EIR
 cdr:  totals, these now include MPPL contribution (from mppl_cop)
-                  SMOS(IFL)=SMOS(IFL)+SMOCL
-                  CHMOS(IFL)=CHMOS(IFL)+CHMOM(JPLS,INC)*VOLTAL(INC)
-              ENDIF  ! LCOARSE OPTION
+                ENDIF  ! LCOARSE OPTION
 
               ENDDO  ! IY LOOP
             ENDDO  ! IX LOOP
@@ -4713,7 +4727,7 @@ cdr   ntalm is a copv tally.
                        IF (LMMPL) SMORES=SMORES+MMPL(JPLS,INC)*
      .                  VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
                        IF (LMIPL) SMORES=SMORES+MIPL(JPLS,INC)*
-     .                         VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
+     .                  VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
 
 cdr  no need to add mppl_cop contribution here, because this is exact (MC noise free)
                        RESSMO(ISTRAI,IFL)=RESSMO(ISTRAI,IFL)+

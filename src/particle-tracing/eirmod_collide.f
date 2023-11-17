@@ -794,7 +794,7 @@ cdr  col estim. particle tally, but second secondary is not a bulk ion
 C  COLLISION ESTIMATOR CONTRIBUTION TO MXPL_VEC (FORMERLY: COPV)
             IF (IESTCX(IRCX,2).NE.0) THEN
               IF (LMXPL) THEN
-C  SET THE POST-COLLISION TEST PARTICLE PARALLEL VELOCITY = OLD PRE-COLLISION BULK (ION) VELOCITY
+C  SET THE POST-COLLISION TEST PARTICLE PARALLEL VELOCITY = PRE-COLLISION BULK (ION) VELOCITY
                 V0_PARB=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
                 V0_PARB=V0_PARB*AMUA*RMASSX
                 IF (INDPRO(4) == 8) THEN
@@ -1396,7 +1396,7 @@ cdr  also exit the calling routine
       ITYP=4
       COLTYP=2
       NCELL = NCLLO
-cdr   write (iunout,*) 'genlim, npanu ',npanu
+cdr   write (iunout,*) 'collide: genlim, npanu ',npanu
       RETURN
       END SUBROUTINE EIRENE_GENLIM
 

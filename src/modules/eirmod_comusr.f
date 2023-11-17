@@ -1279,6 +1279,14 @@ cdr   POT should also be here
         END IF
       END IF
 
+cdr June 2023:
+cdr the code below (and several places elsewhere)
+cdr handles components of a vecter
+cdr as if they were independent scalars.
+cdr This can lead to spectacular unphysical results.
+cdr A cleanup of input tally options for vectorial quantities
+cdr V, B, E is needed, in particular for div-free B field.
+
       IF ((IVSMO > 0) .AND. (IVSMO < 4)) THEN
         WRITE (IUNOUT,*)
      .    'INCONSISTENCY IN SMOOTHING OF DRIFT VELOCITIES ENCOUNTERED'
@@ -1304,6 +1312,7 @@ cdr   POT should also be here
         END IF
       END IF
 
+cdr legal values IBSMO: =0 or =4
       IF ((IBSMO > 0) .AND. (IBSMO < 4)) THEN
         WRITE (IUNOUT,*)
      .       'INCONSISTENCY IN SMOOTHING OF '//

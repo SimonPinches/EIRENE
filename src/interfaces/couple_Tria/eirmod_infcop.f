@@ -3370,7 +3370,9 @@ cdr  only one bulk ion species per volume source stratum supported
                   EEADD=  EIRENE_FEELRC1(IRRC,IN)*DIIN(IPLS,IN)*ELCHA
                 END IF
                 PIADD=0._DP
-                IF (LPARMOM) PIADD=PARMOM(IPLS,IN)*RECADD
+                IF (LPARMOM) THEN
+                  PIADD=PARMOM(IPLS,IN)*RECADD
+                END IF
                 EIADD=1.5*TIIN(IPLSTI,IN)*RECADD
                 IF (LEDRIFT) EIADD=EIADD+EDRIFT(IPLS,IN)*RECADD
 !pb 21012013

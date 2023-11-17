@@ -6,7 +6,7 @@ cpg called from find_param.f
       use eirmod_comusr, only : natmi,nmoli,nioni
 
       IMPLICIT NONE
-      integer, intent(in) :: nlimi,nstsi,ntx
+      integer, intent(in) :: nlimi, nstsi, ntx
       character(8), intent(in) :: textal(ntx)
 
 

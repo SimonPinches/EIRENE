@@ -67,9 +67,14 @@ C  INDPRO=9 MEANS: THESE ARRAYS ARE ALREADY SET IN COUPLE_... (SUBR. INFCOP)
                           DEIN = 0.D0 ! DERIVED TALLY DEIN IS SET
                                       ! IN PLASMA_DERIV
       IF (INDPRO(3) /= 9) DIIN = 0.D0
-      IF (INDPRO(4) /= 9) VXIN = 0.D0
-      IF (INDPRO(4) /= 9) VYIN = 0.D0
-      IF (INDPRO(4) /= 9) VZIN = 0.D0
+
+c flow field
+      IF (INDPRO(4) /= 9) THEN
+        VXIN = 0.D0
+        VYIN = 0.D0
+        VZIN = 0.D0
+      ENDIF
+
       IF (INDPRO(11)/= 9) ZIIN = 0.D0
 c  magnetic field
       IF (LBXIN .AND. (INDPRO(5) /= 9)) BXIN = 0.D0

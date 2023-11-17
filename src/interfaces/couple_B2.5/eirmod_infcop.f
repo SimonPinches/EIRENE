@@ -2120,8 +2120,10 @@ c dpc
                 PPPL_COP(IPLS,INC)=PPPL_COP(IPLS,INC)+RECADD
                 SUMN=SUMN+RECADD*VOL(IN)
                 PIADD=0._DP
-                IF (LPARMOM) PIADD=PARMOM(IPLS,IN)*RECADD
-                MPPL_COP(IPLS,INC)=MPPL_COP(IPLS,INC)+PIADD
+                IF (LPARMOM) THEN
+                  PIADD=PARMOM(IPLS,IN)*RECADD
+                  MPPL_COP(IPLS,INC)=MPPL_COP(IPLS,INC)+PIADD
+                END IF
                 SUMM=SUMM+PIADD*VOL(IN)
                 EIADD=1.5*TIIN(IPLSTI,IN)*RECADD
                 IF (LEDRIFT) EIADD=EIADD+EDRIFT(IPLS,IN)*RECADD

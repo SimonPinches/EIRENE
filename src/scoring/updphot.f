@@ -397,7 +397,7 @@ C  SECOND SECONDARY:
                   IF (NLSPCSCL_PHOT) THEN
                     PPHAT2(1:NATM,0:NPHOT) => PPHAT(:,IRD)
 !$OMP ATOMIC
-                    PPHAT2(IAT2,IPHOT)= PPHAT2(IAT2,IPHOT)+WTRSIG*INUM
+                    PPHAT2(IAT2,IPHOT)=PPHAT2(IAT2,IPHOT)+WTRSIG*INUM
                     LMETSP2(1:NATM,0:NPHOT)=>LMETSP(NTS_PI+1:NTS_APH)
                     LMETSP2(IAT2,0)=.TRUE.
                     LMETSP2(IAT2,IPHOT)=.TRUE.
@@ -414,7 +414,7 @@ C  SECOND SECONDARY:
                   IF (NLSPCSCL_PHOT) THEN
                     PPHML2(1:NMOL,0:NPHOT) => PPHML(:,IRD)
 !$OMP ATOMIC
-                    PPHML2(IML2,IPHOT)= PPHML2(IML2,IPHOT)+WTRSIG*INUM
+                    PPHML2(IML2,IPHOT)=PPHML2(IML2,IPHOT)+WTRSIG*INUM
                     LMETSP2(1:NMOL,0:NPHOT)=>LMETSP(NTS_APH+1:NTS_MPH)
                     LMETSP2(IML2,0)=.TRUE.
                     LMETSP2(IML2,IPHOT)=.TRUE.
@@ -431,7 +431,7 @@ C  SECOND SECONDARY:
                   IF (NLSPCSCL_PHOT) THEN
                     PPHIO2(1:NION,0:NPHOT) => PPHIO(:,IRD)
 !$OMP ATOMIC
-                    PPHIO2(IIO2,IPHOT)= PPHIO2(IIO2,IPHOT)+WTRSIG*INUM
+                    PPHIO2(IIO2,IPHOT)=PPHIO2(IIO2,IPHOT)+WTRSIG*INUM
                     LMETSP2(1:NION,0:NPHOT)=>LMETSP(NTS_MPH+1:NTS_IPH)
                     LMETSP2(IIO2,0)=.TRUE.
                     LMETSP2(IIO2,IPHOT)=.TRUE.

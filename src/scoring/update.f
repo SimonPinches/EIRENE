@@ -126,8 +126,11 @@ C EI PROCESSES
       INTEGER :: IXEI,IREI
 
       REAL(DP) :: EIRENE_VDION
-      REAL(DP), POINTER :: PXX2(:,:), PXPL2(:,:), PXAT2(:,:),
-     .                     PXML2(:,:), PXIO2(:,:)
+      REAL(DP), POINTER, SAVE :: PXX2(:,:), PXPL2(:,:), PXAT2(:,:),
+     .                           PXML2(:,:), PXIO2(:,:)
+!$OMP THREADPRIVATE(PXX2, PXPL2, PXAT2, PXML2, PXIO2)
+      EXTERNAL :: EIRENE_BFIELD, EIRENE_UPDPHOT, EIRENE_UPTCOP,
+     .            EIRENE_VECUSR
 
 C  TAKE CARE OF SCORING OF PHOTONS
 

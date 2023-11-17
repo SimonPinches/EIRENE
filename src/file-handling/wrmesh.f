@@ -104,8 +104,8 @@ c  ADDITIONAL SURFACES
 C 0 < RLB(I) < 2
 C 2-PUNKT OPTION WIRD IM TIMEA0 AUF RLB=1 ZURUECKGEFUEHRT
               IF ((RLB(I) .GT. 0.) .AND. (RLB(I) .LT. 2.) .AND.
-     >          (P3(1,I) .EQ. 1.D55 .OR. P3(2,I) .EQ. 1.D55
-     >          .OR. P3(3,I) .EQ. 1.D55)) THEN
+     >            (P3(1,I) .EQ. 1.D55 .OR. P3(2,I) .EQ. 1.D55
+     >            .OR. P3(3,I) .EQ. 1.D55)) THEN
                 IPOIN = IPOIN + 1
                 IF (IPOIN.GT.MAXPOIN) THEN
                   WRITE(IUNOUT,*)

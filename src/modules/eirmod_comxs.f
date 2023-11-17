@@ -246,7 +246,7 @@ c  post-collision energies: to EL (electrons), PI (background) or HV (heavy test
      I NPBGKA(:),   NPBGKM(:),   NPBGKI(:), NPBGKPH(:),
      I NPBGKP(:,:)
 
-!  POINTER FOR UNIFIED "A,M,I,PH" SUBROUTINES
+!  POINTER FOR UNIFIED "A,M,I,PH" SUBROUTINES: UPDATE, ZMFP, (TBD: COLLIDE)
       INTEGER, PUBLIC, POINTER, SAVE ::
 cdr  No need for pointer attributes. These are just scalar integers
 cdr  Just set these values in SWITCH_PARTINFO.f
@@ -1962,7 +1962,8 @@ cdr  high pressure gas discharge lamps, around 2002.. should not be here!
           READ (13+IFOFF) RP%LINE%REACNAME, RP%LINE%KENN
 
         ELSE IF (1<= RP%IFIT .AND. RP%IFIT <= 2) THEN
-! DATA FOR FIT EXPRESSIONS (POLYNOMIAL, E.G. IN CASE OF HYDHEL, AMJUEL DATABASE)          IF (.NOT.ASSOCIATED(RP%POLY)) ALLOCATE (RP%POLY)
+! DATA FOR FIT EXPRESSIONS (POLYNOMIAL, E.G. IN CASE OF HYDHEL, AMJUEL DATABASE)
+          IF (.NOT.ASSOCIATED(RP%POLY)) ALLOCATE (RP%POLY)
           IF (ASSOCIATED(RP%POLY%DBLPOL)) DEALLOCATE (RP%POLY%DBLPOL)
 
           READ (13+IFOFF) ND1,ND2
