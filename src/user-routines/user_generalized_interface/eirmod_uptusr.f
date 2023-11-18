@@ -112,9 +112,9 @@ C
      .      COPV(1:NPLSI,:) = PPPL_COP(1:NPLSI,:)
           IF (IU >= 2*NPLSI)
      .      COPV(NPLSI+1:2*NPLSI,:) = CPPV_COP(1:NPLSI,:)
-          IF (IU >= 2*NPLSI+1)
-     .      COPV(2*NPLSI+1:3*NPLSI,:) = EPPL_COP(1:NPLSI,:)
           IF (IU >= 3*NPLSI)
+     .      COPV(2*NPLSI+1:3*NPLSI,:) = EPPL_COP(1:NPLSI,:)
+          IF (IU >= 3*NPLSI+1)
      .      COPV(3*NPLSI+1,:) = EPEL_COP(:)
         END IF
 
