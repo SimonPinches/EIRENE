@@ -177,7 +177,7 @@ prepare_testcases:
             - buildRelease/
             - libRelease/
             - EIRENE-sample-cases/${PATH_CASE}
-        when: on_success
+        when: always
 
 .test: &test
     stage: test
@@ -649,7 +649,7 @@ run_EMC3-EIRENE_He:
             - buildRelease/
             - libRelease/
             - EIRENE-sample-cases/EMC3
-        when: on_success
+        when: always
     needs:
         - build_EMC3-EIRENE
     
@@ -757,7 +757,7 @@ run_mpi_cases:
             - buildRelease/
             - libRelease/
             - EIRENE-sample-cases/EMC3
-        when: on_success
+        when: always
     needs:
         - build_EMC3-EIRENE
 
@@ -947,7 +947,7 @@ prepare_openmp_testcases:
             - buildRelease/
             - libRelease/
             - EIRENE-sample-cases/${PATH_CASE}
-        when: on_success
+        when: always
     needs:
         - build_openmp_library
 
