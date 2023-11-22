@@ -1010,7 +1010,6 @@ c...................................................................
             ITRJ = NCHORI + MOD(IPANU,NTRJ) + 1
             NLEVEL=0
             CALL EIRENE_LOCAT1(IPANU)
-            WRITE(0,*) ' IN MCARLO, DOING PARTICLE : ', IPANU
 
 C  IS BIRTH PROCESS SURVIVED?
             IF (.NOT.LGPART) GOTO 110
@@ -1112,6 +1111,7 @@ C
      .          write (iunout,*) 'LONG HISTORY ',npanu,secdel
             ENDIF
   100     CONTINUE    !  nparts_loc(istra)
+          WRITE(0,*) ' IN MCARLO, REACHED END OF NPARTS_LOC LOOP'
 
 !$OMP END DO
 
