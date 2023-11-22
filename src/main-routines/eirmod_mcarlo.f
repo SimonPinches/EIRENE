@@ -1011,7 +1011,6 @@ c...................................................................
             ITRJ = NCHORI + MOD(IPANU,NTRJ) + 1
             NLEVEL=0
             CALL EIRENE_LOCAT1(IPANU)
-            WRITE(iunout,*) 'Located particle ',IPANU
 
 C  IS BIRTH PROCESS SURVIVED?
             IF (.NOT.LGPART) GOTO 110
@@ -1029,7 +1028,6 @@ C  NEXT GENERATION ?
 C
   110       CONTINUE
 
-            WRITE(iunout,*) 'Fnished following particle ',IPANU
             IF (NLRAY(ISTRA)) THEN
               CALL EIRENE_CLEAR_TRAJECTORY (ITRJ)
             END IF
@@ -1119,8 +1117,6 @@ C
 
 !$OMP MASTER
 
-          WRITE(iunout,*) 'IN MCARLO, REACHED END OF NPARTS_LOC LOOP',
-     .     LGABORT
           IF (.NOT.LGABORT) THEN
             CALL EIRENE_LEER(1)
 
@@ -1149,7 +1145,6 @@ cym ccccccccccccccccccccccccccccccccccccccccccccc
 #endif
 C
 C
-          WRITE(iunout,*) 'IN MCARLO, REACHED END OF 101 LOOP'
           XMCT(istra)=timused
           call time_particles(istra, timused, ipanu)
 csw
