@@ -1111,12 +1111,12 @@ C
      .          write (iunout,*) 'LONG HISTORY ',npanu,secdel
             ENDIF
   100     CONTINUE    !  nparts_loc(istra)
-          WRITE(0,*) ' IN MCARLO, REACHED END OF NPARTS_LOC LOOP'
 
 !$OMP END DO
 
 !$OMP MASTER
 
+          WRITE(0,*) 'IN MCARLO, REACHED END OF NPARTS_LOC LOOP'
           IF (.NOT.LGABORT) THEN
             CALL EIRENE_LEER(1)
 
