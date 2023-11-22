@@ -1408,7 +1408,7 @@ C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
      .                            LOLD31
        IF (.NOT.NLTRIMESH) NLTRIMESH=LDUMMY
        IF (TRCINT) THEN
-     .  WRITE (iunout,*) ' LSYMET,LBALAN,LCOARSE,NLTRIMESH,LSPRCL = ',
+        WRITE (iunout,*) ' LSYMET,LBALAN,LCOARSE,NLTRIMESH,LSPRCL = ',
      .                     LSYMET,LBALAN,LCOARSE,NLTRIMESH,LSPRCL
         WRITE (iunout,*) ' LOLD31 = ',
      .                     LOLD31
