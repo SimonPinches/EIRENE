@@ -1010,7 +1010,6 @@ c...................................................................
             ITRJ = NCHORI + MOD(IPANU,NTRJ) + 1
             NLEVEL=0
             CALL EIRENE_LOCAT1(IPANU)
-            WRITE(0,*) 'LOCATED PARTICLE ',IPANU
 
 C  IS BIRTH PROCESS SURVIVED?
             IF (.NOT.LGPART) GOTO 110
@@ -1019,7 +1018,6 @@ C
 C  FOLLOW NEUTRAL PARTICLE
             IF (ITYP.EQ.0.OR.ITYP.EQ.1.OR.ITYP.EQ.2) THEN
               CALL EIRENE_FOLNEUT
-              WRITE(0,*) 'EXITED FOLNEUT FOR PARTICLE ',IPANU
 C  FOLLOW TEST ION
             ELSEIF (ITYP.EQ.3) THEN
               CALL EIRENE_FOLION
@@ -1031,7 +1029,6 @@ C
 
             IF (NLRAY(ISTRA)) THEN
               CALL EIRENE_CLEAR_TRAJECTORY (ITRJ)
-              WRITE(0,*) 'CLEARED TRAJECTORY FOR PARTICLE ',IPANU
             END IF
 
 C  NUMBER OF REMAINING NODES AND NUMBER OF LEVELS AT NEXT NODE
@@ -1096,7 +1093,6 @@ cdr  dec. 15:
 cdr  update linear algebraic combinations of tallies after finishing trajectory
 cdr  this enables also statistical variances for those tallies, avoiding covariance estimators.
             if (nmode.gt.0) call eirene_updlin  !cdr
-            WRITE(0,*) 'AFTER UPDLIN FOR PARTICLE ',IPANU
 
 C   MEAN SQUARE
             IF (NSIGI.GT.0) CALL EIRENE_STATS1
@@ -1107,7 +1103,6 @@ C   MEAN SQUARE
      .                                    (NSBOX_TAL,NR1TAL,NP2TAL,
      .                                     NT3TAL,NLIMPS,
      .                                     NLSYMP(ISTRA),NLSYMT(ISTRA))
-            WRITE(0,*) 'AFTER STATISTICS FOR PARTICLE ',IPANU
 C
             IF (TRCTIM) THEN
               SECND2=EIRENE_SECOND_OWN( )
@@ -1122,7 +1117,8 @@ C
 
 !$OMP MASTER
 
-          WRITE(0,*) 'IN MCARLO, REACHED END OF NPARTS_LOC LOOP'
+          WRITE(iunout,*) 'IN MCARLO, REACHED END OF NPARTS_LOC LOOP',
+     .     LGABORT
           IF (.NOT.LGABORT) THEN
             CALL EIRENE_LEER(1)
 
@@ -1151,6 +1147,7 @@ cym ccccccccccccccccccccccccccccccccccccccccccccc
 #endif
 C
 C
+          WRITE(iunout,*) 'IN MCARLO, REACHED END OF 101 LOOP'
           XMCT(istra)=timused
           call time_particles(istra, timused, ipanu)
 csw
@@ -1171,6 +1168,8 @@ c
           else
             call time_calstr(istra, 0.0_dp)
           endif
+          WRITE(iunout,*) 'IN MCARLO, DID CALSTR'
+          WRITE(iunout,*) 'I_AM_LEADER : ', I_AM_LEADER(istra)
 
           if (I_AM_LEADER(istra)) then
 C
