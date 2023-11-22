@@ -809,6 +809,7 @@ csw 19feb2013
 !$OMP END MASTER
 csw
 
+         WRITE(iunout,*) 'ENTERING NPARTS_LOC LOOP'
 !$OMP BARRIER
 C  PARTICLE LOOP WITHIN STRATUM ISTRA
 !$OMP  DO REDUCTION(.OR.:LOGATM,LOGMOL,LOGION,LOGPLS,
@@ -1010,6 +1011,7 @@ c...................................................................
             ITRJ = NCHORI + MOD(IPANU,NTRJ) + 1
             NLEVEL=0
             CALL EIRENE_LOCAT1(IPANU)
+            WRITE(iunout,*) 'Located particle ',IPANU
 
 C  IS BIRTH PROCESS SURVIVED?
             IF (.NOT.LGPART) GOTO 110
@@ -1027,6 +1029,7 @@ C  NEXT GENERATION ?
 C
   110       CONTINUE
 
+            WRITE(iunout,*) 'Fnished following particle ',IPANU
             IF (NLRAY(ISTRA)) THEN
               CALL EIRENE_CLEAR_TRAJECTORY (ITRJ)
             END IF
@@ -1065,7 +1068,6 @@ C  RESTORE VARIABLES AND START NEW TRACK
 !  PARTICLE TYPE AND SPECIES MAY HAVE CHANGED
 !  PREPARE POINTER FOR UNIFIED SUBROUTINES FPATH, UPDATE, ETC.
               CALL EIRENE_SWITCH_PARTINFO
-              WRITE(0,*) 'SWITCHED INFO FOR PARTICLE ',IPANU
 
               IC_NEUT=0
               IC_ION=0
