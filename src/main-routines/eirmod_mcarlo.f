@@ -809,7 +809,6 @@ csw 19feb2013
 !$OMP END MASTER
 csw
 
-         WRITE(iunout,*) 'ENTERING NPARTS_LOC LOOP'
 !$OMP BARRIER
 C  PARTICLE LOOP WITHIN STRATUM ISTRA
 !$OMP  DO REDUCTION(.OR.:LOGATM,LOGMOL,LOGION,LOGPLS,
@@ -1165,8 +1164,6 @@ c
           else
             call time_calstr(istra, 0.0_dp)
           endif
-          WRITE(iunout,*) 'IN MCARLO, DID CALSTR'
-          WRITE(iunout,*) 'I_AM_LEADER : ', I_AM_LEADER(istra)
 
           if (I_AM_LEADER(istra)) then
 C

@@ -1407,11 +1407,12 @@ C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
        READ (ZEILE,'(2(5L1,1X))') LSYMET,LBALAN,LCOARSE,LDUMMY,LSPRCL,
      .                            LOLD31
        IF (.NOT.NLTRIMESH) NLTRIMESH=LDUMMY
-       IF (TRCINT)
+       IF (TRCINT) THEN
      .  WRITE (iunout,*) ' LSYMET,LBALAN,LCOARSE,NLTRIMESH,LSPRCL = ',
      .                     LSYMET,LBALAN,LCOARSE,NLTRIMESH,LSPRCL
         WRITE (iunout,*) ' LOLD31 = ',
      .                     LOLD31
+       END IF
 
        READ (IUNIN,'(9I6)') NFLA,NCUTB,NCUTL,IMF,
      .                      ntrfrm,nfull,ibrad,ibpol,ibtor
