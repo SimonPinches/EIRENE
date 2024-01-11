@@ -6,6 +6,7 @@ module eirmod_mpi
 !pb  include 'mpif.h'
   integer, private, save :: iounit
   public :: mpi_set_own_io_unit
+  integer, save :: MPI_THREAD_PROVIDED = 0
 
 !pb
 #ifndef MPI_VERSION
@@ -65,6 +66,7 @@ module eirmod_mpi
   integer, parameter :: MPI_SUBVERSION = 2
 
   integer, parameter :: MPI_THREAD_FUNNELED = 0
+  integer, save :: MPI_THREAD_PROVIDED = 0
   integer, save :: MPI_STATUS_IGNORE(MPI_STATUS_SIZE)
   integer, save :: MPI_STATUSES_IGNORE(MPI_STATUS_SIZE,1)
   data MPI_STATUS_IGNORE / MPI_STATUS_SIZE*-1 /
@@ -1349,6 +1351,18 @@ module eirmod_mpi
     iounit = iun
   end subroutine mpi_set_own_io_unit
 
+  subroutine eirene_mpi_init(ier)
+!   MPI initialization routine used by either
+!   eirene_main (for standalone) or
+!   eirene_eirene (coupled) subroutines    
+    integer, intent(out) :: ier
+#ifdef USE_OPENMP
+    call mpi_init_thread(mpi_thread_funneled, mpi_thread_provided, ier)
+#else
+    call mpi_init(ier)
+#endif
+  end subroutine eirene_mpi_init
+ 
 end module eirmod_mpi
 
 !!!Local Variables:

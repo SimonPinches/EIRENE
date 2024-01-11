@@ -33,12 +33,18 @@ cdr  for some frequently used coupled applications (with B2, B2.5, etc..)
 cdr  The parameters DT, NLM, NLL, ITNR, MPI_INIT... are then
 cdr  set from the external code, or in EIRSRT, and are problem-specific.
 
-
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_SECOND_OWN, ONLY: EIRENE_SECOND_OWN,
      .                             EIRENE_RESET_SECOND
       USE EIRMOD_EIRENE, ONLY: EIRENE_EIRENE
+      USE EIRMOD_MPI, ONLY: EIRENE_MPI_INIT
+#ifdef USE_MPI
+      USE MPI, ONLY: MPI_FINALIZE
+      USE EIRMOD_MPI, ONLY: EIRENE_MPI_INIT
+#else
+      USE EIRMOD_MPI, ONLY: EIRENE_MPI_INIT, MPI_FINALIZE
+#endif
 
       IMPLICIT NONE
       REAL(DP) :: DT
@@ -46,6 +52,10 @@ cdr  set from the external code, or in EIRSRT, and are problem-specific.
       REAL(DP), SAVE :: TIMI0
       INTEGER :: ITNR
       LOGICAL :: NLM,NLL,MPI_INIT
+      INTEGER :: IER
+
+C     Initialize MPI
+      CALL EIRENE_MPI_INIT(IER)
 C
       TIMI=EIRENE_SECOND_OWN()
       TIMI0=TIMI
@@ -62,7 +72,7 @@ c  last call, deallocate arrays at the end of run
 c  iteration number for iterations with external code
       ITNR=1
 c  initialize MPI routines
-      MPI_INIT=.TRUE.
+      MPI_INIT=.FALSE.
 !!! debug / commented until -cpp option added
 !!!      write(6,*) "EIRENE_MAIN: starting"
 !!!#ifdef USE_EXT_OPENMP
@@ -80,6 +90,8 @@ C
       TIMEND=EIRENE_RESET_SECOND()
       WRITE (IUNOUT,*) 'TOTAL CPU_TIME (SEC) OF THIS RUN: ',
      .                  TIMEND-TIMI0
+C     Finalize MPI
+      CALL MPI_FINALIZE(IER)
 C
       STOP
       END
