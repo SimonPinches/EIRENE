@@ -105,8 +105,7 @@ cdr          tbd: for PI, EL, processes
      .          VX, VY, VZ, VPLASP,
      .          RMXIO, BF, ZEP
       REAL(DP) :: SIG_ELIM, SIG_TOT_N, SIG_TOT_O, SIG_TEST
-      INTEGER ::
-     .           IXCX, IXEI, IXPI, IXEL, !IXPH,
+      INTEGER :: IXCX, IXEI, IXPI, IXEL, !IXPH,
      .           IOLD, NOLD, INEW, NNEW, ITYPO, ITYPN, IPLSO,
      .           IRCX, IREI, IRPI, IREL, !IRPH,
      .           IBGK, IP, NFLAG,

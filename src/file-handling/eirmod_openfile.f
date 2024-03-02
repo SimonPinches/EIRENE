@@ -34,7 +34,7 @@
       if (present(position)) then
         pos = position
       else
-        pos='ASIS'
+        pos = 'ASIS'
       end if
 
       io = 0

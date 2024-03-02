@@ -240,7 +240,6 @@ c  for FEM-routines (interpolations, gradients,...)
      .        EXCORNER(:),     EYCORNER(:),     EZCORNER(:),
      .        EFCORNER(:),     POTCORNER(:),
      .        ADCORNER(:,:),   VOLCORNER(:),    WGHTCORNER(:,:),
-
      .        BXPERPCORNER(:), BYPERPCORNER(:),
      .        BVINCORNER(:,:),
      .        PARMOMCORNER(:,:),
@@ -288,8 +287,8 @@ C  LUSR, LOGICAL
       LOGICAL, ALLOCATABLE, PUBLIC, SAVE ::
      L         LGVAC(:,:)
 
-c
-C  FLAGS FOR "SMOOTHED INPUT TALLIES" (for interpolation from cell vertices into cell)
+C  FLAGS FOR "SMOOTHED INPUT TALLIES"
+C  (for interpolation from cell vertices into cell)
 C  (REQUIRES AVAILABILITY OF ...CORNER(:) TALLIES)
       LOGICAL, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      L         LSMOPRO(:)
@@ -308,7 +307,6 @@ C
      L         LFREE28SMO, LFREE29SMO, LFREE30SMO
 
 cdr What about smoothed gradient input tallies?
-
 
       LOGICAL, PUBLIC, SAVE ::
 cdr Jan. 2020
@@ -331,7 +329,6 @@ cdr in the same "smoothing category"
 
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I         NAINS(:), NAINT(:)
-
 
       INTEGER, ALLOCATABLE, PUBLIC, SAVE ::
      I         INTLOPTS(:)
@@ -356,39 +353,38 @@ cdr in the same "smoothing category"
 
 ! TYPE DEFINITIONS MOVED HERE FOR WRITING OF JSON FILE
       TYPE TEMPERATURE
-        DOUBLE PRECISION          :: TE, TI
-        INTEGER                   :: II, IDION
-        TYPE(TEMPERATURE),POINTER :: NEXT
+        DOUBLE PRECISION           :: TE, TI
+        INTEGER                    :: II, IDION
+        TYPE(TEMPERATURE), POINTER :: NEXT
       END TYPE TEMPERATURE
 C
       TYPE DENSITY
-        DOUBLE PRECISION      :: DI
-        INTEGER               :: II, IDION
-        TYPE(DENSITY),POINTER :: NEXT
+        DOUBLE PRECISION       :: DI
+        INTEGER                :: II, IDION
+        TYPE(DENSITY), POINTER :: NEXT
       END TYPE DENSITY
 C
       TYPE VELOCITY
-        DOUBLE PRECISION       :: VX, VY, VZ
-        INTEGER                :: IZ, II, IDION
-        TYPE(VELOCITY),POINTER :: NEXT
+        DOUBLE PRECISION        :: VX, VY, VZ
+        INTEGER                 :: IZ, II, IDION
+        TYPE(VELOCITY), POINTER :: NEXT
       END TYPE VELOCITY
 C
       TYPE VOLUMEP
-        DOUBLE PRECISION     :: VOL
-        INTEGER              :: II
-        TYPE(VOLUMEP),POINTER :: NEXT
+        DOUBLE PRECISION       :: VOL
+        INTEGER                :: II
+        TYPE(VOLUMEP), POINTER :: NEXT
       END TYPE VOLUMEP
 C
-      TYPE(TEMPERATURE),POINTER, PUBLIC, SAVE :: TEMPLIST
-      TYPE(DENSITY),POINTER, PUBLIC, SAVE :: DENLIST
-      TYPE(VELOCITY),POINTER, PUBLIC, SAVE :: VELLIST
-      TYPE(VOLUMEP),POINTER, PUBLIC, SAVE :: VOLLIST
+      TYPE(TEMPERATURE), POINTER, PUBLIC, SAVE :: TEMPLIST
+      TYPE(DENSITY), POINTER, PUBLIC, SAVE :: DENLIST
+      TYPE(VELOCITY), POINTER, PUBLIC, SAVE :: VELLIST
+      TYPE(VOLUMEP), POINTER, PUBLIC, SAVE :: VOLLIST
 
       INTEGER, PUBLIC, SAVE :: NZADD
       INTEGER, ALLOCATABLE, PUBLIC, SAVE :: INI_ZONE(:), INE_ZONE(:)
 
 cDB   AMD output
-
       TYPE AMDOutParsTYPE
         character(LEN=:), allocatable :: AMDoutput
         REAL(DP) :: NEmin

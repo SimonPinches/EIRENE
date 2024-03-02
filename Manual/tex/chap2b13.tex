@@ -1,8 +1,8 @@
 \section{Data for nonlinear and time dependent Options} \label{sec2.13}
 
-\textbf{General remarks} 
+\textbf{General remarks}
 
-\medskip 
+\medskip
 
 The data in this block are used to define a discretization in time, and the
 test-particle self interaction effects.
@@ -50,7 +50,7 @@ arrays, e.g., in order to continue a stationary case in the time-dependent mode
 
 \medskip
 
-\textbf{The Input Block} 
+\textbf{The Input Block}
 
 \begin{lstlisting}
 *** 13. Data for nonlinear and time dependent Options
@@ -68,13 +68,13 @@ arrays, e.g., in order to continue a stationary case in the time-dependent mode
             TXTSPC(J,NTALT),TXTUNT(J,NTALT)
  1320     CONTINUE
         ENDIF
-\end{lstlisting} 
+\end{lstlisting}
 
-\medskip 
+\medskip
 
-\textbf{Meaning of the Input Variables for this block} 
+\textbf{Meaning of the Input Variables for this block}
 
-\medskip 
+\medskip
 
 \begin{description}
   \item[NPRNLI] Total number of test particles in time
@@ -87,7 +87,7 @@ arrays, e.g., in order to continue a stationary case in the time-dependent mode
         a default time-horizon is defined.
         See default values specified below.
 
-        If NPRNLI $=0$, no census arrays are scored 
+        If NPRNLI $=0$, no census arrays are scored
 
         In case NLERG = TRUE  (see input block 1), a time horizon is absolutely
         necessary in order to prevent infinite histories.
@@ -138,7 +138,7 @@ arrays, e.g., in order to continue a stationary case in the time-dependent mode
         Each trajectory can score on census up to NTMSTP times.
         Particle trajectories are stopped after NTMSTP time-steps.
 
-        Default: NTMSTP=1 
+        Default: NTMSTP=1
 
         For convenience and by abuse of language, we refer to the 3-dimensional
         hyper-surface $t=t_n$ of the four dimensional $(\vr,t)$-space as
@@ -153,7 +153,7 @@ arrays, e.g., in order to continue a stationary case in the time-dependent mode
         i.e., absorbing at time t = NTMSTP $\times$ DTIMV.
         Snapshot tallies are averages over NTMSTP time-steps.
 
-        Default: NTMSTP=1 
+        Default: NTMSTP=1
 
         If NTMSTP $<$ 0, then each particle can score an unlimited number of times on
         census, i.e., the time-surface is always transparent.
@@ -170,10 +170,10 @@ arrays, e.g., in order to continue a stationary case in the time-dependent mode
         to snapshot tallies in case NTMSTP $<$ 0.
   \item[DTIMV] Length of each individual internal time-step (\si{\second})
 
-        Default: DTIMV=1.0 
+        Default: DTIMV=1.0
 
   \item[TIME0] Initial time $t_0$ of the first time-step.
-        (irrelevant, only for printout and book-keeping) 
+        (irrelevant, only for printout and book-keeping)
 
         Default: TIME0=0.
 
@@ -182,7 +182,7 @@ arrays, e.g., in order to continue a stationary case in the time-dependent mode
         or equal NSNV (see PARMUSR), and the detector functions are user supplied in
         subroutine UPNUSR, see Sub-\cref{sec3.2.3}.
 
-        Default: NSNVI=0 
+        Default: NSNVI=0
 
 \end{description}
 The meaning of the next three cards is the same as for the

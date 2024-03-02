@@ -1758,8 +1758,3 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
 
       RETURN
       END SUBROUTINE EIRENE_SAVE_TALLIES
-
-C
-C
-C
-C

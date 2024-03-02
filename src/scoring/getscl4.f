@@ -761,7 +761,7 @@ C
           IF(JSP.LE.NATMI) THEN
             DO IATM = 1, NATMI
               PP(IATM,JSP) = PAATI2(IATM,JSP)+
-     .                       PRFAAI2(IATM,JSP)
+     .                      PRFAAI2(IATM,JSP)
             END DO
             PP(JSP,JSP) = PP(JSP,JSP)+
      .                    POTATI(JSP,ISTRA)+PGENAI(JSP,ISTRA)

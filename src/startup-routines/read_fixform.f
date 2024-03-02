@@ -2325,7 +2325,7 @@ cdr  only one common profile for all NPLS species?
         WRITE (IUNOUT,*) 'STORAGE FOR VXIN, VYIN, VZIN OVERWRITTEN ',
      .                   'BECAUSE BGK REACTIONS PRESENT'
         LRDMLV=.FALSE.  !  read only one common V.IN card,
-                        ! despite storage for NPLS V.IN profiles.
+                        !  despite storage for NPLS V.IN profiles.
         NPLSV = NPLS
         WRITE (IUNOUT,*) ' NPLSV = ',NPLSV
 c     ELSE
@@ -3963,7 +3963,7 @@ C  TURN OFF TIME DEP MODE IF EITHER NTIME=0 OR NPRNLI=0
           NTIME=0
         ENDIF
 cym - was removed, present in the julich git // crash without this goto
-!pb   time dep. mode is turned off - thus skip reading rest of the block     
+!pb   time dep. mode is turned off - thus skip reading rest of the block
         GOTO 1350
       ENDIF
 
