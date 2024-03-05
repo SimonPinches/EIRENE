@@ -356,7 +356,7 @@
 
       !c*** from 20080706 on:
 
-        call write_title(44,'eirdiag', 5*nsts+1)
+        call write_title(44,'eirdiag',5*nsts+1)
         WRITE(44,'(12i6)') (eirdiag_nds_ind(i),i=1,NSTS+1)
         WRITE(44,'(12i6)') (eirdiag_nds_typ(i),i=1,NSTS)
         WRITE(44,'(12i6)') (eirdiag_nds_srf(i),i=1,NSTS)

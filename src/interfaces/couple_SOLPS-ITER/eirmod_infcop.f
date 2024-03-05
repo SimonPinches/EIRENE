@@ -186,13 +186,13 @@ C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
 C
       TYPE :: CELL
         INTEGER :: TRIANGLE
-        TYPE(CELL),POINTER :: NEXT
+        TYPE(CELL), POINTER :: NEXT
       END TYPE CELL
 
-      TYPE (CELL),POINTER :: CURPOI
+      TYPE (CELL), POINTER :: CURPOI
 
       TYPE :: POIFELD
-        TYPE (CELL),POINTER :: P
+        TYPE (CELL), POINTER :: P
       END TYPE POIFELD
 
       TYPE (POIFELD), ALLOCATABLE, SAVE :: HEADS(:,:)
@@ -2212,7 +2212,6 @@ C  SET PLASMA BACKGROUND ON TRIANGULAR GRID
 C  A TRIANGULAR CELL ITRI RECEIVES THE PLASMA DATA FROM ITS LARGER HOST CELL (IX,IY),
 C  WITHOUT ANY WEIGHTING/INTERPOLATION ETC...
 C
-
       BZINTF = 1._DP
       BFINTF = 1._DP
       DO ITRI=1,NTRII
@@ -2442,7 +2441,7 @@ csw       IF (IO.EQ.0) THEN
 cdr         IF (TRCINT) THEN
 cdr            WRITE(IUNOUT,*)
 cdr              'PLASMA DATA FOR JPLS READ FROM '//FORT//'13'
-cdr            WRITE(IUNOUT,*) 'JPLS, IPLSV,IPLSTI ',JPLS,IPLSV,IPLSTI
+cdr            WRITE(IUNOUT,*) 'JPLS,IPLSV,IPLSTI ',JPLS,IPLSV,IPLSTI
 cdr         ENDIF
 
             IPLSTI = MPLSTI(JPLS)
@@ -3680,6 +3679,7 @@ csw 14jul2011
          ! note that calling exit_own would lead to a deadlock
          ! because that has collective mpi calls
       ENDIF
+
       if (.not. I_am_leader(istraa)) return
 
       IF (.NOT.ALLOCATED(CHPS)) THEN

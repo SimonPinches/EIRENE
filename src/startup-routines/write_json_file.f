@@ -40,6 +40,7 @@
       use json_module           ! IGNORE
 
       implicit none
+      character(*) :: filename
 
       type(json_core) :: json
       type(json_value),pointer :: p, block_1, block_2, block_3a,
@@ -49,7 +50,6 @@
      .                            block_15
       type(json_value),pointer :: cmlines, crs_lines
       type(s_stack), pointer :: cur
-      character(*) :: filename
 
 ! initialize the class
 !      call json%initialize(.false.,.true.,.false.,'ES')

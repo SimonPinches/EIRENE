@@ -911,7 +911,6 @@ c  AND EXTRAPOLATE CONSTANT FROM THERE
       IF2MN = 0
       IF2MX = 0
 
-
 cdr Try to read asymptotics, unless already read: jfeximn,jfeximx /= 0
 cdr Even if jfeximn,jfeximx /= 0, read anyway, but later: do not use
 
@@ -1025,8 +1024,8 @@ c  parameters: fp1(1:3),fp1(4:6),fp2(1:3),fp2(4:6)
         IF (LGR1MIN .AND. .NOT. LGC1MIN.and.if1mn.ge.3.) THEN
           WRITE (IUNOUT,*) ' WARNING FROM SLREAC'
           WRITE (IUNOUT,*) ' REACTION ',IR, 'TYPE ',H123
-          WRITE (IUNOUT,'(A)') ' LOWER RANGE FOR 1ST PARAMETER OF FIT'//
-     .          ' SPECIFIED BUT'//
+          WRITE (IUNOUT,*) ' LOWER RANGE FOR 1ST PARAMETER OF FIT',
+     .          ' SPECIFIED BUT',
      .          ' NO COEFFICIENTS FOR EXTRAPOLATION PROVIDED'
           CALL EIRENE_MASJ1R('IF1MN,R1MN      ',if1mn,r1mn)
           IF (IF1MN.EQ.4)

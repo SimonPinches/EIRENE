@@ -1719,7 +1719,7 @@ C     READ IN THE NUMBER OF TRIANGLES
 
       IF(.NOT.ALLOCATED(XNMTI)) THEN
        WRITE(IUNOUT,*) "ERROR IN WNEUTRAL_FLUXES: ",
-     w                 "NO MAPPING ARRAYS FROM IN0COP"
+     w                 "NO MAPPING ARRAYS FROM IF0COP"
        WRITE(IUNOUT,*) "THE SUBROUTINE WILL BE SKIPPED"
        RETURN
       END IF
@@ -1792,8 +1792,8 @@ C*******************************************************************************
      , , only: NPLP_CGRID
       IMPLICIT NONE
 
-      INTEGER,INTENT(OUT) :: INDMPX(0:NDXP+1,0:NDYP+1),
-     i                       INDMPY(0:NDXP+1,0:NDYP+1)
+      INTEGER, INTENT(OUT) :: INDMPX(0:NDXP+1,0:NDYP+1),
+     i                        INDMPY(0:NDXP+1,0:NDYP+1)
       REAL(DP) :: DINDMPX(0:NDXP+1,0:NDYP+1),
      r            DINDMPY(0:NDXP+1,0:NDYP+1),
      r            DUMMY(0:NDXP+1,0:NDYP+1)
@@ -1943,7 +1943,7 @@ C*******************************************************************************
 
       IMPLICIT NONE
 
-      INTEGER,INTENT(IN) :: NCL
+      INTEGER, INTENT(IN) :: NCL
       INTEGER :: ISS,IS,IND1,DNCL,DNCL2
       CHARACTER*(8) HLP_FRM
 
@@ -2234,7 +2234,7 @@ C*******************************************************************************
 
       IMPLICIT NONE
 
-      INTEGER,INTENT(IN) :: NCL
+      INTEGER, INTENT(IN) :: NCL
       INTEGER :: NCL2,IS,ISS,IA,IE,I,IND
       REAL(DP) :: WLDNA_SUM(NATM,NSTS),WLDNM_SUM(NMOL,NSTS),
      r            EWLDA_SUM(NATM,NSTS),EWLDM_SUM(NMOL,NSTS),
@@ -2248,157 +2248,159 @@ C*******************************************************************************
 
       NCL2=0
       DO IS=1,NSTS
-       IF(eirdiag_nds_ind(IS).LT.0) THEN
-        NCL2=NCL2+1
-        CYCLE !THIS SURFACE IS SKIPPED
-       END IF
-       ISS=NLIM+IS
-       IND=eirdiag_nds_ind(IS)
-       IA=IND+1
-       IE=eirdiag_nds_end(IS)-eirdiag_nds_start(IS)+IA
-       SAREA_SUM(IS)=sum(sarea_res(IA:IE))
-       NCL2=NCL2+IE-IA+2
-       VNAME=' SAREA'
-       CALL CHECK_SUM(SAREA_SUM(IS),SAREA_RES(IND),VNAME,IS,1)
-       DO I=1,NATM
-        WLDNA_SUM(I,IS)=sum(wldna_res(I,IA:IE))
-        VNAME=' WLDNA'
-        CALL CHECK_SUM(WLDNA_SUM(I,IS),WLDNA_RES(I,IND),VNAME,IS,I)
-        EWLDA_SUM(I,IS)=sum(ewlda_res(I,IA:IE))
-        VNAME=' EWLDA'
-        CALL CHECK_SUM(EWLDA_SUM(I,IS),EWLDA_RES(I,IND),VNAME,IS,I)
-        EWLDEA_SUM(I,IS)=sum(ewldea_res(I,IA:IE))
-        VNAME='EWLDEA'
-        CALL CHECK_SUM(EWLDEA_SUM(I,IS),EWLDEA_RES(I,IND),VNAME,IS,I)
-        WLDSPTA_SUM(I,IS)=sum(wldspta_res(I,IA:IE))
-        VNAME='WLDSPA'
-        CALL CHECK_SUM(WLDSPTA_SUM(I,IS),WLDSPTA_RES(I,IND),VNAME,IS,I)
-       END DO
-       DO I=1,NMOL
-        WLDNM_SUM(I,IS)=sum(wldnm_res(I,IA:IE))
-        VNAME=' WLDNM'
-        CALL CHECK_SUM(WLDNM_SUM(I,IS),WLDNM_RES(I,IND),VNAME,IS,I)
-        EWLDM_SUM(I,IS)=sum(ewldm_res(I,IA:IE))
-        VNAME=' EWLDM'
-        CALL CHECK_SUM(EWLDM_SUM(I,IS),EWLDM_RES(I,IND),VNAME,IS,I)
-        EWLDEM_SUM(I,IS)=sum(ewldem_res(I,IA:IE))
-        VNAME='EWLDEM'
-        CALL CHECK_SUM(EWLDEM_SUM(I,IS),EWLDEM_RES(I,IND),VNAME,IS,I)
-        EWLDMR_SUM(I,IS)=sum(ewldmr_res(I,IA:IE))
-        VNAME='EWLDMR'
-        CALL CHECK_SUM(EWLDMR_SUM(I,IS),EWLDMR_RES(I,IND),VNAME,IS,I)
-        WLDSPTM_SUM(I,IS)=sum(wldsptm_res(I,IA:IE))
-        VNAME='WLDSPM'
-        CALL CHECK_SUM(WLDSPTM_SUM(I,IS),WLDSPTM_RES(I,IND),VNAME,IS,I)
-       END DO
-       DO I=1,NSPZ
-        WLPUMP_SUM(I,IS)=sum(wlpump_res(I,IA:IE))
-        VNAME='WLPUMP'
-        CALL CHECK_SUM(WLPUMP_SUM(I,IS),WLPUMP_RES(I,IND),VNAME,IS,I)
-       END DO
-       EWLDRP_SUM(IS)=sum(ewldrp_res(IA:IE))
-       VNAME='EWLDRP'
-       CALL CHECK_SUM(EWLDRP_SUM(IS),EWLDRP_RES(IND),VNAME,IS,1)
-       WLDSPT_SUM(IS)=sum(wldspt_res(IA:IE))
-       VNAME='WLDSPT'
-       CALL CHECK_SUM(WLDSPT_SUM(IS),WLDSPT_RES(IND),VNAME,IS,1)
-       EWLDT_SUM(IS)=sum(ewldt_res(IA:IE))
-       VNAME=' EWLDT'
-       CALL CHECK_SUM(EWLDT_SUM(IS),EWLDT_RES(IND),VNAME,IS,1)
+        IF(eirdiag_nds_ind(IS).LT.0) THEN
+          NCL2=NCL2+1
+          CYCLE !THIS SURFACE IS SKIPPED
+        END IF
+        ISS=NLIM+IS
+        IND=eirdiag_nds_ind(IS)
+        IA=IND+1
+        IE=eirdiag_nds_end(IS)-eirdiag_nds_start(IS)+IA
+        SAREA_SUM(IS)=sum(sarea_res(IA:IE))
+        NCL2=NCL2+IE-IA+2
+        VNAME=' SAREA'
+        CALL CHECK_SUM(SAREA_SUM(IS),SAREA_RES(IND),VNAME,IS,1)
+        DO I=1,NATM
+          WLDNA_SUM(I,IS)=sum(wldna_res(I,IA:IE))
+          VNAME=' WLDNA'
+          CALL CHECK_SUM(WLDNA_SUM(I,IS),WLDNA_RES(I,IND),VNAME,IS,I)
+          EWLDA_SUM(I,IS)=sum(ewlda_res(I,IA:IE))
+          VNAME=' EWLDA'
+          CALL CHECK_SUM(EWLDA_SUM(I,IS),EWLDA_RES(I,IND),VNAME,IS,I)
+          EWLDEA_SUM(I,IS)=sum(ewldea_res(I,IA:IE))
+          VNAME='EWLDEA'
+          CALL CHECK_SUM(EWLDEA_SUM(I,IS),EWLDEA_RES(I,IND),VNAME,IS,I)
+          WLDSPTA_SUM(I,IS)=sum(wldspta_res(I,IA:IE))
+          VNAME='WLDSPA'
+          CALL CHECK_SUM(WLDSPTA_SUM(I,IS),WLDSPTA_RES(I,IND),
+     .                   VNAME,IS,I)
+        END DO
+        DO I=1,NMOL
+          WLDNM_SUM(I,IS)=sum(wldnm_res(I,IA:IE))
+          VNAME=' WLDNM'
+          CALL CHECK_SUM(WLDNM_SUM(I,IS),WLDNM_RES(I,IND),VNAME,IS,I)
+          EWLDM_SUM(I,IS)=sum(ewldm_res(I,IA:IE))
+          VNAME=' EWLDM'
+          CALL CHECK_SUM(EWLDM_SUM(I,IS),EWLDM_RES(I,IND),VNAME,IS,I)
+          EWLDEM_SUM(I,IS)=sum(ewldem_res(I,IA:IE))
+          VNAME='EWLDEM'
+          CALL CHECK_SUM(EWLDEM_SUM(I,IS),EWLDEM_RES(I,IND),VNAME,IS,I)
+          EWLDMR_SUM(I,IS)=sum(ewldmr_res(I,IA:IE))
+          VNAME='EWLDMR'
+          CALL CHECK_SUM(EWLDMR_SUM(I,IS),EWLDMR_RES(I,IND),VNAME,IS,I)
+          WLDSPTM_SUM(I,IS)=sum(wldsptm_res(I,IA:IE))
+          VNAME='WLDSPM'
+          CALL CHECK_SUM(WLDSPTM_SUM(I,IS),WLDSPTM_RES(I,IND),
+     .                   VNAME,IS,I)
+        END DO
+        DO I=1,NSPZ
+          WLPUMP_SUM(I,IS)=sum(wlpump_res(I,IA:IE))
+          VNAME='WLPUMP'
+          CALL CHECK_SUM(WLPUMP_SUM(I,IS),WLPUMP_RES(I,IND),VNAME,IS,I)
+        END DO
+        EWLDRP_SUM(IS)=sum(ewldrp_res(IA:IE))
+        VNAME='EWLDRP'
+        CALL CHECK_SUM(EWLDRP_SUM(IS),EWLDRP_RES(IND),VNAME,IS,1)
+        WLDSPT_SUM(IS)=sum(wldspt_res(IA:IE))
+        VNAME='WLDSPT'
+        CALL CHECK_SUM(WLDSPT_SUM(IS),WLDSPT_RES(IND),VNAME,IS,1)
+        EWLDT_SUM(IS)=sum(ewldt_res(IA:IE))
+        VNAME=' EWLDT'
+        CALL CHECK_SUM(EWLDT_SUM(IS),EWLDT_RES(IND),VNAME,IS,1)
       END DO
       IF(NCL2.NE.NCL) THEN
-         WRITE(IUNOUT,*) "ERROR IN WNEUTRAL_FLUXES: ",
-     w                   "NOT ALL ELEMENTS WERE CHECKED"
-         WRITE(IUNOUT,*) "TOTAL ", NCL, "CHECKED ", NCL2
+        WRITE(IUNOUT,*) "ERROR IN WNEUTRAL_FLUXES: ",
+     w                  "NOT ALL ELEMENTS WERE CHECKED"
+        WRITE(IUNOUT,*) "TOTAL ", NCL, "CHECKED ", NCL2
       END IF
 
       IF(TRCINT) THEN
         WRITE(IUNOUT,*)
         WRITE(IUNOUT,*) "WNEUTRAL_FLUX CONTROL SUMS"
         DO IS=1,NSTS
-         IND=eirdiag_nds_ind(IS)
-         IF(IND.LT.0) CYCLE
-         WRITE(IUNOUT,*)
-         WRITE(IUNOUT,*) "SURFACE ", IS
+          IND=eirdiag_nds_ind(IS)
+          IF(IND.LT.0) CYCLE
+          WRITE(IUNOUT,*)
+          WRITE(IUNOUT,*) "SURFACE ", IS
 
-         WRITE(IUNOUT,601) "VARIABLE",
-     w                     "SPECIES", "STANDARD",
-     w                     "RESOLVED", " DIFFERENCE"
-         WRITE(IUNOUT,600) "SAREA", 0, SAREA_SUM(IS),SAREA_RES(IND),
-     w                             ABS(SAREA_SUM(IS)-SAREA_RES(IND))
-         DO I=1,NATM
-          WRITE(IUNOUT,600) "WLDNA",I,WLDNA_RES(I,IND),WLDNA_SUM(I,IS),
-     w                            ABS(WLDNA_RES(I,IND)-WLDNA_SUM(I,IS))
-          WRITE(IUNOUT,600) "EWLDA",I,EWLDA_RES(I,IND),EWLDA_SUM(I,IS),
-     w                            ABS(EWLDA_RES(I,IND)-EWLDA_SUM(I,IS))
-          WRITE(IUNOUT,600) "EWLDEA",
-     w                     I,EWLDEA_RES(I,IND),EWLDEA_SUM(I,IS),
-     w                   ABS(EWLDEA_RES(I,IND)-EWLDEA_SUM(I,IS))
-          WRITE(IUNOUT,600) "WLDSPTA",
-     w                     I,WLDSPTA_RES(I,IND),WLDSPTA_SUM(I,IS),
-     w                   ABS(WLDSPTA_RES(I,IND)-WLDSPTA_SUM(I,IS))
-         END DO
-         DO I=1,NMOL
-          WRITE(IUNOUT,600) "WLDNM",I,WLDNM_RES(I,IND),WLDNM_SUM(I,IS),
-     w                            ABS(WLDNM_RES(I,IND)-WLDNM_SUM(I,IS))
-          WRITE(IUNOUT,600) "EWLDM",I,EWLDM_RES(I,IND),EWLDM_SUM(I,IS),
-     w                            ABS(EWLDM_RES(I,IND)-EWLDM_SUM(I,IS))
-          WRITE(IUNOUT,600) "EWLDEM",
-     w                     I,EWLDEM_RES(I,IND),EWLDEM_SUM(I,IS),
-     w                   ABS(EWLDEM_RES(I,IND)-EWLDEM_SUM(I,IS))
-          WRITE(IUNOUT,600) "EWLDMR",I,
-     w                       EWLDMR_RES(I,IND),EWLDMR_SUM(I,IS),
-     w                   ABS(EWLDMR_RES(I,IND)-EWLDMR_SUM(I,IS))
-          WRITE(IUNOUT,600) "WLDSPTM",
-     w                     I,WLDSPTM_RES(I,IND),WLDSPTM_SUM(I,IS),
-     w                   ABS(WLDSPTM_RES(I,IND)-WLDSPTM_SUM(I,IS))
-         END DO
-         DO I=1,NSPZ
-          WRITE(IUNOUT,600) "WLPUMP",
-     w                     I,WLPUMP_RES(I,IND),WLPUMP_SUM(I,IS),
-     w                   ABS(WLPUMP_RES(I,IND)-WLPUMP_SUM(I,IS))
-         END DO
-         WRITE(IUNOUT,600) "EWLDRP",0,
-     w                      EWLDRP_RES(IND),EWLDRP_SUM(IS),
-     w                  ABS(EWLDRP_RES(IND)-EWLDRP_SUM(IS))
-         WRITE(IUNOUT,600) "WLDSPT",0,
-     w                      WLDSPT_RES(IND),WLDSPT_SUM(IS),
-     w                  ABS(WLDSPT_RES(IND)-WLDSPT_SUM(IS))
-         WRITE(IUNOUT,600) "EWLDT",0,
-     w                      EWLDT_RES(IND),EWLDT_SUM(IS),
-     w                  ABS(EWLDT_RES(IND)-EWLDT_SUM(IS))
+          WRITE(IUNOUT,601) "VARIABLE",
+     w                      "SPECIES", "STANDARD",
+     w                      "RESOLVED", " DIFFERENCE"
+          WRITE(IUNOUT,600) "SAREA", 0, SAREA_SUM(IS),SAREA_RES(IND),
+     w                              ABS(SAREA_SUM(IS)-SAREA_RES(IND))
+          DO I=1,NATM
+            WRITE(IUNOUT,600) "WLDNA",I,WLDNA_RES(I,IND),WLDNA_SUM(I,IS)
+     w                        ,ABS(WLDNA_RES(I,IND)-WLDNA_SUM(I,IS))
+            WRITE(IUNOUT,600) "EWLDA",I,EWLDA_RES(I,IND),EWLDA_SUM(I,IS)
+     w                        ,ABS(EWLDA_RES(I,IND)-EWLDA_SUM(I,IS))
+            WRITE(IUNOUT,600) "EWLDEA",
+     w                       I,EWLDEA_RES(I,IND),EWLDEA_SUM(I,IS),
+     w                     ABS(EWLDEA_RES(I,IND)-EWLDEA_SUM(I,IS))
+            WRITE(IUNOUT,600) "WLDSPTA",
+     w                       I,WLDSPTA_RES(I,IND),WLDSPTA_SUM(I,IS),
+     w                     ABS(WLDSPTA_RES(I,IND)-WLDSPTA_SUM(I,IS))
+          END DO
+          DO I=1,NMOL
+            WRITE(IUNOUT,600) "WLDNM",I,WLDNM_RES(I,IND),WLDNM_SUM(I,IS)
+     w                        ,ABS(WLDNM_RES(I,IND)-WLDNM_SUM(I,IS))
+            WRITE(IUNOUT,600) "EWLDM",I,EWLDM_RES(I,IND),EWLDM_SUM(I,IS)
+     w                        ,ABS(EWLDM_RES(I,IND)-EWLDM_SUM(I,IS))
+            WRITE(IUNOUT,600) "EWLDEM",
+     w                       I,EWLDEM_RES(I,IND),EWLDEM_SUM(I,IS),
+     w                     ABS(EWLDEM_RES(I,IND)-EWLDEM_SUM(I,IS))
+            WRITE(IUNOUT,600) "EWLDMR",I,
+     w                         EWLDMR_RES(I,IND),EWLDMR_SUM(I,IS),
+     w                     ABS(EWLDMR_RES(I,IND)-EWLDMR_SUM(I,IS))
+            WRITE(IUNOUT,600) "WLDSPTM",
+     w                       I,WLDSPTM_RES(I,IND),WLDSPTM_SUM(I,IS),
+     w                     ABS(WLDSPTM_RES(I,IND)-WLDSPTM_SUM(I,IS))
+          END DO
+          DO I=1,NSPZ
+            WRITE(IUNOUT,600) "WLPUMP",
+     w                       I,WLPUMP_RES(I,IND),WLPUMP_SUM(I,IS),
+     w                     ABS(WLPUMP_RES(I,IND)-WLPUMP_SUM(I,IS))
+          END DO
+          WRITE(IUNOUT,600) "EWLDRP",0,
+     w                       EWLDRP_RES(IND),EWLDRP_SUM(IS),
+     w                   ABS(EWLDRP_RES(IND)-EWLDRP_SUM(IS))
+          WRITE(IUNOUT,600) "WLDSPT",0,
+     w                       WLDSPT_RES(IND),WLDSPT_SUM(IS),
+     w                   ABS(WLDSPT_RES(IND)-WLDSPT_SUM(IS))
+          WRITE(IUNOUT,600) "EWLDT",0,
+     w                       EWLDT_RES(IND),EWLDT_SUM(IS),
+     w                   ABS(EWLDT_RES(IND)-EWLDT_SUM(IS))
         END DO !DO IS=1,NSTS
 
         WRITE(IUNOUT,*)
         WRITE(IUNOUT,*) "WNEUTRAL_FLUX: COMPARING TO OLD DIAGNOSTIC"
         DO IS=1,NSTS
-         IF(eirdiag_nds_ind(IS).LT.0) CYCLE
-         ISS=NLIM+IS
-         WRITE(IUNOUT,*)
-         WRITE(IUNOUT,*) "SURFACE ", IS
+          IF(eirdiag_nds_ind(IS).LT.0) CYCLE
+          ISS=NLIM+IS
+          WRITE(IUNOUT,*)
+          WRITE(IUNOUT,*) "SURFACE ", IS
 
-         WRITE(IUNOUT,601) "VARIABLE",
-     w                     "SPECIES", "NEW",
-     w                     "OLD", " DIFFERENCE"
-         DO I=1,NATM
-          FSUM=WLDNA(ISS,I,0)*ELCHA
-          WRITE(IUNOUT,600) "WLDNA",I,WLDNA_SUM(I,IS),FSUM,
-     w                            ABS(WLDNA_SUM(I,IS)-FSUM)
-         END DO
-         DO I=1,NMOL
-          FSUM=WLDNM(ISS,I,0)*ELCHA
-          WRITE(IUNOUT,600) "WLDNM",I,WLDNM_SUM(I,IS),FSUM,
-     w                            ABS(WLDNM_SUM(I,IS)-FSUM)
-         END DO
-         FSUM=SUM(EWLDA_SUM(:,IS))+SUM(EWLDM_SUM(:,IS))-
-     -        SUM(EWLDEA_SUM(:,IS))-SUM(EWLDEM_SUM(:,IS))
-         WRITE(IUNOUT,600) "WLDNEK",0,FSUM,wldnek(ISS,0),
-     w                            ABS(FSUM-wldnek(ISS,0))
-         WRITE(IUNOUT,600) "WLDPEB",0,EWLDRP_SUM(IS),wldpeb(ISS,0),
-     w                            ABS(EWLDRP_SUM(IS)-wldpeb(ISS,0))
-         FSUM=SUM(EWLDMR_SUM(:,IS))
-         WRITE(IUNOUT,600) "WLDNEP",0,FSUM,wldnep(ISS,0),
-     w                            ABS(FSUM-wldnep(ISS,0))
+          WRITE(IUNOUT,601) "VARIABLE",
+     w                      "SPECIES", "NEW",
+     w                      "OLD", " DIFFERENCE"
+          DO I=1,NATM
+            FSUM=WLDNA(ISS,I,0)*ELCHA
+            WRITE(IUNOUT,600) "WLDNA",I,WLDNA_SUM(I,IS),FSUM,
+     w                              ABS(WLDNA_SUM(I,IS)-FSUM)
+          END DO
+          DO I=1,NMOL
+            FSUM=WLDNM(ISS,I,0)*ELCHA
+            WRITE(IUNOUT,600) "WLDNM",I,WLDNM_SUM(I,IS),FSUM,
+     w                              ABS(WLDNM_SUM(I,IS)-FSUM)
+          END DO
+          FSUM=SUM(EWLDA_SUM(:,IS))+SUM(EWLDM_SUM(:,IS))-
+     w        SUM(EWLDEA_SUM(:,IS))-SUM(EWLDEM_SUM(:,IS))
+          WRITE(IUNOUT,600) "WLDNEK",0,FSUM,wldnek(ISS,0),
+     w                             ABS(FSUM-wldnek(ISS,0))
+          WRITE(IUNOUT,600) "WLDPEB",0,EWLDRP_SUM(IS),wldpeb(ISS,0),
+     w                             ABS(EWLDRP_SUM(IS)-wldpeb(ISS,0))
+          FSUM=SUM(EWLDMR_SUM(:,IS))
+          WRITE(IUNOUT,600) "WLDNEP",0,FSUM,wldnep(ISS,0),
+     w                             ABS(FSUM-wldnep(ISS,0))
         END DO !DO IS=1,NSTS
       END IF !IF(TRCINT)
   600 FORMAT(1X,A12,I8,1P,3E16.7)

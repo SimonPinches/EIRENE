@@ -347,7 +347,7 @@ C  CHANGED: use XX=NTCPU seconds of cpu time for calculation of trajectories
      .                     ' TURNED OFF, BECAUSE NPTS=0'
           CALL EIRENE_LEER(1)
         ENDIF
-        IF (NPTS(ISTRA).GT.0.AND.FLUX(ISTRA).LE.0.D0) THEN
+        IF (NPTS(ISTRA).GT.0 .AND. FLUX(ISTRA).LE.0.D0) THEN
           NPTS(ISTRA)=0
           NLSRON(ISTRA) = .FALSE.
           WRITE (iunout,'(1x,a,i3,a)') 'STRATUM ISTRA= ',ISTRA,

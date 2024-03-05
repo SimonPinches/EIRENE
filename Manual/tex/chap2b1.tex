@@ -1,8 +1,8 @@
 \section{Input data for operating mode} \label{sec2.1}
 
-\textbf{General Remarks} 
+\textbf{General Remarks}
 
-\medskip 
+\medskip
 
 The variables in this block control some of the more general options in EIRENE
 such as overall running time, usage of dump files but also a few parameters
@@ -10,12 +10,12 @@ depending on the simulation model (drifts included or not, etc.).
 
 \medskip
 
-\textbf{The Input Block} 
+\textbf{The Input Block}
 
 \begin{lstlisting}
       TXTRUN
 *** 1. Data for operating mode
-\end{lstlisting} 
+\end{lstlisting}
 
 first card:  integer flags controlling global options for the entire run.
 
@@ -62,9 +62,9 @@ There can be any number of these cards starting with character string
 
 \medskip
 
-\textbf{Meaning of the input flags for operating mode} 
+\textbf{Meaning of the input flags for operating mode}
 
-\medskip 
+\medskip
 
 \begin{description}
   \item[TXTRUN] At least one line of text to identify the run
@@ -251,7 +251,7 @@ There can be any number of these cards starting with character string
         at time $t_i$:
 
         $t_{i} = t_{i-1} + \Delta t = t_0 + i \Delta t = TIME0 + ITIME \cdot [NTMSTP
-            \cdot DTIMV]$ 
+            \cdot DTIMV]$
 
         are filled and prepared for the next time-cycle.
         The census arrays from the previous time cycle (if any), i.e., at $t =
@@ -270,10 +270,10 @@ There can be any number of these cards starting with character string
         I.e., the census population then determines the initial condition for the
         distribution function $f(\underline{r},\underline{v}, i, t = t_0)$.
         The source strength FLUX is computed from that initial condition.
-  \item[NOPTIM] Default: NRAD, = total number of grid cells 
+  \item[NOPTIM] Default: NRAD, = total number of grid cells
 
         (verify this default in case of older versions: there it may have been
-        NOPTIM=1) 
+        NOPTIM=1)
 
         NOPTIM is the first dimension of the arrays IGJUM3(ICELL,ISURF), which may be
         used for optimizing code performance by reducing unnecessary geometrical
@@ -308,10 +308,10 @@ There can be any number of these cards starting with character string
 
         NCLTAL(IRAD) = IRTAL: grid cell IRAD is condensed into the larger cell IRTAL.
         I.e.: output is average over a larger cell IRTAL, which is comprised of all
-        cells IRAD such that NCLTAL(IRAD) = IRTAL,  IRAD=1, NRAD 
+        cells IRAD such that NCLTAL(IRAD) = IRTAL,  IRAD=1, NRAD
 
         The input data in input block 5 (background medium) are always given on the
-        fine mesh (size: NRAD) 
+        fine mesh (size: NRAD)
 
         For output tallies (cell averaging) several cells IRAD1, IRAD2, \dots\ can be
         condensed into one larger cell IRTAL.
@@ -343,7 +343,7 @@ internal code options only.
         printed.
         The contribution of these particles to the particle- and energy balances is
         stored in the bins ``PTRASH" and ``ETRASH" respectively.
-  \item[NLANA] De-activates (NLANA=.TRUE.) all non-analog sampling distributions, such 
+  \item[NLANA] De-activates (NLANA=.TRUE.) all non-analog sampling distributions, such
         as biased source sampling, splitting, etc.
         Select NLANA=.TRUE., if particle trajectory plots are used to get an intuitive
         picture of what is going on physically.
@@ -396,8 +396,8 @@ version dependent.
         The ``junk" congruential generator has been kept, so far, to permit full
         backward compatibility.
         But the code now (from revisions April 17 on) heavily complains if it is used.
-  \item[NLRANMAR] has replaced NLOLDRAN since EIRENE tag        
-        MsV-2023Mar-PBoerner-beta. It indicates that the ``junk'' 
+  \item[NLRANMAR] has replaced NLOLDRAN since EIRENE tag
+        MsV-2023Mar-PBoerner-beta. It indicates that the ``junk''
         congruential generator has been completely removed.
         NLRANMAR switches on testing of generator ``H1RN".
   \item[NLCASCAD] for internal use.
@@ -411,7 +411,7 @@ version dependent.
   \item[NLTRIMESH] stop run after preparation for triangulation code (NLWRMSH)
   \item[NLSPCSCL] extend volume averaged and surface averaged tallies for species
         specific rescaling, execute species specific scoring for the respective tallies
-        and calculate refined scaling factors 
+        and calculate refined scaling factors
   \item[NLSPCSCL\_ON] apply the refined scaling factors
   \item[NLSOLEDGE] switch on use of FNUEQI\_SOL in FOLION and add contributions tally MIPL in FPKCOL
 \end{description}
@@ -427,9 +427,9 @@ cards.
 
         AMJUEL, HYDHEL, METHAN, H2VIBR, HYDRTC, ADAS,  SPECTR, PHOTON, POLARI,
 
-        \medskip 
+        \medskip
 
-        SPUTER, TRIM,  TRMSGL, 
+        SPUTER, TRIM,  TRMSGL,
 
         with volumetric collision databases in the first block, and surface interaction
         databases in the second.
@@ -441,7 +441,7 @@ Example for formatted input:
 
 \lstinline|CFILE AMJUEL /home/path/AMdata/amjuel.tex|
 
-\lstinline|CFILE TRIM /home/path/Surfacedata/TRIM/trim.dat| 
+\lstinline|CFILE TRIM /home/path/Surfacedata/TRIM/trim.dat|
 
 \medskip
 
@@ -470,25 +470,25 @@ also different default names are recognized.
 
 Default file names to be used in this local directory currently are
 
-AMJUEL, 
+AMJUEL,
 
-HYDHEL, 
+HYDHEL,
 
-METHAN or ``METHANE", for database name METHAN 
+METHAN or ``METHANE", for database name METHAN
 
-H2VIBR, 
+H2VIBR,
 
-HYDRTC, 
+HYDRTC,
 
-SPECTR, 
+SPECTR,
 
-PHOTON, 
+PHOTON,
 
-POLARI, 
+POLARI,
 
-SPUTER, 
+SPUTER,
 
-TRIM or ``fort.21",  for database name TRIM 
+TRIM or ``fort.21",  for database name TRIM
 
 For ADAS (AMdata) and TRMSGL (Surfacedata) there is an exception from this
 scheme.

@@ -267,7 +267,6 @@ c  evaluate double parameter fit at s01,al1
           FPAR3=FP2(3)
         ENDIF
 
-
         COU=EIRENE_EXTRAP(AL2,AL2MIN,COU2MIN,IFEX,FPAR1,FPAR2,FPAR3)
         cou=log(cou)
 C       DUM(1:9)= ???
@@ -346,7 +345,6 @@ cdr  the reduced single parameter fit coefficients at fixed AL1 are returned on 
 
       endif
 
-
   100 CONTINUE
 
 cdr  split the fit evaluation into two steps.
@@ -372,8 +370,6 @@ cdr  if p2.le.0.0, just return cou=dum(1) = fit2(AL1,AL2)
       do jj = 8, 1, -1
         cou = cou * p2 + dum(jj)
       end do
-
-
 
       return
       end subroutine EIRENE_dbl_poly

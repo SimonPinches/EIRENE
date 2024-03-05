@@ -45,11 +45,11 @@ cdr  .          PPPL, COPV, EPPL, EPEL, in module CESTIM.
       END TYPE CELLMUL
 
       TYPE :: SIMARR
-        TYPE(CELLSIM),POINTER :: PSIM
+        TYPE(CELLSIM), POINTER :: PSIM
       END TYPE SIMARR
 
       TYPE :: MULARR
-        TYPE(CELLMUL),POINTER :: PMUL
+        TYPE(CELLMUL), POINTER :: PMUL
       END TYPE MULARR
 
       TYPE(SIMARR), ALLOCATABLE, SAVE :: EAELS(:), EMELS(:), EIELS(:),
@@ -65,8 +65,8 @@ cdr  They are analytically derived from B2.5 data.
      .                                   MAPLS(:), MMPLS(:), MIPLS(:),
      .                                   MPHPLS(:)
 
-      TYPE(CELLSIM),POINTER, SAVE :: COLLECT_SIMARR
-      TYPE(CELLMUL),POINTER, SAVE :: COLLECT_MULARR
+      TYPE(CELLSIM), POINTER, SAVE :: COLLECT_SIMARR
+      TYPE(CELLMUL), POINTER, SAVE :: COLLECT_MULARR
 
       CONTAINS
 
