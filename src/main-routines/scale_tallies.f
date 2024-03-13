@@ -77,7 +77,7 @@ C
         write (iunout,*) 'FASCL = ',FASCL(:,ISTRA)
         write (iunout,*) 'FMSCL = ',FMSCL(:,ISTRA)
         write (iunout,*) 'FISCL = ',FISCL(:,ISTRA)
-        write (iunout,*) 'FPHSCL = ',FPHSCL(:,ISTRA)
+        write (iunout,*) 'FPHSCL= ',FPHSCL(:,ISTRA)
         CALL EIRENE_LEER(2)
 C
 C  CARRY OUT SCALING OF VOLUME AND SURFACE TALLIES, RESP.

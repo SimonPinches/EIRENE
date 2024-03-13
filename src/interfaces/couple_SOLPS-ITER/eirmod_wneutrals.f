@@ -871,8 +871,8 @@ C     READ IN THE NUMBER OF TRIANGLES
 
 
       !c*** Surface type and properties
-      wlabsrp=0.0_DP
-      pumpsum=0.0_DP
+      wlabsrp = 0.0_DP
+      pumpsum = 0.0_DP
       eirpump = 0.0_DP
       eirspta = 0.0_DP
       eirsptm = 0.0_DP
