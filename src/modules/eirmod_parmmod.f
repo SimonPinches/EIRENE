@@ -22,6 +22,7 @@ cdr  jan.18:  added: NUM_LINES, NADV_ADD
 cdr  nov.18:  notational cleanup: separate OT from PH (photonic) processes
 cpb  dez.18:  ntalg, increased from 24 to 30, free slots for future use
 cmg  Feb 1, 23: added ISPCOPT for scoring angle resolved tallies
+chk  March 24:  added ISPLDEG for scoring angle resolved tallies
 c
       MODULE EIRMOD_PARMMOD
 c
@@ -168,9 +169,10 @@ cdr  size of particle species columns in various arrays
      .              SPCVX, SPCVY, SPCVZ
         REAL(DP) :: SPCS, SGMS, STVS, GGS
         INTEGER :: NSPC, ISPCTYP, ISPCSRF, IPRTYP, IPRSP, IMETSP,
-     .             ISRFCLL, IDIREC, ISPCOPT
+     .             ISRFCLL, IDIREC, ISPCOPT, ISPLDEG
         LOGICAL :: LOG
         REAL(DP), DIMENSION(:), POINTER :: SPC, SDV, SGM, STV, GG
+        REAL(DP), DIMENSION(:,:), POINTER :: SPCAN
       END TYPE EIRENE_SPECTRUM
 
 
@@ -891,6 +893,7 @@ c     NTALW       = INT_PARM(114)  !dr out, was same as ntals
       SPECA%ISRFCLL = SPECB%ISRFCLL
       SPECA%IDIREC  = SPECB%IDIREC
       SPECA%ISPCOPT = SPECB%ISPCOPT
+      SPECA%ISPLDEG = SPECB%ISPLDEG
       SPECA%LOG     = SPECB%LOG
 
       if (associated(speca%spc)) then

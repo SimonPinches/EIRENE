@@ -11,7 +11,7 @@ cdr   scaling with FATM, FMOL,... done elsewhere?
       IMPLICIT NONE
 
       INTEGER, INTENT(IN) :: ISTR
-      INTEGER :: I, IATM, IMOL, IION, IPHOT, IPLS, ISPC
+      INTEGER :: I, IATM, IMOL, IION, IPHOT, IPLS, ISPC, D
       REAL(DP) :: DEL, DELI, ELEFT, ERIGHT
 
       ESTIMS=ESTIMS*FLXFAC(ISTR)
@@ -74,6 +74,13 @@ cdr 1/DE, DE= energy increment for bin no. I.
 C  SCALE: FROM SCORING TALLY UNITS PER ENERGY BIN --> TALLY UNITS PER EV
             ESTIML(ISPC)%SPC(I) =
      .      ESTIML(ISPC)%SPC(I)*FLXFAC(ISTR)*DELI
+chk Also scale the Legendre expansion coefficients if applicable
+            IF (ESTIML(ISPC)%ISPCOPT==2) THEN
+              DO D=1,ESTIML(ISPC)%ISPLDEG
+                ESTIML(ISPC)%SPCAN(D,I) = 
+     .            ESTIML(ISPC)%SPCAN(D,I)*FLXFAC(ISTR)*DELI
+              END DO
+            END IF
 C  INTEGRATE  --> TALLY UNITS
 cdr  Test tbd: in case of total (not directional) spectrum, 
 cdr            i.e. for IDIREC=0, this

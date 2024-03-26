@@ -404,8 +404,10 @@ c  INDPRO(5)=5:  call prousr
      .                      B0,B1,B2,B3,B4,B5,0._DP,NSURF)
         CALL EIRENE_PROUSR (BYIN,2+1*NPLS+NPLSTI+3*NPLSV,
      .                      B0,B1,B2,B3,B4,B5,0._DP,NSURF)
+        write (*,*) 'calling eirene prousr',BZIN(1),B1,NSURF
         CALL EIRENE_PROUSR (BZIN,3+1*NPLS+NPLSTI+3*NPLSV,
      .                      B0,B1,B2,B3,B4,B5,1._DP,NSURF)
+        write (*,*) 'eirene prousr done',BXIN(1),BYIN(1),BZIN(1)
         CALL EIRENE_PROUSR (BFIN,4+1*NPLS+NPLSTI+3*NPLSV,
      .                      B0,B1,B2,B3,B4,B5,1._DP,NSURF)
       case (6)
