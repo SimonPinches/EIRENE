@@ -23,7 +23,7 @@ cdr  oct.2014:  parameter istr (stratum number) in argument list
       IMPLICIT NONE
       INTEGER , INTENT(IN) :: ISTR
       INTEGER :: IADTYP(0:4)
-      INTEGER :: IOUT, ISPC, I, IT, IE, IEND, IINI
+      INTEGER :: IOUT, ISPC, I, IT, IE, IEND, IINI, D
       REAL(DP) :: EN,EN1,EN2
       CHARACTER(10) :: TEXTYP(0:4)
       CHARACTER(8) :: UNITINT(1:3),UNITOUT
@@ -235,6 +235,46 @@ c  first and last bin: all the fluxes outside specified spectral range
             END DO
 
           END IF
+chk Legendre polynomial expansion tallies of angular spectra for each bin
+          IF (ESTIML(ISPC)%ISPCOPT==2) THEN
+            IF (I > NLIM) THEN
+              WRITE (IOUT,'(A,A,I6)') ' LEGENDRE EXPANSION TALLY FOR',
+     .                     ' NON-DEFAULT STANDARD SURFACE ',I-NLIM
+            ELSE
+              WRITE (IOUT,'(A,A,I6)') ' LEGENDRE EXPANSION TALLY FOR',
+     .                     ' ADDITIONAL SURFACE ',I
+            END IF
+          WRITE (IOUT,'(A6,3A12)') '  BIN ',
+     .                  '  B-LEFT    ','  B-RIGHT   ',' COEFFICIENT'
+            DO IE=IINI,IEND
+              EN = ESTIML(ISPC)%SPCMIN +
+     .            (IE-0.5_DP)*ESTIML(ISPC)%SPCDEL
+c  LOWER energy bin value
+              EN1= ESTIML(ISPC)%SPCMIN +
+     .             (IE-1)*ESTIML(ISPC)%SPCDEL
+c  UPPER energy bin value
+              EN2= ESTIML(ISPC)%SPCMIN +
+     .             (IE  )*ESTIML(ISPC)%SPCDEL
+              IF (ESTIML(ISPC)%LOG) THEN
+                EN = 10._DP**EN
+                EN1= 10._DP**EN1
+                EN2= 10._DP**EN2
+              END IF
+              IF (IE.EQ.IINI) EN1=0.0_DP ! even for log energy binning
+              IF (IE.EQ.IEND) THEN
+                WRITE (IOUT,'(I6,1ES12.4,A12,$)') IE,EN1,' INF       '
+              ELSE
+                WRITE (IOUT,'(I6,2ES12.4,$)') IE,EN1,EN2
+              ENDIF
+              WRITE (IOUT,'(99(1ES12.4))')
+     .          (ESTIML(ISPC)%SPCAN(D,IE),D=1,ESTIML(ISPC)%ISPLDEG)
+c  first and last bin: all the fluxes outside specified spectral range
+              IF (IE.EQ.IINI.OR.IE.EQ.IEND-1)
+     .          WRITE (IOUT,*) '.......................................'
+            END DO
+          END IF
+
+
         ELSE
           WRITE (IOUT,'(A)') ' SPECTRUM IDENTICALLY 0 '
         END IF

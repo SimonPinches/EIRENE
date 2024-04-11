@@ -74,7 +74,7 @@ C
       INTEGER :: NR, NP, NT, MSURFG, J, NCELL, NTOTAL, N1, N2, N3, I,
      .           ITRII, IPLGN, ISPR, ITEXT, ISTS, NFTI, NFTE, NTCO,
      .           K, ITALS, IADS, IALS, IION, IPLS, IATM, N,
-     .           IMOL, IPHOT, ISPC, IOUT, ISF, IE, IT, ILIM
+     .           IMOL, IPHOT, ISPC, IOUT, ISF, IE, IT, ILIM, ID
       INTEGER :: IADTYP(0:4)
       LOGICAL :: LGVRA1(0:NATM,0:NSTRA),
      .           LGVRM1(0:NMOL,0:NSTRA),
@@ -361,6 +361,20 @@ C  SPECTRA
      .                   ESTIML(ISPC)%SPC(IE),
      .                   ESTIML(ISPC)%SDV(IE)
                     END IF
+                  END DO
+                END IF
+chk Legendre polynomial expansion tallies
+                IF (ESTIML(ISPC)%ISPCOPT==2) THEN 
+                  DO IE=1, ESTIML(ISPC)%NSPC
+                    EN = ESTIML(ISPC)%SPCMIN +
+     .                   (IE-0.5)*ESTIML(ISPC)%SPCDEL
+                    IF (ESTIML(ISPC)%LOG) THEN
+                      WRITE (IOUT,'(I6,1ES12.4,$)') IE,10._DP**EN
+                    ELSE
+                      WRITE (IOUT,'(I6,1ES12.4,$)') IE,EN
+                    END IF
+                    WRITE (IOUT,'(99(1ES12.4))')
+     .           (ESTIML(ISPC)%SPCAN(ID,IE),ID=1,ESTIML(ISPC)%ISPLDEG)
                   END DO
                 END IF
               ELSE
