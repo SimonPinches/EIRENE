@@ -14,6 +14,8 @@ cdr             with sign (tbd)
 cdr  March 21:  typo fixed in one place: WTR --> WT
 cmg  Feb 1, 23: added angularly resolved scoring for surface-averaged tallies
 cmg             switch ISPCOPT = 1, calculation of EB = (velx*crtx + vely*crty + velz*crtz)
+chk  March 24:  added Legendre expansion tallies for angular spectra
+chk             switch ISPCOPT = 2, expansion degree ISPLDEG
 
       SUBROUTINE EIRENE_UPDATE_SPECTRUM (WT,IND,ISC)
 C  update contributions to surface- or volume/line-averaged energy spectra
@@ -49,9 +51,9 @@ c  ityp: type of particle
 
       INTEGER, INTENT(IN) :: IND, ISC
       REAL(DP), INTENT(IN) :: WT
-      INTEGER :: ISPC, I, IS, IC, IRDO, IRD
+      INTEGER :: ISPC, I, IS, IC, IRDO, IRD, D
       REAL(DP) :: ADD, WV, DIST, WTR, SPCVX, SPCVY, SPCVZ, CDYN,
-     .            EB, SIG
+     .            EB, SIG, CA, L, LNORM
 
       TYPE(EIRENE_SPECTRUM), POINTER :: P
 
@@ -140,6 +142,21 @@ cdr  score SPC(I), ESP_MIN and ESP_MAX
 !$OMP ATOMIC
             ESTIML(ISPC)%ESP_MAX= MAX(ESTIML(ISPC)%ESP_MAX,EB)
             ESTIML(ISPC)%IMETSP = 1
+
+chk after finding the bin, also score the Legendre coefficients
+            IF (P%ISPCOPT == 2) THEN
+chk compute ISPLDEGth degree Legendre expansion tallies for ISPCOPT=2
+              CA = (velx*crtx + vely*crty + velz*crtz)
+              DO D=1,P%ISPLDEG
+                LNORM = 2._DP / (2*D + 1)
+chk compute L = Dth Legendre polynomial evaluated at cos(impact angle)
+                CALL EIRENE_LEGENDRE(D,CA,L)
+chk scoring the Dth polynomial coefficient SPCAN(D,I) of bin I
+!$OMP ATOMIC
+                ESTIML(ISPC)%SPCAN(D,I) = ESTIML(ISPC)%SPCAN(D,I) +
+     .                  L * ADD / LNORM
+              END DO
+            END IF
           END IF
         END DO
 

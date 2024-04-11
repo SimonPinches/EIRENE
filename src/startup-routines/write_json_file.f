@@ -1749,6 +1749,9 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
         call json%add(spc,'ISRFCLL',espec%isrfcll)
         call json%add(spc,'IDIREC',espec%idirec)
         call json%add(spc,'ISPCOPT',espec%ispcopt)
+        if (espec%ispcopt == 2) then
+          call json%add(spc,'ISPLDEG',espec%ispldeg)
+        end if
 
         call json%add(spc,'SPCMN',espec%spcmin)
         call json%add(spc,'SPCMX',espec%spcmax)

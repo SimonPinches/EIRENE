@@ -525,12 +525,12 @@ CHJL Need to check this removal of over_acc
 ! Initialise openMP including allocating THREADPRIVATE arrays
       CALL EIRENE_PREPARE_OPENMP()
       NPANU=0
-#ifdef USE_OPENMP      
+#ifdef USE_OPENMP
 #ifndef USE_EXT_OPENMP
 !$OMP  PARALLEL DEFAULT(SHARED)
 !$OMP& COPYIN(ETH,Q,M2M1,ES,ETF,ISDVI,IPSTD,RPST,
 !$OMP& RCMSPL,ICMSPL,LCMSOU,XSTOR,XSTORV)
-#endif      
+#endif
 #endif
 
 cdr feb 2020
@@ -595,7 +595,7 @@ C  MOVIE OPTION (NLMOVIE): DONE,
 C    if     nlmovie: sequence of strata is reversed, census stratum istra=nstrai comes first!
 C                    one by one re-launch of ALL particles from census
 c    if not nlmovie: census stratum istra=nstrai comes last.
-#ifdef USE_OPENMP      
+#ifdef USE_OPENMP
 !$OMP BARRIER
 #endif
         IF (.NOT.NLSRON(ISTRA)) THEN
@@ -1452,6 +1452,10 @@ C  SPECTRA
      .                             ESTIML(ISPC)%SPC
                 SMESTL(ISPC)%SPCS = SMESTL(ISPC)%SPCS +
      .                              ESTIML(ISPC)%SPCS
+                IF (ESTIML(ISPC)%ISPCOPT==2) THEN
+                  SMESTL(ISPC)%SPCAN = SMESTL(ISPC)%SPCAN +
+     .                   ESTIML(ISPC)%SPCAN
+                END IF
               END DO
             END IF
 
@@ -1606,6 +1610,9 @@ C  SPECTRA TALLIES
         DO ISPC=1,NADSPC
           ESTIML(ISPC)%SPC = SMESTL(ISPC)%SPC
           ESTIML(ISPC)%SPCS = SMESTL(ISPC)%SPCS
+          IF (ESTIML(ISPC)%ISPCOPT==2) THEN
+            ESTIML(ISPC)%SPCAN = SMESTL(ISPC)%SPCAN
+          END IF
         END DO
 C
 C  NOW PUT VARIANCES FOR SUM OVER STRATA BACK ONTO VARIANCE TALLIES

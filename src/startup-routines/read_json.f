@@ -132,7 +132,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           ISPSRF, ISPTYP, NSPS, NSPSA, IPTYP, IPSPZ, ISTRAI,
      .           IANF, IEND,
      .           IPLSTI, IPLSV, ISRFCLL,
-     .           IDIREC, ISTCHR,  ITOK, IER, IL, ILOGS, IO, ISPOPT,
+     .           IDIREC, ISTCHR, ITOK, IER, IL,ILOGS,IO,ISPOPT,ISPLDEG,
      .           NLOGIN, IFLG, IDUM,
      .           NB,NS,NA, ISTR,
      .           NRC, IADV, NUM_COMPO, NUM_CONTRIB, ICNT, IDMDL, IND,
@@ -3119,7 +3119,7 @@ C
 !cym/cpg end
       logical :: found
       integer, allocatable :: ihelp(:)
-      integer :: nstr, ist, j 
+      integer :: nstr, ist, j
 C
 C  READ DATA FOR PRIMARY SOURCE
 C
@@ -4047,6 +4047,9 @@ C    .      ... WRONG INPUT !
           ESPEC%ISRFCLL = ISRFCLL
           ESPEC%IDIREC = IDIREC
           ESPEC%ISPCOPT = ISPOPT
+          IF (ISPOPT==2) THEN
+            ESPEC%ISPLDEG = ISPLDEG
+          END IF
 cdr
 cdr       ESPEC%LOG = .FALSE. ! this was too restrictive !
 cdr  Option     LOG = .TRUE. WAS ALREADY AVAILABLE IN SCORING/UPDATE_SPECTRUM
@@ -4095,6 +4098,10 @@ c  standard deviation of spectrally resolved tallies
             NULLIFY(ESPEC%SDV, ESPEC%SGM, ESPEC%STV, ESPEC%GG)
           END IF
           ESPEC%SPC(0:NSPSA+1) = 0._DP
+          IF (ISPOPT==2) THEN
+            ALLOCATE(ESPEC%SPCAN(0:ISPLDEG,0:NSPSA+1))
+            ESPEC%SPCAN(0:ISPLDEG,0:NSPSA+1) = 0._DP
+          END IF
           ESPEC%IMETSP = 0
 
           IF (NSMSTRA > 0) THEN
