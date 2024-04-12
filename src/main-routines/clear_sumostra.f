@@ -37,13 +37,6 @@ C  SPECTRA
             SMESTL(ISPC)%STV = 0._DP
             SMESTL(ISPC)%GG = 0._DP
           END IF
-          IF (SMESTL(ISPC)%ISPCOPT==2) THEN
-            IF (.NOT.ASSOCIATED(SMESTL(ISPC)%SPCAN)) THEN
-              ALLOCATE (SMESTL(ISPC)%SPCAN(0:SMESTL(ISPC)%ISPLDEG,
-     .                                     0:SMESTL(ISPC)%NSPC+1))
-            END IF
-            SMESTL(ISPC)%SPCAN = 0._DP
-          END IF
           SMESTL(ISPC)%SPCS = 0._DP
           SMESTL(ISPC)%SGMS = 0._DP
           SMESTL(ISPC)%STVS = 0._DP
