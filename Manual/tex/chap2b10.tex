@@ -414,13 +414,13 @@ Printout of these spectra is activated in input block 11a, flag NSPCPR.
 
 	=1: Energy spectrum replaced by a histogram of cos(incidence angle)
 
-	=2: In addition to the energy spectrum, compute the Legendre expansion of
-	degree ISPLDEG for the angular distribution and output the expansion coefficients
-	$a_n$, $n \in \{1..ISPLDEG\}$ for each energy bin. The zeroth-order coefficients
-	$a_0$ are the fluxes in each energy bin divided by 2. The angular spectrum at each 
-	energy can be reconstructed as 
-	$f(\theta) = \sum_{n=0}^{ISPLDEG} a_n \frac{\pi}{2} sin(\theta) L_n(cos(\theta))$
-	where $L_n$ is the nth Legendre polynomial.
+        =2: In addition to the energy spectrum, compute the Legendre expansion of
+        degree ISPLDEG for the angular distribution and output the expansion coefficients
+        $a_n$, $n \in \{1..\text{ISPLDEG}\}$ for each energy bin. The zeroth-order coefficients
+        $a_0$ are the fluxes in each energy bin divided by 2. The angular spectrum at each
+        energy can be reconstructed as
+        $f(\theta)=\sum_{n=0}^{\text{ISPLDEG}}a_n\cdot\pi sin(\theta)\cdot L_n(2 cos(\theta)-1)$
+        where $L_n$ is the nth Legendre polynomial.
 
   \item[NSPS, SPCMN, SPCMX] Number of equidistant energy bins
         (\si{\electronvolt}) for spectra.
