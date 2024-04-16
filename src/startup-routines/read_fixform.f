@@ -52,8 +52,6 @@ cdr            tbd: call eirene_skip_read_comments: not yet implemented here.
 cdr  Aug. 20 : remove PART_NAME, BULK_NAME,... fix NSTRA, NSRFS,..
 cmg  Feb 1, 23: added ISPOPT and ESPEC%ISPCOPT to turn on scoring of angle distribution
 cmg             additional flag in input deck: ISPSRF ... IDIREC ISPOPT in block 10F
-chk  March 24: added ISPOPT=2 for Legendre expansion of angular tallies
-chk            in each energy bin, and ISPLDEG for the expansion degree
 
       SUBROUTINE EIRENE_READ_FIXFORM (NL, SAREA_SAVE, IERROR)
 C
@@ -198,7 +196,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           ISPSRF, ISPTYP, NSPS, NSPSA, IPTYP, IPSPZ, ISTRAI,
      .           IANF, IEND, IDEFLT_SPUT, IDEFLT_SPEZ,
      .           IPLSTI, IPLSV, IFILE, ISRFCLL,
-     .           IDIREC, ISTCHR,  ITOK, IER, ILOGS, IO, ISPOPT, ISPLDEG,
+     .           IDIREC, ISTCHR,  ITOK, IER, ILOGS, IO, ISPOPT,
      .           IUNIN_SAVE, NLOGIN, IFLG, IDUM,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
      .           NB, NS, NA, ISTR, IRC, IOPT, ITAL,
@@ -3245,9 +3243,6 @@ c
               IDIREC = 0
             END IF
           END IF
-          IF (ISPOPT == 2) THEN
-            READ (IUNIN,'(12I6)') ISPLDEG
-          END IF
 
 c   isrcfll=0 : surface-averaged tally
 c   isrfcll=1 : volume-averaged tally, integrated over all directions
@@ -3335,7 +3330,6 @@ C    .      ... WRONG INPUT !
           ESPEC%ISRFCLL = ISRFCLL
           ESPEC%IDIREC = IDIREC
           ESPEC%ISPCOPT = ISPOPT
-          ESPEC%ISPLDEG = ISPLDEG
 cdr
 cdr       ESPEC%LOG = .FALSE. ! this was too restrictive !
 cdr  Option     LOG = .TRUE. WAS ALREADY AVAILABLE IN SCORING/UPDATE_SPECTRUM
@@ -3384,10 +3378,6 @@ c  standard deviation of spectrally resolved tallies
             NULLIFY(ESPEC%SDV, ESPEC%SGM, ESPEC%STV, ESPEC%GG)
           END IF
           ESPEC%SPC(0:NSPSA+1) = 0._DP
-          IF (ISPOPT==2) THEN
-            ALLOCATE(ESPEC%SPCAN(0:ISPLDEG,0:NSPSA+1))
-            ESPEC%SPCAN(0:ISPLDEG,0:NSPSA+1) = 0._DP
-          END IF
           ESPEC%IMETSP = 0
 
           IF (NSMSTRA > 0) THEN

@@ -1446,10 +1446,6 @@ C  SPECTRA
      .                             ESTIML(ISPC)%SPC
                 SMESTL(ISPC)%SPCS = SMESTL(ISPC)%SPCS +
      .                              ESTIML(ISPC)%SPCS
-                IF (ESTIML(ISPC)%ISPCOPT==2) THEN
-                  SMESTL(ISPC)%SPCAN = SMESTL(ISPC)%SPCAN +
-     .                   ESTIML(ISPC)%SPCAN
-                END IF
               END DO
             END IF
 
@@ -1600,9 +1596,6 @@ C  SPECTRA TALLIES
         DO ISPC=1,NADSPC
           ESTIML(ISPC)%SPC = SMESTL(ISPC)%SPC
           ESTIML(ISPC)%SPCS = SMESTL(ISPC)%SPCS
-          IF (ESTIML(ISPC)%ISPCOPT==2) THEN
-            ESTIML(ISPC)%SPCAN = SMESTL(ISPC)%SPCAN
-          END IF
         END DO
 C
 C  NOW PUT VARIANCES FOR SUM OVER STRATA BACK ONTO VARIANCE TALLIES
