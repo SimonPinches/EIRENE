@@ -159,7 +159,7 @@ cdr  size of particle species columns in various arrays
       INTEGER, PUBLIC, SAVE :: INT_PARM(NUM_PARM)
 
       ! This value will be automatically replaced with the version number specified in version.txt
-      CHARACTER(12), PUBLIC, SAVE :: EIRENE_VERSION_STRING='1.0.7'
+      CHARACTER(12), PUBLIC, SAVE :: EIRENE_VERSION_STRING='1.0.8'
 
 
       PRIVATE :: EIRENE_SPEC_TO_SPEC
