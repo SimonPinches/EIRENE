@@ -74,7 +74,7 @@ C
       INTEGER :: NR, NP, NT, MSURFG, J, NCELL, NTOTAL, N1, N2, N3, I,
      .           ITRII, IPLGN, ISPR, ITEXT, ISTS, NFTI, NFTE, NTCO,
      .           K, ITALS, IADS, IALS, IION, IPLS, IATM, N,
-     .           IMOL, IPHOT, ISPC, IOUT, ISF, IE, IT, ILIM
+     .           IMOL, IPHOT, ISPC, IOUT, ISF, IE, IT, ILIM, ID
       INTEGER :: IADTYP(0:4)
       LOGICAL :: LGVRA1(0:NATM,0:NSTRA),
      .           LGVRM1(0:NMOL,0:NSTRA),
