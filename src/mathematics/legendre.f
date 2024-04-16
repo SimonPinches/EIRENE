@@ -7,6 +7,8 @@ chk  March 24: Evaluate the nth Legendre polynomial at x
       INTEGER, INTENT(IN) :: n
       REAL(DP), INTENT(IN) :: x
       REAL(DP), INTENT(OUT) :: l
+      REAL(dp) :: l0, l1
+      INTEGER :: i 
       SELECT CASE(n)
 chk Degrees 10 and lower pre-computed for speed
         case(0)
@@ -34,17 +36,13 @@ chk Degrees 10 and lower pre-computed for speed
      .       / 256.0
         case default
 chk Compute higher degree polynomials with a loop
-          BLOCK
-            REAL(dp) :: l0, l1
-            INTEGER :: i 
-            l0  = 1
-            l1  = x
-            DO i = 2, n
-              l = (2 * i-1) * x * l1 / i - (i-1) * l0 / i
-              l0 = l1
-              l1 = l
-            END DO
-          END BLOCK
+          l0  = 1
+          l1  = x
+          DO i = 2, n
+            l = (2 * i-1) * x * l1 / i - (i-1) * l0 / i
+            l0 = l1
+            l1 = l
+          END DO
         END SELECT
         RETURN
       END
