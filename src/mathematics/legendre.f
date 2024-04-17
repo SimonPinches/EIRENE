@@ -7,7 +7,7 @@ chk  March 24: Evaluate the nth Legendre polynomial at x
       INTEGER, INTENT(IN) :: n
       REAL(DP), INTENT(IN) :: x
       REAL(DP), INTENT(OUT) :: l
-      REAL(dp) :: l0, l1
+      REAL(DP) :: l0, l1
       INTEGER :: i 
       SELECT CASE(n)
 chk Degrees 10 and lower pre-computed for speed
