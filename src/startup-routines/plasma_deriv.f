@@ -1116,6 +1116,10 @@ cdr IRE: TDMPAR...(IRE)
           ALLOCATE (SPEC%SPC(0:ESTIML(ISPC)%NSPC+1))
           ALLOCATE (SPEC%SDV(0:ESTIML(ISPC)%NSPC+1))
           ALLOCATE (SPEC%SGM(0:ESTIML(ISPC)%NSPC+1))
+          IF (ESTIML(ISPC)%ISPCOPT==2) THEN
+            ALLOCATE(SPEC%SPCAN(0:ESTIML(ISPC)%ISPLDEG,
+     .                          0:ESTIML(ISPC)%NSPC+1))
+          END IF
           SPEC = ESTIML(ISPC)
           FOUND = .TRUE.
         END IF
