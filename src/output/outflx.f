@@ -369,9 +369,9 @@ chk Legendre polynomial expansion tallies
                     EN = ESTIML(ISPC)%SPCMIN +
      .                   (IE-0.5)*ESTIML(ISPC)%SPCDEL
                     IF (ESTIML(ISPC)%LOG) THEN
-                      WRITE (IOUT,'(I6,1ES12.4,$)') IE,10._DP**EN
+                      WRITE (IOUT,'(I6,1ES12.4)') IE,10._DP**EN
                     ELSE
-                      WRITE (IOUT,'(I6,1ES12.4,$)') IE,EN
+                      WRITE (IOUT,'(I6,1ES12.4)') IE,EN
                     END IF
                     WRITE (IOUT,'(99(1ES12.4))')
      .           (ESTIML(ISPC)%SPCAN(ID,IE),ID=1,ESTIML(ISPC)%ISPLDEG)

@@ -51,7 +51,7 @@ c  ityp: type of particle
 
       INTEGER, INTENT(IN) :: IND, ISC
       REAL(DP), INTENT(IN) :: WT
-      INTEGER :: ISPC, I, IS, IC, IRDO, IRD, D
+      INTEGER :: ISPC, I, IS, IC, IRDO, IRD, ID
       REAL(DP) :: ADD, WV, DIST, WTR, SPCVX, SPCVY, SPCVZ, CDYN,
      .            EB, SIG, CA, L, LNORM
 
@@ -147,13 +147,14 @@ chk after finding the bin, also score the Legendre coefficients
             IF (P%ISPCOPT == 2) THEN
 chk compute ISPLDEGth degree Legendre expansion tallies for ISPCOPT=2
               CA = (velx*crtx + vely*crty + velz*crtz)
-              DO D=1,P%ISPLDEG
-                LNORM = 2._DP / (2*D + 1)
-chk compute L = Dth Legendre polynomial evaluated at cos(impact angle)
-                CALL EIRENE_LEGENDRE(D,CA,L)
-chk scoring the Dth polynomial coefficient SPCAN(D,I) of bin I
+              DO ID=1,P%ISPLDEG
+                LNORM = 2._DP / (2*ID + 1)
+chk compute L = IDth Legendre polynomial evaluated at 2 * cos(angle) - 1
+chk transforming cos(angle) from [0,1] to [-1,1] improves fit accuracy
+                CALL EIRENE_LEGENDRE(ID, 2*CA-1, L)
+chk scoring the IDth polynomial coefficient SPCAN(ID,I) of bin I
 !$OMP ATOMIC
-                ESTIML(ISPC)%SPCAN(D,I) = ESTIML(ISPC)%SPCAN(D,I) +
+                ESTIML(ISPC)%SPCAN(ID,I) = ESTIML(ISPC)%SPCAN(ID,I) +
      .                  L * ADD / LNORM
               END DO
             END IF

@@ -262,9 +262,9 @@ c  UPPER energy bin value
               END IF
               IF (IE.EQ.IINI) EN1=0.0_DP ! even for log energy binning
               IF (IE.EQ.IEND) THEN
-                WRITE (IOUT,'(I6,1ES12.4,A12,$)') IE,EN1,' INF       '
+                WRITE (IOUT,'(I6,1ES12.4,A12)') IE,EN1,' INF       '
               ELSE
-                WRITE (IOUT,'(I6,2ES12.4,$)') IE,EN1,EN2
+                WRITE (IOUT,'(I6,2ES12.4)') IE,EN1,EN2
               ENDIF
               WRITE (IOUT,'(99(1ES12.4))')
      .          (ESTIML(ISPC)%SPCAN(D,IE),D=1,ESTIML(ISPC)%ISPLDEG)
