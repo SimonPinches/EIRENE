@@ -90,6 +90,9 @@ C  SAVE ESTIML, SMESTL,...
             SVESTIML(ISPC) = ESTIML(ISPC)
 
             DEALLOCATE (ESTIML(ISPC)%SPC)
+            IF (ESTIML(ISPC)%ISPCOPT==2) THEN
+              DEALLOCATE (ESTIML(ISPC)%SPCAN)
+            END IF
             IF (ASSOCIATED(ESTIML(ISPC)%SDV)) THEN
               DEALLOCATE (ESTIML(ISPC)%SDV)
               DEALLOCATE (ESTIML(ISPC)%SGM)
@@ -107,6 +110,9 @@ C  SAVE ESTIML, SMESTL,...
             SVSMESTL(ISPC) = SMESTL(ISPC)
 
             DEALLOCATE (SMESTL(ISPC)%SPC)
+            IF (SMESTL(ISPC)%ISPCOPT==2) THEN
+              DEALLOCATE (SMESTL(ISPC)%SPCAN)
+            END IF
             IF (ASSOCIATED(SMESTL(ISPC)%SDV)) THEN
               DEALLOCATE (SMESTL(ISPC)%SDV)
               DEALLOCATE (SMESTL(ISPC)%SGM)
@@ -199,6 +205,9 @@ cdr spectrally resolved lines of sight tallies for options 1,3 and 4 ??
            espec%spcdeli = 1._dp / (espec%spcdel+eps60)
 
            allocate(espec%spc(0:espec%nspc+1))
+           if (espec%ispcopt==2) then
+             allocate(espec%spcan(0:espec%ispldeg,0:espec%nspc+1))
+           end if 
 
            allocate(espec%sdv(0:espec%nspc+1))
            allocate(espec%sgm(0:espec%nspc+1))
@@ -214,6 +223,9 @@ C SUM OVER STRATA SPECTRA TALLIES
              sspec => smestl(ispc)
 
              allocate(sspec%spc(0:espec%nspc+1))
+             if (sspec%ispcopt==2) then
+               allocate(sspec%spcan(0:espec%ispldeg,0:espec%nspc+1))
+             end if
 
              allocate(sspec%sdv(0:espec%nspc+1))
              allocate(sspec%sgm(0:espec%nspc+1))
