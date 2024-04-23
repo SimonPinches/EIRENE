@@ -354,6 +354,7 @@ test_EMC3-EIRENE_H_profile:
 
 coverage_report:
     stage: coverage
+    coverage: '/(TOTAL COVERAGE .*%)/'
     only:
         - develop
         - master
@@ -372,6 +373,7 @@ coverage_report:
         - cd EIRENE-sample-cases
         - git checkout ${SAMPLE_CASE_VERSION}
         - make coverageReport FFLAGS="-g -fprofile-arcs -ftest-coverage" CONFIG=Coverage
+        - lcov --summary coverage.info 2>&1 | grep lines | sed 's/^/ TOTAL COVERAGE/'
     dependencies: []
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
