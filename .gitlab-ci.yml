@@ -30,9 +30,13 @@ stages:
         - cd ${PATH_CASE}
         - make
     retry: 2
+    dependencies:
+        - build_library
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
+            - buildRelease/
+            - libRelease/
             - EIRENE-sample-cases/${PATH_CASE}
 
 .run: &run
@@ -165,6 +169,8 @@ build_standalone_ITER_1573:
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
+            - buildRelease/
+            - libRelease/
             - binRelease/
             - EIRENE-sample-cases/${PATH_CASE}
 
