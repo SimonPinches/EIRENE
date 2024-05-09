@@ -901,7 +901,7 @@ C  NEXT: POLOIDAL SURFACES
             IP1=IP+1
             IF (IP.EQ.NP2ND) THEN
               IP1=IP-1
-cdr this next line must be something specific to a certain case
+cdr this next line is specific to handle snowflake cases
             ELSEIF (NPPLG.EQ.6) THEN
               IF (IP.EQ.NPOINT(2,TARGINDEX)-1) IP1=IP-1
             ENDIF
@@ -4538,7 +4538,7 @@ cdr  It is always allocated, and non-zero for vol. rec strata
                   SNICL=SNICL+PPPL_COP(JPLS,INC)*VOLTAL(INC)*FLX_EIR
 
                   SNI(IX,IY,IFL,ISTRAI)=SNI(IX,IY,IFL,ISTRAI)+SNICL
-cdjm Jan2017:  split SNI (into AT,ML,IO, PL parts)
+cdjm Jan2017:  split SNI (into AT,ML,IO,PL parts)
                   IF (LPAPL) SNI_PAPL(IX,IY,IFL,ISTRAI)=
      .                       SNI_PAPL(IX,IY,IFL,ISTRAI)+
      .                                       PAPL(JPLS,INC)*

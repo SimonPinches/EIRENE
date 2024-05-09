@@ -122,7 +122,7 @@ CDR BDRF MODEL, WITH GAUSSIAN LOBE IN SPECULAR PART AND LAMBERTIAN IN THERMAL PA
 
 cdr reflected (specular) fraction
         PRFCF=max(0._DP,(min(1._DP,RECYCF(ISPZ,MSURF))))
-cdr prfct: total reemitted  fraction.
+cdr prfct: total reemitted fraction.
 cdr pabs : (1-recyct) is the absorbed fraction
         PRFCT=max(0._DP,(min(1._DP,RECYCT(ISPZ,MSURF))))
         PABS=1.-PRFCT
