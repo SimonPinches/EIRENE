@@ -815,6 +815,7 @@ test_EMC3-EIRENE_H_multiStrataMpi3:
 
 coverage_report:
     stage: coverage
+    coverage: '/(TOTAL COVERAGE .*%)/'
     rules:
         - if: $CI_COMMIT_REF_NAME == 'develop'
         - if: $CI_COMMIT_REF_NAME == 'master'
@@ -839,6 +840,7 @@ coverage_report:
         - git fetch --depth 1 origin ${SAMPLE_CASE_VERSION}
         - git checkout FETCH_HEAD
         - make coverageReport FFLAGS="-g -cpp -fprofile-arcs -ftest-coverage" CONFIG=Coverage
+        - lcov --summary coverage.info 2>&1 | grep lines | sed 's/^/ TOTAL COVERAGE/'
     dependencies: []
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
