@@ -36,7 +36,7 @@
 
 ! eirdiag.h/eirdiag.f
 !c*** Volume data:
-!c***    srcml   :  power loss due to molecules, including
+!c***    srcml   :  molecule dissociation rate
 !c***    edissml :  power loss due to molecule dissociation
 !c***    eneutrad:  power radiated due to neutral atoms
 !c***    emolrad :  power radiated due to molecules
