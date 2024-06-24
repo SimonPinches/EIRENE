@@ -45,7 +45,6 @@ C            KK= 0  SET DEFAULT ELECTRON KINETIC ENERGY LOSS FROM JELREI FLAG
 
       KK=NELREI(IREI)
 
-
       IF (KK < 0) THEN
 c   electron energy losses per collision from the default EI processes -4 ....-11
         SELECT CASE (KK)

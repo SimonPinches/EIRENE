@@ -27,6 +27,7 @@ elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
   set(CMAKE_Fortran_FLAGS_RELEASE "-O3 -cpp -mp")
   set(CMAKE_Fortran_FLAGS_DEBUG "-g -O0 -cpp -mp -C -Mchkptr -Mchkstk")
 endif()
+message(STATUS "Using ${CMAKE_Fortran_COMPILER_ID} compiler with version ${CMAKE_Fortran_COMPILER_VERSION}")
 
 # Output names and postfix.
 set(EIRENE_LIBRARY_NAME "EIRENE" CACHE STRING "EIRENE library name")
