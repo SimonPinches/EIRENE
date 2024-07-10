@@ -849,7 +849,7 @@ C  PUSH PARTICLE TO POINT OF COLLISION, EITHER DELTA OR REAL
       MASURF=0
       MSURF=0
 cdr  made a bit more precise, to allow calling tmstep.f from collide.f
-      IF (NLTRA) THEN 
+      IF (NLTRA) THEN
         PHI=MOD(PHI-ATAN2(Z01,X01)+ATAN2(Z0,(RMTOR+X0)),PI2A)
         X01=X0+RMTOR
       ENDIF

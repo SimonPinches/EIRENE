@@ -150,7 +150,7 @@ csw external
      .          xint_cut(:,:)
       logical, allocatable, public, save :: lsrcpls(:)
 
-!pb black body removal  end
+!pb black body removal end
 
       CONTAINS
 
@@ -166,11 +166,9 @@ c constants
 c
       return
 
-csw ICAL == 1
       case (1)
-
-
-
+c ICAL=1
+c
       return
 
       case(2)
@@ -180,6 +178,7 @@ c
 
       case(3)
 c ICAL=3
+c
       return
 
       case default
@@ -1613,7 +1612,6 @@ c dE / dlambda = -hc*lambda^-2 = -E^2/(hc)
       return
       end subroutine EIRENE_lorvdwprof
 
-
       subroutine EIRENE_voigtprof(ipl,icell,dnd,drft,gam)
 !  return gam, the FWHM of the Lorentz profile (natural broadening)
 !  return dnd, the doppler width (half width at 1/e maximum)
@@ -1940,7 +1938,6 @@ c  next: part with imag. fadeeva function
       return
       end function EIRENE_ph_lorvdw
 
-
 c...............................................................................
 
 c RANDOM SAMPLING x  (frequency, energy or wavelength) from line shape routines
@@ -1954,7 +1951,6 @@ c  10,11)     zeemann-stark     (Rosato)
 c  3) voigt                     (Reiter)
 c  vdwqs                        (Reiter)
 
-
       REAL(dp) FUNCTION EIRENE_SAM_LORENTZ(alph,shift) result(res)
 !  sample from a Lorentzian line profile.
 !  alph is the FWHM, shift is the shift.
@@ -1967,6 +1963,7 @@ c  vdwqs                        (Reiter)
       IMPLICIT NONE
       real(dp), intent(in) :: alph, shift
       real(dp) :: rr, x, xx, alphh
+
       alphh=alph*0.5
       do
         rr=PIHA*(RANF_EIRENE()*2._DP-1._DP)
