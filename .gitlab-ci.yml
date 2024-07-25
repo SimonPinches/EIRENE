@@ -11,7 +11,7 @@ include:
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
 # eirene_unified_bullseye
-    SAMPLE_CASE_VERSION: 9da73a04894079ca0dce51492ee42b08ed581403
+    SAMPLE_CASE_VERSION: e5aa696ebe6a9ff536556798ac9d1a78329e5b96
 # OpenMP test cases, at present these exist in their own branch created from the
 # first commit. This can be merged at any time.
 # eirene_unified_openmp_bullseye
