@@ -262,6 +262,7 @@ C  READ TEXT DESCRIBING THE RUN, 100--199
 C
       READ (IUNIN,'(A72)') TXTRUN
       WRITE (iunout,'(1X,A)') trim(TXTRUN)
+      CALL EIRENE_LEER(1)
   109 READ (IUNIN,'(A72)') ZEILE
       IF (ZEILE(1:1).EQ.'*') THEN
         IF (ZEILE(1:3).NE.'***') THEN
@@ -2239,6 +2240,7 @@ cdr  only one common profile for all NPLS species?
         NPLSTI = 1
         LRDMLTI=.FALSE.
       ENDIF
+      WRITE (iunout,*) '      NPLSTI= ',NPLSTI
 
       IF ((NPLS > 1) .AND. (NPLSTI == 1) .AND.
      .    (LMULPL .OR. ((NPLS_FIX > 0) .AND. (NPLS_FIX /= NPLSI))
@@ -4164,6 +4166,7 @@ cdr  possibly modified as well:  nlshrt13
 !pb  .                    NAINI, NCOPII, NCOPIE, NCPVI
         write (iunout,*) 'NAINI, NCOPIE, NCPVI ',
      .                    NAINI, NCOPIE, NCPVI
+        CALL EIRENE_LEER(1)
       ENDIF
 
       RETURN
@@ -4274,4 +4277,3 @@ C
  1599 CONTINUE
 
       END SUBROUTINE EIRENE_READ_MPI_STRATEGY_FIXED
-

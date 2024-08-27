@@ -1895,7 +1895,6 @@ c
       return
       end function EIRENE_ph_faddeeva2
 
-
       real(dp) function EIRENE_ph_lorvdw(dx,fwhm,shift,dvdw,
      .                            icell) result(res)
 !  evaluate convolution integral of Lorentzian and Exponential (Stormberg)
