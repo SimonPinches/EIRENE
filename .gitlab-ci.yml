@@ -90,9 +90,12 @@ build_library:
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
-            - buildRelease/
-            - libRelease/
+            - buildRelease
+            - libRelease
+            - src
         when: always
+    needs:
+            - compliance_check
 
 prepare_testcases:
     stage: preparation
@@ -117,7 +120,8 @@ prepare_testcases:
         exclude:
             - EIRENE-sample-cases/.git/**
         when: always
-            
+    needs:
+            - compliance_check
 
 .build_executable: &build_executable
     stage: build:executable
@@ -129,13 +133,18 @@ prepare_testcases:
         - when: on_success
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
-        - make
+        - make -j
+        - ls --full-time eirene || true
+        - ls --full-time ../../src/main-routines/eirene_main.f || true
+        - ls --full-time eirene_main.o || true        
     retry: 2
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
-            - buildRelease/
-            - libRelease/
+            - buildRelease
+            - libRelease
+            - binRelease
+            - src
             - EIRENE-sample-cases/${PATH_CASE}
         when: always
     needs:
@@ -157,8 +166,10 @@ prepare_testcases:
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
-            - buildRelease/
-            - binRelease/
+            - buildRelease
+            - libRelease
+            - binRelease
+            - src
             - EIRENE-sample-cases/${PATH_CASE}
         when: always
     needs:
@@ -175,13 +186,17 @@ prepare_testcases:
         - when: on_success
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
+        - ls --full-time eirene || true
+        - ls --full-time ../../src/main-routines/eirene_main.f || true
+        - ls --full-time eirene_main.o || true
         - make output
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
-            - buildRelease/
-            - libRelease/
-            - binRelease/
+            - buildRelease
+            - libRelease
+            - binRelease
+            - src
             - EIRENE-sample-cases/${PATH_CASE}
         when: always
 
@@ -195,11 +210,18 @@ prepare_testcases:
         - when: on_success
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
+        - ls --full-time eirene || true
+        - ls --full-time ../../src/main-routines/eirene_main.f || true
+        - ls --full-time eirene_main.o || true
         - make test
     retry: 2
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
+            - buildRelease
+            - libRelease
+            - binRelease
+            - src
             - EIRENE-sample-cases/${PATH_CASE}
         when: always
 
@@ -624,8 +646,9 @@ run_EMC3-EIRENE_H:
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
-            - buildRelease/
-            - libRelease/
+            - buildRelease
+            - libRelease
+            - src
             - EIRENE-sample-cases/EMC3
         when: always
     needs:
@@ -638,7 +661,15 @@ test_EMC3-EIRENE_H:
     rules:
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
-        - when: on_success
+        - when: always
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease
+            - libRelease
+            - src
+            - EIRENE-sample-cases/EMC3
+        when: always
     needs:
         - run_EMC3-EIRENE_H
     
@@ -653,8 +684,9 @@ run_EMC3-EIRENE_He:
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
-            - buildRelease/
-            - libRelease/
+            - buildRelease
+            - libRelease
+            - src
             - EIRENE-sample-cases/EMC3
         when: always
     needs:
@@ -668,6 +700,14 @@ test_EMC3-EIRENE_He:
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
         - when: on_success
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease
+            - libRelease
+            - src
+            - EIRENE-sample-cases/EMC3
+        when: always
     needs:
         - run_EMC3-EIRENE_He
 
@@ -682,8 +722,9 @@ run_EMC3-EIRENE_H_multiStrata:
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
-            - buildRelease/
-            - libRelease/
+            - buildRelease
+            - libRelease
+            - src
             - EIRENE-sample-cases/EMC3
         when: always
     needs:
@@ -697,6 +738,16 @@ test_EMC3-EIRENE_H_multiStrata:
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
         - when: on_success
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease
+            - libRelease
+            - src
+            - EIRENE-sample-cases/EMC3
+        when: always
+    dependencies:
+        - run_EMC3-EIRENE_H_multiStrata
     needs:
         - run_EMC3-EIRENE_H_multiStrata
     
@@ -711,8 +762,9 @@ run_EMC3-EIRENE_H_profile:
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
-            - buildRelease/
-            - libRelease/
+            - buildRelease
+            - libRelease
+            - src
             - EIRENE-sample-cases/EMC3
         when: always
     needs:
@@ -726,6 +778,14 @@ test_EMC3-EIRENE_H_profile:
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
         - when: on_success
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease
+            - libRelease
+            - src
+            - EIRENE-sample-cases/EMC3
+        when: always
     needs:
         - run_EMC3-EIRENE_H_profile
 
@@ -763,8 +823,9 @@ run_mpi_cases:
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
-            - buildRelease/
-            - libRelease/
+            - buildRelease
+            - libRelease
+            - src
             - EIRENE-sample-cases/EMC3
         when: always
     needs:
@@ -780,6 +841,14 @@ test_EMC3-EIRENE_H_multiStrataMpi:
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
         - when: on_success
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease
+            - libRelease
+            - src
+            - EIRENE-sample-cases/EMC3
+        when: always
     needs:
         - run_mpi_cases
     
@@ -793,6 +862,14 @@ test_EMC3-EIRENE_H_multiStrataMpi2:
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
         - when: on_success
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease
+            - libRelease
+            - src
+            - EIRENE-sample-cases/EMC3
+        when: always
     needs:
         - run_mpi_cases
     
@@ -806,6 +883,14 @@ test_EMC3-EIRENE_H_multiStrataMpi3:
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
         - when: on_success
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease
+            - libRelease
+            - src
+            - EIRENE-sample-cases/EMC3
+        when: always
     needs:
         - run_mpi_cases
     
@@ -831,7 +916,7 @@ coverage_report:
         - mkdir buildCoverage
         - cd buildCoverage
         - FC=mpif90 cmake ../src -DCMAKE_BUILD_TYPE=Coverage
-        - make EIRENE
+        - make -j EIRENE
         - cd ..
         - mkdir EIRENE-sample-cases
         - cd EIRENE-sample-cases
@@ -868,13 +953,15 @@ build_openmp_library:
         - FC=mpif90 cmake -DOPENMP=ON ../src
         - make clean
         - make -j EIRENE
-    dependencies: []
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
             - buildRelease/
             - libRelease/
+            - src
         when: always
+    needs:
+            - compliance_check
 
 prepare_openmp_testcases:
     stage: preparation:openmp
@@ -892,7 +979,6 @@ prepare_openmp_testcases:
         - git remote add origin https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
         - git fetch --depth 1 origin ${SAMPLE_CASE_VERSION_OPENMP}
         - git checkout FETCH_HEAD
-    dependencies: []
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
@@ -900,6 +986,8 @@ prepare_openmp_testcases:
         exclude:
             - EIRENE-sample-cases/.git/**
         when: always
+    needs:
+            - compliance_check
 
 .build_openmp_executable: &build_openmp_executable
     stage: build:openmp_executable
@@ -911,14 +999,18 @@ prepare_openmp_testcases:
         - when: on_success
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
-        - make
+        - make -j
+        - ls --full-time eirene || true
+        - ls --full-time ../../src/main-routines/eirene_main.f || true
+        - ls --full-time eirene_main.o || true
     retry: 2
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
-            - buildRelease/
-            - libRelease/
-            - binRelease/
+            - buildRelease
+            - libRelease
+            - binRelease
+            - src
             - EIRENE-sample-cases/${PATH_CASE}
         when: always
     needs:
@@ -940,8 +1032,10 @@ prepare_openmp_testcases:
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
-            - buildRelease/
-            - binRelease/
+            - buildRelease
+            - libRelease
+            - binRelease
+            - src
             - EIRENE-sample-cases/${PATH_CASE}
         when: always
     needs:
@@ -958,14 +1052,18 @@ prepare_openmp_testcases:
         - when: on_success
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
+        - ls --full-time eirene || true
+        - ls --full-time ../../src/main-routines/eirene_main.f || true
+        - ls --full-time eirene_main.o || true
         - export OMP_NUM_THREADS=4
         - make output
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
-            - buildRelease/
-            - libRelease/
-            - binRelease/
+            - buildRelease
+            - libRelease
+            - binRelease
+            - src
             - EIRENE-sample-cases/${PATH_CASE}
         when: always
     needs:
@@ -982,9 +1080,21 @@ prepare_openmp_testcases:
     script:
         - python3 --version
         - cd EIRENE-sample-cases/${PATH_CASE}
+        - ls --full-time eirene || true
+        - ls --full-time ../../src/main-routines/eirene_main.f || true
+        - ls --full-time eirene_main.o || true
         - export OMP_NUM_THREADS=4
         - make test_openmp
     retry: 2
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+            - buildRelease
+            - libRelease
+            - binRelease
+            - src
+            - EIRENE-sample-cases/${PATH_CASE}
+        when: always
 
 build_1D-H_slab_openmp:
     <<: *build_openmp_executable
