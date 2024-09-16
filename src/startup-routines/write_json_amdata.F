@@ -65,7 +65,7 @@
       call json%create_object(PART,'Particles')
 
       call json%add(pAMD, REACT)     !add it to the root
-      call json%add(pAMD, PART)     !add it to the root
+      call json%add(pAMD, PART)      !add it to the root
 
 ! start block 4
 

@@ -132,7 +132,7 @@ C
 
       IMPLICIT NONE
 C
-      TYPE(VOLUMEP),POINTER :: VOLCUR
+      TYPE(VOLUMEP), POINTER :: VOLCUR
 C
       REAL(DP) :: VOLTOT_TAL, RTEST
 
@@ -462,7 +462,7 @@ C  COPY USER SPECIFIC DATA TO FILE user_data.input
 
         IF (JL > 0) THEN
           REWIND IUSROUT
-         IUNIN = IUSROUT
+          IUNIN = IUSROUT
         ELSE
           IUSROUT = 0
         END IF
@@ -502,7 +502,7 @@ C
 C
 C  WRITE JSON FILE
       IF (LRDJSON) THEN
-        CALL EIRENE_WRITE_JSON_AMData ('eirene_AMData.json')
+        CALL EIRENE_WRITE_JSON_AMData('eirene_AMData.json')
         CALL EIRENE_WRITE_JSON_FILE('eirene_input_json.out')
       ELSE
         CALL EIRENE_WRITE_JSON_FILE('eirene.input.json')

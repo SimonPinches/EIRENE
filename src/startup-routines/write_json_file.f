@@ -1824,7 +1824,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
 !      call json%add(me,'TRCDBGMPI',trcdbgmpi)
 !      call json%add(me,'TRCDBGC',trcdbgc)
       call json%add(me,'TRCHKTIM',trchktim)
-      call json%add(me,'TRCSCl',trcscl)
+      call json%add(me,'TRCSCL',trcscl)
 
       call json%add(me,'TRCSRC',trcsrc)
 

@@ -1547,8 +1547,8 @@ C        3: TRACE IONS, 4: BULK IONS, 5: PHOTONS)
              ENDIF
            ENDIF
          END DO  ! IPRT
+         IF (TRCINT) CALL EIRENE_LEER(1)
        END DO  ! IT
-       IF (TRCINT) CALL EIRENE_LEER(1)
        READ (IUNIN,'(6E12.4)')  CHGP,CHGEE,CHGEI,CHGMOM
        IF (TRCINT) CALL EIRENE_MASR4
      .                         ('CHGP,CHGEE,CHGEI,CHGMOM         ',
@@ -3520,7 +3520,7 @@ C MOMENTUM, I.E., NOT THE RADIAL VELOCITY
           VTEST2=VPZ/(CS+EPS60)
           IF (TRCINT.AND.ABS(VTEST2/VTEST).GT.EPS12) THEN
             ISP = ISP + 1
-            WRITE (iunout,'(A,3I4,1P,2E12.4)')
+            WRITE (iunout,'(A,I4,2I5,1P,2E12.4)')
      .       'IPLS,ITARG,IG,MACH_PAR,MACH_Z ',
      .        JPLS,ITARG,IG,VTEST,VTEST2
 C           WRITE (iunout,'(A,1P,3E12.4)') 'POL., TOR., RAD. (CM/S)',
@@ -3564,7 +3564,7 @@ C
       CALL EIRENE_LEER(1)
       WRITE (iunout,*) 'TARGET DATA: TARGET NO. ITARG=ISTRA= ',ITARG
       WRITE (iunout,*) TXTSOU(ITARG)
-      WRITE (iunout,'(1X,A3,9A11,A3)')
+      WRITE (iunout,'(1X,A4,9A11,A3)')
      . 'IG','ARC','P-FLUX','E-FLUX','TE','TI','SHEATH/TE',
      . 'VXSTEP','VYSTEP','VZSTEP'
       DO 6100 IG=1,NRWL(ITARG)-1
@@ -3577,7 +3577,7 @@ C
           IF (ORI(ITARG,IG).LT.0) NSEW='S'
           IF (ORI(ITARG,IG).GT.0) NSEW='N'
         ENDIF
-        WRITE (iunout,'(1X,I3,1P,9E11.3,3X,A1)')
+        WRITE (iunout,'(1X,I4,1P,9E11.3,3X,A1)')
      .             IG,RRSTEP(ITARG,IG),FLSTEP(0,ITARG,IG),
      .             ELSTEP(0,ITARG,IG),
      .             TESTEP(ITARG,IG),TISTEP(1,ITARG,IG),
@@ -3585,7 +3585,7 @@ C
      .             VXSTEP(1,ITARG,IG),VYSTEP(1,ITARG,IG),
      .             VZSTEP(1,ITARG,IG),NSEW
  6100 CONTINUE
-      WRITE (iunout,'(1X,I3,1P,1E11.3)') NRWL(ITARG),
+      WRITE (iunout,'(1X,I4,1P,1E11.3)') NRWL(ITARG),
      .                                 RRSTEP(ITARG,NRWL(ITARG))
       CALL EIRENE_MASR1 ('EEMAX   ',EEMAX)
       CALL EIRENE_MASR1 ('EESHT   ',EESHT)
@@ -4254,6 +4254,7 @@ C
 cdr  only one bulk ion species per volume source stratum supported
           IPLS=NSPEZ(ISTRAI)  ! RANGE CHECK FOR IPLS
                               ! ALREADY DONE IN SAMVOL
+          WRITE (IUNOUT,*) 'DIRECT VOL.REC. CONTRIBUTION, IPLS= ',IPLS
 
           IPLSTI = MPLSTI(IPLS)
           DO 7472 IIRC=1,NPRCI(IPLS)

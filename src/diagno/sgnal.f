@@ -232,8 +232,6 @@ C  BALMER ALPHA, only coupling to ground state atoms.
 C
         ELNAME = 'H '
         IZ=0
-
-
 C
 C  H(n=3)/H(n=1) component  (currently no further components available)
         REAC='2.1.5a   '
