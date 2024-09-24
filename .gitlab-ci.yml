@@ -868,6 +868,7 @@ build_openmp_library:
         - FC=mpif90 cmake -DOPENMP=ON ../src
         - make clean
         - make -j EIRENE
+    dependencies: []
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
@@ -891,6 +892,7 @@ prepare_openmp_testcases:
         - git remote add origin https://gitlab-ci-token:${CI_JOB_TOKEN}@${SERVER_DOMAIN}/eirene/EIRENE-sample-cases.git
         - git fetch --depth 1 origin ${SAMPLE_CASE_VERSION_OPENMP}
         - git checkout FETCH_HEAD
+    dependencies: []
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
         paths:
