@@ -15,7 +15,7 @@ variables:
 # OpenMP test cases, at present these exist in their own branch created from the
 # first commit. This can be merged at any time.
 # eirene_unified_openmp_bullseye
-    SAMPLE_CASE_VERSION_OPENMP: f5b69be376ca2d09f8e3782c335722035f08c5ea
+    SAMPLE_CASE_VERSION_OPENMP: 4838eec365c3d731cd989aed373447b7a3b3d2b3
 # These variables allow the exclusion of certain stages to speed up development, true or false
     EXCLUDE_SERIAL: 'false'
     EXCLUDE_MPI:    'false'
