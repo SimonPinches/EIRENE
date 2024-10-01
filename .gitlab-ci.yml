@@ -11,11 +11,13 @@ include:
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
 # eirene_unified_bullseye
-    SAMPLE_CASE_VERSION: 3f16c7b030aaca5b3a96d056365151da6a0c4b7a
+    SAMPLE_CASE_VERSION: cc627185c630f74e9f337f65a25dc740eea4e656
 # OpenMP test cases, at present these exist in their own branch created from the
 # first commit. This can be merged at any time.
 # eirene_unified_openmp_bullseye
     SAMPLE_CASE_VERSION_OPENMP: 0159a29796fcde0f26112d7d68f07914d58b9624
+# Compatible EMC3 version with this EIRENE version
+    EMC3_REPOSITORY_VERSION: 2f24415ec311d1479a67597ef678a2fe6fe49ec4
 # These variables allow the exclusion of certain stages to speed up development, true or false
     EXCLUDE_SERIAL: 'false'
     EXCLUDE_MPI:    'false'
