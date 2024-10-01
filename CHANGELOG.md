@@ -43,9 +43,7 @@
 - The checks were switched off by commits 40a86ae38b0eeb860f7f4553a15ade890749f3f3 (2021-10-14) and 28ba4aa745452a67b75d6836c1e60aefa061af20 (2022-12-14)
 - Fixed compare scripts to flag differences to reference output
 - Updated standard test cases
-- **IMPORTAND!!! NEW TEST CASES WERE NOT YET VALIDATED !!!**
-- Replay all commits of develop branch from last commit without CI compare scrip error (2e9264a09931967e55f82f2c2ac30e41398a56ce)
-- Check, document and validate changes in output
+- **IMPORTANT!!! NEW TEST CASES WERE NOT YET VALIDATED !!!**
 
 **Changes in EIRENE Database since compare error was introduced in  40a86ae38b0eeb860f7f4553a15ade890749f3f3**
 
