@@ -1,3 +1,8 @@
+cdr aug 19: remove: suche_kanten, and corresponding
+cdr         code speed measurements.
+cdr         Only the better routine suche_kanten2
+cdr         replacing suche_kanten now is retained
+
       subroutine EIRENE_rpscut (aorig,values)
 
       use EIRMOD_precision

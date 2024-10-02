@@ -62,7 +62,7 @@ C
 
 C     IND=1: 1-ST GRID, X or RAD. RESOLUTION:  AREA1, VOL
 C     IND=2: 2-ND GRID, Y or POL. RESOLUTION:  AREA, XCOM, YCOM, VOL
-C     IND=3: 3-RD GRID, Z or TOR. RESOLUTION:  VOL 
+C     IND=3: 3-RD GRID, Z or TOR. RESOLUTION:  VOL
 C     IND=4: ADDITIONAL CELL REGION
 C
       SELECT CASE (IND)
@@ -146,11 +146,11 @@ C   1D GRID OF POLYGONS
 C
 C   origin to innermost x surface: sum over triangles
         DO 139 K=1,NPPLG
-         DO J=NPOINT(1,K),NPOINT(2,K)-1
-          AR=EIRENE_ARTRIA(0._DP,0._DP,XPOL(1,J),YPOL(1,J),
+          DO J=NPOINT(1,K),NPOINT(2,K)-1
+            AR=EIRENE_ARTRIA(0._DP,0._DP,XPOL(1,J),YPOL(1,J),
      .                          XPOL(1,J+1),YPOL(1,J+1))
-          AREA1(0)=AREA1(0)+AR
-         END DO
+            AREA1(0)=AREA1(0)+AR
+          END DO
   139   CONTINUE
         AREA1(0)=ABS(AREA1(0))
 C
@@ -255,7 +255,7 @@ C   PARTICLES SEE A TORUS APPROXIMATED BY NTTRAM STRAIGHT CYLINDERS
 C
       case (5)
 C
-C  3D GRID DEFINED BY TETRAHEDRA: set AREA and VOL (XCOM,YCOM,ZCOM NOT SET??)
+C  3D GRID DEFINED BY TETRAHEDRA: set AREA and VOL (XCOM,YCOM,ZCOM NOT SET?)
 C
 
         TWOTHIRD=2.0D0/3.0D0
@@ -288,7 +288,8 @@ C  CALCULATE VOLUMES
             WRITE (iunout,*) ' WARNING ! '
             WRITE (iunout,*) ' VOL(',ITET,') < 0 VOL= ',VOL(ITET)
           END IF
-          IF (SUM(NTBAR(1:4,ITET)) < 0) VOL(ITET) = 0._DP ! COLLAPSED TET
+          IF (SUM(NTBAR(1:4,ITET)) < 0)
+     >     VOL(ITET) = 0._DP ! COLLAPSED TET
           VOL(ITET) = MAX(VOL(ITET),0._DP)
           AREA(ITET)=VOL(ITET)**TWOTHIRD
         END DO
@@ -297,8 +298,8 @@ C
 C
 C  GENERAL GEOMETRY OPTION: PROVIDE CELL VOLUMES (CM**3)
 C                      ON ARRAY VOL(IC),IC=1,NSURFM
-C                (TBD: ALSO PROVIDE CENTER OF CELL:
-C                      XCOM(IC),YCOM(IC),ZCOM(IC))
+C       (TBD: ALSO PROVIDE CENTER OF CELL:
+C             XCOM(IC),YCOM(IC),ZCOM(IC))
 C
         CALL EIRENE_VOLUSR(NR1ST,VOL)
 C
@@ -471,10 +472,10 @@ C                 CALL EIRENE_EXIT_OWN(1)
                 NCELL=I+((J-1)+(K-1)*NP2T3)*NR1P2
                 LDAMCEL(NCELL) = AREAP(I,J) <= EPS30
                 IF (LDAMCEL(NCELL)) THEN
-                  WRITE (iunout,*) 'DAMAGED CELL FOUND IN VOLUME   '
+                  WRITE (iunout,*) 'DAMAGED CELL FOUND IN VOLUME'
                   CALL EIRENE_MASJ2('IR,IP           ',I,J)
                   WRITE (iunout,*) 'PARTICLES ENTERING THIS CELL ',
-     .                             'WILL BE KILLED '
+     .                             'WILL BE KILLED'
                 END IF
                 IF (NSTGRD(NCELL) == 0) THEN
                   VOL(NCELL)=ABS(AREAP(I,J))*(XCOM(NCELL)+RMTOR)*PI2AT
@@ -486,7 +487,7 @@ C                 CALL EIRENE_EXIT_OWN(1)
                   VOL(NCELL) = 0._DP
                 END IF
               END DO
-            END DO 
+            END DO
   267     CONTINUE
         ELSEIF (NLTRZ) THEN
           DO 268 I=1,NR1STM
@@ -496,10 +497,10 @@ C                 CALL EIRENE_EXIT_OWN(1)
                 NCELL=I+((J-1)+(K-1)*NP2T3)*NR1P2
                 LDAMCEL(NCELL) = AREAP(I,J) <= EPS30
                 IF (LDAMCEL(NCELL)) THEN
-                  WRITE (iunout,*) 'DAMAGED CELL FOUND IN VOLUME   '
+                  WRITE (iunout,*) 'DAMAGED CELL FOUND IN VOLUME'
                   CALL EIRENE_MASJ2('IR,IP           ',I,J)
                   WRITE (iunout,*) 'PARTICLES ENTERING THIS CELL ',
-     .                             'WILL BE KILLED '
+     .                             'WILL BE KILLED'
                 END IF
                 IF (NSTGRD(NCELL) == 0) THEN
                   VOL(NCELL)=ABS(AREAP(I,J))*ZDF

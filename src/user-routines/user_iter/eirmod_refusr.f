@@ -59,7 +59,7 @@ c
 c--------------------------------------------------------------------------
 c  Subroutine REFUSR_INIT, set initial coefficients
 c--------------------------------------------------------------------------
-c    
+c
       SUBROUTINE EIRENE_REFUSR_INIT
       IMPLICIT NONE
       INTEGER :: I          !Index for do loop
@@ -157,21 +157,23 @@ c
      .                          EXPI,RPROB,E0TERM,ITYP,MSURF,ISPZO,IRET)
       USE EIRMOD_RANF, ONLY: RANF_EIRENE
       IMPLICIT NONE
-      REAL(DP), INTENT(IN)   :: XMW        !Wall mass weight
-      REAL(DP), INTENT(IN)   :: XCW        !Wall material nucl. charge number
-      REAL(DP), INTENT(IN)   :: XMP        !projectile mass weight
-      REAL(DP), INTENT(IN)   :: XCP        !projectile nucl. charge number
-      REAL(DP), INTENT(IN)   :: ZCOS       !??
-      REAL(DP), INTENT(IN)   :: ZSIN       !??
-      REAL(DP), INTENT(IN)   :: EXPI       !??
-      REAL(DP), INTENT(IN)   :: RPROB      !??
-      REAL(DP), INTENT(IN)   :: E0TERM     !Thermal particle energy in eV
-      INTEGER, INTENT(IN)    :: IGASF      !Species index for fast particle reflection
-      INTEGER, INTENT(INOUT) :: IGAST      !Species index for thermal re-emission
-      INTEGER, INTENT(IN)    :: ISPZO      !Species index
-      INTEGER, INTENT(IN)    :: ITYP       !1 = Atom, 2 = Mol
-      INTEGER, INTENT(IN)    :: MSURF      !Wall surface number
-      INTEGER, INTENT(OUT) :: IRET
+      REAL(DP), INTENT(IN)   :: XMW   !Wall mass weight
+      REAL(DP), INTENT(IN)   :: XCW   !Wall material nucl. charge number
+      REAL(DP), INTENT(IN)   :: XMP   !projectile mass weight
+      REAL(DP), INTENT(IN)   :: XCP   !projectile nucl. charge number
+      REAL(DP), INTENT(IN)   :: ZCOS  !??
+      REAL(DP), INTENT(IN)   :: ZSIN  !??
+      REAL(DP), INTENT(IN)   :: EXPI  !??
+      REAL(DP), INTENT(IN)   :: RPROB !??
+      REAL(DP), INTENT(IN)   :: E0TERM  !Thermal particle energy in eV
+      INTEGER, INTENT(IN)    :: IGASF !Species index for
+                                      !fast particle reflection
+      INTEGER, INTENT(INOUT) :: IGAST !Species index for
+                                      !thermal re-emission
+      INTEGER, INTENT(IN)    :: ISPZO !Species index
+      INTEGER, INTENT(IN)    :: ITYP  !1 = Atom, 2 = Mol
+      INTEGER, INTENT(IN)    :: MSURF !Wall surface number
+      INTEGER, INTENT(OUT)   :: IRET
       REAL(DP) :: TW         !Wall temperature in eV
       REAL(DP) :: FW         !Calculated distribution for N2 on W
       REAL(DP) :: FSS        !Calculated distribution for N2 on SS
@@ -234,14 +236,14 @@ c           WRITE (IUNOUT,*) 'SURFACE TEMP       : ', TW
 c           WRITE (IUNOUT,*) 'RANDOM NUMBER      : ', RF
 c         ENDIF
 
-          IF (NINT(XCW).EQ.74) THEN                !Is it on a W surface
+          IF (NINT(XCW).EQ.74) THEN              !Is it on a W surface
 
 c           IF (TRCREF) WRITE (IUNOUT,*) 'SURFACE: W'
-            FW = AW + M1W*(BW-TW)                  !Calculate distribution
+            FW = AW + M1W*(BW-TW)                !Calculate distribution
             FW = MIN(1._DP,MAX(0._DP,FW))
 c           IF (TRCREF) WRITE (IUNOUT,*) 'CALC DISTRIBUTION: ', FW
 
-            IF ((RF.LT.FW).AND.(FW.GT.0)) THEN     !Determine species
+            IF ((RF.LT.FW).AND.(FW.GT.0)) THEN   !Determine species
 c             IF (TRCREF) WRITE (IUNOUT,*) 'REFLECT AS ND3'
               IGAST = -ND3_MOL
               IRET = 2
@@ -251,14 +253,14 @@ c             IF (TRCREF) WRITE (IUNOUT,*) 'REFLECT AS N2'
               IRET = 2
             ENDIF
 
-          ELSEIF (NINT(XCW).EQ.26) THEN            !Is it on Fe or SS surface
+          ELSEIF (NINT(XCW).EQ.26) THEN   !Is it on Fe or SS surface
 
 c           IF (TRCREF) WRITE (IUNOUT,*) 'SURFACE: SS (or Fe)'
-            FSS = ASS + M1SS*(BW-TW)               !Calculate distribution
+            FSS = ASS + M1SS*(BW-TW)      !Calculate distribution
             FSS = MIN(1._DP,MAX(0._DP,FSS))
 c           IF (TRCREF) WRITE (IUNOUT,*) 'CALC DISTRIBUTION: ', FSS
 
-            IF ((RF.LT.FSS).AND.(FSS.GT.0)) THEN   !Determine species
+            IF ((RF.LT.FSS).AND.(FSS.GT.0)) THEN !Determine species
 c             IF (TRCREF) WRITE (IUNOUT,*) 'REFLECT ND3'
               IGAST = -ND3_MOL
               IRET = 2

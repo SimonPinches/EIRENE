@@ -1,8 +1,8 @@
 C  27.6.05 updphot: iadd removed
 C  21.01.06: photon background for test atoms: removed
 C  18.04.06: test ions and atoms: synchronized
-C            bug fix: V0_para  --> parmom_0 for elastic momentum source
-C                                  contribution from atoms.
+C            bug fix: V0_para --> parmom_0 for elastic momentum source
+C                                 contribution from atoms.
 C  10.01.07: parallel momentum exchange tallies MAPL, MMPL, MIPL
 C            included as default EIRENE tallies.
 C            Before these tallies have been updated in problem
@@ -43,10 +43,10 @@ C T (CM) IS STORED ON CLPD ARRAY FOR ONE OR MORE CELLS, THAT HAVE
 C BEEN CROSSED WITHOUT COLLISION.
 
 C
-C  NCOU:  NUMBER OF PIECES OF TRACK IN DIFFERENT CELLS SCORED IN THIS PRESENT CALL (BUT FIXED NRCELL)
-C     I:  INDIVIDUAL TRACK, I=1,NCOU
-C  IRDO:  TRACK IS IN (FINE) GEOMETRY CELL IRDO (=NRCELL+NUPC(I)*NR1P2+NBLCKA)
-C  IRD:   ESTIMATORS ARE UPDATED IN (COARSE) SCORING CELL IRD (=NCLTAL(IRDO))
+C  NCOU: NUMBER OF PIECES OF TRACK IN DIFFERENT CELLS SCORED IN THIS PRESENT CALL (BUT FIXED NRCELL)
+C     I: INDIVIDUAL TRACK, I=1,NCOU
+C  IRDO: TRACK IS IN (FINE) GEOMETRY CELL IRDO (=NRCELL+NUPC(I)*NR1P2+NBLCKA)
+C  IRD:  ESTIMATORS ARE UPDATED IN (COARSE) SCORING CELL IRD (=NCLTAL(IRDO))
 C
 C  IFLAG:    Info on the previous event prior to this track/score.
 C            To enable noise free (exact) cancellation of terms
@@ -55,7 +55,7 @@ C            CURRENTLY ONLY USED FOR PHOTON TALLIES
 C  IFLAG=1:
 C  IFLAG=2:
 C  IFLAG=3:
-C  IFLAG=4:  CALLED FROM WITHIN STATIC LOOP (PATH LENGTH SET TO MFP), OR CALLED AT POINT OF COLLISION
+C  IFLAG=4: CALLED FROM WITHIN STATIC LOOP (PATH LENGTH SET TO MFP), OR CALLED AT POINT OF COLLISION
 C  IFLAG=5:
 
 C  SPECIAL TREATMENT OF "BGK" COLLISIONS (= ELASTIC COLLISIONS WITH VIRTUAL BACKGROUND SPECIES)
@@ -71,7 +71,7 @@ C                       FOR "REAL" BACKGROUND FIELD PARTICLES 1:NPLS_FIX.
 
 C          IN CASE OF EAPL THIS IS IMPORTANT, IN ORDER NOT TO MIX ENERGY SOURCES FOR REAL BACKGROUND
 C          IONS WITH ENERGY SOURCES FOR VIRTUAL BACKGROUND "IONS" (MISSING SPECIES INDEX)
-C          BUT:  CURRENTLY MISSING IN EAAT: CONTRIBUTIONS OF ENERGY EXCHANGE DUE TO BGK COLLISIONS
+C          BUT: CURRENTLY MISSING IN EAAT: CONTRIBUTIONS OF ENERGY EXCHANGE DUE TO BGK COLLISIONS
 C          (BOTH SOURCE (DUE TO C) AND SINK (DUE TO B))
 
 
@@ -97,32 +97,40 @@ C
       REAL(DP), INTENT(IN OUT) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
      .                            XSTORV2(NSTORV,N2ND+N3RD)
       INTEGER, INTENT(IN) :: IFLAG
-      REAL(DP) :: WTRSIG, DIST, WTR, WTRE0, WV, WTRV, DELE, PRAD,
-     .            V0_PARB, PARMOM_0, P, BX, BY, BZ, BF, VION,
+      REAL(DP) :: WTRSIG, DIST, WTR, WTRE0, WV, WTRV,
+     .            DELE, PRAD,
+     .            V0_PARB, PARMOM_0, P,
+     .            BX, BY, BZ,
+     .            BF, VION,
      .            ELEI, EHEAVY
       REAL(DP) :: EIRENE_FEELEI1, EIRENE_FEHVEI1
-      REAL(DP) :: VSIG_PARB(NPLS), VAL_PARB(NPLS), VX(NPLS), VY(NPLS),
+      REAL(DP) :: VSIG_PARB(NPLS), VAL_PARB(NPLS),
+     .            VX(NPLS), VY(NPLS),
      .            VZ(NPLS),XC,YC,ZC
       INTEGER :: IRD,  I, IRDO,
      .           IPL, IAT, IA,
-     .           IM,  IIO, IP, IML, II, KK, NPBGK,
-     .           IBGK, IPLV
+     .           IM,  IIO, IP, IML, II, NPBGK,
+     .           IBGK, IPLV,
+     .           KK
 C SECONDARY SPECIES IDENTIFIERS
-      INTEGER ::  IAT1,IAT2,IML1,IML2,IIO1,IIO2,IPL1,IPL2
+      INTEGER :: IAT1,IAT2,IML1,IML2,IIO1,IIO2,IPL1,IPL2
 C EL PROCESSES
-      INTEGER ::      IXEL,IREL
+      INTEGER :: IXEL,IREL
 C CX PROCESSES
-      INTEGER ::      IXCX,IRCX
+      INTEGER :: IXCX,IRCX
 C PH PROCESSES
-      INTEGER ::      IXPH,IRPH  ! for later use, photons
+      INTEGER :: IXPH,IRPH  ! for later use, photons
 C PI PROCESSES
-      INTEGER ::      IXPI,IRPI
+      INTEGER :: IXPI,IRPI
 C EI PROCESSES
-      INTEGER ::      IXEI,IREI
+      INTEGER :: IXEI,IREI
 
       REAL(DP) :: EIRENE_VDION
-      REAL(DP), POINTER :: PXX2(:,:), PXPL2(:,:), PXAT2(:,:),
-     .                     PXML2(:,:), PXIO2(:,:)
+      REAL(DP), POINTER, SAVE :: PXX2(:,:), PXPL2(:,:), PXAT2(:,:),
+     .                           PXML2(:,:), PXIO2(:,:)
+!$OMP THREADPRIVATE(PXX2, PXPL2, PXAT2, PXML2, PXIO2)
+      EXTERNAL :: EIRENE_BFIELD, EIRENE_UPDPHOT, EIRENE_UPTCOP,
+     .            EIRENE_VECUSR
 
 C  TAKE CARE OF SCORING OF PHOTONS
 
@@ -143,7 +151,7 @@ C
       IF ((NCPVI.GT.0).AND.LCOPV)
      .  CALL EIRENE_UPTCOP(XSTOR2,XSTORV2,WV)
       IF ((NPBGK.GT.0).AND.LBGKV)
-     .   CALL EIRENE_UPTBGK(XSTOR2,XSTORV2,WV,NPBGK)
+     .  CALL EIRENE_UPTBGK(XSTOR2,XSTORV2,WV,NPBGK)
 
       IF (IUPDTE == 2) RETURN
 
@@ -158,7 +166,8 @@ C
 
 C  FOR STANDARD DEVIATION: INDICATE CELLS THAT HAVE BEEN MET BY THE PRESENT MC HISTORY
         IF (IMETCL(IRD) == 0) THEN
-          NCLMT = NCLMT+1   ! nclmt is <= nrtal, necessarily. Storage cannot overflow.
+          NCLMT = NCLMT+1   ! nclmt is <= nrtal, necessarily.
+                            ! Storage cannot overflow.
           ICLMT(NCLMT) = IRD
           IMETCL(IRD) = NCLMT
         END IF
@@ -167,7 +176,7 @@ C  PARTICLE, MOMENTUM AND ENERGY DENSITY ESTIMATORS
 C
 
         IF (LEDENX) THEN
-!$OMP ATOMIC 
+!$OMP ATOMIC
            EDENX(IRD)=EDENX(IRD)+WTRE0
         ENDIF
 
@@ -222,7 +231,6 @@ C
             LMETSP2(IXSPZ,0) = .TRUE.
             LMETSP2(IXSPZ,IXSPZ) = .TRUE.
           END IF
-
         ENDIF
 
         IF (LEXX) THEN
@@ -596,7 +604,7 @@ C
               END IF
 C
 C  FIRST SECONDARY: = INCIDENT ION. REMAINS SAME PARTICLE BY DEFAULT
-              IF (LEXPL)  THEN
+              IF (LEXPL) THEN
 !$OMP ATOMIC
                 EXPL(IPLS,IRD)=EXPL(IPLS,IRD)+WTRSIG*E0
                 LMETSP(NSPAMI+IPLS)=.TRUE.
@@ -613,7 +621,7 @@ C
    60   CONTINUE
 C
 C.............................................................
-C  ELECTRON IMPACT (EI) COLLISION CONTRIBUTION:  EL + IXSPZ --> ....
+C  ELECTRON IMPACT (EI) COLLISION CONTRIBUTION: EL + IXSPZ --> ....
 C.............................................................
 C
         IF (LGXEI(0).EQ.0) GOTO 57
@@ -759,7 +767,7 @@ C
               ELSE
                 ELEI = EIRENE_FEELEI1(IREI,IRD)
                 EHEAVY = EIRENE_FEHVEI1(IREI,IRD)
-              END IF  
+              END IF
               PRAD=ELEI+EHEAVY-DELE
 !$OMP ATOMIC
               RXEL(IXSPZ,IRD)=RXEL(IXSPZ,IRD)+WTRSIG*PRAD
@@ -821,7 +829,7 @@ C
    57   CONTINUE
 C
 C........................................................
-C  PLASMA ION IMPACT (PI) CONTRIBUTION: IPLS + IXSPZ --> ......
+C  PLASMA ION IMPACT (PI) COLLISION CONTRIBUTION: IPLS + IXSPZ --> ......
 C........................................................
 C
         IF (LGXPI(0,0).EQ.0) GOTO 59
@@ -982,7 +990,7 @@ C
               ELSE
                 ELEI = EIRENE_FEELEI1(IREI,IRD)
                 EHEAVY = EIRENE_FEHVEI1(IREI,IRD)
-              END IF  
+              END IF
               PRAD=ELEI+EHEAVY-DELE
 !$OMP ATOMIC
               RXEL(IXSPZ,IRD)=RXEL(IXSPZ,IRD)+WTRSIG*PRAD
@@ -1049,7 +1057,8 @@ C
 C
         IF (LMXPL) THEN
 
-          CALL EIRENE_BFIELD (IRDO, X0, Y0, Z0, BX, BY, BZ, BF,.FALSE.)
+          CALL EIRENE_BFIELD (IRDO, X0, Y0, Z0,
+     .                              BX, BY, BZ, BF,.FALSE.)
 
           DO IPL=1,NPLSI
             IF (INDPRO(4) == 8) THEN
@@ -1069,8 +1078,9 @@ C
 c  set parameters for parallel momentum of incident bulk particle
 c  val_parb   : parallel velocity component, incl. sign, relative to B
 c  vsig_parb  : parallel momentum, modulus (always positive)
+
           IF ((INDPRO(4) == 8) .AND. (INDPRO(5) == 8)) THEN
-cdr vdion: for which ipl? 
+cdr vdion: for which ipl?
             vion=EIRENE_vdion(irdo)
             VAL_PARB(1:NPLSI) =VION
             VSIG_PARB(1:NPLSI)=CNDYNP(1:NPLSI)*vion*
@@ -1108,7 +1118,6 @@ C     THE PLASMA MOMENTUM IS TAKEN POSITIVE (PARMOM=|PARMOM|), AND
 C     |PARMOM_0| IS ADDED TO IPL MOMENTUM (SOURCE),  IF THE NEUTRAL V_PAR
 C                     HAS THE SAME SIGN AS THE IPL PLASMA ION V_PAR.
 c     |PARMOM_0| IS SUBTRACTED FROM IPL MOMENTUM (SOURCE), IF IT HAS OPPOSITE SIGN
-
 
 C  CHARGE EXCHANGE CONTRIBUTION FROM SPECIES IXSPZ
 C

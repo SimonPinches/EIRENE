@@ -40,60 +40,65 @@ cdr  npestr(istra): total number of processors working on ISTRA
 CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE :: PROCFORSTRA(:,:)
 
-      integer, public :: current_particle_idx 
+      integer, public :: current_particle_idx
 
       ! Identifiers for work distribution strategies:
       integer, public, parameter :: STRATEGY_UNDEFINED = -1
 
       !> Assign PEs to strata by proportional allocation.
       !> The particles within a stratum are divided equally
-      !> among the PEs that calculate the stratum. Usually leads to load imbalance.
+      !> among the PEs that calculate the stratum.
+      !> Usually leads to load imbalance.
       integer, public, parameter :: STRATEGY_ORIGINAL = 0
 
-      !> All PEs Calculate All strata. It is a balanced workload distribution, but
+      !> All PEs Calculate All strata.
+      !> It is a balanced workload distribution, but
       !> the communication costs can be high.
       integer, public, parameter :: STRATEGY_APCAS = 1
 
-      !> Assign PEs to strata to minimize communication, and divide the number of
+      !> Assign PEs to strata to minimize communication,
+      !> and divide the number of
       !> particles between PEs in a way that balances workload.
       integer, public, parameter :: STRATEGY_BALANCED = 2
 
       !> "Embarrassingly" parallel scheme.
       !> Each PE calculates the same number of histories.
       integer, public, parameter :: STRATEGY_EMBARRASS = 3
-      
+
       !> STRATEGY_DEFAULT and NPRLL_DEFAULT are set in user_defaults
       integer, public, save :: STRATEGY_DEFAULT
       integer, public, save :: NPRLL_DEFAULT
 
-      integer, public :: work_distribution_strategy !< stores which strategy was chosen during initialization
+      !> stores which strategy was chosen during initialization
+      integer, public :: work_distribution_strategy
 
-      integer, public :: input_distribution_strategy !< strategy read from input file
+      !> strategy read from input file
+      integer, public :: input_distribution_strategy
 
       !> stratum_leader(i) is the rank of the leader for stratum(i)
-!pb  stratum_leader is identical to npesta, it should be possible to remove one
       integer, dimension(:), allocatable, public :: stratum_leader
-      integer, dimension(:), allocatable, public :: nparts_loc !< number of particles calculated locally
+      !> number of particles calculated locally
+      integer, dimension(:), allocatable, public :: nparts_loc
 
-      !> to help mapping particle idx to a global idx, we store on each PE what is the starting
-      !> global idx
+      !> to help mapping particle idx to a global idx,
+      !> we store on each PE what is the starting global idx
       integer, dimension(:), allocatable, public :: index_shift
-      integer, dimension(:), allocatable, public :: stratum_comm 
+      integer, dimension(:), allocatable, public :: stratum_comm
       integer, public :: leader_comm = MPI_COMM_NULL
 
       !> Whether we have new member of stratum leaders
-      logical, public :: new_leader = .true. 
+      logical, public :: new_leader = .true.
 
       CONTAINS
 
-      !> creates communicators for PEs working on same stratum and a 
-      !> communicator for all stratum leaders
+!> creates communicators for PEs working on same stratum and a
+!> communicator for all stratum leaders
       subroutine create_all_communicators()
         use eirmod_comsou, only: nstrai, nlsron
         use eirmod_mpi, only: MPI_COMM_NULL
         integer :: k
         call free_communicators(nstrai)
-        ! Initialize communicators 
+! Initialize communicators
         do k=1, nstrai
           if (nlsron(k)) then
             stratum_comm(k) = create_stratum_comm(k)
@@ -104,13 +109,13 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
         leader_comm = create_leader_comm()
       end subroutine
 
-      !> returns true if the calling PE should do any work on stratum_idx
+!> returns true if the calling PE should do any work on stratum_idx
       logical function calc_stratum(stratum_idx)
         integer, intent(in) :: stratum_idx
         calc_stratum = nparts_loc(stratum_idx) > 0
       end function
 
-      !> creates the communicator for all stratum leaders
+!> creates the communicator for all stratum leaders
       function create_leader_comm() result(comm)
         integer :: comm
         if (my_pe==0) then
@@ -119,7 +124,7 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
         comm = create_communicator(I_am_leader())
       end function
 
-      !> creates the communicators for PEs working on same stratum
+!> creates the communicators for PEs working on same stratum
       function create_stratum_comm(stratum_idx) result(comm)
         integer :: comm
         integer, intent(in) :: stratum_idx
@@ -127,19 +132,19 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
           write(iunout,*) 'Creating communicator within stratum ',
      &     stratum_idx
         end if
-        comm = create_communicator(nparts_loc(stratum_idx)>0, 
+        comm = create_communicator(nparts_loc(stratum_idx)>0,
      &           stratum_leader(stratum_idx))
-      end function      
+      end function
 
-      !> creates a communicator for the PEs which call it with .true. argument
-      !> It is a collective call: every PE in MPI_COMM_WORLD should call it together.
+!> creates a communicator for the PEs which call it with .true. argument
+!> It is a collective call: every PE in MPI_COMM_WORLD should call it together.
       function create_communicator(include_me, zero_rank) result(comm)
         use eirmod_mpi
-        !> whether to include the calling PE
-        logical, intent(in) :: include_me 
-        !> the rank of the PE which should become rank 0 in the new communicator
-        integer, optional :: zero_rank 
-        integer :: comm 
+!> whether to include the calling PE
+        logical, intent(in) :: include_me
+!> the rank of the PE which should become rank 0 in the new communicator
+        integer, optional :: zero_rank
+        integer :: comm
         integer :: n, k, ierr
         integer, dimension(nprs) :: ranks_tmp
         logical, dimension(nprs) :: include_proc
@@ -148,9 +153,9 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
         logical :: found
         character*13 hlp_frm
 
-        call MPI_allGather(include_me, 1, MPI_LOGICAL, 
+        call MPI_allGather(include_me, 1, MPI_LOGICAL,
      &          include_proc, 1, MPI_LOGICAL, MPI_COMM_WORLD, ierr)
-        ! now collect all the ranks where include_proc is true
+! now collect all the ranks where include_proc is true
         n = 0
         do k=0, nprs-1
           if (include_proc(k+1)) then
@@ -188,7 +193,8 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
         !if (include_me) then
         !  call mpi_group_size(group, gsize, ierr)
         !  call mpi_group_rank(group, grank, ierr)
-        !  write(iunout,*) 'My rank in the new communicator ', grank, ' (', gsize,')'
+        !  write(iunout,*) 'My rank in the new communicator ', grank,
+        !                                                ' (', gsize,')'
         !endif
         call mpi_group_free(group_world, ierr)
         call mpi_group_free(group, ierr)
@@ -209,14 +215,15 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
         endif
       end subroutine
 
-      function get_global_particle_idx(stratum_idx, idx) 
+      function get_global_particle_idx(stratum_idx, idx)
      &  result(global_idx)
         use eirmod_comusr
      ,   , only: iiter
         use eirmod_comsou
      ,   , only: npts, nstrai
         integer, intent(in) :: stratum_idx
-        integer, intent(in) :: idx !< local particle index (1..nparts_loc)
+        !> local particle index (1..nparts_loc)
+        integer, intent(in) :: idx
         integer :: global_idx
         global_idx = index_shift(stratum_idx) + idx
      &    + (iiter-1)*sum(npts(1:nstrai))
@@ -228,14 +235,16 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
         comm = leader_comm
       end function
 
-      !> returns the communicator of the PEs working on stratum `stratum_idx`
+      !> returns the communicator of the PEs working
+      !> on stratum `stratum_idx`
       function get_stratum_comm(stratum_idx) result(comm)
         integer, intent(in) :: stratum_idx
         integer :: comm
         comm = stratum_comm(stratum_idx)
       end function
 
-      !> Checks whether the calling PE is the leader of stratum with stratum_idx,
+      !> Checks whether the calling PE is the leader of
+      !> stratum with stratum_idx,
       !> or any stratum if stratum_idx is not present
       logical function I_am_leader(stratum_idx)
         use eirmod_comsou, only: nlsron
@@ -249,7 +258,8 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
 
       subroutine init_apcas_strategy(nstra, npts)
         integer, intent(in) :: nstra !< number of strata
-        integer, intent(in), dimension(NSTRA) :: npts !< number of points per strata
+        !> number of points per strata
+        integer, intent(in), dimension(NSTRA) :: npts
         integer :: k, diff, proc_id
         if (my_pe==0) then
           write(iunout,*) ''
@@ -274,10 +284,11 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
           diff =  mod(npts(k), nprs)
           if (diff > 0) then
             if (nparts_loc(k)==0) then
-              ! if there are less particles than PEs then let proc 0 do the work
+              ! if there are less particles than PEs then
+              ! let proc 0 do the work
               proc_id = 0
             else
-              proc_id = nprs - 1 
+              proc_id = nprs - 1
             endif
             if (my_pe == proc_id) then
               nparts_loc(k) = nparts_loc(k) + diff
@@ -406,6 +417,7 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
         integer j, k, ierr, n, in, it, ie, isa, ise
         real(kind=dp) :: tot, time_avg, time_std
         real(kind=dp), dimension(0:nprs-1) :: time_pe
+
         call MPI_Gather(nparts_loc, nstrai, MPI_INTEGER,
      &     nparts_tmp, nstrai, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
 
@@ -469,7 +481,7 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
             write(iunout,'(a)') trim(long_line)
             do j = isa, ise
               n = 0
-              do k = 0, nprs - 1 
+              do k = 0, nprs - 1
                 n = n + nparts_tmp(k*nstrai + j)
               end do
               write(ch_tmp(j), fmt='(I8,A1)') n,' '
@@ -603,6 +615,7 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
         integer :: k, ierr
         integer, dimension(nprs) :: tmp
         integer :: grank
+
         index_shift(1) = 0
         do k = 2, nstrai
           index_shift(k) = index_shift(k-1) + npts(k-1)
@@ -610,7 +623,7 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
         ! now adjust with the starting index within the stratum
         do k = 1, nstrai
           if (nparts_loc(k) > 0) then
-            call MPI_allGather(nparts_loc(k), 1, MPI_INTEGER, tmp, 1, 
+            call MPI_allGather(nparts_loc(k), 1, MPI_INTEGER, tmp, 1,
      &             MPI_INTEGER, stratum_comm(k), ierr)
             call mpi_comm_rank(stratum_comm(k), grank, ierr)
             if (ierr /= mpi_success) then
@@ -618,9 +631,11 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
      .         ('ERROR IN SUBROUTINE set_index_shift at mpi_comm_rank.')
               call eirene_exit_own(1)
             end if
-            index_shift(k) = index_shift(k) + sum(tmp(1:grank)) 
-            ! Note that tmp is indexed from 1, while grank is counted from zero.
-            ! Therefore, as intended, the sum does not include the particles
+            index_shift(k) = index_shift(k) + sum(tmp(1:grank))
+            ! Note that tmp is indexed from 1,
+            ! while grank is counted from zero.
+            ! Therefore, as intended,
+            ! the sum does not include the particles
             ! in the local stratum (which is stored in tmp(grank+1))
           endif
         end do
@@ -694,12 +709,13 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
       INTEGER ICAL
 
       IF (ICAL == 1) THEN
-      
+
         NPESTR = 0
         NPESTA = 0
 
 c  correspondence table: Strata vs. PEs
-        PROCFORSTRA=.TRUE.      !  Trivial parallelisation: All PEs work on all strata
+        PROCFORSTRA=.TRUE. !  Trivial parallelisation:
+                           !  All PEs work on all strata
 
         CALL MPI_SET_OWN_IO_UNIT(IUNOUT)
 

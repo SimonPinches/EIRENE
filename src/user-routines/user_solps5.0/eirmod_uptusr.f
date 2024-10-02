@@ -76,7 +76,7 @@ C
     2   CONTINUE
 
 cdr  increments for tally number iadv
-!pb  MOD_ADDV is no incremental value. It is a flag indicating whether all the 
+!pb  MOD_ADDV is no incremental value. It is a flag indicating whether all the
 !pb  rates used for emissivity lines are to be stored or whether storage saving
 !pb  mode ist to be used, only storing the rates for the latest used line
 !pb     IA0=MOD_ADDV        !  RADIAL CURRENT

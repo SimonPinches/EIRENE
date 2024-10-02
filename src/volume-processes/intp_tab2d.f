@@ -14,11 +14,11 @@ c  parameters:  p1, p2
 
 c output:
 c  res,  interpolated value at (p1,p2)
-c  ip1 = 0:  parameter p1 is in valid range of table
-c  ip1 =-1:  parameter p1 is below left boundary of tabulated range
-c  ip1 =+1:  parameter p1 is above right boundary of tabulated range
+c  ip1 = 0: parameter p1 is in valid range of table
+c  ip1 =-1: parameter p1 is below left boundary of tabulated range
+c  ip1 =+1: parameter p1 is above right boundary of tabulated range
 
-c  ip2    :  same as ip1, for parameter p2.
+c  ip2    : same as ip1, for parameter p2.
 
 
       use EIRMOD_precision

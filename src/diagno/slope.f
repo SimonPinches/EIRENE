@@ -2,11 +2,14 @@ C
 C
 C*DK SLOPE
       FUNCTION EIRENE_SLOPE(KN,JCH,NN,EN,BU,N,M)
+cdr  simple linear regression, least square estimators
+
 C
 C     CALCULATE SLOPE OF STRAIGHT LINE
 C
       USE EIRMOD_PRECISION
       IMPLICIT NONE
+
       INTEGER, INTENT(IN) :: KN, JCH, NN, N, M
       REAL(DP), INTENT(IN) :: EN(M), BU(N,M)
       REAL(DP) :: ZSUM1, ZSUM2, ZSUM3, ZSUM4, ZX, ZY, FKN, EIRENE_SLOPE

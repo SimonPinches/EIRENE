@@ -6,12 +6,12 @@ c  L=.false.: This call is in cell ic. Return value at center of gravity of this
 
 c  I=1: return local B field vector as vec_x,vec_y,vec_z
 c  I=2: return local plasma drift velocity vector of eirene background species "ipls"
-c               as vec_x,vec_y,vec_z
+c              as vec_x,vec_y,vec_z
 c  note: ipls is the true background species,
 c        not to be confused with the mapped species index mplsv(ipls)
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
-            IMPLICIT NONE
+      IMPLICIT NONE
       INTEGER, INTENT(IN) :: I, IC,IPL
       LOGICAL             :: L
       REAL(DP), INTENT(IN) :: X,Y,Z

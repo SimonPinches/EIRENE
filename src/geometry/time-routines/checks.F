@@ -186,8 +186,8 @@ c           line from C to A
         END IF
 c       we found nothing, so we have no intersection -> return false
         STATUS = .FALSE.
-        END FUNCTION EIRENE_TIMEA_ThirdCheck
-      
+      END FUNCTION EIRENE_TIMEA_ThirdCheck
+
 cdr  Here starts the original timea1.f: check additional surfaces.
 cdr  It is now called: EIRENE_TIMEA_CheckInter
 cdr  For comparison with older versions: then compare with eirene_timea1.

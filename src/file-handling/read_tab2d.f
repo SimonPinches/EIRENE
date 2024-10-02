@@ -9,8 +9,8 @@ cdr
 
       subroutine EIRENE_read_tab2d (ir,reac,isw,iz1)
 
-cdr  purpose:  read a 2d table TAB2D of A&M data, and put them into REACDAT data structure
-cdr            internal eirene reaction no. IR
+cdr  purpose: read a 2d table TAB2D of A&M data, and put them into REACDAT data structure
+cdr           internal eirene reaction no. IR
 cdr
 cdr  input:
 c           ir:           internal reaction number on eirene structure REACDAT
@@ -29,7 +29,7 @@ c  to be done: units, log-lin, scaling, asymptotics
 
       use EIRMOD_precision
       use EIRMOD_parmmod
-      use EIRMOD_comxs   !dr:  this contains: type(adas_data)
+      use EIRMOD_comxs   !dr: this contains: type(adas_data)
       use EIRMOD_comprt, only: iunout
 
       implicit none
@@ -55,14 +55,14 @@ c     this file format is described in ...
       read (29+ifoff,*,iostat=io) nz, nde, nte, iza, ize
 
       if (io .ne. 0) then
-        write (iunout,*) ' ERROR READING FILE FROM TAB2D DATABASE '
+        write (iunout,*) ' ERROR READING FILE FROM TAB2D DATABASE'
         write (iunout,*) ' DIRECTORY IS ',reac
         call EIRENE_exit_own(1)
       end if
 
       if ((iz1 < iza) .or. (iz1 > ize)) then
-        write (iunout,*) ' ERROR READING FILE FROM TAB2D DATABASE '
-        write (iunout,*) ' REQUESTED Z1 IS NOT AVAILABLE '
+        write (iunout,*) ' ERROR READING FILE FROM TAB2D DATABASE'
+        write (iunout,*) ' REQUESTED Z1 IS NOT AVAILABLE'
         write (iunout,*) ' Z1, ZA, ZE ',IZ1, IZA, IZE
         call EIRENE_exit_own(1)
       end if
@@ -81,7 +81,7 @@ c  storage for 2d table, a rate coefficient vs. Te, ne.
       read (29+ifoff,*)
 
 cdr probably: distinguish between "MS resolved" and "MS unresolved"?
-cdr           by using a certain file name convention? 
+cdr           by using a certain file name convention?
 cdr           Is REAC(..) only use here?
       lc = len_trim(reac)
       if (reac(lc:lc) == 'r') then
@@ -137,7 +137,7 @@ cdr           Is REAC(..) only use here?
 
       close (29+ifoff)
 
-! set up difference arrays (increments) for first 
+! set up difference arrays (increments) for first
 !        and 2nd independent parameter
 
       do ide=1,nde-1
@@ -266,7 +266,7 @@ c
       return
 
  1000 continue
-      WRITE (IUNOUT,*) ' ERROR IN "READ_TAB2D" : '
+      WRITE (IUNOUT,*) ' ERROR IN "READ_TAB2D" :'
       WRITE (IUNOUT,*) ' WRONG REACTION TYPE SPECIFIED FOR TAB2D OPTION'
       WRITE (IUNOUT,*) ' REACTION NO. ', IR
       WRITE (IUNOUT,*) ' REACTION TYPE H.', ISW

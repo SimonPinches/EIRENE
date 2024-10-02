@@ -34,7 +34,7 @@ c*** At the first invocation, read the data from the Eirene input file
 c*** and define the grid corners
 c
       IF (NLPLG) THEN
-      if(first) then
+       if(first) then
 !       read(iunin,'(a80)') 'geometry_comment', already done in calling program
         write (iunout,*) 'GEOUSR: VERSION: BIASED-GARCHING'
         do i=1,8
@@ -133,20 +133,20 @@ c  double null
         else
           write(iunout,*) 'Case NPPLG = ',NPPLG,' not coded. '
         end if
-      end if
+       end if
 c
 c*** Switch off the additional surfaces corresponding to the targets,
 c*** that is, the surfaces between the ones to be linked to the grid
 c*** corners.
 c
-      n=max(npplg/3,1)*4
-      if (n.ne.nasmod) then
+       n=max(npplg/3,1)*4
+       if (n.ne.nasmod) then
         write (iunout,*) 'ERROR IN GEOUSR_biased-garching'
         write (iunout,*) 'N, NASMOD =', N,NASMOD
         call eirene_exit_own(1)
-      endif
+       endif
 c     print '(/(2i8))',(limpos(i),onetwo(i),i=1,n)
-      do 990 i=1,n
+       do 990 i=1,n
         if(onetwo(i).eq.2) then
           m=limpos(i)
           hlp_p1=p2(1,m)
@@ -199,19 +199,19 @@ c*** The chain is broken
             go to 990
   980     continue
         end if
-  990 continue
- 1001 continue
+  990  continue
+ 1001  continue
 C
 C  ANFANG: MODIFY GEOMETRY
 C
-      n=max(npplg/3,1)*4
-      if (n.ne.nasmod) then
+       n=max(npplg/3,1)*4
+       if (n.ne.nasmod) then
         write (iunout,*) 'ERROR IN GEOUSR, Vs.: geousr_biased-garching'
         write (iunout,*) 'N, NASMOD =', N,NASMOD
         call eirene_exit_own(1)
-      endif
+       endif
 c
-      do i=1,max(npplg/3,1)*4
+       do i=1,max(npplg/3,1)*4
         if(onetwo(i).eq.1) then
           p1(1,limpos(i))=xpol(xpolpos(i),ypolpos(i))
           p1(2,limpos(i))=ypol(xpolpos(i),ypolpos(i))
@@ -219,7 +219,7 @@ c
           p2(1,limpos(i))=xpol(xpolpos(i),ypolpos(i))
           p2(2,limpos(i))=ypol(xpolpos(i),ypolpos(i))
         end if
-      end do
+       end do
 c=====================================================
 C  ABSCHALTEN NICHT ERREICHBARER ODER DOPPELT VORHANDENER FLAECHEN
 C
@@ -240,46 +240,46 @@ C
 C   LGJUM3(J,I)=.TRUE. :
 C   ABSCHALTEN DER FLAECHE I, FALLS TEILCHEN IN ZELLE J SITZT
 C
-      IF (NOPTIM >= NSURF) THEN
+       IF (NOPTIM >= NSURF) THEN
 
-      if(normalcase) then
-        write(iunout,*) 'Setting IGJUM3 to 1 for',NSURF,NLIMI
-        if (nlimpb.ge.nlimps) then
-          do I=1,NLIMI
+        if(normalcase) then
+          write(iunout,*) 'Setting IGJUM3 to 1 for',NSURF,NLIMI
+          if (nlimpb.ge.nlimps) then
+            do I=1,NLIMI
 !pb            do J=1,NOPTIM
-            do J=1,NSURF
-              IGJUM3(J,I)=1
+              do J=1,NSURF
+                IGJUM3(J,I)=1
+              end do
             end do
-          end do
+          else
+            nbits=bit_size(1)
+            do I=1,NLIMI
+!pb            do J=1,NOPTIM
+              do J=1,NSURF
+                call EIRENE_bitset(igjum3,0,noptim,j,i,1,nbits)
+              end do
+            end do
+          endif
         else
-          nbits=bit_size(1)
-          do I=1,NLIMI
+          write(iunout,*) 'Setting IGJUM3 to 0 for ',NSURF,NLIMI
+          if (nlimpb.ge.nlimps) then
+            do I=1,NLIMI
 !pb            do J=1,NOPTIM
-            do J=1,NSURF
-              call EIRENE_bitset(igjum3,0,noptim,j,i,1,nbits)
+              do J=1,NSURF
+                IGJUM3(J,I)=0
+              end do
             end do
-          end do
+          else
+            nbits=bit_size(1)
+            do I=1,NLIMI
+!pb            do J=1,NOPTIM
+              do J=1,NSURF
+                call EIRENE_bitset(igjum3,0,noptim,j,i,0,nbits)
+              end do
+            end do
+          endif
         endif
-      else
-        write(iunout,*) 'Setting IGJUM3 to 0 for ',NSURF,NLIMI
-        if (nlimpb.ge.nlimps) then
-          do I=1,NLIMI
-!pb            do J=1,NOPTIM
-            do J=1,NSURF
-              IGJUM3(J,I)=0
-            end do
-          end do
-        else
-          nbits=bit_size(1)
-          do I=1,NLIMI
-!pb            do J=1,NOPTIM
-            do J=1,NSURF
-              call EIRENE_bitset(igjum3,0,noptim,j,i,0,nbits)
-            end do
-          end do
-        endif
-      endif
-      END IF
+       END IF
 
       END IF
 C

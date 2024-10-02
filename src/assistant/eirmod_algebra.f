@@ -62,7 +62,7 @@ C           : MAXIMALE STRINGLAENGE
 C
 C     LOKALE VARIABLEN :
 C
-         INTEGER ::  LAENGE
+         INTEGER :: LAENGE
 C           : AKTUELLE LAENGE VON TERM
 
          CHARACTER(MAXLEN) :: HLFTERM
@@ -108,7 +108,7 @@ C     HILFSVARIABLEN :
 C
          INTEGER :: I, IC, IDIG
          logical :: prefix
-         
+
          IPROUT = IOUT
 chr
 chr   string, der die neuen variablennamen enthaelt
@@ -132,7 +132,7 @@ chr         bringen der operanden in die vom programm verlangte
 chr         zweistellige alphabetische form
             nr=0
             anfang=index(term,'<')
-            do while (anfang.ne.0) 
+            do while (anfang.ne.0)
               nr=nr+1
               ende=index(term,'>')
 chr           abspeichern der ersetzten operanden
@@ -225,7 +225,7 @@ chr               als zwischenergebnis
 
                      idig = 10
                      if (prefix) idig = 8
-                     
+
                      IF (PART(I)(idig:idig).NE.'Z') THEN
                        FELDIND=INDEX(BUCHST,PART(I)(idig:idig))
                        IK=INDEX(ERSETZ(FELDIND),',')
@@ -278,7 +278,7 @@ C
 C
 C     ENDE VON ALGEBR
 C
-      RETURN 
+      RETURN
 
       END SUBROUTINE EIRENE_ALGEBR
 
@@ -296,7 +296,7 @@ C
       ZIF1 = 0
       ZIF2 = 0
       IF (IA*IE > 0) READ (TAL(IA+1:IE-1),*) ZIF1, ZIF2
-      
+
       RETURN
       END SUBROUTINE EIRENE_READ_TAL_SPECS
 
@@ -455,7 +455,7 @@ C
 C     ENDE VON FEHLER
 C
       END SUBROUTINE EIRENE_FEHLER
-      
+
 *************************************************************************
 
 
@@ -568,7 +568,7 @@ C
 C     ENDE VON KLAMME
 C
       END SUBROUTINE EIRENE_KLAMME
-      
+
 *************************************************************************
 
 
@@ -684,11 +684,11 @@ C
    20 CONTINUE
 C
 C     ENDE VON OPERAT
-C     
-      END SUBROUTINE  EIRENE_OPERAT
-      
+C
+      END SUBROUTINE EIRENE_OPERAT
+
 *************************************************************************
-      
+
 
 C-----------------------------------------------------------------------
            SUBROUTINE EIRENE_OPRAND(AUSDRU,AKTLEN,OANDEN,ERROR)
@@ -780,7 +780,7 @@ C
 C     ENDE VON OPRAND
 C
       END SUBROUTINE EIRENE_OPRAND
-      
+
 *************************************************************************
 
 
@@ -837,7 +837,7 @@ C
 C        EINFUEGEN  VON 'Z' FUER ZERLEGUNG IN PART(J)
 C
          I=1
-         DO WHILE (I .LT. IPART(J)) 
+         DO WHILE (I .LT. IPART(J))
             IF (INDEX(ZIFFER,PART(J)(I:I)) .GT. 0) THEN
                IF (I .EQ. 1) THEN
                   HILFE='Z'//PART(J)(I:IPART(J))//' '
@@ -975,9 +975,9 @@ C
       I = BEGINN + IS - 1
       IF (IS == 0) I = OMEGA
       POS=INDEX(FAKTOR, ausdru(I:I))
-      
+
       PREFIX = (I .EQ. BEGINN)
-C     
+C
 C     WHILE : SOLANGE TEILSTRING EINEN OPERATOR ENTHAELT
 C
       DO WHILE (POS .GT. 0)
@@ -986,7 +986,7 @@ C       POSITION UND RANGBESTIMMUNG DES OPERATORS
 C       RANK = 0 : ^
 C            = 1 : * ODER /
 C            = 2 : + ODER -
-C     
+C
         OPER1=I
         RANK1=POS/2
 
@@ -997,7 +997,7 @@ C
 C
 C         SUCHE NACH DEM 2. OPERATOR IM TEILSTRING
 C         REPEAT-2
-C       
+C
           IS = SCAN(AUSDRU(I+1:OMEGA),FAKTOR)
           I = I + IS
           IF (IS == 0) I = OMEGA
@@ -1042,7 +1042,7 @@ C
         END DO
 C
 C       UNTIL-1 : BIS EINE ZERLEGUNG ERFOLGEN DARF
-C     
+C
         TEIL=TEIL+1
 C
 C       UMWANDELN DER ZAHL TEIL IN EINE ZEICHENKETTE TEILCH
@@ -1083,7 +1083,7 @@ C
 C
 C       SUCHE NACH DEM 1. OPERATOR IM TEILSTRING
 C
-         
+
         IS = SCAN(AUSDRU(I+1:OMEGA),FAKTOR)
         I = I + IS
         IF (IS == 0) I = OMEGA
@@ -1140,7 +1140,7 @@ C        UNGUELTIGES ZEICHEN IN AUSDRU GEFUNDEN
 C
          ERROR = 1
        END IF
-C      
+C
 C     ENDE VON SIGNOK
 C
       END SUBROUTINE EIRENE_SIGNOK
@@ -1205,7 +1205,7 @@ C
 C
 C     SUBTITUTION VON '**' DURCH '^'
 C
-      CALL EIRENE_REPLACE(AUSDRU,'**','^',AKTLEN)
+      CALL EIRENE_REPLACE(AUSDRU,'**', '^' ,AKTLEN)
       CALL EIRENE_REPLACE(AUSDRU,'DX', 'QA',AKTLEN)
       CALL EIRENE_REPLACE(AUSDRU,'DY', 'QB',AKTLEN)
       CALL EIRENE_REPLACE(AUSDRU,'DZ', 'QC',AKTLEN)
@@ -1250,10 +1250,10 @@ C
       CWITH = ADJUSTL(TRIM(WITH))
       LREP = LEN_TRIM(CREP)
       LWITH = LEN_TRIM(CWITH)
-      
+
       POS=INDEX(STR,CREP(1:LREP))
 
-      DO WHILE ( POS .GE. 1 .AND. POS .LT. LENGTH-1) 
+      DO WHILE ( POS .GE. 1 .AND. POS .LT. LENGTH-1)
 
 #ifndef F2003
          N = LWITH+LENGTH-LREP+1
@@ -1271,14 +1271,14 @@ C
          STR=HILFE
          LENGTH=LENGTH - (LREP - LWITH)
          POS=INDEX(STR,CREP(1:LREP))
-      END DO  
-      
+      END DO
+
       END SUBROUTINE EIRENE_REPLACE
 
       END SUBROUTINE EIRENE_SUBTIT
 
 *************************************************************************
-      
+
 
 CDR  decompose (interpret) expression AUSDRU into
 cdr  single algebraic operations on tallies.
@@ -1344,7 +1344,7 @@ C           : POSITION DES LEZTEN ZEICHENS VOM TEILAUSDRUCK
 
          INTEGER :: BEGINN
 C           : POSITION IN AUSDRU, BEI DER DIE ZERLEGUNG BEGINNT
- 
+
          INTEGER :: ENDE
 C           : POSITION IN AUSDRU, BEI DER DIE ZERLEGUNG BEENDET WIRD
 
@@ -1357,7 +1357,7 @@ C     HILFSVARIABLEN :
 C
       INTEGER :: POS
       LOGICAL :: CHECK
- 
+
 
 C
 C     ELIMINATION VON BLANKS UND ERSETZEN VON '**' DURCH '^'
@@ -1401,8 +1401,8 @@ C           UEBERPRUEFUNG, OB DIE KLAMMERN WEGFALLEN KOENNEN
 C
             IF (OMEGA+1-ALPHA .LE. 2
      >          .AND. INDEX('+-',AUSDRU(ALPHA:ALPHA)) .EQ. 0) THEN
-               
-!              PRUEFE, OB EINE FUNKTION AUSGEWERTET WERDEN SOLL 
+
+!              PRUEFE, OB EINE FUNKTION AUSGEWERTET WERDEN SOLL
                CHECK = .FALSE.
                IF (ALPHA > 3) THEN
                  CHECK = (AUSDRU(ALPHA-3:ALPHA-3) == 'Q') .AND.
@@ -1432,7 +1432,7 @@ C
                   ENDIF
                   AKTLEN=IARITH(TEIL)
                   AUSDRU=ARITH(TEIL)
-                  
+
                ELSE
 C
 C                 ENTFERNUNG DER KLAMMERN
@@ -1495,7 +1495,7 @@ C
       END SUBROUTINE EIRENE_ZERLEG
 
 *************************************************************************
-      
+
 C
 C
       SUBROUTINE EIRENE_RDCN (ERSETZ,CONST)
@@ -1562,5 +1562,5 @@ C
       END SUBROUTINE EIRENE_RDCN
 
 *************************************************************************
-      
+
       end module eirmod_algebra

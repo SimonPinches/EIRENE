@@ -33,10 +33,10 @@ C
         SELECT CASE(IPUNKT)
 
         CASE DEFAULT
-           WRITE (iunout,*) 'WRONG POINTNUMBER IN ADDUSR '
+           WRITE (iunout,*) 'WRONG POINT NUMBER IN ADDUSR'
            WRITE (iunout,*) 'INPUT LINE READING'
            WRITE (iunout,'(2I6,1P,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
-           WRITE (iunout,*) ' IS IGNORED '
+           WRITE (iunout,*) 'IS IGNORED'
 
         CASE (1)
            P1(1,NRS)=XCOOR
@@ -80,10 +80,10 @@ C
           P2(1,NAS)=XPOL(NSSIR,NSSIP)
           P2(2,NAS)=YPOL(NSSIR,NSSIP)
         ELSE
-          WRITE (iunout,*) 'WRONG POINTNUMBER IN ADDUSR '
+          WRITE (iunout,*) 'WRONG POINT NUMBER IN ADDUSR'
           WRITE (iunout,*) 'INPUT LINE READING'
           WRITE (iunout,'(5I6)') NAS,IPUNKT,NSSIR,NSSIP
-          WRITE (iunout,*) ' IS IGNORED '
+          WRITE (iunout,*) 'IS IGNORED'
         ENDIF
       ENDDO
 
@@ -96,9 +96,9 @@ C
           PPLNX(IR,IP) = -PPLNX(IR,IP)
           PPLNY(IR,IP) = -PPLNY(IR,IP)
         ELSE
-          WRITE (iunout,*) ' IDIR =',IDIR,' NOT FORESEEN IN GEOUSR '
+          WRITE (iunout,*) ' IDIR = ',IDIR,' NOT FORESEEN IN GEOUSR'
           WRITE (iunout,*) IDIR,IR,IP
-          WRITE (iunout,*) ' IS IGNORED '
+          WRITE (iunout,*) ' IS IGNORED'
         END IF
       END DO
 C

@@ -45,7 +45,6 @@ C
 !$OMP&              IRCX,ICOU,IACX,IRDD,IPLSTI,
 !$OMP&              NMTSP)
 
-
 CDR
 !     INTEGER :: I, IP, IR
 !     REAL(DP), ALLOCATABLE, SAVE ::

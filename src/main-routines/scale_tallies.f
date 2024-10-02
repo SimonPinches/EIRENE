@@ -1,3 +1,5 @@
+cdr   jan.2023   spumpi total (spumpi(0,istra) corrected.
+cdr              spumpi is currently unused.
 cdr    dec. 15:  added species index ipls, for volumetric energy source tallies for bulk ions
 cdr              eapl,empl,eipl,ephpl
 cdr   24.09.14:  scaling of new sputter tallies with fatm, fmol,fion,nphot: corrected
@@ -11,6 +13,7 @@ C  15.12.05 :    rescaling connected to spump surface tally
       SUBROUTINE EIRENE_SCALE_TALLIES (ISTRA)
 C
 C  RESCALE TRACKLENGTH-ESTIMATED VOLUME-AVERAGED TALLIES
+C  AS WELL AS SURFACE-FLUX TALLIES
 C  WITH PARTICLE BALANCE CORRECTION FACTORS FATM,FMOL,FION,FPHOT
 C  TO ENFORCE PERFECT GLOBAL PARTICLE BALANCE
 C
@@ -37,6 +40,7 @@ C
       ALLOCATE(FMOL(0:NMOLI))
       ALLOCATE(FION(0:NIONI))
       ALLOCATE(FPHOT(0:NPHOTI))
+cdr  always find particle balance scaling factors, per type
       CALL EIRENE_GETSCL4 (ISTRA,FATM(0),FMOL(0),FION(0),FPHOT(0))
       IF (NLSPCSCL) THEN
         CALL EIRENE_TALLY_SANITY_CHECK(ISTRA)
@@ -73,7 +77,7 @@ C
         write (iunout,*) 'FASCL = ',FASCL(:,ISTRA)
         write (iunout,*) 'FMSCL = ',FMSCL(:,ISTRA)
         write (iunout,*) 'FISCL = ',FISCL(:,ISTRA)
-        write (iunout,*) 'FPHSCL = ',FPHSCL(:,ISTRA)
+        write (iunout,*) 'FPHSCL= ',FPHSCL(:,ISTRA)
         CALL EIRENE_LEER(2)
 C
 C  CARRY OUT SCALING OF VOLUME AND SURFACE TALLIES, RESP.
@@ -91,7 +95,7 @@ c  volumetric atomic tallies
                 PAAT2(1:NATM,LB_ATM:NATM) => PAAT(:,J)
                 PAAT2(IATM,1:NATMI) = PAAT2(IATM,1:NATMI)*FATM(1:NATMI)
                 PAAT(IATM,J) = SUM(PAAT2(IATM,1:NATMI))
-              ELSE  
+              ELSE
                 PAAT(IATM,J)=PAAT(IATM,J)*FATM(0)
               END IF
             END IF
@@ -100,7 +104,7 @@ c  volumetric atomic tallies
                 PMAT2(1:NATM,LB_MOL:NMOL) => PMAT(:,J)
                 PMAT2(IATM,1:NMOLI) = PMAT2(IATM,1:NMOLI)*FMOL(1:NMOLI)
                 PMAT(IATM,J) = SUM(PMAT2(IATM,1:NMOLI))
-              ELSE  
+              ELSE
                 PMAT(IATM,J)=PMAT(IATM,J)*FMOL(0)
               END IF
             END IF
@@ -109,7 +113,7 @@ c  volumetric atomic tallies
                 PIAT2(1:NATM,LB_ION:NION) => PIAT(:,J)
                 PIAT2(IATM,1:NIONI) = PIAT2(IATM,1:NIONI)*FION(1:NIONI)
                 PIAT(IATM,J) = SUM(PIAT2(IATM,1:NIONI))
-              ELSE  
+              ELSE
                 PIAT(IATM,J)=PIAT(IATM,J)*FION(0)
               END IF
             END IF
@@ -119,7 +123,7 @@ c  volumetric atomic tallies
                 PPHAT2(IATM,1:NPHOTI) = PPHAT2(IATM,1:NPHOTI)*
      .                                  FPHOT(1:NPHOTI)
                 PPHAT(IATM,J) = SUM(PPHAT2(IATM,1:NPHOTI))
-              ELSE  
+              ELSE
                 PPHAT(IATM,J)=PPHAT(IATM,J)*FPHOT(0)
               END IF
             END IF
@@ -271,8 +275,8 @@ cdr  ?? scaling with bulk flux ??
           END IF
 
  2111   CONTINUE
- 
-       IF (LOGATM(0,ISTRA)) THEN
+
+        IF (LOGATM(0,ISTRA)) THEN
           PDENAI(0,ISTRA)=SUM(PDENAI(1:NATMI,ISTRA))
           EDENAI(0,ISTRA)=SUM(EDENAI(1:NATMI,ISTRA))
           PGENAI(0,ISTRA)=SUM(PGENAI(1:NATMI,ISTRA))
@@ -343,7 +347,7 @@ cdr  ?? scaling with bulk flux ??
             PPHATI(0,ISTRA)=SUM(PPHATI(1:NATMI,ISTRA))
             PRFPHAI(0,ISTRA)=SUM(PRFPHAI(1:NATMI,ISTRA))
           END IF
-             
+
         END IF
 
         sptatti(istra) = sptatti(istra)*fatm(0)
@@ -371,16 +375,16 @@ C
                 PAML2(1:NMOL,LB_ATM:NATM) => PAML(:,J)
                 PAML2(IMOL,1:NATMI) = PAML2(IMOL,1:NATMI)*FATM(1:NATMI)
                 PAML(IMOL,J) = SUM(PAML2(IMOL,1:NATMI))
-              ELSE  
+              ELSE
                 PAML(IMOL,J)=PAML(IMOL,J)*FATM(0)
               END IF
             END IF
             IF (LPMML) THEN
               IF (NLSPCSCL) THEN
                 PMML2(1:NMOL,LB_MOL:NMOL) => PMML(:,J)
-                PMML2(IMOL,1:NMOLI) = PMML2(IMOL,1:NMOLI)*FMOL(1:NMOLI) 
+                PMML2(IMOL,1:NMOLI) = PMML2(IMOL,1:NMOLI)*FMOL(1:NMOLI)
                 PMML(IMOL,J) = SUM(PMML2(IMOL,1:NMOLI))
-              ELSE  
+              ELSE
                 PMML(IMOL,J)=PMML(IMOL,J)*FMOL(0)
               END IF
             END IF
@@ -389,17 +393,17 @@ C
                 PIML2(1:NMOL,LB_ION:NION) => PIML(:,J)
                 PIML2(IMOL,1:NIONI) = PIML2(IMOL,1:NIONI)*FION(1:NIONI)
                 PIML(IMOL,J) = SUM(PIML2(IMOL,1:NIONI))
-              ELSE  
+              ELSE
                 PIML(IMOL,J)=PIML(IMOL,J)*FION(0)
               END IF
             END IF
-            IF (LPPHML) THEN 
+            IF (LPPHML) THEN
               IF (NLSPCSCL) THEN
                 PPHML2(1:NMOL,LB_PHOT:NPHOT) => PPHML(:,J)
                 PPHML2(IMOL,1:NPHOTI) = PPHML2(IMOL,1:NPHOTI)*
      .                                  FPHOT(1:NPHOTI)
                 PPHML(IMOL,J) = SUM(PPHML2(IMOL,1:NPHOTI))
-              ELSE  
+              ELSE
                 PPHML(IMOL,J)=PPHML(IMOL,J)*FPHOT(0)
               END IF
             END IF
@@ -621,7 +625,7 @@ cdr  ?? scaling with bulk flux ??
           END IF
 
         end if
-  
+
         sptmtti(istra) = sptmtti(istra)*fmol(0)
 
         DO 2117 J=1,NSBOX_TAL
@@ -647,7 +651,7 @@ C
                 PAIO2(1:NION,LB_ATM:NATM) => PAIO(:,J)
                 PAIO2(IION,1:NATMI) = PAIO2(IION,1:NATMI)*FATM(1:NATMI)
                 PAIO(IION,J) = SUM(PAIO2(IION,1:NATMI))
-              ELSE  
+              ELSE
                 PAIO(IION,J)=PAIO(IION,J)*FATM(0)
               END IF
             END IF
@@ -656,7 +660,7 @@ C
                 PMIO2(1:NION,LB_MOL:NMOL) => PMIO(:,J)
                 PMIO2(IION,1:NMOLI) = PMIO2(IION,1:NMOLI)*FMOL(1:NMOLI)
                 PMIO(IION,J) = SUM(PMIO2(IION,1:NMOLI))
-              ELSE  
+              ELSE
                 PMIO(IION,J)=PMIO(IION,J)*FMOL(0)
               END IF
             END IF
@@ -665,7 +669,7 @@ C
                 PIIO2(1:NION,LB_ION:NION) => PIIO(:,J)
                 PIIO2(IION,1:NIONI) = PIIO2(IION,1:NIONI)*FION(1:NIONI)
                 PIIO(IION,J) = SUM(PIIO2(IION,1:NIONI))
-              ELSE  
+              ELSE
                 PIIO(IION,J)=PIIO(IION,J)*FION(0)
               END IF
             END IF
@@ -675,7 +679,7 @@ C
                 PPHIO2(IION,1:NPHOTI) = PPHIO2(IION,1:NPHOTI)*
      .                                  FPHOT(1:NPHOTI)
                 PPHIO(IION,J) = SUM(PPHIO2(IION,1:NPHOTI))
-              ELSE  
+              ELSE
                 PPHIO(IION,J)=PPHIO(IION,J)*FPHOT(0)
               END IF
             END IF
@@ -925,7 +929,7 @@ C
                 PAPHT2(IPHOT,1:NATMI) = PAPHT2(IPHOT,1:NATMI)*
      .                                  FATM(1:NATMI)
                 PAPHT(IPHOT,J) = SUM(PAPHT2(IPHOT,1:NATMI))
-              ELSE  
+              ELSE
                 PAPHT(IPHOT,J)=PAPHT(IPHOT,J)*FATM(0)
               END IF
             END IF
@@ -935,7 +939,7 @@ C
                 PMPHT2(IPHOT,1:NMOLI) = PMPHT2(IPHOT,1:NMOLI)*
      .                                  FMOL(1:NMOLI)
                 PMPHT(IPHOT,J) = SUM(PMPHT2(IPHOT,1:NMOLI))
-              ELSE  
+              ELSE
                 PMPHT(IPHOT,J)=PMPHT(IPHOT,J)*FMOL(0)
               END IF
             END IF
@@ -943,9 +947,9 @@ C
               IF (NLSPCSCL) THEN
                 PIPHT2(1:NPHOT,LB_ION:NION) => PIPHT(:,J)
                 PIPHT2(IPHOT,1:NIONI) = PIPHT2(IPHOT,1:NIONI)*
-     .                                  FION(1:NIONI) 
+     .                                  FION(1:NIONI)
                 PIPHT(IPHOT,J) = SUM(PIPHT2(IPHOT,1:NIONI))
-              ELSE  
+              ELSE
                 PIPHT(IPHOT,J)=PIPHT(IPHOT,J)*FION(0)
               END IF
             END IF
@@ -955,7 +959,7 @@ C
                 PPHPHT2(IPHOT,1:NPHOTI) = PPHPHT2(IPHOT,1:NPHOTI)*
      .                                    FPHOT(1:NPHOTI)
                 PPHPHT(IPHOT,J) = SUM(PPHPHT2(IPHOT,1:NPHOTI))
-              ELSE  
+              ELSE
                 PPHPHT(IPHOT,J)=PPHPHT(IPHOT,J)*FPHOT(0)
               END IF
             END IF
@@ -969,7 +973,7 @@ C
 C  SURFACE-AVERAGED TALLIES
           DO J=1,NLMPGS
             IF (LPOTPHT)  POTPHT (IPHOT,J)=POTPHT (IPHOT,J)*FPHOT(IPHOT)
-            IF (LPRFAPHT) THEN 
+            IF (LPRFAPHT) THEN
               IF (NLSPCSCL) THEN
                 PRFAPHT2(1:NPHOT,LB_ATM:NATM) => PRFAPHT(:,J)
                 PRFAPHT2(IPHOT,1:NATMI) = PRFAPHT2(IPHOT,1:NATMI)*
@@ -1009,13 +1013,15 @@ C  SURFACE-AVERAGED TALLIES
               END IF
             END IF
             IF (LPRFPPHT) PRFPPHT(IPHOT,J)=PRFPPHT(IPHOT,J)*FPHOT(IPHOT)
-            IF (LEOTPHT) EOTPHT (IPHOT,J)=EOTPHT (IPHOT,J)*FPHOT(IPHOT)
+
+            IF (LEOTPHT)  EOTPHT (IPHOT,J)=EOTPHT (IPHOT,J)*FPHOT(IPHOT)
             IF (LERFAPHT) ERFAPHT(IPHOT,J)=ERFAPHT(IPHOT,J)*FATM(0)
             IF (LERFMPHT) ERFMPHT(IPHOT,J)=ERFMPHT(IPHOT,J)*FMOL(0)
             IF (LERFIPHT) ERFIPHT(IPHOT,J)=ERFIPHT(IPHOT,J)*FION(0)
             IF (LERFPHPHT) ERFPHPHT(IPHOT,J)=
      .                                    ERFPHPHT(IPHOT,J)*FPHOT(IPHOT)
             IF (LERFPPHT) ERFPPHT(IPHOT,J)=ERFPPHT(IPHOT,J)*FPHOT(IPHOT)
+
             IF (LSPTAPHT) SPTAPHT(IPHOT,J)=SPTAPHT(IPHOT,J)*FATM(0)
             IF (LSPTMPHT) SPTMPHT(IPHOT,J)=SPTMPHT(IPHOT,J)*FMOL(0)
             IF (LSPTIPHT) SPTIPHT(IPHOT,J)=SPTIPHT(IPHOT,J)*FION(0)
@@ -1042,10 +1048,12 @@ cdr  ?? scaling with bulk flux ??
 
           POTPHTI(IPHOT,ISTRA)=POTPHTI(IPHOT,ISTRA)*FPHOT(IPHOT)
           EOTPHTI(IPHOT,ISTRA)=EOTPHTI(IPHOT,ISTRA)*FPHOT(IPHOT)
+
           ERFAPHTI(IPHOT,ISTRA)=ERFAPHTI(IPHOT,ISTRA)*FATM(0)
           ERFMPHTI(IPHOT,ISTRA)=ERFMPHTI(IPHOT,ISTRA)*FMOL(0)
           ERFIPHTI(IPHOT,ISTRA)=ERFIPHTI(IPHOT,ISTRA)*FION(0)
           ERFPHPHTI(IPHOT,ISTRA)=ERFPHPHTI(IPHOT,ISTRA)*FPHOT(IPHOT)
+
           SPTAPHTI(IPHOT,ISTRA)=SPTAPHTI(IPHOT,ISTRA)*FATM(0)
           SPTMPHTI(IPHOT,ISTRA)=SPTMPHTI(IPHOT,ISTRA)*FMOL(0)
           SPTIPHTI(IPHOT,ISTRA)=SPTIPHTI(IPHOT,ISTRA)*FION(0)
@@ -1111,6 +1119,7 @@ cdr  ?? scaling with bulk flux ??
           END IF
 
         END DO
+
         if (logphot(0,istra)) then
           PDENPHI(0,ISTRA)=SUM(PDENPHI(1:NPHOTI,ISTRA))
           EDENPHI(0,ISTRA)=SUM(EDENPHI(1:NPHOTI,ISTRA))
@@ -1157,6 +1166,7 @@ cdr  ?? scaling with bulk flux ??
             PMPHTI(0,ISTRA)=SUM(PMPHTI(1:NPHOTI,ISTRA))
             PRFMPHTI(0,ISTRA)=SUM(PRFMPHTI(1:NPHOTI,ISTRA))
           END IF
+
           IF (NLSPCSCL) THEN
             PIPHTI2(0:NPHOT,LB_ION:NION) => PIPHTI(:,ISTRA)
             PRFIPHTI2(0:NPHOT,LB_ION:NION) => PRFIPHTI(:,ISTRA)
@@ -1168,6 +1178,7 @@ cdr  ?? scaling with bulk flux ??
             PIPHTI(0,ISTRA)=SUM(PIPHTI(1:NPHOTI,ISTRA))
             PRFIPHTI(0,ISTRA)=SUM(PRFIPHTI(1:NPHOTI,ISTRA))
           END IF
+
           IF (NLSPCSCL) THEN
             PPHPHTI2(0:NPHOT,LB_PHOT:NPHOT) => PPHPHTI(:,ISTRA)
             PRFPHPHTI2(0:NPHOT,LB_PHOT:NPHOT) => PRFPHPHTI(:,ISTRA)
@@ -1304,7 +1315,7 @@ C
                 PAPL2(1:NPLS,LB_ATM:NATM) => PAPL(:,J)
                 PAPL2(IPLS,1:NATMI) = PAPL2(IPLS,1:NATMI)*FATM(1:NATMI)
                 PAPL(IPLS,J) = SUM(PAPL2(IPLS,1:NATMI))
-              ELSE  
+              ELSE
                 PAPL(IPLS,J)=PAPL(IPLS,J)*FATM(0)
               END IF
             END IF
@@ -1313,7 +1324,7 @@ C
                 PMPL2(1:NPLS,LB_MOL:NMOL) => PMPL(:,J)
                 PMPL2(IPLS,1:NMOLI) = PMPL2(IPLS,1:NMOLI)*FMOL(1:NMOLI)
                 PMPL(IPLS,J) = SUM(PMPL2(IPLS,1:NMOLI))
-              ELSE  
+              ELSE
                 PMPL(IPLS,J)=PMPL(IPLS,J)*FMOL(0)
               END IF
             END IF
@@ -1322,7 +1333,7 @@ C
                 PIPL2(1:NPLS,LB_ION:NION) => PIPL(:,J)
                 PIPL2(IPLS,1:NIONI) = PIPL2(IPLS,1:NIONI)*FION(1:NIONI)
                 PIPL(IPLS,J) = SUM(PIPL2(IPLS,1:NIONI))
-              ELSE  
+              ELSE
                 PIPL(IPLS,J)=PIPL(IPLS,J)*FION(0)
               END IF
             END IF
@@ -1332,7 +1343,7 @@ C
                 PPHPL2(IPLS,1:NPHOTI) = PPHPL2(IPLS,1:NPHOTI)*
      .                                  FPHOT(1:NPHOTI)
                 PPHPL(IPLS,J) = SUM(PPHPL2(IPLS,1:NPHOTI))
-              ELSE  
+              ELSE
                 PPHPL(IPLS,J)=PPHPL(IPLS,J)*FPHOT(0)
               END IF
             END IF
@@ -1346,6 +1357,8 @@ C
             IF (LMPHPL) MPHPL(IPLS,J)=MPHPL(IPLS,J)*FPHOT(0)
           END DO
         END DO
+
+cdr  sum over species IPLS
         DO IPLS=1,NPLSI
           IF (NLSPCSCL) THEN
             PAPLI2(0:NPLS,LB_ATM:NATM) => PAPLI(:,ISTRA)
@@ -1412,6 +1425,7 @@ C
         ELSE
           PIPLI(0,ISTRA)=SUM(PIPLI(1:NPLSI,ISTRA))
         END IF
+
         IF (NLSPCSCL) THEN
           PPHPLI2(0:NPLS,LB_PHOT:NPHOT) => PPHPLI(:,ISTRA)
           DO IPHOT = LB_PHOT,NPHOT
@@ -1425,9 +1439,9 @@ C
         EMPLI(0,ISTRA)=SUM(EMPLI(1:NPLSI,ISTRA))
         EIPLI(0,ISTRA)=SUM(EIPLI(1:NPLSI,ISTRA))
         EPHPLI(0,ISTRA)=SUM(EPHPLI(1:NPLSI,ISTRA))
-        MAPLI(0,ISTRA)=SUM(MAPLI(1:NPLSI,ISTRA))
-        MMPLI(0,ISTRA)=SUM(MMPLI(1:NPLSI,ISTRA))
-        MIPLI(0,ISTRA)=SUM(MIPLI(1:NPLSI,ISTRA))
+        MAPLI(0,ISTRA) =SUM(MAPLI(1:NPLSI,ISTRA))
+        MMPLI(0,ISTRA) =SUM(MMPLI(1:NPLSI,ISTRA))
+        MIPLI(0,ISTRA) =SUM(MIPLI(1:NPLSI,ISTRA))
         MPHPLI(0,ISTRA)=SUM(MPHPLI(1:NPLSI,ISTRA))
 C
 C  ELECTRON TALLIES

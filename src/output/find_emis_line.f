@@ -2,17 +2,17 @@
 
 cdr documentation ? comments ?  ongoing....
 cdr
-c  input:   istr  :  stratum number
-c           ichori:  chord number of line of sight
-c           ener_ch  :  energy parameter for identifying a particular 
-C                                  emission profile by "trans_en"
+c  input:   istr  : stratum number
+c           ichori: chord number of line of sight
+c           ener_ch : energy parameter for identifying a particular
+c                                  emission profile by "trans_en"
 c           ch_line_name(ichori)): optional: identify a particular
-c                                  emission profile by "name of line" 
+c                                  emission profile by "name of line"
 c
-c  output:  lno   :  "line number", i.e. the volumetric emission profile.
+c  output:  lno   : "line number", i.e. the volumetric emission profile.
 
-cdr  so far: guessing: 
-cdr currently called from SIGLINE in diagno block. 
+cdr  so far: guessing:
+cdr currently called from SIGLINE (former Balmer and Lyman line of sight routines)
 cdr SIGLINE is called only for chords ICHORI, for which NCHTAL(ichori)=2.
 cdr Calls are whenever a change in stratum number ISTR, transition energy ENER,
 cdr       or a new internal iteration (time stepping, nonlinear BGK iterations)
@@ -21,12 +21,12 @@ cdr from here we call EMISSIVITY.F  (similar to former Ba_alpha.f,...etc.)
 cdr to fill ADDV tallies, and to write them onto fort.10. fort.11, for stratum ISTR.
 
 cdr In storage saving mode (mod_addv = 0) from here we call EIRENE_EMISSIVITY.F
-cdr   for the present stratum and present line, 
+cdr   for the present stratum and present line,
 cdr   to fill the proper tallies ADDV with emissivities.
 cdr    (similar to former Ba_alpha.f,...etc.)
 cdr In full storage mode (mod_addv > 0) the relevant ADDV tallies have already
 cdr   been set in calls to EIRENE_EMISSIVITY from the stratum-loop in MCARLO.f
-cdr 
+cdr
 cdr May 18:  try to identify the line LNO,
 cdr          or (old options) as specified by input flags
 cdr                                       ICHORI  (line of sight number)
@@ -139,14 +139,16 @@ CDR
 C  NOTHING TO BE DONE
       ELSEIF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
         IESTR=ISTR
-        CALL EIRENE_RSTRT(ISTR,NSTRAI,NESTM1,NESTM2,NADSPC,
+        CALL EIRENE_RSTRT(ISTR,NSTRAI,
+     .             NESTM1,NESTM2,NADSPC,
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .             NSIGI_SPC,TRCFLE)
       ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.ISTR.EQ.0) THEN
         IESTR=ISTR
-        CALL EIRENE_RSTRT(ISTR,NSTRAI,NESTM1,NESTM2,NADSPC,
+        CALL EIRENE_RSTRT(ISTR,NSTRAI,
+     .             NESTM1,NESTM2,NADSPC,
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
@@ -159,9 +161,9 @@ C  NOTHING TO BE DONE
       ENDIF
 C
       if (mod_addv == 0) then
-c storage saving mode: 
+c storage saving mode:
 c ADDV is overwritten when a new line comes, within a run.
-c Thus re-calculate the new emissivity profile on ADDV now
+c Thus recalculate the new emissivity profile on ADDV now
          call eirene_emissivity(istr, lno, lno, 1)
 c     else
 c Sufficiently large storage on ADDV additional tally array,

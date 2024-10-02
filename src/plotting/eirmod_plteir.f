@@ -65,20 +65,21 @@ C
 
       INTEGER, INTENT(IN) :: ISTRA
 
-      REAL(DP), ALLOCATABLE :: VECTOR(:,:),VECSAV(:,:),VSDVI(:,:)
-      REAL(DP), ALLOCATABLE :: XSPEC(:),YSPEC(:,:),VSPEC(:,:),
-     .          WLSPEC(:),YSPECWL(:,:),VSPECWL(:,:)
+      REAL(DP), ALLOCATABLE :: VECTOR(:,:), VECSAV(:,:), VSDVI(:,:)
+      REAL(DP), ALLOCATABLE :: XSPEC(:), YSPEC(:,:), VSPEC(:,:),
+     .          WLSPEC(:), YSPECWL(:,:), VSPECWL(:,:)
       REAL(DP) :: DUMMY(NRTAL)
       REAL(DP) :: XXP3D_DUM(1), YYP3D_DUM(1)
       REAL(DP) :: YMN2(NPLT), YMX2(NPLT), YMNLG2(NPLT), YMXLG2(NPLT)
       REAL(DP) :: XMI, XMA, TMIN, TMAX, XI, XE, DEL, OUTAUI,
-     .            SPCAN, SPC00,WL00,DE, DW
+     .            SPCAN, SPC00, WL00, DE, DW
       INTEGER :: IR1(NPLT), IR2(NPLT), IRS(NPLT)
       INTEGER :: IXXE, IXXI, IYYE, IYYI, K, ISPC, NSPS, INULL,
      .           NF, NFT, I, IA, N, IXSET2, ISPZ, IALG, N1SDVI, ISAVE,
      .           IALV, ITL, JTAL, IBLD, ICURV, IE, IXSET3, IS,
      .           IERR, ICINC, IYSET3, IX, I2M, J, IRAD, I1, I2, IT,
-     .           ITT, ITP, KK, JJTAL
+     .           ITT, ITP,
+     .           KK, JJTAL
       LOGICAL :: LPLOT2(NPLT), LSDVI(NPLT), LINLOG, L_SAME
       CHARACTER(24) :: TXUNIT(NPLT), TXSPEC(NPLT)
       CHARACTER(24) :: TXUNT1, TXSPC1
@@ -141,8 +142,9 @@ C  PROVIDE EIRENE OUTPUT TALLIES FOR SELECTED STRATUM ISTRA
 C  NOTHING TO BE DONE
       ELSEIF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
         IESTR=ISTRA
-        IF (TRCFLE) WRITE (IUNOUT,*) 'FROM PLTEIR: '
-        CALL EIRENE_RSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
+        IF (TRCFLE) WRITE (IUNOUT,*) 'FROM PLTEIR:'
+        CALL EIRENE_RSTRT(ISTRA,NSTRAI,
+     .             NESTM1,NESTM2,NADSPC,
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
@@ -153,8 +155,9 @@ C  NOTHING TO BE DONE
         ENDIF
       ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.ISTRA.EQ.0) THEN
         IESTR=ISTRA
-        IF (TRCFLE) WRITE (IUNOUT,*) 'FROM PLTEIR: '
-        CALL EIRENE_RSTRT(ISTRA,NSTRAI,NESTM1,NESTM2,NADSPC,
+        IF (TRCFLE) WRITE (IUNOUT,*) 'FROM PLTEIR:'
+        CALL EIRENE_RSTRT(ISTRA,NSTRAI,
+     .             NESTM1,NESTM2,NADSPC,
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
      .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
@@ -289,6 +292,7 @@ C
             IF (JTAL.LT.0.) THEN
 cdr  here we deal with input tallies (and gradients thereof)
 cdr  ITL = IABS(JTAL)
+cdr  physical species index range: 1:NF, independent of possible indirect addressing
               NF=NFRSTP(ITL)
               VECTOR(:,ICURV)=0.
 
@@ -299,13 +303,13 @@ cdr  ITL = IABS(JTAL)
      .                           ' JTAL = ', JTAL
                 CALL EIRENE_LEER(1)
                 CYCLE
-              END IF  
+              END IF
 
               IF (ISPZ.EQ.0) THEN
 cdr  sum over species: this is nonsense in case of intensive quantities,
 cdr                    such as Ti,V_in,
 cdr                    and also in case of derivatives.
-cdr  tbd:  summing with proper weighting, as in outtal.f
+cdr  tbd: summing with proper weighting, as in outtal.f
                 if (NF .gt. 1) then
                   write (iunout,*) 'DR: wrong code in plteir '
                   write (iunout,*) 'ITAL, ISPZ ',itl,ispz
@@ -324,7 +328,7 @@ cdr  this makes no sense. Ti cannot be summed.
                   VECTOR(1:NSBOX,ICURV) = SUM(DIIN(1:NF,1:NSBOX),1)
                 CASE (5)
 cdr  summing should use density weighting.
-cdr  clearly wrong. 
+cdr  clearly wrong.
                   VECTOR(1:NSBOX,ICURV) = SUM(VXIN(1:NF,1:NSBOX),1)
                 CASE (6)
                   VECTOR(1:NSBOX,ICURV) = SUM(VYIN(1:NF,1:NSBOX),1)
@@ -372,7 +376,7 @@ cdr  clearly wrong.
 ! GRADIENTS OF INPUT TALLIES
                 CASE (31:120)     ! ntali=120, constant required here
                   KK = NADDP(ITL)
-                  VECTOR(1:NSBOX,ICURV) = 
+                  VECTOR(1:NSBOX,ICURV) =
      .                   SUM(PLSTLS(KK+1:KK+NF,1:NSBOX),1)
                 CASE DEFAULT
                   WRITE (iunout,*) ' WRONG TALLY NUMBER IN PLTEIR',
@@ -469,7 +473,7 @@ cdr  plot output tallies
               NFT=NFSTVI(ITL)
               NF=NFIRST(ITL)
               VECTOR(:,ICURV)=0.
-              
+
               IF (.NOT.LIVTALV(JTAL)) THEN
                 WRITE (iunout,*) TXTTAL(1,JTAL)
                 WRITE (iunout,*) 'TALLY SWITCHED OFF'
@@ -481,7 +485,6 @@ cdr  plot output tallies
 c  sum over species
 c  output tallies are also intensive quantities, must be volume weighted.
 c  But this cancels here. No density weighting as e.g. for Ti Vi input tallies.
-
                 DO 122 K=1,NFT
                   DO I=1,NRAD
                     VECTOR(I,ICURV)=VECTOR(I,ICURV)+
@@ -647,7 +650,7 @@ C
                   KK = 0
                   DO K=1,JTAL
                     KK = KK + 1
-                    IF ((K > NEXTVI(JTAL) .AND. 
+                    IF ((K > NEXTVI(JTAL) .AND.
      .                  (MOD(K,NEXTVI(JTAL)) == 1))) KK = KK + 1
                   END DO
                   JJTAL = KK
@@ -798,7 +801,7 @@ c  set a y-z grid, by abuse of notation on xxp3d,yyp3d
                   YYP3D(I)=ZSURF(I)
                 END DO
                 DO I=1,NP2ND
-	              DO J=1,NT3RD
+                  DO J=1,NT3RD
                     XPOL(I,J) = PSURF(I)
                     YPOL(I,J) = ZSURF(J)
                   END DO
@@ -814,7 +817,7 @@ c  set a x-y or a x-z grid, by abuse of notation on xxp3d,yyp3d
                 IXSET3=1
               ENDIF
               IF (NLTOR.AND.NLTRZ.AND..NOT.LPTOR3(IBLD)) THEN
-c  at this point:  lppol3 must be true, i.e. we need x-z grid
+c  at this point: lppol3 must be true, i.e. we need x-z grid
                 IYTL3=NT3RD
                 YYP3D(1:IYTL3)=ZSURF(1:IYTL3)
                 DO I=1,NR1ST
@@ -1003,11 +1006,11 @@ C
                 TMAX=100.
                 IF (LRAPS3(IBLD).AND.INULL.GT.0) THEN
                   TMAX=101.
-                  WRITE (IUNOUT,*) 'RAPS GRAPHICS FOR STD. DEVIATION:  '
+                  WRITE (IUNOUT,*) 'RAPS GRAPHICS FOR STD. DEVIATION:'
                   WRITE (IUNOUT,*) 'IBLD, ICURV ',IBLD, ICURV
-                  WRITE (IUNOUT,*)  INULL, ' CELLS WITH 0 HISTORIES '
+                  WRITE (IUNOUT,*)  INULL, ' CELLS WITH 0 HISTORIES'
                   WRITE (IUNOUT,*) 'STD. DEV. SET = 101% IN THESE CELLS'
-                  WRITE (IUNOUT,*) 'TO PERMIT SPECIAL CHOICE OF COLOUR '
+                  WRITE (IUNOUT,*) 'TO PERMIT SPECIAL CHOICE OF COLOUR'
                 END IF
                 LSDVI(ICURV)=.FALSE.
                 GOTO 1200
@@ -1064,10 +1067,10 @@ C  y axis: ENERGY BIN AVERAGES (approx: value at energy-bin centres)
         YMXLG2(1)=YMX2(1)
 
 CDR:  NOT READY: ABUSE SPCPLT FOR MIN MAX ON PLOT, ALWAYS: LIN-LOG SCALE
-        IF (ESTIML(ISPC)%SPC_XPLT.NE.666.)  THEN
+        IF (ESTIML(ISPC)%SPC_XPLT.NE.666.) THEN
           YMN2(1)=ESTIML(ISPC)%SPC_XPLT
         ENDIF
-        IF (ESTIML(ISPC)%SPC_YPLT.NE.666.)  THEN
+        IF (ESTIML(ISPC)%SPC_YPLT.NE.666.) THEN
           YMX2(1)=ESTIML(ISPC)%SPC_YPLT
         ENDIF
 
@@ -1084,8 +1087,8 @@ C  LINEAR OR LOGARITHMIC Y SCALE ?
         FITY=.FALSE.
 
 CDR  PLOT SPECTRUM LOGARITHMICALLY ???
-CDR     IF (ESTIML(ISPC)%SPC_YPLT.GT.0.0)  THEN
-        IF (.TRUE.)  THEN
+CDR     IF (ESTIML(ISPC)%SPC_YPLT.GT.0.0) THEN
+        IF (.TRUE.) THEN
           LOGY=.TRUE.
           FITY=.TRUE.
         ENDIF
@@ -1172,7 +1175,7 @@ C  y axis: cell averages (approx: cell centres)
           YSPECWL(NSPS-I+1,1)=YSPEC(I,1)
           IF (NSIGI_SPC > 0) VSPECWL(NSPS-I+1,1)=VSPEC(I,1)
         END DO
-C  rescaling:  flux/ev to flux/nm
+C  rescaling: flux/ev to flux/nm
         DO I=1,NSPS
           DE=XSPEC(NSPS-I+1+1)-XSPEC(NSPS-I+1)
           DW=WLSPEC(I+1)-WLSPEC(I)

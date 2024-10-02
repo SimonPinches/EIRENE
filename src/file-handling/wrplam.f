@@ -24,7 +24,7 @@ cdr called from subr. 'calledfrom'
 C  trcfle:  confirm writing on printout unit IUNOUT
 
 cdr  NLSHRT13 : VIA COMMON CLOGAU. MEANING: write "long" or "short" version of fort.13
-C                 DEFAULT: FALSE,
+C               DEFAULT: FALSE,
 cdr  but, e.g.:
 cdr  NLSHRT13 : SET TRUE IN INFCOP, COUPLE_SOLPS_ITER. REDUCED SIZE FORT.13.
       USE EIRMOD_PARMMOD
@@ -78,9 +78,10 @@ c.............................................
 
       IF (NLSHRT13) THEN  !dr  similar to RPLAM_LONG(IFLG=10), but for
 cdr                            field species  NLFA+1:NPLS only.
-        CALL EIRENE_RPLAM_SHRT (TRCFLE,CALLEDFROM)
+        CALL EIRENE_RPLAM_SHRT(TRCFLE,CALLEDFROM)
 
 cdr  only species NPLS_FIX+1:NPLS should be affected from RPLAM_SHRT.
+cdr  No magnetic field etc..
         CALL EIRENE_ALLOC_BCKGRND
         TEINTF(1:NRAD) = TEIN(1:NRAD)
         IF (NLMLTI) THEN

@@ -66,7 +66,7 @@ C
         PHID=ACOS(BZ/SQRT(2.+BY*BY))
       ELSE
         WRITE (iunout,*) 'FEHLER IN DER EINGABE VON VX,VY,VZ ',
-     .    NUM,VX,VY,VZ
+     .                                          NUM,VX,VY,VZ
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
       WRITE (iunout,*) ' PHID ',PHID*RADDEG
@@ -182,7 +182,7 @@ C
             PY=Y0+T*VY
             PZ=Z0+T*VZ
             CALL EIRENE_PL3D
-     .  (P(1,J)+PX,P(2,J)+PY,P(3,J)+PZ,XP(JP),YP(JP))
+     .       (P(1,J)+PX,P(2,J)+PY,P(3,J)+PZ,XP(JP),YP(JP))
             GOTO 4
    12     CONTINUE
           GOTO 14
@@ -193,7 +193,7 @@ C
      .          GOTO 13
             JP=JP+1
             CALL EIRENE_SHNITT
-     .  (P,PXS,PYS,PZS,VX,VY,VZ,AR,IRIGHT,XP,YP,J,J,JP)
+     .       (P,PXS,PYS,PZS,VX,VY,VZ,AR,IRIGHT,XP,YP,J,J,JP)
    13     CONTINUE
         ENDIF
    14   CONTINUE

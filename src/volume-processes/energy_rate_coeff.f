@@ -36,29 +36,29 @@ cdr            LEXP=.true.
 !   (e.g. conversion from electron cooling rate to radiation loss rate)
 
 !  currently 5 different options controlled by 'reacdat(ir)%rtcew%ifit'
-!  ifit=1:   single polynomial fit, use P1, (e.g. HYDHEL, AMJUEL, H.8)
-!  ifit=2:   double polynomial fit, use P1, P2, (e.g. HYDHEL, H.9, AMJUEL, H.10,...)
-!  ifit=3:   interpolation in 2 parameter table (e.g. ADAS)
-!  ifit=4:   interpolation in single parameter table (e.g. open ADAS, ...)
-!  ifit=5:   use internal eirene collision radiative code. To be generalized
+!  ifit=1: single polynomial fit, use P1, (e.g. HYDHEL, AMJUEL, H.8)
+!  ifit=2: double polynomial fit, use P1, P2, (e.g. HYDHEL, H.9, AMJUEL, H.10,...)
+!  ifit=3: interpolation in 2 parameter table (e.g. ADAS)
+!  ifit=4: interpolation in single parameter table (e.g. open ADAS, ...)
+!  ifit=5: use internal eirene collision radiative code. To be generalized
 
 !   input:
-!   ir:        reaction number, as stored in eirene arrays.
-!   ic:        cell number (e.g. for internal CR models).
-!   p1:        first parameter (usually:  log_e temperature,...)
-!   p2:        second parameter  (if any, e.g.  log_e (density),...,log_e(test particle energy),...)
-!   lexp:      return erate=energy-weighted rate coefficient in eV*cm**3/sec
-!   not lexp:  return erate=log_e(erate coefficient) with rate coefficient in cm**3/sec
-!   ip2shft:   >0: carry out shift in parameter p2 for fit expression evaluation,
-!                  currently hard-wired: 1e-8.
-!                 (currently : only for ifit=2, polynomial fits vs. ne, T, ne in units 1e8 *cm**-3)
+!   ir:    reaction number, as stored in eirene arrays.
+!   ic:    cell number (e.g. for internal CR models).
+!   p1:    first parameter (usually: log_e temperature,...)
+!   p2:    second parameter (if any, e.g. log_e (density),...,log_e(test particle energy),...)
+!   lexp:  return erate=energy-weighted rate coefficient in eV*cm**3/sec
+!   not lexp: return erate=log_e(erate coefficient) with rate coefficient in cm**3/sec
+!   ip2shft:  >0: carry out shift in parameter p2 for fit expression evaluation,
+!                 currently hard-wired: 1e-8.
+!                (currently : only for ifit=2, polynomial fits vs. ne, T, ne in units 1e8 *cm**-3)
 
 ! to be done:
 !
-!              ip2shft option: currently hard-wired only for ifit=2 and shift = 1e-8
-!              what happens if later call with other shift ?  coding to be reconsidered !
+!             ip2shft option: currently hard-wired only for ifit=2 and shift = 1e-8
+!             what happens if later call with other shift ?  coding to be reconsidered !
 
-!              remove ifirst and ifsub conditions and set the data once, and save.  DONE (Nov. 15)
+!             remove ifirst and ifsub conditions and set the data once, and save.  DONE (Nov. 15)
 
       use EIRMOD_precision
       use EIRMOD_parmmod
@@ -79,11 +79,12 @@ cdr            LEXP=.true.
      .            pp2, rc2min,  rc2max, fp2(6),
      .                 earrh0,
      .                 rrc2min, rrc2max
-      real(dp), save :: xlog10e =  4.34294482d-01,      !1./ln(10) = log10(e)
-     .                  xln10   =  2.30258509299_dp,    !ln(10)
-     .                  dsub    = 18.420680744_dp,      !ln(1e8), hard-wired. But should come from database
-     .                  xlnelch =-43.2777390821         !ln(elcha)
-      integer :: jfex1mn, jfex1mx,jfex2mn, jfex2mx
+      real(dp), save :: xlog10e =  4.34294482d-01, !1./ln(10) = log10(e)
+     .                  xln10   =  2.30258509299_dp, !ln(10)
+     .                  dsub    = 18.420680744_dp, !ln(1e8), hard-wired.
+                                    ! But should come from database
+     .                  xlnelch =-43.2777390821    !ln(elcha)
+      integer :: jfex1mn, jfex1mx, jfex2mn, jfex2mx
       integer :: ip1, ip2, iflavor, ivar
 
       interface
@@ -129,7 +130,7 @@ c.............................................................
           erate=res
         endif
 
-cdr missing: iftflg < 100:  multiply density,  else: not
+cdr missing: iftflg < 100: multiply density, else: not
 
 
 c.............................................................
@@ -166,7 +167,7 @@ c..............................................................
 
 !  DOUBLE POLYNOMIAL FIT VS. P1 =LN(TEMPERATURE) AND P2,  FOR LN(ENERGY-WEIGHTED RATE)
 
-c  extrapolation data:  for 2d polynomial fits
+c  extrapolation data: for 2d polynomial fits
         rc1min  = reacdat(ir)%rtcew%rc1min
         rc1max  = reacdat(ir)%rtcew%rc1max
         rc2min  = reacdat(ir)%rtcew%rc2min
@@ -181,11 +182,12 @@ c  extrapolation data:  for 2d polynomial fits
         jfex2mx = reacdat(ir)%rtcew%jfex2mx
 
 
-c  rescale parameter p2  (currently only by 1e-8 for density):  pp2
+c  rescale parameter p2 (currently only by 1e-8 for density): pp2
         pp2 = p2
         rrc2min=rc2min
         rrc2max=rc2max
         if (ip2shft > 0) then
+cdr  hidden link?  hard coded MODC=3 option (density dependence)
           pp2 = pp2 - dsub
           rrc2min=rc2min - dsub
           rrc2max=rc2max - dsub
@@ -218,10 +220,10 @@ cdr  to be added here
 
 !  currently hard-wired: input parameters pp1, pp2 and table coefficients are log10
 
-c  convert parameters p1 and p2 from ln to log10:  pp1,pp2
+c  convert parameters p1 and p2 from ln to log10: pp1,pp2
         pp1 = xlog10e*p1
         pp2 = xlog10e*p2
-C  assume here: tabulated data are log10  (to be generalized)
+C  assume here: tabulated data are log10 (to be generalized)
 c  and in joule cm^3/s
         res=eirene_intp_tab2d(reacdat(ir)%rtcew%adas,pp1,pp2,ip1,ip2)
 
@@ -229,8 +231,10 @@ c  and in joule cm^3/s
           erate=10._dp**res/elcha
         else
 c  in this database model erate is strictly positive, and log10(erate) is returned
-          erate = xln10*res       !    convert from log10(erate) to ln(erate)
-          erate = erate - xlnelch !    convert ln(erate) from ln[joule cm^3/s] to ln[eV cm^3/s]
+          erate = xln10*res       !  convert from log10(erate)
+                                  !  to ln(erate)
+          erate = erate - xlnelch !  convert ln(erate) from
+                                  !  ln[joule cm^3/s] to ln[eV cm^3/s]
         end if
 
 c  deal with bremsstrahlung. currently we assume that bremsstrahlung (free-free)
@@ -266,7 +270,7 @@ c..............................................................
 
 ! INTERNAL COLLISION RADIATIVE CODE
 
-c  convert parameters p1, p2 to exp(p1), exp(p2):  PP1,PP2
+c  convert parameters p1, p2 to exp(p1), exp(p2): PP1,PP2
         PP1 = EXP(P1)
         PP2 = EXP(P2)
 

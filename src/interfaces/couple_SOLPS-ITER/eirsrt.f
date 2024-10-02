@@ -5,8 +5,10 @@ cdr Nov   16    finalizing notational synchronisation (..DS.. (legacy) --> ..EI.
 cdr Nov.  17:   1) sync with couple_B2 from git repository. done
 cdr             2) ESIG array: additional argument IPLS: done.
 cdr             3) RTIS% pointer to sploda,.....
-cdr             4) rates SEIODA, SEINWA added (was missing, used for ipls total ion energy density)
+cdr             4) rates SEIODA, SEINWA added (were missing, used for ipls total ion energy density)
 cdr                now: SEIOD(.., NPLS), SEINW(...,NPLS) added
+cdr Dec.  20:   Added LTEST: testing iterations via calling EIRSRT from eirene_main, repeatedly,
+cdr             rather than internal eirene iterative mode (for bgk, photons, time-dep)
 
 C  MAIN INTERFACING ROUTINE FOR COUPLED CFD PLASMA - EIRENE APPLICATIONS
 
@@ -19,10 +21,12 @@ C   SPECIAL TREATMENT OF FIRST CALL TO EIRENE IN THIS (COUPLED) RUN:
 C
 C    IFIRST=0  (A RESTART)
 
+C      CALL EIRENE(..)     (main-routines)
+C
 C      CALL EIRENE_EIRENE(..)     (main-routines), call input,.....,
 C                                                  set IITER=ITNR
 C
-C   LATER CALLS  (IFIRST.GT.1) (INSIDE A B2 CYCLING):
+C   LATER CALLS  (IFIRST.GT.1) (INSIDE A B2.5 CYCLING):
 C
 C      CALL EIRENE_COUPLE  (entry to EIRENE  main-routines, bypassing some
 C                           initialization stuff. Currently only in case LTIME=T)
@@ -44,12 +48,16 @@ C     LSTOP:
 C     LTIME: TIME-DEPENDENT MODE. PREPARE TIME-DEPENDENT OPTIONS,
 C            AND THEN CALL EIRENE
 C     DELTAT: TIME STEP  (IRRELEVANT IN CASE LTIME=.FALSE.)
+C     FLUXES(1:NSTRA): Scaling factors for source strength in external code,
+cdr                    not to be confused with: FLUX(1: NSTRA), the source strength
+cdr                    used in eirene run.
+C     STEP_CPU:  if gt. 0.0: alter eirene cpu time (NTCPU), seconds
 C
 C   ONLY FOR EIRENE ENERGY BALANCE DIAGNOSTICS:
-C     B2BRM:  TOTAL BREMSSTAHLUNG LOSS IN PREVIOUS B2 STEP
-C     B2RD :  TOTAL (LINE) RADIATION LOSS IN PREVIOUS B2 STEP
-C     B2Q  :  VOLUMETRIC ENERGY EXCHANGE (ELECTRONS-IONS) DUE TO COULOMB INTERACTION
-C     B2VP :  VOLUMETRIC ENERGY EXCHANGE (ELECTRONS-IONS) DUE TO WORK DONE BY ELECTRIC FIELD
+C     B2BRM: TOTAL BREMSSTAHLUNG LOSS IN PREVIOUS B2 STEP
+C     B2RD : TOTAL (LINE) RADIATION LOSS IN PREVIOUS B2 STEP
+C     B2Q  : VOLUMETRIC ENERGY EXCHANGE (ELECTRONS-IONS) DUE TO COULOMB INTERACTION
+C     B2VP : VOLUMETRIC ENERGY EXCHANGE (ELECTRONS-IONS) DUE TO WORK DONE BY ELECTRIC FIELD
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -162,6 +170,7 @@ C
         B2RAD=B2RD
         B2QIE=B2Q
         B2VDP=B2VP
+
         DUMMY=EIRENE_RESET_SECOND()
 
         IF(IFIRST.EQ.0) THEN
@@ -170,8 +179,8 @@ C
 C
 C  READ FORMATTED INPUT FILE IUNIN
 C  AND RUN EIRENE FOR ONE TIME CYCLE: ITIMV=1
-C  WITH OR WITHOUT INITIAL DISTRIBUTION ON FILE FT15 (NFILE-J FLAG)
-C  AS FINAL STRATUM
+C  WITH OR WITHOUT INITIAL DISTRIBUTION (CENSUS) ON FILE FT15 (NFILE-J FLAG)
+C  AS FINAL STRATUM.
 C  EXPECT PLASMA DATA ON FORT.31 (NLPLAS=.FALSE.)
           LPLASM=.FALSE.
           LLST=.FALSE.
@@ -187,7 +196,7 @@ C  EIRENE RUN DONE. CENSUS ARRAY WRITTEN
 C  NOW ITIMV=ITIMV+1, NLPLAS=.TRUE.
 C
           IF (.NOT.NLPLAS) THEN
-            WRITE (iunout,*) 'INCONSISTENT COUPLING '
+            WRITE (iunout,*) 'INCONSISTENT COUPLING'
             WRITE (iunout,*) 'LTIME=TRUE, BUT NTIME = ', NTIME
             CALL EIRENE_EXIT_OWN(1)
           ENDIF
@@ -196,9 +205,8 @@ C
     3     CONTINUE
           IFIRST=1
 
-
         ELSE  !(IFIRST.GE.1)
-C  THIS IS NOT THE FIRST CALL TO EIRENE
+C  THIS IS NOT THE FIRST CALL TO EIRENE, and we are in time dep. mode.
 C
 C  NOW: NLPLAS=.TRUE., I.E., PLASMA DATA EXPECTED ON BRAEIR
 C  NOW: ITIMV=ITIMV+1
@@ -248,11 +256,12 @@ C
               FLUX(ISTRA)=FLUXS(ISTRA)
             ENDIF
           ENDDO
-C  RESCALE CENSUS ARRAY FLUX, DUE TO DIFFERENT TIME STEPS IN PREVIOUS AND CURRENT EIRENE STEP
+C  ISTRA=NSTRAI: RESCALE CENSUS ARRAY FLUX, DUE TO DIFFERENT TIME STEPS
+C                IN PREVIOUS AND CURRENT EIRENE STEP
           IF (DTIMVN.NE.DTIMVO) THEN
             FLUX(NSTRAI)=FLUX(NSTRAI)*DTIMVO/DTIMVN
 C
-            WRITE (iunout,*) 'FLUX IS RESCALED BY DTIMV_OLD/DTIMV_NEW '
+            WRITE (iunout,*) 'FLUX IS RESCALED BY DTIMV_OLD/DTIMV_NEW'
             CALL EIRENE_MASR1('FLUX    ',FLUX(NSTRAI))
             CALL EIRENE_LEER(1)
           ENDIF
@@ -321,7 +330,8 @@ csw mpi
         endif
 csw
 
-   10   CONTINUE  ! from here on: both ifirst=0 and ifirst.ge.1 are possible
+   10   CONTINUE  ! from here on:
+                  ! both ifirst=0 and ifirst.ge.1 are possible
 
 csw 17feb2011
 c        if(itnr > 1 .and. rank_mpi==0) then
@@ -371,6 +381,8 @@ csw mpi
         if(rank_mpi .eq. 0) then
 
         IF (.NOT.LLST) THEN
+cdr  prepare some stuff for next iteration step within this same run,
+cdr  such as the ..OD.. parameters for short cycling
 
         IF (IFIRST.GE.1) NLSRON = NLSRON_SAVE
 
@@ -401,7 +413,7 @@ CDR why alloc short cycle data, even if no short cycle is done ??
 
 ! check how often storage IST_RATE is still used
         ISTH = 0
-        IF (IST_RATE > 0) ISTH= ITS_COUNT(IST_RATE)
+        IF (IST_RATE > 0) ISTH = ITS_COUNT(IST_RATE)
 
         IF (ISTH < 1) THEN
 ! rate storage can be used again
@@ -409,8 +421,8 @@ CDR why alloc short cycle data, even if no short cycle is done ??
 ! rate storage still in use, look for an empty slot
           ISTNEW = MINLOC(ITS_COUNT,DIM=1)
           IF (ITS_COUNT(ISTNEW) > 0) THEN
-            WRITE (IUNOUT,*) ' PROBLEM IN EIRSRT '
-            WRITE (IUNOUT,*) ' ITS_COUNT > 0 '
+            WRITE (IUNOUT,*) ' PROBLEM IN EIRSRT'
+            WRITE (IUNOUT,*) ' ITS_COUNT > 0'
             WRITE (IUNOUT,*) ' ITS_COUNT ',ITS_COUNT
             CALL EIRENE_EXIT_OWN(1)
           END IF
@@ -514,7 +526,8 @@ C
            IREI=LGAEI(JATM,IAEI)
 !pb 09022016            ESIG=EPLEI(IREI,2)  this was incorrect,
 cdr                     because it was already summed over ipls
-           ESIG=EPLEI(IREI,JPLS,2)  ! only KER part is corrected in short cycle
+           ESIG=EPLEI(IREI,JPLS,2)  ! only KER part is corrected
+                                    ! in short cycle
            DO IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
                 RTIS%SEIODA(IN,JATM)=RTIS%SEIODA(IN,JATM)+
@@ -583,7 +596,8 @@ C
            IREI=LGIEI(JION,IIEI)
 !pb 09022016            ESIG=EPLEI(IREI,2)  this was incorrect,
 cdr                     because it was already summed over ipls
-           ESIG=EPLEI(IREI,JPLS,2)  ! only KER part is corrected in short cycle
+           ESIG=EPLEI(IREI,JPLS,2)  ! only KER part is corrected
+                                    ! in short cycle
            DO IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
               RTIS%SEIODI(IN,JION)=RTIS%SEIODI(IN,JION)+
@@ -648,7 +662,8 @@ C                                         SUM OVER ALL IPLS
            IREI=LGMEI(JMOL,IMEI)
 !pb 09022106         ESIG=EPLEI(IREI,2)  this was incorrect,
 cdr                     because it was already summed over ipls
-           ESIG=EPLEI(IREI,JPLS,2) ! only KER part is corrected in short cycle
+           ESIG=EPLEI(IREI,JPLS,2) ! only KER part is corrected
+                                   ! in short cycle
            DO IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
               RTIS%SEIODM(IN,JMOL)=RTIS%SEIODM(IN,JMOL)+
@@ -694,8 +709,7 @@ C
 C  NOT THE FIRST CALL IN THIS CYCLE: CHECK: SHORT LOOP CORRECTION
 C                                           OR FULL EIRENE, FOR EACH
 C                                           STRATUM INDIVIDUALLY
-C
-CDR     ELSEIF (IFIRST.GE.1) THEN
+C.......................................................................
 
 10000   CONTINUE ! IFIRST.GE 1 BRANCH
 C
@@ -789,8 +803,8 @@ C
 C
 C  NEXT: ATOMS, EI RATES: SPLNWA, SEENWA, SEINWA
 C
-cdr  correct energy exchange with bulk ions: e0* eplei(IREI,ipls,1)+ eplei(IREI,ipls,2)
-cdr  sum over ipls:                          e0* eplei(IREI,0,1)   + eplei(IREI,0,2)
+cdr  correct energy exchange with bulk ions: e0*eplei(IREI,ipls,1) + eplei(IREI,ipls,2)
+cdr  sum over ipls:                          e0*eplei(IREI,0,1)    + eplei(IREI,0,2)
 cdr  The present short cycle correction only accounts for the KER (=0 for atoms)
 C
 C  NEXT RUN: PARTICLE RATE: ATOMS, EI PROCESSES, FROM IATM TO IPLS,
@@ -828,7 +842,7 @@ C
           END DO
         END DO
 
-cdr  There is no seinwa, because only KER part is in short cycle correction for EI processes
+cdr  There is no seinwa, because currently only KER part is in short cycle correction for EI processes
 cdr             and for atoms this is identically 0.0
 C
 C  NEW: TEST IONS, EI PROCESSES
@@ -951,6 +965,7 @@ C
         NLSRON_SAVE = NLSRON
 
         endif ! rank_mpi == 0
+
 !pb copy NLSRON to LOGHELP to avoid warnings from Intel compiler
         LOGHELP(1:NSTRAI) = NLSRON(1:NSTRAI)
         call mpi_bcast(loghelp,nstrai,MPI_LOGICAL,
@@ -999,6 +1014,7 @@ C
       implicit none
       integer :: ierr_mpi
       LOGICAL :: LOGHELP(NSTRA)
+
 !pb copy NLSRON to LOGHELP to avoid warnings from Intel compiler
       LOGHELP(1:NSTRAI) = NLSRON(1:NSTRAI)
       call mpi_bcast(loghelp,nstrai,MPI_LOGICAL,

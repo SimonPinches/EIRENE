@@ -1,8 +1,8 @@
-!pb  30.10.06:  XNUE removed
+!pb  30.10.06: XNUE removed
 cdr  sept. 2015: npartt=11, rather than 12 (xgener not stored on census)
 cdr  april 2017: some cleanup carried over from solps_iter branch
 cdr  nov.17    : dead flag: nlstor, (and call store...) now removed
-cdr  oct.19    :  started to remove unused variables, ..._mean, stemis, etc.
+cdr  oct.19    : started to remove unused variables, ..._mean, stemis, etc.
 
 c.........................................................................
 c
@@ -21,7 +21,7 @@ c  mpartc, npartc and mpartt, npartt are set in eirmod_parmmod
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
-      
+
       IMPLICIT NONE
 
       PRIVATE
@@ -97,7 +97,8 @@ C MPARTC=14
      I ITIME,  IFPATH, IUPDTE,
      I ISTRA,
      I ISPZ,  ! UP TO HERE: STORE ON CENSUS
-     I MRSURF, MPSURF, MTSURF, MASURF, MSURF,  ! UP TO HERE: STORE FULL PARTICLE INFORMATION
+     I MRSURF, MPSURF, MTSURF, MASURF, MSURF,  ! UP TO HERE:
+                          ! STORE FULL PARTICLE INFORMATION
      I MSURFG
 !$OMP THREADPRIVATE(ISTRA)
 C  SOME FURTHER INTEGER VARIABLES USED ALONG PARTICLE TRAJECTORY
@@ -120,12 +121,12 @@ C  SOME FURTHER INTEGER VARIABLES USED ALONG PARTICLE TRAJECTORY
       LOGICAL, PUBLIC, SAVE ::
      L LGPART, LGLAST, LGTIME,
      L NLSRFX, NLSRFY, NLSRFZ, NLSRFA,
-     L NLTRC,  
+     L NLTRC,
      L NLTRJ
 
-! Needed to avoid circular dependancy when testing for output values      
+! Needed to avoid circular dependency when testing for output values
       INTEGER, PUBLIC :: NTHREAD
-      
+
 !$OMP  THREADPRIVATE(RPSTT,X0,Y0,Z0,VEL,VELX,VELY,VELZ,E0,WEIGHT,
 !$OMP& IPSTD,RPST,
 !$OMP& TIME,PHI,XGENER,TIMINT,TIMPOL,TL,TT,TS,TF,ZT,ZDT1,CRTX,CRTY,
@@ -138,7 +139,7 @@ C  SOME FURTHER INTEGER VARIABLES USED ALONG PARTICLE TRAJECTORY
 !$OMP& IPOLGN,NINCX,NINCY,NINCZ,NINCA,NJUMP,NIMINT,ITRJ,IXSPZ,NMETOFF,
 !$OMP& LGPART,LGLAST,LGTIME,NLSRFX,NLSRFY,NLSRFZ,NLSRFA,NLTRC,NLTRJ)
 
-c  unrelated to particle trajectories:  IO streams
+c  unrelated to particle trajectories: IO streams
       INTEGER, PUBLIC, SAVE ::
      I IUNIN,  IUNOUT, IVTKOUT
 cym
@@ -170,7 +171,8 @@ cdr ...... declarations finished
      .      ' COMPRT ',(NPARTC+NRADS+N1STS*N2NDPLGS)*8 +
      .                 (MPARTC+1+NRADS+N1STS*N2NDPLGS+NRADS)*4
 
-      RPSTT => RPST      !  full (1: npartc) particle information, real
+      RPSTT => RPST      !  full (1: npartc)
+                         !  particle information, real
 
       X0     => RPST( 1)
       Y0     => RPST( 2)
@@ -187,7 +189,8 @@ c  up to here: for census, npartt
       XGENER => RPST(12)
 c  up to here: for splitting, npartc
 
-      IPST  => IPSTD(2:MPARTC+1)  !  full (2:mpartc+1) particle information, integer
+      IPST  => IPSTD(2:MPARTC+1)  !  full (2:mpartc+1)
+                                  !  particle information, integer
 cdr  why remove npanu from state vector for splitting?
 cdr  why do we need two different pointers here, and not for real(dp) state vectors?
       IPSTT => IPSTD(1:MPARTT)    !  reduced (1:mpartt), for census
@@ -235,7 +238,7 @@ cdr  why is msurfg on state vector?
       END SUBROUTINE EIRENE_DEALLOC_COMPRT
 
 
-      SUBROUTINE EIRENE_INIT_COMPRT 
+      SUBROUTINE EIRENE_INIT_COMPRT
 
       RPST   = 0._DP
       IPSTD  = 0

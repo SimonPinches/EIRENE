@@ -3,7 +3,7 @@ c 24.11.05 use nprt(ispz) to check if imol is really a molecule.
 c          otherwise He atoms could be confused with d2 molecules,
 c          if they accidentally are specified in the molecule block 4b
 
-c 24.11.05: chrdf0 in parameterlist for call to xstcx
+c 24.11.05: chrdf0 in parameter list for call to xstcx
 c          (was ok already for call to xstei)
 ! 30.08.06: data structure for reaction data redefined
 ! 12.10.06: modcol revised
@@ -19,7 +19,7 @@ c          (was ok already for call to xstei)
 ! oct.2014: call to xstpi: additional argument: chrdf0
 cdr  oct.14:  clogau removed
 cdr  oct.14:  PLS made allocatable,
-cdr  oct.14:  further synchronization with xsecta,xsecti
+cdr  oct.14:  further synchronization with xsecta, xsecti
 cdr           remaining relevant differences in default models only.
 cdr  May 18:  The fluid limit (critical CX Knudsen number) is now set from NGENM(imol) flag,
 cdr           rather than from the former fldlmm(imol,kk) flag (which is removed now).
@@ -61,8 +61,8 @@ C
 
       ALLOCATE (PLS(NSTORDR))
 
-cdr  PLS:  ELECTRON DENSITY PARAMETER in CR MODELS
-cdr       (NOT TO BE CONFUSED WITH THE DENSITY FACTOR BETWEEN RATES AND RATE COEFF.)
+cdr  PLS: ELECTRON DENSITY PARAMETER in CR MODELS
+cdr      (NOT TO BE CONFUSED WITH THE DENSITY FACTOR BETWEEN RATES AND RATE COEFF.)
 cdr: set hard-wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3
 cdr: at this lower limit density the fits are produced such
 cdr: that they collapse to the corona limit values.
@@ -72,18 +72,15 @@ cdr: that they collapse to the corona limit values.
           PLS(J)=MAX(DEIMIN,DEINL(J))
    10   CONTINUE
       END IF
-
 C
 C
 C   ELECTRON IMPACT COLLISIONS:
-C
-
-C
 C
       DO 100 IMOL=1,NMOLI
         IDSC1=0
         LGMEI(IMOL,0)=0
 C
+C  next loop: only for non-default reactions. Here: KK > 0
         DO NRC=1,NRCM(IMOL)
           KK=IREACM(IMOL,NRC)
           IF (ISWR(KK).LE.0.OR.ISWR(KK).GT.6) GOTO 994
@@ -160,7 +157,7 @@ C  HD:
                 IION3=IION
               ENDIF
    35       CONTINUE
-C  D2:  (OR HT ?)
+C  D2: (OR HT ?)
           ELSEIF (NMASSM(IMOL).EQ.4) THEN
 C  TEST: D2 OR HT, USE TEXTS(IMOL)
             IF (INDEX(TEXTS(NSPA+IMOL),'D').NE.0) THEN
@@ -261,7 +258,7 @@ C  T2:
 C
 C  SET DEFAULT MODEL: 3 ELECTRON IMPACT PROCESSES, DEFAULT PROCESSES KK=-5,-6, -7
 C
-C  FIRST PROCESS, KK=-5   H2 --> H + H:  DEFAULT PROCESS NO KK=-5
+C  FIRST PROCESS, KK=-5 H2 --> H + H: DEFAULT PROCESS NO KK=-5
           KK=-5
           ACCMAS=0.D0
           ACCINV=0.D0
@@ -292,23 +289,26 @@ C  FIRST PROCESS, KK=-5   H2 --> H + H:  DEFAULT PROCESS NO KK=-5
               COU = EIRENE_RATE_COEFF(-5,J,TEINL(J),0._DP,.TRUE.,0)
               TABEI1(IREI,J)=COU*DEIN(J)
    70       CONTINUE
+C  NET ELECTRON ENERGY COST
             EELEI1(IREI,1:NSBOX)=-10.5
 C  TRANSFERRED KINETIC ENERGY: 6 EV
             EHVEI1(IREI,1:NSBOX)=6.0
 C           EPOTEI(IREI)=4.5   !  default for EDPOTM for this dissoc. reaction)
             NREAEI(IREI)=-5
-            NELREI(IREI)=-5  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -5:
+            NELREI(IREI)=-5  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -5
             NHVREI(IREI)=-5
           ELSE
+cdr  storage saving mode
             EELEI1(IREI,1)=-10.5
             NREAEI(IREI)=-5
-            NELREI(IREI)=-5  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -5:
+            NELREI(IREI)=-5  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -5
             NHVREI(IREI)=-5
           END IF
           FACREI(IREI,1) = 1._DP
           FACREI(IREI,2) = 0._DP
 
-C  SECOND PROCESS (MAY BE SPLIT INTO 2A AND 2B)  H2 -->  H  + H+: DEFAULT PROCESS NO. KK=-6
+C  SECOND PROCESS (MAY BE SPLIT INTO 2A AND 2B)  H2 -->  H  + H+:
+c                  DEFAULT PROCESS NO. KK=-6
           KK=-6
           IF (IATM1.NE.IATM2) THEN
 c   e.g. DT -->  0.5 (D + T+)  + 0.5 (D+ + T)
@@ -321,7 +321,7 @@ c   e.g. DT -->  0.5 (D + T+)  + 0.5 (D+ + T)
 C
           IA1=IATM1
           IP2=IPLS2
-c   in case iatm1 ne iatm2:  this next segment is executed twice.
+c   in case iatm1 ne iatm2: this next segment is executed twice.
 c   Split reaction kk=-6 into two EI processes irei and irei+1, with factkk=0.5 each.
 c   Accumulate totals....
    73     ACCMAS=0.D0
@@ -359,17 +359,19 @@ c   Accumulate totals....
               TABEI1(IREI,J)=COU*DEIN(J)*FACTKK
    71       CONTINUE
             EELEI1(IREI,1:NSBOX)=-25.0
-C           EPOTEI(IREI)=15.00   !  default for EDPOTM for this diss ionis. reaction)
+C           EPOTEI(IREI)=15.00   ! default for EDPOTM for this diss ionis. reaction)
 C  TRANSFERRED KINETIC ENERGY: 10 EV
             EHVEI1(IREI,1:NSBOX)=10.0
             NREAEI(IREI) = -6
-            NELREI(IREI) = -6  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -6:
+            NELREI(IREI) = -6  ! FLAG FOR FEELEI1,
+                               ! FOR DEFAULT REACTION -6
             NHVREI(IREI) = -6
           ELSE
             EELEI1(IREI,1)=-25.0
 C           EHVEI1(IREI,1)= 10.0 SET IN ....?
             NREAEI(IREI) = -6
-            NELREI(IREI) = -6  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -6:
+            NELREI(IREI) = -6  ! FLAG FOR FEELEI1,
+                               ! FOR DEFAULT REACTION -6
             NHVREI(IREI) = -6
           END IF
           FACREI(IREI,1) = FACTKK
@@ -381,7 +383,7 @@ C           EHVEI1(IREI,1)= 10.0 SET IN ....?
             GOTO 73
           ENDIF
 C
-C  THIRD PROCESS  H2 --> H2+:  DEFAULT PROCESS NO. KK=-7
+C  THIRD PROCESS H2 --> H2+: DEFAULT PROCESS NO. KK=-7
           KK=-7
           IDSC1=IDSC1+1
           NREII=NREII+1
@@ -406,22 +408,31 @@ C
    72       CONTINUE
 C  NO RADIATION LOSS INCLUDED
             EELEI1(IREI,1:NSBOX)=EELEC  ! =-EIONH2 = -15.45 EV
-C           EPOTEI(IREI)=15.45   !  default for EDPOTM for this ionis. reaction)
+C           EPOTEI(IREI)=15.45   ! default for EDPOTM for this ionis. reaction)
 C           EHVEI1(IREI,1:NSBOX)=0.0
 C  PROBABLY NOT NEEDED, ONLY IN STORAGE SAVING MODE
-            NREAEI(IREI) = -7  ! FLAG FOR FTABEI1, FOR DEFAULT REACTION -7
+            NREAEI(IREI) = -7  ! FLAG FOR FTABEI1,
+                               ! FOR DEFAULT REACTION -7
 C  PROBABLY NOT NEEDED, ONLY IN STORAGE SAVING MODE
-            NELREI(IREI) = -7  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -7:
+            NELREI(IREI) = -7  ! FLAG FOR FEELEI1,
+                               ! FOR DEFAULT REACTION -7
             NHVREI(IREI) = -7
           ELSE  ! storage save mode
             EELEI1(IREI,1)=EELEC   ! =-EIONH2 = -15.45 EV
 C           EHVEI1(IREI,1)= 0.0 SET IN ....?
-            NREAEI(IREI) = -7  ! FLAG FOR FTABEI1, FOR DEFAULT REACTION -7
-            NELREI(IREI) = -7  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION -7:
+            NREAEI(IREI) = -7  ! FLAG FOR FTABEI1,
+                               ! FOR DEFAULT REACTION -7
+            NELREI(IREI) = -7  ! FLAG FOR FEELEI1,
+                               ! FOR DEFAULT REACTION -7
             NHVREI(IREI) = -7
           END IF
           FACREI(IREI,1) = 1._DP
           FACREI(IREI,2) = 0._DP
+
+cdr  apparently: only tracklength estimators are available
+C
+c         iestei(irei,1:3)=0
+cdr       ISPCLEI(IREI,1:4)=0
 C
    76     CONTINUE
 C
@@ -468,7 +479,6 @@ C
           CALL EIRENE_XSTEI_1(IREI)
         ENDDO
 
-
   100 CONTINUE
 C
 C
@@ -486,6 +496,7 @@ C
           NMCXI(IMOL)=0
 C
 C  NON-DEFAULT CX MODEL:
+C
         ELSEIF (NRCM(IMOL).GT.0) THEN
           DO 130 NRC=1,NRCM(IMOL)
             KK=IREACM(IMOL,NRC)
@@ -502,7 +513,7 @@ C  CX PROCESS IDENTIFIED
             FACTKK=FREACM(IMOL,NRC)
             IF (FACTKK.EQ.0.D0) FACTKK=1.
             CHRDF0=0.D0
-C  BULK PARTICLE INDEX
+C  INCIDENT BULK PARTICLE INDEX
             IPLS=EIRENE_IDEZ(IBULKM(IMOL,NRC),3,3)
             IDSC=IDSC+1
             NRCXI=NRCXI+1
@@ -560,7 +571,7 @@ C
         IF (NRCM(IMOL).EQ.0) THEN
           NMELI(IMOL)=0
 C
-C  NON-DEFAULT EL MODEL:  240--
+C  NON-DEFAULT EL MODEL: 240--
 C
         ELSEIF (NRCM(IMOL).GT.0) THEN
           DO 230 NRC=1,NRCM(IMOL)
@@ -592,7 +603,7 @@ C  FOR THIS REACTION KK
             IF (IBGKM(IMOL,NRC).NE.0) THEN
               IF (NPBGKM(IMOL).EQ.0) THEN
 C  IMOL HAS NOT YET BEEN LABELLED AS BGK SPECIES.
-C  DO THIS HERE: IMOL IS BGK SPECIES NO. IBGK_SP, 
+C  DO THIS HERE: IMOL IS BGK SPECIES NO. IBGK_SP,
 C  AND HAS 3 ADDITIONAL BGK TALLIES IN UPTBGK
                 NRBGI=NRBGI+3
                 IBGK_SP=NRBGI/3
@@ -658,7 +669,7 @@ C
         IF (NRCM(IMOL).EQ.0) THEN
           NMPII(IMOL)=0
 C
-C  NON-DEFAULT ION IMPACT MODEL:  130--190
+C  NON-DEFAULT ION IMPACT MODEL: 130--190
 C
         ELSEIF (NRCM(IMOL).GT.0) THEN
           DO NRC=1,NRCM(IMOL)
@@ -676,6 +687,7 @@ C  PI PROCESS IDENTIFIED
             FACTKK=FREACM(IMOL,NRC)
             IF (FACTKK.EQ.0.D0) FACTKK=1.
             IF (MASSP(KK).LE.0.OR.MASST(KK).LE.0) GOTO 992
+
 C  BULK PARTICLE INDEX
             IPLS=EIRENE_IDEZ(IBULKM(IMOL,NRC),3,3)
             IF (IPLS.LE.0.OR.IPLS.GT.NPLSI) GOTO 990

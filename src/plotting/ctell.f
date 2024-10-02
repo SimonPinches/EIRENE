@@ -132,7 +132,7 @@ C
           ENDIF
         ELSE
           IF (XPHI.LE.XLIMS1.OR.XPHI.GE.XLIMS2.OR.
-     .        YPHI.LE.YLIMS1.OR.YPHI.GE.YLIMS2)THEN
+     .        YPHI.LE.YLIMS1.OR.YPHI.GE.YLIMS2) THEN
             IPART=IPART+1
             PHIAN(IPART)=PHIANG(I)
             PHIEN(IPART)=PHIANG(I+1)

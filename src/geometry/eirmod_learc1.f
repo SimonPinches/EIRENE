@@ -23,25 +23,25 @@
 CTK DATENSTRUKTUR FUER DREIECKS UND VIERECKSGITTER
       TYPE :: CELL
         INTEGER :: TRIANGLE
-        TYPE(CELL),POINTER :: NEXT
+        TYPE(CELL), POINTER :: NEXT
       END TYPE CELL
 
       TYPE :: CELL4
         INTEGER :: IX
         INTEGER :: IY
-        TYPE(CELL4),POINTER :: NEXT
+        TYPE(CELL4), POINTER :: NEXT
       END TYPE CELL4
 
       TYPE :: POIFELD
-        TYPE (CELL),POINTER :: P
+        TYPE (CELL), POINTER :: P
       END TYPE POIFELD
 
       TYPE :: POI4
-        TYPE (CELL4),POINTER :: P
+        TYPE (CELL4), POINTER :: P
       END TYPE POI4
 
-      TYPE (POIFELD),ALLOCATABLE,SAVE :: HEADS(:,:)
-      TYPE (POI4),ALLOCATABLE,SAVE :: HEADS4(:,:)
+      TYPE (POIFELD), ALLOCATABLE, SAVE :: HEADS(:,:)
+      TYPE (POI4), ALLOCATABLE, SAVE :: HEADS4(:,:)
 
 cym - because of save attribute
       REAL(DP), SAVE :: XMIN, YMIN, DISTX, DISTY, XMAX, YMAX,
@@ -49,7 +49,7 @@ cym - because of save attribute
 
 !$OMP THREADPRIVATE(IFIRST,D12,D12I,D14,D14I,OBSC,
 !$OMP&    XMIN, YMIN, DISTX, DISTY, XMAX, YMAX, EPDY, EPDXDY, EPDX,
-!$OMP&    HEADS,HEADS4) 
+!$OMP&    HEADS,HEADS4)
 
       CONTAINS
 
@@ -72,7 +72,7 @@ C
 C   LOGX=TRUE: PARTICLE IS ON A RADIAL SURFACE
 C   LOGY=TRUE: PARTICLE IS ON A POLOIDAL SURFACE
 C
-C   FIND 1ST (RADIAL)  MESHPOINT NUMBER LEARC1,
+C   FIND 1ST (RADIAL) MESHPOINT NUMBER LEARC1,
 
 C  LEVGEO=3:
 C   (ADDITIONALLY: FIND POLYGON INDEX IPO, IF NLPLG)
@@ -85,10 +85,10 @@ C     SEARCH ON (!!!) RADIAL SURF. IAN FOR POLOIDAL MESH NUMBER IPO
 C   IF LOGY
 C     SEARCH ON (!!!) POLOIDAL SURF. IAN FOR RADIAL MESH NUMBER LEARC1
 C  LEVGEO=4 :....
-C  LEVGEO=2 :....  nlcirc, nlell: ok. nltri: to be done.
-C  LEVGEO=1 :....  nlcirc, nlell: ok. nltri: to be done.
-C  LEVGEO=5 :  separate routine: LEARCT
-C  LEVGEO=10:  separate routine: LEAUSR
+C  LEVGEO=2 :.... nlcirc, nlell: ok. nltri: to be done.
+C  LEVGEO=1 :.... nlcirc, nlell: ok. nltri: to be done.
+C  LEVGEO=5 : separate routine: LEARCT
+C  LEVGEO=10: separate routine: LEAUSR
 C
       IMPLICIT NONE
 
@@ -96,7 +96,7 @@ C
       INTEGER, INTENT(IN) :: IAN, IEN, NP
       INTEGER, INTENT(INOUT) :: IPO
       CHARACTER(LEN=*), INTENT(IN) :: TEXT
-      LOGICAL, INTENT(IN) ::  LOGX, LOGY
+      LOGICAL, INTENT(IN) :: LOGX, LOGY
 
       REAL(DP) :: X1, X2, X3, X4, Y1, Y2, Y3, Y4, DET4, XCMIN, XCMAX,
      .          ERRMIN, YCMIN, YCMAX, ERR7, YQ, DX4, ERR4, ATQ, XE, XEQ,
@@ -123,7 +123,7 @@ csw 04aug08
       TYPE (CELL4),POINTER :: CUR4,HELPP
 C
 
-C  tbd:  move into levgeo=4 branch, as already done in levgeo=3 branch
+C  tbd: move into levgeo=4 branch, as already done in levgeo=3 branch
 csw 04aug08
       if(np .lt. 0 .and. levgeo.eq.4) then
         if(allocated(obsc)) deallocate(obsc)
@@ -319,7 +319,7 @@ C  CELL I ALREADY TESTED BEFORE ?
           ENDDO
         ENDDO
         IF (IM.LT.1.OR.IM.GT.NTRII) THEN
-          WRITE (iunout,*) 'NO TRIANGLE FOUND IN LEARC1 FOR '
+          WRITE (iunout,*) 'NO TRIANGLE FOUND IN LEARC1 FOR'
           WRITE (iunout,*) 'X = ',X,' Y = ',Y
           WRITE (iunout,*) 'LEARC1 CALLED FROM SUBR. ',TEXT
           WRITE (iunout,*) 'NPANU,IM= ',NP,IM
@@ -334,7 +334,7 @@ C  CELL I ALREADY TESTED BEFORE ?
           CONTINUE ! POINT ON BOUNDARY BETWEEN TWO TRIANGLES
         ELSEIF (INUM.GT.1) THEN
           CALL EIRENE_MASAGE('WARNING FROM LEARC1, INUM.GT.1')
-          CALL EIRENE_MASR2('X,Y             ',X,Y)
+          CALL EIRENE_MASR2 ('X,Y             ',X,Y)
           WRITE (iunout,*) 'LEARC1 CALLED FROM SUBR. ',TEXT
           WRITE (iunout,*) 'NPANU,INUM,IM= ',NP,INUM,IM
           WRITE (iunout,*) 'IAN,IEN,LOGX,LOGY ',IAN,IEN,LOGX,LOGY
@@ -593,7 +593,7 @@ C  CELL I,L ALREADY TESTED BEFORE ?
             LG(I,L)=.TRUE.
 !pb            IF ((I.LT.IA) .OR. (I.GT.IE) .OR. (L.GT.NP2NDM)) GOTO 20
             IF ((I.LT.IA) .OR. (I.GT.IE) .OR. (L.GT.NRPLG-1)) GOTO 20
-C  NORMAL CASE:  OBSC(I,L)=0
+C  NORMAL CASE: OBSC(I,L)=0
             IF (OBSC(I,L).EQ.0._DP) THEN
             X1=XPOL(I,L)
             Y1=YPOL(I,L)
@@ -628,7 +628,7 @@ C
               LM=L
               GOTO 20
             ENDIF
-C  OPPOSITE ORIENTATION OF GRID:  OBSC(I,L)=-1
+C  OPPOSITE ORIENTATION OF GRID: OBSC(I,L)=-1
             ELSEIF (OBSC(I,L).EQ.-1._DP) THEN
               WRITE (iunout,*) 'OPPOSITE GRID ORIENTATION '
               WRITE (iunout,*) 'FUNCTION LEARC1 NEEDS TO BE EXTENDED'

@@ -1,6 +1,9 @@
       SUBROUTINE EIRENE_SCAL_SURF_TALLIES (ISTR)
 cdr May 19:    scoring of surface-averaged spectra:
-cdr   scaling with FATM, FMOL,... done elsewhere?
+cdr          part. balance scaling with FATM, FMOL,... is done in SCALE_TALLIES
+cdr Mar 23:  remove ADDS tally from universal scaling with FLXFAC,
+cdr          and apply the input flags IADSE from block 10D instead
+cdr          Not ready, but ZWW, ZW are already here?
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -14,7 +17,12 @@ cdr   scaling with FATM, FMOL,... done elsewhere?
       INTEGER :: I, IATM, IMOL, IION, IPHOT, IPLS, ISPC, ID
       REAL(DP) :: DEL, DELI, ELEFT, ERIGHT
 
+cdr  surface flux tallies
       ESTIMS=ESTIMS*FLXFAC(ISTR)
+
+C
+C  these next tallies are not surface tallies.
+C  We scale them here anyway.
 C
       ETOTA(ISTR)=ETOTA(ISTR)*FLXFAC(ISTR)
       ETOTM(ISTR)=ETOTM(ISTR)*FLXFAC(ISTR)
@@ -77,12 +85,12 @@ C  SCALE: FROM SCORING TALLY UNITS PER ENERGY BIN --> TALLY UNITS PER EV
 chk Also scale the Legendre expansion coefficients if applicable
             IF (ESTIML(ISPC)%ISPCOPT==2) THEN
               DO ID=1,ESTIML(ISPC)%ISPLDEG
-                ESTIML(ISPC)%SPCAN(ID,I) = 
+                ESTIML(ISPC)%SPCAN(ID,I) =
      .            ESTIML(ISPC)%SPCAN(ID,I)*FLXFAC(ISTR)*DELI
               END DO
             END IF
 C  INTEGRATE  --> TALLY UNITS
-cdr  Test tbd: in case of total (not directional) spectrum, 
+cdr  Test tbd: in case of total (not directional) spectrum,
 cdr            i.e. for IDIREC=0, this
 cdr            integral must coincide with the particle outflux POT..
 cdr            or the energy outflux EOT..,

@@ -34,8 +34,8 @@ C
       REAL(DP), INTENT(IN) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
      .                        XSTORV2(NSTORV,N2ND+N3RD), WV
       INTEGER, INTENT(IN) :: IFLAG
-      REAL(DP), ALLOCATABLE :: PPPL_COP(:,:), CPPV(:,:),
-     .                         EPPL_COP(:), EPEL(:)
+      REAL(DP), ALLOCATABLE :: PPPL_COP(:,:), CPPV_COP(:,:),
+     .                         EPPL_COP(:,:), EPEL_COP(:)
       REAL(DP) :: RECTOT, SUMN, SUMM, SUMEI, SUMEE, RECADD, EEADD,
      .            EIRENE_FTABRC1, EIRENE_FEELRC1, PIADD, EIADD
       INTEGER :: IPL, JPLS, ISR, ISTEP, IIRC, IU, IPLSTI, IRRC, IN, INC
@@ -48,13 +48,13 @@ C
 C  ADD CONTRIBUTIONS FROM VOLUME RECOMBINATION SOURCE
 C
         ALLOCATE (PPPL_COP(NPLS,NRAD))
-        ALLOCATE (CPPV(NPLS,NRAD))
-        ALLOCATE (EPPL_COP(NRAD))
-        ALLOCATE (EPEL(NRAD))
+        ALLOCATE (CPPV_COP(NPLS,NRAD))
+        ALLOCATE (EPPL_COP(NPLS,NRAD))
+        ALLOCATE (EPEL_COP(NRAD))
         PPPL_COP =0.D0
-        CPPV = 0.D0
+        CPPV_COP = 0.D0
         EPPL_COP = 0.D0
-        EPEL = 0.D0
+        EPEL_COP = 0.D0
 
         IF (NLVOL(ISTRA)) THEN
 C
@@ -87,13 +87,13 @@ C
                   SUMN=SUMN+RECADD*VOL(IN)
                   PIADD=0._DP
                   IF (LPARMOM) PIADD=PARMOM(IPLS,IN)*RECADD
-                  CPPV(IPLS,INC)=CPPV(IPLS,INC)+PIADD
+                  CPPV_COP(IPLS,INC)=CPPV_COP(IPLS,INC)+PIADD
                   SUMM=SUMM+PIADD*VOL(IN)
                   EIADD=1.5*TIIN(IPLSTI,IN)*RECADD
                   IF (LEDRIFT) EIADD=EIADD+EDRIFT(IPLS,IN)*RECADD
-                  EPPL_COP(INC)=EPPL_COP(INC)+EIADD
+                  EPPL_COP(IPLS,INC)=EPPL_COP(IPLS,INC)+EIADD
                   SUMEI=SUMEI+EIADD*VOL(IN)
-                  EPEL(INC)=EPEL(INC)+EEADD
+                  EPEL_COP(INC)=EPEL_COP(INC)+EEADD
                   SUMEE=SUMEE+EEADD*VOL(IN)
                 END DO
                 RECTOT = RECTOT + SUMN
@@ -111,17 +111,17 @@ C
           IF (IU >= NPLSI)
      .      COPV(1:NPLSI,:) = PPPL_COP(1:NPLSI,:)
           IF (IU >= 2*NPLSI)
-     .      COPV(NPLSI+1:2*NPLSI,:) = CPPV(1:NPLSI,:)
-          IF (IU >= 2*NPLSI+1)
-     .      COPV(2*NPLSI+1,:) = EPPL_COP(:)
-          IF (IU >= 2*NPLSI+2)
-     .      COPV(2*NPLSI+2,:) = EPEL(:)
+     .      COPV(NPLSI+1:2*NPLSI,:) = CPPV_COP(1:NPLSI,:)
+          IF (IU >= 3*NPLSI)
+     .      COPV(2*NPLSI+1:3*NPLSI,:) = EPPL_COP(1:NPLSI,:)
+          IF (IU >= 3*NPLSI+1)
+     .      COPV(3*NPLSI+1,:) = EPEL_COP(:)
         END IF
 
         DEALLOCATE (PPPL_COP)
-        DEALLOCATE (CPPV)
+        DEALLOCATE (CPPV_COP)
         DEALLOCATE (EPPL_COP)
-        DEALLOCATE (EPEL)
+        DEALLOCATE (EPEL_COP)
 
         ISTROLD = ISTRA
 

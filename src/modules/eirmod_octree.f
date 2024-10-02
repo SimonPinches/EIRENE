@@ -26,7 +26,7 @@
      .          OCTREE_GetLeafchild, OCTREE_Traverse,
      .          OCTREE_CheckBlock, OCTREE_CheckVolume,
      .          OCTREE_Cramer, OCTREE_PrintVTK, OCTREE_PrintGraphviz,
-     .          OCTREE_DeleteTree 
+     .          OCTREE_DeleteTree
 
 c     lookup table for the correct combination of coords in
 c     OCTREE_CreateChildren
@@ -669,16 +669,16 @@ c       to print their labels
         deallocate (tree%root)
         deallocate (tree)
         nullify(tree)
-        
-      END SUBROUTINE OCTREE_DeleteTree 
-      
+
+      END SUBROUTINE OCTREE_DeleteTree
+
       RECURSIVE SUBROUTINE OCTREE_Delete (block)
         TYPE(ocNode), POINTER, INTENT(IN OUT) :: block
         TYPE(OcNode), POINTER :: child
         INTEGER :: i
 
         if (.not.associated(block)) return
-        
+
         if (allocated(block%children)) then
           do i = 1, 8
             child => block%children(i)%node
@@ -688,7 +688,7 @@ c       to print their labels
           end do
           if (allocated(block%surfaces)) deallocate (block%surfaces)
         end if
-        
+
       END SUBROUTINE OCTREE_Delete
 
 

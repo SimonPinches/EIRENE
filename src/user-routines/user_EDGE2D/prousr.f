@@ -230,7 +230,7 @@ c      EFIN: indx=10+1*NPLS+NPLSTI+3*NPLSV
 c      ZI for charge bundling
       elseif (indx == 12+1*NPLS+NPLSTI+3*NPLSV) then
 c! zi
-         pro(1:n) = plas(11,1:n,ipls)
+        pro(1:n) = plas(11,1:n,ipls)
 
       else
          write (iunout,*) ' prousr: no data provided for index ',indx

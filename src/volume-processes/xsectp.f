@@ -61,7 +61,7 @@ cdr: that they collapse to the corona limit values.
       DEIMIN=LOG(1.D8)
       DEIMAX=LOG(1.D16) !VK
       TEIMIN=log(0.1d0) !csw
-       IF (NSTORDR >= NRAD) THEN
+      IF (NSTORDR >= NRAD) THEN
         DO 10 J=1,NSBOX
           PLS(J)=MAX(DEIMIN,DEINL(J))
           PLS(J)=MIN(DEIMAX,PLS(J))        !VK
@@ -85,7 +85,8 @@ C
 C
         IF (NRCP(IPLS).EQ.0) THEN   ! default model for bulk ion IPLS
 C
-          IF (NCHARP(IPLS).EQ.1 .AND. NCHRGP(IPLS).EQ.1) THEN   ! this is now H+, or D+, or T+
+          IF (NCHARP(IPLS).EQ.1 .AND. NCHRGP(IPLS).EQ.1) THEN
+! this is now H+, or D+, or T+
 C
 C  DEFAULT HYDROGENIC RECOMBINATION MODEL, for capture on all levels of H
 C  HYDR. RECOMBINATION RATE COEFFICIENT (1/S/CCM) E + H+ --> H + RAD.
@@ -103,10 +104,10 @@ C
                 IF (NSTORDR >= NRAD) THEN
                   DO 51 J=1,NSBOX
                     ZX=EIONH/MAX(1.E-5_DP,TEIN(J))
-C  rate = rate coeff: <sig v> times electr. density,  1/s per ion
+C  rate = rate coeff: <sig v> times electr. density, 1/s per ion
                     TABRC1(IRRC,J)=1.27E-13*ZX**1.5/(ZX+0.59)*DEIN(J)
 C  maxw. electron energy loss rate due to recombination
-c                   corsum=0._dp  !  old default: 1.5*Te
+c                   corsum=0._dp  ! old default: 1.5*Te
 C  correction due to energy dependence in rec. cross-section
 C  corsum=d(ln<sig v>)/d(ln Te)
 c  corsum approx -0.5 for Te --> 0
@@ -119,7 +120,8 @@ cdr  this setting kk=-1 is confusing. It may work, but
 cdr  kk=-1 is already reserved for "minimal" default H+p charge exchange process
                   NREARC(IRRC) = -1
                   NELRRC(IRRC) = -1
-                ELSE          !  storage saving mode: tabrc1, eelrc1 to be found "on the fly"
+                ELSE          ! storage saving mode:
+                              ! tabrc1, eelrc1 to be found "on the fly"
                   NREARC(IRRC) = -1
                   NELRRC(IRRC) = -1
                 END IF
@@ -157,11 +159,11 @@ C
                 IF (NSTORDR >= NRAD) THEN
                   DO 53 J=1,NSBOX
                     ZX=EIONHE/MAX(1.E-5_DP,TEIN(J))
-C  rate = [rate coeff <sig v>] times [electr. density],  1/s per ion
+C  rate = [rate coeff <sig v>] times [electr. density], 1/s per ion
 c    1.96e-14*sqrt(EionHe/Ry) = 3.5487E-14
                     TABRC1(IRRC,J)=3.5487E-14*ZX**1.5/(ZX+0.35)*DEIN(J)
 C  maxw. electron energy loss rate due to recombination
-c                   corsum=0._dp  !  old default: 1.5*Te
+c                   corsum=0._dp  ! old default: 1.5*Te
 C  correction due to energy dependence in rec. cross-section
 C  corsum=d(ln<sig v>)/d(ln Te)
 c  corsum approx -0.5 for Te --> 0
@@ -174,7 +176,8 @@ cdr  this setting kk=-2 is confusing. It may work, but
 cdr  kk=-2 is already reserved for other "minimal" default processes
                   NREARC(IRRC) = -2
                   NELRRC(IRRC) = -2
-                ELSE          !  storage saving mode: tabrc1, eelrc1 to be found "on the fly"
+                ELSE          ! storage saving mode:
+                              ! tabrc1, eelrc1 to be found "on the fly"
                   NREARC(IRRC) = -2
                   NELRRC(IRRC) = -2
                 END IF
@@ -192,21 +195,21 @@ C
             NPRCI(IPLS)=IDSC
           ENDIF
 C
-C  NON-DEFAULT MODEL:  240--
+C  NON-DEFAULT MODEL: 240--
 C
         ELSEIF (NRCP(IPLS).GT.0) THEN
           DO 82 NRC=1,NRCP(IPLS)
             KK=IREACP(IPLS,NRC)
 csw check photonic process
             if(iswr(kk)==7) then    ! PH Processes
-               idsc=idsc+1
-               nrrci=nrrci+1
-               IF (NRRCI.GT.NREC) GOTO 992
+              idsc=idsc+1
+              nrrci=nrrci+1
+              IF (NRRCI.GT.NREC) GOTO 992
 cdr  here should come call to xstph or xstot
-               call EIRENE_XSTRC(ipls,nrc,idsc,nrrci)
-               cycle
+              call EIRENE_XSTRC(ipls,nrc,idsc,nrrci)
+              cycle
 csw end branch
-            ELSEIF (ISWR(KK).EQ.6) THEN  !  RC Processes
+            ELSEIF (ISWR(KK).EQ.6) THEN  ! RC Processes
 C
               FACTKK=FREACP(IPLS,NRC)
               IF (FACTKK.EQ.0.D0) FACTKK=1.
@@ -317,7 +320,7 @@ C  3. ELECTRON MOMENTUM LOSS RATE
 C
 C
 C  4. ELECTRON ENERGY LOSS RATE  eV/s per ion
-C  flags:  NELRRC, and for storage saving mode: additionally JELRRC
+C  flags: NELRRC, and for storage saving mode: additionally JELRRC
 C
               NSERC5=EIRENE_IDEZ(ISCDEP(IPLS,NRC),5,5)
 
@@ -361,7 +364,7 @@ C  4.C)  ENERGY LOSS RATE OF IMP. ELECTRON = EN.-WEIGHTED RATE(TE)
                   IF (NSTORDR >= NRAD) THEN
                     DO J = 1, NSBOX
                       IF (LGVAC(J,NPLS+1)) CYCLE
-C   CAREFUL:  EELRC1 IS TO BE TAKEN NEGATIVE, IF IT IS A LOSS!
+C   CAREFUL: EELRC1 IS TO BE TAKEN NEGATIVE, IF IT IS A LOSS!
                       EELRC1(IRRC,J)=EIRENE_ENERGY_RATE_COEFF(KREAD,J,
      .                               TEINL(J),0._DP,.TRUE.,0)
                       EELRC1(IRRC,J)=-EELRC1(IRRC,J)*DEIN(J)*FACTKK
@@ -373,8 +376,8 @@ cnh 28.10.2019
                         IF (NCHRGP(IPLS)==0) THEN
                           BREMS = 0._DP
                         ELSE
-c                         Charge 
-                           IF(ZIIN(IPLS,J).NE.ZVAC) THEN
+c                         Charge
+                          IF(ZIIN(IPLS,J).NE.ZVAC) THEN
                             Z = ZIIN(IPLS,J)
                           ELSE
                             Z = DBLE(NCHRGP(IPLS))
@@ -420,7 +423,7 @@ c  (since eelrc1 is taken negative, add the bremsstrahlung)
                         IF (NCHRGP(IPLS)==0) THEN
                           BREMS = 0._DP
                         ELSE
-cnh 28.10.2019
+c                         Charge
                           IF(ZIIN(IPLS,J).NE.ZVAC) THEN
                             Z = ZIIN(IPLS,J)
                           ELSE
@@ -432,7 +435,7 @@ cnh 28.10.2019
                       ENDIF
 c  bremsstrahlung correction done.
 
-                    END DO ! nsbox
+                    END DO  ! nsbox
                     NELRRC(IRRC)=KREAD
                     JELRRC(IRRC)=9
                   ELSE  ! STORAGE SAVING MODE
@@ -462,10 +465,10 @@ c                 ELSE  ! ??
                   END IF
 C
                 ENDIF   ! DELPOT
-              ENDIF  !  NSERC5 
+              ENDIF  ! NSERC5
             ELSE
               GOTO 997
-            ENDIF  !  ISWR
+            ENDIF  ! iswr(kk)
 C
    82     CONTINUE
           NPRCI(IPLS)=IDSC

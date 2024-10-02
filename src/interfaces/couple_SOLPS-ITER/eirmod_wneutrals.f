@@ -34,35 +34,36 @@
       public :: eirene_wneutrals_dealloc
       public :: eirene_wneutrals_alloc_arrays
 
-      ! eirdiag.h/eirdiag.f
-      !c*** Volume data:
-      !c***    srcml   :   power loss due to molecules, including
-      !c***    edissml :   power loss due to molecule dissociation
-      !c***    eneutrad:   power radiated due to neutral atoms
-      !c***    emolrad :   power radiated due to molecules
-      !c***    eionrad :   power radiated due to molecular ions
-      !c*** Surface data:
-      !c***    wldnek  :   net kinetic energy deposited by neutrals
-      !c***    wldnep  :   potential energy released by neutrals
-      !c***    wldna   :   flux of atoms impinging onto the surface
-      !c***    ewlda   :   their average energy
-      !c***    wldnm   :   flux of molecules impinging onto the surface
-      !c***    ewldm   :   their average energy
-      !c***    wldra   :   flux of reflected atoms
-      !c***    wldrm   :   flux of reflected molecules
-      !c***    wldpp   :   flux of plasma ions impinging onto the surface
-      !c***    wldpa   :   flux of resulting atoms
-      !c***    wldpm   :   flux of resulting molecules
-      !c***    wldpeb  :   power carried away by these atoms and molecules
-      !c***    wldspt  :   flux of sputtered wall material
-      !c***    isrftype:   surface type (iliin in Eirene)
-      !c***    wlarea  :   areas of the surface segments from Eirene
-      !c***    wlabsrp :   absorption at the surfaces (1-recyct from Eirene)
-      !c***    wlpump  :   pumped flux at the surfaces
+! eirdiag.h/eirdiag.f
+!c*** Volume data:
+!c***    srcml   :  molecule dissociation rate
+!c***    edissml :  power loss due to molecule dissociation
+!c***    eneutrad:  power radiated due to neutral atoms
+!c***    emolrad :  power radiated due to molecules
+!c***    eionrad :  power radiated due to molecular ions
+!c*** Surface data:
+!c***    wldnek  :  net kinetic energy deposited by neutrals
+!c***    wldnep  :  potential energy released by neutrals
+!c***    wldna   :  flux of atoms impinging onto the surface
+!c***    ewlda   :  their average energy
+!c***    wldnm   :  flux of molecules impinging onto the surface
+!c***    ewldm   :  their average energy
+!c***    wldra   :  flux of reflected atoms
+!c***    wldrm   :  flux of reflected molecules
+!c***    wldpp   :  flux of plasma ions impinging onto the surface
+!c***    wldpa   :  flux of resulting atoms
+!c***    wldpm   :  flux of resulting molecules
+!c***    wldpeb  :  power carried away by these atoms and molecules
+!c***    wldspt  :  flux of sputtered wall material
+!c***    isrftype:  surface type (iliin in Eirene)
+!c***    wlarea  :  areas of the surface segments from Eirene
+!c***    wlabsrp :  absorption at the surfaces
+!c***               (1-recyct from Eirene)
+!c***    wlpump  :  pumped flux at the surfaces
       real(DP), save, allocatable, dimension(:,:,:,:), public ::
      , dab2,dmb2,dib2,tab2,tmb2,tib2,rfluxa,rfluxm,refluxa,refluxm,
      , pfluxa,pfluxm,pefluxa,pefluxm,emiss,emissmol,srcml,edissml,
-     , tfluxa,tfluxm,tefluxa,tefluxm    ! toroidal fluxes, IYS 20.01.2017
+     , tfluxa,tfluxm,tefluxa,tefluxm   ! toroidal fluxes, IYS 20.01.2017
       real(DP), save, allocatable, dimension(:,:), public ::
      , wldnek,wldnep
       real(DP), save, allocatable, dimension (:,:,:), public ::
@@ -72,7 +73,7 @@
      , wldpeb,wldspt,wlabsrp,wlpump
       real(DP), save, allocatable, dimension (:,:,:,:), public ::
      , eneutrad, emolrad, eionrad
-      real(DP), save, allocatable, public :: eirpump(:),   ! pumped flux     !iyv 07.03.18
+      real(DP), save, allocatable, public :: eirpump(:),   ! pumped flux
      ,                                       eirspta(:), eirsptm(:)      ! sputtered flux  !iyv 07.03.18
       real(DP), save, public :: aver_frac, aver_frac46
       real(DP), save, allocatable, dimension(:,:), public ::
@@ -82,7 +83,7 @@
      , wldrm_aver,wldpp_aver,wldpa_aver,wldpm_aver,wldspta_aver,
      , wldsptm_aver ! average fluxes, som 02.04.2019
       real(DP), save, allocatable, dimension (:,:), public ::
-     , wldpeb_aver,wldspt_aver,wlpump_aver ! average fluxes, som 02.04.2018
+     , wldpeb_aver,wldspt_aver,wlpump_aver ! average fluxes
       real(DP), save, allocatable, dimension (:,:), public ::
      , PDENA_aver,PDENM_aver,EDENA_aver,EDENM_aver,
      , VXDENA_aver,VXDENM_aver,VYDENA_aver,VYDENM_aver,
@@ -92,9 +93,11 @@
      ,  eirdiag_nds_ind(:),   eirdiag_nds_typ(:), eirdiag_nds_srf(:),
      ,  eirdiag_nds_start(:), eirdiag_nds_end(:)
 
-      !c*** NEUTRAL FLUXES, SPATIALLY RESOLVED ON NON-DEFAULT STANDARD SURFACES (NDS)
+      !c*** NEUTRAL FLUXES,
+      !c*** SPATIALLY RESOLVED ON NON-DEFAULT STANDARD SURFACES (NDS)
       !c*** First dimension : index of atom or molecule.
-      !c*** Second dimension: index of surface element, controlled by 'eirdiag_nds_ind'
+      !c*** Second dimension: index of surface element,
+      !                       controlled by 'eirdiag_nds_ind'
       real(DP), save, allocatable, dimension(:), public ::
      ,  wlarea, sarea_res      !area of the surface elements
       real(DP), save, allocatable, public ::
@@ -105,11 +108,15 @@
      ,  ewldt_res(:),      !total energy wall load from Eirene particles
      ,  ewldea_res(:,:),   !emitted energy flux of atoms
      ,  ewldem_res(:,:),   !net incident energy flux due of molecules
-     ,  ewldrp_res(:),     !kinetic energy of reflected neutrals originated from ions
-     ,  ewldmr_res(:,:),   !energy due to recombination of atoms and atomic ions into molecules
+     ,  ewldrp_res(:),     !kinetic energy of reflected neutrals
+                           !originated from ions
+     ,  ewldmr_res(:,:),   !energy due to recombination of atoms and
+                           !atomic ions into molecules
      ,  wldspt_res(:),     !flux of sputtered wall material
-     ,  wldspta_res(:,:),  !sputtered flux for each type of emitted atom
-     ,  wldsptm_res(:,:),  !sputtered flux for each type of emitted molecule
+     ,  wldspta_res(:,:),  !sputtered flux
+                           !for each type of emitted atom
+     ,  wldsptm_res(:,:),  !sputtered flux
+                           !for each type of emitted molecule
      ,  wlpump_res(:,:)    !pumped flux
 
       !c*** dissociation energy of the hydrogen molecule
@@ -118,12 +125,12 @@
       ! Integrals over volume.
       ! _INT: WHOLE GRID; _INT_B2: B2 grid.
       real(DP), save, allocatable, dimension (:,:), public ::
-     &                  PDENA_INT, PDENA_INT_B2, !Total number of particles
-     &                  PDENM_INT, PDENM_INT_B2,
-     &                  PDENI_INT, PDENI_INT_B2,
-     &                  EDENA_INT, EDENA_INT_B2, !Total energy, Joules
-     &                  EDENM_INT, EDENM_INT_B2,
-     &                  EDENI_INT, EDENI_INT_B2
+     &  PDENA_INT, PDENA_INT_B2, !Total number of particles
+     &  PDENM_INT, PDENM_INT_B2,
+     &  PDENI_INT, PDENI_INT_B2,
+     &  EDENA_INT, EDENA_INT_B2, !Total energy, Joules
+     &  EDENM_INT, EDENM_INT_B2,
+     &  EDENI_INT, EDENI_INT_B2
 
       integer, save, allocatable, public :: isrftype(:)
       logical, save, allocatable, public :: amark(:,:)
@@ -383,10 +390,10 @@ C     READ IN THE NUMBER OF TRIANGLES
       logical :: do_broadcast
       logical, optional :: broadcast
 
-!     !c======================================================================
-      !c---------------------------------------------------------------------<
+!     !c================================================================
+      !c---------------------------------------------------------------<
       !c      write(iunout,*) '%%% wneutrals_init'
-      !c--------------------------------------------------------------------->
+      !c--------------------------------------------------------------->
 
       IF (IFIRST_wneutral.EQ.0) then
       ! if it is not the first call, then we skip over initialization
@@ -410,10 +417,10 @@ C     READ IN THE NUMBER OF TRIANGLES
         ia3=ia2+natmi+nmoli
 
       endif ! IFIRST_wneutral
-      !c---------------------------------------------------------------------<
+      !c---------------------------------------------------------------<
       if (new_leader) then
-        ! there are new PEs among the leaders, we have to distribute the data
-        ! to them
+! there are new PEs among the leaders, we have to distribute the data
+! to them
         if (present(broadcast)) then
           do_broadcast = broadcast
         else
@@ -435,7 +442,7 @@ C     READ IN THE NUMBER OF TRIANGLES
       end subroutine eirene_wneutrals_init_broadcast
 
       !c
-      !c======================================================================
+      !c================================================================
       subroutine eirene_wneutrals_fill(istra_in)
       implicit none
       integer, intent(in) :: istra_in
@@ -447,12 +454,13 @@ C     READ IN THE NUMBER OF TRIANGLES
       !c                                       istra,istra_in
       istra_save=istra
       istra=istra_in
-      !c--------------------------------------------------------------------->
+      !c--------------------------------------------------------------->
 
-      !csw
-      !csw 21feb2012 corrected radiation from neutrals (atoms only), taken from SOLPS4.3 (V.Kotov)
-      !csw 04mar2013 shifted from wneutrals_save to here (wneutrals_fill)
-      !csw
+!csw
+!csw 21feb2012 corrected radiation from neutrals (atoms only),
+!csw taken from SOLPS4.3 (V.Kotov)
+!csw 04mar2013 shifted from wneutrals_save to here (wneutrals_fill)
+!csw
       write(hlp_frm,'(a,i3,a)') '(a,i6,1p,',natmi+1,'(1x,e13.6))'
       eneutrad(:,:,:,istra) = 0.0_dp
       emolrad(:,:,:,istra) = 0.0_dp
@@ -569,7 +577,7 @@ C     READ IN THE NUMBER OF TRIANGLES
              if(ia0+natmi+jmol.le.nadv)
      >         rfluxm(ix,iy,jmol,1)=rfluxm(ix,iy,jmol,1)+
      &                                 addv(ia0+natmi+jmol,in)*1.0e4
-            if(ia2+natmi+jmol.le.nadv)
+             if(ia2+natmi+jmol.le.nadv)
      >         pfluxm(ix,iy,jmol,1)=pfluxm(ix,iy,jmol,1)+
      &                                 addv(ia2+natmi+jmol,in)*1.0e4
             end if
@@ -614,14 +622,14 @@ C     READ IN THE NUMBER OF TRIANGLES
         end do
       end do
 
-      !c
-      !c*** Rescale the surface data from A to 1/sec and average the energy
-      !c
+!c
+!c*** Rescale the surface data from A to 1/sec and average the energy
+!c
       do i=1,nlimps
         wldnek(i,istra)=0.
         wldnep(i,istra)=0.
         wldpeb(i,istra)=0.
-        !c*** hlp accumulates the power taken away with re-emitted particles
+!c*** hlp accumulates the power taken away with re-emitted particles
         hlp=0.
         do j=1,natmi
           if (leotat)  wldnek(i,istra)=wldnek(i,istra)+eotat(j,i)
@@ -720,7 +728,7 @@ C     READ IN THE NUMBER OF TRIANGLES
       !c
       call update_integrals(istra)
 
-      !c---------------------------------------------------------------------<
+      !c---------------------------------------------------------------<
       istra=istra_save
       return
       end subroutine eirene_wneutrals_fill
@@ -859,15 +867,15 @@ C     READ IN THE NUMBER OF TRIANGLES
           end do
         end do
       end do
-      !c--------------------------------------------------------------------->
+      !c--------------------------------------------------------------->
 
 
       !c*** Surface type and properties
-      wlabsrp=0.0_DP
-      pumpsum=0.0_DP
-      eirpump = 0.0_DP                                                 !iyv 07.03.18 {
+      wlabsrp = 0.0_DP
+      pumpsum = 0.0_DP
+      eirpump = 0.0_DP
       eirspta = 0.0_DP
-      eirsptm = 0.0_DP                                                 !iyv 07.03.18 }
+      eirsptm = 0.0_DP
       do i=1,nlim+nsts
         isrftype(i)=iliin(i)
         wlarea(i)=1.e-4*sarea(i)
@@ -883,15 +891,15 @@ C     READ IN THE NUMBER OF TRIANGLES
           IF (LSPUMP) THEN
             wlpump(j,i)=SPUMP(j,i)*hlp_cnv
             pumpsum=pumpsum+wlpump(j,i)
-            eirpump(j) = eirpump(j) + wlpump(j,i)                     !iyv 07.03.18
+            eirpump(j) = eirpump(j) + wlpump(j,i)
           END IF
         end do
-        do j = 1, natmi                                               !iyv 07.03.18 {
+        do j = 1, natmi
           eirspta(j) = eirspta(j) + wldspta(i,j,0)
         enddo
         do j = 1, nmoli
           eirsptm(j) = eirsptm(j) + wldsptm(i,j,0)
-        enddo                                                         !iyv 07.03.18 }
+        enddo
       end do
 
       do j=1,nspz !{
@@ -1042,32 +1050,6 @@ C     READ IN THE NUMBER OF TRIANGLES
         end if
       end do
       call eirene_leer(1)
-!cc%%%
-!c      write (iunout,*) '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
-!c      write (iunout,'(/6x,20(a8,2x))')
-!c     &        'wldnek','wldnep','wldna','ewlda','wldnm','ewldm',
-!c     &        'wldna He','ewlda He','wldna Ne','ewlda Ne','wldra H',
-!c     &        'wldra He','wldra Ne','wldrm','prfaat'
-!c      do i=1,nlimi
-!c      write (iunout,'(1p,i6,20e10.2)') i,wldnek(i),wldnep(i),
-!c     &      wldna(i,1),ewlda(i,1),wldnm(i,1),ewldm(i,1),
-!c     &      wldna(i,2),ewlda(i,2),wldna(i,3),ewlda(i,3),
-!c     &      wldra(i,1),wldra(i,2),wldra(i,3),wldrm(i,1),
-!c     &      prfaat(1,i)
-!c      end do
-!c      write (iunout,'(/6x,20(a8,2x))')
-!c     &        'wldnek','wldnep','wldna','ewlda','wldnm','ewldm',
-!c     &        'wldna He','ewlda He','wldna Ne','ewlda Ne','wldra H',
-!c     &        'wldra He','wldra Ne','wldrm','prfaat'
-!c      do i=nlim+1,nlim+nstsi
-!c      write (iunout,'(1p,i6,20e10.2)') i-nlim,wldnek(i),wldnep(i),
-!c     ,       wldna(i,1),ewlda(i,1),wldnm(i,1),ewldm(i,1),
-!c     ,       wldna(i,2),ewlda(i,2),wldna(i,3),ewlda(i,3),
-!c     ,       wldra(i,1),wldra(i,2),wldra(i,3),wldrm(i,1),
-!c     ,       prfaat(1,i)
-!c      end do
-!c      write (iunout,*) '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
-!cc%%%
       write(iunout,*) 'ncutl,ncutb ',ncutl,ncutb
       write(iunout,'(1x,a,7i6)') 'ndx,ndy,natm,ndxa,ndya,nfla,n1st',
      &                            ndx,ndy,natm,ndxa,ndya,nfla,n1st
@@ -1737,7 +1719,7 @@ C     READ IN THE NUMBER OF TRIANGLES
 
       IF(.NOT.ALLOCATED(XNMTI)) THEN
        WRITE(IUNOUT,*) "ERROR IN WNEUTRAL_FLUXES: ",
-     w                 "NO MAPPING ARRAYS FROM IN0COP"
+     w                 "NO MAPPING ARRAYS FROM IF0COP"
        WRITE(IUNOUT,*) "THE SUBROUTINE WILL BE SKIPPED"
        RETURN
       END IF
@@ -1810,8 +1792,8 @@ C*******************************************************************************
      , , only: NPLP_CGRID
       IMPLICIT NONE
 
-      INTEGER,INTENT(OUT) :: INDMPX(0:NDXP+1,0:NDYP+1),
-     i                       INDMPY(0:NDXP+1,0:NDYP+1)
+      INTEGER, INTENT(OUT) :: INDMPX(0:NDXP+1,0:NDYP+1),
+     i                        INDMPY(0:NDXP+1,0:NDYP+1)
       REAL(DP) :: DINDMPX(0:NDXP+1,0:NDYP+1),
      r            DINDMPY(0:NDXP+1,0:NDYP+1),
      r            DUMMY(0:NDXP+1,0:NDYP+1)
@@ -1961,7 +1943,7 @@ C*******************************************************************************
 
       IMPLICIT NONE
 
-      INTEGER,INTENT(IN) :: NCL
+      INTEGER, INTENT(IN) :: NCL
       INTEGER :: ISS,IS,IND1,DNCL,DNCL2
       CHARACTER*(8) HLP_FRM
 
@@ -2012,7 +1994,8 @@ C*******************************************************************************
       DO IT=1,NTRII
        DO IS=1,3
          ISS=INMTI(IS,IT)-NLIM
-         IF(ISS.LT.1) CYCLE !THE EDGE OF THE TRIANGLE DOES NOT BELONG TO NDS
+         IF(ISS.LT.1) CYCLE !THE EDGE OF THE TRIANGLE
+                            !DOES NOT BELONG TO NDS
          IF(eirdiag_nds_ind(ISS).LT.0) CYCLE !THIS SURFACE IS SKIPPED
          MS=INSPAT(IS,IT)
          IF(MS.LT.1.OR.MS.GT.NNNMTI) GOTO 100
@@ -2251,7 +2234,7 @@ C*******************************************************************************
 
       IMPLICIT NONE
 
-      INTEGER,INTENT(IN) :: NCL
+      INTEGER, INTENT(IN) :: NCL
       INTEGER :: NCL2,IS,ISS,IA,IE,I,IND
       REAL(DP) :: WLDNA_SUM(NATM,NSTS),WLDNM_SUM(NMOL,NSTS),
      r            EWLDA_SUM(NATM,NSTS),EWLDM_SUM(NMOL,NSTS),
@@ -2265,157 +2248,159 @@ C*******************************************************************************
 
       NCL2=0
       DO IS=1,NSTS
-       IF(eirdiag_nds_ind(IS).LT.0) THEN
-        NCL2=NCL2+1
-        CYCLE !THIS SURFACE IS SKIPPED
-       END IF
-       ISS=NLIM+IS
-       IND=eirdiag_nds_ind(IS)
-       IA=IND+1
-       IE=eirdiag_nds_end(IS)-eirdiag_nds_start(IS)+IA
-       SAREA_SUM(IS)=sum(sarea_res(IA:IE))
-       NCL2=NCL2+IE-IA+2
-       VNAME=' SAREA'
-       CALL CHECK_SUM(SAREA_SUM(IS),SAREA_RES(IND),VNAME,IS,1)
-       DO I=1,NATM
-        WLDNA_SUM(I,IS)=sum(wldna_res(I,IA:IE))
-        VNAME=' WLDNA'
-        CALL CHECK_SUM(WLDNA_SUM(I,IS),WLDNA_RES(I,IND),VNAME,IS,I)
-        EWLDA_SUM(I,IS)=sum(ewlda_res(I,IA:IE))
-        VNAME=' EWLDA'
-        CALL CHECK_SUM(EWLDA_SUM(I,IS),EWLDA_RES(I,IND),VNAME,IS,I)
-        EWLDEA_SUM(I,IS)=sum(ewldea_res(I,IA:IE))
-        VNAME='EWLDEA'
-        CALL CHECK_SUM(EWLDEA_SUM(I,IS),EWLDEA_RES(I,IND),VNAME,IS,I)
-        WLDSPTA_SUM(I,IS)=sum(wldspta_res(I,IA:IE))
-        VNAME='WLDSPA'
-        CALL CHECK_SUM(WLDSPTA_SUM(I,IS),WLDSPTA_RES(I,IND),VNAME,IS,I)
-       END DO
-       DO I=1,NMOL
-        WLDNM_SUM(I,IS)=sum(wldnm_res(I,IA:IE))
-        VNAME=' WLDNM'
-        CALL CHECK_SUM(WLDNM_SUM(I,IS),WLDNM_RES(I,IND),VNAME,IS,I)
-        EWLDM_SUM(I,IS)=sum(ewldm_res(I,IA:IE))
-        VNAME=' EWLDM'
-        CALL CHECK_SUM(EWLDM_SUM(I,IS),EWLDM_RES(I,IND),VNAME,IS,I)
-        EWLDEM_SUM(I,IS)=sum(ewldem_res(I,IA:IE))
-        VNAME='EWLDEM'
-        CALL CHECK_SUM(EWLDEM_SUM(I,IS),EWLDEM_RES(I,IND),VNAME,IS,I)
-        EWLDMR_SUM(I,IS)=sum(ewldmr_res(I,IA:IE))
-        VNAME='EWLDMR'
-        CALL CHECK_SUM(EWLDMR_SUM(I,IS),EWLDMR_RES(I,IND),VNAME,IS,I)
-        WLDSPTM_SUM(I,IS)=sum(wldsptm_res(I,IA:IE))
-        VNAME='WLDSPM'
-        CALL CHECK_SUM(WLDSPTM_SUM(I,IS),WLDSPTM_RES(I,IND),VNAME,IS,I)
-       END DO
-       DO I=1,NSPZ
-        WLPUMP_SUM(I,IS)=sum(wlpump_res(I,IA:IE))
-        VNAME='WLPUMP'
-        CALL CHECK_SUM(WLPUMP_SUM(I,IS),WLPUMP_RES(I,IND),VNAME,IS,I)
-       END DO
-       EWLDRP_SUM(IS)=sum(ewldrp_res(IA:IE))
-       VNAME='EWLDRP'
-       CALL CHECK_SUM(EWLDRP_SUM(IS),EWLDRP_RES(IND),VNAME,IS,1)
-       WLDSPT_SUM(IS)=sum(wldspt_res(IA:IE))
-       VNAME='WLDSPT'
-       CALL CHECK_SUM(WLDSPT_SUM(IS),WLDSPT_RES(IND),VNAME,IS,1)
-       EWLDT_SUM(IS)=sum(ewldt_res(IA:IE))
-       VNAME=' EWLDT'
-       CALL CHECK_SUM(EWLDT_SUM(IS),EWLDT_RES(IND),VNAME,IS,1)
+        IF(eirdiag_nds_ind(IS).LT.0) THEN
+          NCL2=NCL2+1
+          CYCLE !THIS SURFACE IS SKIPPED
+        END IF
+        ISS=NLIM+IS
+        IND=eirdiag_nds_ind(IS)
+        IA=IND+1
+        IE=eirdiag_nds_end(IS)-eirdiag_nds_start(IS)+IA
+        SAREA_SUM(IS)=sum(sarea_res(IA:IE))
+        NCL2=NCL2+IE-IA+2
+        VNAME=' SAREA'
+        CALL CHECK_SUM(SAREA_SUM(IS),SAREA_RES(IND),VNAME,IS,1)
+        DO I=1,NATM
+          WLDNA_SUM(I,IS)=sum(wldna_res(I,IA:IE))
+          VNAME=' WLDNA'
+          CALL CHECK_SUM(WLDNA_SUM(I,IS),WLDNA_RES(I,IND),VNAME,IS,I)
+          EWLDA_SUM(I,IS)=sum(ewlda_res(I,IA:IE))
+          VNAME=' EWLDA'
+          CALL CHECK_SUM(EWLDA_SUM(I,IS),EWLDA_RES(I,IND),VNAME,IS,I)
+          EWLDEA_SUM(I,IS)=sum(ewldea_res(I,IA:IE))
+          VNAME='EWLDEA'
+          CALL CHECK_SUM(EWLDEA_SUM(I,IS),EWLDEA_RES(I,IND),VNAME,IS,I)
+          WLDSPTA_SUM(I,IS)=sum(wldspta_res(I,IA:IE))
+          VNAME='WLDSPA'
+          CALL CHECK_SUM(WLDSPTA_SUM(I,IS),WLDSPTA_RES(I,IND),
+     .                   VNAME,IS,I)
+        END DO
+        DO I=1,NMOL
+          WLDNM_SUM(I,IS)=sum(wldnm_res(I,IA:IE))
+          VNAME=' WLDNM'
+          CALL CHECK_SUM(WLDNM_SUM(I,IS),WLDNM_RES(I,IND),VNAME,IS,I)
+          EWLDM_SUM(I,IS)=sum(ewldm_res(I,IA:IE))
+          VNAME=' EWLDM'
+          CALL CHECK_SUM(EWLDM_SUM(I,IS),EWLDM_RES(I,IND),VNAME,IS,I)
+          EWLDEM_SUM(I,IS)=sum(ewldem_res(I,IA:IE))
+          VNAME='EWLDEM'
+          CALL CHECK_SUM(EWLDEM_SUM(I,IS),EWLDEM_RES(I,IND),VNAME,IS,I)
+          EWLDMR_SUM(I,IS)=sum(ewldmr_res(I,IA:IE))
+          VNAME='EWLDMR'
+          CALL CHECK_SUM(EWLDMR_SUM(I,IS),EWLDMR_RES(I,IND),VNAME,IS,I)
+          WLDSPTM_SUM(I,IS)=sum(wldsptm_res(I,IA:IE))
+          VNAME='WLDSPM'
+          CALL CHECK_SUM(WLDSPTM_SUM(I,IS),WLDSPTM_RES(I,IND),
+     .                   VNAME,IS,I)
+        END DO
+        DO I=1,NSPZ
+          WLPUMP_SUM(I,IS)=sum(wlpump_res(I,IA:IE))
+          VNAME='WLPUMP'
+          CALL CHECK_SUM(WLPUMP_SUM(I,IS),WLPUMP_RES(I,IND),VNAME,IS,I)
+        END DO
+        EWLDRP_SUM(IS)=sum(ewldrp_res(IA:IE))
+        VNAME='EWLDRP'
+        CALL CHECK_SUM(EWLDRP_SUM(IS),EWLDRP_RES(IND),VNAME,IS,1)
+        WLDSPT_SUM(IS)=sum(wldspt_res(IA:IE))
+        VNAME='WLDSPT'
+        CALL CHECK_SUM(WLDSPT_SUM(IS),WLDSPT_RES(IND),VNAME,IS,1)
+        EWLDT_SUM(IS)=sum(ewldt_res(IA:IE))
+        VNAME=' EWLDT'
+        CALL CHECK_SUM(EWLDT_SUM(IS),EWLDT_RES(IND),VNAME,IS,1)
       END DO
       IF(NCL2.NE.NCL) THEN
-         WRITE(IUNOUT,*) "ERROR IN WNEUTRAL_FLUXES: ",
-     w                   "NOT ALL ELEMENTS WERE CHECKED"
-         WRITE(IUNOUT,*) "TOTAL ", NCL, "CHECKED ", NCL2
+        WRITE(IUNOUT,*) "ERROR IN WNEUTRAL_FLUXES: ",
+     w                  "NOT ALL ELEMENTS WERE CHECKED"
+        WRITE(IUNOUT,*) "TOTAL ", NCL, "CHECKED ", NCL2
       END IF
 
       IF(TRCINT) THEN
         WRITE(IUNOUT,*)
         WRITE(IUNOUT,*) "WNEUTRAL_FLUX CONTROL SUMS"
         DO IS=1,NSTS
-         IND=eirdiag_nds_ind(IS)
-         IF(IND.LT.0) CYCLE
-         WRITE(IUNOUT,*)
-         WRITE(IUNOUT,*) "SURFACE ", IS
+          IND=eirdiag_nds_ind(IS)
+          IF(IND.LT.0) CYCLE
+          WRITE(IUNOUT,*)
+          WRITE(IUNOUT,*) "SURFACE ", IS
 
-         WRITE(IUNOUT,601) "VARIABLE",
-     w                     "SPECIES", "STANDARD",
-     w                     "RESOLVED", " DIFFERENCE"
-         WRITE(IUNOUT,600) "SAREA", 0, SAREA_SUM(IS),SAREA_RES(IND),
-     w                             ABS(SAREA_SUM(IS)-SAREA_RES(IND))
-         DO I=1,NATM
-          WRITE(IUNOUT,600) "WLDNA",I,WLDNA_RES(I,IND),WLDNA_SUM(I,IS),
-     w                            ABS(WLDNA_RES(I,IND)-WLDNA_SUM(I,IS))
-          WRITE(IUNOUT,600) "EWLDA",I,EWLDA_RES(I,IND),EWLDA_SUM(I,IS),
-     w                            ABS(EWLDA_RES(I,IND)-EWLDA_SUM(I,IS))
-          WRITE(IUNOUT,600) "EWLDEA",
-     w                     I,EWLDEA_RES(I,IND),EWLDEA_SUM(I,IS),
-     w                   ABS(EWLDEA_RES(I,IND)-EWLDEA_SUM(I,IS))
-          WRITE(IUNOUT,600) "WLDSPTA",
-     w                     I,WLDSPTA_RES(I,IND),WLDSPTA_SUM(I,IS),
-     w                   ABS(WLDSPTA_RES(I,IND)-WLDSPTA_SUM(I,IS))
-         END DO
-         DO I=1,NMOL
-          WRITE(IUNOUT,600) "WLDNM",I,WLDNM_RES(I,IND),WLDNM_SUM(I,IS),
-     w                            ABS(WLDNM_RES(I,IND)-WLDNM_SUM(I,IS))
-          WRITE(IUNOUT,600) "EWLDM",I,EWLDM_RES(I,IND),EWLDM_SUM(I,IS),
-     w                            ABS(EWLDM_RES(I,IND)-EWLDM_SUM(I,IS))
-          WRITE(IUNOUT,600) "EWLDEM",
-     w                     I,EWLDEM_RES(I,IND),EWLDEM_SUM(I,IS),
-     w                   ABS(EWLDEM_RES(I,IND)-EWLDEM_SUM(I,IS))
-          WRITE(IUNOUT,600) "EWLDMR",I,
-     w                       EWLDMR_RES(I,IND),EWLDMR_SUM(I,IS),
-     w                   ABS(EWLDMR_RES(I,IND)-EWLDMR_SUM(I,IS))
-          WRITE(IUNOUT,600) "WLDSPTM",
-     w                     I,WLDSPTM_RES(I,IND),WLDSPTM_SUM(I,IS),
-     w                   ABS(WLDSPTM_RES(I,IND)-WLDSPTM_SUM(I,IS))
-         END DO
-         DO I=1,NSPZ
-          WRITE(IUNOUT,600) "WLPUMP",
-     w                     I,WLPUMP_RES(I,IND),WLPUMP_SUM(I,IS),
-     w                   ABS(WLPUMP_RES(I,IND)-WLPUMP_SUM(I,IS))
-         END DO
-         WRITE(IUNOUT,600) "EWLDRP",0,
-     w                      EWLDRP_RES(IND),EWLDRP_SUM(IS),
-     w                  ABS(EWLDRP_RES(IND)-EWLDRP_SUM(IS))
-         WRITE(IUNOUT,600) "WLDSPT",0,
-     w                      WLDSPT_RES(IND),WLDSPT_SUM(IS),
-     w                  ABS(WLDSPT_RES(IND)-WLDSPT_SUM(IS))
-         WRITE(IUNOUT,600) "EWLDT",0,
-     w                      EWLDT_RES(IND),EWLDT_SUM(IS),
-     w                  ABS(EWLDT_RES(IND)-EWLDT_SUM(IS))
+          WRITE(IUNOUT,601) "VARIABLE",
+     w                      "SPECIES", "STANDARD",
+     w                      "RESOLVED", " DIFFERENCE"
+          WRITE(IUNOUT,600) "SAREA", 0, SAREA_SUM(IS),SAREA_RES(IND),
+     w                              ABS(SAREA_SUM(IS)-SAREA_RES(IND))
+          DO I=1,NATM
+            WRITE(IUNOUT,600) "WLDNA",I,WLDNA_RES(I,IND),WLDNA_SUM(I,IS)
+     w                        ,ABS(WLDNA_RES(I,IND)-WLDNA_SUM(I,IS))
+            WRITE(IUNOUT,600) "EWLDA",I,EWLDA_RES(I,IND),EWLDA_SUM(I,IS)
+     w                        ,ABS(EWLDA_RES(I,IND)-EWLDA_SUM(I,IS))
+            WRITE(IUNOUT,600) "EWLDEA",
+     w                       I,EWLDEA_RES(I,IND),EWLDEA_SUM(I,IS),
+     w                     ABS(EWLDEA_RES(I,IND)-EWLDEA_SUM(I,IS))
+            WRITE(IUNOUT,600) "WLDSPTA",
+     w                       I,WLDSPTA_RES(I,IND),WLDSPTA_SUM(I,IS),
+     w                     ABS(WLDSPTA_RES(I,IND)-WLDSPTA_SUM(I,IS))
+          END DO
+          DO I=1,NMOL
+            WRITE(IUNOUT,600) "WLDNM",I,WLDNM_RES(I,IND),WLDNM_SUM(I,IS)
+     w                        ,ABS(WLDNM_RES(I,IND)-WLDNM_SUM(I,IS))
+            WRITE(IUNOUT,600) "EWLDM",I,EWLDM_RES(I,IND),EWLDM_SUM(I,IS)
+     w                        ,ABS(EWLDM_RES(I,IND)-EWLDM_SUM(I,IS))
+            WRITE(IUNOUT,600) "EWLDEM",
+     w                       I,EWLDEM_RES(I,IND),EWLDEM_SUM(I,IS),
+     w                     ABS(EWLDEM_RES(I,IND)-EWLDEM_SUM(I,IS))
+            WRITE(IUNOUT,600) "EWLDMR",I,
+     w                         EWLDMR_RES(I,IND),EWLDMR_SUM(I,IS),
+     w                     ABS(EWLDMR_RES(I,IND)-EWLDMR_SUM(I,IS))
+            WRITE(IUNOUT,600) "WLDSPTM",
+     w                       I,WLDSPTM_RES(I,IND),WLDSPTM_SUM(I,IS),
+     w                     ABS(WLDSPTM_RES(I,IND)-WLDSPTM_SUM(I,IS))
+          END DO
+          DO I=1,NSPZ
+            WRITE(IUNOUT,600) "WLPUMP",
+     w                       I,WLPUMP_RES(I,IND),WLPUMP_SUM(I,IS),
+     w                     ABS(WLPUMP_RES(I,IND)-WLPUMP_SUM(I,IS))
+          END DO
+          WRITE(IUNOUT,600) "EWLDRP",0,
+     w                       EWLDRP_RES(IND),EWLDRP_SUM(IS),
+     w                   ABS(EWLDRP_RES(IND)-EWLDRP_SUM(IS))
+          WRITE(IUNOUT,600) "WLDSPT",0,
+     w                       WLDSPT_RES(IND),WLDSPT_SUM(IS),
+     w                   ABS(WLDSPT_RES(IND)-WLDSPT_SUM(IS))
+          WRITE(IUNOUT,600) "EWLDT",0,
+     w                       EWLDT_RES(IND),EWLDT_SUM(IS),
+     w                   ABS(EWLDT_RES(IND)-EWLDT_SUM(IS))
         END DO !DO IS=1,NSTS
 
         WRITE(IUNOUT,*)
         WRITE(IUNOUT,*) "WNEUTRAL_FLUX: COMPARING TO OLD DIAGNOSTIC"
         DO IS=1,NSTS
-         IF(eirdiag_nds_ind(IS).LT.0) CYCLE
-         ISS=NLIM+IS
-         WRITE(IUNOUT,*)
-         WRITE(IUNOUT,*) "SURFACE ", IS
+          IF(eirdiag_nds_ind(IS).LT.0) CYCLE
+          ISS=NLIM+IS
+          WRITE(IUNOUT,*)
+          WRITE(IUNOUT,*) "SURFACE ", IS
 
-         WRITE(IUNOUT,601) "VARIABLE",
-     w                     "SPECIES", "NEW",
-     w                     "OLD", " DIFFERENCE"
-         DO I=1,NATM
-          FSUM=WLDNA(ISS,I,0)*ELCHA
-          WRITE(IUNOUT,600) "WLDNA",I,WLDNA_SUM(I,IS),FSUM,
-     w                            ABS(WLDNA_SUM(I,IS)-FSUM)
-         END DO
-         DO I=1,NMOL
-          FSUM=WLDNM(ISS,I,0)*ELCHA
-          WRITE(IUNOUT,600) "WLDNM",I,WLDNM_SUM(I,IS),FSUM,
-     w                            ABS(WLDNM_SUM(I,IS)-FSUM)
-         END DO
-         FSUM=SUM(EWLDA_SUM(:,IS))+SUM(EWLDM_SUM(:,IS))-
-     -        SUM(EWLDEA_SUM(:,IS))-SUM(EWLDEM_SUM(:,IS))
-         WRITE(IUNOUT,600) "WLDNEK",0,FSUM,wldnek(ISS,0),
-     w                            ABS(FSUM-wldnek(ISS,0))
-         WRITE(IUNOUT,600) "WLDPEB",0,EWLDRP_SUM(IS),wldpeb(ISS,0),
-     w                            ABS(EWLDRP_SUM(IS)-wldpeb(ISS,0))
-         FSUM=SUM(EWLDMR_SUM(:,IS))
-         WRITE(IUNOUT,600) "WLDNEP",0,FSUM,wldnep(ISS,0),
-     w                            ABS(FSUM-wldnep(ISS,0))
+          WRITE(IUNOUT,601) "VARIABLE",
+     w                      "SPECIES", "NEW",
+     w                      "OLD", " DIFFERENCE"
+          DO I=1,NATM
+            FSUM=WLDNA(ISS,I,0)*ELCHA
+            WRITE(IUNOUT,600) "WLDNA",I,WLDNA_SUM(I,IS),FSUM,
+     w                              ABS(WLDNA_SUM(I,IS)-FSUM)
+          END DO
+          DO I=1,NMOL
+            FSUM=WLDNM(ISS,I,0)*ELCHA
+            WRITE(IUNOUT,600) "WLDNM",I,WLDNM_SUM(I,IS),FSUM,
+     w                              ABS(WLDNM_SUM(I,IS)-FSUM)
+          END DO
+          FSUM=SUM(EWLDA_SUM(:,IS))+SUM(EWLDM_SUM(:,IS))-
+     w        SUM(EWLDEA_SUM(:,IS))-SUM(EWLDEM_SUM(:,IS))
+          WRITE(IUNOUT,600) "WLDNEK",0,FSUM,wldnek(ISS,0),
+     w                             ABS(FSUM-wldnek(ISS,0))
+          WRITE(IUNOUT,600) "WLDPEB",0,EWLDRP_SUM(IS),wldpeb(ISS,0),
+     w                             ABS(EWLDRP_SUM(IS)-wldpeb(ISS,0))
+          FSUM=SUM(EWLDMR_SUM(:,IS))
+          WRITE(IUNOUT,600) "WLDNEP",0,FSUM,wldnep(ISS,0),
+     w                             ABS(FSUM-wldnep(ISS,0))
         END DO !DO IS=1,NSTS
       END IF !IF(TRCINT)
   600 FORMAT(1X,A12,I8,1P,3E16.7)

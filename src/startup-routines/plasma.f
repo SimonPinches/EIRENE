@@ -5,7 +5,7 @@ C
 !  6.8. 06  bugfix of bugfix: avoid calculation of B field in dead cells, but
 !                             still make sure to set B field in 1D cases.
 !  15.12.06 bug fix: index error corrected in call to prousr when called for ADIN
-!  10.06.08 new:  default BFIN=1 T, rather than 0 T
+!  10.06.08 new: default BFIN=1 T, rather than 0 T
 !  10.06.08 new option: profile type 3 (profs): set BFIN using B2 and B3 parameters
 !  22.09.14 bug fix re. this ind=3 option in case of type (=ind) = 1,2 .
 !                       help2 was undefined --> zero B field
@@ -17,9 +17,9 @@ cdr n,T,V for background (bulk) velocity distribution: not finished.
 !  oct. 16  comments, one minor bug fix (VZIN(IPLSV) in one (unused) option)
 !  nov. 16  nlpitch option added, for orientation of B field in 1D and 2D runs
 cdr jan 19: SELECT CASE(IND)
-cdr feb 19: parameter NDIM: check 1st dimension of input tallies. 
-cdr         Still unclear treatment in case of Ti (ion temperature). 
-cpb: reading tiin from profr:  set 1st dimension of tiin array.
+cdr feb 19: parameter NDIM: check 1st dimension of input tallies.
+cdr         Still unclear treatment in case of Ti (ion temperature).
+cpb: reading tiin from profr: set 1st dimension of tiin array.
 
 cdr: check under which conditions can nplsti be different from npls, and is that still needed?
 cdr: why is that not needed for V and n profiles?
@@ -30,6 +30,7 @@ C  SET DENSITY, TEMPERATURE AND MACH NUMBER PROFILES, B AND E FIELDS,
 C  ON:
 C  INDPRO=1,2,3 1D MESH "RHOZNE(J)", 1,NR1STM, CELL-CENTERED
 C               B FIELD (INDPRO(5)) SET ON 1:NSURF
+C
 C  INDPRO=4     READ FROM EXTERNAL FILE JSTREAM, EVERYWHERE, 1,NSBOX,
 C  INDPRO=5     PROUSR: ONLY IN STANDARD GRID, 1:NSURF
 C  INDPRO=6     PROFR : ONLY IN STANDARD GRID, 1:NSURF
@@ -63,11 +64,17 @@ C
 C  INDPRO=9 MEANS: THESE ARRAYS ARE ALREADY SET IN COUPLE_... (SUBR. INFCOP)
       IF (INDPRO(1) /= 9) TEIN = 0.D0
       IF (INDPRO(2) /= 9) TIIN = 0.D0
-                          DEIN = 0.D0 ! DERIVED TALLY DEIN IS SET IN PLASMA_DERIV
+                          DEIN = 0.D0 ! DERIVED TALLY DEIN IS SET
+                                      ! IN PLASMA_DERIV
       IF (INDPRO(3) /= 9) DIIN = 0.D0
-      IF (INDPRO(4) /= 9) VXIN = 0.D0
-      IF (INDPRO(4) /= 9) VYIN = 0.D0
-      IF (INDPRO(4) /= 9) VZIN = 0.D0
+
+c flow field
+      IF (INDPRO(4) /= 9) THEN
+        VXIN = 0.D0
+        VYIN = 0.D0
+        VZIN = 0.D0
+      ENDIF
+
       IF (INDPRO(11)/= 9) ZIIN = 0.D0
 c  magnetic field
       IF (LBXIN .AND. (INDPRO(5) /= 9)) BXIN = 0.D0
@@ -76,6 +83,7 @@ c  magnetic field
       IF (LBFIN .AND. (INDPRO(5) /= 9)) BFIN = 0.D0
 
       IF (LADIN .AND. (INDPRO(6) /= 9)) ADIN = 0.D0
+
 c  electric field
       IF (LEXIN .AND. (INDPRO(7) /= 9)) EXIN = 0.D0
       IF (LEYIN .AND. (INDPRO(7) /= 9)) EYIN = 0.D0
@@ -97,7 +105,7 @@ C  AND ALL REACTION RATES WRT: TO THIS BULK PARTICLE ARE SET EQUAL TO ZERO (1/S)
       TVAC=0.02_dp
       DVAC=1.E2_dp
       VVAC=0._dp
-      BVAC=1._dp  ! dr:  B field must not be "vacuum". check use of BVAC
+      BVAC=1._dp  ! dr: B field must not be "vacuum". check use of BVAC
       ZVAC=0._dp  ! nh
 C
 C
@@ -114,7 +122,7 @@ C  ELECTRON TEMPERATURE
         CALL EIRENE_PROFS (HELP,TE0,TE1,TE5,TVAC)
         TEIN(1:NR1ST)=HELP(1:NR1ST)
       CASE (4)
-c  INDPRO=4:  read tally from stream TEO
+c  INDPRO=4: read tally from stream TEO
         JSTREAM=NINT(TE0)
         ITALI=1
         CALL EIRENE_READTL(TXTPLS(1,ITALI),TXTPSP(1,ITALI),
@@ -123,17 +131,17 @@ c  INDPRO=4:  read tally from stream TEO
      .              3,JSTREAM)
         TEIN(1:NSBOX)=HELP(1:NSBOX)
       CASE (5)
-c  INDPRO=5:  tally from PROUSR, indx=0
+c  INDPRO=5: tally from PROUSR, indx=0
         CALL EIRENE_PROUSR (HELP,0,TE0,TE1,TE2,TE3,TE4,TE5,TVAC,NSURF)
         TEIN(1:NSURF)=HELP(1:NSURF)
       CASE (6)
-c  INDPRO=6:  tally from PROFR, pointer TEINTF(1:NSURF,.)
+c  INDPRO=6: tally from PROFR, pointer TEINTF(1:NSURF,.)
         ALLOCATE(RDUMMY(1,1:NSURF))
         CALL EIRENE_PROFR (RDUMMY,0,1,1,NSURF)
         TEIN(1:NSURF) = RDUMMY(1,1:NSURF)
         DEALLOCATE(RDUMMY)
       CASE (7)
-c  INDPRO=7:  tally from PROFR, pointer TEINTF(1:NSBOX=NSURF+NRADD,.)
+c  INDPRO=7: tally from PROFR, pointer TEINTF(1:NSBOX=NSURF+NRADD,.)
         ALLOCATE(RDUMMY(1,1:NSBOX))
         CALL EIRENE_PROFR (RDUMMY,0,1,1,NSBOX)
         TEIN(1:NSBOX) = RDUMMY(1,1:NSBOX)
@@ -142,7 +150,7 @@ c  INDPRO=7:  tally from PROFR, pointer TEINTF(1:NSBOX=NSURF+NRADD,.)
 
 C  ION TEMPERATURE
       IND=INDPRO(2)
-cdr first dimension of arrays:  NDIM .ne. NPLSTI possible ?
+cdr first dimension of arrays: NDIM .ne. NPLSTI possible ?
       NDIM = SIZE(TIIN,DIM=1)
       IF (NDIM.LT.NPLSTI) GOTO 996
 
@@ -163,7 +171,7 @@ cdr one profile iplsti set at a time
      .                            TI5(IPLSTI),TVAC)
           TIIN(IPLSTI,1:NR1ST)=HELP(1:NR1ST)
         case (4)
-c  INDPRO=4:  read tally from stream TIO(IPLSTI)
+c  INDPRO=4: read tally from stream TIO(IPLSTI)
           JSTREAM=NINT(TI0(IPLSTI))
           ITALI=2
           CALL EIRENE_READTL(TXTPLS(IPLSTI,ITALI),TXTPSP(IPLSTI,ITALI),
@@ -172,15 +180,15 @@ c  INDPRO=4:  read tally from stream TIO(IPLSTI)
      .              3,JSTREAM)
           TIIN(IPLSTI,1:NSBOX)=HELP(1:NSBOX)
         case (5)
-c  INDPRO=5:  tally from PROUSR, indx=1, but NPLSTI calls, one for each IPLSTI
+c  INDPRO=5: tally from PROUSR, indx=1, but NPLSTI calls, one for each IPLSTI
           CALL EIRENE_PROUSR (HELP,1+0*NPLS,TI0(IPLSTI),TI1(IPLSTI),
      .                      TI2(IPLSTI),TI3(IPLSTI),TI4(IPLSTI),
      .                      TI5(IPLSTI),TVAC,NSURF)
           TIIN(IPLSTI,1:NSURF)=HELP(1:NSURF)
 
-cdr distinct from indpro=1,...5:  now one single call for all IPLS=1,NPLSTI
+cdr distinct from indpro=1,...5: now one single call for all IPLS=1,NPLSTI
         case(6)
-c  INDPRO=6:  tally from PROFR, indx=1, all TIINTF pointer fields in one single call
+c  INDPRO=6: tally from PROFR, indx=1, all TIINTF pointer fields in one single call
           ALLOCATE(RDUMMY(NDIM,NSURF))
           CALL EIRENE_PROFR (RDUMMY,1+0*NPLS,NPLSTI,NDIM,NSURF)
           TIIN(1:NPLSTI,1:NSURF) = RDUMMY(1:NPLSTI,1:NSURF)
@@ -188,7 +196,7 @@ c  INDPRO=6:  tally from PROFR, indx=1, all TIINTF pointer fields in one single 
 !pb all species fields have been filled in this call thus exit loop
           EXIT
         case (7)
-c  INDPRO=7:  tally from PROFR, indx=1, all TIINTF pointer fields in one single call
+c  INDPRO=7: tally from PROFR, indx=1, all TIINTF pointer fields in one single call
           ALLOCATE(RDUMMY(NDIM,NSBOX))
           CALL EIRENE_PROFR (RDUMMY,1+0*NPLS,NPLSTI,NDIM,NSBOX)
           TIIN(1:NPLSTI,1:NSBOX) = RDUMMY(1:NPLSTI,1:NSBOX)
@@ -200,7 +208,7 @@ c  INDPRO=7:  tally from PROFR, indx=1, all TIINTF pointer fields in one single 
 
 C  ION DENSITY
       IND=INDPRO(3)
-cdr first dimension of arrays:  NDIM .ne. NPLS possible ?
+cdr first dimension of arrays: NDIM .ne. NPLS possible ?
       NDIM = SIZE(DIIN,DIM=1)
       IF (NDIM.LT.NPLSI) GOTO 997
 
@@ -221,7 +229,7 @@ cdr one profile ipls set at a time
           CALL EIRENE_PROFS (HELP,DI0(IPLS),DI1(IPLS),DI5(IPLS),DVAC)
           DIIN(IPLS,1:NR1ST)=HELP(1:NR1ST)
         case (4)
-c  INDPRO=4:  read tally from stream DIO(IPLS)
+c  INDPRO=4: read tally from stream DIO(IPLS)
           JSTREAM=NINT(DI0(IPLS))
           ITALI=4
           CALL EIRENE_READTL(TXTPLS(IPLS,ITALI),TXTPSP(IPLS,ITALI),
@@ -230,13 +238,13 @@ c  INDPRO=4:  read tally from stream DIO(IPLS)
      .              3,JSTREAM)
           DIIN(IPLS,1:NSBOX)=HELP(1:NSBOX)
         case (5)
-c  INDPRO=5:  tally from PROUSR, indx=1+1*NPLS, but NPLSI calls, one for each IPLS
+c  INDPRO=5: tally from PROUSR, indx=1+1*NPLS, but NPLSI calls, one for each IPLS
           CALL EIRENE_PROUSR (HELP,1+1*NPLS,DI0(IPLS),DI1(IPLS),
      .                        DI2(IPLS),DI3(IPLS),DI4(IPLS),DI5(IPLS),
      .                        DVAC,NSURF)
           DIIN(IPLS,1:NSURF)=HELP(1:NSURF)
 
-cdr distinct from indpro=1,...5:  now one single call for all IPLS=1,NPLSI
+cdr distinct from indpro=1,...5: now one single call for all IPLS=1,NPLSI
         case (6)
 c  INDPRO=6:
 cdr first dimension of arrays: pointer DIINTF(1:NPLS,.), always NPLS
@@ -260,7 +268,7 @@ cdr first dimension of arrays: pointer DIINTF(1:NPLS,.), always NPLS
 
 C  DRIFT VELOCITY
       IND=INDPRO(4)
-cdr first dimension of arrays:  NDIM .ne. NPLSV possible ?
+cdr first dimension of arrays: NDIM .ne. NPLSV possible ?
       NDIM = MIN(SIZE(VXIN,DIM=1),SIZE(VYIN,DIM=1),SIZE(VZIN,DIM=1))
       IF (NDIM.LT.NPLSV) GOTO 998
 
@@ -298,10 +306,10 @@ cdr one vector component profile (vx,vy,vz), and one value of iplsv set at a tim
 C  INDPRO=4: read tallies from streams VXO(IPLSV), VY0(IPLSV),VZ0(IPLSV)
 c            NOT READY FOR FLOW FIELDS
         case (5)
-c  INDPRO=5:  tally from PROUSR,
-c             VX: indx=1+2*NPLS, but NPLSV calls, one for each IPLSV
-c             VY: indx=1+3*NPLS, but NPLSV calls, one for each IPLSV
-c             VZ: indx=1+4*NPLS, but NPLSV calls, one for each IPLSV
+c  INDPRO=5: tally from PROUSR,
+c            VX: indx=1+2*NPLS, but NPLSV calls, one for each IPLSV
+c            VY: indx=1+3*NPLS, but NPLSV calls, one for each IPLSV
+c            VZ: indx=1+4*NPLS, but NPLSV calls, one for each IPLSV
           CALL EIRENE_PROUSR (HELP,1+2*NPLS,VX0(IPLSV),VX1(IPLSV),
      .                      VX2(IPLSV),VX3(IPLSV),
      .                      VX4(IPLSV),VX5(IPLSV),VVAC,NSURF)
@@ -315,7 +323,7 @@ c             VZ: indx=1+4*NPLS, but NPLSV calls, one for each IPLSV
      .                      VZ4(IPLSV),VZ5(IPLSV),VVAC,NSURF)
           VZIN(IPLSV,1:NSURF)=HELP(1:NSURF)
 
-cdr distinct from indpro=1,...5:  now one single call for all IPLS=1,NPLSV
+cdr distinct from indpro=1,...5: now one single call for all IPLS=1,NPLSV
         case (6)
 c  read tally from external data structure, all V.IN fields in one single call
 cdr first dimension of arrays:  always NPLSV
@@ -392,14 +400,15 @@ C  INDPRO(5)=1:
       case (2)
 C  INDPRO(5)=2:
         CALL EIRENE_PROFE (HELP,B0,B1,B2,B4,B5,BVAC)
-      case (3)   
+      case (3)
 C  INDPRO(5)=3:
         CALL EIRENE_PROFS (HELP,B0,B1,B5,BVAC)
-        CALL EIRENE_PROFS (HELP2,B2,B3,B5,BVAC) ! new (2008) set constant B profile, ONLY INDPRO(5)=3
-      case (4) 
+        CALL EIRENE_PROFS (HELP2,B2,B3,B5,BVAC) ! new (2008)
+                        ! set constant B profile, ONLY INDPRO(5)=3
+      case (4)
 C  INDPRO(5)=4: read tally from stream B0:  NOT IN USE
       case (5)
-c  INDPRO(5)=5:  call prousr
+c  INDPRO(5)=5: call prousr
         CALL EIRENE_PROUSR (BXIN,1+1*NPLS+NPLSTI+3*NPLSV,
      .                      B0,B1,B2,B3,B4,B5,0._DP,NSURF)
         CALL EIRENE_PROUSR (BYIN,2+1*NPLS+NPLSTI+3*NPLSV,
@@ -409,8 +418,8 @@ c  INDPRO(5)=5:  call prousr
         CALL EIRENE_PROUSR (BFIN,4+1*NPLS+NPLSTI+3*NPLSV,
      .                      B0,B1,B2,B3,B4,B5,1._DP,NSURF)
       case (6)
-c  INDPRO(5) =6:  call profr (information comes from interfacing code)
-c                 default (vacuum) parameters in additional cells
+c  INDPRO(5) =6: call profr (information comes from interfacing code)
+c                default (vacuum) parameters in additional cells
         ALLOCATE(RDUMMY(1,1:NSURF))
         CALL EIRENE_PROFR (RDUMMY,1+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
         BXIN(1:NSURF) = RDUMMY(1,1:NSURF)
@@ -422,8 +431,8 @@ c                 default (vacuum) parameters in additional cells
         BFIN(1:NSURF) = RDUMMY(1,1:NSURF)
         DEALLOCATE(RDUMMY)
       case (7)
-c  INDPRO(5) =7:  call profr (information comes from interfacing code)
-c                 include also additional cells
+c  INDPRO(5) =7: call profr (information comes from interfacing code)
+c                include also additional cells
         ALLOCATE(RDUMMY(1,1:NSBOX))
         CALL EIRENE_PROFR (RDUMMY,1+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
         BXIN(1:NSBOX) = RDUMMY(1,1:NSBOX)
@@ -438,7 +447,7 @@ c                 include also additional cells
 
 C  CONVERT PITCH ANGLE INTO B FIELD UNIT VECTOR
         IF (IND <= 3) then
-C  AT THIS POINT: INDPRO= 1,2, OR =3. 
+C  AT THIS POINT: INDPRO= 1,2, OR =3.
 C                 HELP2 IS KNOWN ONLY IN CASE INDPRO=3
         IF (LEVGEO.EQ.1) THEN
           DO 1401 J=1,NSURF
@@ -447,10 +456,12 @@ C                 HELP2 IS KNOWN ONLY IN CASE INDPRO=3
             IF (IR.GE.NR1ST) GOTO 1401
             IF ((NP2ND.GT.1).AND.(IP.GE.NP2ND)) GOTO 1401
 C
-            IF (.NOT.NLPITCH) THEN ! OLD DEFAULT: B FIELD IS parallel TO Y,Z
+            IF (.NOT.NLPITCH) THEN ! OLD DEFAULT:
+                                   ! B FIELD IS parallel TO Y,Z
               BXIN(J)=0.0
               BYIN(J)=HELP(IR)
-            ELSEIF (NLPITCH) THEN  ! NEW OPTION : B FIELD IS parallel TO X,Z
+            ELSEIF (NLPITCH) THEN  ! NEW OPTION :
+                                   ! B FIELD IS parallel TO X,Z
               BXIN(J)=HELP(IR)
               BYIN(J)=0.0
             ENDIF
@@ -546,15 +557,15 @@ C  ADDITIONAL INPUT TALLIES
         case (1:4)
 C  DEFAULT: ADIN == 0.0, only options ind=5,6,7 are available
 c          (transfer from problem-specific codes or external data structures)
-        DO 1151 J=1,NR1ST
-          ADIN(K,J)=0.
- 1151   CONTINUE
+          DO 1151 J=1,NR1ST
+            ADIN(K,J)=0.
+ 1151     CONTINUE
         case (5)
           CALL EIRENE_PROUSR (HELP,6+1*NPLS+NPLSTI+3*NPLSV,
-     .                      BD,BD,BD,BD,BD,BD,0._DP,NSURF)
+     .                        BD,BD,BD,BD,BD,BD,0._DP,NSURF)
           ADIN(K,1:NSURF)=HELP(1:NSURF)
 
-cdr distinct from indpro=1,...5:  now one single call for all K=1,NAINI
+cdr distinct from indpro=1,...5: now one single call for all K=1,NAINI
         case (6)
           ALLOCATE(RDUMMY(NDIM,NSURF))
           CALL EIRENE_PROFR (RDUMMY,6+1*NPLS+NPLSTI+3*NPLSV,
@@ -582,15 +593,14 @@ C  DEFAULT: E==0.0 (no electric field), only options ind=5,6,7 overrule this
 c          (transfer from problem-specific codes or external data structures)
       select case (IND)
       case (5)
-        CALL EIRENE_PROUSR (EXIN,7+1*NPLS+NPLSTI+3*NPLSV,
+        CALL EIRENE_PROUSR (EXIN, 7+1*NPLS+NPLSTI+3*NPLSV,
      .                      EF0,EF1,EF2,EF3,EF4,EF5,0._DP,NSURF)
-        CALL EIRENE_PROUSR (EYIN,8+1*NPLS+NPLSTI+3*NPLSV,
+        CALL EIRENE_PROUSR (EYIN, 8+1*NPLS+NPLSTI+3*NPLSV,
      .                      EF0,EF1,EF2,EF3,EF4,EF5,0._DP,NSURF)
-        CALL EIRENE_PROUSR (EZIN,9+1*NPLS+NPLSTI+3*NPLSV,
+        CALL EIRENE_PROUSR (EZIN, 9+1*NPLS+NPLSTI+3*NPLSV,
      .                      EF0,EF1,EF2,EF3,EF4,EF5,0._DP,NSURF)
         CALL EIRENE_PROUSR (EFIN,10+1*NPLS+NPLSTI+3*NPLSV,
      .                      EF0,EF1,EF2,EF3,EF4,EF5,0._DP,NSURF)
-
       case (6)
         ALLOCATE(RDUMMY(1,1:NSURF))
         CALL EIRENE_PROFR (RDUMMY, 7+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
@@ -695,8 +705,9 @@ C   THE STANDARD MESH.
 C   EXCLUDE: INDPRO=4: ADDITIONAL CELL REGION FROM FILE JSTREAM
 C   EXCLUDE: INDPRO=7: ADDITIONAL CELL REGION DATA FROM EXTERNAL CODE (PROFR)
 C   EXCLUDE: INDPRO=8: ??
+C   EXCLUDE: INDPRO=9: TRANSFER FROM PLASMA_BCKGRND, EXTERNAL CODE
 
-cdr tbd: indpro=4:  are data set on 1:nsurf, or on 1:nsbox=nsurf+nradd ?
+cdr tbd: indpro=4: are data set on 1:nsurf, or on 1:nsbox=nsurf+nradd ?
 C
       IF (INDPRO(1).LE.6 .OR. INDPRO(1).EQ.9) THEN
         DO J=NSURF+1,NSURF+NRADD
@@ -775,7 +786,7 @@ C
 
   995 CONTINUE
       WRITE (iunout,*) 'ERROR IN PLASMA: 1ST DIMENSION OF ZIIN TALLY'
-      WRITE (iunout,*) 'NDIM,NPLSTI ',NDIM,NPLSI
+      WRITE (iunout,*) 'NDIM,NPLSI ',NDIM,NPLSI
       CALL EIRENE_EXIT_OWN(1)
   996 CONTINUE
       WRITE (iunout,*) 'ERROR IN PLASMA: 1ST DIMENSION OF TIIN TALLY'

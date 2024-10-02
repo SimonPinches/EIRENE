@@ -1,21 +1,21 @@
-C 
+C
 C
       SUBROUTINE EIRENE_SIGEIR(INIT,JJJ,ZDS,DUM1,PSIG,DUM2,ARGST)
 CMG 3/9/21 (MG) User routine to integrate plasma parameters,
-C               e.g. atomic density    
+C               e.g. atomic density
 C  INPUT:
 C          IFIRST: FLAG FOR INITIALISATION
 C          NCELL:   INDEX IN TALLY ARRAYS FOR CURRENT ZONE
 C          JJJ:    INDEX OF SEGMENT ALONG CHORD
 C          ZDS:    LENGTH OF SEGMENT NO. JJJ
-C               
+C
 C  OUTPUT: CONTRIB. FROM CELL NCELL AND CHORD SEGMENT JJJ TO
 C          THE PARAMETER PSIG (TOTAL) and ARGST (CONTR.)
-C          ISP = NSPSPZ in block 13, defined for each ICHORI      
+C          ISP = NSPSPZ in block 13, defined for each ICHORI
 C          PSIG(ISP=1), ARGST(ISP=1,) - nH0 ---> to be checked
 C          for order of species!
-C          PSIG(2), ARGST (2,) - nH2      
-C      
+C          PSIG(2), ARGST (2,) - nH2
+C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CESTIM
@@ -42,16 +42,16 @@ C
 
         IF (IITER .NE. ITROLD) THEN
           WRITE (IUNOUT,*) ' sigeir '
-           
+
         ENDIF
         ITROLD=IITER
         IF (TRCSIG) WRITE(IUNOUT,*) 'SIGEIR, UDIM= ',UDIM
         RETURN
       ENDIF
- 
+
 
 C  LINE INTEGRAL: NEUTRAL PARAMETER * CM
-C  
+C
       udim=ubound(psig,1)
       ncelc=ncltal(ncell)
       if (udim >= 1)
@@ -65,6 +65,6 @@ C
         if (udim >= 2)
      .    ARGST(2,JJJ)=PDENM(1,NCELC)
       ENDIF
-      
+
       RETURN
       END

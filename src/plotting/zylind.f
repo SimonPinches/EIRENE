@@ -68,7 +68,7 @@ C
         PHID=ACOS(BZ/SQRT(2.+BY*BY))
       ELSE
         WRITE (iunout,*) 'FEHLER IN DER EINGABE VON VX,VY,VZ ',
-     .    NUM,VX,VY,VZ
+     .                                          NUM,VX,VY,VZ
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
       CX=AY*BZ-AZ*BY
@@ -159,7 +159,7 @@ C
       DO 5 J=1,NP
         IF (ILEFT.NE.0) THEN
           CALL EIRENE_SHNITT
-     .  (P,PXS,PYS,PZS,-VX,-VY,-VZ,AL,ILEFT,XP,YP,J,J,1)
+     .     (P,PXS,PYS,PZS,-VX,-VY,-VZ,AL,ILEFT,XP,YP,J,J,1)
         ENDIF
         DO 4 I=IA,IE
           T=T1+(I-1)*DT
@@ -170,7 +170,7 @@ C
     4   CONTINUE
         IF (IRIGHT.NE.0) THEN
           CALL EIRENE_SHNITT
-     .  (P,PXS,PYS,PZS,VX,VY,VZ,AR,IRIGHT,XP,YP,J,J,NK)
+     .     (P,PXS,PYS,PZS,VX,VY,VZ,AR,IRIGHT,XP,YP,J,J,NK)
         ENDIF
         do 9 jj=1,nk
           xps(jj)=real(xp(jj),sp)

@@ -85,9 +85,9 @@ C
      .                       ldef_time_horizon,nlfem_in, nlplg_in,
      .                       nlpol_in, np2nd_in, nr1st_in, nt3rd_in,
      .                       noptim_in, nrtal_in, nsmstra_in, nstrai_in,
-     .                       eirene_init_input_blocks 
+     .                       eirene_init_input_blocks
 !pgf      use json_module, ck => json_ck
-!cym/cpg, keep using json_ck       
+!cym/cpg, keep using json_ck
 !      use json_module           !IGNORE
       use json_module           !IGNORE
 !cym/cpg
@@ -101,7 +101,7 @@ C
         type(json_value), pointer, intent(in) :: p
         END SUBROUTINE EIRENE_IF0PRM_JSON
       END INTERFACE
-c      
+c
       type(json_value),pointer :: p
 
       integer :: nstsi, j, nprnli, nlimi
@@ -112,10 +112,11 @@ c
      .           NLRANMAR, NLOCTREE, NEXVS, NLTRIMESH
       logical :: found0, ldefstor
 !      logical :: found0, ldefstor, lext, nlerg, lhyddef, ladapt
-      logical :: lmulpl ! multiple Ti and V..IN (per species) multiple ion velocities (per species)
-cym      
+      logical :: lmulpl ! multiple Ti and V..IN (per species)
+                        ! multiple ion velocities (per species)
+cym
       character*8, allocatable :: textal(:)
-cym      
+cym
 !pgf      character(kind=CK,len=:), allocatable :: header
 !cym/cpg, keep using json_ck
       character(kind=json_CK,len=:), allocatable :: header
@@ -125,9 +126,9 @@ C  SET DEFAULT VALUES FOR STORAGE PARAMETERS
 C
       CALL EIRENE_INIT_PARAMS
       LDEFSTOR=.false.
-      
+
       lmulpl = .false.
-  
+
       CALL EIRENE_LEER(3)
 
       WRITE (IUNOUT,*) 'PRINTOUT FROM EIRENE PRE-PROCESSING:'
@@ -141,7 +142,8 @@ c  start reading json file
 
 C  start browsing the header
 
-      j = itree_num(0)        ! index of the jtree that holds the data of the input block   
+      j = itree_num(0)        ! index of the jtree that holds
+                              ! the data of the input block
       call jtrees(j)%get(blks(0)%p,'TXTRUN',header,found0)
       write (iunout,'(A)') header
       CALL EIRENE_LEER(1)
@@ -207,7 +209,7 @@ C  start browsing the header
       if (nmode == 0) then
         j = itree_num(14)
         call eirene_browse_block_14(jtrees(j),blks(14)%p)
-      else 
+      else
 ! to be prepared
 !       CALL EIRENE_IF0PRM(IUNIN)
         j = itree_num(14)
@@ -215,15 +217,15 @@ C  start browsing the header
       end if
 
       CALL EIRENE_ALLOC_CTRCEI(2)
-     
+
 C  SWITCH OFF SUM OVER STRATA IF THERE IS ONLY ONE STRATUM TO BE CALCULATED
 !pb      IF (NSTRAI == 1) NSMSTRA = 0
- 
+
 cdr  due to these changes there, also some derived storage parmeters may have changed....
       NRAD=MAX(N1ST*N2ND*N3RD,NTRI*N3RD,NTETRA)+NADD+1 ! as in parmmod
 
-      
-!  output paramters for check 
+
+!  output parameters for check
 
       CALL EIRENE_LEER(1)
       WRITE (IUNOUT,'(A)') ' AUTOMATED STORAGE SETTING (FIND_PARAM.F)'
@@ -263,7 +265,7 @@ cdr species
 
       CALL EIRENE_LEER(1)
 c  additional volumetric tallies
-      WRITE (iunout,'(a14,i8)') 'NADV        = ',NADV    
+      WRITE (iunout,'(a14,i8)') 'NADV        = ',NADV
       WRITE (iunout,'(a14,i8)') 'NCLV        = ',NCLV
       WRITE (iunout,'(a14,i8)') 'NSNV        = ',NSNV
       WRITE (iunout,'(a14,i8)') 'NALV        = ',NALV
@@ -318,7 +320,7 @@ C  OPTIONAL STORAGE/PERFORMANCE HANDLING FLAGS
       WRITE (iunout,'(a14,i8)') 'NSMSTRA     = ',NSMSTRA
       WRITE (iunout,'(a14,i8)') 'NSTORAM     = ',NSTORAM
       WRITE (iunout,'(a14,i8)') 'NGSTAL      = ',NGSTAL
-C 
+C
       CALL EIRENE_LEER(1)
       WRITE (IUNOUT,*) 'SETTING OF CENSUS STORAGE FOR T-DEP. MODE'
 cdr  time dependent options: census array size
@@ -366,14 +368,14 @@ cpg
       nsmstra_in = nsmstra
 
       call json%get(p,'NLERG',nlerg,found)
-     
-C  NSTORAM IS REDEFINED, FINALLY EITHER =0  (A&M STORAGE SAVE MODE) 
-C                                    OR =9  (FULL A&M STORAGE MODE, =DEFAULT) 
+
+C  NSTORAM IS REDEFINED, FINALLY EITHER =0  (A&M STORAGE SAVE MODE)
+C                                    OR =9  (FULL A&M STORAGE MODE, =DEFAULT)
       NSTORAM = MIN(NSTORAM,9)
       IF (NSTORAM < 9) NSTORAM = 0
       NOPTM1 = MAX(NOPTM1,1)
 C
-      
+
       call json%get(p,'NLSCL',nlscl,found)
       call json%get(p,'NLTEST',nltest,found)
       call json%get(p,'NLANA',nlana,found)
@@ -403,8 +405,8 @@ cdr scan for optional CFILE lines: path to external database files
       call json%get_child(p,'CFILE',pfile,found)
       if (found) then
         call json%info(pfile,n_children=nch)
-!       do ifile = 1, ndbnames 
-        do i = 1, nch 
+!       do ifile = 1, ndbnames
+        do i = 1, nch
           call json%get_child(pfile,i,pdb,found)
           call json%get(pdb,'FILE',cdbh,found)
           call json%get(pdb,'PATH',cdbf,found)
@@ -428,7 +430,7 @@ cpg         TREEPATH = get_solpstop()
      .           REPEAT(' ',400-(I4+1))
                 ldbread(ifile) = .true.
               end if
-            ELSE  
+            ELSE
               dbfname(ifile) = trim(cdbf)
               ldbread(ifile) = .true.
             END IF
@@ -499,7 +501,7 @@ C
         nplg = max(nplg,nrplg)
         nppart = max(nppart,npplg)
       end if
-      
+
       call json%get(p,'RADIAL_GRID.NRKNOT',nrknot,found)
       call json%get(p,'RADIAL_GRID.NCOOR',ncoor,found)
       nknot = max(nknot,nrknot)
@@ -526,7 +528,7 @@ C
             CALL EIRENE_EXIT_OWN(1)
           END IF
           CASENAME(1:LL) = CASE(1:LL)
-          
+
           IF (NLFEM) THEN
             CALL EIRENE_FIND_TRIANG_DIM(NR1ST, NTRI, NTRII, NKNOT,
      .                                  NGITT, CASENAME, IFOFF)
@@ -535,7 +537,7 @@ C
           IF (NLTET) THEN
             CALL EIRENE_FIND_TET_DIM(NR1ST, NTETRA, NTET, NCOORD,
      .                               NGITT, CASENAME, IFOFF)
-          ENDIF       
+          ENDIF
         end if
       end if
       NTRIS=NTRII
@@ -562,7 +564,7 @@ cdr  storage for 3nd coordinate grid only, if NLTOR=T
       if (nltor) n3rd = max(n3rd,nt3rd)
 CDR STORAGE FOR TOROIDAL EFFECTS, EVEN IF
 CDR NO TOROIDAL RESOLUTION IS USED
-      NTOR = MAX(NTOR,NTTRA)  
+      NTOR = MAX(NTOR,NTTRA)
 C
 C  MESH MULTIPLICATION
 C
@@ -595,7 +597,7 @@ C
 !PB   IF NTIME >=1 NSTSI IS INCREASED in BLOCK 12
 !PB   IF (NTIME.GE.1) NSTSI = NSTSI + 1
       NSTS = MAX(NSTS,NSTSI)
-        
+
       end subroutine eirene_browse_block_3a
 
 
@@ -613,7 +615,7 @@ C
 
       call json%get(p,'NLIMI',nlimi,found)
       NLIM = MAX(NLIM,NLIMI)
-        
+
       end subroutine eirene_browse_block_3b
 
 
@@ -625,7 +627,7 @@ C
       class(json_core),intent(inout) :: json
       type(json_value), pointer, intent(in) :: p
 
-      type(json_value), pointer :: species, preac, pspecs, pspc 
+      type(json_value), pointer :: species, preac, pspecs, pspc
       integer :: nreaci, natmi, nmoli, nioni, nphoti
       logical :: found
       character(50) :: s1, s2, sss
@@ -640,10 +642,10 @@ C
      .  '       ATOMIC REACTION CARDS, NREACI DATA FIELDS'
 
       call json%get(p,s1//s2//'.NREACI',nreaci,found)
-!PB   increase number of reactions by 1 as there are still 
+!PB   increase number of reactions by 1 as there are still
 !PB   calls to SLREAC which use reaction number NREACI+1 (SGNAL and HE_EMISS)
       NREAC = MAX(NREAC,NREACI+1)
-      
+
 
       call json%get_child(p,'SPECIES_SPEC',species,found)
       call json%get_child(species,'REACTIONS',preac,found)
@@ -663,7 +665,7 @@ cxpb New code: we are doing this for the converter that needs to know early the
 cxpb  correspondence between the species in the old and new runs
 cym moved as above // introduce a local variable to pass as argument to couple_param_...
 cym      if(.not.allocated(TEXTA)) allocate(TEXTA(NATM))
-      if(.not.allocated(TEXTAL)) allocate(TEXTAL(NATM)) 
+      if(.not.allocated(TEXTAL)) allocate(TEXTAL(NATM))
 cym to be evaluated - see calling order / find_param
       if(.not.allocated(NMASSA)) then
         allocate(NMASSA(NATM))
@@ -734,7 +736,7 @@ cym to be evaluated
       nullify(preac)
       nullify(pspecs)
       nullify(pspc)
-       
+
       end subroutine eirene_browse_block_4
 
 !******************************************************************************
@@ -747,7 +749,7 @@ cym to be evaluated
       character(*), intent(in) :: ch
       integer, intent(in) :: nspc
       logical, intent(inout) :: logpl
-      integer, intent(inout), optional :: nmass(nspc), nchar(nspc), 
+      integer, intent(inout), optional :: nmass(nspc), nchar(nspc),
      .                                    nchrg(nspc), lkind(nspc)
 
       type(json_value), pointer :: pspecies, spchild, preac, pir
@@ -760,7 +762,7 @@ cym to be evaluated
       call json%get_child(p,'SPECIES',pspecies,found)
       call json%get_child(pspecies,spchild)
       if (.not.associated(spchild)) return
-      
+
       do i = 1, nspc
         if (ch == 'A') then
           call json%get(spchild,'SPECIES',spname,found)
@@ -799,7 +801,7 @@ cdr:  to be generalized: there may be other reactions, which require multiple Ti
           call json%get(pir,'IBGK'//ch,ibgk,found)
           logpl = logpl .or. (ibgk /= 0)
           call json%get_next(pir,pir)
-        end do 
+        end do
         call json%get_next(spchild,spchild)
         if (.not.associated(spchild)) exit
       end do
@@ -809,7 +811,7 @@ cdr:  to be generalized: there may be other reactions, which require multiple Ti
       nullify (preac)
       nullify (pir)
 
-      end subroutine eirene_read_spc_block 
+      end subroutine eirene_read_spc_block
 
 
 !******************************************************************************
@@ -820,7 +822,7 @@ cdr:  to be generalized: there may be other reactions, which require multiple Ti
       class(json_core),intent(inout) :: json
       type(json_value), pointer, intent(in) :: p
 
-      type(json_value), pointer :: pback, pbulk, pspecies, 
+      type(json_value), pointer :: pback, pbulk, pspecies,
      .                             pspc, pdm, pplas
       integer :: nreaci, natmi, nmoli, nioni, nphoti, i, ico
       INTEGER, allocatable :: indp(:)
@@ -844,7 +846,7 @@ cdr:  to be generalized: there may be other reactions, which require multiple Ti
       do i = 1, nplsi
         if (associated(pspc)) then
           call json%get_child(pspc,'DENS_MODEL',pdm,found)
-          if (found) ico = ico + 1 
+          if (found) ico = ico + 1
         end if
         call json%get_next(pspc,pspc)
       end do
@@ -889,7 +891,7 @@ cdr these next 2 lines for V_IN(ipls)
         NPLSV = NPLS
         WRITE (IUNOUT,*) ' NPLSV = ',NPLSV
       END IF
-      
+
       deallocate(indp)
       nullify(pback)
       nullify(pbulk)
@@ -1030,7 +1032,7 @@ c  Due to the volume tally input card (indpro(12)) being optional.
       end if
 
       nullify(ptom)
-        
+
       end subroutine eirene_browse_block_6
 
 
@@ -1057,15 +1059,15 @@ c  Due to the volume tally input card (indpro(12)) being optional.
       NSTRAI_IN = NSTRAI
       IF (NTIME.GE.1) NSTRAI = NSTRAI + 1
       NSTRA = MAX(NSTRA,NSTRAI)
-      
+
 CDR  TRY TO SET NSTEP, THE NUMBER OF STEP FUNCTIONS FOR SOURCE SAMPLING
 cdr  set nstep = highest stratum number, which receives primary source data from external code.
 cdr  this must be highly case specfic. To be reconsidered !!
 cpb  Step functions are only used in conjunction withsource sampling.
-cpb  If we find the highest stratum J that uses a step function we can be sure 
-cpb  that there are less than J step functions involved. 
+cpb  If we find the highest stratum J that uses a step function we can be sure
+cpb  that there are less than J step functions involved.
 cpb  For this reason start the loop at NSTRAI and count downwards.
-cpb  We imply implicitely that the numbering of step functions is in 
+cpb  We imply implicitely that the numbering of step functions is in
 cpb  ascending order starting with 1
       NSTEP = 1
       call json%get(p,'INDSRC',indsrc,found)
@@ -1081,7 +1083,7 @@ cpb  ascending order starting with 1
       call json%get_child(p,'STRATA',pstra,found)
 
       if (found) then
-!  noc stratum blocks in input file 
+!  noc stratum blocks in input file
 !  noc < nstrai if any(indsrc==6)
          noc = json%count(pstra)
          call json%get_child(pstra,pst)
@@ -1095,7 +1097,7 @@ cpb  ascending order starting with 1
              NSRFS = MAX(NSRFS,NSRFSI)
 
              call json%get_child(pst,'SUBSTRATA',psubs,fsub)
-             
+
              call json%get_child(psubs,psub)
              do i = 1, nsrfsi
                 if (associated(psub)) then
@@ -1108,19 +1110,19 @@ cpb  ascending order starting with 1
                   do while (isor > 0)
                     ist =  mod(isor,10)
 cdr  here NSTEP is set to the largest step function number specified on SORIND
-                    if ((ist == 4).OR.(ist==5)) 
+                    if ((ist == 4).OR.(ist==5))
      .                nstep = max(nstep,nint(sorind))
                     isor = isor / 10
                   end do
-                  call json%get_next(psub,psub)          
+                  call json%get_next(psub,psub)
                 end if
              end do
-             
-             call json%get_next(pst,pst)          
+
+             call json%get_next(pst,pst)
            end if
          end do
       end if
-        
+
       deallocate (indsrc)
       nullify(pstra)
       nullify(pst)
@@ -1144,7 +1146,7 @@ cdr  here NSTEP is set to the largest step function number specified on SORIND
       WRITE (iunout,*) '*** 9. DATA FOR STATISTIC AND NON-ANALOG MODEL'
 
       WRITE (iunout,*) '       CARDS FOR STANDARD DEVIATION'
-      
+
       if (associated(p)) then
         call json%get(p,'NSIGVI',nsigvi,found)
         call json%get(p,'NSIGSI',nsigsi,found)
@@ -1158,7 +1160,7 @@ cdr  here NSTEP is set to the largest step function number specified on SORIND
       NSD = MAX(NSD,NSIGVI)
       NSDW = MAX(NSDW,NSIGSI)
       NCV = MAX(NCV,NSIGCI)
-        
+
       end subroutine eirene_browse_block_9
 
 
@@ -1206,7 +1208,7 @@ cdr  here NSTEP is set to the largest step function number specified on SORIND
       WRITE (iunout,*) '*** 10D. DATA FOR ADDITIONAL SURFACE TALLIES'
       WRITE (iunout,*) '*** 10E. DATA FOR ALGEBRAIC SURFACE TALLIES'
       WRITE (iunout,*) '*** 10F. DATA FOR SPECTRA'
-        
+
       end subroutine eirene_browse_block_10
 
 
@@ -1266,7 +1268,7 @@ C  ERGODIC OPTION NEEDS PRINTOUT AT LEAST FROM TIME-HORIZON
         nullify(ptals)
         nullify(ptal)
       end if
-       
+
       end subroutine eirene_browse_block_11
 
 
@@ -1283,7 +1285,7 @@ C  ERGODIC OPTION NEEDS PRINTOUT AT LEAST FROM TIME-HORIZON
 !pgf      character(kind=CK,len=:), allocatable :: ckey
 !cym/cpg, keep using json_ck
       character(kind=json_CK,len=:), allocatable :: ckey
-      integer :: num_lines, mod_addv, i, j, k, num_compo, num_contrib, 
+      integer :: num_lines, mod_addv, i, j, k, num_compo, num_contrib,
      .           lines, iratio, nadv_add, nchori, ncheni
       logical :: lkey, found, nlemis
 
@@ -1304,12 +1306,12 @@ C  ERGODIC OPTION NEEDS PRINTOUT AT LEAST FROM TIME-HORIZON
           if (index(ckey,json_ck_'DEFINE_LINES') == 0) lkey = .false.
 !cym end
         end if
-      
+
         if (lkey) then
 !  read emission lines
           call json%get(p,'.NUM_LINES',num_lines,found)
           call json%get(p,'.MOD_ADDV',mod_addv, found)
-          
+
           call json%get_child(p,'LINES',plines,found)
           call json%get_child(plines,pline)
 
@@ -1319,11 +1321,12 @@ C  ERGODIC OPTION NEEDS PRINTOUT AT LEAST FROM TIME-HORIZON
               call json%get(pline,'NUM_COMPO',num_compo,found)
               IF (MOD_ADDV == 0) THEN
                 NADV_ADD = MAX(NADV_ADD,NUM_COMPO+1)
-              ELSE 
+              ELSE
                 NADV_ADD = NADV_ADD + NUM_COMPO + 1
               END IF
 
-              if (.false.) then  ! read components and contributions, not needed
+              if (.false.) then  ! read components and contributions,
+                                 ! not needed
 ! components
               call json%get_child(pline,'COMPONENTS',pcomps,found)
               call json%get_child(pcomps,pcomp)
@@ -1352,9 +1355,9 @@ C  ERGODIC OPTION NEEDS PRINTOUT AT LEAST FROM TIME-HORIZON
 
 ! ADD 1 FOR TOTAL  --  already done
 !         IF (MOD_ADDV == 0) NADV_ADD = NADV_ADD + 1
-          NADV = NADV + NADV_ADD 
+          NADV = NADV + NADV_ADD
 !         NREAC = NREAC + LINES
-         
+
         end if
 
         WRITE (iunout,*) '*** 12A. DATA FOR LINES OF SIGHT'
@@ -1362,15 +1365,15 @@ C  ERGODIC OPTION NEEDS PRINTOUT AT LEAST FROM TIME-HORIZON
         call json%get(p,'NCHORI',nchori,found)
         call json%get(p,'NCHENI',ncheni,found)
 
-        nullify(plines) 
+        nullify(plines)
         nullify(pline)
-        nullify(pcomps) 
+        nullify(pcomps)
         nullify(pcomp)
-        nullify(pcnts) 
+        nullify(pcnts)
         nullify(pcnt)
- 
+
       end if
-      
+
       NCHOR = MAX(NCHOR,NCHORI)
       NCHEN = MAX(NCHEN,NCHENI)
       NLEMIS = NLEMIS .OR. (NCHOR > 0)
@@ -1383,9 +1386,9 @@ C  ERGODIC OPTION NEEDS PRINTOUT AT LEAST FROM TIME-HORIZON
 ! USE MAXIMUM AS NCHAR AND NCHRG ARE NOT YET AVAILABLE
         NUM_CONTRIB = NATMI + NMOLI + 2*NMOLI + 2*NMOLI + 2*NMOLI +
      .                NPLSI
-        NREAC = NREAC + NUM_LINES*NUM_COMPO + 3           
+        NREAC = NREAC + NUM_LINES*NUM_COMPO + 3
       END IF
-    
+
       end subroutine eirene_browse_block_12
 
 
@@ -1406,7 +1409,7 @@ C  ERGODIC OPTION NEEDS PRINTOUT AT LEAST FROM TIME-HORIZON
       nprnli = 0
       nprmul = 1
       NSNVI = 0
-      
+
       if (associated(p)) then
         call json%get(p,'NPRNLI',nprnli,found)
         call json%get(p,'DEFAULT_TIME_HORIZON',ldef_time_horizon,found)
@@ -1443,7 +1446,7 @@ C  THEREFORE: SET A DEFAULT TIME HORIZON HERE
       NSTRA = MAX(NSTRA,NSTRAI)
       NPRNL = MAX(NPRNL,NPRNLI)
       NLIMPS = NLIM+NSTS
- 
+
       end subroutine eirene_browse_block_13
 
 
@@ -1472,14 +1475,14 @@ C  THEREFORE: SET A DEFAULT TIME HORIZON HERE
         j = itree_num(14)
         call eirene_if0prm_json(json,p)
       ENDIF
-      
+
 cdr  some parameters may have gotten changed in IF0PRM, case-specific
       NAIN = MAX(NAIN,NAINI)
       NCPV = MAX(NCPV,NCPVI)
-        
+
       end subroutine eirene_browse_block_14
 
- 
+
 !******************************************************************************
 
 

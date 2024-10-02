@@ -1,9 +1,9 @@
 \section{Data for additional volume and surface averaged tallies}
 \label{sec2.10}
 
-\textbf{General remarks} 
+\textbf{General remarks}
 
-\medskip 
+\medskip
 
 There is a large number of preprogrammed ``default" volume or surface averaged
 tallies, which have been selected mainly to allow assessment of global particle
@@ -28,7 +28,7 @@ contains only zeros, then the rest of this block can/must be omitted.
 
 \medskip
 
-\textbf{The Input Block} 
+\textbf{The Input Block}
 
 \begin{small}
   \begin{lstlisting}
@@ -79,9 +79,9 @@ optional, in versions Eirene$_{2003}$ and younger:
   106 CONTINUE
 \end{lstlisting}
 
-\textbf{Meaning of the input variables for additional volume and surface averaged Tallies} 
+\textbf{Meaning of the input variables for additional volume and surface averaged Tallies}
 
-\medskip 
+\medskip
 
 \begin{description}
   \item[NADVI] Total number of additional volume averaged,
@@ -97,7 +97,7 @@ optional, in versions Eirene$_{2003}$ and younger:
   \item[NADSPC] Total number of surface or cell averaged energy spectra
 \end{description}
 
-\subsection{Additional volume averaged tallies, track-length estimator}\label{sec2.10A} 
+\subsection{Additional volume averaged tallies, track-length estimator}\label{sec2.10A}
 
 \begin{description}
   \item[IADVE] flag for scaling factor for this tally
@@ -105,10 +105,10 @@ optional, in versions Eirene$_{2003}$ and younger:
         \begin{description}
           \item[$= 1$] scale tally
                 per unit volume [\si{\per\cubic\centi\metre}].
-                The tally is printed and plotted in the units 
+                The tally is printed and plotted in the units
 
                 $[\si{\per\cubic\centi\metre}] \cdot [$units of $g^*] \cdot [\si{\centi\metre}]
-                  \cdot [$source strength FLUX$]$ 
+                  \cdot [$source strength FLUX$]$
 
                 however, with FLUX converted to units [\si{\per\second}] (rather than input
                 units $[Ampere]$).
@@ -196,19 +196,19 @@ If either ICLVS or ICLVT is out of range, no default tally is replaced.
         functions have been introduced.
         Available functions consist of ``ABS'' (absolute value), ``EXP'' (exponential
         function), ``LN'' (natural logarithm), ``LOG'' (decimal logarithm).
-        Additionally functions ``DX'', ``DY'' and ``DZ'' for calculation of partial 
-        derivatives in the respective carthesian coordinate are available. 
-        For the moment the code is only able to store two intermediate result for 
+        Additionally functions ``DX'', ``DY'' and ``DZ'' for calculation of partial
+        derivatives in the respective carthesian coordinate are available.
+        For the moment the code is only able to store two intermediate result for
         further calculations.
         Thus the expression for calculating the divergence of the transport
         flux of atom species 1 which in this case consists of D atoms
         \begin{equation*}
-          (DX( \langle 1,85 \rangle) + DY(\langle 1,89 \rangle) + DZ(\langle 1,93 
+          (DX( \langle 1,85 \rangle) + DY(\langle 1,89 \rangle) + DZ(\langle 1,93
           \rangle)) / \langle 1.66D-24 \rangle / \langle 2.E0 \rangle
         \end{equation*}
-        will result in a warning messages. 
-        Nevertheless this problem can be overcome by introducing an additional pair of 
-        parenthesis. 
+        will result in a warning messages.
+        Nevertheless this problem can be overcome by introducing an additional pair of
+        parenthesis.
         Thus
         \begin{equation*}
           ((DX( \langle 1,85 \rangle) + DY(\langle 1,89 \rangle)) + DZ(\langle 1,93
@@ -227,7 +227,7 @@ If either ICLVS or ICLVT is out of range, no default tally is replaced.
         line:
 
         ($\langle 1,7\rangle +\langle 1,12\rangle +\langle 1,17\rangle) * \langle
-          1.e6\rangle /\langle 1.6022e-19\rangle$ 
+          1.e6\rangle /\langle 1.6022e-19\rangle$
 
         in code versions older than 2002 (see tables in \cref{sec.tables-old}), and the
         same expressions in versions 2002 and younger, i.e.\ after implementation of
@@ -235,7 +235,7 @@ If either ICLVS or ICLVT is out of range, no default tally is replaced.
         \cref{sec.tables-new}):
 
         ($\langle 1,9\rangle+\langle 1,15\rangle+\langle 1,21\rangle) * \langle
-          1.e6\rangle/\langle 1.6022e-19\rangle$ 
+          1.e6\rangle/\langle 1.6022e-19\rangle$
 
         and it would be stored on the tally: ``ALGV" with the first (labelling) index
         IALVI.
@@ -248,16 +248,16 @@ If either ICLVS or ICLVT is out of range, no default tally is replaced.
 \subsubsection{frequently used algebraic tallies}
 
 \begin{itemize}
-  \item{mean energy} ~ 
+  \item{mean energy} ~
 
         The mean energy (\si{\electronvolt}) of a test particle species is the ratio of
         its total energy density (= total pressure) and particle density.
         The algebraic tally $\langle i,5\rangle/\langle i,1\rangle$ is that ratio
         estimate, here exemplarily for atomic species no.\ IATM=$i$.
         Similarly, for molecular species IMOL=$k$, this expression would read:
-        $\langle k,6\rangle/\langle k,2\rangle$ 
+        $\langle k,6\rangle/\langle k,2\rangle$
 
-  \item{kinetic temperature} ~ 
+  \item{kinetic temperature} ~
 
         The kinetic temperature $T_t$ (\si{\electronvolt})  is defined such that $3/2
           \ T_t$ is the mean thermal energy.
@@ -296,7 +296,7 @@ identical, see \cref{sec3.2.4}.
 
 \subsection{Algebraic expression in surface averaged tallies}\label{sec2.10F}
 
-as in sub-block 10C except for the calculation of partial derivatives, 
+as in sub-block 10C except for the calculation of partial derivatives,
 but for surface averaged tallies rather than volume averaged tallies.
 The corresponding tally numbers are listed in \cref{tab3}.
 
@@ -332,10 +332,10 @@ surfaces.
 This is evaluated by the string:
 
 $\langle 23,1\rangle-\langle 23,2\rangle+\langle 26,1\rangle-\langle
-  26,2\rangle+\langle 29,1\rangle-$ 
+  26,2\rangle+\langle 29,1\rangle-$
 
 $\langle 29,2\rangle+\langle 32,1\rangle-\langle 32,2\rangle+\langle
-  35,1\rangle-\langle 35,2\rangle$ 
+  35,1\rangle-\langle 35,2\rangle$
 
 The value found for this expression is stored on ALGS (\dots, ISURF), and is
 the same for ISURF=7, =8, =9, =10 or =11, and zero for all other surfaces.
@@ -363,41 +363,41 @@ Printout of these spectra is activated in input block 11a, flag NSPCPR.
 
   \item[ISPTYP] type of spectrum:
 
-        \textbf{for surface averaged spectra (i.e.\ ISRFCLL=0):} 
+        \textbf{for surface averaged spectra (i.e.\ ISRFCLL=0):}
 
-        flux-spectrum (ISPTYP=1), [\si{\ampere\per\electronvolt}] 
+        flux-spectrum (ISPTYP=1), [\si{\ampere\per\electronvolt}]
 
         or energy-flux spectrum (ISPTYP=2) [\si{\watt\per\electronvolt}]
 
         Currently only surface ``incident fluxes".
         Spectra for surfaces ``emitted fluxes" (outgoing) are not yet available.
 
-        \textbf{for cell averaged spectra (i.e.\ ISRFCLL=1):} 
+        \textbf{for cell averaged spectra (i.e.\ ISRFCLL=1):}
 
-        \textbf{case a:} no direction specified: IDIREC=0 
+        \textbf{case a:} no direction specified: IDIREC=0
 
         energy distribution (ISPTYP=1), [\si{\per\cubic\centi\metre\per\electronvolt}]
 
         energy weighted energy distribution (ISPTYP=2)
-        [\si{\electronvolt\per\cubic\centi\metre\per\electronvolt}] 
+        [\si{\electronvolt\per\cubic\centi\metre\per\electronvolt}]
 
         velocity weighted energy distribution (ISPTYP=3)
         [\si{\centi\metre\per\second\per\cubic\centi\metre\per\electronvolt}]
 
-        \textbf{case b:} direction specified: IDIREC=1 
+        \textbf{case b:} direction specified: IDIREC=1
 
         velocity distribution along specified direction, binned in energy units
-        (ISPTYP=1), [\si{\per\cubic\centi\metre\per\electronvolt}] 
+        (ISPTYP=1), [\si{\per\cubic\centi\metre\per\electronvolt}]
 
         energy weighted velocity distribution along specified direction, put into bins
         in energy units (ISPTYP=2)
-        [\si{\electronvolt\per\cubic\centi\metre\per\electronvolt}] 
+        [\si{\electronvolt\per\cubic\centi\metre\per\electronvolt}]
 
         velocity weighted velocity distribution along specified direction, put into
         bins in energy units (ISPTYP=3)
         [\si{\centi\metre\per\second\per\cubic\centi\metre\per\electronvolt}]
 
-  \item[IDIREC, SPCVX, SPCVY, SPCVZ] 
+  \item[IDIREC, SPCVX, SPCVY, SPCVZ]
 
         These flags are only for cell averaged spectra (otherwise: not in use):
 
@@ -451,6 +451,7 @@ Printout of these spectra is activated in input block 11a, flag NSPCPR.
         .
 
   \item[SPCPLT\_SAME] plot this spectrum into previous frame
+  \item[ISPCOPT] flag to score angle resolved tallies (when set to 1)
 \end{description}
 The surface flux spectra are printed together with the other surface averaged
 tallies, for those surfaces, which are selected for printout in sub-block 11A.

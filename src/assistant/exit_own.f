@@ -10,6 +10,7 @@ C
       INTEGER :: IER
 #endif
       LOGICAL :: LXOWN
+      EXTERNAL :: EIRENE_PLEND, IOFLUSH_USR
 
       WRITE(IUNOUT,*) 'EIRENE EXIT_OWN ENTERED FROM PROCESSOR ', MY_PE
       LXOWN = .TRUE.
@@ -23,6 +24,7 @@ C  LEGAL ENDING OF GR PLOTTING SOFTWARE
 #else
       CALL EIRENE_PLEND
 #endif
+      call ioflush_usr
 #if defined(G95) || ( defined(PGF90) && COMPILER_MAJOR_VERSION < 19 ) || ( defined(GFORTRAN) && COMPILER_MAJOR_VERSION < 5 && COMPILER_MINOR_VERSION < 6 )
       STOP 'EIRENE_EXIT'
 #else

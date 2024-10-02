@@ -3,7 +3,8 @@ cdr  re-activated: Jan 2018
       subroutine EIRENE_read_photdbk (ir, reac, isw)
 c   read parameters relevant "reaction no IR" for line transport (photon gas transport)
 c   from photonic database, into EIRENE data structure REACDAT(IR).
-c   A photon (IPHOT) "line" is a sharp or broadened emission source.
+c   A photon (IPHOT) "line" is a sharp or broadened "line" photon
+c   from a bound-bound light emission source.
 c   A continuum emission from a given spectral source distribution is also
 c   a "line" (=photon species), by abuse of language.
 c
@@ -43,7 +44,7 @@ c
      .                     ' SPECIFIED FOR REACTION', IR
           WRITE (IUNOUT,*) ' CHECK SPECIFICATION OF REACTIONS'
           CALL EIRENE_EXIT_OWN(1)
-        END IF
+      END IF
 
       if (ifrst == 0) then
          ifrst = 1
@@ -68,9 +69,10 @@ c
         call EIRENE_delete_blanks(zeile(ianf:iend))
         iblnk = scan(zeile(ianf:iend),'|') - 1
         if (iblnk < 0) iblnk = iend-ianf+1
+
         if (iblnk == 0) then
            write (iunout,*) ' ERROR IN DATABASE PHOTON'
-           write (iunout,*) ' NO ELEMENT NAME FOUND '
+           write (iunout,*) ' NO ELEMENT NAME FOUND'
            call eirene_exit_own(1)
         end if
 
@@ -109,7 +111,7 @@ c
         iend = ianf + scan(zeile(ianf:),'|') - 1
         read (zeile(ianf:iend-1),*) aik
 
-!  skip  reading oscillator strength fij
+!  skip reading oscillator strength fij
         ianf = iend + 2
         iend = ianf + scan(zeile(ianf:),'|') - 1
 
@@ -272,13 +274,15 @@ cdr  done with pressure broadening constants
       allocate (phline)
 
       phline%aik = aik
+!  line center wavelength
 !     wl is in nm
 !  line center energy in eV
       phline%e0 = hpcl / wl *1.E7_DP
-!  stat. weights
+!  stat. weights, upper, lower
       phline%g1 = gj
       phline%g2 = gi
 !     Ej is in [1/cm] i.e. in 1.E-7 [1/nm]
+cdr convert to eV units
       phline%e1 = ej * clight*hplanck*erg_to_ev
 c  unused, pressure broadening constants
       phline%c2 = c2
@@ -291,7 +295,8 @@ c  unused, pressure broadening constants
         case (2)    ! emission
            phline%ircart = 4
         case (3)    ! stimulated emission
-        case (4)    ! ph_cabs ot (case(7) bei sven)
+cdr  ??
+        case (4)    ! effective absorption, corrected for stim. emiss.
            phline%ircart = 7
         case default
            phline%ircart = 0
@@ -324,7 +329,7 @@ c  reaction no IR is a "photonic" reaction
       reacdat(ir)%phr%line => phline
       reacdat(ir)%phr%ifit = -1
 
-
+cdr  fetch data for bound-bound transition line
       call EIRENE_get_reaction(ir)
       b21=EIRENE_ph_b21()
       b12=b21*gi/gj

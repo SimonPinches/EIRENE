@@ -2,11 +2,11 @@ cdr  Oct. 17:
 cdr  from W.Zholobenko: add         He emission lines, new options NCHTAL=5
 cdr                     analogous to H emission lines,             NCHTAL=2
 cdr  itp (select type) of component relevant for LOS (not in use yet)
-cdr  Aug. 16:  re LOS option:
-cdr            the option described in the manual regarding
-cdr            use of emin1, emax1 to identify a particular spectroscopic
-cdr            line  (by upper and lower quantum number in H-atom)
-cdr            is apparently not available.  Lost from an earier version? to be checked.
+cdr  Aug. 16: re LOS option:
+cdr           the option described in the manual regarding
+cdr           use of emin1, emax1 to identify a particular spectroscopic
+cdr           line (by upper and lower quantum number in H-atom)
+cdr           is apparently not available.  Lost from an earier version? to be checked.
 C
 C  CALLED IN POSTPROCESSING PHASE:
 C  CALCULATE A NUMBER OF (ICHORI=1,NCHORI) LINE INTEGRALS ALONG LINES-OF-SIGHT
@@ -24,14 +24,14 @@ C
       SUBROUTINE EIRENE_DIAGNO
 cdr main program for side on (line of sight) diagnostics, in post processing phase
 
-c  step 1:  prepare arrays for energy (or spectral) resolution (binning)
-c  step 2:  call sgnal, to carry out line of sight integration, all bins.
-c  step 3:  call outsig, to print (if prspec) and plot (if plspec)
-c           energy/spectrally resolved "side-on" data, line integrated.
+c  step 1: prepare arrays for energy (or spectral) resolution (binning)
+c  step 2: call sgnal, to carry out line of sight integration, all bins.
+c  step 3: call outsig, to print (if prspec) and plot (if plspec)
+c          energy/spectrally resolved "side-on" data, line integrated.
 
-c  nb    :  during step 2, also spatially resolved (along the line of sight)
-c           information can be extracted. This is controlled by the flags
-c           plargl, prargl
+c  nb    : during step 2, also spatially resolved (along the line of sight)
+c          information can be extracted. This is controlled by the flags
+c          plargl, prargl
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -52,7 +52,8 @@ c           plargl, prargl
 C
 C  INITIALISE LINE INTEGRATION ROUTINE
 C
-      NSPTP(1:NCHOR) = 0  !  NOT READY, NOT USED. TYPE OF RELEVANT COMPONENT, see nspspc...
+      NSPTP(1:NCHOR) = 0  !  NOT READY, NOT USED.
+                          !  TYPE OF RELEVANT COMPONENT, see nspspc...
       PLSAVE=PLHST
       PLHST=PLCHOR
 C
@@ -114,7 +115,8 @@ C
 C  CARRY OUT LINE INTEGRATION
 C
         ISTR=NSPSTR(ICHORI)  ! Stratum index
-        ISP =NSPSPZ(ICHORI)  ! Species index, or no. of contribution. Meaning depends on NCHTAL
+        ISP =NSPSPZ(ICHORI)  ! Species index, or no. of contribution.
+                             ! Meaning depends on NCHTAL
         ITP =NSPTP (ICHORI)  ! Type index  (not in use)
 C  TENTATIVELY ASSUME: THIS LINE OF SIGHT IS ACTIVE
         L_CHOR(ICHORI)=.TRUE.

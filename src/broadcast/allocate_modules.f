@@ -1,14 +1,14 @@
 c     memory allocation for additional processors
-       
+
 !pb  15.05.20  allocation is now done in the broadcast routines
 !pb            directly in the modules
 !pb            allocations triggered here belong to modules with no
-!pb            broadcasting routine     
-      
+!pb            broadcasting routine
+
 !pb  03.06.09  NCHORI --> NCHOR in if-condition as NCHORI is not yet broadcasted
 
       SUBROUTINE EIRENE_ALLOCATE_MODULES
-      
+
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMPRT
       USE EIRMOD_CPES

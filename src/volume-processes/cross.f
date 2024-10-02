@@ -1,9 +1,9 @@
 C 0406: default resonant CX for He in He+/He++ plasma added:
-C       Janev (HYDHEL) ,1987, reactions 5.3.1 and 6.3.1
+C       Janev (HYDHEL), 1987, reactions 5.3.1 and 6.3.1
 C
 C 0710: provide value of cross-section for reaction K
 C       K=0 means no cross-section available for this reaction
-c       k=-1,-2,-3:  default (hard-wired) CX cross-sections
+c       k=-1,-2,-3: default (hard-wired) CX cross-sections
 c 0315: increase kk>=-10 to kk>=-11 for He EI process, to fully reserve k=-1
 c       for H+p CX as default process
 C Nov.19: Arrhenius factor (not needed here,
@@ -16,21 +16,21 @@ C  CROSS-SECTION
 C    AL=LN(ELAB), ELAB IN (EV)
 C    RETURN CROSS-SECTION IN CM**2
 C
-C  K>0 :  DATA FROM ARRAY REACDAT, I.E. FROM EXTERNAL DATABASE
+C  K>0 : DATA FROM ARRAY REACDAT, I.E. FROM EXTERNAL DATABASE
 C
 C  K<0 : DEFAULT MODEL DEFINED IN SETUP_MINIMAL_REACTIONS, BUT NOW ALSO ON REACDAT
 C
 C  K=-1: H + H+ --> H+ + H   CX CROSS-SECTION, JANEV, 3.1.8
-C         LINEAR EXTRAPOLATION ON LOG-LOG SCALE AT LOW ENERGY END FOR LN(SIGMA)
-C         IDENTICAL TO hydhel.tex, H.1, 3.1.8
+C        LINEAR EXTRAPOLATION ON LOG-LOG SCALE AT LOW ENERGY END FOR LN(SIGMA)
+C        IDENTICAL TO hydhel.tex, H.1, 3.1.8
 C
 C  K=-2: He + He+ --> He+ + He  CX CROSS-SECTION, JANEV, 5.3.1
-C         LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
-C         IDENTICAL TO hydhel.tex, H.1, 5.3.1
+C        LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
+C        IDENTICAL TO hydhel.tex, H.1, 5.3.1
 C
 C  K=-3: He + He++ --> He++ + He  CX CROSS-SECTION, JANEV, 6.3.1
-C         LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
-C         IDENTICAL TO hydhel.tex, H.1, 6.3.1
+C        LINEAR EXTRAPOLATION AT LOW ENERGY END FOR LN(SIGMA)
+C        IDENTICAL TO hydhel.tex, H.1, 6.3.1
 
 C  FOR -11 <= K <= -4  VARIOUS DEFAULT EI PROCESSES FOR H, H2, H2+, HE
 C                      CURRENTLY ONLY RATE COEFF, SO NO DATA HERE.
@@ -70,7 +70,7 @@ C
           CALL EIRENE_EXIT_OWN(1)
 
 CDR:  SAME EVALUATION OF CROSS-SECTION FORMULAS FOR DEFAULT
-CDR:       (K<0) AND NON-DEFAULT (K>0) CROSS-SECTIONS
+CDR:  (K<0) AND NON-DEFAULT (K>0) CROSS-SECTIONS
 
         ELSE IF (IFTFLG(K,1) == 0) THEN
 
@@ -96,7 +96,7 @@ cdr Near threshold and high energy Born-Bethe asymptotically correct cross-secti
 
 cdr  XI: threshold. ie. E>XI necessarily for this fit.
           E = EXP(AL)
-          XI = REACDAT(K)%CRS%POLY%DBLPOL(1,1)
+          XI= REACDAT(K)%CRS%POLY%DBLPOL(1,1)
 
 cdr  careful: E and XI must relate to same mass.
           if (E .le. XI) then
@@ -162,7 +162,7 @@ cdr E .gt. XI is already fulfilled here.
           ENDIF
 
         ELSE
-          WRITE (iunout,*) ' WRONG FITTING FLAG IN CROSS '
+          WRITE (iunout,*) ' WRONG FITTING FLAG IN CROSS'
           WRITE (iunout,*) ' K = ',K,' IFTFLG = ',IFTFLG(K,1)
           WRITE (iunout,*) 'REACTION NO. ',IR
           CALL EIRENE_EXIT_OWN(1)

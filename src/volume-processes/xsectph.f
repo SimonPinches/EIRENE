@@ -16,12 +16,12 @@ C
       USE EIRMOD_CTRCEI
       USE EIRMOD_PHOTON
       IMPLICIT NONE
-c 
-cdr   PHOTON COLLISIONS, PH - type  (separate from OT processes, which are
-cdr                                  of H.11, H.12 type, popul. ratios)
+c
+cdr   PHOTON COLLISIONS, PH - type (separate from OT processes, which are
+cdr                                 of H.11, H.12 type, popul. ratios)
 c
       integer :: kk,iphot,idsc,nrc,ipl0,ipl1,ipl2,ityp1,ityp2,ifnd,
-     .    updf,mode, idph
+     .           updf,mode,idph
 
       IDPH=0
 

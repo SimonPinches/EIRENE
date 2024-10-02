@@ -1,7 +1,7 @@
 cdr:  njump=3 option: continue new flight from previously found
 cdr                   intersection with cell boundary. used from levgeo=10
 C icts introduced,
-!pb  22.03.07:  LEVGEO=6 --> LEVGEO=10
+!pb  22.03.07: LEVGEO=6 --> LEVGEO=10
 cdr   may 17:  commenting. tbd: commenting in particular of tetrahedra-grid part.
 cdr  march 18: variable LHITP (meaning analogue as in timep.F). Had another name
 cdr            before, which had caused confusion with another variable in interfacing routines
@@ -27,12 +27,12 @@ C
       USE EIRMOD_CTRIG
       USE EIRMOD_OPENMP
 
-      implicit none  
-      
+      implicit none
+
       private
-      
+
       PUBLIC :: EIRENE_TIMER
-cym 
+cym
 !      REAL(DP),SAVE :: SIG1, SIG2, DET, XMU, XETA, AX, AY, V,
 !     .          TIMTET,
 !     .          ZZ, RICHTY, HELP, TM, RICHTX, YY, XX, S3, TIMT, TIM,
@@ -53,7 +53,7 @@ cym
       INTEGER, SAVE :: NSTS_CELL
 !$OMP THREADPRIVATE (ICALL, ITFRST,
 !$OMP& ITRINO, ISIDNO, NSTS_CELL)
-      
+
 !!$OMP THREADPRIVATE (
 !!$OMP& SIG1, SIG2, DET, XMU, XETA, AX, AY, V,TIMTET,
 !!$OMP& ZZ, RICHTY, HELP, TM, RICHTX, YY, XX, S3, TIMT, TIM,
@@ -71,15 +71,12 @@ cym
 !!$OMP& ISTS_CELL, ISD, nclpb, icts,
 !!$OMP& ITRINO, ISIDNO, NSTS_CELL)
 
-
 cpg      SAVE
-      
-      
 
-      CONTAINS  
+      CONTAINS
 
       SUBROUTINE EIRENE_TIMER (PT)
-      IMPLICIT NONE 
+      IMPLICIT NONE
       REAL(DP), INTENT(OUT) :: PT
 C
 C  THIS SUBROUTINE CALCULATES DISTANCES TO INTERSECTION POINTS IN THE 1ST STANDARD
@@ -93,11 +90,11 @@ C       NRCELL=0 IF PARTICLE OUTSIDE STANDARD MESH
 C
 C       NJUMP = 0 MEANS: THIS IS THE FIRST CALL OF TIMER FOR THIS TRACK
 C                        IN THIS CASE, NLSRFX MUST BE KNOWN
-C           NLSRFX = .TRUE. :PARTICLE ON A SURFACE, IN THIS CASE
-C                            THE SUBROUTINE NEEDS 'MRSURF'
-C                            MRSURF = NUMBER OF THIS SURFACE
+C           NLSRFX = .TRUE. : PARTICLE ON A SURFACE, IN THIS CASE
+C                             THE SUBROUTINE NEEDS 'MRSURF'
+C                             MRSURF = NUMBER OF THIS SURFACE
 C
-C           NLSRFX = .FALSE.:PARTICLE NOT ON A SURFACE
+C           NLSRFX = .FALSE.: PARTICLE NOT ON A SURFACE
 C
 C           X0,Y0,Z0 = STARTING POINT OF THIS TRACK
 C           VELX,VELY,VELZ = SPEED UNIT VECTOR OF PARTICLE
@@ -138,7 +135,7 @@ C       TIMINT(MRSURF) NE 0 INDICATES THAT FURTHER INTERSECTION WITH SAME SURFAC
 C                      ALREADY IN THIS CALL, WHICH MAY BE USED IN A LATER CALL
 C       NINCX = INDEX FOR DIRECTION IN GRID "RSURF": +1 OR -1
 C             = 0 IF NO NEXT SURFACE FOUND
-C       NRCELL:  NUMBER OF FINAL RADIAL CELL (IE. NOT MODIFIED)
+C       NRCELL: NUMBER OF FINAL RADIAL CELL (IE. NOT MODIFIED)
 C       IRCELL: NOT NEEDED ON RADIAL SURFACE. SET IRCELL=NRCELL
 C
 C  ADDITIONALLY IF NLPLG:
@@ -210,7 +207,7 @@ C
           CALL EIRENE_TIMER_CIRCULAR_MESH(PT)
         END IF
 C
-C****ELLIPTICAL MESH  (NOT NECESSARILY CONCENTRIC NOR CONFOCAL)
+C****ELLIPTICAL MESH (NOT NECESSARILY CONCENTRIC NOR CONFOCAL)
 C
         IF (NLELL) THEN
           CALL EIRENE_TIMER_ELLIPTICAL_MESH(PT)
@@ -222,7 +219,7 @@ C  POLYGON MESH
 C
         CALL EIRENE_TIMER_CURVILINEAR_MESH(PT)
 
-      CASE(4) 
+      CASE(4)
 C
 C   FINITE ELEMENT DISCRETISATION (MESH TRIANGLES IN X-Y- PLANE)
 C
@@ -242,9 +239,9 @@ C
 
       CASE DEFAULT
 
-        WRITE (IUNOUT,*) 'UNIDENTIFIED GEOMETRY OPTION FOUND IN TIMER '
+        WRITE (IUNOUT,*) 'UNIDENTIFIED GEOMETRY OPTION FOUND IN TIMER'
         WRITE (IUNOUT,*) 'LEVGEO = ',LEVGEO
-        WRITE (IUNOUT,*) 'CALCULATION ABANDONNED'
+        WRITE (IUNOUT,*) 'CALCULATION ABANDONED'
         CALL EIRENE_EXIT_OWN(1)
 
       END SELECT
@@ -339,7 +336,7 @@ C  TRY TO FIND REENTRY SURFACE. CHECK ONLY NON-DEFAULT RADIAL SURFACES
       ENDIF
 #endif
       RETURN
-      
+
       END SUBROUTINE EIRENE_TIMER_SLAB
 
 !-------------------------------------------------------------------------
@@ -357,9 +354,8 @@ C****CIRCULAR MESH   (CONCENTRIC)
 C
 #ifdef TRACE
       IF (NLTRC) THEN
-C
 !$OMP CRITICAL
-        WRITE (iunout,*) 'NJUMP,NINCX,NRCELL '
+        WRITE (iunout,*) 'NJUMP,NINCX,NRCELL'
         WRITE (iunout,*)  NJUMP,NINCX,NRCELL
 !$OMP END CRITICAL
       ENDIF
@@ -484,15 +480,15 @@ C
       REAL(DP), SAVE :: YVY, VELXQ, VELYQ, XX0, VVELX, X0SURF, DSRF, ZR,
      .                  Y0Q, ZA, ZB, ZB2, ZAB, ZAB2, ZC1, ZEP1
       INTEGER, SAVE :: MSAVE
-      INTEGER :: NRI 
+      INTEGER :: NRI
       INTEGER :: EIRENE_LEARC2
 !$OMP THREADPRIVATE(YVY, VELXQ, VELYQ, XX0, VVELX, X0SURF, DSRF, ZR,
 !$OMP& Y0Q, ZA, ZB, ZB2, ZAB, ZAB2, ZC1, ZEP1, MSAVE)
 C
-C****ELLIPTICAL MESH  (NOT NECESSARILY CONCENTRIC NOR CONFOCAL)
+C****ELLIPTICAL MESH (NOT NECESSARILY CONCENTRIC NOR CONFOCAL)
 C
       IF (NRCELL.LE.0) THEN
-        WRITE (iunout,*) 'NRCELL.LE.0 IN TIMER: NOT READY '
+        WRITE (iunout,*) 'NRCELL.LE.0 IN TIMER: NOT READY'
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
 
@@ -640,25 +636,26 @@ CPB        GOTO 2000
       INTEGER, SAVE :: IPOLGO, ICELLR
 !$OMP THREADPRIVATE(IPOLGO, ICELLR)
 cym - replace equivalence statement
-      REAL(DP), TARGET :: PTS(4) 
-      REAL(DP), POINTER :: PT1,PT2,PT3,PT4
+      REAL(DP), TARGET :: PTS(4)
+      REAL(DP), POINTER :: PT1, PT2, PT3, PT4
 
 #ifdef TRACE
       INTEGER :: ICOUP
 #endif
- 
+
       LOGICAL, TARGET :: LCTS(4)
-      LOGICAL, POINTER :: LCT1, LCT2, LCT3, LCT4 
+      LOGICAL, POINTER :: LCT1, LCT2, LCT3, LCT4
 
       LOGICAL :: LNGB1, LNGB2, LNGB3, LNGB4
-      LOGICAL :: LHITP(N2NDPLGS) ! for finding re-entry into levgeo=3 grid
+      LOGICAL :: LHITP(N2NDPLGS) ! for finding re-entry
+                                 ! into levgeo=3 grid
 C
 cym fixing LCTS/PTS - should be done in initialization routine
       LCT1 => LCTS(1)
       LCT2 => LCTS(2)
       LCT3 => LCTS(3)
       LCT4 => LCTS(4)
-   
+
       PT1  => PTS(1)
       PT2  => PTS(2)
       PT3  => PTS(3)
@@ -721,9 +718,9 @@ C  CALCULATE INTERSECTIONS OF FLIGHT WITH CELL BOUNDARIES
         IF (NLTRC) THEN
 !$OMP CRITICAL
           WRITE (iunout,*) ' IR,IP,LNGB1,LNGB2,LNGB3,LNGB4',
-     .                           IR,IP,LNGB1,LNGB2,LNGB3,LNGB4
+     .                       IR,IP,LNGB1,LNGB2,LNGB3,LNGB4
           WRITE (iunout,*) ' velx, vely, velz ',
-     .                           velx, vely, velz
+     .                       velx, vely, velz
 !$OMP END CRITICAL
         ENDIF
 #endif
@@ -875,7 +872,7 @@ C  PLAY SAFE: TRY ONCE AGAIN, IF PARTICLE ON RAD. SURFACE
             IF (NLTRC) THEN
 !$OMP CRITICAL
               WRITE (iunout,*)
-     .        ' NO INTERSECTION IN TIMER. TRY ONCE AGAIN '
+     .        ' NO INTERSECTION IN TIMER. TRY ONCE AGAIN'
 !$OMP END CRITICAL
             ENDIF
 #endif
@@ -913,7 +910,7 @@ C  PLAY SAFE: TRY ONCE AGAIN, IF PARTICLE ON POL. SURFACE
             IF (NLTRC) THEN
 !$OMP CRITICAL
               WRITE (iunout,*)
-     .        ' NO INTERSECTION IN TIMER. TRY ONCE AGAIN '
+     .        ' NO INTERSECTION IN TIMER. TRY ONCE AGAIN'
 !$OMP END CRITICAL
             ENDIF
 #endif
@@ -940,7 +937,7 @@ C  PLAY SAFE: TRY ONCE AGAIN, IF PARTICLE ON POL. SURFACE
             NJUMP=1
             GOTO 6001
           ENDIF
-          WRITE (iunout,*) ' ERROR: NO INTERSECTION FOUND IN TIMER '
+          WRITE (iunout,*) ' ERROR: NO INTERSECTION FOUND IN TIMER'
           WRITE (iunout,*) ' NPANU: ',NPANU
           MRSURF=0
           PT=1.D30
@@ -1123,7 +1120,7 @@ C
  8020   CONTINUE
         IF (IZELL.EQ.0) GOTO 9999
         DO 8010,J=1,3
-         IF (J.NE.IPOLGO) THEN
+          IF (J.NE.IPOLGO) THEN
             RICHTX = VTRIX(J,IZELL)
             RICHTY = VTRIY(J,IZELL)
             AX = XTRIAN(NECKE(J,IZELL))-XX
@@ -1184,9 +1181,9 @@ C  SEARCH NEIGHBOUR TRIANGLE
         ENDIF
 
 C  NO INTERSECTION FOUND AND NLSRFX=.FALSE.
-        write (iunout,*) ' NO INTERSECTION FOUND IN TRIANGLE '
-        write (iunout,*) ' PARTICLE TRAJECTORY STOPPED'
-        write (iunout,*) ' NPANU ',NPANU
+        write (iunout,*) 'NO INTERSECTION FOUND IN TRIANGLE'
+        write (iunout,*) 'PARTICLE TRAJECTORY STOPPED'
+        write (iunout,*) 'NPANU ',NPANU
         LGPART = .FALSE.
 
         RETURN
@@ -1210,7 +1207,7 @@ C
       IPOLGN=NTIM(NRCELL)
       ISTS=ABS(INMTI(IPOLGN,NRCELL))
       IF (ISTS.EQ.0) THEN
-c  on internal grid surface:  ISTS=0
+c  on internal grid surface: ISTS=0
         NINCX=NCHBAR(IPOLGN,NRCELL)-NRCELL
       ELSEIF (ISTS.GT.0.AND.
      .        ISTS.LE.NLIM+NSTSI) THEN
@@ -1315,7 +1312,7 @@ C PARTICLE OUTSIDE STANDARD MESH IN CELL NACELL, NRCELL=0
       RETURN
 
  9999 CONTINUE
-      WRITE (iunout,*) 'ERROR IN TIMER_TRIANGLE_MESH, '// 
+      WRITE (iunout,*) 'ERROR IN TIMER_TRIANGLE_MESH, '//
      .                 'EXIT CALLED AT 9999'
       WRITE (iunout,*) 'PARTICLE TRAJECTORY STOPPED'
       WRITE (iunout,*) 'NPANU ', NPANU
@@ -1341,14 +1338,14 @@ C
       REAL(DP) :: A1, A2, A3, B1, B2, B3, DET, PNORMI, S1, S2, S3,
      .            SIG1, SIG2, T, TIMT, TIMTET, TM, V1, V2, V3,
      .            XETA, XMU, XX, YY, ZZ
-      INTEGER :: I, I1, I2, IL, IOB, IS, ISTS, IT, ITET, 
+      INTEGER :: I, I1, I2, IL, IOB, IS, ISTS, IT, ITET,
      .           J, NTIMT, NTMS, NTMZ
       INTEGER, SAVE :: IPOLGO, IZELL, IZELLO
 !$OMP THREADPRIVATE(IPOLGO, IZELL, IZELLO)
-      REAL(DP) ::EIRENE_SARRUS
+      REAL(DP) :: EIRENE_SARRUS
       LOGICAL :: EIRENE_BITGET
-      INTEGER,SAVE :: IRICH(2,4), ITSIDE(3,4)
-  
+      INTEGER, SAVE :: IRICH(2,4), ITSIDE(3,4)
+
       DATA ITSIDE /1,2,3,
      .             1,4,2,
      .             2,4,3,
@@ -1384,7 +1381,7 @@ C       ELSEIF (NJUMP.EQ.1) THEN
         ZZ = Z0
         TM=0.
         IF (IZELL.EQ.0) THEN
-          WRITE (iunout,*) ' IZELL = 0 IN TIMER '
+          WRITE (iunout,*) ' IZELL = 0 IN TIMER'
           CALL EIRENE_EXIT_OWN(1)
         END IF
 C
@@ -1461,7 +1458,7 @@ C
      .                     a(3,1),a(3,2),a(3,3)
                      write(iunout,'(1x,a,3es14.7)') ' b1, b2, b3 ',
      .                     b(1),b(2),b(3)
-                     write (iunout,'(1x,a,3es14.7)') ' det, xmu ',
+                     write(iunout,'(1x,a,3es14.7)') ' det, xmu ',
      .                     det,xmu
 !$OMP END CRITICAL
                   end if
@@ -1501,7 +1498,7 @@ C
 #ifdef TRACE
         IF (NLTRC) THEN
 !$OMP CRITICAL
-          WRITE (iunout,*) ' NO INTERSECTION FOUND IN TETRAHEDRON '
+          WRITE (iunout,*) ' NO INTERSECTION FOUND IN TETRAHEDRON'
 !$OMP END CRITICAL
         ENDIF
 #endif
@@ -1516,9 +1513,9 @@ C  DURCHSUCHE NACHBARDREIECK
           IF (IZELL > 0) GOTO 11020
         ENDIF
 C  KEIN SCHNITTPUNKT GEFUNDEN UND NLSRFX=.FALSE.
-        write (iunout,*) ' NO INTERSECTION FOUND IN TETRAHEDRON '
-        write (iunout,*) ' PARTICLE TRAJECTORY STOPPED'
-        write (iunout,*) ' NPANU ',NPANU
+        write (iunout,*) 'NO INTERSECTION FOUND IN TETRAHEDRON'
+        write (iunout,*) 'PARTICLE TRAJECTORY STOPPED'
+        write (iunout,*) 'NPANU ',NPANU
         LGPART = .FALSE.
         RETURN
 C
@@ -1744,7 +1741,7 @@ C
 
       IF (ICALL == 0) THEN
         ICALL = 1
-c  set nrmsrf:  = a "free virtual radial" surface index, between 1 and nsurf, such that none
+c  set nrmsrf: = a "free virtual radial" surface index, between 1 and nsurf, such that none
 c              of the block 3a defined nstsi "real radial" non-default standard surfaces
 c              coincides with this "virtual radial" surface.
 
@@ -1757,7 +1754,7 @@ c              coincides with this "virtual radial" surface.
           END DO
           NRMSRF = IRS
           IF (NRMSRF > NSURF) THEN
-            WRITE (iunout,*) ' ERROR IN TIMER, NRMSRF WRONG '
+            WRITE (iunout,*) ' ERROR IN TIMER, NRMSRF WRONG'
             CALL EIRENE_EXIT_OWN(1)
           END IF
         END IF
@@ -1765,7 +1762,7 @@ c              coincides with this "virtual radial" surface.
 C
 
 
-C  NJUMP=3:  INTERNAL GRID SURFACE, STOP AND GO.
+C  NJUMP=3: INTERNAL GRID SURFACE, STOP AND GO.
       IF (NJUMP.EQ.3.or.njump.eq.0) then
         TIM=0.
       endif
@@ -1802,7 +1799,7 @@ cdr  one of the non-default surfaces has been hit. set this surface index to mrs
         MRSURF=INUMP(-NEWCEL,1)
 cdr
       ELSEIF (NEWCEL.EQ.0) THEN
-        WRITE (iunout,*) 'NEWCEL=0, EXIT FROM MESH '
+        WRITE (iunout,*) 'NEWCEL=0, EXIT FROM MESH'
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
       NLSRFX=.FALSE.
@@ -1817,7 +1814,7 @@ cdr
       RETURN
 
  9999 CONTINUE
-      WRITE (iunout,*) 'ERROR IN TIMER_USER_DEFINED_GEOMETRY '
+      WRITE (iunout,*) 'ERROR IN TIMER_USER_DEFINED_GEOMETRY'
       WRITE (iunout,*) 'EXIT CALLED AT 9999'
       WRITE (iunout,*) 'PARTICLE TRAJECTORY STOPPED'
       WRITE (iunout,*) 'NPANU ', NPANU

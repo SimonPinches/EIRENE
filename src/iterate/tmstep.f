@@ -13,8 +13,10 @@ cdr              facilitate continuation in time-dep runs even
 cdr              if "zeroth time step" (census initialization) was too large.
 cdr  oct. 2021:  Remove target-pointer structures RPSTT, IPSTT. Only use
 cdr              the really necessary components of state vectors.
-
-CDR  APRIL 2006: IPHOT ADDED TO LOOP: DO 140
+cdr  jun. 2022:  include particle balance scaling factors in the
+cdr              census fluxes and weights.
+cdr  jan. 2023:  separate counting of Scores and Histories on census,
+cdr              due to new cascading options
 
 C
       SUBROUTINE EIRENE_MOD_TMSTEP
@@ -39,17 +41,19 @@ C
       USE EIRMOD_CLOGAU, ONLY: NLMOVIE, NLPLAS
       USE EIRMOD_CPLOT, ONLY: PLTSRC
       USE EIRMOD_CTRCEI, ONLY: TRCPLT, TRCGRD, TRCCEN
-      USE EIRMOD_COMPRT, ONLY: IATM, IION, IMOL, IPHOT, 
+      USE EIRMOD_COMPRT, ONLY: IATM, IION, IMOL, IPHOT,
      >                         ITYP, IUNOUT, WEIGHT
 cdr   state vector: real(dp) and integer parts.
 cdr  >                         IPSTT, RPSTT   !dr  targets for full set of particle "coordinates"
-cdr   Oct.21:  removed. The required state vector coordinates are now made explicit: 
+cdr   Oct.21:  removed. The required state vector coordinates are now made explicit:
 cdr            NPANUS, ISTRAS, ISPZS, WEIGHTS
       USE EIRMOD_COMNNL, ONLY: FLXCEN, DTIMV, TIME0,
      >                         IPRNL, IPRNLI,
      >                         NPTST, RPARTW,
-     >                         IPART, RPART,   !dr  census from this present run.
-     >                         IPARTC, RPARTC  !dr  initial condition next timestep
+     >                         IPART, RPART,   !dr  census from
+                                               !    this present run.
+     >                         IPARTC, RPARTC  !dr  initial condition
+                                               !    next timestep
       USE EIRMOD_COMSOU, ONLY: FLUX, NLSRON, NMINPTS, NPTS, NSTRAI,
      >                         NSRFSI, SORWGT
       USE EIRMOD_COUTAU, ONLY: FASCL, FISCL, FMSCL, FLXFAC, FPHSCL, XMCP
@@ -65,8 +69,10 @@ cdr some state vector components from census score no. I
       REAL(DP) :: WEIGHTS
       INTEGER :: NPANUS, ISTRAS, ISPZS
 c
-      INTEGER :: ISTRAO, NPANUO,   !dr  from first state vector, for initializing stand. deviations 
-     .           ISTRAI, JATM, JMOL, JION, JPHOT, I
+      INTEGER :: ISTRAO, NPANUO,   !dr  from first state vector,
+                                   ! for initializing stand. deviations
+     .           ISTRAI, JATM, JMOL, JION, JPHOT,
+     .           I
 C
 C  STEP 1
 C
@@ -79,7 +85,7 @@ C  REDUCE REDUNDANT PRINTOUT IN NEXT TIME STEP
   120 CONTINUE
 C
 C  SPEED UP GEOMETRY. USE INFO FROM PREVIOUS TIME-STEP
-C  tbd.    
+C  tbd.
 C
 C  STEP 2
 C
@@ -125,7 +131,8 @@ C  ONE BY ONE RELAUNCH FROM OLD CENSUS
 C  OLD CENSUS CONTAINS IPRNL ENTRIES.
 cdr oct.21: I am not sure if that option still works properly
         NPTS(NSTRAI)=IPRNL
-        NMINPTS(NSTRAI)=IPRNL  !ENFORCE: FULL RE-LOCATION OF ALL PARTICLES FROM OLD CENSUS
+        NMINPTS(NSTRAI)=IPRNL  !ENFORCE: FULL RE-LOCATION
+                               !OF ALL PARTICLES FROM OLD CENSUS
       ENDIF
 
 
@@ -137,6 +144,8 @@ C  B: set FLUX for time stratum NSTRAI IN NEXT TIME STEP
         SGMTOT(ISTRAI)=0.0
         FLX(ISTRAI)=0.0
   130 CONTINUE
+
+C  PREPARE VARIANCE OF CENSUS DATA
       SGMREL=0.0
 C
 cdr  empty census?
@@ -162,11 +171,12 @@ C
 C  SET "ATOMIC" FLUXES ONTO CENSUS ARRAY
 C  IF NLSCL, APPLY PART. BALANCE CORRECTION SCALING, FOR THE TOTAL CENSUS FLUX
 
-C  THIS IS ALREADY DONE ON "TIME SURFACE" TALLY ELSEWHERE, AS IT IS ON ANY OTHER SURFACE
+C  THIS IS ALREADY DONE ON "TIME SURFACE" TALLY ELSEWHERE,
+C  AS IT IS ON ANY OTHER SURFACE.
 C  BUT IS DONE HERE ADDITIONALLY ON THE PARTICULAR "CENSUS ARRAYS" RPARTW (RESAMPLING), RPART(9,..),
 C  AND THE SPECIES TYPE-RESOLVED FLUXES ADDPH, ADDA, ADDM, ADDI
 
-      DO 140  I=1,IPRNL
+      DO 140 I=1,IPRNL
 
 cdr  Oct. 21: remove reference to full state vector here. We only need
 cdr           npanu, ispz, istra and weight
@@ -179,7 +189,7 @@ cdr     RPART(9,I)  ! particle weight at score to census       = WEIGHT
         WEIGHTS = RPART(9,I)
         NPANUS  = IPART(1,I)
         ISPZS   = IPART(9,I)
-        ISTRAS  = IPART(8,I)  
+        ISTRAS  = IPART(8,I)
 
         ITYP=ISPEZI(ISPZS,-1)
 
@@ -210,9 +220,10 @@ cdr     RPART(9,I)  ! particle weight at score to census       = WEIGHT
         ENDIF
 
 C  SET DISCRETE CUMULATIVE CENSUS FLUX DISTRIBUTION FOR RESAMPLING OF SCORE-INDEX "I"
-C  DO NOT INCLUDE NPRT FACTORS, BECAUSE THIS WEIGHT-FACTOŔ WILL ALREADY BE CARRIED BY RELAUNCHED PARTICLE
+C  DO NOT INCLUDE NPRT FACTORS, BECAUSE THIS WEIGHT-FACTOŔ WILL ALREADY BE CARRIED
+C  BY RELAUNCHED PARTICLE
 C  ALSO THE BALANCE CORRECTION FACTORS FATM,... ARE NOT INCLUDED HERE
-C       RPARTW(I)=RPARTW(I-1)+ADDP  ! same as next line
+cdr     RPARTW(I)=RPARTW(I-1)+ADDP  ! same as next line
 
         RPARTW(I)=RPARTW(I-1)+WEIGHTS*FLXFAC(ISTRAS)
 C
@@ -236,9 +247,9 @@ C   PUT WEIGHT OF CURRENT CENSUS SCORE NPANU ONTO ADDS
           ADDS=ADD
         ENDIF
 
-C   WEIGHT may have been altered. So: redefine this entire component of state vector.
-        RPART(9,I)=WEIGHT 
-  140 CONTINUE
+C   WEIGHT may have been altered above. So: redefine this component of state vector.
+        RPART(9,I)=WEIGHT
+  140 CONTINUE   ! IPRNL
 
 C  CONTRIBUTION FROM LAST CENSUS SCORE NO. IPRNL
 
@@ -296,9 +307,9 @@ C
       ENDIF
 
 C  SET ARRAYS OF CENSUS PARTICLE COORDINATES
-C  FOR RE-SAMPLING (SUBR. LOCATE) IN NEXT TIMESTEP.
+C  FOR RE-SAMPLING (SUBR. LOCATE) IN NEXT TIMESTEP (=initial condition).
 C  WEIGHT OF RE-SAMPLED PARTICLE = 1.0, SINCE ORIGINAL CENSUS PARTICLE
-C  WEIGHT IS ALREADY ACCOUNTED FOR IN RE-SAMPLING DISTRIBUTION RPARTW
+C  WEIGHT IS ALREADY ACCOUNTED FOR IN RE-SAMPLING DISTRIBUTION "RPARTW" SET ABOVE:
       RPARTC(1:NPARTT,1:IPRNL)=RPART(1:NPARTT,1:IPRNL)
       IPARTC(1:MPARTT,1:IPRNL)=IPART(1:MPARTT,1:IPRNL)
 C
@@ -307,8 +318,8 @@ cdr probably better not to be done here. tbd: move to locate.f, or input.f.
       IPARTC(8,1:IPRNL)=ISTRAS
 
 C
-C  CALL WRSNAP TO WRITE SNAPSHOT POPULATION
-C  FOR NEXT RUN ON FT 15
+C  CALL WRSNAP TO WRITE SNAPSHOT POPULATION ON FT 15
+C  TO BE USED AS INITIAL CONDITION IN NEXT RUN (TIMESTEP)
 C
   300 CONTINUE
       IF ((NFILEJ.EQ.1.OR.NFILEJ.EQ.3).AND.ITIMV.GE.NTIME) THEN

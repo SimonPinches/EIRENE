@@ -18,7 +18,7 @@ C
      .                      XL3(N1,*), YL3(N1,*), ZL3(N1,*)
       LOGICAL NF
       REAL(DP) :: P(3,36), XYZG(3,36), ANGLE(36), CORD(108), PS(3)
-      REAL(DP) :: B1, B2, B3, DET, EIRENE_DETER3x3, TEST, T, DX, DY, DZ,
+      REAL(DP) :: B1, B2, B3, DET, EIRENE_DETER3X3, TEST, T, DX, DY, DZ,
      .            HELP, XMIT, YMIT, ZMIT, PI, ANG, X1, X2, Y1, Y2,
      .            Z1, Z2
       INTEGER :: K, J, IPOINT, IP, ILN, I, II, ISORT, ICOUNT, ICHECK,
@@ -76,17 +76,17 @@ C
           IP=I+1
           DO 21 J=IP,ILN
 C  SCHNITTPUNKT EBENE I, J, UND A0,A1,A2,A3
-            DET=EIRENE_DETER3x3(A1,XL(I,NUM),XL(J,NUM),A2,YL(I,NUM),
+            DET=EIRENE_DETER3X3(A1,XL(I,NUM),XL(J,NUM),A2,YL(I,NUM),
      .                YL(J,NUM),A3,ZL(I,NUM),ZL(J,NUM))
             IF (ABS(DET).LE.EPS) GOTO 21
             B1=-A0
             B2=-AL(I,NUM)
             B3=-AL(J,NUM)
-            PS(1)=EIRENE_DETER3x3(B1,B2,B3,A2,YL(I,NUM),YL(J,NUM),
+            PS(1)=EIRENE_DETER3X3(B1,B2,B3,A2,YL(I,NUM),YL(J,NUM),
      .                  A3,ZL(I,NUM),ZL(J,NUM))/DET
-            PS(2)=EIRENE_DETER3x3(A1,XL(I,NUM),XL(J,NUM),B1,B2,B3,
+            PS(2)=EIRENE_DETER3X3(A1,XL(I,NUM),XL(J,NUM),B1,B2,B3,
      .                  A3,ZL(I,NUM),ZL(J,NUM))/DET
-            PS(3)=EIRENE_DETER3x3(A1,XL(I,NUM),XL(J,NUM),A2,YL(I,NUM),
+            PS(3)=EIRENE_DETER3X3(A1,XL(I,NUM),XL(J,NUM),A2,YL(I,NUM),
      .                  YL(J,NUM),B1,B2,B3)/DET
 C  CHECKE, OB ALLE ANDEREN LINEAREN UNGLEICHUNGEN ERFUELLT SIND
             DO 40 K=1,ILN

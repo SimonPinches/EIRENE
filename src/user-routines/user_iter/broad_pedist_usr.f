@@ -4,6 +4,7 @@
 
       IMPLICIT NONE
 
-      REAL(DP), INTENT(IN) :: XTIM(0:NSTRA) !< time allocated for stratum
+      !> time allocated for stratum
+      REAL(DP), INTENT(IN) :: XTIM(0:NSTRA)
 
       END SUBROUTINE EIRENE_BROAD_PEDIST_USR

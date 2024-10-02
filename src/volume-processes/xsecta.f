@@ -1,5 +1,5 @@
-c 24.11.05: chrdf0 in parameterlist for call to xstcx
-c          (was ok already for call to xstei)
+c 24.11.05: chrdf0 in parameter list for call to XSTCX
+c          (was ok already for call to XSTEI)
 C  6.12.05: comments changed: default CX only for H on p. No He default CX
 C  2.05.06: default resonant CX added for He on He+ and He on He++
 C           also modified: cross.f, xsecta_param.f
@@ -18,7 +18,7 @@ C           also modified: cross.f, xsecta_param.f
 ! oct.2014: call to xstpi: additional argument: chrdf0
 cdr  oct.14:  comsou, clogau removed
 cdr  oct.14:  eelei1 set in storage save mode, for default models (was missing)
-cdr  oct.14:  further synchronization with xsectm,xsecti
+cdr  oct.14:  further synchronization with xsectm, xsecti
 cdr           remaining relevant differences in default models only.
 cdr  aug.15:  ibgk_sp:  no of bgk species. to be distinguished from ibgk: no of bgk reaction.
 cdr  oct.15:  default He ionisation kk=-1 --> kk=-11,
@@ -65,8 +65,8 @@ C
 
       ALLOCATE (PLS(NSTORDR))
 
-cdr  PLS:  ELECTRON DENSITY PARAMETER in CR MODELS
-cdr       (NOT TO BE CONFUSED WITH THE DENSITY FACTOR BETWEEN RATES AND RATE COEFF.)
+cdr  PLS: ELECTRON DENSITY PARAMETER in CR MODELS
+cdr      (NOT TO BE CONFUSED WITH THE DENSITY FACTOR BETWEEN RATES AND RATE COEFF.)
 cdr: set hard-wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3
 cdr: at this lower limit density the fits are produced such
 cdr: that they collapse to the corona limit values.
@@ -173,8 +173,10 @@ C  PROBABLY NOT NEEDED, ONLY IN STORAGE SAVING MODE
             NELREI(IREI) = ISTORE
           ELSE  ! storage save mode
             EELEI1(IREI,1)=EELEC
-            NREAEI(IREI) = ISTORE  ! FLAG FOR FTABEI1, FOR DEFAULT REACTION ISTORE = -4, -11
-            NELREI(IREI) = ISTORE  ! FLAG FOR FEELEI1, FOR DEFAULT REACTION ISTORE = -4, -11
+            NREAEI(IREI) = ISTORE  ! FLAG FOR FTABEI1,
+                       ! FOR DEFAULT REACTION ISTORE = -4, -11
+            NELREI(IREI) = ISTORE  ! FLAG FOR FEELEI1,
+                       ! FOR DEFAULT REACTION ISTORE = -4, -11
 
           END IF
           FACREI(IREI,1) = 1._DP
@@ -245,7 +247,7 @@ C   DEFAULT MODEL 100 --- 129: RESONANT CX FOR H  + P,
 C                 130 --- 139: RESONANT CX FOR HE + HE+,
 C                 140 --- 149: RESONANT CX FOR HE + HE++,
 cdr modcol(3,..)=3 for all minimal models, i.e. use cross section only.
-cdr modc=eirene_idez(modcfl(kk),3,5)=0, i.e. no storage save mode option FTABCX3 
+cdr modc=eirene_idez(modcfl(kk),3,5)=0, i.e. no storage save mode option FTABCX3
 C
         IF (NRCA(IATM).EQ.0) THEN
           DO 155 IPLS=1,NPLSI
@@ -358,7 +360,7 @@ C
 C  TRACKLENGTH ESTIMATOR FOR ALL COLLISION RATE CONTRIBUTIONS
 C
             IESTCX(IRCX,1:3)=0
-C           ISPCLCX(IRCX,1:2)=0
+cdr         ISPCLCX(IRCX,0:2)=0
 C
 C  DEFAULT BULK ION ENERGY LOSS RATE = 1.5*TI+EDRIFT PER COLLISION
 C
@@ -367,17 +369,21 @@ C
               EPLCX3(IRCX,1:NSBOX,1)=1.5*TIIN(IPLSTI,1:NSBOX)
               IF (LEDRIFT) EPLCX3(IRCX,1:NSBOX,1)=
      .                     EPLCX3(IRCX,1:NSBOX,1)+EDRIFT(IPLS,1:NSBOX)
-              NELRCX(IRCX) = -1      ! FLAG FOR FEPLCX3:  default incident bulk ion energy
-              NREACX(IRCX) = ISTORE  ! FLAG FOR FTABCX3, FOR DEFAULT REACTION ISTORE -1,-2,-3
+              NELRCX(IRCX) = -1      ! FLAG FOR FEPLCX3:
+                                     ! default incident bulk ion energy
+              NREACX(IRCX) = ISTORE  ! FLAG FOR FTABCX3,
+                           ! FOR DEFAULT REACTION ISTORE -1,-2,-3
             ELSE
               NELRCX(IRCX) = -1
-              NREACX(IRCX) = ISTORE  ! FLAG FOR FTABCX3, FOR DEFAULT REACTION ISTORE -1,-2,-3
+              NREACX(IRCX) = ISTORE  ! FLAG FOR FTABCX3,
+                           ! FOR DEFAULT REACTION ISTORE -1,-2,-3
             END IF
 C
             MODCOL(3,2,IRCX)=3
             MODCOL(3,4,IRCX)=3
 C
-  155     CONTINUE   ! end of nplsi loop, bulk collision partners for default CX models
+  155     CONTINUE   ! end of nplsi loop,
+                     ! bulk collision partners for default CX models
 C
           NACXI(IATM)=IDSC
 C
@@ -399,7 +405,7 @@ C  CX PROCESS IDENTIFIED
             FACTKK=FREACA(IATM,NRC)
             IF (FACTKK.EQ.0.D0) FACTKK=1.
             CHRDF0=0.D0
-C  BULK PARTICLE INDEX
+C  INCIDENT BULK PARTICLE INDEX
             IPLS=EIRENE_IDEZ(IBULKA(IATM,NRC),3,3)
             IF (IPLS.LE.0.OR.IPLS.GT.NPLSI) GOTO 990
             IF (MASSP(KK).LE.0.OR.MASST(KK).LE.0) GOTO 993
@@ -409,13 +415,15 @@ C  BULK PARTICLE INDEX
             LGACX(IATM,IDSC,0)=IRCX
             LGACX(IATM,IDSC,1)=IPLS
 c
-            if (ngena(iatm).lt.0) then  !  in range -1,...-infinity
+            if (ngena(iatm).lt.0) then  !  in range -1,...-99
 c  set CX fluid limit FDLM (critical Knudsen number Kn_c = mfp_cx/delta
 c  delta: typical length (could be cell size, or gradient length...)
 c  use the integer input flag (format I3) NGENA (generation limit).
-              MFL=-(ngena(iatm)+1)  !  now MFL in range 0 to +infinity
+              MFL=-(ngena(iatm)+1)  !  now MFL is in range 0 to 98
 c  ngena=-10001 produces Kn_c=1.0. Larger abs(ngena) --> smaller Kn_c
               FDLMCX(IRCX)=1.0E4/(MFL+eps30)
+cdr  for testing: Kn=1.0, because ngena ist only format I3
+cdr           fdlmcx(ircx)=1.0
             endif
 
             IAT=NSPH+IATM
@@ -459,7 +467,7 @@ C
         IF (NRCA(IATM).EQ.0) THEN
           NAELI(IATM)=0
 C
-C  NON-DEFAULT EL MODEL:  240--
+C  NON-DEFAULT EL MODEL: 240--
 C
         ELSEIF (NRCA(IATM).GT.0) THEN
           DO 230 NRC=1,NRCA(IATM)
@@ -554,7 +562,7 @@ C
         IF (NRCA(IATM).EQ.0) THEN
           NAPII(IATM)=0
 C
-C  NON-DEFAULT ION IMPACT MODEL:  130--190
+C  NON-DEFAULT ION IMPACT MODEL: 130--190
 C
         ELSEIF (NRCA(IATM).GT.0) THEN
           DO NRC=1,NRCA(IATM)

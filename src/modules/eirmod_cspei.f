@@ -1,13 +1,13 @@
       MODULE EIRMOD_CSPEI
 cdr Handle storage for:
-c   cspei: Standard deviations, co.-variances, etc.
-c   plasma_bckgrnd: For interfacing with external plasma code
+c   CSPEI: Standard deviations, covariances, etc.
+cdr and, quite unrelated, for:
+c   PLASMA_BCKGRND: For interfacing with external plasma code
 c                   also used for internal non-lin. iterations within eirene
 c
-c   Size of plasma_bckgrnd:  currently NIINTF (formerly: NIDC)
+c   Size of plasma_bckgrnd: currently NIINTF (formerly: NIDC)
 c   to be checked: is this consistent with usage of plasma_bckgrnd?
-c   also in modbgk? 
-
+c   also in modbgk?
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
 
@@ -17,6 +17,7 @@ c   also in modbgk?
 
       PUBLIC :: EIRENE_ALLOC_CSPEI, EIRENE_DEALLOC_CSPEI,
      P          EIRENE_INIT_CSPEI,
+
      P          EIRENE_ALLOC_BCKGRND, EIRENE_DEALLOC_BCKGRND,
      P          EIRENE_INIT_BCKGRND
 
@@ -61,7 +62,8 @@ cdr
       INTEGER, PARAMETER :: IL = SELECTED_INT_KIND(15)
       INTEGER(IL) :: MEM
 
-      IF (ALLOCATED(SMESTV)) RETURN  ! allocated smestv is used as indicator for: 'all fields are allocated'
+! allocated smestv is used as indicator for: 'all fields are allocated'
+      IF (ALLOCATED(SMESTV)) RETURN
 
       IF (NSMSTRA > 0) THEN
         NIDV=NVOLTL
@@ -73,7 +75,7 @@ cdr
 CDR  storage for for sum over strata, surface and volume tallies.
       ALLOCATE (SMESTV(NIDV,NRTAL))
       ALLOCATE (SMESTS(NIDS,NLMPGS))
-CDR   same for spectra, but:
+CDR  same for spectra, but:
 cdr   ALLOCATE (SMESTL(NADSPC))   ! TO BE MOVED HERE FROM INPUT.F,  NOT POSSIBLE BECAUSE DIFFERENT DATA TYPE FOR SMESTL
 
 
@@ -117,7 +119,7 @@ C  TOTAL ALLOCATED STORAGE IN THIS ROUTINE
 
       WRITE (IUNMEM,'(A,T25,I15)')
      .       ' CSPEI ', MEM
-      
+
       CALL EIRENE_INIT_CSPEI
 
       RETURN
@@ -183,7 +185,7 @@ cdr  originally only for transfer of plasma data from external code
 cdr  and PROFR  profile options INDPRO=6 or INDPRO=7
 
 cdr  called from:
-c    input.f  (if any indpro(1:12)=6 or =7). Called TWICE
+c    input.f  (if any indpro(1:12) =6 or =7). Called TWICE
 c              once after reading block 13 and before reading block 14,
 c              once again after statement 4000.
 c    eirsrt.f (coupling to various B2 code variants)
@@ -193,7 +195,6 @@ c       rplam_long.f (if IFLG=10)
 c    modbgk.f (transfer of modified virtual background for next iteration)
 cdr
 
-cdr  If any indpro(1..12)=6,7, then ALLOC_BCKGRND is called:
 c      provide storage for
 c      transfer of background (plasma) tallies
 c      from an external code into eirene background tallies
@@ -214,22 +215,28 @@ cdr  size of interfacing plasma data storage
         ALLOCATE(PLASMA_BCKGRND(NIINTF,NRAD))
 
 cdr initial : final storage for ADINTF tally corrected
+c  1
         TEINTF => PLASMA_BCKGRND(1+0+0*NPLS             ,   :)
+c  2 -- 1+nplsti
         TIINTF => PLASMA_BCKGRND(1+1+0*NPLS        :
      .                           1+0+0*NPLS+NPLSTI,         :)
+c  2+nplsti -- 1+nplsti+npls
         DIINTF => PLASMA_BCKGRND(1+1+0*NPLS+NPLSTI :
      .                           1+0+1*NPLS+NPLSTI,         :)
+c  2+nplsti+npls -- 1+nplsti+npls+nplsv
         VXINTF => PLASMA_BCKGRND(1+1+1*NPLS+NPLSTI+0*NPLSV :
      .                           1+0+1*NPLS+NPLSTI+1*NPLSV, :)
         VYINTF => PLASMA_BCKGRND(1+1+1*NPLS+NPLSTI+1*NPLSV :
      .                           1+0+1*NPLS+NPLSTI+2*NPLSV, :)
         VZINTF => PLASMA_BCKGRND(1+1+1*NPLS+NPLSTI+2*NPLSV :
      .                           1+0+1*NPLS+NPLSTI+3*NPLSV, :)
+c
         BXINTF => PLASMA_BCKGRND(1+1+1*NPLS+NPLSTI+3*NPLSV, :)
         BYINTF => PLASMA_BCKGRND(1+2+1*NPLS+NPLSTI+3*NPLSV, :)
         BZINTF => PLASMA_BCKGRND(1+3+1*NPLS+NPLSTI+3*NPLSV, :)
         BFINTF => PLASMA_BCKGRND(1+4+1*NPLS+NPLSTI+3*NPLSV, :)
         VLINTF => PLASMA_BCKGRND(1+5+1*NPLS+NPLSTI+3*NPLSV, :)
+c  7+npls+nplsti+3nplsv -- 6+npls+nplsti+3nplsv+nain
         ADINTF => PLASMA_BCKGRND(1+6+1*NPLS+NPLSTI+3*NPLSV :
      .                             6+1*NPLS+NPLSTI+3*NPLSV+NAIN, :)
 

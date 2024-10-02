@@ -17,7 +17,7 @@ cdr              be available already.
 C  this is the "on the fly", storage saving, version to eliminate
 C  pre-computed array EELPI3(irpi,k,1,...,9) from this run
 
-cdr  find electron energy loss for PI process no. IRPI,  energy in eV
+cdr  find electron energy loss for PI process no. IRPI, energy in eV
 c    locally in cell K, for process kk= nelrpi(irpi)
 c
       USE EIRMOD_PRECISION
@@ -53,14 +53,15 @@ c  non-default models, data from external databases
           ELPI = EIRENE_ENERGY_RATE_COEFF(KK,K,TEINL(K),0._DP,.TRUE.,0)
           EIRENE_FEELPI3=-ELPI*DEIN(K)*FACRPI(IRPI,1)/
      .                   (EIRENE_FTABPI3(IRPI,K)+EPS60)
-        ELSEIF(JELRPI(IRPI) == 9) THEN   !  Te, ne dependence. ? Should be Ti,ni.
+        ELSEIF(JELRPI(IRPI) == 9) THEN   !  Te, ne dependence. ?
+                                         !  Should be Ti,ni.
           DEIMIN=LOG(1.D8)
           PLS=MAX(DEIMIN,DEINL(K))
           ELPI = EIRENE_ENERGY_RATE_COEFF(KK,K,TEINL(K),PLS,.FALSE.,1)
           EE=MAX(-100._DP,ELPI+FACRPI(IRPI,2)+DEINL(K))
           EIRENE_FEELPI3=-EXP(EE)/(EIRENE_FTABPI3(IRPI,K)+EPS60)
         ELSE
-CDR: missing still:  EB,Ti dependence
+CDR: missing still: EB,Ti dependence
           WRITE (IUNOUT,* ) 'ERROR IN FEELPI3, INVALID JELRPI '
           CALL EIRENE_EXIT_OWN(1)
         END IF

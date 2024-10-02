@@ -4,9 +4,9 @@ C
       FUNCTION EIRENE_LEARC2(X,Y,NR,NP,TEXT)
 C
 C  CALLED ONLY IN CASE OF 2D POLYGONAL MESH
-C    A:  (LEVGEO=3), (EVEN FOR 1D GRID CASES)
+C    A: (LEVGEO=3), (EVEN FOR 1D GRID CASES)
 C  OR
-C    B:  (LEVGEO=2 and NLPOL) WHEN THE POLOIDAL SUB-GRID IS DEFINED
+C    B: (LEVGEO=2 and NLPOL) WHEN THE POLOIDAL SUB-GRID IS DEFINED
 C                             BY POLYGONAL LINES.
 
 C  SEARCH 2ND GRID INDEX IPOLG
@@ -16,7 +16,7 @@ C  ASSUMING (knowing) THAT POINT (X,Y) IS IN THE RADIAL ZONE "NR",
 C  I.E. SEARCH ONLY BETWEEN THE TWO NEIGHBORING "RADIAL" POLYGONS NR AND NR+1
 
 C  stricly, subr. LEARC1 does the same, with ian=nr and ien=nr+1
-c  tbd:  which routine does it better? faster ?
+c  tbd: which routine does it better? faster ?
 c  NB: (levgeo=2 and nlpol) is not covered in learc1, only here in learc2.
 C
       USE EIRMOD_PRECISION
@@ -53,7 +53,7 @@ C
 
 !$OMP THREADPRIVATE(IFIRST,X1,Y1,X2,Y2,X3,Y3,X4,Y4,TX,TY,UX,UY,
 !$OMP&    DET,VY1,WY1,WX1,DWY,HELP,D12,D14,D32,D34)
-      
+
 csw 04aug08
       if(np .lt. 0) then
         if(allocated(x1)) then

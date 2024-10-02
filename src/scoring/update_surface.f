@@ -5,7 +5,7 @@ c  SCORE "INCIDENT" and "EMITTED" SURFACE FLUX TALLIES, FOR SURFACE MSURF, OR SU
 c  INCIDENT: update tallies POT_A_B(iout,msurf) and EOT_A_B(iout,msurf)
 c  EMITTED : update tallies PRF_A_B(iout,msurf) and ERF_A_B(iout,msurf)
 c  A code-letter for incident type of particle: A, M, I, P, PH
-c  B code-letter for emitted type of particle :  AT, ML, IO, PL, PHT
+c  B code-letter for emitted type of particle : AT, ML, IO, PL, PHT
 c  iout:  species index for emitted particle
 
       SUBROUTINE EIRENE_UPDATE_SURFACE (ITOLD,IOLD,WGHTSG,IND)
@@ -15,27 +15,27 @@ C       ENERGY FLUXES   (E0*WGHTSG),         score EOT.., ERF...
 
 c  input:
 c
-c  ind=1:  score incident currents
+c  ind=1: score incident currents
 c    itold:  type of incident particle
 c    iold:   index of incident particle
 c    ispez  (iatm, imol, iion, ipls, iphot): of incident particle
 c    msurf:  surface index
-c    msurfg:  sub-segment of surface MSURF, for spatial resolution on surface
+c    msurfg: sub-segment of surface MSURF, for spatial resolution on surface
 c    E0:     energy (eV) of incident particle
-c    WGHTSG:   stat. weight of incident particle WEIGHT* PROB* SIGN.
+c    WGHTSG: stat. weight of incident particle WEIGHT* PROB* SIGN.
 
-c  ind=2:  score reemitted currents
+c  ind=2: score reemitted currents
 c    itold:  type of incident particle
 c    iold:   index of incident particle
 c    ityp :  type of emitted particle
 c    ispez  (iatm, imol, iion, ipls, iphot): of emitted particle
 c    msurf:  surface index
-c    msurfg:  sub-segment of surface MSURF, for spatial resolution on surface
+c    msurfg: sub-segment of surface MSURF, for spatial resolution on surface
 c    E0:     energy (eV) of reemitted particle
-c    WGHTSG:   stat. weight of reemitted particle* PROB* SIGN.
+c    WGHTSG: stat. weight of reemitted particle* PROB* SIGN.
 
 c  output:
-c  lmetspw(ispz):  species ispz is emitted, emitted flux tally is scored.
+c  lmetspw(ispz): species ispz is emitted, emitted flux tally is scored.
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -118,11 +118,11 @@ C  INCIDENT MOLECULES
         IF (MSURFG.GT.0) THEN
           IF (LEOTML) THEN
 !$OMP ATOMIC
-             EOTML(IMOL,MSURFG)=EOTML(IMOL,MSURFG)+EWGHTSG
+            EOTML(IMOL,MSURFG)=EOTML(IMOL,MSURFG)+EWGHTSG
           ENDIF
           IF (LPOTML) THEN
 !$OMP ATOMIC
-             POTML(IMOL,MSURFG)=POTML(IMOL,MSURFG)+WGHTSG
+            POTML(IMOL,MSURFG)=POTML(IMOL,MSURFG)+WGHTSG
           ENDIF
         ENDIF
         IF (LEOTML .OR. LPOTML) LMETSPW(NSPA+IMOL) = .TRUE.
@@ -360,7 +360,7 @@ c... from an incident bulk ion
           goto 999
         ENDIF
 
-c  a molecule is reemitted
+c  a molecule IMOL is reemitted
       ELSEIF (ITYP.EQ.2) THEN
         LOGMOL(IMOL,ISTRA)=.TRUE.
         IF (ITOLD.EQ.1) THEN

@@ -1,5 +1,5 @@
       subroutine eirene_write_json_file(filename)
-      
+
       use eirmod_precision
       use eirmod_parmmod
       USE EIRMOD_COMUSR
@@ -35,23 +35,22 @@
       USE EIRMOD_CUPD
       USE EIRMOD_PHOTON
       USE EIRMOD_JSON
-      USE EIRMOD_IOUSR, ONLY: eirene_write_block_11_usr
       USE EIRMOD_PRESSURELOOP
-      
-      use json_module           !IGNORE
+      USE EIRMOD_IOUSR, ONLY: eirene_write_block_11_usr
+      use json_module           ! IGNORE
 
       implicit none
+      character(*) :: filename
 
       type(json_core) :: json
-      type(json_value),pointer :: p, block_1, block_2, block_3a, 
+      type(json_value),pointer :: p, block_1, block_2, block_3a,
      .                            block_3b, block_45, block_6, block_7,
      .                            block_8, block_9, block_10, block_11,
      .                            block_12, block_13, block_14, block_0,
      .                            block_15
       type(json_value),pointer :: cmlines, crs_lines
       type(s_stack), pointer :: cur
-      character(*) :: filename
-      
+
 ! initialize the class
 !      call json%initialize(.false.,.true.,.false.,'ES')
 !      call json%initialize(compact_reals=.true.,real_format='ES',
@@ -106,7 +105,7 @@
         do while (associated(cur))
           call json%add(cmlines,'CM',trim(cur%string))
           cur => cur%next
-        end do 
+        end do
         call json%add(block_0,cmlines)
       end if
 
@@ -128,7 +127,7 @@
 
 ! write the file:
       call json%print(p,trim(filename))
-      
+
 !cleanup:
       call json%destroy(p)
       if (json%failed()) stop 1
@@ -147,11 +146,11 @@
       type(json_value),pointer :: cfile
       type(json_value),pointer :: var
       integer :: ifile, ntcpu_orig
-      
+
       ntcpu_orig = ntcpu
       if (abs(mpts_comsou-1._dp) > eps10)
      .   ntcpu_orig = ntcpu_orig / mpts_comsou
-      
+
       call json%add(me,'MANUAL',
      .     "http://www.eirene.de/eirene.pdf#section.2.1")
       call json%add(me,'NPRLL',nprll)
@@ -196,13 +195,13 @@
       do ifile=1, ndbnames
         if (.not.ldbread(ifile)) cycle
         call json%create_object(var,'')    !name does not matter
-        call json%add(var, 'FILE',trim(dbhandle(ifile))) 
-        call json%add(var, 'PATH',trim(dbfname(ifile))) 
+        call json%add(var, 'FILE',trim(dbhandle(ifile)))
+        call json%add(var, 'PATH',trim(dbfname(ifile)))
         call json%add(cfile,var)
         nullify(var)
       end do
       call json%add(me,cfile)
-      
+
       end subroutine eirene_write_block_1
 
 !******************************************************************************
@@ -211,7 +210,7 @@
 
       type(json_value),pointer :: me
       type(json_value),pointer :: rad, pol, tor, mlt, add, pnts, pnt,
-     .                            plgs, plg 
+     .                            plgs, plg
       integer :: k,i,j,nm
 
       call json%add(me,'MANUAL',
@@ -243,13 +242,13 @@
           call json%add(rad,'NR1ST',nr1st_in)
         else
           call json%add(rad,'NR1ST',nr1st_in)
-        end if 
+        end if
         call json%add(rad,'NRSEP',nrsep)
         call json%add(rad,'NRPLG',nrplg)
         call json%add(rad,'NPPLG',npplg)
         call json%add(rad,'NRKNOT',nrknot)
-        call json%add(rad,'NCOOR',ncoor)        
-        
+        call json%add(rad,'NCOOR',ncoor)
+
         if (indgrd(1) .le. 5) then
           if (nlslb .or. nlcrc .or. nlell .or. nltri) then
             call json%add(rad,'RIA',ria)
@@ -281,7 +280,7 @@
 
             call json%create_array(pnts,'POLYGON_PARTS') !an array
             call json%add(rad,pnts)
-            do k = 1, npplg          
+            do k = 1, npplg
               call json%create_object(pnt,'') !name does not matter
               call json%add(pnt,'IPART',k)
               call json%add(pnt,'NPOINT',[npoint(1,k),npoint(2,k)])
@@ -340,7 +339,7 @@
         call json%add(pol,'YYA',yya)
       end if
 
-! toroidal grid 
+! toroidal grid
       call json%create_object(tor,'TOROIDAL_GRID')
       call json%add(me,tor)
 
@@ -360,7 +359,7 @@
         call json%add(tor,'ZZA',zza)
         call json%add(tor,'ROA',roa)
       end if
-  
+
 ! block multiplication
       if (nlmlt) then
         call json%create_object(mlt,'MESH_MULTIPLICATION')
@@ -368,7 +367,7 @@
         call json%add(mlt,'NBMLT',nbmlt)
         call json%add(mlt,'VOLCOR',volcor(1:nbmlt))
       end if
-  
+
 ! additional cells
       if (nladd) then
         call json%create_object(add,'ADD_CELLS')
@@ -376,7 +375,7 @@
         call json%add(add,'NRADD',nradd)
         call json%add(add,'VOLADD',volcor(1:nradd))
       end if
-  
+
       end subroutine eirene_write_block_2
 
 !******************************************************************************
@@ -402,8 +401,8 @@
         nlj = nlim + ists
         idimp = maxloc(inump(ists,1:3),dim=1)
         call json%create_object(srf,'')    !name does not matter
-        call json%add(srf,'TXTSFL',trim(txtsfl(nlj))) 
-        call json%add(srf,'IDIMP',idimp) 
+        call json%add(srf,'TXTSFL',trim(txtsfl(nlj)))
+        call json%add(srf,'IDIMP',idimp)
         call json%add(srf,'INUMP',inump(ists,idimp))
         call json%add(srf,'IRPTA1',irpta(ists,1))
         call json%add(srf,'IRPTE1',irpte(ists,1))
@@ -419,7 +418,7 @@
         nullify(srf)
       end do
       call json%add(me,nondefs)
-  
+
       end subroutine eirene_write_block_3a
 
 !******************************************************************************
@@ -439,7 +438,7 @@
       call json%add(srf,'ILCELL',ilcell(nlj))
       call json%add(srf,'ILBOX',ilbox(nlj))
       call json%add(srf,'ILPLG',ilplg(nlj))
-      
+
       end subroutine eirene_write_surf_switches
 
 !******************************************************************************
@@ -479,7 +478,7 @@
          call json%add(srf,'ESPUTS',esputs(1,nlj))
          call json%add(srf,'ESPUTC',esputc(1,nlj))
       end if
-      
+
       end subroutine eirene_write_ref_model
 
 !******************************************************************************
@@ -513,12 +512,12 @@
       call json%create_object(ext,'')
       call json%create_object(blk,'ADDITIONAL_SURFACES')
       call json%add(ext,blk)
-      
+
       call json%add(blk,'MANUAL',
      .     "http://www.eirene.de/eirene.pdf#subsection.2.3.2")
 
       call json%add(blk,'NLIMI',nlimi)
-      
+
 ! CH0 lines
       if (associated(ch0_stack%head)) then
         call json%create_array(ch0lines,'CH0-LINES') !an array
@@ -526,18 +525,18 @@
         do while (associated(cur))
           call json%add(ch0lines,'CH0',cur%string)
           cur => cur%next
-        end do 
+        end do
         call json%add(blk,ch0lines)
       end if
-      
+
 ! loop over additional surfaces
       call json%create_array(adds,'SURFACES') !an array
 
       do i=1, nlimi
-        
+
         call json%create_object(srf,'') !name does not matter
-        call json%add(srf,'ILIM',i) 
-        call json%add(srf,'TXTSFL',trim(txtsfl(i))) 
+        call json%add(srf,'ILIM',i)
+        call json%add(srf,'TXTSFL',trim(txtsfl(i)))
 
 ! CH1 lines
         if (associated(ch1_stack(i)%head)) then
@@ -546,7 +545,7 @@
           do while (associated(cur))
             call json%add(ch1lines,'CH1',cur%string)
             cur => cur%next
-          end do 
+          end do
           call json%add(srf,ch1lines)
         end if
 
@@ -557,7 +556,7 @@
           do while (associated(cur))
             call json%add(ch2lines,'CH2',cur%string)
             cur => cur%next
-          end do 
+          end do
           call json%add(srf,ch2lines)
         end if
 
@@ -595,7 +594,7 @@
           if (rlb_in(i) >= 4.) then
             call json%add(srf,'P4',p4_in(1:3,i))
           end if
-! 5 point surface  
+! 5 point surface
           if (rlb_in(i) >= 5.) then
             call json%add(srf,'P5',p5_in(1:3,i))
           end if
@@ -603,7 +602,7 @@
           if (rlb_in(i) >= 6.) then
             call json%add(srf,'P6',p6_in(1:3,i))
           end if
-        end if 
+        end if
 
 ! boundary specification
         if ((rlb_in(i) > 0.) .and. (rlb_in(i) < 2.)) then
@@ -686,11 +685,11 @@
 
 ! write the file:
       call json%print(ext,'eirene_add_surfaces.input.json')
-      
+
 !cleanup:
       call json%destroy(ext)
       if (json%failed()) stop 1
-  
+
       end subroutine eirene_write_block_3b
 
 !******************************************************************************
@@ -731,28 +730,28 @@
 ! start block 4
       call json%create_object(ssapm,'REACTIONS')
       call json%add(blk4,ssapm)
-   
+
       call json%add(ssapm,'NREACI',nreaci)
-      
+
 ! write classical reaction lines for easy comparison with fixed input
-      if (associated(crs_stack%head)) then
-        call json%create_array(crs_lines,'ClassicReactionStrings') ! an array
+      if (associated(crs_stack%head)) then ! an array
+        call json%create_array(crs_lines,'ClassicReactionStrings')
         cur => crs_stack%head
         do while (associated(cur))
           call json%add(crs_lines,'CRS',trim(cur%string))
           cur => cur%next
-        end do 
+        end do
         call json%add(ssapm,crs_lines)
       end if
-            
+
 ! loop over reaction lines
       call json%create_array(reacs,'REAC_SPECS') !an array
 
       do i=1, irlines
-        
+
         call json%create_object(rea,'') !name does not matter
 
-        call json%add(rea,'IR',reaclines(i)%no) 
+        call json%add(rea,'IR',reaclines(i)%no)
         call json%add(rea,'FILNAM',reaclines(i)%FILE)
         call json%add(rea,'H123',reaclines(i)%h_select)
         call json%add(rea,'REAC',reaclines(i)%reac_string)
@@ -790,7 +789,7 @@
            call json%add(rea,'ICOL_ESC',reaclines(i)%icol_esc)
            call json%add(rea,'POP_ESC',reaclines(i)%pop_esc)
          end if
-        
+
         call json%add(reacs,rea)
 
       end do
@@ -802,8 +801,8 @@
       call json%create_object(atoms,'ATOMS')
       call json%add(atoms,'NATMI',natmi)
       call json%create_array(blk4a,'SPECIES') !an array
-      call eirene_write_block_4abcd (blk4a, ityp, nsph, natmi, natm, 
-     .     texts, 'IATM', 'A', nmassa, nchara, ndum1, ndum2, isrf, isrt,  
+      call eirene_write_block_4abcd (blk4a, ityp, nsph, natmi, natm,
+     .     texts, 'IATM', 'A', nmassa, nchara, ndum1, ndum2, isrf, isrt,
      .     nrca, nfola, ngena, nhsts, ireaca, ibulka,
      .     iscd1a, iscd2a, iscd3a, iscd4a, iscdea, iestma, ibgka,
      .     eeleca, ebulka, escd1a, freaca, edpota)
@@ -815,8 +814,8 @@
       call json%create_object(mols,'MOLECULES') !an array
       call json%add(mols,'NMOLI',nmoli)
       call json%create_array(blk4b,'SPECIES') !an array
-      call eirene_write_block_4abcd (blk4b, ityp, nspa, nmoli, nmol, 
-     .     texts, 'IMOL', 'M', nmassm, ncharm, nprt, ndum2, isrf, isrt, 
+      call eirene_write_block_4abcd (blk4b, ityp, nspa, nmoli, nmol,
+     .     texts, 'IMOL', 'M', nmassm, ncharm, nprt, ndum2, isrf, isrt,
      .     nrcm, nfolm, ngenm, nhsts, ireacm, ibulkm,
      .     iscd1m, iscd2m, iscd3m, iscd4m, iscdem, iestmm, ibgkm,
      .     eelecm, ebulkm, escd1m, freacm, edpotm, LKIND=lkindm)
@@ -828,8 +827,8 @@
       call json%create_object(ions,'TEST_IONS') !an array
       call json%add(ions,'NIONI',nioni)
       call json%create_array(blk4c,'SPECIES') !an array
-      call eirene_write_block_4abcd (blk4c, ityp, nspam, nioni, nion, 
-     .     texts, 'IION', 'I', nmassi, nchari, nprt, nchrgi, isrf, isrt, 
+      call eirene_write_block_4abcd (blk4c, ityp, nspam, nioni, nion,
+     .     texts, 'IION', 'I', nmassi, nchari, nprt, nchrgi, isrf, isrt,
      .     nrci, nfoli, ngeni, nhsts, ireaci, ibulki,
      .     iscd1i, iscd2i, iscd3i, iscd4i, iscdei, iestmi, ibgki,
      .     eeleci, ebulki, escd1i, freaci, edpoti, LKIND=lkindi)
@@ -842,7 +841,7 @@
       call json%add(phots,'NPHOTI',nphoti)
       call json%create_array(blk4d,'SPECIES') !an array
       call eirene_write_block_4abcd (blk4d, ityp, 0, nphoti, nphot,
-     .     texts, 'IPHOT', 'PH', ndum1, ndum2, ndum3, ndum4, isrf, isrt, 
+     .     texts, 'IPHOT', 'PH', ndum1, ndum2, ndum3, ndum4, isrf, isrt,
      .     nrcph, nfolph, ngenph, nhsts, ireacph, ibulkph,
      .     iscd1ph, iscd2ph, iscd3ph, iscd4ph, iscdeph, iestmph, ibgkph,
      .     eelecph, ebulkph, escd1ph, freacph, edpotph)
@@ -850,16 +849,16 @@
       call json%add(blk4,phots)
 
 ! start block 5
-! bulk ions 
+! bulk ions
       ityp = 4
       call json%create_object(bulks,'BULK_IONS')
       call json%add(bulks,'NPLSI',nplsi)
       call json%create_array(blk5a,'SPECIES') !an array
-      call eirene_write_block_4abcd (blk5a, ityp, nspami, nplsi, npls, 
-     .     texts, 'IPLS', 'P', nmassp, ncharp, nprt, nchrgp, isrf, isrt,  
+      call eirene_write_block_4abcd (blk5a, ityp, nspami, nplsi, npls,
+     .     texts, 'IPLS', 'P', nmassp, ncharp, nprt, nchrgp, isrf, isrt,
      .     nrcp, ndum1, ndum2, nhsts, ireacp, ibulkp,
      .     iscd1p, iscd2p, iscd3p, iscd4p, iscdep, ndum3, ndum4,
-     .     eelecp, ebulkp, escd1p, freacp, edpotp, 
+     .     eelecp, ebulkp, escd1p, freacp, edpotp,
      .     DENSLIM=denslim, CDENMODEL=cdenmodel)
       call json%add(bulks,blk5a)
 
@@ -898,7 +897,7 @@
           call json%add(ti,'TI3',ti3(i))
           call json%add(ti,'TI4',ti4(i))
           call json%add(ti,'TI5',ti5(i))
-        
+
           call json%add(tis,ti)
         end do
         call json%add(blk5b,tis)
@@ -1014,21 +1013,21 @@
         end do
         call json%add(blk5b,ops)
       end if
-      
-      call json%add(blk5,blk5b)    
+
+      call json%add(blk5,blk5b)
 ! write the file:
       call json%print(ext,'eirene_physics_model.input.json')
-      
+
 !cleanup:
       call json%destroy(ext)
       if (json%failed()) stop 1
-  
+
       end subroutine eirene_write_block_45
 
 !******************************************************************************
 
-      subroutine eirene_write_block_4abcd (me, ityp, nbas, nloop, ndim, 
-     .     texts, cndx, cext, nmass, nchar, nprt, nchrg, isrf, isrt, 
+      subroutine eirene_write_block_4abcd (me, ityp, nbas, nloop, ndim,
+     .     texts, cndx, cext, nmass, nchar, nprt, nchrg, isrf, isrt,
      .     nrc, nfol, ngen, nhsts, ireac, ibulk,
      .     iscd1, iscd2, iscd3, iscd4, iscde, iestm, ibgk,
      .     eelec, ebulk, escd1, freac, edpot, lkind, denslim, cdenmodel)
@@ -1036,17 +1035,17 @@
       type(json_value),pointer :: me
       type(json_value),pointer :: elem, reas, re, model
       integer, intent(in) :: ityp, nbas, nloop, ndim
-      integer, intent(in) :: nmass(*), nchar(*), 
-     .         isrf(nspz,*), isrt(nspz,*), nprt(*), nchrg(*), 
-     .         nrc(*), nfol(*), ngen(*), nhsts(*), 
-     .         ireac(ndim,*), ibulk(ndim,*), iscd1(ndim,*), 
-     .         iscd2(ndim,*), iscd3(ndim,*), iscd4(ndim,*), 
+      integer, intent(in) :: nmass(*), nchar(*),
+     .         isrf(nspz,*), isrt(nspz,*), nprt(*), nchrg(*),
+     .         nrc(*), nfol(*), ngen(*), nhsts(*),
+     .         ireac(ndim,*), ibulk(ndim,*), iscd1(ndim,*),
+     .         iscd2(ndim,*), iscd3(ndim,*), iscd4(ndim,*),
      .         iscde(ndim,*), iestm(ndim,*), ibgk(ndim,*)
       integer, optional :: lkind(ndim)
       real(dp), optional :: denslim(ndim)
-      real(dp), intent(in) :: eelec(ndim,*), ebulk(ndim,*), 
+      real(dp), intent(in) :: eelec(ndim,*), ebulk(ndim,*),
      .         escd1(ndim,*), freac(ndim,*), edpot(ndim,*)
-      character(*) :: texts(*), cndx, cext    
+      character(*) :: texts(*), cndx, cext
       character(*), optional :: cdenmodel(ndim)
       integer :: i, ispz, numsec, k, j, nre, jdens
       logical :: lden
@@ -1110,12 +1109,12 @@
           call json%add(re,'IBULK'//cext,ibulk(i,k))
           call json%add(re,'ISCD1'//cext,iscd1(i,k))
           call json%add(re,'ISCD2'//cext,iscd2(i,k))
-          if (numsec > 2) 
+          if (numsec > 2)
      .      call json%add(re,'ISCD3'//cext,iscd3(i,k))
-          if (numsec > 3) 
+          if (numsec > 3)
      .      call json%add(re,'ISCD4'//cext,iscd4(i,k))
           call json%add(re,'ISCDE'//cext,iscde(i,k))
-          
+
           if (ityp < 4) then
             call json%add(re,'IESTM'//cext,iestm(i,k))
             call json%add(re,'IBGK'//cext,ibgk(i,k))
@@ -1131,7 +1130,7 @@
 
           call json%add(reas,re)
 
-         end do 
+         end do
 
          if ((ityp == 4) .and. lden) then
            if (len_trim(cdenmodel(i)) > 0) then
@@ -1198,7 +1197,7 @@
 
          call json%add(me,elem)
 
-      end do  
+      end do
 
       end subroutine eirene_write_block_4abcd
 
@@ -1219,7 +1218,7 @@
      .     "http://www.eirene.de/eirene.pdf#subsection.2.6.1")
 
       call json%add(me,'NLTRIM',nltrim)
-      
+
       if (nltrim) then
         if (len_trim(reffil(1)) > 0) then
           slash = char(47)
@@ -1231,7 +1230,7 @@
             do i=1,nhd6
               max_len=max(max_len,len_trim(reffil(i)(i1+1:)))
             end do
-            
+
             allocate (character(len=max_len) :: tps(nhd6))
             tps = repeat(' ',max_len)
 !           do i = 1, nhd6
@@ -1307,7 +1306,7 @@
           end if
           call json%add(vrs,vr)
           spr => spr%next
-        end do 
+        end do
 
         refcur => refcur%next
 
@@ -1333,7 +1332,7 @@
       nst = nstrai_in
 
       ampts = mpts_comsou
-      
+
       call json%add(me,'NSTRAI',nst)
       call json%add(me,'INDSRC',indsrc(1:nst))
       call json%add(me,'ALLOC',alloc)
@@ -1341,7 +1340,7 @@
 
       call json%create_array(srcs,'STRATA')
       call json%add(me, srcs)
-      
+
       do istra = 1, nst
         if (indsrc(istra) == 6) cycle
         call json%create_object(src,'')
@@ -1364,9 +1363,9 @@ C       call json%add(src,'NLRAY',nlray(istra))
         end if
 
 !  999999 is the largest number of particles in input
-!  thus npts was negative originally        
+!  thus npts was negative originally
         if (npts_orig > 999999) npts_orig = -1
-        
+
         call json%add(src,'NPTS',npts_orig)
         call json%add(src,'NINITL',ninitl(istra))
         call json%add(src,'NEMODS',nemods(istra))
@@ -1432,7 +1431,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
           call json%add(sub,'SORAD4',sorad4(j,istra))
           call json%add(sub,'SORAD5',sorad5(j,istra))
           call json%add(sub,'SORAD6',sorad6(j,istra))
-        
+
           call json%add(subs,sub)
         end do
         call json%add(src, subs)
@@ -1442,7 +1441,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
         call json%add(src,'SORVDX',sorvdx(istra))
         call json%add(src,'SORVDY',sorvdy(istra))
         call json%add(src,'SORVDZ',sorvdz(istra))
-        
+
         call json%add(src,'SORCOS',sorcos_in(istra))
         call json%add(src,'SORMAX',sormax_in(istra))
         call json%add(src,'SORCTX',sorctx(istra))
@@ -1477,7 +1476,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
 
       do i = 1, nzadd
         call json%create_object(zone,'')
-        
+
         call json%add(zone,'INI',ini_zone(i))
         call json%add(zone,'INE',ine_zone(i))
 ! CH3 lines
@@ -1487,10 +1486,10 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
           do while (associated(cur))
             call json%add(ch3lines,'CH3',cur%string)
             cur => cur%next
-          end do 
+          end do
           call json%add(zone,ch3lines)
         end if
-        
+
         tempcur => templist
         do while (associated(tempcur))
           if (tempcur%ii == ini_zone(i)) then
@@ -1503,7 +1502,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
           end if
           tempcur => tempcur%next
         end do
-        
+
         dencur => denlist
         do while (associated(dencur))
           if (dencur%ii == ini_zone(i)) then
@@ -1515,7 +1514,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
           end if
           dencur => dencur%next
         end do
-        
+
         velcur => vellist
         do while (associated(velcur))
           if (velcur%ii == ini_zone(i)) then
@@ -1523,7 +1522,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
               call json%create_object(vels,'M')
             else
               call json%create_object(vels,'V')
-            endif  
+            endif
             call json%add(vels,'IDION',velcur%idion)
             call json%add(vels,'VX',velcur%vx)
             call json%add(vels,'VY',velcur%vy)
@@ -1533,7 +1532,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
           end if
           velcur => velcur%next
         end do
-        
+
         volcur => vollist
         do while (associated(volcur))
           if (volcur%ii == ini_zone(i)) then
@@ -1547,6 +1546,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
 
         call json%add(zones,zone)
       end do
+
       end subroutine eirene_write_block_8
 
 !******************************************************************************
@@ -1558,14 +1558,14 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
       call json%add(me,'MANUAL',
      .     "http://www.eirene.de/eirene.pdf#section.2.9")
 
-      call json%add(me,'NLPRCA',nlprca(1:natmi))      
-      call json%add(me,'NLPRCM',nlprcm(1:nmoli))      
-      call json%add(me,'NLPRCI',nlprci(1:nioni))      
-      call json%add(me,'NLPRCPH',nlprcph(1:nphoti))      
+      call json%add(me,'NLPRCA',nlprca(1:natmi))
+      call json%add(me,'NLPRCM',nlprcm(1:nmoli))
+      call json%add(me,'NLPRCI',nlprci(1:nioni))
+      call json%add(me,'NLPRCPH',nlprcph(1:nphoti))
 
       iprsf = pack( [(i, i=0,nlimps)], nlprcs, [(-1,i=0,nlimps)] )
-      num = count(iprsf > -1)    
-      call json%add(me,'NPRCSF',num)   
+      num = count(iprsf > -1)
+      call json%add(me,'NPRCSF',num)
       if (num > 0) call json%add(me,'IPRSF',iprsf(1:num))
 
       call json%add(me,'MAXLEV',maxlev)
@@ -1656,12 +1656,12 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
       call json%add(me,'MANUAL',
      .     "http://www.eirene.de/eirene.pdf#section.2.10")
 
-      call json%add(me,'NADVI',nadvi)      
-      call json%add(me,'NCLVI',nclvi)      
-      call json%add(me,'NALVI',nalvi)      
-      call json%add(me,'NADSI',nadsi)      
-      call json%add(me,'NALSI',nalsi)      
-      call json%add(me,'NADSPC',nadspc) 
+      call json%add(me,'NADVI',nadvi)
+      call json%add(me,'NCLVI',nclvi)
+      call json%add(me,'NALVI',nalvi)
+      call json%add(me,'NADSI',nadsi)
+      call json%add(me,'NALSI',nalsi)
+      call json%add(me,'NADSPC',nadspc)
 
       call json%create_array(blk_10a,'ADD_VOL_TAL')
       call json%create_array(blk_10b,'COLL_EST')
@@ -1712,7 +1712,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
         call json%add(alg,'TXTUTR',txtunt(j,ntalr))
         call json%add(blk_10c,alg)
       end do
-      
+
 ! additional surface tallies
       do j = 1, NADSI
         call json%create_object(sav,'')
@@ -1775,7 +1775,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
 
       subroutine eirene_write_block_11(me)
       type(json_value),pointer :: me, tals, tal, srfs, srf
-      type(json_value),pointer :: plads, plad, plstds, plstd, 
+      type(json_value),pointer :: plads, plad, plstds, plstd,
      .                            pltls, pltl, spcs, spc
       integer :: j, nsrf, i
 
@@ -1783,51 +1783,51 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
      .     "http://www.eirene.de/eirene.pdf#section.2.11")
 
 ! block 11a, print output
-      call json%add(me,'TRCPLT',trcplt)      
-      call json%add(me,'TRCHST',trchst)      
-      call json%add(me,'TRCNAL',trcnal)      
-      call json%add(me,'TRCMOD',trcmod)      
-      call json%add(me,'TRCSIG',trcsig)      
+      call json%add(me,'TRCPLT',trcplt)
+      call json%add(me,'TRCHST',trchst)
+      call json%add(me,'TRCNAL',trcnal)
+      call json%add(me,'TRCMOD',trcmod)
+      call json%add(me,'TRCSIG',trcsig)
 
-      call json%add(me,'TRCGRD',trcgrd)      
-      call json%add(me,'TRCSUR',trcsur)      
-      call json%add(me,'TRCREF',trcref)      
-      call json%add(me,'TRCFLE',trcfle)      
-      call json%add(me,'TRCAMD',trcamd)      
+      call json%add(me,'TRCGRD',trcgrd)
+      call json%add(me,'TRCSUR',trcsur)
+      call json%add(me,'TRCREF',trcref)
+      call json%add(me,'TRCFLE',trcfle)
+      call json%add(me,'TRCAMD',trcamd)
 
-      call json%add(me,'TRCINT',trcint)      
-      call json%add(me,'TRCLST',trclst)      
-      call json%add(me,'TRCSOU',trcsou)      
-      call json%add(me,'TRCREC',trcrec)      
-      call json%add(me,'TRCTIM',trctim)      
+      call json%add(me,'TRCINT',trcint)
+      call json%add(me,'TRCLST',trclst)
+      call json%add(me,'TRCSOU',trcsou)
+      call json%add(me,'TRCREC',trcrec)
+      call json%add(me,'TRCTIM',trctim)
 
-      call json%add(me,'TRCBLA',trcbla)      
-      call json%add(me,'TRCBLM',trcblm)      
-      call json%add(me,'TRCBLI',trcbli)      
-      call json%add(me,'TRCBLP',trcblp)      
-      call json%add(me,'TRCBLE',trcble)      
+      call json%add(me,'TRCBLA',trcbla)
+      call json%add(me,'TRCBLM',trcblm)
+      call json%add(me,'TRCBLI',trcbli)
+      call json%add(me,'TRCBLP',trcblp)
+      call json%add(me,'TRCBLE',trcble)
 
-      call json%add(me,'TRCBLPH',trcblph)      
-      call json%add(me,'TRCTAL',trctal)      
-      call json%add(me,'TRCOCT',trcoct)      
-      call json%add(me,'TRCCEN',trccen) 
-      call json%add(me,'TRCRNF',trcrnf) 
-     
-!      call json%add(me,'TRCDBG2',trcdbg2)      
-!      call json%add(me,'TRCDBGE',trcdbge)      
-!      call json%add(me,'TRCDBGM',trcdbgm)      
-!      call json%add(me,'TRCDBGF',trcdbgf)      
-!      call json%add(me,'TRCDBGL',trcdbgf)      
-     
-!      call json%add(me,'TRCDBGS',trcdbgs)      
-!      call json%add(me,'TRCDBGG',trcdbgg)      
-!      call json%add(me,'TRCDBGMPI',trcdbgmpi)      
-!      call json%add(me,'TRCDBGC',trcdbgc) 
-      call json%add(me,'TRCHKTIM',trchktim) 
-      call json%add(me,'TRCSCl',trcscl) 
+      call json%add(me,'TRCBLPH',trcblph)
+      call json%add(me,'TRCTAL',trctal)
+      call json%add(me,'TRCOCT',trcoct)
+      call json%add(me,'TRCCEN',trccen)
+      call json%add(me,'TRCRNF',trcrnf)
+
+!      call json%add(me,'TRCDBG2',trcdbg2)
+!      call json%add(me,'TRCDBGE',trcdbge)
+!      call json%add(me,'TRCDBGM',trcdbgm)
+!      call json%add(me,'TRCDBGF',trcdbgf)
+!      call json%add(me,'TRCDBGL',trcdbgf)
+
+!      call json%add(me,'TRCDBGS',trcdbgs)
+!      call json%add(me,'TRCDBGG',trcdbgg)
+!      call json%add(me,'TRCDBGMPI',trcdbgmpi)
+!      call json%add(me,'TRCDBGC',trcdbgc)
+      call json%add(me,'TRCHKTIM',trchktim)
+      call json%add(me,'TRCSCL',trcscl)
 
       call json%add(me,'TRCSRC',trcsrc)
-    
+
 ! volume averaged tallies
       call json%add(me,'NVOLPR',nvolpr)
       call json%add(me,'NSPCPR',nspcpr)
@@ -1842,7 +1842,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
          call json%add(tals,tal)
       end do
       call json%add(me,tals)
-    
+
 ! output of surfaces
       call json%add(me,'NSURPR',nsurpr)
 
@@ -1876,31 +1876,31 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
 
 ! block 11 b, geometrie plot
 
-      call json%add(me,'PL1ST',pl1st) 
-      call json%add(me,'PL2ND',pl2nd) 
-      call json%add(me,'PL3RD',pl3rd) 
-      call json%add(me,'PLADD',pladd) 
-      call json%add(me,'PLHST',plhst) 
+      call json%add(me,'PL1ST',pl1st)
+      call json%add(me,'PL2ND',pl2nd)
+      call json%add(me,'PL3RD',pl3rd)
+      call json%add(me,'PLADD',pladd)
+      call json%add(me,'PLHST',plhst)
 
-      call json%add(me,'PLCUT',plcut) 
-      call json%add(me,'PLBOX',plbox) 
-      call json%add(me,'PLSTOR',plstor) 
+      call json%add(me,'PLCUT',plcut)
+      call json%add(me,'PLBOX',plbox)
+      call json%add(me,'PLSTOR',plstor)
 
-      call json%add(me,'PLNUMV',plnumv) 
-      call json%add(me,'PLNUMS',plnums) 
-      call json%add(me,'PLARR',plarr) 
-      call json%add(me,'LRPSCUT',lrpscut) 
-      call json%add(me,'PLIDL',plidl) 
-      call json%add(me,'PLVTK',plvtk) 
+      call json%add(me,'PLNUMV',plnumv)
+      call json%add(me,'PLNUMS',plnums)
+      call json%add(me,'PLARR',plarr)
+      call json%add(me,'LRPSCUT',lrpscut)
+      call json%add(me,'PLIDL',plidl)
+      call json%add(me,'PLVTK',plvtk)
 
-      call json%add(me,'NPLINR',nplinr) 
-      call json%add(me,'NPLOTR',nplotr) 
-      call json%add(me,'NPLDLR',npldlr) 
-      call json%add(me,'NPLINP',nplinp) 
-      call json%add(me,'NPLOTP',nplotp) 
-      call json%add(me,'NPLDLP',npldlp) 
-      call json%add(me,'NPLINT',nplint) 
-      call json%add(me,'NPLOTT',nplott) 
+      call json%add(me,'NPLINR',nplinr)
+      call json%add(me,'NPLOTR',nplotr)
+      call json%add(me,'NPLDLR',npldlr)
+      call json%add(me,'NPLINP',nplinp)
+      call json%add(me,'NPLOTP',nplotp)
+      call json%add(me,'NPLDLP',npldlp)
+      call json%add(me,'NPLINT',nplint)
+      call json%add(me,'NPLOTT',nplott)
       call json%add(me,'NPLDLT',npldlt)
 
       call eirene_write_block_11_usr(json,me)
@@ -2065,7 +2065,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
           call json%add(line,'TRANS_EN',emis_lines(i)%trans_en)
 
           call json%create_array(comps,'COMPONENTS')
-          
+
           do j = 1, emis_lines(i)%num_compo
 
             call json%create_object(compo,'')
@@ -2103,13 +2103,13 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
             call json%add(compo,conts)
             call json%add(comps,compo)
           end do ! components
-          
+
           call json%add(line,comps)
           call json%add(lines,line)
         end do  ! lines
         call json%add(me,lines)
 
-      else if (nlemis) then  
+      else if (nlemis) then
 
         call json%add(me,'KEYWORD', "DEFAULT_LINES")
 
@@ -2121,7 +2121,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
       call json%add(me,'NCHENI',ncheni)
       if (nchori > 0) then
         call json%create_array(chrds,'CHORDS')
-        
+
         do i = 1, nchori
           call json%create_object(chrd,'')
           call json%add(chrd,'TXTSIG',txtsig(i))
@@ -2144,7 +2144,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
           call json%add(chrd,'NSPEND',nspend(i))
           call json%add(chrd,'NSPBLC',nspblc(i))
           call json%add(chrd,'NSPADD',nspadd(i))
-          
+
           call json%add(chrd,'EMIN1',emin1(i))
           call json%add(chrd,'EMAX1',emax1(i))
           call json%add(chrd,'ESHIFT',eshift(i))
@@ -2171,7 +2171,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
       end if
 
       end subroutine eirene_write_block_12
- 
+
 !******************************************************************************
 
       subroutine eirene_write_block_13(me)
@@ -2217,7 +2217,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
       end if
 
       end subroutine eirene_write_block_13
- 
+
 !******************************************************************************
 
       subroutine eirene_write_block_14(me)
@@ -2239,7 +2239,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
       call json%add(me,'MANUAL',
      .     "http://www.eirene.de/eirene.pdf#section.2.14")
 
-      if (nmode == 0) then         
+      if (nmode == 0) then
         call json%add(me,'NAINI',naini)
 !pb     call json%add(me,'NCOPII',ncopii)
         call json%add(me,'NCOPIE',ncpvi)
@@ -2263,7 +2263,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
 !      call eirene_wrjson_usr(me)
 
       end subroutine eirene_write_block_14
- 
+
 !******************************************************************************
 
       subroutine eirene_write_block_15(me)
@@ -2288,11 +2288,11 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
       case default
         strategy = 'AUTOMATIC'
       end select
-      
+
       call json%add(me,'STRATEGY',strategy)
- 
+
       end subroutine eirene_write_block_15
- 
+
 !******************************************************************************
 
       end subroutine eirene_write_json_file

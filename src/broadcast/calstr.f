@@ -12,8 +12,8 @@ cdr                            to be checked again after changes in 2013
 cdr dec. 15:  eppli: now resolved wrt. species index ipls, added
 cdr july 17:  comments re. call to user routine: calstr_usr.
 cpb Dec. 17:  remove type SPECT_ARRAY, not needed in Fortran 2003
-cdr Mar. 19:  further comments, 
-cdr           tbd: sync coding for estiml variances with those of other variance tallies 
+cdr Mar. 19:  further comments,
+cdr           tbd: sync coding for estiml variances with those of other variance tallies
 cdr           tbd: Make allocatable: helps, dummys
 cdr           Dimensioning of covariance tallies is likely incorrect:
 cdr           Can cause problems in case of few cells (0-d "box" cases)
@@ -161,7 +161,7 @@ cdr missing: wtotph ??
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) EELFI(0:nioni,istra) = helpi(0:nioni)
 
-c  particle balance tallies:  from bulk (ipls) to species a,m,i,ph,pl
+c  particle balance tallies: from bulk (ipls) to species a,m,i,ph,pl
         call mpi_reduce(PPATI(0:natmi,istra),helpa,natmi+1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) PPATI(0:natmi,istra) = helpa(0:natmi)
@@ -184,7 +184,7 @@ c  particle balance tallies:  from bulk (ipls) to species a,m,i,ph,pl
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) PPPLI(0:nplsi,istra) = helpp(0:nplsi)
 
-c  energy balance tallies:  from bulk (ipls) to species a,m,i,ph,pl
+c  energy balance tallies: from bulk (ipls) to species a,m,i,ph,pl
         call mpi_reduce(EPATI(istra),helpc(1),1,
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) EPATI(istra) = helpc(1)
@@ -225,7 +225,7 @@ c  all surface-averaged tallies: estims
         end do
 
 c  all energy-resolved ("spectra") tallies: estiml%spc
-cdr  different treatment because tallies and their variances are mixed 
+cdr  different treatment because tallies and their variances are mixed
 cdr  into a single data structure, distinct from all other tallies?
         do ispc=1,nadspc
           ns = estiml(ispc)%nspc

@@ -27,8 +27,8 @@ tallies in the list after the sputter tallies.
 These latter revisions are described in \cref{tab3a}, and only for that section
 of the surface tally list that has been affected.
 
-Options for switching on and off of input tallies have been added to the code 
-in 2019. 
+Options for switching on and off of input tallies have been added to the code
+in 2019.
 At the same time the input data has been reviewed and additional input tallies
 have been made available.
 For this reason the table of input tallies is given twice once for the current
@@ -60,26 +60,26 @@ resolved, or energy (spectrally) resolved, etc.) have to be implemented in the
 
 Tally naming convention:
 \begin{description}
-  \item[Particle source rates] 
+  \item[Particle source rates]
 
-        name: P[A][BC], with 
+        name: P[A][BC], with
 
         A: type of incident particle, A = A (atoms), M (molecules), I (test ions),
-        PH (photons), P (bulk particle) 
+        PH (photons), P (bulk particle)
 
         BC: type of produced particle, BC = AT (atoms), ML (molecules), IO (test ions),
-        PHT (photons), EL (electrons), PL (bulk particles) 
+        PHT (photons), EL (electrons), PL (bulk particles)
 
         The tallies are resolved by species index of produced particle, and are to be
         scaled (NLSCL option) by type of incident test particle.
-  \item[Energy source rates] 
+  \item[Energy source rates]
 
-        name: E[A][BC], analogue to particle source rates 
+        name: E[A][BC], analogue to particle source rates
 
         but not resolved wrt.\ species index of secondary particles.
-  \item[Momentum source rates] 
+  \item[Momentum source rates]
 
-        name: M[A][BC], analogue to particle source rates 
+        name: M[A][BC], analogue to particle source rates
 
         only available for [A] = A, M, I, PH  and for [BC]=PL, i.e.\ currently default
         tallies are only available for momentum sources/sinks for background (plasma)
@@ -95,7 +95,7 @@ ISURF=1,NLIMI.
 
 and with some spatial resolution possible on standard mesh surfaces
 
-ISURF=NLIM,NLIM+NSTSI 
+ISURF=NLIM,NLIM+NSTSI
 
 Emitted particle and energy surface averaged fluxes are split by the type of
 the incident particle: \acf{Pht}, \acf{Ats}, \acf{Mls}, \acf{TI} or \ac{BI}.
@@ -113,7 +113,7 @@ PRF\dots\ are fluxes reflected or emitted due to incident particle fluxes, of
 type [A], SPT[A][BC] are sputtered fluxes (additional fluxes of surface
 material).
 
-\textbf{Note:} The naming convention of 
+\textbf{Note:} The naming convention of
 \textbf{surface sputter tallies SPT\dots} differs in older versions of EIRENE.
 The full resolution wrt.\ to incident type and emitted species is only
 implemented in EIRENE revisions SVN 360 and later (Jan.\ 2014), see
@@ -149,10 +149,10 @@ to the ``Time-Surface" (the census array) then.
 %\newpage
 
 \subsection{Current status, incl.\ photon gas tallies (Eirene\texorpdfstring{$_{2002}
-    $}{2002} and younger)}\label{sec.tables-new} 
+    $}{2002} and younger)}\label{sec.tables-new}
 
 \begin{landscape}
-  \begin{longtable}{|r|l|l|l|l|c|c|} 
+  \begin{longtable}{|r|l|l|l|l|c|c|}
     \caption{\textbf{Input Tallies for Background, Input, Module: COMUSR, EIRENE version Eirene\_revised\_input\_tallies.}}
     \label{tab1new}
     \\
@@ -161,7 +161,7 @@ to the ``Time-Surface" (the census array) then.
 			   & \textbf{\ordinalnum{1} Dim.}
 			   & \textbf{Units}               & \textbf{Estim.}
                            & \textbf{switched}
-    \\ 
+    \\
     \hline \hline
     \endhead
 
@@ -187,7 +187,7 @@ to the ``Time-Surface" (the census array) then.
 			   & \si{\centi\metre\per\second} & / & on
     \\ \hline
     -8                     & BXIN                         & Magnetic field unit vector,
-    x-component            & 1                            & /                                 & /              & on 
+    x-component            & 1                            & /                                 & /              & on
     \\ \hline
     -9                     & BYIN                         & Magnetic field unit vector,
     y-component            & 1                            & /                                 & /              & on
@@ -241,391 +241,391 @@ to the ``Time-Surface" (the census array) then.
     \\ \hline
     -25                    & PSI
                            & PSI fct                      & 1                                 & --
-			   & /              & off      
+			   & /              & off
     \\ \hline
-    -26                    & ZI                           & ion charge                 
+    -26                    & ZI                           & ion charge
 			   & NPLS                         &                                   & /              & NPLS > 0
     \\ \hline
     -31                    & dTE/dX $^*$
-                           & partial derivative of TE in X direction  
+                           & partial derivative of TE in X direction
                            & 1                            & \si{\electronvolt\per\centi\meter}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -32                    & dTE/dY $^*$
-                           & partial derivative of TE in Y direction  
+                           & partial derivative of TE in Y direction
                            & 1                            & \si{\electronvolt\per\centi\meter}
-			   & /              & off        
+			   & /              & off
     \\ \hline
     -33                    & dTE/dZ $^*$
-                           & partial derivative of TE in Z direction  
+                           & partial derivative of TE in Z direction
                            & 1                            & \si{\electronvolt\per\centi\meter}
 			   & /              & off
     \\ \hline
     -34                    & dTI/dX $^*$
-                           & partial derivative of TI in X direction  
+                           & partial derivative of TI in X direction
                            & 1                            & \si{\electronvolt\per\centi\meter}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -35                    & dTI/dY $^*$
-                           & partial derivative of TI in Y direction  
+                           & partial derivative of TI in Y direction
                            & 1                            & \si{\electronvolt\per\centi\meter}
-			   & /              & off        
+			   & /              & off
     \\ \hline
     -36                    & dTI/dZ $^*$
-                           & partial derivative of TI in Z direction  
+                           & partial derivative of TI in Z direction
                            & 1                            & \si{\electronvolt\per\centi\meter}
 			   & /              & off
     \\ \hline
     -37                    & dNE/dX $^*$
-                           & partial derivative of NE in X direction  
+                           & partial derivative of NE in X direction
                            & 1                            & \si{\per\cubic\centi\metre\per\centi\metre}
-			   & /              & off        
+			   & /              & off
     \\ \hline
     -38                    & dNE/dY $^*$
-                           & partial derivative of NE in Y direction  
+                           & partial derivative of NE in Y direction
                            & 1                            & \si{\per\cubic\centi\metre\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -39                    & dNE/dZ $^*$
-                           & partial derivative of NE in Z direction  
+                           & partial derivative of NE in Z direction
                            & 1                            & \si{\per\cubic\centi\metre\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -40                    & dNI/dX $^*$
-                           & partial derivative of NI in X direction  
+                           & partial derivative of NI in X direction
                            & 1                            & \si{\per\cubic\centi\metre\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -41                    & dNI/dY $^*$
-                           & partial derivative of NI in Y direction  
+                           & partial derivative of NI in Y direction
                            & 1                            & \si{\per\cubic\centi\metre\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -42                    & dNI/dZ $^*$
-                           & partial derivative of NI in Z direction  
+                           & partial derivative of NI in Z direction
                            & 1                            & \si{\per\cubic\centi\metre\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -43                    & dVX/dX $^*$
-                           & partial derivative of VX in X direction  
+                           & partial derivative of VX in X direction
                            & 1                            & \si{\centi\metre\per\second\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -44                    & dVX/dY $^*$
-                           & partial derivative of VX in Y direction  
+                           & partial derivative of VX in Y direction
                            & 1                            & \si{\centi\metre\per\second\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -45                    & dVX/dZ $^*$
-                           & partial derivative of VX in Z direction  
+                           & partial derivative of VX in Z direction
                            & 1                            & \si{\centi\metre\per\second\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -46                    & dVY/dX $^*$
-                           & partial derivative of VY in X direction  
+                           & partial derivative of VY in X direction
                            & 1                            & \si{\centi\metre\per\second\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -47                    & dVY/dY $^*$
-                           & partial derivative of VY in Y direction  
+                           & partial derivative of VY in Y direction
                            & 1                            & \si{\centi\metre\per\second\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -48                    & dVY/dZ $^*$
-                           & partial derivative of VY in Z direction  
+                           & partial derivative of VY in Z direction
                            & 1                            & \si{\centi\metre\per\second\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -49                    & dVZ/dX $^*$
-                           & partial derivative of VZ in X direction  
+                           & partial derivative of VZ in X direction
                            & 1                            & \si{\centi\metre\per\second\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -50                    & dVZ/dY $^*$
-                           & partial derivative of VZ in Y direction  
+                           & partial derivative of VZ in Y direction
                            & 1                            & \si{\centi\metre\per\second\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -51                    & dVZ/dZ $^*$
-                           & partial derivative of VZ in Z direction  
+                           & partial derivative of VZ in Z direction
                            & 1                            & \si{\centi\metre\per\second\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -52                    & dBX/dX $^*$
-                           & partial derivative of BX in X direction  
+                           & partial derivative of BX in X direction
                            & 1                            & /
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -53                    & dBX/dY $^*$
-                           & partial derivative of BX in Y direction  
+                           & partial derivative of BX in Y direction
                            & 1                            & /
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -54                    & dBX/dZ $^*$
-                           & partial derivative of BX in Z direction  
+                           & partial derivative of BX in Z direction
                            & 1                            & /
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -55                    & dBY/dX $^*$
-                           & partial derivative of BY in X direction  
+                           & partial derivative of BY in X direction
                            & 1                            & /
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -56                    & dBY/dY $^*$
-                           & partial derivative of BY in Y direction  
+                           & partial derivative of BY in Y direction
                            & 1                            & /
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -57                    & dBY/dZ $^*$
-                           & partial derivative of BY in Z direction  
+                           & partial derivative of BY in Z direction
                            & 1                            & /
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -58                    & dBZ/dX $^*$
-                           & partial derivative of BZ in X direction  
+                           & partial derivative of BZ in X direction
                            & 1                            & /
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -59                    & dBZ/dY $^*$
-                           & partial derivative of BZ in Y direction  
+                           & partial derivative of BZ in Y direction
                            & 1                            & /
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -60                    & dBZ/dZ $^*$
-                           & partial derivative of BZ in Z direction  
+                           & partial derivative of BZ in Z direction
                            & 1                            & /
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -61                    & dBF/dX $^*$
-                           & partial derivative of BF in X direction  
+                           & partial derivative of BF in X direction
                            & 1                            & \si{\tesla\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -62                    & dBF/dY $^*$
-                           & partial derivative of BF in Y direction  
-                           & 1                            & \si{\tesla\per\centi\metre} 
-			   & /              & off         
+                           & partial derivative of BF in Y direction
+                           & 1                            & \si{\tesla\per\centi\metre}
+			   & /              & off
     \\ \hline
     -63                    & dBF/dZ $^*$
-                           & partial derivative of BF in Z direction  
+                           & partial derivative of BF in Z direction
                            & 1                            & \si{\tesla\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -64                    & dADIN/dX $^*$
                            & partial derivative of ADIN in X direction
                            & 1                            & /
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -65                    & dADIN/dY $^*$
                            & partial derivative of ADIN in Y direction
                            & 1                            & /
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -66                    & dADIN/dZ $^*$
                            & partial derivative of ADIN in Z direction
                            & 1                            & /
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -67                    & dEDRIFT/dX $^*$
                            & partial derivative of EDRIFT in X direction
                            & 1                            & \si{\electronvolt\per\centi\meter}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -68                    & dEDRIFT/dY $^*$
                            & partial derivative of EDRIFT in Y direction
                            & 1                            & \si{\electronvolt\per\centi\meter}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -69                    & dEDRIFT/dZ $^*$
                            & partial derivative of EDRIFT in Z direction
                            & 1                            & \si{\electronvolt\per\centi\meter}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -70                    & dVOL/dX $^*$
                            & partial derivative of VOL in X direction
                            & 1                            & \si{\cubic\centi\metre\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -71                    & dVOL/dY $^*$
                            & partial derivative of VOL in Y direction
                            & 1                            & \si{\cubic\centi\metre\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -72                    & dVOL/dZ $^*$
                            & partial derivative of VOL in Z direction
                            & 1                            & \si{\cubic\centi\metre\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -73                    & dWGHT/dX $^*$
                            & partial derivative of WGHT in X direction
                            & 1                            & \si{\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -74                    & dWGHT/dY $^*$
                            & partial derivative of WGHT in Y direction
                            & 1                            & \si{\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -75                    & dWGHT/dZ $^*$
                            & partial derivative of WGHT in Z direction
                            & 1                            & \si{\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -76                    & dBXPERP/dX $^*$
                            & partial derivative of BXPERP in X direction
-                           & 1                            & 
-			   & /              & off         
+                           & 1                            &
+			   & /              & off
     \\ \hline
     -77                    & dBXPERP/dY $^*$
                            & partial derivative of BXPERP in Y direction
-                           & 1                            & 
-			   & /              & off         
+                           & 1                            &
+			   & /              & off
     \\ \hline
     -78                    & dBXPERP/dZ $^*$
                            & partial derivative of BXPERP in Z direction
-                           & 1                            & 
-			   & /              & off         
+                           & 1                            &
+			   & /              & off
     \\ \hline
     -79                    & dBYPERP/dX $^*$
                            & partial derivative of BYPERP in X direction
-                           & 1                            & 
-			   & /              & off         
+                           & 1                            &
+			   & /              & off
     \\ \hline
     -80                    & dBYPERP/dY $^*$
                            & partial derivative of BYPERP in Y direction
-                           & 1                            & 
-			   & /              & off         
+                           & 1                            &
+			   & /              & off
     \\ \hline
     -81                    & dBYPERP/dZ $^*$
                            & partial derivative of BYPERP in Z direction
-                           & 1                            & 
-			   & /              & off         
+                           & 1                            &
+			   & /              & off
     \\ \hline
     -82                    & dEX/dX $^*$
                            & partial derivative of EX in X direction
-                           & 1                            & 
-			   & /              & off         
+                           & 1                            &
+			   & /              & off
     \\ \hline
     -83                    & dEX/dY $^*$
                            & partial derivative of EX in Y direction
-                           & 1                            & 
-			   & /              & off         
+                           & 1                            &
+			   & /              & off
     \\ \hline
     -84                    & dEX/dZ $^*$
                            & partial derivative of EX in Z direction
-                           & 1                            & 
-			   & /              & off         
+                           & 1                            &
+			   & /              & off
     \\ \hline
     -85                    & dEY/dX $^*$
                            & partial derivative of EY in X direction
-                           & 1                            & 
-			   & /              & off         
+                           & 1                            &
+			   & /              & off
     \\ \hline
     -86                    & dEY/dY $^*$
                            & partial derivative of EY in Y direction
-                           & 1                            & 
-			   & /              & off         
+                           & 1                            &
+			   & /              & off
     \\ \hline
     -87                    & dEY/dZ $^*$
                            & partial derivative of EY in Z direction
-                           & 1                            & 
-			   & /              & off         
+                           & 1                            &
+			   & /              & off
     \\ \hline
     -88                    & dEZ/dX $^*$
                            & partial derivative of EZ in X direction
-                           & 1                            & 
-			   & /              & off         
+                           & 1                            &
+			   & /              & off
     \\ \hline
     -89                    & dEZ/dY $^*$
                            & partial derivative of EZ in Y direction
-                           & 1                            & 
-			   & /              & off         
+                           & 1                            &
+			   & /              & off
     \\ \hline
     -90                    & dEZ/dZ $^*$
                            & partial derivative of EZ in Z direction
-                           & 1                            & 
-			   & /              & off         
+                           & 1                            &
+			   & /              & off
     \\ \hline
     -91                    & dEF/dX $^*$
                            & partial derivative of EF in X direction
                            & 1                            & \si{\volt\per\centi\metre\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -92                    & dEF/dY $^*$
                            & partial derivative of EF in Y direction
                            & 1                            & \si{\volt\per\centi\metre\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -93                    & dEF/dZ $^*$
                            & partial derivative of EF in Z direction
                            & 1                            & \si{\volt\per\centi\metre\per\centi\metre}
-			   & /               & off        
+			   & /               & off
     \\ \hline
     -94                    & dPOT/dX $^*$
                            & partial derivative of POT in X direction
                            & 1                            & \si{\volt\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -95                    & dPOT/dY $^*$
                            & partial derivative of POT in Y direction
                            & 1                            & \si{\volt\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -96                    & dPOT/dZ $^*$
                            & partial derivative of POT in Z direction
                            & 1                            & \si{\volt\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -97                    & dBV/dX $^*$
-                           & partial derivative of BV in X direction  
+                           & partial derivative of BV in X direction
                            & 1                            & \si{\centi\metre\second\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -98                    & dBV/dY $^*$
-                           & partial derivative of BV in Y direction  
+                           & partial derivative of BV in Y direction
                            & 1                            & \si{\centi\metre\second\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -99                    & dBV/dZ $^*$
-                           & partial derivative of BV in Z direction  
+                           & partial derivative of BV in Z direction
                            & 1                            & \si{\centi\metre\second\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -100                   & dPARMOM/dX $^*$
-                           & partial derivative of PARMOM in X direction  
+                           & partial derivative of PARMOM in X direction
                            & 1                            & \si{\gram\centi\metre\per\second\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -101                   & dPARMOM/dY $^*$
-                           & partial derivative of PARMOM in Y direction  
+                           & partial derivative of PARMOM in Y direction
                            & 1                            & \si{\gram\centi\metre\per\second\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -102                   & dPARMOM/dZ $^*$
-                           & partial derivative of PARMOM in Z direction  
+                           & partial derivative of PARMOM in Z direction
                            & 1                            & \si{\gram\centi\metre\per\second\per\centi\metre}
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -103                   & dPSI/dX $^*$
-                           & partial derivative of PSI in X direction  
+                           & partial derivative of PSI in X direction
                            & 1                            & /
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -104                   & dPSI/dY $^*$
-                           & partial derivative of PSI in Y direction  
+                           & partial derivative of PSI in Y direction
                            & 1                            & /
-			   & /              & off         
+			   & /              & off
     \\ \hline
     -105                   & dPSI/dZ $^*$
-                           & partial derivative of PSI in Z direction  
+                           & partial derivative of PSI in Z direction
                            & 1                            & /
-			   & /              & off         
+			   & /              & off
     \\ \hline
   \end{longtable}
 
-  \textbf{Note:} 
+  \textbf{Note:}
 
-  We distinguish between so called primary input tallies, and derived input 
+  We distinguish between so called primary input tallies, and derived input
   tallies, the latter being indicated by $^*$.
   The latter are automatically computed from the former by EIRENE.
 
@@ -636,13 +636,13 @@ to the ``Time-Surface" (the census array) then.
   \begin{itemize}
     \item NPLSTI: number of different bulk particle (bulk ion) temperatures in a run.
 	  See input block 5.
-	  Default: NPLSTI=NPLS. 
+	  Default: NPLSTI=NPLS.
     \item NPLSV: number of different bulk particle (bulk ion) flow velocities in a
           run.
 	  See input block 5.
 	  Default: NPLSV=NPLS.
-    \item Some input tallies such as electron and ion temperatures and densities as 
-          well as drift velocities and magnetic field are not allowed to be 
+    \item Some input tallies such as electron and ion temperatures and densities as
+          well as drift velocities and magnetic field are not allowed to be
           switched off.
     \item DEIN and EDRIFT are ``derived" input tallies, internally computed from
 	  the ion densities (quasi-neutrality), and the flow field, respectively.
@@ -650,19 +650,19 @@ to the ``Time-Surface" (the census array) then.
           switched off per default.
     \item Tallies -31 -- -120 are further ``internal" derived quantities, providing
           derivatives in carthesian coordinates (gradient vector) of input tallies
-          -1 -- -25 and are switched off if not explicitely switched on in the 
+          -1 -- -25 and are switched off if not explicitely switched on in the
           input block 5 of the EIRENE input file (\cref{sec2.5}).
-    \item All input tallies are available for printing, plotting and for use in 
+    \item All input tallies are available for printing, plotting and for use in
           algebraic expressions in volume averaged tallies when switched on.
     \item B-field and E-field tallies contain redundancy.
 	  Storage can be reduced.
     \item WGHT space species  weight window arrays.
 	  Currently not in use and switched off.
     \item Magnetic field input is needed only for photon transport with Zeeman
-	  split line shapes, or in case of charged particle transport (Subr.\ 
+	  split line shapes, or in case of charged particle transport (Subr.\
           FOLION).
 	  Only quite rudimentary preprogrammed input options for magnetic field are
-	  available, usually it is expected to receive B-field information from 
+	  available, usually it is expected to receive B-field information from
           external files, see INDPRO(5) options for magnetic field tallies in input
           block 5 (\cref{sec2.5}).
     \item For electric fields (needed only for charged particle transport) only
@@ -670,7 +670,7 @@ to the ``Time-Surface" (the census array) then.
 	  Default: $\vec{E} = 0$.
   \end{itemize}
 
-  \begin{longtable}{|r|l|l|l|l|c|} 
+  \begin{longtable}{|r|l|l|l|l|c|}
     \caption{\textbf{Input Tallies for Background, Input, Module: COMUSR, EIRENE version prior to Eirene\_revised\_input\_tallies.}}
     \label{tab1}
     \\
@@ -678,7 +678,7 @@ to the ``Time-Surface" (the census array) then.
     \textbf{No}            & \textbf{Name}                & \textbf{Macroscopic quantity}
 			   & \textbf{\ordinalnum{1} Dim.}
 			   & \textbf{Units}               & \textbf{Estim.}
-    \\ 
+    \\
     \hline \hline
     \endhead
 
@@ -770,7 +770,7 @@ to the ``Time-Surface" (the census array) then.
     \hline
   \end{longtable}
 
-  \textbf{Note:} 
+  \textbf{Note:}
 
   We distinguish between so called primary input tallies, and
   derived input tallies, the latter being  indicated by $^*$.
@@ -784,11 +784,11 @@ to the ``Time-Surface" (the census array) then.
     \item NPLSTI: number of different bulk particle (bulk ion) temperatures in a
 	  run.
 	  See input block 5.
-	  Default: NPLSTI=NPLS 
+	  Default: NPLSTI=NPLS
     \item NPLSV: number of different bulk particle (bulk ion) flow velocities
 	  in a run.
 	  See input block 5.
-	  Default: NPLSV=NPLS 
+	  Default: NPLSV=NPLS
     \item DEIN and EDRIFT are ``derived" input tallies, internally computed from
 	  the ion densities (quasi-neutrality), and the flow field, respectively.
     \item Tallies d1 -- d5 are further ``internal" derived quantities, currently
@@ -796,7 +796,7 @@ to the ``Time-Surface" (the census array) then.
     \item B-field and E-field tallies contain redundancy.
 	  Storage can be reduced
     \item WGHT space species  weight window arrays.
-	  Currently not in use 
+	  Currently not in use
     \item Magnetic field input is needed only for photon transport with Zeeman
 	  split line shapes, or in case of charged particle transport (Subr.\ FOLION).
 	  Only quite rudimentary preprogrammed input options for magnetic field are
@@ -808,7 +808,7 @@ to the ``Time-Surface" (the census array) then.
 	  Default: $\vec{E} = 0$
   \end{itemize}
 
-  \newpage 
+  \newpage
 
   \begin{longtable}{|r|l|l|l|l|c|}
     \caption{\textbf{Volume Averaged Tallies, Output, Module: CESTIM.}}
@@ -1741,7 +1741,7 @@ to the ``Time-Surface" (the census array) then.
     \\  \hline
   \end{longtable}
 
-  \textbf{Note:} 
+  \textbf{Note:}
 
   \begin{enumerate}
     \item The tallies listed here are two dimensional arrays.
@@ -1915,7 +1915,7 @@ to the ``Time-Surface" (the census array) then.
     \\	\hline
   \end{longtable}
 
-  \textbf{Note:} 
+  \textbf{Note:}
 
   This extended set of sputter tallies has now species naming conventions
   SPT[A][BC] fully identical to those for volumetric source rates, as well as
@@ -1930,7 +1930,7 @@ to the ``Time-Surface" (the census array) then.
 \newpage
 
 \subsection{old version, w/o photon gas tallies (Eirene\texorpdfstring{$_{2001}
-    $}{2001} and older)}\label{sec.tables-old} 
+    $}{2001} and older)}\label{sec.tables-old}
 
 In these older versions photon test particle tallies are not available, nor are
 the momentum source rates MAPL, \dots\ and test particle momentum fluxes VXDEN,
@@ -1961,7 +1961,7 @@ external plasma codes B2, B2.5, etc.\ are described.
     \textbf{No}                      & \textbf{Name}                          &
     \textbf{Macroscopic quantity}    & \textbf{\ordinalnum{1} Dim.}
 				     & \textbf{Units}
-    \\ 
+    \\
     \hline \hline
     \endhead
 
@@ -2046,7 +2046,7 @@ external plasma codes B2, B2.5, etc.\ are described.
     \textbf{No}                              & \textbf{Name}                    &
     \textbf{Macroscopic quantity}            & \textbf{\ordinalnum{1} Dim.}     &
     \textbf{Units}                           & \textbf{Estim.}
-    \\ 
+    \\
     \hline \hline
     \endhead
     1                                        & PDENA                            &
@@ -2306,7 +2306,7 @@ external plasma codes B2, B2.5, etc.\ are described.
     \textbf{No}            & \textbf{Name}  & \textbf{Macroscopic quantity}
 			   & \textbf{\ordinalnum{1} Dim.}
 			   & \textbf{Units} & \textbf{Estim.}
-    \\ 
+    \\
     \hline \hline
     \endhead
     1                      & POTAT          & Particle Flux, incident, Atoms

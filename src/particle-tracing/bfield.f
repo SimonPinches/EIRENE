@@ -17,11 +17,11 @@ cpb              switch used for interpolation of magnetic field input tally
 cdr              from cell vertices to a local x,y,z point inside a cell.
 cdr              Not fully available for all levgeo=1,2,3 optins. Check FEMINT.f
 
-      subroutine eirene_bfield (icell, x, y, z, bx, by, bz, bf,l)
+      subroutine eirene_bfield (icell, x, y, z, bx, by, bz, bf, l)
 
       use eirmod_precision, only: dp
-      use eirmod_comusr, only: BXIN, BYIN, BZIN, BFIN, BXINCORNER, 
-     >                         BYINCORNER, BZINCORNER, BFINCORNER, 
+      use eirmod_comusr, only: BXIN, BYIN, BZIN, BFIN, BXINCORNER,
+     >                         BYINCORNER, BZINCORNER, BFINCORNER,
      >                         LBSMO, LBIN
       use eirmod_cinit, only: INDPRO
 
@@ -36,45 +36,48 @@ cdr              Not fully available for all levgeo=1,2,3 optins. Check FEMINT.f
       IF (INDPRO(5) == 8) THEN
 cdr  user defined B field. Units of Bx, By, Bz?
 cdr  BF=1. ?  BF should be in Tesla.
-cdr  L=true : spatial coordinates x,y,z are known here, 
+cdr  L=true : spatial coordinates x,y,z are known here,
 cdr           i.e. call vecusr with L=true
-cdr  or else: x,y,z are unknown here.
-cdr           Then VECUSR returns B field at COM (center of mass)
-         CALL EIRENE_VECUSR (1,ICELL,X,Y,Z,BX,BY,BZ,1,L)
+cdr  L=false: position x,y,z is unknown here.
+cdr           Then VECUSR returns B field at COM (center of mass) in cell ICELL
+        CALL EIRENE_VECUSR (1,ICELL,X,Y,Z,BX,BY,BZ,1,L)
+
 cdr  unfinished coding here? BF in Tesla?
-         bf = 1.
+        bf = 1.
 
       ELSE IF (LBSMO) THEN
 cdr
-         lsame=.false.
-         bx = eirene_Femint(bxincorner, icell, x, y, z, lsame)
-         lsame=.true.   ! next calls to FEMINT at same position x,y,z
-         by = eirene_Femint(byincorner, icell, x, y, z, lsame)
-         bz = eirene_Femint(bzincorner, icell, x, y, z, lsame)
-         bf = eirene_Femint(bfincorner, icell, x, y, z, lsame)
+        lsame=.false.
+        bx = eirene_Femint(bxincorner, icell, x, y, z, lsame)
+        lsame=.true.   ! next calls to FEMINT at same position x,y,z
+        by = eirene_Femint(byincorner, icell, x, y, z, lsame)
+        bz = eirene_Femint(bzincorner, icell, x, y, z, lsame)
+        bf = eirene_Femint(bfincorner, icell, x, y, z, lsame)
 cdr  re-normalize unit vector, after interpolation.
-         bni = 1._dp/sqrt(bx*bx + by*by + bz*bz)
-         bx = bx * bni
-         by = by * bni
-         bz = bz * bni
-         bf = eirene_Femint(bfincorner, icell, x, y, z, lsame)
+        bni = 1._dp/sqrt(bx*bx + by*by + bz*bz)
+        bx = bx * bni
+        by = by * bni
+        bz = bz * bni
+        bf = eirene_Femint(bfincorner, icell, x, y, z, lsame)
 
       ELSEIF (LBIN) THEN
 cdr cartesian unit vector
-         BX=BXIN(ICELL)
-         BY=BYIN(ICELL)
-         BZ=BZIN(ICELL)
+        BX=BXIN(ICELL)
+        BY=BYIN(ICELL)
+        BZ=BZIN(ICELL)
+
 cdr modulus of B field, T
-         BF=BFIN(ICELL)
+        BF=BFIN(ICELL)
 
       ELSE
 cdr Default: B field input tallies BXIN,BYIN,BZIN,BFIN
-cdr if no BFIELD input tallies: use default B field: 1 [T] in z-direction
-         BX = 0._DP
-         BY = 0._DP
-         BZ = 1._DP
+cdr IF no BFIELD input tallies: use default B field: 1 [T] in z-direction
+cdr
+        BX = 0._DP
+        BY = 0._DP
+        BZ = 1._DP
 cdr  modulus of B field, T
-         BF = 1._DP
+        BF = 1._DP
 
       END IF
 

@@ -69,7 +69,7 @@ C
      .            EIRENE_ENERGY_RATE_COEFF,
      .            TB, TII,
      .            FP1(6),FP2(6)
-      INTEGER :: NSEPI4, NSEPI5, NEND, J, 
+      INTEGER :: NSEPI4, NSEPI5, NEND, J,
      .           ITYP1, ISPZ1, INUM1,
      .           IML, MODC, IIO, IPLTI, IP, IAT,
      .           ICOUNT, IAA, IMM, III, IPP, KREAD
@@ -272,9 +272,11 @@ C..................................................................
 
         MODCOL(4,2,IRPI)=MODC
 C  2.B)
-        IF (MODC.EQ.1) NEND=1   ! rate coeff for (FIXED E0, e.g. E0=0.0, TI)
+        IF (MODC.EQ.1) NEND=1   ! rate coeff for
+                                ! (FIXED E0, e.g. E0=0.0, TI)
 C  2.C)
-        IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E0, TI) NEND=9 HERE
+        IF (MODC.EQ.2) NEND=NSTORDT ! rate coeff vs. (E0, TI)
+                                    ! NEND=9 HERE
 C   STORAGE SAVING MODE ?
         IF (NSTORDR >= NRAD) THEN
 C   NO, NSTORDT=9 HERE
@@ -301,7 +303,9 @@ C           NEND=9
             DO J=1,NSBOX
               IF (LGVAC(J,IPL)) CYCLE
               TII=TIINL(IPLTI,J)+ADDTL
-              tii = max(tminl,tii) ! this is another cut-off, at TIIN <=0.1 eV rather than at TVAC = 0.02 ev
+              tii = max(tminl,tii) ! this is another cut-off,
+                                   ! at TIIN <=0.1 eV rather than
+                                   ! at TVAC = 0.02 ev
 c old
 c old         CALL EIRENE_PREP_RTCS (KK,3,TII,CF)
 c old
@@ -324,7 +328,8 @@ C  STORAGE SAVE MODE NOT READY FOR THIS OPTION ??
 C  2.D) RATE COEFFICIENT(TI=TE, NE=NI ?, E0 FIXED, E.G. E0=0.)
 C       IF (MODC.EQ.3) NEND=1  rate coeff vs. (N, T), NEND NOT NEEDED
 
-        MODCOL(4,2,IRPI)=1 !  indicate: rate coefficient as fct. of local plasma conditions only
+        MODCOL(4,2,IRPI)=1 !  indicate: rate coefficient as
+                           !  fct. of local plasma conditions only
         FCTKKL=LOG(FACTKK)
         IF (NSTORDR >= NRAD) THEN
 

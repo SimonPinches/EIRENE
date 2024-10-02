@@ -29,14 +29,14 @@ cdr  March 17:  NPTRGT printed. May have been changed in call to if0parm, block 
 CDR  May 2017:  try to fix NSTRAI, NSRFSI, consistent with input.f
 cdr             same thing: NCPVI, NCPV (and eliminate old parameters NCOP, NCOPI)
 cdr  July 17 :  lmulpl: automatic options for multiple ion temperatures,
-cdr                              multiple ion velocities in case of BGK nonlinear collisions
+cdr                     multiple ion velocities in case of BGK nonlinear collisions
 cdr  July 17 :  initialize 2D CFD code coupling parameters NDX,....
 c               move NRAD=... after call to if0prm, because of 3D CFD (emc3) coupling
 cdr  Jun 18  : various corrections, comments in new (generalized) block 12 options.
 cdr            nadv=nadv+10: now out, is contained in more general storage settings.
 cdr  Oct. 19 : block 5 card counting to infere the setting of INDPRO(2).
 cdr            From then on: completely symmetric options for both background parameter
-cdr            sets: Ti (temperature) and V.IN (flow field) in multispecies cases.
+cdr            sets: Ti (temperature) and V.IN (flow field) in multi-species cases.
 cdr            Only unsolved case: NPLS=2. This can mean: two different ion temperatures
 cdr            or one ion temperature plus one optional VOL (INDPRO(12) card).
 cdr            Default: 1 Ti card and 1 Vol card. If two Ti cards are to be read,
@@ -83,7 +83,7 @@ C
       USE EIRMOD_CGEOM
       USE EIRMOD_CSDVI
       USE EIRMOD_COMPRT
-      USE EIRMOD_CPES, ONLY: NPRS,NLIDENT,
+      USE EIRMOD_CPES, ONLY: NPRS, NLIDENT,
      >    STRATEGY_UNDEFINED, STRATEGY_EMBARRASS,
      >    STRATEGY_ORIGINAL, STRATEGY_APCAS, STRATEGY_BALANCED,
      >    INPUT_DISTRIBUTION_STRATEGY
@@ -113,10 +113,10 @@ C
       IMPLICIT NONE
 
 C
-      TYPE(TEMPERATURE),POINTER :: TEMPCUR
-      TYPE(DENSITY),POINTER :: DENCUR
-      TYPE(VELOCITY),POINTER :: VELCUR
-      TYPE(VOLUMEP),POINTER :: VOLCUR
+      TYPE(TEMPERATURE), POINTER :: TEMPCUR
+      TYPE(DENSITY), POINTER :: DENCUR
+      TYPE(VELOCITY), POINTER :: VELCUR
+      TYPE(VOLUMEP), POINTER :: VOLCUR
 C
       TYPE(TSURFACE), POINTER :: SURFCUR, SURFCUR2
       TYPE(REFMODEL), POINTER :: REFCUR, REFLAST
@@ -133,18 +133,19 @@ C
       TYPE(TCONTRIB) :: CNT
 cdr  optional arguments for FILNAM=CONST options
       INTERFACE
-        SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
+        SUBROUTINE EIRENE_SLREAC (IR, FILNAM, H123, REAC, CRC,
      .             RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .             RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
      .             ELNAME, IZ1, BUNDLING,
-     .             IROW_ESC, ICOL_ESC, POP_ESC,  ! for internal CR models, line emission etc..
+! for internal CR models, line emission etc..
+     .             IROW_ESC, ICOL_ESC, POP_ESC,
      .             IFTFL, NCOEF, COEF)  ! for filnam=const
         USE EIRMOD_PRECISION
         INTEGER,      INTENT(IN) :: IR, IZ1
         INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC,
      .                                        IFTFL, NCOEF
         REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC
-        REAL(DP),     INTENT(IN), OPTIONAL :: COEF(9)      
+        REAL(DP),     INTENT(IN), OPTIONAL :: COEF(9)
         CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: BUNDLING
         CHARACTER(8), INTENT(IN) :: FILNAM
         CHARACTER(4), INTENT(IN) :: H123
@@ -156,7 +157,6 @@ cdr  optional arguments for FILNAM=CONST options
      .                              RC2MIN, RC2MAX, FP2(6)
         END SUBROUTINE EIRENE_SLREAC
       END INTERFACE
-
 
       TYPE(TRANSFORM), POINTER :: TRF
 C
@@ -190,7 +190,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           JDUMMY, IRPTA1, IRPTA2, IRPTE1, NLJ, I1, I2, I3,
      .           NTIME0, IREAD, I, ISTS, J, IST, IMSG,
      .           IPOS2, IPOS0, NM, K, JJ, IPOS1, NRGEN, INUM, NTLSF,
-     .           L, INILGJ, INI, ICO, IS, NTLV, ID, IRE, NSC,
+     .           L, INILGJ, INI, ICO, IS, NTLV, ID, NSC,
      .           INELGJ, NPRCSF, MXL, NSPZV1, NSPZV2, NFLGV,
      .           IPRCSF, IR, MT, MP, NDUMM, NUMSEC, NDUMM1, NDUMM2,
      .           NRTAL1, NCOPIE, NFR, IPLN,
@@ -198,19 +198,19 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           ISPSRF, ISPTYP, NSPS, NSPSA, IPTYP, IPSPZ, ISTRAI,
      .           IANF, IEND, IDEFLT_SPUT, IDEFLT_SPEZ,
      .           IPLSTI, IPLSV, IFILE, ISRFCLL,
-     .           IDIREC, ISTCHR,  ITOK, IER, ILOGS, IO, ISPOPT, ISPLDEG,
+     .           IDIREC, ISTCHR, ITOK, IER, ILOGS, IO, ISPOPT, ISPLDEG,
      .           IUNIN_SAVE, NLOGIN, IFLG, IDUM,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
-     .           NB, NS, NA, ISTR, IRC, IOPT, ITAL,
+     .           NB, NS, NA, ISTR, IRC, IOPT, ITAL, IRE,
      .           NRC, IADV, NUM_COMPO, NUM_CONTRIB, ICNT, IDMDL, IND,
      .           ILINE, JCOMP, KCONTR, IROW_ESC, ICOL_ESC,
-     .           IFTFL, NCOEF, IRET, ITLV, ITLS, JL, IUSR
-     .          ,KK, ELONLY 
+     .           IFTFL, NCOEF, IRET, ITLV, ITLS, JL, IUSR,
+     .           KK, ELONLY
       INTEGER, SAVE :: NITER0, IUSROUT=0
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       INTEGER, DIMENSION(1) :: ISTR_A
       LOGICAL :: LHELP(NLIMPS), NLSRON_SAVE(NSTRA)
-      LOGICAL :: LRPS3D, LRPSCN, LHYDDEF, LINCL45, LMULPL, 
+      LOGICAL :: LRPS3D, LRPSCN, LHYDDEF, LINCL45, LMULPL,
      .           LRDMLTI, LRDMLV, NLSPCSCL_DUM, NLSPCSCL_ON_DUM
       LOGICAL, ALLOCATABLE :: LOGRDH(:)
       CHARACTER(10) :: CDATE, CTIME
@@ -262,17 +262,18 @@ C  READ TEXT DESCRIBING THE RUN, 100--199
 C
       READ (IUNIN,'(A72)') TXTRUN
       WRITE (iunout,'(1X,A)') trim(TXTRUN)
+      CALL EIRENE_LEER(1)
   109 READ (IUNIN,'(A72)') ZEILE
       IF (ZEILE(1:1).EQ.'*') THEN
         IF (ZEILE(1:3).NE.'***') THEN
           WRITE (iunout,'(1X,A)') trim(ZEILE)
-!  STORE COMMENT LINES FOR OUTPUTING TO JSON FILE 
+!  STORE COMMENT LINES FOR OUTPUTING TO JSON FILE
 !cym/cpg avoid type mismatch
-!          call eirene_push_string_stack(cm_stack,trim(zeile)) 
+!          call eirene_push_string_stack(cm_stack,trim(zeile))
           zeileCK=trim(zeile)
           call eirene_push_string_stack(cm_stack,trim(zeileCK))
 !cym/cpg end
-        END IF  
+        END IF
         GOTO 109
       ELSE
         READ (ZEILE,6666) NPRLL,NMODE,NTCPU,NFILE,NDUMM1,NITER,
@@ -301,7 +302,7 @@ C  THESE DEFAULTS HAVE ALREADY BEEN SET IN FIND_PARAM
       IF ((INDEX(ZEILE,'F') + INDEX(ZEILE,'f') + INDEX(ZEILE,'T') +
      .     INDEX(ZEILE,'t')) == 0) THEN
 C  YES
-C THIS LINE:  NOPTIM, NSTORAM,.... is read in FIND_PARAM and modified in SET_PARMMOD(1)
+C THIS LINE: NOPTIM, NSTORAM,.... is read in FIND_PARAM and modified in SET_PARMMOD(1)
 !pb do not overwrite here
         noptim_save=noptim
         READ (ZEILE,6666) NOPTIM,NOPTM1,NGEOM_USR,NCOUP_INPUT,
@@ -391,8 +392,8 @@ C  READING OF INPUT BLOCK 1 DONE
       CALL EIRENE_MASAGE('*** 1. DATA FOR OPERATING MODE')
       CALL EIRENE_LEER(1)
       IF (NPRS > 1) THEN
-      CALL EIRENE_MASAGE('       PARALLELISATION MODE:')
-      SELECT CASE( NPRLL )
+        CALL EIRENE_MASAGE('       PARALLELISATION MODE:')
+        SELECT CASE( NPRLL )
         CASE( -1 )
           CALL EIRENE_MASAGE('       MPI USER-DEFINED')
           CALL EIRENE_MASAGE('       WILL BE SELECTED FROM END OF FILE')
@@ -417,7 +418,7 @@ C         Reserved for default, see below
           CALL EIRENE_MASAGE('       UNLESS OVERWRITTEN AT END OF FILE')
           input_distribution_strategy = STRATEGY_EMBARRASS
           NPRLL = 0
-      END SELECT
+        END SELECT
       END IF
       WRITE (IUNOUT,*) '       NUMBER OF PROCESSES NPRS= ',NPRS
       CALL EIRENE_LEER(1)
@@ -446,12 +447,12 @@ C         Reserved for default, see below
         WRITE (iunout,*) '       NMODE= ',NMODE
       ELSE
         CALL EIRENE_MASAGE
-     .  ('       EIRENE RUN AS STAND ALONE CODE')
+     .  ('       EIRENE RUN AS STANDALONE CODE')
         CALL EIRENE_MASAGE
      .  ('       INTERFACING ROUTINE INFCOP IS NOT CALLED')
       ENDIF
       CALL EIRENE_LEER(1)
-      WRITE (iunout,*) '       EIRENE ASSUMES A TOTAL CPUTIME'
+      WRITE (iunout,*) '       EIRENE ASSUMES A TOTAL CPU TIME'
       WRITE (iunout,*) '       OF ',NTCPU,' SECONDS'
       CALL EIRENE_LEER(1)
 
@@ -491,14 +492,17 @@ C         Reserved for default, see below
 
       IF (NFILEL.GE.6.AND.NFILEL.LE.9) THEN
 cdr  reset to nfilel=1,2,3,4, and set nlshrt13 switch
-cdr  only use short version of fort.13: i.e. only virtual background npls_fix+1,nplsi
+cdr  only use short version of fort.13:
+cdr  i.e. store only virtual background npls_fix+1,nplsi
+cdr  as well as some A&M data for iteration with these species.
         NFILEL = NFILEL - 5
         NLSHRT13 = .TRUE.
       END IF
       SELECT CASE (NFILEL)
+cdr  write field particle parameters, A&M data, and primary source data
         CASE (1)
           IF (NLSHRT13) THEN
-            WRITE (iunout,*) '       EIRENE SAVES ONLY PLASMA DATA,' 
+            WRITE (iunout,*) '       EIRENE SAVES ONLY PLASMA DATA,'
             WRITE (iunout,*) '       STARTING FROM SPECIES NUMBER'
             WRITE (iunout,*) '       NPLS_FIX+1 (COUPLING VARIABLE,'
             WRITE (iunout,*) '       BLOCK 14),'
@@ -508,6 +512,7 @@ cdr  only use short version of fort.13: i.e. only virtual background npls_fix+1,
           END IF
           WRITE (iunout,*) '       ON FILE FT13 AT END OF RUN, I.E.,'
           WRITE (iunout,*) '       AFTER LAST TIMESTEP OR ITERATION'
+cdr  read field particle parameters, A&M data, and primary source data
         CASE (2)
           IF (NLSHRT13) THEN
             WRITE (iunout,*) '       EIRENE READS (AND EXPECTS) ONLY'
@@ -519,6 +524,7 @@ cdr  only use short version of fort.13: i.e. only virtual background npls_fix+1,
             WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
           ENDIF
           WRITE (iunout,*) '       FROM FILE FT13 '
+cdr  read and write field particle parameters, A&M data, and primary source data
         CASE (3)
           IF (NLSHRT13) THEN
             WRITE (iunout,*) '       EIRENE READS (AND EXPECTS) ONLY'
@@ -539,6 +545,7 @@ cdr  only use short version of fort.13: i.e. only virtual background npls_fix+1,
           END IF
           WRITE (iunout,*) '       ON FILE FT13 AT END OF RUN, I.E.,'
           WRITE (iunout,*) '       AFTER LAST TIMESTEP OR ITERATION'
+cdr  read and write field particle parameters, A&M data, but no primary source data
         CASE (4)
           IF (NLSHRT13) THEN
             WRITE (iunout,*) '       EIRENE READS (AND EXPECTS) ONLY'
@@ -569,21 +576,21 @@ C  ??
         CASE (1)
           WRITE (iunout,*)
      .      '       EIRENE SAVES DATA FOR RECOMMENDED INPUT'
-          WRITE (iunout,*) 
+          WRITE (iunout,*)
      .      '       MODIFICATIONS AND RUN TIME PER STRATUM ON FILE FT14'
         CASE (2)
           WRITE (iunout,*)
      .      '       EIRENE READS DATA FOR RECOMMENDED INPUT'
           WRITE (iunout,*)
      .      '       MODIFICATIONS AND RUN TIME PER STRATUM FROM FILE'
-          WRITE (iunout,*) 
+          WRITE (iunout,*)
      .      '       FT14, AND CARRIES OUT INPUT MODIFICATIONS THIS RUN'
         CASE (3)
           WRITE (iunout,*)
      .      '       EIRENE READS OLD DATA FOR RECOMMENDED INPUT'
           WRITE (iunout,*)
      .      '       MODIFICATIONS AND RUN TIME PER STRATUM FROM FILE'
-          WRITE (iunout,*) 
+          WRITE (iunout,*)
      .      '       FT14, AND CARRIES OUT INPUT MODIFICATIONS THIS RUN'
           WRITE (iunout,*)
      .      '       EIRENE SAVES NEW DATA FOR RECOMMENDED INPUT'
@@ -647,7 +654,7 @@ C  ??
       CALL EIRENE_LEER(1)
 C
 C  to be done:
-c  printout:  which default storage settings have we overruled (consequences thereof?)
+c  printout: which default storage settings have we overruled (consequences thereof?)
 C
 C
 C  READ DATA FOR STANDARD MESH, 200---299
@@ -806,7 +813,7 @@ C INPUT SUB-BLOCK 2B
       READ (ZEILE,6665) NLPOL
       IREAD = 0
 C
- 222  CONTINUE
+  222 CONTINUE
       NLPOL_IN = NLPOL
       READ (IUNIN,'(A72)') ZEILE
 * For gfortran: it does not accept empty field for logicals
@@ -908,7 +915,7 @@ C  300--349
 C
       IF (IREAD.EQ.0) READ (IUNIN,*)
       CALL EIRENE_MASAGE
-     .  ('*** 3A. DATA FOR NON-DEFAULT STANDARD SURFACES')
+     . ('*** 3A. DATA FOR NON-DEFAULT STANDARD SURFACES')
   310 READ (IUNIN,'(A72)') ZEILE
       IF (ZEILE(1:1) .EQ. '*') GOTO 310
       IREAD=1
@@ -1137,8 +1144,8 @@ C
         IREAD=1
         IF (ZEILE(1:3).EQ.'CH0') THEN
           IREAD=0
-          
-!  STORE CH0 LINES FOR OUTPUTING TO JSON FILE 
+
+!  STORE CH0 LINES FOR OUTPUTING TO JSON FILE
 !cym/cpg avoid type mismatch
 !          call eirene_push_string_stack(ch0_stack,zeile(1:72))
           zeileCK=zeile
@@ -1164,7 +1171,7 @@ C
 !pb read data for switched off surfaces in order to be able to write
 !   data onto json files
 !        IF (IGJUM0(I).NE.0) THEN
-!361       READ (IUNIN,'(A72)') ZEILE
+!  361     READ (IUNIN,'(A72)') ZEILE
 !          IREAD=1
 !          IF (ZEILE(1:1).EQ.'*') GOTO 369
 !          IF (ZEILE(1:9).EQ.'TRANSFORM') GOTO 368
@@ -1174,11 +1181,11 @@ C
 C   GENERAL SURFACE DATA
   362   READ (IUNIN,'(A72)') ZEILE
         IF (ZEILE(1:3).EQ.'CH1') THEN
-          
-!  STORE CH1 LINES FOR OUTPUTING TO JSON FILE 
+
+!  STORE CH1 LINES FOR OUTPUTING TO JSON FILE
 !cym/cpg avoid type mismatch
 !           call eirene_push_string_stack(ch1_stack(i),zeile(1:72))
-           zeileCK=zeile           
+           zeileCK=zeile
            call eirene_push_string_stack(ch1_stack(i),zeileCK(1:72))
 !cym/cpg end
 
@@ -1191,8 +1198,8 @@ C   GENERAL SURFACE DATA
           GOTO 362
 
         ELSEIF (ZEILE(1:3).EQ.'CH2') THEN
-        
-!  STORE CH2 LINES FOR OUTPUTING TO JSON FILE 
+
+!  STORE CH2 LINES FOR OUTPUTING TO JSON FILE
 !cym/cpg avoid type mismatch
 !          call eirene_push_string_stack(ch2_stack(i),zeile(1:72))
           zeileCK=zeile
@@ -1261,7 +1268,6 @@ C  READ BOUNDARY DATA
      .                        ZLIMS3(J,I)
   364     CONTINUE
         ENDIF
-
 
 !  STORE VERTICES OF ADDITIONAL SURFACES FOR OUTPUTING THEM ONTO JSON FILE
 !  ORIGINAL VALUES MIGHT BE CHANGED LATER ON
@@ -1362,7 +1368,7 @@ c  STORE TRANSFORMATIONS FOR OUTPUT TO JSON FILE
           TRNSFRM(I)%LAST%NEXT => TRF
           TRNSFRM(I)%LAST => TRF
         END IF
-c  SHIFT
+C  SHIFT
         XSH=XLCOR(I)
         IF (XSH.NE.0.D0) CALL EIRENE_XSHADD(XSH,ITINI(I),ITEND(I))
         YSH=YLCOR(I)
@@ -1409,7 +1415,8 @@ C  AT THIS POINT THE INPUT LINE *** 4.  .... IS EXPECTED
 
 ! CHECK FOR INCLUDE LINE
       READ (IUNIN,'(A420)') ZEILE
-      IREAD=1  !  next input line is already read from iunin, now on 'ZEILE'
+!  next input line is already read from iunin, now on 'ZEILE'
+      IREAD=1
       ULINE = ZEILE
       CALL EIRENE_UPPERCASE(ULINE)
       I1 = INDEX(ULINE,'INCLUDE')
@@ -1430,8 +1437,9 @@ C
         IREAD = 0
 
         IUNIN_SAVE = IUNIN
-        IUNIN = 2+ifoff !  FILE45 is the include file. read block 4 and 5 from
-!                          FILE45 (stream fort.2) rather than from stream fort.iunin
+        IUNIN = 2+ifoff !  FILE45 is the include file.
+!                          read block 4 and 5 from FILE45 (stream fort.2)
+!                          rather than from stream fort.iunin
 !                          close fort.2 at end of block 5.
         WRITE (IUNOUT,*) 'EXTERNAL A&M INPUT BLOCK 4 AND 5 FOUND'
         WRITE (IUNOUT,*) 'FILE45 = ',TRIM(FILE45)
@@ -1480,9 +1488,9 @@ C
   411 IF (IREAD == 0) READ (IUNIN,'(A420)') ZEILE
       IF (ZEILE(1:1).NE.'*') THEN
 
-!  STORE REACTION LINES FOR OUTPUTING TO JSON FILE 
+!  STORE REACTION LINES FOR OUTPUTING TO JSON FILE
 !cym/cpg avoid type mismatch
-!        call eirene_push_string_stack(crs_stack,trim(zeile)) 
+!        call eirene_push_string_stack(crs_stack,trim(zeile))
          zeileCK=zeile
          call eirene_push_string_stack(crs_stack,trim(zeileCK))
 !cym/cpg end
@@ -1490,13 +1498,12 @@ C
 C
 C  READ ONE REACTION FROM FILE "FILNAM" AT A TIME. Input card is on "ZEILE"
 C
-
         CALL EIRENE_READ_REACLINES (ZEILE, IUNIN, IUNOUT, IREAD,
      .       IR, FILNAM, H123, REAC, CRC, MP, MT, DPP,
      .       RC1MIN, RC1MAX, JFEX1MN, JFEX1MX, FP1,
      .       RC2MIN, RC2MAX, JFEX2MN, JFEX2MX, FP2,
      .       IZ, ELNAME, BUNDLING,
-     .       IROW_ESC, ICOL_ESC, POP_ESC, 
+     .       IROW_ESC, ICOL_ESC, POP_ESC,
      .       IFTFL, NCOEF, COEF)
 
 C  SAVE SOME OF THE INPUT FLAGS FOR LATER
@@ -1507,11 +1514,16 @@ C  PROCESSING (MASS SCALING, POTENTIAL ENERGY INCREMENT) IN XSTCX,XSTEI,...
         DELPOT(IR)=DPP
 C
         CALL EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
-     .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX, ! additional input card: asymptotics P1
-     .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX, ! additional input card: asymptotics P2
-     .               ELNAME,IZ,BUNDLING,        ! additional input card read for TAB2D/ADAS format
-     .               IROW_ESC,ICOL_ESC,POP_ESC, ! (optional) additional input card read CR  internal models
-     .               IFTFL, NCOEF, COEF)        ! (optional) for "CONST models"
+! additional input card: asymptotics P1
+     .               RC1MIN,RC1MAX,FP1,JFEX1MN,JFEX1MX,
+! additional input card: asymptotics P2
+     .               RC2MIN,RC2MAX,FP2,JFEX2MN,JFEX2MX,
+! additional input card read for TAB2D/ADAS format
+     .               ELNAME,IZ,BUNDLING,
+! (optional) additional input card read CR internal models
+     .               IROW_ESC,ICOL_ESC,POP_ESC,
+! (optional) for "CONST models"
+     .               IFTFL, NCOEF, COEF)
         GOTO 411
       ENDIF
       IF (TRCAMD) CALL EIRENE_LEER(1)
@@ -1668,7 +1680,7 @@ C
      .                        ISCDEM(JMOL,K),IESTMM(JMOL,K),
      .                        IBGKM(JMOL,K)
             IF (ISCD4M(JMOL,K) .GT. 0) THEN
-              WRITE (iunout,*) 'REACTION KK= ',IREACM(JMOL,K)
+              WRITE (iunout,*) 'WARNING: REACTION KK= ',IREACM(JMOL,K)
               WRITE (iunout,*)
      .        ' FOUR SECONDARY GROUPS USED FOR SPECIES ',
      .          TEXTS(ISPZ)
@@ -1693,10 +1705,11 @@ CDR  FOR THE TIME BEING:  NONLINEAR BGK REACTIONS MUST BE ELASTIC
           endif
 cdr  enforce multiple background field temperature arrays, in case of any BGK reactions.
           LMULPL = LMULPL .OR. (IBGKM(JMOL,K) /= 0)
+
           READ (IUNIN,6664) EELECM(JMOL,K),EBULKM(JMOL,K),
      .                      ESCD1M(JMOL,K),ESCD2M,
      .                      FREACM(JMOL,K),EDPOTM(JMOL,K)
-cdr  for backward compatibility:  formerly: two KER values, now one total is used.
+cdr  for backward compatibility: formerly: two KER values, now one total is used.
           ESCD1M(JMOL,K) = ESCD1M(JMOL,K)+ESCD2M
           NSC = 0
           IF (ISCD3M(JMOL,K) > 0) NSC = 3
@@ -1791,6 +1804,7 @@ C
             IMSG=1
           endif
           LMULPL = LMULPL .OR. (IBGKI(JION,K) /= 0)
+
           READ (IUNIN,6664) EELECI(JION,K),EBULKI(JION,K),
      .                      ESCD1I(JION,K),ESCD2I,
      .                      FREACI(JION,K),EDPOTI(JION,K)
@@ -1893,6 +1907,7 @@ C  DEFAULTS FOR PHOTONIC SPECIES:
             IMSG=1
           endif
           LMULPL = LMULPL .OR. (IBGKPH(JPHOT,K) /= 0)
+
           READ (IUNIN,6664) EELECPH(JPHOT,K),EBULKPH(JPHOT,K),
      .                      ESCD1PH(JPHOT,K),ESCD2PH,
      .                      FREACPH(JPHOT,K),EDPOTPH(JPHOT,K)
@@ -2029,6 +2044,7 @@ cdr  NSC: number of secondaries. But here: 0,1,2 secondaries all have NSC=0 ??
           END IF
 c
   512   CONTINUE
+
         IF (LEN_TRIM(CDENMODEL(JPLS)) > 0) THEN
           ALLOCATE (TDMPAR(JPLS)%TDM)
           TDMPAR(JPLS)%TDM%NRE=MAX(NRE,1)
@@ -2100,6 +2116,8 @@ c  default: only for bulk ions
      .           TDMPAR(JPLS)%TDM%ISTR(1),
      .           TDMPAR(JPLS)%TDM%IRC(1),
      .           TDMPAR(JPLS)%TDM%A_CORONA
+cdr  currently only one single contribution allowed. NRE=1 for CORONA model
+cdr         NRE=TDMPAR(JPLS)%TDM%NRE = 1
             IR = TDMPAR(JPLS)%TDM%IRC(1)
             IF (.NOT.REACDAT(IR)%LRTC) THEN
               WRITE (iunout,*)
@@ -2109,7 +2127,8 @@ c  default: only for bulk ions
               CALL EIRENE_EXIT_OWN(1)
             END IF
           CASE ('COLRAD')
-            IDMDL = IDMDL + 1  !  ONE MORE H.11 or H.12 REACTION data set
+            IDMDL = IDMDL + 1  ! ONE MORE H.11 or H.12 REACTION data set
+cdr  NRE components contributing to field particle species JPLS
             DO I=1, TDMPAR(JPLS)%TDM%NRE
               READ (IUNIN,'(A72)') ZEILE
               IF (VERIFY(ZEILE,'1234567890eEdD+- ') > 0) THEN
@@ -2135,7 +2154,7 @@ c  default: only for bulk ions
                 WRITE (iunout,*) ' IPLS = ',JPLS
                 CALL EIRENE_EXIT_OWN(1)
               END IF
-            END DO
+            END DO  ! I
           CASE DEFAULT
 !PB  NOTHING TO BE DONE
           END SELECT
@@ -2221,8 +2240,9 @@ cdr  only one common profile for all NPLS species?
         NPLSTI = 1
         LRDMLTI=.FALSE.
       ENDIF
+      WRITE (iunout,*) '      NPLSTI= ',NPLSTI
 
-      IF ((NPLS > 1) .AND. (NPLSTI == 1) .AND. 
+      IF ((NPLS > 1) .AND. (NPLSTI == 1) .AND.
      .    (LMULPL .OR. ((NPLS_FIX > 0) .AND. (NPLS_FIX /= NPLSI))
      .            .OR.  ANY(CDENMODEL == FORT//'13'))) THEN
 
@@ -2231,11 +2251,12 @@ cdr  only one common profile for all NPLS species?
         WRITE (IUNOUT,*) 'TIIN STORAGE PROVIDED FOR ONE SPECIES ONLY ',
      .                   'DUE TO INDPRO(2) > 10'
         WRITE (IUNOUT,*) 'STORAGE FOR TIIN OVERWRITTEN ',
-     .                   'BECAUSE BGK REACTIONS PRESENT',
+     .                   'BECAUSE BGK REACTIONS PRESENT ',
      .                   'OR DENSITY MODEL ',FORT//'13',' WAS FOUND'
-        LRDMLTI=.FALSE.         !  read only one common Ti card, despite storage for NPLS Ti profiles.
+        LRDMLTI=.FALSE.  ! read only one common Ti card,
+                         ! despite storage for NPLS Ti profiles.
         NPLSTI = NPLS
-        WRITE (IUNOUT,*) ' NPLSTI = ',NPLSTI
+        WRITE (IUNOUT,*) '      NPLSTI= ',NPLSTI
         CALL EIRENE_LEER(1)
 c     ELSE
 c  read one Ti card for each of the NPLS Ti profiles
@@ -2248,9 +2269,11 @@ c       LRDMLTI=.TRUE.
 
 cdr  indirect addressing: IVL= MPLSTI(IPLS)   ! find Ti field for IPLS on TIIN(IVL)
       IF (NPLSTI == 1) THEN
-        MPLSTI = 1                    ! find ALL Ti fields on IPLS=1 storage
+        MPLSTI = 1                  ! find ALL Ti fields
+                                    ! on IPLS=1 storage
       ELSEIF (NPLSTI == NPLS) THEN
-        MPLSTI = (/ (I,I=1,NPLS) /)   ! find each individual Ti field on its IPLS storage
+        MPLSTI = (/ (I,I=1,NPLS) /) ! find each individual Ti field
+                                    ! on its IPLS storage
       ELSE
 cdr     more general options: to be written.
 cdr     E.g.: only virtual background species with different flow fields
@@ -2283,11 +2306,12 @@ c  di profiles
      .                     I=1,NPLSI)
 c  V_IN profile(s)
 cdr  default is: cm/s units for flow field(s)
-      NLMACH=INDPRO(4).LT.0  ! Mach number units instead, rather than cm/s
+      NLMACH=INDPRO(4).LT.0  ! Mach number units instead,
+                             ! rather than cm/s
       INDPRO(4)=IABS(INDPRO(4))
 
-cdr  default is: |indpro| < 10:  npls flow fields, one per background species
-cdr              |indpro| > 10:  only one common flow field
+cdr  default is: |indpro| < 10: npls flow fields, one per background species
+cdr              |indpro| > 10: only one common flow field
 
       NPLSV = NPLS
       LRDMLV=.TRUE.
@@ -2304,7 +2328,8 @@ cdr  only one common profile for all NPLS species?
      .                   'DUE TO INDPRO(4) > 10'
         WRITE (IUNOUT,*) 'STORAGE FOR VXIN, VYIN, VZIN OVERWRITTEN ',
      .                   'BECAUSE BGK REACTIONS PRESENT'
-        LRDMLV=.FALSE.  !  read only one common V.IN card, despite storage for NPLS V.IN profiles.
+        LRDMLV=.FALSE.  !  read only one common V.IN card,
+                        !  despite storage for NPLS V.IN profiles.
         NPLSV = NPLS
         WRITE (IUNOUT,*) ' NPLSV = ',NPLSV
 c     ELSE
@@ -2318,9 +2343,11 @@ c       LRDMLV=.TRUE.
 
 cdr  indirect addressing: IVL= MPLSV(IPLS)   ! find flow field for IPLS on V_XYZ(IVL)
       IF (NPLSV == 1) THEN
-        MPLSV = 1                    ! find ALL flow fields on IPLS=1 storage
+        MPLSV = 1                     ! find ALL flow fields
+                                      ! on IPLS=1 storage
       ELSEIF (NPLSV == NPLS) THEN
-        MPLSV = (/ (I,I=1,NPLS) /)   ! find each individual flow field on its IPLS storage
+        MPLSV = (/ (I,I=1,NPLS) /)    ! find each individual flow field
+                                      ! on its IPLS storage
       ELSE
 cdr     more general options: to be written.
 cdr     E.g.: only virtual background species with different flow fields
@@ -2366,8 +2393,10 @@ C  READ ONLY ONE COMMON FLOW FIELD FOR ALL NPLS SPECIES
       ENDIF
 
 c  pitch or B field profile
-c                              !  default:                B FIELD WITH BX=0
-      NLPITCH=INDPRO(5).LT.0   !  for 1D parallel B runs: B FIELD WITH BY=0
+c                              !  default:
+                               !  B FIELD WITH BX=0
+      NLPITCH=INDPRO(5).LT.0   !  for 1D parallel B runs:
+                               !  B FIELD WITH BY=0
 
       INDPRO(5)=IABS(INDPRO(5))
       IF (INDPRO(5).LE.5)
@@ -2399,17 +2428,9 @@ c  cell volume profile card, OPTIONAL
 c  check for "OPTIONAL" input cards.
 c  Here: explicitly switch on/off input tallies,
 c        or activate gradient tallies: INTLOPTS(ITAL)
-c  ITAL:  -ntali<ital<0, then: ital=iabs(ital).
-c  IOPT:   turn off or add gradient tally
+c  ITAL: -ntali<ital<0, then: ital=iabs(ital).
+c  IOPT: turn off or add gradient tally
 
-!pb moved to IF0PRM
-!pb#ifdef B25_EIRENE
-!pbcxpb Add data provided in fort.31 file
-!pb      IF (INDPRO(1).EQ.6.OR.INDPRO(2).EQ.6.OR.INDPRO(3).EQ.6.OR.
-!pb     .    INDPRO(4).EQ.6.OR.INDPRO(5).EQ.6) THEN
-!pb        INTLOPTS(22) = 1
-!pb      END IF
-!PB#endif
 
       IO = 0
       IF (IREAD == 0) READ (IUNIN,'(A72)',IOSTAT=IO) ZEILE
@@ -2425,7 +2446,7 @@ cdr  Possible conflicts, inconsistencies.
             READ (IUNIN,'(A72)',IOSTAT=IO) ZEILE
             IF ((IO /= 0) .OR. (ZEILE(1:3) .EQ. '***')) EXIT
             READ (ZEILE,6666) ITAL, IOPT
-            IF ((ITAL >= 0) .OR. (ITAL < -NTALI)) CYCLE         
+            IF ((ITAL >= 0) .OR. (ITAL < -NTALI)) CYCLE
             INTLOPTS(IABS(ITAL)) = IOPT
           END DO
         END IF
@@ -2486,8 +2507,9 @@ C  NEXT VALID INPUT CARD FOUND
 C  PATH SPECIFICATION FOR DATABASE FOUND
           LTRIM_OLD=.FALSE.
           READ (ZEILE(7:LEN(ZEILE)),'(A400)') PATH
+!VK TO REMOVE \r
           I=INDEX(PATH,ACHAR(13)) !VK
-          IF(I.GT.0.AND.I.LE.LEN_TRIM(PATH)) PATH(I:I)=' ' !VK TO REMOVE \r
+          IF(I.GT.0.AND.I.LE.LEN_TRIM(PATH)) PATH(I:I)=' '
           PATH=ADJUSTL(PATH)
           IF (LEN_TRIM(PATH) == 0) PATH='./ '
           I2=INDEX(PATH,' ')
@@ -2504,8 +2526,9 @@ C  PATH FOUND. NEXT: READ ONE OR MORE CARDS FILNAM A_ON_B
   625     IF (INDEX(ZEILE,'ON')+INDEX(ZEILE,'on').NE.0) THEN
             NFR=NFR+1
             READ (ZEILE,'(A72)') RFILNM
+!VK TO REMOVE \r
             I=INDEX(RFILNM,ACHAR(13)) !VK
-            IF(I.GT.0.AND.I.LE.LEN_TRIM(RFILNM)) RFILNM(I:I)=' ' !VK TO REMOVE \r
+            IF(I.GT.0.AND.I.LE.LEN_TRIM(RFILNM)) RFILNM(I:I)=' '
             FILE(I2:)=RFILNM
             WRITE (iunout,*) ' NFR =',NFR,' FILNAM = ',FILE(I2:I2+20)
 C           WRITE (iunout,'(A,A)') ' FILE = ',FILE
@@ -2560,19 +2583,23 @@ c  next: read species index sampling distributions datm, dmol, dion, dpls, and i
       IF (NATMI.GT.6) THEN
         READ (IUNIN,6664) (DATD(JATM),JATM=7,NATMI)
       ENDIF
+cdr next: read mod(nmoli,6) cards for molecular species distribution
       READ (IUNIN,6664) (DMLD(JMOL),JMOL=1,NMOLI)
+cdr ditto: test ions
       READ (IUNIN,6664) (DIOD(JION),JION=1,NIONI)
+cdr ditto: field particles (bulk ions)
       READ (IUNIN,6664) (DPLD(JPLS),JPLS=1,NPLSI)
-      IF (NPHOTI > 0)   !dr try to make this more logical: always read dphd.
-cdr                     !dr backward compatible ?
+      IF (NPHOTI > 0)   !dr try to make this more logical:
+                        !dr always read dphd.
+cdr                     !dr but then: backward compatible ?
      .  READ (IUNIN,6664) (DPHD(JPHOT),JPHOT=1,NPHOTI)
-      
+
       DATD_IN = DATD
       DMLD_IN = DMLD
       DIOD_IN = DIOD
       DPLD_IN = DPLD
       DPHD_IN = DPHD
-      
+
 c  next: read universal surface reflection model flags
       READ (IUNIN,6664) ERMIN,ERCUT,RPROB0,RINTEG(1),EINTEG(1),AINTEG(1)
 
@@ -2586,6 +2613,7 @@ c  read surface models identified by character string 'SURFMOD_...'
         END IF
         IF (ZEILE(1:8) /= 'SURFMOD_') CYCLE
         ALLOCATE (REFCUR)
+cdr reflection/recycling parameters
         ALLOCATE (REFCUR%JSRS(nspz))
         ALLOCATE (REFCUR%JSRC(nspz))
         ALLOCATE (REFCUR%JLCHSPNWL(nspz))
@@ -2596,6 +2624,7 @@ c  read surface models identified by character string 'SURFMOD_...'
         ALLOCATE (REFCUR%EXPPLR(nspz))
         ALLOCATE (REFCUR%EXPELR(nspz))
         ALLOCATE (REFCUR%EXPILR(nspz))
+cdr sputtering parameters
         ALLOCATE (REFCUR%RCYCSR(nspz))
         ALLOCATE (REFCUR%RCYCCR(nspz))
         ALLOCATE (REFCUR%STPRMR(nspz))
@@ -2613,6 +2642,7 @@ c  read surface models identified by character string 'SURFMOD_...'
         REFCUR%EXPPLR  = 0._DP
         REFCUR%EXPELR  = 0._DP
         REFCUR%EXPILR  = 0._DP
+cdr  parameters for sputter models
         REFCUR%RCYCSR  = 0._DP
         REFCUR%RCYCCR  = 0._DP
         REFCUR%STPRMR  = 0._DP
@@ -2632,6 +2662,9 @@ c  read surface models identified by character string 'SURFMOD_...'
         READ (IUNIN,6664) REFCUR%RCYCFR(1),REFCUR%RCYCTR(1),
      .                    REFCUR%RCPRMR(1),REFCUR%EXPPLR(1),
      .                    REFCUR%EXPELR(1),REFCUR%EXPILR(1)
+
+cdr This particular "surface model" SURFMOD_... is now copied NSPZ times,
+cdr i.e., made identically the same for all possible incident species ISPZ
         DO I=2,NSPZ
           REFCUR%JSRS(I) = REFCUR%JSRS(1)
           REFCUR%JSRC(I) = REFCUR%JSRC(1)
@@ -2685,7 +2718,7 @@ C  READ ONE MORE LINE FOR NON-DEFAULT SPUTTER MODEL
             allocate(spr)
             spr%varname = varname
             spr%spcname = spcname
-            if ((varname == 'ISRS') .or. (varname == 'ISRC')) then           
+            if ((varname == 'ISRS') .or. (varname == 'ISRC')) then
               read (zeile(18:),'(I6)') spr%ival
             else
               read (zeile(18:),'(E12.4)') spr%rval
@@ -2767,7 +2800,7 @@ cxpb Assume old SOLPS4.3 format
               ideflt_sput=1
               ideflt_spez=-1
               !Pressure feedback loop model
-              IF (REFCUR%JLREF == 4) 
+              IF (REFCUR%JLREF == 4)
      .          WRITE (IUNOUT,*) "PFL with parameters: ",
      .            REFCUR%REFCELL, REFCUR%REFPRESS
             end if
@@ -2780,7 +2813,7 @@ cxpb Assume old SOLPS4.3 format
           READ (IUNIN,'(A72)') ZEILE
           IREAD=1
 C
-        END do    ! end of do-while loop (search for * or for SURFMOD_)
+        END DO    ! end of do-while loop (search for * or for SURFMOD_)
 C all lines of this particular SURFMOD_... are read now
 C
         IF (ideflt_sput.le.0.and.REFCUR%JLSPT.NE.0) THEN
@@ -2797,14 +2830,14 @@ C
 !pb     REFCUR%NEXT => REFLIST
 !pb     REFLIST => REFCUR
 !  add new reflection model at the end of the list
-          nullify(refcur%next)
-          if (.not.associated(reflist)) then
-            reflist => refcur
-            reflast => refcur
-          else
-            reflast%next => refcur
-            reflast => reflast%next
-          end if
+        nullify(refcur%next)
+        if (.not.associated(reflist)) then
+          reflist => refcur
+          reflast => refcur
+        else
+          reflast%next => refcur
+          reflast => reflast%next
+        end if
       END DO
       CALL EIRENE_LEER(1)
 C
@@ -2826,18 +2859,19 @@ C
 
 C  AMPTS: (option added 2014) common multiplier for max. allowed cpu time NTCPU,
 C          and for number of histories NPTS (see below)
-      IF (AMPTS.EQ.0.0_DP) AMPTS=1.0_DP
+      IF(AMPTS.EQ.0.0_DP) AMPTS=1.0_DP
       IF(AMPTS.NE.1.0_DP) THEN
         MPTS_COMSOU=AMPTS
         NTCPU=INT(REAL(NTCPU)*AMPTS)
-        WRITE (iunout,*) '       NTCPU, NPTS ENHANCED BY FACTOR AMPTS ',
+        WRITE (iunout,*) ' NTCPU, NPTS ENHANCED BY FACTOR AMPTS ',
      .                     AMPTS
       ELSE
         MPTS_COMSOU=1.0_DP
       END IF
 C
       DO 712 JSTRA=1,NSTRAI
-        IF (INDSRC(JSTRA).EQ.6) GOTO 712  ! SKIP READING INPUT FOR THIS STRATUM.
+        ! SKIP READING INPUT FOR THIS STRATUM?
+        IF (INDSRC(JSTRA).EQ.6) GOTO 712
 
         I=JSTRA
         IF (IREAD.EQ.0) THEN
@@ -2851,14 +2885,13 @@ C
         IF (ZEILE(1:1) .EQ. '*') GOTO 713
         call fix_logical_input(zeile,4)
         READ (ZEILE,6665) NLAVRP(I),NLAVRT(I),NLSYMP(I),NLSYMT(I)
-C    .                   ,NLRAY(I)
-                          NLRAY(I)=.FALSE.  ! CDR: UNFINISHED PROPRIETARY OPTION
+C    .                   ,NLRAY(I)  ! CDR: UNFINISHED PROPRIETARY OPTION
+                          NLRAY(I)=.FALSE.
         IREAD=0
         READ (IUNIN,6666) NPTS(I),NINITL(I),NEMODS(I),NAMODS(I),
 
 c.............................................
-c  NMINPTS:   ENFORCE MINIMUM NUMBER OF HISTORIES FOR STRATUM.
-cdr           currently set in various places, but not used anywhere.
+c  NMINPTS: ENFORCE MINIMUM NUMBER OF HISTORIES FOR STRATUM.
      .                    NMINPTS(I),
 c  NPTSDEL: =0 (VALUES NPTSDEL.GT.0 ONLY FOR INTERNAL TESTING PROCEDURES
 C               OF MPI parallelization. Requires 2 runs with special input settings)
@@ -2867,7 +2900,7 @@ cdr See comments in MCARLO.F
 C    .                   ,NRAYEN(I)   !CDR  NOT IN USE
 c...................................................................
 
-C APPLY MULTIPLIER AMPTS TO SELECTED MC PARTICLE NUMBER RANGE
+C APPLY MULTIPLIER AMPTS TO THE SELECTED MC PARTICLE NUMBER RANGE
         IF(AMPTS.GT.0) THEN
          NPTS(JSTRA)=INT(NPTS(JSTRA)*AMPTS)
          NMINPTS(JSTRA)=INT(NMINPTS(JSTRA)*AMPTS)
@@ -2913,8 +2946,8 @@ C  VELOCITY SPACE DISTRIBUTION
      .                    SORCTZ(I),
      .                    RAYFRAC(I)
 !  STORE VALUES FOR JSON OUTPUT
-        SORCOS_IN(I) = SORCOS(I) 
-        SORMAX_IN(I) = SORMAX(I) 
+        SORCOS_IN(I) = SORCOS(I)
+        SORMAX_IN(I) = SORMAX(I)
 C
   712 CONTINUE
 C
@@ -2970,11 +3003,11 @@ C  IGJUM3 FLAG
      .                    (ZEILE(4:72),IGJUM3,0,NOPTIM,II,NLIMPB,NBITS)
             END IF
   821     CONTINUE
-  
+
 !cym/cpg avoid type mismatch
 !          call eirene_push_string_stack(ch3_stack(i),zeile(1:72))
           zeileCK=zeile
-          call eirene_push_string_stack(ch3_stack(i),zeileCK(1:72))          
+          call eirene_push_string_stack(ch3_stack(i),zeileCK(1:72))
 !cym/cpg end
           GOTO 812
 C  TEMPERATURE
@@ -3055,7 +3088,7 @@ C  read 60 or more logical flags
       END DO
 c
       IF (NATMI > 0) NLPRCA(1:NATMI) = LOGRDH(1:NATMI)
-      IF (NMOLI> 0)
+      IF (NMOLI > 0)
      .    NLPRCM(1:NMOLI) = LOGRDH(NATMI+1 : NATMI+NMOLI)
       IF (NIONI > 0) NLPRCI(1:NIONI) =
      .       LOGRDH(NATMI+NMOLI+1 : NATMI+NMOLI+NIONI)
@@ -3252,7 +3285,7 @@ c
 c   isrcfll=0 : surface-averaged tally
 c   isrfcll=1 : volume-averaged tally, integrated over all directions
 c   isrfcll=2 : volume-averaged tally, along a specific direction
-c  it seems: surface-averaged directional tallies: not yet forseen
+c  it seems: surface-averaged directional tallies: not yet foreseen
 c  one may try to score coefficients of orthogonal angular expansion, per energy bin.
 
 cdr  better: first discriminate by isrfcll, then, for each value of isrfcll: do the rest
@@ -3267,8 +3300,10 @@ C  SPECTRUM AT AN ADDITIONAL SURFACE
             END IF
 C  SPECTRUM IN CELL, POSSIBLY ALONG A CERTAIN DIRECTION
 cdr:  next 2 lines: why different condition for cell-based spectra cell numbers ??
-            IF (((ISRFCLL == 1) .AND. (ISPSRF > NRTAL)) .OR.   ! cell-based spectrum in scoring cell ISPSRF
-     .          ((ISRFCLL == 2) .AND. (ISPSRF > NRAD))) THEN   ! directional cell-based spectrum in scoring cell ISPSRF
+! cell-based spectrum in scoring cell ISPSRF
+            IF (((ISRFCLL == 1) .AND. (ISPSRF > NRTAL)) .OR.
+! directional cell-based spectrum in scoring cell ISPSRF
+     .          ((ISRFCLL == 2) .AND. (ISPSRF > NRAD))) THEN
               WRITE (iunout,*)
      .          ' CELL INDEX FOR SPECTRUM OUT OF BOUNDS'
               WRITE (iunout,*) ' SPECTRUM NUMBER = ',J
@@ -3433,7 +3468,7 @@ c  search for input block 11a
      .                  TRCINT,TRCLST,TRCSOU,TRCREC,TRCTIM,
      .                  TRCBLA,TRCBLM,TRCBLI,TRCBLP,TRCBLE,
      .                  TRCBLPH,TRCTAL,TRCOCT,TRCCEN,TRCRNF,
-CVK TRACING FOR DEBUGGING, V.Kotov:  not in use in present EIRENE version
+CVK TRACING FOR DEBUGGING, V.Kotov: not in use in present EIRENE version
 cdr  .                  TRCDBG2,TRCDBGE,TRCDBGM,TRCDBGF,TRCDBGL,
 cdr  .                  TRCDBGS,TRCDBGG,TRCDBGMPI,TRCDBGC,
 CPB  ACTIVATE SPECIES-RESOLVED CPU CONSUMPTION OPTION
@@ -3451,7 +3486,7 @@ C
          WRITE (iunout,*) ' NVOLPR, NVLPR ', NVOLPR, NVLPR
          CALL EIRENE_EXIT_OWN(1)
       ENDIF
-      WRITE (iunout,*) '        NVOLPR= ',NVOLPR
+      WRITE (iunout,*) '       NVOLPR= ',NVOLPR
       DO 1120 J=1,NVOLPR
         READ (IUNIN,6666) NTLV,NFLGV,NSPZV1,NSPZV2,NTLVF
         IF (NTLV.LT.-NTALI.OR.NTLV.GT.NTALV) GOTO 990
@@ -3471,7 +3506,7 @@ C
          CALL EIRENE_EXIT_OWN(1)
       ENDIF
 C
-      WRITE (iunout,*) '        NSURPR= ',NSURPR
+      WRITE (iunout,*) '       NSURPR= ',NSURPR
       DO 1130 J=1,NSURPR
         READ (IUNIN,6666) NSRF,NTLS,NFLGS,NSPZS1,NSPZS2,NTLSF
 c  negative surface numbers may be used for non-default standard surfaces
@@ -3566,20 +3601,6 @@ C  2D GEOMETRY PLOT
       CALL EIRENE_READ_BLOCK_11_USR
 !PB moved to subroutine EIRENE_READ_BLOCK_11_USR
 !pb  .                  NPLINT,NPLOTT,NPLDLT,nsrfcls !csw 22jul2011 added nsrfcls
-csw 22jul2011
-!pb      if(abs(nsrfcls) > 0) call eirene_extrab25_srfprvsl_init()
-!pb      do j=1,abs(nsrfcls)
-!pb        read (iunin,6666) msrfcls(j)
-!pb        if(msrfcls(j).gt.0) then !{
-!pb          if(msrfcls(j).gt.msrfclsx) then !{
-!pb            write(iunout,*) 'Too many selection criteria for surface ',
-!pb     ,            'properties visualisation. j,msrfcls(j)=',j,msrfcls(j)
-!pb            CALL EIRENE_EXIT_OWN(1)
-!pb          end if !}
-!pb          read (iunin,6666) (lsrfcls(i,j),i=1,msrfcls(j))
-!pb        end if
-!pb      end do
-csw
 C  3D GEOMETRY PLOT
       DO 1140 J=1,5
         READ (IUNIN,6662) PL3A(J),TEXTLA(J),IPLTA(J),
@@ -3604,7 +3625,7 @@ c  search for input block 11c
       IF (ZEILE(1:1) .EQ. '*') GOTO 1151
 C  DATA FOR PLOTS OF VOLUME-AVERAGED TALLIES
       READ (ZEILE,6666) NVOLPL
-      WRITE (iunout,*) '        NVOLPL= ',NVOLPL
+      WRITE (iunout,*) '       NVOLPL= ',NVOLPL
       CALL EIRENE_LEER(1)
 C
       IF (NVOLPL.GT.NPTAL)
@@ -3719,10 +3740,10 @@ cdr  check if such emissivity tallies are defined: search for 'DEFINE LINES' in 
 cdr  careful: slightly different from find_param
       NLEMIS = NCHOR > 0  !dr  and: NCHTAL=2 ??
       LDEF_LINES = .FALSE.
-      
+
       IF (INDEX(ULINE,'DEFINE_LINES') > 0) THEN
 cdr read volumetric emission profile data
-        LDEF_LINES = .TRUE.       
+        LDEF_LINES = .TRUE.
         IADV = NADVI
         NLEMIS = .TRUE.
         READ (IUNIN,6666) NUM_LINES, MOD_ADDV
@@ -3787,7 +3808,7 @@ cdr  e.g. different isotopes,... but same rates, same population factors in each
                 CNT%ITP_RAT = -1
                 READ (IUNIN,6666) CNT%ISP, CNT%ITP, CNT%IRATIO
 
-cdr  read QSS ratio between two densities, e.g.:  H2+/H2, if nfoli(H2+)=-1.
+cdr  read QSS ratio between two densities, e.g.: H2+/H2, if nfoli(H2+)=-1.
 cdr  If density n_B of parent state (e.g. H2+) for upper level is not amongst the densities
 cdr  known in this run,
 cdr  but is in an (QSS) equilibrium (nfol<0) with such a density n_A (e.g. H2) instead.
@@ -3799,7 +3820,7 @@ cdr   Read a second density ratio.
 cdr   It may turn out that, after reading the first density ratio,
 cdr   that now the new parent density n_A is still not amongst the density
 cdr   known to eirene in this run. Then read a second density ratio.
-cdr   Example:  n_B=n_H3+, ratio1=nH3+/nH2+. I.e. n_A =nH2+.
+cdr   Example: n_B=n_H3+, ratio1=nH3+/nH2+. I.e. n_A =nH2+.
 cdr   See routine emissivity.f for further explanations.
                   IF (CNT%IRATIO == 2) THEN
                     READ (IUNIN,6666) CNT%IRC_RAT(2),
@@ -3841,7 +3862,7 @@ cdr read from block "12.0", no default emissivities are set at all.
       IF (NLEMIS.AND..NOT.ALLOCATED(EMIS_LINES))
      .   CALL EIRENE_SETUP_DEFAULT_EMISSIVITY
 
-c  June 18: new:  end of new code, further modifications below, for NCHTAL=2 option
+c  June 18: new: end of new code, further modifications below, for NCHTAL=2 option
       CALL EIRENE_MASAGE
      .  ('*** 12A. DATA FOR LINES OF SIGHT              ')
       IF (IREAD == 0) READ (IUNIN,'(A80)') ZEILE
@@ -3871,10 +3892,10 @@ cdr                    for nchtal=2 option.
 
         IF (NCHTAL(ICHORI) == 2) THEN
 cdr  old default: neither "define_lines" nor "default_lines" found.
-cdr  still:  chords with NCHTAL=2 present. Set default now, latest. 
+cdr  still: chords with NCHTAL=2 present. Set default now, latest.
           IF (.NOT.ALLOCATED(EMIS_LINES))
      .      CALL EIRENE_SETUP_DEFAULT_EMISSIVITY
-cdr  for nchtal=2: one optional extra input card may be read:  search for 'USE_LINE'
+cdr  for nchtal=2: one optional extra input card may be read: search for 'USE_LINE'
 cdr  and fill CH_LINE_NAME(ICHORI) with the name of that line.
 cdr  Alternatively the energy parameters EMIN1 may be used.
           ULINE = ZEILE
@@ -3887,7 +3908,8 @@ cdr  Alternatively the energy parameters EMIN1 may be used.
           END IF
         END IF
 
-        READ (ZEILE,6666) NSPSTR(ICHORI),NSPSPZ(ICHORI),  ! here should come: NSPTP(..), TYPE
+! here should come: NSPTP(..), TYPE
+        READ (ZEILE,6666) NSPSTR(ICHORI),NSPSPZ(ICHORI),
      .                    NSPINI(ICHORI),NSPEND(ICHORI),
      .                    NSPBLC(ICHORI),NSPADD(ICHORI)
         IREAD=0
@@ -3896,7 +3918,8 @@ cdr  Alternatively the energy parameters EMIN1 may be used.
      .                     XPIVOT(ICHORI),YPIVOT(ICHORI),ZPIVOT(ICHORI)
         READ (IUNIN,66664) ICHORD(ICHORI),
      .                     XCHORD(ICHORI),YCHORD(ICHORI),ZCHORD(ICHORI)
-        NLSTCHR(ICHORI) = ISTCHR > 0  ! automatically add directional cell-based spectra, along line of sight
+! automatically add directional cell-based spectra, along line of sight
+        NLSTCHR(ICHORI) = ISTCHR > 0
  1220 CONTINUE   ! ichori
 
       READ (IUNIN,'(A72)') ZEILE
@@ -3934,10 +3957,10 @@ C  NO TIME HORIZON DEFINED, DESPITE NLERG=.TRUE.
 C  THEREFORE: SET A DEFAULT TIME HORIZON HERE
         NPRNLI=100
         IF (NTIME.EQ.0) NTIME=1
-        WRITE (iunout,*) '        NPRNLI= ',NPRNLI,
+        WRITE (iunout,*) '       NPRNLI= ',NPRNLI,
      .                   ' (MODIFIED DUE TO NLERG)'
       ELSE
-        WRITE (iunout,*) '        NPRNLI= ',NPRNLI
+        WRITE (iunout,*) '       NPRNLI= ',NPRNLI
       ENDIF
       CALL EIRENE_LEER(1)
 
@@ -3952,11 +3975,11 @@ C  TURN OFF TIME DEP MODE IF EITHER NTIME=0 OR NPRNLI=0
           NTIME=0
         ENDIF
 cym - was removed, present in the julich git // crash without this goto
-!pb   time dep. mode is turned off - thus skip reading rest of the block     
+!pb   time dep. mode is turned off - thus skip reading rest of the block
         GOTO 1350
       ENDIF
 
-cdr  from here: time dep mode is ON.
+cdr  from here: time dep mode is ON: NTIME.NE.0. and also: NPRNLI GT 0
       LDEF_TIME_HORIZON = .FALSE.
       READ (IUNIN,'(A72)') ZEILE
       IREAD=1
@@ -4002,6 +4025,7 @@ C   READ DATA FOR SNAPSHOT TALLIES (OPTIONAL)
       WRITE (iunout,*) '        NSNVI= ',NSNVI
       CALL EIRENE_LEER(1)
       DO 1320 J=1,NSNVI
+cdr  scaling and labels of (additional) snapshot tallies, scored in UPNUSR.F
  1321   READ (IUNIN,'(A72)') ZEILE
         IREAD=1
         IF (ZEILE(1:1) .EQ. '*') GOTO 1321
@@ -4023,11 +4047,9 @@ C  SKIP READING REST OF THIS BLOCK
       IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE
       IF (ZEILE(1:3).NE.'***') GOTO 1350
       IREAD=1
-
+C
       IF (IREAD.EQ.0) READ (IUNIN,*)
 
-C
-C
  6662 FORMAT (L1,1X,A24,1X,I1,1X,4(2I3,1X))
  6664 FORMAT (6E12.4)
  6665 FORMAT (12(5L1,1X))
@@ -4067,9 +4089,9 @@ C
       WRITE (iunout,*) 'ERROR IN INPUT BLOCK FOR ADDITIONAL DATA FOR'
       WRITE (iunout,*) 'SPECIFIC ZONES FOUND AT ZONE NO. ',I
       CALL EIRENE_EXIT_OWN(1)
-      
+
       END SUBROUTINE EIRENE_READ_FIXFORM
-      
+
 
       SUBROUTINE EIRENE_READ_BLK14_FIXFORM(IERROR)
       USE EIRMOD_PRECISION
@@ -4080,7 +4102,7 @@ C
       USE EIRMOD_CSPEI
       USE EIRMOD_INFCOP, ONLY: EIRENE_IF0COP
       IMPLICIT NONE
-      INTEGER, INTENT(INOUT) :: IERROR 
+      INTEGER, INTENT(INOUT) :: IERROR
       CHARACTER(420) :: ZEILE, ULINE
       INTEGER :: IDUM, NCOPIE, J
       LOGICAL :: LSHORT
@@ -4098,9 +4120,9 @@ C
      .  ('*** 14. DATA FOR INTERFACING ROUTINE "INFCOP"')
 
       IF (NMODE.EQ.0) THEN
-C  STAND ALONE RUN, READ BLOCK *** 14 HERE
+C  STANDALONE RUN, READ BLOCK *** 14 HERE
         WRITE (iunout,*) '        SUBR. INFCOP NOT CALLED.'
-!pb NCOPII is completely redundant        
+!pb NCOPII is completely redundant
 !       READ (IUNIN,6666) NAINI,NCOPII,NCOPIE
         READ (IUNIN,6666) NAINI,IDUM,NCOPIE
         NCPVI=NCOPIE
@@ -4114,7 +4136,7 @@ C  STAND ALONE RUN, READ BLOCK *** 14 HERE
           WRITE (iunout,*) ' THE ERRORS BEFORE RE-EXECUTION'
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
-        
+
         IF (NCPVI.GT.NCPV) THEN
           CALL EIRENE_MASPRM('NCPV',4,NCPV,'NCPVI',5,NCPVI,IERROR)
           CALL EIRENE_EXIT_OWN(1)
@@ -4134,7 +4156,7 @@ C  COUPLED RUN, READ BLOCK *** 14 IN INTERFACING ROUTINE INFCOP (ENTRY IF0COP)
 !pb     NCOPII=0
         NCOPIE=0
         NAINI=0
-C  READ BLOCK 14 AND GEOMETRY FROM EXTERNAL DATABASE (FT30), 
+C  READ BLOCK 14 AND GEOMETRY FROM EXTERNAL DATABASE (FT30),
 C  also set NAINI, NCOPII, NCOPIE there
 cdr  possibly modified as well:  nlshrt13
         LSHORT=.FALSE.
@@ -4144,6 +4166,7 @@ cdr  possibly modified as well:  nlshrt13
 !pb  .                    NAINI, NCOPII, NCOPIE, NCPVI
         write (iunout,*) 'NAINI, NCOPIE, NCPVI ',
      .                    NAINI, NCOPIE, NCPVI
+        CALL EIRENE_LEER(1)
       ENDIF
 
       RETURN
@@ -4154,7 +4177,7 @@ cdr  possibly modified as well:  nlshrt13
       SUBROUTINE EIRENE_READ_MPI_STRATEGY_FIXED(LINE)
       USE EIRMOD_COMUSR, ONLY: NPRLL
       USE EIRMOD_COMPRT, ONLY: IUNIN
-      USE EIRMOD_CPES, ONLY: NPRS, NLIDENT, 
+      USE EIRMOD_CPES, ONLY: NPRS, NLIDENT,
      >    STRATEGY_UNDEFINED, STRATEGY_EMBARRASS,
      >    STRATEGY_ORIGINAL, STRATEGY_APCAS, STRATEGY_BALANCED,
      >    INPUT_DISTRIBUTION_STRATEGY
@@ -4167,71 +4190,71 @@ C
 C  READ MPI STRATEGY IF PRESENT
 C
       DO
-      IF (INDEX(LINE,'INFORMATION_FOR_MPI') /= 0) THEN
-        CALL EIRENE_MASAGE('*** INFORMATION_FOR_MPI')
-        DO
-          READ (IUNIN,'(A80)',END=1596) ZEILE
-          IF (INDEX(ZEILE,'ORIGINAL') /= 0) THEN
-            NPRLL = 1
-            input_distribution_strategy = STRATEGY_ORIGINAL
-            CALL EIRENE_MASAGE
+        IF (INDEX(LINE,'INFORMATION_FOR_MPI') /= 0) THEN
+          CALL EIRENE_MASAGE('*** INFORMATION_FOR_MPI')
+          DO
+            READ (IUNIN,'(A80)',END=1596) ZEILE
+            IF (INDEX(ZEILE,'ORIGINAL') /= 0) THEN
+              NPRLL = 1
+              input_distribution_strategy = STRATEGY_ORIGINAL
+              CALL EIRENE_MASAGE
      .         ('APPLYING "ORIGINAL" PARALLELIZATION STRATEGY')
-            goto 1597
-          ELSE IF (INDEX(ZEILE,'APCAS') /= 0) THEN
-            NPRLL = 2
-            input_distribution_strategy = STRATEGY_APCAS
-            CALL EIRENE_MASAGE
+              goto 1597
+            ELSE IF (INDEX(ZEILE,'APCAS') /= 0) THEN
+              NPRLL = 2
+              input_distribution_strategy = STRATEGY_APCAS
+              CALL EIRENE_MASAGE
      .         ('APPLYING "APCAS" PARALLELIZATION STRATEGY')
-            goto 1597
-          ELSE IF (INDEX(ZEILE,'BALANCED') /= 0) THEN
-            NPRLL = 3
-            input_distribution_strategy = STRATEGY_BALANCED
-            CALL EIRENE_MASAGE
+              goto 1597
+            ELSE IF (INDEX(ZEILE,'BALANCED') /= 0) THEN
+              NPRLL = 3
+              input_distribution_strategy = STRATEGY_BALANCED
+              CALL EIRENE_MASAGE
      .         ('APPLYING "BALANCED" PARALLELIZATION STRATEGY')
-            goto 1597
-          ELSE IF (INDEX(ZEILE,'EMBARRASS') /= 0) THEN
-            NPRLL = 0
-            input_distribution_strategy = STRATEGY_EMBARRASS
-            CALL EIRENE_MASAGE
+              goto 1597
+            ELSE IF (INDEX(ZEILE,'EMBARRASS') /= 0) THEN
+              NPRLL = 0
+              input_distribution_strategy = STRATEGY_EMBARRASS
+              CALL EIRENE_MASAGE
      .         ('APPLYING "EMBARRASSINGLY PARALLEL" STRATEGY')
-            goto 1597
-          ELSE IF (INDEX(ZEILE,'AUTOMATIC') /=0) THEN
-            CALL EIRENE_MASAGE
+              goto 1597
+            ELSE IF (INDEX(ZEILE,'AUTOMATIC') /=0) THEN
+              CALL EIRENE_MASAGE
      .         ('APPLYING AUTOMATIC PARALLELIZATION STRATEGY')
 #if MPI_VERSION < 3
+              NPRLL = 1
+              input_distribution_strategy = STRATEGY_ORIGINAL
+              CALL EIRENE_MASAGE
+     .         ('CURRENT AUTOMATIC ASSIGNMENT IS "ORIGINAL"')
+#else
+              NPRLL = 3
+              input_distribution_strategy = STRATEGY_BALANCED
+              CALL EIRENE_MASAGE
+     .         ('CURRENT AUTOMATIC ASSIGNMENT IS "BALANCED"')
+#endif
+              goto 1597
+            END IF
+          END DO
+ 1596     CONTINUE
+          if (input_distribution_strategy.eq.STRATEGY_UNDEFINED) THEN
+            CALL EIRENE_MASAGE
+     .       ('NO MPI PARALLELIZATION STRATEGY NAME RECOGNIZED')
+#if MPI_VERSION < 3
             NPRLL = 1
             input_distribution_strategy = STRATEGY_ORIGINAL
             CALL EIRENE_MASAGE
-     .         ('CURRENT AUTOMATIC ASSIGNMENT IS "ORIGINAL"')
+     .       ('APPLYING DEFAULT "ORIGINAL" STRATEGY')
 #else
             NPRLL = 3
             input_distribution_strategy = STRATEGY_BALANCED
             CALL EIRENE_MASAGE
-     .         ('CURRENT AUTOMATIC ASSIGNMENT IS "BALANCED"')
-#endif
-            goto 1597
-          END IF
-        END DO
- 1596   CONTINUE
-        if (input_distribution_strategy.eq.STRATEGY_UNDEFINED) THEN
-          CALL EIRENE_MASAGE
-     .       ('NO MPI PARALLELIZATION STRATEGY NAME RECOGNIZED')
-#if MPI_VERSION < 3
-          NPRLL = 1
-          input_distribution_strategy = STRATEGY_ORIGINAL
-          CALL EIRENE_MASAGE
-     .       ('APPLYING DEFAULT "ORIGINAL" STRATEGY')
-#else
-          NPRLL = 3
-          input_distribution_strategy = STRATEGY_BALANCED
-          CALL EIRENE_MASAGE
      .       ('APPLYING DEFAULT "BALANCED" STRATEGY')
 #endif
-        end if
- 1597   CONTINUE
-        CALL EIRENE_LEER(1)
-        GOTO 1599
-      END IF
+          end if
+ 1597     CONTINUE
+          CALL EIRENE_LEER(1)
+          GOTO 1599
+        END IF
       END DO
  1598 CONTINUE
       IF (NPRS > 1 .and.
@@ -4254,4 +4277,3 @@ C
  1599 CONTINUE
 
       END SUBROUTINE EIRENE_READ_MPI_STRATEGY_FIXED
-

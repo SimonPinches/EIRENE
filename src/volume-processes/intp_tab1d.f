@@ -3,7 +3,7 @@
 cdr  (linear) interpolate in 1d table tb at argument p1.
 cdr  binary search in table. linear extrapolation outside range of table
 
-cdr  Nov. 15: argument p2 removed, added: ip1:  indicator for extrapolation or interpolation
+cdr  Nov. 15: argument p2 removed, added: ip1: indicator for extrapolation or interpolation
 cdr           ip1: as in intp_tab2d (2d tables)
 cdr      tbd: generalize to general 1d tables, not just hydkin_data
 cdr  Aug. 19: started. Old data structure hydkin rebuild, for 1D tables

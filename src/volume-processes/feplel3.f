@@ -13,6 +13,9 @@
       IMPLICIT NONE
 
       INTEGER, INTENT(IN) :: IREL, K
+cdr  tbd: change name of variable EPEL. That would be the logical name for
+cdr       tally EPEL: volume sampled electron (EL) energy loss (E) from field (P),
+cdr       e.g. in recombination (RC) reactions. So far that EPEL tally is missing.
       REAL(DP) :: PLS, ADD, EPEL, EIRENE_FEPLEL3,
      .            EIRENE_RATE_COEFF
       INTEGER :: KK, IPLSTI

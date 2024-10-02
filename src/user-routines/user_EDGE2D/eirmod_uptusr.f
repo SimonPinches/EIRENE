@@ -1,5 +1,5 @@
       MODULE EIRMOD_UPTUSR
-      
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_CESTIM
@@ -18,20 +18,20 @@
       PRIVATE
 
       PUBLIC :: EIRENE_UPTUSR, EIRENE_uptusr_reinit
-      
+
 c      REAL(DP), ALLOCATABLE, SAVE :: CNDYNA(:),CNDYNP(:)
 CDR
       REAL(DP), ALLOCATABLE, SAVE :: VPX(:),VPY(:),VRX(:),VRY(:)
-      
+
       INTEGER, SAVE :: IFIRST, IA0, IA1, IA2, IA3, NA4, INDEXM, INDEXF
       DATA IFIRST/0/
-      
+
       integer, save :: num=0,eirene_nbirth,eirene_njetto
       character(len=256), save :: eirene_fbirth,eirene_ftransfer,
      &     eirene_fstoreneutflux
 
       CONTAINS
-      
+
       SUBROUTINE EIRENE_UPTUSR(XSTOR2,XSTORV2,WV,IFLAG)
 C
 C  USER-SUPPLIED TRACKLENGTH ESTIMATOR, VOLUME-AVERAGED
@@ -107,7 +107,7 @@ C
             VRY(IRD)=PPLNY(IR,IP)
           END DO
         END DO
-!pb  MOD_ADDV is no incremental value. It is a flag indicating whether all the 
+!pb  MOD_ADDV is no incremental value. It is a flag indicating whether all the
 !pb  rates used for emissivity lines are to be stored or whether storage saving
 !pb  mode ist to be used, only storing the rates for the latest used line
 !pb     IA0=MOD_ADDV
@@ -158,7 +158,7 @@ c         net sources due CX:
       RETURN
       END SUBROUTINE EIRENE_UPTUSR
 
-      
+
       SUBROUTINE EIRENE_uptusr_reinit
       if(ifirst .ne. 0) then
         ifirst=0

@@ -271,10 +271,10 @@ c     get species index/indices IPLAN(ISTEP) --> IPLEN(ISTEP)
             END IF
 c     fudge species index for atomic impurity flux (get it from NEMODS index K)
             IF (NLATM(ISTRA)) THEN
-              IPLS_tmp = EIRENE_IDEZ(NEMODS(ISTRA),4,4)
-              IF (IPLS_tmp.gt.0) then
-                ipls=IPLS_tmp
-              ENDIF
+               IPLS_tmp = EIRENE_IDEZ(NEMODS(ISTRA),4,4)
+               IF (IPLS_tmp.gt.0) then
+                  ipls=IPLS_tmp
+               ENDIF
             ENDIF
 c     search target tag in .zplasma file
            IPLS_tmp = IPLS
@@ -541,7 +541,7 @@ c     use hydrogen ion flux [A] to wall
          do itri=1,ntr
             do iside=1,3
                if ( (hydIonFLX(iside,itri).ne.0)
-     &              .and.(INMTI(iside,itri).ne.0) )then
+     &              .and.(INMTI(iside,itri).ne.0) ) then
                   FLXOUT(NLIM+NSTS + INSPAT(iside,itri)) =
      &                 FLXOUT(NLIM+NSTS + INSPAT(iside,itri))
      &                 + DABS(hydIonFLX(iside,itri))
@@ -560,7 +560,7 @@ c     use hydrogen neutral flux [A] to wall
                   do itri=1,ntr
                      do iside=1,3
                         if ((INSPAT(iside,itri).eq. j -(NLIM+NSTS))
-     &                       .and.(INSPAT(iside,itri).ne.0) )then
+     &                       .and.(INSPAT(iside,itri).ne.0) ) then
                            if (lex) then
                               WRITE(IUNOUT,*) "* EIRENE_PLAUSR:"
                               write(IUNOUT,*) "* Edge twice found"
@@ -618,7 +618,7 @@ c     Debug output of boundary
          do itri=1,ntr
             do iside=1,3
                if ((INSPAT(iside,itri).eq. i -(NLIM+NSTS))
-     &              .and.(INSPAT(iside,itri).ne.0) )then
+     &              .and.(INSPAT(iside,itri).ne.0) ) then
                   if (lex) write(fp2,*)"*Edge twice found"
                   lex=.true.
                   IS1 = ISIDE + 1

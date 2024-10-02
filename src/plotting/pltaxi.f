@@ -12,7 +12,7 @@ C  MIT GITTERLINIEN ODER NUR MIT KURZEN MARKIERUNGEN VERSEHEN
 C  ODER BESCHRIFTUNG VOM PROGRAMM ANGEPASST ODER SELBST VORGEGEBEN
 C  UND WIE LANG DIE ANDERE ACHSE IST.
 C
-C  EINGABE :  COMMON XAXES,YAXES
+C  EINGABE : COMMON XAXES,YAXES
 C  IAX=1: PLOTTE X ACHSE
 C  IAX=2: PLOTTE Y ACHSE
 C
@@ -131,7 +131,7 @@ C
                           CALL GRDSH(0.2,0.5,0.2)
                           CALL GRSPTS(16)
                         ENDIF
-                        CALL GRDRW(REAL(T,SP), REAL(LENY,SP))
+                        CALL GRDRW(REAL(T,SP),REAL(LENY,SP))
                         CALL GRDSH(1.,0.,1.)
                      ELSE
                         CALL GRDRW(REAL(T,SP),0.)
@@ -147,7 +147,7 @@ C
                        CALL GRSPTS(16)
                        CALL GRDSH(0.2,0.5,0.2)
                      ENDIF
-                     CALL GRDRW(REAL(RI,SP), REAL(LENY,SP))
+                     CALL GRDRW(REAL(RI,SP),REAL(LENY,SP))
                      CALL GRDSH(1.,0.,1.)
                      CALL GRSPTS(20)
                   ELSE
@@ -160,7 +160,7 @@ C
                      CALL GRJMP(REAL(T,SP),-0.1)
                      IF (GRIDX) THEN
                         CALL GRDSH(0.2,0.5,0.2)
-                        CALL GRDRW(REAL(T,SP), REAL(LENY,SP))
+                        CALL GRDRW(REAL(T,SP),REAL(LENY,SP))
                         CALL GRDSH(1.,0.,1.)
                      ELSE
                         CALL GRDRW(REAL(T,SP),0.)
@@ -176,7 +176,7 @@ C
                        CALL GRSPTS(16)
                        CALL GRDSH(0.2,0.5,0.2)
                      ENDIF
-                     CALL GRDRW(REAL(RI,SP), REAL(LENY,SP))
+                     CALL GRDRW(REAL(RI,SP),REAL(LENY,SP))
                      CALL GRDSH(1.,0.,1.)
                      CALL GRSPTS(20)
                   ELSE
@@ -189,7 +189,7 @@ C
                      CALL GRJMP(REAL(T,SP),-0.1)
                      IF (GRIDX) THEN
                         CALL GRDSH(0.2,0.5,0.2)
-                        CALL GRDRW(REAL(T,SP), REAL(LENY,SP))
+                        CALL GRDRW(REAL(T,SP),REAL(LENY,SP))
                         CALL GRDSH(1.,0.,1.)
                      ELSE
                         CALL GRDRW(REAL(T,SP),0.)
@@ -205,7 +205,7 @@ C
                        CALL GRSPTS(16)
                        CALL GRDSH(0.2,0.5,0.2)
                      ENDIF
-                     CALL GRDRW(REAL(RI,SP), REAL(LENY,SP))
+                     CALL GRDRW(REAL(RI,SP),REAL(LENY,SP))
                      CALL GRDSH(1.,0.,1.)
                      CALL GRSPTS(20)
                   ELSE

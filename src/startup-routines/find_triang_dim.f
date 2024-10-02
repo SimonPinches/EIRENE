@@ -9,12 +9,12 @@
 
       integer, intent(inout) :: nr1st,ntri,ntrii,nknot,ngitt
       integer, intent(in) :: ifoff
-      character(*), intent(in) :: casename 
+      character(*), intent(in) :: casename
       integer :: ll, nrknot, i, id, nb1, ns1, inm1, nb2, ns2, inm2,
      .           nb3, ns3, inm3, iunco, iunel, iunng
       character(:), allocatable :: filename
       character(80) :: zeile
-      
+
       LL=LEN_TRIM(CASENAME)
       NTRII=NR1ST
       NTRI=MAX(NTRI,NR1ST)
@@ -26,12 +26,12 @@
         IUNCO = -9999
         CALL EIRENE_OPENFILE (iunco,FILE=FILENAME,ACCESS='SEQUENTIAL',
      .      FORM='FORMATTED')
-      
+
         FILENAME=CASENAME(1:LL) // '.elemente'
         IUNEL = -9999
         CALL EIRENE_OPENFILE (iunel,FILE=FILENAME,ACCESS='SEQUENTIAL',
      .       FORM='FORMATTED')
-      
+
         FILENAME=CASENAME(1:LL) // '.neighbors'
         IUNNG = -9999
         CALL EIRENE_OPENFILE (IUNNG,FILE=FILENAME,ACCESS='SEQUENTIAL',
@@ -41,23 +41,22 @@
         iunel = 34
         iunng = 35
       end if
-     
 
       ZEILE='*   '
       DO WHILE (ZEILE(1:1) == '*')
         READ (IUNCO,'(A)') ZEILE
       END DO
-      
+
       READ (ZEILE,*) NRKNOT
       WRITE(IUNOUT,*) 'NRKNOT = ',NRKNOT
       NKNOT=NRKNOT
       CLOSE (UNIT=IUNCO)
-      
+
       ZEILE='*   '
       DO WHILE (ZEILE(1:1) == '*')
         READ (IUNEL,'(A)') ZEILE
       END DO
-      
+
       READ (ZEILE,*) NTRII
       NTRI=NTRII+1
       NR1ST=NTRI

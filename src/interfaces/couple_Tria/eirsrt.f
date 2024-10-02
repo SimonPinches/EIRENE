@@ -23,7 +23,7 @@ C      CALL EIRENE(..)     (main-routines)
 C
 C   LATER CALLS:
 C
-C      CALL EIRENE_COUPLE  (entry to EIRENE  main-routines, bypassing some  initialization stuff)
+C      CALL EIRENE_COUPLE (entry to EIRENE main-routines, bypassing some initialization stuff)
 c
 
 C
@@ -34,7 +34,7 @@ C   INPUT:
 C     LSTOP:
 C     LTIME: TIME-DEPENDENT MODE. PREPARE TIME-DEPENDENT OPTIONS,
 C            AND THEN CALL EIRENE
-C     DELTAT: TIME STEP  (IRRELEVANT IN CASE LTIME=.FALSE.)
+C     DELTAT: TIME STEP (IRRELEVANT IN CASE LTIME=.FALSE.)
 C
 C   ONLY FOR EIRENE ENERGY BALANCE DIAGNOSTICS:
 C     B2BRM:  TOTAL BREMSSTAHLUNG LOSS IN PREVIOUS B2 STEP
@@ -346,7 +346,7 @@ C
           DO 21 IAEI=1,NAEII(JATM)
            IREI=LGAEI(JATM,IAEI)
            IF (PPLEI(IREI,JPLS).EQ.0.) GOTO 21
-          DO IN=1,NDXY
+           DO IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
               RTIS%SPLODA(IN,JATM,JPLS)=RTIS%SPLODA(IN,JATM,JPLS)+
      .                        TABEI1(IREI,IN)*PPLEI(IREI,JPLS)
@@ -354,7 +354,7 @@ C
               RTIS%SPLODA(IN,JATM,JPLS)=RTIS%SPLODA(IN,JATM,JPLS)+
      .                        EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,JPLS)
             END IF
-          ENDDO
+           ENDDO
    21     CONTINUE
          ENDDO
         ENDDO
@@ -368,7 +368,7 @@ C
           IREI=LGAEI(JATM,IAEI)
           DO IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
-                RTIS%SEEODA(IN,JATM)=RTIS%SEEODA(IN,JATM)+
+              RTIS%SEEODA(IN,JATM)=RTIS%SEEODA(IN,JATM)+
      .                                        EELEI1(IREI,IN)*
      .                                        TABEI1(IREI,IN)
             ELSE
@@ -401,7 +401,7 @@ cdr                     because it was already summed over ipls
                 RTIS%SEIODA(IN,JATM)=RTIS%SEIODA(IN,JATM)+
      .                        EIRENE_FTABEI1(IREI,IN)*ESIG
             END IF
-          ENDDO
+           ENDDO
           ENDDO
          ENDDO
         ENDDO
@@ -419,7 +419,7 @@ C
            IREI=LGIEI(JION,IIEI)
 c
            IF (PPLEI(IREI,JPLS).EQ.0.) GOTO 27
-          DO IN=1,NDXY
+           DO IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
               RTIS%SPLODI(IN,JION,JPLS)=RTIS%SPLODI(IN,JION,JPLS)+
      .                             TABEI1(IREI,IN)*PPLEI(IREI,JPLS)
@@ -427,7 +427,7 @@ c
               RTIS%SPLODI(IN,JION,JPLS)=RTIS%SPLODI(IN,JION,JPLS)+
      .                         EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,JPLS)
             ENDIF
-          ENDDO
+           ENDDO
    27     CONTINUE
          END DO
         END DO
@@ -462,7 +462,7 @@ C
 !pb 09022016            ESIG=EPLEI(IREI,2)  this was incorrect,
 cdr                     because it was already summed over ipls
            ESIG=EPLEI(IREI,JPLS,2)  ! only KER -part is corrected in short cycle
-          DO IN=1,NDXY
+           DO IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
               RTIS%SEIODI(IN,JION)=RTIS%SEIODI(IN,JION)+
      .                        TABEI1(IREI,IN)*ESIG
@@ -470,7 +470,7 @@ cdr                     because it was already summed over ipls
               RTIS%SEIODI(IN,JION)=RTIS%SEIODI(IN,JION)+
      .                        EIRENE_FTABEI1(IREI,IN)*ESIG
             END IF
-          ENDDO
+           ENDDO
           END DO
          END DO
         END DO
@@ -483,7 +483,7 @@ C
           DO 47 IMEI=1,NMEII(JMOL)
            IREI=LGMEI(JMOL,IMEI)
            IF (PPLEI(IREI,JPLS).EQ.0.) GOTO 47
-          DO IN=1,NDXY
+           DO IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
               RTIS%SPLODM(IN,JMOL,JPLS)=RTIS%SPLODM(IN,JMOL,JPLS)+
      .                             TABEI1(IREI,IN)*PPLEI(IREI,JPLS)
@@ -491,7 +491,7 @@ C
               RTIS%SPLODM(IN,JMOL,JPLS)=RTIS%SPLODM(IN,JMOL,JPLS)+
      .                         EIRENE_FTABEI1(IREI,IN)*PPLEI(IREI,JPLS)
             END IF
-          ENDDO
+           ENDDO
    47     CONTINUE
          END DO
         END DO
@@ -503,12 +503,12 @@ C
         DO JMOL=1,NMOLI
          DO IMEI=1,NMEII(JMOL)
           IREI=LGMEI(JMOL,IMEI)
-            DO IN=1,NDXY
-              IF (NSTORDR >= NRAD) THEN
-                RTIS%SEEODM(IN,JMOL)=RTIS%SEEODM(IN,JMOL)+
+          DO IN=1,NDXY
+            IF (NSTORDR >= NRAD) THEN
+              RTIS%SEEODM(IN,JMOL)=RTIS%SEEODM(IN,JMOL)+
      .                                          EELEI1(IREI,IN)*
      .                                          TABEI1(IREI,IN)
-              ELSE
+            ELSE
               RTIS%SEEODM(IN,JMOL)=RTIS%SEEODM(IN,JMOL)+
      .                                        EIRENE_FEELEI1(IREI,IN)*
      .                                        EIRENE_FTABEI1(IREI,IN)
@@ -527,7 +527,7 @@ C                                         SUM OVER ALL IPLS
 !pb 09022106         ESIG=EPLEI(IREI,2)  this was incorrect,
 cdr                     because it was already summed over ipls
            ESIG=EPLEI(IREI,JPLS,2) ! only KER -part is corrected in short cycle
-          DO IN=1,NDXY
+           DO IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
               RTIS%SEIODM(IN,JMOL)=RTIS%SEIODM(IN,JMOL)+
      .                        TABEI1(IREI,IN)*ESIG
@@ -670,7 +670,7 @@ C
           DO 107 IIEI=1,NIEII(JION)
            IREI=LGIEI(JION,IIEI)
            IF (PPLEI(IREI,JPLS).EQ.0.) GOTO 107
-          DO 108 IN=1,NDXY
+           DO 108 IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
               SPLNWI(IN,JION,JPLS)=SPLNWI(IN,JION,JPLS)+
      .                             TABEI1(IREI,IN)*PPLEI(IREI,JPLS)
@@ -708,7 +708,7 @@ cdr  correct energy exchange with bulk ions: e0* eplei(IREI,ipls,1)+ eplei(IREI,
 cdr  sum over ipls:                          e0* eplei(IREI,0,1)   + eplei(IREI,0,2)
 cdr  the present short cycle correction only accounts for the KER (=0 for atoms)
            ESIG=EPLEI(IREI,JPLS,2)
-          DO 110 IN=1,NDXY
+           DO 110 IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
               SEINWI(IN,JION)=SEINWI(IN,JION)+TABEI1(IREI,IN)*ESIG
             ELSE
@@ -727,7 +727,7 @@ C
           DO 117 IMEI=1,NMEII(JMOL)
            IREI=LGMEI(JMOL,IMEI)
            IF (PPLEI(IREI,JPLS).EQ.0.) GOTO 117
-          DO 118 IN=1,NDXY
+           DO 118 IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
               SPLNWM(IN,JMOL,JPLS)=SPLNWM(IN,JMOL,JPLS)+
      .                             TABEI1(IREI,IN)*PPLEI(IREI,JPLS)
@@ -761,7 +761,7 @@ C
           DO IMEI=1,NMEII(JMOL)
            IREI=LGMEI(JMOL,IMEI)
            ESIG=EPLEI(IREI,JPLS,2)
-          DO 120 IN=1,NDXY
+           DO 120 IN=1,NDXY
             IF (NSTORDR >= NRAD) THEN
               SEINWM(IN,JMOL)=SEINWM(IN,JMOL)+TABEI1(IREI,IN)*ESIG
             ELSE

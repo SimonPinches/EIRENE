@@ -41,7 +41,9 @@ C  MCGRD, INTEGER
      I NSURF,  NSURFM, NBLCKS, NSTRD,  NSBOX,
      I NR1P2,  NP2T3,
      I NR1TAL, NP2TAL, NT3TAL, NSBOX_TAL,NRADD_TAL,NSURF_TAL,
-     I NPLP_CGRID  !dr: apparently added for B2.5 interface. Set eq. NPLP there
+     I NPLP_CGRID  !dr: apparently added for B2.5 interface.
+                   !    Set eq. NPLP there
+
 
       CONTAINS
 
@@ -166,7 +168,7 @@ C  MCGRD, INTEGER
       USE EIRMOD_MPI
       INTEGER, INTENT(IN) :: ME
       INTEGER :: IER
-      
+
       IF (ME /= 0) CALL EIRENE_ALLOC_CGRID
 
       CALL MPI_BCAST (RCGRID,NCGRD,MPI_REAL8,0,MPI_COMM_WORLD,ier)
@@ -176,5 +178,5 @@ C  MCGRD, INTEGER
 
       RETURN
       END SUBROUTINE EIRENE_BROADCAST_CGRID
-      
+
       END MODULE EIRMOD_CGRID

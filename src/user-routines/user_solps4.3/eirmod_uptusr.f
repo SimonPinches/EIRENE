@@ -8,7 +8,7 @@ C
       PUBLIC
 
       CONTAINS
-   
+
 C
       SUBROUTINE EIRENE_UPTUSR(XSTOR2,XSTORV2,WV,IFLAG)
 C
@@ -18,14 +18,14 @@ C  ALSO: SUMMED OVER IRCX (ALL CX PROCESSES)
 
 C  THIS VERSION:
 
-CCC   1     PARTICLE CX RATE  (ONLY TOTAL, ZERO PARTICLE SOURCE WITH THIS PROCESS, IN SINGLE SPECIES RUN)
+CCC   1     PARTICLE CX RATE (ONLY TOTAL, ZERO PARTICLE SOURCE WITH THIS PROCESS, IN SINGLE SPECIES RUN)
 CCC   2-4   ENERGY   CX RATES
 
-C    ADDV(IATM,ICELL)         : VOLUMETRIC CX RATE  (REACTIONS/S/CM**3), ATOMS
+C    ADDV(IATM,ICELL)         : VOLUMETRIC CX RATE (REACTIONS/S/CM**3), ATOMS
 
-C    ADDV(  NATMI+IATM,ICELL) : VOLUMETRIC INCIDENT ION ENERGY CX RATE  (EV/S/CM**3), ATOMS
-C    ADDV(2*NATMI+IATM,ICELL) : VOLUMETRIC INCIDENT NEUTRAL ENERGY CX RATE  (EV/S/CM**3), ATOMS
-C    ADDV(3*NATMI+IATM,ICELL) : VOLUMETRIC NET ION ENERGY CX RATE  (EV/S/CM**3), ATOMS
+C    ADDV(  NATMI+IATM,ICELL) : VOLUMETRIC INCIDENT ION ENERGY CX RATE (EV/S/CM**3), ATOMS
+C    ADDV(2*NATMI+IATM,ICELL) : VOLUMETRIC INCIDENT NEUTRAL ENERGY CX RATE (EV/S/CM**3), ATOMS
+C    ADDV(3*NATMI+IATM,ICELL) : VOLUMETRIC NET ION ENERGY CX RATE (EV/S/CM**3), ATOMS
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -47,9 +47,9 @@ C
      .                        XSTORV2(NSTORV,N2ND+N3RD),
      .                        WV
       INTEGER, INTENT(IN) :: IFLAG
-      INTEGER ::   ICOU,K,IRD,IACX,IRCX, IRDO,nti,nte,ia,
-     .             IMCX,IMEL,IREL,IFIRST,I
-      REAL(DP) ::  DIST,WTR,WTRSIG
+      INTEGER :: ICOU,K,IRD,IACX,IRCX,IRDO,nti,nte,ia,
+     .           IMCX,IMEL,IREL,IFIRST,I
+      REAL(DP) :: DIST,WTR,WTRSIG
       REAL(DP) :: VSIG_PARB(NPLS), VAL_PARB(NPLS),
      .            VSIG_PERP(NPLS), VAL_PERP(NPLS),
      .            V0_PARB,PARMOM_0,
@@ -63,7 +63,7 @@ C
 C
 CDR
 CDR  PROVIDE A RADIAL UNIT VECTOR PER CELL
-CDR  VPX,VPY,  NEEDED FOR PROJECTING PARTICLE VELOCITIES
+CDR  VPX,VPY, NEEDED FOR PROJECTING PARTICLE VELOCITIES
 CDR  SAME FOR POLOIDAL UNIT VECTOR VRX,VRY
 C
         if(allocated(vpx)) deallocate(vpx,vpy,vrx,vry)
@@ -78,22 +78,23 @@ C
         IF (LBXIN.AND.LBYIN.AND.LBXPERP.AND.LBYPERP) THEN
 !          DO I=1,ntrii
           DO I=1,nrad
-!           VPX(I)=PLNXTRI(i)    ! radial unit vector 
+cdr  probably incorrect coding in infcop. pln.tri, ppln.tri: do not use.
+!           VPX(I)=PLNXTRI(i)    ! radial unit vector
 !           VPY(I)=PLNYTRI(i)    ! => bxperp, byperp
 !           VRX(I)=PPLNXTRI(i)   ! poloidal unit vector
 !           VRY(I)=PPLNYTRI(i)   ! => BXIN, BYIN TO BE NORMALIZED
 cdr tbd: check liftali: bx,by,,bxperp,byperp
             VPX(I)=BXPERP(i)     ! radial unit vector <= bxperp, byperp
-            VPY(I)=BYPERP(i)     ! 
+            VPY(I)=BYPERP(i)     !
             DD = SQRT(BXIN(I)**2 + BYIN(I)**2)
-            VRX(I)=BXIN(i)/DD    ! poloidal unit vector <= BXIN, BYIN TO BE NORMALIZED 
-            VRY(I)=BYIN(i)/DD    ! 
+            VRX(I)=BXIN(i)/DD    ! poloidal unit vector <= BXIN, BYIN TO BE NORMALIZED
+            VRY(I)=BYIN(i)/DD    !
           END DO
         END IF
       ENDIF
 
 C
-C  ON INPUT:  WV=WEIGHT/VEL
+C  ON INPUT: WV=WEIGHT/VEL
 
 
 C
@@ -122,12 +123,12 @@ c  assume here: bvin, parmom are set in plasma_deriv.
 c               In case of other options (indpro): see update.f
 cdr only signum needed: default tbd: signum=1
           IF (LBVIN) THEN
-            VAL_PARB(1:NPLSI) =BVIN(MPLSV(1:NPLSI),IRDO)
+            VAL_PARB(1:NPLSI) = BVIN(MPLSV(1:NPLSI),IRDO)
           ELSE
             VAL_PARB(1:NPLSI) = 0._DP
           END IF
           IF (LPARMOM) THEN
-            VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)
+            VSIG_PARB(1:NPLSI) = PARMOM(1:NPLSI,IRDO)
           ELSE
             VSIG_PARB(1:NPLSI) = 0._DP
           END IF
@@ -148,7 +149,7 @@ C
 C
           IF (LGACX(IATM,0,0).EQ.0) GOTO 590
             DO 560 IACX=1,NACXI(IATM)
-!pb  MOD_ADDV is no incremental value. It is a flag indicating whether all the 
+!pb  MOD_ADDV is no incremental value. It is a flag indicating whether all the
 !pb  rates used for emissivity lines are to be stored or whether storage saving
 !pb  mode ist to be used, only storing the rates for the latest used line
 !pb           IA=MOD_ADDV   !  increment for addv tally 1st index: cx energy, atoms
@@ -170,7 +171,7 @@ c  Loss for neutrals
               ADDV(IA+2*NATM+IATM,IRD)=ADDV(IA+2*NATM+IATM,IRD)+
      .                              WTRSIG*(-E0)
 c  volumetric net ion energy loss rate due to charge exchange with iatm.
-c  sign:  for neutrals.
+c  sign: for neutrals.
               ADDV(IA+3*NATM+IATM,IRD)=ADDV(IA+3*NATM+IATM,IRD)+
      .                              WTRSIG*(ESIGCX(IRCX,1)-E0)
 
@@ -222,7 +223,7 @@ c  volumetric net ion parallel momentum loss/gain rate due to charge exchange
   560       CONTINUE
   590     CONTINUE
 
-C  RADIAL GESCHWINDIGKEITSKOMPONENTE  (CM/SEC)
+C  RADIAL GESCHWINDIGKEITSKOMPONENTE (CM/SEC)
           VR=(VELX*VPX(IRDO)+VELY*VPY(IRDO))*VEL
           ADDV(IA+8*NATM+IATM,IRD)=ADDV(IA+8*NATM+IATM,IRD)+WTR*VR
           ADDV(IA+9*NATM+IATM,IRD)=ADDV(IA+9*NATM+IATM,IRD)+WTR*VR*E0
@@ -265,12 +266,12 @@ c  assume here: bvin, parmom are set in plasma_deriv.
 c               In case of other options (indpro): see update.f
 cdr only signum needed: default tbd: signum=1
           IF (LBVIN) THEN
-            VAL_PARB(1:NPLSI) =BVIN(MPLSV(1:NPLSI),IRDO)
+            VAL_PARB(1:NPLSI) = BVIN(MPLSV(1:NPLSI),IRDO)
           ELSE
             VAL_PARB(1:NPLSI) = 0._DP
           END IF
           IF (LPARMOM) THEN
-            VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)
+            VSIG_PARB(1:NPLSI) = PARMOM(1:NPLSI,IRDO)
           ELSE
             VSIG_PARB(1:NPLSI) = 0._DP
           END IF
@@ -399,7 +400,7 @@ C
 
  9999 CONTINUE
 
-C     WRITE (IUNOUT,*) 'NOTHING DONE IN UPTUSR '
+C     WRITE (IUNOUT,*) 'NOTHING DONE IN UPTUSR'
       RETURN
       END SUBROUTINE EIRENE_UPTUSR
 

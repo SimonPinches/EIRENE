@@ -3,6 +3,12 @@ C    AUG. 05: NCELL UPDATED FOR SPLITTING AND THEN RESET
 !             RSPLST(NLEVEL,1:NPARTC) --> RSPLST(1:NPARTC,NLEVEL)
 !             ISPLST(NLEVEL,1:MPARTC) --> ISPLST(1:MPARTC,NLEVEL)
 cdr Nov. 17 : remove call to STORE.F
+cdr 2022
+cdr nlevel.lt.maxlev is ensured in calling program
+cdr Does that mean that RR cannot happen for NLEVEL=MAXLEV?
+cdr Try to re-vive splitting and RR schemes.
+cdr Procedure invalid for LEVGEO GT 3
+
 C
 !pb   SUBROUTINE EIRENE_SPLTRR(IDIM,MS,NINC,*,*)
       SUBROUTINE EIRENE_SPLTRR(IDIM,MS,NINC,IRET)
@@ -14,9 +20,13 @@ C  IF SPLITTING:
 C  1) PUSH PARTICLE TO SPLITTING SURFACE
 C  2) SPLIT PARTICLE
 C  3) RESET ORIGINAL PARTICLE COORDINATES.
+cdr  input : nlevel
+cdr  output: nlevel=nlevel+1, nodes(nlevel) is set.
 
 C  IF RUSSIAN ROULETTE:
 C  EITHER KILL PARTICLE, OR CONTINUE FLIGHT WITH INCREASED WEIGHT
+cdr  input : weight
+cdr  output: weight=weight*znu,  nlevel and nodes(nlevel) are unchanged
 C
 C  IDIM  =1: RADIAL SURFACE
 C        =2: POLOIDAL SURFACE
@@ -45,7 +55,6 @@ C
       INTEGER, INTENT(OUT) :: IRET
       REAL(DP) :: XNU, XM, YM, ZM, ZNU1, ZEP1, ZNU, X0S, Y0S, Z0S,
      .            TIMES
-ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: IPOLGS, MASRFS, MSURFS, J, IADD, NU, IG, NCELLS
 
       IRET = 0
@@ -71,7 +80,7 @@ C  NO - SPLIT PARTICLE
 
 C  PUSH PARTICLE TO SPLITTING POSITION (DISTANCE ZT)
 C  THEN SPLIT,
-C  THEN RESTORE CURRENT POSITION
+C  THEN RESTORE OLD POSITION (STARTING POINT OF TRACK)
 
       X0S=X0
       Y0S=Y0
@@ -121,7 +130,8 @@ C   SAVE LOCATION, WEIGHT AND OTHER PARAMETERS AT CURRENT LEVEL
 C  NUMBER OF NODES AT THIS LEVEL
       NODES(NLEVEL)=NU
 
-C  RESTORE SOME PARTICLE COORDINATES
+C  RESTORE SOME PARTICLE COORDINATES,
+C  because the push to surface will be done in calling program as well.
       X0=X0S
       Y0=Y0S
       Z0=Z0S
@@ -157,7 +167,6 @@ C
         XM=X0+VELX*ZT
         YM=Y0+VELY*ZT
         ZM=Z0+VELZ*ZT
-
 !$OMP CRITICAL
         CALL EIRENE_CHCTRC(XM,YM,ZM,16,10)
 !$OMP END CRITICAL

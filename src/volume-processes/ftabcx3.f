@@ -16,7 +16,8 @@ c         process number in REACDAT structure:  KK=NREACX(IRCX)
 c
 
 cdr  (first stage):
-c  FTABCX3 is currently only called in case MODC=eirene_idez(MODCLF(KK),3,5))=1, i.e. rate depends only
+c  FTABCX3 is currently only called in case MODC=eirene_idez(MODCLF(KK),3,5))=1,
+c          i.e. rate depends only
 c          on one single background parameter, Ti, and not on test particle energy.
 c
 cdr Sept 22: extended to MODC=3:  now two background parameters: ne and T (=Te=Ti)

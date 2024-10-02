@@ -1,12 +1,12 @@
 C  TO BE DONE: ADD PARAMETERS DUMMY AND ESBPARM, AS IN EIRENE_RDTRIM
 C
-C  read (try to read) IFLR = NHD6  (=12) pre-defined target-projectile combinations.
+C  read (try to read) IFLR = NHD6 (=12) pre-defined target-projectile combinations.
 C
 C
       SUBROUTINE EIRENE_REFDAT(TMM,TCC,WMM,WCC)
 
-c  input:  nhd6=12
-c          iun =21+ifoff  (input stream for TRIM.dat)
+c  input: nhd6=12
+c         iun =21+ifoff  (input stream for TRIM.dat)
 
 C  This is the old (and default) model for reading TRIM conditional quantile tables, for reflection.
 
@@ -60,7 +60,7 @@ C
         WRITE (iunout,*) 'NHD6= ',NHD6
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
-C  HARD-WIRED FORMAT:  12*7*5*5*5,  AND NHD6=12 such files.
+C  HARD-WIRED FORMAT: 12*7*5*5*5, AND NHD6=12 such files.
       NRECL=1092
 
       TML(1)=1._DP
@@ -179,8 +179,8 @@ C
       END DO
 
       IF (IFILE > NDBNAMES) THEN
-        WRITE (IUNOUT,*) ' NO DATABASE NAME FOR TRIM DEFINED '
-        WRITE (IUNOUT,*) ' CALCULATION ABANDONED '
+        WRITE (IUNOUT,*) ' NO DATABASE NAME FOR TRIM DEFINED'
+        WRITE (IUNOUT,*) ' CALCULATION ABANDONED'
         CALL EIRENE_EXIT_OWN(1)
       END IF
 
@@ -232,7 +232,7 @@ c  7*5: energy quantiles
               HFTR1(I1,I2,I3,IFILE)=FELD(I)
             END DO
           END DO
-c  7*5*5:  polar angle quantiles
+c  7*5*5: polar angle quantiles
           DO I2=1,INW
             DO I3=1,INR
               DO I4=1,INR
@@ -241,7 +241,7 @@ c  7*5*5:  polar angle quantiles
               END DO
             END DO
           END DO
-c  7*5*5*5:  azimuthal angle quantiles
+c  7*5*5*5: azimuthal angle quantiles
           DO I2=1,INW
             DO I3=1,INR
               DO I4=1,INR

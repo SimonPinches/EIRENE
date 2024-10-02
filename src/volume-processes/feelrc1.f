@@ -4,7 +4,7 @@ cdr  nov.14:  function brems, replaces Gaunt factor function,
 cdr           reaction scaling factor factkk removed from bremsstrahlung
 cdr  nov 17:  comments. bremsstrahlung handling is currently connected
 cdr           to 2d tab format. This is not generally correct, only if
-cdr           the 2d tab comes from ADAS.  Should be handled in read_tab2d?
+cdr           the 2d tab comes from ADAS. Should be handled in read_tab2d?
 cdr           or as iftflg(..4) option.
 cdr sept 18:  try to revive storage save mode.
 cdr           Rationalization with options in feelei1.f:
@@ -78,7 +78,8 @@ cnh       28.10.2019
           else
             Z = DBLE(NCHRGP(IPLS))
           endif
-          BREMS = EIRENE_BREMS(TEIN(K),DEIN(K),Z)/ELCHA   ! W per ion --> eV/s  per ion
+          BREMS = EIRENE_BREMS(TEIN(K),DEIN(K),Z)/ELCHA  ! W per ion -->
+                                                         ! eV/s per ion
           EIRENE_FEELRC1=EIRENE_FEELRC1 + BREMS
         END IF
 c

@@ -1,10 +1,10 @@
-cdr  Oct. 18: further comments: 
+cdr  Oct. 18: further comments:
 
 cdr           This routine implicity makes some assumptions regarding the
 cdr           species in input block 4a,b,c,d:
-cdr           H2  (type=2)
-cdr           H+  (type=4)
-cdr           H   (type=1)
+cdr           H2 (type=2)
+cdr           H+ (type=4)
+cdr           H  (type=1)
 cdr   to be checked: contributions? multiple isotopes ?
 
       subroutine eirene_setup_default_emissivity
@@ -23,12 +23,12 @@ cdr  Try to reproduce the content of the old versions of these 6 routines,
 cdr  by filling (and later using)
 cdr  the new structures EMIS_LINES%....
 cdr
-cdr  number of lines       6     (BA_AL, BA_BET, ..., LY_BET)
-cdr  number of components: 6     (COUPLING TO H, H+,H2,H2+,H-,H3+)
-cdr  number of contributions:  detected from input file,
-cdr                            as in old ba... ly... routines
-cdr                           (there sum over contributions only
-cdr                            on ADDV tallies),
+cdr  number of lines       6 (BA_AL, BA_BET, ..., LY_BET)
+cdr  number of components: 6 (COUPLING TO H,H+,H2,H2+,H-,H3+)
+cdr  number of contributions: detected from input file,
+cdr                           as in old ba... ly... routines
+cdr                          (there sum over contributions only
+cdr                           on ADDV tallies),
 cdr  hard-coded here: use pop. coeffs from amjuel H.12, and
 cdr                   use ratios for short living radicals (H2+, H3+, H-)
 cdr                   from amjuel H.11 and H.12
@@ -37,10 +37,10 @@ cdr              H2+, H- and H3+ QSS states, because of hard-coded density ratio
 cdr              H2+ must be produced from both EI and IC processes, because
 cdr              hard-coded ratio H.12 2.0c is used here.
 cdr
-cdr  tbd:  make consistent notation "component vs. contribution":  DONE !
-cdr  
+cdr  tbd: make consistent notation "component vs. contribution": DONE !
+cdr
 cdr  The ADDV tallies are filled later,
-cdr  in calls to emissivity.f from MCARLO, per stratum. 
+cdr  in calls to emissivity.f from MCARLO, per stratum.
 
 cdr  Apparently we need at least one chord and nchtal=2, (even if unused)
 cdr  to fill the ADDV arrays, because of a hidden link between emissivity options
@@ -66,10 +66,10 @@ cdr
      .             IFTFL, NCOEF, COEF)
         USE EIRMOD_PRECISION
         INTEGER,      INTENT(IN) :: IR, IZ1
-        INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC, 
+        INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC,
      .                                        IFTFL, NCOEF
-        REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC       
-        REAL(DP),     INTENT(IN), OPTIONAL :: COEF(9)      
+        REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC
+        REAL(DP),     INTENT(IN), OPTIONAL :: COEF(9)
         CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: BUNDLING
         CHARACTER(8), INTENT(IN) :: FILNAM
         CHARACTER(4), INTENT(IN) :: H123
@@ -81,11 +81,11 @@ cdr
      .                              RC2MIN, RC2MAX, FP2(6)
         END SUBROUTINE EIRENE_SLREAC
       END INTERFACE
-      
-      integer :: i, NUM_compo, iat, iml, ipl, nat, npl, nml, 
+
+      integer :: i, NUM_compo, iat, iml, ipl, nat, npl, nml,
      .           nrc, nrc_rat1, nrc_rat2, nrc_rat3
-      integer :: ir, mp, mt, 
-     .           jfex1mn, jfex1mx, jfex2mn, jfex2mx, 
+      integer :: ir, mp, mt,
+     .           jfex1mn, jfex1mx, jfex2mn, jfex2mx,
      .           iz, irow_esc, icol_esc, iftfl, ncoef
       real(dp) :: dpp, rc1min, rc1max, rc2min, rc2max, pop_esc
       real(dp) :: fp1(6), fp2(6), coef(9)
@@ -93,11 +93,12 @@ cdr
       character(4) :: h123
       character(50) :: reac
       character(3) :: crc
-      character(2) :: elname 
+      character(2) :: elname
       character(60) :: bundling
       real(dp) :: ry = 13.605
 
-      NUM_lines    = 6  ! Ba_alpha, Ba_beta, Ba_gamma, Ba_delta, Ly_alpha, Ly_beta
+      NUM_lines    = 6  ! Ba_alpha, Ba_beta, Ba_gamma, Ba_delta,
+                        ! Ly_alpha, Ly_beta
       NUM_compo    = 6  ! coupling to H, H+, H2, H2+, H- and H3+
 c     NUM_contrib  = inferred from input file, species specification block 4a,b,c.
       MOD_ADDV = 0
@@ -128,7 +129,7 @@ c default asymptotics
       jfex2mn = 0
       jfex2mx = 0
 
-! read data for ratios from AMJUEL, 
+! read data for ratios from AMJUEL,
 c ratio H2+/H2, and assuming also an IC contribution to H2+ formation
       FILNAM = 'AMJUEL  '
       H123   = 'H.12'
@@ -171,7 +172,6 @@ c ratio H3+/H2:  prod rate: [H2+] [H2].  loss rate: [ne] [H3+]
      .               IROW_ESC,ICOL_ESC,POP_ESC,
      .               IFTFL, NCOEF, COEF)
 
-
       ALLOCATE (EMIS_LINES(NUM_LINES))
       EMIS_LINES%LINE_NAME = REPEAT(' ',80)
       EMIS_LINES%NUM_COMPO = 0
@@ -184,8 +184,9 @@ c ratio H3+/H2:  prod rate: [H2+] [H2].  loss rate: [ne] [H3+]
       EMIS_LINES(1)%NUM_COMPO = NUM_COMPO
 C  RADIATIVE TRANSITION RATE (1/S)
       EMIS_LINES(1)%EINSTEIN = 4.410E7
-c  transition energy, identifyer for line
+C  transition energy
       EMIS_LINES(1)%TRANS_EN = 1.8889_DP
+C  identifier of line:
       EMIS_LINES(1)%IADV_TOTAL = NADVI + NUM_COMPO+1
 
       ALLOCATE (EMIS_LINES(1)%COMPO(NUM_COMPO))
@@ -214,7 +215,7 @@ C  H(n=3)/H(n=1)
 cdr  hard-coded type: atoms. Species: default: =0
       CNT%ISP     = 0
       CNT%ITP     = 1
-c 
+c
       CNT%IRATIO  = 0
 
       CNT%ISP_RAT = -1
@@ -310,7 +311,7 @@ cdr hard-coded type: molecules. Species: default: =0
       CNT%IRC_RAT = 0
 
 cdr search all neutral molecular species with nucl. charge number=2.
-cdr These must be the isotopomers of H2. 
+cdr These must be the isotopomers of H2.
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(1)%COMPO(3)%CONTRIB(NML))
       EMIS_LINES(1)%COMPO(3)%NUM_CONTRIB = NML
@@ -344,9 +345,9 @@ C  H(n=3)/H2+(g)
      .               IFTFL, NCOEF, COEF)
       EMIS_LINES(1)%COMPO(4)%IRC = NRC
 
-cdr  hard-coded type: molecules. Species: default: =0 
-cdr  test ion (H2+) is in QSS (nfoli < 0) with molecule, ratio H.12 2.0c 
-cdr  i.e.: H2+ produced from H2, via both channels EI plus IC.  
+cdr  hard-coded type: molecules. Species: default: =0
+cdr  test ion (H2+) is in QSS (nfoli < 0) with molecule, ratio H.12 2.0c
+cdr  i.e.: H2+ produced from H2, via both channels EI plus IC.
       CNT%ISP     = 0
       CNT%ITP     = 2
       CNT%IRATIO  = 1
@@ -357,7 +358,7 @@ cdr  i.e.: H2+ produced from H2, via both channels EI plus IC.
       CNT%IRC_RAT(2) = -1
 
 cdr search all neutral molecular species with nucl. charge number=2.
-cdr These must be the isotopomers of H2. 
+cdr These must be the isotopomers of H2.
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(1)%COMPO(4)%CONTRIB(NML))
       EMIS_LINES(1)%COMPO(4)%NUM_CONTRIB = NML
@@ -392,8 +393,8 @@ C  H(n=3)/H-
       EMIS_LINES(1)%COMPO(5)%IRC = NRC
 
 c  hard-coded: type: molecules. Species: default: =0
-cdr  test ion (H-) is in QSS (nfoli < 0) with molecule, ratio H.11 7.0a 
-cdr  i.e.: H- produced from H2, via dissociative attachment.  
+cdr  test ion (H-) is in QSS (nfoli < 0) with molecule, ratio H.11 7.0a
+cdr  i.e.: H- produced from H2, via dissociative attachment.
       CNT%ISP     = 0
       CNT%ITP     = 2
       CNT%IRATIO  = 1
@@ -405,7 +406,7 @@ c  no second density ratio
       CNT%IRC_RAT(2) = -1
 
 cdr search all neutral molecular species with nucl. charge number=2.
-cdr These must be the isotopomers of H2. 
+cdr These must be the isotopomers of H2.
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(1)%COMPO(5)%CONTRIB(NML))
       EMIS_LINES(1)%COMPO(5)%NUM_CONTRIB = NML
@@ -440,27 +441,27 @@ C  H(n=3)/H3+
       EMIS_LINES(1)%COMPO(6)%IRC = NRC
 
 c  hard-coded: type: molecules. Species: default: =0
-cdr  test ion (H3+) is in QSS (nfoli < 0) with molecule, 
-cdr  ratio1  H.12 7.0c and  ratio2 H.11 4.0a 
-cdr  i.e.: H3+ produced from H2 and H2+, via particle exchange channels 
-      CNT%ISP     = 0 
+cdr  test ion (H3+) is in QSS (nfoli < 0) with molecule,
+cdr  ratio1  H.12 7.0c and  ratio2 H.11 4.0a
+cdr  i.e.: H3+ produced from H2 and H2+, via particle exchange channels
+      CNT%ISP     = 0
       CNT%ITP     = 2
 
       CNT%IRATIO          = 2
       CNT%IRC_RAT(1) = NRC_RAT1   ! density ratio H2+/H2
 
 c  two species, [nH2/ne] density ratio to be multiplied
-c  H2   
-      CNT%ISP_RAT(1) = 1 
+c  H2
+      CNT%ISP_RAT(1) = 1
       CNT%ITP_RAT(1) = 2
 c  electron density
-      CNT%ISP_RAT(2) = 1 
+      CNT%ISP_RAT(2) = 1
       CNT%ITP_RAT(2) = 5
 
       CNT%IRC_RAT(2) = NRC_RAT3   ! ratio loss H3+/ prod H3+
 
 cdr search all neutral molecular species with nucl. charge number=2.
-cdr These must be the isotopomers of H2. 
+cdr These must be the isotopomers of H2.
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(1)%COMPO(6)%CONTRIB(NML))
       EMIS_LINES(1)%COMPO(6)%NUM_CONTRIB = NML
@@ -483,7 +484,7 @@ cdr These must be the isotopomers of H2.
       EMIS_LINES(2)%NUM_COMPO = NUM_COMPO
 C  RADIATIVE TRANSITION RATE (1/S)
       EMIS_LINES(2)%EINSTEIN = 8.419E6
-      EMIS_LINES(2)%TRANS_EN = 2.5500_DP 
+      EMIS_LINES(2)%TRANS_EN = 2.5500_DP
       EMIS_LINES(2)%IADV_TOTAL = NADVI + NUM_COMPO+1
 
       ALLOCATE (EMIS_LINES(2)%COMPO(NUM_COMPO))
@@ -510,7 +511,7 @@ C  H(n=4)/H(n=1)
       EMIS_LINES(2)%COMPO(1)%IRC = NRC
 
       CNT%ISP     = 0
-      CNT%ITP     = 1 
+      CNT%ITP     = 1
       CNT%IRATIO  = 0
 
       CNT%ISP_RAT = -1
@@ -720,9 +721,9 @@ C  H(n=4)/H3+
       CNT%IRATIO  = 2
       CNT%IRC_RAT(1) = NRC_RAT1
 
-      CNT%ISP_RAT(1) = 1 
+      CNT%ISP_RAT(1) = 1
       CNT%ITP_RAT(1) = 2
-      CNT%ISP_RAT(2) = 1 
+      CNT%ISP_RAT(2) = 1
       CNT%ITP_RAT(2) = 5
       CNT%IRC_RAT(2) = NRC_RAT3
 
@@ -738,7 +739,6 @@ C  H(n=4)/H3+
           EMIS_LINES(2)%COMPO(6)%CONTRIB(IML) = CNT
         END IF
       END DO
-
 
 ************************************************
 * BALMER GAMMA
@@ -775,7 +775,7 @@ C  H(n=5)/H(n=1)
       EMIS_LINES(3)%COMPO(1)%IRC = NRC
 
       CNT%ISP     = 0
-      CNT%ITP     = 1 
+      CNT%ITP     = 1
       CNT%IRATIO  = 0
       CNT%ISP_RAT = -1
       CNT%ITP_RAT = -1
@@ -981,9 +981,9 @@ C  H(n=5)/H3+
       CNT%IRATIO  = 2
       CNT%IRC_RAT(1) = NRC_RAT1
 
-      CNT%ISP_RAT(1) = 1 
+      CNT%ISP_RAT(1) = 1
       CNT%ITP_RAT(1) = 2
-      CNT%ISP_RAT(2) = 1 
+      CNT%ISP_RAT(2) = 1
       CNT%ITP_RAT(2) = 5
 
       CNT%IRC_RAT(2) = NRC_RAT3
@@ -1038,7 +1038,7 @@ C  H(n=6)/H(n=1)
       EMIS_LINES(4)%COMPO(1)%IRC = NRC
 
       CNT%ISP     = 0
-      CNT%ITP     = 1 
+      CNT%ITP     = 1
       CNT%IRATIO  = 0
 
       CNT%ISP_RAT = -1
@@ -1247,9 +1247,9 @@ C  H(n=6)/H3+
       CNT%IRATIO  = 2
       CNT%IRC_RAT(1) = NRC_RAT1
 
-      CNT%ISP_RAT(1) = 1 
+      CNT%ISP_RAT(1) = 1
       CNT%ITP_RAT(1) = 2
-      CNT%ISP_RAT(2) = 1 
+      CNT%ISP_RAT(2) = 1
       CNT%ITP_RAT(2) = 5
       CNT%IRC_RAT(2) = NRC_RAT3
 
@@ -1265,7 +1265,6 @@ C  H(n=6)/H3+
           EMIS_LINES(4)%COMPO(6)%CONTRIB(IML) = CNT
         END IF
       END DO
-
 
 ************************************************
 * LYMAN ALPHA
@@ -1302,7 +1301,7 @@ C  H(n=2)/H(n=1)
       EMIS_LINES(5)%COMPO(1)%IRC = NRC
 
       CNT%ISP     = 0
-      CNT%ITP     = 1 
+      CNT%ITP     = 1
       CNT%IRATIO  = 0
 
       CNT%ISP_RAT = -1
@@ -1511,9 +1510,9 @@ C  H(n=2)/H3+
       CNT%IRATIO  = 2
       CNT%IRC_RAT(1) = NRC_RAT1
 
-      CNT%ISP_RAT(1) = 1 
+      CNT%ISP_RAT(1) = 1
       CNT%ITP_RAT(1) = 2
-      CNT%ISP_RAT(2) = 1 
+      CNT%ISP_RAT(2) = 1
       CNT%ITP_RAT(2) = 5
       CNT%IRC_RAT(2) = NRC_RAT3
 
@@ -1529,7 +1528,6 @@ C  H(n=2)/H3+
           EMIS_LINES(5)%COMPO(6)%CONTRIB(IML) = CNT
         END IF
       END DO
-
 
 ************************************************
 * LYMAN BETA
@@ -1566,7 +1564,7 @@ C  H(n=3)/H(n=1)
       EMIS_LINES(6)%COMPO(1)%IRC = NRC
 
       CNT%ISP     = 0
-      CNT%ITP     = 1 
+      CNT%ITP     = 1
       CNT%IRATIO  = 0
 
       CNT%ISP_RAT = -1
@@ -1654,7 +1652,7 @@ C  H(n=3)/H2(g)
       CNT%IRC_RAT = 0
 
 cdr search all neutral molecular species with nucl. charge number=2.
-cdr These must be the isotopomers of H2. 
+cdr These must be the isotopomers of H2.
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(6)%COMPO(3)%CONTRIB(NML))
       EMIS_LINES(6)%COMPO(3)%NUM_CONTRIB = NML
@@ -1698,7 +1696,7 @@ C  H(n=3)/H2+(g)
       CNT%IRC_RAT(2) = -1
 
 cdr search all neutral molecular species with nucl. charge number=2.
-cdr These must be the isotopomers of H2. 
+cdr These must be the isotopomers of H2.
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(6)%COMPO(4)%CONTRIB(NML))
       EMIS_LINES(6)%COMPO(4)%NUM_CONTRIB = NML
@@ -1742,7 +1740,7 @@ C  H(n=3)/H-
       CNT%IRC_RAT(2) = -1
 
 cdr search all neutral molecular species with nucl. charge number=2.
-cdr These must be the isotopomers of H2. 
+cdr These must be the isotopomers of H2.
       NML = COUNT(NCHARM == 2)
       ALLOCATE (EMIS_LINES(6)%COMPO(5)%CONTRIB(NML))
       EMIS_LINES(6)%COMPO(5)%NUM_CONTRIB = NML
@@ -1778,12 +1776,12 @@ C  H(n=2)/H3+
 
       CNT%ISP     = 0
       CNT%ITP     = 2
-      CNT%IRATIO          = 2
+      CNT%IRATIO  = 2
       CNT%IRC_RAT(1) = NRC_RAT1
 
-      CNT%ISP_RAT(1) = 1 
+      CNT%ISP_RAT(1) = 1
       CNT%ITP_RAT(1) = 2
-      CNT%ISP_RAT(2) = 1 
+      CNT%ISP_RAT(2) = 1
       CNT%ITP_RAT(2) = 5
       CNT%IRC_RAT(2) = NRC_RAT3
 
@@ -1794,7 +1792,7 @@ C  H(n=2)/H3+
       IML = 0
       DO I = 1, NMOLI
 cdr search all neutral molecular species with nucl. charge number=2.
-cdr These must be the isotopomers of H2. 
+cdr These must be the isotopomers of H2.
         IF (NCHARM(I) == 2) THEN
           IML = IML + 1
           CNT%ISP = I

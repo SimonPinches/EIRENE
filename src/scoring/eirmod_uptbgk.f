@@ -10,7 +10,7 @@
 
       CONTAINS
 
-cdr Aug. 2015: revisited:  comments,...
+cdr Aug. 2015: revisited: comments,...
 c
 c  code segment: bgk
 c
@@ -20,9 +20,9 @@ c               to be treated by iteration.
 c               This segment contains a routine UPTBGK which updates the tallies
 c               required for iteration (carried out in MODBGK).
 c
-C  CURRENTLY:  3 TALLIES ARE SCORED PER BGK COLLISION SPECIES,IBGK_SP, IBGK_SP=1,NRBGI/3
-c              On input: npbgk= npbgka(iatm), or npbgkm(imol), or npbgki(iion)
-c              ibgk_sp=npbgk, and update three tallies for bgk species no. ibgk_sp.
+C  CURRENTLY: 3 TALLIES ARE SCORED PER BGK COLLISION SPECIES,IBGK_SP, IBGK_SP=1,NRBGI/3
+c             On input: npbgk= npbgka(iatm), or npbgkm(imol), or npbgki(iion)
+c             ibgk_sp=npbgk, and update three tallies for bgk species no. ibgk_sp.
 c
 c  do not confuse: ibgk is the bgk reaction number, the bgk reactions
 c                  form a subset of the elastic reactions, IREL=1,NREL.
@@ -33,11 +33,11 @@ c                  For each test particle species ibgk_sp there are currently
 c                  three so-called additional "bgk tallies" scored
 c                  (by default: the transport flux vector components).
 
-c  Note:  for velocity-dependent BGK collision rates probably 5 tallies per bgk collision (ibgk)
+c  Note: for velocity-dependent BGK collision rates probably 5 tallies per bgk collision (ibgk)
 c        need to be scored, rather than the three tallies per bgk species (ibgk_sp),
-c         to enforce the 5 collision invariants by iteration.
-c  Note:  for ES-BGK models (correct Prandtl number models) more than 3 bgk tallies
-c         are needed per BGK species ibgk_sp (non-diagonal pressure tensor elements)
+c        to enforce the 5 collision invariants by iteration.
+c  Note: for ES-BGK models (correct Prandtl number models) more than 3 bgk tallies
+c        are needed per BGK species ibgk_sp (non-diagonal pressure tensor elements)
 c
 c  A routine (MODBGK) carries out the iterations at the end of an iteration step.
 c
@@ -66,14 +66,14 @@ C
       REAL(DP), INTENT(IN) :: WV
       INTEGER, INTENT(IN) :: NPBGK
       REAL(DP) :: DIST, WTRV, WTRVX, WTRVY, WTRVZ
-      INTEGER :: I, NMTSP, IUPD2, IUPD3, 
+      INTEGER :: I, NMTSP, IUPD2, IUPD3,
      .           IRD, NSBGK, IBGK_SP,
      .           IML, IIO, IUPD1, ITP, ISP, IAT, IRDO
       CHARACTER(8) :: TXT
 
-!$OMP THREADPRIVATE(DIST,WTRV,WTRVX,WTRVY,WTRVZ, 
+!$OMP THREADPRIVATE(DIST,WTRV,WTRVX,WTRVY,WTRVZ,
 !$OMP&              I, NMTSP, IUPD2, IUPD3, IRD, NSBGK, IBGK_SP,
-!$OMP&              IML,IIO,IUPD1,ITP,ISP,IAT,IRDO,TXT)      
+!$OMP&              IML,IIO,IUPD1,ITP,ISP,IAT,IRDO,TXT)
 
       SAVE
 C
@@ -114,7 +114,7 @@ C  ISP IS ONE OF THE TEST ION SPECIES WHICH HAVE AT LEAST ONE BGK COLLISION
               GOTO 1
             ENDIF
           ENDDO
-C  PHOTONIC BGK COLLISIONS:  TO BE DONE ??
+C  PHOTONIC BGK COLLISIONS: TO BE DONE ??
 
           WRITE (iunout,*) 'SPECIES ERROR IN UPTBGK'
           CALL EIRENE_EXIT_OWN(1)
@@ -153,7 +153,7 @@ cym atomic  not usable with strings ?
           IBGRC(IUPD1)=ITP
 !$OMP ATOMIC WRITE
           IBGRC(IUPD2)=ITP
-!$OMP ATOMIC WRITE          
+!$OMP ATOMIC WRITE
           IBGRC(IUPD3)=ITP
         ENDDO
 
@@ -161,7 +161,7 @@ cdr  Species index increment for bgk tallies, used for LMETSP arrays.
 cdr: This species index increment should be set in input.f,
 cdr  like all the others.
 cdr  Sequence: test species, bulk species, add tallies, alg. tallies, collest tallies,
-cdr             cop tallies, bgk tallies.
+cdr            cop tallies, bgk tallies.
         NMTSP=NPHOTI+NATMI+NMOLI+NIONI+NPLSI+NADVI+NALVI+NCLVI+NCPVI
 C
 C  END OF IFIRST BLOCK

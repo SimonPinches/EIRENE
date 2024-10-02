@@ -3041,11 +3041,11 @@
  -18.77932 -18.77932 -18.77932 -18.77932
 C-------------------------------------------------------------------------------
 C
-C  Generate charge exchange recombination power from : 
+C  Generate charge exchange recombination power from :
 C     /home/afoster/adas_dev/407/w_adf03_new.dat
 C
 C  CODE     : ADAS408
-C  PRODUCER : Adam Foster                   
+C  PRODUCER : Adam Foster
 C  DATE     : 11.01.08
 C
 C-------------------------------------------------------------------------------

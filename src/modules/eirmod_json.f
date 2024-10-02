@@ -1,22 +1,22 @@
 
       MODULE EIRMOD_JSON
- 
+
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD, ONLY: NLIM, NLIMPS,
-     .                          NATM, NMOL, NION, NPHOT, NPLS, NSPZ, 
+     .                          NATM, NMOL, NION, NPHOT, NPLS, NSPZ,
      .                          NSTRA
 !pb      USE EIRMOD_COMPRT, ONLY: IUNOUT
 
       use json_module           !IGNORE
-!cym/cpg keep original names       
+!cym/cpg keep original names
 !     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
-!cym, for reference : this would be equivalent to the initial code; works too for this file 
+!cym, for reference : this would be equivalent to the initial code; works too for this file
 !      use json_kinds, only: lk, rk, ik, ck
- 
+
       IMPLICIT NONE
- 
+
       PRIVATE
- 
+
       PUBLIC :: eirene_init_input_blocks, jval_array,
      .          eirene_alloc_json_arrays, eirene_dealloc_json_arrays,
      .          S_stack, STRING_STACK,
@@ -43,24 +43,29 @@
      5               "MPI_INFORMATION     " /)
       logical, public, parameter :: blk_required(0:nblks)=
      >     (/.true.,  .true.,  .true.,  .true.,  .true.,
-     >       .true.,  .true.,  .true.,  .false., .false., 
+     >       .true.,  .true.,  .true.,  .false., .false.,
      >       .false., .true.,  .false., .false., .true.,
      >       .false. /)
-      
+
       type jval_array
         type(json_value), pointer :: p
       end type jval_array
-      
-      type(json_core), public, save :: jtrees(0:nblks) ! array of json trees for reading from different files 
-      type(jval_array), public, save :: ptree(0:nblks) ! pointer to first item of jtree
-      type(jval_array), public, save :: blks(0:nblks)  ! pointer to the branch of a block in a jtree
-      integer, public, save :: njs=-1,                 ! number of jtrees that have been read
-     .                         itree_num(0:nblks)      ! number of the jtree containing the data of a block
+
+      ! array of json trees for reading from different files
+      type(json_core), public, save :: jtrees(0:nblks)
+      ! pointer to first item of jtree
+      type(jval_array), public, save :: ptree(0:nblks)
+      ! pointer to the branch of a block in a jtree
+      type(jval_array), public, save :: blks(0:nblks)
+      ! number of jtrees that have been read
+      integer, public, save :: njs=-1,
+      ! number of the jtree containing the data of a block
+     .                         itree_num(0:nblks)
 
 
 !     variables stored for output to json file
 
-! arrays for json output 
+! arrays for json output
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE :: SORCOS_IN(:), SORMAX_IN(:)
 
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
@@ -68,7 +73,7 @@
      R P6_IN(:,:)
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R A0LM_IN(:), A1LM_IN(:), A2LM_IN(:), A3LM_IN(:), A4LM_IN(:),
-     R A5LM_IN(:), A6LM_IN(:), A7LM_IN(:), A8LM_IN(:), A9LM_IN(:) 
+     R A5LM_IN(:), A6LM_IN(:), A7LM_IN(:), A8LM_IN(:), A9LM_IN(:)
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R XLIMS1_IN(:,:), YLIMS1_IN(:,:), ZLIMS1_IN(:,:),
      R XLIMS2_IN(:,:), YLIMS2_IN(:,:), ZLIMS2_IN(:,:)
@@ -77,22 +82,22 @@
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R ALIMS0_IN(:,:), XLIMS3_IN(:,:), YLIMS3_IN(:,:), ZLIMS3_IN(:,:)
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE :: RLB_IN(:)
-      INTEGER, PUBLIC, ALLOCATABLE, SAVE :: 
+      INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I ILCOL_IN(:), LCHSPNWL_IN(:,:)
-       
+
       REAl(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R DATD_IN(:), DMLD_IN(:), DIOD_IN(:), DPLD_IN(:), DPHD_IN(:) 
-      
+     R DATD_IN(:), DMLD_IN(:), DIOD_IN(:), DPLD_IN(:), DPHD_IN(:)
+
 ! storing original INDPRO data for json output
       INTEGER, PUBLIC, SAVE :: INDPRO_IN(12)
-      
+
 ! arrays for storing numbers of tallies explicitly switched on or off
-! allocated in subroutine input      
+! allocated in subroutine input
       INTEGER, PUBLIC, ALLOCATABLE, SAVE :: ITLVOUT(:), ITLSOUT(:)
       INTEGER, PUBLIC, SAVE :: NTLVOUT, NTLSOUT
 
       INTEGER, PUBLIC, SAVE :: NR1ST_IN, NP2ND_IN, NT3RD_IN, NRTAL_IN,
-     .                         NOPTIM_IN, NSMSTRA_IN, NSTRAI_IN, 
+     .                         NOPTIM_IN, NSMSTRA_IN, NSTRAI_IN,
      .                         NTIME_IN
       LOGICAL, PUBLIC, SAVE :: NLPOL_IN, NLPLG_IN, NLFEM_IN
 
@@ -101,7 +106,7 @@
 
       TYPE TRANSFORM
         INTEGER :: ITINI, ITEND
-        REAL(DP) :: XLCOR, YLCOR, ZLCOR, 
+        REAL(DP) :: XLCOR, YLCOR, ZLCOR,
      R              XLREF, YLREF, ZLREF,
      R              XLROT, YLROT, ZLROT, ALROT
         TYPE(TRANSFORM), POINTER :: NEXT
@@ -122,23 +127,23 @@
 
       TYPE(STRING_STACK), PUBLIC, SAVE :: CM_STACK,  CH0_STACK,
      >                                    CRS_STACK
-      TYPE(STRING_STACK), PUBLIC, ALLOCATABLE, SAVE :: 
+      TYPE(STRING_STACK), PUBLIC, ALLOCATABLE, SAVE ::
      >  CH1_STACK(:), CH2_STACK(:), CH3_STACK(:)
 
       TYPE(TRANSFORM_QUEUE), PUBLIC, ALLOCATABLE, SAVE :: TRNSFRM(:)
-      
+
       contains
 
 
 !******************************************************************************
 
       subroutine eirene_start_json(fname,iblk,iunout)
-      
+
       implicit none
       character(*), intent(in) :: fname
       integer, intent(in) :: iblk, iunout
       logical :: status_ok
-      character(kind=json_CK,len=:),allocatable :: error_msg
+      character(kind=json_CK,len=:), allocatable :: error_msg
 
       njs = njs + 1
 
@@ -177,7 +182,7 @@
       character(kind=json_CK,len=:), allocatable :: incname
 !cym - avoid type mismatch
       character(kind=json_CK,len=1), parameter :: space=' '
-!cym            
+!cym
       integer :: ind, j
       logical :: found
 
@@ -212,7 +217,8 @@
           call eirene_start_json(fname,i,iunout)
         end if
 
-        j = itree_num(i)        ! index of the jtree that holds the data of the input block
+! index of the jtree that holds the data of the input block
+        j = itree_num(i)
         call jtrees(j)%get_child(ptree(j)%p,trim(blknam(i)),
      .                           blks(i)%p,found)
         if (.not.found) then
@@ -224,18 +230,18 @@
             nullify(blks(i)%p)
           end if
         end if
-         
+
       end do
 
       return
 
       end subroutine eirene_init_input_blocks
-      
-     
+
+
 !******************************************************************************
 
       subroutine eirene_alloc_json_arrays
-      
+
       ALLOCATE(SORCOS_IN(NSTRA))
       ALLOCATE(SORMAX_IN(NSTRA))
 
@@ -281,22 +287,22 @@
       ALLOCATE(DMLD_IN(NMOL))
       ALLOCATE(DIOD_IN(NION))
       ALLOCATE(DPLD_IN(NPLS))
-      ALLOCATE(DPHD_IN(NPHOT)) 
+      ALLOCATE(DPHD_IN(NPHOT))
 
       ALLOCATE (CH1_STACK(NLIM))
       ALLOCATE (CH2_STACK(NLIM))
 
       ALLOCATE (TRNSFRM(NLIM))
-      
+
       call eirene_init_json_arrays
-      
+
       end subroutine eirene_alloc_json_arrays
-     
+
 !******************************************************************************
- 
+
       subroutine eirene_dealloc_json_arrays
       INTEGER :: I
-     
+
       DEALLOCATE(SORCOS_IN)
       DEALLOCATE(SORMAX_IN)
 
@@ -334,21 +340,21 @@
       DEALLOCATE(XLIMS3_IN)
       DEALLOCATE(YLIMS3_IN)
       DEALLOCATE(ZLIMS3_IN)
-      
+
       DEALLOCATE(ILCOL_IN)
       DEALLOCATE(LCHSPNWL_IN)
-      
+
       DEALLOCATE(DATD_IN)
       DEALLOCATE(DMLD_IN)
       DEALLOCATE(DIOD_IN)
       DEALLOCATE(DPLD_IN)
-      DEALLOCATE(DPHD_IN) 
-      
+      DEALLOCATE(DPHD_IN)
+
       call eirene_resolve_string_stack(cm_stack)
       call eirene_resolve_string_stack(ch0_stack)
       call eirene_resolve_string_stack(crs_stack)
-      
-      DO  I=1,NLIM
+
+      DO I=1,NLIM
         call eirene_resolve_string_stack(ch1_stack(i))
         call eirene_resolve_string_stack(ch2_stack(i))
       END DO
@@ -357,32 +363,32 @@
       DEALLOCATE (CH2_STACK)
 
       DEALLOCATE (TRNSFRM)
-     
+
       end subroutine eirene_dealloc_json_arrays
-    
+
 !******************************************************************************
 
       subroutine eirene_resolve_string_stack (stack)
 
       type(string_stack), intent(inout) :: stack
       TYPE(S_STACK), POINTER :: CUR
-      
+
       CUR => STACK%HEAD
       DO WHILE (ASSOCIATED(CUR))
         STACK%HEAD => CUR%NEXT
         DEALLOCATE (CUR)
         CUR => STACK%HEAD
-      END DO    
+      END DO
       nullify(stack%head)
       nullify(stack%last)
 
       end subroutine eirene_resolve_string_stack
-    
+
 !******************************************************************************
- 
+
       subroutine eirene_init_json_arrays
       integer :: i
-      
+
       SORCOS_IN = 0._DP
       SORMAX_IN = 0._DP
 
@@ -429,7 +435,7 @@
       DIOD_IN = 0._DP
       DPLD_IN = 0._DP
       DPHD_IN = 0._DP
-      
+
       NULLIFY (CM_STACK%HEAD)
 
       NULLIFY(CH0_STACK%HEAD)
@@ -444,16 +450,16 @@
         NULLIFY(TRNSFRM(I)%HEAD)
         NULLIFY(TRNSFRM(I)%LAST)
       END DO
-      
+
       end subroutine eirene_init_json_arrays
-    
+
 !******************************************************************************
 
       subroutine eirene_push_string_stack (stack, str)
-!cym/cpg      
+!cym/cpg
 !      character(*), intent(in) :: str
       character(kind=json_CK,len=*), intent(in) :: str
-!cym/cpg end    
+!cym/cpg end
       type(string_stack), intent(inout) :: stack
       type(s_stack), pointer :: new_elem
 
@@ -466,9 +472,9 @@
       else
         stack%head => new_elem
       end if
-      
+
       stack%last => new_elem
-      
+
       END subroutine eirene_push_string_stack
 !******************************************************************************
 
@@ -486,7 +492,7 @@
       P5_IN(:,I) = P5(:,I)
       P6_IN(:,I) = P6(:,I)
 
-      A0LM_IN(I) = A0LM(I) 
+      A0LM_IN(I) = A0LM(I)
       A1LM_IN(I) = A1LM(I)
       A2LM_IN(I) = A2LM(I)
       A3LM_IN(I) = A3LM(I)
@@ -514,9 +520,8 @@
 
       ILCOL_IN(I) = ILCOL(I)
       LCHSPNWL_IN(:,I) = LCHSPNWL(:,I)
-      
+
       end subroutine eirene_copy_addsrf
 !******************************************************************************
-
 
       END MODULE EIRMOD_JSON

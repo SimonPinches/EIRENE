@@ -74,10 +74,10 @@ C> Recommended number of test particles for next MC cycle.
       INTEGER :: IER
 
       IF (ME /= 0) CALL EIRENE_ALLOC_CAI
-      
+
       CALL MPI_BCAST (RATIO,NSTRA,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NRECOM,NSTRA,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
-      
+
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       RETURN

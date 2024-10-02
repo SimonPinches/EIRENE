@@ -1,8 +1,8 @@
 \section{Data for interfacing Subroutine ``INFCOP" (example)} \label{sec2.14}
 
-\textbf{General remarks} 
+\textbf{General remarks}
 
-\medskip 
+\medskip
 
 Data in input block 14 control additional input for an EIRENE run.
 %
@@ -37,7 +37,7 @@ EIRENE to the 2 dimensional plasma transport code B2 \cite{kn:Braams} (the
 ``B2-EIRENE" code system, \cite{kn:Reiter91b},\cite{kn:Reiter92b}).
 A corresponding version of INFCOP is available from FZ J\"ulich.
 
-\textbf{The Input Block (in ``stand alone" case NMODE = 0)} 
+\textbf{The Input Block (in ``stand alone" case NMODE = 0)}
 
 \begin{lstlisting}
 ***14. Data for additional input tallies, in stand alone mode
@@ -50,11 +50,11 @@ A corresponding version of INFCOP is available from FZ J\"ulich.
           TXTPSP(IAIN,11) TXTPUN(IAIN,11)
         ENDDO
       ELSEIF (NMODE.NE. 0) ... see paragraphs below
-\end{lstlisting} 
+\end{lstlisting}
 
 \textbf{Meaning of the Input Variables of block 14 in stand alone mode}
 
-\medskip 
+\medskip
 
 \begin{description}
   \item[NAINI] Number of additional input tallies (module
@@ -92,7 +92,7 @@ A$\&$M data fits or tables)
 
         \begin{description}
           \item[$= 20$] electron impact collision rate coefficient
-                $\langle\sigma v\rangle_{ei}$ [a.u.], with the rate coefficient profile taken 
+                $\langle\sigma v\rangle_{ei}$ [a.u.], with the rate coefficient profile taken
                 from TABEI3(IREI, \dots) arrays.
                 $IREI: 1 \le NREI$ : number of electron impact process.
                 See TRCAMD output from the initialization phase of a run to identify, which
@@ -157,7 +157,7 @@ volume (FV) schemes) and solved (in the laboratory frame of reference):
 $D/Dt$ denotes the derivative (total, or convective derivative, or partial
 derivative), and $o.c.
 $ stands for other contributions such as e.g.\ friction forces, pressure
-gradient forces, collisional heating, etc. 
+gradient forces, collisional heating, etc.
 
 All source rates $S$ are resolved per stratum $is$ and per cell of the
 computational grid $icell$.
@@ -305,7 +305,7 @@ carried out,  to turn these fields into EIRENE bulk ion tallies
 (\cref{tab1old}) as well as to derive recycling target fluxes and boundary
 conditions from them.
 
-\textbf{The Input Block} 
+\textbf{The Input Block}
 
 \begin{lstlisting}
 ***14. Data for interfacing Subroutine "INFCOP"
@@ -324,7 +324,7 @@ conditions from them.
        (NTGPRT(IT),IT=1,NTARGI)
        DO 30 IT=1,NTARGI
          DO 33 IPRT=1,NTGPRT(IT)
-           I NDT(IT,IPRT) NINCT(..,..) NIXY(..,..) 
+           I NDT(IT,IPRT) NINCT(..,..) NIXY(..,..)
      .       NTIN(..,..) NTEN(..,..)
            NIFLG(..,..) NPTC(..,..) NSPZI(..,..) NSPZE(..,..)
          33 CONTINUE
@@ -340,11 +340,11 @@ conditions from them.
        DO 50 IAOT=1,NAOTB
          I NAOTS(IAOT) NAOTT(IAOT)
        50 CONTINUE
-\end{lstlisting} 
+\end{lstlisting}
 
 \textbf{Meaning of the Input Variables for interfacing Subroutine ``INFCOP"}
 
-\medskip 
+\medskip
 
 \begin{description}
   \item[LSYMET]
@@ -449,7 +449,7 @@ conditions from them.
         paths), may be inconsistent with the electron density in the plasma code.
   \item[BMASS] Mass of plasma code species IFLB(IPLS) is BMASS(IPLS) in
         \si{\atomicmassunit}.
-  \item[NDXA,NDYA] ~ 
+  \item[NDXA,NDYA] ~
 
         grid size in 2D plasma code.
         NDXA is the size of the grid tangential to the flux surfaces, and NDYA is the
@@ -521,7 +521,7 @@ for this stratum.
         alone.
   \item[NPTC] This corresponds to the NPTS flag in input block 7, and is needed
         only if INDSRC=6, i.e., if the source is specified by data from block 14 alone.
-  \item[NSPZI,NSPZE] ~ 
+  \item[NSPZI,NSPZE] ~
 
         Species range for this stratum.
         Only the EIRENE fluids IPLS corresponding to plasma code fluids IFL with  NSPZI
@@ -620,7 +620,7 @@ block 7 for that stratum.
         computational grid and evaluated using the plasma background data of a
         particular run (in particular: check for extrapolation errors in A$\&$M data)
 
-  \item[TXTPLS, TXTPSP, TXTPUN]~ 
+  \item[TXTPLS, TXTPSP, TXTPUN] ~
 
         text for printout and plotting, same as described for additional output tallies
         in bock 10.
@@ -694,11 +694,11 @@ poloidal grid coordinate direction.
 
 \textbf{Meaning of the Input Variables for interfacing Subroutine ``INFCOP"}
 
-\medskip 
+\medskip
 
-input block 14: unchanged, as compared to \cref{sec2.14.1} 
+input block 14: unchanged, as compared to \cref{sec2.14.1}
 
-\medskip 
+\medskip
 
 Additional data to those described in previous sub-\cref{sec2.14.1} are read,
 basically to account for non-orthogonal grids and for direct transfer of
@@ -713,9 +713,9 @@ From input stream FORT.29 two angles are read for each cell:
 \end{description}
 
 \begin{figure}[h] \label{eirene-coord-2}
-  \includegraphics[width=12.0cm]{eirene-coord-2} 
-  \caption{Definition of angles $\alpha_x$=ALPHXB and $\alpha_y$=ALPHYB, 
-    respectively, for inclined (non-orthogonal) B2-grids to be used in EIRENE 
+  \includegraphics[width=12.0cm]{eirene-coord-2}
+  \caption{Definition of angles $\alpha_x$=ALPHXB and $\alpha_y$=ALPHYB,
+    respectively, for inclined (non-orthogonal) B2-grids to be used in EIRENE
     code.}
 \end{figure}
 
@@ -769,7 +769,7 @@ Also additional: flags for magnetic field orientation, e.g.\ to allow poloidal
 and/or toroidal magnetic field components to be reversed, opposed to B2 radial
 and poloidal grid orientation.
 
-To be written 
+To be written
 
 Meaning of additional flags from input block 14  (format: see \cref{sec2.14}):
 \begin{description}
@@ -780,9 +780,9 @@ Meaning of additional flags from input block 14  (format: see \cref{sec2.14}):
         Originates from LINDA grid generating code, G.~Maddison, mid eighties last
         century.
 
-        MSHFRM = 1: ``Sonnet" format 
+        MSHFRM = 1: ``Sonnet" format
 
-        MSHFRM = 2: ``Carre" format 
+        MSHFRM = 2: ``Carre" format
 
   \item[NTRFRM] two different formats for triangular grid files are supported:
 
@@ -793,9 +793,9 @@ Meaning of additional flags from input block 14  (format: see \cref{sec2.14}):
         enforced for all strata
 \end{description}
 
-\textbf{Magnetic field conventions in B2, B2.5 interfaces} 
+\textbf{Magnetic field conventions in B2, B2.5 interfaces}
 
-\medskip 
+\medskip
 
 The next three flags (introduced in March 2015) allow to change the orientation
 of the magnetic field as reconstructed form B2 or B2.5 parameters.
@@ -808,13 +808,13 @@ Introducing the radial, poloidal and toroidal magnetic field components
 $(B_r,B_\theta,B_\phi)$ the default (and exclusive, until March 2015) option
 \textbf{in all B2-EIRENE versions ever, until then}, was to assume that
 \begin{description}
-  \item[$B_r = (\vB \cdot \ver)$] ~ 
+  \item[$B_r = (\vB \cdot \ver)$] ~
 
         the radial magnetic field B$_r$ is zero: B$_r$ =0 always.
         But note that the B2, B2.5 radial grid index is typically IY, whereas the
         EIRENE x-or radial grid index is IX, IR.
 
-  \item[$B_\theta = (\vB \cdot \veth)$] ~ 
+  \item[$B_\theta = (\vB \cdot \veth)$] ~
 
         the poloidal magnetic field is in the direction of increasing coordinate of the
         poloidal B2 (B2.5) grid index IX, but EIRENE y- or poloidal grid index IY, or
@@ -827,7 +827,7 @@ $(B_r,B_\theta,B_\phi)$ the default (and exclusive, until March 2015) option
         splitting) nor for the kinetic (guiding center) trace ion options.
 
         $B_\theta = |\vB| \cdot $ pitch.
-  \item[$B_\phi = (\vB \cdot \veph)$] ~ 
+  \item[$B_\phi = (\vB \cdot \veph)$] ~
 
         the toroidal magnetic field is normal to the poloidal (x-y) plane in the EIRENE
         z (periodic cylinder, NLTRZ-option ) or PHI (approximated torus, NLTRA option)
@@ -840,11 +840,11 @@ $(B_r,B_\theta,B_\phi)$ the default (and exclusive, until March 2015) option
         In the latter case it would matter indeed, e.g.\ to fix the $\nabla \vB$ drift
         direction.
 \end{description}
-\emph{Note: The confusing notational convention of x and y coordinates in 
-  B2-EIRENE still exists because B2 originally started as 1D parallel code, with 
-  the only coordinate being along the field, whereas EIRENE also started as 1D 
-  code, but with the first coordinate being the radial direction. 
-  (Both codes originated separately, in the early eighties of the last century, 
+\emph{Note: The confusing notational convention of x and y coordinates in
+  B2-EIRENE still exists because B2 originally started as 1D parallel code, with
+  the only coordinate being along the field, whereas EIRENE also started as 1D
+  code, but with the first coordinate being the radial direction.
+  (Both codes originated separately, in the early eighties of the last century,
   before they have been coupled together in the late eighties.)}
 
 \begin{description}
@@ -876,7 +876,7 @@ The same applies for momentum source terms in diamagnetic or radial directions,
 when plasma drifts and electrical currents are explicitly accounted for in B2
 or B2.5 applications.
 
-\subsection{Version B2.5-EIRENE (2012 and later)} \label{sec2.14.4} 
+\subsection{Version B2.5-EIRENE (2012 and later)} \label{sec2.14.4}
 
 One distinction to the earlier versions of interfaces to the B2 plasma fluid
 code is that in B2.5 the energy conservation equation is solved for the

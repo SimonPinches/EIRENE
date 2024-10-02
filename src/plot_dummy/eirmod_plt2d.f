@@ -28,7 +28,7 @@
 c--------------------------------------------------------------
 
 C
-C  PRINT AND PLOT PARTICLE HISTORIES IN GEOMETRY-PLOT
+C  PRINT AND PLOT PARTICLE HISTORIES IN GEOMETRY PLOT
 C
       SUBROUTINE EIRENE_CHCTRC(XPLO,YPLO,ZPLO,IFLAG,ISYM)
 
@@ -61,10 +61,10 @@ cdr  to still be able to provide printed trajectory output.
      .            'TIME LIMIT(15)      ',
      .            'GENERATION LIMIT(16)',
      .            'FLUID LIMIT(17)     ',
-     .            'ERROR DETECTED      ',     ! SYMBOL FOR PARTICLE TRACING ERROR.
+     .            'ERROR DETECTED      ',     ! SYMBOL FOR PARTICLE
+                                              ! TRACING ERROR.
 c  next symbols/text: only for printout, not on plot.
      .            'INT. GRID SURFACE(8)',
-cym
      .            'DIFFUSION STEP(20)  ',
      .            'STATIC LOOP(21)     '/
 C
@@ -104,7 +104,7 @@ C  FOR NEUTRALS OR PHOTONS: VELOCITY IS ALWAYS GIVEN BY THE CARTESIAN COMPONENTS
      .         ('VELX,VELY,VELZ,VEL,E0                   ',
      .           VELX,VELY,VELZ,VEL,E0)
         ENDIF
-        CALL EIRENE_MASR2 ('WEIGHT,TIME   ',WEIGHT,TIME)
+        CALL EIRENE_MASR2 ('WEIGHT,TIME     ',WEIGHT,TIME)
         CALL EIRENE_MASR1 ('XGENER  ',XGENER)
         CALL EIRENE_MASJ3
      .  ('NRCELL,NACELL,NBLOCK    ',NRCELL,NACELL,NBLOCK)

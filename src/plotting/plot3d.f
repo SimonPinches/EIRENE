@@ -6,11 +6,11 @@ C
      .                   ZMA,ZMI,W1,W2,
      .                   HEAD,RUNID,TXHEAD,TRC)
 C
-C  ON INPUT:  LOGL: USE LOG SCALE FOR ORDINATE
-C             ARR(IJ),I=1,NX-1,J=1,NY-1 ,IJ=I+(J-1)*NR1ST
-C                          ARRAY TO BE PLOTTED
-C             XX(I),I=1,NX X-GRID BOUNDARIES
-C             YY(J),J=1,NY Y GRID BOUNDARIES
+C  ON INPUT: LOGL: USE LOG SCALE FOR ORDINATE
+C            ARR(IJ),I=1,NX-1,J=1,NY-1 ,IJ=I+(J-1)*NR1ST
+C                         ARRAY TO BE PLOTTED
+C            XX(I),I=1,NX X-GRID BOUNDARIES
+C            YY(J),J=1,NY Y GRID BOUNDARIES
 C  ARR(IJ) IS THEN SET ONTO 2D ARRAY FALT(I,J)
 C
 C
@@ -40,8 +40,8 @@ C
       REAL(SP) :: XMINN, XMAXN, DXXX, YMINN, YMAXN
 
       REAL(SP) :: FALT(N1STS,N2NDPLGS),
-     .            X(N1STS,N2NDPLGS), Y(N1STS,N2NDPLGS), 
-     .            Z2(N1STS,N2NDPLGS)
+     .            X(N1STS,N2NDPLGS), Y(N1STS,N2NDPLGS),
+     .           Z2(N1STS,N2NDPLGS)
       REAL(SP) :: EXT(3,3), VALU(3,2), DCM, YH
       REAL(SP) :: YHLF, XHLF, FMIN, FMAX, REMIN, REMAX,
      .            XMIN, XMAX, YMIN, YMAX
@@ -166,7 +166,7 @@ cdr USE FZJ PROPRIETARY GR PLOTTING SOFTWARE
         CHAXS(3) = ' '
         CALL GR3AXS(AR,IER,EXT,VALU,CHAXS,.FALSE.,4,1)
         CALL GR3ROT(AR,IER,'Z',REAL(W1,SP),'X',
-     .              REAL(W2,SP),'Y',0.0)
+     .                         REAL(W2,SP),'Y',0.0)
         CALL GR3PLO(AR,IER,'HID')
 C
       ELSE

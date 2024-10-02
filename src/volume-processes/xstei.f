@@ -44,8 +44,8 @@ C
 !
 !
 c   rmass: mass of incident test particle
-c   irei: counting index for this particular electron impact collision
-c   isp:  incident test particle species identifier
+c   irei:  counting index for this particular electron impact collision
+c   isp:   incident test particle species identifier
 c   PLS:   precomputed log of electron density
 
 
@@ -235,7 +235,7 @@ C     TO BE WRITTEN
 C  2.B) RATE COEFFICIENT(TE)  (FIXED, OR: LOW DENSITY (CORONA) RATE COEFF.
 C                              E0 FIXED (E.G. E0=0.0)
         IF (NSTORDR >= NRAD) THEN
-C  RATE:  (1/S) =
+C  RATE: (1/S) =
 C  RATE COEFFICIENT: (CM^3/S) * DENSITY (CM^3)
           DO J=1,NSBOX
             IF (LGVAC(J,NPLS+1)) CYCLE
@@ -311,7 +311,8 @@ cdr  safety cut-off at ne= 1e8 cm**-3 already in PLS(..) from calling program. D
 C  WHAT DO WE DO IN CASE NSTORDR < NRAD  ?
           NREAEI(IREI) = KK
         ENDIF
-        MODCOL(1,2,IREI)=1 !  indicate: rate coefficient as fct. of local plasma conditions only
+        MODCOL(1,2,IREI)=1 !  indicate: rate coefficient as fct.
+                           !  of local plasma conditions only
       ELSE
         GOTO 996
       ENDIF
@@ -328,7 +329,7 @@ C  4.A: ELECTRON ENERGY LOSS RATES
 C
       EFLAG=EIRENE_IDEZ(ISCDE,5,5)
       IF (EFLAG.EQ.0) THEN
-C  4.A1) ENERGY LOSS RATE OF IMP. ELECTRON = CONST.*RATECOEFF.
+C  4.A1) ENERGY LOSS RATE OF IMP. ELECTRON = CONST.*RATE COEFF.
               IF (NSTORDR >= NRAD) THEN
                 DO 101 J=1,NSBOX
                   EELEI1(IREI,J)=EELEC
@@ -342,7 +343,7 @@ C  4.A1) ENERGY LOSS RATE OF IMP. ELECTRON = CONST.*RATECOEFF.
               MODCOL(1,4,IREI)=1
 
       ELSEIF (EFLAG.EQ.1) THEN
-C  4.A2) ENERGY LOSS RATE OF IMP. ELECTRON = 1.5*TE*RATECOEFF
+C  4.A2) ENERGY LOSS RATE OF IMP. ELECTRON = 1.5*TE*RATE COEFF
               IF (NSTORDR >= NRAD) THEN
                 DO 103 J=1,NSBOX
                   IF (LGVAC(J,NPLS+1)) CYCLE
@@ -427,7 +428,7 @@ C  4.B: HEAVY PARTICLE ENERGY GAIN RATE, "KINETIC ENERGY RELEASE" KER
 C
       EFLAG=EIRENE_IDEZ(ISCDE,3,5)
       IF (EFLAG.EQ.0) THEN
-C  4.B1)  RATE = CONST.*RATECOEFF.
+C  4.B1)  RATE = CONST.*RATE COEFF.
         IF (NSTORDR >= NRAD) THEN
           DO 201 J=1,NSBOX
             EHVEI1(IREI,J)=EHEAVY
@@ -640,21 +641,21 @@ C
         EA=MAX(EA,EN)
   876 CONTINUE
       IF (PPLEI(IREI,0).GT.0.D0) THEN
-        WRITE (iunout,*) 'BULK IONS: PPLEI '
+        WRITE (iunout,*) 'BULK IONS: PPLEI'
         DO 874 IPP=1,NPLSI
           IP=NSPAMI+IPP
           IF (PPLEI(IREI,IPP).NE.0.D0)
      .      WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IP),PPLEI(IREI,IPP)
   874   CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
-          WRITE (iunout,*) 'ENERGY: EPLEI '
+          WRITE (iunout,*) 'ENERGY: EPLEI'
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EPLEI(IREI,0,1),
      .                                 ' * E0 + ',EPLEI(IREI,0,2)*EI
         ELSEIF (EI.NE.1.D30) THEN
           WRITE (iunout,*) 'ENERGY: EPLEI '
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EPLEI(IREI,0,1),
      .                                 ' * E0 + ',EPLEI(IREI,0,2),
-     .                                 ' * EHEAVY '
+     .                                 ' * EHEAVY'
 C  IN CASE OF EI PROCESSES: COM IS SET EQ. E0
           WRITE (iunout,*) 'ENERGY RANGE: EHEAVY_MIN, EHEAVY_MAX'
           WRITE (iunout,'(1X,2(1PE12.4))') EI,EA
@@ -672,18 +673,18 @@ C
       ENDIF
 C
       IF (PATEI(IREI,0).GT.0.D0) THEN
-        WRITE (iunout,*) 'ATOMS    : PATEI '
+        WRITE (iunout,*) 'ATOMS    : PATEI'
         DO 871 IAT=1,NATMI
           IA=NSPH+IAT
           IF (PATEI(IREI,IAT).NE.0.D0)
      .    WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IA),PATEI(IREI,IAT)
   871   CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
-          WRITE (iunout,*) 'ENERGY: EATEI '
+          WRITE (iunout,*) 'ENERGY: EATEI'
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EATEI(IREI,0,1),
      .                                 ' * E0 + ',EATEI(IREI,0,2)*EI
         ELSE
-          WRITE (iunout,*) 'ENERGY: EATEI '
+          WRITE (iunout,*) 'ENERGY: EATEI'
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EATEI(IREI,0,1),
      .                                 ' * E0 + ',EATEI(IREI,0,2),
      .                                 ' * EHEAVY'
@@ -692,18 +693,18 @@ C
         ENDIF
       ENDIF
       IF (PMLEI(IREI,0).GT.0.D0) THEN
-        WRITE (iunout,*) 'MOLECULES: PMLEI '
+        WRITE (iunout,*) 'MOLECULES: PMLEI'
         DO 872 IML=1,NMOLI
           IM=NSPA+IML
           IF (PMLEI(IREI,IML).NE.0.D0)
      .    WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IM),PMLEI(IREI,IML)
   872   CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
-          WRITE (iunout,*) 'ENERGY: EMLEI '
+          WRITE (iunout,*) 'ENERGY: EMLEI'
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EMLEI(IREI,0,1),
      .                                 ' * E0 + ',EMLEI(IREI,0,2)*EI
         ELSE
-          WRITE (iunout,*) 'ENERGY: EMLEI '
+          WRITE (iunout,*) 'ENERGY: EMLEI'
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EMLEI(IREI,0,1),
      .                                 ' * E0 + ',EMLEI(IREI,0,2),
      .                                 ' * EHEAVY'
@@ -712,18 +713,18 @@ C
         ENDIF
       ENDIF
       IF (PIOEI(IREI,0).GT.0.D0) THEN
-        WRITE (iunout,*) 'TEST IONS: PIOEI '
+        WRITE (iunout,*) 'TEST IONS: PIOEI'
         DO 873 IIO=1,NIONI
           IO=NSPAM+IIO
           IF (PIOEI(IREI,IIO).NE.0.D0)
      .    WRITE (iunout,'(1X,A8,1PE12.4)') TEXTS(IO),PIOEI(IREI,IIO)
   873   CONTINUE
         IF (ABS((EI-EA)/(EA+EPS60)).LE.EPS10) THEN
-          WRITE (iunout,*) 'ENERGY: EIOEI '
+          WRITE (iunout,*) 'ENERGY: EIOEI'
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4)') EIOEI(IREI,0,1),
      .                                 ' * E0 + ',EIOEI(IREI,0,2)*EI
         ELSE
-          WRITE (iunout,*) 'ENERGY: EIOEI '
+          WRITE (iunout,*) 'ENERGY: EIOEI'
           WRITE (iunout,'(1X,1PE12.4,A8,1PE12.4,A10)') EIOEI(IREI,0,1),
      .                                 ' * E0 + ',EIOEI(IREI,0,2),
      .                                 ' * EHEAVY'

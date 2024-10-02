@@ -1,5 +1,5 @@
       MODULE EIRMOD_CGRPTL
-cdr  grid parameters only needed for graphical output with proprietary 
+cdr  grid parameters only needed for graphical output with proprietary
 cdr  eirene graphics routines.
 cdr  Can probably go out in case of using routines "plot_dummy"
 cdr  instead of routines from "plotting"

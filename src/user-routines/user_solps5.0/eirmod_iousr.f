@@ -20,7 +20,7 @@ C  User specific read routines
       end interface eirene_write_block_11_usr
 
       contains
-      
+
       subroutine eirene_read_block_11_usr_fixed
 
       use eirmod_comprt
@@ -59,10 +59,10 @@ C  User specific read routines
       class(json_core) :: json
       type(json_value),pointer :: me
       type(json_value),pointer :: pcrits, pcrit
-            
+
       return
       end subroutine eirene_write_block_11_usr_json
 
-      end module eirmod_iousr 
+      end module eirmod_iousr
 
-      
+

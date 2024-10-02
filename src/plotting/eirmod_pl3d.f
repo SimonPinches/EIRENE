@@ -128,7 +128,7 @@ C     the following SUBROUTINE is for reinitialization of EIRENE (DMH)
       IMPLICIT NONE
       IFIRST = 0
       IPBOX = 0
-      return
+      RETURN
 
       END SUBROUTINE EIRENE_PL3D_REINIT
 

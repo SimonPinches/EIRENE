@@ -1,5 +1,5 @@
 cdr nov. 19: Add XMLIM, XCLIM, LCHSPNWL
-cdr          for refined wall chemistry models.
+cdr          for refined wall chemistry models. Not ready
       MODULE EIRMOD_CLGIN
 
       USE EIRMOD_PRECISION
@@ -55,7 +55,7 @@ cdr  rlwmn, rlwmx: weight window for surface. Currently unused
         TYPE(TSURFACE),POINTER :: NEXT
       END TYPE TSURFACE
 
-      TYPE(TSURFACE), PUBLIC, POINTER , SAVE :: SURFLIST
+      TYPE(TSURFACE), PUBLIC, POINTER, SAVE :: SURFLIST
 
       CONTAINS
 

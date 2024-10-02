@@ -10,7 +10,7 @@ c  input: sg:     cosine of tracjetory with surface normal.
 c         epslim: limiting value for SG, to identify motion parallel to surface.
 c
 C  newly added in March 2019: code snippet removed from FOLION.F
-C                              similar code snippet still to be removed from LOCATE.F
+C                             similar code snippet still to be removed from LOCATE.F
 CDR  CHECK FOR CORRECT ORIENTATION OF FLIGHT "SG" AND CELL NUMBERS,
 CDR  IF A TEST PARTICLE STARTS FROM STITTING EXACTLY ON A SURFACE
 CDR  |SG| LE EPSLIM IS TAKEN TO MEAN: MOTION PARALLEL TO A SURFACE
@@ -21,8 +21,8 @@ C  ICO        =1 CALLED ON SECOND TRY, WITH NEW GUESSES FOR SG, NEW CELL NUMBERS
 C  ICO        >1 GIVE UP, TRY TO CONTINUE TRAJECTORY ANYWAY.
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_COMPRT, ONLY: IPOLG, IUNOUT, MPSURF, MRSURF, MTSURF,
-     >                         NCELL, NLSRFX, NLSRFY, NLSRFZ, NPANU, 
-     >                         NPCELL, NRCELL, NTCELL, X0, Y0, Z0 
+     >                         NCELL, NLSRFX, NLSRFY, NLSRFZ, NPANU,
+     >                         NPCELL, NRCELL, NTCELL, X0, Y0, Z0
       USE EIRMOD_CCONA, ONLY: EPS60
       USE EIRMOD_CGEOM, ONLY: CELDIA, NGHPLS
       USE EIRMOD_CTRIG, ONLY: NCHBAR, NSEITE, PTRIX, PTRIY
@@ -38,12 +38,12 @@ C  ICO        >1 GIVE UP, TRY TO CONTINUE TRAJECTORY ANYWAY.
       REAL(DP), INTENT(INOUT) :: EPSLIM
       REAL(DP), INTENT(OUT) :: SG
       INTEGER, INTENT(INOUT) :: ICO
-      REAL(DP) :: SH, PUX, PUY, PN, XOLD,YOLD
-      INTEGER :: NRCELL_OLD,NPCELL_OLD,NTCELL_OLD, NTEST,
+      REAL(DP) :: SH, PUX, PUY, PN, XOLD, YOLD
+      INTEGER :: NRCELL_OLD, NPCELL_OLD, NTCELL_OLD, NTEST,
      .           IDUM, IFPB
 
       IRET = 0
-      
+
       IF (NLSRFX) THEN
 
 c  particle is exactly on one of the radial grid surfaces (MRSURF)
@@ -124,7 +124,8 @@ C    .                             SG,NTEST,NCHBAR(IPOLG,MRSURF)
               IPOLG=NSEITE(IPOLG,MRSURF)
               MRSURF=NRCELL
             ENDIF
-          ELSEIF (SG.GT.0.0_DP) THEN  ! SG IS GT EPSLIM (=EPS6 FOR ICO LE 1)
+          ELSEIF (SG.GT.0.0_DP) THEN  ! SG IS GT EPSLIM
+                                      ! (=EPS6 FOR ICO LE 1)
             NTEST=NCHBAR(IPOLG,MRSURF)
             IF (NTEST.EQ.0) THEN
 C  NO NEIGHBOR. PUSH BACK INTO OLD CELL.
@@ -142,7 +143,8 @@ c  neighbor found. continue in neighbor cell.
               IPOLG=NSEITE(IPOLG,MRSURF)
               MRSURF=NRCELL
             ENDIF
-          ELSEIF (SG.LT.0.0_DP) THEN ! SG IS LT.- EPSLIM (=EPS6 FOR ICO LE 1)
+          ELSEIF (SG.LT.0.0_DP) THEN ! SG IS LT.- EPSLIM
+                                     ! (=EPS6 FOR ICO LE 1)
 C  CONTINUE FLIGHT IN ORIGINAL CELL.
 C  NOTHING TO BE DONE
           ENDIF
@@ -181,8 +183,8 @@ C  NOTHING TO BE DONE
             epslim=epslim*10.0_DP
             iret = 1
             return  ! GO BACK AND TRY AGAIN WITH NEW CELL NUMBER
-          end if
-          ENDIF
+          endif
+        ENDIF
 
       ELSEIF (NLSRFY) THEN
 
@@ -216,7 +218,8 @@ C  ACCOUNT FOR CUTS, PERIODICITY, ETC.
         end select
         IF (NPCELL.NE.NPCELL_OLD) THEN
           ico=ico+1
-          if (ico.le.1) then      ! GO BACK AND TRY AGAIN WITH NEW CELL NUMBER
+          if (ico.le.1) then
+! GO BACK AND TRY AGAIN WITH NEW CELL NUMBER
             iret = 1
             return
           elseif (ico.le.2) then
@@ -245,7 +248,8 @@ C  NLTRZ AND NLTRT OPTION
         ENDIF
         IF (NTCELL.NE.NTCELL_OLD) THEN
           ico=ico+1
-          if (ico.le.1) then     ! GO BACK AND TRY AGAIN WITH NEW CELL NUMBER
+          if (ico.le.1) then
+! GO BACK AND TRY AGAIN WITH NEW CELL NUMBER
             iret = 1
             return
           elseif (ico.le.2) then

@@ -11,7 +11,6 @@ C   ALSO BEST HERE: CASE-SPECIFIC SPEED-UP OF GEOMETRICAL WORK
 C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
-
       USE EIRMOD_COMPRT
 
       IMPLICIT NONE
@@ -67,7 +66,7 @@ C
       IMPLICIT NONE
 !      CHARACTER(80) :: ZEILE
       REAL(DP) :: XCOOR, YCOOR, ZCOOR
-      INTEGER :: NRS, IPUNKT, I,NSSIR, NSSIP,
+      INTEGER :: NRS, IPUNKT, I, NSSIR, NSSIP,
      .           IDIR, IR, IP, NAS
 C
 C MODIFY GEOMETRY
@@ -82,10 +81,10 @@ C
         SELECT CASE(IPUNKT)
 
         CASE DEFAULT
-           WRITE (iunout,*) 'WRONG POINT NUMBER IN ADDUSR '
+           WRITE (iunout,*) 'WRONG POINT NUMBER IN ADDUSR'
            WRITE (iunout,*) 'INPUT LINE READING'
            WRITE (iunout,'(2I6,1P,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
-           WRITE (iunout,*) ' IS IGNORED '
+           WRITE (iunout,*) 'IS IGNORED'
 
         CASE (1)
            P1(1,NRS)=XCOOR
@@ -129,10 +128,10 @@ C
           P2(1,NAS)=XPOL(NSSIR,NSSIP)
           P2(2,NAS)=YPOL(NSSIR,NSSIP)
         ELSE
-          WRITE (iunout,*) 'WRONG POINT NUMBER IN ADDUSR '
+          WRITE (iunout,*) 'WRONG POINT NUMBER IN ADDUSR'
           WRITE (iunout,*) 'INPUT LINE READING'
           WRITE (iunout,'(5I6)') NAS,IPUNKT,NSSIR,NSSIP
-          WRITE (iunout,*) ' IS IGNORED '
+          WRITE (iunout,*) 'IS IGNORED'
         ENDIF
       ENDDO
 
@@ -145,9 +144,9 @@ C
           PPLNX(IR,IP) = -PPLNX(IR,IP)
           PPLNY(IR,IP) = -PPLNY(IR,IP)
         ELSE
-          WRITE (iunout,*) ' IDIR =',IDIR,' NOT FORESEEN IN GEOUSR '
+          WRITE (iunout,*) ' IDIR = ',IDIR,' NOT FORESEEN IN GEOUSR'
           WRITE (iunout,*) IDIR,IR,IP
-          WRITE (iunout,*) ' IS IGNORED '
+          WRITE (iunout,*) ' IS IGNORED'
         END IF
       END DO
 C
@@ -293,7 +292,7 @@ csw 03sep2013
             P1(1,NRS)=XCOOR
             P1(2,NRS)=YCOOR
             P1(3,NRS)=ZCOOR
-            
+
           CASE (2)
             P2(1,NRS)=XCOOR
             P2(2,NRS)=YCOOR
@@ -318,13 +317,13 @@ csw 03sep2013
             P6(1,NRS)=XCOOR
             P6(2,NRS)=YCOOR
             P6(3,NRS)=ZCOOR
-            
+
           CASE DEFAULT
-            WRITE (iunout,*) 'WRONG POINT NUMBER IN INFCOP '
+            WRITE (iunout,*) 'WRONG POINT NUMBER IN INFCOP'
             WRITE (iunout,*) 'INPUT LINE READING'
             WRITE (iunout,'(2I6,1P,3E12.4)')
-     .                                  NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
-            WRITE (iunout,*) ' IS IGNORED '
+     .                                NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
+            WRITE (iunout,*) 'IS IGNORED'
 
           END SELECT
         ENDDO
@@ -342,8 +341,8 @@ csw 03sep2013 AARRRGH!!!!          read(iunin,*) onetwo(i),limpos(i)
           call fix_integer_input(zeile,3)
           read(zeile,*,err=91) limpos(i),onetwo(i),icoor(i)
           goto 92
- 91       read(zeile,*) limpos(i),onetwo(i)
- 92       continue
+   91     read(zeile,*) limpos(i),onetwo(i)
+   92     continue
           if(onetwo(i).lt.0) then
             normalcase=.false.
             onetwo(i)=-onetwo(i)
@@ -357,9 +356,9 @@ csw 03sep2013
         IF(NASMOD.NE.N) THEN
           IF (NPPLG.EQ.1 .AND. NASMOD.EQ.2) THEN
             write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
-     1         ''' LINKED TO LEFT TARGET'')') onetwo(1),limpos(1)
+     1       ''' LINKED TO LEFT TARGET'')') onetwo(1),limpos(1)
             write(iunout,'(''P'',i1,'' FOR SEGMENT '',i3,'//
-     1         ''' LINKED TO RIGHT TARGET'')') onetwo(2),limpos(2)
+     1       ''' LINKED TO RIGHT TARGET'')') onetwo(2),limpos(2)
           ELSE
             WRITE(iunout,*) "WARNING: NASMOD.NE.NPPLG", NASMOD,npplg
             DO I=1,NASMOD
@@ -408,7 +407,7 @@ cdr  NASMOD = N = max(npplg/3,1)*4
       else
         if (nlplg) N=max(npplg/3,1)*4
         if (nlfem) N=NASMOD
-      end if                    ! first
+      end if  ! first
 c
 c*** Switch off the additional surfaces corresponding to the targets,
 c*** that is, the surfaces between the ones to be linked to the grid
@@ -421,13 +420,13 @@ csw 03sep2013      do 990 i=1,n
           m=limpos(i)
           hlp_p1=p2(1,m)
           hlp_p2=p2(2,m)
-c           write (iunout,*) 'onetwo=2. igjum0= ',igjum0(j),
+c         write (iunout,*) 'onetwo=2. igjum0= ',igjum0(j),
 c      ,    ',i,hlp_p1,hlp_p2 = '
-c           write (iunout,*) i,hlp_p1,hlp_p2
+c         write (iunout,*) i,hlp_p1,hlp_p2
           do 980 l=1,nlimi
             do j=1,nlimi
               hlp_found=.false.
-c               write (iunout,*) 'lgjum0,j,m = ',lgjum0(j),j,m
+c             write (iunout,*) 'lgjum0,j,m = ',lgjum0(j),j,m
               if(igjum0(j)==0 .and. j.ne.m .and. iliin(j).eq.1) then
                 if(abs(hlp_p1-p1(1,j)).le.hlp_tol .and.
      .             abs(hlp_p2-p1(2,j)).le.hlp_tol) then
@@ -441,7 +440,7 @@ c               write (iunout,*) 'lgjum0,j,m = ',lgjum0(j),j,m
                   hlp_p2=p1(2,j)
                 end if
                 if(hlp_found) then
-c                   write (iunout,*) j,hlp_p1,hlp_p2
+c                 write (iunout,*) j,hlp_p1,hlp_p2
 c*** Check whether this segment is marked as a target edge
                   do k=1,n
                     if(j.eq.limpos(k)) then
@@ -461,7 +460,7 @@ c*** Check whether this segment is marked as a target edge
 c*** Switch off the segment
                   igjum0(j)=1
                   write (iunout,*) 'geousr_biased: segment ',j,
-     ,                                              '  is turned off'
+     ,                                           '  is turned off'
                   go to 980
                 end if
               end if
@@ -469,16 +468,16 @@ c*** Switch off the segment
 c*** The chain is broken
             write (iunout,*) 'geousr_biased: the chain is broken'
             go to 990
- 980      continue
+  980     continue
         end if
- 990  continue
+  990 continue
  1001 continue
 C
 C  ANFANG: MODIFY GEOMETRY
 C
 csw 03sep2013      do i=1,max(npplg/3,1)*4
       if (nlplg) then
-         do i=1,nasmod
+        do i=1,nasmod
           select case(onetwo(i))
           case(1)
             p1(1,limpos(i))=xpol(xpolpos(i),ypolpos(i))
@@ -542,42 +541,42 @@ C
 C   LGJUM3(J,I)=.TRUE. :
 C   ABSCHALTEN DER FLAECHE I, FALLS TEILCHEN IN ZELLE J SITZT
 C
-        IF (NOPTIM >= NSURF) THEN
+      IF (NOPTIM >= NSURF) THEN
 
-          if(normalcase) then
-            write(iunout,*) 'Setting IGJUM3 to 1 for',NSURF,NLIMI
-            if (nlimpb.ge.nlimps) then
-              do I=1,NLIMI
-                do J=1,NOPTIM
-                  IGJUM3(J,I)=1
-                end do
+        if(normalcase) then
+          write(iunout,*) 'Setting IGJUM3 to 1 for',NSURF,NLIMI
+          if (nlimpb.ge.nlimps) then
+            do I=1,NLIMI
+              do J=1,NOPTIM
+                IGJUM3(J,I)=1
               end do
-            else
-              nbits=bit_size(1)
-              do I=1,NLIMI
-                do J=1,NOPTIM
-                  call EIRENE_bitset(igjum3,0,noptim,j,i,1,nbits)
-                end do
-              end do
-            endif
+            end do
           else
-            write(iunout,*) 'Setting IGJUM3 to 0 for ',NSURF,NLIMI
-            if (nlimpb.ge.nlimps) then
-              do I=1,NLIMI
-                do J=1,NOPTIM
-                  IGJUM3(J,I)=0
-                end do
+            nbits=bit_size(1)
+            do I=1,NLIMI
+              do J=1,NOPTIM
+                call EIRENE_bitset(igjum3,0,noptim,j,i,1,nbits)
               end do
-            else
-              nbits=bit_size(1)
-              do I=1,NLIMI
-                do J=1,NOPTIM
-                  call EIRENE_bitset(igjum3,0,noptim,j,i,0,nbits)
-                end do
-              end do
-            endif
+            end do
           endif
-        END IF
+        else
+          write(iunout,*) 'Setting IGJUM3 to 0 for ',NSURF,NLIMI
+          if (nlimpb.ge.nlimps) then
+            do I=1,NLIMI
+              do J=1,NOPTIM
+                IGJUM3(J,I)=0
+              end do
+            end do
+          else
+            nbits=bit_size(1)
+            do I=1,NLIMI
+              do J=1,NOPTIM
+                call EIRENE_bitset(igjum3,0,noptim,j,i,0,nbits)
+              end do
+            end do
+          endif
+        endif
+      END IF
 C
 C  SET SOME VOLUMES EXPLICITLY
 C
@@ -586,8 +585,8 @@ C  MODIFY REFLECTION MODEL AT TARGET PLATES
 C
 C
       RETURN
-      CONTAINS
 
+      CONTAINS
 CVK
 C LOOKING FOR THE NODE OF NON-DEFAULT STANDARD SURFACES (NDS) WHICH IS
 C THE CLOSEST TO XP,YP. PUT IT TO XN,YN. INDS ISR THE INDEX OF CORRESPONDING NDS
@@ -640,7 +639,7 @@ C  ERROR
        YN=YPOL(IXN,IYN)
        IF(INDS.EQ.0) WRITE(iunout,*) "ERROR IN  FIND_NEAREST_NDS:",
      w                          "CANNOT FIND A NEAREST POINT"
-      END SUBROUTINE  FIND_NEAREST_NDS
+      END SUBROUTINE FIND_NEAREST_NDS
 
       END SUBROUTINE EIRENE_GEOUSR_BIASED
 
@@ -789,12 +788,12 @@ c          write (iunout,*) i,hlp_p1,hlp_p2
 c              write (iunout,*) 'lgjum0,j,m = ',lgjum0(j),j,m
                 if(igjum0(j)==0 .and. j.ne.m .and. iliin(j).eq.1) then
                   if(abs(hlp_p1-p1(1,j)).le.hlp_tol .and.
-     .                            abs(hlp_p2-p1(2,j)).le.hlp_tol) then
+     .               abs(hlp_p2-p1(2,j)).le.hlp_tol) then
                     hlp_found=.true.
                     hlp_p1=p2(1,j)
                     hlp_p2=p2(2,j)
                   else if(abs(hlp_p1-p2(1,j)).le.hlp_tol .and.
-     .                             abs(hlp_p2-p2(2,j)).le.hlp_tol) then
+     .                    abs(hlp_p2-p2(2,j)).le.hlp_tol) then
                     hlp_found=.true.
                     hlp_p1=p1(1,j)
                     hlp_p2=p1(2,j)

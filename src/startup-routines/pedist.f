@@ -34,7 +34,8 @@ C> - NPESTA(ISTRA): master process for stratum ISTRA
 
       IMPLICIT NONE
 
-      REAL(DP), INTENT(INOUT) :: XTIM(0:NSTRA) !< time allocated for stratum
+      REAL(DP), INTENT(INOUT) :: XTIM(0:NSTRA) !< time allocated
+                                               !< for stratum
       REAL(DP), INTENT(IN) :: XX1 !< remaining CPU time
 
       IF (NPRS == 1) THEN
@@ -47,8 +48,8 @@ C> - NPESTA(ISTRA): master process for stratum ISTRA
         NPESTR(1:nstra) = 1
         nparts_loc(1:nstra) = npts(1:nstra)
         stratum_leader = 0
-	return
-      end if
+        return
+      END IF
 
       SELECT CASE( NPRLL )
         CASE( -1 )
@@ -63,8 +64,8 @@ C> - NPESTA(ISTRA): master process for stratum ISTRA
 
 C> \brief "Embarrassingly parallel" scheme.
 C>
-C> Here, all strata are calculated by all processes. XTIM remains
-C> unchanged.
+C> Here, all strata are calculated by all processes.
+C> XTIM remains unchanged.
       SUBROUTINE EIRENE_PEDIST_EMBPARALL
       USE EIRMOD_COMSOU, ONLY: NLSRON, NPTS
       USE EIRMOD_CPES, ONLY: NPESTA, NPESTR, NPRS, PROCFORSTRA,
@@ -107,7 +108,7 @@ C>   processes to one stratum.
       USE EIRMOD_CAI, ONLY: XMCT
       USE EIRMOD_CCONA, ONLY: EPS30
       USE EIRMOD_CPES, ONLY: NPESTA, NPESTR, NPRS, PROCFORSTRA,
-     .                       NPARTS_LOC, MY_PE, 
+     .                       NPARTS_LOC, MY_PE,
      .                       STRATUM_LEADER, I_AM_LEADER
       USE EIRMOD_COMSOU, ONLY: NLSRON, NPTS
       USE EIRMOD_COMPRT, ONLY: IUNOUT
@@ -115,7 +116,8 @@ C>   processes to one stratum.
 
       IMPLICIT NONE
 
-      REAL(DP), INTENT(INOUT) :: XTIM(0:NSTRA) !< time allocated for stratum
+      REAL(DP), INTENT(INOUT) :: XTIM(0:NSTRA) !< time allocated
+                                               !< for stratum
       REAL(DP), INTENT(IN) :: XX1 !< remaining CPU time
       REAL(DP) :: TIMPE(0:NSTRA), TSTRPE(NSTRA,0:NPRS-1)
       REAL(DP) :: FACP, DELT, SUMTIM, TMEAN, TPE
@@ -144,7 +146,7 @@ C>   processes to one stratum.
 ! BUT EACH STRATUM IS CALCULATED BY EXACTLY ONE PROCESSOR
 ! ADJUST XTIM TO OPTIMIZE USE OF AVAILABLE CPU TIME
         nparts_loc = 0
-        NPESTR (1:nstra)= 1
+        NPESTR(1:nstra) = 1
         TSTRPE = 0._DP
         IPE = -1
         DO ISTRA = 1, NSTRA
@@ -231,7 +233,6 @@ C>   processes to one stratum.
           FACP=MIN(1.0_DP,REAL(NPRS_FREE,DP)/
      .                   (REAL(NPRS_OPT,DP)+eps30))
           write (iunout,*) ' facp ',facp
-!HJL this is wrong  NPESTR(0)=NPRS
           DO ISTRA=1,NSTRA
             NPESTR(ISTRA)=NPESTR(ISTRA)+int(TIMPE(ISTRA)*FACP)
             NPRS_FREE=NPRS_FREE-int(TIMPE(ISTRA)*FACP)
@@ -243,7 +244,6 @@ C>   processes to one stratum.
         else
 
 csw attempting better work load balancing
-!HJL      npestr(0)=nprs
           tmean=xtim(0)/dble(nprs)
           do istra=1,nstra
             timpe(istra) = max(xtim(istra)-tmean,0.0_DP)/tmean
@@ -284,7 +284,7 @@ csw
             NPRS_FREE=NPRS_FREE-1
           ENDIF
         ENDDO
-        WRITE (iunout,*) ' NPESTR '
+        WRITE (iunout,*) ' NPESTR'
         WRITE (iunout,'(12I6)') (NPESTR(ISTRA),ISTRA=1,NSTRA)
         WRITE (iunout,*) ' NPRS_FREE ',NPRS_FREE
 
@@ -310,7 +310,7 @@ C independent of parallelisation (strong scaling approach):
             IPE=IPE+1
           ENDDO
         ENDDO
-        WRITE (iunout,*) 'pedist:  proc. IPE works on stratum ISTRA'
+        WRITE (iunout,*) 'pedist: proc. IPE works on stratum ISTRA'
         WRITE (iunout,*) ' IPE, ISTRA'
         WRITE (iunout,'(12I6)') (I,NSTRPE(I),I=0,NPRS-1)
 
@@ -356,13 +356,6 @@ C independent of parallelisation (strong scaling approach):
         DO ISTRA=1,NSTRA
           CALL EIRENE_MASJ1R ('STRATUM, TIME   ',ISTRA,XTIM(ISTRA))
         END DO
-
-C Rescaling of particles per stratum, to keep total particle number
-C independent of parallelisation (strong scaling approach):
-C already done with nparts_loc
-C       WHERE ( NPESTR > 1 )
-C         NPTS = NPTS / NPESTR
-C       END WHERE
 
       END IF
 

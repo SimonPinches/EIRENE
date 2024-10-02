@@ -30,7 +30,7 @@ cdr          can be strongly simplified
 
       SUBROUTINE EIRENE_ALLOC_CCOUPL (ICAL)
 cdr Here only deal with ICCPL2.
-cdr NFLA is iccpl2(3) in corresponding non-default modules 
+cdr NFLA is iccpl2(3) in corresponding non-default modules
 
       INTEGER, INTENT(IN) :: ICAL
 
@@ -90,7 +90,7 @@ cdr NFLA is iccpl2(3) in corresponding non-default modules
 
       CALL MPI_BCAST (NMODE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
-      IF (NMODE == 0) RETURN 
+      IF (NMODE == 0) RETURN
 
       IF (ME /= 0) THEN
         CALL EIRENE_ALLOC_CCOUPL(1)
@@ -103,6 +103,6 @@ cdr NFLA is iccpl2(3) in corresponding non-default modules
 
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
-      END SUBROUTINE EIRENE_BROADCAST_CCOUPL 
+      END SUBROUTINE EIRENE_BROADCAST_CCOUPL
 
       END MODULE EIRMOD_CCOUPL

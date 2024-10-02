@@ -1,8 +1,8 @@
 cpb July  17: bug fix, rpselect allocation from -1 , not from 0
-cdr sept. 15: bug fix:   after re-sampling (with replacement) from census, the weight of
-cdr                      sampled census particles is set to 1.0, rather than keeping the old weight.
-cdr                      The census flux is regarded as "discrete distribution" for the index "i" of a particle,
-cdr                      and the weight stored on census during particle tracing is the probability mass of index "i"
+cdr sept. 15: bug fix: after re-sampling (with replacement) from census, the weight of
+cdr                    sampled census particles is set to 1.0, rather than keeping the old weight.
+cdr                    The census flux is regarded as "discrete distribution" for the index "i" of a particle,
+cdr                    and the weight stored on census during particle tracing is the probability mass of index "i"
 cdr
 cdr  addph,adda,addm,addi: type-resolved census fluxes added for diagnostics.
 cdr Aug. 2015  comments added
@@ -194,8 +194,8 @@ cdr where currently these numbers are hard-coded.
 
 ! THERE IS NOT ENOUGH STORAGE for all scores from all processors.
 
-      else  ! here: itotal > nprnl:  carry out some condensation:
-!                                    sample exactly nprnl scores from the full set of itotal scores
+      else  ! here: itotal > nprnl: carry out some condensation:
+!                                   sample exactly nprnl scores from the full set of itotal scores
         if (my_pe == 0) then
           write (iunout,*)
      .           ' There is not enough storage for collected census'
@@ -205,8 +205,8 @@ cdr where currently these numbers are hard-coded.
 
         itotal = nprnl
 
-        allocate (rpselect(-1:nprs))    !  reicht wohl:  0,nprs-1
-!pb     allocate (rpselect(0:nprs-1))   !  reicht wohl:  0,nprs-1 !pb nein!
+        allocate (rpselect(-1:nprs))    !  reicht wohl: 0,nprs-1
+!pb     allocate (rpselect(0:nprs-1))   !  reicht wohl: 0,nprs-1 !pb nein!
 
         if (my_pe == 0) then
           rpselect(-1) = 0._dp
@@ -241,7 +241,7 @@ cdr rpselect(0) war schon gesetzt.
 
 !  first step : for each of the nprnl new census scores,
 !               find processor iu, from which to sample a census score
-!  second step:  after that sample from that processor iu
+!  second step: after that sample from that processor iu
 
 !  now: first step:
           do i = 1, nprnl

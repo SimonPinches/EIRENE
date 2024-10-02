@@ -1,12 +1,12 @@
       subroutine eirene_write_json_amdata(filename)
-      
+
       use eirmod_precision
       use eirmod_parmmod
       USE EIRMOD_COMUSR
       USE EIRMOD_JSON
       USE EIRMOD_COMXS
       USE EIRMOD_COMPRT
-      
+
       use json_module           !IGNORE
 
       implicit none
@@ -16,7 +16,7 @@
       type(json_value),pointer :: crs_lines
       type(s_stack), pointer   :: cur
       character(*) :: filename
-      
+
 ! initialize the class
       call json%initialize(compact_reals=.true.,real_format='ES',
      .          case_sensitive_keys=.false.,compress_vectors=.false.)
@@ -24,11 +24,11 @@
 ! initialize the structure:
       call json%create_object(pAMD,'')
 
-      call eirene_write_block_45(pAMD) 
+      call eirene_write_block_45(pAMD)
 
 ! write the file:
       call json%print(pAMD,trim(filename))
-      
+
 !cleanup:
       call json%destroy(pAMD)
       if (json%failed()) then
@@ -65,58 +65,58 @@
       call json%create_object(PART,'Particles')
 
       call json%add(pAMD, REACT)     !add it to the root
-      call json%add(pAMD, PART)     !add it to the root
+      call json%add(pAMD, PART)      !add it to the root
 
 ! start block 4
-      
+
       call json%add(REACT,'NREACI',nreaci)
-      
+
 ! write classical reaction lines for easy comparison with fixed input
-      if (associated(crs_stack%head)) then
-        call json%create_array(crs_lines,'ClassicReactionStrings') ! an array
+      if (associated(crs_stack%head)) then ! an array
+        call json%create_array(crs_lines,'ClassicReactionStrings')
         cur => crs_stack%head
         do while (associated(cur))
           call json%add(crs_lines,'CRS',trim(cur%string))
           cur => cur%next
-        end do 
+        end do
         call json%add(REACT,crs_lines)
       end if
 
       do i=1, IRLINES
  100     format(i3,1x,A8,1x,A4,1x,A,1x,A3,1x,i3,1x,i3,5es12.4)
-         write (sCReactStr, 100) reaclines(i)%no, reaclines(i)%FILE, 
+         write (sCReactStr, 100) reaclines(i)%no, reaclines(i)%FILE,
      >         reaclines(i)%h_select,reaclines(i)%reac_string,
-     >         reaclines(i)%reactyp,reaclines(i)%mp, 
-     >         reaclines(i)%mt,reaclines(i)%dpp,   
-     >         reaclines(i)%r1mn,reaclines(i)%r1mx,   
-     >         reaclines(i)%r2mn,reaclines(i)%r2mx  
+     >         reaclines(i)%reactyp,reaclines(i)%mp,
+     >         reaclines(i)%mt,reaclines(i)%dpp,
+     >         reaclines(i)%r1mn,reaclines(i)%r1mx,
+     >         reaclines(i)%r2mn,reaclines(i)%r2mx
 
           if (reaclines(i)%r1mn > 0)
-     >    write (sCReactStr, "(A/,i3,1x,3es12.4)")  sCReactStr, 
+     >    write (sCReactStr, "(A/,i3,1x,3es12.4)")  sCReactStr,
      >           reaclines(i)%jfex1mn, reaclines(i)%fp1(1:3)
-          if (reaclines(i)%r1mx.gt.0) 
-     >    write (sCReactStr, "(A,i3,1x,3es12.4)")  sCReactStr, 
+          if (reaclines(i)%r1mx.gt.0)
+     >    write (sCReactStr, "(A,i3,1x,3es12.4)")  sCReactStr,
      >           reaclines(i)%jfex1mx, reaclines(i)%fp1(4:6)
           if (reaclines(i)%r2mn.gt.0)
-     >    write (sCReactStr, "(A,i3,1x,3es12.4)")  sCReactStr, 
+     >    write (sCReactStr, "(A,i3,1x,3es12.4)")  sCReactStr,
      >           reaclines(i)%jfex2mn, reaclines(i)%fp2(1:3)
-          if (reaclines(i)%r2mx.gt.0) 
-     >    write (sCReactStr, "(A,i3,1x,3es12.4)")  sCReactStr, 
+          if (reaclines(i)%r2mx.gt.0)
+     >    write (sCReactStr, "(A,i3,1x,3es12.4)")  sCReactStr,
      >           reaclines(i)%jfex2mx, reaclines(i)%fp2(4:6)
 
           call json%add(REACT, 'CStr' ,sCReactStr)
       enddo
-      
-      
+
+
 #ifdef NEVERCOMEHERE
 ! loop over reaction lines
       call json%create_array(reacs,'REAC_SPECS') !an array
 
       do i=1, irlines
-        
+
         call json%create_object(rea,'') !name does not matter
 
-        call json%add(rea,'IR',reaclines(i)%no) 
+        call json%add(rea,'IR',reaclines(i)%no)
         call json%add(rea,'FILNAM',reaclines(i)%FILE)
         call json%add(rea,'H123',reaclines(i)%h_select)
         call json%add(rea,'REAC',reaclines(i)%reac_string)
@@ -153,7 +153,7 @@
            call json%add(rea,'ICOL_ESC',reaclines(i)%icol_esc)
            call json%add(rea,'POP_ESC',reaclines(i)%pop_esc)
          end if
-        
+
         call json%add(reacs,rea)
 
       end do
@@ -165,8 +165,8 @@
       call json%create_object(atoms,'ATOMS')
       call json%add(atoms,'NATMI',natmi)
       call json%create_array(blk4a,'SPECIES') !an array
-      call eirene_write_block_4abcd (blk4a, ityp, nsph, natmi, natm, 
-     .     texts, 'IATM', 'A', nmassa, nchara, ndum1, ndum2, isrf, isrt,  
+      call eirene_write_block_4abcd (blk4a, ityp, nsph, natmi, natm,
+     .     texts, 'IATM', 'A', nmassa, nchara, ndum1, ndum2, isrf, isrt,
      .     nrca, nfola, ngena, nhsts, ireaca, ibulka,
      .     iscd1a, iscd2a, iscd3a, iscd4a, iscdea, iestma, ibgka,
      .     eeleca, ebulka, escd1a, freaca, edpota)
@@ -178,8 +178,8 @@
       call json%create_object(mols,'MOLECULES') !an array
       call json%add(mols,'NMOLI',nmoli)
       call json%create_array(blk4b,'SPECIES') !an array
-      call eirene_write_block_4abcd (blk4b, ityp, nspa, nmoli, nmol, 
-     .     texts, 'IMOL', 'M', nmassm, ncharm, nprt, ndum2, isrf, isrt, 
+      call eirene_write_block_4abcd (blk4b, ityp, nspa, nmoli, nmol,
+     .     texts, 'IMOL', 'M', nmassm, ncharm, nprt, ndum2, isrf, isrt,
      .     nrcm, nfolm, ngenm, nhsts, ireacm, ibulkm,
      .     iscd1m, iscd2m, iscd3m, iscd4m, iscdem, iestmm, ibgkm,
      .     eelecm, ebulkm, escd1m, freacm, edpotm)
@@ -191,8 +191,8 @@
       call json%create_object(ions,'TEST_IONS') !an array
       call json%add(ions,'NIONI',nioni)
       call json%create_array(blk4c,'SPECIES') !an array
-      call eirene_write_block_4abcd (blk4c, ityp, nspam, nioni, nion, 
-     .     texts, 'IION', 'I', nmassi, nchari, nprt, nchrgi, isrf, isrt, 
+      call eirene_write_block_4abcd (blk4c, ityp, nspam, nioni, nion,
+     .     texts, 'IION', 'I', nmassi, nchari, nprt, nchrgi, isrf, isrt,
      .     nrci, nfoli, ngeni, nhsts, ireaci, ibulki,
      .     iscd1i, iscd2i, iscd3i, iscd4i, iscdei, iestmi, ibgki,
      .     eeleci, ebulki, escd1i, freaci, edpoti)
@@ -205,7 +205,7 @@
       call json%add(phots,'NPHOTI',nphoti)
       call json%create_array(blk4d,'SPECIES') !an array
       call eirene_write_block_4abcd (blk4d, ityp, 0, nphoti, nphot,
-     .     texts, 'IPHOT', 'PH', ndum1, ndum2, ndum3, ndum4, isrf, isrt, 
+     .     texts, 'IPHOT', 'PH', ndum1, ndum2, ndum3, ndum4, isrf, isrt,
      .     nrcph, nfolph, ngenph, nhsts, ireacph, ibulkph,
      .     iscd1ph, iscd2ph, iscd3ph, iscd4ph, iscdeph, iestmph, ibgkph,
      .     eelecph, ebulkph, escd1ph, freacph, edpotph)
@@ -213,13 +213,13 @@
       call json%add(blk4,phots)
 
 ! start block 5
-! bulk ions 
+! bulk ions
       ityp = 4
       call json%create_object(bulks,'BULK_IONS')
       call json%add(bulks,'NPLSI',nplsi)
       call json%create_array(blk5a,'SPECIES') !an array
-      call eirene_write_block_4abcd (blk5a, ityp, nspami, nplsi, npls, 
-     .     texts, 'IPLS', 'P', nmassp, ncharp, nprt, nchrgp, isrf, isrt,  
+      call eirene_write_block_4abcd (blk5a, ityp, nspami, nplsi, npls,
+     .     texts, 'IPLS', 'P', nmassp, ncharp, nprt, nchrgp, isrf, isrt,
      .     nrcp, ndum1, ndum2, nhsts, ireacp, ibulkp,
      .     iscd1p, iscd2p, iscd3p, iscd4p, iscdep, ndum3, ndum4,
      .     eelecp, ebulkp, escd1p, freacp, edpotp, cdenmodel)
@@ -260,7 +260,7 @@
         call json%add(ti,'TI3',ti3(i))
         call json%add(ti,'TI4',ti4(i))
         call json%add(ti,'TI5',ti5(i))
-        
+
         call json%add(tis,ti)
         end do
         call json%add(blk5b,tis)
@@ -278,7 +278,7 @@
         call json%add(di,'DI3',di3(i))
         call json%add(di,'DI4',di4(i))
         call json%add(di,'DI5',di5(i))
-        
+
         call json%add(dis,di)
         end do
         call json%add(blk5b,dis)
@@ -314,7 +314,7 @@
         call json%add(vl,'VZ3',vz3(i))
         call json%add(vl,'VZ4',vz4(i))
         call json%add(vl,'VZ5',vz5(i))
-        
+
         call json%add(vls,vl)
         end do
         call json%add(blk5b,vls)
@@ -356,18 +356,18 @@
         end do
         call json%add(blk5b,ops)
       end if
-      
+
       call json%add(blk5,blk5b)
 
 #endif
-  
+
       end subroutine eirene_write_block_45
 
 !******************************************************************************
 #ifdef NEVERCOMEHERE
-      
-      subroutine eirene_write_block_4abcd (me, ityp, nbas, nloop, ndim, 
-     .     texts, cndx, cext, nmass, nchar, nprt, nchrg, isrf, isrt, 
+
+      subroutine eirene_write_block_4abcd (me, ityp, nbas, nloop, ndim,
+     .     texts, cndx, cext, nmass, nchar, nprt, nchrg, isrf, isrt,
      .     nrc, nfol, ngen, nhsts, ireac, ibulk,
      .     iscd1, iscd2, iscd3, iscd4, iscde, iestm, ibgk,
      .     eelec, ebulk, escd1, freac, edpot, cdenmodel)
@@ -375,15 +375,15 @@
       type(json_value),pointer :: me
       type(json_value),pointer :: elem, reas, re, model
       integer, intent(in) :: ityp, nbas, nloop, ndim
-      integer, intent(in) :: nmass(*), nchar(*), 
-     .         isrf(nspz,*), isrt(nspz,*), nprt(*), nchrg(*), 
-     .         nrc(*), nfol(*), ngen(*), nhsts(*), 
-     .         ireac(ndim,*), ibulk(ndim,*), iscd1(ndim,*), 
-     .         iscd2(ndim,*), iscd3(ndim,*), iscd4(ndim,*), 
+      integer, intent(in) :: nmass(*), nchar(*),
+     .         isrf(nspz,*), isrt(nspz,*), nprt(*), nchrg(*),
+     .         nrc(*), nfol(*), ngen(*), nhsts(*),
+     .         ireac(ndim,*), ibulk(ndim,*), iscd1(ndim,*),
+     .         iscd2(ndim,*), iscd3(ndim,*), iscd4(ndim,*),
      .         iscde(ndim,*), iestm(ndim,*), ibgk(ndim,*)
-      real(dp), intent(in) :: eelec(ndim,*), ebulk(ndim,*), 
+      real(dp), intent(in) :: eelec(ndim,*), ebulk(ndim,*),
      .         escd1(ndim,*), freac(ndim,*), edpot(ndim,*)
-      character(*) :: texts(*), cndx, cext    
+      character(*) :: texts(*), cndx, cext
       character(*), optional :: cdenmodel(ndim)
       integer :: i, ispz, numsec, k, j, nre
       logical :: lden
@@ -434,12 +434,12 @@
           call json%add(re,'IBULK'//cext,ibulk(i,k))
           call json%add(re,'ISCD1'//cext,iscd1(i,k))
           call json%add(re,'ISCD2'//cext,iscd2(i,k))
-          if (numsec > 2) 
+          if (numsec > 2)
      .      call json%add(re,'ISCD3'//cext,iscd3(i,k))
-          if (numsec > 3) 
+          if (numsec > 3)
      .      call json%add(re,'ISCD4'//cext,iscd4(i,k))
           call json%add(re,'ISCDE'//cext,iscde(i,k))
-          
+
           if (ityp < 4) then
             call json%add(re,'IESTM'//cext,iestm(i,k))
             call json%add(re,'IBGK'//cext,ibgk(i,k))
@@ -455,7 +455,7 @@
 
           call json%add(reas,re)
 
-         end do 
+         end do
 
          if ((ityp == 4) .and. lden) then
            if (len_trim(cdenmodel(i)) > 0) then
@@ -522,7 +522,7 @@
 
          call json%add(me,elem)
 
-      end do  
+      end do
 
       end subroutine eirene_write_block_4abcd
 

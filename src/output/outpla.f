@@ -6,13 +6,13 @@ C                       MAPPING PROVIDED BY I_COARSE=NCLTAL(I_FINE)
 C                       ADDITIONAL CELL REGION: NSURF+1,...    ,NSBOX (NRADD CELLS) ON FINE GRID
 C                                               NSURF_TAL+1,...,NSBOX_TAL  ON UNDERLYING COARSE GRID
 C                       THE GRIDS OVERLAP IN CELLS 1,....,NSURF_TAL OF THE COARSE GRID.
-C               TO BE DONE:  SWITCH BETWEEN OLD AND NEW OPTION.
+C               TO BE DONE: SWITCH BETWEEN OLD AND NEW OPTION.
 cdr  Aug. 16: 1D grid set for printout on separate tally output streams in 1D cases
 cdr  Jan. 17:  switching between grids (coarse, structured and finer, unstrucutred)
-cdr            new NFLAGV option:  >=0: old (default), use fine grid
-cdr                                < 0: new: coarse grain by averaging onto
-cdr                                          coarser structured grid,
-cdr                                          and use abs(nflagv) as before nflagv.
+cdr            new NFLAGV option: >=0: old (default), use fine grid
+cdr                               < 0: new: coarse grain by averaging onto
+cdr                                         coarser structured grid,
+cdr                                         and use abs(nflagv) as before nflagv.
 cdr to be done: loops 121 and 122 are identical, once i_fine is set. eliminate one of them?
 cdr             inttal and intvol are largely identical, remove one ?
 cdr             prttal and prtvol are largely identical, remove one ?
@@ -27,7 +27,7 @@ cdr mar 23    : account for bgk virt. species as if they were "densmodel" specie
 C
       SUBROUTINE EIRENE_OUTPLA(ICAL)
 C  This routine prints background tallies as requested in input block 11.
-C  ical=0: called after initialization phase
+C  ical=0: called after initialization phase, prior to Monte Carlo loop.
 C  ical=1: called in postprocessing phase from iteration loop
 C          Some background parameters
 C          may have been modified due to iteration loop.
@@ -59,10 +59,11 @@ C
       REAL(DP) :: TALAV, HELPI, TALTOT, TOTALW
       INTEGER :: IR, IP, IT, I, I_FINE, NBLCKA, IB, IPRV, ITAL,
      .           NXM, NYM, NZM, NR1PR, NP2PR, NT3PR, NSBPR, NFLGPR,
-     .           ITALI, K, NFTI, NFTE, KK
+     .           ITALI, K, NFTI, NFTE,
+     .           KK
 
 C  INDICATOR FOR THE TALLIES THAT MAY HAVE BEEN MODIFIED IN POSTPROCESSING
-C  CURRENTLY:  BULK ION TEMP (-2), BULK ION DENSITY (-4), AND BULK ION DRIFT VELOCITY (-5,-6,-7)
+C  CURRENTLY: BULK ION TEMP (-2), BULK ION DENSITY (-4), AND BULK ION DRIFT VELOCITY (-5,-6,-7)
       INTEGER :: JPRTAL(5) = (/-2,-4,-5,-6,-7/)
 C
 cdr: extensive or intensive quantities? Needed for averaging....
@@ -93,9 +94,9 @@ C                 TALTYP=4: UNKNOWN        (?)
       TALTYP(20)=0
       TALTYP(21)=0
       TALTYP(22)=0
-      TALTYP(23)=0  ! bvin   cm/s
+      TALTYP(23)=0  ! bvin, units: cm/s
       TALTYP(24)=0  ! parmom units: g*cm/s
-      TALTYP(25)=0  ! psi units: Tesla*m
+      TALTYP(25)=0  ! psi, units: Tesla*m
       TALTYP(26)=3  ! zi
 
       TALTYP(27)=0  ! free27 units ??
@@ -108,7 +109,7 @@ cdr to be done: weighting function for gradient tallies. Tentatively set =0
 
       IF (ICAL == 1) THEN
 
-cdr "density model" is jargon for setting field particle parameters di,ti and v_vec
+cdr "density model" is jargon for setting field particle parameters di, ti and vi_vec
 cdr from other field particle parameters plus some further data, e.g. certain rate coefficients.
 
 !  IS ANY "DENSITY MODEL" DEFINED IN THIS RUN AT ALL?
@@ -116,10 +117,11 @@ cdr from other field particle parameters plus some further data, e.g. certain ra
 cdr  tbd: .and. all: npbgkp(ipls,1) .eq.0     also BGK virt. species should be printed.
 cdr   since BGK field species should be just special cases of "cdenmodel" cases
      .     ) RETURN
-!  IS OUTPUT OF AN INPUT TALLY ASKED FOR?
+
+!  IS OUTPUT OF SUCH AN "DENSITY-MODEL" INPUT TALLY ASKED FOR?
         DO IPRV=1,NVOLPR
           ITAL=NPRTLV(IPRV)
-cdr further below we check, if the prinout species range NSPEZI, NSPEZE
+cdr further below we check, if the printout species range NSPEZI, NSPEZE
 cdr includes any IPLS with a "density model"
           IF (ANY(JPRTAL == ITAL)) THEN
             CALL EIRENE_LEER (2)
@@ -176,10 +178,13 @@ c  positive tally numbers ital: output tallies, printed from OUTEIR.
 
           NFTI=1
 cdr  be careful with indirect species index addressing here.
-cdr  nfte=NPLSI for Ti and Vin_VEC profiles.
-cdr            not = NPLSTI and NPLSV, resp. 
-cdr  due to different density weighting, even if Ti or Vin are identical
-cdr  for different IPLS
+cdr  NFTE=NPLSI for Ti and Vin_VEC profiles.
+cdr            not: NFTE = NPLSTI or NPLSV, resp.
+cdr  due to different density weighting.
+cdr  Full physical species range is needed even if
+cdr  "intensive" tallies Ti or Vin_VEC are made identical
+cdr  for different IPLS, e.g. EVEN IF NFRSTP(ITALI)=1
+
           NFTE=NFSTPI(ITALI)
           IF (NSPEZV(IPRV,1).GT.0) THEN
 c  print tally only for selected range of species indices
@@ -198,6 +203,7 @@ c  check for valid range of tally ITALI
               GOTO 119
             ENDIF
 
+c  HELPP, HELPW: for weighting when averaging tallies across several cells
             SELECT CASE (ITALI)
             CASE (1)
               HELPP(1:NSBOX) = TEIN(1:NSBOX)
@@ -250,10 +256,12 @@ cdr  missing here: verify cdenmodel(k) ?
             CASE (22)
               HELPP(1:NSBOX) = POT(1:NSBOX)
             CASE (23)
-              IF ((ICAL == 1).AND.(VERIFY(CDENMODEL(K),' ') == 0)) CYCLE
+              IF ((ICAL == 1) .AND.
+     .            (VERIFY(CDENMODEL(K),' ') == 0)) CYCLE
               HELPP(1:NSBOX) = BVIN(MPLSV(K),1:NSBOX)
             CASE (24)
-              IF ((ICAL == 1).AND.(VERIFY(CDENMODEL(K),' ') == 0)) CYCLE
+              IF ((ICAL == 1) .AND.
+     .            (VERIFY(CDENMODEL(K),' ') == 0)) CYCLE
               HELPP(1:NSBOX) = PARMOM(K,1:NSBOX)
             CASE (25)
               HELPP(1:NSBOX) = PSI(1:NSBOX)
@@ -316,8 +324,10 @@ C  USE NCLTPR(I) = NCELL ARRAY TO COARSE GRAIN ONTO STRUCTURED GRID.
 C
             TOTALW=0.D0
             HELPW = 0.D0
-            HELPS = HELPP ! ORIGINAL INPUT TALLY ON FINE GRID: MOVED TO HELPS
-            HELPP = 0.D0  ! BUILD NEW TALLY NOW, ON UNDERLYING COARSER GRID, IF WANTED
+            HELPS = HELPP ! ORIGINAL INPUT TALLY ON FINE GRID:
+                          ! MOVED TO HELPS
+            HELPP = 0.D0  ! BUILD NEW TALLY NOW, ON UNDERLYING
+                          ! COARSER GRID, IF WANTED
 c                         ! otherwise: helpp=helps
             DO 121 IB=1,NBMLT
              NBLCKA=NSTRD*(IB-1)
@@ -388,7 +398,7 @@ C  22: (ELECTRIC) POTENTIAL
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (24)
 C  24) PARALLEL TO B FLOW MOMENTUM
-cdr jan 22: bug fix. weighting was missing
+cdr Jan.22: bug fix. weighting was missing
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
@@ -500,7 +510,7 @@ C  (ELECTRIC) POTENTIAL
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (24)
 C  PARALLEL TO B FLOW MOMENTUM
-cdr jan. 22 bug fix, weighting was missing
+cdr Jan.22: bug fix, weighting was missing
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)

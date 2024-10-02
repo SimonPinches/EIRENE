@@ -14,7 +14,7 @@ cdr             number of input cards read. This card counting is done in find_p
 cdr sept. 19:   call alloc bckgrnd: indpro=6 and/or indpro =7 ?,
 c               remove one redundant call
 cdr  oct 18 :   unify reading of A&M data (reaction decks) from external file:
-cdr             Formerly from block 4, block 5 ("density models") 
+cdr             Formerly from block 4, block 5 ("density models")
 cdr             and block 12 (line emissivities).
 cdr             Now: unified interpreter of reaction card, subr. READ_REACLINES.f.
 cdr             Reading only from the list in  block 4, IR=1,NREACI.
@@ -22,15 +22,15 @@ cdr             ALL reaction data potentially needed in blocks 5 and 12
 cdr             must have been read in block 4, as well as their transfer to internal reaction
 cdr             reaction data structures (calls to SLREAC.f) are already carried out.
 cdr             Block 5 TDMPAR (density model) option: revised
-cdr sept. 18:   iopt:  ?? further optional input lines at the end of block 5?
+cdr sept. 18:   iopt: ?? further optional input lines at the end of block 5?
 cdr             for turning on/off input tally storage, and for gradients of
 cdr             input tallies (optional)
 cdr  sept.18:   XDR format options for fort.13 stream: removed.
 cdr  apr. 18:   fully connected and tested: trchktm option, in block 11.
 cdr  july 17 :  GR cleanup: wrmesh option split into writing and plotting
 Cdr  april 17:  some cleanup (spelling, trim(character)) adopted from sols_iter version
-cdr             added: logical NEXVS   (default: F. Unclear meaning, so far...)
-c               added: logical TRCRNF  (traceback for random seeds for correlated sampling)
+cdr             added: logical NEXVS (default: F. Unclear meaning, so far...)
+c               added: logical TRCRNF (traceback for random seeds for correlated sampling)
 cdr  sept. 16:  extend options for extrapolations for A&M data beyond range
 cdr             of tables or validity range fit expressions.
 
@@ -38,7 +38,7 @@ cdr             of tables or validity range fit expressions.
 !               of second variable in fit or data table
 !               same with jfexmn,jfexmx (parameters to select extrapolation scheme)
 
-!pb  June  16:  default for NPLSTI changed from 1 to NPLS
+!pb  June  16:  default for NPLSTI changed from 1 to NPLSI
 cdr             indpro(2) and indpro(4): try to synchronize the meaning, to be done
 !cd  jan   16:  reset census start time to time0, even for time0=0.
 !cd  dec.  15:  jj-nlim, rather than jj-nlimi, for non.dev.std. surfaces
@@ -46,9 +46,9 @@ cdr             indpro(2) and indpro(4): try to synchronize the meaning, to be d
 !cd  29.10.14:  reading external file for block 4&5: allow comment lines at the beginning of file
 !               (same in find_param)
 !cd  22.09.14:  1D case, levgeo=2:  do not call grid(2)
-!cd  22.03.14:  option 'include filname ' instead of block 4 and 5 tested and verified
+!cd  22.03.14:  option 'include filname' instead of block 4 and 5 tested and verified
 !               some minor changes at transition from end of block ***3 and re-entry to block ***6
-!pb  01.01.14:  options AMPTS, multiplier for ntcpu.... added (input block 7)
+!pb  01.01.14:  options AMPTS, multiplier for ntcpu, npts(istra): added (input block 7)
 !dr  03.03.10:  READING A&M DATA in block 4, commented, sorted,.....
 !pb  20.03.08:  allocate and nullify estiml(1) if no input block 10F
 !pb             is available
@@ -120,7 +120,7 @@ C
       USE EIRMOD_CSPEI
       USE EIRMOD_CESTIM
       USE EIRMOD_CUPD
-      USE EIRMOD_CPES, ONLY : NPRS
+      USE EIRMOD_CPES, ONLY: NPRS
       USE EIRMOD_PHOTON
       USE EIRMOD_TIMEA, ONLY: EIRENE_TIMEA0
       USE EIRMOD_SECOND_OWN, ONLY: EIRENE_SECOND_OWN
@@ -132,8 +132,8 @@ C
 
       IMPLICIT NONE
 C
-      TYPE(VOLUMEP),POINTER :: VOLCUR
-CC
+      TYPE(VOLUMEP), POINTER :: VOLCUR
+C
       REAL(DP) :: VOLTOT_TAL, RTEST
 
 C  RUN TIME STATISTICS IN INITIALIZATION PHASE, WITHIN INPUT.F
@@ -143,7 +143,7 @@ cdr   REAL(DP) :: timea
       REAL(DP), ALLOCATABLE :: SAREA_SAVE(:)
       REAL(DP), ALLOCATABLE :: RDUMMY(:,:)
       INTEGER :: IADTYP(0:4)
-      INTEGER :: IERROR, IUNIN_SAVE, JSTREAM, NSOPT, ILIMPS, 
+      INTEGER :: IERROR, IUNIN_SAVE, JSTREAM, NSOPT, ILIMPS,
      .           I, J, I1, I2, I3, JL, IO, IUSR, IFLG,
      .           ITALI, IRAD, IS, ISS, II, INC, IRET,
      .           JPLS, IRE, JSPZ, JTRJ, ISTRAI, NLJ, IENTRY,
@@ -170,6 +170,9 @@ C
 !pb IUNIN set in COMPRT
       IUNIN_SAVE = IUNIN
       IUSROUT = 0
+C
+C  UNIT NUMBERS FOR INPUT FILE: MUST BE DIFFERENT FROM: 8,10,11,12
+C  13,14,AND 15
 C
 C  UNIT NUMBER FOR OUTPUT FILE: MUST BE DIFFERENT FROM: 5,8,10,11,12
 C  13,14, AND 15 AND IUNIN
@@ -223,7 +226,8 @@ C
 
       MTSURF=0 ! cdr  ????
 C
-C  SET DEFAULT REACTION MODELS
+cdr SET MINIMAL REACTION MODELS (H/He plasmas), unless other reaction data are specified
+cdr i.e. should be called only in case if any NRCA, NRCM, NRCI = 0 for any IATM, IMOL, IION
 C
       CALL EIRENE_SETUP_DEFAULT_REACTIONS
 
@@ -268,7 +272,6 @@ C  THEREFORE .TRUE. MEANS: TALLY IS SWITCHED OFF
       LVZDENM  = .TRUE.
       LVZDENI  = .TRUE.
       LVZDENPH = .TRUE.
-
 C
       CALL EIRENE_LEER(2)
 
@@ -295,11 +298,11 @@ C
       IF (IUNIN.NE.5) REWIND IUNIN !VK
 
       READ (IUNIN,'(A80)') ZEILE
-      
+
       IF (IUNIN.NE.5) REWIND IUNIN !VK
       LRDJSON = .FALSE.
       IF (ZEILE(1:1) == '{') THEN
-	LRDJSON = .TRUE.
+        LRDJSON = .TRUE.
       ELSEIF (ZEILE(1:1) /= '*') THEN
         WRITE (IUNOUT,*) ' EIRENE INPUT FORT.1 HAS WRONG FORMAT'
         CALL EIRENE_EXIT_OWN(1)
@@ -312,12 +315,12 @@ C
 
       ELSE
 
-     	 CALL EIRENE_READ_FIXFORM (NLIMPS, SAREA_SAVE, IERROR)
+        CALL EIRENE_READ_FIXFORM (NLIMPS, SAREA_SAVE, IERROR)
 
       END IF
 C
       CALL EIRENE_SETUP_TIME_SURFACE (IERROR)
-C     
+C
  1500 IF (IERROR.GT.0) THEN
         WRITE (iunout,*) IERROR,' INPUT OR PARAMETER ERRORS DETECTED'
         WRITE (iunout,*)
@@ -342,7 +345,7 @@ C   MODIFICATION OF INPUT DUE TO EITHER INCONSISTENCIES OR DUE
 C   TO COUPLED NEUTRAL-PLASMA (OR NEUTRAL-NEUTRAL) CALCULATIONS
 C   SOME FURTHER CONSTANTS ARE SET.      STATEM. NO. 2000 --> 3999
 
-      CALL EIRENE_CHECK_GEOM_CONSIST   
+      CALL EIRENE_CHECK_GEOM_CONSIST
 C
 C  SOURCE PARAMETERS AND (REFLECTING) BOUNDARY CONDITIONS,
 C  ON ADDITIONAL AND NON-DEFAULT STANDARD SURFACES
@@ -354,9 +357,9 @@ C
 C  SET NON-DEFAULT STANDARD SURFACE IDENTIFIERS INMP...
 C
       CALL EIRENE_SETUP_INMP
-C     
+C
       CALL EIRENE_PREP_STRATA
-C     
+C
 C
 C
 C  SPECIES INDEX DISTRIBUTION OF PRIMARY SOURCE PARTICLES
@@ -371,7 +374,8 @@ C  SET SOME ARRAYS TO SPEED UP COMPUTATIONS
 C
       CALL EIRENE_SETUP_ISPEZ
 
-      IF (NPHOTI > 0) CALL EIRENE_PH_INIT(1)  !  this should go into setamd(0)
+!  this should go into setamd(0)
+      IF (NPHOTI > 0) CALL EIRENE_PH_INIT(1)
       CALL EIRENE_SETAMD(0)
       CALL EIRENE_ALLOC_CTEXT(2)
 
@@ -405,7 +409,7 @@ cdr  from external codes. E.g.: bgk iterations ? spectra?
       IF (LRDJSON) THEN
 
         CALL EIRENE_READ_BLK14_JSON(IERROR)
-        
+
         CALL EIRENE_READ_MPI_STRATEGY_JSON
 
 C  CHECK FOR USER SPECIFIC INPUT
@@ -451,14 +455,14 @@ C  COPY USER SPECIFIC DATA TO FILE user_data.input
             END IF
           END IF
         END DO
-      
+
         IF (VERIFY(MPI_LINE,' ') > 0) THEN
           CALL EIRENE_READ_MPI_STRATEGY_fixed(MPI_LINE)
         END IF
 
         IF (JL > 0) THEN
           REWIND IUSROUT
-         IUNIN = IUSROUT
+          IUNIN = IUSROUT
         ELSE
           IUSROUT = 0
         END IF
@@ -472,9 +476,9 @@ C
 C  INPUT BLOCK 14 DONE
 C
       CALL EIRENE_PREP_PLOTTING
-      
+
       CALL EIRENE_CORRECT_STATS_INPUT
-      
+
 C
 C  NO MODIFICATION OF INPUT VARIABLES BEYOND THIS POINT
 C  WITHOUT WARNING
@@ -484,10 +488,9 @@ C
 C
       CALL EIRENE_INIUSR
 C
-C  SET DERIVED INPUT PARAMETERS, GRIDS AND PROFILES    
+C  SET DERIVED INPUT PARAMETERS, GRIDS AND PROFILES
 C
       CALL EIRENE_SET_DERIVED_INPUT_PARAMETERS(IERROR)
-      
 
       CALL EIRENE_SET_PARMMOD(3)
       CALL EIRENE_ALLOC_CGEOM(2)
@@ -499,7 +502,7 @@ C
 C
 C  WRITE JSON FILE
       IF (LRDJSON) THEN
-        CALL EIRENE_WRITE_JSON_AMData ('eirene_AMData.json')
+        CALL EIRENE_WRITE_JSON_AMData('eirene_AMData.json')
         CALL EIRENE_WRITE_JSON_FILE('eirene_input_json.out')
       ELSE
         CALL EIRENE_WRITE_JSON_FILE('eirene.input.json')
@@ -507,7 +510,7 @@ C  WRITE JSON FILE
 
 !  REMOVE LIST OF REFLECTION MODELS
 !  MOVED HERE AS TO BE AVAILABLE FOR WRITING ON JSON-FILE
-      
+
       CALL EIRENE_DEALLOC_REFLIST
 
       CALL EIRENE_PAGE
@@ -524,19 +527,20 @@ C
 C  SET RADIAL OR X GRID
         IF (NLRAD) CALL EIRENE_GRID (1)
 C  SET POLOIDAL OR Y GRID
-        IF (NLPOL.OR.(LEVGEO == 3)) CALL EIRENE_GRID (2)  ! NO NEED TO SET UP POLYGON GRID IN CASE OF 1D RUN, LEVGEO=2
+! NO NEED TO SET UP POLYGON GRID IN CASE OF 1D RUN, LEVGEO=2
+        IF (NLPOL.OR.(LEVGEO == 3)) CALL EIRENE_GRID (2)
 C  SET TOROIDAL OR Z GRID
         IF (NLTOR) CALL EIRENE_GRID (3)
 C
         IF (INDPRO(12).LT.4) THEN
 C  INITIALISE SUBROUTINE VOLUME FOR LATER CALLS
-C  TO BE WRITTEN:    CALL VOLUME(0)
+C  TO BE WRITTEN: CALL VOLUME(0)
 C  SET VOLUMES, 1ST DIMENSION (R/X-GRID)
           IF (NLRAD) CALL EIRENE_VOLUME(1)
 C  SET VOLUMES, 2ND DIMENSION (THETA/Y-GRID)
           IF (NLPOL) CALL EIRENE_VOLUME(2)
 C  SET VOLUMES, 3RD DIMENSION (PHI/Z-GRID)
-         IF (NLTOR) CALL EIRENE_VOLUME(3)
+          IF (NLTOR) CALL EIRENE_VOLUME(3)
 C  SET VOLUMES, IN ADDITIONAL CELL REGION
           IF (NLADD) CALL EIRENE_VOLUME(4)
         ELSEIF (INDPRO(12).EQ.4) THEN
@@ -566,7 +570,7 @@ C
 C  SET CELL DIAMETER
 C
         CALL EIRENE_SET_CELL_DIAMETER
-C     
+C
 C   INCLUDE INFORMATION PROVIDED BY INPUT BLOCK 8: ADDITIONAL
 C   DATA FOR SPECIFIC ZONES
 C
@@ -627,7 +631,7 @@ C
 C  SET 'VISIBLE ADDITIONAL SURFACES' RANGES nlimii(j),nlimie(j), for each grid cell j
 C  FROM INFORMATION ON IGJUM3
         CALL EIRENE_SETUP_VIS_ADD_SURF_RANGES
-        
+
 C
 C  ALL GEOMETRICAL DATA (GRIDS, VOLUMES, SWITCHES) ARE DEFINED NOW
 C
@@ -643,8 +647,9 @@ C
 C
         IF (NFILEM.EQ.1) CALL EIRENE_WRGEOM(TRCFLE)
 
+!VK+AK in order to use EIRENE only for mesh generation
         if(nltrimesh) then
-          write(iunout,*) 'NLTRIMESH=.true.' !VK+AK in order to use EIRENE only for mesh generation
+          write(iunout,*) 'NLTRIMESH=.true.'
           IF (NPRS > 1) THEN
             CALL EIRENE_EXIT_OWN(1)
           ELSE
@@ -751,24 +756,26 @@ CVK END
      . write (iunout,*) ' CPU time before plasma definition ',tpb2-tpb1
       tpb1 = tpb2
 C
- 4000 CONTINUE   !  at this point: continue INPUT.f in case iiter > 1 or itimv>1,
+ 4000 CONTINUE   !  at this point:
+cdr                 continue INPUT.f in case iiter > 1 or itimv>1,
 cdr                 after having skipped all the rest above.
 C
       if ((iiter.gt.1) .or. (itimv.gt.1)) then
         write (iunout,*) 'iterative or time dep.mode. input 4000'
-        write (iunout,*) 'iiter, itimv, nfilel,nfilej,nlshrt13,iprnl'
-        write (iunout,*)  iiter, itimv, nfilel,nfilej,nlshrt13,iprnl
+        write (iunout,*) 'iiter,itimv,nfilel,nfilej,nlshrt13,iprnl'
+        write (iunout,*)  iiter,itimv,nfilel,nfilej,nlshrt13,iprnl
       endif
 
 !  NOTHING IS DONE IF ARRAYS FOR BACKGROUND FIELDS ARE ALREADY ALLOCATED
       IF (ANY(INDPRO(1:12) == 6) .or. ANY(INDPRO(1:12) == 7))
-     .    CALL EIRENE_ALLOC_BCKGRND
+     .   CALL EIRENE_ALLOC_BCKGRND
 
       IF ((NMODE.NE.0.AND.IITER.LE.MAX(1,NITER0)) .OR.
-     .    (ABS(NMODE).EQ.2)) THEN  !dr: for EMC3 coupling? in case IITER .GT. 1
+     .    (ABS(NMODE).EQ.2)) THEN  !dr: for EMC3 coupling?
+                                   !    in case IITER .GT. 1
 C  READ PLASMA BACKGROUND
-c  EITHER:  FROM EXTERNAL DATABASE (FT31) (NOT NLPLAS)
-C  OR    :  FROM COMMON BRAEIR (NLPLAS)
+c  EITHER: FROM EXTERNAL DATABASE (FT31) (NOT NLPLAS)
+C  OR    : FROM COMMON BRAEIR (NLPLAS)
         IENTRY=0
         CALL EIRENE_IF1COP(IENTRY)
       ENDIF
@@ -841,7 +848,7 @@ cdr  Yes.
 cdr
 
 cdr set plasma, plasma_deriv, and create fort.13
-      IF ((NFILEL.LE.1) .OR. NLSHRT13 .OR. IO13.NE.0 .or. .not.ex) THEN
+      IF (NFILEL.LE.1 .OR. NLSHRT13 .OR. IO13.NE.0 .or. .not.ex) THEN
 C
 C  SET PLASMA PARAMETERS AND PRIMARY SOURCE PARAMETERS
 C  FROM INPUT BLOCKS 5 AND 7, RESP.
@@ -861,7 +868,7 @@ cdr of each iteration cycle or time cycle
         IF ((NZADD.GT.0) .AND. (IITER == 1)
      .                   .AND. (ITIMV == 1))
      .    CALL EIRENE_SET_SPECIFIC_ZONES
-C     
+C
 C  MODIFY SOME PLASMA DATA, USER-SUPPLIED ROUTINE
 C
         CALL EIRENE_PLAUSR
@@ -886,7 +893,7 @@ cdr Then just do nothing for virt. background.
           IFLG=0
           CALL EIRENE_RPLAM(TRCFLE,IFLG,'INPUT 1')
 
-        endif
+        ENDIF
 C
 C  COMPUTE SOME 'DERIVED' PLASMA DATA PROFILES FROM THE INPUT PROFILES
 C
@@ -920,7 +927,8 @@ C
         tpb1 = tpb2
 
 C
-      ELSEIF (NFILEL.GE.2.AND.NFILEL.LE.4) THEN  !  =2,3,4, and NLSHRT13=F,necessarily
+      ELSEIF (NFILEL.GE.2.AND.NFILEL.LE.4) THEN   ! =2,3,4,
+                                  ! and NLSHRT13=F, necessarily
 C
 C  READ PLASMA DATA, ATOMIC DATA, SOURCE DATA FROM FT13
 C
@@ -934,7 +942,8 @@ cdr  iflg rather than nfilel  ??
         IF ((NFILEL == 2) .OR. (NFILEL == 3)) THEN
           CALL EIRENE_RPLAM(TRCFLE,IFLG,'INPUT 2')
 
-cdr  from now on: iflg=4, skip reading A&M data and primary source data from fort.13
+cdr  from now on: iflg=4,
+cdr  skip reading A&M data and primary source data from fort.13
         ELSEIF (NFILEL == 4) THEN
           IFLG=4
           CALL EIRENE_RPLAM(TRCFLE,IFLG,'INPUT 3')
@@ -959,6 +968,12 @@ C
 
 C
 C  SET UP TABLE OF CONTRIBUTIONS OF MONTE CARLO PARTICLES TO BACKGROUND SPECIES
+CDR: in case of "density models": multiple test particle components for one new background tally,
+cdr  e.g. COLRAD models
+
+cdr  independent:
+cdr  iadtyp(ityp) = increment in 1D species arrays
+cdr  potentially useful in many places
 C
       IADTYP(0:4) = (/ 0, NSPH, NSPA, NSPAM, NSPAMI /)
 
@@ -976,12 +991,12 @@ C
 cdr 2020  remove irrelevant/confusing printout
       if (ANY(ISPZ_BACK(:,:) > 0)) then
         CALL EIRENE_LEER(2)
-        WRITE (IUNOUT,*) ' LIST OF CONTRIBUTIONS TO BACKGROUND SPECIES'
+        WRITE (IUNOUT,*) 'LIST OF CONTRIBUTIONS TO BACKGROUND SPECIES'
         DO JSPZ = 1, NSPZ
           DO JPLS = 1, NPLSI
             IF (ISPZ_BACK(JSPZ,JPLS) > 0)
-     .           WRITE (IUNOUT,*) TEXTS(JSPZ), ' CONTRIBUTES TO ',
-     .                            TEXTS(NSPAMI+JPLS)
+     .        WRITE (IUNOUT,*) TEXTS(JSPZ), ' CONTRIBUTES TO ',
+     .                         TEXTS(NSPAMI+JPLS)
           END DO
         END DO
       endif
@@ -990,8 +1005,8 @@ C  AT THIS POINT THE BACKGROUND MEDIUM DATA ARE ALL SET.
 C
 C  COMPUTE PRIMARY SOURCE DATA (OVERRULE SOME OF INPUT BLOCK 7)
 
-      IF (NMODE.NE.0.AND.((IITER.LE.1) .OR. 
-     .                    (IITER > NITER)))  THEN
+      IF (NMODE.NE.0.AND.((IITER.LE.1) .OR.
+     .                    (IITER > NITER))) THEN
         DO ISTRAI=1,NSTRAI
           IF (INDSRC(ISTRAI).GE.0) CALL EIRENE_IF2COP(ISTRAI)
         ENDDO
@@ -1051,7 +1066,7 @@ CDR EMPTY CENSUS. TURN OFF TIME STRATUM
 
 
 cdr   ELSEIF (NTIME.LT.0) THEN
-cdr read census and launch one by one, no time horizon.
+cdr M.Rack option: read census (fort.15) and launch one by one, no time horizon.
 cdr All done already above.
       ENDIF
 C
@@ -1130,8 +1145,8 @@ C
         CALL EIRENE_LEER(1)
 
         DO 7702 J=1,NSOPT
-          CALL EIRENE_MASJ3 ('J,NLIMII,NLIMIE          ',
-     .                        J,NLIMII(J),NLIMIE(J))
+          CALL EIRENE_MASJ3('J,NLIMII,NLIMIE          ',
+     .                       J,NLIMII(J),NLIMIE(J))
  7702   CONTINUE
 C
       ENDIF
@@ -1219,9 +1234,10 @@ c      write (iunout,'(a,a)') 'zeile :',trim(a)   !###
 c========================================================================
 
       subroutine eirene_replace_stored
-cdr restore some selected background data and atomic data
-cdr for virtual species, which may have been saved
-cdr in iterative routines modbgk, tmstep, modphot
+cdr For nonlinear mode:
+cdr Restore some selected background data and atomic data
+cdr for virtual species, which may have been explicitly saved
+cdr in iterative routines eirene_modbgk, eirene_tmstep, eirene_modphot
 
 CDR NOTHING IS DONE IN CASE: nfla_virt=0 .and. nrea_virt=0
       use eirmod_precision
@@ -1235,13 +1251,13 @@ CDR NOTHING IS DONE IN CASE: nfla_virt=0 .and. nrea_virt=0
       integer :: ifl, irea, jpls, isw, irei, ircx, irpi, irel
 
       if (nstordr < nrad) then
-        write (iunout,*) 
+        write (iunout,*)
      .    'ERROR encountered in EIRENE_REPLACE_STORED'
         write (iunout,*) 'Reaction data have been read from fort.13'
         write (iunout,*) 'and should be fed into TABEI,CX,EL..'
         write (iunout,*) 'but no space is provided due to'
         write (iunout,*) 'STORAGE SAVE MODE'
-        write (iunout,*) 'Calculation abandonned!'
+        write (iunout,*) 'Calculation abandoned!'
         CALL EIRENE_EXIT_OWN(1)
       end if
 
@@ -1249,7 +1265,7 @@ CDR NOTHING IS DONE IN CASE: nfla_virt=0 .and. nrea_virt=0
       call eirene_masj2('nfla_vi,nrea_vi ',nfla_virt,nrea_virt)
 
       if ((nfla_virt > 0) .and. .not.allocated(lg_store)) then
-        write (iunout,*) 'NO STORED DATA AVAILABE FOR LGVAC '//
+        write (iunout,*) 'NO STORED DATA AVAILABLE FOR LGVAC '//
      .       'IN EIRENE_REPLACE_STORED'
       else
         do ifl = 1, nfla_virt
@@ -1264,7 +1280,7 @@ CDR NOTHING IS DONE IN CASE: nfla_virt=0 .and. nrea_virt=0
 
       if ((nrea_virt > 0) .and. (.not.allocated(tab_store) .or.
      .                           .not.allocated(e_store))) then
-        write (iunout,*) 'NO STORED DATA AVAILABE FOR '//
+        write (iunout,*) 'NO STORED DATA AVAILABLE FOR '//
      .       'PARTICLE OR ENERGY RATES IN EIRENE_REPLACE_STORED'
       else
         do irea = 1, nrea_virt

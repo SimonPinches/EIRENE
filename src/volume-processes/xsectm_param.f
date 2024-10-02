@@ -1,4 +1,4 @@
-C  april 07:  setting of NRPI  introduced (ion impact collisions)
+C  april 07:  setting of NRPI introduced (ion impact collisions)
 C  may 16  :  nrds -> nrei
 C
 C
@@ -74,7 +74,7 @@ C  HD:
                 IION3=IION
               ENDIF
    35       CONTINUE
-C  D2:  (OR HT ?)
+C  D2: (OR HT ?)
           ELSEIF (NMASSM(IMOL).EQ.4) THEN
 C  TEST: D2 OR HT, USE TEXTS(IMOL)
             IF (INDEX(TEXTS(NSPA+IMOL),'D').NE.0) THEN
@@ -239,7 +239,7 @@ C
         IF (NRCM(IMOL).EQ.0) THEN
           NMELI(IMOL)=0
 C
-C  NON-DEFAULT EL MODEL:  240--
+C  NON-DEFAULT EL MODEL: 240--
 C
         ELSEIF (NRCM(IMOL).GT.0) THEN
           DO 230 NRC=1,NRCM(IMOL)
@@ -268,7 +268,7 @@ C  NO DEFAULT MODEL
 C
        IF (NRCM(IMOL).EQ.0) THEN
 C
-C  NON-DEFAULT ION IMPACT MODEL:  130--190
+C  NON-DEFAULT ION IMPACT MODEL: 130--190
 C
         ELSEIF (NRCM(IMOL).GT.0) THEN
           DO 150 NRC=1,NRCM(IMOL)

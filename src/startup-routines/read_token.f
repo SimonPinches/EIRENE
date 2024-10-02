@@ -2,7 +2,7 @@
      .  lreal)
 cdr
 cdr  comments ?  in ? out?
-cdr  seems to be used in many places. 
+cdr  seems to be used in many places.
 cdr  perhaps move to general purpose "assistant" section
 cdr
       implicit none

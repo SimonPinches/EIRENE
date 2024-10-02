@@ -39,7 +39,7 @@ c  eirene_locat2:  deallocate temporary arrays
       USE EIRMOD_SPUTER, ONLY: EIRENE_SPUTR1
       USE EIRMOD_REFLEC, ONLY: EIRENE_REFLC1
       USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
-      use eirmod_sheath, only: eirene_sheath 
+      USE EIRMOD_SHEATH, ONLY: EIRENE_SHEATH
 
       IMPLICIT NONE
       PRIVATE
@@ -61,8 +61,8 @@ cym copied from subroutine LOCATE1 -> threadprivate because of save
       REAL(DP) :: DUMT(3),DUMV(3)
       REAL(DP) :: YIELD1, YIELD2, FMASS, FCHAR, VELXS, VELYS,
      .          VELZS, E0S, WEIGHS, VELS, FLX, VPARZ, VPAR, VTERM,
-     .          VPERP, VPARX, VPARY, 
-     .          ESHET, 
+     .          VPERP, VPARX, VPARY,
+     .          ESHET,
      .          GAMMA,
      .          VYSPTP, VZSPTP, ESPTC, ESPTP, VSPTP, VXSPTP, VSPTC, SG,
      .          VXSPTC, VYSPTC, VZSPTC, SUM1, ZEP1, CUR,
@@ -86,12 +86,12 @@ c     .            TIWL(NPLS), DIWL(NPLS), EFWL(NPLS), SHWL, TEWL,
 c     .            CUMDIS(0:NREC)
       REAL(DP), allocatable :: VXWL(:), VYWL(:), VZWL(:), VPWL(:),
      .             TIWL(:), DIWL(:), EFWL(:), CUMDIS(:), ZIWL(:)
-      REAL(DP) :: SHWL, TEWL       
+      REAL(DP) :: SHWL, TEWL
 cym end change
 
       INTEGER :: ISSPTP, ISSPTC, ISTS, IP, ISPZS, IRC, IIRC, IRRC,
      .           ISOUR, ISRFS, I, ISTEP,
-     .           IDUMM, NFLAG, 
+     .           IDUMM, NFLAG,
      .           IPLV, IDUM, IO, NO, IPL, IPP,
      .           IPLTI, IRPH, KK, JSPZ,
      .           ITYP_OLD, IGASP_OLD, IGASC_OLD
@@ -110,7 +110,7 @@ cym adding externals
 !$OMP threadprivate(DUMT, DUMV,
 !$OMP& YIELD1, YIELD2, FMASS, FCHAR, VELXS, VELYS,
 !$OMP& VELZS, E0S, WEIGHS, VELS, FLX, VPARZ, VPAR, VTERM,
-!$OMP& VPERP, VPARX, VPARY, 
+!$OMP& VPERP, VPARX, VPARY,
 !$OMP& ESHET,
 !$OMP& GAMMA,
 !$OMP& VYSPTP, VZSPTP, ESPTC, ESPTP, VSPTP, VXSPTP, VSPTC, SG,
@@ -129,12 +129,12 @@ cym adding externals
 !$OMP& VXWL, VYWL, VZWL, VPWL,
 !$OMP& TIWL, DIWL, EFWL, SHWL, TEWL, ZIWL,
 cym - ITER case
-!$OMP& WEISPZ, 
+!$OMP& WEISPZ,
 cym
 !$OMP& CUMDIS,
 !$OMP& ISSPTP, ISSPTC, ISTS, IP, ISPZS, IRC, IIRC, IRRC,
 !$OMP& ISOUR, ISRFS, I, ISTEP,
-!$OMP& IDUMM, NFLAG, 
+!$OMP& IDUMM, NFLAG,
 !$OMP& IPLV, IDUM, IO, NO, IPL, IPP,
 !$OMP& IPLTI, IRPH, KK, JSPZ,
 !$OMP& ITYP_OLD, IGASP_OLD, IGASC_OLD,
@@ -144,13 +144,13 @@ cym
 !$OMP& ILINE, ISURF, ITRSF, ICOS, IVOLM, ISOR, INDTEC,
 !$OMP& JATM, JMOL, JION, JPLS, JPHOT,
 !$OMP& IRET, IDIMM)
-      
+
 !HJL      save
 
 
       CONTAINS
 
-c  jan05:  2nd bulk secondary for irrc processes in pppl, eppl
+c  jan 05:  2nd bulk secondary for irrc processes in pppl, eppl
 c          (also affected: comxs, xstrc, xsectp)
 c
 c  for testing sampling and evaluation of line profiles:
@@ -164,7 +164,7 @@ c           elstep is now nemod1=8,9  (was previously: -2, -3, but this
 c           could not be chosen in input, due to use of IDEZ function for nemods)
 c
 !PB 12.01.06: index "ind" added to update_spectrum indicating particle starts on surface
-!PB 02.03.06: store startpoint of trajectory
+!PB 02.03.06: store start point of trajectory
 cdr 12.05.06: argument vn added to ph_energy, for doppler+motional stark effect
 c             directly to be included in line shape sampling
 !pb 27.09.06: spttot updated with sputtering of bulk ions (total sputtered flux tally)
@@ -181,12 +181,12 @@ cdr 22.09.14: updating of revised sputter tallies (resolved wrt. emitted species
 cdr 24.09.14: levgeo=2, surface normal on radial surface from algebraic relation, rather than from polygon
 cdr           levgeo=2 and 1D run: no polygons are set anymore.
 cdr oct   14: weight now as argument in velocs (not via comprt).
-CDR           RSQDV2:  factor for Mach number conversion to cm/s
+CDR           RSQDV2: factor for Mach number conversion to cm/s
 cdr           also: scoring sputter tallies revised, igasp,igasc=0 option:
 cdr           means: score (if sputtered particle species found), but do not follow.
 cdr           to be done: epel volume tally (electron energy loss associated with vol.rec,
 cdr                       or with sheath, etc)
-cdr july 15:  correction for levgeo=10: do not modify nrcell, even if nlsrfx
+cdr july  15: correction for levgeo=10: do not modify nrcell, even if nlsrfx
 cdr nov 15 :  species index eppl added.
 cdr oct 17 :  code unification/reduction: set species pointer, near 5000
 cdr           Could be done earlier, and also simplify code here in locate already
@@ -275,10 +275,10 @@ cym - do this on all threads, this is a private variable
         ALLOCATE (WEISPZ(NSPZ))      
         DO 1 JSPZ=1,NSPZ
           WEISPZ(JSPZ)=-1.
-    1 CONTINUE
+    1   CONTINUE
       ENDIF
 
-!$OMP MASTER        
+!$OMP MASTER
 C
       SUMM = SUM(SORWGT(1:NSRFSI(ISTRA),ISTRA))
 c  at this point: SUMM .gt.0 already verified in calling routine (NLSRON)
@@ -358,13 +358,13 @@ C
       END IF
 
 !$OMP END MASTER
-      
+
       RETURN
       END SUBROUTINE EIRENE_LOCAT0
 C
       SUBROUTINE EIRENE_LOCAT1(IPANU)
       IMPLICIT NONE
-      
+
       INTEGER, INTENT(IN) :: IPANU
 cym      INTEGER :: NPANUO, NCELLT, IPOINT,
 cym     .           ityp_b1,ityp_b2,ipls_b1,ipls_b2,ISECT, I1, I2, IM, IMP,
@@ -372,7 +372,6 @@ cym     .           ILINE, ISURF, ITRSF, ICOS, IVOLM, ISOR, INDTEC,
 cym     .           JATM, JMOL, JION, JPLS, JPHOT
 
       save
-
 
 cym allocate newly allocatable arrays
       if (.not.allocated(VXWL)) then
@@ -388,7 +387,7 @@ cym allocate newly allocatable arrays
         allocate(cflag(7,MSTOR0))
       endif
 cym see where this should be deallocated
-cym end      
+cym end
 
 C
 C  TENTATIVELY ASSUME: A TEST PARTICLE WILL BE BORN
@@ -558,11 +557,11 @@ C Volume source
         END SELECT
 
         IF (ITYP.GE.0 .AND. ITYP.LE.3) THEN
-        IF (NLTRC) THEN
+          IF (NLTRC) THEN
 !$OMP CRITICAL
-          CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
+            CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
 !$OMP END CRITICAL
-        ENDIF
+          ENDIF
 C
           GOTO 5000
         ENDIF
@@ -703,23 +702,25 @@ C  TENTATIVELY ASSUME:
           ELSEIF (MTSURF.GT.0) THEN
             ITRSF=INMP3I(NRCELL,NPCELL,MTSURF)
           ENDIF
-cdr  same code as for levgeo<4. But explicitly only for first grid MRSURF, MASURF
           IF (ITRSF.GT.0) MSURF=NLIM+ITRSF
         case (4)
+cdr  same code as for levgeo<4. But explicitly only for first grid MRSURF, MASURF
           IF (MASURF == 0) THEN
-c  increment NLIM already added on inmti? msurf=nlim+ists
+c  increment NLIM is already added on inmti. msurf=nlim+ists.
             MSURF=ABS(INMTI(IPOLG,NRCELL))
           ELSE
             MSURF=MASURF
           END IF
         case (5)
+cdr  same code as for levgeo<4. But explicitly only for first grid MRSURF, MASURF
       IF (MASURF == 0) THEN
-c  increment NLIM already added on inmtit? msurf=nlim+ists
+c  is increment NLIM already added on inmtit? msurf=nlim+ists?
             MSURF=ABS(INMTIT(IPOLG,NRCELL))
           ELSE
             MSURF=MASURF
           END IF
         case (10)
+c  3rd party supplied geometry package  (e.g.: EMC3-EIRENE):
 c  deal with 1st grid surfaces only (with "radial surfaces", by abuse of language)
           IF (MASURF.GT.0) THEN
             MSURF=MASURF
@@ -731,7 +732,7 @@ c  deal with 1st grid surfaces only (with "radial surfaces", by abuse of languag
         end select
 C
 C  SET ICOS AND SCOS SUCH AS IF THE SOURCE PARTICLE HAD ARRIVED
-C  AT THE SURFACE FROM THE CORRECT SIDE AND IS NOW REFLECTED
+C  AT THE SURFACE FROM THE CORRECT SIDE AND WILL THEN BE REFLECTED
 C  (NOTE: THE FLAG "IWEI" USED IN SUBR. STDCOL AND ADDCOL
 C  WILL ALWAYS BE POSITIVE WITH THIS DEFINITION OF SCOS)
 C  THIS DEFAULT SETTING MAY BE OVERRULED BY SORIFL FLAG
@@ -756,7 +757,7 @@ C  TRY TO FIND ICOS AUTOMATICALLY, IF POSSIBLE
             ENDIF
           ELSEIF (LEVGEO.EQ.4.AND.MRSURF.GT.0) THEN
 C  CURRENTLY: ONLY MATH. POSITIVELY ORIENTED TRIANGLES,
-C             HENCE: NORMAL VECTOR OUTSIDE.
+C             HENCE: NORMAL VECTOR POINTS OUTSIDE.
             ICOS=1
           ELSE
             GOTO 990
@@ -810,7 +811,8 @@ C  SUBSTRATA OF VOLUME SOURCE: IVOLM
      .              WEISPZ)
         IF (.NOT.LGPART) RETURN
         MSURF=0
-      ENDIF
+
+      ENDIF    ! nlpnt, nllne, nlsrf, nlvol
 C
       IRCELL=NRCELL
       IPCELL=NPCELL
@@ -827,7 +829,8 @@ C
       ELSEIF (LGTIME) THEN
         ISOR=NINT(ABS(SORLIM(ISECT,ISTRA)))
         INDTEC=EIRENE_IDEZ(ISOR,4,4)
-        IF (INDTEC.EQ.0) INDTEC=2  !  default: sample uniformly in time interval
+        IF (INDTEC.EQ.0) INDTEC=2  !  default:
+                                   !  sample uniformly in time interval
         IF (INDTEC.LE.1) TIME=TIME0
         IF (INDTEC.EQ.2) TIME=TIME0+RANF_EIRENE()*DTIMV
       ENDIF
@@ -851,6 +854,8 @@ C
 C .........................................................................
 C
 C  FIND SPECIES INDEX AND RELATED CONSTANTS 100---199
+cdr  ITYP is known here, find iatm, imol, iion, ipls, iphot,
+cdr                      as well as: weight, rsqdv2
 C
 C  SAMPLING IS CONTROLLED BY INPUT FLAG NSPEZ:
 C  A)  NSPEZ < 0:  NON-ANALOG SAMPLING FROM INPUT DISTRIBUTION DPLS, DATM, DMOL,....
@@ -1088,7 +1093,9 @@ C
 !  PREPARE POINTER FOR UNIFIED SUBROUTINES
       CALL EIRENE_SWITCH_PARTINFO
 C
-C  FIND VELOCITY SPACE COORDINATES, GIVEN: POSITION, SPECIES
+C.........................................................
+C
+C  FIND PARAMETERS TIWD, ETC., FOR VELOCITY SPACE COORDINATES, GIVEN: POSITION, SPECIES
 C
 C  PARAMETERS FOR VELOCITY SAMPLING DISTRIBUTION:
 C  TEWD,TIWD,VXWD,VYWD,VZDW
@@ -1107,7 +1114,7 @@ C  SET SAMPLING TEMPERATURES FROM LOCAL PLASMA DATA FOR SPECIES IPLTI
         TEWD=TEWL
       ELSE
 C  DEFAULT: ONLY FOR ITYP==4, OR ITYP==3
-C  SET SAMPLING TEMPERATURES FROM LOCAL PLASMA DATA FOR SPECIES IPLS
+C  SET SAMPLING TEMPERATURES FROM LOCAL FIELD PARTICLE DATA FOR SPECIES IPLS
         TEWD=TEWL
         SELECT CASE (ITYP)
           CASE (4)
@@ -1124,7 +1131,7 @@ C  SET SAMPLING TEMPERATURES FROM LOCAL PLASMA DATA FOR SPECIES IPLS
               ENDIF
             ENDDO
           CASE DEFAULT
-C  SET SAMPLING ION-TEMPERATURE TO ZERO
+C  SET SAMPLING TEMPERATURE TO ZERO
             TIWD=0.
         END SELECT
       ENDIF
@@ -1170,7 +1177,7 @@ C  SET SAMPLING DRIFT VELOCITIES FROM BACKGROUND DATA FOR SPECIES IPL
                 VZWD=VZWL(IPL)
               ENDIF
             ENDDO
-C  DEFAULT FOR ATOMS, MOLECULES, PHOTONS:  ZERO DRIFT VELOCITY
+C  DEFAULT FOR ATOMS, MOLECULES, PHOTONS: ZERO DRIFT VELOCITY
           CASE DEFAULT
             VXWD=0.
             VYWD=0.
@@ -1191,7 +1198,7 @@ C  .....................................
       SELECT CASE (ITYP)
         CASE (1)
 C
-C  ATOM?  200 --- 299
+C  PRIMARY ATOM?  200 --- 299
 C
           IF (NEMOD1.EQ.1) THEN
             EMAX=SORENI(ISTRA)
@@ -1388,7 +1395,7 @@ C           EMAX=EFWL   to be written: find proper species index for efwl
           ENDIF
 C
           IF (NEMOD1.EQ.3.OR.NEMOD1.EQ.5.OR.
-     .        NEMOD1.EQ.7.OR.NEMOD1.EQ.9)   THEN
+     .        NEMOD1.EQ.7.OR.NEMOD1.EQ.9) THEN
 C  SET ELECTROSTATIC SHEATH ACCELERATION ENERGY "ESHET", eV
             IF (SHWL.GT.0.) THEN
               ESHET=NCHRGI(IION)*SHWL*TEWL
@@ -1408,10 +1415,10 @@ cnh 02.11.2019 NCHRGP->ZIWL
 cdr sheath potential factor explicitly defined on surface via input blocks 3a,3b
                 ESHET=NCHRGI(IION)*FSHEAT(MSURF)*TEWL
               ENDIF
-
+C
             ENDIF
-C   NO SHEATH POTENTIAL TO BE ADDED
           ELSE
+C   NO SHEATH POTENTIAL TO BE ADDED
             ESHET=0.
           ENDIF
 
@@ -1424,7 +1431,7 @@ C
 C  COSINE LIKE OR GAUSSIAN ANGLE DISTRIBUTION
 C
 C  IN CASE (CRTX,CRTY,CRTZ) NE (0.,0.,0.D0)
-C  USE REFLECTION MODEL ANGULAR DISTRIBUTION
+C  USE "NORMAL INCIDENCE" REFLECTION MODEL ANGULAR DISTRIBUTION
             VELX=CRTX
             VELY=CRTY
             VELZ=CRTZ
@@ -1434,7 +1441,7 @@ C  USE REFLECTION MODEL ANGULAR DISTRIBUTION
 
           ELSEIF (EMAX.LE.0..AND.TIWD.GT.0..AND.NLSRF(ISTRA)) THEN
 C
-C  SAMPLE FROM SHIFTED TRUNCATED MAXWELLIAN FLUX
+C  SAMPLE VELOCITY FROM SHIFTED TRUNCATED MAXWELLIAN FLUX, ZERO SHEATH ACCELERATION
 C              AROUND INNER (!) NORMAL AT TEMP. TW (EV)
             VWD=SQRT(VXWD**2+VYWD**2+VZWD**2)
             CALL EIRENE_VELOCS (WEIGHT,
@@ -1458,7 +1465,8 @@ C
 C  SAMPLE FROM MAXWELLIAN AT TEMP. TW (EV) =TIWD
 C
             IF (TIWD.LE.0.) TIWD=ABS(EMAX)
-            NFLAG=2   !  sample from (drifting) maxwellian, no cross-section weighting
+            NFLAG=2   !  sample from (drifting) maxwellian,
+                      !  no cross-section weighting
             IDUM=1
             DUMT(1)=SQRT(TIWD/RMASSI(IION))*CVEL2A
             DUMT(2)=DUMT(1)
@@ -1523,7 +1531,7 @@ C
             ENDIF
 C
             IF (NEMOD1.EQ.3.OR.NEMOD1.EQ.5.OR.
-     .          NEMOD1.EQ.7.OR.NEMOD1.EQ.9)   THEN
+     .          NEMOD1.EQ.7.OR.NEMOD1.EQ.9) THEN
 C  SET ELECTROSTATIC SHEATH ACCELERATION ENERGY "ESHET", eV
               IF (SHWL.GT.0.) THEN
                 ESHET=ZIWL(IPLS)*SHWL*TEWL
@@ -1540,6 +1548,7 @@ cnh 02.11.2019 NCHRGP -> ZIWL
                   ESHET=ZIWL(IPLS)*EIRENE_SHEATH(TEWL,DIWL,VPWL,
      .                                    ZIWL,GAMMA,CUR,NPLSI,MSURF)
                 ELSE
+cdr sheath potential factor is explicitly defined on surface via input blocks 3a,3b
                   ESHET=ZIWL(IPLS)*FSHEAT(MSURF)*TEWL
                 ENDIF
 C
@@ -1585,7 +1594,7 @@ C
             CRTY=-CRTY
             CRTZ=-CRTZ
 C
-C  A BULK ION, HITTING A SURFACE, HAS BEEN CREATED.
+C  A BULK PARTICLE, HITTING A SURFACE, HAS BEEN CREATED.
 C
 C  UPDATE PARTICLE EFFLUX  ONTO SURFACE MSURF
 C  UPDATE ENERGY FLUX ONTO SURFACE MSURF
@@ -1593,8 +1602,8 @@ C
 C  SPATIAL RESOLUTION ON NON-DEFAULT STANDARD SURFACE?
 C  FIND MSURFG, THE POSITION FOR STORING THE LOCAL FLUX ON THE
 C               SURFACE-AVERAGED TALLY ARRAYS
-C  FIND FLX:  THE FLUX TO THIS SURFACE ELEMENT TO BE USED FOR
-C             CHEMICAL SPUTTERING LFUX DEPENDENCE
+C  FIND FLX: THE FLUX TO THIS SURFACE ELEMENT TO BE USED FOR
+C            CHEMICAL SPUTTERING FLUX DEPENDENCE
             IF (MSURF.GT.NLIM.AND.NLMPGS.GT.NLIMPS) THEN
               IF (LEVGEO.LE.3) THEN
                 ISTS=MSURF-NLIM
@@ -1619,6 +1628,10 @@ C             CHEMICAL SPUTTERING LFUX DEPENDENCE
             ENDIF
 
 C  WTOTP, WTOTE, ETOTP: INTEGRAL FLUXES FOR SCALING
+cdr  mostly these tallies wtotp, etotp are redundant.
+cdr  They should coincide with the totals pppli, eppli,
+cdr  unless there are bulk secondaries as well
+cdr  from RC processes (e.g. photon emission plus a bulk lower state atom)
 !$OMP ATOMIC
             WTOTP(IPLS,ISTRA)=WTOTP(IPLS,ISTRA)-WEIGHT
 !$OMP ATOMIC
@@ -1626,15 +1639,16 @@ C  WTOTP, WTOTE, ETOTP: INTEGRAL FLUXES FOR SCALING
 !$OMP ATOMIC
             ETOTP(ISTRA)=ETOTP(ISTRA)-E0*WEIGHT
 C  NEW (2004) VOLUME-AVERAGED TALLIES
-C  PPPL, EPPL AND THEIR INTEGRALS: ALSO FOR GLOBAL PARTICLE BALANCE
+C  PPPL, EPPL AND THEIR INTEGRALS: ALSO FOR GLOBAL PARTICLE & ENERGY BALANCE
             IF (LPPPL) THEN
 !$OMP ATOMIC
-               PPPL(IPLS,NCELLT)=PPPL(IPLS,NCELLT)-WEIGHT
+              PPPL(IPLS,NCELLT)=PPPL(IPLS,NCELLT)-WEIGHT
             ENDIF
             IF (LEPPL) THEN
 !$OMP ATOMIC
-               EPPL(IPLS,NCELLT)=EPPL(IPLS,NCELLT)-E0*WEIGHT
+              EPPL(IPLS,NCELLT)=EPPL(IPLS,NCELLT)-E0*WEIGHT
             ENDIF
+CDR  missing here: mppl_vec and epel tallies (have not been needed so far).
 C  SURFACE-AVERAGED TALLIES (NOTE: FLUXES HERE COUNTED POSITIVE,
 C                            BUT INTEGRALS OF OUTGOING SURFACE FLUXES
 C                            POTPLI,... ARE TAKEN NEGATIVE).
@@ -1651,7 +1665,7 @@ C
 !$OMP END CRITICAL
             ENDIF
 C
-C  REFLECT THIS ION AS TEST PARTICLE FROM SURFACE NO. MSURF
+C  REFLECT THIS BULK ION AS TEST PARTICLE FROM SURFACE NO. MSURF
 C
 C  BUT FIRST: CALL SPUTTER MODEL IF REQUESTED
 C
@@ -1672,13 +1686,14 @@ csw 10jan2011
 CVK       IF (ILSPT(MSURF).NE.0) THEN
 !pb  allow for bulk particle to sputter at transparent surface
 !pb  because of gap between outer plasma surface and wall in SOLPS
-            IF(ISPUT(1,MSURF).NE.0 .OR. ISPUT(2,MSURF).NE.0) THEN !VK from AK locate
+!VK from AK locate
+            IF(ISPUT(1,MSURF).NE.0 .OR. ISPUT(2,MSURF).NE.0) THEN
 csw
 
 cdr  ilspt=0 in case of transparent surfaces was a safety procedure in subr. input.f
 cdr  this has now been bypassed. Better: do that in couple_b2 (case-specific), but not in eirene itself
 
-C  SAVE INCIDENT PARTICLE SPEED AND ENERGY
+C  SAVE INCIDENT PARTICLE SPEED AND ENERGY, SURFACE NORMAL, ETC...
               E0S=E0
               WEIGHS=WEIGHT
               VELS=VEL
@@ -1709,7 +1724,7 @@ C
 C
 C  UPDATE SPUTTER SURFACE TALLIES. SAME AS IN SUBR. ESCAPE, BUT HERE
 C                                  FOR INCICENT BULK IONS
-C  SHIFTED TO SUBROUTINE EIRENE_UPDATE_SPTFLX, CALLED SEPARATELY
+C  NOW MOVED TO SUBROUTINE EIRENE_UPDATE_SPTFLX, CALLED SEPARATELY
 C  FOR PHYSICAL AND CHEMICAL SPUTTERING RESP.
               ITYP_OLD  = 4
               IGASP_OLD = ISRS(ISPZ,MSURF)
@@ -1721,9 +1736,9 @@ C   update total sputter fluxes for those cases in which sputtered particle spec
 C   (e.g. if target material is not an eirene test particle in this run)
 
                 IF (WGHTSP.GT.0.AND.ISSPTP.EQ.0)
-     .            CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD, WGHTSP,1)
+     .            CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD,WGHTSP,1)
                 IF (WGHTSC.GT.0..AND.ISSPTC.EQ.0)
-     .            CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD, WGHTSC*YSPTWL,1)
+     .            CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD,WGHTSC*YSPTWL,1)
 C
               ENDIF
             ENDIF
@@ -1764,14 +1779,15 @@ C
 C
 cdr  species index of physically sputtered particle is known.
 cdr  update total and sputtered species-resolved sputtered fluxes
-
-              CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD, WGHTSP,2)
+              CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD,WGHTSP,2)
 C
               IF (NADSI.GE.1) CALL EIRENE_UPSUSR(WGHTSP,2)
               IF (NADSPC_S.GE.1) CALL EIRENE_UPDATE_SPECTRUM(WGHTSP,2,0)
 
-              IF (IGASP_OLD.EQ.0) GOTO 4711 ! SCORE SPUTTERED PARTICLES ON SURFACE/VOLUME TALLIES ONLY
-C                                             IF THEY ARE FOLLOWED. OTHERWISE: ONLY ON SPUTTER TALLIES
+              IF (IGASP_OLD.EQ.0) GOTO 4711 ! SCORE SPUTTERED PARTICLES
+                                            ! ON SURFACE/VOLUME TALLIES
+C                                             ONLY IF THEY ARE FOLLOWED.
+C                                  OTHERWISE: ONLY ON SPUTTER TALLIES
               CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,IPLS,WGHTSP,2)
 C
               SELECT CASE (ITYP)
@@ -1856,16 +1872,18 @@ C
 !$OMP END CRITICAL
               ENDIF
 C
-cdr  species index of physically sputtered particle is known.
+cdr  species index of chemically sputtered particle is known.
 cdr  update total and sputtered species-resolved sputtered fluxes
 
-              CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD, WGHTSC*YSPTWL,2)
+              CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD,WGHTSC*YSPTWL,2)
               IF (NADSI.GE.1) CALL EIRENE_UPSUSR(WGHTSC*YSPTWL,2)
-              IF (NADSPC_S.GE.1) 
-     .          CALL EIRENE_UPDATE_SPECTRUM(WGHTSC*YSPTWL,2,0)
+              IF (NADSPC_S.GE.1)
+     .         CALL EIRENE_UPDATE_SPECTRUM(WGHTSC*YSPTWL,2,0)
 
-              IF (IGASC_OLD.EQ.0) GOTO 4712 ! SCORE SPUTTERED PARTICLES ON SURFACE/VOLUME TALLIES ONLY
-C                                             IF THEY ARE FOLLOWED. OTHERWISE: ONLY ON SPUTTER TALLIES
+              IF (IGASC_OLD.EQ.0) GOTO 4712 ! SCORE SPUTTERED PARTICLES
+                                 ! ON SURFACE/VOLUME TALLIES ONLY
+C                                  IF THEY WILL BE TRACED LATER.
+C                                  OTHERWISE: ONLY ON SPUTTER TALLIES
               CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,IPLS,WGHTSC,2)
 C
               SELECT CASE (ITYP)
@@ -1873,31 +1891,31 @@ C
                   LOGATM(IATM,ISTRA)=.TRUE.
                   IF (LPPAT) THEN
 !$OMP ATOMIC
-                     PPAT(IATM,NCELLT)=PPAT(IATM,NCELLT)+WEIGHT
+                    PPAT(IATM,NCELLT)=PPAT(IATM,NCELLT)+WEIGHT
                   ENDIF
                   IF (LEPAT) THEN
 !$OMP ATOMIC
-                     EPAT(NCELLT)=EPAT(NCELLT)+E0*WEIGHT
+                    EPAT(NCELLT)=EPAT(NCELLT)+E0*WEIGHT
                   ENDIF
                 CASE (2)
                   LOGMOL(IMOL,ISTRA)=.TRUE.
                   IF (LPPML) THEN
 !$OMP ATOMIC
-                     PPML(IMOL,NCELLT)=PPML(IMOL,NCELLT)+WEIGHT
+                    PPML(IMOL,NCELLT)=PPML(IMOL,NCELLT)+WEIGHT
                   ENDIF
                   IF (LEPML) THEN
 !$OMP ATOMIC
-                     EPML(NCELLT)=EPML(NCELLT)+E0*WEIGHT
+                    EPML(NCELLT)=EPML(NCELLT)+E0*WEIGHT
                   ENDIF
                 CASE (3)
                   LOGION(IION,ISTRA)=.TRUE.
                   IF (LPPIO) THEN
 !$OMP ATOMIC
-                     PPIO(IION,NCELLT)=PPIO(IION,NCELLT)+WEIGHT
+                    PPIO(IION,NCELLT)=PPIO(IION,NCELLT)+WEIGHT
                   ENDIF
                   IF (LEPIO) THEN
 !$OMP ATOMIC
-                     EPIO(NCELLT)=EPIO(NCELLT)+E0*WEIGHT
+                    EPIO(NCELLT)=EPIO(NCELLT)+E0*WEIGHT
                   ENDIF
               END SELECT
 
@@ -1947,7 +1965,7 @@ cym
 !$OMP CRITICAL
               IF (LGPART) THEN
                 WRITE (iunout,*) 'AFTER SUBR. REFLEC:' !,' ithread =',
-!     .              omp_get_thread_num() 
+!     .              omp_get_thread_num()
                 WRITE (iunout,'(1X,A8)') TEXTS(ISPZ)
                 CALL EIRENE_MASR6 (
      .             'VELX,VELY,VELZ,VEL,E0,WEIGHT                    ',
@@ -1964,8 +1982,8 @@ C  (VOLUME TALLIES PPAT,PPML,... WILL BE DONE BELOW,
 C                   ONCE FOR NLPNT,NLLNE,NLSRF,NLVOL)
 C
 C
-            IF (LGPART) 
-     .        CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,IPLS,WEIGHT,2)
+            IF (LGPART)
+     .       CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,IPLS,WEIGHT,2)
             IF (NADSI.GE.1) CALL EIRENE_UPSUSR(WEIGHT,2)
             IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM(WEIGHT,2,0)
 C
@@ -2000,11 +2018,11 @@ c           DUMV(3)=0._DP
             ETOTP(ISTRA)=ETOTP(ISTRA)-E0*WEIGHT
             IF (LPPPL) THEN
 !$OMP ATOMIC
-               PPPL(IPLS,NCELLT)=PPPL(IPLS,NCELLT)-WEIGHT
+              PPPL(IPLS,NCELLT)=PPPL(IPLS,NCELLT)-WEIGHT
             ENDIF
             IF (LEPPL) THEN
 !$OMP ATOMIC
-               EPPL(IPLS,NCELLT)=EPPL(IPLS,NCELLT)-E0*WEIGHT
+              EPPL(IPLS,NCELLT)=EPPL(IPLS,NCELLT)-E0*WEIGHT
             ENDIF
 C           IF (LEPEL) EPEL(NCELLT)=EPEL(NCELLT)- ???  ELECTRON ENERGY LOSS/GAIN ASSOCIATED WITH PROCESS IRRC
             IF (NLTRC) THEN
@@ -2144,7 +2162,7 @@ cdr  new type: ITYP is set.
             ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
 C
 C  SPECIES IDENTIFIED
-C  NEXT: NEW VELOCITY, ENERGY, ETC...
+C  NEXT: NEW VELOCITY, ENERGY, ETC... (still: nlpls and nlvol)
 C
 C  NEW OPTIONS
             IF (NEMOD1.EQ.1) THEN  ! still for: ityp_old=4 and nlvol
@@ -2164,7 +2182,8 @@ cdr   high pressure discharge lamb applications. Now removed
 
 !  NEXT: PHOTON DEFAULT OPTION for NLVOL, ITYP_old=4. ityp=ityp_new=0
 
-            ELSEIF (ITYP.EQ.0) THEN ! still: within NLVOL, new type: photon
+            ELSEIF (ITYP.EQ.0) THEN ! still: within NLVOL,
+                                    ! new type: photon
 
 C  PHOTON EMISSION PROFILE OPTIONS 0-9
 C  SAMPLE ONLY FROM LINE PROFILES WITHOUT DOPPLER CONTRIBUTION
@@ -2234,7 +2253,7 @@ C
             ENDIF
 
 c           end do ! iloop
-c           IF (NLTRC) CALL CHCTRC(X0,Y0,Z0,0,1)
+c           IF (NLTRC) CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
 
 c  parts for plotting emission spectrum removed from here --> development branch
 
@@ -2335,7 +2354,8 @@ C  TALLIES FOR BULK-SECONDARIES (IF ANY)
           ENDIF
 C  TALLIES FOR SECONDARY ELECTRONS  (TO BE DONE)
 
-cdr  finished with primary source ITYP_old=4 
+cdr  finished with primary source ITYP_old=4
+cdr  Next: ityp_old=0
 
       END SELECT
 C

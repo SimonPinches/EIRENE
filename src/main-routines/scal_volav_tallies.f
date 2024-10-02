@@ -50,14 +50,14 @@ C
 C  ATOMIC PARTICLE SPECIES LOOP FOR THE STRATUM ISTRA
 C
       DO 220 IATM=1,NATMI
-         IF (LOGATM(IATM,ISTR)) THEN
+        IF (LOGATM(IATM,ISTR)) THEN
           DO 221 J=1,NSBOX_TAL
             IF (LPDENA) PDENA(IATM,J)=PDENA(IATM,J)*ZVOLIN(J)
             IF (LEDENA) EDENA(IATM,J)=EDENA(IATM,J)*ZVOLIN(J)
-            IF (LPAAT) THEN 
+            IF (LPAAT) THEN
               IF (NLSPCSCL_ATM) THEN
                 PAAT2(1:NATM,0:NATM) => PAAT(:,J)
-                PAAT2(IATM,:) =PAAT2(IATM,:) *ZVOLIW(J) 
+                PAAT2(IATM,:) = PAAT2(IATM,:) *ZVOLIW(J)
               ELSE
                 PAAT(IATM,J) = PAAT(IATM,J) *ZVOLIW(J)
               END IF
@@ -65,15 +65,15 @@ C
             IF (LPMAT) THEN
               IF (NLSPCSCL_MOL) THEN
                 PMAT2(1:NATM,0:NMOL) => PMAT(:,J)
-                PMAT2(IATM,:) =PMAT2(IATM,:) *ZVOLIW(J)
-              ELSE 
+                PMAT2(IATM,:) = PMAT2(IATM,:) *ZVOLIW(J)
+              ELSE
                 PMAT(IATM,J) = PMAT(IATM,J) *ZVOLIW(J)
               END IF
             END IF
             IF (LPIAT) THEN
               IF (NLSPCSCL_ION) THEN
                 PIAT2(1:NATM,0:NION) => PIAT(:,J)
-                PIAT2(IATM,:) =PIAT2(IATM,:) *ZVOLIW(J)
+                PIAT2(IATM,:) = PIAT2(IATM,:) *ZVOLIW(J)
               ELSE
                 PIAT(IATM,J) = PIAT(IATM,J) *ZVOLIW(J)
               END IF
@@ -81,7 +81,7 @@ C
             IF (LPPHAT) THEN
               IF (NLSPCSCL_PHOT) THEN
                 PPHAT2(1:NATM,0:NPHOT) => PPHAT(:,J)
-                PPHAT2(IATM,:) =PPHAT2(IATM,:) *ZVOLIW(J)
+                PPHAT2(IATM,:) = PPHAT2(IATM,:) *ZVOLIW(J)
               ELSE
                PPHAT(IATM,J) = PPHAT(IATM,J)*ZVOLIW(J)
               END IF
@@ -122,7 +122,7 @@ C
             IF (LPAML) THEN
               IF (NLSPCSCL_ATM) THEN
                 PAML2(1:NMOL,0:NATM) => PAML(:,J)
-                PAML2(IMOL,:) =PAML2(IMOL,:) *ZVOLIW(J)
+                PAML2(IMOL,:) = PAML2(IMOL,:) *ZVOLIW(J)
               ELSE
                 PAML(IMOL,J) = PAML(IMOL,J) *ZVOLIW(J)
               END IF
@@ -130,7 +130,7 @@ C
             IF (LPMML) THEN
               IF (NLSPCSCL_MOL) THEN
                 PMML2(1:NMOL,0:NMOL) => PMML(:,J)
-                PMML2(IMOL,:) =PMML2(IMOL,:) *ZVOLIW(J)
+                PMML2(IMOL,:) = PMML2(IMOL,:) *ZVOLIW(J)
               ELSE
                 PMML(IMOL,J) = PMML(IMOL,J) *ZVOLIW(J)
               END IF
@@ -138,7 +138,7 @@ C
             IF (LPIML) THEN
               IF (NLSPCSCL_ION) THEN
                 PIML2(1:NMOL,0:NION) => PIML(:,J)
-                PIML2(IMOL,:) =PIML2(IMOL,:) *ZVOLIW(J)
+                PIML2(IMOL,:) = PIML2(IMOL,:) *ZVOLIW(J)
               ELSE
                 PIML(IMOL,J) = PIML(IMOL,J) *ZVOLIW(J)
               END IF
@@ -146,7 +146,7 @@ C
             IF (LPPHML) THEN
               IF (NLSPCSCL_PHOT) THEN
                 PPHML2(1:NMOL,0:NPHOT) => PPHML(:,J)
-                PPHML2(IMOL,:) =PPHML2(IMOL,:) *ZVOLIW(J)
+                PPHML2(IMOL,:) = PPHML2(IMOL,:) *ZVOLIW(J)
               ELSE
                 PPHML(IMOL,J)= PPHML(IMOL,J)*ZVOLIW(J)
               END IF
@@ -187,7 +187,7 @@ C
             IF (LPAIO) THEN
               IF (NLSPCSCL_ATM) THEN
                 PAIO2(1:NION,0:NATM) => PAIO(:,J)
-                PAIO2(IION,:) =PAIO2(IION,:) *ZVOLIW(J)
+                PAIO2(IION,:) = PAIO2(IION,:) *ZVOLIW(J)
               ELSE
                 PAIO(IION,J) = PAIO(IION,J) *ZVOLIW(J)
               END IF
@@ -195,7 +195,7 @@ C
             IF (LPMIO) THEN
               IF (NLSPCSCL_MOL) THEN
                 PMIO2(1:NION,0:NMOL) => PMIO(:,J)
-                PMIO2(IION,:) =PMIO2(IION,:) *ZVOLIW(J)
+                PMIO2(IION,:) = PMIO2(IION,:) *ZVOLIW(J)
               ELSE
                 PMIO(IION,J) = PMIO(IION,J) *ZVOLIW(J)
               END IF
@@ -203,7 +203,7 @@ C
             IF (LPIIO) THEN
               IF (NLSPCSCL_ION) THEN
                 PIIO2(1:NION,0:NION) => PIIO(:,J)
-                PIIO2(IION,:) =PIIO2(IION,:) *ZVOLIW(J)
+                PIIO2(IION,:) = PIIO2(IION,:) *ZVOLIW(J)
               ELSE
                 PIIO(IION,J) =PIIO(IION,J) *ZVOLIW(J)
               END IF
@@ -211,7 +211,7 @@ C
             IF (LPPHIO) THEN
               IF (NLSPCSCL_PHOT) THEN
                 PPHIO2(1:NION,0:NPHOT) => PPHIO(:,J)
-                PPHIO2(IION,:) =PPHIO2(IION,:) *ZVOLIW(J)
+                PPHIO2(IION,:) = PPHIO2(IION,:) *ZVOLIW(J)
               ELSE
                 PPHIO(IION,J)=PPHIO(IION,J)*ZVOLIW(J)
               END IF
@@ -252,7 +252,7 @@ C
             IF (LPAPHT) THEN
               IF (NLSPCSCL_ATM) THEN
                 PAPHT2(1:NPHOT,0:NATM) => PAPHT(:,J)
-                PAPHT2(IPHOT,:) =PAPHT2(IPHOT,:) *ZVOLIW(J)
+                PAPHT2(IPHOT,:) = PAPHT2(IPHOT,:) *ZVOLIW(J)
               ELSE
                 PAPHT(IPHOT,J) = PAPHT(IPHOT,J) *ZVOLIW(J)
               END IF
@@ -260,7 +260,7 @@ C
             IF (LPMPHT) THEN
               IF (NLSPCSCL_MOL) THEN
                 PMPHT2(1:NPHOT,0:NMOL) => PMPHT(:,J)
-                PMPHT2(IPHOT,:) =PMPHT2(IPHOT,:) *ZVOLIW(J)
+                PMPHT2(IPHOT,:) = PMPHT2(IPHOT,:) *ZVOLIW(J)
               ELSE
                 PMPHT(IPHOT,J) = PMPHT(IPHOT,J) *ZVOLIW(J)
               END IF
@@ -268,7 +268,7 @@ C
             IF (LPIPHT) THEN
               IF (NLSPCSCL_ION) THEN
                 PIPHT2(1:NPHOT,0:NION) => PIPHT(:,J)
-                PIPHT2(IPHOT,:) =PIPHT2(IPHOT,:) *ZVOLIW(J)
+                PIPHT2(IPHOT,:) = PIPHT2(IPHOT,:) *ZVOLIW(J)
               ELSE
                 PIPHT(IPHOT,J) = PIPHT(IPHOT,J) *ZVOLIW(J)
               END IF
@@ -276,7 +276,7 @@ C
             IF (LPPHPHT) THEN
               IF (NLSPCSCL_PHOT) THEN
                 PPHPHT2(1:NPHOT,0:NPHOT) => PPHPHT(:,J)
-                PPHPHT2(IPHOT,:) =PPHPHT2(IPHOT,:) *ZVOLIW(J)
+                PPHPHT2(IPHOT,:) = PPHPHT2(IPHOT,:) *ZVOLIW(J)
               ELSE
                 PPHPHT(IPHOT,J) = PPHPHT(IPHOT,J)*ZVOLIW(J)
               END IF
@@ -314,7 +314,7 @@ C
             IF (LPAPL) THEN
               IF (NLSPCSCL_ATM) THEN
                 PAPL2(1:NPLS,0:NATM) => PAPL(:,J)
-                PAPL2(IPLS,:) =PAPL2(IPLS,:) *ZVOLIW(J)
+                PAPL2(IPLS,:) = PAPL2(IPLS,:) *ZVOLIW(J)
               ELSE
                 PAPL(IPLS,J) = PAPL(IPLS,J) *ZVOLIW(J)
               END IF
@@ -322,7 +322,7 @@ C
             IF (LPMPL) THEN
               IF (NLSPCSCL_MOL) THEN
                 PMPL2(1:NPLS,0:NMOL) => PMPL(:,J)
-                PMPL2(IPLS,:) =PMPL2(IPLS,:) *ZVOLIW(J)
+                PMPL2(IPLS,:) = PMPL2(IPLS,:) *ZVOLIW(J)
               ELSE
                 PMPL(IPLS,J) = PMPL(IPLS,J) *ZVOLIW(J)
               END IF
@@ -330,7 +330,7 @@ C
             IF (LPIPL) THEN
               IF (NLSPCSCL_ION) THEN
                 PIPL2(1:NPLS,0:NION) => PIPL(:,J)
-                PIPL2(IPLS,:) =PIPL2(IPLS,:) *ZVOLIW(J)
+                PIPL2(IPLS,:) = PIPL2(IPLS,:) *ZVOLIW(J)
               ELSE
                 PIPL(IPLS,J) = PIPL(IPLS,J) *ZVOLIW(J)
               END IF
@@ -338,9 +338,9 @@ C
             IF (LPPHPL) THEN
               IF (NLSPCSCL_PHOT) THEN
                 PPHPL2(1:NPLS,0:NPHOT) => PPHPL(:,J)
-                PPHPL2(IPLS,:) =PPHPL2(IPLS,:) *ZVOLIW(J)
+                PPHPL2(IPLS,:) = PPHPL2(IPLS,:) *ZVOLIW(J)
               ELSE
-                PPHPL(IPLS,J)=PPHPL(IPLS,J)*ZVOLIW(J)
+                PPHPL(IPLS,J)= PPHPL(IPLS,J)*ZVOLIW(J)
               END IF
             END IF
             IF (LPPPL)  PPPL(IPLS,J) =PPPL(IPLS,J) *ZVOLIW(J)
@@ -350,7 +350,6 @@ C
             IF (LEIPL)  EIPL(IPLS,J) =EIPL(IPLS,J) *ZVOLIW(J)
             IF (LEPHPL) EPHPL(IPLS,J)=EPHPL(IPLS,J)*ZVOLIW(J)
             IF (LEPPL)  EPPL(IPLS,J) =EPPL(IPLS,J) *ZVOLIW(J)
-
             IF (LMAPL)  MAPL(IPLS,J) =MAPL(IPLS,J) *ZVOLIW(J)
             IF (LMMPL)  MMPL(IPLS,J) =MMPL(IPLS,J) *ZVOLIW(J)
             IF (LMIPL)  MIPL(IPLS,J) =MIPL(IPLS,J) *ZVOLIW(J)
@@ -376,7 +375,7 @@ C
 C  ADDITIONAL TRACKLENGTH-ESTIMATED TALLIES FOR THE STRATUM ISTRA
 C  TALLY ADDV; NO. NTALA
 C  # is a placeholder for the units of the detector function used
-C  for scoring these additional tallies (see manual, block 10) 
+C  for scoring these additional tallies (see manual, block 10)
 C
       IF (LADDV) THEN
         DO 230 IADV=1,NADVI
@@ -675,7 +674,7 @@ C  SCALE: FROM SCORING TALLY UNITS # PER ENERGY BIN --> TALLY UNITS # PER EV
 C  INTEGRATE--> TALLY UNITS
 cdr  Test tbd: in case of total (not directional) spectrum, i.e. for IDIREC=0, this
 cdr            integral must coincide with the particle density PDEN.. or the energy density EDEN..,
-cdr            in the selected cell, depending on ISPTYP=1, 
+cdr            in the selected cell, depending on ISPTYP=1,
 cdr            or ISPTYP=2, respectively.
 cdr  See text in scale_surf_tallies: this test should
 cdr  also work for directional resolved spectra.

@@ -29,7 +29,7 @@ C
       WRITE (112+ifoff,*) 'NGHPLS ',NGHPLS
       WRITE (112+ifoff,*) 'NGHPOL ',NGHPOL
       WRITE (112+ifoff,*) 'NCLTAL ',NCLTAL
-#endif      
+#endif
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 12: RCGM,ICGM '
       WRITE (12+ifoff) RCGRID,ICGRID
 #ifdef CHECKBIN
@@ -39,7 +39,7 @@ C
         WRITE (112+ifoff,*) i,(RCGRID(j),j=i,min(i+9,ncgrd))
       end do
       WRITE (112+ifoff,*) 'ICGRID ',ICGRID
-#endif      
+#endif
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 12: RCGRID,ICGRID'
       WRITE (12+ifoff) RCPLYG,RCPLY2,ICPLYG
 #ifdef CHECKBIN
@@ -50,7 +50,7 @@ C
       end do
       WRITE (112+ifoff,*) 'RCPLY2 ',RCPLY2
       WRITE (112+ifoff,*) 'ICPLYG ',ICPLYG
-#endif      
+#endif
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 12: RCPLYG,ICPLYG'
       IF (NRKNOT > 0) THEN
         WRITE (12+ifoff) XTRIAN,YTRIAN,VTRIX,VTRIY,PTRIX,PTRIY,
@@ -59,7 +59,7 @@ C
         WRITE (112+ifoff,*) 'CTRIAN'
         WRITE (112+ifoff,*) XTRIAN,YTRIAN,VTRIX,VTRIY,PTRIX,PTRIY,
      .             NECKE,NCHBAR,NSEITE,INMTI,NRKNOT,NTRII
-#endif      
+#endif
         IF (TRCFLE) WRITE (iunout,*) 'WRITE 12: RCTRIG,ICTRIG'
       END IF
       WRITE (12+ifoff)
@@ -98,7 +98,7 @@ C
       WRITE (112+ifoff,*) 'IGFIL ...'
       WRITE (112+ifoff,*)
      I IGFIL,IGJUM0,IGJUM1,IGJUM2,IGJUM3
-#endif      
+#endif
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 12: RCLGN,ICLGN,LCLGN'
       WRITE (12+ifoff) RADGEO,IADGEO,NLIMI
       IF (TRCFLE) WRITE (iunout,*) 'WRITE 12: RCADG,ICADG'
@@ -108,7 +108,7 @@ C
       WRITE (112+ifoff,*) 'RADGEO ',RADGEO
       WRITE (112+ifoff,*) 'IADGEO ',IADGEO,NLIMI
       CLOSE (UNIT=112+ifoff)
-#endif      
+#endif
       END SUBROUTINE EIRENE_WRGEOM
 C
       SUBROUTINE EIRENE_RGEOM(TRCFLE)

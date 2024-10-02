@@ -1,4 +1,4 @@
-      subroutine eirene_lookup_adasdir_usr(DSN, FOUND, 
+      subroutine eirene_lookup_adasdir_usr(DSN, FOUND,
      .                                     REAC, ELNAME, BUNDLING)
       use eirmod_cinit
       implicit none

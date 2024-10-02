@@ -43,7 +43,7 @@ cdr  damaged cell ?
      L LDAMCEL(:)
 
 cdr  comments ??
-cpb  data types for a simple linked list 
+cpb  data types for a simple linked list
       TYPE :: CELL_ELEM
         INTEGER :: NOCELL
         TYPE(CELL_ELEM), POINTER :: NEXT_CELL
@@ -54,7 +54,7 @@ cpb  data types for a simple linked list
       END TYPE CELL_LIST
 
 cpb  array of linked lists providing the numbers of all cells surrounding
-cpb  a vertex point   
+cpb  a vertex point
       TYPE(CELL_LIST), ALLOCATABLE, SAVE, PUBLIC :: COORCELL(:)
 
 
@@ -187,7 +187,7 @@ c  integer arrays
       RETURN
       END SUBROUTINE EIRENE_INIT_CGEOM
 
-      
+
       SUBROUTINE EIRENE_BROADCAST_CGEOM(ME)
       USE EIRMOD_MPI
       INTEGER, INTENT(IN) :: ME
@@ -210,10 +210,10 @@ c  integer arrays
       CALL MPI_BCAST (NCLTAL,NRAD,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NNODES,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LDAMCEL,NRAD,MPI_LOGICAL,0,MPI_COMM_WORLD,ier)
-      
+
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       RETURN
       END SUBROUTINE EIRENE_BROADCAST_CGEOM
-      
+
       END MODULE EIRMOD_CGEOM

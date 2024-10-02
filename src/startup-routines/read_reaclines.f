@@ -3,14 +3,14 @@
      .           rc1min, rc1max, jfex1mn, jfex1mx, fp1,
      .           rc2min, rc2max, jfex2mn, jfex2mx, fp2,
      .           iz, elname, bundling,
-     .           irow_esc, icol_esc, pop_esc, 
+     .           irow_esc, icol_esc, pop_esc,
      .           iftflg, ncoef, coef)
 
 c  input: ZEILE:  character(72) (made upper case already)
 c  output:  IR
 c           FILNAM
 c           H123  (H.IJ,  IJ one or two integers)
-c           REAC  (?? or IFTFLG in case of filnam=const ??)
+c           REAC  (? or IFTFLG in case of filnam=const ?)
 c           CRC
 c           MP, MT, DPP,
 c           RC1MIN, RC1MAX, RC2MIN, RC2MAX
@@ -19,8 +19,8 @@ c           FP1, FP2
 c           IZ
 c           ELNAME
 c           IROW_ESC, ICOL_ESC, POPESC
-c           IFTFLG, NCOEF, COEF      
-c          
+c           IFTFLG, NCOEF, COEF
+c
 c
 c  Interpret character(72) ZEILE for call to slreac.f
 c  and to fill data structure REACDAT(IR):
@@ -32,12 +32,12 @@ c  In certain special cases, depending on FILNAM, one further input card is read
 c  filnam=ADAS/TAB2D:  read IZ, ELNAME         (mandatory)
 c  filnam=CR...     :  read irow,icol,pop_esc  (optional)
 c  filnam=CONST     :  read IFTFLG  (coded as FTxxxxxx, IFTFLG=xxxxxx)
-c                      read fit coefficients here and hand them back for slreac     
-c                           if mod(iftflg,100).eq.10 
-c                           then 
+c                      read fit coefficients here and hand them back for slreac
+c                           if mod(iftflg,100).eq.10
+c                           then
 c                                only one coefficient is read
 c                                ==>  ncoef=1, coef(1)  is read
-c                           else 
+c                           else
 c                                9 coefficients read
 c                                ==>  ncoef=9, coef(1:9)   are read
 c                           better: clearly separate iftflg and reac in case of filnam=CONST
@@ -53,12 +53,12 @@ C
       use eirmod_parmmod
       use eirmod_comxs, only : REACTION_INPUT_LINE, REACLINES, IRLINES
       use eirmod_json, only : S_STACK, STRING_STACK, CRS_STACK,
-     >                        EIRENE_PUSH_STRING_STACK 
-!cym/cpg provide access to json_ck type                  
+     >                        EIRENE_PUSH_STRING_STACK
+!cym/cpg provide access to json_ck type
       use json_module           !IGNORE
      >  , only : json_ck
 !end cym/cpg
-      
+
       implicit none
       character(420), intent(inout) :: zeile
 !cym/cpg avoid type mismatch
@@ -67,9 +67,9 @@ C
       integer, intent(inout) :: iread
       integer, intent(in) :: iunin, iunout
       integer, intent(out) :: ir, mp, mt,
-     .                        jfex1mn, jfex1mx, jfex2mn, jfex2mx, 
+     .                        jfex1mn, jfex1mx, jfex2mn, jfex2mx,
      .                        iz, irow_esc, icol_esc, iftflg, ncoef
-      real(dp), intent(out) :: dpp, rc1min, rc1max, rc2min, rc2max, 
+      real(dp), intent(out) :: dpp, rc1min, rc1max, rc2min, rc2max,
      .                         pop_esc
       real(dp), intent(out) :: fp1(6), fp2(6), coef(9)
       character(8), intent(out) :: filnam
@@ -86,10 +86,10 @@ C
       integer :: iend, itok, isw, i1, i, il, ier
       real(dp) :: r1mn, r1mx, r2mn, r2mx
       character(12) :: chr
-      character(3), save :: rea_proc(8) = 
-     .   (/ 'EI ','DS ','CX ','II ','PI ','EL ','RC ','OT ' /) 
+      character(3), save :: rea_proc(8) =
+     .   (/ 'EI ','DS ','CX ','II ','PI ','EL ','RC ','OT ' /)
       logical :: chk_h123
-      
+
       filnam = repeat(' ',8)
       h123 = repeat(' ',4)
       reac = repeat(' ',50)
@@ -127,7 +127,7 @@ c  1) leading integer IR:
         WRITE (iunout,*) ' ERROR READING REACTION NUMBER ',IR
         CALL EIRENE_EXIT_OWN(1)
       END IF
-      
+
       if ((ir < 1) .or. (ir > nreac)) then
         WRITE (iunout,*) ' ERROR REACTION NUMBER IR IS OUT OF RANGE '
         WRITE (iunout,*) ' 1 <= IR <= NREAC IS EXPECTED'
@@ -135,7 +135,7 @@ c  1) leading integer IR:
         CALL EIRENE_EXIT_OWN(1)
       end if
 
-c  2) filename  
+c  2) filename
       CALL EIRENE_READ_TOKEN (ZEILE(IEND:),' ',FILNAM,ITOK,IER,.FALSE.)
       IF (IER > 0) THEN
         WRITE (iunout,*)
@@ -148,7 +148,7 @@ c  2) filename
       READ (ZEILE(IEND:IEND+3),'(A4)') H123
       IEND = IEND + 4
 
-      CHK_H123 = (H123(1:2) == 'H.') .OR. (H123(1:2) == 'P.') 
+      CHK_H123 = (H123(1:2) == 'H.') .OR. (H123(1:2) == 'P.')
       IF (H123(4:4) == ' ') THEN
         CHK_H123 = CHK_H123 .AND. (VERIFY(H123(3:3),'1234567890') == 0)
       ELSE
@@ -165,8 +165,9 @@ c  2) filename
         CALL EIRENE_EXIT_OWN(1)
       END IF
 
-c  3) reaction identifier  
-      IF (INDEX(FILNAM,'CONST') == 0) THEN !  INPUT FROM EXTERNAL A&M DATA FILE
+c  3) reaction identifier
+      IF (INDEX(FILNAM,'CONST') == 0) THEN !  INPUT FROM EXTERNAL
+                                           !  A&M DATA FILE
 
 C  THE INPUT FLAG  "FT...." IS NOT AVAILABLE HERE
 C  IT MIGHT BE READ LATER FROM A&M DATA FILE AMJUEL, IN SUBR. SLREAC
@@ -175,7 +176,7 @@ C  PUT THIS FLAG ON REAC.
         CALL EIRENE_READ_TOKEN (ZEILE(IEND:),' ',REAC,ITOK,IER,.FALSE.)
         IF (IER > 0) THEN
           WRITE (iunout,*)
-     .        ' REACTION STRING FOR REACTION ',IR,' TOO LONG '
+     .        ' REACTION STRING FOR REACTION ',IR,' TOO LONG'
           CALL EIRENE_EXIT_OWN(1)
         END IF
 C  NEXT: FIND POSITION FROM WHICH NEXT INPUT FLAG "CRC" CAN BE READ
@@ -203,12 +204,12 @@ C  NEXT: FIND POSITION FROM WHICH NEXT INPUT FLAG "CRC" CAN BE READ
           CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.FALSE.)
           IEND = IEND + ITOK
         END IF
-!  READ FIT COEFFICIENTS            
+!  READ FIT COEFFICIENTS
         IF (MOD(IFTFLG,100) == 10) THEN
           NCOEF = 1
           READ (IUNIN,'(6E12.4)') COEF(1)
 !  STORE REACTION LINES FOR OUTPUTING TO JSON FILE
-          ALLOCATE (CHARACTER(LEN=12) :: CLINE)        
+          ALLOCATE (CHARACTER(LEN=12) :: CLINE)
           WRITE (CLINE,'(6E12.4)') COEF(1)
 !cym/cpg avoid type mismatch
 !          call eirene_push_string_stack(crs_stack,trim(cline))
@@ -219,8 +220,8 @@ C  NEXT: FIND POSITION FROM WHICH NEXT INPUT FLAG "CRC" CAN BE READ
         ELSE
           NCOEF = 9
           READ (IUNIN,'(6E12.4)') COEF(1:NCOEF)
-!  STORE REACTION LINES FOR OUTPUTING TO JSON FILE 
-          ALLOCATE (CHARACTER(LEN=72) :: CLINE)        
+!  STORE REACTION LINES FOR OUTPUTING TO JSON FILE
+          ALLOCATE (CHARACTER(LEN=72) :: CLINE)
           WRITE (CLINE,'(6E12.4)') COEF(1:6)
 !cym/cpg avoid type mismatch
 !          call eirene_push_string_stack(crs_stack,trim(cline))
@@ -233,17 +234,17 @@ C  NEXT: FIND POSITION FROM WHICH NEXT INPUT FLAG "CRC" CAN BE READ
 !          call eirene_push_string_stack(crs_stack,trim(cline))
           clineCK=trim(cline)
           call eirene_push_string_stack(crs_stack,trim(clineCK))
-!cym/cpg end          
+!cym/cpg end
           DEALLOCATE(CLINE)
         END IF
       END IF
 C
 
-c  3) flag for the type of the reaction process 
+c  3) flag for the type of the reaction process
       CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CRC,ITOK,IER,.FALSE.)
       IEND = IEND + ITOK
       IF (IER > 0) THEN
-        WRITE (iunout,*) ' CRC-STRING FOR REACTION ',IR,' TOO LONG '
+        WRITE (iunout,*) ' CRC-STRING FOR REACTION ',IR,' TOO LONG'
         CALL EIRENE_EXIT_OWN(1)
       END IF
       IF (ALL(REA_PROC /= CRC)) THEN
@@ -274,7 +275,7 @@ C  READ FLAGS MP, MT, DPP, R1MN, R1MX, R2MN, R2MX FROM CHR
         CALL EIRENE_EXIT_OWN(1)
       END IF
 
-!  READ DPP,  potential energy increment in energy weighted rate
+!  READ DPP,  potential energy increment in energy-weighted rate
       CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.TRUE.)
       IEND = IEND + ITOK
       READ (CHR,'(E12.4)') DPP
@@ -283,7 +284,7 @@ C  READ FLAGS MP, MT, DPP, R1MN, R1MX, R2MN, R2MX FROM CHR
         CALL EIRENE_EXIT_OWN(1)
       END IF
 
-!  READ R1MN,   lower boundary for extrapolation, 1st parameter
+!  READ R1MN, lower boundary for extrapolation, 1st parameter
       CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.TRUE.)
       IEND = IEND + ITOK
       READ (CHR,'(E12.4)') R1MN
@@ -292,7 +293,7 @@ C  READ FLAGS MP, MT, DPP, R1MN, R1MX, R2MN, R2MX FROM CHR
         CALL EIRENE_EXIT_OWN(1)
       END IF
 
-!  READ R1MX,   upper boundary for extrapolation, 1st parameter
+!  READ R1MX, upper boundary for extrapolation, 1st parameter
       CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.TRUE.)
       IEND = IEND + ITOK
       READ (CHR,'(E12.4)') R1MX
@@ -301,7 +302,7 @@ C  READ FLAGS MP, MT, DPP, R1MN, R1MX, R2MN, R2MX FROM CHR
         CALL EIRENE_EXIT_OWN(1)
       END IF
 
-!  READ R2MN,   lower boundary for extrapolation, 2nd parameter
+!  READ R2MN, lower boundary for extrapolation, 2nd parameter
       CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.TRUE.)
       IEND = IEND + ITOK
       READ (CHR,'(E12.4)') R2MN
@@ -310,7 +311,7 @@ C  READ FLAGS MP, MT, DPP, R1MN, R1MX, R2MN, R2MX FROM CHR
         CALL EIRENE_EXIT_OWN(1)
       END IF
 
-!  READ R2MX,   upper boundary for extrapolation, 2nd parameter
+!  READ R2MX, upper boundary for extrapolation, 2nd parameter
       CALL EIRENE_READ_TOKEN(ZEILE(IEND:),' ',CHR,ITOK,IER,.TRUE.)
       IEND = IEND + ITOK
       READ (CHR,'(E12.4)') R2MX
@@ -318,19 +319,19 @@ C  READ FLAGS MP, MT, DPP, R1MN, R1MX, R2MN, R2MX FROM CHR
         WRITE (iunout,*) ' ERROR READING R2MX FOR REACTION ',IR
         CALL EIRENE_EXIT_OWN(1)
       END IF
-      
+
       IF (INDEX(ZEILE,'ADAS') .NE. 0 .OR.
      .    INDEX(ZEILE,'TAB2D') .NE. 0 ) THEN
 !  CHECK FOR ELEMENT NAME AND CHARGE STATE IN TABLE
         READ (IUNIN,'(4X,A2,1X,I3,2X,A60)') ELNAME,IZ,BUNDLING
-!  STORE REACTION LINES FOR OUTPUTING TO JSON FILE 
-        ALLOCATE (CHARACTER(LEN=72) :: CLINE)        
+!  STORE REACTION LINES FOR OUTPUTING TO JSON FILE
+        ALLOCATE (CHARACTER(LEN=72) :: CLINE)
         WRITE (CLINE,'(4X,A2,1X,I3,2X,A60)') ELNAME,IZ,BUNDLING
 !cym/cpg avoid type mismatch
 !        call eirene_push_string_stack(crs_stack,trim(cline))
         clineCK=trim(cline)
         call eirene_push_string_stack(crs_stack,trim(clineCK))
-!cym/cpg end        
+!cym/cpg end
         DEALLOCATE(CLINE)
         CALL EIRENE_LOWERCASE(ELNAME)
         CALL EIRENE_LOWERCASE(BUNDLING)
@@ -342,14 +343,14 @@ C  READ FLAGS MP, MT, DPP, R1MN, R1MX, R2MN, R2MX FROM CHR
 
       IF (INDEX(ZEILE,'CR') .NE. 0) THEN
         READ (IUNIN,'(A80)') ZEILE
-!  STORE REACTION LINES FOR OUTPUTING TO JSON FILE 
+!  STORE REACTION LINES FOR OUTPUTING TO JSON FILE
 !cym/cpg avoid type mismatch
 !        call eirene_push_string_stack(crs_stack,trim(zeile))
          zeileCK=zeile
          call eirene_push_string_stack(crs_stack,trim(zeileCK))
 !cym/cpg end
-cdr       CALL EIRENE_UPPERCASE (ZEILE), removed, because leading blank removal wrecks format
-! CHECK FOR POPULATION ESCAPE  FACTORS
+cdr     CALL EIRENE_UPPERCASE (ZEILE), removed, because leading blank removal wrecks format
+! CHECK FOR POPULATION ESCAPE FACTORS
 ! IF ANY OTHER CHARACTER (NOT A PURE REAL OR INTEGER) IS FOUND,
 ! VALUE OF VERIFY... GIVES THE FIRST (LEFTMOST) POSITION.
         IF (VERIFY(ZEILE,'+-.edED0123456789 ') > 0) THEN
@@ -384,27 +385,31 @@ cdr        elsewhere.   There should be no such difference.
 cdr   default asymp: means: no asympt. at all. fp1, fp2 never needed !
 
 
-C  CURRENT DEFAULT ASYMPTOTICS:  SET SUCH THAT "NO ASYMPTOTICS" IS USED
+C  CURRENT DEFAULT ASYMPTOTICS: SET SUCH THAT "NO ASYMPTOTICS" IS USED
       IF (INDEX(H123,'P.').eq.0) then
 c  single parametric data, or for first parameter in 2-parametric data
-          RC1MIN = -20.  ! lower ln(E), ln(T) default limit; E,T in eV  (2E-9 EV)
-          RC1MAX =  20.  ! upper ln(E), ln(T) default limit; E,T in eV  (5E8  EV)
+        RC1MIN = -20.  ! lower ln(E), ln(T) default limit;
+                       ! E,T in eV (2E-9 EV)
+        RC1MAX =  20.  ! upper ln(E), ln(T) default limit;
+                       ! E,T in eV (5E8  EV)
 c  2nd parameter in 2 parametric data
-          RC2MIN = -20.  ! lower ln(E0), ln(N) default limit; E0 in eV, N in cm**-3
-          RC2MAX =  100. ! upper ln(E0), ln(N) default limit; E0 in eV, N in cm**-3
+        RC2MIN = -20.  ! lower ln(E0), ln(N) default limit;
+                       ! E0 in eV, N in cm**-3
+        RC2MAX = 100.  ! upper ln(E0), ln(N) default limit;
+                       ! E0 in eV, N in cm**-3
 
-C  ARE PARAMETERS FOR ASYMPTOTICS FOR THIS REACTION IR SPECIFIED 
-c  EXPLICITLY IN input file?
+C  ARE PARAMETERS FOR ASYMPTOTICS FOR THIS REACTION IR SPECIFIED
+C  EXPLICITLY IN input file?
 C  IF YES: OVERWRITE DEFAULTS, AND/OR DATA FROM EXTERNAL FILE
 C  PARAMETERS ARE E,T,N: ALWAYS POSITIVE
         IF (R1MN.GT.0.D0) THEN
           READ (IUNIN,66664) JFEX1MN,(FP1(I),I=1,3)
           RC1MIN=LOG(R1MN)
           WRITE (IUNOUT,*) 'NON-DEF. R1MN FOR REACTION IR=',IR,R1MN
-!  STORE REACTION LINES FOR OUTPUTING TO JSON FILE 
-          ALLOCATE (CHARACTER(LEN=72) :: CLINE)        
+!  STORE REACTION LINES FOR OUTPUTING TO JSON FILE
+          ALLOCATE (CHARACTER(LEN=72) :: CLINE)
           WRITE (CLINE,66664) JFEX1MN,(FP1(I),I=1,3)
-!cym/cpg avoid type mismatch 
+!cym/cpg avoid type mismatch
 !          call eirene_push_string_stack(crs_stack,trim(cline))
           clineCK=cline
           call eirene_push_string_stack(crs_stack,trim(clineCK))
@@ -415,10 +420,10 @@ C  PARAMETERS ARE E,T,N: ALWAYS POSITIVE
           READ (IUNIN,66664) JFEX1MX,(FP1(I),I=4,6)
           RC1MAX=LOG(R1MX)
           WRITE (IUNOUT,*) 'NON-DEF. R1MX FOR REACTION IR=',IR,R1MX
-!  STORE REACTION LINES FOR OUTPUTING TO JSON FILE 
-          ALLOCATE (CHARACTER(LEN=72) :: CLINE)        
+!  STORE REACTION LINES FOR OUTPUTING TO JSON FILE
+          ALLOCATE (CHARACTER(LEN=72) :: CLINE)
           WRITE (CLINE,66664) JFEX1MX,(FP1(I),I=4,6)
-!cym/cpg avoid type mismatch 
+!cym/cpg avoid type mismatch
 !          call eirene_push_string_stack(crs_stack,trim(cline))
           clineCK=cline
           call eirene_push_string_stack(crs_stack,trim(clineCK))
@@ -429,8 +434,8 @@ C  PARAMETERS ARE E,T,N: ALWAYS POSITIVE
           READ (IUNIN,66664) JFEX2MN,(FP2(I),I=1,3)
           RC2MIN=LOG(R2MN)
           WRITE (IUNOUT,*) 'NON-DEF. R2MN FOR REACTION IR=',IR,R2MN
-!  STORE REACTION LINES FOR OUTPUTING TO JSON FILE 
-          ALLOCATE (CHARACTER(LEN=72) :: CLINE)        
+!  STORE REACTION LINES FOR OUTPUTING TO JSON FILE
+          ALLOCATE (CHARACTER(LEN=72) :: CLINE)
           WRITE (CLINE,66664) JFEX2MN,(FP2(I),I=1,3)
 !cym/cpg avoid type mismatch
 !          call eirene_push_string_stack(crs_stack,trim(cline))
@@ -443,8 +448,8 @@ C  PARAMETERS ARE E,T,N: ALWAYS POSITIVE
           READ (IUNIN,66664) JFEX2MX,(FP2(I),I=4,6)
           RC2MAX=LOG(R2MX)
           WRITE (IUNOUT,*) 'NON-DEF. R2MX FOR REACTION IR=',IR,R2MX
-!  STORE REACTION LINES FOR OUTPUTING TO JSON FILE 
-          ALLOCATE (CHARACTER(LEN=72) :: CLINE)        
+!  STORE REACTION LINES FOR OUTPUTING TO JSON FILE
+          ALLOCATE (CHARACTER(LEN=72) :: CLINE)
           WRITE (CLINE,66664) JFEX2MX,(FP2(I),I=4,6)
 !cym/cpg end
 !          call eirene_push_string_stack(crs_stack,trim(cline))
@@ -453,10 +458,10 @@ C  PARAMETERS ARE E,T,N: ALWAYS POSITIVE
 !cym/cpg end
           DEALLOCATE(CLINE)
         ENDIF
-        IF (MAX(R1MN,R1MX,R2MN,R2MX).GT.0.D0) CALL EIRENE_LEER(1)   
-     
+        IF (MAX(R1MN,R1MX,R2MN,R2MX).GT.0.D0) CALL EIRENE_LEER(1)
+
       else
-! identifier "P" found in H123. Data for photon processes! No assymptotics available
+! identifier "P" found in H123. Data for photon processes! No asymptotics available
 ! defaults already set at beginning of subroutine
       endif
 
@@ -495,7 +500,7 @@ C       ONLY NEEDED FOR AUTOMATED INTERFACE TO HYDKIN DATABASE.
       REACLINES(IL)%COEF(1:NCOEF) = COEF(1:NCOEF)
       IRLINES = IL
 C  DONE
-      
+
 66664 FORMAT (I6,6X,5E12.4)
 66665 FORMAT (2I6,4E12.4)
       return

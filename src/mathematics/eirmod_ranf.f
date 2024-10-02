@@ -8,7 +8,7 @@
 
       PUBLIC :: ranf_eirene, ranf_eirene_reinit,
      .          ranset_eirene, ranset_eirene_reinit,
-     .          ranget_eirene 
+     .          ranget_eirene
 
       integer, save :: ifirst_ranf=0, ifirst_ranset=0
 cccccccccccccccccccccccccc
@@ -17,14 +17,14 @@ cccccccccccccccccccccccccc
       integer :: iseed
 
 !$omp threadprivate(ifirst_ranf,ifirst_ranset,iseed)
- 
+
       CONTAINS
 
 cdr April 2016:  looked at current default random number generator.
-cdr               it seems to be a rather trivial congruential generator,
-cdr               even without additive constant  (c=0.0)
-cdr               very likely that this generator must be removed urgently !
-cdr               maybe the CERN generator (nlranmar) H1rn is superior by far
+cdr              it seems to be a rather trivial congruential generator,
+cdr              even without additive constant  (c=0.0)
+cdr              very likely that this generator must be removed urgently !
+cdr              maybe the CERN generator (nlranmar) H1rn is superior by far
 
 cdr April 2017:  references found, see F. James,
 c       ref.: review paper  F. James, CPC, 60 (1990) 329,  for both generators
@@ -41,10 +41,10 @@ C
 C RANDOM NUMBER GENERATOR FROM
 C  http://www.srcc.msu.su/num_anal/lib_na/cat/g/gsu1r.htm (in russian)
 
-cdr:  web page is not accessible anymore,
+cdr: web page is not accessible anymore,
 C
-C SOURCE:  Knuth, D.E. 1981, Seminumerical Algorithms, 2nd ed., vol. 2 of The Art
-C          of Computer Programming (Reading, MA: Addison-Wesley)
+C SOURCE: Knuth, D.E. 1981, Seminumerical Algorithms, 2nd ed., vol. 2 of The Art
+C         of Computer Programming (Reading, MA: Addison-Wesley)
 C
 cdr:  I cannot find this random generator in that reference.
 c
@@ -60,7 +60,7 @@ C ISEED IS THE INTEGER FROM 1 TO 2147483647, AFTER FINISHING ITS VALUE IS
 C (2**31) * R (N) AND CAN BE USED FOR THE FUTURE CALLS
 C RETURNS ONE RANDOM NUMBER FROM 0 TO 1
 
-cdr  if nloldran = T:  H1RN generator is used
+cdr  if nloldran = T: H1RN generator is used
 C
       USE EIRMOD_PRECISION
       implicit none
@@ -103,16 +103,16 @@ cdr   store that in Common CMEM, and initialize random generator.
 c
       INTEGER FUNCTION RANSET_EIRENE(ISE)
 cdr   input:
-c       nloldran:  (CLOGAU)
+c       nloldran: (CLOGAU)
 c         T: use random number generator  H1RN, H1RNIN,...., recommended.
 c         F: use random number generator (IBM 1968),     not recommended.
 c       ise: input seed, must be an 2**32 bit integer, i.e. 0<=ise<=2**31-1
 c            additionally: 0<= ise <= 900.000.000 for H1RN, H1RNIN generator
 
-c       ref.: review paper  F. James, CPC, 60 (1990) 329,  for both generators
+c       ref.: review paper F. James, CPC, 60 (1990) 329, for both generators
 c
-c  if in very first call ise <=0:  try a default seed.
-c  if that happens in a later call:  error exit.
+c  if in very first call ise <=0: try a default seed.
+c  if that happens in a later call: error exit.
 
       implicit none
       integer, intent(in) :: ise
@@ -190,9 +190,9 @@ cdr  output:  ISE (=ranget_eirene),  return a legal integer seed
 cdr  use H1RN, which is RANMAR, F. James, CPC, 60 (1990) 329, sec 3.3
 c    A legal seed must be 0<=ISE<=900.000.000
 cdr  input:
-C    ISE:   old reference seed,
-C           from which the current status of random generator is set
-C           and from which new seed should result in a deterministic way
+C    ISE: old reference seed,
+C         from which the current status of random generator is set
+C         and from which new seed should result in a deterministic way
 c
 
       implicit none
@@ -204,20 +204,19 @@ cym      common /cmem/ iseed
 cym cccccccccccccccccccccccccccccccccc
       real(dp) :: ran
 
-c  1st generator: H1RN  (RANMAR)
+c  1st generator: H1RN (RANMAR)
 
 cdr  iseed=0 is a perfectly legal seed for this generator
-         if (iseed.lt.0.or.iseed.gt.900000000) then
+      if (iseed.lt.0.or.iseed.gt.900000000) then
 c  no legal seed available
-           write (iunout,*) 'error in fct. ranget of random generator'
-           write (iunout,*) 'exit called from subr. ranget'
-           call eirene_exit_own(1)
-         endif
+        write (iunout,*) 'error in fct. ranget of random generator'
+        write (iunout,*) 'exit called from subr. ranget'
+        call eirene_exit_own(1)
+      endif
 
-         ranget_eirene= mod(iseed+1,900000000)+1
-
+      ranget_eirene= mod(iseed+1,900000000)+1
 
       return
       end function ranget_eirene
-     
+
       END MODULE EIRMOD_RANF

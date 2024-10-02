@@ -1,4 +1,4 @@
-Cdr  june 17:  gr-cleanup: call grstrt, grend --> call eirene_plstrt, eirene_plend
+Cdr  june 17: gr-cleanup: call grstrt, grend --> call eirene_plstrt, eirene_plend
 cdr  comments
 cd   oct 20: modified to obtain total cpu time, sum over all iterations.
 C
@@ -11,7 +11,7 @@ cdr  Main program, to run EIRENE as standalone code.
 c
 c     a)  initialize graphics routines
 c     b)  set default global run parameters NLM, DT, NLL, ITNR, MPI_INIT
-c         for stand alone runs.
+c         for standalone runs.
 c     c)  call EIRENE(DT,NLM,NLL,ITNR,MPI_INIT)
 c     d)  close graphics routines
 
@@ -28,11 +28,10 @@ cdr  or to the entry point EIRENE_COUPLE in SUBR. EIRENE.
 
 cdr  For example:
 cdr  CALL EIRENE_EIRENE and CALL_EIRENE_COUPLE
-cdr  are preprogrammed in the main interfacing routine EIRSRT.f ,
+cdr  are preprogrammed in the main interfacing routine EIRSRT.f,
 cdr  for some frequently used coupled applications (with B2, B2.5, etc..)
 cdr  The parameters DT, NLM, NLL, ITNR, MPI_INIT... are then
 cdr  set from the external code, or in EIRSRT, and are problem-specific.
-
 
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
@@ -46,8 +45,6 @@ cdr  set from the external code, or in EIRSRT, and are problem-specific.
 #else
       USE EIRMOD_MPI, ONLY: EIRENE_MPI_INIT, MPI_FINALIZE
 #endif
-
-      
 
       IMPLICIT NONE
       REAL(DP) :: DT
@@ -79,15 +76,15 @@ c  initialize MPI routines
 !!! debug / commented until -cpp option added
 !!!      write(6,*) "EIRENE_MAIN: starting"
 !!!#ifdef USE_EXT_OPENMP
-!!!      write(6,*) "Entering paralell region replicating external region"
+!!!      write(6,*) "Entering parallel region replicating external region"
 !!!$OMP PARALLEL DEFAULT(SHARED)
-!!!      write(6,*) "Entered paralell region replicating external region"
+!!!      write(6,*) "Entered parallel region replicating external region"
 !!!#endif
       CALL EIRENE_EIRENE(DT,NLM,NLL,ITNR,MPI_INIT)
 !!!#ifdef USE_EXT_OPENMP
-!!!!$OMP END PARALLEL      
+!!!!$OMP END PARALLEL
 !!!#endif
-C     
+C
       CALL EIRENE_PLEND
 C
       TIMEND=EIRENE_RESET_SECOND()
@@ -95,6 +92,6 @@ C
      .                  TIMEND-TIMI0
 C     Finalize MPI
       CALL MPI_FINALIZE(IER)
-C      
+C
       STOP
       END

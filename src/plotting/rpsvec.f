@@ -1,5 +1,5 @@
-C  april 2006:  levgeo=1 option and nlpol: added
-C  ??           array dimension ZUORD(..,30,2), rather than (...,20,2)
+C  april 2006: levgeo=1 option and nlpol: added
+C  ??          array dimension ZUORD(..,30,2), rather than (...,20,2)
 C
       SUBROUTINE EIRENE_RPSVEC (AORIG,BORIG,IBLD,ICURV,
      .                   IXX,IYY,XX,YY,
@@ -431,7 +431,7 @@ c  ib, ic are the two other nodes in triangle k
             if (ic.eq.4) ic=1
 c
             call EIRENE_muelam
-     .  (xtrian(i),ytrian(i),ywert1(i,1),zwert1(i,1),
+     .                  (xtrian(i),ytrian(i),ywert1(i,1),zwert1(i,1),
      .                   xtrian(necke(ib,k)),ytrian(necke(ib,k)),
      .                   xtrian(necke(ic,k)),ytrian(necke(ic,k)),xl,xm)
             if (xm >= 0. .and. xm <= 1. .AND. XL > 0.) then

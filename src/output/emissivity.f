@@ -8,32 +8,34 @@ cdr  may 18: some comments tried......NOT FINISHED
 cdr  This routine is a generalization of old routines Ba_alpha,....,Ly-Beta.
 
 cdr  Fill ADDV tallies with emissivities, stratum ISTR
-cdr  for lines LSTART to LEND.
+cdr  for a set of lines ILINE = LSTART, LEND.
 c
 c    ADDV must have been allocated properly for (not checked here):
-c    ADDV(iads),  iads = emis_lines(i)%iadv_total,
-c                        for lines i=lstart,lend
-c    ADDV(iadv),  iadv = emis_lines(i)%compo(j)%iadv
-c                        for i=lstart,lend                     ! lines
-c                           for j=1,emis_lines(i)%num_compo    ! components per line
+c    ADDV(iads),  iads = emis_lines(iline)%iadv_total,
+c                        summed over lines iline=lstart,lend
+c    ADDV(iadv),  iadv = emis_lines(iline)%compo(j)%iadv
+c                        for iline=lstart,lend                     ! lines
+c                           for j=1,emis_lines(iline)%num_compo    ! components per line
 c
-c
+cdr: icall option: (perhaps not ready)
 c    icall=0:  called from MCARLO, after each stratum, if NLEMIS
 cdr                                and once again: for sum over strata.
 cdr
-c    icall=1:  called from SIGLINE in storage saving mode (MOD_ADDV=0) and if
-c              line of sight is defined in input block 12.
+c    icall=1:  called from SIGLINE in storage saving mode (MOD_ADDV=0)
+c              and also if line of sight integral is defined in input block 12.
 c
 c
-cdr  Line emissivity rates are defined in input block 4, 
+cdr  Line emissivity rates are defined in input block 4,
 cdr  via ordinary "reaction decks".
-cdr  Population coefficient for upper states (components) 
-cdr  must have been defined via a reaction deck in block 4 (H.11 or H.12),
-cdr  or via internal CR codes (H-colrad, He-colrad)
-cdr  These are transfered into here via call to OTHER_RATE_COEFF.f
-cdr  
-cdr  NFILEN flag: 
-cdr  Write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
+c
+cdr  Population coefficient for upper states (components)
+cdr  must be defined via a reaction deck in block 4
+cdr  either from databases (e.g.: AMJUEL, H.11 or H.12),
+cdr  or via internal CR codes (H-colrad, He-colrad).
+cdr  These population coefficients are transfered into here via call to OTHER_RATE_COEFF.f
+cdr
+cdr  NFILEN flag:
+cdr  Write the newly defined tallies ADDV onto stream fort.10, fort.11, stratum ISTR
 
 
 
@@ -56,7 +58,7 @@ cdr  Write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
       implicit none
 
       integer, intent(in) :: istr, lstart, lend, icall
-      integer :: i, j, k, iline, 
+      integer :: i, j, k, iline,
      .           iads, iadv, isp(3), itp(3), iratio, irc,
      .           irc_rat(2), icell, ncelc, ndens, idens, icount
       real(dp) :: density(3), sigadd, add, powalf, powalfs,
@@ -70,15 +72,15 @@ cdr  Write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
       character(len=80) :: ctest2
 
       IF (TRCSIG .AND. ICALL.EQ.0) THEN
-      CALL EIRENE_LEER(2)
-      CALL EIRENE_FTCRI(ISTR,CISTRA)
-      IF (ISTR.GT.0) CALL EIRENE_MASBOX
+        CALL EIRENE_LEER(2)
+        CALL EIRENE_FTCRI(ISTR,CISTRA)
+        IF (ISTR.GT.0) CALL EIRENE_MASBOX
      .   ('SUBR. EMISSIVITY CALLED, FOR STRATUM NO. '//CISTRA)
-      IF (ISTR.EQ.0) CALL EIRENE_MASBOX
+        IF (ISTR.EQ.0) CALL EIRENE_MASBOX
      .   ('SUBR. EMISSIVITY CALLED, FOR SUM OVER STRATA')
-      CALL EIRENE_LEER(1)
+        CALL EIRENE_LEER(1)
 
-      WRITE (iunout,*) ' AFTER INTEGRATION OVER COMPUTATIONAL DOMAIN'
+        WRITE (iunout,*) 'AFTER INTEGRATION OVER COMPUTATIONAL DOMAIN'
       ENDIF
 
       do i = lstart, lend
@@ -86,14 +88,13 @@ cdr  Write the newly defined tallies ADDV onto stream fort.11, stratum ISTR
         IF (TRCSIG .AND. ICALL.EQ.0) THEN
           ctest2 = emis_lines(iline)%line_name
           WRITE (iunout,'(1X,A,I2,3A)') 'LINE no. ',
-     .                                   ILINE,', ',TRIM(CTEST2),':' 
-          
+     .                                   ILINE,', ',TRIM(CTEST2),':'
           write (iunout,'(1X,A,ES12.4)') 'EINSTEIN COEFFICIENT',
-     .                               emis_lines(i)%einstein
+     .                                    emis_lines(i)%einstein
           write (iunout,'(1X,A,ES12.4/1x)') 'TRANSITION ENERGY   ',
-     .                               emis_lines(i)%trans_en
+     .                                    emis_lines(i)%trans_en
 
-        WRITE (iunout,*) ' FLUX (AMP) AND POWER (WATT) BY '
+          WRITE (iunout,*) 'FLUX (AMP) AND POWER (WATT) BY '
         ENDIF
 
         einstein = emis_lines(i)%einstein
@@ -117,14 +118,14 @@ c
           sigadd = 0._dp
           powalf = 0._dp
 
-cdr run over contributions:  density models, isotopes, QSS states            
+cdr run over contributions: density models, isotopes, QSS states
           do k = 1, emis_lines(i)%compo(j)%num_contrib
             isp(1) = emis_lines(i)%compo(j)%contrib(k)%isp
             itp(1) = emis_lines(i)%compo(j)%contrib(k)%itp
             isp(2:3) = emis_lines(i)%compo(j)%contrib(k)%isp_rat
             itp(2:3) = emis_lines(i)%compo(j)%contrib(k)%itp_rat
             iratio = emis_lines(i)%compo(j)%contrib(k)%iratio
-            
+
             irc_rat = emis_lines(i)%compo(j)%contrib(k)%irc_rat
 
             ndens = count(itp >= 0)
@@ -135,11 +136,11 @@ cdr  Option for internal CR code models only (ifit=5)
 cdr  Each transition (line) can be
 cdr  assigned a population escape factor.
 cdr  This is then used for all calls to this CR code during the run,
-cdr  e.g. for both effective rate coefficients and line emission densities 
+cdr  e.g. for both effective rate coefficients and line emission densities
             if (reacdat(irc)%oth%ifit == 5) then
               fpop_esc = reacdat(irc)%oth%crm%pop_esc
             end if
-            
+
             ICOUNT=0
             DO ICELL=1,NSBOX
 C
@@ -237,7 +238,7 @@ cdr         add volume-weighted contribution to coarse cell "ncelc"
           end do ! k contributions (summed) of component j of line iline
 
 cdr ADDV was volume-weighted (extensive) sum. Now divide by coarse cell volume
-cdr      to turn it into an intensive score:  [...] per cm**3
+cdr      to turn it into an intensive score: [...] per cm**3
           addv(iadv,1:nsbox_tal) = addv(iadv,1:nsbox_tal)
      .                             / voltal(1:nsbox_tal)
 
@@ -271,7 +272,7 @@ cdr  now sum over components: on tally ADDV(IADS)
         addv(iads,1:nsbox_tal) = addv(iads,1:nsbox_tal)
      .                           / voltal(1:nsbox_tal)
         IF (TRCSIG .AND. ICALL.EQ.0)
-     .  WRITE (iunout,'(A50,2ES16.7)')
+     .   WRITE (iunout,'(A50,2ES16.7)')
      .                  ' TOTAL FLUX (AMP) AND POWER (WATT) '
      .                  ,POWALFS/TRANS_EN*ELCHA,POWALFS
 
@@ -293,15 +294,17 @@ cdr  now sum over components: on tally ADDV(IADS)
       end do ! line no. ILINE
 
 C
-C  WRITE ON STREAM 11 DATA FOR STRATUM NO. ISTR
+C  WRITE ON STREAM 10 DATA FOR STRATUM NO. ISTR
       IF (NFILEN.EQ.1.OR.NFILEN.EQ.2) THEN
         IESTR=ISTR
-        CALL EIRENE_WRSTRT(ISTR,NSTRAI,NESTM1,NESTM2,NADSPC,
+        CALL EIRENE_WRSTRT(ISTR,NSTRAI,
+     .              NESTM1,NESTM2,NADSPC,
      .              ESTIMV,ESTIMS,ESTIML,
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
      .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .              NSIGI_SPC,TRCFLE)
 C
+C  WRITE ON STREAM 11 (TOTALS, SUMMED OVER GRID) FOR STRATUM NO. ISTR
         IRC=2
         ALLOCATE (OUTAU(NOUTAU))
         CALL EIRENE_WRITE_COUTAU (OUTAU, IUNOUT)
@@ -309,15 +312,17 @@ C
         DEALLOCATE (OUTAU)
         IF (TRCFLE)   WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
 
-C  WRITE ON STREAM 11 ONLY DATA FOR SUM OVER STRATA
+C  WRITE ON STREAM 10 ONLY DATA FOR SUM OVER STRATA
       ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.ISTR.EQ.0) THEN
         IESTR=ISTR
-        CALL EIRENE_WRSTRT(ISTR,NSTRAI,NESTM1,NESTM2,NADSPC,
+        CALL EIRENE_WRSTRT(ISTR,NSTRAI,
+     .              NESTM1,NESTM2,NADSPC,
      .              ESTIMV,ESTIMS,ESTIML,
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
      .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
      .              NSIGI_SPC,TRCFLE)
 C
+C  WRITE ON STREAM 11 (TOTALS, SUMMED OVER GRID) ONLY DATA FOR SUM OVER STRATA
         IRC=2
         ALLOCATE (OUTAU(NOUTAU))
         CALL EIRENE_WRITE_COUTAU (OUTAU, IUNOUT)

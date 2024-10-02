@@ -3,6 +3,10 @@ bin*
 build*
 doc*
 lib*
+TAGS
+
+# Ignore local user files
+src.local/
 
 # Ignore temporary files
 *~
@@ -16,7 +20,7 @@ lib*
 # Ignore PDF in Manual
 Manual/*.pdf
 Manual/*.dvi
-Manual/*.cfg 
+Manual/*.cfg
 
 # Ignore EIRENE test cases
 EIRENE-sample-cases

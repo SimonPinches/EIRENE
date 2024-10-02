@@ -128,6 +128,9 @@
         NTSEITE(1:4,NTET+6) = -1
       END IF
 
+! In the blocks below, intervert the commented lines related to INMP3I
+! dependeing on whether the tetrahedra in the grid are right-handed
+! or left-handed
       INMTIT(1,NTET+1) = INMP3I(IR,IP,IT)
 !pb      INMTIT(1,NTET+1) = INMP3I(IR,IP,IT+1)
       INMTIT(3,NTET+1) = INMP2I(IR,IP+1,IT)

@@ -25,7 +25,7 @@ c     using special octree stuff, to speed up additional surface handling
      .          EIRENE_TIMEA0_OC,
      .          EIRENE_DEALLOC_TIMEA
 
-cym this variable seem to be shared (OMP)      
+cym this variable seem to be shared (OMP)
 c     the octree
       TYPE(octree), POINTER, SAVE :: TREE
 c     active surface ids of surfs not in octree saved in lookup table
@@ -39,14 +39,14 @@ Cdr:  at some point (after 2010) this routine was extended by an "octree option"
 c     to speed up calculation for intersections of rays with add. surfaces
 c     implemented as triangles in 3d space (rlb >=3 options>).
 
-cdr Jan 2017:  the octree option NLOCTREE is part of a proprietary development branch
-c              at FZJ, and should not be used by a 3rd party. It is likely not finished.
+cdr Jan 2017: the octree option NLOCTREE is part of a proprietary development branch
+c             at FZJ, and should not be used by a 3rd party. It is likely not finished.
 cdr see: TODO comment below. Further: is the sequence of additional surfaces changed
 c        by doing the RLB< 3 surfaces first and the RLB >=3 surfaces next?
 c        This may invalidate some of the surface options which depend on the
 c        order of additional surfaces, see manual, input block 3b
-cdr  Feb 2017:  some documentation, and clearer separation of NLOCTREE options
-cdr             from the default (.NOT.NLOCTREE) procedure.  More to do.....
+cdr Feb 2017: some documentation, and clearer separation of NLOCTREE options
+cdr           from the default (.NOT.NLOCTREE) procedure. More to do.....
 C
       SUBROUTINE EIRENE_TIMEA0
 C
@@ -541,7 +541,7 @@ c  create HNF coefficients (normalized vector and distance)
 c.....................................................
 
 !pb 04122019
-!pb   clean up in case NLIMI is changed compared to an earlier iteration      
+!pb   clean up in case NLIMI is changed compared to an earlier iteration
       call eirene_dealloc_timea
       IF (NLOCTREE) then
 c  calling an internal subroutine for preparing octree procedure:
@@ -570,32 +570,32 @@ C
      .  VXX,VYY,VZZ,VV,MASURF,XR,YR,ZR,SG,TL,NLTRC,LCNDEXP)
       IMPLICIT NONE
 
-cym seperate arguments of subroutine from other local variables
+cym separate arguments of subroutine from other local variables
 cym in order to handle the save properly
 
       REAL(DP) :: XX, YY, ZZ, TMT, VXX, VYY, VZZ, VV
-      REAL(DP) :: XR, YR, ZR, SG, TL           
-      INTEGER :: MSURF, NCELL ,NLI, NLE, NTCELL, IPERID, MASURF
+      REAL(DP) :: XR, YR, ZR, SG, TL
+      INTEGER :: MSURF, NCELL, NLI, NLE, NTCELL, IPERID, MASURF
       LOGICAL, INTENT(OUT) :: LCNDEXP
       LOGICAL :: NLTRC
 
-cym local variables with save attribute      
-      REAL(DP),save :: TMIN, X_S, Y_S, Z_S, SG_S
-      INTEGER,save :: NNTCL,MASURF_S
-      LOGICAL,save :: LCNDEXP_S
+cym local variables with save attribute
+      REAL(DP), SAVE :: TMIN, X_S, Y_S, Z_S, SG_S
+      INTEGER, SAVE :: NNTCL, MASURF_S
+      LOGICAL, SAVE :: LCNDEXP_S
 c     some vars for checking on intersection/where we are
-      TYPE(ocnode), POINTER,save :: block
-      
-      REAL(DP), DIMENSION(3),save :: ip, start, direction
-      REAL(DP),save :: runlength, norm
-      LOGICAL,save :: status
-      
+      TYPE(ocnode), POINTER, SAVE :: block
+
+      REAL(DP), DIMENSION(3), SAVE :: ip, start, direction
+      REAL(DP), SAVE :: runlength, norm
+      LOGICAL, SAVE :: status
+
 
 !$OMP THREADPRIVATE(TMIN,X_S, Y_S, Z_S, SG_S,
 !$OMP&        NNTCL, MASURF_S, LCNDEXP_S,
 !$OMP&        block,ip, start, direction,runlength, norm,status)
 
-cym      SAVE 
+cym      SAVE
 
       INTERFACE
         SUBROUTINE EIRENE_TIMEA_CheckInter(
@@ -856,14 +856,14 @@ c  that are no tri/quad/quintangles
 
       END SUBROUTINE EIRENE_TIMEA0_BUILDOC
 
-      
+
       SUBROUTINE EIRENE_DEALLOC_TIMEA
       IMPLICIT NONE
 
       if (ALLOCATED(NOTOCSURFS)) DEALLOCATE (NOTOCSURFS)
       if (ASSOCIATED(tree)) call OCTREE_DeleteTree(tree)
       RETURN
-      
+
       END SUBROUTINE EIRENE_DEALLOC_TIMEA
 
       END MODULE EIRMOD_TIMEA

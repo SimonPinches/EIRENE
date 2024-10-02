@@ -25,6 +25,7 @@ C
 
       XTRAN(XI,ETA)=XI*COSA-ETA*SINA
       YTRAN(XI,ETA)=XI*SINA+ETA*COSA
+
       IF (TRCPLT) WRITE (iunout,*) 'PLTKU'
       IF (LBOX) THEN
         CALL GRJMP(REAL(XL1,SP),REAL(YL1,SP))
@@ -71,7 +72,7 @@ C*****FIRST POINT OF LINE
             IF (LIN.AND.LPLA) THEN
                IF (LZR) CALL GRJMP (REAL(XX,SP),REAL(YY,SP))
                IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS)
-     .           CALL EIRENE_STCOOR(XX,YY,0)
+     .          CALL EIRENE_STCOOR (XX,YY,0)
                INN=24
                IFLAG=24
             ENDIF
@@ -85,7 +86,7 @@ C*****POINT INSIDE PLOTAREA AND INSIDE THE CONFIGURATION
             IF (LIN.AND.LINO.AND.LPLA.AND.LPLAO) THEN
                IF (LZR) CALL GRDRW (REAL(XX,SP),REAL(YY,SP))
                IF (.NOT.LZR.OR.PLSTOR.OR.PLNUMS)
-     .           CALL EIRENE_STCOOR (XX,YY,1)
+     .          CALL EIRENE_STCOOR (XX,YY,1)
             ELSE
 C*****LINE CROSSES BOUNDARY
 C***** ... OF CONFIGURATION

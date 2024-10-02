@@ -4,8 +4,8 @@ C
 C                                                     X+ LAMBDA * XR
 C  SCHNITTPUNKT DER EBENE A0,A1,A2,A3 MIT DER GERADEN Y+ LAMBDA * YR
 C                                                     Z+ LAMBDA * ZR
-C  OUTPUT:  P(3): SCHNITTPUNKT
-C           T:    LAMBDA
+C  OUTPUT: P(3): SCHNITTPUNKT
+C          T:    LAMBDA
 C
       USE EIRMOD_PRECISION
       IMPLICIT NONE

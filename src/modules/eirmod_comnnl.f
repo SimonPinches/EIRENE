@@ -3,12 +3,12 @@
 !               IPART (MPRNL,NPARTT) --> IPART (MPARTT,NPRNL)
 !               RPARTC(NPRNL,NPARTT) --> RPARTC(NPARTT,NPRNL)
 !               IPARTC(MPRNL,NPARTT) --> IPARTC(MPARTT,NPRNL)
-cdr:  rpart, ipart:  "true census" arrays, real and integer.
+cdr:  rpart, ipart: "true census" arrays, real and integer.
 cdr:  rpartc,ipartc: copies of census arrays, needed for sampling (bootstrapping)
 cdr                  from old census, while already filling the new census
-cdr   rpartw:  cumulated weight from census, set at the end of timestep (TMSTEP.f)
-cdr            from the weights stored on rpart, for bootstrapping in next timestep
-cdr            (in subr. LOCATE.f)
+cdr   rpartw: cumulated weight from census, set at the end of timestep (TMSTEP.f)
+cdr           from the weights stored on rpart, for bootstrapping in next timestep
+cdr           (in subr. LOCATE.f)
 cdr Jan 2020:  fix nonlinear iteration problems.
 cdr            In case of short version of FORT.13:
 cdr              Other data than just the target PLASMA_BCKGRND input tallies
@@ -55,11 +55,16 @@ cdr  data for iterative mode, e.g. bgk, photon transport, ...
 cdr  data for time dep. mode, e.g. census flux, time stepping, census arrays
       REAL(DP), PUBLIC, SAVE ::
      R  FLXCEN, DTIMV,  DTIMVI, DTIMVN, TIME0
-
+cdr  census arrays, containing the full state vectors of all scores at census (=end of timestep)
+cdr  real(dp) coordinates
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R  RPART(:,:), RPARTC(:,:), RPARTW(:)
+     R  RPART(:,:), RPARTC(:,:),
+cdr  derived: cumulative distribution of indices for re-sampling (bootstrapping) from census
+     R  RPARTW(:)
 
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
+cdr  census arrays, containing the full state vectors of all scores at census (=end of timestep)
+cdr  integer coordinates
      I  IPART(:,:), IPARTC(:,:),
      I  NPRNLS(:)
 
@@ -169,7 +174,7 @@ cdr  Part 2: time dep mode, census arrays, etc.
 
         IPART  = 0
         IPARTC = 0
-        
+
         NPRNLI = 0
         NPRNLS = 0
         IPRNLI = 0
@@ -253,7 +258,7 @@ C> not (yet) implemented and may be part of the plasma code interface.)
       CALL MPI_BCAST (NPTST ,1,MPI_INTEGER,0,MPI_COMM_WORLD,IER)
       CALL MPI_BCAST (NTMSTP,1,MPI_INTEGER,0,MPI_COMM_WORLD,IER)
       CALL MPI_BCAST (ITMSTP,1,MPI_INTEGER,0,MPI_COMM_WORLD,IER)
-      
+
       IF ( NPRLL > 0 ) THEN
         CALL MPI_BCAST (RPART,NPRNL*NPARTT,MPI_REAL8,
      >                  0,MPI_COMM_WORLD,IER)

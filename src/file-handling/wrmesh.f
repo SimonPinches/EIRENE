@@ -104,8 +104,8 @@ c  ADDITIONAL SURFACES
 C 0 < RLB(I) < 2
 C 2-PUNKT OPTION WIRD IM TIMEA0 AUF RLB=1 ZURUECKGEFUEHRT
               IF ((RLB(I) .GT. 0.) .AND. (RLB(I) .LT. 2.) .AND.
-     >          (P3(1,I) .EQ. 1.D55 .OR. P3(2,I) .EQ. 1.D55
-     >          .OR. P3(3,I) .EQ. 1.D55)) THEN
+     >            (P3(1,I) .EQ. 1.D55 .OR. P3(2,I) .EQ. 1.D55
+     >            .OR. P3(3,I) .EQ. 1.D55)) THEN
                 IPOIN = IPOIN + 1
                 IF (IPOIN.GT.MAXPOIN) THEN
                   WRITE(IUNOUT,*)
@@ -141,13 +141,13 @@ C               Y,Z-KOORDINATEN
      >               sqrt((partcont(ipoin,1,1)-partcont(ipoin,2,1))**2
      >                   +(partcont(ipoin,1,2)-partcont(ipoin,2,2))**2)
                 IF (TRCGRD)
-     >            WRITE(iunout,
-     >              '(a,g14.7,a,g14.7,a,g14.7,a,g14.7,a,i4)')
-     >              'Grabbed segment (',
-     >              PARTCONT(IPOIN,1,1),',',PARTCONT(IPOIN,1,2),
-     >              ') to (',
-     >              PARTCONT(IPOIN,2,1),',',PARTCONT(IPOIN,2,2),
-     >              ') from wall ',I
+     >           WRITE(iunout,
+     >            '(a,g14.7,a,g14.7,a,g14.7,a,g14.7,a,i4)')
+     >            'Grabbed segment (',
+     >            PARTCONT(IPOIN,1,1),',',PARTCONT(IPOIN,1,2),
+     >            ') to (',
+     >            PARTCONT(IPOIN,2,1),',',PARTCONT(IPOIN,2,2),
+     >            ') from wall ',I
               ELSE
 C  ERROR
                 WRITE(iunout,'(a,f11.4,2i4)')
@@ -214,7 +214,7 @@ C  RADIAL SURFACES
               ELSE
 C  ERROR
                 WRITE(iunout,*) 'CASE NOT FORESEEN: INUMP: ',
-     >                       (INUMP(I,J),J=1,3)
+     >                     (INUMP(I,J),J=1,3)
               ENDIF
             ENDIF
           ENDDO
@@ -535,13 +535,13 @@ cdr
       ALLOCATE (partcont(newpoin,2,2))
       ALLOCATE (idiag(newpoin))
       ALLOCATE (irip(newpoin,2))
-      
+
       partcont(1:maxpoin,:,:) = pc(1:maxpoin,:,:)
       idiag(1:maxpoin) = id(1:maxpoin)
       irip(1:maxpoin,:) = ir(1:maxpoin,:)
 
       maxpoin = newpoin
-      
+
       deallocate(pc)
       deallocate(id)
       deallocate(ir)

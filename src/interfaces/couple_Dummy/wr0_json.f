@@ -1,6 +1,6 @@
       subroutine eirene_wr0_json(json,me)
-      
-      use eirmod_precision     
+
+      use eirmod_precision
       use json_module           !IGNORE
 
       implicit none

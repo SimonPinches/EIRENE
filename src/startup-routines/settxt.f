@@ -4,11 +4,11 @@ cdr  29.09.14: TXTUNT corrected for generation limits, momentum sources
 c    oct.14  : input tally 22 (potential) connnected to text arrays
 cdr  dec. 15 : energy source tallies for bulk ions: additional species index ipls
 cdr            tallies 38,44,50,56 and 84
-cdr  dec.17:   pumped flux tally SPUMP:  range 1--N5=NSPZ,  rather than N7+1--N8
+cdr  dec.17:   pumped flux tally SPUMP: range 1--N5=NSPZ, rather than N7+1--N8
 cdr            size of array LMETSPW decreased accordingly
 cdr  june 18:  nlemis used to condition some storage setting (FOR REVISED BLOCK 12)
 cdr  oct 18 :  setting text and storage range for input tallies: moved to own routines:
-cdr            settxt_intal, and setprm_intal, to accommodate also the new input gradient tallies. 
+cdr            settxt_intal, and setprm_intal, to accommodate also the new input gradient tallies.
 
       SUBROUTINE EIRENE_SETTXT
 c  Set default texts  (volume tallies: name, species, units),
@@ -246,6 +246,7 @@ C  MOMENTUM DENSITY TALLIES
      . 'MOMENTUM SOURCE (BULK IONS) FROM TEST ION-PLASMA INTERACTION'
       TXTTAL(1,100)=
      . 'MOMENTUM SOURCE (BULK IONS) FROM PHOTON-PLASMA INTERACTION  '
+
 C  RADIATION RATES
       TXTTAL(1,101)=
      . 'RADIATION RATE EMITTED FROM ATOMS                           '
@@ -255,7 +256,7 @@ C  RADIATION RATES
      . 'RADIATION RATE EMITTED FROM TEST IONS                       '
 C
       DO 1 J=1,NTALV
-        DO I=2,N1MX
+        DO I=2,N1MX  ! rather than n1mx we should use nfstpi(j)
           TEXT72=TXTTAL(1,J)
           TXTTAL(I,J)=TEXT72
         END DO
@@ -379,7 +380,6 @@ C  RADIATION RATES
         END DO
     2 CONTINUE
 
-
       IF (NADVI > 0) THEN
         TXTTAL(1:NADVI,NTALA) = TXTTLA(1:NADVI)
         TXTSPC(1:NADVI,NTALA) = TXTSCA(1:NADVI)
@@ -402,11 +402,10 @@ C  RADIATION RATES
         TXTTAL(1:NSNVI,NTALT) = TXTTLT(1:NSNVI)
         TXTSPC(1:NSNVI,NTALT) = TXTSCT(1:NSNVI)
         TXTUNT(1:NSNVI,NTALT) = TXTUTT(1:NSNVI)
-      END IF     
+      END IF
 
       CALL EIRENE_DEALLOC_CTEXT3
 
-      
 C  SURFACE-AVERAGED TALLIES
 
 C  PARTICLE FLUXES, INCIDENT AND EMITTED
@@ -603,7 +602,7 @@ c  sputter tallies
       DO J=1,NTALS
         TXTUNW(2:N2MX,J)=TXTUNW(1,J)
       END DO
-     
+
       RETURN
       END SUBROUTINE EIRENE_SETTXT
 C
@@ -733,7 +732,7 @@ C
       NFSTVI(NTALC)=NCLVI   ! TALLY 58
       NFSTVI(NTALT)=NSNVI   ! TALLY 59
       NFSTVI(NTALM)=NCPVI   ! TALLY 60
-C     NFSTVI(NTALB) IS DEFINED IN SUBR. XSECT...
+C     NFSTVI(NTALB)=NBGVI   ! TALLY 61, BUT NBGVI IS DEFINED IN SUBR. XSECT...
       NFSTVI(NTALB)=0
       NFSTVI(NTALR)=NALVI   ! TALLY 62
       NFSTVI(63)=NATMI
@@ -758,6 +757,7 @@ C     NFSTVI(NTALB) IS DEFINED IN SUBR. XSECT...
       NFSTVI(82)=1
       NFSTVI(83)=1
       NFSTVI(84)=NPLSI
+C  MOMENTUM DENSITY TALLIES, X,Y,Z
       NFSTVI(85)=NATMI
       NFSTVI(86)=NMOLI
       NFSTVI(87)=NIONI
@@ -931,7 +931,8 @@ C
       NFSTWI(NTLSR)=NALSI    !  ALG. SURF. TALLY
       NFSTWI(NTALS)=NSPTOT   !  PUMPED FLUX
 C
-C  INITIALISE SPECIES ARRAYS FOR VOLUME TALLIES
+C  DEFINE INITIAL AND LAST "SPECIES INDEX"  FOR VOLUME TALLIES, NSPAN, NSPEN
+C  NEEDED FOR STANDARD DEVIATION MARKER LMETSP(..), which is reset for each history
 
       N1=NPHOTI
       N2=N1+NATMI
@@ -977,10 +978,12 @@ C  tallies resolved for photons
       NSPAN(2)=N2+1
       NSPAN(3)=N3+1
       NSPAN(4)=1
+
       NSPAN(5)=N1+1
       NSPAN(6)=N2+1
       NSPAN(7)=N3+1
       NSPAN(8)=1
+
       NSPAN(9)=0
       IF (NLSPCSCL_ATM) THEN
         NSPAN(10)=N11+1
@@ -1103,6 +1106,7 @@ c
       NSPAN(82)=0
       NSPAN(83)=0
       NSPAN(84)=N4+1
+
       NSPAN(85)=N1+1
       NSPAN(86)=N2+1
       NSPAN(87)=N3+1
@@ -1128,10 +1132,12 @@ c
       NSPEN(2)=N3
       NSPEN(3)=N4
       NSPEN(4)=N1
+
       NSPEN(5)=N2
       NSPEN(6)=N3
       NSPEN(7)=N4
       NSPEN(8)=N1
+
       NSPEN(9)=0
       IF (NLSPCSCL_ATM) THEN
         NSPEN(10)=N12
@@ -1236,20 +1242,25 @@ C  GENERATION LIMIT TALLIES
       NSPEN(76)=N3
       NSPEN(77)=N4
       NSPEN(78)=N1
+
       NSPEN(79)=N5
       NSPEN(80)=0
       NSPEN(81)=0
       NSPEN(82)=0
       NSPEN(83)=0
+
       NSPEN(84)=N5
+
       NSPEN(85)=N2
       NSPEN(86)=N3
       NSPEN(87)=N4
       NSPEN(88)=N1
+
       NSPEN(89)=N2
       NSPEN(90)=N3
       NSPEN(91)=N4
       NSPEN(92)=N1
+
       NSPEN(93)=N2
       NSPEN(94)=N3
       NSPEN(95)=N4
@@ -1559,7 +1570,7 @@ C  for fluxes going into photons
       N21=N22+NPHOT*NMOLP
       N22=N23+NPHOT*NIONP
       N23=N24+NPHOT*NPHOTP
-      
+
       NSPANW(1)=N1+1
       NSPANW(2)=N1+1
       IF (NLSPCSCL_ATM) NSPANW(2)=N7+1
@@ -1663,43 +1674,43 @@ C  for fluxes going into photons
 
       NSPENW(1)=N2
       NSPENW(2)=N2
-      IF (NLSPCSCL_ATM) NSPENW(2)=N8 
+      IF (NLSPCSCL_ATM) NSPENW(2)=N8
       NSPENW(3)=N2
-      IF (NLSPCSCL_MOL) NSPENW(3)=N9 
+      IF (NLSPCSCL_MOL) NSPENW(3)=N9
       NSPENW(4)=N2
-      IF (NLSPCSCL_ION) NSPENW(4)=N10 
+      IF (NLSPCSCL_ION) NSPENW(4)=N10
       NSPENW(5)=N2
-      IF (NLSPCSCL_PHOT) NSPENW(5)=N11 
+      IF (NLSPCSCL_PHOT) NSPENW(5)=N11
       NSPENW(6)=N2
       NSPENW(7)=N3
       NSPENW(8)=N3
-      IF (NLSPCSCL_ATM) NSPENW(8)=N12 
+      IF (NLSPCSCL_ATM) NSPENW(8)=N12
       NSPENW(9)=N3
-      IF (NLSPCSCL_MOL) NSPENW(9)=N13 
+      IF (NLSPCSCL_MOL) NSPENW(9)=N13
       NSPENW(10)=N3
-      IF (NLSPCSCL_ION) NSPENW(10)=N14 
+      IF (NLSPCSCL_ION) NSPENW(10)=N14
       NSPENW(11)=N3
-      IF (NLSPCSCL_PHOT) NSPENW(11)=N15 
+      IF (NLSPCSCL_PHOT) NSPENW(11)=N15
       NSPENW(12)=N3
       NSPENW(13)=N4
       NSPENW(14)=N4
-      IF (NLSPCSCL_ATM) NSPENW(14)=N16 
+      IF (NLSPCSCL_ATM) NSPENW(14)=N16
       NSPENW(15)=N4
-      IF (NLSPCSCL_MOL) NSPENW(15)=N17 
+      IF (NLSPCSCL_MOL) NSPENW(15)=N17
       NSPENW(16)=N4
-      IF (NLSPCSCL_ION) NSPENW(16)=N18 
+      IF (NLSPCSCL_ION) NSPENW(16)=N18
       NSPENW(17)=N4
-      IF (NLSPCSCL_PHOT) NSPENW(17)=N19 
+      IF (NLSPCSCL_PHOT) NSPENW(17)=N19
       NSPENW(18)=N4
       NSPENW(19)=N1
       NSPENW(20)=N1
-      IF (NLSPCSCL_ATM) NSPENW(20)=N20 
+      IF (NLSPCSCL_ATM) NSPENW(20)=N20
       NSPENW(21)=N1
-      IF (NLSPCSCL_MOL) NSPENW(21)=N21 
+      IF (NLSPCSCL_MOL) NSPENW(21)=N21
       NSPENW(22)=N1
-      IF (NLSPCSCL_ION) NSPENW(22)=N22 
+      IF (NLSPCSCL_ION) NSPENW(22)=N22
       NSPENW(23)=N1
-      IF (NLSPCSCL_PHOT) NSPENW(23)=N23 
+      IF (NLSPCSCL_PHOT) NSPENW(23)=N23
       NSPENW(24)=N1
       NSPENW(25)=N5
       NSPENW(26)=N2
@@ -1758,9 +1769,9 @@ C  for fluxes going into photons
       NSPENW(79)=0
       NSPENW(80)=0
       NSPENW(81)=0
-      NSPENW(82)=N6    ! ADD. SURF. TALLY:  N5+1--N6
-      NSPENW(83)=N7    ! ALG. SURF. TALLY:  N6+1--N7
-      NSPENW(84)=N5    ! PUMPED FLUX     :  1   --N5
+      NSPENW(82)=N6    ! ADD. SURF. TALLY: N5+1--N6
+      NSPENW(83)=N7    ! ALG. SURF. TALLY: N6+1--N7
+      NSPENW(84)=N5    ! PUMPED FLUX     : 1   --N5
 
       DO IPHOT=1,NPHOTI
         ISPZ=IPHOT
@@ -1987,10 +1998,10 @@ C
       CHARACTER(8) :: TT1, TT2
       CHARACTER(50) :: TTOUT
       INTEGER :: LL1, LL2, LL
-      
+
       LL1 = LEN_TRIM(ADJUSTL(TRIM(TXT1)))
       TT1(1:LL1) = ADJUSTL(TRIM(TXT1))
-      
+
       LL2 = LEN_TRIM(ADJUSTL(TRIM(TXT2)))
       TT2(1:LL2) = ADJUSTL(TRIM(TXT2))
 
@@ -2001,5 +2012,3 @@ C
 
       RETURN
       END SUBROUTINE EIRENE_TEXT_COMBINE
-
-      

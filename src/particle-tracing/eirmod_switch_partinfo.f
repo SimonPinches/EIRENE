@@ -4,7 +4,7 @@ cdr 2022: reworking some of this coding, to enable condensation of
 cdr       colatm,colmol,colion into the single routine collide.
 cdr       (E.g. for more transparent (unified) generation limit, cascading
 cdr       and species scaling implementations.
-cdr       Also: accomodate photon tracing tallies now.
+cdr       Also: accommodate photon tracing tallies now.
 
 cdr        PXX, PXX2 pointers had excess species indices. Now removed.
 cdr        LGX.. etc... pointers had excess species index. Now removed
@@ -26,7 +26,7 @@ cdr         for compiler complains from MASYR1 printout routine.
       USE EIRMOD_COMSOU
       USE EIRMOD_CLOGAU
       USE EIRMOD_SECOND_OWN, ONLY: eirene_second_own
-       
+
       IMPLICIT NONE
 cdr for trchktim option: cpu time consumption split by species
       real(dp), allocatable, save :: time_ar0(:,:),
@@ -40,18 +40,18 @@ cdr for trchktim option: cpu time consumption split by species
      .                 imol_old=-1,
      .                 iion_old=-1,
      .                 ipls_old=-1
-     
+
 !$omp  threadprivate(istra_old,ityp_old,iphot_old,iatm_old,imol_old,
-!$omp&   iion_old,ipls_old)     
+!$omp&   iion_old,ipls_old)
 
       PRIVATE
 
-      PUBLIC :: eirene_switch_partinfo, eirene_output_partinfo, 
+      PUBLIC :: eirene_switch_partinfo, eirene_output_partinfo,
      .          eirene_reinit_partinfo
 
       CONTAINS
 
-cdr  Jan 18:  bypass this actions for photons (ityp=0). Code not ready for photon transport.
+cdr  Jan 18: bypass this actions for photons (ityp=0). Code not ready for photon transport.
 cpb:  added: cpu time statistics by particle type, species and stratum: time_array
 cdr: Apr.18: testing, cleaning of time_array options (minor bug fix)
 cdr          further photonic arrays added (targets,pointer)
@@ -66,7 +66,7 @@ c  It is called from: LOCATE (for primary source particles),
 c          and after: COLLIDE and REFLEC (for new post-collision species)
 c
 c  Input:  istra, ityp, iphot, iatm, imol, iion, ipls
-c  Output: ixspz,nmetoff,logphot,logatm,logmol,logion
+c  Output: ixspz, nmetoff, logphot, logatm, logmol, logion
 
       implicit none
 
@@ -247,23 +247,25 @@ C  save stratum, old type, species
          IF (LPXPHT) PXPHT  => PPHPHT(1:NPHOTI,:)
          IF (LPXPL)  PXPL   => PPHPL(1:NPLSI,:)
        END IF
+
        IF (LEXEL)   EXEL   => EPHEL(:)
        IF (LEXAT)   EXAT   => EPHAT(:)
        IF (LEXML)   EXML   => EPHML(:)
        IF (LEXIO)   EXIO   => EPHIO(:)
-       IF (LEXPHT)  EXPHT  => EPHPHT(:)
+       IF (LEXPHT)  EXPHT  => EPHPHT(:)     ! for species I=IPHOT:
+                                            ! same as EXX
        IF (LEXPL)   EXPL   => EPHPL(1:NPLSI,:)
 
        IF (LVXDENX) VXDENX => VXDENPH(IPHOT,:)
        IF (LVYDENX) VYDENX => VYDENPH(IPHOT,:)
        IF (LVZDENX) VZDENX => VZDENPH(IPHOT,:)
 
-       IF (LPGENX) PGENX => PGENPH(IPHOT,:)
-       IF (LEGENX) EGENX => EGENPH(IPHOT,:)
-       IF (LVGENX) VGENX => VGENPH(IPHOT,:)
+       IF (LPGENX) PGENX   => PGENPH(IPHOT,:)
+       IF (LEGENX) EGENX   => EGENPH(IPHOT,:)
+       IF (LVGENX) VGENX   => VGENPH(IPHOT,:)
 
        IF (LMXPL)   MXPL   => MPHPL(1:NPLSI,:)
-       IF (LRXEL)   RXEL   => RPHEL(1:NPHOTI,:)
+       IF (LRXEL) RXEL => RPHEL(1:NPHOTI,:)
 
        IF (LSCX) THEN
          NDXX = NPHOT
@@ -282,7 +284,7 @@ C  save stratum, old type, species
 !       LGXEL => LGPHEL
 !       LGXPI => LGPHPI
 cdr now: allocatable, rather than pointer
-!pb that means: here we do a copy 
+!pb that means: here we do a copy
        LGXCX(0:NRCX,0:1) = LGPHCX(IPHOT,0:NRCX,0:1)
        LGXEI(0:NREI)     = LGPHEI(IPHOT,0:NREI)
        LGXEL(0:NREL,0:1) = LGPHEL(IPHOT,0:NREL,0:1)
@@ -340,6 +342,7 @@ cdr now: allocatable, rather than pointer
        LVGENX  => LVGENA
 
        LMXPL   => LMAPL
+
        LRXEL   => LRAEL
        LPXX    => LPAAT
        LEXX    => LEAAT
@@ -347,9 +350,10 @@ cdr now: allocatable, rather than pointer
 
        IF (LPDENX)  PDENX  => PDENA(IATM,:)
        IF (LEDENX)  EDENX  => EDENA(IATM,:)
+
        IF (LPXEL)   PXEL   => PAEL(:)
        IF (LSCX) THEN
-         IF (LPXAT) THEN 
+         IF (LPXAT) THEN
            NTS_PXATA = NSPZTOTS+1
            NTS_PXATE = NTS_AA
            PXAT   => PAAT(1:NATM*NATMP,:)
@@ -359,7 +363,7 @@ cdr now: allocatable, rather than pointer
            NTS_PXMLE = NTS_MA
            PXML   => PAML(1:NMOL*NATMP,:)
          END IF
-         IF (LPXIO) THEN 
+         IF (LPXIO) THEN
            NTS_PXIOA = NTS_MA+1
            NTS_PXIOE = NTS_IA
            PXIO   => PAIO(1:NION*NATMP,:)
@@ -369,13 +373,14 @@ cdr now: allocatable, rather than pointer
            NTS_PXPHE = NTS_PHA
            PXPHT  => PAPHT(1:NPHOT*NATMP,:)
          END IF
-         IF (LPXPL) THEN 
+         IF (LPXPL) THEN
            NTS_PXPLA = NTS_PHA+1
            NTS_PXPLE = NTS_PA
            PXPL   => PAPL(1:NPLS*NATMP,:)
          END IF
        ELSE
-         IF (LPXAT)  PXAT   => PAAT(1:NATMI,:)
+         IF (LPXAT)  PXAT   => PAAT(1:NATMI,:)  ! for species i=iatm:
+                                                ! same as PXX
          IF (LPXML)  PXML   => PAML(1:NMOLI,:)
          IF (LPXIO)  PXIO   => PAIO(1:NIONI,:)
          IF (LPXPHT) PXPHT  => PAPHT(1:NPHOTI,:)
@@ -383,7 +388,8 @@ cdr now: allocatable, rather than pointer
        END IF
 
        IF (LEXEL)   EXEL   => EAEL(:)
-       IF (LEXAT)   EXAT   => EAAT(:)   ! for species i=iatm: same as EXX
+       IF (LEXAT)   EXAT   => EAAT(:)   ! for species i=iatm:
+                                        ! same as EXX
        IF (LEXML)   EXML   => EAML(:)
        IF (LEXIO)   EXIO   => EAIO(:)
        IF (LEXPHT)  EXPHT  => EAPHT(:)
@@ -418,7 +424,7 @@ cdr now: allocatable, rather than pointer
 !      LGXEL => LGAEL
 !      LGXPI => LGAPI
 cdr now: allocatable, rather than pointer
-!pb that means: here we do a copy 
+!pb that means: here we do a copy
        LGXCX(0:NRCX,0:1) = LGACX(IATM,0:NRCX,0:1)
        LGXEI(0:NREI)     = LGAEI(IATM,0:NREI)
        LGXEL(0:NREL,0:1) = LGAEL(IATM,0:NREL,0:1)
@@ -476,6 +482,7 @@ cdr now: allocatable, rather than pointer
        LVGENX  => LVGENM
 
        LMXPL   => LMMPL
+
        LRXEL   => LRMEL
 
        LPXX    => LPMML
@@ -484,6 +491,7 @@ cdr now: allocatable, rather than pointer
 
        IF (LPDENX)  PDENX  => PDENM(IMOL,:)
        IF (LEDENX)  EDENX  => EDENM(IMOL,:)
+
        IF (LPXEL)   PXEL   => PMEL(:)
        IF (LSCX) THEN
          IF (LPXAT) THEN
@@ -513,7 +521,8 @@ cdr now: allocatable, rather than pointer
          END IF
        ELSE
          IF (LPXAT)  PXAT   => PMAT(1:NATMI,:)
-         IF (LPXML)  PXML   => PMML(1:NMOLI,:)  ! same as PXX
+         IF (LPXML)  PXML   => PMML(1:NMOLI,:)  ! for species i=imol:
+                                                ! same as PXX
          IF (LPXIO)  PXIO   => PMIO(1:NIONI,:)
          IF (LPXPHT) PXPHT  => PMPHT(1:NPHOTI,:)
          IF (LPXPL)  PXPL   => PMPL(1:NPLSI,:)
@@ -521,7 +530,8 @@ cdr now: allocatable, rather than pointer
 
        IF (LEXEL)   EXEL   => EMEL(:)
        IF (LEXAT)   EXAT   => EMAT(:)
-       IF (LEXML)   EXML   => EMML(:)  ! same as EXX
+       IF (LEXML)   EXML   => EMML(:)   ! for species i=imol:
+                                        ! same as EXX
        IF (LEXIO)   EXIO   => EMIO(:)
        IF (LEXPHT)  EXPHT  => EMPHT(:)
        IF (LEXPL)   EXPL   => EMPL(1:NPLSI,:)
@@ -530,13 +540,13 @@ cdr now: allocatable, rather than pointer
        IF (LVYDENX) VYDENX => VYDENM(IMOL,:)
        IF (LVZDENX) VZDENX => VZDENM(IMOL,:)
 
-       IF (LRXEL)   RXEL   => RMEL(1:NMOLI,:)
-
        IF (LPGENX)  PGENX  => PGENM(IMOL,:)
        IF (LEGENX)  EGENX  => EGENM(IMOL,:)
        IF (LVGENX)  VGENX  => VGENM(IMOL,:)
 
        IF (LMXPL)   MXPL   => MMPL(1:NPLSI,:)
+
+       IF (LRXEL)   RXEL   => RMEL(1:NMOLI,:)
 
        IF (LSCX) THEN
          NDXX = NMOL
@@ -555,7 +565,7 @@ cdr now: allocatable, rather than pointer
 !      LGXEL => LGMEL
 !      LGXPI => LGMPI
 cdr now: allocatable, rather than pointer
-!pb that means: here we do a copy 
+!pb that means: here we do a copy
        LGXCX(0:NRCX,0:1) = LGMCX(IMOL,0:NRCX,0:1)
        LGXEI(0:NREI)     = LGMEI(IMOL,0:NREI)
        LGXEL(0:NREL,0:1) = LGMEL(IMOL,0:NREL,0:1)
@@ -650,10 +660,11 @@ cdr now: allocatable, rather than pointer
            NTS_PXPLE = NTS_PI
            PXPL   => PIPL(1:NPLS*NIONP,:)
          END IF
-       ELSE 
+       ELSE
          IF (LPXAT)  PXAT   => PIAT(1:NATMI,:)
          IF (LPXML)  PXML   => PIML(1:NMOLI,:)
-         IF (LPXIO)  PXIO   => PIIO(1:NIONI,:)
+         IF (LPXIO)  PXIO   => PIIO(1:NIONI,:)  ! for species i=iion:
+                                                ! same as PXX
          IF (LPXPHT) PXPHT  => PIPHT(1:NPHOTI,:)
          IF (LPXPL)  PXPL   => PIPL(1:NPLSI,:)
        END IF
@@ -661,7 +672,8 @@ cdr now: allocatable, rather than pointer
        IF (LEXEL)   EXEL   => EIEL(:)
        IF (LEXAT)   EXAT   => EIAT(:)
        IF (LEXML)   EXML   => EIML(:)
-       IF (LEXIO)   EXIO   => EIIO(:)  ! same as EXX
+       IF (LEXIO)   EXIO   => EIIO(:)   ! for species i=iion:
+                                        ! same as EXX
        IF (LEXPHT)  EXPHT  => EIPHT(:)
        IF (LEXPL)   EXPL   => EIPL(1:NPLSI,:)
 
@@ -672,7 +684,7 @@ cdr now: allocatable, rather than pointer
        IF (LRXEL)   RXEL   => RIEL(1:NIONI,:)
 
        IF (LPGENX)  PGENX  => PGENI(IION,:)
-       IF (LEGENX ) EGENX  => EGENI(IION,:)
+       IF (LEGENX)  EGENX  => EGENI(IION,:)
        IF (LVGENX)  VGENX  => VGENI(IION,:)
 
        IF (LMXPL)   MXPL   => MIPL(1:NPLSI,:)
@@ -694,7 +706,7 @@ cdr now: allocatable, rather than pointer
 !      LGXEL => LGIEL
 !      LGXPI => LGIPI
 cdr now: allocatable, rather than pointer
-!pb that means: here we do a copy 
+!pb that means: here we do a copy
        LGXCX(0:NRCX,0:1) = LGICX(IION,0:NRCX,0:1)
        LGXEI(0:NREI)     = LGIEI(IION,0:NREI)
        LGXEL(0:NREL,0:1) = LGIEL(IION,0:NREL,0:1)

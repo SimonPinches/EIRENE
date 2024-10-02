@@ -1,6 +1,6 @@
 cdr order of points 3 and 4 in quadrangles (xpol,ypol) got changed in 2015. IFEM documents
 cdr See IFEM documents
-cdr june 17:  comments
+cdr june 17: comments
 cdr nov. 17: comments.  Some unfinished options re levgeo= 1 and levgeo = 2
 cdr jan. 20: Note: interpolation is for a scalar field "fecken".
 cdr                For vector fields or dyadic fields, the interpolation may
@@ -14,38 +14,37 @@ cdr                Toroidal curvature effects are lost by the present procedure.
 
 c
 
-c                     fem_interpolate  (this routine)
-c  related routines:  fem_differentiate
-c                     fem_local-coord
-c                     fem_cell-corner
+c                    fem_interpolate  (this routine)
+c  related routines: fem_differentiate
+c                    fem_local-coord
+c                    fem_cell-corner
 c
-c  AFEM:  course "Advanced Finite Element Methods",
-c         Department of Aerospace Engineering Sciences,
-c         University of Colorado at Boulder
-c         https://www.colorado.edu/engineering/CAS/courses.d/AFEM.d/
-c  IFEM:  course "Introduction to Finite Element Methods"
-c         Department of Aerospace Engineering Sciences,
-c         University of Colorado at Boulder
-c         https://www.colorado.edu/engineering/CAS/courses.d/IFEM.d/Home.html
+c  AFEM: course "Advanced Finite Element Methods",
+c        Department of Aerospace Engineering Sciences,
+c        University of Colorado at Boulder
+c        https://www.colorado.edu/engineering/CAS/courses.d/AFEM.d/
+c  IFEM: course "Introduction to Finite Element Methods"
+c        Department of Aerospace Engineering Sciences,
+c        University of Colorado at Boulder
+c        https://www.colorado.edu/engineering/CAS/courses.d/IFEM.d/Home.html
 c
 
       function eirene_femint (fecken, icell, x, y, z, lsame)
      .         result(res)
 
-c  former function femint.f :  (-->  fem_interpolate.f)
+c  former function femint.f : (--> fem_interpolate.f)
 c  interpolate a given function fecken, defined on cell vertices of grid cell no. icell,
 c  using certain FEM-shape functions.
 
 c  input:
-c  lsame:   call with same coordinates x,y,z as in previous call, just another function 'fecken'
-c           if lsame    : local coordinates r,s,t are taken from previous call
-c           if not lsame: local coordinates are calculated here (call fem_local-coord)
+c  lsame:  call with same coordinates x,y,z as in previous call, just another function 'fecken'
+c          if lsame    : local coordinates r,s,t are taken from previous call
+c          if not lsame: local coordinates are calculated here (call fem_local-coord)
 c  output:
 c  res : interpolated function fecken, evaluated at x,y,z
 
 c  programmed for levgeo=4,5,
 c  as well as partially for 2D (x,y) grids in case of levgeo=1,2,3
-
 
       use eirmod_precision
       use eirmod_parmmod
@@ -56,7 +55,6 @@ c  as well as partially for 2D (x,y) grids in case of levgeo=1,2,3
       use eirmod_ctrig
       use eirmod_ctetra
       USE EIRMOD_COMPRT, ONLY: IUNOUT
-
 
       implicit none
 
@@ -97,10 +95,10 @@ cdr   not ready for 2D x-z grids, nor for 3d x-y-z- grids
             y4=psurf(ip+1)
 
           else if ((levgeo == 2) .or. (levgeo == 3)) then
-cdr  not ready: in case levgeo=2 and nlcrc:  xpol and ypol are not set.
+cdr  not ready: in case levgeo=2 and nlcrc: xpol and ypol are not set.
 cdr
 c  warning, possibly a hidden link:
-c  here we use xpol,ypol in case of levgeo=2.  These arrays may not be defined at all ??
+c  here we use xpol,ypol in case of levgeo=2. These arrays may not be defined at all ??
 
             x1=xpol(ir+1,ip)
             x2=xpol(ir,ip)

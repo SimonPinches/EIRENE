@@ -1,8 +1,16 @@
-cdr called from find_param.f in initialization phase,
+cdr called from FIND_PARAM.f in initialization phase,
 cdr when eirene is in "coupled mode": i.e. IF(NMODE.NE.0)
+
 C
-cdr Read block 14 from interfacing routines (not from eirene_input.f)
-c   this version: couple_dummy, i.e. only dummy interfacing routines.
+cdr First pass reading from block 14
+cdr Later this block 14 will be read again from interfacing routines (e.g. infcop.f),
+cdr not from eirene_input.f, which only reads blocks 1 to 13.
+c   this version: couple_SOLPS-ITER.
+c
+c   for particle balance rescaling:
+c   define array: LKINDL(NPLS): assign a chemical element to the various plasma ions.
+c                 e.g.:  He+ and He++ should be the same "kind",
+c                        or C+,C++,...C6+ be "another kind".
 c
 c   and set storage for allocatable arrays:
 c   NSTEP :
@@ -12,9 +20,9 @@ c   NAOT  :
 c   NCPV  :
 c   NKNOT :
 C   NTRII :
-C   NCPVI :  no. of special couple tallies
+C   NCPVI : no. of special couple tallies
 
-c  also set: NDX,NDY,NFL, NDXP, NDYP
+c  also set: NDX,NDY,NFL,NDXP,NDYP
 
       SUBROUTINE EIRENE_IF0PRM(IUNIN)
 
@@ -37,7 +45,8 @@ c  also set: NDX,NDY,NFL, NDXP, NDYP
      .           NAINB, IAIN, NAOTB, IAOT, NRKNOT, ITRG,
      .           NTRII
       INTEGER, SAVE :: IO
-      INTEGER :: IDUMMY(0:99)=0 ! Extend to read as written by uinp (jdl)
+ ! Extend to read as written by uinp (jdl)
+      INTEGER :: IDUMMY(0:99)=0
       REAL(DP) :: RDUMMY(0:9), RLAST
       LOGICAL :: LDUMMY(0:5), LSPRCL_LOC
       CHARACTER(72) :: ZEILE
@@ -49,13 +58,15 @@ C  READ INPUT BLOCK 14
       IF (.NOT.NLTRIMESH) NLTRIMESH = LDUMMY(3)
       LSPRCL_LOC = LDUMMY(4)
       READ (IUNIN,'(9I6)') IDUMMY(0:8)
-      IF (IDUMMY(0).EQ.0 .OR. IDUMMY(1).LT.0) THEN ! This was a junk Eirene_96 line
+      IF (IDUMMY(0).EQ.0 .OR. IDUMMY(1).LT.0) THEN
+! This was a junk Eirene_96 line
         READ (IUNIN,'(3I6)') NFLA,NCUTB,NCUTL
       ELSE
         NFLA  = IDUMMY(0)
         NCUTB = IDUMMY(1)
         NCUTL = IDUMMY(2)
       ENDIF
+
       IF(.NOT.ALLOCATED(LKINDP)) ALLOCATE(LKINDP(NPLS))
       LKINDP=0
       DO IPL=1,NPLS
@@ -78,6 +89,7 @@ C  READ INPUT BLOCK 14
           END IF
         END IF
       END DO
+
 C  GRID SIZE IN 2D PLASMA FLUID CODE
       READ (IUNIN,'(2I6)') NDXA,NDYA
 C  NUMBER OF TARGET SOURCES ON B2 SURFACES: NTARGI
@@ -148,7 +160,7 @@ C
 C
 C  DEFINE ADDITIONAL TALLIES FOR COUPLING (UPDATED IN SUBR. UPTCOP
 C                                          AND IN SUBR. COLLIDE)
-      NCPVI=NPLS
+      NCPVI= NPLS
       NCPV = MAX(NCPV,NCPVI)
 C
 C SAVE SOME MORE INPUT DATA FOR SHORT CYCLE ON COMMON CCOUPL
@@ -163,6 +175,8 @@ C SAVE SOME MORE INPUT DATA FOR SHORT CYCLE ON COMMON CCOUPL
       NDXP = NDX+1
       NDYP = NDY+1
 C
+C
+C  TRANSFER GEOMETRY
 C
 C  READ DATA FOR TRIANGULAR MESH
 C

@@ -29,7 +29,7 @@ c  eirene_samsf2:  deallocate temporary arrays
       USE EIRMOD_LEARC1, ONLY: EIRENE_LEARC1
       USE EIRMOD_RANF, ONLY: RANF_EIRENE
       USE EIRMOD_SAMUSR, ONLY: EIRENE_SAMUSR_INIT, EIRENE_SAMUSR
-      use eirmod_sheath, only: EIRENE_SHEATH
+      USE EIRMOD_SHEATH, ONLY: EIRENE_SHEATH
 
       IMPLICIT NONE
       PRIVATE
@@ -39,7 +39,7 @@ c  eirene_samsf2:  deallocate temporary arrays
 
       REAL(DP), ALLOCATABLE, SAVE ::
      .        ALEFT(:,:,:), BRGHT(:,:,:), XI(:,:,:), XE(:,:,:)
-      REAL(DP), SAVE :: FL, VX,VY,VZ,XC,YC,ZC
+      REAL(DP), SAVE :: FL,VX,VY,VZ,XC,YC,ZC
       INTEGER, ALLOCATABLE, SAVE :: INDTEC(:,:)
       INTEGER, SAVE :: ISTEP_SPEZ, ISTEP, IS1, IPLSTI, IPLSV
 
@@ -48,9 +48,9 @@ c  eirene_samsf2:  deallocate temporary arrays
 
       CONTAINS
 
-C  6.4.04:  include torl in default step function
+C  6.4.04: include torl in default step function
 C  nov. 11.05  jet-2005 patch 1: new parameter shwl at call to smsrf1
-C              added:  print ekflx, eshflx: total kinetic and sheath fluxes
+C              added: print ekflx, eshflx: total kinetic and sheath fluxes
 C              from newly added step functions  elstep, shstep
 C              now return shwl, efwl(ipls) for use in locate.f
 C              in locate: new options nemod1=8,9 for using efwl(ipls)
@@ -88,24 +88,24 @@ C
       IMPLICIT NONE
 
 cym variable defined in the module removed from the list
-      REAL(DP) :: TORL(NSTEP,NGITT), FL, EIRENE_STEP, GAMMA, CUR,
-     .            RANDIF,
-     .            DELR, TESH, CTHETA, DELRR, CS, EIRENE_STEP0,
-     .            V_MEAN, ZZ
+      REAL(DP):: TORL(NSTEP,NGITT), FL, EIRENE_STEP, GAMMA, CUR,
+     .           RANDIF,
+     .           DELR, TESH, CTHETA, DELRR, CS, EIRENE_STEP0,
+     .           V_MEAN, ZZ
 cym end
       REAL(DP):: FLX(NPLS),EKFLX(NPLS),ESHFLX(NPLS),
      .           DISH(NPLS),VPSH(NPLS),ZISH(NPLS)
       INTEGER :: ISPZD(NPLS), ISP, ISPZ
-      INTEGER :: ISTRAI, IERROR, ISRFS, ISOR, ISORFL, INDSRF, ISTR, ISR, 
+      INTEGER :: ISTRAI, IERROR, ISRFS, ISOR, ISORFL, INDSRF, ISTR, ISR,
      .           NL3J, NL2J, NL1J, IP, ISTS, IT, KAN, JPLS, ITET,
-     .           KEN, K, NBIN, NSMX, IPL, NANZ, IS, ITRI, 
+     .           KEN, K, NBIN, NSMX, IPL, NANZ, IS, ITRI,
      .           ISGRD1, IS2, ISGRD2,
      .           ISGRD3, INS, JATM, JMOL, JSPZ,
      .           MSTEP(NSTEP),MMSTEP(NSTEP)
       INTEGER, EXTERNAL :: EIRENE_IDEZ
-cym      REAL(DP), EXTERNAL :: EIRENE_SHEATH
 
-      MSTEP=0      ! REDUCE DUPLICATED DIAGNOSTIC PRINTOUT FOR STEP FUNCTION ISTEP
+      MSTEP=0      ! REDUCE DUPLICATED DIAGNOSTIC PRINTOUT
+                   ! FOR STEP FUNCTION ISTEP
       MMSTEP=ISTUF ! STEP FUNCTIONS ALREADY SET EXTERNALLY
 
       DO ISTRAI=1,NSTRAI
@@ -252,9 +252,9 @@ C  WITH: DELTA-Z = LENGTH IN TOROIDAL OR Z-DIRECTION: EITHER "ZDF" OR "2 PI R"
 
             INDSRF = 0
 C  Y0:
-            IF (INDIM(ISRFS,ISTRAI).NE.2.OR..NOT.NLPOL) THEN
+            IF (INDIM(ISRFS,ISTRAI).NE.2 .OR. .NOT.NLPOL) THEN
               IP=1
-            ELSEIF (INDIM(ISRFS,ISTRAI).EQ.2.AND.NLPOL) THEN
+            ELSEIF (INDIM(ISRFS,ISTRAI).EQ.2 .AND. NLPOL) THEN
               IP=INSOR(ISRFS,ISTRAI)
               do ists=1,nstsi
                 if ((inump(ists,2) == ip) .and.
@@ -264,9 +264,9 @@ C  Y0:
               end do
             ENDIF
 C  Z0:
-            IF (INDIM(ISRFS,ISTRAI).NE.3.OR..NOT.NLTOR) THEN
+            IF (INDIM(ISRFS,ISTRAI).NE.3 .OR. .NOT.NLTOR) THEN
               IT=1
-            ELSEIF (INDIM(ISRFS,ISTRAI).EQ.3.AND.NLTOR) THEN
+            ELSEIF (INDIM(ISRFS,ISTRAI).EQ.3 .AND. NLTOR) THEN
               IT=INSOR(ISRFS,ISTRAI)
               WRITE (iunout,*) 'DEF. STEP FUNCTIONS ONLY AVAILABLE FOR'
               WRITE (iunout,*) 'SAMPLING OF RADIAL (OR X-) COORDINATE'
@@ -277,7 +277,7 @@ C  Z0:
               CALL EIRENE_EXIT_OWN(1)
             ENDIF
 C
-C  CURRENTLY: IN STANDARD GEOMETRY BLOCK  IBLOCK=1
+C  CURRENTLY: IN STANDARD GEOMETRY BLOCK IBLOCK=1
 C
 
             select case (LEVGEO)
@@ -359,7 +359,7 @@ C  TRIANGULAR GRID. RRSURF IS INTEGRATED ALONG A SET OF TRIANGLE SIDES.
 cdr  ??
 !pb                 BABS=SQRT(BXIN(ITRI)**2+BYIN(ITRI)**2+BZIN(ITRI)**2)
 !pb                 CTHETA=ABS((PTRIX(IS,ITRI)*BXIN(ITRI) +
-!pb     .                          PTRIY(IS,ITRI)*BYIN(ITRI))/BABS)
+!pb     .                       PTRIY(IS,ITRI)*BYIN(ITRI))/BABS)
                     CTHETA = 1._DP
 cdr  May 2020:  I do not think that is is correct.
 cdr  theta is the angle between parallel (to B) plasma flux and the surface normal.
@@ -438,7 +438,7 @@ C
 
               TESTEP(ISTEP,K)=TEIN(NCELL)
               IF (NLPLS(ISTRAI)) THEN
-cdr  the code below sets bulk ion fluxes in the full species range
+cdr  the code below sets bulk ion (field particle) fluxes in the full species range 1:npls
                DO 2 JPLS=1,NPLSI
                 IPLS=JPLS
                 IPLSTI = MPLSTI(IPLS)
@@ -469,7 +469,7 @@ c    set drift velocities at cell center
                 END IF
 c  isothermal ion acoustic speed
                 CS=CVEL2A*SQRT((TIIN(IPLSTI,NCELL)+TEIN(NCELL))/
-     .             RMASSP(IPLS))
+     .                          RMASSP(IPLS))
 c  default: sonic flux density FL = 1/2 n_u cs = n_t cs  (AMPS)
                 FLSTEP(IPLS,ISTEP,K)=CS*DIIN(IPLS,NCELL)*
      .                               TORL(ISTEP,K)*ELCHA
@@ -483,7 +483,7 @@ c  drift speed = isothermal ion sound speed
                 ELSTEP(IPLS,ISTEP,K)=(3._DP*TISTEP(IPLSTI,ISTEP,K) +
      .                               0.5_DP*TESTEP(ISTEP,K)) *
      .                               FLSTEP(IPLS,ISTEP,K)
-    2         CONTINUE
+    2          CONTINUE
 
               ELSEIF (NLMOL(ISTRAI)) THEN
 cdr  the code below sets molecular fluxes in the full species range 1:nmol
@@ -633,8 +633,8 @@ c  this can happen with either nlpls or nlion:
               ELSEIF (NLPLS(ISTRAI)) THEN
 c  employ default eirene sheath model.
 c  ISPZ=IPLS now.
-c    To be done. plasma flow velocity v..step should first be projected
-c    towards surface normal.
+c  To be done. plasma flow velocity v..step should first be projected
+c  towards surface normal.
                 GAMMA=0.
                 CUR=0.
                 TESH=TESTEP(ISTEP,K)
@@ -665,7 +665,7 @@ C
             WRITE (iunout,
      .       '(1X,A4,A12,5(2X,A7,I2,A1))')
      .       '   K','  RRSTEP    ',('FLSTEP(',ISPZD(ISP),')',
-     .                              ISP=1,NANZ)
+     .                               ISP=1,NANZ)
           ELSE
             WRITE (iunout,
      .       '(1X,A4,A12,5(2X,A7,I2,A1)/(17x,5(2X,A7,I2,A1)))')
@@ -744,7 +744,7 @@ C
                 CALL EIRENE_EXIT_OWN(1)
               end select
 c  STEP FUNCTIONS ON RADIAL SURFACE MAY HAVE BEEN DEFINED EXTERNALLY
-C  TAKE FULL RANGE STEP FUNCTION. NO USE OF INGRDA, INGRDE FORSEEN
+C  TAKE FULL RANGE STEP FUNCTION. NO USE OF INGRDA, INGRDE FORESEEN
             ELSE IF (ISTEP.NE.0) THEN
 
               IF (NSMAX(ISTEP).NE.0) THEN
@@ -954,7 +954,7 @@ C
      .          EIRENE_STEP1
       INTEGER :: ISID, IDUM, NDUM, EIRENE_LEARC2, NT,
      .           IEN, IAN, ITRI, ITET,
-     .           EIRENE_LEARCA, 
+     .           EIRENE_LEARCA,
      .           ICOUNT, IPLG, I, ILTR, IAUSR,
      .           IBUSR, IRUSR, IPUSR, ITUSR, IK, J, JCALC, IINDEX,
      .           JPLS, JSPZ
@@ -1009,7 +1009,7 @@ C   UNIFORM DISTRIBUTION IN THIS COORDINATE
         case (3)
 C   TRUNCATED EXPONENTIAL DECAY WITH LENGTH XLAMDA, FOR ONE COORDINATE ONLY
 C   PARAMETER: SOREXP
-C   METHOD: COVEYOU-TRICK  (SPANIER-GELBARD, ADDISON WESLEY,  P 35)
+C   METHOD: COVEYOU-TRICK (SPANIER-GELBARD, ADDISON WESLEY, P 35)
           DELTA=BRGHT(J,NLSF,ISTRA)-ALEFT(J,NLSF,ISTRA)
           XLAMDA=SOREXP(NLSF,ISTRA)
           ZM=DELTA/XLAMDA

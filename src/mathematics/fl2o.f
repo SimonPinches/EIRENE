@@ -238,7 +238,7 @@ C     Das Gleichungssystem Am=b ist loesbar, wenn Rang(A) = Rang(AB)
 C     Das Gleichungssystem wird wird mit dem QR - Algorithmus geloest.
 C     Sind die Residuen (b-A*m=RES) alle gleich Null, so gibt es
 C     mindestens eine Loesung, sonst nicht.
-C     IMSL - Verfahren:  DLSBRR
+C     IMSL - Verfahren: DLSBRR
 c
       CALL EIRENE_DLSBRR(3,3,A,3,B,EPS,M,RES,KBASIS)
 C     WRITE (iunout,*) ' IMSL  KBASIS = ',KBASIS

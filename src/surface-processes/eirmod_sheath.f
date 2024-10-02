@@ -1,5 +1,5 @@
       module eirmod_sheath
-cym 04/2020 turned into module beacuse of save 
+cym 04/2020 turned into module because of save
       use eirmod_precision
       implicit none
       private
@@ -45,7 +45,7 @@ C
       IMPLICIT NONE
 
       INTEGER, INTENT(IN) :: NP, MS
-      REAL(DP), INTENT(IN) :: DPP(NP),VP(NP), TE, GAMMA, CUR, ZNZP(NP)
+      REAL(DP), INTENT(IN) :: DPP(NP), VP(NP), TE, GAMMA, CUR, ZNZP(NP)
       REAL(DP) :: SUM, DE, CE, EIRENE_SHEATH
       INTEGER :: J, MSS
 
@@ -71,7 +71,7 @@ C  UNITS OF SUM: VELOCITY (CM/SEC)
       SUM=1./CE*SQRT(PI2A)/(1.-GAMMA)*(SUM-CUR/ELCHA/DE)
 CNR   MOBILITY OF ELECTRONS ASSUMED MUCH LARGER THAN OF IONS,
 CNR   SO THIS POTENTIAL SHOULD ALWAYS BE > 0 (I.E. LOG(SUM)<0).
-CNR   THIS CAN HAPPEN IN REGIONS WHERE Te IS VERY LOW AND 
+CNR   THIS CAN HAPPEN IN REGIONS WHERE Te IS VERY LOW AND
 CNR   ION FLOW VELOCITY IS HIGH.
 CNR   IF THIS HAPPENS, FALL BACK TO 2.8*TE
       IF (SUM.GT.0.D0) THEN

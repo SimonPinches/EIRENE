@@ -48,9 +48,8 @@
 !pb      ! eirpbls globals
 !pb      integer, save, allocatable, public :: lkindp(:), lkindm(:), lkindi(:)
 
-!PB      !c*** ionization potentials for consistency with B2.5 moved to 
+!PB      !c*** ionization potentials for consistency with B2.5 moved to
 !pb      subroutine EIRENE_INIT_EION
-
 
       ! srfprvls
       integer, save, public :: nsrfcls
@@ -357,7 +356,7 @@
 
       !c*** from 20080706 on:
 
-        call write_title(44,'eirdiag', 5*nsts+1)
+        call write_title(44,'eirdiag',5*nsts+1)
         WRITE(44,'(12i6)') (eirdiag_nds_ind(i),i=1,NSTS+1)
         WRITE(44,'(12i6)') (eirdiag_nds_typ(i),i=1,NSTS)
         WRITE(44,'(12i6)') (eirdiag_nds_srf(i),i=1,NSTS)
@@ -875,7 +874,7 @@
       use eirmod_clgin
       implicit none
       integer, intent(in) :: kard,ldmf
-      integer :: is,iif
+      integer is,iif
       real(DP), intent(in) :: dummy(nlimps,*)
 
       do iif=1,ldmf
@@ -2176,7 +2175,7 @@
       do i = 1, num_lines
         write (iunout,*) 'in EXTRAB25_EMISSIVITY, line no. = ',i
         if (mod_addv == 0) then
-! storage saving mode: 
+! storage saving mode:
 ! ADDV is overwritten when a new line comes, within a run.
 ! Thus re-calculate the new emissivity profile on ADDV now
           call eirene_emissivity(istr, i, i, 0)
@@ -2190,9 +2189,9 @@
 !dr  iadv: tally number on ADDV
           iadv = emis_lines(i)%compo(j)%iadv
 
-!pb  This is dangerous! It is implicitely assumed that the default 
+!pb  This is dangerous! It is implicitly assumed that the default
 !pb  emissivity model is used.
-!pb  In case of a user specific model specified in the Eirene input 
+!pb  In case of a user-specific model specified in the Eirene input
 !pb  this might produce rubbish.
           if (i.eq.1.and.istr.eq.0) then ! Ba-alpha emissivity for fort.44
             do icell = 1, nsbox

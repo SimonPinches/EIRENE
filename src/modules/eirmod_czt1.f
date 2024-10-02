@@ -37,7 +37,7 @@ C  ZT2 ARRAY  RCZT2(NZT2)
      R RSQDVX, CVRSSX, ALMASX, CNDYNX
 
 !$OMP  THREADPRIVATE(RSQDVX,CVRSSX,ALMASX,CNDYNX)
-cym turned into public   
+cym turned into public
       INTEGER, PRIVATE, SAVE :: NZT1, NZT2
 
 
@@ -174,7 +174,7 @@ cym turned into public
       CALL MPI_BCAST (RCZT1,NZT1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (RCZT2,NZT2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 cdr these next two fields ZT1 and ZRG should go into COMXS,
-cdr they belong, logically, to the pre-computed 
+cdr they belong, logically, to the pre-computed
 cdr plasma tallies DEINL, DIINL, TEINL, TIINL used to speed up code.
 cdr They all should be removed in "storage save mode"
       CALL MPI_BCAST (ZT1,NPLS*NRAD,MPI_REAL8,0,MPI_COMM_WORLD,ier)

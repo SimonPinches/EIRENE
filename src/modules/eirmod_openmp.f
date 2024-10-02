@@ -17,28 +17,28 @@
       USE EIRMOD_PARMMOD
       USE EIRMOD_PRECISION
       USE EIRMOD_SPUTER, ONLY: ETH,Q,M2M1,ES,ETF
-      
-#ifdef USE_OPENMP     
+
+#ifdef USE_OPENMP
       USE OMP_LIB               !IGNORE
 #endif
-      
+
       IMPLICIT NONE
 
       PRIVATE
 
-      PUBLIC  :: EIRENE_INIT_OPENMP, EIRENE_PREPARE_OPENMP,
-     .           EIRENE_DEALLOCATE_OPENMP
-      
+      PUBLIC :: EIRENE_INIT_OPENMP, EIRENE_PREPARE_OPENMP,
+     .          EIRENE_DEALLOCATE_OPENMP
+
       INTEGER, PUBLIC, SAVE :: EIRENE_ITHREAD, EIRENE_NTHREADS
 
 !$OMP THREADPRIVATE(EIRENE_ITHREAD,EIRENE_NTHREADS)
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c     ym shared variables used as buffer to initialize private pointer variables
-c     ym copyin does not work for allocatable pointer arrrays      
+c     ym copyin does not work for allocatable pointer arrrays
 
       INTEGER :: BISTRA
-      INTEGER,TARGET,ALLOCATABLE :: BISDVI(:)      
+      INTEGER,TARGET,ALLOCATABLE :: BISDVI(:)
       INTEGER,TARGET,ALLOCATABLE :: BIPSTD(:),BICMSPL(:)
       REAL(DP),TARGET,ALLOCATABLE :: BRPST(:),BRCMSPL(:),
      .     BXSTOR(:,:),BXSTORV(:)
@@ -51,18 +51,18 @@ c     ym copyin does not work for allocatable pointer arrrays
 !     Initialisation routine that calls allocate and array copy routines
 !     The preprocessor directives differentiate between the parallel region
 !     being created in eirmod_mcarlo and being created by an external coupled code.
-!      
+!
 !     There is also a parallel region in eirene_main that allows for compilation
 !     of the standalone code while using the EXT_OPENMP flag, this is not seen
 !     by a coupled code as it is before the coupling ENTRY point
-      
+
       SUBROUTINE EIRENE_INIT_OPENMP
-      
-#ifndef USE_EXT_OPENMP      
+
+#ifndef USE_EXT_OPENMP
 !$OMP PARALLEL DEFAULT(SHARED)
 #endif
 
-#ifdef USE_OPENMP     
+#ifdef USE_OPENMP
       EIRENE_ITHREAD  = OMP_GET_THREAD_NUM()
       EIRENE_NTHREADS = OMP_GET_NUM_THREADS()
 #else
@@ -72,14 +72,14 @@ c     ym copyin does not work for allocatable pointer arrrays
 !HJL Needed to avoid circular dependancy with comprt
       NTHREAD = EIRENE_NTHREADS
 
-#ifndef USE_EXT_OPENMP      
+#ifndef USE_EXT_OPENMP
 !$OMP END PARALLEL
 #endif
 
       END SUBROUTINE EIRENE_INIT_OPENMP
 
-      SUBROUTINE EIRENE_PREPARE_OPENMP  
-      
+      SUBROUTINE EIRENE_PREPARE_OPENMP
+
 !$OMP BARRIER
 
 #ifdef USE_OPENMP
@@ -92,18 +92,17 @@ c     ym copyin does not work for allocatable pointer arrrays
 
       CALL EIRENE_CHECK_STDEV()
 
-      
-#ifndef USE_EXT_OPENMP      
+#ifndef USE_EXT_OPENMP
 !$OMP PARALLEL DEFAULT(SHARED)
 #endif
-    
-#ifdef USE_EXT_OPENMP      
+
+#ifdef USE_EXT_OPENMP
       IF(EIRENE_ITHREAD==0) THEN
-         CALL EIRENE_INIT_BUFFERS_OPENMP()
+        CALL EIRENE_INIT_BUFFERS_OPENMP()
       ELSE
 #endif
 #ifdef USE_OPENMP
-         CALL EIRENE_ALLOCATE_OPENMP()
+        CALL EIRENE_ALLOCATE_OPENMP()
 #endif
 #ifdef USE_EXT_OPENMP
       ENDIF
@@ -111,13 +110,13 @@ c     ym copyin does not work for allocatable pointer arrrays
 !$OMP BARRIER
 
       IF(EIRENE_ITHREAD>0) THEN
-         CALL EIRENE_COPY_BUFFERS_OPENMP()
+        CALL EIRENE_COPY_BUFFERS_OPENMP()
       ENDIF
-      
+
 !$OMP BARRIER
 
       IF(EIRENE_ITHREAD==0) THEN
-         CALL EIRENE_DEALLOCATE_BUFFERS_OPENMP()
+        CALL EIRENE_DEALLOCATE_BUFFERS_OPENMP()
       ENDIF
 #else
 !$OMP END PARALLEL
@@ -125,29 +124,29 @@ c     ym copyin does not work for allocatable pointer arrrays
 
       END SUBROUTINE EIRENE_PREPARE_OPENMP
 
-      
-!!! Allocate THREAD_PRIVATE arrays for non master threads      
+
+!!! Allocate THREAD_PRIVATE arrays for non master threads
       SUBROUTINE EIRENE_ALLOCATE_OPENMP
 
       IF(EIRENE_ITHREAD==0) RETURN
-      
-      ALLOCATE (ISDVI(MSDVI))              
+
+      ALLOCATE (ISDVI(MSDVI))
       ALLOCATE (LCMSOU(14,NSTRA))
       ALLOCATE (TIMINT(NRADS))
       ALLOCATE (TIMPOL(N1STS,N2NDPLGS))
       ALLOCATE (NTIM(NRADS))
       ALLOCATE (IIMPOL(N1STS,N2NDPLGS))
       ALLOCATE (IIMINT(NRADS))
-      
+
       ALLOCATE (RPST(NPARTC))
       ALLOCATE (IPSTD(MPARTC+1))
       ALLOCATE (RCMSPL(NCMSPL))
       ALLOCATE (ICMSPL(MCMSPL))
-      
+
       ALLOCATE (ALPD(N2ND))
       ALLOCATE (BLPD(N3RD))
       ALLOCATE (CLPD(N2ND+N3RD))
-      
+
       ALLOCATE (JUPC(N2ND))
       ALLOCATE (KUPC(N3RD))
       ALLOCATE (NUPC(N2ND+N3RD))
@@ -155,15 +154,15 @@ c     ym copyin does not work for allocatable pointer arrrays
       ALLOCATE (NCOUNT(N2ND+N3RD))
       ALLOCATE (LUPC(N2ND))
       ALLOCATE (MUPC(N2ND))
-      
+
 !!      ALLOCATE (RCGRID(NCGRD))
 
-      ALLOCATE(EREDUC(NSPZ,0:NLIMPS))
-      ALLOCATE(FREDUC(NSPZ,0:NLIMPS))
-      ALLOCATE(IREDUC(NSPZ,0:NLIMPS))
-      
+      ALLOCATE (EREDUC(NSPZ,0:NLIMPS))
+      ALLOCATE (FREDUC(NSPZ,0:NLIMPS))
+      ALLOCATE (IREDUC(NSPZ,0:NLIMPS))
+
       AllOCATE (IIND(NRTAL))
-      ALLOCATE (XSTOR(MSTOR1,MSTOR2))       
+      ALLOCATE (XSTOR(MSTOR1,MSTOR2))
       ALLOCATE (XSTORV(NSTORV))
 
 c     ym arrays from eirmod_clast - these are not pointers
@@ -180,39 +179,39 @@ c     ym arrays from eirmod_clast - these are not pointers
       ALLOCATE (IFLREL(NREL))
       ALLOCATE (NPMEAN(NRPI))
       ALLOCATE (IFLRPI(NRPI))
-      
+
 c     ym test iter
       ALLOCATE (RSPLST(NPARTC,MAXLEVEL))
       ALLOCATE (ISPLST(MPARTC,MAXLEVEL))
 
-      RSPLST=0._dp
-      ISPLST=0
+      RSPLST = 0._DP
+      ISPLST = 0
 
-c     ym make sure the clast variables do not take exotic values      
+c     ym make sure the clast variables do not take exotic values
       call eirene_init_clast
 
       ALLOCATE (FNUIAR(NPLS))
-      FNUIAR=0._dp
-      
-      NCLMT     => ISDVI(8)
-      NCLMTS    => ISDVI(9)
-      NWLMT     => ISDVI(10)         
-      NWLMTS    => ISDVI(11)
-      ICLMT     => ISDVI(12+2*NSD+2*NSDW+NCV+NRTAL :
+      FNUIAR = 0._DP
+
+      NCLMT  => ISDVI(8)
+      NCLMTS => ISDVI(9)
+      NWLMT  => ISDVI(10)
+      NWLMTS => ISDVI(11)
+      ICLMT  => ISDVI(12+2*NSD+2*NSDW+NCV+NRTAL :
      .     11+2*NSD+2*NSDW+NCV+2*NRTAL)
-      IMETCL    => ISDVI(12+2*NSD+2*NSDW+NCV :
+      IMETCL => ISDVI(12+2*NSD+2*NSDW+NCV :
      .     11+2*NSD+2*NSDW+NCV+NRTAL)
-      IMETWL    => ISDVI(12+2*NSD+2*NSDW+NCV+2*NRTAL :
+      IMETWL => ISDVI(12+2*NSD+2*NSDW+NCV+2*NRTAL :
      .     11+2*NSD+2*NSDW+NCV+2*NRTAL+NLIMPS)
-      IWLMT    => ISDVI(12+2*NSD+2*NSDW+NCV+2*NRTAL+NLIMPS : MSDVI)
-      
+      IWLMT  => ISDVI(12+2*NSD+2*NSDW+NCV+2*NRTAL+NLIMPS : MSDVI)
+
 !cym      ISPZ   => IPSTD( 9)
 !HJL      NT3RD  => ICGRID( 8)
-      
+
       NLRAY  => LCMSOU(14,:)
-      
-      RPSTT => RPST
-      
+
+      RPSTT  => RPST
+
       X0     => RPST( 1)
       Y0     => RPST( 2)
       Z0     => RPST( 3)
@@ -223,11 +222,11 @@ c     ym make sure the clast variables do not take exotic values
       E0     => RPST( 8)
       WEIGHT => RPST( 9)
       TIME   => RPST(10)
-      PHI    => RPST(11)   
+      PHI    => RPST(11)
       XGENER => RPST(12)
-      
-      IPST  => IPSTD(2:MPARTC+1)
-      IPSTT => IPSTD(1:MPARTT)
+
+      IPST   => IPSTD(2:MPARTC+1)
+      IPSTT  => IPSTD(1:MPARTT)
 
       NPANU  => IPSTD(1)
       IPOLG  => IPSTD(2)
@@ -244,7 +243,7 @@ c     ym make sure the clast variables do not take exotic values
       MTSURF => IPSTD(12)
       MASURF => IPSTD(13)
       MSURF  => IPSTD(14)
-      
+
       MSURFG => IPSTD(15)
       WMINV  => RCMSPL(1)
       WMINS  => RCMSPL(2)
@@ -253,33 +252,33 @@ c     ym make sure the clast variables do not take exotic values
       SPLPAR => RCMSPL(5)
       RNUMB  => RCMSPL(6:5+ N1ST+N2ND+N3RD+NLIM)
       PRMSPL => RCMSPL(6+   N1ST+N2ND+N3RD+NLIM : NCMSPL)
-      
+
       MAXLEV => ICMSPL(1)
       NLEVEL => ICMSPL(2)
       MAXRAD => ICMSPL(3)
       MAXPOL => ICMSPL(4)
       MAXTOR => ICMSPL(5)
       MAXADD => ICMSPL(6)
-      
+
       NODES  => ICMSPL(7:6+ MAXLEVEL)
       NSSPL  => ICMSPL(7  + MAXLEVEL:MCMSPL)
-      
+
       SIGVCX => XSTOR(:,1)
       SIGVPI => XSTOR(:,2)
       SIGVEI => XSTOR(:,3)
       SIGVEL => XSTOR(:,4)
       SIGVPH => XSTOR(:,22)
-      
+
       ESIGCX => XSTOR(:,5:6)
       ESIGPI => XSTOR(:,7:11)
       ESIGEI => XSTOR(:,12:16)
       ESIGEL => XSTOR(:,17:18)
       ESIGPH => XSTOR(:,23:24)
-      
+
       VSIGCX => XSTOR(:,19)
       VSIGPI => XSTOR(:,20)
       VSIGEL => XSTOR(:,21)
-      
+
       SIGCXT  => XSTORV(1)
       SIGPIT  => XSTORV(2)
       SIGEIT  => XSTORV(3)
@@ -288,80 +287,79 @@ c     ym make sure the clast variables do not take exotic values
       SIGTOT  => XSTORV(6)
       SIGBGK  => XSTORV(7)
       ZMFPI   => XSTORV(8)
-      
+
       END SUBROUTINE EIRENE_ALLOCATE_OPENMP
 
 
 !!! Deallocate THREADPRIVATE arrays
       SUBROUTINE EIRENE_DEALLOCATE_OPENMP
-      
 
       IF(EIRENE_ITHREAD == 0 ) RETURN
-      
-      DEALLOCATE(ISDVI)
-      DEALLOCATE(TIMINT)
-      DEALLOCATE(TIMPOL)
-      DEALLOCATE(NTIM)
-      DEALLOCATE(IIMPOL)
-      DEALLOCATE(IIMINT)
-      
-      DEALLOCATE(RPST)
-      DEALLOCATE(IPSTD)
-      DEALLOCATE(RCMSPL)
-      DEALLOCATE(ICMSPL)
-      
-      DEALLOCATE(ALPD)
-      DEALLOCATE(BLPD)
-      DEALLOCATE(CLPD)
-      
+
+      DEALLOCATE (ISDVI)
+      DEALLOCATE (TIMINT)
+      DEALLOCATE (TIMPOL)
+      DEALLOCATE (NTIM)
+      DEALLOCATE (IIMPOL)
+      DEALLOCATE (IIMINT)
+
+      DEALLOCATE (RPST)
+      DEALLOCATE (IPSTD)
+      DEALLOCATE (RCMSPL)
+      DEALLOCATE (ICMSPL)
+
+      DEALLOCATE (ALPD)
+      DEALLOCATE (BLPD)
+      DEALLOCATE (CLPD)
+
       DEALLOCATE (JUPC)
       DEALLOCATE (KUPC)
       DEALLOCATE (LUPC)
       DEALLOCATE (MUPC)
-      DEALLOCATE(NUPC)
-      DEALLOCATE(NCOUNP)
-      DEALLOCATE(NCOUNT)
-      
-      DEALLOCATE(EREDUC)
-      DEALLOCATE(FREDUC)
-      DEALLOCATE(IREDUC)
-      
-      DEALLOCATE(XSTOR)
-      DEALLOCATE(XSTORV)
-      DEALLOCATE(LCMSOU)
-      
-      DEALLOCATE(IIND)
-      
+      DEALLOCATE (NUPC)
+      DEALLOCATE (NCOUNP)
+      DEALLOCATE (NCOUNT)
+
+      DEALLOCATE (EREDUC)
+      DEALLOCATE (FREDUC)
+      DEALLOCATE (IREDUC)
+
+      DEALLOCATE (XSTOR)
+      DEALLOCATE (XSTORV)
+      DEALLOCATE (LCMSOU)
+
+      DEALLOCATE (IIND)
+
       DEALLOCATE (XCMEAN)
       DEALLOCATE (SGCVMX)
       DEALLOCATE (XEMEAN)
       DEALLOCATE (SGEVMX)
       DEALLOCATE (XPMEAN)
       DEALLOCATE (SGPVMX)
-      
+
       DEALLOCATE (NCMEAN)
       DEALLOCATE (IFLRCX)
       DEALLOCATE (NEMEAN)
       DEALLOCATE (IFLREL)
       DEALLOCATE (NPMEAN)
       DEALLOCATE (IFLRPI)
-      
+
       DEALLOCATE (FNUIAR)
-      
+
       DEALLOCATE (RSPLST)
       DEALLOCATE (ISPLST)
 
       END SUBROUTINE EIRENE_DEALLOCATE_OPENMP
 
-      
+
 !!! Allocate shared arrays and copy in the data from master
       SUBROUTINE EIRENE_INIT_BUFFERS_OPENMP
 
-      ALLOCATE (BISDVI(MSDVI))              
+      ALLOCATE (BISDVI(MSDVI))
       BISDVI=ISDVI
-      ALLOCATE (BIPSTD(MPARTC+1))      
+      ALLOCATE (BIPSTD(MPARTC+1))
       BIPSTD=IPSTD
-      ALLOCATE (BRPST(NPARTC))     
+      ALLOCATE (BRPST(NPARTC))
       BRPST=RPST
       ALLOCATE (BRCMSPL(NCMSPL))
       BRCMSPL=RCMSPL
@@ -369,7 +367,7 @@ c     ym make sure the clast variables do not take exotic values
       BICMSPL=ICMSPL
       ALLOCATE (BLCMSOU(14,NSTRA))
       BLCMSOU=LCMSOU
-      ALLOCATE (BXSTOR(MSTOR1,MSTOR2))       
+      ALLOCATE (BXSTOR(MSTOR1,MSTOR2))
       BXSTOR=XSTOR
       ALLOCATE (BXSTORV(NSTORV))
       BXSTORV=XSTORV
@@ -386,8 +384,8 @@ c     ym make sure the clast variables do not take exotic values
 
 !!! Copy the shared buffers into the thread private arrays
       SUBROUTINE EIRENE_COPY_BUFFERS_OPENMP
-      
-      ISDVI=BISDVI             
+
+      ISDVI=BISDVI
       IPSTD=BIPSTD
       RPST=BRPST
       RCMSPL=BRCMSPL
@@ -403,55 +401,53 @@ c     ym make sure the clast variables do not take exotic values
       M2M1=BM2M1
       ETF=BETF
       ES=BES
-      
+
       END SUBROUTINE EIRENE_COPY_BUFFERS_OPENMP
 
-      
- !!! Allocate shared arrays and copy in the data from master
+
+!!! Allocate shared arrays and copy in the data from master
       SUBROUTINE EIRENE_DEALLOCATE_BUFFERS_OPENMP
 
-      DEALLOCATE(BISDVI)              
-      DEALLOCATE(BIPSTD)      
-      DEALLOCATE(BRPST)     
+      DEALLOCATE(BISDVI)
+      DEALLOCATE(BIPSTD)
+      DEALLOCATE(BRPST)
       DEALLOCATE(BRCMSPL)
       DEALLOCATE(BICMSPL)
       DEALLOCATE(BLCMSOU)
-      DEALLOCATE(BXSTOR)       
+      DEALLOCATE(BXSTOR)
       DEALLOCATE(BXSTORV)
 
-      END SUBROUTINE EIRENE_DEALLOCATE_BUFFERS_OPENMP    
+      END SUBROUTINE EIRENE_DEALLOCATE_BUFFERS_OPENMP
 
       SUBROUTINE EIRENE_CHECK_STDEV
 
 CHJL At present the standard deviation calculations are incorrect when using
-CHJL OpenMP threads and anyway resul in the code crashing, this routine turns
+CHJL OpenMP threads and anyway result in the code crashing, this routine turns
 CHJL off standard deviation calculations
-      
+
       IF(EIRENE_NTHREADS>1) THEN
-         IF(NSIGI>0) THEN
-!$OMP MASTER            
-            write(iunout,*)"***************WARNING*******************"
-            write(iunout,*)"The standard deviation calculations have"
-            write(iunout,*)"not been implemented for OpenMP threads."
-            write(iunout,*)"Standard deviation calculations have been"
-            write(iunout,*)"turned off."
-            write(iunout,*)"INPUT FILE:",NSIGI,NSIGVI,NSIGSI,NSIGCI
-!$OMP END MASTER
-!$OMP BARRIER            
-            NSIGVI=0
-            NSIGSI=0
-            NSIGCI=0
-            NSIGI_SPC=0
-            NSIGI=0            
+        IF(NSIGI>0) THEN
 !$OMP MASTER
-            write(iunout,*)"NOW:",NSIGI,NSIGVI,NSIGSI,NSIGCI 
-            write(iunout,*)"***************WARNING*******************"
+          write(iunout,*)"***************WARNING*******************"
+          write(iunout,*)"The standard deviation calculations have"
+          write(iunout,*)"not been implemented for OpenMP threads."
+          write(iunout,*)"Standard deviation calculations have been"
+          write(iunout,*)"turned off."
+          write(iunout,*)"INPUT FILE:",NSIGI,NSIGVI,NSIGSI,NSIGCI
 !$OMP END MASTER
-         ENDIF         
-      ENDIF      
-      
+!$OMP BARRIER
+          NSIGVI=0
+          NSIGSI=0
+          NSIGCI=0
+          NSIGI_SPC=0
+          NSIGI=0
+!$OMP MASTER
+          write(iunout,*)"NOW:",NSIGI,NSIGVI,NSIGSI,NSIGCI
+          write(iunout,*)"***************WARNING*******************"
+!$OMP END MASTER
+        ENDIF
+      ENDIF
+
       END SUBROUTINE EIRENE_CHECK_STDEV
 
-      
-      
       END MODULE EIRMOD_OPENMP

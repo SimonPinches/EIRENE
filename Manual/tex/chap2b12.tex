@@ -1,8 +1,8 @@
 \section{Data for Diagnostic Module} \label{sec2.12}
 
-\textbf{General remarks} 
+\textbf{General remarks}
 
-\medskip 
+\medskip
 
 The data in this block are used to define a line-of-sight (LOS) across the
 computational domain, along which line integrals $I$
@@ -47,28 +47,28 @@ For testing and \ordinalnum{3} party defined further integrands $g(x)$ along
 lines of side there is a user defined option (Subr.\ SIGTST).
 
 In 2018 a more general option for definition of emission lines (in NCHTAL = 2
-option) was introduced. It allows the definition of emission lines via the 
+option) was introduced. It allows the definition of emission lines via the
 Eirene input file. The population coefficients, QSS ratios, etc. needed for
 setting up volumetric line emissivity profiles as further additional tally ADDV
-need to be specified in input block 4. The ADDV tallies may then be used 
+need to be specified in input block 4. The ADDV tallies may then be used
 for line of sight integration, along the chords defined further below.
 
 Distinct from the other addv tallies from block 10a these
 further addv tallies (beyond NADVI) are currently apparently neither
 scaled, averaged, integrated, nor do they have text (units, species) assigned.
 
-One of the keywords ``DEFINE\_LINES'' or ``DEFAULT\_LINES'' needs to specified 
-in the input to determine if the originally implemented Lyman- and 
-Balmer series volume source rates should be used or line definitions are 
-given. Please be aware: there is no mixing of default and 
-selfdefined lines. If at least one selfdefined line is to be used all 
+One of the keywords ``DEFINE\_LINES'' or ``DEFAULT\_LINES'' needs to specified
+in the input to determine if the originally implemented Lyman- and
+Balmer series volume source rates should be used or line definitions are
+given. Please be aware: there is no mixing of default and
+selfdefined lines. If at least one selfdefined line is to be used all
 emission lines need to be defined in the input.
 
 
 
 \medskip
 
-\textbf{The Input Block} 
+\textbf{The Input Block}
 
 \begin{lstlisting}
 *** 12. Data for Diagnostic Module
@@ -94,7 +94,7 @@ emission lines need to be defined in the input.
             ENDDO
           ENDDO
         ENDDO
-      ENDIF 
+      ENDIF
       NCHORI  NCHENI
       IF (NCHORI.GT.0) THEN
         DO 121 ICHORI=1,NCHORI
@@ -107,20 +107,20 @@ emission lines need to be defined in the input.
   121   CONTINUE
         PLCHOR PLSPEC PRSPEC PLARGL PRARGL
       ENDIF
-\end{lstlisting} 
+\end{lstlisting}
 
-\medskip 
+\medskip
 
 \textbf{Meaning of the Input Variables for Diagnostic Module}
 
-\medskip 
+\medskip
 
 \begin{description}
-  \item[KEYWORD] Keyword indicating if the originally implemented Lyman- and 
-        Balmer series volume source rates should be used or 
-        line definitions are provide. 
+  \item[KEYWORD] Keyword indicating if the originally implemented Lyman- and
+        Balmer series volume source rates should be used or
+        line definitions are provide.
         \begin{description}
-          \item[$=$ DEFAULT\_LINES] the implemented Lyman- and 
+          \item[$=$ DEFAULT\_LINES] the implemented Lyman- and
                Balmer series volume source rates are used
           \item[$=$ DEFINE\_LINES] definition of emission lines is expected
         \end{description}
@@ -129,7 +129,7 @@ emission lines need to be defined in the input.
         \begin{description}
           \item[$= 0$] memory saving mode
                Only the components of the latest calculated emission line
-               are kept in storage. A new calculated emission line 
+               are kept in storage. A new calculated emission line
                overwrites the previously calculated data. If a previously
                calculated emission line is used again for a chord lateron
                it needs to be recalculated.
@@ -144,13 +144,13 @@ emission lines need to be defined in the input.
    \item[NUM\_COMPO] Number of components of the line
    \item[EINSTEIN] radiative transition rate (1/sec)
    \item[TRANS\_EN] transition energy, identifyer for line
-   \item[COMPO\_NAME] name of the component, 
+   \item[COMPO\_NAME] name of the component,
 
          used for identification of the component in the emissivity output
    \item[NUM\_CONTRIB] Number of contributions to the component of the line
    \item[IRC] Number of a reaction defined in input block 4 for a
          population coefficient such as H.12 2.2.5a
-   \item[ISP] species index of density which is used for building the 
+   \item[ISP] species index of density which is used for building the
          emission line
    \item[ITP] particle type
         \begin{description}
@@ -165,11 +165,11 @@ emission lines need to be defined in the input.
          maximal 2 ratios are allowed.
 
          The use of a ratio is required if the true parent density is not
-         available (or in QSS mode). Then the first ratio converts from 
+         available (or in QSS mode). Then the first ratio converts from
          density(1) the to ``true'' density for this component.
 
-         density(1) is taken as "intermediate" parent density. Fetch 
-         reduced population coefficent and density ratio  
+         density(1) is taken as "intermediate" parent density. Fetch
+         reduced population coefficent and density ratio
          ratio1="density"/"density(1)" will be applied,
          to turn density(1) into "density"
 
@@ -205,17 +205,17 @@ emission lines need to be defined in the input.
           \item[$= 3$] spectral radiance of photonic lines
                 (SIGRAD) (new in versions 2005 and younger)
           \item[$= 10$] user supplied
-                integrand (SIGUSR) 
+                integrand (SIGUSR)
 
                 (this was option NSPTAL =3, in versions 2004 and older)
-          \item[$= 11$] integrand is line of sight (SIGLOS) 
+          \item[$= 11$] integrand is line of sight (SIGLOS)
           \item[$= 12$] back ground (input) tallies
-                user supplied integrand (SIGPLA) 
+                user supplied integrand (SIGPLA)
           \item[$= 13$] volume averaged (output) tallies
-                user supplied integrand (SIGEIR) 
+                user supplied integrand (SIGEIR)
         \end{description}
   \item[NSPSCL] Flag for choice of linear or logarithmic axes in plots of spectra
-        (vs.\ energy or wavelength, resp.) and of source term distribution along 
+        (vs.\ energy or wavelength, resp.) and of source term distribution along
         line of sight.
         \begin{description}
           \item[$= 0$] both axes linear
@@ -290,7 +290,7 @@ emission lines need to be defined in the input.
 
         If NSPADD $\ne$ 0, then the block number NSPBLC must be NSPBLC = NBMLT+1, i.e.\
         the second point on the line of sight is in the ``additional cell region".
-  \item[EMIN1, EMAX1] ~ 
+  \item[EMIN1, EMAX1] ~
 
         for NSPTAL=1,3,10:
 
@@ -305,15 +305,15 @@ emission lines need to be defined in the input.
         Emin1 and Emax1 are interpreted as integer principal quantum numbers $n,m$ of
         the lower and upper state for the transition.
 
-        EMIN1 = 1, EMAX1 = 3:  Lyman-beta line 
+        EMIN1 = 1, EMAX1 = 3:  Lyman-beta line
 
-        EMIN1 = 2, EMAX1 = 6:  Balmer-delta line 
+        EMIN1 = 2, EMAX1 = 6:  Balmer-delta line
 
-        EMIN1 = 2, EMAX1 = 5:  Balmer-gamma line 
+        EMIN1 = 2, EMAX1 = 5:  Balmer-gamma line
 
-        EMIN1 = 2, EMAX1 = 4:  Balmer-beta line 
+        EMIN1 = 2, EMAX1 = 4:  Balmer-beta line
 
-        EMIN1 = 2, EMAX1 = 3:  Balmer-alpha line 
+        EMIN1 = 2, EMAX1 = 3:  Balmer-alpha line
 
         Old input version (still maintained for backward compatibility of input files:
         EMIN1 is an energy parameter to identify the particular hydrogen line and EMAX1
@@ -321,15 +321,15 @@ emission lines need to be defined in the input.
         EMIN1 is given in \si{\electronvolt}, by $Ry \times \left(1/n^2-1/m^2\right)$,
         with $Ry=\num{13.6}$ (\si{\electronvolt}).
 
-        EMIN1 = 12.089: Lyman-beta line 
+        EMIN1 = 12.089: Lyman-beta line
 
-        EMIN1 = 3.0222: Balmer-delta line 
+        EMIN1 = 3.0222: Balmer-delta line
 
-        EMIN1 = 2.8560: Balmer-gamma line 
+        EMIN1 = 2.8560: Balmer-gamma line
 
-        EMIN1 = 2.5500: Balmer-beta line 
+        EMIN1 = 2.5500: Balmer-beta line
 
-        EMIN1 = 1.8889: Balmer-alpha line 
+        EMIN1 = 1.8889: Balmer-alpha line
 
         Other side on line emissivities can be obtained using the user supplied line of
         side integral SIGUSR (option NSPTAL=10) and analogy to the preprogrammed
@@ -339,7 +339,7 @@ emission lines need to be defined in the input.
         For the preprogrammed options these latter coefficients for $n=2,3,4,5,6$ are
         stored in AMJUEL, section H12, see this web page under: EIRENE AMS data files.
 
-  \item[ESHIFT] (for NSPTAL=1, 3, 10 options only) 
+  \item[ESHIFT] (for NSPTAL=1, 3, 10 options only)
 
         energy shift for spectral resolution in printout, and plot
 \end{description}
@@ -364,7 +364,7 @@ Note 1:
 When specifying the coordinates of the points $P_{pivot}$ and $P_{scnd}$ to
 select a particular line of sight, the same rules must be followed as also for
 specifying birth point locations of ``real" particles (input block 7).
-These starting points are assumed to be given \textbf{inside a cell, not 
+These starting points are assumed to be given \textbf{inside a cell, not
 exactly on a cell boundary}.
 For example coordinates z0=0.0 must be avoided if a z-grid surface coincides
 with this position.
@@ -410,14 +410,14 @@ The next card specifies the first (``pivot") point.
         sub-block 2c)
         \begin{description}
           \item[1 $\leq$ IPIVOT $\leq$ NTTRA-1]
-                (currently no available, error exit) 
+                (currently no available, error exit)
 
                 number of local toroidal co-ordinate system (NTTRA: see sub-block 2c), in which
                 this pivot point is specified.
                 The pivot point is then given in Cartesian coordinates is this local system
-          \item[IPIVOT = 0] ~ 
+          \item[IPIVOT = 0] ~
 
-                pivot point is given in global cylindrical coordinates, 
+                pivot point is given in global cylindrical coordinates,
 
                 XPIVOT,YPIVOT,ZPIVOT = $r,z,\phi$, with $\phi$ in degrees.
                 The corresponding toroidal block numbers ITTRA are found automatically.
@@ -440,7 +440,7 @@ point belongs, must be specified by the NSPBLC and NSPADD flags.
 automatically.)
 
 \begin{description}
-  \item[ICHORD] (only needed for NLTRA option, sub-block 2c) 
+  \item[ICHORD] (only needed for NLTRA option, sub-block 2c)
 
         Meaning analogous to that of first point flag IPIVOT:
 

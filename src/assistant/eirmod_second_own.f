@@ -2,10 +2,10 @@
 cdr  used for internal run time monitoring
 
       USE EIRMOD_PRECISION
-#ifdef USE_OPENMP 
-      use omp_lib               !IGNORE
+#ifdef USE_OPENMP
+      use omp_lib           !IGNORE
 #endif
-#ifdef USE_MPI      
+#ifdef USE_MPI
       use mpi               !IGNORE
 #endif
       IMPLICIT NONE
@@ -13,7 +13,7 @@ cdr  used for internal run time monitoring
 
       PUBLIC :: EIRENE_SECOND_OWN, EIRENE_RESET_SECOND
 
-      real(dp),save :: start=0.0_dp
+      real(dp), save :: start=0.0_dp
       integer :: ifirst = 0
 
       CONTAINS
@@ -24,16 +24,16 @@ cdr returns wall clock time (in seconds) since the last call to function eirene_
 
       real(dp) :: EIRENE_second_own
       real(dp) :: time
-#ifdef USE_OPENMP 
+#ifdef USE_OPENMP
       double precision :: omp_get_wtime
       time=omp_get_wtime()
 #elif USE_MPI
       double precision :: mpi_wtime
       time=mpi_wtime()
 #else
-      call cpu_time(time)      
+      call cpu_time(time)
 #endif
-      
+
       EIRENE_second_own=time-start
       return
       END FUNCTION EIRENE_SECOND_OWN
@@ -42,7 +42,7 @@ C
 cdr returns wall clock time (in seconds)
       implicit none
       real(dp) :: EIRENE_reset_second
-#ifdef USE_OPENMP 
+#ifdef USE_OPENMP
       double precision :: omp_get_wtime
       start=omp_get_wtime()
 #elif USE_MPI

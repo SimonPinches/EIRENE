@@ -4,7 +4,7 @@ C
 
 CDR  produce formatted output files for RAPS graphics system
 C
-C   options available so far:  documentation to be written
+C   options available so far: documentation to be written
 C
 C   nov. 15: something added for levgeo=1, y-z plot at given x position
 CDR

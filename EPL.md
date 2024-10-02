@@ -6,7 +6,7 @@ lang: en
 :::info
 EIRENE IEK-4
 EPL (EIRENE Public Licence)
-Version: 1.0.8
+Version: 1.0.9
 Copyright Forschungszentrum Jülich GmbH
 :::
 
@@ -69,7 +69,7 @@ visiting scientists or external contractors, which are tasked with programming a
 
 "Milestone Version" (MsV): any AD community will be able to release the milestone versions, which are meant to be made available to all Basic Developers (1st layer of the license) unlike the internal development inside the particular AD community, to which access can be kept restricted. Any MsV version should have a clear history of the previous MsVs on which it is based . It is expected that the MsVs will be released relatively seldom marking significant stages of the development. It is however, strongly recommended to have an MsV, before any fork is to be started. Thus, a MsV, is a snapshot for the package like any other version, however it is expected to be tested and documented in the best possible way. The latter is left to the judgement of the AD community releasing the MsV.
 
-"Forks":  forks are versions of the Code, which are significantly incompatible with each other, despite being based on one of the EIRENE MsVs. Basically, it is obviously in the common interest to avoid any forking, however it is not always fully possible. It is foreseen that merging of the forks will happen from time to time and will lead to new MsV releases (e.g. joint between 2 or more AD communities). Obviously each merging action will demand additional effort, however, the long-term forks are known to lose with time all the advantages of the joint development, thus their scientific value. Still, the licence leaves the decision on starting a fork to any developer including a BASIC Developer or an AD community - at their own responsibility for the consequences including any additional effort needed to keep it compatible with new developments. 
+"Forks":  forks are versions of the Code, which are significantly incompatible with each other, despite being based on one of the EIRENE MsVs. Basically, it is obviously in the common interest to avoid any forking, however it is not always fully possible. It is foreseen that merging of the forks will happen from time to time and will lead to new MsV releases (e.g. joint between 2 or more AD communities). Obviously each merging action will demand additional effort, however, the long-term forks are known to lose with time all the advantages of the joint development, thus their scientific value. Still, the licence leaves the decision on starting a fork to any developer including a BASIC Developer or an AD community - at their own responsibility for the consequences including any additional effort needed to keep it compatible with new developments.
 
 
 # 3. Rights and Obligations
@@ -84,19 +84,19 @@ If you want to contribute to EIRENE, you must be an AD and convey your Derivativ
 
 Outside of the Community the conveyance of the Source Code is prohibited. At the BASIC level you may only access the last consolidated version via the BASIC-repository. The Licensee must take all necessary security precautions to ensure that, if services are made available to third parties outside the community, no access to the Source Code is made possible by these third parties.
 
-If you want to become an AD you may apply to the contact person (CP) responsible for the community. Any AD community is expected to govern itself based on this license with some minimal information provided to the Licensor, which should include the CP (and way of communication including a valid e-mail address), the name of the community, and the MsV(s) the Fork(s) are based on. 
+If you want to become an AD you may apply to the contact person (CP) responsible for the community. Any AD community is expected to govern itself based on this license with some minimal information provided to the Licensor, which should include the CP (and way of communication including a valid e-mail address), the name of the community, and the MsV(s) the Fork(s) are based on.
 
 An AD can be a member of several AD communities. If you choose to leave the Community, you will fall back to the BASIC level regarding that part of the work you have already obtained and must delete all Code that is not covered by the BASIC level of access. In the event of a termination of the License agreement, e.g. through the Licensee leaving the Community, the Licensee must ensure that any Code, that is not covered by the BASIC level of access, is no longer used by him/her, his/her employees, his/her representatives as well as cooperation partners and that it is no longer available for use via the Licensee. Detailed procedure of new AD acceptation or expulsion will be formulated in the DCoC (which can be different for each AD community, but it is recommended to keep the rules as similar as possible to encourage effective cooperation).
 
 You may also create your own AD community for distinct and separate pieces of software (Forks) of EIRENE at the Licensors discretion. Such a community is bound by the same rules as an AD with the exception, that You do not have to send your Derivative Work for code review, but still grant a corresponding licence to the Licensor for each contribution. You must choose a name for your own AD community discernibly different from the FZ Jülich Associated Developers community EIRENE-NGM-DEVELOPERS" and any other AD communities formed prior to yours.
 
-# 4. Copyright 
+# 4. Copyright
 
 The Licensor warrants, that s/he is legitimated to grant this Licence.
 
 The AD warrants, that s/he is legitimated to licence the Work he conveys in the scope of Section 3 of this License.
 
-# 5. Warranty 
+# 5. Warranty
 
 The Work is a work in progress, which is continuously being improved by numerous Contributors. It is not a finished work and may therefore contain defects or "bugs" inherent to this type of development. For the above reason, the Work is provided under the Licence on an "as is" basis and without warranties of any kind concerning the Work, including without limitation, merchantability, fitness for a particular purpose, absence of defects or errors, accuracy, non-infringement of intellectual property rights other than copyright as stated in section 4 of this Licence.
 

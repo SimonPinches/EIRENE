@@ -61,7 +61,7 @@ cdr six components per line: H, H+, H-, H2, H2+, H3+.
       CHARACTER(80), PUBLIC, ALLOCATABLE, SAVE :: CH_LINE_NAME(:)
 
       TYPE TCONTRIB
-        INTEGER :: ISP, ITP, IRATIO, IRC_RAT(2), ISP_RAT(2), ITP_RAT(2) 
+        INTEGER :: ISP, ITP, IRATIO, IRC_RAT(2), ISP_RAT(2), ITP_RAT(2)
       END TYPE TCONTRIB
 
       TYPE TCOMPO
@@ -199,8 +199,8 @@ C
       CONA%ITP          = CONB%ITP
       CONA%IRATIO       = CONB%IRATIO
       CONA%IRC_RAT      = CONB%IRC_RAT
-      CONA%ISP_RAT = CONB%ISP_RAT
-      CONA%ITP_RAT = CONB%ITP_RAT
+      CONA%ISP_RAT      = CONB%ISP_RAT
+      CONA%ITP_RAT      = CONB%ITP_RAT
 
       RETURN
       END SUBROUTINE EIRENE_CONTRIB_TO_CONTRIB
@@ -231,7 +231,7 @@ cdr  additional output tallies added by code itself (rather than via input block
       IF (NUM_LINES > 0) THEN
         CALL EIRENE_BROAD_EMIS_LINES(ME)
       END IF
-      
+
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       RETURN
@@ -302,10 +302,10 @@ cdr  additional output tallies added by code itself (rather than via input block
             CALL MPI_BCAST (CNT%IRATIO,1,MPI_INTEGER,
      .                      0,MPI_COMM_WORLD,ier)
 cdr donor state densities may be converted to other species/isotopes densities,
-cdr by multiplication with a density "ratio": e.g. nH2+ = nH2 * ratio, 
-cdr with ratio = CR equilibrium ratio:(nH2+/nH2) 
+cdr by multiplication with a density "ratio": e.g. nH2+ = nH2 * ratio,
+cdr with ratio = CR equilibrium ratio:(nH2+/nH2)
 
-c  density ratio factor, for this donor state 
+c  density ratio factor, for this donor state
 c  plus,(for ratio2) two further density factors
             CALL MPI_BCAST (CNT%ISP_RAT,2,MPI_INTEGER,
      .                      0,MPI_COMM_WORLD,ier)

@@ -1,11 +1,11 @@
       MODULE EIRMOD_VELOEL
 
-cym  04/2020 Module nows contains several routines initially in volume-processes
+cym  04/2020 Module now contains several routines initially in volume-processes
 cym  and called in veloel only : gaumeh,rstern,rtsaf,fi,fivec
 cym  gaumeh & rstern had SAVE attributes
 cym  there was a common shared between fivec & gaumeh (/CFI/)
 cym  once this is done, it makes more sense to include fi&rtsaf here too
-  
+
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -93,9 +93,9 @@ cym CHECK THIS
 C
 !$OMP THREADPRIVATE(X5A,X5B,X10A,X10B,X20A,X20B,
 !$OMP&       XG10A,XG10B,
-!$OMP&       SUM, F, X,   
+!$OMP&       SUM, F, X,
 !$OMP&       I, IFIRST1, IFI)
-     
+
 cym      integer :: icll
 cym !$OMP THREADPRIVATE(icll)
 
@@ -103,7 +103,7 @@ cym      SAVE
 
       CONTAINS
 
-c         061205:   au_to_cm2 --> ccona
+c         061205: au_to_cm2 --> ccona
 !         100107: SUBROUTINE VELOEL_REINIT added for reinitialization of EIRENE
 CDR  Aug. 2015  : PROGRAMMING AND NOTATION SYNCHRONIZED WITH VELOCX.F
 !DR
@@ -130,17 +130,17 @@ C  THIS SUBROUTINE CARRIES OUT AN ELASTIC COLLISION OF A TEST PARTICLE
 C  WITH A BULK PARTICLE.
 C  IT RETURNS THE POST-COLLISION VELOCITY VECTOR.
 C
-C  NFLAG= 1:       SAMPLING FROM MONOENERGETIC DISTRIBUTION
-C                  OF ION SPEED IN 3D, X,Y,Z DIRECTION
-C                  (I.E., DELTA FUNCTION IN ENERGY SPACE)
-C                  E=M/2 V_M^2 =3/2 KT, IN REST FRAME OF IPLS
-C                  USE WEIGHT CORRECTION OR REJECTION
-C                  to be generalized to E=ESIGCX(IRCX,1)
-C  NFLAG= 2:       SAMPLING FROM SHIFTED MAXWELLIAN
-C                  "FMAXW" AT TI AND V-DRIFT IN CELL K
-C  NFLAG= 3:       SAMPLING FROM SHIFTED MAXWELLIAN + WEIGHT CORRECTION
-C                  FACTOR = SIGMA*VREL*FMAXW/<SIGMA*VREL>
-C                  OR ALTERNATIVELY: REJECTION
+C  NFLAG= 1: SAMPLING FROM MONOENERGETIC DISTRIBUTION
+C            OF ION SPEED IN 3D, X,Y,Z DIRECTION
+C            (I.E., DELTA FUNCTION IN ENERGY SPACE)
+C            E=M/2 V_M^2 =3/2 KT, IN REST FRAME OF IPLS
+C            USE WEIGHT CORRECTION OR REJECTION
+C            to be generalized to E=ESIGCX(IRCX,1)
+C  NFLAG= 2: SAMPLING FROM SHIFTED MAXWELLIAN
+C            "FMAXW" AT TI AND V-DRIFT IN CELL K
+C  NFLAG= 3: SAMPLING FROM SHIFTED MAXWELLIAN + WEIGHT CORRECTION
+C            FACTOR = SIGMA*VREL*FMAXW/<SIGMA*VREL>
+C            OR ALTERNATIVELY: REJECTION
 C
 C  1ST STEP: FIND COLLISION PARTNER FROM BULK ION SPECIES "IPLS":
 C            (VXN,VYN,VZN)
@@ -205,7 +205,6 @@ c                read from file AMJUEL rather than initialising them here
 c       P_A_B(5)=P(4)*(1.-LOG(2.)/P(2))         (=R0, ROOT OF V)
 c       P_A_B(6)=P(4)*(1.+LOG(2.)/P(2)/P(3))    (=RW, INFLECTION OF V)
 c       P_A_B(8)=-3.*P(1)/4.                    (=V(RW) )
-cym is this still necessary ?
       SAVE
 C
 c initialize arrays for "on the fly" rejection efficiency estimates
@@ -232,7 +231,7 @@ C CURRENTLY: HARD-WIRED SEARCH RANGE
         SGEVMX(IREL)=-1.D60
         JM=1
         do j=1,1000
-c  elab:  here ln(E), with E from 0.01 to 1e3 eV
+c  elab: here ln(E), with E from 0.01 to 1e3 eV
           elab=elmin+(j-1)/999._dp*(elmax-elmin)
 
 c  find cross-section at ENERGY ELAB from a fit or table.
@@ -273,7 +272,8 @@ C  NEXT: STEP 1
 C
 C    set parameters for random sampling in cell icell=K
 C
-      IF (K.GT.0.AND.K.LE.NRAD) THEN  ! K is the grid cell number. Use local bulk medium parameters
+      IF (K.GT.0.AND.K.LE.NRAD) THEN  ! K is the grid cell number.
+                                      ! Use local bulk medium parameters
 c  scaled 1d temperatures, per degree of freedom
         ZARGX=ZRG(IPLS,K)
         ZARGY=ZRG(IPLS,K)
@@ -330,7 +330,7 @@ C  ALL OTHER CASES: MAXWELLIAN AT LOCAL TEMPERATURE TIIN AND DRIFT VDR
         VZN=VZN*ZARGZ+VZDR
       ENDIF
 C
-C  DRIFTING MAXWELLIAN DISTRIBUTION (FOR MAXWELL-1/r^4-POTENTIAL: 
+C  DRIFTING MAXWELLIAN DISTRIBUTION (FOR MAXWELL-1/r^4-POTENTIAL:
 C  SIGMA*V = CONST(T), BUT INDEPENDENT OF V)
 C
       IF (NFLAG.EQ.2) THEN
@@ -427,7 +427,8 @@ C  SOME STUFF HERE FOR COM ISOTROPIC COLLISIONS.....
       ELSEIF (MODCOL(5,0,IREL).GT.0) THEN
 C  INTERACTION POTENTIAL IS GIVEN, get fit coefficients of interaction potential
         IREAC=MODCOL(5,0,IREL)
-        IFLAG=IFTFLG(IREAC,0)   !cdr  is iftflg correctly set for repulsive potential?
+        IFLAG=IFTFLG(IREAC,0)   !cdr  is iftflg correctly set for
+                                !     repulsive potential?
 cdr                                check slreac. There default is set to iftflg=2 (Morse)
 CDR REACDAT should not be used during trajectory generation, see comments in xstel.f
 c   to be done.
@@ -532,7 +533,7 @@ C  CONVERT FROM DEFLECTION ANGLE CHI TO OBSERVABLE SCATTERING ANGLE PH, [0,...,P
         SPH=SQRT(1.0-CPH*CPH)
       ENDIF
 
-C  SCATTERING ANGLE PH , COS(PH)=CPH AND SIN(PH)=SPH ARE SET
+C  SCATTERING ANGLE PH, COS(PH)=CPH AND SIN(PH)=SPH ARE SET
 C
 C  POLAR ANGLE
       EPS=PI2A*RANF_EIRENE( )
@@ -559,7 +560,7 @@ C  STEP 4 FINISHED, POST-COLLISION VELOCITY IS SET IN LAB FRAME
 C  NEXT: RETURN
 C
  1000 CONTINUE
-
+C
       RETURN
 C
   995 CONTINUE
@@ -576,13 +577,13 @@ C
       CALL EIRENE_EXIT_OWN(1)
       END SUBROUTINE EIRENE_VELOEL
 
- 
+
 C
 C
       REAL(DP) FUNCTION EIRENE_RSTERN (ER,B,IFLAGI,P)
 C
-C     IFLAG=1:  H+  + H, PURELY REPULSIVE POTENTIAL
-C     IFLAG=2:  MORSE POTENTIAL, He+ + He, H+ + Noble Gases, H+ + H2
+C     IFLAG=1: H+ + H, PURELY REPULSIVE POTENTIAL
+C     IFLAG=2: MORSE POTENTIAL, He+ + He, H+ + Noble Gases, H+ + H2
 C
 C               PARAMETERS: P(1):
 C                           P(2):
@@ -592,9 +593,9 @@ C  RSTERN(ER,B) IS THE LARGEST ROOT OF THE EQUATION:
 C
 C     FI(R):=1.-V(R)/ER-(B/R)**2=0.
 C
-C   HERE:  ER COLLISION ENERGY (EV)
-C          B  IMPACT PARAMETER
-C          V  INTERACTION POTENTIAL (EV)
+C   HERE: ER COLLISION ENERGY (EV)
+C         B  IMPACT PARAMETER
+C         V  INTERACTION POTENTIAL (EV)
 C
 C     DIMENSION RV0(3),RVM(3),RVW(3),VM(3),VW(3),VSW(3)
 
@@ -612,7 +613,7 @@ cym ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cym local variables moved to declaration section of module
 cym IFLAG -> IFLAGI to avoid confusion with IFLAG from veloel
 cym ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-        
+
 C     DATA IFIRST /0/
 C     DATA RV0/0.,0.99699,2.18039/
 C     DATA RVM/0.,1.4556 ,2.835539/
@@ -708,7 +709,7 @@ cym ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       REAL(DP) :: X5(5),X10(10),X20(20)
       REAL(DP) :: W5, W10, W20
       REAL(DP) :: XG10(10),WG10(10)
-      
+
       DATA X5 /0.95105654E+00_DP, 0.58778542E+00_DP, 0.31391647E-06_DP,
      .       - 0.58778363E+00_DP,-0.95105600E+00_DP/,
      .     W5 /0.62831837E+00/
@@ -751,7 +752,7 @@ C                           INTEGRATION FROM A=0 TO B=1
      .    .28419221863676482994_DP,
      .    .29834597294520589473_DP,
      .    .30550677426145261144_DP/
-      
+
       IF (IFIRST1.EQ.0) THEN
 C SET ROOTS AND WEIGHTS FOR GAUSS QUADRATURE RULES
         IFIRST1=1
@@ -918,8 +919,8 @@ C  EVALUATE EFFECTIVE POTENTIAL FUNCTION FI AT R
 C  EVALUATE DFI(R)/DR AT R
 C  RETURN FI=FI(R), DFI=DFI(R)/DR
 C     --------------
-C  IFLAGI=1:  H+ + H
-C  IFLAGI=2:  H+ + NOBLE GASES,  H+ + H2,  HE+ + HE
+C  IFLAGI=1: H+ + H
+C  IFLAGI=2: H+ + NOBLE GASES, H+ + H2, HE+ + HE
 C
 
       USE EIRMOD_PRECISION
@@ -1024,8 +1025,8 @@ C  EVALUATE EFFECTIVE POTENTIAL FUNCTION AT AR(I),I=1,NFI
 C  NOTE: NFI.LE.128 IS NOT CHECKED, BUT USED
 C  RETURN FI(AR(I)) IN THE ARRAY AFI(I),I=1,NFI
 C     --------------
-C  IFLAGI=1:  H+ + H
-C  IFLAGI=2:  H+ + NOBLE GASES , H+ + H2, HE+ + HE
+C  IFLAGI=1: H+ + H
+C  IFLAGI=2: H+ + NOBLE GASES, H+ + H2, HE+ + HE
 C
 
       USE EIRMOD_PRECISION

@@ -422,7 +422,7 @@ C    READING OF POLYGON DATA
      .                         YPOL(dimyh+1,nxcut2(NNCUT)),
      .                         YPOL(dimyh+1,IX),YPOL(IY,IX)
               ENDIF
- 14         CONTINUE
+   14       CONTINUE
           ENDIF
         ENDIF
 C    READING OF SECOND POLOIDAL PATCH
@@ -485,7 +485,7 @@ C   DDN/SN Case
      .                         DUMMI(1),DUMMI(2),
      .                         YPOL(dimyh+1,IX+1),YPOL(IY,IX+1)
               ENDIF
- 190        CONTINUE
+  190       CONTINUE
           ENDIF
           IF (IX.EQ.nxcut1(2)) THEN
             DO 200 IY = 1, DIMYH
@@ -505,7 +505,7 @@ C   DDN/SN Case
      .                         YPOL(dimyh+1,IX+2),
      .                         YPOL(dimyh+1,IX+1),YPOL(IY,IX+1)
               ENDIF
- 200        CONTINUE
+  200       CONTINUE
           ENDIF
          ENDIF
         ENDIF
@@ -634,7 +634,7 @@ C    Snowflake Case
      .                         YPOL(IY,IX+4-NWISO)
               ENDIF
    34       CONTINUE
-          ENDIF
+           ENDIF
           ELSE
 C    DDN case
            IF ((IX.GE.nxcut2(3)).AND.(IX.LE.nxiso1(1)-1)) THEN
@@ -780,7 +780,7 @@ C    snowflake/XPT case
      .                         YPOL(dimyh+1,IX+NPLP-1-NWISO),
      .                         YPOL(IY,IX+NPLP-1-NWISO)
               ENDIF
- 22         CONTINUE
+   22       CONTINUE
           ENDIF
          ELSE
 C   DDN/SN cases
@@ -887,10 +887,9 @@ C   ANFANGSPUNKT DES DRITTEN TEILSTUECKS DES I-TEN POLYGONS
 C   START OF THIRD POLOIDAL SECTION OF THE GRID
         NPOINT(1,3)=nxcut2(nncut-1)+2
 C   ENDPUNKT DES DRITTEN TEILSTUECKS DES I-TEN POLYGONS
+C   END OF THIRD POLOIDAL SECTION OF THE GRID
         IF (NNCUT.EQ.2) NPOINT(2,3)=dimxh+3
         IF (NNCUT.EQ.4) THEN
-C   ENDPUNKT DES DRITTEN TEILSTUECKS DES I-TEN POLYGONS
-C   END OF THIRD POLOIDAL SECTION OF THE GRID
           NPOINT(2,3)=NXISO1(1)+3
 C   ANFANGSPUNKT DES VIERTEN TEILSTUECKS DES I-TEN POLYGONS
 C   START OF FOURTH POLOIDAL SECTION OF THE GRID
@@ -944,7 +943,7 @@ C
         WRITE(IUNOUT,*) filename//'  : NNCUT = ', NNCUT
         WRITE(IUNOUT,*) filename//'  : NNISO = ', NNISO
         WRITE(IUNOUT,*) filename//'  : NWISO = ', NWISO
-        WRITE(IUNOUT,*) 
+        WRITE(IUNOUT,*)
      .   'WE MUST HAVE NP2ND = NX+MAX(3*(NNCUT/2),1)+NNISO*NWISO'
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
@@ -971,11 +970,6 @@ C
         DO I=1,NP
           XPOL(J,I)=XPOL(J,I)*100.
           YPOL(J,I)=YPOL(J,I)*100.
-cdr nov 2020: in some versions the next two lines are found
-cdr           I do not understand, it seems to be in absolute
-cdr           rather than relative units. So I remove these two lines.
-cdr       IF (ABS(XPOL(J,I)).LT.5.D-5) XPOL(J,I)=0.
-cdr       IF (ABS(YPOL(J,I)).LT.5.D-5) YPOL(J,I)=0.
         END DO
  1020 CONTINUE
       RETURN
@@ -1526,11 +1520,11 @@ C
       TYPE(CELLMUL), POINTER :: CPMUL
 
       IF (ISTRAI.LE.NTARGI.AND.WTOTP(0,ISTRAI).NE.0.) THEN
-         FLXI=-1._DP/WTOTP(0,ISTRAI)
+        FLXI=-1._DP/WTOTP(0,ISTRAI)
       ELSEIF (ISTRAI.LE.NTARGI.AND.WTOTP(0,ISTRAI).EQ.0.) THEN
-         RETURN
+        RETURN
       ELSEIF (ISTRAI.GT.NTARGI) THEN
-         FLXI=1._DP
+        FLXI=1._DP
       ENDIF
 
       CALL EIRENE_FREE_SIMARR(ISTRAI)
@@ -1764,8 +1758,3 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
 
       RETURN
       END SUBROUTINE EIRENE_SAVE_TALLIES
-
-C
-C
-C
-C

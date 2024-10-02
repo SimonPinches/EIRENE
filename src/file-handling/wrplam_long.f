@@ -1,8 +1,8 @@
 cdr jan. 2020: remove argument IRET. Unused.
-c  jan. 2019:  lgdft removed.  read (....,IOSTAT=IO)
+c  jan. 2019:  lgdft removed. read (....,IOSTAT=IO)
 c  oct. 2018:  iflg=0 read primary source data (incl. stepfunctions)
-c              else   no reading of primary source data 
-c             (also not of  stepfunctions)
+c              else   no reading of primary source data
+c             (also not of stepfunctions)
 c              remove redundant logical tally LGDFT
 c  feb. 2018:  restructured because of switchable input tallies
 c              Tests: are the same input tallies active in read and write runs?
@@ -17,7 +17,7 @@ c  at subroutine RPLAM:
 C  read plasma (background) data, source distribution and atomic data
 C  from unit 13. And: allocate target: plasma_bckgrnd
 C
-C  trcfle:  confirm writing on printout on unit IUNOUT
+C  trcfle: confirm writing on printout on unit IUNOUT
 
       SUBROUTINE EIRENE_WRPLAM_LONG(TRCFLE,CALLEDFROM)
       USE EIRMOD_PRECISION
@@ -40,26 +40,26 @@ C
       OPEN (UNIT=113,ACCESS='SEQUENTIAL',FORM='FORMATTED')
       REWIND 113
 #endif
-      
+
 C  write those input tallies which are active in the present run
       WRITE (13+ifoff) LIVTALI
 #ifdef CHECKBIN
-      WRITE (113,*) 'LIVTALI '
+      WRITE (113,*) 'LIVTALI'
       WRITE (113,*) LIVTALI
 #endif
-      IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: LIVTALI '
+      IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: LIVTALI'
       WRITE (13+ifoff) NFRSTP, NADDP
 #ifdef CHECKBIN
-      WRITE (113,*) 'NFRSTP, NADDP '
+      WRITE (113,*) 'NFRSTP, NADDP'
       WRITE (113,*) NFRSTP, NADDP
 #endif
-      IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: NFRSTP, NADDP '
+      IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: NFRSTP, NADDP'
       WRITE (13+ifoff) PLSTLS
 #ifdef CHECKBIN
-      WRITE (113,*) 'PLSTLS '
+      WRITE (113,*) 'PLSTLS'
       WRITE (113,*) PLSTLS
 #endif
-      IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: input tallies PLSTLS '
+      IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: input tallies PLSTLS'
 C
       WRITE (13+ifoff)
 C  REAL
@@ -104,7 +104,7 @@ C  MUSR, INTEGER
 C  LUSR, LOGICAL
      L           LGVAC,LSMOPRO
 #endif
-      IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: module EIRMOD_COMUSR.f '
+      IF (TRCFLE) WRITE (iunout,*) 'WRITE 13: module EIRMOD_COMUSR.f'
 
 cdr  Write A&M data. The routines WRITE_CMDTA, WRITE_CMAMF are contained
 cdr  in module COMXS
@@ -156,12 +156,12 @@ C
 c...............................................................
 C
       SUBROUTINE EIRENE_RPLAM_LONG(TRCFLE,IFLG,CALLEDFROM)
-cdr  feb 20: commented, and: removed: argument IRET ==  IO
+cdr  feb 20: commented, and: removed argument IRET ==  IO
 cdr
 C  IFLG  :  only for  RPLAM:
 C            = 0   read background data and profiles (COMUSR)
-C                  and read A&M data (COMXS)
-C                  and primary source data (COMSOU)
+C                  read A&M data (COMXS)
+C                  read primary source data (COMSOU)
 C            > 0   same, but do not read primary source data COMSOU
 C            < 0   ...
 cdr iflag=10:  something special, called from
@@ -175,10 +175,11 @@ C                  do not set PLSTLS target,
 C                  but
 C                  set pointers DIINTF,.... for PLASMA_BCKGRND data structure.
 
-cdr  Reading COMXS, step fct. COMSOU and setting pointers DIINTF excludes each other ! WHY?
-cdr  only iflg=10 or iflg/=10 is used. In former case: no reading of COMSOU, COMXS,
+cdr  unclear coding:
+cdr  Reading COMXS, CSTEP, COMSOU and setting pointers DIINTF excludes each other ! WHY?
+cdr  In former versions: not reading of COMSOU, COMXS,
 cdr                                    although we are in ..._long.f
-cdr  also strange: intlopts(2):  what is special about that? livtali instead?
+cdr  Also strange: INTLOPTS(2):  what is special about that? use livtali instead?
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -205,9 +206,9 @@ cdr, jan 2019
       LOGICAL EX
 
       IF (.NOT.ALLOCATED(PTL))
-     .  ALLOCATE(PTL(size(PLSTLS,1),size(PLSTLS,2)))
+     . ALLOCATE(PTL(size(PLSTLS,1),size(PLSTLS,2)))
       if (13+ifoff.ge.100) then
-      WRITE(FILENUMBER,'(I3)') 13+ifoff
+        WRITE(FILENUMBER,'(I3)') 13+ifoff
       else
         WRITE(FILENUMBER,'(I2)') 13+ifoff
       end if
@@ -228,7 +229,7 @@ cdr, jan 2019
       IF (IO /= 0) THEN
         GOTO 990
       END IF
-      IF (TRCFLE) WRITE (iunout,*) 'READ 13: LIVTALI '
+      IF (TRCFLE) WRITE (iunout,*) 'READ 13: LIVTALI'
 c   verify: same active tallies as in previous write?
       DO I=1, NTALI
         IF ((LIVTALI(I).AND.LIVT(I)).OR.
@@ -240,7 +241,7 @@ c   verify: same active tallies as in previous write?
       END DO
 
       READ (13+ifoff,IOSTAT=IO) NFRS, NAD
-      IF (TRCFLE) WRITE (iunout,*) 'READ 13: NFRSTP, NADDP '
+      IF (TRCFLE) WRITE (iunout,*) 'READ 13: NFRSTP, NADDP'
       IF (IO /= 0) GOTO 990
       IF (ANY(NFRSTP(1:NTALI) /= NFRS(1:NTALI))) GOTO 992
       IF (ANY(NADDP(1:NTALI) /= NAD(1:NTALI))) GOTO 993
@@ -249,7 +250,7 @@ cdr next: read background input "plasma" tallies PLSTLS
       IF (.NOT.ALLOCATED(PTL))
      . ALLOCATE(PTL(size(PLSTLS,1),size(PLSTLS,2)))
       READ (13+ifoff,IOSTAT=IO) PTL
-      IF (TRCFLE) WRITE (iunout,*) 'READ 13: input tallies PLSTLS '
+      IF (TRCFLE) WRITE (iunout,*) 'READ 13: input tallies PLSTLS'
       IF (IO /= 0) THEN
         DEALLOCATE (PTL)
         GOTO 990
@@ -261,13 +262,13 @@ cdr set pointers (only for tallies of nlshrt13 but in rplm_long?)
 cdr to be checked. intlopts should not be used after input.
 cdr only livtali and lsmopro.
 cdr further: intlopts(2)< 0 is prohibited anyway?
-        IF (INTLOPTS(2) >= 0) 
-     .    TIINTF(1:NPLSTI,1:NRAD) = PTL(NADDP(2)+1:NADDP(3),1:NRAD)       
+        IF (INTLOPTS(2) >= 0)
+     .  TIINTF(1:NPLSTI,1:NRAD) = PTL(NADDP(2)+1:NADDP(3),1:NRAD)
 cdr     DEINTF...
-        DIINTF(1:NPLS,1:NRAD) = PTL(NADDP(4)+1:NADDP(5),1:NRAD)
-        VXINTF(1:NPLSV,1:NRAD) = PTL(NADDP(5)+1:NADDP(6),1:NRAD)
-        VYINTF(1:NPLSV,1:NRAD) = PTL(NADDP(6)+1:NADDP(7),1:NRAD)
-        VZINTF(1:NPLSV,1:NRAD) = PTL(NADDP(7)+1:NADDP(8),1:NRAD)
+        DIINTF(1:NPLS,1:NRAD)   = PTL(NADDP(4)+1:NADDP(5),1:NRAD)
+        VXINTF(1:NPLSV,1:NRAD)  = PTL(NADDP(5)+1:NADDP(6),1:NRAD)
+        VYINTF(1:NPLSV,1:NRAD)  = PTL(NADDP(6)+1:NADDP(7),1:NRAD)
+        VZINTF(1:NPLSV,1:NRAD)  = PTL(NADDP(7)+1:NADDP(8),1:NRAD)
         DEALLOCATE (PTL)
         RETURN
         if (trcfle) then
@@ -276,8 +277,8 @@ cdr     DEINTF...
           write (iunout,*) 'Rest of comusr, as well as comxs, comsou:'
           write (iunout,*) 'is not read.'
         endif
-        RETURN  ! this seems to be acting a bit like rplam_shrt. No A&M data,
-cdr               and no primary source data are read.
+        RETURN  ! this seems to be acting a bit like rplam_shrt.
+cdr               No A&M data, and no primary source data are read.
 cdr               But we are in rplam_long
 cdr               So this is for field particles 1:npls, not only for npls_fix+1:npls
       ELSE
@@ -307,7 +308,7 @@ C  MUSR, INTEGER
      I           NPRT,ISPEZ,ISPEZI,MPLSTI,MPLSV,
 C  LUSR, LOGICAL
      L           LGVAC,LSMOPRO
-      IF (TRCFLE) WRITE (iunout,*) 'READ 13: module EIRMOD_COMUSR.f '
+      IF (TRCFLE) WRITE (iunout,*) 'READ 13: module EIRMOD_COMUSR.f'
       IF (IO /= 0) GOTO 990
 
 cdr  Read A&M data. The routines READ_CMDTA, READ_CMAMF are contained
@@ -335,7 +336,7 @@ c  read primary source parameters as well, step functions, etc.
      .             FESTEP,FISTEP,SHSTEP,VPSTEP,MCSTEP,
      .             IRSTEP,IPSTEP,ITSTEP,IASTEP,IBSTEP,IGSTEP,
      .             ISTUF,NSMAX,NSPSTI,NSPSTE
-        IF (TRCFLE) WRITE (iunout,*) 'READ 13: module EIRMOD_CSTEP.f '
+        IF (TRCFLE) WRITE (iunout,*) 'READ 13: module EIRMOD_CSTEP.f'
         IF (IO /= 0) GOTO 990
       ELSE
         IF (TRCFLE)
@@ -345,7 +346,7 @@ c  read primary source parameters as well, step functions, etc.
       CLOSE (UNIT=13+ifoff)
       RETURN
 
- 990  CONTINUE
+  990 CONTINUE
       WRITE (IUNOUT,*) ' RPLAM_LONG: cannot read FILE '//FORT//'13'
       CALL EIRENE_LEER(1)
 c     CALL EIRENE_EXIT_OWN(1)
@@ -355,19 +356,19 @@ c                for an initial iteration step.
       CLOSE (UNIT=13+ifoff)
       return
 
- 991  CONTINUE
+  991 CONTINUE
       WRITE (IUNOUT,*) ' AVAILABLE INPUT TALLIES ARE DIFFERENT FROM',
-     .                 ' PRIOR JOB WHICH WROTE '//FORT//'13 '
+     .                 ' PRIOR JOB WHICH WROTE '//FORT//'13'
       CALL EIRENE_EXIT_OWN(1)
- 992  CONTINUE
+  992 CONTINUE
       WRITE (IUNOUT,*) ' LEADING DIMENSIONS OF INPUT TALLIES ARE',
      .                 ' DIFFERENT FROM',
-     .                 ' PRIOR JOB WHICH WROTE '//FORT//'13 '
+     .                 ' PRIOR JOB WHICH WROTE '//FORT//'13'
       CALL EIRENE_EXIT_OWN(1)
- 993  CONTINUE
-      WRITE (IUNOUT,*) ' STARTING POSITIONS OF INPUT TALLIES ',
+  993 CONTINUE
+      WRITE (IUNOUT,*) ' STARTING POSITIONS OF INPUT TALLIES',
      .                 ' IN ARRAY PLSTLS ARE DIFFERENT FROM',
-     .                 ' PRIOR JOB WHICH WROTE '//FORT//'13 '
+     .                 ' PRIOR JOB WHICH WROTE '//FORT//'13'
       CALL EIRENE_EXIT_OWN(1)
 
       END SUBROUTINE EIRENE_RPLAM_LONG

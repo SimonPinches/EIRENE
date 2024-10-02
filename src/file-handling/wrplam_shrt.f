@@ -15,14 +15,17 @@ cdr  jan 18: comments
 cdr  2019,2020, more comments
 cdr  feb 2020: revived within ISFN activities: retain selected A&M rates
 cdr            involving the NPLS_FIX+1:NPLS virtual field species, lgvac, etc...
-
+cdr  2021    : read/write temporary arrays TIAR. DIAR. etc.,
+cdr            for a reduced range of species
+cdr  tbd.:  deallocate these temp. arrays somewhere?
+cdr  Aug. 2022: sync format for printout (4a) --> (1x,4a)
 c
 C
       SUBROUTINE EIRENE_WRPLAM_SHRT(TRCFLE,CALLEDFROM)
 
 cdr Only the input tallies of the last (virtual) plasma species: npls_fix+1,...nplsi
-cdr are written/read using I/O stream fort.13. 
-cdr The other ones 1,...,npls_fix are directly transferred 
+cdr are written/read using I/O stream fort.13.
+cdr The other ones 1,...,npls_fix are directly transferred
 cdr from external plasma code/ external data set, or re-computed
 
 cdr Only cross-sections, collision rates, other parameters,
@@ -30,17 +33,6 @@ cdr involving some virt. species need to be retained.
 
 c  Here: NLSRT13=true : wrplam_short and rplam_short are called from WRPLAM, RPLAM, resp.
 c
-
-cdr this is the SHORT version of WRPLAM.F
-cdr It writes and reads (RPLAM_SHRT) background data onto/from fort.13
-cdr Distinct from WRPLAM_long here only the background tallies are written/read,
-cdr (tallies T, n, V for ipls=1,nplsi), but not the atomic data,
-cdr nor the primary source sampling information.
-cdr for BGK type nonlinear iterations, with velocity-independent rates,
-cdr this may be sufficient.
-cdr Better: add here also the rates and other atomic data needed to streamline
-cdr         nonlinear iterations.
-
 
 
       USE EIRMOD_PRECISION, ONLY: DP
@@ -64,7 +56,7 @@ cdr  Should only be written in modbgk, modphot, tmstep, etc.. routines
       INTEGER :: IREA, ISWR, IREI, IRCX, IRPI, IREL, IFL, IPLS, ND, IO
       INTEGER :: I
       REAL(DP), ALLOCATABLE, SAVE :: TIAR(:,:), DIAR(:,:),
-     R                         VXAR(:,:), VYAR(:,:), VZAR(:,:)
+     R                               VXAR(:,:), VYAR(:,:), VZAR(:,:)
 
       write (iunout,*) 'WRPLAM_SHRT called from ',calledfrom
 
@@ -134,7 +126,7 @@ cdr do these things ever get deallocated again?
         ENDIF
       END IF
 
-cdr  next: write atomic/molecular data set in MODUSR, for collision processes
+cdr  Next: write atomic/molecular data set in MODUSR, for collision processes
 cdr        involving the npls_fix+1:npls virtual background species
 cdr        and their possible dependencies on parameters distinct from PLSTLS.
 cdr        There are NFLA_VIRT such data arrays.
@@ -261,7 +253,7 @@ C .......................................................................
 C ........................................................................
 
       if (13+ifoff.ge.100) then
-      WRITE(FILENUMBER,'(I3)') 13+ifoff
+        WRITE(FILENUMBER,'(I3)') 13+ifoff
       else
         WRITE(FILENUMBER,'(I2)') 13+ifoff
       end if
@@ -289,11 +281,11 @@ C ........................................................................
 
       REWIND 13+ifoff
 
-      IF(NPLS_FIX.LT.NPLSI) THEN
+      IF (NPLS_FIX.LT.NPLSI) THEN
 cdr  only read plasma background data for species, which are not already
 cdr  transferred via common BRAEIR, i.e. only: npls_fix+1,....nplsi
 cdr  I.e. the virtual background species for nonlinear iterations
-cdr  have to come last in the list of all background species.  
+cdr  have to come last in the list of all background species.
         REWIND 13+ifoff
         READ (13+ifoff,IOSTAT=IO)
      R       TIIN(NPLS_FIX+1:NPLSI,1:NRAD),
@@ -367,7 +359,7 @@ cdr  next: read the NFLA_VIRT collisional process data related to these virtual 
       END IF
 
       IF (ALLOCATED(LG_STORE) .AND. SIZE(LG_STORE,2) < NFLA_VIRT) THEN
-        DEALLOCATE(LG_STORE)
+        DEALLOCATE (LG_STORE)
       END IF
 
       IF (.NOT.ALLOCATED(TAB_STORE)) THEN
@@ -401,6 +393,10 @@ c  data for virt. species ipls
           read (13+ifoff) lg_store(1:nrad,ifl)
         endif
       END DO
+
+cdr tab_store and e_store will be transfered to proper
+cdr tab... and eel..., epl... arrays in calling routine,
+cdr after the last call to SETAMD
 
       do irea = 1, nrea_virt
         iswr=nfla_iswr(irea)

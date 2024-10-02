@@ -1,24 +1,34 @@
       MODULE EIRMOD_UPDLIN
+cdr  2020: comments, explanation added
 
+cdr  Score linear algebraic expressions of eirene volumetric tallies.
+cdr  Update the score after each completed history.
+cdr  Currently: scored on COPV. A more logical tally would be ALGV,
+cdr             as this routine provides an "algebraic expression of tallies".
 
-cdr  Nov. 2015
-
-cdr  internal energy: make also ipls species-dependent
-cdr  check for storage (copy) and return, if not enough storage
-cdr  updlin should be made a default eirene option
-cdr  for linear combination of tallies
+cdr             Distinct from post processing routine ALGEBRA  this present routine
+cdr             it is limited to linear algebraic expressions.
+cdr             But for such the default variances (standard deviations) options
+cdr             are available, distinct from the general algebraic ALGV tallies.
+cdr             To achieve this, when UPDLIN is called after trajectory no. IHIST,
+cdr             COPV contains the cumulated (summed) scores from trajectories 1 to IHIST.
+cdr             Subr. STATIS can then infer the score per single trajectory IHIST,
+cdr             and provide the squared score per history needed for updating the variance
+cdr
+cdr
+cdr  Called after each completed trajectory.
       USE EIRMOD_PRECISION
       IMPLICIT NONE
       PRIVATE
 
-      PUBLIC :: EIRENE_UPDLIN, EIRENE_RESET_UPDLIN, 
+      PUBLIC :: EIRENE_UPDLIN, EIRENE_RESET_UPDLIN,
      .          EIRENE_PREPARE_UPDLIN
 
       INTEGER, SAVE :: IFIRST=0
 
-      REAL(DP), ALLOCATABLE, SAVE :: UAH(:,:),EKIN(:,:)
-     
-cym UAH/EKIN should be shared - large memory usage     
+      REAL(DP), ALLOCATABLE, SAVE :: UAH(:,:), EKIN(:,:)
+
+cym UAH/EKIN should be shared - large memory usage
 cymtest !$OMP THREADPRIVATE(IFIRST,UAH,EKIN)
 
       CONTAINS
@@ -33,7 +43,7 @@ cdr  for linear combination of tallies (with their stat. variances)
       SUBROUTINE EIRENE_PREPARE_UPDLIN
 
 cpb  prepare array UAL and EKIN for use by EIRENE_UPDLIN
-cpb  this needs to be done before the first thread enters EIRENE_UPDLIN 
+cpb  this needs to be done before the first thread enters EIRENE_UPDLIN
 cpb  for scoring on COPV
 
       USE EIRMOD_PARMMOD
@@ -80,11 +90,11 @@ cdr  ird is coarse grid for scoring
 !                        distinct from aposteriori evaluation of linear combinations
 
 !  current version:
-!    1)   total particle source             (sni=papl+pmpl+pipl      , ICP+1  ,ICP2)
-!    2)   total parallel momentum source    (smo=mapl+mmpl+mipl      , ICP2+1 ,ICP3)
-!    3) total ion energy source        (sei_tot=eapl+empl+eipl  , ICP3+1 ,ICP4)
-!    4) internal ion energy source     (sei_int=sei-u*smo+ek*sni, ICP4+1 ,ICP5)
-!    5) total electr. energy source    (see=eael+emel+eiel      , ICP5+1)
+!    1) total particle source          (sni=papl+pmpl+pipl       , ICP+1  ,ICP2)
+!    2) total parallel momentum source (smo=mapl+mmpl+mipl       , ICP2+1 ,ICP3)
+!    3) total ion energy source        (sei_tot=eapl+empl+eipl   , ICP3+1 ,ICP4)
+!    4) internal ion energy source     (sei_int=sei-u*smo+ek*sni , ICP4+1 ,ICP5)
+!    5) total electr. energy source    (see=eael+emel+eiel       , ICP5+1)
 
       USE EIRMOD_PARMMOD
       USE EIRMOD_CESTIM
@@ -103,11 +113,15 @@ cdr  ird is coarse grid for scoring
       INTEGER :: ICP, ICP2, ICP3, ICP4, ICP5,
      .           ICO, IR, IPL, NMTSP, IRD
 
-      ICP = NPLSI     ! ...+1:  summed ipls part. source, a+m+i+ph
-      ICP2 = 2*NPLSI  ! ...+1:  summed ipls parallel mom. source, a+m+i+ph
-      ICP3 = 3*NPLSI  ! ...+1:  summed ipls ion energy source, total, a+m+i+ph
-      ICP4 = 4*NPLSI  ! ...+1:  summed ipls ion energy source, internal, a+m+i+ph
-      ICP5 = 5*NPLSI  ! ...+1:  summed electr. energy sources, a+m+i+ph
+      ICP = NPLSI     ! ...+1: summed ipls part. source, a+m+i+ph
+      ICP2 = 2*NPLSI  ! ...+1: summed ipls parallel mom.
+                      !                          source, a+m+i+ph
+      ICP3 = 3*NPLSI  ! ...+1: summed ipls ion energy
+                      !                   source, total, a+m+i+ph
+      ICP4 = 4*NPLSI  ! ...+1: summed ipls ion energy
+                      !                source, internal, a+m+i+ph
+      ICP5 = 5*NPLSI  ! ...+1: summed electr. energy
+                      !                         sources, a+m+i+ph
       NMTSP=NPHOTI+NATMI+NMOLI+NIONI+NPLSI+NADVI+NALVI+NCLVI
 
       IF (NCPVI < ICP5+1) THEN
@@ -212,9 +226,9 @@ CDR  the present trajectory has visited NCLMT (coarse) scoring cells
 !$OMP CRITICAL
             COPV(ICP4+IPL,IR) = 0._DP
             COPV(ICP4+IPL,IR) = COPV(ICP4+IPL,IR)
-     .          - UAH(IPL,IR) * COPV(ICP2+IPL,IR)*              ! UA*SMO
+     .          - UAH(IPL,IR) * COPV(ICP2+IPL,IR)*      ! UA*SMO
      .           cveli2/amua*2._DP * SIGN(1._DP,UAH(IPL,IR))
-     .          + EKIN(IPL,IR) * COPV(ICP+IPL,IR)               ! EKIN*SNI
+     .          + EKIN(IPL,IR) * COPV(ICP+IPL,IR)       ! EKIN*SNI
 !$OMP END CRITICAL
             IF (LEAPL.OR.LEMPL.OR.LEIPL) LMETSP(NMTSP+ICP4+IPL)=.TRUE.
           END DO

@@ -62,8 +62,6 @@ c  This single seed should produce identically the same as IJ, KL from above.
       IJKL = 54217137
       call h1rnin(ijkl)
 
-
-
 cdr  Skip 20000 random numbers
 c     do IRAN=1,20000
 c       ran=H1RN()

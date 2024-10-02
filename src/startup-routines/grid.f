@@ -22,8 +22,8 @@ cdr           for some other is routine sneigh.f (geometry module)
       SUBROUTINE EIRENE_GRID (IND)
 
 C  SET STANDARD GRIDS AND RELATED DATA
-C    INPUT:   IND
-C    OUTPUT:  IN MODULES
+C    INPUT:  IND
+C    OUTPUT: IN MODULES
 C    IND=1:  1ST GRID, X OR RADIAL COORDINATE, AS WELL AS TRIANGULAR (LEVGEO=4) AND TETRAHEDRON (LEVGEO=5) GRIDS.
 C    IND=2:  2ND GRID, Y OR POLOIDAL COORDINATE
 C    IND=3:  3RD GRID, Z OR TOROIDAL COORDINATE
@@ -106,7 +106,7 @@ C  NOTHING TO BE DONE HERE
 C
         IF (TRCGRD) THEN
           CALL EIRENE_LEER(1)
-          WRITE (iunout,*) 'GRIDPOINTS IN X DIRECTION '
+          WRITE (iunout,*) 'GRID POINTS IN X DIRECTION'
           CALL EIRENE_LEER(1)
           CALL EIRENE_MASRR1('  N, RSURF ',RSURF,NR1ST,3)
           CALL EIRENE_LEER(2)
@@ -417,7 +417,7 @@ C
 cdr  ncorner: number of cell vertices in case levgeo=4, for FEM interpolation
         NCORNER = NKNOT
 
-!pb initialize list of triangles per gridpoint
+!pb initialize list of triangles per grid point
         ALLOCATE (COORTRI(NKNOT))
         DO I=1,NKNOT
           NULLIFY(COORTRI(I)%PTRI)
@@ -498,9 +498,9 @@ C
           CALL EIRENE_EXIT_OWN(1)
         END IF
 
-C  INDEX J:            EIRENE SURFACE  (NON-DEFAULT, OR ADDITIONAL)
-C  INDEX IT, OR ITRI:  TRIANGLE
-C  INDEX IS:           TRIANGLE SIDE
+C  INDEX J:           EIRENE SURFACE (NON-DEFAULT, OR ADDITIONAL)
+C  INDEX IT, OR ITRI: TRIANGLE
+C  INDEX IS:          TRIANGLE SIDE
 
         DO J = 1, NLIMPS
           NSRFTR = COUNT(INMTI(1:3,1:NTRII) .EQ. J)
@@ -522,7 +522,7 @@ C  INDEX IS:           TRIANGLE SIDE
 c  transparent surfaces, that switch into additional cells, are legal.
 c  all other transparent cell faces must either have a neighbor, or a surface boundary condition.
                 WRITE (iunout,*) 'SIDE',IS,' OF TRIANGLE ',IT,
-     .              ' IS TRANSPARENT BUT HAS NO NEIGHBOR '
+     .              ' IS TRANSPARENT BUT HAS NO NEIGHBOR'
                 LERROR = .TRUE.
                 END IF
               END IF
@@ -538,7 +538,7 @@ c  all other transparent cell faces must either have a neighbor, or a surface bo
 
         IF (LERROR) THEN
           WRITE (iunout,*) ' CALCULATION STOPPED DUE TO ERRORS',
-     .                     ' LISTED ABOVE '
+     .                     ' LISTED ABOVE'
           CALL EIRENE_EXIT_OWN(1)
         END IF
 
@@ -573,7 +573,7 @@ c  all other transparent cell faces must either have a neighbor, or a surface bo
             IF ((DP1/SURF_TRIAN(J)%BGLT(NT+1) > 1.D-2)
      .          .OR. (IM*IMP == 0)) THEN
                WRITE (IUNOUT,*) ' PROBLEM FINDING STARTING POINT',
-     .                          ' FOR SORTING OF TRIANGLES '
+     .                          ' FOR SORTING OF TRIANGLES'
                WRITE (IUNOUT,*)
      .            ' SORTING ABANDONED FOR SURFACE NUMBER ',I
                CYCLE
@@ -611,7 +611,7 @@ c  all other transparent cell faces must either have a neighbor, or a surface bo
                 END IF
               END DO
               IF (K > NT) THEN
-                WRITE (IUNOUT,*) ' NO MATCHING TRIANGLE FOUND '
+                WRITE (IUNOUT,*) ' NO MATCHING TRIANGLE FOUND'
               ELSE
                 IF (I /= K) THEN
                    IT = SURF_TRIAN(J)%ITRIAS(I)
@@ -633,7 +633,7 @@ c  all other transparent cell faces must either have a neighbor, or a surface bo
 C
         IF (TRCGRD) THEN
           WRITE (iunout,*) ' NUMBER OF TRIANGLES = ',NTRII
-          WRITE (iunout,*) ' I,(XTRIAN(J),YTRIAN(J),J=1,3) '
+          WRITE (iunout,*) ' I,(XTRIAN(J),YTRIAN(J),J=1,3)'
           CALL EIRENE_LEER(1)
           DO 163 I=1,NTRII
             WRITE (iunout,'(1X,I4,1X,1P,6E12.4)')
@@ -651,7 +651,7 @@ C
             ENDIF
             WRITE (IUNOUT,*)
             WRITE (IUNOUT,*) ' SURFACE NO. ',JLIM
-            WRITE (IUNOUT,'(5A6,A12)') 'J','ITRI','ISIDE',
+            WRITE (IUNOUT,'(5A6,A12)') 'I','ITRI','ISIDE',
      .                                 'IP1','IP2','BLGT'
             DO I=1, SURF_TRIAN(J)%NUMTR
               IT = SURF_TRIAN(J)%ITRIAS(I)
@@ -778,8 +778,8 @@ C  SIDE 3-1-4
           DO IS=1,4
             IF ((NTBAR(IS,ITET) == 0) .AND. (INMTIT(IS,ITET) == 0)) THEN
               IC=IC+1
-              WRITE (iunout,*) ' TETRAHEDRON WITH NO NEIGHBORS AND NO ',
-     .                    'REFLECTION MODEL FOUND'
+              WRITE (iunout,*) ' TETRAHEDRON WITH NO NEIGHBORS AND NO',
+     .                         ' REFLECTION MODEL FOUND'
               WRITE (iunout,*) ' ITET = ',ITET,' ISIDE = ',IS
               write (iunout,*) nteck(itside(1,is),itet),
      .                    nteck(itside(2,is),itet),
@@ -813,13 +813,13 @@ c  all other transparent cell faces must either have a neighbor, or a surface bo
 
         IF ((IC > 0) .OR. LERROR) THEN
           WRITE (iunout,*) ' CALCULATION STOPPED DUE TO ERRORS',
-     .                     ' LISTED ABOVE '
+     .                     ' LISTED ABOVE'
           CALL EIRENE_EXIT_OWN(1)
         END IF
 C
         IF (TRCGRD) THEN
           WRITE (iunout,*) ' NUMBER OF COORDINATES = ',NCOOR
-          WRITE (iunout,*) ' I,(XETRA(J),YTETRA(J),ZTETRA(J),J=1,3) '
+          WRITE (iunout,*) ' I,(XETRA(J),YTETRA(J),ZTETRA(J),J=1,3)'
           DO I=1,NCOOR
             WRITE (iunout,'(1X,I4,1X,6ES12.4)')
      .             I,XTETRA(I),YTETRA(I),ZTETRA(I)
@@ -844,7 +844,7 @@ C
      .              ' NEIGHBOR ',NTBAR(J,ITET),
      .              ' SIDE ',NTSEITE(J,ITET)
             END DO
-            WRITE (iunout,*) 'OUTER NORMALS '
+            WRITE (iunout,*) 'OUTER NORMALS'
             DO J=1,4
               WRITE (iunout,'(7X,3ES12.4)')
      .              PTETX(J,ITET),PTETY(J,ITET),PTETZ(J,ITET)
@@ -862,7 +862,7 @@ C  CHECK OUTER NORMALS
                IF (ANY(PC1 > 1.E-6)) THEN
                 WRITE(iunout,*) ' PROBLEM WITH TETRAHEDRON ',ITET,
      .                          ' SIDE ',J
-                WRITE(iunout,*) ' NORMALS DO NOT MATCH '
+                WRITE(iunout,*) ' NORMALS DO NOT MATCH'
                 WRITE(iunout,*) PTETX(J,ITET),PTETY(J,ITET),
      .                          PTETZ(J,ITET)
                 WRITE(iunout,*) PTETX(NTSEITE(J,ITET),NTBAR(J,ITET)),
@@ -989,8 +989,8 @@ C
         RORIG=0.
 C
       ELSE
-        WRITE (iunout,*) ' ERROR IN INPUT DATA! '
-        WRITE (iunout,*) ' NLTRA OR NLTRZ OR NLTRT MUST BE .TRUE. '
+        WRITE (iunout,*) ' ERROR IN INPUT DATA!'
+        WRITE (iunout,*) ' NLTRA OR NLTRZ OR NLTRT MUST BE .TRUE.'
         CALL EIRENE_EXIT_OWN(1)
       ENDIF
 C
@@ -1175,7 +1175,7 @@ C
 C
         IF (TRCGRD) THEN
           CALL EIRENE_LEER(1)
-          WRITE (iunout,*) 'GRID POINTS IN Y DIRECTION '
+          WRITE (iunout,*) 'GRID POINTS IN Y DIRECTION'
           CALL EIRENE_LEER(1)
           CALL EIRENE_MASRR1('  N, PSURF ',PSURF,NP2ND,3)
           CALL EIRENE_LEER(2)
@@ -1210,7 +1210,7 @@ C
 C
         IF (TRCGRD) THEN
           CALL EIRENE_LEER(1)
-          WRITE (iunout,*) 'GRIDPOINTS IN POLOIDAL DIRECTION '
+          WRITE (iunout,*) 'GRID POINTS IN POLOIDAL DIRECTION'
           CALL EIRENE_LEER(1)
           CALL EIRENE_MASRR1('  N, PSURF ',PSURF,NP2ND,3)
           CALL EIRENE_LEER(2)

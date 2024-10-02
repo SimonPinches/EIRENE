@@ -1,9 +1,9 @@
-CDR  OCT.14 ADDED:  READ ESBPARM (PROJECTILE SURFACE BINDING ENERGY) FROM TRIM FILES.
-c                   CURRENTLY NOT IN USE.
-C                   CURRENTLY ALSO NOT YET READ (TO BE DONE):
-c                             FIND END OF LINE AND READ DATA ONLY IF AVAILABLE.
-cdr  Jan 17      :  started: read INR (resolution on data file), rather than fixed INR=5
-c                   tbd:     read DUMMY=INR from 1st of the 84 files.
+CDR  OCT.14 ADDED: READ ESBPARM (PROJECTILE SURFACE BINDING ENERGY) FROM TRIM FILES.
+c                  CURRENTLY NOT IN USE.
+C                  CURRENTLY ALSO NOT YET READ (TO BE DONE):
+c                            FIND END OF LINE AND READ DATA ONLY IF AVAILABLE.
+cdr  Jan 17      : started: read INR (resolution on data file), rather than fixed INR=5
+c                  tbd:     read DUMMY=INR from 1st of the 84 files.
 C
 C                         DEFAULT              : DUMMY=5
 C                         SOME FILES READY WITH: DUMMY=10
@@ -37,7 +37,8 @@ C
       IFLR=NHD6
       INE=12
       INW=7
-      INR=5  !  this value should now come from data file itself, variable :dummy.
+      INR=5  !  this value should now come from data file itself,
+             !  variable :dummy.
 C
       IF (INE*INW*IFLR.GT.NH0 .OR.
      .    INE*INW*INR*IFLR.GT.NH1  .OR.

@@ -2,7 +2,7 @@ C  27.6.05  irds --> irei
 c 24.11.05 use nprt(ispz) to check if iion is a molecular ion
 c          otherwise he+ atomic ions could be confused with d2+ molecular
 c          ions and then get assigned the wrong default collision model
-c 24.11.05 chrdf0 in parameterlist for call to xstcx
+c 24.11.05 chrdf0 in parameter list for call to xstcx
 c          (was ok already for call to xstei)
 ! 30.08.06: data structure for reaction data redefined
 ! 12.10.06: modcol revised
@@ -17,9 +17,9 @@ c          (was ok already for call to xstei)
 ! 23.02.14: call to xstpi: additional arguments: III, pls (for H.4 option)
 cdr  oct.14:  pls made allocatable
 cdr  oct.14:  eelei1 set in storage save mode, for default models (was missing)
-cdr  oct.14:  further synchronization with xsectm,xsecta,
+cdr  oct.14:  further synchronization with xsectm, xsecta,
 cdr           remaining relevant differences in default models only.
-cdr  aug.15:  ibgk_sp:  no of bgk species. to be distinguished from ibgk: no of bgk reaction.
+cdr  aug.15:  ibgk_sp: no of bgk species. to be distinguished from ibgk: no of bgk reaction.
 cdr  apr.16:  accmas and accinv set explicitly also for reaction -9
 cdr           (was missing, but accidentally correct)
 
@@ -29,9 +29,9 @@ cdr           (was missing, but accidentally correct)
 !pb  MAY  16:  tabds1 -> tabds1
 !pb  JUL  16:  ehvds1 -> ehvds1
 cdr  sept 16:  nidsi  -> nieii
-cdr  aug.18:   process kk=-9, default KER changed from 0.5 to 0.8  (=0.4 per particle)
+cdr  aug.18:   process kk=-9, default KER changed from 0.5 to 0.8 (=0.4 per particle)
 cdr            to better sync with HYDHEL original data.
-cdr  sept 18:  rationalization for nhvrei flags for default reaction:  same as -KK
+cdr  sept 18:  rationalization for nhvrei flags for default reaction: same as -KK
 C
       SUBROUTINE EIRENE_XSECTI
 C
@@ -62,8 +62,8 @@ C
      .           IIEL, IIEI, IREI, IESTM, IFRST, ISCND, ISCDE, IPL,
      .           IICX, IRCX, ITHRD, IFRTH, IRPI, IIPI
       INTEGER, EXTERNAL :: EIRENE_IDEZ
-      ALLOCATE (PLS(NSTORDR))
 
+      ALLOCATE (PLS(NSTORDR))
 cdr  PLS: ELECTRON DENSITY PARAMETER in CR MODELS
 cdr      (NOT TO BE CONFUSED WITH THE DENSITY FACTOR BETWEEN RATES AND RATE COEFF.)
 cdr: set hard-wired lower density for H.4, H.10 type fits from AMJUEL: 1e8 cm**-3
@@ -214,7 +214,8 @@ C  T2+:
 C
 C  SET DEFAULT MODEL: 3 ELECTRON IMPACT PROCESSES, LABELED -8, -9 AND -10.
 C
-C  FIRST PROCESS (MAY BE SPLIT INTO 1A AND 1B)  H2+  -->  H + H+ :  DEFAULT PROCESS NO. KK=-8
+C  FIRST PROCESS (MAY BE SPLIT INTO 1A AND 1B) H2+ --> H + H+ :
+C                 DEFAULT PROCESS NO. KK=-8
           KK=-8
           IF (IATM1.NE.IATM2) THEN
             FACTKK=0.5
@@ -283,8 +284,9 @@ C  TRANSFERRED KINETIC ENERGY: 8.6 EV
             GOTO 7000
           ENDIF
 
-C  SECOND PROCESS,  H2+ --> H+ +  H+ + e :  DEFAULT PROCESS NO. KK=-9
+C  SECOND PROCESS, H2+ --> H+ + H+ + e : DEFAULT PROCESS NO. KK=-9
 cdr   KER = 0.8, ETH = -15.5, I.E. KER=0.4 PER PARTICLE
+cdr   EDPOT = ETH - KER, hence: radiation loss = 0
           KK=-9
           ACCMAS=0.D0
           ACCINV=0.D0
@@ -300,11 +302,15 @@ cdr   KER = 0.8, ETH = -15.5, I.E. KER=0.4 PER PARTICLE
           ACCINV=ACCINV+1./RMASSP(IPLS2)
 
           EPLEI(IREI,IPLS1,1)=RMASSP(IPLS1)/ACCMAS
-          EPLEI(IREI,IPLS2,1)=RMASSP(IPLS2)/ACCMAS     ! if ipls1=ipls2: eplei(ipls,1): only 1/2
+          EPLEI(IREI,IPLS2,1)=RMASSP(IPLS2)/ACCMAS     ! if ipls1=ipls2:
+                                           ! eplei(ipls,1): only 1/2
           EPLEI(IREI,IPLS1,2)=1./RMASSP(IPLS1)/ACCINV
-          EPLEI(IREI,IPLS2,2)=1./RMASSP(IPLS2)/ACCINV  ! if ipls1=ipls2: eplei(ipls,2): only 1/2
-          EPLEI(IREI,0,    1)=EPLEI(IREI,IPLS1,1)+EPLEI(IREI,IPLS2,1)  ! if ipls1=ipls2: eplei(0,1): total, correct
-          EPLEI(IREI,0,    2)=EPLEI(IREI,IPLS1,2)+EPLEI(IREI,IPLS2,2)  ! if ipls1=ipls2: eplei(0,2): total, correct
+          EPLEI(IREI,IPLS2,2)=1./RMASSP(IPLS2)/ACCINV  ! if ipls1=ipls2:
+                                           ! eplei(ipls,2): only 1/2
+          ! if ipls1=ipls2: eplei(0,1): total, correct
+          EPLEI(IREI,0,    1)=EPLEI(IREI,IPLS1,1)+EPLEI(IREI,IPLS2,1)
+          ! if ipls1=ipls2: eplei(0,2): total, correct
+          EPLEI(IREI,0,    2)=EPLEI(IREI,IPLS1,2)+EPLEI(IREI,IPLS2,2)
 
           PELEI(IREI)=1.
 
@@ -334,7 +340,7 @@ C  TRANSFERRED KINETIC ENERGY: 0.8  (=0.4 EV PER PARTICLE)
           FACREI(IREI,1) = 1._DP
           FACREI(IREI,2) = 0._DP
 
-C  THIRD PROCESS   H2+   -->   H + H:  DEFAULT PROCESS NO. KK=-10, diss.rec
+C  THIRD PROCESS H2+ --> H + H: DEFAULT PROCESS NO. KK=-10, diss.rec
           KK=-10
           ACCMAS=0.D0
           ACCINV=0.D0
@@ -352,7 +358,8 @@ C  THIRD PROCESS   H2+   -->   H + H:  DEFAULT PROCESS NO. KK=-10, diss.rec
           P2ND(IREI,NSPH+IATM2)=P2ND(IREI,NSPH+IATM2)+1.
 
           EATEI(IREI,IATM1,1)=RMASSA(IATM1)/ACCMAS
-          EATEI(IREI,IATM2,1)=RMASSA(IATM2)/ACCMAS   ! problem is iatm1=iatm2. Then eatds(..iatm,..) is per particle.
+          EATEI(IREI,IATM2,1)=RMASSA(IATM2)/ACCMAS
+! problem is iatm1=iatm2. Then eatds(..iatm,..) is per particle.
           EATEI(IREI,IATM1,2)=1./RMASSA(IATM1)/ACCINV
           EATEI(IREI,IATM2,2)=1./RMASSA(IATM2)/ACCINV
 
@@ -374,7 +381,7 @@ C
               COU = EIRENE_RATE_COEFF(-10,J,TEINL(J),0._DP,.TRUE.,0)
               TABEI1(IREI,J)=COU*DEIN(J)
    72       CONTINUE
-C  NO RADIATION LOSS INCLUDED
+C  RADIATION LOSS = MINUS EPOTEI
 C  FOR THE FACTOR -0.896... SEE: EIRENE MANUAL, INPUT BLOCK 4, EXAMPLES
             DE_10=8.964355004318D-01
             EELEI1(IREI,1:NSBOX)=-DE_10*TEIN(1:NSBOX)
@@ -385,7 +392,9 @@ C  TRANSFERRED KINETIC ENERGY: = INGOING ELECTRON ENERGY
             NHVREI(IREI) = -10
           ELSE ! storage save mode
 cdr
-cdr here: eelds1 und ehvds1 set in felee1 ?  there 0.88 times tein, i.e. not constant.
+cdr here: eelei1 und ehvei1 set in felee1 and
+cdr       there both are 0.896... times TEIN, i.e. not constant.
+cdr hence: the potential energy difference gain EPOTEI is radiated.
 cdr
             NREAEI(IREI) = -10
             NELREI(IREI) = -10
@@ -522,7 +531,7 @@ C
         IF (NRCI(IION).EQ.0) THEN
           NIELI(IION)=0
 C
-C  NON-DEFAULT EL MODEL:  240--
+C  NON-DEFAULT EL MODEL: 240--
 C
         ELSEIF (NRCI(IION).GT.0) THEN
           DO 230 NRC=1,NRCI(IION)
@@ -609,7 +618,7 @@ C
         IF (NRCI(IION).EQ.0) THEN
           NIPII(IION)=0
 C
-C  NON-DEFAULT ION IMPACT MODEL:  130--190
+C  NON-DEFAULT ION IMPACT MODEL: 130--190
 C
         ELSEIF (NRCI(IION).GT.0) THEN
           DO NRC=1,NRCI(IION)

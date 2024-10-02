@@ -11,8 +11,8 @@ cdr 21.09.15:  NPARTT REDUCED FROM 12 TO 11 (XGENER NOT ON CENSUS)
 cdr  Dec. 15:  species-resolved energy tallies for pl (bulk ion) energy balance.
 !pb  May  16:  nrds -> nrei
 cdr  May  17: eliminate NCOP, NCOPI, only use NCPV, NCPVI
-cdr           tbd: similar: eliminate NBGK, NBGKI,  only use  NBGV, NBGVI
-cdr  July 17: remove NTALW  (was same as NTALS), NAIN added to N1MX
+cdr           tbd: similar: eliminate NBGK, NBGKI, only use NBGV, NBGVI
+cdr  July 17: remove NTALW (was same as NTALS), NAIN added to N1MX
 cpb  Dec. 17: remove type SPECT_ARRAY, not needed in Fortran 2003
 cdr   dec.17: add nspztotw, at same place as formerly NTALW was.
 cdr           fully corresponds to vol tally parameter nspztot,
@@ -28,7 +28,7 @@ c
 c
 c handling of storage for dynamically allocated arrays
 c contains:
-c    set_parmmod(ical),  ical=1,2,3
+c    set_parmmod(ical), ical=1,2,3
 c    collect_parm
 c    distrib_parm
 
@@ -40,7 +40,7 @@ c    distrib_parm
 
       PRIVATE
 
-      PUBLIC :: EIRENE_SET_PARMMOD, 
+      PUBLIC :: EIRENE_SET_PARMMOD,
      P          EIRENE_BROADCAST_PARMMOD,
      P          EIRENE_SPECTRUM,
      P          ASSIGNMENT(=)
@@ -60,7 +60,7 @@ C> Indicates whether output files 'output.*' should be appended or overwritten
       LOGICAL, PUBLIC, SAVE :: LOUTAPP = .FALSE.
 C> Indicates whether routine EIRENE_IF3COP is called from with strata loop
       LOGICAL, PUBLIC, SAVE :: LIF3COP_FROM_LOOP = .FALSE.
-c> Indicates whether output of master processor 0 is written to standard output
+C> Indicates whether output of master processor 0 is written to standard output
       LOGICAL, PUBLIC, SAVE :: LPE0_TO_STDOUT = .FALSE.
 C> Indicates whether fixed form input of JSON formatted input is used
       LOGICAL, PUBLIC, SAVE :: LRDJSON = .FALSE.
@@ -109,12 +109,11 @@ C  BLOCK A FEW RESERVED OUTPUT STREAMS.
       INTEGER, PUBLIC, SAVE ::
      I NREAC_LINES
 
- 
       INTEGER, PUBLIC, SAVE ::
      I NGEOM_USR, NCOUP_INPUT, NSMSTRA, NSTORAM, NGSTAL
 
       INTEGER, PUBLIC, SAVE ::
-     I NRAD,   NSWIT,   N1F,    N2F,    N3F,    NGITT,  NGITTP,
+     I NRAD,   NSWIT,    N1F,    N2F,    N3F,    NGITT,  NGITTP,
      I NRADS,  N2NDPLGS, N1STS,  N2NDS,  NTRIS,  NKNOTS, NRTALS
 
       INTEGER, PUBLIC, SAVE ::
@@ -137,9 +136,9 @@ cdr  additional tallies
      I NTALA,  NTALC,  NTALT,
      I NTALM,  NTALB,  NTALR,
      I NTALS,  NTLSA,  NTLSR,
-cdr  size of particle species columns in various arrays 
-     I N0MX,   N1MX,   N2MX,   NSPZ,   NSPZP, 
-     I NSPZMC, NCOLMC, 
+cdr  size of particle species columns in various arrays
+     I N0MX,   N1MX,   N2MX,   NSPZ,   NSPZP,
+     I NSPZMC, NCOLMC,
      I NSPZTOT, NSPZTOTW, NSPZTOTS, NSPZTOTWS
 
       INTEGER, PUBLIC, SAVE ::
@@ -158,9 +157,9 @@ cdr  size of particle species columns in various arrays
 
       INTEGER, PUBLIC, SAVE :: INT_PARM(NUM_PARM)
 
-      ! This value will be automatically replaced with the version number specified in version.txt
-      CHARACTER(12), PUBLIC, SAVE :: EIRENE_VERSION_STRING='1.0.8'
-
+      ! This value will be automatically replaced with
+      ! the version number specified in version.txt
+      CHARACTER(12), PUBLIC, SAVE :: EIRENE_VERSION_STRING='1.0.9'
 
       PRIVATE :: EIRENE_SPEC_TO_SPEC
       TYPE EIRENE_SPECTRUM
@@ -175,20 +174,18 @@ cdr  size of particle species columns in various arrays
         REAL(DP), DIMENSION(:,:), POINTER :: SPCAN
       END TYPE EIRENE_SPECTRUM
 
-
       INTERFACE ASSIGNMENT(=)  ! DEFINE ASSIGNMENT
         MODULE PROCEDURE EIRENE_SPEC_TO_SPEC
       END INTERFACE
-
 
 
       CONTAINS
 
 
       SUBROUTINE EIRENE_SET_PARMMOD(ICAL)
-C  ical=1:  called directly from eirene.f after "find_param.f", before input.f
-C  ical=2:  called from inside "setamd.f",  prepare allocatable storage for comxs, comsou, czt1
-C  ical=3:  called from inside "input.f", prepare allocatable storage for cgeom, comusr
+C  ical=1: called directly from eirene.f after "find_param.f", before input.f
+C  ical=2: called from inside "setamd.f", prepare allocatable storage for comxs, comsou, czt1
+C  ical=3: called from inside "input.f", prepare allocatable storage for cgeom, comusr
 
       INTEGER, INTENT(IN) :: ICAL
       INTEGER :: NMAX
@@ -201,15 +198,15 @@ C.......................................................................
 C
 C  GEOMETRY
 C
-!pb 18.04.2017 take care of multiply grid blocks
+!pb 18.04.2017 take care of multiple grid blocks
         NRAD=MAX(N1ST*N2ND*N3RD*NBMAX,NTRI*N3RD,NTETRA)+NADD+1
         IF (NRTAL==0) NRTAL=NRAD
         IF (NOPTIM < 0) NOPTIM = NRAD
 
 C  NSWIT: ELIMINATE SOME ARRAYS IN CASE OF LEVGEO=10 OPTION
 C                     (GEOMETRY ARRAYS OUTSIDE EIRENE CODE)
-C  ngeom_usr=1:  use eirene grid tallies RSURF, PSURF,...  (default)
-c  ngeom_usr=0:  eirene grid tallies are eliminated, no storage, (e.g. in case of levgeo=10)
+C  ngeom_usr=1: use eirene grid tallies RSURF, PSURF,...  (default)
+c  ngeom_usr=0: eirene grid tallies are eliminated, no storage, (e.g. in case of levgeo=10)
         NSWIT=1-NGEOM_USR
 
 C  IDENTIFY: WHICH GRIDS ARE THERE? N1F=0 OR N1F=1, IF N1ST=1, OR IF N1ST GT 1, RESP.
@@ -236,7 +233,7 @@ C
         NGTSFT=NGSTAL*NGITT
         NLMPGS=NLIM+NSTS+NGTSFT*NSTS
 
-! NBMAX is number of multiplicative grid blocks 
+! NBMAX is number of multiplicative grid blocks
 ! set in find_param
 !        NBMAX=10
 C
@@ -266,30 +263,31 @@ C                                   ARE IDENTICAL FOR SURFACE AVERAGES)
 C                           NTLSR: INDEX OF THE ALGEBRAIC TALLY
 
 C                       NTALI: TOTAL NUMBER OF INPUT TALLIES
-C                           NTALG: NUMBER OF INPUT TALLIES, 
+C                           NTALG: NUMBER OF INPUT TALLIES,
 C                                  EXCLUDING THE OPTIONAL GRADIENT TALLIES
 C                           NTALI=NTALG+(3*NTALG), FOR THREE DERIVATIVES PER TALLY
 C                           NTALN: INDEX OF THE ADDITIONAL INPUT TALLIES
 C                           NTALO: INDEX OF THE CELL VOLUME TALLY
 
-        NIONP=NION+1
-        NATMP=NATM+1
-        NMOLP=NMOL+1
-        NPLSP=NPLS+1
+        NIONP =NION+1
+        NATMP =NATM+1
+        NMOLP =NMOL+1
+        NPLSP =NPLS+1
         NPHOTP=NPHOT+1
-        NADVP=NADV+1
-        NADSP=NADS+1
-        NCLVP=NCLV+1
-        NALVP=NALV+1
-        NALSP=NALS+1
-        NSNVP=NSNV+1
+        NADVP =NADV+1
+        NADSP =NADS+1
+        NCLVP =NCLV+1
+        NALVP =NALV+1
+        NALSP =NALS+1
+        NSNVP =NSNV+1
 
-        NTALG=30        ! number of VOLUME INPUT TALLIES,  WITHOUT COUNTING GRADIENT TALLIES:
+        NTALG=30        ! number of VOLUME INPUT TALLIES,
+c                         WITHOUT COUNTING GRADIENT TALLIES:
 c                         INCREASED IN 2014 FROM 21 TO 22
 c                         INCREASED IN 2018 FROM 22 TO 24
 c                         INCREASED IN 2018 FROM 24 TO 30
         NTALI=NTALG*4   ! total number of VOLUME INPUT TALLIES
-c                         INCLUDE ALL POSSIBLE GRADIENT TALLIES d(TL)/dX, d(TL)/dY,  d(TL)/dZ...
+c                         INCLUDE ALL POSSIBLE GRADIENT TALLIES d(TL)/dX, d(TL)/dY, d(TL)/dZ...
 
 c  additional volume-averaged INPUT tallies at fixed storage locations:
         NTALN=12  ! (ADIN: ADDITIONAL INPUT TALLIES)
@@ -321,33 +319,31 @@ C  MAX SPECIES INDEX IN SURFACE-AVERAGED OUTPUT TALLIES
           N2MX=MAX(N2MX,NMAX*(NMAX+1))
         END IF
 
-        NSPZ=NPHOT+NATM+NMOL+NION+NPLS  ! TOTAL NUMBER OF MC SPECIES PLUS BULK
+        NSPZ=NPHOT+NATM+NMOL+NION+NPLS  ! TOTAL NUMBER OF MC SPECIES
+                                        ! PLUS BULK
         NSPZP=NSPZ+1
         NSPZMC=NPHOT+NATM+NMOL+NION     ! TOTAL NUMBER OF MC SPECIES
-
 
 C  TOTAL NUMBER OF SURFACE-AVERAGED TALLIES
 C  SET IN SETPRM ACCORDING TO THE LIVING TALLIES SPECIFIED IN LIVTALS
         NSFTLP=17*NATMP+17*NMOLP+17*NIONP+17*NPHOTP+7*NPLSP+6+
      P        1*NADSP+1*NALSP+1*NSPZP
 
-        IF (NLSPCSCL) THEN
-          IF (NLSPCSCL_ATM) THEN
-            NSFTLP=NSFTLP-NATMP-NMOLP-NIONP-NPHOTP
-            NSFTLP=NSFTLP+(NATMP+NMOLP+NIONP+NPHOTP)*NATMP
-          END IF
-          IF (NLSPCSCL_MOL) THEN
-            NSFTLP=NSFTLP-NATMP-NMOLP-NIONP-NPHOTP
-            NSFTLP=NSFTLP+(NATMP+NMOLP+NIONP+NPHOTP)*NMOLP
-          END IF
-          IF (NLSPCSCL_ION) THEN
-            NSFTLP=NSFTLP-NATMP-NMOLP-NIONP-NPHOTP
-            NSFTLP=NSFTLP+(NATMP+NMOLP+NIONP+NPHOTP)*NIONP
-          END IF
-          IF (NLSPCSCL_PHOT) THEN
-            NSFTLP=NSFTLP-NATMP-NMOLP-NIONP-NPHOTP
-            NSFTLP=NSFTLP+(NATMP+NMOLP+NIONP+NPHOTP)*NPHOTP
-          END IF
+        IF (NLSPCSCL_ATM) THEN
+          NSFTLP=NSFTLP-NATMP-NMOLP-NIONP-NPHOTP
+          NSFTLP=NSFTLP+(NATMP+NMOLP+NIONP+NPHOTP)*NATMP
+        END IF
+        IF (NLSPCSCL_MOL) THEN
+          NSFTLP=NSFTLP-NATMP-NMOLP-NIONP-NPHOTP
+          NSFTLP=NSFTLP+(NATMP+NMOLP+NIONP+NPHOTP)*NMOLP
+        END IF
+        IF (NLSPCSCL_ION) THEN
+          NSFTLP=NSFTLP-NATMP-NMOLP-NIONP-NPHOTP
+          NSFTLP=NSFTLP+(NATMP+NMOLP+NIONP+NPHOTP)*NIONP
+        END IF
+        IF (NLSPCSCL_PHOT) THEN
+          NSFTLP=NSFTLP-NATMP-NMOLP-NIONP-NPHOTP
+          NSFTLP=NSFTLP+(NATMP+NMOLP+NIONP+NPHOTP)*NPHOTP
         END IF
 
 C  SURFACE REFLECTION DATA
@@ -390,12 +386,15 @@ C  CALLED AFTER INPUT.F
 C.......................................................................
 
 c  set some derived storage parameters
+cdr  NBGV tallies for 5 collisional invariants per BGK reaction,
+cdr  needed in case of velocity dependent BGK collision rates
+
         NBGV=NBGK*3
         NCPVP=NCPV+1
         NBGVP=NBGV+1
         NCOLMC=NPLS+NREI+NREC
 
-C  N1MX: storage parameter for species text for input and output tallies, 
+C  N1MX: storage parameter for species text for input and output tallies,
 C        and for SCLTAL in mcarlo.f
 
 !pb12Oct2022
@@ -408,19 +407,23 @@ C        and for SCLTAL in mcarlo.f
         N1MX=MAX(NPHOT,NATM,NMOL,NION,NPLS,NADV,NALV,NCLV,NCPV,NBGV,
      .           NSNV,NAIN,NSPZ)
 cdr  same MEANING as n1mx?.  Check: why not n1mx=max(....)
-        
+
         IF (NLSPCSCL) THEN
           NMAX=MAX(NATM,NMOL,NION,NPHOT)
           N1MX=MAX(N1MX,NMAX*(NMAX+1))
         END IF
+        IF (NLSPCSCL_ATM) N1MX=MAX(N1MX,NPLS*(NATM+1))
+        IF (NLSPCSCL_MOL) N1MX=MAX(N1MX,NPLS*(NMOL+1))
+        IF (NLSPCSCL_ION) N1MX=MAX(N1MX,NPLS*(NION+1))
+        IF (NLSPCSCL_PHOT) N1MX=MAX(N1MX,NPLS*(NPHOT+1))
 
-C  NSPZTOT: storage parameter for LMETSP(NSPZTOT) array, 
+C  NSPZTOT: storage parameter for LMETSP(NSPZTOT) array,
 C           for standard deviation estimators
         NSPZTOTS = NSPZ+NADV+NALV+NCLV+NCPV+NBGV+NSNV
         NSPZTOT = NSPZTOTS + (NATM+NMOL+NION+NPHOT+NPLS)*
      p                       (NATMP+NMOLP+NION+NPHOTP)
 
-C  NSPZTOTW: storage parameter for LMETSPW(NSPZTOTW) array, 
+C  NSPZTOTW: storage parameter for LMETSPW(NSPZTOTW) array,
 C            for standard deviation estimators
         NSPZTOTWS = NSPZ+NADS+NALS
         NSPZTOTW = NSPZTOTWS + (NATM+NMOL+NION+NPHOT)*
@@ -429,33 +432,27 @@ C            for standard deviation estimators
 C  TOTAL NUMBER OF VOLUME-AVERAGED OUTPUT TALLIES
 C  SET IN SETPRM ACCORDING TO LIVING TALLIES SPECIFIED IN LIVTALV
 
-        NVLTLP=6*NATMP+6*NMOLP+6*NIONP+6*NPHOTP+1*NADVP+1*NCLVP+
-     P         1*NSNVP+1*NCPVP+1*NALVP+1*NBGVP+
-     P         4*NPLSP+28+3*(NATMP+NMOLP+NIONP+NPHOTP)+
-C
-     P         NATMP+NMOLP+NIONP+NPHOTP+NPLSP+5*NPLSP+
-     P         3*(NATMP+NMOLP+NIONP+NPHOTP)+4*NPLSP+
-     P         NATMP+NMOLP+NIONP
+        NVLTLP=9*(NATMP+NMOLP+NIONP+NPHOTP)+28+6*NPLSP+
+     P         4*(NATMP+NMOLP+NIONP+NPHOTP+NPLSP)+
+     P         1*NADVP+1*NCLVP+1*NSNVP+1*NCPVP+1*NBGVP+1*NALVP+
+     P         4*NPLSP
 
-        IF (NLSPCSCL) THEN
-          IF (NLSPCSCL_ATM) THEN
-            NSFTLP=NSFTLP-NATMP-NMOLP-NIONP-NPHOTP-NPLSP
-            NSFTLP=NSFTLP+(NATMP+NMOLP+NIONP+NPHOTP+NPLSP)*NATMP
-          END IF
-          IF (NLSPCSCL_MOL) THEN
-            NSFTLP=NSFTLP-NATMP-NMOLP-NIONP-NPHOTP-NPLSP
-            NSFTLP=NSFTLP+(NATMP+NMOLP+NIONP+NPHOTP+NPLSP)*NMOLP
-          END IF
-          IF (NLSPCSCL_ION) THEN
-            NSFTLP=NSFTLP-NATMP-NMOLP-NIONP-NPHOTP-NPLSP
-            NSFTLP=NSFTLP+(NATMP+NMOLP+NIONP+NPHOTP+NPLSP)*NIONP
-          END IF
-          IF (NLSPCSCL_PHOT) THEN
-            NSFTLP=NSFTLP-NATMP-NMOLP-NIONP-NPHOTP-NPLSP
-            NSFTLP=NSFTLP+(NATMP+NMOLP+NIONP+NPHOTP+NPLSP)*NPHOTP
-          END IF
+        IF (NLSPCSCL_ATM) THEN
+          NVLTLP=NVLTLP-NATMP-NMOLP-NIONP-NPHOTP-NPLSP
+          NVLTLP=NVLTLP+(NATMP+NMOLP+NIONP+NPHOTP+NPLSP)*NATMP
         END IF
-
+        IF (NLSPCSCL_MOL) THEN
+          NVLTLP=NVLTLP-NATMP-NMOLP-NIONP-NPHOTP-NPLSP
+          NVLTLP=NVLTLP+(NATMP+NMOLP+NIONP+NPHOTP+NPLSP)*NMOLP
+        END IF
+        IF (NLSPCSCL_ION) THEN
+          NVLTLP=NVLTLP-NATMP-NMOLP-NIONP-NPHOTP-NPLSP
+          NVLTLP=NVLTLP+(NATMP+NMOLP+NIONP+NPHOTP+NPLSP)*NIONP
+        END IF
+        IF (NLSPCSCL_PHOT) THEN
+          NVLTLP=NVLTLP-NATMP-NMOLP-NIONP-NPHOTP-NPLSP
+          NVLTLP=NVLTLP+(NATMP+NMOLP+NIONP+NPHOTP+NPLSP)*NPHOTP
+        END IF
 
       ELSE IF (ICAL == 3) THEN
 
@@ -509,7 +506,8 @@ c  leading dimensions of output tally arrays
       INT_PARM( 30) = NALS
       INT_PARM( 31) = NAIN  !  this is an input tally!
       INT_PARM( 32) = NCPV
-      INT_PARM( 33) = NBGK  !dr  tbd: more logical: put NBGV here, eliminate NBGK
+      INT_PARM( 33) = NBGK  !dr  tbd: more logical:
+                            !         put NBGV here, eliminate NBGK
 
 c  variances, covariances
       INT_PARM( 34) = NSD
@@ -575,7 +573,8 @@ c
       INT_PARM( 80) = NLMPGS
 
 C     INT_PARM( 81) =        !dr free, not in use.
-      INT_PARM( 82) = NBGV   !dr either nbgk or nbgv should be made redundant
+      INT_PARM( 82) = NBGV   !dr either nbgk or nbgv
+                             !   should be made redundant
       INT_PARM( 83) = NBMAX
       INT_PARM( 84) = NPTAL
       INT_PARM( 85) = NSPZTOTS
@@ -662,8 +661,8 @@ cdr   INT_PARM(120) = N0MX !   because ncolmc is obsolete
       INT_PARM(149) = NADV_ADD
 
       INT_PARM(150) = NINPTL
-      INT_PARM(151) = NTALG   
- 
+      INT_PARM(151) = NTALG
+
       RETURN
       END SUBROUTINE EIRENE_COLLECT_PARM
 
