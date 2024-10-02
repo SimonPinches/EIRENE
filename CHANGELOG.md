@@ -3,7 +3,7 @@
 - Add new entries at the top of the file
 - Include Author, branch and last commit sha-1 hash
 - Include the last EIRENE release version the development is based on
-  - The commit sha-1 hash is obviously not known at the time of the commit, so best practice is to add an additional commit just including an update to the CHANGELOG.md file. This commit can then reference the previous commits sha-1 hash.
+- The commit sha-1 hash is obviously not known at the time of the commit, so best practice is to add an additional commit just including an update to the CHANGELOG.md file. This commit can then reference the previous commits sha-1 hash.
 - Include list of changes with short description
 - If test cases were updated describe the necessity and the amount by which results have changed
 
@@ -15,13 +15,55 @@
 
 ---
 
+## X. Bonnin - feature/SOLPS_push_whitespace-comments - 7e1414043117164fc3187260b0afbc43baf2ff7d
+
+#### Based on develop - d3033c4626f220acfb060aecc8c29c523b8f4d4c
+
+**Changes**
+
+This commit is meant is decrease the distance between the SOLPS Eirene branch and the MsV reference develop branch. It is not meant to contain any functional changes.
+
+- Updated version number to 1.0.9.
+- Streamlined detection of graphical library dependencies for compilation.
+- Some formatting corrections to avoid stars in output.
+- Added a more informative error message when EWALL=0 is set.
+- Added informative message from CMake as to what compiler version is being used.
+- Added flushing of buffers on error exit to make sure all output is printed.
+- Bug fix to OUTAU array size to prevent a CI test failure.
+- Corrected generalized interface UPTUSR routine to do the same as its counterparts.
+- Added SAVE and THREADPRIVATE statements for local arrays in SUMOSTRA, EIRMOD_COUTAU and EIRMOD_LOCATE routines.
+- Alignment bug fix in EIRMOD_COMXS to ensure RP%POLY is allocated.
+- Keeping function and routine name declarations on a single line to facilitate code searches.
+- Changed CI rules to always produce artifacts.
+- Cleaned up debugging output.
+- Corrected explanation of SRCML array (folllowing bug fix from Niels Horsten).
+- Corrected default value of DTIMV in Manual.
+- Added ISPCOPT variable description in Manual.
+- Corrected typos.
+- Added clarification comments (mostly from Detlev Reiter).
+- Right-justifying line labels to satisfy the NAG compiler preprocessor.
+- Some aethestic changes in the positioning of empty lines (in both the code source and the output).
+- Some minor additional output to match that from the SOLPS branch.
+- Removing trailing whitespaces as per the CONTRIBUTING rules.
+- Removing tabs as indentation characters.
+- Removed some superfluous commented out code lines.
+- Removing some superfluous parentheses.
+- Truncating long comment lines to avoid compiler warnings.
+- Enforced proper indentation when found misaligned.
+- Added some spaces to improve code readability.
+- Changes of character case to match the SOLPS branch.
+- Removed duplicate prb89.dat file.
+- Added local user source files to .gitignore list.
+
+---
+
 ## D. Harting - DMH/develop_fix_compare_scripts - 0d9077f21ce0c99835d44719821f7e00ad5073f3
 
 #### Based on develop - d3033c4626f220acfb060aecc8c29c523b8f4d4c
 
 **Changes**
 
-- Only chnages to CI logic, no code changes
+- Only changes to CI logic, no code changes
   
   - Removed fort.37 from reference outputs of ITER cases. Output to fort.37 was abandoned and is now included in the standard output of EIRENE
 

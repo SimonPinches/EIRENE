@@ -6,7 +6,7 @@ lang: en
 :::info
 EIRENE IEK-4
 EPL (EIRENE Public Licence)
-Version: 1.0.8
+Version: 1.0.9
 Copyright Forschungszentrum Jülich GmbH
 :::
 

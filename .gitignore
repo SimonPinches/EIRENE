@@ -3,6 +3,10 @@ bin*
 build*
 doc*
 lib*
+TAGS
+
+# Ignore local user files
+src.local/
 
 # Ignore temporary files
 *~
