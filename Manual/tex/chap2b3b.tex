@@ -584,7 +584,10 @@ For a plane surface the following reduction is valid:
 \medskip 
 
 The boundary of the valid part of the surface may be described by 4 different
-options, depending upon the value of the flag RLBND.
+options, depending upon the value of the flag RLBND (“RLB” in some code versions).
+One should note that in the code RLBND is not given as precise
+value but as intervals (e.g. 2.0 $\le$ RLBND < 2.15 or 2.15 $\le$ RLBND < 2.3).
+
 \begin{description}
   \item[RLBND = 0] ~ 
 
@@ -613,7 +616,9 @@ options, depending upon the value of the flag RLBND.
 
         In this case the surface will be defined by the input of the coordinates of at
         least 2 and at highest 5 points on a plane surface.
-        If there are only 2 points, the surface is parallel to one axis.
+        If there are only 2 points the surface is defined by P1 and P2 and is parallel to
+        one axis. When going on a straight line from P1 to P2 the ("outer") surface normal is pointing
+        to your right hand side.
         If there are 3 or more points, then the boundary of this plane surface is a
         closed polygon $(P_1, \dots, P_n, P_1)$.
         Therefore, the correct order of points at input is relevant.
