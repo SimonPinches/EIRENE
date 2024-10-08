@@ -15,6 +15,22 @@
 
 ---
 
+## D. Harting - DMH/streamline_ci - cb3e1058b63486ca91c750b13f6a6beb396a6ed8
+
+#### Based on develop - 375c8f50e4e5641fed3654c9b59a41e429f590f9
+
+**Changes**
+
+Removed -fopenmp compile switch from non openmp test cases
+
+- Removed -fopenmp switch from CMakeList.txt of EIRENE repository and from the Makefiles in the sample case repository
+
+- Updated test case ITER_1573_scaling due to small changes from removal of -fopenmp switch
+
+- Removed ouput files fort.111 and fort.113 generated if CHECKBIN environment variable is set during compile time as these files are now inconsistent with updated test cases and not used during CI checks
+
+---
+
 ## X. Bonnin - feature/SOLPS_push_whitespace-comments - 66c03ee2edeeb58def8b6a4ef7b6aefd02ae797b
 
 #### Based on develop - d3033c4626f220acfb060aecc8c29c523b8f4d4c
@@ -149,8 +165,6 @@ This commit is meant is decrease the distance between the SOLPS Eirene branch an
   
   - Changes in coefficients
     - Reaction 3.2      p + C -> C^+ + H 
-
-
 
 **Differences of new test cases generated**
 
