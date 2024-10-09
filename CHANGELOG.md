@@ -17,31 +17,35 @@
 
 ---
 
-## D. Harting - DMH/streamline_ci - D. Harting - DMH/streamline_ci -
+## D. Harting - DMH/streamline_ci - D. Harting - DMH/streamline_ci - 54b400477165ea16b146ca28b0361cf4ff916a48
 
 #### Based on develop - 375c8f50e4e5641fed3654c9b59a41e429f590f9
 
 **Changes**
 
-Reduced number of MC particles in EMC3 test cases to speedup CI pipeline
+- All the ITER test cases were building the whole EIRENE library again
+  
+  - Build now only once the ITER EIRENE executable at preparation stage to speedup the CI pipeline
+  
+  - Reuse the ITER EIRENE executable at run stage
+  
+  - No changes in referece outputs of ITER test cases
+  
+  
 
-- Reference outputs of EMC3 test cases were updated due to new results with reduced number of MC particles
+- Reduced number of MC particles in EMC3 test cases to speedup CI pipeline
+  
+  - Reference outputs of EMC3 test cases were updated due to new results with reduced number of MC particles
 
----
 
-## D. Harting - DMH/streamline_ci - cb3e1058b63486ca91c750b13f6a6beb396a6ed8
 
-#### Based on develop - 375c8f50e4e5641fed3654c9b59a41e429f590f9
-
-**Changes**
-
-Removed -fopenmp compile switch from non openmp test cases
-
-- Removed -fopenmp switch from CMakeList.txt of EIRENE repository and from the Makefiles in the sample case repository
-
-- Updated test case ITER_1573_scaling due to small changes from removal of -fopenmp switch
-
-- Removed ouput files fort.111 and fort.113 generated if CHECKBIN environment variable is set during compile time as these files are now inconsistent with updated test cases and not used during CI checks
+- Removed -fopenmp compile switch from non openmp test cases
+  
+  - Removed -fopenmp switch from CMakeList.txt of EIRENE repository and from the Makefiles in the sample case repository
+  
+  - Updated test case ITER_1573_scaling due to small changes from removal of -fopenmp switch
+  
+  - Removed ouput files fort.111 and fort.113 generated if CHECKBIN environment variable is set during compile time as these files are now inconsistent with updated test cases and not used during CI checks
 
 ---
 
