@@ -15,7 +15,7 @@
 
 ---
 
-## H. Leggate - HJL/add_changelog_and_coding_rules_version_check - 028dd1d9c8a79bb82632bb72fdf2f2f1c2c455b
+## H. Leggate - HJL/add_changelog_and_coding_rules_version_check - 028dd1d9c8a79bb82632bb72fdf2f2f1c2c455b0
 
 #### Based on develop - 375c8f50e4e5641fed3654c9b59a41e429f590f9
 
