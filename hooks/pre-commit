@@ -16,7 +16,10 @@ echo "Running pre-commit hook for EIRENE version" $EIRENE_VERSION
 src_file="src/modules/eirmod_parmmod.f"
 src_ver=$(awk 'BEGIN { FS = "=" }/EIRENE_VERSION_STRING/{ print $2 }' $src_file )
 src_ver=${src_ver:1:-1}
-if [ "$src_ver" != "$ver" ]; then
+if [ -z $src_ver ]; then
+    echo "No version found in ${src_file}. Please update."
+    retval=2
+elif [ "$src_ver" != "$ver" ]; then
     echo "Updating source $src_ver to $ver"
     replace=$(sed -i "s/$src_ver/$ver/" $src_file)
     retval=1
@@ -25,7 +28,10 @@ fi
 # Set the version text in EPL.md to the value in version.txt
 epl_file="EPL.md"
 epl_ver=$(awk '/Version:/{ print $2 }' $epl_file )
-if [ "$ver" != "$epl_ver" ]; then
+if [ -z $epl_ver ]; then
+    echo "No version found in ${epl_file}. Please update."
+    retval=2
+elif [ "$ver" != "$epl_ver" ]; then
     echo "Updating license $epl_ver to $ver"
     replace=$(sed -i "s/$epl_ver/$ver/" $epl_file)
     retval=1
@@ -35,15 +41,33 @@ fi
 man_file="Manual/eirene.tex"
 man_ver=$(awk '/Manual version/{print $4 }' $man_file )
 man_ver=${man_ver::-2}
-if [ "$man_ver" != "$ver" ]; then
+if [ -z $man_ver ]; then
+    echo "No version found in ${man_file}. Please update."
+    retval=2
+elif [ "$man_ver" != "$ver" ]; then
     echo "Updating manual ${man_ver} to $ver"
     replace=$(sed -i "s/$man_ver/$ver/" $man_file)
     retval=1
 fi
 
+# Set the version text in coding_rules.md to the value in version.txt
+#cod_file="coding_rules.md"
+#cod_ver=$(awk '/Version:/{ print $2 }' $cod_file )
+#if [ -z $cod_ver ]; then
+#    echo "No version found in ${cod_file}. Please update."
+#    retval=2
+#elif [ "$cod_ver" != "$ver" ]; then
+#    echo "Updating coding rules ${cod_ver} to $ver"
+#    replace=$(sed -i "s/$cod_ver/$ver/" $cod_file)
+#    retval=1
+#fi
+
 if [ "$retval" == "1" ]; then
-    echo "Version numbers did not match, they have been replaced however the commit did not proceeed. Please commit again"
+    echo "Version numbers did not match, they have been replaced however the commit did not proceeed. Please commit again."
     exit 1
+elif [ "$retval" == "2" ]; then
+    echo "A Version number was not found in one of the files. Please update the file and commit again."
+    exit 2
 fi
 
 if git rev-parse --verify HEAD >/dev/null 2>&1
