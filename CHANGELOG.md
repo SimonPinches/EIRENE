@@ -15,6 +15,13 @@
 
 ---
 
+## H. Leggate - HJL/add_changelog_and_coding_rules_version_check - 19cc27ff2b06fb84c8a31fae30706fca02ffca98
+
+#### Based on develop - 375c8f50e4e5641fed3654c9b59a41e429f590f9
+
+EIRENE_version=1.0.9
+
+
 ## X. Bonnin - feature/SOLPS_push_whitespace-comments - 66c03ee2edeeb58def8b6a4ef7b6aefd02ae797b
 
 #### Based on develop - d3033c4626f220acfb060aecc8c29c523b8f4d4c

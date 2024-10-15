@@ -49,12 +49,12 @@ cod_file="coding_rules.md"
 cod_ver=$(awk '/Version: /{print $2}' $cod_file )
 
 # Get the version text in change_log.md
-cha_file="change_log.md"
-cha_ver=$(awk '/New_EIRENE_Version: /{print $2}' $cha_file)
+cha_file="CHANGELOG.md"
+cha_ver=$(awk -F'[/=]' '/EIRENE_version/{print $2}' $cha_file)
 
 if [ "$ver" != "$src_ver" ] || [ "$ver" != "$epl_ver" ]  || [ "$ver" != "$man_ver" ] || [ "$ver" != "$cod_ver" ] || [ "$ver" != "$cha_ver" ]; then
 
-    printf "The version numbers in version.txt($ver), eirmod_parmmod.f($man_ver), eirene.tex($man_ver), EPL.md($epl_ver), coding_rules.md($cod_ver) and change_log.md($cha_ver) do not match.\n"
+    printf "The version numbers in version.txt($ver), eirmod_parmmod.f($man_ver), eirene.tex($man_ver), EPL.md($epl_ver), coding_rules.md($cod_ver) and CHANGELOG.md($cha_ver) do not match.\n"
 
     cat <<\EOF
 
