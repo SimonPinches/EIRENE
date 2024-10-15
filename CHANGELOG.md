@@ -15,7 +15,7 @@
 
 ---
 
-## H. Leggate - HJL/add_changelog_and_coding_rules_version_check - c56a51910852cba18f5acd11e4cbfd6a0256b9b7
+## H. Leggate - HJL/add_changelog_and_coding_rules_version_check - 028dd1d9c8a79bb82632bb72fdf2f2f1c2c455b
 
 #### Based on develop - 375c8f50e4e5641fed3654c9b59a41e429f590f9
 
@@ -29,6 +29,7 @@ This adds further checks on versions at various points in the code and adds a co
 - Added check on Version in coding_rules.md to pre-commit git hook
 - Added check for New_EIRENE_Version in CHANGELOG.md in ci_version_check.sh
 - Added short guide to merging in CONTRIBUTING.md
+- Changed OpenMP Sample Case version to add in 2 exclusions from 2D-poly
 
 ---
 
