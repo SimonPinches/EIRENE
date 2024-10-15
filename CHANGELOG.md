@@ -19,7 +19,7 @@
 
 #### Based on develop - 375c8f50e4e5641fed3654c9b59a41e429f590f9
 
-New_EIRENE_Version=1.0.9
+New_EIRENE_Version=1.0.10
 
 ** Changes
 
