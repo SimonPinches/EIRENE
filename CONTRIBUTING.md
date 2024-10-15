@@ -37,7 +37,7 @@ Once a new feature has been developed and tested including the running of the Gi
 
 1) The version number after the merge must be decided. If there are no actual code changes this can be the same as the previous version or otherwise can be increased in line with semantic versioning.
 
-2) The version in version.txt should be updated to this value. If git hooks are set up (see contributing.md) then the pre-commit hook will ensure that the version numbers are the same in the following files.
+2) The version in version.txt should be updated to this value. If git hooks are set up (see contributing.md) then the pre-commit hook will ensure that the version numbers are the same in eirene manual, source code and code_rules.md. The version must be manually updated in CHAGELOG.md.
 
 3) This code should then be committed and a note taken of the git hash.
 
