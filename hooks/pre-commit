@@ -51,16 +51,16 @@ elif [ "$man_ver" != "$ver" ]; then
 fi
 
 # Set the version text in coding_rules.md to the value in version.txt
-#cod_file="coding_rules.md"
-#cod_ver=$(awk '/Version:/{ print $2 }' $cod_file )
-#if [ -z $cod_ver ]; then
-#    echo "No version found in ${cod_file}. Please update."
-#    retval=2
-#elif [ "$cod_ver" != "$ver" ]; then
-#    echo "Updating coding rules ${cod_ver} to $ver"
-#    replace=$(sed -i "s/$cod_ver/$ver/" $cod_file)
-#    retval=1
-#fi
+cod_file="coding_rules.md"
+cod_ver=$(awk '/Version:/{ print $2 }' $cod_file )
+if [ -z $cod_ver ]; then
+    echo "No version found in ${cod_file}. Please update."
+    retval=2
+elif [ "$cod_ver" != "$ver" ]; then
+    echo "Updating coding rules ${cod_ver} to $ver"
+    replace=$(sed -i "s/$cod_ver/$ver/" $cod_file)
+    retval=1
+fi
 
 if [ "$retval" == "1" ]; then
     echo "Version numbers did not match, they have been replaced however the commit did not proceeed. Please commit again."
