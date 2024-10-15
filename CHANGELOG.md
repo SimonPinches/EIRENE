@@ -19,8 +19,18 @@
 
 #### Based on develop - 375c8f50e4e5641fed3654c9b59a41e429f590f9
 
-EIRENE_version=1.0.9
+New_EIRENE_Version=1.0.9
 
+** Changes
+
+This adds further checks on versions at various points in the code and adds a coding rules document
+
+- Added coding_rules.md imported from ModCR
+- Added check on Version in coding_rules.md to pre-commit git hook
+- Added check for New_EIRENE_Version in CHANGELOG.md in ci_version_check.sh
+- Added short guide to merging in CONTRIBUTING.md
+
+---
 
 ## X. Bonnin - feature/SOLPS_push_whitespace-comments - 66c03ee2edeeb58def8b6a4ef7b6aefd02ae797b
 

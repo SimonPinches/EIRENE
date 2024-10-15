@@ -50,7 +50,7 @@ cod_ver=$(awk '/Version: /{print $2}' $cod_file )
 
 # Get the version text in change_log.md
 cha_file="CHANGELOG.md"
-cha_ver=$(awk -F'[/=]' '/EIRENE_version/{print $2}' $cha_file)
+cha_ver=$(awk -F'[/=]' '/New_EIRENE_Version/{print $2}' $cha_file)
 
 if [ "$ver" != "$src_ver" ] || [ "$ver" != "$epl_ver" ]  || [ "$ver" != "$man_ver" ] || [ "$ver" != "$cod_ver" ] || [ "$ver" != "$cha_ver" ]; then
 
