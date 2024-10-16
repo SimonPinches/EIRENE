@@ -15,6 +15,8 @@
 
 ---
 
+---
+
 ## H. Leggate - HJL/add_changelog_and_coding_rules_version_check - 703973eea3bc51198dc1b7169c460573054debda
 
 #### Based on Vx.y.z(undefined before this commit - use instead develop - 375c8f50e4e5641fed3654c9b59a41e429f590f9)
@@ -30,6 +32,36 @@ This adds further checks on versions at various points in the code and adds a co
 - Added check for New_EIRENE_Version in CHANGELOG.md in ci_version_check.sh
 - Added short guide to merging in CONTRIBUTING.md
 - Changed OpenMP Sample Case version to add in 2 exclusions from 2D-poly
+
+---
+
+## D. Harting - DMH/streamline_ci - 54b400477165ea16b146ca28b0361cf4ff916a48
+
+#### Based on on Vx.y.z (undefined before this commit - use instead develop - 375c8f50e4e5641fed3654c9b59a41e429f590f9)
+
+**Changes**
+
+- All the ITER test cases were building the whole EIRENE library again
+
+  - Build now only once the ITER EIRENE executable at preparation stage to speedup the CI pipeline
+
+  - Reuse the ITER EIRENE executable at run stage
+
+  - No changes in referece outputs of ITER test cases
+
+
+- Reduced number of MC particles in EMC3 test cases to speedup CI pipeline
+
+  - Reference outputs of EMC3 test cases were updated due to new results with reduced number of MC particles
+
+
+- Removed -fopenmp compile switch from non openmp test cases
+
+  - Removed -fopenmp switch from CMakeList.txt of EIRENE repository and from the Makefiles in the sample case repository
+
+  - Updated test case ITER_1573_scaling due to small changes from removal of -fopenmp switch
+
+  - Removed ouput files fort.111 and fort.113 generated if CHECKBIN environment variable is set during compile time as these files are now inconsistent with updated test cases and not used during CI checks
 
 ---
 
@@ -167,8 +199,6 @@ This commit is meant is decrease the distance between the SOLPS Eirene branch an
   
   - Changes in coefficients
     - Reaction 3.2      p + C -> C^+ + H 
-
-
 
 **Differences of new test cases generated**
 

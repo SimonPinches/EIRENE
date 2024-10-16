@@ -11,7 +11,7 @@ include:
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
 # eirene_unified_bullseye
-    SAMPLE_CASE_VERSION: cc627185c630f74e9f337f65a25dc740eea4e656
+    SAMPLE_CASE_VERSION: 313c4eef6edbf8af7c398886c47ef4a9eddf0f21
 # OpenMP test cases, at present these exist in their own branch created from the
 # first commit. This can be merged at any time.
 # eirene_unified_openmp_bullseye
@@ -153,8 +153,8 @@ prepare_testcases:
         - build_library
         - prepare_testcases
 
-.build_iter_executable: &build_iter_executable
-    stage: build:executable
+build_iter_executable:
+    stage: preparation
     rules:
         - if: $CI_PIPELINE_SOURCE == 'schedule'
           when: never
@@ -162,8 +162,11 @@ prepare_testcases:
           when: never
         - when: on_success
     script:
-        - cd EIRENE-sample-cases/${PATH_CASE}
-        - make -j
+        - mkdir buildRelease
+        - cd buildRelease
+        - FC=mpif90 cmake ../src -DCMAKE_BUILD_TYPE=Release -DEIRENE_INTERFACE=SOLPS-ITER -DEIRENE_USER-ROUTINES=iter -DEIRENE_POSTFIX=_iter -DOPENMP=OFF -DMPI=OFF -DCHECKBIN=OFF
+        - make -j EIRENE
+        - make -j eirene
     retry: 2
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
@@ -172,11 +175,9 @@ prepare_testcases:
             - libRelease
             - binRelease
             - src
-            - EIRENE-sample-cases/${PATH_CASE}
         when: always
     needs:
-        - build_library
-        - prepare_testcases
+        - compliance_check
 
 .run: &run
     stage: run
@@ -548,17 +549,18 @@ test_standalone_cylinder_triang_octree:
 # ITER cases
 ######################################################################################
 
-build_standalone_ITER_1573:
-    <<: *build_iter_executable
-    variables:
-        PATH_CASE: "ITER_1573"
+#build_standalone_ITER_1573:
+#    <<: *build_iter_executable
+#    variables:
+#        PATH_CASE: "ITER_1573"
 
 run_standalone_ITER_1573:
     <<: *run
     variables:
         PATH_CASE: "ITER_1573"
     needs:
-        - build_standalone_ITER_1573
+        - build_iter_executable
+        - prepare_testcases
 
 test_standalone_ITER_1573:
     <<: *test
@@ -567,17 +569,18 @@ test_standalone_ITER_1573:
     needs:
         - run_standalone_ITER_1573
 
-build_standalone_ITER_1573_scaling:
-    <<: *build_iter_executable
-    variables:
-        PATH_CASE: "ITER_1573_scaling"
+#build_standalone_ITER_1573_scaling:
+#    <<: *build_iter_executable
+#    variables:
+#        PATH_CASE: "ITER_1573_scaling"
 
 run_standalone_ITER_1573_scaling:
     <<: *run
     variables:
         PATH_CASE: "ITER_1573_scaling"
     needs:
-        - build_standalone_ITER_1573_scaling
+        - build_iter_executable
+        - prepare_testcases
 
 test_standalone_ITER_1573_scaling:
     <<: *test
@@ -586,17 +589,18 @@ test_standalone_ITER_1573_scaling:
     needs:
         - run_standalone_ITER_1573_scaling
 
-build_standalone_ITER_1573_def_lines:
-    <<: *build_iter_executable
-    variables:
-        PATH_CASE: "ITER_1573_def_lines"
+#uild_standalone_ITER_1573_def_lines:
+#   <<: *build_iter_executable
+#   variables:
+#       PATH_CASE: "ITER_1573_def_lines"
 
 run_standalone_ITER_1573_def_lines:
     <<: *run
     variables:
         PATH_CASE: "ITER_1573_def_lines"
     needs:
-        - build_standalone_ITER_1573_def_lines
+        - build_iter_executable
+        - prepare_testcases
 
 test_standalone_ITER_1573_def_lines:
     <<: *test
@@ -605,17 +609,18 @@ test_standalone_ITER_1573_def_lines:
     needs:
         - run_standalone_ITER_1573_def_lines
 
-build_standalone_ITER_1573_dens_model:
-    <<: *build_iter_executable
-    variables:
-        PATH_CASE: "ITER_1573_dens_model"
+#uild_standalone_ITER_1573_dens_model:
+#   <<: *build_iter_executable
+#   variables:
+#       PATH_CASE: "ITER_1573_dens_model"
 
 run_standalone_ITER_1573_dens_model:
     <<: *run
     variables:
         PATH_CASE: "ITER_1573_dens_model"
     needs:
-        - build_standalone_ITER_1573_dens_model
+        - build_iter_executable
+        - prepare_testcases
 
 test_standalone_ITER_1573_dens_model:
     <<: *test
