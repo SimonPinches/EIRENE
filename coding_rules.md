@@ -31,7 +31,7 @@ then:
 4. Private branches are allowed, but should be kept under their own sub-folder structure (e.g. ‘private_uid_or_acronym/private_branch_name’). We recommend to name the branches with initials like “DVB/my_new_idea” and select the “delete branch” option when submitting the merge request.
 5. Please commit often, even a few code lines. Also the merge requests should follow promptly – we should avoid long-term branching with painful effort on merging in the end. Each new feature should have an individual branch.
 
-### Log for changes (‘change_log.md’ file)
+### Log for changes (‘CHANGELOG.md’ file)
 Whenever a new feature or bug-fix is merged back to the official distribution branches (e.g. ‘develop’, ‘release’, ‘feature’…) an entry at the top of the ‘change_log.md’ file must be made. This makes it much easier for the Reviewer of the merge request to understand the new development. Also, any code-releases should be logged in this file, which makes it easier to compile ‘Release-Notes’ for the user community.
 The entries in the ‘change_log.md’ file must contain:
 
