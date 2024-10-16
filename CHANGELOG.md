@@ -15,7 +15,7 @@
 
 ---
 
-## H. Leggate - HJL/add_changelog_and_coding_rules_version_check - 72708806c35ee9a5247c34c202aab6f21d49f6f8
+## H. Leggate - HJL/add_changelog_and_coding_rules_version_check - 5856c83b06cf11cf4d5275e99dae9274bf7efee5
 
 #### Based on Vx.y.z(undefined before this commit - use instead develop - 375c8f50e4e5641fed3654c9b59a41e429f590f9)
 
