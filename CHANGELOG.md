@@ -17,7 +17,7 @@
 
 ## H. Leggate - HJL/add_changelog_and_coding_rules_version_check - 12af6b91da99affbcf457c23a79d414766ba5fd9
 
-#### Based on develop - 375c8f50e4e5641fed3654c9b59a41e429f590f9
+#### Based on Vx.y.z(undefined before this commit - use instead develop - 375c8f50e4e5641fed3654c9b59a41e429f590f9)
 
 New_EIRENE_Version=1.0.10
 
@@ -35,7 +35,7 @@ This adds further checks on versions at various points in the code and adds a co
 
 ## X. Bonnin - feature/SOLPS_push_whitespace-comments - 66c03ee2edeeb58def8b6a4ef7b6aefd02ae797b
 
-#### Based on develop - d3033c4626f220acfb060aecc8c29c523b8f4d4c
+#### Based on Vx.y.z(undefined before this commit - use instead develop - d3033c4626f220acfb060aecc8c29c523b8f4d4c)
 
 **Changes**
 
@@ -77,7 +77,7 @@ This commit is meant is decrease the distance between the SOLPS Eirene branch an
 
 ## D. Harting - DMH/develop_fix_compare_scripts - 0d9077f21ce0c99835d44719821f7e00ad5073f3
 
-#### Based on develop - d3033c4626f220acfb060aecc8c29c523b8f4d4c
+#### Based on Vx.y.z (undefined before this commit - use instead develop - d3033c4626f220acfb060aecc8c29c523b8f4d4c)
 
 **Changes**
 
@@ -95,7 +95,7 @@ This commit is meant is decrease the distance between the SOLPS Eirene branch an
 
 ## D. Harting - DMH/develop_fix_compare_scripts - 7cf909853e2065c8213459946d13e63a9e9a427d
 
-#### Based on develop - d3033c4626f220acfb060aecc8c29c523b8f4d4c
+#### Based on Vx.y.z (undefined before this commit - use instead develop - d3033c4626f220acfb060aecc8c29c523b8f4d4c)
 
 **Description**
 
