@@ -17,41 +17,57 @@
 
 ---
 
-## D. Harting - DMH/streamline_ci - D. Harting - DMH/streamline_ci - 54b400477165ea16b146ca28b0361cf4ff916a48
+## H. Leggate - HJL/add_changelog_and_coding_rules_version_check - 5cc860bae983754e7aaabb8797f8b340e80e2ac7
 
-#### Based on develop - 375c8f50e4e5641fed3654c9b59a41e429f590f9
+#### Based on Vx.y.z(undefined before this commit - use instead develop - 375c8f50e4e5641fed3654c9b59a41e429f590f9)
+
+New_EIRENE_Version=1.0.10
+
+** Changes
+
+This adds further checks on versions at various points in the code and adds a coding rules document
+
+- Added coding_rules.md imported from ModCR
+- Added check on Version in coding_rules.md to pre-commit git hook
+- Added check for New_EIRENE_Version in CHANGELOG.md in ci_version_check.sh
+- Added short guide to merging in CONTRIBUTING.md
+- Changed OpenMP Sample Case version to add in 2 exclusions from 2D-poly
+
+---
+
+## D. Harting - DMH/streamline_ci - 54b400477165ea16b146ca28b0361cf4ff916a48
+
+#### Based on on Vx.y.z (undefined before this commit - use instead develop - 375c8f50e4e5641fed3654c9b59a41e429f590f9)
 
 **Changes**
 
 - All the ITER test cases were building the whole EIRENE library again
-  
+
   - Build now only once the ITER EIRENE executable at preparation stage to speedup the CI pipeline
-  
+
   - Reuse the ITER EIRENE executable at run stage
-  
+
   - No changes in referece outputs of ITER test cases
-  
-  
+
 
 - Reduced number of MC particles in EMC3 test cases to speedup CI pipeline
-  
+
   - Reference outputs of EMC3 test cases were updated due to new results with reduced number of MC particles
 
 
-
 - Removed -fopenmp compile switch from non openmp test cases
-  
+
   - Removed -fopenmp switch from CMakeList.txt of EIRENE repository and from the Makefiles in the sample case repository
-  
+
   - Updated test case ITER_1573_scaling due to small changes from removal of -fopenmp switch
-  
+
   - Removed ouput files fort.111 and fort.113 generated if CHECKBIN environment variable is set during compile time as these files are now inconsistent with updated test cases and not used during CI checks
 
 ---
 
 ## X. Bonnin - feature/SOLPS_push_whitespace-comments - 66c03ee2edeeb58def8b6a4ef7b6aefd02ae797b
 
-#### Based on develop - d3033c4626f220acfb060aecc8c29c523b8f4d4c
+#### Based on Vx.y.z(undefined before this commit - use instead develop - d3033c4626f220acfb060aecc8c29c523b8f4d4c)
 
 **Changes**
 
@@ -93,7 +109,7 @@ This commit is meant is decrease the distance between the SOLPS Eirene branch an
 
 ## D. Harting - DMH/develop_fix_compare_scripts - 0d9077f21ce0c99835d44719821f7e00ad5073f3
 
-#### Based on develop - d3033c4626f220acfb060aecc8c29c523b8f4d4c
+#### Based on Vx.y.z (undefined before this commit - use instead develop - d3033c4626f220acfb060aecc8c29c523b8f4d4c)
 
 **Changes**
 
@@ -111,7 +127,7 @@ This commit is meant is decrease the distance between the SOLPS Eirene branch an
 
 ## D. Harting - DMH/develop_fix_compare_scripts - 7cf909853e2065c8213459946d13e63a9e9a427d
 
-#### Based on develop - d3033c4626f220acfb060aecc8c29c523b8f4d4c
+#### Based on Vx.y.z (undefined before this commit - use instead develop - d3033c4626f220acfb060aecc8c29c523b8f4d4c)
 
 **Description**
 
