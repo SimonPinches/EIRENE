@@ -31,7 +31,7 @@ fi
 
 
 # Get the version text from  modules/eirmod_parmmod.f90
-src_file="src/modules/eirmod_parmmod.f"
+src_file="src/modules/eirmod_parmmod.F"
 src_ver=$(awk 'BEGIN { FS = "=" }/EIRENE_VERSION_STRING/{ print $2 }' $src_file )
 src_ver=${src_ver:1:-1}
 
