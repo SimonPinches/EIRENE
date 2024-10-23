@@ -4,6 +4,8 @@ cdr mar 18:   add trchktm (species-resolved cpu consumption),
 cdr           read in first line block 11.
 cdr           and remove (deactivate) the unused trcdbg... flags inherited from
 cdr           V.K. proprietary versions
+cdr dec 20:   trcmeld:  turn off all cpu-time consumption printout, to facilitate
+cdr                     comparison of large output files.
 
       MODULE EIRMOD_CTRCEI
 
@@ -24,7 +26,7 @@ cdr           V.K. proprietary versions
      L TRCINT, TRCLST, TRCSOU, TRCREC, TRCTIM,
      L TRCBLA, TRCBLP, TRCBLE, TRCBLM, TRCBLI,
      L TRCBLPH,TRCTAL, TRCOCT, TRCCEN, TRCRNF,
-     L TRCHKTIM, TRCSCL
+     L TRCHKTIM, TRCSCL, TRCMELD
 
 CVK TRACING FOR DEBUGGING VIA WRITE(0,...
 c     INTEGER,PUBLIC,PARAMETER :: LDBGTRC=9
@@ -68,7 +70,7 @@ CVK END
         IF (ALLOCATED(LTRCEI)) RETURN
 
         MCTRC=5+3*NVLPR+4*NSRPR
-        LCTRC=27
+        LCTRC=28
 
         ALLOCATE (LTRCEI(LCTRC))
         ALLOCATE (ITRCEI(MCTRC))
@@ -106,6 +108,7 @@ CVK END
         TRCRNF => LTRCEI(25)
         TRCHKTIM => LTRCEI(26)
         TRCSCL => LTRCEI(27)
+        TRCMELD => LTRCEI(28)
 
 !       NPRTLV => ITRCEI(  1 : 100)
 !       NFLAGV => ITRCEI(101 : 200)

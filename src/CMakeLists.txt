@@ -211,7 +211,7 @@ endforeach()
 # Remove program file to be able to add it separately if required.
 list(GET src_main-routines 0 fortran_file)
 get_filename_component(fortran_dir ${fortran_file} PATH)
-list(REMOVE_ITEM src_main-routines ${fortran_dir}/eirene_main.f)
+list(REMOVE_ITEM src_main-routines ${fortran_dir}/eirene_main.F)
 
 # Specify interface and user-routines to use.
 set(src_interface/x ${src_interfaces/couple_${EIRENE_INTERFACE}})
@@ -227,7 +227,7 @@ endif()
 # Add linking to the plotting libraries
 set(plotpath "")
 
-add_executable(eirene main-routines/eirene_main.f)
+add_executable(eirene main-routines/eirene_main.F)
 
 message(STATUS " --  Setting libraries for internal plotting:  --  --")
 

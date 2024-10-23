@@ -15,6 +15,17 @@
 
 ---
 
+## X. Bonnin - feature/SOLPS_push_clean-up - 73a692665efc344c074aeda2801d11566fbfba6a
+
+#### Based on develop - 1138b60ed32d3337e392f716ece854bfc89675a3
+
+** Changes **
+
+This commit is meant to apply good coding practices with minimal consequences on actual results. It addresses warnings from many different compilers to make the Eirene compilation as clean as reasonably achievable.
+
+- Applied CONTRIBUTING rule that Fortran file extensions should be .F instead of .f when the file must be pre-processed by the Makefile
+- Pointing to modified set of examples with .F file extensions
+- Added TRCMELD output switch
 ---
 
 ## H. Leggate - HJL/add_changelog_and_coding_rules_version_check - 5cc860bae983754e7aaabb8797f8b340e80e2ac7
