@@ -21,6 +21,7 @@ src.local/
 Manual/*.pdf
 Manual/*.dvi
 Manual/*.cfg
+Manual/*.out.ps
 
 # Ignore EIRENE test cases
 EIRENE-sample-cases

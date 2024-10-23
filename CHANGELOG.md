@@ -27,6 +27,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Pointing to modified set of examples with .F file extensions
 - Added TRCMELD output switch
 - Added some more clarifying comments
+- Have figures in Manual listed by full relative path and file extension
 - Added missing comment about density validity range in AMJUEL file
 ---
 
