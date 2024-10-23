@@ -38,8 +38,8 @@ c              for evaluation of rate coefficient.
                       ! input parameter arrays
 
       TBEI=0.D0
-      KK = NREAEI(IREI)   !  KK=-11:NREAC in REACDAT, IFTFLG 
-!                            KK=  1:NREAC else
+      KK = NREAEI(IREI)   !  KK=-11: NREAC in REACDAT, IFTFLG
+                          !  KK=  1: NREAC otherwise
 
 
       DEIMIN=LOG(1.D8)

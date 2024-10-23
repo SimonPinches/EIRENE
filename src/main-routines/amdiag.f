@@ -206,6 +206,7 @@ c  no interacting particle species found
   170     CONTINUE
         ENDIF
 
+cdr KK is set for tallies 20 and 21
         IF (NA.EQ.20) THEN
           mm=modcol(1,2,irei)
           KK=NREAEI(irei)
@@ -320,6 +321,7 @@ c  no interacting particle species found
   172     CONTINUE
         ENDIF
 
+cdr  KK is set for tallies 22 and 23
         IF (NA.EQ.22) THEN
           mm=modcol(3,2,ircx)
           kk=NREACX(ircx)
@@ -469,6 +471,7 @@ c  no interacting particle species found
   174     CONTINUE
         ENDIF
 
+cdr KK is set for tallies 24 and 25
         IF (NA.EQ.24) THEN
           mm=modcol(5,2,irel)
           kk=NREAEL(irel)
@@ -622,6 +625,7 @@ c  no interacting particle species found
   176     CONTINUE
         ENDIF
 
+cdr  KK is set for tallies 26 and 27
         IF (NA.EQ.26) THEN
           mm=modcol(4,2,irpi)
           kk=nreapi(irpi)
@@ -741,6 +745,7 @@ c  no interacting particle species found
         ENDIF
   178   CONTINUE
 
+cdr KK is set for tallies 28 and 29
         IF (NA.EQ.28) THEN
           mm=modcol(6,2,irrc)
           kk=NREARC(irrc)

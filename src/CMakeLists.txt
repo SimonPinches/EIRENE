@@ -223,7 +223,6 @@ if( NOT src_user-routines/x )
   message(FATAL_ERROR "No user-routines named \"${EIRENE_USER-ROUTINES}\"")
 endif()
 
-# Adds eirene executable to the project and links it to the MPI library.
 # Add linking to the plotting libraries
 set(plotpath "")
 
@@ -303,6 +302,7 @@ add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno}
                    ${src_surface-processes} ${src_tetrahedra}
                    ${src_user-routines/x} ${src_volume-processes})
 
+# Adds eirene executable to the project and links it to the MPI library.
 if (MPI)
   target_link_libraries(eirene EIRENE ${LibJSON} ${MPI_Fortran_LIBRARIES})
 else()

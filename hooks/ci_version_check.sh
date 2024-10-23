@@ -30,7 +30,7 @@ if [ ${newversplit[2]} -lt ${oldversplit[2]} ]; then
 fi
 
 
-# Get the version text from  modules/eirmod_parmmod.f90
+# Get the version text from modules/eirmod_parmmod.F
 src_file="src/modules/eirmod_parmmod.F"
 src_ver=$(awk 'BEGIN { FS = "=" }/EIRENE_VERSION_STRING/{ print $2 }' $src_file )
 src_ver=${src_ver:1:-1}

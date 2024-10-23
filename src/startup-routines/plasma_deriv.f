@@ -978,7 +978,7 @@ cdr NTALG+1:NTALI gradients of these regular input tallies
         ALLOCATE (TALLY(NCORNER))
         DO ITAL = 1, NTALG
 C  ITAL : NO. OF TALLY OF WHICH GRADIENT IS TO BE CALCULATED
-C  KK   : INDEX OF GRADIENT TALLY: KK+1, KK+2, KK+3
+C  KK   : INDEX OF GRADIENT TALLY COMPONENTS: KK+1, KK+2, KK+3
           KK = NTALG + (ITAL-1)*3 
           IF (ANY(LIVTALI(KK+1:KK+3))) THEN
             NFTI = 1

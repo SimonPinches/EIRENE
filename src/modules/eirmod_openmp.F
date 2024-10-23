@@ -69,7 +69,7 @@ c     ym copyin does not work for allocatable pointer arrrays
       EIRENE_ITHREAD  = 0
       EIRENE_NTHREADS = 1
 #endif
-!HJL Needed to avoid circular dependancy with comprt
+!HJL Needed to avoid circular dependency with comprt
       NTHREAD = EIRENE_NTHREADS
 
 #ifndef USE_EXT_OPENMP

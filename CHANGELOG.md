@@ -26,6 +26,8 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Applied CONTRIBUTING rule that Fortran file extensions should be .F instead of .f when the file must be pre-processed by the Makefile
 - Pointing to modified set of examples with .F file extensions
 - Added TRCMELD output switch
+- Added some more clarifying comments
+- Added missing comment about density validity range in AMJUEL file
 ---
 
 ## H. Leggate - HJL/add_changelog_and_coding_rules_version_check - 5cc860bae983754e7aaabb8797f8b340e80e2ac7
