@@ -24,6 +24,7 @@
      .           IHEADY1, IHEADY2, IHEADZ1, IHEADZ2
       INTEGER, SAVE :: IFIRST=0
       LOGICAL :: LG(NTET)
+      EXTERNAL :: EIRENE_CAL_VOL
 
       TYPE :: CELL
         INTEGER :: TETNR

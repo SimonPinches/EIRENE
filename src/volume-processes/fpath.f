@@ -128,6 +128,13 @@ cdr  functions for 'on the fly' evaluation of A&M data
       REAL(DP), PARAMETER :: TMINL=-2.3_DP
       REAL(DP), PARAMETER :: EMINL=-2.3_DP  ! hard-coded cut-off
                                   ! for EBEAM parameter in H.3 fits
+      EXTERNAL :: EIRENE_VECUSR, EIRENE_EXIT_OWN, EIRENE_CROSS,
+     .            EIRENE_FEELEI1, EIRENE_FEELPI3, EIRENE_FEHVEI1,
+     .            EIRENE_FEHVPI3, EIRENE_FEPLCX3, EIRENE_FEPLEL3,
+     .            EIRENE_FPATHPH,
+     .            EIRENE_FTABCX3, EIRENE_FTABEI1, EIRENE_FTABPI3,
+     .            EIRENE_ENERGY_RATE_COEFF, EIRENE_RATE_COEFF,
+     .            EIRENE_SNGL_POLY
 
 !  FOR PHOTONS CALL EIRENE_FPATHPH
       IF (ITYP == 0) THEN

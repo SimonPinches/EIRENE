@@ -15,6 +15,7 @@
       character(len=*), optional :: form, access, status, position
       character(len=:), allocatable :: frm, acc, stat, pos
       integer :: iun, io
+      external :: eirene_masage
 
       if (present(form)) then
         frm = form
@@ -87,6 +88,7 @@
       integer function eirene_newunit ()
       implicit none
       logical used
+      external :: eirene_masage, eirene_exit_own
 
       eirene_newunit = 99
       used = .true.

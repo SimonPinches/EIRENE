@@ -115,6 +115,10 @@ cdr   integer, parameter :: lupa=34, lima=40
       integer, parameter :: lupa=34, lima=34
       INTEGER, SAVE :: IFRST=0
       INTEGER :: IP
+      EXTERNAL :: EIRENE_CLSAHA, EIRENE_EINSTN,
+     .            EIRENE_E_IONREC, EIRENE_IONREC,
+     .            EIRENE_POPCOF_M, EIRENE_RATCOF,
+     .            EIRENE_EXIT_OWN
 c
       IF (LIMA.GT.40.OR.LUPA.GT.LIMA) THEN
         WRITE (iunout,*) 'LIMA, LUPA ??? ',LIMA,LUPA
@@ -288,6 +292,7 @@ C
       DIMENSION OSC(40,40),C(40,40),F(40,40),U(40,40)
       DIMENSION SAHA(40),S(40),ALPHA(40),BETA(40),EBETA(40),UION(40)
       INTEGER I, II, III, J, JJ
+      EXTERNAL EIRENE_CLBETA, EIRENE_EXCOFF
 
 cdr  above some critical Te0 value the radiative rate coefficients beta become unphysical
 c    perhaps due to numerical integration, or due to fit expression for integrand.
@@ -554,6 +559,8 @@ C
       DIMENSION U(40,40),OSC(40,40),C(40,40),F(40,40)
       DIMENSION S(40),ALPHA(40)
       INTEGER I, J
+      EXTERNAL EIRENE_COF1N, EIRENE_COFJO, EIRENE_COFJS, EIRENE_COFJS2,
+     .         EIRENE_COFVR, EIRENE_COFVS
 C
       S=0.0
       ALPHA=0.0
@@ -648,7 +655,7 @@ C
 
       INTEGER I, J, ICON
       REAL(DP) EIRENE_GINT
-      EXTERNAL EIRENE_GINT
+      EXTERNAL EIRENE_GINT, EIRENE_EXPI
 
       P=I
       Q=J
@@ -727,6 +734,7 @@ C
 
       IMPLICIT REAL(DP) (A-H,O-Z)
       INTEGER I, J, ICON
+      EXTERNAL EIRENE_EXPI, EIRENE_EXIT_OWN
 
       P=I
       BN=(4.0-18.63/P+36.24/P**2-28.09/P**3)/P
@@ -810,6 +818,7 @@ C
       IMPLICIT REAL(DP) (A-H,O-Z)
       INTEGER I, N, K, ICON
       DIMENSION G(0:2,40)
+      EXTERNAL EIRENE_EXPI
 
       G(0,1)=1.1330
       G(1,1)=-0.4059
@@ -1026,7 +1035,7 @@ C
       REAL(DP) EIRENE_GAUNT3,EIRENE_GAUNT4,PP,XPP,A,B,EPSR
       INTEGER II, NMIN, NMAX
       COMMON PP,XPP
-      EXTERNAL EIRENE_GAUNT3, EIRENE_GAUNT4
+      EXTERNAL EIRENE_GAUNT3, EIRENE_GAUNT4, EIRENE_AQC8
 
       II=INT(P)
       PP=P
@@ -1106,6 +1115,7 @@ C
       INTEGER I,J,K,L,IE,ICON,IS
       LOGICAL :: L_EXT
       integer ip(40)
+      EXTERNAL :: EIRENE_LAX_M
 
       DO 201 K=2,LUP-1
 
@@ -1576,6 +1586,7 @@ C
       IMPLICIT REAL(DP) (A-H,O-Z)
       REAL(DP) OSC(40,40),CJ(40,40)
       INTEGER I, J, ICON
+      EXTERNAL EIRENE_EXPI
 
       TE=TEMP*1.1605E4
 C

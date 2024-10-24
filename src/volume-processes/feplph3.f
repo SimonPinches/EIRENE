@@ -16,6 +16,7 @@ cdr  unfinished routine, not to be used
       INTEGER, INTENT(IN) :: IRPH, K
       REAL(DP) :: EIRENE_FEPLPH3
       INTEGER :: KK, IPLSTI
+      EXTERNAL :: EIRENE_EXIT_OWN
 
       EIRENE_FEPLPH3=0.D0
       KK=NELRPH(IRPH)

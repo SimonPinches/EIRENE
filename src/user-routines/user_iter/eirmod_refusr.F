@@ -64,6 +64,7 @@ c
       IMPLICIT NONE
       INTEGER :: I          !Index for do loop
       CHARACTER*(9) :: HLP_FRM
+      EXTERNAL :: EIRENE_LEER, EIRENE_MASR3
 c
 c--------------------------------------------------------------------------
 c  Set the starting distribution coefficients for N2 vs ND3
@@ -345,6 +346,10 @@ c--------------------------------------------------------------------------
       REAL(DP) :: TSTEP
       INTEGER :: TSTEP_FLAG, IER
       LOGICAL :: file_exists
+      EXTERNAL :: EIRENE_CHECK_EXIT, EIRENE_EXIT_OWN
+#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+      EXTERNAL :: MPI_BCAST
+#endif
 
       IF (.NOT.ALLOCATED(DENSBE)) THEN
         ALLOCATE(DENSBE(0:NLIMPS))

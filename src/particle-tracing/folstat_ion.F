@@ -51,6 +51,8 @@ cym following pgi compilation ...
      .            VELXS, VELYS, VELZS, VELS,
      .            EIRENE_FPATH
       INTEGER :: ISTS, IFLAG, IRT
+      EXTERNAL :: EIRENE_UPDATE, EIRENE_UPDATE_SPECTRUM,
+     .            EIRENE_FPATH
 
       IRET = 0
 

@@ -184,6 +184,9 @@ cym this is because of SAVE attribute
       REAL(DP), INTENT(OUT) :: VELQ
       INTEGER, INTENT(IN) :: K, IOLD, NOLD, NFLAG, IREL
       REAL(DP) :: EIRENE_CROSS
+      EXTERNAL :: EIRENE_CROSS, EIRENE_FGAUSS, EIRENE_VECUSR,
+     .            EIRENE_MASJ1R, EIRENE_MASJ4, EIRENE_MASJ5,
+     .            EIRENE_LEER, EIRENE_EXIT_OWN
 
 CYM/HJL Variables moved to module scope
 
@@ -606,6 +609,7 @@ C     DIMENSION RV0(3),RVM(3),RVW(3),VM(3),VW(3),VSW(3)
 
       REAL(DP), INTENT(IN) :: ER, B, P(*)
       INTEGER, INTENT(IN) :: IFLAGI
+      EXTERNAL :: EIRENE_EXIT_OWN
 
 cym     REAL(DP) :: EIRENE_RTSAF,EIRENE_FI
 
@@ -700,6 +704,7 @@ C
       REAL(DP), INTENT(IN) :: RS, ER, B, P(*)
       REAL(DP), INTENT(OUT) :: RESULT
       INTEGER, INTENT(IN) :: IFLAGI, N, IGAUS
+      EXTERNAL :: EIRENE_EXIT_OWN
 
 cym ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cym local variables moved to declaration section of module
@@ -935,6 +940,7 @@ C
       REAL(DP) :: DSS, U, DU, SS, RI, RIQ, G1, REFF, RR,
      .            EMRR, G2, EX2, B2, V, DV, EX, RLOW, R2, R3,
      .            G, RMI, EPS
+      EXTERNAL :: EIRENE_EXIT_OWN
 
       B2=B*B
 C
@@ -1039,6 +1045,7 @@ C
       REAL(DP) :: RI, G1, SS, EX, EX2, RR, REFF, EMRR, G2, V,
      .          R, R2, B2, RLOW, G, RMI, EPS
       INTEGER :: IFI
+      EXTERNAL :: EIRENE_EXIT_OWN
 
 cym cccccccccccc transformed into regular module variables cccccc
 cym      REAL(DP) :: AR(128), AFI(128)

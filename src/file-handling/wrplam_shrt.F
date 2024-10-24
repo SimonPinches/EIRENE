@@ -57,6 +57,7 @@ cdr  Should only be written in modbgk, modphot, tmstep, etc.. routines
       INTEGER :: I
       REAL(DP), ALLOCATABLE, SAVE :: TIAR(:,:), DIAR(:,:),
      R                               VXAR(:,:), VYAR(:,:), VZAR(:,:)
+      EXTERNAL :: EIRENE_LEER
 
       write (iunout,*) 'WRPLAM_SHRT called from ',calledfrom
 
@@ -249,6 +250,7 @@ C .......................................................................
       INTEGER :: IO
       INTEGER :: IREA, ISWR, IREI, IRCX, IRPI, IREL, IFL, IPLS
       LOGICAL EX
+      EXTERNAL EIRENE_LEER
 
 C ........................................................................
 

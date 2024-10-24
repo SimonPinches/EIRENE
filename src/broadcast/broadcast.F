@@ -118,6 +118,11 @@ cdr
       USE EIRMOD_MPI
       IMPLICIT NONE
       INTEGER :: IER
+      EXTERNAL :: EIRENE_ALLOCATE_MODULES, EIRENE_BROADCAST_USR,
+     .            EIRENE_CHECK_EXIT
+#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+      EXTERNAL :: MPI_BCAST
+#endif
 
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
       CALL EIRENE_CHECK_EXIT

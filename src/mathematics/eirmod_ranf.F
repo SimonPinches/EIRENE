@@ -198,6 +198,7 @@ c
       implicit none
       integer, intent(in) :: ise
       integer :: idumran
+      external :: eirene_exit_own
 cym cccccccccccccccccccccccccccccccccc
 cym      integer :: iseed,idumran
 cym      common /cmem/ iseed

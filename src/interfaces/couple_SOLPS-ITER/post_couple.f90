@@ -11,6 +11,7 @@
       implicit none
       integer nx_b2,ny_b2,ns_b2,nstrat_b2
       logical error
+      external eirene_exit_own
 
       error=.false.
       if (levgeo.le.3) then

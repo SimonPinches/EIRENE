@@ -151,6 +151,8 @@ c   LGVAC(...,0)     : background vacuum flag
      .           IO, IPLSTI, IPLSV, IOLDTI, IOLDV, IBS, IFLG,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
      .           ITAL, K, NFTI, NFTE, JPLS, IRC
+      EXTERNAL :: EIRENE_RATE_COEFF, EIRENE_OTHER_RATE_COEFF,
+     .            EIRENE_VDION
 
       TYPE(EIRENE_SPECTRUM) :: SPEC
       LOGICAL :: FOUND
@@ -189,6 +191,8 @@ c   LGVAC(...,0)     : background vacuum flag
      .                              RC2MIN, RC2MAX, FP2(6)
         END SUBROUTINE EIRENE_SLREAC
       end interface
+
+      EXTERNAL :: EIRENE_RPLAM, EIRENE_EXIT_OWN
 
       FP1 = 0._DP
       FP2 = 0._DP
@@ -1026,6 +1030,7 @@ c  output: base_density, base_temp (missing: base_drift?)
 c
       INTEGER, INTENT(IN) :: IRE
       INTEGER :: IG, IT, ISTRA, ITYP
+      EXTERNAL :: EIRENE_RSTRT, EIRENE_SYMET, EIRENE_EXIT_OWN
 
       BASE_DENSITY = 0._DP
       BASE_TEMP = 0._DP

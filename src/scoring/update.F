@@ -103,7 +103,7 @@ C
      .            BX, BY, BZ,
      .            BF, VION,
      .            ELEI, EHEAVY
-      REAL(DP) :: EIRENE_FEELEI1, EIRENE_FEHVEI1
+      REAL(DP), EXTERNAL :: EIRENE_FEELEI1, EIRENE_FEHVEI1
       REAL(DP) :: VSIG_PARB(NPLS), VAL_PARB(NPLS),
      .            VX(NPLS), VY(NPLS),
      .            VZ(NPLS),XC,YC,ZC

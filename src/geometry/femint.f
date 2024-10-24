@@ -67,6 +67,7 @@ c  as well as partially for 2D (x,y) grids in case of levgeo=1,2,3
      .            z1, z2, z3, z4, res
       real(dp), save :: r, s, t, u
       integer, save :: ir, ip, it, ia, ib
+      external :: eirene_ncelln, eirene_xyz_to_rst, eirene_exit_own
 
       res = 0._dp
 

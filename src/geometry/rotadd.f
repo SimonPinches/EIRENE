@@ -23,6 +23,7 @@ C
       REAL(DP) :: P1S, P2S, P3S, A3S, A4S, A5S, A6S, A7S, A8S, A9S, S,
      .            DEL, EIRENE_DETER3X3, T, A1S, A2S
       INTEGER  :: I, J
+      EXTERNAL :: EIRENE_DETER3X3
 C
 C
       DO 100 I=ILINI,ILEND

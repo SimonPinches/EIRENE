@@ -30,6 +30,7 @@ C  User specific read routines
 
       implicit none
       integer :: i, j, idumm(9)
+      external :: eirene_exit_own
 
       backspace iunin
 csw 22jul2011
@@ -68,6 +69,7 @@ csw
       integer :: nsf, j
       integer, allocatable :: idum(:)
       logical :: found, foundc
+      external :: eirene_exit_own
 
       call json%get(me,'NSRFCLS',nsrfcls,found)
 

@@ -43,6 +43,7 @@ C
      .           K, KK,
      .           NFTI, NFTE, MXSPZ, IOUT
       CHARACTER(50) :: FNAME, FORMA, FORME, FORME2
+      EXTERNAL :: EIRENE_INTTAL, EIRENE_INTVOL, EIRENE_LEER
 C
 C  TYPE OF TALLY: TALTYP=0: #              (#-UNITS)
 C                 TALTYP=1: # DENSITY      (#-UNITS/CM**3)

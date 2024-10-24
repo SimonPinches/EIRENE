@@ -144,6 +144,7 @@
       integer, intent(in) :: iblk, iunout
       logical :: status_ok
       character(kind=json_CK,len=:), allocatable :: error_msg
+      external :: eirene_exit_own
 
       njs = njs + 1
 
@@ -185,6 +186,7 @@
 !cym
       integer :: ind, j
       logical :: found
+      external :: eirene_leer, eirene_exit_own
 
       call eirene_start_json(inname,0,iunout)
 

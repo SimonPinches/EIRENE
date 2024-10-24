@@ -18,6 +18,7 @@ C
       REAL(DP), INTENT(IN) :: B(3), V_PARALLEL, V_PERP, PHI
       REAL(DP), INTENT(INOUT) :: EB(3),V(3)
       REAL(DP) :: BNI
+      EXTERNAL :: EIRENE_B_PROJIN
 
       BNI=1./SQRT(SUM(B*B)+1.D-30)
       EB=B*BNI

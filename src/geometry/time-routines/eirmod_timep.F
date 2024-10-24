@@ -130,9 +130,11 @@ cym therefore: save not there, same in timer.F
 cym check this is correct
 cdr logicals for intersection with poloidal surfaces
       INTEGER :: NCOUNS(N2ND+N3RD)
+      EXTERNAL :: EIRENE_EXIT_OWN
 
 #ifdef TRACE
       INTEGER :: JJ
+      EXTERNAL :: EIRENE_LEER
 #endif
 
 cym cccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -347,6 +349,7 @@ C
       INTEGER :: J, JSH, ISTS, NN, NCOUPE, MPTEST, IR, IN,
      .           IRSAVE, I1, ITEST, ITC
       INTEGER :: EIRENE_LEARC2
+      EXTERNAL :: EIRENE_LEARC2
       LOGICAL  :: LNINCZ, LHITP0
 C
       IF (NRCELL.GT.0) GOTO 10
@@ -781,6 +784,7 @@ C
       INTEGER :: EIRENE_LEARC2
 cdr logicals for intersection with poloidal surfaces
       LOGICAL :: LHITP(N2NDPLGS)
+      EXTERNAL :: EIRENE_EXIT_OWN, EIRENE_ILLZ, EIRENE_LEARC2
 C
 C  BLOCK 2B. LEVGEO=2 BUT NOT NLCRC, POLOIDAL SURFACES ARE NOT PLANE SURFACES
 
@@ -1025,6 +1029,7 @@ C
      .            DYZR, DUM, BB
       INTEGER :: ISTS, ITEST, J1, J2, MPTEST, NYSAVE, IRSAVE, IN, INCY
       INTEGER :: EIRENE_LEARCA
+      EXTERNAL :: EIRENE_LEARCA
 C
 C  IDENTICAL, UP TO NAMES, TO TOROIDAL GRID PART, NLTRZ BLOCK
 C

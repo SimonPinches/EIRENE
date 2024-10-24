@@ -61,6 +61,7 @@ C
       IMPLICIT NONE
 
       INTEGER :: IIN, IR, J
+      EXTERNAL :: EIRENE_INDTAL
 
       IMETCL = 0
       NCLMT = 0

@@ -48,6 +48,7 @@ C
      .          UX(:,:),UY(:,:),DET(:,:),
      .          VY1(:,:),WY1(:,:),WX1(:,:),DWY(:,:),HELP(:,:),
      .          D12(:,:),D14(:,:),D32(:,:),D34(:,:)
+      EXTERNAL :: EIRENE_MASAGE, EIRENE_MASR2
 !pb      SAVE
 !     DATA IFIRST /0/
 

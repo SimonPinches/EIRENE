@@ -157,6 +157,7 @@ csw external
 c I/O & MISC-ROUTINES
       SUBROUTINE EIRENE_PH_INIT(ICAL)
       integer, intent(in) :: ical
+      external :: eirene_exit_own
 
       select case(ical)
 csw ICAL == 0
@@ -233,6 +234,7 @@ c     .            omega_min
       real(dp):: ctheta,ctheta2,dbz
       real(dp):: t_e,t_p,t_g
       real(dp):: bx, by, bz, bf
+      external :: eirene_exit_own
 
 c  reaction data for process kkin are now loaded into "reaction"
 c  includes also reaction%b12.
@@ -481,6 +483,7 @@ c           9:   lorentz+doppler, i.e., voigt
       integer, intent(in) :: iprof
       real(dp) :: xx,yy,val,del(-1:1),e00d,res
       integer :: ipol
+      external :: eirene_exit_own
 
       res = 0.
       del(-1)=-dbz
@@ -972,6 +975,7 @@ c      real(dp) :: dl, l0, l00
       real(dp) :: ctheta,ctheta2,dbz,zep1,v,T_e,T_p,T_g
       real(dp) :: bx, by, bz, bf
       integer :: ictoff
+      external :: eirene_exit_own
 
       ctheta =0._dp
       ctheta2=0._dp
@@ -1184,6 +1188,7 @@ c        2: stim.em
      .    zep1,cangl,een,dl,
      .    fwhm,shift,dvdw,ee,cvel,l0,e00s,
      .    velx_b, vely_b, velz_b, velparm, vel_b
+      external :: eirene_fisotr, eirene_fgauss, eirene_exit_own
 
       if (idreac /= kk) call EIRENE_get_reaction(kk)
 
@@ -1883,6 +1888,7 @@ c
       integer, intent(in) :: icell,ipl
       real(dp) :: u,v
       logical :: flag
+      external :: eirene_exit_own
 
       call EIRENE_ph_wofz(x,y,u,v,flag)
       if(flag) then
@@ -2016,6 +2022,7 @@ c     f2=v2*sqrt(-(ar+ar)/s)*sig
       real(dp) :: dsum,e00d,del,r0,ssum,res
       real(dp) :: strength(-1:1)
       integer :: ipol
+      external :: eirene_exit_own
 
       res = 0._dp
 c  3 normal zeeman components:
@@ -2858,6 +2865,7 @@ c allocate
       integer :: kk,ipl0,ipl1,ipl2,ityp0,ityp1,ityp2,
      .    ifnd,mode,updf,nseot4,ierr,ipl0ti
       real(dp) :: factkk, ebulk
+      external :: eirene_exit_own, eirene_leer
 
       kk=ireacph(ipht,nrc)
       factkk=freacph(ipht,nrc)
@@ -3672,6 +3680,7 @@ c
       logical, allocatable, save :: visitl(:), visitr(:)
       integer, save :: ictsave = -1
       integer :: icount, nrjp, irj
+      external :: eirene_exit_own
 
       nrjp = reaction%nrjprt
 
@@ -4006,6 +4015,9 @@ c    .                           res
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: ME
       INTEGER :: IER, NNROT, NRC, KK, IATM, IPHOT
+#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+      EXTERNAL :: MPI_BCAST
+#endif
 
       IF (NPHOTI > 0) THEN
         nnrot=0

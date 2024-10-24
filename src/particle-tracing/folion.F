@@ -161,7 +161,12 @@ c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
      .           EIRENE_LEARC2, COLTYP,
      .           indf, NJUMP_EMC3 = 0, IRET, IRT_STAT, KK
       LOGICAL :: LCNDEXP
-
+      EXTERNAL :: EIRENE_CLLTST, EIRENE_ESCAPE, EIRENE_FOLSTAT_ION,
+     .            EIRENE_FPATH, EIRENE_FPKCOL, EIRENE_NEWFIELD,
+     .            EIRENE_SRFCHK, EIRENE_TIMCOL, EIRENE_TORCOL,
+     .            EIRENE_TIME_TO_STANDARD_SURFACE, EIRENE_UPDATE,
+     .            EIRENE_UPDATE_SPECTRUM, EIRENE_EXIT_OWN,
+     .            EIRENE_LEER, EIRENE_MASAGE, EIRENE_LEARC2
 
 c  no conditional expectation estimators for test ions
 
@@ -1506,6 +1511,7 @@ C
       REAL(DP), INTENT(IN) :: X,Y,Z,VELS
       REAL(DP) :: BVEC_1(3), VVEC(3), GYRO, BBF
       INTEGER :: IND
+      EXTERNAL :: EIRENE_BFIELD, EIRENE_B_PROJI
 
       CALL EIRENE_BFIELD (NCELL, X, Y, Z, BBX, BBY, BBZ, BBF, .TRUE.)
       BVEC = (/ BBX, BBY, BBZ /)

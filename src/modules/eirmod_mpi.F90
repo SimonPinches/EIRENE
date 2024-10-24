@@ -512,86 +512,6 @@ module eirmod_mpi
     data2(1:n) = data1(1:n,1)
   end subroutine mpi_reduce_L2_L1
 
-#ifdef GFORTRAN
-  subroutine mpi_ireduce_i0_r1 (data1, data2, n, datatype, operation, receiver, &
-    comm, request, ierror )
-    ! first argument is MPI_IN_PLACE flag
-    implicit none
-    integer, intent(in) :: n, comm
-    integer, intent(in) :: data1
-    double precision, dimension(:) :: data2
-    integer, intent(in) :: datatype, operation, receiver
-    integer, intent(out) :: request, ierror
-    if ( datatype == mpi_integer ) then
-      ierror = mpi_success
-    else
-      ierror = MPI_FAILURE
-    end if
-    request = 0
-    data2 = data1
-  end subroutine mpi_ireduce_i0_r1
-
-  subroutine mpi_ireduce_i0_l1 (data1, data2, n, datatype, operation, receiver, &
-    comm, request, ierror )
-    ! first argument is MPI_IN_PLACE flag
-    implicit none
-    integer, intent(in) :: n, comm
-    integer, intent(in) :: data1
-    logical, dimension(:) :: data2
-    integer, intent(in) :: datatype, operation, receiver
-    integer, intent(out) :: request, ierror
-    if ( datatype == mpi_integer ) then
-      ierror = mpi_success
-    else
-      ierror = MPI_FAILURE
-    end if
-    request = 0
-    if ( data1 == 0 ) then
-      data2 = .false.
-    else if ( data1 == 1 ) then
-      data2 = .true.
-    else
-      ierror = MPI_FAILURE
-    end if
-  end subroutine mpi_ireduce_i0_l1
-  
-  subroutine mpi_ireduce_r1_r1 (data1, data2, n, datatype, operation, receiver, &
-    comm, request, ierror )
-    ! first argument is MPI_IN_PLACE flag
-    implicit none
-    integer, intent(in) :: n, comm
-    double precision, dimension(:), intent(in) :: data1
-    double precision, dimension(:) :: data2
-    integer, intent(in) :: datatype, operation, receiver
-    integer, intent(out) :: request, ierror
-    if ( datatype == mpi_double_precision ) then
-      ierror = mpi_success
-    else
-      ierror = MPI_FAILURE
-    end if
-    request = 0
-    data2 = data1
-  end subroutine mpi_ireduce_r1_r1
-   
-  subroutine mpi_ireduce_l1_l1 (data1, data2, n, datatype, operation, receiver, &
-    comm, request, ierror )
-    ! first argument is MPI_IN_PLACE flag
-    implicit none
-    integer, intent(in) :: n, comm
-    logical, dimension(:), intent(in) :: data1
-    logical, dimension(:) :: data2
-    integer, intent(in) :: datatype, operation, receiver
-    integer, intent(out) :: request, ierror
-    if ( datatype == mpi_logical ) then
-      ierror = mpi_success
-    else
-      ierror = MPI_FAILURE
-    end if
-    request = 0
-    data2 = data1
-  end subroutine mpi_ireduce_l1_l1
-#endif
-
   subroutine mpi_reduce_inplace_r0(data1, data2, n, datatype, operation, receiver, &
     comm, ierror)
     ! first argument is MPI_IN_PLACE flag
@@ -988,6 +908,7 @@ module eirmod_mpi
     integer, intent(out) :: recvbuf
     integer, intent(in) :: sendtype, recvtype, root, comm
     integer, intent(out) :: ierr
+    external eirene_exit_own
     if (sendcount == recvcount) then
       ierr = MPI_SUCCESS
       recvbuf = sendbuf
@@ -1007,6 +928,7 @@ module eirmod_mpi
     integer, intent(out) :: recvbuf
     integer, intent(in) :: sendtype, recvtype, root, comm
     integer, intent(out) :: ierr
+    external eirene_exit_own
     if (sendcount == recvcount) then
       ierr = MPI_SUCCESS
       recvbuf = sendbuf(1)
@@ -1026,6 +948,7 @@ module eirmod_mpi
     integer, intent(out) :: recvbuf(recvcount)
     integer, intent(in) :: sendtype, recvtype, root, comm
     integer, intent(out) :: ierr
+    external eirene_exit_own
     if (sendcount == recvcount) then
       ierr = MPI_SUCCESS
       recvbuf(1:sendcount) = sendbuf(1:sendcount)

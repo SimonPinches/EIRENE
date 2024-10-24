@@ -116,6 +116,16 @@ C
      .           IFRSTR, ISTH, ISTNEW, ISTIN, ISTRAI, ifrst_save, iflg
       LOGICAL :: LSTP, LLST, LPLASM
       LOGICAL :: NLSRON_SAVE(NSTRA), LOGHELP(NSTRA)
+      EXTERNAL :: EIRENE_FTABEI1, EIRENE_FEELEI1,
+     .            EIRENE_HEADNG, EIRENE_LEER,
+     .            EIRENE_MASAGE, EIRENE_MASR1,
+     .            EIRENE_PLASMA, EIRENE_PLASMA_DERIV,
+     .            EIRENE_PLSTRT, EIRENE_PLEND,
+     .            EIRENE_REPLACE_STORED, EIRENE_RPLAM, EIRENE_SETAMD,
+     .            EIRENE_WRPLAM, EIRENE_EXIT_OWN
+#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+      EXTERNAL :: MPI_BCAST
+#endif
 C
 
 cdr pointer :: rtis, FOR "OD" RATES (SHORT CYCLE) PER STRATUM
@@ -1014,6 +1024,9 @@ C
       implicit none
       integer :: ierr_mpi
       LOGICAL :: LOGHELP(NSTRA)
+#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+      EXTERNAL :: MPI_BCAST
+#endif
 
 !pb copy NLSRON to LOGHELP to avoid warnings from Intel compiler
       LOGHELP(1:NSTRAI) = NLSRON(1:NSTRAI)

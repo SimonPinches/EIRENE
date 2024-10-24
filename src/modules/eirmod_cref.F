@@ -222,6 +222,10 @@ cdr Why can we not use NHDx directly?
 
       INTEGER, INTENT(IN) :: ME
       INTEGER :: IER
+      EXTERNAL :: EIRENE_CHECK_EXIT
+#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+      EXTERNAL :: MPI_BCAST
+#endif
 
       CALL EIRENE_CHECK_EXIT
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)

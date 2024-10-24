@@ -17,6 +17,7 @@ C
       LOGICAL, INTENT(OUT) :: L
       REAL(DP) :: XMS1, XMS2, XMS3, XLS1, XLS2, XLS3
       INTEGER :: I
+      EXTERNAL :: EIRENE_EXIT_OWN
 
       L=.TRUE.
       IF (RLB(N).EQ.1..OR.RLB(N).EQ.1.5) THEN

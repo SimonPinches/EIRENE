@@ -25,10 +25,16 @@ This commit is meant to apply good coding practices with minimal consequences on
 
 - Applied CONTRIBUTING rule that Fortran file extensions should be .F instead of .f when the file must be pre-processed by the Makefile
 - Pointing to modified set of examples with .F file extensions
+- Removed forced usage of OpenMP compiler options
 - Added TRCMELD output switch
+- Added definition of GFORTRAN pragma in CMakeLists.txt
+- Added EXTERNAL definitions for called subroutines and functions
+- Removed superfluous MPI interface routines
 - Added some more clarifying comments
 - Have figures in Manual listed by full relative path and file extension
 - Added missing comment about density validity range in AMJUEL file
+- Added -allow-argument-mismatch argument to GNU compilation above version 9.5 to avoid errors with MPI routines
+- Added Cray compiler support
 ---
 
 ## H. Leggate - HJL/add_changelog_and_coding_rules_version_check - 5cc860bae983754e7aaabb8797f8b340e80e2ac7

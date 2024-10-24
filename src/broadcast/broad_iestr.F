@@ -6,6 +6,10 @@
 
       INTEGER, INTENT(IN) :: IESTR
       INTEGER :: IER
+      EXTERNAL :: EIRENE_CHECK_EXIT
+#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+      EXTERNAL :: MPI_BCAST
+#endif
 
       CALL EIRENE_CHECK_EXIT
       CALL MPI_BARRIER (MPI_COMM_WORLD,IER)

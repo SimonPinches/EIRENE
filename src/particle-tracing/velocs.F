@@ -56,6 +56,7 @@ ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
 #ifdef PGF90
       REAL(DP) :: DERF
 #endif
+      EXTERNAL :: EIRENE_FMAXWL, EIRENE_ROTATF, EIRENE_ROTATI
 C
 C---------------------------------------------------------------------
 C

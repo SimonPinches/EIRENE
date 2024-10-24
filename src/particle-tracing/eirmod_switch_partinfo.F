@@ -750,6 +750,8 @@ cdr now: allocatable, rather than pointer
       subroutine eirene_output_partinfo
       implicit none
       integer :: istr, it, is
+      external :: eirene_leer, eirene_headng,
+     .            eirene_masage, eirene_masr1, eirene_masyr1
 
       call eirene_leer(2)
 

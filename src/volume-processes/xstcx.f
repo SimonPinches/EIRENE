@@ -96,6 +96,8 @@ C
       REAL(DP), PARAMETER :: TMINL=-2.3_DP
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt
+      EXTERNAL :: EIRENE_DBL_POLY, EIRENE_LEER, EIRENE_EXIT_OWN,
+     .            EIRENE_RATE_COEFF, EIRENE_ENERGY_RATE_COEFF
 
       SAVE
 
@@ -575,6 +577,7 @@ C
       INTEGER, INTENT(IN) :: IRCX, IPL
       INTEGER :: ITYP1, ITYP2, ISPZ1, ISPZ2
       CHARACTER(8) :: TEXTS1, TEXTS2
+      EXTERNAL :: EIRENE_LEER
 C
       CALL EIRENE_LEER(2)
       WRITE (iunout,*) 'CHARGE EXCHANGE REACTION NO. IRCX= ',IRCX

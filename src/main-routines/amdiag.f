@@ -108,6 +108,14 @@ cdr  functions for 'on the fly' evaluation of A&M data
      .           iael,imel,iiel,iaei,imei,iiei,iprc
       CHARACTER(4) :: CNO, CN1
       LOGICAL :: LEXP
+      EXTERNAL :: EIRENE_LEER,
+     .            EIRENE_FEELEI1,
+     .            EIRENE_FEELRC1,
+     .            EIRENE_FEPLCX3, EIRENE_FEPLEL3,
+     .            EIRENE_FTABCX3, EIRENE_FTABPI3,
+     .            EIRENE_FTABEI1, EIRENE_FTABRC1,
+     .            EIRENE_FTABEL3,
+     .            EIRENE_RATE_COEFF, EIRENE_SNGL_POLY
 
       AU=0.6120D-08
 

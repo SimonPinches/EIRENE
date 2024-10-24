@@ -274,6 +274,10 @@ cdr  for reading asymptotics parameters from data files
         end subroutine eirene_lookup_adasdir_usr
 
       END INTERFACE
+
+      EXTERNAL :: EIRENE_READ_PHOTDBK, EIRENE_READ_TAB2D,
+     .            EIRENE_LEER, EIRENE_MASJ1R, EIRENE_MASRR1,
+     .            EIRENE_EXIT_OWN, EIRENE_UPPERCASE
 C
       IF(TRCAMD) WRITE(IUNOUT,'(A,1X,I3,1X,A8,1X,A4,1X,A,1X,A2)')
      w                 "IR,FILNAM,H123,REAC,CRC",IR,FILNAM,H123,

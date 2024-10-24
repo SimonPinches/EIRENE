@@ -53,6 +53,7 @@ cdr  set from the external code, or in EIRSRT, and are problem-specific.
       INTEGER :: ITNR
       LOGICAL :: NLM,NLL,MPI_INIT
       INTEGER :: IER
+      EXTERNAL :: EIRENE_PLSTRT, EIRENE_PLEND
 
 C     Initialize MPI
       CALL EIRENE_MPI_INIT(IER)

@@ -120,6 +120,9 @@ cym
 !pgf      character(kind=CK,len=:), allocatable :: header
 !cym/cpg, keep using json_ck
       character(kind=json_CK,len=:), allocatable :: header
+      EXTERNAL :: EIRENE_COUPLE_PARAM_CONSISTENCY,
+     .            EIRENE_FIND_TRIANG_DIM, EIRENE_FIND_TET_DIM,
+     .            EIRENE_INIT_PARAMS, EIRENE_LEER, EIRENE_EXIT_OWN
 
 C
 C  SET DEFAULT VALUES FOR STORAGE PARAMETERS

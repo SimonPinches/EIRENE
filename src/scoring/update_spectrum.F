@@ -54,6 +54,7 @@ c  ityp: type of particle
       INTEGER :: ISPC, I, IS, IC, IRDO, IRD, ID
       REAL(DP) :: ADD, WV, DIST, WTR, SPCVX, SPCVY, SPCVZ, CDYN,
      .            EB, SIG, CA, L, LNORM
+      EXTERNAL :: EIRENE_EXIT_OWN, EIRENE_LEGENDRE
 
       TYPE(EIRENE_SPECTRUM), POINTER :: P
 

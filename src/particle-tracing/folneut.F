@@ -131,7 +131,13 @@ C
      .           NCLLN, IRET, IRT_STAT, KK
       LOGICAL :: NLPR, LCNDEXP
       TYPE(CELL_INFO), POINTER :: NEW_CELL
-
+      EXTERNAL :: EIRENE_CLLTST, EIRENE_COLPHOT, EIRENE_ESCAPE,
+     .            EIRENE_FOLSTAT_NEUT, EIRENE_SPLTRR, EIRENE_TIMCOL,
+     .            EIRENE_TIME_TO_STANDARD_SURFACE, EIRENE_TORCOL,
+     .            EIRENE_UPDATE, EIRENE_UPDATE_SPECTRUM,
+     .            EIRENE_LEER, EIRENE_MASAGE,
+     .            EIRENE_MASJ4, EIRENE_MASJ5,
+     .            EIRENE_FPATH, EIRENE_LEARC2
 
 c  all cell indices must be known at this point
 c  tentatively assume: a next generation particle will be born

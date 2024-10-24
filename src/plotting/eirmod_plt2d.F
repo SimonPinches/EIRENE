@@ -101,6 +101,14 @@ C
       LOGICAL :: LSTORE, PLSAV1, PLSAV2
       CHARACTER(10) :: CX, CY, CX0, CY0, CZ0
       CHARACTER(6) :: CH
+      EXTERNAL :: EIRENE_FTCRE, EIRENE_NCELLN, EIRENE_PLGELR,
+     .            EIRENE_PLNXTB, EIRENE_PLTADD, EIRENE_PLTLNE,
+     .            EIRENE_PLTMSK, EIRENE_PLT3D, EIRENE_ROTADD,
+     .            EIRENE_SETROT, EIRENE_TETRA_SCHNITT,
+     .            EIRENE_XSHADD, EIRENE_YSHADD, EIRENE_ZSHADD,
+     .            EIRENE_EXIT_OWN
+      EXTERNAL GRARRW, GRCLP, GRCHRC, GRDRW, GRDSH, GRJMP,
+     .         GRFILL, GRNWPN, GRSCLV, GRSPTS, GRTXT
 
       SAVE
 C
@@ -1495,13 +1503,21 @@ cym      REAL(DP) :: XNP05, YYIA, XN1, YN, FX, FY, XN2, Z1, XN3, YNP, XN,
 cym     .          YWO, XWO, XR, THET, PPHI, XPL, RWN, YPL, ZPL, ZWN,
 cym     .          XPLO, YPLO, ZPLO, XN0
 cym      INTEGER :: IA, I, J
-cym      INTEGER :: ICP, ISTR, IC, NTDUM, NTT,  EIRENE_LEARCA,
+cym      INTEGER :: ICP, ISTR, IC, NTDUM, NTT,
 cym     .           NT, ICOLOR, ISYM, IFLAG, ISP, IAA
 cym      LOGICAL :: LWR
 cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       INTEGER :: EIRENE_LEARCA
+      EXTERNAL :: EIRENE_LEARCA
       CHARACTER(20) :: TXTHST(NTXHST)
+      EXTERNAL :: EIRENE_FZRTOR, EIRENE_FZRTRA, EIRENE_FZRTRI,
+     .            EIRENE_LEER, EIRENE_MASJ1, EIRENE_MASJ1R,
+     .            EIRENE_MASJ3, EIRENE_MASJ4, EIRENE_MASJ5,
+     .            EIRENE_MASR1, EIRENE_MASR2,
+     .            EIRENE_MASR3, EIRENE_MASR5, EIRENE_MASR6
+      EXTERNAL :: GRDRW, GRDSH, GRFONT, GRJMP, GRJMPS, GRNWPN,
+     .            GRSCLV, GRSPTS, GRTXT
 
 cym removed ... check if ok
 cym      SAVE

@@ -23,6 +23,7 @@ cdr  after this: INTLOPTS should not be needed any more?
 
       INTEGER :: J, ITAL, NLSTTL, INDGRAD, INDTL,
      .              NTAL              !dr  NTAL = NTALG or = NTALI
+      EXTERNAL :: EIRENE_LEER
 C
 
 C  LIVTALI: SWITCH OFF SOME INPUT TALLIES AUTOMATICALLY;

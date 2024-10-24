@@ -152,6 +152,9 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
         integer :: group !, gsize, grank
         logical :: found
         character*13 hlp_frm
+#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+        external :: mpi_allgather
+#endif
 
         call MPI_allGather(include_me, 1, MPI_LOGICAL,
      &          include_proc, 1, MPI_LOGICAL, MPI_COMM_WORLD, ierr)
@@ -315,6 +318,11 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
         logical, save :: first_call = .true.
         integer, dimension(NSTRA) :: old_stratum_leader
         integer, dimension(NSTRA) :: ipts
+        external :: eirene_pedist, eirene_leer, eirene_masage,
+     &              eirene_exit_own
+#if( defined(USE_MPI) && !defined(GFORTRAN) )
+        external :: mpi_bcast
+#endif
 
         if (first_call) then
           old_stratum_leader = -1
@@ -417,6 +425,10 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
         integer j, k, ierr, n, in, it, ie, isa, ise
         real(kind=dp) :: tot, time_avg, time_std
         real(kind=dp), dimension(0:nprs-1) :: time_pe
+        external :: eirene_leer
+#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+        external :: mpi_gather
+#endif
 
         call MPI_Gather(nparts_loc, nstrai, MPI_INTEGER,
      &     nparts_tmp, nstrai, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
@@ -615,6 +627,10 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
         integer :: k, ierr
         integer, dimension(nprs) :: tmp
         integer :: grank
+        external :: eirene_masage, eirene_exit_own
+#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+        external :: mpi_allgather
+#endif
 
         index_shift(1) = 0
         do k = 2, nstrai

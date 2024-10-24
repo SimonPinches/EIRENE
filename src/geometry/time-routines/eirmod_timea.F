@@ -76,6 +76,7 @@ C      REAL(DP) :: XLS1, XLS2, XLS3, XMS1, XMS2, XMS3
      .           ISTS, I1000, J, I,
      .           ISPZ, IAB, JUM
       INTEGER, EXTERNAL :: EIRENE_IDEZ
+      EXTERNAL :: EIRENE_BITSET, EIRENE_EXIT_OWN, EIRENE_LEER
 
       SAVE
 C
@@ -590,6 +591,9 @@ c     some vars for checking on intersection/where we are
       REAL(DP), SAVE :: runlength, norm
       LOGICAL, SAVE :: status
 
+#ifdef TRACE
+      EXTERNAL EIRENE_LEER, EIRENE_MASR4
+#endif
 
 !$OMP THREADPRIVATE(TMIN,X_S, Y_S, Z_S, SG_S,
 !$OMP&        NNTCL, MASURF_S, LCNDEXP_S,

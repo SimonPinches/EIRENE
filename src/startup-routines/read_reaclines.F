@@ -89,6 +89,8 @@ C
       character(3), save :: rea_proc(8) =
      .   (/ 'EI ','DS ','CX ','II ','PI ','EL ','RC ','OT ' /)
       logical :: chk_h123
+      external :: eirene_lowercase, eirene_read_token, eirene_leer,
+     .            eirene_exit_own
 
       filnam = repeat(' ',8)
       h123 = repeat(' ',4)

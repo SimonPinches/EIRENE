@@ -34,6 +34,8 @@ c
      .            EIRENE_FTABPI3,
      .            ELPI, EIRENE_ENERGY_RATE_COEFF, DELE
       INTEGER :: KK
+      EXTERNAL :: EIRENE_EXIT_OWN, EIRENE_FTABPI3,
+     .            EIRENE_ENERGY_RATE_COEFF
 
       EIRENE_FEELPI3=0.D0
       KK=NELRPI(IRPI)

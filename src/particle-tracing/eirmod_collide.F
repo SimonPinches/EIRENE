@@ -167,6 +167,7 @@ C
       INTEGER :: I, J
       REAL(DP), POINTER :: PXX2(:,:), PXPL2(:,:), PXAT2(:,:),
      .                     PXML2(:,:), PXIO2(:,:)
+      EXTERNAL :: EIRENE_BFIELD, EIRENE_VELOEI, EIRENE_EXIT_OWN
 
 C  INIT
       KK = 0

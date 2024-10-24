@@ -205,6 +205,9 @@ C
       SUBROUTINE EIRENE_REFLC0
       IMPLICIT NONE
       INTEGER :: EIRENE_LEARCA
+      EXTERNAL :: EIRENE_LEARCA
+      EXTERNAL :: EIRENE_RDTRIM, EIRENE_REFDAT, EIRENE_SPLINE,
+     .            EIRENE_LEER, EIRENE_MASR3, EIRENE_EXIT_OWN
 CYM/HJL Moved variables to module scope
       SAVE
 C
@@ -446,6 +449,8 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       IMPLICIT NONE
       REAL(DP) :: WMIN, XMP, XCP
       INTEGER :: NPRIN, IGASF, IGAST
+      EXTERNAL :: EIRENE_FCOSIN, EIRENE_ROTATE, EIRENE_ROTATF,
+     .            EIRENE_VELOCS, EIRENE_LEER, EIRENE_EXIT_OWN
 
 c DATA FOR REDUCED ENERGY SCALING
 CYM/HJL Moved variables to module scope

@@ -26,6 +26,7 @@
         integer                                  :: i, j, ip
         INTEGER,dimension(2)                     :: ipdst
         logical                                  :: exi_spunkt
+        EXTERNAL :: EIRENE_SCHNITT_GER_EB, EIRENE_SORT_UEBERPRUEF
 
         spanz=0; i=1; j=1
         DSTMIN=HUGE(1.D0)

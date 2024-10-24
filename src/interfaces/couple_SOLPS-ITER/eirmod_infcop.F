@@ -289,6 +289,10 @@ C
       CHARACTER(20) :: FORM
       CHARACTER(72) :: ZEILE
       LOGICAL :: EX, L1, L2, LDUMMY, FOUND, IFBOUND
+      EXTERNAL :: EIRENE_HEADNG, EIRENE_LEER, EIRENE_EXIT_OWN,
+     .            EIRENE_GEOMD, EIRENE_GEOUSR,
+     .            EIRENE_INDMAP, EIRENE_PLASM, EIRENE_SNEIGH,
+     .            EIRENE_MASJ1, EIRENE_MASJ2, EIRENE_MASJ5
 C
       IERROR=0
       IUSROUT = 0
@@ -1396,6 +1400,9 @@ csw
        IMPLICIT NONE
        INTEGER :: JL
        LOGICAL :: LDUMMY
+       EXTERNAL :: EIRENE_MASPRM, EIRENE_MASR4,
+     .             EIRENE_EXIT_OWN, EIRENE_SKIP_READ_COMMENT,
+     .             FIX_LOGICAL_INPUT
 
        WRITE (iunout,*) '        SUBROUTINE INFCOP IS CALLED'
 C  READ INPUT DATA OF BLOCK 14
@@ -1641,6 +1648,7 @@ C  COPY USER SPECIFIC DATA TO FILE user_data.input
        integer :: j, npl, ntrg
        integer, allocatable :: ihelp(:)
        logical :: found, foundi, foundo, ldummy
+       external :: eirene_masprm, eirene_masr4
 
        WRITE (iunout,*) '        SUBROUTINE INFCOP IS CALLED  '
 C  READ INPUT DATA OF BLOCK 14
@@ -1953,6 +1961,8 @@ C
       REAL(DP) :: UUBC, VVBC, WWBC, BX, BY, BZ, BN
       REAL(DP) :: RRBC, UDBC, UPBC, VDBC
       REAL(DP) :: DUMMY(0:NDXP,0:NDYP)
+      EXTERNAL :: EIRENE_PLASM, EIRENE_INDMAP, EIRENE_LEER,
+     .            EIRENE_EXIT_OWN
 
 C
 C   NOW READ THE PLASMA STATE GIVEN BY BRAAMS
@@ -2734,6 +2744,8 @@ C
 C
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       REAL(DP), EXTERNAL :: EIRENE_STEP, EIRENE_EMAXW
+      EXTERNAL :: EIRENE_LEER, EIRENE_MASR1, EIRENE_MASJ6,
+     .            EIRENE_FTCRI, EIRENE_EXIT_OWN
 C
       DATA LTARG/0/
 C
@@ -3645,6 +3657,8 @@ C
       TYPE(RATE_STORE), POINTER :: RTIS
 C
       REAL(DP), EXTERNAL :: EIRENE_FTABRC1, EIRENE_FEELRC1
+      EXTERNAL :: EIRENE_MASR6, EIRENE_INDMPI, EIRENE_LEER,
+     .            EIRENE_SAVE_TALLIES
 C
       IF (IENTRY.EQ.0) THEN
         WRITE (iunout,*) 'IF3COP IS CALLED, ISTRAA,ISTRAE'
@@ -5559,6 +5573,10 @@ cdr  sputter fluxes
       INTEGER, ALLOCATABLE, SAVE :: IHELP(:)
       real(dp), allocatable :: helpw(:)
       LOGICAL, SAVE :: LNONREC_SY, LNONREC_NY, LNONREC_WX, LNONREC_EX
+      EXTERNAL :: EIRENE_LEER, EIRENE_MASRR1, EIRENE_MASR1,
+     .            EIRENE_MASR2, EIRENE_MASR3, EIRENE_MASR4,
+     .            EIRENE_MASJ2, EIRENE_MASJ5, EIRENE_MASYR1,
+     .            EIRENE_EXIT_OWN
 C
       NREC11=NOUTAU
       OPEN (UNIT=11,ACCESS='DIRECT',FORM='UNFORMATTED',RECL=8*NREC11,
@@ -6272,6 +6290,9 @@ csw mpi 07apr2010
       SUBROUTINE EIRENE_BROADCAST_INFCOP
       IMPLICIT NONE
       integer :: ier
+#ifdef USE_MPI
+      external :: mpi_bcast
+#endif
 
       if(my_pe > 0) then
         if(.not.allocated(lcut)) allocate(lcut(0:NDXP))
@@ -6345,6 +6366,9 @@ csw mpi 09jun2010
       implicit none
       integer :: ifl, istrx, ier
       real(dp), allocatable :: dumvec(:)
+#ifdef USE_MPI
+      external :: mpi_bcast
+#endif
 
       if(.not.allocated(snis0)) then
         ALLOCATE (SEES0(NSTRAi))
@@ -6418,6 +6442,9 @@ csw mpi 09jun2010
       integer, intent(in) :: istrr, irank
       integer ier
       real(dp), allocatable :: dumvec(:)
+#ifdef USE_MPI
+      external :: mpi_recv
+#endif
 
       allocate(dumvec(0:nfl))
       call mpi_recv(xmct(istrr),     1, MPI_DOUBLE_PRECISION,
@@ -6593,6 +6620,9 @@ cdjm Jan2017
       integer, intent(in) :: istrr, irank
       integer :: ier
       real(dp), allocatable :: dumvec(:)
+#ifdef USE_MPI
+      external :: mpi_send
+#endif
 
       allocate(dumvec(0:nfl))
       call mpi_send(xmct(istrr),     1, MPI_DOUBLE_PRECISION,

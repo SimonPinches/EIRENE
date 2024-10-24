@@ -32,6 +32,7 @@ cdr              Not fully available for all levgeo=1,2,3 optins. Check FEMINT.f
       real(dp), intent(in) :: x, y, z
       real(dp), intent(out) :: bx, by, bz, bf
       real(dp) :: eirene_femint, bni
+      external :: eirene_vecusr, eirene_femint
 
       IF (INDPRO(5) == 8) THEN
 cdr  user defined B field. Units of Bx, By, Bz?

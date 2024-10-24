@@ -8,6 +8,9 @@ C
       INTEGER, INTENT(IN) :: ICC
 #ifdef USE_MPI
       INTEGER :: IER
+#ifndef GFORTRAN
+      EXTERNAL :: MPI_ALLGATHER
+#endif
 #endif
       LOGICAL :: LXOWN
       EXTERNAL :: EIRENE_PLEND, IOFLUSH_USR
@@ -39,6 +42,10 @@ C  LEGAL ENDING OF GR PLOTTING SOFTWARE
 #ifdef USE_MPI
       INTEGER :: IER
       INTEGER IPRS
+      EXTERNAL :: EIRENE_PLEND
+#ifndef GFORTRAN
+      EXTERNAL :: MPI_ALLGATHER
+#endif
 #endif
       LOGICAL :: LXOWN
 

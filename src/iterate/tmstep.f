@@ -73,6 +73,9 @@ c
                                    ! for initializing stand. deviations
      .           ISTRAI, JATM, JMOL, JION, JPHOT,
      .           I
+      EXTERNAL :: EIRENE_LEER, EIRENE_MASBOX, EIRENE_MASJ2,
+     .            EIRENE_MASR1, EIRENE_MASR2,
+     .            EIRENE_TMSUSR, EIRENE_WRSNAP
 C
 C  STEP 1
 C

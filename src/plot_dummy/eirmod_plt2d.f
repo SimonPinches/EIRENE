@@ -42,6 +42,10 @@ cdr  to still be able to provide printed trajectory output.
       INTEGER :: ISTR, I
       LOGICAL :: LWR
       CHARACTER(20) :: TXTHST(NTXHST)
+      EXTERNAL :: EIRENE_LEER, EIRENE_MASJ1, EIRENE_MASJ1R,
+     .            EIRENE_MASJ3, EIRENE_MASJ4, EIRENE_MASR1,
+     .            EIRENE_MASR2, EIRENE_MASR3, EIRENE_MASR5,
+     .            EIRENE_MASR6
 
       DATA TXTHST
      .           /'LOCATE(1)           ',

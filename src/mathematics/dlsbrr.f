@@ -10,6 +10,7 @@
       REAL(DP) A(LDA,NCA),B(NRA),X(NCA),RES(NRA),TOL
       REAL(DP), ALLOCATABLE :: Q(:,:),R(:)
       INTEGER, ALLOCATABLE :: S(:)
+      EXTERNAL :: EIRENE_MA20A
 
       ALLOCATE (Q(NRA+2,NCA+2))
       ALLOCATE (R(NRA))

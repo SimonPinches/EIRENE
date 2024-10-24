@@ -108,6 +108,7 @@ C     HILFSVARIABLEN :
 C
          INTEGER :: I, IC, IDIG
          logical :: prefix
+         EXTERNAL :: EIRENE_UPPERCASE
 
          IPROUT = IOUT
 chr

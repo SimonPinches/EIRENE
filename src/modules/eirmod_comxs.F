@@ -2069,6 +2069,7 @@ cpb   not called from READ_POLY
       LOGICAL :: DATA_FOUND
       TYPE(POLY_DATA), POINTER :: REA
       INTEGER, SAVE :: ISW2D(7) = (/ 3, 4, 6, 7, 9, 10, 12 /)
+      EXTERNAL :: EIRENE_EXIT_OWN
 
 cdr   NDIM1 = INEP
       NDIM1 = 9
@@ -2536,6 +2537,9 @@ c
       USE EIRMOD_MPI
       INTEGER, INTENT(IN) :: ME
       INTEGER :: IER, IR
+#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+      EXTERNAL :: MPI_BCAST
+#endif
 
       IF (ME /= 0) THEN
         CALL EIRENE_ALLOC_COMXS(1)
@@ -3058,6 +3062,10 @@ cdr  input:  pointer RP = REACDAT(IR)%TYP%.... with TYP = POT, CRS, RTC,...
       TYPE(FIT_FORMS), POINTER :: RP
       INTEGER, INTENT(IN) :: ME
       INTEGER :: IER, ND1, ND2
+      EXTERNAL :: EIRENE_CHECK_EXIT, EIRENE_EXIT_OWN
+#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+      EXTERNAL :: MPI_BCAST
+#endif
 
 C.....................................................................
 cdr broadcast A&M data, general for a process, independent of data structure RP%IFIT

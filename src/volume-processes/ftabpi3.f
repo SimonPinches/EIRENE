@@ -33,6 +33,7 @@ c  hard-wired: cut-off (density) parameter for fits: 1e8
       INTEGER, INTENT(IN) :: IRPI, K
       REAL(DP) :: EIRENE_FTABPI3, DEIMIN, TII, PLS, TBPI,
      .            EIRENE_RATE_COEFF
+      EXTERNAL :: EIRENE_RATE_COEFF
       INTEGER :: KK, IPLSTI
 
       TBPI=0.D0

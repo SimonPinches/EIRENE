@@ -14,6 +14,7 @@ C
       INTEGER, INTENT(OUT) :: IC
       type(TAVLTree), pointer :: baum
       logical :: inserted
+      EXTERNAL :: EIRENE_EXIT_OWN
 
       IC = 0
       IC=NCOOR+1

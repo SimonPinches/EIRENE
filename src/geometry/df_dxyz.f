@@ -55,6 +55,7 @@ c  to be done:    range test for local coordinates r,s,t,u
       real(dp) :: a(4,4), ad(4,4), am1(4,4),
      .            dndr(4), dnds(4), j(2,2), jm1(2,2)
       integer :: ir, ip, it, ia, ib
+      external :: eirene_deter4x4
 
       logical, allocatable, save :: visited(:)
       real(dp), allocatable, save :: x32(:), x13(:), x21(:),
@@ -63,6 +64,7 @@ c  to be done:    range test for local coordinates r,s,t,u
 cdr   integer, save :: icount=0  !  for test output only
 
       real(dp) :: dummy
+      external :: eirene_ncelln, eirene_xyz_to_rst
 
 c  2d grid, quadrangles, x-y plane. z: ignorable.
 

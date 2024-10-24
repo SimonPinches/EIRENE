@@ -234,6 +234,7 @@ C
 
       subroutine eirene_wneutrals_alloc_arrays
       implicit none
+      EXTERNAL :: EIRENE_EXIT_OWN
 
       if(allocated(dab2)) return
       allocate(dab2(0:ndxp,0:ndyp,natm,1))
@@ -740,6 +741,7 @@ C     READ IN THE NUMBER OF TRIANGLES
       real(DP), save :: pumpsum, sptsum
       real(DP) :: dummy(0:ndxp,0:ndyp)
       character*36 hlp_frm
+      external :: eirene_indmpi, eirene_leer
       !c
       !c      write (iunout,*) '%%% wneutrals_save: istra = ',istra
       !c*** Calculate the totals (stratum 0)
@@ -1282,6 +1284,9 @@ C     READ IN THE NUMBER OF TRIANGLES
       integer, intent(in) :: istra
       integer, intent(in) :: rank
       integer :: ierr
+#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+      external :: mpi_send
+#endif
 
       call mpi_send(edissml(0,0,1,istra) , size(edissml(:,:,:,istra)),
      &              MPI_DOUBLE_PRECISION, 0, istra, MPI_COMM_WORLD,
@@ -1416,6 +1421,9 @@ C     READ IN THE NUMBER OF TRIANGLES
       integer, intent(in) :: istra
       integer, intent(in) :: rank
       integer :: ierr
+#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+      external :: mpi_recv
+#endif
 
       call mpi_recv(edissml(0,0,1,istra) , size(edissml(:,:,:,istra)),
      &              MPI_DOUBLE_PRECISION, rank, istra,
@@ -1550,6 +1558,9 @@ C     READ IN THE NUMBER OF TRIANGLES
      , ,only: my_pe, get_leader_comm
       implicit none
       integer :: comm, ierr
+#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+      external :: mpi_reduce
+#endif
 
       comm = get_leader_comm()
 
@@ -1798,7 +1809,7 @@ C*******************************************************************************
      r            DINDMPY(0:NDXP+1,0:NDYP+1),
      r            DUMMY(0:NDXP+1,0:NDYP+1)
       INTEGER :: IX,IY
-
+      EXTERNAL :: EIRENE_INDMAP
 
       DO IY=0,NDYP+1
        DO IX=0,NDXP+1
@@ -2637,6 +2648,7 @@ C INCIDENT ENERGY MINUS REFLECTED ENERGY
       INTEGER :: I, IN, IX, IY, JATM, JMOL, JION
       REAL(DP) :: PP,EE
       LOGICAL :: LHELP
+      EXTERNAL :: EIRENE_LEER
 
       LHELP = ISTRA.EQ.0
       IF (.NOT.LHELP) LHELP = NLSRON(ISTRA)

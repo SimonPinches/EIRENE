@@ -22,6 +22,7 @@ cdr                                 of H.11, H.12 type, popul. ratios)
 c
       integer :: kk,iphot,idsc,nrc,ipl0,ipl1,ipl2,ityp1,ityp2,ifnd,
      .           updf,mode,idph
+      EXTERNAL :: EIRENE_LEER, EIRENE_MASBOX
 
       IDPH=0
 

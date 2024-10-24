@@ -33,6 +33,7 @@ C                           (WITH TI (EV), RMASS (AMU) CVEL2A=9.8226 E5)
 #endif
 
       IF (XMPER.NE.0.D0) THEN
+cdr  valid also for negative VPER ?
         XMM=XMPER
         XMM2=XMPER*XMPER
         YMM2=YMPAR*YMPAR

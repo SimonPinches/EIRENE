@@ -96,6 +96,7 @@ C SECONDARY SPECIES IDENTIFIERS
 C PH PROCESSES
       INTEGER :: IAPH,IRPH
 C    .          ,UPDF        ! out, something for stim. emiss ?
+      EXTERNAL :: EIRENE_UPTCOP
 
 C
 C  ESTIMATORS FOR PHOTONS

@@ -24,7 +24,9 @@ C
       INTEGER :: IPAR(20)
       INTEGER :: ISORT, IPART, IMIN, IANG, IZ, IE, JP, IMAX, ITEST,
      .           I, IHILF
-
+      EXTERNAL :: EIRENE_INVERT, EIRENE_ROTADD, EIRENE_SECANG,
+     .            EIRENE_XSHADD, EIRENE_YSHADD, EIRENE_ZSHADD,
+     .            EIRENE_ZYLND2
 C
       ITEST=0
       WRITE (iunout,*) ' ZYLPLN CALLED FOR JS = ',JS

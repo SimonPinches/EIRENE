@@ -32,6 +32,8 @@ C
      .          PI, DT
       REAL(SP), ALLOCATABLE :: XPS(:), YPS(:)
       INTEGER :: I, IA, JJ, NAPK, IE, J
+      EXTERNAL :: EIRENE_SCCONE, EIRENE_EXIT_OWN
+      EXTERNAL :: GRFILL, GRLN, GRNWPN
 C
       NAPK = MAX(NA,NP,NK) + 1
       ALLOCATE (XP(NAPK))

@@ -74,6 +74,8 @@ C
       REAL(DP), PARAMETER :: TMINL=-2.3_DP
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt
+      EXTERNAL :: EIRENE_DBL_POLY, EIRENE_LEER, EIRENE_EXIT_OWN,
+     .            EIRENE_RATE_COEFF, EIRENE_ENERGY_RATE_COEFF
 
       SAVE
 
@@ -450,7 +452,7 @@ C
       INTEGER, INTENT(IN) :: IREL, IPL
       INTEGER :: IBGK, ISPZB, ITYPB
       INTEGER, EXTERNAL :: EIRENE_IDEZ
-
+      EXTERNAL :: EIRENE_LEER
 C
       CALL EIRENE_LEER(2)
       WRITE (iunout,*) 'ELASTIC COLLISION NO. IREL= ',IREL

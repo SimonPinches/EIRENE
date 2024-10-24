@@ -111,6 +111,7 @@ C     INTEGER, ALLOCATABLE :: NAMIEI(:), NAMIPI(:)  ! preparing code synchronisa
 
       INTEGER :: iaph,irph,kk,updf,t1
       real(dp):: sump
+      EXTERNAL :: EIRENE_EXIT_OWN
 
       SAVE
 

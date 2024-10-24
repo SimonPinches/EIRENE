@@ -771,6 +771,7 @@ cdr also set weighting function WEI(:) for averaging in calling routine.
 cdr K from full physical species range: 1:NF.
 cdr even if reduced indirect species indices NSPLV or NPLSTI exist
 cdr K=0: sum over species index.
+      EXTERNAL :: EIRENE_LEER
 
       IER = 0
 

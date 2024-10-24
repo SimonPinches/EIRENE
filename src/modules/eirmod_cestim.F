@@ -2044,6 +2044,9 @@ C
       USE EIRMOD_MPI
       INTEGER, INTENT(IN) :: ME
       INTEGER :: IER, I, NSPS
+#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+      EXTERNAL :: MPI_BCAST
+#endif
 
       IF (ME /= 0) THEN
         CALL EIRENE_ALLOC_CESTIM(0)

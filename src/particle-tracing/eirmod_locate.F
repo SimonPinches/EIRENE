@@ -370,6 +370,12 @@ cym      INTEGER :: NPANUO, NCELLT, IPOINT,
 cym     .           ityp_b1,ityp_b2,ipls_b1,ipls_b2,ISECT, I1, I2, IM, IMP,
 cym     .           ILINE, ISURF, ITRSF, ICOS, IVOLM, ISOR, INDTEC,
 cym     .           JATM, JMOL, JION, JPLS, JPHOT
+      EXTERNAL :: EIRENE_CLLTST, EIRENE_CNSUSR, EIRENE_FISOTR,
+     .            EIRENE_NCELLN, EIRENE_REFANG, EIRENE_SAMPNT,
+     .            EIRENE_UPDATE_SPECTRUM, EIRENE_UPDATE_SPTFLX,
+     .            EIRENE_UPDATE_SURFACE, EIRENE_UPSUSR, EIRENE_VELOCS,
+     .            EIRENE_MASJ6, EIRENE_MASR1, EIRENE_MASR6,
+     .            EIRENE_EXIT_OWN
 
       save
 

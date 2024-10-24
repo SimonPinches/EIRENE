@@ -77,6 +77,8 @@ C
       REAL(DP),PARAMETER :: TMINL=-2.3_DP
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt
+      EXTERNAL :: EIRENE_DBL_POLY, EIRENE_LEER, EIRENE_EXIT_OWN,
+     .            EIRENE_RATE_COEFF, EIRENE_ENERGY_RATE_COEFF
 
       SAVE
 
@@ -733,7 +735,7 @@ C
       INTEGER, INTENT(IN) :: IRPI, IPL
       REAL(DP) :: EI, EA, EN, EIRENE_FEELPI3, EIRENE_FEHVPI3
       INTEGER :: IMIN, IMAX, IRAD, IPP, IP, IAT, IA, IML, IM, IIO, IO
-
+      EXTERNAL :: EIRENE_LEER, EIRENE_FEELPI3, EIRENE_FEHVPI3
 C
       CALL EIRENE_LEER(2)
       WRITE (iunout,*) 'GENERAL ION IMPACT REACTION NO. IRPI= ', IRPI

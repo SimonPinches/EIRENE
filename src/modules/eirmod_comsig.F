@@ -210,6 +210,9 @@ C
       USE EIRMOD_MPI
       INTEGER, INTENT(IN) :: ME
       INTEGER :: IER
+#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+      EXTERNAL :: MPI_BCAST
+#endif
 
       IF ((ME /= 0) .AND. (NCHOR > 0)) CALL EIRENE_ALLOC_COMSIG
 
@@ -244,6 +247,9 @@ cdr  additional output tallies added by code itself (rather than via input block
       INTEGER :: I, J, K, NUM_COMPO, NUM_CONTRIB, IER
       TYPE(TCONTRIB) :: CNT
       LOGICAL :: LINES_ALLOCATED
+#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+      EXTERNAL :: MPI_BCAST
+#endif
 
       LINES_ALLOCATED = ALLOCATED(EMIS_LINES)
       IF (.NOT.LINES_ALLOCATED) THEN

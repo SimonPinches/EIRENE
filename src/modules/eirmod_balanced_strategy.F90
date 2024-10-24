@@ -130,6 +130,11 @@ module eirmod_balanced_strategy
     integer, intent(out) :: ierror !< 0 = success, any other values = error
     integer ierr, ierrr
     integer mpi_major, mpi_minor
+    external eirene_masage, eirene_exit_own
+#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+    external mpi_allreduce
+#endif
+
     ! We cannot access my_pe and nprs from eirmod_cpes, because that would be a
     ! a circular reference. We store locally instead.
     call mpi_comm_rank(MPI_COMM_WORLD, my_pe, ierr)
@@ -202,6 +207,9 @@ module eirmod_balanced_strategy
     real(kind=dp) :: throughput_avg, time, t_target
     integer, dimension(nstrai) :: npts_remaining, n_epsilon
     integer :: i, k, idx, n, ierr
+#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+    external :: mpi_bcast, mpi_scatter
+#endif
     
     if (nprs == 1) return ! nothing to optimize for serial mode
     
@@ -386,6 +394,9 @@ module eirmod_balanced_strategy
     integer, dimension(nstrai*nprs) :: nparts_processed_all  !< for MPI communication
     integer :: k, i, idx, n, ierr, n_strat
     real(kind=dp) :: t, t_strat
+#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+    external :: mpi_gather
+#endif
 
     ! gather the processing time and particle numbers from other PEs
     call MPI_Gather(t_particles_loc, nstrai, MPI_DOUBLE_PRECISION, &
@@ -522,6 +533,9 @@ module eirmod_balanced_strategy
     real(kind=dp), dimension(:), allocatable :: t_calstr_pe
     integer, dimension(nstrai) :: n_calstr_sum 
     integer :: ierr, k, i, idx
+#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+    external :: mpi_gather, mpi_reduce
+#endif
 
     if(.not.allocated(t_calstr_strat_avg)) then
       if (my_pe==0) then
@@ -586,6 +600,9 @@ module eirmod_balanced_strategy
     real(kind=dp), dimension(nstrai) :: t_postproc_avg
     integer :: ierr, k, n_tot
     real(kind=dp) :: n, tmp
+#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+    external :: mpi_reduce
+#endif
 
     call MPI_REDUCE(t_postproc_loc, t_postproc_avg, nstrai, &
            MPI_DOUBLE_PRECISION, MPI_SUM, 0, MPI_COMM_WORLD, ierr)

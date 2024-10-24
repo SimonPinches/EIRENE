@@ -28,6 +28,7 @@ c                      df/dy, and df/dz, resp.
 
       integer :: i, ir, ipart, ip, in, it, ierr
       real(dp) :: xc, yc, zc, dx, dy, dz
+      external :: eirene_exit_own
 
       interface
         subroutine eirene_df_dxyz (f,in,XC,YC,ZC,DX,DY,DZ)

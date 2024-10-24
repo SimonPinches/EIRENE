@@ -92,6 +92,9 @@ module eirmod_calstr_buffered
     integer, intent(in), dimension(:), allocatable :: nparts_loc
     logical :: flag
     integer :: ierr
+#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+    external :: mpi_testall
+#endif
     if (.not. allocated(next_check)) then
       ! We are not in buffered mode in this case
       return
@@ -106,6 +109,9 @@ module eirmod_calstr_buffered
   subroutine calstr_buffered_finish()
     use eirmod_mpi
     integer :: ierr
+#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+    external :: mpi_waitall
+#endif
     call MPI_WAITALL(N_BUFFERS, calstr_request, MPI_STATUSES_IGNORE, ierr)
   end subroutine calstr_buffered_finish
 
@@ -122,6 +128,10 @@ module eirmod_calstr_buffered
     integer, intent(in) :: my_pe_gr !< my rank within the calstr communicator
     logical, intent(in) :: leader !< whether the PE is the leader of the stratum
     integer :: ierr, isize
+    external :: eirene_masage, eirene_exit_own
+#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+    external :: mpi_ireduce, mpi_waitall
+#endif
     call calstr_init_progress
     ! Wait if there are any pending reduce operations for the previous stratum
     call MPI_WAITALL(N_BUFFERS, calstr_request, MPI_STATUSES_IGNORE, ierr)
@@ -167,6 +177,7 @@ module eirmod_calstr_buffered
 
   subroutine calstr_pack_d0(buff)
     real(kind=dp), intent(in) :: buff
+    external :: eirene_exit_own
 
     if (.not. allocated(calstr_buffer_d)) then
       write(iunout,*) 'Error, calstr_buffer_d not allocated'
@@ -184,6 +195,7 @@ module eirmod_calstr_buffered
   subroutine calstr_pack_d(n, buff)
     integer :: n
     real(kind=dp), dimension(*), intent(in) :: buff
+    external :: eirene_exit_own
 
     if (.not. allocated(calstr_buffer_d)) then
       write(iunout,*) 'Error, calstr_buffer_d not allocated'
@@ -200,6 +212,7 @@ module eirmod_calstr_buffered
 
   subroutine calstr_unpack_d0(buff)
     real(kind=dp), intent(out) :: buff
+    external :: eirene_exit_own
 
     if (.not. allocated(calstr_buffer_d)) then
       write(iunout,*) 'Error, calstr_buffer not allocated'
@@ -217,6 +230,7 @@ module eirmod_calstr_buffered
   subroutine calstr_unpack_d(n, buff)
     integer, intent(in) :: n
     real(kind=dp), dimension(*) :: buff
+    external :: eirene_exit_own
 
     if (.not. allocated(calstr_buffer_d)) then
       write(iunout,*) 'Error, calstr_buffer not allocated'
@@ -233,6 +247,7 @@ module eirmod_calstr_buffered
 
   subroutine calstr_pack_l0(buff)
     logical, intent(in) :: buff
+    external :: eirene_exit_own
 
     if (.not. allocated(calstr_buffer_l)) then
       write(iunout,*) 'Error, calstr_buffer_l not allocated'
@@ -250,6 +265,7 @@ module eirmod_calstr_buffered
   subroutine calstr_pack_l(n, buff)
     integer, intent(in) :: n
     logical, dimension(*), intent(in) :: buff
+    external :: eirene_exit_own
 
     if (.not. allocated(calstr_buffer_l)) then
       write(iunout,*) 'Error, calstr_buffer_l not allocated'
@@ -266,6 +282,7 @@ module eirmod_calstr_buffered
 
   subroutine calstr_unpack_l0(buff)
     logical, intent(out) :: buff
+    external :: eirene_exit_own
 
     if (.not. allocated(calstr_buffer_l)) then
       write(iunout,*) 'Error, calstr_buffer not allocated'
@@ -283,6 +300,7 @@ module eirmod_calstr_buffered
   subroutine calstr_unpack_l(n, buff)
     integer, intent(in) :: n
     logical, dimension(*), intent(out) :: buff
+    external :: eirene_exit_own
 
     if (.not. allocated(calstr_buffer_l)) then
       write(iunout,*) 'Error, calstr_buffer not allocated'

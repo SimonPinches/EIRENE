@@ -98,6 +98,8 @@ cdr  functions for 'on the fly' evaluation of a&m data
      .            EIRENE_FEPLPH3
       INTEGER :: J, KK, irph, ipph, IL, jpls,
      .           IPLSV
+      EXTERNAL :: EIRENE_VECUSR, EIRENE_EXIT_OWN,
+     .            EIRENE_FEPLPH3
 C
 C  SET DEFAULTS: NO REACTIONS
 C

@@ -127,6 +127,7 @@
       integer, parameter :: jvft44=20201006, jvft46=20170930
       character*32 :: get_Eir_hash
       external get_Eir_hash
+      external eirene_neutr
 
       character*12 :: filename
       character*3 :: stnum
@@ -1229,6 +1230,7 @@
       integer :: j,k,l,i,ic,kr,ki,iv,is,mc,ie,iw,i1,lun1,lun,ivv,istr
       integer :: j1,ii,i2,j2
       real(dp) :: x,r1
+      external :: eirene_exit_own
       !c=======================================================================
 
       if(nsrfcls.eq.0) return
@@ -2143,6 +2145,7 @@
       subroutine eirene_extrab25_emissivity
       implicit none
       integer :: istr, i, j, iadv, icell, ncelc, ix, iy
+      external :: eirene_emissivity, eirene_rstrt
 
       istr = 0
 

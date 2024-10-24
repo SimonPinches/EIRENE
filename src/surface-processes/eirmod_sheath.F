@@ -48,6 +48,7 @@ C
       REAL(DP), INTENT(IN) :: DPP(NP), VP(NP), TE, GAMMA, CUR, ZNZP(NP)
       REAL(DP) :: SUM, DE, CE, EIRENE_SHEATH
       INTEGER :: J, MSS
+      EXTERNAL :: EIRENE_MASR1
 
 cccccccccccccccccccccccccccccccccccc
 cym      INTEGER :: J, MSS, ICOUNT

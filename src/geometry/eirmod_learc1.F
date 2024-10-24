@@ -112,7 +112,7 @@ C
      .           I1, I2, I3
 
       LOGICAL :: LG(N1STS,N2NDPLGS), LG1(NRADS)
-
+      EXTERNAL :: EIRENE_LEARCT, EIRENE_LEAUSR
 
       TYPE (POIFELD) :: HELPCUR(4)
       TYPE (CELL),POINTER :: CUR
@@ -121,6 +121,9 @@ csw 04aug08
 csw 04aug08
       TYPE (POI4) :: HELPCUR4(4)
       TYPE (CELL4),POINTER :: CUR4,HELPP
+
+      EXTERNAL :: EIRENE_LEER, EIRENE_MASAGE, EIRENE_MASJR3,
+     .            EIRENE_MASR2, EIRENE_EXIT_OWN
 C
 
 C  tbd: move into levgeo=4 branch, as already done in levgeo=3 branch

@@ -24,6 +24,8 @@ c    e.g. in velopi for sampling, and in update, collide,.. for scoring
       REAL(DP) :: EIRENE_FEHVPI3, EHVPI, EIRENE_FTABPI3,
      .            EIRENE_ENERGY_RATE_COEFF
       INTEGER :: KK
+      EXTERNAL :: EIRENE_EXIT_OWN, EIRENE_FTABPI3,
+     .            EIRENE_ENERGY_RATE_COEFF
 
       EIRENE_FEHVPI3=0.D0
       KK=NHVRPI(IRPI)

@@ -39,6 +39,7 @@ cdr  hard-wired: cut-off (density) parameter for fits: 1e8. TO BE CHECKED WITH X
      .            EIRENE_RATE_COEFF
       INTEGER :: KK, IPLSTI, MODC, IFLG
       INTEGER, EXTERNAL :: EIRENE_IDEZ
+      EXTERNAL :: EIRENE_EXIT_OWN, EIRENE_RATE_COEFF
 
       TBCX=0.D0
 

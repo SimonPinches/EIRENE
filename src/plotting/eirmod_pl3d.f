@@ -25,6 +25,8 @@ C
      .          PPY23, PPY24, DX, F00, F01, F02, F03, F10, F11, F12,
      .          BREITE, XMIN, YMIN, ZMIN, XMAX, YMAX, ZMAX, XO, W3, FA,
      .          BREI
+      EXTERNAL :: EIRENE_LOCTOR, EIRENE_TORLOC
+      EXTERNAL :: GRDRW, GRJMP, GRJMPS, GRMRKS, GRNWPN
       SAVE
 
       FXI(X,Y) = (F10+F11*X)+F12*Y

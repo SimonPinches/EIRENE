@@ -30,6 +30,7 @@ c
      .           j
       integer, external :: EIRENE_idez
       real(dp) :: factkk,aik
+      EXTERNAL :: EIRENE_EXIT_OWN
 
 c  fetch data for process nrc of ipls
 

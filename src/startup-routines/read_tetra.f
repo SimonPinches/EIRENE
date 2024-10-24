@@ -17,6 +17,7 @@
      .           IC, J, JS, JT, IP1, i1, i2, i3, i4
       INTEGER :: ITSIDE(3,4), IP(3), JP(3)
       TYPE(TET_ELEM), POINTER :: CUR
+      EXTERNAL :: EIRENE_SUCHE_NACHBARN, EIRENE_EXIT_OWN
 C
       DATA ITSIDE /1,2,3,
      .             1,4,2,

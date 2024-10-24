@@ -37,6 +37,7 @@ C> - NPESTA(ISTRA): master process for stratum ISTRA
       REAL(DP), INTENT(INOUT) :: XTIM(0:NSTRA) !< time allocated
                                                !< for stratum
       REAL(DP), INTENT(IN) :: XX1 !< remaining CPU time
+      EXTERNAL :: EIRENE_PEDIST_USR
 
       IF (NPRS == 1) THEN
 
@@ -124,6 +125,8 @@ C>   processes to one stratum.
       INTEGER :: IPE, K, I, ISTRA, NPRS_FREE, NPRS_OPT, N
       INTEGER, DIMENSION(1) :: NSTRPE(0:NPRS-1)
       INTEGER :: IHELP(1:NSTRA)
+      EXTERNAL :: EIRENE_LEER, EIRENE_MASAGE, EIRENE_MASJ1R,
+     .            EIRENE_MASJ2R, EIRENE_EXIT_OWN
 
       PROCFORSTRA = .FALSE.
 

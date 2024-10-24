@@ -278,6 +278,7 @@ cym ccccccccccccccccccccccccccccccccccccccc
       LOGICAL FIRST
       DATA FIRST /.TRUE./
       DATA CHECK /'H1RN INITIALISED'/
+      EXTERNAL :: EIRENE_EXIT_OWN
 *
       IF (FIRST) THEN
          IF (FLAG .NE. CHECK) THEN

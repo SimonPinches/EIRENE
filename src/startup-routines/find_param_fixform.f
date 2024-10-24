@@ -118,6 +118,13 @@ C
 cym
       character*8, allocatable :: textal(:)
 cym
+      EXTERNAL :: EIRENE_COUPLE_PARAM_CONSISTENCY,
+     .            EIRENE_FILEPATH_USR, EIRENE_FIND_TRIANG_DIM,
+     .            EIRENE_FIND_TET_DIM, EIRENE_IF0PRM,
+     .            EIRENE_INIT_PARAMS,
+     .            EIRENE_READ_TOKEN, EIRENE_UPPERCASE,
+     .            EIRENE_LEER, EIRENE_EXIT_OWN,
+     .            FIX_INTEGER_INPUT, FIX_LOGICAL_INPUT
 C
 C  SET DEFAULT VALUES FOR STORAGE PARAMETERS
 C

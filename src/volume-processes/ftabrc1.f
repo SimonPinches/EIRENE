@@ -30,6 +30,7 @@ c  hard-wired: density parameter in fit scaled by DSUB=1e-8, done in rate_coeff.
      .            EIRENE_RATE_COEFF
 C      REAL(DP) :: DSUB
       INTEGER :: KK
+      EXTERNAL :: EIRENE_EXIT_OWN, EIRENE_RATE_COEFF
 
       TBRC=0.D0
       KK = NREARC(IRRC)

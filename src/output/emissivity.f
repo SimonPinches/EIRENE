@@ -70,6 +70,9 @@ cdr  Write the newly defined tallies ADDV onto stream fort.10, fort.11, stratum 
 
       CHARACTER(6) :: CISTRA
       character(len=80) :: ctest2
+      EXTERNAL :: EIRENE_FTCRI, EIRENE_INTTAL, EIRENE_WRSTRT,
+     .            EIRENE_LEER, EIRENE_MASBOX,
+     .            EIRENE_OTHER_RATE_COEFF
 
       IF (TRCSIG .AND. ICALL.EQ.0) THEN
         CALL EIRENE_LEER(2)

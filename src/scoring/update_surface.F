@@ -51,6 +51,7 @@ c  lmetspw(ispz): species ispz is emitted, emitted flux tally is scored.
       INTEGER, INTENT(IN) :: ITOLD, IOLD, IND
       REAL(dp), INTENT(IN) :: WGHTSG
       REAL(dp) ::             EWGHTSG
+      EXTERNAL :: EIRENE_EXIT_OWN
 
       IF (MSURF .LE. 0) RETURN
 

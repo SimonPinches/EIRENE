@@ -33,6 +33,7 @@ c              for evaluation of rate coefficient.
       INTEGER, INTENT(IN) :: IREI, K
       REAL(DP) :: EIRENE_FTABEI1, DEIMIN, PLS, TBEI,
      .            EIRENE_RATE_COEFF
+      EXTERNAL :: EIRENE_RATE_COEFF
       REAL(DP) :: TEE
       INTEGER :: KK   ! reaction counting index in reaction
                       ! input parameter arrays

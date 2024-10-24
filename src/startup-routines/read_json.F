@@ -152,6 +152,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
 cdr  intermediate data for those already set in find_param.f
       integer :: noptim_save
       LOGICAL :: LHYDDEF, LMULPL
+      EXTERNAL :: EIRENE_EXIT_OWN
 
 C
 C  DO NOT READ ANY INPUT, IF THIS IS NOT THE VERY FIRST ITERATION
@@ -287,6 +288,7 @@ cdr     CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
       character(len=:), allocatable :: cdbhc
 !cym/cpg end
       integer :: ifile, nch
+      external :: eirene_filepath_usr, eirene_leer, eirene_masage
 
       call json%get(p,'NPRLL',nprll,found)
       call json%get(p,'NMODE',nmode,found)
@@ -632,6 +634,8 @@ C
 !cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
       character(kind=json_CK,len=:), allocatable :: clab
 !cym/cpg end
+      external :: eirene_read_tetra, eirene_read_triang,
+     .            eirene_leer, eirene_masage, eirene_exit_own
 
       CALL EIRENE_MASAGE
      .  ('*** 2. DATA FOR STANDARD MESH')
@@ -946,6 +950,7 @@ C
 !cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
       character(kind=json_CK,len=:), allocatable :: txts
 !cym/cpg end
+      external :: eirene_leer, eirene_masage, eirene_exit_own
 C
       IF (IREAD.EQ.0) READ (IUNIN,*)
       CALL EIRENE_MASAGE
@@ -1223,6 +1228,10 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
       character(kind=json_CK,len=:), allocatable :: txts
       character(kind=json_CK,len=72), dimension(:), allocatable ::
      .           ch0lines, ch1lines, ch2lines
+      external :: eirene_dekey, eirene_dekeyb, eirene_rotadd,
+     .            eirene_setref, eirene_setrot,
+     .            eirene_xshadd, eirene_yshadd, eirene_zshadd,
+     .            eirene_leer, eirene_masage, eirene_exit_own
 !cym/cpg end
 C
 C  * 3B: READ DATA FOR ADDITIONAL SURFACES 350--399
@@ -1542,6 +1551,7 @@ C
      .           crs_lines
 !cym/cpg end
       integer, allocatable :: lknd(:), jdnsl(:)
+      external :: eirene_leer, eirene_masage, eirene_exit_own
 
       LHYDDEF = .FALSE.
       IMSG=0
@@ -1936,6 +1946,7 @@ C
 !cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
       character(kind=json_CK,len=:), allocatable :: txt
 !cym/cpg end
+      external :: eirene_leer, eirene_exit_own
 
       lden = present(cdenmodel)
 
@@ -2238,6 +2249,8 @@ c  default: only for bulk ions
       character(kind=json_CK,len=:), allocatable :: AMDoutputCK
 !cym/cpg end
       integer, allocatable :: lknd(:), jdnsl(:)
+      external :: eirene_uppercase, eirene_leer, eirene_masage,
+     .            eirene_exit_own
 
       CALL EIRENE_MASAGE('*** 5. DATA FOR PLASMA BACKGROUND')
       CALL EIRENE_LEER(1)
@@ -2719,6 +2732,7 @@ cdr  Possible conflicts, inconsistencies.
       real(dp), allocatable :: rhelp(:)
       logical :: found, foundp, founds, foundc, lf(5)
       CHARACTER(500) :: FILE
+      external :: eirene_leer, eirene_masage, eirene_exit_own
 
       CALL EIRENE_MASAGE
      .  ('*** 6. GENERAL DATA FOR REFLECTION MODEL')
@@ -3120,6 +3134,7 @@ C
       logical :: found
       integer, allocatable :: ihelp(:)
       integer :: nstr, ist, j
+      external :: eirene_leer, eirene_masage, eirene_masprm
 C
 C  READ DATA FOR PRIMARY SOURCE
 C
@@ -3312,6 +3327,8 @@ C  VELOCITY SPACE DISTRIBUTION
       logical :: found, foundc, foundv, foundm
       integer :: inilgj, inelgj, in, idion, ini, ine, nch3
       real(dp) :: tte, tti, di, vx, vy, vz, vl
+      external :: eirene_dekey, eirene_dekeyb, eirene_exit_own,
+     .            eirene_leer, eirene_masage
 C
 C     READ ADDITIONAL DATA FOR SOME SPECIFIC ZONES
 C
@@ -3473,6 +3490,8 @@ C  VOLUME
       integer :: num, i, ia, nvi, nsi, nci
       integer, allocatable :: iprsf(:), ihelp(:)
       real(dp), allocatable :: rhelp(:)
+      external :: eirene_leer, eirene_masage, eirene_masprm,
+     .            eirene_exit_own
 C
 C     READ DATA FOR STATISTICS AND NON-ANALOG MODEL, 900--999
 C
@@ -3694,6 +3713,7 @@ C  DATA FOR STANDARD DEVIATION
 !cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
       character(kind=json_CK,len=:), allocatable :: txt
 !cym/cpg end
+      external :: eirene_leer, eirene_masage, eirene_exit_own
 C
 C     READ DATA FOR ADDITIONAL AND SURFACE-AVERAGED TALLIES
 C
@@ -4150,6 +4170,8 @@ cdr  Why do we allocate estiml in input.f and not in eirmod_cestim ?
 !cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
       character(kind=json_CK,len=:), allocatable :: txt
 !cym/cpg end
+      external :: eirene_leer, eirene_masage, eirene_masprm,
+     .            eirene_exit_own
 C
 C   READ DATA FOR NUMERICAL AND GRAPHICAL OUTPUT 1100--1199
 C
@@ -4623,6 +4645,9 @@ C
 !cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
       character(kind=json_CK,len=:), allocatable :: txt, key
 !cym/cpg end
+      external :: eirene_setup_default_emissivity,
+     .            eirene_leer, eirene_masage, eirene_masprm,
+     .            eirene_exit_own
 C
 C  READ DATA FOR DIAGNOSTIC MODULE
 C
@@ -4943,6 +4968,7 @@ c     dr  Alternatively the energy parameters EMIN1 may be used.
 !cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
       character(kind=json_CK,len=:), allocatable :: txt
 !cym/cpg end
+      external :: eirene_leer, eirene_masage, eirene_exit_own
 C
 C  READ DATA FOR TIME-DEPENDENT AND NONLINEAR MODE  1300--1399
 C
@@ -5101,6 +5127,8 @@ C  TURN OFF TIME DEP MODE IF EITHER NTIME=0 OR NPRNLI=0
       character(kind=json_CK,len=:), allocatable :: txt
 !cym/cpg end
       integer :: js
+      external :: eirene_leer, eirene_masage, eirene_masprm,
+     .            eirene_exit_own
 
       js = itree_num(14)
       json = jtrees(js)
@@ -5201,6 +5229,7 @@ C  also set NAINI, NCOPII, NCOPIE there
       character(kind=CK,len=:), allocatable :: txt
       logical :: found
       integer :: js
+      external :: eirene_leer, eirene_masage
 
       js = itree_num(15)
       json = jtrees(js)

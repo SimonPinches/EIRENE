@@ -11,6 +11,10 @@
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: ME
       integer :: ier
+      EXTERNAL :: EIRENE_CHECK_EXIT
+#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+      EXTERNAL :: MPI_BCAST
+#endif
 
       if (me > 0) then
          if (.not.allocated(plnxtri)) then

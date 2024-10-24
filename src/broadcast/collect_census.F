@@ -50,6 +50,12 @@ ctk      real(dp), external :: ranf_eirene
       integer :: ier, i, ncoreal, itotal, il, im, iu, ipe,
      .           ityp, iphot, iatm, imol, iion
       integer :: icopro(0:nprs), idistrib(0:nprs), icosend(0:nprs)
+      external :: eirene_leer, eirene_masr4, eirene_check_exit,
+     .            eirene_exit_own
+#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+      external :: mpi_allreduce, mpi_bcast, mpi_gather, mpi_gatherv,
+     .            mpi_reduce, mpi_scatter, mpi_scatterv
+#endif
 
       CALL EIRENE_CHECK_EXIT
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)

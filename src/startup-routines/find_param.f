@@ -20,6 +20,9 @@ C
       character(20), save :: outname
       character(6), save :: outpos
       LOGICAL :: UEX, op
+      EXTERNAL :: EIRENE_COUPLE_INIT_OUTPUT, EIRENE_DEFAULTS_USR,
+     .            EIRENE_FIND_PARAM_FIXFORM, EIRENE_FIND_PARAM_JSON,
+     .            EIRENE_LEER, EIRENE_MASL5, EIRENE_EXIT_OWN
 C
 C  UNIT NUMBER FOR INPUT FILE: MUST BE DIFFERENT FROM: 5,8,10,11,12
 C  13,14, AND 15

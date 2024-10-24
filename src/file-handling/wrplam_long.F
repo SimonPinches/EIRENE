@@ -32,6 +32,7 @@ C  trcfle: confirm writing on printout on unit IUNOUT
 
       LOGICAL TRCFLE
       CHARACTER(*) CALLEDFROM
+      EXTERNAL EIRENE_LEER
 C
       OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 13+ifoff
@@ -204,6 +205,7 @@ cdr, jan 2019
       CHARACTER*8 FILENAME
       CHARACTER*3 FILENUMBER
       LOGICAL EX
+      EXTERNAL EIRENE_LEER, EIRENE_EXIT_OWN
 
       IF (.NOT.ALLOCATED(PTL))
      . ALLOCATE(PTL(size(PLSTLS,1),size(PLSTLS,2)))

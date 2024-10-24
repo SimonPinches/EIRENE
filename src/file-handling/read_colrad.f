@@ -55,6 +55,7 @@ c  optional input parameters
       integer :: ivar, i, istr, irow_esc, icol_esc
       real(dp) :: pop_esc
       character(8), save :: hstr(21)
+      external :: eirene_exit_own, eirene_leer
 
       close (29+ifoff)  ! nothing further to be read, currently
 

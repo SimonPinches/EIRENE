@@ -1052,6 +1052,7 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       REAL(DP) :: OUTAU(:)
       INTEGER, INTENT(IN) :: IUNOUT
       INTEGER :: IA, IE
+      EXTERNAL :: EIRENE_EXIT_OWN
 
       IF (SIZE(OUTAU) < NOUTAU) THEN
         WRITE (iunout,*)
@@ -1914,6 +1915,7 @@ cdr  surface tallies
       REAL(DP) :: OUTAU(:)
       INTEGER, INTENT(IN) :: IUNOUT
       INTEGER :: IA, IE
+      EXTERNAL :: EIRENE_EXIT_OWN
 
       IF (SIZE(OUTAU) < NOUTAU) THEN
         WRITE (iunout,*)
@@ -2997,6 +2999,9 @@ cdr    for tally ITAL, species ISP, stratum ISTRA
       USE EIRMOD_MPI
       INTEGER, INTENT(IN) :: ME
       INTEGER :: IER
+#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+      EXTERNAL :: MPI_BCAST
+#endif
 
       IF (ME /= 0) CALL EIRENE_ALLOC_COUTAU
 

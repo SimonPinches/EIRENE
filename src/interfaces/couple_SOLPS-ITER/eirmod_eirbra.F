@@ -264,6 +264,9 @@ csw mpi
       subroutine eirene_broadcast_eirbra
 
       integer :: inum, ierr
+#ifdef USE_MPI
+      external :: mpi_bcast
+#endif
 
       inum = (ndxd+1)*(ndyd+1)*nfld*nstrad
       call mpi_bcast (sni,inum,MPI_DOUBLE_PRECISION,
@@ -364,6 +367,9 @@ cdjm Jan2017
         integer, intent(in) :: istr  !< stratum index
         integer, intent(in) :: irank !< where to send
         integer :: ierr
+#ifdef USE_MPI
+        external :: mpi_send
+#endif
 
         call mpi_send(volsumn(istr), 1, MPI_DOUBLE_PRECISION,
      .                irank, istr, MPI_COMM_WORLD, ierr)
@@ -381,6 +387,9 @@ cdjm Jan2017
 !> rank from where the message was sent
         integer, intent(in) :: irank
         integer :: ierr
+#ifdef USE_MPI
+        external :: mpi_recv
+#endif
 
         call mpi_recv(volsumn(istr), 1, MPI_DOUBLE_PRECISION,
      .                irank, istr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,

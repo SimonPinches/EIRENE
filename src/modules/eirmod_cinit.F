@@ -346,6 +346,9 @@ cdr  FOR SOME COMPILERS THIS IS ILLEGAL.
       INTEGER :: IER, IPLS, NREF, IRF, IAN
       REAL(DP) :: RHELP(4)
       INTEGER, ALLOCATABLE :: IHELP(:)
+#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+      EXTERNAL :: MPI_BCAST
+#endif
 
       IF (ME /= 0) CALL EIRENE_ALLOC_CINIT
 

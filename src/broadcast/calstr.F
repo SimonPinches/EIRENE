@@ -68,6 +68,10 @@ C> - tallies
       logical, allocatable :: lhelp(:)
       logical :: lhelpa(0:natm), lhelpm(0:nmol), lhelpi(0:nion),
      .           lhelpp(0:npls), lhelpph(0:nphot)
+      external :: eirene_calstr_usr, eirene_masage, eirene_exit_own
+#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+      external :: mpi_reduce
+#endif
 
 C This subroutine is only called if PROCFORSTR(ISTRA,MY_PE), check is duplication.
 C Could not check whether need_calstr(istra) can be moved outside of this subroutine.

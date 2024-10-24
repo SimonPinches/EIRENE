@@ -15,7 +15,9 @@
       INTEGER, INTENT(INOUT) :: IERROR
       INTEGER :: I, ISTR_A(1), ISTR, IPNT
       REAL(DP) :: DTIMVO
-
+      EXTERNAL :: EIRENE_RSNAP, EIRENE_LEER, EIRENE_MASJ1,
+     .            EIRENE_MASPRM, EIRENE_MASR1, EIRENE_MASR2,
+     .            EIRENE_EXIT_OWN
 C
       IF (NTIME.GE.1) THEN
 cdr prepare time-dependent mode: A: horizon, B: initial distribution

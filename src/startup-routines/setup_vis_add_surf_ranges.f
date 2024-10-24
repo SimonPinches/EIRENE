@@ -15,6 +15,7 @@ C
       INTEGER :: J, I, IIN, IEN , NO, IGO, IBEND, IB, ILA, NSOPT,
      .           EIRENE_ILLZ
       LOGICAL :: LHELP(NLIMPS)
+      EXTERNAL :: EIRENE_ILLZ
 
 C  DEFAULT
       NLIMII=1

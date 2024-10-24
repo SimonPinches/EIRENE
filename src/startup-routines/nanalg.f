@@ -24,6 +24,7 @@ C
       REAL(DP) :: XMAXR1, ZR1, ZR2
       INTEGER :: IR, IP, IT, IRT, IRP, IA, IRA, IRD, J, MMXRAD, MAXR1,
      .           JR, JS, NA, NE, NANZ
+      EXTERNAL :: EIRENE_LEER, EIRENE_MASAL1
 
 C---------------------------------------------------------------------
       NODES=0

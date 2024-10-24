@@ -12,6 +12,7 @@ C
 
       character(20) :: outname
       character(6) :: outpos
+      external :: ioflush_usr
 
 #ifndef B25_EIRENE
       if (NPRS > 1) IUNOUT = 7
