@@ -318,7 +318,7 @@ if (MPI)
 else()
   target_link_libraries(eirene EIRENE ${LibJSON})
 endif()
-
+# Link it to the graphics libraries.
 if(LibGKS AND LibGRS AND LibX11 AND Libz AND LibXt AND LibJSON)
   target_link_libraries(eirene EIRENE ${LibGRS} ${LibGKS} ${LibX11} ${LibXt} ${LibJSON})
 endif()

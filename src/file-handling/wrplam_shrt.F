@@ -341,7 +341,7 @@ cdr  next: read the NFLA_VIRT collisional process data related to these virtual 
       END IF
 
       IF (.NOT.ALLOCATED(NFLA_ISWR)) THEN
-#ifdef F2003
+#ifndef LEGACYCOMP
         ALLOCATE (NFLA_ISWR(NREA_VIRT), SOURCE = 0)
         ALLOCATE (NFLA_IR(NREA_VIRT), SOURCE = 0)
         ALLOCATE (NFLA_IPLS(NPLS), SOURCE = 0)
@@ -365,7 +365,7 @@ cdr  next: read the NFLA_VIRT collisional process data related to these virtual 
       END IF
 
       IF (.NOT.ALLOCATED(TAB_STORE)) THEN
-#ifdef F2003
+#ifndef LEGACYCOMP
         ALLOCATE (TAB_STORE(NREA_VIRT,NRAD,9), SOURCE=0._DP)
         ALLOCATE (E_STORE(NREA_VIRT,NRAD,9), SOURCE=0._DP)
 #else
@@ -377,7 +377,7 @@ cdr  next: read the NFLA_VIRT collisional process data related to these virtual 
       END IF
 
       IF (.NOT.ALLOCATED(LG_STORE)) THEN
-#ifdef F2003
+#ifndef LEGACYCOMP
         ALLOCATE (LG_STORE(NRAD,NFLA_VIRT), SOURCE=.FALSE.)
 #else
         ALLOCATE (LG_STORE(NRAD,NFLA_VIRT))

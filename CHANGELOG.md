@@ -27,9 +27,13 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Pointing to modified set of examples with .F file extensions
 - Removed forced usage of OpenMP compiler options
 - Added TRCMELD output switch
+- Added LEGACYCOMP alternate code
 - Added definition of GFORTRAN pragma in CMakeLists.txt
+- Added G95 pre-processor pragmas to deal with g95 compiler errors
+- Replaced F2003 pre-processor (the compiler supports the Fortran 2003 standard) pragma with LEGACYCOMP (the compiler does not support the Fortran 2003 standard)
 - Added EXTERNAL definitions for called subroutines and functions
 - Removed superfluous MPI interface routines
+- Making use of lower/upper case more consistent
 - Added some more clarifying comments
 - Have figures in Manual listed by full relative path and file extension
 - Added missing comment about density validity range in AMJUEL file

@@ -386,14 +386,22 @@ C
 
 cDB   AMD output
       TYPE AMDOutParsTYPE
+#ifdef LEGACYCOMP
+        character(LEN=24), allocatable :: AMDoutput
+#else
         character(LEN=:), allocatable :: AMDoutput
+#endif
         REAL(DP) :: NEmin
         REAL(DP) :: NEmax
         REAL(DP) :: TEmin
         REAL(DP) :: TEmax
         INTEGER  :: NNE
         INTEGER  :: NTE
+#ifdef LEGACYCOMP
+        character(LEN=24), allocatable :: MeshType
+#else
         character(LEN=:), allocatable :: MeshType
+#endif
       ENDTYPE AMDOutParsTYPE
       TYPE (AMDOutParsTYPE), public, save :: AMDOutpars
 

@@ -13,7 +13,11 @@
       integer, intent(out), optional :: iostat
       character(len=*) :: file
       character(len=*), optional :: form, access, status, position
+#if ( defined(G95) || defined(NAGFOR) || defined(LEGACYCOMP) )
+      character(len=24) :: frm, acc, stat, pos
+#else
       character(len=:), allocatable :: frm, acc, stat, pos
+#endif
       integer :: iun, io
       external :: eirene_masage
 
@@ -51,7 +55,7 @@
 
       else
 
-#ifdef F2003
+#ifndef LEGACYCOMP
 #ifndef NAGFOR
         open (newunit=iun,file=file,
      .        form=frm,access=acc,status=stat,position=pos,iostat=io)

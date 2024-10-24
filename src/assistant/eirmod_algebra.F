@@ -1225,7 +1225,7 @@ C
       CHARACTER(*), INTENT(IN) :: REP, WITH
       INTEGER, INTENT(INOUT) :: LENGTH
       INTEGER :: LREP, LWITH, POS
-#ifdef F2003
+#ifndef LEGACYCOMP
       CHARACTER(:), ALLOCATABLE :: CREP, CWITH, HILFE
 #else
       INTEGER :: N
@@ -1233,7 +1233,7 @@ C
       CHARACTER(LEN=STRMAX) :: CREP, CWITH, HILFE
 #endif
 
-#ifndef F2003
+#ifdef LEGACYCOMP
       N = LEN(ADJUSTL(TRIM(REP)))
       IF (N.GT.STRMAX) THEN
         WRITE(IPROUT,*)
@@ -1256,7 +1256,7 @@ C
 
       DO WHILE ( POS .GE. 1 .AND. POS .LT. LENGTH-1)
 
-#ifndef F2003
+#ifdef LEGACYCOMP
          N = LWITH+LENGTH-LREP+1
          IF (N.GT.STRMAX) THEN
            WRITE(IPROUT,*)

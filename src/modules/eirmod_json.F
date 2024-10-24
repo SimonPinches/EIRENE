@@ -117,7 +117,11 @@
       END TYPE TRANSFORM_QUEUE
 
       TYPE S_STACK
+#ifdef LEGACYCOMP
+        CHARACTER, dimension(:), allocatable :: STRING
+#else
         CHARACTER(len=:), allocatable :: STRING
+#endif
         TYPE(S_STACK), POINTER :: NEXT
       END TYPE S_STACK
 
