@@ -403,15 +403,11 @@ c.............................................................................
         WRITE(IUNOUT,*) 'INPUT TALLIES USED IN THIS RUN'
         CALL EIRENE_LEER(1)
         WRITE(IUNOUT,'(A6,1X,A)') 'NO.','DESCRIPTION'
-        DO ITAL=1,NTALI
+        DO ITAL=1,NTALG
           IF (LIVTALI(ITAL)) THEN
-            IF (ITAL <= NTALG) THEN
-              IF (LSMOPRO(ITAL)) THEN
-                WRITE (IUNOUT,'(I6,1X,A,1X,A8)')
-     .            ITAL,trim(TXTPLS(1,ITAL)),', SMOOTHED'
-              ELSE
-                WRITE (IUNOUT,'(I6,1X,A)') ITAL,trim(TXTPLS(1,ITAL))
-              ENDIF
+            IF (LSMOPRO(ITAL)) THEN
+              WRITE (IUNOUT,'(I6,1X,A,A10)')
+     .          ITAL,trim(TXTPLS(1,ITAL)),', SMOOTHED'
             ELSE
               WRITE (IUNOUT,'(I6,1X,A)') ITAL,trim(TXTPLS(1,ITAL))
             ENDIF

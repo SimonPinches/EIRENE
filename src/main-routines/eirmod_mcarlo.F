@@ -363,12 +363,17 @@ C  CHANGED: use XX=NTCPU seconds of cpu time for calculation of trajectories
           WRITE (iunout,'(1x,a,i3,a)') 'STRATUM ISTRA= ',ISTRA,
      .                     ' TURNED OFF, BECAUSE NPTS=0'
           CALL EIRENE_LEER(1)
-        ENDIF
-        IF (NPTS(ISTRA).GT.0 .AND. FLUX(ISTRA).LE.0.D0) THEN
+        ELSEIF (NPTS(ISTRA).GT.0 .AND. FLUX(ISTRA).LE.0.D0) THEN
           NPTS(ISTRA)=0
           NLSRON(ISTRA) = .FALSE.
           WRITE (iunout,'(1x,a,i3,a)') 'STRATUM ISTRA= ',ISTRA,
      .                     ' TURNED OFF, BECAUSE FLUX=0.0'
+          CALL EIRENE_LEER(1)
+        ELSEIF (NPTS(ISTRA).LE.0 .AND. FLUX(ISTRA).LE.0.D0) THEN
+          NPTS(ISTRA)=0
+          NLSRON(ISTRA) = .FALSE.
+          WRITE (iunout,'(1x,a,i3,a)') 'STRATUM ISTRA= ',ISTRA,
+     .                     ' TURNED OFF, BECAUSE NPTS=0 AND FLUX=0.0'
           CALL EIRENE_LEER(1)
         ENDIF
         IF (SUM(SORWGT(1:NSRFSI(ISTRA),ISTRA)).LE.0.D0) THEN
@@ -618,7 +623,7 @@ c    if not nlmovie: census stratum istra=nstrai comes last.
         IF (.NOT.NLSRON(ISTRA)) THEN
 !$OMP MASTER
           CALL EIRENE_LEER(2)
-          WRITE (iunout,*) 'STRATUM NO. ',ISTRA,' ABANDONED'
+          WRITE (iunout,*) 'STRATUM NO. ',ISTRA,' ABANDONED, NLSRON=F'
           CALL EIRENE_LEER(2)
 !$OMP END MASTER
           CYCLE
@@ -1516,6 +1521,7 @@ cdr  do another sub-stratum, for missing rare events stored on census
 cdr     If...
 cdr  not ready. currently we do this in next time-cycle
 
+        call ioflush_usr
 !$OMP BARRIER
 
       END DO                    ! ISTR

@@ -221,6 +221,7 @@ cdr  IFLG=10:  set pointers DIINTF,... in RPLAM
         IPLS = JPLS
         IPLSTI=MPLSTI(IPLS)
         IPLSV=MPLSV(IPLS)
+c       write (iunout,*) jpls, cdenmodel(IPLS)
 
         SELECT CASE (CDENMODEL(IPLS))
 
@@ -591,6 +592,7 @@ c  sum up contributions coupled to one or more (NRE) base-species
             IOLD=TDMPAR(IPLS)%TDM%ISP(IRE)
             IOLDTI=MPLSTI(IOLD)
             IOLDV=MPLSV(IOLD)
+c           write (iunout,*) 'test colrad ',iold,ioldti,ioldv
             CALL EIRENE_GET_BASE_DENSITY(IRE)
 
 c  temperature and density dependence in reduced population coefficient

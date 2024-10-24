@@ -2385,7 +2385,7 @@ C  EXCLUDE IPLS-VACUUM CELLS
                 END DO
  7471           CONTINUE
                 RECTOT = RECTOT + SUMN
-                WRITE (iunout,*) 'IPLS,IRRC ',IPLS,IRRC
+                WRITE (iunout,*) 'PARTIAL: IRRC ',IRRC
                 CALL EIRENE_MASR4('SUMN, SUMM, SUMEI, SUMEE        ',
      .                             SUMN, SUMM, SUMEI, SUMEE)
  7472         CONTINUE

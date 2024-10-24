@@ -207,6 +207,7 @@ module eirmod_balanced_strategy
     real(kind=dp) :: throughput_avg, time, t_target
     integer, dimension(nstrai) :: npts_remaining, n_epsilon
     integer :: i, k, idx, n, ierr
+    character*13 hlp_frm
 #if ( defined(USE_MPI) && !defined(GFORTRAN) )
     external :: mpi_bcast, mpi_scatter
 #endif
@@ -239,7 +240,8 @@ module eirmod_balanced_strategy
       ! therefore we choose the smaller of t_epsilon and t_calstr_allavg
       n_epsilon = int(min(t_epsilon, t_calstr_allavg) * throughput_strat_avg)
       if (print_timing_info) then
-        write(iunout,*) 'n_epsilon', n_epsilon
+        write(hlp_frm,'(a,i4,a)') '(1x,a,',size(n_epsilon),'i5)'
+        write(iunout,hlp_frm) 'n_epsilon', n_epsilon
         write(iunout,*) 't_calstr_epsilon ', t_calstr_allavg * throughput
       endif
       ! Initialize output arrays

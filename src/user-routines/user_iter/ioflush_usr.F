@@ -1,4 +1,5 @@
       subroutine ioflush_usr
+      use eirmod_comprt, only: iunout
       implicit none
 
 #ifdef WINDOWS
@@ -9,7 +10,6 @@
       end interface
 #endif
 
-cpg ioflush missing on julich repo
-cpg        call ioflush
+      flush(iunout)
 
       end subroutine ioflush_usr

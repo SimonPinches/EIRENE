@@ -8,8 +8,20 @@ TAGS
 # Ignore local user files
 src.local/
 
+# backup files
+*.bak
+*.orig
+
 # Ignore temporary files
 *~
+
+# object, archive,... files
+*.[oa]
+*.mod
+TAGS
+
+# error messages from compiler etc.
+*.error
 
 # Ignore eclipse files
 .cproject

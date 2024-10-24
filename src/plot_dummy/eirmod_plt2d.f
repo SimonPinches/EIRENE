@@ -68,7 +68,7 @@ cdr  to still be able to provide printed trajectory output.
      .            'ERROR DETECTED      ',     ! SYMBOL FOR PARTICLE
                                               ! TRACING ERROR.
 c  next symbols/text: only for printout, not on plot.
-     .            'INT. GRID SURFACE(8)',
+     .            'INT.GRID SURFACE(19)',
      .            'DIFFUSION STEP(20)  ',
      .            'STATIC LOOP(21)     '/
 C

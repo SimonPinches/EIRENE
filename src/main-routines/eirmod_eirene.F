@@ -215,7 +215,7 @@ cdr  MPI: DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
               CALL EIRENE_OPENFILE (IUNOUT, FILE=OUTNAME,
      .          ACCESS='SEQUENTIAL', FORM='FORMATTED', POSITION=OUTPOS)
             end if
-
+            call ioflush_usr
             init_open=1
           END IF
 
@@ -492,7 +492,6 @@ C
 C  ATOMIC & MOLECULAR DATA DIAGNOSTICS ON ADDITIONAL INPUT ARRAY ADIN
 C
         CALL EIRENE_AMDIAG
-        write (iunout,*) 'nach amdiag'
 C
 C  PRINT VOLUME-AVERAGED INPUT TALLIES.
 C
@@ -519,6 +518,7 @@ C
   300   CONTINUE
 
       END IF   ! MY_PE == 0
+      call ioflush_usr
 
       IF (NPRS > 1) CALL EIRENE_BROADCAST
       CALL EIRENE_INFCOP_PRE_MCARLO

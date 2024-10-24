@@ -72,7 +72,7 @@ c
       INTEGER :: ISTRAO, NPANUO,   !dr  from first state vector,
                                    ! for initializing stand. deviations
      .           ISTRAI, JATM, JMOL, JION, JPHOT,
-     .           I
+     .           ICOUNT, I
       EXTERNAL :: EIRENE_LEER, EIRENE_MASBOX, EIRENE_MASJ2,
      .            EIRENE_MASR1, EIRENE_MASR2,
      .            EIRENE_TMSUSR, EIRENE_WRSNAP
@@ -149,6 +149,7 @@ C  B: set FLUX for time stratum NSTRAI IN NEXT TIME STEP
   130 CONTINUE
 
 C  PREPARE VARIANCE OF CENSUS DATA
+      ICOUNT=0
       SGMREL=0.0
 C
 cdr  empty census?
@@ -159,6 +160,7 @@ cdr what if iprnl=0? are these next arrays properly allocated?
 
 cdr     IPART(1,I)  ! particle number of score no. I on census = NPANU
 cdr     IPART(8,I)  ! stratum  number of score no. I on census = ISTRA
+      ICOUNT=1
 
 cdr  needed for initializing the std. deviation estimates. First score to census.
       NPANUO=IPART(1,1)
@@ -248,6 +250,7 @@ C  FLUX IS TOTAL "ATOMIC FLUX" ON CENSUS
           ISTRAO=ISTRAS
 C   PUT WEIGHT OF CURRENT CENSUS SCORE NPANU ONTO ADDS
           ADDS=ADD
+          ICOUNT=ICOUNT+1
         ENDIF
 
 C   WEIGHT may have been altered above. So: redefine this component of state vector.
@@ -338,7 +341,8 @@ cdr   300 CONTINUE  ! moved up to ensure fort.15 is written.
       WRITE (iunout,*) 'TIME CYCLE COMPLETED, NEXT TIME CYCLE PREPARED'
       WRITE (iunout,*) 'NEXT TIME CYCLE RUNS FROM TIM1 TO TIM2:'
       CALL EIRENE_MASR2('TIM1, TIM2      ',TIME0,TIME0+DTIMV)
-      CALL EIRENE_MASJ1('IPRNL   ',IPRNL)
+      WRITE (iunout,*) 'CENSUS SCORES, TRAJECTORIES ON CENSUS:'
+      CALL EIRENE_MASJ2('ISCORE, ITRAJ   ',IPRNL,ICOUNT)
       WRITE (IUNOUT,*) '"ATOMIC" FLUX AT CENSUS (AMP):'
       CALL EIRENE_MASR1('FLUX    ',FLXCEN)
       CALL EIRENE_MASR1('+-%     ',SGMREL)

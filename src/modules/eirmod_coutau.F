@@ -1064,6 +1064,7 @@ C     The following SUBROUTINE is for reinitialization of EIRENE
       IA = 1
       IE = IA - 1 + SIZE(PDENAI)
       OUTAU(IA:IE) = PACK(PDENAI,.TRUE.)
+c     write (iunout,*) '1, NATMP ',(IE-IA+1)/NSTRAP, NATMP
 
       IA = IE + 1
       IE = IA - 1 + SIZE(PDENMI)
@@ -1301,11 +1302,11 @@ cdr energy sources done.Next: additional tallies
       IA = IE + 1
       IE = IA - 1 + SIZE(SNAPVI)
       OUTAU(IA:IE) = PACK(SNAPVI,.TRUE.)
-
+c     write (iunout,*) 'snap, NSNVP ',(IE-IA+1)/NSTRAP, NSNVP
       IA = IE + 1
       IE = IA - 1 + SIZE(COPVI)
       OUTAU(IA:IE) = PACK(COPVI ,.TRUE.)
-
+c     write (iunout,*) 'copv, NCPVP ',(IE-IA+1)/NSTRAP, NCPVP
       IA = IE + 1
       IE = IA - 1 + SIZE(BGKVI)
       OUTAU(IA:IE) = PACK(BGKVI ,.TRUE.)
@@ -1317,6 +1318,7 @@ cdr energy sources done.Next: additional tallies
       IA = IE + 1
       IE = IA - 1 + SIZE(PGENAI)
       OUTAU(IA:IE) = PACK(PGENAI,.TRUE.)
+c     write (iunout,*) 'pgena, NATMP ',(IE-IA+1)/NSTRAP, NATMP
 
       IA = IE + 1
       IE = IA - 1 + SIZE(PGENMI)
@@ -1329,6 +1331,7 @@ cdr energy sources done.Next: additional tallies
       IA = IE + 1
       IE = IA - 1 + SIZE(PGENPHI)
       OUTAU(IA:IE) = PACK(PGENPHI,.TRUE.)
+c     write (iunout,*) 'pgenph, NPHOTP ',(IE-IA+1)/NSTRAP, NPHOTP
 
       IA = IE + 1
       IE = IA - 1 + SIZE(EGENAI)
@@ -1453,7 +1456,7 @@ cdr energy sources done.Next: additional tallies
       IA = IE + 1
       IE = IA - 1 + SIZE(MAPLI)
       OUTAU(IA:IE) = PACK(MAPLI,.TRUE.)
-
+c     write (iunout,*) 'mapl, NPLSP ',(IE-IA+1)/NSTRAP, NPLSP
       IA = IE + 1
       IE = IA - 1 + SIZE(MMPLI)
       OUTAU(IA:IE) = PACK(MMPLI,.TRUE.)

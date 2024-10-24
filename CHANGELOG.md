@@ -27,11 +27,25 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Pointing to modified set of examples with .F file extensions
 - Removed forced usage of OpenMP compiler options
 - Added TRCMELD output switch
+- Do not use IUNOUT in EIRENE_MAIN before it is defined or after it has been deallocated
 - Added a safety and error message in FIND_PARAM if the input file is found empty
 - Added a safety to check the fort.34 file is present before attempting to read it
 - Added safety for reading correct number of integers in block 10F of input file in READ_FIXFORM
 - Added safety against IPRNL=0 in SETUP_TIME_SURFACE
+- Adding safety for incorrect algebraic manipulation of intensive tallies in ALGTAL
+- Added calls to flush out buffers
 - Added allocated status safeties
+- Added information about thread number in error state in EIRENE_EXIT_OWN
+- Added census score output in TMSTEP
+- Added SHSTEP output in EIRMOD_INFCOP from SOLPS-ITER interface
+- Removed misleading superfluous output from CMakeLists.txt
+- Added standard deviation output in OUTIDLTAL
+- Removed redundant output in OUTIDLPLA
+- Conditioned some debugging output
+- Rewrote some output formats to avoid creation of temporary arrays
+- Clarified some code output
+- Some aesthetic output changes
+- Corrected format statements
 - Generalized usaged of FORT and FORT_LC variables
 - Added TRIM operations and character ranges to avoid string length overflows
 - Added LEGACYCOMP alternate code
@@ -44,6 +58,8 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Added some more clarifying comments
 - Have figures in Manual listed by full relative path and file extension
 - Added missing comment about density validity range in AMJUEL file
+- Added some more produced file types to .gitignore file
+- Improved handling of external libraries in CMakeLists.txt
 - Added -allow-argument-mismatch argument to GNU compilation above version 9.5 to avoid errors with MPI routines
 - Added Cray compiler support
 ---

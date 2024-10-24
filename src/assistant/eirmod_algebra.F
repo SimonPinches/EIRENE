@@ -1488,6 +1488,8 @@ C           ZERLEGUNG
 C
             CALL EIRENE_RUKSUB(TEIL, IPART, PART, IARITH, ARITH, HILFE)
          ENDIF
+      else
+        write (6,*) 'ALG. TALLIES: error in zerleg'
 
       ENDIF
 C

@@ -166,7 +166,7 @@ C
       CALL EIRENE_LEER(1)
 C
 C  start browsing the header
-      READ (IUNIN,'(A72)',END=6999) ZEILE
+      READ (IUNIN,'(A80)',END=6999) ZEILE
       WRITE (IUNOUT,'(A)') TRIM(ZEILE)
       CALL EIRENE_LEER(1)
 

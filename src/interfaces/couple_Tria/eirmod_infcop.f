@@ -1802,7 +1802,7 @@ C  READ DATA FOR "IPLS" FROM EIRENE DUMP FILE FT13
             IF (TRCFLE) WRITE (iunout,*) 'READ 13: RCMUSR, IO= ',IO
             IF(IO.NE.0) THEN
               WRITE(IUNOUT,*) "WARNING FROM INFCOP: ",
-     w                 "FORT.13 IS IN SHORT FORMAT"
+     w                 FORT//"13 IS IN SHORT FORMAT"
 C IF READING IN OLD FORMAT DOES NOT WORK, THEN TRY THE NEW ONE
               REWIND 13
               READ (13,IOSTAT=IO)
@@ -1810,7 +1810,7 @@ C IF READING IN OLD FORMAT DOES NOT WORK, THEN TRY THE NEW ONE
      R          VXIN(NFLA+1:NPLSI,1:NRAD),VYIN(NFLA+1:NPLSI,1:NRAD),
      R          VZIN(NFLA+1:NPLSI,1:NRAD)
               IF (TRCFLE) WRITE (iunout,*)
-     w         'INFCOP: BGK BACKGROUND IS READ FROM FORT.13'
+     w         'INFCOP: BGK BACKGROUND IS READ FROM '//FORT//'13'
             END IF
             CLOSE (UNIT=13)
           ENDIF
@@ -4802,7 +4802,7 @@ C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
      .  WRITE (iunout,*) ' LSYMET,LBALAN,LCOARSE = ',
      .                     LSYMET,LBALAN,LCOARSE
 
-       READ (IUNIN,'(9I6)') NFLA,NCUTB,NCUTL,IMF,
+       READ (IUNIN,'(5I6)') NFLA,NCUTB,NCUTL,IMF,
 cdr  imf  flag for different formats of geometry file: linda, sonnet, carre. What is what?
      .                      ntrfrm
        NPLS_FIX = NFLA
@@ -4891,8 +4891,8 @@ C  NTIN,NTEN: SOURCE RANGE FROM GRID POINT NTIN TO GRID POINT NTEN
              ENDIF
            ENDIF
          END DO  ! IPRT
+         IF (TRCINT) CALL EIRENE_LEER(1)
        END DO  ! IT
-       IF (TRCINT) CALL EIRENE_LEER(1)
        READ (IUNIN,'(6E12.4)')  CHGP,CHGEE,CHGEI,CHGMOM
        IF (TRCINT) CALL EIRENE_MASR4
      .                         ('CHGP,CHGEE,CHGEI,CHGMOM         ',

@@ -1249,18 +1249,18 @@ C  CARRY OUT SOME CONSISTENCY CHECKS ON NEW TRIANGULAR GRID
             WRITE (iunout,*) ' NCHBAR,INMTI',
      .                         NCHBAR(IS,ITRI),INMTI(IS,ITRI)
             WRITE (iunout,*) ' OPEN SIDE OF TRIANGLE ',ITRI,' SIDE ',IS
-
-            if (ixtri(itri) == 0) then
-              write (iunout,*)
+            IF (TRCGRD) THEN
+              if (ixtri(itri) == 0) then
+                write (iunout,*)
      .               'triangle outside original structured grid'
-              call eirene_masj1('itri   ',itri)
-            else
-              write (iunout,*)
+                call eirene_masj1('itri   ',itri)
+              else
+                write (iunout,*)
      .               'triangle inside original structured grid'
-              call eirene_masj2('nr,np           ',
+                call eirene_masj2('nr,np           ',
      .                           iytri(itri),ixtri(itri))
-            endif
-
+              endif
+            ENDIF
             write (iunout,*) ' necke ',necke(1:3,itri)
             write (iunout,*) ' xtrian,ytrian(1) ',xtrian(necke(1,itri)),
      .                                            ytrian(necke(1,itri))
@@ -3576,8 +3576,8 @@ C
       CALL EIRENE_LEER(1)
       WRITE (iunout,*) 'TARGET DATA: TARGET NO. ITARG=ISTRA= ',ITARG
       WRITE (iunout,*) TXTSOU(ITARG)
-      WRITE (iunout,'(1X,A4,9A11,A3)')
-     . 'IG','ARC','P-FLUX','E-FLUX','TE','TI','SHEATH/TE',
+      WRITE (iunout,'(1X,A4,10A11,A3)')
+     . 'IG','ARC','P-FLUX','E-FLUX','TE','TI','SHEATH/TE','SHSTEP',
      . 'VXSTEP','VYSTEP','VZSTEP'
       DO 6100 IG=1,NRWL(ITARG)-1
 
@@ -3589,11 +3589,12 @@ C
           IF (ORI(ITARG,IG).LT.0) NSEW='S'
           IF (ORI(ITARG,IG).GT.0) NSEW='N'
         ENDIF
-        WRITE (iunout,'(1X,I4,1P,9E11.3,3X,A1)')
+        WRITE (iunout,'(1X,I4,1P,10E11.3,3X,A1)')
      .             IG,RRSTEP(ITARG,IG),FLSTEP(0,ITARG,IG),
      .             ELSTEP(0,ITARG,IG),
      .             TESTEP(ITARG,IG),TISTEP(1,ITARG,IG),
      .             ESHT(ITARG,IG)/(TESTEP(ITARG,IG)+EPS60),
+     .             SHSTEP(ITARG,IG),
      .             VXSTEP(1,ITARG,IG),VYSTEP(1,ITARG,IG),
      .             VZSTEP(1,ITARG,IG),NSEW
  6100 CONTINUE
@@ -4360,17 +4361,25 @@ csw             EPEL_COP(INC)=EPEL_COP(INC)+EEADD
 csw
 cdr             SUMEE=SUMEE+EEADD*VOL(IN)! may 2018 now moved up after lhit-condition
 
- 7471         CONTINUE  ! loop over grid
+ 7471       CONTINUE  ! loop over grid
 
-              RECTOT = RECTOT + SUMN
-            WRITE (iunout,*) 'IPLS,IRRC ',IPLS,IRRC
-              CALL EIRENE_MASR4('SUMN, SUMM, SUMEI, SUMEE        ',
-     .                     SUMN,SUMM,SUMEI,SUMEE)
-              volSUMN(ISTRAI)=volSUMN(ISTRAI)+SUMN             ! dpc
-              volSUMM(ISTRAI)=volSUMM(ISTRAI)+SUMM             ! dpc
-              volSUMEI(ISTRAI)=volSUMEI(ISTRAI)+SUMEI          ! dpc
-              volSUMEE(ISTRAI)=volSUMEE(ISTRAI)+SUMEE          ! dpc
- 7472     CONTINUE
+            RECTOT = RECTOT + SUMN
+
+            WRITE (iunout,*) 'PARTIAL: IRRC ',IRRC
+            CALL EIRENE_MASR4
+     .           ('SUMN, SUMM, SUMEI, SUMEE        ',
+     .             SUMN, SUMM, SUMEI, SUMEE)
+            volSUMN(ISTRAI)=volSUMN(ISTRAI)+SUMN             ! dpc
+            volSUMM(ISTRAI)=volSUMM(ISTRAI)+SUMM             ! dpc
+            volSUMEI(ISTRAI)=volSUMEI(ISTRAI)+SUMEI          ! dpc
+            volSUMEE(ISTRAI)=volSUMEE(ISTRAI)+SUMEE          ! dpc
+ 7472     CONTINUE  !IRRC
+
+          WRITE (iunout,*) 'TOTAL'
+          CALL EIRENE_MASR4
+     .         ('SUMN, SUMM, SUMEI, SUMEE        ',
+     .           volSUMN(ISTRAI),  volSUMM(ISTRAI),
+     .           volSUMEI(ISTRAI), volSUMEE(ISTRAI))
 cdr
 CC SUMN_OLD=WTOTP ???
           IF (.NOT.LSHORT) SUMN_OLD=RECTOT
@@ -5148,8 +5157,10 @@ CVK SCALING TO MAKE POSSIBLE COMPARISON WITH B2
         END IF
 
         CALL EIRENE_LEER(1)
-        WRITE (iunout,*) 'RECYCLING SOURCE FROM IF3COP ',ISTRAI
-        WRITE (iunout,'(3E14.6)') sum(SNIS(1:nfla)), SEIS, SEES
+        WRITE (iunout,*) 'IF3COP: TOTAL SOURCES P,EI,EE,MOM_VEC: ISTRA='
+     .                   ,ISTRAI
+        WRITE (iunout,'(4E14.6)') sum(SNIS(1:nfla)), SEIS, SEES,
+     .                            sum(SMOS(1:nfla))
 C
 C   NEXT:
 C   IF LSHORT OR IFIRST.GT.0     : CRITERION TO STOP SHORT CYCLE,

@@ -146,8 +146,16 @@ cdr not the reduced "storage species index" NFRSTP
 
             CALL EIRENE_GET_INTAL
             IF (IER > 0) EXIT   ! NO CORRESPONDING INPUT TALLY FOUND
-cdr  input tally(itl,:) is returned as OP(:),
+cdr  input tally(itl,k,:) is returned as OP(:),
 cdr  weighting fct is returned as WEI(:).
+CDR  IN CASE OF INTENSIVE MULTI-SPECIES INPUT TALLIES
+cdr  code in get_intal is often simply wrong for K=0.
+            if (itl.lt.0 .and. nf.gt.1 .and. k.eq.0) then
+              write (iunout,*) 'DR: wrong code for this alttal option'
+              write (iunout,*) 'ital,ispez ',itl,K
+              write (iunout,*) 'alg. tally skipped for safety '
+              goto 91
+            endif
 
 cdr  weighted sum over subcells: in=ncltal(i)
             SUMWEI = EPS60
@@ -224,7 +232,7 @@ cdr not the reduced "storage species index" NFRSTP
 
             CALL EIRENE_GET_INTAL
             IF (IER > 0) EXIT   ! NO CORRESPONDING INPUT TALLY FOUND
-cdr  input tally(itl,:) is returned as OP(:),
+cdr  input tally(itl,k,:) is returned as OP(:),
 cdr  weighting fct is returned as WEI(:).
 
 cdr  weighted sum over subcells: in=ncltal(i)

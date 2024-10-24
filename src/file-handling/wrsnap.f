@@ -66,8 +66,6 @@ C
       IF (TRCFLE) WRITE (iunout,*) 'READ 15: IPRNL,FLXCEN,DTIMV'
       READ (15+ifoff,END=915) IPRNL,FLXCEN,DTIMV
 
-      IF (TRCFLE) WRITE (iunout,*) 'READ 15: IPRNL,FLUX,DTIMV'
-
 cdr  tbd:
 cdr  fort.15 (census) was written in a previous run.
 cdr  In the present run allocation of storage for census arrays rpartc,ipartc,rpartw

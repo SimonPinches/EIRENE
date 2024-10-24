@@ -250,7 +250,8 @@ cdr atom particle tallies
           PAAT(IATM,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
           IF (TRCSCL) THEN
             WRITE (IUNOUT,*) 'INTEGRATE_TALLIES'
-            WRITE (IUNOUT,*) ' PAATI ',IATM, PAATI(IATM,ISTRA)
+            IF (.NOT.NLSPCSCL_ATM)
+     .       WRITE (IUNOUT,*) ' PAATI ',IATM, PAATI(IATM,ISTRA)
           END IF
           IF (NLSPCSCL_ATM) THEN
             PAATI2(0:NATM,0:NATM) => PAATI(:,ISTRA)
@@ -278,7 +279,8 @@ cdr atom particle tallies
           PMAT(IATM,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
           IF (TRCSCL) THEN
             WRITE (IUNOUT,*) 'INTEGRATE_TALLIES'
-            WRITE (IUNOUT,*) ' PMATI ',IATM, PMATI(IATM,ISTRA)
+            IF (.NOT.NLSPCSCL_MOL)
+     .       WRITE (IUNOUT,*) ' PMATI ',IATM, PMATI(IATM,ISTRA)
           END IF
           IF (NLSPCSCL_MOL) THEN
             PMATI2(0:NATM,0:NMOL) => PMATI(:,ISTRA)

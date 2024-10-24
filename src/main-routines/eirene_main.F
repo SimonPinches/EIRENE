@@ -34,7 +34,6 @@ cdr  The parameters DT, NLM, NLL, ITNR, MPI_INIT... are then
 cdr  set from the external code, or in EIRSRT, and are problem-specific.
 
       USE EIRMOD_PRECISION
-      USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_SECOND_OWN, ONLY: EIRENE_SECOND_OWN,
      .                             EIRENE_RESET_SECOND
       USE EIRMOD_EIRENE, ONLY: EIRENE_EIRENE
@@ -60,7 +59,7 @@ C     Initialize MPI
 C
       TIMI=EIRENE_SECOND_OWN()
       TIMI0=TIMI
-c     write (iunout,*) 'timi ',timi0
+c     write (*,*) 'timi ',timi0
 C
       CALL EIRENE_PLSTRT
 C
@@ -89,7 +88,7 @@ C
       CALL EIRENE_PLEND
 C
       TIMEND=EIRENE_RESET_SECOND()
-      WRITE (IUNOUT,*) 'TOTAL CPU_TIME (SEC) OF THIS RUN: ',
+      IF (MY_PE == 0) WRITE (*,*) 'TOTAL CPU_TIME (SEC) OF THIS RUN: ',
      .                  TIMEND-TIMI0
 C     Finalize MPI
       CALL MPI_FINALIZE(IER)

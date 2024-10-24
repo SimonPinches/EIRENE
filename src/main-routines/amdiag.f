@@ -132,7 +132,7 @@ cdr  functions for 'on the fly' evaluation of A&M data
         NA=NAINT(IAIN)    !  na stands for tally:
                           !  TAB..3(...), EPL..3(...)
 
-        IF ((NA < 20) .OR. (NA > 29)) CYCLE
+        IF ((NA < 20) .OR. (NA > 40)) CYCLE
 ! reinitialize ADIN to 0 in order to avoid residual values from prior
 ! iterations, e.g. in case of changed LGVAC
         if (any(adin(iain,:).ne.0.0)) then
@@ -217,12 +217,15 @@ c  no interacting particle species found
 cdr KK is set for tallies 20 and 21
         IF (NA.EQ.20) THEN
           mm=modcol(1,2,irei)
-          KK=NREAEI(irei)
+c
           WRITE (CNO,'(I4)') IREI
           WRITE (CN1,'(I4)') KK
+cdr  avoid repeated augmenting of tally-name in iterative mode
+          if (iiter.le.1) then
           TXTPLS(IAIN,NTALN) =
-     .      'ELECTRON IMPACT REACTION RATE COEFFICIENT IREI ='//CNO
-     .      //' KK='//CN1
+     .      'EI RATE COEFF. IREI ='//CNO
+     .      //' KK='//CN1// ': '//TRIM(TXTPLS(IAIN,NTALN))
+          endif
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)// ' on ELECTRONS'
           TXTPUN(IAIN,NTALN) = 'A.U. (0.612E-8 cm3/s)   '
 
@@ -248,9 +251,12 @@ C  ELECTRON IMPACT ENERGY LOSS RATE COEFFICIENT NO. IREI
 c
           WRITE (CNO,'(I4)') IREI
           WRITE (CN1,'(I4)') KK
+cdr  avoid repeated augmenting of tally-name in iterative mode
+          if (iiter.le.1) then
           TXTPLS(IAIN,NTALN) =
-     .      'ELECTRON IMPACT ENERGY LOSS RATE COEFFICIENT IREI ='//CNO
-     .      //' KK='//CN1
+     .      'EI ENERGY RATE COEFF. IREI ='//CNO
+     .      //' KK='//CN1//': '//TRIM(TXTPLS(IAIN,NTALN))
+          endif
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)// ' on ELECTRONS'
           TXTPUN(IAIN,NTALN) = 'eV A.U. (0.612E-8 cm3/s)'
           if (mm.eq.1) then
@@ -332,12 +338,15 @@ c  no interacting particle species found
 cdr  KK is set for tallies 22 and 23
         IF (NA.EQ.22) THEN
           mm=modcol(3,2,ircx)
-          kk=NREACX(ircx)
+c
           WRITE (CNO,'(I4)') IRCX
           WRITE (CN1,'(I4)') KK
+cdr  avoid repeated augmenting of tally-name in iterative mode
+          if (iiter.le.1) then
           TXTPLS(IAIN,NTALN) =
-     .      'CHARGE EXCHANGE REACTION RATE COEFFICIENT IRCX ='//CNO
-     .      //' KK='//CN1
+     .      'CX RATE COEFF. IRCX ='//CNO
+     .      //' KK='//CN1//': '//TRIM(TXTPLS(IAIN,NTALN))
+          endif
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)//' on '//TEXTS(NSPAMI+IPL)
           TXTPUN(IAIN,NTALN) = 'A.U. (0.612E-8 cm3/s)   '
 
@@ -398,9 +407,12 @@ C  BULK ION IMPACT ENERGY LOSS RATE COEFFICIENT NO. IRCX
 c
           WRITE (CNO,'(I4)') IRCX
           WRITE (CN1,'(I4)') KK
+cdr  avoid repeated augmenting of tally-name in iterative mode
+          if (iiter.le.1) then
           TXTPLS(IAIN,NTALN) =
-     .      ' BULK ION IMPACT ENERGY LOSS RATE COEFFICIENT IRCX ='//CNO
-     .      //' KK='//CN1
+     .      'CX ENERGY LOSS RATE COEFF. IRCX ='//CNO
+     .      //' KK='//CN1//': '//TRIM(TXTPLS(IAIN,NTALN))
+          endif
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)//' on '//TEXTS(NSPAMI+IPL)
           TXTPUN(IAIN,NTALN) = 'eV A.U. (0.612E-8 cm3/s)'
           if (mm.eq.1) then
@@ -485,9 +497,12 @@ cdr KK is set for tallies 24 and 25
           kk=NREAEL(irel)
           WRITE (CNO,'(I4)') IREL
           WRITE (CN1,'(I4)') KK
+cdr  avoid repeated augmenting of tally-name in iterative mode
+          if (iiter.le.1) then
           TXTPLS(IAIN,NTALN) =
-     .      'ELASTIC REACTION RATE COEFFICIENT IREL ='//CNO
-     .      //' KK='//CN1
+     .      ' EL RATE COEFF. IREL ='//CNO
+     .      //' KK='//CN1//': '//TRIM(TXTPLS(IAIN,NTALN))
+          endif
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)// ' on '// TEXTS(NSPAMI+IPL)
           TXTPUN(IAIN,NTALN) = 'A.U. (0.612E-8 cm3/s)   '
 
@@ -551,9 +566,12 @@ C  BULK ION IMPACT ENERGY LOSS RATE COEFFICIENT NO. IREL
 c
           WRITE (CNO,'(I4)') IREL
           WRITE (CN1,'(I4)') KK
+cdr  avoid repeated augmenting of tally-name in iterative mode
+          if (iiter.le.1) then
           TXTPLS(IAIN,NTALN) =
-     .      ' BULK ION IMPACT ENERGY LOSS RATE COEFFICIENT IREL ='//CNO
-     .      //' KK='//CN1
+     .      'EL ENERGY RATE COEFF. IREL ='//CNO
+     .      //' KK='//CN1//': '//TRIM(TXTPLS(IAIN,NTALN))
+          endif
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)//' on '//TEXTS(NSPAMI+IPL)
           TXTPUN(IAIN,NTALN) = 'eV A.U. (0.612E-8 cm3/s)'
           if (mm.eq.1) then
@@ -639,9 +657,12 @@ cdr  KK is set for tallies 26 and 27
           kk=nreapi(irpi)
           WRITE (CNO,'(I4)') IRPI
           WRITE (CN1,'(I4)') KK
+cdr  avoid repeated augmenting of tally-name in iterative mode
+          if (iiter.le.1) then
           TXTPLS(IAIN,NTALN) =
-     .      'BULK ION IMPACT REACTION RATE COEFFICIENT IRPI ='//CNO
-     .      //' KK='//CN1
+     .      'PI RATE COEFF. IRPI ='//CNO
+     .      //' KK='//CN1//': '//TRIM(TXTPLS(IAIN,NTALN))
+          endif
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)// ' on '// TEXTS(NSPAMI+IPL)
           TXTPUN(IAIN,NTALN) = 'A.U. (0.612E-8 cm3/s)   '
 
@@ -699,9 +720,12 @@ C  BULK ION IMPACT ENERGY LOSS RATE COEFFICIENT NO. IRCX
 c
           WRITE (CNO,'(I4)') IRPI
           WRITE (CN1,'(I4)') KK
+cdr  avoid repeated augmenting of tally-name in iterative mode
+          if (iiter.le.1) then
           TXTPLS(IAIN,NTALN) =
-     .      ' BULK ION IMPACT ENERGY LOSS RATE COEFFICIENT IRPI ='//CNO
-     .      //' KK='//CN1
+     .      'PI ENERGY RATE COEFF. IRPI ='//CNO
+     .      //' KK='//CN1//': '//TRIM(TXTPLS(IAIN,NTALN))
+          endif
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)//' on '//TEXTS(NSPAMI+IPL)
           TXTPUN(IAIN,NTALN) = 'eV A.U. (0.612E-8 cm3/s)'
           if (mm.eq.1) then
@@ -758,10 +782,13 @@ cdr KK is set for tallies 28 and 29
           mm=modcol(6,2,irrc)
           kk=NREARC(irrc)
           WRITE (CNO,'(I4)') IRRC
-          WRITE (CN1,'(I4)') NREARC(IRRC)
+          WRITE (CN1,'(I4)') KK
+cdr  avoid repeated augmenting of tally-name in iterative mode
+          if (iiter.le.1) then
           TXTPLS(IAIN,NTALN) =
-     .      'RECOMBINATION REACTION RATE COEFFICIENT IRRC ='//CNO
-     .      //' KK='//CN1
+     .      'RC RATE COEFF. IRRC ='//CNO
+     .      //' KK='//CN1//': '//TRIM(TXTPLS(IAIN,NTALN))
+          endif
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)// ' on ELECTRONS'
           TXTPUN(IAIN,NTALN) = 'A.U. (0.612E-8 cm3/s)   '
 
@@ -788,9 +815,12 @@ c  recombination electron energy loss rate coefficient no. irrc
 c
           WRITE (CNO,'(I4)') IRRC
           WRITE (CN1,'(I4)') NELRRC(IRRC)
+cdr  avoid repeated augmenting of tally-name in iterative mode
+          if (iiter.le.1) then
           TXTPLS(IAIN,NTALN) =
-     .      'RECOMBINATION ENERGY LOSS RATE COEFFICIENT IRRC ='//CNO
-     .      //' KK='//CN1
+     .      'RC ENERGY RATE COEFF. IRRC ='//CNO
+     .      //' KK='//CN1//': '//TRIM(TXTPLS(IAIN,NTALN))
+          endif
           TXTPSP(IAIN,NTALN) = TEXTS(ISP)// ' on ELECTRONS'
           TXTPUN(IAIN,NTALN) = 'eV A.U. (0.612E-8 cm3/s)'
           irrc=ns

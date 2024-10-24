@@ -608,7 +608,7 @@ C
       REAL(DP) :: FATM(0:NATMI), FMOL(0:NMOLI), FION(0:NIONI),
      .           FPHOT(0:NPHOTI)
       INTEGER :: NNP, IATM, IMOL, IION, IPHOT,
-     .           JSP, JMOL, JION, JPHOT
+     .           JSP, JMOL, JION, JPHOT, I
       INTEGER :: IER
       INTEGER, ALLOCATABLE :: IW(:)
       REAL(DP), ALLOCATABLE :: PP(:,:), B(:)
@@ -652,47 +652,47 @@ C
           write (iunout,*) 'paati in getscl'
           do iatm=0,natmi
             write (iunout,'(A,i3,(1x,5es15.7))') 'iatm = ',
-     .           iatm,paati2(iatm,lb_atm:natmi)
+     .           iatm,(paati2(iatm,i),i=lb_atm,natmi)
           end do
           write (iunout,*) 'pamli in getscl'
           do imol=0,nmoli
             write (iunout,'(A,i3,(1x,5es15.7))') 'imol = ',
-     .           imol,pamli2(imol,lb_atm:natmi)
+     .           imol,(pamli2(imol,i),i=lb_atm,natmi)
           end do
           write (iunout,*) 'paioi in getscl'
           do iion=0,nioni
             write (iunout,'(A,i3,(1x,5es15.7))') 'iion = ',
-     .           iion,paioi2(iion,lb_atm:natmi)
+     .           iion,(paioi2(iion,i),i=lb_atm,natmi)
           end do
           write (iunout,*) 'pmati in getscl'
           do iatm=0,natmi
             write (iunout,'(A,i3,(1x,5es15.7))') 'iatm = ',
-     .           iatm,pmati2(iatm,lb_mol:nmoli)
+     .           iatm,(pmati2(iatm,i),i=lb_mol,nmoli)
           end do
           write (iunout,*) 'pmmli in getscl'
           do imol=0,nmoli
             write (iunout,'(A,i3,(1x,5es15.7))') 'imol = ',
-     .           imol,pmmli2(imol,lb_mol:nmoli)
+     .           imol,(pmmli2(imol,i),i=lb_mol,nmoli)
           end do
           write (iunout,*) 'pmioi in getscl'
           do iion=0,nioni
             write (iunout,'(A,i3,(1x,5es15.7))') 'iion = ',
-     .           iion,pmioi2(iion,lb_mol:nmoli)
+     .           iion,(pmioi2(iion,i),i=lb_mol,nmoli)
           end do
           write (iunout,*) 'piati in getscl'
           do iatm=0,natmi
             write (iunout,'(A,i3,(1x,5es15.7))') 'iatm = ',
-     .           iatm,piati2(iatm,lb_ion:nioni)
+     .           iatm,(piati2(iatm,i),i=lb_ion,nioni)
           end do
           write (iunout,*) 'pimli in getscl'
           do imol=0,nmoli
             write (iunout,'(A,i3,(1x,5es15.7))') 'imol = ',
-     .           imol,pimli2(imol,lb_ion:nioni)
+     .           imol,(pimli2(imol,i),i=lb_ion,nioni)
           end do
           write (iunout,*) 'piioi in getscl'
           do iion=0,nioni
             write (iunout,'(A,i3,(1x,5es15.7))') 'iion = ',
-     .           iion,piioi2(iion,lb_ion:nioni)
+     .           iion,(piioi2(iion,i),i=lb_ion,nioni)
           end do
         END IF
 
@@ -717,47 +717,47 @@ C
           write (iunout,*) 'prfaai in getscl'
           do iatm=0,natmi
             write (iunout,'(A,i3,(1x,5es15.7))') 'iatm = ',
-     .           iatm,prfaai2(iatm,lb_atm:natmi)
+     .           iatm,(prfaai2(iatm,i),i=lb_atm,natmi)
           end do
           write (iunout,*) 'prfami in getscl'
           do imol=0,nmoli
             write (iunout,'(A,i3,(1x,5es15.7))') 'imol = ',
-     .           imol,prfami2(imol,lb_atm:natmi)
+     .           imol,(prfami2(imol,i),i=lb_atm,natmi)
           end do
           write (iunout,*) 'prfaii in getscl'
           do iion=0,nioni
             write (iunout,'(A,i3,(1x,5es15.7))') 'iion = ',
-     .           iion,prfaii2(iion,lb_atm:natmi)
+     .           iion,(prfaii2(iion,i),i=lb_atm,natmi)
           end do
           write (iunout,*) 'prfmai in getscl'
           do iatm=0,natmi
             write (iunout,'(A,i3,(1x,5es15.7))') 'iatm = ',
-     .           iatm,prfmai2(iatm,lb_mol:nmoli)
+     .           iatm,(prfmai2(iatm,i),i=lb_mol,nmoli)
           end do
           write (iunout,*) 'prfmmi in getscl'
           do imol=0,nmoli
             write (iunout,'(A,i3,(1x,5es15.7))') 'imol = ',
-     .           imol,prfmmi2(imol,lb_mol:nmoli)
+     .           imol,(prfmmi2(imol,i),i=lb_mol,nmoli)
           end do
           write (iunout,*) 'prfmii in getscl'
           do iion=0,nioni
             write (iunout,'(A,i3,(1x,5es15.7))') 'iion = ',
-     .           iion,prfmii2(iion,lb_mol:nmoli)
+     .           iion,(prfmii2(iion,i),i=lb_mol,nmoli)
           end do
           write (iunout,*) 'prfiai in getscl'
           do iatm=1,natmi
             write (iunout,'(A,i3,(1x,5es15.7))') 'iatm = ',
-     .           iatm,prfiai2(iatm,1:nioni)
+     .           iatm,(prfiai2(iatm,i),i=lb_ion,nioni)
           end do
           write (iunout,*) 'prfimi in getscl'
           do imol=1,nmoli
             write (iunout,'(A,i3,(1x,5es15.7))') 'imol = ',
-     .           imol,prfimi2(imol,1:nioni)
+     .           imol,(prfimi2(imol,i),i=lb_ion,nioni)
           end do
           write (iunout,*) 'prfiii in getscl'
           do iion=0,nioni
             write (iunout,'(A,i3,(1x,5es15.7))') 'iion = ',
-     .           iion,prfiii2(iion,lb_ion:nioni)
+     .           iion,(prfiii2(iion,i),i=lb_ion,nioni)
           end do
         END IF
 

@@ -135,9 +135,9 @@ cdr  All other A&M data will be recomputed in SETAMD.f
 
 c  nfla_virt is not a pointer to some target
       IF(NFLA_VIRT == 0) THEN
-        WRITE(iunout,'(4a)')
-     w         "WRPLAM_SHRT: NFLA_VIRT = 0. ",
-     w         "NO COLLISION DATA WILL BE STORED IN ", FORT, "13"
+        WRITE(iunout,'(1x,4a)')
+     w         ' WRPLAM_SHRT: NFLA_VIRT = 0 ',
+     w         'NO ITERATION DATA WILL BE STORED ON ', FORT, '13'
 
         CLOSE (UNIT=13+ifoff)
         RETURN
@@ -162,6 +162,11 @@ c  data for virt. species ipls
 #ifdef CHECKBIN
           write (113,*) 'LGVAC ',lgvac(1:nrad,ipls)
 #endif
+        else
+          write (iunout,*) 'WARNING'
+          write (iunout,*) 'conflict in wrplam_shrt '
+          write (iunout,*) 'virt. species index out of range'
+          write (iunout,*) 'ipls, npls_fix+1 ',ipls,npls_fix+1
         endif
       END DO
 
@@ -309,7 +314,7 @@ cdr  have to come last in the list of all background species.
       NREA_VIRT = 0
       READ (13+IFOFF,IOSTAT=IO) NFLA_VIRT, NREA_VIRT
       IF(IO /= 0) THEN
-        WRITE(iunout,'(4a)')
+        WRITE(iunout,'(1x,4a)')
      w         "RPLAM_SHRT: NFLA_VIRT COULD NOT BE READ. ",
      w         "NO COLLISION DATA WILL BE READ FROM ", FORT, "13"
         CALL EIRENE_LEER(1)
@@ -320,14 +325,14 @@ cdr  have to come last in the list of all background species.
 cdr  now we have: NFLA_VIRT
 cdr  next: read the NFLA_VIRT collisional process data related to these virtual species
       IF (NFLA_VIRT == 0) THEN
-        WRITE(iunout,'(4a)')
+        WRITE(iunout,'(1x,4a)')
      w         "RPLAM_SHRT: NFLA_VIRT = 0. ",
-     w         "NO COLLISION DATA WILL BE READ FROM ", FORT, "13"
+     w         "NO VIRT. SPECIES DATA WILL BE READ FROM ", FORT, "13"
         CALL EIRENE_LEER(1)
         CLOSE (UNIT=13+ifoff)
       END IF
       IF (NREA_VIRT == 0) THEN
-        WRITE(iunout,'(4a)')
+        WRITE(iunout,'(1x,4a)')
      w         "RPLAM_SHRT: NREA_VIRT = 0. ",
      w         "NO COLLISION DATA WILL BE READ FROM ", FORT, "13"
         CALL EIRENE_LEER(1)
@@ -432,7 +437,7 @@ cdr  case 6,7: to be done
 
   200 CONTINUE
 
-      WRITE(iunout,'(4a)')
+      WRITE(iunout,'(1x,4a)')
      w 'RPLAM_SHRT: CANNOT READ ', FORT, '13: ',
      w 'ZERO VIRTUAL BACKGROUND IS ASSIGNED'
       WRITE (iunout,*) 'SPECIES NPLS_FIX+1, NPLSI ',NPLS_FIX+1,NPLSI

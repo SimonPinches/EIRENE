@@ -288,6 +288,7 @@ C
       WRITE (IUNOUT,*) 'FILNAM ',FILNAM
       WRITE (IUNOUT,*) 'H123 ',H123
       WRITE (IUNOUT,*) 'REAC ',REAC
+      CALL EIRENE_LEER(1)
 C
 ! defining backslash character
       BACK=ACHAR(92)

@@ -37,6 +37,7 @@ C
       OPEN (UNIT=13+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 13+ifoff
       write (iunout,*) 'WRPLAM_LONG called from ',calledfrom
+      CALL EIRENE_LEER(1)
 #ifdef CHECKBIN
       OPEN (UNIT=113,ACCESS='SEQUENTIAL',FORM='FORMATTED')
       REWIND 113
@@ -226,6 +227,7 @@ cdr, jan 2019
       REWIND 13+ifoff
 
       write (iunout,*) 'RPLAM_LONG called from ',calledfrom
+      CALL EIRENE_LEER(1)
 
       READ (13+ifoff,IOSTAT=IO) LIVT
       IF (IO /= 0) THEN
