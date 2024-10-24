@@ -30,6 +30,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Added a safety and error message in FIND_PARAM if the input file is found empty
 - Added a safety to check the fort.34 file is present before attempting to read it
 - Added safety for reading correct number of integers in block 10F of input file in READ_FIXFORM
+- Added safety against IPRNL=0 in SETUP_TIME_SURFACE
 - Added allocated status safeties
 - Generalized usaged of FORT and FORT_LC variables
 - Added TRIM operations and character ranges to avoid string length overflows

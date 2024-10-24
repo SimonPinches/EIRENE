@@ -147,7 +147,11 @@ cdr  for census source particles. This may result in error exits
 C Would gain performance by turning RPSTT into a pointer
 cpb  changed due to optimizer problem
 cpb  try to determine the index of the element of RPSTT which TIME points to
-            RPSTT(1:NPARTT)=RPARTC(1:NPARTT,1)
+            IF (IPRNL.GT.0) THEN
+              RPSTT(1:NPARTT)=RPARTC(1:NPARTT,1)
+            ELSE
+              RPSTT(1:NPARTT)=0.0_DP
+            END IF
             TIME=HUGE(1._DP)
             IPNT=MAXLOC(RPSTT,1)
 cpb  reset time stamp
