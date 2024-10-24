@@ -1825,29 +1825,6 @@ C
       END SUBROUTINE EIRENE_GALPD_M
 
 
-      subroutine EIRENE_expi(x,ei,icon)
-      USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
-c  exponential integral
-c  -int exp(-x)/x, von -x nach unendlich     x<0,  identisch mit
-c  +int exp(x)/x,  von -unendl. bis x
-c
-c   PV +int exp(-x)/x von unendl bis -x      x>0 ,  identisch mit
-c   PV +int exp(x)/x von -unendl bis x
-      INTEGER ICON, IER
-      REAL(DP) EIRENE_mmdei,dei,xx
-cdr   if (x.gt.0) then
-        xx=x
-        dei=-EIRENE_mmdei(xx,ier)
-        icon=ier
-        ei=dei
-cdr   else
-cdr     write (iunout,*) 'argument in expi lt.0, call exit'
-cdr     call eirene_exit_own(1)
-cdr   endif
-      return
-      end subroutine EIRENE_expi
-c
       subroutine EIRENE_aqc8(a,b,f,epsr,nmin,nmax,S)
       USE EIRMOD_PRECISION
       IMPLICIT REAL(DP) (A-H,O-Z)
@@ -1870,52 +1847,6 @@ cdr  perhaps Romberg integration?
       return
       end subroutine EIRENE_aqc8
 
-
-
-c
-      FUNCTION EIRENE_MMDEI (S,IER)
-      USE EIRMOD_PRECISION
-C  exponential integral function
-c  imsl routine, dort: mmdei(ipot=2,s,ier), also:
-c  s muss gt.0, mmdei ist dann: integral (s bis unendlich) von
-c               exp(-t)/t dt
-      IMPLICIT REAL(DP) (A-H,O-Z)
-      REAL(DP) EIRENE_MMDEI
-      INTEGER IER
-      X=S
-      Y=ABS(X)
-      Z=0.25_DP*Y
-      IF (Z.LE.1.0D0) THEN
-       VALUE=((((((((((((((((((((-.483702D-8*Z+.2685377D-7)*Z-
-     1 .11703642D-6)*Z+.585911692D-6)*Z-.2843937873D-5)*Z+
-     1 .1284394756D-4)*Z-.547380648948D-4)*Z+.21992775413732D-3)*Z-
-     1 .8290046678016D-3)*Z+.0029187885699858)*Z-.0095523774824170)*Z+
-     1 .028895941356815)*Z-.080266510032735)*Z+.20317460364863)*Z-
-     1 .46439909294939)*Z+.9481481480886)*Z-1.706666666669)*Z+
-     1 2.6666666666702)*Z-3.5555555555546)*Z+3.9999999999994)*Z-
-     1 3.9999999999996)*Z+.57721566490143+LOG(Y)
-      VALUE=-VALUE
-      ELSE
-       Z=1.0D0/Z
-      VALUE=(((((((((((((((((((-.77769007188383D-3*Z+.84295295893998D-2
-     1 )*Z-.04272827083185)*Z+.13473041266261)*Z-.29671551148)*Z+
-     1 .48618806480858)*Z-.61743468824936)*Z+.62656052544291)*Z-
-     1 .52203502518727)*Z+.36771959879483)*Z-.22727998629908)*Z+
-     1 .12965447884319)*Z-.72886262704894D-1)*Z+.043418637381012)*Z-
-     1 .29244589614262D-1)*Z+.23433749581188D-1)*Z-.023437317333964)*Z+
-     1 .03124999448124)*Z-.062499999910765)*Z+.24999999999935)*Z-
-     1 .20933859981036D-14
-c     if (y.gt.160.D0) then
-c       value=0
-c     else
-        VALUE=VALUE*EXP(-Y)
-c     endif
-      ENDIF
-      VAL=VALUE
-      EIRENE_MMDEI=VAL
-      ier=0
-      RETURN
-      END FUNCTION EIRENE_MMDEI
 
       SUBROUTINE EIRENE_QROMO(FUNC,A,B,SS,CHOOSE,epsr)
       USE EIRMOD_PRECISION
