@@ -2911,7 +2911,7 @@ C    .                   ,NRAYEN(I)   !CDR  NOT IN USE
 c...................................................................
 
 C APPLY MULTIPLIER AMPTS TO THE SELECTED MC PARTICLE NUMBER RANGE
-        IF(AMPTS.GT.0) THEN
+        IF(AMPTS.NE.1.0.AND.AMPTS.GT.0) THEN
          NPTS(JSTRA)=INT(NPTS(JSTRA)*AMPTS)
          NMINPTS(JSTRA)=INT(NMINPTS(JSTRA)*AMPTS)
         END IF
@@ -3265,7 +3265,7 @@ c  first read isrfcll: "type of spectrum",
 c  then next: ispsrf "where is this spectrum scored"
 c  then further details (species: iptyp,ipspz, and then: direction,....)
 c
-
+          call fix_integer_input(zeile,8)
           READ (ZEILE,'(12I6)') ISPSRF, IPTYP, IPSPZ, ISPTYP, NSPS,
      .                          ISRFCLL, IDIREC, ISPOPT
           READ (IUNIN,'(6E12.4)') SPCMN, SPCMX, SPC_SHIFT,

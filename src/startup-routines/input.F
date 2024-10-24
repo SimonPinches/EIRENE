@@ -475,7 +475,7 @@ C  COPY USER SPECIFIC DATA TO FILE user_data.input
         DO WHILE (IO == 0)
           READ (IUNIN,'(A72)',IOSTAT=IO) ZEILE
           IF (INDEX(ZEILE,'INFORMATION_FOR_MPI') /= 0) THEN
-            MPI_LINE = ZEILE
+            MPI_LINE = ZEILE(1:80)
             EXIT
           ELSE
             IF (IO == 0) THEN

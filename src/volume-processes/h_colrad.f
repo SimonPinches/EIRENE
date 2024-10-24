@@ -1864,7 +1864,7 @@ c icon: error code
       integer nmin, nmax
       real(dp) f
       external f
-      external EIRENE_midpnt
+      external EIRENE_midpnt, EIRENE_qromo
 cdr  perhaps Romberg integration?
       call EIRENE_qromo(f,a,b,s,EIRENE_midpnt,epsr)
       return
@@ -1927,7 +1927,7 @@ c     endif
       DIMENSION S(JMAXP),H(JMAXP)
       INTEGER J
       REAL(DP) FUNC
-      external choose,func
+      external choose,func,eirene_polint
 
       H(1)=1.0D0
       DO 11 J=1,JMAX

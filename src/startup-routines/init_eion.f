@@ -31,7 +31,7 @@
       filename='ionization_potentials'
       inquire(file=filename,exist=found)
       if(.not.found) then
-        filename='../'//filename
+        filename='../'//trim(filename)
         inquire(file=filename,exist=found)
       endif
       if (found) then

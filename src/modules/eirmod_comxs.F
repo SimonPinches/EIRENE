@@ -1035,10 +1035,12 @@ cdr  (single code of atoms, molecules and test ions. tbd: photons)
       DEALLOCATE (LGIPI)
       DEALLOCATE (LGPHPI)
 
-      DEALLOCATE (LGXCX)
-      DEALLOCATE (LGXEI)
-      DEALLOCATE (LGXEL)
-      DEALLOCATE (LGXPI)
+      IF (ALLOCATED(LGXCX)) THEN
+        DEALLOCATE (LGXCX)
+        DEALLOCATE (LGXEI)
+        DEALLOCATE (LGXEL)
+        DEALLOCATE (LGXPI)
+      END IF
 
       DEALLOCATE (DELPOT)
 

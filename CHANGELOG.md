@@ -27,6 +27,12 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Pointing to modified set of examples with .F file extensions
 - Removed forced usage of OpenMP compiler options
 - Added TRCMELD output switch
+- Added a safety and error message in FIND_PARAM if the input file is found empty
+- Added a safety to check the fort.34 file is present before attempting to read it
+- Added safety for reading correct number of integers in block 10F of input file in READ_FIXFORM
+- Added allocated status safeties
+- Generalized usaged of FORT and FORT_LC variables
+- Added TRIM operations and character ranges to avoid string length overflows
 - Added LEGACYCOMP alternate code
 - Added definition of GFORTRAN pragma in CMakeLists.txt
 - Added G95 pre-processor pragmas to deal with g95 compiler errors

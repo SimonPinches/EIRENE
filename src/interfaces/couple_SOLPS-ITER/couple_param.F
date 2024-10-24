@@ -135,7 +135,6 @@ cpg called from find_param.f
      .   'Increase DEF_NATM in DIMENSIONS.F and recompile.'
       ENDIF
 #endif
-      if(.not.allocated(TEXTA)) allocate(TEXTA(NATM))
 
 #ifndef ALLOCATE_AND_NAMELIST
       IF (NMOLI.GT.DEF_NMOL) THEN
@@ -203,7 +202,7 @@ cxpb Define some numbers needed by eirmod_extrab25
       nnstsi=nstsi
 
 !cym get texta from local variable in find_param
-      allocate(texta(size(textal)))
+      if (.not.allocated(texta)) allocate(texta(size(textal)))
       texta=textal
 
       return

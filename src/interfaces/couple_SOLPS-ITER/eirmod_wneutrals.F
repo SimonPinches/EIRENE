@@ -18,7 +18,7 @@
       use eirmod_COMPRT
      , , only: IUNOUT, ISTRA
       use eirmod_CINIT
-     , , only: FORT
+     , , only: FORT, FORT_LC
       IMPLICIT NONE
       PRIVATE
 
@@ -234,6 +234,7 @@ C
 
       subroutine eirene_wneutrals_alloc_arrays
       implicit none
+      logical :: exist
       EXTERNAL :: EIRENE_EXIT_OWN
 
       if(allocated(dab2)) return
@@ -314,6 +315,8 @@ C
       allocate(wlpump_aver(nspz,nlim+nsts))
 
 C     READ IN THE NUMBER OF TRIANGLES
+      INQUIRE (FILE=FORT_LC//'34',EXIST=EXIST)
+      IF (.NOT.EXIST) GOTO 984
       OPEN (UNIT=34,ACCESS='SEQUENTIAL',FORM='FORMATTED',ERR=984)
       REWIND 34
       READ(34,*,ERR=984) NTRII
@@ -1228,10 +1231,16 @@ C     READ IN THE NUMBER OF TRIANGLES
         deallocate(wldsptm)
         deallocate(isrftype)
         deallocate(eneutrad,emolrad,eionrad)
+      endif
+
+      if(allocated(wlarea)) then
         deallocate(wlarea,wlabsrp,eirtxt,wlpump)
         deallocate(eirdiag_nds_ind, eirdiag_nds_typ,
      &             eirdiag_nds_srf, eirdiag_nds_start,
      &             eirdiag_nds_end)
+      endif
+
+      if(allocated(wldnek_aver)) then
         deallocate(wldnek_aver)
         deallocate(wldnep_aver)
         deallocate(wldna_aver)
@@ -1265,15 +1274,17 @@ C     READ IN THE NUMBER OF TRIANGLES
      &             wlpump_res, sarea_res)
       end if
 
-      deallocate(pdena_int,pdena_int_b2,pdenm_int,pdenm_int_b2,
-     &           pdeni_int,pdeni_int_b2,edena_int,edena_int_b2,
-     &           edenm_int,edenm_int_b2,edeni_int,edeni_int_b2)
+      if(allocated(pdena_int))
+     > deallocate(pdena_int,pdena_int_b2,pdenm_int,pdenm_int_b2,
+     &            pdeni_int,pdeni_int_b2,edena_int,edena_int_b2,
+     &            edenm_int,edenm_int_b2,edeni_int,edeni_int_b2)
 
-      deallocate(pdena_aver,pdenm_aver,
-     &           edena_aver,edenm_aver,
-     &           vxdena_aver,vxdenm_aver,
-     &           vydena_aver,vydenm_aver,
-     &           vzdena_aver,vzdenm_aver)
+      if(allocated(pdena_aver))
+     > deallocate(pdena_aver,pdenm_aver,
+     &            edena_aver,edenm_aver,
+     &            vxdena_aver,vxdenm_aver,
+     &            vydena_aver,vydenm_aver,
+     &            vzdena_aver,vzdenm_aver)
 
       return
       end subroutine eirene_wneutrals_dealloc

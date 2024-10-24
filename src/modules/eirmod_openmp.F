@@ -130,6 +130,8 @@ c     ym copyin does not work for allocatable pointer arrrays
 
       IF(EIRENE_ITHREAD==0) RETURN
 
+      IF(ALLOCATED(ISDVI)) RETURN
+
       ALLOCATE (ISDVI(MSDVI))
       ALLOCATE (LCMSOU(14,NSTRA))
       ALLOCATE (TIMINT(NRADS))

@@ -581,6 +581,7 @@ cdr  This may be 3*NPLS due to vectorial tallies, but still be smaller than NSPA
 cdr  Most likely "weight-window tallies" 15, 73,74,75 do not exist in any run
 cdr  anyway. But still corrections are needed here.
       DO 50 ISPZ=1,NSPAMI
+        if (ispz.gt.n1mx) exit
         TXTPSP(ISPZ,15)=TEXTS(ISPZ)
         TXTPSP(ISPZ,73)=TEXTS(ISPZ)
         TXTPSP(ISPZ,74)=TEXTS(ISPZ)
