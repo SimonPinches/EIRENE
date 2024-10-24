@@ -1452,8 +1452,14 @@ C
                   ENDIF
                   AKTLEN=AKTLEN-2
                   AUSDRU=HILFE
-                  IARITH(TEIL)=AKTLEN
-                  ARITH(TEIL)=AUSDRU
+cdr Apr. 2023 I have encountered cases with TEIL=0.
+cdr           Probably something incorrect further up?
+                  if (teil.gt.0) then
+                    IARITH(TEIL)=AKTLEN
+                    ARITH(TEIL)=AUSDRU
+                  else
+cdr  here should come an error message
+                  endif
                END IF
             ENDIF
 

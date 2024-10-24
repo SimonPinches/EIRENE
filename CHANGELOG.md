@@ -59,6 +59,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Added USE_OPENMP and USE_EXT_OPENMP pragmas to avoid compiler warnings from !$OMP instructions when compiling without OpenMP
 - Removed double definition of USE_OPENMP and USE_EXT_OPENMP in CMakeLists.txt
 - Added B25_EIRENE pre-processor pragmas in SOLPS-ITER interface routines
+- Adding safety against TEIL=0 in EIRMOD_ALGEBRA
 - Added LEGACYCOMP alternate code
 - Added definition of GFORTRAN pragma in CMakeLists.txt
 - Added G95 pre-processor pragmas to deal with g95 compiler errors
