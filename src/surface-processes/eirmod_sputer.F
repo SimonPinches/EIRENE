@@ -542,7 +542,7 @@ ctk      real(dp) :: EIRENE_YHAASZ97M
      .            G2, G3, YTHERM, YDES,
      .            EDESE0, EDAME0, QSE, YDAM, YSURF, ARG,
      .            VXR, VYR, VZR, VWL, WGHTVS  ! FOR SAMPLING WITH VELOCS
-      INTEGER :: ITA, IPS, IPR, MODCHM, MODPYS, MS, ITYPP, IATMP
+      INTEGER :: ITA, IPS, IPR, MODCHM, MODPYS, MS, IATMP
       EXTERNAL :: EIRENE_FCOSIN, EIRENE_FTHOMP, EIRENE_ROTATF,
      .            EIRENE_SP1USR, EIRENE_SPTUSR, EIRENE_VELOCS,
      .            EIRENE_EXIT_OWN
@@ -697,7 +697,6 @@ C
       IF (YIELD1.GT.0.D0) THEN
 
         IF (IGASP.GT.0.AND.IGASP.LE.NATMI) THEN
-          ITYPP=1
           IATMP=IGASP
           ISPZP=IATMP+NSPH
         ELSEIF (IGASP.GT.NATMI) THEN
@@ -715,7 +714,6 @@ CDR         WRITE (iunout,*) 'SPECIES INDEX, PHYS. SPUTER ? MSURF ',MS
             ISPZP=0
             GOTO 5000
           ENDIF
-          ITYPP=1
           IATMP=ISPZP
           ISPZP=IATMP+NSPH
         ENDIF

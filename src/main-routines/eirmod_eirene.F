@@ -59,9 +59,9 @@ cdr           It must be cleaned up and documented.
      >                       MY_PE, NPRS
       USE EIRMOD_COMNNL, ONLY: EIRENE_ALLOC_COMNNL,
      >                         EIRENE_DEALLOC_COMNNL, DTIMVN, IPRNLI
-      USE EIRMOD_COMSOU, ONLY: EIRENE_ALLOC_COMSOU, FLUX,
+      USE EIRMOD_COMSOU, ONLY: EIRENE_ALLOC_COMSOU,
      >                         EIRENE_DEALLOC_COMSOU, NLSRON, NPTS,
-     >                         NSPEZ, NSTRAI, NLVOL, NLCNS
+     >                         NSPEZ, NSTRAI
       USE EIRMOD_CSTEP, ONLY: EIRENE_ALLOC_CSTEP, EIRENE_DEALLOC_CSTEP
       USE EIRMOD_COMSPL, ONLY: EIRENE_ALLOC_COMSPL,
      >                         EIRENE_DEALLOC_COMSPL, WMINS, WMINV
@@ -138,11 +138,10 @@ C
       LOGICAL, INTENT(IN) :: NLMODE, NLLAST, MPI_INITIALIZE
       INTEGER, INTENT(IN) :: ITNR
 
-      INTEGER :: IER, ISTRAI
+      INTEGER :: IER
       logical :: op
       character(20), save :: outname
       character(6), save :: outpos
-      INTEGER :: PROVIDED
       EXTERNAL :: EIRENE_COUPLE_ALLOC, EIRENE_DEFAULTS_USR,
      .            EIRENE_FIND_PARAM, EIRENE_LEER, EIRENE_VERSION,
      .            IOFLUSH_USR

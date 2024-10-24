@@ -50,13 +50,11 @@ c stdcol, stdcol_x_rad, stdcol_y_pol, stdcol_z_tor
       INTEGER, EXTERNAL :: EIRENE_IDEZ
 
       INTEGER :: IDIMM
-      
-      INTEGER :: M
 
 !$OMP THREADPRIVATE(X0SA,Y0SA,Z0SA,
 !$OMP&   NACLLS,ICOS,IWEI,MSURFS,IRET_OUT,
 !$OMP&   COSROT,SINROT,VELX_OLD,
-!$OMP&   NDUM,IDIMM,M)
+!$OMP&   NDUM,IDIMM)
 
       CONTAINS
 

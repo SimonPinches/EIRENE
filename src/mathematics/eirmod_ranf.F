@@ -10,13 +10,13 @@
      .          ranset_eirene, ranset_eirene_reinit,
      .          ranget_eirene
 
-      integer, save :: ifirst_ranf=0, ifirst_ranset=0
+      integer, save :: ifirst_ranset=0
 cccccccccccccccccccccccccc
 cym common /cmem/ replaced
 cccccccccccccccccccccccccc
       integer :: iseed
 
-!$omp threadprivate(ifirst_ranf,ifirst_ranset,iseed)
+!$omp threadprivate(ifirst_ranset,iseed)
 
       CONTAINS
 
@@ -66,16 +66,7 @@ C
       implicit none
 cym      integer :: iseed
 cym      common /cmem/ iseed
-      real(dp) :: ra, dummy, ranf_eirene !, h1rn
-
-cdr  parameters for SURAND  (IBM, 1968), aka: "GGL generator". 
-cdr  generally quoted as: "should not be used anymore"
-cdr  since 19-eighties
-      INTEGER D2P32M
-      DOUBLE PRECISION Z,D2P31M,D2PN31
-      DATA  D2PN31/4.656612873077393D-10/,  !    = 1 / 2**31   = 1/m
-     .      D2P31M/2147483647.D0/,          !    = 2**31-1 = m
-     .      D2P32M/16807/                   !    = a = 7**5
+      real(dp) :: dummy, ranf_eirene !, h1rn
 
 cdr April 2017:  h1rn is a variant of RANMAR. It has period 2**144, if properly used.
 cdr              initialization is by a 32 bit integer
@@ -93,7 +84,6 @@ C     The following FUNCTION is for reinitialization of EIRENE
       FUNCTION ranf_eirene_reinit()
       real(dp) :: ranf_eirene_reinit
 cdr   indicate that random number generator is not initialized.
-      ifirst_ranf = 0
       ranf_eirene_reinit = 0.D0
       return
       end FUNCTION ranf_eirene_reinit
@@ -197,13 +187,11 @@ c
 
       implicit none
       integer, intent(in) :: ise
-      integer :: idumran
       external :: eirene_exit_own
 cym cccccccccccccccccccccccccccccccccc
-cym      integer :: iseed,idumran
+cym      integer :: iseed
 cym      common /cmem/ iseed
 cym cccccccccccccccccccccccccccccccccc
-      real(dp) :: ran
 
 c  1st generator: H1RN (RANMAR)
 

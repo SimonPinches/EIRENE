@@ -57,7 +57,7 @@ C   SET DIMENSIONS (PARAMETERS) FOR ALLOCATABLE ARRAYS (TALLIES, GRIDS, ETC..) A
 C
       USE EIRMOD_PRECISION, ONLY: DP
       USE EIRMOD_PARMMOD, ONLY: N1ST, N2ND, N3RD, NADD, NADS, NADV,
-     .                          NAIN, NALS, NALV, NATM, NBGK, NCLV,
+     .                          NAIN, NALS, NALV, NATM, NCLV,
      .                          NCOORD, NCOUP_INPUT, NCPV, NCV,
      .                          NGEOM_USR, NGSTAL, NION, NKNOT, NLIM,
      .                          NLIMPS, NMOL, NOPTIM, NOPTM1, NPHOT,
@@ -68,9 +68,9 @@ C
      .                          NSRPR, NVLPR, NHD6, NPLSTI, NPLSV,
      .                          NREAC_LINES, IFOFF, NBMAX, NGITT,
      .                          NKNOTS, NTRIS
-      USE EIRMOD_CTRCEI, ONLY: TRCAMD, TRCINT, NVOLPR, NSURPR,
+      USE EIRMOD_CTRCEI, ONLY: TRCAMD, TRCINT,
      .                         EIRENE_ALLOC_CTRCEI
-      USE EIRMOD_CINIT, ONLY: CASENAME, DBFNAME, DBHANDLE, NDBNAMES,
+      USE EIRMOD_CINIT, ONLY: DBFNAME, DBHANDLE, NDBNAMES,
      .                        INDPRO2_SAVE, LDBREAD,
      .                        EIRENE_INIT_CINIT, MASTER_PATH
       USE EIRMOD_COMUSR, ONLY: NMODE, NTIME,
@@ -102,13 +102,10 @@ C
         END SUBROUTINE EIRENE_IF0PRM_JSON
       END INTERFACE
 c
-      type(json_value),pointer :: p
-
       integer :: nstsi, j, nprnli, nlimi
       INTEGER :: INDPRO(12)
-      INTEGER :: IDUMMY(2)
       LOGICAL :: NLSCL, NLTEST, NLANA, NLDRFT, NLCRR, NLERG, NLIDENT,
-     .           NLONE, NLMOVIE, LINCL45, NLCASCAD, NLDFST,
+     .           NLONE, NLMOVIE, NLCASCAD, NLDFST,
      .           NLRANMAR, NLOCTREE, NEXVS, NLTRIMESH
       logical :: found0, ldefstor
 !      logical :: found0, ldefstor, lext, nlerg, lhyddef, ladapt
@@ -633,7 +630,7 @@ C
       type(json_value), pointer :: species, preac, pspecs, pspc
       integer :: nreaci, natmi, nmoli, nioni, nphoti
       logical :: found
-      character(50) :: s1, s2, sss
+      character(50) :: s1, s2
 
       WRITE (iunout,*) '*** 4. DATA FOR SPECIES SPECIFICATION AND'
       WRITE (iunout,*) '       ATOMIC PHYSICS MODULE'
@@ -827,7 +824,7 @@ cdr:  to be generalized: there may be other reactions, which require multiple Ti
 
       type(json_value), pointer :: pback, pbulk, pspecies,
      .                             pspc, pdm, pplas
-      integer :: nreaci, natmi, nmoli, nioni, nphoti, i, ico
+      integer :: i, ico
       INTEGER, allocatable :: indp(:)
       logical :: found
 
@@ -1013,9 +1010,6 @@ c  Due to the volume tally input card (indpro(12)) being optional.
       type(json_value), pointer, intent(in) :: p
 
       type(json_value), pointer :: ptom
-!pgf      character(kind=CK,len=:), allocatable :: path
-!cym/cpg, keep using json_ck
-      character(kind=json_CK,len=:), allocatable :: path
       logical :: found, nltrim
 
       WRITE (iunout,*) '*** 6. GENERAL DATA FOR REFLECTION MODEL'

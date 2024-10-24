@@ -675,7 +675,7 @@ C
       REAL(DP) :: ADD, X1, Y1, X2, Y2, X3, Y3, ZEP1, ZRM1, WINK,
      .            RR, RRI, RRD, RRN, EPR, ELR, Z1, Z2, Z3, ZZ,
      .            X4, Y4, Z4, X01, CNORM
-      INTEGER :: IFPLS, IIRC, IRRC, IVOLSI, IVL, ICC, IRC,
+      INTEGER :: IFPLS, IIRC, IRRC, IVOLSI, IVL, ICC,
      .           IR1, IR2, IP1, IP2, IT1, IT2, IR, IP, IT, ISTEP,
      .           IFRC, IAUSR, IBUSR, IRUSR, ITUSR, IPUSR,
      .           IC1, IC2, IL, IU, IM, ICELL, IN, JSPZ
@@ -752,11 +752,9 @@ C
           DO IIRC=1,NPRCI(IPLS)
             IRRC=LGPRC(IPLS,IIRC)
             IF (ISTEP.EQ.IRRC) THEN
-              IRC=IRRC
               IFRC=IIRC
             ELSEIF (ISTEP.EQ.0) THEN
 C  SUM OVER ALL EXTERNAL VOLUMETRIC SOURCE PROCESSES FOR SPECIES IPLS
-              IRC=0
               IFRC=0
               ISTEP=-1
             ELSE

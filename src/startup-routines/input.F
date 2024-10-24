@@ -145,11 +145,14 @@ cdr   REAL(DP) :: timea
       INTEGER :: IADTYP(0:4)
       INTEGER :: IERROR, IUNIN_SAVE, JSTREAM, NSOPT, ILIMPS,
      .           I, J, I1, I2, I3, JL, IO, IUSR, IFLG,
-     .           ITALI, IRAD, IS, ISS, II, INC, IRET,
+     .           ITALI, IRAD, IS, ISS, INC,
      .           JPLS, IRE, JSPZ, JTRJ, ISTRAI, NLJ, IENTRY,
-     .           IO13, IER
+     .           IO13
 
       INTEGER, SAVE :: NITER0, IUSROUT=0
+#ifdef USE_MPI
+      INTEGER :: IER
+#endif
       LOGICAL :: NLSRON_SAVE(NSTRA)
       LOGICAL :: LTEST, EX
       CHARACTER(10) :: CDATE, CTIME

@@ -117,7 +117,7 @@ c          some more speed ups in lorvdwprof. still much more to be done
      .    eirene_ph_xsectph,
      .    eirene_ph_post_energy, eirene_ph_alloc_xsectph,
      .    eirene_ph_lorvdw, eirene_planck,
-     .    eirene_ph_b21,
+     .    eirene_ph_b12, eirene_ph_b21,
 !pb black body removal (core saturation)
      .    eirene_line_cutoff
 
@@ -833,6 +833,8 @@ c     end do
       real(dp)::EIRENE_coll,N,Te,Ti,epsilon,v0,ve,rhoWi,rhoWe,
      .          lambda_Di,lambda_De,
      .          ymin_i,ymin_e,phi_i,phi_e
+      real(dp)::EIRENE_expint
+      external::EIRENE_expint
 
       v0=sqrt(2.*e*Ti/m_D)
       ve=sqrt(2.*e*Te/me)
@@ -851,42 +853,6 @@ c  parameter for checking validity of approximation
 c     epsilon=(e/hbar)*phi_i*((N*1.e6)**(-1./3.))/v0
       return
       end function EIRENE_coll
-
-!******************************************************************
-!> \brief Approximation of the exponential integral E_1
-!>
-!> Integral E_1(arg) from x=arg to x=infinity of exp(-x)/x
-!> Here, Allen and Hastings approximation of the exponential integral
-!> is used.
-!> See Handbook of Mathematical Functions: With Formulas, Graphs, and
-!> Mathematical Tables, by Milton Abramowitz, Irene A. Stegun, Courier
-!> Corporation, 1964, ISBN 0486612724, 9780486612720
-!> Formula 5.1.53 (0 <= arg <=1, |error| <= 2 x 10^-7)
-!> Formula 5.1.56 (1 <= arg < inf, |error| <= 2 x 10^-8)
-      function EIRENE_expint(arg)
-      implicit none
-      real(dp)::A0,A1,A2,A3,A4,A5
-      real(dp)::   B1,B2,B3,B4
-      real(dp)::   C1,C2,C3,C4
-      REAL(DP),intent(in)::arg
-      REAL(DP)::EIRENE_expint
-      data A0/-.57721566_DP/,A1/.99999193_DP/,A2/-.24991055_DP/
-      data A3/.05519968_DP/,A4/-.00976004_DP/,A5/.00107857_DP/
-      data B1/8.5733287401_DP/,B2/18.0590169730_DP/,B3/8.6347608925_DP/
-      data B4/.2677737343_DP/
-      data C1/9.5733223454_DP/,C2/25.6329561486_DP/,C3/21.0996530827_DP/
-      data C4/3.9584969228_DP/
-      if(arg.gt.1.0) then
-        EIRENE_expint=exp(-arg)*(B4+arg*(B3+arg*(B2+arg*(B1+arg))))/
-     .         (C4+arg*(C3+arg*(C2+arg*(C1+arg))))
-        EIRENE_expint=EIRENE_expint/arg
-      else
-        EIRENE_expint=-log(arg)+A0+
-     .                arg*(A1+arg*(A2+arg*(A3+arg*(A4+arg*A5))))
-      end if
-      return
-      end function EIRENE_expint
-!****************************** END *******************************
 
 
 
@@ -3038,9 +3004,9 @@ c     ENDIF
       RETURN
       END SUBROUTINE EIRENE_PH_XSECTPH
 C
-      SUBROUTINE EIRENE_XSTPH_2(Idsc,IPL)
-      IMPLICIT NONE
-      integer, intent(in) :: idsc,ipl
+C     SUBROUTINE EIRENE_XSTPH_2(Idsc,IPL)
+C     IMPLICIT NONE
+C     integer, intent(in) :: idsc,ipl
 C
 c     CALL EIRENE_LEER(1)
 c     WRITE (iunout,*) 'Photon REACTION NO. Idsc= ',Idsc
@@ -3062,9 +3028,9 @@ c     IF (ITYP2.EQ.4) TEXTS2=TEXTS(NSPAMI+ISPZ2)
 c     WRITE (iunout,*) 'IPLS= ',TEXTS(NSPAMI+IPL),'I2ND1= ',TEXTS1,
 c    .                    'I2ND2= ',TEXTS2
 c     CALL EIRENE_LEER(1)
-      RETURN
+C     RETURN
 C
-      END SUBROUTINE EIRENE_XSTPH_2
+C     END SUBROUTINE EIRENE_XSTPH_2
 
 c
 c  experimental routine for black body removal

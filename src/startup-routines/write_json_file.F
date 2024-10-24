@@ -492,8 +492,7 @@
       type(json_value),pointer :: ch0lines, ch1lines, ch2lines
       type(s_stack), pointer :: cur
       type(transform), pointer :: trf
-      integer :: i, idimp, j
-      real(dp) :: znmlc
+      integer :: i, j
 
       if (nlimi == 0) then
         call json%add(me,'MANUAL',
@@ -704,7 +703,6 @@
       type(json_value),pointer :: te, tis, ti, dis, di, vls, vl, bf, v,
      .                            op, ops, zi, zis
       integer :: i, ndum1(1), ndum2(1), ndum3(1), ndum4(1), nti, nv
-      real(dp) :: dum(1)
 
       call json%add(me,'MANUAL',
      .     "http://www.eirene.de/eirene.pdf#subsection.2.4.1")
@@ -1047,7 +1045,7 @@
      .         escd1(ndim,*), freac(ndim,*), edpot(ndim,*)
       character(*) :: texts(*), cndx, cext
       character(*), optional :: cdenmodel(ndim)
-      integer :: i, ispz, numsec, k, j, nre, jdens
+      integer :: i, ispz, numsec, k, j, jdens
       logical :: lden
 
       lden = present(cdenmodel)
@@ -1207,7 +1205,7 @@
       subroutine eirene_write_block_6(me)
 
       type(json_value),pointer :: me
-      type(json_value),pointer :: toms, tom, vrs, vr, smod, sm
+      type(json_value),pointer :: vrs, vr, smod, sm
       TYPE(REFMODEL), POINTER :: refcur
       type(spec_ref), pointer :: spr
       character(len=:), allocatable :: tps(:)
@@ -2268,7 +2266,6 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
 
       subroutine eirene_write_block_15(me)
       type(json_value),pointer :: me
-      integer :: i
       character(80) :: strategy
 
       call json%add(me,'MANUAL',

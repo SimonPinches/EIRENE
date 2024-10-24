@@ -98,7 +98,7 @@ cym end
       INTEGER :: ISPZD(NPLS), ISP, ISPZ
       INTEGER :: ISTRAI, IERROR, ISRFS, ISOR, ISORFL, INDSRF, ISTR, ISR,
      .           NL3J, NL2J, NL1J, IP, ISTS, IT, KAN, JPLS, ITET,
-     .           KEN, K, NBIN, NSMX, IPL, NANZ, IS, ITRI,
+     .           KEN, K, NBIN, NSMX, NANZ, IS, ITRI,
      .           ISGRD1, IS2, ISGRD2,
      .           ISGRD3, INS, JATM, JMOL, JSPZ,
      .           MSTEP(NSTEP),MMSTEP(NSTEP)

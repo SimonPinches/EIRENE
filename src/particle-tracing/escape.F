@@ -1044,7 +1044,6 @@ C
         IF (E0TERM.GT.0) THEN
 C  MONOENERGETIC DISTRIBUTION
           E0=E0TERM
-          E0_MEAN=E0
           VEL=RSQDVM(IMOL)*SQRT(E0)
 C   AZIMUTHAL ANGLE: EQUIDISTRIBUTION
 C   POLAR ANGLE: COSINE
@@ -1070,7 +1069,6 @@ c are INTENT(IN) !
      .                      CVRSSM(IMOL),
      .                     -CRTX,-CRTY,-CRTZ,
      .                      E0,VELX,VELY,VELZ,VEL)
-          E0_MEAN=2._DP*TW
         ELSE
           WRITE (iunout,*) 'EWALL = 0: MODEL NOT AVAILABLE'
           WRITE (iunout,*) 'ERROR IN ESCAPE, EXIT CALLED'

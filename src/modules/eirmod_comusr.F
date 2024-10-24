@@ -1226,13 +1226,11 @@ C  TALLIES 31--130: DERIVATIVES WRT. X,Y,Z COORDINATES OF TALLIES 1--30
       SUBROUTINE EIRENE_ALLOC_CORNERS
       USE EIRMOD_COMPRT, ONLY: IUNOUT
 
-      INTEGER :: N1DIM(12)
       INTEGER :: NTOT, I, J, NLSTTL, NTOT2
       INTEGER :: IDSMO, IVSMO, IBSMO, IESMO
 
       IF (ALLOCATED(CORNER_PROFILES)) RETURN
 
-      N1DIM = 0
 cdr  are there any FEM interpolated background tallies in this run?
 
 !  interpolation to vertices can only be done if input tally is available (active)

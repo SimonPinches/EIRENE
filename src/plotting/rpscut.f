@@ -13,7 +13,7 @@ cdr         replacing suche_kanten now is retained
       use EIRMOD_ccona
       use EIRMOD_cplot
       use EIRMOD_module_avltree
-      USE EIRMOD_SECOND_OWN, ONLY: EIRENE_second_own
+
       implicit none
 
       REAL(DP), INTENT(IN) :: AORIG(*)

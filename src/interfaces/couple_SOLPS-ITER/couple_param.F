@@ -3,6 +3,12 @@ cpg called from find_param.f
       subroutine eirene_couple_param_consistency(nlimi,nstsi,textal,ntx)
       use eirmod_parmmod
       use eirmod_extrab25
+#ifdef B25_EIRENE
+      use eirmod_cgrid, only : nr1st, np2nd
+      use eirmod_clogau, only : nlpol
+      use eirmod_comprt, only : iunout
+      use eirmod_comsou, only : nstrai
+#endif
       use eirmod_comusr, only : natmi,nmoli,nioni
 
       IMPLICIT NONE

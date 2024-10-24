@@ -22,8 +22,6 @@ c  also set: NDX,NDY,NFL, NDXP, NDYP
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMUSR
       USE EIRMOD_CINIT
-      USE EIRMOD_COMUSR
-     , , ONLY: INTLOPTS
       USE EIRMOD_COMPRT, only: iunout
       USE EIRMOD_BRAEIR
       USE EIRMOD_CLOGAU
@@ -41,12 +39,11 @@ c  also set: NDX,NDY,NFL, NDXP, NDYP
       type(json_value), pointer :: pflds, pfld,ptrgs, ptrg, prts, prt
 
       INTEGER :: NFLA, NCUTB, NCUTL, NDXA, NDYA, IPL, NTARGI, IT, IPRT,
-     .           NAINB, IAIN, NAOTB, IAOT, NRKNOT, ITRG,
+     .           NAINB, NAOTB, ITRG,
      .           NTRII, NR1ST, IFL, LKP, NSPI, NSPE
       REAL(DP) :: BM, RLAST
       INTEGER, ALLOCATABLE :: NTG(:)
       LOGICAL :: FOUND, LDUMMY, FOUNDI, FOUNDE, LSPRCL_LOC
-      CHARACTER(72) :: ZEILE
       EXTERNAL :: EIRENE_FIND_TRIANG_DIM
 
       WRITE (iunout,*) '*** 14. DATA FOR INTERFACING ROUTINE "INFCOP"'

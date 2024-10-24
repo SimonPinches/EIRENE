@@ -58,8 +58,7 @@ C
       REAL(DP) :: P11, P12, P13, P21, P22, P23, P31, P32, P33,
      .            B1, B2, B3,
      .            ap3ma, ap3mi, ap3m, ap3n3, ap3n2
-      INTEGER :: ICOL, IROW, I, J, I1, I2, J1, J2, IC, JOUT, IOUT,
-     .           ICOL2, IROW2, I3
+      INTEGER :: ICOL, IROW, I, J, I1, I2, J1, J2, IC, JOUT, IOUT, I3
       LOGICAL :: LCOLM(4), LROW(4), lcol2(3), lrow2(3)
       EXTERNAL :: EIRENE_LEER, EIRENE_MASAGE,
      .            EIRENE_MASRR1, EIRENE_MASR4,
@@ -447,8 +446,6 @@ cdr check determinant=0, relative to L1 norm
             write (iunout,*) 'but not by random sampling'
 cdr  proper norm for comparison with row or column norm squared
             ap3n2=ap3m**2
-            ICOL2=0
-            IROW2=0
             DO I=1,3
               LROW2(I)=
      .          ((PP(I,1)**2+PP(I,2)**2+PP(I,3)**2)/ap3n2.GT.EPS30)
@@ -597,8 +594,7 @@ C
       USE EIRMOD_COMPRT
      , ,ONLY : IUNOUT
       USE EIRMOD_CLOGAU
-     , ,ONLY : NLSPCSCL, NLSPCSCL_ATM, NLSPCSCL_MOL, NLSPCSCL_ION,
-     ,         NLSPCSCL_PHOT, NLSPCSCL_ON
+     , ,ONLY : NLSPCSCL, NLSPCSCL_ON
       USE EIRMOD_CESTIM
      , ,ONLY : LB_ATM, LB_MOL, LB_ION, LB_PHOT
       USE EIRMOD_CTRCEI

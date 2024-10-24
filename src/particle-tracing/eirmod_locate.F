@@ -65,25 +65,21 @@ cym copied from subroutine LOCATE1 -> threadprivate because of save
      .          ESHET,
      .          GAMMA,
      .          VYSPTP, VZSPTP, ESPTC, ESPTP, VSPTP, VXSPTP, VSPTC, SG,
-     .          VXSPTC, VYSPTC, VZSPTC, SUM1, ZEP1, CUR,
+     .          VXSPTC, VYSPTC, VZSPTC, ZEP1, CUR,
      .          EMAX, VWD, VXWD, VYWD, VZWD, CS, VELQ, VO, SUMM,
      .          VXO, VYO, VZO, DAT, RSQDV, RSQDV2, DML, FR, DIO, DPL,
-     .          TIWD, TEWD, DPH, E00,
-     .          res
-      REAL(DP) :: VEL_B, VELX_B, VELY_B, VELZ_B, VN, xl, xr, xm, yl,
-     .            yr, ym,
-     .            EIRENE_fpathph, zmfp_cut, zmfp_e0, zmfp_e00,
-     .            fac_e0, fac_e00
+     .          TIWD, TEWD, DPH
+      REAL(DP) :: VEL_B, VELX_B, VELY_B, VELZ_B, VN
 cym allocatable too
 c      real(dp) :: cflag(7,MSTOR0)
       real(dp), allocatable :: cflag(:,:)
 
       real(dp) :: weight_b1,weight_b2,e0_b1,e0_b2
-      REAL(DP) :: xleft, xright, A, ZV, YSPTWL
+      REAL(DP) :: A, ZV, YSPTWL
 cym have to be changed to allocatable
 c      REAL(DP) :: VXWL(NPLS), VYWL(NPLS), VZWL(NPLS), VPWL(NPLS),
-c     .            TIWL(NPLS), DIWL(NPLS), EFWL(NPLS), SHWL, TEWL,
-c     .            CUMDIS(0:NREC)
+c     .            TIWL(NPLS), DIWL(NPLS), EFWL(NPLS),
+c     .            CUMDIS(0:NREC), ZIWL(NPLS)
       REAL(DP), allocatable :: VXWL(:), VYWL(:), VZWL(:), VPWL(:),
      .             TIWL(:), DIWL(:), EFWL(:), CUMDIS(:), ZIWL(:)
       REAL(DP) :: SHWL, TEWL
@@ -114,18 +110,14 @@ cym adding externals
 !$OMP& ESHET,
 !$OMP& GAMMA,
 !$OMP& VYSPTP, VZSPTP, ESPTC, ESPTP, VSPTP, VXSPTP, VSPTC, SG,
-!$OMP& VXSPTC, VYSPTC, VZSPTC, SUM1, ZEP1, CUR,
+!$OMP& VXSPTC, VYSPTC, VZSPTC, ZEP1, CUR,
 !$OMP& EMAX, VWD, VXWD, VYWD, VZWD, CS, VELQ, VO, SUMM,
 !$OMP& VXO, VYO, VZO, DAT, RSQDV, RSQDV2, DML, FR, DIO, DPL,
-!$OMP& TIWD, TEWD, DPH, E00,
-!$OMP& res,
-!$OMP& VEL_B, VELX_B, VELY_B, VELZ_B, VN, xl, xr, xm, yl,
-!$OMP& yr, ym,
-!$OMP& EIRENE_fpathph, zmfp_cut, zmfp_e0, zmfp_e00,
-!$OMP& fac_e0, fac_e00,
+!$OMP& TIWD, TEWD, DPH,
+!$OMP& VEL_B, VELX_B, VELY_B, VELZ_B, VN,
 !$OMP& cflag,
 !$OMP& weight_b1,weight_b2,e0_b1,e0_b2,
-!$OMP& xleft, xright, A, ZV,
+!$OMP& A, ZV,
 !$OMP& VXWL, VYWL, VZWL, VPWL,
 !$OMP& TIWL, DIWL, EFWL, SHWL, TEWL, ZIWL,
 cym - ITER case
@@ -255,6 +247,8 @@ C
       IMPLICIT NONE
       REAL(DP) :: SUMM, SUM1
       INTEGER :: JSPZ, ISOUR, ISRFS, IDUMM, I
+
+!$OMP THREADPRIVATE( SUM1 )
 C
 C
 C  PREPARE DATA FOR SAMPLING SUBSTRATA FOR STRATUM ISTRA: 1--10
@@ -429,8 +423,6 @@ C
       IPOLGN=1
       IPERID=1
       ICOL=0
-      XLEFT = HUGE(1._DP)
-      XRIGHT = 0._DP
 !pb   01.11.2022
       mrsurf=0
       mpsurf=0

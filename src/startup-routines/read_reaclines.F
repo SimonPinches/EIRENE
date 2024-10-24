@@ -51,7 +51,7 @@ C  READ ONE REACTION FROM FILE "FILNAM" AT A TIME. Input card is on "ZEILE"
 C
       use eirmod_precision
       use eirmod_parmmod
-      use eirmod_comxs, only : REACTION_INPUT_LINE, REACLINES, IRLINES
+      use eirmod_comxs, only : REACLINES, IRLINES
       use eirmod_json, only : S_STACK, STRING_STACK, CRS_STACK,
      >                        EIRENE_PUSH_STRING_STACK
 !cym/cpg provide access to json_ck type

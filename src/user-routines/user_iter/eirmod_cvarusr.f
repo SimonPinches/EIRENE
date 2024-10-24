@@ -9,7 +9,6 @@
 
       public :: eirene_alloc_cvarusr, eirene_dealloc_cvarusr
 
-      character(15), public, save :: cfort30=repeat(' ',15)
       integer, public, save :: NADMOD=0, NASMOD=0, NORMOD=0
 
       contains

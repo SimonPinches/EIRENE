@@ -1,6 +1,6 @@
 C
 C
-      FUNCTION EIRENE_EMAXW(TI,XMPER,YMPAR)
+      FUNCTION EIRENE_EMAXW(TI,VPER,VPAR)
 C
 C  MEAN SURFACE CROSSING ENERGY (EV) OF AN ION, FROM A TRUNCATED AND DISPLACED MAXWELLIAN
 C  FLUX DENSITY AT TEMPERATURE TI (EV).
@@ -26,17 +26,17 @@ C                           (WITH TI (EV), RMASS (AMU) CVEL2A=9.8226 E5)
 
       IMPLICIT NONE
 
-      REAL(DP), INTENT(IN) :: TI, XMPER, YMPAR
+      REAL(DP), INTENT(IN) :: TI, VPER, VPAR
       REAL(DP) :: XMM, XMM2, YMM2, ER1, ER2, FACTOR, EIRENE_EMAXW
 #ifdef PGF90
       REAL(DP) :: DERF
 #endif
 
-      IF (XMPER.NE.0.D0) THEN
+      IF (VPER.NE.0.D0) THEN
 cdr  valid also for negative VPER ?
-        XMM=XMPER
-        XMM2=XMPER*XMPER
-        YMM2=YMPAR*YMPAR
+        XMM=VPER
+        XMM2=VPER*VPER
+        YMM2=VPAR*VPAR
         ER1=EXP(-XMM2)/SQRT(PIA)
 #ifdef PGF90
         ER2=(1.+DERF(XMM))*XMM
@@ -45,7 +45,7 @@ cdr  valid also for negative VPER ?
 #endif
         FACTOR=((XMM2+2.+YMM2)*ER1+(XMM2+2.5+YMM2)*ER2)/(ER1+ER2)
       ELSE
-        YMM2=YMPAR*YMPAR
+        YMM2=VPAR*VPAR
         FACTOR=2.+YMM2
       ENDIF
       EIRENE_EMAXW=FACTOR*TI

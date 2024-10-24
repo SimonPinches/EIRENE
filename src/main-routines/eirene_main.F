@@ -37,7 +37,6 @@ cdr  set from the external code, or in EIRSRT, and are problem-specific.
       USE EIRMOD_SECOND_OWN, ONLY: EIRENE_SECOND_OWN,
      .                             EIRENE_RESET_SECOND
       USE EIRMOD_EIRENE, ONLY: EIRENE_EIRENE
-      USE EIRMOD_MPI, ONLY: EIRENE_MPI_INIT
       USE EIRMOD_CPES, ONLY: MY_PE
 #ifdef USE_MPI
       USE MPI, ONLY: MPI_FINALIZE

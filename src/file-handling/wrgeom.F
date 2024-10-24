@@ -10,7 +10,9 @@ C
       USE EIRMOD_CTRIG
       IMPLICIT NONE
       LOGICAL TRCFLE
+#ifdef CHECKBIN
       integer :: i, j
+#endif
 C
       OPEN (UNIT=12+ifoff,ACCESS='SEQUENTIAL',FORM='UNFORMATTED')
       REWIND 12+ifoff

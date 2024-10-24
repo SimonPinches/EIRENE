@@ -49,13 +49,16 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Generalized usaged of FORT and FORT_LC variables
 - Introduced usage of EIRENE_OPENFILE in all interface routines
 - Added TRIM operations and character ranges to avoid string length overflows
+- Added B25_EIRENE pre-processor pragmas in SOLPS-ITER interface routines
 - Added LEGACYCOMP alternate code
 - Added definition of GFORTRAN pragma in CMakeLists.txt
 - Added G95 pre-processor pragmas to deal with g95 compiler errors
 - Added NAGFOR pre-processor pragmas to deal with NAG compiler specific warnings
 - Replaced F2003 pre-processor (the compiler supports the Fortran 2003 standard) pragma with LEGACYCOMP (the compiler does not support the Fortran 2003 standard)
 - Added EXTERNAL definitions for called subroutines and functions
+- Added pre-processor pragmas around relevant variables only used if the pragma is declared
 - Removed superfluous MPI interface routines
+- Removed unused variables and modules
 - Making use of lower/upper case more consistent
 - Added some more clarifying comments
 - Have figures in Manual listed by full relative path and file extension

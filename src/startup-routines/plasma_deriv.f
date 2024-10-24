@@ -130,25 +130,23 @@ c   LGVAC(...,0)     : background vacuum flag
       INTEGER, INTENT(IN) :: ICALL
       REAL(DP) :: ZTII, ZTNI, FCT2, FCRG, FCT1, EIRENE_VDION, ZTEI,
      .            ZTNE,EMPLS, FCT0, TEPLS, DEPLS, DIPLS, AM1, TEF, DEF,
-     .            TEI, DEJ, TEIDEJ,
      .            BOLTZFAC, RCORONA, RCOLRAD, DELTAE,
      .            G_BOLTZ, G_PLANCK,
 ! rates and population coefficients for density models
      .            EIRENE_RATE_COEFF, EIRENE_OTHER_RATE_COEFF,
 ! asymptotics thereof
-     .            RC1MIN, RC1MAX, RC2MIN, RC2MAX, DE_CORONA,
+     .            RC1MIN, RC1MAX, RC2MIN, RC2MAX,
      .            BXP, BYP, BNORM, TE, DE
       REAL(DP) :: FP1(6), FP2(6)
       REAL(DP) :: BX, BY, BZ
       REAL(DP) :: tpb1, tpb2
-      REAL(DP) :: COEF1D(0:8), COEF2D(0:8,0:8)
       REAL(DP), ALLOCATABLE :: DEINTF(:), SUMNI(:), SUMMNI(:),
      .                         BASE_DENSITY(:), BASE_TEMP(:),
      .                         TALLY(:)
-      INTEGER :: IR, IN, IP, IPM, IPLS, IOLD, ISW, IRE, I1,
-     .           I, J, JEND, IAIN, ISPZ,
+      INTEGER :: IR, IN, IP, IPM, IPLS, IOLD, IRE,
+     .           I, J, IAIN, ISPZ,
      .           KK,
-     .           IO, IPLSTI, IPLSV, IOLDTI, IOLDV, IBS, IFLG,
+     .           IPLSTI, IPLSV, IOLDTI, IOLDV, IBS, IFLG,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
      .           ITAL, K, NFTI, NFTE, JPLS, IRC
       EXTERNAL :: EIRENE_RATE_COEFF, EIRENE_OTHER_RATE_COEFF,
@@ -171,25 +169,6 @@ c   LGVAC(...,0)     : background vacuum flag
           logical, intent(in) :: lfdx, lfdy, lfdz
         end subroutine eirene_calc_grad
 
-        SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
-     .             RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
-     .             RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .             ELNAME, IZ1, BUNDLING,
-     .             IROW_ESC, ICOL_ESC, POP_ESC)
-        USE EIRMOD_PRECISION
-        INTEGER,      INTENT(IN) :: IR, IZ1
-        INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC
-        REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC
-        CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: BUNDLING
-        CHARACTER(8), INTENT(IN) :: FILNAM
-        CHARACTER(4), INTENT(IN) :: H123
-        CHARACTER(LEN=*), INTENT(IN) :: REAC
-        CHARACTER(2), INTENT(IN) :: ELNAME
-        CHARACTER(3), INTENT(IN) :: CRC
-        INTEGER,  INTENT(IN OUT) :: JFEX1MN, JFEX1MX,JFEX2MN, JFEX2MX
-        REAL(DP), INTENT(IN OUT) :: RC1MIN, RC1MAX, FP1(6),
-     .                              RC2MIN, RC2MAX, FP2(6)
-        END SUBROUTINE EIRENE_SLREAC
       end interface
 
       EXTERNAL :: EIRENE_RPLAM, EIRENE_EXIT_OWN
@@ -601,7 +580,6 @@ cdr            now to more general reaction card IRC
 cdr            (e.g. population coefficients from internal CR codes
 cdr                  or from AMJUEL H.11, or H.12 data fits)
             IRC = TDMPAR(IPLS)%TDM%IRC(IRE)
-            DE_CORONA=1.E8_DP
             DO IR=1,NSBOX
 cdr nsbox rather than nsurf? Otherwise this will not work in additional cells
               IF (LGVAC(IR,NPLS+1)) CYCLE

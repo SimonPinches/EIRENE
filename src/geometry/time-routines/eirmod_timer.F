@@ -351,7 +351,7 @@ C  TRY TO FIND REENTRY SURFACE. CHECK ONLY NON-DEFAULT RADIAL SURFACES
       REAL(DP), INTENT(INOUT) :: PT
       REAL(DP) :: ZR, ZSQRT, ZT1, ZT2, ZEP1
       REAL(DP), SAVE :: ZA, ZB, ZB2, ZAB, ZAB2, ZC1, PS
-      INTEGER :: IR, IS, MS, NRI
+      INTEGER :: IR, MS, NRI
 !$OMP THREADPRIVATE(ZA, ZB, ZB2, ZAB, ZAB2, ZC1, PS)
 C
 C****CIRCULAR MESH   (CONCENTRIC)
@@ -400,7 +400,6 @@ C  FIND NEXT SURFACE MRSURF
       NRI=1
       PS=PT
       MS=0
-      IS=0
   200 DO 205 IR=NRI,NR1ST
         IF (INMP1I(IR,0,0).NE.0) THEN
           MRSURF=IR
@@ -464,7 +463,6 @@ C
         RETURN
       ELSE
         IF (PT.GT.0.AND.PT.LT.PS) THEN
-          IS=MRSURF-MAX(0,NINCX)
           MS=MRSURF
           PS=PT
         ENDIF
@@ -619,7 +617,6 @@ C
      .                   'TIMER_ELLIPTICAL_MESH '
         CALL EIRENE_EXIT_OWN(1)
 CPB        IF (PT.GT.0.AND.PT.LT.PS) THEN
-CPB          IS=MRSURF-MAX(0,NINCX)
 CPB          MS=MRSURF
 CPB          PS=PT
 CPB        ENDIF
@@ -636,7 +633,7 @@ CPB        GOTO 2000
       IMPLICIT NONE
       REAL(DP), INTENT(INOUT) :: PT
       REAL(DP) :: T, T1, T2, T3, T4, V1, V2, HELP
-      INTEGER :: NCLPB, MMSURF, I, J, K, JPOL, MPOL, ISW, ISTS, ISD, IR,
+      INTEGER :: NCLPB, I, J, K, JPOL, MPOL, ISW, ISTS, ISD, IR,
      .           IP, IHELP, ICTS
       INTEGER, SAVE :: IPOLGO, ICELLR
 !$OMP THREADPRIVATE(IPOLGO, ICELLR)
@@ -645,7 +642,7 @@ cym - replace equivalence statement
       REAL(DP), POINTER :: PT1, PT2, PT3, PT4
 
 #ifdef TRACE
-      INTEGER :: ICOUP
+      INTEGER :: ICOUP, MMSURF
 #endif
 
       LOGICAL, TARGET :: LCTS(4)
@@ -880,10 +877,8 @@ C  PLAY SAFE: TRY ONCE AGAIN, IF PARTICLE ON RAD. SURFACE
      .        ' NO INTERSECTION IN TIMER. TRY ONCE AGAIN'
 !$OMP END CRITICAL
             ENDIF
-#endif
             MMSURF=MSURF
             IF (MSURF.GT.NLIM) MMSURF=-MSURF+NLIM
-#ifdef TRACE
             IF (NLTRC) THEN
 !$OMP CRITICAL
               WRITE (iunout,*) 'NPANU, MSURF ',NPANU,MMSURF
@@ -917,11 +912,10 @@ C  PLAY SAFE: TRY ONCE AGAIN, IF PARTICLE ON POL. SURFACE
               WRITE (iunout,*)
      .        ' NO INTERSECTION IN TIMER. TRY ONCE AGAIN'
 !$OMP END CRITICAL
-            ENDIF
 #endif
+            ENDIF
             MMSURF=MSURF
             IF (MSURF.GT.NLIM) MMSURF=-MSURF+NLIM
-#ifdef TRACE
             IF (NLTRC) THEN
 !$OMP CRITICAL
               WRITE (iunout,*) 'NPANU, MSURF ',NPANU,MMSURF

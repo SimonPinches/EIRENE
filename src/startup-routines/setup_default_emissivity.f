@@ -84,7 +84,7 @@ cdr
 
       integer :: i, NUM_compo, iat, iml, ipl, nat, npl, nml,
      .           nrc, nrc_rat1, nrc_rat2, nrc_rat3
-      integer :: ir, mp, mt,
+      integer :: mp, mt,
      .           jfex1mn, jfex1mx, jfex2mn, jfex2mx,
      .           iz, irow_esc, icol_esc, iftfl, ncoef
       real(dp) :: dpp, rc1min, rc1max, rc2min, rc2max, pop_esc
@@ -95,7 +95,6 @@ cdr
       character(3) :: crc
       character(2) :: elname
       character(60) :: bundling
-      real(dp) :: ry = 13.605
 
       NUM_lines    = 6  ! Ba_alpha, Ba_beta, Ba_gamma, Ba_delta,
                         ! Ly_alpha, Ly_beta

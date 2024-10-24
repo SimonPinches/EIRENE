@@ -89,9 +89,9 @@ c
      .            EIRENE_SNGL_POLY, EARRH,
      .            RMASSS, EBFAC, RATE,
      .            TII, TBCX, TBEI, TBPI, TBEL, TBRC,
-     .            ELEI, EPPI, EPCX, EPEL, ELRC,
+     .            ELEI, EPCX, EPEL, ELRC,
 cdr  functions for 'on the fly' evaluation of A&M data
-     .          EIRENE_FEELEI1, EIRENE_FEELPI3,
+     .          EIRENE_FEELEI1,
      .          EIRENE_FEELRC1,
      .          EIRENE_FEPLCX3, EIRENE_FEPLEL3,
      .          EIRENE_FTABCX3, EIRENE_FTABPI3,
@@ -100,7 +100,6 @@ cdr  functions for 'on the fly' evaluation of A&M data
      .          EIRENE_RATE_COEFF
       REAL(DP),PARAMETER :: EMIN = 0.1003_DP  ! hard coded cut-off for
                                         ! EBEAM parameter in H.3 fits
-      REAL(DP),PARAMETER :: EMINL=-2.3000_DP  ! hard coded cut-off for EBEAM parameter in H.3 fits
       INTEGER :: NS,NA,IAIN,MM,KK,ND2,
      .           irei,ircx,irpi,irel,irrc,
      .           iat,iml,iio,ipl,isp,iplti,

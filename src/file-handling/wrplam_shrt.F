@@ -54,7 +54,9 @@ cdr  Should only be written in modbgk, modphot, tmstep, etc.. routines
       LOGICAL,INTENT(IN) :: TRCFLE
       CHARACTER(*) CALLEDFROM
       INTEGER :: IREA, ISWR, IREI, IRCX, IRPI, IREL, IFL, IPLS, ND, IO
+#ifdef CHECKBIN
       INTEGER :: I
+#endif
       REAL(DP), ALLOCATABLE, SAVE :: TIAR(:,:), DIAR(:,:),
      R                               VXAR(:,:), VYAR(:,:), VZAR(:,:)
       EXTERNAL :: EIRENE_LEER
@@ -253,7 +255,7 @@ C .......................................................................
       CHARACTER*8 FILENAME
       CHARACTER*3 FILENUMBER
       INTEGER :: IO
-      INTEGER :: IREA, ISWR, IREI, IRCX, IRPI, IREL, IFL, IPLS
+      INTEGER :: IREA, IREI, ISWR, IFL, IPLS
       LOGICAL EX
       EXTERNAL EIRENE_LEER
 
@@ -410,22 +412,22 @@ cdr after the last call to SETAMD
         select case (iswr)
         case (1)
 cdr restore some EI rates for iterative procedure (nonlinearities)
-          irei=nfla_ir(irea)
+c         irei=nfla_ir(irea), not needed here
           read (13+ifoff)
      w      tab_store(irea,1:nrad,1),e_store(irea,1:nrad,1)
         case (3)
 cdr restore some CX rates for iterative procedure (nonlinearities)
-          ircx=nfla_ir(irea)
+c         ircx=nfla_ir(irea)
           read (13+ifoff)
      w      tab_store(irea,1:nrad,1:9),e_store(irea,1:nrad,1:9)
         case (4)
 cdr restore some PI rates for iterative procedure (nonlinearities)
-          irpi=nfla_ir(irea)
+c         irpi=nfla_ir(irea)
           read (13+ifoff)
      w      tab_store(irei,1:nrad,1:9),e_store(irea,1:nrad,1:9)
         case (5)
 cdr restore some EL rates for iterative procedure (nonlinearities)
-          irel=nfla_ir(irea)
+c         irel=nfla_ir(irea)
           read (13+ifoff)
      w      tab_store(irea,1:nrad,1:9),e_store(irea,1:nrad,1:9)
 cdr  case 6,7: to be done

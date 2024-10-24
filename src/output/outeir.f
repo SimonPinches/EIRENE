@@ -48,7 +48,7 @@ C
      .            EGAINP, ELOSSP, PGAINE, PLOSSE, SMEAN, OUTAUI, TALAV,
      .            TALTOT, DIF, SMSPT, ERADE
       INTEGER :: IALS, IALV, J, JJ, IS, NFTI, NFTE, K, NF, N, IALG,
-     .           ITAL, IPRV, ILAST, ICOUNT, I, IINDEX, ISPC,
+     .           ITAL, IPRV, ILAST, ICOUNT, I, ISPC,
      .           IT, JATM, JMOL, JION, JPHOT, IRET, N1D, KK
       INTEGER :: IADTYP(0:4)
       LOGICAL :: LCOVN(NCV)
@@ -385,7 +385,6 @@ C
             IF (OUTAUI.EQ.0.D0) GOTO 158
 C
             DO 155 I=1,NSBOX_TAL
-              IINDEX=NADDV(ITAL)*NRAD+(I-1)*NF+K
               VECTOR(I)=ESTIMV(NADDV(ITAL)+K,I)
   155       CONTINUE
             TALTOT=OUTAUI

@@ -154,7 +154,6 @@ C
       USE EIRMOD_CSPEI
       USE EIRMOD_CSPEZ
       USE EIRMOD_CSTEP
-      USE EIRMOD_CZT1
       USE EIRMOD_COMNNL
       USE EIRMOD_CTEXT
       USE EIRMOD_CTRIG
@@ -222,7 +221,7 @@ c  for short cycle correction terms, in vol. rec. strata.
 
       real(dp), allocatable :: save_estimv(:,:), save_estims(:,:)
       REAL(DP), ALLOCATABLE, SAVE :: eapl0(:),empl0(:),eipl0(:)
-      REAL(DP), SAVE :: T, V, VL, BVAC, BRAD, BPOL, BTOR
+      REAL(DP), SAVE :: T, V, VL, BRAD, BPOL, BTOR
 
       INTEGER, SAVE :: NPBS, NPES, NDX2, NRED, NPLP
       INTEGER, ALLOCATABLE, SAVE :: NPTS_SAVE(:)
@@ -276,7 +275,7 @@ C
       INTEGER, SAVE :: IO29, IO, IMF
       INTEGER :: N, I, J, K, L, IX, IY, IXI, IXE, IXNI, IPL, JPLS, JUN,
      I           IREAD, IS, IS1, ISC, ISC1, ISC2, ISCS, ISTS, ISTR,
-     I           IT, IN, IP, IP1, IR, IR1, IPRT, NTGPRI, IMODE,
+     I           IT, IN, IP, IP1, IR, IR1, IPRT, NTGPRI,
      I           ICOADD, ICOSCR, ICOG, ICOU, IDUMMY, IERROR,
      I           IAIN, IAOT, ITRI, NBAR, NUMSI, NBARSI,
      I           IUNIN_SAVE, IUSROUT, JS
@@ -288,7 +287,7 @@ C
       CHARACTER(10) :: CHR
       CHARACTER(20) :: FORM
       CHARACTER(72) :: ZEILE
-      LOGICAL :: EX, L1, L2, LDUMMY, FOUND, IFBOUND
+      LOGICAL :: EX, L1, L2, FOUND, IFBOUND
       EXTERNAL :: EIRENE_HEADNG, EIRENE_LEER, EIRENE_EXIT_OWN,
      .            EIRENE_GEOMD, EIRENE_GEOUSR,
      .            EIRENE_INDMAP, EIRENE_PLASM, EIRENE_SNEIGH,
@@ -297,8 +296,6 @@ C
       IERROR=0
       IUSROUT = 0
       IUNIN_SAVE = IUNIN
-C
-      IMODE=IABS(NMODE)
 C
       IF (.NOT.ALLOCATED(CHPM)) THEN
 cdr  for short cycle only. Obsolete
@@ -2210,7 +2207,6 @@ C  VACUUM DATA NEEDED FOR REGION OUTSIDE B2-MESH
       TVAC=0.02_DP                       !pb 0.02 -> 0.02_dp
       DVAC=1.D2
       VVAC=0.
-      BVAC=1.
       ZVAC=0.
 CTRIG E
       DO 2105 JPLS=1,NPLSI
@@ -2734,7 +2730,7 @@ C
      .            TE, TES, TIS, THMAX, EESHT, EEMAX, EMAXW, CUR,
      .            PARW, PERW, PARWI, PERWI, PM1, PN1, DXPOL, DYPOL,
      .            EADD, ESHEATH, ESUM
-      REAL(DP) :: RRBS, UD, UP, RRBC, UDBC, UPBC, VDBC
+      REAL(DP) :: RRBS, UD, UP
       REAL(DP), ALLOCATABLE, SAVE ::
      .            TORL(:,:), ESHT(:,:), ORI(:,:)
 
@@ -3647,7 +3643,7 @@ C
      .          EAMISUM, EEADD, EIADD, CHE, CHI, CHP, CHEES, CHEIS
 C
       logical :: lhit(nrad)
-      INTEGER :: I, IAT, JATM, JMOL, JION, JPLS, IPLSV, IPLSTI, ISTRAI,
+      INTEGER :: I, JATM, JMOL, JION, JPLS, IPLSV, IPLSTI, ISTRAI,
      .           IN, IT, IX, IY, IFL, INC, IIRC, IRRC, IST_RATE, IER,
      .           ISTAT_COP, ICPV
       INTEGER, SAVE :: IFIRST

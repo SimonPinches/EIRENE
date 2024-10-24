@@ -4,7 +4,10 @@ C
 
       subroutine eirene_couple_init_output
 
-      use EIRMOD_CPES, only: MY_PE, NPRS
+      use EIRMOD_CPES, only: MY_PE
+#ifndef B25_EIRENE
+      use EIRMOD_CPES, only: NPRS
+#endif
       use EIRMOD_COMPRT, only: IUNOUT
       use EIRMOD_PARMMOD, only: LOUTAPP
       use EIRMOD_OPENFILE, only: EIRENE_OPENFILE

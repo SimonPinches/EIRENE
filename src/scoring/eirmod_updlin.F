@@ -111,7 +111,7 @@ cdr  ird is coarse grid for scoring
 
       INTEGER, SAVE :: IFIRST=0
       INTEGER :: ICP, ICP2, ICP3, ICP4, ICP5,
-     .           ICO, IR, IPL, NMTSP, IRD
+     .           ICO, IR, IPL, NMTSP
 
       ICP = NPLSI     ! ...+1: summed ipls part. source, a+m+i+ph
       ICP2 = 2*NPLSI  ! ...+1: summed ipls parallel mom.

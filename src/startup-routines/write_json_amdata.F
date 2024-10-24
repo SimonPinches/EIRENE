@@ -12,7 +12,7 @@
       implicit none
 
       type(json_core) :: json
-      type(json_value),pointer :: pAMD, REACT, PART
+      type(json_value),pointer :: pAMD
       type(json_value),pointer :: crs_lines
       type(s_stack), pointer   :: cur
       character(*) :: filename
@@ -50,8 +50,10 @@
       type(json_value),pointer :: pAMD
       type(json_value),pointer :: PART, REACT
 
-      integer :: i, ndum1(1), ndum2(1), ndum3(1), ndum4(1), nti, nv
-      real(dp) :: dum(1)
+      integer :: i
+#ifdef NEVERCOMEHERE
+      integer :: ndum1(1), ndum2(1), ndum3(1), ndum4(1), nti, nv
+#endif
 
       character(300) :: sCReactStr
 

@@ -116,7 +116,7 @@ C
       REAL(DP) :: XSTORC(MSTOR1,MSTOR2), XSTORVC(NSTORV)
       REAL(DP) :: VELXC, TIMEC, WS, X0C, Y0C, Z0C, ZDT1C,
      .          X0ERR, Y0ERR, Z0ERR, VELC, E0C, VELYC, VELZC, SG,
-     .          GENRC, PHIC, WEIGHC, ZLI, XLI, YLI, T, ZTS,
+     .          GENRC, PHIC, WEIGHC, ZLI, XLI, YLI, ZTS,
      .          ZMFP, ZEP1, ZLOG, ZTST, ZINT1, ZINT2, Z0S, TIMES,
      .          X0S, Y0S, PHIS, DIST, ZTC, PSAVE, TSAVE,
      .          EX, EXPM, FF, WMINC_LOCAL, PR, PPR,   ! cond. exp. est.

@@ -109,7 +109,7 @@ cdr          tbd: for PI, EL, processes
      .           IOLD, NOLD, INEW, NNEW, ITYPO, ITYPN, IPLSO,
      .           IRCX, IREI, IRPI, IREL, !IRPH,
      .           IBGK, IP, NFLAG,
-     .           IATMN, IMOLN, IIONN, IPLSN,
+     .           IATMN, IPLSN,
      .           NCLLO, IPLSV, IPL,
      .           IPTYPO, IPTYPN
 
@@ -135,7 +135,7 @@ cym IAPH, RMMIO, RMIIO and IRPH removed during merge
 !$OMP& IXCX, IXEI, IXPI, IXEL,
 !$OMP& IOLD, NOLD, INEW, NNEW, ITYPO, ITYPN, IPLSO,
 !$OMP& IRCX, IREI, IRPI, IREL,
-!$OMP& IBGK, IP, NFLAG, IATMN, IMOLN, IIONN, IPLSN, IPLSV, IPL, NCLLO,
+!$OMP& IBGK, IP, NFLAG, IATMN, IPLSN, IPLSV, IPL, NCLLO,
 !$OMP& NAMIEI, NAMIPI, IPTYPO, IPTYPN, CCOLEST)
 
       contains
@@ -849,7 +849,6 @@ cdr also exit from calling routine
           CASE(2)
 C  1ST SECONDARY IS MOLECULE IMOL
             IMOL=N1STX(IRCX,2)
-            IMOLN=IMOL
             E0=CVRSSM(IMOL)*VELQ
             NNEW=NSPA+IMOL
 C
@@ -897,7 +896,6 @@ cdr  col estim. energy tally
           CASE(3)
 C  1ST SECONDARY IS TEST ION
             IION=N1STX(IRCX,2)
-            IIONN=IION
             E0=CVRSSI(IION)*VELQ
             NNEW=NSPAM+IION
 C

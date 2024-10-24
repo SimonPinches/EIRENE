@@ -1501,10 +1501,10 @@ C
 cym cccccccc  need to be private, SAVE requires action ... ccccccccccccccc
 cym      REAL(DP) :: XNP05, YYIA, XN1, YN, FX, FY, XN2, Z1, XN3, YNP, XN,
 cym     .          YWO, XWO, XR, THET, PPHI, XPL, RWN, YPL, ZPL, ZWN,
-cym     .          XPLO, YPLO, ZPLO, XN0
+cym     .          XN0
 cym      INTEGER :: IA, I, J
 cym      INTEGER :: ICP, ISTR, IC, NTDUM, NTT,
-cym     .           NT, ICOLOR, ISYM, IFLAG, ISP, IAA
+cym     .           NT, ICOLOR, ISP, IAA
 cym      LOGICAL :: LWR
 cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 

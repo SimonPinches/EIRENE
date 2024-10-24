@@ -43,7 +43,7 @@ c  EIRENE_PLMESH: plots these contours, using GR plot software.
       INTEGER  :: ICONT, IPOIN, IWST, IWEN, IWL, IWP,
      .            IWAN, IMN, I, NCONT, J, IUHR, ISTORE, IP, IH, IFOUND,
      .            ICO, IPO, IN, IS, IS1, ITRI, INBT, INBS
-      LOGICAL  :: LCLOSED, LFOUND
+      LOGICAL  :: LFOUND
       LOGICAL, ALLOCATABLE :: FOUND(:,:)
       EXTERNAL :: EIRENE_LEER
 
@@ -367,10 +367,8 @@ C STUECKE DER AKTUELLEN KONTOUR WERDEN SORTIERT
         IF ((PARTCONT(1,1,1) .NE. PARTCONT(IPOIN,2,1)) .OR.
      >      (PARTCONT(1,1,2) .NE. PARTCONT(IPOIN,2,2))) THEN
           WRITE(iunout,*) 'CONTOUR ',ICONT,' IS NOT CLOSED'
-          LCLOSED = .FALSE.
         ELSE
           WRITE(iunout,*) 'CLOSED CONTOUR ',ICONT
-          LCLOSED = .TRUE.
         ENDIF
 
         IF (TRCSUR) THEN

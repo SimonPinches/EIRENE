@@ -124,13 +124,14 @@ C
       REAL(DP), ALLOCATABLE :: XTIM(:)
 
       REAL(DP) :: XFL1,
-     .          XPRNLS, XFACT, OVER_ACC, XPRNLI,
+     .          XPRNLS, XFACT, XPRNLI,
      .          TIMI, XPT, XX1, XPT1, XFL, SECND, XX,
      .          ZW, ZWW, ZVOLWT, ZVOLNT, FSIG, ZFLUX,
      .          OVER, WTT, timan, timen,
      .          tim1, tim2, timst,
      .          rn1, ran, xmax
       REAL(DP), SAVE :: SECND1, SECND2, SECDEL
+!     REAL(DP) :: OVER_ACC
 
 cym IC ?
       INTEGER :: NPTS_SAVE(NSTRA), NINITL_SAVE(NSTRA), IPTSI
@@ -139,13 +140,16 @@ cym IC ?
      .           NINIST, IPANU, ISEED_ISTRA, ISEED_IPTSI, IDUMRAN,
      .           NDIGITS, NINIMAX, NAVAIL,
      .           ISTR, NPTTOT, NREC11,
-     .           IADD, INDX, ICLV, IADV,
+     .           IADD, ICLV, IADV,
      .           INODES, J, IT, IMCP,
      .           ISUM, NPX, IS, NEW_ITER, ISPC, IN,
      .           JATM, JMOL, JION, JPHOT, JPLS,
-     .           IERR, IFIRST, ipb, jpb
+     .           IERR, IFIRST
+#ifdef CHECKBIN
+      INTEGER :: ipb, jpb
+#endif
 
-      LOGICAL, SAVE :: LGSTOP, NLPOLS, NLTORS
+      LOGICAL, SAVE :: LGSTOP
       LOGICAL :: LGABORT
 cpg
       INTEGER, SAVE :: MY_ID
@@ -772,12 +776,10 @@ C  ENFORCE TOROIDAL OR POLOIDAL SYMMETRY FOR THIS STRATUM
 C
 !$OMP MASTER
           IF (NLAVRP(ISTRA)) THEN
-            NLPOLS=NLPOL
             NLPOL=.FALSE.
           ENDIF
 C
           IF (NLAVRT(ISTRA)) THEN
-            NLTORS=NLTOR
             NLTOR=.FALSE.
           ENDIF
 C

@@ -92,7 +92,6 @@ C
      .           J, NEND, MODC, NSECX4, IPL2, IIO2, IPLTI,
      .           NCBULK, NCGBLK
       INTEGER, EXTERNAL :: EIRENE_IDEZ
-      CHARACTER(8) :: TEXTS1, TEXTS2
       REAL(DP), PARAMETER :: TMINL=-2.3_DP
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt

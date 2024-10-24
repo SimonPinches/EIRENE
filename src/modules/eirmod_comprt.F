@@ -71,8 +71,6 @@ C  SOME FURTHER REAL VARIABLES USED ALONG PARTICLE TRAJECTORY
      R CRTX,   CRTY,   CRTZ,   SCOS,   SCOS_SAVE,  WGHTSP, WGHTSC,
      R CRTXG,  CRTYG,  CRTZG
 
-      REAL(DP), PUBLIC, SAVE ::
-     R VEL_MEAN, VELX_MEAN, VELY_MEAN, VELZ_MEAN, E0_MEAN
 c............................................................
 cdr the following variables are unused. Left over from former, mostly
 cdr unfinished options. To be removed?

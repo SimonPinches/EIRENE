@@ -60,7 +60,7 @@ C
       TYPE(VELOCITY),POINTER :: VELCUR
       TYPE(VOLUMEP),POINTER :: VOLCUR
 C
-      TYPE(TSURFACE), POINTER :: SURFCUR, SURFCUR2
+      TYPE(TSURFACE), POINTER :: SURFCUR
       TYPE(REFMODEL), POINTER :: REFCUR, REFLAST
       TYPE(SPEC_REF), POINTER :: SPR, SPR_LAST
 
@@ -97,60 +97,30 @@ cdr  optional arguments for FILNAM=CONST options
       REAL(DP), INTENT(INOUT) :: SAREA_SAVE(NL)
 
 C
-      REAL(DP) :: AFF(3,3), AFFI(3,3), FP1(6), FP2(6)
-      REAL(DP) :: RP1, SA, SI, THMAX, SM, SPP, DTIMVO, SAVE, VOLTOT_TAL,
-     .          SPH, ALR, ROTNRM, RPSDL, XSH, YSH, ZSH, REFNRM,
-     .          DPP, R1MN, R1MX, R2MN, R2MX,
-     .          SPCMN, SPCMX,SPC_SHIFT,
+      REAL(DP) :: AFF(3,3), AFFI(3,3)
+      REAL(DP) :: ALR, ROTNRM, RPSDL, XSH, YSH, ZSH, REFNRM,
+     .          DPP, SPCMN, SPCMX,SPC_SHIFT,
      .          SPCPLT_X,SPCPLT_Y,SPCPLT_SAME, SPCVX, SPCVY, SPCVZ,
      .          VNORM
 
-C  RUN TIME STATISTICS IN INITIALIZATION PHASE, WITHIN INPUT.F
-      REAL(DP) :: tpb1, tpb2
-cdr   REAL(DP) :: timea
       INTEGER :: IERROR, IREAD
       INTEGER, SAVE :: IUSROUT=0
 c
 C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
       REAL(DP) :: AMPTS
 
-      INTEGER :: IADTYP(0:4)
-      INTEGER :: JP, KT, IM, IP, IA, NFLGS, NSPZS1, NSPZS2, IPH,
-     .           II, NTLVF, NSRF, NTLS, I1000, NSP, NTL, ICHORI, IRAD,
-     .           ILIMPS, ISS, ILA, IB, INC, NSOPT, IIN, IEN,
-     .           EIRENE_ILLZ, IZ, ITALI, IBEND,
-     .           JATM, JMOL, JION, JPHOT, JPLS, JTRJ, JSPZ, JSTRA,
-     .           NO, IGO,
-     .           JDUMMY, NLJ, I1, I2, I3,
-     .           NTIME0, I, J, IST, IMSG,
-     .           IPOS2, IPOS0, NM, K, JJ, IPOS1, NRGEN, INUM, NTLSF,
-     .           L, IS, NTLV, ID, IRE,
-     .           INELGJ, NPRCSF, MXL, NSPZV1, NSPZV2, NFLGV,
-     .           IPRCSF, IR, MT, MP,
-     .           NRTAL1, IPLN,
-     .           NRE, IRET,
-     .           ISPSRF, ISPTYP, NSPS, NSPSA, IPTYP, IPSPZ, ISTRAI,
-     .           IANF, IEND,
-     .           IPLSTI, IPLSV, ISRFCLL,
-     .           IDIREC, ISTCHR, ITOK, IER, IL,ILOGS,IO,ISPOPT,ISPLDEG,
-     .           NLOGIN, IFLG, IDUM,
-     .           NB,NS,NA, ISTR,
-     .           NRC, IADV, NUM_COMPO, NUM_CONTRIB, ICNT, IDMDL, IND,
-     .           JS, IUSR, KK, ELONLY
+      INTEGER :: II, NTLVF, NSRF, NSP, NTL, ICHORI,
+     .           JSTRA, I2, NTIME0, I, J, IMSG,
+     .           K, NRGEN, NTLV, MXL,
+     .           IR, IPLN,
+     .           ISPSRF, ISPTYP, NSPS, NSPSA, IPTYP, IPSPZ, ISRFCLL,
+     .           IDIREC, IL, ISPOPT, ISPLDEG,
+     .           ISTR, IADV, IDMDL,
+     .           JS, KK, ELONLY
 
       INTEGER, SAVE :: NITER0
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL :: LRDMLTI, LRDMLV
-      INTEGER, DIMENSION(1) :: ISTR_A
-      LOGICAL :: LHELP(NLIMPS), NLSRON_SAVE(NSTRA)
-      LOGICAL :: LRPS3D, LRPSCN, LINCL45
-      CHARACTER(10) :: CDATE, CTIME
-      CHARACTER(12) :: CHR
-      CHARACTER(420) :: ZEILE, ULINE
-      CHARACTER(4) :: CLAB
-      CHARACTER(6) :: HANDLE
-cdr  intermediate data for those already set in find_param.f
-      integer :: noptim_save
       LOGICAL :: LHYDDEF, LMULPL
       EXTERNAL :: EIRENE_EXIT_OWN
 
@@ -628,7 +598,7 @@ C
      .                             pmlt, padd
       type(json_core) :: core
       logical :: found
-      integer :: ilogs, i, j, k, nch
+      integer :: ilogs, i, k, nch
       integer, allocatable :: ihelp(:)
       real(dp), allocatable :: rhelp(:)
 !cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
@@ -1520,7 +1490,7 @@ C
       type(json_value), pointer :: preacs, prea, pspc, preac,
      .                             patm, pmol, pion, pphot
       logical :: found, foundr, found_crs
-      integer :: nrea, j, ir, mp, mt, iz,
+      integer :: nrea, ir, mp, mt, iz,
      .           jfex1mn, jfex1mx, jfex2mn, jfex2mx, iftfl, ncoef,
      .           irow_esc, icol_esc, ncrs, k, ll
       real(dp) :: r1mn, r1mx, r2mn, r2mx, fp1(6), fp2(6),
@@ -1528,7 +1498,7 @@ C
       real(dp), allocatable :: ffp1(:), ffp2(:), ccoef(:)
       real(dp) :: coef(9)
 !cym/cpg : changed type
-      character(kind=json_CK,len=:), allocatable :: txt, chr
+      character(kind=json_CK,len=:), allocatable :: chr
       character(kind=json_CK,len=8) :: filnam
       character(kind=json_CK,len=4) :: h123
       character(kind=json_CK,len=50) :: reac
@@ -1543,9 +1513,7 @@ C
       character(len=2) :: elnamec
       character(len=60) :: bundlingc
 !cym/cpg end
-      integer :: i, ndum1(1), ndum2(1), ndum3(1), ndum4(1), nti, nv,
-     .           mxdm
-      real(dp) :: dum(1)
+      integer :: ndum1(1), ndum2(1), ndum4(1), mxdm
 !cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
       character(kind=json_CK,len=420), dimension(:), allocatable ::
      .           crs_lines
@@ -2244,7 +2212,6 @@ c  default: only for bulk ions
      .           ital, iopt, jpls
       logical :: found, foundp, foundi
 !cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
-      character(kind=json_CK,len=:), allocatable :: txtr
       character(kind=json_CK,len=:), allocatable :: MeshTypeCK
       character(kind=json_CK,len=:), allocatable :: AMDoutputCK
 !cym/cpg end
@@ -3133,7 +3100,7 @@ C
 !cym/cpg end
       logical :: found
       integer, allocatable :: ihelp(:)
-      integer :: nstr, ist, j
+      integer :: nstr, j
       external :: eirene_leer, eirene_masage, eirene_masprm
 C
 C  READ DATA FOR PRIMARY SOURCE
@@ -3320,12 +3287,11 @@ C  VELOCITY SPACE DISTRIBUTION
       type(json_value), pointer, intent(in) :: p
       type(json_value), pointer :: pzones, pz, pt, pd, pv, pvol
 !cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
-      character(kind=json_CK,len=:), allocatable :: txt
       character(kind=json_CK,len=72), dimension(:), allocatable ::
      .           ch3lines
 !cym/cpg end
       logical :: found, foundc, foundv, foundm
-      integer :: inilgj, inelgj, in, idion, ini, ine, nch3
+      integer :: inilgj, inelgj, idion, ini, ine, nch3
       real(dp) :: tte, tti, di, vx, vy, vz, vl
       external :: eirene_dekey, eirene_dekeyb, eirene_exit_own,
      .            eirene_leer, eirene_masage
@@ -3708,8 +3674,7 @@ C  DATA FOR STANDARD DEVIATION
       type(json_value), pointer :: padvi, pad, pclvi, pcl, palsi, pal,
      .                             pspeci, psp, palvi, padsi
       logical :: found
-      logical, allocatable :: lhelp(:)
-      integer :: num, i, ia, nvi, nsi, nci, j
+      integer :: i, nvi, nsi, j
 !cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
       character(kind=json_CK,len=:), allocatable :: txt
 !cym/cpg end
@@ -4636,12 +4601,10 @@ C
       type(json_value), pointer, intent(in) :: p
       type(json_value), pointer :: plines, pline, pchords, pchord,
      .    pcomps, pcomp, pconts, pcont, prats, prat
-      logical :: found, foundt, lrpscn, lrps3d
-      logical, allocatable :: lhelp(:)
-      integer :: i, j, nlines, nchrds, iline, num_compo, ncomps, jcomp,
+      logical :: found
+      integer :: nlines, nchrds, iline, num_compo, ncomps, jcomp,
      .           num_contrib, irc, nconts, kcontr, nrats, irt, istchr
-      integer, allocatable :: ihelp(:), numtal(:)
-      real(dp), allocatable :: rhelp(:)
+      integer, allocatable :: ihelp(:)
 !cym/cpg CK-> JSON_CK, in line with not renaming types after use json_modules
       character(kind=json_CK,len=:), allocatable :: txt, key
 !cym/cpg end
@@ -5216,7 +5179,7 @@ C  also set NAINI, NCOPII, NCOPIE there
       subroutine eirene_read_mpi_strategy_json
       USE EIRMOD_JSON
       USE EIRMOD_COMUSR, ONLY: NPRLL
-      USE EIRMOD_CPES, ONLY: NPRS, NLIDENT,
+      USE EIRMOD_CPES, ONLY: NPRS,
      >    STRATEGY_UNDEFINED, STRATEGY_EMBARRASS,
      >    STRATEGY_ORIGINAL, STRATEGY_APCAS, STRATEGY_BALANCED,
      >    INPUT_DISTRIBUTION_STRATEGY

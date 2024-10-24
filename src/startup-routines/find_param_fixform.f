@@ -60,13 +60,13 @@ C
       USE EIRMOD_COMUSR
       USE EIRMOD_COMSOU, ONLY: NSTRAI
       USE EIRMOD_COMPRT, ONLY: IUNIN, IUNOUT
-      USE EIRMOD_CLOGAU, ONLY: NLWRMSH, NLSPCSCL, EIRENE_ALLOC_CLOGAU,
-     .                         NLSPCSCL_ON, NLSOLEDGE
+      USE EIRMOD_CLOGAU, ONLY: NLWRMSH, NLSPCSCL, NLSPCSCL_ON,
+     .                         NLSOLEDGE
       USE EIRMOD_CTRCEI, ONLY: TRCAMD, TRCINT, NVOLPR, NSURPR,
      .                         EIRENE_ALLOC_CTRCEI
       USE EIRMOD_CINIT, ONLY: CASENAME, DBFNAME, DBHANDLE, NDBNAMES,
      .                        INDPRO2_SAVE,
-     .                        EIRENE_INIT_CINIT, MASTER_PATH
+     .                        EIRENE_INIT_CINIT
       USE EIRMOD_JSON, ONLY : NOPTIM_IN, NRTAL_IN, NSMSTRA_IN,
      .                        INDPRO_IN, NSTRAI_IN, NTIME_IN
       IMPLICIT NONE
@@ -84,16 +84,16 @@ C
      .           NTPER, NTTRA, NCOOR, NTET, NBMLT,
      .           NT3RD, NTSEP, NTRII, NP2ND, NPPER, NPSEP, NPPLA,
      .           NSIGCI, IREAD, NCOPIE,
-     .           NRC, NRE, NLINES, LL, NB1, NB2, NB3, NS1,
-     .           NS2, NS3, INM1, INM2, INM3, INMDL, IEND, ITOK, IER,
-     .           NB4, NS4, INM4, IUNIN_SAVE, I1, NPRMUL,
+     .           NRC, NRE, NLINES, LL,
+     .           INMDL, IEND, ITOK, IER,
+     .           IUNIN_SAVE, I1, NPRMUL,
      .           IATM, IMOL, IION, IPHOT, IPLS,
      .           ISTRA, ISPZ,
      .           NUMSEC, NINITL_READ,
      .           MOD_ADDV, NUM_COMPO,
      .           NUM_CONTRIB, ISP, ITP, IRATIO,
      .           I, J, K,
-     .           I2, I3, I4, IH, IANF, IFILE,
+     .           I2, I3, IH, IANF, IFILE,
      .           ILINE, JCOMP, KCONTR, IREAC_ADD, IDUM1, IDUM2
       REAL(DP) :: SORIND, SORLIM, DUMM1, ROA, ZAA, ZZA, ZGA, YAA, YYA,
      .            ZIA, YP, XP, YIA, YGA, RDUM1, RDUM2
@@ -106,12 +106,11 @@ C
       LOGICAL :: NLTRA, NLTRT, NLTRZ
       LOGICAL :: PLTL2D, PLTL3D, LRPSCUT
       LOGICAL :: LDEFSTOR
-      LOGICAL :: EX, UEX, NLEMIS
+      LOGICAL :: UEX, NLEMIS
       LOGICAL :: LMULPL   ! multiple Ti and V..IN (per species)
                           ! due to virt. background iterations
       LOGICAL :: ldum(35)
-      CHARACTER(420) :: FILENAME, ULINE
-      CHARACTER(400) :: TREEPATH
+      CHARACTER(420) :: ULINE
       CHARACTER(420) :: ZEILE, FILE45
       CHARACTER(4) :: CLAB
       CHARACTER(6) :: HANDLE
