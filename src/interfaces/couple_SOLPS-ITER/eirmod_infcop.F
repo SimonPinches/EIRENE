@@ -4317,50 +4317,6 @@ cdr to be checked again. Not sure that this is correct
               SUMEI=SUMEI+EIADD*VOL(IN)
               SUMEE=SUMEE+EEADD*VOL(IN)
 
-cdr may 18: This next code changes PAAT, EAPL, EAEL, for some B2.5 specific
-cdr         purpose, adding the vol-rec sink there, rather than on pppl_cop,.etc..
-cdr         PIADD (MPPL_COP) was probably forgotten ?
-cdr         Since we now use EPPL_COP and EPEL_COP for the sources transferred to
-cdr         we must bypass this (anyway incomplete) stuff
-cdr
-             if (.true.) cycle
-
-cdr..jan 17  double check code changes below
-cdr..  pppl_cop is set, and that part is removed here from paat
-cdr    mppl_cop is set, nothing done with it.
-cdr....eppl_cop is not set any more, instead that part is directly removed from eapl
-cdr    epel_cop is not set any more, instead that part is directly removed from eael
-cdr may 2018:  mppl moved up, sync with pppl_cop treatment (lhit condition)
-c.......
-csw 21feb2012, taken from SOLPS4.3
-C CORRECT PAAT FOR CALCULATING RADIATION  FOR ATOMS IN WNEUTRALS
-                IAT=NATPRC(IRRC)
-                IF(IAT.GT.0) THEN
-                  PAAT(IAT,INC)=PAAT(IAT,INC)-RECADD
-                  IF (NLSPCSCL_ATM) THEN
-                    PAAT2(1:NATM,0:NATM) => PAAT(:,INC)
-                    PAAT2(IAT,IAT)=PAAT2(IAT,IAT)-RECADD
-                  END IF
-                END IF
-csw
-cdr..........................
-
-cdr             MPPL_COP(IPLS,INC)=MPPL_COP(IPLS,INC)+PIADD ! may 2018 now moved up into lhit-condition
-cdr  for consistency: this should probably be done with mapl, rather than mppl_cop,
-cdr  but perhaps mapl is not used in wneutrals ??
-cdr             SUMM=SUMM+PIADD*VOL(IN)  ! may 2018 now moved up into lhit-condition
-
-csw 08feb2013
-csw             EPPL_COP(INC)=EPPL_COP(INC)+EIADD
-                IF (LEAPL) EAPL(IPLS,INC)=EAPL(IPLS,INC)+EIADD
-csw
-cdr             SUMEI=SUMEI+EIADD*VOL(IN) ! may 2018 now moved up after lhit-condition
-csw 08feb2013
-csw             EPEL_COP(INC)=EPEL_COP(INC)+EEADD
-                IF (LEAEL) EAEL(INC)=EAEL(INC)+EEADD
-csw
-cdr             SUMEE=SUMEE+EEADD*VOL(IN)! may 2018 now moved up after lhit-condition
-
  7471       CONTINUE  ! loop over grid
 
             RECTOT = RECTOT + SUMN

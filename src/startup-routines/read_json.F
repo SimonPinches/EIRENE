@@ -1533,13 +1533,13 @@ C
       character(kind=json_CK,len=4) :: h123
       character(kind=json_CK,len=50) :: reac
       character(kind=json_CK,len=2) :: elname
-      character(kind=json_CK,len=50) :: crc
+      character(kind=json_CK,len=3) :: crc
       character(kind=json_CK,len=60) :: bundling
 
       character(len=8) :: filnamc
       character(len=4) :: h123c
       character(len=50) :: reacc
-      character(len=50) :: crcc
+      character(len=3) :: crcc
       character(len=2) :: elnamec
       character(len=60) :: bundlingc
 !cym/cpg end

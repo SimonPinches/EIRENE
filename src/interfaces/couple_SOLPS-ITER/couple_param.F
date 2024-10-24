@@ -61,9 +61,7 @@ cpg called from find_param.f
         WRITE(0,*)
      .   'Increase DEF_NYD in DIMENSIONS.F and recompile.'
       ENDIF
-#endif
 
-#ifndef ALLOCATE_AND_NAMELIST
       IF (NLPOL.AND.NP2ND.GT.
      . DEF_NXD+1+DEF_NCUT+(DEF_NCUT/2-1)*(1+DEF_ISOEXTRA)) THEN
         WRITE(iunout,*)
@@ -81,9 +79,7 @@ cpg called from find_param.f
         WRITE(0,*)
      .   'Increase DEF_NXD in DIMENSIONS.F and recompile.'
       ENDIF
-#endif
 
-#ifndef ALLOCATE_AND_NAMELIST
       IF (NSTSI.GT.DEF_NSTS) THEN
         WRITE(iunout,*)
      .   'NSTS from KOPPLDIM.F is too small (',DEF_NSTS,')'
@@ -100,9 +96,6 @@ cpg called from find_param.f
      .   'Increase DEF_NSTS in DIMENSIONS.F and recompile.'
       ENDIF
 
-#endif 
-
-#ifndef ALLOCATE_AND_NAMELIST
       IF (NLIMI.GT.DEF_NLIM) THEN
         WRITE(iunout,*)
      .   'NLIM from KOPPLDIM.F is too small (',DEF_NLIM,')'
@@ -117,9 +110,7 @@ cpg called from find_param.f
         WRITE(0,*)
      .   'Increase DEF_NLIM in DIMENSIONS.F and recompile.'
       ENDIF
-#endif
 
-#ifndef ALLOCATE_AND_NAMELIST
       IF (NATMI.GT.DEF_NATM) THEN
         WRITE(iunout,*)
      .   'NATM from KOPPLDIM.F is too small (',DEF_NATM,')'
@@ -134,9 +125,7 @@ cpg called from find_param.f
         WRITE(0,*)
      .   'Increase DEF_NATM in DIMENSIONS.F and recompile.'
       ENDIF
-#endif
 
-#ifndef ALLOCATE_AND_NAMELIST
       IF (NMOLI.GT.DEF_NMOL) THEN
         WRITE(iunout,*)
      .   'NMOL from KOPPLDIM.F is too small (',DEF_NMOL,')'
@@ -152,9 +141,6 @@ cpg called from find_param.f
      .   'Increase DEF_NMOL in DIMENSIONS.F and recompile.'
       ENDIF
 
-#endif
-
-#ifndef ALLOCATE_AND_NAMELIST
       IF (NIONI.GT.DEF_NION) THEN
         WRITE(iunout,*)
      .   'NION from KOPPLDIM.F is too small (',DEF_NION,')'
@@ -169,9 +155,7 @@ cpg called from find_param.f
         WRITE(0,*)
      .   'Increase DEF_NION in DIMENSIONS.F and recompile.'
       ENDIF
-#endif
 
-#ifndef ALLOCATE_AND_NAMELIST
       IF (NSTRAI.GT.DEF_NSTRA) THEN
         WRITE(iunout,*)
      .   'NSTRA from KOPPLDIM.F is too small (',DEF_NSTRA,')'

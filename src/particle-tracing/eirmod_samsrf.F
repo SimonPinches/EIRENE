@@ -678,7 +678,7 @@ C
           END IF
           DO 4 K=1,NSMX-1
             IF (NANZ.LE.5) THEN
-              WRITE (iunout,'(1X,I4,1P,6E12.4/(5x,1P,6E12.4))')
+              WRITE (iunout,'(1X,I4,1P,6E12.4)')
      .               K,RRSTEP(ISTEP,K),
      .               (FLSTEP(ISPZD(ISP),ISTEP,K),ISP=1,NANZ)
             ELSE
