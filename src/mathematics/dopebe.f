@@ -53,4 +53,4 @@ C
 *
       B0 = -(B1 * P(1) + B2 * P(2) + B3 * P(3))
 *
-      END
+      END SUBROUTINE EIRENE_DOPEBE

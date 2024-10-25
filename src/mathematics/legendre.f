@@ -45,4 +45,4 @@ chk Compute higher degree polynomials with a loop
           END DO
         END SELECT
         RETURN
-      END
+      END SUBROUTINE EIRENE_LEGENDRE

@@ -41,4 +41,4 @@ C
       ARGST(1,JJJ)=ZDS
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_SIGLOS

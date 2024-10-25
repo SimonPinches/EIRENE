@@ -171,4 +171,4 @@ C                EIGENVALUE AFTER 30 ITERATIONS ::::::::::
  1000 IERR = L
  1001 RETURN
 C     :::::::::: LAST CARD OF TQL2 ::::::::::
-      END
+      END SUBROUTINE EIRENE_TQL2

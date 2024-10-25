@@ -77,4 +77,4 @@ cdr   call EIRENE_BA_ALPHA_REINIT
 C     reinitialization end
 
 
-      end
+      end subroutine eirene_reinitialization_of_eirene

@@ -66,4 +66,4 @@ c  tbd.
       call eirene_leer(1)
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_CONDENSE

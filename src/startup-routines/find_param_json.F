@@ -1041,7 +1041,7 @@ c  Due to the volume tally input card (indpro(12)) being optional.
       class(json_core),intent(inout) :: json
       type(json_value), pointer, intent(in) :: p
 
-      type(json_value), pointer :: psrc, pstra, pst, psub, psubs
+      type(json_value), pointer :: pstra, pst, psub, psubs
       integer :: j, noc, nsrfsi, isor, ist, i,indim
       real(dp) :: sorlim, sorind
       integer, allocatable :: indsrc(:)
@@ -1283,7 +1283,7 @@ C  ERGODIC OPTION NEEDS PRINTOUT AT LEAST FROM TIME-HORIZON
 !cym/cpg, keep using json_ck
       character(kind=json_CK,len=:), allocatable :: ckey
       integer :: num_lines, mod_addv, i, j, k, num_compo, num_contrib,
-     .           lines, iratio, nadv_add, nchori, ncheni
+     .           iratio, nadv_add, nchori, ncheni
       logical :: lkey, found, nlemis
 
       WRITE (iunout,*) '*** 12. DATA FOR DIAGNOSTIC MODULE'

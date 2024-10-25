@@ -56,6 +56,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Added NAGFOR pre-processor pragmas to deal with NAG compiler specific warnings
 - Replaced F2003 pre-processor (the compiler supports the Fortran 2003 standard) pragma with LEGACYCOMP (the compiler does not support the Fortran 2003 standard)
 - Added EXTERNAL definitions for called subroutines and functions
+- Using END SUBROUTINE <SUB_NAME> statements to close subroutines
 - Added pre-processor pragmas around relevant variables only used if the pragma is declared
 - Removed superfluous MPI interface routines
 - Removed unused variables and modules

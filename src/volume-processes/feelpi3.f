@@ -74,4 +74,4 @@ CDR: missing still: EB,Ti dependence
       END IF
 
       RETURN
-      END
+      END FUNCTION EIRENE_FEELPI3

@@ -94,4 +94,4 @@ C     Finalize MPI
       CALL MPI_FINALIZE(IER)
 C
       STOP
-      END
+      END PROGRAM EIRENE_MAIN

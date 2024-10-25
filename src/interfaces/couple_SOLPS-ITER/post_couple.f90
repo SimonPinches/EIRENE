@@ -55,7 +55,7 @@
         write(iunout,*) 'POST-COUPLING TEST PASSED'
       endif
       return
-      end
+      end subroutine post_couple
 
 !!!Local Variables:
 !!! mode: f90

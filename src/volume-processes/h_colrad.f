@@ -1299,7 +1299,7 @@ C  FROM EXTERNAL, TRANSITION TO CONTINUUM
 C  ALP_EXT STILL MISSING: from external to ground state
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_IONREC
 
 C***********************************************************************
       SUBROUTINE EIRENE_E_IONREC

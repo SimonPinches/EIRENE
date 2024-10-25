@@ -35,4 +35,4 @@ cdr  unfinished routine, not to be used
       END SELECT
 
       RETURN
-      END
+      END FUNCTION EIRENE_FEPLPH3

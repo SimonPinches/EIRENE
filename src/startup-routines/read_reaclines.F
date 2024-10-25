@@ -506,4 +506,4 @@ C  DONE
 66664 FORMAT (I6,6X,5E12.4)
 66665 FORMAT (2I6,4E12.4)
       return
-      end
+      end subroutine eirene_read_reaclines

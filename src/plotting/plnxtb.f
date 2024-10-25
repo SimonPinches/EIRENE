@@ -53,4 +53,4 @@ C
         IFRST2=0
       end select
       RETURN
-      END
+      END SUBROUTINE EIRENE_PLNXTB

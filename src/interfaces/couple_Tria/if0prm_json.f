@@ -97,4 +97,4 @@ C
       call eirene_find_triang_dim(nr1st,ntri,ntrii,nknot,ngitt,' ',0)
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_IF0PRM_JSON

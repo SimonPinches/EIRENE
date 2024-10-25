@@ -69,4 +69,4 @@ cdr  only valid for AMJUEL fits.
       EIRENE_FTABRC1 = TBRC
 
       RETURN
-      END
+      END FUNCTION EIRENE_FTABRC1
