@@ -91,7 +91,8 @@ C  FOR THE FACTOR -0.896... SEE: EIRENE MANUAL, INPUT BLOCK 4, EXAMPLES
 c  non-default models, data from external databases, KK=KREAD for el. energy-weighted rates
       ELSE IF (KK > 0) THEN
         IF (JELREI(IREI) == 1) THEN  !  Te dependence only
-          ELEI = EIRENE_ENERGY_RATE_COEFF(KK,K,TEINL(K),0._DP,.TRUE.,0)
+          PLS=0._DP
+          ELEI = EIRENE_ENERGY_RATE_COEFF(KK,K,TEINL(K),PLS,.TRUE.,0)
           EIRENE_FEELEI1=-ELEI*DEIN(K)*FACREI(IREI,1)/
      .                   (EIRENE_FTABEI1(IREI,K)+EPS60)
         ELSEIF(JELREI(IREI) == 9) THEN    !  Te, ne dependence.

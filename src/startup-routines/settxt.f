@@ -256,8 +256,8 @@ C  RADIATION RATES
      . 'RADIATION RATE EMITTED FROM TEST IONS                       '
 C
       DO 1 J=1,NTALV
+        TEXT72=TXTTAL(1,J)
         DO I=2,N1MX  ! rather than n1mx we should use nfstpi(j)
-          TEXT72=TXTTAL(1,J)
           TXTTAL(I,J)=TEXT72
         END DO
     1 CONTINUE

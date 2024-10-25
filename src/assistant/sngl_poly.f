@@ -187,8 +187,9 @@ C  Continue with a constant: poly evaluated at RCMAX
 
 C  PARAMETER "P1=AL" IS WITHIN VALID RANGE OF FIT:
 
-  100 cou = cf(9)
+  100 continue
 
+      cou = cf(9)
       do ii = 8, 1, -1
         cou = cou * p1 + cf(ii)
       end do

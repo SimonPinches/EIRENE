@@ -59,7 +59,7 @@ C
       REAL(DP) :: TALAV, HELPI, TALTOT, TOTALW
       INTEGER :: IR, IP, IT, I, I_FINE, NBLCKA, IB, IPRV, ITAL,
      .           NXM, NYM, NZM, NR1PR, NP2PR, NT3PR, NSBPR, NFLGPR,
-     .           ITALI, K, NFTI, NFTE,
+     .           ITALI, K, NFTI, NFTE, KG,
      .           KK
       EXTERNAL :: EIRENE_INTTAL, EIRENE_INTVOL, EIRENE_PRTTAL,
      .            EIRENE_PRTVOL, EIRENE_HEADNG, EIRENE_LEER,
@@ -281,8 +281,8 @@ cdr  missing here: verify cdenmodel(k) ?
 c
             CASE (31:120)  ! ntali=120, constant required here
 !  GRADIENTS
-              KK = NADDP(ITALI)+K
-              HELPP(1:NSBOX) = PLSTLS(KK,1:NSBOX)
+              KG = NADDP(ITALI)+K
+              HELPP(1:NSBOX) = PLSTLS(KG,1:NSBOX)
             CASE DEFAULT
               WRITE (iunout,*)
      .          ' WRONG TALLY NUMBER (OUTPLA), ITAL = ',ITAL

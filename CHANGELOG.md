@@ -26,6 +26,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Applied CONTRIBUTING rule that Fortran file extensions should be .F instead of .f when the file must be pre-processed by the Makefile
 - Pointing to modified set of examples with .F file extensions
 - Removed forced usage of OpenMP compiler options
+- Moved EIRENE_EXPINT and EIRENE_MMDEI to their own file
 - Added TRCMELD output switch
 - Do not use IUNOUT in EIRENE_MAIN before it is defined or after it has been deallocated
 - Added a safety and error message in FIND_PARAM if the input file is found empty

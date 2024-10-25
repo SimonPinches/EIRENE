@@ -87,7 +87,7 @@ c
       REAL(DP) :: AU, ELB, FP(6), RCMIN, RCMAX,
      .            TBCX3(9), TBPI3(9), TBEL3(9),
      .            EIRENE_SNGL_POLY, EARRH,
-     .            RMASSS, EBFAC, RATE,
+     .            RMASSS, EBFAC, RATE, CUTOFF,
      .            TII, TBCX, TBEI, TBPI, TBEL, TBRC,
      .            ELEI, EPCX, EPEL, ELRC,
 cdr  functions for 'on the fly' evaluation of A&M data
@@ -117,6 +117,8 @@ cdr  functions for 'on the fly' evaluation of A&M data
      .            EIRENE_RATE_COEFF, EIRENE_SNGL_POLY
 
       AU=0.6120D-08
+      cutoff=exp(-50.0_DP)  ! as used in subr. rate_coef,
+                            ! energy_rate_coef, etc...
 
       IF (.NOT.LADIN) THEN
         WRITE (IUNOUT,*) ' INPUT TALLY ADIN NOT AVAILABLE',
@@ -493,7 +495,7 @@ c  no interacting particle species found
 cdr KK is set for tallies 24 and 25
         IF (NA.EQ.24) THEN
           mm=modcol(5,2,irel)
-          kk=NREAEL(irel)
+
           WRITE (CNO,'(I4)') IREL
           WRITE (CN1,'(I4)') KK
 cdr  avoid repeated augmenting of tally-name in iterative mode
@@ -653,7 +655,7 @@ c  no interacting particle species found
 cdr  KK is set for tallies 26 and 27
         IF (NA.EQ.26) THEN
           mm=modcol(4,2,irpi)
-          kk=nreapi(irpi)
+
           WRITE (CNO,'(I4)') IRPI
           WRITE (CN1,'(I4)') KK
 cdr  avoid repeated augmenting of tally-name in iterative mode
@@ -779,7 +781,7 @@ c  no interacting particle species found
 cdr KK is set for tallies 28 and 29
         IF (NA.EQ.28) THEN
           mm=modcol(6,2,irrc)
-          kk=NREARC(irrc)
+
           WRITE (CNO,'(I4)') IRRC
           WRITE (CN1,'(I4)') KK
 cdr  avoid repeated augmenting of tally-name in iterative mode

@@ -2040,11 +2040,12 @@ c
 
         IF (LEN_TRIM(CDENMODEL(JPLS)) > 0) THEN
           ALLOCATE (TDMPAR(JPLS)%TDM)
-          TDMPAR(JPLS)%TDM%NRE=MAX(NRE,1)
-          ALLOCATE(TDMPAR(JPLS)%TDM%ISP(TDMPAR(JPLS)%TDM%NRE),SOURCE=0)
-          ALLOCATE(TDMPAR(JPLS)%TDM%ITP(TDMPAR(JPLS)%TDM%NRE),SOURCE=0)
-          ALLOCATE(TDMPAR(JPLS)%TDM%ISTR(TDMPAR(JPLS)%TDM%NRE),SOURCE=0)
-          ALLOCATE(TDMPAR(JPLS)%TDM%IRC(TDMPAR(JPLS)%TDM%NRE),SOURCE=0)
+          NRE=MAX(NRE,1)
+          TDMPAR(JPLS)%TDM%NRE=NRE
+          ALLOCATE(TDMPAR(JPLS)%TDM%ISP(NRE),SOURCE=0)
+          ALLOCATE(TDMPAR(JPLS)%TDM%ITP(NRE),SOURCE=0)
+          ALLOCATE(TDMPAR(JPLS)%TDM%ISTR(NRE),SOURCE=0)
+          ALLOCATE(TDMPAR(JPLS)%TDM%IRC(NRE),SOURCE=0)
 
 C needs trim, check if possible...
           SELECT CASE (CDENMODEL(JPLS))
@@ -2111,8 +2112,8 @@ c  default: only for bulk ions
      .           TDMPAR(JPLS)%TDM%A_CORONA
 cdr  currently only one single contribution allowed. NRE=1 for CORONA model
 cdr         NRE=TDMPAR(JPLS)%TDM%NRE = 1
-            IR = TDMPAR(JPLS)%TDM%IRC(1)
-            IF (.NOT.REACDAT(IR)%LRTC) THEN
+            IRC = TDMPAR(JPLS)%TDM%IRC(1)
+            IF (.NOT.REACDAT(IRC)%LRTC) THEN
               WRITE (iunout,*)
      .          ' WRONG REACTION SPECIFIED FOR CORONA MODEL'
               WRITE (iunout,*) ' ONLY H.2 REACTION DATA ARE PERMITTED'
@@ -2122,7 +2123,8 @@ cdr         NRE=TDMPAR(JPLS)%TDM%NRE = 1
           CASE ('COLRAD')
             IDMDL = IDMDL + 1  ! ONE MORE H.11 or H.12 REACTION data set
 cdr  NRE components contributing to field particle species JPLS
-            DO I=1, TDMPAR(JPLS)%TDM%NRE
+            NRE=TDMPAR(JPLS)%TDM%NRE
+            DO IRE = 1, NRE
               READ (IUNIN,'(A72)') ZEILE
               IF (VERIFY(ZEILE,'1234567890eEdD+- ') > 0) THEN
                 WRITE (IUNOUT,*) ' OLD VERSION OF INPUT FOR DENSITY',
@@ -2133,13 +2135,13 @@ cdr  NRE components contributing to field particle species JPLS
                 CALL EIRENE_EXIT_OWN(1)
               END IF
               READ (ZEILE,6666)
-     .             TDMPAR(JPLS)%TDM%ISP(I),
-     .             TDMPAR(JPLS)%TDM%ITP(I),
-     .             TDMPAR(JPLS)%TDM%ISTR(I),
-     .             TDMPAR(JPLS)%TDM%IRC(I)
+     .             TDMPAR(JPLS)%TDM%ISP(IRE),
+     .             TDMPAR(JPLS)%TDM%ITP(IRE),
+     .             TDMPAR(JPLS)%TDM%ISTR(IRE),
+     .             TDMPAR(JPLS)%TDM%IRC(IRE)
 
-              IR = TDMPAR(JPLS)%TDM%IRC(I)
-              IF (.NOT.REACDAT(IR)%LOTH) THEN
+              IRC = TDMPAR(JPLS)%TDM%IRC(IRE)
+              IF (.NOT.REACDAT(IRC)%LOTH) THEN
                 WRITE (iunout,*)
      .            ' WRONG REACTION SPECIFIED FOR COLRAD MODEL'
                 WRITE (iunout,*) ' ONLY H.11 OR H.12 (OT) REACTION DATA'
@@ -2147,7 +2149,7 @@ cdr  NRE components contributing to field particle species JPLS
                 WRITE (iunout,*) ' IPLS = ',JPLS
                 CALL EIRENE_EXIT_OWN(1)
               END IF
-            END DO  ! I
+            END DO  ! IRE
           CASE DEFAULT
 !PB  NOTHING TO BE DONE
           END SELECT

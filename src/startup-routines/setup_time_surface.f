@@ -203,8 +203,11 @@ cdr  at this point: NTIME LT 0.
 cdr  New option (M. Rack: 2017):
 CDR  Read an external census array from fort.15, and launch one by one.
 
-        IF (NFILEJ.EQ.2.OR.NFILEJ.EQ.3) THEN
+        IF (NFILEJ.LE.1) THEN
+cdr  no initial census population to be used in this run.
+cdr  Use default empty census, nothing to be done for one-by-one relaunch
 
+        ELSEIF (NFILEJ.EQ.2.OR.NFILEJ.EQ.3) THEN
 
 !pb        IF ( SIZE( PACK((/ (i, i = 1, NSTRA) /),NLCNS) ) == 1 ) THEN
         IF ( COUNT(NLCNS(1:NSTRA)) == 1 ) THEN

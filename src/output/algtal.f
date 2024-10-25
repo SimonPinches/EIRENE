@@ -139,8 +139,8 @@ c  1ST OPERAND IS AN INPUT TALLY: fetch an input tally, case 1 to case 25
             IF (ITL.GT.NTALI) GOTO 90
 cdr use physical species index NFSTPI,
 cdr not the reduced "storage species index" NFRSTP
-            IF (IZIF(1,IOP).GT.NFRSTP(ITL)) GOTO 91
             K=IZIF(1,IOP)
+            IF (K.GT.NFRSTP(ITL)) GOTO 91
 
             NF=NFRSTP(ITL)
 
@@ -223,11 +223,11 @@ C
           ELSEIF (IZIF(4,IOP).LT.0) THEN
 c  2nd OPERAND IS AN INPUT TALLY: fetch an input tally, case 1 to case 25
             ITL=IABS(IZIF(4,IOP))
+            K=IZIF(3,IOP)
             IF (ITL.GT.NTALI) GOTO 90
 cdr use physical species index NFSTPI,
 cdr not the reduced "storage species index" NFRSTP
-            IF (IZIF(3,IOP).GT.NFRSTP(ITL)) GOTO 91
-            K=IZIF(3,IOP)
+            IF (K.GT.NFRSTP(ITL)) GOTO 91
             NF=NFRSTP(ITL)
 
             CALL EIRENE_GET_INTAL

@@ -542,7 +542,7 @@ ctk      real(dp) :: EIRENE_YHAASZ97M
      .            G2, G3, YTHERM, YDES,
      .            EDESE0, EDAME0, QSE, YDAM, YSURF, ARG,
      .            VXR, VYR, VZR, VWL, WGHTVS  ! FOR SAMPLING WITH VELOCS
-      INTEGER :: ITA, IPS, IPR, MODCHM, MODPYS, MS, IATMP
+      INTEGER :: ITA, IPS, IPR, MODCHM, MODPYS, IATMP
       EXTERNAL :: EIRENE_FCOSIN, EIRENE_FTHOMP, EIRENE_ROTATF,
      .            EIRENE_SP1USR, EIRENE_SPTUSR, EIRENE_VELOCS,
      .            EIRENE_EXIT_OWN
@@ -707,10 +707,10 @@ C
 C  DEFAULT: TRY TO FIND SPECIES INDEX OF SPUTTERED PARTICLE AUTOMATICALLY
           ISPZP=ISPZSP_DEF(MSURF)
           IF (ISPZP.LE.0) THEN
-            MS=MSURF
-            IF (MSURF.GT.NLIM) MS=-(MSURF-NLIM)
+            MSS=MSURF
+            IF (MSURF.GT.NLIM) MSS=-(MSURF-NLIM)
 CDR         WRITE (iunout,*) 'WARNING FROM SPUTER '
-CDR         WRITE (iunout,*) 'SPECIES INDEX, PHYS. SPUTER ? MSURF ',MS
+CDR         WRITE (iunout,*) 'SPECIES INDEX, PHYS. SPUTER ? MSURF ',MSS
             ISPZP=0
             GOTO 5000
           ENDIF
@@ -980,10 +980,10 @@ c   species index of chemicaly sputtered atom
 C  DEFAULT: TRY TO FIND SPECIES INDEX OF SPUTTERED PARTICLE AUTOMATICALLY
           ISPZC=ISPZSP_DEF(MSURF)
           IF (ISPZC.LE.0) THEN
-            MS=MSURF
-            IF (MSURF.GT.NLIM) MS=-(MSURF-NLIM)
+            MSS=MSURF
+            IF (MSURF.GT.NLIM) MSS=-(MSURF-NLIM)
 CDR         WRITE (iunout,*) 'WARNING FROM SPUTER '
-CDR         WRITE (iunout,*) 'SPECIES INDEX, CHEM. SPUTER ? MSURF ',MS
+CDR         WRITE (iunout,*) 'SPECIES INDEX, CHEM. SPUTER ? MSURF ',MSS
             ISPZC=0
             GOTO 20000
           ENDIF

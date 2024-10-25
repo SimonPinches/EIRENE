@@ -84,7 +84,7 @@ C
       INTEGER :: I1, I2, IN, I, IS, NAC2, NBC2, ICHRD, IPVOT, NCHNI,
      .           IFIRST, JEN, NSPI, ISTR, ICOUNT, KK, IR, IZ,
      .           KREC, IRRC, MAXREC, IFLAG, ISPC,
-     .           ICELL,
+     .           ICELL, ND_3, ND_5, ND_10,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
       INTEGER, SAVE :: MX_COMPO, ND
       LOGICAL :: NLVL(0:NSTRAI),LCHOR
@@ -496,14 +496,17 @@ c  summation over contributions (different isotopes but same emission reactions,
           END IF
           ND = MAX(ND, MX_COMPO)
         END IF
-
-        IF (ANY(NCHTAL == 3)) ND = MAX(ND, NPHOTI)
-
-        IF (ANY(NCLTAL == 5)) ND = MAX(ND, 10)
-        IF (ANY(NCHTAL == 10)) ND = MAX(ND, NSPZ)
+cdr  Nov. 20:
+        ND_3=0
+        ND_5=0
+        ND_10=0
+        IF (ANY(NCHTAL == 3)) ND_3 = MAX(ND, NPHOTI)
+        IF (ANY(NCLTAL == 5)) ND_5 = MAX(ND, 10)
+        IF (ANY(NCHTAL == 10)) ND_10 = MAX(ND, NSPZ)
         IF (ANY(NCHTAL == 11)) ND = MAX(ND,1)
         IF (ANY(NCHTAL == 12)) ND = MAX(ND,10)
         IF (ANY(NCHTAL == 13)) ND = MAX(ND,10)
+        ND=MAX(ND,ND_3,ND_5,ND_10)
 
         ALLOCATE (PSIG(0:ND))
         PSIG = 0._DP

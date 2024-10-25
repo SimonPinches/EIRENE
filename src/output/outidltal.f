@@ -47,7 +47,7 @@ cdr               depending on how many non-zero rows a tally has.
 C
       REAL(DP), ALLOCATABLE :: VECTOR(:,:), TALAV(:), TALTOT(:)
       REAL(DP) :: OUTAUI, SMEAN
-      INTEGER :: NFTI, NFTE, K, ITAL, I, ISTR, MXSPZ, IOUT, IN, KK
+      INTEGER :: NFTI, NFTE, K, ITAL, I, ISTR, MXSPZ, IOUT, ICELL, KK
       INTEGER :: ISP, ISIG
       LOGICAL :: LFIRST
       CHARACTER(6) :: CITAL, CISP
@@ -165,9 +165,9 @@ C
 C
             IF (NSBOX_TAL /= NSBOX) THEN
               DO I=1,NSBOX
-                IN = NCLTAL(I)
-                IF (IN > 0) THEN
-                  VECTOR(I,K)=ESTIMV(NADDV(ITAL)+K,IN)
+                ICELL = NCLTAL(I)
+                IF (ICELL > 0) THEN
+                  VECTOR(I,K)=ESTIMV(NADDV(ITAL)+K,ICELL)
                 ELSE
                   VECTOR(I,K)=0._DP
                 END IF
