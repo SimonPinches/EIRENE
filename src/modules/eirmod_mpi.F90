@@ -1,7 +1,7 @@
 !> Wrapper module for MPI, and dummy module for serial compilation
 module eirmod_mpi
 #ifdef USE_MPI
-  use mpi         !IGNORE
+  use mpi      ! IGNORE
   implicit none
 !pb  include 'mpif.h'
   integer, private, save :: iounit
@@ -49,7 +49,7 @@ module eirmod_mpi
   integer, parameter :: mpi_group_null = mpi_comm_null
   integer, parameter :: mpi_group_empty = mpi_group_null
 
-!  Dummy of an include file needed by MPI
+  ! Dummy of an include file needed by MPI
   integer, parameter :: MPI_INTEGER = 1,   &
                  MPI_REAL = 2,             &
                  MPI_DOUBLE_PRECISION = 3, &
@@ -1277,7 +1277,7 @@ module eirmod_mpi
   subroutine eirene_mpi_init(ier)
 !   MPI initialization routine used by either
 !   eirene_main (for standalone) or
-!   eirene_eirene (coupled) subroutines    
+!   eirene_eirene (coupled) subroutines
     integer, intent(out) :: ier
 #ifdef USE_OPENMP
     call mpi_init_thread(mpi_thread_funneled, mpi_thread_provided, ier)
@@ -1285,7 +1285,7 @@ module eirmod_mpi
     call mpi_init(ier)
 #endif
   end subroutine eirene_mpi_init
- 
+
 end module eirmod_mpi
 
 !!!Local Variables:

@@ -38,11 +38,11 @@ c     ym shared variables used as buffer to initialize private pointer variables
 c     ym copyin does not work for allocatable pointer arrrays
 
       INTEGER :: BISTRA
-      INTEGER,TARGET,ALLOCATABLE :: BISDVI(:)
-      INTEGER,TARGET,ALLOCATABLE :: BIPSTD(:),BICMSPL(:)
-      REAL(DP),TARGET,ALLOCATABLE :: BRPST(:),BRCMSPL(:),
-     .     BXSTOR(:,:),BXSTORV(:)
-      LOGICAL,TARGET,ALLOCATABLE :: BLCMSOU(:,:)
+      INTEGER, TARGET, ALLOCATABLE :: BISDVI(:)
+      INTEGER, TARGET, ALLOCATABLE :: BIPSTD(:),BICMSPL(:)
+      REAL(DP), TARGET, ALLOCATABLE :: BRPST(:),BRCMSPL(:),
+     ,                                 BXSTOR(:,:),BXSTORV(:)
+      LOGICAL, TARGET, ALLOCATABLE :: BLCMSOU(:,:)
       REAL(DP), DIMENSION(28,0:11) :: BETH,BQ,BM2M1,BETF
       REAL(DP), DIMENSION(28) :: BES
 

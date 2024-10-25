@@ -603,12 +603,12 @@ C     READ IN THE NUMBER OF TRIANGLES
             if (ledenm) tmb2(ix,iy,jmol,1)=tmb2(ix,iy,jmol,1)+
      &                      edenm(jmol,in)*vl
             if (lpmml) srcml(ix,iy,jmol,1)=srcml(ix,iy,jmol,1)+
-     &                                          pmml(jmol,in)*vl
+     &                      pmml(jmol,in)*vl
             !c*** Potential energy source related to hydrogen molecules
             !c*** for determining the radiation (W per cell)
             if (ncharm(jmol).eq.2 .and. lpmml)
-     >       edissml(ix,iy,jmol,istra)=
-     &          edissml(ix,iy,jmol,istra)+ pmml(jmol,in)*vl*diss_pot_H2
+     >       edissml(ix,iy,jmol,istra)=edissml(ix,iy,jmol,istra)+
+     &                      pmml(jmol,in)*vl*diss_pot_H2
           endif
         end do
       end do
@@ -976,7 +976,7 @@ C     READ IN THE NUMBER OF TRIANGLES
           do jatm=1,natmi
             if (dab2(ix,iy,jatm,1).gt.0.) then
               tab2(ix,iy,jatm,1)=tab2(ix,iy,jatm,1)/dab2(ix,iy,jatm,1)*
-     &                                                 elcha*2./3.*1.e6
+     &                            elcha*2./3.*1.e6
             else
               tab2(ix,iy,jatm,1)=1.e-6*elcha
             end if
@@ -984,7 +984,7 @@ C     READ IN THE NUMBER OF TRIANGLES
           do jmol=1,nmoli
             if (dmb2(ix,iy,jmol,1).gt.0.) then
               tmb2(ix,iy,jmol,1)=tmb2(ix,iy,jmol,1)/dmb2(ix,iy,jmol,1)*
-     &                                                 elcha*2./3.*1.e6
+     &                            elcha*2./3.*1.e6
             else
               tmb2(ix,iy,jmol,1)=1.e-6*elcha
             end if
@@ -992,7 +992,7 @@ C     READ IN THE NUMBER OF TRIANGLES
           do jion=1,nioni
             if (dib2(ix,iy,jion,1).gt.0.) then
               tib2(ix,iy,jion,1)=tib2(ix,iy,jion,1)/dib2(ix,iy,jion,1)*
-     &                                                 elcha*2./3.*1.e6
+     &                            elcha*2./3.*1.e6
             else
               tib2(ix,iy,jion,1)=1.e-6*elcha
             end if
@@ -1039,7 +1039,8 @@ C     READ IN THE NUMBER OF TRIANGLES
      &       wldpa(j,1,0).ne.0 .or. wldpm(j,1,0).ne.0 .or.
      &       wldpp(j,1,0).ne.0)
      >        write(iunout,hlp_frm)
-     &          'non-def-surf ',i, 1.e-4*sarea(j), 1.e-6*wldnek(j,0),
+     &          'non-def-surf ',i, 1.e-4*sarea(j),
+     &               1.e-6*wldnek(j,0),
      &              (wldna(j,k,0),k=1,natmi),(wldnm(j,k,0),k=1,nmoli),
      &              (wldra(j,k,0),k=1,natmi),(wldrm(j,k,0),k=1,nmoli),
      &              (wldpa(j,k,0),k=1,natmi),(wldpm(j,k,0),k=1,nmoli),
@@ -1049,7 +1050,8 @@ C     READ IN THE NUMBER OF TRIANGLES
      &       wldna(j,1,0).ne.0 .or. wldra(j,1,0).ne.0 .or.
      &       wldpa(j,1,0).ne.0 .or. wldpp(j,1,0).ne.0)
      >        write(iunout,hlp_frm)
-     &          'non-def-surf ',i, 1.e-4*sarea(j), 1.e-6*wldnek(j,0),
+     &          'non-def-surf ',i, 1.e-4*sarea(j),
+     &               1.e-6*wldnek(j,0),
      &              (wldna(j,k,0),k=1,natmi),(wldra(j,k,0),k=1,natmi),
      &              (wldpa(j,k,0),k=1,natmi),(wldpp(j,k,0),k=1,nfla)
         end if

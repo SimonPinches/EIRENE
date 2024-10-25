@@ -44,7 +44,6 @@ c              for evaluation of rate coefficient.
       KK = NREAEI(IREI)   !  KK=-11: NREAC in REACDAT, IFTFLG
                           !  KK=  1: NREAC otherwise
 
-
       DEIMIN=LOG(1.D8)
       PLS=MAX(DEIMIN,DEINL(K))
 

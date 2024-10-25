@@ -33,8 +33,6 @@ C  target index 0   : data evaluated "on the fly"
 cym -> public because copyin needed
       REAL(DP), DIMENSION(28,0:11), PUBLIC, SAVE :: ETH,Q,M2M1,ETF
       REAL(DP), DIMENSION(28), PUBLIC, SAVE :: ES
-
-
 cym these will need to be copyin (initialized in sputr0)
 !$OMP THREADPRIVATE(ETH,Q,M2M1,ES,ETF)
 

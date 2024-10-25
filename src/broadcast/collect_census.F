@@ -335,7 +335,7 @@ c
 
 ! broadcast numbers of required particles per processor
 
-       	if (.not.allocated(rdistrib)) allocate(rdistrib(nprnl))
+        if (.not.allocated(rdistrib)) allocate(rdistrib(nprnl))
 
         CALL EIRENE_CHECK_EXIT
         CALL MPI_BARRIER(MPI_COMM_WORLD,ier)

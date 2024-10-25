@@ -49,9 +49,8 @@ cdr  set from the external code, or in EIRSRT, and are problem-specific.
       REAL(DP) :: DT
       REAL(DP) :: TIMI, TIMEND
       REAL(DP), SAVE :: TIMI0
-      INTEGER :: ITNR
-      LOGICAL :: NLM,NLL,MPI_INIT
-      INTEGER :: IER
+      INTEGER :: ITNR, IER
+      LOGICAL :: NLM, NLL, MPI_INIT
       EXTERNAL :: EIRENE_PLSTRT, EIRENE_PLEND
 
 C     Initialize MPI

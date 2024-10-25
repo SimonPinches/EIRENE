@@ -36,6 +36,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Adding safety for incorrect algebraic manipulation of intensive tallies in ALGTAL
 - Added calls to flush out buffers
 - Added allocated status safeties
+- Removed MAXPOIN from EIRMOD_SOLPS
 - Added information about thread number in error state in EIRENE_EXIT_OWN
 - Added census score output in TMSTEP
 - Added SHSTEP output in EIRMOD_INFCOP from SOLPS-ITER interface
@@ -62,7 +63,9 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Removed superfluous MPI interface routines
 - Removed unused variables and modules
 - Making use of lower/upper case more consistent
+- Removed tabulations, alignment corrections
 - Added some more clarifying comments
+- Removed trailing whitespaces and empty lines
 - Have figures in Manual listed by full relative path and file extension
 - Added missing comment about density validity range in AMJUEL file
 - Added some more produced file types to .gitignore file

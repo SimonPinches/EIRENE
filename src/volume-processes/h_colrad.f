@@ -238,7 +238,8 @@ C Feb. 2008: TYPO CORRECTED: .3387 --> .3887
 
 cdr  gaunt(x) done. gaunt=g(i,j)
 
-        F(I,J)=2.**6/(3.*SQRT(3.)*3.1416)*(AI/AJ)**3/(2.*AI**2)*G/X**3
+        F(I,J)=2.**6/(3.*SQRT(3.)*3.1416)*(AI/AJ)**3/
+     .        (2.*AI**2)*G/X**3
         A(J,I)=8.03E9*AI**2/AJ**2*(AI**(-2)-AJ**(-2))**2*F(I,J)
 
 cdr  Fully Ly opaque: all a(j-->1) transitions are removed.
@@ -1865,7 +1866,7 @@ cdr  perhaps Romberg integration?
 
         CALL CHOOSE(FUNC,A,B,S(J),J)
         IF (J.GE.K) THEN
-          CALL EIRENE_POLINT(H(J-KM),S(J-KM),K,0.0d0,SS,DSS)
+          CALL EIRENE_POLINT(H(J-KM),S(J-KM),K,0.0D0,SS,DSS)
           IF (ABS(DSS).LT.EPSR*ABS(SS)) then
             RETURN
           endif
@@ -1910,7 +1911,7 @@ cdr  perhaps Romberg integration?
           D(I)=HP*DEN
           C(I)=HO*DEN
    12   CONTINUE
-        IF (2*NS.LT.N-M)THEN
+        IF (2*NS.LT.N-M) THEN
           DY=C(NS+1)
         ELSE
           DY=D(NS)
@@ -1927,6 +1928,7 @@ C
       INTEGER N, IT, J
       external func
       save
+
       IF (N.EQ.1) THEN
         S=(B-A)*FUNC(0.5*(A+B))
         IT=1

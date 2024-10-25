@@ -10,12 +10,12 @@
       use json_module           !IGNORE
 
       implicit none
+      character(*) :: filename
 
       type(json_core) :: json
       type(json_value),pointer :: pAMD
       type(json_value),pointer :: crs_lines
       type(s_stack), pointer   :: cur
-      character(*) :: filename
 
 ! initialize the class
       call json%initialize(compact_reals=.true.,real_format='ES',

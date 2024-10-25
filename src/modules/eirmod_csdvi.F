@@ -31,7 +31,7 @@ cdr nov. 17:  nspztotw introduced, in analogy with nspztot
      I IIHW(:),   IGHW(:),
      I ICOV(:),
      I NSIGI,     NSIGVI,   NSIGSI, NSIGCI,
-     I NSIGI_SPC,
+     I NSIGI_SPC
 C SPEED UP OF SUBROUTINE STATIS
 
 cdr This list stores information along history.
@@ -44,6 +44,7 @@ c    surface visited: ISURF=IWLMT(ICW), ICW=1,..,NWLMTS
 c    species scoring in volume, somewhere:  ISPZ=LMETSP (...)
 c    species scoring at surface, somewhere: ISPZ=LMETSPW(...)
 
+      INTEGER, PUBLIC, POINTER, SAVE ::
      I IMETCL(:), ICLMT(:), NCLMT, NCLMTS,
      I IMETWL(:), IWLMT(:), NWLMT, NWLMTS
 

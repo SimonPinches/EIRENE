@@ -1679,7 +1679,7 @@ C
             ISSPTC=0
 C
             NLSPUT=.FALSE.
-            ITYP_OLD  = 4
+            ITYP_OLD = 4
 
 csw 10jan2011
 CVK       IF (ILSPT(MSURF).NE.0) THEN

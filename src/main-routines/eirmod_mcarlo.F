@@ -45,9 +45,9 @@ cdr  via iterative loops or stepping.
      .                                  EIRENE_OUTPUT_PARTINFO
       USE EIRMOD_LOCATE, ONLY: EIRENE_LOCAT0, EIRENE_LOCAT1
       USE EIRMOD_SAMSRF, ONLY: EIRENE_SAMSF0
-      USE EIRMOD_SPUTER, ONLY: EIRENE_SPUTR0,
+      USE EIRMOD_SPUTER, ONLY: EIRENE_SPUTR0
 cym these variables need copyin
-     .                        ETH,Q,M2M1,ES,ETF
+      USE EIRMOD_SPUTER, ONLY: ETH,Q,M2M1,ES,ETF
       USE EIRMOD_STATIS, ONLY: EIRENE_STATS0, EIRENE_STATS1,
      .                         EIRENE_STATS2
       USE EIRMOD_UPDLIN

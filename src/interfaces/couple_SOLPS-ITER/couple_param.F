@@ -9,7 +9,7 @@ cpg called from find_param.f
       use eirmod_comprt, only : iunout
       use eirmod_comsou, only : nstrai
 #endif
-      use eirmod_comusr, only : natmi,nmoli,nioni
+      use eirmod_comusr, only : natmi, nmoli, nioni
 
       IMPLICIT NONE
       integer, intent(in) :: nlimi, nstsi, ntx

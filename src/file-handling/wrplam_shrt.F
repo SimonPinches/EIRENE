@@ -136,6 +136,7 @@ cdr        There are NFLA_VIRT such data arrays.
 cdr  All other A&M data will be recomputed in SETAMD.f
 
 c  nfla_virt is not a pointer to some target
+
       IF(NFLA_VIRT == 0) THEN
         WRITE(iunout,'(1x,4a)')
      w         ' WRPLAM_SHRT: NFLA_VIRT = 0 ',

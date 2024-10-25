@@ -376,7 +376,7 @@ C
   119   CONTINUE
 C
         FNAME = 'intal_  '
-        WRITE (FNAME(7:8),'(i0)') ITAL
+        WRITE (FNAME(7:8),'(I0)') ITAL
 
         OPEN (UNIT=IOUT,FILE=FNAME,FORM='FORMATTED',
      .        ACCESS='SEQUENTIAL')

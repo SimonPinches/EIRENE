@@ -2545,7 +2545,6 @@ cdr  then add pppl
      .                  PPPL_COP(IPLS,IN)) * VOLTAL(IN)*FLX_EIR
 cdr  is this now any different from sni set above?
 
-
 cdr  add pppl contribution to internal energy sources rate
                 bv = 0._dp
                 if (lbvin) bv = bvin(iplsv,inn)

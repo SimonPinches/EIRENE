@@ -122,7 +122,6 @@ else()
     "Use cmake -DLibJSON=\"<directory>\" to set it.")
 endif()
 
-
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Control of interface and user-routines to compile.
@@ -139,7 +138,6 @@ if( NOT EIRENE_USER-ROUTINES)
 endif()
 set(EIRENE_INTERFACE "Dummy" CACHE STRING "EIRENE interface to compile")
 set(EIRENE_USER-ROUTINES "default" CACHE STRING "EIRENE user-routines to compile")
-
 
 # Add option to control whether trace output will be compiled.
 option(TRACE "Build with trace output" OFF)
@@ -332,13 +330,11 @@ else()
   message(STATUS " --  Plotting will be disabled.")
 endif()
 
-
 # Decide whether to use plotting or plot_dummy.
 if( LibGRS AND LibGKS AND LibX11 AND Libz AND LibXt )
   list(APPEND plotpath ${src_plotting})
 else()
-  list(APPEND plotpath ${src_plotting})
-  list(APPEND plotpath ${src_grsoft-dummy})
+  list(APPEND plotpath ${src_plotting} ${src_grsoft-dummy})
 endif()
 
 # Adds EIRENE library to the project.

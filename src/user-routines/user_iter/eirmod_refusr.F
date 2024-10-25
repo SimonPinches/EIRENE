@@ -462,7 +462,7 @@ c--------------------------------------------------------------------------
         IF (edition.eq.'    ') IB2STEP=IB2STEP+1
 C       WRITE (IUNOUT,*) 'IB2STEP', IB2STEP
         DO ILIMPSUSER=BEGINSURF, ENDSURF
-        
+
 C Instantaneous Be deposition flux calculation
           SPUMPADD(ILIMPSUSER)=0._DP
           DO K = 1, NATMI
@@ -478,7 +478,7 @@ C Instantaneous Be deposition flux calculation
      .         wlpump(ISPZ,ILIMPSUSER)
             END IF
           END DO
-          
+
 C Time-averaged Be deposition flux calculation
           SPUMPADD(ILIMPSUSER)=SPUMPADD(ILIMPSUSER)/wlarea(ILIMPSUSER)
           SPUMPSAVE(ILIMPSUSER)=SPUMPSAVE(ILIMPSUSER)*
@@ -487,14 +487,14 @@ C Time-averaged Be deposition flux calculation
 
 C Instantaneous Be sputtering flux calculation
           SPTTOTADD(ILIMPSUSER)=wldspt(ILIMPSUSER,0)/wlarea(ILIMPSUSER)
-          
+
 C Time-averaged Be sputtering flux calculation
           SPTTOTSAVE(ILIMPSUSER)=SPTTOTSAVE(ILIMPSUSER)*
      .     AVCOF+SPTTOTADD(ILIMPSUSER)*(1._DP-AVCOF)
           SPTTOTBE=SPTTOTSAVE(ILIMPSUSER)
 
           DENSBELOC=DENSBE(ILIMPSUSER)
-          
+
 C Time-stepping
           DENSBE(ILIMPSUSER)=(SPUMPBE-SPTTOTBE)*
      .     TSTEP_ARR(ILIMPSUSER)+DENSBELOC
@@ -510,7 +510,7 @@ C Be concentration calculation
             ENDIF
           ENDIF
         END DO
-        
+
 C Output
         IF (MOD(IB2STEP+CONBEOUTDELAY-1, CONBEOUTDELAY).EQ.0 .or.
      .      edition.ne.'    ') THEN

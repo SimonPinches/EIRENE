@@ -260,6 +260,7 @@ cdr         itold=?                         ! type
 
             ALLOCATE (BASE_DENSITY(NRAD))
             ALLOCATE (BASE_TEMP(NRAD))
+
             CALL EIRENE_GET_BASE_DENSITY(1)
 
             DIIN(IPLS,1:NSBOX)=MAX(DVAC,BASE_DENSITY(1:NSBOX))
@@ -319,6 +320,7 @@ c           ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
 
             ALLOCATE (BASE_DENSITY(NRAD))
             ALLOCATE (BASE_TEMP(NRAD))
+
             CALL EIRENE_GET_BASE_DENSITY(1)
 
             DO IR=1,NSBOX
@@ -343,6 +345,7 @@ c           ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
 
             ALLOCATE (BASE_DENSITY(NRAD))
             ALLOCATE (BASE_TEMP(NRAD))
+
             CALL EIRENE_GET_BASE_DENSITY(1)
 
             IF (NLMLTI) THEN
@@ -963,7 +966,7 @@ cdr NTALG+1:NTALI gradients of these regular input tallies
         DO ITAL = 1, NTALG
 C  ITAL : NO. OF TALLY OF WHICH GRADIENT IS TO BE CALCULATED
 C  KK   : INDEX OF GRADIENT TALLY COMPONENTS: KK+1, KK+2, KK+3
-          KK = NTALG + (ITAL-1)*3 
+          KK = NTALG + (ITAL-1)*3
           IF (ANY(LIVTALI(KK+1:KK+3))) THEN
             NFTI = 1
             NFTE=NFSTPI(KK+1)  ! same as for KK+2, KK+3

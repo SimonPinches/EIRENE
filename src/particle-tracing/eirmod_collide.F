@@ -95,8 +95,7 @@ cdr          tbd: for PI, EL, processes
       REAL(DP) :: DUMT(3), DUMV(3)
       REAL(DP) :: SIGSUM, WGHTO, FRSTP, SCNDP, PTOT,
      .          VELXO, VELYO, VELZO, VELO, E0O,
-     .          BX, BY, BZ,
-     .          BXN(0:2), BYN(0:2), BZN(0:2),
+     .          BX, BY, BZ, BXN(0:2), BYN(0:2), BZN(0:2),
      .          V0_O(0:2), M0_O(0:2), VP_O(0:2), MP_O(0:2),
      .          EDEL, VDEL, SIGNUM,
      .          V0_PARB, V0_PARBO,

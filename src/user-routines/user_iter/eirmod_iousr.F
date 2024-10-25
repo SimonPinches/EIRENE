@@ -139,5 +139,3 @@ csw
       end subroutine eirene_write_block_11_usr_json
 
       end module eirmod_iousr
-
-

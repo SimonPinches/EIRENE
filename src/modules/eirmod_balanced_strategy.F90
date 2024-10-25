@@ -1,16 +1,16 @@
 module eirmod_balanced_strategy
 ! An optimized workload distribution to reduce MPI waiting time and maximize
-! parallel efficiency. 
+! parallel efficiency.
 !
-! Main ingredients: 
+! Main ingredients:
 !  - Eirmod_calstr_buffered is used to allow non-blocking reductions in calstr.
 !  - If we have N processors calculating stratum(k) then we do NOT divide these
 !    particles evenly between the processors.
-!  - We measure the execution time of the particle loop, calstr, and stratum 
+!  - We measure the execution time of the particle loop, calstr, and stratum
 !    postprocessing and use this data to optimize how many particles should
 !    each PEs process.
 !
-! There value of the T_EPSILON_FRACTION parameter can influence the work 
+! There value of the T_EPSILON_FRACTION parameter can influence the work
 ! distribution. Lower values increase the time for optimization. Higher values
 ! will give less optimal results.
 !
@@ -23,16 +23,16 @@ module eirmod_balanced_strategy
    , only: nstra
 
   implicit none
-  
+
   private
-  
-  !> Init_balanced_strategy should be called first, afterwards in every 
+
+  !> Init_balanced_strategy should be called first, afterwards in every
   !> iteration we optimize
   public init_balanced_strategy
   public opt_balanced_strategy
-  
+
   public allocate_balanced_strategy, deallocate_balanced_strategy
-  
+
   !> The timings soubroutines should be called from mcarlo
   !> The workload distribution will be optimized based on the data
   !> collected by these subroutines
@@ -40,58 +40,58 @@ module eirmod_balanced_strategy
 
   !> Throughput for all PEs over all strata (allocated only on PE 0)
   real(kind=dp), allocatable, dimension(:), public :: throughput_pe_all
-      
+
   !> Overhead time for each PE, used only for printing work distribution table
   !> (allocated only on PE 0)
-  real(kind=dp), allocatable, dimension(:), public :: t_overhead   
-  
+  real(kind=dp), allocatable, dimension(:), public :: t_overhead
+
   !> In opt_balanced_strategy we estimate the ideal working time t_ideal,
-  !> and then iteratively distribute it among PEs. In every iteration at least 
+  !> and then iteratively distribute it among PEs. In every iteration at least
   !> T_EPSILON_FRACTION of the ideal time is distributed. Currently it is 5%.
-  real(kind=dp), parameter :: T_EPSILON_FRACTION = 0.05_dp  
-  
+  real(kind=dp), parameter :: T_EPSILON_FRACTION = 0.05_dp
+
   ! Arrays to store timing information, all local to the current PE:
-  
+
   !> The n_particles_loc(k) stores how many particles have been
   !> processed on stratum(k) by the local PE.
-  !> It is a commulative quantity, in every iteration we increase 
-  !> n_particles_loc(k) by the number of particles that were processed. 
+  !> It is a commulative quantity, in every iteration we increase
+  !> n_particles_loc(k) by the number of particles that were processed.
   integer, allocatable, dimension(:) :: n_particles_loc
-      
-  !> t_particles_loc(k) stores the CPU time (in seconds) that was used to 
-  !> process the particles n_particles_loc(k) 
+
+  !> t_particles_loc(k) stores the CPU time (in seconds) that was used to
+  !> process the particles n_particles_loc(k)
   !> This way we can calculate an average processing time over many iterations
   !> (see calculate_throughput for details).
   real(kind=dp), allocatable, dimension(:) :: t_particles_loc
-      
+
   !> How many times calstr was called for each stratum
   integer, allocatable, dimension(:) :: n_calstr_loc
-      
-  !> If calstr is called for stratum k, then t_calstr(k) is the execution time 
+
+  !> If calstr is called for stratum k, then t_calstr(k) is the execution time
   !> of calstr. This is already a weighted average over iterations of eirene
   real(kind=dp), allocatable, dimension(:) :: t_calstr_loc
-  
+
   !> calstr time for each stratum, averaged over all the iterations
   real(kind=dp), allocatable, dimension(:) :: t_calstr_strat_avg
-  
+
   !> calstr time for each PE individually
   real(kind=dp), allocatable, dimension(:) :: t_calstr_pe
-  
+
   !> The number of all the postprocessing steps so far is
   integer :: n_postproc_executed
-  
+
   !> t_postproc(k) is the postprocessing time (after calstr) for stratum k
   real(kind=dp), allocatable, dimension(:) :: t_postproc_loc
-      
+
   !> We cannot acces these from CPES (circular reference) so we store them here
   integer :: my_pe, nprs
   integer :: nsteff
-  
+
   !> Whether to print timing information that was used for the optimization
   logical, parameter :: print_timing_info = .false.
-  
+
   contains
-  
+
   subroutine allocate_balanced_strategy
     allocate(n_particles_loc(nstra))
     n_particles_loc = 0
@@ -104,7 +104,7 @@ module eirmod_balanced_strategy
     allocate(t_postproc_loc(nstra))
     t_postproc_loc = 0
   end subroutine
-  
+
   subroutine deallocate_balanced_strategy
     use eirmod_calstr_buffered &
      , only: deallocate_calstr_buffer
@@ -119,12 +119,12 @@ module eirmod_balanced_strategy
     if(allocated(throughput_pe_all)) deallocate(throughput_pe_all)
     if(allocated(t_overhead)) deallocate(t_overhead)
   end subroutine
-  
+
   subroutine init_balanced_strategy(ierror)
   ! Check if we have correct MPI version, and initializes calstr_buffer.
-  ! This subroutine does not define a parallelization strategy. After calling 
+  ! This subroutine does not define a parallelization strategy. After calling
   ! this subroutine, please use any other strategy (preferably STRATEGY_APCAS)
-  ! to initialize the work distribution. 
+  ! to initialize the work distribution.
     use eirmod_calstr_buffered
     use eirmod_mpi
     integer, intent(out) :: ierror !< 0 = success, any other values = error
@@ -150,7 +150,7 @@ module eirmod_balanced_strategy
       endif
       ierror = 1
       return
-    endif 
+    endif
     nsteff = count(npts(1:nstrai) > 0)
     ierror = 0
     call mpi_get_version(mpi_major, mpi_minor, ierr)
@@ -173,30 +173,30 @@ module eirmod_balanced_strategy
 
   subroutine opt_balanced_strategy(nparts_loc, npestr, stratum_leader, &
               procforstra)
-  ! Based on the measurements by time_particles, time_calstr, time_postproc we 
+  ! Based on the measurements by time_particles, time_calstr, time_postproc we
   ! optimize the work distribution table
   !
   ! We calculate the throughput (particles/sec) for each PE and strata. We use
   ! this to estimate how long it will take to process the particle loop.
   !
   ! First we select the stratum leaders, and let them work as long as they can
-  ! on their stratum (to minimize the number of PEs per stratum, and this way 
-  ! minimize the communication). Then we distribute the rest of the work to the 
+  ! on their stratum (to minimize the number of PEs per stratum, and this way
+  ! minimize the communication). Then we distribute the rest of the work to the
   ! remaining PEs. Within a stratum, we aim to finish all the particle loops
-  ! before the stratum leader finishes its particle loop, to minimize waiting 
+  ! before the stratum leader finishes its particle loop, to minimize waiting
   ! time in calstr (stratum leader has to wait there before continuing with
   ! stratum postprocessing).
   ! We consider the time needed to execute calstr for all PEs, and the
   ! postprocessing for the stratum leaders. This ensures a quasi-optimal
   ! workload distribution.
-  
+
     use eirmod_mpi
     !> We will define the following parameters:
     integer, intent(inout), dimension(:) :: nparts_loc
     integer, intent(inout), dimension(0:) :: npestr
     integer, intent(inout), dimension(:) :: stratum_leader
     logical, intent(inout), dimension(:,0:) :: procforstra
-    
+
     real(kind=dp), dimension(nstrai) :: t_postproc
     real(kind=dp), dimension(nstrai) :: throughput !< aggregate throughput per stratum
     real(kind=dp), dimension(nstrai) :: throughput_strat_avg !< average per stratum
@@ -211,16 +211,16 @@ module eirmod_balanced_strategy
 #if ( defined(USE_MPI) && !defined(GFORTRAN) )
     external :: mpi_bcast, mpi_scatter
 #endif
-    
+
     if (nprs == 1) return ! nothing to optimize for serial mode
-    
+
     if(my_pe==0) then
       write(iunout,*) 'Optimizing workload distribution'
     endif
-    
-    ! For each PE and stratum we estimate the throghput and the time to execute  
+
+    ! For each PE and stratum we estimate the throghput and the time to execute
     ! calstr. Additionally, we calculate the average postprocessing time for
-    ! each stratum. All PEs have to call the next three subroutines, because of 
+    ! each stratum. All PEs have to call the next three subroutines, because of
     ! the collective MPI calls.
     call calculate_calstr_time(t_calstr_strat_avg, t_calstr_allavg, t_calstr_pe)
     call calculate_postproc_time(t_postproc)
@@ -232,10 +232,10 @@ module eirmod_balanced_strategy
       call calculate_ideal_time(throughput, t_calstr_strat_avg, t_postproc, &
                                 t_ideal, t_ideal_tot)
       t_pe = 0 ! t_pe(i) stores how much time PE i has already worked
-      !> we give away at least t_epsilon time in each step 
+      !> we give away at least t_epsilon time in each step
       t_epsilon = t_ideal_tot * T_EPSILON_FRACTION / nprs
       ! Calstr has an overhead, we calculate how many particles could be
-      ! processed in the overhead time. 
+      ! processed in the overhead time.
       ! But t_calstr_allavg might be distorted if there is load imbalance
       ! therefore we choose the smaller of t_epsilon and t_calstr_allavg
       n_epsilon = int(min(t_epsilon, t_calstr_allavg) * throughput_strat_avg)
@@ -246,28 +246,28 @@ module eirmod_balanced_strategy
       endif
       ! Initialize output arrays
       !> the number of particles that needs to be distributed:
-      npts_remaining = npts(1:nstrai) 
+      npts_remaining = npts(1:nstrai)
       npestr = 0         !< number of PEs per stratum
       !> The most important output quantity will be calculated in nparts_loc_all
       !> nparts_loc_all(i*nstrai + k) is the number of particles from stratum k
       !> processed by PE i
-      nparts_loc_all = 0 
+      nparts_loc_all = 0
       procforstra = .false. !< this is not used, but we can calculate anyways
-      
+
       if(.not.allocated(t_overhead)) then
         allocate(t_overhead(0:nprs-1))
       endif
       t_overhead = 0.0_dp !< communication and postproc. overhead for each PE
       ! t_overhead is used only for printing overhead information in
       ! print_work_distribution_table
-      
+
       ! First select the leaders and assign work to them
       do k=1,nstrai
         if (npts(k) > 0) then
           i = get_next_pe(t_pe)
           stratum_leader(k) = i
           idx = i*nstrai + k
-          ! we try to assign all the available time 
+          ! we try to assign all the available time
           time = t_ideal_tot - t_pe(i)
           call assign_work(time, t_pe(i), nparts_loc_all(idx), &
                    throughput_pe_all(idx), npts_remaining(k), n_epsilon(k))
@@ -307,7 +307,7 @@ module eirmod_balanced_strategy
             procforstra(k,i) = .true.
             ! We use t_calstr_pe instead of t_calstr_strat_avg(k) to have
             ! individual overhead estimate for each PE
-            ! (stratum leaders have larger overhead than others, so if the 
+            ! (stratum leaders have larger overhead than others, so if the
             ! leaders do not change then it is better estimate than the average)
             t_overhead(i) = t_overhead(i) + t_calstr_pe(idx)
             t_pe(i) = t_pe(i) + t_calstr_pe(idx)
@@ -334,7 +334,7 @@ module eirmod_balanced_strategy
     !> time that PE has worked so far (will be increased by time)
     real(kind=dp), intent(inout) :: t_pe
     !> we will increase nparts loc with the number of particles assgned
-    integer, intent(inout) :: nparts_loc 
+    integer, intent(inout) :: nparts_loc
     real(kind=dp), intent(in) :: throughput !< throughput of the PE
     !> the number of particles still remaining in the stratum
     integer, intent(inout) :: npts_remaining
@@ -343,35 +343,35 @@ module eirmod_balanced_strategy
     integer n
     if (time < 0) then
       write(iunout,*) 'Warning, trying to assign negative time'
-    endif 
+    endif
     n = int(time * throughput) !< number of particles that can be processed in time
     if (n<=0) then
       write(iunout,*) 'Warning, zero particles would be assigned'
-        n = max(1, n_epsilon)
+      n = max(1, n_epsilon)
     endif
     if (npts_remaining < n) then
       n = npts_remaining
-    endif 
+    endif
     t_pe = t_pe + n / throughput
     nparts_loc =  nparts_loc + n
     npts_remaining = npts_remaining - n
     if (npts_remaining.ne.0 .and. npts_remaining < n_epsilon) then
-        nparts_loc = nparts_loc + npts_remaining
-        t_pe = t_pe + npts_remaining / throughput
-        npts_remaining = 0
+      nparts_loc = nparts_loc + npts_remaining
+      t_pe = t_pe + npts_remaining / throughput
+      npts_remaining = 0
     endif
   end subroutine
- 
+
   function get_next_pe(time) result (ipe)
-  ! Returs rank of PE who has the smallest working time
+  ! Returns rank of PE who has the smallest working time
   ! ( = has most time available to do work)
     integer :: ipe
-    real(kind=dp), intent(in), dimension(0:nprs-1) :: time    
+    real(kind=dp), intent(in), dimension(0:nprs-1) :: time
     integer, dimension(1) :: tmp
     tmp = minloc(time)
     ipe = tmp(1) - 1 ! because PEs are numbered from 0
   end function
-  
+
   subroutine calculate_throughput(throughput_pe, throughput, &
              throughput_avg, throughput_strat_avg)
   ! Throughput = particles / sec
@@ -391,7 +391,7 @@ module eirmod_balanced_strategy
     !> throughput averaged over all PEs and all strata
     real(kind=dp):: throughput_avg
     !> throughput_pe_avg(i) is the average throughput of PE i over all strata
-    real(kind=dp), dimension(0:nprs-1) :: throughput_pe_avg 
+    real(kind=dp), dimension(0:nprs-1) :: throughput_pe_avg
     real(kind=dp), dimension(nstrai*nprs) :: t_particles_all !< temporary variables
     integer, dimension(nstrai*nprs) :: nparts_processed_all  !< for MPI communication
     integer :: k, i, idx, n, ierr, n_strat
@@ -430,15 +430,15 @@ module eirmod_balanced_strategy
             throughput_pe(idx) = nparts_processed_all(idx) / t_particles_all(idx)
           else
             ! below we will define an estimate for this case too
-            throughput_pe(idx) = 0.0D0 
+            throughput_pe(idx) = 0.0D0
           endif
           throughput(k) = throughput(k) + throughput_pe(idx)
-         enddo
-         if (t_strat > 0) then
-           throughput_strat_avg(k) = n_strat / t_strat
-         endif
+        enddo
+        if (t_strat > 0) then
+          throughput_strat_avg(k) = n_strat / t_strat
+        endif
       enddo
-      if ( t > 0) then 
+      if ( t > 0) then
         throughput_avg = n / t
       else
         write(iunout,*) 'Something is wrong, we do not have any throughput measurements. '
@@ -477,7 +477,7 @@ module eirmod_balanced_strategy
           throughput_pe_avg(i) = n / t
         else
           ! This value is used only for print_timing_info
-          throughput_pe_avg(i) = 0 
+          throughput_pe_avg(i) = 0
         endif
       end do
       if (print_timing_info) then
@@ -486,10 +486,10 @@ module eirmod_balanced_strategy
         write(iunout,*) 'throughput_pe_avg', throughput_pe_avg
         write(iunout,*) 'throughput_avg', throughput_avg
         write(iunout,*) 'throughput 0', throughput_pe(1:nstrai)
-      endif 
+      endif
     endif
   end subroutine
-    
+
   subroutine calculate_ideal_time(throughput, t_calstr, &
            t_postproc, t_ideal, t_ideal_tot)
     !> aggregate throughput per stratum
@@ -505,7 +505,7 @@ module eirmod_balanced_strategy
     do k = 1, nstrai
      ! Ideally, stratum(k) would be processed in this much of time:
       if (npts(k) > 0) then
-        t_ideal(k) = npts(k) / throughput(k) 
+        t_ideal(k) = npts(k) / throughput(k)
         ! we could consider the postprocessing and calstr overhead too
         ! from arrays t_calstr and t_postproc, like:
         ! t_ideal(k) = t_ideal(k) + t_postproc(k)
@@ -526,14 +526,14 @@ module eirmod_balanced_strategy
      , only: nstrai
     use eirmod_mpi
     ! All arguments are output arguments, but they are only defined at PE 0
-    !> t_calstr_strat_avg(k) is the average calstr time of stratum k, over 
+    !> t_calstr_strat_avg(k) is the average calstr time of stratum k, over
     !> iterations of Eirene and PEs
-    real(kind=dp), dimension(:), allocatable :: t_calstr_strat_avg 
+    real(kind=dp), dimension(:), allocatable :: t_calstr_strat_avg
     !> average calstr time over all strata, PE, and iterations
     real(kind=dp) :: t_calstr_avg
     !> Estimated calstr time for each PE
     real(kind=dp), dimension(:), allocatable :: t_calstr_pe
-    integer, dimension(nstrai) :: n_calstr_sum 
+    integer, dimension(nstrai) :: n_calstr_sum
     integer :: ierr, k, i, idx
 #if ( defined(USE_MPI) && !defined(GFORTRAN) )
     external :: mpi_gather, mpi_reduce
@@ -592,7 +592,7 @@ module eirmod_balanced_strategy
     endif
     n_calstr_loc = 0
   end subroutine
-       
+
   subroutine calculate_postproc_time(t_postproc_avg)
     use eirmod_mpi
     use eirmod_comsou &
@@ -625,19 +625,19 @@ module eirmod_balanced_strategy
       tmp = sum(t_postproc_avg) / nsteff
       do k = 1,nstrai
         if (t_postproc_avg(k)==0.0_dp) then
-          t_postproc_avg(k) = tmp 
+          t_postproc_avg(k) = tmp
         endif
       end do
     endif
   end subroutine
-  
+
   subroutine time_calstr(istra, time)
     integer, intent(in) :: istra !< stratum idx
     real(kind=dp), intent(in) :: time !< time (s)
     ! We calculate a weighted average with the previous values
     ! Let t(n) be the average value at iteration n
     ! t(n) = N * (t(n) + t(n-1)/2 + t(n-2)/4 + t(k,n-3)/8 + ... )
-    ! Here N is the normalization factor: 
+    ! Here N is the normalization factor:
     ! N = (1 + 1/2 + 1/4 + 1/8 + ...)^-1 = 1 / 2 (approximately)
     t_calstr_loc(istra) = (t_calstr_loc(istra) + time) / 2
     n_calstr_loc(istra) = n_calstr_loc(istra) + 1
@@ -650,10 +650,10 @@ module eirmod_balanced_strategy
     n_particles_loc(istra) = n_particles_loc(istra) + n
     t_particles_loc(istra) = t_particles_loc(istra) + time
   end subroutine
-   
+
   subroutine time_postproc(istra, time)
     integer, intent(in) :: istra !< stratum idx
-    real(kind=dp), intent(in) :: time !< time (s)  
+    real(kind=dp), intent(in) :: time !< time (s)
     t_postproc_loc(istra) = t_postproc_loc(istra) + time
     n_postproc_executed = n_postproc_executed + 1
   end subroutine
