@@ -1,17 +1,27 @@
 !> Wrapper module for MPI, and dummy module for serial compilation
 module eirmod_mpi
 #ifdef USE_MPI
-  use mpi      ! IGNORE
-  implicit none
-!pb  include 'mpif.h'
-  integer, private, save :: iounit
-  public :: mpi_set_own_io_unit
-  integer, save :: MPI_THREAD_PROVIDED = 0
-
-!pb
 #ifndef MPI_VERSION
 #define MPI_VERSION 3
 #endif
+#ifndef MPI_MOD
+#if MPI_VERSION > 2
+#define MPI_MOD 1
+#else
+#define MPI_MOD 0
+#endif
+#endif
+
+#if MPI_MOD > 0
+  use mpi      ! IGNORE
+#endif
+  implicit none
+#if MPI_MOD < 1
+  include 'mpif.h'
+#endif
+  integer, private, save :: iounit
+  public :: mpi_set_own_io_unit
+  integer, save :: MPI_THREAD_PROVIDED = 0
 
 #if MPI_VERSION < 3
 ! MPI libraries with MPI version 3 are available on all platforms.
@@ -39,6 +49,10 @@ module eirmod_mpi
   integer, private, save :: iounit
   public :: mpi_set_own_io_unit
 
+  !> number of buffers (1 double and 1 logical)
+  !> Moved from eirmod_calstr_buffered to avoid a size mismatch error
+  integer, parameter :: N_BUFFERS = 2
+
   integer, parameter :: mpi_success = 0
   integer, parameter :: mpi_failure = 1
   integer, parameter :: mpi_comm_world = 0
@@ -56,7 +70,7 @@ module eirmod_mpi
                  MPI_REAL8 = 3,            &
                  MPI_LOGICAL = 4,          &
                  MPI_CHARACTER = 5,        &
-                 MPI_STATUS_SIZE = 3,      &
+                 MPI_STATUS_SIZE = 5,      &
                  MPI_SUM = 1,              &
                  MPI_LOR = 2,              &
                  MPI_IN_PLACE = 0
@@ -68,9 +82,10 @@ module eirmod_mpi
   integer, parameter :: MPI_THREAD_FUNNELED = 0
   integer, save :: MPI_THREAD_PROVIDED = 0
   integer, save :: MPI_STATUS_IGNORE(MPI_STATUS_SIZE)
-  integer, save :: MPI_STATUSES_IGNORE(MPI_STATUS_SIZE,1)
+  integer, save :: MPI_STATUSES_IGNORE(MPI_STATUS_SIZE,N_BUFFERS)
   data MPI_STATUS_IGNORE / MPI_STATUS_SIZE*-1 /
-  data MPI_STATUSES_IGNORE / MPI_STATUS_SIZE*-1 /
+  data MPI_STATUSES_IGNORE(1:MPI_STATUS_SIZE,1) / MPI_STATUS_SIZE*-1 /
+  data MPI_STATUSES_IGNORE(1:MPI_STATUS_SIZE,2) / MPI_STATUS_SIZE*-1 /
 
 
   interface mpi_allgather

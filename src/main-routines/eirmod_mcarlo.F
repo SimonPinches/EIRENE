@@ -622,6 +622,8 @@ C    if     nlmovie: sequence of strata is reversed, census stratum istra=nstrai
 C                    one by one re-launch of ALL particles from census
 c    if not nlmovie: census stratum istra=nstrai comes last.
 #ifdef USE_OPENMP
+        CALL EIRENE_CHECK_EXIT
+        CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 !$OMP BARRIER
 #endif
         IF (.NOT.NLSRON(ISTRA)) THEN
@@ -832,7 +834,8 @@ csw 19feb2013
           call system_clock (itimstart, itimrate)
 !$OMP END MASTER
 csw
-
+          call eirene_check_exit
+          call mpi_barrier(mpi_comm_world,ier)
 !$OMP BARRIER
 C  PARTICLE LOOP WITHIN STRATUM ISTRA
 !$OMP  DO REDUCTION(.OR.:LOGATM,LOGMOL,LOGION,LOGPLS,
@@ -1524,6 +1527,8 @@ cdr     If...
 cdr  not ready. currently we do this in next time-cycle
 
         call ioflush_usr
+        CALL EIRENE_CHECK_EXIT
+        CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 !$OMP BARRIER
 
       END DO                    ! ISTR

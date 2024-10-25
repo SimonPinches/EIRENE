@@ -39,7 +39,7 @@ cdr  set from the external code, or in EIRSRT, and are problem-specific.
       USE EIRMOD_EIRENE, ONLY: EIRENE_EIRENE
       USE EIRMOD_CPES, ONLY: MY_PE
 #ifdef USE_MPI
-      USE MPI, ONLY: MPI_FINALIZE
+      USE MPI, ONLY: MPI_FINALIZE    ! IGNORE
       USE EIRMOD_MPI, ONLY: EIRENE_MPI_INIT
 #else
       USE EIRMOD_MPI, ONLY: EIRENE_MPI_INIT, MPI_FINALIZE

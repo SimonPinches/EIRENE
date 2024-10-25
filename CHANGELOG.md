@@ -29,6 +29,8 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Moved EIRENE_EXPINT and EIRENE_MMDEI to their own file
 - Added TRCMELD output switch
 - Do not use IUNOUT in EIRENE_MAIN before it is defined or after it has been deallocated
+- Added MPI_VERSION and MPI_MOD pragmas to handle older MPI implementations
+- Ensuring MPI_STATUSES has consistent size for MPI runs
 - Added a safety and error message in FIND_PARAM if the input file is found empty
 - Added a safety to check the fort.34 file is present before attempting to read it
 - Added safety for reading correct number of integers in block 10F of input file in READ_FIXFORM
@@ -60,6 +62,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Added EXTERNAL definitions for called subroutines and functions
 - Using END SUBROUTINE <SUB_NAME> statements to close subroutines
 - Added pre-processor pragmas around relevant variables only used if the pragma is declared
+- Add IGNORE comments to MPI module use statements for SOLPS-style dependencies build
 - Removed superfluous MPI interface routines
 - Removed unused variables and modules
 - Making use of lower/upper case more consistent

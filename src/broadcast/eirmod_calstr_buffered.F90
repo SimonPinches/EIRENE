@@ -42,8 +42,11 @@ module eirmod_calstr_buffered
   public :: calstr_progress_message
   public :: eirene_calstr_buffered
 
+#ifdef USE_MPI
   !> number of buffers (1 double and 1 logical)
+  !> When MPI is not present, this definition must be in the dummy MPI module
   integer, parameter :: N_BUFFERS = 2
+#endif
   !> Identifies the communication operations, one request object for each buffer
   integer, save, dimension(N_BUFFERS) :: calstr_request = MPI_REQUEST_NULL
 
