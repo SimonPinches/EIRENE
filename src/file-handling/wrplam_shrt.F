@@ -58,7 +58,8 @@ cdr  Should only be written in modbgk, modphot, tmstep, etc.. routines
       INTEGER :: I
 #endif
       REAL(DP), ALLOCATABLE, SAVE :: TIAR(:,:), DIAR(:,:),
-     R                               VXAR(:,:), VYAR(:,:), VZAR(:,:)
+     R                               VXAR(:,:), VYAR(:,:), VZAR(:,:),
+     R                               RTAB(:,:), ETAB(:,:)
       EXTERNAL :: EIRENE_LEER
 
       write (iunout,*) 'WRPLAM_SHRT called from ',calledfrom
@@ -188,39 +189,48 @@ c
 cdr
       do irea = 1, nrea_virt
         iswr=nfla_iswr(irea)
+cdr some compilers dislike writing the 3D tallies with fixed 1st index
+        IF (.NOT.ALLOCATED(RTAB)) THEN
+          ALLOCATE(RTAB(NRAD,1:9))
+          ALLOCATE(ETAB(NRAD,1:9))
+        END IF
         select case (iswr)
 c  data for reaction irei, ircx, irpi or irel
         case (1)
           irei=nfla_ir(irea)
-          write (13+ifoff)
-     w      tabei1(irei,1:nrad),eelei1(irei,1:nrad)
+          rtab(1:nrad,1)=tabei1(irei,1:nrad)
+          etab(1:nrad,1)=eelei1(irei,1:nrad)
+          write (13+ifoff) rtab(1:nrad,1),etab(1:nrad,1)
 #ifdef CHECKBIN
           write (113,*) 'TABEI1'
-          write (113,*) tabei1(irei,1:nrad),eelei1(irei,1:nrad)
+          write (113,*) rtab(1:nrad,1),etab(1:nrad,1)
 #endif
         case (3)
           ircx=nfla_ir(irea)
-          write (13+ifoff)
-     w      tabcx3(ircx,1:nrad,1:9),eplcx3(ircx,1:nrad,1:9)
+          rtab(1:nrad,1:9)=tabcx3(ircx,1:nrad,1:9)
+          etab(1:nrad,1:9)=eplcx3(ircx,1:nrad,1:9)
+          write (13+ifoff) rtab(1:nrad,1:9),etab(1:nrad,1:9)
 #ifdef CHECKBIN
           write (113,*) 'TABCX3'
-          write(113,*) tabcx3(ircx,1:nrad,1:9),eplcx3(ircx,1:nrad,1:9)
+          write(113,*) rtab(1:nrad,1:9),etab(1:nrad,1:9)
 #endif
         case (4)
           irpi=nfla_ir(irea)
-          write (13+ifoff)
-     w      tabpi3(irei,1:nrad,1:9),eelpi3(irpi,1:nrad,1:9)
+          rtab(1:nrad,1:9)=tabpi3(irpi,1:nrad,1:9)
+          etab(1:nrad,1:9)=eelpi3(irpi,1:nrad,1:9)
+          write (13+ifoff) rtab(1:nrad,1:9),etab(1:nrad,1:9)
 #ifdef CHECKBIN
           write (113,*) 'TABPI3'
-          write(113,*) tabpi3(irei,1:nrad,1:9),eelpi3(irpi,1:nrad,1:9)
+          write(113,*) rtab(1:nrad,1:9),etab(1:nrad,1:9)
 #endif
         case (5)
           irel=nfla_ir(irea)
-          write (13+ifoff)
-     w      tabel3(irel,1:nrad,1:9),eplel3(irel,1:nrad,1:9)
+          rtab(1:nrad,1:9)=tabel3(irel,1:nrad,1:9)
+          etab(1:nrad,1:9)=eplel3(irel,1:nrad,1:9)
+          write (13+ifoff) rtab(1:nrad,1:9),etab(1:nrad,1:9)
 #ifdef CHECKBIN
           write (113,*) 'TABEL3'
-          write(113,*) tabel3(irel,1:nrad,1:9),eplel3(irel,1:nrad,1:9)
+          write(113,*) rtab(1:nrad,1:9),etab(1:nrad,1:9)
 #endif
 cdr  case 6,7: to be done
 cdr  for photons we may also need "irrc" data
@@ -229,6 +239,10 @@ cdr  for photons we may also need "irrc" data
 
 cdr  some diagnostics, if trcfle.....
 
+      IF (ALLOCATED(rtab)) THEN
+        DEALLOCATE (rtab)
+        DEALLOCATE (etab)
+      END IF
       CLOSE (UNIT=13+ifoff)
 #ifdef CHECKBIN
       CLOSE (UNIT=113)
@@ -257,6 +271,7 @@ C .......................................................................
       CHARACTER*3 FILENUMBER
       INTEGER :: IO
       INTEGER :: IREA, IREI, ISWR, IFL, IPLS
+      REAL(DP), ALLOCATABLE, SAVE :: RTAB(:,:), ETAB(:,:)
       LOGICAL EX
       EXTERNAL EIRENE_LEER
 
@@ -366,6 +381,8 @@ cdr  next: read the NFLA_VIRT collisional process data related to these virtual 
       IF (ALLOCATED(TAB_STORE) .AND. SIZE(TAB_STORE,1) < NREA_VIRT) THEN
         DEALLOCATE (TAB_STORE)
         DEALLOCATE (E_STORE)
+        DEALLOCATE (RTAB)
+        DEALLOCATE (ETAB)
       END IF
 
       IF (ALLOCATED(LG_STORE) .AND. SIZE(LG_STORE,2) < NFLA_VIRT) THEN
@@ -376,9 +393,13 @@ cdr  next: read the NFLA_VIRT collisional process data related to these virtual 
 #ifndef LEGACYCOMP
         ALLOCATE (TAB_STORE(NREA_VIRT,NRAD,9), SOURCE=0._DP)
         ALLOCATE (E_STORE(NREA_VIRT,NRAD,9), SOURCE=0._DP)
+        ALLOCATE (RTAB(NRAD,9))
+        ALLOCATE (ETAB(NRAD,9))
 #else
         ALLOCATE (TAB_STORE(NREA_VIRT,NRAD,9))
         ALLOCATE (E_STORE(NREA_VIRT,NRAD,9))
+        ALLOCATE (RTAB(NRAD,9))
+        ALLOCATE (ETAB(NRAD,9))
         TAB_STORE = 0._DP
         E_STORE = 0._DP
 #endif
@@ -429,8 +450,9 @@ c         irpi=nfla_ir(irea)
         case (5)
 cdr restore some EL rates for iterative procedure (nonlinearities)
 c         irel=nfla_ir(irea)
-          read (13+ifoff)
-     w      tab_store(irea,1:nrad,1:9),e_store(irea,1:nrad,1:9)
+          read (13+ifoff) rtab,etab
+          tab_store(irea,1:nrad,1:9)=rtab(1:nrad,1:9)
+          e_store  (irea,1:nrad,1:9)=etab(1:nrad,1:9)
 cdr  case 6,7: to be done
         end select
       ENDDO

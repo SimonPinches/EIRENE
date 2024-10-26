@@ -55,6 +55,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Clarified some code output
 - Some aesthetic output changes
 - Corrected format statements
+- Refactored reading of fort.13 file
 - Generalized usaged of FORT and FORT_LC variables
 - Introduced usage of EIRENE_OPENFILE in all interface routines
 - Avoiding obsolescent shared labels END DO statements, replaced with CONTINUE
