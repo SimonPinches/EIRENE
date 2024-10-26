@@ -196,7 +196,7 @@ cdr  Also strange: INTLOPTS(2):  what is special about that? use livtali instead
       IMPLICIT NONE
 
       INTEGER, INTENT(INOUT) :: IFLG
-      LOGICAL TRCFLE
+      LOGICAL, INTENT(IN) :: TRCFLE
       CHARACTER(*) CALLEDFROM
 
 cdr, jan 2019

@@ -201,13 +201,14 @@ C
 C     L.C.JOHNSON, ASTROPHYS. J. 174, 227 (1972).
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
       INTEGER LIM
-      DIMENSION F(40,40)
-      DIMENSION A(40,40)
-      DIMENSION E_AT(40)
-      DIMENSION POP_ESC(40,40)
+      REAL(DP) F(40,40)
+      REAL(DP) A(40,40)
+      REAL(DP) E_AT(40)
+      REAL(DP) POP_ESC(40,40)
       INTEGER I, J
+      REAL(DP) AI, AJ, G, P, UH, X
       logical lopaque
 
       UH=13.595
@@ -260,9 +261,10 @@ C
 C
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
-      DIMENSION SAHA(40)
+      IMPLICIT NONE
+      REAL(DP) TEMP,SAHA(40)
       INTEGER I
+      REAL(DP) P, TE, UION
 
       TE=TEMP*1.1605E4
 
@@ -289,10 +291,12 @@ C
 C
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
-      DIMENSION OSC(40,40),C(40,40),F(40,40),U(40,40)
-      DIMENSION SAHA(40),S(40),ALPHA(40),BETA(40),EBETA(40),UION(40)
+      IMPLICIT NONE
+      REAL(DP) TEMP
+      REAL(DP) OSC(40,40),C(40,40),F(40,40),U(40,40)
+      REAL(DP) SAHA(40),S(40),ALPHA(40),BETA(40),EBETA(40),UION(40)
       INTEGER I, II, III, J, JJ
+      REAL(DP) DCCX, ELN, EP, EXS, P, TE, TEL10, UH, XP, XS
       EXTERNAL EIRENE_CLBETA, EIRENE_EXCOFF
 
 cdr  above some critical Te0 value the radiative rate coefficients beta become unphysical
@@ -300,137 +304,137 @@ c    perhaps due to numerical integration, or due to fit expression for integran
 c    Extrapolate energy rate coeff ebeta beyond Te0 =500 eV
 
       logical lopaque
-      DIMENSION RECMB1(9)
+      REAL(DP) RECMB1(9)
       DATA RECMB1/
      .-2.955397218588D+01,-5.415952519274D-01, -1.898544362547D-02,
      .-6.296638424302D-03,-6.590547592879D-04,  1.979096752346D-04,
      .-3.384091511722D-06,-1.312178532481D-06,  6.794867069246D-08/
-      DIMENSION RECMB2(9)
+      REAL(DP) RECMB2(9)
       DATA RECMB2/
      .-3.028258203128D+01,-6.489344359811D-01,-5.044516146247D-02,
      .-6.834257068606D-03, 7.621603311294D-04, 1.820369471925D-04,
      .-4.172173992553D-05, 3.151129832749D-06,-8.557790319804D-08/
-      DIMENSION RECMB3(9)
+      REAL(DP) RECMB3(9)
       DATA RECMB3/
      .-3.081308111854D+01,-7.506832188514D-01,-6.392987382349D-02,
      .-3.136753737114D-03, 1.130486114398D-03,-5.891101787416D-06,
      .-1.871544818151D-05, 1.924155011543D-06,-6.113117867247D-08/
-      DIMENSION RECMB4(9)
+      REAL(DP) RECMB4(9)
       DATA RECMB4/
      .-3.124178248661D+01,-8.324721778000D-01,-6.749686238962D-02,
      .-1.819027715538D-04, 1.029662235699D-03,-9.947563495630D-05,
      .-1.157212109508D-06, 6.419046650810D-07,-2.632212378124D-08/
-      DIMENSION RECMB5(9)
+      REAL(DP) RECMB5(9)
       DATA RECMB5/
      .-3.160248102907D+01,-8.970582941706D-01,-6.672021078686D-02,
      . 1.735998035356D-03, 8.102846437404D-04,-1.293548645460D-04,
      . 7.653597399125D-06,-1.007290294963D-07,-4.396689144443D-09/
-      DIMENSION RECMB6(9)
+      REAL(DP) RECMB6(9)
       DATA RECMB6/
      .-3.191200354649D+01,-9.487943192650D-01,-6.416290359056D-02,
      . 2.915417324842D-03, 5.904290511293D-04,-1.293159094005D-04,
      . 1.121762622770D-05,-4.647730339162D-07, 7.248953722425D-09/
-      DIMENSION RECMB7(9)
+      REAL(DP) RECMB7(9)
       DATA RECMB7/
      .-3.218096339788D+01,-9.910879396074D-01,-6.095219508517D-02,
      . 3.617704413680D-03, 4.023923659235D-04,-1.170991503299D-04,
      . 1.208395104539D-05,-6.153747484991D-07, 1.276002457208D-08/
-      DIMENSION RECMB8(9)
+      REAL(DP) RECMB8(9)
       DATA RECMB8/
      .-3.241655828927D+01,-1.026367760090D+00,-5.758688104786D-02,
      . 4.015706361086D-03, 2.503898666107D-04,-1.009126065615D-04,
      . 1.164859556536D-05,-6.527211813278D-07, 1.485788926575D-08/
-      DIMENSION RECMB9(9)
+      REAL(DP) RECMB9(9)
       DATA RECMB9/
      .-3.262387280670D+01,-1.056350328756D+00, -5.428573116785D-02,
      . 4.218200737528D-03, 1.304699903027D-04, -8.440144760676D-05,
      . 1.063623086507D-05,-6.324515306256D-07,  1.511971184207D-08/
-      DIMENSION RECMB10(9)
+      REAL(DP) RECMB10(9)
       DATA RECMB10/
      .-3.280658322283D+01,-1.082264892917D+00,-5.113789272221D-02,
      . 4.293438883183D-03,3.692139459358D-05 ,-6.905886517440D-05,
      . 9.413397820660D-06,-5.846761030723D-07, 1.443147593158D-08/
-      DIMENSION RECMB11(9)
+      REAL(DP) RECMB11(9)
       DATA RECMB11/
      .-3.296736752352D+01, -1.105008301698D+00, -4.817218718568D-02,
      . 4.284573570871D-03, -3.554562646018D-05, -5.539693364836D-05,
      . 8.160180100312D-06, -5.253448069028D-07,  1.327912727320D-08/
-      DIMENSION RECMB12(9)
+      REAL(DP) RECMB12(9)
       DATA RECMB12/
      .-3.310815524446D+01,-1.125249327580D+00,-4.538927682514D-02,
      . 4.219407043180D-03,-9.129558854381D-05,-4.350496815893D-05,
      . 6.963937973383D-06,-4.630004759641D-07, 1.193307256583D-08/
-      DIMENSION RECMB13(9)
+      REAL(DP) RECMB13(9)
       DATA RECMB13/
      .-3.323028186699D+01,-1.143497947426D+00,-4.277662562220D-02,
      . 4.116029910827D-03,-1.338072127899D-04,-3.328224832213D-05,
      . 5.863111240449D-06,-4.021451443280D-07, 1.054515552989D-08/
-      DIMENSION RECMB14(9)
+      REAL(DP) RECMB14(9)
       DATA RECMB14/
      .-3.333457692604D+01,-1.160151559549D+00,-4.031606772897D-02,
      . 3.986144192297D-03,-1.657642895871D-04,-2.454533247143D-05,
      . 4.866420567932D-06,-3.445615518446D-07, 9.181805185443D-09/
-      DIMENSION RECMB15(9)
+      REAL(DP) RECMB15(9)
       DATA RECMB15/
      .-3.342140353146D+01, -1.175528330345D+00, -3.798784446956D-02,
      . 3.837630497852D-03, -1.892109056864D-04, -1.713312193944D-05,
      . 3.978313590670D-06, -2.915668119657D-07,  7.895773130286D-09/
-      DIMENSION RECMB16(9)
+      REAL(DP) RECMB16(9)
       DATA RECMB16/
      .-3.349065709684D+01,-1.189890025875D+00,-3.577113355659D-02,
      . 3.675431118626D-03,-2.057472771812D-04,-1.086107122550D-05,
      . 3.190471670743D-06,-2.432219763675D-07, 6.698796511582D-09/
-      DIMENSION RECMB17(9)
+      REAL(DP) RECMB17(9)
       DATA RECMB17/
      .-3.354171350627D+01, -1.203459634476D+00,-3.364574539433D-02,
      . 3.502705068758D-03, -2.165263655319D-04,-5.593693576382D-06,
      . 2.496628300465D-06,-1.995492586410D-07 , 5.598476502405D-09/
-      DIMENSION RECMB18(9)
+      REAL(DP) RECMB18(9)
       DATA RECMB18/
      .-3.357331947394D+01,-1.216435628777D+00, -3.159069352529D-02,
      . 3.321134001198D-03,-2.224762687832D-04, -1.195846543818D-06,
      . 1.887944138620D-06,-1.603648021903D-07, 4.597768509898D-09 /
-      DIMENSION RECMB19(9)
+      REAL(DP) RECMB19(9)
       DATA RECMB19/
      .-3.358338560247D+01,-1.229004753335D+00,-2.958476231981D-02,
      . 3.131349929429D-03,-2.242129098657D-04, 2.426519089379D-06,
      . 1.357374516638D-06,-1.253982655621D-07, 3.692268883687D-09/
-      DIMENSION RECMB20(9)
+      REAL(DP) RECMB20(9)
       DATA RECMB20/
      .-3.356862240333D+01, -1.241355838486D+00, -2.760425715542D-02,
      . 2.932832208231D-03, -2.221882606505D-04,  5.370072522835D-06,
      . 8.951422982914D-07, -9.414351171950D-08,  2.871350578727D-09/
-      DIMENSION RECMB21(9)
+      REAL(DP) RECMB21(9)
       DATA RECMB21/
      .-3.352387025175D+01, -1.253698383107D+00, -2.562222079503D-02,
      . 2.724279920091D-03, -2.166083216770D-04, 7.671932594855D-06 ,
      . 4.995725943925D-07, -6.664545124985D-08,  2.139078683720D-09/
-      DIMENSION RECMB22(9)
+      REAL(DP) RECMB22(9)
       DATA RECMB22/
      .-3.344080404025D+01,-1.266290224370D+00, -2.360370763255D-02,
      . 2.502743536910D-03,-2.074812094740D-04,  9.376815010545D-06,
      . 1.640662776104D-07,-4.245674204110D-08,  1.483365500922D-09/
-      DIMENSION RECMB23(9)
+      REAL(DP) RECMB23(9)
       DATA RECMB23/
      .-3.330515902115D+01,-1.279492872276D+00, -2.149943684787D-02,
      . 2.263297751642D-03,-1.945289210035D-04,  1.048130070914D-05,
      .-1.111440892860D-07,-2.168045908152D-08,  9.097953739845D-10/
-      DIMENSION RECMB24(9)
+      REAL(DP) RECMB24(9)
       DATA RECMB24/
      .-3.308989756561D+01,-1.293895127861D+00,-1.922974855128D-02,
      . 1.996974143238D-03,-1.769459921577D-04, 1.093203266053D-05,
      .-3.242765500448D-07,-4.272006247928D-09, 4.140158369421D-10/
-      DIMENSION RECMB25(9)
+      REAL(DP) RECMB25(9)
       DATA RECMB25/
      .-3.273412834255D+01,-1.310670020686D+00,-1.663863373590D-02,
      . 1.685306322247D-03,-1.528534971941D-04, 1.057088450235D-05,
      .-4.649188077982D-07, 9.294915640077D-09, 6.752259753282D-12/
-      DIMENSION RECMB26(9)
+      REAL(DP) RECMB26(9)
       DATA RECMB26/
      .-3.204416240346D+01,-1.333113656592D+00,-1.330417762787D-02,
      . 1.278449892734D-03,-1.168945644350D-04, 8.891790020206D-06,
      .-4.953005276433D-07, 1.718610439449D-08,-2.710780782107D-10/
-      DIMENSION RECOMB(9,26)
+      REAL(DP) RECOMB(9,26)
       EQUIVALENCE (RECOMB(1,1),RECMB1(1))
       EQUIVALENCE (RECOMB(1,2),RECMB2(1))
       EQUIVALENCE (RECOMB(1,3),RECMB3(1))
@@ -556,10 +560,12 @@ C
 C
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
-      DIMENSION U(40,40),OSC(40,40),C(40,40),F(40,40)
-      DIMENSION S(40),ALPHA(40)
+      IMPLICIT NONE
+      REAL(DP) TEMP
+      REAL(DP) U(40,40),OSC(40,40),C(40,40),F(40,40)
+      REAL(DP) S(40),ALPHA(40)
       INTEGER I, J
+      REAL(DP) AL, CJ, CV, F1, GG, GGG, P, Q, S1, SJ, SV, TE
       EXTERNAL EIRENE_COF1N, EIRENE_COFJO, EIRENE_COFJS, EIRENE_COFJS2,
      .         EIRENE_COFVR, EIRENE_COFVS
 C
@@ -652,9 +658,12 @@ C
 C
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
 
+      REAL(DP) U, OSC, TE, F
       INTEGER I, J, ICON
+      REAl(DP) A, B, C1, E1, E1Y, E1Z, E2, E2Y, E2Z,
+     .         R, RX, P, Q, X, Y, Y1, Z, Z1
       REAL(DP) EIRENE_GINT
       EXTERNAL EIRENE_GINT, EIRENE_EXPI
 
@@ -733,8 +742,11 @@ C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
 
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
+      REAL(DP) U, OSC, TE, C
       INTEGER I, J, ICON
+      REAL(DP) A, B, C1, BN, E1, E1Y, E1Z, E2, E2Y, E2Z, P, Q, R,
+     .         X, Y, Y1, Z, Z1
       EXTERNAL EIRENE_EXPI, EIRENE_EXIT_OWN
 
       P=I
@@ -779,8 +791,11 @@ C
 C
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
+      REAL(DP) U, OSC, TEMP, C
       INTEGER I, J
+      REAL(DP) A, B, C1, C2, BN, DELTA,
+     .         G1, G2, G3, GAMMA, P, Q, S1, UH, X
 
       UH=13.595
       P=I
@@ -816,9 +831,13 @@ C     J. APPL. PHYS. 73, 8122 (1993).
 C
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
+      REAL(DP) TE, S
       INTEGER I, N, K, ICON
-      DIMENSION G(0:2,40)
+      REAL(DP) G(0:2,40)
+      REAL(DP) A, B, BN, C1,
+     .         E0Y, E0Z, E1, E1Y, E1Z, E2, E2Y, E2Z, EGY, EGZ,
+     .         P, R, RX, Y, Y1, Z, Z1
       EXTERNAL EIRENE_EXPI
 
       G(0,1)=1.1330
@@ -914,9 +933,12 @@ C     J. APPL. PHYS. 73, 8122 (1993).
 C
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
+      REAL(DP) TE, W
       INTEGER I, N, K
-      DIMENSION G(0:2,40)
+      REAL(DP) G(0:2,40)
+      REAL(DP) A, B, C1, E0Y, E0Z, E1, E1Y, E1Z, E2, E2Y, E2Z, EGY, EGZ,
+     .         P, PP, R, RX, Y, Y1, Z, Z1
       REAL(DP) EIRENE_GINT
       EXTERNAL EIRENE_GINT
 
@@ -981,8 +1003,10 @@ C
 C
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
+      REAL(DP) TEMP, S
       INTEGER I
+      REAL(DP) P, UI, UIZ
 
       P=I
       UI=13.595/TEMP/P**2
@@ -1032,7 +1056,8 @@ C   integrate functions gaunt3(x), for S and gaunt4, for ES, from 0 to 20
 C
       USE EIRMOD_PRECISION
 
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
+      REAL(DP) XP,P,S,ES
       REAL(DP) EIRENE_GAUNT3,EIRENE_GAUNT4,PP,XPP,A,B,EPSR
       INTEGER II, NMIN, NMAX
       COMMON PP,XPP
@@ -1106,8 +1131,9 @@ c  WITH OF UP TO 3 RIGHT HAND SIDES. (DEFAULT: 2: IONISATION, RECOMBINATION)
 c  l_ext: indicate that 3rd right hand side term is requested
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
       INTEGER LUP, LIM
+      REAL(DP) DENSEL
       REAL(DP) C(40,40),F(40,40),A(40,40),W(40,40),
      &         SAHA(40),S(40),ALPHA(40),BETA(40),R0(40),R1(40),
      &         Q_EXT(40),R_EXT(40),
@@ -1116,6 +1142,7 @@ C
       INTEGER I,J,K,L,IE,ICON,IS
       LOGICAL :: L_EXT
       integer ip(40)
+      REAL(DP) SUMA, SUMAS, SUMC, SUMF, SUMFS
       EXTERNAL :: EIRENE_LAX_M
 
       DO 201 K=2,LUP-1
@@ -1256,11 +1283,13 @@ C  3) FROM EXTERNAL TO GROUND OR CONTINUUM: SCR_EXT, ALP_EXT
 C
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
       INTEGER LUP, LIM
-      DIMENSION C(40,40),S(40),SAHA(40),A(40,40),ALPHA(40),BETA(40),
-     &          R0(40),R1(40),R_EXT(40),Q_EXT(40),F(40,40)
+      REAL(DP) ALPCR, DENSEL, SCR, SCR_EXT
+      REAL(DP) C(40,40),S(40),SAHA(40),A(40,40),ALPHA(40),BETA(40),
+     &         R0(40),R1(40),R_EXT(40),Q_EXT(40),F(40,40)
       INTEGER I
+      REAL(DP) ALPCR1, ALPCR2, SUSCR, SUSRAD
       LOGICAL :: L_EXT
 C
       DO 5000 I=LUP+1,LIM
@@ -1331,15 +1360,17 @@ C     ENERGY LEVELS: E_AT(1)=0, E_AT(H+)=13.595=UH
 C
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
       INTEGER LUP, LIM
-      DIMENSION C(40,40),S(40),SAHA(40),A(40,40),F(40,40),
-     &          ALPHA(40),BETA(40),EBETA(40),
-     &          R0(40),R1(40),R_EXT(40),Q_EXT(40),E_AT(40)
+      REAL(DP) ALPCR, DENSEL, E_ALPCR, E_SCR, E_SCR_EXT, SCR, SCR_EXT
+      REAL(DP) C(40,40),S(40),SAHA(40),A(40,40),F(40,40),
+     &         ALPHA(40),BETA(40),EBETA(40),
+     &         R0(40),R1(40),R_EXT(40),Q_EXT(40),E_AT(40)
       INTEGER I, I1, I2
+      REAL(DP) DE, SUSCR, UH
       LOGICAL :: L_EXT
 
-      DIMENSION EMEAN_REC(41)
+      REAL(DP) EMEAN_REC(41)
 C
       DO 5000 I=LUP+1,LIM
         R0(I)=1.0*SAHA(I)
@@ -1584,9 +1615,12 @@ C
 C
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
+      REAL(DP) TEMP
       REAL(DP) OSC(40,40),CJ(40,40)
       INTEGER I, J, ICON
+      REAL(DP) A, B, BN, C1, E1, E1Y, E1Z, E2, E2Y, E2Z, EP, EQ,
+     .         P, Q, R, TE, U, X, Y, Y1, Z, Z1
       EXTERNAL EIRENE_EXPI
 
       TE=TEMP*1.1605E4
@@ -1639,196 +1673,9 @@ C
       RETURN
       END SUBROUTINE EIRENE_JOHN
 c
-      subroutine EIRENE_LAX_M(A,N1,N,B,nb,nbi,eps,ifl,is,vw,ip,icon)
-C
-C     COPY OF ORIGINAL ROUTINE EIRENE_LAX FOR USE OF MULTIPLE RIGHT HAND SIDES
-C     NEW ARGUMENT: nb:  STORAGE FOR NO. OF RIGHT HAND SIDE (INHOMOGENEOUS) VECTORS
-C     NEW ARGUMENT: nbi: NO. OF RIGHT HAND SIDE (INHOMOGENEOUS) VECTORS. .LE.NB
-C
-      USE EIRMOD_PRECISION
-      USE EIRMOD_COMPRT, ONLY: IUNOUT
-
-      integer n1, n,nb, nbi, ifl, is, icon
-      real(dp) a(n1,n1),B(nb,*),vw(*)
-      real(dp) eps
-      integer ip(*)
-      integer iw(100), ier
-      if (n1.gt.100) then
-        write (iunout,*) 'error in lax'
-        call eirene_exit_own(1)
-      endif
-      call EIRENE_galpd_m(a,n1,n,b,nb,nbi,iw,ier)
-      if (ier.eq.1) then
-        write (iunout,*) 'error in lax, matrix ist singulaer'
-      endif
-      return
-      end
-c
-
-c
-      SUBROUTINE EIRENE_GALPD_M(A,NA,NG,B,NB,NBI,IW,IER)
-C
-C     COPY OF ORIGINAL ROUTINE EIRENE_GALPD FOR USE OF MULTIPLE RIGHT HAND SIDES
-C     NEW ARGUMENT: nb:  NO. OF RIGHT HAND SIDE (INHOMOGENEOUS) VECTORS
-C
-      USE EIRMOD_PRECISION
-C
-C***********************************************************************
-C*   GAUSS-ALGORITHMUS ZUR LOESUNG LINEARER GLEICHUNGS-SYSTEME MIT     *
-C*   PIVOTIERUNG.                                                      *
-C*   GENAUIGKEIT:   DOUBLE-PRECISION                   (01.07.1991)    *
-C***********************************************************************
-C    A(NA,NA): KOEFFIZIENTEN-MATRIX DES GLEICHUNGS-SYSTEMS
-C    NA      : DIMENSION VON A WIE IM AUFRUFENDEN PROGRAMM ANGEGEBEN
-C    NG      : ANZAHL DER UNBEKANNTEN   (NG <= NA)
-C    B(NB,NG): ELEMENTE DER RECHTEN SEITE DES GLEICHUNGS-SYSTEMS
-C    NB      : DIMENSION ANZAHL DER RECHTEN SEITEN (NB >= 1)
-C    NBI     : ANZAHL DER RECHTEN SEITEN (NB >= 1)
-c    B WIRD MODIFIZIERT UND ENTHAELT BEIM OUTPUT DIE NBI LOESUNGSVEKTOREN
-C    IW(NG)  : INTEGER HILFS-ARRAY FUER EINE MOEGLICHE PROGRAMM-
-C              INTERNE UMNUMERIERUNG DER GLEICHUNGEN
-C    IER     : ERROR-INDEX (IER = 1: MATRIX SINGULAER)
-C***********************************************************************
-C
-      IMPLICIT REAL(DP) (A-H,O-Z)
-      INTEGER NA, NG, NB, NBI, IW, IER
-      DIMENSION A(NA,NA),B(NB,NG),IW(NG)
-      DIMENSION HB(NB), R(NB,NG)
-      INTEGER IB, I, K, M, N, IZ, KS, IH, II
-      DATA ZERO /1.E-71_DP/
-      IER=0
-C
-C     ******************************************************************
-C     DER FALL:   NG = 2
-C     ******************************************************************
-C
-      IF(NG.EQ.2) THEN
-                  DO IB = 1, NBI
-                    H=A(1,1)*A(2,2)-A(2,1)*A(1,2)
-                    AI=B(IB,1)*A(2,2)-B(IB,2)*A(1,2)
-                    AK=A(1,1)*B(IB,2)-A(2,1)*B(IB,1)
-                    B(IB,1)=AI/H
-                    B(IB,2)=AK/H
-                  END DO
-                  RETURN
-                  ENDIF
-C
-C     ******************************************************************
-C     NUMMERN DER UNBEKANNTEN AUF IW ABSPEICHERN.
-C     ******************************************************************
-C
-      DO 1 K=1,NG
-        IW(K)=K
-    1 CONTINUE
-C
-C     ******************************************************************
-C     DIE A-MATRIX AUF DREIECKS-FORM BRINGEN.
-C     ******************************************************************
-C
-      DO 10 I=1,NG
-C
-C        ===============================================================
-C        Pivot-Element suchen  ( Zeile IZ,  Spalte KS )
-C        ===============================================================
-C
-         AP=0
-         IZ=0
-         KS=0
-         DO 3 M=I,NG
-            DO 2 N=I,NG
-               AMN=ABS(A(M,N))
-               IF(AMN.GT.AP) THEN
-                             AP=AMN
-
-                             IZ=M
-
-                             KS=N
-
-                             ENDIF
-    2          CONTINUE
-    3      CONTINUE
-C
-C        ============================
-C        Zeilen umordnen, wenn IZ > I
-C        ============================
-C
-         IF(IZ.GT.I) THEN
-                     DO 4 N=I,NG
-                        H=A(I,N)
-                        A(I,N)=A(IZ,N)
-                        A(IZ,N)=H
-    4                CONTINUE
-                     HB(1:NBI)=B(1:NBI,I)
-                     B(1:NBI,I)=B(1:NBI,IZ)
-                     B(1:NBI,IZ)=HB(1:NBI)
-                     ENDIF
-C
-C        ===============================================
-C        Spalten umordnen und Unbekannte neu numerieren
-C        ===============================================
-C
-         IF(KS.GT.I) THEN
-                     IH=IW(I)
-                     IW(I)=IW(KS)
-                     IW(KS)=IH
-                     DO 5 M=1,NG
-                        AK=A(M,KS)
-                        A(M,KS)=A(M,I)
-                        A(M,I)=AK
-    5                CONTINUE
-                     ENDIF
-C
-C        ===============================================================
-C        Total-Pivotierung. Spalte i,  Zeile 1 ... i-1, i+1 ... NG
-C        zu Null machen.
-C        ===============================================================
-C
-         AP=A(I,I)
-         IF(ABS(AP).LT.ZERO) GOTO 15
-         AP=1/AP
-         DO 8 M=1,NG
-            IF(M.EQ.I) GOTO 8
-            IF(ABS(A(M,I)).GT.ZERO) THEN
-                                    Q=A(M,I)*AP
-                                    DO 7 N=I,NG
-                                       A(M,N)=A(M,N)-A(I,N)*Q
-    7                               CONTINUE
-                                    B(1:NBI,M)=B(1:NBI,M)-B(1:NBI,I)*Q
-                                    ENDIF
-    8       CONTINUE
-   10    CONTINUE
-C
-C     ******************************************************************
-C     WENN A(N,N) ^= 0, KOENNEN DIE UNBEKANNTEN BERECHNET WERDEN.
-C     -:  SIE WERDEN ZUNAECHST AUF A(N,I), I=1,...,N GESETZT.
-C     -:  DANN DIE BERECHNETEN UNBEKANNTEN IN DER RICHTIGEN ANORDNUNG
-C         AUF B(I) SCHREIBEN UND AN DAS AUFRUFENDE PROGRAMM ZURUECKGEBEN
-C     ******************************************************************
-C
-      DO 12 M=1,NG
-         R(1:NBI,M)=B(1:NBI,M)/A(M,M)
-   12 CONTINUE
-      DO 14 M=1,NG
-         II=IW(M)
-         B(1:NBI,II)=R(1:NBI,M)
-   14 CONTINUE
-C
-       RETURN
-
-C     ******************************************************************
-C     MATRIX IST SINGULAER.
-C       -: IER = 1 SETZTEN
-C       -: RETURN
-C     ******************************************************************
-C
-   15 IER=1
-      RETURN
-      END SUBROUTINE EIRENE_GALPD_M
-
-
       subroutine EIRENE_aqc8(a,b,f,epsr,nmin,nmax,S)
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
 c  S=integral from a to b, of the function f(x) (external).
 c  epsr : relative errors, input
 c   nmin,nmax:  min and max number of function calls
@@ -1840,7 +1687,7 @@ c err: estim absolut error
 c n  anzahl der functionsaufrufe
 c icon: error code
       integer nmin, nmax
-      real(dp) f
+      real(dp) a, b, f, epsr, s
       external f
       external EIRENE_midpnt, EIRENE_qromo
 cdr  perhaps Romberg integration?
@@ -1853,10 +1700,11 @@ cdr  perhaps Romberg integration?
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
 
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
       INTEGER JMAX, JMAXP, KM, K
       PARAMETER (JMAX=14,JMAXP=JMAX+1,KM=4,K=KM+1)
-      DIMENSION S(JMAXP),H(JMAXP)
+      REAL(DP) A, B, DSS, SS, EPSR
+      REAL(DP) S(JMAXP),H(JMAXP)
       INTEGER J
       REAL(DP) FUNC
       external choose,func,eirene_polint
@@ -1879,11 +1727,13 @@ cdr  perhaps Romberg integration?
 
       SUBROUTINE EIRENE_POLINT(XA,YA,N,X,Y,DY)
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
       INTEGER NMAX, N
       PARAMETER (NMAX=10)
-      DIMENSION XA(N),YA(N),C(NMAX),D(NMAX)
+      REAL(DP) DY, X, Y
+      REAL(DP) XA(N),YA(N),C(NMAX),D(NMAX)
       INTEGER I, NS, M
+      REAL(DP) DEN, DIF, DIFT, HO, HP, W
 
       NS=1
       DIF=ABS(X-XA(1))
@@ -1924,8 +1774,11 @@ cdr  perhaps Romberg integration?
 C
       SUBROUTINE EIRENE_MIDPNT(FUNC,A,B,S,N)
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
       INTEGER N, IT, J
+      REAL(DP) A, B, S
+      REAl(DP) DEL, DDEL, SUM, TNM, X
+      REAL(DP) FUNC
       external func
       save
 

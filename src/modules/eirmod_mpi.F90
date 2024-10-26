@@ -1247,7 +1247,7 @@ module eirmod_mpi
     implicit none
     integer, intent(in) :: n
     integer, intent(inout) :: requests(n)
-    integer, dimension(MPI_STATUS_SIZE, n) :: statuses
+    integer, intent(in), dimension(MPI_STATUS_SIZE, n) :: statuses
     integer, intent(out) :: ierr
     requests = MPI_REQUEST_NULL
     ierr = MPI_SUCCESS
@@ -1275,7 +1275,7 @@ module eirmod_mpi
     integer, intent(in) :: n
     integer, intent(inout) :: requests(n)
     logical, intent(out) :: flag
-    integer, dimension(MPI_STATUS_SIZE, n) :: statuses
+    integer, intent(in), dimension(MPI_STATUS_SIZE, n) :: statuses
     integer, intent(out) :: ierr
     requests = MPI_REQUEST_NULL
     flag = .true.

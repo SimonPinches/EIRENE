@@ -103,7 +103,7 @@ C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
       USE EIRMOD_JSON
       USE EIRMOD_OPENFILE, ONLY: EIRENE_OPENFILE
 
-      use json_module       
+      use json_module       ! IGNORE
 
       IMPLICIT NONE
 

@@ -356,6 +356,7 @@ c     ym make sure the clast variables do not take exotic values
 
 !!! Allocate shared arrays and copy in the data from master
       SUBROUTINE EIRENE_INIT_BUFFERS_OPENMP
+      IMPLICIT NONE
 
       ALLOCATE (BISDVI(MSDVI))
       BISDVI=ISDVI
@@ -386,6 +387,7 @@ c     ym make sure the clast variables do not take exotic values
 
 !!! Copy the shared buffers into the thread private arrays
       SUBROUTINE EIRENE_COPY_BUFFERS_OPENMP
+      IMPLICIT NONE
 
       ISDVI=BISDVI
       IPSTD=BIPSTD
@@ -409,6 +411,7 @@ c     ym make sure the clast variables do not take exotic values
 
 !!! Allocate shared arrays and copy in the data from master
       SUBROUTINE EIRENE_DEALLOCATE_BUFFERS_OPENMP
+      IMPLICIT NONE
 
       DEALLOCATE(BISDVI)
       DEALLOCATE(BIPSTD)
@@ -422,6 +425,7 @@ c     ym make sure the clast variables do not take exotic values
       END SUBROUTINE EIRENE_DEALLOCATE_BUFFERS_OPENMP
 
       SUBROUTINE EIRENE_CHECK_STDEV
+      IMPLICIT NONE
 
 CHJL At present the standard deviation calculations are incorrect when using
 CHJL OpenMP threads and anyway result in the code crashing, this routine turns

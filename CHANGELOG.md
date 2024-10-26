@@ -26,7 +26,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Applied CONTRIBUTING rule that Fortran file extensions should be .F instead of .f when the file must be pre-processed by the Makefile
 - Pointing to modified set of examples with .F file extensions
 - Removed forced usage of OpenMP compiler options
-- Moved EIRENE_EXPINT and EIRENE_MMDEI to their own file
+- Moved EIRENE_EXPINT, EIRENE_LAX_M and EIRENE_MMDEI to their own files
 - Added TRCMELD output switch
 - Do not use IUNOUT in EIRENE_MAIN before it is defined or after it has been deallocated
 - Added MPI_VERSION and MPI_MOD pragmas to handle older MPI implementations
@@ -61,8 +61,10 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Replaced F2003 pre-processor (the compiler supports the Fortran 2003 standard) pragma with LEGACYCOMP (the compiler does not support the Fortran 2003 standard)
 - Added EXTERNAL definitions for called subroutines and functions
 - Using END SUBROUTINE <SUB_NAME> statements to close subroutines
+- Added IMPLICIT NONE statements
+- Added some INTENT(IN) declarations
 - Added pre-processor pragmas around relevant variables only used if the pragma is declared
-- Add IGNORE comments to MPI module use statements for SOLPS-style dependencies build
+- Add IGNORE comments to MPI and JSON modules use statements for SOLPS-style dependencies build
 - Removed superfluous MPI interface routines
 - Removed unused variables and modules
 - Making use of lower/upper case more consistent
@@ -73,6 +75,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Added missing comment about density validity range in AMJUEL file
 - Added some more produced file types to .gitignore file
 - Improved handling of external libraries in CMakeLists.txt
+- Added -fpe0 debug Intel compilation flag
 - Added -allow-argument-mismatch argument to GNU compilation above version 9.5 to avoid errors with MPI routines
 - Added Cray compiler support
 ---
