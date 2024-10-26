@@ -4,7 +4,7 @@ cpg called from find_param.f
       use eirmod_parmmod
       use eirmod_extrab25
 #ifdef B25_EIRENE
-      use eirmod_cgrid, only : nr1st, np2nd
+      use eirmod_cgrid, only : nr1st, np2nd, eirene_alloc_cgrid
       use eirmod_clogau, only : nlpol
       use eirmod_comprt, only : iunout
       use eirmod_comsou, only : nstrai
@@ -51,6 +51,7 @@ cpg called from find_param.f
       ENDIF
 
 #ifndef ALLOCATE_AND_NAMELIST
+      CALL EIRENE_ALLOC_CGRID
       IF (NR1ST.GT.DEF_NYD+1) THEN
         WRITE(iunout,*)
      .   'N1ST from KOPPLDIM.F is too small (',DEF_NYD+1,')'

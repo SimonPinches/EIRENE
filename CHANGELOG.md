@@ -27,6 +27,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Pointing to modified set of examples with .F file extensions
 - Removed forced usage of OpenMP compiler options
 - Added GRAPHICS option in CMakeLists.txt for compilation with or without plotting enabled
+- Added EIRENE_ALLOC_CGRID call in COUPLE_PARAM from SOLPS-ITER routine
 - Used the module provided NREACI, NATMI, NMOLI, NIONI, and NPHOTI in EIRENE_BROWSE_BLOCK_5 inside FIND_PARAM_JSON
 - Added ITYP_OLD assignments in EIRMOD_LOCAT1
 - Added IFIRST initialization to zero in READ_COLRAD
