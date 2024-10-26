@@ -1219,7 +1219,7 @@ cym ccccccccccccccccccccccccccccccccccccccccccccc
 cym see comment above
 cym ccccccccccccccccccccccccccccccccccccccccccccc
 #ifndef USE_OPENMP
-  101     CONTINUE
+C 101     CONTINUE
 #endif
 C
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )

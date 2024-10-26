@@ -27,8 +27,8 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Pointing to modified set of examples with .F file extensions
 - Removed forced usage of OpenMP compiler options
 - Used the module provided NREACI, NATMI, NMOLI, NIONI, and NPHOTI in EIRENE_BROWSE_BLOCK_5 inside FIND_PARAM_JSON
-- Moved EIRENE_EXPINT, EIRENE_LAX_M and EIRENE_MMDEI to their own files
 - Added IFIRST initialization to zero in READ_COLRAD
+- Moved EIRENE_EXPINT, EIRENE_LAX_M and EIRENE_MMDEI to their own files
 - Added TRCMELD output switch
 - Do not use IUNOUT in EIRENE_MAIN before it is defined or after it has been deallocated
 - Added MPI_VERSION and MPI_MOD pragmas to handle older MPI implementations
@@ -37,6 +37,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Added a safety to check the fort.34 file is present before attempting to read it
 - Added safety for reading correct number of integers in block 10F of input file in READ_FIXFORM
 - Added safety against IPRNL=0 in SETUP_TIME_SURFACE
+- Adding safety against TEIL=0 and an error message in EIRMOD_ALGEBRA
 - Adding safety for incorrect algebraic manipulation of intensive tallies in ALGTAL
 - Added calls to flush out buffers
 - Added allocated status safeties
@@ -56,11 +57,11 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Corrected format statements
 - Generalized usaged of FORT and FORT_LC variables
 - Introduced usage of EIRENE_OPENFILE in all interface routines
+- Avoiding obsolescent shared labels END DO statements, replaced with CONTINUE
 - Added TRIM operations and character ranges to avoid string length overflows
 - Added USE_OPENMP and USE_EXT_OPENMP pragmas to avoid compiler warnings from !$OMP instructions when compiling without OpenMP
 - Removed double definition of USE_OPENMP and USE_EXT_OPENMP in CMakeLists.txt
 - Added B25_EIRENE pre-processor pragmas in SOLPS-ITER interface routines
-- Adding safety against TEIL=0 in EIRMOD_ALGEBRA
 - Added LEGACYCOMP alternate code
 - Added definition of GFORTRAN pragma in CMakeLists.txt
 - Added G95 pre-processor pragmas to deal with g95 compiler errors
@@ -74,6 +75,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Add IGNORE comments to MPI and JSON modules use statements for SOLPS-style dependencies build
 - Removed superfluous MPI interface routines
 - Removed unused variables and modules
+- Removed unused labels, formats and error statements
 - Making use of lower/upper case more consistent
 - Removed tabulations, alignment corrections
 - Added some more clarifying comments

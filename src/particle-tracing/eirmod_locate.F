@@ -1594,10 +1594,10 @@ C  SHEATH POTENTIAL NOT YET SET IN SAMSRF. TRY TO FIND IT NOW
                 IF (FSHEAT(MSURF).LE.0.D0) THEN
                   GAMMA=0.
                   CUR=0.
-                  DO 550 IP=1,NPLSI
+                  DO IP=1,NPLSI
                     VPWL(IP)=SQRT(VXWL(IP)**2+VYWL(IP)**2+VZWL(IP)**2)
 C                   DIWL(IP)=DIWL(IP)
-  550             CONTINUE
+                  ENDDO
 cnh 02.11.2019 NCHRGP -> ZIWL
                   ESHET=ZIWL(IPLS)*EIRENE_SHEATH(TEWL,DIWL,VPWL,
      .                                    ZIWL,GAMMA,CUR,NPLSI,MSURF)
