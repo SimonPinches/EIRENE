@@ -470,6 +470,7 @@ C
         GOTO 200
       ENDIF
 
+      RETURN
       END SUBROUTINE EIRENE_TIMER_CIRCULAR_MESH
 
 !-------------------------------------------------------------------------

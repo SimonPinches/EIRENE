@@ -2427,6 +2427,7 @@ C*******************************************************************************
      w                             ABS(FSUM-wldnep(ISS,0))
         END DO !DO IS=1,NSTS
       END IF !IF(TRCINT)
+      RETURN
   600 FORMAT(1X,A12,I8,1P,3E16.7)
   601 FORMAT(1X,A12,A8,3A16)
   602 FORMAT(1X,A16,1P,E16.7,A14,E16.7,A6,E16.7)
@@ -2461,6 +2462,7 @@ C******************************************************************************
         END IF
       END IF
 
+      RETURN
       END SUBROUTINE CHECK_SUM
 
 C******************************************************************************
@@ -2508,6 +2510,7 @@ C CALCULATING THE FLUX DENSITIES
         wldspt_res(IS)=wldspt_res(IS)/sarea_res(IS)
        END DO
       END DO
+      RETURN
       END SUBROUTINE POSTPROCESS_FLUXES
 
 C******************************************************************************
@@ -2538,6 +2541,7 @@ C UPDATING SURFACE AREA, EXCLUDING DOUBLE-COUNTING
       ELSE
        sarea_res(IR)=sarea_res(IR)+SAREA(MS)
       END IF  !IF(ITN.GT.0) THEN
+      RETURN
 
       END SUBROUTINE WNEUTRAL_FLUXES_SAREA_UPDATE
 

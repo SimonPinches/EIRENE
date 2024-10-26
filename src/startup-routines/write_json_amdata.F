@@ -362,7 +362,7 @@
       call json%add(blk5,blk5b)
 
 #endif
-
+      return
       end subroutine eirene_write_block_45
 
 !******************************************************************************
@@ -526,6 +526,7 @@
 
       end do
 
+      return
       end subroutine eirene_write_block_4abcd
 
 #endif

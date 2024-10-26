@@ -110,4 +110,5 @@
         call json%add(this,ottls)
       end if
 
+      return
       end subroutine eirene_wr0_json

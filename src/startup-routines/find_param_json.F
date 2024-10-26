@@ -579,6 +579,7 @@ C
         NADD = MAX(NADD,NRADD)
       end if
 
+      return
       end subroutine eirene_browse_block_2
 
 !******************************************************************************
@@ -598,6 +599,7 @@ C
 !PB   IF (NTIME.GE.1) NSTSI = NSTSI + 1
       NSTS = MAX(NSTS,NSTSI)
 
+      return
       end subroutine eirene_browse_block_3a
 
 
@@ -616,6 +618,7 @@ C
       call json%get(p,'NLIMI',nlimi,found)
       NLIM = MAX(NLIM,NLIMI)
 
+      return
       end subroutine eirene_browse_block_3b
 
 
@@ -737,6 +740,7 @@ cym to be evaluated
       nullify(pspecs)
       nullify(pspc)
 
+      return
       end subroutine eirene_browse_block_4
 
 !******************************************************************************
@@ -811,6 +815,7 @@ cdr:  to be generalized: there may be other reactions, which require multiple Ti
       nullify (preac)
       nullify (pir)
 
+      return
       end subroutine eirene_read_spc_block
 
 
@@ -900,6 +905,7 @@ cdr these next 2 lines for V_IN(ipls)
       nullify(pdm)
       nullify(pplas)
 
+      return
       end subroutine eirene_browse_block_5
 
 
@@ -999,6 +1005,7 @@ c  Due to the volume tally input card (indpro(12)) being optional.
       indpro2_save=indpro(2)
 
       nullify (pti)
+      return
       end subroutine eirene_Ti_input
 
 !******************************************************************************
@@ -1030,6 +1037,7 @@ c  Due to the volume tally input card (indpro(12)) being optional.
 
       nullify(ptom)
 
+      return
       end subroutine eirene_browse_block_6
 
 
@@ -1126,6 +1134,7 @@ cdr  here NSTEP is set to the largest step function number specified on SORIND
       nullify(psub)
       nullify(psubs)
 
+      return
       end subroutine eirene_browse_block_7
 
 
@@ -1158,6 +1167,7 @@ cdr  here NSTEP is set to the largest step function number specified on SORIND
       NSDW = MAX(NSDW,NSIGSI)
       NCV = MAX(NCV,NSIGCI)
 
+      return
       end subroutine eirene_browse_block_9
 
 
@@ -1206,6 +1216,7 @@ cdr  here NSTEP is set to the largest step function number specified on SORIND
       WRITE (iunout,*) '*** 10E. DATA FOR ALGEBRAIC SURFACE TALLIES'
       WRITE (iunout,*) '*** 10F. DATA FOR SPECTRA'
 
+      return
       end subroutine eirene_browse_block_10
 
 
@@ -1266,6 +1277,7 @@ C  ERGODIC OPTION NEEDS PRINTOUT AT LEAST FROM TIME-HORIZON
         nullify(ptal)
       end if
 
+      return
       end subroutine eirene_browse_block_11
 
 
@@ -1386,6 +1398,7 @@ C  ERGODIC OPTION NEEDS PRINTOUT AT LEAST FROM TIME-HORIZON
         NREAC = NREAC + NUM_LINES*NUM_COMPO + 3
       END IF
 
+      return
       end subroutine eirene_browse_block_12
 
 
@@ -1444,6 +1457,7 @@ C  THEREFORE: SET A DEFAULT TIME HORIZON HERE
       NPRNL = MAX(NPRNL,NPRNLI)
       NLIMPS = NLIM+NSTS
 
+      return
       end subroutine eirene_browse_block_13
 
 
@@ -1477,6 +1491,7 @@ cdr  some parameters may have gotten changed in IF0PRM, case-specific
       NAIN = MAX(NAIN,NAINI)
       NCPV = MAX(NCPV,NCPVI)
 
+      return
       end subroutine eirene_browse_block_14
 
 

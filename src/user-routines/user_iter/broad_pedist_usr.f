@@ -7,4 +7,5 @@
       !> time allocated for stratum
       REAL(DP), INTENT(IN) :: XTIM(0:NSTRA)
 
+      RETURN
       END SUBROUTINE EIRENE_BROAD_PEDIST_USR

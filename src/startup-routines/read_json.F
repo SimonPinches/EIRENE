@@ -243,6 +243,7 @@ cdr     CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
         deallocate (cmlines)
       end if
 
+      return
       end subroutine eirene_read_block_0
 
 !*****************************************************************
@@ -585,7 +586,7 @@ C
 C  to be done:
 c  printout:  which default storage settings have we overruled (consequences thereof?)
 C
-
+      return
       end subroutine eirene_read_block_1
 
 !*****************************************************************
@@ -904,6 +905,7 @@ C
         END IF
       ENDIF
 
+      return
       end subroutine eirene_read_block_2
 
 !*****************************************************************
@@ -1069,6 +1071,7 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
 
       end do
 
+      return
       end subroutine eirene_read_block_3a
 
 !*****************************************************************
@@ -1102,6 +1105,7 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
         IMSG=1
       ENDIF
 
+      return
       end subroutine eirene_read_surf_switches
 
 !*****************************************************************
@@ -1178,6 +1182,7 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
         end if
       end if
 
+      return
       end subroutine eirene_read_ref_model
 
 
@@ -5172,6 +5177,7 @@ C  also set NAINI, NCOPII, NCOPIE there
      .                    NAINI, NCOPIE, NCPVI
       END IF
 
+      RETURN
       END SUBROUTINE EIRENE_READ_BLK14_JSON
 
 !*****************************************************************

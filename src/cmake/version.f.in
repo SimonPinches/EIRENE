@@ -27,6 +27,7 @@ C> usual output unit.
      . '@git_branch@'
 #endif
 
+      RETURN
       END SUBROUTINE EIRENE_VERSION
 
       function get_Eir_hash()

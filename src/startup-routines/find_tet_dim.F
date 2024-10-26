@@ -70,4 +70,5 @@
 
       deallocate (filename)
 
+      return
       end subroutine eirene_find_tet_dim

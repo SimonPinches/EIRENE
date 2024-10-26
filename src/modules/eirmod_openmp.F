@@ -76,6 +76,7 @@ c     ym copyin does not work for allocatable pointer arrrays
 !$OMP END PARALLEL
 #endif
 
+      RETURN
       END SUBROUTINE EIRENE_INIT_OPENMP
 
       SUBROUTINE EIRENE_PREPARE_OPENMP
@@ -122,6 +123,7 @@ c     ym copyin does not work for allocatable pointer arrrays
 !$OMP END PARALLEL
 #endif
 
+      RETURN
       END SUBROUTINE EIRENE_PREPARE_OPENMP
 
 
@@ -290,6 +292,7 @@ c     ym make sure the clast variables do not take exotic values
       SIGBGK  => XSTORV(7)
       ZMFPI   => XSTORV(8)
 
+      RETURN
       END SUBROUTINE EIRENE_ALLOCATE_OPENMP
 
 
@@ -351,6 +354,7 @@ c     ym make sure the clast variables do not take exotic values
       DEALLOCATE (RSPLST)
       DEALLOCATE (ISPLST)
 
+      RETURN
       END SUBROUTINE EIRENE_DEALLOCATE_OPENMP
 
 
@@ -382,6 +386,7 @@ c     ym make sure the clast variables do not take exotic values
       BETF=ETF
       BES=ES
 
+      RETURN
       END SUBROUTINE EIRENE_INIT_BUFFERS_OPENMP
 
 
@@ -406,6 +411,7 @@ c     ym make sure the clast variables do not take exotic values
       ETF=BETF
       ES=BES
 
+      RETURN
       END SUBROUTINE EIRENE_COPY_BUFFERS_OPENMP
 
 
@@ -422,6 +428,7 @@ c     ym make sure the clast variables do not take exotic values
       DEALLOCATE(BXSTOR)
       DEALLOCATE(BXSTORV)
 
+      RETURN
       END SUBROUTINE EIRENE_DEALLOCATE_BUFFERS_OPENMP
 
       SUBROUTINE EIRENE_CHECK_STDEV
@@ -454,6 +461,7 @@ CHJL off standard deviation calculations
         ENDIF
       ENDIF
 
+      RETURN
       END SUBROUTINE EIRENE_CHECK_STDEV
 
       END MODULE EIRMOD_OPENMP

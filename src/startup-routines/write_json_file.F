@@ -202,6 +202,7 @@
       end do
       call json%add(me,cfile)
 
+      return
       end subroutine eirene_write_block_1
 
 !******************************************************************************
@@ -376,6 +377,7 @@
         call json%add(add,'VOLADD',volcor(1:nradd))
       end if
 
+      return
       end subroutine eirene_write_block_2
 
 !******************************************************************************
@@ -419,6 +421,7 @@
       end do
       call json%add(me,nondefs)
 
+      return
       end subroutine eirene_write_block_3a
 
 !******************************************************************************
@@ -439,6 +442,7 @@
       call json%add(srf,'ILBOX',ilbox(nlj))
       call json%add(srf,'ILPLG',ilplg(nlj))
 
+      return
       end subroutine eirene_write_surf_switches
 
 !******************************************************************************
@@ -479,6 +483,7 @@
          call json%add(srf,'ESPUTC',esputc(1,nlj))
       end if
 
+      return
       end subroutine eirene_write_ref_model
 
 !******************************************************************************
@@ -689,6 +694,7 @@
       call json%destroy(ext)
       if (json%failed()) stop 1
 
+      return
       end subroutine eirene_write_block_3b
 
 !******************************************************************************
@@ -1020,6 +1026,7 @@
       call json%destroy(ext)
       if (json%failed()) stop 1
 
+      return
       end subroutine eirene_write_block_45
 
 !******************************************************************************
@@ -1197,6 +1204,7 @@
 
       end do
 
+      return
       end subroutine eirene_write_block_4abcd
 
 !******************************************************************************
@@ -1312,6 +1320,7 @@
         call json%add(smod,sm)
       end do
 
+      return
       end subroutine eirene_write_block_6
 
 
@@ -1450,6 +1459,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
         call json%add(srcs,src)
       end do
 
+      return
       end subroutine eirene_write_block_7
 
 !******************************************************************************
@@ -1545,6 +1555,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
         call json%add(zones,zone)
       end do
 
+      return
       end subroutine eirene_write_block_8
 
 !******************************************************************************
@@ -1639,6 +1650,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
         call json%add(me,sci)
       end if
 
+      return
       end subroutine eirene_write_block_9
 
 !******************************************************************************
@@ -1767,6 +1779,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
         call json%add(blk_10f,spc)
       end do
 
+      return
       end subroutine eirene_write_block_10
 
 !******************************************************************************
@@ -2033,6 +2046,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
         call json%add(me,pltls)
       end if
 
+      return
       end subroutine eirene_write_block_11
 
 !******************************************************************************
@@ -2168,6 +2182,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
         call json%add(me,'PRARGL',prargl)
       end if
 
+      return
       end subroutine eirene_write_block_12
 
 !******************************************************************************
@@ -2214,6 +2229,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
         end if
       end if
 
+      return
       end subroutine eirene_write_block_13
 
 !******************************************************************************
@@ -2260,6 +2276,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
 
 !      call eirene_wrjson_usr(me)
 
+      return
       end subroutine eirene_write_block_14
 
 !******************************************************************************
@@ -2288,6 +2305,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
 
       call json%add(me,'STRATEGY',strategy)
 
+      return
       end subroutine eirene_write_block_15
 
 !******************************************************************************

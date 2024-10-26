@@ -302,6 +302,7 @@
 
       call eirene_init_json_arrays
 
+      return
       end subroutine eirene_alloc_json_arrays
 
 !******************************************************************************
@@ -370,6 +371,7 @@
 
       DEALLOCATE (TRNSFRM)
 
+      return
       end subroutine eirene_dealloc_json_arrays
 
 !******************************************************************************
@@ -388,6 +390,7 @@
       nullify(stack%head)
       nullify(stack%last)
 
+      return
       end subroutine eirene_resolve_string_stack
 
 !******************************************************************************
@@ -457,6 +460,7 @@
         NULLIFY(TRNSFRM(I)%LAST)
       END DO
 
+      return
       end subroutine eirene_init_json_arrays
 
 !******************************************************************************
@@ -481,6 +485,7 @@
 
       stack%last => new_elem
 
+      return
       END subroutine eirene_push_string_stack
 !******************************************************************************
 
@@ -527,6 +532,7 @@
       ILCOL_IN(I) = ILCOL(I)
       LCHSPNWL_IN(:,I) = LCHSPNWL(:,I)
 
+      return
       end subroutine eirene_copy_addsrf
 !******************************************************************************
 

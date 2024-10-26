@@ -82,4 +82,5 @@
 
       if (allocated(filename)) deallocate (filename)
 
+      return
       end subroutine eirene_find_triang_dim

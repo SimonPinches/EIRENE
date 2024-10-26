@@ -4,4 +4,5 @@
 
       flush(iunout)
 
+      return
       end subroutine ioflush_usr
