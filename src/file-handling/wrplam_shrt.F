@@ -270,7 +270,7 @@ C .......................................................................
       CHARACTER*8 FILENAME
       CHARACTER*3 FILENUMBER
       INTEGER :: IO
-      INTEGER :: IREA, IREI, ISWR, IFL, IPLS
+      INTEGER :: IREA, ISWR, IFL, IPLS
       REAL(DP), ALLOCATABLE, SAVE :: RTAB(:,:), ETAB(:,:)
       LOGICAL EX
       EXTERNAL EIRENE_LEER
@@ -446,7 +446,7 @@ c         ircx=nfla_ir(irea)
 cdr restore some PI rates for iterative procedure (nonlinearities)
 c         irpi=nfla_ir(irea)
           read (13+ifoff)
-     w      tab_store(irei,1:nrad,1:9),e_store(irea,1:nrad,1:9)
+     w      tab_store(irea,1:nrad,1:9),e_store(irea,1:nrad,1:9)
         case (5)
 cdr restore some EL rates for iterative procedure (nonlinearities)
 c         irel=nfla_ir(irea)
