@@ -50,7 +50,7 @@ c  optional input parameters
       integer, intent(in), optional :: ir_esc, ic_esc
       real(dp) , intent(in), optional :: p_esc
 
-      integer, save :: ifirst
+      integer, save :: ifirst = 0
       integer, save :: ihsw(21)
       integer :: ivar, i, istr, irow_esc, icol_esc
       real(dp) :: pop_esc

@@ -28,6 +28,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Removed forced usage of OpenMP compiler options
 - Used the module provided NREACI, NATMI, NMOLI, NIONI, and NPHOTI in EIRENE_BROWSE_BLOCK_5 inside FIND_PARAM_JSON
 - Moved EIRENE_EXPINT, EIRENE_LAX_M and EIRENE_MMDEI to their own files
+- Added IFIRST initialization to zero in READ_COLRAD
 - Added TRCMELD output switch
 - Do not use IUNOUT in EIRENE_MAIN before it is defined or after it has been deallocated
 - Added MPI_VERSION and MPI_MOD pragmas to handle older MPI implementations
