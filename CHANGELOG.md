@@ -26,9 +26,11 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Applied CONTRIBUTING rule that Fortran file extensions should be .F instead of .f when the file must be pre-processed by the Makefile
 - Pointing to modified set of examples with .F file extensions
 - Removed forced usage of OpenMP compiler options
+- Added GRAPHICS option in CMakeLists.txt for compilation with or without plotting enabled
 - Used the module provided NREACI, NATMI, NMOLI, NIONI, and NPHOTI in EIRENE_BROWSE_BLOCK_5 inside FIND_PARAM_JSON
 - Added ITYP_OLD assignments in EIRMOD_LOCAT1
 - Added IFIRST initialization to zero in READ_COLRAD
+- Adding COUPLE_INIT routine in B2.5 interface
 - Moved EIRENE_EXPINT, EIRENE_LAX_M and EIRENE_MMDEI to their own files
 - Added TRCMELD output switch
 - Do not use IUNOUT in EIRENE_MAIN before it is defined or after it has been deallocated
@@ -88,6 +90,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Added missing comment about density validity range in AMJUEL file
 - Added some more produced file types to .gitignore file
 - Improved handling of external libraries in CMakeLists.txt
+- Added compilation dependency on local environment setup files
 - Added -fpe0 debug Intel compilation flag
 - Added -allow-argument-mismatch argument to GNU compilation above version 9.5 to avoid errors with MPI routines
 - Added Cray compiler support
