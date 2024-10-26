@@ -112,9 +112,13 @@ C     write (iunout,*) 'fpkcol push, zt used', zt
       IF (NLTRA) PHI=MOD(PHI-ATAN2(Z01,X01)+ATAN2(Z0,(RMTOR+X0)),PI2A)
 
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         CALL EIRENE_CHCTRC(X0,Y0,Z0,16,7)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
 
 C  TEST FOR CORRECT CELL NUMBER AT COLLISION POINT
@@ -162,7 +166,9 @@ cdr currently: arbitrary 1.5*Tiin(1,...)
 C
 C  UPDATE ESTIMATORS EIIO,EIPL
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
         EIIO(NCELLT)=EIIO(NCELLT)+WEIGHT*(E0NEW-E0OLD)
 
 cdr  for the time being: distribute bulk ion energy loss proportional to collision frequency
@@ -173,7 +179,9 @@ cdr
         FNUI = SUM(FNUIAR(1:NPLSI))  ! CDR THIS SUM SHOULD BE KNOWN
                                      !     FROM CALLING ROUTINE
         DO IPL = 1, NPLSI
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
           EIPL(IPL,NCELLT)=EIPL(IPL,NCELLT)-EWG*FNUIAR(IPL)/FNUI
         END DO
 C
@@ -281,9 +289,13 @@ C
       CALL EIRENE_MASAGE('PARTICLE IS KILLED')
 C   DETAILED PRINTOUT ALREADY DONE FROM SUBR. CLLTST
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
       GOTO 999
   998 CALL EIRENE_MASAGE
@@ -293,16 +305,24 @@ C   DETAILED PRINTOUT ALREADY DONE FROM SUBR. CLLTST
       WRITE (IUNOUT,'(A,I6)') ' NPANU = ',NPANU
       WRITE (IUNOUT,'(A,2ES12.4)') ' ZT, VEL = ', ZT, VEL
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
       GOTO 999
 C
   999 LGPART=.FALSE.
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
       PTRASH(ISTRA)=PTRASH(ISTRA)-WEIGHT
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
       ETRASH(ISTRA)=ETRASH(ISTRA)-WEIGHT*E0
       WEIGHT=0.
       CALL EIRENE_LEER(1)

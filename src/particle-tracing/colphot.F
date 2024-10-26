@@ -163,9 +163,13 @@ C
 C  PHOTON (OT) COLLISION (analog to CX in colatm)
 C
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           CALL EIRENE_CHCTRC(X0,Y0,Z0,16,4)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
 C
 C   FIND SPECIES INDEX OF BULK COLLISION PARTNER

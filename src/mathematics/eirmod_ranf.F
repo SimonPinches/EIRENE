@@ -16,7 +16,9 @@ cym common /cmem/ replaced
 cccccccccccccccccccccccccc
       integer :: iseed
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$omp threadprivate(ifirst_ranset,iseed)
+#endif
 
       CONTAINS
 

@@ -34,7 +34,9 @@ cym -> public because copyin needed
       REAL(DP), DIMENSION(28,0:11), PUBLIC, SAVE :: ETH,Q,M2M1,ETF
       REAL(DP), DIMENSION(28), PUBLIC, SAVE :: ES
 cym these will need to be copyin (initialized in sputr0)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(ETH,Q,M2M1,ES,ETF)
+#endif
 
       REAL(DP), PUBLIC, SAVE :: RTAMU(28),ZTAR(28)
       REAL(DP), PUBLIC, SAVE :: BT1 = 7.0_DP, BT2 = -0.54_DP,
@@ -69,9 +71,10 @@ C  NTARG: TARGET IDENTIFIER
 
       REAL(DP), PUBLIC, SAVE :: RM1,RM2,Z1,Z2,Z123,Z223,ES23,
      .                          FM2M1,GM2M1,GZ1Z213,GZ1Z212,XETF
-
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(RM1,RM2,Z1,Z2,Z123,Z223,ES23,
 !$OMP&               FM2M1,GM2M1,GZ1Z213,GZ1Z212,XETF)
+#endif
 
       REAL(DP), PUBLIC, SAVE :: TWOTHIRD,ONETHIRD,ONESIXTH,FIVESIXTH
 
@@ -83,9 +86,9 @@ C  CHEMICAL EROSION DATA
       INTEGER, ALLOCATABLE, PUBLIC, SAVE :: IPROJ(:), IPROJS(:),
      .                                      ITARG(:), ISPZSP_DEF(:)
       INTEGER, SAVE :: ICOUNT
-
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(ICOUNT)
-
+#endif
 
       CONTAINS
 

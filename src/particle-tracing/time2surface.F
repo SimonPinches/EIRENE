@@ -145,7 +145,9 @@ C
 C
   990 CONTINUE
 cym
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE('ERROR IN TIME_TO_STANDARD_SURFACE, '//
      .                   'ZDT1 OR NCELL OUT OF RANGE')
@@ -158,12 +160,16 @@ cym
      .                  NPANU,NCELL,ZDT1,ZTST,TL,TS
       CALL EIRENE_MASJ4('NRCELL,NPCELL,NTCELL,NACELL     ',
      .                   NRCELL,NPCELL,NTCELL,NACELL)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
 cym
       RETURN
 C
   994 CONTINUE
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE('ERROR IN TIME_TO_STANDARD_SURFACE, '//
      .                   'FOKKER-PLANCK COLLISION INDICATED BUT '//
@@ -177,28 +183,38 @@ C
      .                  NPANU,NCELL,ZDT1,ZTST,TL,TS,TT,TF
       CALL EIRENE_MASJ4('NRCELL,NPCELL,NTCELL,NACELL     ',
      .                   NRCELL,NPCELL,NTCELL,NACELL)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       RETURN
 C
  9911 CONTINUE
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE('ERROR IN TIME_TO_STANDARD_SURFACE, '//
      .                   'NO INTERSECTION FOUND')
       CALL EIRENE_MASAGE('PARTICLE IS KILLED')
       WRITE (iunout,*) 'NPANU,NCELL,NRCELL,NPCELL,NTCELL '
       WRITE (iunout,*)  NPANU,NCELL,NRCELL,NPCELL,NTCELL
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       RETURN
 C
   992 CONTINUE
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE('ERROR IN TIME_TO_STANDARD_SURFACE, '//
      .                   ' SURFACE CONFLICT')
       CALL EIRENE_MASR2('TL,TS           ',TL,TS)
       WRITE (iunout,*) 'NPANU ',NPANU
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ZT=TL
       RETURN
 

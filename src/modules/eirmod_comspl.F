@@ -64,6 +64,7 @@ cym PRIVATE-> PUBLIC
 !csw 20.01.11: SOLPS5.2 legacy code, SOURCE CORRECTION DATA
 !     LOGICAL, PUBLIC, ALLOCATABLE, SAVE ::
 !    L NLPBLS(:,:)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP  THREADPRIVATE(WMINV,WMINS,WMINC,WMINL,SPLPAR,RNUMB,PRMSPL,
 !$OMP& RSPLST,MAXLEV,NLEVEL,MAXRAD,MAXPOL,MAXTOR,MAXADD,NODES,NSSPL,
 !$OMP& ISPLST,
@@ -74,7 +75,7 @@ cym!$omp& ncmspl,mcmspl,kcmspl,
 cym again not private 18/04
 cym!$omp& lcmspl,
 !$OMP& RCMSPL,ICMSPL)
-
+#endif
 cdr  end threadprivate here
 
       CONTAINS

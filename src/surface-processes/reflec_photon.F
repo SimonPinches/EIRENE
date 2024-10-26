@@ -28,7 +28,9 @@ C
       INTEGER, SAVE :: IFIRST=0
       EXTERNAL :: EIRENE_LEER
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(IFIRST)
+#endif
 
       IF (IFIRST.EQ.1) RETURN
       IFIRST=1
@@ -83,8 +85,9 @@ C
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       EXTERNAL :: EIRENE_ROTATE, EIRENE_ROTATF
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(NPANOLD)
-
+#endif
 C
 C  RE-SYNCHRONIZE RANDOM NUMBERS (CORRELATED SAMPLING): out.
 C  tbd: introduce counter of max. possible random numbers used up to this point
@@ -183,10 +186,14 @@ C  WITH SUPPRESSION OF ABSORPTION
         WABS=WEIGHT*(1.D0-RPROB)
         IF (WABS.GT.0.D0) THEN
           IF (LSPUMP) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             SPUMP(ISPZO,MSURF)=SPUMP(ISPZO,MSURF)+WABS
             IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               SPUMP(ISPZO,MSURFG)=SPUMP(ISPZO,MSURFG)+WABS
             END IF
             LMETSPW(ISPZO) = .TRUE.
@@ -244,11 +251,15 @@ C
   700 CONTINUE
       IF (LSPUMP) THEN
         IF (MSURF.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
           SPUMP(ISPZO,MSURF)=SPUMP(ISPZO,MSURF)+WEIGHT
         ENDIF
         IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
           SPUMP(ISPZO,MSURFG)=SPUMP(ISPZO,MSURFG)+WEIGHT
         END IF
         LMETSPW(ISPZO) = .TRUE.

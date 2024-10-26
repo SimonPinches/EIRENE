@@ -17,7 +17,9 @@ cym 04/2020 turned into a module because of SAVE attribute
       public :: eirene_timep
 C
       REAL(DP) :: ZRADS
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(ZRADS)
+#endif
 
 !      REAL(DP) :: HELP, GS, GC, F, XNEN, DUM, SUM, BB, DY, X0TEST,
 !     .          Y0TEST, V1, V2, T1, ZRADS, ZRD, WIN1, X000, Z0T,
@@ -34,6 +36,7 @@ cdr logicals for intersection with poloidal surfaces
 !      LOGICAL :: LHITP0
 !      LOGICAL :: lnincz
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !!$OMP THREADPRIVATE(HELP, GS, GC, F, XNEN, DUM, SUM, BB, DY, X0TEST,
 !!$OMP&  Y0TEST, V1, V2, T1, ZRADS, ZRD, WIN1, X000, Z0T,
 !!$OMP&  TWIN1, XT, Y000, TSS, X0T, Y0T,
@@ -44,6 +47,7 @@ cdr logicals for intersection with poloidal surfaces
 !!$OMP&  IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J,
 !!$OMP&  NJC, ITEST, JSH, NN ,IN, itc,
 !!$OMP&  LHITP0, lnincz)
+#endif
 
 cym is this really useful ?
 !      SAVE
@@ -146,7 +150,9 @@ cym      SAVE
 C
 #ifdef TRACE
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         CALL EIRENE_LEER(1)
         IF (NRCELL.GT.0) THEN
           WRITE (iunout,*) 'TIMEP FROM INSIDE, NPANU ', NPANU
@@ -158,7 +164,9 @@ C
           WRITE (iunout,*) 'MRSURF,MPSURF,MTSURF,ZRAD '
           WRITE (iunout,*)  MRSURF,MPSURF,MTSURF,ZRAD
         ENDIF
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
 #endif
 C
@@ -176,11 +184,15 @@ C       NCOUT=NCOUT
         NTCELL=NCOUNT(1)
         IF (NCOUT.GT.1) IPOLGN=0
 #ifdef TRACE
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         IF (NLTRC)
      .    WRITE (iunout,*) 'because NLTOR/NLTRA: ZRAD,NTCELL ',
      .                                           ZRAD,NTCELL
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
 #endif
       ELSE
         NCOUT=1
@@ -247,9 +259,13 @@ C
  5000 CONTINUE
 #ifdef TRACE
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         WRITE (iunout,*) 'NCOUP= ',NCOUP
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
 #endif
       DO 5100 J=1,NCOUP
@@ -265,12 +281,16 @@ C
         ENDIF
 #ifdef TRACE
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           JJ=J+IADD
           WRITE (iunout,'(1X,A,3X,I6,3X,1PE12.4,3X,I6,3X,I6)')
      .                     'TIMEP: JJ,CLPD(JJ),NUPC(JJ),NCOUNP(JJ) ',
      .                             JJ,CLPD(JJ),NUPC(JJ),NCOUNP(JJ)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
 #endif
  5100 CONTINUE
@@ -295,10 +315,14 @@ C
         ncoup=jn
 #ifdef TRACE
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           WRITE (iunout,*) 'NEXT TOR. CELL: ZRAD,NTCELL,IADD ',
      .                                      ZRAD,NTCELL,IADD
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
 #endif
         GOTO 10000
@@ -378,17 +402,25 @@ C  TEST POLOIDAL SURFACE NO. MPTEST FOR REENTRY
      .         /(VELX*VVTY(IR,MPTEST)-VELY*VVTX(IR,MPTEST)+EPS60)
 #ifdef TRACE
             IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
               WRITE (iunout,*) 'IR,MPTEST,T1 ',IR,MPTEST,T1
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
             ENDIF
 #endif
             IF (T1.LT.0..OR.T1.GE.ZRD) CYCLE
 #ifdef TRACE
             IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
               WRITE (iunout,*) 'VALID INTERSECTION AT T1= ',T1
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
             ENDIF
 #endif
             NCOUP=1
@@ -420,10 +452,14 @@ C  NCOUP=1 AT THIS POINT
         NINCZ=0
 #ifdef TRACE
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           WRITE (iunout,*) 'REENTRY FOUND, MPSURF,ZRAD = ',MPSURF,ZRAD
           WRITE (iunout,*) 'IRCELL ',IRCELL
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
 #endif
         GOTO 31
@@ -436,9 +472,13 @@ C  NO REENTRY FOUND
         MPSURF=0
 #ifdef TRACE
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           WRITE (iunout,*) 'NO REENTRY INTO POLOIDAL GRID FOUND '
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
 #endif
         X00=X00+ZRAD*VELX
@@ -456,13 +496,17 @@ C
       ENDIF
 #ifdef TRACE
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         WRITE (iunout,*) ' TIMEP IN NEIGHBOR PART '
         WRITE (iunout,*) ' ALPD ',(ALPD(J),J=1,NCOUP)
         WRITE (iunout,*) ' JUPC ',(JUPC(J),J=1,NCOUP)
         WRITE (iunout,*) ' LUPC ',(LUPC(J),J=1,NCOUP)
         WRITE (iunout,*) ' MUPC ',(MUPC(J),J=1,NCOUP)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
 #endif
       NLSRFY=.FALSE.
@@ -524,10 +568,14 @@ C  TRACK ENDS ON ONE OF THE NON-DEFAULT POLOIDAL SURFACES
 C
 #ifdef TRACE
           IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
             WRITE (iunout,*) ' TRACK TERMINATED'
             WRITE (iunout,*) ' ITEST,ILIIN ',ITEST,ILIIN(IN)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
           ENDIF
 #endif
           NCOUPE=J
@@ -550,10 +598,14 @@ C  STOP TRACK ANYHOW
 C
 #ifdef TRACE
           IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
             WRITE (iunout,*) ' TRACK TERMINATED'
             WRITE (iunout,*) ' ITYP,ILIIN ',ITYP,ILIIN(IN)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
           ENDIF
 #endif
           if (ldamcel(itc)) lgpart=.false.
@@ -607,12 +659,16 @@ C
   311 CONTINUE
 #ifdef TRACE
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         WRITE (iunout,*) ' ALPD ',(ALPD(J),J=1,NCOUP)
         WRITE (iunout,*) ' JUPC ',(JUPC(J),J=1,NCOUP)
         WRITE (iunout,*) ' LUPC ',(LUPC(J),J=1,NCOUP)
         WRITE (iunout,*) ' MUPC ',(MUPC(J),J=1,NCOUP)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
 #endif
 C
@@ -649,12 +705,16 @@ C
       NCOUP=NCOUPE
 #ifdef TRACE
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         WRITE (iunout,*) ' ALPD ',(ALPD(J),J=1,NCOUP)
         WRITE (iunout,*) ' JUPC ',(JUPC(J),J=1,NCOUP)
         WRITE (iunout,*) ' LUPC ',(LUPC(J),J=1,NCOUP)
         WRITE (iunout,*) ' MUPC ',(MUPC(J),J=1,NCOUP)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
 #endif
 C
@@ -811,9 +871,13 @@ C
         LHITP(J)=V1*V2.LE.0.
 #ifdef TRACE
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           IF (LHITP(J)) WRITE (iunout,*) 'LHITP=TRUE FOR ',J
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
 #endif
   112 CONTINUE
@@ -840,17 +904,25 @@ C
      .       /(VELX*VVTY(NRCELL,I)-VELY*VVTX(NRCELL,I)+EPS60)
 #ifdef TRACE
           IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
             WRITE (iunout,*) 'I,T1 ',I,T1
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
           ENDIF
 #endif
           IF (T1.LT.0..OR.T1.GE.ZRAD) GOTO 114
 #ifdef TRACE
           IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
             WRITE (iunout,*) 'VALID INTERSECTION AT T1= ',T1
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
           ENDIF
 #endif
           NCOUP=NCOUP+1
@@ -892,13 +964,17 @@ C
       IF (ISW.GT.0.AND.NCOUP.GT.2) GOTO 115
 #ifdef TRACE
       IF (NLTRC.AND.NCOUP.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         WRITE (iunout,*) ' NACH SORTIEREN '
         WRITE (iunout,*) ' ALPD ',(ALPD(J),J=1,NCOUP)
         WRITE (iunout,*) ' JUPC ',(JUPC(J),J=1,NCOUP)
         WRITE (iunout,*) ' LUPC ',(LUPC(J),J=1,NCOUP)
         WRITE (iunout,*) ' MUPC ',(MUPC(J),J=1,NCOUP)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
 #endif
 C
@@ -907,11 +983,15 @@ C
           IF (JUPC(J).LE.0.OR.JUPC(J).GE.NP2ND) THEN
 #ifdef TRACE
             IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
               WRITE (iunout,*) ' VERTAUSCHE ALPD(',J,') UND (',J+1,')'
               WRITE (iunout,*) ' ALPD = ',ALPD(J),ALPD(J+1)
               WRITE (iunout,*) ' JUPC = ',JUPC(J),JUPC(J+1)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
             ENDIF
 #endif
             HELP=ALPD(J)
@@ -946,10 +1026,14 @@ C  TRACK ENDS ON ONE OF THE NON-DEFAULT POLOIDAL SURFACES
 C
 #ifdef TRACE
           IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
             WRITE (iunout,*) ' TRACK TERMINATED'
             WRITE (iunout,*) ' ITEST,ILIIN ',ITEST,ILIIN(IN)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
           ENDIF
 #endif
           NCOUPE=J
@@ -994,12 +1078,16 @@ C
       NCOUP=NCOUPE
 #ifdef TRACE
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         WRITE (iunout,*) ' ALPD ',(ALPD(J),J=1,NCOUP)
         WRITE (iunout,*) ' JUPC ',(JUPC(J),J=1,NCOUP)
         WRITE (iunout,*) ' LUPC ',(LUPC(J),J=1,NCOUP)
         WRITE (iunout,*) ' MUPC ',(MUPC(J),J=1,NCOUP)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
 #endif
 C
@@ -1051,9 +1139,13 @@ C  TIME FROM Y00 TO PSURF
           F=DY/BB
 #ifdef TRACE
           IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
             WRITE (iunout,*) 'MPTEST,F,DY ',MPTEST,F,DY
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
           ENDIF
 #endif
           IF (F.LE.ZRD.AND.F.GT.0.D0) THEN
@@ -1087,10 +1179,14 @@ C  NCOUP=1 AT THIS POINT
         NINCZ=0
 #ifdef TRACE
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           WRITE (iunout,*) 'REENTRY FOUND, MPSURF,ZRAD = ',MPSURF,ZRAD
           WRITE (iunout,*) 'IRCELL ',IRCELL
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
 #endif
         Y00=Y00+VELY*ZRD
@@ -1107,9 +1203,13 @@ C  CHECK VALID RANGE ON MRSURF
           Y0TEST=Y00+VELY*ZRAD
 #ifdef TRACE
           IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
             WRITE (iunout,*) 'CHECK VALID RANGE: Y0TEST ',Y0TEST
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
           ENDIF
 #endif
           IF (Y0TEST.GE.PSURF(1).AND.Y0TEST.LE.PSURF(NP2ND)) THEN
@@ -1126,9 +1226,13 @@ C  CHECK VALID RANGE ON MRSURF
         NINCY=0
 #ifdef TRACE
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           WRITE (iunout,*) 'NO REENTRY FOUND '
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
 #endif
         Y00=Y00+ZRD*VELY
@@ -1141,9 +1245,13 @@ C
       Y000=Y00+VELY*ZRAD
 #ifdef TRACE
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         WRITE (iunout,*) 'Y000,Y00,ZRAD ',Y000,Y00,ZRAD
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
 #endif
 C
@@ -1191,9 +1299,13 @@ C  TIME FROM Y00 TO PSURF
       F=DY/BB
 #ifdef TRACE
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         WRITE (iunout,*) 'J2,F,DY ',J2,F,DY
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
 #endif
       IF (F.LE.ZRAD) THEN
@@ -1230,9 +1342,13 @@ C  LAST CELL
 C
 #ifdef TRACE
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         WRITE (iunout,*) 'LAST CELL ',ZRAD,DUM
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
 #endif
       IF (MPSURF.EQ.0) THEN

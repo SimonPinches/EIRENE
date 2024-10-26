@@ -96,9 +96,13 @@ C
       WEIGHT=WEIGHT*PR
 C
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         CALL EIRENE_CHCTRC(X0,Y0,Z0,16,15)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
 C
 C  UPDATE SNAPSHOT ESTIMATORS
@@ -188,38 +192,54 @@ cdr     CALL EIRENE_UPDATE_SURFACE (ITYP_OLD,IOLD,WGHTSG,IND)
 cdr out ini
         IF (ITYP.EQ.0) THEN
           IF (LEOTPHT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             EOTPHT(IPHOT,MSURF)=EOTPHT(IPHOT,MSURF)+E0*WEIGHT
           ENDIF
           IF (LPOTPHT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             POTPHT(IPHOT,MSURF)=POTPHT(IPHOT,MSURF)+WEIGHT
           ENDIF
         ELSEIF (ITYP.EQ.1) THEN
           IF (LEOTAT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             EOTAT(IATM,MSURF)=EOTAT(IATM,MSURF)+E0*WEIGHT
           ENDIF
           IF (LPOTAT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             POTAT(IATM,MSURF)=POTAT(IATM,MSURF)+WEIGHT
           ENDIF
         ELSEIF (ITYP.EQ.2) THEN
           IF (LEOTML) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             EOTML(IMOL,MSURF)=EOTML(IMOL,MSURF)+E0*WEIGHT
           ENDIF
           IF (LPOTML) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             POTML(IMOL,MSURF)=POTML(IMOL,MSURF)+WEIGHT
           ENDIF
         ELSEIF (ITYP.EQ.3) THEN
           IF (LEOTIO) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             EOTIO(IION,MSURF)=EOTIO(IION,MSURF)+E0*WEIGHT
           ENDIF
           IF (LPOTIO) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             POTIO(IION,MSURF)=POTIO(IION,MSURF)+WEIGHT
           ENDIF
         ENDIF
@@ -228,7 +248,9 @@ cdr out end
         ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
 c spatial resolution on time-surface is not available. MSURFG ?
         IF (LSPUMP) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
           SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
         ENDIF
         IF (LSPUMP) LMETSPW(ISPZ)    = .TRUE.

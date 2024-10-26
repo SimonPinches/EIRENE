@@ -40,10 +40,12 @@ C
      .           IRCX, ICOU, IACX, IRDD, IPLSTI
       INTEGER :: NMTSP
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(WTRSIG,EEION,DIST,WTR,
 !$OMP&              IRD,IFIRST,
 !$OMP&              IRCX,ICOU,IACX,IRDD,IPLSTI,
 !$OMP&              NMTSP)
+#endif
 
 CDR
 !     INTEGER :: I, IP, IR
@@ -120,7 +122,9 @@ C
               EEION=1.5*TIIN(IPLSTI,IRD)
               IF (LEDRIFT) EEION=EEION+EDRIFT(IPLS,IRD)
               WTRSIG=WTR*SIGVCX(IRCX)/DIIN(IPLS,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               COPV(IPLS,IRDD)=COPV(IPLS,IRDD)+WTRSIG*(E0/EEION-1.)
               LMETSP(NMTSP+IPLS)=.TRUE.
    52       CONTINUE

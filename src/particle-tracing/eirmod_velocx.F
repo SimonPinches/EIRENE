@@ -31,9 +31,11 @@ C      REAL(DP) :: ELB
 
 !HJL      SAVE
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$omp threadprivate(ifirst,vxn,vyn,vzn,vx,vy,vz,vn,vxi,vyi,vzi,
 !$OMP& zargx,zargy,zargz,vxdr,vydr,vzdr,vrelq,test,vrel,elab,
 !$OMP& cxs,vr,vrq,elmax,elmin,icount,j,jj,irl,ireac)
+#endif
 
 
       CONTAINS
@@ -130,12 +132,16 @@ C NFLAG=1 AND NFLAG=3 OPTIONS
       ENDIF
 C
       IF (IFLRCX(IRCX).EQ.0.AND.NFLAG.NE.2) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) 'FIRST CALL TO VELOCX FOR IRCX= ',IRCX
         WRITE (iunout,*) 'PREPARE REJECTION TECHNIQUE '
         WRITE (iunout,*) 'FIND MAX. "SGCVMX" OF SIGMA(VEL) * VEL '
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         IFLRCX(IRCX)=-1
 C  PREPARE REJECTION SAMPLING OF INCIDENT ION VELOCITY.
 C  IS CROSS-SECTION AVAILABLE?
@@ -145,7 +151,9 @@ C CURRENTLY: HARD-WIRED INITIAL SEARCH RANGE
         elmin=log(0.1_dp)
         elmax=log(1.e4_dp)
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
     2   continue
         SGCVMX(IRCX)=-1.D60
         JJ=1
@@ -181,7 +189,9 @@ cdr (sigma times v) is still rising. Search at higher energies
           WRITE (iunout,*) 'NO TRUE MAXIMUM FOUND, USE WEIGHTING '
         ENDIF
         CALL EIRENE_LEER(1)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
 
       ENDIF
     1 CONTINUE

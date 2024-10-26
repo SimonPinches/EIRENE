@@ -34,7 +34,9 @@
       INTEGER, SAVE :: ISTROLD=-1
       LOGICAL, ALLOCATABLE, SAVE :: LPLSSR(:), LATSSR(:)
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(ISTROLD)
+#endif
 
       CONTAINS
 

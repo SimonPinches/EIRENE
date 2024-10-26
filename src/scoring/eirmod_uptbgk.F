@@ -6,7 +6,9 @@
 
       INTEGER, SAVE :: IFIRST=0
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(IFIRST)
+#endif
 
       CONTAINS
 
@@ -72,9 +74,11 @@ C
       CHARACTER(8) :: TXT
       EXTERNAL :: EIRENE_EXIT_OWN
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(DIST,WTRV,WTRVX,WTRVY,WTRVZ,
 !$OMP&              I, NMTSP, IUPD2, IUPD3, IRD, NSBGK, IBGK_SP,
 !$OMP&              IML,IIO,IUPD1,ITP,ISP,IAT,IRDO,TXT)
+#endif
 
       SAVE
 C
@@ -131,7 +135,9 @@ cdr              from obsolete old (vel. indep.) procedure still.
           IUPD3=(IBGK_SP-1)*3+3
 cym these are all shared variables updated with private TXT & ITP
 cym atomic  not usable with strings ?
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           TXTTAL(IUPD1,NTALB)='BGK TALLY: FLUX DENSITY IN X DIRECTION '
           TXTTAL(IUPD2,NTALB)='BGK TALLY: FLUX DENSITY IN Y DIRECTION '
           TXTTAL(IUPD3,NTALB)='BGK TALLY: FLUX DENSITY IN Z DIRECTION '
@@ -143,19 +149,15 @@ cym atomic  not usable with strings ?
           TXTSPC(IUPD1,NTALB)=TXT
           TXTSPC(IUPD2,NTALB)=TXT
           TXTSPC(IUPD3,NTALB)=TXT
-!$OMP END CRITICAL
-!$OMP ATOMIC WRITE
           IBGVE(IUPD1)=1
-!$OMP ATOMIC WRITE
           IBGVE(IUPD2)=1
-!$OMP ATOMIC WRITE
           IBGVE(IUPD3)=1
-!$OMP ATOMIC WRITE
           IBGRC(IUPD1)=ITP
-!$OMP ATOMIC WRITE
           IBGRC(IUPD2)=ITP
-!$OMP ATOMIC WRITE
           IBGRC(IUPD3)=ITP
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP END CRITICAL
+#endif
         ENDDO
 
 cdr  Species index increment for bgk tallies, used for LMETSP arrays.
@@ -195,11 +197,17 @@ C  THE BGK TALLIES NO. IUPD1,IUPD2,IUPD3 NEED TO BE SCORED.
 !
         IRDO=NRCELL+NUPC(I)*NR1P2+NBLCKA
         IRD=NCLTAL(IRDO)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
         BGKV(IUPD1,IRD)=BGKV(IUPD1,IRD)+WTRVX
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
         BGKV(IUPD2,IRD)=BGKV(IUPD2,IRD)+WTRVY
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
         BGKV(IUPD3,IRD)=BGKV(IUPD3,IRD)+WTRVZ
    51 CONTINUE
 

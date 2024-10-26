@@ -51,10 +51,12 @@ c stdcol, stdcol_x_rad, stdcol_y_pol, stdcol_z_tor
 
       INTEGER :: IDIMM
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(X0SA,Y0SA,Z0SA,
 !$OMP&   NACLLS,ICOS,IWEI,MSURFS,IRET_OUT,
 !$OMP&   COSROT,SINROT,VELX_OLD,
 !$OMP&   NDUM,IDIMM)
+#endif
 
       CONTAINS
 
@@ -382,9 +384,13 @@ C
          RETURN
       ENDIF
       IF (NLTRC.AND.EIRENE_IDEZ(ILIIN(MSURF),1,2).LE.4) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         CALL EIRENE_CHCTRC(X0,Y0,Z0,16,8)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
 C
 C
@@ -818,18 +824,26 @@ C  PARTICLE HAS HIT A SURFACE FROM AN ABSORBING SIDE
 C  SCORE FLUXES (DO NOT SET WEIGHT=0.D0, IRET_OUT=2)
 C  AND ABSORB PARTICLE LATER
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           CALL EIRENE_CHCTRC(X0,Y0,Z0,16,8)
           WRITE (iunout,*) 'ABSORB PARTICLE: NPANU ',NPANU
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
         IF (LSPUMP) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
           SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
         ENDIF
         IF (MSURFG.GT.0) THEN
           IF (LSPUMP) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
              SPUMP(ISPZ,MSURFG)=SPUMP(ISPZ,MSURFG)+WEIGHT
           ENDIF
         END IF
@@ -840,14 +854,22 @@ C  AND ABSORB PARTICLE LATER
       ELSEIF (IWEI.EQ.-2) THEN
 C  KILL THIS PARTICLE BECAUSE IT COMES FROM WRONG SIDE
 C  DO NOT SCORE FLUXES (SET WEIGHT=0.D0, IRET_OUT=2)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
         PTRASH(ISTRA)=PTRASH(ISTRA)-WEIGHT
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
         ETRASH(ISTRA)=ETRASH(ISTRA)-WEIGHT*E0
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
         WRITE (iunout,*) 'ERROR DETECTED IN SUBR. STDCOL'
         WRITE (iunout,*) 'PARTICLE COMES FROM WRONG SIDE'
@@ -862,12 +884,16 @@ C  DO NOT SCORE FLUXES (SET WEIGHT=0.D0, IRET_OUT=2)
         CALL EIRENE_MASR3 ('VELX,VELY,VELZ          ',VELX,VELY,VELZ)
         CALL EIRENE_MASR3 ('VEL,WEIGHT,E0           ',VEL,WEIGHT,E0)
         IF (LSPUMP) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
           SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
         ENDIF
         IF (MSURFG.GT.0) THEN
           IF (LSPUMP) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             SPUMP(ISPZ,MSURFG)=SPUMP(ISPZ,MSURFG)+WEIGHT
           ENDIF
         END IF
@@ -887,9 +913,13 @@ C  ACTS AS ILIIN=0 OPTION (NO SURFACE TALLIES, NO SWITCHES)
           IF (IDIMM.EQ.3.AND.ILIIN(MSURF).GT.0) NTCELL=NTCELL+ICOS
         END IF
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           CALL EIRENE_CHCTRC(X0,Y0,Z0,16,8)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
         colflag = .true.
         IRET_OUT = 1
@@ -897,14 +927,22 @@ C  ACTS AS ILIIN=0 OPTION (NO SURFACE TALLIES, NO SWITCHES)
       ELSEIF (IWEI.EQ.-10) THEN
 C  KILL THIS PARTICLE BECAUSE CELL NUMBER OUT OF RANGE DUE TO SWITCHING
 C  DO NOT SCORE FLUXES (SET WEIGHT=0.D0)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
         PTRASH(ISTRA)=PTRASH(ISTRA)-WEIGHT
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
         ETRASH(ISTRA)=ETRASH(ISTRA)-WEIGHT*E0
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
         WRITE (iunout,*) 'ERROR DETECTED IN SUBR. STDCOL'
         WRITE (iunout,*) 'NACELL OUT OF RANGE'
@@ -923,12 +961,16 @@ C  DO NOT SCORE FLUXES (SET WEIGHT=0.D0)
         CALL EIRENE_MASR3 ('VELX,VELY,VELZ          ',VELX,VELY,VELZ)
         CALL EIRENE_MASR3 ('VEL,WEIGHT,E0           ',VEL,WEIGHT,E0)
         IF (LSPUMP) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
            SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
         ENDIF
         IF (MSURFG.GT.0) THEN
           IF (LSPUMP) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             SPUMP(ISPZ,MSURFG)=SPUMP(ISPZ,MSURFG)+WEIGHT
           ENDIF
         END IF

@@ -146,16 +146,23 @@ C
      .            EIRENE_FIND_PARAM, EIRENE_LEER, EIRENE_VERSION,
      .            IOFLUSH_USR
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(OUTNAME,OUTPOS)
+#endif
 C
 C               1.         INITIALIZE PACKAGE
 C
-#ifdef USE_EXT_OPENMP
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
 !$OMP MASTER
 #endif
       IF (MPI_INITIALIZE) THEN
          CALL EIRENE_MPI_INIT(IER)
       ENDIF
+#if ( defined(USE_EXT_OPENMP) && defined(USE_OPENMP) )
+      WRITE(*,*) 'Cannot run Eirene with both '//
+     .           'USE_EXT_OPENMP and USE_OPENMP simultaneously!'
+      CALL EIRENE_EXIT_OWN(1)
+#endif
 
 Cdmh  MOVED CPU TIME AFTER MPI_INIT BECAUSE MPI CPU-TIME ROUTINE IS USED
       TIMI=EIRENE_SECOND_OWN()
@@ -174,23 +181,31 @@ c     IUNIN = 1
       IUNOUT = 6  ! Fortran standard output channel
       IF (NPRS > 1) IUNOUT = 7  ! in case of multiple PEs
                                 ! use separate output files
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP PARALLEL
+#endif
       IF (EIRENE_NTHREADS > 1) IUNOUT = 200 ! for multiple threads
                                             ! use different file numbers
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END PARALLEL
+#endif
 
 cxpb 04nov16 Going back to having the master PE write to standard output
       IF (LPE0_TO_STDOUT .AND. (MY_PE == 0)) IUNOUT = 6
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP PARALLEL
+#endif
       IUNOUT = IUNOUT + IFOFF
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END PARALLEL
+#endif
 
 CDR  OUTPUT STREAM IS: IUNOUT. THIS IS ALSO THE STREAM FOR MASTER PROCESSOR MY_PE =0
 cdr  MPI: DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
 
       IF (NPRS > 1 .OR. EIRENE_NTHREADS > 1) THEN
-#ifndef USE_EXT_OPENMP
+#if ( !defined(USE_EXT_OPENMP) && defined(USE_OPENMP) )
 !$OMP PARALLEL FIRSTPRIVATE(OP,INIT_OPEN)
 #endif
 !pb_open
@@ -226,7 +241,7 @@ cdr  MPI: DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
         write (iunout,*) 'MY_PE, EIRENE_ITHREAD ', MY_PE, EIRENE_ITHREAD
         call eirene_leer(1)
 
-#ifndef USE_EXT_OPENMP
+#if ( !defined(USE_EXT_OPENMP) && defined(USE_OPENMP) )
 !$OMP END PARALLEL
 #endif
       END IF
@@ -263,7 +278,7 @@ c  Calls to find_param, set_parmod(1),... have already been done above
 
       END IF  ! MY_PE == 0
 
-#ifdef USE_EXT_OPENMP
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
 !$OMP END MASTER
 #endif
 
@@ -307,7 +322,7 @@ C
      .            EIRENE_WRREC, EIRENE_LEER, EIRENE_MASBOX,
      .            EIRENE_CHECK_EXIT, IOFLUSH_USR
 
-#ifdef USE_EXT_OPENMP
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
 !$OMP MASTER
 #endif
       IF (MY_PE == 0) THEN
@@ -369,11 +384,11 @@ C
       END IF  ! MY_PE == 0
 C
 C  each internal iteration or internal time step (fixed plasma) starts here
-#ifdef USE_EXT_OPENMP
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
 !$OMP END MASTER
 #endif
   101 CONTINUE
-#ifdef USE_EXT_OPENMP
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
 !$OMP MASTER
 #endif
 C  IITER=... , ITIMV=...
@@ -532,11 +547,11 @@ CVK END
 
 C  MAIN MONTE CARLO ROUTINE: LOOP OVER STRATA AND PARTICLE HISTORIES, SCORING
 
-#ifdef USE_EXT_OPENMP
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
 !$OMP END MASTER
 #endif
       CALL EIRENE_MCARLO
-#ifdef USE_EXT_OPENMP
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
 !$OMP MASTER
 #endif
 C
@@ -599,11 +614,11 @@ C  TO MODIFY SOME OF THE INPUT VARIABLES FOR THE NEXT ITERATION STEP.
 C  MODUSR IS ALSO CALLED AFTER THE LAST ITERATION TO ALLOW
 C  WRITING OF DATA ONTO SOME FILE AFTER EACH ITERATION
 C
-#ifdef USE_EXT_OPENMP
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
 !$OMP END MASTER
 #endif
       IF (NITER.GE.1.AND.IITER.LE.NITER) THEN
-#ifdef USE_EXT_OPENMP
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
 !$OMP MASTER
 #endif
         IF (MY_PE == 0) THEN
@@ -617,7 +632,7 @@ CVK ADDITIONAL PRINTOUT
           END IF
         END IF
 CVK END
-#ifdef USE_EXT_OPENMP
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
 !$OMP END MASTER
 #endif
         IITER=IITER+1
@@ -630,7 +645,7 @@ cdr  prepare next internal iteration
           GOTO 101
         ENDIF
       ENDIF
-#ifdef USE_EXT_OPENMP
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
 !$OMP MASTER
 #endif
       IF (MY_PE == 0) THEN
@@ -649,18 +664,18 @@ C  SUBROUTINE STOSS IS A SUBROUTINE, IN WHICH BINARY COLLISION
 C  EVENTS BETWEEN TEST PARTICLES ARE CARRIED OUT
 C  STOSS IS ALSO CALLED AFTER THE LAST "TIMESTEP"
 C
-#ifdef USE_EXT_OPENMP
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
 !$OMP END MASTER
 #endif
       IF (NTIME.GE.1) THEN
 C  COLLISIONS BETWEEN TEST PARTICLES ON CENSUS, OLD DSMC ALGORITHM, NOT AVAILABLE ANYMORE
 C       CALL STOSS
 C  MODIFY BACKGROUND (TIME DEP. MODE)
-#ifdef USE_EXT_OPENMP
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
 !$OMP MASTER
 #endif
         IF (MY_PE == 0) CALL EIRENE_MOD_TMSTEP
-#ifdef USE_EXT_OPENMP
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
 !$OMP END MASTER
 #endif
         ITIMV=ITIMV+1
@@ -676,7 +691,7 @@ C  HENCE: RESET IITER TO 1
           GOTO 101
         ENDIF
       ENDIF
-#ifdef USE_EXT_OPENMP
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
 !$OMP MASTER
 #endif
 C  PRINT OUTPUT FOR IDL BASED EXTERNAL GRAPHICS AND POSTPROCESSING
@@ -751,16 +766,16 @@ csw
 
 !pb   IF (MY_PE > 0) THEN
       IF (NPRS > 1 .OR. EIRENE_NTHREADS > 1) THEN
-#ifndef USE_EXT_OPENMP
+#if ( !defined(USE_EXT_OPENMP) && defined(USE_OPENMP) )
 !$OMP PARALLEL
 #endif
         CLOSE (UNIT=IUNOUT)
-#ifndef USE_EXT_OPENMP
+#if ( !defined(USE_EXT_OPENMP) && defined(USE_OPENMP) )
 !$OMP END PARALLEL
 #endif
       END IF
 
-#ifdef USE_EXT_OPENMP
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
 !$OMP END MASTER
 #endif
       RETURN

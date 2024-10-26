@@ -25,10 +25,12 @@
       INTEGER :: IWEI, NACLLS, MM,
      .           ICOS, NN, NTNEW, MASRFS
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(WINK, CNORM,XL,YL,ZL,CSAVE,ROT,PPP,XXR,
 !$OMP&     XR,X0SA,Y0SA,Z0SA,
 !$OMP&     IWEI,NACLLS,MM,
 !$OMP&     ICOS,NN,NTNEW,MASRFS)
+#endif
 
 
       CONTAINS
@@ -288,9 +290,13 @@ C
 C  SWITCHING DONE
 C
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         CALL EIRENE_CHCTRC(X0,Y0,Z0,16,8)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
 C
       IF (ILIIN(MASURF).LT.0) THEN
@@ -317,18 +323,26 @@ C
 C  PARTICLE HAS HIT A SURFACE FROM AN ABSORBING SIDE
 C  UPDATE FLUXES (DO NOT SET WEIGHT=0.D0) AND ABSORB PARTICLE
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           CALL EIRENE_CHCTRC(X0,Y0,Z0,16,8)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
           WRITE (iunout,*) 'ABSORB PARTICLE: NPANU ',NPANU
         ENDIF
         IF (LSPUMP) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
           SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
         ENDIF
         IF (MSURFG.GT.0) THEN
           IF (LSPUMP) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             SPUMP(ISPZ,MSURFG)=SPUMP(ISPZ,MSURFG)+WEIGHT
           ENDIF
         END IF
@@ -337,17 +351,25 @@ C  UPDATE FLUXES (DO NOT SET WEIGHT=0.D0) AND ABSORB PARTICLE
         iret = 2
         RETURN
       ELSEIF (IWEI.EQ.-2) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
         PTRASH(ISTRA)=PTRASH(ISTRA)-WEIGHT
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
         ETRASH(ISTRA)=ETRASH(ISTRA)-WEIGHT*E0
 C  KILL THIS PARTICLE BECAUSE IT COMES FROM WRONG SIDE
 C  DO NOT UPDATE FLUXES (SET WEIGHT=0.D0)
 
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
 
         WRITE (iunout,*) 'ERROR DETECTED IN SUBR. ADDCOL'
@@ -360,12 +382,16 @@ C  DO NOT UPDATE FLUXES (SET WEIGHT=0.D0)
         CALL EIRENE_MASR3 ('VELX,VELY,VELZ          ',VELX,VELY,VELZ)
         CALL EIRENE_MASR3 ('VEL,WEIGHT,E0           ',VEL,WEIGHT,E0)
         IF (LSPUMP) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
           SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
         ENDIF
         IF (MSURFG.GT.0) THEN
           IF (LSPUMP) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             SPUMP(ISPZ,MSURFG)=SPUMP(ISPZ,MSURFG)+WEIGHT
           ENDIF
         END IF
@@ -384,14 +410,22 @@ C  ACTS AS ILIIN=0 OPTION (NO SURFACE TALLIES, NO SWITCHES)
       ELSEIF (IWEI.EQ.-10) THEN
 C  KILL THIS PARTICLE BECAUSE CELL NUMBER OF RANGE DUE TO SWITCHING
 C  DO NOT UPDATE FLUXES (SET WEIGHT=0.D0)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
         PTRASH(ISTRA)=PTRASH(ISTRA)-WEIGHT
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
         ETRASH(ISTRA)=ETRASH(ISTRA)-WEIGHT*E0
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
         WRITE (iunout,*) 'ERROR DETECTED IN SUBR. ADDCOL'
         WRITE (iunout,*) 'SOME CELL INDEX OUT OF RANGE'
@@ -408,12 +442,16 @@ C  DO NOT UPDATE FLUXES (SET WEIGHT=0.D0)
         CALL EIRENE_MASR3 ('VELX,VELY,VELZ          ',VELX,VELY,VELZ)
         CALL EIRENE_MASR3 ('VEL,WEIGHT,E0           ',VEL,WEIGHT,E0)
         IF (LSPUMP) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
           SPUMP(ISPZ,MSURF)=SPUMP(ISPZ,MSURF)+WEIGHT
         ENDIF
         IF (MSURFG.GT.0) THEN
           IF (LSPUMP) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
              SPUMP(ISPZ,MSURFG)=SPUMP(ISPZ,MSURFG)+WEIGHT
           ENDIF
         END IF
@@ -426,9 +464,13 @@ C  DO NOT UPDATE FLUXES (SET WEIGHT=0.D0)
 C
   400 CONTINUE
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         CALL EIRENE_CHCTRC(X0,Y0,Z0,16,8)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
       iret = 2
       RETURN

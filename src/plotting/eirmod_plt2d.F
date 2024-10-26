@@ -70,12 +70,14 @@ cym CHKTRC variables - need to be threadprivate & there is a SAVE ...
      .           NT, ICOLOR, ISP, IAA
       LOGICAL :: LWR
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(XNP05, YYIA, XN1, YN, FX, FY, XN2, Z1, XN3, YNP,
 !$OMP&              XN, YWO, XWO, XR, THET, PPHI, XPL, RWN, YPL, ZPL,
 !$OMP&              ZWN, XN0,
 !$OMP&              IA, I, J, ICP, ISTR, IC, NTDUM, NTT,
 !$OMP&              NT, ICOLOR,ISP, IAA, LWR,
 !$OMP&              IN)
+#endif
 
       CONTAINS
 

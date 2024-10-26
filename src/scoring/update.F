@@ -128,7 +128,9 @@ C EI PROCESSES
       REAL(DP) :: EIRENE_VDION
       REAL(DP), POINTER, SAVE :: PXX2(:,:), PXPL2(:,:), PXAT2(:,:),
      .                           PXML2(:,:), PXIO2(:,:)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(PXX2, PXPL2, PXAT2, PXML2, PXIO2)
+#endif
       EXTERNAL :: EIRENE_BFIELD, EIRENE_UPDPHOT, EIRENE_UPTCOP,
      .            EIRENE_VECUSR
 
@@ -176,29 +178,39 @@ C  PARTICLE, MOMENTUM AND ENERGY DENSITY ESTIMATORS
 C
 
         IF (LEDENX) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
            EDENX(IRD)=EDENX(IRD)+WTRE0
         ENDIF
 
         IF (LPDENX) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
            PDENX(IRD)=PDENX(IRD)+WTR
         ENDIF
         IF (LEDENX.OR.LPDENX)
      .      LMETSP(NMETOFF+IXSPZ)=.TRUE.
 
         IF (LVXDENX) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
           VXDENX(IRD)=VXDENX(IRD)+WTRV*VELX
         ENDIF
 
         IF (LVYDENX) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
           VYDENX(IRD)=VYDENX(IRD)+WTRV*VELY
         ENDIF
 
         IF (LVZDENX) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
           VZDENX(IRD)=VZDENX(IRD)+WTRV*VELZ
         ENDIF
 
@@ -221,11 +233,15 @@ C
         WTRSIG=WTR*(SIGTOT-SIGBGK)
 
         IF (LPXX) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
           PXX(IXSPZ,IRD)=PXX(IXSPZ,IRD)-WTRSIG
           IF (LSCX) THEN
             PXX2(1:NDXX,0:NDXX) => PXX(:,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             PXX2(IXSPZ,IXSPZ)=PXX2(IXSPZ,IXSPZ)-WTRSIG
             LMETSP2(1:NDXX,0:NDXX) => LMETSP(NDXXA:NDXXE)
             LMETSP2(IXSPZ,0) = .TRUE.
@@ -234,7 +250,9 @@ C
         ENDIF
 
         IF (LEXX) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
           EXX(IRD)      =EXX(IRD)      -WTRSIG*E0
         ENDIF
 C
@@ -259,11 +277,15 @@ C
           IF (IESTCX(IRCX,1).NE.0) THEN
 
             IF (LPXX) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               PXX(IXSPZ,IRD)=PXX(IXSPZ,IRD)+WTRSIG
               IF (LSCX) THEN
                 PXX2(1:NDXX,0:NDXX) => PXX(:,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXX2(IXSPZ,IXSPZ)=PXX2(IXSPZ,IXSPZ)+WTRSIG
                 LMETSP2(1:NDXX,0:NDXX) => LMETSP(NDXXA:NDXXE)
                 LMETSP2(IXSPZ,0) = .TRUE.
@@ -275,11 +297,15 @@ C
 C  PRE-COLLISION RATES, BULK IONS
 C
             IF (LPXPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               PXPL(IPLS,IRD)=PXPL(IPLS,IRD)-WTRSIG
               IF (LSCX) THEN
                 PXPL2(1:NPLS,0:NDXX) => PXPL(:,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXPL2(IPLS,IXSPZ)=PXPL2(IPLS,IXSPZ)-WTRSIG
                 LMETSP2(1:NPLS,0:NDXX) => LMETSP(NTS_PXPLA:NTS_PXPLE)
                 LMETSP2(IPLS,0) = .TRUE.
@@ -294,11 +320,15 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
               IAT1=N1STX(IRCX,2)
               LOGATM(IAT1,ISTRA)=.TRUE.
               IF (LPXAT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXAT(IAT1,IRD)= PXAT(IAT1,IRD)+WTRSIG
                 IF (LSCX) THEN
                   PXAT2(1:NATM,0:NDXX) => PXAT(:,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   PXAT2(IAT1,IXSPZ)=PXAT2(IAT1,IXSPZ)+WTRSIG
                   LMETSP2(1:NATM,0:NDXX) => LMETSP(NTS_PXATA:NTS_PXATE)
                   LMETSP2(IAT1,IXSPZ) = .TRUE.
@@ -310,11 +340,15 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
               IML1=N1STX(IRCX,2)
               LOGMOL(IML1,ISTRA)=.TRUE.
               IF (LPXML) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXML(IML1,IRD)= PXML(IML1,IRD)+WTRSIG
                 IF (LSCX) THEN
                   PXML2(1:NMOL,0:NDXX) => PXML(:,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   PXML2(IML1,IXSPZ)=PXML2(IML1,IXSPZ)+WTRSIG
                   LMETSP2(1:NMOL,0:NDXX) => LMETSP(NTS_PXMLA:NTS_PXMLE)
                   LMETSP2(IML1,0) = .TRUE.
@@ -326,11 +360,15 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
               IIO1=N1STX(IRCX,2)
               LOGION(IIO1,ISTRA)=.TRUE.
               IF (LPXIO) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXIO(IIO1,IRD)= PXIO(IIO1,IRD)+WTRSIG
                 IF (LSCX) THEN
                   PXIO2(1:NION,0:NDXX) => PXIO(:,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   PXIO2(IIO1,IXSPZ)=PXIO2(IIO1,IXSPZ)+WTRSIG
                   LMETSP2(1:NION,0:NDXX) => LMETSP(NTS_PXIOA:NTS_PXIOE)
                   LMETSP2(IIO1,0) = .TRUE.
@@ -342,11 +380,15 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
               IPL1=N1STX(IRCX,2)
               LOGPLS(IPL1,ISTRA)=.TRUE.
               IF (LPXPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXPL(IPL1,IRD)= PXPL(IPL1,IRD)+WTRSIG
                 IF (LSCX) THEN
                   PXPL2(1:NPLS,0:NDXX) => PXPL(:,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   PXPL2(IPL1,IXSPZ)=PXPL2(IPL1,IXSPZ)+WTRSIG
                   LMETSP2(1:NPLS,0:NDXX) => LMETSP(NTS_PXPLA:NTS_PXPLE)
                   LMETSP2(IPL1,0) = .TRUE.
@@ -360,11 +402,15 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
               IAT2=N2NDX(IRCX,2)
               LOGATM(IAT2,ISTRA)=.TRUE.
               IF (LPXAT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXAT(IAT2,IRD)= PXAT(IAT2,IRD)+WTRSIG
                 IF (LSCX) THEN
                   PXAT2(1:NATM,0:NDXX) => PXAT(:,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   PXAT2(IAT2,IXSPZ)=PXAT2(IAT2,IXSPZ)+WTRSIG
                   LMETSP2(1:NATM,0:NDXX) => LMETSP(NTS_PXATA:NTS_PXATE)
                   LMETSP2(IAT2,0) = .TRUE.
@@ -376,11 +422,15 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
               IML2=N2NDX(IRCX,2)
               LOGMOL(IML2,ISTRA)=.TRUE.
               IF (LPXML) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXML(IML2,IRD)= PXML(IML2,IRD)+WTRSIG
                 IF (LSCX) THEN
                   PXML2(1:NMOL,0:NDXX) => PXML(:,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   PXML2(IML2,IXSPZ)=PXML2(IML2,IXSPZ)+WTRSIG
                   LMETSP2(1:NMOL,0:NDXX) => LMETSP(NTS_PXMLA:NTS_PXMLE)
                   LMETSP2(IML2,0) = .TRUE.
@@ -392,11 +442,15 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
               IIO2=N2NDX(IRCX,2)
               LOGION(IIO2,ISTRA)=.TRUE.
               IF (LPXIO) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXIO(IIO2,IRD)= PXIO(IIO2,IRD)+WTRSIG
                 IF (LSCX) THEN
                   PXIO2(1:NION,0:NDXX) => PXIO(:,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   PXIO2(IIO2,IXSPZ)=PXIO2(IIO2,IXSPZ)+WTRSIG
                   LMETSP2(1:NION,0:NDXX) => LMETSP(NTS_PXIOA:NTS_PXIOE)
                   LMETSP2(IIO2,0) = .TRUE.
@@ -408,11 +462,15 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
               IPL2=N2NDX(IRCX,2)
               LOGPLS(IPL2,ISTRA)=.TRUE.
               IF (LPXPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXPL(IPL2,IRD)= PXPL(IPL2,IRD)+WTRSIG
                 IF (LSCX) THEN
                   PXPL2(1:NPLS,0:NDXX) => PXPL(:,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   PXPL2(IPL2,IXSPZ)=PXPL2(IPL2,IXSPZ)+WTRSIG
                   LMETSP2(1:NPLS,0:NDXX) => LMETSP(NTS_PXPLA:NTS_PXPLE)
                   LMETSP2(IPL2,0) = .TRUE.
@@ -429,7 +487,9 @@ C
           IF (LEX) THEN
             IF (IESTCX(IRCX,3).NE.0) THEN
               IF (LEXX) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 EXX(IRD) = EXX(IRD) + WTRSIG*E0
               ENDIF
             ELSE
@@ -437,7 +497,9 @@ C
 C  PRE-COLLISION RATES, BULK IONS
 C
               IF (LEXPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 EXPL(IPLS,IRD) = EXPL(IPLS,IRD) - WTRSIG*ESIGCX(IRCX,1)
                 LMETSP(NSPAMI+IPLS)=.TRUE.
               END IF
@@ -448,28 +510,36 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
                 IAT1=N1STX(IRCX,2)
                 LOGATM(IAT1,ISTRA)=.TRUE.
                 IF (LEXAT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   EXAT(IRD) = EXAT(IRD) + WTRSIG*ESIGCX(IRCX,1)
                 ENDIF
               ELSEIF (N1STX(IRCX,1).EQ.2) THEN
                 IML1=N1STX(IRCX,2)
                 LOGMOL(IML1,ISTRA)=.TRUE.
                 IF (LEXML) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   EXML(IRD) = EXML(IRD) + WTRSIG*ESIGCX(IRCX,1)
                 ENDIF
               ELSEIF (N1STX(IRCX,1).EQ.3) THEN
                 IIO1=N1STX(IRCX,2)
                 LOGION(IIO1,ISTRA)=.TRUE.
                 IF (LEXIO) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   EXIO(IRD) = EXIO(IRD) + WTRSIG*ESIGCX(IRCX,1)
                 ENDIF
               ELSEIF (N1STX(IRCX,1).EQ.4) THEN
                 IPL1=N1STX(IRCX,2)
                 LOGPLS(IPL1,ISTRA)=.TRUE.
                 IF (LEXPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   EXPL(IPL1,IRD) = EXPL(IPL1,IRD)+ WTRSIG*ESIGCX(IRCX,1)
                   LMETSP(NSPAMI+IPL1) = .TRUE.
                 END IF
@@ -479,28 +549,36 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
                 IAT2=N2NDX(IRCX,2)
                 LOGATM(IAT2,ISTRA)=.TRUE.
                 IF (LEXAT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   EXAT(IRD) = EXAT(IRD) + WTRSIG*E0
                 ENDIF
               ELSEIF (N2NDX(IRCX,1).EQ.2) THEN
                 IML2=N2NDX(IRCX,2)
                 LOGMOL(IML2,ISTRA)=.TRUE.
                 IF (LEXML) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   EXML(IRD) = EXML(IRD) + WTRSIG*E0
                 ENDIF
               ELSEIF (N2NDX(IRCX,1).EQ.3) THEN
                 IIO2=N2NDX(IRCX,2)
                 LOGION(IIO2,ISTRA)=.TRUE.
                 IF (LEXIO) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   EXIO(IRD) = EXIO(IRD) + WTRSIG*E0
                 ENDIF
               ELSEIF (N2NDX(IRCX,1).EQ.4) THEN
                 IPL2=N2NDX(IRCX,2)
                 LOGPLS(IPL2,ISTRA)=.TRUE.
                 IF (LEXPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   EXPL(IPL2,IRD) = EXPL(IPL2,IRD) + WTRSIG*E0
                   LMETSP(NSPAMI+IPL2) = .TRUE.
                 END IF
@@ -537,11 +615,15 @@ C  COMPENSATE PRE-COLLISION RATES HERE
 C
           IF (IESTEL(IREL,1).NE.0) THEN
             IF (LPXX) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               PXX(IXSPZ,IRD)=PXX(IXSPZ,IRD)+WTRSIG
               IF (LSCX) THEN
                 PXX2(1:NDXX,0:NDXX) => PXX(:,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXX2(IXSPZ,IXSPZ)=PXX2(IXSPZ,IXSPZ)+WTRSIG
                 LMETSP2(1:NDXX,0:NDXX) => LMETSP(NDXXA:NDXXE)
                 LMETSP2(IXSPZ,0) = .TRUE.
@@ -561,11 +643,15 @@ C             END IF
 C             LMETSP(NSPAMI+IPLS)=.TRUE.
 C           END IF
             IF (LPXX) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               PXX(IXSPZ,IRD)=PXX(IXSPZ,IRD)+WTRSIG
               IF (LSCX) THEN
                 PXX2(1:NDXX,0:NDXX) => PXX(:,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXX2(IXSPZ,IXSPZ)=PXX2(IXSPZ,IXSPZ)+WTRSIG
                 LMETSP2(1:NDXX,0:NDXX) => LMETSP(NDXXA:NDXXE)
                 LMETSP2(IXSPZ,0) = .TRUE.
@@ -585,7 +671,9 @@ C
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
 C  COMPENSATE SUBTRACTED PRE-COLLISION RATES HERE
               IF (LEXX) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 EXX(IRD)=EXX(IRD)+WTRSIG*E0
               ENDIF
             ELSE
@@ -598,20 +686,26 @@ C
 C  PRE-COLLISION RATES, BULK IONS
 C
               IF (LEXPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 EXPL(IPLS,IRD)=EXPL(IPLS,IRD)-WTRSIG*ESIGEL(IREL,1)
                 LMETSP(NSPAMI+IPLS)=.TRUE.
               END IF
 C
 C  FIRST SECONDARY: = INCIDENT ION. REMAINS SAME PARTICLE BY DEFAULT
               IF (LEXPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 EXPL(IPLS,IRD)=EXPL(IPLS,IRD)+WTRSIG*E0
                 LMETSP(NSPAMI+IPLS)=.TRUE.
               END IF
 C  SECOND SECONDARY: = INCIDENT TEST PARTICLE IXSPZ REMAINS SAME PARTICLE BY DEFAULT
               IF (LEXX) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 EXX(IRD)=EXX(IRD)+WTRSIG*ESIGEL(IREL,1)
               ENDIF
             ENDIF
@@ -639,11 +733,15 @@ C  COMPENSATE PRE-COLLISION RATES HERE
 C
           IF (IESTEI(IREI,1).NE.0) THEN
             IF (LPXX) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               PXX(IXSPZ,IRD)=PXX(IXSPZ,IRD)+WTRSIG
               IF (LSCX) THEN
                 PXX2(1:NDXX,0:NDXX) => PXX(:,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXX2(IXSPZ,IXSPZ)=PXX2(IXSPZ,IXSPZ)+WTRSIG
                 LMETSP2(1:NDXX,0:NDXX) => LMETSP(NDXXA:NDXXE)
                 LMETSP2(IXSPZ,0) = .TRUE.
@@ -659,7 +757,9 @@ C
 C  ELECTRONS: DO NOT SEPARATE PRE- AND POST-COLLISION. UPDATE NET RATES
 C
             IF (LPXEL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               PXEL(IRD)=PXEL(IRD)+WTRSIG*PELEI(IREI)
             ENDIF
 C
@@ -668,11 +768,15 @@ C  POST-COLLISION CONTRIBUTIONS
               IAT=IPATEI(IREI,IA)
               LOGATM(IAT,ISTRA)=.TRUE.
               IF (LPXAT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXAT(IAT,IRD)=PXAT(IAT,IRD)+PATEI(IREI,IAT)*WTRSIG
                 IF (LSCX) THEN
                   PXAT2(1:NATM,0:NDXX) => PXAT(:,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   PXAT2(IAT,IXSPZ)=PXAT2(IAT,IXSPZ)+
      .                             PATEI(IREI,IAT)*WTRSIG
                   LMETSP2(1:NATM,0:NDXX) => LMETSP(NTS_PXATA:NTS_PXATE)
@@ -687,11 +791,15 @@ C  POST-COLLISION CONTRIBUTIONS
               IML=IPMLEI(IREI,IM)
               LOGMOL(IML,ISTRA)=.TRUE.
               IF (LPXML) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXML(IML,IRD)=PXML(IML,IRD)+PMLEI(IREI,IML)*WTRSIG
                 IF (LSCX) THEN
                   PXML2(1:NMOL,0:NDXX) => PXML(:,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   PXML2(IML,IXSPZ)=PXML2(IML,IXSPZ)+
      .                             PMLEI(IREI,IML)*WTRSIG
                   LMETSP2(1:NMOL,0:NDXX) => LMETSP(NTS_PXMLA:NTS_PXMLE)
@@ -706,11 +814,15 @@ C  POST-COLLISION CONTRIBUTIONS
               IIO=IPIOEI(IREI,II)
               LOGION(IIO,ISTRA)=.TRUE.
               IF (LPXIO) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXIO(IIO,IRD)=PXIO(IIO,IRD)+PIOEI(IREI,IIO)*WTRSIG
                 IF (LSCX) THEN
                   PXIO2(1:NION,0:NDXX) => PXIO(:,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   PXIO2(IIO,IXSPZ)=PXIO2(IIO,IXSPZ)+
      .                             PIOEI(IREI,IIO)*WTRSIG
                   LMETSP2(1:NION,0:NDXX) => LMETSP(NTS_PXIOA:NTS_PXIOE)
@@ -725,11 +837,15 @@ C  POST-COLLISION CONTRIBUTIONS
               IPL=IPPLEI(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
               IF (LPXPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXPL(IPL,IRD)=PXPL(IPL,IRD)+PPLEI(IREI,IPL)*WTRSIG
                 IF (LSCX) THEN
                   PXPL2(1:NPLS,0:NDXX) => PXPL(:,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   PXPL2(IPL,IXSPZ)=PXPL2(IPL,IXSPZ)+
      .                             PPLEI(IREI,IPL)*WTRSIG
                   LMETSP2(1:NPLS,0:NDXX) => LMETSP(NTS_PXPLA:NTS_PXPLE)
@@ -748,7 +864,9 @@ C  (STILL: EI PROCESSES)
 C
           IF (IESTEI(IREI,3).EQ.0) THEN
             IF (LEXEL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               EXEL(IRD)=EXEL(IRD)+WTRSIG*ESIGEI(IREI,5)
             ENDIF
             IF (LRXEL) THEN
@@ -769,7 +887,9 @@ C
                 EHEAVY = EIRENE_FEHVEI1(IREI,IRD)
               END IF
               PRAD=ELEI+EHEAVY-DELE
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               RXEL(IXSPZ,IRD)=RXEL(IXSPZ,IRD)+WTRSIG*PRAD
             ENDIF
           ENDIF
@@ -781,7 +901,9 @@ C  COLLISION ESTIMATOR
 C  COMPENSATE PRE-COLLISION CONTRIBUTION
 C
               IF (LEXX) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 EXX(IRD)=EXX(IRD)+WTRSIG*E0
               ENDIF
 cdr  Now: exx, exat,exml,exio and expl to be done in subr. COLLIDE
@@ -791,17 +913,23 @@ C  TRACKLENGH ESTIMATOR: HEAVY (AND BULK) PARTICLE ENERGY LOSS/GAIN RATES
 C
 
               IF (LEXAT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 EXAT(IRD)=EXAT(IRD)+WTRSIG*ESIGEI(IREI,1)
               ENDIF
 
               IF (LEXML) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 EXML(IRD)=EXML(IRD)+WTRSIG*ESIGEI(IREI,2)
               ENDIF
 
               IF (LEXIO) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 EXIO(IRD)=EXIO(IRD)+WTRSIG*ESIGEI(IREI,3)
               ENDIF
               IF (LEXPL) THEN
@@ -816,7 +944,9 @@ cdr  Tbd.: Must be fragmented into individual ipl contributions
 cdr  Therefore: EI processes with more than one (different) post-collision bulk: disabled.
 cdr             same for PI processes.
 cdr  Example: dissociative ionisation of DT+ molecular ion cannot be handled any more.
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   EXPL(IPL,IRD)=EXPL(IPL,IRD)+WTRSIG*ESIGEI(IREI,4)
                   LMETSP(NSPAMI+IPL)=.TRUE.
                 END DO
@@ -848,11 +978,15 @@ C  COMPENSATE PRE-COLLISION RATES HERE
 C
           IF (IESTPI(IRPI,1).NE.0) THEN
             IF (LPXX) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               PXX(IXSPZ,IRD)=PXX(IXSPZ,IRD)+WTRSIG
               IF (LSCX) THEN
                 PXX2(1:NDXX,0:NDXX) => PXX(:,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXX2(IXSPZ,IXSPZ)=PXX2(IXSPZ,IXSPZ)+WTRSIG
                 LMETSP2(1:NDXX,0:NDXX) => LMETSP(NDXXA:NDXXE)
                 LMETSP2(IXSPZ,0) = .TRUE.
@@ -867,11 +1001,15 @@ C
 C  PRE-COLLISION BULK ION CONTRIBUTION, ASSUME: INCIDENT ION IS LOST
 C
             IF (LPXPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               PXPL(IPLS,IRD)=PXPL(IPLS,IRD)-WTRSIG
               IF (LSCX) THEN
                 PXPL2(1:NPLS,0:NDXX) => PXPL(:,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXPL2(IPLS,IXSPZ)=PXPL2(IPLS,IXSPZ)-WTRSIG
                 LMETSP2(1:NPLS,0:NDXX) => LMETSP(NTS_PXPLA:NTS_PXPLE)
                 LMETSP2(IPLS,0) = .TRUE.
@@ -883,7 +1021,9 @@ C
 C  ELECTRONS: HERE: ONLY POST-COLLISION CONTRIBUTIONS
 C
             IF (LPXEL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               PXEL(IRD)=PXEL(IRD)+WTRSIG*PELPI(IRPI)
             ENDIF
 C
@@ -891,11 +1031,15 @@ C
               IAT=IPATPI(IRPI,IA)
               LOGATM(IAT,ISTRA)=.TRUE.
               IF (LPXAT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXAT(IAT,IRD)= PXAT(IAT,IRD)+WTRSIG*PATPI(IRPI,IAT)
                 IF (LSCX) THEN
                   PXAT2(1:NATM,0:NDXX) => PXAT(:,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   PXAT2(IAT,IXSPZ)=PXAT2(IAT,IXSPZ)+
      .                             WTRSIG*PATPI(IRPI,IAT)
                   LMETSP2(1:NATM,0:NDXX) => LMETSP(NTS_PXATA:NTS_PXATE)
@@ -910,11 +1054,15 @@ C
               IML=IPMLPI(IRPI,IM)
               LOGMOL(IML,ISTRA)=.TRUE.
               IF (LPXML) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXML(IML,IRD)= PXML(IML,IRD)+WTRSIG*PMLPI(IRPI,IML)
                 IF (LSCX) THEN
                   PXML2(1:NMOL,0:NDXX) => PXML(:,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   PXML2(IML,IXSPZ)=PXML2(IML,IXSPZ)+
      .                             WTRSIG*PMLPI(IRPI,IML)
                   LMETSP2(1:NMOL,0:NDXX) => LMETSP(NTS_PXMLA:NTS_PXMLE)
@@ -929,11 +1077,15 @@ C
               IIO=IPIOPI(IRPI,II)
               LOGION(IIO,ISTRA)=.TRUE.
               IF (LPXIO) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXIO(IIO,IRD)= PXIO(IIO,IRD)+WTRSIG*PIOPI(IRPI,IIO)
                 IF (LSCX) THEN
                   PXIO2(1:NION,0:NDXX) => PXIO(:,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   PXIO2(IIO,IXSPZ)=PXIO2(IIO,IXSPZ)+
      .                             WTRSIG*PIOPI(IRPI,IIO)
                   LMETSP2(1:NION,0:NDXX) => LMETSP(NTS_PXIOA:NTS_PXIOE)
@@ -948,11 +1100,15 @@ C
               IPL=IPPLPI(IRPI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
               IF (LPXPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXPL(IPL,IRD)= PXPL(IPL,IRD)+WTRSIG*PPLPI(IRPI,IPL)
                 IF (LSCX) THEN
                   PXPL2(1:NPLS,0:NDXX) => PXPL(:,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   PXPL2(IPL,IXSPZ)=PXPL2(IPL,IXSPZ)+
      .                             WTRSIG*PPLPI(IRPI,IPL)
                   LMETSP2(1:NPLS,0:NDXX) => LMETSP(NTS_PXPLA:NTS_PXPLE)
@@ -971,7 +1127,9 @@ C  (STILL: PI PROCESSES)
 C
           IF (IESTPI(IRPI,3).EQ.0) THEN
             IF (LEXEL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               EXEL(IRD)=EXEL(IRD)+WTRSIG*ESIGPI(IRPI,5)
             ENDIF
             IF (LRXEL) THEN
@@ -992,7 +1150,9 @@ C
                 EHEAVY = EIRENE_FEHVEI1(IREI,IRD)
               END IF
               PRAD=ELEI+EHEAVY-DELE
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               RXEL(IXSPZ,IRD)=RXEL(IXSPZ,IRD)+WTRSIG*PRAD
             END IF
           ENDIF
@@ -1004,22 +1164,30 @@ C  COLLISION ESTIMATOR
 C  COMPENSATE PRE-COLLISION CONTRIBUTION
 C
               IF (LEXX) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 EXX(IRD)=EXX(IRD)+WTRSIG*E0
               ENDIF
 C
             ELSE
 C
               IF (LEXAT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 EXAT(IRD)=EXAT(IRD)+WTRSIG*ESIGPI(IRPI,1)
               ENDIF
               IF (LEXML) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 EXML(IRD)=EXML(IRD)+WTRSIG*ESIGPI(IRPI,2)
               ENDIF
               IF (LEXIO) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 EXIO(IRD)=EXIO(IRD)+WTRSIG*ESIGPI(IRPI,3)
               ENDIF
               IF (LEXPL) THEN
@@ -1031,7 +1199,9 @@ cdr  This is incorrect. esigpi is sum over ipl species.
 cdr  it only happens to be correct if the post-collision bulk species are all the same (ipl),
 cdr  because then esigpi is the total for this species.
 cdr  Must be fragmented into individual ipl contributions
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   EXPL(IPL,IRD)=EXPL(IPL,IRD)+WTRSIG*ESIGPI(IRPI,4)
                   LMETSP(NSPAMI+IPL)=.TRUE.
                 ENDDO

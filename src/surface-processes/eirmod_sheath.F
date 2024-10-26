@@ -9,7 +9,9 @@ cym 04/2020 turned into module because of save
 cym make sure this works fine
       integer,save :: icount=0
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(icount)
+#endif
 C
       contains
 C

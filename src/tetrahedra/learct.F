@@ -39,9 +39,11 @@
       TYPE (POIFELD),ALLOCATABLE,SAVE :: HEADS(:,:,:)
       TYPE (CELL),POINTER :: CUR
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(XMIN,XMAX,YMIN,YMAX,ZMIN,ZMAX,
 !$OMP&              DISTX,DISTY,DISTZ,EPDX,EPDY,EPDZ,
 !$OMP&              HEADS,IFIRST)
+#endif
 
       IF (IFIRST.EQ.0) THEN
         IFIRST = 1

@@ -787,9 +787,13 @@ C  TEMPORARILY
           TSAVE=TIME
           TIME=TIMES
 cym
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           CALL EIRENE_CHCTRC(X0S,Y0S,Z0S,16,19)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
           PHI=PSAVE
           TIME=TSAVE
         ENDIF
@@ -1004,9 +1008,13 @@ C  IN CASE NCOU.EQ.1: XSTORV HAS NOT BEEN STORED ONTO XSTORV2
         NPCELL=NPCLLC
         NTCELL=NTCLLC
 cym
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         CALL EIRENE_CHCTRC(X0C,Y0C,Z0C,16,13)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         PHI=PSAVE
         TIME=TSAVE
         NPCELL=NPSAVE
@@ -1072,9 +1080,13 @@ C   RESTORE PRE-COLLISION DATA AND SAMPLE FROM COLLISION KERNEL
       XSTORV(:)  = XSTORVC(:)
 cym
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         CALL EIRENE_CHCTRC(X0,Y0,Z0,0,14)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
       ICOL=0
       LGPART=.TRUE.
@@ -1094,7 +1106,9 @@ C  REGULAR STOP IN SUBR. FOLNEUT, STOP HISTORY, CENSUS ARRAY FULL
 C
   990 CONTINUE
 cym
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE('ERROR IN FOLNEUT, ZDT1 OR NCELL OUT OF RANGE')
       CALL EIRENE_MASAGE('PARTICLE IS KILLED')
@@ -1106,19 +1120,25 @@ cym
      .                  NPANU,NCELL,ZDT1,ZTST,TL,TS
       CALL EIRENE_MASJ4('NRCELL,NPCELL,NTCELL,NACELL     ',
      .                   NRCELL,NPCELL,NTCELL,NACELL)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
 cym
       GOTO 995
 C
 C
  9912 CONTINUE
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
       CALL EIRENE_LEER(1)
       CALL EIRENE_MASAGE('ERROR IN FOLNEUT, DAMAGED CELL HIT')
       CALL EIRENE_MASAGE('PARTICLE IS KILLED')
       WRITE (iunout,*) 'NPANU,NCELL,NRCELL,NPCELL,NTCELL '
       WRITE (iunout,*)  NPANU,NCELL,NRCELL,NPCELL,NTCELL
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       GOTO 995
 C
   995 WRITE (iunout,*) 'MRSURF,MPSURF,MTSURF,MASURF ',
@@ -1128,17 +1148,25 @@ C
       Z0ERR=Z0+ZT*VELZ
       IF (NLTRC) THEN
 cym
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         CALL EIRENE_CHCTRC(X0ERR,Y0ERR,Z0ERR,16,18)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ELSE
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         WRITE (iunout,'(A,1P,4(1X,1E14.7))') 'X0,Y0,Z0,ZT ',X0,Y0,Z0,ZT
         WRITE (iunout,'(A,1P,4(1X,1E14.7))') 'VELX,VELY,VELZ,VEL ',
      .                                        VELX,VELY,VELZ,VEL
         WRITE (iunout,'(A,1P,3(1X,1E14.7))') 'X0ERR,Y0ERR,Z0ERR ',
      .                                        X0ERR,Y0ERR,Z0ERR
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
       GOTO 999
   997 CALL EIRENE_MASAGE('ERROR IN FOLNEUT, DETECTED IN SUBR. CLLTST')
@@ -1146,9 +1174,13 @@ cym
 C   DETAILED PRINTOUT ALREADY DONE FROM SUBR. CLLTST
 cym
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
       GOTO 999
 C
@@ -1159,9 +1191,13 @@ C
       GOTO 999
 C
   999 CONTINUE
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
       PTRASH(ISTRA)=PTRASH(ISTRA)-WEIGHT
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
       ETRASH(ISTRA)=ETRASH(ISTRA)-WEIGHT*E0
       LGPART=.FALSE.
       CALL EIRENE_LEER(1)

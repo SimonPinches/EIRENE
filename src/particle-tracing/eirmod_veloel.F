@@ -43,6 +43,7 @@ cym  once this is done, it makes more sense to include fi&rtsaf here too
       REAL(DP) :: P(9)
       INTEGER :: IFLAG, IRL, IREAC, JM, J, ICOUNT
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(IFIRST,
 !$OMP&  TEST, VRELX,
 !$OMP&  VXN, VYN, VZN, VXI, VYI, VZI, VRELQ, VN, VREL,
@@ -57,6 +58,7 @@ cym  once this is done, it makes more sense to include fi&rtsaf here too
 !$OMP&  VR, CEL, VRQ,
 !$OMP&  P,
 !$OMP& IFLAG, IRL, IREAC, JM, J, ICOUNT)
+#endif
 
 cym ccccccccccccccccccccc variables from RSTERN ccccccccccccccccccccccccccc
 cym this comes here because of SAVE attribute
@@ -64,8 +66,10 @@ cym this comes here because of SAVE attribute
       REAL(DP) :: FIW, RV,  BQ, TOL, DFI,
      .        FITEST, rup, rlw, vw, rw, r0
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(FIW,RV,BQ,TOL,DFI,
 !$OMP&      FITEST, rup, rlw, vw, rw, r0)
+#endif
 
 cym ccccccccccccccccccccc variables from GAUMEH ccccccccccccccccccccccccccc
 cym this comes here because of SAVE attibute
@@ -79,7 +83,9 @@ cym common to be treated
       REAL(DP) :: AR(128), AFI(128)
       INTEGER :: NFI
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(AR,AFI,NFI)
+#endif
 
       REAL(DP) :: X5A(5),X5B(5),X10A(10),X10B(10),X20A(20),X20B(20)
 C
@@ -91,10 +97,12 @@ cym      DATA IFIRST1 /0/
 cym CHECK THIS
       integer :: ifirst1=0
 C
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(X5A,X5B,X10A,X10B,X20A,X20B,
 !$OMP&       XG10A,XG10B,
 !$OMP&       SUM, F, X,
 !$OMP&       I, IFIRST1, IFI)
+#endif
 
 cym      integer :: icll
 cym !$OMP THREADPRIVATE(icll)

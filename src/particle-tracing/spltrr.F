@@ -105,9 +105,13 @@ C
       MSURF=0
 C
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
        CALL EIRENE_CHCTRC(X0,Y0,Z0,16,9)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
 C
 C
@@ -167,9 +171,13 @@ C
         XM=X0+VELX*ZT
         YM=Y0+VELY*ZT
         ZM=Z0+VELZ*ZT
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         CALL EIRENE_CHCTRC(XM,YM,ZM,16,10)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
       LGPART=.FALSE.
       IRET = 2

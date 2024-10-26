@@ -136,11 +136,17 @@ c  find the bin I  (energy units)
             END IF
 
 cdr  score SPC(I), ESP_MIN and ESP_MAX
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             ESTIML(ISPC)%SPC(I) = ESTIML(ISPC)%SPC(I) + ADD
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             ESTIML(ISPC)%ESP_MIN= MIN(ESTIML(ISPC)%ESP_MIN,EB)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             ESTIML(ISPC)%ESP_MAX= MAX(ESTIML(ISPC)%ESP_MAX,EB)
             ESTIML(ISPC)%IMETSP = 1
 
@@ -154,7 +160,9 @@ chk compute L = IDth Legendre polynomial evaluated at 2 * cos(angle) - 1
 chk transforming cos(angle) from [0,1] to [-1,1] improves fit accuracy
                 CALL EIRENE_LEGENDRE(ID, 2*CA-1, L)
 chk scoring the IDth polynomial coefficient SPCAN(ID,I) of bin I
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 ESTIML(ISPC)%SPCAN(ID,I) = ESTIML(ISPC)%SPCAN(ID,I) +
      .                  L * ADD / LNORM
               END DO
@@ -226,11 +234,17 @@ c  find the bin I  (energy units)
               END IF
 
 cdr  score SPC(I), ESP_MIN and ESP_MAX
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               ESTIML(ISPC)%SPC(I) = ESTIML(ISPC)%SPC(I) + ADD
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               ESTIML(ISPC)%ESP_MIN= MIN(ESTIML(ISPC)%ESP_MIN,EB)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               ESTIML(ISPC)%ESP_MAX= MAX(ESTIML(ISPC)%ESP_MAX,EB)
               ESTIML(ISPC)%IMETSP = 1
             END IF

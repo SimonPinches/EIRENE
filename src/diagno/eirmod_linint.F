@@ -465,12 +465,16 @@ C
         TRCHST=.TRUE.
         NPANU=ICHORI
         ISPZ=0
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         CALL EIRENE_LEER(2)
         WRITE (iunout,*) 'INIT. POINT C2 IN LININT: '
         CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
         CALL EIRENE_LEER(1)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         TRCHST=TRCSAV
       ENDIF
 C
@@ -675,9 +679,13 @@ C
 C     PERIODICITY (inspired by escape.f):
       IF (ILIIN(MSURF).GE.4) THEN
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           CALL EIRENE_CHCTRC(X0,Y0,Z0,0,11)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
         GOTO 14
       ENDIF
@@ -748,12 +756,16 @@ C
         TRCHST=.TRUE.
         NPANU=ICHORI
         ISPZ=0
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         CALL EIRENE_LEER(2)
         WRITE (iunout,*) 'SIGNAL: STARTING POINT ON CHORD'
         CALL EIRENE_CHCTRC(X0,Y0,Z0,16,8)
         CALL EIRENE_LEER(1)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         TRCHST=TRCSAV
       ENDIF
 C
@@ -1056,9 +1068,13 @@ C
 C     PERIODICITY (inspired by escape.f):
       IF (ILIIN(MSURF).GE.4) THEN
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           CALL EIRENE_CHCTRC(X0,Y0,Z0,0,11)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
         GOTO 104
       ENDIF
@@ -1068,12 +1084,16 @@ C
         TRCHST=.TRUE.
         NPANU=ICHORI
         ISPZ=0
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         CALL EIRENE_LEER(2)
         WRITE (iunout,*) 'SIGNAL: END POINT ON CHORD'
         CALL EIRENE_CHCTRC(X0,Y0,Z0,16,8)
         CALL EIRENE_LEER(2)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         TRCHST=TRCSAV
       ENDIF
 C

@@ -109,10 +109,11 @@ C  DISTRIBUTION FUNCTIONS ZIDE(ZRANGE), ONE FOR EACH ZENGY
      .    0.105_DP,0.305_DP,0.6_DP,0.9_DP,1._DP/
 C---------------------------------------------------------------------
 
+      REAL(DP), SAVE, ALLOCATABLE :: ZIDED(:,:), ZENGY(:), ZRANGE(:),
+     .  ZDE(:), ZDEL(:), ZR(:), ZIDE(:,:),
+     .  E0AV(:), QUOTR(:), QUOTE(:)
       REAL(DP), SAVE ::
-     .  ZRANGE(0:12),ZDE(12),ZDEL(12),ZENGY(0:12),ZR(0:12),ZIDE(12,12),
-     .  ZIDED(12,12),XSP(13),YSP(13),ASP(13),BSP(13),CSP(13),DSP(13),
-     .  E0AV(0:12),QUOTR(0:11),QUOTE(0:11)
+     .  XSP(13),YSP(13),ASP(13),BSP(13),CSP(13),DSP(13)
 
       REAL(DP) :: ERDUC, EFCT
 
@@ -122,13 +123,13 @@ C---------------------------------------------------------------------
      .          ZTHET, ZE, ESUM, EFAC, ZDELTA, COSI2, WABS, WLOSS, TW,
      .          FLPRT, WMOLEC, RPROBM, FR2, PRTEST, RPROBL, DUMMY,
      .          XCH, XMFE, XMH, EPSHFE, E0TERM, XCW, EBIND, PRFCT,
-     .          PRFCF, XMW, CON, ZWDR, EOQ,
+     .          PRFCF, XMW,
      .          XCFE, DX, RO1, EQSAVE, ZEP1, RO3,
      .          EMINR, EMAXR, RPROB, APROB, COSIN,
      .          EXPP, EXPI, EXPE, RINTG, AINTG, EINTG,
      .          EQTO, ETEST, EQT, F1, WFAC, F2,
      .          FR1, RO2
-      REAL(DP) :: RF, RF1, RF2, RF3, RF4, RF5, RF6, RF7, RF8, 
+      REAL(DP) :: RF, RF1, RF2, RF3, RF4, RF5, RF6, RF7, RF8,
      .          RF9, RF10, RF11, RF12, RF13, RF14, RF15, RF16,
      .          RFF1, RFF2, RFF3, RFF4, RFF5, RFF6, RFF7, RFF8,
      .          RFFF1, RFFF2, RFFF3, RFFF4,
@@ -144,6 +145,7 @@ C---------------------------------------------------------------------
       LOGICAL :: NLDATA, NLBEHR
       integer , save :: ifile
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE (IFILE,
 !$OMP& ZRANGES, ZENGYS, ZRS, ZIDES,
 !$OMP& ZRANGE, ZDE, ZDEL, ZENGY, ZR, ZIDE,
@@ -157,7 +159,7 @@ C---------------------------------------------------------------------
 !$OMP& ZTHET, ZE, ESUM, EFAC, ZDELTA, COSI2, WABS, WLOSS, TW,
 !$OMP& FLPRT, WMOLEC, RPROBM, FR2, PRTEST, RPROBL, DUMMY,
 !$OMP& XCH, XMFE, XMH, EPSHFE, E0TERM, XCW, EBIND, PRFCT,
-!$OMP& PRFCF, XMW, CON, ZWDR, EOQ,
+!$OMP& PRFCF, XMW,
 !$OMP& XCFE, DX, RO1, EQSAVE, ZEP1, RO3,
 !$OMP& EMINR, EMAXR, RPROB, APROB, COSIN,
 !$OMP& EXPP, EXPI, EXPE, RINTG, AINTG, EINTG,
@@ -174,7 +176,7 @@ C---------------------------------------------------------------------
 !$OMP& ICOUNT, IFIRST, ICOANGL,
 !$OMP& J, NRI, INDR3, ISAVE, INDEP, INDWP, INDE, INDR2P,
 !$OMP& INDR1P, INDR1, ISPZO, INDW, IDUMMY, IRET)
-
+#endif
 
       CONTAINS
 
@@ -221,6 +223,10 @@ C
       IF (IFIRST.EQ.1) RETURN
       IFIRST=1
 C
+      IF (.NOT.ALLOCATED(ZRANGE)) ALLOCATE(ZRANGE(0:12))
+      IF (.NOT.ALLOCATED(ZENGY)) ALLOCATE(ZENGY(0:12))
+      IF (.NOT.ALLOCATED(ZIDE)) ALLOCATE(ZIDE(12,12))
+      IF (.NOT.ALLOCATED(ZR)) ALLOCATE(ZR(0:12))
       ZENGY = ZENGYS
       ZR = ZRS
       ZRANGE = ZRANGES
@@ -347,12 +353,15 @@ C  MASS NUMBER   : HYDROGEN
 C
         EPSHFE=EREDC(XMFE,XCFE,XMH,XCH)
 C
+        IF (.NOT.ALLOCATED(ZDE)) ALLOCATE(ZDE(12))
 C       ZRANGE(0)=0.0
         DO 12 J=1,12
           ZRANGE(J)=ZRANGE(J)*EPSHFE
           ZDE(J)=ZRANGE(J)-ZRANGE(J-1)
           ZENGY(J)=ZENGY(J)*EPSHFE
    12   CONTINUE
+        IF (.NOT.ALLOCATED(ZIDED)) ALLOCATE(ZIDED(12,12))
+        IF (.NOT.ALLOCATED(ZDEL)) ALLOCATE(ZDEL(12))
         DO 13 I=1,12
           ZIDED(1,I)=ZIDE(1,I)
           ZDEL(I)=ZENGY(I)-ZRANGE(I-1)
@@ -364,6 +373,7 @@ C       ZRANGE(0)=0.0
 C
 C  SET MEAN ENERGY OF REFLECTED PARTICLES FROM STOCHASTIC MATRIX
 C
+        IF (.NOT.ALLOCATED(E0AV)) ALLOCATE(E0AV(0:12))
         E0AV(0)=0.
         DO 15 J=1,12
 C  LAST BOX
@@ -377,6 +387,8 @@ C
 C  SET SOME CONSTANTS TO SPEED UP LINEAR INTERPOLATION IN
 C  BEHRISCH REFLECTION DATA
 C
+        IF (.NOT.ALLOCATED(QUOTR)) ALLOCATE(QUOTR(0:11))
+        IF (.NOT.ALLOCATED(QUOTE)) ALLOCATE(QUOTE(0:11))
         DO 17 J=0,11
           JP=J+1
           QUOTR(J)=(ZR(JP)-ZR(J))/(ZENGY(JP)-ZENGY(J))
@@ -607,7 +619,9 @@ C  FIND DATABASE FILE WITH SCALING RATIO CLOSEST TO ONE
         ENDIF
   120 CONTINUE
       IF (ICOUNT.LT.5.AND.TRCREF) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         WRITE (iunout,*) 'TRIM REFLECTION DATA REQUESTED BUT NOT'
         WRITE (iunout,*) 'AVAILABLE FOR THE TARGET-PROJECTILE SYSTEM:'
         WRITE (iunout,*) 'ISP,ISURF,XMWALL,XCWALL,XMPART,XCPART'
@@ -622,7 +636,9 @@ C  FIND DATABASE FILE WITH SCALING RATIO CLOSEST TO ONE
         WRITE (iunout,*) 'ERDC(J), F_REDUC = ',ERDC(ISAVE),EQSAVE
         CALL EIRENE_LEER(1)
         ICOUNT=ICOUNT+1
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
       IFILE=ISAVE
       EFCT=EQSAVE
@@ -1210,11 +1226,15 @@ C  SUPPRESSION OF ABSORPTION
           WABS=WEIGHT*WLOSS
           IF (LSPUMP .AND. WABS .GT. 0.D0) THEN
             IF (MSURF.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               SPUMP(ISPZO,MSURF)=SPUMP(ISPZO,MSURF)+WABS
             ENDIF
             IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               SPUMP(ISPZO,MSURFG)=SPUMP(ISPZO,MSURFG)+WABS
             END IF
             LMETSPW(ISPZO) = .TRUE.
@@ -1306,11 +1326,15 @@ C  SUPPRESSION OF ABSORPTION
           WABS=WEIGHT*WLOSS
           IF (LSPUMP .AND. WABS .GT. 0.D0) THEN
             IF (MSURF.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               SPUMP(ISPZO,MSURF)=SPUMP(ISPZO,MSURF)+WABS
             ENDIF
             IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               SPUMP(ISPZO,MSURFG)=SPUMP(ISPZO,MSURFG)+WABS
             END IF
             LMETSPW(ISPZO) = .TRUE.
@@ -1354,11 +1378,15 @@ C
   700 CONTINUE
       IF (LSPUMP) THEN
         IF (MSURF.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
           SPUMP(ISPZO,MSURF)=SPUMP(ISPZO,MSURF)+WEIGHT
         ENDIF
         IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
           SPUMP(ISPZO,MSURFG)=SPUMP(ISPZO,MSURFG)+WEIGHT
         END IF
         LMETSPW(ISPZO) = .TRUE.
@@ -1398,9 +1426,13 @@ c
       GOTO 999
 C
   999 IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
       LGPART=.FALSE.
       WEIGHT=0.
@@ -1417,10 +1449,21 @@ C     The following SUBROUTINE is for reinitialization of EIRENE (DMH)
       IF (ALLOCATED(EREDUC)) DEALLOCATE(EREDUC)
       IF (ALLOCATED(FREDUC)) DEALLOCATE(FREDUC)
       IF (ALLOCATED(IREDUC)) DEALLOCATE(IREDUC)
+      IF (ALLOCATED(ZRANGE)) DEALLOCATE(ZRANGE)
+      IF (ALLOCATED(ZIDED)) DEALLOCATE(ZIDED)
+      IF (ALLOCATED(ZENGY)) DEALLOCATE(ZENGY)
+      IF (ALLOCATED(QUOTE)) DEALLOCATE(QUOTE)
+      IF (ALLOCATED(QUOTR)) DEALLOCATE(QUOTR)
+      IF (ALLOCATED(ZIDE)) DEALLOCATE(ZIDE)
+      IF (ALLOCATED(ZDEL)) DEALLOCATE(ZDEL)
+      IF (ALLOCATED(E0AV)) DEALLOCATE(E0AV)
+      IF (ALLOCATED(ZDE)) DEALLOCATE(ZDE)
+      IF (ALLOCATED(ZR)) DEALLOCATE(ZR)
       ICOUNT = 0
       NPANOLD = 0
       IFIRST = 0
 
+      RETURN
       END SUBROUTINE EIRENE_REFLEC_REINIT
 
       FUNCTION EREDC(XMTT,XCTT,XMPP,XCPP)
@@ -1428,6 +1471,11 @@ C     The following SUBROUTINE is for reinitialization of EIRENE (DMH)
       REAL(DP) :: EREDC
       REAL(DP), INTENT(IN) :: XMTT,XCTT,XMPP,XCPP
       REAL(DP) :: CON=0.4685_DP, ZWDR=0.666667_DP, EOQ=14.39_DP
+
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP THREADPRIVATE(CON, ZWDR, EOQ)
+#endif
+      SAVE
 
 cdr:  statement function: reduced energy for target (tt) - projectile (pp) system.
       EREDC=CON/EOQ*XMTT/((XMPP+XMTT)*XCPP*XCTT*

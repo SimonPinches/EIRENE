@@ -54,8 +54,10 @@ c    species scoring at surface, somewhere: ISPZ=LMETSPW(...)
       LOGICAL, PUBLIC, POINTER, SAVE ::
      l LMETSP2(:,:), LMETSPW2(:,:)
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP  THREADPRIVATE(ISDVI,IMETCL,ICLMT,NCLMT,NCLMTS,IMETWL,IWLMT,
 !$OMP& NWLMT,NWLMTS)
+#endif
 
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I IIHC(:,:), IGHC(:,:)

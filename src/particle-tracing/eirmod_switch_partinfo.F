@@ -41,8 +41,10 @@ cdr for trchktim option: cpu time consumption split by species
      .                 iion_old=-1,
      .                 ipls_old=-1
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$omp  threadprivate(istra_old,ityp_old,iphot_old,iatm_old,imol_old,
 !$omp&   iion_old,ipls_old)
+#endif
 
       PRIVATE
 

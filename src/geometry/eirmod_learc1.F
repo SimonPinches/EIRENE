@@ -47,9 +47,11 @@ cym - because of save attribute
       REAL(DP), SAVE :: XMIN, YMIN, DISTX, DISTY, XMAX, YMAX,
      .                  EPDY, EPDXDY, EPDX
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(IFIRST,D12,D12I,D14,D14I,OBSC,
 !$OMP&    XMIN, YMIN, DISTX, DISTY, XMAX, YMAX, EPDY, EPDXDY, EPDX,
 !$OMP&    HEADS,HEADS4)
+#endif
 
       CONTAINS
 

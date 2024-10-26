@@ -52,8 +52,10 @@ C
 !pb      SAVE
 !     DATA IFIRST /0/
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(IFIRST,X1,Y1,X2,Y2,X3,Y3,X4,Y4,TX,TY,UX,UY,
 !$OMP&    DET,VY1,WY1,WX1,DWY,HELP,D12,D14,D32,D34)
+#endif
 
 csw 04aug08
       if(np .lt. 0) then

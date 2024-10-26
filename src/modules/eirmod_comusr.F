@@ -223,7 +223,9 @@ C
 !     POINTER FOR UNIFIED SUBROUTINES
       REAL(DP), POINTER, PUBLIC, SAVE :: RMASSX
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP  THREADPRIVATE(RMASSX)
+#endif
 
 C     PLASMA PROFILES ON CELL VERTICES
       REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE ::
@@ -278,7 +280,9 @@ cdr So move that there too, as part of "eirpbls globals".
 
 !     POINTER FOR UNIFIED SUBROUTINES
       INTEGER, POINTER, PUBLIC, SAVE :: NGENX
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP  THREADPRIVATE(NGENX)
+#endif
 
       INTEGER, ALLOCATABLE, PUBLIC, SAVE ::
      I         ISPZ_BACK(:,:)

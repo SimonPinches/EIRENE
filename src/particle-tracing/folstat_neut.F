@@ -52,14 +52,22 @@ c  particle enters the static loop, NFOL$(ISPZ)=-1
 
       IF (IC_PART.EQ.1.AND.NLTRC.AND.TRCHST) THEN
 !FIRST ENTRY TO STATIC LOOP
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         WRITE (iunout,*) 'TRAJECTORY ENTERS STATIC LOOP, ITYP=', ITYP
         CALL EIRENE_CHCTRC(X0,Y0,Z0,0,21)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ELSEIF (NLTRC.AND.TRCHST.and.ic_part.le.10) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         WRITE (iunout,*) 'neut static generation ic_part=',ic_part
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
 
 C***********************************************************************

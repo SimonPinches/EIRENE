@@ -103,6 +103,7 @@ cym end change
 cym adding externals
       real(dp), external :: EIRENE_EMAXW, EIRENE_FTABRC1
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP threadprivate(DUMT, DUMV,
 !$OMP& YIELD1, YIELD2, FMASS, FCHAR, VELXS, VELYS,
 !$OMP& VELZS, E0S, WEIGHS, VELS, FLX, VPARZ, VPAR, VTERM,
@@ -138,7 +139,7 @@ cym
 !$OMP& IRET, IDIMM)
 
 !HJL      save
-
+#endif
 
       CONTAINS
 
@@ -248,13 +249,17 @@ C
       REAL(DP) :: SUMM, SUM1
       INTEGER :: JSPZ, ISOUR, ISRFS, IDUMM, I
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE( SUM1 )
+#endif
       SAVE
 C
 C
 C  PREPARE DATA FOR SAMPLING SUBSTRATA FOR STRATUM ISTRA: 1--10
 C
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP MASTER
+#endif
       IF (.NOT.ALLOCATED(WMM)) THEN
         ALLOCATE (WMM(NSRFS))
         ALLOCATE (WEISPZ(NSPZ))
@@ -263,7 +268,9 @@ C
         ALLOCATE (IUPSOR(NSRFS))
         ALLOCATE (IFPSOR(NSRFS))
       END IF
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END MASTER
+#endif
 
 cym - do this on all threads, this is a private variable
       IF (.NOT.ALLOCATED(WEISPZ)) THEN
@@ -273,7 +280,9 @@ cym - do this on all threads, this is a private variable
     1   CONTINUE
       ENDIF
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP MASTER
+#endif
 C
       SUMM = SUM(SORWGT(1:NSRFSI(ISTRA),ISTRA))
 c  at this point: SUMM .gt.0 already verified in calling routine (NLSRON)
@@ -352,7 +361,9 @@ C
         X2LINE = 0._DP
       END IF
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END MASTER
+#endif
 
       RETURN
       END SUBROUTINE EIRENE_LOCAT0
@@ -519,23 +530,35 @@ C
         SELECT CASE( ITYP )
           CASE( 1 )
 C Volume source
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             WTOTA(IATM,ISTRA)=WTOTA(IATM,ISTRA)+WEIGHT
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             ETOTA(ISTRA)=ETOTA(ISTRA)+E0*WEIGHT
             LOGATM(IATM,ISTRA)=.TRUE.
           CASE( 2 )
 C Volume source
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             WTOTM(IMOL,ISTRA)=WTOTM(IMOL,ISTRA)+WEIGHT
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             ETOTM(ISTRA)=ETOTM(ISTRA)+E0*WEIGHT
             LOGMOL(IMOL,ISTRA)=.TRUE.
           CASE( 3 )
 C Volume source
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             WTOTI(IION,ISTRA)=WTOTI(IION,ISTRA)+WEIGHT
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             ETOTI(ISTRA)=ETOTI(ISTRA)+E0*WEIGHT
             LOGION(IION,ISTRA)=.TRUE.
           CASE( 4 )
@@ -544,9 +567,13 @@ C add part for volume source (see above), i.e. check whether needed or
 C elseif below can be used.
           CASE( 0 )
 C Volume source
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             WTOTPH(IPHOT,ISTRA)=WTOTPH(IPHOT,ISTRA)+WEIGHT
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             ETOTPH(ISTRA)=ETOTPH(ISTRA)+E0*WEIGHT
             LOGPHOT(IPHOT,ISTRA)=.TRUE.
           CASE DEFAULT
@@ -557,9 +584,13 @@ C Volume source
 
         IF (ITYP.GE.0 .AND. ITYP.LE.3) THEN
           IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
             CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
           ENDIF
 C
           GOTO 5000
@@ -1268,18 +1299,26 @@ C           E0_MEAN=1.5*TIWD+0.
             GOTO 998
           ENDIF
 C
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
           WTOTA(IATM,ISTRA)=WTOTA(IATM,ISTRA)+WEIGHT
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
           ETOTA(ISTRA)=ETOTA(ISTRA)+E0*WEIGHT
           IF (NADSI.GE.1.AND.NLSRF(ISTRA))
      .      CALL EIRENE_UPSUSR(WEIGHT,2)
           IF (NADSPC.GE.1.AND.NLSRF(ISTRA))
      .      CALL EIRENE_UPDATE_SPECTRUM(WEIGHT,2,0)
           IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
             CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
           ENDIF
 
         CASE (2)
@@ -1353,16 +1392,24 @@ C
             GOTO 998
           ENDIF
 C
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
           WTOTM(IMOL,ISTRA)=WTOTM(IMOL,ISTRA)+WEIGHT
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
           ETOTM(ISTRA)=ETOTM(ISTRA)+WEIGHT*E0
           IF (NADSI.GE.1) CALL EIRENE_UPSUSR(WEIGHT,2)
           IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM(WEIGHT,2,0)
           IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
             CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
           ENDIF
 
         CASE (3)
@@ -1480,16 +1527,24 @@ C
             GOTO 998
           ENDIF
 C
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
           WTOTI(IION,ISTRA)=WTOTI(IION,ISTRA)+WEIGHT
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
           ETOTI(ISTRA)=ETOTI(ISTRA)+E0*WEIGHT
           IF (NADSI.GE.1) CALL EIRENE_UPSUSR(WEIGHT,2)
           IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM(WEIGHT,2,0)
           IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
             CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
           ENDIF
         CASE (4)
 C
@@ -1631,20 +1686,30 @@ cdr  mostly these tallies wtotp, etotp are redundant.
 cdr  They should coincide with the totals pppli, eppli,
 cdr  unless there are bulk secondaries as well
 cdr  from RC processes (e.g. photon emission plus a bulk lower state atom)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             WTOTP(IPLS,ISTRA)=WTOTP(IPLS,ISTRA)-WEIGHT
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             WTOTE(ISTRA)=WTOTE(ISTRA)-ZIWL(IPLS)*WEIGHT
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             ETOTP(ISTRA)=ETOTP(ISTRA)-E0*WEIGHT
 C  NEW (2004) VOLUME-AVERAGED TALLIES
 C  PPPL, EPPL AND THEIR INTEGRALS: ALSO FOR GLOBAL PARTICLE & ENERGY BALANCE
             IF (LPPPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               PPPL(IPLS,NCELLT)=PPPL(IPLS,NCELLT)-WEIGHT
             ENDIF
             IF (LEPPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               EPPL(IPLS,NCELLT)=EPPL(IPLS,NCELLT)-E0*WEIGHT
             ENDIF
 CDR  missing here: mppl_vec and epel tallies (have not been needed so far).
@@ -1659,9 +1724,13 @@ C  POTPL,EOTPL,....FOR PRINTOUT OF SURFACE FLUXES
             IF (NADSPC.GE.1) CALL EIRENE_UPDATE_SPECTRUM(-WEIGHT,1,0)
 C
             IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
               CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
             ENDIF
 C
 C  REFLECT THIS BULK ION AS TEST PARTICLE FROM SURFACE NO. MSURF
@@ -1766,14 +1835,18 @@ C
 C.....................................................................
 C
               IF (NLTRC.AND.TRCHST) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
                 WRITE (iunout,*) 'AFTER SUBR. SPUTER: PHYS. SPUTTERING'
                 WRITE (iunout,'(1X,A8)') TEXTS(ISPZ)
                 CALL EIRENE_MASR1('YIELDP  ',YIELD1)
                 CALL EIRENE_MASR6 (
      .             'VELX,VELY,VELZ,VEL,E0,WEIGHT                    ',
      .              VELX,VELY,VELZ,VEL,E0,WEIGHT)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
               ENDIF
 C
 cdr  species index of physically sputtered particle is known.
@@ -1793,31 +1866,43 @@ C
                 CASE (1)
                   LOGATM(IATM,ISTRA)=.TRUE.
                   IF (LPPAT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                     PPAT(IATM,NCELLT)=PPAT(IATM,NCELLT)+WEIGHT
                   ENDIF
                   IF (LEPAT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                     EPAT(NCELLT)=EPAT(NCELLT)+E0*WEIGHT
                   ENDIF
                 CASE (2)
                   LOGMOL(IMOL,ISTRA)=.TRUE.
                   IF (LPPML) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                     PPML(IMOL,NCELLT)=PPML(IMOL,NCELLT)+WEIGHT
                   ENDIF
                   IF (LEPML) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                     EPML(NCELLT)=EPML(NCELLT)+E0*WEIGHT
                   ENDIF
                 CASE (3)
                   LOGION(IION,ISTRA)=.TRUE.
                   IF (LPPIO) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                     PPIO(IION,NCELLT)=PPIO(IION,NCELLT)+WEIGHT
                   ENDIF
                   IF (LEPIO) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                     EPIO(NCELLT)=EPIO(NCELLT)+E0*WEIGHT
                   ENDIF
               END SELECT
@@ -1861,14 +1946,18 @@ C
 C.....................................................................
 C
               IF (NLTRC.AND.TRCHST) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
                 WRITE (iunout,*) 'AFTER SUBR. SPUTER: CHEM. SPUTTERING'
                 WRITE (iunout,'(1X,A8)') TEXTS(ISPZ)
                 CALL EIRENE_MASR1('YIELDC  ',YIELD2)
                 CALL EIRENE_MASR6 (
      .             'VELX,VELY,VELZ,VEL,E0,WEIGHT                    ',
      .              VELX,VELY,VELZ,VEL,E0,WEIGHT)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
               ENDIF
 C
 cdr  species index of chemically sputtered particle is known.
@@ -1889,31 +1978,43 @@ C
                 CASE (1)
                   LOGATM(IATM,ISTRA)=.TRUE.
                   IF (LPPAT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                     PPAT(IATM,NCELLT)=PPAT(IATM,NCELLT)+WEIGHT
                   ENDIF
                   IF (LEPAT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                     EPAT(NCELLT)=EPAT(NCELLT)+E0*WEIGHT
                   ENDIF
                 CASE (2)
                   LOGMOL(IMOL,ISTRA)=.TRUE.
                   IF (LPPML) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                     PPML(IMOL,NCELLT)=PPML(IMOL,NCELLT)+WEIGHT
                   ENDIF
                   IF (LEPML) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                     EPML(NCELLT)=EPML(NCELLT)+E0*WEIGHT
                   ENDIF
                 CASE (3)
                   LOGION(IION,ISTRA)=.TRUE.
                   IF (LPPIO) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                     PPIO(IION,NCELLT)=PPIO(IION,NCELLT)+WEIGHT
                   ENDIF
                   IF (LEPIO) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                     EPIO(NCELLT)=EPIO(NCELLT)+E0*WEIGHT
                   ENDIF
               END SELECT
@@ -1961,7 +2062,9 @@ C
 C
             IF (NLTRC.AND.TRCHST) THEN
 cym
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
               IF (LGPART) THEN
                 WRITE (iunout,*) 'AFTER SUBR. REFLEC:' !,' ithread =',
 !     .              omp_get_thread_num()
@@ -1972,7 +2075,9 @@ cym
               ELSE
                 WRITE (iunout,*) 'ABSORBED IN SUBR. REFLEC'
               ENDIF
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
             ENDIF
 C
 C  NOW: SCORE SURFACE TALLIES. REEMITTED CURRENTS
@@ -2009,25 +2114,39 @@ c           DUMV(3)=0._DP
      .                         IDUM,DUMT,DUMV)
             E0=VELQ*CVRSSP(IPLS)
             LOGPLS(IPLS,ISTRA)=.TRUE.
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             WTOTP(IPLS,ISTRA)=WTOTP(IPLS,ISTRA)-WEIGHT
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             WTOTE(ISTRA)=WTOTE(ISTRA)-ZIWL(IPLS)*WEIGHT
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             ETOTP(ISTRA)=ETOTP(ISTRA)-E0*WEIGHT
             IF (LPPPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               PPPL(IPLS,NCELLT)=PPPL(IPLS,NCELLT)-WEIGHT
             ENDIF
             IF (LEPPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               EPPL(IPLS,NCELLT)=EPPL(IPLS,NCELLT)-E0*WEIGHT
             ENDIF
 C           IF (LEPEL) EPEL(NCELLT)=EPEL(NCELLT)- ???  ELECTRON ENERGY LOSS/GAIN ASSOCIATED WITH PROCESS IRRC
             IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
               CALL EIRENE_CHCTRC(X0,Y0,Z0,0,1)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
             ENDIF
 
 C
@@ -2283,44 +2402,60 @@ C  VOLUME TALLIES FOR TEST SECONDARIES FROM INITIAL BULK PARTICLES
             CASE (1)
               LOGATM(IATM,ISTRA)=.TRUE.
               IF (LPPAT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PPAT(IATM,NCELLT)=PPAT(IATM,NCELLT)+WEIGHT
               ENDIF
               IF (LEPAT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                  EPAT(NCELLT)=EPAT(NCELLT)+E0*WEIGHT
               ENDIF
               LAST_EVENT%ISPEZ = IATM
             CASE (2)
               LOGMOL(IMOL,ISTRA)=.TRUE.
               IF (LPPML) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                  PPML(IMOL,NCELLT)=PPML(IMOL,NCELLT)+WEIGHT
               ENDIF
               IF (LEPML) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                  EPML(NCELLT)=EPML(NCELLT)+E0*WEIGHT
               ENDIF
               LAST_EVENT%ISPEZ = IMOL
             CASE (3)
               LOGION(IION,ISTRA)=.TRUE.
               IF (LPPIO) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                  PPIO(IION,NCELLT)=PPIO(IION,NCELLT)+WEIGHT
               ENDIF
               IF (LEPIO) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                  EPIO(NCELLT)=EPIO(NCELLT)+E0*WEIGHT
               ENDIF
               LAST_EVENT%ISPEZ = IION
             CASE (0)
               LOGPHOT(IPHOT,ISTRA)=.TRUE.
               IF (LPPPHT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                  PPPHT(IPHOT,NCELLT)=PPPHT(IPHOT,NCELLT)+WEIGHT
               ENDIF
               IF (LEPPHT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                  EPPHT(NCELLT)=EPPHT(NCELLT)+E0*WEIGHT
               ENDIF
               LAST_EVENT%ISPEZ = IPHOT
@@ -2329,24 +2464,32 @@ C  TALLIES FOR BULK-SECONDARIES (IF ANY)
           IF (ITYP_B1.EQ.4) THEN
             LOGPLS(IPLS_B1,ISTRA)=.TRUE.
             IF (LPPPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               PPPL(IPLS_B1,NCELLT)=PPPL(IPLS_B1,NCELLT)+
      .                                      WEIGHT_B1
             ENDIF
             IF (LEPPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               EPPL(IPLS_B1,NCELLT)=EPPL(IPLS_B1,NCELLT)+
      .                                      E0_B1*WEIGHT_B1
             ENDIF
           ELSEIF (ITYP_B2.EQ.4) THEN
             LOGPLS(IPLS_B2,ISTRA)=.TRUE.
             IF (LPPPL)THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                PPPL(IPLS_B2,NCELLT)=PPPL(IPLS_B2,NCELLT)+
      .                                      WEIGHT_B2
             ENDIF
             IF (LEPPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               EPPL(IPLS_B2,NCELLT)=EPPL(IPLS_B2,NCELLT)+
      .                                      E0_B2*WEIGHT_B2
             ENDIF
@@ -2497,9 +2640,13 @@ C  TOROIDAL CELL NO. MAY BE WRONG
       WRITE (iunout,*)
      .  'TEST PARTICLE LAUNCHED WITH INVALID CELL INDICES'
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
       WEIGHT=0.
       LGPART=.FALSE.

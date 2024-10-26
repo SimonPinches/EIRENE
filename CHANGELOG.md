@@ -26,6 +26,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Applied CONTRIBUTING rule that Fortran file extensions should be .F instead of .f when the file must be pre-processed by the Makefile
 - Pointing to modified set of examples with .F file extensions
 - Removed forced usage of OpenMP compiler options
+- Used the module provided NREACI, NATMI, NMOLI, NIONI, and NPHOTI in EIRENE_BROWSE_BLOCK_5 inside FIND_PARAM_JSON
 - Moved EIRENE_EXPINT, EIRENE_LAX_M and EIRENE_MMDEI to their own files
 - Added TRCMELD output switch
 - Do not use IUNOUT in EIRENE_MAIN before it is defined or after it has been deallocated
@@ -39,6 +40,8 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Added calls to flush out buffers
 - Added allocated status safeties
 - Removed MAXPOIN from EIRMOD_SOLPS
+- Rearranged OpenMP critical region in EIRMOD_UPTBGK
+- Added OpenMP compliant error handling
 - Added information about thread number in error state in EIRENE_EXIT_OWN
 - Added census score output in TMSTEP
 - Added SHSTEP output in EIRMOD_INFCOP from SOLPS-ITER interface
@@ -53,6 +56,8 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Generalized usaged of FORT and FORT_LC variables
 - Introduced usage of EIRENE_OPENFILE in all interface routines
 - Added TRIM operations and character ranges to avoid string length overflows
+- Added USE_OPENMP and USE_EXT_OPENMP pragmas to avoid compiler warnings from !$OMP instructions when compiling without OpenMP
+- Removed double definition of USE_OPENMP and USE_EXT_OPENMP in CMakeLists.txt
 - Added B25_EIRENE pre-processor pragmas in SOLPS-ITER interface routines
 - Added LEGACYCOMP alternate code
 - Added definition of GFORTRAN pragma in CMakeLists.txt

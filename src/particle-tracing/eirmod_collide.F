@@ -121,6 +121,7 @@ CDR         or integer (1/2 particle possible?)
 
       SAVE
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 cym IAPH, RMMIO, RMIIO and IRPH removed during merge
 !$OMP THREADPRIVATE (dumt,dumv,
 !$OMP& SIGSUM, WGHTO, FRSTP, SCNDP, PTOT, VELXO,
@@ -136,6 +137,7 @@ cym IAPH, RMMIO, RMIIO and IRPH removed during merge
 !$OMP& IRCX, IREI, IRPI, IREL,
 !$OMP& IBGK, IP, NFLAG, IATMN, IPLSN, IPLSV, IPL, NCLLO,
 !$OMP& NAMIEI, NAMIPI, IPTYPO, IPTYPN, CCOLEST)
+#endif
 
       contains
 
@@ -278,9 +280,13 @@ C
 C  ELECTRON IMPACT COLLISION:
 C
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           CALL EIRENE_CHCTRC(X0,Y0,Z0,16,2)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
 C
 C  FIND TYPE OF ELECTR. IMPACT COLLISION PROCESS: IREI
@@ -309,7 +315,9 @@ C  NET PRE- AND POST-COLLISION ESTIMATOR FOR EXPL AND EXEL
         IF (IESTEI(IREI,3).NE.0) THEN
 C  score loss of incoming test particle energy
           IF (LEXX) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             EXX(NCELL)=EXX(NCELL)-WEIGHT*E0
           ENDIF
 
@@ -323,13 +331,17 @@ cdr  because then esigei is the total for this species.
 cdr  For atomic test particles this error should not matter.
               IPL=IPPLEI(IREI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               EXPL(IPL,NCELL)=EXPL(IPL,NCELL)+WEIGHT*ESIGEI(IREI,4)
               LMETSP(NSPAMI+IPL)=.TRUE.
             END DO
           END IF
           IF (LEXEL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             EXEL(NCELL)=EXEL(NCELL)+WEIGHT*ESIGEI(IREI,5)
           ENDIF
         ENDIF
@@ -475,17 +487,23 @@ C         ACCOUNT FOR POST-COLLISION CONTRIBUTIONS
         IF (IESTEI(IREI,3).NE.0) THEN
           IF (ITYP.EQ.1) THEN
             IF (LEXAT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               EXAT(NCELL)=EXAT(NCELL)+WEIGHT*E0
             ENDIF
           ELSEIF (ITYP.EQ.2) THEN
             IF (LEXML) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               EXML(NCELL)=EXML(NCELL)+WEIGHT*E0
             ENDIF
           ELSEIF (ITYP.EQ.3) THEN
             IF (LEXIO) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               EXIO(NCELL)=EXIO(NCELL)+WEIGHT*E0
             ENDIF
           ENDIF
@@ -506,9 +524,13 @@ C
 C  CHARGE-EXCHANGE:
 C
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           CALL EIRENE_CHCTRC(X0,Y0,Z0,16,6)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
 C
 C   FIND CX PROCESS IRCX AND SPECIES INDEX IPLS OF INCIDENT BULK ION
@@ -688,12 +710,16 @@ C
             IF (IESTCX(IRCX,1).NE.0) THEN
 C  pre-collision estimator, iold, nold, iplso
               IF (LPXX) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXX(IOLD,NCELL) =PXX(IOLD,NCELL)-WGHTO
                 LMETSP(NOLD)=.TRUE.
                 IF (LSCX) THEN
                   PXX2(1:NDXX,0:NDXX) => PXX(:,NCELL)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   PXX2(IOLD,IOLD)=PXX2(IOLD,IOLD)-WGHTO
                   LMETSP2(1:NDXX,0:NDXX) => LMETSP(NDXXA:NDXXE)
                   LMETSP2(IOLD,0) = .TRUE.
@@ -701,12 +727,16 @@ C  pre-collision estimator, iold, nold, iplso
                 END IF
               END IF
               IF (LPXPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXPL(IPLSO,NCELL) =PXPL(IPLSO,NCELL)-WEIGHT
                 LMETSP(NSPAMI+IPLSO)=.TRUE.
                 IF (LSCX) THEN
                   PXPL2(1:NPLS,0:NDXX) => PXPL(:,NCELL)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   PXPL2(IPLSO,IOLD)=PXPL2(IPLSO,IOLD)-WEIGHT
                   LMETSP2(1:NPLS,0:NDXX) => LMETSP(NTS_PXPLA:NTS_PXPLE)
                   LMETSP2(IPLSO,0) = .TRUE.
@@ -714,19 +744,25 @@ C  pre-collision estimator, iold, nold, iplso
                 END IF
               END IF
               IF (LPXEL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXEL(NCELL)      =PXEL(NCELL)-WEIGHT
               ENDIF
 
 C  post-collision estimator
 C  IATMN: ATOM SPECIES AFTER CX
               IF (LPXAT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 PXAT(IATMN,NCELL)=PXAT(IATMN,NCELL)+WEIGHT
                 LMETSP(NSPH+IATMN)=.TRUE.
                 IF (LSCX) THEN
                   PXAT2(1:NATM,0:NDXX) => PXAT(:,NCELL)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   PXAT2(IATMN,IOLD)=PXAT2(IATMN,IOLD)+WEIGHT
                   LMETSP2(1:NATM,0:NDXX) => LMETSP(NTS_PXATA:NTS_PXATE)
                   LMETSP2(IATMN,0) = .TRUE.
@@ -738,12 +774,16 @@ C  IATMN: ATOM SPECIES AFTER CX
 C  IPLSN: ION SPECIES AFTER CX
                 IPLSN=N2NDX(IRCX,2)
                 IF (LPXPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   PXPL(IPLSN,NCELL)=PXPL(IPLSN,NCELL)+WGHTO
                   LMETSP(NSPAMI+IPLSN)=.TRUE.
                   IF (LSCX) THEN
                     PXPL2(1:NPLS,0:NDXX) => PXPL(:,NCELL)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                     PXPL2(IPLSN,IOLD)=PXPL2(IPLSN,IOLD)+WGHTO
                     LMETSP2(1:NPLS,0:NDXX) =>
      .                      LMETSP(NTS_PXPLA:NTS_PXPLE)
@@ -752,7 +792,9 @@ C  IPLSN: ION SPECIES AFTER CX
                   END IF
                 END IF
                 IF (LPXEL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   PXEL(NCELL)      =PXEL(NCELL)+WGHTO
                 ENDIF
 
@@ -765,22 +807,30 @@ cdr  col estim. particle tally, but second secondary is not a bulk ion
 c  collision estimator for CX energy exchange tallies
             IF (IESTCX(IRCX,3).NE.0) THEN
               IF (LEXX) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 EXX(NCELL)=EXX(NCELL)-E0O*WGHTO
               ENDIF
               IF (LEXAT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 EXAT(NCELL)=EXAT(NCELL)+E0*WEIGHT
               ENDIF
               IF (LEXPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 EXPL(IPLSO,NCELL)=EXPL(IPLSO,NCELL)-E0*WEIGHT
                 LMETSP(NSPAMI+IPLSO)=.TRUE.
               END IF
               IF (N2NDX(IRCX,1).EQ.4) THEN
                 IF (LEXPL) THEN
                   IPLSN=N2NDX(IRCX,2)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   EXPL(IPLSN,NCELL)=EXPL(IPLSN,NCELL)+E0O*WGHTO
                   LMETSP(NSPAMI+IPLSN)=.TRUE.
                 ENDIF
@@ -809,7 +859,9 @@ C  SET THE POST-COLLISION TEST PARTICLE PARALLEL VELOCITY = PRE-COLLISION BULK (
 C  ASSUME: OLD (INCIDENT) FIELD PARTICLE VELOCITY WAS EQUAL TO NEW TEST PARTICLE VELOCITY
 C          Scattering angle = PI in COM.
 C  remove its momentum from field particles
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                 MXPL(IPLS,NCELL)=MXPL(IPLS,NCELL)-
      .                           WEIGHT*V0_PARB
      .                           *SIGNUM
@@ -822,7 +874,9 @@ C  IPLSN: BULK ION SPECIES AFTER CX
                   IPLSN=N2NDX(IRCX,2)
 C  ASSUME: NEW FIELD PARTICLE VELOCITY IS EQUAL TO (OLD) INCIDENT TEST PARTICLE VELOCITY
 C          Scattering angle = PI in COM. Exchange of identity
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   MXPL(IPLSN,NCELL)=MXPL(IPLSN,NCELL)+
      .                              WGHTO*V0_PARBO
      .                              *SIGNUM
@@ -1034,9 +1088,13 @@ cdr:  currently still somewhere in folion. To be moved here,
 cdr   build on analogy with other elastic collisions
 C
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           CALL EIRENE_CHCTRC(X0,Y0,Z0,16,5)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
 
 C   FIND IREL, AND SPECIES INDEX IPLS OF BULK (ION) COLLISION PARTNER
@@ -1078,19 +1136,27 @@ C  UPDATE COLLISION ESTIMATOR CONTRIBUTION
 C  ASSUME, AS BEFORE, NO CHANGE IN SPECIES/TYPE
         IF (IESTEL(IREL,1).NE.0) THEN
           IF (LPXX) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             PXX(IOLD,NCELL) =PXX(IOLD,NCELL)-WGHTO
 c  IOLD=INEW for EL processes
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             PXX(INEW,NCELL) =PXX(INEW,NCELL)+WEIGHT
             LMETSP(NOLD)=.TRUE.
 c  NOLD=NNEW for EL processes
             LMETSP(NNEW)=.TRUE.
             IF (LSCX) THEN
               PXX2(1:NDXX,0:NDXX) => PXX(:,NCELL)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               PXX2(IOLD,IOLD)=PXX2(IOLD,IOLD)-WGHTO
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               PXX2(INEW,IOLD)=PXX2(INEW,IOLD)+WEIGHT
               LMETSP2(1:NDXX,0:NDXX) => LMETSP(NDXXA:NDXXE)
               LMETSP2(IOLD,0) = .TRUE.
@@ -1104,11 +1170,15 @@ c  UPDATE NET collision estimator for EL energy exchange tallies
         IF (IESTEL(IREL,3).NE.0) THEN
           EDEL=E0O*WGHTO-E0*WEIGHT
           IF (LEXX) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             EXX(NCELL)      =EXX(NCELL)-EDEL
           ENDIF
           IF (LEXPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             EXPL(IPLS,NCELL) =EXPL(IPLS,NCELL)+EDEL
             LMETSP(NSPAMI+IPLS)=.TRUE.
           END IF
@@ -1146,9 +1216,13 @@ C
       ELSEIF (ZEP1.LE.SIGEIT+SIGCXT+SIGELT+SIGPIT) THEN
 C
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           CALL EIRENE_CHCTRC(X0,Y0,Z0,16,3)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
 
         SIGSUM=SIGEIT+SIGCXT+SIGELT
@@ -1179,7 +1253,9 @@ C  PRE- AND POST-COLLISION ESTIMATOR FOR EXPL AND EXEL
         IF (IESTPI(IRPI,3).NE.0) THEN
 C  score loss of incoming test particle energy
           IF (LEXX) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             EXX(NCELL)=EXX(NCELL)-WEIGHT*E0
           ENDIF
 
@@ -1190,13 +1266,17 @@ cdr EXAT, EXML, EXIO : SCORE EXACT GAINS LATER.
 cdr: this is incorrect. esigpi must be split into ipl secondaries
               IPL=IPPLPI(IRPI,IP)
               LOGPLS(IPL,ISTRA)=.TRUE.
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               EXPL(IPL,NCELL)=EXPL(IPL,NCELL)+WEIGHT*ESIGPI(IRPI,4)
               LMETSP(NSPAMI+IPL)=.TRUE.
             END DO
           END IF
           IF (LEXEL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             EXEL(NCELL)=EXEL(NCELL)+WEIGHT*ESIGPI(IRPI,5)
           ENDIF
         ENDIF
@@ -1298,17 +1378,23 @@ C  NEW TYP: ITYP
         IF (IESTPI(IRPI,3).NE.0) THEN
           IF (ITYP.EQ.1) THEN
             IF (LEXAT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               EXAT(NCELL)=EXAT(NCELL)+WEIGHT*E0
             ENDIF
           ELSEIF (ITYP.EQ.2) THEN
             IF (LEXML) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               EXML(NCELL)=EXML(NCELL)+WEIGHT*E0
             ENDIF
           ELSEIF (ITYP.EQ.3) THEN
             IF (LEXIO) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               EXIO(NCELL)=EXIO(NCELL)+WEIGHT*E0
             ENDIF
           ENDIF
@@ -1364,11 +1450,15 @@ C  SHOULD MAKE NO DIFFERENCE ON AVERAGE, IF GENERATION LIMIT IS VALID.
 C  IF NOT, ONLY THIS FORM OF ABSORPTION ESTIMATOR GIVES CORRECT BALANCES.
 
       IF (LPGENX) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
         PGENX(NCELL)=PGENX(NCELL)-WEIGHT
       ENDIF
       IF (LEGENX) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
         EGENX(NCELL)=EGENX(NCELL)-WEIGHT*E0
       ENDIF
       IF (LVGENX) THEN
@@ -1377,16 +1467,22 @@ C  THE LOCAL B FIELD: KNOWN ALREADY FROM INITIALISATION
         V0_N(0)=VEL*(VELX*BXN(0)+VELY*BYN(0)+VELZ*BZN(0))
 c  Mass of post-collision test particle is the same as pre-collision mass RMASSX
         M0_N(0)=V0_N(0)*AMUA*RMASSX
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
         VGENX(NCELL)=VGENX(NCELL)-WEIGHT*M0_N(0)
       END IF
 
       IF (LPGENX.OR.LEGENX.OR.LVGENX) LMETSP(NOLD)=.TRUE.
 
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         CALL EIRENE_CHCTRC(X0,Y0,Z0,16,16)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
 cdr  also exit the calling routine
       LGPART=.FALSE.

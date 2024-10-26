@@ -17,7 +17,9 @@ cdr  to reduce unnecessary printout of zero tallies
 
       LOGICAL, POINTER, PUBLIC, SAVE :: LOGXSPZ
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP  THREADPRIVATE(LOGXSPZ)
+#endif
 
       CONTAINS
 

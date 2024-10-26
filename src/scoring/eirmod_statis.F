@@ -43,6 +43,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
      .           NSYM, IGI, ITL, ISCO, NSYH, J1, J2, IP, IG, IT
       INTEGER, SAVE :: NSB, NRW
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE (vector,vectrc,iadd,igff,iaddw,igffw,
 !$OMP& iaddc,igffc,ind,IIND,indss,SD,SDC,
 !$OMP& D1, DS1, D2S, DS2, DSA, DD22, DD11, D2, DD12,
@@ -51,6 +52,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 !$OMP& ISCO2, NR1, NP2, NT3, INP, IGF, IC, I, IRU, IIN, J, IR, IGS,
 !$OMP& ICO,  IS, ITL2, ISCO1, ITL1, IGE,
 !$OMP& NSYM, IGI, ITL, ISCO, NSYH, J1, J2, IP, IG, IT,nsb,nrw)
+#endif
 
       CONTAINS
 

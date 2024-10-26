@@ -28,9 +28,11 @@ cdr  In case of parallel execution: set TRCLST = false
      I         NPMEAN(:),IFLRPI(:)
 
 cym
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP threadprivate(XCMEAN,XEMEAN,XPMEAN,
 !$OMP& SGCVMX,SGEVMX,SGPVMX,NCMEAN,NEMEAN,NPMEAN,
 !$OMP& IFLRCX,IFLREL,IFLRPI)
+#endif
 
       CONTAINS
 

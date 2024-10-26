@@ -56,12 +56,16 @@ C  THIS IS NEEDED IN CASE THE SPUTTERED (emitted) SPECIES IS NOT AN EIRENE TEST 
 C  ONLY THE SPUTTERED FLUX IS SCORED
 
       IF (LSPTTOT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
         SPTTOT(MSURF) = SPTTOT(MSURF) + WGH
       ENDIF
       IF (MSURFG.GT.0) THEN
          IF (LSPTTOT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
            SPTTOT(MSURFG) = SPTTOT(MSURFG) + WGH
          ENDIF
       ENDIF
@@ -69,27 +73,37 @@ C  AT THIS PLACE: NEW ITYP AND NEW SPECIES INDEX NOT NECESSARILY KNOWN
       SELECT CASE (ITOLD)
       CASE (0)
         if (lsptphtot) then
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
           sptphtot(msurf) = sptphtot(msurf) + wgh
         endif
       CASE (1)
         if (lsptatot) then
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
            sptatot(msurf)  = sptatot(msurf)  + wgh
         endif
       CASE (2)
         if (lsptmtot) then
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
            sptmtot(msurf)  = sptmtot(msurf)  + wgh
         endif
       CASE (3)
         if (lsptitot) then
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
            sptitot(msurf)  = sptitot(msurf)  + wgh
         endif
       CASE (4)
          if (lsptpltot) then
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             sptpltot(msurf) = sptpltot(msurf) + wgh
          endif
       END SELECT
@@ -122,10 +136,14 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 !      OUTGOING PARTICLE IS PHOTON
          CASE(0)
             IF (LSPTPHPHT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                SPTPHPHT(IPHOT,MSURF)=SPTPHPHT(IPHOT,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   SPTPHPHT(IPHOT,MSURFG)=SPTPHPHT(IPHOT,MSURFG)+WGH
                ENDIF
                LMETSPW(IPHOT) = .TRUE.
@@ -133,10 +151,14 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 !     OUTGOING PARTICLE IS ATOM
          CASE(1)
             IF (LSPTPHAT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                SPTPHAT(IATM,MSURF)=SPTPHAT(IATM,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   SPTPHAT(IATM,MSURFG)=SPTPHAT(IATM,MSURFG)+WGH
                ENDIF
                LMETSPW(NSPH+IATM) = .TRUE.
@@ -144,10 +166,14 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 !     OUTGOING PARTICLE IS MOLECULE
          CASE(2)
             IF (LSPTPHML) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                SPTPHML(IMOL,MSURF)=SPTPHML(IMOL,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   SPTPHML(IMOL,MSURFG)=SPTPHML(IMOL,MSURFG)+WGH
                ENDIF
                LMETSPW(NSPA+IMOL) = .TRUE.
@@ -155,10 +181,14 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 !     OUTGOING PARTICLE IS TEST ION
          CASE(3)
             IF (LSPTPHIO) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                SPTPHIO(IION,MSURF)=SPTPHIO(IION,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   SPTPHIO(IION,MSURFG)=SPTPHIO(IION,MSURFG)+WGH
                ENDIF
                LMETSPW(NSPAM+IION) = .TRUE.
@@ -166,10 +196,14 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 !     OUTGOING PARTICLE IS BULK ION
          CASE(4)
             IF (LSPTPHPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                SPTPHPL(IPLS,MSURF)=SPTPHPL(IPLS,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   SPTPHPL(IPLS,MSURFG)=SPTPHPL(IPLS,MSURFG)+WGH
                ENDIF
                LMETSPW(NSPAMI+IPLS) = .TRUE.
@@ -190,10 +224,14 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 !      OUTGOING PARTICLE IS PHOTON
          CASE(0)
             IF (LSPTAPHT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                SPTAPHT(IPHOT,MSURF)=SPTAPHT(IPHOT,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   SPTAPHT(IPHOT,MSURFG)=SPTAPHT(IPHOT,MSURFG)+WGH
                ENDIF
                LMETSPW(IPHOT) = .TRUE.
@@ -201,10 +239,14 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 !     OUTGOING PARTICLE IS ATOM
          CASE(1)
             IF (LSPTAAT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                SPTAAT(IATM,MSURF)=SPTAAT(IATM,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   SPTAAT(IATM,MSURFG)=SPTAAT(IATM,MSURFG)+WGH
                ENDIF
                LMETSPW(NSPH+IATM) = .TRUE.
@@ -212,10 +254,14 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 !     OUTGOING PARTICLE IS MOLECULE
          CASE(2)
             IF (LSPTAML) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                SPTAML(IMOL,MSURF)=SPTAML(IMOL,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   SPTAML(IMOL,MSURFG)=SPTAML(IMOL,MSURFG)+WGH
                ENDIF
                LMETSPW(NSPA+IMOL) = .TRUE.
@@ -223,10 +269,14 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 !     OUTGOING PARTICLE IS TEST ION
          CASE(3)
             IF (LSPTAIO) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                SPTAIO(IION,MSURF)=SPTAIO(IION,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   SPTAIO(IION,MSURFG)=SPTAIO(IION,MSURFG)+WGH
                ENDIF
                LMETSPW(NSPAM+IION) = .TRUE.
@@ -234,10 +284,14 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 !     OUTGOING PARTICLE IS BULK ION
          CASE(4)
             IF (LSPTAPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                SPTAPL(IPLS,MSURF)=SPTAPL(IPLS,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   SPTAPL(IPLS,MSURFG)=SPTAPL(IPLS,MSURFG)+WGH
                ENDIF
                LMETSPW(NSPAMI+IPLS) = .TRUE.
@@ -257,10 +311,14 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 ! OUTGOING PARTICLE IS PHOTON
          CASE(0)
             IF (LSPTMPHT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                SPTMPHT(IPHOT,MSURF)=SPTMPHT(IPHOT,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   SPTMPHT(IPHOT,MSURFG)=SPTMPHT(IPHOT,MSURFG)+WGH
                ENDIF
                LMETSPW(IPHOT) = .TRUE.
@@ -268,10 +326,14 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 ! OUTGOING PARTICLE IS ATOM
          CASE(1)
             IF (LSPTMAT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                SPTMAT(IATM,MSURF)=SPTMAT(IATM,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   SPTMAT(IATM,MSURFG)=SPTMAT(IATM,MSURFG)+WGH
                ENDIF
                LMETSPW(NSPH+IATM) = .TRUE.
@@ -279,10 +341,14 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 !     OUTGOING PARTICLE IS MOLECULE
          CASE(2)
             IF (LSPTMML) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                SPTMML(IMOL,MSURF)=SPTMML(IMOL,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   SPTMML(IMOL,MSURFG)=SPTMML(IMOL,MSURFG)+WGH
                ENDIF
                LMETSPW(NSPA+IMOL) = .TRUE.
@@ -290,10 +356,14 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 !     OUTGOING PARTICLE IS ATOMTEST ION
          CASE(3)
             IF (LSPTMIO) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                SPTMIO(IION,MSURF)=SPTMIO(IION,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   SPTMIO(IION,MSURFG)=SPTMIO(IION,MSURFG)+WGH
                ENDIF
                LMETSPW(NSPAM+IION) = .TRUE.
@@ -301,10 +371,14 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 !     OUTGOING PARTICLE IS BULK ION
          CASE(4)
             IF (LSPTMPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                SPTMPL(IPLS,MSURF)=SPTMPL(IPLS,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   SPTMPL(IPLS,MSURFG)=SPTMPL(IPLS,MSURFG)+WGH
                ENDIF
                LMETSPW(NSPAMI+IPLS) = .TRUE.
@@ -325,10 +399,14 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 ! OUTGOING PARTICLE IS PHOTON
          CASE(0)
             IF (LSPTIPHT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                SPTIPHT(IPHOT,MSURF)=SPTIPHT(IPHOT,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   SPTIPHT(IPHOT,MSURFG)=SPTIPHT(IPHOT,MSURFG)+WGH
                ENDIF
                LMETSPW(IPHOT) = .TRUE.
@@ -336,10 +414,14 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 ! OUTGOING PARTICLE IS ATOM
          CASE(1)
             IF (LSPTIAT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                SPTIAT(IATM,MSURF)=SPTIAT(IATM,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   SPTIAT(IATM,MSURFG)=SPTIAT(IATM,MSURFG)+WGH
                ENDIF
                LMETSPW(NSPH+IATM) = .TRUE.
@@ -347,10 +429,14 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 !     OUTGOING PARTICLE IS MOLECULE
          CASE(2)
             IF (LSPTIML) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                SPTIML(IMOL,MSURF)=SPTIML(IMOL,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   SPTIML(IMOL,MSURFG)=SPTIML(IMOL,MSURFG)+WGH
                ENDIF
                LMETSPW(NSPA+IMOL) = .TRUE.
@@ -358,10 +444,14 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 !     OUTGOING PARTICLE IS TEST ION
          CASE(3)
             IF (LSPTIIO) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                SPTIIO(IION,MSURF)=SPTIIO(IION,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   SPTIIO(IION,MSURFG)=SPTIIO(IION,MSURFG)+WGH
                ENDIF
                LMETSPW(NSPAM+IION) = .TRUE.
@@ -369,10 +459,14 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 !     OUTGOING PARTICLE IS BULK ION
          CASE(4)
             IF (LSPTIPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                SPTIPL(IPLS,MSURF)=SPTIPL(IPLS,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   SPTIPL(IPLS,MSURFG)=SPTIPL(IPLS,MSURFG)+WGH
                ENDIF
                LMETSPW(NSPAMI+IPLS) = .TRUE.
@@ -393,10 +487,14 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 ! OUTGOING PARTICLE IS PHOTON
          CASE(0)
             IF (LSPTPPHT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                SPTPPHT(IPHOT,MSURF)=SPTPPHT(IPHOT,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   SPTPPHT(IPHOT,MSURFG)=SPTPPHT(IPHOT,MSURFG)+WGH
                ENDIF
                LMETSPW(IPHOT) = .TRUE.
@@ -404,10 +502,14 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 ! OUTGOING PARTICLE IS ATOM
          CASE(1)
             IF (LSPTPAT) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                SPTPAT(IATM,MSURF)=SPTPAT(IATM,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   SPTPAT(IATM,MSURFG)=SPTPAT(IATM,MSURFG)+WGH
                ENDIF
                LMETSPW(NSPH+IATM) = .TRUE.
@@ -415,10 +517,14 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 !     OUTGOING PARTICLE IS MOLECULE
          CASE(2)
             IF (LSPTPML) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                SPTPML(IMOL,MSURF)=SPTPML(IMOL,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   SPTPML(IMOL,MSURFG)=SPTPML(IMOL,MSURFG)+WGH
                ENDIF
                LMETSPW(NSPA+IMOL) = .TRUE.
@@ -426,10 +532,14 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 !     OUTGOING PARTICLE IS TEST ION
          CASE(3)
             IF (LSPTPIO) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                SPTPIO(IION,MSURF)=SPTPIO(IION,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   SPTPIO(IION,MSURFG)=SPTPIO(IION,MSURFG)+WGH
                ENDIF
                LMETSPW(NSPAM+IION) = .TRUE.
@@ -437,10 +547,14 @@ C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 !     OUTGOING PARTICLE IS BULK ION
          CASE(4)
             IF (LSPTPPL) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                SPTPPL(IPLS,MSURF)=SPTPPL(IPLS,MSURF)+WGH
                IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   SPTPPL(IPLS,MSURFG)=SPTPPL(IPLS,MSURFG)+WGH
                ENDIF
                LMETSPW(NSPAMI+IPLS) = .TRUE.

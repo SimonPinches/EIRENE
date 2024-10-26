@@ -16,9 +16,11 @@
       USE EIRMOD_CUPD
       USE EIRMOD_PARMMOD
       USE EIRMOD_PRECISION
+#ifdef USE_EXT_OPENMP
       USE EIRMOD_SPUTER, ONLY: ETH,Q,M2M1,ES,ETF
+#endif
 
-#ifdef USE_OPENMP
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
       USE OMP_LIB               !IGNORE
 #endif
 
@@ -31,12 +33,15 @@
 
       INTEGER, PUBLIC, SAVE :: EIRENE_ITHREAD, EIRENE_NTHREADS
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(EIRENE_ITHREAD,EIRENE_NTHREADS)
+#endif
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c     ym shared variables used as buffer to initialize private pointer variables
 c     ym copyin does not work for allocatable pointer arrrays
 
+#ifdef USE_EXT_OPENMP
       INTEGER :: BISTRA
       INTEGER, TARGET, ALLOCATABLE :: BISDVI(:)
       INTEGER, TARGET, ALLOCATABLE :: BIPSTD(:),BICMSPL(:)
@@ -45,6 +50,7 @@ c     ym copyin does not work for allocatable pointer arrrays
       LOGICAL, TARGET, ALLOCATABLE :: BLCMSOU(:,:)
       REAL(DP), DIMENSION(28,0:11) :: BETH,BQ,BM2M1,BETF
       REAL(DP), DIMENSION(28) :: BES
+#endif
 
       CONTAINS
 
@@ -58,7 +64,7 @@ c     ym copyin does not work for allocatable pointer arrrays
 
       SUBROUTINE EIRENE_INIT_OPENMP
 
-#ifndef USE_EXT_OPENMP
+#if ( !defined(USE_EXT_OPENMP) && defined(USE_OPENMP) )
 !$OMP PARALLEL DEFAULT(SHARED)
 #endif
 
@@ -72,7 +78,7 @@ c     ym copyin does not work for allocatable pointer arrrays
 !HJL Needed to avoid circular dependency with comprt
       NTHREAD = EIRENE_NTHREADS
 
-#ifndef USE_EXT_OPENMP
+#if ( !defined(USE_EXT_OPENMP) && defined(USE_OPENMP) )
 !$OMP END PARALLEL
 #endif
 
@@ -81,52 +87,58 @@ c     ym copyin does not work for allocatable pointer arrrays
 
       SUBROUTINE EIRENE_PREPARE_OPENMP
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP BARRIER
+#endif
 
-#ifdef USE_OPENMP
+#if ( defined(USE_OPENMP) && !defined(USE_EXT_OPENMP) )
 !$OMP MASTER
       write(iunout,*)"Compiled with OpenMP - NTHREADS =",EIRENE_NTHREADS
 !$OMP END MASTER
-#else
+#elif ( !defined(USE_OPENMP) && !defined(USE_EXT_OPENMP) )
       write(iunout,*)"Compiled without OpenMP support"
 #endif
 
       CALL EIRENE_CHECK_STDEV()
 
-#ifndef USE_EXT_OPENMP
+#if ( !defined(USE_EXT_OPENMP) && defined(USE_OPENMP) )
 !$OMP PARALLEL DEFAULT(SHARED)
 #endif
 
-#ifdef USE_EXT_OPENMP
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
       IF(EIRENE_ITHREAD==0) THEN
         CALL EIRENE_INIT_BUFFERS_OPENMP()
       ELSE
 #endif
-#ifdef USE_OPENMP
+#if ( defined(USE_OPENMP) && !defined(USE_EXT_OPENMP) )
         CALL EIRENE_ALLOCATE_OPENMP()
 #endif
-#ifdef USE_EXT_OPENMP
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
       ENDIF
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP BARRIER
+#endif
 
       IF(EIRENE_ITHREAD>0) THEN
         CALL EIRENE_COPY_BUFFERS_OPENMP()
       ENDIF
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP BARRIER
+#endif
 
       IF(EIRENE_ITHREAD==0) THEN
         CALL EIRENE_DEALLOCATE_BUFFERS_OPENMP()
       ENDIF
-#else
+#elif ( defined(USE_OPENMP) && !defined(USE_EXT_OPENMP) )
 !$OMP END PARALLEL
 #endif
 
       RETURN
       END SUBROUTINE EIRENE_PREPARE_OPENMP
 
-
+#ifdef USE_OPENMP
 !!! Allocate THREAD_PRIVATE arrays for non master threads
       SUBROUTINE EIRENE_ALLOCATE_OPENMP
 
@@ -294,7 +306,7 @@ c     ym make sure the clast variables do not take exotic values
 
       RETURN
       END SUBROUTINE EIRENE_ALLOCATE_OPENMP
-
+#endif
 
 !!! Deallocate THREADPRIVATE arrays
       SUBROUTINE EIRENE_DEALLOCATE_OPENMP
@@ -357,7 +369,7 @@ c     ym make sure the clast variables do not take exotic values
       RETURN
       END SUBROUTINE EIRENE_DEALLOCATE_OPENMP
 
-
+#ifdef USE_EXT_OPENMP
 !!! Allocate shared arrays and copy in the data from master
       SUBROUTINE EIRENE_INIT_BUFFERS_OPENMP
       IMPLICIT NONE
@@ -430,6 +442,7 @@ c     ym make sure the clast variables do not take exotic values
 
       RETURN
       END SUBROUTINE EIRENE_DEALLOCATE_BUFFERS_OPENMP
+#endif
 
       SUBROUTINE EIRENE_CHECK_STDEV
       IMPLICIT NONE
@@ -440,24 +453,32 @@ CHJL off standard deviation calculations
 
       IF(EIRENE_NTHREADS>1) THEN
         IF(NSIGI>0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP MASTER
+#endif
           write(iunout,*)"***************WARNING*******************"
           write(iunout,*)"The standard deviation calculations have"
           write(iunout,*)"not been implemented for OpenMP threads."
           write(iunout,*)"Standard deviation calculations have been"
           write(iunout,*)"turned off."
           write(iunout,*)"INPUT FILE:",NSIGI,NSIGVI,NSIGSI,NSIGCI
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END MASTER
 !$OMP BARRIER
+#endif
           NSIGVI=0
           NSIGSI=0
           NSIGCI=0
           NSIGI_SPC=0
           NSIGI=0
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP MASTER
+#endif
           write(iunout,*)"NOW:",NSIGI,NSIGVI,NSIGSI,NSIGCI
           write(iunout,*)"***************WARNING*******************"
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END MASTER
+#endif
         ENDIF
       ENDIF
 

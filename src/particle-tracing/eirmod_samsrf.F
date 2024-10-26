@@ -43,8 +43,10 @@ c  eirene_samsf2:  deallocate temporary arrays
       INTEGER, ALLOCATABLE, SAVE :: INDTEC(:,:)
       INTEGER, SAVE :: ISTEP_SPEZ, ISTEP, IS1, IPLSTI, IPLSV
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(FL,VX,VY,VZ,XC,YC,ZC,
 !$OMP& ISTEP_SPEZ,ISTEP,IS1,IPLSTI,IPLSV)
+#endif
 
       CONTAINS
 

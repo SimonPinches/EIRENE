@@ -23,8 +23,10 @@ cdr  begin threadprivate here
 
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE :: FNUIAR(:)
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP  THREADPRIVATE(E0PAR,VELPAR,VELPER,VLXPAR,VLYPAR,VLZPAR,SIGPAR,
 !$OMP& BVEC,BBX,BBY,BBZ,TAUE,LCART,COLFLAG,FNUIAR)
+#endif
 
 cdr  end threadprivate here
 

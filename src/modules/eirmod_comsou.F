@@ -58,7 +58,9 @@ c.....................................................................
      L NLMOL(:),  NLATM(:),  NLION(:),  NLPLS(:),  NLPHOT(:),
      L NLAVRP(:), NLAVRT(:), NLSRON(:), NLRAY(:)
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP  THREADPRIVATE(NLRAY,LCMSOU)
+#endif
 
 c.....................................................................
 

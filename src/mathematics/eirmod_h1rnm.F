@@ -40,7 +40,9 @@ cym - former RASET2 common
 
       CHARACTER*16 :: FLAG
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$omp threadprivate(U,C,CD,CM,IM,JM,FLAG)
+#endif
 
       LOGICAL, SAVE :: FIRST1=.TRUE.
 

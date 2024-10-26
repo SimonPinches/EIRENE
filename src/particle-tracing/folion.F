@@ -1073,9 +1073,13 @@ cdr  try to tell external code: particle on surface, but it is an old particle, 
         ENDIF
 
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           CALL EIRENE_CHCTRC(X0,Y0,Z0,16,19)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
         NUPC(1)=NPCELL-1+(NTCELL-1)*NP2T3
         NCELL=NRCELL+NUPC(1)*NR1P2+NBLCKA
@@ -1173,9 +1177,13 @@ C              FULL CARTESIAN VELOCITY COMPONENTS
         ENDIF
 
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           CALL EIRENE_CHCTRC(X0,Y0,Z0,0,11)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
         GOTO 1004
       ENDIF
@@ -1302,9 +1310,13 @@ C
       CALL EIRENE_MASAGE('ERROR IN FOLION, LCART HAS WRONG VALUE')
       WRITE (IUNOUT,*) 'NPANU,LCART ',NPANU,LCART
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
       GOTO 999
 C
@@ -1318,17 +1330,25 @@ C
       Y0ERR=Y0+ZT*VELY
       Z0ERR=Z0+ZT*VELZ
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         CALL EIRENE_CHCTRC(X0ERR,Y0ERR,Z0ERR,16,18)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ELSE
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         WRITE (iunout,'(A,1P,4(1X,1E14.7))') 'X0,Y0,Z0,ZT ',X0,Y0,Z0,ZT
         WRITE (iunout,'(A,1P,4(1X,1E14.7))') 'VELX,VELY,VELZ,VEL ',
      .                                        VELX,VELY,VELZ,VEL
         WRITE (iunout,'(A,1P,3(1X,1E14.7))') 'X0ERR,Y0ERR,Z0ERR ',
      .                                        X0ERR,Y0ERR,Z0ERR
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
       GOTO 999
   996 CALL EIRENE_MASAGE
@@ -1339,9 +1359,13 @@ C
 C   DETAILED PRINTOUT ALREADY DONE FROM SUBR. CLLTST
 
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
       GOTO 999
 C
@@ -1350,9 +1374,13 @@ C
       GOTO 999
 C
   999 CONTINUE
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
       PTRASH(ISTRA)=PTRASH(ISTRA)-WEIGHT
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
       ETRASH(ISTRA)=ETRASH(ISTRA)-WEIGHT*E0
       LGPART=.FALSE.
       WEIGHT=0.

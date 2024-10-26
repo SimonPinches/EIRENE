@@ -201,9 +201,11 @@ c  inverse mean free path
 
       REAL(DP), PUBLIC, SAVE :: ZMFPTHI, TDGTEMX
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP  THREADPRIVATE(SIGVCX,SIGVPI,SIGVEI,SIGVEL,SIGVPH,XSTOR,XSTORV,
 !$OMP& ESIGCX,ESIGPI,ESIGEI,ESIGEL,ESIGPH,VSIGCX,VSIGPI,VSIGEL,SIGCXT,
 !$OMP& SIGPIT,SIGEIT,SIGELT,SIGPHT,SIGTOT,SIGBGK,ZMFPI,ZMFPTHI,TDGTEMX)
+#endif
 
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R TABEI1(:,:),   TABRC1(:,:),
@@ -254,8 +256,10 @@ cdr  Just set these values in SWITCH_PARTINFO.f
      I NXEIIM, NXCXIM, NXELIM, NXPIIM,
      I NPBGKX
 cym p2nei removed from threadprivate list
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP  THREADPRIVATE(NXEII,NXCXI,NXELI,NXPII,
 !$OMP& NXEIIM,NXCXIM,NXELIM,NXPIIM,NPBGKX)
+#endif
 
       INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      I NAEIIM(:),   NMEIIM(:),   NIEIIM(:),  NPHEIIM(:),
@@ -327,7 +331,9 @@ cdr April 22: Remove redundant leading dimension in 3d arrays LGX...
 cdr           Remove POINTER attribute, use ALLOCATABLE instead
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I LGXCX(:,:), LGXEI(:), LGXEL(:,:), LGXPI(:,:)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP  THREADPRIVATE(LGXCX,LGXEI,LGXEL,LGXPI)
+#endif
 
       INTEGER, PUBLIC, SAVE ::
      I NRPII, NREII, NRCXI, NRELI, NRRCI, NRPHI, NROTI, NRBGI

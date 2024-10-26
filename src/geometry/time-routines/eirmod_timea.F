@@ -595,10 +595,11 @@ c     some vars for checking on intersection/where we are
       EXTERNAL EIRENE_LEER, EIRENE_MASR4
 #endif
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(TMIN,X_S, Y_S, Z_S, SG_S,
 !$OMP&        NNTCL, MASURF_S, LCNDEXP_S,
 !$OMP&        block,ip, start, direction,runlength, norm,status)
-
+#endif
 cym      SAVE
 
       INTERFACE

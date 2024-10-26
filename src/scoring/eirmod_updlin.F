@@ -144,12 +144,16 @@ cdr  ird is coarse grid for scoring
 CDR  the present trajectory has visited NCLMT (coarse) scoring cells
              IR = ICLMT(ICO)
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
              COPV(ICP+IPL,IR) = 0._DP
              IF (LPAPL) COPV(ICP+IPL,IR)=COPV(ICP+IPL,IR)+PAPL(IPL,IR)
              IF (LPIPL) COPV(ICP+IPL,IR)=COPV(ICP+IPL,IR)+PIPL(IPL,IR)
              IF (LPMPL) COPV(ICP+IPL,IR)=COPV(ICP+IPL,IR)+PMPL(IPL,IR)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
              IF (LPAPL.OR.LPMPL.OR.LPIPL) LMETSP(NMTSP+ICP+IPL)=.TRUE.
            END DO
         END IF
@@ -164,12 +168,16 @@ CDR  the present trajectory has visited NCLMT (coarse) scoring cells
            DO ICO = 1,NCLMT
              IR = ICLMT(ICO)
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
              COPV(ICP2+IPL,IR) = 0._DP
              IF (LMAPL) COPV(ICP2+IPL,IR)=COPV(ICP2+IPL,IR)+MAPL(IPL,IR)
              IF (LMIPL) COPV(ICP2+IPL,IR)=COPV(ICP2+IPL,IR)+MIPL(IPL,IR)
              IF (LMMPL) COPV(ICP2+IPL,IR)=COPV(ICP2+IPL,IR)+MMPL(IPL,IR)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
              IF (LMAPL.OR.LMMPL.OR.LMIPL) LMETSP(NMTSP+ICP2+IPL)=.TRUE.
 
            END DO
@@ -181,12 +189,16 @@ CDR  the present trajectory has visited NCLMT (coarse) scoring cells
       DO ICO = 1,NCLMT
         IR = ICLMT(ICO)
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         COPV(ICP5+1,IR) = 0._DP
         IF (LEAEL) COPV(ICP5+1,IR)=COPV(ICP5+1,IR)+EAEL(IR)
         IF (LEIEL) COPV(ICP5+1,IR)=COPV(ICP5+1,IR)+EIEL(IR)
         IF (LEMEL) COPV(ICP5+1,IR)=COPV(ICP5+1,IR)+EMEL(IR)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         IF (LEAEL.OR.LEMEL.OR.LEIEL) LMETSP(NMTSP+ICP5+1)=.TRUE.
       END DO
 
@@ -201,12 +213,16 @@ CDR  the present trajectory has visited NCLMT (coarse) scoring cells
             IR = ICLMT(ICO)
 
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
             COPV(ICP3+IPL,IR) = 0._DP
             IF (LEAPL) COPV(ICP3+IPL,IR)=COPV(ICP3+IPL,IR)+EAPL(IPL,IR)
             IF (LEIPL) COPV(ICP3+IPL,IR)=COPV(ICP3+IPL,IR)+EIPL(IPL,IR)
             IF (LEMPL) COPV(ICP3+IPL,IR)=COPV(ICP3+IPL,IR)+EMPL(IPL,IR)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
             IF (LEAPL.OR.LEMPL.OR.LEIPL) LMETSP(NMTSP+ICP3+IPL)=.TRUE.
 
           END DO
@@ -223,13 +239,17 @@ CDR  the present trajectory has visited NCLMT (coarse) scoring cells
           DO ICO = 1,NCLMT
             IR = ICLMT(ICO)
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
             COPV(ICP4+IPL,IR) = 0._DP
             COPV(ICP4+IPL,IR) = COPV(ICP4+IPL,IR)
      .          - UAH(IPL,IR) * COPV(ICP2+IPL,IR)*      ! UA*SMO
      .           cveli2/amua*2._DP * SIGN(1._DP,UAH(IPL,IR))
      .          + EKIN(IPL,IR) * COPV(ICP+IPL,IR)       ! EKIN*SNI
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
             IF (LEAPL.OR.LEMPL.OR.LEIPL) LMETSP(NMTSP+ICP4+IPL)=.TRUE.
           END DO
         ENDIF
